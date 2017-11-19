@@ -1,0 +1,32 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+1 VERSIONINFO
+ FILEVERSION ${${PROJECT_NAME}_VERSION_MAJOR}, ${${PROJECT_NAME}_VERSION_MINOR}, ${${PROJECT_NAME}_VERSION_BUILD}, 0
+ PRODUCTVERSION ${VERSION_MAJOR}, ${VERSION_MINOR}, ${VERSION_BUILD}, 0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "DragonJoker"
+            VALUE "FileDescription", "${MAIN_PROJECT_NAME} Plugin: ${${PROJECT_NAME}_DESCRIPTION}"
+            VALUE "FileVersion", "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}.0"
+            VALUE "InternalName", "${PROJECT_NAME}"
+            VALUE "LegalCopyright", "Copyright (C) ${VERSION_YEAR}"
+            VALUE "OriginalFilename", "${PROJECT_NAME}.dll"
+            VALUE "ProductName", "${MAIN_PROJECT_NAME}"
+            VALUE "ProductVersion", "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_BUILD}.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END

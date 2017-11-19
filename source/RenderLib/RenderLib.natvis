@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <Type Name="render::Range&lt;*&gt;">
+    <DisplayString>{{[{m_min},{m_max}]}}</DisplayString>
+    <Expand>
+      <Item Name="min">m_min</Item>
+      <Item Name="max">m_max</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::LogarithmicRange&lt;*&gt;">
+    <DisplayString>{{[{m_min},{m_max}]}}</DisplayString>
+    <Expand>
+      <Item Name="min">m_min</Item>
+      <Item Name="max">m_max</Item>
+      <Item Name="a">m_a</Item>
+      <Item Name="b">m_b</Item>
+      <Item Name="offset">m_minOffset</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::RangedValue&lt;*&gt;">
+    <DisplayString>{{{m_value} {m_range}}}</DisplayString>
+    <Expand>
+      <Item Name="value">m_value</Item>
+      <ExpandedItem>m_range</ExpandedItem>
+    </Expand>
+  </Type>
+
+  <Type Name="render::Billboard">
+    <DisplayString>{{name={m_name} count={m_buffer.m_count} dimensions={m_dimensions} material={m_material}}}</DisplayString>
+    <Expand>
+      <Item Name="name">m_name</Item>
+      <Item Name="buffer">m_buffer</Item>
+      <Item Name="position">m_position</Item>
+      <Item Name="orientation">m_orientation</Item>
+      <Item Name="scale">m_scale</Item>
+      <Item Name="transform">m_transform</Item>
+      <Item Name="visible">m_visible</Item>
+      <Item Name="dimensions">m_dimensions</Item>
+      <Item Name="material">m_material</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::BillboardData">
+    <DisplayString>{{center={m_center} magnitude={m_magnitude} scale={m_scale}}}</DisplayString>
+    <Expand>
+      <Item Name="center">m_center</Item>
+      <Item Name="magnitude">m_magnitude</Item>
+      <Item Name="scale">m_scale</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::BillboardBuffer::Vertex">
+    <Expand>
+      <ExpandedItem>data</ExpandedItem>
+      <Item Name="id">id</Item>
+      <Item Name="texture">texture</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::BillboardBuffer">
+    <DisplayString>{{count={m_count} vbo={m_vbo}}}</DisplayString>
+    <Expand>
+      <Item Name="count">m_count</Item>
+      <Item Name="unculled">m_unculled</Item>
+      <Item Name="scale">m_scale</Item>
+      <Item Name="vbo">m_vbo</Item>
+      <Item Name="buffer">m_buffer</Item>
+      <Item Name="visible">m_visible</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::Camera">
+    <DisplayString>{{position={m_position} orientation={m_orientation}}}</DisplayString>
+    <Expand>
+      <Item Name="position">m_position</Item>
+      <Item Name="orientation">m_orientation</Item>
+      <Item Name="transform">m_transform</Item>
+      <ExpandedItem>m_viewport</ExpandedItem>
+    </Expand>
+  </Type>
+
+  <Type Name="render::CameraState">
+    <DisplayString>{{fovy={m_fovy} angle={m_angle}}}</DisplayString>
+    <Expand>
+      <Item Name="fovy">m_fovy</Item>
+      <Item Name="min fovy">m_fovyMin</Item>
+      <Item Name="max fovy">m_fovyMax</Item>
+      <Item Name="angle">m_angle</Item>
+      <Item Name="rotation speed">m_velocity</Item>
+      <Item Name="zoom speed">m_zoomVelocity</Item>
+      <ExpandedItem>m_viewport</ExpandedItem>
+    </Expand>
+  </Type>
+
+  <Type Name="render::ElementsList&lt;*&gt;">
+    <DisplayString>{{{m_elements}}}</DisplayString>
+    <Expand>
+      <Item Name="allocator">m_allocator</Item>
+      <ExpandedItem>m_elements</ExpandedItem>
+    </Expand>
+  </Type>
+
+  <Type Name="render::FlagCombination&lt;*&gt;">
+    <DisplayString>{{{m_value}}}</DisplayString>
+    <Expand>
+      <Item Name="value">m_value</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::Font">
+    <DisplayString>{{name={m_faceName} height={m_height}}}</DisplayString>
+    <Expand>
+      <Item Name="name">m_faceName</Item>
+      <Item Name="height">m_height</Item>
+      <Item Name="max height">m_maxHeight</Item>
+      <Item Name="max width">m_maxWidth</Item>
+      <ExpandedItem>m_glyphs</ExpandedItem>
+    </Expand>
+  </Type>
+
+  <Type Name="render::FontTexture">
+    <DisplayString>{{font={m_font} texture={m_texture}}}</DisplayString>
+    <Expand>
+      <Item Name="font">m_font</Item>
+      <Item Name="texture">m_texture</Item>
+      <ExpandedItem>m_glyphsPositions</ExpandedItem>
+    </Expand>
+  </Type>
+
+  <Type Name="render::Glyph">
+    <DisplayString>{{{m_character}}}</DisplayString>
+    <Expand>
+      <Item Name="bearing">m_bearing</Item>
+      <Item Name="size">m_size</Item>
+      <Item Name="advance">m_advance</Item>
+      <Item Name="character">m_character</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::Material">
+    <Expand>
+      <Item Name="ambient">m_ambient</Item>
+      <Item Name="diffuse">m_diffuse</Item>
+      <Item Name="specular">m_specular</Item>
+      <Item Name="emissive">m_emissive</Item>
+      <Item Name="exponent">m_exponent</Item>
+      <Item Name="alpha text">m_alphaTest</Item>
+      <Item Name="opacity">m_opacity</Item>
+      <Item Name="opacity map">m_opacityMap</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::Mesh">
+    <DisplayString>{{boundaries={m_boundaries}}}</DisplayString>
+    <Expand>
+      <Item Name="boundaries">m_boundaries</Item>
+      <Item Name="position">m_position</Item>
+      <Item Name="normal">m_normal</Item>
+      <Item Name="texcoord">m_texcoord</Item>
+      <ExpandedItem>m_submeshes</ExpandedItem>
+    </Expand>
+  </Type>
+
+  <Type Name="render::Movable">
+    <DisplayString>{{name={m_name}}}</DisplayString>
+    <Expand>
+      <Item Name="name">m_name</Item>
+      <Item Name="position">m_position</Item>
+      <Item Name="orientation">m_orientation</Item>
+      <Item Name="scale">m_scale</Item>
+      <Item Name="transform">m_transform</Item>
+      <Item Name="visible">m_visible</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::Object">
+    <DisplayString>{{name={m_name}}}</DisplayString>
+    <Expand>
+      <Item Name="name">m_name</Item>
+      <Item Name="position">m_position</Item>
+      <Item Name="orientation">m_orientation</Item>
+      <Item Name="scale">m_scale</Item>
+      <Item Name="transform">m_transform</Item>
+      <Item Name="visible">m_visible</Item>
+      <Item Name="materials">m_materials</Item>
+      <Item Name="mesh">m_mesh</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::Overlay">
+    <DisplayString>{{index={m_index} position={m_position}}}</DisplayString>
+    <Expand>
+      <Item Name="index">m_index</Item>
+      <Item Name="position">m_position</Item>
+      <Item Name="size">m_size</Item>
+      <Item Name="colour">m_colour</Item>
+      <Item Name="visible">m_visible</Item>
+      <Item Name="transform">m_transform</Item>
+      <Item Name="quads">m_quads</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::TextOverlay::DisplayableChar">
+    <DisplayString>{{{m_glyph}}}</DisplayString>
+    <Expand>
+      <Item Name="position">m_position</Item>
+      <Item Name="size">m_size</Item>
+      <Item Name="glyph">m_glyph</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::TextOverlay::DisplayableLine">
+    <DisplayString>{{{m_characters}}}</DisplayString>
+    <Expand>
+      <Item Name="position">m_position</Item>
+      <Item Name="width">m_width</Item>
+      <Item Name="height">m_height</Item>
+      <Item Name="characters">m_characters</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::TextOverlay::Vertex">
+    <DisplayString>{{position={coords} uv={text}}}</DisplayString>
+    <Expand>
+      <Item Name="position">coords</Item>
+      <Item Name="uv">text</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="render::TextOverlay">
+    <DisplayString>{{index={m_index} position={m_position} caption={m_previousCaption}}}</DisplayString>
+    <Expand>
+      <Item Name="caption">m_previousCaption</Item>
+      <Item Name="index">m_index</Item>
+      <Item Name="position">m_position</Item>
+      <Item Name="size">m_size</Item>
+      <Item Name="colour">m_colour</Item>
+      <Item Name="visible">m_visible</Item>
+      <Item Name="align">m_hAlign</Item>
+      <Item Name="spacing mode">m_lineSpacingMode</Item>
+      <Item Name="transform">m_transform</Item>
+      <Item Name="quads">m_quads</Item>
+    </Expand>
+  </Type>
+
+</AutoVisualizer>
