@@ -21,7 +21,8 @@ find_path( VkLib_ROOT_DIR include/VkLib/VkLibPrerequisites.hpp
 		/usr
 )
 
-if ( ${VkLib_ROOT_DIR} )
+
+if ( VkLib_ROOT_DIR )
 	find_path( VkLib_INCLUDE_DIR VkLib/VkLibPrerequisites.hpp
 		HINTS
 		PATH_SUFFIXES

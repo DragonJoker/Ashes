@@ -61,10 +61,16 @@ if ( MSVC )
 	string( REGEX REPLACE "/Zi" "/ZI" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG} )
 endif ()
 
-add_subdirectory( GlLib )
-add_subdirectory( RenderLib )
+find_package( VkLib )
+
+include_directories(
+	${CMAKE_SOURCE_DIR}/Utils/Src
+	${VkLib_INCLUDE_DIR}
+)
+
+add_subdirectory( Utils )
 add_subdirectory( FreeType )
-add_subdirectory( StarMapLib )
+add_subdirectory( RenderLib )
 
 if ( ANDROID )
 	add_subdirectory( AndroidUtils )
@@ -73,4 +79,3 @@ else ()
 endif ()
 
 add_subdirectory( RenderLibTestApp )
-add_subdirectory( StarMapTestApp )
