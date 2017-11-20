@@ -64,12 +64,11 @@ endif ()
 find_package( VkLib )
 
 include_directories(
-	${CMAKE_SOURCE_DIR}/Utils/Src
 	${VkLib_INCLUDE_DIR}
 )
 
-add_subdirectory( Utils )
 add_subdirectory( FreeType )
+add_subdirectory( Renderer )
 add_subdirectory( RenderLib )
 
 if ( ANDROID )
