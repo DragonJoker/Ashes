@@ -30,7 +30,7 @@ namespace render
 		}
 
 		std::vector< OverlayPtr > doSortPerZIndex( OverlayList const & overlays
-			, utils::IVec2 const & size )
+			, renderer::IVec2 const & size )
 		{
 			std::vector< OverlayPtr > result;
 
@@ -117,14 +117,14 @@ namespace render
 			, opacity
 			, text ? ObjectType::eTextOverlay : ObjectType::ePanelOverlay ) }
 		, m_overlayUbo{ "Overlay", 0u, *m_program }
-		, m_mpUniform{ &m_overlayUbo.createUniform< utils::Mat4 >( "mtxMP" ) }
-		, m_colour{ &m_overlayUbo.createUniform< utils::RgbaColour >( "colour" ) }
+		, m_mpUniform{ &m_overlayUbo.createUniform< renderer::Mat4 >( "mtxMP" ) }
+		, m_colour{ &m_overlayUbo.createUniform< renderer::RgbaColour >( "colour" ) }
 		, m_mapColour{ gl::makeUniform< int >( "mapColour", *m_program ) }
 		, m_mapOpacity{ gl::makeUniform< int >( "mapOpacity", *m_program ) }
-		, m_position{ m_program->createAttribute< utils::Vec2 >( "position"
+		, m_position{ m_program->createAttribute< renderer::Vec2 >( "position"
 			, sizeof( TextOverlay::Vertex )
 			, offsetof( TextOverlay::Vertex, coords ) ) }
-		, m_texture{ m_program->createAttribute< utils::Vec2 >( "texture"
+		, m_texture{ m_program->createAttribute< renderer::Vec2 >( "texture"
 			, sizeof( TextOverlay::Vertex )
 			, offsetof( TextOverlay::Vertex, text ) ) }
 	{
@@ -181,7 +181,7 @@ namespace render
 		}
 	}
 
-	void OverlayRenderer::beginRender( utils::IVec2 const & size )
+	void OverlayRenderer::beginRender( renderer::IVec2 const & size )
 	{
 		if ( m_viewport.size() != size )
 		{
@@ -301,7 +301,7 @@ namespace render
 
 	void OverlayRenderer::doDrawBuffer( gl::Buffer< Overlay::Quad > const & buffer
 		, uint32_t count
-		, utils::Mat4 const & transform
+		, renderer::Mat4 const & transform
 		, Material const & material
 		, OverlayNode const & node )
 	{
@@ -333,7 +333,7 @@ namespace render
 
 	void OverlayRenderer::doDrawBuffer( gl::Buffer< Overlay::Quad > const & buffer
 		, uint32_t count
-		, utils::Mat4 const & transform
+		, renderer::Mat4 const & transform
 		, Material const & material
 		, Texture const & textOpacity
 		, OverlayNode const & node )

@@ -19,7 +19,7 @@ include_directories(
 )
 
 set( TARGET_RSC
-	${CMAKE_CURRENT_SOURCE_DIR}/Src/RenderLibDesktopTestApp.rc
+	${CMAKE_CURRENT_SOURCE_DIR}/RenderLibDesktopTestApp.rc
 )
 
 source_group( "Resource Files" FILES ${TARGET_RSC} )

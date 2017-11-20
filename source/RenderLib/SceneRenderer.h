@@ -48,21 +48,21 @@ namespace render
 			//! L'UBO contenant les matrices.
 			gl::UniformBuffer m_mtxUbo;
 			//! La variable uniforme contenant la matrice de projection.
-			utils::Mat4Uniform * m_mtxProjection;
+			renderer::Mat4Uniform * m_mtxProjection;
 			//! La variable uniforme contenant la matrice de vue.
-			utils::Mat4Uniform * m_mtxView;
+			renderer::Mat4Uniform * m_mtxView;
 			//! La variable uniforme contenant la matrice du modèle.
-			utils::Mat4Uniform * m_mtxModel;
+			renderer::Mat4Uniform * m_mtxModel;
 			//! L'UBO contenant les informations du matériau.
 			gl::UniformBuffer m_matUbo;
 			//! La variable uniforme contenant la couleur ambiante.
-			utils::Vec3Uniform * m_matAmbient;
+			renderer::Vec3Uniform * m_matAmbient;
 			//! La variable uniforme contenant la couleur diffuse.
-			utils::Vec3Uniform * m_matDiffuse;
+			renderer::Vec3Uniform * m_matDiffuse;
 			//! La variable uniforme contenant la couleur spéculaire.
-			utils::Vec3Uniform * m_matSpecular;
+			renderer::Vec3Uniform * m_matSpecular;
 			//! La variable uniforme contenant la couleur émissive.
-			utils::Vec3Uniform * m_matEmissive;
+			renderer::Vec3Uniform * m_matEmissive;
 			//! La variable uniforme contenant l'exposant spéculaire.
 			gl::FloatUniform * m_matExponent;
 			//! La variable uniforme contenant l'opacité
@@ -87,11 +87,11 @@ namespace render
 			*/
 			ObjectNode( gl::ShaderProgramPtr && program );
 			//! L'attribut de position.
-			utils::Vec3AttributePtr m_position;
+			renderer::Vec3AttributePtr m_position;
 			//! L'attribut de normale.
-			utils::Vec3AttributePtr m_normal;
+			renderer::Vec3AttributePtr m_normal;
 			//! L'attribut de coordonnées de texture.
-			utils::Vec2AttributePtr m_texture;
+			renderer::Vec2AttributePtr m_texture;
 		};
 		//! Un pointeur sur un ObjectNode.
 		using ObjectNodePtr = std::unique_ptr< ObjectNode >;
@@ -114,15 +114,15 @@ namespace render
 			//! L'UBO contenant les variables liées au billboard.
 			gl::UniformBuffer m_billboardUbo;
 			//! La variable uniforme contenant les dimensions du billboard.
-			utils::Vec2Uniform * m_dimensions;
+			renderer::Vec2Uniform * m_dimensions;
 			//! La variable uniforme contenant la position de la caméra.
-			utils::Vec3Uniform * m_camera;
+			renderer::Vec3Uniform * m_camera;
 			//! Attribut de position.
-			utils::Vec3AttributePtr m_position;
+			renderer::Vec3AttributePtr m_position;
 			//! Attribut d'échelle.
-			utils::Vec2AttributePtr m_scale;
+			renderer::Vec2AttributePtr m_scale;
 			//! Attribut de coordonnées de texture.
-			utils::Vec2AttributePtr m_texture;
+			renderer::Vec2AttributePtr m_texture;
 		};
 		//! Un pointeur sur un BillboardNode.
 		using BillboardNodePtr = std::unique_ptr< BillboardNode >;
@@ -151,11 +151,11 @@ namespace render
 			//! La variable uniforme contenant l'échelle.
 			gl::FloatUniform * m_lineScale;
 			//! La variable uniforme contenant la position de la caméra.
-			utils::Vec3Uniform * m_camera;
+			renderer::Vec3Uniform * m_camera;
 			//! L'attribut de position
-			utils::Vec3AttributePtr m_position;
+			renderer::Vec3AttributePtr m_position;
 			//! L'attribut de normale
-			utils::Vec3AttributePtr m_normal;
+			renderer::Vec3AttributePtr m_normal;
 		};
 		//! Un pointeur sur un PolyLineNode.
 		using PolyLineNodePtr = std::unique_ptr< PolyLineNode >;

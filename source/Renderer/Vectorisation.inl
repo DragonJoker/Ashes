@@ -1,41 +1,41 @@
-/*
+﻿/*
 This file belongs to VkLib.
 See LICENSE file in root folder
 */
-namespace utils
+namespace renderer
 {
 	namespace details
 	{
 		/**
 		*\brief
-		*	Structure d'aide � l'appel vectorialis� d'une fonction.
+		*	Structure d'aide à l'appel vectorialisé d'une fonction.
 		*/
 		template< typename R, typename T, typename V >
 		struct Caller;
 		/**
 		*\brief
-		*	Structure d'aide � l'appel vectorialis� d'une fonction.
+		*	Structure d'aide à l'appel vectorialisé d'une fonction.
 		*/
 		template< typename R, typename T, typename V >
 		struct CallerConstRef;
 		/**
 		*\brief
-		*	Structure d'aide � l'appel vectorialis� d'une fonction.
+		*	Structure d'aide à l'appel vectorialisé d'une fonction.
 		*\remarks
-		*	Sp�cialisation pour utils::Vec2T
+		*	Spécialisation pour renderer::Vec2T
 		*/
 		template< typename R, typename T >
 		struct Caller< R, T, Vec2T< T > >
 		{
 			/**
 			*\brief
-			*	Appelle une fonction sur chaque composante du vecteur donn�.
+			*	Appelle une fonction sur chaque composante du vecteur donné.
 			*\param[in] func
 			*	La fonction.
 			*\param[in] vector
 			*	Le vecteur.
 			*\return
-			*	Le vecteur r�sultant des appels.
+			*	Le vecteur résultant des appels.
 			*/
 			static Vec2T< T > call( R( *func )( T ), Vec2T< T > const & vector )
 			{
@@ -48,22 +48,22 @@ namespace utils
 		};
 		/**
 		*\brief
-		*	Structure d'aide � l'appel vectorialis� d'une fonction.
+		*	Structure d'aide à l'appel vectorialisé d'une fonction.
 		*\remarks
-		*	Sp�cialisation pour utils::Vec2T
+		*	Spécialisation pour renderer::Vec2T
 		*/
 		template< typename R, typename T >
 		struct CallerConstRef< R, T, Vec2T< T > >
 		{
 			/**
 			*\brief
-			*	Appelle une fonction sur chaque composante du vecteur donn�.
+			*	Appelle une fonction sur chaque composante du vecteur donné.
 			*\param[in] func
 			*	La fonction.
 			*\param[in] vector
 			*	Le vecteur.
 			*\return
-			*	Le vecteur r�sultant des appels.
+			*	Le vecteur résultant des appels.
 			*/
 			static Vec2T< T > call( R( *func )( T const & ), Vec2T< T > const & vector )
 			{
@@ -76,22 +76,22 @@ namespace utils
 		};
 		/**
 		*\brief
-		*	Structure d'aide � l'appel vectorialis� d'une fonction.
+		*	Structure d'aide à l'appel vectorialisé d'une fonction.
 		*\remarks
-		*	Sp�cialisation pour utils::Vec3T
+		*	Spécialisation pour renderer::Vec3T
 		*/
 		template< typename R, typename T >
 		struct Caller< R, T, Vec3T< T > >
 		{
 			/**
 			*\brief
-			*	Appelle une fonction sur chaque composante du vecteur donn�.
+			*	Appelle une fonction sur chaque composante du vecteur donné.
 			*\param[in] func
 			*	La fonction.
 			*\param[in] vector
 			*	Le vecteur.
 			*\return
-			*	Le vecteur r�sultant des appels.
+			*	Le vecteur résultant des appels.
 			*/
 			static Vec3T< T > call( R( *func )( T ), Vec3T< T > const & vector )
 			{
@@ -105,22 +105,22 @@ namespace utils
 		};
 		/**
 		*\brief
-		*	Structure d'aide � l'appel vectorialis� d'une fonction.
+		*	Structure d'aide à l'appel vectorialisé d'une fonction.
 		*\remarks
-		*	Sp�cialisation pour utils::Vec3T
+		*	Spécialisation pour renderer::Vec3T
 		*/
 		template< typename R, typename T >
 		struct CallerConstRef< R, T, Vec3T< T > >
 		{
 			/**
 			*\brief
-			*	Appelle une fonction sur chaque composante du vecteur donn�.
+			*	Appelle une fonction sur chaque composante du vecteur donné.
 			*\param[in] func
 			*	La fonction.
 			*\param[in] vector
 			*	Le vecteur.
 			*\return
-			*	Le vecteur r�sultant des appels.
+			*	Le vecteur résultant des appels.
 			*/
 			static Vec3T< T > call( R( *func )( T const & ), Vec3T< T > const & vector )
 			{
@@ -134,22 +134,22 @@ namespace utils
 		};
 		/**
 		*\brief
-		*	Structure d'aide � l'appel vectorialis� d'une fonction.
+		*	Structure d'aide à l'appel vectorialisé d'une fonction.
 		*\remarks
-		*	Sp�cialisation pour utils::Vec4T
+		*	Spécialisation pour renderer::Vec4T
 		*/
 		template< typename R, typename T >
 		struct Caller< R, T, Vec4T< T > >
 		{
 			/**
 			*\brief
-			*	Appelle une fonction sur chaque composante du vecteur donn�.
+			*	Appelle une fonction sur chaque composante du vecteur donné.
 			*\param[in] func
 			*	La fonction.
 			*\param[in] vector
 			*	Le vecteur.
 			*\return
-			*	Le vecteur r�sultant des appels.
+			*	Le vecteur résultant des appels.
 			*/
 			static Vec4T< T > call( R( *func )( T ), Vec4T< T > const & vector )
 			{
@@ -164,22 +164,22 @@ namespace utils
 		};
 		/**
 		*\brief
-		*	Structure d'aide � l'appel vectorialis� d'une fonction.
+		*	Structure d'aide à l'appel vectorialisé d'une fonction.
 		*\remarks
-		*	Sp�cialisation pour utils::Vec4T
+		*	Spécialisation pour renderer::Vec4T
 		*/
 		template< typename R, typename T >
 		struct CallerConstRef< R, T, Vec4T< T > >
 		{
 			/**
 			*\brief
-			*	Appelle une fonction sur chaque composante du vecteur donn�.
+			*	Appelle une fonction sur chaque composante du vecteur donné.
 			*\param[in] func
 			*	La fonction.
 			*\param[in] vector
 			*	Le vecteur.
 			*\return
-			*	Le vecteur r�sultant des appels.
+			*	Le vecteur résultant des appels.
 			*/
 			static Vec4T< T > call( R( *func )( T const & ), Vec4T< T > const & vector )
 			{

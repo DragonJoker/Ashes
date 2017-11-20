@@ -1,15 +1,15 @@
 #include "Viewport.h"
 
-#include <Utils/Transform.hpp>
+#include <Renderer/Transform.hpp>
 
 namespace render
 {
-	Viewport::Viewport( utils::IVec2 const & size )noexcept
+	Viewport::Viewport( renderer::IVec2 const & size )noexcept
 		: m_size{ size }
 	{
 	}
 
-	void Viewport::resize( utils::IVec2 const & size )noexcept
+	void Viewport::resize( renderer::IVec2 const & size )noexcept
 	{
 		m_size = size;
 	}
@@ -21,10 +21,10 @@ namespace render
 		, float near
 		, float far )noexcept
 	{
-		m_projection = utils::ortho( left, right, bottom, top, near, far );
+		m_projection = renderer::ortho( left, right, bottom, top, near, far );
 	}
 
-	void Viewport::fovY( utils::Angle const & fovy )noexcept
+	void Viewport::fovY( renderer::Angle const & fovy )noexcept
 	{
 		m_changed = m_fovy != fovy;
 
@@ -32,7 +32,7 @@ namespace render
 		{
 			m_fovy = fovy;
 			float aspect = float( m_size.x ) / m_size.y;
-			m_projection = utils::infinitePerspective( utils::Radians{ m_fovy }, aspect, 0.1f );
+			m_projection = renderer::infinitePerspective( renderer::Radians{ m_fovy }, aspect, 0.1f );
 		}
 	}
 

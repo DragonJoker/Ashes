@@ -118,11 +118,11 @@ MACRO( add_target_precompiled_header TARGET_NAME PCH_HEADER PCH_SOURCE TARGET_CX
 			foreach ( SRC ${ARGN} )
 				set_source_files_properties( ${SRC} PROPERTIES COMPILE_FLAGS "${TARGET_CXX_FLAGS} /Yu${PCH_HEADER} /FI${PCH_HEADER}" )
 			endforeach ()
-			set_source_files_properties( Src/${PCH_SOURCE} PROPERTIES COMPILE_FLAGS "${TARGET_CXX_FLAGS} /Yc${PCH_HEADER}" )
+			set_source_files_properties( ${PCH_SOURCE} PROPERTIES COMPILE_FLAGS "${TARGET_CXX_FLAGS} /Yc${PCH_HEADER}" )
 		else ()
 			get_filename_component( PCH_NAME ${PCH_HEADER} NAME)
 			get_filename_component( PCH_PATH ${PCH_HEADER} PATH)
-			set( PCH_OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/Src/${PCH_NAME}.gch" )
+			set( PCH_OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/${PCH_NAME}.gch" )
 			get_filename_component( PCH_OUTDIR ${PCH_OUTPUT} PATH )
 
 			FILE( MAKE_DIRECTORY ${PCH_OUTDIR} )

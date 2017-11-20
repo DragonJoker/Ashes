@@ -48,7 +48,7 @@ namespace utils
 		*\return
 		*	Les dimensions de la fenêtre.
 		*/
-		inline utils::IVec2 size()const
+		inline renderer::IVec2 size()const
 		{
 			return m_size;
 		}
@@ -78,37 +78,37 @@ namespace utils
 		*\brief
 		*	Réaffichage de la fenêtre après une minimisation.
 		*/
-		virtual void onRestore( utils::IVec2 const & event ) = 0;
+		virtual void onRestore( renderer::IVec2 const & event ) = 0;
 		/**
 		*\brief
 		*	Redimensionnement de la fenêtre.
 		*/
-		virtual void onResize( utils::IVec2 const & event ) = 0;
+		virtual void onResize( renderer::IVec2 const & event ) = 0;
 		/**
 		*\brief
 		*	D�placement de la souris.
 		*/
-		virtual void onMouseMove( utils::MouseEvent const & event ) = 0;
+		virtual void onMouseMove( renderer::MouseEvent const & event ) = 0;
 		/**
 		*\brief
 		*	Bouton gauche de la souris cliqué.
 		*/
-		virtual void onLButtonDown( utils::MouseEvent const & event ) = 0;
+		virtual void onLButtonDown( renderer::MouseEvent const & event ) = 0;
 		/**
 		*\brief
 		*	Bouton gauche de la souris cliqué.
 		*/
-		virtual void onLButtonClick( utils::MouseEvent const & event ) = 0;
+		virtual void onLButtonClick( renderer::MouseEvent const & event ) = 0;
 		/**
 		*\brief
 		*	Bouton gauche de la souris double cliqué.
 		*/
-		virtual void onLButtonDblClick( utils::MouseEvent const & event ) = 0;
+		virtual void onLButtonDblClick( renderer::MouseEvent const & event ) = 0;
 		/**
 		*\brief
 		*	Un évènement de molette.
 		*/
-		virtual void onMouseWheel( utils::MouseEvent const & event ) = 0;
+		virtual void onMouseWheel( renderer::MouseEvent const & event ) = 0;
 
 	protected:
 		/**
@@ -121,7 +121,7 @@ namespace utils
 		void doCreate();
 		void doDestroy();
 		void doMinimise();
-		void doRestore( utils::IVec2 const & size );
+		void doRestore( renderer::IVec2 const & size );
 		bool doPrepareDC( HDC hdc );
 		HGLRC doCreateContext( HDC hdc );
 		void doRegisterClass( HINSTANCE hInstance
@@ -143,7 +143,7 @@ namespace utils
 		HWND m_hwnd{ nullptr };
 		HDC m_hdc{ NULL };
 		HGLRC m_context{ NULL };
-		utils::IVec2 m_size;
+		renderer::IVec2 m_size;
 		int m_timer{ -1 };
 		static std::map< HWND, MsWindow * > sm_instances;
 		bool m_minimised{ false };

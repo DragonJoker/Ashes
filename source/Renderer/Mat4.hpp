@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <array>
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief

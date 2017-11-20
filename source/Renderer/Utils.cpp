@@ -2,8 +2,8 @@
 This file belongs to VkLib.
 See LICENSE file in root folder
 */
-#include "Utils.hpp"
+#include "RendererPrerequisites.hpp"
 
-namespace utils
+namespace renderer
 {
 }

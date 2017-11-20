@@ -110,7 +110,7 @@ namespace render
 	}
 
 	void BillboardBuffer::cull( Camera const & camera
-		, utils::Vec3 const & position
+		, renderer::Vec3 const & position
 		, float scale )
 	{
 		auto buffer = m_visible->lock();

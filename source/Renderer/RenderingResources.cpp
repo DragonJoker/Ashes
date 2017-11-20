@@ -6,7 +6,7 @@
 #include <VkLib/Queue.hpp>
 #include <VkLib/StagingBuffer.hpp>
 
-namespace render
+namespace renderer
 {
 	RenderingResources::RenderingResources( vk::LogicalDevice const & device
 		, vk::CommandPool const & commandPool )
@@ -35,7 +35,7 @@ namespace render
 		, vk::Image & texture )const
 	{
 		doCopyToStagingBuffer( data.data()
-			, data.size() );
+			, uint32_t( data.size() ) );
 		auto & commandBuffer = getCommandBuffer();
 
 		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )

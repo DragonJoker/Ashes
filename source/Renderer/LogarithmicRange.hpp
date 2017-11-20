@@ -10,7 +10,7 @@ See LICENSE file in root folder
 #include <math.h>
 #include <limits>
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief

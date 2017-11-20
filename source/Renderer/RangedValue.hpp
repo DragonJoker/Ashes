@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Range.hpp"
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief

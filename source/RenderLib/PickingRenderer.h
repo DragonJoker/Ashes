@@ -56,11 +56,11 @@ namespace render
 			//! L'UBO contenant les matrices.
 			gl::UniformBuffer m_mtxUbo;
 			//! La variable uniforme contenant la matrice de projection.
-			utils::Mat4Uniform * m_mtxProjection;
+			renderer::Mat4Uniform * m_mtxProjection;
 			//! La variable uniforme contenant la matrice de vue.
-			utils::Mat4Uniform * m_mtxView;
+			renderer::Mat4Uniform * m_mtxView;
 			//! La variable uniforme contenant la matrice du modèle.
-			utils::Mat4Uniform * m_mtxModel;
+			renderer::Mat4Uniform * m_mtxModel;
 			//! La variable uniforme contenant la texture d'opacité.
 			gl::IntUniformPtr m_mapOpacity;
 			//! L'UBO contenant les informations de picking.
@@ -85,11 +85,11 @@ namespace render
 			*/
 			ObjectNode( gl::ShaderProgramPtr && program );
 			//! L'attribut de position.
-			utils::Vec3AttributePtr m_position;
+			renderer::Vec3AttributePtr m_position;
 			//! L'attribut de normale.
-			utils::Vec3AttributePtr m_normal;
+			renderer::Vec3AttributePtr m_normal;
 			//! L'attribut de coordonnées de texture.
-			utils::Vec2AttributePtr m_texture;
+			renderer::Vec2AttributePtr m_texture;
 			//! La variable uniforme contenant la mise à l'échelle.
 			gl::FloatUniformPtr m_scale;
 		};
@@ -114,15 +114,15 @@ namespace render
 			//! L'UBO contenant les variables liées au billboard.
 			gl::UniformBuffer m_billboardUbo;
 			//! La variable uniforme contenant les dimensions du billboard.
-			utils::Vec2Uniform * m_dimensions;
+			renderer::Vec2Uniform * m_dimensions;
 			//! La variable uniforme contenant la position de la caméra.
-			utils::Vec3Uniform * m_camera;
+			renderer::Vec3Uniform * m_camera;
 			//! Attribut de position.
-			utils::Vec3AttributePtr m_position;
+			renderer::Vec3AttributePtr m_position;
 			//! Attribut d'échelle.
-			utils::Vec2AttributePtr m_scale;
+			renderer::Vec2AttributePtr m_scale;
 			//! Attribut de coordonnées de texture.
-			utils::Vec2AttributePtr m_texture;
+			renderer::Vec2AttributePtr m_texture;
 			//! Attribut d'identifiant.
 			gl::FloatAttributePtr m_id;
 		};
@@ -235,9 +235,9 @@ namespace render
 		//! Le pipeline de rendu des objets opaques (ainsi que les objets avec alpha testing).
 		gl::Pipeline m_pipelineOpaque;
 		//! L'intervalle d'échelle pour les billboards.
-		utils::Range< float > m_billboardScale{ utils::makeRange( 1.0f, 20.0f ) };
+		renderer::Range< float > m_billboardScale{ renderer::makeRange( 1.0f, 20.0f ) };
 		//! L'intervalle d'échelle pour les objets complexes.
-		utils::Range< float > m_objectScale{ utils::makeRange( 1.0f, 5.0f ) };
+		renderer::Range< float > m_objectScale{ renderer::makeRange( 1.0f, 5.0f ) };
 	};
 }
 

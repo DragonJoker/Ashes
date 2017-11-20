@@ -117,14 +117,14 @@ namespace render
 	SceneRenderer::RenderNode::RenderNode( gl::ShaderProgramPtr && program )
 		: m_program{ std::move( program ) }
 		, m_mtxUbo{ "Matrices", 0u, *m_program }
-		, m_mtxProjection{ &m_mtxUbo.createUniform< utils::Mat4 >( "mtxProjection" ) }
-		, m_mtxView{ &m_mtxUbo.createUniform< utils::Mat4 >( "mtxView" ) }
-		, m_mtxModel{ &m_mtxUbo.createUniform< utils::Mat4 >( "mtxModel" ) }
+		, m_mtxProjection{ &m_mtxUbo.createUniform< renderer::Mat4 >( "mtxProjection" ) }
+		, m_mtxView{ &m_mtxUbo.createUniform< renderer::Mat4 >( "mtxView" ) }
+		, m_mtxModel{ &m_mtxUbo.createUniform< renderer::Mat4 >( "mtxModel" ) }
 		, m_matUbo{ "Material", 1u, *m_program }
-		, m_matAmbient{ &m_matUbo.createUniform< utils::RgbColour >( "matAmbient" ) }
-		, m_matDiffuse{ &m_matUbo.createUniform< utils::RgbColour >( "matDiffuse" ) }
-		, m_matSpecular{ &m_matUbo.createUniform< utils::RgbColour >( "matSpecular" ) }
-		, m_matEmissive{ &m_matUbo.createUniform< utils::RgbColour >( "matEmissive" ) }
+		, m_matAmbient{ &m_matUbo.createUniform< renderer::RgbColour >( "matAmbient" ) }
+		, m_matDiffuse{ &m_matUbo.createUniform< renderer::RgbColour >( "matDiffuse" ) }
+		, m_matSpecular{ &m_matUbo.createUniform< renderer::RgbColour >( "matSpecular" ) }
+		, m_matEmissive{ &m_matUbo.createUniform< renderer::RgbColour >( "matEmissive" ) }
 		, m_matExponent{ &m_matUbo.createUniform< float >( "matExponent" ) }
 		, m_matOpacity{ &m_matUbo.createUniform< float >( "matOpacity" ) }
 		, m_mapDiffuse{ gl::makeUniform< int >( "mapDiffuse", *m_program ) }
@@ -138,9 +138,9 @@ namespace render
 
 	SceneRenderer::ObjectNode::ObjectNode( gl::ShaderProgramPtr && program )
 		: RenderNode{ std::move( program ) }
-		, m_position{ m_program->createAttribute< utils::Vec3 >( "position" ) }
-		, m_normal{ m_program->createAttribute< utils::Vec3 >( "normal" ) }
-		, m_texture{ m_program->createAttribute< utils::Vec2 >( "texture" ) }
+		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position" ) }
+		, m_normal{ m_program->createAttribute< renderer::Vec3 >( "normal" ) }
+		, m_texture{ m_program->createAttribute< renderer::Vec2 >( "texture" ) }
 	{
 	}
 
@@ -149,15 +149,15 @@ namespace render
 	SceneRenderer::BillboardNode::BillboardNode( gl::ShaderProgramPtr && program )
 		: RenderNode{ std::move( program ) }
 		, m_billboardUbo{ "Billboard", 2u, *m_program }
-		, m_dimensions{ &m_billboardUbo.createUniform< utils::Vec2 >( "dimensions" ) }
-		, m_camera{ &m_billboardUbo.createUniform< utils::Vec3 >( "camera" ) }
-		, m_position{ m_program->createAttribute< utils::Vec3 >( "position"
+		, m_dimensions{ &m_billboardUbo.createUniform< renderer::Vec2 >( "dimensions" ) }
+		, m_camera{ &m_billboardUbo.createUniform< renderer::Vec3 >( "camera" ) }
+		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position"
 			, sizeof( BillboardBuffer::Vertex )
 			, offsetof( BillboardData, center ) ) }
-		, m_scale{ m_program->createAttribute< utils::Vec2 >( "scale"
+		, m_scale{ m_program->createAttribute< renderer::Vec2 >( "scale"
 			, sizeof( BillboardBuffer::Vertex )
 			, offsetof( BillboardData, scale ) ) }
-		, m_texture{ m_program->createAttribute< utils::Vec2 >( "texture"
+		, m_texture{ m_program->createAttribute< renderer::Vec2 >( "texture"
 			, sizeof( BillboardBuffer::Vertex )
 			, offsetof( BillboardBuffer::Vertex, texture ) ) }
 	{
@@ -172,11 +172,11 @@ namespace render
 		, m_lineWidth{ &m_lineUbo.createUniform< float >( "lineWidth" ) }
 		, m_lineFeather{ &m_lineUbo.createUniform< float >( "lineFeather" ) }
 		, m_lineScale{ &m_lineUbo.createUniform< float >( "lineScale" ) }
-		, m_camera{ &m_lineUbo.createUniform< utils::Vec3 >( "camera" ) }
-		, m_position{ m_program->createAttribute< utils::Vec3 >( "position"
+		, m_camera{ &m_lineUbo.createUniform< renderer::Vec3 >( "camera" ) }
+		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position"
 			, sizeof( PolyLine::Vertex )
 			, offsetof( PolyLine::Vertex, m_position ) ) }
-		, m_normal{ m_program->createAttribute< utils::Vec3 >( "normal"
+		, m_normal{ m_program->createAttribute< renderer::Vec3 >( "normal"
 			, sizeof( PolyLine::Vertex )
 			, offsetof( PolyLine::Vertex, m_normal ) ) }
 	{
@@ -345,8 +345,8 @@ namespace render
 	{
 		if ( !objects.empty() )
 		{
-			utils::Mat4 const & projection = camera.projection();
-			utils::Mat4 const & view = camera.view();
+			renderer::Mat4 const & projection = camera.projection();
+			renderer::Mat4 const & view = camera.view();
 			node.m_program->bind();
 			node.m_mtxProjection->value( projection );
 			node.m_mtxView->value( view );
@@ -382,9 +382,9 @@ namespace render
 	{
 		if ( !billboards.empty() )
 		{
-			utils::Mat4 const & projection = camera.projection();
-			utils::Mat4 const & view = camera.view();
-			utils::Vec3 const & position = camera.position();
+			renderer::Mat4 const & projection = camera.projection();
+			renderer::Mat4 const & view = camera.view();
+			renderer::Vec3 const & position = camera.position();
 			node.m_program->bind();
 			node.m_mtxProjection->value( projection );
 			node.m_mtxView->value( view );
@@ -396,7 +396,7 @@ namespace render
 					&& billboard->buffer().count() )
 				{
 					node.m_mtxModel->value( billboard->transform() );
-					node.m_dimensions->value( utils::Vec2{ billboard->dimensions() } );
+					node.m_dimensions->value( renderer::Vec2{ billboard->dimensions() } );
 					doBindMaterial( node, billboard->material() );
 					node.m_mtxUbo.bind( 0u );
 					node.m_matUbo.bind( 1u );
@@ -428,9 +428,9 @@ namespace render
 	{
 		if ( !lines.empty() )
 		{
-			utils::Mat4 const & projection = camera.projection();
-			utils::Mat4 const & view = camera.view();
-			utils::Vec3 const & position = camera.position();
+			renderer::Mat4 const & projection = camera.projection();
+			renderer::Mat4 const & view = camera.view();
+			renderer::Vec3 const & position = camera.position();
 			node.m_program->bind();
 			node.m_mtxProjection->value( projection );
 			node.m_mtxView->value( view );

@@ -4,8 +4,8 @@
 #include "Texture.h"
 #include "Font.h"
 
-#include <Utils/StringUtils.hpp>
-#include <Utils/Converter.hpp>
+#include <Renderer/StringUtils.hpp>
+#include <Renderer/Converter.hpp>
 
 #include <iostream>
 
@@ -26,10 +26,10 @@ namespace render
 			return uint32_t( atoi( text.c_str() ) );
 		}
 
-		utils::IVec2 getIVec2( std::string const & text )
+		renderer::IVec2 getIVec2( std::string const & text )
 		{
-			auto infos = utils::split( text, " ", 3, false );
-			utils::IVec2 ret;
+			auto infos = renderer::split( text, " ", 3, false );
+			renderer::IVec2 ret;
 
 			if ( infos.size() == 2 )
 			{
@@ -56,41 +56,41 @@ namespace render
 
 		if ( data )
 		{
-			utils::PixelFormat format;
+			renderer::PixelFormat format;
 
 			switch ( n )
 			{
 			case 1:
-				format = utils::PixelFormat::eL8;
+				format = renderer::PixelFormat::eL8;
 				break;
 
 			case 2:
-				format = utils::PixelFormat::eL8A8;
+				format = renderer::PixelFormat::eL8A8;
 				break;
 
 			case 3:
-				format = utils::PixelFormat::eR8G8B8;
+				format = renderer::PixelFormat::eR8G8B8;
 				break;
 
 			case 4:
-				format = utils::PixelFormat::eR8G8B8A8;
+				format = renderer::PixelFormat::eR8G8B8A8;
 				break;
 
 			default:
 				assert( "Unsupported component count" );
-				format = utils::PixelFormat::eR8G8B8A8;
+				format = renderer::PixelFormat::eR8G8B8A8;
 				break;
 			}
 
 			texture.image( format
-				, utils::IVec2{ x, y }
+				, renderer::IVec2{ x, y }
 				, ByteArray{ data, data + n * x * y } );
 			stbi_image_free( data );
 		}
 	}
 
 	void loadTexture( ByteArray const & fileContent
-		, utils::PixelFormat format
+		, renderer::PixelFormat format
 		, Texture & texture )
 	{
 		int x = 0;
@@ -102,7 +102,7 @@ namespace render
 			, &y
 			, &n
 			, 0 );
-		size_t bufferSize = x * y * utils::pixelSize( format );
+		size_t bufferSize = x * y * renderer::pixelSize( format );
 		ByteArray buffer( bufferSize );
 
 		if ( data )
@@ -110,7 +110,7 @@ namespace render
 			switch ( n )
 			{
 			case 1:
-				utils::convertBuffer< utils::PixelFormat::eL8 >( data
+				renderer::convertBuffer< renderer::PixelFormat::eL8 >( data
 					, size_t( n * x * y )
 					, buffer.data()
 					, format
@@ -118,7 +118,7 @@ namespace render
 				break;
 
 			case 2:
-				utils::convertBuffer< utils::PixelFormat::eL8A8 >( data
+				renderer::convertBuffer< renderer::PixelFormat::eL8A8 >( data
 					, size_t( n * x * y )
 					, buffer.data()
 					, format
@@ -126,7 +126,7 @@ namespace render
 				break;
 
 			case 3:
-				utils::convertBuffer< utils::PixelFormat::eR8G8B8 >( data
+				renderer::convertBuffer< renderer::PixelFormat::eR8G8B8 >( data
 					, size_t( n * x * y )
 					, buffer.data()
 					, format
@@ -134,7 +134,7 @@ namespace render
 				break;
 
 			case 4:
-				utils::convertBuffer< utils::PixelFormat::eR8G8B8A8 >( data
+				renderer::convertBuffer< renderer::PixelFormat::eR8G8B8A8 >( data
 					, size_t( n * x * y )
 					, buffer.data()
 					, format
@@ -143,7 +143,7 @@ namespace render
 			}
 
 			texture.image( format
-				, utils::IVec2{ x, y }
+				, renderer::IVec2{ x, y }
 			, buffer );
 			stbi_image_free( data );
 		}
@@ -152,12 +152,12 @@ namespace render
 	void loadFont( std::string const & content
 		, Font & font )
 	{
-		auto lines = utils::split( content, "\n", 0xFFFFFFFF, false );
+		auto lines = renderer::split( content, "\n", 0xFFFFFFFF, false );
 
 		for ( auto & line : lines )
 		{
 			std::clog << line << std::endl;
-			auto infos = utils::split( line, ",", 5, false );
+			auto infos = renderer::split( line, ",", 5, false );
 
 			if ( infos.size() == 4 )
 			{

@@ -4,9 +4,9 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils.hpp"
+#include "RendererPrerequisites.hpp"
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief

@@ -50,9 +50,9 @@ namespace render
 		*\param[in] texture
 		*	L'attribut de coordonnées de texture.
 		*/
-		void bind( utils::Vec3Attribute const * position
-			, utils::Vec3Attribute const * normal
-			, utils::Vec2Attribute const * texture )const noexcept;
+		void bind( renderer::Vec3Attribute const * position
+			, renderer::Vec3Attribute const * normal
+			, renderer::Vec2Attribute const * texture )const noexcept;
 		/**
 		*\brief
 		*	Désactive les tampons du maillage.
@@ -63,9 +63,9 @@ namespace render
 		*\param[in] texture
 		*	L'attribut de coordonnées de texture.
 		*/
-		void unbind( utils::Vec3Attribute const * position
-			, utils::Vec3Attribute const * normal
-			, utils::Vec2Attribute const * texture )const noexcept;
+		void unbind( renderer::Vec3Attribute const * position
+			, renderer::Vec3Attribute const * normal
+			, renderer::Vec2Attribute const * texture )const noexcept;
 
 	private:
 		//! Le maillage parent.

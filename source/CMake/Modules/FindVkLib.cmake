@@ -77,47 +77,27 @@ if ( VkLib_ROOT_DIR )
 			${VkLib_LIBRARY_DEBUG_DIR}
 	)
 
-	find_library( Utils_LIBRARY_RELEASE
-		NAMES
-			Utils.lib
-			Utils.a
-		HINTS
-		PATHS
-			${VkLib_LIBRARY_RELEASE_DIR}
-	)
-
-	find_library( Utils_LIBRARY_DEBUG
-		NAMES
-			Utils.lib
-			Utils.a
-		HINTS
-		PATHS
-			${VkLib_LIBRARY_DEBUG_DIR}
-	)
-
 	mark_as_advanced( VkLib_LIBRARY_RELEASE_DIR )
 	mark_as_advanced( VkLib_LIBRARY_DEBUG_DIR )
 	mark_as_advanced( VkLib_LIBRARY_RELEASE )
 	mark_as_advanced( VkLib_LIBRARY_DEBUG_DIR )
-	mark_as_advanced( Utils_LIBRARY_RELEASE )
-	mark_as_advanced( Utils_LIBRARY_DEBUG_DIR )
 	find_package_handle_standard_args( VkLib DEFAULT_MSG VkLib_LIBRARY_RELEASE VkLib_INCLUDE_DIR )
 
 	IF ( VkLib_FOUND )
 		IF (MSVC)
 			if ( VkLib_LIBRARY_DEBUG )
-				set( VkLib_LIBRARIES optimized ${VkLib_LIBRARY_RELEASE} ${Utils_LIBRARY_RELEASE} debug ${Utils_LIBRARY_DEBUG} ${VkLib_LIBRARY_DEBUG} CACHE STRING "VkLib libraries" )
+				set( VkLib_LIBRARIES optimized ${VkLib_LIBRARY_RELEASE} debug ${VkLib_LIBRARY_DEBUG} CACHE STRING "VkLib libraries" )
 				set( VkLib_LIBRARY_DIRS ${VkLib_LIBRARY_RELEASE_DIR} ${VkLib_LIBRARY_DEBUG_DIR} )
 			else()
-				set( VkLib_LIBRARIES ${VkLib_LIBRARY_RELEASE} ${Utils_LIBRARY_RELEASE} CACHE STRING "VkLib libraries" )
+				set( VkLib_LIBRARIES ${VkLib_LIBRARY_RELEASE} CACHE STRING "VkLib libraries" )
 				set( VkLib_LIBRARY_DIRS ${VkLib_LIBRARY_RELEASE_DIR} )
 			endif()
 		ELSE ()
 			if ( VkLib_LIBRARY_DEBUG )
-				set( VkLib_LIBRARIES optimized ${VkLib_LIBRARY_RELEASE} ${Utils_LIBRARY_RELEASE} debug ${Utils_LIBRARY_DEBUG} ${VkLib_LIBRARY_DEBUG} CACHE STRING "VkLib libraries" )
+				set( VkLib_LIBRARIES optimized ${VkLib_LIBRARY_RELEASE} debug ${VkLib_LIBRARY_DEBUG} CACHE STRING "VkLib libraries" )
 				set( VkLib_LIBRARY_DIRS ${VkLib_LIBRARY_RELEASE_DIR} ${VkLib_LIBRARY_DEBUG_DIR} )
 			else()
-				set( VkLib_LIBRARIES ${VkLib_LIBRARY_RELEASE} ${Utils_LIBRARY_RELEASE} CACHE STRING "VkLib libraries" )
+				set( VkLib_LIBRARIES ${VkLib_LIBRARY_RELEASE} CACHE STRING "VkLib libraries" )
 				set( VkLib_LIBRARY_DIRS ${VkLib_LIBRARY_RELEASE_DIR} )
 			endif()
 		ENDIF ()

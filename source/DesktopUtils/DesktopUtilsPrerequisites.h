@@ -8,16 +8,16 @@
 #define ___DesktopUtils_Prerequisites_HPP___
 #pragma once
 
-#include <Utils/Converter.hpp>
-#include <Utils/StringUtils.hpp>
+#include <Renderer/Converter.hpp>
+#include <Renderer/StringUtils.hpp>
 
-#include <ElementsList.h>
-#include <FontLoader.h>
-#include <Glyph.h>
-#include <Material.h>
-#include <Mesh.h>
-#include <Object.h>
-#include <Texture.h>
+#include <RenderLib/ElementsList.h>
+#include <RenderLib/FontLoader.h>
+#include <RenderLib/Glyph.h>
+#include <RenderLib/Material.h>
+#include <RenderLib/Mesh.h>
+#include <RenderLib/Object.h>
+#include <RenderLib/Texture.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -46,7 +46,7 @@ namespace utils
 	struct SizeEvent
 	{
 		//! Les nouvelle dimensions
-		utils::IVec2 size;
+		renderer::IVec2 size;
 		//! Dit si la fenêtre est maximisée.
 		bool maximized;
 		//! Dit si la fenêtre est minimisée.
@@ -61,7 +61,7 @@ namespace utils
 	struct MouseEvent
 	{
 		//! La position actuelle de la souris.
-		utils::IVec2 position;
+		renderer::IVec2 position;
 		//! \p true si le bouton gauche de la souris est enfoncé.
 		bool ldown;
 		//! \p true si le bouton milieu de la souris est enfoncé.

@@ -4,9 +4,9 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils.hpp"
+#include <VkLib/VkLibPrerequisites.hpp>
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief
@@ -32,6 +32,6 @@ namespace utils
 		eD16,
 		//! Stencil en 8 bits (pour les render buffers uniquement).
 		eS8,
-		Utils_EnumBounds( eL8 )
+		VkLib_EnumBounds( eL8 )
 	};
 }

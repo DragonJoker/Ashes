@@ -8,12 +8,12 @@
 
 namespace render
 {
-	RenderTarget::RenderTarget( utils::IVec2 const & dimensions
+	RenderTarget::RenderTarget( renderer::IVec2 const & dimensions
 		, gl::PixelFormat format )
 		: m_size{ dimensions }
 		, m_framebuffer{ std::make_unique< gl::FrameBuffer >() }
 		, m_colour{ std::make_unique< gl::Texture >( format, dimensions ) }
-		, m_depth{ std::make_unique< gl::RenderBuffer >( utils::PixelFormat::eD16, dimensions ) }
+		, m_depth{ std::make_unique< gl::RenderBuffer >( renderer::PixelFormat::eD16, dimensions ) }
 	{
 		m_framebuffer->bind();
 		m_framebuffer->attach( *m_colour, gl::AttachmentPoint::eColour0 );

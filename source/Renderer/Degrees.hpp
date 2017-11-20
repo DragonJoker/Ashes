@@ -4,9 +4,9 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils.hpp"
+#include "RendererPrerequisites.hpp"
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief
@@ -168,7 +168,7 @@ namespace utils
 *\return
 *	L'angle.
 */
-inline utils::Degrees operator "" _degrees( long double value )
+inline renderer::Degrees operator "" _degrees( long double value )
 {
-	return utils::Degrees{ float( value ) };
+	return renderer::Degrees{ float( value ) };
 }

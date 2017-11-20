@@ -9,11 +9,11 @@ See LICENSE file in root folder
 #include <math.h>
 #include <limits>
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief
-	*	Retourne le logarithme dans la base voulue de la valeur donn�e.
+	*	Retourne le logarithme dans la base voulue de la valeur donnée.
 	*\arg Base
 	*	La base du logarithme.
 	*\param[in] value
@@ -28,7 +28,7 @@ namespace utils
 	}
 	/**
 	*\brief
-	*	Retourne l'exposant dans la base voulue de la valeur donn�e.
+	*	Retourne l'exposant dans la base voulue de la valeur donnée.
 	*\arg Base
 	*	La base du logarithme.
 	*\param[in] value

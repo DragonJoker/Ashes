@@ -4,9 +4,9 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils.hpp"
+#include "RendererPrerequisites.hpp"
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief
@@ -168,7 +168,7 @@ namespace utils
 *\return
 *	L'angle.
 */
-inline utils::Radians operator "" _radians( long double value )
+inline renderer::Radians operator "" _radians( long double value )
 {
-	return utils::Radians{ float( value ) };
+	return renderer::Radians{ float( value ) };
 }

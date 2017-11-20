@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Vec2.hpp"
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief

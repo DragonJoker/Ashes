@@ -8,7 +8,7 @@
 #define ___RenderLib_UberShader_HPP___
 #pragma once
 
-#include <Utils/FlagCombination.hpp>
+#include <VkLib/FlagCombination.hpp>
 
 namespace render
 {
@@ -38,7 +38,7 @@ namespace render
 		//! Programme avec texture d'opacité.
 		eOpacity = 0x02,
 	};
-	Utils_ImplementFlag( TextureFlag )
+	VkLib_ImplementFlag( TextureFlag )
 	/**
 	*\brief
 	*	Enumération des types de programme de rendu.
@@ -71,7 +71,7 @@ namespace render
 		eTextOverlay,
 		//! Texture en plein écran.
 		eTexture,
-		Utils_EnumBounds( eObject )
+		VkLib_EnumBounds( eObject )
 	};
 	/**
 	*\brief

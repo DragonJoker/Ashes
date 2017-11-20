@@ -29,7 +29,7 @@ namespace render
 		}
 	}
 
-	RenderWindow::RenderWindow( utils::IVec2 const & dimensions
+	RenderWindow::RenderWindow( renderer::IVec2 const & dimensions
 		, render::FontLoader & loader
 		, bool debug )
 		: m_pipeline{ true, false, false, false }
@@ -46,12 +46,12 @@ namespace render
 			, ObjectType::eTexture ) }
 		, m_vbo{ gl::makeBuffer( gl::BufferTarget::eArrayBuffer
 			, doGetVtxData() ) }
-		, m_posAttrib{ m_program->createAttribute< utils::Vec2 >( "position"
+		, m_posAttrib{ m_program->createAttribute< renderer::Vec2 >( "position"
 			, sizeof( RenderWindow::Vertex )
 			, 0 ) }
-		, m_texAttrib{ m_program->createAttribute< utils::Vec2 >( "texture"
+		, m_texAttrib{ m_program->createAttribute< renderer::Vec2 >( "texture"
 			, sizeof( RenderWindow::Vertex )
-			, sizeof( utils::Vec2 ) ) }
+			, sizeof( renderer::Vec2 ) ) }
 		, m_texUniform{ gl::makeUniform< int >( "mapDiffuse"
 			, *m_program ) }
 		, m_viewport{ dimensions }
@@ -115,7 +115,7 @@ namespace render
 		m_debug.end();
 	}
 
-	void RenderWindow::resize( utils::IVec2 const & size )noexcept
+	void RenderWindow::resize( renderer::IVec2 const & size )noexcept
 	{
 		m_size = size;
 		m_viewport.resize( m_size );

@@ -4,8 +4,8 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___RenderLib_RenderingResources_HPP___
-#define ___RenderLib_RenderingResources_HPP___
+#ifndef ___Renderer_RenderingResources_HPP___
+#define ___Renderer_RenderingResources_HPP___
 #pragma once
 
 #include <VkLib/FrameBuffer.hpp>
@@ -13,7 +13,7 @@
 #include <VkLib/PrimaryCommandBuffer.hpp>
 #include <VkLib/Semaphore.hpp>
 
-namespace render
+namespace renderer
 {
 	/**
 	*@~french

@@ -4,12 +4,12 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils.hpp"
+#include "RendererPrerequisites.hpp"
 
 #include <math.h>
 #include <limits>
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief

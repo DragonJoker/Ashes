@@ -109,7 +109,7 @@ namespace render
 		*\param[in] colour
 		*	La nouvelle valeur.
 		*/
-		inline void ambient( utils::RgbColour const & colour )noexcept
+		inline void ambient( renderer::RgbColour const & colour )noexcept
 		{
 			m_ambient = colour;
 		}
@@ -119,7 +119,7 @@ namespace render
 		*\param[in] colour
 		*	La nouvelle valeur.
 		*/
-		inline void diffuse( utils::RgbColour const & colour )noexcept
+		inline void diffuse( renderer::RgbColour const & colour )noexcept
 		{
 			m_diffuse = colour;
 		}
@@ -129,7 +129,7 @@ namespace render
 		*\param[in] colour
 		*	La nouvelle valeur.
 		*/
-		inline void specular( utils::RgbColour const & colour )noexcept
+		inline void specular( renderer::RgbColour const & colour )noexcept
 		{
 			m_specular = colour;
 		}
@@ -139,7 +139,7 @@ namespace render
 		*\param[in] colour
 		*	La nouvelle valeur.
 		*/
-		inline void emissive( utils::RgbColour const & colour )noexcept
+		inline void emissive( renderer::RgbColour const & colour )noexcept
 		{
 			m_emissive = colour;
 		}
@@ -167,7 +167,7 @@ namespace render
 		*\return
 		*	La couleur ambiante de ce matériau.
 		*/
-		inline utils::RgbColour const & ambient()const noexcept
+		inline renderer::RgbColour const & ambient()const noexcept
 		{
 			return m_ambient;
 		}
@@ -175,7 +175,7 @@ namespace render
 		*\return
 		*	La couleur diffuse de ce matériau.
 		*/
-		inline utils::RgbColour const & diffuse()const noexcept
+		inline renderer::RgbColour const & diffuse()const noexcept
 		{
 			return m_diffuse;
 		}
@@ -183,7 +183,7 @@ namespace render
 		*\return
 		*	La couleur spéculaire de ce matériau.
 		*/
-		inline utils::RgbColour const & specular()const noexcept
+		inline renderer::RgbColour const & specular()const noexcept
 		{
 			return m_specular;
 		}
@@ -191,7 +191,7 @@ namespace render
 		*\return
 		*	La couleur émissive de ce matériau.
 		*/
-		inline utils::RgbColour const & emissive()const noexcept
+		inline renderer::RgbColour const & emissive()const noexcept
 		{
 			return m_emissive;
 		}
@@ -256,13 +256,13 @@ namespace render
 
 	private:
 		//! La couleur ambiante.
-		utils::RgbColour m_ambient{ 0.0f, 0.0f, 0.0f };
+		renderer::RgbColour m_ambient{ 0.0f, 0.0f, 0.0f };
 		//! La couleur diffuse.
-		utils::RgbColour m_diffuse{ 1.0f, 1.0f, 1.0f };
+		renderer::RgbColour m_diffuse{ 1.0f, 1.0f, 1.0f };
 		//! La couleur spéculaire.
-		utils::RgbColour m_specular{ 1.0f, 1.0f, 1.0f };
+		renderer::RgbColour m_specular{ 1.0f, 1.0f, 1.0f };
 		//! La couleur émissive.
-		utils::RgbColour m_emissive{ 0.0f, 0.0f, 0.0f };
+		renderer::RgbColour m_emissive{ 0.0f, 0.0f, 0.0f };
 		//! L'exposant spéculaire.
 		float m_exponent{ 50.0f };
 		//! L'opacité globale du matériau.

@@ -37,7 +37,7 @@ namespace render
 
 		template< typename MapT, typename NodeT >
 		inline void doPickFromList( MapT const & map
-			, utils::IVec4 const & data
+			, renderer::IVec4 const & data
 			, NodeT *& result )
 		{
 			using Traits = NodeTraits< NodeT >;
@@ -51,7 +51,7 @@ namespace render
 		static int constexpr PickingOffset = PickingWidth / 2;
 	}
 
-	Picking::Picking( utils::IVec2 const & size )
+	Picking::Picking( renderer::IVec2 const & size )
 		: m_renderer{}
 		, m_size{ size }
 		, m_colour{ std::make_unique< gl::Texture >
@@ -78,7 +78,7 @@ namespace render
 		m_fbo->unbind();
 	}
 
-	Picking::NodeType Picking::pick( utils::IVec2 const & position
+	Picking::NodeType Picking::pick( renderer::IVec2 const & position
 		, Camera const & camera
 		, float zoomPercent
 		, RenderSubmeshArray const & objects
@@ -104,7 +104,7 @@ namespace render
 #endif
 	}
 
-	Picking::Pixel Picking::doFboPick( utils::IVec2 const & position
+	Picking::Pixel Picking::doFboPick( renderer::IVec2 const & position
 		, Camera const & camera
 		, float zoomPercent
 		, RenderSubmeshArray const & objects
@@ -114,14 +114,14 @@ namespace render
 		assert( position.y < m_size.y );
 		m_fbo->bind();
 		camera.viewport().apply();
-		m_fbo->clear( utils::RgbaColour{ 0, 0, 0, 1 } );
+		m_fbo->clear( renderer::RgbaColour{ 0, 0, 0, 1 } );
 		m_renderer.draw( camera
 			, zoomPercent
 			, objects
 			, billboards );
 		m_fbo->unbind();
 		memset( m_buffer.data(), 0xFF, m_buffer.size() * sizeof( Pixel ) );
-		utils::IVec2 offset
+		renderer::IVec2 offset
 		{
 			m_size.x - position.x - PickingOffset,
 			m_size.y - position.y - PickingOffset
@@ -131,7 +131,7 @@ namespace render
 			, uint32_t( offset.y )
 			, PickingWidth
 			, PickingWidth
-			, utils::PixelFormat::eR8G8B8A8
+			, renderer::PixelFormat::eR8G8B8A8
 			, reinterpret_cast< uint8_t * >( m_buffer.data() ) );
 		m_fbo->unbind();
 
@@ -169,7 +169,7 @@ namespace render
 		return ret;
 	}
 
-	utils::IVec4 Picking::doUnpackPixel( Pixel pixel )
+	renderer::IVec4 Picking::doUnpackPixel( Pixel pixel )
 	{
 		static constexpr uint8_t ObjectTypeMask{ ObjectMask | BillboardMask };
 		static constexpr uint8_t NodeTypeMask{ 0x3F };
@@ -182,35 +182,35 @@ namespace render
 		{
 		case ObjectMask:
 			objectType = int( ObjectType::eObject );
-			return utils::IVec4{ objectType, nodeType, doUnpackObjectPixel( pixel ) };
+			return renderer::IVec4{ objectType, nodeType, doUnpackObjectPixel( pixel ) };
 
 		case BillboardMask:
 			objectType = int( ObjectType::eBillboard );
-			return utils::IVec4{ objectType, nodeType, doUnpackBillboardPixel( pixel ) };
+			return renderer::IVec4{ objectType, nodeType, doUnpackBillboardPixel( pixel ) };
 
 		default:
 			assert( false && "Unsupported object type" );
-			return utils::IVec4{};
+			return renderer::IVec4{};
 			break;
 		}
 	}
 
-	utils::IVec2 Picking::doUnpackBillboardPixel( Pixel pixel )
+	renderer::IVec2 Picking::doUnpackBillboardPixel( Pixel pixel )
 	{
 		auto index = ( uint32_t( pixel.r ) << 6 )
 			| ( uint32_t( pixel.g & 0xFC ) >> 2 );
 		auto instance = ( uint32_t( pixel.g & 0x03 ) << 16 )
 			| ( uint32_t( pixel.b ) << 8 )
 			| ( uint32_t( pixel.a ) );
-		return utils::IVec2{ index, instance };
+		return renderer::IVec2{ index, instance };
 	}
 
-	utils::IVec2 Picking::doUnpackObjectPixel( Pixel pixel )
+	renderer::IVec2 Picking::doUnpackObjectPixel( Pixel pixel )
 	{
 		auto index = ( uint32_t( pixel.r ) << 24 )
 			| ( uint32_t( pixel.g ) << 16 )
 			| ( uint32_t( pixel.b ) << 8 )
 			| ( uint32_t( pixel.a ) );
-		return utils::IVec2{ index, 0 };
+		return renderer::IVec2{ index, 0 };
 	}
 }

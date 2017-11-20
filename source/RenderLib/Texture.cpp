@@ -9,8 +9,8 @@ namespace render
 	{
 	}
 
-	void Texture::image( utils::PixelFormat format
-		, utils::IVec2 const & size
+	void Texture::image( renderer::PixelFormat format
+		, renderer::IVec2 const & size
 		, ByteArray const & data
 		, vk::WrapMode wrapS
 		, vk::WrapMode wrapT

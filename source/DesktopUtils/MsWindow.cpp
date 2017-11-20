@@ -143,7 +143,7 @@ namespace utils
 		m_minimised = true;
 	}
 
-	void MsWindow::doRestore( utils::IVec2 const & size )
+	void MsWindow::doRestore( renderer::IVec2 const & size )
 	{
 		if ( m_minimised )
 		{
@@ -263,7 +263,7 @@ namespace utils
 		, size_t wParam
 		, longptr_t lParam )
 	{
-		static utils::Clock::time_point time;
+		static renderer::Clock::time_point time;
 		static constexpr std::chrono::milliseconds ClickTimeout{ 200 };
 
 		switch ( message )
@@ -316,13 +316,13 @@ namespace utils
 				bool mdown = ( wParam & MK_MBUTTON ) == MK_MBUTTON;
 				bool rdown = ( wParam & MK_RBUTTON ) == MK_RBUTTON;
 				onLButtonDown( { { w, h }, ldown, mdown, rdown, 0 } );
-				time = utils::Clock::now();
+				time = renderer::Clock::now();
 			}
 			break;
 
 		case WM_LBUTTONUP:
 			{
-				auto diff = std::chrono::duration_cast< std::chrono::milliseconds >( utils::Clock::now() - time );
+				auto diff = std::chrono::duration_cast< std::chrono::milliseconds >( renderer::Clock::now() - time );
 
 				if ( diff < ClickTimeout )
 				{

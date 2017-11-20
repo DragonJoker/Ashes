@@ -39,17 +39,17 @@ namespace render
 		//! Le tampon de variables uniformes pour les incrustations.
 		gl::UniformBuffer m_overlayUbo;
 		//! La variable uniforme contenant la matrice modèle - projection.
-		utils::Mat4Uniform * m_mpUniform;
+		renderer::Mat4Uniform * m_mpUniform;
 		//! La variable uniforme contenant la couleur de l'incrustation.
-		utils::Vec4Uniform * m_colour;
+		renderer::Vec4Uniform * m_colour;
 		//! La variable uniforme contenant l'échantillonneur de la texture couleur.
 		gl::IntUniformPtr m_mapColour;
 		//! La variable uniforme contenant l'échantillonneur de la texture d'opacité.
 		gl::IntUniformPtr m_mapOpacity;
 		//! L'attribut de position.
-		utils::Vec2AttributePtr m_position;
+		renderer::Vec2AttributePtr m_position;
 		//! L'attribut de coordonnées de texture.
-		utils::Vec2AttributePtr m_texture;
+		renderer::Vec2AttributePtr m_texture;
 	};
 	//! Tableau de noeuds de rendu d'incrustations.
 	using OverlayNodeArray = std::array< OverlayNode, size_t( NodeType::eCount ) >;
@@ -106,7 +106,7 @@ namespace render
 		*param[in] size
 		*	Les dimensions de la fenêtre de rendu.
 		*/
-		void beginRender( utils::IVec2 const & size );
+		void beginRender( renderer::IVec2 const & size );
 		/**
 		*brief
 		*	Termine le rendu des incrustations.
@@ -136,7 +136,7 @@ namespace render
 		*/
 		void doDrawBuffer( gl::Buffer< Overlay::Quad > const & buffer
 			, uint32_t count
-			, utils::Mat4 const & transform
+			, renderer::Mat4 const & transform
 			, Material const & material
 			, OverlayNode const & node );
 		/**
@@ -157,7 +157,7 @@ namespace render
 		*/
 		void doDrawBuffer( gl::Buffer< Overlay::Quad > const & buffer
 			, uint32_t count
-			, utils::Mat4 const & transform
+			, renderer::Mat4 const & transform
 			, Material const & material
 			, Texture const & textOpacity
 			, OverlayNode const & node );
@@ -197,7 +197,7 @@ namespace render
 		//! Dit si les dimension du rendu ont changé.
 		bool m_sizeChanged{ true };
 		//! La matrice de projection.
-		utils::Mat4 m_transform;
+		renderer::Mat4 m_transform;
 		//! Le viewport de rendu des incrustations.
 		Viewport m_viewport;
 	};

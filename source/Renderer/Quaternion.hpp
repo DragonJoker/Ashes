@@ -7,7 +7,7 @@ See LICENSE file in root folder
 #include "Mat4.hpp"
 #include "Angle.hpp"
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief

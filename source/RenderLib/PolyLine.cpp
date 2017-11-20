@@ -19,9 +19,9 @@ namespace render
 
 	void PolyLine::add( Points const & line )
 	{
-		static constexpr utils::Vec3 down{ 0, 0, -1 };
-		utils::Vec3 slope{ utils::normalize( line.m_b - line.m_a ) };
-		auto normal = utils::cross( slope, down );
+		static constexpr renderer::Vec3 down{ 0, 0, -1 };
+		renderer::Vec3 slope{ renderer::normalize( line.m_b - line.m_a ) };
+		auto normal = renderer::cross( slope, down );
 		m_buffer.push_back( LineQuad
 		{
 			{

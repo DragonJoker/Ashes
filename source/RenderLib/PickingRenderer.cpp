@@ -95,9 +95,9 @@ namespace render
 	PickingRenderer::RenderNode::RenderNode( gl::ShaderProgramPtr && program )
 		: m_program{ std::move( program ) }
 		, m_mtxUbo{ "Matrices", 0u, *m_program }
-		, m_mtxProjection{ &m_mtxUbo.createUniform< utils::Mat4 >( "mtxProjection" ) }
-		, m_mtxView{ &m_mtxUbo.createUniform< utils::Mat4 >( "mtxView" ) }
-		, m_mtxModel{ &m_mtxUbo.createUniform< utils::Mat4 >( "mtxModel" ) }
+		, m_mtxProjection{ &m_mtxUbo.createUniform< renderer::Mat4 >( "mtxProjection" ) }
+		, m_mtxView{ &m_mtxUbo.createUniform< renderer::Mat4 >( "mtxView" ) }
+		, m_mtxModel{ &m_mtxUbo.createUniform< renderer::Mat4 >( "mtxModel" ) }
 		, m_mapOpacity{ gl::makeUniform< int >( "mapOpacity", *m_program ) }
 		, m_pickUbo{ "Picking", 1u, *m_program }
 		, m_drawIndex{ &m_pickUbo.createUniform< int >( "drawIndex" ) }
@@ -111,9 +111,9 @@ namespace render
 
 	PickingRenderer::ObjectNode::ObjectNode( gl::ShaderProgramPtr && program )
 		: RenderNode{ std::move( program ) }
-		, m_position{ m_program->createAttribute< utils::Vec3 >( "position" ) }
-		, m_normal{ m_program->createAttribute< utils::Vec3 >( "normal" ) }
-		, m_texture{ m_program->createAttribute< utils::Vec2 >( "texture" ) }
+		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position" ) }
+		, m_normal{ m_program->createAttribute< renderer::Vec3 >( "normal" ) }
+		, m_texture{ m_program->createAttribute< renderer::Vec2 >( "texture" ) }
 		, m_scale{ gl::makeUniform< float >( "scale", *m_program ) }
 	{
 	}
@@ -123,15 +123,15 @@ namespace render
 	PickingRenderer::BillboardNode::BillboardNode( gl::ShaderProgramPtr && program )
 		: RenderNode{ std::move( program ) }
 		, m_billboardUbo{ "Billboard", 2u, *m_program }
-		, m_dimensions{ &m_billboardUbo.createUniform< utils::Vec2 >( "dimensions" ) }
-		, m_camera{ &m_billboardUbo.createUniform< utils::Vec3 >( "camera" ) }
-		, m_position{ m_program->createAttribute< utils::Vec3 >( "position"
+		, m_dimensions{ &m_billboardUbo.createUniform< renderer::Vec2 >( "dimensions" ) }
+		, m_camera{ &m_billboardUbo.createUniform< renderer::Vec3 >( "camera" ) }
+		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position"
 			, sizeof( BillboardBuffer::Vertex )
 			, offsetof( BillboardData, center ) ) }
-		, m_scale{ m_program->createAttribute< utils::Vec2 >( "scale"
+		, m_scale{ m_program->createAttribute< renderer::Vec2 >( "scale"
 			, sizeof( BillboardBuffer::Vertex )
 			, offsetof( BillboardData, scale ) ) }
-		, m_texture{ m_program->createAttribute< utils::Vec2 >( "texture"
+		, m_texture{ m_program->createAttribute< renderer::Vec2 >( "texture"
 			, sizeof( BillboardBuffer::Vertex )
 			, offsetof( BillboardBuffer::Vertex, texture ) ) }
 		, m_id{ m_program->createAttribute< float >( "id"
@@ -299,8 +299,8 @@ namespace render
 	{
 		if ( !objects.empty() )
 		{
-			utils::Mat4 const & projection = camera.projection();
-			utils::Mat4 const & view = camera.view();
+			renderer::Mat4 const & projection = camera.projection();
+			renderer::Mat4 const & view = camera.view();
 			node.m_program->bind();
 			node.m_mtxProjection->value( projection );
 			node.m_mtxView->value( view );
@@ -344,9 +344,9 @@ namespace render
 	{
 		if ( !billboards.empty() )
 		{
-			utils::Mat4 const & projection = camera.projection();
-			utils::Mat4 const & view = camera.view();
-			utils::Vec3 const & position = camera.position();
+			renderer::Mat4 const & projection = camera.projection();
+			renderer::Mat4 const & view = camera.view();
+			renderer::Vec3 const & position = camera.position();
 			node.m_program->bind();
 			node.m_mtxProjection->value( projection );
 			node.m_mtxView->value( view );

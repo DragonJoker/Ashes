@@ -6,11 +6,11 @@ See LICENSE file in root folder
 
 #include <math.h>
 
-#include "Utils.hpp"
+#include "RendererPrerequisites.hpp"
 #include "Degrees.hpp"
 #include "Radians.hpp"
 
-namespace utils
+namespace renderer
 {
 	//!Constante pi.
 	static constexpr long double Pi = 3.1415926535897932384626433832795028841968;

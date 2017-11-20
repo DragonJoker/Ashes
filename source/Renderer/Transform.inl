@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #include <math.h>
 
-namespace utils
+namespace renderer
 {
 	template< typename T >
 	Mat4T< T > translate( Mat4T< T > const & m, Vec3T< T > const & v )

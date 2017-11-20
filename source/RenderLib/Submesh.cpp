@@ -48,9 +48,9 @@ namespace render
 		m_index.unbind();
 	}
 
-	void Submesh::bind( utils::Vec3Attribute const * position
-		, utils::Vec3Attribute const * normal
-		, utils::Vec2Attribute const * texture )const noexcept
+	void Submesh::bind( renderer::Vec3Attribute const * position
+		, renderer::Vec3Attribute const * normal
+		, renderer::Vec2Attribute const * texture )const noexcept
 	{
 		doBindAttribBuffer( *m_mesh.m_positions, *position );
 
@@ -65,9 +65,9 @@ namespace render
 		}
 	}
 
-	void Submesh::unbind( utils::Vec3Attribute const * position
-		, utils::Vec3Attribute const * normal
-		, utils::Vec2Attribute const * texture )const noexcept
+	void Submesh::unbind( renderer::Vec3Attribute const * position
+		, renderer::Vec3Attribute const * normal
+		, renderer::Vec2Attribute const * texture )const noexcept
 	{
 		if ( texture && m_mesh.m_texcoord )
 		{

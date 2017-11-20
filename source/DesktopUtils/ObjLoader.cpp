@@ -90,7 +90,7 @@ namespace utils
 				{
 					std::string path;
 					stream >> path;
-					auto content = utils::getFileBinaryContent( path );
+					auto content = renderer::getFileBinaryContent( path );
 					select->diffuseMap( loadTexture( path
 						, content
 						, texturesList ) );
@@ -170,7 +170,7 @@ namespace utils
 
 		if ( !mtlfile.empty() )
 		{
-			loadMtlFile( utils::getFileTextContent( mtlfile )
+			loadMtlFile( renderer::getFileTextContent( mtlfile )
 				, materialsList
 				, texturesList );
 		}

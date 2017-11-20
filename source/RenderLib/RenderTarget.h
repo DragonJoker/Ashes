@@ -30,8 +30,8 @@ namespace render
 		*\param[in] format
 		*	Le format des pixels de la texture recevant le rendu.
 		*/
-		RenderTarget( utils::IVec2 const & dimensions
-			, utils::PixelFormat format );
+		RenderTarget( renderer::IVec2 const & dimensions
+			, renderer::PixelFormat format );
 		/**
 		*\brief
 		*	Destructeur.
@@ -46,7 +46,7 @@ namespace render
 		*\return
 		*	Les dimensions de la cible.
 		*/
-		inline utils::IVec2 const & dimensions()const noexcept
+		inline renderer::IVec2 const & dimensions()const noexcept
 		{
 			return m_size;
 		}
@@ -62,7 +62,7 @@ namespace render
 
 	private:
 		//! Les dimensions de la cible.
-		utils::IVec2 m_size;
+		renderer::IVec2 m_size;
 		//! Le frame buffer de la cible.
 		gl::FrameBufferPtr m_framebuffer;
 		//! La texture recevant le rendu couleurs.

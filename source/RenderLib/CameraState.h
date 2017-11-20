@@ -8,8 +8,8 @@
 #define ___DesktopUtils_CameraState_HPP___
 #pragma once
 
-#include <Utils/Angle.hpp>
-#include <Utils/RangedValue.hpp>
+#include <Renderer/Angle.hpp>
+#include <Renderer/RangedValue.hpp>
 
 namespace render
 {
@@ -35,15 +35,15 @@ namespace render
 		*\return
 		*	La rotation voulue pour la caméra.
 		*/
-		utils::Quaternion rotation()const noexcept;
+		renderer::Quaternion rotation()const noexcept;
 		/**
 		*\brief
 		*	Définit les angles d'ouverture minimal et maximal.
 		*\param[in] fovyMin, fovyMax
 		*	Les bornes.
 		*/
-		inline void zoomBounds( utils::Angle const & fovyMin
-			, utils::Angle const & fovyMax )noexcept
+		inline void zoomBounds( renderer::Angle const & fovyMin
+			, renderer::Angle const & fovyMax )noexcept
 		{
 			m_fovy.updateRange( makeRange( fovyMin, fovyMax ) );
 		}
@@ -51,7 +51,7 @@ namespace render
 		*\return
 		*	Les bornes du zoom.
 		*/
-		inline utils::Range< utils::Angle > const & zoomBounds()const noexcept
+		inline renderer::Range< renderer::Angle > const & zoomBounds()const noexcept
 		{
 			return m_fovy.range();
 		}
@@ -61,10 +61,10 @@ namespace render
 		*param[in] value
 		*	La nouvelle valeur.
 		*/
-		inline void velocity( utils::Vec2 const & value )noexcept
+		inline void velocity( renderer::Vec2 const & value )noexcept
 		{
-			m_velocityX = utils::Degrees{ value.x };
-			m_velocityY = utils::Degrees{ value.y };
+			m_velocityX = renderer::Degrees{ value.x };
+			m_velocityY = renderer::Degrees{ value.y };
 		}
 		/**
 		*\brief
@@ -74,69 +74,69 @@ namespace render
 		*/
 		inline void zoomVelocity( float value )noexcept
 		{
-			m_zoomVelocity = utils::Degrees{ value };
+			m_zoomVelocity = renderer::Degrees{ value };
 		}
 		/**
 		*\return
 		*	La valeur du zoom.
 		*/
-		inline utils::Angle const & zoom()const noexcept
+		inline renderer::Angle const & zoom()const noexcept
 		{
 			return m_fovy.value();
 		}
 
 	private:
 		//! L'intervalle d'angles de rotation.
-		utils::Range< utils::Radians > m_angleRange
+		renderer::Range< renderer::Radians > m_angleRange
 		{
-			utils::Radians{ float( -utils::PiDiv2 ) },
-			utils::Radians{ float( utils::PiDiv2 ) }
+			renderer::Radians{ float( -renderer::PiDiv2 ) },
+			renderer::Radians{ float( renderer::PiDiv2 ) }
 		};
 		//! La rotation sur l'axe X.
-		utils::RangedValue< utils::Radians > m_angleX
+		renderer::RangedValue< renderer::Radians > m_angleX
 		{
 			0.0_radians,
 			m_angleRange
 		};
 		//! La rotation sur l'axe Y.
-		utils::RangedValue< utils::Radians > m_angleY
+		renderer::RangedValue< renderer::Radians > m_angleY
 		{
 			0.0_radians,
 			m_angleRange
 		};
 		//! La rotation sur l'axe X.
-		utils::Quaternion m_quatX;
+		renderer::Quaternion m_quatX;
 		//! La rotation sur l'axe Y.
-		utils::Quaternion m_quatY;
+		renderer::Quaternion m_quatY;
 		//! L'intervalle de vitesse de rotation.
-		utils::Range< utils::Degrees > m_velocityRange
+		renderer::Range< renderer::Degrees > m_velocityRange
 		{
 			-5.0_degrees,
 			5.0_degrees
 		};
 		//! La vitesse de rotation sur l'axe X.
-		utils::RangedValue< utils::Degrees > m_velocityX
+		renderer::RangedValue< renderer::Degrees > m_velocityX
 		{
 			0.0_degrees,
 			m_velocityRange
 		};
 		//! La vitesse de rotation sur l'axe Y.
-		utils::RangedValue< utils::Degrees > m_velocityY
+		renderer::RangedValue< renderer::Degrees > m_velocityY
 		{
 			0.0_degrees,
 			m_velocityRange
 		};
 		//! La vitesse de zoom.
-		utils::RangedValue< utils::Degrees > m_zoomVelocity
+		renderer::RangedValue< renderer::Degrees > m_zoomVelocity
 		{
 			0.0_degrees,
-			utils::makeRange( -2.0_degrees, 2.0_degrees )
+			renderer::makeRange( -2.0_degrees, 2.0_degrees )
 		};
 		//! Le FovY utilisé pour le zoom, borné dans son intervalle.
-		utils::RangedValue< utils::Angle > m_fovy
+		renderer::RangedValue< renderer::Angle > m_fovy
 		{
-			utils::Angle{ 45.0_degrees },
-			utils::makeRange( utils::Angle{ 0.1_degrees }, utils::Angle{ 45.0_degrees } )
+			renderer::Angle{ 45.0_degrees },
+			renderer::makeRange( renderer::Angle{ 0.1_degrees }, renderer::Angle{ 45.0_degrees } )
 		};
 	};
 }

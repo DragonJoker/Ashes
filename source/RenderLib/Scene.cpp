@@ -35,7 +35,7 @@ namespace render
 		}
 	}
 
-	Scene::Scene( utils::IVec2 const & size )
+	Scene::Scene( renderer::IVec2 const & size )
 		: RenderableContainer{}
 		, m_camera{ size }
 	{
@@ -43,7 +43,7 @@ namespace render
 
 		if ( !material )
 		{
-			utils::RgbColour white{ 1, 1, 1 };
+			renderer::RgbColour white{ 1, 1, 1 };
 			material = std::make_shared< Material >();
 			material->ambient( white );
 			material->diffuse( white );
@@ -91,7 +91,7 @@ namespace render
 			, 2.0f * percent + ( 1.0f - percent ) / 100.0f );
 	}
 
-	void Scene::resize( utils::IVec2 const & size )noexcept
+	void Scene::resize( renderer::IVec2 const & size )noexcept
 	{
 		m_camera.resize( size );
 	}
@@ -162,7 +162,7 @@ namespace render
 	void Scene::doUpdateBillboards()
 	{
 		static float constexpr offset = 1.0f;
-		static utils::LogarithmicRange< 2, float > threshRange{ 0 + offset, 1 + offset };
+		static renderer::LogarithmicRange< 2, float > threshRange{ 0 + offset, 1 + offset };
 		auto percent = m_state.zoomBounds().invpercent( m_state.zoom() );
 		m_currentThreshold = m_threshold.range().value( percent );
 		// First, initialise the billboards that need to be.

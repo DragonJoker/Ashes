@@ -4,13 +4,13 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils.hpp"
+#include "RendererPrerequisites.hpp"
 
 #include <functional>
 #include <set>
 #include <map>
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief

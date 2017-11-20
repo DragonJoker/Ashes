@@ -9,7 +9,7 @@ See LICENSE file in root folder
 #include <string>
 #include <ostream>
 
-namespace render
+namespace renderer
 {
 	/**
 	*\brief
@@ -58,16 +58,16 @@ namespace render
 		{
 			if ( traits_type::eq_int_type( c, traits_type::eof() ) )
 			{
-				do_sync();
+				doSync();
 			}
 			else if ( c == '\n' )
 			{
-				do_sync();
+				doSync();
 			}
 			else if ( c == '\r' )
 			{
 				m_buffer += '\r';
-				do_sync_no_nl();
+				doSyncNoNl();
 			}
 			else
 			{
@@ -77,7 +77,7 @@ namespace render
 			return c;
 		}
 
-		int do_sync()
+		int doSync()
 		{
 			if ( !m_buffer.empty() )
 			{
@@ -88,7 +88,7 @@ namespace render
 			return 0;
 		}
 
-		int do_sync_no_nl()
+		int doSyncNoNl()
 		{
 			if ( !m_buffer.empty() )
 			{

@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include <algorithm>
 
-namespace utils
+namespace renderer
 {
 	std::string replace( std::string const & input
 		, std::string const & toReplace

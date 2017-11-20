@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #include "PlaneEquation.hpp"
 
-namespace utils
+namespace renderer
 {
 	PlaneEquation::PlaneEquation()
 		: m_d{ 0 }
@@ -33,17 +33,17 @@ namespace utils
 	{
 		Vec3 v{ p2 - p1 };
 		Vec3 w{ p3 - p1 };
-		m_normal = utils::normalize( utils::cross( w, v ) );
+		m_normal = renderer::normalize( renderer::cross( w, v ) );
 		m_point = ( p1 + p2 + p3 ) / float( 3 );
-		m_d = -utils::dot( m_point, m_normal );
+		m_d = -renderer::dot( m_point, m_normal );
 	}
 
 	void PlaneEquation::set( Vec3 const & normal
 		, Vec3 const & point )
 	{
-		m_normal = utils::normalize( normal );
+		m_normal = renderer::normalize( normal );
 		m_point = point;
-		m_d = -utils::dot( m_point, m_normal );
+		m_d = -renderer::dot( m_point, m_normal );
 	}
 
 	bool PlaneEquation::parallel( PlaneEquation const & plane )const
@@ -57,7 +57,7 @@ namespace utils
 
 	float PlaneEquation::distance( Vec3 const & point )const
 	{
-		return utils::dot( m_normal, point ) + m_d;
+		return renderer::dot( m_normal, point ) + m_d;
 	}
 
 	Vec3 PlaneEquation::project( Vec3 const & point )const

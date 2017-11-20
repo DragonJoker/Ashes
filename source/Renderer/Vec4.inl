@@ -2,7 +2,7 @@
 This file belongs to VkLib.
 See LICENSE file in root folder
 */
-namespace utils
+namespace renderer
 {
 	template< typename T >
 	Vec4T< T >::Vec4T( NoInit const & )noexcept

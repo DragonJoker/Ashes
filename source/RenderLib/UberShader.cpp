@@ -2,7 +2,7 @@
 
 #include "Material.h"
 
-#include <Utils/StringUtils.hpp>
+#include <Renderer/StringUtils.hpp>
 
 namespace render
 {
@@ -922,30 +922,30 @@ void main()
 	{
 		if ( gl::OpenGL::checkSupport( gl::FeatureLevel::eGLES3 ) )
 		{
-			vtx = utils::replace( vtx, "[attribute]", "in" );
-			vtx = utils::replace( vtx, "[varying]", "out" );
-			vtx = utils::replace( vtx, "[texture2D]", "texture" );
+			vtx = renderer::replace( vtx, "[attribute]", "in" );
+			vtx = renderer::replace( vtx, "[varying]", "out" );
+			vtx = renderer::replace( vtx, "[texture2D]", "texture" );
 		}
 		else
 		{
-			vtx = utils::replace( vtx, "[attribute]", "attribute" );
-			vtx = utils::replace( vtx, "[varying]", "varying" );
-			vtx = utils::replace( vtx, "[texture2D]", "texture2D" );
+			vtx = renderer::replace( vtx, "[attribute]", "attribute" );
+			vtx = renderer::replace( vtx, "[varying]", "varying" );
+			vtx = renderer::replace( vtx, "[texture2D]", "texture2D" );
 		}
 
 		if ( gl::OpenGL::checkSupport( gl::FeatureLevel::eGLES3 ) )
 		{
-			pxl = utils::replace( pxl, "[varying]", "in" );
-			pxl = utils::replace( pxl, "[varying out]", "out" );
-			pxl = utils::replace( pxl, "[texture2D]", "texture" );
-			pxl = utils::replace( pxl, "[gl_FragColor]", "out_fragColour" );
+			pxl = renderer::replace( pxl, "[varying]", "in" );
+			pxl = renderer::replace( pxl, "[varying out]", "out" );
+			pxl = renderer::replace( pxl, "[texture2D]", "texture" );
+			pxl = renderer::replace( pxl, "[gl_FragColor]", "out_fragColour" );
 		}
 		else
 		{
-			pxl = utils::replace( pxl, "[varying]", "varying" );
-			pxl = utils::replace( pxl, "[varying out]", "varying" );
-			pxl = utils::replace( pxl, "[texture2D]", "texture2D" );
-			pxl = utils::replace( pxl, "[gl_FragColor]", "gl_FragColor" );
+			pxl = renderer::replace( pxl, "[varying]", "varying" );
+			pxl = renderer::replace( pxl, "[varying out]", "varying" );
+			pxl = renderer::replace( pxl, "[texture2D]", "texture2D" );
+			pxl = renderer::replace( pxl, "[gl_FragColor]", "gl_FragColor" );
 		}
 
 		auto program = std::make_unique< gl::ShaderProgram >( vtx, pxl );

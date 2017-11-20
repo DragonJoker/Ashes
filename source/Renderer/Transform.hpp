@@ -7,7 +7,7 @@ See LICENSE file in root folder
 #include "Quaternion.hpp"
 #include "Angle.hpp"
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief

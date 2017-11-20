@@ -4,11 +4,11 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils.hpp"
+#include "RendererPrerequisites.hpp"
 
 #include <string>
 
-namespace utils
+namespace renderer
 {
 	//! Un tableau de chaines de caractères.
 	using StringArray = std::vector< std::string >;

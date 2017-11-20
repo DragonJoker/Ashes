@@ -45,7 +45,7 @@ namespace render
 		*\param[in] size
 		*	La taille initiale de la zone de rendu.
 		*/
-		Scene( utils::IVec2 const & size );
+		Scene( renderer::IVec2 const & size );
 		/**
 		*\brief
 		*	Destructeur.
@@ -72,7 +72,7 @@ namespace render
 		*\param[in] size
 		*	Les nouvelles dimensions.
 		*/
-		void resize( utils::IVec2 const & size )noexcept;
+		void resize( renderer::IVec2 const & size )noexcept;
 		/**
 		*\brief
 		*	Ajoute un objet à la scène.
@@ -227,7 +227,7 @@ namespace render
 		*\param[in] colour
 		*	La nouvelle valeur.
 		*/
-		inline void backgroundColour( utils::RgbaColour const & colour )noexcept
+		inline void backgroundColour( renderer::RgbaColour const & colour )noexcept
 		{
 			m_backgroundColour = colour;
 		}
@@ -235,7 +235,7 @@ namespace render
 		*\return
 		*	La couleur de fond de la scène.
 		*/
-		inline utils::RgbaColour const & backgroundColour()const noexcept
+		inline renderer::RgbaColour const & backgroundColour()const noexcept
 		{
 			return m_backgroundColour;
 		}
@@ -259,7 +259,7 @@ namespace render
 		*\return
 		*	L'intervalle de valeurs pour le seuil d'affichage.
 		*/
-		inline utils::Range< float > const & thresholdBounds()const noexcept
+		inline renderer::Range< float > const & thresholdBounds()const noexcept
 		{
 			return m_threshold.range();
 		}
@@ -269,7 +269,7 @@ namespace render
 		*/
 		inline void thresholdBounds( float min, float max )noexcept
 		{
-			m_threshold.updateRange( utils::makeRange( min, max ) );
+			m_threshold.updateRange( renderer::makeRange( min, max ) );
 		}
 		/**
 		*\return
@@ -326,16 +326,16 @@ namespace render
 		//! Les incrustations.
 		OverlayList m_overlays;
 		//! La couleur du fond.
-		utils::RgbaColour m_backgroundColour;
+		renderer::RgbaColour m_backgroundColour;
 		//! Le seuil précédent d'affichage des objets.
 		float m_previousThreshold{ 0.0f };
 		//! Le seuil courant d'affichage des objets.
 		float m_currentThreshold{ 0.0f };
 		//! Le seuil d'affichage des objets.
-		utils::RangedValue< float > m_threshold
+		renderer::RangedValue< float > m_threshold
 		{
 			std::numeric_limits< float >::infinity(),
-			utils::makeRange( -30.0f, 30.0f )
+			renderer::makeRange( -30.0f, 30.0f )
 		};
 		//! La liste de nouveaux tampons de billboards.
 		std::vector< BillboardBufferPtr > m_newBillboardBuffers;
