@@ -1,6 +1,6 @@
 #include "OverlayRenderer.h"
 
-#include <Renderer/GlAttribute.h>
+#include <Renderer/Attribute.hpp>
 #include <Renderer/GlUniform.h>
 #include <Renderer/VertexBuffer.hpp>
 

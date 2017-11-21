@@ -13,10 +13,11 @@
 #include <Renderer/Texture.hpp>
 #include "UberShader.h"
 
-#include <Renderer/RangedValue.hpp>
-#include <Renderer/UniformBuffer.hpp>
+#include <Renderer/DescriptorSet.hpp>
 #include <Renderer/Pipeline.hpp>
+#include <Renderer/RangedValue.hpp>
 #include <Renderer/ShaderProgram.hpp>
+#include <Renderer/UniformBuffer.hpp>
 
 #include <array>
 #include <functional>
@@ -74,6 +75,7 @@ namespace render
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
 			RenderNode( renderer::RenderingResources const & resources
+				, renderer::DescriptorSetPool const & pool
 				, renderer::ShaderProgramPtr && program );
 			//! Le programme shader.
 			renderer::ShaderProgramPtr m_program;
@@ -81,8 +83,8 @@ namespace render
 			renderer::UniformBuffer< MatrixUbo > m_mtxUbo;
 			//! L'UBO contenant les informations de picking.
 			renderer::UniformBuffer< PickingUbo > m_pickUbo;
-			//! La variable uniforme contenant la texture d'opacité.
-			renderer::IntUniformPtr m_mapOpacity;
+			//! Le descriptor set du noeud.
+			renderer::DescriptorSet m_descriptorSet;
 		};
 		/**
 		*\brief
@@ -98,15 +100,14 @@ namespace render
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
 			ObjectNode( renderer::RenderingResources const & resources
+				, renderer::DescriptorSetPool const & pool
 				, renderer::ShaderProgramPtr && program );
-			//! L'attribut de position.
-			renderer::Vec3AttributePtr m_position;
-			//! L'attribut de normale.
-			renderer::Vec3AttributePtr m_normal;
-			//! L'attribut de coordonnées de texture.
-			renderer::Vec2AttributePtr m_texture;
-			//! La variable uniforme contenant la mise à l'échelle.
-			renderer::FloatUniformPtr m_scale;
+			//! Le layout du tampon de positions.
+			renderer::VertexLayout m_posLayout;
+			//! Le layout du tampon de normales.
+			renderer::VertexLayout m_nmlLayout;
+			//! Le layout du tampon de coordonnées de texture.
+			renderer::VertexLayout m_texLayout;
 		};
 		//! Un pointeur sur un ObjectNode.
 		using ObjectNodePtr = std::unique_ptr< ObjectNode >;
@@ -126,17 +127,12 @@ namespace render
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
 			BillboardNode( renderer::RenderingResources const & resources
+				, renderer::DescriptorSetPool const & pool
 				, renderer::ShaderProgramPtr && program );
+			//! Le layout du tampon de positions.
+			renderer::VertexLayout m_layout;
 			//! L'UBO contenant les variables liées au billboard.
 			renderer::UniformBuffer< BillboardUbo > m_billboardUbo;
-			//! Attribut de position.
-			renderer::Vec3AttributePtr m_position;
-			//! Attribut d'échelle.
-			renderer::Vec2AttributePtr m_scale;
-			//! Attribut de coordonnées de texture.
-			renderer::Vec2AttributePtr m_texture;
-			//! Attribut d'identifiant.
-			renderer::FloatAttributePtr m_id;
 		};
 		//! Un pointeur sur un BillboardNode.
 		using BillboardNodePtr = std::unique_ptr< BillboardNode >;
@@ -186,12 +182,12 @@ namespace render
 		void doRenderObjects( Camera const & camera
 			, float zoomPercent
 			, NodeType type
-			, ObjectNode const & node
+			, ObjectNode & node
 			, RenderSubmeshVector const & objects )const;
 		void doRenderBillboards( Camera const & camera
 			, float zoomPercent
 			, NodeType type
-			, BillboardNode const & node
+			, BillboardNode & node
 			, BillboardArray const & billboards )const;
 
 	private:

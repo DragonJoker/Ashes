@@ -28,10 +28,8 @@ namespace renderer
 		*	Le LogicalDevice parent.
 		*\param[in] layout
 		*	Le layout du pipeline.
-		*\param[in] vertexShaderFile
-		*	Le chemin d'accès au fichier du vertex shader.
-		*\param[in] fragmentShaderFile
-		*	Le chemin d'accès au fichier du fragment shader.
+		*\param[in] program
+		*	Le programme shader.
 		*\param[in] vertexBuffers
 		*	Les tampons de sommets utilisés.
 		*\param[in] renderPass
@@ -40,9 +38,8 @@ namespace renderer
 		*	La topologie d'affichage des sommets affichés via ce pipeline.
 		*/
 		Pipeline( RenderingResources const & resources
-			, vk::PipelineLayout const & layout
-			, std::string const & vertexShaderFile
-			, std::string const & fragmentShaderFile
+			, PipelineLayout const & layout
+			, ShaderProgram const & program
 			, std::vector< std::reference_wrapper< VertexLayout const > > const & vertexLayouts
 			, vk::RenderPass const & renderPass
 			, PrimitiveTopology topology );
@@ -53,25 +50,25 @@ namespace renderer
 		*	Le LogicalDevice parent.
 		*\param[in] layout
 		*	Le layout du pipeline.
-		*\param[in] vertexShaderFile
-		*	Le chemin d'accès au fichier du vertex shader.
-		*\param[in] fragmentShaderFile
-		*	Le chemin d'accès au fichier du fragment shader.
+		*\param[in] program
+		*	The shader program.
 		*\param[in] vertexBuffers
 		*	Les tampons de sommets utilisés.
 		*\param[in] viewport
 		*	Le viewport.
+		*\param[in] scissor
+		*	Le ciseau.
 		*\param[in] renderPass
 		*	La passe de rendu.
 		*\param[in] topology
 		*	La topologie d'affichage des sommets affichés via ce pipeline.
 		*/
 		Pipeline( RenderingResources const & resources
-			, vk::PipelineLayout const & layout
-			, std::string const & vertexShaderFile
-			, std::string const & fragmentShaderFile
+			, PipelineLayout const & layout
+			, ShaderProgram const & program
 			, std::vector< std::reference_wrapper< VertexLayout const > > const & vertexLayouts
-			, vk::Viewport const & viewport
+			, Viewport const & viewport
+			, Scissor const & scissor
 			, vk::RenderPass const & renderPass
 			, PrimitiveTopology topology );
 		/**

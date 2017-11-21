@@ -6,7 +6,12 @@
 #include "PolyLine.h"
 #include "Submesh.h"
 
+#include <Renderer/DescriptorSet.hpp>
+#include <Renderer/DescriptorSetLayout.hpp>
+#include <Renderer/DescriptorSetLayoutBinding.hpp>
+#include <Renderer/DescriptorSetPool.hpp>
 #include <Renderer/RenderingResources.hpp>
+#include <Renderer/VertexLayout.hpp>
 
 #include <algorithm>
 
@@ -83,52 +88,67 @@ namespace render
 	//*************************************************************************
 
 	PickingRenderer::RenderNode::RenderNode( renderer::RenderingResources const & resources
+		, renderer::DescriptorSetPool const & pool
 		, renderer::ShaderProgramPtr && program )
 		: m_program{ std::move( program ) }
-		, m_mtxUbo{ 1u, renderer::BufferTarget::eTransferDst, renderer::MemoryMapFlag::eDeviceLocal }
-		, m_mapOpacity{ renderer::makeUniform< int >( "mapOpacity", *m_program ) }
-		, m_pickUbo{ 1u, renderer::BufferTarget::eTransferDst, renderer::MemoryMapFlag::eDeviceLocal }
+		, m_mtxUbo{ resources, 0u, renderer::BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal }
+		, m_pickUbo{ resources, 2u, renderer::BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal }
+		, m_descriptorSet{ pool.createDescriptorSet() }
+		//, m_mapOpacity{ renderer::makeUniform< int >( "mapOpacity", *m_program ) }
 	{
+		m_descriptorSet.createBinding( { 0u
+				, renderer::DescriptorType::eUniformBuffer
+				, renderer::ShaderStageFlag::eFragment }
+			, m_mtxUbo );
+		m_descriptorSet.createBinding( { 2u
+				, renderer::DescriptorType::eUniformBuffer
+				, renderer::ShaderStageFlag::eFragment }
+			, m_pickUbo );
 	}
 
 	//*************************************************************************
 
 	PickingRenderer::ObjectNode::ObjectNode( renderer::RenderingResources const & resources
+		, renderer::DescriptorSetPool const & pool
 		, renderer::ShaderProgramPtr && program )
-		: RenderNode{ std::move( program ) }
-		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position" ) }
-		, m_normal{ m_program->createAttribute< renderer::Vec3 >( "normal" ) }
-		, m_texture{ m_program->createAttribute< renderer::Vec2 >( "texture" ) }
-		, m_scale{ renderer::makeUniform< float >( "scale", *m_program ) }
+		: RenderNode{ resources, pool, std::move( program ) }
+		, m_posLayout{ 0u }
+		, m_nmlLayout{ 1u }
+		, m_texLayout{ 2u }
 	{
+		m_posLayout.createAttribute< renderer::Vec3 >( 0u, 0u );
+		m_nmlLayout.createAttribute< renderer::Vec3 >( 1u, 0u );
+		m_texLayout.createAttribute< renderer::Vec2 >( 2u, 0u );
 	}
 
 	//*************************************************************************
 
 	PickingRenderer::BillboardNode::BillboardNode( renderer::RenderingResources const & resources
+		, renderer::DescriptorSetPool const & pool
 		, renderer::ShaderProgramPtr && program )
-		: RenderNode{ std::move( program ) }
-		, m_billboardUbo{ 1u, renderer::BufferTarget::eTransferDst, renderer::MemoryMapFlag::eDeviceLocal }
-		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position"
-			, sizeof( BillboardBuffer::Vertex )
-			, offsetof( BillboardData, center ) ) }
-		, m_scale{ m_program->createAttribute< renderer::Vec2 >( "scale"
-			, sizeof( BillboardBuffer::Vertex )
-			, offsetof( BillboardData, scale ) ) }
-		, m_texture{ m_program->createAttribute< renderer::Vec2 >( "texture"
-			, sizeof( BillboardBuffer::Vertex )
-			, offsetof( BillboardBuffer::Vertex, texture ) ) }
-		, m_id{ m_program->createAttribute< float >( "id"
-			, sizeof( BillboardBuffer::Vertex )
-			, offsetof( BillboardBuffer::Vertex, id ) ) }
+		: RenderNode{ resources, pool, std::move( program ) }
+		, m_layout{ 0u }
+		, m_billboardUbo{ resources, 1u, renderer::BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal }
 	{
+		m_layout.createAttribute< renderer::Vec3 >( 0u
+			, offsetof( BillboardData, center ) );
+		m_layout.createAttribute< renderer::Vec2 >( 1u
+			, offsetof( BillboardData, scale ) );
+		m_layout.createAttribute< renderer::Vec2 >( 2u
+			, offsetof( BillboardBuffer::Vertex, texture ) );
+		m_layout.createAttribute< float >( 3u
+			, offsetof( BillboardBuffer::Vertex, id ) );
+		m_descriptorSet.createBinding( { 1u
+				, renderer::DescriptorType::eUniformBuffer
+				, renderer::ShaderStageFlag::eFragment }
+			, m_billboardUbo );
 	}
 
 	//*************************************************************************
 
 	PickingRenderer::PickingRenderer( renderer::RenderingResources const & resources )
 		: m_resources{ resources }
-		, m_pipelineOpaque{ false, true, true, false }
+		, m_pipelineOpaque{ resources, false, true, true, false }
 	{
 	}
 
@@ -175,7 +195,7 @@ namespace render
 		, RenderSubmeshArray const & objects
 		, RenderBillboardArray const & billboards )const
 	{
-		m_pipelineOpaque.apply();
+		m_pipelineOpaque.bind( m_resources );
 		doRenderObjects( camera
 			, zoomPercent
 			, NodeType::eOpaqueNoTex
@@ -278,7 +298,7 @@ namespace render
 	void PickingRenderer::doRenderObjects( Camera const & camera
 		, float zoomPercent
 		, NodeType type
-		, ObjectNode const & node
+		, ObjectNode & node
 		, RenderSubmeshVector const & objects )const
 	{
 		if ( !objects.empty() )
@@ -326,7 +346,7 @@ namespace render
 	void PickingRenderer::doRenderBillboards( Camera const & camera
 		, float zoomPercent
 		, NodeType type
-		, BillboardNode const & node
+		, BillboardNode & node
 		, BillboardArray const & billboards )const
 	{
 		if ( !billboards.empty() )

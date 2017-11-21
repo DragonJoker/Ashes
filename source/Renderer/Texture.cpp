@@ -1,6 +1,9 @@
 #include "Texture.hpp"
 
+#include "CommandBuffer.hpp"
+#include "ImageMemoryBarrier.hpp"
 #include "RenderingResources.hpp"
+#include "StagingBuffer.hpp"
 
 #include <VkLib/Queue.hpp>
 
@@ -11,13 +14,16 @@ namespace renderer
 	{
 	}
 
-	void Texture::image( PixelFormat format
+	void Texture::setImage( PixelFormat format
 		, IVec2 const & size
-		, ByteArray const & data
-		, WrapMode wrapS
-		, WrapMode wrapT
-		, Filter minFilter
-		, Filter magFilter )
+		, ByteArray const & data )
+	{
+		setImage( format, size );
+		m_resources.getStagingBuffer().copyTextureData( data, *this );
+	}
+
+	void Texture::setImage( PixelFormat format
+		, IVec2 const & size )
 	{
 		m_format = format;
 		m_size = size;
@@ -25,13 +31,6 @@ namespace renderer
 			, m_size.x
 			, m_size.y
 			, convert( MemoryPropertyFlag::eDeviceLocal ) );
-		m_sampler = m_resources.getDevice().createSampler( convert( minFilter )
-			, convert( magFilter )
-			, convert( MipmapMode::eNearest )
-			, convert( wrapS )
-			, convert( wrapT )
-			, convert( WrapMode::eRepeat ) );
-		m_resources.copyTextureData( data, *m_texture );
 	}
 
 	void Texture::generateMipmaps()const noexcept
@@ -43,29 +42,29 @@ namespace renderer
 
 	void Texture::bindAsShaderInput( uint32_t unit )const
 	{
-		assert( m_texture && m_sampler );
+		assert( m_texture );
 		auto & device = m_resources.getDevice();
-		auto & commandBuffer = m_resources.getCommandBuffer();
+		auto & commandBuffer = m_resources.getCommandBuffer().getCommandBuffer();
 
 		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
 		{
 			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 				, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
 				, m_texture->makeShaderInputResource() );
-			auto res = commandBuffer.end();
+			auto res = vk::checkError( commandBuffer.end() );
 
-			if ( !vk::checkError( res ) )
+			if ( !res )
 			{
 				throw std::runtime_error{ "Texture binding failed: " + vk::getLastError() };
 			}
 
-			res = device.getGraphicsQueue().submit( { commandBuffer }
+			res = vk::checkError( device.getGraphicsQueue().submit( { commandBuffer }
 				, {}
 				, {}
 				, {}
-			, nullptr );
+			, nullptr ) );
 
-			if ( !vk::checkError( res ) )
+			if ( !res )
 			{
 				throw std::runtime_error{ "Texture binding failed: " + vk::getLastError() };
 			}
@@ -76,34 +75,58 @@ namespace renderer
 
 	void Texture::bindAsShaderOutput( uint32_t unit )const
 	{
-		assert( m_texture && m_sampler );
+		assert( m_texture );
 		auto & device = m_resources.getDevice();
-		auto & commandBuffer = m_resources.getCommandBuffer();
+		auto & commandBuffer = m_resources.getCommandBuffer().getCommandBuffer();
 
 		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
 		{
 			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 				, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
 				, m_texture->makeColourAttachment() );
-			auto res = commandBuffer.end();
+			auto res = vk::checkError( commandBuffer.end() );
 
-			if ( !vk::checkError( res ) )
+			if ( !res )
 			{
 				throw std::runtime_error{ "Texture binding failed: " + vk::getLastError() };
 			}
 
-			res = device.getGraphicsQueue().submit( { commandBuffer }
+			res = vk::checkError( device.getGraphicsQueue().submit( { commandBuffer }
 				, {}
 				, {}
 				, {}
-			, nullptr );
+			, nullptr ) );
 
-			if ( !vk::checkError( res ) )
+			if ( !res )
 			{
 				throw std::runtime_error{ "Texture binding failed: " + vk::getLastError() };
 			}
 
 			device.waitIdle();
 		}
+	}
+	ImageMemoryBarrier Texture::makeTransferDestination()const
+	{
+		return ImageMemoryBarrier{ m_texture->makeTransferDestination() };
+	}
+
+	ImageMemoryBarrier Texture::makeShaderInputResource()const
+	{
+		return ImageMemoryBarrier{ m_texture->makeShaderInputResource() };
+	}
+
+	ImageMemoryBarrier Texture::makeColourAttachment()const
+	{
+		return ImageMemoryBarrier{ m_texture->makeColourAttachment() };
+	}
+
+	ImageMemoryBarrier Texture::makeDrawDestination()const
+	{
+		return ImageMemoryBarrier{ m_texture->makeDrawDestination() };
+	}
+
+	ImageMemoryBarrier Texture::makePresentSource()const
+	{
+		return ImageMemoryBarrier{ m_texture->makePresentSource() };
 	}
 }

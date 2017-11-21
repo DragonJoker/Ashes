@@ -9,12 +9,8 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
-	*@~french
-	*@brief
+	*\brief
 	*	Enumération des modes de wrap.
-	*@~english
-	*@brief
-	*	Wrap modes enumeration.
 	*/
 	enum class WrapMode
 	{
@@ -25,4 +21,13 @@ namespace renderer
 		eMirrorClampToEdge,
 		VkLib_EnumBounds( eRepeat )
 	};
+	/**
+	*\brief
+	*	Convertit un renderer::WrapMode en VkSamplerAddressMode.
+	*\param[in] mode
+	*	Le renderer::WrapMode.
+	*\return
+	*	Le VkSamplerAddressMode.
+	*/
+	VkSamplerAddressMode convert( WrapMode mode );
 }

@@ -15,7 +15,7 @@
 #include "RenderTarget.h"
 #include "Scene.h"
 
-#include <Renderer/GlAttribute.h>
+#include <Renderer/Attribute.hpp>
 #include <Renderer/ShaderProgram.hpp>
 #include <Renderer/OpenGL.h>
 #include <Renderer/Pipeline.hpp>

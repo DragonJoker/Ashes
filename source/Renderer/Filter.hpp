@@ -22,4 +22,13 @@ namespace renderer
 		eLinear,
 		VkLib_EnumBounds( eNearest )
 	};
+	/**
+	*\brief
+	*	Convertit un renderer::Filter en VkFilter.
+	*\param[in] filter
+	*	Le renderer::Filter.
+	*\return
+	*	Le VkFilter.
+	*/
+	VkFilter convert( Filter filter );
 }

@@ -71,14 +71,6 @@ namespace renderer
 			return *m_buffer;
 		}
 		/**
-		*\return
-		*	Le tampon.
-		*/
-		inline vk::VertexBuffer & getVbo()
-		{
-			return *m_buffer;
-		}
-		/**
 		*\brief
 		*	Définit les attributs du tampon de sommets.
 		*\param[in] layout

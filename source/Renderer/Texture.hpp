@@ -38,18 +38,20 @@ namespace renderer
 		*	Les dimensions de l'image.
 		*\param[in] data
 		*	Les données de l'image.
-		*\param[in] wrapS, wrapT
-		*	Les modes de wrap de texture.
-		*\param[in] minFilter, magFilter
-		*	Les filtres de minification et magnification.
 		*/
-		void image( PixelFormat format
+		void setImage( PixelFormat format
 			, IVec2 const & size
-			, ByteArray const & data
-			, WrapMode wrapS = WrapMode::eClampToEdge
-			, WrapMode wrapT = WrapMode::eClampToEdge
-			, Filter minFilter = Filter::eLinear
-			, Filter magFilter = Filter::eLinear );
+			, ByteArray const & data );
+		/**
+		*\brief
+		*	Charge l'image de la texture.
+		*\param[in] format
+		*	Le format de l'image.
+		*\param[in] size
+		*	Les dimensions de l'image.
+		*/
+		void setImage( PixelFormat format
+			, IVec2 const & size );
 		/**
 		*\brief
 		*	Génère les mipmaps de la texture.
@@ -70,10 +72,45 @@ namespace renderer
 		*/
 		void bindAsShaderOutput( uint32_t unit )const;
 		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de destination de transfert.
+		*\return
+		*	La barrière mémoire.
+		*/
+		ImageMemoryBarrier makeTransferDestination()const;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de ressource d'entrée (lecture seule) d'un shader.
+		*\return
+		*	La barrière mémoire.
+		*/
+		ImageMemoryBarrier makeShaderInputResource()const;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout d'attache couleur.
+		*\return
+		*	La barrière mémoire.
+		*/
+		ImageMemoryBarrier makeColourAttachment()const;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de destination de dessin.
+		*\return
+		*	La barrière mémoire.
+		*/
+		ImageMemoryBarrier makeDrawDestination()const;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de source de presentation.
+		*\return
+		*	La barrière mémoire.
+		*/
+		ImageMemoryBarrier makePresentSource()const;
+		/**
 		*\return
 		*	Le format des pixels de la texture.
 		*/
-		inline renderer::PixelFormat format()const noexcept
+		inline renderer::PixelFormat getFormat()const noexcept
 		{
 			return m_format;
 		}
@@ -81,22 +118,25 @@ namespace renderer
 		*\return
 		*	Les dimensions de la texture.
 		*/
-		inline renderer::IVec2 const & dimensions()const noexcept
+		inline renderer::IVec2 const & getDimensions()const noexcept
 		{
 			return m_size;
 		}
+		/**
+		*\return
+		*	L'image vulkan.
+		*/
+		inline vk::Image const & getImage()const noexcept
+		{
+			assert( m_texture );
+			return *m_texture;
+		}
 
 	private:
-		//! Les ressources de rendu.
 		renderer::RenderingResources const & m_resources;
-		//! Les dimensions de l'image.
 		renderer::IVec2 m_size;
-		//! Le format des données de l'image.
 		renderer::PixelFormat m_format{ renderer::PixelFormat::eR8G8B8 };
-		//! La texture.
 		vk::ImagePtr m_texture;
-		//! L'échantillonneur.
-		vk::SamplerPtr m_sampler;
 	};
 }
 

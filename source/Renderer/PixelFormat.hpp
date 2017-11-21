@@ -36,6 +36,15 @@ namespace renderer
 	};
 	/**
 	*\brief
+	*	Convertit un renderer::PixelFormat en VkFormat.
+	*\param[in] format
+	*	Le renderer::PixelFormat.
+	*\return
+	*	Le format Vulkan.
+	*/
+	VkFormat convert( PixelFormat format );
+	/**
+	*\brief
 	*	Donne le nombre d'octets du format de pixels donné.
 	*\param[in] format
 	*	Le format de pixel.

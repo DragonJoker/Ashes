@@ -32,4 +32,13 @@ namespace renderer
 		ePatchList,
 		VkLib_EnumBounds( ePointList )
 	};
+	/**
+	*\brief
+	*	Convertit un renderer::PrimitiveTopology en VkPrimitiveTopology.
+	*\param[in] format
+	*	Le renderer::PrimitiveTopology.
+	*\return
+	*	Le VkPrimitiveTopology.
+	*/
+	VkPrimitiveTopology convert( PrimitiveTopology topology );
 }

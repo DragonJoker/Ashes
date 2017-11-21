@@ -1,7 +1,11 @@
 #include "Pipeline.hpp"
 
+#include "PipelineLayout.hpp"
 #include "RenderingResources.hpp"
+#include "Scissor.hpp"
+#include "ShaderProgram.hpp"
 #include "VertexLayout.hpp"
+#include "Viewport.hpp"
 
 #include <VkLib/LogicalDevice.hpp>
 
@@ -16,7 +20,7 @@ namespace renderer
 
 			for ( auto & layout : layouts )
 			{
-				result.push_back( *layout.get().getLayout() );
+				result.emplace_back( *layout.get().getLayout() );
 			}
 
 			return result;
@@ -24,15 +28,13 @@ namespace renderer
 	}
 
 	Pipeline::Pipeline( RenderingResources const & resources
-		, vk::PipelineLayout const & layout
-		, std::string const & vertexShaderFile
-		, std::string const & fragmentShaderFile
+		, PipelineLayout const & layout
+		, ShaderProgram const & program
 		, std::vector< std::reference_wrapper< VertexLayout const > > const & vertexLayouts
 		, vk::RenderPass const & renderPass
 		, PrimitiveTopology topology )
-		: m_pipeline{ resources.getDevice().createPipeline( layout
-			, vertexShaderFile
-			, fragmentShaderFile
+		: m_pipeline{ resources.getDevice().createPipeline( layout.getLayout()
+			, program.getProgram()
 			, convert( vertexLayouts )
 			, renderPass
 			, convert( topology ) ) }
@@ -40,18 +42,18 @@ namespace renderer
 	}
 
 	Pipeline::Pipeline( RenderingResources const & resources
-		, vk::PipelineLayout const & layout
-		, std::string const & vertexShaderFile
-		, std::string const & fragmentShaderFile
+		, PipelineLayout const & layout
+		, ShaderProgram const & program
 		, std::vector< std::reference_wrapper< VertexLayout const > > const & vertexLayouts
-		, vk::Viewport const & viewport
+		, Viewport const & viewport
+		, Scissor const & scissor
 		, vk::RenderPass const & renderPass
 		, PrimitiveTopology topology )
-		: m_pipeline{ resources.getDevice().createPipeline( layout
-			, vertexShaderFile
-			, fragmentShaderFile
+		: m_pipeline{ resources.getDevice().createPipeline( layout.getLayout()
+			, program.getProgram()
 			, convert( vertexLayouts )
-			, viewport
+			, viewport.getViewport()
+			, scissor.getScissor()
 			, renderPass
 			, convert( topology ) ) }
 	{

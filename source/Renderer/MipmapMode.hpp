@@ -9,12 +9,8 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
-	*@~french
-	*@brief
+	*\brief
 	*	Enumération des modes de mipmap.
-	*@~english
-	*@brief
-	*	Mipmap modes enumeration.
 	*/
 	enum class MipmapMode
 	{
@@ -22,4 +18,13 @@ namespace renderer
 		eLinear,
 		VkLib_EnumBounds( eNearest )
 	};
+	/**
+	*\brief
+	*	Convertit un renderer::MipmapMode en VkSamplerMipmapMode.
+	*\param[in] mode
+	*	Le renderer::MipmapMode.
+	*\return
+	*	Le VkSamplerMipmapMode.
+	*/
+	VkSamplerMipmapMode convert( MipmapMode mode );
 }

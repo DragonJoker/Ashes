@@ -50,7 +50,7 @@ namespace render
 				offsetY -= maxHeight;
 			}
 
-			texture.image( renderer::PixelFormat::eL8, size, data );
+			texture.setImage( renderer::PixelFormat::eL8, size, data );
 			return texture;
 		}
 	}

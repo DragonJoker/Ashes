@@ -30,4 +30,13 @@ namespace renderer
 		eIndirectBuffer = 0x00000100,
 	};
 	VkLib_ImplementFlag( BufferTarget )
+	/**
+	*\brief
+	*	Convertit un renderer::BufferTargets en VkBufferUsageFlags.
+	*\param[in] targets
+	*	Le renderer::BufferTargets.
+	*\return
+	*	Le VkBufferUsageFlags.
+	*/
+	VkBufferUsageFlags convert( BufferTargets targets );
 }

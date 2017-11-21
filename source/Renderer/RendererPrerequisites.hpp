@@ -6,13 +6,22 @@
 */
 #pragma once
 
+#include "AccessFlag.hpp"
 #include "BufferTarget.hpp"
+#include "CommandBufferResetFlag.hpp"
+#include "CommandBufferUsageFlag.hpp"
+#include "DescriptorType.hpp"
 #include "Filter.hpp"
+#include "ImageAspectFlag.hpp"
+#include "ImageLayout.hpp"
 #include "MemoryMapFlag.hpp"
 #include "MemoryPropertyFlag.hpp"
 #include "MipmapMode.hpp"
+#include "PipelineBindPoint.hpp"
+#include "PipelineStageFlag.hpp"
 #include "PixelFormat.hpp"
 #include "PrimitiveTopology.hpp"
+#include "ShaderStageFlag.hpp"
 #include "WrapMode.hpp"
 
 #include <cassert>
@@ -48,11 +57,24 @@ namespace renderer
 	template< typename T >
 	class Attribute;
 
+	class BufferMemoryBarrier;
+	class CommandBuffer;
+	class DescriptorSet;
+	class DescriptorSetLayout;
+	class DescriptorSetLayoutBinding;
+	class DescriptorSetPool;
+	class ImageMemoryBarrier;
+	class ImageSubresourceRange;
 	class Pipeline;
+	class PipelineLayout;
 	class RenderingResources;
+	class Sampler;
+	class Scissor;
 	class ShaderProgram;
+	class StagingBuffer;
 	class Texture;
 	class VertexLayout;
+	class Viewport;
 
 	/**
 	*\name Typedefs généralistes.
@@ -80,7 +102,9 @@ namespace renderer
 	using VertexBufferPtr = std::unique_ptr< VertexBuffer< T > >;
 	using ShaderProgramPtr = std::unique_ptr< ShaderProgram >;
 	using VertexLayoutPtr = std::unique_ptr< VertexLayout >;
+	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
 	using TexturePtr = std::shared_ptr< Texture >;
+	using StagingBufferPtr = std::shared_ptr< StagingBuffer >;
 	/**@}*/
 	/**
 	*\name Typedefs d'attributs de sommets.
@@ -99,28 +123,4 @@ namespace renderer
 	using Vec3AttributePtr = AttributePtr< Vec3 >;
 	using Vec4AttributePtr = AttributePtr< Vec4 >;
 	/**@}*/
-	/**
-	*@~french
-	*@brief
-	*	Convertit un renderer::PixelFormat en VkFormat.
-	*@param[in] format
-	*	Le renderer::PixelFormat.
-	*@return
-	*	Le format Vulkan.
-	*@~english
-	*@brief
-	*	Converts a renderer::PixelFormat to a VkFormat.
-	*@param[in] format
-	*	The renderer::PixelFormat.
-	*@return
-	*	The Vulkan format.
-	*/
-	VkFormat convert( PixelFormat format );
-	VkFilter convert( Filter filter );
-	VkSamplerMipmapMode convert( MipmapMode mode );
-	VkSamplerAddressMode convert( WrapMode mode );
-	VkMemoryPropertyFlags convert( MemoryPropertyFlags flags );
-	VkBufferUsageFlags convert( BufferTargets targets );
-	VkMemoryMapFlags convert( MemoryMapFlags flags );
-	VkPrimitiveTopology convert( PrimitiveTopology topology );
 }

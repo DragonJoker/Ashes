@@ -21,4 +21,13 @@ namespace renderer
 	{
 	};
 	VkLib_ImplementFlag( MemoryMapFlag )
+	/**
+	*\brief
+	*	Convertit un renderer::MemoryMapFlags en VkMemoryMapFlags.
+	*\param[in] format
+	*	Le renderer::MemoryMapFlags.
+	*\return
+	*	Le VkMemoryMapFlags.
+	*/
+	VkMemoryMapFlags convert( MemoryMapFlags flags );
 }

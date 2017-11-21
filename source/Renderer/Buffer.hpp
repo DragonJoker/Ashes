@@ -69,6 +69,14 @@ namespace renderer
 			m_resources.copyBufferData( data
 				, *m_buffer );
 		}
+		/**
+		*\return
+		*	Le tampon.
+		*/
+		inline vk::Buffer const & getBuffer()const
+		{
+			return *m_buffer;
+		}
 
 	private:
 		RenderingResources const & m_resources;
