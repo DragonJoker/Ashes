@@ -1,10 +1,10 @@
 #include "TextOverlay.h"
 
 #include "OverlayRenderer.h"
-#include "StringUtils.h"
 
 #include <algorithm>
 
+#include <Renderer/StringUtils.hpp>
 #include <Renderer/Transform.hpp>
 
 namespace render

@@ -331,12 +331,7 @@ void main()
 			std::string getDefines( TextureFlags textures )
 			{
 				std::string ret;
-
-				if ( gl::OpenGL::checkSupport( gl::FeatureLevel::eGLES3 ) )
-				{
-					ret += "#version 300 es\n";
-				}
-
+				ret += "#version 300 es\n";
 				ret += "precision highp float;\n";
 
 				if ( textures )
@@ -351,59 +346,29 @@ void main()
 			{
 				std::string ret;
 
-				if ( gl::OpenGL::checkSupport( gl::FeatureLevel::eGLES3 ) )
+				switch ( object )
 				{
-					switch ( object )
-					{
-					case ObjectType::eObject:
-						ret += MtxUbo;
-						break;
+				case ObjectType::eObject:
+					ret += MtxUbo;
+					break;
 
-					case ObjectType::eBillboard:
-						ret += MtxUbo;
-						ret += BillboardUbo;
-						break;
+				case ObjectType::eBillboard:
+					ret += MtxUbo;
+					ret += BillboardUbo;
+					break;
 
-					case ObjectType::ePolyLine:
-						ret += MtxUbo;
-						ret += PolyLineUbo;
-						break;
+				case ObjectType::ePolyLine:
+					ret += MtxUbo;
+					ret += PolyLineUbo;
+					break;
 
-					case ObjectType::ePanelOverlay:
-					case ObjectType::eTextOverlay:
-						ret += OverlayUbo;
-						break;
+				case ObjectType::ePanelOverlay:
+				case ObjectType::eTextOverlay:
+					ret += OverlayUbo;
+					break;
 
-					default:
-						break;
-					}
-				}
-				else
-				{
-					switch ( object )
-					{
-					case ObjectType::eObject:
-						ret += MtxUniforms;
-						break;
-
-					case ObjectType::eBillboard:
-						ret += MtxUniforms;
-						ret += BillboardUniforms;
-						break;
-
-					case ObjectType::ePolyLine:
-						ret += MtxUniforms;
-						ret += PolyLineUniforms;
-						break;
-
-					case ObjectType::ePanelOverlay:
-					case ObjectType::eTextOverlay:
-						ret += OverlayUniforms;
-						break;
-
-					default:
-						break;
-					}
+				default:
+					break;
 				}
 
 				return ret;
@@ -771,12 +736,7 @@ void main()
 				, OpacityType opacity )
 			{
 				std::string ret;
-
-				if ( gl::OpenGL::checkSupport( gl::FeatureLevel::eGLES3 ) )
-				{
-					ret += "#version 300 es\n";
-				}
-
+				ret += "#version 300 es\n";
 				ret += "precision highp float;\n";
 				ret += getTextureDefines( textures );
 				ret += getOpacityDefines( opacity );
@@ -789,76 +749,39 @@ void main()
 			{
 				std::string ret;
 
-				if ( gl::OpenGL::checkSupport( gl::FeatureLevel::eGLES3 ) )
+				if ( object != ObjectType::ePanelOverlay
+					&& object != ObjectType::eTextOverlay
+					&& object != ObjectType::eTexture )
 				{
-					if ( object != ObjectType::ePanelOverlay
-						&& object != ObjectType::eTextOverlay
-						&& object != ObjectType::eTexture )
+					ret += MatUbo;
+
+					switch ( render )
 					{
-						ret += MatUbo;
+					case RenderType::ePicking:
+						ret += PickingUbo;
+						break;
 
-						switch ( render )
-						{
-						case RenderType::ePicking:
-							ret += PickingUbo;
-							break;
-
-						default:
-							break;
-						}
-
-						switch ( object )
-						{
-						case ObjectType::ePolyLine:
-							ret += PolyLineUbo;
-							break;
-
-						default:
-							break;
-						}
-					}
-					else if ( object == ObjectType::ePanelOverlay
-						|| object == ObjectType::eTextOverlay )
-					{
-						ret += OverlayUbo;
+					default:
+						break;
 					}
 
-					ret += "out vec4 out_fragColour;\n";
-				}
-				else
-				{
-					if ( object != ObjectType::ePanelOverlay
-						&& object != ObjectType::eTextOverlay
-						&& object != ObjectType::eTexture )
+					switch ( object )
 					{
-						ret += MatUniforms;
+					case ObjectType::ePolyLine:
+						ret += PolyLineUbo;
+						break;
 
-						switch ( render )
-						{
-						case RenderType::ePicking:
-							ret += PickingUniforms;
-							break;
-
-						default:
-							break;
-						}
-
-						switch ( object )
-						{
-						case ObjectType::ePolyLine:
-							ret += PolyLineUniforms;
-							break;
-
-						default:
-							break;
-						}
-					}
-					else if ( object == ObjectType::ePanelOverlay
-						|| object == ObjectType::eTextOverlay )
-					{
-						ret += OverlayUniforms;
+					default:
+						break;
 					}
 				}
+				else if ( object == ObjectType::ePanelOverlay
+					|| object == ObjectType::eTextOverlay )
+				{
+					ret += OverlayUbo;
+				}
+
+				ret += "out vec4 out_fragColour;\n";
 
 				return ret;
 			}
@@ -896,14 +819,7 @@ void main()
 					break;
 
 				case RenderType::ePicking:
-					if ( gl::OpenGL::checkSupport( gl::FeatureLevel::eGLES3 ) )
-					{
-						ret += PickingPackPixelES2;
-					}
-					else
-					{
-						ret += PickingPackPixelES2;
-					}
+					ret += PickingPackPixelES3;
 					ret += PickingShader;
 					break;
 
@@ -917,38 +833,19 @@ void main()
 		}
 	}
 
-	gl::ShaderProgramPtr UberShader::createShaderProgram( std::string vtx
+	renderer::ShaderProgramPtr UberShader::createShaderProgram( std::string vtx
 		, std::string pxl )
 	{
-		if ( gl::OpenGL::checkSupport( gl::FeatureLevel::eGLES3 ) )
-		{
-			vtx = renderer::replace( vtx, "[attribute]", "in" );
-			vtx = renderer::replace( vtx, "[varying]", "out" );
-			vtx = renderer::replace( vtx, "[texture2D]", "texture" );
-		}
-		else
-		{
-			vtx = renderer::replace( vtx, "[attribute]", "attribute" );
-			vtx = renderer::replace( vtx, "[varying]", "varying" );
-			vtx = renderer::replace( vtx, "[texture2D]", "texture2D" );
-		}
+		vtx = renderer::replace( vtx, "[attribute]", "in" );
+		vtx = renderer::replace( vtx, "[varying]", "out" );
+		vtx = renderer::replace( vtx, "[texture2D]", "texture" );
 
-		if ( gl::OpenGL::checkSupport( gl::FeatureLevel::eGLES3 ) )
-		{
-			pxl = renderer::replace( pxl, "[varying]", "in" );
-			pxl = renderer::replace( pxl, "[varying out]", "out" );
-			pxl = renderer::replace( pxl, "[texture2D]", "texture" );
-			pxl = renderer::replace( pxl, "[gl_FragColor]", "out_fragColour" );
-		}
-		else
-		{
-			pxl = renderer::replace( pxl, "[varying]", "varying" );
-			pxl = renderer::replace( pxl, "[varying out]", "varying" );
-			pxl = renderer::replace( pxl, "[texture2D]", "texture2D" );
-			pxl = renderer::replace( pxl, "[gl_FragColor]", "gl_FragColor" );
-		}
+		pxl = renderer::replace( pxl, "[varying]", "in" );
+		pxl = renderer::replace( pxl, "[varying out]", "out" );
+		pxl = renderer::replace( pxl, "[texture2D]", "texture" );
+		pxl = renderer::replace( pxl, "[gl_FragColor]", "out_fragColour" );
 
-		auto program = std::make_unique< gl::ShaderProgram >( vtx, pxl );
+		auto program = std::make_unique< renderer::ShaderProgram >( vtx, pxl );
 		return program;
 	}
 
@@ -1042,7 +939,7 @@ void main()
 		return result;
 	}
 
-	gl::ShaderProgramPtr UberShader::createShaderProgram( RenderType render
+	renderer::ShaderProgramPtr UberShader::createShaderProgram( RenderType render
 		, TextureFlags textures
 		, OpacityType opacity
 		, ObjectType object )

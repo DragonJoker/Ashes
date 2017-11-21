@@ -2,14 +2,13 @@
 
 #include "Scene.h"
 
-#include <GlLib/GlAttribute.h>
-#include <GlLib/GlBuffer.h>
-#include <GlLib/GlFrameBuffer.h>
-#include <GlLib/GlRenderBuffer.h>
-#include <GlLib/GlSampler.h>
-#include <GlLib/GlTexture.h>
-#include <GlLib/GlUniform.h>
-#include <GlLib/OpenGL.h>
+#include <Renderer/VertexBuffer.h>
+#include <Renderer/GlFrameBuffer.h>
+#include <Renderer/GlRenderBuffer.h>
+#include <Renderer/GlSampler.h>
+#include <Renderer/GlTexture.h>
+#include <Renderer/GlUniform.h>
+#include <Renderer/OpenGL.h>
 
 namespace render
 {
@@ -33,32 +32,31 @@ namespace render
 		, render::FontLoader & loader
 		, bool debug )
 		: m_pipeline{ true, false, false, false }
-		, m_target{ dimensions, gl::PixelFormat::eR8G8B8 }
+		, m_target{ dimensions, renderer::PixelFormat::eR8G8B8 }
 		, m_scene{ dimensions }
 		, m_size{ dimensions }
-		, m_sampler{ gl::OpenGL::createSampler( gl::WrapMode::eClampToEdge
-			, gl::WrapMode::eClampToEdge
-			, gl::MinFilter::eLinear
-			, gl::MagFilter::eLinear ) }
+		, m_sampler{ renderer::OpenGL::createSampler( renderer::WrapMode::eClampToEdge
+			, renderer::WrapMode::eClampToEdge
+			, renderer::MinFilter::eLinear
+			, renderer::MagFilter::eLinear ) }
 		, m_program{ UberShader::createShaderProgram( RenderType::eScene
 			, TextureFlag::eNone
 			, OpacityType::eOpaque
 			, ObjectType::eTexture ) }
-		, m_vbo{ gl::makeBuffer( gl::BufferTarget::eArrayBuffer
-			, doGetVtxData() ) }
-		, m_posAttrib{ m_program->createAttribute< renderer::Vec2 >( "position"
-			, sizeof( RenderWindow::Vertex )
-			, 0 ) }
-		, m_texAttrib{ m_program->createAttribute< renderer::Vec2 >( "texture"
-			, sizeof( RenderWindow::Vertex )
-			, sizeof( renderer::Vec2 ) ) }
-		, m_texUniform{ gl::makeUniform< int >( "mapDiffuse"
+		, m_vbo{ renderer::makeVertexBuffer( m_resources
+			, 0u
+			, doGetVtxData()
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
+		, m_texUniform{ renderer::makeUniform< int >( "mapDiffuse"
 			, *m_program ) }
 		, m_viewport{ dimensions }
 		, m_overlayRenderer{ std::make_unique< OverlayRenderer >() }
 		, m_picking{ dimensions }
 		, m_debug{ debug, m_scene, loader }
 	{
+		m_vbo->createAttribute< renderer::Vec2 >( 0u, 0u );
+		m_vbo->createAttribute< renderer::Vec2 >( 1u, sizeof( renderer::Vec2 ) );
 	}
 
 	void RenderWindow::beginFrame()
@@ -122,7 +120,7 @@ namespace render
 		m_scene.resize( m_size );
 	}
 
-	void RenderWindow::doRenderTextureToScreen( gl::Texture const & texture )const noexcept
+	void RenderWindow::doRenderTextureToScreen( renderer::Texture const & texture )const noexcept
 	{
 		glCheckError( glClear, GL_COLOR_BUFFER_BIT );
 		m_pipeline.apply();

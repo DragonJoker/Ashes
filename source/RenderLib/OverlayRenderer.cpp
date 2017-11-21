@@ -1,8 +1,8 @@
 #include "OverlayRenderer.h"
 
-#include <GlLib/GlAttribute.h>
-#include <GlLib/GlBuffer.h>
-#include <GlLib/GlUniform.h>
+#include <Renderer/GlAttribute.h>
+#include <Renderer/GlUniform.h>
+#include <Renderer/VertexBuffer.hpp>
 
 #include "BorderPanelOverlay.h"
 #include "ElementsList.h"
@@ -18,14 +18,16 @@ namespace render
 
 	namespace
 	{
-		void doFillBuffers( Overlay::QuadArray::const_iterator begin
+		void doFillBuffers( renderer::RenderingResources const & resources
+			, Overlay::QuadArray::const_iterator begin
 			, uint32_t count
 			, uint32_t & offset
-			, gl::Buffer< Overlay::Quad > const & buffer )
+			, renderer::VertexBuffer< Overlay::Quad > const & buffer )
 		{
-			buffer.bind();
-			buffer.upload( offset, count, &( *begin ) );
-			buffer.unbind();
+			resources.copyVertexData( reinterpret_cast< uint8_t const * const >( &( *begin ) )
+				, uint32_t( count * sizeof( Overlay::Quad ) )
+				, uint32_t( offset * sizeof( Overlay::Quad ) )
+				, buffer.getVbo() );
 			offset += count;
 		}
 
@@ -68,10 +70,10 @@ namespace render
 		}
 
 
-		void doBindMaterial( OverlayNode const & node
+		void doBindMaterial( OverlayNode & node
 			, Material const & material )
 		{
-			node.m_colour->value( { material.ambient(), material.opacity() } );
+			node.m_overlayUbo.getData().colour = renderer::Vec4{ material.ambient(), material.opacity() };
 
 			if ( material.hasDiffuseMap()
 				&& node.m_mapColour->valid() )
@@ -90,7 +92,7 @@ namespace render
 			}
 		}
 
-		void doUnbindMaterial( OverlayNode const & node
+		void doUnbindMaterial( OverlayNode & node
 			, Material const & material )
 		{
 			if ( material.hasOpacityMap()
@@ -109,18 +111,17 @@ namespace render
 
 	//*************************************************************************
 
-	OverlayNode::OverlayNode( bool text
+	OverlayNode::OverlayNode( renderer::RenderingResources const & resources
+		, bool text
 		, OpacityType opacity
 		, TextureFlags textures )
 		: m_program{ UberShader::createShaderProgram( RenderType::eScene
 			, textures
 			, opacity
 			, text ? ObjectType::eTextOverlay : ObjectType::ePanelOverlay ) }
-		, m_overlayUbo{ "Overlay", 0u, *m_program }
-		, m_mpUniform{ &m_overlayUbo.createUniform< renderer::Mat4 >( "mtxMP" ) }
-		, m_colour{ &m_overlayUbo.createUniform< renderer::RgbaColour >( "colour" ) }
-		, m_mapColour{ gl::makeUniform< int >( "mapColour", *m_program ) }
-		, m_mapOpacity{ gl::makeUniform< int >( "mapOpacity", *m_program ) }
+		, m_overlayUbo{ resources, 1u, renderer::BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal }
+		, m_mapColour{ renderer::makeUniform< int >( "mapColour", *m_program ) }
+		, m_mapOpacity{ renderer::makeUniform< int >( "mapOpacity", *m_program ) }
 		, m_position{ m_program->createAttribute< renderer::Vec2 >( "position"
 			, sizeof( TextOverlay::Vertex )
 			, offsetof( TextOverlay::Vertex, coords ) ) }
@@ -128,38 +129,45 @@ namespace render
 			, sizeof( TextOverlay::Vertex )
 			, offsetof( TextOverlay::Vertex, text ) ) }
 	{
-		m_overlayUbo.initialise();
 	}
 
-	OverlayNodeArray doCreatePanelNodes()
+	OverlayNodeArray doCreatePanelNodes( renderer::RenderingResources const & resources )
 	{
 		return
 		{
 			{
-				OverlayNode{ false, OpacityType::eOpaque, TextureFlag::eNone },
-				OverlayNode{ false, OpacityType::eOpaque, TextureFlag::eDiffuse },
-				OverlayNode{ false, OpacityType::eAlphaBlend, TextureFlag::eNone },
-				OverlayNode{ false, OpacityType::eAlphaBlend, TextureFlag::eDiffuse },
-				OverlayNode{ false, OpacityType::eAlphaBlend, TextureFlag::eOpacity },
-				OverlayNode{ false, OpacityType::eAlphaBlend, TextureFlag::eDiffuse | TextureFlag::eOpacity },
-				OverlayNode{ false, OpacityType::eAlphaTest, TextureFlag::eNone },
-				OverlayNode{ false, OpacityType::eAlphaTest, TextureFlag::eDiffuse },
-				OverlayNode{ false, OpacityType::eAlphaTest, TextureFlag::eOpacity },
-				OverlayNode{ false, OpacityType::eAlphaTest, TextureFlag::eDiffuse | TextureFlag::eOpacity },
+				OverlayNode{ resources, false, OpacityType::eOpaque, TextureFlag::eNone },
+				OverlayNode{ resources, false, OpacityType::eOpaque, TextureFlag::eDiffuse },
+				OverlayNode{ resources, false, OpacityType::eAlphaBlend, TextureFlag::eNone },
+				OverlayNode{ resources, false, OpacityType::eAlphaBlend, TextureFlag::eDiffuse },
+				OverlayNode{ resources, false, OpacityType::eAlphaBlend, TextureFlag::eOpacity },
+				OverlayNode{ resources, false, OpacityType::eAlphaBlend, TextureFlag::eDiffuse | TextureFlag::eOpacity },
+				OverlayNode{ resources, false, OpacityType::eAlphaTest, TextureFlag::eNone },
+				OverlayNode{ resources, false, OpacityType::eAlphaTest, TextureFlag::eDiffuse },
+				OverlayNode{ resources, false, OpacityType::eAlphaTest, TextureFlag::eOpacity },
+				OverlayNode{ resources, false, OpacityType::eAlphaTest, TextureFlag::eDiffuse | TextureFlag::eOpacity },
 			}
 		};
 	}
 
 	//*************************************************************************
 
-	OverlayRenderer::OverlayRenderer( uint32_t maxCharsPerBuffer )
-		: m_panelNodes{ doCreatePanelNodes() }
-		, m_textNode{ true, OpacityType::eAlphaTest, TextureFlag::eOpacity }
+	OverlayRenderer::OverlayRenderer( renderer::RenderingResources const & resources
+		, uint32_t maxCharsPerBuffer )
+		: m_resources{ resources }
+		, m_panelNodes{ doCreatePanelNodes( resources ) }
+		, m_textNode{ resources, true, OpacityType::eAlphaTest, TextureFlag::eOpacity }
 		, m_pipeline{ true, false, true, true }
-		, m_panelBuffer{ gl::makeBuffer( gl::BufferTarget::eArrayBuffer
-				, std::vector< TextOverlay::Quad >( 1u ) ) }
-		, m_borderBuffer{ gl::makeBuffer( gl::BufferTarget::eArrayBuffer
-				, std::vector< TextOverlay::Quad >( 8u ) ) }
+		, m_panelBuffer{ renderer::makeVertexBuffer< Overlay::Quad >( resources
+			, 0u
+			, uint32_t( 1u * sizeof( Overlay::Quad ) )
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
+		, m_borderBuffer{ renderer::makeVertexBuffer< Overlay::Quad >( resources
+			, 0u
+			, uint32_t( 8u * sizeof( Overlay::Quad ) )
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
 		, m_maxCharsPerBuffer{ maxCharsPerBuffer }
 		, m_viewport{ { 100, 100 } }
 	{
@@ -210,10 +218,9 @@ namespace render
 		auto & node = m_panelNodes[size_t( UberShader::nodeType
 			( material.opacityType()
 			, material.textureFlags() ) )];
+		m_resources.copyVertexData( overlay.panelVertex()
+			, m_panelBuffer->getVbo() );
 		node.m_program->bind();
-		m_panelBuffer->bind();
-		m_panelBuffer->upload( 0u, 1u, overlay.panelVertex().data() );
-		m_panelBuffer->unbind();
 		doDrawBuffer( *m_panelBuffer
 			, 1u
 			, overlay.transform()
@@ -228,18 +235,16 @@ namespace render
 		auto & node = m_panelNodes[size_t( UberShader::nodeType
 			( material.opacityType()
 			, material.textureFlags() ) )];
+		m_resources.copyVertexData( overlay.panelVertex()
+			, m_panelBuffer->getVbo() );
+		m_resources.copyVertexData( overlay.borderVertex()
+			, m_borderBuffer->getVbo() );
 		node.m_program->bind();
-		m_panelBuffer->bind();
-		m_panelBuffer->upload( 0u, 1u, overlay.panelVertex().data() );
-		m_panelBuffer->unbind();
 		doDrawBuffer( *m_panelBuffer
 			, 1u
 			, overlay.transform()
 			, overlay.material()
 			, node );
-		m_borderBuffer->bind();
-		m_borderBuffer->upload( 0u, 8u, overlay.borderVertex().data() );
-		m_borderBuffer->unbind();
 		doDrawBuffer( *m_borderBuffer
 			, 8u
 			, overlay.transform()
@@ -255,7 +260,7 @@ namespace render
 		uint32_t count = uint32_t( quads.size() );
 		auto it = quads.cbegin();
 		uint32_t index{ 0u };
-		std::vector< gl::Buffer< Overlay::Quad > const * > buffers;
+		std::vector< renderer::VertexBuffer< Overlay::Quad > const * > buffers;
 
 		while ( count > m_maxCharsPerBuffer )
 		{
@@ -291,15 +296,18 @@ namespace render
 		m_textNode.m_program->unbind();
 	}
 
-	gl::Buffer< Overlay::Quad > const & OverlayRenderer::doCreateTextBuffer()
+	renderer::VertexBuffer< Overlay::Quad > const & OverlayRenderer::doCreateTextBuffer()
 	{
-		auto buffer = gl::makeBuffer( gl::BufferTarget::eArrayBuffer
-			, std::vector< TextOverlay::Quad >( m_maxCharsPerBuffer ) );
+		auto buffer = renderer::makeVertexBuffer< TextOverlay::Quad >( m_resources
+			, 0u
+			, m_maxCharsPerBuffer
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_textBuffers.push_back( std::move( buffer ) );
 		return *m_textBuffers.back();
 	}
 
-	void OverlayRenderer::doDrawBuffer( gl::Buffer< Overlay::Quad > const & buffer
+	void OverlayRenderer::doDrawBuffer( renderer::VertexBuffer< Overlay::Quad > const & buffer
 		, uint32_t count
 		, renderer::Mat4 const & transform
 		, Material const & material
@@ -331,7 +339,7 @@ namespace render
 		buffer.unbind();
 	}
 
-	void OverlayRenderer::doDrawBuffer( gl::Buffer< Overlay::Quad > const & buffer
+	void OverlayRenderer::doDrawBuffer( renderer::VertexBuffer< Overlay::Quad > const & buffer
 		, uint32_t count
 		, renderer::Mat4 const & transform
 		, Material const & material
@@ -354,13 +362,13 @@ namespace render
 		buffer.unbind();
 	}
 
-	gl::Buffer< Overlay::Quad > const & OverlayRenderer::doFillTextPart
+	renderer::VertexBuffer< Overlay::Quad > const & OverlayRenderer::doFillTextPart
 		( uint32_t count
 		, uint32_t & offset
 		, TextOverlay::QuadArray::const_iterator & it
 		, uint32_t & index )
 	{
-		gl::Buffer< Overlay::Quad > const * buffer{ nullptr };
+		renderer::VertexBuffer< Overlay::Quad > const * buffer{ nullptr };
 
 		if ( offset + count > m_maxCharsPerBuffer )
 		{
@@ -374,7 +382,7 @@ namespace render
 		}
 
 		count = std::min( count, m_maxCharsPerBuffer );
-		doFillBuffers( it, count, offset, *buffer );
+		doFillBuffers( m_resources, it, count, offset, *buffer );
 		it += count;
 
 		return *buffer;

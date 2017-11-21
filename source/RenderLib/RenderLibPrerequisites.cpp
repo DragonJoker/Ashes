@@ -1,7 +1,7 @@
 #include "RenderLibPrerequisites.h"
 
 #include "FontLoader.h"
-#include "Texture.h"
+#include <Renderer/Texture.hpp>
 #include "Font.h"
 
 #include <Renderer/StringUtils.hpp>
@@ -42,7 +42,7 @@ namespace render
 	}
 
 	void loadTexture( ByteArray const & fileContent
-		, Texture & texture )
+		, renderer::Texture & texture )
 	{
 		int x = 0;
 		int y = 0;
@@ -91,7 +91,7 @@ namespace render
 
 	void loadTexture( ByteArray const & fileContent
 		, renderer::PixelFormat format
-		, Texture & texture )
+		, renderer::Texture & texture )
 	{
 		int x = 0;
 		int y = 0;

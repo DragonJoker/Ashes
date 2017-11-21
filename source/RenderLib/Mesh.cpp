@@ -2,27 +2,35 @@
 
 #include "Submesh.h"
 
-#include <GlLib/GlBuffer.h>
-
 namespace render
 {
-	void Mesh::data( Vec3Array const & pos
+	void Mesh::data( renderer::RenderingResources const & resources
+		, Vec3Array const & pos
 		, Vec3Array const & nml
 		, Vec2Array const & tex )
 	{
-		m_positions = gl::makeBuffer( gl::BufferTarget::eArrayBuffer
-			, pos );
+		m_positions = renderer::makeVertexBuffer( resources
+			, 0u
+			, pos
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 
 		if ( !nml.empty() )
 		{
-			m_normal = gl::makeBuffer( gl::BufferTarget::eArrayBuffer
-				, nml );
+			m_normal = renderer::makeVertexBuffer( resources
+				, 1u
+				, nml
+				, renderer::BufferTarget::eTransferDst
+				, renderer::MemoryPropertyFlag::eDeviceLocal );
 		}
 
 		if ( !tex.empty() )
 		{
-			m_texcoord = gl::makeBuffer( gl::BufferTarget::eArrayBuffer
-				, tex );
+			m_texcoord = renderer::makeVertexBuffer( resources
+				, 2u
+				, tex
+				, renderer::BufferTarget::eTransferDst
+				, renderer::MemoryPropertyFlag::eDeviceLocal );
 		}
 
 		renderer::Vec3 min
@@ -51,8 +59,9 @@ namespace render
 		m_boundaries = renderer::vectorCall< float, float >( std::abs, max - min );
 	}
 
-	void Mesh::addSubmesh( UInt16Array const & idx )
+	void Mesh::addSubmesh( renderer::RenderingResources const & resources
+		, UInt16Array const & idx )
 	{
-		m_submeshes.push_back( std::make_shared< Submesh >( *this, idx ) );
+		m_submeshes.push_back( std::make_shared< Submesh >( resources, *this, idx ) );
 	}
 }

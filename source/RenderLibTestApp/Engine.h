@@ -39,12 +39,12 @@ public:
 	*\brief
 	*	Réaffichage de la fenêtre après une minimisation.
 	*/
-	void onRestore( gl::IVec2 const & event )override;
+	void onRestore( renderer::IVec2 const & event )override;
 	/**
 	*\brief
 	*	Initialisation de la fenêtre.
 	*/
-	void onResize( gl::IVec2 const & event )override;
+	void onResize( renderer::IVec2 const & event )override;
 	/**
 	*\brief
 	*	Déplacement de la souris.
@@ -113,7 +113,7 @@ private:
 	*	L'opacité du matériau.
 	*/
 	render::MaterialPtr doCreateOverlayMaterial( std::string const & name
-		, gl::RgbColour const & colour
+		, renderer::RgbColour const & colour
 		, float opacity );
 	/**
 	*\brief
@@ -145,7 +145,7 @@ private:
 
 	render::RenderWindowPtr m_window;
 
-	gl::IVec2 m_mouse;
+	renderer::IVec2 m_mouse;
 
 	render::Connection< render::OnObjectPicked > m_onObjectPicked;
 	render::Connection< render::OnBillboardPicked > m_onBillboardPicked;

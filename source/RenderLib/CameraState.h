@@ -4,8 +4,8 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___DesktopUtils_CameraState_HPP___
-#define ___DesktopUtils_CameraState_HPP___
+#ifndef ___RenderLib_CameraState_HPP___
+#define ___RenderLib_CameraState_HPP___
 #pragma once
 
 #include <Renderer/Angle.hpp>

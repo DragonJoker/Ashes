@@ -54,27 +54,27 @@ namespace render
 	Picking::Picking( renderer::IVec2 const & size )
 		: m_renderer{}
 		, m_size{ size }
-		, m_colour{ std::make_unique< gl::Texture >
-			( gl::PixelFormat::eR8G8B8A8
+		, m_colour{ std::make_unique< renderer::Texture >
+			( renderer::PixelFormat::eR8G8B8A8
 			, size ) }
-		, m_depth{ std::make_unique< gl::RenderBuffer >
-			( gl::PixelFormat::eD16
+		, m_depth{ std::make_unique< renderer::RenderBuffer >
+			( renderer::PixelFormat::eD16
 			, size ) }
-		, m_fbo{ std::make_unique< gl::FrameBuffer >() }
+		, m_fbo{ std::make_unique< renderer::FrameBuffer >() }
 		, m_buffer( PickingWidth * PickingWidth )
 	{
 		m_renderer.initialise();
 		m_fbo->bind();
-		m_fbo->attach( *m_colour, gl::AttachmentPoint::eColour0 );
-		m_fbo->attach( *m_depth, gl::AttachmentPoint::eDepth );
+		m_fbo->attach( *m_colour, renderer::AttachmentPoint::eColour0 );
+		m_fbo->attach( *m_depth, renderer::AttachmentPoint::eDepth );
 		m_fbo->unbind();
 	}
 
 	Picking::~Picking()
 	{
 		m_fbo->bind();
-		m_fbo->detach( *m_colour, gl::AttachmentPoint::eColour0 );
-		m_fbo->detach( *m_depth, gl::AttachmentPoint::eDepth );
+		m_fbo->detach( *m_colour, renderer::AttachmentPoint::eColour0 );
+		m_fbo->detach( *m_depth, renderer::AttachmentPoint::eDepth );
 		m_fbo->unbind();
 	}
 
@@ -86,7 +86,7 @@ namespace render
 	{
 #if DEBUG_PICKING
 		m_fbo->bind();
-		m_fbo->clear( gl::RgbaColour{ 0, 0, 0, 1 } );
+		m_fbo->clear( renderer::RgbaColour{ 0, 0, 0, 1 } );
 		m_renderer.draw( camera
 			, zoomPercent
 			, objects

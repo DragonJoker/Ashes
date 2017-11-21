@@ -15,10 +15,10 @@
 #include "RenderTarget.h"
 #include "Scene.h"
 
-#include <GlLib/GlAttribute.h>
-#include <GlLib/GlShaderProgram.h>
-#include <GlLib/OpenGL.h>
-#include <GlLib/GlPipeline.h>
+#include <Renderer/GlAttribute.h>
+#include <Renderer/ShaderProgram.hpp>
+#include <Renderer/OpenGL.h>
+#include <Renderer/Pipeline.hpp>
 
 namespace render
 {
@@ -168,11 +168,12 @@ namespace render
 		*\brief
 		*	Dessine une texture dans le backbuffer.
 		*/
-		void doRenderTextureToScreen( gl::Texture const & texture )const noexcept;
+		void doRenderTextureToScreen( renderer::Texture const & texture )const noexcept;
 
 	private:
+		renderer::RenderingResources m_resources;
 		//! Le pipeline de rendu dans la fenêtre.
-		gl::Pipeline m_pipeline;
+		renderer::Pipeline m_pipeline;
 		//! La cible de rendu.
 		RenderTarget m_target;
 		//! La scène qui sera dessinée.
@@ -180,17 +181,13 @@ namespace render
 		//! Les dimensions de la fenêtre.
 		renderer::IVec2 m_size;
 		//! L'échantillonneur de la texture de la cible de rendu.
-		gl::SamplerPtr m_sampler;
+		renderer::SamplerPtr m_sampler;
 		//! Le programme shader utilisé pour le rendu dans la fenêtre.
-		gl::ShaderProgramPtr m_program;
+		renderer::ShaderProgramPtr m_program;
 		//! Le tampon GPU contenant les sommets du rendu dans la fenêtre.
-		gl::BufferPtr< Vertex > m_vbo;
-		//! L'attribut de position.
-		renderer::Vec2AttributePtr m_posAttrib;
-		//! L'attibut de coordonnées de texture.
-		renderer::Vec2AttributePtr m_texAttrib;
+		renderer::VertexBufferPtr< Vertex > m_vbo;
 		//! La variable uniforme contenant la texture de la cible.
-		gl::IntUniformPtr m_texUniform;
+		renderer::IntUniformPtr m_texUniform;
 		//! Le viewport du rendu dans la fenêtre.
 		Viewport m_viewport;
 		//! Le renderer d'incrustations

@@ -13,5 +13,5 @@
 #	ifndef GLEW_STATIC
 #		define GLEW_STATIC
 #	endif
-#	include <GlLib/GL/glew.h>
+#	include <Renderer/GL/glew.h>
 #endif

@@ -4,16 +4,16 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___RenderLib_Texture_HPP___
-#define ___RenderLib_Texture_HPP___
+#ifndef ___Renderer_Texture_HPP___
+#define ___Renderer_Texture_HPP___
 #pragma once
 
-#include "RenderLibPrerequisites.h"
+#include "Vec2.hpp"
 
 #include <VkLib/Image.hpp>
 #include <VkLib/Sampler.hpp>
 
-namespace render
+namespace renderer
 {
 	/**
 	*\brief
@@ -43,13 +43,13 @@ namespace render
 		*\param[in] minFilter, magFilter
 		*	Les filtres de minification et magnification.
 		*/
-		void image( renderer::PixelFormat format
-			, renderer::IVec2 const & size
+		void image( PixelFormat format
+			, IVec2 const & size
 			, ByteArray const & data
-			, vk::WrapMode wrapS = vk::WrapMode::eClampToEdge
-			, vk::WrapMode wrapT = vk::WrapMode::eClampToEdge
-			, vk::Filter minFilter = vk::Filter::eLinear
-			, vk::Filter magFilter = vk::Filter::eLinear );
+			, WrapMode wrapS = WrapMode::eClampToEdge
+			, WrapMode wrapT = WrapMode::eClampToEdge
+			, Filter minFilter = Filter::eLinear
+			, Filter magFilter = Filter::eLinear );
 		/**
 		*\brief
 		*	Génère les mipmaps de la texture.
@@ -61,14 +61,14 @@ namespace render
 		*\param[in] unit
 		*	L'indice de l'unité sur laquelle la texture doit être activée.
 		*/
-		void bind( uint32_t unit )const noexcept;
+		void bindAsShaderInput( uint32_t unit )const;
 		/**
 		*\brief
-		*	Désactive la texture.
+		*	Active la texture.
 		*\param[in] unit
-		*	L'indice de l'unité sur laquelle la texture a été activée.
+		*	L'indice de l'unité sur laquelle la texture doit être activée.
 		*/
-		void unbind( uint32_t unit )const noexcept;
+		void bindAsShaderOutput( uint32_t unit )const;
 		/**
 		*\return
 		*	Le format des pixels de la texture.
@@ -88,7 +88,7 @@ namespace render
 
 	private:
 		//! Les ressources de rendu.
-		RenderingResources const & m_resources;
+		renderer::RenderingResources const & m_resources;
 		//! Les dimensions de l'image.
 		renderer::IVec2 m_size;
 		//! Le format des données de l'image.

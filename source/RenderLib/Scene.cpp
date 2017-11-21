@@ -1,16 +1,17 @@
 #include "Scene.h"
 
 #include "Billboard.h"
-#include "ExponentialRange.h"
-#include "LogarithmicRange.h"
 #include "Object.h"
 #include "PolyLine.h"
-#include "StringUtils.h"
 #include "Submesh.h"
 
-#include <GlLib/GlShaderProgram.h>
-#include <GlLib/GlUniform.h>
-#include <GlLib/OpenGL.h>
+#include <Renderer/ExponentialRange.hpp>
+#include <Renderer/LogarithmicRange.hpp>
+#include <Renderer/StringUtils.hpp>
+
+//#include <Renderer/ShaderProgram.hpp>
+//#include <Renderer/GlUniform.h>
+//#include <Renderer/OpenGL.h>
 
 #include <algorithm>
 

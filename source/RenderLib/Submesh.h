@@ -10,8 +10,7 @@
 
 #include "RenderLibPrerequisites.h"
 
-#include <GlLib/GlAttribute.h>
-#include <GlLib/GlBuffer.h>
+#include <Renderer/Buffer.hpp>
 
 namespace render
 {
@@ -34,7 +33,9 @@ namespace render
 		*\param[in] idx
 		*	Les données d'indices des faces.
 		*/
-		Submesh( Mesh const & mesh, UInt16Array const & idx );
+		Submesh( renderer::RenderingResources const & resources
+			, Mesh const & mesh
+			, UInt16Array const & idx );
 		/**
 		*\brief
 		*	Dessine le sous-maillage, en utilisant son tampon d'indices.
@@ -71,7 +72,7 @@ namespace render
 		//! Le maillage parent.
 		Mesh const & m_mesh;
 		//! Les indices des faces.
-		gl::UInt16Buffer m_index;
+		renderer::BufferPtr< uint16_t > m_index;
 	};
 }
 

@@ -10,9 +10,9 @@
 
 #include "PickingRenderer.h"
 
-#include <GlLib/GlFrameBuffer.h>
-#include <GlLib/GlRenderBuffer.h>
-#include <GlLib/GlTexture.h>
+#include <Renderer/GlFrameBuffer.h>
+#include <Renderer/GlRenderBuffer.h>
+#include <Renderer/GlTexture.h>
 
 #include <Renderer/UtilsSignal.hpp>
 
@@ -117,7 +117,7 @@ namespace render
 		*\return
 		*	La texture de couleurs.
 		*/
-		inline gl::Texture const & texture()const noexcept
+		inline renderer::Texture const & texture()const noexcept
 		{
 			assert( m_colour != nullptr );
 			return *m_colour;
@@ -211,11 +211,11 @@ namespace render
 		//! Les dimensions de l'image.
 		renderer::IVec2 m_size;
 		//! La texture recevant le rendu couleur.
-		gl::TexturePtr m_colour;
+		renderer::TexturePtr m_colour;
 		//! Le tampon recevant le rendu profondeur.
-		gl::RenderBufferPtr m_depth;
+		renderer::RenderBufferPtr m_depth;
 		//! Le tampon d'image.
-		gl::FrameBufferPtr m_fbo;
+		renderer::FrameBufferPtr m_fbo;
 		//! Le tampon dans lequel on va recevoir l'image.
 		mutable PixelArray m_buffer;
 	};

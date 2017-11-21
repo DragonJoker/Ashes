@@ -9,7 +9,7 @@
 #pragma once
 
 #include "Font.h"
-#include "Texture.h"
+#include <Renderer/Texture.hpp>
 
 namespace render
 {
@@ -26,7 +26,8 @@ namespace render
 		*\param[in] font
 		*	La police décrivant les caractères.
 		*/
-		FontTexture( FontPtr && font );
+		FontTexture( renderer::RenderingResources const & resources
+			, FontPtr && font );
 		/**
 		*\brief
 		*	Constructeur.
@@ -35,7 +36,8 @@ namespace render
 		*\param[in] font
 		*	La police décrivant les caractères.
 		*/
-		FontTexture( Texture && texture
+		FontTexture( renderer::RenderingResources const & resources
+			, renderer::Texture && texture
 			, FontPtr && font );
 		/**
 		 *\brief
@@ -55,7 +57,7 @@ namespace render
 		*\return
 		*	La texture.
 		*/
-		inline Texture const & texture()const
+		inline renderer::Texture const & texture()const
 		{
 			return m_texture;
 		}
@@ -72,7 +74,7 @@ namespace render
 		using GlyphPositionMap = std::map< char, renderer::IVec2 >;
 
 		//! La texture qui recevra les glyphes.
-		Texture m_texture;
+		renderer::Texture m_texture;
 		//! La desscription des glyphes.
 		FontPtr m_font;
 		//! Position des glyphes.

@@ -19,9 +19,6 @@ namespace renderer
 	*@~french
 	*@brief
 	*	Classe regroupant les ressources de rendu nécessaires au dessin d'une image.
-	*@~english
-	*@brief
-	*	Class used to group the image rendering necessary informations.
 	*/
 	class RenderingResources
 	{
@@ -34,13 +31,6 @@ namespace renderer
 		*	Le LogicalDevice parent.
 		*@param[in] familyIndex
 		*	L'index du type de file.
-		*@~english
-		*@brief
-		*	Constructor.
-		*@param[in] device
-		*	The parent LogicalDevice.
-		*@param[in] familyIndex
-		*	The queue family type index.
 		*/
 		RenderingResources( vk::LogicalDevice const & device
 			, vk::CommandPool const & commandPool );
@@ -52,13 +42,6 @@ namespace renderer
 		*	Le temps à attendre pour le signalement.
 		*@return
 		*	\p true si l'attente n'est pas sortie en timeout.
-		*@~english
-		*@brief
-		*	Waits for the command buffer to be ready to record.
-		*@param[in] timeout
-		*	The waiting timeout.
-		*@return
-		*	\p true if the wait didn't timeout.
 		*/
 		bool waitRecord( uint32_t timeout );
 		/**
@@ -67,33 +50,317 @@ namespace renderer
 		*	Copie les données d'une image dans une texture, en passant par le tampon de transfert.
 		*@param[in] data
 		*	Les données à copier.
-		*@param[in] width, height
-		*	Les dimensions de l'image.
 		*@param[out] texture
 		*	La texture de destination.
-		*@~english
-		*@brief
-		*	Copies image data to given texture, using the staging buffer.
-		*@param[in] data
-		*	The data to copy.
-		*@param[in] width, height
-		*	The image dimensions.
-		*@param[out] texture
-		*	The dextination texture.
 		*/
 		void copyTextureData( vk::ByteArray const & data
-			, vk::Image & texture )const;
+			, vk::Image const & texture )const;
+		/**
+		*@~french
+		*@brief
+		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		template< typename T >
+		inline void copyBufferData( std::vector< T > const & data
+			, vk::Buffer const & buffer )const
+		{
+			copyBufferData( reinterpret_cast< uint8_t const * const >( data.data() )
+				, uint32_t( data.size() * sizeof( T ) )
+				, 0u
+				, buffer );
+		}
+		/**
+		*@~french
+		*@brief
+		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		inline void copyBufferData( vk::ByteArray const & data
+			, vk::Buffer const & buffer )const
+		{
+			copyBufferData( data.data()
+				, uint32_t( data.size() )
+				, 0u
+				, buffer );
+		}
+		/**
+		*@~french
+		*@brief
+		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[in] size
+		*	La taille des données à copier.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		inline void copyBufferData( uint8_t const * const data
+			, uint32_t size
+			, vk::Buffer const & buffer )const
+		{
+			copyBufferData( data
+				, size
+				, 0u
+				, buffer );
+		}
+		/**
+		*@~french
+		*@brief
+		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[in] offset
+		*	L'offset dans le tampon.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		template< typename T >
+		inline void copyBufferData( std::vector< T > const & data
+			, uint32_t offset
+			, vk::Buffer const & buffer )const
+		{
+			copyBufferData( reinterpret_cast< uint8_t const * const >( data.data() )
+				, uint32_t( data.size() * sizeof( T ) )
+				, offset
+				, buffer );
+		}
+		/**
+		*@~french
+		*@brief
+		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[in] offset
+		*	L'offset dans le tampon.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		inline void copyBufferData( vk::ByteArray const & data
+			, uint32_t offset
+			, vk::Buffer const & buffer )const
+		{
+			copyBufferData( data.data()
+				, uint32_t( data.size() )
+				, offset
+				, buffer );
+		}
+		/**
+		*@~french
+		*@brief
+		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[in] size
+		*	La taille des données à copier.
+		*@param[in] offset
+		*	L'offset dans le tampon.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		void copyBufferData( uint8_t const * const data
+			, uint32_t size
+			, uint32_t offset
+			, vk::Buffer const & buffer )const;
+		/**
+		*@~french
+		*@brief
+		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		template< typename T >
+		inline void copyVertexData( std::vector< T > const & data
+			, vk::VertexBuffer const & buffer )const
+		{
+			copyVertexData( reinterpret_cast< uint8_t const * const >( data.data() )
+				, uint32_t( data.size() * sizeof( T ) )
+				, 0u
+				, buffer );
+		}
+		/**
+		*@~french
+		*@brief
+		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		inline void copyVertexData( vk::ByteArray const & data
+			, vk::VertexBuffer const & buffer )const
+		{
+			copyVertexData( data.data()
+				, uint32_t( data.size() )
+				, 0u
+				, buffer );
+		}
+		/**
+		*@~french
+		*@brief
+		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[in] size
+		*	La taille des données à copier.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		inline void copyVertexData( uint8_t const * const data
+			, uint32_t size
+			, vk::VertexBuffer const & buffer )const
+		{
+			copyVertexData( data
+				, size
+				, 0u
+				, buffer );
+		}
+		/**
+		*@~french
+		*@brief
+		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[in] offset
+		*	L'offset dans le tampon.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		template< typename T >
+		inline void copyVertexData( std::vector< T > const & data
+			, uint32_t offset
+			, vk::VertexBuffer const & buffer )const
+		{
+			copyVertexData( reinterpret_cast< uint8_t const * const >( data.data() )
+				, uint32_t( data.size() * sizeof( T ) )
+				, offset
+				, buffer );
+		}
+		/**
+		*@~french
+		*@brief
+		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[in] offset
+		*	L'offset dans le tampon.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		inline void copyVertexData( vk::ByteArray const & data
+			, uint32_t offset
+			, vk::VertexBuffer const & buffer )const
+		{
+			copyVertexData( data.data()
+				, uint32_t( data.size() )
+				, offset
+				, buffer );
+		}
+		/**
+		*@~french
+		*@brief
+		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[in] size
+		*	La taille des données à copier.
+		*@param[in] offset
+		*	L'offset dans le tampon.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		void copyVertexData( uint8_t const * const data
+			, uint32_t size
+			, uint32_t offset
+			, vk::VertexBuffer const & buffer )const;
+		/**
+		*@~french
+		*@brief
+		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		inline void copyUniformData( vk::ByteArray const & data
+			, vk::UniformBuffer const & buffer )const
+		{
+			copyUniformData( data.data()
+				, uint32_t( data.size() )
+				, 0u
+				, buffer );
+		}
+		/**
+		*@~french
+		*@brief
+		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[in] size
+		*	La taille des données à copier.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		inline void copyUniformData( uint8_t const * const data
+			, uint32_t size
+			, vk::UniformBuffer const & buffer )const
+		{
+			copyUniformData( data
+				, size
+				, 0u
+				, buffer );
+		}
+		/**
+		*@~french
+		*@brief
+		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[in] offset
+		*	L'offset dans le tampon.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		void copyUniformData( vk::ByteArray const & data
+			, uint32_t offset
+			, vk::UniformBuffer const & buffer )const
+		{
+			copyUniformData( data.data()
+				, uint32_t( data.size() )
+				, offset
+				, buffer );
+		}
+		/**
+		*@~french
+		*@brief
+		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
+		*@param[in] data
+		*	Les données à copier.
+		*@param[in] size
+		*	La taille des données à copier.
+		*@param[in] offset
+		*	L'offset dans le tampon.
+		*@param[out] buffer
+		*	Le tampon de destination.
+		*/
+		void copyUniformData( uint8_t const * const data
+			, uint32_t size
+			, uint32_t offset
+			, vk::UniformBuffer const & buffer )const;
 		/**
 		*@~french
 		*@brief
 		*	Définit le tampon d'images.
 		*@param[in] frameBuffer
 		*	Le nouveau tampon d'images.
-		*@~english
-		*@brief
-		*	Sets the current frame buffer.
-		*@param[in] frameBuffer
-		*	The new frame buffer.
 		*/
 		inline void setFrameBuffer( vk::FrameBufferPtr && frameBuffer )
 		{
@@ -103,9 +370,6 @@ namespace renderer
 		*@~french
 		*@return
 		*	Le tampon d'images.
-		*@~english
-		*@return
-		*	The frame buffer.
 		*/
 		inline auto const & getFrameBuffer()const
 		{
@@ -115,9 +379,6 @@ namespace renderer
 		*@~french
 		*@return
 		*	Le sémaphore d'attente que l'image soit disponible.
-		*@~english
-		*@return
-		*	The semaphore used to wait for an image to be available.
 		*/
 		inline auto const & getImageAvailableSemaphore()const
 		{
@@ -127,9 +388,6 @@ namespace renderer
 		*@~french
 		*@return
 		*	Le sémaphore d'attente que le rendu soit terminé.
-		*@~english
-		*@return
-		*	The semaphore used to wait for the render to be finished.
 		*/
 		inline auto const & getRenderingFinishedSemaphore()const
 		{
@@ -139,9 +397,6 @@ namespace renderer
 		*@~french
 		*@return
 		*	Le tampon de commandes.
-		*@~english
-		*@return
-		*	The command buffer.
 		*/
 		inline auto const & getCommandBuffer()const
 		{
@@ -151,9 +406,6 @@ namespace renderer
 		*@~french
 		*@return
 		*	La barrière.
-		*@~english
-		*@return
-		*	The fence.
 		*/
 		inline auto const & getFence()const
 		{
@@ -163,9 +415,6 @@ namespace renderer
 		*@~french
 		*@return
 		*	La périphérique logique.
-		*@~english
-		*@return
-		*	The logical device.
 		*/
 		inline auto const & getDevice()const
 		{

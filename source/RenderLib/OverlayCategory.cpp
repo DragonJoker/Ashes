@@ -1,7 +1,6 @@
 #include "OverlayCategory.h"
 
 #include "BorderPanelOverlay.h"
-#include "OverlayRenderer.h"
 #include "PanelOverlay.h"
 #include "TextOverlay.h"
 

@@ -4,9 +4,10 @@ namespace render
 {
 	namespace
 	{
-		Texture doCreateTexture( Font & font )
+		renderer::Texture doCreateTexture( renderer::RenderingResources const & resources
+			, Font & font )
 		{
-			Texture texture;
+			renderer::Texture texture{ resources };
 			uint32_t const maxWidth = font.maxWidth();
 			uint32_t const maxHeight = font.maxHeight();
 			uint32_t const count = uint32_t( std::ceil( std::distance
@@ -54,12 +55,17 @@ namespace render
 		}
 	}
 
-	FontTexture::FontTexture( FontPtr && font )
-		: FontTexture{ doCreateTexture( *font ), std::move( font ) }
+	FontTexture::FontTexture( renderer::RenderingResources const & resources
+		, FontPtr && font )
+		: FontTexture{ resources
+			, doCreateTexture( resources, *font )
+			, std::move( font ) }
 	{
 	}
 
-	FontTexture::FontTexture( Texture && texture, FontPtr && font )
+	FontTexture::FontTexture( renderer::RenderingResources const & resources
+		, renderer::Texture && texture
+		, FontPtr && font )
 		: m_texture{ std::move( texture ) }
 		, m_font{ std::move( font ) }
 	{

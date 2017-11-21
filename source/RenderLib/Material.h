@@ -8,7 +8,7 @@
 #define ___RenderLib_Material_HPP___
 #pragma once
 
-#include "Texture.h"
+#include <Renderer/Texture.hpp>
 #include "UberShader.h"
 
 namespace render
@@ -58,7 +58,7 @@ namespace render
 		*	La texture de diffuse *DOIT* exister (utiliser la fonction
 		*	hasDiffuseMap() avant d'appeler cette fonction).
 		*/
-		inline Texture & diffuseMap()const noexcept
+		inline renderer::Texture & diffuseMap()const noexcept
 		{
 			assert( m_diffuseMap );
 			return *m_diffuseMap;
@@ -69,7 +69,7 @@ namespace render
 		*\param[in] texture
 		*	La nouvelle texture.
 		*/
-		inline void diffuseMap( TexturePtr texture )noexcept
+		inline void diffuseMap( renderer::TexturePtr texture )noexcept
 		{
 			m_diffuseMap = texture;
 		}
@@ -88,7 +88,7 @@ namespace render
 		*	La texture d'opacité *DOIT* exister (utiliser la fonction
 		*	hasOpacityMap() avant d'appeler cette fonction).
 		*/
-		inline Texture & opacityMap()const noexcept
+		inline renderer::Texture & opacityMap()const noexcept
 		{
 			assert( m_opacityMap );
 			return *m_opacityMap;
@@ -99,7 +99,7 @@ namespace render
 		*\param[in] texture
 		*	La nouvelle texture.
 		*/
-		inline void opacityMap( TexturePtr texture )noexcept
+		inline void opacityMap( renderer::TexturePtr texture )noexcept
 		{
 			m_opacityMap = texture;
 		}
@@ -268,9 +268,9 @@ namespace render
 		//! L'opacité globale du matériau.
 		float m_opacity{ 1.0f };
 		//! La texture de diffuse.
-		TexturePtr m_diffuseMap{ nullptr };
+		renderer::TexturePtr m_diffuseMap{ nullptr };
 		//! La texture d'opacité.
-		TexturePtr m_opacityMap{ nullptr };
+		renderer::TexturePtr m_opacityMap{ nullptr };
 		//! Dit si l'opacité du matériau est de type alpha test.
 		bool m_alphaTest{ false };
 	};

@@ -88,27 +88,27 @@ namespace utils
 		*\brief
 		*	D�placement de la souris.
 		*/
-		virtual void onMouseMove( renderer::MouseEvent const & event ) = 0;
+		virtual void onMouseMove( MouseEvent const & event ) = 0;
 		/**
 		*\brief
 		*	Bouton gauche de la souris cliqué.
 		*/
-		virtual void onLButtonDown( renderer::MouseEvent const & event ) = 0;
+		virtual void onLButtonDown( MouseEvent const & event ) = 0;
 		/**
 		*\brief
 		*	Bouton gauche de la souris cliqué.
 		*/
-		virtual void onLButtonClick( renderer::MouseEvent const & event ) = 0;
+		virtual void onLButtonClick( MouseEvent const & event ) = 0;
 		/**
 		*\brief
 		*	Bouton gauche de la souris double cliqué.
 		*/
-		virtual void onLButtonDblClick( renderer::MouseEvent const & event ) = 0;
+		virtual void onLButtonDblClick( MouseEvent const & event ) = 0;
 		/**
 		*\brief
 		*	Un évènement de molette.
 		*/
-		virtual void onMouseWheel( renderer::MouseEvent const & event ) = 0;
+		virtual void onMouseWheel( MouseEvent const & event ) = 0;
 
 	protected:
 		/**
@@ -141,8 +141,8 @@ namespace utils
 
 	private:
 		HWND m_hwnd{ nullptr };
-		HDC m_hdc{ NULL };
-		HGLRC m_context{ NULL };
+		HDC m_hdc{ nullptr };
+		HGLRC m_context{ nullptr };
 		renderer::IVec2 m_size;
 		int m_timer{ -1 };
 		static std::map< HWND, MsWindow * > sm_instances;

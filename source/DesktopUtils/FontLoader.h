@@ -8,7 +8,7 @@
 #define ___DesktopUtils_FontLoader_HPP___
 #pragma once
 
-#include <FontLoader.h>
+#include <RenderLib/FontLoader.h>
 
 struct  FT_LibraryRec_;
 typedef FT_LibraryRec_ * FT_Library;

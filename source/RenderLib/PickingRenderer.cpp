@@ -6,7 +6,7 @@
 #include "PolyLine.h"
 #include "Submesh.h"
 
-#include <GlLib/OpenGL.h>
+#include <Renderer/RenderingResources.hpp>
 
 #include <algorithm>
 
@@ -17,17 +17,7 @@ namespace render
 	namespace
 	{
 		template< typename T >
-		void doSetUniformValue( gl::Uniform< T > const & uniform
-			, T const & value )
-		{
-			if ( uniform.valid() )
-			{
-				uniform.value( value );
-			}
-		}
-
-		template< typename T >
-		void doBindAttribute( gl::Attribute< T > const & attribute )
+		void doBindAttribute( renderer::Attribute< T > const & attribute )
 		{
 			if ( attribute.valid() )
 			{
@@ -36,7 +26,7 @@ namespace render
 		}
 
 		template< typename T >
-		void doUnbindAttribute( gl::Attribute< T > const & attribute )
+		void doUnbindAttribute( renderer::Attribute< T > const & attribute )
 		{
 			if ( attribute.valid() )
 			{
@@ -45,8 +35,8 @@ namespace render
 		}
 
 		template< typename T >
-		void doBindAttribBuffer( gl::Buffer< T > const & buffer
-			, gl::Attribute< T > const & attribute )noexcept
+		void doBindAttribBuffer( renderer::VertexBuffer< T > const & buffer
+			, renderer::Attribute< T > const & attribute )noexcept
 		{
 			if ( attribute.valid() )
 			{
@@ -55,8 +45,8 @@ namespace render
 			}
 		}
 		template< typename T >
-		void doUnbindAttribBuffer( gl::Buffer< T > const & buffer
-			, gl::Attribute< T > const & attribute )noexcept
+		void doUnbindAttribBuffer( renderer::VertexBuffer< T > const & buffer
+			, renderer::Attribute< T > const & attribute )noexcept
 		{
 			if ( attribute.valid() )
 			{
@@ -92,39 +82,33 @@ namespace render
 
 	//*************************************************************************
 
-	PickingRenderer::RenderNode::RenderNode( gl::ShaderProgramPtr && program )
+	PickingRenderer::RenderNode::RenderNode( renderer::RenderingResources const & resources
+		, renderer::ShaderProgramPtr && program )
 		: m_program{ std::move( program ) }
-		, m_mtxUbo{ "Matrices", 0u, *m_program }
-		, m_mtxProjection{ &m_mtxUbo.createUniform< renderer::Mat4 >( "mtxProjection" ) }
-		, m_mtxView{ &m_mtxUbo.createUniform< renderer::Mat4 >( "mtxView" ) }
-		, m_mtxModel{ &m_mtxUbo.createUniform< renderer::Mat4 >( "mtxModel" ) }
-		, m_mapOpacity{ gl::makeUniform< int >( "mapOpacity", *m_program ) }
-		, m_pickUbo{ "Picking", 1u, *m_program }
-		, m_drawIndex{ &m_pickUbo.createUniform< int >( "drawIndex" ) }
-		, m_nodeIndex{ &m_pickUbo.createUniform< int >( "nodeIndex" ) }
+		, m_mtxUbo{ 1u, renderer::BufferTarget::eTransferDst, renderer::MemoryMapFlag::eDeviceLocal }
+		, m_mapOpacity{ renderer::makeUniform< int >( "mapOpacity", *m_program ) }
+		, m_pickUbo{ 1u, renderer::BufferTarget::eTransferDst, renderer::MemoryMapFlag::eDeviceLocal }
 	{
-		m_mtxUbo.initialise();
-		m_pickUbo.initialise();
 	}
 
 	//*************************************************************************
 
-	PickingRenderer::ObjectNode::ObjectNode( gl::ShaderProgramPtr && program )
+	PickingRenderer::ObjectNode::ObjectNode( renderer::RenderingResources const & resources
+		, renderer::ShaderProgramPtr && program )
 		: RenderNode{ std::move( program ) }
 		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position" ) }
 		, m_normal{ m_program->createAttribute< renderer::Vec3 >( "normal" ) }
 		, m_texture{ m_program->createAttribute< renderer::Vec2 >( "texture" ) }
-		, m_scale{ gl::makeUniform< float >( "scale", *m_program ) }
+		, m_scale{ renderer::makeUniform< float >( "scale", *m_program ) }
 	{
 	}
 
 	//*************************************************************************
 
-	PickingRenderer::BillboardNode::BillboardNode( gl::ShaderProgramPtr && program )
+	PickingRenderer::BillboardNode::BillboardNode( renderer::RenderingResources const & resources
+		, renderer::ShaderProgramPtr && program )
 		: RenderNode{ std::move( program ) }
-		, m_billboardUbo{ "Billboard", 2u, *m_program }
-		, m_dimensions{ &m_billboardUbo.createUniform< renderer::Vec2 >( "dimensions" ) }
-		, m_camera{ &m_billboardUbo.createUniform< renderer::Vec3 >( "camera" ) }
+		, m_billboardUbo{ 1u, renderer::BufferTarget::eTransferDst, renderer::MemoryMapFlag::eDeviceLocal }
 		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position"
 			, sizeof( BillboardBuffer::Vertex )
 			, offsetof( BillboardData, center ) ) }
@@ -138,13 +122,13 @@ namespace render
 			, sizeof( BillboardBuffer::Vertex )
 			, offsetof( BillboardBuffer::Vertex, id ) ) }
 	{
-		m_billboardUbo.initialise();
 	}
 
 	//*************************************************************************
 
-	PickingRenderer::PickingRenderer()
-		: m_pipelineOpaque{ false, true, true, false }
+	PickingRenderer::PickingRenderer( renderer::RenderingResources const & resources )
+		: m_resources{ resources }
+		, m_pipelineOpaque{ false, true, true, false }
 	{
 	}
 
@@ -302,19 +286,22 @@ namespace render
 			renderer::Mat4 const & projection = camera.projection();
 			renderer::Mat4 const & view = camera.view();
 			node.m_program->bind();
-			node.m_mtxProjection->value( projection );
-			node.m_mtxView->value( view );
+			node.m_mtxUbo.getData().projection = projection;
+			node.m_mtxUbo.getData().view = view;
 			node.m_scale->value( m_objectScale.value( zoomPercent ) );
-			node.m_drawIndex->value( ObjectMask | int( type ) );
+			node.m_pickUbo.getData().drawIndex = ObjectMask | int( type );
 			uint32_t id{ 0u };
 
 			for ( auto & object : objects )
 			{
 				if ( object.m_object->visible() )
 				{
-					node.m_mtxModel->value(
-						object.m_object->transform() );
-					node.m_nodeIndex->value( id );
+					node.m_mtxUbo.getData().model = object.m_object->transform();
+					node.m_pickUbo.getData().nodeIndex = id;
+					m_resources.copyUniformData( node.m_mtxUbo.getDatas()
+						, node.m_mtxUbo.getUbo() );
+					m_resources.copyUniformData( node.m_pickUbo.getDatas()
+						, node.m_pickUbo.getUbo() );
 					doBindMaterial( node, *object.m_material );
 					node.m_mtxUbo.bind( 0u );
 					node.m_pickUbo.bind( 1u );
@@ -347,12 +334,12 @@ namespace render
 			renderer::Mat4 const & projection = camera.projection();
 			renderer::Mat4 const & view = camera.view();
 			renderer::Vec3 const & position = camera.position();
+			node.m_mtxUbo.getData().projection = projection;
+			node.m_mtxUbo.getData().view = view;
+			node.m_billboardUbo.getData().camera = position;
+			node.m_billboardUbo.getData().dimensions = renderer::Vec2{ 30.0, 30.0 };
+			node.m_pickUbo.getData().drawIndex = ObjectMask | int( type );
 			node.m_program->bind();
-			node.m_mtxProjection->value( projection );
-			node.m_mtxView->value( view );
-			node.m_camera->value( position );
-			node.m_dimensions->value( { 30.0, 30.0 } );
-			node.m_drawIndex->value( BillboardMask | int( type ) );
 			uint32_t id{ 0u };
 
 			for ( auto & billboard : billboards )
@@ -360,8 +347,12 @@ namespace render
 				if ( billboard->visible()
 					&& billboard->buffer().count() )
 				{
-					node.m_mtxModel->value( billboard->transform() );
-					node.m_nodeIndex->value( id );
+					node.m_mtxUbo.getData().model = billboard->transform();
+					node.m_pickUbo.getData().nodeIndex = id;
+					m_resources.copyUniformData( node.m_mtxUbo.getDatas()
+						, node.m_mtxUbo.getUbo() );
+					m_resources.copyUniformData( node.m_pickUbo.getDatas()
+						, node.m_pickUbo.getUbo() );
 					doBindMaterial( node, billboard->material() );
 					node.m_mtxUbo.bind( 0u );
 					node.m_pickUbo.bind( 1u );

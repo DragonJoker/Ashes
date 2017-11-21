@@ -34,4 +34,13 @@ namespace renderer
 		eS8,
 		VkLib_EnumBounds( eL8 )
 	};
+	/**
+	*\brief
+	*	Donne le nombre d'octets du format de pixels donné.
+	*\param[in] format
+	*	Le format de pixel.
+	*\return
+	*	Le nombre d'octets.
+	*/
+	uint32_t pixelSize( PixelFormat format )noexcept;
 }

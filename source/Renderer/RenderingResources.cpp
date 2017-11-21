@@ -5,6 +5,8 @@
 #include <VkLib/LogicalDevice.hpp>
 #include <VkLib/Queue.hpp>
 #include <VkLib/StagingBuffer.hpp>
+#include <VkLib/UniformBuffer.hpp>
+#include <VkLib/VertexBuffer.hpp>
 
 namespace renderer
 {
@@ -32,7 +34,7 @@ namespace renderer
 	}
 
 	void RenderingResources::copyTextureData( vk::ByteArray const & data
-		, vk::Image & texture )const
+		, vk::Image const & texture )const
 	{
 		doCopyToStagingBuffer( data.data()
 			, uint32_t( data.size() ) );
@@ -64,6 +66,120 @@ namespace renderer
 			if ( !vk::checkError( res ) )
 			{
 				throw std::runtime_error{ "Texture data copy failed: " + vk::getLastError() };
+			}
+
+			m_device.waitIdle();
+		}
+	}
+
+	void RenderingResources::copyBufferData( uint8_t const * const data
+		, uint32_t size
+		, uint32_t offset
+		, vk::Buffer const & buffer )const
+	{
+		doCopyToStagingBuffer( data, size );
+		auto & commandBuffer = getCommandBuffer();
+
+		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
+		{
+			commandBuffer.copyBuffer( m_stagingBuffer->getBuffer()
+				, buffer
+				, size
+				, offset );
+			auto res = commandBuffer.end();
+
+			if ( !vk::checkError( res ) )
+			{
+				throw std::runtime_error{ "Vertex data copy failed: " + vk::getLastError() };
+			}
+
+			res = m_device.getGraphicsQueue().submit( { commandBuffer }
+				, {}
+				, {}
+				, {}
+			, nullptr );
+
+			if ( !vk::checkError( res ) )
+			{
+				throw std::runtime_error{ "Vertex data copy failed: " + vk::getLastError() };
+			}
+
+			m_device.waitIdle();
+		}
+	}
+
+	void RenderingResources::copyVertexData( uint8_t const * const data
+		, uint32_t size
+		, uint32_t offset
+		, vk::VertexBuffer const & buffer )const
+	{
+		doCopyToStagingBuffer( data, size );
+		auto & commandBuffer = getCommandBuffer();
+
+		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
+		{
+			commandBuffer.copyBuffer( m_stagingBuffer->getBuffer()
+				, buffer.getBuffer()
+				, size
+				, offset );
+			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+				, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
+				, buffer.makeVertexShaderInputResource() );
+			auto res = commandBuffer.end();
+
+			if ( !vk::checkError( res ) )
+			{
+				throw std::runtime_error{ "Vertex data copy failed: " + vk::getLastError() };
+			}
+
+			res = m_device.getGraphicsQueue().submit( { commandBuffer }
+				, {}
+				, {}
+				, {}
+			, nullptr );
+
+			if ( !vk::checkError( res ) )
+			{
+				throw std::runtime_error{ "Vertex data copy failed: " + vk::getLastError() };
+			}
+
+			m_device.waitIdle();
+		}
+	}
+
+	void RenderingResources::copyUniformData( uint8_t const * const data
+		, uint32_t size
+		, uint32_t offset
+		, vk::UniformBuffer const & buffer )const
+	{
+		doCopyToStagingBuffer( data, size );
+		auto & commandBuffer = getCommandBuffer();
+
+		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
+		{
+			commandBuffer.copyBuffer( m_stagingBuffer->getBuffer()
+				, buffer.getBuffer()
+				, size
+				, offset );
+			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+				, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
+				, buffer.makeUniformBufferInput() );
+			auto res = commandBuffer.end();
+
+			if ( !vk::checkError( res ) )
+			{
+				throw std::runtime_error{ "Uniform buffer data copy failed: " + vk::getLastError() };
+			}
+
+			res = m_device.getGraphicsQueue().submit( { commandBuffer }
+				, {}
+				, {}
+				, {}
+			, nullptr );
+
+			if ( !vk::checkError( res ) )
+			{
+				throw std::runtime_error{ "Uniform buffer data copy failed: " + vk::getLastError() };
 			}
 
 			m_device.waitIdle();

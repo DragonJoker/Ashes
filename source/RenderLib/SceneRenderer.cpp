@@ -6,8 +6,6 @@
 #include "PolyLine.h"
 #include "Submesh.h"
 
-#include <GlLib/OpenGL.h>
-
 #include <algorithm>
 
 namespace render
@@ -17,17 +15,7 @@ namespace render
 	namespace
 	{
 		template< typename T >
-		void doSetUniformValue( gl::Uniform< T > const & uniform
-			, T const & value )
-		{
-			if ( uniform.valid() )
-			{
-				uniform.value( value );
-			}
-		}
-
-		template< typename T >
-		void doBindAttribute( gl::Attribute< T > const & attribute )
+		void doBindAttribute( renderer::Attribute< T > const & attribute )
 		{
 			if ( attribute.valid() )
 			{
@@ -36,7 +24,7 @@ namespace render
 		}
 
 		template< typename T >
-		void doUnbindAttribute( gl::Attribute< T > const & attribute )
+		void doUnbindAttribute( renderer::Attribute< T > const & attribute )
 		{
 			if ( attribute.valid() )
 			{
@@ -45,8 +33,8 @@ namespace render
 		}
 
 		template< typename T >
-		void doBindAttribBuffer( gl::Buffer< T > const & buffer
-			, gl::Attribute< T > const & attribute )noexcept
+		void doBindAttribBuffer( renderer::VertexBuffer< T > const & buffer
+			, renderer::Attribute< T > const & attribute )noexcept
 		{
 			if ( attribute.valid() )
 			{
@@ -56,8 +44,8 @@ namespace render
 		}
 
 		template< typename T >
-		void doUnbindAttribBuffer( gl::Buffer< T > const & buffer
-			, gl::Attribute< T > const & attribute )noexcept
+		void doUnbindAttribBuffer( renderer::VertexBuffer< T > const & buffer
+			, renderer::Attribute< T > const & attribute )noexcept
 		{
 			if ( attribute.valid() )
 			{
@@ -70,12 +58,12 @@ namespace render
 		void doBindMaterial( NodesType const & nodes
 			, Material const & material )
 		{
-			nodes.m_matAmbient->value( material.ambient() );
-			nodes.m_matDiffuse->value( material.diffuse() );
-			nodes.m_matSpecular->value( material.specular() );
-			nodes.m_matEmissive->value( material.emissive() );
-			nodes.m_matExponent->value( material.exponent() );
-			nodes.m_matOpacity->value( material.opacity() );
+			nodes.m_matUbo.getData().ambient = material.ambient();
+			nodes.m_matUbo.getData().diffuse = material.diffuse();
+			nodes.m_matUbo.getData().specular = material.specular();
+			nodes.m_matUbo.getData().emissive = material.emissive();
+			nodes.m_matUbo.getData().exponent = material.exponent();
+			nodes.m_matUbo.getData().opacity = material.opacity();
 
 			if ( material.hasDiffuseMap()
 				&& nodes.m_mapDiffuse->valid() )
@@ -114,21 +102,13 @@ namespace render
 
 	//*************************************************************************
 
-	SceneRenderer::RenderNode::RenderNode( gl::ShaderProgramPtr && program )
+	SceneRenderer::RenderNode::RenderNode( renderer::RenderingResources const & resources
+		, renderer::ShaderProgramPtr && program )
 		: m_program{ std::move( program ) }
-		, m_mtxUbo{ "Matrices", 0u, *m_program }
-		, m_mtxProjection{ &m_mtxUbo.createUniform< renderer::Mat4 >( "mtxProjection" ) }
-		, m_mtxView{ &m_mtxUbo.createUniform< renderer::Mat4 >( "mtxView" ) }
-		, m_mtxModel{ &m_mtxUbo.createUniform< renderer::Mat4 >( "mtxModel" ) }
-		, m_matUbo{ "Material", 1u, *m_program }
-		, m_matAmbient{ &m_matUbo.createUniform< renderer::RgbColour >( "matAmbient" ) }
-		, m_matDiffuse{ &m_matUbo.createUniform< renderer::RgbColour >( "matDiffuse" ) }
-		, m_matSpecular{ &m_matUbo.createUniform< renderer::RgbColour >( "matSpecular" ) }
-		, m_matEmissive{ &m_matUbo.createUniform< renderer::RgbColour >( "matEmissive" ) }
-		, m_matExponent{ &m_matUbo.createUniform< float >( "matExponent" ) }
-		, m_matOpacity{ &m_matUbo.createUniform< float >( "matOpacity" ) }
-		, m_mapDiffuse{ gl::makeUniform< int >( "mapDiffuse", *m_program ) }
-		, m_mapOpacity{ gl::makeUniform< int >( "mapOpacity", *m_program ) }
+		, m_mtxUbo{ resources, 1u, BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal }
+		, m_matUbo{ resources, 1u, BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal }
+		, m_mapDiffuse{ renderer::makeUniform< int >( "mapDiffuse", *m_program ) }
+		, m_mapOpacity{ renderer::makeUniform< int >( "mapOpacity", *m_program ) }
 	{
 		m_mtxUbo.initialise();
 		m_matUbo.initialise();
@@ -136,7 +116,8 @@ namespace render
 
 	//*************************************************************************
 
-	SceneRenderer::ObjectNode::ObjectNode( gl::ShaderProgramPtr && program )
+	SceneRenderer::ObjectNode::ObjectNode( renderer::RenderingResources const & resources
+		, renderer::ShaderProgramPtr && program )
 		: RenderNode{ std::move( program ) }
 		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position" ) }
 		, m_normal{ m_program->createAttribute< renderer::Vec3 >( "normal" ) }
@@ -146,11 +127,10 @@ namespace render
 
 	//*************************************************************************
 
-	SceneRenderer::BillboardNode::BillboardNode( gl::ShaderProgramPtr && program )
+	SceneRenderer::BillboardNode::BillboardNode( renderer::RenderingResources const & resources
+		, renderer::ShaderProgramPtr && program )
 		: RenderNode{ std::move( program ) }
-		, m_billboardUbo{ "Billboard", 2u, *m_program }
-		, m_dimensions{ &m_billboardUbo.createUniform< renderer::Vec2 >( "dimensions" ) }
-		, m_camera{ &m_billboardUbo.createUniform< renderer::Vec3 >( "camera" ) }
+		, m_billboardUbo{ resources, 1u, BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal }
 		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position"
 			, sizeof( BillboardBuffer::Vertex )
 			, offsetof( BillboardData, center ) ) }
@@ -166,13 +146,10 @@ namespace render
 
 	//*************************************************************************
 
-	SceneRenderer::PolyLineNode::PolyLineNode( gl::ShaderProgramPtr && program )
+	SceneRenderer::PolyLineNode::PolyLineNode( renderer::RenderingResources const & resources
+		, renderer::ShaderProgramPtr && program )
 		: RenderNode{ std::move( program ) }
-		, m_lineUbo{ "PolyLine", 2u, *m_program }
-		, m_lineWidth{ &m_lineUbo.createUniform< float >( "lineWidth" ) }
-		, m_lineFeather{ &m_lineUbo.createUniform< float >( "lineFeather" ) }
-		, m_lineScale{ &m_lineUbo.createUniform< float >( "lineScale" ) }
-		, m_camera{ &m_lineUbo.createUniform< renderer::Vec3 >( "camera" ) }
+		, m_lineUbo{ resources, 1u, BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal }
 		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position"
 			, sizeof( PolyLine::Vertex )
 			, offsetof( PolyLine::Vertex, m_position ) ) }
@@ -185,8 +162,9 @@ namespace render
 
 	//*************************************************************************
 
-	SceneRenderer::SceneRenderer()
-		: m_pipelineOpaque{ true, true, true, false }
+	SceneRenderer::SceneRenderer( renderer::RenderingResources const & resources )
+		: m_resources{ resources }
+		, m_pipelineOpaque{ true, true, true, false }
 		, m_pipelineAlphaBlend{ false, true, false, true }
 	{
 	}
@@ -197,7 +175,8 @@ namespace render
 		for ( auto & node : m_objectNodes )
 		{
 			node = std::make_unique< ObjectNode >
-				( UberShader::createShaderProgram( RenderType::eScene
+				( m_resources
+					, UberShader::createShaderProgram( RenderType::eScene
 					, UberShader::textureFlags( NodeType( i ) )
 					, UberShader::opacityType( NodeType( i ) )
 					, ObjectType::eObject ) );
@@ -208,7 +187,8 @@ namespace render
 		for ( auto & node : m_billboardNodes )
 		{
 			node = std::make_unique< BillboardNode >
-				( UberShader::createShaderProgram( RenderType::eScene
+				( m_resources
+					, UberShader::createShaderProgram( RenderType::eScene
 					, UberShader::textureFlags( NodeType( i ) )
 					, UberShader::opacityType( NodeType( i ) )
 					, ObjectType::eBillboard ) );
@@ -216,7 +196,8 @@ namespace render
 		}
 
 		m_lineNode = std::make_unique< PolyLineNode >
-			( UberShader::createShaderProgram( RenderType::eScene
+			( m_resources
+				, UberShader::createShaderProgram( RenderType::eScene
 				, TextureFlag::eNone
 				, OpacityType::eOpaque
 				, ObjectType::ePolyLine ) );
@@ -348,16 +329,19 @@ namespace render
 			renderer::Mat4 const & projection = camera.projection();
 			renderer::Mat4 const & view = camera.view();
 			node.m_program->bind();
-			node.m_mtxProjection->value( projection );
-			node.m_mtxView->value( view );
+			node.m_mtxUbo.getData().projection = projection;
+			node.m_mtxUbo.getData().view = view;
 
 			for ( auto & object : objects )
 			{
 				if ( object.m_object->visible() )
 				{
-					node.m_mtxModel->value(
-						object.m_object->transform() );
+					node.m_mtxUbo.getData().model = object.m_object->transform();
+					m_resources.copyUniformData( node.m_mtxUbo.getDatas()
+						, node.m_mtxUbo );
 					doBindMaterial( node, *object.m_material );
+					m_resources.copyUniformData( node.m_matUbo.getDatas()
+						, node.m_matUbo );
 					node.m_mtxUbo.bind( 0u );
 					node.m_matUbo.bind( 1u );
 					object.m_submesh->bind( node.m_position.get()
@@ -386,18 +370,24 @@ namespace render
 			renderer::Mat4 const & view = camera.view();
 			renderer::Vec3 const & position = camera.position();
 			node.m_program->bind();
-			node.m_mtxProjection->value( projection );
-			node.m_mtxView->value( view );
-			node.m_camera->value( position );
+			node.m_mtxUbo.getData().projection = projection;
+			node.m_mtxUbo.getData().view = view;
+			node.m_billboardUbo.getData().camera = position;
 
 			for ( auto & billboard : billboards )
 			{
 				if ( billboard->visible()
 					&& billboard->buffer().count() )
 				{
-					node.m_mtxModel->value( billboard->transform() );
-					node.m_dimensions->value( renderer::Vec2{ billboard->dimensions() } );
+					node.m_mtxUbo.getData().model = billboard->transform();
+					m_resources.copyUniformData( node.m_mtxUbo.getDatas()
+						, node.m_mtxUbo );
+					node.m_billboardUbo.getData().dimensions = renderer::Vec2{ billboard->dimensions() };
+					m_resources.copyUniformData( node.m_billboardUbo.getDatas()
+						, node.m_billboardUbo );
 					doBindMaterial( node, billboard->material() );
+					m_resources.copyUniformData( node.m_matUbo.getDatas()
+						, node.m_matUbo );
 					node.m_mtxUbo.bind( 0u );
 					node.m_matUbo.bind( 1u );
 					node.m_billboardUbo.bind( 2u );
@@ -432,20 +422,26 @@ namespace render
 			renderer::Mat4 const & view = camera.view();
 			renderer::Vec3 const & position = camera.position();
 			node.m_program->bind();
-			node.m_mtxProjection->value( projection );
-			node.m_mtxView->value( view );
-			node.m_lineScale->value( zoomScale );
-			node.m_camera->value( position );
+			node.m_mtxUbo.getData().projection = projection;
+			node.m_mtxUbo.getData().view = view;
+			node.m_lineUbo.getData().lineScale = zoomScale;
+			node.m_lineUbo.getData().camera = position;
 
 			for ( auto & line : lines )
 			{
 				if ( line->visible()
 					&& line->count() )
 				{
-					node.m_mtxModel->value( line->transform() );
-					node.m_lineWidth->value( line->width() );
-					node.m_lineFeather->value( line->feather() );
+					node.m_mtxUbo.getData().model = line->transform();
+					m_resources.copyUniformData( node.m_mtxUbo.getDatas()
+						, node.m_mtxUbo );
+					node.m_lineUbo.getData().lineWidth = line->width();
+					node.m_lineUbo.getData().lineFeather = line->feather();
+					m_resources.copyUniformData( node.m_lineUbo.getDatas()
+						, node.m_lineUbo );
 					doBindMaterial( node, line->material() );
+					m_resources.copyUniformData( node.m_matUbo.getDatas()
+						, node.m_matUbo );
 					node.m_mtxUbo.bind( 0u );
 					node.m_matUbo.bind( 1u );
 					node.m_lineUbo.bind( 2u );

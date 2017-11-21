@@ -2,16 +2,13 @@
 
 #include "Mesh.h"
 
-#include <GlLib/GlAttribute.h>
-#include <GlLib/GlBuffer.h>
-
 namespace render
 {
 	namespace
 	{
 		template< typename T >
-		void doBindAttribBuffer( gl::Buffer< T > const & buffer
-			, gl::Attribute< T > const & attribute )noexcept
+		void doBindAttribBuffer( renderer::VertexBuffer< T > const & buffer
+			, renderer::Attribute< T > const & attribute )noexcept
 		{
 			if ( attribute.valid() )
 			{
@@ -20,8 +17,8 @@ namespace render
 			}
 		}
 		template< typename T >
-		void doUnbindAttribBuffer( gl::Buffer< T > const & buffer
-			, gl::Attribute< T > const & attribute )noexcept
+		void doUnbindAttribBuffer( renderer::VertexBuffer< T > const & buffer
+			, renderer::Attribute< T > const & attribute )noexcept
 		{
 			if ( attribute.valid() )
 			{
@@ -31,9 +28,14 @@ namespace render
 		}
 	}
 
-	Submesh::Submesh( Mesh const & mesh, UInt16Array const & idx )
+	Submesh::Submesh( renderer::RenderingResources const & resources
+		, Mesh const & mesh
+		, UInt16Array const & idx )
 		: m_mesh{ mesh }
-		, m_index{ gl::BufferTarget::eElementArrayBuffer, idx }
+		, m_index{ renderer::makeBuffer( resources
+			, idx
+			, renderer::BufferTarget::eIndexBuffer | renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
 	{
 	}
 

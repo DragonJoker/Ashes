@@ -2,91 +2,40 @@
 
 #include "Camera.h"
 
+#include <Renderer/VertexBuffer.hpp>
+#include <Renderer/VertexLayout.hpp>
+
 namespace render
 {
-	namespace
-	{
-		//*********************************************************************
-
-		class StorageES2
-			: public BillboardBuffer::Storage
-		{
-		public:
-			StorageES2( uint32_t size )
-				: m_data( size )
-			{
-				m_vbo = gl::makeBuffer< BillboardBuffer::Quad >
-					( gl::BufferTarget::eArrayBuffer, m_data );
-			}
-
-			BillboardBuffer::Quad * lock()override
-			{
-				return m_data.data();
-			}
-
-			void unlock()override
-			{
-				m_vbo->bind();
-				m_vbo->upload( 0u, m_vbo->count(), m_data.data() );
-				m_vbo->unbind();
-			}
-
-		private:
-			//! Les données du stockage.
-			std::vector< BillboardBuffer::Quad > m_data;
-		};
-
-		//*********************************************************************
-
-		class StorageES3
-			: public BillboardBuffer::Storage
-		{
-		public:
-			StorageES3( uint32_t size )
-			{
-				m_vbo = gl::makeBuffer< BillboardBuffer::Quad >
-					( gl::BufferTarget::eArrayBuffer );
-				m_vbo->bind();
-				m_vbo->resize( size );
-				m_vbo->unbind();
-			}
-
-			BillboardBuffer::Quad * lock()override
-			{
-				m_vbo->bind();
-				return m_vbo->lock( 0u, m_vbo->count(), GL_MAP_WRITE_BIT );
-			}
-
-			void unlock()override
-			{
-				m_vbo->unlock();
-				m_vbo->unbind();
-			}
-		};
-
-		//*********************************************************************
-	}
-
-	BillboardBuffer::BillboardBuffer( bool scale )
-		: m_scale{ scale }
+	BillboardBuffer::BillboardBuffer( renderer::RenderingResources const & resources
+		, bool scale )
+		: m_resources{ resources }
+		, m_scale{ scale }
 	{
 	}
 
 	void BillboardBuffer::initialise()
 	{
-		if ( gl::OpenGL::checkSupport( gl::FeatureLevel::eGLES3 ) )
-		{
-			m_visible = std::make_unique< StorageES3 >( uint32_t( m_buffer.size() ) );
-		}
-		else
-		{
-			m_visible = std::make_unique< StorageES2 >( uint32_t( m_buffer.size() ) );
-		}
+		m_vbo = renderer::makeVertexBuffer< BillboardBuffer::Quad >( m_resources
+			, 0u
+			, uint32_t( m_buffer.size() )
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
+		auto layout = std::make_unique< renderer::VertexLayout >( 0u );
+		layout->createAttribute< renderer::Vec3 >( 0u
+			, offsetof( BillboardData, center ) );
+		layout->createAttribute< renderer::Vec2 >( 1u
+			, offsetof( BillboardData, scale ) );
+		layout->createAttribute< renderer::Vec2 >( 2u
+			, offsetof( BillboardBuffer::Vertex, texture ) );
+		layout->createAttribute< float >( 3u
+			, offsetof( BillboardBuffer::Vertex, id ) );
+		m_vbo->setLayout( std::move( layout ) );
 	}
 
 	void BillboardBuffer::cleanup()
 	{
-		m_visible.reset();
+		m_vbo.reset();
 	}
 
 	void BillboardBuffer::update( float threshold )
@@ -94,9 +43,9 @@ namespace render
 		auto it = std::find_if( std::begin( m_buffer )
 			, std::end( m_buffer )
 			, [&threshold]( auto const & element )
-		{
-			return element[0].data.magnitude > threshold;
-		} );
+			{
+				return element[0].data.magnitude > threshold;
+			} );
 
 		if ( it != std::end( m_buffer ) )
 		{
@@ -113,25 +62,22 @@ namespace render
 		, renderer::Vec3 const & position
 		, float scale )
 	{
-		auto buffer = m_visible->lock();
-
-		if ( buffer )
-		{
-			auto count = 0u;
-			std::for_each( std::begin( m_buffer )
-				, std::begin( m_buffer ) + m_unculled
-				, [&count
-					, &camera
-					, &position
-					, &scale
-					, &buffer
-					, this]( Quad const & quad )
+		assert( m_vbo && "Billboard VBO is not initialised." );
+		m_visible.resize( m_buffer.size() );
+		auto count = 0u;
+		std::for_each( std::begin( m_buffer )
+			, std::begin( m_buffer ) + m_unculled
+			, [&count
+				, &camera
+				, &position
+				, &scale
+				, this]( Quad const & quad )
 			{
 				if ( m_scale )
 				{
 					if ( camera.visible( quad[0].data.center + position ) )
 					{
-						auto & visible = buffer[count];
+						auto & visible = m_visible[count];
 						visible = quad;
 
 						visible[0].data.scale *= scale;
@@ -148,17 +94,17 @@ namespace render
 				{
 					if ( camera.visible( quad[0].data.center + position ) )
 					{
-						auto & visible = buffer[count];
+						auto & visible = m_visible[count];
 						visible = quad;
 					}
 
 					count++;
 				}
 			} );
-			m_count = count;
-		}
 
-		m_visible->unlock();
+		m_resources.copyVertexData( m_visible
+			, m_vbo->getVbo() );
+		m_count = count;
 	}
 
 	void BillboardBuffer::remove( uint32_t index )
@@ -209,6 +155,4 @@ namespace render
 
 		onBillboardBufferChanged( *this );
 	}
-
-	//*************************************************************************
 }

@@ -51,41 +51,6 @@ namespace render
 		};
 		//! Un quad est composé de 6 sommets, pour l'afficher en tant que triangle.
 		using Quad = std::array< Vertex, 6 >;
-		/**
-		*\brief
-		*	Le stockage des billboards visibles.
-		*/
-		class Storage
-		{
-		public:
-			/**
-			*\brief
-			*	Mappe en RAM le tampon VRAM.
-			*\return
-			*	Le pointeur sur le tampon en RAM.
-			*/
-			virtual Quad * lock() = 0;
-			/**
-			*\brief
-			*	Démappe le tampon de la RAM.
-			*/
-			virtual void unlock() = 0;
-			/**
-			*\return
-			*	Le tampon GPU contenant les données.
-			*/
-			inline gl::Buffer< Quad > const & vbo()const
-			{
-				assert( m_vbo );
-				return *m_vbo;
-			}
-
-		protected:
-			//! Le VBO contenant les données.
-			gl::BufferPtr< BillboardBuffer::Quad > m_vbo;
-		};
-		//! Un pointeur sur le stockage.
-		using StoragePtr = std::unique_ptr< Storage >;
 
 	public:
 		/**
@@ -95,7 +60,8 @@ namespace render
 		*	Dit si on veut que les billboards soient mis à l'échelle du zoom, c'est à
 		*	dire qu'ils ne varieront pas de taille.
 		*/
-		BillboardBuffer( bool scale );
+		BillboardBuffer( renderer::RenderingResources const & resources
+			, bool scale );
 		/**
 		*\brief
 		*	Initialise le VBO afin qu'il puisse contenir les données du tampon.
@@ -189,10 +155,10 @@ namespace render
 		*\return
 		*	Le tampon GPU contenant les sommets.
 		*/
-		inline gl::Buffer< Quad > const & vbo()const
+		inline renderer::VertexBuffer< Quad > const & vbo()const
 		{
-			assert( m_visible );
-			return m_visible->vbo();
+			assert( m_vbo );
+			return *m_vbo;
 		}
 
 	public:
@@ -200,6 +166,7 @@ namespace render
 		OnBillboardBufferChanged onBillboardBufferChanged;
 
 	private:
+		renderer::RenderingResources const & m_resources;
 		//! Le compte des objets visibles avant le culling.
 		uint32_t m_unculled{ 0u };
 		//! Le nombre de billboards à afficher (en fonction du seuil et du culling).
@@ -207,7 +174,9 @@ namespace render
 		//! La liste des sommets.
 		std::vector< Quad > m_buffer;
 		//! Le stockage des sommets visibles.
-		StoragePtr m_visible;
+		std::vector< Quad > m_visible;
+		//! Le VBO contenant les données.
+		renderer::VertexBufferPtr< BillboardBuffer::Quad > m_vbo;
 		//! Dit si on veut que les billboards soient mis à l'échelle du zoom.
 		bool m_scale{ false };
 	};

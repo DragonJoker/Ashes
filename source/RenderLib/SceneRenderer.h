@@ -10,12 +10,12 @@
 
 #include "Material.h"
 #include "Mesh.h"
-#include "Texture.h"
+#include <Renderer/Texture.hpp>
 #include "UberShader.h"
 
-#include <GlLib/GlPipeline.h>
-#include <GlLib/GlShaderProgram.h>
-#include <GlLib/GlUniformBuffer.h>
+#include <Renderer/Pipeline.hpp>
+#include <Renderer/ShaderProgram.hpp>
+#include <Renderer/UniformBuffer.hpp>
 
 #include <array>
 #include <functional>
@@ -30,6 +30,52 @@ namespace render
 	class SceneRenderer
 	{
 	private:
+		//! Les données de l'UBO contenant les matrices.
+		struct MatrixUbo
+		{
+			//! La variable uniforme contenant la matrice de projection.
+			renderer::Mat4 projection;
+			//! La variable uniforme contenant la matrice de vue.
+			renderer::Mat4 view;
+			//! La variable uniforme contenant la matrice du modèle.
+			renderer::Mat4 model;
+		};
+		//! Les données de l'UBO contenant les informations du matériau.
+		struct MaterialUbo
+		{
+			//! La variable uniforme contenant la couleur ambiante.
+			renderer::Vec3 ambient;
+			//! La variable uniforme contenant la couleur diffuse.
+			renderer::Vec3 diffuse;
+			//! La variable uniforme contenant la couleur spéculaire.
+			renderer::Vec3 specular;
+			//! La variable uniforme contenant la couleur émissive.
+			renderer::Vec3 emissive;
+			//! La variable uniforme contenant l'exposant spéculaire.
+			float exponent;
+			//! La variable uniforme contenant l'opacité
+			float opacity;
+		};
+		//! Les données de l'UBO contenant les variables liées au billboard.
+		struct BillboardUbo
+		{
+			//! La variable uniforme contenant les dimensions du billboard.
+			renderer::Vec2 dimensions;
+			//! La variable uniforme contenant la position de la caméra.
+			renderer::Vec3 camera;
+		};
+		//! Les données de l'UBO contenant les variables liées à la ligne.
+		struct LineUbo
+		{
+			//! La variable uniforme contenant la largeur de la ligne.
+			float lineWidth;
+			//! La variable uniforme contenant la plume.
+			float lineFeather;
+			//! La variable uniforme contenant l'échelle.
+			float lineScale;
+			//! La variable uniforme contenant la position de la caméra.
+			renderer::Vec3 camera;
+		};
 		/**
 		*\brief
 		*	Contient les informations communes d'un noeud de rendu.
@@ -42,35 +88,18 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			RenderNode( gl::ShaderProgramPtr && program );
+			RenderNode( renderer::RenderingResources const & resources
+				, renderer::ShaderProgramPtr && program );
 			//! Le programme shader.
-			gl::ShaderProgramPtr m_program;
+			renderer::ShaderProgramPtr m_program;
 			//! L'UBO contenant les matrices.
-			gl::UniformBuffer m_mtxUbo;
-			//! La variable uniforme contenant la matrice de projection.
-			renderer::Mat4Uniform * m_mtxProjection;
-			//! La variable uniforme contenant la matrice de vue.
-			renderer::Mat4Uniform * m_mtxView;
-			//! La variable uniforme contenant la matrice du modèle.
-			renderer::Mat4Uniform * m_mtxModel;
+			renderer::UniformBuffer< MatrixUbo > m_mtxUbo;
 			//! L'UBO contenant les informations du matériau.
-			gl::UniformBuffer m_matUbo;
-			//! La variable uniforme contenant la couleur ambiante.
-			renderer::Vec3Uniform * m_matAmbient;
-			//! La variable uniforme contenant la couleur diffuse.
-			renderer::Vec3Uniform * m_matDiffuse;
-			//! La variable uniforme contenant la couleur spéculaire.
-			renderer::Vec3Uniform * m_matSpecular;
-			//! La variable uniforme contenant la couleur émissive.
-			renderer::Vec3Uniform * m_matEmissive;
-			//! La variable uniforme contenant l'exposant spéculaire.
-			gl::FloatUniform * m_matExponent;
-			//! La variable uniforme contenant l'opacité
-			gl::FloatUniform * m_matOpacity;
+			renderer::UniformBuffer< MaterialUbo > m_matUbo;
 			//! La variable uniforme contenant la texture de diffuse.
-			gl::IntUniformPtr m_mapDiffuse;
+			renderer::IntUniformPtr m_mapDiffuse;
 			//! La variable uniforme contenant la texture d'opacité.
-			gl::IntUniformPtr m_mapOpacity;
+			renderer::IntUniformPtr m_mapOpacity;
 		};
 		/**
 		*\brief
@@ -85,7 +114,8 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			ObjectNode( gl::ShaderProgramPtr && program );
+			ObjectNode( renderer::RenderingResources const & resources
+				, renderer::ShaderProgramPtr && program );
 			//! L'attribut de position.
 			renderer::Vec3AttributePtr m_position;
 			//! L'attribut de normale.
@@ -110,13 +140,10 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			BillboardNode( gl::ShaderProgramPtr && program );
+			BillboardNode( renderer::RenderingResources const & resources
+				, renderer::ShaderProgramPtr && program );
 			//! L'UBO contenant les variables liées au billboard.
-			gl::UniformBuffer m_billboardUbo;
-			//! La variable uniforme contenant les dimensions du billboard.
-			renderer::Vec2Uniform * m_dimensions;
-			//! La variable uniforme contenant la position de la caméra.
-			renderer::Vec3Uniform * m_camera;
+			renderer::UniformBuffer< BillboardUbo > m_billboardUbo;
 			//! Attribut de position.
 			renderer::Vec3AttributePtr m_position;
 			//! Attribut d'échelle.
@@ -141,17 +168,10 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			PolyLineNode( gl::ShaderProgramPtr && program );
+			PolyLineNode( renderer::RenderingResources const & resources
+				, renderer::ShaderProgramPtr && program );
 			//! L'UBO contenant les variables liées à la ligne.
-			gl::UniformBuffer m_lineUbo;
-			//! La variable uniforme contenant la largeur de la ligne.
-			gl::FloatUniform * m_lineWidth;
-			//! La variable uniforme contenant la plume.
-			gl::FloatUniform * m_lineFeather;
-			//! La variable uniforme contenant l'échelle.
-			gl::FloatUniform * m_lineScale;
-			//! La variable uniforme contenant la position de la caméra.
-			renderer::Vec3Uniform * m_camera;
+			renderer::UniformBuffer< LineUbo > m_lineUbo;
 			//! L'attribut de position
 			renderer::Vec3AttributePtr m_position;
 			//! L'attribut de normale
@@ -167,7 +187,7 @@ namespace render
 		*\brief
 		*	Constructeur.
 		*/
-		SceneRenderer();
+		SceneRenderer( renderer::RenderingResources const & resources );
 		/**
 		*\brief
 		*	Crée tous les noeuds de rendu.
@@ -199,89 +219,32 @@ namespace render
 			, PolyLineArray const & lines )const;
 
 	private:
-		/**
-		*\brief
-		*	Dessine les objets transparents de la scène, à travers la vue
-		*	de la caméra.
-		*\param[in] camera
-		*	La caméra.
-		*\param[in] type
-		*	Le type de noeud à dessiner.
-		*\param[in] opacity
-		*	Le type d'opacité.
-		*\param[in] objects
-		*	Les objets à dessiner.
-		*\param[in] billboards
-		*	Les billboards à dessiner.
-		*\param[in] lines
-		*	Les polylignes à dessiner.
-		*/
 		void doRenderTransparent( Camera const & camera
 			, NodeType type
 			, OpacityType opacity
 			, RenderSubmeshArray const & objects
 			, RenderBillboardArray const & billboards
 			, PolyLineArray const & lines )const;
-		/**
-		*\brief
-		*	Dessine une liste d'objets complexes du type donné.
-		*\param[in] camera
-		*	La caméra.
-		*\param[in] type
-		*	Le type de noeud à dessiner.
-		*\param[in] node
-		*	Le noeud de rendu.
-		*\param[in] objects
-		*	Les objets à dessiner.
-		*/
 		void doRenderObjects( Camera const & camera
 			, NodeType type
 			, ObjectNode const & node
 			, RenderSubmeshVector const & objects )const;
-		/**
-		*\brief
-		*	Dessine une liste de billboards du type donné.
-		*\param[in] camera
-		*	La caméra.
-		*\param[in] type
-		*	Le type de noeud à dessiner.
-		*\param[in] node
-		*	Le noeud de rendu.
-		*\param[in] billboards
-		*	Les billboards à dessiner.
-		*/
 		void doRenderBillboards( Camera const & camera
 			, NodeType type
 			, BillboardNode const & node
 			, BillboardArray const & billboards )const;
-		/**
-		*\brief
-		*	Dessine une liste de lignes.
-		*\param[in] camera
-		*	La caméra.
-		*\param[in] zoomScale
-		*	L'échelle calculée par rapport au zoom.
-		*\param[in] node
-		*	Le noeud de rendu.
-		*\param[in] lines
-		*	Les billboards à dessiner.
-		*/
 		void doRenderLines( Camera const & camera
 			, float zoomScale
 			, PolyLineNode const & node
 			, PolyLineArray const & lines )const;
 
 	private:
-		//! Les noeuds de rendu d'objets complexes.
+		renderer::RenderingResources const & m_resources;
 		ObjectNodeArray m_objectNodes;
-		//! Les noeuds de rendu de billboards.
 		BillboardNodeArray m_billboardNodes;
-		//! Les noeuds de rendu de lignes.
 		PolyLineNodePtr m_lineNode;
-		//! Le pipeline de rendu des objets opaques (ainsi que les objets avec alpha testing).
-		gl::Pipeline m_pipelineOpaque;
-		//! Le pipeline de rendu des objets avec alpha blending.
-		gl::Pipeline m_pipelineAlphaBlend;
+		renderer::Pipeline m_pipelineOpaque;
+		renderer::Pipeline m_pipelineAlphaBlend;
 	};
 }
 

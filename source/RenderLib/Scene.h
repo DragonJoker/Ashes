@@ -19,13 +19,13 @@
 #include "Range.h"
 #include "RenderableContainer.h"
 #include "TextOverlay.h"
-#include "Texture.h"
+#include <Renderer/Texture.hpp>
 #include "UberShader.h"
 #include "Viewport.h"
 
-#include <GlLib/GlDebug.h>
-#include <GlLib/GlUniform.h>
-#include <GlLib/GlShaderProgram.h>
+#include <Renderer/GlDebug.h>
+#include <Renderer/GlUniform.h>
+#include <Renderer/ShaderProgram.hpp>
 
 #include <functional>
 

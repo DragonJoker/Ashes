@@ -1,14 +1,14 @@
 #include "MsWindow.h"
 
-#include <RenderLibPrerequisites.h>
-#include <FlagCombination.h>
+#include <RenderLib/RenderLibPrerequisites.h>
+#include <VkLib/FlagCombination.hpp>
 
 #include <Windows.h>
 #include <windowsx.h>
 
 #define GLEW_STATIC
-#include <GlLib/GL/glew.h>
-#include <GlLib/GL/wglew.h>
+#include <Renderer/GL/glew.h>
+#include <Renderer/GL/wglew.h>
 
 namespace utils
 {
@@ -31,9 +31,9 @@ namespace utils
 			std::string ret;
 			ret.resize( 1024 );
 			uint32_t count{ 1023u };
-			count = ::GetModuleFileNameA( NULL, &ret[0], count );
+			count = ::GetModuleFileNameA( nullptr, &ret[0], count );
 			ret.resize( count + 1 );
-			ret = ret.substr( 0, ret.find_last_of( "\\" ) );
+			ret = ret.substr( 0, ret.find_last_of( R"(\)" ) );
 			return ret;
 		}
 	}
@@ -73,7 +73,7 @@ namespace utils
 		{
 			::ShowWindow( m_hwnd, TRUE );
 			::UpdateWindow( m_hwnd );
-			::SetTimer( m_hwnd, 1, 17, NULL );
+			::SetTimer( m_hwnd, 1, 17, nullptr );
 			m_timer = 1;
 			doRegisterInstance( this );
 			doCreate();
@@ -114,7 +114,7 @@ namespace utils
 					glCheckError( glEnable, GL_TEXTURE_2D );
 					glCheckError( glFrontFace, GL_CCW );
 					onCreate();
-					wglMakeCurrent( m_hdc, 0 );
+					wglMakeCurrent( m_hdc, nullptr );
 				}
 			}
 		}
@@ -126,13 +126,13 @@ namespace utils
 		{
 			wglMakeCurrent( m_hdc, m_context );
 			onDestroy();
-			wglMakeCurrent( m_hdc, 0 );
+			wglMakeCurrent( m_hdc, nullptr );
 			::ReleaseDC( m_hwnd, m_hdc );
 			wglDeleteContext( m_context );
 		}
 
-		m_hdc = NULL;
-		m_context = NULL;
+		m_hdc = nullptr;
+		m_context = nullptr;
 	}
 
 	void MsWindow::doMinimise()
@@ -150,7 +150,7 @@ namespace utils
 			m_size = size;
 			wglMakeCurrent( m_hdc, m_context );
 			onRestore( size );
-			::SetTimer( m_hwnd, 1, 17, NULL );
+			::SetTimer( m_hwnd, 1, 17, nullptr );
 			m_timer = 1;
 		}
 		else if ( m_size != size )
@@ -194,15 +194,15 @@ namespace utils
 		if ( !context )
 		{
 			std::cerr << "Context creation failed." << std::endl;
-			return NULL;
+			return nullptr;
 		}
 
 		wglMakeCurrent( hdc, context );
 
 
-		if ( !gl::OpenGL::initialise() )
+		if ( !renderer::OpenGL::initialise() )
 		{
-			wglMakeCurrent( hdc, 0 );
+			wglMakeCurrent( hdc, nullptr );
 		}
 		else
 		{
@@ -223,12 +223,12 @@ namespace utils
 					0
 				};
 				context = glCreateContextAttribs( hdc, nullptr, attribList.data() );
-				wglMakeCurrent( hdc, 0 );
+				wglMakeCurrent( hdc, nullptr );
 				wglDeleteContext( old );
 			}
 			else
 			{
-				wglMakeCurrent( hdc, 0 );
+				wglMakeCurrent( hdc, nullptr );
 			}
 		}
 
@@ -252,7 +252,7 @@ namespace utils
 		wcex.hIcon = ::LoadIconA( hInstance, MAKEINTRESOURCEA( iconResourceID ) );
 		wcex.hCursor = ::LoadCursorA( nullptr, IDC_ARROW );
 		wcex.hbrBackground = ( HBRUSH )( COLOR_WINDOW + 1 );
-		wcex.lpszMenuName = NULL;
+		wcex.lpszMenuName = nullptr;
 		wcex.lpszClassName = className.c_str();
 		wcex.hIconSm = ::LoadIconA( wcex.hInstance, MAKEINTRESOURCEA( smallIconResourceID ) );
 
@@ -274,7 +274,7 @@ namespace utils
 				HDC hdc = ::BeginPaint( m_hwnd, &paint );
 				wglMakeCurrent( hdc, m_context );
 				onDraw();
-				wglMakeCurrent( hdc, 0 );
+				wglMakeCurrent( hdc, nullptr );
 				::EndPaint( m_hwnd, &paint );
 			}
 			break;
@@ -364,7 +364,7 @@ namespace utils
 				auto hdc = ::GetDC( m_hwnd );
 				wglMakeCurrent( hdc, m_context );
 				onDraw();
-				wglMakeCurrent( hdc, 0 );
+				wglMakeCurrent( hdc, nullptr );
 				::ReleaseDC( m_hwnd, hdc );
 			}
 			break;

@@ -8,7 +8,7 @@
 #define ___RenderLib_Mesh_H___
 #pragma once
 
-#include <GlLib/GlBuffer.h>
+#include <Renderer/VertexBuffer.hpp>
 
 #include "Material.h"
 
@@ -37,7 +37,8 @@ namespace render
 		*\param[in] tex
 		*	Les coordonnées de texture du maillage.
 		*/
-		void data( Vec3Array const & pos
+		void data( renderer::RenderingResources const & resources
+			, Vec3Array const & pos
 			, Vec3Array const & nml = Vec3Array{}
 			, Vec2Array const & tex = Vec2Array{} );
 		/**
@@ -46,7 +47,8 @@ namespace render
 		*\param[in] idx
 		*	Les indices des faces du sous-maillage à ajouter.
 		*/
-		void addSubmesh( UInt16Array const & idx );
+		void addSubmesh( renderer::RenderingResources const & resources
+			, UInt16Array const & idx );
 		/**
 		*\return
 		*	Le nombre de sous-maillages.
@@ -98,11 +100,11 @@ namespace render
 
 	private:
 		//! Les positions des sommets.
-		renderer::Vec3BufferPtr m_positions;
+		renderer::VertexBufferPtr< renderer::Vec3 > m_positions;
 		//! Les normales des sommets.
-		renderer::Vec3BufferPtr m_normal;
+		renderer::VertexBufferPtr< renderer::Vec3 > m_normal;
 		//! Les coordonnées de texture des sommets.
-		renderer::Vec2BufferPtr m_texcoord;
+		renderer::VertexBufferPtr< renderer::Vec2 > m_texcoord;
 		//! Les sous-maillages.
 		SubmeshArray m_submeshes;
 		//! Les dimensions du maillage.

@@ -57,19 +57,11 @@ namespace render
 	class Scene;
 	class Submesh;
 	class TextOverlay;
-	class Texture;
-	class UniformBuffer;
-	class UniformBufferBinding;
 	class Viewport;
 	struct RenderSubmesh;
-	class RenderingResources;
 
 	template< typename T >
 	class ElementsList;
-	template< typename Signal >
-	class Connection;
-	template< typename Function >
-	class Signal;
 	/**@}*/
 	/**
 	*\name Définitions diverses depuis les prédéclarations.
@@ -91,7 +83,6 @@ namespace render
 	using BorderPanelOverlayPtr = std::shared_ptr< BorderPanelOverlay >;
 	using TextOverlayPtr = std::shared_ptr< TextOverlay >;
 	using OverlayPtr = std::shared_ptr< Overlay >;
-	using TexturePtr = std::shared_ptr< Texture >;
 
 	using MaterialArray = std::vector< MaterialPtr >;
 	using MeshArray = std::vector< MeshPtr >;
@@ -101,7 +92,7 @@ namespace render
 	using BillboardArray = std::vector< BillboardPtr >;
 
 	using MaterialList = ElementsList< Material >;
-	using TextureList = ElementsList< Texture >;
+	using TextureList = ElementsList< renderer::Texture >;
 	using BillboardList = ElementsList< BillboardBuffer >;
 	using MeshList = ElementsList< Mesh >;
 	using OverlayList = ElementsList< Overlay >;
@@ -196,7 +187,7 @@ namespace render
 	*	Reçoit la texture.
 	*/
 	void loadTexture( ByteArray const & fileContent
-		, Texture & texture );
+		, renderer::Texture & texture );
 	/**
 	*\brief
 	*	Charge une texture depuis le contenu donné.
@@ -209,7 +200,7 @@ namespace render
 	*/
 	void loadTexture( ByteArray const & fileContent
 		, renderer::PixelFormat format
-		, Texture & texture );
+		, renderer::Texture & texture );
 	/**
 	*\brief
 	*	Charge une police depuis le contenu donné.

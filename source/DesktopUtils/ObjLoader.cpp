@@ -58,19 +58,19 @@ namespace utils
 			{
 				if ( ident == "Ka" )
 				{
-					gl::RgbColour value;
+					renderer::RgbColour value;
 					stream >> value.x >> value.y >> value.z;
 					select->ambient( value );
 				}
 				else if ( ident == "Kd" )
 				{
-					gl::RgbColour value;
+					renderer::RgbColour value;
 					stream >> value.x >> value.y >> value.z;
 					select->diffuse( value );
 				}
 				else if ( ident == "Ks" )
 				{
-					gl::RgbColour value;
+					renderer::RgbColour value;
 					stream >> value.x >> value.y >> value.z;
 					select->specular( value );
 				}

@@ -54,7 +54,7 @@ namespace render
 		*\return
 		*	La texture de couleurs.
 		*/
-		inline gl::Texture const & texture()const noexcept
+		inline renderer::Texture const & texture()const noexcept
 		{
 			assert( m_colour != nullptr );
 			return *m_colour;
@@ -64,11 +64,11 @@ namespace render
 		//! Les dimensions de la cible.
 		renderer::IVec2 m_size;
 		//! Le frame buffer de la cible.
-		gl::FrameBufferPtr m_framebuffer;
+		renderer::FrameBufferPtr m_framebuffer;
 		//! La texture recevant le rendu couleurs.
-		gl::TexturePtr m_colour;
+		renderer::TexturePtr m_colour;
 		//! Le tampon de rendu recevant la profondeur.
-		gl::RenderBufferPtr m_depth;
+		renderer::RenderBufferPtr m_depth;
 	};
 }
 

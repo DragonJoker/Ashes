@@ -10,13 +10,13 @@
 
 #include "Material.h"
 #include "Mesh.h"
-#include "RangedValue.h"
-#include "Texture.h"
+#include <Renderer/Texture.hpp>
 #include "UberShader.h"
 
-#include <GlLib/GlPipeline.h>
-#include <GlLib/GlShaderProgram.h>
-#include <GlLib/GlUniformBuffer.h>
+#include <Renderer/RangedValue.hpp>
+#include <Renderer/UniformBuffer.hpp>
+#include <Renderer/Pipeline.hpp>
+#include <Renderer/ShaderProgram.hpp>
 
 #include <array>
 #include <functional>
@@ -38,6 +38,29 @@ namespace render
 	class PickingRenderer
 	{
 	private:
+		struct MatrixUbo
+		{
+			//! La variable uniforme contenant la matrice de projection.
+			renderer::Mat4 projection;
+			//! La variable uniforme contenant la matrice de vue.
+			renderer::Mat4 view;
+			//! La variable uniforme contenant la matrice du modèle.
+			renderer::Mat4 model;
+		};
+		struct PickingUbo
+		{
+			//! La variable uniforme contenant l'indice du draw call.
+			int drawIndex;
+			//! La variable uniforme contenant l'indice de l'objet dans le draw call.
+			int nodeIndex;
+		};
+		struct BillboardUbo
+		{
+			//! La variable uniforme contenant les dimensions du billboard.
+			renderer::Vec2 dimensions;
+			//! La variable uniforme contenant la position de la caméra.
+			renderer::Vec3 camera;
+		};
 		/**
 		*\brief
 		*	Contient les informations communes d'un noeud de rendu.
@@ -50,25 +73,16 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			RenderNode( gl::ShaderProgramPtr && program );
+			RenderNode( renderer::RenderingResources const & resources
+				, renderer::ShaderProgramPtr && program );
 			//! Le programme shader.
-			gl::ShaderProgramPtr m_program;
+			renderer::ShaderProgramPtr m_program;
 			//! L'UBO contenant les matrices.
-			gl::UniformBuffer m_mtxUbo;
-			//! La variable uniforme contenant la matrice de projection.
-			renderer::Mat4Uniform * m_mtxProjection;
-			//! La variable uniforme contenant la matrice de vue.
-			renderer::Mat4Uniform * m_mtxView;
-			//! La variable uniforme contenant la matrice du modèle.
-			renderer::Mat4Uniform * m_mtxModel;
-			//! La variable uniforme contenant la texture d'opacité.
-			gl::IntUniformPtr m_mapOpacity;
+			renderer::UniformBuffer< MatrixUbo > m_mtxUbo;
 			//! L'UBO contenant les informations de picking.
-			gl::UniformBuffer m_pickUbo;
-			//! La variable uniforme contenant l'indice du draw call.
-			gl::IntUniform * m_drawIndex;
-			//! La variable uniforme contenant l'indice de l'objet dans le draw call.
-			gl::IntUniform * m_nodeIndex;
+			renderer::UniformBuffer< PickingUbo > m_pickUbo;
+			//! La variable uniforme contenant la texture d'opacité.
+			renderer::IntUniformPtr m_mapOpacity;
 		};
 		/**
 		*\brief
@@ -83,7 +97,8 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			ObjectNode( gl::ShaderProgramPtr && program );
+			ObjectNode( renderer::RenderingResources const & resources
+				, renderer::ShaderProgramPtr && program );
 			//! L'attribut de position.
 			renderer::Vec3AttributePtr m_position;
 			//! L'attribut de normale.
@@ -91,7 +106,7 @@ namespace render
 			//! L'attribut de coordonnées de texture.
 			renderer::Vec2AttributePtr m_texture;
 			//! La variable uniforme contenant la mise à l'échelle.
-			gl::FloatUniformPtr m_scale;
+			renderer::FloatUniformPtr m_scale;
 		};
 		//! Un pointeur sur un ObjectNode.
 		using ObjectNodePtr = std::unique_ptr< ObjectNode >;
@@ -110,13 +125,10 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			BillboardNode( gl::ShaderProgramPtr && program );
+			BillboardNode( renderer::RenderingResources const & resources
+				, renderer::ShaderProgramPtr && program );
 			//! L'UBO contenant les variables liées au billboard.
-			gl::UniformBuffer m_billboardUbo;
-			//! La variable uniforme contenant les dimensions du billboard.
-			renderer::Vec2Uniform * m_dimensions;
-			//! La variable uniforme contenant la position de la caméra.
-			renderer::Vec3Uniform * m_camera;
+			renderer::UniformBuffer< BillboardUbo > m_billboardUbo;
 			//! Attribut de position.
 			renderer::Vec3AttributePtr m_position;
 			//! Attribut d'échelle.
@@ -124,7 +136,7 @@ namespace render
 			//! Attribut de coordonnées de texture.
 			renderer::Vec2AttributePtr m_texture;
 			//! Attribut d'identifiant.
-			gl::FloatAttributePtr m_id;
+			renderer::FloatAttributePtr m_id;
 		};
 		//! Un pointeur sur un BillboardNode.
 		using BillboardNodePtr = std::unique_ptr< BillboardNode >;
@@ -136,7 +148,7 @@ namespace render
 		*\brief
 		*	Constructeur.
 		*/
-		PickingRenderer();
+		PickingRenderer( renderer::RenderingResources const & resources );
 		/**
 		*\brief
 		*	Crée tous les noeuds de rendu.
@@ -165,62 +177,17 @@ namespace render
 			, RenderBillboardArray const & billboards )const;
 
 	private:
-		/**
-		*\brief
-		*	Dessine les objets transparents de la scène, à travers la vue
-		*	de la caméra.
-		*\param[in] camera
-		*	La caméra.
-		*\param[in] zoomPercent
-		Le pourcentage du zoom actuel.
-		*\param[in] type
-		*	Le type de noeud à dessiner.
-		*\param[in] opacity
-		*	Le type d'opacité.
-		*\param[in] objects
-		*	Les objets à dessiner.
-		*\param[in] billboards
-		*	Les billboards à dessiner.
-		*/
 		void doRenderTransparent( Camera const & camera
 			, float zoomPercent
 			, NodeType type
 			, OpacityType opacity
 			, RenderSubmeshArray const & objects
 			, RenderBillboardArray const & billboards )const;
-		/**
-		*\brief
-		*	Dessine une liste d'objets complexes du type donné.
-		*\param[in] camera
-		*	La caméra.
-		*\param[in] zoomPercent
-		Le pourcentage du zoom actuel.
-		*\param[in] type
-		*	Le type de noeud à dessiner.
-		*\param[in] node
-		*	Le noeud de rendu.
-		*\param[in] objects
-		*	Les objets à dessiner.
-		*/
 		void doRenderObjects( Camera const & camera
 			, float zoomPercent
 			, NodeType type
 			, ObjectNode const & node
 			, RenderSubmeshVector const & objects )const;
-		/**
-		*\brief
-		*	Dessine une liste de billboards du type donné.
-		*\param[in] camera
-		*	La caméra.
-		*\param[in] zoomPercent
-		Le pourcentage du zoom actuel.
-		*\param[in] type
-		*	Le type de noeud à dessiner.
-		*\param[in] node
-		*	Le noeud de rendu.
-		*\param[in] billboards
-		*	Les billboards à dessiner.
-		*/
 		void doRenderBillboards( Camera const & camera
 			, float zoomPercent
 			, NodeType type
@@ -228,15 +195,11 @@ namespace render
 			, BillboardArray const & billboards )const;
 
 	private:
-		//! Les noeuds de rendu d'objets complexes.
+		renderer::RenderingResources const & m_resources;
 		ObjectNodeArray m_objectNodes;
-		//! Les noeuds de rendu de billboards.
 		BillboardNodeArray m_billboardNodes;
-		//! Le pipeline de rendu des objets opaques (ainsi que les objets avec alpha testing).
-		gl::Pipeline m_pipelineOpaque;
-		//! L'intervalle d'échelle pour les billboards.
+		renderer::Pipeline m_pipelineOpaque;
 		renderer::Range< float > m_billboardScale{ renderer::makeRange( 1.0f, 20.0f ) };
-		//! L'intervalle d'échelle pour les objets complexes.
 		renderer::Range< float > m_objectScale{ renderer::makeRange( 1.0f, 5.0f ) };
 	};
 }

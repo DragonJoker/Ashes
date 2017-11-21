@@ -90,7 +90,7 @@ namespace render
 		*\return
 		*	Le programme.
 		*/
-		static gl::ShaderProgramPtr createShaderProgram( std::string vtx
+		static renderer::ShaderProgramPtr createShaderProgram( std::string vtx
 			, std::string pxl );
 		/**
 		*\brief
@@ -106,7 +106,7 @@ namespace render
 		*\return
 		*	Le programme.
 		*/
-		static gl::ShaderProgramPtr createShaderProgram( RenderType render
+		static renderer::ShaderProgramPtr createShaderProgram( RenderType render
 			, TextureFlags textures
 			, OpacityType opacity
 			, ObjectType object );
