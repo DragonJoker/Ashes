@@ -4,7 +4,7 @@
 #include "PanelOverlay.h"
 #include "TextOverlay.h"
 
-#include <Renderer/Transform.hpp>
+#include <Utils/Transform.hpp>
 
 namespace render
 {
@@ -31,9 +31,9 @@ namespace render
 	{
 		if ( m_positionChanged )
 		{
-			m_transform = renderer::Mat4{ 1 };
-			m_transform = renderer::translate( m_transform
-				, renderer::Vec3{ m_position.x, m_position.y, 0 } );
+			m_transform = utils::Mat4{ 1 };
+			m_transform = utils::translate( m_transform
+				, utils::Vec3{ m_position.x, m_position.y, 0 } );
 			m_positionChanged = false;
 		}
 	}

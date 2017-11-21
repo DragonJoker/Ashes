@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 
+#include <Renderer/StagingBuffer.hpp>
 #include <Renderer/VertexBuffer.hpp>
 #include <Renderer/VertexLayout.hpp>
 
@@ -22,11 +23,11 @@ namespace render
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		auto layout = std::make_unique< renderer::VertexLayout >( 0u );
-		layout->createAttribute< renderer::Vec3 >( 0u
+		layout->createAttribute< utils::Vec3 >( 0u
 			, offsetof( BillboardData, center ) );
-		layout->createAttribute< renderer::Vec2 >( 1u
+		layout->createAttribute< utils::Vec2 >( 1u
 			, offsetof( BillboardData, scale ) );
-		layout->createAttribute< renderer::Vec2 >( 2u
+		layout->createAttribute< utils::Vec2 >( 2u
 			, offsetof( BillboardBuffer::Vertex, texture ) );
 		layout->createAttribute< float >( 3u
 			, offsetof( BillboardBuffer::Vertex, id ) );
@@ -59,7 +60,7 @@ namespace render
 	}
 
 	void BillboardBuffer::cull( Camera const & camera
-		, renderer::Vec3 const & position
+		, utils::Vec3 const & position
 		, float scale )
 	{
 		assert( m_vbo && "Billboard VBO is not initialised." );
@@ -102,8 +103,8 @@ namespace render
 				}
 			} );
 
-		m_resources.copyVertexData( m_visible
-			, m_vbo->getVbo() );
+		m_resources.getStagingBuffer().copyVertexData( m_visible
+			, *m_vbo );
 		m_count = count;
 	}
 

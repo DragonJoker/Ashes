@@ -45,7 +45,7 @@ namespace render
 		*\param[in] size
 		*	La taille initiale de la zone de rendu.
 		*/
-		Scene( renderer::IVec2 const & size );
+		Scene( utils::IVec2 const & size );
 		/**
 		*\brief
 		*	Destructeur.
@@ -72,7 +72,7 @@ namespace render
 		*\param[in] size
 		*	Les nouvelles dimensions.
 		*/
-		void resize( renderer::IVec2 const & size )noexcept;
+		void resize( utils::IVec2 const & size )noexcept;
 		/**
 		*\brief
 		*	Ajoute un objet à la scène.
@@ -259,7 +259,7 @@ namespace render
 		*\return
 		*	L'intervalle de valeurs pour le seuil d'affichage.
 		*/
-		inline renderer::Range< float > const & thresholdBounds()const noexcept
+		inline utils::Range< float > const & thresholdBounds()const noexcept
 		{
 			return m_threshold.range();
 		}
@@ -269,7 +269,7 @@ namespace render
 		*/
 		inline void thresholdBounds( float min, float max )noexcept
 		{
-			m_threshold.updateRange( renderer::makeRange( min, max ) );
+			m_threshold.updateRange( utils::makeRange( min, max ) );
 		}
 		/**
 		*\return
@@ -332,10 +332,10 @@ namespace render
 		//! Le seuil courant d'affichage des objets.
 		float m_currentThreshold{ 0.0f };
 		//! Le seuil d'affichage des objets.
-		renderer::RangedValue< float > m_threshold
+		utils::RangedValue< float > m_threshold
 		{
 			std::numeric_limits< float >::infinity(),
-			renderer::makeRange( -30.0f, 30.0f )
+			utils::makeRange( -30.0f, 30.0f )
 		};
 		//! La liste de nouveaux tampons de billboards.
 		std::vector< BillboardBufferPtr > m_newBillboardBuffers;

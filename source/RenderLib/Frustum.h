@@ -10,7 +10,7 @@
 
 #include "RenderLibPrerequisites.h"
 
-#include <Renderer/PlaneEquation.hpp>
+#include <Utils/PlaneEquation.hpp>
 
 #include <array>
 
@@ -63,10 +63,10 @@ namespace render
 		*\param[in] z
 		*	Le vecteur Z.
 		*/
-		void update( renderer::Vec3 const & position
-			, renderer::Vec3 const & x
-			, renderer::Vec3 const & y
-			, renderer::Vec3 const & z );
+		void update( utils::Vec3 const & position
+			, utils::Vec3 const & x
+			, utils::Vec3 const & y
+			, utils::Vec3 const & z );
 		/**
 		*\brief
 		*	Vérifie si le point donné est dans le frustum de vue.
@@ -75,13 +75,13 @@ namespace render
 		*\return
 		*	\p false si le point en dehors du frustum de vue.
 		*/
-		bool visible( renderer::Vec3 const & point )const;
+		bool visible( utils::Vec3 const & point )const;
 
 	private:
 		//! Le viewport.
 		Viewport & m_viewport;
 		//! Les plans du frustum de vue.
-		std::array< renderer::PlaneEquation, size_t( FrustumPlane::eCount ) > m_planes;
+		std::array< utils::PlaneEquation, size_t( FrustumPlane::eCount ) > m_planes;
 	};
 }
 

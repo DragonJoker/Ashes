@@ -32,7 +32,7 @@ namespace render
 		}
 
 		std::vector< OverlayPtr > doSortPerZIndex( OverlayList const & overlays
-			, renderer::IVec2 const & size )
+			, utils::IVec2 const & size )
 		{
 			std::vector< OverlayPtr > result;
 
@@ -73,7 +73,7 @@ namespace render
 		void doBindMaterial( OverlayNode & node
 			, Material const & material )
 		{
-			node.m_overlayUbo.getData().colour = renderer::Vec4{ material.ambient(), material.opacity() };
+			node.m_overlayUbo.getData().colour = utils::Vec4{ material.ambient(), material.opacity() };
 
 			if ( material.hasDiffuseMap()
 				&& node.m_mapColour->valid() )
@@ -122,10 +122,10 @@ namespace render
 		, m_overlayUbo{ resources, 1u, renderer::BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal }
 		, m_mapColour{ renderer::makeUniform< int >( "mapColour", *m_program ) }
 		, m_mapOpacity{ renderer::makeUniform< int >( "mapOpacity", *m_program ) }
-		, m_position{ m_program->createAttribute< renderer::Vec2 >( "position"
+		, m_position{ m_program->createAttribute< utils::Vec2 >( "position"
 			, sizeof( TextOverlay::Vertex )
 			, offsetof( TextOverlay::Vertex, coords ) ) }
-		, m_texture{ m_program->createAttribute< renderer::Vec2 >( "texture"
+		, m_texture{ m_program->createAttribute< utils::Vec2 >( "texture"
 			, sizeof( TextOverlay::Vertex )
 			, offsetof( TextOverlay::Vertex, text ) ) }
 	{
@@ -189,7 +189,7 @@ namespace render
 		}
 	}
 
-	void OverlayRenderer::beginRender( renderer::IVec2 const & size )
+	void OverlayRenderer::beginRender( utils::IVec2 const & size )
 	{
 		if ( m_viewport.size() != size )
 		{
@@ -309,7 +309,7 @@ namespace render
 
 	void OverlayRenderer::doDrawBuffer( renderer::VertexBuffer< Overlay::Quad > const & buffer
 		, uint32_t count
-		, renderer::Mat4 const & transform
+		, utils::Mat4 const & transform
 		, Material const & material
 		, OverlayNode const & node )
 	{
@@ -341,7 +341,7 @@ namespace render
 
 	void OverlayRenderer::doDrawBuffer( renderer::VertexBuffer< Overlay::Quad > const & buffer
 		, uint32_t count
-		, renderer::Mat4 const & transform
+		, utils::Mat4 const & transform
 		, Material const & material
 		, Texture const & textOpacity
 		, OverlayNode const & node )

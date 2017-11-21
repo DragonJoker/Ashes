@@ -19,10 +19,11 @@
 #include "MipmapMode.hpp"
 #include "PipelineBindPoint.hpp"
 #include "PipelineStageFlag.hpp"
-#include "PixelFormat.hpp"
 #include "PrimitiveTopology.hpp"
 #include "ShaderStageFlag.hpp"
 #include "WrapMode.hpp"
+
+#include <Utils/PixelFormat.hpp>
 
 #include <cassert>
 #include <ctime>
@@ -36,18 +37,6 @@
 
 namespace renderer
 {
-	template< typename T >
-	class Vec2T;
-	template< typename T >
-	class Vec3T;
-	template< typename T >
-	class Vec4T;
-	template< typename T >
-	class Mat4T;
-	template< typename T >
-	class QuaternionT;
-	template< typename Function >
-	class Signal;
 	template< typename T >
 	class Buffer;
 	template< typename T >
@@ -80,22 +69,22 @@ namespace renderer
 	*\name Typedefs généralistes.
 	*/
 	/**@{*/
-	using Vec2 = Vec2T< float >;
-	using Vec3 = Vec3T< float >;
-	using Vec4 = Vec4T< float >;
-	using Mat4 = Mat4T< float >;
-	using IVec2 = Vec2T< int >;
-	using IVec3 = Vec3T< int >;
-	using IVec4 = Vec4T< int >;
-	using Quaternion = QuaternionT< float >;
-	using RgbaColour = Vec4;
-	using RgbColour = Vec3;
-	using ByteArray = std::vector< uint8_t >;
-	using UInt16Array = std::vector< uint16_t >;
-	using UInt32Array = std::vector< uint32_t >;
-	using Vec3Array = std::vector< Vec3 >;
-	using Vec2Array = std::vector< Vec2 >;
-	using StringArray = std::vector< std::string >;
+	using Vec2 = utils::Vec2;
+	using Vec3 = utils::Vec3;
+	using Vec4 = utils::Vec4;
+	using Mat4 = utils::Mat4;
+	using IVec2 = utils::IVec2;
+	using IVec3 = utils::IVec3;
+	using IVec4 = utils::IVec4;
+	using Quaternion = utils::Quaternion;
+	using RgbaColour = utils::RgbaColour;
+	using RgbColour = utils::RgbColour;
+	using ByteArray = utils::ByteArray;
+	using UInt16Array = utils::UInt16Array;
+	using UInt32Array = utils::UInt32Array;
+	using Vec3Array = utils::Vec3Array;
+	using Vec2Array = utils::Vec2Array;
+	using StringArray = utils::StringArray;
 	template< typename T >
 	using BufferPtr = std::unique_ptr< Buffer< T > >;
 	template< typename T >
@@ -123,4 +112,13 @@ namespace renderer
 	using Vec3AttributePtr = AttributePtr< Vec3 >;
 	using Vec4AttributePtr = AttributePtr< Vec4 >;
 	/**@}*/
+	/**
+	*\brief
+	*	Convertit un utils::PixelFormat en VkFormat.
+	*\param[in] format
+	*	Le utils::PixelFormat.
+	*\return
+	*	Le format Vulkan.
+	*/
+	VkFormat convert( utils::PixelFormat format )noexcept;
 }

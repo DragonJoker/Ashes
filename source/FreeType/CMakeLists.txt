@@ -194,4 +194,9 @@ if ( ANDROID )
 	)
 endif ()
 
-add_library( ${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SRC_FILES} ${${PROJECT_NAME}_HDR_FILES} )
+add_library( ${PROJECT_NAME} STATIC
+	${${PROJECT_NAME}_SRC_FILES}
+	${${PROJECT_NAME}_HDR_FILES}
+)
+
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Core" )

@@ -52,7 +52,7 @@ namespace render
 		 *\return
 		 *	La position.
 		 */
-		renderer::IVec2 const & glyphPosition( char c )const;
+		utils::IVec2 const & glyphPosition( char c )const;
 		/**
 		*\return
 		*	La texture.
@@ -71,7 +71,7 @@ namespace render
 		}
 
 	private:
-		using GlyphPositionMap = std::map< char, renderer::IVec2 >;
+		using GlyphPositionMap = std::map< char, utils::IVec2 >;
 
 		//! La texture qui recevra les glyphes.
 		renderer::Texture m_texture;

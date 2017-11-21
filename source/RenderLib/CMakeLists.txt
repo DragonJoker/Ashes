@@ -40,3 +40,5 @@ add_target_precompiled_header( ${PROJECT_NAME}
 add_dependencies( ${PROJECT_NAME}
 	Renderer
 )
+
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Render" )

@@ -24,8 +24,8 @@ namespace render
 	*/
 	struct OverlayUbo
 	{
-		renderer::Mat4 modelProj;
-		renderer::Vec4 colour;
+		utils::Mat4 modelProj;
+		utils::Vec4 colour;
 	};
 	/**
 	*\brief
@@ -53,9 +53,9 @@ namespace render
 		//! La variable uniforme contenant l'échantillonneur de la texture d'opacité.
 		renderer::IntUniformPtr m_mapOpacity;
 		//! L'attribut de position.
-		renderer::Vec2AttributePtr m_position;
+		utils::Vec2AttributePtr m_position;
 		//! L'attribut de coordonnées de texture.
-		renderer::Vec2AttributePtr m_texture;
+		utils::Vec2AttributePtr m_texture;
 	};
 	//! Tableau de noeuds de rendu d'incrustations.
 	using OverlayNodeArray = std::array< OverlayNode, size_t( NodeType::eCount ) >;
@@ -113,7 +113,7 @@ namespace render
 		*param[in] size
 		*	Les dimensions de la fenêtre de rendu.
 		*/
-		void beginRender( renderer::IVec2 const & size );
+		void beginRender( utils::IVec2 const & size );
 		/**
 		*brief
 		*	Termine le rendu des incrustations.
@@ -143,7 +143,7 @@ namespace render
 		*/
 		void doDrawBuffer( renderer::VertexBuffer< Overlay::Quad > const & buffer
 			, uint32_t count
-			, renderer::Mat4 const & transform
+			, utils::Mat4 const & transform
 			, Material const & material
 			, OverlayNode const & node );
 		/**
@@ -164,7 +164,7 @@ namespace render
 		*/
 		void doDrawBuffer( renderer::VertexBuffer< Overlay::Quad > const & buffer
 			, uint32_t count
-			, renderer::Mat4 const & transform
+			, utils::Mat4 const & transform
 			, Material const & material
 			, Texture const & textOpacity
 			, OverlayNode const & node );
@@ -196,7 +196,7 @@ namespace render
 		std::vector< renderer::VertexBufferPtr< Overlay::Quad > > m_textBuffers;
 		uint32_t m_maxCharsPerBuffer;
 		bool m_sizeChanged{ true };
-		renderer::Mat4 m_transform;
+		utils::Mat4 m_transform;
 		Viewport m_viewport;
 	};
 }

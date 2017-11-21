@@ -38,3 +38,5 @@ add_dependencies( ${PROJECT_NAME}
 	RenderLib
 	FreeType
 )
+
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Main" )

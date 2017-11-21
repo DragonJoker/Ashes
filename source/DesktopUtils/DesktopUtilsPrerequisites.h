@@ -8,8 +8,8 @@
 #define ___DesktopUtils_Prerequisites_HPP___
 #pragma once
 
-#include <Renderer/Converter.hpp>
-#include <Renderer/StringUtils.hpp>
+#include <Utils/Converter.hpp>
+#include <Utils/StringUtils.hpp>
 
 #include <RenderLib/ElementsList.h>
 #include <RenderLib/FontLoader.h>
@@ -46,7 +46,7 @@ namespace utils
 	struct SizeEvent
 	{
 		//! Les nouvelle dimensions
-		renderer::IVec2 size;
+		utils::IVec2 size;
 		//! Dit si la fenêtre est maximisée.
 		bool maximized;
 		//! Dit si la fenêtre est minimisée.
@@ -61,7 +61,7 @@ namespace utils
 	struct MouseEvent
 	{
 		//! La position actuelle de la souris.
-		renderer::IVec2 position;
+		utils::IVec2 position;
 		//! \p true si le bouton gauche de la souris est enfoncé.
 		bool ldown;
 		//! \p true si le bouton milieu de la souris est enfoncé.

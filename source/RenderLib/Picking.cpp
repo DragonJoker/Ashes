@@ -37,7 +37,7 @@ namespace render
 
 		template< typename MapT, typename NodeT >
 		inline void doPickFromList( MapT const & map
-			, renderer::IVec4 const & data
+			, utils::IVec4 const & data
 			, NodeT *& result )
 		{
 			using Traits = NodeTraits< NodeT >;
@@ -51,7 +51,7 @@ namespace render
 		static int constexpr PickingOffset = PickingWidth / 2;
 	}
 
-	Picking::Picking( renderer::IVec2 const & size )
+	Picking::Picking( utils::IVec2 const & size )
 		: m_renderer{}
 		, m_size{ size }
 		, m_colour{ std::make_unique< renderer::Texture >
@@ -78,7 +78,7 @@ namespace render
 		m_fbo->unbind();
 	}
 
-	Picking::NodeType Picking::pick( renderer::IVec2 const & position
+	Picking::NodeType Picking::pick( utils::IVec2 const & position
 		, Camera const & camera
 		, float zoomPercent
 		, RenderSubmeshArray const & objects
@@ -104,7 +104,7 @@ namespace render
 #endif
 	}
 
-	Picking::Pixel Picking::doFboPick( renderer::IVec2 const & position
+	Picking::Pixel Picking::doFboPick( utils::IVec2 const & position
 		, Camera const & camera
 		, float zoomPercent
 		, RenderSubmeshArray const & objects
@@ -121,7 +121,7 @@ namespace render
 			, billboards );
 		m_fbo->unbind();
 		memset( m_buffer.data(), 0xFF, m_buffer.size() * sizeof( Pixel ) );
-		renderer::IVec2 offset
+		utils::IVec2 offset
 		{
 			m_size.x - position.x - PickingOffset,
 			m_size.y - position.y - PickingOffset
@@ -169,7 +169,7 @@ namespace render
 		return ret;
 	}
 
-	renderer::IVec4 Picking::doUnpackPixel( Pixel pixel )
+	utils::IVec4 Picking::doUnpackPixel( Pixel pixel )
 	{
 		static constexpr uint8_t ObjectTypeMask{ ObjectMask | BillboardMask };
 		static constexpr uint8_t NodeTypeMask{ 0x3F };
@@ -182,35 +182,35 @@ namespace render
 		{
 		case ObjectMask:
 			objectType = int( ObjectType::eObject );
-			return renderer::IVec4{ objectType, nodeType, doUnpackObjectPixel( pixel ) };
+			return utils::IVec4{ objectType, nodeType, doUnpackObjectPixel( pixel ) };
 
 		case BillboardMask:
 			objectType = int( ObjectType::eBillboard );
-			return renderer::IVec4{ objectType, nodeType, doUnpackBillboardPixel( pixel ) };
+			return utils::IVec4{ objectType, nodeType, doUnpackBillboardPixel( pixel ) };
 
 		default:
 			assert( false && "Unsupported object type" );
-			return renderer::IVec4{};
+			return utils::IVec4{};
 			break;
 		}
 	}
 
-	renderer::IVec2 Picking::doUnpackBillboardPixel( Pixel pixel )
+	utils::IVec2 Picking::doUnpackBillboardPixel( Pixel pixel )
 	{
 		auto index = ( uint32_t( pixel.r ) << 6 )
 			| ( uint32_t( pixel.g & 0xFC ) >> 2 );
 		auto instance = ( uint32_t( pixel.g & 0x03 ) << 16 )
 			| ( uint32_t( pixel.b ) << 8 )
 			| ( uint32_t( pixel.a ) );
-		return renderer::IVec2{ index, instance };
+		return utils::IVec2{ index, instance };
 	}
 
-	renderer::IVec2 Picking::doUnpackObjectPixel( Pixel pixel )
+	utils::IVec2 Picking::doUnpackObjectPixel( Pixel pixel )
 	{
 		auto index = ( uint32_t( pixel.r ) << 24 )
 			| ( uint32_t( pixel.g ) << 16 )
 			| ( uint32_t( pixel.b ) << 8 )
 			| ( uint32_t( pixel.a ) );
-		return renderer::IVec2{ index, 0 };
+		return utils::IVec2{ index, 0 };
 	}
 }

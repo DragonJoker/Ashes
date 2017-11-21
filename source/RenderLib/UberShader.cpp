@@ -2,7 +2,7 @@
 
 #include "Material.h"
 
-#include <Renderer/StringUtils.hpp>
+#include <Utils/StringUtils.hpp>
 
 namespace render
 {

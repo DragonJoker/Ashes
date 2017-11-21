@@ -188,7 +188,7 @@ namespace renderer
 		*/
 		template< typename T >
 		inline void copyVertexData( std::vector< T > const & data
-			, vk::VertexBuffer const & buffer )const
+			, VertexBuffer< T > const & buffer )const
 		{
 			copyVertexData( reinterpret_cast< uint8_t const * const >( data.data() )
 				, uint32_t( data.size() * sizeof( T ) )
@@ -296,7 +296,7 @@ namespace renderer
 			, VertexBuffer< T > const & buffer )const
 		{
 			doCopyToStagingBuffer( data, size );
-			doCopyFromStagingBuffer( size, offset, buffer.getVbo() );
+			doCopyFromStagingBuffer( size, offset, buffer.getVbo().getBuffer() );
 		}
 		/**
 		*@~french

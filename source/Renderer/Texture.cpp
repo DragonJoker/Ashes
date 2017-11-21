@@ -14,7 +14,7 @@ namespace renderer
 	{
 	}
 
-	void Texture::setImage( PixelFormat format
+	void Texture::setImage( utils::PixelFormat format
 		, IVec2 const & size
 		, ByteArray const & data )
 	{
@@ -22,7 +22,7 @@ namespace renderer
 		m_resources.getStagingBuffer().copyTextureData( data, *this );
 	}
 
-	void Texture::setImage( PixelFormat format
+	void Texture::setImage( utils::PixelFormat format
 		, IVec2 const & size )
 	{
 		m_format = format;

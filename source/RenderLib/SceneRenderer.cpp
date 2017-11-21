@@ -119,9 +119,9 @@ namespace render
 	SceneRenderer::ObjectNode::ObjectNode( renderer::RenderingResources const & resources
 		, renderer::ShaderProgramPtr && program )
 		: RenderNode{ std::move( program ) }
-		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position" ) }
-		, m_normal{ m_program->createAttribute< renderer::Vec3 >( "normal" ) }
-		, m_texture{ m_program->createAttribute< renderer::Vec2 >( "texture" ) }
+		, m_position{ m_program->createAttribute< utils::Vec3 >( "position" ) }
+		, m_normal{ m_program->createAttribute< utils::Vec3 >( "normal" ) }
+		, m_texture{ m_program->createAttribute< utils::Vec2 >( "texture" ) }
 	{
 	}
 
@@ -131,13 +131,13 @@ namespace render
 		, renderer::ShaderProgramPtr && program )
 		: RenderNode{ std::move( program ) }
 		, m_billboardUbo{ resources, 1u, BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal }
-		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position"
+		, m_position{ m_program->createAttribute< utils::Vec3 >( "position"
 			, sizeof( BillboardBuffer::Vertex )
 			, offsetof( BillboardData, center ) ) }
-		, m_scale{ m_program->createAttribute< renderer::Vec2 >( "scale"
+		, m_scale{ m_program->createAttribute< utils::Vec2 >( "scale"
 			, sizeof( BillboardBuffer::Vertex )
 			, offsetof( BillboardData, scale ) ) }
-		, m_texture{ m_program->createAttribute< renderer::Vec2 >( "texture"
+		, m_texture{ m_program->createAttribute< utils::Vec2 >( "texture"
 			, sizeof( BillboardBuffer::Vertex )
 			, offsetof( BillboardBuffer::Vertex, texture ) ) }
 	{
@@ -150,10 +150,10 @@ namespace render
 		, renderer::ShaderProgramPtr && program )
 		: RenderNode{ std::move( program ) }
 		, m_lineUbo{ resources, 1u, BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal }
-		, m_position{ m_program->createAttribute< renderer::Vec3 >( "position"
+		, m_position{ m_program->createAttribute< utils::Vec3 >( "position"
 			, sizeof( PolyLine::Vertex )
 			, offsetof( PolyLine::Vertex, m_position ) ) }
-		, m_normal{ m_program->createAttribute< renderer::Vec3 >( "normal"
+		, m_normal{ m_program->createAttribute< utils::Vec3 >( "normal"
 			, sizeof( PolyLine::Vertex )
 			, offsetof( PolyLine::Vertex, m_normal ) ) }
 	{
@@ -326,8 +326,8 @@ namespace render
 	{
 		if ( !objects.empty() )
 		{
-			renderer::Mat4 const & projection = camera.projection();
-			renderer::Mat4 const & view = camera.view();
+			utils::Mat4 const & projection = camera.projection();
+			utils::Mat4 const & view = camera.view();
 			node.m_program->bind();
 			node.m_mtxUbo.getData().projection = projection;
 			node.m_mtxUbo.getData().view = view;
@@ -366,9 +366,9 @@ namespace render
 	{
 		if ( !billboards.empty() )
 		{
-			renderer::Mat4 const & projection = camera.projection();
-			renderer::Mat4 const & view = camera.view();
-			renderer::Vec3 const & position = camera.position();
+			utils::Mat4 const & projection = camera.projection();
+			utils::Mat4 const & view = camera.view();
+			utils::Vec3 const & position = camera.position();
 			node.m_program->bind();
 			node.m_mtxUbo.getData().projection = projection;
 			node.m_mtxUbo.getData().view = view;
@@ -382,7 +382,7 @@ namespace render
 					node.m_mtxUbo.getData().model = billboard->transform();
 					m_resources.copyUniformData( node.m_mtxUbo.getDatas()
 						, node.m_mtxUbo );
-					node.m_billboardUbo.getData().dimensions = renderer::Vec2{ billboard->dimensions() };
+					node.m_billboardUbo.getData().dimensions = utils::Vec2{ billboard->dimensions() };
 					m_resources.copyUniformData( node.m_billboardUbo.getDatas()
 						, node.m_billboardUbo );
 					doBindMaterial( node, billboard->material() );
@@ -418,9 +418,9 @@ namespace render
 	{
 		if ( !lines.empty() )
 		{
-			renderer::Mat4 const & projection = camera.projection();
-			renderer::Mat4 const & view = camera.view();
-			renderer::Vec3 const & position = camera.position();
+			utils::Mat4 const & projection = camera.projection();
+			utils::Mat4 const & view = camera.view();
+			utils::Vec3 const & position = camera.position();
 			node.m_program->bind();
 			node.m_mtxUbo.getData().projection = projection;
 			node.m_mtxUbo.getData().view = view;

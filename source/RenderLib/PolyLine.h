@@ -30,9 +30,9 @@ namespace render
 		struct Points
 		{
 			//! Le premier point.
-			renderer::Vec3 m_a;
+			utils::Vec3 m_a;
 			//! Le second point.
-			renderer::Vec3 m_b;
+			utils::Vec3 m_b;
 		};
 		//! Tableau de lignes.
 		using LineArray = std::vector< Points >;
@@ -43,9 +43,9 @@ namespace render
 		struct Vertex
 		{
 			//! Sa position.
-			renderer::Vec3 m_position;
+			utils::Vec3 m_position;
 			//! Sa normale (par rapport à la pente de la ligne.)
-			renderer::Vec3 m_normal;
+			utils::Vec3 m_normal;
 		};
 		//! Un quad, constitué de 6 sommets.
 		using LineQuad = std::array< Vertex, 6 >;

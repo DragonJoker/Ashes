@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "Vec2.hpp"
+#include <Utils/Vec2.hpp>
 
 #include <VkLib/Viewport.hpp>
 

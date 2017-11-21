@@ -8,7 +8,9 @@
 #define ___Renderer_Texture_HPP___
 #pragma once
 
-#include "Vec2.hpp"
+#include "RendererPrerequisites.hpp"
+
+#include <Utils/Vec2.hpp>
 
 #include <VkLib/Image.hpp>
 #include <VkLib/Sampler.hpp>
@@ -39,7 +41,7 @@ namespace renderer
 		*\param[in] data
 		*	Les données de l'image.
 		*/
-		void setImage( PixelFormat format
+		void setImage( utils::PixelFormat format
 			, IVec2 const & size
 			, ByteArray const & data );
 		/**
@@ -50,7 +52,7 @@ namespace renderer
 		*\param[in] size
 		*	Les dimensions de l'image.
 		*/
-		void setImage( PixelFormat format
+		void setImage( utils::PixelFormat format
 			, IVec2 const & size );
 		/**
 		*\brief
@@ -110,7 +112,7 @@ namespace renderer
 		*\return
 		*	Le format des pixels de la texture.
 		*/
-		inline renderer::PixelFormat getFormat()const noexcept
+		inline utils::PixelFormat getFormat()const noexcept
 		{
 			return m_format;
 		}
@@ -118,7 +120,7 @@ namespace renderer
 		*\return
 		*	Les dimensions de la texture.
 		*/
-		inline renderer::IVec2 const & getDimensions()const noexcept
+		inline utils::IVec2 const & getDimensions()const noexcept
 		{
 			return m_size;
 		}
@@ -134,8 +136,8 @@ namespace renderer
 
 	private:
 		renderer::RenderingResources const & m_resources;
-		renderer::IVec2 m_size;
-		renderer::PixelFormat m_format{ renderer::PixelFormat::eR8G8B8 };
+		utils::IVec2 m_size;
+		utils::PixelFormat m_format{ utils::PixelFormat::eR8G8B8 };
 		vk::ImagePtr m_texture;
 	};
 }

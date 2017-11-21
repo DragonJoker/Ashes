@@ -23,9 +23,9 @@ namespace render
 		//! Sa magnitude.
 		float magnitude;
 		//! Sa position.
-		renderer::Vec3 center;
+		utils::Vec3 center;
 		//! Son échelle.
-		renderer::Vec2 scale;
+		utils::Vec2 scale;
 	};
 	//! Un tableau de données de billboard.
 	using BillboardDataArray = std::vector< BillboardData >;
@@ -45,7 +45,7 @@ namespace render
 			//! Ses données.
 			BillboardData data;
 			//! Ses coordonnées de texture.
-			renderer::Vec2 texture;
+			utils::Vec2 texture;
 			//! Son ID de billboard.
 			float id;
 		};
@@ -90,7 +90,7 @@ namespace render
 		*	L'échelle du zoom.
 		*/
 		void cull( Camera const & camera
-			, renderer::Vec3 const & position
+			, utils::Vec3 const & position
 			, float scale );
 		/**
 		*\brief

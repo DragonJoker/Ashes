@@ -7,7 +7,7 @@
 
 #include <Renderer/ExponentialRange.hpp>
 #include <Renderer/LogarithmicRange.hpp>
-#include <Renderer/StringUtils.hpp>
+#include <Utils/StringUtils.hpp>
 
 //#include <Renderer/ShaderProgram.hpp>
 //#include <Renderer/GlUniform.h>
@@ -36,7 +36,7 @@ namespace render
 		}
 	}
 
-	Scene::Scene( renderer::IVec2 const & size )
+	Scene::Scene( utils::IVec2 const & size )
 		: RenderableContainer{}
 		, m_camera{ size }
 	{
@@ -92,7 +92,7 @@ namespace render
 			, 2.0f * percent + ( 1.0f - percent ) / 100.0f );
 	}
 
-	void Scene::resize( renderer::IVec2 const & size )noexcept
+	void Scene::resize( utils::IVec2 const & size )noexcept
 	{
 		m_camera.resize( size );
 	}

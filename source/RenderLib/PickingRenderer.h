@@ -15,9 +15,9 @@
 
 #include <Renderer/DescriptorSet.hpp>
 #include <Renderer/Pipeline.hpp>
-#include <Renderer/RangedValue.hpp>
 #include <Renderer/ShaderProgram.hpp>
 #include <Renderer/UniformBuffer.hpp>
+#include <Utils/RangedValue.hpp>
 
 #include <array>
 #include <functional>
@@ -42,11 +42,11 @@ namespace render
 		struct MatrixUbo
 		{
 			//! La variable uniforme contenant la matrice de projection.
-			renderer::Mat4 projection;
+			utils::Mat4 projection;
 			//! La variable uniforme contenant la matrice de vue.
-			renderer::Mat4 view;
+			utils::Mat4 view;
 			//! La variable uniforme contenant la matrice du modèle.
-			renderer::Mat4 model;
+			utils::Mat4 model;
 		};
 		struct PickingUbo
 		{
@@ -58,9 +58,9 @@ namespace render
 		struct BillboardUbo
 		{
 			//! La variable uniforme contenant les dimensions du billboard.
-			renderer::Vec2 dimensions;
+			utils::Vec2 dimensions;
 			//! La variable uniforme contenant la position de la caméra.
-			renderer::Vec3 camera;
+			utils::Vec3 camera;
 		};
 		/**
 		*\brief
@@ -195,8 +195,8 @@ namespace render
 		ObjectNodeArray m_objectNodes;
 		BillboardNodeArray m_billboardNodes;
 		renderer::Pipeline m_pipelineOpaque;
-		renderer::Range< float > m_billboardScale{ renderer::makeRange( 1.0f, 20.0f ) };
-		renderer::Range< float > m_objectScale{ renderer::makeRange( 1.0f, 5.0f ) };
+		utils::Range< float > m_billboardScale{ utils::makeRange( 1.0f, 20.0f ) };
+		utils::Range< float > m_objectScale{ utils::makeRange( 1.0f, 5.0f ) };
 	};
 }
 

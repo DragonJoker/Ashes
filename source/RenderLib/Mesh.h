@@ -93,22 +93,22 @@ namespace render
 		*\return
 		*	Les dimensions du maillage.
 		*/
-		inline renderer::Vec3 const & boundaries()const noexcept
+		inline utils::Vec3 const & boundaries()const noexcept
 		{
 			return m_boundaries;
 		}
 
 	private:
 		//! Les positions des sommets.
-		renderer::VertexBufferPtr< renderer::Vec3 > m_positions;
+		renderer::VertexBufferPtr< utils::Vec3 > m_positions;
 		//! Les normales des sommets.
-		renderer::VertexBufferPtr< renderer::Vec3 > m_normal;
+		renderer::VertexBufferPtr< utils::Vec3 > m_normal;
 		//! Les coordonnées de texture des sommets.
-		renderer::VertexBufferPtr< renderer::Vec2 > m_texcoord;
+		renderer::VertexBufferPtr< utils::Vec2 > m_texcoord;
 		//! Les sous-maillages.
 		SubmeshArray m_submeshes;
 		//! Les dimensions du maillage.
-		renderer::Vec3 m_boundaries;
+		utils::Vec3 m_boundaries;
 	};
 }
 

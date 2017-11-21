@@ -28,7 +28,7 @@ namespace render
 		}
 	}
 
-	RenderWindow::RenderWindow( renderer::IVec2 const & dimensions
+	RenderWindow::RenderWindow( utils::IVec2 const & dimensions
 		, render::FontLoader & loader
 		, bool debug )
 		: m_pipeline{ true, false, false, false }
@@ -55,8 +55,8 @@ namespace render
 		, m_picking{ dimensions }
 		, m_debug{ debug, m_scene, loader }
 	{
-		m_vbo->createAttribute< renderer::Vec2 >( 0u, 0u );
-		m_vbo->createAttribute< renderer::Vec2 >( 1u, sizeof( renderer::Vec2 ) );
+		m_vbo->createAttribute< utils::Vec2 >( 0u, 0u );
+		m_vbo->createAttribute< utils::Vec2 >( 1u, sizeof( utils::Vec2 ) );
 	}
 
 	void RenderWindow::beginFrame()
@@ -113,7 +113,7 @@ namespace render
 		m_debug.end();
 	}
 
-	void RenderWindow::resize( renderer::IVec2 const & size )noexcept
+	void RenderWindow::resize( utils::IVec2 const & size )noexcept
 	{
 		m_size = size;
 		m_viewport.resize( m_size );

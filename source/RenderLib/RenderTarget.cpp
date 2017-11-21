@@ -8,7 +8,7 @@
 
 namespace render
 {
-	RenderTarget::RenderTarget( renderer::IVec2 const & dimensions
+	RenderTarget::RenderTarget( utils::IVec2 const & dimensions
 		, renderer::PixelFormat format )
 		: m_size{ dimensions }
 		, m_framebuffer{ std::make_unique< renderer::FrameBuffer >() }

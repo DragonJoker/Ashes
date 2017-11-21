@@ -2,35 +2,35 @@
 
 namespace renderer
 {
-	VkFormat convert( PixelFormat format )
+	VkFormat convert( utils::PixelFormat format )noexcept
 	{
 		switch ( format )
 		{
-		case PixelFormat::eL8:
+		case utils::PixelFormat::eL8:
 			return VK_FORMAT_R8_UINT;
 
-		case PixelFormat::eL8A8:
+		case utils::PixelFormat::eL8A8:
 			return VK_FORMAT_R8G8_UINT;
 
-		case PixelFormat::eR8G8B8:
+		case utils::PixelFormat::eR8G8B8:
 			return VK_FORMAT_R8G8B8_UINT;
 
-		case PixelFormat::eRGB565:
+		case utils::PixelFormat::eRGB565:
 			return VK_FORMAT_R5G6B5_UNORM_PACK16;
 
-		case PixelFormat::eR8G8B8A8:
+		case utils::PixelFormat::eR8G8B8A8:
 			return VK_FORMAT_R8G8B8A8_UNORM;
 
-		case PixelFormat::eRGBA5551:
+		case utils::PixelFormat::eRGBA5551:
 			return VK_FORMAT_R5G5B5A1_UNORM_PACK16;
 
-		case PixelFormat::eRGBA4444:
+		case utils::PixelFormat::eRGBA4444:
 			return VK_FORMAT_R4G4B4A4_UNORM_PACK16;
 
-		case PixelFormat::eD16:
+		case utils::PixelFormat::eD16:
 			return VK_FORMAT_D16_UNORM;
 
-		case PixelFormat::eS8:
+		case utils::PixelFormat::eS8:
 			return VK_FORMAT_S8_UINT;
 		}
 
@@ -357,37 +357,6 @@ namespace renderer
 		}
 
 		return result;
-	}
-
-	uint32_t pixelSize( PixelFormat format )noexcept
-	{
-		switch ( format )
-		{
-		case PixelFormat::eL8:
-		case PixelFormat::eS8:
-			return 1;
-			break;
-
-		case PixelFormat::eL8A8:
-		case PixelFormat::eRGB565:
-		case PixelFormat::eRGBA5551:
-		case PixelFormat::eRGBA4444:
-		case PixelFormat::eD16:
-			return 2;
-			break;
-
-		case PixelFormat::eR8G8B8:
-			return 3;
-			break;
-
-		case PixelFormat::eR8G8B8A8:
-			return 4;
-			break;
-
-		default:
-			assert( false && "Unsupported pixel format" );
-			return 0;
-		}
 	}
 
 	VkCommandBufferResetFlags convert( CommandBufferResetFlags flags )

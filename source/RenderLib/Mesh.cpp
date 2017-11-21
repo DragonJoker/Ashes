@@ -33,13 +33,13 @@ namespace render
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
 		}
 
-		renderer::Vec3 min
+		utils::Vec3 min
 		{
 			std::numeric_limits< float >::max(),
 			std::numeric_limits< float >::max(),
 			std::numeric_limits< float >::max()
 		};
-		renderer::Vec3 max
+		utils::Vec3 max
 		{
 			std::numeric_limits< float >::lowest(),
 			std::numeric_limits< float >::lowest(),
@@ -56,7 +56,7 @@ namespace render
 			max.z = std::max( max.z, position.z );
 		}
 
-		m_boundaries = renderer::vectorCall< float, float >( std::abs, max - min );
+		m_boundaries = utils::vectorCall< float, float >( std::abs, max - min );
 	}
 
 	void Mesh::addSubmesh( renderer::RenderingResources const & resources

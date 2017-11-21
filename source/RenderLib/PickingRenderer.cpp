@@ -116,9 +116,9 @@ namespace render
 		, m_nmlLayout{ 1u }
 		, m_texLayout{ 2u }
 	{
-		m_posLayout.createAttribute< renderer::Vec3 >( 0u, 0u );
-		m_nmlLayout.createAttribute< renderer::Vec3 >( 1u, 0u );
-		m_texLayout.createAttribute< renderer::Vec2 >( 2u, 0u );
+		m_posLayout.createAttribute< utils::Vec3 >( 0u, 0u );
+		m_nmlLayout.createAttribute< utils::Vec3 >( 1u, 0u );
+		m_texLayout.createAttribute< utils::Vec2 >( 2u, 0u );
 	}
 
 	//*************************************************************************
@@ -130,11 +130,11 @@ namespace render
 		, m_layout{ 0u }
 		, m_billboardUbo{ resources, 1u, renderer::BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal }
 	{
-		m_layout.createAttribute< renderer::Vec3 >( 0u
+		m_layout.createAttribute< utils::Vec3 >( 0u
 			, offsetof( BillboardData, center ) );
-		m_layout.createAttribute< renderer::Vec2 >( 1u
+		m_layout.createAttribute< utils::Vec2 >( 1u
 			, offsetof( BillboardData, scale ) );
-		m_layout.createAttribute< renderer::Vec2 >( 2u
+		m_layout.createAttribute< utils::Vec2 >( 2u
 			, offsetof( BillboardBuffer::Vertex, texture ) );
 		m_layout.createAttribute< float >( 3u
 			, offsetof( BillboardBuffer::Vertex, id ) );
@@ -303,8 +303,8 @@ namespace render
 	{
 		if ( !objects.empty() )
 		{
-			renderer::Mat4 const & projection = camera.projection();
-			renderer::Mat4 const & view = camera.view();
+			utils::Mat4 const & projection = camera.projection();
+			utils::Mat4 const & view = camera.view();
 			node.m_program->bind();
 			node.m_mtxUbo.getData().projection = projection;
 			node.m_mtxUbo.getData().view = view;
@@ -351,13 +351,13 @@ namespace render
 	{
 		if ( !billboards.empty() )
 		{
-			renderer::Mat4 const & projection = camera.projection();
-			renderer::Mat4 const & view = camera.view();
-			renderer::Vec3 const & position = camera.position();
+			utils::Mat4 const & projection = camera.projection();
+			utils::Mat4 const & view = camera.view();
+			utils::Vec3 const & position = camera.position();
 			node.m_mtxUbo.getData().projection = projection;
 			node.m_mtxUbo.getData().view = view;
 			node.m_billboardUbo.getData().camera = position;
-			node.m_billboardUbo.getData().dimensions = renderer::Vec2{ 30.0, 30.0 };
+			node.m_billboardUbo.getData().dimensions = utils::Vec2{ 30.0, 30.0 };
 			node.m_pickUbo.getData().drawIndex = ObjectMask | int( type );
 			node.m_program->bind();
 			uint32_t id{ 0u };

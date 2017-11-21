@@ -34,23 +34,23 @@ namespace render
 		struct MatrixUbo
 		{
 			//! La variable uniforme contenant la matrice de projection.
-			renderer::Mat4 projection;
+			utils::Mat4 projection;
 			//! La variable uniforme contenant la matrice de vue.
-			renderer::Mat4 view;
+			utils::Mat4 view;
 			//! La variable uniforme contenant la matrice du modèle.
-			renderer::Mat4 model;
+			utils::Mat4 model;
 		};
 		//! Les données de l'UBO contenant les informations du matériau.
 		struct MaterialUbo
 		{
 			//! La variable uniforme contenant la couleur ambiante.
-			renderer::Vec3 ambient;
+			utils::Vec3 ambient;
 			//! La variable uniforme contenant la couleur diffuse.
-			renderer::Vec3 diffuse;
+			utils::Vec3 diffuse;
 			//! La variable uniforme contenant la couleur spéculaire.
-			renderer::Vec3 specular;
+			utils::Vec3 specular;
 			//! La variable uniforme contenant la couleur émissive.
-			renderer::Vec3 emissive;
+			utils::Vec3 emissive;
 			//! La variable uniforme contenant l'exposant spéculaire.
 			float exponent;
 			//! La variable uniforme contenant l'opacité
@@ -60,9 +60,9 @@ namespace render
 		struct BillboardUbo
 		{
 			//! La variable uniforme contenant les dimensions du billboard.
-			renderer::Vec2 dimensions;
+			utils::Vec2 dimensions;
 			//! La variable uniforme contenant la position de la caméra.
-			renderer::Vec3 camera;
+			utils::Vec3 camera;
 		};
 		//! Les données de l'UBO contenant les variables liées à la ligne.
 		struct LineUbo
@@ -74,7 +74,7 @@ namespace render
 			//! La variable uniforme contenant l'échelle.
 			float lineScale;
 			//! La variable uniforme contenant la position de la caméra.
-			renderer::Vec3 camera;
+			utils::Vec3 camera;
 		};
 		/**
 		*\brief
@@ -117,11 +117,11 @@ namespace render
 			ObjectNode( renderer::RenderingResources const & resources
 				, renderer::ShaderProgramPtr && program );
 			//! L'attribut de position.
-			renderer::Vec3AttributePtr m_position;
+			utils::Vec3AttributePtr m_position;
 			//! L'attribut de normale.
-			renderer::Vec3AttributePtr m_normal;
+			utils::Vec3AttributePtr m_normal;
 			//! L'attribut de coordonnées de texture.
-			renderer::Vec2AttributePtr m_texture;
+			utils::Vec2AttributePtr m_texture;
 		};
 		//! Un pointeur sur un ObjectNode.
 		using ObjectNodePtr = std::unique_ptr< ObjectNode >;
@@ -145,11 +145,11 @@ namespace render
 			//! L'UBO contenant les variables liées au billboard.
 			renderer::UniformBuffer< BillboardUbo > m_billboardUbo;
 			//! Attribut de position.
-			renderer::Vec3AttributePtr m_position;
+			utils::Vec3AttributePtr m_position;
 			//! Attribut d'échelle.
-			renderer::Vec2AttributePtr m_scale;
+			utils::Vec2AttributePtr m_scale;
 			//! Attribut de coordonnées de texture.
-			renderer::Vec2AttributePtr m_texture;
+			utils::Vec2AttributePtr m_texture;
 		};
 		//! Un pointeur sur un BillboardNode.
 		using BillboardNodePtr = std::unique_ptr< BillboardNode >;
@@ -173,9 +173,9 @@ namespace render
 			//! L'UBO contenant les variables liées à la ligne.
 			renderer::UniformBuffer< LineUbo > m_lineUbo;
 			//! L'attribut de position
-			renderer::Vec3AttributePtr m_position;
+			utils::Vec3AttributePtr m_position;
 			//! L'attribut de normale
-			renderer::Vec3AttributePtr m_normal;
+			utils::Vec3AttributePtr m_normal;
 		};
 		//! Un pointeur sur un PolyLineNode.
 		using PolyLineNodePtr = std::unique_ptr< PolyLineNode >;

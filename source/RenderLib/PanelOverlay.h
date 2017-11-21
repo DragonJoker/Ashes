@@ -55,7 +55,7 @@ namespace render
 		*\param[in] size
 		*	La nouvelle valeur.
 		*/
-		inline void size( renderer::IVec2 const & size )noexcept
+		inline void size( utils::IVec2 const & size )noexcept
 		{
 			m_sizeChanged |= ( size != m_size );
 			m_size = size;
@@ -80,7 +80,7 @@ namespace render
 		//! Les données du tampon de sommets
 		QuadArray m_panelQuads;
 		//!Les UV du panneau.
-		renderer::Vec4 m_uv{ 0.0f, 0.0f, 1.0f, 1.0f };
+		utils::Vec4 m_uv{ 0.0f, 0.0f, 1.0f, 1.0f };
 		//! Dit si la taille de l'incrustation a changé.
 		bool m_sizeChanged{ true };
 	};

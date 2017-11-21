@@ -40,9 +40,9 @@ namespace render
 		struct Vertex
 		{
 			//! Sa position.
-			renderer::Vec2 coords;
+			utils::Vec2 coords;
 			//! Ses coordonnées de texture.
-			renderer::Vec2 text;
+			utils::Vec2 text;
 		};
 		//! Un quad permettant d'afficher un caractère.
 		using Quad = std::array< Vertex, 6 >;
@@ -98,7 +98,7 @@ namespace render
 		*\param[in] position
 		*	La nouvelle valeur.
 		*/
-		inline void position( renderer::IVec2 const & position )noexcept
+		inline void position( utils::IVec2 const & position )noexcept
 		{
 			m_position = position;
 			m_positionChanged = true;
@@ -107,7 +107,7 @@ namespace render
 		*\return
 		*	La position de l'incrustation.
 		*/
-		inline renderer::IVec2 const & position()const noexcept
+		inline utils::IVec2 const & position()const noexcept
 		{
 			return m_position;
 		}
@@ -115,7 +115,7 @@ namespace render
 		*\return
 		*	La taille de l'incrustation.
 		*/
-		inline renderer::IVec2 const & size()const noexcept
+		inline utils::IVec2 const & size()const noexcept
 		{
 			return m_size;
 		}
@@ -131,7 +131,7 @@ namespace render
 		*\return
 		*	La matrice de transformation de l'incrustation.
 		*/
-		inline renderer::Mat4 const & transform()const noexcept
+		inline utils::Mat4 const & transform()const noexcept
 		{
 			return m_transform;
 		}
@@ -191,15 +191,15 @@ namespace render
 		//! Le type d'incrustation
 		Type m_type;
 		//! La taille en pixels.
-		renderer::IVec2 m_size;
+		utils::IVec2 m_size;
 		//! La position en pixels.
-		renderer::IVec2 m_position;
+		utils::IVec2 m_position;
 		//! Dit si la position de cette incrustation a changé.
 		bool m_positionChanged{ true };
 		//! Le matériau de l'incrustation.
 		MaterialPtr m_material;
 		//! La matrice de transformation de l'incrustation.
-		renderer::Mat4 m_transform;
+		utils::Mat4 m_transform;
 		//! Le statut de visibilité.
 		bool m_visible{ true };
 		//! Le Z-index de l'incrustation.

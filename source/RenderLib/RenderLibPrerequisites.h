@@ -9,8 +9,8 @@
 #pragma once
 
 #include <Renderer/RendererPrerequisites.hpp>
-#include <Renderer/Quaternion.hpp>
-#include <Renderer/UtilsSignal.hpp>
+#include <Utils/Quaternion.hpp>
+#include <Utils/UtilsSignal.hpp>
 
 #include <time.h>
 #include <functional>
@@ -27,8 +27,8 @@ namespace render
 	/**@{*/
 	using ByteArray = renderer::ByteArray;
 	using UInt16Array = renderer::UInt16Array;
-	using Vec3Array = renderer::Vec3Array;
-	using Vec2Array = renderer::Vec2Array;
+	using Vec3Array = utils::Vec3Array;
+	using Vec2Array = utils::Vec2Array;
 	/**@}*/
 	/**
 	*\name Prédéclarations.
@@ -101,13 +101,13 @@ namespace render
 	*\name Définitions des signaux.
 	*/
 	/**@{*/
-	using OnMovableChanged = renderer::Signal< std::function< void( Movable & ) > >;
-	using OnBillboardChanged = renderer::Signal< std::function< void( Billboard & ) > >;
-	using OnBillboardBufferChanged = renderer::Signal< std::function< void( BillboardBuffer & ) > >;
-	using OnPolyLineChanged = renderer::Signal< std::function< void( PolyLine & ) > >;
-	using OnObjectPicked = renderer::Signal< std::function< void( Object & ) > >;
-	using OnBillboardPicked = renderer::Signal< std::function< void( Billboard &, uint32_t ) > >;
-	using OnUnpick = renderer::Signal< std::function< void() > >;
+	using OnMovableChanged = utils::Signal< std::function< void( Movable & ) > >;
+	using OnBillboardChanged = utils::Signal< std::function< void( Billboard & ) > >;
+	using OnBillboardBufferChanged = utils::Signal< std::function< void( BillboardBuffer & ) > >;
+	using OnPolyLineChanged = utils::Signal< std::function< void( PolyLine & ) > >;
+	using OnObjectPicked = utils::Signal< std::function< void( Object & ) > >;
+	using OnBillboardPicked = utils::Signal< std::function< void( Billboard &, uint32_t ) > >;
+	using OnUnpick = utils::Signal< std::function< void() > >;
 	/**@}*/
 	/**
 	*\brief
@@ -199,7 +199,7 @@ namespace render
 	*	Reçoit la texture.
 	*/
 	void loadTexture( ByteArray const & fileContent
-		, renderer::PixelFormat format
+		, utils::PixelFormat format
 		, renderer::Texture & texture );
 	/**
 	*\brief
@@ -225,31 +225,31 @@ namespace render
 	*\name Opérateurs de flux.
 	*/
 	/**@{*/
-	inline std::ostream & operator<<( std::ostream & stream, renderer::Vec2 const & value )
+	inline std::ostream & operator<<( std::ostream & stream, utils::Vec2 const & value )
 	{
 		stream << value.x << ", " << value.y;
 		return stream;
 	}
 
-	inline std::ostream & operator<<( std::ostream & stream, renderer::Vec3 const & value )
+	inline std::ostream & operator<<( std::ostream & stream, utils::Vec3 const & value )
 	{
 		stream << value.x << ", " << value.y << ", " << value.z;
 		return stream;
 	}
 
-	inline std::ostream & operator<<( std::ostream & stream, renderer::Vec4 const & value )
+	inline std::ostream & operator<<( std::ostream & stream, utils::Vec4 const & value )
 	{
 		stream << value.x << ", " << value.y << ", " << value.z << ", " << value.w;
 		return stream;
 	}
 
-	inline std::ostream & operator<<( std::ostream & stream, renderer::Quaternion const & value )
+	inline std::ostream & operator<<( std::ostream & stream, utils::Quaternion const & value )
 	{
 		stream << value.x << ", " << value.y << ", " << value.z << ", " << value.w;
 		return stream;
 	}
 
-	inline std::ostream & operator<<( std::ostream & stream, renderer::Mat4 const & value )
+	inline std::ostream & operator<<( std::ostream & stream, utils::Mat4 const & value )
 	{
 		stream << value[0].x << ", " << value[0].y << ", " << value[0].z << ", " << value[0].w << "\n";
 		stream << value[1].x << ", " << value[1].y << ", " << value[1].z << ", " << value[1].w << "\n";

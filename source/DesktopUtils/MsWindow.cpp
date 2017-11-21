@@ -143,7 +143,7 @@ namespace utils
 		m_minimised = true;
 	}
 
-	void MsWindow::doRestore( renderer::IVec2 const & size )
+	void MsWindow::doRestore( utils::IVec2 const & size )
 	{
 		if ( m_minimised )
 		{

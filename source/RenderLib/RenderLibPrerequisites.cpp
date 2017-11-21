@@ -4,8 +4,8 @@
 #include <Renderer/Texture.hpp>
 #include "Font.h"
 
-#include <Renderer/StringUtils.hpp>
-#include <Renderer/Converter.hpp>
+#include <Utils/StringUtils.hpp>
+#include <Utils/Converter.hpp>
 
 #include <iostream>
 
@@ -26,10 +26,10 @@ namespace render
 			return uint32_t( atoi( text.c_str() ) );
 		}
 
-		renderer::IVec2 getIVec2( std::string const & text )
+		utils::IVec2 getIVec2( std::string const & text )
 		{
 			auto infos = renderer::split( text, " ", 3, false );
-			renderer::IVec2 ret;
+			utils::IVec2 ret;
 
 			if ( infos.size() == 2 )
 			{
@@ -83,7 +83,7 @@ namespace render
 			}
 
 			texture.image( format
-				, renderer::IVec2{ x, y }
+				, utils::IVec2{ x, y }
 				, ByteArray{ data, data + n * x * y } );
 			stbi_image_free( data );
 		}
@@ -143,7 +143,7 @@ namespace render
 			}
 
 			texture.image( format
-				, renderer::IVec2{ x, y }
+				, utils::IVec2{ x, y }
 			, buffer );
 			stbi_image_free( data );
 		}
