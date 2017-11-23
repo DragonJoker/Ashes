@@ -1,4 +1,4 @@
-﻿/**
+/**
 *\file
 *	Overlay.h
 *\author
@@ -40,9 +40,9 @@ namespace render
 		struct Vertex
 		{
 			//! Sa position.
-			utils::Vec2 coords;
+			utils::Vec2 position;
 			//! Ses coordonnées de texture.
-			utils::Vec2 text;
+			utils::Vec2 texture;
 		};
 		//! Un quad permettant d'afficher un caractère.
 		using Quad = std::array< Vertex, 6 >;
@@ -72,7 +72,8 @@ namespace render
 		*\param[in] renderer
 		*	Le renderer utilisé pour dessiner cette incrustation.
 		*/
-		virtual void render( OverlayRenderer & renderer )const = 0;
+		virtual void render( renderer::RenderingResources const & resources
+			, OverlayRenderer & renderer )const = 0;
 		/**
 		*\return
 		*	Le matériau de l'incrustation.

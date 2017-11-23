@@ -19,8 +19,8 @@
 #include <RenderLib/Object.h>
 #include <Renderer/Texture.hpp>
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 #include <chrono>
 #include <fstream>

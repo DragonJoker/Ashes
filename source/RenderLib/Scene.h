@@ -16,16 +16,15 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "Picking.h"
-#include "Range.h"
 #include "RenderableContainer.h"
 #include "TextOverlay.h"
 #include <Renderer/Texture.hpp>
 #include "UberShader.h"
 #include "Viewport.h"
 
-#include <Renderer/GlDebug.h>
-#include <Renderer/GlUniform.h>
 #include <Renderer/ShaderProgram.hpp>
+
+#include <Utils/Range.hpp>
 
 #include <functional>
 
@@ -45,7 +44,8 @@ namespace render
 		*\param[in] size
 		*	La taille initiale de la zone de rendu.
 		*/
-		Scene( utils::IVec2 const & size );
+		Scene( renderer::Device const & device
+			, utils::IVec2 const & size );
 		/**
 		*\brief
 		*	Destructeur.
@@ -65,7 +65,7 @@ namespace render
 		*\brief
 		*	Dessine les objets de la scène, à travers la vue de la caméra.
 		*/
-		void draw()const;
+		void draw( renderer::RenderingResources const & resources )const;
 		/**
 		*\brief
 		*	Redimensionne le viewport de la caméra.
@@ -125,6 +125,37 @@ namespace render
 		*/
 		void addBillboardBuffer( std::string const & name
 			, BillboardBufferPtr buffer );
+		/**
+		*brief
+		*	Ajoute un PanelOverlay.
+		*\param[in] overlay
+		*	L'incrustation à ajouter.
+		*/
+		void addOverlay( std::string const & name
+			, PanelOverlayPtr overlay );
+		/**
+		*brief
+		*	Ajoute un BorderPanelOverlay.
+		*\param[in] overlay
+		*	L'incrustation à ajouter.
+		*/
+		void addOverlay( std::string const & name
+			, BorderPanelOverlayPtr overlay );
+		/**
+		*brief
+		*	Ajoute un TextOverlay.
+		*\param[in] overlay
+		*	L'incrustation à ajouter.
+		*/
+		void addOverlay( std::string const & name
+			, TextOverlayPtr overlay );
+		/**
+		*brief
+		*	Supprime un PanelOverlay.
+		*\param[in] overlay
+		*	L'incrustation à supprimer.
+		*/
+		void removeOverlay( std::string const & name );
 		/**
 		*\return
 		*	La caméra.
@@ -342,9 +373,9 @@ namespace render
 		//! Les Movable qui ont changé.
 		std::vector< Movable * > m_changedMovables;
 		//! Les connections aux évènements de Movable changé.
-		std::map< Movable *, Connection< OnMovableChanged > > m_onMovableChanged;
+		std::map< Movable *, utils::Connection< OnMovableChanged > > m_onMovableChanged;
 		//! Dit si la caméra a changé entre 2 updates.
-		bool m_cameraChanged{ true };
+		mutable bool m_cameraChanged{ true };
 	};
 }
 

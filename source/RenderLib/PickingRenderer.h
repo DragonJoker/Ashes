@@ -14,7 +14,10 @@
 #include "UberShader.h"
 
 #include <Renderer/DescriptorSet.hpp>
+#include <Renderer/DescriptorSetLayout.hpp>
+#include <Renderer/DescriptorSetPool.hpp>
 #include <Renderer/Pipeline.hpp>
+#include <Renderer/PipelineLayout.hpp>
 #include <Renderer/ShaderProgram.hpp>
 #include <Renderer/UniformBuffer.hpp>
 #include <Utils/RangedValue.hpp>
@@ -74,8 +77,8 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			RenderNode( renderer::RenderingResources const & resources
-				, renderer::DescriptorSetPool const & pool
+			RenderNode( renderer::Device const & device
+				, renderer::DescriptorSetLayout && layout
 				, renderer::ShaderProgramPtr && program );
 			//! Le programme shader.
 			renderer::ShaderProgramPtr m_program;
@@ -83,8 +86,12 @@ namespace render
 			renderer::UniformBuffer< MatrixUbo > m_mtxUbo;
 			//! L'UBO contenant les informations de picking.
 			renderer::UniformBuffer< PickingUbo > m_pickUbo;
-			//! Le descriptor set du noeud.
-			renderer::DescriptorSet m_descriptorSet;
+			//! Le layout des descriptor sets du noeud, pour les UBO.
+			renderer::DescriptorSetLayout m_uboDescriptorLayout;
+			//! Le pool de descriptor set du noeud, pour les UBO.
+			renderer::DescriptorSetPool m_uboDescriptorPool;
+			//! Le descriptor set de ce noeud, pour les UBO.
+			renderer::DescriptorSet m_uboDescriptor;
 		};
 		/**
 		*\brief
@@ -99,9 +106,13 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			ObjectNode( renderer::RenderingResources const & resources
-				, renderer::DescriptorSetPool const & pool
+			ObjectNode( renderer::Device const & device
+				, renderer::DescriptorSetLayout && layout
 				, renderer::ShaderProgramPtr && program );
+			//! Le layout du pipeline.
+			renderer::PipelineLayout m_pipelineLayout;
+			//! Le pipeline.
+			renderer::PipelinePtr m_pipeline;
 			//! Le layout du tampon de positions.
 			renderer::VertexLayout m_posLayout;
 			//! Le layout du tampon de normales.
@@ -126,13 +137,17 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			BillboardNode( renderer::RenderingResources const & resources
-				, renderer::DescriptorSetPool const & pool
+			BillboardNode( renderer::Device const & device
+				, renderer::DescriptorSetLayout && layout
 				, renderer::ShaderProgramPtr && program );
-			//! Le layout du tampon de positions.
-			renderer::VertexLayout m_layout;
 			//! L'UBO contenant les variables liées au billboard.
 			renderer::UniformBuffer< BillboardUbo > m_billboardUbo;
+			//! Le layout du tampon de positions.
+			renderer::VertexLayout m_layout;
+			//! Le layout du pipeline.
+			renderer::PipelineLayout m_pipelineLayout;
+			//! Le pipeline.
+			renderer::PipelinePtr m_pipeline;
 		};
 		//! Un pointeur sur un BillboardNode.
 		using BillboardNodePtr = std::unique_ptr< BillboardNode >;
@@ -144,7 +159,7 @@ namespace render
 		*\brief
 		*	Constructeur.
 		*/
-		PickingRenderer( renderer::RenderingResources const & resources );
+		PickingRenderer( renderer::Device const & device );
 		/**
 		*\brief
 		*	Crée tous les noeuds de rendu.
@@ -167,34 +182,37 @@ namespace render
 		*\param[in] billboards
 		*	Les billboards à dessiner.
 		*/
-		void draw( Camera const & camera
+		void draw( renderer::RenderingResources const & resources
+			, Camera const & camera
 			, float zoomPercent
 			, RenderSubmeshArray const & objects
 			, RenderBillboardArray const & billboards )const;
 
 	private:
-		void doRenderTransparent( Camera const & camera
+		void doRenderTransparent( renderer::RenderingResources const & resources
+			, Camera const & camera
 			, float zoomPercent
 			, NodeType type
 			, OpacityType opacity
 			, RenderSubmeshArray const & objects
 			, RenderBillboardArray const & billboards )const;
-		void doRenderObjects( Camera const & camera
+		void doRenderObjects( renderer::RenderingResources const & resources
+			, Camera const & camera
 			, float zoomPercent
 			, NodeType type
 			, ObjectNode & node
 			, RenderSubmeshVector const & objects )const;
-		void doRenderBillboards( Camera const & camera
+		void doRenderBillboards( renderer::RenderingResources const & resources
+			, Camera const & camera
 			, float zoomPercent
 			, NodeType type
 			, BillboardNode & node
-			, BillboardArray const & billboards )const;
+			, RenderBillboardVector const & billboards )const;
 
 	private:
-		renderer::RenderingResources const & m_resources;
+		renderer::Device const & m_device;
 		ObjectNodeArray m_objectNodes;
 		BillboardNodeArray m_billboardNodes;
-		renderer::Pipeline m_pipelineOpaque;
 		utils::Range< float > m_billboardScale{ utils::makeRange( 1.0f, 20.0f ) };
 		utils::Range< float > m_objectScale{ utils::makeRange( 1.0f, 5.0f ) };
 	};

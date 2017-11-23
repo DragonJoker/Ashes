@@ -22,44 +22,26 @@ namespace renderer
 {
 	/**
 	*\brief
-	*	Classe template wrappant un vk::VertexBuffer.
+	*	Classe wrappant un vk::VertexBuffer.
 	*/
-	template< typename T >
-	class VertexBuffer
+	class VertexBufferBase
 	{
 	public:
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
-		*\param[in] count
-		*	La nombre d'éléments dans le tampon.
+		*\param[in] device
+		*	Le périphérique logique.
+		*\param[in] size
+		*	La taille du tampon.
 		*\param[in] target
 		*	Les indicateurs d'utilisation du tampon.
 		*\param[in] flags
 		*	Les indicateurs de mémoire du tampon.
 		*/
-		inline VertexBuffer( RenderingResources const & resources
+		inline VertexBufferBase( Device const & device
 			, uint32_t bindingSlot
-			, uint32_t count
-			, BufferTargets target
-			, MemoryPropertyFlags flags );
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
-		*\param[in] data
-		*	Les données du tampon.
-		*\param[in] target
-		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] flags
-		*	Les indicateurs de mémoire du tampon.
-		*/
-		inline VertexBuffer( RenderingResources const & resources
-			, uint32_t bindingSlot
-			, std::vector< T > const & data
+			, uint32_t size
 			, BufferTargets target
 			, MemoryPropertyFlags flags );
 		/**
@@ -91,16 +73,69 @@ namespace renderer
 			return *m_layout;
 		}
 
-	private:
-		RenderingResources const & m_resources;
+	protected:
+		Device const & m_device;
 		vk::VertexBufferPtr m_buffer;
 		VertexLayoutPtr m_layout;
 	};
 	/**
 	*\brief
+	*	Classe template wrappant un vk::VertexBuffer.
+	*/
+	template< typename T >
+	class VertexBuffer
+		: public VertexBufferBase
+	{
+	public:
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
+		*\param[in] count
+		*	La nombre d'éléments dans le tampon.
+		*\param[in] target
+		*	Les indicateurs d'utilisation du tampon.
+		*\param[in] flags
+		*	Les indicateurs de mémoire du tampon.
+		*/
+		inline VertexBuffer( Device const & device
+			, uint32_t bindingSlot
+			, uint32_t count
+			, BufferTargets target
+			, MemoryPropertyFlags flags );
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
+		*\param[in] data
+		*	Les données du tampon.
+		*\param[in] target
+		*	Les indicateurs d'utilisation du tampon.
+		*\param[in] flags
+		*	Les indicateurs de mémoire du tampon.
+		*/
+		inline VertexBuffer( Device const & device
+			, uint32_t bindingSlot
+			, BufferTargets target
+			, MemoryPropertyFlags flags
+			, std::vector< T > const & data
+			, RenderingResources const & resources );
+		/**
+		*\return
+		*	Le nombre d'éléments contenus dans ce tampon.
+		*/
+		inline uint32_t getCount()const
+		{
+			return m_buffer->getBuffer().getSize() / sizeof( T );
+		}
+	};
+	/**
+	*\brief
 	*	Fonction d'aide à la création d'un Buffer.
-	*\param[in] resources
-	*	Les ressources de rendu.
+	*\param[in] device
+	*	Le périphérique logique.
 	*\param[in] count
 	*	La nombre d'éléments dans le tampon.
 	*\param[in] target
@@ -111,42 +146,15 @@ namespace renderer
 	*	Le tampon créé.
 	*/
 	template< typename T >
-	inline VertexBufferPtr< T > makeVertexBuffer( RenderingResources const & resources
+	inline VertexBufferPtr< T > makeVertexBuffer( Device const & device
 		, uint32_t bindingSlot
 		, uint32_t count
 		, BufferTargets target
 		, MemoryPropertyFlags flags )
 	{
-		return std::make_unique< VertexBuffer< T > >( resources
+		return std::make_unique< VertexBuffer< T > >( device
 			, bindingSlot
 			, count
-			, target
-			, flags );
-	}
-	/**
-	*\brief
-	*	Fonction d'aide à la création d'un Buffer.
-	*\param[in] resources
-	*	Les ressources de rendu.
-	*\param[in] data
-	*	Les données du tampon.
-	*\param[in] target
-	*	Les indicateurs d'utilisation du tampon.
-	*\param[in] flags
-	*	Les indicateurs de mémoire du tampon.
-	*\return
-	*	Le tampon créé.
-	*/
-	template< typename T >
-	inline VertexBufferPtr< T > makeVertexBuffer( RenderingResources const & resources
-		, uint32_t bindingSlot
-		, std::vector< T > const & data
-		, BufferTargets target
-		, MemoryPropertyFlags flags )
-	{
-		return std::make_unique< VertexBuffer< T > >( resources
-			, bindingSlot
-			, data
 			, target
 			, flags );
 	}

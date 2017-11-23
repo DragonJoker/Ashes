@@ -1,5 +1,6 @@
 #include "RenderingResources.hpp"
 
+#include "Device.hpp"
 #include "StagingBuffer.hpp"
 
 #include <VkLib/CommandPool.hpp>
@@ -8,14 +9,13 @@
 
 namespace renderer
 {
-	RenderingResources::RenderingResources( vk::LogicalDevice const & device
-		, vk::CommandPool const & commandPool )
+	RenderingResources::RenderingResources( Device const & device )
 		: m_device{ device }
-		, m_commandBuffer{ *this, commandPool }
-		, m_imageAvailableSemaphore{ device.createSemaphore() }
-		, m_finishedRenderingSemaphore{ device.createSemaphore() }
-		, m_fence{ device, VK_FENCE_CREATE_SIGNALED_BIT }
-		, m_stagingBuffer{ std::make_shared< StagingBuffer >( *this ) }
+		, m_commandBuffer{ m_device, m_device.getDevice().getGraphicsCommandPool() }
+		, m_imageAvailableSemaphore{ m_device.getDevice().createSemaphore() }
+		, m_finishedRenderingSemaphore{ m_device.getDevice().createSemaphore() }
+		, m_fence{ m_device.getDevice(), VK_FENCE_CREATE_SIGNALED_BIT }
+		, m_stagingBuffer{ std::make_shared< StagingBuffer >( device ) }
 	{
 	}
 

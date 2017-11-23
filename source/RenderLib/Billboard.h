@@ -29,7 +29,8 @@ namespace render
 		*\param[in] buffer
 		*	Les tampons du billboard.
 		*/
-		Billboard( std::string const & name, BillboardBuffer & buffer );
+		Billboard( std::string const & name
+			, BillboardBuffer & buffer );
 		/**
 		*\brief
 		*	Cache les billboards qui ne sont pas visibles par la caméra donnée.
@@ -38,13 +39,14 @@ namespace render
 		*\param[in] scale
 		*	L'échelle du zoom.
 		*/
-		void cull( Camera const & camera
+		void cull( renderer::RenderingResources const & resources
+			, Camera const & camera
 			, float scale );
 		/**
 		*\return
 		*	Le tampon contenant les positions.
 		*/
-		inline auto const & buffer()const
+		inline BillboardBuffer const & buffer()const
 		{
 			return m_buffer;
 		}
@@ -52,7 +54,7 @@ namespace render
 		*\return
 		*	Le tampon contenant les positions.
 		*/
-		inline auto & buffer()
+		inline BillboardBuffer & buffer()
 		{
 			return m_buffer;
 		}

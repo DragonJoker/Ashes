@@ -13,7 +13,11 @@
 #include <Renderer/Texture.hpp>
 #include "UberShader.h"
 
+#include <Renderer/DescriptorSet.hpp>
+#include <Renderer/DescriptorSetLayout.hpp>
+#include <Renderer/DescriptorSetPool.hpp>
 #include <Renderer/Pipeline.hpp>
+#include <Renderer/PipelineLayout.hpp>
 #include <Renderer/ShaderProgram.hpp>
 #include <Renderer/UniformBuffer.hpp>
 
@@ -88,18 +92,22 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			RenderNode( renderer::RenderingResources const & resources
-				, renderer::ShaderProgramPtr && program );
+			RenderNode( renderer::Device const & device
+				, renderer::DescriptorSetLayout && layout
+				, renderer::ShaderProgramPtr && program
+				, NodeType type );
 			//! Le programme shader.
 			renderer::ShaderProgramPtr m_program;
 			//! L'UBO contenant les matrices.
 			renderer::UniformBuffer< MatrixUbo > m_mtxUbo;
 			//! L'UBO contenant les informations du matériau.
 			renderer::UniformBuffer< MaterialUbo > m_matUbo;
-			//! La variable uniforme contenant la texture de diffuse.
-			renderer::IntUniformPtr m_mapDiffuse;
-			//! La variable uniforme contenant la texture d'opacité.
-			renderer::IntUniformPtr m_mapOpacity;
+			//! Le layout des descriptor sets du noeud, pour les UBO.
+			renderer::DescriptorSetLayout m_uboDescriptorLayout;
+			//! Le pool de descriptor set du noeud, pour les UBO.
+			renderer::DescriptorSetPool m_uboDescriptorPool;
+			//! Le descriptor set de ce noeud, pour les UBO.
+			renderer::DescriptorSet m_uboDescriptor;
 		};
 		/**
 		*\brief
@@ -114,14 +122,20 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			ObjectNode( renderer::RenderingResources const & resources
-				, renderer::ShaderProgramPtr && program );
-			//! L'attribut de position.
-			utils::Vec3AttributePtr m_position;
-			//! L'attribut de normale.
-			utils::Vec3AttributePtr m_normal;
-			//! L'attribut de coordonnées de texture.
-			utils::Vec2AttributePtr m_texture;
+			ObjectNode( renderer::Device const & device
+				, renderer::DescriptorSetLayout && layout
+				, renderer::ShaderProgramPtr && program
+				, NodeType type );
+			//! Le layout du pipeline.
+			renderer::PipelineLayout m_pipelineLayout;
+			//! Le pipeline.
+			renderer::PipelinePtr m_pipeline;
+			//! Le layout du tampon de positions.
+			renderer::VertexLayout m_posLayout;
+			//! Le layout du tampon de normales.
+			renderer::VertexLayout m_nmlLayout;
+			//! Le layout du tampon de coordonnées de texture.
+			renderer::VertexLayout m_texLayout;
 		};
 		//! Un pointeur sur un ObjectNode.
 		using ObjectNodePtr = std::unique_ptr< ObjectNode >;
@@ -140,16 +154,18 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			BillboardNode( renderer::RenderingResources const & resources
-				, renderer::ShaderProgramPtr && program );
+			BillboardNode( renderer::Device const & device
+				, renderer::DescriptorSetLayout && layout
+				, renderer::ShaderProgramPtr && program
+				, NodeType type );
 			//! L'UBO contenant les variables liées au billboard.
 			renderer::UniformBuffer< BillboardUbo > m_billboardUbo;
-			//! Attribut de position.
-			utils::Vec3AttributePtr m_position;
-			//! Attribut d'échelle.
-			utils::Vec2AttributePtr m_scale;
-			//! Attribut de coordonnées de texture.
-			utils::Vec2AttributePtr m_texture;
+			//! Le layout du tampon de positions.
+			renderer::VertexLayout m_layout;
+			//! Le layout du pipeline.
+			renderer::PipelineLayout m_pipelineLayout;
+			//! Le pipeline.
+			renderer::PipelinePtr m_pipeline;
 		};
 		//! Un pointeur sur un BillboardNode.
 		using BillboardNodePtr = std::unique_ptr< BillboardNode >;
@@ -168,14 +184,18 @@ namespace render
 			*\param[in,out] program
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
-			PolyLineNode( renderer::RenderingResources const & resources
-				, renderer::ShaderProgramPtr && program );
+			PolyLineNode( renderer::Device const & device
+				, renderer::DescriptorSetLayout && layout
+				, renderer::ShaderProgramPtr && program
+				, NodeType type );
 			//! L'UBO contenant les variables liées à la ligne.
 			renderer::UniformBuffer< LineUbo > m_lineUbo;
-			//! L'attribut de position
-			utils::Vec3AttributePtr m_position;
-			//! L'attribut de normale
-			utils::Vec3AttributePtr m_normal;
+			//! Le layout du tampon de positions.
+			renderer::VertexLayout m_layout;
+			//! Le layout du pipeline.
+			renderer::PipelineLayout m_pipelineLayout;
+			//! Le pipeline.
+			renderer::PipelinePtr m_pipeline;
 		};
 		//! Un pointeur sur un PolyLineNode.
 		using PolyLineNodePtr = std::unique_ptr< PolyLineNode >;
@@ -187,7 +207,7 @@ namespace render
 		*\brief
 		*	Constructeur.
 		*/
-		SceneRenderer( renderer::RenderingResources const & resources );
+		SceneRenderer( renderer::Device const & device );
 		/**
 		*\brief
 		*	Crée tous les noeuds de rendu.
@@ -212,39 +232,42 @@ namespace render
 		*\param[in] lines
 		*	Les polylignes à dessiner.
 		*/
-		void draw( Camera const & camera
+		void draw( renderer::RenderingResources const & resources
+			, Camera const & camera
 			, float zoomScale
 			, RenderSubmeshArray const & objects
 			, RenderBillboardArray const & billboards
-			, PolyLineArray const & lines )const;
+			, RenderPolyLineArray const & lines )const;
 
 	private:
-		void doRenderTransparent( Camera const & camera
+		void doRenderTransparent( renderer::RenderingResources const & resources
+			, Camera const & camera
 			, NodeType type
 			, OpacityType opacity
 			, RenderSubmeshArray const & objects
 			, RenderBillboardArray const & billboards
-			, PolyLineArray const & lines )const;
-		void doRenderObjects( Camera const & camera
+			, RenderPolyLineArray const & lines )const;
+		void doRenderObjects( renderer::RenderingResources const & resources
+			, Camera const & camera
 			, NodeType type
-			, ObjectNode const & node
+			, ObjectNode & node
 			, RenderSubmeshVector const & objects )const;
-		void doRenderBillboards( Camera const & camera
+		void doRenderBillboards( renderer::RenderingResources const & resources
+			, Camera const & camera
 			, NodeType type
-			, BillboardNode const & node
-			, BillboardArray const & billboards )const;
-		void doRenderLines( Camera const & camera
+			, BillboardNode & node
+			, RenderBillboardVector const & billboards )const;
+		void doRenderLines( renderer::RenderingResources const & resources
+			, Camera const & camera
 			, float zoomScale
-			, PolyLineNode const & node
-			, PolyLineArray const & lines )const;
+			, PolyLineNode & node
+			, RenderPolyLineVector const & lines )const;
 
 	private:
-		renderer::RenderingResources const & m_resources;
+		renderer::Device const & m_device;
 		ObjectNodeArray m_objectNodes;
 		BillboardNodeArray m_billboardNodes;
 		PolyLineNodePtr m_lineNode;
-		renderer::Pipeline m_pipelineOpaque;
-		renderer::Pipeline m_pipelineAlphaBlend;
 	};
 }
 

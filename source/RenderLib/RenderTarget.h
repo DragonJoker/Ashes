@@ -41,7 +41,8 @@ namespace render
 		*\brief
 		*	Dessine la scène dans le frame buffer de la cible de rendu.
 		*/
-		void drawScene( Scene const & scene )const noexcept;
+		void drawScene( renderer::RenderingResources const & resources
+			, Scene const & scene )const noexcept;
 		/**
 		*\return
 		*	Les dimensions de la cible.

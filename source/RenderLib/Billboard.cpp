@@ -10,9 +10,13 @@ namespace render
 	{
 	}
 
-	void Billboard::cull( Camera const & camera
+	void Billboard::cull( renderer::RenderingResources const & resources
+		, Camera const & camera
 		, float scale )
 	{
-		m_buffer.cull( camera, position(), scale );
+		m_buffer.cull( resources
+			, camera
+			, position()
+			, scale );
 	}
 }

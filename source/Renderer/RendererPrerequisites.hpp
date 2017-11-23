@@ -14,6 +14,7 @@
 #include "Filter.hpp"
 #include "ImageAspectFlag.hpp"
 #include "ImageLayout.hpp"
+#include "IndexType.hpp"
 #include "MemoryMapFlag.hpp"
 #include "MemoryPropertyFlag.hpp"
 #include "MipmapMode.hpp"
@@ -48,20 +49,27 @@ namespace renderer
 
 	class BufferMemoryBarrier;
 	class CommandBuffer;
+	class Connection;
 	class DescriptorSet;
 	class DescriptorSetLayout;
 	class DescriptorSetLayoutBinding;
 	class DescriptorSetPool;
+	class Device;
+	class FrameBuffer;
 	class ImageMemoryBarrier;
 	class ImageSubresourceRange;
 	class Pipeline;
 	class PipelineLayout;
+	class RenderBuffer;
+	class Renderer;
 	class RenderingResources;
 	class Sampler;
 	class Scissor;
 	class ShaderProgram;
 	class StagingBuffer;
+	class SwapChain;
 	class Texture;
+	class VertexBufferBase;
 	class VertexLayout;
 	class Viewport;
 
@@ -85,15 +93,26 @@ namespace renderer
 	using Vec3Array = utils::Vec3Array;
 	using Vec2Array = utils::Vec2Array;
 	using StringArray = utils::StringArray;
+
 	template< typename T >
 	using BufferPtr = std::unique_ptr< Buffer< T > >;
 	template< typename T >
 	using VertexBufferPtr = std::unique_ptr< VertexBuffer< T > >;
-	using ShaderProgramPtr = std::unique_ptr< ShaderProgram >;
-	using VertexLayoutPtr = std::unique_ptr< VertexLayout >;
+
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
-	using TexturePtr = std::shared_ptr< Texture >;
+	using DevicePtr = std::unique_ptr< Device >;
+	using RenderBufferPtr = std::unique_ptr< RenderBuffer >;
+	using RendererPtr = std::unique_ptr< Renderer >;
+	using RenderingResourcesPtr = std::unique_ptr< RenderingResources >;
+	using ShaderProgramPtr = std::unique_ptr< ShaderProgram >;
+	using SwapChainPtr = std::unique_ptr< SwapChain >;
+	using VertexLayoutPtr = std::unique_ptr< VertexLayout >;
+
+	using FrameBufferPtr = std::shared_ptr< FrameBuffer >;
+	using PipelinePtr = std::shared_ptr< Pipeline >;
+	using SamplerPtr = std::shared_ptr< Sampler >;
 	using StagingBufferPtr = std::shared_ptr< StagingBuffer >;
+	using TexturePtr = std::shared_ptr< Texture >;
 	/**@}*/
 	/**
 	*\name Typedefs d'attributs de sommets.

@@ -5,6 +5,8 @@
 #include "PolyLine.h"
 #include "Submesh.h"
 
+#include <Renderer/DescriptorSetLayoutBinding.hpp>
+
 #include <algorithm>
 
 namespace render
@@ -26,10 +28,47 @@ namespace render
 
 			objects.clear();
 		}
+
+		renderer::DescriptorSetLayout doCreateMaterialDescriptorLayout( renderer::Device const & device
+			, NodeType node )
+		{
+			uint32_t index = 0u;
+			std::vector< renderer::DescriptorSetLayoutBinding > bindings;
+
+			bindings.emplace_back( index++
+				, renderer::DescriptorType::eUniformBuffer
+				, renderer::ShaderStageFlag::eFragment );
+
+			if ( node == NodeType::eOpaqueDiff
+				|| node == NodeType::eAlphaBlendDiff
+				|| node == NodeType::eAlphaBlendOpaDiff
+				|| node == NodeType::eAlphaTestDiff
+				|| node == NodeType::eAlphaTestOpaDiff )
+			{
+				// Diffuse texture.
+				bindings.emplace_back( index++
+					, renderer::DescriptorType::eSampledImage
+					, renderer::ShaderStageFlag::eFragment );
+			}
+
+			if ( node == NodeType::eAlphaBlendOpa
+				|| node == NodeType::eAlphaBlendOpaDiff
+				|| node == NodeType::eAlphaTestOpa
+				|| node == NodeType::eAlphaTestOpaDiff )
+			{
+				// Opacity texture
+				bindings.emplace_back( index++
+					, renderer::DescriptorType::eSampledImage
+					, renderer::ShaderStageFlag::eFragment );
+			}
+
+			return renderer::DescriptorSetLayout{ device, bindings };
+		}
 	}
 
-	RenderableContainer::RenderableContainer()
-		: m_renderer{}
+	RenderableContainer::RenderableContainer( renderer::Device const & device )
+		: m_renderer{ device }
+		, m_device{ device }
 	{
 		m_renderer.initialise();
 	}
@@ -51,20 +90,28 @@ namespace render
 			billboards.clear();
 		}
 
+		for ( auto & lines : m_renderLines )
+		{
+			lines.clear();
+		}
+
 		m_lines.clear();
 		m_objects.clear();
 		m_billboards.clear();
 		m_renderer.cleanup();
+		m_descriptorLayouts.clear();
 	}
 
-	void RenderableContainer::doDraw( Camera const & camera
+	void RenderableContainer::doDraw( renderer::RenderingResources const & resources
+		, Camera const & camera
 		, float zoomScale )const
 	{
-		m_renderer.draw( camera
+		m_renderer.draw( resources
+			, camera
 			, zoomScale
 			, m_renderObjects
 			, m_renderBillboards
-			, m_lines );
+			, m_renderLines );
 	}
 
 	void RenderableContainer::doAdd( ObjectPtr object )
@@ -86,15 +133,14 @@ namespace render
 
 		while ( mshit != mshitend )
 		{
-			RenderSubmesh objMesh;
-			objMesh.m_material = *mtlit;
-			objMesh.m_submesh = *mshit;
-			objMesh.m_mesh = object->mesh();
-			objMesh.m_object = object;
-			auto opacity = objMesh.m_material->opacityType();
-			auto textures = objMesh.m_material->textureFlags();
-			size_t flags = size_t( UberShader::nodeType( opacity, textures ) );
-			m_renderObjects[flags].push_back( objMesh );
+			auto material = ( *mtlit );
+			auto node = UberShader::nodeType( material->opacityType()
+				, material->textureFlags() );
+			m_renderObjects[size_t( node )].emplace_back( doFindDescriptorLayout( node ).pool
+				, object->mesh()
+				, *mshit
+				, material
+				, object );
 			++mshit;
 			++mtlit;
 		}
@@ -117,25 +163,21 @@ namespace render
 
 		while ( mshit != mshitend )
 		{
-			RenderSubmesh objMesh;
-			objMesh.m_material = *mtlit;
-			objMesh.m_submesh = *mshit;
-			objMesh.m_mesh = object->mesh();
-			objMesh.m_object = object;
-			auto opacity = objMesh.m_material->opacityType();
-			auto textures = objMesh.m_material->textureFlags();
-			size_t flags = size_t( UberShader::nodeType( opacity, textures ) );
+			auto material = ( *mtlit );
+			auto submesh = ( *mshit );
+			size_t flags = size_t( UberShader::nodeType( material->opacityType()
+				, material->textureFlags() ) );
 			auto itr = std::find_if( m_renderObjects[flags].begin()
 				, m_renderObjects[flags].end()
-				, [&objMesh]( RenderSubmesh & submesh )
+				, [submesh, material]( RenderSubmesh & lookup )
 				{
-					return submesh.m_submesh == objMesh.m_submesh
-						&& submesh.m_material == objMesh.m_material;
+					return lookup.m_submesh == submesh
+						&& lookup.m_material == material;
 				} );
 
 			if ( itr == m_renderObjects[flags].end() )
 			{
-				assert( false && "Billboard not found in the list" );
+				assert( false && "Object not found in the list" );
 				return;
 			}
 
@@ -157,11 +199,12 @@ namespace render
 			return;
 		}
 
-		auto opacity = billboard->material().opacityType();
-		auto textures = billboard->material().textureFlags();
-		size_t flags = size_t( UberShader::nodeType( opacity, textures ) );
-		m_renderBillboards[flags].push_back( billboard );
 		m_billboards.push_back( billboard );
+		auto & material = billboard->material();
+		auto node = UberShader::nodeType( material.opacityType()
+			, material.textureFlags() );
+		m_renderBillboards[size_t( node )].emplace_back( doFindDescriptorLayout( node ).pool
+			, billboard );
 	}
 
 	void RenderableContainer::doRemove( BillboardPtr billboard )
@@ -177,12 +220,14 @@ namespace render
 		}
 
 		m_billboards.erase( it );
-		auto opacity = billboard->material().opacityType();
-		auto textures = billboard->material().textureFlags();
-		size_t flags = size_t( UberShader::nodeType( opacity, textures ) );
-		auto itr = std::find( m_renderBillboards[flags].begin()
+		auto flags = size_t( UberShader::nodeType( billboard->material().opacityType()
+			, billboard->material().textureFlags() ) );
+		auto itr = std::find_if( m_renderBillboards[flags].begin()
 			, m_renderBillboards[flags].end()
-			, billboard );
+			, [billboard]( RenderBillboard & lookup )
+			{
+				return lookup.m_billboard == billboard;
+			} );
 
 		if ( itr == m_renderBillboards[flags].end() )
 		{
@@ -206,6 +251,11 @@ namespace render
 		}
 
 		m_lines.push_back( lines );
+		auto & material = lines->material();
+		auto node = UberShader::nodeType( material.opacityType()
+			, material.textureFlags() );
+		m_renderLines[size_t( node )].emplace_back( doFindDescriptorLayout( node ).pool
+			, lines );
 	}
 
 	void RenderableContainer::doRemove( PolyLinePtr lines )
@@ -221,5 +271,34 @@ namespace render
 		}
 
 		m_lines.erase( it );
+		auto flags = size_t( UberShader::nodeType( lines->material().opacityType()
+			, lines->material().textureFlags() ) );
+		auto itr = std::find_if( m_renderLines[flags].begin()
+			, m_renderLines[flags].end()
+			, [lines]( RenderPolyLine & lookup )
+		{
+			return lookup.m_line == lines;
+		} );
+
+		if ( itr == m_renderLines[flags].end() )
+		{
+			assert( false && "PolyLine not found in the list" );
+			return;
+		}
+
+		m_renderLines[flags].erase( itr );
+	}
+
+	RenderableContainer::DescriptorLayoutPool const & RenderableContainer::doFindDescriptorLayout( NodeType node )
+	{
+		auto it = m_descriptorLayouts.find( size_t( node ) );
+
+		if ( it == m_descriptorLayouts.end() )
+		{
+			it = m_descriptorLayouts.emplace( size_t( node )
+				, DescriptorLayoutPool{ doCreateMaterialDescriptorLayout( m_device, node ) } ).first;
+		}
+
+		return it->second;
 	}
 }

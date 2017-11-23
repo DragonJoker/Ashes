@@ -8,6 +8,8 @@
 #define ___RenderLib_Viewport_HPP___
 #pragma once
 
+#include <Renderer/Viewport.hpp>
+
 #include <Utils/Angle.hpp>
 
 namespace render
@@ -97,6 +99,14 @@ namespace render
 			m_changed = false;
 			return result;
 		}
+		/**
+		*\return
+		*	Le viewport du renderer.
+		*/
+		inline renderer::Viewport const & viewport()const noexcept
+		{
+			return m_viewport;
+		}
 
 	private:
 		//! Les dimensions du viewport.
@@ -105,6 +115,8 @@ namespace render
 		utils::Mat4 m_projection;
 		//! L'angle d'ouverture verticale.
 		utils::Angle m_fovy;
+		//! Le viewport du renderer.
+		renderer::Viewport m_viewport;
 		//! Dit si le viewport a changé.
 		mutable bool m_changed{ true };
 	};

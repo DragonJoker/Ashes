@@ -13,9 +13,10 @@ namespace render
 	{
 	}
 
-	void PanelOverlay::render( OverlayRenderer & renderer )const
+	void PanelOverlay::render( renderer::RenderingResources const & resources
+		, OverlayRenderer & renderer )const
 	{
-		renderer.drawPanel( *this );
+		renderer.drawPanel( resources, *this );
 	}
 
 	void PanelOverlay::doUpdate()

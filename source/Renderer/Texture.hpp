@@ -27,10 +27,10 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*/
-		Texture( RenderingResources const & resources );
+		Texture( Device const & device );
 		/**
 		*\brief
 		*	Charge l'image de la texture.
@@ -43,7 +43,8 @@ namespace renderer
 		*/
 		void setImage( utils::PixelFormat format
 			, IVec2 const & size
-			, ByteArray const & data );
+			, ByteArray const & data
+			, RenderingResources const & resources );
 		/**
 		*\brief
 		*	Charge l'image de la texture.
@@ -65,14 +66,16 @@ namespace renderer
 		*\param[in] unit
 		*	L'indice de l'unité sur laquelle la texture doit être activée.
 		*/
-		void bindAsShaderInput( uint32_t unit )const;
+		void bindAsShaderInput( CommandBuffer const & commandBuffer
+			, uint32_t unit )const;
 		/**
 		*\brief
 		*	Active la texture.
 		*\param[in] unit
 		*	L'indice de l'unité sur laquelle la texture doit être activée.
 		*/
-		void bindAsShaderOutput( uint32_t unit )const;
+		void bindAsShaderOutput( CommandBuffer const & commandBuffer
+			, uint32_t unit )const;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de destination de transfert.
@@ -135,7 +138,7 @@ namespace renderer
 		}
 
 	private:
-		renderer::RenderingResources const & m_resources;
+		Device const & m_device;
 		utils::IVec2 m_size;
 		utils::PixelFormat m_format{ utils::PixelFormat::eR8G8B8 };
 		vk::ImagePtr m_texture;

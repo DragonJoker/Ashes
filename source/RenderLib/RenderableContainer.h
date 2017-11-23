@@ -10,7 +10,11 @@
 
 #include "SceneRenderer.h"
 
+#include <Renderer/DescriptorSetLayout.hpp>
+#include <Renderer/DescriptorSetPool.hpp>
+
 #include <functional>
+#include <unordered_map>
 
 namespace render
 {
@@ -25,7 +29,7 @@ namespace render
 		*\brief
 		*	Constructeur.
 		*/
-		RenderableContainer();
+		RenderableContainer( renderer::Device const & device );
 		/**
 		*\brief
 		*	Destructeur.
@@ -97,6 +101,19 @@ namespace render
 		}
 
 	protected:
+		struct DescriptorLayoutPool
+		{
+			DescriptorLayoutPool( renderer::DescriptorSetLayout && layout )
+				: layout{ std::move( layout ) }
+				, pool{ layout }
+			{
+			}
+
+			renderer::DescriptorSetLayout layout;
+			renderer::DescriptorSetPool pool;
+		};
+
+	protected:
 		/**
 		*\brief
 		*	Vide le conteneur.
@@ -110,7 +127,8 @@ namespace render
 		*\param[in] zoomScale
 		*	L'échelle calculée par rapport au zoom.
 		*/
-		void doDraw( Camera const & camera
+		void doDraw( renderer::RenderingResources const & resources
+			, Camera const & camera
 			, float zoomScale )const;
 		/**
 		*\brief
@@ -154,8 +172,21 @@ namespace render
 		*	La liste de lignes à supprimer.
 		*/
 		void doRemove( PolyLinePtr lines );
+		/**
+		*\brief
+		*	Cherche un layout de descripteur, pour le type de noeud donné.
+		*\remarks
+		*	Si le layout n'existe pas encore, il est alors créé.
+		*\param[in] node
+		*	Le type de noeud.
+		*\return
+		*	Le layout trouvé.
+		*/
+		DescriptorLayoutPool const & doFindDescriptorLayout( NodeType node );
 
 	private:
+		//! Les ressources de rendu.
+		renderer::Device const & m_device;
 		//! Le renderer.
 		SceneRenderer m_renderer;
 		//! Les objets complexes à dessiner.
@@ -168,6 +199,10 @@ namespace render
 		RenderSubmeshArray m_renderObjects;
 		//! Les instances de billboards à dessiner.
 		RenderBillboardArray m_renderBillboards;
+		//! Les instances de polylignes à dessiner.
+		RenderPolyLineArray m_renderLines;
+		//! Les layouts de descripteurs, par type de noeud.
+		std::unordered_map< size_t, DescriptorLayoutPool > m_descriptorLayouts;
 	};
 }
 

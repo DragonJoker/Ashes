@@ -60,7 +60,7 @@ namespace render
 		*	Dit si on veut que les billboards soient mis à l'échelle du zoom, c'est à
 		*	dire qu'ils ne varieront pas de taille.
 		*/
-		BillboardBuffer( renderer::RenderingResources const & resources
+		BillboardBuffer( renderer::Device const & device
 			, bool scale );
 		/**
 		*\brief
@@ -89,7 +89,8 @@ namespace render
 		*\param[in] scale
 		*	L'échelle du zoom.
 		*/
-		void cull( Camera const & camera
+		void cull( renderer::RenderingResources const & resources
+			, Camera const & camera
 			, utils::Vec3 const & position
 			, float scale );
 		/**
@@ -166,7 +167,7 @@ namespace render
 		OnBillboardBufferChanged onBillboardBufferChanged;
 
 	private:
-		renderer::RenderingResources const & m_resources;
+		renderer::Device const & m_device;
 		//! Le compte des objets visibles avant le culling.
 		uint32_t m_unculled{ 0u };
 		//! Le nombre de billboards à afficher (en fonction du seuil et du culling).

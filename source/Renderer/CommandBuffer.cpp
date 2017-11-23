@@ -16,10 +16,10 @@ See LICENSE file in root folder.
 
 namespace renderer
 {
-	CommandBuffer::CommandBuffer( RenderingResources const & resources
+	CommandBuffer::CommandBuffer( Device const & device
 		, vk::CommandPool const & pool )
-		: m_resources{ resources }
-		, m_commandBuffer{ resources.getDevice(), pool }
+		: m_device{ device }
+		, m_commandBuffer{ m_device.getDevice(), pool }
 	{
 	}
 
@@ -54,6 +54,27 @@ namespace renderer
 	{
 		m_commandBuffer.bindPipeline( pipeline.getPipeline()
 			, convert( bindingPoint ) );
+	}
+
+	void CommandBuffer::bindVertexBuffer( VertexBufferBase const & vertexBuffer
+		, uint64_t offset )const
+	{
+		m_commandBuffer.bindVertexBuffer( vertexBuffer.getVbo()
+			, offset );
+	}
+
+	void CommandBuffer::bindVertexBuffers( std::vector< std::reference_wrapper< VertexBufferBase const > > const & vertexBuffers
+		, std::vector< uint64_t > offsets )const
+	{
+		std::vector< std::reference_wrapper< vk::VertexBuffer const > > buffers;
+
+		for ( auto & buffer : vertexBuffers )
+		{
+			buffers.emplace_back( buffer.get().getVbo() );
+		}
+
+		m_commandBuffer.bindVertexBuffers( buffers
+			, offsets );
 	}
 
 	void CommandBuffer::memoryBarrier( PipelineStageFlags after

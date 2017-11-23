@@ -9,8 +9,8 @@
 #pragma once
 
 #include "BufferTarget.hpp"
+#include "Device.hpp"
 #include "MemoryPropertyFlag.hpp"
-#include "RenderingResources.hpp"
 
 #include <VkLib/Buffer.hpp>
 #include <VkLib/LogicalDevice.hpp>
@@ -28,8 +28,8 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*\param[in] count
 		*	Le nombre d'éléments du tampon.
 		*\param[in] target
@@ -37,37 +37,24 @@ namespace renderer
 		*\param[in] flags
 		*	Les indicateurs de mémoire du tampon.
 		*/
-		Buffer( RenderingResources const & resources
+		Buffer( Device const & device
 			, uint32_t count
 			, BufferTargets target
 			, MemoryPropertyFlags flags )
-			: m_resources{ resources }
-			, m_buffer{ std::make_unique< vk::Buffer >( resources.getDevice()
+			: m_device{ device }
+			, m_buffer{ device.getDevice()
 				, count * sizeof( T )
 				, convert( target )
-				, convert( flags ) ) }
+				, convert( flags ) }
 		{
 		}
 		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
-		*\param[in] data
-		*	Les données du tampon.
-		*\param[in] target
-		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] flags
-		*	Les indicateurs de mémoire du tampon.
+		*\return
+		*	Le nombre d'éléments.
 		*/
-		Buffer( RenderingResources const & resources
-			, std::vector< T > const & data
-			, BufferTargets target
-			, MemoryPropertyFlags flags )
-			: Buffer{ resources, uint32_t( data.size() ), target, flags }
+		inline uint32_t getCount()const
 		{
-			m_resources.copyBufferData( data
-				, *m_buffer );
+			return uint32_t( m_buffer.getSize() / sizeof( T ) );
 		}
 		/**
 		*\return
@@ -75,40 +62,13 @@ namespace renderer
 		*/
 		inline vk::Buffer const & getBuffer()const
 		{
-			return *m_buffer;
+			return m_buffer;
 		}
 
 	private:
-		RenderingResources const & m_resources;
+		Device const & m_device;
 		vk::Buffer m_buffer;
 	};
-	/**
-	*\brief
-	*	Fonction d'aide à la création d'un Buffer.
-	*\remarks
-	*	Initialise les données du tampon avec celles données.
-	*\param[in] resources
-	*	Les ressources de rendu.
-	*\param[in] data
-	*	Les données du tampon.
-	*\param[in] target
-	*	Les indicateurs d'utilisation du tampon.
-	*\param[in] flags
-	*	Les indicateurs de mémoire du tampon.
-	*\return
-	*	Le tampon créé.
-	*/
-	template< typename T >
-	BufferPtr< T > makeBuffer( RenderingResources const & resources
-		, std::vector< T > const & data
-		, BufferTargets target
-		, MemoryPropertyFlags flags )
-	{
-		return std::make_unique< Buffer< T > >( resources
-			, data
-			, target
-			, flags );
-	}
 	/**
 	*\brief
 	*	Fonction d'aide à la création d'un Buffer.
@@ -116,10 +76,10 @@ namespace renderer
 	*	Le tampon n'ayant pas de taille définie, il faut impérativement
 	*	appeler Buffer::resize, puis Buffer::upload pour lui attribuer
 	*	des données.
-	*\param[in] resources
-	*	Les ressources de rendu.
-		*\param[in] count
-		*	Le nombre d'éléments du tampon.
+	*\param[in] device
+	*	Les périphérique logique.
+	*\param[in] count
+	*	Le nombre d'éléments du tampon.
 	*\param[in] target
 	*	Les indicateurs d'utilisation du tampon.
 	*\param[in] flags
@@ -128,12 +88,12 @@ namespace renderer
 	*	Le tampon créé.
 	*/
 	template< typename T >
-	BufferPtr< T > makeBuffer( RenderingResources const & resources
+	BufferPtr< T > makeBuffer( Device const & device
 		, uint32_t count
 		, BufferTargets target
 		, MemoryPropertyFlags flags )
 	{
-		return std::make_unique< Buffer< T > >( resources
+		return std::make_unique< Buffer< T > >( device
 			, count
 			, target
 			, flags );

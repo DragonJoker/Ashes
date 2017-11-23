@@ -16,9 +16,10 @@ namespace render
 	{
 	}
 
-	void BorderPanelOverlay::render( OverlayRenderer & renderer )const
+	void BorderPanelOverlay::render( renderer::RenderingResources const & resources
+		, OverlayRenderer & renderer )const
 	{
-		renderer.drawBorderPanel( *this );
+		renderer.drawBorderPanel( resources, *this );
 	}
 
 	void BorderPanelOverlay::doUpdate()

@@ -24,18 +24,18 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*\param[in] wrapS, wrapT
 		*	Les modes de wrap de texture.
 		*\param[in] minFilter, magFilter
 		*	Les filtres de minification et magnification.
 		*/
-		Sampler( RenderingResources const & resources
-			, WrapMode wrapS = WrapMode::eClampToEdge
-			, WrapMode wrapT = WrapMode::eClampToEdge
-			, Filter minFilter = Filter::eLinear
-			, Filter magFilter = Filter::eLinear );
+		Sampler( Device const & device
+			, WrapMode wrapS
+			, WrapMode wrapT
+			, Filter minFilter
+			, Filter magFilter );
 		/**
 		*\return
 		*	L'échantillonneur vulkan.

@@ -23,8 +23,8 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*/
 		template< typename T >
 		BufferMemoryBarrier( AccessFlags srcAccessMask
@@ -51,8 +51,8 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*/
 		template< typename T >
 		BufferMemoryBarrier( AccessFlags srcAccessMask
@@ -79,8 +79,8 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*/
 		template< typename T >
 		BufferMemoryBarrier( AccessFlags srcAccessMask
@@ -107,8 +107,8 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*/
 		BufferMemoryBarrier( AccessFlags srcAccessMask
 			, AccessFlags dstAccessMask

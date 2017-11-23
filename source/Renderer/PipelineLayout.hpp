@@ -25,7 +25,7 @@ namespace renderer
 		*\param[in] layout
 		*	Le layout des descripteurs du pipeline.
 		*/
-		PipelineLayout( RenderingResources const & resources
+		PipelineLayout( Device const & device
 			, DescriptorSetLayout const * layout );
 		/**
 		*@~french

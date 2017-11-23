@@ -16,9 +16,13 @@
 #include "Scene.h"
 
 #include <Renderer/Attribute.hpp>
+#include <Renderer/DescriptorSet.hpp>
+#include <Renderer/DescriptorSetLayout.hpp>
+#include <Renderer/DescriptorSetPool.hpp>
 #include <Renderer/ShaderProgram.hpp>
-#include <Renderer/OpenGL.h>
 #include <Renderer/Pipeline.hpp>
+#include <Renderer/PipelineLayout.hpp>
+#include <Renderer/SwapChain.hpp>
 
 namespace render
 {
@@ -56,7 +60,8 @@ namespace render
 		*\param[in] loader
 		*	Le loader de police.
 		*/
-		RenderWindow( utils::IVec2 const & dimensions
+		RenderWindow( renderer::Device const & device
+			, utils::IVec2 const & dimensions
 			, render::FontLoader & loader
 			, bool debug );
 		/**
@@ -95,6 +100,14 @@ namespace render
 		*	Les dimensions du viewport.
 		*/
 		void resize( utils::IVec2 const & size )noexcept;
+		/**
+		*\return
+		*	Récupère les ressources de rendu par défaut.
+		*/
+		renderer::RenderingResources const & getDefaultResources()const
+		{
+			return m_swapChain->getDefaultResources();
+		}
 		/**
 		*\return
 		*	La scène.
@@ -168,12 +181,18 @@ namespace render
 		*\brief
 		*	Dessine une texture dans le backbuffer.
 		*/
-		void doRenderTextureToScreen( renderer::Texture const & texture )const noexcept;
+		void doRenderTextureToScreen( renderer::RenderingResources const & resources
+			, renderer::Texture const & texture )const noexcept;
 
 	private:
-		renderer::RenderingResources m_resources;
+		//! La swap chain.
+		renderer::SwapChainPtr m_swapChain;
+		//! Le layout des descripteurs de rendu dans la fenêtre.
+		renderer::DescriptorSetLayout m_descriptorLayout;
+		//! Le layout du pipeline de rendu dans la fenêtre.
+		renderer::PipelineLayout m_pipelineLayout;
 		//! Le pipeline de rendu dans la fenêtre.
-		renderer::Pipeline m_pipeline;
+		renderer::PipelinePtr m_pipeline;
 		//! La cible de rendu.
 		RenderTarget m_target;
 		//! La scène qui sera dessinée.
@@ -186,8 +205,11 @@ namespace render
 		renderer::ShaderProgramPtr m_program;
 		//! Le tampon GPU contenant les sommets du rendu dans la fenêtre.
 		renderer::VertexBufferPtr< Vertex > m_vbo;
+		//! Le layout de sommets du tampon.
+		renderer::VertexLayoutPtr m_layout;
 		//! La variable uniforme contenant la texture de la cible.
-		renderer::IntUniformPtr m_texUniform;
+		renderer::DescriptorSetPool m_descriptorPool;
+		renderer::DescriptorSet m_descriptor;
 		//! Le viewport du rendu dans la fenêtre.
 		Viewport m_viewport;
 		//! Le renderer d'incrustations
@@ -200,6 +222,8 @@ namespace render
 		mutable bool m_pick{ false };
 		//! Les informations de débogage.
 		Debug m_debug;
+		renderer::RenderingResources * m_resources{ nullptr };
+		bool m_vboInitialised{ false };
 	};
 }
 

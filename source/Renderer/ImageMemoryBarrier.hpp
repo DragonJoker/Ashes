@@ -20,8 +20,8 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*/
 		ImageMemoryBarrier( AccessFlags srcAccessMask
 			, AccessFlags dstAccessMask
@@ -34,8 +34,8 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*/
 		ImageMemoryBarrier( VkImageMemoryBarrier const & barrier );
 		/**

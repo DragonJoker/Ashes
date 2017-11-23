@@ -1,31 +1,20 @@
 #include "MsWindow.h"
 
 #include <RenderLib/RenderLibPrerequisites.h>
+
+#include <Renderer/Connection.hpp>
+#include <Renderer/RenderingResources.hpp>
+
 #include <VkLib/FlagCombination.hpp>
 
 #include <Windows.h>
 #include <windowsx.h>
 
-#define GLEW_STATIC
-#include <Renderer/GL/glew.h>
-#include <Renderer/GL/wglew.h>
 
 namespace utils
 {
 	namespace
 	{
-#if !defined( NDEBUG )
-
-		static constexpr int GL_CONTEXT_CREATION_DEFAULT_FLAGS = 0;
-		static constexpr int GL_CONTEXT_CREATION_DEFAULT_MASK = WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
-
-#else
-
-		static constexpr int GL_CONTEXT_CREATION_DEFAULT_FLAGS = 0;
-		static constexpr int GL_CONTEXT_CREATION_DEFAULT_MASK = WGL_CONTEXT_ES2_PROFILE_BIT_EXT;
-
-#endif
-
 		std::string doGetExecutableDir()
 		{
 			std::string ret;
@@ -101,20 +90,16 @@ namespace utils
 		{
 			if ( doPrepareDC( m_hdc ) )
 			{
-				m_context = doCreateContext( m_hdc );
+				m_renderer = std::make_unique< renderer::Renderer >();
+				RECT rect;
+				::GetClientRect( m_hwnd, &rect );
+				m_size.x = rect.right - rect.left;
+				m_size.y = rect.bottom - rect.top;
+				m_device = m_renderer->createDevice( doCreateConnection() );
 
-				if ( m_context )
+				if ( m_device )
 				{
-					RECT rect;
-					::GetClientRect( m_hwnd, &rect );
-					m_size.x = rect.right - rect.left;
-					m_size.y = rect.bottom - rect.top;
-
-					wglMakeCurrent( m_hdc, m_context );
-					glCheckError( glEnable, GL_TEXTURE_2D );
-					glCheckError( glFrontFace, GL_CCW );
 					onCreate();
-					wglMakeCurrent( m_hdc, nullptr );
 				}
 			}
 		}
@@ -124,11 +109,9 @@ namespace utils
 	{
 		if ( m_context != INVALID_HANDLE_VALUE )
 		{
-			wglMakeCurrent( m_hdc, m_context );
 			onDestroy();
-			wglMakeCurrent( m_hdc, nullptr );
+			m_renderer.reset();
 			::ReleaseDC( m_hwnd, m_hdc );
-			wglDeleteContext( m_context );
 		}
 
 		m_hdc = nullptr;
@@ -187,52 +170,11 @@ namespace utils
 		return true;
 	}
 
-	HGLRC MsWindow::doCreateContext( HDC hdc )
+	renderer::Connection MsWindow::doCreateConnection()
 	{
-		HGLRC context = wglCreateContext( hdc );
-
-		if ( !context )
-		{
-			std::cerr << "Context creation failed." << std::endl;
-			return nullptr;
-		}
-
-		wglMakeCurrent( hdc, context );
-
-
-		if ( !renderer::OpenGL::initialise() )
-		{
-			wglMakeCurrent( hdc, nullptr );
-		}
-		else
-		{
-			HGLRC( CALLBACK *glCreateContextAttribs )( HDC, HGLRC, int const * );
-			glCreateContextAttribs = reinterpret_cast< decltype( glCreateContextAttribs ) >( wglGetProcAddress( "wglCreateContextAttribsARB" ) );
-
-			if ( glCreateContextAttribs )
-			{
-				HGLRC old = context;
-				int major = 3;
-				int minor = 2;
-				std::vector< int > attribList
-				{
-					WGL_CONTEXT_MAJOR_VERSION_ARB, major,
-					WGL_CONTEXT_MINOR_VERSION_ARB, minor,
-					WGL_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
-					WGL_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
-					0
-				};
-				context = glCreateContextAttribs( hdc, nullptr, attribList.data() );
-				wglMakeCurrent( hdc, nullptr );
-				wglDeleteContext( old );
-			}
-			else
-			{
-				wglMakeCurrent( hdc, nullptr );
-			}
-		}
-
-		return context;
+		return renderer::Connection{ *m_renderer
+			, ::GetModuleHandle( nullptr )
+			, m_hwnd };
 	}
 
 	void MsWindow::doRegisterClass( HINSTANCE hInstance
@@ -263,8 +205,8 @@ namespace utils
 		, size_t wParam
 		, longptr_t lParam )
 	{
-		static renderer::Clock::time_point time;
-		static constexpr std::chrono::milliseconds ClickTimeout{ 200 };
+		static utils::Clock::time_point time;
+		static constexpr utils::Milliseconds clickTimeout{ 200 };
 
 		switch ( message )
 		{
@@ -316,15 +258,15 @@ namespace utils
 				bool mdown = ( wParam & MK_MBUTTON ) == MK_MBUTTON;
 				bool rdown = ( wParam & MK_RBUTTON ) == MK_RBUTTON;
 				onLButtonDown( { { w, h }, ldown, mdown, rdown, 0 } );
-				time = renderer::Clock::now();
+				time = utils::Clock::now();
 			}
 			break;
 
 		case WM_LBUTTONUP:
 			{
-				auto diff = std::chrono::duration_cast< std::chrono::milliseconds >( renderer::Clock::now() - time );
+				auto diff = std::chrono::duration_cast< utils::Milliseconds >( utils::Clock::now() - time );
 
-				if ( diff < ClickTimeout )
+				if ( diff < clickTimeout )
 				{
 					int w = GET_X_LPARAM( lParam );
 					int h = GET_Y_LPARAM( lParam );

@@ -19,11 +19,11 @@ Engine::Engine()
 	: MsWindow{}
 {
 	std::string const appName = "RenderLibTestApp";
-	m_cout = new render::LogStreambuf< utils::InfoLogStreambufTraits >( appName
+	m_cout = new utils::LogStreambuf< utils::InfoLogStreambufTraits >( appName
 		, std::cout );
-	m_cerr = new render::LogStreambuf< utils::ErrorLogStreambufTraits >( appName
+	m_cerr = new utils::LogStreambuf< utils::ErrorLogStreambufTraits >( appName
 		, std::cerr );
-	m_clog = new render::LogStreambuf< utils::DebugLogStreambufTraits >( appName
+	m_clog = new utils::LogStreambuf< utils::DebugLogStreambufTraits >( appName
 		, std::clog );
 }
 
@@ -142,16 +142,10 @@ void Engine::doInitialise3DElements()
 	auto height = size().y;
 	float ratio = float( width ) / height;
 
-	// Initialise OpenGL
-	if ( !renderer::OpenGL::isInitialised() )
-	{
-		renderer::OpenGL::initialise();
-	}
-
 	// Initialise the render window
 	utils::FontLoader loader{ "arial.ttf" };
-	m_window = std::make_unique< render::RenderWindow >( utils::IVec2{ width
-			, height }
+	m_window = std::make_unique< render::RenderWindow >( *m_device
+		, utils::IVec2{ width, height }
 		, loader
 		, true );
 	m_window->viewport().fovY( utils::Angle{ 45.0_degrees } );
@@ -165,7 +159,8 @@ void Engine::doInitialise3DElements()
 
 	if ( !content.empty() )
 	{
-		render::ObjectPtr object = utils::loadObjFile( "Cube"
+		render::ObjectPtr object = utils::loadObjFile( m_window->getDefaultResources()
+			, "Cube"
 			, content
 			, scene.materials()
 			, scene.textures()
@@ -178,8 +173,9 @@ void Engine::doInitialise3DElements()
 
 	if ( !texture )
 	{
-		texture = std::make_shared< render::Texture >();
-		render::loadTexture( utils::getFileBinaryContent( "texture.bmp" )
+		texture = std::make_shared< render::Texture >( *m_device );
+		render::loadTexture( m_window->getDefaultResources()
+			, utils::getFileBinaryContent( "texture.bmp" )
 			, *texture );
 		scene.textures().addElement( "texture.bmp", texture );
 	}
@@ -188,8 +184,9 @@ void Engine::doInitialise3DElements()
 
 	if ( !opacity )
 	{
-		opacity = std::make_shared< render::Texture >();
-		render::loadTexture( utils::getFileBinaryContent( "halo.bmp" )
+		opacity = std::make_shared< render::Texture >( *m_device );
+		render::loadTexture( m_window->getDefaultResources()
+			, utils::getFileBinaryContent( "halo.bmp" )
 			, *opacity );
 		scene.textures().addElement( "halo.bmp", opacity );
 	}
@@ -200,7 +197,8 @@ void Engine::doInitialise3DElements()
 	pickedMat->diffuse( renderer::RgbColour{ 0.0, 0.0, 0.5 } );
 	scene.materials().addElement( "picked", pickedMat );
 
-	auto pickedBuffers = std::make_shared< render::BillboardBuffer >( false );
+	auto pickedBuffers = std::make_shared< render::BillboardBuffer >( *m_device
+		, false );
 	pickedBuffers->add( { -1000.0f, utils::Vec3{ 0, 0, 0 }, utils::Vec2{ 1, 1 } } );
 	scene.addBillboardBuffer( "picked", pickedBuffers );
 	m_picked = std::make_shared< render::Billboard >( "picked", *pickedBuffers );
@@ -215,7 +213,8 @@ void Engine::doInitialise3DElements()
 	billboardMat->diffuse( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
 	billboardMat->emissive( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
 	scene.materials().addElement( "billboard", billboardMat );
-	auto billboardBuffers = std::make_shared< render::BillboardBuffer >( false );
+	auto billboardBuffers = std::make_shared< render::BillboardBuffer >( *m_device
+		, false );
 	billboardBuffers->add( { -100.0f, utils::Vec3{ 1, 0, 0 }, utils::Vec2{ 1, 1 } } );
 	billboardBuffers->add( { -100.0f, utils::Vec3{ 0, 1, 0 }, utils::Vec2{ 1, 0.5 } } );
 	billboardBuffers->add( { -100.0f, utils::Vec3{ -1, 0, 0 }, utils::Vec2{ 0.5, 1 } } );
@@ -241,7 +240,8 @@ void Engine::doInitialise3DElements()
 	halosMat->diffuse( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
 	halosMat->emissive( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
 	scene.materials().addElement( "halos", halosMat );
-	auto starsBuffers = std::make_shared< render::BillboardBuffer >( false );
+	auto starsBuffers = std::make_shared< render::BillboardBuffer >( *m_device
+		, false );
 	starsBuffers->add( { 50.0f, utils::Vec3{ -1, 1, 0 }, utils::Vec2{ 1, 1 } } );
 	starsBuffers->add( { 50.0f, utils::Vec3{ 1, 1, 0 }, utils::Vec2{ 1, 0.5 } } );
 	starsBuffers->add( { 50.0f, utils::Vec3{ 1, -1, 0 }, utils::Vec2{ 0.5, 1 } } );
@@ -272,7 +272,15 @@ void Engine::doInitialise3DElements()
 	lines->material( linesMat );
 	scene.add( lines );
 
-	doInitialiseFontTexture();
+	{
+		auto content = utils::getFileBinaryContent( "arial.ttf" );
+		render::FontPtr font = std::make_unique< render::Font >( "Arial", 32u );
+		utils::FontLoader loader{ "arial.ttf" };
+		render::loadFont( loader, *font );
+		m_fontTexture = std::make_unique< render::FontTexture >( *m_device
+			, std::move( font ) );
+	}
+
 	auto coinMat = doCreateOverlayMaterial( "coin", renderer::RgbColour{ 0, 1, 0 }, 1 );
 	auto overlay = std::make_shared< render::TextOverlay >();
 	overlay->position( utils::IVec2{ 200, 200 } );
@@ -313,16 +321,6 @@ void Engine::doCleanup3DElements()
 	m_window.reset();
 }
 
-void Engine::doInitialiseFontTexture()
-{
-	auto content = utils::getFileBinaryContent( "arial.ttf" );
-	render::FontPtr font = std::make_unique< render::Font >( "Arial", 32u );
-	utils::FontLoader loader{ "arial.ttf" };
-	render::loadFont( loader, *font );
-	m_fontTexture = std::make_unique< render::FontTexture >
-		( std::move( font ) );
-}
-
 render::MaterialPtr Engine::doCreateOverlayMaterial( std::string const & name
 	, renderer::RgbColour const & colour
 	, float opacity )
@@ -355,7 +353,7 @@ void Engine::doUpdatePicked( render::Object const & object )
 {
 	m_picked->moveTo( object.position() - utils::Vec3{ 0, 0, object.boundaries().z + 0.1 } );
 	doUpdatePicked( static_cast< render::Movable const & >( object ) );
-	m_picked->dimensions( utils::IVec2{ renderer::toVec2( object.boundaries() ) } );
+	m_picked->dimensions( utils::IVec2{ utils::toVec2( object.boundaries() ) } );
 	m_picked->buffer().at( 0u, { -1000.0f, utils::Vec3{ 0, 0, 0 }, utils::Vec2{ 1, 1 } } );
 }
 

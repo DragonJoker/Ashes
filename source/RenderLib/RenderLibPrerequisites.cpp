@@ -1,8 +1,14 @@
 #include "RenderLibPrerequisites.h"
 
+#include "Billboard.h"
 #include "FontLoader.h"
-#include <Renderer/Texture.hpp>
 #include "Font.h"
+#include "Material.h"
+#include "PolyLine.h"
+#include "Texture.h"
+
+#include <Renderer/DescriptorSetLayoutBinding.hpp>
+#include <Renderer/DescriptorSet.hpp>
 
 #include <Utils/StringUtils.hpp>
 #include <Utils/Converter.hpp>
@@ -28,7 +34,7 @@ namespace render
 
 		utils::IVec2 getIVec2( std::string const & text )
 		{
-			auto infos = renderer::split( text, " ", 3, false );
+			auto infos = utils::split( text, " ", 3, false );
 			utils::IVec2 ret;
 
 			if ( infos.size() == 2 )
@@ -41,8 +47,95 @@ namespace render
 		}
 	}
 
-	void loadTexture( ByteArray const & fileContent
-		, renderer::Texture & texture )
+	RenderSubmesh::RenderSubmesh( renderer::DescriptorSetPool const & pool
+		, MeshPtr mesh
+		, SubmeshPtr submesh
+		, MaterialPtr material
+		, ObjectPtr object )
+		: m_mesh{ mesh }
+		, m_submesh{ submesh }
+		, m_material{ material }
+		, m_object{ object }
+		, m_materialDescriptor{ pool }
+	{
+		uint32_t index = 0u;
+
+		if ( material->hasDiffuseMap() )
+		{
+			m_materialDescriptor.createBinding( renderer::DescriptorSetLayoutBinding{ index++
+					, renderer::DescriptorType::eSampledImage
+					, renderer::ShaderStageFlag::eFragment }
+				, material->diffuseMap().texture()
+				, material->diffuseMap().sampler() );
+		}
+
+		if ( material->hasOpacityMap() )
+		{
+			m_materialDescriptor.createBinding( renderer::DescriptorSetLayoutBinding{ index++
+					, renderer::DescriptorType::eSampledImage
+					, renderer::ShaderStageFlag::eFragment }
+				, material->opacityMap().texture()
+				, material->opacityMap().sampler() );
+		}
+	}
+
+	RenderBillboard::RenderBillboard( renderer::DescriptorSetPool const & pool
+		, BillboardPtr billboard )
+		: m_billboard{ billboard }
+		, m_materialDescriptor{ pool }
+	{
+		auto & material = billboard->material();
+		uint32_t index = 0u;
+
+		if ( material.hasDiffuseMap() )
+		{
+			m_materialDescriptor.createBinding( renderer::DescriptorSetLayoutBinding{ index++
+					, renderer::DescriptorType::eSampledImage
+					, renderer::ShaderStageFlag::eFragment }
+				, material.diffuseMap().texture()
+				, material.diffuseMap().sampler() );
+		}
+
+		if ( material.hasOpacityMap() )
+		{
+			m_materialDescriptor.createBinding( renderer::DescriptorSetLayoutBinding{ index++
+					, renderer::DescriptorType::eSampledImage
+					, renderer::ShaderStageFlag::eFragment }
+				, material.opacityMap().texture()
+				, material.opacityMap().sampler() );
+		}
+	}
+
+	RenderPolyLine::RenderPolyLine( renderer::DescriptorSetPool const & pool
+		, PolyLinePtr line )
+		: m_line{ line }
+		, m_materialDescriptor{ pool }
+	{
+		auto & material = line->material();
+		uint32_t index = 0u;
+
+		if ( material.hasDiffuseMap() )
+		{
+			m_materialDescriptor.createBinding( renderer::DescriptorSetLayoutBinding{ index++
+					, renderer::DescriptorType::eSampledImage
+					, renderer::ShaderStageFlag::eFragment }
+				, material.diffuseMap().texture()
+				, material.diffuseMap().sampler() );
+		}
+
+		if ( material.hasOpacityMap() )
+		{
+			m_materialDescriptor.createBinding( renderer::DescriptorSetLayoutBinding{ index++
+					, renderer::DescriptorType::eSampledImage
+					, renderer::ShaderStageFlag::eFragment }
+				, material.opacityMap().texture()
+				, material.opacityMap().sampler() );
+		}
+	}
+
+	void loadTexture( renderer::RenderingResources const & resources
+		, ByteArray const & fileContent
+		, Texture & texture )
 	{
 		int x = 0;
 		int y = 0;
@@ -56,42 +149,44 @@ namespace render
 
 		if ( data )
 		{
-			renderer::PixelFormat format;
+			utils::PixelFormat format;
 
 			switch ( n )
 			{
 			case 1:
-				format = renderer::PixelFormat::eL8;
+				format = utils::PixelFormat::eL8;
 				break;
 
 			case 2:
-				format = renderer::PixelFormat::eL8A8;
+				format = utils::PixelFormat::eL8A8;
 				break;
 
 			case 3:
-				format = renderer::PixelFormat::eR8G8B8;
+				format = utils::PixelFormat::eR8G8B8;
 				break;
 
 			case 4:
-				format = renderer::PixelFormat::eR8G8B8A8;
+				format = utils::PixelFormat::eR8G8B8A8;
 				break;
 
 			default:
 				assert( "Unsupported component count" );
-				format = renderer::PixelFormat::eR8G8B8A8;
+				format = utils::PixelFormat::eR8G8B8A8;
 				break;
 			}
 
 			texture.image( format
 				, utils::IVec2{ x, y }
-				, ByteArray{ data, data + n * x * y } );
+				, ByteArray{ data, data + n * x * y }
+				, resources );
 			stbi_image_free( data );
 		}
 	}
 
-	void loadTexture( ByteArray const & fileContent
-		, renderer::PixelFormat format
-		, renderer::Texture & texture )
+	void loadTexture( renderer::RenderingResources const & resources
+		, ByteArray const & fileContent
+		, utils::PixelFormat format
+		, Texture & texture )
 	{
 		int x = 0;
 		int y = 0;
@@ -102,7 +197,7 @@ namespace render
 			, &y
 			, &n
 			, 0 );
-		size_t bufferSize = x * y * renderer::pixelSize( format );
+		size_t bufferSize = x * y * utils::pixelSize( format );
 		ByteArray buffer( bufferSize );
 
 		if ( data )
@@ -110,7 +205,7 @@ namespace render
 			switch ( n )
 			{
 			case 1:
-				renderer::convertBuffer< renderer::PixelFormat::eL8 >( data
+				utils::convertBuffer< utils::PixelFormat::eL8 >( data
 					, size_t( n * x * y )
 					, buffer.data()
 					, format
@@ -118,7 +213,7 @@ namespace render
 				break;
 
 			case 2:
-				renderer::convertBuffer< renderer::PixelFormat::eL8A8 >( data
+				utils::convertBuffer< utils::PixelFormat::eL8A8 >( data
 					, size_t( n * x * y )
 					, buffer.data()
 					, format
@@ -126,7 +221,7 @@ namespace render
 				break;
 
 			case 3:
-				renderer::convertBuffer< renderer::PixelFormat::eR8G8B8 >( data
+				utils::convertBuffer< utils::PixelFormat::eR8G8B8 >( data
 					, size_t( n * x * y )
 					, buffer.data()
 					, format
@@ -134,7 +229,7 @@ namespace render
 				break;
 
 			case 4:
-				renderer::convertBuffer< renderer::PixelFormat::eR8G8B8A8 >( data
+				utils::convertBuffer< utils::PixelFormat::eR8G8B8A8 >( data
 					, size_t( n * x * y )
 					, buffer.data()
 					, format
@@ -144,7 +239,8 @@ namespace render
 
 			texture.image( format
 				, utils::IVec2{ x, y }
-			, buffer );
+				, buffer
+				, resources );
 			stbi_image_free( data );
 		}
 	}
@@ -152,12 +248,12 @@ namespace render
 	void loadFont( std::string const & content
 		, Font & font )
 	{
-		auto lines = renderer::split( content, "\n", 0xFFFFFFFF, false );
+		auto lines = utils::split( content, "\n", 0xFFFFFFFF, false );
 
 		for ( auto & line : lines )
 		{
 			std::clog << line << std::endl;
-			auto infos = renderer::split( line, ",", 5, false );
+			auto infos = utils::split( line, ",", 5, false );
 
 			if ( infos.size() == 4 )
 			{

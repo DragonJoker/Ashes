@@ -28,8 +28,8 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*\param[in] count
 		*	Le nombre d'instance des données.
 		*\param[in] target
@@ -37,7 +37,7 @@ namespace renderer
 		*\param[in] flags
 		*	Les indicateurs de mémoire du tampon.
 		*/
-		inline UniformBuffer( RenderingResources const & resources
+		inline UniformBuffer( Device const & device
 			, uint32_t count
 			, BufferTarget target
 			, MemoryPropertyFlags flags );
@@ -91,7 +91,7 @@ namespace renderer
 		}
 
 	private:
-		RenderingResources const & m_resources;
+		Device const & m_device;
 		vk::UniformBufferPtr m_buffer;
 		std::vector< T > m_data;
 	};

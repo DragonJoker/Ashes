@@ -5,8 +5,8 @@
 #include "PolyLine.h"
 #include "Submesh.h"
 
-#include <Renderer/ExponentialRange.hpp>
-#include <Renderer/LogarithmicRange.hpp>
+#include <Utils/ExponentialRange.hpp>
+#include <Utils/LogarithmicRange.hpp>
 #include <Utils/StringUtils.hpp>
 
 //#include <Renderer/ShaderProgram.hpp>
@@ -36,8 +36,9 @@ namespace render
 		}
 	}
 
-	Scene::Scene( utils::IVec2 const & size )
-		: RenderableContainer{}
+	Scene::Scene( renderer::Device const & device
+		, utils::IVec2 const & size )
+		: RenderableContainer{ device }
 		, m_camera{ size }
 	{
 		auto material = m_materials.findElement( "FullAlphaWhite" );
@@ -84,11 +85,25 @@ namespace render
 		}
 	}
 
-	void Scene::draw()const
+	void Scene::draw( renderer::RenderingResources const & resources )const
 	{
+		if ( m_cameraChanged )
+		{
+			auto percent = m_state.zoomBounds().invpercent( m_state.zoom() );
+			m_cameraChanged = false;
+			// Apply frustum culling to billboards.
+			for ( auto & billboard : billboards() )
+			{
+				billboard->cull( resources
+					, m_camera
+					, 2.0f - 2.0f * percent );
+			}
+		}
+
 		m_camera.viewport().apply();
 		auto percent = m_state.zoomBounds().percent( m_state.zoom() );
-		doDraw( m_camera
+		doDraw( resources
+			, m_camera
 			, 2.0f * percent + ( 1.0f - percent ) / 100.0f );
 	}
 
@@ -163,7 +178,7 @@ namespace render
 	void Scene::doUpdateBillboards()
 	{
 		static float constexpr offset = 1.0f;
-		static renderer::LogarithmicRange< 2, float > threshRange{ 0 + offset, 1 + offset };
+		static utils::LogarithmicRange< 2, float > threshRange{ 0 + offset, 1 + offset };
 		auto percent = m_state.zoomBounds().invpercent( m_state.zoom() );
 		m_currentThreshold = m_threshold.range().value( percent );
 		// First, initialise the billboards that need to be.
@@ -189,17 +204,6 @@ namespace render
 			for ( auto & billboard : m_newBillboardBuffers )
 			{
 				billboard->update( m_previousThreshold );
-			}
-		}
-
-		if ( m_cameraChanged )
-		{
-			m_cameraChanged = false;
-			// Apply frustum culling to billboards.
-			for ( auto & billboard : billboards() )
-			{
-				billboard->cull( m_camera
-					, 2.0f - 2.0f * percent );
 			}
 		}
 

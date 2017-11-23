@@ -2,18 +2,18 @@
 
 #include "Scene.h"
 
-#include <Renderer/GlFrameBuffer.h>
-#include <Renderer/GlRenderBuffer.h>
-#include <Renderer/GlTexture.h>
+#include <Renderer/FrameBuffer.hpp>
+#include <Renderer/RenderBuffer.hpp>
+#include <Renderer/Texture.hpp>
 
 namespace render
 {
 	RenderTarget::RenderTarget( utils::IVec2 const & dimensions
-		, renderer::PixelFormat format )
+		, utils::PixelFormat format )
 		: m_size{ dimensions }
 		, m_framebuffer{ std::make_unique< renderer::FrameBuffer >() }
 		, m_colour{ std::make_unique< renderer::Texture >( format, dimensions ) }
-		, m_depth{ std::make_unique< renderer::RenderBuffer >( renderer::PixelFormat::eD16, dimensions ) }
+		, m_depth{ std::make_unique< renderer::RenderBuffer >( utils::PixelFormat::eD16, dimensions ) }
 	{
 		m_framebuffer->bind();
 		m_framebuffer->attach( *m_colour, renderer::AttachmentPoint::eColour0 );
@@ -29,11 +29,12 @@ namespace render
 		m_framebuffer->unbind();
 	}
 
-	void RenderTarget::drawScene( Scene const & scene )const noexcept
+	void RenderTarget::drawScene( renderer::RenderingResources const & resources
+		, Scene const & scene )const noexcept
 	{
 		m_framebuffer->bind();
 		m_framebuffer->clear( scene.backgroundColour() );
-		scene.draw();
+		scene.draw( resources );
 		m_framebuffer->unbind();
 	}
 }

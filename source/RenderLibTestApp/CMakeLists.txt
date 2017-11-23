@@ -36,10 +36,12 @@ add_executable( ${PROJECT_NAME} WIN32
 
 target_link_libraries( ${PROJECT_NAME}
 	${VkLib_LIBRARIES}
+	Utils
 	Renderer
 	RenderLib
 	FreeType
 	DesktopUtils
+	${BinaryLibraries}
 )
 
 add_dependencies( ${PROJECT_NAME}

@@ -6,6 +6,7 @@ namespace render
 {
 	Viewport::Viewport( utils::IVec2 const & size )noexcept
 		: m_size{ size }
+		, m_viewport{ size.x, size.y, 0, 0 }
 	{
 	}
 
@@ -21,7 +22,7 @@ namespace render
 		, float near
 		, float far )noexcept
 	{
-		m_projection = renderer::ortho( left, right, bottom, top, near, far );
+		m_projection = utils::ortho( left, right, bottom, top, near, far );
 	}
 
 	void Viewport::fovY( utils::Angle const & fovy )noexcept
@@ -32,12 +33,7 @@ namespace render
 		{
 			m_fovy = fovy;
 			float aspect = float( m_size.x ) / m_size.y;
-			m_projection = renderer::infinitePerspective( utils::Radians{ m_fovy }, aspect, 0.1f );
+			m_projection = utils::infinitePerspective( utils::Radians{ m_fovy }, aspect, 0.1f );
 		}
-	}
-
-	void Viewport::apply()const noexcept
-	{
-		glViewport( 0, 0, GLsizei( m_size.x ), GLsizei( m_size.y ) );
 	}
 }

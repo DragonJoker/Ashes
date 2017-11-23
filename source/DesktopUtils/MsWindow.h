@@ -10,19 +10,21 @@
 
 #include "DesktopUtilsPrerequisites.h"
 
+#include <Renderer/Renderer.hpp>
+
 struct HINSTANCE__;
-typedef struct HINSTANCE__ *HINSTANCE;
+using HINSTANCE = struct HINSTANCE__ *;
 struct HWND__;
-typedef struct HWND__ *HWND;
+using HWND = struct HWND__ *;
 struct HDC__;
-typedef struct HDC__ *HDC;
+using HDC = struct HDC__ *;
 struct HGLRC__;
-typedef struct HGLRC__ *HGLRC;
+using HGLRC = struct HGLRC__ *;
 
 #if defined( _WIN64 )
-typedef int64_t longptr_t;
+using longptr_t = int64_t;
 #else
-typedef long longptr_t;
+using longptr_t = long;
 #endif
 
 namespace utils
@@ -116,6 +118,11 @@ namespace utils
 		*	Echange les tampons du double buffering.
 		*/
 		void doSwapBuffers();
+		/**
+		*\brief
+		*	Crée la connection entre l'API de rendu et la fenêtre.
+		*/
+		renderer::Connection doCreateConnection();
 
 	private:
 		void doCreate();
@@ -123,7 +130,6 @@ namespace utils
 		void doMinimise();
 		void doRestore( utils::IVec2 const & size );
 		bool doPrepareDC( HDC hdc );
-		HGLRC doCreateContext( HDC hdc );
 		void doRegisterClass( HINSTANCE hInstance
 			, std::string const & className
 			, int iconResourceID
@@ -138,6 +144,10 @@ namespace utils
 		static void doRegisterInstance( MsWindow * window );
 		static void doUnregisterInstance( MsWindow * window );
 		static MsWindow * doGetInstance( HWND hWnd );
+
+	protected:
+		renderer::RendererPtr m_renderer;
+		renderer::DevicePtr m_device;
 
 	private:
 		HWND m_hwnd{ nullptr };

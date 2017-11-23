@@ -1,7 +1,7 @@
 #include "DescriptorSetLayout.hpp"
 
 #include "DescriptorSetLayoutBinding.hpp"
-#include "RenderingResources.hpp"
+#include "Device.hpp"
 
 #include <VkLib/LogicalDevice.hpp>
 
@@ -22,9 +22,9 @@ namespace renderer
 			return result;
 		}
 	}
-	DescriptorSetLayout::DescriptorSetLayout( RenderingResources const & resources
+	DescriptorSetLayout::DescriptorSetLayout( Device const & device
 		, std::vector< DescriptorSetLayoutBinding > const & bindings )
-		: m_layout{ resources.getDevice().createDescriptorLayout( doConvert( bindings ) ) }
+		: m_layout{ device.getDevice().createDescriptorLayout( doConvert( bindings ) ) }
 	{
 	}
 }

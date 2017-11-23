@@ -27,12 +27,9 @@ namespace renderer
 		*\brief
 		*	Constructeur.
 		*\param[in] device
-		*	Le LogicalDevice parent.
-		*\param[in] familyIndex
-		*	L'index du type de file.
+		*	Le Device parent.
 		*/
-		RenderingResources( vk::LogicalDevice const & device
-			, vk::CommandPool const & commandPool );
+		RenderingResources( Device const & device );
 		/**
 		*\brief
 		*	Attend que le tampon de commandes soit prêt à l'enregistrement.
@@ -110,7 +107,7 @@ namespace renderer
 		}
 
 	private:
-		vk::LogicalDevice const & m_device;
+		Device const & m_device;
 		vk::FrameBufferPtr m_frameBuffer;
 		vk::SemaphorePtr m_imageAvailableSemaphore;
 		vk::SemaphorePtr m_finishedRenderingSemaphore;

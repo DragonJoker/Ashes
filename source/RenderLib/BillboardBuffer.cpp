@@ -8,16 +8,16 @@
 
 namespace render
 {
-	BillboardBuffer::BillboardBuffer( renderer::RenderingResources const & resources
+	BillboardBuffer::BillboardBuffer( renderer::Device const & device
 		, bool scale )
-		: m_resources{ resources }
+		: m_device{ device }
 		, m_scale{ scale }
 	{
 	}
 
 	void BillboardBuffer::initialise()
 	{
-		m_vbo = renderer::makeVertexBuffer< BillboardBuffer::Quad >( m_resources
+		m_vbo = renderer::makeVertexBuffer< BillboardBuffer::Quad >( m_device
 			, 0u
 			, uint32_t( m_buffer.size() )
 			, renderer::BufferTarget::eTransferDst
@@ -59,7 +59,8 @@ namespace render
 		}
 	}
 
-	void BillboardBuffer::cull( Camera const & camera
+	void BillboardBuffer::cull( renderer::RenderingResources const & resources
+		, Camera const & camera
 		, utils::Vec3 const & position
 		, float scale )
 	{
@@ -103,7 +104,8 @@ namespace render
 				}
 			} );
 
-		m_resources.getStagingBuffer().copyVertexData( m_visible
+		resources.getStagingBuffer().copyVertexData( resources.getCommandBuffer()
+			, m_visible
 			, *m_vbo );
 		m_count = count;
 	}

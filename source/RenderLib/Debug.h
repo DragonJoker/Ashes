@@ -33,7 +33,8 @@ namespace render
 		*\param[in] loader
 		*	Le loader de police.
 		*/
-		Debug( bool enable
+		Debug( renderer::Device const & device
+			, bool enable
 			, render::Scene & scene
 			, render::FontLoader & loader );
 		/**

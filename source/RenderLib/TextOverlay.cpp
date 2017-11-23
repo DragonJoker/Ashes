@@ -18,9 +18,10 @@ namespace render
 	{
 	}
 
-	void TextOverlay::render( OverlayRenderer & renderer )const
+	void TextOverlay::render( renderer::RenderingResources const & resources
+		, OverlayRenderer & renderer )const
 	{
-		renderer.drawText( *this );
+		renderer.drawText( resources, *this );
 	}
 
 	void TextOverlay::doUpdate()
@@ -35,7 +36,7 @@ namespace render
 
 	TextOverlay::DisplayableLineArray TextOverlay::doPrepareText()
 	{
-		std::vector< std::string > lines = renderer::split( m_previousCaption
+		std::vector< std::string > lines = utils::split( m_previousCaption
 			, "\n"
 			, uint32_t( std::count( m_previousCaption.begin()
 				, m_previousCaption.end()

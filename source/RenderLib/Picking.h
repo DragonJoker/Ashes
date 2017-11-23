@@ -10,11 +10,11 @@
 
 #include "PickingRenderer.h"
 
-#include <Renderer/GlFrameBuffer.h>
-#include <Renderer/GlRenderBuffer.h>
-#include <Renderer/GlTexture.h>
+#include <Renderer/FrameBuffer.hpp>
+#include <Renderer/RenderBuffer.hpp>
+#include <Renderer/Texture.hpp>
 
-#include <Renderer/UtilsSignal.hpp>
+#include <Utils/UtilsSignal.hpp>
 
 namespace render
 {
@@ -86,7 +86,8 @@ namespace render
 		*\param[in] size
 		*	La taille voulue pour le FBO.
 		 */
-		Picking( utils::IVec2 const & size );
+		Picking( renderer::Device const & device
+			, utils::IVec2 const & size );
 		/**
 		*\brief
 		*	Destructeur.
@@ -108,7 +109,8 @@ namespace render
 		*\return
 		*	Picking::NodeType::eNone si rien n'a été pické.
 		*/
-		NodeType pick( utils::IVec2 const & position
+		NodeType pick( renderer::RenderingResources const & resources
+			, utils::IVec2 const & position
 			, Camera const & camera
 			, float zoomPercent
 			, RenderSubmeshArray const & objects
@@ -148,7 +150,8 @@ namespace render
 		*\return
 		*	La couleur de la sélection.
 		*/
-		Pixel doFboPick( utils::IVec2 const & position
+		Pixel doFboPick( renderer::RenderingResources const & resources
+			, utils::IVec2 const & position
 			, Camera const & camera
 			, float zoomPercent
 			, RenderSubmeshArray const & objects

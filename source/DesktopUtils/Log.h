@@ -1,4 +1,4 @@
-﻿/**
+/**
 *\file
 *	Log.h
 *\author
@@ -11,7 +11,7 @@
 #include <string>
 #include <ostream>
 
-#include <LogUtils.h>
+#include <Utils/LogUtils.hpp>
 
 namespace utils
 {

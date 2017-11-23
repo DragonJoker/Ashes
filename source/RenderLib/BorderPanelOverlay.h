@@ -52,7 +52,8 @@ namespace render
 		*\param[in] renderer
 		*	Le renderer utilisé pour dessiner cette incrustation.
 		*/
-		void render( OverlayRenderer & renderer )const override;
+		void render( renderer::RenderingResources const & resources
+			, OverlayRenderer & renderer )const override;
 		/**
 		*\return
 		*	Définit la taille de l'incrustation.

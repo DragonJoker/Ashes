@@ -12,6 +12,16 @@ namespace renderer
 	}
 
 	template< typename T >
+	void CommandBuffer::bindIndexBuffer( Buffer< T > const & indexBuffer
+		, uint64_t offset
+		, IndexType type )const
+	{
+		m_commandBuffer.bindIndexBuffer( indexBuffer.getBuffer()
+			, offset
+			, convert( type ) );
+	}
+
+	template< typename T >
 	void CommandBuffer::copyBuffer( Buffer< T > const & src
 		, Buffer< T > const & dst
 		, uint32_t size

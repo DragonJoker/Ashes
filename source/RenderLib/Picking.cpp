@@ -51,14 +51,15 @@ namespace render
 		static int constexpr PickingOffset = PickingWidth / 2;
 	}
 
-	Picking::Picking( utils::IVec2 const & size )
-		: m_renderer{}
+	Picking::Picking( renderer::Device const & device
+		, utils::IVec2 const & size )
+		: m_renderer{ device }
 		, m_size{ size }
 		, m_colour{ std::make_unique< renderer::Texture >
-			( renderer::PixelFormat::eR8G8B8A8
+			( utils::PixelFormat::eR8G8B8A8
 			, size ) }
 		, m_depth{ std::make_unique< renderer::RenderBuffer >
-			( renderer::PixelFormat::eD16
+			( utils::PixelFormat::eD16
 			, size ) }
 		, m_fbo{ std::make_unique< renderer::FrameBuffer >() }
 		, m_buffer( PickingWidth * PickingWidth )
@@ -78,7 +79,8 @@ namespace render
 		m_fbo->unbind();
 	}
 
-	Picking::NodeType Picking::pick( utils::IVec2 const & position
+	Picking::NodeType Picking::pick( renderer::RenderingResources const & resources
+		, utils::IVec2 const & position
 		, Camera const & camera
 		, float zoomPercent
 		, RenderSubmeshArray const & objects
@@ -95,7 +97,8 @@ namespace render
 		return NodeType::eNone;
 #else
 		onUnpick();
-		auto pixel = doFboPick( position
+		auto pixel = doFboPick( resources
+			, position
 			, camera
 			, zoomPercent
 			, objects
@@ -104,7 +107,8 @@ namespace render
 #endif
 	}
 
-	Picking::Pixel Picking::doFboPick( utils::IVec2 const & position
+	Picking::Pixel Picking::doFboPick( renderer::RenderingResources const & resources
+		, utils::IVec2 const & position
 		, Camera const & camera
 		, float zoomPercent
 		, RenderSubmeshArray const & objects
@@ -131,7 +135,7 @@ namespace render
 			, uint32_t( offset.y )
 			, PickingWidth
 			, PickingWidth
-			, renderer::PixelFormat::eR8G8B8A8
+			, utils::PixelFormat::eR8G8B8A8
 			, reinterpret_cast< uint8_t * >( m_buffer.data() ) );
 		m_fbo->unbind();
 

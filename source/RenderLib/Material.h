@@ -58,7 +58,7 @@ namespace render
 		*	La texture de diffuse *DOIT* exister (utiliser la fonction
 		*	hasDiffuseMap() avant d'appeler cette fonction).
 		*/
-		inline renderer::Texture & diffuseMap()const noexcept
+		inline Texture & diffuseMap()const noexcept
 		{
 			assert( m_diffuseMap );
 			return *m_diffuseMap;
@@ -69,7 +69,7 @@ namespace render
 		*\param[in] texture
 		*	La nouvelle texture.
 		*/
-		inline void diffuseMap( renderer::TexturePtr texture )noexcept
+		inline void diffuseMap( TexturePtr texture )noexcept
 		{
 			m_diffuseMap = texture;
 		}
@@ -88,7 +88,7 @@ namespace render
 		*	La texture d'opacité *DOIT* exister (utiliser la fonction
 		*	hasOpacityMap() avant d'appeler cette fonction).
 		*/
-		inline renderer::Texture & opacityMap()const noexcept
+		inline Texture & opacityMap()const noexcept
 		{
 			assert( m_opacityMap );
 			return *m_opacityMap;
@@ -99,7 +99,7 @@ namespace render
 		*\param[in] texture
 		*	La nouvelle texture.
 		*/
-		inline void opacityMap( renderer::TexturePtr texture )noexcept
+		inline void opacityMap( TexturePtr texture )noexcept
 		{
 			m_opacityMap = texture;
 		}
@@ -268,9 +268,9 @@ namespace render
 		//! L'opacité globale du matériau.
 		float m_opacity{ 1.0f };
 		//! La texture de diffuse.
-		renderer::TexturePtr m_diffuseMap{ nullptr };
+		TexturePtr m_diffuseMap{ nullptr };
 		//! La texture d'opacité.
-		renderer::TexturePtr m_opacityMap{ nullptr };
+		TexturePtr m_opacityMap{ nullptr };
 		//! Dit si l'opacité du matériau est de type alpha test.
 		bool m_alphaTest{ false };
 	};

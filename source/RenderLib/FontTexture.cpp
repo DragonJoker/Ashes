@@ -4,10 +4,10 @@ namespace render
 {
 	namespace
 	{
-		renderer::Texture doCreateTexture( renderer::RenderingResources const & resources
+		Texture doCreateTexture( renderer::RenderingResources const & resources
 			, Font & font )
 		{
-			renderer::Texture texture{ resources };
+			Texture result{ resources.getDevice() };
 			uint32_t const maxWidth = font.maxWidth();
 			uint32_t const maxHeight = font.maxHeight();
 			uint32_t const count = uint32_t( std::ceil( std::distance
@@ -50,21 +50,21 @@ namespace render
 				offsetY -= maxHeight;
 			}
 
-			texture.setImage( utils::PixelFormat::eL8, size, data );
-			return texture;
+			result.image( utils::PixelFormat::eL8, size, data, resources );
+			return result;
 		}
 	}
 
 	FontTexture::FontTexture( renderer::RenderingResources const & resources
 		, FontPtr && font )
-		: FontTexture{ resources
+		: FontTexture{ resources.getDevice()
 			, doCreateTexture( resources, *font )
 			, std::move( font ) }
 	{
 	}
 
-	FontTexture::FontTexture( renderer::RenderingResources const & resources
-		, renderer::Texture && texture
+	FontTexture::FontTexture( renderer::Device const & device
+		, Texture && texture
 		, FontPtr && font )
 		: m_texture{ std::move( texture ) }
 		, m_font{ std::move( font ) }

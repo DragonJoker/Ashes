@@ -19,7 +19,8 @@ namespace render
 		static std::string const BufferCount = "Debug_BufferCount";
 	}
 
-	Debug::Debug( bool enable
+	Debug::Debug( renderer::Device const & device
+		, bool enable
 		, render::Scene & scene
 		, render::FontLoader & loader )
 		: m_enabled{ enable }
@@ -29,8 +30,8 @@ namespace render
 			render::FontPtr font = std::make_unique< render::Font >( "Arial"
 				, 32 );
 			render::loadFont( loader, *font );
-			m_fontTexture = std::make_unique< render::FontTexture >
-				( std::move( font ) );
+			m_fontTexture = std::make_unique< render::FontTexture >( device
+				, std::move( font ) );
 
 			auto material = scene.materials().findElement( "FullAlphaWhite" );
 
@@ -38,33 +39,33 @@ namespace render
 			m_version = std::make_shared< TextOverlay >();
 			m_version->position( { 0, 0 } );
 			m_version->material( material );
-			m_version->caption( renderer::OpenGL::getVersion() );
+			//m_version->caption( renderer::OpenGL::getVersion() );
 			m_version->fontTexture( *m_fontTexture );
-			m_scene->overlays().addElement( Version, m_version );
+			m_scene->addOverlay( Version, m_version );
 
 			m_time = std::make_shared< TextOverlay >();
 			m_time->position( { 0, 40 } );
 			m_time->material( material );
 			m_time->fontTexture( *m_fontTexture );
-			m_scene->overlays().addElement( Time, m_time );
+			m_scene->addOverlay( Time, m_time );
 
 			m_fps = std::make_shared< TextOverlay >();
 			m_fps->position( { 0, 80 } );
 			m_fps->material( material );
 			m_fps->fontTexture( *m_fontTexture );
-			m_scene->overlays().addElement( Fps, m_fps );
+			m_scene->addOverlay( Fps, m_fps );
 
 			m_billboardCount = std::make_shared< TextOverlay >();
 			m_billboardCount->position( { 0, 120 } );
 			m_billboardCount->material( material );
 			m_billboardCount->fontTexture( *m_fontTexture );
-			m_scene->overlays().addElement( BillboardCount, m_billboardCount );
+			m_scene->addOverlay( BillboardCount, m_billboardCount );
 
 			m_buffersCount = std::make_shared< TextOverlay >();
 			m_buffersCount->position( { 0, 160 } );
 			m_buffersCount->material( material );
 			m_buffersCount->fontTexture( *m_fontTexture );
-			m_scene->overlays().addElement( BufferCount, m_buffersCount );
+			m_scene->addOverlay( BufferCount, m_buffersCount );
 		}
 	}
 
@@ -77,10 +78,10 @@ namespace render
 			m_buffersCount.reset();
 			m_billboardCount.reset();
 			m_version.reset();
-			m_scene->overlays().removeElement( BufferCount );
-			m_scene->overlays().removeElement( BillboardCount );
-			m_scene->overlays().removeElement( Version );
-			m_scene->overlays().removeElement( Time );
+			m_scene->removeOverlay( BufferCount );
+			m_scene->removeOverlay( BillboardCount );
+			m_scene->removeOverlay( Version );
+			m_scene->removeOverlay( Time );
 			m_fontTexture.reset();
 		}
 	}

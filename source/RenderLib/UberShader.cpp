@@ -2,6 +2,8 @@
 
 #include "Material.h"
 
+#include <Renderer/ShaderProgram.hpp>
+
 #include <Utils/StringUtils.hpp>
 
 namespace render
@@ -833,20 +835,34 @@ void main()
 		}
 	}
 
-	renderer::ShaderProgramPtr UberShader::createShaderProgram( std::string vtx
+	renderer::ShaderProgramPtr UberShader::createShaderProgram( renderer::Device const & device
+		, std::string vtx
 		, std::string pxl )
 	{
-		vtx = renderer::replace( vtx, "[attribute]", "in" );
-		vtx = renderer::replace( vtx, "[varying]", "out" );
-		vtx = renderer::replace( vtx, "[texture2D]", "texture" );
+		vtx = utils::replace( vtx, "[attribute]", "in" );
+		vtx = utils::replace( vtx, "[varying]", "out" );
+		vtx = utils::replace( vtx, "[texture2D]", "texture" );
 
-		pxl = renderer::replace( pxl, "[varying]", "in" );
-		pxl = renderer::replace( pxl, "[varying out]", "out" );
-		pxl = renderer::replace( pxl, "[texture2D]", "texture" );
-		pxl = renderer::replace( pxl, "[gl_FragColor]", "out_fragColour" );
+		pxl = utils::replace( pxl, "[varying]", "in" );
+		pxl = utils::replace( pxl, "[varying out]", "out" );
+		pxl = utils::replace( pxl, "[texture2D]", "texture" );
+		pxl = utils::replace( pxl, "[gl_FragColor]", "out_fragColour" );
 
-		auto program = std::make_unique< renderer::ShaderProgram >( vtx, pxl );
+		auto program = std::make_unique< renderer::ShaderProgram >( device );
+		program->createModule( vtx, renderer::ShaderStageFlag::eVertex );
+		program->createModule( pxl, renderer::ShaderStageFlag::eVertex );
 		return program;
+	}
+
+	renderer::ShaderProgramPtr UberShader::createShaderProgram( renderer::Device const & device
+		, RenderType render
+		, TextureFlags textures
+		, OpacityType opacity
+		, ObjectType object )
+	{
+		auto vtx = doGetVertexSource( render, textures, opacity, object );
+		auto pxl = doGetPixelSource( render, textures, opacity, object );
+		return createShaderProgram( device, vtx, pxl );
 	}
 
 	NodeType UberShader::nodeType( OpacityType opacity
@@ -937,16 +953,6 @@ void main()
 		}
 
 		return result;
-	}
-
-	renderer::ShaderProgramPtr UberShader::createShaderProgram( RenderType render
-		, TextureFlags textures
-		, OpacityType opacity
-		, ObjectType object )
-	{
-		auto vtx = doGetVertexSource( render, textures, opacity, object );
-		auto pxl = doGetPixelSource( render, textures, opacity, object );
-		return createShaderProgram( vtx, pxl );
 	}
 
 	std::string UberShader::doGetVertexSource( RenderType render

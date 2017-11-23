@@ -9,28 +9,37 @@ namespace render
 		, Vec3Array const & nml
 		, Vec2Array const & tex )
 	{
-		m_positions = renderer::makeVertexBuffer( resources
+		m_positions = renderer::makeVertexBuffer< utils::Vec3 >( resources.getDevice()
 			, 0u
-			, pos
+			, uint32_t( pos.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
+		resources.getStagingBuffer().copyVertexData( resources.getCommandBuffer()
+			, pos
+			, *m_positions );
 
 		if ( !nml.empty() )
 		{
-			m_normal = renderer::makeVertexBuffer( resources
+			m_normal = renderer::makeVertexBuffer< utils::Vec3 >( resources.getDevice()
 				, 1u
-				, nml
+				, uint32_t( nml.size() )
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
+			resources.getStagingBuffer().copyVertexData( resources.getCommandBuffer()
+				, nml
+				, *m_normal );
 		}
 
 		if ( !tex.empty() )
 		{
-			m_texcoord = renderer::makeVertexBuffer( resources
+			m_texcoord = renderer::makeVertexBuffer< utils::Vec2 >( resources.getDevice()
 				, 2u
-				, tex
+				, uint32_t( tex.size() )
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
+			resources.getStagingBuffer().copyVertexData( resources.getCommandBuffer()
+				, tex
+				, *m_texcoord );
 		}
 
 		utils::Vec3 min

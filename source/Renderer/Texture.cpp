@@ -9,17 +9,20 @@
 
 namespace renderer
 {
-	Texture::Texture( RenderingResources const & resources )
-		: m_resources{ resources }
+	Texture::Texture( Device const & device )
+		: m_device{ device }
 	{
 	}
 
 	void Texture::setImage( utils::PixelFormat format
 		, IVec2 const & size
-		, ByteArray const & data )
+		, ByteArray const & data
+		, RenderingResources const & resources )
 	{
 		setImage( format, size );
-		m_resources.getStagingBuffer().copyTextureData( data, *this );
+		resources.getStagingBuffer().copyTextureData( resources.getCommandBuffer()
+			, data
+			, *this );
 	}
 
 	void Texture::setImage( utils::PixelFormat format
@@ -27,7 +30,7 @@ namespace renderer
 	{
 		m_format = format;
 		m_size = size;
-		m_texture = m_resources.getDevice().createImage( convert( m_format )
+		m_texture = m_device.getDevice().createImage( convert( m_format )
 			, m_size.x
 			, m_size.y
 			, convert( MemoryPropertyFlag::eDeviceLocal ) );
@@ -40,11 +43,12 @@ namespace renderer
 		//m_texture->unbind( 0 );
 	}
 
-	void Texture::bindAsShaderInput( uint32_t unit )const
+	void Texture::bindAsShaderInput( CommandBuffer const & cb
+		, uint32_t unit )const
 	{
 		assert( m_texture );
-		auto & device = m_resources.getDevice();
-		auto & commandBuffer = m_resources.getCommandBuffer().getCommandBuffer();
+		auto & device = m_device;
+		auto & commandBuffer = cb.getCommandBuffer();
 
 		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
 		{
@@ -58,7 +62,7 @@ namespace renderer
 				throw std::runtime_error{ "Texture binding failed: " + vk::getLastError() };
 			}
 
-			res = vk::checkError( device.getGraphicsQueue().submit( { commandBuffer }
+			res = vk::checkError( m_device.getDevice().getGraphicsQueue().submit( { commandBuffer }
 				, {}
 				, {}
 				, {}
@@ -69,15 +73,16 @@ namespace renderer
 				throw std::runtime_error{ "Texture binding failed: " + vk::getLastError() };
 			}
 
-			device.waitIdle();
+			m_device.getDevice().waitIdle();
 		}
 	}
 
-	void Texture::bindAsShaderOutput( uint32_t unit )const
+	void Texture::bindAsShaderOutput( CommandBuffer const & cb
+		, uint32_t unit )const
 	{
 		assert( m_texture );
-		auto & device = m_resources.getDevice();
-		auto & commandBuffer = m_resources.getCommandBuffer().getCommandBuffer();
+		auto & device = m_device;
+		auto & commandBuffer = cb.getCommandBuffer();
 
 		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
 		{
@@ -91,7 +96,7 @@ namespace renderer
 				throw std::runtime_error{ "Texture binding failed: " + vk::getLastError() };
 			}
 
-			res = vk::checkError( device.getGraphicsQueue().submit( { commandBuffer }
+			res = vk::checkError( m_device.getDevice().getGraphicsQueue().submit( { commandBuffer }
 				, {}
 				, {}
 				, {}
@@ -102,7 +107,7 @@ namespace renderer
 				throw std::runtime_error{ "Texture binding failed: " + vk::getLastError() };
 			}
 
-			device.waitIdle();
+			m_device.getDevice().waitIdle();
 		}
 	}
 	ImageMemoryBarrier Texture::makeTransferDestination()const

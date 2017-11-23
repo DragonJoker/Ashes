@@ -5,9 +5,13 @@ See LICENSE file in root folder
 #pragma once
 
 #include <vector>
+#include <chrono>
 
 namespace utils
 {
+	using Clock = std::chrono::high_resolution_clock;
+	using Milliseconds = std::chrono::milliseconds;
+
 	template< typename T >
 	class Vec2T;
 	template< typename T >

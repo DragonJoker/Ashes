@@ -20,10 +20,20 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*/
-		ShaderProgram( RenderingResources const & resources );
+		ShaderProgram( Device const & device );
+		/**
+		*\brief
+		*	Crée un module de shader et l'ajoute à la liste.
+		*\param[in] shader
+		*	Le code GLSL du shader.
+		*\param[in] stage
+		*	Le niveau de shader utilisé pour le module.
+		*/
+		void createModule( std::string const & shader
+			, ShaderStageFlag stage );
 		/**
 		*\brief
 		*	Crée un module de shader et l'ajoute à la liste.

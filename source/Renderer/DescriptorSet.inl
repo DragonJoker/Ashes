@@ -7,6 +7,6 @@ namespace renderer
 		, UniformBuffer< T > const & uniformBuffer )
 	{
 		m_descriptorSet->createBinding( layoutBinding.getBinding()
-			, buffer.getUbo() );
+			, uniformBuffer.getUbo() );
 	}
 }

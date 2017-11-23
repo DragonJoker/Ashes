@@ -26,8 +26,8 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*/
 		DescriptorSet( DescriptorSetPool const & pool );
 		/**

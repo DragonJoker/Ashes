@@ -24,7 +24,7 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
+		*\param[in] device
 		*	Le LogicalDevice parent.
 		*\param[in] layout
 		*	Le layout du pipeline.
@@ -37,7 +37,7 @@ namespace renderer
 		*\param[in] topology
 		*	La topologie d'affichage des sommets affichés via ce pipeline.
 		*/
-		Pipeline( RenderingResources const & resources
+		Pipeline( Device const & device
 			, PipelineLayout const & layout
 			, ShaderProgram const & program
 			, std::vector< std::reference_wrapper< VertexLayout const > > const & vertexLayouts
@@ -46,7 +46,7 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
+		*\param[in] device
 		*	Le LogicalDevice parent.
 		*\param[in] layout
 		*	Le layout du pipeline.
@@ -63,7 +63,7 @@ namespace renderer
 		*\param[in] topology
 		*	La topologie d'affichage des sommets affichés via ce pipeline.
 		*/
-		Pipeline( RenderingResources const & resources
+		Pipeline( Device const & device
 			, PipelineLayout const & layout
 			, ShaderProgram const & program
 			, std::vector< std::reference_wrapper< VertexLayout const > > const & vertexLayouts

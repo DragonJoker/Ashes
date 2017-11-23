@@ -97,6 +97,30 @@ namespace render
 		{
 			return m_boundaries;
 		}
+		/**
+		*\return
+		*	Le tampon contenant les positions.
+		*/
+		inline renderer::VertexBuffer< utils::Vec3 > const & getPositions()const noexcept
+		{
+			return *m_positions;
+		}
+		/**
+		*\return
+		*	Le tampon contenant les normales.
+		*/
+		inline renderer::VertexBuffer< utils::Vec3 > const & getNormals()const noexcept
+		{
+			return *m_normal;
+		}
+		/**
+		*\return
+		*	Le tampon contenant les coordonnées de texture.
+		*/
+		inline renderer::VertexBuffer< utils::Vec2 > const & getTexCoords()const noexcept
+		{
+			return *m_texcoord;
+		}
 
 	private:
 		//! Les positions des sommets.

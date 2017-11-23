@@ -90,7 +90,8 @@ namespace render
 		*\return
 		*	Le programme.
 		*/
-		static renderer::ShaderProgramPtr createShaderProgram( std::string vtx
+		static renderer::ShaderProgramPtr createShaderProgram( renderer::Device const & device
+			, std::string vtx
 			, std::string pxl );
 		/**
 		*\brief
@@ -106,7 +107,8 @@ namespace render
 		*\return
 		*	Le programme.
 		*/
-		static renderer::ShaderProgramPtr createShaderProgram( RenderType render
+		static renderer::ShaderProgramPtr createShaderProgram( renderer::Device const & device
+			, RenderType render
 			, TextureFlags textures
 			, OpacityType opacity
 			, ObjectType object );

@@ -37,36 +37,15 @@ namespace render
 			, Mesh const & mesh
 			, UInt16Array const & idx );
 		/**
-		*\brief
-		*	Dessine le sous-maillage, en utilisant son tampon d'indices.
+		*\return
+		*	Le nombre d'indices.
 		*/
-		void draw()const noexcept;
+		uint32_t getIndexCount()const noexcept;
 		/**
-		*\brief
-		*	Active les tampons du maillage parent sur les attributs donnés.
-		*\param[in] position
-		*	L'attribut de position.
-		*\param[in] normal
-		*	L'attribut de normale.
-		*\param[in] texture
-		*	L'attribut de coordonnées de texture.
+		*\return
+		*	Le tampon d'indices.
 		*/
-		void bind( utils::Vec3Attribute const * position
-			, utils::Vec3Attribute const * normal
-			, utils::Vec2Attribute const * texture )const noexcept;
-		/**
-		*\brief
-		*	Désactive les tampons du maillage.
-		*\param[in] position
-		*	L'attribut de position.
-		*\param[in] normal
-		*	L'attribut de normale.
-		*\param[in] texture
-		*	L'attribut de coordonnées de texture.
-		*/
-		void unbind( utils::Vec3Attribute const * position
-			, utils::Vec3Attribute const * normal
-			, utils::Vec2Attribute const * texture )const noexcept;
+		renderer::Buffer< uint16_t > const & getIbo()const noexcept;
 
 	private:
 		//! Le maillage parent.

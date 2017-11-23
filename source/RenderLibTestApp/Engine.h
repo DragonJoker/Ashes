@@ -147,9 +147,9 @@ private:
 
 	utils::IVec2 m_mouse;
 
-	render::Connection< render::OnObjectPicked > m_onObjectPicked;
-	render::Connection< render::OnBillboardPicked > m_onBillboardPicked;
-	render::Connection< render::OnUnpick > m_onUnpick;
+	utils::Connection< render::OnObjectPicked > m_onObjectPicked;
+	utils::Connection< render::OnBillboardPicked > m_onBillboardPicked;
+	utils::Connection< render::OnUnpick > m_onUnpick;
 
 	render::Object * m_pickedObject{ nullptr };
 	render::Billboard * m_pickedBillboard{ nullptr };

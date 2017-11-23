@@ -1,5 +1,6 @@
 #include "Pipeline.hpp"
 
+#include "Device.hpp"
 #include "PipelineLayout.hpp"
 #include "RenderingResources.hpp"
 #include "Scissor.hpp"
@@ -27,13 +28,13 @@ namespace renderer
 		}
 	}
 
-	Pipeline::Pipeline( RenderingResources const & resources
+	Pipeline::Pipeline( Device const & device
 		, PipelineLayout const & layout
 		, ShaderProgram const & program
 		, std::vector< std::reference_wrapper< VertexLayout const > > const & vertexLayouts
 		, vk::RenderPass const & renderPass
 		, PrimitiveTopology topology )
-		: m_pipeline{ resources.getDevice().createPipeline( layout.getLayout()
+		: m_pipeline{ device.getDevice().createPipeline( layout.getLayout()
 			, program.getProgram()
 			, convert( vertexLayouts )
 			, renderPass
@@ -41,7 +42,7 @@ namespace renderer
 	{
 	}
 
-	Pipeline::Pipeline( RenderingResources const & resources
+	Pipeline::Pipeline( Device const & device
 		, PipelineLayout const & layout
 		, ShaderProgram const & program
 		, std::vector< std::reference_wrapper< VertexLayout const > > const & vertexLayouts
@@ -49,7 +50,7 @@ namespace renderer
 		, Scissor const & scissor
 		, vk::RenderPass const & renderPass
 		, PrimitiveTopology topology )
-		: m_pipeline{ resources.getDevice().createPipeline( layout.getLayout()
+		: m_pipeline{ device.getDevice().createPipeline( layout.getLayout()
 			, program.getProgram()
 			, convert( vertexLayouts )
 			, viewport.getViewport()

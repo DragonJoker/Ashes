@@ -24,10 +24,10 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*/
-		DescriptorSetLayout( RenderingResources const & resources
+		DescriptorSetLayout( Device const & device
 			, std::vector< DescriptorSetLayoutBinding > const & bindings );
 		/**
 		*\return

@@ -9,6 +9,8 @@
 #pragma once
 
 #include <Renderer/RendererPrerequisites.hpp>
+#include <Renderer/DescriptorSet.hpp>
+
 #include <Utils/Quaternion.hpp>
 #include <Utils/UtilsSignal.hpp>
 
@@ -57,6 +59,7 @@ namespace render
 	class Scene;
 	class Submesh;
 	class TextOverlay;
+	class Texture;
 	class Viewport;
 	struct RenderSubmesh;
 
@@ -67,22 +70,25 @@ namespace render
 	*\name Définitions diverses depuis les prédéclarations.
 	*/
 	/**@{*/
-	using BillboardPtr = std::shared_ptr< Billboard >;
 	using BillboardAttributesPtr = std::unique_ptr< BillboardAttributes >;
-	using BillboardBufferPtr = std::shared_ptr< BillboardBuffer >;
-	using FontPtr = std::unique_ptr< Font >;
 	using FontLoaderPtr = std::unique_ptr< FontLoader >;
+	using FontPtr = std::unique_ptr< Font >;
 	using FontTexturePtr = std::unique_ptr< FontTexture >;
+	using OverlayRendererPtr = std::unique_ptr< OverlayRenderer >;
+	using RenderWindowPtr = std::unique_ptr< RenderWindow >;
+
+	using BillboardPtr = std::shared_ptr< Billboard >;
+	using BillboardBufferPtr = std::shared_ptr< BillboardBuffer >;
+	using BorderPanelOverlayPtr = std::shared_ptr< BorderPanelOverlay >;
 	using MaterialPtr = std::shared_ptr< Material >;
 	using MeshPtr = std::shared_ptr< Mesh >;
 	using ObjectPtr = std::shared_ptr< Object >;
-	using OverlayRendererPtr = std::unique_ptr< OverlayRenderer >;
-	using PolyLinePtr = std::shared_ptr< PolyLine >;
-	using RenderWindowPtr = std::unique_ptr< RenderWindow >;
-	using SubmeshPtr = std::shared_ptr< Submesh >;
-	using BorderPanelOverlayPtr = std::shared_ptr< BorderPanelOverlay >;
-	using TextOverlayPtr = std::shared_ptr< TextOverlay >;
 	using OverlayPtr = std::shared_ptr< Overlay >;
+	using PanelOverlayPtr = std::shared_ptr< PanelOverlay >;
+	using PolyLinePtr = std::shared_ptr< PolyLine >;
+	using SubmeshPtr = std::shared_ptr< Submesh >;
+	using TextOverlayPtr = std::shared_ptr< TextOverlay >;
+	using TexturePtr = std::shared_ptr< Texture >;
 
 	using MaterialArray = std::vector< MaterialPtr >;
 	using MeshArray = std::vector< MeshPtr >;
@@ -92,7 +98,7 @@ namespace render
 	using BillboardArray = std::vector< BillboardPtr >;
 
 	using MaterialList = ElementsList< Material >;
-	using TextureList = ElementsList< renderer::Texture >;
+	using TextureList = ElementsList< Texture >;
 	using BillboardList = ElementsList< BillboardBuffer >;
 	using MeshList = ElementsList< Mesh >;
 	using OverlayList = ElementsList< Overlay >;
@@ -131,6 +137,11 @@ namespace render
 	*/
 	struct RenderSubmesh
 	{
+		RenderSubmesh( renderer::DescriptorSetPool const & pool
+			, MeshPtr mesh
+			, SubmeshPtr submesh
+			, MaterialPtr material
+			, ObjectPtr object );
 		//! Le maillage.
 		MeshPtr m_mesh;
 		//! Le sous-maillage.
@@ -139,7 +150,41 @@ namespace render
 		MaterialPtr m_material;
 		//! L'objet parent.
 		ObjectPtr m_object;
+		//! Le descriptor set.
+		renderer::DescriptorSet m_materialDescriptor;
 	};
+	//! Un vecteur de RenderSubmesh.
+	using RenderSubmeshVector = std::vector< RenderSubmesh >;
+	/**
+	*\brief
+	*	Un billboard et son descriptor set, dans la scène.
+	*/
+	struct RenderBillboard
+	{
+		RenderBillboard( renderer::DescriptorSetPool const & pool
+			, BillboardPtr billboard );
+		//! Le billboard.
+		BillboardPtr m_billboard;
+		//! Le descriptor set.
+		renderer::DescriptorSet m_materialDescriptor;
+	};
+	//! Un vecteur de RenderBillboard.
+	using RenderBillboardVector = std::vector< RenderBillboard >;
+	/**
+	*\brief
+	*	Une polyligne et son descriptor set, dans la scène.
+	*/
+	struct RenderPolyLine
+	{
+		RenderPolyLine( renderer::DescriptorSetPool const & pool
+			, PolyLinePtr line );
+		//! La polyligne.
+		PolyLinePtr m_line;
+		//! Le descriptor set.
+		renderer::DescriptorSet m_materialDescriptor;
+	};
+	//! Un vecteur de RenderPolyLine.
+	using RenderPolyLineVector = std::vector< RenderPolyLine >;
 	/**
 	*\brief
 	*	Les types de noeuds.
@@ -174,10 +219,9 @@ namespace render
 		eAlphaTestOpaDiff,
 		VkLib_EnumBounds( eOpaque )
 	};
-	using RenderSubmeshVector = std::vector< RenderSubmesh >;
 	using RenderSubmeshArray = std::array< RenderSubmeshVector, size_t( NodeType::eCount ) >;
-	using RenderBillboardArray = std::array< BillboardArray, size_t( NodeType::eCount ) >;
-	using RenderPolyLineArray = std::array< PolyLineArray, size_t( NodeType::eCount ) >;
+	using RenderBillboardArray = std::array< RenderBillboardVector, size_t( NodeType::eCount ) >;
+	using RenderPolyLineArray = std::array< RenderPolyLineVector, size_t( NodeType::eCount ) >;
 	/**
 	*\brief
 	*	Charge une texture depuis le contenu donné.
@@ -186,8 +230,9 @@ namespace render
 	*\param[out] texture
 	*	Reçoit la texture.
 	*/
-	void loadTexture( ByteArray const & fileContent
-		, renderer::Texture & texture );
+	void loadTexture( renderer::RenderingResources const & resources
+		, ByteArray const & fileContent
+		, Texture & texture );
 	/**
 	*\brief
 	*	Charge une texture depuis le contenu donné.
@@ -198,9 +243,10 @@ namespace render
 	*\param[out] texture
 	*	Reçoit la texture.
 	*/
-	void loadTexture( ByteArray const & fileContent
+	void loadTexture( renderer::RenderingResources const & resources
+		, ByteArray const & fileContent
 		, utils::PixelFormat format
-		, renderer::Texture & texture );
+		, Texture & texture );
 	/**
 	*\brief
 	*	Charge une police depuis le contenu donné.

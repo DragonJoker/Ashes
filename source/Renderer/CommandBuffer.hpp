@@ -20,10 +20,10 @@ namespace renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] resources
-		*	Les ressources de rendu.
+		*\param[in] device
+		*	Le périphérique logique.
 		*/
-		CommandBuffer( RenderingResources const & resources
+		CommandBuffer( Device const & device
 			, vk::CommandPool const & pool );
 		/**
 		*\brief
@@ -104,9 +104,41 @@ namespace renderer
 		*\param[in] offset
 		*	L'offset du premier sommet dans le tampon.
 		*/
+		void bindVertexBuffer( VertexBufferBase const & vertexBuffer
+			, uint64_t offset )const;
+		/**
+		*\brief
+		*	Active des tampons de sommets.
+		*\param[in] vertexBuffers
+		*	Les tampons de sommets.
+		*\param[in] offsets
+		*	L'offset du premier sommet pour chaque tampon.
+		*/
+		void bindVertexBuffers( std::vector< std::reference_wrapper< VertexBufferBase const > > const & vertexBuffers
+			, std::vector< uint64_t > offsets )const;
+		/**
+		*\brief
+		*	Active un tampon de sommets.
+		*\param[in] vertexBuffer
+		*	Le tampon de sommets.
+		*\param[in] offset
+		*	L'offset du premier sommet dans le tampon.
+		*/
 		template< typename T >
 		void bindVertexBuffer( VertexBuffer< T > const & vertexBuffer
 			, uint64_t offset )const;
+		/**
+		*\brief
+		*	Active un tampon de sommets.
+		*\param[in] vertexBuffer
+		*	Le tampon de sommets.
+		*\param[in] offset
+		*	L'offset du premier sommet dans le tampon.
+		*/
+		template< typename T >
+		void bindIndexBuffer( Buffer< T > const & indexBuffer
+			, uint64_t offset
+			, IndexType type )const;
 		/**
 		*\brief
 		*	Active un descriptor set.
@@ -280,7 +312,7 @@ namespace renderer
 		}
 
 	private:
-		RenderingResources const & m_resources;
+		Device const & m_device;
 		vk::PrimaryCommandBuffer m_commandBuffer;
 	};
 }

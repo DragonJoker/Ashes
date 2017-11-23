@@ -12,9 +12,9 @@
 
 namespace renderer
 {
-	StagingBuffer::StagingBuffer( RenderingResources const & resources )
-		: m_resources{ resources }
-		, m_stagingBuffer{ resources.getDevice().createStagingBuffer( 1000000, 0 ) }
+	StagingBuffer::StagingBuffer( Device const & device )
+		: m_device{ device }
+		, m_stagingBuffer{ device.getDevice().createStagingBuffer( 1000000, 0 ) }
 	{
 	}
 
@@ -32,12 +32,14 @@ namespace renderer
 		};
 	}
 
-	void StagingBuffer::copyTextureData( vk::ByteArray const & data
+	void StagingBuffer::copyTextureData( CommandBuffer const & cb
+		, vk::ByteArray const & data
 		, Texture const & texture )const
 	{
-		doCopyToStagingBuffer( data.data()
+		doCopyToStagingBuffer( cb
+			, data.data()
 			, uint32_t( data.size() ) );
-		auto & commandBuffer = m_resources.getCommandBuffer().getCommandBuffer();
+		auto & commandBuffer = cb.getCommandBuffer();
 
 		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
 		{
@@ -56,7 +58,7 @@ namespace renderer
 				throw std::runtime_error{ "Texture data copy failed: " + vk::getLastError() };
 			}
 
-			res = vk::checkError( m_resources.getDevice().getGraphicsQueue().submit( { commandBuffer }
+			res = vk::checkError( m_device.getDevice().getGraphicsQueue().submit( { commandBuffer }
 				, {}
 				, {}
 				, {}
@@ -67,11 +69,12 @@ namespace renderer
 				throw std::runtime_error{ "Texture data copy failed: " + vk::getLastError() };
 			}
 
-			m_resources.getDevice().waitIdle();
+			m_device.getDevice().waitIdle();
 		}
 	}
 
-	void StagingBuffer::doCopyToStagingBuffer( uint8_t const * data
+	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & cb
+		, uint8_t const * data
 		, uint32_t size )const
 	{
 		auto buffer = m_stagingBuffer->getBuffer().lock( 0
@@ -90,11 +93,12 @@ namespace renderer
 			, true );
 	}
 
-	void StagingBuffer::doCopyFromStagingBuffer( uint32_t size
+	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & cb
+		, uint32_t size
 		, uint32_t offset
 		, vk::Buffer const & buffer )const
 	{
-		auto & commandBuffer = m_resources.getCommandBuffer().getCommandBuffer();
+		auto & commandBuffer = cb.getCommandBuffer();
 
 		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
 		{
@@ -115,7 +119,7 @@ namespace renderer
 				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
 			}
 
-			res = vk::checkError( m_resources.getDevice().getGraphicsQueue().submit( { commandBuffer }
+			res = vk::checkError( m_device.getDevice().getGraphicsQueue().submit( { commandBuffer }
 				, {}
 				, {}
 				, {}
@@ -126,7 +130,7 @@ namespace renderer
 				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
 			}
 
-			m_resources.getDevice().waitIdle();
+			m_device.getDevice().waitIdle();
 		}
 	}
 }
