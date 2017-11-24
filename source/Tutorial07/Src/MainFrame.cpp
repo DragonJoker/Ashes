@@ -40,10 +40,20 @@ namespace vkapp
 
 	void MainFrame::updateFps( std::chrono::microseconds const & duration )
 	{
+		++m_frameCount;
+		m_framesTimes[m_frameIndex] = duration;
+		auto count = std::min( m_frameCount, m_framesTimes.size() );
+		auto averageTime = std::accumulate( m_framesTimes.begin()
+			, m_framesTimes.begin() + count
+			, std::chrono::microseconds{ 0 } ).count() / float( count );
+		m_frameIndex = ++m_frameIndex % FrameSamplesCount;
 		wxString title;
 		auto ms = duration.count() / 1000.0f;
-		title << wxT( " - " ) << ms << wxT( " ms" );
+		auto avgms = averageTime / 1000.0f;
+		title << wxT( " - (Instant) " ) << ms << wxT( " ms" );
 		title << wxT( " - " ) << ( 1000.0f / ms ) << " fps";
+		title << wxT( " - (Average) " ) << avgms << wxT( " ms" );
+		title << wxT( " - " ) << ( 1000.0f / avgms ) << " fps";
 		SetTitle( AppName + title );
 	}
 }

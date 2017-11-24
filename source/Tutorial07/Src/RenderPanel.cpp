@@ -40,7 +40,7 @@ namespace vkapp
 			RenderTimer = 42
 		}	Ids;
 
-		static int const TimerTimeMs = 40;
+		static int const TimerTimeMs = 10;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
