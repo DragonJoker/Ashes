@@ -32,25 +32,23 @@ namespace renderer
 		};
 	}
 
-	void StagingBuffer::copyTextureData( CommandBuffer const & cb
+	void StagingBuffer::copyTextureData( CommandBuffer const & commandBuffer
 		, vk::ByteArray const & data
 		, Texture const & texture )const
 	{
-		doCopyToStagingBuffer( cb
-			, data.data()
+		doCopyToStagingBuffer( data.data()
 			, uint32_t( data.size() ) );
-		auto & commandBuffer = cb.getCommandBuffer();
 
-		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
+		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
 		{
-			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
-				, VK_PIPELINE_STAGE_TRANSFER_BIT
-				, m_stagingBuffer->getBuffer().makeTransferSource() );
-			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
-				, VK_PIPELINE_STAGE_TRANSFER_BIT
-				, texture.getImage().makeTransferDestination() );
-			commandBuffer.copyImage( m_stagingBuffer->getBuffer()
-				, texture.getImage() );
+			commandBuffer.memoryBarrier( PipelineStageFlag::eTopOfPipe
+				, PipelineStageFlag::eTransfer
+				, texture.makeTransferDestination() );
+			commandBuffer.copyImage( *this
+				, texture );
+			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+				, PipelineStageFlag::eFragmentShader
+				, texture.makeShaderInputResource() );
 			bool res = commandBuffer.end();
 
 			if ( !res )
@@ -58,7 +56,7 @@ namespace renderer
 				throw std::runtime_error{ "Texture data copy failed: " + vk::getLastError() };
 			}
 
-			res = vk::checkError( m_device.getDevice().getGraphicsQueue().submit( { commandBuffer }
+			res = vk::checkError( m_device.getDevice().getGraphicsQueue().submit( { commandBuffer.getCommandBuffer() }
 				, {}
 				, {}
 				, {}
@@ -73,8 +71,7 @@ namespace renderer
 		}
 	}
 
-	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & cb
-		, uint8_t const * data
+	void StagingBuffer::doCopyToStagingBuffer( uint8_t const * data
 		, uint32_t size )const
 	{
 		auto buffer = m_stagingBuffer->getBuffer().lock( 0
@@ -93,22 +90,14 @@ namespace renderer
 			, true );
 	}
 
-	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & cb
+	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 		, uint32_t size
 		, uint32_t offset
 		, vk::Buffer const & buffer )const
 	{
-		auto & commandBuffer = cb.getCommandBuffer();
-
-		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
+		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
 		{
-			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
-				, VK_PIPELINE_STAGE_TRANSFER_BIT
-				, m_stagingBuffer->getBuffer().makeTransferSource() );
-			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
-				, VK_PIPELINE_STAGE_TRANSFER_BIT
-				, buffer.makeTransferDestination() );
-			commandBuffer.copyBuffer( m_stagingBuffer->getBuffer()
+			commandBuffer.getCommandBuffer().copyBuffer( m_stagingBuffer->getBuffer()
 				, buffer
 				, size
 				, offset );
@@ -119,7 +108,81 @@ namespace renderer
 				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
 			}
 
-			res = vk::checkError( m_device.getDevice().getGraphicsQueue().submit( { commandBuffer }
+			res = vk::checkError( m_device.getDevice().getGraphicsQueue().submit( { commandBuffer.getCommandBuffer() }
+				, {}
+				, {}
+				, {}
+			, nullptr ) );
+
+			if ( !res )
+			{
+				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
+			}
+
+			m_device.getDevice().waitIdle();
+		}
+	}
+
+	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
+		, uint32_t size
+		, uint32_t offset
+		, vk::VertexBuffer const & buffer
+		, PipelineStageFlags const & flags )const
+	{
+		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
+		{
+			commandBuffer.getCommandBuffer().copyBuffer( m_stagingBuffer->getBuffer()
+				, buffer.getBuffer()
+				, size
+				, offset );
+			commandBuffer.getCommandBuffer().memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+				, convert( flags )
+				, buffer.makeVertexShaderInputResource() );
+			bool res = commandBuffer.end();
+
+			if ( !res )
+			{
+				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
+			}
+
+			res = vk::checkError( m_device.getDevice().getGraphicsQueue().submit( { commandBuffer.getCommandBuffer() }
+				, {}
+				, {}
+				, {}
+			, nullptr ) );
+
+			if ( !res )
+			{
+				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
+			}
+
+			m_device.getDevice().waitIdle();
+		}
+	}
+
+	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
+		, uint32_t size
+		, uint32_t offset
+		, vk::UniformBuffer const & buffer
+		, PipelineStageFlags const & flags )const
+	{
+		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
+		{
+			commandBuffer.getCommandBuffer().copyBuffer( m_stagingBuffer->getBuffer()
+				, buffer.getBuffer()
+				, size
+				, offset );
+			commandBuffer.getCommandBuffer().memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+				, convert( flags )
+				, buffer.makeUniformBufferInput() );
+			bool res = commandBuffer.end();
+
+			if ( !res )
+			{
+				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
+			}
+
+			res = vk::checkError( m_device.getDevice().getGraphicsQueue().submit( { commandBuffer.getCommandBuffer() }
 				, {}
 				, {}
 				, {}

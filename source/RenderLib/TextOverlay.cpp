@@ -18,10 +18,13 @@ namespace render
 	{
 	}
 
-	void TextOverlay::render( renderer::RenderingResources const & resources
+	void TextOverlay::render( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, OverlayRenderer & renderer )const
 	{
-		renderer.drawText( resources, *this );
+		renderer.drawText( stagingBuffer
+			, commandBuffer
+			, *this );
 	}
 
 	void TextOverlay::doUpdate()

@@ -127,7 +127,8 @@ namespace render
 		*\param[in] zoomScale
 		*	L'échelle calculée par rapport au zoom.
 		*/
-		void doDraw( renderer::RenderingResources const & resources
+		void doDraw( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, float zoomScale )const;
 		/**

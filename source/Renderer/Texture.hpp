@@ -44,7 +44,8 @@ namespace renderer
 		void setImage( utils::PixelFormat format
 			, IVec2 const & size
 			, ByteArray const & data
-			, RenderingResources const & resources );
+			, renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer );
 		/**
 		*\brief
 		*	Charge l'image de la texture.

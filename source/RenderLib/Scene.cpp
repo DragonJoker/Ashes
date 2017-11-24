@@ -85,7 +85,8 @@ namespace render
 		}
 	}
 
-	void Scene::draw( renderer::RenderingResources const & resources )const
+	void Scene::draw( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer )const
 	{
 		if ( m_cameraChanged )
 		{
@@ -94,7 +95,8 @@ namespace render
 			// Apply frustum culling to billboards.
 			for ( auto & billboard : billboards() )
 			{
-				billboard->cull( resources
+				billboard->cull( stagingBuffer
+					, commandBuffer
 					, m_camera
 					, 2.0f - 2.0f * percent );
 			}
@@ -102,7 +104,8 @@ namespace render
 
 		m_camera.viewport().apply();
 		auto percent = m_state.zoomBounds().percent( m_state.zoom() );
-		doDraw( resources
+		doDraw( stagingBuffer
+			, commandBuffer
 			, m_camera
 			, 2.0f * percent + ( 1.0f - percent ) / 100.0f );
 	}

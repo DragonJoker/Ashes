@@ -22,7 +22,7 @@ namespace renderer
 		glslang::FinalizeProcess();
 	}
 
-	DevicePtr Renderer::createDevice( Connection & connection )
+	DevicePtr Renderer::createDevice( Connection & connection )const
 	{
 		DevicePtr result;
 

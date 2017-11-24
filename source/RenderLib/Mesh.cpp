@@ -4,42 +4,47 @@
 
 namespace render
 {
-	void Mesh::data( renderer::RenderingResources const & resources
+	void Mesh::data( renderer::Device const & device
+		, renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, Vec3Array const & pos
 		, Vec3Array const & nml
 		, Vec2Array const & tex )
 	{
-		m_positions = renderer::makeVertexBuffer< utils::Vec3 >( resources.getDevice()
+		m_positions = renderer::makeVertexBuffer< utils::Vec3 >( device
 			, 0u
 			, uint32_t( pos.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		resources.getStagingBuffer().copyVertexData( resources.getCommandBuffer()
+		stagingBuffer.copyVertexData( commandBuffer
 			, pos
-			, *m_positions );
+			, *m_positions
+			, renderer::PipelineStageFlag::eVertexInput );
 
 		if ( !nml.empty() )
 		{
-			m_normal = renderer::makeVertexBuffer< utils::Vec3 >( resources.getDevice()
+			m_normal = renderer::makeVertexBuffer< utils::Vec3 >( device
 				, 1u
 				, uint32_t( nml.size() )
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
-			resources.getStagingBuffer().copyVertexData( resources.getCommandBuffer()
+			stagingBuffer.copyVertexData( commandBuffer
 				, nml
-				, *m_normal );
+				, *m_normal
+				, renderer::PipelineStageFlag::eVertexInput );
 		}
 
 		if ( !tex.empty() )
 		{
-			m_texcoord = renderer::makeVertexBuffer< utils::Vec2 >( resources.getDevice()
+			m_texcoord = renderer::makeVertexBuffer< utils::Vec2 >( device
 				, 2u
 				, uint32_t( tex.size() )
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
-			resources.getStagingBuffer().copyVertexData( resources.getCommandBuffer()
+			stagingBuffer.copyVertexData( commandBuffer
 				, tex
-				, *m_texcoord );
+				, *m_texcoord
+				, renderer::PipelineStageFlag::eVertexInput );
 		}
 
 		utils::Vec3 min
@@ -68,9 +73,15 @@ namespace render
 		m_boundaries = utils::vectorCall< float, float >( std::abs, max - min );
 	}
 
-	void Mesh::addSubmesh( renderer::RenderingResources const & resources
+	void Mesh::addSubmesh( renderer::Device const & device
+		, renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, UInt16Array const & idx )
 	{
-		m_submeshes.push_back( std::make_shared< Submesh >( resources, *this, idx ) );
+		m_submeshes.push_back( std::make_shared< Submesh >( device
+			, stagingBuffer
+			, commandBuffer
+			, *this
+			, idx ) );
 	}
 }

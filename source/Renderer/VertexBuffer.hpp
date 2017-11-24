@@ -39,7 +39,7 @@ namespace renderer
 		*\param[in] flags
 		*	Les indicateurs de mémoire du tampon.
 		*/
-		inline VertexBufferBase( Device const & device
+		VertexBufferBase( Device const & device
 			, uint32_t bindingSlot
 			, uint32_t size
 			, BufferTargets target
@@ -104,24 +104,6 @@ namespace renderer
 			, uint32_t count
 			, BufferTargets target
 			, MemoryPropertyFlags flags );
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] data
-		*	Les données du tampon.
-		*\param[in] target
-		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] flags
-		*	Les indicateurs de mémoire du tampon.
-		*/
-		inline VertexBuffer( Device const & device
-			, uint32_t bindingSlot
-			, BufferTargets target
-			, MemoryPropertyFlags flags
-			, std::vector< T > const & data
-			, RenderingResources const & resources );
 		/**
 		*\return
 		*	Le nombre d'éléments contenus dans ce tampon.

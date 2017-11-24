@@ -35,7 +35,7 @@ namespace renderer
 		*@brief
 		*	VkPipelineLayout implicit cast operator.
 		*/
-		inline vk::PipelineLayout getLayout()const
+		inline vk::PipelineLayout const & getLayout()const
 		{
 			return *m_layout;
 		}

@@ -78,4 +78,5 @@ else ()
 	add_subdirectory( DesktopUtils )
 endif ()
 
+add_subdirectory( Tutorial07 )
 add_subdirectory( RenderLibTestApp )

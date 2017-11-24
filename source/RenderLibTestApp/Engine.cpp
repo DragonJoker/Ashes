@@ -159,7 +159,9 @@ void Engine::doInitialise3DElements()
 
 	if ( !content.empty() )
 	{
-		render::ObjectPtr object = utils::loadObjFile( m_window->getDefaultResources()
+		render::ObjectPtr object = utils::loadObjFile( m_window->getDevice()
+			, m_window->getStagingBuffer()
+			, m_window->getDefaultResources().getCommandBuffer()
 			, "Cube"
 			, content
 			, scene.materials()
@@ -174,7 +176,8 @@ void Engine::doInitialise3DElements()
 	if ( !texture )
 	{
 		texture = std::make_shared< render::Texture >( *m_device );
-		render::loadTexture( m_window->getDefaultResources()
+		render::loadTexture( m_window->getStagingBuffer()
+			, m_window->getDefaultResources().getCommandBuffer()
 			, utils::getFileBinaryContent( "texture.bmp" )
 			, *texture );
 		scene.textures().addElement( "texture.bmp", texture );
@@ -185,7 +188,8 @@ void Engine::doInitialise3DElements()
 	if ( !opacity )
 	{
 		opacity = std::make_shared< render::Texture >( *m_device );
-		render::loadTexture( m_window->getDefaultResources()
+		render::loadTexture( m_window->getStagingBuffer()
+			, m_window->getDefaultResources().getCommandBuffer()
 			, utils::getFileBinaryContent( "halo.bmp" )
 			, *opacity );
 		scene.textures().addElement( "halo.bmp", opacity );
@@ -278,6 +282,8 @@ void Engine::doInitialise3DElements()
 		utils::FontLoader loader{ "arial.ttf" };
 		render::loadFont( loader, *font );
 		m_fontTexture = std::make_unique< render::FontTexture >( *m_device
+			, m_window->getStagingBuffer()
+			, m_window->getDefaultResources().getCommandBuffer()
 			, std::move( font ) );
 	}
 

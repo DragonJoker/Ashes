@@ -98,9 +98,15 @@ namespace renderer
 	using BufferPtr = std::unique_ptr< Buffer< T > >;
 	template< typename T >
 	using VertexBufferPtr = std::unique_ptr< VertexBuffer< T > >;
+	template< typename T >
+	using UniformBufferPtr = std::unique_ptr< UniformBuffer< T > >;
 
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
+	using DescriptorSetLayoutPtr = std::unique_ptr< DescriptorSetLayout >;
+	using DescriptorSetPoolPtr = std::unique_ptr< DescriptorSetPool >;
+	using DescriptorSetPtr = std::unique_ptr< DescriptorSet >;
 	using DevicePtr = std::unique_ptr< Device >;
+	using PipelineLayoutPtr = std::unique_ptr< PipelineLayout >;
 	using RenderBufferPtr = std::unique_ptr< RenderBuffer >;
 	using RendererPtr = std::unique_ptr< Renderer >;
 	using RenderingResourcesPtr = std::unique_ptr< RenderingResources >;

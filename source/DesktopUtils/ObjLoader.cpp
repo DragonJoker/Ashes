@@ -16,7 +16,9 @@ namespace utils
 {
 	namespace
 	{
-		inline render::TexturePtr loadTexture( renderer::RenderingResources const & resources
+		inline render::TexturePtr loadTexture( renderer::Device const & device
+			, renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, std::string const & name
 			, render::ByteArray const & fileContent
 			, render::TextureList & textures )
@@ -25,9 +27,10 @@ namespace utils
 
 			if ( !ret )
 			{
-				ret = std::make_shared< render::Texture >( resources.getDevice() );
+				ret = std::make_shared< render::Texture >( device );
 				textures.addElement( name, ret );
-				render::loadTexture( resources
+				render::loadTexture( stagingBuffer
+					, commandBuffer
 					, fileContent
 					, *ret );
 			}
@@ -36,7 +39,9 @@ namespace utils
 		}
 
 
-		bool doPreloadFile( renderer::RenderingResources const & resources
+		bool doPreloadFile( renderer::Device const & device
+			, renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, std::string const & fileContent
 			, render::MaterialList & materialsList
 			, render::TextureList & texturesList
@@ -108,7 +113,9 @@ namespace utils
 
 			if ( !mtlfile.empty() )
 			{
-				loadMtlFile( resources
+				loadMtlFile( device
+					, stagingBuffer
+					, commandBuffer
 					, utils::getFileTextContent( mtlfile )
 					, materialsList
 					, texturesList );
@@ -117,7 +124,9 @@ namespace utils
 			return true;
 		}
 
-		void doLoadNewMesh( renderer::RenderingResources const & resources
+		void doLoadNewMesh( renderer::Device const & device
+			, renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, std::string const & name
 			, std::string const & fileContent
 			, render::MaterialList & materialsList
@@ -133,7 +142,9 @@ namespace utils
 			uint16_t ntf = 0u;
 			render::UInt16Array faces;
 
-			if ( !doPreloadFile( resources
+			if ( !doPreloadFile( device
+				, stagingBuffer
+				, commandBuffer
 				, fileContent
 				, materialsList
 				, texturesList
@@ -215,7 +226,9 @@ namespace utils
 					}
 					else
 					{
-						mesh->addSubmesh( resources
+						mesh->addSubmesh( device
+							, stagingBuffer
+							, commandBuffer
 							, render::UInt16Array( index.begin()
 								, idxit ) );
 						assert( materialsList.findElement( mtlname ) );
@@ -234,7 +247,9 @@ namespace utils
 					}
 					else if ( index.begin() != idxit )
 					{
-						mesh->addSubmesh( resources
+						mesh->addSubmesh( device
+							, stagingBuffer
+							, commandBuffer
 							, render::UInt16Array( index.begin()
 								, idxit ) );
 						assert( materialsList.findElement( mtlname ) );
@@ -284,13 +299,17 @@ namespace utils
 			if ( idxit != index.begin()
 				&& facesit != faces.end() )
 			{
-				mesh->addSubmesh( resources
+				mesh->addSubmesh( device
+					, stagingBuffer
+					, commandBuffer
 					, render::UInt16Array( index.begin(), idxit ) );
 				assert( materialsList.findElement( mtlname ) );
 				materials.push_back( materialsList.findElement( mtlname ) );
 			}
 
-			mesh->data( resources
+			mesh->data( device
+				, stagingBuffer
+				, commandBuffer
 				, vertex
 				, normal
 				, alltex.empty()
@@ -298,7 +317,9 @@ namespace utils
 			: texcoord );
 		}
 
-		void doLoadMeshMaterials( renderer::RenderingResources const & resources
+		void doLoadMeshMaterials( renderer::Device const & device
+			, renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, std::string const & fileContent
 			, render::MaterialList & materialsList
 			, render::TextureList & texturesList
@@ -311,7 +332,9 @@ namespace utils
 			uint16_t ntf = 0u;
 			render::UInt16Array faces;
 
-			if ( !doPreloadFile( resources
+			if ( !doPreloadFile( device
+				, stagingBuffer
+				, commandBuffer
 				, fileContent
 				, materialsList
 				, texturesList
@@ -386,7 +409,9 @@ namespace utils
 		}
 	}
 
-	void loadMtlFile( renderer::RenderingResources const & resources
+	void loadMtlFile( renderer::Device const & device
+		, renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, std::string const & fileContent
 		, render::MaterialList & materialsList
 		, render::TextureList & texturesList )
@@ -446,7 +471,9 @@ namespace utils
 					std::string path;
 					stream >> path;
 					auto content = utils::getFileBinaryContent( path );
-					select->diffuseMap( loadTexture( resources
+					select->diffuseMap( loadTexture( device
+						, stagingBuffer
+						, commandBuffer
 						, path
 						, content
 						, texturesList ) );
@@ -455,7 +482,9 @@ namespace utils
 		}
 	}
 
-	render::ObjectPtr loadObjFile( renderer::RenderingResources const & resources
+	render::ObjectPtr loadObjFile( renderer::Device const & device
+		, renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, std::string const & name
 		, std::string const & fileContent
 		, render::MaterialList & materialsList
@@ -468,7 +497,9 @@ namespace utils
 
 		if ( !mesh )
 		{
-			doLoadNewMesh( resources
+			doLoadNewMesh( device
+				, stagingBuffer
+				, commandBuffer
 				, name
 				, fileContent
 				, materialsList
@@ -479,7 +510,9 @@ namespace utils
 		}
 		else
 		{
-			doLoadMeshMaterials( resources
+			doLoadMeshMaterials( device
+				, stagingBuffer
+				, commandBuffer
 				, fileContent
 				, materialsList
 				, texturesList

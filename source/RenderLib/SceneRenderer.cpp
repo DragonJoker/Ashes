@@ -270,46 +270,54 @@ namespace render
 		m_lineNode.reset();
 	}
 
-	void SceneRenderer::draw( renderer::RenderingResources const & resources
+	void SceneRenderer::draw( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, Camera const & camera
 		, float zoomScale
 		, RenderSubmeshArray const & objects
 		, RenderBillboardArray const & billboards
 		, RenderPolyLineArray const & lines )const
 	{
-		doRenderObjects( resources
+		doRenderObjects( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType::eOpaqueNoTex
 			, *m_objectNodes[size_t( NodeType::eOpaqueNoTex )]
 			, objects[size_t( NodeType::eOpaqueNoTex )] );
-		doRenderObjects( resources
+		doRenderObjects( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType::eOpaqueDiff
 			, *m_objectNodes[size_t( NodeType::eOpaqueDiff )]
 			, objects[size_t( NodeType::eOpaqueDiff )] );
-		doRenderBillboards( resources
+		doRenderBillboards( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType::eOpaqueNoTex
 			, *m_billboardNodes[size_t( NodeType::eOpaqueNoTex )]
 			, billboards[size_t( NodeType::eOpaqueNoTex )] );
-		doRenderBillboards( resources
+		doRenderBillboards( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType::eOpaqueDiff
 			, *m_billboardNodes[size_t( NodeType::eOpaqueDiff )]
 			, billboards[size_t( NodeType::eOpaqueDiff )] );
-		doRenderLines( resources
+		doRenderLines( stagingBuffer
+			, commandBuffer
 			, camera
 			, zoomScale
 			, *m_lineNode
 			, lines[size_t( NodeType::eOpaqueNoTex )] );
-		doRenderTransparent( resources
+		doRenderTransparent( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType::eAlphaTest
 			, OpacityType::eAlphaTest
 			, objects
 			, billboards
 			, lines );
-		doRenderTransparent( resources
+		doRenderTransparent( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType::eAlphaBlend
 			, OpacityType::eAlphaBlend
@@ -318,7 +326,8 @@ namespace render
 			, lines );
 	}
 
-	void SceneRenderer::doRenderTransparent( renderer::RenderingResources const & resources
+	void SceneRenderer::doRenderTransparent( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, Camera const & camera
 		, NodeType type
 		, OpacityType opacity
@@ -328,63 +337,72 @@ namespace render
 	{
 		size_t nodeType{ size_t( type )
 			+ size_t( TransparentNodeType::eNoTex ) };
-		doRenderObjects( resources
+		doRenderObjects( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType( nodeType )
 			, *m_objectNodes[nodeType]
 			, objects[nodeType] );
 		nodeType = size_t( type )
 			+ size_t( TransparentNodeType::eDiff );
-		doRenderObjects( resources
+		doRenderObjects( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType( nodeType )
 			, *m_objectNodes[nodeType]
 			, objects[nodeType] );
 		nodeType = size_t( type )
 			+ size_t( TransparentNodeType::eOpa );
-		doRenderObjects( resources
+		doRenderObjects( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType( nodeType )
 			, *m_objectNodes[nodeType]
 			, objects[nodeType] );
 		nodeType = size_t( type )
 			+ size_t( TransparentNodeType::eOpaDiff );
-		doRenderObjects( resources
+		doRenderObjects( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType( nodeType )
 			, *m_objectNodes[nodeType]
 			, objects[nodeType] );
 		nodeType = size_t( type )
 			+ size_t( TransparentNodeType::eNoTex );
-		doRenderBillboards( resources
+		doRenderBillboards( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType( nodeType )
 			, *m_billboardNodes[nodeType]
 			, billboards[nodeType] );
 		nodeType = size_t( type )
 			+ size_t( TransparentNodeType::eDiff );
-		doRenderBillboards( resources
+		doRenderBillboards( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType( nodeType )
 			, *m_billboardNodes[nodeType]
 			, billboards[nodeType] );
 		nodeType = size_t( type )
 			+ size_t( TransparentNodeType::eOpa );
-		doRenderBillboards( resources
+		doRenderBillboards( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType( nodeType )
 			, *m_billboardNodes[nodeType]
 			, billboards[nodeType] );
 		nodeType = size_t( type )
 			+ size_t( TransparentNodeType::eOpaDiff );
-		doRenderBillboards( resources
+		doRenderBillboards( stagingBuffer
+			, commandBuffer
 			, camera
 			, NodeType( nodeType )
 			, *m_billboardNodes[nodeType]
 			, billboards[nodeType] );
 	}
 
-	void SceneRenderer::doRenderObjects( renderer::RenderingResources const & resources
+	void SceneRenderer::doRenderObjects( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, Camera const & camera
 		, NodeType type
 		, ObjectNode & node
@@ -394,7 +412,7 @@ namespace render
 		{
 			utils::Mat4 const & projection = camera.projection();
 			utils::Mat4 const & view = camera.view();
-			resources.getCommandBuffer().bindPipeline( *node.m_pipeline );
+			commandBuffer.bindPipeline( *node.m_pipeline );
 			node.m_mtxUbo.getData().projection = projection;
 			node.m_mtxUbo.getData().view = view;
 
@@ -403,29 +421,31 @@ namespace render
 				if ( object.m_object->visible() )
 				{
 					node.m_mtxUbo.getData().model = object.m_object->transform();
-					resources.getStagingBuffer().copyUniformData( resources.getCommandBuffer()
+					stagingBuffer.copyUniformData( commandBuffer
 						, node.m_mtxUbo.getDatas()
-						, node.m_mtxUbo );
+						, node.m_mtxUbo
+						, renderer::PipelineStageFlag::eVertexShader );
 					node.m_matUbo.getData().ambient = object.m_material->ambient();
 					node.m_matUbo.getData().diffuse = object.m_material->diffuse();
 					node.m_matUbo.getData().specular = object.m_material->specular();
 					node.m_matUbo.getData().emissive = object.m_material->emissive();
 					node.m_matUbo.getData().exponent = object.m_material->exponent();
 					node.m_matUbo.getData().opacity = object.m_material->opacity();
-					resources.getStagingBuffer().copyUniformData( resources.getCommandBuffer()
+					stagingBuffer.copyUniformData( commandBuffer
 						, node.m_matUbo.getDatas()
-						, node.m_matUbo );
-					resources.getCommandBuffer().bindDescriptorSet( object.m_materialDescriptor
+						, node.m_matUbo
+						, renderer::PipelineStageFlag::eFragmentShader );
+					commandBuffer.bindDescriptorSet( object.m_materialDescriptor
 						, node.m_pipelineLayout );
-					resources.getCommandBuffer().bindVertexBuffers( { std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getPositions() ) )
+					commandBuffer.bindVertexBuffers( { std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getPositions() ) )
 						, std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getNormals() ) )
 						, std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getTexCoords() ) ) }
 					, { 0u, 0u, 0u } );
-					resources.getCommandBuffer().bindIndexBuffer( object.m_submesh->getIbo()
+					commandBuffer.bindIndexBuffer( object.m_submesh->getIbo()
 						, 0u
 						, renderer::IndexType::eUInt16 );
 					//node.m_scale->bind();
-					resources.getCommandBuffer().draw( object.m_submesh->getIndexCount()
+					commandBuffer.draw( object.m_submesh->getIndexCount()
 						, 1u
 						, 0u
 						, 0u );
@@ -434,7 +454,8 @@ namespace render
 		}
 	}
 
-	void SceneRenderer::doRenderBillboards( renderer::RenderingResources const & resources
+	void SceneRenderer::doRenderBillboards( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, Camera const & camera
 		, NodeType type
 		, BillboardNode & node
@@ -445,7 +466,7 @@ namespace render
 			utils::Mat4 const & projection = camera.projection();
 			utils::Mat4 const & view = camera.view();
 			utils::Vec3 const & position = camera.position();
-			resources.getCommandBuffer().bindPipeline( *node.m_pipeline );
+			commandBuffer.bindPipeline( *node.m_pipeline );
 			node.m_mtxUbo.getData().projection = projection;
 			node.m_mtxUbo.getData().view = view;
 			node.m_billboardUbo.getData().camera = position;
@@ -456,27 +477,30 @@ namespace render
 					&& billboard.m_billboard->buffer().count() )
 				{
 					node.m_mtxUbo.getData().model = billboard.m_billboard->transform();
-					resources.getStagingBuffer().copyUniformData( resources.getCommandBuffer()
+					stagingBuffer.copyUniformData( commandBuffer
 						, node.m_mtxUbo.getDatas()
-						, node.m_mtxUbo );
+						, node.m_mtxUbo
+						, renderer::PipelineStageFlag::eVertexShader );
 					node.m_billboardUbo.getData().dimensions = utils::Vec2{ billboard.m_billboard->dimensions() };
-					resources.getStagingBuffer().copyUniformData( resources.getCommandBuffer()
+					stagingBuffer.copyUniformData( commandBuffer
 						, node.m_billboardUbo.getDatas()
-						, node.m_billboardUbo );
+						, node.m_billboardUbo
+						, renderer::PipelineStageFlag::eVertexShader | renderer::PipelineStageFlag::eFragmentShader );
 					node.m_matUbo.getData().ambient = billboard.m_billboard->material().ambient();
 					node.m_matUbo.getData().diffuse = billboard.m_billboard->material().diffuse();
 					node.m_matUbo.getData().specular = billboard.m_billboard->material().specular();
 					node.m_matUbo.getData().emissive = billboard.m_billboard->material().emissive();
 					node.m_matUbo.getData().exponent = billboard.m_billboard->material().exponent();
 					node.m_matUbo.getData().opacity = billboard.m_billboard->material().opacity();
-					resources.getStagingBuffer().copyUniformData( resources.getCommandBuffer()
+					stagingBuffer.copyUniformData( commandBuffer
 						, node.m_matUbo.getDatas()
-						, node.m_matUbo );
-					resources.getCommandBuffer().bindDescriptorSet( billboard.m_materialDescriptor
+						, node.m_matUbo
+						, renderer::PipelineStageFlag::eFragmentShader );
+					commandBuffer.bindDescriptorSet( billboard.m_materialDescriptor
 						, node.m_pipelineLayout );
-					resources.getCommandBuffer().bindVertexBuffer( billboard.m_billboard->buffer().vbo()
+					commandBuffer.bindVertexBuffer( billboard.m_billboard->buffer().vbo()
 						, 0u );
-					resources.getCommandBuffer().draw( billboard.m_billboard->buffer().count() * 6
+					commandBuffer.draw( billboard.m_billboard->buffer().count() * 6
 						, 1u
 						, 0u
 						, 0u );
@@ -485,7 +509,8 @@ namespace render
 		}
 	}
 
-	void SceneRenderer::doRenderLines( renderer::RenderingResources const & resources
+	void SceneRenderer::doRenderLines( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, Camera const & camera
 		, float zoomScale
 		, PolyLineNode & node
@@ -496,7 +521,7 @@ namespace render
 			utils::Mat4 const & projection = camera.projection();
 			utils::Mat4 const & view = camera.view();
 			utils::Vec3 const & position = camera.position();
-			resources.getCommandBuffer().bindPipeline( *node.m_pipeline );
+			commandBuffer.bindPipeline( *node.m_pipeline );
 			node.m_mtxUbo.getData().projection = projection;
 			node.m_mtxUbo.getData().view = view;
 			node.m_lineUbo.getData().lineScale = zoomScale;
@@ -508,28 +533,31 @@ namespace render
 					&& line.m_line->count() )
 				{
 					node.m_mtxUbo.getData().model = line.m_line->transform();
-					resources.getStagingBuffer().copyUniformData( resources.getCommandBuffer()
+					stagingBuffer.copyUniformData( commandBuffer
 						, node.m_mtxUbo.getDatas()
-						, node.m_mtxUbo );
+						, node.m_mtxUbo
+						, renderer::PipelineStageFlag::eVertexShader );
 					node.m_lineUbo.getData().lineWidth = line.m_line->width();
 					node.m_lineUbo.getData().lineFeather = line.m_line->feather();
-					resources.getStagingBuffer().copyUniformData( resources.getCommandBuffer()
+					stagingBuffer.copyUniformData( commandBuffer
 						, node.m_lineUbo.getDatas()
-						, node.m_lineUbo );
+						, node.m_lineUbo
+						, renderer::PipelineStageFlag::eVertexShader | renderer::PipelineStageFlag::eFragmentShader );
 					node.m_matUbo.getData().ambient = line.m_line->material().ambient();
 					node.m_matUbo.getData().diffuse = line.m_line->material().diffuse();
 					node.m_matUbo.getData().specular = line.m_line->material().specular();
 					node.m_matUbo.getData().emissive = line.m_line->material().emissive();
 					node.m_matUbo.getData().exponent = line.m_line->material().exponent();
 					node.m_matUbo.getData().opacity = line.m_line->material().opacity();
-					resources.getStagingBuffer().copyUniformData( resources.getCommandBuffer()
+					stagingBuffer.copyUniformData( commandBuffer
 						, node.m_matUbo.getDatas()
-						, node.m_matUbo );
-					resources.getCommandBuffer().bindDescriptorSet( line.m_materialDescriptor
+						, node.m_matUbo
+						, renderer::PipelineStageFlag::eFragmentShader );
+					commandBuffer.bindDescriptorSet( line.m_materialDescriptor
 						, node.m_pipelineLayout );
-					//m_resources.getCommandBuffer().bindVertexBuffer( line.m_line->buffer()
+					//m_commandBuffer.bindVertexBuffer( line.m_line->buffer()
 					//	, 0u );
-					resources.getCommandBuffer().draw( line.m_line->count() * 6
+					commandBuffer.draw( line.m_line->count() * 6
 						, 1u
 						, 0u
 						, 0u );

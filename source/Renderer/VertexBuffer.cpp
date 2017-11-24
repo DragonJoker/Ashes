@@ -2,7 +2,7 @@
 
 namespace renderer
 {
-	inline VertexBufferBase::VertexBufferBase( Device const & device
+	VertexBufferBase::VertexBufferBase( Device const & device
 		, uint32_t bindingSlot
 		, uint32_t size
 		, BufferTargets target

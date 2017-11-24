@@ -89,7 +89,8 @@ namespace render
 		*\param[in] scale
 		*	L'échelle du zoom.
 		*/
-		void cull( renderer::RenderingResources const & resources
+		void cull( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, utils::Vec3 const & position
 			, float scale );

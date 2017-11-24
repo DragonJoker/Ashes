@@ -23,6 +23,13 @@ namespace renderer
 		SwapChain( Device const & device
 			, utils::IVec2 const & size );
 		/**
+		*\brief
+		*	Définit la couleur de vidage de la swapchain.
+		*\param[in] value
+		*	La nouvelle valeur.
+		*/
+		void setClearColour( utils::RgbaColour const & value );
+		/**
 		*\return
 		*	Récupère les ressources de rendu actives.
 		*/
@@ -42,6 +49,14 @@ namespace renderer
 		void present( RenderingResources & resources );
 		/**
 		*\return
+		*	Les dimensions de la swap chain.
+		*/
+		inline utils::IVec2 getDimensions()const
+		{
+			return { m_swapChain->getWidth(), m_swapChain->getHeight() };
+		}
+		/**
+		*\return
 		*	La swap chain de vulkan.
 		*/
 		inline vk::SwapChain const & getSwapChain()const
@@ -59,7 +74,6 @@ namespace renderer
 		Device const & m_device;
 		utils::IVec2 m_dimensions;
 		vk::SwapChainPtr m_swapChain;
-		vk::BackBuffer * m_backBuffer{ nullptr };
 		//! Les ressources de rendu liées à la swap chain.
 		std::vector< RenderingResourcesPtr > m_renderingResources;
 		//! L'indice de la ressource de rendu active.

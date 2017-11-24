@@ -124,4 +124,11 @@ namespace renderer
 			, firstVertex
 			, firstInstance );
 	}
+
+	void CommandBuffer::copyImage( StagingBuffer const & src
+		, Texture const & dst )const
+	{
+		m_commandBuffer.copyImage( src.getStagingBuffer().getBuffer()
+			, dst.getImage() );
+	}
 }

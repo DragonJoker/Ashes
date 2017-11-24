@@ -23,17 +23,19 @@ namespace render
 
 	namespace
 	{
-		void doFillBuffers( renderer::RenderingResources const & resources
+		void doFillBuffers( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Overlay::QuadArray::const_iterator begin
 			, uint32_t count
 			, uint32_t & offset
 			, renderer::VertexBuffer< Overlay::Quad > const & buffer )
 		{
-			resources.getStagingBuffer().copyVertexData( resources.getCommandBuffer()
+			stagingBuffer.copyVertexData( commandBuffer
 				, reinterpret_cast< uint8_t const * const >( &( *begin ) )
 				, uint32_t( count * sizeof( Overlay::Quad ) )
 				, uint32_t( offset * sizeof( Overlay::Quad ) )
-				, buffer );
+				, buffer
+				, renderer::PipelineStageFlag::eVertexInput );
 			offset += count;
 		}
 
@@ -356,7 +358,8 @@ namespace render
 		}
 	}
 
-	void OverlayRenderer::draw( renderer::RenderingResources const & resources
+	void OverlayRenderer::draw( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, OverlayList const & overlays )
 	{
 		auto & size = m_viewport.size();
@@ -364,7 +367,9 @@ namespace render
 
 		for ( auto & overlay : sorted )
 		{
-			overlay->render( resources, *this );
+			overlay->render( stagingBuffer
+				, commandBuffer
+				, *this );
 		}
 	}
 
@@ -389,18 +394,21 @@ namespace render
 		m_sizeChanged = false;
 	}
 
-	void OverlayRenderer::drawPanel( renderer::RenderingResources const & resources
+	void OverlayRenderer::drawPanel( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, PanelOverlay const & overlay )
 	{
 		auto & material = overlay.material();
 		auto & node = m_panelNodes[size_t( UberShader::nodeType
 			( material.opacityType()
 			, material.textureFlags() ) )];
-		resources.getStagingBuffer().copyVertexData( resources.getCommandBuffer()
+		stagingBuffer.copyVertexData( commandBuffer
 			, overlay.panelVertex()
-			, *m_panelBuffer );
-		resources.getCommandBuffer().bindPipeline( *node.m_pipeline );
-		doDrawBuffer( resources
+			, *m_panelBuffer
+			, renderer::PipelineStageFlag::eVertexInput );
+		commandBuffer.bindPipeline( *node.m_pipeline );
+		doDrawBuffer( stagingBuffer
+			, commandBuffer
 			, *m_panelBuffer
 			, 1u
 			, overlay.transform()
@@ -409,28 +417,33 @@ namespace render
 			, m_panelOverlays.find( &overlay )->second );
 	}
 
-	void OverlayRenderer::drawBorderPanel( renderer::RenderingResources const & resources
+	void OverlayRenderer::drawBorderPanel( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, BorderPanelOverlay const & overlay )
 	{
 		auto & material = overlay.material();
 		auto & node = m_panelNodes[size_t( UberShader::nodeType
 			( material.opacityType()
 			, material.textureFlags() ) )];
-		resources.getStagingBuffer().copyVertexData( resources.getCommandBuffer()
+		stagingBuffer.copyVertexData( commandBuffer
 			, overlay.panelVertex()
-			, *m_panelBuffer );
-		resources.getStagingBuffer().copyVertexData( resources.getCommandBuffer()
+			, *m_panelBuffer
+			, renderer::PipelineStageFlag::eVertexInput );
+		stagingBuffer.copyVertexData( commandBuffer
 			, overlay.borderVertex()
-			, *m_borderBuffer );
-		resources.getCommandBuffer().bindPipeline( *node.m_pipeline );
-		doDrawBuffer( resources
+			, *m_borderBuffer
+			, renderer::PipelineStageFlag::eVertexInput );
+		commandBuffer.bindPipeline( *node.m_pipeline );
+		doDrawBuffer( stagingBuffer
+			, commandBuffer
 			, *m_panelBuffer
 			, 1u
 			, overlay.transform()
 			, overlay.material()
 			, node
 			, m_panelOverlays.find( &overlay )->second );
-		doDrawBuffer( resources
+		doDrawBuffer( stagingBuffer
+			, commandBuffer
 			, *m_borderBuffer
 			, 8u
 			, overlay.transform()
@@ -439,7 +452,8 @@ namespace render
 			, m_borderOverlays.find( &overlay )->second );
 	}
 
-	void OverlayRenderer::drawText( renderer::RenderingResources const & resources
+	void OverlayRenderer::drawText( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, TextOverlay const & overlay )
 	{
 		uint32_t offset{ 0u };
@@ -451,7 +465,8 @@ namespace render
 
 		while ( count > m_maxCharsPerBuffer )
 		{
-			buffers.push_back( &doFillTextPart( resources
+			buffers.push_back( &doFillTextPart( stagingBuffer
+				, commandBuffer
 				, count
 				, offset
 				, it
@@ -461,7 +476,8 @@ namespace render
 
 		if ( count > 0 )
 		{
-			buffers.push_back( &doFillTextPart( resources
+			buffers.push_back( &doFillTextPart( stagingBuffer
+				, commandBuffer
 				, count
 				, offset
 				, it
@@ -472,7 +488,8 @@ namespace render
 
 		for ( auto & buffer : buffers )
 		{
-			doDrawBuffer( resources
+			doDrawBuffer( stagingBuffer
+				, commandBuffer
 				, *buffer
 				, std::min( count, m_maxCharsPerBuffer )
 				, overlay.transform()
@@ -483,7 +500,8 @@ namespace render
 		}
 	}
 
-	renderer::VertexBuffer< Overlay::Quad > const & OverlayRenderer::doCreateTextBuffer( renderer::RenderingResources const & resources )
+	renderer::VertexBuffer< Overlay::Quad > const & OverlayRenderer::doCreateTextBuffer( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer )
 	{
 		auto buffer = renderer::makeVertexBuffer< TextOverlay::Quad >( m_device
 			, 0u
@@ -494,7 +512,8 @@ namespace render
 		return *m_textBuffers.back();
 	}
 
-	void OverlayRenderer::doDrawBuffer( renderer::RenderingResources const & resources
+	void OverlayRenderer::doDrawBuffer( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, renderer::VertexBuffer< Overlay::Quad > const & buffer
 		, uint32_t count
 		, utils::Mat4 const & transform
@@ -504,20 +523,22 @@ namespace render
 	{
 		node.m_overlayUbo.getData().colour = utils::Vec4{ material.ambient(), material.opacity() };
 		node.m_overlayUbo.getData().modelProj = m_transform * transform;
-		resources.getStagingBuffer().copyUniformData( resources.getCommandBuffer()
+		stagingBuffer.copyUniformData( commandBuffer
 			, node.m_overlayUbo.getDatas()
-			, node.m_overlayUbo );
-		resources.getCommandBuffer().bindVertexBuffer( buffer
+			, node.m_overlayUbo
+			, renderer::PipelineStageFlag::eVertexShader | renderer::PipelineStageFlag::eFragmentShader );
+		commandBuffer.bindVertexBuffer( buffer
 			, 0u );
-		resources.getCommandBuffer().bindDescriptorSet( descriptor
+		commandBuffer.bindDescriptorSet( descriptor
 			, node.m_pipelineLayout );
-		resources.getCommandBuffer().draw( count * 6u
+		commandBuffer.draw( count * 6u
 			, 1u
 			, 0u
 			, 0u );
 	}
 
-	renderer::VertexBuffer< Overlay::Quad > const & OverlayRenderer::doFillTextPart( renderer::RenderingResources const & resources
+	renderer::VertexBuffer< Overlay::Quad > const & OverlayRenderer::doFillTextPart( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, uint32_t count
 		, uint32_t & offset
 		, TextOverlay::QuadArray::const_iterator & it
@@ -527,7 +548,7 @@ namespace render
 
 		if ( offset + count > m_maxCharsPerBuffer )
 		{
-			buffer = &doCreateTextBuffer( resources );
+			buffer = &doCreateTextBuffer( stagingBuffer, commandBuffer );
 			offset = 0u;
 			++index;
 		}
@@ -537,7 +558,12 @@ namespace render
 		}
 
 		count = std::min( count, m_maxCharsPerBuffer );
-		doFillBuffers( resources, it, count, offset, *buffer );
+		doFillBuffers( stagingBuffer
+			, commandBuffer
+			, it
+			, count
+			, offset
+			, *buffer );
 		it += count;
 
 		return *buffer;

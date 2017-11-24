@@ -35,6 +35,7 @@ namespace render
 		Texture( renderer::Device const & device
 			, renderer::WrapMode wrapS = renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode wrapT = renderer::WrapMode::eClampToEdge
+			, renderer::WrapMode wrapR = renderer::WrapMode::eClampToEdge
 			, renderer::Filter minFilter = renderer::Filter::eLinear
 			, renderer::Filter magFilter = renderer::Filter::eLinear );
 		/**
@@ -50,7 +51,8 @@ namespace render
 		void image( utils::PixelFormat format
 			, utils::IVec2 const & size
 			, ByteArray const & data
-			, renderer::RenderingResources const & resources );
+			, renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer );
 		/**
 		*\return
 		*	Le format des pixels de la texture.

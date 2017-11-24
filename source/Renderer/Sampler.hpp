@@ -34,13 +34,14 @@ namespace renderer
 		Sampler( Device const & device
 			, WrapMode wrapS
 			, WrapMode wrapT
+			, WrapMode wrapR
 			, Filter minFilter
 			, Filter magFilter );
 		/**
 		*\return
 		*	L'échantillonneur vulkan.
 		*/
-		inline vk::Sampler getSampler()const noexcept
+		inline vk::Sampler const & getSampler()const noexcept
 		{
 			return *m_sampler;
 		}

@@ -232,7 +232,8 @@ namespace render
 		*\param[in] lines
 		*	Les polylignes à dessiner.
 		*/
-		void draw( renderer::RenderingResources const & resources
+		void draw( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, float zoomScale
 			, RenderSubmeshArray const & objects
@@ -240,24 +241,28 @@ namespace render
 			, RenderPolyLineArray const & lines )const;
 
 	private:
-		void doRenderTransparent( renderer::RenderingResources const & resources
+		void doRenderTransparent( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, NodeType type
 			, OpacityType opacity
 			, RenderSubmeshArray const & objects
 			, RenderBillboardArray const & billboards
 			, RenderPolyLineArray const & lines )const;
-		void doRenderObjects( renderer::RenderingResources const & resources
+		void doRenderObjects( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, NodeType type
 			, ObjectNode & node
 			, RenderSubmeshVector const & objects )const;
-		void doRenderBillboards( renderer::RenderingResources const & resources
+		void doRenderBillboards( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, NodeType type
 			, BillboardNode & node
 			, RenderBillboardVector const & billboards )const;
-		void doRenderLines( renderer::RenderingResources const & resources
+		void doRenderLines( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, float zoomScale
 			, PolyLineNode & node

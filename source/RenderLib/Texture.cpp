@@ -8,12 +8,14 @@ namespace render
 	Texture::Texture( renderer::Device const & device
 		, renderer::WrapMode wrapS
 		, renderer::WrapMode wrapT
+		, renderer::WrapMode wrapR
 		, renderer::Filter minFilter
 		, renderer::Filter magFilter )
 		: m_texture{ device }
 		, m_sampler{ device
 			, wrapS
 			, wrapT
+			, wrapR
 			, minFilter
 			, magFilter }
 	{
@@ -22,13 +24,15 @@ namespace render
 	void Texture::image( utils::PixelFormat format
 		, utils::IVec2 const & size
 		, ByteArray const & data
-		, renderer::RenderingResources const & resources )
+		, renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer )
 	{
 		m_format = format;
 		m_size = size;
 		m_texture.setImage( m_format
 			, m_size
 			, data
-			, resources );
+			, stagingBuffer
+			, commandBuffer );
 	}
 }

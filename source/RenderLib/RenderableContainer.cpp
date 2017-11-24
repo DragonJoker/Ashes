@@ -102,11 +102,13 @@ namespace render
 		m_descriptorLayouts.clear();
 	}
 
-	void RenderableContainer::doDraw( renderer::RenderingResources const & resources
+	void RenderableContainer::doDraw( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, Camera const & camera
 		, float zoomScale )const
 	{
-		m_renderer.draw( resources
+		m_renderer.draw( stagingBuffer
+			, commandBuffer
 			, camera
 			, zoomScale
 			, m_renderObjects

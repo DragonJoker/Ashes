@@ -37,7 +37,9 @@ namespace render
 		*\param[in] tex
 		*	Les coordonnées de texture du maillage.
 		*/
-		void data( renderer::RenderingResources const & resources
+		void data( renderer::Device const & device
+			, renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Vec3Array const & pos
 			, Vec3Array const & nml = Vec3Array{}
 			, Vec2Array const & tex = Vec2Array{} );
@@ -47,7 +49,9 @@ namespace render
 		*\param[in] idx
 		*	Les indices des faces du sous-maillage à ajouter.
 		*/
-		void addSubmesh( renderer::RenderingResources const & resources
+		void addSubmesh( renderer::Device const & device
+			, renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, UInt16Array const & idx );
 		/**
 		*\return

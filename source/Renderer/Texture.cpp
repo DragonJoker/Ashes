@@ -17,10 +17,11 @@ namespace renderer
 	void Texture::setImage( utils::PixelFormat format
 		, IVec2 const & size
 		, ByteArray const & data
-		, RenderingResources const & resources )
+		, renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer )
 	{
 		setImage( format, size );
-		resources.getStagingBuffer().copyTextureData( resources.getCommandBuffer()
+		stagingBuffer.copyTextureData( commandBuffer
 			, data
 			, *this );
 	}

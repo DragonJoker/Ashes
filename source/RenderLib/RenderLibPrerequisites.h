@@ -230,7 +230,8 @@ namespace render
 	*\param[out] texture
 	*	Reçoit la texture.
 	*/
-	void loadTexture( renderer::RenderingResources const & resources
+	void loadTexture( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, ByteArray const & fileContent
 		, Texture & texture );
 	/**
@@ -243,7 +244,8 @@ namespace render
 	*\param[out] texture
 	*	Reçoit la texture.
 	*/
-	void loadTexture( renderer::RenderingResources const & resources
+	void loadTexture( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, ByteArray const & fileContent
 		, utils::PixelFormat format
 		, Texture & texture );

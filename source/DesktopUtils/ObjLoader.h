@@ -22,7 +22,9 @@ namespace utils
 	*\param[in,out] texturesList
 	*	Reçoit les textures chargées.
 	*/
-	void loadMtlFile( renderer::RenderingResources const & resources
+	void loadMtlFile( renderer::Device const & device
+		, renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, std::string const & fileContent
 		, render::MaterialList & materialsList
 		, render::TextureList & texturesList );
@@ -42,7 +44,9 @@ namespace utils
 	*\return
 	*	L'objet chargé.
 	*/
-	render::ObjectPtr loadObjFile( renderer::RenderingResources const & resources
+	render::ObjectPtr loadObjFile( renderer::Device const & device
+		, renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, std::string const & name
 		, std::string const & fileContent
 		, render::MaterialList & materialsList

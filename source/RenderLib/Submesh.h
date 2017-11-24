@@ -33,7 +33,9 @@ namespace render
 		*\param[in] idx
 		*	Les données d'indices des faces.
 		*/
-		Submesh( renderer::RenderingResources const & resources
+		Submesh( renderer::Device const & device
+			, renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Mesh const & mesh
 			, UInt16Array const & idx );
 		/**

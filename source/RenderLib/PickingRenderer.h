@@ -182,27 +182,31 @@ namespace render
 		*\param[in] billboards
 		*	Les billboards à dessiner.
 		*/
-		void draw( renderer::RenderingResources const & resources
+		void draw( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, float zoomPercent
 			, RenderSubmeshArray const & objects
 			, RenderBillboardArray const & billboards )const;
 
 	private:
-		void doRenderTransparent( renderer::RenderingResources const & resources
+		void doRenderTransparent( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, float zoomPercent
 			, NodeType type
 			, OpacityType opacity
 			, RenderSubmeshArray const & objects
 			, RenderBillboardArray const & billboards )const;
-		void doRenderObjects( renderer::RenderingResources const & resources
+		void doRenderObjects( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, float zoomPercent
 			, NodeType type
 			, ObjectNode & node
 			, RenderSubmeshVector const & objects )const;
-		void doRenderBillboards( renderer::RenderingResources const & resources
+		void doRenderBillboards( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, float zoomPercent
 			, NodeType type

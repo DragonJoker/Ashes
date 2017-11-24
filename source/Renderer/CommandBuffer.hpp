@@ -17,6 +17,8 @@ namespace renderer
 	class CommandBuffer
 	{
 	public:
+		CommandBuffer( CommandBuffer const & ) = delete;
+		CommandBuffer & operator=( CommandBuffer const & ) = delete;
 		/**
 		*\brief
 		*	Constructeur.
@@ -303,10 +305,20 @@ namespace renderer
 		void copyImage( Buffer< T > const & src
 			, Texture const & dst )const;
 		/**
+		*\brief
+		*	Copie les données d'un tampon vers une image.
+		*\param[in] src
+		*	Le tampon source.
+		*\param[in] dst
+		*	L'image destination.
+		*/
+		void copyImage( StagingBuffer const & src
+			, Texture const & dst )const;
+		/**
 		*\return
 		*	Le tampon de commandes vulkan.
 		*/
-		vk::PrimaryCommandBuffer getCommandBuffer()const
+		vk::PrimaryCommandBuffer const & getCommandBuffer()const
 		{
 			return m_commandBuffer;
 		}

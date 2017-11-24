@@ -140,7 +140,7 @@ namespace renderer
 			copyBufferData( commandBuffer
 				, reinterpret_cast< uint8_t const * const >( data.data() )
 				, uint32_t( data.size() * sizeof( T ) )
-				, offset
+				, uint32_t( offset * sizeof( T ) )
 				, buffer );
 		}
 		/**
@@ -186,8 +186,7 @@ namespace renderer
 			, uint32_t offset
 			, Buffer< T > const & buffer )const
 		{
-			doCopyToStagingBuffer( commandBuffer
-				, data
+			doCopyToStagingBuffer( data
 				, size );
 			doCopyFromStagingBuffer( commandBuffer
 				, size
@@ -206,13 +205,15 @@ namespace renderer
 		template< typename T >
 		inline void copyVertexData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
-			, VertexBuffer< T > const & buffer )const
+			, VertexBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
 			copyVertexData( commandBuffer
 				, reinterpret_cast< uint8_t const * const >( data.data() )
 				, uint32_t( data.size() * sizeof( T ) )
 				, 0u
-				, buffer );
+				, buffer
+				, flags );
 		}
 		/**
 		*@~french
@@ -226,13 +227,15 @@ namespace renderer
 		template< typename T >
 		inline void copyVertexData( CommandBuffer const & commandBuffer
 			, ByteArray const & data
-			, VertexBuffer< T > const & buffer )const
+			, VertexBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
 			copyVertexData( commandBuffer
 				, data.data()
 				, uint32_t( data.size() )
 				, 0u
-				, buffer );
+				, buffer
+				, flags );
 		}
 		/**
 		*@~french
@@ -249,13 +252,15 @@ namespace renderer
 		inline void copyVertexData( CommandBuffer const & commandBuffer
 			, uint8_t const * const data
 			, uint32_t size
-			, VertexBuffer< T > const & buffer )const
+			, VertexBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
 			copyVertexData( commandBuffer
 				, data
 				, size
 				, 0u
-				, buffer );
+				, buffer
+				, flags );
 		}
 		/**
 		*@~french
@@ -272,13 +277,15 @@ namespace renderer
 		inline void copyVertexData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, uint32_t offset
-			, VertexBuffer< T > const & buffer )const
+			, VertexBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
 			copyVertexData( commandBuffer
 				, reinterpret_cast< uint8_t const * const >( data.data() )
 				, uint32_t( data.size() * sizeof( T ) )
-				, offset
-				, buffer );
+				, uint32_t( offset * sizeof( T ) )
+				, buffer
+				, flags );
 		}
 		/**
 		*@~french
@@ -295,13 +302,15 @@ namespace renderer
 		inline void copyVertexData( CommandBuffer const & commandBuffer
 			, ByteArray const & data
 			, uint32_t offset
-			, VertexBuffer< T > const & buffer )const
+			, VertexBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
 			copyVertexData( commandBuffer
 				, data.data()
 				, uint32_t( data.size() )
 				, offset
-				, buffer );
+				, buffer
+				, flags );
 		}
 		/**
 		*@~french
@@ -321,15 +330,16 @@ namespace renderer
 			, uint8_t const * const data
 			, uint32_t size
 			, uint32_t offset
-			, VertexBuffer< T > const & buffer )const
+			, VertexBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
-			doCopyToStagingBuffer( commandBuffer
-				, data
+			doCopyToStagingBuffer( data
 				, size );
 			doCopyFromStagingBuffer( commandBuffer
 				, size
 				, offset
-				, buffer.getVbo().getBuffer() );
+				, buffer.getVbo()
+				, flags );
 		}
 		/**
 		*@~french
@@ -343,13 +353,15 @@ namespace renderer
 		template< typename T >
 		inline void copyUniformData( CommandBuffer const & commandBuffer
 			, ByteArray const & data
-			, UniformBuffer< T > const & buffer )const
+			, UniformBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
 			copyUniformData( commandBuffer
 				, data.data()
 				, uint32_t( data.size() )
 				, 0u
-				, buffer );
+				, buffer
+				, flags );
 		}
 		/**
 		*@~french
@@ -366,13 +378,15 @@ namespace renderer
 		inline void copyUniformData( CommandBuffer const & commandBuffer
 			, uint8_t const * const data
 			, uint32_t size
-			, UniformBuffer< T > const & buffer )const
+			, UniformBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
 			copyUniformData( commandBuffer
 				, data
 				, size
 				, 0u
-				, buffer );
+				, buffer
+				, flags );
 		}
 		/**
 		*@~french
@@ -389,13 +403,15 @@ namespace renderer
 		void copyUniformData( CommandBuffer const & commandBuffer
 			, ByteArray const & data
 			, uint32_t offset
-			, UniformBuffer< T > const & buffer )const
+			, UniformBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
 			copyUniformData( commandBuffer
 				, data.data()
 				, uint32_t( data.size() )
 				, offset
-				, buffer );
+				, buffer
+				, flags );
 		}
 		/**
 		*@~french
@@ -409,13 +425,15 @@ namespace renderer
 		template< typename T >
 		void copyUniformData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
-			, UniformBuffer< T > const & buffer )const
+			, UniformBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
 			copyUniformData( commandBuffer
 				, reinterpret_cast< uint8_t const * const >( data.data() )
-				, uint32_t( data.size() )
+				, uint32_t( data.size() * sizeof( T ) )
 				, 0u
-				, buffer );
+				, buffer
+				, flags );
 		}
 		/**
 		*@~french
@@ -423,22 +441,24 @@ namespace renderer
 		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
 		*@param[in] data
 		*	Les données à copier.
-		*@param[in] size
-		*	La taille des données à copier.
+		*@param[in] count
+		*	Le nombre d'éléments à copier.
 		*@param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
 		void copyUniformData( CommandBuffer const & commandBuffer
 			, T const * const data
-			, uint32_t size
-			, UniformBuffer< T > const & buffer )const
+			, uint32_t count
+			, UniformBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
 			copyUniformData( commandBuffer
 				, reinterpret_cast< uint8_t const * const >( data )
-				, size
+				, uint32_t( count * sizeof( T ) )
 				, 0u
-				, buffer );
+				, buffer
+				, flags );
 		}
 		/**
 		*@~french
@@ -455,13 +475,15 @@ namespace renderer
 		void copyUniformData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, uint32_t offset
-			, UniformBuffer< T > const & buffer )const
+			, UniformBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
 			copyUniformData( commandBuffer
 				, reinterpret_cast< uint8_t const * const >( data.data() )
-				, uint32_t( data.size() )
-				, offset
-				, buffer );
+				, uint32_t( data.size() * sizeof( T ) )
+				, uint32_t( offset * sizeof( T ) )
+				, buffer
+				, flags );
 		}
 		/**
 		*@~french
@@ -469,8 +491,8 @@ namespace renderer
 		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
 		*@param[in] data
 		*	Les données à copier.
-		*@param[in] size
-		*	La taille des données à copier.
+		*@param[in] count
+		*	Le nombre d'éléments à copier.
 		*@param[in] offset
 		*	L'offset dans le tampon.
 		*@param[out] buffer
@@ -479,15 +501,17 @@ namespace renderer
 		template< typename T >
 		void copyUniformData( CommandBuffer const & commandBuffer
 			, T const * const data
-			, uint32_t size
+			, uint32_t count
 			, uint32_t offset
-			, UniformBuffer< T > const & buffer )const
+			, UniformBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
 			copyUniformData( commandBuffer
 				, reinterpret_cast< uint8_t const * const >( data )
-				, size
-				, offset
-				, buffer );
+				, uint32_t( data.size() * sizeof( T ) )
+				, uint32_t( offset * sizeof( T ) )
+				, buffer
+				, flags );
 		}
 		/**
 		*@~french
@@ -507,15 +531,16 @@ namespace renderer
 			, uint8_t const * const data
 			, uint32_t size
 			, uint32_t offset
-			, UniformBuffer< T > const & buffer )const
+			, UniformBuffer< T > const & buffer
+			, PipelineStageFlags const & flags )const
 		{
-			doCopyToStagingBuffer( commandBuffer
-				, data
+			doCopyToStagingBuffer( data
 				, size );
 			doCopyFromStagingBuffer( commandBuffer
 				, size
 				, offset
-				, buffer.getUbo().getBuffer() );
+				, buffer.getUbo()
+				, flags );
 		}
 		/**
 		*\return
@@ -527,13 +552,22 @@ namespace renderer
 		}
 
 	private:
-		void doCopyToStagingBuffer( CommandBuffer const & commandBuffer
-			, uint8_t const * data
+		void doCopyToStagingBuffer( uint8_t const * data
 			, uint32_t size )const;
 		void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 			, uint32_t size
 			, uint32_t offset
 			, vk::Buffer const & buffer )const;
+		void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
+			, uint32_t size
+			, uint32_t offset
+			, vk::VertexBuffer const & buffer
+			, PipelineStageFlags const & flags )const;
+		void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
+			, uint32_t size
+			, uint32_t offset
+			, vk::UniformBuffer const & buffer
+			, PipelineStageFlags const & flags )const;
 
 	private:
 		Device const & m_device;

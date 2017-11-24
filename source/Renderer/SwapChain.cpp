@@ -12,13 +12,17 @@ namespace renderer
 		, m_dimensions{ size }
 		, m_swapChain{ device.getDevice().createSwapChain( size.x, size.y ) }
 	{
-		m_swapChain->setClearColour( VkClearColorValue{ { 1.0f, 0.8f, 0.4f, 0.0f } } );
 		m_renderingResources.resize( 3 );
 
 		for ( auto & resource : m_renderingResources )
 		{
 			resource = std::make_unique< renderer::RenderingResources >( device );
 		}
+	}
+
+	void SwapChain::setClearColour( utils::RgbaColour const & value )
+	{
+		m_swapChain->setClearColour( VkClearColorValue{ { value.r, value.g, value.b, value.a } } );
 	}
 
 	RenderingResources * SwapChain::getResources()
@@ -28,11 +32,13 @@ namespace renderer
 
 		if ( resources.waitRecord( vk::FenceTimeout ) )
 		{
+			vk::BackBuffer * backBuffer{ nullptr };
 			auto res = m_swapChain->acquireBackBuffer( resources.getImageAvailableSemaphore()
-				, m_backBuffer );
+				, backBuffer );
 
 			if ( doCheckNeedReset( res, true, "Swap chain image acquisition" ) )
 			{
+				resources.setBackBuffer( backBuffer );
 				return &resources;
 			}
 
@@ -52,12 +58,12 @@ namespace renderer
 
 		if ( vk::checkError( res ) )
 		{
-			res = m_swapChain->presentBackBuffer( *m_backBuffer
+			res = m_swapChain->presentBackBuffer( resources.getBackBuffer()
 				, resources.getRenderingFinishedSemaphore() );
 			doCheckNeedReset( res, false, "Image presentation" );
 		}
 
-		m_backBuffer = nullptr;
+		resources.setBackBuffer( nullptr );
 	}
 
 	bool SwapChain::doCheckNeedReset( VkResult errCode

@@ -72,11 +72,6 @@ namespace renderer
 
 #endif
 		/**
-		*\brief
-		*	Destructeur.
-		*/
-		~Connection();
-		/**
 		*\return
 		*	La connection vulkan.
 		*/

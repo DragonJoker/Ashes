@@ -20,6 +20,7 @@
 #include <Renderer/DescriptorSetLayout.hpp>
 #include <Renderer/DescriptorSetPool.hpp>
 #include <Renderer/ShaderProgram.hpp>
+#include <Renderer/StagingBuffer.hpp>
 #include <Renderer/Pipeline.hpp>
 #include <Renderer/PipelineLayout.hpp>
 #include <Renderer/SwapChain.hpp>
@@ -175,6 +176,22 @@ namespace render
 			m_pickPosition = position;
 			m_pick = true;
 		}
+		/**
+		*\return
+		*	Le device logique.
+		*/
+		inline renderer::Device const & getDevice()const noexcept
+		{
+			return m_device;
+		}
+		/**
+		*\return
+		*	Le tampon de transfert.
+		*/
+		inline renderer::StagingBuffer const & getStagingBuffer()const noexcept
+		{
+			return m_stagingBuffer;
+		}
 
 	private:
 		/**
@@ -186,7 +203,11 @@ namespace render
 
 	private:
 		//! La swap chain.
+		renderer::Device const & m_device;
+		//! La swap chain.
 		renderer::SwapChainPtr m_swapChain;
+		//! La swap chain.
+		renderer::StagingBuffer m_stagingBuffer;
 		//! Le layout des descripteurs de rendu dans la fenêtre.
 		renderer::DescriptorSetLayout m_descriptorLayout;
 		//! Le layout du pipeline de rendu dans la fenêtre.

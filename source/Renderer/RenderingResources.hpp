@@ -41,6 +41,24 @@ namespace renderer
 		bool waitRecord( uint32_t timeout );
 		/**
 		*\brief
+		*	Définit le tampon de fenêtre.
+		*\param[in] backBuffer
+		*	Le nouveau tampon de fenêtre.
+		*/
+		inline void setBackBuffer( vk::BackBuffer * backBuffer )
+		{
+			m_backBuffer = backBuffer;
+		}
+		/**
+		*\return
+		*	Le tampon de fenêtre.
+		*/
+		inline vk::BackBuffer & getBackBuffer()const
+		{
+			return *m_backBuffer;
+		}
+		/**
+		*\brief
 		*	Définit le tampon d'images.
 		*\param[in] frameBuffer
 		*	Le nouveau tampon d'images.
@@ -97,14 +115,6 @@ namespace renderer
 		{
 			return m_device;
 		}
-		/**
-		*\return
-		*	Le tampon de transfert.
-		*/
-		inline StagingBuffer const & getStagingBuffer()const
-		{
-			return *m_stagingBuffer;
-		}
 
 	private:
 		Device const & m_device;
@@ -113,7 +123,7 @@ namespace renderer
 		vk::SemaphorePtr m_finishedRenderingSemaphore;
 		vk::Fence m_fence;
 		CommandBuffer m_commandBuffer;
-		StagingBufferPtr m_stagingBuffer;
+		vk::BackBuffer * m_backBuffer{ nullptr };
 	};
 }
 

@@ -34,6 +34,8 @@ namespace render
 		*	Le loader de police.
 		*/
 		Debug( renderer::Device const & device
+			, renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, bool enable
 			, render::Scene & scene
 			, render::FontLoader & loader );

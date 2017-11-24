@@ -15,7 +15,6 @@ namespace renderer
 		, m_imageAvailableSemaphore{ m_device.getDevice().createSemaphore() }
 		, m_finishedRenderingSemaphore{ m_device.getDevice().createSemaphore() }
 		, m_fence{ m_device.getDevice(), VK_FENCE_CREATE_SIGNALED_BIT }
-		, m_stagingBuffer{ std::make_shared< StagingBuffer >( device ) }
 	{
 	}
 

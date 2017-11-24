@@ -20,6 +20,8 @@ namespace render
 	}
 
 	Debug::Debug( renderer::Device const & device
+		, renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, bool enable
 		, render::Scene & scene
 		, render::FontLoader & loader )
@@ -31,6 +33,8 @@ namespace render
 				, 32 );
 			render::loadFont( loader, *font );
 			m_fontTexture = std::make_unique< render::FontTexture >( device
+				, stagingBuffer
+				, commandBuffer
 				, std::move( font ) );
 
 			auto material = scene.materials().findElement( "FullAlphaWhite" );

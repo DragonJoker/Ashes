@@ -32,7 +32,7 @@ namespace renderer
 		*\param[in] connection
 		*	La connection avec la fenêtre.
 		*/
-		DevicePtr createDevice( Connection & connection );
+		DevicePtr createDevice( Connection & connection )const;
 		/**
 		*\return
 		*	L'instance de vulkan.

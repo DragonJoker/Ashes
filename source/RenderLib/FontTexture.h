@@ -26,7 +26,9 @@ namespace render
 		*\param[in] font
 		*	La police décrivant les caractères.
 		*/
-		FontTexture( renderer::RenderingResources const & resources
+		FontTexture( renderer::Device const & device
+			, renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, FontPtr && font );
 		/**
 		*\brief

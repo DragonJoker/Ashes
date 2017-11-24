@@ -133,7 +133,8 @@ namespace render
 		}
 	}
 
-	void loadTexture( renderer::RenderingResources const & resources
+	void loadTexture( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, ByteArray const & fileContent
 		, Texture & texture )
 	{
@@ -178,12 +179,14 @@ namespace render
 			texture.image( format
 				, utils::IVec2{ x, y }
 				, ByteArray{ data, data + n * x * y }
-				, resources );
+				, stagingBuffer
+				, commandBuffer );
 			stbi_image_free( data );
 		}
 	}
 
-	void loadTexture( renderer::RenderingResources const & resources
+	void loadTexture( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, ByteArray const & fileContent
 		, utils::PixelFormat format
 		, Texture & texture )
@@ -240,7 +243,8 @@ namespace render
 			texture.image( format
 				, utils::IVec2{ x, y }
 				, buffer
-				, resources );
+				, stagingBuffer
+				, commandBuffer );
 			stbi_image_free( data );
 		}
 	}

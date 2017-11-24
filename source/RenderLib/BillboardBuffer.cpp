@@ -59,7 +59,8 @@ namespace render
 		}
 	}
 
-	void BillboardBuffer::cull( renderer::RenderingResources const & resources
+	void BillboardBuffer::cull( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, Camera const & camera
 		, utils::Vec3 const & position
 		, float scale )
@@ -104,9 +105,10 @@ namespace render
 				}
 			} );
 
-		resources.getStagingBuffer().copyVertexData( resources.getCommandBuffer()
+		stagingBuffer.copyVertexData( commandBuffer
 			, m_visible
-			, *m_vbo );
+			, *m_vbo
+			, renderer::PipelineStageFlag::eVertexInput );
 		m_count = count;
 	}
 

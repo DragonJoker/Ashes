@@ -51,13 +51,16 @@ namespace render
 		, utils::IVec2 const & dimensions
 		, render::FontLoader & loader
 		, bool debug )
-		: m_swapChain{ device.createSwapChain( dimensions ) }
+		: m_device{ device }
+		, m_swapChain{ device.createSwapChain( dimensions ) }
+		, m_stagingBuffer{ device }
 		, m_descriptorLayout{ doCreateDescriptorLayout( device ) }
 		, m_pipelineLayout{ device, &m_descriptorLayout }
 		, m_target{ dimensions, utils::PixelFormat::eR8G8B8 }
 		, m_scene{ device, dimensions }
 		, m_size{ dimensions }
 		, m_sampler{ std::make_shared< renderer::Sampler >( device
+			, renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
 			, renderer::Filter::eLinear
@@ -78,7 +81,7 @@ namespace render
 		, m_viewport{ dimensions }
 		, m_overlayRenderer{ std::make_unique< OverlayRenderer >( device ) }
 		, m_picking{ device, dimensions }
-		, m_debug{ device, debug, m_scene, loader }
+		, m_debug{ device, m_stagingBuffer, m_swapChain->getDefaultResources().getCommandBuffer(), debug, m_scene, loader }
 	{
 		//m_pipeline = std::make_shared< renderer::Pipeline >( device
 		//	, m_pipelineLayout
@@ -110,9 +113,10 @@ namespace render
 
 		if ( m_resources && !m_vboInitialised )
 		{
-			m_resources->getStagingBuffer().copyVertexData( m_resources->getCommandBuffer()
+			m_stagingBuffer.copyVertexData( m_resources->getCommandBuffer()
 				, doGetVtxData()
-				, *m_vbo );
+				, *m_vbo
+				, renderer::PipelineStageFlag::eVertexInput );
 			m_vboInitialised = true;
 		}
 	}
@@ -158,7 +162,9 @@ namespace render
 #endif
 
 			m_overlayRenderer->beginRender( m_size );
-			m_overlayRenderer->draw( *m_resources, m_scene.overlays() );
+			m_overlayRenderer->draw( m_stagingBuffer
+				, m_resources->getCommandBuffer()
+				, m_scene.overlays() );
 			m_overlayRenderer->endRender();
 		}
 	}

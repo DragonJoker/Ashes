@@ -33,7 +33,7 @@ namespace renderer
 		*\return
 		*	Le ciseau vulkan.
 		*/
-		inline vk::Scissor getScissor()const
+		inline vk::Scissor const & getScissor()const
 		{
 			return m_scissor;
 		}

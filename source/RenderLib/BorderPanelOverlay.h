@@ -52,7 +52,8 @@ namespace render
 		*\param[in] renderer
 		*	Le renderer utilisé pour dessiner cette incrustation.
 		*/
-		void render( renderer::RenderingResources const & resources
+		void render( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, OverlayRenderer & renderer )const override;
 		/**
 		*\return

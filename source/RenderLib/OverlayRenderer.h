@@ -154,7 +154,8 @@ namespace render
 		*\param[in] overlays
 		*	Les incrustations texte à dessiner.
 		*/
-		void draw( renderer::RenderingResources const & resources
+		void draw( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, OverlayList const & overlays );
 		/**
 		*brief
@@ -162,7 +163,8 @@ namespace render
 		*\param[in] overlay
 		*	L'incrustation à dessiner.
 		*/
-		void drawPanel( renderer::RenderingResources const & resources
+		void drawPanel( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, PanelOverlay const & overlay );
 		/**
 		*brief
@@ -170,7 +172,8 @@ namespace render
 		*\param[in] overlay
 		*	L'incrustation à dessiner.
 		*/
-		void drawBorderPanel( renderer::RenderingResources const & resources
+		void drawBorderPanel( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, BorderPanelOverlay const & overlay );
 		/**
 		*brief
@@ -178,7 +181,8 @@ namespace render
 		*\param[in] overlay
 		*	L'incrustation à dessiner.
 		*/
-		void drawText( renderer::RenderingResources const & resources
+		void drawText( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, TextOverlay const & overlay );
 
 	private:
@@ -187,7 +191,8 @@ namespace render
 		*	Crée un tampon de sommets et ses attrobite pour les incrustations
 		*	texte, et l'ajoute à la liste.
 		*/
-		renderer::VertexBuffer< Overlay::Quad > const & doCreateTextBuffer( renderer::RenderingResources const & resources );
+		renderer::VertexBuffer< Overlay::Quad > const & doCreateTextBuffer( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer );
 		/**
 		*brief
 		*	Fonction de dessin d'une incrustation.
@@ -202,7 +207,8 @@ namespace render
 		*param[in] node
 		*	Le noeud de rendu.
 		*/
-		void doDrawBuffer( renderer::RenderingResources const & resources
+		void doDrawBuffer( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, renderer::VertexBuffer< Overlay::Quad > const & buffer
 			, uint32_t count
 			, utils::Mat4 const & transform
@@ -222,7 +228,8 @@ namespace render
 		*return
 		*	Le GeometryBuffers utilisé.
 		*/
-		renderer::VertexBuffer< Overlay::Quad > const & doFillTextPart( renderer::RenderingResources const & resources
+		renderer::VertexBuffer< Overlay::Quad > const & doFillTextPart( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
 			, uint32_t count
 			, uint32_t & offset
 			, Overlay::QuadArray::const_iterator & it

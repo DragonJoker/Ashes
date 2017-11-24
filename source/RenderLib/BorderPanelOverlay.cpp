@@ -16,10 +16,13 @@ namespace render
 	{
 	}
 
-	void BorderPanelOverlay::render( renderer::RenderingResources const & resources
+	void BorderPanelOverlay::render( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer
 		, OverlayRenderer & renderer )const
 	{
-		renderer.drawBorderPanel( resources, *this );
+		renderer.drawBorderPanel( stagingBuffer
+			, commandBuffer
+			, *this );
 	}
 
 	void BorderPanelOverlay::doUpdate()

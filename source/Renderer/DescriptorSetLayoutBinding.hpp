@@ -47,7 +47,7 @@ namespace renderer
 		*@return
 		*	The binding descriptor type.
 		*/
-		inline vk::DescriptorLayoutBinding getBinding()const
+		inline vk::DescriptorLayoutBinding const & getBinding()const
 		{
 			return m_binding;
 		}
