@@ -1,4 +1,5 @@
 #include "UniformBuffer.hpp"
+#include "Texture.hpp"
 #include "VertexBuffer.hpp"
 
 namespace renderer

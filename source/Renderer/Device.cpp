@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	Device::Device( Renderer const & renderer
-		, Connection & connection )
+		, Connection && connection )
 		: m_device{ renderer.getInstance()
 			, renderer.getPhysicalDevice()
 			, std::move( connection.getConnection() ) }

@@ -4,8 +4,9 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <vector>
 #include <chrono>
+#include <string>
+#include <vector>
 
 namespace utils
 {

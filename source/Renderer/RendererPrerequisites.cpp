@@ -1,5 +1,7 @@
 #include "RendererPrerequisites.hpp"
 
+#include <Utils/Vec4.hpp>
+
 namespace renderer
 {
 	VkClearColorValue convert( utils::RgbaColour const & colour )

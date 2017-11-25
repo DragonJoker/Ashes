@@ -3,6 +3,7 @@ This file belongs to VkLib.
 See LICENSE file in root folder
 */
 #include <cassert>
+#include <cmath>
 
 namespace utils
 {

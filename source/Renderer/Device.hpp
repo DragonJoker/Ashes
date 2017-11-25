@@ -27,7 +27,7 @@ namespace renderer
 		*	La connection à l'application.
 		*/
 		Device( Renderer const & renderer
-			, Connection & connection );
+			, Connection && connection );
 		/**
 		*\brief
 		*	Crée une swap chain.

@@ -1,20 +1,44 @@
 project( Renderer )
 
-find_package( glslang )
-find_package( SPIRV )
+option( RENDERLIB_GLSL_TO_SPV "Enable Comping from GLSL to SPIR-V, using glslang and SPIRV libraries" TRUE )
+
+if ( RENDERLIB_GLSL_TO_SPV )
+	set( RENDERLIB_GLSL_TO_SPV 1 )
+	find_package( glslang )
+	find_package( SPIRV )
+
+	if ( glslang_FOUND AND SPIRV_FOUND )
+		include_directories(
+			${glslang_INCLUDE_DIR}
+			${SPIRV_INCLUDE_DIR}
+		)
+		set( BinaryLibraries
+			${BinaryLibraries}
+			${glslang_LIBRARIES}
+			${SPIRV_LIBRARIES}
+			PARENT_SCOPE
+		)
+	endif ()
+else ()
+	set( RENDERLIB_GLSL_TO_SPV 0 )
+	set( SPIRV_FOUND TRUE )
+	set( glslang_FOUND TRUE )
+endif ()
+
+set( ${PROJECT_NAME}_CONFIG_HEADER
+	${CMAKE_CURRENT_BINARY_DIR}/Config.hpp
+)
+
+configure_file(
+	${CMAKE_CURRENT_SOURCE_DIR}/Config.hpp.in
+	${${PROJECT_NAME}_CONFIG_HEADER}
+	NEWLINE_STYLE LF
+)
 
 if ( glslang_FOUND AND SPIRV_FOUND )
 	include_directories(
 		${CMAKE_SOURCE_DIR}
-		${glslang_INCLUDE_DIR}
-		${SPIRV_INCLUDE_DIR}
-	)
-
-	set( BinaryLibraries
-		${BinaryLibraries}
-		${glslang_LIBRARIES}
-		${SPIRV_LIBRARIES}
-		PARENT_SCOPE
+		${CMAKE_CURRENT_BINARY_DIR}
 	)
 
 	file( GLOB ${PROJECT_NAME}_SRC_FILES
@@ -34,6 +58,7 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 	add_library( ${PROJECT_NAME} STATIC
 		${${PROJECT_NAME}_SRC_FILES}
 		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_CONFIG_HEADER}
 	)
 
 	add_target_precompiled_header( ${PROJECT_NAME}

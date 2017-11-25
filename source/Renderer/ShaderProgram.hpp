@@ -24,6 +24,9 @@ namespace renderer
 		*	Le périphérique logique.
 		*/
 		ShaderProgram( Device const & device );
+
+#if RENDERLIB_GLSL_TO_SPV
+
 		/**
 		*\brief
 		*	Crée un module de shader et l'ajoute à la liste.
@@ -34,6 +37,9 @@ namespace renderer
 		*/
 		void createModule( std::string const & shader
 			, ShaderStageFlag stage );
+
+#endif
+
 		/**
 		*\brief
 		*	Crée un module de shader et l'ajoute à la liste.

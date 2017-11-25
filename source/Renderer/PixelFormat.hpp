@@ -6,6 +6,8 @@ See LICENSE file in root folder.
 
 #include <Utils/PixelFormat.hpp>
 
+#include <VkLib/VkLibPrerequisites.hpp>
+
 namespace renderer
 {
 	/**

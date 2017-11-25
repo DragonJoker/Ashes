@@ -170,7 +170,11 @@ namespace vkapp
 			std::tm today = { 0 };
 			time_t ttime;
 			time( &ttime );
+#if _MSC_VER
 			localtime_s( &today, &ttime );
+#else
+			today = *localtime( &ttime );
+#endif			
 			char buffer[33] = { 0 };
 			strftime( buffer, 32, "%Y-%m-%d %H:%M:%S", &today );
 			std::string timeStamp = buffer;

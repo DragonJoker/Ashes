@@ -1,9 +1,7 @@
 #include "RenderBuffer.hpp"
 
-#include "CommandBuffer.hpp"
+#include "Device.hpp"
 #include "ImageMemoryBarrier.hpp"
-#include "RenderingResources.hpp"
-#include "StagingBuffer.hpp"
 
 #include <VkLib/Queue.hpp>
 

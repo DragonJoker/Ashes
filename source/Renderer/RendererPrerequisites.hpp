@@ -6,6 +6,8 @@
 */
 #pragma once
 
+#include "Config.hpp"
+
 #include "AccessFlag.hpp"
 #include "BufferTarget.hpp"
 #include "CommandBufferResetFlag.hpp"

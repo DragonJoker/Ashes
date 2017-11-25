@@ -6,13 +6,18 @@ See LICENSE file in root folder.
 
 #include "Device.hpp"
 
-#include <glslang/Public/ShaderLang.h>
-#include <SPIRV/GlslangToSpv.h>
+# if RENDERLIB_GLSL_TO_SPV
+#	include <glslang/Public/ShaderLang.h>
+#	include <SPIRV/GlslangToSpv.h>
+#endif
 
 #include <VkLib/LogicalDevice.hpp>
 
 namespace renderer
 {
+
+#if RENDERLIB_GLSL_TO_SPV
+
 	namespace
 	{
 		void doInitResources( TBuiltInResource & resources )
@@ -140,10 +145,14 @@ namespace renderer
 		}
 	}
 
+#endif
+
 	ShaderProgram::ShaderProgram( Device const & device )
 		: m_program{ device.getDevice().createShaderProgram() }
 	{
 	}
+
+#if RENDERLIB_GLSL_TO_SPV
 
 	void ShaderProgram::createModule( std::string const & shader
 		, ShaderStageFlag stage )
@@ -187,6 +196,8 @@ namespace renderer
 		glslang::GlslangToSpv( *glprogram.getIntermediate( glstage ), spirv );
 		m_program->createModule( spirv, convert( stage ) );
 	}
+
+#endif
 
 	void ShaderProgram::createModule( ByteArray const & fileData
 		, ShaderStageFlag stage )

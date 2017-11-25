@@ -1,0 +1,4 @@
+#pragma once
+
+//! Tells if RenderLib can use glslang and SPIRV to read GLSL shaders.
+#define RENDERLIB_GLSL_TO_SPV ${RENDERLIB_GLSL_TO_SPV}

@@ -10,6 +10,8 @@
 #include <VkLib/Queue.hpp>
 #include <VkLib/StagingBuffer.hpp>
 
+#include <cstring>
+
 namespace renderer
 {
 	StagingBuffer::StagingBuffer( Device const & device )

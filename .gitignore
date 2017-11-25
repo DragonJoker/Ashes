@@ -246,3 +246,4 @@ ModelManifest.xml
 .fake/
 /doc/GlLib
 /doc/html
+/source/Renderer/*.gch

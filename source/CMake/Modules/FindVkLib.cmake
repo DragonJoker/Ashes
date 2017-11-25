@@ -39,7 +39,7 @@ if ( VkLib_ROOT_DIR )
 		set( PLATFORM "x86" )
 	endif ()
 
-	find_path( VkLib_LIBRARY_RELEASE_DIR VkLib.lib VkLib.a
+	find_path( VkLib_LIBRARY_RELEASE_DIR VkLib.lib libVkLib.a
 		HINTS
 		PATH_SUFFIXES
 			lib/${PLATFORM}
@@ -49,7 +49,7 @@ if ( VkLib_ROOT_DIR )
 			${VkLib_ROOT_DIR}
 	)
 
-	find_path( VkLib_LIBRARY_DEBUG_DIR VkLib.lib VkLib.a
+	find_path( VkLib_LIBRARY_DEBUG_DIR VkLib.lib libVkLib.a
 		HINTS
 		PATH_SUFFIXES
 			lib/${PLATFORM}/Debug
@@ -62,7 +62,7 @@ if ( VkLib_ROOT_DIR )
 	find_library( VkLib_LIBRARY_RELEASE
 		NAMES
 			VkLib.lib
-			VkLib.a
+			libVkLib.a
 		HINTS
 		PATHS
 			${VkLib_LIBRARY_RELEASE_DIR}
@@ -71,7 +71,7 @@ if ( VkLib_ROOT_DIR )
 	find_library( VkLib_LIBRARY_DEBUG
 		NAMES
 			VkLib.lib
-			VkLib.a
+			libVkLib.a
 		HINTS
 		PATHS
 			${VkLib_LIBRARY_DEBUG_DIR}

@@ -8,27 +8,37 @@
 #include <VkLib/LogicalDevice.hpp>
 #include <VkLib/SwapChain.hpp>
 
-#include <glslang/Public/ShaderLang.h>
+# if RENDERLIB_GLSL_TO_SPV
+#	include <glslang/Public/ShaderLang.h>
+#endif
 
 namespace renderer
 {
 	Renderer::Renderer()
 	{
+# if RENDERLIB_GLSL_TO_SPV
+
 		glslang::InitializeProcess();
+
+#endif
 	}
 
 	Renderer::~Renderer()
 	{
+# if RENDERLIB_GLSL_TO_SPV
+
 		glslang::FinalizeProcess();
+
+#endif
 	}
 
-	DevicePtr Renderer::createDevice( Connection & connection )const
+	DevicePtr Renderer::createDevice( Connection && connection )const
 	{
 		DevicePtr result;
 
 		try
 		{
-			result = std::make_unique< Device >( *this, connection );
+			result = std::make_unique< Device >( *this, std::move( connection ) );
 		}
 		catch ( std::exception & exc )
 		{

@@ -39,7 +39,7 @@ if ( glslang_ROOT_DIR )
 		set( PLATFORM "x86" )
 	endif ()
 
-	find_path( glslang_LIBRARY_RELEASE_DIR glslang.lib libglslang.a
+	find_path( glslang_LIBRARY_RELEASE_DIR glslang
 		HINTS
 		PATH_SUFFIXES
 			lib/${PLATFORM}/Release
@@ -50,7 +50,7 @@ if ( glslang_ROOT_DIR )
 			${glslang_ROOT_DIR}
 	)
 
-	find_path( glslang_LIBRARY_DEBUG_DIR glslang.lib libglslang.a
+	find_path( glslang_LIBRARY_DEBUG_DIR glslang
 		HINTS
 		PATH_SUFFIXES
 			lib/${PLATFORM}/Debug
@@ -62,8 +62,7 @@ if ( glslang_ROOT_DIR )
 
 	find_library( glslang_LIBRARY_RELEASE
 		NAMES
-			glslang.lib
-			libglslang.a
+			glslang
 		HINTS
 		PATHS
 			${glslang_LIBRARY_RELEASE_DIR}
@@ -71,8 +70,7 @@ if ( glslang_ROOT_DIR )
 
 	find_library( glslang_LIBRARY_DEBUG
 		NAMES
-			glslang.lib
-			libglslang.a
+			glslang
 		HINTS
 		PATHS
 			${glslang_LIBRARY_DEBUG_DIR}
@@ -80,8 +78,7 @@ if ( glslang_ROOT_DIR )
 
 	find_library( OSDependent_LIBRARY_RELEASE
 		NAMES
-			OSDependent.lib
-			libOSDependent.a
+			OSDependent
 		HINTS
 		PATHS
 			${glslang_LIBRARY_RELEASE_DIR}
@@ -89,8 +86,7 @@ if ( glslang_ROOT_DIR )
 
 	find_library( OSDependent_LIBRARY_DEBUG
 		NAMES
-			OSDependent.lib
-			libOSDependent.a
+			OSDependent
 		HINTS
 		PATHS
 			${glslang_LIBRARY_DEBUG_DIR}
@@ -98,8 +94,7 @@ if ( glslang_ROOT_DIR )
 
 	find_library( OGLCompiler_LIBRARY_RELEASE
 		NAMES
-			OGLCompiler.lib
-			libOGLCompiler.a
+			OGLCompiler
 		HINTS
 		PATHS
 			${glslang_LIBRARY_RELEASE_DIR}
@@ -107,8 +102,7 @@ if ( glslang_ROOT_DIR )
 
 	find_library( OGLCompiler_LIBRARY_DEBUG
 		NAMES
-			OGLCompiler.lib
-			libOGLCompiler.a
+			OGLCompiler
 		HINTS
 		PATHS
 			${glslang_LIBRARY_DEBUG_DIR}

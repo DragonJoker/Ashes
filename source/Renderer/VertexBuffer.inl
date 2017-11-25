@@ -11,7 +11,7 @@ namespace renderer
 		, MemoryPropertyFlags flags )
 		: VertexBufferBase{ device
 			, bindingSlot
-			, count * sizeof( T )
+			, uint32_t( count * sizeof( T ) )
 			, target
 			, flags }
 	{

@@ -29,8 +29,8 @@ namespace vkapp
 #else
 
 		GtkWidget * widget{ static_cast< GtkWidget * >( window->GetHandle() ) };
-		Window window{ None };
-		Display * display{ nullptr };
+		Window xwindow{ None };
+		Display * xdisplay{ nullptr };
 
 		if ( widget )
 		{
@@ -38,20 +38,20 @@ namespace vkapp
 
 			if ( gtkWindow )
 			{
-				window = gdk_x11_drawable_get_xid( gtkWindow );
+				xwindow = gdk_x11_drawable_get_xid( gtkWindow );
 			}
 
 			auto gtkDisplay{ gtk_widget_get_display( widget ) };
 
 			if ( gtkDisplay )
 			{
-				display = gdk_x11_display_get_xdisplay( gtkDisplay );
+				xdisplay = gdk_x11_display_get_xdisplay( gtkDisplay );
 			}
 		}
 
 		renderer::Connection connection{ vulkan
-			, display
-			, window };
+			, xdisplay
+			, xwindow };
 
 #endif
 

@@ -31,7 +31,7 @@ namespace renderer
 
 	FrameBufferPtrArray SwapChain::createFrameBuffers( RenderPass const & renderPass )const
 	{
-		auto & frameBuffers = m_swapChain->createFrameBuffers( renderPass.getRenderPass() );
+		auto frameBuffers = m_swapChain->createFrameBuffers( renderPass.getRenderPass() );
 		FrameBufferPtrArray result;
 		result.reserve( frameBuffers.size() );
 
@@ -45,7 +45,7 @@ namespace renderer
 
 	CommandBufferPtrArray SwapChain::createCommandBuffers()const
 	{
-		auto & commandBuffers = m_swapChain->createCommandBuffers();
+		auto commandBuffers = m_swapChain->createCommandBuffers();
 		CommandBufferPtrArray result;
 		result.reserve( commandBuffers.size() );
 

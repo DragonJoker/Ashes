@@ -1,4 +1,8 @@
-option( PROJECTS_USE_PRECOMPILED_HEADERS "Use precompiled headers" TRUE )
+if ( MSVC )
+	option( PROJECTS_USE_PRECOMPILED_HEADERS "Use precompiled headers" TRUE )
+else ()
+	option( PROJECTS_USE_PRECOMPILED_HEADERS "Use precompiled headers" FALSE )
+endif ()
 
 #--------------------------------------------------------------------------------------------------
 # - Try to find precompiled headers support for GCC 3.4 and 4.x
