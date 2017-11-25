@@ -10,6 +10,7 @@ See LICENSE file in root folder.
 #include "Pipeline.hpp"
 #include "PipelineLayout.hpp"
 #include "RenderingResources.hpp"
+#include "RenderPass.hpp"
 #include "Scissor.hpp"
 #include "Texture.hpp"
 #include "Viewport.hpp"
@@ -18,48 +19,61 @@ namespace renderer
 {
 	CommandBuffer::CommandBuffer( Device const & device
 		, vk::CommandPool const & pool )
-		: m_device{ device }
-		, m_commandBuffer{ m_device.getDevice(), pool }
+		: m_commandBuffer{ std::make_unique< vk::PrimaryCommandBuffer >( device.getDevice(), pool ) }
+	{
+	}
+
+	CommandBuffer::CommandBuffer( vk::PrimaryCommandBufferPtr && commandBuffer )
+		: m_commandBuffer{ std::move( commandBuffer ) }
 	{
 	}
 
 	bool CommandBuffer::begin( CommandBufferUsageFlags flags )const
 	{
-		return m_commandBuffer.begin( convert( flags ) );
+		return m_commandBuffer->begin( convert( flags ) );
 	}
 
 	bool CommandBuffer::end()const
 	{
-		return vk::checkError( m_commandBuffer.end() );
+		return vk::checkError( m_commandBuffer->end() );
 	}
 
 	bool CommandBuffer::reset( CommandBufferResetFlags flags )const
 	{
-		return vk::checkError( m_commandBuffer.reset( convert( flags ) ) );
+		return vk::checkError( m_commandBuffer->reset( convert( flags ) ) );
+	}
+
+	void CommandBuffer::beginRenderPass( RenderPass const & renderPass
+		, FrameBuffer const & frameBuffer
+		, utils::RgbaColour const & colour )const
+	{
+		m_commandBuffer->beginRenderPass( renderPass.getRenderPass()
+			, frameBuffer.getFrameBuffer()
+			, convert( colour ) );
+	}
+
+	void CommandBuffer::endRenderPass()const
+	{
+		m_commandBuffer->endRenderPass();
 	}
 
 	void CommandBuffer::clear( Texture const & image
 		, RgbaColour const & colour )const
 	{
-		VkClearColorValue col;
-		col.float32[0] = colour.r;
-		col.float32[1] = colour.g;
-		col.float32[2] = colour.b;
-		col.float32[3] = colour.a;
-		m_commandBuffer.clear( image.getImage(), col );
+		m_commandBuffer->clear( image.getImage(), convert( colour ) );
 	}
 
 	void CommandBuffer::bindPipeline( Pipeline const & pipeline
 		, PipelineBindPoint bindingPoint )const
 	{
-		m_commandBuffer.bindPipeline( pipeline.getPipeline()
+		m_commandBuffer->bindPipeline( pipeline.getPipeline()
 			, convert( bindingPoint ) );
 	}
 
 	void CommandBuffer::bindVertexBuffer( VertexBufferBase const & vertexBuffer
 		, uint64_t offset )const
 	{
-		m_commandBuffer.bindVertexBuffer( vertexBuffer.getVbo()
+		m_commandBuffer->bindVertexBuffer( vertexBuffer.getVbo()
 			, offset );
 	}
 
@@ -73,7 +87,7 @@ namespace renderer
 			buffers.emplace_back( buffer.get().getVbo() );
 		}
 
-		m_commandBuffer.bindVertexBuffers( buffers
+		m_commandBuffer->bindVertexBuffers( buffers
 			, offsets );
 	}
 
@@ -81,7 +95,7 @@ namespace renderer
 		, PipelineStageFlags before
 		, BufferMemoryBarrier const & transitionBarrier )const
 	{
-		m_commandBuffer.memoryBarrier( convert( after )
+		m_commandBuffer->memoryBarrier( convert( after )
 			, convert( before )
 			, transitionBarrier.getBarrier() );
 	}
@@ -90,7 +104,7 @@ namespace renderer
 		, PipelineStageFlags before
 		, ImageMemoryBarrier const & transitionBarrier )const
 	{
-		m_commandBuffer.memoryBarrier( convert( after )
+		m_commandBuffer->memoryBarrier( convert( after )
 			, convert( before )
 			, transitionBarrier.getBarrier() );
 	}
@@ -99,19 +113,19 @@ namespace renderer
 		, PipelineLayout const & layout
 		, PipelineBindPoint bindingPoint )const
 	{
-		m_commandBuffer.bindDescriptorSet( descriptorSet.getDescriptorSet()
+		m_commandBuffer->bindDescriptorSet( descriptorSet.getDescriptorSet()
 			, layout.getLayout()
 			, convert( bindingPoint ) );
 	}
 
 	void CommandBuffer::setViewport( Viewport const & viewport )const
 	{
-		m_commandBuffer.setViewport( viewport.getViewport() );
+		m_commandBuffer->setViewport( viewport.getViewport() );
 	}
 
 	void CommandBuffer::setScissor( Scissor const & scissor )const
 	{
-		m_commandBuffer.setScissor( scissor.getScissor() );
+		m_commandBuffer->setScissor( scissor.getScissor() );
 	}
 
 	void CommandBuffer::draw( uint32_t vtxCount
@@ -119,7 +133,7 @@ namespace renderer
 		, uint32_t firstVertex
 		, uint32_t firstInstance )const
 	{
-		m_commandBuffer.draw( vtxCount
+		m_commandBuffer->draw( vtxCount
 			, instCount
 			, firstVertex
 			, firstInstance );
@@ -128,7 +142,7 @@ namespace renderer
 	void CommandBuffer::copyImage( StagingBuffer const & src
 		, Texture const & dst )const
 	{
-		m_commandBuffer.copyImage( src.getStagingBuffer().getBuffer()
+		m_commandBuffer->copyImage( src.getStagingBuffer().getBuffer()
 			, dst.getImage() );
 	}
 }

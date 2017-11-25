@@ -9,11 +9,11 @@ See LICENSE file in root folder
 namespace renderer
 {
 	/**
-	*@~french
-	*@brief
+	*\~french
+	*\brief
 	*	Masques de bits décrivant les propriétés pour un type de mémoire.
-	*@~english
-	*@brief
+	*\~english
+	*\brief
 	*	Bimask specifying properties for a memory type.
 	*/
 	enum class MemoryMapFlag
@@ -29,5 +29,5 @@ namespace renderer
 	*\return
 	*	Le VkMemoryMapFlags.
 	*/
-	VkMemoryMapFlags convert( MemoryMapFlags flags );
+	VkMemoryMapFlags convert( MemoryMapFlags const & flags );
 }

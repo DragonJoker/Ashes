@@ -3,6 +3,7 @@
 #include "Device.hpp"
 #include "PipelineLayout.hpp"
 #include "RenderingResources.hpp"
+#include "RenderPass.hpp"
 #include "Scissor.hpp"
 #include "ShaderProgram.hpp"
 #include "VertexLayout.hpp"
@@ -14,9 +15,9 @@ namespace renderer
 {
 	namespace
 	{
-		std::vector< std::reference_wrapper< vk::VertexLayout const > > convert( std::vector< std::reference_wrapper< VertexLayout const > > const & layouts )
+		vk::VertexLayoutCRefArray convert( VertexLayoutCRefArray const & layouts )
 		{
-			std::vector< std::reference_wrapper< vk::VertexLayout const > > result;
+			vk::VertexLayoutCRefArray result;
 			result.reserve( layouts.size() );
 
 			for ( auto & layout : layouts )
@@ -31,13 +32,13 @@ namespace renderer
 	Pipeline::Pipeline( Device const & device
 		, PipelineLayout const & layout
 		, ShaderProgram const & program
-		, std::vector< std::reference_wrapper< VertexLayout const > > const & vertexLayouts
-		, vk::RenderPass const & renderPass
+		, VertexLayoutCRefArray const & vertexLayouts
+		, RenderPass const & renderPass
 		, PrimitiveTopology topology )
 		: m_pipeline{ device.getDevice().createPipeline( layout.getLayout()
 			, program.getProgram()
 			, convert( vertexLayouts )
-			, renderPass
+			, renderPass.getRenderPass()
 			, convert( topology ) ) }
 	{
 	}
@@ -45,17 +46,17 @@ namespace renderer
 	Pipeline::Pipeline( Device const & device
 		, PipelineLayout const & layout
 		, ShaderProgram const & program
-		, std::vector< std::reference_wrapper< VertexLayout const > > const & vertexLayouts
+		, VertexLayoutCRefArray const & vertexLayouts
 		, Viewport const & viewport
 		, Scissor const & scissor
-		, vk::RenderPass const & renderPass
+		, RenderPass const & renderPass
 		, PrimitiveTopology topology )
 		: m_pipeline{ device.getDevice().createPipeline( layout.getLayout()
 			, program.getProgram()
 			, convert( vertexLayouts )
 			, viewport.getViewport()
 			, scissor.getScissor()
-			, renderPass
+			, renderPass.getRenderPass()
 			, convert( topology ) ) }
 	{
 	}

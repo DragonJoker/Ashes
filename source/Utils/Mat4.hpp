@@ -98,7 +98,7 @@ namespace utils
 		/**
 		*\name Opérateurs arithmétiques membres.
 		*/
-		/**@{*/
+		/**\{*/
 		template< typename U >
 		inline Mat4T & operator+=( Mat4T< U > const & rhs )noexcept;
 		template< typename U >
@@ -113,7 +113,7 @@ namespace utils
 		inline Mat4T & operator*=( U const & rhs )noexcept;
 		template< typename U >
 		inline Mat4T & operator/=( U const & rhs )noexcept;
-		/**@}*/
+		/**\}*/
 
 	private:
 		union
@@ -131,18 +131,18 @@ namespace utils
 	/**
 	*\name Opérateurs logiques.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T >
 	inline bool operator==( Mat4T< T > const & lhs
 		, Mat4T< T > const & rhs )noexcept;
 	template< typename T >
 	inline bool operator!=( Mat4T< T > const & lhs
 		, Mat4T< T > const & rhs )noexcept;
-	/**@}*/
+	/**\}*/
 	/**
 	*\name Opérateurs arithmétiques.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T, typename U >
 	inline Mat4T< T > operator+( Mat4T< T > const & lhs
 		, Mat4T< U > const & rhs )noexcept;
@@ -167,7 +167,7 @@ namespace utils
 	template< typename T >
 	inline Vec4T< T > operator*( Mat4T< T > const & lhs
 		, Vec4T< T > const & rhs )noexcept;
-	/**@}*/
+	/**\}*/
 }
 
 #include "Mat4.inl"

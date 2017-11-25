@@ -16,11 +16,11 @@ namespace vkapp
 	static wxSize const WindowSize{ 800, 600 };
 	static wxString const AppName{ wxT( "MainApp" ) };
 	/**
-	*@~french
-	*@brief
+	*\~french
+	*\brief
 	*	Les données d'un sommet.
-	*@~english
-	*@brief
+	*\~english
+	*\brief
 	*	The data for one vertex.
 	*/
 	struct VertexData
@@ -29,11 +29,11 @@ namespace vkapp
 		float r, g, b, a;
 	};
 	/**
-	*@~french
-	*@brief
+	*\~french
+	*\brief
 	*	Les données d'un sommet texturé.
-	*@~english
-	*@brief
+	*\~english
+	*\brief
 	*	The data for one textured vertex.
 	*/
 	struct TexturedVertexData
@@ -42,33 +42,33 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 	/**
-	*@~french
-	*@brief
-	*	Cr�e une vk::Connection associant une fen�tre et un GPU.
-	*@param[in] window
-	*	Fen�tre utilis�e pour r�cup�rer les informations d�pendantes de la plateforme cible.
-	*@param[in] vulkan
+	*\~french
+	*\brief
+	*	Crée une vk::Connection associant une fenêtre et un GPU.
+	*\param[in] window
+	*	Fenêtre utilis�e pour r�cup�rer les informations dépendantes de la plateforme cible.
+	*\param[in] vulkan
 	*	L'instance Vulkan.
-	*@param[in] gpu
-	*	Le GPU choisi pour associer Vulkan � la fen�tre.
-	*@~english
-	*@brief
+	*\param[in] gpu
+	*	Le GPU choisi pour associer Vulkan � la fenêtre.
+	*\~english
+	*\brief
 	*	Creates a vk::Connection binding a window to a GPU.
-	*@param[in] window
+	*\param[in] window
 	*	The window used to retrieve the platform dependant informations.
-	*@param[in] vulkan
+	*\param[in] vulkan
 	*	The Vulkan instance.
-	*@param[in] gpu
+	*\param[in] gpu
 	*	The GPU chosen to bind the window and the GPU.
 	*/
 	renderer::Connection makeConnection( wxWindow * window
 		, renderer::Renderer const & vulkan );
 	/**
-	*@~french
-	*@brief
-	*	Cr�e un pointeur intelligent sur une fen�tre.
-	*@~french
-	*@brief
+	*\~french
+	*\brief
+	*	Crée un pointeur intelligent sur une fenêtre.
+	*\~french
+	*\brief
 	*	Creates a smart pointer to a window.
 	*/
 	template< typename T, typename ... Params >
@@ -76,36 +76,6 @@ namespace vkapp
 	{
 		return wxWindowPtr< T >( new T( std::forward< Params >( params )... ) );
 	}
-	/**
-	*@~french
-	*@brief
-	*	Crée une matrice de projection orthographique.
-	*@param[in] left, right
-	*	Les bornes gauche et droite.
-	*@param[in] bottom, top
-	*	Les bornes basse et haute.
-	*@param[in] near, far
-	*	Les bornes proche et éloignée.
-	*@return
-	*	Un tableau contenant la matrice résultat.
-	*@~english
-	*@brief
-	*	Create an orthographic projection matrix.
-	*@param[in] left, right
-	*	The left and right bounds.
-	*@param[in] bottom, top
-	*	The top and bottom bounds.
-	*@param[in] near, far
-	*	The near and far bounds.
-	*@return
-	*	An array containing the resulting matrix.
-	*/
-	std::array< float, 16 > getOrthographicProjection( float left
-		, float right
-		, float top
-		, float bottom
-		, float near
-		, float far );
 
 	class Application;
 	class MainFrame;

@@ -42,5 +42,5 @@ namespace renderer
 	*\return
 	*	Le VkCommandBufferUsageFlags.
 	*/
-	VkPipelineStageFlags convert( PipelineStageFlags flags );
+	VkPipelineStageFlags convert( PipelineStageFlags const & flags );
 }

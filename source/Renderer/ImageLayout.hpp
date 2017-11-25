@@ -34,5 +34,5 @@ namespace renderer
 	*\return
 	*	Le VkImageLayout.
 	*/
-	VkImageLayout convert( ImageLayout layout );
+	VkImageLayout convert( ImageLayout const & layout );
 }

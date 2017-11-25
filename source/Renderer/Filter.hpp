@@ -9,11 +9,11 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
-	*@~french
-	*@brief
+	*\~french
+	*\brief
 	*	Enumération des filtres.
-	*@~english
-	*@brief
+	*\~english
+	*\brief
 	*	Filters enumeration.
 	*/
 	enum class Filter
@@ -30,5 +30,5 @@ namespace renderer
 	*\return
 	*	Le VkFilter.
 	*/
-	VkFilter convert( Filter filter );
+	VkFilter convert( Filter const & filter );
 }

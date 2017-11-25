@@ -21,28 +21,36 @@ namespace renderer
 	public:
 		/**
 		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le device logique.
-		*\param[in] renderPass
-		*	La passe de rendu avec laquelle ce tampon d'images sera compatible.
-		*\param[in] views
-		*	Les attaches.
-		*\param[in] width, height
+		*	Crée un FrameBuffer compatible avec la passe de rendu donnée.
+		*\remarks
+		*	Si la compatibilité entre les textures voulues et les formats de la passe de rendu
+		*	n'est pas possible, une std::runtime_error est lancée.
+		*\param[in] dimensions
 		*	Les dimensions du tampon d'images.
+		*\param[in] textures
+		*	Les textures voulues pour le tampon d'images à créer.
 		*/
-		FrameBuffer();
+		FrameBuffer( RenderPass const & renderPass
+			, utils::IVec2 const & dimensions
+			, TextureCRefArray const & textures );
+		/**
+		*\brief
+		*	Wrappe un vk::FrameBuffer.
+		*\param[in] frameBuffer
+		*	Lee vk::FrameBuffer à wrapper.
+		*/
+		FrameBuffer( vk::FrameBufferPtr && frameBuffer );
 		/**
 		*\return
 		*	Le Framebuffer vulkan.
 		*/
 		inline vk::FrameBuffer const & getFrameBuffer()const
 		{
-			assert( m_framebuffer );
-			return *m_framebuffer;
+			assert( m_frameBuffer );
+			return *m_frameBuffer;
 		}
 
 	private:
-		vk::FrameBufferPtr m_framebuffer;
+		vk::FrameBufferPtr m_frameBuffer;
 	};
 }

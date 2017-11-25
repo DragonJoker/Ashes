@@ -92,7 +92,7 @@ namespace utils
 		/**
 		*\name Opérateurs arithmétiques membres.
 		*/
-		/**@{*/
+		/**\{*/
 		template< typename U >
 		inline QuaternionT & operator+=( QuaternionT< U > const & rhs )noexcept;
 		template< typename U >
@@ -103,7 +103,7 @@ namespace utils
 		inline QuaternionT & operator*=( U const & rhs )noexcept;
 		template< typename U >
 		inline QuaternionT & operator/=( U const & rhs )noexcept;
-		/**@}*/
+		/**\}*/
 
 	public:
 		//! Les composantes du quaternion.
@@ -305,18 +305,18 @@ namespace utils
 	/**
 	*\name Opérateurs logiques.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T >
 	inline bool operator==( QuaternionT< T > const & lhs
 		, QuaternionT< T > const & rhs )noexcept;
 	template< typename T >
 	inline bool operator!=( QuaternionT< T > const & lhs
 		, QuaternionT< T > const & rhs )noexcept;
-	/**@}*/
+	/**\}*/
 	/**
 	*\name Opérateurs arithmétiques.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T, typename U >
 	inline QuaternionT< T > operator+( QuaternionT< T > const & lhs
 		, QuaternionT< U > const & rhs )noexcept;
@@ -338,7 +338,7 @@ namespace utils
 	template< typename T, typename U >
 	inline Vec4T< T > operator*( QuaternionT< T > const & lhs
 		, Vec4T< U > const & rhs )noexcept;
-	/**@}*/
+	/**\}*/
 }
 
 #include "Quaternion.inl"

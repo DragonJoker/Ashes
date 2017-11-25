@@ -28,5 +28,5 @@ namespace renderer
 	*\return
 	*	Le VkCommandBufferUsageFlags.
 	*/
-	VkCommandBufferUsageFlags convert( CommandBufferUsageFlags flags );
+	VkCommandBufferUsageFlags convert( CommandBufferUsageFlags const & flags );
 }

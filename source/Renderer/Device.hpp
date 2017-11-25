@@ -5,6 +5,7 @@ See LICENSE file in root folder
 #pragma once
 
 #include "Connection.hpp"
+#include "Queue.hpp"
 
 #include <VkLib/LogicalDevice.hpp>
 
@@ -35,19 +36,33 @@ namespace renderer
 		*/
 		SwapChainPtr createSwapChain( utils::IVec2 const & size )const;
 		/**
-		*\~french
 		*\brief
-		*	Conversion implicite vers VkDevice.
-		*\~english
-		*\brief
-		*	VkDevice implicit cast operator.
+		*	Le vk::Device.
 		*/
 		inline vk::LogicalDevice const & getDevice()const
 		{
 			return m_device;
 		}
+		/**
+		*\return
+		*	La file de présentation.
+		*/
+		inline Queue const & getPresentQueue()const
+		{
+			return m_presentQueue;
+		}
+		/**
+		*\return
+		*	La file de dessin.
+		*/
+		inline Queue const & getGraphicsQueue()const
+		{
+			return m_graphicsQueue;
+		}
 
 	private:
 		vk::LogicalDevice m_device;
+		Queue m_presentQueue;
+		Queue m_graphicsQueue;
 	};
 }

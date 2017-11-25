@@ -10,9 +10,9 @@
 
 #include "CommandBuffer.hpp"
 
-#include <VkLib/Fence.hpp>
-#include <VkLib/FrameBuffer.hpp>
-#include <VkLib/Semaphore.hpp>
+#include "Fence.hpp"
+#include "FrameBuffer.hpp"
+#include "Semaphore.hpp"
 
 namespace renderer
 {
@@ -45,7 +45,7 @@ namespace renderer
 		*\param[in] backBuffer
 		*	Le nouveau tampon de fenêtre.
 		*/
-		inline void setBackBuffer( vk::BackBuffer * backBuffer )
+		inline void setBackBuffer( uint32_t backBuffer )
 		{
 			m_backBuffer = backBuffer;
 		}
@@ -53,27 +53,9 @@ namespace renderer
 		*\return
 		*	Le tampon de fenêtre.
 		*/
-		inline vk::BackBuffer & getBackBuffer()const
+		inline uint32_t getBackBuffer()const
 		{
-			return *m_backBuffer;
-		}
-		/**
-		*\brief
-		*	Définit le tampon d'images.
-		*\param[in] frameBuffer
-		*	Le nouveau tampon d'images.
-		*/
-		inline void setFrameBuffer( vk::FrameBufferPtr && frameBuffer )
-		{
-			m_frameBuffer = std::move( frameBuffer );
-		}
-		/**
-		*\return
-		*	Le tampon d'images.
-		*/
-		inline auto const & getFrameBuffer()const
-		{
-			return *m_frameBuffer;
+			return m_backBuffer;
 		}
 		/**
 		*\return
@@ -118,12 +100,11 @@ namespace renderer
 
 	private:
 		Device const & m_device;
-		vk::FrameBufferPtr m_frameBuffer;
-		vk::SemaphorePtr m_imageAvailableSemaphore;
-		vk::SemaphorePtr m_finishedRenderingSemaphore;
-		vk::Fence m_fence;
+		SemaphorePtr m_imageAvailableSemaphore;
+		SemaphorePtr m_finishedRenderingSemaphore;
+		Fence m_fence;
 		CommandBuffer m_commandBuffer;
-		vk::BackBuffer * m_backBuffer{ nullptr };
+		uint32_t m_backBuffer{ 0u };
 	};
 }
 

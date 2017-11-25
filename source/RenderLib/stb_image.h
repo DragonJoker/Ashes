@@ -172,7 +172,7 @@
     Tom Seddon (pic)                       Omar Cornut (1/2/4-bit PNG)
     Thatcher Ulrich (psd)                  Nicolas Guillemot (vertical flip)
     Ken Miller (pgm, ppm)                  Richard Mitton (16-bit PSD)
-    urraka@github (animated gif)           Junggon Kim (PNM comments)
+    urraka\github (animated gif)           Junggon Kim (PNM comments)
                                            Daniel Gibson (16-bit TGA)
 
  Optimizations & bugfixes
@@ -185,13 +185,13 @@
     Dave Moore              Roy Eltham         Hayaki Saito       Phil Jordan
     Won Chun                Luke Graham        Johan Duparc       Nathan Reed
     the Horde3D community   Thomas Ruf         Ronny Chevalier    Nick Verigakis
-    Janez Zemva             John Bartholomew   Michal Cichon      svdijk@github
+    Janez Zemva             John Bartholomew   Michal Cichon      svdijk\github
     Jonathan Blow           Ken Hamada         Tero Hanninen      Baldur Karlsson
-    Laurent Gomila          Cort Stratton      Sergio Gonzalez    romigrou@github
+    Laurent Gomila          Cort Stratton      Sergio Gonzalez    romigrou\github
     Aruelien Pocheville     Thibault Reuille   Cass Everitt       Matthew Gregan
-    Ryamond Barbiero        Paul Du Bois       Engin Manap        snagar@github
-    Michaelangel007@github  Oriol Ferrer Mesia socks-the-fox      Zelex@github
-    Philipp Wiesemann       Josh Tobin         rlyeh@github       grim210@github
+    Ryamond Barbiero        Paul Du Bois       Engin Manap        snagar\github
+    Michaelangel007\github  Oriol Ferrer Mesia socks-the-fox      Zelex\github
+    Philipp Wiesemann       Josh Tobin         rlyeh\github       grim210\github
     Blazej Dariusz Roszkowski                  
 
 
@@ -444,7 +444,7 @@ STBIDEF stbi_us *stbi_load_16(char const *filename, int *x, int *y, int *channel
 #ifndef STBI_NO_STDIO
 STBIDEF stbi_us *stbi_load_from_file_16(FILE *f, int *x, int *y, int *channels_in_file, int desired_channels);
 #endif
-// @TODO the other variants
+// \TODO the other variants
 
 ////////////////////////////////////
 //
@@ -1119,7 +1119,7 @@ static unsigned char *stbi__load_and_postprocess_8bit(stbi__context *s, int *x, 
       ri.bits_per_channel = 8;
    }
 
-   // @TODO: move stbi__convert_format to here
+   // \TODO: move stbi__convert_format to here
 
    if (stbi__vertically_flip_on_load) {
       int w = *x, h = *y;
@@ -1127,7 +1127,7 @@ static unsigned char *stbi__load_and_postprocess_8bit(stbi__context *s, int *x, 
       int row,col,z;
       stbi_uc *image = (stbi_uc *) result;
 
-      // @OPTIMIZE: use a bigger temp buffer and memcpy multiple pixels at once
+      // \OPTIMIZE: use a bigger temp buffer and memcpy multiple pixels at once
       for (row = 0; row < (h>>1); row++) {
          for (col = 0; col < w; col++) {
             for (z = 0; z < channels; z++) {
@@ -1156,8 +1156,8 @@ static stbi__uint16 *stbi__load_and_postprocess_16bit(stbi__context *s, int *x, 
       ri.bits_per_channel = 16;
    }
 
-   // @TODO: move stbi__convert_format16 to here
-   // @TODO: special case RGB-to-Y (and RGBA-to-YA) for 8-bit-to-16-bit case to keep more precision
+   // \TODO: move stbi__convert_format16 to here
+   // \TODO: special case RGB-to-Y (and RGBA-to-YA) for 8-bit-to-16-bit case to keep more precision
 
    if (stbi__vertically_flip_on_load) {
       int w = *x, h = *y;
@@ -1165,7 +1165,7 @@ static stbi__uint16 *stbi__load_and_postprocess_16bit(stbi__context *s, int *x, 
       int row,col,z;
       stbi__uint16 *image = (stbi__uint16 *) result;
 
-      // @OPTIMIZE: use a bigger temp buffer and memcpy multiple pixels at once
+      // \OPTIMIZE: use a bigger temp buffer and memcpy multiple pixels at once
       for (row = 0; row < (h>>1); row++) {
          for (col = 0; col < w; col++) {
             for (z = 0; z < channels; z++) {
@@ -1189,7 +1189,7 @@ static void stbi__float_postprocess(float *result, int *x, int *y, int *comp, in
       int row,col,z;
       float temp;
 
-      // @OPTIMIZE: use a bigger temp buffer and memcpy multiple pixels at once
+      // \OPTIMIZE: use a bigger temp buffer and memcpy multiple pixels at once
       for (row = 0; row < (h>>1); row++) {
          for (col = 0; col < w; col++) {
             for (z = 0; z < depth; z++) {
@@ -2052,7 +2052,7 @@ static int stbi__jpeg_decode_block_prog_dc(stbi__jpeg *j, short data[64], stbi__
    return 1;
 }
 
-// @OPTIMIZE: store non-zigzagged during the decode passes,
+// \OPTIMIZE: store non-zigzagged during the decode passes,
 // and only de-zigzag when dequantizing
 static int stbi__jpeg_decode_block_prog_ac(stbi__jpeg *j, short data[64], stbi__huffman *hac, stbi__int16 *fac)
 {
@@ -2124,7 +2124,7 @@ static int stbi__jpeg_decode_block_prog_ac(stbi__jpeg *j, short data[64], stbi__
          k = j->spec_start;
          do {
             int r,s;
-            int rs = stbi__jpeg_huff_decode(j, hac); // @OPTIMIZE see if we can use the fast path here, advance-by-r is so slow, eh
+            int rs = stbi__jpeg_huff_decode(j, hac); // \OPTIMIZE see if we can use the fast path here, advance-by-r is so slow, eh
             if (rs < 0) return stbi__err("bad huffman code","Corrupt JPEG");
             s = rs & 15;
             r = rs >> 4;
@@ -4066,7 +4066,7 @@ static int stbi__parse_zlib_header(stbi__zbuf *a)
    return 1;
 }
 
-// @TODO: should statically initialize these for optimal thread safety
+// \TODO: should statically initialize these for optimal thread safety
 static stbi_uc stbi__zdefault_length[288], stbi__zdefault_distance[32];
 static void stbi__init_zdefaults(void)
 {
@@ -6180,7 +6180,7 @@ static stbi_uc *stbi__process_gif_raster(stbi__context *s, stbi__gif *g)
          stbi__int32 code = bits & codemask;
          bits >>= codesize;
          valid_bits -= codesize;
-         // @OPTIMIZE: is there some way we can accelerate the non-clear path?
+         // \OPTIMIZE: is there some way we can accelerate the non-clear path?
          if (code == clear) {  // clear code
             codesize = lzw_cs + 1;
             codemask = (1 << codesize) - 1;
@@ -7075,7 +7075,7 @@ STBIDEF int stbi_info_from_callbacks(stbi_io_callbacks const *c, void *user, int
       0.99    correct handling of alpha in palette
       0.98    TGA loader by lonesock; dynamically add loaders (untested)
       0.97    jpeg errors on too large a file; also catch another malloc failure
-      0.96    fix detection of invalid v value - particleman@mollyrocket forum
+      0.96    fix detection of invalid v value - particleman\mollyrocket forum
       0.95    during header scan, seek to markers in case of padding
       0.94    STBI_NO_STDIO to disable stdio usage; rename all #defines the same
       0.93    handle jpegtran output; verbose errors

@@ -26,5 +26,5 @@ namespace renderer
 	*\return
 	*	Le VkSamplerMipmapMode.
 	*/
-	VkSamplerMipmapMode convert( MipmapMode mode );
+	VkSamplerMipmapMode convert( MipmapMode const & mode );
 }

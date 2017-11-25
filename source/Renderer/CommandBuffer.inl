@@ -7,7 +7,7 @@ namespace renderer
 	void CommandBuffer::bindVertexBuffer( VertexBuffer< T > const & vertexBuffer
 		, uint64_t offset )const
 	{
-		m_commandBuffer.bindVertexBuffer( vertexBuffer.getVbo()
+		m_commandBuffer->bindVertexBuffer( vertexBuffer.getVbo()
 			, offset );
 	}
 
@@ -16,7 +16,7 @@ namespace renderer
 		, uint64_t offset
 		, IndexType type )const
 	{
-		m_commandBuffer.bindIndexBuffer( indexBuffer.getBuffer()
+		m_commandBuffer->bindIndexBuffer( indexBuffer.getBuffer()
 			, offset
 			, convert( type ) );
 	}
@@ -27,7 +27,7 @@ namespace renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		m_commandBuffer.copyBuffer( src.getBuffer()
+		m_commandBuffer->copyBuffer( src.getBuffer()
 			, dst.getBuffer()
 			, size
 			, offset );
@@ -39,7 +39,7 @@ namespace renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		m_commandBuffer.copyBuffer( src.getBuffer()
+		m_commandBuffer->copyBuffer( src.getBuffer()
 			, dst.getVbo()
 			, size
 			, offset );
@@ -51,7 +51,7 @@ namespace renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		m_commandBuffer.copyBuffer( src.getVbo()
+		m_commandBuffer->copyBuffer( src.getVbo()
 			, dst.getBuffer()
 			, size
 			, offset );
@@ -63,7 +63,7 @@ namespace renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		m_commandBuffer.copyBuffer( src.getVbo()
+		m_commandBuffer->copyBuffer( src.getVbo()
 			, dst.getVbo()
 			, size
 			, offset );
@@ -75,7 +75,7 @@ namespace renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		m_commandBuffer.copyBuffer( src.getBuffer()
+		m_commandBuffer->copyBuffer( src.getBuffer()
 			, dst.getUbo()
 			, size
 			, offset );
@@ -87,7 +87,7 @@ namespace renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		m_commandBuffer.copyBuffer( src.getUbo()
+		m_commandBuffer->copyBuffer( src.getUbo()
 			, dst.getBuffer()
 			, size
 			, offset );
@@ -99,7 +99,7 @@ namespace renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		m_commandBuffer.copyBuffer( src.getUbo()
+		m_commandBuffer->copyBuffer( src.getUbo()
 			, dst.getUbo()
 			, size
 			, offset );
@@ -109,7 +109,7 @@ namespace renderer
 	void CommandBuffer::copyImage( Buffer< T > const & src
 		, Texture const & dst )const
 	{
-		m_commandBuffer.copyImage( src.getBuffer()
+		m_commandBuffer->copyImage( src.getBuffer()
 			, dst.getImage() );
 	}
 }

@@ -32,7 +32,7 @@ namespace renderer
 	*\return
 	*	Le VkShaderStageFlags.
 	*/
-	VkShaderStageFlags convert( ShaderStageFlags flags );
+	VkShaderStageFlags convert( ShaderStageFlags const & flags );
 	/**
 	*\brief
 	*	Convertit un renderer::ShaderStageFlag en VkShaderStageFlagBits.
@@ -41,5 +41,5 @@ namespace renderer
 	*\return
 	*	Le VkShaderStageFlagBits.
 	*/
-	VkShaderStageFlagBits convert( ShaderStageFlag flag );
+	VkShaderStageFlagBits convert( ShaderStageFlag const & flag );
 }

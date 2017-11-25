@@ -23,7 +23,7 @@ namespace utils
 		/**
 		*\name Construction
 		*/
-		/**@{*/
+		/**\{*/
 		explicit inline DegreesT( float value )noexcept
 			: m_value{ T( value ) }
 		{
@@ -38,20 +38,20 @@ namespace utils
 			: m_value{ T( value ) }
 		{
 		}
-		/**@}*/
+		/**\}*/
 		/**
 		*\name Conversion
 		*/
-		/**@{*/
+		/**\{*/
 		explicit inline operator T()const noexcept
 		{
 			return m_value;
 		}
-		/**@}*/
+		/**\}*/
 		/**
 		*\name Opérateurs arithmétiques membres.
 		*/
-		/**@{*/
+		/**\{*/
 		inline DegreesT & operator-()noexcept
 		{
 			m_value = -m_value;
@@ -81,7 +81,7 @@ namespace utils
 			m_value /= rhs;
 			return *this;
 		}
-		/**@}*/
+		/**\}*/
 
 	private:
 		T m_value;
@@ -89,7 +89,7 @@ namespace utils
 	/**
 	*\name Opérateurs de comparaison.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T >
 	inline bool operator==( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
 	{
@@ -125,11 +125,11 @@ namespace utils
 	{
 		return !( lhs < rhs );
 	}
-	/**@}*/
+	/**\}*/
 	/**
 	*\name Opérateurs arithmétiques.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T >
 	inline DegreesT< T > operator+( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
 	{
@@ -157,7 +157,7 @@ namespace utils
 		DegreesT< T > tmp{ lhs };
 		return tmp /= rhs;
 	}
-	/**@}*/
+	/**\}*/
 	using Degrees = DegreesT< float >;
 }
 /**

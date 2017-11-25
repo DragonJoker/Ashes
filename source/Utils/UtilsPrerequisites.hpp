@@ -27,7 +27,7 @@ namespace utils
 	/**
 	*\name Typedefs généralistes.
 	*/
-	/**@{*/
+	/**\{*/
 	using Vec2 = Vec2T< float >;
 	using Vec3 = Vec3T< float >;
 	using Vec4 = Vec4T< float >;
@@ -44,5 +44,5 @@ namespace utils
 	using Vec3Array = std::vector< Vec3 >;
 	using Vec2Array = std::vector< Vec2 >;
 	using StringArray = std::vector< std::string >;
-	/**@}*/
+	/**\}*/
 }

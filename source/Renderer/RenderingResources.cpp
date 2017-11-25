@@ -12,15 +12,15 @@ namespace renderer
 	RenderingResources::RenderingResources( Device const & device )
 		: m_device{ device }
 		, m_commandBuffer{ m_device, m_device.getDevice().getGraphicsCommandPool() }
-		, m_imageAvailableSemaphore{ m_device.getDevice().createSemaphore() }
-		, m_finishedRenderingSemaphore{ m_device.getDevice().createSemaphore() }
-		, m_fence{ m_device.getDevice(), VK_FENCE_CREATE_SIGNALED_BIT }
+		, m_imageAvailableSemaphore{ std::make_unique< Semaphore >( m_device ) }
+		, m_finishedRenderingSemaphore{ std::make_unique< Semaphore >( m_device ) }
+		, m_fence{ m_device, FenceCreateFlag::eSignaled }
 	{
 	}
 
 	bool RenderingResources::waitRecord( uint32_t timeout )
 	{
-		bool res = m_fence.wait( timeout ) == VK_SUCCESS;
+		bool res = m_fence.wait( timeout ) == WaitResult::eSuccess;
 
 		if ( res )
 		{

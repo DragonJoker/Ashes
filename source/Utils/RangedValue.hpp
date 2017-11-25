@@ -82,7 +82,7 @@ namespace utils
 		/**
 		*\name Opérateurs arithmétiques.
 		*/
-		/**@{*/
+		/**\{*/
 		inline RangedValue< T > & operator+=( RangedValue< T > const & rhs )noexcept
 		{
 			m_value = m_range.clamp( m_value + rhs.m_value );
@@ -130,7 +130,7 @@ namespace utils
 			m_value = m_range.clamp( m_value / rhs );
 			return *this;
 		}
-		/**@}*/
+		/**\}*/
 
 	private:
 		//! L'intervalle.
@@ -158,7 +158,7 @@ namespace utils
 	/**
 	*\name Opérateurs de comparaison.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T >
 	inline bool operator==( RangedValue< T > const & lhs
 		, T const & rhs )noexcept
@@ -286,11 +286,11 @@ namespace utils
 	{
 		return !( lhs < rhs );
 	}
-	/**@}*/
+	/**\}*/
 	/**
 	*\name Opérateurs arithmétiques.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T >
 	inline T operator+( T const & lhs, RangedValue< T > const & rhs )noexcept
 	{
@@ -366,5 +366,5 @@ namespace utils
 	{
 		return lhs.value() / rhs.value();
 	}
-	/**@}*/
+	/**\}*/
 }

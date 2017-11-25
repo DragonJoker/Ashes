@@ -29,5 +29,5 @@ namespace renderer
 	*\return
 	*	Le VkSamplerAddressMode.
 	*/
-	VkSamplerAddressMode convert( WrapMode mode );
+	VkSamplerAddressMode convert( WrapMode const & mode );
 }

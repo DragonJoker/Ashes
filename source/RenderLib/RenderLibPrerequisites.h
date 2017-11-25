@@ -26,16 +26,16 @@ namespace render
 	/**
 	*\name Typedefs généralistes.
 	*/
-	/**@{*/
+	/**\{*/
 	using ByteArray = renderer::ByteArray;
 	using UInt16Array = renderer::UInt16Array;
 	using Vec3Array = utils::Vec3Array;
 	using Vec2Array = utils::Vec2Array;
-	/**@}*/
+	/**\}*/
 	/**
 	*\name Prédéclarations.
 	*/
-	/**@{*/
+	/**\{*/
 	class BillboardAttributes;
 	class BillboardBuffer;
 	class Billboard;
@@ -65,11 +65,11 @@ namespace render
 
 	template< typename T >
 	class ElementsList;
-	/**@}*/
+	/**\}*/
 	/**
 	*\name Définitions diverses depuis les prédéclarations.
 	*/
-	/**@{*/
+	/**\{*/
 	using BillboardAttributesPtr = std::unique_ptr< BillboardAttributes >;
 	using FontLoaderPtr = std::unique_ptr< FontLoader >;
 	using FontPtr = std::unique_ptr< Font >;
@@ -102,11 +102,11 @@ namespace render
 	using BillboardList = ElementsList< BillboardBuffer >;
 	using MeshList = ElementsList< Mesh >;
 	using OverlayList = ElementsList< Overlay >;
-	/**@}*/
+	/**\}*/
 	/**
 	*\name Définitions des signaux.
 	*/
-	/**@{*/
+	/**\{*/
 	using OnMovableChanged = utils::Signal< std::function< void( Movable & ) > >;
 	using OnBillboardChanged = utils::Signal< std::function< void( Billboard & ) > >;
 	using OnBillboardBufferChanged = utils::Signal< std::function< void( BillboardBuffer & ) > >;
@@ -114,7 +114,7 @@ namespace render
 	using OnObjectPicked = utils::Signal< std::function< void( Object & ) > >;
 	using OnBillboardPicked = utils::Signal< std::function< void( Billboard &, uint32_t ) > >;
 	using OnUnpick = utils::Signal< std::function< void() > >;
-	/**@}*/
+	/**\}*/
 	/**
 	*\brief
 	*	Les types de noeuds transparents.
@@ -272,7 +272,7 @@ namespace render
 	/**
 	*\name Opérateurs de flux.
 	*/
-	/**@{*/
+	/**\{*/
 	inline std::ostream & operator<<( std::ostream & stream, utils::Vec2 const & value )
 	{
 		stream << value.x << ", " << value.y;
@@ -305,7 +305,7 @@ namespace render
 		stream << value[3].x << ", " << value[3].y << ", " << value[3].z << ", " << value[3].w << "\n";
 		return stream;
 	}
-	/**@}*/
+	/**\}*/
 }
 
 #endif

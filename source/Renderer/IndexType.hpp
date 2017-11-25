@@ -25,5 +25,5 @@ namespace renderer
 	*\return
 	*	Le VkIndexType.
 	*/
-	VkIndexType convert( IndexType type );
+	VkIndexType convert( IndexType const & type );
 }

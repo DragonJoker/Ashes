@@ -26,25 +26,25 @@ namespace renderer
 		*	Le type d'attache.
 		*\param[in] flags
 		*	Les indicateurs d'étape shader.
-		*@~english
-		*@brief
+		*\~english
+		*\brief
 		*	Constructor.
-		*@param[in] index
+		*\param[in] index
 		*	The binding index.
-		*@param[in] type
+		*\param[in] type
 		*	The binding type.
-		*@param[in] flags
+		*\param[in] flags
 		*	The shader stage flags.
 		*/ 
 		DescriptorSetLayoutBinding( uint32_t index
 			, DescriptorType type
 			, ShaderStageFlags flags );
 		/**
-		*@~french
-		*@return
+		*\~french
+		*\return
 		*	Le type de descripteur de l'attache.
-		*@~english
-		*@return
+		*\~english
+		*\return
 		*	The binding descriptor type.
 		*/
 		inline vk::DescriptorLayoutBinding const & getBinding()const

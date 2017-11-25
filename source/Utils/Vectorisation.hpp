@@ -31,7 +31,7 @@ namespace utils
 	*	Permet d'appeler, par exemple, des fonctions math�matiques telles que
 	*	abs, cos... sur les composantes d'un vecteur, ce en un seul
 	*	appel, et de stocker le résultat dans un vecteur.
-	*	Version pour les fonctions prenant en param�tre une r�f�rence constante
+	*	Version pour les fonctions prenant en paramêtre une r�f�rence constante
 	*	(comme utils::cos, par exemple).
 	*\param[in] func
 	*	La fonction.

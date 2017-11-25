@@ -14,12 +14,20 @@ namespace renderer
 	{
 	}
 
+	Texture::Texture( Device const & device
+		, vk::Image const & image )
+		: m_device{ device }
+		, m_nonOwnedTexture{ &image }
+	{
+	}
+
 	void Texture::setImage( utils::PixelFormat format
 		, IVec2 const & size
 		, ByteArray const & data
-		, renderer::StagingBuffer const & stagingBuffer
-		, renderer::CommandBuffer const & commandBuffer )
+		, StagingBuffer const & stagingBuffer
+		, CommandBuffer const & commandBuffer )
 	{
+		assert( ( !m_nonOwnedTexture || m_ownedTexture ) && "Can't set the image of a non owned texture" );
 		setImage( format, size );
 		stagingBuffer.copyTextureData( commandBuffer
 			, data
@@ -31,10 +39,11 @@ namespace renderer
 	{
 		m_format = format;
 		m_size = size;
-		m_texture = m_device.getDevice().createImage( convert( m_format )
+		m_ownedTexture = m_device.getDevice().createImage( convert( m_format )
 			, m_size.x
 			, m_size.y
 			, convert( MemoryPropertyFlag::eDeviceLocal ) );
+		m_nonOwnedTexture = m_ownedTexture.get();
 	}
 
 	void Texture::generateMipmaps()const noexcept
@@ -47,7 +56,7 @@ namespace renderer
 	void Texture::bindAsShaderInput( CommandBuffer const & cb
 		, uint32_t unit )const
 	{
-		assert( m_texture );
+		assert( m_nonOwnedTexture );
 		auto & device = m_device;
 		auto & commandBuffer = cb.getCommandBuffer();
 
@@ -55,7 +64,7 @@ namespace renderer
 		{
 			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 				, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
-				, m_texture->makeShaderInputResource() );
+				, m_nonOwnedTexture->makeShaderInputResource() );
 			auto res = vk::checkError( commandBuffer.end() );
 
 			if ( !res )
@@ -81,7 +90,7 @@ namespace renderer
 	void Texture::bindAsShaderOutput( CommandBuffer const & cb
 		, uint32_t unit )const
 	{
-		assert( m_texture );
+		assert( m_nonOwnedTexture );
 		auto & device = m_device;
 		auto & commandBuffer = cb.getCommandBuffer();
 
@@ -89,7 +98,7 @@ namespace renderer
 		{
 			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 				, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-				, m_texture->makeColourAttachment() );
+				, m_nonOwnedTexture->makeColourAttachment() );
 			auto res = vk::checkError( commandBuffer.end() );
 
 			if ( !res )
@@ -111,28 +120,34 @@ namespace renderer
 			m_device.getDevice().waitIdle();
 		}
 	}
+
 	ImageMemoryBarrier Texture::makeTransferDestination()const
 	{
-		return ImageMemoryBarrier{ m_texture->makeTransferDestination() };
+		assert( m_nonOwnedTexture );
+		return ImageMemoryBarrier{ m_nonOwnedTexture->makeTransferDestination() };
 	}
 
 	ImageMemoryBarrier Texture::makeShaderInputResource()const
 	{
-		return ImageMemoryBarrier{ m_texture->makeShaderInputResource() };
+		assert( m_nonOwnedTexture );
+		return ImageMemoryBarrier{ m_nonOwnedTexture->makeShaderInputResource() };
 	}
 
 	ImageMemoryBarrier Texture::makeColourAttachment()const
 	{
-		return ImageMemoryBarrier{ m_texture->makeColourAttachment() };
+		assert( m_nonOwnedTexture );
+		return ImageMemoryBarrier{ m_nonOwnedTexture->makeColourAttachment() };
 	}
 
 	ImageMemoryBarrier Texture::makeDrawDestination()const
 	{
-		return ImageMemoryBarrier{ m_texture->makeDrawDestination() };
+		assert( m_nonOwnedTexture );
+		return ImageMemoryBarrier{ m_nonOwnedTexture->makeDrawDestination() };
 	}
 
 	ImageMemoryBarrier Texture::makePresentSource()const
 	{
-		return ImageMemoryBarrier{ m_texture->makePresentSource() };
+		assert( m_nonOwnedTexture );
+		return ImageMemoryBarrier{ m_nonOwnedTexture->makePresentSource() };
 	}
 }

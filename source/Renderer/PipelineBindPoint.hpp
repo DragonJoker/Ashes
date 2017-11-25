@@ -26,5 +26,5 @@ namespace renderer
 	*\return
 	*	Le VkPipelineBindPoint.
 	*/
-	VkPipelineBindPoint convert( PipelineBindPoint point );
+	VkPipelineBindPoint convert( PipelineBindPoint const & point );
 }

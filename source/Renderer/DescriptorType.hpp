@@ -9,11 +9,11 @@ See LICENSE file in root folder
 namespace renderer
 {
 	/**
-	*@~french
-	*@brief
+	*\~french
+	*\brief
 	*	Masques de bits décrivant les propriétés pour un type de mémoire.
-	*@~english
-	*@brief
+	*\~english
+	*\brief
 	*	Bimask specifying properties for a memory type.
 	*/
 	enum class DescriptorType
@@ -39,5 +39,5 @@ namespace renderer
 	*\return
 	*	Le VkDescriptorType.
 	*/
-	VkDescriptorType convert( DescriptorType type );
+	VkDescriptorType convert( DescriptorType const & type );
 }

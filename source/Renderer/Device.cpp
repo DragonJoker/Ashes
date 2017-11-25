@@ -14,6 +14,8 @@ namespace renderer
 		: m_device{ renderer.getInstance()
 			, renderer.getPhysicalDevice()
 			, std::move( connection.getConnection() ) }
+		, m_graphicsQueue{ m_device.getGraphicsQueue() }
+		, m_presentQueue{ m_device.getPresentQueue() }
 	{
 	}
 

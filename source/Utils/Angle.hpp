@@ -25,7 +25,7 @@ namespace utils
 	/**
 	*\name Conversions.
 	*/
-	/**@{*/
+	/**\{*/
 	/**
 	*\brief
 	*	Calcule la valeur en radians de l'angle en degrés donné.
@@ -52,7 +52,7 @@ namespace utils
 	{
 		return DegreesT< T >{ T( value ) * RadianToDegree };
 	}
-	/**@}*/
+	/**\}*/
 	/**
 	*\brief
 	*	Classe d'angle.
@@ -68,7 +68,7 @@ namespace utils
 		/**
 		*\name Construction
 		*/
-		/**@{*/
+		/**\{*/
 		/**
 		*\brief
 		*	Constructeur, à partir d'un angle en degrés.
@@ -99,11 +99,11 @@ namespace utils
 			: m_radians{ T{ 0.0 } }
 		{
 		}
-		/**@}*/
+		/**\}*/
 		/**
 		*\name Conversion
 		*/
-		/**@{*/
+		/**\{*/
 		/**
 		*\return
 		*	La valeur de l'angle, en degrés.
@@ -128,11 +128,11 @@ namespace utils
 		{
 			return T( m_radians );
 		}
-		/**@}*/
+		/**\}*/
 		/**
 		*\name Opérateurs arithmétiques membres.
 		*/
-		/**@{*/
+		/**\{*/
 		inline AngleT & operator+=( AngleT< T > const & rhs )noexcept
 		{
 			m_radians += rhs;
@@ -168,7 +168,7 @@ namespace utils
 			m_radians /= rhs;
 			return *this;
 		}
-		/**@}*/
+		/**\}*/
 
 	private:
 		/**
@@ -204,7 +204,7 @@ namespace utils
 	/**
 	*\name Opérateurs de comparaison.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T >
 	inline bool operator==( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
 	{
@@ -240,11 +240,11 @@ namespace utils
 	{
 		return !( lhs > rhs );
 	}
-	/**@}*/
+	/**\}*/
 	/**
 	*\name Opérateurs arithmétiques.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T >
 	inline AngleT< T > operator+( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
 	{
@@ -272,11 +272,11 @@ namespace utils
 		AngleT< T > tmp{ lhs };
 		return tmp /= rhs;
 	}
-	/**@}*/
+	/**\}*/
 	/**
 	*\name Surcharges des fonctions trigonométriques de base.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T >
 	inline T cos( RadiansT< T > const & angle )noexcept
 	{
@@ -330,6 +330,6 @@ namespace utils
 	{
 		return RadiansT< T >{ ::atan( value) };
 	}
-	/**@}*/
+	/**\}*/
 	using Angle = AngleT< float >;
 }

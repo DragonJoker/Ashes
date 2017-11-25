@@ -11,6 +11,7 @@
 #include "CommandBufferResetFlag.hpp"
 #include "CommandBufferUsageFlag.hpp"
 #include "DescriptorType.hpp"
+#include "FenceCreateFlag.hpp"
 #include "Filter.hpp"
 #include "ImageAspectFlag.hpp"
 #include "ImageLayout.hpp"
@@ -20,11 +21,11 @@
 #include "MipmapMode.hpp"
 #include "PipelineBindPoint.hpp"
 #include "PipelineStageFlag.hpp"
+#include "PixelFormat.hpp"
 #include "PrimitiveTopology.hpp"
+#include "SampleCountFlag.hpp"
 #include "ShaderStageFlag.hpp"
 #include "WrapMode.hpp"
-
-#include <Utils/PixelFormat.hpp>
 
 #include <cassert>
 #include <ctime>
@@ -47,6 +48,7 @@ namespace renderer
 	template< typename T >
 	class Attribute;
 
+	class BackBuffer;
 	class BufferMemoryBarrier;
 	class CommandBuffer;
 	class Connection;
@@ -55,6 +57,7 @@ namespace renderer
 	class DescriptorSetLayoutBinding;
 	class DescriptorSetPool;
 	class Device;
+	class Fence;
 	class FrameBuffer;
 	class ImageMemoryBarrier;
 	class ImageSubresourceRange;
@@ -63,7 +66,12 @@ namespace renderer
 	class RenderBuffer;
 	class Renderer;
 	class RenderingResources;
+	class RenderPass;
+	class RenderPassState;
+	class RenderSubpass;
+	class RenderSubpassState;
 	class Sampler;
+	class Semaphore;
 	class Scissor;
 	class ShaderProgram;
 	class StagingBuffer;
@@ -76,7 +84,7 @@ namespace renderer
 	/**
 	*\name Typedefs généralistes.
 	*/
-	/**@{*/
+	/**\{*/
 	using Vec2 = utils::Vec2;
 	using Vec3 = utils::Vec3;
 	using Vec4 = utils::Vec4;
@@ -110,6 +118,8 @@ namespace renderer
 	using RenderBufferPtr = std::unique_ptr< RenderBuffer >;
 	using RendererPtr = std::unique_ptr< Renderer >;
 	using RenderingResourcesPtr = std::unique_ptr< RenderingResources >;
+	using RenderPassPtr = std::unique_ptr< RenderPass >;
+	using SemaphorePtr = std::unique_ptr< Semaphore >;
 	using ShaderProgramPtr = std::unique_ptr< ShaderProgram >;
 	using SwapChainPtr = std::unique_ptr< SwapChain >;
 	using VertexLayoutPtr = std::unique_ptr< VertexLayout >;
@@ -119,11 +129,28 @@ namespace renderer
 	using SamplerPtr = std::shared_ptr< Sampler >;
 	using StagingBufferPtr = std::shared_ptr< StagingBuffer >;
 	using TexturePtr = std::shared_ptr< Texture >;
-	/**@}*/
+
+	using FrameBufferPtrArray = std::vector< FrameBufferPtr >;
+	using CommandBufferPtrArray = std::vector< CommandBufferPtr >;
+
+	using PipelineStageFlagsArray = std::vector< PipelineStageFlags >;
+
+	using CommandBufferCRef = std::reference_wrapper< CommandBuffer const >;
+	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;
+	using SwapChainCRef = std::reference_wrapper< SwapChain const >;
+	using TextureCRef = std::reference_wrapper< Texture const >;
+	using VertexLayoutCRef = std::reference_wrapper< VertexLayout const >;
+
+	using CommandBufferCRefArray = std::vector< CommandBufferCRef >;
+	using SemaphoreCRefArray = std::vector< SemaphoreCRef >;
+	using SwapChainCRefArray = std::vector< SwapChainCRef >;
+	using TextureCRefArray = std::vector< TextureCRef >;
+	using VertexLayoutCRefArray = std::vector< VertexLayoutCRef >;
+	/**\}*/
 	/**
 	*\name Typedefs d'attributs de sommets.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T >
 	class Attribute;
 	using FloatAttribute = Attribute< float >;
@@ -136,14 +163,46 @@ namespace renderer
 	using Vec2AttributePtr = AttributePtr< Vec2 >;
 	using Vec3AttributePtr = AttributePtr< Vec3 >;
 	using Vec4AttributePtr = AttributePtr< Vec4 >;
-	/**@}*/
+	/**\}*/
 	/**
 	*\brief
-	*	Convertit un utils::PixelFormat en VkFormat.
-	*\param[in] format
-	*	Le utils::PixelFormat.
+	*	Convertit une utils::RgbaColour en VkClearColorValue.
+	*\param[in] value
+	*	La utils::RgbaColour.
 	*\return
-	*	Le format Vulkan.
+	*	La VkClearColorValue.
 	*/
-	VkFormat convert( utils::PixelFormat format )noexcept;
+	VkClearColorValue convert( utils::RgbaColour const & colour );
+	/**
+	*\brief
+	*	Convertit une utils::RgbaColour en VkClearColorValue.
+	*\param[in] value
+	*	La utils::RgbaColour.
+	*\return
+	*	La VkClearColorValue.
+	*/
+	utils::RgbaColour convert( VkClearColorValue const & colour );
+	/**
+	*\brief
+	*	Convertit un tableau de RendererType en tableau de VkType.
+	*\remarks
+	*	Un prérequis à cette fonction est que la fonction VkType convert( RendererType ) existe.
+	*\param[in] values
+	*	Le tableau de RendererType.
+	*\return
+	*	Le tableau de VkType.
+	*/
+	template< typename VkType, typename RendererType >
+	std::vector< VkType > convert( std::vector< RendererType > const & values )
+	{
+		std::vector< VkType > result;
+		result.reserve( values.size() );
+
+		for ( auto & value : values )
+		{
+			result.emplace_back( convert( value ) );
+		}
+
+		return result;
+	}
 }

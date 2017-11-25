@@ -42,5 +42,5 @@ namespace renderer
 	*\return
 	*	Le VkAccessFlags.
 	*/
-	VkAccessFlags convert( AccessFlags flags );
+	VkAccessFlags convert( AccessFlags const & flags );
 }

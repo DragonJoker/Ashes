@@ -29,6 +29,13 @@ namespace renderer
 			, vk::CommandPool const & pool );
 		/**
 		*\brief
+		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
+		*/
+		CommandBuffer( vk::PrimaryCommandBufferPtr && commandBuffer );
+		/**
+		*\brief
 		*	Démarre l'enregistrement du tampon de commandes.
 		*\param[in] flags
 		*	Les indicateurs de type de charge qui sera affectée au tampon.
@@ -52,6 +59,24 @@ namespace renderer
 		*	\p false en cas d'erreur.
 		*/
 		bool reset( CommandBufferResetFlags flags = 0u )const;
+		/**
+		*\brief
+		*	Démarre une passe de rendu.
+		*\param[in] renderPass
+		*	La passe de rendu.
+		*\param[in] frameBuffer
+		*	Le tampon d'image affecté par le rendu.
+		*\param[in] colour
+		*	La couleur de vidage.
+		*/
+		void beginRenderPass( RenderPass const & renderPass
+			, FrameBuffer const & frameBuffer
+			, utils::RgbaColour const & colour )const;
+		/**
+		*\brief
+		*	Termine une passe de rendu.
+		*/
+		void endRenderPass()const;
 		/**
 		*\brief
 		*	Vide l'image avec la couleur de vidage.
@@ -320,12 +345,11 @@ namespace renderer
 		*/
 		vk::PrimaryCommandBuffer const & getCommandBuffer()const
 		{
-			return m_commandBuffer;
+			return *m_commandBuffer;
 		}
 
 	private:
-		Device const & m_device;
-		vk::PrimaryCommandBuffer m_commandBuffer;
+		vk::PrimaryCommandBufferPtr m_commandBuffer;
 	};
 }
 

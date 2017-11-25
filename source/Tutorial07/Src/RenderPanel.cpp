@@ -4,13 +4,20 @@
 #include "MainFrame.hpp"
 #include "FileUtils.hpp"
 
+#include <Renderer/BackBuffer.hpp>
 #include <Renderer/Connection.hpp>
+#include <Renderer/DescriptorSet.hpp>
 #include <Renderer/DescriptorSetLayout.hpp>
 #include <Renderer/DescriptorSetLayoutBinding.hpp>
 #include <Renderer/DescriptorSetPool.hpp>
-#include <Renderer/DescriptorSet.hpp>
 #include <Renderer/Device.hpp>
+#include <Renderer/FrameBuffer.hpp>
 #include <Renderer/ImageMemoryBarrier.hpp>
+#include <Renderer/Queue.hpp>
+#include <Renderer/RenderPass.hpp>
+#include <Renderer/RenderPassState.hpp>
+#include <Renderer/RenderSubpass.hpp>
+#include <Renderer/RenderSubpassState.hpp>
 #include <Renderer/Renderer.hpp>
 #include <Renderer/Scissor.hpp>
 #include <Renderer/ShaderProgram.hpp>
@@ -21,11 +28,6 @@
 #include <Renderer/VertexBuffer.hpp>
 #include <Renderer/VertexLayout.hpp>
 #include <Renderer/Viewport.hpp>
-
-#include <VkLib/BackBuffer.hpp>
-//#include <Renderer/Queue.hpp>
-#include <VkLib/RenderPass.hpp>
-#include <VkLib/RenderSubpass.hpp>
 
 #include <Utils/Transform.hpp>
 
@@ -90,6 +92,7 @@ namespace vkapp
 			std::cout << "Vertex buffer created." << std::endl;
 			doCreatePipeline();
 			std::cout << "Pipeline created." << std::endl;
+			doPrepareFrames();
 			DEBUG_WRITE( "tutorial07.log" );
 
 			m_timer->Start( TimerTimeMs );
@@ -114,6 +117,8 @@ namespace vkapp
 				m_device->getDevice().waitIdle();
 			}
 
+			m_commandBuffers.clear();
+			m_frameBuffers.clear();
 			m_uniformBuffer.reset();
 			m_descriptorSet.reset();
 			m_descriptorPool.reset();
@@ -137,6 +142,8 @@ namespace vkapp
 	{
 		delete m_timer;
 		m_device->getDevice().waitIdle();
+		m_commandBuffers.clear();
+		m_frameBuffers.clear();
 		m_uniformBuffer.reset();
 		m_descriptorSet.reset();
 		m_descriptorPool.reset();
@@ -163,6 +170,23 @@ namespace vkapp
 		wxSize size{ GetClientSize() };
 		m_swapChain = m_device->createSwapChain( { size.x, size.y } );
 		m_swapChain->setClearColour( { 1.0f, 0.8f, 0.4f, 0.0f } );
+		m_swapChainReset = m_swapChain->onReset.connect( [this]()
+		{
+			auto size = m_swapChain->getDimensions();
+			float halfWidth = static_cast< float >( size.x ) * 0.5f;
+			float halfHeight = static_cast< float >( size.y ) * 0.5f;
+			m_uniformBuffer->getData( 0u ) = utils::ortho( -halfWidth
+				, halfWidth
+				, -halfHeight
+				, halfHeight
+				, -1.0f
+				, 1.0f );
+			m_stagingBuffer->copyUniformData( m_swapChain->getDefaultResources().getCommandBuffer()
+				, m_uniformBuffer->getDatas()
+				, *m_uniformBuffer
+				, renderer::PipelineStageFlag::eVertexShader );
+			doPrepareFrames();
+		} );
 	}
 
 	void RenderPanel::doCreateTexture()
@@ -268,20 +292,20 @@ namespace vkapp
 
 	void RenderPanel::doCreateRenderPass()
 	{
-		std::vector< VkFormat > formats{ { m_swapChain->getSwapChain().getFormat() } };
-		vk::RenderSubpass subpass{ m_device->getDevice()
+		std::vector< utils::PixelFormat > formats{ { m_swapChain->getFormat() } };
+		renderer::RenderSubpass subpass{ *m_device
 			, formats
-			, { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-			, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT }
-		};
-		m_renderPass = m_device->getDevice().createRenderPass( formats
-			, { subpass }
-			, { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-			, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
-			, { VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } }
-			, { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-			, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
-			, { VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } } );
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite } };
+		m_renderPass = std::make_unique< renderer::RenderPass >( *m_device
+			, formats
+			, std::vector< renderer::RenderSubpass >{ subpass }
+			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite
+				, { renderer::ImageLayout::eColourAttachmentOptimal } }
+			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite
+				, { renderer::ImageLayout::eColourAttachmentOptimal } } );
 	}
 
 	void RenderPanel::doCreateVertexBuffer()
@@ -333,60 +357,52 @@ namespace vkapp
 			, renderer::PrimitiveTopology::eTriangleStrip );
 	}
 
-	void RenderPanel::doCreateFrameBuffer( vk::ImageView const & view
-		, renderer::RenderingResources & resources )
+	void RenderPanel::doPrepareFrames()
 	{
-		wxSize size{ GetClientSize() };
-		resources.setFrameBuffer( m_renderPass->createCompatibleFrameBuffer( size.x
-			, size.y
-			, { view } ) );
-	}
+		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
+		m_commandBuffers = m_swapChain->createCommandBuffers();
 
-	bool RenderPanel::doPrepareFrame( renderer::RenderingResources & resources )
-	{
-		bool result{ false };
-		auto & backBuffer = resources.getBackBuffer();
-		doCreateFrameBuffer( backBuffer.getImage().getView()
-			, resources );
-		auto & commandBuffer = resources.getCommandBuffer();
-
-		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
+		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
 		{
-			auto dimensions = m_swapChain->getDimensions();
-			commandBuffer.getCommandBuffer().memoryBarrier( VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, backBuffer.getImage().makeColourAttachment() );
-			m_renderPass->begin( commandBuffer.getCommandBuffer()
-				, resources.getFrameBuffer()
-				, backBuffer.getClearColour() );
-			commandBuffer.bindPipeline( *m_pipeline );
-			commandBuffer.setViewport( { uint32_t(  dimensions.x )
-				, uint32_t( dimensions.y )
-				, 0
-				, 0 } );
-			commandBuffer.setScissor( { 0
-				, 0
-				, uint32_t( dimensions.x )
-				, uint32_t( dimensions.y ) } );
-			commandBuffer.bindVertexBuffer( *m_vertexBuffer
-				, 0u );
-			commandBuffer.bindDescriptorSet( *m_descriptorSet
-				, *m_pipelineLayout );
-			commandBuffer.draw( 4u, 1u, 0u, 0u );
-			m_renderPass->end( commandBuffer.getCommandBuffer() );
-			commandBuffer.getCommandBuffer().memoryBarrier( VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
-				, backBuffer.getImage().makePresentSource() );
+			auto & frameBuffer = *m_frameBuffers[i];
+			auto & commandBuffer = *m_commandBuffers[i];
 
-			result = commandBuffer.end();
+			wxSize size{ GetClientSize() };
 
-			if ( !result )
+			if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT ) )
 			{
-				std::cerr << "Command buffers recording failed: " << vk::getLastError() << std::endl;
+				auto dimensions = m_swapChain->getDimensions();
+				m_swapChain->preRenderCommands( i, commandBuffer );
+				commandBuffer.beginRenderPass( *m_renderPass
+					, frameBuffer
+					, m_swapChain->getClearColour() );
+				commandBuffer.bindPipeline( *m_pipeline );
+				commandBuffer.setViewport( { uint32_t( dimensions.x )
+					, uint32_t( dimensions.y )
+					, 0
+					, 0 } );
+				commandBuffer.setScissor( { 0
+					, 0
+					, uint32_t( dimensions.x )
+					, uint32_t( dimensions.y ) } );
+				commandBuffer.bindVertexBuffer( *m_vertexBuffer
+					, 0u );
+				commandBuffer.bindDescriptorSet( *m_descriptorSet
+					, *m_pipelineLayout );
+				commandBuffer.draw( 4u, 1u, 0u, 0u );
+				commandBuffer.endRenderPass();
+				m_swapChain->postRenderCommands( i, commandBuffer );
+
+				auto res = commandBuffer.end();
+
+				if ( !res )
+				{
+					std::stringstream stream;
+					stream << "Command buffers recording failed.";
+					throw std::runtime_error{ stream.str() };
+				}
 			}
 		}
-
-		return result;
 	}
 
 	void RenderPanel::doDraw()
@@ -396,11 +412,13 @@ namespace vkapp
 		if ( resources )
 		{
 			auto before = std::chrono::high_resolution_clock::now();
-
-			if ( doPrepareFrame( *resources ) )
-			{
-				m_swapChain->present( *resources );
-			}
+			auto & queue = m_device->getGraphicsQueue();
+			auto res = queue.submit( *m_commandBuffers[resources->getBackBuffer()]
+				, resources->getImageAvailableSemaphore()
+				, renderer::PipelineStageFlag::eColourAttachmentOutput
+				, resources->getRenderingFinishedSemaphore()
+				, &resources->getFence() );
+			m_swapChain->present( *resources );
 
 			auto after = std::chrono::high_resolution_clock::now();
 			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
@@ -412,59 +430,11 @@ namespace vkapp
 		}
 	}
 
-	bool RenderPanel::doCheckNeedReset( VkResult errCode
-		, bool acquisition
-		, char const * const action )
-	{
-		bool result{ false };
-
-		switch ( errCode )
-		{
-		case VK_SUCCESS:
-			result = true;
-			break;
-
-		case VK_ERROR_OUT_OF_DATE_KHR:
-			if ( !acquisition )
-			{
-				doResetSwapChain();
-			}
-			else
-			{
-				result = true;
-			}
-			break;
-
-		case VK_SUBOPTIMAL_KHR:
-			doResetSwapChain();
-			break;
-
-		default:
-			std::cerr << action << " failed: " << vk::getLastError() << std::endl;
-			break;
-		}
-
-		return result;
-	}
-
 	void RenderPanel::doResetSwapChain()
 	{
 		m_device->getDevice().waitIdle();
-		m_swapChain.reset();
-		doCreateSwapChain();
-		auto size = m_swapChain->getDimensions();
-		float halfWidth = static_cast< float >( size.x ) * 0.5f;
-		float halfHeight = static_cast< float >( size.y ) * 0.5f;
-		m_uniformBuffer->getData( 0u ) = utils::ortho( -halfWidth
-			, halfWidth
-			, -halfHeight
-			, halfHeight
-			, -1.0f
-			, 1.0f );
-		m_stagingBuffer->copyUniformData( m_swapChain->getDefaultResources().getCommandBuffer()
-			, m_uniformBuffer->getDatas()
-			, *m_uniformBuffer
-			, renderer::PipelineStageFlag::eVertexShader );
+		wxSize size{ GetClientSize() };
+		m_swapChain->reset( { size.GetWidth(), size.GetHeight() } );
 	}
 
 	void RenderPanel::onTimer( wxTimerEvent & event )

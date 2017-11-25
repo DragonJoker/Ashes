@@ -9,11 +9,11 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
-	*@~french
-	*@brief
+	*\~french
+	*\brief
 	*	Enumération des types de primitives.
-	*@~english
-	*@brief
+	*\~english
+	*\brief
 	*	Primitive types enumeration.
 	*/
 	enum class PrimitiveTopology
@@ -40,5 +40,5 @@ namespace renderer
 	*\return
 	*	Le VkPrimitiveTopology.
 	*/
-	VkPrimitiveTopology convert( PrimitiveTopology topology );
+	VkPrimitiveTopology convert( PrimitiveTopology const & topology );
 }

@@ -29,5 +29,5 @@ namespace renderer
 	*\return
 	*	Le VkImageAspectFlags.
 	*/
-	VkImageAspectFlags convert( ImageAspectFlags flags );
+	VkImageAspectFlags convert( ImageAspectFlags const & flags );
 }

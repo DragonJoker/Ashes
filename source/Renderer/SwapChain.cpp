@@ -1,7 +1,10 @@
 #include "SwapChain.hpp"
 
 #include "Device.hpp"
+#include "RenderPass.hpp"
+#include "Texture.hpp"
 
+#include <VkLib/BackBuffer.hpp>
 #include <VkLib/LogicalDevice.hpp>
 
 namespace renderer
@@ -20,9 +23,50 @@ namespace renderer
 		}
 	}
 
-	void SwapChain::setClearColour( utils::RgbaColour const & value )
+	void SwapChain::reset( utils::IVec2 const & size )
 	{
-		m_swapChain->setClearColour( VkClearColorValue{ { value.r, value.g, value.b, value.a } } );
+		m_dimensions = size;
+		doResetSwapChain();
+	}
+
+	FrameBufferPtrArray SwapChain::createFrameBuffers( RenderPass const & renderPass )const
+	{
+		auto & frameBuffers = m_swapChain->createFrameBuffers( renderPass.getRenderPass() );
+		FrameBufferPtrArray result;
+		result.reserve( frameBuffers.size() );
+
+		for ( auto & frameBuffer : frameBuffers )
+		{
+			result.emplace_back( std::make_shared< FrameBuffer >( std::move( frameBuffer ) ) );
+		}
+
+		return result;
+	}
+
+	CommandBufferPtrArray SwapChain::createCommandBuffers()const
+	{
+		auto & commandBuffers = m_swapChain->createCommandBuffers();
+		CommandBufferPtrArray result;
+		result.reserve( commandBuffers.size() );
+
+		for ( auto & commandBuffer : commandBuffers )
+		{
+			result.emplace_back( std::make_unique< CommandBuffer >( std::move( commandBuffer ) ) );
+		}
+
+		return result;
+	}
+
+	void SwapChain::preRenderCommands( uint32_t index
+		, CommandBuffer const & commandBuffer )const
+	{
+		m_swapChain->preRenderCommands( index, commandBuffer.getCommandBuffer() );
+	}
+
+	void SwapChain::postRenderCommands( uint32_t index
+		, CommandBuffer const & commandBuffer )const
+	{
+		m_swapChain->postRenderCommands( index, commandBuffer.getCommandBuffer() );
 	}
 
 	RenderingResources * SwapChain::getResources()
@@ -32,8 +76,8 @@ namespace renderer
 
 		if ( resources.waitRecord( vk::FenceTimeout ) )
 		{
-			vk::BackBuffer * backBuffer{ nullptr };
-			auto res = m_swapChain->acquireBackBuffer( resources.getImageAvailableSemaphore()
+			uint32_t backBuffer{ 0u };
+			auto res = m_swapChain->acquireBackBuffer( resources.getImageAvailableSemaphore().getSemaphore()
 				, backBuffer );
 
 			if ( doCheckNeedReset( res, true, "Swap chain image acquisition" ) )
@@ -51,19 +95,10 @@ namespace renderer
 
 	void SwapChain::present( RenderingResources & resources )
 	{
-		auto res = m_device.getDevice().submitToGraphicsQueue( resources.getCommandBuffer().getCommandBuffer()
-			, resources.getImageAvailableSemaphore()
-			, resources.getRenderingFinishedSemaphore()
-			, &resources.getFence() );
-
-		if ( vk::checkError( res ) )
-		{
-			res = m_swapChain->presentBackBuffer( resources.getBackBuffer()
-				, resources.getRenderingFinishedSemaphore() );
-			doCheckNeedReset( res, false, "Image presentation" );
-		}
-
-		resources.setBackBuffer( nullptr );
+		auto res = m_swapChain->presentBackBuffer( resources.getBackBuffer()
+			, resources.getRenderingFinishedSemaphore().getSemaphore() );
+		doCheckNeedReset( res, false, "Image presentation" );
+		resources.setBackBuffer( ~0u );
 	}
 
 	bool SwapChain::doCheckNeedReset( VkResult errCode
@@ -104,7 +139,10 @@ namespace renderer
 	void SwapChain::doResetSwapChain()
 	{
 		m_device.getDevice().waitIdle();
+		auto colour = m_swapChain->getClearColour();
 		m_swapChain.reset();
 		m_swapChain = m_device.getDevice().createSwapChain( m_dimensions.x, m_dimensions.y );
+		m_swapChain->setClearColour( colour );
+		onReset();
 	}
 }

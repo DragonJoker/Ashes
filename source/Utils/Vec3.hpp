@@ -118,7 +118,7 @@ namespace utils
 		/**
 		*\name Opérateurs arithmétiques membres.
 		*/
-		/**@{*/
+		/**\{*/
 		template< typename U >
 		inline Vec3T & operator+=( Vec3T< U > const & rhs )noexcept;
 		template< typename U >
@@ -133,7 +133,7 @@ namespace utils
 		inline Vec3T & operator*=( U const & rhs )noexcept;
 		template< typename U >
 		inline Vec3T & operator/=( U const & rhs )noexcept;
-		/**@}*/
+		/**\}*/
 
 	public:
 		//! Les composantes du point.
@@ -218,18 +218,18 @@ namespace utils
 	/**
 	*\name Opérateurs logiques.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T >
 	inline bool operator==( Vec3T< T > const & lhs
 		, Vec3T< T > const & rhs )noexcept;
 	template< typename T >
 	inline bool operator!=( Vec3T< T > const & lhs
 		, Vec3T< T > const & rhs )noexcept;
-	/**@}*/
+	/**\}*/
 	/**
 	*\name Opérateurs arithmétiques.
 	*/
-	/**@{*/
+	/**\{*/
 	template< typename T >
 	inline Vec3T< T > operator-( Vec3T< T > const & rhs )noexcept;
 	template< typename T, typename U >
@@ -253,7 +253,7 @@ namespace utils
 	template< typename T, typename U >
 	inline Vec3T< T > operator/( Vec3T< T > const & lhs
 		, U const & rhs )noexcept;
-	/**@}*/
+	/**\}*/
 }
 
 #include "Vec3.inl"

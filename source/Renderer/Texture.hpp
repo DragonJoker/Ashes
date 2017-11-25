@@ -33,6 +33,14 @@ namespace renderer
 		Texture( Device const & device );
 		/**
 		*\brief
+		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
+		*/
+		Texture( Device const & device
+			, vk::Image const & image );
+		/**
+		*\brief
 		*	Charge l'image de la texture.
 		*\param[in] format
 		*	Le format de l'image.
@@ -44,8 +52,8 @@ namespace renderer
 		void setImage( utils::PixelFormat format
 			, IVec2 const & size
 			, ByteArray const & data
-			, renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer );
+			, StagingBuffer const & stagingBuffer
+			, CommandBuffer const & commandBuffer );
 		/**
 		*\brief
 		*	Charge l'image de la texture.
@@ -134,15 +142,16 @@ namespace renderer
 		*/
 		inline vk::Image const & getImage()const noexcept
 		{
-			assert( m_texture );
-			return *m_texture;
+			assert( m_nonOwnedTexture );
+			return *m_nonOwnedTexture;
 		}
 
 	private:
 		Device const & m_device;
 		utils::IVec2 m_size;
 		utils::PixelFormat m_format{ utils::PixelFormat::eR8G8B8 };
-		vk::ImagePtr m_texture;
+		vk::ImagePtr m_ownedTexture;
+		vk::Image const * m_nonOwnedTexture{ nullptr };
 	};
 }
 

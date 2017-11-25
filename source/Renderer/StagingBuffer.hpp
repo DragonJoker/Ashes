@@ -19,20 +19,20 @@
 namespace renderer
 {
 	/**
-	*@~french
-	*@brief
+	*\~french
+	*\brief
 	*	Classe regroupant les ressources de rendu nécessaires au dessin d'une image.
 	*/
 	class StagingBuffer
 	{
 	public:
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Constructeur.
-		*@param[in] device
+		*\param[in] device
 		*	Le LogicalDevice parent.
-		*@param[in] familyIndex
+		*\param[in] familyIndex
 		*	L'index du type de file.
 		*/
 		StagingBuffer( Device const & device );
@@ -46,24 +46,24 @@ namespace renderer
 		*/
 		BufferMemoryBarrier makeTransferSource()const;
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données d'une image dans une texture, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[out] texture
+		*\param[out] texture
 		*	La texture de destination.
 		*/
 		void copyTextureData( CommandBuffer const & commandBuffer
 			, ByteArray const & data
 			, Texture const & texture )const;
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -78,12 +78,12 @@ namespace renderer
 				, buffer );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -98,14 +98,14 @@ namespace renderer
 				, buffer );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] size
+		*\param[in] size
 		*	La taille des données à copier.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -121,14 +121,14 @@ namespace renderer
 				, buffer );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] offset
+		*\param[in] offset
 		*	L'offset dans le tampon.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -144,14 +144,14 @@ namespace renderer
 				, buffer );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] offset
+		*\param[in] offset
 		*	L'offset dans le tampon.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -167,16 +167,16 @@ namespace renderer
 				, buffer );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] size
+		*\param[in] size
 		*	La taille des données à copier.
-		*@param[in] offset
+		*\param[in] offset
 		*	L'offset dans le tampon.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -194,12 +194,12 @@ namespace renderer
 				, buffer.getBuffer() );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -216,12 +216,12 @@ namespace renderer
 				, flags );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -238,14 +238,14 @@ namespace renderer
 				, flags );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] size
+		*\param[in] size
 		*	La taille des données à copier.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -263,14 +263,14 @@ namespace renderer
 				, flags );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] offset
+		*\param[in] offset
 		*	L'offset dans le tampon.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -288,14 +288,14 @@ namespace renderer
 				, flags );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] offset
+		*\param[in] offset
 		*	L'offset dans le tampon.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -313,16 +313,16 @@ namespace renderer
 				, flags );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données de sommets dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] size
+		*\param[in] size
 		*	La taille des données à copier.
-		*@param[in] offset
+		*\param[in] offset
 		*	L'offset dans le tampon.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -342,12 +342,12 @@ namespace renderer
 				, flags );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -364,14 +364,14 @@ namespace renderer
 				, flags );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] size
+		*\param[in] size
 		*	La taille des données à copier.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -389,14 +389,14 @@ namespace renderer
 				, flags );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] offset
+		*\param[in] offset
 		*	L'offset dans le tampon.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -414,12 +414,12 @@ namespace renderer
 				, flags );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -436,14 +436,14 @@ namespace renderer
 				, flags );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] count
+		*\param[in] count
 		*	Le nombre d'éléments à copier.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -461,14 +461,14 @@ namespace renderer
 				, flags );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] offset
+		*\param[in] offset
 		*	L'offset dans le tampon.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -486,16 +486,16 @@ namespace renderer
 				, flags );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] count
+		*\param[in] count
 		*	Le nombre d'éléments à copier.
-		*@param[in] offset
+		*\param[in] offset
 		*	L'offset dans le tampon.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >
@@ -514,16 +514,16 @@ namespace renderer
 				, flags );
 		}
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Copie les données d'un tampon d'uniformes dans un tampon, en passant par le tampon de transfert.
-		*@param[in] data
+		*\param[in] data
 		*	Les données à copier.
-		*@param[in] size
+		*\param[in] size
 		*	La taille des données à copier.
-		*@param[in] offset
+		*\param[in] offset
 		*	L'offset dans le tampon.
-		*@param[out] buffer
+		*\param[out] buffer
 		*	Le tampon de destination.
 		*/
 		template< typename T >

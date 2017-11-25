@@ -9,11 +9,11 @@ See LICENSE file in root folder
 namespace renderer
 {
 	/**
-	*@~french
-	*@brief
+	*\~french
+	*\brief
 	*	Masques de bits décrivant les propriétés pour un type de mémoire.
-	*@~english
-	*@brief
+	*\~english
+	*\brief
 	*	Bimask specifying properties for a memory type.
 	*/
 	enum class BufferTarget
@@ -38,5 +38,5 @@ namespace renderer
 	*\return
 	*	Le VkBufferUsageFlags.
 	*/
-	VkBufferUsageFlags convert( BufferTargets targets );
+	VkBufferUsageFlags convert( BufferTargets const & targets );
 }

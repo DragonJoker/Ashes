@@ -40,8 +40,8 @@ namespace renderer
 		Pipeline( Device const & device
 			, PipelineLayout const & layout
 			, ShaderProgram const & program
-			, std::vector< std::reference_wrapper< VertexLayout const > > const & vertexLayouts
-			, vk::RenderPass const & renderPass
+			, VertexLayoutCRefArray const & vertexLayouts
+			, RenderPass const & renderPass
 			, PrimitiveTopology topology );
 		/**
 		*\brief
@@ -66,10 +66,10 @@ namespace renderer
 		Pipeline( Device const & device
 			, PipelineLayout const & layout
 			, ShaderProgram const & program
-			, std::vector< std::reference_wrapper< VertexLayout const > > const & vertexLayouts
+			, VertexLayoutCRefArray const & vertexLayouts
 			, Viewport const & viewport
 			, Scissor const & scissor
-			, vk::RenderPass const & renderPass
+			, RenderPass const & renderPass
 			, PrimitiveTopology topology );
 		/**
 		*\return

@@ -26,5 +26,5 @@ namespace renderer
 	*\return
 	*	Le VkCommandBufferResetFlags.
 	*/
-	VkCommandBufferResetFlags convert( CommandBufferResetFlags flags );
+	VkCommandBufferResetFlags convert( CommandBufferResetFlags const & flags );
 }

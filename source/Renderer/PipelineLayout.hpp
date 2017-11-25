@@ -28,11 +28,11 @@ namespace renderer
 		PipelineLayout( Device const & device
 			, DescriptorSetLayout const * layout );
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Conversion implicite vers VkPipelineLayout.
-		*@~english
-		*@brief
+		*\~english
+		*\brief
 		*	VkPipelineLayout implicit cast operator.
 		*/
 		inline vk::PipelineLayout const & getLayout()const
