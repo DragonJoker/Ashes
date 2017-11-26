@@ -4,6 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
+#include "CommandPool.hpp"
 #include "Connection.hpp"
 #include "Queue.hpp"
 
@@ -59,10 +60,28 @@ namespace renderer
 		{
 			return m_graphicsQueue;
 		}
+		/**
+		*\return
+		*	Le pool de tampons de commandes pour la file de présentation.
+		*/
+		inline CommandPool const & getPresentCommandPool()const
+		{
+			return m_presentCommandPool;
+		}
+		/**
+		*\return
+		*	Le pool de tampons de commandes pour la file de dessin.
+		*/
+		inline CommandPool const & getGraphicsCommandPool()const
+		{
+			return m_graphicsCommandPool;
+		}
 
 	private:
 		vk::LogicalDevice m_device;
 		Queue m_presentQueue;
 		Queue m_graphicsQueue;
+		CommandPool m_presentCommandPool;
+		CommandPool m_graphicsCommandPool;
 	};
 }

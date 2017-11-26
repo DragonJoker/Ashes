@@ -32,10 +32,11 @@ namespace renderer
 		*	Constructeur.
 		*\param[in] device
 		*	Le LogicalDevice parent.
-		*\param[in] familyIndex
-		*	L'index du type de file.
+		*\param[in] size
+		*	La taille du tampon.
 		*/
-		StagingBuffer( Device const & device );
+		StagingBuffer( Device const & device
+			, uint32_t size = 10000000u );
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de source de transfert.

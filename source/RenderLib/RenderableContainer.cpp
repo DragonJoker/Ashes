@@ -66,8 +66,9 @@ namespace render
 		}
 	}
 
-	RenderableContainer::RenderableContainer( renderer::Device const & device )
-		: m_renderer{ device }
+	RenderableContainer::RenderableContainer( renderer::Device const & device
+		, renderer::RenderPass const & renderPass )
+		: m_renderer{ device, renderPass }
 		, m_device{ device }
 	{
 		m_renderer.initialise();

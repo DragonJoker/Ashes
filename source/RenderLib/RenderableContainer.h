@@ -29,7 +29,8 @@ namespace render
 		*\brief
 		*	Constructeur.
 		*/
-		RenderableContainer( renderer::Device const & device );
+		RenderableContainer( renderer::Device const & device
+			, renderer::RenderPass const & renderPass );
 		/**
 		*\brief
 		*	Destructeur.

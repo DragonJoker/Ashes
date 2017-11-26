@@ -37,8 +37,9 @@ namespace render
 	}
 
 	Scene::Scene( renderer::Device const & device
+		, renderer::RenderPass const & renderPass
 		, utils::IVec2 const & size )
-		: RenderableContainer{ device }
+		: RenderableContainer{ device, renderPass }
 		, m_camera{ size }
 	{
 		auto material = m_materials.findElement( "FullAlphaWhite" );
@@ -102,7 +103,6 @@ namespace render
 			}
 		}
 
-		m_camera.viewport().apply();
 		auto percent = m_state.zoomBounds().percent( m_state.zoom() );
 		doDraw( stagingBuffer
 			, commandBuffer
@@ -171,6 +171,25 @@ namespace render
 	{
 		m_billboardsBuffers.addElement( name, buffer );
 		m_newBillboardBuffers.push_back( buffer );
+	}
+
+	void Scene::addOverlay( std::string const & name
+		, PanelOverlayPtr overlay )
+	{
+	}
+
+	void Scene::addOverlay( std::string const & name
+		, BorderPanelOverlayPtr overlay )
+	{
+	}
+
+	void Scene::addOverlay( std::string const & name
+		, TextOverlayPtr overlay )
+	{
+	}
+
+	void Scene::removeOverlay( std::string const & name )
+	{
 	}
 
 	void Scene::onMovableChanged( Movable & movable )

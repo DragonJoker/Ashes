@@ -8,6 +8,11 @@
 #include "Submesh.h"
 #include "Viewport.h"
 
+#include <Renderer/RenderPass.hpp>
+#include <Renderer/RenderPassState.hpp>
+#include <Renderer/RenderSubpass.hpp>
+#include <Renderer/RenderSubpassState.hpp>
+
 namespace render
 {
 	namespace
@@ -28,10 +33,10 @@ namespace render
 		template<>
 		struct NodeTraits< Billboard >
 		{
-			static inline void getNodeValue( BillboardArray::const_iterator it
+			static inline void getNodeValue( RenderBillboardVector::const_iterator it
 				, Billboard *& billboard )
 			{
-				billboard = it->get();
+				billboard = it->m_billboard.get();
 			}
 		};
 
@@ -49,37 +54,58 @@ namespace render
 
 		static int constexpr PickingWidth = 50;
 		static int constexpr PickingOffset = PickingWidth / 2;
+
+		std::vector< utils::PixelFormat > doGetPixelFormats()
+		{
+			return { utils::PixelFormat::eR8G8B8A8, utils::PixelFormat::eD16 };
+		}
+
+		renderer::RenderSubpassState doGetSubpassState()
+		{
+			return { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite };
+		}
+
+		renderer::RenderPassState doGetColourPassState()
+		{
+			return { renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite
+				, { renderer::ImageLayout::eColourAttachmentOptimal } };
+		}
 	}
 
 	Picking::Picking( renderer::Device const & device
 		, utils::IVec2 const & size )
-		: m_renderer{ device }
+		: m_renderPass{ std::make_unique< renderer::RenderPass >( device
+			, doGetPixelFormats()
+			, renderer::RenderSubpassArray{ { device
+				, doGetPixelFormats()
+				, doGetSubpassState() } }
+			, doGetColourPassState()
+			, doGetColourPassState() ) }
+		, m_renderer{ device, *m_renderPass }
 		, m_size{ size }
-		, m_colour{ std::make_unique< renderer::Texture >
-			( utils::PixelFormat::eR8G8B8A8
-			, size ) }
-		, m_depth{ std::make_unique< renderer::RenderBuffer >
-			( utils::PixelFormat::eD16
-			, size ) }
-		, m_fbo{ std::make_unique< renderer::FrameBuffer >() }
+		, m_colour{ std::make_shared< renderer::Texture >( device ) }
+		, m_depth{ std::make_shared< renderer::Texture >( device ) }
 		, m_buffer( PickingWidth * PickingWidth )
+		, m_stagingBuffer{ std::make_shared< renderer::StagingBuffer >( device ) }
+		, m_commandPool{ std::make_unique< renderer::CommandPool >( device
+			, device.getGraphicsQueue().getFamilyIndex() ) }
+		, m_commandBuffer{ std::make_unique< renderer::CommandBuffer >( device
+			, *m_commandPool ) }
 	{
+		m_colour->setImage( utils::PixelFormat::eR8G8B8A8, size );
+		m_depth->setImage( utils::PixelFormat::eD16, size );
+		m_frameBuffer = std::make_shared< renderer::FrameBuffer >( *m_renderPass
+			, size
+			, renderer::TextureCRefArray{ *m_colour, *m_depth } );
 		m_renderer.initialise();
-		m_fbo->bind();
-		m_fbo->attach( *m_colour, renderer::AttachmentPoint::eColour0 );
-		m_fbo->attach( *m_depth, renderer::AttachmentPoint::eDepth );
-		m_fbo->unbind();
 	}
 
 	Picking::~Picking()
 	{
-		m_fbo->bind();
-		m_fbo->detach( *m_colour, renderer::AttachmentPoint::eColour0 );
-		m_fbo->detach( *m_depth, renderer::AttachmentPoint::eDepth );
-		m_fbo->unbind();
 	}
 
-	Picking::NodeType Picking::pick( renderer::RenderingResources const & resources
+	Picking::NodeType Picking::pick( renderer::Queue const & queue
 		, utils::IVec2 const & position
 		, Camera const & camera
 		, float zoomPercent
@@ -87,17 +113,18 @@ namespace render
 		, RenderBillboardArray const & billboards )const
 	{
 #if DEBUG_PICKING
-		m_fbo->bind();
-		m_fbo->clear( renderer::RgbaColour{ 0, 0, 0, 1 } );
+		m_frameBuffer->bind();
+		m_frameBuffer->clear( renderer::RgbaColour{ 0, 0, 0, 1 } );
 		m_renderer.draw( camera
 			, zoomPercent
 			, objects
 			, billboards );
-		m_fbo->unbind();
+		m_frameBuffer->unbind();
 		return NodeType::eNone;
 #else
 		onUnpick();
-		auto pixel = doFboPick( resources
+		auto pixel = doFboPick( *m_commandBuffer
+			, queue
 			, position
 			, camera
 			, zoomPercent
@@ -107,7 +134,8 @@ namespace render
 #endif
 	}
 
-	Picking::Pixel Picking::doFboPick( renderer::RenderingResources const & resources
+	Picking::Pixel Picking::doFboPick( renderer::CommandBuffer const & commandBuffer
+		, renderer::Queue const & queue
 		, utils::IVec2 const & position
 		, Camera const & camera
 		, float zoomPercent
@@ -116,28 +144,37 @@ namespace render
 	{
 		assert( position.x < m_size.x );
 		assert( position.y < m_size.y );
-		m_fbo->bind();
-		camera.viewport().apply();
-		m_fbo->clear( renderer::RgbaColour{ 0, 0, 0, 1 } );
-		m_renderer.draw( camera
-			, zoomPercent
-			, objects
-			, billboards );
-		m_fbo->unbind();
+		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
+		{
+			commandBuffer.beginRenderPass( *m_renderPass
+				, *m_frameBuffer
+				, utils::RgbaColour{ 0, 0, 0, 1 } );
+			commandBuffer.setViewport( camera.viewport().viewport() );
+			m_renderer.draw( *m_stagingBuffer
+				, commandBuffer
+				, camera
+				, zoomPercent
+				, objects
+				, billboards );
+			commandBuffer.endRenderPass();
+
+			queue.submit( commandBuffer, nullptr );
+		}
+
 		memset( m_buffer.data(), 0xFF, m_buffer.size() * sizeof( Pixel ) );
 		utils::IVec2 offset
 		{
 			m_size.x - position.x - PickingOffset,
 			m_size.y - position.y - PickingOffset
 		};
-		m_fbo->bind();
-		m_fbo->download( uint32_t( offset.x )
+		m_frameBuffer->download( queue
+			, 0u
+			, uint32_t( offset.x )
 			, uint32_t( offset.y )
 			, PickingWidth
 			, PickingWidth
 			, utils::PixelFormat::eR8G8B8A8
 			, reinterpret_cast< uint8_t * >( m_buffer.data() ) );
-		m_fbo->unbind();
 
 		return m_buffer[( PickingOffset * PickingWidth ) + PickingOffset - 1];
 	}

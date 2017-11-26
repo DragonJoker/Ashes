@@ -9,6 +9,21 @@
 
 namespace renderer
 {
+	namespace
+	{
+		Texture::Mapped convert( vk::Image::Mapped const & mapped )
+		{
+			return Texture::Mapped
+			{
+				mapped.data,
+				mapped.size,
+				mapped.rowPitch,
+				mapped.arrayPitch,
+				mapped.depthPitch,
+			};
+		}
+	}
+
 	Texture::Texture( Device const & device )
 		: m_device{ device }
 	{
@@ -25,24 +40,33 @@ namespace renderer
 		, IVec2 const & size
 		, ByteArray const & data
 		, StagingBuffer const & stagingBuffer
-		, CommandBuffer const & commandBuffer )
+		, CommandBuffer const & commandBuffer
+		, ImageUsageFlags usageFlags
+		, ImageTiling tiling )
 	{
 		assert( ( !m_nonOwnedTexture || m_ownedTexture ) && "Can't set the image of a non owned texture" );
-		setImage( format, size );
+		setImage( format
+			, size
+			, usageFlags
+			, tiling );
 		stagingBuffer.copyTextureData( commandBuffer
 			, data
 			, *this );
 	}
 
 	void Texture::setImage( utils::PixelFormat format
-		, IVec2 const & size )
+		, IVec2 const & size
+		, ImageUsageFlags usageFlags
+		, ImageTiling tiling )
 	{
 		m_format = format;
 		m_size = size;
 		m_ownedTexture = m_device.getDevice().createImage( convert( m_format )
 			, m_size.x
 			, m_size.y
-			, convert( MemoryPropertyFlag::eDeviceLocal ) );
+			, convert( MemoryPropertyFlag::eDeviceLocal )
+			, convert( usageFlags )
+			, convert( tiling ) );
 		m_nonOwnedTexture = m_ownedTexture.get();
 	}
 
@@ -53,72 +77,42 @@ namespace renderer
 		//m_texture->unbind( 0 );
 	}
 
-	void Texture::bindAsShaderInput( CommandBuffer const & cb
-		, uint32_t unit )const
+	Texture::Mapped Texture::lock( uint32_t offset
+		, uint32_t size
+		, VkMemoryMapFlags flags )const
 	{
-		assert( m_nonOwnedTexture );
-		auto & device = m_device;
-		auto & commandBuffer = cb.getCommandBuffer();
-
-		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
-		{
-			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
-				, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
-				, m_nonOwnedTexture->makeShaderInputResource() );
-			auto res = vk::checkError( commandBuffer.end() );
-
-			if ( !res )
-			{
-				throw std::runtime_error{ "Texture binding failed: " + vk::getLastError() };
-			}
-
-			res = vk::checkError( m_device.getDevice().getGraphicsQueue().submit( { commandBuffer }
-				, {}
-				, {}
-				, {}
-			, nullptr ) );
-
-			if ( !res )
-			{
-				throw std::runtime_error{ "Texture binding failed: " + vk::getLastError() };
-			}
-
-			m_device.getDevice().waitIdle();
-		}
+		return convert( m_nonOwnedTexture->lock( offset
+			, size
+			, flags ) );
 	}
 
-	void Texture::bindAsShaderOutput( CommandBuffer const & cb
+	void Texture::unlock( uint32_t size
+		, bool modified )const
+	{
+	}
+
+	void Texture::bindAsShaderInput( CommandBuffer const & commandBuffer
 		, uint32_t unit )const
 	{
 		assert( m_nonOwnedTexture );
-		auto & device = m_device;
-		auto & commandBuffer = cb.getCommandBuffer();
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
+			, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
+			, m_nonOwnedTexture->makeShaderInputResource() );
+	}
 
-		if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT ) )
-		{
-			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
-				, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-				, m_nonOwnedTexture->makeColourAttachment() );
-			auto res = vk::checkError( commandBuffer.end() );
+	void Texture::bindAsShaderOutput( CommandBuffer const & commandBuffer
+		, uint32_t unit )const
+	{
+		assert( m_nonOwnedTexture );
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
+			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+			, m_nonOwnedTexture->makeColourAttachment() );
+	}
 
-			if ( !res )
-			{
-				throw std::runtime_error{ "Texture binding failed: " + vk::getLastError() };
-			}
-
-			res = vk::checkError( m_device.getDevice().getGraphicsQueue().submit( { commandBuffer }
-				, {}
-				, {}
-				, {}
-			, nullptr ) );
-
-			if ( !res )
-			{
-				throw std::runtime_error{ "Texture binding failed: " + vk::getLastError() };
-			}
-
-			m_device.getDevice().waitIdle();
-		}
+	ImageMemoryBarrier Texture::makeGeneralLayout( AccessFlags accessFlags )const
+	{
+		assert( m_nonOwnedTexture );
+		return ImageMemoryBarrier{ m_nonOwnedTexture->makeGeneralLayout( convert( accessFlags ) ) };
 	}
 
 	ImageMemoryBarrier Texture::makeTransferDestination()const
@@ -127,10 +121,22 @@ namespace renderer
 		return ImageMemoryBarrier{ m_nonOwnedTexture->makeTransferDestination() };
 	}
 
+	ImageMemoryBarrier Texture::makeTransferSource()const
+	{
+		assert( m_nonOwnedTexture );
+		return ImageMemoryBarrier{ m_nonOwnedTexture->makeTransferSource() };
+	}
+
 	ImageMemoryBarrier Texture::makeShaderInputResource()const
 	{
 		assert( m_nonOwnedTexture );
 		return ImageMemoryBarrier{ m_nonOwnedTexture->makeShaderInputResource() };
+	}
+
+	ImageMemoryBarrier Texture::makeDepthStencilReadOnly()const
+	{
+		assert( m_nonOwnedTexture );
+		return ImageMemoryBarrier{ m_nonOwnedTexture->makeDepthStencilReadOnly() };
 	}
 
 	ImageMemoryBarrier Texture::makeColourAttachment()const

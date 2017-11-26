@@ -26,7 +26,7 @@ namespace renderer
 		*	Le périphérique logique.
 		*/
 		CommandBuffer( Device const & device
-			, vk::CommandPool const & pool );
+			, CommandPool const & pool );
 		/**
 		*\brief
 		*	Constructeur.

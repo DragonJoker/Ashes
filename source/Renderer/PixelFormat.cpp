@@ -21,7 +21,7 @@ namespace renderer
 		case utils::PixelFormat::eR8G8B8A8:
 			return VK_FORMAT_R8G8B8A8_UNORM;
 
-		case utils::PixelFormat::eB8R8G8A8:
+		case utils::PixelFormat::eB8G8R8A8:
 			return VK_FORMAT_B8G8R8A8_UNORM;
 
 		case utils::PixelFormat::eRGBA5551:
@@ -62,7 +62,7 @@ namespace renderer
 			return utils::PixelFormat::eR8G8B8A8;
 
 		case VK_FORMAT_B8G8R8A8_UNORM:
-			return utils::PixelFormat::eB8R8G8A8;
+			return utils::PixelFormat::eB8G8R8A8;
 
 		case VK_FORMAT_R5G5B5A1_UNORM_PACK16:
 			return utils::PixelFormat::eRGBA5551;

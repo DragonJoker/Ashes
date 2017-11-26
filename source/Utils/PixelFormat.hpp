@@ -25,7 +25,7 @@ namespace utils
 		//! RGBA avec 8 bits par composante (pour les textures uniquement).
 		eR8G8B8A8,
 		//! BGRA avec 8 bits par composante (pour les textures uniquement).
-		eB8R8G8A8,
+		eB8G8R8A8,
 		//! RGBA sur 16 bits.
 		eRGBA5551,
 		//! RGBA avec4 bits par composante.

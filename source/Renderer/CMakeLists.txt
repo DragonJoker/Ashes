@@ -72,6 +72,7 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 		${VkLib_LIBRARIES}
 	)
 
+	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Render" )
 else ()
 	if ( NOT glslang_FOUND )

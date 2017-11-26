@@ -67,6 +67,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		${wxWidgets_LIBRARIES}
 		${GTK2_LIBRARIES}
 	)
+	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Main" )
 
 	file( GLOB SHADERS ${CMAKE_CURRENT_SOURCE_DIR}/Shaders/*.* )

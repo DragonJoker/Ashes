@@ -37,6 +37,7 @@ namespace utils
 	{
 	public:
 		MsWindow();
+		virtual ~MsWindow();
 		/**
 		*\brief
 		*	Crée la fenêtre.
@@ -157,6 +158,14 @@ namespace utils
 		int m_timer{ -1 };
 		static std::map< HWND, MsWindow * > sm_instances;
 		bool m_minimised{ false };
+
+#if !defined( NDEBUG )
+#	if defined( _WIN32 )
+
+		bool m_allocated{ false };
+
+#	endif
+#endif
 	};
 }
 

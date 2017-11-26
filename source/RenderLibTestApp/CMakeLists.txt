@@ -58,4 +58,5 @@ copy_target_files( ${PROJECT_NAME}
 	${ASSETS}
 )
 
+set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Main" )

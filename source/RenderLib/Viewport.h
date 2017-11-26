@@ -61,11 +61,6 @@ namespace render
 		*/
 		void fovY( utils::Angle const & fovy )noexcept;
 		/**
-		*\brief
-		*	Applique le viewport.
-		*/
-		void apply()const noexcept;
-		/**
 		*\return
 		*	La matrice de projection du viewport.
 		*/

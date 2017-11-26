@@ -14,9 +14,10 @@
 
 namespace renderer
 {
-	StagingBuffer::StagingBuffer( Device const & device )
+	StagingBuffer::StagingBuffer( Device const & device
+		, uint32_t size )
 		: m_device{ device }
-		, m_stagingBuffer{ device.getDevice().createStagingBuffer( 1000000, 0 ) }
+		, m_stagingBuffer{ device.getDevice().createStagingBuffer( size, 0 ) }
 	{
 	}
 

@@ -29,6 +29,18 @@ namespace renderer
 		*	Met en attente des tampons de commandes.
 		*\param[in] commandBuffer
 		*	Le tampon de commandes.
+		*\param[in] fence
+		*	Une barrière optionnelle.
+		*\return
+		*	\p true si tout s'est bien passé.
+		*/
+		bool submit( CommandBuffer const & commandBuffer
+			, Fence const * fence )const;
+		/**
+		*\brief
+		*	Met en attente des tampons de commandes.
+		*\param[in] commandBuffer
+		*	Le tampon de commandes.
 		*\param[in] semaphoreToWait
 		*	Le sémaphore à attendre lors de l'éxécution de la file.
 		*\param[in] semaphoreStage

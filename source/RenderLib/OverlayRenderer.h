@@ -47,6 +47,7 @@ namespace render
 		*	Dit si c'est un programme pour les incrustations texte.
 		*/
 		OverlayNode( renderer::Device const & device
+			, renderer::RenderPass const & renderPass
 			, bool text
 			, OpacityType opacity
 			, TextureFlags textures );
@@ -88,6 +89,7 @@ namespace render
 		*	Le nombre maximal de caractères par tampon de sommets de texte.
 		*/
 		explicit OverlayRenderer( renderer::Device const & device
+			, renderer::RenderPass const & renderPass
 			, uint32_t maxCharsPerBuffer = 600 );
 		/**
 		*brief
@@ -237,6 +239,7 @@ namespace render
 
 	private:
 		renderer::Device const & m_device;
+		renderer::RenderPass const & m_renderPass;
 		OverlayNodeArray m_panelNodes;
 		OverlayNode m_textNode;
 		renderer::VertexBufferPtr< Overlay::Quad > m_panelBuffer;

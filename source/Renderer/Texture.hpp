@@ -26,6 +26,20 @@ namespace renderer
 	public:
 		/**
 		*\brief
+		*	Contient les informations d'une image mappée en RAM.
+		*/
+		struct Mapped
+		{
+			uint8_t * data;
+			uint64_t size;
+			uint64_t rowPitch;
+			uint64_t arrayPitch;
+			uint64_t depthPitch;
+		};
+
+	public:
+		/**
+		*\brief
 		*	Constructeur.
 		*\param[in] device
 		*	Le périphérique logique.
@@ -53,7 +67,9 @@ namespace renderer
 			, IVec2 const & size
 			, ByteArray const & data
 			, StagingBuffer const & stagingBuffer
-			, CommandBuffer const & commandBuffer );
+			, CommandBuffer const & commandBuffer
+			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
+			, ImageTiling tiling = ImageTiling::eOptimal );
 		/**
 		*\brief
 		*	Charge l'image de la texture.
@@ -63,12 +79,39 @@ namespace renderer
 		*	Les dimensions de l'image.
 		*/
 		void setImage( utils::PixelFormat format
-			, IVec2 const & size );
+			, IVec2 const & size
+			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
+			, ImageTiling tiling = ImageTiling::eOptimal );
 		/**
 		*\brief
 		*	Génère les mipmaps de la texture.
 		*/
 		void generateMipmaps()const noexcept;
+		/**
+		*\brief
+		*	Mappe la mémoire du tampon en RAM.
+		*\param[in] offset
+		*	L'offset à partir duquel la mémoire du tampon est mappée.
+		*\param[in] size
+		*	La taille en octets de la mémoire à mapper.
+		*\param[in] flags
+		*	Indicateurs de configuration du mapping.
+		*\return
+		*	\p nullptr si le mapping a échoué.
+		*/
+		Mapped lock( uint32_t offset
+			, uint32_t size
+			, VkMemoryMapFlags flags )const;
+		/**
+		*\brief
+		*	Unmappe la mémoire du tampon de la RAM.
+		*\param[in] size
+		*	La taille en octets de la mémoire mappée.
+		*\param[in] modified
+		*	Dit si le tampon a été modifié, et donc si la VRAM doit être mise à jour.
+		*/
+		void unlock( uint32_t size
+			, bool modified )const;
 		/**
 		*\brief
 		*	Active la texture.
@@ -87,6 +130,15 @@ namespace renderer
 			, uint32_t unit )const;
 		/**
 		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout général.
+		*\param[in] accessFlags
+		*	Les accès voulus, une fois que la transition est effectuée.
+		*\return
+		*	La barrière mémoire.
+		*/
+		ImageMemoryBarrier makeGeneralLayout( AccessFlags accessFlags )const;
+		/**
+		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de destination de transfert.
 		*\return
 		*	La barrière mémoire.
@@ -94,11 +146,27 @@ namespace renderer
 		ImageMemoryBarrier makeTransferDestination()const;
 		/**
 		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de source de transfert.
+		*\return
+		*	La barrière mémoire.
+		*/
+		ImageMemoryBarrier makeTransferSource()const;
+		/**
+		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de ressource d'entrée (lecture seule) d'un shader.
 		*\return
 		*	La barrière mémoire.
 		*/
 		ImageMemoryBarrier makeShaderInputResource()const;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de ressource d'entrée (lecture seule) d'un shader.
+		*\remarks
+		*	Spécifique aux images prondeur et/ou stencil.
+		*\return
+		*	La barrière mémoire.
+		*/
+		ImageMemoryBarrier makeDepthStencilReadOnly()const;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout d'attache couleur.

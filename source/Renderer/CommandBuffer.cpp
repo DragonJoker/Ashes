@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "CommandBuffer.hpp"
 
 #include "BufferMemoryBarrier.hpp"
+#include "CommandPool.hpp"
 #include "DescriptorSet.hpp"
 #include "ImageMemoryBarrier.hpp"
 #include "Pipeline.hpp"
@@ -18,8 +19,9 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	CommandBuffer::CommandBuffer( Device const & device
-		, vk::CommandPool const & pool )
-		: m_commandBuffer{ std::make_unique< vk::PrimaryCommandBuffer >( device.getDevice(), pool ) }
+		, CommandPool const & pool )
+		: m_commandBuffer{ std::make_unique< vk::PrimaryCommandBuffer >( device.getDevice()
+			, pool.getCommandPool() ) }
 	{
 	}
 

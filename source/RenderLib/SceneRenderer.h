@@ -13,6 +13,8 @@
 #include <Renderer/Texture.hpp>
 #include "UberShader.h"
 
+#include <Renderer/CommandBuffer.hpp>
+#include <Renderer/CommandPool.hpp>
 #include <Renderer/DescriptorSet.hpp>
 #include <Renderer/DescriptorSetLayout.hpp>
 #include <Renderer/DescriptorSetPool.hpp>
@@ -123,19 +125,20 @@ namespace render
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
 			ObjectNode( renderer::Device const & device
+				, renderer::RenderPass const & renderPass
 				, renderer::DescriptorSetLayout && layout
 				, renderer::ShaderProgramPtr && program
 				, NodeType type );
-			//! Le layout du pipeline.
-			renderer::PipelineLayout m_pipelineLayout;
-			//! Le pipeline.
-			renderer::PipelinePtr m_pipeline;
 			//! Le layout du tampon de positions.
 			renderer::VertexLayout m_posLayout;
 			//! Le layout du tampon de normales.
 			renderer::VertexLayout m_nmlLayout;
 			//! Le layout du tampon de coordonnées de texture.
 			renderer::VertexLayout m_texLayout;
+			//! Le layout du pipeline.
+			renderer::PipelineLayoutPtr m_pipelineLayout;
+			//! Le pipeline.
+			renderer::PipelinePtr m_pipeline;
 		};
 		//! Un pointeur sur un ObjectNode.
 		using ObjectNodePtr = std::unique_ptr< ObjectNode >;
@@ -155,6 +158,7 @@ namespace render
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
 			BillboardNode( renderer::Device const & device
+				, renderer::RenderPass const & renderPass
 				, renderer::DescriptorSetLayout && layout
 				, renderer::ShaderProgramPtr && program
 				, NodeType type );
@@ -163,7 +167,7 @@ namespace render
 			//! Le layout du tampon de positions.
 			renderer::VertexLayout m_layout;
 			//! Le layout du pipeline.
-			renderer::PipelineLayout m_pipelineLayout;
+			renderer::PipelineLayoutPtr m_pipelineLayout;
 			//! Le pipeline.
 			renderer::PipelinePtr m_pipeline;
 		};
@@ -185,6 +189,7 @@ namespace render
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
 			PolyLineNode( renderer::Device const & device
+				, renderer::RenderPass const & renderPass
 				, renderer::DescriptorSetLayout && layout
 				, renderer::ShaderProgramPtr && program
 				, NodeType type );
@@ -193,7 +198,7 @@ namespace render
 			//! Le layout du tampon de positions.
 			renderer::VertexLayout m_layout;
 			//! Le layout du pipeline.
-			renderer::PipelineLayout m_pipelineLayout;
+			renderer::PipelineLayoutPtr m_pipelineLayout;
 			//! Le pipeline.
 			renderer::PipelinePtr m_pipeline;
 		};
@@ -207,7 +212,8 @@ namespace render
 		*\brief
 		*	Constructeur.
 		*/
-		SceneRenderer( renderer::Device const & device );
+		SceneRenderer( renderer::Device const & device
+			, renderer::RenderPass const & renderPass );
 		/**
 		*\brief
 		*	Crée tous les noeuds de rendu.
@@ -270,6 +276,7 @@ namespace render
 
 	private:
 		renderer::Device const & m_device;
+		renderer::RenderPass const & m_renderPass;
 		ObjectNodeArray m_objectNodes;
 		BillboardNodeArray m_billboardNodes;
 		PolyLineNodePtr m_lineNode;

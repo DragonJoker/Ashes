@@ -37,7 +37,7 @@ namespace renderer
 		*/
 		RenderPass( Device const & device
 			, std::vector< utils::PixelFormat > const & formats
-			, std::vector< RenderSubpass > const & subpasses
+			, RenderSubpassArray const & subpasses
 			, RenderPassState const & initialState
 			, RenderPassState const & finalState
 			, bool clear = true

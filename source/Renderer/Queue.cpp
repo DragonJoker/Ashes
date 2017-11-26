@@ -60,6 +60,13 @@ namespace renderer
 	}
 
 	bool Queue::submit( CommandBuffer const & commandBuffer
+		, Fence const * fence )const
+	{
+		return vk::checkError( m_queue.submit( commandBuffer.getCommandBuffer()
+			, fence ? &fence->getFence() : nullptr ) );
+	}
+
+	bool Queue::submit( CommandBuffer const & commandBuffer
 		, Semaphore const & semaphoreToWait
 		, PipelineStageFlags const & semaphoreStage
 		, Semaphore const & semaphoreToSignal

@@ -31,9 +31,48 @@ namespace utils
 
 	MsWindow::MsWindow()
 	{
+#if !defined( NDEBUG )
+#	if defined( _WIN32 )
+
+		if ( ::AllocConsole() )
+		{
+			m_allocated = true;
+			FILE * dump;
+			freopen_s( &dump, "conout$", "w", stdout );
+			freopen_s( &dump, "conout$", "w", stderr );
+		}
+		else
+		{
+			DWORD lastError = ::GetLastError();
+
+			if ( lastError == ERROR_ACCESS_DENIED )
+			{
+				FILE * dump;
+				freopen_s( &dump, "conout$", "w", stdout );
+				freopen_s( &dump, "conout$", "w", stderr );
+			}
+		}
+
+#	endif
+#endif
+
 		::SetCurrentDirectoryA( doGetExecutableDir().c_str() );
 	}
 	
+	MsWindow::~MsWindow()
+	{
+#if !defined( NDEBUG )
+#	if defined( _WIN32 )
+
+		if ( m_allocated )
+		{
+			::FreeConsole();
+		}
+
+#	endif
+#endif
+	}
+
 	void MsWindow::create( HINSTANCE instance
 		, std::string const & className
 		, int iconResourceID
@@ -131,7 +170,6 @@ namespace utils
 		if ( m_minimised )
 		{
 			m_size = size;
-			wglMakeCurrent( m_hdc, m_context );
 			onRestore( size );
 			::SetTimer( m_hwnd, 1, 17, nullptr );
 			m_timer = 1;
@@ -214,9 +252,7 @@ namespace utils
 			{
 				PAINTSTRUCT paint;
 				HDC hdc = ::BeginPaint( m_hwnd, &paint );
-				wglMakeCurrent( hdc, m_context );
 				onDraw();
-				wglMakeCurrent( hdc, nullptr );
 				::EndPaint( m_hwnd, &paint );
 			}
 			break;
@@ -304,9 +340,7 @@ namespace utils
 		case WM_TIMER:
 			{
 				auto hdc = ::GetDC( m_hwnd );
-				wglMakeCurrent( hdc, m_context );
 				onDraw();
-				wglMakeCurrent( hdc, nullptr );
 				::ReleaseDC( m_hwnd, hdc );
 			}
 			break;

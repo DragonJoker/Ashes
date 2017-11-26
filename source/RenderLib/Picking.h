@@ -10,6 +10,8 @@
 
 #include "PickingRenderer.h"
 
+#include <Renderer/CommandBuffer.hpp>
+#include <Renderer/CommandPool.hpp>
 #include <Renderer/FrameBuffer.hpp>
 #include <Renderer/RenderBuffer.hpp>
 #include <Renderer/Texture.hpp>
@@ -109,7 +111,7 @@ namespace render
 		*\return
 		*	Picking::NodeType::eNone si rien n'a été pické.
 		*/
-		NodeType pick( renderer::RenderingResources const & resources
+		NodeType pick( renderer::Queue const & queue
 			, utils::IVec2 const & position
 			, Camera const & camera
 			, float zoomPercent
@@ -150,7 +152,8 @@ namespace render
 		*\return
 		*	La couleur de la sélection.
 		*/
-		Pixel doFboPick( renderer::RenderingResources const & resources
+		Pixel doFboPick( renderer::CommandBuffer const & commandBuffer
+			, renderer::Queue const & queue
 			, utils::IVec2 const & position
 			, Camera const & camera
 			, float zoomPercent
@@ -209,16 +212,24 @@ namespace render
 		static utils::IVec2 doUnpackObjectPixel( Pixel pixel );
 
 	private:
+		//! La passe de rendu de picking.
+		renderer::RenderPassPtr m_renderPass;
 		//! Le renderer.
 		PickingRenderer m_renderer;
 		//! Les dimensions de l'image.
 		utils::IVec2 m_size;
 		//! La texture recevant le rendu couleur.
 		renderer::TexturePtr m_colour;
-		//! Le tampon recevant le rendu profondeur.
-		renderer::RenderBufferPtr m_depth;
+		//! La texture recevant le rendu profondeur.
+		renderer::TexturePtr m_depth;
 		//! Le tampon d'image.
-		renderer::FrameBufferPtr m_fbo;
+		renderer::FrameBufferPtr m_frameBuffer;
+		//! Le tampon de transfert.
+		renderer::StagingBufferPtr m_stagingBuffer;
+		//! Le pool de tampon de commandes.
+		renderer::CommandPoolPtr m_commandPool;
+		//! Le tampon de commandes.
+		renderer::CommandBufferPtr m_commandBuffer;
 		//! Le tampon dans lequel on va recevoir l'image.
 		mutable PixelArray m_buffer;
 	};

@@ -16,6 +16,7 @@ file( GLOB ${PROJECT_NAME}_HDR_FILES
 
 include_directories(
 	${CMAKE_SOURCE_DIR}
+	${CMAKE_BINARY_DIR}/Renderer
 	${CMAKE_SOURCE_DIR}/FreeType/include
 	${CMAKE_SOURCE_DIR}/FreeType/include/freetype
 )
@@ -39,4 +40,5 @@ add_dependencies( ${PROJECT_NAME}
 	FreeType
 )
 
+set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Main" )

@@ -10,6 +10,8 @@
 
 #include "RenderLibPrerequisites.h"
 
+#include <Renderer/RenderPass.hpp>
+
 namespace render
 {
 	/**
@@ -30,7 +32,8 @@ namespace render
 		*\param[in] format
 		*	Le format des pixels de la texture recevant le rendu.
 		*/
-		RenderTarget( utils::IVec2 const & dimensions
+		RenderTarget( renderer::Device const & device
+			, utils::IVec2 const & dimensions
 			, utils::PixelFormat format );
 		/**
 		*\brief
@@ -41,13 +44,13 @@ namespace render
 		*\brief
 		*	Dessine la scène dans le frame buffer de la cible de rendu.
 		*/
-		void drawScene( renderer::RenderingResources const & resources
+		void drawScene( renderer::CommandBuffer const & commandBuffer
 			, Scene const & scene )const noexcept;
 		/**
 		*\return
 		*	Les dimensions de la cible.
 		*/
-		inline utils::IVec2 const & dimensions()const noexcept
+		inline utils::IVec2 const & getDimensions()const noexcept
 		{
 			return m_size;
 		}
@@ -55,21 +58,43 @@ namespace render
 		*\return
 		*	La texture de couleurs.
 		*/
-		inline renderer::Texture const & texture()const noexcept
+		inline renderer::Texture const & getTexture()const noexcept
 		{
 			assert( m_colour != nullptr );
 			return *m_colour;
+		}
+		/**
+		*\return
+		*	La texture de couleurs.
+		*/
+		inline renderer::RenderPass const & getRenderPass()const noexcept
+		{
+			assert( m_renderPass != nullptr );
+			return *m_renderPass;
+		}
+		/**
+		*\return
+		*	Le tampon d'images.
+		*/
+		inline renderer::FrameBuffer const & getFrameBuffer()const noexcept
+		{
+			assert( m_framebuffer != nullptr );
+			return *m_framebuffer;
 		}
 
 	private:
 		//! Les dimensions de la cible.
 		utils::IVec2 m_size;
-		//! Le frame buffer de la cible.
-		renderer::FrameBufferPtr m_framebuffer;
+		//! La passe de rendu.
+		renderer::RenderPassPtr m_renderPass;
 		//! La texture recevant le rendu couleurs.
 		renderer::TexturePtr m_colour;
 		//! Le tampon de rendu recevant la profondeur.
-		renderer::RenderBufferPtr m_depth;
+		renderer::TexturePtr m_depth;
+		//! Le frame buffer de la cible.
+		renderer::FrameBufferPtr m_framebuffer;
+		//! Le tampon de transfert.
+		renderer::StagingBufferPtr m_stagingBuffer;
 	};
 }
 

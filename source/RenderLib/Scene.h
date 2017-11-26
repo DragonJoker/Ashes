@@ -45,6 +45,7 @@ namespace render
 		*	La taille initiale de la zone de rendu.
 		*/
 		Scene( renderer::Device const & device
+			, renderer::RenderPass const & renderPass
 			, utils::IVec2 const & size );
 		/**
 		*\brief

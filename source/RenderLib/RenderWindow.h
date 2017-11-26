@@ -16,6 +16,8 @@
 #include "Scene.h"
 
 #include <Renderer/Attribute.hpp>
+#include <Renderer/CommandBuffer.hpp>
+#include <Renderer/CommandPool.hpp>
 #include <Renderer/DescriptorSet.hpp>
 #include <Renderer/DescriptorSetLayout.hpp>
 #include <Renderer/DescriptorSetPool.hpp>
@@ -198,15 +200,25 @@ namespace render
 		*\brief
 		*	Dessine une texture dans le backbuffer.
 		*/
-		void doRenderTextureToScreen( renderer::RenderingResources const & resources
-			, renderer::Texture const & texture )const noexcept;
+		void doPrepareCommandBuffer( uint32_t index
+			, renderer::Texture const & texture )const;
 
 	private:
 		//! La swap chain.
 		renderer::Device const & m_device;
 		//! La swap chain.
 		renderer::SwapChainPtr m_swapChain;
-		//! La swap chain.
+		//! La passe de rendu de picking.
+		renderer::RenderPassPtr m_renderPass;
+		//! Les tampons d'image de la swap chain.
+		std::vector< renderer::FrameBufferPtr > m_frameBuffers;
+		//! Les tampons de commandes, un par back buffer de la swap chain.
+		std::vector< renderer::CommandBufferPtr > m_commandBuffers;
+		//! Le pool de tampons de commandes de dessin de la scène.
+		renderer::CommandPoolPtr m_drawCommandPool;
+		//! Le tampons de commandes de dessin de la scène.
+		renderer::CommandBufferPtr m_drawCommandBuffer;
+		//! Le tampon de transfert.
 		renderer::StagingBuffer m_stagingBuffer;
 		//! Le layout des descripteurs de rendu dans la fenêtre.
 		renderer::DescriptorSetLayout m_descriptorLayout;
@@ -228,8 +240,9 @@ namespace render
 		renderer::VertexBufferPtr< Vertex > m_vbo;
 		//! Le layout de sommets du tampon.
 		renderer::VertexLayoutPtr m_layout;
-		//! La variable uniforme contenant la texture de la cible.
+		//! Le pool de descripteurs.
 		renderer::DescriptorSetPool m_descriptorPool;
+		//! Le set de descripteurs.
 		renderer::DescriptorSet m_descriptor;
 		//! Le viewport du rendu dans la fenêtre.
 		Viewport m_viewport;
@@ -243,7 +256,6 @@ namespace render
 		mutable bool m_pick{ false };
 		//! Les informations de débogage.
 		Debug m_debug;
-		renderer::RenderingResources * m_resources{ nullptr };
 		bool m_vboInitialised{ false };
 	};
 }

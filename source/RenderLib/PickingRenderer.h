@@ -107,6 +107,7 @@ namespace render
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
 			ObjectNode( renderer::Device const & device
+				, renderer::RenderPass const & renderPass
 				, renderer::DescriptorSetLayout && layout
 				, renderer::ShaderProgramPtr && program );
 			//! Le layout du pipeline.
@@ -138,6 +139,7 @@ namespace render
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
 			BillboardNode( renderer::Device const & device
+				, renderer::RenderPass const & renderPass
 				, renderer::DescriptorSetLayout && layout
 				, renderer::ShaderProgramPtr && program );
 			//! L'UBO contenant les variables liées au billboard.
@@ -159,7 +161,8 @@ namespace render
 		*\brief
 		*	Constructeur.
 		*/
-		PickingRenderer( renderer::Device const & device );
+		PickingRenderer( renderer::Device const & device
+			, renderer::RenderPass const & renderPass );
 		/**
 		*\brief
 		*	Crée tous les noeuds de rendu.
@@ -215,6 +218,7 @@ namespace render
 
 	private:
 		renderer::Device const & m_device;
+		renderer::RenderPass const & m_renderPass;
 		ObjectNodeArray m_objectNodes;
 		BillboardNodeArray m_billboardNodes;
 		utils::Range< float > m_billboardScale{ utils::makeRange( 1.0f, 20.0f ) };

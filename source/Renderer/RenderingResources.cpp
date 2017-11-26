@@ -11,7 +11,7 @@ namespace renderer
 {
 	RenderingResources::RenderingResources( Device const & device )
 		: m_device{ device }
-		, m_commandBuffer{ m_device, m_device.getDevice().getGraphicsCommandPool() }
+		, m_commandBuffer{ m_device, m_device.getGraphicsCommandPool() }
 		, m_imageAvailableSemaphore{ std::make_unique< Semaphore >( m_device ) }
 		, m_finishedRenderingSemaphore{ std::make_unique< Semaphore >( m_device ) }
 		, m_fence{ m_device, FenceCreateFlag::eSignaled }

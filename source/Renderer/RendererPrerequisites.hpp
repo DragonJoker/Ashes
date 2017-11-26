@@ -12,11 +12,14 @@
 #include "BufferTarget.hpp"
 #include "CommandBufferResetFlag.hpp"
 #include "CommandBufferUsageFlag.hpp"
+#include "CommandPoolCreateFlag.hpp"
 #include "DescriptorType.hpp"
 #include "FenceCreateFlag.hpp"
 #include "Filter.hpp"
 #include "ImageAspectFlag.hpp"
 #include "ImageLayout.hpp"
+#include "ImageTiling.hpp"
+#include "ImageUsageFlag.hpp"
 #include "IndexType.hpp"
 #include "MemoryMapFlag.hpp"
 #include "MemoryPropertyFlag.hpp"
@@ -53,6 +56,7 @@ namespace renderer
 	class BackBuffer;
 	class BufferMemoryBarrier;
 	class CommandBuffer;
+	class CommandPool;
 	class Connection;
 	class DescriptorSet;
 	class DescriptorSetLayout;
@@ -65,6 +69,7 @@ namespace renderer
 	class ImageSubresourceRange;
 	class Pipeline;
 	class PipelineLayout;
+	class Queue;
 	class RenderBuffer;
 	class Renderer;
 	class RenderingResources;
@@ -112,6 +117,7 @@ namespace renderer
 	using UniformBufferPtr = std::unique_ptr< UniformBuffer< T > >;
 
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
+	using CommandPoolPtr = std::unique_ptr< CommandPool >;
 	using DescriptorSetLayoutPtr = std::unique_ptr< DescriptorSetLayout >;
 	using DescriptorSetPoolPtr = std::unique_ptr< DescriptorSetPool >;
 	using DescriptorSetPtr = std::unique_ptr< DescriptorSet >;
@@ -136,6 +142,7 @@ namespace renderer
 	using CommandBufferPtrArray = std::vector< CommandBufferPtr >;
 
 	using PipelineStageFlagsArray = std::vector< PipelineStageFlags >;
+	using RenderSubpassArray = std::vector< RenderSubpass >;
 
 	using CommandBufferCRef = std::reference_wrapper< CommandBuffer const >;
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;

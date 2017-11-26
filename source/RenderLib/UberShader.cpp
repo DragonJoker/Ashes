@@ -333,7 +333,7 @@ void main()
 			std::string getDefines( TextureFlags textures )
 			{
 				std::string ret;
-				ret += "#version 300 es\n";
+				ret += "#version 310 es\n";
 				ret += "precision highp float;\n";
 
 				if ( textures )
@@ -738,7 +738,7 @@ void main()
 				, OpacityType opacity )
 			{
 				std::string ret;
-				ret += "#version 300 es\n";
+				ret += "#version 310 es\n";
 				ret += "precision highp float;\n";
 				ret += getTextureDefines( textures );
 				ret += getOpacityDefines( opacity );
@@ -850,7 +850,7 @@ void main()
 
 		auto program = std::make_unique< renderer::ShaderProgram >( device );
 		program->createModule( vtx, renderer::ShaderStageFlag::eVertex );
-		program->createModule( pxl, renderer::ShaderStageFlag::eVertex );
+		program->createModule( pxl, renderer::ShaderStageFlag::eFragment );
 		return program;
 	}
 

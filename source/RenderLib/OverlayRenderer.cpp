@@ -77,21 +77,22 @@ namespace render
 			return result;
 		}
 
-		OverlayNodeArray doCreatePanelNodes( renderer::Device const & device )
+		OverlayNodeArray doCreatePanelNodes( renderer::Device const & device
+			, renderer::RenderPass const & renderPass )
 		{
 			return
 			{
 				{
-					OverlayNode{ device, false, OpacityType::eOpaque, TextureFlag::eNone },
-					OverlayNode{ device, false, OpacityType::eOpaque, TextureFlag::eDiffuse },
-					OverlayNode{ device, false, OpacityType::eAlphaBlend, TextureFlag::eNone },
-					OverlayNode{ device, false, OpacityType::eAlphaBlend, TextureFlag::eDiffuse },
-					OverlayNode{ device, false, OpacityType::eAlphaBlend, TextureFlag::eOpacity },
-					OverlayNode{ device, false, OpacityType::eAlphaBlend, TextureFlag::eDiffuse | TextureFlag::eOpacity },
-					OverlayNode{ device, false, OpacityType::eAlphaTest, TextureFlag::eNone },
-					OverlayNode{ device, false, OpacityType::eAlphaTest, TextureFlag::eDiffuse },
-					OverlayNode{ device, false, OpacityType::eAlphaTest, TextureFlag::eOpacity },
-					OverlayNode{ device, false, OpacityType::eAlphaTest, TextureFlag::eDiffuse | TextureFlag::eOpacity },
+					OverlayNode{ device, renderPass, false, OpacityType::eOpaque, TextureFlag::eNone },
+					OverlayNode{ device, renderPass, false, OpacityType::eOpaque, TextureFlag::eDiffuse },
+					OverlayNode{ device, renderPass, false, OpacityType::eAlphaBlend, TextureFlag::eNone },
+					OverlayNode{ device, renderPass, false, OpacityType::eAlphaBlend, TextureFlag::eDiffuse },
+					OverlayNode{ device, renderPass, false, OpacityType::eAlphaBlend, TextureFlag::eOpacity },
+					OverlayNode{ device, renderPass, false, OpacityType::eAlphaBlend, TextureFlag::eDiffuse | TextureFlag::eOpacity },
+					OverlayNode{ device, renderPass, false, OpacityType::eAlphaTest, TextureFlag::eNone },
+					OverlayNode{ device, renderPass, false, OpacityType::eAlphaTest, TextureFlag::eDiffuse },
+					OverlayNode{ device, renderPass, false, OpacityType::eAlphaTest, TextureFlag::eOpacity },
+					OverlayNode{ device, renderPass, false, OpacityType::eAlphaTest, TextureFlag::eDiffuse | TextureFlag::eOpacity },
 				}
 			};
 		}
@@ -189,6 +190,7 @@ namespace render
 	//*************************************************************************
 
 	OverlayNode::OverlayNode( renderer::Device const & device
+		, renderer::RenderPass const & renderPass
 		, bool text
 		, OpacityType opacity
 		, TextureFlags textures )
@@ -206,18 +208,15 @@ namespace render
 		, m_uboDescriptorPool{ m_uboDescriptorLayout }
 		, m_uboDescriptor{ m_uboDescriptorPool }
 	{
-		//m_pipeline = std::make_shared< renderer::Pipeline >( device
-		//	, m_pipelineLayout
-		//	, *m_program
-		//	, { m_posLayout, m_nmlLayout, m_texLayout }
-		//	, vk::RenderPass{ resources.getDevice()
-		//		, { VK_FORMAT_R8G8B8A8_UNORM }
-		//		, {}
-		//		, vk::RenderPassState{}
-		//		, vk::RenderPassState{}
-		//		, true
-		//		, VK_SAMPLE_COUNT_32_BIT }
-		//	, renderer::PrimitiveTopology::eTriangleFan );
+		m_pipeline = std::make_shared< renderer::Pipeline >( device
+			, m_pipelineLayout
+			, *m_program
+			, renderer::VertexLayoutCRefArray
+			{
+				m_layout
+			}
+			, renderPass
+			, renderer::PrimitiveTopology::eTriangleFan );
 
 		m_layout.createAttribute< utils::Vec2 >( 0u
 			, offsetof( TextOverlay::Vertex, position ) );
@@ -237,10 +236,12 @@ namespace render
 	//*************************************************************************
 
 	OverlayRenderer::OverlayRenderer( renderer::Device const & device
+		, renderer::RenderPass const & renderPass
 		, uint32_t maxCharsPerBuffer )
 		: m_device{ device }
-		, m_panelNodes{ doCreatePanelNodes( device ) }
-		, m_textNode{ device, true, OpacityType::eAlphaTest, TextureFlag::eOpacity }
+		, m_renderPass{ renderPass }
+		, m_panelNodes{ doCreatePanelNodes( device, renderPass ) }
+		, m_textNode{ device, renderPass, true, OpacityType::eAlphaTest, TextureFlag::eOpacity }
 		, m_panelBuffer{ renderer::makeVertexBuffer< Overlay::Quad >( device
 			, 0u
 			, uint32_t( 1u * sizeof( Overlay::Quad ) )

@@ -157,13 +157,6 @@ namespace renderer
 	void ShaderProgram::createModule( std::string const & shader
 		, ShaderStageFlag stage )
 	{
-		static bool glslangInit{ false };
-
-		if ( !glslangInit )
-		{
-			glslang::InitializeProcess();
-		}
-
 		TBuiltInResource resources;
 		doInitResources( resources );
 

@@ -27,6 +27,7 @@ if ( ANDROID OR CMAKE_COMPILER_IS_GNUCXX )
 elseif ( MSVC )
   add_definitions(
 		-D_CRT_SECURE_NO_WARNINGS
+		-D_ENFORCE_MATCHING_ALLOCATORS=0
 	)
 endif ()
 

@@ -14,8 +14,10 @@ namespace renderer
 		: m_device{ renderer.getInstance()
 			, renderer.getPhysicalDevice()
 			, std::move( connection.getConnection() ) }
-		, m_graphicsQueue{ m_device.getGraphicsQueue() }
 		, m_presentQueue{ m_device.getPresentQueue() }
+		, m_graphicsQueue{ m_device.getGraphicsQueue() }
+		, m_presentCommandPool{ *this, m_device.getPresentCommandPool() }
+		, m_graphicsCommandPool{ *this, m_device.getGraphicsCommandPool() }
 	{
 	}
 

@@ -205,8 +205,10 @@ namespace vkapp
 			, std::cerr );
 		m_clog = new LogStreambuf< DebugLogStreambufTraits >( "Tutorial 07"
 			, std::clog );
+
 #if !defined( NDEBUG )
 #	if defined( _WIN32 )
+
 		if ( ::AllocConsole() )
 		{
 			m_allocated = true;
@@ -225,8 +227,10 @@ namespace vkapp
 				freopen_s( &dump, "conout$", "w", stderr );
 			}
 		}
+
 #	endif
 #endif
+
 		wxInitAllImageHandlers();
 		bool result = false;
 
@@ -247,14 +251,18 @@ namespace vkapp
 	int App::OnExit()
 	{
 		wxImage::CleanUpHandlers();
+
 #if !defined( NDEBUG )
 #	if defined( _WIN32 )
+
 		if ( m_allocated )
 		{
 			::FreeConsole();
 		}
+
 #	endif
 #endif
+
 		delete m_cout;
 		delete m_cerr;
 		delete m_clog;

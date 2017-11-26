@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "FrameBuffer.hpp"
 
+#include "Queue.hpp"
 #include "RenderPass.hpp"
 #include "Texture.hpp"
 
@@ -40,5 +41,24 @@ namespace renderer
 	FrameBuffer::FrameBuffer( vk::FrameBufferPtr && frameBuffer )
 		: m_frameBuffer{ std::move( frameBuffer ) }
 	{
+	}
+
+	void FrameBuffer::download( Queue const & queue
+		, uint32_t index
+		, uint32_t xoffset
+		, uint32_t yoffset
+		, uint32_t width
+		, uint32_t height
+		, utils::PixelFormat format
+		, uint8_t * data )const noexcept
+	{
+		m_frameBuffer->download( queue.getQueue()
+			, index
+			, xoffset
+			, yoffset
+			, width
+			, height
+			, convert( format )
+			, data );
 	}
 }

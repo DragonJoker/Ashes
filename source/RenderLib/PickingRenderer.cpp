@@ -14,7 +14,7 @@
 #include <Renderer/DescriptorSetPool.hpp>
 #include <Renderer/PipelineLayout.hpp>
 #include <Renderer/RenderingResources.hpp>
-//#include <Renderer/RenderPass.hpp>
+#include <Renderer/RenderPass.hpp>
 #include <Renderer/StagingBuffer.hpp>
 #include <Renderer/VertexLayout.hpp>
 
@@ -82,6 +82,7 @@ namespace render
 	//*************************************************************************
 
 	PickingRenderer::ObjectNode::ObjectNode( renderer::Device const & device
+		, renderer::RenderPass const & renderPass
 		, renderer::DescriptorSetLayout && layout
 		, renderer::ShaderProgramPtr && program )
 		: RenderNode{ device, std::move( layout ), std::move( program ) }
@@ -90,18 +91,17 @@ namespace render
 		, m_nmlLayout{ 1u }
 		, m_texLayout{ 2u }
 	{
-		//m_pipeline = std::make_shared< renderer::Pipeline >( device
-		//	, m_pipelineLayout
-		//	, *m_program
-		//	, { m_posLayout, m_nmlLayout, m_texLayout }
-		//	, vk::RenderPass{ resources.getDevice()
-		//		, { VK_FORMAT_R8G8B8A8_UNORM }
-		//		, {}
-		//		, vk::RenderPassState{}
-		//		, vk::RenderPassState{}
-		//		, true
-		//		, VK_SAMPLE_COUNT_32_BIT }
-		//	, renderer::PrimitiveTopology::eTriangleList );
+		m_pipeline = std::make_shared< renderer::Pipeline >( device
+			, m_pipelineLayout
+			, *m_program
+			, renderer::VertexLayoutCRefArray
+			{
+				m_posLayout,
+				m_nmlLayout,
+				m_texLayout
+			}
+			, renderPass
+			, renderer::PrimitiveTopology::eTriangleList );
 		m_posLayout.createAttribute< utils::Vec3 >( 0u, 0u );
 		m_nmlLayout.createAttribute< utils::Vec3 >( 1u, 0u );
 		m_texLayout.createAttribute< utils::Vec2 >( 2u, 0u );
@@ -110,6 +110,7 @@ namespace render
 	//*************************************************************************
 
 	PickingRenderer::BillboardNode::BillboardNode( renderer::Device const & device
+		, renderer::RenderPass const & renderPass
 		, renderer::DescriptorSetLayout && layout
 		, renderer::ShaderProgramPtr && program )
 		: RenderNode{ device, std::move( layout ), std::move( program ) }
@@ -120,18 +121,15 @@ namespace render
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal }
 	{
-		//m_pipeline = std::make_shared< renderer::Pipeline >( device
-		//	, m_pipelineLayout
-		//	, *m_program
-		//	, { m_posLayout, m_nmlLayout, m_texLayout }
-		//	, vk::RenderPass{ resources.getDevice()
-		//		, { VK_FORMAT_R8G8B8A8_UNORM }
-		//		, {}
-		//		, vk::RenderPassState{}
-		//		, vk::RenderPassState{}
-		//		, true
-		//		, VK_SAMPLE_COUNT_32_BIT }
-		//	, renderer::PrimitiveTopology::eTriangleFan );
+		m_pipeline = std::make_shared< renderer::Pipeline >( device
+			, m_pipelineLayout
+			, *m_program
+			, renderer::VertexLayoutCRefArray
+			{
+				m_layout,
+			}
+			, renderPass
+			, renderer::PrimitiveTopology::eTriangleFan );
 		m_layout.createAttribute< utils::Vec3 >( 0u
 			, offsetof( BillboardData, center ) );
 		m_layout.createAttribute< utils::Vec2 >( 1u
@@ -148,8 +146,10 @@ namespace render
 
 	//*************************************************************************
 
-	PickingRenderer::PickingRenderer( renderer::Device const & device )
+	PickingRenderer::PickingRenderer( renderer::Device const & device
+		, renderer::RenderPass const & renderPass )
 		: m_device{ device }
+		, m_renderPass{ renderPass }
 	{
 	}
 
@@ -159,6 +159,7 @@ namespace render
 		for ( auto & node : m_objectNodes )
 		{
 			node = std::make_unique< ObjectNode >( m_device
+				, m_renderPass
 				, doCreateUboDescriptorLayout( m_device
 					, ObjectType::eObject )
 				, UberShader::createShaderProgram( m_device
@@ -173,6 +174,7 @@ namespace render
 		for ( auto & node : m_billboardNodes )
 		{
 			node = std::make_unique< BillboardNode >( m_device
+				, m_renderPass
 				, doCreateUboDescriptorLayout( m_device
 					, ObjectType::eBillboard )
 				, UberShader::createShaderProgram( m_device
@@ -350,6 +352,7 @@ namespace render
 			//node.m_scale->value( m_objectScale.value( zoomPercent ) );
 			node.m_pickUbo.getData().drawIndex = ObjectMask | int( type );
 			commandBuffer.bindPipeline( *node.m_pipeline );
+			commandBuffer.setViewport( camera.viewport().viewport() );
 			uint32_t id{ 0u };
 
 			for ( auto & object : objects )
@@ -410,6 +413,7 @@ namespace render
 				, renderer::PipelineStageFlag::eFragmentShader );
 			node.m_pickUbo.getData().drawIndex = ObjectMask | int( type );
 			commandBuffer.bindPipeline( *node.m_pipeline );
+			commandBuffer.setViewport( camera.viewport().viewport() );
 			uint32_t id{ 0u };
 			commandBuffer.bindDescriptorSet( node.m_uboDescriptor
 				, node.m_pipelineLayout );
