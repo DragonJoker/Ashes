@@ -1,5 +1,5 @@
 /*
-This file belongs to VkLib.
+This file belongs to Renderer.
 See LICENSE file in root folder.
 */
 #include "RenderPassState.hpp"

@@ -13,6 +13,7 @@
 #include <Renderer/Device.hpp>
 #include <Renderer/FrameBuffer.hpp>
 #include <Renderer/ImageMemoryBarrier.hpp>
+#include <Renderer/MultisampleState.hpp>
 #include <Renderer/Queue.hpp>
 #include <Renderer/RenderPass.hpp>
 #include <Renderer/RenderPassState.hpp>
@@ -355,6 +356,8 @@ namespace vkapp
 			, std::vector< std::reference_wrapper< renderer::VertexLayout const > >{ { std::ref( m_vertexBuffer->getLayout() ) } }
 			, *m_renderPass
 			, renderer::PrimitiveTopology::eTriangleStrip );
+		m_pipeline->multisampleState( renderer::MultisampleState{} )
+			.finish();
 	}
 
 	void RenderPanel::doPrepareFrames()

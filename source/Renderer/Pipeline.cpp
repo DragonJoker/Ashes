@@ -1,11 +1,14 @@
 #include "Pipeline.hpp"
 
+#include "DepthStencilState.hpp"
 #include "Device.hpp"
+#include "MultisampleState.hpp"
 #include "PipelineLayout.hpp"
 #include "RenderingResources.hpp"
 #include "RenderPass.hpp"
 #include "Scissor.hpp"
 #include "ShaderProgram.hpp"
+#include "TessellationState.hpp"
 #include "VertexLayout.hpp"
 #include "Viewport.hpp"
 
@@ -34,30 +37,52 @@ namespace renderer
 		, ShaderProgram const & program
 		, VertexLayoutCRefArray const & vertexLayouts
 		, RenderPass const & renderPass
-		, PrimitiveTopology topology )
+		, PrimitiveTopology topology
+		, RasterisationState const & rasterisationState
+		, ColourBlendState const & colourBlendState )
 		: m_pipeline{ device.getDevice().createPipeline( layout.getLayout()
 			, program.getProgram()
 			, convert( vertexLayouts )
 			, renderPass.getRenderPass()
-			, convert( topology ) ) }
+			, convert( topology )
+			, rasterisationState.getState()
+			, colourBlendState.getState() ) }
 	{
 	}
 
-	Pipeline::Pipeline( Device const & device
-		, PipelineLayout const & layout
-		, ShaderProgram const & program
-		, VertexLayoutCRefArray const & vertexLayouts
-		, Viewport const & viewport
-		, Scissor const & scissor
-		, RenderPass const & renderPass
-		, PrimitiveTopology topology )
-		: m_pipeline{ device.getDevice().createPipeline( layout.getLayout()
-			, program.getProgram()
-			, convert( vertexLayouts )
-			, viewport.getViewport()
-			, scissor.getScissor()
-			, renderPass.getRenderPass()
-			, convert( topology ) ) }
+	Pipeline & Pipeline::finish()
 	{
+		m_pipeline->finish();
+		return *this;
+	}
+
+	Pipeline & Pipeline::multisampleState( MultisampleState const & state )
+	{
+		m_pipeline->multisampleState( state.getState() );
+		return *this;
+	}
+
+	inline Pipeline & Pipeline::depthStencilState( DepthStencilState const & state )
+	{
+		m_pipeline->depthStencilState( state.getState() );
+		return *this;
+	}
+
+	inline Pipeline & Pipeline::tessellationState( TessellationState const & state )
+	{
+		m_pipeline->tessellationState( state.getState() );
+		return *this;
+	}
+
+	inline Pipeline & Pipeline::viewport( Viewport const & viewport )
+	{
+		m_pipeline->viewport( viewport.getViewport() );
+		return *this;
+	}
+
+	inline Pipeline & Pipeline::scissor( Scissor const & scissor )
+	{
+		m_pipeline->scissor( scissor.getScissor() );
+		return *this;
 	}
 }

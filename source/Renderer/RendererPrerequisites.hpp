@@ -9,27 +9,40 @@
 #include "Config.hpp"
 
 #include "AccessFlag.hpp"
+#include "BlendFactor.hpp"
+#include "BlendOp.hpp"
 #include "BufferTarget.hpp"
+#include "ColourComponentFlag.hpp"
 #include "CommandBufferResetFlag.hpp"
 #include "CommandBufferUsageFlag.hpp"
 #include "CommandPoolCreateFlag.hpp"
+#include "CompareOp.hpp"
+#include "CullModeFlag.hpp"
+#include "DepthStencilStateFlag.hpp"
 #include "DescriptorType.hpp"
 #include "FenceCreateFlag.hpp"
 #include "Filter.hpp"
+#include "FrontFace.hpp"
 #include "ImageAspectFlag.hpp"
 #include "ImageLayout.hpp"
 #include "ImageTiling.hpp"
 #include "ImageUsageFlag.hpp"
 #include "IndexType.hpp"
+#include "LogicOp.hpp"
 #include "MemoryMapFlag.hpp"
 #include "MemoryPropertyFlag.hpp"
 #include "MipmapMode.hpp"
+#include "MultisampleStateFlag.hpp"
 #include "PipelineBindPoint.hpp"
 #include "PipelineStageFlag.hpp"
 #include "PixelFormat.hpp"
+#include "PolygonMode.hpp"
 #include "PrimitiveTopology.hpp"
+#include "RasterisationStateFlag.hpp"
 #include "SampleCountFlag.hpp"
 #include "ShaderStageFlag.hpp"
+#include "StencilOp.hpp"
+#include "TessellationStateFlag.hpp"
 #include "WrapMode.hpp"
 
 #include <cassert>
@@ -55,9 +68,12 @@ namespace renderer
 
 	class BackBuffer;
 	class BufferMemoryBarrier;
+	class ColourBlendState;
+	class ColourBlendStateAttachment;
 	class CommandBuffer;
 	class CommandPool;
 	class Connection;
+	class DepthStencilState;
 	class DescriptorSet;
 	class DescriptorSetLayout;
 	class DescriptorSetLayoutBinding;
@@ -67,9 +83,11 @@ namespace renderer
 	class FrameBuffer;
 	class ImageMemoryBarrier;
 	class ImageSubresourceRange;
+	class MultisampleState;
 	class Pipeline;
 	class PipelineLayout;
 	class Queue;
+	class RasterisationState;
 	class RenderBuffer;
 	class Renderer;
 	class RenderingResources;
@@ -82,7 +100,9 @@ namespace renderer
 	class Scissor;
 	class ShaderProgram;
 	class StagingBuffer;
+	class StencilOpState;
 	class SwapChain;
+	class TessellationState;
 	class Texture;
 	class VertexBufferBase;
 	class VertexLayout;
