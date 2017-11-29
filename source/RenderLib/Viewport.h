@@ -8,6 +8,7 @@
 #define ___RenderLib_Viewport_HPP___
 #pragma once
 
+#include <Renderer/Scissor.hpp>
 #include <Renderer/Viewport.hpp>
 
 #include <Utils/Angle.hpp>
@@ -102,6 +103,14 @@ namespace render
 		{
 			return m_viewport;
 		}
+		/**
+		*\return
+		*	Le scissor du renderer.
+		*/
+		inline renderer::Scissor const & scissor()const noexcept
+		{
+			return m_scissor;
+		}
 
 	private:
 		//! Les dimensions du viewport.
@@ -112,6 +121,8 @@ namespace render
 		utils::Angle m_fovy;
 		//! Le viewport du renderer.
 		renderer::Viewport m_viewport;
+		//! Le scissor du renderer.
+		renderer::Scissor m_scissor;
 		//! Dit si le viewport a changé.
 		mutable bool m_changed{ true };
 	};

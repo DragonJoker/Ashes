@@ -33,6 +33,10 @@ namespace render
 			, m_size
 			, data
 			, stagingBuffer
-			, commandBuffer );
+			, commandBuffer
+			, renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
+			, m_format == utils::PixelFormat::eR8G8B8
+				? renderer::ImageTiling::eLinear
+				: renderer::ImageTiling::eOptimal );
 	}
 }

@@ -40,4 +40,9 @@ namespace renderer
 
 		return result;
 	}
+
+	void Device::waitIdle()const
+	{
+		m_device.waitIdle();
+	}
 }

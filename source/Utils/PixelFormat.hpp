@@ -32,6 +32,8 @@ namespace utils
 		eRGBA4444,
 		//! Profondeur en 16 bits (pour les render buffers uniquement).
 		eD16,
+		//! Profondeur en 24 bits, stencil en 8 bits (pour les render buffers uniquement).
+		eD24S8,
 		//! Stencil en 8 bits (pour les render buffers uniquement).
 		eS8,
 	};

@@ -6,19 +6,16 @@ namespace render
 	PanelOverlay::PanelOverlay()
 		: Overlay( Overlay::Type::ePanel )
 	{
-		m_panelQuads.resize( 1 );
 	}
 
 	PanelOverlay::~PanelOverlay()
 	{
 	}
 
-	void PanelOverlay::render( renderer::StagingBuffer const & stagingBuffer
-		, renderer::CommandBuffer const & commandBuffer
-		, OverlayRenderer & renderer )const
+	void PanelOverlay::render( renderer::CommandBuffer const & commandBuffer
+		, OverlayRenderer const & renderer )const
 	{
-		renderer.drawPanel( stagingBuffer
-			, commandBuffer
+		renderer.drawPanel( commandBuffer
 			, *this );
 	}
 
@@ -45,12 +42,11 @@ namespace render
 		Overlay::Vertex vertex4 = { { centerR, centerB }, { m_uv.z, m_uv.y } };
 		Overlay::Vertex vertex5 = { { centerR, centerT }, { m_uv.z, m_uv.w } };
 
-		auto & quad = m_panelQuads[0];
-		quad[0] = vertex0;
-		quad[1] = vertex1;
-		quad[2] = vertex2;
-		quad[3] = vertex3;
-		quad[4] = vertex4;
-		quad[5] = vertex5;
+		m_quad[0] = vertex0;
+		m_quad[1] = vertex1;
+		m_quad[2] = vertex2;
+		m_quad[3] = vertex3;
+		m_quad[4] = vertex4;
+		m_quad[5] = vertex5;
 	}
 }

@@ -38,12 +38,15 @@ void Engine::onDraw()
 {
 	if ( m_window )
 	{
+		auto start = std::chrono::high_resolution_clock::now();
 		m_window->beginFrame();
 		m_window->update();
 		m_window->updateOverlays();
+		m_window->updateUbos();
 		m_window->draw();
-		doSwapBuffers();
 		m_window->endFrame();
+		auto end = std::chrono::high_resolution_clock::now();
+		doUpdateFps( std::chrono::duration_cast< std::chrono::microseconds >( end - start ) );
 	}
 }
 
@@ -170,7 +173,7 @@ void Engine::doInitialise3DElements()
 		object->moveTo( utils::Vec3{ 0.0, 0.0, 52.0 } );
 		scene.add( object );
 	}
-
+/*
 	auto texture = scene.textures().findElement( "texture.bmp" );
 
 	if ( !texture )
@@ -212,7 +215,7 @@ void Engine::doInitialise3DElements()
 
 	auto billboardMat = std::make_shared< render::Material >();
 	billboardMat->diffuseMap( texture );
-	billboardMat->opacityMap( opacity );
+	//billboardMat->opacityMap( opacity );
 	billboardMat->ambient( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
 	billboardMat->diffuse( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
 	billboardMat->emissive( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
@@ -275,7 +278,7 @@ void Engine::doInitialise3DElements()
 	lines->moveTo( utils::Vec3{ 0, 0, 50 } );
 	lines->material( linesMat );
 	scene.add( lines );
-
+*/
 	{
 		auto content = utils::getFileBinaryContent( "arial.ttf" );
 		render::FontPtr font = std::make_unique< render::Font >( "Arial", 32u );
@@ -293,7 +296,7 @@ void Engine::doInitialise3DElements()
 	overlay->material( coinMat );
 	overlay->caption( "coin !!" );
 	overlay->fontTexture( *m_fontTexture );
-	scene.overlays().addElement( "coin", overlay );
+	scene.addOverlay( "coin", overlay );
 
 	auto glopMat = doCreateOverlayMaterial( "glop", renderer::RgbColour{ 1, 0, 0 }, 1 );
 	overlay = std::make_shared< render::TextOverlay >();
@@ -301,20 +304,20 @@ void Engine::doInitialise3DElements()
 	overlay->material( glopMat );
 	overlay->caption( "glop !!" );
 	overlay->fontTexture( *m_fontTexture );
-	scene.overlays().addElement( "glop", overlay );
+	scene.addOverlay( "glop", overlay );
 
-	m_onObjectPicked = m_window->picking().onObjectPicked.connect
-		( std::bind( &Engine::onObjectPicked
-			, this
-			, std::placeholders::_1 ) );
-	m_onBillboardPicked = m_window->picking().onBillboardPicked.connect
-		( std::bind( &Engine::onBillboardPicked
-			, this
-			, std::placeholders::_1
-			, std::placeholders::_2 ) );
-	m_onUnpick = m_window->picking().onUnpick.connect
-		( std::bind( &Engine::onUnpick
-			, this ) );
+	//m_onObjectPicked = m_window->picking().onObjectPicked.connect
+	//	( std::bind( &Engine::onObjectPicked
+	//		, this
+	//		, std::placeholders::_1 ) );
+	//m_onBillboardPicked = m_window->picking().onBillboardPicked.connect
+	//	( std::bind( &Engine::onBillboardPicked
+	//		, this
+	//		, std::placeholders::_1
+	//		, std::placeholders::_2 ) );
+	//m_onUnpick = m_window->picking().onUnpick.connect
+	//	( std::bind( &Engine::onUnpick
+	//		, this ) );
 }
 
 void Engine::doCleanup3DElements()

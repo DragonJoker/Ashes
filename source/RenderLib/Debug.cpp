@@ -82,10 +82,6 @@ namespace render
 			m_buffersCount.reset();
 			m_billboardCount.reset();
 			m_version.reset();
-			m_scene->removeOverlay( BufferCount );
-			m_scene->removeOverlay( BillboardCount );
-			m_scene->removeOverlay( Version );
-			m_scene->removeOverlay( Time );
 			m_fontTexture.reset();
 		}
 	}

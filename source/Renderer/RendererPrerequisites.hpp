@@ -108,6 +108,8 @@ namespace renderer
 	class VertexLayout;
 	class Viewport;
 
+	struct ClearValue;
+
 	/**
 	*\name Typedefs généralistes.
 	*/
@@ -161,6 +163,8 @@ namespace renderer
 	using FrameBufferPtrArray = std::vector< FrameBufferPtr >;
 	using CommandBufferPtrArray = std::vector< CommandBufferPtr >;
 
+	using ClearValueArray = std::vector< ClearValue >;
+	using DescriptorSetLayoutBindingArray = std::vector< DescriptorSetLayoutBinding >;
 	using PipelineStageFlagsArray = std::vector< PipelineStageFlags >;
 	using RenderSubpassArray = std::vector< RenderSubpass >;
 

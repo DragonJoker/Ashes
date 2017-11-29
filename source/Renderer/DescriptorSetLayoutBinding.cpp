@@ -11,6 +11,7 @@ namespace renderer
 		, ShaderStageFlags flags )
 		: m_binding{ index
 			, convert( type )
+			, 1u
 			, convert( flags ) }
 	{
 	}

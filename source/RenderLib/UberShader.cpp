@@ -20,7 +20,7 @@ uniform mat4 mtxModel;
 
 		static std::string const MtxUbo
 		{
-			R"(layout( std140 ) uniform Matrices
+			R"(layout( std140[UboMatrixBinding] ) uniform Matrices
 {
 	mat4 mtxProjection;
 	mat4 mtxView;
@@ -46,7 +46,7 @@ uniform float matOpacity;
 
 		static std::string const MatUbo
 		{
-			R"(layout( std140 ) uniform Material
+			R"(layout( std140[UboMaterialBinding] ) uniform Material
 {
 	vec3 matAmbient;
 	vec3 matEmissive;
@@ -71,7 +71,7 @@ uniform vec2 dimensions;
 
 		static std::string const BillboardUbo
 		{
-			R"(layout( std140 ) uniform Billboard
+			R"(layout( std140[UboBillboardBinding] ) uniform Billboard
 {
 	vec3 camera;
 	vec2 dimensions;
@@ -90,7 +90,7 @@ uniform vec3 camera;
 
 		static std::string const PolyLineUbo
 		{
-			R"(layout( std140 ) uniform PolyLine
+			R"(layout( std140[UboPolyLineBinding] ) uniform PolyLine
 {
 	float lineWidth;
 	float lineFeather;
@@ -109,7 +109,7 @@ uniform int nodeIndex;
 
 		static std::string const PickingUbo
 		{
-			R"(layout( std140 ) uniform Picking
+			R"(layout( std140[UboPickingBinding] ) uniform Picking
 {
 	int drawIndex;
 	int nodeIndex;
@@ -126,7 +126,7 @@ uniform vec4 colour;
 
 		static std::string const OverlayUbo
 		{
-			R"(layout( std140 ) uniform Overlay
+			R"(layout( std140[UboOverlayBinding] ) uniform Overlay
 {
 	mat4 mtxMP;
 	vec4 colour;
@@ -143,7 +143,7 @@ uniform vec4 colour;
 [attribute] vec3 normal;
 #endif
 #ifdef TEXTURED
-[attribute] vec2 texture;
+[attribute] vec2 texCoord;
 #endif
 
 #ifdef LIGHTING
@@ -156,11 +156,12 @@ uniform vec4 colour;
 void main()
 {
 	gl_Position = mtxProjection * mtxView * mtxModel * vec4( position, 1.0 );
+	[invertY]
 #ifdef LIGHTING
 	vtx_normal = normal;
 #endif
 #ifdef TEXTURED
-	vtx_texture = texture;
+	vtx_texture = texCoord;
 #endif
 }
 )"
@@ -170,10 +171,10 @@ void main()
 			{
 				R"([attribute] vec3 position;
 #ifdef TEXTURED
-[attribute] vec2 texture;
+[attribute] vec2 texCoord;
 #endif
 
-uniform float scale;
+//uniform float scale;
 
 [varying] float vtx_instance;
 #ifdef TEXTURED
@@ -182,9 +183,10 @@ uniform float scale;
 
 void main()
 {
-	gl_Position = mtxProjection * mtxView * mtxModel * vec4( position * vec3( scale, scale, 1.0 ), 1.0 );
+	gl_Position = mtxProjection * mtxView * mtxModel * vec4( position /** vec3( scale, scale, 1.0 )*/, 1.0 );
+	[invertY]
 #ifdef TEXTURED
-	vtx_texture = texture + vec2( 0.5, 0.5 );
+	vtx_texture = texCoord + vec2( 0.5, 0.5 );
 #endif
 	vtx_instance = 0.0;
 }
@@ -195,7 +197,7 @@ void main()
 			{
 				R"([attribute] vec3 position;
 [attribute] vec2 scale;
-[attribute] vec2 texture;
+[attribute] vec2 texCoord;
 
 #ifdef LIGHTING
 [varying] vec3 vtx_normal;
@@ -217,12 +219,13 @@ void main()
 	vec3 up = -vec3( mtxView[0][1], mtxView[1][1], mtxView[2][1] );
 	float width = dimensions.x;
 	float height = dimensions.y;
-	mPosition.xyz += ( right * texture.x * width * scale.x )
-			+ ( up * texture.y * height * scale.y );
+	mPosition.xyz += ( right * texCoord.x * width * scale.x )
+			+ ( up * texCoord.y * height * scale.y );
 	vec4 mvPosition = mtxView * mPosition;
 	gl_Position = mtxProjection * mvPosition;
+	[invertY]
 #ifdef TEXTURED
-	vtx_texture = texture + vec2( 0.5, 0.5 );
+	vtx_texture = texCoord + vec2( 0.5, 0.5 );
 #endif
 }
 )"
@@ -232,7 +235,7 @@ void main()
 			{
 				R"([attribute] vec3 position;
 [attribute] vec2 scale;
-[attribute] vec2 texture;
+[attribute] vec2 texCoord;
 [attribute] float id;
 
 [varying] float vtx_instance;
@@ -247,12 +250,13 @@ void main()
 	vec3 up = -vec3( mtxView[0][1], mtxView[1][1], mtxView[2][1] );
 	float width = dimensions.x;
 	float height = dimensions.y;
-	mPosition.xyz += ( right * texture.x * width * scale.x )
-			+ ( up * texture.y * height * scale.y );
+	mPosition.xyz += ( right * texCoord.x * width * scale.x )
+			+ ( up * texCoord.y * height * scale.y );
 	vec4 mvPosition = mtxView * mPosition;
 	gl_Position = mtxProjection * mvPosition;
+	[invertY]
 #ifdef TEXTURED
-	vtx_texture = texture + vec2( 0.5, 0.5 );
+	vtx_texture = texCoord + vec2( 0.5, 0.5 );
 #endif
 	vtx_instance = float( id );
 }
@@ -273,6 +277,7 @@ void main()
 	//mPosition.xy += delta;
 	vec4 mvPosition = mtxView * mPosition;
 	gl_Position = mtxProjection * mvPosition;
+	[invertY]
 	vtx_normal = normal;
 }
 )"
@@ -282,7 +287,7 @@ void main()
 			{
 				R"([attribute] vec2 position;
 #ifdef TEXTURED
-[attribute] vec2 texture;
+[attribute] vec2 texCoord;
 #endif
 
 #ifdef TEXTURED
@@ -292,10 +297,11 @@ void main()
 void main()
 {
 #ifdef TEXTURED
-	vtx_texture = texture;
+	vtx_texture = texCoord;
 #endif
 
 	gl_Position = mtxMP * vec4( position, 0.0, 1.0 );
+	[invertY]
 }
 )"
 			};
@@ -303,14 +309,15 @@ void main()
 			static std::string TextOverlayShader
 			{
 				R"([attribute] vec2 position;
-[attribute] vec2 texture;
+[attribute] vec2 texCoord;
 
 [varying] vec2 vtx_texture;
 
 void main()
 {
-	vtx_texture = texture;
+	vtx_texture = texCoord;
 	gl_Position = mtxMP * vec4( position, 0.0, 1.0 );
+	[invertY]
 }
 )"
 			};
@@ -318,14 +325,15 @@ void main()
 			static std::string TextureShader
 			{
 				R"([attribute] vec2 position;
-[attribute] vec2 texture;
+[attribute] vec2 texCoord;
 
 [varying] vec2 vtx_texture;
 
 void main()
 {
-	vtx_texture = texture;
-	gl_Position = vec4( position, 0.0, 1.0 );
+	vtx_texture = texCoord;
+	gl_Position = vec4( position, 0.5, 1.0 );
+	[invertY]
 }
 )"
 			};
@@ -344,7 +352,7 @@ void main()
 				return ret;
 			}
 
-			std::string getUniforms( ObjectType object )
+			std::string getUniforms( ObjectType object)
 			{
 				std::string ret;
 
@@ -511,10 +519,10 @@ void main()
 			static std::string const SceneShader
 			{
 				R"(#ifdef DIFFUSE_MAP
-uniform sampler2D mapDiffuse;
+[TextureDiffuseBinding]uniform sampler2D mapDiffuse;
 #endif
 #ifdef OPACITY_MAP
-uniform sampler2D mapOpacity;
+[TextureOpacityBinding]uniform sampler2D mapOpacity;
 #endif
 
 #ifdef LIGHTING
@@ -611,7 +619,7 @@ vec4 packPixel( int drawIndex, int nodeIndex, int instIndex )
 #endif
 
 #ifdef OPACITY_MAP
-uniform sampler2D mapOpacity;
+[TextureOpacityBinding]uniform sampler2D mapOpacity;
 #endif
 
 void main()
@@ -634,10 +642,10 @@ void main()
 			static std::string PanelOverlayShader
 			{
 				R"(#ifdef DIFFUSE_MAP
-uniform sampler2D mapColour;
+[TextureDiffuseBinding]uniform sampler2D mapColour;
 #endif
 #ifdef OPACITY_MAP
-uniform sampler2D mapOpacity;
+[TextureOpacityBinding]uniform sampler2D mapOpacity;
 #endif
 
 #ifdef TEXTURED
@@ -662,7 +670,7 @@ void main()
 			{
 				R"([varying] vec2 vtx_texture;
 
-uniform sampler2D mapOpacity;
+[TextureOpacityBinding]uniform sampler2D mapOpacity;
 
 void main()
 {
@@ -675,7 +683,7 @@ void main()
 
 			static std::string TextureShader
 			{
-				R"(uniform sampler2D mapDiffuse;
+				R"([TextureDiffuseBinding]uniform sampler2D mapDiffuse;
 
 [varying] vec2 vtx_texture;
 
@@ -755,8 +763,6 @@ void main()
 					&& object != ObjectType::eTextOverlay
 					&& object != ObjectType::eTexture )
 				{
-					ret += MatUbo;
-
 					switch ( render )
 					{
 					case RenderType::ePicking:
@@ -764,6 +770,7 @@ void main()
 						break;
 
 					default:
+						ret += MatUbo;
 						break;
 					}
 
@@ -783,7 +790,7 @@ void main()
 					ret += OverlayUbo;
 				}
 
-				ret += "out vec4 out_fragColour;\n";
+				ret += "layout( location=0 ) out vec4 out_fragColour;\n";
 
 				return ret;
 			}
@@ -839,14 +846,50 @@ void main()
 		, std::string vtx
 		, std::string pxl )
 	{
-		vtx = utils::replace( vtx, "[attribute]", "in" );
+		int count = 0;
+		vtx = utils::replace( vtx, "[attribute]", [&count]()
+		{
+			return std::string{ "layout( location = " } + std::to_string( count++ ) + ") in";
+		} );
 		vtx = utils::replace( vtx, "[varying]", "out" );
 		vtx = utils::replace( vtx, "[texture2D]", "texture" );
+		vtx = utils::replace( vtx, "[invertY]", "gl_Position.y = -gl_Position.y;" );
 
 		pxl = utils::replace( pxl, "[varying]", "in" );
 		pxl = utils::replace( pxl, "[varying out]", "out" );
 		pxl = utils::replace( pxl, "[texture2D]", "texture" );
 		pxl = utils::replace( pxl, "[gl_FragColor]", "out_fragColour" );
+
+		vtx = utils::replace( vtx, "[UboMatrixBinding]"
+			, ", binding=" + std::to_string( UboMatrixBinding ) );
+		vtx = utils::replace( vtx, "[UboMaterialBinding]"
+			, ", binding=" + std::to_string( UboMaterialBinding ) );
+		vtx = utils::replace( vtx, "[UboBillboardBinding]"
+			, ", binding=" + std::to_string( UboBillboardBinding ) );
+		vtx = utils::replace( vtx, "[UboPolyLineBinding]"
+			, ", binding=" + std::to_string( UboPolyLineBinding ) );
+		vtx = utils::replace( vtx, "[UboPickingBinding]"
+			, ", binding=" + std::to_string( UboPickingBinding ) );
+		vtx = utils::replace( vtx, "[UboOverlayBinding]"
+			, ", binding=" + std::to_string( UboOverlayBinding ) );
+
+		pxl = utils::replace( pxl, "[UboMatrixBinding]"
+			, ", binding=" + std::to_string( UboMatrixBinding ) );
+		pxl = utils::replace( pxl, "[UboMaterialBinding]"
+			, ", binding=" + std::to_string( UboMaterialBinding ) );
+		pxl = utils::replace( pxl, "[UboBillboardBinding]"
+			, ", binding=" + std::to_string( UboBillboardBinding ) );
+		pxl = utils::replace( pxl, "[UboPolyLineBinding]"
+			, ", binding=" + std::to_string( UboPolyLineBinding ) );
+		pxl = utils::replace( pxl, "[UboPickingBinding]"
+			, ", binding=" + std::to_string( UboPickingBinding ) );
+		pxl = utils::replace( pxl, "[UboOverlayBinding]"
+			, ", binding=" + std::to_string( UboOverlayBinding ) );
+		pxl = utils::replace( pxl, "[TextureDiffuseBinding]"
+			, "layout( binding=" + std::to_string( TextureDiffuseBinding ) + " ) " );
+		pxl = utils::replace( pxl, "[TextureOpacityBinding]"
+			, "layout( binding=" + std::to_string( TextureOpacityBinding ) + " ) " );
+
 
 		auto program = std::make_unique< renderer::ShaderProgram >( device );
 		program->createModule( vtx, renderer::ShaderStageFlag::eVertex );

@@ -38,6 +38,11 @@ namespace renderer
 		SwapChainPtr createSwapChain( utils::IVec2 const & size )const;
 		/**
 		*\brief
+		*	Attend que le périphérique soit inactif.
+		*/
+		void waitIdle()const;
+		/**
+		*\brief
 		*	Le vk::Device.
 		*/
 		inline vk::LogicalDevice const & getDevice()const

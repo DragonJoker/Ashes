@@ -10,22 +10,38 @@ namespace renderer
 	DescriptorSet::DescriptorSet( DescriptorSetPool const & pool )
 		: m_descriptorSet{ pool.getPool().createDescriptorSet() }
 	{
+		pool.allocate( 1u );
 	}
 
-	void DescriptorSet::createBinding( DescriptorSetLayoutBinding const & layoutBinding
+	CombinedTextureSamplerBinding DescriptorSet::createBinding( DescriptorSetLayoutBinding const & layoutBinding
 		, Texture const & view
 		, Sampler const & sampler )
 	{
-		m_descriptorSet->createBinding( layoutBinding.getBinding()
+		auto binding = layoutBinding.getBinding();
+		binding.setCount( 1u );
+		m_descriptorSet->createBinding( binding
 			, view.getImage().getView()
 			, sampler.getSampler() );
+		return CombinedTextureSamplerBinding
+		{
+			layoutBinding,
+			view,
+			sampler
+		};
 	}
 
-	void DescriptorSet::createBinding( DescriptorSetLayoutBinding const & layoutBinding
+	SampledTextureBinding DescriptorSet::createBinding( DescriptorSetLayoutBinding const & layoutBinding
 		, Texture const & view )
 	{
-		m_descriptorSet->createBinding( layoutBinding.getBinding()
+		auto binding = layoutBinding.getBinding();
+		binding.setCount( 1u );
+		m_descriptorSet->createBinding( binding
 			, view.getImage().getView() );
+		return SampledTextureBinding
+		{
+			layoutBinding,
+			view
+		};
 	}
 
 	void DescriptorSet::update()const

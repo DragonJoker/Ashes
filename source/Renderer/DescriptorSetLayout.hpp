@@ -28,7 +28,12 @@ namespace renderer
 		*	Le périphérique logique.
 		*/
 		DescriptorSetLayout( Device const & device
-			, std::vector< DescriptorSetLayoutBinding > const & bindings );
+			, DescriptorSetLayoutBindingArray const & bindings );
+		/**
+		*\return
+		*	L'attache de descripteur au point d'attache donné.
+		*/
+		DescriptorSetLayoutBinding const & getBinding( uint32_t point )const;
 		/**
 		*\return
 		*	Le descriptor layout vulkan.
@@ -40,6 +45,7 @@ namespace renderer
 
 	private:
 		vk::DescriptorLayoutPtr m_layout;
+		DescriptorSetLayoutBindingArray m_bindings;
 	};
 }
 

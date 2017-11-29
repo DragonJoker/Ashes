@@ -46,7 +46,8 @@ namespace render
 		*/
 		Scene( renderer::Device const & device
 			, renderer::RenderPass const & renderPass
-			, utils::IVec2 const & size );
+			, utils::IVec2 const & size
+			, OverlayRenderer & overlayRenderer );
 		/**
 		*\brief
 		*	Destructeur.
@@ -64,10 +65,15 @@ namespace render
 		void updateOverlays();
 		/**
 		*\brief
+		*	Met à jour les UBO.
+		*/
+		void updateUbos( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer );
+		/**
+		*\brief
 		*	Dessine les objets de la scène, à travers la vue de la caméra.
 		*/
-		void draw( renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer )const;
+		void draw( renderer::CommandBuffer const & commandBuffer )const;
 		/**
 		*\brief
 		*	Redimensionne le viewport de la caméra.
@@ -378,6 +384,7 @@ namespace render
 		std::map< Movable *, utils::Connection< OnMovableChanged > > m_onMovableChanged;
 		//! Dit si la caméra a changé entre 2 updates.
 		mutable bool m_cameraChanged{ true };
+		OverlayRenderer & m_overlayRenderer;
 	};
 }
 

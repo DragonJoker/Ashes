@@ -31,6 +31,29 @@ namespace utils
 		return ret;
 	}
 
+	std::string replace( std::string const & input
+		, std::string const & toReplace
+		, std::function< std::string() > const & replacer )
+	{
+		std::string ret;
+		std::size_t currentPos = 0;
+		std::size_t pos = 0;
+
+		while ( ( pos = input.find( toReplace, currentPos ) ) != std::string::npos )
+		{
+			ret.append( input.substr( currentPos, pos - currentPos ) );
+			ret.append( replacer() );
+			currentPos = pos + toReplace.size();
+		}
+
+		if ( currentPos != input.size() )
+		{
+			ret.append( input.substr( currentPos, pos - currentPos ) );
+		}
+
+		return ret;
+	}
+
 	std::string trimLeft( std::string const & text )
 	{
 		std::string ret{ text };

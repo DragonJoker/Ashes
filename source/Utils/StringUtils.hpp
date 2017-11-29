@@ -6,6 +6,7 @@ See LICENSE file in root folder
 
 #include "UtilsPrerequisites.hpp"
 
+#include <functional>
 #include <string>
 
 namespace utils
@@ -27,6 +28,21 @@ namespace utils
 	std::string replace( std::string const & text
 		, std::string const & toReplace
 		, std::string const & replacement );
+	/**
+	*\brief
+	*	Remplace toutes les occurences de toReplace par replacement dans text.
+	*\param[in] text
+	*	Le texte source.
+	*\param[in] toReplace
+	*	Le texte à remplacer.
+	*\param[in] replacement
+	*	Le texte de remplacement.
+	*\return
+	*	Le text modifié.
+	*/
+	std::string replace( std::string const & text
+		, std::string const & toReplace
+		, std::function< std::string() > const & replacer );
 	/**
 	*\brief
 	*	Supprime les caractères blancs (' ', '\\t', '\\r') du début du texte.

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
-  <Type Name="render::Range&lt;*&gt;">
+  <Type Name="utils::Range&lt;*&gt;">
     <DisplayString>{{[{m_min},{m_max}]}}</DisplayString>
     <Expand>
       <Item Name="min">m_min</Item>
@@ -9,7 +9,7 @@
     </Expand>
   </Type>
 
-  <Type Name="render::LogarithmicRange&lt;*&gt;">
+  <Type Name="utils::LogarithmicRange&lt;*&gt;">
     <DisplayString>{{[{m_min},{m_max}]}}</DisplayString>
     <Expand>
       <Item Name="min">m_min</Item>
@@ -20,7 +20,7 @@
     </Expand>
   </Type>
 
-  <Type Name="render::RangedValue&lt;*&gt;">
+  <Type Name="utils::RangedValue&lt;*&gt;">
     <DisplayString>{{{m_value} {m_range}}}</DisplayString>
     <Expand>
       <Item Name="value">m_value</Item>
@@ -103,7 +103,7 @@
     </Expand>
   </Type>
 
-  <Type Name="render::FlagCombination&lt;*&gt;">
+  <Type Name="utils::FlagCombination&lt;*&gt;">
     <DisplayString>{{{m_value}}}</DisplayString>
     <Expand>
       <Item Name="value">m_value</Item>
@@ -144,12 +144,13 @@
     <Expand>
       <Item Name="ambient">m_ambient</Item>
       <Item Name="diffuse">m_diffuse</Item>
+      <Item Condition="m_diffuseMap != nullptr" Name="diffuse map">m_diffuseMap</Item>
       <Item Name="specular">m_specular</Item>
       <Item Name="emissive">m_emissive</Item>
       <Item Name="exponent">m_exponent</Item>
       <Item Name="alpha text">m_alphaTest</Item>
       <Item Name="opacity">m_opacity</Item>
-      <Item Name="opacity map">m_opacityMap</Item>
+      <Item Condition="m_opacityMap != nullptr" Name="opacity map">m_opacityMap</Item>
     </Expand>
   </Type>
 

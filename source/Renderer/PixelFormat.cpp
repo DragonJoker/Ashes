@@ -33,6 +33,9 @@ namespace renderer
 		case utils::PixelFormat::eD16:
 			return VK_FORMAT_D16_UNORM;
 
+		case utils::PixelFormat::eD24S8:
+			return VK_FORMAT_D24_UNORM_S8_UINT;
+
 		case utils::PixelFormat::eS8:
 			return VK_FORMAT_S8_UINT;
 
@@ -72,6 +75,9 @@ namespace renderer
 
 		case VK_FORMAT_D16_UNORM:
 			return utils::PixelFormat::eD16;
+
+		case VK_FORMAT_D24_UNORM_S8_UINT:
+			return utils::PixelFormat::eD24S8;
 
 		case VK_FORMAT_S8_UINT:
 			return utils::PixelFormat::eS8;

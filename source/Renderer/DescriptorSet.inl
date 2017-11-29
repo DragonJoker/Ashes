@@ -4,10 +4,23 @@
 namespace renderer
 {
 	template< typename T >
-	void DescriptorSet::createBinding( DescriptorSetLayoutBinding const & layoutBinding
-		, UniformBuffer< T > const & uniformBuffer )
+	UniformBufferBinding< T > DescriptorSet::createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		, UniformBuffer< T > const & uniformBuffer
+		, uint32_t offset )
 	{
-		m_descriptorSet->createBinding( layoutBinding.getBinding()
-			, uniformBuffer.getUbo() );
+		uint32_t constexpr size = uint32_t( sizeof( T ) );
+		offset = uniformBuffer.getUbo().getOffset( offset, size );
+		auto binding = layoutBinding.getBinding();
+		binding.setCount( 1u );
+		m_descriptorSet->createBinding( binding
+			, uniformBuffer.getUbo()
+			, offset
+			, size );
+		return UniformBufferBinding< T >
+		{
+			layoutBinding,
+			uniformBuffer,
+			offset
+		};
 	}
 }

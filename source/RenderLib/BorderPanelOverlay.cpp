@@ -8,20 +8,16 @@ namespace render
 	BorderPanelOverlay::BorderPanelOverlay()
 		: Overlay( Overlay::Type::eBorderPanel )
 	{
-		m_panelQuads.resize( 1 );
-		m_borderQuads.resize( 8 );
 	}
 
 	BorderPanelOverlay::~BorderPanelOverlay()
 	{
 	}
 
-	void BorderPanelOverlay::render( renderer::StagingBuffer const & stagingBuffer
-		, renderer::CommandBuffer const & commandBuffer
-		, OverlayRenderer & renderer )const
+	void BorderPanelOverlay::render( renderer::CommandBuffer const & commandBuffer
+		, OverlayRenderer const & renderer )const
 	{
-		renderer.drawBorderPanel( stagingBuffer
-			, commandBuffer
+		renderer.drawBorderPanel( commandBuffer
 			, *this );
 	}
 
@@ -77,13 +73,12 @@ namespace render
 			Overlay::Vertex vertex3 = { { centerL, centerT }, { m_uv[0], m_uv[3] } };
 			Overlay::Vertex vertex4 = { { centerR, centerB }, { m_uv[2], m_uv[1] } };
 			Overlay::Vertex vertex5 = { { centerR, centerT }, { m_uv[2], m_uv[3] } };
-			auto & quad = m_panelQuads[0];
-			quad[0] = vertex0;
-			quad[1] = vertex1;
-			quad[2] = vertex2;
-			quad[3] = vertex3;
-			quad[4] = vertex4;
-			quad[5] = vertex5;
+			m_panelQuad[0] = vertex0;
+			m_panelQuad[1] = vertex1;
+			m_panelQuad[2] = vertex2;
+			m_panelQuad[3] = vertex3;
+			m_panelQuad[4] = vertex4;
+			m_panelQuad[5] = vertex5;
 		}
 		uint32_t index = 0;
 		{

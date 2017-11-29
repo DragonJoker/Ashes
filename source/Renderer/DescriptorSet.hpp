@@ -8,7 +8,7 @@
 #define ___Renderer_DescriptorSet_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include "DescriptorSetBinding.hpp"
 
 #include <VkLib/DescriptorSet.hpp>
 
@@ -42,7 +42,7 @@ namespace renderer
 		*\return
 		*	L'attache créée.
 		*/
-		void createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		CombinedTextureSamplerBinding createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, Texture const & view
 			, Sampler const & sampler );
 		/**
@@ -55,7 +55,7 @@ namespace renderer
 		*\return
 		*	L'attache créée.
 		*/
-		void createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		SampledTextureBinding createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, Texture const & view );
 		/**
 		*\brief
@@ -68,8 +68,9 @@ namespace renderer
 		*	L'attache créée.
 		*/
 		template< typename T >
-		void createBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, UniformBuffer< T > const & uniformBuffer );
+		UniformBufferBinding< T > createBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, UniformBuffer< T > const & uniformBuffer
+			, uint32_t offset );
 		/**
 		*\brief
 		*	Met à jour toutes les attaches du descripteur.

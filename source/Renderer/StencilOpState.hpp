@@ -16,13 +16,13 @@ namespace renderer
 	class StencilOpState
 	{
 	public:
-		StencilOpState( StencilOp failOp
-			, StencilOp passOp
-			, StencilOp depthFailOp
-			, CompareOp compareOp
-			, uint32_t compareMask
-			, uint32_t writeMask
-			, uint32_t reference );
+		StencilOpState( StencilOp failOp = StencilOp::eKeep
+			, StencilOp passOp = StencilOp::eKeep
+			, StencilOp depthFailOp = StencilOp::eKeep
+			, CompareOp compareOp = CompareOp::eAlways
+			, uint32_t compareMask = 0xFFFFFFFFu
+			, uint32_t writeMask = 0xFFFFFFFFu
+			, uint32_t reference = 0u );
 		/**
 		*\~french
 		*\return

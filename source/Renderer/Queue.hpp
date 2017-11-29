@@ -88,6 +88,13 @@ namespace renderer
 			, UInt32Array const & imagesIndex
 			, SemaphoreCRefArray const & semaphoresToWait )const;
 		/**
+		*\brief
+		*	Attend que la file soit inactive.
+		*\return
+		*	\p true si tout s'est bien passé.
+		*/
+		bool waitIdle()const;
+		/**
 		*\return
 		*	L'index de la famille de la file.
 		*/

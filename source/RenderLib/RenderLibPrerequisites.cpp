@@ -7,8 +7,10 @@
 #include "PolyLine.h"
 #include "Texture.h"
 
-#include <Renderer/DescriptorSetLayoutBinding.hpp>
 #include <Renderer/DescriptorSet.hpp>
+#include <Renderer/DescriptorSetLayout.hpp>
+#include <Renderer/DescriptorSetPool.hpp>
+#include <Renderer/DescriptorSetLayoutBinding.hpp>
 
 #include <Utils/StringUtils.hpp>
 #include <Utils/Converter.hpp>
@@ -51,86 +53,114 @@ namespace render
 		, MeshPtr mesh
 		, SubmeshPtr submesh
 		, MaterialPtr material
-		, ObjectPtr object )
+		, ObjectPtr object
+		, uint32_t index
+		, renderer::UniformBuffer< MatrixUbo > const & mtxUbo
+		, renderer::UniformBuffer< MaterialUbo > const & matUbo )
 		: m_mesh{ mesh }
 		, m_submesh{ submesh }
 		, m_material{ material }
 		, m_object{ object }
-		, m_materialDescriptor{ pool }
+		, m_descriptor{ std::make_unique< renderer::DescriptorSet >( pool ) }
 	{
-		uint32_t index = 0u;
+		m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::UboMatrixBinding )
+			, mtxUbo
+			, index );
+		m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::UboMaterialBinding )
+			, matUbo
+			, index );
 
 		if ( material->hasDiffuseMap() )
 		{
-			m_materialDescriptor.createBinding( renderer::DescriptorSetLayoutBinding{ index++
-					, renderer::DescriptorType::eSampledImage
-					, renderer::ShaderStageFlag::eFragment }
+			m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::TextureDiffuseBinding )
 				, material->diffuseMap().texture()
 				, material->diffuseMap().sampler() );
 		}
 
 		if ( material->hasOpacityMap() )
 		{
-			m_materialDescriptor.createBinding( renderer::DescriptorSetLayoutBinding{ index++
-					, renderer::DescriptorType::eSampledImage
-					, renderer::ShaderStageFlag::eFragment }
+			m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::TextureOpacityBinding )
 				, material->opacityMap().texture()
 				, material->opacityMap().sampler() );
 		}
+
+		m_descriptor->update();
 	}
 
 	RenderBillboard::RenderBillboard( renderer::DescriptorSetPool const & pool
-		, BillboardPtr billboard )
+		, BillboardPtr billboard
+		, uint32_t index
+		, renderer::UniformBuffer< MatrixUbo > const & mtxUbo
+		, renderer::UniformBuffer< MaterialUbo > const & matUbo
+		, renderer::UniformBuffer< BillboardUbo > const & billboardUbo )
 		: m_billboard{ billboard }
-		, m_materialDescriptor{ pool }
+		, m_descriptor{ std::make_unique< renderer::DescriptorSet >( pool ) }
 	{
+		m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::UboMatrixBinding )
+			, mtxUbo
+			, index );
+		m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::UboMaterialBinding )
+			, matUbo
+			, index );
+		m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::UboBillboardBinding )
+			, billboardUbo
+			, index );
+
 		auto & material = billboard->material();
-		uint32_t index = 0u;
 
 		if ( material.hasDiffuseMap() )
 		{
-			m_materialDescriptor.createBinding( renderer::DescriptorSetLayoutBinding{ index++
-					, renderer::DescriptorType::eSampledImage
-					, renderer::ShaderStageFlag::eFragment }
+			m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::TextureDiffuseBinding )
 				, material.diffuseMap().texture()
 				, material.diffuseMap().sampler() );
 		}
 
 		if ( material.hasOpacityMap() )
 		{
-			m_materialDescriptor.createBinding( renderer::DescriptorSetLayoutBinding{ index++
-					, renderer::DescriptorType::eSampledImage
-					, renderer::ShaderStageFlag::eFragment }
+			m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::TextureOpacityBinding )
 				, material.opacityMap().texture()
 				, material.opacityMap().sampler() );
 		}
+
+		m_descriptor->update();
 	}
 
 	RenderPolyLine::RenderPolyLine( renderer::DescriptorSetPool const & pool
-		, PolyLinePtr line )
+		, PolyLinePtr line
+		, uint32_t index
+		, renderer::UniformBuffer< MatrixUbo > const & mtxUbo
+		, renderer::UniformBuffer< MaterialUbo > const & matUbo
+		, renderer::UniformBuffer< LineUbo > const & lineUbo )
 		: m_line{ line }
-		, m_materialDescriptor{ pool }
+		, m_descriptor{ std::make_unique< renderer::DescriptorSet >( pool ) }
 	{
+		m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::UboMatrixBinding )
+			, mtxUbo
+			, index );
+		m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::UboMaterialBinding )
+			, matUbo
+			, index );
+		m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::UboPolyLineBinding )
+			, lineUbo
+			, index );
+
 		auto & material = line->material();
-		uint32_t index = 0u;
 
 		if ( material.hasDiffuseMap() )
 		{
-			m_materialDescriptor.createBinding( renderer::DescriptorSetLayoutBinding{ index++
-					, renderer::DescriptorType::eSampledImage
-					, renderer::ShaderStageFlag::eFragment }
+			m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::TextureDiffuseBinding )
 				, material.diffuseMap().texture()
 				, material.diffuseMap().sampler() );
 		}
 
 		if ( material.hasOpacityMap() )
 		{
-			m_materialDescriptor.createBinding( renderer::DescriptorSetLayoutBinding{ index++
-					, renderer::DescriptorType::eSampledImage
-					, renderer::ShaderStageFlag::eFragment }
+			m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::TextureOpacityBinding )
 				, material.opacityMap().texture()
 				, material.opacityMap().sampler() );
 		}
+
+		m_descriptor->update();
 	}
 
 	void loadTexture( renderer::StagingBuffer const & stagingBuffer
@@ -141,18 +171,19 @@ namespace render
 		int x = 0;
 		int y = 0;
 		int n = 0;
+		int r = 4;
 		uint8_t * data = stbi_load_from_memory( fileContent.data()
 			, int( fileContent.size() )
 			, &x
 			, &y
 			, &n
-			, 0 );
+			, r );
 
 		if ( data )
 		{
 			utils::PixelFormat format;
 
-			switch ( n )
+			switch ( r )
 			{
 			case 1:
 				format = utils::PixelFormat::eL8;
@@ -178,7 +209,7 @@ namespace render
 
 			texture.image( format
 				, utils::IVec2{ x, y }
-				, ByteArray{ data, data + n * x * y }
+				, ByteArray{ data, data + r * x * y }
 				, stagingBuffer
 				, commandBuffer );
 			stbi_image_free( data );

@@ -66,9 +66,8 @@ namespace render
 		*\param[in] renderer
 		*	Le renderer utilisé pour dessiner cette incrustation.
 		*/
-		void render( renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer
-			, OverlayRenderer & renderer )const override;
+		void render( renderer::CommandBuffer const & commandBuffer
+			, OverlayRenderer const & renderer )const override;
 		/**
 		*\brief
 		*	Définit la texture de police utilisée pour le dessin de

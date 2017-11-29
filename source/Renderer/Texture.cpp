@@ -145,6 +145,12 @@ namespace renderer
 		return ImageMemoryBarrier{ m_nonOwnedTexture->makeColourAttachment() };
 	}
 
+	ImageMemoryBarrier Texture::makeDepthStencilAttachment()const
+	{
+		assert( m_nonOwnedTexture );
+		return ImageMemoryBarrier{ m_nonOwnedTexture->makeDepthStencilAttachment() };
+	}
+
 	ImageMemoryBarrier Texture::makeDrawDestination()const
 	{
 		assert( m_nonOwnedTexture );

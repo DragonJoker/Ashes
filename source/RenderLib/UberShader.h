@@ -204,6 +204,17 @@ namespace render
 			, TextureFlags textures
 			, OpacityType opacity
 			, ObjectType object );
+
+	public:
+		static uint32_t constexpr UboMatrixBinding = 0u;
+		static uint32_t constexpr UboMaterialBinding = 1u;
+		static uint32_t constexpr UboBillboardBinding = 2u;
+		static uint32_t constexpr UboPolyLineBinding = 2u;
+		static uint32_t constexpr UboPickingBinding = 3u;
+		static uint32_t constexpr UboOverlayBinding = 0u;
+
+		static uint32_t constexpr TextureDiffuseBinding = 4u;
+		static uint32_t constexpr TextureOpacityBinding = 5u;
 	};
 }
 

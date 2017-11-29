@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include "StencilOpState.hpp"
 
 #include <VkLib/DepthStencilState.hpp>
 
@@ -21,16 +21,16 @@ namespace renderer
 	class DepthStencilState
 	{
 	public:
-		DepthStencilState( DepthStencilStateFlags flags
-			, bool depthTestEnable
-			, bool depthWriteEnable
-			, CompareOp depthCompareOp
-			, bool depthBoundsTestEnable
-			, bool stencilTestEnable
-			, StencilOpState const & front
-			, StencilOpState const & back
-			, float minDepthBounds
-			, float maxDepthBounds );
+		DepthStencilState( DepthStencilStateFlags flags = DepthStencilStateFlags{}
+			, bool depthTestEnable = true
+			, bool depthWriteEnable = true
+			, CompareOp depthCompareOp = CompareOp::eLess
+			, bool depthBoundsTestEnable = false
+			, bool stencilTestEnable = false
+			, StencilOpState const & front = StencilOpState{}
+			, StencilOpState const & back = StencilOpState{}
+			, float minDepthBounds = 0.0f
+			, float maxDepthBounds = 1.0f );
 		/**
 		*\~french
 		*\return

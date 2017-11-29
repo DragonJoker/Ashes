@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include "ClearValue.hpp"
 
 #include <VkLib/PrimaryCommandBuffer.hpp>
 
@@ -66,12 +66,12 @@ namespace renderer
 		*	La passe de rendu.
 		*\param[in] frameBuffer
 		*	Le tampon d'image affecté par le rendu.
-		*\param[in] colour
-		*	La couleur de vidage.
+		*\param[in] clearValues
+		*	Les valeurs de vidage, une par attache de la passe de rendu.
 		*/
 		void beginRenderPass( RenderPass const & renderPass
 			, FrameBuffer const & frameBuffer
-			, utils::RgbaColour const & colour )const;
+			, ClearValueArray const & clearValues )const;
 		/**
 		*\brief
 		*	Termine une passe de rendu.

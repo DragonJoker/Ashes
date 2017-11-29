@@ -27,16 +27,31 @@ namespace renderer
 		*\brief
 		*	Constructeur.
 		*\param[in] layout
-		*	Le layout � partir duquel sera créé le pool.
+		*	Le layout à partir duquel sera créé le pool.
 		*/
-		DescriptorSetPool( DescriptorSetLayout const & layout );
+		DescriptorSetPool( DescriptorSetLayout const & layout, uint32_t maxSets );
 		/**
 		*\brief
-		*	Crée un descriptor set correspondant au layout d�fini pour ce pool.
+		*	Alloue des descripteurs.
+		*\param[in] count
+		*	Le nombre de descripteurs.
+		*/
+		void allocate( uint32_t count )const;
+		/**
+		*\brief
+		*	Crée un descriptor set correspondant au layout défini pour ce pool.
 		*\return
 		*	Le descriptor set créé.
 		*/
 		DescriptorSet createDescriptorSet()const;
+		/**
+		*\return
+		*	Le layout de descriptor set.
+		*/
+		inline DescriptorSetLayout const & getLayout()const
+		{
+			return m_layout;
+		}
 		/**
 		*\return
 		*	Le pool de descriptor set vulkan.
@@ -47,7 +62,10 @@ namespace renderer
 		}
 
 	private:
+		DescriptorSetLayout const & m_layout;
 		vk::DescriptorPoolPtr m_pool;
+		uint32_t m_maxSets;
+		mutable uint32_t m_allocated{ 0u };
 	};
 }
 

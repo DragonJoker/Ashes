@@ -42,10 +42,32 @@ namespace render
 		~RenderTarget()noexcept;
 		/**
 		*\brief
+		*	Met à jour les données de la scène en VRAM.
+		*/
+		void updateScene( renderer::CommandBuffer const & commandBuffer
+			, Scene & scene )const;
+		/**
+		*\brief
+		*	Met à jour les données des incrustations en VRAM.
+		*/
+		void updateOverlays( renderer::CommandBuffer const & commandBuffer
+			, OverlayRenderer & renderer )const;
+		/**
+		*\brief
+		*	Effectue les commandes pré-rendu.
+		*/
+		void preRenderCommands( renderer::CommandBuffer const & commandBuffer )const;
+		/**
+		*\brief
 		*	Dessine la scène dans le frame buffer de la cible de rendu.
 		*/
-		void drawScene( renderer::CommandBuffer const & commandBuffer
-			, Scene const & scene )const noexcept;
+		void render( renderer::CommandBuffer const & commandBuffer
+			, Scene const & scene )const;
+		/**
+		*\brief
+		*	Effectue les commandes post-rendu.
+		*/
+		void postRenderCommands( renderer::CommandBuffer const & commandBuffer )const;
 		/**
 		*\return
 		*	Les dimensions de la cible.

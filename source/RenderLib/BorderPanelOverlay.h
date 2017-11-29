@@ -36,6 +36,9 @@ namespace render
 		: public Overlay
 	{
 	public:
+		using BorderQuads = std::array< Quad, 8u >;
+
+	public:
 		/**
 		*\brief
 		*	Constructeur.
@@ -52,9 +55,8 @@ namespace render
 		*\param[in] renderer
 		*	Le renderer utilisé pour dessiner cette incrustation.
 		*/
-		void render( renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer
-			, OverlayRenderer & renderer )const override;
+		void render( renderer::CommandBuffer const & commandBuffer
+			, OverlayRenderer const & renderer )const override;
 		/**
 		*\return
 		*	Définit la taille de l'incrustation.
@@ -202,15 +204,15 @@ namespace render
 		*\return
 		*	Le tampon de sommets du panneau
 		*/
-		inline Overlay::QuadArray const & panelVertex()const
+		inline Quad const & panelVertex()const
 		{
-			return m_panelQuads;
+			return m_panelQuad;
 		}
 		/**
 		*\return
 		*	Le tampon de sommets de la bordure.
 		*/
-		inline Overlay::QuadArray const & borderVertex()const
+		inline BorderQuads const & borderVertex()const
 		{
 			return m_borderQuads;
 		}
@@ -238,9 +240,9 @@ namespace render
 		//! Le nom du matériau de la bordure.
 		BorderPosition m_borderPosition;
 		//! Les données du tampon de sommets.
-		QuadArray m_panelQuads;
+		Quad m_panelQuad;
 		//! Les données du tampon de sommets pour la bordure.
-		QuadArray m_borderQuads;
+		BorderQuads m_borderQuads;
 		//!Les UV du panneau.
 		utils::Vec4 m_uv{ 0.33f, 0.33f, 0.66f, 0.66f };
 		//! Les UV de la partie extérieure de la bordure.

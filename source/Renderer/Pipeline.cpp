@@ -62,25 +62,25 @@ namespace renderer
 		return *this;
 	}
 
-	inline Pipeline & Pipeline::depthStencilState( DepthStencilState const & state )
+	Pipeline & Pipeline::depthStencilState( DepthStencilState const & state )
 	{
 		m_pipeline->depthStencilState( state.getState() );
 		return *this;
 	}
 
-	inline Pipeline & Pipeline::tessellationState( TessellationState const & state )
+	Pipeline & Pipeline::tessellationState( TessellationState const & state )
 	{
 		m_pipeline->tessellationState( state.getState() );
 		return *this;
 	}
 
-	inline Pipeline & Pipeline::viewport( Viewport const & viewport )
+	Pipeline & Pipeline::viewport( Viewport const & viewport )
 	{
 		m_pipeline->viewport( viewport.getViewport() );
 		return *this;
 	}
 
-	inline Pipeline & Pipeline::scissor( Scissor const & scissor )
+	Pipeline & Pipeline::scissor( Scissor const & scissor )
 	{
 		m_pipeline->scissor( scissor.getScissor() );
 		return *this;

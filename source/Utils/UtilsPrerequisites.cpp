@@ -25,6 +25,10 @@ namespace utils
 			return 2;
 			break;
 
+		case PixelFormat::eD24S8:
+			return 4;
+			break;
+
 		case PixelFormat::eR8G8B8:
 			return 3;
 			break;

@@ -69,6 +69,11 @@ namespace render
 			, bool debug );
 		/**
 		*\brief
+		*	Destructeur.
+		*/
+		~RenderWindow();
+		/**
+		*\brief
 		*	Démarre le dessin d'une image.
 		*/
 		void beginFrame();
@@ -84,13 +89,18 @@ namespace render
 		void updateOverlays();
 		/**
 		*\brief
+		*	Met à jour les données de la scène en VRAM.
+		*/
+		void updateUbos();
+		/**
+		*\brief
 		*	Dessine la scène.
 		*\remarks
 		*	Le dessin se fait dans la cible de rendu, puis les effets éventuels
 		*	sont appliqués et enfin la cible de rendu est dessinée dans le
 		*	tampon de la fenêtre.
 		*/
-		void draw()const noexcept;
+		void draw()const;
 		/**
 		*\brief
 		*	Termine le dessin d'une image.
@@ -147,10 +157,10 @@ namespace render
 		*\return
 		*	L'instance de picking.
 		*/
-		inline Picking const & picking()const noexcept
-		{
-			return m_picking;
-		}
+		//inline Picking const & picking()const noexcept
+		//{
+		//	return m_picking;
+		//}
 		/**
 		*\return
 		*	L'état de la caméra.
@@ -192,7 +202,7 @@ namespace render
 		*/
 		inline renderer::StagingBuffer const & getStagingBuffer()const noexcept
 		{
-			return m_stagingBuffer;
+			return *m_stagingBuffer;
 		}
 
 	private:
@@ -218,16 +228,20 @@ namespace render
 		renderer::CommandPoolPtr m_drawCommandPool;
 		//! Le tampons de commandes de dessin de la scène.
 		renderer::CommandBufferPtr m_drawCommandBuffer;
+		//! Le tampons de commandes de dessin de la scène.
+		renderer::SemaphorePtr m_drawSemaphore;
 		//! Le tampon de transfert.
-		renderer::StagingBuffer m_stagingBuffer;
+		renderer::StagingBufferPtr m_stagingBuffer;
 		//! Le layout des descripteurs de rendu dans la fenêtre.
 		renderer::DescriptorSetLayout m_descriptorLayout;
 		//! Le layout du pipeline de rendu dans la fenêtre.
-		renderer::PipelineLayout m_pipelineLayout;
+		renderer::PipelineLayoutPtr m_pipelineLayout;
 		//! Le pipeline de rendu dans la fenêtre.
 		renderer::PipelinePtr m_pipeline;
 		//! La cible de rendu.
-		RenderTarget m_target;
+		RenderTargetPtr m_target;
+		//! Le renderer d'incrustations
+		OverlayRendererPtr m_overlayRenderer;
 		//! La scène qui sera dessinée.
 		Scene m_scene;
 		//! Les dimensions de la fenêtre.
@@ -241,22 +255,22 @@ namespace render
 		//! Le layout de sommets du tampon.
 		renderer::VertexLayoutPtr m_layout;
 		//! Le pool de descripteurs.
-		renderer::DescriptorSetPool m_descriptorPool;
+		renderer::DescriptorSetPoolPtr m_descriptorPool;
 		//! Le set de descripteurs.
-		renderer::DescriptorSet m_descriptor;
+		renderer::DescriptorSetPtr m_descriptor;
 		//! Le viewport du rendu dans la fenêtre.
 		Viewport m_viewport;
-		//! Le renderer d'incrustations
-		OverlayRendererPtr m_overlayRenderer;
 		//! La position voulue pour le picking.
 		utils::IVec2 m_pickPosition;
 		//! L'instance de picking.
-		Picking m_picking;
+		//Picking m_picking;
 		//! Dit si on doit exécuter le picking lors du dessin de la prochaine frame.
 		mutable bool m_pick{ false };
 		//! Les informations de débogage.
 		Debug m_debug;
 		bool m_vboInitialised{ false };
+		//! Les ressources de rendu de la frame actuelle.
+		renderer::RenderingResources * m_resources{ nullptr };
 	};
 }
 

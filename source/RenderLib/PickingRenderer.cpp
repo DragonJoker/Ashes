@@ -8,10 +8,12 @@
 #include "Submesh.h"
 #include "Texture.h"
 
+#include <Renderer/DepthStencilState.hpp>
 #include <Renderer/DescriptorSet.hpp>
 #include <Renderer/DescriptorSetLayout.hpp>
 #include <Renderer/DescriptorSetLayoutBinding.hpp>
 #include <Renderer/DescriptorSetPool.hpp>
+#include <Renderer/MultisampleState.hpp>
 #include <Renderer/PipelineLayout.hpp>
 #include <Renderer/RenderingResources.hpp>
 #include <Renderer/RenderPass.hpp>
@@ -27,27 +29,67 @@ namespace render
 	namespace
 	{
 		renderer::DescriptorSetLayout doCreateUboDescriptorLayout( renderer::Device const & device
-			, ObjectType type )
+			, ObjectType type
+			, TextureFlags textures )
 		{
 			uint32_t index = 0u;
 			std::vector< renderer::DescriptorSetLayoutBinding > bindings;
 
-			bindings.emplace_back( 0u
+			bindings.emplace_back( UberShader::UboMatrixBinding
 				, renderer::DescriptorType::eUniformBuffer
 				, renderer::ShaderStageFlag::eVertex );
-			bindings.emplace_back( 1u
-				, renderer::DescriptorType::eUniformBuffer
-				, renderer::ShaderStageFlag::eFragment );
 
-			if ( type == ObjectType::eBillboard
-				|| type == ObjectType::ePolyLine )
+			if ( type == ObjectType::eBillboard )
 			{
-				bindings.emplace_back( 0u
+				bindings.emplace_back( UberShader::UboBillboardBinding
+					, renderer::DescriptorType::eUniformBuffer
+					, renderer::ShaderStageFlag::eVertex | renderer::ShaderStageFlag::eFragment );
+			}
+			else if ( type == ObjectType::ePolyLine )
+			{
+				bindings.emplace_back( UberShader::UboPolyLineBinding
 					, renderer::DescriptorType::eUniformBuffer
 					, renderer::ShaderStageFlag::eVertex | renderer::ShaderStageFlag::eFragment );
 			}
 
+			bindings.emplace_back( UberShader::UboPickingBinding
+				, renderer::DescriptorType::eUniformBuffer
+				, renderer::ShaderStageFlag::eFragment );
+
+			if ( checkFlag( textures, TextureFlag::eOpacity ) )
+			{
+				bindings.emplace_back( UberShader::TextureOpacityBinding
+					, renderer::DescriptorType::eCombinedImageSampler
+					, renderer::ShaderStageFlag::eFragment );
+			}
+
 			return renderer::DescriptorSetLayout{ device, bindings };
+		}
+
+		renderer::ColourBlendState doCreateBlendState( NodeType type )
+		{
+			renderer::ColourBlendState result;
+
+			switch ( UberShader::opacityType( type ) )
+			{
+			case OpacityType::eAlphaBlend:
+				result.addAttachment( renderer::ColourBlendStateAttachment
+				{
+					true,
+					renderer::BlendFactor::eSrcAlpha,
+					renderer::BlendFactor::eInvSrcAlpha,
+					renderer::BlendOp::eAdd,
+					renderer::BlendFactor::eSrcAlpha,
+					renderer::BlendFactor::eInvSrcAlpha,
+					renderer::BlendOp::eAdd
+				} );
+				break;
+
+			default:
+				result.addAttachment( renderer::ColourBlendStateAttachment{} );
+			}
+
+			return result;
 		}
 	}
 
@@ -65,18 +107,16 @@ namespace render
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal }
-		, m_uboDescriptorLayout{ std::move( layout ) }
-		, m_uboDescriptorPool{ m_uboDescriptorLayout }
-		, m_uboDescriptor{ m_uboDescriptorPool.createDescriptorSet() }
+		, m_descriptorLayout{ std::move( layout ) }
+		, m_descriptorPool{ m_descriptorLayout, MaxObjectsCount }
+		, m_descriptor{ m_descriptorPool.createDescriptorSet() }
 	{
-		m_uboDescriptor.createBinding( { 0u
-				, renderer::DescriptorType::eUniformBuffer
-				, renderer::ShaderStageFlag::eVertex | renderer::ShaderStageFlag::eFragment }
-			, m_mtxUbo );
-		m_uboDescriptor.createBinding( { 1u
-				, renderer::DescriptorType::eUniformBuffer
-				, renderer::ShaderStageFlag::eVertex | renderer::ShaderStageFlag::eFragment }
-			, m_pickUbo );
+		m_descriptor.createBinding( m_descriptorPool.getLayout().getBinding( UberShader::UboMatrixBinding )
+			, m_mtxUbo
+			, 0u );
+		m_descriptor.createBinding( m_descriptorPool.getLayout().getBinding( UberShader::UboPickingBinding )
+			, m_pickUbo
+			, 0u );
 	}
 
 	//*************************************************************************
@@ -84,27 +124,30 @@ namespace render
 	PickingRenderer::ObjectNode::ObjectNode( renderer::Device const & device
 		, renderer::RenderPass const & renderPass
 		, renderer::DescriptorSetLayout && layout
-		, renderer::ShaderProgramPtr && program )
+		, renderer::ShaderProgramPtr && program
+		, NodeType type )
 		: RenderNode{ device, std::move( layout ), std::move( program ) }
-		, m_pipelineLayout{ device, nullptr }
 		, m_posLayout{ 0u }
-		, m_nmlLayout{ 1u }
-		, m_texLayout{ 2u }
+		, m_texLayout{ 1u }
 	{
+		m_posLayout.createAttribute< utils::Vec3 >( 0u, 0u );
+		m_texLayout.createAttribute< utils::Vec2 >( 1u, 0u );
+		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( device, &m_descriptorLayout );
 		m_pipeline = std::make_shared< renderer::Pipeline >( device
-			, m_pipelineLayout
+			, *m_pipelineLayout
 			, *m_program
 			, renderer::VertexLayoutCRefArray
 			{
 				m_posLayout,
-				m_nmlLayout,
 				m_texLayout
 			}
 			, renderPass
-			, renderer::PrimitiveTopology::eTriangleList );
-		m_posLayout.createAttribute< utils::Vec3 >( 0u, 0u );
-		m_nmlLayout.createAttribute< utils::Vec3 >( 1u, 0u );
-		m_texLayout.createAttribute< utils::Vec2 >( 2u, 0u );
+			, renderer::PrimitiveTopology::eTriangleList
+			, renderer::RasterisationState{}
+			, doCreateBlendState( type ) );
+		m_pipeline->multisampleState( renderer::MultisampleState{} )
+			.depthStencilState( renderer::DepthStencilState{} )
+			.finish();
 	}
 
 	//*************************************************************************
@@ -112,36 +155,37 @@ namespace render
 	PickingRenderer::BillboardNode::BillboardNode( renderer::Device const & device
 		, renderer::RenderPass const & renderPass
 		, renderer::DescriptorSetLayout && layout
-		, renderer::ShaderProgramPtr && program )
+		, renderer::ShaderProgramPtr && program
+		, NodeType type )
 		: RenderNode{ device, std::move( layout ), std::move( program ) }
-		, m_pipelineLayout{ device, nullptr }
-		, m_layout{ 0u }
 		, m_billboardUbo{ device
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal }
+		, m_layout{ 0u }
 	{
+		m_layout.createAttribute< utils::Vec3 >( 0u, offsetof( BillboardData, center ) );
+		m_layout.createAttribute< utils::Vec2 >( 1u, offsetof( BillboardData, scale ) );
+		m_layout.createAttribute< utils::Vec2 >( 2u, offsetof( BillboardBuffer::Vertex, texture ) );
+		m_layout.createAttribute< float >( 3u, offsetof( BillboardBuffer::Vertex, id ) );
+		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( device, &m_descriptorLayout );
+		m_descriptor.createBinding( m_descriptorPool.getLayout().getBinding( UberShader::UboBillboardBinding )
+			, m_billboardUbo
+			, 0u );
 		m_pipeline = std::make_shared< renderer::Pipeline >( device
-			, m_pipelineLayout
+			, *m_pipelineLayout
 			, *m_program
 			, renderer::VertexLayoutCRefArray
 			{
 				m_layout,
 			}
 			, renderPass
-			, renderer::PrimitiveTopology::eTriangleFan );
-		m_layout.createAttribute< utils::Vec3 >( 0u
-			, offsetof( BillboardData, center ) );
-		m_layout.createAttribute< utils::Vec2 >( 1u
-			, offsetof( BillboardData, scale ) );
-		m_layout.createAttribute< utils::Vec2 >( 2u
-			, offsetof( BillboardBuffer::Vertex, texture ) );
-		m_layout.createAttribute< float >( 3u
-			, offsetof( BillboardBuffer::Vertex, id ) );
-		m_uboDescriptor.createBinding( { 2u
-				, renderer::DescriptorType::eUniformBuffer
-				, renderer::ShaderStageFlag::eFragment }
-			, m_billboardUbo );
+			, renderer::PrimitiveTopology::eTriangleFan
+			, renderer::RasterisationState{}
+			, doCreateBlendState( type ) );
+		m_pipeline->multisampleState( renderer::MultisampleState{} )
+			.depthStencilState( renderer::DepthStencilState{} )
+			.finish();
 	}
 
 	//*************************************************************************
@@ -158,30 +202,40 @@ namespace render
 		uint32_t i = 0u;
 		for ( auto & node : m_objectNodes )
 		{
+			auto type = NodeType( i );
+			auto textures = UberShader::textureFlags( type );
+			auto opacity = UberShader::opacityType( type );
 			node = std::make_unique< ObjectNode >( m_device
 				, m_renderPass
 				, doCreateUboDescriptorLayout( m_device
-					, ObjectType::eObject )
+					, ObjectType::eObject
+					, textures )
 				, UberShader::createShaderProgram( m_device
 					, RenderType::ePicking
-					, UberShader::textureFlags( NodeType( i ) )
-					, UberShader::opacityType( NodeType( i ) )
-					, ObjectType::eObject ) );
+					, textures
+					, opacity
+					, ObjectType::eObject )
+				, type );
 			++i;
 		}
 
 		i = 0u;
 		for ( auto & node : m_billboardNodes )
 		{
+			auto type = NodeType( i );
+			auto textures = UberShader::textureFlags( type );
+			auto opacity = UberShader::opacityType( type );
 			node = std::make_unique< BillboardNode >( m_device
 				, m_renderPass
 				, doCreateUboDescriptorLayout( m_device
-					, ObjectType::eBillboard )
+					, ObjectType::eBillboard
+					, textures )
 				, UberShader::createShaderProgram( m_device
 					, RenderType::ePicking
-					, UberShader::textureFlags( NodeType( i ) )
-					, UberShader::opacityType( NodeType( i ) )
-					, ObjectType::eBillboard ) );
+					, textures
+					, opacity
+					, ObjectType::eBillboard )
+				, type );
 			++i;
 		}
 	}
@@ -369,8 +423,8 @@ namespace render
 						, node.m_pickUbo.getDatas()
 						, node.m_pickUbo
 						, renderer::PipelineStageFlag::eVertexShader | renderer::PipelineStageFlag::eFragmentShader );
-					commandBuffer.bindDescriptorSet( object.m_materialDescriptor
-						, node.m_pipelineLayout );
+					commandBuffer.bindDescriptorSet( *object.m_descriptor
+						, *node.m_pipelineLayout );
 					commandBuffer.bindVertexBuffers( { std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getPositions() ) )
 							, std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getNormals() ) )
 							, std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getTexCoords() ) ) }
@@ -415,8 +469,8 @@ namespace render
 			commandBuffer.bindPipeline( *node.m_pipeline );
 			commandBuffer.setViewport( camera.viewport().viewport() );
 			uint32_t id{ 0u };
-			commandBuffer.bindDescriptorSet( node.m_uboDescriptor
-				, node.m_pipelineLayout );
+			commandBuffer.bindDescriptorSet( node.m_descriptor
+				, *node.m_pipelineLayout );
 
 			for ( auto & billboard : billboards )
 			{
@@ -433,8 +487,6 @@ namespace render
 						, node.m_pickUbo.getDatas()
 						, node.m_pickUbo
 						, renderer::PipelineStageFlag::eVertexShader | renderer::PipelineStageFlag::eFragmentShader );
-					commandBuffer.bindDescriptorSet( billboard.m_materialDescriptor
-						, node.m_pipelineLayout );
 					commandBuffer.bindVertexBuffer( billboard.m_billboard->buffer().vbo()
 						, 0u );
 					commandBuffer.draw( billboard.m_billboard->buffer().count() * 6

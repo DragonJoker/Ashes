@@ -69,7 +69,8 @@ namespace render
 		{
 			return { renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite
-				, { renderer::ImageLayout::eColourAttachmentOptimal } };
+				, { renderer::ImageLayout::eColourAttachmentOptimal
+					, renderer::ImageLayout::eDepthStencilAttachmentOptimal } };
 		}
 	}
 
@@ -77,9 +78,7 @@ namespace render
 		, utils::IVec2 const & size )
 		: m_renderPass{ std::make_unique< renderer::RenderPass >( device
 			, doGetPixelFormats()
-			, renderer::RenderSubpassArray{ { device
-				, doGetPixelFormats()
-				, doGetSubpassState() } }
+			, renderer::RenderSubpassArray{ { device, doGetPixelFormats(), doGetSubpassState() } }
 			, doGetColourPassState()
 			, doGetColourPassState() ) }
 		, m_renderer{ device, *m_renderPass }
@@ -93,8 +92,8 @@ namespace render
 		, m_commandBuffer{ std::make_unique< renderer::CommandBuffer >( device
 			, *m_commandPool ) }
 	{
-		m_colour->setImage( utils::PixelFormat::eR8G8B8A8, size );
-		m_depth->setImage( utils::PixelFormat::eD16, size );
+		m_colour->setImage( utils::PixelFormat::eR8G8B8A8, size, renderer::ImageUsageFlag::eColourAttachment );
+		m_depth->setImage( utils::PixelFormat::eD16, size, renderer::ImageUsageFlag::eDepthStencilAttachment );
 		m_frameBuffer = std::make_shared< renderer::FrameBuffer >( *m_renderPass
 			, size
 			, renderer::TextureCRefArray{ *m_colour, *m_depth } );
@@ -148,7 +147,10 @@ namespace render
 		{
 			commandBuffer.beginRenderPass( *m_renderPass
 				, *m_frameBuffer
-				, utils::RgbaColour{ 0, 0, 0, 1 } );
+				, {
+					renderer::ClearValue{ utils::RgbaColour{ 0, 0, 0, 1 } },
+					renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0 } }
+				} );
 			commandBuffer.setViewport( camera.viewport().viewport() );
 			m_renderer.draw( *m_stagingBuffer
 				, commandBuffer

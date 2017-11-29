@@ -115,7 +115,7 @@ namespace vkapp
 
 			if ( m_device )
 			{
-				m_device->getDevice().waitIdle();
+				m_device->waitIdle();
 			}
 
 			m_commandBuffers.clear();
@@ -142,7 +142,7 @@ namespace vkapp
 	RenderPanel::~RenderPanel()
 	{
 		delete m_timer;
-		m_device->getDevice().waitIdle();
+		m_device->waitIdle();
 		m_commandBuffers.clear();
 		m_frameBuffers.clear();
 		m_uniformBuffer.reset();
@@ -281,13 +281,14 @@ namespace vkapp
 			renderer::DescriptorSetLayoutBinding{ 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex }
 		};
 		m_descriptorLayout = std::make_unique< renderer::DescriptorSetLayout >( *m_device, bindings );
-		m_descriptorPool = std::make_unique< renderer::DescriptorSetPool >( *m_descriptorLayout );
+		m_descriptorPool = std::make_unique< renderer::DescriptorSetPool >( *m_descriptorLayout, 1u );
 		m_descriptorSet = std::make_unique< renderer::DescriptorSet >( *m_descriptorPool );
 		m_descriptorSet->createBinding( bindings[0]
 			, *m_texture
 			, *m_sampler );
 		m_descriptorSet->createBinding( bindings[1]
-			, *m_uniformBuffer );
+			, *m_uniformBuffer
+			, 0u );
 		m_descriptorSet->update();
 	}
 
@@ -372,13 +373,15 @@ namespace vkapp
 
 			wxSize size{ GetClientSize() };
 
-			if ( commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT ) )
+			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 			{
 				auto dimensions = m_swapChain->getDimensions();
 				m_swapChain->preRenderCommands( i, commandBuffer );
 				commandBuffer.beginRenderPass( *m_renderPass
 					, frameBuffer
-					, m_swapChain->getClearColour() );
+					, {
+						renderer::ClearValue{ m_swapChain->getClearColour() }
+					} );
 				commandBuffer.bindPipeline( *m_pipeline );
 				commandBuffer.setViewport( { uint32_t( dimensions.x )
 					, uint32_t( dimensions.y )

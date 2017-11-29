@@ -86,12 +86,12 @@ namespace render
 			renderer::UniformBuffer< MatrixUbo > m_mtxUbo;
 			//! L'UBO contenant les informations de picking.
 			renderer::UniformBuffer< PickingUbo > m_pickUbo;
-			//! Le layout des descriptor sets du noeud, pour les UBO.
-			renderer::DescriptorSetLayout m_uboDescriptorLayout;
-			//! Le pool de descriptor set du noeud, pour les UBO.
-			renderer::DescriptorSetPool m_uboDescriptorPool;
-			//! Le descriptor set de ce noeud, pour les UBO.
-			renderer::DescriptorSet m_uboDescriptor;
+			//! Le layout des descriptor sets du noeud.
+			renderer::DescriptorSetLayout m_descriptorLayout;
+			//! Le pool de descriptor set du noeud.
+			renderer::DescriptorSetPool m_descriptorPool;
+			//! Le descriptor set de ce noeud.
+			renderer::DescriptorSet m_descriptor;
 		};
 		/**
 		*\brief
@@ -109,17 +109,16 @@ namespace render
 			ObjectNode( renderer::Device const & device
 				, renderer::RenderPass const & renderPass
 				, renderer::DescriptorSetLayout && layout
-				, renderer::ShaderProgramPtr && program );
-			//! Le layout du pipeline.
-			renderer::PipelineLayout m_pipelineLayout;
-			//! Le pipeline.
-			renderer::PipelinePtr m_pipeline;
+				, renderer::ShaderProgramPtr && program
+				, NodeType type );
 			//! Le layout du tampon de positions.
 			renderer::VertexLayout m_posLayout;
-			//! Le layout du tampon de normales.
-			renderer::VertexLayout m_nmlLayout;
 			//! Le layout du tampon de coordonnées de texture.
 			renderer::VertexLayout m_texLayout;
+			//! Le layout du pipeline.
+			renderer::PipelineLayoutPtr m_pipelineLayout;
+			//! Le pipeline.
+			renderer::PipelinePtr m_pipeline;
 		};
 		//! Un pointeur sur un ObjectNode.
 		using ObjectNodePtr = std::unique_ptr< ObjectNode >;
@@ -141,13 +140,14 @@ namespace render
 			BillboardNode( renderer::Device const & device
 				, renderer::RenderPass const & renderPass
 				, renderer::DescriptorSetLayout && layout
-				, renderer::ShaderProgramPtr && program );
+				, renderer::ShaderProgramPtr && program
+				, NodeType type );
 			//! L'UBO contenant les variables liées au billboard.
 			renderer::UniformBuffer< BillboardUbo > m_billboardUbo;
 			//! Le layout du tampon de positions.
 			renderer::VertexLayout m_layout;
 			//! Le layout du pipeline.
-			renderer::PipelineLayout m_pipelineLayout;
+			renderer::PipelineLayoutPtr m_pipelineLayout;
 			//! Le pipeline.
 			renderer::PipelinePtr m_pipeline;
 		};

@@ -23,8 +23,6 @@ include_directories(
 	${CMAKE_BINARY_DIR}/Renderer
 )
 
-add_forced_include( "${CMAKE_CURRENT_SOURCE_DIR}/pch.h" )
-
 add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
@@ -32,8 +30,8 @@ add_library( ${PROJECT_NAME} STATIC
 )
 
 add_target_precompiled_header( ${PROJECT_NAME}
-	pch.h
-	pch.cpp
+	RenderLibPch.hpp
+	RenderLibPch.cpp
 	${CMAKE_CXX_FLAGS}
 	${${PROJECT_NAME}_SRC_FILES}
 )

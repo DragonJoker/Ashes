@@ -176,6 +176,13 @@ namespace renderer
 		ImageMemoryBarrier makeColourAttachment()const;
 		/**
 		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout d'attache profondeur/stencil.
+		*\return
+		*	La barrière mémoire.
+		*/
+		ImageMemoryBarrier makeDepthStencilAttachment()const;
+		/**
+		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de destination de dessin.
 		*\return
 		*	La barrière mémoire.

@@ -1,9 +1,13 @@
 #include "Scene.h"
 
 #include "Billboard.h"
+#include "BorderPanelOverlay.h"
 #include "Object.h"
+#include "OverlayRenderer.h"
+#include "PanelOverlay.h"
 #include "PolyLine.h"
 #include "Submesh.h"
+#include "TextOverlay.h"
 
 #include <Utils/ExponentialRange.hpp>
 #include <Utils/LogarithmicRange.hpp>
@@ -38,9 +42,11 @@ namespace render
 
 	Scene::Scene( renderer::Device const & device
 		, renderer::RenderPass const & renderPass
-		, utils::IVec2 const & size )
+		, utils::IVec2 const & size
+		, OverlayRenderer & overlayRenderer )
 		: RenderableContainer{ device, renderPass }
 		, m_camera{ size }
+		, m_overlayRenderer{ overlayRenderer }
 	{
 		auto material = m_materials.findElement( "FullAlphaWhite" );
 
@@ -64,6 +70,7 @@ namespace render
 			billboard.second->cleanup();
 		}
 
+		m_overlays.clear();
 		m_materials.clear();
 		m_meshes.clear();
 		m_textures.clear();
@@ -73,7 +80,7 @@ namespace render
 	void Scene::update()
 	{
 		m_cameraChanged |= m_camera.update();
-		doUpdate( m_changedMovables );
+		render::doUpdate( m_changedMovables );
 		doUpdateBillboards();
 		m_cameraChanged = false;
 	}
@@ -86,8 +93,8 @@ namespace render
 		}
 	}
 
-	void Scene::draw( renderer::StagingBuffer const & stagingBuffer
-		, renderer::CommandBuffer const & commandBuffer )const
+	void Scene::updateUbos( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer )
 	{
 		if ( m_cameraChanged )
 		{
@@ -104,8 +111,16 @@ namespace render
 		}
 
 		auto percent = m_state.zoomBounds().percent( m_state.zoom() );
-		doDraw( stagingBuffer
+		doUpdate( stagingBuffer
 			, commandBuffer
+			, m_camera
+			, 2.0f * percent + ( 1.0f - percent ) / 100.0f );
+	}
+
+	void Scene::draw( renderer::CommandBuffer const & commandBuffer )const
+	{
+		auto percent = m_state.zoomBounds().percent( m_state.zoom() );
+		doDraw( commandBuffer
 			, m_camera
 			, 2.0f * percent + ( 1.0f - percent ) / 100.0f );
 	}
@@ -176,20 +191,41 @@ namespace render
 	void Scene::addOverlay( std::string const & name
 		, PanelOverlayPtr overlay )
 	{
+		if ( !m_overlays.findElement( name ) )
+		{
+			m_overlays.addElement( name, overlay );
+			m_overlayRenderer.registerOverlay( overlay );
+		}
 	}
 
 	void Scene::addOverlay( std::string const & name
 		, BorderPanelOverlayPtr overlay )
 	{
+		if ( !m_overlays.findElement( name ) )
+		{
+			m_overlays.addElement( name, overlay );
+			m_overlayRenderer.registerOverlay( overlay );
+		}
 	}
 
 	void Scene::addOverlay( std::string const & name
 		, TextOverlayPtr overlay )
 	{
+		if ( !m_overlays.findElement( name ) )
+		{
+			m_overlays.addElement( name, overlay );
+			m_overlayRenderer.registerOverlay( overlay );
+		}
 	}
 
 	void Scene::removeOverlay( std::string const & name )
 	{
+		auto overlay = m_overlays.findElement( name );
+
+		if ( overlay )
+		{
+			m_overlayRenderer.unregisterOverlay( overlay );
+		}
 	}
 
 	void Scene::onMovableChanged( Movable & movable )

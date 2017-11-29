@@ -7,12 +7,15 @@ namespace render
 	Viewport::Viewport( utils::IVec2 const & size )noexcept
 		: m_size{ size }
 		, m_viewport{ size.x, size.y, 0, 0 }
+		, m_scissor{ 0, 0, size.x, size.y }
 	{
 	}
 
 	void Viewport::resize( utils::IVec2 const & size )noexcept
 	{
 		m_size = size;
+		m_viewport = renderer::Viewport{ uint32_t( size.x ), uint32_t( size.y ), 0, 0 };
+		m_scissor = renderer::Scissor{ 0, 0, uint32_t( size.x ), uint32_t( size.y ) };
 	}
 
 	void Viewport::ortho( float left

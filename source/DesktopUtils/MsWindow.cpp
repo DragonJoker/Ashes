@@ -149,6 +149,7 @@ namespace utils
 		if ( m_context != INVALID_HANDLE_VALUE )
 		{
 			onDestroy();
+			m_device.reset();
 			m_renderer.reset();
 			::ReleaseDC( m_hwnd, m_hdc );
 		}
@@ -402,5 +403,25 @@ namespace utils
 		}
 
 		return result;
+	}
+
+	void MsWindow::doUpdateFps( std::chrono::microseconds const & duration )
+	{
+		++m_frameCount;
+		m_framesTimes[m_frameIndex] = duration;
+		auto count = std::min( m_frameCount, m_framesTimes.size() );
+		auto averageTime = std::accumulate( m_framesTimes.begin()
+			, m_framesTimes.begin() + count
+			, std::chrono::microseconds{ 0 } ).count() / float( count );
+		m_frameIndex = ++m_frameIndex % FrameSamplesCount;
+		std::stringstream title;
+		auto ms = duration.count() / 1000.0f;
+		auto avgms = averageTime / 1000.0f;
+		title << " - (Instant) " << ms << " ms";
+		title << " - " << ( 1000.0f / ms ) << " fps";
+		title << " - (Average) " << avgms << " ms";
+		title << " - " << ( 1000.0f / avgms ) << " fps";
+		strcpy( m_title.data(), title.str().c_str() );
+		//::SendMessageA( m_hwnd, WM_SETTEXT, 0, LPARAM( m_title.data() ) );
 	}
 }

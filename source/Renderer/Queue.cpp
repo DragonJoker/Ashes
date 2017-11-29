@@ -100,4 +100,9 @@ namespace renderer
 			, imagesIndex
 			, convert( semaphoresToWait ) ) );
 	}
+
+	bool Queue::waitIdle()const
+	{
+		return vk::checkError( m_queue.waitIdle() );
+	}
 }

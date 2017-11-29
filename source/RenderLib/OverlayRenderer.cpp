@@ -3,9 +3,11 @@
 #include "Texture.h"
 
 #include <Renderer/Attribute.hpp>
+#include <Renderer/DepthStencilState.hpp>
 #include <Renderer/DescriptorSet.hpp>
 #include <Renderer/DescriptorSetLayoutBinding.hpp>
 #include <Renderer/DescriptorSetPool.hpp>
+#include <Renderer/MultisampleState.hpp>
 #include <Renderer/StagingBuffer.hpp>
 #include <Renderer/VertexBuffer.hpp>
 
@@ -23,22 +25,6 @@ namespace render
 
 	namespace
 	{
-		void doFillBuffers( renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer
-			, Overlay::QuadArray::const_iterator begin
-			, uint32_t count
-			, uint32_t & offset
-			, renderer::VertexBuffer< Overlay::Quad > const & buffer )
-		{
-			stagingBuffer.copyVertexData( commandBuffer
-				, reinterpret_cast< uint8_t const * const >( &( *begin ) )
-				, uint32_t( count * sizeof( Overlay::Quad ) )
-				, uint32_t( offset * sizeof( Overlay::Quad ) )
-				, buffer
-				, renderer::PipelineStageFlag::eVertexInput );
-			offset += count;
-		}
-
 		std::vector< OverlayPtr > doSortPerZIndex( OverlayList const & overlays
 			, utils::IVec2 const & size )
 		{
@@ -97,93 +83,156 @@ namespace render
 			};
 		}
 
-		renderer::DescriptorSetLayout doCreateMaterialDescriptorLayout( renderer::Device const & device
-			, TextureFlags flags )
+		renderer::DescriptorSetLayoutPtr doCreateDescriptorLayout( renderer::Device const & device
+			, TextureFlags flags
+			, bool text )
 		{
-			uint32_t index = 0u;
 			std::vector< renderer::DescriptorSetLayoutBinding > bindings;
+
+			bindings.emplace_back( UberShader::UboOverlayBinding
+				, renderer::DescriptorType::eUniformBuffer
+				, renderer::ShaderStageFlag::eVertex | renderer::ShaderStageFlag::eFragment );
 
 			if ( checkFlag( flags, TextureFlag::eDiffuse ) )
 			{
 				// Diffuse texture.
-				bindings.emplace_back( index++
-					, renderer::DescriptorType::eSampledImage
+				bindings.emplace_back( UberShader::TextureDiffuseBinding
+					, renderer::DescriptorType::eCombinedImageSampler
 					, renderer::ShaderStageFlag::eFragment );
 			}
 
-			if ( checkFlag( flags, TextureFlag::eOpacity ) )
+			if ( checkFlag( flags, TextureFlag::eOpacity )
+				|| text )
 			{
 				// Opacity texture
-				bindings.emplace_back( index++
-					, renderer::DescriptorType::eSampledImage
+				bindings.emplace_back( UberShader::TextureOpacityBinding
+					, renderer::DescriptorType::eCombinedImageSampler
 					, renderer::ShaderStageFlag::eFragment );
 			}
 
-			return renderer::DescriptorSetLayout{ device, bindings };
+			return std::make_unique< renderer::DescriptorSetLayout >( device, bindings );
 		}
 
-		renderer::DescriptorSet doCreateMaterialDescriptor( renderer::DescriptorSetPool const & pool
-			, Material const & material )
+		template< typename Data, typename OvType >
+		bool doAddOverlay( OverlayPtr overlay
+			, OverlayNode const & node
+			, OverlayVbo< Data, OvType > & vbo )
 		{
-			renderer::DescriptorSet result{ pool };
-			uint32_t index = 0u;
+			bool result = vbo.m_overlays.size() < vbo.m_data.size();
 
-			if ( material.hasDiffuseMap() )
+			if ( result )
 			{
-				result.createBinding( renderer::DescriptorSetLayoutBinding{ index++
-					, renderer::DescriptorType::eSampledImage
-					, renderer::ShaderStageFlag::eFragment }
-					, material.diffuseMap().texture()
-					, material.diffuseMap().sampler() );
-			}
+				if ( vbo.m_overlays.end() != std::find_if( vbo.m_overlays.begin()
+					, vbo.m_overlays.end()
+					, [&overlay]( RenderOverlayPtr< OvType > const & lookup )
+					{
+						return lookup->m_overlay == overlay;
+					} ) )
+				{
+					assert( false && "Overlay has already been added" );
+					return result;
+				}
 
-			if ( material.hasOpacityMap() )
-			{
-				result.createBinding( renderer::DescriptorSetLayoutBinding{ index++
-					, renderer::DescriptorType::eSampledImage
-					, renderer::ShaderStageFlag::eFragment }
-					, material.opacityMap().texture()
-					, material.opacityMap().sampler() );
+				auto & material = overlay->material();
+				vbo.m_overlays.push_back( makeRenderOverlay( *node.m_descriptorPool
+					, std::static_pointer_cast< OvType >( overlay )
+					, uint32_t( vbo.m_overlays.size() )
+					, *node.m_overlayUbo ) );
+				result = true;
 			}
 
 			return result;
 		}
 
-		renderer::DescriptorSet doCreateMaterialDescriptor( renderer::DescriptorSetPool const & pool
-			, Material const & material
-			, Texture const & fontTexture )
+		template< typename Data, typename OvType >
+		bool doRemoveOverlay( OverlayPtr overlay
+			, OverlayVbo< Data, OvType > & vbo )
 		{
-			renderer::DescriptorSet result{ pool };
-			uint32_t index = 0u;
+			auto itr = std::find_if( vbo.m_overlays.begin()
+				, vbo.m_overlays.end()
+				, [overlay]( RenderOverlayPtr< OvType > & lookup )
+				{
+					return lookup->m_overlay == overlay;
+				} );
 
-			if ( material.hasDiffuseMap() )
+			if ( itr == vbo.m_overlays.end() )
 			{
-				result.createBinding( renderer::DescriptorSetLayoutBinding{ index++
-					, renderer::DescriptorType::eSampledImage
-					, renderer::ShaderStageFlag::eFragment }
-					, material.diffuseMap().texture()
-					, material.diffuseMap().sampler() );
+				return false;
 			}
 
-			result.createBinding( renderer::DescriptorSetLayoutBinding{ index++
-				, renderer::DescriptorType::eSampledImage
-				, renderer::ShaderStageFlag::eFragment }
-				, fontTexture.texture()
-				, fontTexture.sampler() );
+			itr = vbo.m_overlays.erase( itr );
+			auto index = uint32_t( std::distance( itr = vbo.m_overlays.begin(), itr ) );
 
-			return result;
+			for ( auto it = itr; it != vbo.m_overlays.end(); ++it )
+			{
+				( *it )->createDescriptor( index++ );
+			}
+
+			return true;
 		}
 
-		renderer::DescriptorSetLayout doCreateUboDescriptorLayout( renderer::Device const & device )
+		void doCopyBuffer( PanelOverlay const & overlay
+			, uint32_t index
+			, std::vector< Overlay::Quad > & buffer )
 		{
-			uint32_t index = 0u;
-			std::vector< renderer::DescriptorSetLayoutBinding > bindings;
+			buffer[index] = overlay.panelVertex();
+		}
 
-			bindings.emplace_back( index++
-				, renderer::DescriptorType::eUniformBuffer
-				, renderer::ShaderStageFlag::eVertex | renderer::ShaderStageFlag::eFragment );
+		void doCopyBuffer( BorderPanelOverlay const & overlay
+			, uint32_t index
+			, std::vector< Overlay::Quad > & buffer )
+		{
+			buffer[index] = overlay.panelVertex();
+		}
 
-			return renderer::DescriptorSetLayout{ device, bindings };
+		void doCopyBuffer( BorderPanelOverlay const & overlay
+			, uint32_t index
+			, std::vector< BorderPanelOverlay::BorderQuads > & buffer )
+		{
+			buffer[index] = overlay.borderVertex();
+		}
+
+		void doCopyBuffer( TextOverlay const & overlay
+			, uint32_t index
+			, std::vector< Overlay::Quad > & buffer )
+		{
+			std::copy( overlay.textVertex().begin()
+				, overlay.textVertex().end()
+				, buffer.begin() + index );
+		}
+
+		template< typename Data, typename OvType >
+		void doUpdate( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
+			, OverlayNode & node
+			, uint32_t count
+			, OverlayVbo< Data, OvType > & vbo )
+		{
+			if ( !vbo.m_overlays.empty() )
+			{
+				uint32_t index = 0u;
+
+				for ( auto & overlay : vbo.m_overlays )
+				{
+					auto & data = node.m_overlayUbo->getData( index );
+					data.modelProj = overlay->m_overlay->transform();
+					data.colour = utils::RgbaColour{ overlay->m_overlay->material().ambient()
+						, overlay->m_overlay->material().opacity() };
+					doCopyBuffer( *overlay->m_overlay
+						, uint32_t( index * count )
+						, vbo.m_data );
+					++index;
+				}
+
+				stagingBuffer.copyUniformData( commandBuffer
+					, node.m_overlayUbo->getDatas()
+					, *node.m_overlayUbo
+					, renderer::PipelineStageFlag::eVertexShader | renderer::PipelineStageFlag::eFragmentShader );
+				stagingBuffer.copyVertexData( commandBuffer
+					, vbo.m_data
+					, *vbo.m_buffer
+					, renderer::PipelineStageFlag::eVertexInput );
+			}
 		}
 	}
 
@@ -199,38 +248,123 @@ namespace render
 			, textures
 			, opacity
 			, text ? ObjectType::eTextOverlay : ObjectType::ePanelOverlay ) }
-		, m_pipelineLayout{ device, nullptr }
-		, m_layout{ 0u }
-		, m_overlayUbo{ device, 1u, renderer::BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal }
-		, m_materialDescriptorLayout{ doCreateMaterialDescriptorLayout( device, textures ) }
-		, m_materialDescriptorPool{ m_materialDescriptorLayout }
-		, m_uboDescriptorLayout{ doCreateUboDescriptorLayout( device ) }
-		, m_uboDescriptorPool{ m_uboDescriptorLayout }
-		, m_uboDescriptor{ m_uboDescriptorPool }
+		, m_layout{ std::make_unique< renderer::VertexLayout >( 0u ) }
+		, m_overlayUbo{ std::make_unique< renderer::UniformBuffer< OverlayUbo > >( device
+			, MaxObjectsCount
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
+		, m_descriptorLayout{ doCreateDescriptorLayout( device, textures, text ) }
+		, m_descriptorPool{ std::make_unique< renderer::DescriptorSetPool >( *m_descriptorLayout, MaxObjectsCount ) }
 	{
-		m_pipeline = std::make_shared< renderer::Pipeline >( device
-			, m_pipelineLayout
-			, *m_program
-			, renderer::VertexLayoutCRefArray
-			{
-				m_layout
-			}
-			, renderPass
-			, renderer::PrimitiveTopology::eTriangleFan );
-
-		m_layout.createAttribute< utils::Vec2 >( 0u
+		m_layout->createAttribute< utils::Vec2 >( 0u
 			, offsetof( TextOverlay::Vertex, position ) );
 
 		if ( textures )
 		{
-			m_layout.createAttribute< utils::Vec2 >( 1u
+			m_layout->createAttribute< utils::Vec2 >( 1u
 				, offsetof( TextOverlay::Vertex, texture ) );
 		}
 
-		m_uboDescriptor.createBinding( renderer::DescriptorSetLayoutBinding{ 0u
-				, renderer::DescriptorType::eUniformBuffer
-				, renderer::ShaderStageFlag::eVertex | renderer::ShaderStageFlag::eFragment }
-			, m_overlayUbo );
+		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( device, m_descriptorLayout.get() );
+		m_pipeline = std::make_shared< renderer::Pipeline >( device
+			, *m_pipelineLayout
+			, *m_program
+			, renderer::VertexLayoutCRefArray
+			{
+				*m_layout
+			}
+			, renderPass
+			, renderer::PrimitiveTopology::eTriangleFan );
+		m_pipeline->multisampleState( renderer::MultisampleState{} )
+			.depthStencilState( renderer::DepthStencilState{} )
+			.finish();
+	}
+
+	//*************************************************************************
+
+	template< typename OvType >
+	RenderOverlay< OvType >::RenderOverlay( renderer::DescriptorSetPool const & pool
+		, std::shared_ptr< OvType > overlay
+		, uint32_t index
+		, renderer::UniformBuffer< OverlayUbo > const & overlayUbo
+		, Texture const * opacity )
+		: m_pool{ pool }
+		, m_overlayUbo{ overlayUbo }
+		, m_opacity{ opacity }
+		, m_overlay{ overlay }
+	{
+		createDescriptor( index );
+	}
+
+	template< typename OvType >
+	void RenderOverlay< OvType >::createDescriptor( uint32_t index )
+	{
+		m_index = index;
+		m_descriptor = std::make_unique< renderer::DescriptorSet >( m_pool );
+		m_descriptor->createBinding( m_pool.getLayout().getBinding( UberShader::UboOverlayBinding )
+			, m_overlayUbo
+			, index );
+
+		auto & material = m_overlay->material();
+
+		if ( material.hasDiffuseMap() )
+		{
+			m_descriptor->createBinding( m_pool.getLayout().getBinding( UberShader::TextureDiffuseBinding )
+				, material.diffuseMap().texture()
+				, material.diffuseMap().sampler() );
+		}
+
+		if ( m_opacity )
+		{
+			m_descriptor->createBinding( m_pool.getLayout().getBinding( UberShader::TextureOpacityBinding )
+				, m_opacity->texture()
+				, m_opacity->sampler() );
+		}
+
+		m_descriptor->update();
+	}
+
+	//*************************************************************************
+	
+	template< typename OvType >
+	RenderOverlayPtr< OvType > makeRenderOverlay( renderer::DescriptorSetPool const & pool
+		, std::shared_ptr< OvType > overlay
+		, uint32_t index
+		, renderer::UniformBuffer< OverlayUbo > const & overlayUbo )
+	{
+		return std::make_unique< RenderOverlay< OvType > >( pool
+			, overlay
+			, index
+			, overlayUbo
+			, overlay->material().hasOpacityMap()
+				? &overlay->material().opacityMap()
+				: nullptr );
+	}
+	
+	RenderOverlayPtr< TextOverlay > makeRenderOverlay( renderer::DescriptorSetPool const & pool
+		, TextOverlayPtr overlay
+		, uint32_t index
+		, renderer::UniformBuffer< OverlayUbo > const & overlayUbo )
+	{
+		return std::make_unique< RenderOverlay< TextOverlay > >( pool
+			, overlay
+			, index
+			, overlayUbo
+			, &overlay->fontTexture().texture() );
+	}
+
+	//*************************************************************************
+
+	template< typename Data, typename OvType >
+	OverlayVbo< Data, OvType >::OverlayVbo( renderer::Device const & device
+		, uint32_t count )
+		: m_buffer{ renderer::makeVertexBuffer< Data >( device
+			, 0u
+			, count
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
+		, m_data{ count, Data{} }
+	{
 	}
 
 	//*************************************************************************
@@ -241,135 +375,196 @@ namespace render
 		: m_device{ device }
 		, m_renderPass{ renderPass }
 		, m_panelNodes{ doCreatePanelNodes( device, renderPass ) }
+		, m_borderNodesPanel{ doCreatePanelNodes( device, renderPass ) }
+		, m_borderNodesBorder{ doCreatePanelNodes( device, renderPass ) }
 		, m_textNode{ device, renderPass, true, OpacityType::eAlphaTest, TextureFlag::eOpacity }
-		, m_panelBuffer{ renderer::makeVertexBuffer< Overlay::Quad >( device
-			, 0u
-			, uint32_t( 1u * sizeof( Overlay::Quad ) )
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_borderBuffer{ renderer::makeVertexBuffer< Overlay::Quad >( device
-			, 0u
-			, uint32_t( 8u * sizeof( Overlay::Quad ) )
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
+		, m_panelOverlays
+		{
+			PanelOverlayVbo{ device, MaxObjectsCount },
+			PanelOverlayVbo{ device, MaxObjectsCount },
+			PanelOverlayVbo{ device, MaxObjectsCount },
+			PanelOverlayVbo{ device, MaxObjectsCount },
+			PanelOverlayVbo{ device, MaxObjectsCount },
+			PanelOverlayVbo{ device, MaxObjectsCount },
+			PanelOverlayVbo{ device, MaxObjectsCount },
+			PanelOverlayVbo{ device, MaxObjectsCount },
+			PanelOverlayVbo{ device, MaxObjectsCount },
+			PanelOverlayVbo{ device, MaxObjectsCount },
+		}
+		, m_borderOverlaysPanels
+		{
+			BorderOverlayPanelVbo{ device, MaxObjectsCount },
+			BorderOverlayPanelVbo{ device, MaxObjectsCount },
+			BorderOverlayPanelVbo{ device, MaxObjectsCount },
+			BorderOverlayPanelVbo{ device, MaxObjectsCount },
+			BorderOverlayPanelVbo{ device, MaxObjectsCount },
+			BorderOverlayPanelVbo{ device, MaxObjectsCount },
+			BorderOverlayPanelVbo{ device, MaxObjectsCount },
+			BorderOverlayPanelVbo{ device, MaxObjectsCount },
+			BorderOverlayPanelVbo{ device, MaxObjectsCount },
+			BorderOverlayPanelVbo{ device, MaxObjectsCount },
+		}
+		, m_borderOverlaysBorders
+		{
+			BorderOverlayBorderVbo{ device, MaxObjectsCount },
+			BorderOverlayBorderVbo{ device, MaxObjectsCount },
+			BorderOverlayBorderVbo{ device, MaxObjectsCount },
+			BorderOverlayBorderVbo{ device, MaxObjectsCount },
+			BorderOverlayBorderVbo{ device, MaxObjectsCount },
+			BorderOverlayBorderVbo{ device, MaxObjectsCount },
+			BorderOverlayBorderVbo{ device, MaxObjectsCount },
+			BorderOverlayBorderVbo{ device, MaxObjectsCount },
+			BorderOverlayBorderVbo{ device, MaxObjectsCount },
+			BorderOverlayBorderVbo{ device, MaxObjectsCount },
+		}
 		, m_maxCharsPerBuffer{ maxCharsPerBuffer }
 		, m_viewport{ { 100, 100 } }
 	{
+		m_textOverlays.emplace_back( device, MaxObjectsCount * m_maxCharsPerBuffer );
 	}
 
 	OverlayRenderer::~OverlayRenderer()
 	{
 	}
 
-	void OverlayRenderer::registerOverlay( PanelOverlay const & overlay )
+	void OverlayRenderer::registerOverlay( PanelOverlayPtr overlay )
 	{
-		auto it = m_panelOverlays.find( &overlay );
+		assert( overlay && "Null overlay given" );
+		auto & material = overlay->material();
+		auto node = UberShader::nodeType( material.opacityType()
+			, material.textureFlags() );
+		doAddOverlay( overlay
+			, m_panelNodes[size_t( node )]
+			, m_panelOverlays[size_t( node )] );
+	}
 
-		if ( it == m_panelOverlays.end() )
+	void OverlayRenderer::registerOverlay( BorderPanelOverlayPtr overlay )
+	{
+		assert( overlay && "Null overlay given" );
+		auto & material = overlay->material();
+		auto node = UberShader::nodeType( material.opacityType()
+			, material.textureFlags() );
+		doAddOverlay( overlay
+			, m_borderNodesPanel[size_t( node )]
+			, m_borderOverlaysPanels[size_t( node )] );
+		doAddOverlay( overlay
+			, m_borderNodesBorder[size_t( node )]
+			, m_borderOverlaysBorders[size_t( node )] );
+	}
+
+	void OverlayRenderer::registerOverlay( TextOverlayPtr overlay )
+	{
+		doAddOverlay( overlay
+			, m_textNode
+			, m_textOverlays[m_textOverlays.size() - 1] );
+	}
+
+	void OverlayRenderer::unregisterOverlay( OverlayPtr overlay )
+	{
+		switch ( overlay->type() )
 		{
-			auto & material = overlay.material();
-			auto & node = m_panelNodes[size_t( UberShader::nodeType
-				( material.opacityType()
-				, material.textureFlags() ) )];
-			m_panelOverlays.emplace( &overlay
-				, doCreateMaterialDescriptor( node.m_materialDescriptorPool, material ) );
+		case Overlay::Type::ePanel:
+			unregisterOverlay( std::static_pointer_cast< PanelOverlay >( overlay ) );
+			break;
+
+		case Overlay::Type::eBorderPanel:
+			unregisterOverlay( std::static_pointer_cast< BorderPanelOverlay >( overlay ) );
+			break;
+
+		case Overlay::Type::eText:
+			unregisterOverlay( std::static_pointer_cast< TextOverlay >( overlay ) );
+			break;
 		}
 	}
 
-	void OverlayRenderer::registerOverlay( BorderPanelOverlay const & overlay )
+	void OverlayRenderer::unregisterOverlay( PanelOverlayPtr overlay )
 	{
-		auto it = m_panelOverlays.find( &overlay );
+		auto & material = overlay->material();
+		auto node = UberShader::nodeType( material.opacityType()
+			, material.textureFlags() );
+		bool result = doRemoveOverlay( overlay, m_panelOverlays[size_t( node )] );
+		assert( result && "Overlay not found in the list" );
+	}
 
-		if ( it == m_panelOverlays.end() )
+	void OverlayRenderer::unregisterOverlay( BorderPanelOverlayPtr overlay )
+	{
+		auto & material = overlay->material();
+		auto node = UberShader::nodeType( material.opacityType()
+			, material.textureFlags() );
+		bool result = doRemoveOverlay( overlay, m_borderOverlaysPanels[size_t( node )] );
+		assert( result && "Overlay panel not found in the list" );
+		result = doRemoveOverlay( overlay, m_borderOverlaysBorders[size_t( node )] );
+		assert( result && "Overlay borders not found in the list" );
+	}
+
+	void OverlayRenderer::unregisterOverlay( TextOverlayPtr overlay )
+	{
+		bool result = false;
+		auto it = m_textOverlays.begin();
+
+		while ( !result )
 		{
-			auto & material = overlay.material();
-			auto & node = m_panelNodes[size_t( UberShader::nodeType
-				( material.opacityType()
-				, material.textureFlags() ) )];
-			m_panelOverlays.emplace( &overlay
-				, doCreateMaterialDescriptor( node.m_materialDescriptorPool
-					, material ) );
+			result = doRemoveOverlay( overlay, *it );
 		}
 
-		it = m_borderOverlays.find( &overlay );
+		assert( result && "Overlay not found in the list" );
+	}
 
-		if ( it == m_borderOverlays.end() )
+	void OverlayRenderer::updateBuffers( renderer::StagingBuffer const & stagingBuffer
+		, renderer::CommandBuffer const & commandBuffer )
+	{
+		uint32_t index = 0;
+
+		for ( auto & renderOverlays : m_panelOverlays )
 		{
-			auto & material = overlay.borderMaterial();
-			auto & node = m_panelNodes[size_t( UberShader::nodeType
-				( material.opacityType()
-				, material.textureFlags() ) )];
-			m_borderOverlays.emplace( &overlay
-				, doCreateMaterialDescriptor( node.m_materialDescriptorPool
-					, material ) );
+			doUpdate( stagingBuffer
+				, commandBuffer
+				, m_panelNodes[index++]
+				, 1u
+				, renderOverlays );
+		}
+
+		index = 0;
+
+		for ( auto & renderOverlays : m_borderOverlaysPanels )
+		{
+			doUpdate( stagingBuffer
+				, commandBuffer
+				, m_borderNodesPanel[index++]
+				, 1u
+				, renderOverlays );
+		}
+
+		index = 0;
+
+		for ( auto & renderOverlays : m_borderOverlaysBorders )
+		{
+			doUpdate( stagingBuffer
+				, commandBuffer
+				, m_borderNodesBorder[index++]
+				, 1u
+				, renderOverlays );
+		}
+
+		for ( auto & vbos : m_textOverlays )
+		{
+			doUpdate( stagingBuffer
+				, commandBuffer
+				, m_textNode
+				, m_maxCharsPerBuffer
+				, vbos );
 		}
 	}
 
-	void OverlayRenderer::registerOverlay( TextOverlay const & overlay )
-	{
-		auto it = m_textOverlays.find( &overlay );
-
-		if ( it == m_textOverlays.end() )
-		{
-			auto & material = overlay.material();
-			auto & node = m_panelNodes[size_t( UberShader::nodeType
-				( material.opacityType()
-				, material.textureFlags() ) )];
-			m_textOverlays.emplace( &overlay
-				, doCreateMaterialDescriptor( node.m_materialDescriptorPool
-					, material
-					, overlay.fontTexture().texture() ) );
-		}
-	}
-
-	void OverlayRenderer::unregisterOverlay( PanelOverlay const & overlay )
-	{
-		auto it = m_panelOverlays.find( &overlay );
-
-		if ( it != m_panelOverlays.end() )
-		{
-			m_panelOverlays.erase( it );
-		}
-	}
-
-	void OverlayRenderer::unregisterOverlay( BorderPanelOverlay const & overlay )
-	{
-		auto it = m_panelOverlays.find( &overlay );
-
-		if ( it != m_panelOverlays.end() )
-		{
-			m_panelOverlays.erase( it );
-		}
-
-		it = m_borderOverlays.find( &overlay );
-
-		if ( it != m_borderOverlays.end() )
-		{
-			m_borderOverlays.erase( it );
-		}
-	}
-
-	void OverlayRenderer::unregisterOverlay( TextOverlay const & overlay )
-	{
-		auto it = m_textOverlays.find( &overlay );
-
-		if ( it != m_textOverlays.end() )
-		{
-			m_textOverlays.erase( it );
-		}
-	}
-
-	void OverlayRenderer::draw( renderer::StagingBuffer const & stagingBuffer
-		, renderer::CommandBuffer const & commandBuffer
-		, OverlayList const & overlays )
+	void OverlayRenderer::draw( renderer::CommandBuffer const & commandBuffer
+		, OverlayList const & overlays )const
 	{
 		auto & size = m_viewport.size();
 		auto sorted = doSortPerZIndex( overlays, size );
 
 		for ( auto & overlay : sorted )
 		{
-			overlay->render( stagingBuffer
-				, commandBuffer
+			overlay->render( commandBuffer
 				, *this );
 		}
 	}
@@ -395,178 +590,152 @@ namespace render
 		m_sizeChanged = false;
 	}
 
-	void OverlayRenderer::drawPanel( renderer::StagingBuffer const & stagingBuffer
-		, renderer::CommandBuffer const & commandBuffer
-		, PanelOverlay const & overlay )
+	void OverlayRenderer::drawPanel( renderer::CommandBuffer const & commandBuffer
+		, PanelOverlay const & overlay )const
 	{
 		auto & material = overlay.material();
-		auto & node = m_panelNodes[size_t( UberShader::nodeType
-			( material.opacityType()
-			, material.textureFlags() ) )];
-		stagingBuffer.copyVertexData( commandBuffer
-			, overlay.panelVertex()
-			, *m_panelBuffer
-			, renderer::PipelineStageFlag::eVertexInput );
+		auto nodeType = size_t( UberShader::nodeType( material.opacityType()
+			, material.textureFlags() ) );
+		auto & overlays = m_panelOverlays[nodeType];
+		auto & node = m_panelNodes[nodeType];
 		commandBuffer.bindPipeline( *node.m_pipeline );
-		doDrawBuffer( stagingBuffer
-			, commandBuffer
-			, *m_panelBuffer
+		commandBuffer.setViewport( m_viewport.viewport() );
+		commandBuffer.setScissor( m_viewport.scissor() );
+		auto it = std::find_if( overlays.m_overlays.begin()
+			, overlays.m_overlays.end()
+			, [&overlay]( RenderOverlayPtr< PanelOverlay > const & lookup )
+			{
+				return lookup->m_overlay.get() == &overlay;
+			} );
+		assert( it != overlays.m_overlays.end() );
+		doDrawBuffer( commandBuffer
+			, *overlays.m_buffer
+			, ( *it )->m_index * MaxObjectsCount
 			, 1u
 			, overlay.transform()
 			, overlay.material()
 			, node
-			, m_panelOverlays.find( &overlay )->second );
+			, *( *it )->m_descriptor );
 	}
 
-	void OverlayRenderer::drawBorderPanel( renderer::StagingBuffer const & stagingBuffer
-		, renderer::CommandBuffer const & commandBuffer
-		, BorderPanelOverlay const & overlay )
+	void OverlayRenderer::drawBorderPanel( renderer::CommandBuffer const & commandBuffer
+		, BorderPanelOverlay const & overlay )const
 	{
 		auto & material = overlay.material();
-		auto & node = m_panelNodes[size_t( UberShader::nodeType
-			( material.opacityType()
-			, material.textureFlags() ) )];
-		stagingBuffer.copyVertexData( commandBuffer
-			, overlay.panelVertex()
-			, *m_panelBuffer
-			, renderer::PipelineStageFlag::eVertexInput );
-		stagingBuffer.copyVertexData( commandBuffer
-			, overlay.borderVertex()
-			, *m_borderBuffer
-			, renderer::PipelineStageFlag::eVertexInput );
+		auto nodeType = size_t( UberShader::nodeType( material.opacityType()
+			, material.textureFlags() ) );
+		auto & node = m_panelNodes[nodeType];
 		commandBuffer.bindPipeline( *node.m_pipeline );
-		doDrawBuffer( stagingBuffer
-			, commandBuffer
-			, *m_panelBuffer
+		commandBuffer.setViewport( m_viewport.viewport() );
+		commandBuffer.setScissor( m_viewport.scissor() );
+		auto & panelOverlays = m_borderOverlaysPanels[nodeType];
+		auto itPanel = std::find_if( panelOverlays.m_overlays.begin()
+			, panelOverlays.m_overlays.end()
+			, [&overlay]( RenderOverlayPtr< BorderPanelOverlay > const & lookup )
+			{
+				return lookup->m_overlay.get() == &overlay;
+			} );
+		assert( itPanel != panelOverlays.m_overlays.end() );
+		doDrawBuffer( commandBuffer
+			, *panelOverlays.m_buffer
+			, ( *itPanel )->m_index * MaxObjectsCount
 			, 1u
 			, overlay.transform()
 			, overlay.material()
 			, node
-			, m_panelOverlays.find( &overlay )->second );
-		doDrawBuffer( stagingBuffer
-			, commandBuffer
-			, *m_borderBuffer
-			, 8u
+			, *( *itPanel )->m_descriptor );
+		auto & borderOverlays = m_borderOverlaysPanels[nodeType];
+		auto itBorder = std::find_if( borderOverlays.m_overlays.begin()
+			, borderOverlays.m_overlays.end()
+			, [&overlay]( RenderOverlayPtr< BorderPanelOverlay > const & lookup )
+			{
+				return lookup->m_overlay.get() == &overlay;
+			} );
+		assert( itBorder != borderOverlays.m_overlays.end() );
+		doDrawBuffer( commandBuffer
+			, *borderOverlays.m_buffer
+			, ( *itBorder )->m_index * MaxObjectsCount
+			, 1u
 			, overlay.transform()
 			, overlay.borderMaterial()
 			, node
-			, m_borderOverlays.find( &overlay )->second );
+			, *( *itBorder )->m_descriptor );
 	}
 
-	void OverlayRenderer::drawText( renderer::StagingBuffer const & stagingBuffer
-		, renderer::CommandBuffer const & commandBuffer
-		, TextOverlay const & overlay )
+	void OverlayRenderer::drawText( renderer::CommandBuffer const & commandBuffer
+		, TextOverlay const & overlay )const
 	{
 		uint32_t offset{ 0u };
 		auto & quads = overlay.textVertex();
 		auto count = uint32_t( quads.size() );
-		auto it = quads.cbegin();
-		uint32_t index{ 0u };
-		std::vector< renderer::VertexBuffer< Overlay::Quad > const * > buffers;
+		commandBuffer.bindPipeline( *m_textNode.m_pipeline );
+		commandBuffer.setViewport( m_viewport.viewport() );
+		commandBuffer.setScissor( m_viewport.scissor() );
+		std::vector< RenderOverlayPtr< TextOverlay > >::const_iterator itText;
+		auto itVbo = std::find_if( m_textOverlays.begin()
+			, m_textOverlays.end()
+			, [&overlay, &itText]( TextOverlayVbo const & vboLookup )
+			{
+				auto it = std::find_if( vboLookup.m_overlays.begin()
+					, vboLookup.m_overlays.end()
+					, [&overlay]( RenderOverlayPtr< TextOverlay > const & lookup )
+					{
+						return lookup->m_overlay.get() == &overlay;
+					} );
 
-		while ( count > m_maxCharsPerBuffer )
-		{
-			buffers.push_back( &doFillTextPart( stagingBuffer
-				, commandBuffer
-				, count
-				, offset
-				, it
-				, index ) );
-			count -= m_maxCharsPerBuffer;
-		}
+				if ( it != vboLookup.m_overlays.end() )
+				{
+					itText = it;
+				}
 
-		if ( count > 0 )
-		{
-			buffers.push_back( &doFillTextPart( stagingBuffer
-				, commandBuffer
-				, count
-				, offset
-				, it
-				, index ) );
-		}
-
-		count = uint32_t( quads.size() );
-
-		for ( auto & buffer : buffers )
-		{
-			doDrawBuffer( stagingBuffer
-				, commandBuffer
-				, *buffer
-				, std::min( count, m_maxCharsPerBuffer )
-				, overlay.transform()
-				, overlay.material()
-				, m_textNode
-				, m_textOverlays.find( &overlay )->second );
-			count -= m_maxCharsPerBuffer;
-		}
+				return it != vboLookup.m_overlays.end();
+			} );
+		assert( itVbo != m_textOverlays.end() );
+		doDrawBuffer( commandBuffer
+			, *itVbo->m_buffer
+			, ( *itText )->m_index * m_maxCharsPerBuffer
+			, std::min( count, m_maxCharsPerBuffer )
+			, overlay.transform()
+			, overlay.material()
+			, m_textNode
+			, *( *itText )->m_descriptor );
 	}
 
-	renderer::VertexBuffer< Overlay::Quad > const & OverlayRenderer::doCreateTextBuffer( renderer::StagingBuffer const & stagingBuffer
-		, renderer::CommandBuffer const & commandBuffer )
-	{
-		auto buffer = renderer::makeVertexBuffer< TextOverlay::Quad >( m_device
-			, 0u
-			, m_maxCharsPerBuffer
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_textBuffers.push_back( std::move( buffer ) );
-		return *m_textBuffers.back();
-	}
-
-	void OverlayRenderer::doDrawBuffer( renderer::StagingBuffer const & stagingBuffer
-		, renderer::CommandBuffer const & commandBuffer
+	void OverlayRenderer::doDrawBuffer( renderer::CommandBuffer const & commandBuffer
 		, renderer::VertexBuffer< Overlay::Quad > const & buffer
+		, uint32_t offset
 		, uint32_t count
 		, utils::Mat4 const & transform
 		, Material const & material
-		, OverlayNode & node
-		, renderer::DescriptorSet const & descriptor )
+		, OverlayNode const & node
+		, renderer::DescriptorSet const & descriptor )const
 	{
-		node.m_overlayUbo.getData().colour = utils::Vec4{ material.ambient(), material.opacity() };
-		node.m_overlayUbo.getData().modelProj = m_transform * transform;
-		stagingBuffer.copyUniformData( commandBuffer
-			, node.m_overlayUbo.getDatas()
-			, node.m_overlayUbo
-			, renderer::PipelineStageFlag::eVertexShader | renderer::PipelineStageFlag::eFragmentShader );
 		commandBuffer.bindVertexBuffer( buffer
 			, 0u );
 		commandBuffer.bindDescriptorSet( descriptor
-			, node.m_pipelineLayout );
+			, *node.m_pipelineLayout );
 		commandBuffer.draw( count * 6u
 			, 1u
-			, 0u
+			, offset * 6u
 			, 0u );
 	}
 
-	renderer::VertexBuffer< Overlay::Quad > const & OverlayRenderer::doFillTextPart( renderer::StagingBuffer const & stagingBuffer
-		, renderer::CommandBuffer const & commandBuffer
+	void OverlayRenderer::doDrawBuffer( renderer::CommandBuffer const & commandBuffer
+		, renderer::VertexBuffer< BorderPanelOverlay::BorderQuads > const & buffer
+		, uint32_t offset
 		, uint32_t count
-		, uint32_t & offset
-		, TextOverlay::QuadArray::const_iterator & it
-		, uint32_t & index )
+		, utils::Mat4 const & transform
+		, Material const & material
+		, OverlayNode const & node
+		, renderer::DescriptorSet const & descriptor )const
 	{
-		renderer::VertexBuffer< Overlay::Quad > const * buffer{ nullptr };
-
-		if ( offset + count > m_maxCharsPerBuffer )
-		{
-			buffer = &doCreateTextBuffer( stagingBuffer, commandBuffer );
-			offset = 0u;
-			++index;
-		}
-		else
-		{
-			buffer = m_textBuffers[index].get();
-		}
-
-		count = std::min( count, m_maxCharsPerBuffer );
-		doFillBuffers( stagingBuffer
-			, commandBuffer
-			, it
-			, count
-			, offset
-			, *buffer );
-		it += count;
-
-		return *buffer;
+		commandBuffer.bindVertexBuffer( buffer
+			, 0u );
+		commandBuffer.bindDescriptorSet( descriptor
+			, *node.m_pipelineLayout );
+		commandBuffer.draw( count * 6u * 8u
+			, 1u
+			, offset * 6u * 8u
+			, 0u );
 	}
 }

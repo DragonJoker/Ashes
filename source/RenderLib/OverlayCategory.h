@@ -72,9 +72,8 @@ namespace render
 		*\param[in] renderer
 		*	Le renderer utilisé pour dessiner cette incrustation.
 		*/
-		virtual void render( renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer
-			, OverlayRenderer & renderer )const = 0;
+		virtual void render( renderer::CommandBuffer const & commandBuffer
+			, OverlayRenderer const & renderer )const = 0;
 		/**
 		*\return
 		*	Le matériau de l'incrustation.

@@ -102,24 +102,21 @@ namespace render
 		}
 
 	protected:
-		struct DescriptorLayoutPool
-		{
-			DescriptorLayoutPool( renderer::DescriptorSetLayout && layout )
-				: layout{ std::move( layout ) }
-				, pool{ layout }
-			{
-			}
-
-			renderer::DescriptorSetLayout layout;
-			renderer::DescriptorSetPool pool;
-		};
-
-	protected:
 		/**
 		*\brief
 		*	Vide le conteneur.
 		*/
 		void doCleanup();
+		/**
+		*\brief
+		*	Met à jour les objets de la scène.
+		*\param[in] camera
+		*	La caméra.
+		*/
+		void doUpdate( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
+			, Camera const & camera
+			, float zoomScale );
 		/**
 		*\brief
 		*	Dessine les objets de la scène, à travers la vue de la caméra.
@@ -128,8 +125,7 @@ namespace render
 		*\param[in] zoomScale
 		*	L'échelle calculée par rapport au zoom.
 		*/
-		void doDraw( renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer
+		void doDraw( renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, float zoomScale )const;
 		/**
@@ -174,17 +170,24 @@ namespace render
 		*	La liste de lignes à supprimer.
 		*/
 		void doRemove( PolyLinePtr lines );
-		/**
-		*\brief
-		*	Cherche un layout de descripteur, pour le type de noeud donné.
-		*\remarks
-		*	Si le layout n'existe pas encore, il est alors créé.
-		*\param[in] node
-		*	Le type de noeud.
-		*\return
-		*	Le layout trouvé.
-		*/
-		DescriptorLayoutPool const & doFindDescriptorLayout( NodeType node );
+
+	private:
+		void doUpdate( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
+			, Camera const & camera
+			, SceneRenderer::ObjectNode & node
+			, RenderSubmeshVector const & objects )const;
+		void doUpdate( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
+			, Camera const & camera
+			, SceneRenderer::BillboardNode & node
+			, RenderBillboardVector const & billboards )const;
+		void doUpdate( renderer::StagingBuffer const & stagingBuffer
+			, renderer::CommandBuffer const & commandBuffer
+			, Camera const & camera
+			, float zoomScale
+			, SceneRenderer::PolyLineNode & node
+			, RenderPolyLineVector const & lines )const;
 
 	private:
 		//! Les ressources de rendu.
@@ -203,8 +206,6 @@ namespace render
 		RenderBillboardArray m_renderBillboards;
 		//! Les instances de polylignes à dessiner.
 		RenderPolyLineArray m_renderLines;
-		//! Les layouts de descripteurs, par type de noeud.
-		std::unordered_map< size_t, DescriptorLayoutPool > m_descriptorLayouts;
 	};
 }
 

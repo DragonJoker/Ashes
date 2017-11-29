@@ -62,8 +62,8 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 	)
 
 	add_target_precompiled_header( ${PROJECT_NAME}
-		pch.h
-		pch.cpp
+		RendererPch.hpp
+		RendererPch.cpp
 		${CMAKE_CXX_FLAGS}
 		${${PROJECT_NAME}_SRC_FILES}
 	)

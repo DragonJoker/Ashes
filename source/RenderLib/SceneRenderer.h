@@ -35,53 +35,7 @@ namespace render
 	*/
 	class SceneRenderer
 	{
-	private:
-		//! Les données de l'UBO contenant les matrices.
-		struct MatrixUbo
-		{
-			//! La variable uniforme contenant la matrice de projection.
-			utils::Mat4 projection;
-			//! La variable uniforme contenant la matrice de vue.
-			utils::Mat4 view;
-			//! La variable uniforme contenant la matrice du modèle.
-			utils::Mat4 model;
-		};
-		//! Les données de l'UBO contenant les informations du matériau.
-		struct MaterialUbo
-		{
-			//! La variable uniforme contenant la couleur ambiante.
-			utils::Vec3 ambient;
-			//! La variable uniforme contenant la couleur diffuse.
-			utils::Vec3 diffuse;
-			//! La variable uniforme contenant la couleur spéculaire.
-			utils::Vec3 specular;
-			//! La variable uniforme contenant la couleur émissive.
-			utils::Vec3 emissive;
-			//! La variable uniforme contenant l'exposant spéculaire.
-			float exponent;
-			//! La variable uniforme contenant l'opacité
-			float opacity;
-		};
-		//! Les données de l'UBO contenant les variables liées au billboard.
-		struct BillboardUbo
-		{
-			//! La variable uniforme contenant les dimensions du billboard.
-			utils::Vec2 dimensions;
-			//! La variable uniforme contenant la position de la caméra.
-			utils::Vec3 camera;
-		};
-		//! Les données de l'UBO contenant les variables liées à la ligne.
-		struct LineUbo
-		{
-			//! La variable uniforme contenant la largeur de la ligne.
-			float lineWidth;
-			//! La variable uniforme contenant la plume.
-			float lineFeather;
-			//! La variable uniforme contenant l'échelle.
-			float lineScale;
-			//! La variable uniforme contenant la position de la caméra.
-			utils::Vec3 camera;
-		};
+	public:
 		/**
 		*\brief
 		*	Contient les informations communes d'un noeud de rendu.
@@ -96,20 +50,17 @@ namespace render
 			*/
 			RenderNode( renderer::Device const & device
 				, renderer::DescriptorSetLayout && layout
-				, renderer::ShaderProgramPtr && program
-				, NodeType type );
+				, renderer::ShaderProgramPtr && program );
 			//! Le programme shader.
 			renderer::ShaderProgramPtr m_program;
 			//! L'UBO contenant les matrices.
 			renderer::UniformBuffer< MatrixUbo > m_mtxUbo;
 			//! L'UBO contenant les informations du matériau.
 			renderer::UniformBuffer< MaterialUbo > m_matUbo;
-			//! Le layout des descriptor sets du noeud, pour les UBO.
-			renderer::DescriptorSetLayout m_uboDescriptorLayout;
-			//! Le pool de descriptor set du noeud, pour les UBO.
-			renderer::DescriptorSetPool m_uboDescriptorPool;
-			//! Le descriptor set de ce noeud, pour les UBO.
-			renderer::DescriptorSet m_uboDescriptor;
+			//! Le layout des descriptor sets du noeud.
+			renderer::DescriptorSetLayout m_descriptorLayout;
+			//! Le pool de descriptor set du noeud.
+			renderer::DescriptorSetPool m_descriptorPool;
 		};
 		/**
 		*\brief
@@ -238,37 +189,102 @@ namespace render
 		*\param[in] lines
 		*	Les polylignes à dessiner.
 		*/
-		void draw( renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer
+		void draw( renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, float zoomScale
 			, RenderSubmeshArray const & objects
 			, RenderBillboardArray const & billboards
 			, RenderPolyLineArray const & lines )const;
+		/**
+		*\brief
+		*	Récupère le noeud d'objet pour le type donné.
+		*\param[in] node
+		*	Le type de noeud.
+		*\return
+		*	Le noeud.
+		*/
+		ObjectNode const & getObjectNode( NodeType node )const
+		{
+			return *m_objectNodes[size_t( node )];
+		}
+		/**
+		*\brief
+		*	Récupère le noeud de billboard pour le type donné.
+		*\param[in] node
+		*	Le type de noeud.
+		*\return
+		*	Le noeud.
+		*/
+		BillboardNode const & getBillboardNode( NodeType node )const
+		{
+			return *m_billboardNodes[size_t( node )];
+		}
+		/**
+		*\brief
+		*	Récupère le noeud de billboard pour le type donné.
+		*\param[in] node
+		*	Le type de noeud.
+		*\return
+		*	Le noeud.
+		*/
+		PolyLineNode const & getPolyLineNode()const
+		{
+			return *m_lineNode;
+		}
+		/**
+		*\brief
+		*	Récupère le noeud d'objet pour le type donné.
+		*\param[in] node
+		*	Le type de noeud.
+		*\return
+		*	Le noeud.
+		*/
+		ObjectNode & getObjectNode( NodeType node )
+		{
+			return *m_objectNodes[size_t( node )];
+		}
+		/**
+		*\brief
+		*	Récupère le noeud de billboard pour le type donné.
+		*\param[in] node
+		*	Le type de noeud.
+		*\return
+		*	Le noeud.
+		*/
+		BillboardNode & getBillboardNode( NodeType node )
+		{
+			return *m_billboardNodes[size_t( node )];
+		}
+		/**
+		*\brief
+		*	Récupère le noeud de polyligne.
+		*\return
+		*	Le noeud.
+		*/
+		PolyLineNode & getPolyLineNode()
+		{
+			return *m_lineNode;
+		}
 
 	private:
-		void doRenderTransparent( renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer
+		void doRenderTransparent( renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, NodeType type
 			, OpacityType opacity
 			, RenderSubmeshArray const & objects
 			, RenderBillboardArray const & billboards
 			, RenderPolyLineArray const & lines )const;
-		void doRenderObjects( renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer
+		void doRenderObjects( renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, NodeType type
 			, ObjectNode & node
 			, RenderSubmeshVector const & objects )const;
-		void doRenderBillboards( renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer
+		void doRenderBillboards( renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, NodeType type
 			, BillboardNode & node
 			, RenderBillboardVector const & billboards )const;
-		void doRenderLines( renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer
+		void doRenderLines( renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, float zoomScale
 			, PolyLineNode & node

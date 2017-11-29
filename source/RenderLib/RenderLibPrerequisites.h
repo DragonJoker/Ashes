@@ -23,6 +23,53 @@
 
 namespace render
 {
+	static uint32_t constexpr MaxObjectsCount = 100u;
+	//! Les données de l'UBO contenant les matrices.
+	struct MatrixUbo
+	{
+		//! La variable uniforme contenant la matrice de projection.
+		utils::Mat4 projection;
+		//! La variable uniforme contenant la matrice de vue.
+		utils::Mat4 view;
+		//! La variable uniforme contenant la matrice du modèle.
+		utils::Mat4 model;
+	};
+	//! Les données de l'UBO contenant les informations du matériau.
+	struct MaterialUbo
+	{
+		//! La variable uniforme contenant la couleur ambiante.
+		utils::Vec3 ambient;
+		//! La variable uniforme contenant la couleur diffuse.
+		utils::Vec3 diffuse;
+		//! La variable uniforme contenant la couleur spéculaire.
+		utils::Vec3 specular;
+		//! La variable uniforme contenant la couleur émissive.
+		utils::Vec3 emissive;
+		//! La variable uniforme contenant l'exposant spéculaire.
+		float exponent;
+		//! La variable uniforme contenant l'opacité
+		float opacity;
+	};
+	//! Les données de l'UBO contenant les variables liées au billboard.
+	struct BillboardUbo
+	{
+		//! La variable uniforme contenant les dimensions du billboard.
+		utils::Vec2 dimensions;
+		//! La variable uniforme contenant la position de la caméra.
+		utils::Vec3 camera;
+	};
+	//! Les données de l'UBO contenant les variables liées à la ligne.
+	struct LineUbo
+	{
+		//! La variable uniforme contenant la largeur de la ligne.
+		float lineWidth;
+		//! La variable uniforme contenant la plume.
+		float lineFeather;
+		//! La variable uniforme contenant l'échelle.
+		float lineScale;
+		//! La variable uniforme contenant la position de la caméra.
+		utils::Vec3 camera;
+	};
 	/**
 	*\name Typedefs généralistes.
 	*/
@@ -75,6 +122,7 @@ namespace render
 	using FontPtr = std::unique_ptr< Font >;
 	using FontTexturePtr = std::unique_ptr< FontTexture >;
 	using OverlayRendererPtr = std::unique_ptr< OverlayRenderer >;
+	using RenderTargetPtr = std::unique_ptr< RenderTarget >;
 	using RenderWindowPtr = std::unique_ptr< RenderWindow >;
 
 	using BillboardPtr = std::shared_ptr< Billboard >;
@@ -141,7 +189,10 @@ namespace render
 			, MeshPtr mesh
 			, SubmeshPtr submesh
 			, MaterialPtr material
-			, ObjectPtr object );
+			, ObjectPtr object
+			, uint32_t index
+			, renderer::UniformBuffer< MatrixUbo > const & mtxUbo
+			, renderer::UniformBuffer< MaterialUbo > const & matUbo );
 		//! Le maillage.
 		MeshPtr m_mesh;
 		//! Le sous-maillage.
@@ -151,7 +202,7 @@ namespace render
 		//! L'objet parent.
 		ObjectPtr m_object;
 		//! Le descriptor set.
-		renderer::DescriptorSet m_materialDescriptor;
+		renderer::DescriptorSetPtr m_descriptor;
 	};
 	//! Un vecteur de RenderSubmesh.
 	using RenderSubmeshVector = std::vector< RenderSubmesh >;
@@ -162,11 +213,15 @@ namespace render
 	struct RenderBillboard
 	{
 		RenderBillboard( renderer::DescriptorSetPool const & pool
-			, BillboardPtr billboard );
+			, BillboardPtr billboard
+			, uint32_t index
+			, renderer::UniformBuffer< MatrixUbo > const & mtxUbo
+			, renderer::UniformBuffer< MaterialUbo > const & matUbo
+			, renderer::UniformBuffer< BillboardUbo > const & billboardUbo );
 		//! Le billboard.
 		BillboardPtr m_billboard;
 		//! Le descriptor set.
-		renderer::DescriptorSet m_materialDescriptor;
+		renderer::DescriptorSetPtr m_descriptor;
 	};
 	//! Un vecteur de RenderBillboard.
 	using RenderBillboardVector = std::vector< RenderBillboard >;
@@ -177,11 +232,15 @@ namespace render
 	struct RenderPolyLine
 	{
 		RenderPolyLine( renderer::DescriptorSetPool const & pool
-			, PolyLinePtr line );
+			, PolyLinePtr line
+			, uint32_t index
+			, renderer::UniformBuffer< MatrixUbo > const & mtxUbo
+			, renderer::UniformBuffer< MaterialUbo > const & matUbo
+			, renderer::UniformBuffer< LineUbo > const & lineUbo );
 		//! La polyligne.
 		PolyLinePtr m_line;
 		//! Le descriptor set.
-		renderer::DescriptorSet m_materialDescriptor;
+		renderer::DescriptorSetPtr m_descriptor;
 	};
 	//! Un vecteur de RenderPolyLine.
 	using RenderPolyLineVector = std::vector< RenderPolyLine >;

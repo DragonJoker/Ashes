@@ -124,6 +124,11 @@ namespace utils
 		*	Crée la connection entre l'API de rendu et la fenêtre.
 		*/
 		renderer::Connection doCreateConnection();
+		/**
+		*\brief
+		*	Met à jour le temps d'une image.
+		*/
+		void doUpdateFps( std::chrono::microseconds const & duration );
 
 	private:
 		void doCreate();
@@ -158,6 +163,11 @@ namespace utils
 		int m_timer{ -1 };
 		static std::map< HWND, MsWindow * > sm_instances;
 		bool m_minimised{ false };
+		static size_t constexpr FrameSamplesCount = 1000;
+		std::array< std::chrono::microseconds, FrameSamplesCount > m_framesTimes;
+		uint32_t m_frameIndex{ 0 };
+		size_t m_frameCount{ 0 };
+		std::array< char, 256 > m_title;
 
 #if !defined( NDEBUG )
 #	if defined( _WIN32 )

@@ -47,11 +47,11 @@ namespace renderer
 
 	void CommandBuffer::beginRenderPass( RenderPass const & renderPass
 		, FrameBuffer const & frameBuffer
-		, utils::RgbaColour const & colour )const
+		, ClearValueArray const & clearValues )const
 	{
 		m_commandBuffer->beginRenderPass( renderPass.getRenderPass()
 			, frameBuffer.getFrameBuffer()
-			, convert( colour ) );
+			, convert< VkClearValue >( clearValues ) );
 	}
 
 	void CommandBuffer::endRenderPass()const

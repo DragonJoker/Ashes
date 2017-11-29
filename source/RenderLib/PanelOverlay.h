@@ -36,9 +36,8 @@ namespace render
 		*\param[in] renderer
 		*	Le renderer utilisé pour dessiner cette incrustation.
 		*/
-		void render( renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer
-			, OverlayRenderer & renderer )const override;
+		void render( renderer::CommandBuffer const & commandBuffer
+			, OverlayRenderer const & renderer )const override;
 		/**
 		 *\~english
 		 *\brief		Retrieves the panel vertex buffer
@@ -47,9 +46,9 @@ namespace render
 		 *\brief		Récupère le tampon de sommets du panneau
 		 *\return		Le tampon
 		 */
-		inline Overlay::QuadArray const & panelVertex()const
+		inline Overlay::Quad const & panelVertex()const
 		{
-			return m_panelQuads;
+			return m_quad;
 		}
 		/**
 		*\return
@@ -80,7 +79,7 @@ namespace render
 
 	protected:
 		//! Les données du tampon de sommets
-		QuadArray m_panelQuads;
+		Quad m_quad;
 		//!Les UV du panneau.
 		utils::Vec4 m_uv{ 0.0f, 0.0f, 1.0f, 1.0f };
 		//! Dit si la taille de l'incrustation a changé.
