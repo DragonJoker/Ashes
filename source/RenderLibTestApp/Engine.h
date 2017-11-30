@@ -151,6 +151,11 @@ private:
 	utils::Connection< render::OnBillboardPicked > m_onBillboardPicked;
 	utils::Connection< render::OnUnpick > m_onUnpick;
 
+	using OnDrawFunc = std::function< void() >;
+	using OnDraw = utils::Signal< OnDrawFunc >;
+	OnDraw m_onDraw;
+	utils::Connection< OnDraw > m_onDrawConnection;
+
 	render::Object * m_pickedObject{ nullptr };
 	render::Billboard * m_pickedBillboard{ nullptr };
 	render::BillboardPtr m_picked;

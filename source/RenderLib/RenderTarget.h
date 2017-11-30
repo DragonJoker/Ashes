@@ -48,12 +48,6 @@ namespace render
 			, Scene & scene )const;
 		/**
 		*\brief
-		*	Met à jour les données des incrustations en VRAM.
-		*/
-		void updateOverlays( renderer::CommandBuffer const & commandBuffer
-			, OverlayRenderer & renderer )const;
-		/**
-		*\brief
 		*	Effectue les commandes pré-rendu.
 		*/
 		void preRenderCommands( renderer::CommandBuffer const & commandBuffer )const;

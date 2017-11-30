@@ -28,10 +28,10 @@ namespace render
 			static std::vector< RenderWindow::Vertex > result
 			{
 				{
-					{ { -1, -1 }, { 1, 0 } },
-					{ { 1, -1 }, { 0, 0 } },
-					{ { 1, 1 }, { 0, 1 } },
-					{ { -1, 1 }, { 1, 1 } },
+					{ { -1, -1 }, { 0, 1 } },
+					{ { 1, -1 }, { 1, 1 } },
+					{ { 1, 1 }, { 1, 0 } },
+					{ { -1, 1 }, { 0, 0 } },
 				}
 			};
 			return result;
@@ -91,8 +91,8 @@ namespace render
 		, m_descriptorLayout{ doCreateDescriptorLayout( device ) }
 		, m_pipelineLayout{ std::make_unique< renderer::PipelineLayout >( device, &m_descriptorLayout ) }
 		, m_target{ std::make_unique< RenderTarget >( device, dimensions, utils::PixelFormat::eR8G8B8A8 ) }
-		, m_overlayRenderer{ std::make_unique< OverlayRenderer >( device, m_target->getRenderPass() ) }
-		, m_scene{ device, m_target->getRenderPass(), dimensions, *m_overlayRenderer }
+		, m_overlayRenderer{ device, m_target->getRenderPass(), *m_drawCommandPool, dimensions }
+		, m_scene{ device, m_target->getRenderPass(), dimensions, m_overlayRenderer }
 		, m_size{ dimensions }
 		, m_sampler{ std::make_shared< renderer::Sampler >( device
 			, renderer::WrapMode::eClampToEdge
@@ -180,8 +180,7 @@ namespace render
 	{
 		m_target->updateScene( *m_drawCommandBuffer
 			, m_scene );
-		m_target->updateOverlays( *m_drawCommandBuffer
-			, *m_overlayRenderer );
+		m_overlayRenderer.update();
 	}
 
 	void RenderWindow::draw()const
@@ -206,12 +205,9 @@ namespace render
 				renderer::ClearValue{ m_scene.backgroundColour() },
 				renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0 } }
 			} );
-		m_target->render( *m_drawCommandBuffer, m_scene );
-
-		m_overlayRenderer->beginRender( m_size );
-		m_overlayRenderer->draw( *m_drawCommandBuffer
+		m_scene.draw( *m_drawCommandBuffer );
+		m_overlayRenderer.draw( *m_drawCommandBuffer
 			, m_scene.overlays() );
-		m_overlayRenderer->endRender();
 
 		m_drawCommandBuffer->endRenderPass();
 		m_drawCommandBuffer->end();
@@ -259,6 +255,7 @@ namespace render
 		m_size = size;
 		m_viewport.resize( m_size );
 		m_scene.resize( m_size );
+		m_overlayRenderer.resize( m_size );
 	}
 
 	void RenderWindow::doPrepareCommandBuffer( uint32_t index

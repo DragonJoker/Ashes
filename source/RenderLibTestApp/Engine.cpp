@@ -12,6 +12,7 @@
 
 #include <RenderLib/Billboard.h>
 #include <RenderLib/Object.h>
+#include <RenderLib/PanelOverlay.h>
 #include <RenderLib/PolyLine.h>
 #include <RenderLib/Scene.h>
 
@@ -39,6 +40,7 @@ void Engine::onDraw()
 	if ( m_window )
 	{
 		auto start = std::chrono::high_resolution_clock::now();
+		m_onDraw();
 		m_window->beginFrame();
 		m_window->update();
 		m_window->updateOverlays();
@@ -150,7 +152,7 @@ void Engine::doInitialise3DElements()
 	m_window = std::make_unique< render::RenderWindow >( *m_device
 		, utils::IVec2{ width, height }
 		, loader
-		, true );
+		, false );
 	m_window->viewport().fovY( utils::Angle{ 45.0_degrees } );
 
 	// Initialise the scene
@@ -173,7 +175,7 @@ void Engine::doInitialise3DElements()
 		object->moveTo( utils::Vec3{ 0.0, 0.0, 52.0 } );
 		scene.add( object );
 	}
-/*
+
 	auto texture = scene.textures().findElement( "texture.bmp" );
 
 	if ( !texture )
@@ -198,6 +200,17 @@ void Engine::doInitialise3DElements()
 		scene.textures().addElement( "halo.bmp", opacity );
 	}
 
+	{
+		auto content = utils::getFileBinaryContent( "arial.ttf" );
+		render::FontPtr font = std::make_unique< render::Font >( "Arial", 32u );
+		utils::FontLoader loader{ "arial.ttf" };
+		render::loadFont( loader, *font );
+		m_fontTexture = std::make_unique< render::FontTexture >( *m_device
+			, m_window->getStagingBuffer()
+			, m_window->getDefaultResources().getCommandBuffer()
+			, std::move( font ) );
+	}
+/*
 	auto pickedMat = std::make_shared< render::Material >();
 	pickedMat->opacityMap( opacity );
 	pickedMat->ambient( renderer::RgbColour{ 0.0, 0.0, 0.5 } );
@@ -279,32 +292,30 @@ void Engine::doInitialise3DElements()
 	lines->material( linesMat );
 	scene.add( lines );
 */
-	{
-		auto content = utils::getFileBinaryContent( "arial.ttf" );
-		render::FontPtr font = std::make_unique< render::Font >( "Arial", 32u );
-		utils::FontLoader loader{ "arial.ttf" };
-		render::loadFont( loader, *font );
-		m_fontTexture = std::make_unique< render::FontTexture >( *m_device
-			, m_window->getStagingBuffer()
-			, m_window->getDefaultResources().getCommandBuffer()
-			, std::move( font ) );
-	}
-
 	auto coinMat = doCreateOverlayMaterial( "coin", renderer::RgbColour{ 0, 1, 0 }, 1 );
-	auto overlay = std::make_shared< render::TextOverlay >();
-	overlay->position( utils::IVec2{ 200, 200 } );
-	overlay->material( coinMat );
-	overlay->caption( "coin !!" );
-	overlay->fontTexture( *m_fontTexture );
-	scene.addOverlay( "coin", overlay );
+	auto coin = std::make_shared< render::TextOverlay >();
+	coin->position( utils::IVec2{ 200, 200 } );
+	coin->material( coinMat );
+	coin->caption( "coin !!" );
+	coin->fontTexture( *m_fontTexture );
+	scene.addOverlay( "coin", coin );
 
 	auto glopMat = doCreateOverlayMaterial( "glop", renderer::RgbColour{ 1, 0, 0 }, 1 );
-	overlay = std::make_shared< render::TextOverlay >();
-	overlay->position( utils::IVec2{ 400, 200 } );
-	overlay->material( glopMat );
-	overlay->caption( "glop !!" );
-	overlay->fontTexture( *m_fontTexture );
-	scene.addOverlay( "glop", overlay );
+	auto glop = std::make_shared< render::TextOverlay >();
+	glop->position( utils::IVec2{ 400, 200 } );
+	glop->material( glopMat );
+	glop->caption( "glop !!" );
+	glop->fontTexture( *m_fontTexture );
+	scene.addOverlay( "glop", glop );
+
+	auto miaouMat = doCreateOverlayMaterial( "miaou", renderer::RgbColour{ 0, 1, 0 }, 1.0 );
+	miaouMat->diffuseMap( texture );
+	miaouMat->opacityMap( opacity );
+	auto miaou = std::make_shared< render::PanelOverlay >();
+	miaou->position( utils::IVec2{ 100, 100 } );
+	miaou->size( utils::IVec2{ 200, 200 } );
+	miaou->material( miaouMat );
+	scene.addOverlay( "miaou", miaou );
 
 	//m_onObjectPicked = m_window->picking().onObjectPicked.connect
 	//	( std::bind( &Engine::onObjectPicked
@@ -322,6 +333,7 @@ void Engine::doInitialise3DElements()
 
 void Engine::doCleanup3DElements()
 {
+	m_onDrawConnection.disconnect();
 	onUnpick();
 	m_picked.reset();
 	m_onObjectPicked.disconnect();

@@ -81,13 +81,6 @@ namespace render
 
 	}
 
-	void RenderTarget::updateOverlays( renderer::CommandBuffer const & commandBuffer
-		, OverlayRenderer & renderer )const
-	{
-		renderer.updateBuffers( *m_stagingBuffer
-			, commandBuffer );
-	}
-
 	void RenderTarget::preRenderCommands( renderer::CommandBuffer const & commandBuffer )const
 	{
 		commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput

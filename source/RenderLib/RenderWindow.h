@@ -241,7 +241,7 @@ namespace render
 		//! La cible de rendu.
 		RenderTargetPtr m_target;
 		//! Le renderer d'incrustations
-		OverlayRendererPtr m_overlayRenderer;
+		OverlayRenderer m_overlayRenderer;
 		//! La scène qui sera dessinée.
 		Scene m_scene;
 		//! Les dimensions de la fenêtre.
