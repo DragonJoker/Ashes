@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <fstream>
+#include <locale>
 #include <sstream>
 
 #include <RenderLib/ElementsList.h>
@@ -62,6 +63,7 @@ namespace utils
 				std::stringstream stream( line );
 				std::string ident;
 				stream >> ident;
+				ident = lowerCase( ident );
 
 				if ( ident == "v" )
 				{
@@ -174,6 +176,7 @@ namespace utils
 				std::stringstream stream( line );
 				std::string ident;
 				stream >> ident;
+				ident = lowerCase( ident );
 
 				if ( ident == "v" )
 				{
@@ -217,14 +220,16 @@ namespace utils
 				std::stringstream stream( line );
 				std::string ident;
 				stream >> ident;
+				ident = lowerCase( ident );
 
 				if ( ident == "g" )
 				{
 					if ( facesit == faces.end() )
 					{
 						facesit = faces.begin();
+						std::clog << "    Group faces count: " << *facesit << std::endl;
 					}
-					else
+					else if ( index.begin() != idxit )
 					{
 						mesh->addSubmesh( device
 							, stagingBuffer
@@ -234,10 +239,13 @@ namespace utils
 						assert( materialsList.findElement( mtlname ) );
 						materials.push_back( materialsList.findElement( mtlname ) );
 						idxit = index.begin();
+						std::clog << "    Group faces count: " << *facesit << std::endl;
 						++facesit;
 					}
-
-					std::clog << "    Group faces count: " << *facesit << std::endl;
+					else
+					{
+						std::clog << "    Group faces count: " << *facesit << std::endl;
+					}
 				}
 				else if ( ident == "usemtl" )
 				{
@@ -361,6 +369,7 @@ namespace utils
 				std::stringstream stream( line );
 				std::string ident;
 				stream >> ident;
+				ident = lowerCase( ident );
 
 				if ( ident == "g" )
 				{
@@ -426,6 +435,7 @@ namespace utils
 			std::stringstream stream( line );
 			std::string ident;
 			stream >> ident;
+			ident = lowerCase( ident );
 
 			if ( ident == "newmtl" )
 			{
@@ -436,25 +446,25 @@ namespace utils
 			}
 			else if ( select )
 			{
-				if ( ident == "Ka" )
+				if ( ident == "ka" )
 				{
 					renderer::RgbColour value;
 					stream >> value.x >> value.y >> value.z;
 					select->ambient( value );
 				}
-				else if ( ident == "Kd" )
+				else if ( ident == "kd" )
 				{
 					renderer::RgbColour value;
 					stream >> value.x >> value.y >> value.z;
 					select->diffuse( value );
 				}
-				else if ( ident == "Ks" )
+				else if ( ident == "ks" )
 				{
 					renderer::RgbColour value;
 					stream >> value.x >> value.y >> value.z;
 					select->specular( value );
 				}
-				else if ( ident == "Ns" )
+				else if ( ident == "ns" )
 				{
 					float value;
 					stream >> value;
@@ -466,7 +476,7 @@ namespace utils
 					stream >> value;
 					select->opacity( value );
 				}
-				else if ( ident == "map_Kd" )
+				else if ( ident == "map_kd" )
 				{
 					std::string path;
 					stream >> path;
