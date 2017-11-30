@@ -206,6 +206,7 @@ namespace render
 			, renderer::CommandBuffer const & commandBuffer
 			, OverlayNode & node
 			, uint32_t count
+			, utils::Mat4 const & projection
 			, OverlayVbo< Data, OvType > & vbo )
 		{
 			if ( !vbo.m_overlays.empty() )
@@ -215,7 +216,7 @@ namespace render
 				for ( auto & overlay : vbo.m_overlays )
 				{
 					auto & data = node.m_overlayUbo->getData( index );
-					data.modelProj = overlay->m_overlay->transform();
+					data.modelProj = projection * overlay->m_overlay->transform();
 					data.colour = utils::RgbaColour{ overlay->m_overlay->material().ambient()
 						, overlay->m_overlay->material().opacity() };
 					doCopyBuffer( *overlay->m_overlay
@@ -258,13 +259,17 @@ namespace render
 	{
 		m_layout->createAttribute< utils::Vec2 >( 0u
 			, offsetof( TextOverlay::Vertex, position ) );
+		m_layout->createAttribute< utils::Vec2 >( 1u
+			, offsetof( TextOverlay::Vertex, texture ) );
 
-		if ( textures )
-		{
-			m_layout->createAttribute< utils::Vec2 >( 1u
-				, offsetof( TextOverlay::Vertex, texture ) );
-		}
-
+		renderer::ColourBlendState bsState;
+		bsState.addAttachment( renderer::ColourBlendStateAttachment{ true
+			, renderer::BlendFactor::eSrcAlpha
+			, renderer::BlendFactor::eInvSrcAlpha
+			, renderer::BlendOp::eAdd
+			, renderer::BlendFactor::eSrcAlpha
+			, renderer::BlendFactor::eInvSrcAlpha
+			, renderer::BlendOp::eAdd } );
 		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( device, m_descriptorLayout.get() );
 		m_pipeline = std::make_shared< renderer::Pipeline >( device
 			, *m_pipelineLayout
@@ -274,7 +279,9 @@ namespace render
 				*m_layout
 			}
 			, renderPass
-			, renderer::PrimitiveTopology::eTriangleFan );
+			, renderer::PrimitiveTopology::eTriangleList
+			, renderer::RasterisationState{}
+			, bsState );
 		m_pipeline->multisampleState( renderer::MultisampleState{} )
 			.depthStencilState( renderer::DepthStencilState{} )
 			.finish();
@@ -371,6 +378,8 @@ namespace render
 
 	OverlayRenderer::OverlayRenderer( renderer::Device const & device
 		, renderer::RenderPass const & renderPass
+		, renderer::CommandPool const & commandPool
+		, utils::IVec2 const & size
 		, uint32_t maxCharsPerBuffer )
 		: m_device{ device }
 		, m_renderPass{ renderPass }
@@ -378,6 +387,10 @@ namespace render
 		, m_borderNodesPanel{ doCreatePanelNodes( device, renderPass ) }
 		, m_borderNodesBorder{ doCreatePanelNodes( device, renderPass ) }
 		, m_textNode{ device, renderPass, true, OpacityType::eAlphaTest, TextureFlag::eOpacity }
+		, m_updateCommandBuffer{ std::make_unique < renderer::CommandBuffer >( device
+			, commandPool ) }
+		, m_stagingBuffer{ std::make_unique< renderer::StagingBuffer >( device
+			, uint32_t( MaxObjectsCount * maxCharsPerBuffer * sizeof( BorderPanelOverlay::BorderQuads ) ) ) }
 		, m_panelOverlays
 		{
 			PanelOverlayVbo{ device, MaxObjectsCount },
@@ -420,6 +433,7 @@ namespace render
 		, m_maxCharsPerBuffer{ maxCharsPerBuffer }
 		, m_viewport{ { 100, 100 } }
 	{
+		resize( size );
 		m_textOverlays.emplace_back( device, MaxObjectsCount * m_maxCharsPerBuffer );
 	}
 
@@ -436,6 +450,7 @@ namespace render
 		doAddOverlay( overlay
 			, m_panelNodes[size_t( node )]
 			, m_panelOverlays[size_t( node )] );
+		m_changed = true;
 	}
 
 	void OverlayRenderer::registerOverlay( BorderPanelOverlayPtr overlay )
@@ -450,6 +465,7 @@ namespace render
 		doAddOverlay( overlay
 			, m_borderNodesBorder[size_t( node )]
 			, m_borderOverlaysBorders[size_t( node )] );
+		m_changed = true;
 	}
 
 	void OverlayRenderer::registerOverlay( TextOverlayPtr overlay )
@@ -457,6 +473,7 @@ namespace render
 		doAddOverlay( overlay
 			, m_textNode
 			, m_textOverlays[m_textOverlays.size() - 1] );
+		m_changed = true;
 	}
 
 	void OverlayRenderer::unregisterOverlay( OverlayPtr overlay )
@@ -484,6 +501,7 @@ namespace render
 			, material.textureFlags() );
 		bool result = doRemoveOverlay( overlay, m_panelOverlays[size_t( node )] );
 		assert( result && "Overlay not found in the list" );
+		m_changed = true;
 	}
 
 	void OverlayRenderer::unregisterOverlay( BorderPanelOverlayPtr overlay )
@@ -495,6 +513,7 @@ namespace render
 		assert( result && "Overlay panel not found in the list" );
 		result = doRemoveOverlay( overlay, m_borderOverlaysBorders[size_t( node )] );
 		assert( result && "Overlay borders not found in the list" );
+		m_changed = true;
 	}
 
 	void OverlayRenderer::unregisterOverlay( TextOverlayPtr overlay )
@@ -507,52 +526,59 @@ namespace render
 			result = doRemoveOverlay( overlay, *it );
 		}
 
+		m_changed = true;
 		assert( result && "Overlay not found in the list" );
 	}
 
-	void OverlayRenderer::updateBuffers( renderer::StagingBuffer const & stagingBuffer
-		, renderer::CommandBuffer const & commandBuffer )
+	void OverlayRenderer::update()
 	{
-		uint32_t index = 0;
-
-		for ( auto & renderOverlays : m_panelOverlays )
+		if ( m_changed )
 		{
-			doUpdate( stagingBuffer
-				, commandBuffer
-				, m_panelNodes[index++]
-				, 1u
-				, renderOverlays );
-		}
+			uint32_t index = 0;
 
-		index = 0;
+			for ( auto & renderOverlays : m_panelOverlays )
+			{
+				doUpdate( *m_stagingBuffer
+					, *m_updateCommandBuffer
+					, m_panelNodes[index++]
+					, 1u
+					, m_transform
+					, renderOverlays );
+			}
 
-		for ( auto & renderOverlays : m_borderOverlaysPanels )
-		{
-			doUpdate( stagingBuffer
-				, commandBuffer
-				, m_borderNodesPanel[index++]
-				, 1u
-				, renderOverlays );
-		}
+			index = 0;
 
-		index = 0;
+			for ( auto & renderOverlays : m_borderOverlaysPanels )
+			{
+				doUpdate( *m_stagingBuffer
+					, *m_updateCommandBuffer
+					, m_borderNodesPanel[index++]
+					, 1u
+					, m_transform
+					, renderOverlays );
+			}
 
-		for ( auto & renderOverlays : m_borderOverlaysBorders )
-		{
-			doUpdate( stagingBuffer
-				, commandBuffer
-				, m_borderNodesBorder[index++]
-				, 1u
-				, renderOverlays );
-		}
+			index = 0;
 
-		for ( auto & vbos : m_textOverlays )
-		{
-			doUpdate( stagingBuffer
-				, commandBuffer
-				, m_textNode
-				, m_maxCharsPerBuffer
-				, vbos );
+			for ( auto & renderOverlays : m_borderOverlaysBorders )
+			{
+				doUpdate( *m_stagingBuffer
+					, *m_updateCommandBuffer
+					, m_borderNodesBorder[index++]
+					, 1u
+					, m_transform
+					, renderOverlays );
+			}
+
+			for ( auto & vbos : m_textOverlays )
+			{
+				doUpdate( *m_stagingBuffer
+					, *m_updateCommandBuffer
+					, m_textNode
+					, m_maxCharsPerBuffer
+					, m_transform
+					, vbos );
+			}
 		}
 	}
 
@@ -567,9 +593,12 @@ namespace render
 			overlay->render( commandBuffer
 				, *this );
 		}
+
+		m_changed = false;
+		m_sizeChanged = false;
 	}
 
-	void OverlayRenderer::beginRender( utils::IVec2 const & size )
+	void OverlayRenderer::resize( utils::IVec2 const & size )
 	{
 		if ( m_viewport.size() != size )
 		{
@@ -579,15 +608,11 @@ namespace render
 				, float( size.x )
 				, 0.0f
 				, float( size.y )
-				, 0.0f
-				, 1000.0f );
+				, -1.0f
+				, 1.0f );
 			m_transform = m_viewport.transform();
+			m_changed = true;
 		}
-	}
-
-	void OverlayRenderer::endRender()
-	{
-		m_sizeChanged = false;
 	}
 
 	void OverlayRenderer::drawPanel( renderer::CommandBuffer const & commandBuffer
@@ -612,8 +637,6 @@ namespace render
 			, *overlays.m_buffer
 			, ( *it )->m_index * MaxObjectsCount
 			, 1u
-			, overlay.transform()
-			, overlay.material()
 			, node
 			, *( *it )->m_descriptor );
 	}
@@ -640,8 +663,6 @@ namespace render
 			, *panelOverlays.m_buffer
 			, ( *itPanel )->m_index * MaxObjectsCount
 			, 1u
-			, overlay.transform()
-			, overlay.material()
 			, node
 			, *( *itPanel )->m_descriptor );
 		auto & borderOverlays = m_borderOverlaysPanels[nodeType];
@@ -656,8 +677,6 @@ namespace render
 			, *borderOverlays.m_buffer
 			, ( *itBorder )->m_index * MaxObjectsCount
 			, 1u
-			, overlay.transform()
-			, overlay.borderMaterial()
 			, node
 			, *( *itBorder )->m_descriptor );
 	}
@@ -695,8 +714,6 @@ namespace render
 			, *itVbo->m_buffer
 			, ( *itText )->m_index * m_maxCharsPerBuffer
 			, std::min( count, m_maxCharsPerBuffer )
-			, overlay.transform()
-			, overlay.material()
 			, m_textNode
 			, *( *itText )->m_descriptor );
 	}
@@ -705,18 +722,16 @@ namespace render
 		, renderer::VertexBuffer< Overlay::Quad > const & buffer
 		, uint32_t offset
 		, uint32_t count
-		, utils::Mat4 const & transform
-		, Material const & material
 		, OverlayNode const & node
 		, renderer::DescriptorSet const & descriptor )const
 	{
 		commandBuffer.bindVertexBuffer( buffer
-			, 0u );
+			, offset );
 		commandBuffer.bindDescriptorSet( descriptor
 			, *node.m_pipelineLayout );
 		commandBuffer.draw( count * 6u
 			, 1u
-			, offset * 6u
+			, 0u
 			, 0u );
 	}
 
@@ -724,18 +739,21 @@ namespace render
 		, renderer::VertexBuffer< BorderPanelOverlay::BorderQuads > const & buffer
 		, uint32_t offset
 		, uint32_t count
-		, utils::Mat4 const & transform
-		, Material const & material
 		, OverlayNode const & node
 		, renderer::DescriptorSet const & descriptor )const
 	{
 		commandBuffer.bindVertexBuffer( buffer
-			, 0u );
+			, offset );
 		commandBuffer.bindDescriptorSet( descriptor
 			, *node.m_pipelineLayout );
 		commandBuffer.draw( count * 6u * 8u
 			, 1u
-			, offset * 6u * 8u
+			, 0u
 			, 0u );
+	}
+
+	void OverlayRenderer::onOverlayChanged( Overlay & overlay )
+	{
+		m_changed = true;
 	}
 }

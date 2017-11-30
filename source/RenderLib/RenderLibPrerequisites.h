@@ -159,6 +159,7 @@ namespace render
 	using OnBillboardChanged = utils::Signal< std::function< void( Billboard & ) > >;
 	using OnBillboardBufferChanged = utils::Signal< std::function< void( BillboardBuffer & ) > >;
 	using OnPolyLineChanged = utils::Signal< std::function< void( PolyLine & ) > >;
+	using OnOverlayChanged = utils::Signal< std::function< void( Overlay & ) > >;
 	using OnObjectPicked = utils::Signal< std::function< void( Object & ) > >;
 	using OnBillboardPicked = utils::Signal< std::function< void( Billboard &, uint32_t ) > >;
 	using OnUnpick = utils::Signal< std::function< void() > >;
@@ -178,6 +179,40 @@ namespace render
 		//! Noeud avec textures d'opacité et de diffuse.
 		eOpaDiff,
 		VkLib_EnumBounds( eNoTex )
+	};
+	/**
+	*\brief
+	*	Les types de noeuds.
+	*/
+	enum class NodeType
+	{
+		//! Noeud opaque.
+		eOpaque,
+		//! Noeud opaque sans texture.
+		eOpaqueNoTex = eOpaque,
+		//! Noeud opaque avec une texture de diffuse.
+		eOpaqueDiff,
+		//! Noeud avec alpha blending.
+		eAlphaBlend,
+		//! Noeud avec alpha blending, sans texture.
+		eAlphaBlendNoTex = eAlphaBlend,
+		//! Noeud avec alpha blending, avec texture de diffuse.
+		eAlphaBlendDiff,
+		//! Noeud avec alpha blending, avec texture d'opacité.
+		eAlphaBlendOpa,
+		//! Noeud avec alpha blending, avec textures d'opacité et de diffuse.
+		eAlphaBlendOpaDiff,
+		//! Noeud avec alpha testing.
+		eAlphaTest,
+		//! Noeud avec alpha testing, sans texture.
+		eAlphaTestNoTex = eAlphaTest,
+		//! Noeud avec alpha testing, avec texture de diffuse.
+		eAlphaTestDiff,
+		//! Noeud avec alpha testing, avec texture d'opacité.
+		eAlphaTestOpa,
+		//! Noeud avec alpha testing, avec textures d'opacité et de diffuse.
+		eAlphaTestOpaDiff,
+		VkLib_EnumBounds( eOpaque )
 	};
 	/**
 	*\brief
@@ -244,40 +279,6 @@ namespace render
 	};
 	//! Un vecteur de RenderPolyLine.
 	using RenderPolyLineVector = std::vector< RenderPolyLine >;
-	/**
-	*\brief
-	*	Les types de noeuds.
-	*/
-	enum class NodeType
-	{
-		//! Noeud opaque.
-		eOpaque,
-		//! Noeud opaque sans texture.
-		eOpaqueNoTex = eOpaque,
-		//! Noeud opaque avec une texture de diffuse.
-		eOpaqueDiff,
-		//! Noeud avec alpha blending.
-		eAlphaBlend,
-		//! Noeud avec alpha blending, sans texture.
-		eAlphaBlendNoTex = eAlphaBlend,
-		//! Noeud avec alpha blending, avec texture de diffuse.
-		eAlphaBlendDiff,
-		//! Noeud avec alpha blending, avec texture d'opacité.
-		eAlphaBlendOpa,
-		//! Noeud avec alpha blending, avec textures d'opacité et de diffuse.
-		eAlphaBlendOpaDiff,
-		//! Noeud avec alpha testing.
-		eAlphaTest,
-		//! Noeud avec alpha testing, sans texture.
-		eAlphaTestNoTex = eAlphaTest,
-		//! Noeud avec alpha testing, avec texture de diffuse.
-		eAlphaTestDiff,
-		//! Noeud avec alpha testing, avec texture d'opacité.
-		eAlphaTestOpa,
-		//! Noeud avec alpha testing, avec textures d'opacité et de diffuse.
-		eAlphaTestOpaDiff,
-		VkLib_EnumBounds( eOpaque )
-	};
 	using RenderSubmeshArray = std::array< RenderSubmeshVector, size_t( NodeType::eCount ) >;
 	using RenderBillboardArray = std::array< RenderBillboardVector, size_t( NodeType::eCount ) >;
 	using RenderPolyLineArray = std::array< RenderPolyLineVector, size_t( NodeType::eCount ) >;

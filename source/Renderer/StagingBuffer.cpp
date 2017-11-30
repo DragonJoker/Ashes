@@ -59,17 +59,15 @@ namespace renderer
 				throw std::runtime_error{ "Texture data copy failed: " + vk::getLastError() };
 			}
 
-			Fence fence{ m_device };
 			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, &fence );
-			fence.wait( vk::FenceTimeout );
+				, nullptr );
 
 			if ( !res )
 			{
 				throw std::runtime_error{ "Texture data copy failed: " + vk::getLastError() };
 			}
 
-			m_device.getDevice().waitIdle();
+			m_device.getGraphicsQueue().waitIdle();
 		}
 	}
 
@@ -110,17 +108,15 @@ namespace renderer
 				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
 			}
 
-			Fence fence{ m_device };
 			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, &fence );
-			fence.wait( vk::FenceTimeout );
+				, nullptr );
 
 			if ( !res )
 			{
 				throw std::runtime_error{ "Texture data copy failed: " + vk::getLastError() };
 			}
 
-			m_device.getDevice().waitIdle();
+			m_device.getGraphicsQueue().waitIdle();
 		}
 	}
 
@@ -146,17 +142,15 @@ namespace renderer
 				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
 			}
 
-			Fence fence{ m_device };
 			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, &fence );
-			fence.wait( vk::FenceTimeout );
+				, nullptr );
 
 			if ( !res )
 			{
 				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
 			}
 
-			m_device.getDevice().waitIdle();
+			m_device.getGraphicsQueue().waitIdle();
 		}
 	}
 
@@ -182,17 +176,15 @@ namespace renderer
 				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
 			}
 
-			Fence fence{ m_device };
 			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, &fence );
-			fence.wait( vk::FenceTimeout );
+				, nullptr );
 
 			if ( !res )
 			{
 				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
 			}
 
-			m_device.getDevice().waitIdle();
+			m_device.getGraphicsQueue().waitIdle();
 		}
 	}
 }

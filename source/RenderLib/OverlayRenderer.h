@@ -133,6 +133,8 @@ namespace render
 		*/
 		explicit OverlayRenderer( renderer::Device const & device
 			, renderer::RenderPass const & renderPass
+			, renderer::CommandPool const & commandPool
+			, utils::IVec2 const & size
 			, uint32_t maxCharsPerBuffer = 600 );
 		/**
 		*brief
@@ -190,22 +192,16 @@ namespace render
 		void unregisterOverlay( TextOverlayPtr overlay );
 		/**
 		*brief
-		*	Commence le rendu des incrustations.
+		*	Met à jour le viewport de rendu des incrustation.
 		*param[in] size
 		*	Les dimensions de la fenêtre de rendu.
 		*/
-		void beginRender( utils::IVec2 const & size );
-		/**
-		*brief
-		*	Termine le rendu des incrustations.
-		*/
-		void endRender();
+		void resize( utils::IVec2 const & size );
 		/**
 		*brief
 		*	Met à jour les tampons des incrustations.
 		*/
-		void updateBuffers( renderer::StagingBuffer const & stagingBuffer
-			, renderer::CommandBuffer const & commandBuffer );
+		void update();
 		/**
 		*brief
 		*	Dessine les incrustations.
@@ -256,8 +252,6 @@ namespace render
 			, renderer::VertexBuffer< Overlay::Quad > const & buffer
 			, uint32_t offset
 			, uint32_t count
-			, utils::Mat4 const & transform
-			, Material const & material
 			, OverlayNode const & node
 			, renderer::DescriptorSet const & descriptor )const;
 		/**
@@ -278,10 +272,9 @@ namespace render
 			, renderer::VertexBuffer< BorderPanelOverlay::BorderQuads > const & buffer
 			, uint32_t offset
 			, uint32_t count
-			, utils::Mat4 const & transform
-			, Material const & material
 			, OverlayNode const & node
 			, renderer::DescriptorSet const & descriptor )const;
+		void onOverlayChanged( Overlay & overlay );
 
 	private:
 		renderer::Device const & m_device;
@@ -290,12 +283,16 @@ namespace render
 		OverlayNodeArray m_borderNodesPanel;
 		OverlayNodeArray m_borderNodesBorder;
 		OverlayNode m_textNode;
+		renderer::CommandBufferPtr m_updateCommandBuffer;
+		renderer::StagingBufferPtr m_stagingBuffer;
 		PanelOverlayVboArray m_panelOverlays;
 		BorderOverlayPanelVboArray m_borderOverlaysPanels;
 		BorderOverlayBorderVboArray m_borderOverlaysBorders;
 		std::vector< TextOverlayVbo > m_textOverlays;
+		std::vector< utils::Connection< OnOverlayChanged > > m_connections;
 		uint32_t m_maxCharsPerBuffer;
-		bool m_sizeChanged{ true };
+		mutable bool m_sizeChanged{ true };
+		mutable bool m_changed{ true };
 		utils::Mat4 m_transform;
 		Viewport m_viewport;
 	};

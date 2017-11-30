@@ -103,6 +103,7 @@ namespace render
 		{
 			m_position = position;
 			m_positionChanged = true;
+			onChanged( *this );
 		}
 		/**
 		*\return
@@ -187,6 +188,9 @@ namespace render
 		*	Met à jour le tampon de sommets si nécessaire.
 		*/
 		virtual void doUpdate() = 0;
+
+	public:
+		OnOverlayChanged onChanged;
 
 	protected:
 		//! Le type d'incrustation

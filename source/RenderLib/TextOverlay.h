@@ -79,6 +79,7 @@ namespace render
 		{
 			m_textChanged |= ( &fontTexture != m_fontTexture );
 			m_fontTexture = &fontTexture;
+			onChanged( *this );
 		}
 		/**
 		*\return
@@ -115,6 +116,7 @@ namespace render
 		{
 			m_currentCaption = value;
 			m_textChanged = true;
+			onChanged( *this );
 		}
 		/**
 		*\return
@@ -134,6 +136,7 @@ namespace render
 		{
 			m_textChanged |= m_hAlign != value;
 			m_hAlign = value;
+			onChanged( *this );
 		}
 		/**
 		*\return
@@ -153,6 +156,7 @@ namespace render
 		{
 			m_textChanged |= m_lineSpacingMode != value;
 			m_lineSpacingMode = value;
+			onChanged( *this );
 		}
 
 	private:

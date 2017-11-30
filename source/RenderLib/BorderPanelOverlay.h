@@ -67,6 +67,7 @@ namespace render
 		{
 			m_sizeChanged |= ( size != m_size );
 			m_size = size;
+			onChanged( *this );
 		}
 		/**
 		*\brief
@@ -105,6 +106,7 @@ namespace render
 		{
 			m_borderSize = size;
 			m_borderChanged = true;
+			onChanged( *this );
 		}
 		/**
 		*\return
@@ -124,6 +126,7 @@ namespace render
 		{
 			m_borderSize.x = size;
 			m_borderChanged = true;
+			onChanged( *this );
 		}
 		/**
 		*\return
@@ -143,6 +146,7 @@ namespace render
 		{
 			m_borderSize.y = size;
 			m_borderChanged = true;
+			onChanged( *this );
 		}
 		/**
 		*\return
@@ -162,6 +166,7 @@ namespace render
 		{
 			m_borderSize.z = size;
 			m_borderChanged = true;
+			onChanged( *this );
 		}
 		/**
 		*\return
@@ -181,6 +186,7 @@ namespace render
 		{
 			m_borderSize.w = size;
 			m_borderChanged = true;
+			onChanged( *this );
 		}
 		/**
 		*\return

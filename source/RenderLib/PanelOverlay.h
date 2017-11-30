@@ -60,6 +60,7 @@ namespace render
 		{
 			m_sizeChanged |= ( size != m_size );
 			m_size = size;
+			onChanged( *this );
 		}
 
 	public:
