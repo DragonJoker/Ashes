@@ -422,6 +422,6 @@ namespace utils
 		title << " - (Average) " << avgms << " ms";
 		title << " - " << ( 1000.0f / avgms ) << " fps";
 		strcpy( m_title.data(), title.str().c_str() );
-		//::SendMessageA( m_hwnd, WM_SETTEXT, 0, LPARAM( m_title.data() ) );
+		::SendMessageA( m_hwnd, WM_SETTEXT, 0, LPARAM( m_title.data() ) );
 	}
 }
