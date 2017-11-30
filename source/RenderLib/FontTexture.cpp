@@ -4,12 +4,12 @@ namespace render
 {
 	namespace
 	{
-		Texture doCreateTexture( renderer::Device const & device
+		TexturePtr doCreateTexture( renderer::Device const & device
 			, renderer::StagingBuffer const & stagingBuffer
 			, renderer::CommandBuffer const & commandBuffer
 			, Font & font )
 		{
-			Texture result{ device };
+			TexturePtr result{ std::make_shared< Texture >( device ) };
 			uint32_t const maxWidth = font.maxWidth();
 			uint32_t const maxHeight = font.maxHeight();
 			uint32_t const count = uint32_t( std::ceil( std::distance
@@ -19,8 +19,7 @@ namespace render
 			auto it = font.begin();
 			uint32_t const totalWidth = size.x;
 			uint32_t offsetY = size.y - maxHeight;
-			ByteArray data;
-			data.resize( size.x * size.y );
+			ByteArray data( size.x * size.y * 4u, uint8_t{} );
 			uint8_t * buffer = data.data();
 
 			for ( uint32_t y = 0; y < count && it != font.end(); ++y )
@@ -32,16 +31,28 @@ namespace render
 					render::Glyph & glyph = *it;
 					utils::IVec2 const & glyphSize = glyph.size();
 					ByteArray const & glyphBitmap = glyph.bitmap();
-					uint32_t const dstLineIndex = ( totalWidth * offsetY ) + offsetX;
+					uint32_t const dstLineIndex = 4u * ( ( totalWidth * offsetY ) + offsetX );
 					uint8_t * dstLineBuffer = &buffer[dstLineIndex];
 
-					for ( int32_t i = 0; i < glyphSize.y; ++i )
+					for ( int32_t y = 0; y < glyphSize.y; ++y )
 					{
-						assert( dstLineIndex + glyphSize.x <= data.size() );
-						memcpy( dstLineBuffer
-							, &glyphBitmap[i * glyphSize.x]
-							, glyphSize.x );
-						dstLineBuffer += totalWidth;
+						assert( dstLineIndex + 4u * glyphSize.x <= data.size() );
+						uint8_t * dstLine = dstLineBuffer;
+
+						for ( int x = 0; x < glyphSize.x; ++x )
+						{
+							dstLine[0] = glyphBitmap[y * glyphSize.x + x];
+							dstLine[1] = glyphBitmap[y * glyphSize.x + x];
+							dstLine[2] = glyphBitmap[y * glyphSize.x + x];
+							dstLine[3] = glyphBitmap[y * glyphSize.x + x];
+							dstLine += 4u;
+						}
+
+						dstLineBuffer += totalWidth * 4u;
+						//memcpy( dstLineBuffer
+						//	, &glyphBitmap[y * glyphSize.x]
+						//	, glyphSize.x );
+						//dstLineBuffer += totalWidth;
 					}
 
 					glyph.clearBitmap();
@@ -52,7 +63,7 @@ namespace render
 				offsetY -= maxHeight;
 			}
 
-			result.image( utils::PixelFormat::eL8
+			result->image( utils::PixelFormat::eR8G8B8A8
 				, size
 				, data
 				, stagingBuffer
@@ -75,9 +86,9 @@ namespace render
 	}
 
 	FontTexture::FontTexture( renderer::Device const & device
-		, Texture && texture
+		, TexturePtr texture
 		, FontPtr && font )
-		: m_texture{ std::move( texture ) }
+		: m_texture{ texture }
 		, m_font{ std::move( font ) }
 	{
 		uint32_t const maxWidth = m_font->maxWidth();

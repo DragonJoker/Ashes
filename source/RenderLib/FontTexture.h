@@ -39,7 +39,7 @@ namespace render
 		*	La police décrivant les caractères.
 		*/
 		FontTexture( renderer::Device const & device
-			, Texture && texture
+			, TexturePtr texture
 			, FontPtr && font );
 		/**
 		 *\brief
@@ -61,6 +61,14 @@ namespace render
 		*/
 		inline Texture const & texture()const
 		{
+			return *m_texture;
+		}
+		/**
+		*\return
+		*	La texture.
+		*/
+		inline TexturePtr texturePtr()const
+		{
 			return m_texture;
 		}
 		/**
@@ -76,7 +84,7 @@ namespace render
 		using GlyphPositionMap = std::map< char, utils::IVec2 >;
 
 		//! La texture qui recevra les glyphes.
-		Texture m_texture;
+		TexturePtr m_texture;
 		//! La desscription des glyphes.
 		FontPtr m_font;
 		//! Position des glyphes.
