@@ -381,7 +381,8 @@ namespace vkapp
 					, frameBuffer
 					, {
 						renderer::ClearValue{ m_swapChain->getClearColour() }
-					} );
+					}
+					, renderer::SubpassContents::eInline );
 				commandBuffer.bindPipeline( *m_pipeline );
 				commandBuffer.setViewport( { uint32_t( dimensions.x )
 					, uint32_t( dimensions.y )

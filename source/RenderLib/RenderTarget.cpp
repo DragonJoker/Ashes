@@ -91,10 +91,21 @@ namespace render
 			, m_depth->makeDepthStencilAttachment() );
 	}
 
+	void RenderTarget::render( Scene const & scene
+		, OverlayRenderer const & overlayRenderer )const
+	{
+		scene.draw( *m_framebuffer );
+		overlayRenderer.draw( *m_framebuffer
+			, scene.overlays() );
+	}
+
 	void RenderTarget::render( renderer::CommandBuffer const & commandBuffer
-		, Scene const & scene )const
+		, Scene const & scene
+		, OverlayRenderer const & overlayRenderer )const
 	{
 		scene.draw( commandBuffer );
+		overlayRenderer.draw( commandBuffer
+			, scene.overlays() );
 	}
 
 	void RenderTarget::postRenderCommands( renderer::CommandBuffer const & commandBuffer )const

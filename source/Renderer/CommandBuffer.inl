@@ -9,7 +9,7 @@ namespace renderer
 		, uint64_t offset )const
 	{
 		m_commandBuffer->bindVertexBuffer( vertexBuffer.getVbo()
-			, offset );
+			, offset * sizeof( T ) );
 	}
 
 	template< typename T >

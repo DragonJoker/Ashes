@@ -150,7 +150,8 @@ namespace render
 				, {
 					renderer::ClearValue{ utils::RgbaColour{ 0, 0, 0, 1 } },
 					renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0 } }
-				} );
+				}
+				, renderer::SubpassContents::eInline );
 			commandBuffer.setViewport( camera.viewport().viewport() );
 			m_renderer.draw( *m_stagingBuffer
 				, commandBuffer

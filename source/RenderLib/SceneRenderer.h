@@ -49,18 +49,18 @@ namespace render
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
 			RenderNode( renderer::Device const & device
-				, renderer::DescriptorSetLayout && layout
+				, renderer::DescriptorSetLayoutPtr && layout
 				, renderer::ShaderProgramPtr && program );
 			//! Le programme shader.
 			renderer::ShaderProgramPtr m_program;
 			//! L'UBO contenant les matrices.
-			renderer::UniformBuffer< MatrixUbo > m_mtxUbo;
+			renderer::UniformBufferPtr< MatrixUbo > m_mtxUbo;
 			//! L'UBO contenant les informations du matériau.
-			renderer::UniformBuffer< MaterialUbo > m_matUbo;
+			renderer::UniformBufferPtr< MaterialUbo > m_matUbo;
 			//! Le layout des descriptor sets du noeud.
-			renderer::DescriptorSetLayout m_descriptorLayout;
+			renderer::DescriptorSetLayoutPtr m_descriptorLayout;
 			//! Le pool de descriptor set du noeud.
-			renderer::DescriptorSetPool m_descriptorPool;
+			renderer::DescriptorSetPoolPtr m_descriptorPool;
 		};
 		/**
 		*\brief
@@ -77,15 +77,15 @@ namespace render
 			*/
 			ObjectNode( renderer::Device const & device
 				, renderer::RenderPass const & renderPass
-				, renderer::DescriptorSetLayout && layout
+				, renderer::DescriptorSetLayoutPtr && layout
 				, renderer::ShaderProgramPtr && program
 				, NodeType type );
 			//! Le layout du tampon de positions.
-			renderer::VertexLayout m_posLayout;
+			renderer::VertexLayoutPtr m_posLayout;
 			//! Le layout du tampon de normales.
-			renderer::VertexLayout m_nmlLayout;
+			renderer::VertexLayoutPtr m_nmlLayout;
 			//! Le layout du tampon de coordonnées de texture.
-			renderer::VertexLayout m_texLayout;
+			renderer::VertexLayoutPtr m_texLayout;
 			//! Le layout du pipeline.
 			renderer::PipelineLayoutPtr m_pipelineLayout;
 			//! Le pipeline.
@@ -110,13 +110,13 @@ namespace render
 			*/
 			BillboardNode( renderer::Device const & device
 				, renderer::RenderPass const & renderPass
-				, renderer::DescriptorSetLayout && layout
+				, renderer::DescriptorSetLayoutPtr && layout
 				, renderer::ShaderProgramPtr && program
 				, NodeType type );
 			//! L'UBO contenant les variables liées au billboard.
-			renderer::UniformBuffer< BillboardUbo > m_billboardUbo;
+			renderer::UniformBufferPtr< BillboardUbo > m_billboardUbo;
 			//! Le layout du tampon de positions.
-			renderer::VertexLayout m_layout;
+			renderer::VertexLayoutPtr m_layout;
 			//! Le layout du pipeline.
 			renderer::PipelineLayoutPtr m_pipelineLayout;
 			//! Le pipeline.
@@ -141,13 +141,13 @@ namespace render
 			*/
 			PolyLineNode( renderer::Device const & device
 				, renderer::RenderPass const & renderPass
-				, renderer::DescriptorSetLayout && layout
+				, renderer::DescriptorSetLayoutPtr && layout
 				, renderer::ShaderProgramPtr && program
 				, NodeType type );
 			//! L'UBO contenant les variables liées à la ligne.
-			renderer::UniformBuffer< LineUbo > m_lineUbo;
+			renderer::UniformBufferPtr< LineUbo > m_lineUbo;
 			//! Le layout du tampon de positions.
-			renderer::VertexLayout m_layout;
+			renderer::VertexLayoutPtr m_layout;
 			//! Le layout du pipeline.
 			renderer::PipelineLayoutPtr m_pipelineLayout;
 			//! Le pipeline.
@@ -175,6 +175,26 @@ namespace render
 		*	Supprime tous les noeuds de rendu.
 		*/
 		void cleanup();
+		/**
+		*\brief
+		*	Dessine les objets de la scène, à travers la vue de la caméra.
+		*\param[in] camera
+		*	La caméra.
+		*\param[in] zoomScale
+		*	L'échelle calculée par rapport au zoom.
+		*\param[in] objects
+		*	Les objets à dessiner.
+		*\param[in] billboards
+		*	Les billboards à dessiner.
+		*\param[in] lines
+		*	Les polylignes à dessiner.
+		*/
+		void draw( renderer::FrameBuffer const & frameBuffer
+			, Camera const & camera
+			, float zoomScale
+			, RenderSubmeshArray const & objects
+			, RenderBillboardArray const & billboards
+			, RenderPolyLineArray const & lines )const;
 		/**
 		*\brief
 		*	Dessine les objets de la scène, à travers la vue de la caméra.
@@ -256,14 +276,20 @@ namespace render
 			return *m_billboardNodes[size_t( node )];
 		}
 		/**
-		*\brief
-		*	Récupère le noeud de polyligne.
 		*\return
-		*	Le noeud.
+		*	Le noeud de polyligne.
 		*/
 		PolyLineNode & getPolyLineNode()
 		{
 			return *m_lineNode;
+		}
+		/**
+		*\return
+		*	Le tampon de commandes de rendu.
+		*/
+		renderer::CommandBuffer const & commandBuffer()const
+		{
+			return *m_commandBuffer;
 		}
 
 	private:
@@ -296,6 +322,8 @@ namespace render
 		ObjectNodeArray m_objectNodes;
 		BillboardNodeArray m_billboardNodes;
 		PolyLineNodePtr m_lineNode;
+		renderer::CommandPoolPtr m_commandPool;
+		renderer::CommandBufferPtr m_commandBuffer;
 	};
 }
 

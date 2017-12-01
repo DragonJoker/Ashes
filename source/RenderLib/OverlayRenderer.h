@@ -206,6 +206,12 @@ namespace render
 		*brief
 		*	Dessine les incrustations.
 		*/
+		void draw( renderer::FrameBuffer const & frameBuffer
+			, OverlayList const & overlays )const;
+		/**
+		*brief
+		*	Dessine les incrustations.
+		*/
 		void draw( renderer::CommandBuffer const & commandBuffer
 			, OverlayList const & overlays )const;
 		/**
@@ -232,6 +238,14 @@ namespace render
 		*/
 		void drawText( renderer::CommandBuffer const & commandBuffer
 			, TextOverlay const & overlay )const;
+		/**
+		*\return
+		*	Le tampon de commandes de rendu.
+		*/
+		renderer::CommandBuffer const & commandBuffer()const
+		{
+			return *m_drawCommandBuffer;
+		}
 
 	private:
 		/**
@@ -283,6 +297,7 @@ namespace render
 		OverlayNodeArray m_borderNodesPanel;
 		OverlayNodeArray m_borderNodesBorder;
 		OverlayNode m_textNode;
+		renderer::CommandBufferPtr m_drawCommandBuffer;
 		renderer::CommandBufferPtr m_updateCommandBuffer;
 		renderer::StagingBufferPtr m_stagingBuffer;
 		PanelOverlayVboArray m_panelOverlays;

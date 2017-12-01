@@ -73,6 +73,11 @@ namespace render
 		*\brief
 		*	Dessine les objets de la scène, à travers la vue de la caméra.
 		*/
+		void draw( renderer::FrameBuffer const & frameBuffer )const;
+		/**
+		*\brief
+		*	Dessine les objets de la scène, à travers la vue de la caméra.
+		*/
 		void draw( renderer::CommandBuffer const & commandBuffer )const;
 		/**
 		*\brief

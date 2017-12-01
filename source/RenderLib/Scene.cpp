@@ -117,6 +117,14 @@ namespace render
 			, 2.0f * percent + ( 1.0f - percent ) / 100.0f );
 	}
 
+	void Scene::draw( renderer::FrameBuffer const & frameBuffer )const
+	{
+		auto percent = m_state.zoomBounds().percent( m_state.zoom() );
+		doDraw( frameBuffer
+			, m_camera
+			, 2.0f * percent + ( 1.0f - percent ) / 100.0f );
+	}
+
 	void Scene::draw( renderer::CommandBuffer const & commandBuffer )const
 	{
 		auto percent = m_state.zoomBounds().percent( m_state.zoom() );

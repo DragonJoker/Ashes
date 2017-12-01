@@ -107,6 +107,18 @@ namespace render
 		}
 	}
 
+	void RenderableContainer::doDraw( renderer::FrameBuffer const & frameBuffer
+		, Camera const & camera
+		, float zoomScale )const
+	{
+		m_renderer.draw( frameBuffer
+			, camera
+			, zoomScale
+			, m_renderObjects
+			, m_renderBillboards
+			, m_renderLines );
+	}
+
 	void RenderableContainer::doDraw( renderer::CommandBuffer const & commandBuffer
 		, Camera const & camera
 		, float zoomScale )const
@@ -142,14 +154,14 @@ namespace render
 			auto nodeType = UberShader::nodeType( material->opacityType()
 				, material->textureFlags() );
 			auto & node = m_renderer.getObjectNode( nodeType );
-			m_renderObjects[size_t( nodeType )].emplace_back( node.m_descriptorPool
+			m_renderObjects[size_t( nodeType )].emplace_back( *node.m_descriptorPool
 				, object->mesh()
 				, *mshit
 				, material
 				, object
 				, uint32_t( m_renderObjects[size_t( nodeType )].size() )
-				, node.m_mtxUbo
-				, node.m_matUbo );
+				, *node.m_mtxUbo
+				, *node.m_matUbo );
 			++mshit;
 			++mtlit;
 		}
@@ -213,12 +225,12 @@ namespace render
 		auto nodeType = UberShader::nodeType( material.opacityType()
 			, material.textureFlags() );
 		auto & node = m_renderer.getBillboardNode( nodeType );
-		m_renderBillboards[size_t( nodeType )].emplace_back( node.m_descriptorPool
+		m_renderBillboards[size_t( nodeType )].emplace_back( *node.m_descriptorPool
 			, billboard
 			, uint32_t( m_renderBillboards[size_t( nodeType )].size() )
-			, node.m_mtxUbo
-			, node.m_matUbo
-			, node.m_billboardUbo );
+			, *node.m_mtxUbo
+			, *node.m_matUbo
+			, *node.m_billboardUbo );
 	}
 
 	void RenderableContainer::doRemove( BillboardPtr billboard )
@@ -269,12 +281,12 @@ namespace render
 		auto nodeType = UberShader::nodeType( material.opacityType()
 			, material.textureFlags() );
 		auto & node = m_renderer.getPolyLineNode();
-		m_renderLines[size_t( nodeType )].emplace_back( node.m_descriptorPool
+		m_renderLines[size_t( nodeType )].emplace_back( *node.m_descriptorPool
 			, lines
 			, uint32_t( m_renderLines[size_t( nodeType )].size() )
-			, node.m_mtxUbo
-			, node.m_matUbo
-			, node.m_lineUbo );
+			, *node.m_mtxUbo
+			, *node.m_matUbo
+			, *node.m_lineUbo );
 	}
 
 	void RenderableContainer::doRemove( PolyLinePtr lines )
@@ -325,11 +337,11 @@ namespace render
 			{
 				if ( object.m_object->visible() )
 				{
-					auto & mtxData = node.m_mtxUbo.getData( index );
+					auto & mtxData = node.m_mtxUbo->getData( index );
 					mtxData.projection = projection;
 					mtxData.view = view;
 					mtxData.model = object.m_object->transform();
-					auto & matData = node.m_matUbo.getData( index );
+					auto & matData = node.m_matUbo->getData( index );
 					matData.ambient = object.m_material->ambient();
 					matData.diffuse = object.m_material->diffuse();
 					matData.specular = object.m_material->specular();
@@ -342,12 +354,12 @@ namespace render
 			}
 
 			stagingBuffer.copyUniformData( commandBuffer
-				, node.m_mtxUbo.getDatas()
-				, node.m_mtxUbo
+				, node.m_mtxUbo->getDatas()
+				, *node.m_mtxUbo
 				, renderer::PipelineStageFlag::eVertexShader );
 			stagingBuffer.copyUniformData( commandBuffer
-				, node.m_matUbo.getDatas()
-				, node.m_matUbo
+				, node.m_matUbo->getDatas()
+				, *node.m_matUbo
 				, renderer::PipelineStageFlag::eFragmentShader );
 		}
 	}
@@ -370,18 +382,18 @@ namespace render
 				if ( billboard.m_billboard->visible()
 					&& billboard.m_billboard->buffer().count() )
 				{
-					auto & mtxData = node.m_mtxUbo.getData( index );
+					auto & mtxData = node.m_mtxUbo->getData( index );
 					mtxData.projection = projection;
 					mtxData.view = view;
 					mtxData.model = billboard.m_billboard->transform();
-					auto & matData = node.m_matUbo.getData( index );
+					auto & matData = node.m_matUbo->getData( index );
 					matData.ambient = billboard.m_billboard->material().ambient();
 					matData.diffuse = billboard.m_billboard->material().diffuse();
 					matData.specular = billboard.m_billboard->material().specular();
 					matData.emissive = billboard.m_billboard->material().emissive();
 					matData.exponent = billboard.m_billboard->material().exponent();
 					matData.opacity = billboard.m_billboard->material().opacity();
-					auto & billboardData = node.m_billboardUbo.getData( index );
+					auto & billboardData = node.m_billboardUbo->getData( index );
 					billboardData.camera = position;
 					billboardData.dimensions = utils::Vec2{ billboard.m_billboard->dimensions() };
 				}
@@ -390,16 +402,16 @@ namespace render
 			}
 
 			stagingBuffer.copyUniformData( commandBuffer
-				, node.m_mtxUbo.getDatas()
-				, node.m_mtxUbo
+				, node.m_mtxUbo->getDatas()
+				, *node.m_mtxUbo
 				, renderer::PipelineStageFlag::eVertexShader );
 			stagingBuffer.copyUniformData( commandBuffer
-				, node.m_matUbo.getDatas()
-				, node.m_matUbo
+				, node.m_matUbo->getDatas()
+				, *node.m_matUbo
 				, renderer::PipelineStageFlag::eFragmentShader );
 			stagingBuffer.copyUniformData( commandBuffer
-				, node.m_billboardUbo.getDatas()
-				, node.m_billboardUbo
+				, node.m_billboardUbo->getDatas()
+				, *node.m_billboardUbo
 				, renderer::PipelineStageFlag::eVertexShader | renderer::PipelineStageFlag::eFragmentShader );
 		}
 	}
@@ -423,18 +435,18 @@ namespace render
 				if ( line.m_line->visible()
 					&& line.m_line->count() )
 				{
-					auto & mtxData = node.m_mtxUbo.getData( index );
+					auto & mtxData = node.m_mtxUbo->getData( index );
 					mtxData.projection = projection;
 					mtxData.view = view;
 					mtxData.model = line.m_line->transform();
-					auto & matData = node.m_matUbo.getData( index );
+					auto & matData = node.m_matUbo->getData( index );
 					matData.ambient = line.m_line->material().ambient();
 					matData.diffuse = line.m_line->material().diffuse();
 					matData.specular = line.m_line->material().specular();
 					matData.emissive = line.m_line->material().emissive();
 					matData.exponent = line.m_line->material().exponent();
 					matData.opacity = line.m_line->material().opacity();
-					auto & lineData = node.m_lineUbo.getData( index );
+					auto & lineData = node.m_lineUbo->getData( index );
 					lineData.lineScale = zoomScale;
 					lineData.camera = position;
 					lineData.lineWidth = line.m_line->width();
@@ -445,16 +457,16 @@ namespace render
 			}
 
 			stagingBuffer.copyUniformData( commandBuffer
-				, node.m_mtxUbo.getDatas()
-				, node.m_mtxUbo
+				, node.m_mtxUbo->getDatas()
+				, *node.m_mtxUbo
 				, renderer::PipelineStageFlag::eVertexShader );
 			stagingBuffer.copyUniformData( commandBuffer
-				, node.m_lineUbo.getDatas()
-				, node.m_lineUbo
+				, node.m_lineUbo->getDatas()
+				, *node.m_lineUbo
 				, renderer::PipelineStageFlag::eVertexShader | renderer::PipelineStageFlag::eFragmentShader );
 			stagingBuffer.copyUniformData( commandBuffer
-				, node.m_matUbo.getDatas()
-				, node.m_matUbo
+				, node.m_matUbo->getDatas()
+				, *node.m_matUbo
 				, renderer::PipelineStageFlag::eFragmentShader );
 		}
 	}

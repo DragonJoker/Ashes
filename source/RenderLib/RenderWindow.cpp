@@ -204,11 +204,14 @@ namespace render
 			, {
 				renderer::ClearValue{ m_scene.backgroundColour() },
 				renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0 } }
-			} );
-		m_scene.draw( *m_drawCommandBuffer );
-		m_overlayRenderer.draw( *m_drawCommandBuffer
-			, m_scene.overlays() );
-
+			}
+		, renderer::SubpassContents::eSecondaryCommandBuffers );
+		m_target->render( m_scene
+			, m_overlayRenderer );
+		m_drawCommandBuffer->executeCommands( {
+			m_scene.commandBuffer(),
+			m_overlayRenderer.commandBuffer()
+		} );
 		m_drawCommandBuffer->endRenderPass();
 		m_drawCommandBuffer->end();
 
@@ -273,7 +276,8 @@ namespace render
 				, frameBuffer
 				, {
 					renderer::ClearValue{ utils::RgbaColour{ 1.0, 1.0, 0.0, 1.0 } }
-				} );
+				}
+				, renderer::SubpassContents::eInline );
 			commandBuffer.bindPipeline( *m_pipeline );
 			commandBuffer.setViewport( m_viewport.viewport() );
 			commandBuffer.setScissor( m_viewport.scissor() );

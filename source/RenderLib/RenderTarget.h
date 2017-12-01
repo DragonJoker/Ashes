@@ -55,8 +55,15 @@ namespace render
 		*\brief
 		*	Dessine la scène dans le frame buffer de la cible de rendu.
 		*/
+		void render( Scene const & scene
+			, OverlayRenderer const & overlayRenderer )const;
+		/**
+		*\brief
+		*	Dessine la scène dans le frame buffer de la cible de rendu.
+		*/
 		void render( renderer::CommandBuffer const & commandBuffer
-			, Scene const & scene )const;
+			, Scene const & scene
+			, OverlayRenderer const & overlayRenderer )const;
 		/**
 		*\brief
 		*	Effectue les commandes post-rendu.

@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "ClearValue.hpp"
 
-#include <VkLib/PrimaryCommandBuffer.hpp>
+#include <VkLib/CommandBuffer.hpp>
 
 namespace renderer
 {
@@ -24,16 +24,21 @@ namespace renderer
 		*	Constructeur.
 		*\param[in] device
 		*	Le périphérique logique.
+		*\param[in] pool
+		*	Le pool de tampons de commandes.
+		*\param[in] primary
+		*	Dit si le tampon est un tampon de commandes primaire (\p true) ou secondaire (\p false).
 		*/
 		CommandBuffer( Device const & device
-			, CommandPool const & pool );
+			, CommandPool const & pool
+			, bool primary = true );
 		/**
 		*\brief
 		*	Constructeur.
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		CommandBuffer( vk::PrimaryCommandBufferPtr && commandBuffer );
+		CommandBuffer( vk::CommandBufferPtr && commandBuffer );
 		/**
 		*\brief
 		*	Démarre l'enregistrement du tampon de commandes.
@@ -43,6 +48,35 @@ namespace renderer
 		*	\p false en cas d'erreur.
 		*/
 		bool begin( CommandBufferUsageFlags flags = 0u )const;
+		/**
+		*\brief
+		*	Démarre l'enregistrement du tampon de commandes en tant que tampon secondaire.
+		*\param[in] flags
+		*	Les indicateurs de type de charge qui sera affectée au tampon.
+		*\param[in] renderPass
+		*	La passe de rendu avec laquelle le tampon sera compatible, et dans laquelle il peut s'exécuter.
+		*\param[in] subpass
+		*	L'indice de la sous-passe au sein de laquelle le tampon de commandes sera exécuté.
+		*\param[in] frameBuffer
+		*	Le tampon d'images dans lequel le tampon de commandes va effectuer son rendu.
+		*\param[in] occlusionQueryEnable
+		*	Indique si le tampon de commandes peut être exécuté alors qu'une requête d'occlusion est active sur le tampon principal.
+		*\param[in] queryFlags
+		*	Les indicateurs de requête d'occlusion pouvant être utilisées par une requête d'occlusion active sur le tampon principal,
+		*	lorsque ce tampon est exécuté.
+		*\param[in] pipelineStatistics
+		*	Indique quelles statistique de pipeline peuvent être comptées par une requête active sur le tampon principal,
+		*	lorsque ce tampon est exécuté.
+		*\return
+		*	\p false en cas d'erreur.
+		*/
+		bool begin( CommandBufferUsageFlags flags
+			, RenderPass const & renderPass
+			, uint32_t subpass
+			, FrameBuffer const & frameBuffer
+			, bool occlusionQueryEnable = false
+			, QueryControlFlags queryFlags = 0u
+			, QueryPipelineStatisticFlags pipelineStatistics = 0u )const;
 		/**
 		*\brief
 		*	Termine l'enregistrement du tampon de commandes.
@@ -68,15 +102,32 @@ namespace renderer
 		*	Le tampon d'image affecté par le rendu.
 		*\param[in] clearValues
 		*	Les valeurs de vidage, une par attache de la passe de rendu.
+		*\param[in] contents
+		*	Indique la manière dont les commandes de la première sous-passe sont fournies.
 		*/
 		void beginRenderPass( RenderPass const & renderPass
 			, FrameBuffer const & frameBuffer
-			, ClearValueArray const & clearValues )const;
+			, ClearValueArray const & clearValues
+			, SubpassContents contents )const;
+		/**
+		*\brief
+		*	Passe à la sous-passe suivante.
+		*\param[in] contents
+		*	Indique la manière dont les commandes de la sous-passe suivante sont fournies.
+		*/
+		void nextSubpass( SubpassContents contents )const;
 		/**
 		*\brief
 		*	Termine une passe de rendu.
 		*/
 		void endRenderPass()const;
+		/**
+		*\brief
+		*	Execute des tampons de commande secondaires.
+		*\param[in] commands
+		*	Les tampons de commandes.
+		*/
+		void executeCommands( CommandBufferCRefArray const & commands )const;
 		/**
 		*\brief
 		*	Vide l'image avec la couleur de vidage.
@@ -215,6 +266,25 @@ namespace renderer
 			, uint32_t firstInstance )const;
 		/**
 		*\brief
+		*	Dessine des sommets.
+		*\param[in] indexCount
+		*	Nombre d'indices.
+		*\param[in] instCount
+		*	Nombre d'instances.
+		*\param[in] firstIndex
+		*	Index du premier indice.
+		*\param[in] vertexOffset
+		*	La valeur ajoutée à l'indice du sommet avant d'indexer le tampon de sommets.
+		*\param[in] firstInstance
+		*	Index de la première instance.
+		*/
+		void drawIndexed( uint32_t indexCount
+			, uint32_t instCount
+			, uint32_t firstIndex
+			, uint32_t vertexOffset
+			, uint32_t firstInstance )const;
+		/**
+		*\brief
 		*	Copie les données d'un tampon vers un autre tampon.
 		*\param[in] src
 		*	Le tampon source.
@@ -343,13 +413,13 @@ namespace renderer
 		*\return
 		*	Le tampon de commandes vulkan.
 		*/
-		vk::PrimaryCommandBuffer const & getCommandBuffer()const
+		vk::CommandBuffer const & getCommandBuffer()const
 		{
 			return *m_commandBuffer;
 		}
 
 	private:
-		vk::PrimaryCommandBufferPtr m_commandBuffer;
+		vk::CommandBufferPtr m_commandBuffer;
 	};
 }
 

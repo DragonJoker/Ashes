@@ -387,6 +387,9 @@ namespace render
 		, m_borderNodesPanel{ doCreatePanelNodes( device, renderPass ) }
 		, m_borderNodesBorder{ doCreatePanelNodes( device, renderPass ) }
 		, m_textNode{ device, renderPass, true, OpacityType::eAlphaTest, TextureFlag::eOpacity }
+		, m_drawCommandBuffer{ std::make_unique < renderer::CommandBuffer >( device
+			, commandPool
+			, false ) }
 		, m_updateCommandBuffer{ std::make_unique < renderer::CommandBuffer >( device
 			, commandPool ) }
 		, m_stagingBuffer{ std::make_unique< renderer::StagingBuffer >( device
@@ -579,6 +582,22 @@ namespace render
 					, m_transform
 					, vbos );
 			}
+
+			m_changed = false;
+		}
+	}
+
+	void OverlayRenderer::draw( renderer::FrameBuffer const & frameBuffer
+		, OverlayList const & overlays )const
+	{
+		if ( m_drawCommandBuffer->begin( renderer::CommandBufferUsageFlag::eRenderPassContinue
+			, m_renderPass
+			, 0u
+			, frameBuffer ) )
+		{
+			draw( *m_drawCommandBuffer
+				, overlays );
+			m_drawCommandBuffer->end();
 		}
 	}
 
@@ -594,7 +613,6 @@ namespace render
 				, *this );
 		}
 
-		m_changed = false;
 		m_sizeChanged = false;
 	}
 

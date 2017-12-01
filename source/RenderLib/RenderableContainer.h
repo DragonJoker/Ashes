@@ -100,6 +100,14 @@ namespace render
 		{
 			return m_renderBillboards;
 		}
+		/**
+		*\return
+		*	Le tampon de commandes de rendu.
+		*/
+		renderer::CommandBuffer const & commandBuffer()const
+		{
+			return m_renderer.commandBuffer();
+		}
 
 	protected:
 		/**
@@ -117,6 +125,17 @@ namespace render
 			, renderer::CommandBuffer const & commandBuffer
 			, Camera const & camera
 			, float zoomScale );
+		/**
+		*\brief
+		*	Dessine les objets de la scène, à travers la vue de la caméra.
+		*\param[in] camera
+		*	La caméra.
+		*\param[in] zoomScale
+		*	L'échelle calculée par rapport au zoom.
+		*/
+		void doDraw( renderer::FrameBuffer const & frameBuffer
+			, Camera const & camera
+			, float zoomScale )const;
 		/**
 		*\brief
 		*	Dessine les objets de la scène, à travers la vue de la caméra.

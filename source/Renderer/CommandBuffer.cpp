@@ -18,14 +18,31 @@ See LICENSE file in root folder.
 
 namespace renderer
 {
+	namespace
+	{
+		vk::CommandBufferCRefArray convert( CommandBufferCRefArray const & commands )
+		{
+			vk::CommandBufferCRefArray result;
+
+			for ( auto & command : commands )
+			{
+				result.emplace_back( command.get().getCommandBuffer() );
+			}
+
+			return result;
+		}
+	}
+
 	CommandBuffer::CommandBuffer( Device const & device
-		, CommandPool const & pool )
-		: m_commandBuffer{ std::make_unique< vk::PrimaryCommandBuffer >( device.getDevice()
-			, pool.getCommandPool() ) }
+		, CommandPool const & pool
+		, bool primary )
+		: m_commandBuffer{ std::make_unique< vk::CommandBuffer >( device.getDevice()
+			, pool.getCommandPool()
+			, primary ) }
 	{
 	}
 
-	CommandBuffer::CommandBuffer( vk::PrimaryCommandBufferPtr && commandBuffer )
+	CommandBuffer::CommandBuffer( vk::CommandBufferPtr && commandBuffer )
 		: m_commandBuffer{ std::move( commandBuffer ) }
 	{
 	}
@@ -33,6 +50,23 @@ namespace renderer
 	bool CommandBuffer::begin( CommandBufferUsageFlags flags )const
 	{
 		return m_commandBuffer->begin( convert( flags ) );
+	}
+
+	bool CommandBuffer::begin( CommandBufferUsageFlags flags
+		, RenderPass const & renderPass
+		, uint32_t subpass
+		, FrameBuffer const & frameBuffer
+		, bool occlusionQueryEnable
+		, QueryControlFlags queryFlags
+		, QueryPipelineStatisticFlags pipelineStatistics )const
+	{
+		return m_commandBuffer->begin( convert( flags )
+			, renderPass.getRenderPass()
+			, subpass
+			, frameBuffer.getFrameBuffer()
+			, occlusionQueryEnable
+			, queryFlags
+			, pipelineStatistics );
 	}
 
 	bool CommandBuffer::end()const
@@ -47,16 +81,28 @@ namespace renderer
 
 	void CommandBuffer::beginRenderPass( RenderPass const & renderPass
 		, FrameBuffer const & frameBuffer
-		, ClearValueArray const & clearValues )const
+		, ClearValueArray const & clearValues
+		, SubpassContents contents )const
 	{
 		m_commandBuffer->beginRenderPass( renderPass.getRenderPass()
 			, frameBuffer.getFrameBuffer()
-			, convert< VkClearValue >( clearValues ) );
+			, convert< VkClearValue >( clearValues )
+			, convert( contents ) );
+	}
+
+	void CommandBuffer::nextSubpass( SubpassContents contents )const
+	{
+		m_commandBuffer->nextSubpass( convert( contents ) );
 	}
 
 	void CommandBuffer::endRenderPass()const
 	{
 		m_commandBuffer->endRenderPass();
+	}
+
+	void CommandBuffer::executeCommands( CommandBufferCRefArray const & commands )const
+	{
+		m_commandBuffer->executeCommands( convert( commands ) );
 	}
 
 	void CommandBuffer::clear( Texture const & image
@@ -138,6 +184,19 @@ namespace renderer
 		m_commandBuffer->draw( vtxCount
 			, instCount
 			, firstVertex
+			, firstInstance );
+	}
+
+	void CommandBuffer::drawIndexed( uint32_t indexCount
+		, uint32_t instCount
+		, uint32_t firstIndex
+		, uint32_t vertexOffset
+		, uint32_t firstInstance )const
+	{
+		m_commandBuffer->drawIndexed( indexCount
+			, instCount
+			, firstIndex
+			, vertexOffset
 			, firstInstance );
 	}
 

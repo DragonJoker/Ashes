@@ -38,10 +38,13 @@
 #include "PixelFormat.hpp"
 #include "PolygonMode.hpp"
 #include "PrimitiveTopology.hpp"
+#include "QueryControlFlag.hpp"
+#include "QueryPipelineStatisticFlag.hpp"
 #include "RasterisationStateFlag.hpp"
 #include "SampleCountFlag.hpp"
 #include "ShaderStageFlag.hpp"
 #include "StencilOp.hpp"
+#include "SubpassContents.hpp"
 #include "TessellationStateFlag.hpp"
 #include "WrapMode.hpp"
 

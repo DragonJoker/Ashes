@@ -14,9 +14,9 @@ namespace renderer
 {
 	namespace
 	{
-		vk::PrimaryCommandBufferCRefArray convert( CommandBufferCRefArray const & values )
+		vk::CommandBufferCRefArray convert( CommandBufferCRefArray const & values )
 		{
-			vk::PrimaryCommandBufferCRefArray result;
+			vk::CommandBufferCRefArray result;
 			result.reserve( values.size() );
 
 			for ( auto & value : values )

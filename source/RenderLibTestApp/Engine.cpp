@@ -225,7 +225,7 @@ void Engine::doInitialise3DElements()
 	m_picked->material( pickedMat );
 	m_picked->show( false );
 	scene.add( m_picked );
-
+*/
 	auto billboardMat = std::make_shared< render::Material >();
 	billboardMat->diffuseMap( texture );
 	//billboardMat->opacityMap( opacity );
@@ -246,7 +246,7 @@ void Engine::doInitialise3DElements()
 	billboard->scale( utils::Vec3{ 1.5, 1.5, 1.5 } );
 	billboard->material( billboardMat );
 	scene.add( billboard );
-
+/*
 	auto starsMat = std::make_shared< render::Material >();
 	starsMat->opacityMap( opacity );
 	starsMat->ambient( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
@@ -304,7 +304,7 @@ void Engine::doInitialise3DElements()
 	auto glop = std::make_shared< render::TextOverlay >();
 	glop->position( utils::IVec2{ 400, 200 } );
 	glop->material( glopMat );
-	glop->caption( "glop !!" );
+	glop->caption( "glop !" );
 	glop->fontTexture( *m_fontTexture );
 	scene.addOverlay( "glop", glop );
 
