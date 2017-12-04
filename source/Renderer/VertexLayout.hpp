@@ -28,8 +28,11 @@ namespace renderer
 		*	Constructeur.
 		*\param[in] bindingSlot
 		*	Le point d'attache du tampon associé.
+		*\param[in] stride
+		*	La taille en octets séparant un élément du suivant, dans le tampon.
 		*/
-		VertexLayout( uint32_t bindingSlot );
+		VertexLayout( uint32_t bindingSlot
+			, uint32_t stride );
 		/**
 		*\brief
 		*	Crée un attribut de sommet.
@@ -53,6 +56,20 @@ namespace renderer
 	private:
 		vk::VertexLayoutPtr m_layout;
 	};
+	/**
+	*\brief
+	*	Construit un layout, ayant pour stride la taille du type template donné.
+	*\param[in] bindingSlot
+	*	Le point d'attache du tampon associé.
+	*\return
+	*	Le layout.
+	*/
+	template< typename T >
+	inline VertexLayoutPtr makeLayout( uint32_t bindingSlot )
+	{
+		return std::make_unique< VertexLayout >( bindingSlot
+			, uint32_t( sizeof( T ) ) );
+	}
 }
 
 #include "VertexLayout.inl"

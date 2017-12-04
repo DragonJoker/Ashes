@@ -19,6 +19,7 @@ namespace renderer
 		, m_presentCommandPool{ *this, m_device.getPresentCommandPool() }
 		, m_graphicsCommandPool{ *this, m_device.getGraphicsCommandPool() }
 	{
+		m_version = "Vulkan 1.0.0";
 	}
 
 	SwapChainPtr Device::createSwapChain( utils::IVec2 const & size )const

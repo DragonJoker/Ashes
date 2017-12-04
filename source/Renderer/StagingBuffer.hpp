@@ -429,11 +429,13 @@ namespace renderer
 			, UniformBuffer< T > const & buffer
 			, PipelineStageFlags const & flags )const
 		{
-			copyUniformData( commandBuffer
-				, reinterpret_cast< uint8_t const * const >( data.data() )
-				, uint32_t( data.size() * sizeof( T ) )
+			doCopyUniformDataToStagingBuffer( data.data()
+				, uint32_t( data.size() )
+				, buffer.getOffset( 1u ) );
+			doCopyFromStagingBuffer( commandBuffer
+				, buffer.getOffset( uint32_t( data.size() ) )
 				, 0u
-				, buffer
+				, buffer.getUbo()
 				, flags );
 		}
 		/**
@@ -454,11 +456,13 @@ namespace renderer
 			, UniformBuffer< T > const & buffer
 			, PipelineStageFlags const & flags )const
 		{
-			copyUniformData( commandBuffer
-				, reinterpret_cast< uint8_t const * const >( data )
-				, uint32_t( count * sizeof( T ) )
+			doCopyUniformDataToStagingBuffer( data.data()
+				, count
+				, buffer.getOffset( 1u ) );
+			doCopyFromStagingBuffer( commandBuffer
+				, buffer.getOffset( uint32_t( data.size() ) )
 				, 0u
-				, buffer
+				, buffer.getUbo()
 				, flags );
 		}
 		/**
@@ -479,11 +483,13 @@ namespace renderer
 			, UniformBuffer< T > const & buffer
 			, PipelineStageFlags const & flags )const
 		{
-			copyUniformData( commandBuffer
-				, reinterpret_cast< uint8_t const * const >( data.data() )
-				, uint32_t( data.size() * sizeof( T ) )
-				, uint32_t( offset * sizeof( T ) )
-				, buffer
+			doCopyUniformDataToStagingBuffer( data.data()
+				, uint32_t( data.size() )
+				, buffer.getOffset( 1u ) );
+			doCopyFromStagingBuffer( commandBuffer
+				, buffer.getOffset( uint32_t( data.size() ) )
+				, buffer.getOffset( offset )
+				, buffer.getUbo()
 				, flags );
 		}
 		/**
@@ -507,11 +513,13 @@ namespace renderer
 			, UniformBuffer< T > const & buffer
 			, PipelineStageFlags const & flags )const
 		{
-			copyUniformData( commandBuffer
-				, reinterpret_cast< uint8_t const * const >( data )
-				, uint32_t( data.size() * sizeof( T ) )
-				, uint32_t( offset * sizeof( T ) )
-				, buffer
+			doCopyUniformDataToStagingBuffer( data.data()
+				, count
+				, buffer.getOffset( 1u ) );
+			doCopyFromStagingBuffer( commandBuffer
+				, buffer.getOffset( uint32_t( data.size() ) )
+				, buffer.getOffset( offset )
+				, buffer.getUbo()
 				, flags );
 		}
 		/**
@@ -553,7 +561,11 @@ namespace renderer
 		}
 
 	private:
-		void doCopyToStagingBuffer( uint8_t const * data
+		template< typename T >
+		inline void doCopyUniformDataToStagingBuffer( T const * const data
+			, uint32_t count
+			, uint32_t offset )const;
+		void doCopyToStagingBuffer( uint8_t const * const data
 			, uint32_t size )const;
 		void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 			, uint32_t size
@@ -576,5 +588,7 @@ namespace renderer
 		AccessFlags m_currentAccessMask{ AccessFlag::eMemoryWrite };
 	};
 }
+
+#include "StagingBuffer.inl"
 
 #endif

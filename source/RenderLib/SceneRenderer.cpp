@@ -129,9 +129,9 @@ namespace render
 		, renderer::ShaderProgramPtr && program
 		, NodeType type )
 		: RenderNode{ device, std::move( layout ), std::move( program ) }
-		, m_posLayout{ std::make_unique< renderer::VertexLayout >( 0u ) }
-		, m_nmlLayout{ std::make_unique< renderer::VertexLayout >( 1u ) }
-		, m_texLayout{ std::make_unique< renderer::VertexLayout >( 2u ) }
+		, m_posLayout{ renderer::makeLayout< utils::Vec3 >( 0u ) }
+		, m_nmlLayout{ renderer::makeLayout< utils::Vec3 >( 1u ) }
+		, m_texLayout{ renderer::makeLayout< utils::Vec2 >( 2u ) }
 	{
 		m_posLayout->createAttribute< utils::Vec3 >( 0u, 0u );
 		m_nmlLayout->createAttribute< utils::Vec3 >( 1u, 0u );
@@ -167,7 +167,8 @@ namespace render
 			, MaxObjectsCount
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_layout{ std::make_unique< renderer::VertexLayout >( 0u ) }
+		, m_layout{ std::make_unique< renderer::VertexLayout >( 0u
+			, uint32_t( sizeof( BillboardBuffer::Vertex ) ) ) }
 	{
 		m_layout->createAttribute< utils::Vec3 >( 0u, offsetof( BillboardData, center ) );
 		m_layout->createAttribute< utils::Vec2 >( 1u, offsetof( BillboardData, scale ) );
@@ -181,8 +182,14 @@ namespace render
 				*m_layout,
 			}
 			, renderPass
-			, renderer::PrimitiveTopology::eTriangleFan
-			, renderer::RasterisationState{}
+			, renderer::PrimitiveTopology::eTriangleList
+			, renderer::RasterisationState{
+				0u,
+				false,
+				false,
+				renderer::PolygonMode::eFill,
+				renderer::CullModeFlag::eNone
+			}
 			, doCreateBlendState( type ) );
 		m_pipeline->multisampleState( renderer::MultisampleState{} )
 			.depthStencilState( renderer::DepthStencilState{} )
@@ -201,10 +208,12 @@ namespace render
 			, MaxObjectsCount
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_layout{ std::make_unique< renderer::VertexLayout >( 0u ) }
+		, m_layout{ renderer::makeLayout< PolyLine::Vertex >( 0u ) }
 	{
-		m_layout->createAttribute< utils::Vec3 >( 0u, offsetof( PolyLine::Vertex, m_position ) );
-		m_layout->createAttribute< utils::Vec2 >( 1u, offsetof( PolyLine::Vertex, m_normal ) );
+		m_layout->createAttribute< utils::Vec3 >( 0u
+			, offsetof( PolyLine::Vertex, m_position ) );
+		m_layout->createAttribute< utils::Vec2 >( 1u
+			, offsetof( PolyLine::Vertex, m_normal ) );
 		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( device, m_descriptorLayout.get() );
 		m_pipeline = std::make_shared< renderer::Pipeline >( device
 			, *m_pipelineLayout

@@ -43,6 +43,14 @@ namespace renderer
 		void waitIdle()const;
 		/**
 		*\brief
+		*	Le numéro de version.
+		*/
+		inline std::string const & getVersion()const
+		{
+			return m_version;
+		}
+		/**
+		*\brief
 		*	Le vk::Device.
 		*/
 		inline vk::LogicalDevice const & getDevice()const
@@ -88,5 +96,6 @@ namespace renderer
 		Queue m_graphicsQueue;
 		CommandPool m_presentCommandPool;
 		CommandPool m_graphicsCommandPool;
+		std::string m_version;
 	};
 }

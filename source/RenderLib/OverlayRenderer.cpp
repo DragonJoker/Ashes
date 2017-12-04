@@ -249,7 +249,7 @@ namespace render
 			, textures
 			, opacity
 			, text ? ObjectType::eTextOverlay : ObjectType::ePanelOverlay ) }
-		, m_layout{ std::make_unique< renderer::VertexLayout >( 0u ) }
+		, m_layout{ renderer::makeLayout< TextOverlay::Vertex >( 0u ) }
 		, m_overlayUbo{ std::make_unique< renderer::UniformBuffer< OverlayUbo > >( device
 			, MaxObjectsCount
 			, renderer::BufferTarget::eTransferDst
@@ -453,6 +453,10 @@ namespace render
 		doAddOverlay( overlay
 			, m_panelNodes[size_t( node )]
 			, m_panelOverlays[size_t( node )] );
+		m_connections[overlay.get()] = overlay->onChanged.connect( [this]( Overlay & overlay )
+		{
+			m_changed = true;
+		} );
 		m_changed = true;
 	}
 
@@ -468,6 +472,10 @@ namespace render
 		doAddOverlay( overlay
 			, m_borderNodesBorder[size_t( node )]
 			, m_borderOverlaysBorders[size_t( node )] );
+		m_connections[overlay.get()] = overlay->onChanged.connect( [this]( Overlay & overlay )
+		{
+			m_changed = true;
+		} );
 		m_changed = true;
 	}
 
@@ -476,6 +484,10 @@ namespace render
 		doAddOverlay( overlay
 			, m_textNode
 			, m_textOverlays[m_textOverlays.size() - 1] );
+		m_connections[overlay.get()] = overlay->onChanged.connect( [this]( Overlay & overlay )
+		{
+			m_changed = true;
+		} );
 		m_changed = true;
 	}
 
@@ -504,6 +516,7 @@ namespace render
 			, material.textureFlags() );
 		bool result = doRemoveOverlay( overlay, m_panelOverlays[size_t( node )] );
 		assert( result && "Overlay not found in the list" );
+		m_connections.erase( m_connections.find( overlay.get() ) );
 		m_changed = true;
 	}
 
@@ -516,6 +529,7 @@ namespace render
 		assert( result && "Overlay panel not found in the list" );
 		result = doRemoveOverlay( overlay, m_borderOverlaysBorders[size_t( node )] );
 		assert( result && "Overlay borders not found in the list" );
+		m_connections.erase( m_connections.find( overlay.get() ) );
 		m_changed = true;
 	}
 
@@ -529,8 +543,9 @@ namespace render
 			result = doRemoveOverlay( overlay, *it );
 		}
 
-		m_changed = true;
 		assert( result && "Overlay not found in the list" );
+		m_changed = true;
+		m_connections.erase( m_connections.find( overlay.get() ) );
 	}
 
 	void OverlayRenderer::update()
@@ -653,7 +668,7 @@ namespace render
 		assert( it != overlays.m_overlays.end() );
 		doDrawBuffer( commandBuffer
 			, *overlays.m_buffer
-			, ( *it )->m_index * MaxObjectsCount
+			, ( *it )->m_index
 			, 1u
 			, node
 			, *( *it )->m_descriptor );
@@ -679,7 +694,7 @@ namespace render
 		assert( itPanel != panelOverlays.m_overlays.end() );
 		doDrawBuffer( commandBuffer
 			, *panelOverlays.m_buffer
-			, ( *itPanel )->m_index * MaxObjectsCount
+			, ( *itPanel )->m_index
 			, 1u
 			, node
 			, *( *itPanel )->m_descriptor );
@@ -693,7 +708,7 @@ namespace render
 		assert( itBorder != borderOverlays.m_overlays.end() );
 		doDrawBuffer( commandBuffer
 			, *borderOverlays.m_buffer
-			, ( *itBorder )->m_index * MaxObjectsCount
+			, ( *itBorder )->m_index
 			, 1u
 			, node
 			, *( *itBorder )->m_descriptor );

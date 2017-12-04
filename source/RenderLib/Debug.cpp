@@ -43,7 +43,7 @@ namespace render
 			m_version = std::make_shared< TextOverlay >();
 			m_version->position( { 0, 0 } );
 			m_version->material( material );
-			//m_version->caption( renderer::OpenGL::getVersion() );
+			m_version->caption( device.getVersion() );
 			m_version->fontTexture( *m_fontTexture );
 			m_scene->addOverlay( Version, m_version );
 

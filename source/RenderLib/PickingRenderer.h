@@ -112,9 +112,9 @@ namespace render
 				, renderer::ShaderProgramPtr && program
 				, NodeType type );
 			//! Le layout du tampon de positions.
-			renderer::VertexLayout m_posLayout;
+			renderer::VertexLayoutPtr m_posLayout;
 			//! Le layout du tampon de coordonnées de texture.
-			renderer::VertexLayout m_texLayout;
+			renderer::VertexLayoutPtr m_texLayout;
 			//! Le layout du pipeline.
 			renderer::PipelineLayoutPtr m_pipelineLayout;
 			//! Le pipeline.
@@ -145,7 +145,7 @@ namespace render
 			//! L'UBO contenant les variables liées au billboard.
 			renderer::UniformBuffer< BillboardUbo > m_billboardUbo;
 			//! Le layout du tampon de positions.
-			renderer::VertexLayout m_layout;
+			renderer::VertexLayoutPtr m_layout;
 			//! Le layout du pipeline.
 			renderer::PipelineLayoutPtr m_pipelineLayout;
 			//! Le pipeline.

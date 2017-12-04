@@ -127,19 +127,19 @@ namespace render
 		, renderer::ShaderProgramPtr && program
 		, NodeType type )
 		: RenderNode{ device, std::move( layout ), std::move( program ) }
-		, m_posLayout{ 0u }
-		, m_texLayout{ 1u }
+		, m_posLayout{ renderer::makeLayout< utils::Vec3 > ( 0u ) }
+		, m_texLayout{ renderer::makeLayout< utils::Vec2 >( 1u ) }
 	{
-		m_posLayout.createAttribute< utils::Vec3 >( 0u, 0u );
-		m_texLayout.createAttribute< utils::Vec2 >( 1u, 0u );
+		m_posLayout->createAttribute< utils::Vec3 >( 0u, 0u );
+		m_texLayout->createAttribute< utils::Vec2 >( 1u, 0u );
 		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( device, &m_descriptorLayout );
 		m_pipeline = std::make_shared< renderer::Pipeline >( device
 			, *m_pipelineLayout
 			, *m_program
 			, renderer::VertexLayoutCRefArray
 			{
-				m_posLayout,
-				m_texLayout
+				*m_posLayout,
+				*m_texLayout
 			}
 			, renderPass
 			, renderer::PrimitiveTopology::eTriangleList
@@ -162,12 +162,12 @@ namespace render
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal }
-		, m_layout{ 0u }
+		, m_layout{ renderer::makeLayout< BillboardBuffer::Vertex >( 0u ) }
 	{
-		m_layout.createAttribute< utils::Vec3 >( 0u, offsetof( BillboardData, center ) );
-		m_layout.createAttribute< utils::Vec2 >( 1u, offsetof( BillboardData, scale ) );
-		m_layout.createAttribute< utils::Vec2 >( 2u, offsetof( BillboardBuffer::Vertex, texture ) );
-		m_layout.createAttribute< float >( 3u, offsetof( BillboardBuffer::Vertex, id ) );
+		m_layout->createAttribute< utils::Vec3 >( 0u, offsetof( BillboardData, center ) );
+		m_layout->createAttribute< utils::Vec2 >( 1u, offsetof( BillboardData, scale ) );
+		m_layout->createAttribute< utils::Vec2 >( 2u, offsetof( BillboardBuffer::Vertex, texture ) );
+		m_layout->createAttribute< float >( 3u, offsetof( BillboardBuffer::Vertex, id ) );
 		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( device, &m_descriptorLayout );
 		m_descriptor.createBinding( m_descriptorPool.getLayout().getBinding( UberShader::UboBillboardBinding )
 			, m_billboardUbo
@@ -177,7 +177,7 @@ namespace render
 			, *m_program
 			, renderer::VertexLayoutCRefArray
 			{
-				m_layout,
+				*m_layout,
 			}
 			, renderPass
 			, renderer::PrimitiveTopology::eTriangleFan

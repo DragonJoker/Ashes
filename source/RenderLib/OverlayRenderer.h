@@ -304,7 +304,7 @@ namespace render
 		BorderOverlayPanelVboArray m_borderOverlaysPanels;
 		BorderOverlayBorderVboArray m_borderOverlaysBorders;
 		std::vector< TextOverlayVbo > m_textOverlays;
-		std::vector< utils::Connection< OnOverlayChanged > > m_connections;
+		std::map< Overlay *, utils::Connection< OnOverlayChanged > > m_connections;
 		uint32_t m_maxCharsPerBuffer;
 		mutable bool m_sizeChanged{ true };
 		mutable bool m_changed{ true };

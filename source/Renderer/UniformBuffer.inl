@@ -8,7 +8,7 @@ namespace renderer
 		, BufferTarget target
 		, MemoryPropertyFlags flags )
 		: m_device{ device }
-		, m_buffer{ device.getDevice().createUniformBuffer( count * sizeof( T )
+		, m_buffer{ device.getDevice().createUniformBuffer( vk::UniformBuffer::getOffset( device.getDevice(), count, sizeof( T ) )
 			, convert( target )
 			, convert( flags ) ) }
 		, m_data( count, T{} )

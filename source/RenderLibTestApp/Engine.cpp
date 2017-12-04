@@ -152,7 +152,7 @@ void Engine::doInitialise3DElements()
 	m_window = std::make_unique< render::RenderWindow >( *m_device
 		, utils::IVec2{ width, height }
 		, loader
-		, false );
+		, true );
 	m_window->viewport().fovY( utils::Angle{ 45.0_degrees } );
 
 	// Initialise the scene
@@ -160,21 +160,21 @@ void Engine::doInitialise3DElements()
 	scene.backgroundColour( renderer::RgbaColour{ 0.5, 0.5, 0.5, 1.0 } );
 
 	// Populate the scene
-	std::string content = utils::getFileTextContent( "tex_cube.obj" );
+	//std::string content = utils::getFileTextContent( "tex_cube.obj" );
 
-	if ( !content.empty() )
-	{
-		render::ObjectPtr object = utils::loadObjFile( m_window->getDevice()
-			, m_window->getStagingBuffer()
-			, m_window->getDefaultResources().getCommandBuffer()
-			, "Cube"
-			, content
-			, scene.materials()
-			, scene.textures()
-			, scene.meshes() );
-		object->moveTo( utils::Vec3{ 0.0, 0.0, 52.0 } );
-		scene.add( object );
-	}
+	//if ( !content.empty() )
+	//{
+	//	render::ObjectPtr object = utils::loadObjFile( m_window->getDevice()
+	//		, m_window->getStagingBuffer()
+	//		, m_window->getDefaultResources().getCommandBuffer()
+	//		, "Cube"
+	//		, content
+	//		, scene.materials()
+	//		, scene.textures()
+	//		, scene.meshes() );
+	//	object->moveTo( utils::Vec3{ 0.0, 0.0, 52.0 } );
+	//	scene.add( object );
+	//}
 
 	auto texture = scene.textures().findElement( "texture.bmp" );
 
@@ -236,9 +236,9 @@ void Engine::doInitialise3DElements()
 	auto billboardBuffers = std::make_shared< render::BillboardBuffer >( *m_device
 		, false );
 	billboardBuffers->add( { -100.0f, utils::Vec3{ 1, 0, 0 }, utils::Vec2{ 1, 1 } } );
-	billboardBuffers->add( { -100.0f, utils::Vec3{ 0, 1, 0 }, utils::Vec2{ 1, 0.5 } } );
-	billboardBuffers->add( { -100.0f, utils::Vec3{ -1, 0, 0 }, utils::Vec2{ 0.5, 1 } } );
-	billboardBuffers->add( { -100.0f, utils::Vec3{ 0, -1, 0 }, utils::Vec2{ 1.5, 1.5 } } );
+	//billboardBuffers->add( { -100.0f, utils::Vec3{ 0, 1, 0 }, utils::Vec2{ 1, 0.5 } } );
+	//billboardBuffers->add( { -100.0f, utils::Vec3{ -1, 0, 0 }, utils::Vec2{ 0.5, 1 } } );
+	//billboardBuffers->add( { -100.0f, utils::Vec3{ 0, -1, 0 }, utils::Vec2{ 1.5, 1.5 } } );
 	scene.addBillboardBuffer( "billboard", billboardBuffers );
 	auto billboard = std::make_shared< render::Billboard >( "billboard", *billboardBuffers );
 	billboard->dimensions( utils::IVec2{ 1, 1 } );
@@ -308,14 +308,21 @@ void Engine::doInitialise3DElements()
 	glop->fontTexture( *m_fontTexture );
 	scene.addOverlay( "glop", glop );
 
-	auto miaouMat = doCreateOverlayMaterial( "miaou", renderer::RgbColour{ 0, 1, 0 }, 1.0 );
-	miaouMat->diffuseMap( texture );
-	miaouMat->opacityMap( opacity );
-	auto miaou = std::make_shared< render::PanelOverlay >();
-	miaou->position( utils::IVec2{ 100, 100 } );
-	miaou->size( utils::IVec2{ 200, 200 } );
-	miaou->material( miaouMat );
-	scene.addOverlay( "miaou", miaou );
+	//auto miaouMat = doCreateOverlayMaterial( "miaou", renderer::RgbColour{ 0, 1, 0 }, 1.0 );
+	//miaouMat->diffuseMap( texture );
+	//auto miaou = std::make_shared< render::PanelOverlay >();
+	//miaou->position( utils::IVec2{ 100, 100 } );
+	//miaou->size( utils::IVec2{ 200, 200 } );
+	//miaou->material( miaouMat );
+	//scene.addOverlay( "miaou", miaou );
+
+	//auto bizuizuiMat = doCreateOverlayMaterial( "bizuizui", renderer::RgbColour{ 0, 1, 0 }, 1.0 );
+	//bizuizuiMat->diffuseMap( texture );
+	//auto bizuizui = std::make_shared< render::PanelOverlay >();
+	//bizuizui->position( utils::IVec2{ 400, 100 } );
+	//bizuizui->size( utils::IVec2{ 200, 200 } );
+	//bizuizui->material( bizuizuiMat );
+	//scene.addOverlay( "bizuizui", bizuizui );
 
 	//m_onObjectPicked = m_window->picking().onObjectPicked.connect
 	//	( std::bind( &Engine::onObjectPicked

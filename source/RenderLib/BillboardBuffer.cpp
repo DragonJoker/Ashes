@@ -22,16 +22,6 @@ namespace render
 			, uint32_t( m_buffer.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		auto layout = std::make_unique< renderer::VertexLayout >( 0u );
-		layout->createAttribute< utils::Vec3 >( 0u
-			, offsetof( BillboardData, center ) );
-		layout->createAttribute< utils::Vec2 >( 1u
-			, offsetof( BillboardData, scale ) );
-		layout->createAttribute< utils::Vec2 >( 2u
-			, offsetof( BillboardBuffer::Vertex, texture ) );
-		layout->createAttribute< float >( 3u
-			, offsetof( BillboardBuffer::Vertex, id ) );
-		m_vbo->setLayout( std::move( layout ) );
 	}
 
 	void BillboardBuffer::cleanup()

@@ -101,7 +101,7 @@ namespace utils
 		{
 			::ShowWindow( m_hwnd, TRUE );
 			::UpdateWindow( m_hwnd );
-			::SetTimer( m_hwnd, 1, 17, nullptr );
+			::SetTimer( m_hwnd, 1, 10, nullptr );
 			m_timer = 1;
 			doRegisterInstance( this );
 			doCreate();
@@ -407,21 +407,21 @@ namespace utils
 
 	void MsWindow::doUpdateFps( std::chrono::microseconds const & duration )
 	{
-		++m_frameCount;
-		m_framesTimes[m_frameIndex] = duration;
-		auto count = std::min( m_frameCount, m_framesTimes.size() );
-		auto averageTime = std::accumulate( m_framesTimes.begin()
-			, m_framesTimes.begin() + count
-			, std::chrono::microseconds{ 0 } ).count() / float( count );
-		m_frameIndex = ++m_frameIndex % FrameSamplesCount;
-		std::stringstream title;
-		auto ms = duration.count() / 1000.0f;
-		auto avgms = averageTime / 1000.0f;
-		title << " - (Instant) " << ms << " ms";
-		title << " - " << ( 1000.0f / ms ) << " fps";
-		title << " - (Average) " << avgms << " ms";
-		title << " - " << ( 1000.0f / avgms ) << " fps";
-		strcpy( m_title.data(), title.str().c_str() );
-		::SendMessageA( m_hwnd, WM_SETTEXT, 0, LPARAM( m_title.data() ) );
+		//++m_frameCount;
+		//m_framesTimes[m_frameIndex] = duration;
+		//auto count = std::min( m_frameCount, m_framesTimes.size() );
+		//auto averageTime = std::accumulate( m_framesTimes.begin()
+		//	, m_framesTimes.begin() + count
+		//	, std::chrono::microseconds{ 0 } ).count() / float( count );
+		//m_frameIndex = ++m_frameIndex % FrameSamplesCount;
+		//std::stringstream title;
+		//auto ms = duration.count() / 1000.0f;
+		//auto avgms = averageTime / 1000.0f;
+		//title << " - (Instant) " << ms << " ms";
+		//title << " - " << ( 1000.0f / ms ) << " fps";
+		//title << " - (Average) " << avgms << " ms";
+		//title << " - " << ( 1000.0f / avgms ) << " fps";
+		//strcpy( m_title.data(), title.str().c_str() );
+		//::SendMessageA( m_hwnd, WM_SETTEXT, 0, LPARAM( m_title.data() ) );
 	}
 }

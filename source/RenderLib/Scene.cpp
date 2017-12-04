@@ -13,10 +13,6 @@
 #include <Utils/LogarithmicRange.hpp>
 #include <Utils/StringUtils.hpp>
 
-//#include <Renderer/ShaderProgram.hpp>
-//#include <Renderer/GlUniform.h>
-//#include <Renderer/OpenGL.h>
-
 #include <algorithm>
 
 namespace render
@@ -82,7 +78,6 @@ namespace render
 		m_cameraChanged |= m_camera.update();
 		render::doUpdate( m_changedMovables );
 		doUpdateBillboards();
-		m_cameraChanged = false;
 	}
 
 	void Scene::updateOverlays()

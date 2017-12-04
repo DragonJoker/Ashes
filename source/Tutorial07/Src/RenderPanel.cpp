@@ -317,7 +317,7 @@ namespace vkapp
 			, uint32_t( m_vertexData.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		auto layout = std::make_unique< renderer::VertexLayout >( 0 );
+		auto layout = renderer::makeLayout< TexturedVertexData >( 0 );
 		layout->createAttribute< utils::Vec4 >( 0u
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 		layout->createAttribute< utils::Vec2 >( 1u

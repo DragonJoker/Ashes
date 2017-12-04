@@ -42,6 +42,18 @@ namespace renderer
 			, BufferTarget target
 			, MemoryPropertyFlags flags );
 		/**
+		*\brief
+		*	Récupère l'offset dans le buffer pour un nombre d'éléments donné.
+		*\param[in] count
+		*	Le nombre d'éléments.
+		*\return
+		*	L'offset réel.
+		*/
+		uint32_t getOffset( uint32_t count )const
+		{
+			return m_buffer->getOffset( count, sizeof( T ) );
+		}
+		/**
 		*\return
 		*	Le tampon.
 		*/

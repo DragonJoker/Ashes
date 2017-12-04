@@ -110,15 +110,17 @@ namespace render
 			, uint32_t( doGetVtxData().size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_layout{ std::make_unique< renderer::VertexLayout >( 0u ) }
+		, m_layout{ renderer::makeLayout< RenderWindow::Vertex >( 0u ) }
 		, m_descriptorPool{ std::make_unique< renderer::DescriptorSetPool >( m_descriptorLayout, 1u ) }
 		, m_descriptor{ std::make_unique< renderer::DescriptorSet >( *m_descriptorPool ) }
 		, m_viewport{ dimensions }
 		//, m_picking{ device, dimensions }
 		, m_debug{ device, *m_stagingBuffer, m_swapChain->getDefaultResources().getCommandBuffer(), debug, m_scene, loader }
 	{
-		m_layout->createAttribute< utils::Vec2 >( 0u, 0u );
-		m_layout->createAttribute< utils::Vec2 >( 1u, sizeof( utils::Vec2 ) );
+		m_layout->createAttribute< utils::Vec2 >( 0u
+			, uint32_t( offsetof( RenderWindow::Vertex, position ) ) );
+		m_layout->createAttribute< utils::Vec2 >( 1u
+			, uint32_t( offsetof( RenderWindow::Vertex, texture ) ) );
 
 		m_descriptor->createBinding( m_descriptorPool->getLayout().getBinding( UberShader::TextureDiffuseBinding )
 			, m_target->getTexture()
