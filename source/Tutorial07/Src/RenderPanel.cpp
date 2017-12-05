@@ -233,11 +233,10 @@ namespace vkapp
 				}
 			}
 
-			m_texture = std::make_unique< renderer::Texture >( *m_device );
+			m_texture = m_device->createTexture();
 			m_texture->setImage( utils::PixelFormat::eR8G8B8A8
 				, { image.GetSize().x, image.GetSize().y } );
-			m_sampler = std::make_unique< renderer::Sampler >( *m_device
-				, renderer::WrapMode::eClampToEdge
+			m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 				, renderer::WrapMode::eClampToEdge
 				, renderer::WrapMode::eClampToEdge
 				, renderer::Filter::eLinear
@@ -280,13 +279,13 @@ namespace vkapp
 			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
 			renderer::DescriptorSetLayoutBinding{ 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex }
 		};
-		m_descriptorLayout = std::make_unique< renderer::DescriptorSetLayout >( *m_device, bindings );
-		m_descriptorPool = std::make_unique< renderer::DescriptorSetPool >( *m_descriptorLayout, 1u );
-		m_descriptorSet = std::make_unique< renderer::DescriptorSet >( *m_descriptorPool );
-		m_descriptorSet->createBinding( bindings[0]
+		m_descriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
+		m_descriptorPool = m_descriptorLayout->createPool( 1u );
+		m_descriptorSet = m_descriptorPool->createDescriptorSet();
+		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
 			, *m_texture
 			, *m_sampler );
-		m_descriptorSet->createBinding( bindings[1]
+		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 1u )
 			, *m_uniformBuffer
 			, 0u );
 		m_descriptorSet->update();
@@ -295,13 +294,11 @@ namespace vkapp
 	void RenderPanel::doCreateRenderPass()
 	{
 		std::vector< utils::PixelFormat > formats{ { m_swapChain->getFormat() } };
-		renderer::RenderSubpass subpass{ *m_device
-			, formats
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite } };
-		m_renderPass = std::make_unique< renderer::RenderPass >( *m_device
-			, formats
-			, std::vector< renderer::RenderSubpass >{ subpass }
+		renderer::RenderSubpassPtrArray subpasses;
+		subpasses.emplace_back( m_device->createRenderSubpass( formats
+			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
+		m_renderPass = m_device->createRenderPass( formats
+			, subpasses
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite
 				, { renderer::ImageLayout::eColourAttachmentOptimal } }
@@ -313,16 +310,14 @@ namespace vkapp
 	void RenderPanel::doCreateVertexBuffer()
 	{
 		m_vertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
-			, 0u
 			, uint32_t( m_vertexData.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		auto layout = renderer::makeLayout< TexturedVertexData >( 0 );
-		layout->createAttribute< utils::Vec4 >( 0u
+		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( *m_device, 0 );
+		m_vertexLayout->createAttribute< utils::Vec4 >( 0u
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		layout->createAttribute< utils::Vec2 >( 1u
+		m_vertexLayout->createAttribute< utils::Vec2 >( 1u
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
-		m_vertexBuffer->setLayout( std::move( layout ) );
 		m_stagingBuffer->copyVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData
 			, *m_vertexBuffer
@@ -331,12 +326,12 @@ namespace vkapp
 
 	void RenderPanel::doCreateStagingBuffer()
 	{
-		m_stagingBuffer = std::make_unique < renderer::StagingBuffer > ( *m_device );
+		m_stagingBuffer = m_device->createStagingBuffer();
 	}
 
 	void RenderPanel::doCreatePipeline()
 	{
-		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( *m_device, m_descriptorLayout.get() );
+		m_pipelineLayout = m_device->createPipelineLayout( *m_descriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = getPath( getExecutableDirectory() ) / "share" / "Tutorial07" / "Shaders";
 
@@ -346,15 +341,14 @@ namespace vkapp
 			throw std::runtime_error{ "Shader files are missing" };
 		}
 
-		m_program = std::make_unique< renderer::ShaderProgram >( *m_device );
+		m_program = m_device->createShaderProgram();
 		m_program->createModule( dumpBinaryFile( shadersFolder / "vert.spv" )
 			, renderer::ShaderStageFlag::eVertex );
 		m_program->createModule( dumpBinaryFile( shadersFolder / "frag.spv" )
 			, renderer::ShaderStageFlag::eFragment );
-		m_pipeline = std::make_shared< renderer::Pipeline >( *m_device
-			, *m_pipelineLayout
+		m_pipeline = m_device->createPipeline( *m_pipelineLayout
 			, *m_program
-			, std::vector< std::reference_wrapper< renderer::VertexLayout const > >{ { std::ref( m_vertexBuffer->getLayout() ) } }
+			, { *m_vertexLayout }
 			, *m_renderPass
 			, renderer::PrimitiveTopology::eTriangleStrip );
 		m_pipeline->multisampleState( renderer::MultisampleState{} )
@@ -439,7 +433,7 @@ namespace vkapp
 
 	void RenderPanel::doResetSwapChain()
 	{
-		m_device->getDevice().waitIdle();
+		m_device->waitIdle();
 		wxSize size{ GetClientSize() };
 		m_swapChain->reset( { size.GetWidth(), size.GetHeight() } );
 	}

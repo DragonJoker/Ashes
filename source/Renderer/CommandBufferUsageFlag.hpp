@@ -2,10 +2,12 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_CommandBufferUsageFlag_HPP___
+#define ___Renderer_CommandBufferUsageFlag_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
-#include <VkLib/FlagCombination.hpp>
+#include "RendererPrerequisites.hpp"
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -20,14 +22,7 @@ namespace renderer
 		eRenderPassContinue = 0x00000002,
 		eSimultaneousUse = 0x00000004,
 	};
-	VkLib_ImplementFlag( CommandBufferUsageFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::CommandBufferUsageFlag en VkCommandBufferUsageFlags.
-	*\param[in] flags
-	*	Le renderer::CommandBufferUsageFlag.
-	*\return
-	*	Le VkCommandBufferUsageFlags.
-	*/
-	VkCommandBufferUsageFlags convert( CommandBufferUsageFlags const & flags );
+	Utils_ImplementFlag( CommandBufferUsageFlag )
 }
+
+#endif

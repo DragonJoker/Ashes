@@ -2,6 +2,8 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_RenderPassState_HPP___
+#define ___Renderer_RenderPassState_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
@@ -27,17 +29,45 @@ namespace renderer
 		*/
 		RenderPassState( PipelineStageFlags pipelineStage
 			, AccessFlags access
-			, std::vector< ImageLayout > const & imageLayouts );
+			, ImageLayoutArray const & imageLayouts );
 		/**
 		*\return
-		*	Le vk::RenderPassState.
+		*	Les indicateurs d'état du pipeline.
 		*/
-		inline vk::RenderPassState const & getState()const
+		inline PipelineStageFlags const & getPipelineStage()const
 		{
-			return m_state;
+			return m_pipelineStage;
+		}
+		/**
+		*\return
+		*	Les indicateurs d'accès.
+		*/
+		inline AccessFlags const & getAccess()const
+		{
+			return m_access;
+		}
+		/**
+		*\return
+		*	Le début du tableau de layouts d'images.
+		*/
+		inline ImageLayoutArray::const_iterator begin()const
+		{
+			return m_imageLayouts.begin();
+		}
+		/**
+		*\return
+		*	La fin du tableau de layouts d'images.
+		*/
+		inline ImageLayoutArray::const_iterator end()const
+		{
+			return m_imageLayouts.end();
 		}
 
 	private:
-		vk::RenderPassState m_state;
+		PipelineStageFlags m_pipelineStage;
+		AccessFlags m_access;
+		ImageLayoutArray m_imageLayouts;
 	};
 }
+
+#endif

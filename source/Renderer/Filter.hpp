@@ -2,9 +2,11 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_Filter_HPP___
+#define ___Renderer_Filter_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
+#include "RendererPrerequisites.hpp"
 
 namespace renderer
 {
@@ -20,15 +22,8 @@ namespace renderer
 	{
 		eNearest,
 		eLinear,
-		VkLib_EnumBounds( eNearest )
+		Utils_EnumBounds( eNearest )
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::Filter en VkFilter.
-	*\param[in] filter
-	*	Le renderer::Filter.
-	*\return
-	*	Le VkFilter.
-	*/
-	VkFilter convert( Filter const & filter );
 }
+
+#endif

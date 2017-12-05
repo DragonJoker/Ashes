@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_DepthStencilStateFlag_HPP___
+#define ___Renderer_DepthStencilStateFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -16,14 +18,7 @@ namespace renderer
 		: uint32_t
 	{
 	};
-	VkLib_ImplementFlag( DepthStencilStateFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::DepthStencilStateFlags en VkPipelineDepthStencilStateCreateFlags.
-	*\param[in] flags
-	*	Le renderer::DepthStencilStateFlags.
-	*\return
-	*	Le VkPipelineDepthStencilStateCreateFlags.
-	*/
-	VkPipelineDepthStencilStateCreateFlags convert( DepthStencilStateFlags const & flags );
+	Utils_ImplementFlag( DepthStencilStateFlag )
 }
+
+#endif

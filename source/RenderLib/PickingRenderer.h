@@ -20,6 +20,8 @@
 #include <Renderer/PipelineLayout.hpp>
 #include <Renderer/ShaderProgram.hpp>
 #include <Renderer/UniformBuffer.hpp>
+#include <Renderer/VertexLayout.hpp>
+
 #include <Utils/RangedValue.hpp>
 
 #include <array>
@@ -78,7 +80,7 @@ namespace render
 			*	Le programme depuis lequel les variables sont récupérées.
 			*/
 			RenderNode( renderer::Device const & device
-				, renderer::DescriptorSetLayout && layout
+				, renderer::DescriptorSetLayoutPtr && layout
 				, renderer::ShaderProgramPtr && program );
 			//! Le programme shader.
 			renderer::ShaderProgramPtr m_program;
@@ -87,11 +89,11 @@ namespace render
 			//! L'UBO contenant les informations de picking.
 			renderer::UniformBuffer< PickingUbo > m_pickUbo;
 			//! Le layout des descriptor sets du noeud.
-			renderer::DescriptorSetLayout m_descriptorLayout;
+			renderer::DescriptorSetLayoutPtr m_descriptorLayout;
 			//! Le pool de descriptor set du noeud.
-			renderer::DescriptorSetPool m_descriptorPool;
+			renderer::DescriptorSetPoolPtr m_descriptorPool;
 			//! Le descriptor set de ce noeud.
-			renderer::DescriptorSet m_descriptor;
+			renderer::DescriptorSetPtr m_descriptor;
 		};
 		/**
 		*\brief
@@ -108,7 +110,7 @@ namespace render
 			*/
 			ObjectNode( renderer::Device const & device
 				, renderer::RenderPass const & renderPass
-				, renderer::DescriptorSetLayout && layout
+				, renderer::DescriptorSetLayoutPtr && layout
 				, renderer::ShaderProgramPtr && program
 				, NodeType type );
 			//! Le layout du tampon de positions.
@@ -139,7 +141,7 @@ namespace render
 			*/
 			BillboardNode( renderer::Device const & device
 				, renderer::RenderPass const & renderPass
-				, renderer::DescriptorSetLayout && layout
+				, renderer::DescriptorSetLayoutPtr && layout
 				, renderer::ShaderProgramPtr && program
 				, NodeType type );
 			//! L'UBO contenant les variables liées au billboard.

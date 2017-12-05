@@ -6,6 +6,8 @@ See LICENSE file in root folder.
 
 #include "FileUtils.hpp"
 
+#include <fstream>
+
 #if defined( __linux__ )
 #	include <unistd.h>
 #endif

@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_StencilOp_HPP___
+#define ___Renderer_StencilOp_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -24,13 +26,6 @@ namespace renderer
 		eIncrementAndWrap,
 		eDecrementAndWrap,
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::StencilOp en VkStencilOp.
-	*\param[in] value
-	*	Le renderer::StencilOp.
-	*\return
-	*	Le VkStencilOp.
-	*/
-	VkStencilOp convert( StencilOp const & value );
 }
+
+#endif

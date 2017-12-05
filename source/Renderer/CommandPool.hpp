@@ -1,12 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_CommandPool_HPP___
+#define ___Renderer_CommandPool_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
-
-#include <VkLib/CommandPool.hpp>
 
 namespace renderer
 {
@@ -16,7 +16,7 @@ namespace renderer
 	*/
 	class CommandPool
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
@@ -30,36 +30,30 @@ namespace renderer
 		CommandPool( Device const & device
 			, uint32_t queueFamilyIndex
 			, CommandPoolCreateFlags flags = 0 );
+
+	public:
 		/**
+		*\~english
 		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] pool
-		*	Le vk::CommandPool.
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
 		*/
-		CommandPool( Device const & device
-			, vk::CommandPool const & pool );
+		virtual ~CommandPool() = default;
 		/**
 		*\brief
 		*	Crée un tampon de commandes.
+		*\param[in] primary
+		*	Dit si le tampon est un tampon de commandes primaire (\p true) ou secondaire (\p false).
 		*\return
 		*	Le tampon de commandes créé.
 		*/
-		CommandBufferPtr createCommandBuffer()const;
-		/**
-		*\return
-		*	Le vk::CommandPool.
-		*/
-		vk::CommandPool const & getCommandPool()const
-		{
-			assert( m_nonOwnedCommandPool );
-			return *m_nonOwnedCommandPool;
-		}
+		virtual CommandBufferPtr createCommandBuffer( bool primary = true )const = 0;
 
-	private:
+	protected:
 		Device const & m_device;
-		vk::CommandPoolPtr m_ownedCommandPool;
-		vk::CommandPool const * m_nonOwnedCommandPool;
 	};
 }
+
+#endif

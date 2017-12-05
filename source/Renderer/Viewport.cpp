@@ -10,7 +10,8 @@ namespace renderer
 		, uint32_t height
 		, int32_t x
 		, int32_t y )
-		: m_viewport{ width, height, x, y }
+		: m_offset{ x, y }
+		, m_size{ width, height }
 	{
 	}
 }

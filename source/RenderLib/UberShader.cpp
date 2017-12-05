@@ -2,6 +2,7 @@
 
 #include "Material.h"
 
+#include <Renderer/Device.hpp>
 #include <Renderer/ShaderProgram.hpp>
 
 #include <Utils/StringUtils.hpp>
@@ -891,7 +892,7 @@ void main()
 			, "layout( binding=" + std::to_string( TextureOpacityBinding ) + " ) " );
 
 
-		auto program = std::make_unique< renderer::ShaderProgram >( device );
+		auto program = device.createShaderProgram();
 		program->createModule( vtx, renderer::ShaderStageFlag::eVertex );
 		program->createModule( pxl, renderer::ShaderStageFlag::eFragment );
 		return program;

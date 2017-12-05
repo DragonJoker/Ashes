@@ -2,11 +2,11 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_Queue_HPP___
+#define ___Renderer_Queue_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
-
-#include <VkLib/Queue.hpp>
 
 namespace renderer
 {
@@ -16,14 +16,23 @@ namespace renderer
 	*/
 	class Queue
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] queue
-		*	La vk::Queue.
 		*/
-		Queue( vk::Queue const & queue );
+		Queue();
+
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~Queue() = default;
 		/**
 		*\brief
 		*	Met en attente des tampons de commandes.
@@ -34,8 +43,8 @@ namespace renderer
 		*\return
 		*	\p true si tout s'est bien passé.
 		*/
-		bool submit( CommandBuffer const & commandBuffer
-			, Fence const * fence )const;
+		virtual bool submit( CommandBuffer const & commandBuffer
+			, Fence const * fence )const = 0;
 		/**
 		*\brief
 		*	Met en attente des tampons de commandes.
@@ -52,11 +61,11 @@ namespace renderer
 		*\return
 		*	\p true si tout s'est bien passé.
 		*/ 
-		bool submit( CommandBuffer const & commandBuffer
+		virtual bool submit( CommandBuffer const & commandBuffer
 			, Semaphore const & semaphoreToWait
 			, PipelineStageFlags const & semaphoreStage
 			, Semaphore const & semaphoreToSignal
-			, Fence const * fence )const;
+			, Fence const * fence )const = 0;
 		/**
 		*\brief
 		*	Met en attente des tampons de commandes.
@@ -73,45 +82,33 @@ namespace renderer
 		*\return
 		*	\p true si tout s'est bien passé.
 		*/ 
-		bool submit( CommandBufferCRefArray const & commandBuffers
+		virtual bool submit( CommandBufferCRefArray const & commandBuffers
 			, SemaphoreCRefArray const & semaphoresToWait
 			, PipelineStageFlagsArray const & semaphoresStage
 			, SemaphoreCRefArray const & semaphoresToSignal
-			, Fence const * fence )const;
+			, Fence const * fence )const = 0;
 		/**
 		*\brief
 		*	Présente la file à Vulkan.
 		*\return
 		*	\p true si tout s'est bien passé.
 		*/ 
-		bool present( SwapChainCRefArray const & swapChains
+		virtual bool present( SwapChainCRefArray const & swapChains
 			, UInt32Array const & imagesIndex
-			, SemaphoreCRefArray const & semaphoresToWait )const;
+			, SemaphoreCRefArray const & semaphoresToWait )const = 0;
 		/**
 		*\brief
 		*	Attend que la file soit inactive.
 		*\return
 		*	\p true si tout s'est bien passé.
 		*/
-		bool waitIdle()const;
+		virtual bool waitIdle()const = 0;
 		/**
 		*\return
 		*	L'index de la famille de la file.
 		*/
-		inline uint32_t getFamilyIndex()const
-		{
-			return m_queue.getFamilyIndex();
-		}
-		/**
-		*\return
-		*	La vk::Queue.
-		*/
-		inline vk::Queue const & getQueue()const
-		{
-			return m_queue;
-		}
-
-	private:
-		vk::Queue const & m_queue;
+		virtual uint32_t getFamilyIndex()const = 0;
 	};
 }
+
+#endif

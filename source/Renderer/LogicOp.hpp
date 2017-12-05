@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_LogicOp_HPP___
+#define ___Renderer_LogicOp_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -32,13 +34,6 @@ namespace renderer
 		eNand,
 		eSet,
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::LogicOp en VkLogicOp.
-	*\param[in] value
-	*	Le renderer::LogicOp.
-	*\return
-	*	Le VkLogicOp.
-	*/
-	VkLogicOp convert( LogicOp const & value );
 }
+
+#endif

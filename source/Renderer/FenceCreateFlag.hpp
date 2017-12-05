@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_FenceCreateFlag_HPP___
+#define ___Renderer_FenceCreateFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -17,14 +19,7 @@ namespace renderer
 	{
 		eSignaled = 0x00000001,
 	};
-	VkLib_ImplementFlag( FenceCreateFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::FenceCreateFlags en VkFenceCreateFlags.
-	*\param[in] flags
-	*	Le renderer::FenceCreateFlags.
-	*\return
-	*	Le VkFenceCreateFlags.
-	*/
-	VkFenceCreateFlags convert( FenceCreateFlags const & flags );
+	Utils_ImplementFlag( FenceCreateFlag )
 }
+
+#endif

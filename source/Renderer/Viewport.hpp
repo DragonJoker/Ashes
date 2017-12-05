@@ -2,11 +2,13 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_Viewport_HPP___
+#define ___Renderer_Viewport_HPP___
 #pragma once
 
-#include <Utils/Vec2.hpp>
+#include "RendererPrerequisites.hpp"
 
-#include <VkLib/Viewport.hpp>
+#include <Utils/Vec2.hpp>
 
 namespace renderer
 {
@@ -31,14 +33,25 @@ namespace renderer
 			, int32_t y );
 		/**
 		*\return
-		*	Le viewport Vulkan.
+		*	L'offset du ciseau.
 		*/
-		inline vk::Viewport const & getViewport()const
+		inline utils::IVec2 const & getOffset()const
 		{
-			return m_viewport;
+			return m_offset;
+		}
+		/**
+		*\return
+		*	Les dimensions du ciseau.
+		*/
+		inline utils::IVec2 const & getSize()const
+		{
+			return m_size;
 		}
 
 	private:
-		vk::Viewport m_viewport;
+		utils::IVec2 m_offset;
+		utils::IVec2 m_size;
 	};
 }
+
+#endif

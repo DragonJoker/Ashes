@@ -167,6 +167,7 @@ namespace vkapp
 		renderer::PipelineLayoutPtr m_pipelineLayout;
 		renderer::PipelinePtr m_pipeline;
 		renderer::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
+		renderer::VertexLayoutPtr m_vertexLayout;
 		renderer::StagingBufferPtr m_stagingBuffer;
 		renderer::TexturePtr m_texture;
 		renderer::SamplerPtr m_sampler;

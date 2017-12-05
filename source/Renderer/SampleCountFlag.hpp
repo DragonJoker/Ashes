@@ -2,9 +2,11 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_SampleCountFlag_HPP___
+#define ___Renderer_SampleCountFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -19,14 +21,7 @@ namespace renderer
 		e32 = 0x00000020,
 		e64 = 0x00000040,
 	};
-	VkLib_ImplementFlag( SampleCountFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::SampleCountFlag en VkSampleCountFlagBits.
-	*\param[in] flags
-	*	Le renderer::SampleCountFlag.
-	*\return
-	*	Le VkSampleCountFlagBits.
-	*/
-	VkSampleCountFlagBits convert( SampleCountFlag const & flags );
+	Utils_ImplementFlag( SampleCountFlag )
 }
+
+#endif

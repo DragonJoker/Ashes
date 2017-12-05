@@ -2,9 +2,11 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_PrimitiveTopology_HPP___
+#define ___Renderer_PrimitiveTopology_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
+#include "RendererPrerequisites.hpp"
 
 namespace renderer
 {
@@ -30,15 +32,8 @@ namespace renderer
 		eTriangleListWithAdjacency,
 		eTriangleStripWithAdjacency,
 		ePatchList,
-		VkLib_EnumBounds( ePointList )
+		Utils_EnumBounds( ePointList )
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::PrimitiveTopology en VkPrimitiveTopology.
-	*\param[in] format
-	*	Le renderer::PrimitiveTopology.
-	*\return
-	*	Le VkPrimitiveTopology.
-	*/
-	VkPrimitiveTopology convert( PrimitiveTopology const & topology );
 }
+
+#endif

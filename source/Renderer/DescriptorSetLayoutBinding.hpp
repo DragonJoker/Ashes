@@ -1,12 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_DescriptorSetLayoutBinding_HPP___
+#define ___Renderer_DescriptorSetLayoutBinding_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
-
-#include <VkLib/DescriptorLayoutBinding.hpp>
 
 namespace renderer
 {
@@ -40,19 +40,47 @@ namespace renderer
 			, DescriptorType type
 			, ShaderStageFlags flags );
 		/**
-		*\~french
-		*\return
-		*	Le type de descripteur de l'attache.
 		*\~english
 		*\return
-		*	The binding descriptor type.
+		*	The binding point.
+		*\~french
+		*\return
+		*	Le point d'attache.
 		*/
-		inline vk::DescriptorLayoutBinding const & getBinding()const
+		inline uint32_t getBindingPoint()const
 		{
-			return m_binding;
+			return m_index;
+		}
+		/**
+		*\~english
+		*\return
+		*	The descriptor type.
+		*\~french
+		*\return
+		*	Le Le type de descripteur.
+		*/
+		inline DescriptorType getDescriptorType()const
+		{
+			return m_type;
+		}
+		/**
+		*\~english
+		*\return
+		*	The shader stage flags.
+		*\~french
+		*\return
+		*	Les indicateurs de niveau de shader.
+		*/
+		inline ShaderStageFlags getShaderStageFlags()const
+		{
+			return m_flags;
 		}
 
 	private:
-		vk::DescriptorLayoutBinding m_binding;
+		uint32_t m_index;
+		DescriptorType m_type;
+		ShaderStageFlags m_flags;
 	};
 }
+
+#endif

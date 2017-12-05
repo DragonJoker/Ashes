@@ -12,8 +12,6 @@ namespace renderer
 	BackBuffer::BackBuffer( Device const & device
 		, SwapChain const & swapChain
 		, uint32_t imageIndex )
-		: m_backBuffer{ *swapChain.getSwapChain().getBackBuffers()[imageIndex] }
-		, m_texture{ device, m_backBuffer.getImage() }
 	{
 	}
 }

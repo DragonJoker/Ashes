@@ -41,7 +41,14 @@ namespace render
 			return renderer::RenderPassState{ renderer::PipelineStageFlag::eBottomOfPipe
 				, renderer::AccessFlag::eMemoryRead
 				, { renderer::ImageLayout::eShaderReadOnlyOptimal
-					, renderer::ImageLayout::eDepthStencilAttachmentOptimal } };
+				, renderer::ImageLayout::eDepthStencilAttachmentOptimal } };
+		}
+
+		renderer::RenderSubpassPtrArray doGetRenderSubpasses( renderer::Device const & device )
+		{
+			renderer::RenderSubpassPtrArray result;
+			result.emplace_back( device.createRenderSubpass( doGetPixelFormats(), doGetSubpassState() ) );
+			return result;
 		}
 	}
 
@@ -49,14 +56,13 @@ namespace render
 		, utils::IVec2 const & dimensions
 		, utils::PixelFormat format )
 		: m_size{ dimensions }
-		, m_renderPass{ std::make_unique< renderer::RenderPass >( device
-			, doGetPixelFormats()
-			, renderer::RenderSubpassArray{ { device, doGetPixelFormats(), doGetSubpassState() } }
+		, m_renderPass{ device.createRenderPass( doGetPixelFormats()
+			, doGetRenderSubpasses( device)
 			, doGetInitialState()
 			, doGetFinalState() ) }
-		, m_colour{ std::make_unique< renderer::Texture >( device ) }
-		, m_depth{ std::make_unique< renderer::Texture >( device ) }
-		, m_stagingBuffer{ std::make_shared< renderer::StagingBuffer >( device, 10000000 ) }
+		, m_colour{ device.createTexture() }
+		, m_depth{ device.createTexture() }
+		, m_stagingBuffer{ device.createStagingBuffer( 10000000u ) }
 	{
 		m_colour->setImage( format
 			, dimensions
@@ -64,8 +70,7 @@ namespace render
 		m_depth->setImage( utils::PixelFormat::eD24S8
 			, dimensions
 			, renderer::ImageUsageFlag::eDepthStencilAttachment );
-		m_framebuffer = std::make_shared< renderer::FrameBuffer >( *m_renderPass
-			, dimensions
+		m_framebuffer = m_renderPass->createFrameBuffer( dimensions
 			, renderer::TextureCRefArray{ *m_colour, *m_depth } );
 	}
 

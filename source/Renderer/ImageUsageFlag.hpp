@@ -2,10 +2,12 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_ImageUsageFlag_HPP___
+#define ___Renderer_ImageUsageFlag_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
-#include <VkLib/FlagCombination.hpp>
+#include "RendererPrerequisites.hpp"
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -25,14 +27,7 @@ namespace renderer
 		eTransientAttachment = 0x00000040,
 		eInputAttachment = 0x00000080,
 	};
-	VkLib_ImplementFlag( ImageUsageFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::ImageUsageFlags en VkImageUsageFlags.
-	*\param[in] flags
-	*	Le renderer::ImageUsageFlags.
-	*\return
-	*	Le VkImageUsageFlags.
-	*/
-	VkImageUsageFlags convert( ImageUsageFlags const & flags );
+	Utils_ImplementFlag( ImageUsageFlag )
 }
+
+#endif

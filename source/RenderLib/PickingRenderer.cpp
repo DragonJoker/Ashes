@@ -18,7 +18,6 @@
 #include <Renderer/RenderingResources.hpp>
 #include <Renderer/RenderPass.hpp>
 #include <Renderer/StagingBuffer.hpp>
-#include <Renderer/VertexLayout.hpp>
 
 #include <algorithm>
 
@@ -28,7 +27,7 @@ namespace render
 
 	namespace
 	{
-		renderer::DescriptorSetLayout doCreateUboDescriptorLayout( renderer::Device const & device
+		renderer::DescriptorSetLayoutPtr doCreateUboDescriptorLayout( renderer::Device const & device
 			, ObjectType type
 			, TextureFlags textures )
 		{
@@ -63,7 +62,7 @@ namespace render
 					, renderer::ShaderStageFlag::eFragment );
 			}
 
-			return renderer::DescriptorSetLayout{ device, bindings };
+			return device.createDescriptorSetLayout( std::move( bindings ) );
 		}
 
 		renderer::ColourBlendState doCreateBlendState( NodeType type )
@@ -96,7 +95,7 @@ namespace render
 	//*************************************************************************
 
 	PickingRenderer::RenderNode::RenderNode( renderer::Device const & device
-		, renderer::DescriptorSetLayout && layout
+		, renderer::DescriptorSetLayoutPtr && layout
 		, renderer::ShaderProgramPtr && program )
 		: m_program{ std::move( program ) }
 		, m_mtxUbo{ device
@@ -108,13 +107,13 @@ namespace render
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal }
 		, m_descriptorLayout{ std::move( layout ) }
-		, m_descriptorPool{ m_descriptorLayout, MaxObjectsCount }
-		, m_descriptor{ m_descriptorPool.createDescriptorSet() }
+		, m_descriptorPool{ m_descriptorLayout->createPool( MaxObjectsCount ) }
+		, m_descriptor{ m_descriptorPool->createDescriptorSet() }
 	{
-		m_descriptor.createBinding( m_descriptorPool.getLayout().getBinding( UberShader::UboMatrixBinding )
+		m_descriptor->createBinding( m_descriptorPool->getLayout().getBinding( UberShader::UboMatrixBinding )
 			, m_mtxUbo
 			, 0u );
-		m_descriptor.createBinding( m_descriptorPool.getLayout().getBinding( UberShader::UboPickingBinding )
+		m_descriptor->createBinding( m_descriptorPool->getLayout().getBinding( UberShader::UboPickingBinding )
 			, m_pickUbo
 			, 0u );
 	}
@@ -123,24 +122,19 @@ namespace render
 
 	PickingRenderer::ObjectNode::ObjectNode( renderer::Device const & device
 		, renderer::RenderPass const & renderPass
-		, renderer::DescriptorSetLayout && layout
+		, renderer::DescriptorSetLayoutPtr && layout
 		, renderer::ShaderProgramPtr && program
 		, NodeType type )
 		: RenderNode{ device, std::move( layout ), std::move( program ) }
-		, m_posLayout{ renderer::makeLayout< utils::Vec3 > ( 0u ) }
-		, m_texLayout{ renderer::makeLayout< utils::Vec2 >( 1u ) }
+		, m_posLayout{ renderer::makeLayout< utils::Vec3 > ( device, 0u ) }
+		, m_texLayout{ renderer::makeLayout< utils::Vec2 >( device, 1u ) }
 	{
 		m_posLayout->createAttribute< utils::Vec3 >( 0u, 0u );
 		m_texLayout->createAttribute< utils::Vec2 >( 1u, 0u );
-		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( device, &m_descriptorLayout );
-		m_pipeline = std::make_shared< renderer::Pipeline >( device
-			, *m_pipelineLayout
+		m_pipelineLayout = device.createPipelineLayout( *m_descriptorLayout );
+		m_pipeline = device.createPipeline( *m_pipelineLayout
 			, *m_program
-			, renderer::VertexLayoutCRefArray
-			{
-				*m_posLayout,
-				*m_texLayout
-			}
+			, { *m_posLayout, *m_texLayout }
 			, renderPass
 			, renderer::PrimitiveTopology::eTriangleList
 			, renderer::RasterisationState{}
@@ -154,7 +148,7 @@ namespace render
 
 	PickingRenderer::BillboardNode::BillboardNode( renderer::Device const & device
 		, renderer::RenderPass const & renderPass
-		, renderer::DescriptorSetLayout && layout
+		, renderer::DescriptorSetLayoutPtr && layout
 		, renderer::ShaderProgramPtr && program
 		, NodeType type )
 		: RenderNode{ device, std::move( layout ), std::move( program ) }
@@ -162,23 +156,19 @@ namespace render
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal }
-		, m_layout{ renderer::makeLayout< BillboardBuffer::Vertex >( 0u ) }
+		, m_layout{ renderer::makeLayout< BillboardBuffer::Vertex >( device, 0u ) }
 	{
 		m_layout->createAttribute< utils::Vec3 >( 0u, offsetof( BillboardData, center ) );
 		m_layout->createAttribute< utils::Vec2 >( 1u, offsetof( BillboardData, scale ) );
 		m_layout->createAttribute< utils::Vec2 >( 2u, offsetof( BillboardBuffer::Vertex, texture ) );
 		m_layout->createAttribute< float >( 3u, offsetof( BillboardBuffer::Vertex, id ) );
-		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( device, &m_descriptorLayout );
-		m_descriptor.createBinding( m_descriptorPool.getLayout().getBinding( UberShader::UboBillboardBinding )
+		m_pipelineLayout = device.createPipelineLayout( *m_descriptorLayout );
+		m_descriptor->createBinding( m_descriptorPool->getLayout().getBinding( UberShader::UboBillboardBinding )
 			, m_billboardUbo
 			, 0u );
-		m_pipeline = std::make_shared< renderer::Pipeline >( device
-			, *m_pipelineLayout
+		m_pipeline = device.createPipeline( *m_pipelineLayout
 			, *m_program
-			, renderer::VertexLayoutCRefArray
-			{
-				*m_layout,
-			}
+			, { *m_layout }
 			, renderPass
 			, renderer::PrimitiveTopology::eTriangleFan
 			, renderer::RasterisationState{}
@@ -429,7 +419,7 @@ namespace render
 							, std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getNormals() ) )
 							, std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getTexCoords() ) ) }
 						, { 0u, 0u, 0u } );
-					commandBuffer.bindIndexBuffer( object.m_submesh->getIbo()
+					commandBuffer.bindIndexBuffer( object.m_submesh->getIbo().getBuffer()
 						, 0u
 						, renderer::IndexType::eUInt16 );
 					//node.m_scale->bind();
@@ -469,7 +459,7 @@ namespace render
 			commandBuffer.bindPipeline( *node.m_pipeline );
 			commandBuffer.setViewport( camera.viewport().viewport() );
 			uint32_t id{ 0u };
-			commandBuffer.bindDescriptorSet( node.m_descriptor
+			commandBuffer.bindDescriptorSet( *node.m_descriptor
 				, *node.m_pipelineLayout );
 
 			for ( auto & billboard : billboards )

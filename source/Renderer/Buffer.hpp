@@ -1,8 +1,6 @@
-/**
-*\file
-*	RenderingResources.h
-*\author
-*	Sylvain Doremus
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
 #ifndef ___Renderer_Buffer_HPP___
 #define ___Renderer_Buffer_HPP___
@@ -12,11 +10,55 @@
 #include "Device.hpp"
 #include "MemoryPropertyFlag.hpp"
 
-#include <VkLib/Buffer.hpp>
-#include <VkLib/LogicalDevice.hpp>
-
 namespace renderer
 {
+	/**
+	*\brief
+	*	Classe de tampon GPU.
+	*/
+	class BufferBase
+	{
+	protected:
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
+		*\param[in] size
+		*	La taille du tampon.
+		*\param[in] target
+		*	Les indicateurs d'utilisation du tampon.
+		*\param[in] flags
+		*	Les indicateurs de mémoire du tampon.
+		*/
+		BufferBase( Device const & device
+			, uint32_t size
+			, BufferTargets target
+			, MemoryPropertyFlags flags );
+
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~BufferBase() = default;
+		/**
+		*\return
+		*	La taille du tampon.
+		*/
+		inline uint32_t getSize()const
+		{
+			return m_size;
+		}
+
+	private:
+		Device const & m_device;
+		uint32_t m_size;
+	};
 	/**
 	*\brief
 	*	Classe regroupant les ressources de rendu nécessaires au dessin d'une image.
@@ -40,34 +82,26 @@ namespace renderer
 		Buffer( Device const & device
 			, uint32_t count
 			, BufferTargets target
-			, MemoryPropertyFlags flags )
-			: m_device{ device }
-			, m_buffer{ device.getDevice()
-				, count * sizeof( T )
-				, convert( target )
-				, convert( flags ) }
-		{
-		}
+			, MemoryPropertyFlags flags );
 		/**
 		*\return
 		*	Le nombre d'éléments.
 		*/
 		inline uint32_t getCount()const
 		{
-			return uint32_t( m_buffer.getSize() / sizeof( T ) );
+			return uint32_t( m_buffer->getSize() / sizeof( T ) );
 		}
 		/**
 		*\return
 		*	Le tampon.
 		*/
-		inline vk::Buffer const & getBuffer()const
+		inline BufferBase const & getBuffer()const
 		{
-			return m_buffer;
+			return *m_buffer;
 		}
 
 	private:
-		Device const & m_device;
-		vk::Buffer m_buffer;
+		BufferBasePtr m_buffer;
 	};
 	/**
 	*\brief

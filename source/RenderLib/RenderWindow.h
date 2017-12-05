@@ -233,7 +233,7 @@ namespace render
 		//! Le tampon de transfert.
 		renderer::StagingBufferPtr m_stagingBuffer;
 		//! Le layout des descripteurs de rendu dans la fenêtre.
-		renderer::DescriptorSetLayout m_descriptorLayout;
+		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
 		//! Le layout du pipeline de rendu dans la fenêtre.
 		renderer::PipelineLayoutPtr m_pipelineLayout;
 		//! Le pipeline de rendu dans la fenêtre.

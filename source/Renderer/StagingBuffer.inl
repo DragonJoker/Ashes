@@ -1,3 +1,7 @@
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
+*/
 namespace renderer
 {
 	template< typename T >
@@ -6,14 +10,8 @@ namespace renderer
 		, uint32_t offset )const
 	{
 		auto size = count * offset;
-		auto buffer = m_stagingBuffer->getBuffer().lock( 0
-			, size
-			, 0 );
-
-		if ( !buffer )
-		{
-			throw std::runtime_error{ "Staging buffer storage memory mapping failed." };
-		}
+		ByteArray data( size_t( size ), uint8_t{} );
+		auto buffer = data.data();
 
 		for ( uint32_t i = 0; i < count; ++i )
 		{
@@ -21,7 +19,6 @@ namespace renderer
 			buffer += offset;
 		}
 
-		m_stagingBuffer->getBuffer().unlock( size
-			, true );
+		doCopyToStagingBuffer( data.data(), size );
 	}
 }

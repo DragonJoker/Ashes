@@ -1,6 +1,7 @@
 #include "Prerequisites.hpp"
 
 #include <Renderer/Connection.hpp>
+#include <Renderer/PlatformWindowHandle.hpp>
 #include <Renderer/Renderer.hpp>
 
 #if defined( __WXGTK__ )
@@ -17,14 +18,15 @@
 
 namespace vkapp
 {
-	renderer::Connection makeConnection( wxWindow * window
+	renderer::ConnectionPtr makeConnection( wxWindow * window
 		, renderer::Renderer const & vulkan )
 	{
 #if defined( __WXMSW__ )
 
-		renderer::Connection connection{ vulkan
-			, wxGetInstance()
-			, window->GetHandle() };
+		auto handle = renderer::WindowHandle{ std::make_unique< renderer::IMswWindowHandle >( wxGetInstance()
+			, window->GetHandle() ) };
+		return vulkan.createConnection( 0u
+			, std::move( handle ) );
 
 #else
 
@@ -49,13 +51,11 @@ namespace vkapp
 			}
 		}
 
-		renderer::Connection connection{ vulkan
-			, xdisplay
-			, xwindow };
+		return vulkan.createConnection( 0u
+			, renderer::WindowHandle{ std::make_unique< renderer::IXWindowHandle >( xdisplay
+				, xwindow ) } );
 
 #endif
-
-		return connection;
 	}
 
 	std::array< float, 16 > getOrthographicProjection( float left

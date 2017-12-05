@@ -1,8 +1,6 @@
-/**
-*\file
-*	DescriptorSetPool.h
-*\author
-*	Sylvain Doremus
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
 #ifndef ___Renderer_DescriptorSetPool_HPP___
 #define ___Renderer_DescriptorSetPool_HPP___
@@ -22,28 +20,41 @@ namespace renderer
 	*/
 	class DescriptorSetPool
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
 		*\param[in] layout
 		*	Le layout à partir duquel sera créé le pool.
+		*\param[in] maxSets
+		*	Le nombre maximum de sets que le pool peut créer.
 		*/
 		DescriptorSetPool( DescriptorSetLayout const & layout, uint32_t maxSets );
+
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~DescriptorSetPool() = default;
 		/**
 		*\brief
 		*	Alloue des descripteurs.
 		*\param[in] count
 		*	Le nombre de descripteurs.
 		*/
-		void allocate( uint32_t count )const;
+		virtual void allocate( uint32_t count )const;
 		/**
 		*\brief
 		*	Crée un descriptor set correspondant au layout défini pour ce pool.
 		*\return
 		*	Le descriptor set créé.
 		*/
-		DescriptorSet createDescriptorSet()const;
+		virtual DescriptorSetPtr createDescriptorSet()const = 0;
 		/**
 		*\return
 		*	Le layout de descriptor set.
@@ -52,18 +63,9 @@ namespace renderer
 		{
 			return m_layout;
 		}
-		/**
-		*\return
-		*	Le pool de descriptor set vulkan.
-		*/
-		inline vk::DescriptorPool const & getPool()const
-		{
-			return *m_pool;
-		}
 
 	private:
 		DescriptorSetLayout const & m_layout;
-		vk::DescriptorPoolPtr m_pool;
 		uint32_t m_maxSets;
 		mutable uint32_t m_allocated{ 0u };
 	};

@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_ImageTiling_HPP___
+#define ___Renderer_ImageTiling_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
+#include "RendererPrerequisites.hpp"
 
 namespace renderer
 {
@@ -17,13 +19,6 @@ namespace renderer
 		eOptimal,
 		eLinear,
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::ImageTiling en VkImageTiling.
-	*\param[in] value
-	*	Le renderer::ImageTiling.
-	*\return
-	*	Le VkImageTiling.
-	*/
-	VkImageTiling convert( ImageTiling const & value );
 }
+
+#endif

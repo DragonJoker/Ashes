@@ -1,4 +1,15 @@
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
+*/
+#ifndef ___Renderer_Config_HPP___
+#define ___Renderer_Config_HPP___
 #pragma once
 
-//! Tells if RenderLib can use glslang and SPIRV to read GLSL shaders.
-#define RENDERLIB_GLSL_TO_SPV ${RENDERLIB_GLSL_TO_SPV}
+//! The platform.
+#define RENDERLIB_WIN32 ${RENDERLIB_WIN32}
+#define RENDERLIB_XCB ${RENDERLIB_XCB}
+#define RENDERLIB_XLIB ${RENDERLIB_XLIB}
+#define RENDERLIB_ANDROID ${RENDERLIB_ANDROID}
+
+#endif

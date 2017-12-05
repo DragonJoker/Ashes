@@ -10,6 +10,7 @@
 #include <Renderer/MultisampleState.hpp>
 #include <Renderer/StagingBuffer.hpp>
 #include <Renderer/VertexBuffer.hpp>
+#include <Renderer/VertexLayout.hpp>
 
 #include "BorderPanelOverlay.h"
 #include "ElementsList.h"
@@ -87,7 +88,7 @@ namespace render
 			, TextureFlags flags
 			, bool text )
 		{
-			std::vector< renderer::DescriptorSetLayoutBinding > bindings;
+			renderer::DescriptorSetLayoutBindingArray bindings;
 
 			bindings.emplace_back( UberShader::UboOverlayBinding
 				, renderer::DescriptorType::eUniformBuffer
@@ -110,7 +111,7 @@ namespace render
 					, renderer::ShaderStageFlag::eFragment );
 			}
 
-			return std::make_unique< renderer::DescriptorSetLayout >( device, bindings );
+			return device.createDescriptorSetLayout( std::move( bindings ) );
 		}
 
 		template< typename Data, typename OvType >
@@ -249,13 +250,13 @@ namespace render
 			, textures
 			, opacity
 			, text ? ObjectType::eTextOverlay : ObjectType::ePanelOverlay ) }
-		, m_layout{ renderer::makeLayout< TextOverlay::Vertex >( 0u ) }
+		, m_layout{ renderer::makeLayout< TextOverlay::Vertex >( device, 0u ) }
 		, m_overlayUbo{ std::make_unique< renderer::UniformBuffer< OverlayUbo > >( device
 			, MaxObjectsCount
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
 		, m_descriptorLayout{ doCreateDescriptorLayout( device, textures, text ) }
-		, m_descriptorPool{ std::make_unique< renderer::DescriptorSetPool >( *m_descriptorLayout, MaxObjectsCount ) }
+		, m_descriptorPool{ m_descriptorLayout->createPool( MaxObjectsCount ) }
 	{
 		m_layout->createAttribute< utils::Vec2 >( 0u
 			, offsetof( TextOverlay::Vertex, position ) );
@@ -270,14 +271,10 @@ namespace render
 			, renderer::BlendFactor::eSrcAlpha
 			, renderer::BlendFactor::eInvSrcAlpha
 			, renderer::BlendOp::eAdd } );
-		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( device, m_descriptorLayout.get() );
-		m_pipeline = std::make_shared< renderer::Pipeline >( device
-			, *m_pipelineLayout
+		m_pipelineLayout = device.createPipelineLayout( *m_descriptorLayout );
+		m_pipeline = device.createPipeline( *m_pipelineLayout
 			, *m_program
-			, renderer::VertexLayoutCRefArray
-			{
-				*m_layout
-			}
+			, { *m_layout }
 			, renderPass
 			, renderer::PrimitiveTopology::eTriangleList
 			, renderer::RasterisationState{}
@@ -307,7 +304,7 @@ namespace render
 	void RenderOverlay< OvType >::createDescriptor( uint32_t index )
 	{
 		m_index = index;
-		m_descriptor = std::make_unique< renderer::DescriptorSet >( m_pool );
+		m_descriptor = m_pool.createDescriptorSet();
 		m_descriptor->createBinding( m_pool.getLayout().getBinding( UberShader::UboOverlayBinding )
 			, m_overlayUbo
 			, index );
@@ -366,7 +363,6 @@ namespace render
 	OverlayVbo< Data, OvType >::OverlayVbo( renderer::Device const & device
 		, uint32_t count )
 		: m_buffer{ renderer::makeVertexBuffer< Data >( device
-			, 0u
 			, count
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
@@ -387,13 +383,9 @@ namespace render
 		, m_borderNodesPanel{ doCreatePanelNodes( device, renderPass ) }
 		, m_borderNodesBorder{ doCreatePanelNodes( device, renderPass ) }
 		, m_textNode{ device, renderPass, true, OpacityType::eAlphaTest, TextureFlag::eOpacity }
-		, m_drawCommandBuffer{ std::make_unique < renderer::CommandBuffer >( device
-			, commandPool
-			, false ) }
-		, m_updateCommandBuffer{ std::make_unique < renderer::CommandBuffer >( device
-			, commandPool ) }
-		, m_stagingBuffer{ std::make_unique< renderer::StagingBuffer >( device
-			, uint32_t( MaxObjectsCount * maxCharsPerBuffer * sizeof( BorderPanelOverlay::BorderQuads ) ) ) }
+		, m_drawCommandBuffer{ commandPool.createCommandBuffer( false ) }
+		, m_updateCommandBuffer{ commandPool.createCommandBuffer() }
+		, m_stagingBuffer{ device.createStagingBuffer( uint32_t( MaxObjectsCount * maxCharsPerBuffer * sizeof( BorderPanelOverlay::BorderQuads ) ) ) }
 		, m_panelOverlays
 		{
 			PanelOverlayVbo{ device, MaxObjectsCount },

@@ -2,11 +2,13 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_RenderSubpass_HPP___
+#define ___Renderer_RenderSubpass_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
 
-#include <VkLib/RenderSubpass.hpp>
+#include <Utils/PixelFormat.hpp>
 
 namespace renderer
 {
@@ -20,7 +22,7 @@ namespace renderer
 	*/
 	class RenderSubpass
 	{
-	public:
+	protected:
 		/**
 		*\~french
 		*\brief
@@ -44,16 +46,18 @@ namespace renderer
 		RenderSubpass( Device const & device
 			, std::vector< utils::PixelFormat > const & formats
 			, RenderSubpassState const & neededState );
-		/**
-		*\return
-		*	La vk::RenderSubpass.
-		*/
-		inline vk::RenderSubpass const & getRenderSubpass()const
-		{
-			return m_subPass;
-		}
 
-	private:
-		vk::RenderSubpass m_subPass;
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~RenderSubpass() = default;
 	};
 }
+
+#endif

@@ -2,10 +2,12 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_CommandBufferResetFlag_HPP___
+#define ___Renderer_CommandBufferResetFlag_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
-#include <VkLib/FlagCombination.hpp>
+#include "RendererPrerequisites.hpp"
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -18,14 +20,7 @@ namespace renderer
 	{
 		eReleaseResources = 0x00000001,
 	};
-	VkLib_ImplementFlag( CommandBufferResetFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::CommandBufferResetFlags en VkCommandBufferResetFlags.
-	*\param[in] flags
-	*	Le renderer::CommandBufferResetFlags.
-	*\return
-	*	Le VkCommandBufferResetFlags.
-	*/
-	VkCommandBufferResetFlags convert( CommandBufferResetFlags const & flags );
+	Utils_ImplementFlag( CommandBufferResetFlag )
 }
+
+#endif

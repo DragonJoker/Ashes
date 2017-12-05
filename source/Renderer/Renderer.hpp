@@ -1,61 +1,50 @@
-/**
-*\file
-*	Renderer.h
-*\author
-*	Sylvain Doremus
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_HPP___
+#define ___Renderer_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
-
-#include <VkLib/Instance.hpp>
-#include <VkLib/VulkanLibrary.hpp>
+#include "WindowHandle.hpp"
 
 namespace renderer
 {
 	class Renderer
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur, initialise l'instance de Vulkan.
 		*/
-		Renderer();
+		Renderer() = default;
+
+	public:
 		/**
 		*\brief
 		*	Destructeur.
 		*/
-		~Renderer();
+		virtual ~Renderer() = default;
 		/**
 		*\brief
 		*	Crée le périphérique logique.
 		*\param[in] connection
 		*	La connection avec la fenêtre.
 		*/
-		DevicePtr createDevice( Connection && connection )const;
-		/**
-		*\return
-		*	L'instance de vulkan.
-		*/
-		inline vk::Instance const & getInstance()const
-		{
-			return m_vulkan;
-		}
+		virtual DevicePtr createDevice( ConnectionPtr && connection )const = 0;
 		/**
 		*\brief
-		*	Récupère le GPU physique à l'index donné.
-		*\param[in] index
-		*	L'index.
-		*\return
-		*	Le GPU physique.
+		*	Constructeur.
+		*\param[in] renderer
+		*	L'instance de Renderer.
+		*\param[in] deviceIndex
+		*	L'indice du périphérique physique.
+		*\param[in] handle
+		*	Le descripteur de la fenêtre.
 		*/
-		inline vk::PhysicalDevice const & getPhysicalDevice( uint32_t index = 0u )const
-		{
-			return m_vulkan.getPhysicalDevice( index );
-		}
-
-	private:
-		vk::VulkanLibrary m_library;
-		vk::Instance m_vulkan;
+		virtual ConnectionPtr createConnection( uint32_t deviceIndex
+			, WindowHandle && handle )const = 0;
 	};
 }
+
+#endif

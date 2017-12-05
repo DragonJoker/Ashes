@@ -75,7 +75,7 @@ namespace render
 		*/
 		inline renderer::Texture const & texture()const noexcept
 		{
-			return m_texture;
+			return *m_texture;
 		}
 		/**
 		*\return
@@ -83,7 +83,7 @@ namespace render
 		*/
 		inline renderer::Sampler const & sampler()const noexcept
 		{
-			return m_sampler;
+			return *m_sampler;
 		}
 
 	private:
@@ -92,9 +92,9 @@ namespace render
 		//! Le format des données de l'image.
 		utils::PixelFormat m_format{ utils::PixelFormat::eR8G8B8 };
 		//! La texture.
-		renderer::Texture m_texture;
+		renderer::TexturePtr m_texture;
 		//! L'échantillonneur.
-		renderer::Sampler m_sampler;
+		renderer::SamplerPtr m_sampler;
 	};
 }
 

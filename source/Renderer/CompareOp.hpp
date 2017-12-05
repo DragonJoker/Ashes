@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_CompareOp_HPP___
+#define ___Renderer_CompareOp_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -24,13 +26,6 @@ namespace renderer
 		eGreaterEqual,
 		eAlways,
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::CompareOp en VkCompareOp.
-	*\param[in] value
-	*	Le renderer::CompareOp.
-	*\return
-	*	Le VkCompareOp.
-	*/
-	VkCompareOp convert( CompareOp const & value );
 }
+
+#endif

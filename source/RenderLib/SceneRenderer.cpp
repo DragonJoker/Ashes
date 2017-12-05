@@ -71,7 +71,7 @@ namespace render
 					, renderer::ShaderStageFlag::eFragment );
 			}
 
-			return std::make_unique< renderer::DescriptorSetLayout >( device, bindings );
+			return device.createDescriptorSetLayout( std::move( bindings ) );
 		}
 
 		renderer::ColourBlendState doCreateBlendState( NodeType type )
@@ -116,8 +116,7 @@ namespace render
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
 		, m_descriptorLayout{ std::move( layout ) }
-		, m_descriptorPool{ std::make_unique< renderer::DescriptorSetPool >( *m_descriptorLayout
-			, MaxObjectsCount ) }
+		, m_descriptorPool{ m_descriptorLayout->createPool( MaxObjectsCount ) }
 	{
 	}
 
@@ -129,23 +128,17 @@ namespace render
 		, renderer::ShaderProgramPtr && program
 		, NodeType type )
 		: RenderNode{ device, std::move( layout ), std::move( program ) }
-		, m_posLayout{ renderer::makeLayout< utils::Vec3 >( 0u ) }
-		, m_nmlLayout{ renderer::makeLayout< utils::Vec3 >( 1u ) }
-		, m_texLayout{ renderer::makeLayout< utils::Vec2 >( 2u ) }
+		, m_posLayout{ renderer::makeLayout< utils::Vec3 >( device, 0u ) }
+		, m_nmlLayout{ renderer::makeLayout< utils::Vec3 >( device, 1u ) }
+		, m_texLayout{ renderer::makeLayout< utils::Vec2 >( device, 2u ) }
 	{
 		m_posLayout->createAttribute< utils::Vec3 >( 0u, 0u );
 		m_nmlLayout->createAttribute< utils::Vec3 >( 1u, 0u );
 		m_texLayout->createAttribute< utils::Vec2 >( 2u, 0u );
-		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( device, m_descriptorLayout.get() );
-		m_pipeline = std::make_shared< renderer::Pipeline >( device
-			, *m_pipelineLayout
+		m_pipelineLayout = device.createPipelineLayout( *m_descriptorLayout );
+		m_pipeline = device.createPipeline( *m_pipelineLayout
 			, *m_program
-			, renderer::VertexLayoutCRefArray
-			{
-				*m_posLayout,
-				*m_nmlLayout,
-				*m_texLayout
-			}
+			, { *m_posLayout, *m_nmlLayout, *m_texLayout }
 			, renderPass
 			, renderer::PrimitiveTopology::eTriangleList
 			, renderer::RasterisationState{}
@@ -167,20 +160,15 @@ namespace render
 			, MaxObjectsCount
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_layout{ std::make_unique< renderer::VertexLayout >( 0u
-			, uint32_t( sizeof( BillboardBuffer::Vertex ) ) ) }
+		, m_layout{ renderer::makeLayout< BillboardBuffer::Vertex >( device, 0u ) }
 	{
 		m_layout->createAttribute< utils::Vec3 >( 0u, offsetof( BillboardData, center ) );
 		m_layout->createAttribute< utils::Vec2 >( 1u, offsetof( BillboardData, scale ) );
 		m_layout->createAttribute< utils::Vec2 >( 2u, offsetof( BillboardBuffer::Vertex, texture ) );
-		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( device, m_descriptorLayout.get() );
-		m_pipeline = std::make_shared< renderer::Pipeline >( device
-			, *m_pipelineLayout
+		m_pipelineLayout = device.createPipelineLayout( *m_descriptorLayout );
+		m_pipeline = device.createPipeline( *m_pipelineLayout
 			, *m_program
-			, renderer::VertexLayoutCRefArray
-			{
-				*m_layout,
-			}
+			, { *m_layout }
 			, renderPass
 			, renderer::PrimitiveTopology::eTriangleList
 			, renderer::RasterisationState{
@@ -208,20 +196,16 @@ namespace render
 			, MaxObjectsCount
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_layout{ renderer::makeLayout< PolyLine::Vertex >( 0u ) }
+		, m_layout{ renderer::makeLayout< PolyLine::Vertex >( device, 0u ) }
 	{
 		m_layout->createAttribute< utils::Vec3 >( 0u
 			, offsetof( PolyLine::Vertex, m_position ) );
 		m_layout->createAttribute< utils::Vec2 >( 1u
 			, offsetof( PolyLine::Vertex, m_normal ) );
-		m_pipelineLayout = std::make_unique< renderer::PipelineLayout >( device, m_descriptorLayout.get() );
-		m_pipeline = std::make_shared< renderer::Pipeline >( device
-			, *m_pipelineLayout
+		m_pipelineLayout = device.createPipelineLayout( *m_descriptorLayout );
+		m_pipeline = device.createPipeline( *m_pipelineLayout
 			, *m_program
-			, renderer::VertexLayoutCRefArray
-			{
-				*m_layout
-			}
+			, { *m_layout }
 			, renderPass
 			, renderer::PrimitiveTopology::eTriangleFan
 			, renderer::RasterisationState{}
@@ -237,9 +221,7 @@ namespace render
 		, renderer::RenderPass const & renderPass )
 		: m_device{ device }
 		, m_renderPass{ renderPass }
-		, m_commandBuffer{ std::make_unique< renderer::CommandBuffer >( device
-			, m_device.getGraphicsCommandPool()
-			, false ) }
+		, m_commandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer( false ) }
 	{
 	}
 
@@ -479,7 +461,7 @@ namespace render
 						, std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getNormals() ) )
 						, std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getTexCoords() ) ) }
 						, { 0u, 0u, 0u } );
-					commandBuffer.bindIndexBuffer( object.m_submesh->getIbo()
+					commandBuffer.bindIndexBuffer( object.m_submesh->getIbo().getBuffer()
 						, 0u
 						, renderer::IndexType::eUInt16 );
 					//node.m_scale->bind();

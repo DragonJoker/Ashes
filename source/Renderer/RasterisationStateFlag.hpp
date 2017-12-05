@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_RasterisationStateFlag_HPP___
+#define ___Renderer_RasterisationStateFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -16,14 +18,7 @@ namespace renderer
 		: uint32_t
 	{
 	};
-	VkLib_ImplementFlag( RasterisationStateFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::RasterisationStateFlags en VkPipelineRasterizationStateCreateFlags.
-	*\param[in] flags
-	*	Le renderer::RasterisationStateFlags.
-	*\return
-	*	Le VkPipelineRasterizationStateCreateFlags.
-	*/
-	VkPipelineRasterizationStateCreateFlags convert( RasterisationStateFlags const & flags );
+	Utils_ImplementFlag( RasterisationStateFlag )
 }
+
+#endif

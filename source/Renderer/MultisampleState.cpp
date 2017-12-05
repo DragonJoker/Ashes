@@ -7,40 +7,35 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	MultisampleState::MultisampleState( MultisampleStateFlags flags
-		, SampleCountFlag rasterizationSamples
+		, SampleCountFlag rasterisationSamples
 		, bool sampleShadingEnable
 		, float minSampleShading
 		, bool alphaToCoverageEnable
 		, bool alphaToOneEnable )
-		: m_state
-		{
-			convert( flags ),
-			convert( rasterizationSamples ),
-			sampleShadingEnable,
-			minSampleShading,
-			alphaToCoverageEnable,
-			alphaToOneEnable
-		}
+		: MultisampleState{ flags
+			, rasterisationSamples
+			, sampleShadingEnable
+			, minSampleShading
+			, 0u
+			, alphaToCoverageEnable
+			, alphaToOneEnable }
 	{
 	}
 
 	MultisampleState::MultisampleState( MultisampleStateFlags flags
-		, SampleCountFlag rasterizationSamples
+		, SampleCountFlag rasterisationSamples
 		, bool sampleShadingEnable
 		, float minSampleShading
 		, uint32_t sampleMask
 		, bool alphaToCoverageEnable
 		, bool alphaToOneEnable )
-		: m_state
-		{
-			convert( flags ),
-			convert( rasterizationSamples ),
-			sampleShadingEnable,
-			minSampleShading,
-			sampleMask,
-			alphaToCoverageEnable,
-			alphaToOneEnable
-		}
+		: m_flags{ flags }
+		, m_rasterizationSamples{ rasterisationSamples }
+		, m_sampleShadingEnable{ sampleShadingEnable }
+		, m_minSampleShading{ minSampleShading }
+		, m_sampleMask{ sampleMask }
+		, m_alphaToCoverageEnable{ alphaToCoverageEnable }
+		, m_alphaToOneEnable{ alphaToOneEnable }
 	{
 	}
 }

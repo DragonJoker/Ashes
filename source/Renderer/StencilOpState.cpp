@@ -13,16 +13,13 @@ namespace renderer
 		, uint32_t compareMask
 		, uint32_t writeMask
 		, uint32_t reference )
-		: m_state
-		{
-			convert( failOp ),
-			convert( passOp ),
-			convert( depthFailOp ),
-			convert( compareOp ),
-			compareMask,
-			writeMask,
-			reference,
-		}
+		: m_failOp{ failOp }
+		, m_passOp{ passOp }
+		, m_depthFailOp{ depthFailOp }
+		, m_compareOp{ compareOp }
+		, m_compareMask{ compareMask }
+		, m_writeMask{ writeMask }
+		, m_reference{ reference }
 	{
 	}
 }

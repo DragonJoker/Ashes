@@ -61,7 +61,7 @@ namespace vkapp
 	*\param[in] gpu
 	*	The GPU chosen to bind the window and the GPU.
 	*/
-	renderer::Connection makeConnection( wxWindow * window
+	renderer::ConnectionPtr makeConnection( wxWindow * window
 		, renderer::Renderer const & vulkan );
 	/**
 	*\~french

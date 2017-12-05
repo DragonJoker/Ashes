@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_BufferTarget_HPP___
+#define ___Renderer_BufferTarget_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -29,14 +31,7 @@ namespace renderer
 		eVertexBuffer = 0x00000080,
 		eIndirectBuffer = 0x00000100,
 	};
-	VkLib_ImplementFlag( BufferTarget )
-	/**
-	*\brief
-	*	Convertit un renderer::BufferTargets en VkBufferUsageFlags.
-	*\param[in] targets
-	*	Le renderer::BufferTargets.
-	*\return
-	*	Le VkBufferUsageFlags.
-	*/
-	VkBufferUsageFlags convert( BufferTargets const & targets );
+	Utils_ImplementFlag( BufferTarget )
 }
+
+#endif

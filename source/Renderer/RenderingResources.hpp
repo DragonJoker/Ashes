@@ -1,17 +1,13 @@
-/**
-*\file
-*	RenderingResources.h
-*\author
-*	Sylvain Doremus
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
 #ifndef ___Renderer_RenderingResources_HPP___
 #define ___Renderer_RenderingResources_HPP___
 #pragma once
 
 #include "CommandBuffer.hpp"
-
 #include "Fence.hpp"
-#include "FrameBuffer.hpp"
 #include "Semaphore.hpp"
 
 namespace renderer
@@ -22,7 +18,7 @@ namespace renderer
 	*/
 	class RenderingResources
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
@@ -30,6 +26,17 @@ namespace renderer
 		*	Le Device parent.
 		*/
 		RenderingResources( Device const & device );
+
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~RenderingResources() = default;
 		/**
 		*\brief
 		*	Attend que le tampon de commandes soit prêt à l'enregistrement.
@@ -38,7 +45,7 @@ namespace renderer
 		*\return
 		*	\p true si l'attente n'est pas sortie en timeout.
 		*/
-		bool waitRecord( uint32_t timeout );
+		virtual bool waitRecord( uint32_t timeout ) = 0;
 		/**
 		*\brief
 		*	Définit le tampon de fenêtre.
@@ -61,7 +68,7 @@ namespace renderer
 		*\return
 		*	Le sémaphore d'attente que l'image soit disponible.
 		*/
-		inline auto const & getImageAvailableSemaphore()const
+		inline Semaphore const & getImageAvailableSemaphore()const
 		{
 			return *m_imageAvailableSemaphore;
 		}
@@ -69,7 +76,7 @@ namespace renderer
 		*\return
 		*	Le sémaphore d'attente que le rendu soit terminé.
 		*/
-		inline auto const & getRenderingFinishedSemaphore()const
+		inline Semaphore const & getRenderingFinishedSemaphore()const
 		{
 			return *m_finishedRenderingSemaphore;
 		}
@@ -79,31 +86,31 @@ namespace renderer
 		*/
 		inline CommandBuffer const & getCommandBuffer()const
 		{
-			return m_commandBuffer;
+			return *m_commandBuffer;
 		}
 		/**
 		*\return
 		*	La barrière.
 		*/
-		inline auto const & getFence()const
+		inline Fence const & getFence()const
 		{
-			return m_fence;
+			return *m_fence;
 		}
 		/**
 		*\return
 		*	La périphérique logique.
 		*/
-		inline auto const & getDevice()const
+		inline Device const & getDevice()const
 		{
 			return m_device;
 		}
 
-	private:
+	protected:
 		Device const & m_device;
 		SemaphorePtr m_imageAvailableSemaphore;
 		SemaphorePtr m_finishedRenderingSemaphore;
-		Fence m_fence;
-		CommandBuffer m_commandBuffer;
+		FencePtr m_fence;
+		CommandBufferPtr m_commandBuffer;
 		uint32_t m_backBuffer{ 0u };
 	};
 }

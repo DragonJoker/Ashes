@@ -7,6 +7,8 @@
 #include "Submesh.h"
 
 #include <Renderer/DescriptorSetLayoutBinding.hpp>
+#include <Renderer/StagingBuffer.hpp>
+#include <Renderer/VertexLayout.hpp>
 
 #include <algorithm>
 

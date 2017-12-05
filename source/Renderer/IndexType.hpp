@@ -2,9 +2,11 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_IndexType_HPP___
+#define ___Renderer_IndexType_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
+#include "RendererPrerequisites.hpp"
 
 namespace renderer
 {
@@ -17,13 +19,6 @@ namespace renderer
 		eUInt16,
 		eUInt32,
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::IndexType en VkIndexType.
-	*\param[in] type
-	*	Le renderer::IndexType.
-	*\return
-	*	Le VkIndexType.
-	*/
-	VkIndexType convert( IndexType const & type );
 }
+
+#endif

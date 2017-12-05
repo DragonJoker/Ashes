@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_ShaderStageFlag_HPP___
+#define ___Renderer_ShaderStageFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -23,23 +25,7 @@ namespace renderer
 		eCompute = 0x00000020,
 		eAll = 0x0000001F,
 	};
-	VkLib_ImplementFlag( ShaderStageFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::ShaderStageFlags en VkShaderStageFlags.
-	*\param[in] flags
-	*	Le renderer::ShaderStageFlags.
-	*\return
-	*	Le VkShaderStageFlags.
-	*/
-	VkShaderStageFlags convert( ShaderStageFlags const & flags );
-	/**
-	*\brief
-	*	Convertit un renderer::ShaderStageFlag en VkShaderStageFlagBits.
-	*\param[in] flags
-	*	Le renderer::ShaderStageFlag.
-	*\return
-	*	Le VkShaderStageFlagBits.
-	*/
-	VkShaderStageFlagBits convert( ShaderStageFlag const & flag );
+	Utils_ImplementFlag( ShaderStageFlag )
 }
+
+#endif

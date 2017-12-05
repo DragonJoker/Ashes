@@ -1,3 +1,7 @@
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
+*/
 #include "ImageMemoryBarrier.hpp"
 
 #include "ImageSubresourceRange.hpp"
@@ -13,24 +17,14 @@ namespace renderer
 		, uint32_t dstQueueFamilyIndex
 		, Texture const & image
 		, ImageSubresourceRange const & subresourceRange )
-		: m_barrier
-	{
-			VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-			nullptr,
-			convert( srcAccessMask ),
-			convert( dstAccessMask ),
-			convert( oldLayout ),
-			convert( newLayout ),
-			srcQueueFamilyIndex,
-			dstQueueFamilyIndex,
-			image.getImage(),
-			subresourceRange.getRange()
-		}
-	{
-	}
-
-	ImageMemoryBarrier::ImageMemoryBarrier( VkImageMemoryBarrier const & barrier )
-		: m_barrier{ barrier }
+		: m_srcAccessMask{ srcAccessMask }
+		, m_dstAccessMask{ dstAccessMask }
+		, m_oldLayout{ oldLayout }
+		, m_newLayout{ newLayout }
+		, m_srcQueueFamilyIndex{ srcQueueFamilyIndex }
+		, m_dstQueueFamilyIndex{ dstQueueFamilyIndex }
+		, m_image{ image }
+		, m_subresourceRange{ subresourceRange }
 	{
 	}
 }

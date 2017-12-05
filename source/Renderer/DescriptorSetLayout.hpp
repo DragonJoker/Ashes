@@ -1,50 +1,59 @@
-/**
-*\file
-*	VertexBuffer.h
-*\author
-*	Sylvain Doremus
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
 #ifndef ___Renderer_DescriptorSetLayout_HPP___
 #define ___Renderer_DescriptorSetLayout_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
-
-#include <VkLib/DescriptorLayout.hpp>
+#include "DescriptorSetLayoutBinding.hpp"
 
 namespace renderer
 {
 	/**
 	*\brief
-	*	Classe template wrappant un vk::DescriptorLayout.
+	*	Un layout de set de descripteurs.
 	*/
 	class DescriptorSetLayout
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
 		*\param[in] device
 		*	Le périphérique logique.
+		*\param[in] bindings
+		*	Les attaches du layout.
 		*/
 		DescriptorSetLayout( Device const & device
-			, DescriptorSetLayoutBindingArray const & bindings );
+			, DescriptorSetLayoutBindingArray && bindings );
+
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~DescriptorSetLayout() = default;
 		/**
 		*\return
 		*	L'attache de descripteur au point d'attache donné.
 		*/
 		DescriptorSetLayoutBinding const & getBinding( uint32_t point )const;
 		/**
+		*\brief
+		*	Crée un pool pour les descripteurs qui utiliseront ce layout.
+		*\param[in] maxSets
+		*	Le nombre maximum de sets que le pool peut créer.
 		*\return
-		*	Le descriptor layout vulkan.
+		*	Le pool.
 		*/
-		inline vk::DescriptorLayout const & getLayout()const
-		{
-			return *m_layout;
-		}
+		virtual DescriptorSetPoolPtr createPool( uint32_t maxSets )const = 0;
 
-	private:
-		vk::DescriptorLayoutPtr m_layout;
+	protected:
 		DescriptorSetLayoutBindingArray m_bindings;
 	};
 }

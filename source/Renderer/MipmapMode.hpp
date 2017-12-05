@@ -2,9 +2,11 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_MipmapMode_HPP___
+#define ___Renderer_MipmapMode_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
+#include "RendererPrerequisites.hpp"
 
 namespace renderer
 {
@@ -16,15 +18,8 @@ namespace renderer
 	{
 		eNearest,
 		eLinear,
-		VkLib_EnumBounds( eNearest )
+		Utils_EnumBounds( eNearest )
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::MipmapMode en VkSamplerMipmapMode.
-	*\param[in] mode
-	*	Le renderer::MipmapMode.
-	*\return
-	*	Le VkSamplerMipmapMode.
-	*/
-	VkSamplerMipmapMode convert( MipmapMode const & mode );
 }
+
+#endif

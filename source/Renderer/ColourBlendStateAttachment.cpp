@@ -14,17 +14,14 @@ namespace renderer
 		, BlendFactor dstAlphaBlendFactor
 		, BlendOp alphaBlendOp
 		, ColourComponentFlags colorWriteMask )
-		: m_state
-		{
-			blendEnable,
-			convert( srcColorBlendFactor ),
-			convert( dstColorBlendFactor ),
-			convert( colorBlendOp ),
-			convert( srcAlphaBlendFactor ),
-			convert( dstAlphaBlendFactor ),
-			convert( alphaBlendOp ),
-			convert( colorWriteMask ),
-		}
+		: m_blendEnable{ blendEnable }
+		, m_srcColorBlendFactor{ srcColorBlendFactor }
+		, m_dstColorBlendFactor{ dstColorBlendFactor }
+		, m_colorBlendOp{ colorBlendOp }
+		, m_srcAlphaBlendFactor{ srcAlphaBlendFactor }
+		, m_dstAlphaBlendFactor{ dstAlphaBlendFactor }
+		, m_alphaBlendOp{ alphaBlendOp }
+		, m_colorWriteMask{ colorWriteMask }
 	{
 	}
 }

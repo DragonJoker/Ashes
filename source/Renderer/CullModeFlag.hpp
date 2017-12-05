@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_CullModeFlag_HPP___
+#define ___Renderer_CullModeFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -20,14 +22,7 @@ namespace renderer
 		eBack = 0x00000002,
 		eFrontAndBack = 0x00000003,
 	};
-	VkLib_ImplementFlag( CullModeFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::CullModeFlags en VkCullModeFlags.
-	*\param[in] flags
-	*	Le renderer::CullModeFlags.
-	*\return
-	*	Le VkCullModeFlags.
-	*/
-	VkCullModeFlags convert( CullModeFlags const & flags );
+	Utils_ImplementFlag( CullModeFlag )
 }
+
+#endif

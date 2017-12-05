@@ -1,8 +1,6 @@
-/**
-*\file
-*	Texture.h
-*\author
-*	Sylvain Doremus
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
 #ifndef ___Renderer_Pipeline_HPP___
 #define ___Renderer_Pipeline_HPP___
@@ -21,7 +19,7 @@ namespace renderer
 	*/
 	class Pipeline
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
@@ -46,58 +44,57 @@ namespace renderer
 			, PrimitiveTopology topology
 			, RasterisationState const & rasterisationState = RasterisationState{}
 			, ColourBlendState const & colourBlendState = ColourBlendState::createDefault() );
+
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~Pipeline() = default;
 		/**
 		*\brief
 		*	Crée le pipeline.
 		*/
-		Pipeline & finish();
+		virtual Pipeline & finish() = 0;
 		/**
 		*\brief
 		*	Définit le MultisampleState.
 		*\param[in] state
 		*	La nouvelle valeur.
 		*/
-		Pipeline & multisampleState( MultisampleState const & state );
+		virtual Pipeline & multisampleState( MultisampleState const & state ) = 0;
 		/**
 		*\brief
 		*	Définit le DepthStencilState.
 		*\param[in] state
 		*	La nouvelle valeur.
 		*/
-		Pipeline & depthStencilState( DepthStencilState const & state );
+		virtual Pipeline & depthStencilState( DepthStencilState const & state ) = 0;
 		/**
 		*\brief
 		*	Définit le TessellationState.
 		*\param[in] state
 		*	La nouvelle valeur.
 		*/
-		Pipeline & tessellationState( TessellationState const & state );
+		virtual Pipeline & tessellationState( TessellationState const & state ) = 0;
 		/**
 		*\brief
 		*	Définit le Viewport.
 		*\param[in] viewport
 		*	La nouvelle valeur.
 		*/
-		Pipeline & viewport( Viewport const & viewport );
+		virtual Pipeline & viewport( Viewport const & viewport ) = 0;
 		/**
 		*\brief
 		*	Définit le Scissor.
 		*\param[in] scissor
 		*	La nouvelle valeur.
 		*/
-		Pipeline & scissor( Scissor const & scissor );
-		/**
-		*\return
-		*	Les dimensions de la texture.
-		*/
-		inline vk::Pipeline const & getPipeline()const noexcept
-		{
-			return *m_pipeline;
-		}
-
-	private:
-		//! Le pipeline de rendu.
-		vk::PipelinePtr m_pipeline;
+		virtual Pipeline & scissor( Scissor const & scissor ) = 0;
 	};
 }
 

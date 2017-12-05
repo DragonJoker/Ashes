@@ -12,9 +12,6 @@ namespace renderer
 	RenderSubpass::RenderSubpass( Device const & device
 		, std::vector< utils::PixelFormat > const & formats
 		, RenderSubpassState const & neededState )
-		: m_subPass{ device.getDevice()
-			, convert< VkFormat >( formats )
-			, neededState.getState() }
 	{
 	}
 }

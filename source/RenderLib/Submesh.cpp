@@ -2,6 +2,8 @@
 
 #include "Mesh.h"
 
+#include <Renderer/StagingBuffer.hpp>
+
 namespace render
 {
 	Submesh::Submesh( renderer::Device const & device

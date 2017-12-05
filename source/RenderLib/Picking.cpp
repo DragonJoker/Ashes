@@ -72,31 +72,34 @@ namespace render
 				, { renderer::ImageLayout::eColourAttachmentOptimal
 					, renderer::ImageLayout::eDepthStencilAttachmentOptimal } };
 		}
+
+		renderer::RenderSubpassPtrArray doGetSubPasses( renderer::Device const & device )
+		{
+			renderer::RenderSubpassPtrArray result;
+			result.emplace_back( device.createRenderSubpass( doGetPixelFormats(), doGetSubpassState() ) );
+			return result;
+		}
 	}
 
 	Picking::Picking( renderer::Device const & device
 		, utils::IVec2 const & size )
-		: m_renderPass{ std::make_unique< renderer::RenderPass >( device
-			, doGetPixelFormats()
-			, renderer::RenderSubpassArray{ { device, doGetPixelFormats(), doGetSubpassState() } }
+		: m_renderPass{ device.createRenderPass( doGetPixelFormats()
+			, doGetSubPasses( device )
 			, doGetColourPassState()
 			, doGetColourPassState() ) }
 		, m_renderer{ device, *m_renderPass }
 		, m_size{ size }
-		, m_colour{ std::make_shared< renderer::Texture >( device ) }
-		, m_depth{ std::make_shared< renderer::Texture >( device ) }
+		, m_colour{ device.createTexture() }
+		, m_depth{ device.createTexture() }
 		, m_buffer( PickingWidth * PickingWidth )
-		, m_stagingBuffer{ std::make_shared< renderer::StagingBuffer >( device ) }
-		, m_commandPool{ std::make_unique< renderer::CommandPool >( device
-			, device.getGraphicsQueue().getFamilyIndex() ) }
-		, m_commandBuffer{ std::make_unique< renderer::CommandBuffer >( device
-			, *m_commandPool ) }
+		, m_stagingBuffer{ device.createStagingBuffer() }
+		, m_commandPool{ device.createCommandPool( device.getGraphicsQueue().getFamilyIndex() ) }
+		, m_commandBuffer{ m_commandPool->createCommandBuffer() }
 	{
 		m_colour->setImage( utils::PixelFormat::eR8G8B8A8, size, renderer::ImageUsageFlag::eColourAttachment );
 		m_depth->setImage( utils::PixelFormat::eD16, size, renderer::ImageUsageFlag::eDepthStencilAttachment );
-		m_frameBuffer = std::make_shared< renderer::FrameBuffer >( *m_renderPass
-			, size
-			, renderer::TextureCRefArray{ *m_colour, *m_depth } );
+		m_frameBuffer = m_renderPass->createFrameBuffer( size
+			, { *m_colour, *m_depth } );
 		m_renderer.initialise();
 	}
 

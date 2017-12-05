@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_TessellationStateFlag_HPP___
+#define ___Renderer_TessellationStateFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -16,14 +18,7 @@ namespace renderer
 		: uint32_t
 	{
 	};
-	VkLib_ImplementFlag( TessellationStateFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::TessellationStateFlags en VkPipelineTessellationStateCreateFlags.
-	*\param[in] flags
-	*	Le renderer::TessellationStateFlags.
-	*\return
-	*	Le VkPipelineTessellationStateCreateFlags.
-	*/
-	VkPipelineTessellationStateCreateFlags convert( TessellationStateFlags const & flags );
+	Utils_ImplementFlag( TessellationStateFlag )
 }
+
+#endif

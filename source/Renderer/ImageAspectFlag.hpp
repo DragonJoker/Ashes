@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_ImageAspectFlag_HPP___
+#define ___Renderer_ImageAspectFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -20,14 +22,7 @@ namespace renderer
 		eStencil = 0x00000004,
 		eMetaData = 0x00000008,
 	};
-	VkLib_ImplementFlag( ImageAspectFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::ImageAspectFlags en VkImageAspectFlags.
-	*\param[in] flags
-	*	Le renderer::ImageAspectFlags.
-	*\return
-	*	Le VkImageAspectFlags.
-	*/
-	VkImageAspectFlags convert( ImageAspectFlags const & flags );
+	Utils_ImplementFlag( ImageAspectFlag )
 }
+
+#endif

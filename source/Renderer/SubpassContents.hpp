@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_SubpassContents_HPP___
+#define ___Renderer_SubpassContents_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -20,13 +22,6 @@ namespace renderer
 		//! Uniquement des tampons de commandes secondaire.
 		eSecondaryCommandBuffers,
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::SubpassContents en VkSubpassContents.
-	*\param[in] value
-	*	Le renderer::SubpassContents.
-	*\return
-	*	Le VkSubpassContents.
-	*/
-	VkSubpassContents convert( SubpassContents const & value );
 }
+
+#endif

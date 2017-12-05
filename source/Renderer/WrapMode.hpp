@@ -2,9 +2,11 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_WrapMode_HPP___
+#define ___Renderer_WrapMode_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
+#include "RendererPrerequisites.hpp"
 
 namespace renderer
 {
@@ -19,15 +21,8 @@ namespace renderer
 		eClampToEdge,
 		eClampToBorder,
 		eMirrorClampToEdge,
-		VkLib_EnumBounds( eRepeat )
+		Utils_EnumBounds( eRepeat )
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::WrapMode en VkSamplerAddressMode.
-	*\param[in] mode
-	*	Le renderer::WrapMode.
-	*\return
-	*	Le VkSamplerAddressMode.
-	*/
-	VkSamplerAddressMode convert( WrapMode const & mode );
 }
+
+#endif

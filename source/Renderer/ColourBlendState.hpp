@@ -1,12 +1,14 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_ColourBlendState_HPP___
+#define ___Renderer_ColourBlendState_HPP___
 #pragma once
 
 #include "ColourBlendStateAttachment.hpp"
 
-#include <VkLib/ColourBlendState.hpp>
+#include <Utils/Vec4.hpp>
 
 namespace renderer
 {
@@ -34,14 +36,51 @@ namespace renderer
 		void addAttachment( ColourBlendStateAttachment const & attachment );
 		/**
 		*\return
-		*	Le vk::ColourBlendState.
+		*	Le statut d'activation de l'opérateur logique.
 		*/
-		inline vk::ColourBlendState getState()const
+		inline bool isLogicOpEnabled()const
 		{
-			return m_state;
+			return m_logicOpEnable;
+		}
+		/**
+		*\return
+		*	L'opérateur logique.
+		*/
+		inline LogicOp getLogicOp()const
+		{
+			return m_logicOp;
+		}
+		/**
+		*\return
+		*	Les constantes de mélange.
+		*/
+		inline utils::Vec4 const & getBlendConstants()const
+		{
+			return m_blendConstants;
+		}
+		/**
+		*\return
+		*	Le début du tableau d'attaches.
+		*/
+		inline ColourBlendStateAttachmentArray::const_iterator begin()const
+		{
+			return m_attachs.begin();
+		}
+		/**
+		*\return
+		*	La fin du tableau d'attaches.
+		*/
+		inline ColourBlendStateAttachmentArray::const_iterator end()const
+		{
+			return m_attachs.end();
 		}
 
 	private:
-		vk::ColourBlendState m_state;
+		bool const m_logicOpEnable;
+		LogicOp const m_logicOp;
+		utils::Vec4 const m_blendConstants;
+		ColourBlendStateAttachmentArray m_attachs;
 	};
 }
+
+#endif

@@ -3,7 +3,6 @@ This file belongs to Renderer.
 See LICENSE file in root folder.
 */
 #include "ColourBlendState.hpp"
-#include "ColourBlendStateAttachment.hpp"
 
 namespace renderer
 {
@@ -20,9 +19,9 @@ namespace renderer
 	ColourBlendState::ColourBlendState( bool logicOpEnable
 		, LogicOp logicOp
 		, utils::Vec4 const & blendConstants )
-		: m_state{ logicOpEnable
-			, convert( logicOp )
-			, { blendConstants.r, blendConstants.g, blendConstants.b, blendConstants.a } }
+		: m_logicOpEnable{ logicOpEnable }
+		, m_logicOp{ logicOp }
+		, m_blendConstants{ blendConstants }
 	{
 	}
 
@@ -34,6 +33,6 @@ namespace renderer
 
 	void ColourBlendState::addAttachment( ColourBlendStateAttachment const & attachment )
 	{
-		m_state.addAttachment( attachment.getAttachment() );
+		m_attachs.push_back( attachment );
 	}
 }

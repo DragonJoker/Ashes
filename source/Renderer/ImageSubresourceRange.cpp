@@ -1,3 +1,7 @@
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
+*/
 #include "ImageSubresourceRange.hpp"
 
 namespace renderer
@@ -7,14 +11,11 @@ namespace renderer
 		, uint32_t levelCount
 		, uint32_t baseArrayLayer
 		, uint32_t layerCount )
-		: m_range
-		{
-			convert( aspectMask ),
-			baseMipLevel,
-			levelCount,
-			baseArrayLayer,
-			layerCount
-		}
+		: m_aspectMask{ aspectMask }
+		, m_baseMipLevel{ baseMipLevel }
+		, m_levelCount{ levelCount }
+		, m_baseArrayLayer{ baseArrayLayer }
+		, m_layerCount{ layerCount }
 	{
 	}
 }

@@ -2,11 +2,13 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_Scissor_HPP___
+#define ___Renderer_Scissor_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
 
-#include <VkLib/Scissor.hpp>
+#include <Utils/Vec2.hpp>
 
 namespace renderer
 {
@@ -31,14 +33,25 @@ namespace renderer
 			, uint32_t height );
 		/**
 		*\return
-		*	Le ciseau vulkan.
+		*	L'offset du ciseau.
 		*/
-		inline vk::Scissor const & getScissor()const
+		inline utils::IVec2 const & getOffset()const
 		{
-			return m_scissor;
+			return m_offset;
+		}
+		/**
+		*\return
+		*	Les dimensions du ciseau.
+		*/
+		inline utils::IVec2 const & getSize()const
+		{
+			return m_size;
 		}
 
 	private:
-		vk::Scissor m_scissor;
+		utils::IVec2 m_offset;
+		utils::IVec2 m_size;
 	};
 }
+
+#endif

@@ -37,7 +37,7 @@ namespace render
 			return result;
 		}
 
-		renderer::DescriptorSetLayout doCreateDescriptorLayout( renderer::Device const & device )
+		renderer::DescriptorSetLayoutPtr doCreateDescriptorLayout( renderer::Device const & device )
 		{
 			std::vector< renderer::DescriptorSetLayoutBinding > bindings;
 
@@ -45,7 +45,7 @@ namespace render
 				, renderer::DescriptorType::eCombinedImageSampler
 				, renderer::ShaderStageFlag::eFragment );
 
-			return renderer::DescriptorSetLayout{ device, bindings };
+			return device.createDescriptorSetLayout( std::move( bindings ) );
 		}
 
 		std::vector< utils::PixelFormat > doGetPixelFormats()
@@ -64,6 +64,13 @@ namespace render
 				, renderer::AccessFlag::eColourAttachmentWrite
 				, { renderer::ImageLayout::eColourAttachmentOptimal } };
 		}
+
+		renderer::RenderSubpassPtrArray doGetRenderSubpasses( renderer::Device const & device )
+		{
+			renderer::RenderSubpassPtrArray result;
+			result.emplace_back( device.createRenderSubpass( doGetPixelFormats(), doGetSubpassState() ) );
+			return result;
+		}
 	}
 
 	//*********************************************************************************************
@@ -74,28 +81,24 @@ namespace render
 		, bool debug )
 		: m_device{ device }
 		, m_swapChain{ device.createSwapChain( dimensions ) }
-		, m_renderPass{ std::make_unique< renderer::RenderPass >( device
-			, doGetPixelFormats()
-			, renderer::RenderSubpassArray{ { device, doGetPixelFormats(), doGetSubpassState() } }
+		, m_renderPass{ device.createRenderPass( doGetPixelFormats()
+			, doGetRenderSubpasses( device )
 			, doGetColourPassState()
 			, doGetColourPassState() ) }
 		, m_frameBuffers{ m_swapChain->createFrameBuffers( *m_renderPass ) }
 		, m_commandBuffers{ m_swapChain->createCommandBuffers() }
-		, m_drawCommandPool{ std::make_unique< renderer::CommandPool >( device
-			, device.getGraphicsQueue().getFamilyIndex()
+		, m_drawCommandPool{ device.createCommandPool( device.getGraphicsQueue().getFamilyIndex()
 			, renderer::CommandPoolCreateFlag::eResetCommandBuffer ) }
-		, m_drawCommandBuffer{ std::make_unique < renderer::CommandBuffer > ( device
-			, *m_drawCommandPool ) }
-		, m_drawSemaphore{ std::make_unique< renderer::Semaphore >( device ) }
-		, m_stagingBuffer{ std::make_unique< renderer::StagingBuffer >( device ) }
+		, m_drawCommandBuffer{ m_drawCommandPool->createCommandBuffer() }
+		, m_drawSemaphore{ device.createSemaphore() }
+		, m_stagingBuffer{ device.createStagingBuffer() }
 		, m_descriptorLayout{ doCreateDescriptorLayout( device ) }
-		, m_pipelineLayout{ std::make_unique< renderer::PipelineLayout >( device, &m_descriptorLayout ) }
+		, m_pipelineLayout{ device.createPipelineLayout( *m_descriptorLayout ) }
 		, m_target{ std::make_unique< RenderTarget >( device, dimensions, utils::PixelFormat::eR8G8B8A8 ) }
 		, m_overlayRenderer{ device, m_target->getRenderPass(), *m_drawCommandPool, dimensions }
 		, m_scene{ device, m_target->getRenderPass(), dimensions, m_overlayRenderer }
 		, m_size{ dimensions }
-		, m_sampler{ std::make_shared< renderer::Sampler >( device
-			, renderer::WrapMode::eClampToEdge
+		, m_sampler{ device.createSampler( renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
 			, renderer::Filter::eLinear
@@ -106,13 +109,12 @@ namespace render
 			, OpacityType::eOpaque
 			, ObjectType::eTexture ) }
 		, m_vbo{ renderer::makeVertexBuffer< RenderWindow::Vertex >( device
-			, 0u
 			, uint32_t( doGetVtxData().size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_layout{ renderer::makeLayout< RenderWindow::Vertex >( 0u ) }
-		, m_descriptorPool{ std::make_unique< renderer::DescriptorSetPool >( m_descriptorLayout, 1u ) }
-		, m_descriptor{ std::make_unique< renderer::DescriptorSet >( *m_descriptorPool ) }
+		, m_layout{ renderer::makeLayout< RenderWindow::Vertex >( device, 0u ) }
+		, m_descriptorPool{ m_descriptorLayout->createPool( 1u ) }
+		, m_descriptor{ m_descriptorPool->createDescriptorSet() }
 		, m_viewport{ dimensions }
 		//, m_picking{ device, dimensions }
 		, m_debug{ device, *m_stagingBuffer, m_swapChain->getDefaultResources().getCommandBuffer(), debug, m_scene, loader }
@@ -128,10 +130,9 @@ namespace render
 		m_descriptor->update();
 		uint32_t index = 0u;
 
-		m_pipeline = std::make_shared< renderer::Pipeline >( device
-			, *m_pipelineLayout
+		m_pipeline = device.createPipeline( *m_pipelineLayout
 			, *m_program
-			, renderer::VertexLayoutCRefArray{ *m_layout }
+			, { *m_layout }
 			, *m_renderPass
 			, renderer::PrimitiveTopology::eTriangleFan );
 		m_pipeline->multisampleState( renderer::MultisampleState{} )

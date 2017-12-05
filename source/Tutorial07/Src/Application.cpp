@@ -2,6 +2,8 @@
 
 #include "MainFrame.hpp"
 
+#include <fstream>
+
 wxIMPLEMENT_APP( vkapp::App );
 
 namespace vkapp

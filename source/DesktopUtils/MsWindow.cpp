@@ -3,13 +3,16 @@
 #include <RenderLib/RenderLibPrerequisites.h>
 
 #include <Renderer/Connection.hpp>
+#include <Renderer/PlatformWindowHandle.hpp>
+#include <Renderer/Renderer.hpp>
 #include <Renderer/RenderingResources.hpp>
+
+#include <VkRenderer/VkRenderer.hpp>
 
 #include <VkLib/FlagCombination.hpp>
 
 #include <Windows.h>
 #include <windowsx.h>
-
 
 namespace utils
 {
@@ -129,7 +132,7 @@ namespace utils
 		{
 			if ( doPrepareDC( m_hdc ) )
 			{
-				m_renderer = std::make_unique< renderer::Renderer >();
+				m_renderer = std::make_unique< vk_renderer::Renderer >();
 				RECT rect;
 				::GetClientRect( m_hwnd, &rect );
 				m_size.x = rect.right - rect.left;
@@ -209,11 +212,11 @@ namespace utils
 		return true;
 	}
 
-	renderer::Connection MsWindow::doCreateConnection()
+	renderer::ConnectionPtr MsWindow::doCreateConnection()
 	{
-		return renderer::Connection{ *m_renderer
-			, ::GetModuleHandle( nullptr )
-			, m_hwnd };
+		return m_renderer->createConnection( 0u
+			, renderer::WindowHandle{ std::make_unique< renderer::IMswWindowHandle >( ::GetModuleHandle( nullptr )
+				, m_hwnd ) } );
 	}
 
 	void MsWindow::doRegisterClass( HINSTANCE hInstance

@@ -2,10 +2,12 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_CommandPoolCreateFlag_HPP___
+#define ___Renderer_CommandPoolCreateFlag_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
-#include <VkLib/FlagCombination.hpp>
+#include "RendererPrerequisites.hpp"
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -19,14 +21,7 @@ namespace renderer
 		eTransient = 0x00000001,
 		eResetCommandBuffer = 0x00000002,
 	};
-	VkLib_ImplementFlag( CommandPoolCreateFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::CommandPoolCreateFlags en VkCommandPoolCreateFlags.
-	*\param[in] flags
-	*	Le renderer::CommandPoolCreateFlags.
-	*\return
-	*	Le VkCommandPoolCreateFlags.
-	*/
-	VkCommandPoolCreateFlags convert( CommandPoolCreateFlags const & flags );
+	Utils_ImplementFlag( CommandPoolCreateFlag )
 }
+
+#endif

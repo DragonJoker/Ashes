@@ -1,7 +1,9 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_PipelineLayout_HPP___
+#define ___Renderer_PipelineLayout_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
@@ -16,7 +18,7 @@ namespace renderer
 	*/
 	class PipelineLayout
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
@@ -27,20 +29,18 @@ namespace renderer
 		*/
 		PipelineLayout( Device const & device
 			, DescriptorSetLayout const * layout );
+
+	public:
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkPipelineLayout.
 		*\~english
 		*\brief
-		*	VkPipelineLayout implicit cast operator.
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
 		*/
-		inline vk::PipelineLayout const & getLayout()const
-		{
-			return *m_layout;
-		}
-
-	private:
-		vk::PipelineLayoutPtr m_layout;
+		virtual ~PipelineLayout() = default;
 	};
 }
+
+#endif

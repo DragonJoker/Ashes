@@ -1,12 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_BackBuffer_HPP___
+#define ___Renderer_BackBuffer_HPP___
 #pragma once
 
 #include "Texture.hpp"
-
-#include <VkLib/BackBuffer.hpp>
 
 namespace renderer
 {
@@ -16,7 +16,7 @@ namespace renderer
 	*/
 	class BackBuffer
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
@@ -30,25 +30,23 @@ namespace renderer
 		BackBuffer( Device const & device
 			, SwapChain const & swapchain
 			, uint32_t imageIndex );
+
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~BackBuffer() = default;
 		/**
 		*\return
 		*	La texture du back buffer.
 		*/
-		inline Texture const & getTexture()const
-		{
-			return m_texture;
-		}
-		/**
-		*\return
-		*	Le vk::BackBuffer.
-		*/
-		inline vk::BackBuffer const & getBackBuffer()const
-		{
-			return m_backBuffer;
-		}
-
-	private:
-		vk::BackBuffer & m_backBuffer;
-		Texture const & m_texture;
+		virtual Texture const & getTexture()const = 0;
 	};
 }
+
+#endif

@@ -1,16 +1,12 @@
-/**
-*\file
-*	VertexBuffer.h
-*\author
-*	Sylvain Doremus
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
 #ifndef ___Renderer_VertexLayout_HPP___
 #define ___Renderer_VertexLayout_HPP___
 #pragma once
 
 #include "Attribute.hpp"
-
-#include <VkLib/VertexLayout.hpp>
 
 #include <vector>
 
@@ -22,7 +18,7 @@ namespace renderer
 	*/
 	class VertexLayout
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
@@ -33,6 +29,17 @@ namespace renderer
 		*/
 		VertexLayout( uint32_t bindingSlot
 			, uint32_t stride );
+
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~VertexLayout() = default;
 		/**
 		*\brief
 		*	Crée un attribut de sommet.
@@ -41,37 +48,41 @@ namespace renderer
 		*\param[in] offset
 		*	La position de l'attribut dans le tampon.
 		*/
-		template< typename AttributeType >
-		inline Attribute< AttributeType > createAttribute( uint32_t location
-			, uint32_t offset );
+		virtual AttributeBase createAttribute( uint32_t location
+			, AttributeFormat format
+			, uint32_t offset ) = 0;
 		/**
-		*\return
-		*	Le layout vulkan.
+		*\brief
+		*	Crée un attribut de sommet.
+		*\param[in] location
+		*	La position de l'attribut dans le shader.
+		*\param[in] offset
+		*	La position de l'attribut dans le tampon.
 		*/
-		inline vk::VertexLayoutPtr getLayout()const
+		template< typename T >
+		inline AttributeBase createAttribute( uint32_t location
+			, uint32_t offset )
 		{
-			return m_layout;
+			return createAttribute( location
+				, details::FormatGetter< T >::value
+				, offset );
 		}
-
-	private:
-		vk::VertexLayoutPtr m_layout;
 	};
 	/**
 	*\brief
-	*	Construit un layout, ayant pour stride la taille du type template donné.
+	*	Crée un layout de sommets.
 	*\param[in] bindingSlot
 	*	Le point d'attache du tampon associé.
 	*\return
-	*	Le layout.
+	*	Le layout créé.
 	*/
 	template< typename T >
-	inline VertexLayoutPtr makeLayout( uint32_t bindingSlot )
+	VertexLayoutPtr makeLayout( Device const & device
+		, uint32_t bindingSlot )
 	{
-		return std::make_unique< VertexLayout >( bindingSlot
+		return device.createVertexLayout( bindingSlot
 			, uint32_t( sizeof( T ) ) );
 	}
 }
-
-#include "VertexLayout.inl"
 
 #endif

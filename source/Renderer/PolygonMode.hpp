@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_PolygonMode_HPP___
+#define ___Renderer_PolygonMode_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -19,13 +21,6 @@ namespace renderer
 		eLine,
 		ePoint,
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::PolygonMode en VkPolygonMode.
-	*\param[in] value
-	*	Le renderer::PolygonMode.
-	*\return
-	*	Le VkPolygonMode.
-	*/
-	VkPolygonMode convert( PolygonMode const & value );
 }
+
+#endif

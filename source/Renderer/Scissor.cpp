@@ -10,7 +10,8 @@ namespace renderer
 		, int32_t y
 		, uint32_t width
 		, uint32_t height )
-		: m_scissor{ x, y, width, height }
+		: m_offset{ x, y }
+		, m_size{ width, height }
 	{
 	}
 }

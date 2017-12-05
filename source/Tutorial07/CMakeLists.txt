@@ -40,6 +40,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		${CMAKE_SOURCE_DIR}/VkLib
 		${CMAKE_BINARY_DIR}/VkLib
 		${CMAKE_BINARY_DIR}/Renderer
+		${CMAKE_BINARY_DIR}/VkRenderer
 		${CMAKE_SOURCE_DIR}
 		${wxWidgets_INCLUDE_DIRS}
 		${GTK2_INCLUDE_DIRS}
@@ -63,6 +64,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		${VkLib_LIBRARIES}
 		Utils
 		Renderer
+		VkRenderer
 		${BinaryLibraries}
 		${wxWidgets_LIBRARIES}
 		${GTK2_LIBRARIES}

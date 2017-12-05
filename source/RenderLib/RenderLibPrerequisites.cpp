@@ -11,6 +11,7 @@
 #include <Renderer/DescriptorSetLayout.hpp>
 #include <Renderer/DescriptorSetPool.hpp>
 #include <Renderer/DescriptorSetLayoutBinding.hpp>
+#include <Renderer/UniformBuffer.hpp>
 
 #include <Utils/StringUtils.hpp>
 #include <Utils/Converter.hpp>
@@ -61,7 +62,7 @@ namespace render
 		, m_submesh{ submesh }
 		, m_material{ material }
 		, m_object{ object }
-		, m_descriptor{ std::make_unique< renderer::DescriptorSet >( pool ) }
+		, m_descriptor{ pool.createDescriptorSet() }
 	{
 		m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::UboMatrixBinding )
 			, mtxUbo
@@ -94,7 +95,7 @@ namespace render
 		, renderer::UniformBuffer< MaterialUbo > const & matUbo
 		, renderer::UniformBuffer< BillboardUbo > const & billboardUbo )
 		: m_billboard{ billboard }
-		, m_descriptor{ std::make_unique< renderer::DescriptorSet >( pool ) }
+		, m_descriptor{ pool.createDescriptorSet() }
 	{
 		m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::UboMatrixBinding )
 			, mtxUbo
@@ -132,7 +133,7 @@ namespace render
 		, renderer::UniformBuffer< MaterialUbo > const & matUbo
 		, renderer::UniformBuffer< LineUbo > const & lineUbo )
 		: m_line{ line }
-		, m_descriptor{ std::make_unique< renderer::DescriptorSet >( pool ) }
+		, m_descriptor{ pool.createDescriptorSet() }
 	{
 		m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::UboMatrixBinding )
 			, mtxUbo

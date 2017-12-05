@@ -1,8 +1,6 @@
-/**
-*\file
-*	RenderingResources.h
-*\author
-*	Sylvain Doremus
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
 #ifndef ___Renderer_StagingBuffer_HPP___
 #define ___Renderer_StagingBuffer_HPP___
@@ -11,10 +9,6 @@
 #include "Buffer.hpp"
 #include "VertexBuffer.hpp"
 #include "UniformBuffer.hpp"
-
-#include <VkLib/StagingBuffer.hpp>
-#include <VkLib/UniformBuffer.hpp>
-#include <VkLib/VertexBuffer.hpp>
 
 namespace renderer
 {
@@ -25,7 +19,7 @@ namespace renderer
 	*/
 	class StagingBuffer
 	{
-	public:
+	protected:
 		/**
 		*\~french
 		*\brief
@@ -36,16 +30,19 @@ namespace renderer
 		*	La taille du tampon.
 		*/
 		StagingBuffer( Device const & device
+			, BufferTargets target
 			, uint32_t size = 10000000u );
+
+	public:
 		/**
+		*\~english
 		*\brief
-		*	Prépare une barrière mémoire de transition vers un layout de source de transfert.
-		*\param[in] dstAccess
-		*	Les indicateurs d'accès voulus après la transition.
-		*\return
-		*	La barrière mémoire.
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
 		*/
-		BufferMemoryBarrier makeTransferSource()const;
+		virtual ~StagingBuffer() = default;
 		/**
 		*\~french
 		*\brief
@@ -55,9 +52,9 @@ namespace renderer
 		*\param[out] texture
 		*	La texture de destination.
 		*/
-		void copyTextureData( CommandBuffer const & commandBuffer
+		virtual void copyTextureData( CommandBuffer const & commandBuffer
 			, ByteArray const & data
-			, Texture const & texture )const;
+			, Texture const & texture )const = 0;
 		/**
 		*\~french
 		*\brief
@@ -339,7 +336,7 @@ namespace renderer
 			doCopyFromStagingBuffer( commandBuffer
 				, size
 				, offset
-				, buffer.getVbo()
+				, buffer
 				, flags );
 		}
 		/**
@@ -553,11 +550,11 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Le tampon de transfert vulkan.
+		*	Le tampon GPU.
 		*/
-		vk::StagingBuffer const & getStagingBuffer()const
+		inline BufferBase const & getBuffer()const
 		{
-			return *m_stagingBuffer;
+			return *m_buffer;
 		}
 
 	private:
@@ -565,27 +562,27 @@ namespace renderer
 		inline void doCopyUniformDataToStagingBuffer( T const * const data
 			, uint32_t count
 			, uint32_t offset )const;
-		void doCopyToStagingBuffer( uint8_t const * const data
-			, uint32_t size )const;
-		void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
+		virtual void doCopyToStagingBuffer( uint8_t const * const data
+			, uint32_t size )const = 0;
+		virtual void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 			, uint32_t size
 			, uint32_t offset
-			, vk::Buffer const & buffer )const;
-		void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
+			, BufferBase const & buffer )const = 0;
+		virtual void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 			, uint32_t size
 			, uint32_t offset
-			, vk::VertexBuffer const & buffer
-			, PipelineStageFlags const & flags )const;
-		void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
+			, VertexBufferBase const & buffer
+			, PipelineStageFlags const & flags )const = 0;
+		virtual void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 			, uint32_t size
 			, uint32_t offset
-			, vk::UniformBuffer const & buffer
-			, PipelineStageFlags const & flags )const;
+			, UniformBufferBase const & buffer
+			, PipelineStageFlags const & flags )const = 0;
 
-	private:
+	protected:
 		Device const & m_device;
-		vk::StagingBufferPtr m_stagingBuffer;
 		AccessFlags m_currentAccessMask{ AccessFlag::eMemoryWrite };
+		BufferBasePtr m_buffer;
 	};
 }
 

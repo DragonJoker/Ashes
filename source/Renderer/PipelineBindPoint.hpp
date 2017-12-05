@@ -2,9 +2,11 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_PipelineBindPoint_HPP___
+#define ___Renderer_PipelineBindPoint_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
+#include "RendererPrerequisites.hpp"
 
 namespace renderer
 {
@@ -18,13 +20,6 @@ namespace renderer
 		eGraphics,
 		eCompute,
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::PipelineBindPoint en VkPipelineBindPoint.
-	*\param[in] point
-	*	Le renderer::PipelineBindPoint.
-	*\return
-	*	Le VkPipelineBindPoint.
-	*/
-	VkPipelineBindPoint convert( PipelineBindPoint const & point );
 }
+
+#endif

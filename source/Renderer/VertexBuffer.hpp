@@ -1,20 +1,12 @@
-/**
-*\file
-*	VertexBuffer.h
-*\author
-*	Sylvain Doremus
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
 #ifndef ___Renderer_VertexBuffer_HPP___
 #define ___Renderer_VertexBuffer_HPP___
 #pragma once
 
-#include "BufferTarget.hpp"
-#include "MemoryPropertyFlag.hpp"
-#include "RenderingResources.hpp"
-#include "VertexLayout.hpp"
-
-#include <VkLib/LogicalDevice.hpp>
-#include <VkLib/VertexBuffer.hpp>
+#include "Buffer.hpp"
 
 #include <vector>
 
@@ -26,7 +18,7 @@ namespace renderer
 	*/
 	class VertexBufferBase
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
@@ -40,43 +32,32 @@ namespace renderer
 		*	Les indicateurs de mémoire du tampon.
 		*/
 		VertexBufferBase( Device const & device
-			, uint32_t bindingSlot
 			, uint32_t size
 			, BufferTargets target
 			, MemoryPropertyFlags flags );
+
+	public:
 		/**
 		*\return
-		*	Le tampon.
+		*	La taille du tampon.
 		*/
-		inline vk::VertexBuffer const & getVbo()const
+		inline uint32_t getSize()const
+		{
+			return m_size;
+		}
+		/**
+		*\return
+		*	Le tampon GPU.
+		*/
+		inline BufferBase const & getBuffer()const
 		{
 			return *m_buffer;
-		}
-		/**
-		*\brief
-		*	Définit les attributs du tampon de sommets.
-		*\param[in] layout
-		*	Le nouveau layout.
-		*/
-		inline void setLayout( VertexLayoutPtr && layout )
-		{
-			m_layout = std::move( layout );
-			m_buffer->setLayout( m_layout->getLayout() );
-		}
-		/**
-		*\return
-		*	Les attributs du tampon de sommets.
-		*/
-		inline VertexLayout const & getLayout()const
-		{
-			assert( m_layout );
-			return *m_layout;
 		}
 
 	protected:
 		Device const & m_device;
-		vk::VertexBufferPtr m_buffer;
-		VertexLayoutPtr m_layout;
+		uint32_t m_size;
+		BufferBasePtr m_buffer;
 	};
 	/**
 	*\brief
@@ -100,7 +81,6 @@ namespace renderer
 		*	Les indicateurs de mémoire du tampon.
 		*/
 		inline VertexBuffer( Device const & device
-			, uint32_t bindingSlot
 			, uint32_t count
 			, BufferTargets target
 			, MemoryPropertyFlags flags );
@@ -110,8 +90,19 @@ namespace renderer
 		*/
 		inline uint32_t getCount()const
 		{
-			return m_buffer->getBuffer().getSize() / sizeof( T );
+			return m_buffer->getSize() / sizeof( T );
 		}
+		/**
+		*\return
+		*	Le tampon GPU.
+		*/
+		inline VertexBufferBase const & getVbo()const
+		{
+			return *m_vbo;
+		}
+
+	private:
+		VertexBufferBasePtr m_vbo;
 	};
 	/**
 	*\brief
@@ -129,13 +120,11 @@ namespace renderer
 	*/
 	template< typename T >
 	inline VertexBufferPtr< T > makeVertexBuffer( Device const & device
-		, uint32_t bindingSlot
 		, uint32_t count
 		, BufferTargets target
 		, MemoryPropertyFlags flags )
 	{
 		return std::make_unique< VertexBuffer< T > >( device
-			, bindingSlot
 			, count
 			, target
 			, flags );

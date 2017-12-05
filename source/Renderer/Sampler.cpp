@@ -1,9 +1,8 @@
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
+*/
 #include "Sampler.hpp"
-
-#include "Device.hpp"
-#include "RenderingResources.hpp"
-
-#include <VkLib/LogicalDevice.hpp>
 
 namespace renderer
 {
@@ -12,13 +11,14 @@ namespace renderer
 		, WrapMode wrapT
 		, WrapMode wrapR
 		, Filter minFilter
-		, Filter magFilter )
-		: m_sampler{ device.getDevice().createSampler( convert( minFilter )
-			, convert( magFilter )
-			, convert( MipmapMode::eNearest )
-			, convert( wrapS )
-			, convert( wrapT )
-			, convert( wrapR ) ) }
+		, Filter magFilter
+		, MipmapMode mipFilter )
+		: m_wrapS{ wrapS }
+		, m_wrapT{ wrapT }
+		, m_wrapR{ wrapR }
+		, m_minFilter{ minFilter }
+		, m_magFilter{ magFilter }
+		, m_mipFilter{ mipFilter }
 	{
 	}
 }

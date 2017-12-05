@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_QueryPipelineStatisticFlag_HPP___
+#define ___Renderer_QueryPipelineStatisticFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -27,14 +29,7 @@ namespace renderer
 		eTessellationControlShaderInvocations = 0x00000200,
 		eComputeShaderInvocations = 0x00000400,
 	};
-	VkLib_ImplementFlag( QueryPipelineStatisticFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::QueryPipelineStatisticFlags en VkQueryPipelineStatisticFlags.
-	*\param[in] flags
-	*	Le renderer::QueryPipelineStatisticFlags.
-	*\return
-	*	Le VkQueryPipelineStatisticFlags.
-	*/
-	VkQueryPipelineStatisticFlags convert( QueryPipelineStatisticFlags const & flags );
+	Utils_ImplementFlag( QueryPipelineStatisticFlag )
 }
+
+#endif

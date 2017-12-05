@@ -1,12 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_CommandBuffer_HPP___
+#define ___Renderer_CommandBuffer_HPP___
 #pragma once
 
 #include "ClearValue.hpp"
-
-#include <VkLib/CommandBuffer.hpp>
 
 namespace renderer
 {
@@ -16,9 +16,14 @@ namespace renderer
 	*/
 	class CommandBuffer
 	{
-	public:
+	protected:
 		CommandBuffer( CommandBuffer const & ) = delete;
 		CommandBuffer & operator=( CommandBuffer const & ) = delete;
+		/**
+		*\brief
+		*	Constructeur par défaut.
+		*/
+		CommandBuffer() = default;
 		/**
 		*\brief
 		*	Constructeur.
@@ -32,13 +37,17 @@ namespace renderer
 		CommandBuffer( Device const & device
 			, CommandPool const & pool
 			, bool primary = true );
+
+	public:
 		/**
+		*\~english
 		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
 		*/
-		CommandBuffer( vk::CommandBufferPtr && commandBuffer );
+		virtual ~CommandBuffer() = default;
 		/**
 		*\brief
 		*	Démarre l'enregistrement du tampon de commandes.
@@ -47,7 +56,7 @@ namespace renderer
 		*\return
 		*	\p false en cas d'erreur.
 		*/
-		bool begin( CommandBufferUsageFlags flags = 0u )const;
+		virtual bool begin( CommandBufferUsageFlags flags = 0u )const = 0;
 		/**
 		*\brief
 		*	Démarre l'enregistrement du tampon de commandes en tant que tampon secondaire.
@@ -70,20 +79,20 @@ namespace renderer
 		*\return
 		*	\p false en cas d'erreur.
 		*/
-		bool begin( CommandBufferUsageFlags flags
+		virtual bool begin( CommandBufferUsageFlags flags
 			, RenderPass const & renderPass
 			, uint32_t subpass
 			, FrameBuffer const & frameBuffer
 			, bool occlusionQueryEnable = false
 			, QueryControlFlags queryFlags = 0u
-			, QueryPipelineStatisticFlags pipelineStatistics = 0u )const;
+			, QueryPipelineStatisticFlags pipelineStatistics = 0u )const = 0;
 		/**
 		*\brief
 		*	Termine l'enregistrement du tampon de commandes.
 		*\return
 		*	\p false en cas d'erreur.
 		*/
-		bool end()const;
+		virtual bool end()const = 0;
 		/**
 		*\brief
 		*	Réinitialise le tampon de commandes et le met dans un état où il peut à nouveau enregistrer des commandes.
@@ -92,7 +101,7 @@ namespace renderer
 		*\return
 		*	\p false en cas d'erreur.
 		*/
-		bool reset( CommandBufferResetFlags flags = 0u )const;
+		virtual bool reset( CommandBufferResetFlags flags = 0u )const = 0;
 		/**
 		*\brief
 		*	Démarre une passe de rendu.
@@ -105,29 +114,29 @@ namespace renderer
 		*\param[in] contents
 		*	Indique la manière dont les commandes de la première sous-passe sont fournies.
 		*/
-		void beginRenderPass( RenderPass const & renderPass
+		virtual void beginRenderPass( RenderPass const & renderPass
 			, FrameBuffer const & frameBuffer
 			, ClearValueArray const & clearValues
-			, SubpassContents contents )const;
+			, SubpassContents contents )const = 0;
 		/**
 		*\brief
 		*	Passe à la sous-passe suivante.
 		*\param[in] contents
 		*	Indique la manière dont les commandes de la sous-passe suivante sont fournies.
 		*/
-		void nextSubpass( SubpassContents contents )const;
+		virtual void nextSubpass( SubpassContents contents )const = 0;
 		/**
 		*\brief
 		*	Termine une passe de rendu.
 		*/
-		void endRenderPass()const;
+		virtual void endRenderPass()const = 0;
 		/**
 		*\brief
 		*	Execute des tampons de commande secondaires.
 		*\param[in] commands
 		*	Les tampons de commandes.
 		*/
-		void executeCommands( CommandBufferCRefArray const & commands )const;
+		virtual void executeCommands( CommandBufferCRefArray const & commands )const = 0;
 		/**
 		*\brief
 		*	Vide l'image avec la couleur de vidage.
@@ -136,8 +145,8 @@ namespace renderer
 		*\param[in] colour
 		*	La couleur de vidage.
 		*/
-		void clear( Texture const & image
-			, RgbaColour const & colour )const;
+		virtual void clear( Texture const & image
+			, RgbaColour const & colour )const = 0;
 		/**
 		*\brief
 		*	Met en place une barrière de transition d'état de tampon.
@@ -148,9 +157,9 @@ namespace renderer
 		*\param[in] transitionBarrier
 		*	La description de la transition.
 		*/
-		void memoryBarrier( PipelineStageFlags after
+		virtual void memoryBarrier( PipelineStageFlags after
 			, PipelineStageFlags before
-			, BufferMemoryBarrier const & transitionBarrier )const;
+			, BufferMemoryBarrier const & transitionBarrier )const = 0;
 		/**
 		*\brief
 		*	Met en place une barrière de transition de layout d'image.
@@ -161,9 +170,9 @@ namespace renderer
 		*\param[in] transitionBarrier
 		*	La description de la transition.
 		*/
-		void memoryBarrier( PipelineStageFlags after
+		virtual void memoryBarrier( PipelineStageFlags after
 			, PipelineStageFlags before
-			, ImageMemoryBarrier const & transitionBarrier )const;
+			, ImageMemoryBarrier const & transitionBarrier )const = 0;
 		/**
 		*\brief
 		*	Active un pipeline: shaders, tests, états, ...
@@ -172,8 +181,8 @@ namespace renderer
 		*\param[in] bindingPoint
 		*	Le point d'attache du pipeline.
 		*/
-		void bindPipeline( Pipeline const & pipeline
-			, PipelineBindPoint bindingPoint = PipelineBindPoint::eGraphics )const;
+		virtual void bindPipeline( Pipeline const & pipeline
+			, PipelineBindPoint bindingPoint = PipelineBindPoint::eGraphics )const = 0;
 		/**
 		*\brief
 		*	Active un tampon de sommets.
@@ -182,8 +191,8 @@ namespace renderer
 		*\param[in] offset
 		*	L'offset du premier sommet dans le tampon.
 		*/
-		void bindVertexBuffer( VertexBufferBase const & vertexBuffer
-			, uint64_t offset )const;
+		virtual void bindVertexBuffer( VertexBufferBase const & vertexBuffer
+			, uint64_t offset )const = 0;
 		/**
 		*\brief
 		*	Active des tampons de sommets.
@@ -192,8 +201,8 @@ namespace renderer
 		*\param[in] offsets
 		*	L'offset du premier sommet pour chaque tampon.
 		*/
-		void bindVertexBuffers( std::vector< std::reference_wrapper< VertexBufferBase const > > const & vertexBuffers
-			, std::vector< uint64_t > offsets )const;
+		virtual void bindVertexBuffers( std::vector< std::reference_wrapper< VertexBufferBase const > > const & vertexBuffers
+			, std::vector< uint64_t > offsets )const = 0;
 		/**
 		*\brief
 		*	Active un tampon de sommets.
@@ -202,21 +211,9 @@ namespace renderer
 		*\param[in] offset
 		*	L'offset du premier sommet dans le tampon.
 		*/
-		template< typename T >
-		void bindVertexBuffer( VertexBuffer< T > const & vertexBuffer
-			, uint64_t offset )const;
-		/**
-		*\brief
-		*	Active un tampon de sommets.
-		*\param[in] vertexBuffer
-		*	Le tampon de sommets.
-		*\param[in] offset
-		*	L'offset du premier sommet dans le tampon.
-		*/
-		template< typename T >
-		void bindIndexBuffer( Buffer< T > const & indexBuffer
+		virtual void bindIndexBuffer( BufferBase const & indexBuffer
 			, uint64_t offset
-			, IndexType type )const;
+			, IndexType type )const = 0;
 		/**
 		*\brief
 		*	Active un descriptor set.
@@ -227,9 +224,9 @@ namespace renderer
 		*\param[in] bindingPoint
 		*	Le point d'attache du set.
 		*/
-		void bindDescriptorSet( DescriptorSet const & descriptorSet
+		virtual void bindDescriptorSet( DescriptorSet const & descriptorSet
 			, PipelineLayout const & layout
-			, PipelineBindPoint bindingPoint = PipelineBindPoint::eGraphics )const;
+			, PipelineBindPoint bindingPoint = PipelineBindPoint::eGraphics )const = 0;
 		/**
 		*\brief
 		*	Définit le viewport du pipeline.
@@ -238,7 +235,7 @@ namespace renderer
 		*\param[in] viewport
 		*	Le viewport.
 		*/
-		void setViewport( Viewport const & viewport )const;
+		virtual void setViewport( Viewport const & viewport )const = 0;
 		/**
 		*\brief
 		*	Définit le ciseau du pipeline.
@@ -247,7 +244,7 @@ namespace renderer
 		*\param[in] scissor
 		*	Le ciseau.
 		*/
-		void setScissor( Scissor const & scissor )const;
+		virtual void setScissor( Scissor const & scissor )const = 0;
 		/**
 		*\brief
 		*	Dessine des sommets.
@@ -260,10 +257,10 @@ namespace renderer
 		*\param[in] firstInstance
 		*	Index de la première instance.
 		*/
-		void draw( uint32_t vtxCount
+		virtual void draw( uint32_t vtxCount
 			, uint32_t instCount
 			, uint32_t firstVertex
-			, uint32_t firstInstance )const;
+			, uint32_t firstInstance )const = 0;
 		/**
 		*\brief
 		*	Dessine des sommets.
@@ -278,11 +275,11 @@ namespace renderer
 		*\param[in] firstInstance
 		*	Index de la première instance.
 		*/
-		void drawIndexed( uint32_t indexCount
+		virtual void drawIndexed( uint32_t indexCount
 			, uint32_t instCount
 			, uint32_t firstIndex
 			, uint32_t vertexOffset
-			, uint32_t firstInstance )const;
+			, uint32_t firstInstance )const = 0;
 		/**
 		*\brief
 		*	Copie les données d'un tampon vers un autre tampon.
@@ -293,11 +290,10 @@ namespace renderer
 		*\param[in] size
 		*	La taille des données à copier.
 		*/
-		template< typename T >
-		void copyBuffer( Buffer< T > const & src
-			, Buffer< T > const & dst
+		virtual void copyBuffer( BufferBase const & src
+			, BufferBase const & dst
 			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, uint32_t offset = 0 )const = 0;
 		/**
 		*\brief
 		*	Copie les données d'un tampon vers un autre tampon.
@@ -308,11 +304,10 @@ namespace renderer
 		*\param[in] size
 		*	La taille des données à copier.
 		*/
-		template< typename T >
-		void copyBuffer( Buffer< T > const & src
-			, VertexBuffer< T > const & dst
+		virtual void copyBuffer( BufferBase const & src
+			, VertexBufferBase const & dst
 			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, uint32_t offset = 0 )const = 0;
 		/**
 		*\brief
 		*	Copie les données d'un tampon vers un autre tampon.
@@ -323,11 +318,10 @@ namespace renderer
 		*\param[in] size
 		*	La taille des données à copier.
 		*/
-		template< typename T >
-		void copyBuffer( VertexBuffer< T > const & src
-			, Buffer< T > const & dst
+		virtual void copyBuffer( VertexBufferBase const & src
+			, BufferBase const & dst
 			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, uint32_t offset = 0 )const = 0;
 		/**
 		*\brief
 		*	Copie les données d'un tampon vers un autre tampon.
@@ -338,11 +332,10 @@ namespace renderer
 		*\param[in] size
 		*	La taille des données à copier.
 		*/
-		template< typename T >
-		void copyBuffer( VertexBuffer< T > const & src
-			, VertexBuffer< T > const & dst
+		virtual void copyBuffer( VertexBufferBase const & src
+			, VertexBufferBase const & dst
 			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, uint32_t offset = 0 )const = 0;
 		/**
 		*\brief
 		*	Copie les données d'un tampon vers un autre tampon.
@@ -353,11 +346,10 @@ namespace renderer
 		*\param[in] size
 		*	La taille des données à copier.
 		*/
-		template< typename T >
-		void copyBuffer( Buffer< T > const & src
-			, UniformBuffer< T > const & dst
+		virtual void copyBuffer( BufferBase const & src
+			, UniformBufferBase const & dst
 			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, uint32_t offset = 0 )const = 0;
 		/**
 		*\brief
 		*	Copie les données d'un tampon vers un autre tampon.
@@ -368,11 +360,10 @@ namespace renderer
 		*\param[in] size
 		*	La taille des données à copier.
 		*/
-		template< typename T >
-		void copyBuffer( UniformBuffer< T > const & src
-			, Buffer< T > const & dst
+		virtual void copyBuffer( UniformBufferBase const & src
+			, BufferBase const & dst
 			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, uint32_t offset = 0 )const = 0;
 		/**
 		*\brief
 		*	Copie les données d'un tampon vers un autre tampon.
@@ -383,11 +374,10 @@ namespace renderer
 		*\param[in] size
 		*	La taille des données à copier.
 		*/
-		template< typename T >
-		void copyBuffer( UniformBuffer< T > const & src
-			, UniformBuffer< T > const & dst
+		virtual void copyBuffer( UniformBufferBase const & src
+			, UniformBufferBase const & dst
 			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, uint32_t offset = 0 )const = 0;
 		/**
 		*\brief
 		*	Copie les données d'un tampon vers une image.
@@ -396,9 +386,8 @@ namespace renderer
 		*\param[in] dst
 		*	L'image destination.
 		*/
-		template< typename T >
-		void copyImage( Buffer< T > const & src
-			, Texture const & dst )const;
+		virtual void copyImage( BufferBase const & src
+			, Texture const & dst )const = 0;
 		/**
 		*\brief
 		*	Copie les données d'un tampon vers une image.
@@ -407,20 +396,9 @@ namespace renderer
 		*\param[in] dst
 		*	L'image destination.
 		*/
-		void copyImage( StagingBuffer const & src
-			, Texture const & dst )const;
-		/**
-		*\return
-		*	Le tampon de commandes vulkan.
-		*/
-		vk::CommandBuffer const & getCommandBuffer()const
-		{
-			return *m_commandBuffer;
-		}
-
-	private:
-		vk::CommandBufferPtr m_commandBuffer;
+		virtual void copyImage( StagingBuffer const & src
+			, Texture const & dst )const = 0;
 	};
 }
 
-#include "CommandBuffer.inl"
+#endif

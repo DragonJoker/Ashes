@@ -8,10 +8,10 @@ namespace renderer
 {
 	RenderPassState::RenderPassState( PipelineStageFlags pipelineStage
 		, AccessFlags access
-		, std::vector< ImageLayout > const & imageLayouts )
-		: m_state{ convert( pipelineStage )
-			, convert( access )
-			, convert< VkImageLayout >( imageLayouts ) }
+		, ImageLayoutArray const & imageLayouts )
+		: m_pipelineStage{ pipelineStage }
+		, m_access{ access }
+		, m_imageLayouts{ imageLayouts }
 	{
 	}
 }

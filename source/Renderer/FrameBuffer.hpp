@@ -1,12 +1,12 @@
-/*
+﻿/*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_FrameBuffer_HPP___
+#define ___Renderer_FrameBuffer_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
-
-#include <VkLib/FrameBuffer.hpp>
 
 namespace renderer
 {
@@ -18,13 +18,18 @@ namespace renderer
 	*/
 	class FrameBuffer
 	{
-	public:
+	protected:
 		/**
 		*\brief
-		*	Cr�e un FrameBuffer compatible avec la passe de rendu donn�e.
+		*	Crée un FrameBuffer.
+		*/
+		FrameBuffer();
+		/**
+		*\brief
+		*	Crée un FrameBuffer compatible avec la passe de rendu donnée.
 		*\remarks
-		*	Si la compatibilit� entre les textures voulues et les formats de la passe de rendu
-		*	n'est pas possible, une std::runtime_error est lanc�e.
+		*	Si la compatibilité entre les textures voulues et les formats de la passe de rendu
+		*	n'est pas possible, une std::runtime_error est lancée.
 		*\param[in] dimensions
 		*	Les dimensions du tampon d'images.
 		*\param[in] textures
@@ -33,13 +38,17 @@ namespace renderer
 		FrameBuffer( RenderPass const & renderPass
 			, utils::IVec2 const & dimensions
 			, TextureCRefArray const & textures );
+
+	public:
 		/**
+		*\~english
 		*\brief
-		*	Wrappe un vk::FrameBuffer.
-		*\param[in] frameBuffer
-		*	Lee vk::FrameBuffer à wrapper.
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
 		*/
-		FrameBuffer( vk::FrameBufferPtr && frameBuffer );
+		virtual ~FrameBuffer() = default;
 		/**
 		*\brief
 		*	Copie des données dans la RAM.
@@ -55,25 +64,15 @@ namespace renderer
 		*\param[out] data
 		*	Reçoit les données copiées.
 		*/
-		void download( Queue const & queue
+		virtual void download( Queue const & queue
 			, uint32_t index
 			, uint32_t xoffset
 			, uint32_t yoffset
 			, uint32_t width
 			, uint32_t height
 			, utils::PixelFormat format
-			, uint8_t * data )const noexcept;
-		/**
-		*\return
-		*	Le Framebuffer vulkan.
-		*/
-		inline vk::FrameBuffer const & getFrameBuffer()const
-		{
-			assert( m_frameBuffer );
-			return *m_frameBuffer;
-		}
-
-	private:
-		vk::FrameBufferPtr m_frameBuffer;
+			, uint8_t * data )const noexcept = 0;
 	};
 }
+
+#endif

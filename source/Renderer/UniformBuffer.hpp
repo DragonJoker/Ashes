@@ -1,13 +1,12 @@
-/**
-*\file
-*	UniformBuffer.h
-*\author
-*	Sylvain Doremus
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
 #ifndef ___Renderer_UniformBuffer_HPP___
 #define ___Renderer_UniformBuffer_HPP___
 #pragma once
 
+#include "Buffer.hpp"
 #include "BufferTarget.hpp"
 #include "MemoryPropertyFlag.hpp"
 #include "RenderingResources.hpp"
@@ -19,7 +18,76 @@ namespace renderer
 {
 	/**
 	*\brief
-	*	Classe wrappant un vk::UniformBuffer.
+	*	Représente un tampon de variables uniformes.
+	*/
+	class UniformBufferBase
+	{
+	protected:
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
+		*\param[in] count
+		*	Le nombre d'instance des données.
+		*\param[in] size
+		*	La taille d'une instance des données, en octets.
+		*\param[in] target
+		*	Les indicateurs d'utilisation du tampon.
+		*\param[in] flags
+		*	Les indicateurs de mémoire du tampon.
+		*/
+		UniformBufferBase( Device const & device
+			, uint32_t count
+			, uint32_t size
+			, BufferTargets target
+			, MemoryPropertyFlags flags );
+
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~UniformBufferBase() = default;
+		/**
+		*\brief
+		*	Récupère l'offset dans le buffer pour un nombre d'éléments donné.
+		*\param[in] count
+		*	Le nombre d'éléments.
+		*\return
+		*	L'offset réel.
+		*/
+		virtual uint32_t getOffset( uint32_t count )const = 0;
+		/**
+		*\return
+		*	Le tampon GPU.
+		*/
+		inline BufferBase const & getBuffer()const
+		{
+			return *m_buffer;
+		}
+		/**
+		*\return
+		*	La taille d'une instance des données du tampon.
+		*/
+		inline uint32_t getSize()const
+		{
+			return m_size;
+		}
+
+	protected:
+		Device const & m_device;
+		uint32_t m_count;
+		uint32_t m_size;
+		BufferBasePtr m_buffer;
+	};
+	/**
+	*\brief
+	*	Classe template wrappant un UniformBufferBase.
 	*/
 	template< typename T >
 	class UniformBuffer
@@ -39,36 +107,8 @@ namespace renderer
 		*/
 		inline UniformBuffer( Device const & device
 			, uint32_t count
-			, BufferTarget target
+			, BufferTargets target
 			, MemoryPropertyFlags flags );
-		/**
-		*\brief
-		*	Récupère l'offset dans le buffer pour un nombre d'éléments donné.
-		*\param[in] count
-		*	Le nombre d'éléments.
-		*\return
-		*	L'offset réel.
-		*/
-		uint32_t getOffset( uint32_t count )const
-		{
-			return m_buffer->getOffset( count, sizeof( T ) );
-		}
-		/**
-		*\return
-		*	Le tampon.
-		*/
-		inline vk::UniformBuffer const & getUbo()const
-		{
-			return *m_buffer;
-		}
-		/**
-		*\return
-		*	Le tampon.
-		*/
-		inline vk::UniformBuffer & getUbo()
-		{
-			return *m_buffer;
-		}
 		/**
 		*\return
 		*	La n-ème instance des données.
@@ -101,10 +141,29 @@ namespace renderer
 		{
 			return m_data;
 		}
+		/**
+		*\brief
+		*	Récupère l'offset dans le buffer pour un nombre d'éléments donné.
+		*\param[in] count
+		*	Le nombre d'éléments.
+		*\return
+		*	L'offset réel.
+		*/
+		inline uint32_t getOffset( uint32_t count )const
+		{
+			return m_ubo->getOffset( count );
+		}
+		/**
+		*\return
+		*	Le tampon GPU.
+		*/
+		inline UniformBufferBase const & getUbo()const
+		{
+			return *m_ubo;
+		}
 
 	private:
-		Device const & m_device;
-		vk::UniformBufferPtr m_buffer;
+		UniformBufferBasePtr m_ubo;
 		std::vector< T > m_data;
 	};
 }

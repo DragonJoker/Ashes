@@ -2,6 +2,8 @@
 
 #include "RenderPanel.hpp"
 
+#include <VkRenderer/VkRenderer.hpp>
+
 #include <wx/sizer.h>
 
 namespace vkapp
@@ -19,7 +21,7 @@ namespace vkapp
 
 		try
 		{
-			m_renderer = std::make_unique< renderer::Renderer >();
+			m_renderer = std::make_unique< vk_renderer::Renderer >();
 			std::cout << "Vulkan instance created." << std::endl;
 			m_panel = wxMakeWindowPtr< RenderPanel >( this, WindowSize, *m_renderer );
 

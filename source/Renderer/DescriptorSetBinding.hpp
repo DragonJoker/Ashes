@@ -1,8 +1,6 @@
-﻿/**
-*\file
-*	VertexBuffer.h
-*\author
-*	Sylvain Doremus
+﻿/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
 #ifndef ___Renderer_DescriptorSetBinding_HPP___
 #define ___Renderer_DescriptorSetBinding_HPP___
@@ -111,9 +109,8 @@ namespace renderer
 	};
 	/**
 	*\brief
-	*	Attache de type texture échantillonnée.
+	*	Attache de type tampon de variables uniformes.
 	*/
-	template< typename T >
 	class UniformBufferBinding
 	{
 	public:
@@ -128,7 +125,7 @@ namespace renderer
 		*	L'attache créée.
 		*/
 		UniformBufferBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, UniformBuffer< T > const & uniformBuffer
+			, UniformBufferBase const & uniformBuffer
 			, uint32_t offset )
 			: m_binding{ layoutBinding }
 			, m_uniformBuffer{ uniformBuffer }
@@ -147,7 +144,7 @@ namespace renderer
 		*\return
 		*	Le tampon d'uniformes.
 		*/
-		inline UniformBuffer< T > const & getUniformBuffer()const
+		inline UniformBufferBase const & getUniformBuffer()const
 		{
 			return m_uniformBuffer;
 		}
@@ -162,7 +159,7 @@ namespace renderer
 
 	private:
 		DescriptorSetLayoutBinding const & m_binding;
-		UniformBuffer< T > const & m_uniformBuffer;
+		UniformBufferBase const & m_uniformBuffer;
 		uint32_t m_offset;
 	};
 }

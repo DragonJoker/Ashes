@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_ImageLayout_HPP___
+#define ___Renderer_ImageLayout_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
+#include "RendererPrerequisites.hpp"
 
 namespace renderer
 {
@@ -23,16 +25,9 @@ namespace renderer
 		eTransferSrcOptimal = 6,
 		eTransferDstOptimal = 7,
 		ePreinitialised = 8,
-		VkLib_EnumBounds( eUndefined ),
+		Utils_EnumBounds( eUndefined ),
 		ePresentSrc = 1000001002,
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::ImageLayout en VkImageLayout.
-	*\param[in] layout
-	*	Le renderer::ImageLayout.
-	*\return
-	*	Le VkImageLayout.
-	*/
-	VkImageLayout convert( ImageLayout const & layout );
 }
+
+#endif

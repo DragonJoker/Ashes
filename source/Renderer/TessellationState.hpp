@@ -1,19 +1,19 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_TessellationState_HPP___
+#define ___Renderer_TessellationState_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
-
-#include <VkLib/TessellationState.hpp>
 
 namespace renderer
 {
 	/**
 	*\~french
 	*\brief
-	*	Wrapper de vk::TessellationState.
+	*	Un état de tessellation.
 	*/
 	class TessellationState
 	{
@@ -22,14 +22,25 @@ namespace renderer
 			, uint32_t patchControlPoints );
 		/**
 		*\return
-		*	Le vk::TessellationState.
+		*	Les indicateurs de l'état.
 		*/
-		inline vk::TessellationState const & getState()const
+		inline TessellationStateFlags const & getFlags()const
 		{
-			return m_state;
+			return m_flags;
+		}
+		/**
+		*\return
+		*	Le nombre de points de contrôle par patch.
+		*/
+		inline uint32_t const & getControlPoints()const
+		{
+			return m_patchControlPoints;
 		}
 
 	private:
-		vk::TessellationState m_state;
+		TessellationStateFlags m_flags;
+		uint32_t m_patchControlPoints;
 	};
 }
+
+#endif

@@ -17,6 +17,7 @@ file( GLOB ${PROJECT_NAME}_HDR_FILES
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_BINARY_DIR}/Renderer
+	${CMAKE_BINARY_DIR}/VkRenderer
 	${CMAKE_SOURCE_DIR}/FreeType/include
 	${CMAKE_SOURCE_DIR}/FreeType/include/freetype
 )
@@ -36,6 +37,7 @@ add_target_precompiled_header( ${PROJECT_NAME}
 )
 
 add_dependencies( ${PROJECT_NAME}
+	VkRenderer
 	RenderLib
 	FreeType
 )

@@ -1,12 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_Fence_HPP___
+#define ___Renderer_Fence_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
-
-#include <VkLib/Fence.hpp>
 
 namespace renderer
 {
@@ -26,7 +26,7 @@ namespace renderer
 	*/
 	class Fence
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur
@@ -37,6 +37,17 @@ namespace renderer
 		*/ 
 		Fence( Device const & device
 			, FenceCreateFlags flags = 0 );
+
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~Fence() = default;
 		/**
 		*\brief
 		*	Attend que la barrière soit signalée.
@@ -45,22 +56,13 @@ namespace renderer
 		*\return
 		*	\p WaitResult::eSuccess ou \p WaitResult::eTimeOut en cas de succès.
 		*/ 
-		WaitResult wait( uint32_t timeout );
+		virtual WaitResult wait( uint32_t timeout ) = 0;
 		/**
 		*\brief
 		*	Remet la barrière en non signalée.
 		*/ 
-		void reset();
-		/**
-		*\return
-		*	La vk::Fence.
-		*/
-		inline vk::Fence const & getFence()const
-		{
-			return m_fence;
-		}
-
-	private:
-		vk::Fence m_fence;
+		virtual void reset() = 0;
 	};
 }
+
+#endif

@@ -4,8 +4,6 @@ See LICENSE file in root folder.
 */
 #include "DepthStencilState.hpp"
 
-#include "StencilOpState.hpp"
-
 namespace renderer
 {
 	DepthStencilState::DepthStencilState( DepthStencilStateFlags flags
@@ -18,19 +16,16 @@ namespace renderer
 		, StencilOpState const & back
 		, float minDepthBounds
 		, float maxDepthBounds )
-		: m_state
-		{
-			flags,
-			depthTestEnable,
-			depthWriteEnable,
-			convert( depthCompareOp ),
-			depthBoundsTestEnable,
-			stencilTestEnable,
-			front.getState(),
-			back.getState(),
-			minDepthBounds,
-			maxDepthBounds
-		}
+		: m_flags{ flags }
+		, m_depthTestEnable{ depthTestEnable }
+		, m_depthWriteEnable{ depthWriteEnable }
+		, m_depthCompareOp{ depthCompareOp }
+		, m_depthBoundsTestEnable{ depthBoundsTestEnable }
+		, m_stencilTestEnable{ stencilTestEnable }
+		, m_front{ front }
+		, m_back{ back }
+		, m_minDepthBounds{ minDepthBounds }
+		, m_maxDepthBounds{ maxDepthBounds }
 	{
 	}
 }

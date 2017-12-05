@@ -1,9 +1,11 @@
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
+*/
 #include "RenderBuffer.hpp"
 
 #include "Device.hpp"
 #include "ImageMemoryBarrier.hpp"
-
-#include <VkLib/Queue.hpp>
 
 namespace renderer
 {
@@ -13,21 +15,6 @@ namespace renderer
 		: m_device{ device }
 		, m_format{ format }
 		, m_size{ size }
-		, m_texture{ m_device.getDevice().createImage( convert( m_format )
-			, m_size.x
-			, m_size.y
-			, convert( MemoryPropertyFlags{ MemoryPropertyFlag::eLazilyAllocated | MemoryPropertyFlag::eDeviceLocal } ) ) }
 	{
-		makeDepthStencilAttachment();
-	}
-
-	ImageMemoryBarrier RenderBuffer::makeColourAttachment()const
-	{
-		return ImageMemoryBarrier{ m_texture->makeColourAttachment() };
-	}
-
-	ImageMemoryBarrier RenderBuffer::makeDepthStencilAttachment()const
-	{
-		return ImageMemoryBarrier{ m_texture->makeDepthStencilAttachment() };
 	}
 }

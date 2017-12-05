@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_BlendFactor_HPP___
+#define ___Renderer_BlendFactor_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
+#include "RendererPrerequisites.hpp"
 
 namespace renderer
 {
@@ -35,13 +37,6 @@ namespace renderer
 		eSrc1Alpha,
 		eInvSrc1Alpha,
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::BlendFactor en VkBlendFactor.
-	*\param[in] value
-	*	Le renderer::BlendFactor.
-	*\return
-	*	Le VkBlendFactor.
-	*/
-	VkBlendFactor convert( BlendFactor const & value );
 }
+
+#endif

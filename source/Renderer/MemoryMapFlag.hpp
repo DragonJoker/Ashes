@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_MemoryMapFlag_HPP___
+#define ___Renderer_MemoryMapFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -20,14 +22,7 @@ namespace renderer
 		: uint32_t
 	{
 	};
-	VkLib_ImplementFlag( MemoryMapFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::MemoryMapFlags en VkMemoryMapFlags.
-	*\param[in] format
-	*	Le renderer::MemoryMapFlags.
-	*\return
-	*	Le VkMemoryMapFlags.
-	*/
-	VkMemoryMapFlags convert( MemoryMapFlags const & flags );
+	Utils_ImplementFlag( MemoryMapFlag )
 }
+
+#endif

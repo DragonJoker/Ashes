@@ -2,11 +2,11 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_ShaderProgram_HPP___
+#define ___Renderer_ShaderProgram_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
-
-#include <VkLib/ShaderProgram.hpp>
 
 namespace renderer
 {
@@ -16,7 +16,7 @@ namespace renderer
 	*/
 	class ShaderProgram
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
@@ -25,8 +25,16 @@ namespace renderer
 		*/
 		ShaderProgram( Device const & device );
 
-#if RENDERLIB_GLSL_TO_SPV
-
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~ShaderProgram() = default;
 		/**
 		*\brief
 		*	Crée un module de shader et l'ajoute à la liste.
@@ -35,11 +43,8 @@ namespace renderer
 		*\param[in] stage
 		*	Le niveau de shader utilisé pour le module.
 		*/
-		void createModule( std::string const & shader
-			, ShaderStageFlag stage );
-
-#endif
-
+		virtual void createModule( std::string const & shader
+			, ShaderStageFlag stage ) = 0;
 		/**
 		*\brief
 		*	Crée un module de shader et l'ajoute à la liste.
@@ -48,18 +53,9 @@ namespace renderer
 		*\param[in] stage
 		*	Le niveau de shader utilisé pour le module.
 		*/
-		void createModule( ByteArray const & shader
-			, ShaderStageFlag stage );
-		/**
-		*\brief
-		*	Le début du tableau de modules.
-		*/
-		inline vk::ShaderProgram const & getProgram()const
-		{
-			return *m_program;
-		}
-
-	private:
-		vk::ShaderProgramPtr m_program;
+		virtual void createModule( ByteArray const & shader
+			, ShaderStageFlag stage ) = 0;
 	};
 }
+
+#endif

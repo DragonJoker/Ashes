@@ -1,8 +1,6 @@
-﻿/**
-*\file
-*	VertexBuffer.h
-*\author
-*	Sylvain Doremus
+﻿/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
 #ifndef ___Renderer_DescriptorSet_HPP___
 #define ___Renderer_DescriptorSet_HPP___
@@ -22,7 +20,7 @@ namespace renderer
 	*/
 	class DescriptorSet
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
@@ -30,6 +28,17 @@ namespace renderer
 		*	Le périphérique logique.
 		*/
 		DescriptorSet( DescriptorSetPool const & pool );
+
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~DescriptorSet() = default;
 		/**
 		*\brief
 		*	Crée une attache de type image et échantillonneur combinés.
@@ -42,9 +51,9 @@ namespace renderer
 		*\return
 		*	L'attache créée.
 		*/
-		CombinedTextureSamplerBinding createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		virtual CombinedTextureSamplerBinding createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, Texture const & view
-			, Sampler const & sampler );
+			, Sampler const & sampler ) = 0;
 		/**
 		*\brief
 		*	Crée une attache de type image échantillonée.
@@ -55,8 +64,21 @@ namespace renderer
 		*\return
 		*	L'attache créée.
 		*/
-		SampledTextureBinding createBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, Texture const & view );
+		virtual SampledTextureBinding createBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, Texture const & view ) = 0;
+		/**
+		*\brief
+		*	Crée une attache de type tampon de variables uniformes.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] uniformBuffer
+		*	Le tampon.
+		*\return
+		*	L'attache créée.
+		*/
+		virtual UniformBufferBinding createBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, UniformBufferBase const & uniformBuffer
+			, uint32_t offset ) = 0;
 		/**
 		*\brief
 		*	Crée une attache de type tampon de variables uniformes.
@@ -68,28 +90,20 @@ namespace renderer
 		*	L'attache créée.
 		*/
 		template< typename T >
-		UniformBufferBinding< T > createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		inline UniformBufferBinding createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, UniformBuffer< T > const & uniformBuffer
-			, uint32_t offset );
+			, uint32_t offset )
+		{
+			return createBinding( layoutBinding
+				, uniformBuffer.getUbo()
+				, offset );
+		}
 		/**
 		*\brief
 		*	Met à jour toutes les attaches du descripteur.
 		*/
-		void update()const;
-		/**
-		*\return
-		*	Le descriptor set vulkan.
-		*/
-		inline vk::DescriptorSet const & getDescriptorSet()const
-		{
-			return *m_descriptorSet;
-		}
-
-	private:
-		vk::DescriptorSetPtr m_descriptorSet;
+		virtual void update()const = 0;
 	};
 }
-
-#include "DescriptorSet.inl"
 
 #endif

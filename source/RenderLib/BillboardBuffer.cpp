@@ -18,7 +18,6 @@ namespace render
 	void BillboardBuffer::initialise()
 	{
 		m_vbo = renderer::makeVertexBuffer< BillboardBuffer::Quad >( m_device
-			, 0u
 			, uint32_t( m_buffer.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );

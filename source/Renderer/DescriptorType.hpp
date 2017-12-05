@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_DescriptorType_HPP___
+#define ___Renderer_DescriptorType_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -31,13 +33,6 @@ namespace renderer
 		eStorageBufferDynamic,
 		eInputAttachment,
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::DescriptorType en VkDescriptorType.
-	*\param[in] type
-	*	Le renderer::DescriptorType.
-	*\return
-	*	Le VkDescriptorType.
-	*/
-	VkDescriptorType convert( DescriptorType const & type );
 }
+
+#endif

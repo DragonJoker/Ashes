@@ -1,3 +1,7 @@
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
+*/
 #include "DescriptorSetPool.hpp"
 
 #include "DescriptorSet.hpp"
@@ -7,7 +11,6 @@ namespace renderer
 {
 	DescriptorSetPool::DescriptorSetPool( DescriptorSetLayout const & layout, uint32_t maxSets )
 		: m_layout{ layout }
-		, m_pool{ layout.getLayout().createDescriptorPool( maxSets ) }
 		, m_maxSets{ maxSets }
 	{
 	}
@@ -16,10 +19,5 @@ namespace renderer
 	{
 		assert( m_allocated + count <= m_maxSets );
 		m_allocated = std::min( m_allocated + count, m_maxSets );
-	}
-
-	DescriptorSet DescriptorSetPool::createDescriptorSet()const
-	{
-		return DescriptorSet{ *this };
 	}
 }

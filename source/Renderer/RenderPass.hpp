@@ -2,11 +2,13 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_RenderPass_HPP___
+#define ___Renderer_RenderPass_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
 
-#include <VkLib/RenderPass.hpp>
+#include <Utils/PixelFormat.hpp>
 
 namespace renderer
 {
@@ -16,7 +18,7 @@ namespace renderer
 	*/
 	class RenderPass
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
@@ -37,26 +39,38 @@ namespace renderer
 		*/
 		RenderPass( Device const & device
 			, std::vector< utils::PixelFormat > const & formats
-			, RenderSubpassArray const & subpasses
+			, RenderSubpassPtrArray const & subpasses
 			, RenderPassState const & initialState
 			, RenderPassState const & finalState
 			, bool clear = true
 			, SampleCountFlag samplesCount = SampleCountFlag::e1 );
+
+	public:
 		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
 		*\brief
 		*	Destructeur.
 		*/
-		~RenderPass();
+		virtual ~RenderPass() = default;
 		/**
+		*\brief
+		*	Crée un FrameBuffer compatible avec la passe de rendu.
+		*\remarks
+		*	Si la compatibilité entre les textures voulues et les formats de la passe de rendu
+		*	n'est pas possible, une std::runtime_error est lancée.
+		*\param[in] dimensions
+		*	Les dimensions du tampon d'images.
+		*\param[in] textures
+		*	Les textures voulues pour le tampon d'images à créer.
 		*\return
-		*	La vk::RenderPass.
+		*	Le FrameBuffer créé.
 		*/
-		inline vk::RenderPass const & getRenderPass()const
-		{
-			return m_renderPass;
-		}
-
-	private:
-		vk::RenderPass m_renderPass;
+		virtual FrameBufferPtr createFrameBuffer( utils::IVec2 const & dimensions
+			, TextureCRefArray const & textures )const = 0;
 	};
 }
+
+#endif

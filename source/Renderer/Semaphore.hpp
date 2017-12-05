@@ -2,11 +2,11 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_Semaphore_HPP___
+#define ___Renderer_Semaphore_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
-
-#include <VkLib/Semaphore.hpp>
 
 namespace renderer
 {
@@ -18,7 +18,7 @@ namespace renderer
 	*/
 	class Semaphore
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
@@ -26,16 +26,18 @@ namespace renderer
 		*	Le LogicalDevice parent.
 		*/
 		explicit Semaphore( Device const & device );
-		/**
-		*\brief
-		*	Conversion implicite vers VkSemaphore.
-		*/
-		inline vk::Semaphore const & getSemaphore()const
-		{
-			return m_semaphore;
-		}
 
-	private:
-		vk::Semaphore m_semaphore;
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~Semaphore() = default;
 	};
 }
+
+#endif

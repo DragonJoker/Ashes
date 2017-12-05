@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_AccessFlag_HPP___
+#define ___Renderer_AccessFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -33,14 +35,7 @@ namespace renderer
 		eMemoryRead = 0x00008000,
 		eMemoryWrite = 0x00010000,
 	};
-	VkLib_ImplementFlag( AccessFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::AccessFlags en VkAccessFlags.
-	*\param[in] flags
-	*	Le renderer::AccessFlags.
-	*\return
-	*	Le VkAccessFlags.
-	*/
-	VkAccessFlags convert( AccessFlags const & flags );
+	Utils_ImplementFlag( AccessFlag )
 }
+
+#endif

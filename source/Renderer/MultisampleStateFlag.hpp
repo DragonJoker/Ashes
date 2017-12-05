@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_MultisampleStateFlag_HPP___
+#define ___Renderer_MultisampleStateFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -16,14 +18,7 @@ namespace renderer
 		: uint32_t
 	{
 	};
-	VkLib_ImplementFlag( MultisampleStateFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::MultisampleStateFlags en VkPipelineMultisampleStateCreateFlags.
-	*\param[in] flags
-	*	Le renderer::MultisampleStateFlags.
-	*\return
-	*	Le VkPipelineMultisampleStateCreateFlags.
-	*/
-	VkPipelineMultisampleStateCreateFlags convert( MultisampleStateFlags const & flags );
+	Utils_ImplementFlag( MultisampleStateFlag )
 }
+
+#endif

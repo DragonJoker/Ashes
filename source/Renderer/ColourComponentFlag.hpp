@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_ColourComponentFlag_HPP___
+#define ___Renderer_ColourComponentFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -20,14 +22,7 @@ namespace renderer
 		eB = 0x00000004,
 		eA = 0x00000008,
 	};
-	VkLib_ImplementFlag( ColourComponentFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::ColourComponentFlag en VkColorComponentFlags.
-	*\param[in] flags
-	*	Le renderer::ColourComponentFlag.
-	*\return
-	*	Le VkColorComponentFlags.
-	*/
-	VkColorComponentFlags convert( ColourComponentFlags const & flags );
+	Utils_ImplementFlag( ColourComponentFlag )
 }
+
+#endif

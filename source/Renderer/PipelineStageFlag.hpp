@@ -2,10 +2,12 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_PipelineStageFlag_HPP___
+#define ___Renderer_PipelineStageFlag_HPP___
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
-#include <VkLib/FlagCombination.hpp>
+#include "RendererPrerequisites.hpp"
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -34,14 +36,7 @@ namespace renderer
 		eAllGraphics = 0x00008000,
 		eAllCommands = 0x00010000,
 	};
-	VkLib_ImplementFlag( PipelineStageFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::CommandBufferUsageFlag en VkCommandBufferUsageFlags.
-	*\param[in] flags
-	*	Le renderer::CommandBufferUsageFlag.
-	*\return
-	*	Le VkCommandBufferUsageFlags.
-	*/
-	VkPipelineStageFlags convert( PipelineStageFlags const & flags );
+	Utils_ImplementFlag( PipelineStageFlag )
 }
+
+#endif

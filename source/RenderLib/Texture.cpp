@@ -1,7 +1,8 @@
 #include "Texture.h"
 
-#include <Renderer/Texture.hpp>
+#include <Renderer/Device.hpp>
 #include <Renderer/Sampler.hpp>
+#include <Renderer/Texture.hpp>
 
 namespace render
 {
@@ -11,13 +12,12 @@ namespace render
 		, renderer::WrapMode wrapR
 		, renderer::Filter minFilter
 		, renderer::Filter magFilter )
-		: m_texture{ device }
-		, m_sampler{ device
-			, wrapS
+		: m_texture{ device.createTexture() }
+		, m_sampler{ device.createSampler( wrapS
 			, wrapT
 			, wrapR
 			, minFilter
-			, magFilter }
+			, magFilter ) }
 	{
 	}
 
@@ -29,7 +29,7 @@ namespace render
 	{
 		m_format = format;
 		m_size = size;
-		m_texture.setImage( m_format
+		m_texture->setImage( m_format
 			, m_size
 			, data
 			, stagingBuffer

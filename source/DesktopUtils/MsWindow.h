@@ -123,7 +123,7 @@ namespace utils
 		*\brief
 		*	Crée la connection entre l'API de rendu et la fenêtre.
 		*/
-		renderer::Connection doCreateConnection();
+		renderer::ConnectionPtr doCreateConnection();
 		/**
 		*\brief
 		*	Met à jour le temps d'une image.

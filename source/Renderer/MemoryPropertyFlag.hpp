@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_MemoryPropertyFlag_HPP___
+#define ___Renderer_MemoryPropertyFlag_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -26,14 +28,7 @@ namespace renderer
 		//! Non visible to host, moreover object's memory may be provided lazily, by implementation.
 		eLazilyAllocated = 0x00000010,
 	};
-	VkLib_ImplementFlag( MemoryPropertyFlag )
-	/**
-	*\brief
-	*	Convertit un renderer::MemoryPropertyFlags en VkMemoryPropertyFlags.
-	*\param[in] flags
-	*	Le renderer::MemoryPropertyFlags.
-	*\return
-	*	Le VkMemoryPropertyFlags.
-	*/
-	VkMemoryPropertyFlags convert( MemoryPropertyFlags const & flags );
+	Utils_ImplementFlag( MemoryPropertyFlag )
 }
+
+#endif

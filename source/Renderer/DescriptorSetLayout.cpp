@@ -1,32 +1,14 @@
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
+*/
 #include "DescriptorSetLayout.hpp"
-
-#include "DescriptorSetLayoutBinding.hpp"
-#include "Device.hpp"
-
-#include <VkLib/LogicalDevice.hpp>
 
 namespace renderer
 {
-	namespace
-	{
-		std::vector< vk::DescriptorLayoutBinding > doConvert( DescriptorSetLayoutBindingArray const & bindings )
-		{
-			std::vector< vk::DescriptorLayoutBinding > result;
-			result.reserve( bindings.size() );
-
-			for ( auto & binding : bindings )
-			{
-				result.emplace_back( binding.getBinding() );
-			}
-
-			return result;
-		}
-	}
-
 	DescriptorSetLayout::DescriptorSetLayout( Device const & device
-		, DescriptorSetLayoutBindingArray const & bindings )
-		: m_layout{ device.getDevice().createDescriptorLayout( doConvert( bindings ) ) }
-		, m_bindings{ bindings }
+		, DescriptorSetLayoutBindingArray && bindings )
+		: m_bindings{ std::move( bindings ) }
 	{
 	}
 
@@ -36,7 +18,7 @@ namespace renderer
 			, m_bindings.end()
 			, [index]( DescriptorSetLayoutBinding const & lookup )
 		{
-			return lookup.getBinding().getIndex() == index;
+			return lookup.getBindingPoint() == index;
 		} );
 
 		if ( it == m_bindings.end() )

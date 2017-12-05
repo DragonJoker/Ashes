@@ -1,8 +1,6 @@
-/**
-*\file
-*	Texture.h
-*\author
-*	Sylvain Doremus
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
 #ifndef ___Renderer_Texture_HPP___
 #define ___Renderer_Texture_HPP___
@@ -10,10 +8,8 @@
 
 #include "RendererPrerequisites.hpp"
 
+#include <Utils/PixelFormat.hpp>
 #include <Utils/Vec2.hpp>
-
-#include <VkLib/Image.hpp>
-#include <VkLib/Sampler.hpp>
 
 namespace renderer
 {
@@ -37,7 +33,7 @@ namespace renderer
 			uint64_t depthPitch;
 		};
 
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
@@ -45,14 +41,17 @@ namespace renderer
 		*	Le périphérique logique.
 		*/
 		Texture( Device const & device );
+
+	public:
 		/**
+		*\~english
 		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
 		*/
-		Texture( Device const & device
-			, vk::Image const & image );
+		virtual ~Texture() = default;
 		/**
 		*\brief
 		*	Charge l'image de la texture.
@@ -78,15 +77,15 @@ namespace renderer
 		*\param[in] size
 		*	Les dimensions de l'image.
 		*/
-		void setImage( utils::PixelFormat format
+		virtual void setImage( utils::PixelFormat format
 			, IVec2 const & size
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal );
+			, ImageTiling tiling = ImageTiling::eOptimal ) = 0;
 		/**
 		*\brief
 		*	Génère les mipmaps de la texture.
 		*/
-		void generateMipmaps()const noexcept;
+		virtual void generateMipmaps()const = 0;
 		/**
 		*\brief
 		*	Mappe la mémoire du tampon en RAM.
@@ -99,9 +98,9 @@ namespace renderer
 		*\return
 		*	\p nullptr si le mapping a échoué.
 		*/
-		Mapped lock( uint32_t offset
+		virtual Mapped lock( uint32_t offset
 			, uint32_t size
-			, VkMemoryMapFlags flags )const;
+			, MemoryMapFlags flags )const = 0;
 		/**
 		*\brief
 		*	Unmappe la mémoire du tampon de la RAM.
@@ -110,24 +109,24 @@ namespace renderer
 		*\param[in] modified
 		*	Dit si le tampon a été modifié, et donc si la VRAM doit être mise à jour.
 		*/
-		void unlock( uint32_t size
-			, bool modified )const;
+		virtual void unlock( uint32_t size
+			, bool modified )const = 0;
 		/**
 		*\brief
 		*	Active la texture.
 		*\param[in] unit
 		*	L'indice de l'unité sur laquelle la texture doit être activée.
 		*/
-		void bindAsShaderInput( CommandBuffer const & commandBuffer
-			, uint32_t unit )const;
+		virtual void bindAsShaderInput( CommandBuffer const & commandBuffer
+			, uint32_t unit )const = 0;
 		/**
 		*\brief
 		*	Active la texture.
 		*\param[in] unit
 		*	L'indice de l'unité sur laquelle la texture doit être activée.
 		*/
-		void bindAsShaderOutput( CommandBuffer const & commandBuffer
-			, uint32_t unit )const;
+		virtual void bindAsShaderOutput( CommandBuffer const & commandBuffer
+			, uint32_t unit )const = 0;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout général.
@@ -136,28 +135,28 @@ namespace renderer
 		*\return
 		*	La barrière mémoire.
 		*/
-		ImageMemoryBarrier makeGeneralLayout( AccessFlags accessFlags )const;
+		virtual ImageMemoryBarrier makeGeneralLayout( AccessFlags accessFlags )const = 0;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de destination de transfert.
 		*\return
 		*	La barrière mémoire.
 		*/
-		ImageMemoryBarrier makeTransferDestination()const;
+		virtual ImageMemoryBarrier makeTransferDestination()const = 0;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de source de transfert.
 		*\return
 		*	La barrière mémoire.
 		*/
-		ImageMemoryBarrier makeTransferSource()const;
+		virtual ImageMemoryBarrier makeTransferSource()const = 0;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de ressource d'entrée (lecture seule) d'un shader.
 		*\return
 		*	La barrière mémoire.
 		*/
-		ImageMemoryBarrier makeShaderInputResource()const;
+		virtual ImageMemoryBarrier makeShaderInputResource()const = 0;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de ressource d'entrée (lecture seule) d'un shader.
@@ -166,35 +165,35 @@ namespace renderer
 		*\return
 		*	La barrière mémoire.
 		*/
-		ImageMemoryBarrier makeDepthStencilReadOnly()const;
+		virtual ImageMemoryBarrier makeDepthStencilReadOnly()const = 0;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout d'attache couleur.
 		*\return
 		*	La barrière mémoire.
 		*/
-		ImageMemoryBarrier makeColourAttachment()const;
+		virtual ImageMemoryBarrier makeColourAttachment()const = 0;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout d'attache profondeur/stencil.
 		*\return
 		*	La barrière mémoire.
 		*/
-		ImageMemoryBarrier makeDepthStencilAttachment()const;
+		virtual ImageMemoryBarrier makeDepthStencilAttachment()const = 0;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de destination de dessin.
 		*\return
 		*	La barrière mémoire.
 		*/
-		ImageMemoryBarrier makeDrawDestination()const;
+		virtual ImageMemoryBarrier makeDrawDestination()const = 0;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de source de presentation.
 		*\return
 		*	La barrière mémoire.
 		*/
-		ImageMemoryBarrier makePresentSource()const;
+		virtual ImageMemoryBarrier makePresentSource()const = 0;
 		/**
 		*\return
 		*	Le format des pixels de la texture.
@@ -211,22 +210,11 @@ namespace renderer
 		{
 			return m_size;
 		}
-		/**
-		*\return
-		*	L'image vulkan.
-		*/
-		inline vk::Image const & getImage()const noexcept
-		{
-			assert( m_nonOwnedTexture );
-			return *m_nonOwnedTexture;
-		}
 
-	private:
+	protected:
 		Device const & m_device;
 		utils::IVec2 m_size;
 		utils::PixelFormat m_format{ utils::PixelFormat::eR8G8B8 };
-		vk::ImagePtr m_ownedTexture;
-		vk::Image const * m_nonOwnedTexture{ nullptr };
 	};
 }
 

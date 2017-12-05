@@ -1,0 +1,186 @@
+/**
+*\file
+*	Texture.h
+*\author
+*	Sylvain Doremus
+*/
+#ifndef ___VkRenderer_Texture_HPP___
+#define ___VkRenderer_Texture_HPP___
+#pragma once
+
+#include "VkRendererPrerequisites.hpp"
+
+#include <VkLib/Image.hpp>
+#include <VkLib/Sampler.hpp>
+
+#include <Renderer/Texture.hpp>
+
+#include <Utils/Vec2.hpp>
+
+namespace vk_renderer
+{
+	/**
+	*\brief
+	*	Une texture, avec son image et son échantillonneur.
+	*/
+	class Texture
+		: public renderer::Texture
+	{
+	public:
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
+		*/
+		Texture( renderer::Device const & device );
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
+		*/
+		Texture( renderer::Device const & device
+			, vk::Image const & image );
+		/**
+		*\brief
+		*	Charge l'image de la texture.
+		*\param[in] format
+		*	Le format de l'image.
+		*\param[in] size
+		*	Les dimensions de l'image.
+		*/
+		void setImage( utils::PixelFormat format
+			, utils::IVec2 const & size
+			, renderer::ImageUsageFlags usageFlags = renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
+			, renderer::ImageTiling tiling = renderer::ImageTiling::eOptimal )override;
+		/**
+		*\brief
+		*	Génère les mipmaps de la texture.
+		*/
+		void generateMipmaps()const override;
+		/**
+		*\brief
+		*	Mappe la mémoire du tampon en RAM.
+		*\param[in] offset
+		*	L'offset à partir duquel la mémoire du tampon est mappée.
+		*\param[in] size
+		*	La taille en octets de la mémoire à mapper.
+		*\param[in] flags
+		*	Indicateurs de configuration du mapping.
+		*\return
+		*	\p nullptr si le mapping a échoué.
+		*/
+		renderer::Texture::Mapped lock( uint32_t offset
+			, uint32_t size
+			, renderer::MemoryMapFlags flags )const override;
+		/**
+		*\brief
+		*	Unmappe la mémoire du tampon de la RAM.
+		*\param[in] size
+		*	La taille en octets de la mémoire mappée.
+		*\param[in] modified
+		*	Dit si le tampon a été modifié, et donc si la VRAM doit être mise à jour.
+		*/
+		void unlock( uint32_t size
+			, bool modified )const override;
+		/**
+		*\brief
+		*	Active la texture.
+		*\param[in] unit
+		*	L'indice de l'unité sur laquelle la texture doit être activée.
+		*/
+		void bindAsShaderInput( renderer::CommandBuffer const & commandBuffer
+			, uint32_t unit )const override;
+		/**
+		*\brief
+		*	Active la texture.
+		*\param[in] unit
+		*	L'indice de l'unité sur laquelle la texture doit être activée.
+		*/
+		void bindAsShaderOutput( renderer::CommandBuffer const & commandBuffer
+			, uint32_t unit )const override;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout général.
+		*\param[in] accessFlags
+		*	Les accès voulus, une fois que la transition est effectuée.
+		*\return
+		*	La barrière mémoire.
+		*/
+		renderer::ImageMemoryBarrier makeGeneralLayout( renderer::AccessFlags accessFlags )const override;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de destination de transfert.
+		*\return
+		*	La barrière mémoire.
+		*/
+		renderer::ImageMemoryBarrier makeTransferDestination()const override;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de source de transfert.
+		*\return
+		*	La barrière mémoire.
+		*/
+		renderer::ImageMemoryBarrier makeTransferSource()const override;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de ressource d'entrée (lecture seule) d'un shader.
+		*\return
+		*	La barrière mémoire.
+		*/
+		renderer::ImageMemoryBarrier makeShaderInputResource()const override;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de ressource d'entrée (lecture seule) d'un shader.
+		*\remarks
+		*	Spécifique aux images prondeur et/ou stencil.
+		*\return
+		*	La barrière mémoire.
+		*/
+		renderer::ImageMemoryBarrier makeDepthStencilReadOnly()const override;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout d'attache couleur.
+		*\return
+		*	La barrière mémoire.
+		*/
+		renderer::ImageMemoryBarrier makeColourAttachment()const override;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout d'attache profondeur/stencil.
+		*\return
+		*	La barrière mémoire.
+		*/
+		renderer::ImageMemoryBarrier makeDepthStencilAttachment()const override;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de destination de dessin.
+		*\return
+		*	La barrière mémoire.
+		*/
+		renderer::ImageMemoryBarrier makeDrawDestination()const override;
+		/**
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de source de presentation.
+		*\return
+		*	La barrière mémoire.
+		*/
+		renderer::ImageMemoryBarrier makePresentSource()const override;
+		/**
+		*\return
+		*	L'image vulkan.
+		*/
+		inline vk::Image const & getImage()const noexcept
+		{
+			assert( m_nonOwnedTexture );
+			return *m_nonOwnedTexture;
+		}
+
+	private:
+		vk::ImagePtr m_ownedTexture;
+		vk::Image const * m_nonOwnedTexture{ nullptr };
+	};
+}
+
+#endif

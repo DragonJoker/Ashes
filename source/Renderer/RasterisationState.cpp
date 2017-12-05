@@ -8,7 +8,7 @@ namespace renderer
 {
 	RasterisationState::RasterisationState( RasterisationStateFlags flags
 		, bool depthClampEnable
-		, bool rasterizerDiscardEnable
+		, bool rasteriserDiscardEnable
 		, PolygonMode polygonMode
 		, CullModeFlags cullMode
 		, FrontFace frontFace
@@ -17,20 +17,17 @@ namespace renderer
 		, float depthBiasClamp
 		, float depthBiasSlopeFactor
 		, float lineWidth )
-		: m_state
-		{
-			flags,
-			depthClampEnable,
-			rasterizerDiscardEnable,
-			convert( polygonMode ),
-			convert( cullMode ),
-			convert( frontFace ),
-			depthBiasEnable,
-			depthBiasConstantFactor,
-			depthBiasClamp,
-			depthBiasSlopeFactor,
-			lineWidth
-		}
+		: m_flags{ flags }
+		, m_depthClampEnable{ depthClampEnable }
+		, m_rasteriserDiscardEnable{ rasteriserDiscardEnable }
+		, m_polygonMode{ polygonMode }
+		, m_cullMode{ cullMode }
+		, m_frontFace{ frontFace }
+		, m_depthBiasEnable{ depthBiasEnable }
+		, m_depthBiasConstantFactor{ depthBiasConstantFactor }
+		, m_depthBiasClamp{ depthBiasClamp }
+		, m_depthBiasSlopeFactor{ depthBiasSlopeFactor }
+		, m_lineWidth{ lineWidth }
 	{
 	}
 }

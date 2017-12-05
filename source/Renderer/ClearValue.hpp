@@ -1,7 +1,9 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_ClearValue_HPP___
+#define ___Renderer_ClearValue_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
@@ -28,31 +30,28 @@ namespace renderer
 		ClearValue( utils::RgbaColour const & colour );
 		ClearValue( DepthStencilClearValue const & depthStencil );
 
-		utils::RgbaColour const & colour()
+		bool isColour()const
+		{
+			return m_isColour;
+		}
+
+		utils::RgbaColour const & colour()const
 		{
 			assert( m_isColour );
 			return m_colour;
 		}
 
-		DepthStencilClearValue const & depthStencil()
+		DepthStencilClearValue const & depthStencil()const
 		{
 			assert( !m_isColour );
 			return m_depthStencil;
 		}
 
 	private:
-		friend VkClearValue convert( ClearValue const & value );
 		bool m_isColour{ false };
 		utils::RgbaColour m_colour;
 		DepthStencilClearValue m_depthStencil;
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::ClearValue en VkClearValue.
-	*\param[in] value
-	*	Le renderer::ClearValue.
-	*\return
-	*	Le VkClearValue.
-	*/
-	VkClearValue convert( ClearValue const & value );
 }
+
+#endif

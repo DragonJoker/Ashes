@@ -9,10 +9,9 @@ namespace renderer
 	DescriptorSetLayoutBinding::DescriptorSetLayoutBinding( uint32_t index
 		, DescriptorType type
 		, ShaderStageFlags flags )
-		: m_binding{ index
-			, convert( type )
-			, 1u
-			, convert( flags ) }
+		: m_index{ index }
+		, m_type{ type }
+		, m_flags{ flags }
 	{
 	}
 }

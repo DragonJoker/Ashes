@@ -1,3 +1,7 @@
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
+*/
 #include "Device.hpp"
 
 namespace renderer
@@ -5,12 +9,12 @@ namespace renderer
 	template< typename T >
 	UniformBuffer< T >::UniformBuffer( Device const & device
 		, uint32_t count
-		, BufferTarget target
+		, BufferTargets target
 		, MemoryPropertyFlags flags )
-		: m_device{ device }
-		, m_buffer{ device.getDevice().createUniformBuffer( vk::UniformBuffer::getOffset( device.getDevice(), count, sizeof( T ) )
-			, convert( target )
-			, convert( flags ) ) }
+		: m_ubo{ device.createUniformBuffer( count
+			, sizeof( T )
+			, target
+			, flags ) }
 		, m_data( count, T{} )
 	{
 	}

@@ -8,6 +8,11 @@ See LICENSE file in root folder
 #include <string>
 #include <vector>
 
+#define Utils_EnumBounds( MinValue )\
+	eCount,\
+	eMin = MinValue,\
+	eMax = eCount - 1
+
 namespace utils
 {
 	using Clock = std::chrono::high_resolution_clock;
@@ -26,7 +31,7 @@ namespace utils
 	template< typename Function >
 	class Signal;
 	/**
-	*\name Typedefs généralistes.
+	*\name Typedefs gï¿½nï¿½ralistes.
 	*/
 	/**\{*/
 	using Vec2 = Vec2T< float >;

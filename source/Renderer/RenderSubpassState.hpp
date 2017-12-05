@@ -2,6 +2,8 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_RenderSubpassState_HPP___
+#define ___Renderer_RenderSubpassState_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
@@ -27,14 +29,25 @@ namespace renderer
 			, AccessFlags access );
 		/**
 		*\return
-		*	Le vk::RenderPassState.
+		*	Les indicateurs d'état du pipeline.
 		*/
-		inline vk::RenderSubpassState const & getState()const
+		inline PipelineStageFlags const & getPipelineStage()const
 		{
-			return m_state;
+			return m_pipelineStage;
+		}
+		/**
+		*\return
+		*	Les indicateurs d'accès.
+		*/
+		inline AccessFlags const & getAccess()const
+		{
+			return m_access;
 		}
 
 	private:
-		vk::RenderSubpassState m_state;
+		PipelineStageFlags m_pipelineStage;
+		AccessFlags m_access;
 	};
 }
+
+#endif

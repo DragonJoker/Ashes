@@ -1,10 +1,12 @@
 /*
 This file belongs to Renderer.
-See LICENSE file in root folder
+See LICENSE file in root folder.
 */
+#ifndef ___Renderer_BlendOp_HPP___
+#define ___Renderer_BlendOp_HPP___
 #pragma once
 
-#include <VkLib/FlagCombination.hpp>
+#include <Utils/FlagCombination.hpp>
 
 namespace renderer
 {
@@ -21,13 +23,6 @@ namespace renderer
 		eMin,
 		eMax,
 	};
-	/**
-	*\brief
-	*	Convertit un renderer::BlendOp en VkBlendOp.
-	*\param[in] value
-	*	Le renderer::BlendOp.
-	*\return
-	*	Le VkBlendOp.
-	*/
-	VkBlendOp convert( BlendOp const & value );
 }
+
+#endif

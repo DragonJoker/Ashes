@@ -1,19 +1,15 @@
-/**
-*\file
-*	Texture.h
-*\author
-*	Sylvain Doremus
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
 */
-#ifndef ___Renderer_Texture_HPP___
-#define ___Renderer_Texture_HPP___
+#ifndef ___Renderer_RenderBuffer_HPP___
+#define ___Renderer_RenderBuffer_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
 
+#include <Utils/PixelFormat.hpp>
 #include <Utils/Vec2.hpp>
-
-#include <VkLib/Image.hpp>
-#include <VkLib/Sampler.hpp>
 
 namespace renderer
 {
@@ -23,7 +19,7 @@ namespace renderer
 	*/
 	class RenderBuffer
 	{
-	public:
+	protected:
 		/**
 		*\brief
 		*	Constructeur.
@@ -33,20 +29,31 @@ namespace renderer
 		RenderBuffer( Device const & device
 			, utils::PixelFormat format
 			, IVec2 const & size );
+
+	public:
+		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~RenderBuffer() = default;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout d'attache couleur.
 		*\return
 		*	La barrière mémoire.
 		*/
-		ImageMemoryBarrier makeColourAttachment()const;
+		virtual ImageMemoryBarrier makeColourAttachment()const = 0;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout d'attache profondeur et stencil.
 		*\return
 		*	La barrière mémoire.
 		*/
-		ImageMemoryBarrier makeDepthStencilAttachment()const;
+		virtual ImageMemoryBarrier makeDepthStencilAttachment()const = 0;
 		/**
 		*\return
 		*	Le format des pixels de la texture.
@@ -63,21 +70,11 @@ namespace renderer
 		{
 			return m_size;
 		}
-		/**
-		*\return
-		*	L'image vulkan.
-		*/
-		inline vk::Image const & getImage()const noexcept
-		{
-			assert( m_texture );
-			return *m_texture;
-		}
 
 	private:
-		renderer::Device const & m_device;
+		Device const & m_device;
 		utils::IVec2 m_size;
 		utils::PixelFormat m_format{ utils::PixelFormat::eR8G8B8 };
-		vk::ImagePtr m_texture;
 	};
 }
 

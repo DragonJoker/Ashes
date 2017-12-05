@@ -2,6 +2,8 @@
 
 #include "Submesh.h"
 
+#include <Renderer/StagingBuffer.hpp>
+
 namespace render
 {
 	void Mesh::data( renderer::Device const & device
@@ -12,7 +14,6 @@ namespace render
 		, Vec2Array const & tex )
 	{
 		m_positions = renderer::makeVertexBuffer< utils::Vec3 >( device
-			, 0u
 			, uint32_t( pos.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -24,7 +25,6 @@ namespace render
 		if ( !nml.empty() )
 		{
 			m_normal = renderer::makeVertexBuffer< utils::Vec3 >( device
-				, 1u
 				, uint32_t( nml.size() )
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -37,7 +37,6 @@ namespace render
 		if ( !tex.empty() )
 		{
 			m_texcoord = renderer::makeVertexBuffer< utils::Vec2 >( device
-				, 2u
 				, uint32_t( tex.size() )
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
