@@ -54,6 +54,21 @@ namespace vk_renderer
 				, count
 				, this->getSize() );
 		}
+
+	protected:
+		/**
+		*\brief
+		*	Crée le tampon GPU.
+		*\param[in] count
+		*	Le nombre d'instance des données.
+		*\param[in] target
+		*	Les indicateurs d'utilisation du tampon.
+		*\param[in] flags
+		*	Les indicateurs de mémoire du tampon.
+		*/
+		void doCreateBuffer( uint32_t count
+			, renderer::BufferTargets target
+			, renderer::MemoryPropertyFlags flags )override;
 	};
 }
 

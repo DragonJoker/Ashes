@@ -80,6 +80,21 @@ namespace renderer
 		}
 
 	protected:
+		/**
+		*\brief
+		*	Crée le tampon GPU.
+		*\param[in] count
+		*	Le nombre d'instance des données.
+		*\param[in] target
+		*	Les indicateurs d'utilisation du tampon.
+		*\param[in] flags
+		*	Les indicateurs de mémoire du tampon.
+		*/
+		virtual void doCreateBuffer( uint32_t count
+			, BufferTargets target
+			, MemoryPropertyFlags flags ) = 0;
+
+	protected:
 		Device const & m_device;
 		uint32_t m_count;
 		uint32_t m_size;

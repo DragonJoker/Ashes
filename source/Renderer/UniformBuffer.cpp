@@ -14,9 +14,6 @@ namespace renderer
 		: m_device{ device }
 		, m_count{ count }
 		, m_size{ size }
-		, m_buffer{ m_device.createBuffer( size * count
-			, target | BufferTarget::eUniformBuffer
-			, flags ) }
 	{
 	}
 }

@@ -152,7 +152,7 @@ void Engine::doInitialise3DElements()
 	m_window = std::make_unique< render::RenderWindow >( *m_device
 		, utils::IVec2{ width, height }
 		, loader
-		, true );
+		, false );
 	m_window->viewport().fovY( utils::Angle{ 45.0_degrees } );
 
 	// Initialise the scene
@@ -176,30 +176,111 @@ void Engine::doInitialise3DElements()
 	//	scene.add( object );
 	//}
 
-	auto texture = scene.textures().findElement( "texture.bmp" );
-
-	if ( !texture )
-	{
-		texture = std::make_shared< render::Texture >( *m_device );
-		render::loadTexture( m_window->getStagingBuffer()
-			, m_window->getDefaultResources().getCommandBuffer()
-			, utils::getFileBinaryContent( "texture.bmp" )
-			, *texture );
-		scene.textures().addElement( "texture.bmp", texture );
-	}
-
-	auto opacity = scene.textures().findElement( "halo.bmp" );
-
-	if ( !opacity )
-	{
-		opacity = std::make_shared< render::Texture >( *m_device );
-		render::loadTexture( m_window->getStagingBuffer()
-			, m_window->getDefaultResources().getCommandBuffer()
-			, utils::getFileBinaryContent( "halo.bmp" )
-			, *opacity );
-		scene.textures().addElement( "halo.bmp", opacity );
-	}
-
+//	auto texture = scene.textures().findElement( "texture.bmp" );
+//
+//	if ( !texture )
+//	{
+//		texture = std::make_shared< render::Texture >( *m_device );
+//		render::loadTexture( m_window->getStagingBuffer()
+//			, m_window->getDefaultResources().getCommandBuffer()
+//			, utils::getFileBinaryContent( "texture.bmp" )
+//			, *texture );
+//		scene.textures().addElement( "texture.bmp", texture );
+//	}
+//
+//	auto opacity = scene.textures().findElement( "halo.bmp" );
+//
+//	if ( !opacity )
+//	{
+//		opacity = std::make_shared< render::Texture >( *m_device );
+//		render::loadTexture( m_window->getStagingBuffer()
+//			, m_window->getDefaultResources().getCommandBuffer()
+//			, utils::getFileBinaryContent( "halo.bmp" )
+//			, *opacity );
+//		scene.textures().addElement( "halo.bmp", opacity );
+//	}
+///*
+//	auto pickedMat = std::make_shared< render::Material >();
+//	pickedMat->opacityMap( opacity );
+//	pickedMat->ambient( renderer::RgbColour{ 0.0, 0.0, 0.5 } );
+//	pickedMat->diffuse( renderer::RgbColour{ 0.0, 0.0, 0.5 } );
+//	scene.materials().addElement( "picked", pickedMat );
+//
+//	auto pickedBuffers = std::make_shared< render::BillboardBuffer >( *m_device
+//		, false );
+//	pickedBuffers->add( { -1000.0f, utils::Vec3{ 0, 0, 0 }, utils::Vec2{ 1, 1 } } );
+//	scene.addBillboardBuffer( "picked", pickedBuffers );
+//	m_picked = std::make_shared< render::Billboard >( "picked", *pickedBuffers );
+//	m_picked->material( pickedMat );
+//	m_picked->show( false );
+//	scene.add( m_picked );
+//*/
+//	auto billboardMat = std::make_shared< render::Material >();
+//	billboardMat->diffuseMap( texture );
+//	//billboardMat->opacityMap( opacity );
+//	billboardMat->ambient( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
+//	billboardMat->diffuse( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
+//	billboardMat->emissive( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
+//	scene.materials().addElement( "billboard", billboardMat );
+//	auto billboardBuffers = std::make_shared< render::BillboardBuffer >( *m_device
+//		, false );
+//	billboardBuffers->add( { -100.0f, utils::Vec3{ 1, 0, 0 }, utils::Vec2{ 1, 1 } } );
+//	//billboardBuffers->add( { -100.0f, utils::Vec3{ 0, 1, 0 }, utils::Vec2{ 1, 0.5 } } );
+//	//billboardBuffers->add( { -100.0f, utils::Vec3{ -1, 0, 0 }, utils::Vec2{ 0.5, 1 } } );
+//	//billboardBuffers->add( { -100.0f, utils::Vec3{ 0, -1, 0 }, utils::Vec2{ 1.5, 1.5 } } );
+//	scene.addBillboardBuffer( "billboard", billboardBuffers );
+//	auto billboard = std::make_shared< render::Billboard >( "billboard", *billboardBuffers );
+//	billboard->dimensions( utils::IVec2{ 1, 1 } );
+//	billboard->moveTo( utils::Vec3{ 0, 0, 50 } );
+//	billboard->scale( utils::Vec3{ 1.5, 1.5, 1.5 } );
+//	billboard->material( billboardMat );
+//	scene.add( billboard );
+///*
+//	auto starsMat = std::make_shared< render::Material >();
+//	starsMat->opacityMap( opacity );
+//	starsMat->ambient( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
+//	starsMat->diffuse( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
+//	starsMat->emissive( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
+//	starsMat->alphaTest( true );
+//	scene.materials().addElement( "stars", starsMat );
+//	auto halosMat = std::make_shared< render::Material >();
+//	halosMat->opacityMap( opacity );
+//	halosMat->ambient( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
+//	halosMat->diffuse( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
+//	halosMat->emissive( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
+//	scene.materials().addElement( "halos", halosMat );
+//	auto starsBuffers = std::make_shared< render::BillboardBuffer >( *m_device
+//		, false );
+//	starsBuffers->add( { 50.0f, utils::Vec3{ -1, 1, 0 }, utils::Vec2{ 1, 1 } } );
+//	starsBuffers->add( { 50.0f, utils::Vec3{ 1, 1, 0 }, utils::Vec2{ 1, 0.5 } } );
+//	starsBuffers->add( { 50.0f, utils::Vec3{ 1, -1, 0 }, utils::Vec2{ 0.5, 1 } } );
+//	starsBuffers->add( { 50.0f, utils::Vec3{ -1, -1, 0 }, utils::Vec2{ 1.5, 1.5 } } );
+//	scene.addBillboardBuffer( "stars", starsBuffers );
+//	auto stars = std::make_shared< render::Billboard >( "stars", *starsBuffers );
+//	stars->dimensions( utils::IVec2{ 1, 1 } );
+//	stars->moveTo( utils::Vec3{ 0, 0, 50 } );
+//	stars->material( starsMat );
+//	scene.add( stars );
+//	auto halos = std::make_shared< render::Billboard >( "halos", *starsBuffers );
+//	halos->dimensions( utils::IVec2{ 2, 2 } );
+//	halos->moveTo( utils::Vec3{ 0, 0, 50 } );
+//	halos->material( halosMat );
+//	scene.add( halos );
+//
+//	auto linesMat = std::make_shared< render::Material >();
+//	linesMat->ambient( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
+//	linesMat->diffuse( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
+//	linesMat->emissive( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
+//	scene.materials().addElement( "lines", linesMat );
+//	auto lines = std::make_shared< render::PolyLine >( "lines" );
+//	lines->add( { utils::Vec3{ -1, 1, 0 }, utils::Vec3{ 1, 1, 0 } } );
+//	lines->add( { utils::Vec3{ 1, 1, 0 }, utils::Vec3{ 1, -1, 0 } } );
+//	lines->add( { utils::Vec3{ 1, -1, 0 }, utils::Vec3{ -1, -1, 0 } } );
+//	lines->add( { utils::Vec3{ -1, -1, 0 }, utils::Vec3{ -1, 1, 0 } } );
+//	lines->moveTo( utils::Vec3{ 0, 0, 50 } );
+//	lines->material( linesMat );
+//	scene.add( lines );
+//*/
 	{
 		auto content = utils::getFileBinaryContent( "arial.ttf" );
 		render::FontPtr font = std::make_unique< render::Font >( "Arial", 32u );
@@ -210,88 +291,6 @@ void Engine::doInitialise3DElements()
 			, m_window->getDefaultResources().getCommandBuffer()
 			, std::move( font ) );
 	}
-/*
-	auto pickedMat = std::make_shared< render::Material >();
-	pickedMat->opacityMap( opacity );
-	pickedMat->ambient( renderer::RgbColour{ 0.0, 0.0, 0.5 } );
-	pickedMat->diffuse( renderer::RgbColour{ 0.0, 0.0, 0.5 } );
-	scene.materials().addElement( "picked", pickedMat );
-
-	auto pickedBuffers = std::make_shared< render::BillboardBuffer >( *m_device
-		, false );
-	pickedBuffers->add( { -1000.0f, utils::Vec3{ 0, 0, 0 }, utils::Vec2{ 1, 1 } } );
-	scene.addBillboardBuffer( "picked", pickedBuffers );
-	m_picked = std::make_shared< render::Billboard >( "picked", *pickedBuffers );
-	m_picked->material( pickedMat );
-	m_picked->show( false );
-	scene.add( m_picked );
-*/
-	auto billboardMat = std::make_shared< render::Material >();
-	billboardMat->diffuseMap( texture );
-	//billboardMat->opacityMap( opacity );
-	billboardMat->ambient( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
-	billboardMat->diffuse( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
-	billboardMat->emissive( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
-	scene.materials().addElement( "billboard", billboardMat );
-	auto billboardBuffers = std::make_shared< render::BillboardBuffer >( *m_device
-		, false );
-	billboardBuffers->add( { -100.0f, utils::Vec3{ 1, 0, 0 }, utils::Vec2{ 1, 1 } } );
-	//billboardBuffers->add( { -100.0f, utils::Vec3{ 0, 1, 0 }, utils::Vec2{ 1, 0.5 } } );
-	//billboardBuffers->add( { -100.0f, utils::Vec3{ -1, 0, 0 }, utils::Vec2{ 0.5, 1 } } );
-	//billboardBuffers->add( { -100.0f, utils::Vec3{ 0, -1, 0 }, utils::Vec2{ 1.5, 1.5 } } );
-	scene.addBillboardBuffer( "billboard", billboardBuffers );
-	auto billboard = std::make_shared< render::Billboard >( "billboard", *billboardBuffers );
-	billboard->dimensions( utils::IVec2{ 1, 1 } );
-	billboard->moveTo( utils::Vec3{ 0, 0, 50 } );
-	billboard->scale( utils::Vec3{ 1.5, 1.5, 1.5 } );
-	billboard->material( billboardMat );
-	scene.add( billboard );
-/*
-	auto starsMat = std::make_shared< render::Material >();
-	starsMat->opacityMap( opacity );
-	starsMat->ambient( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
-	starsMat->diffuse( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
-	starsMat->emissive( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
-	starsMat->alphaTest( true );
-	scene.materials().addElement( "stars", starsMat );
-	auto halosMat = std::make_shared< render::Material >();
-	halosMat->opacityMap( opacity );
-	halosMat->ambient( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
-	halosMat->diffuse( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
-	halosMat->emissive( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
-	scene.materials().addElement( "halos", halosMat );
-	auto starsBuffers = std::make_shared< render::BillboardBuffer >( *m_device
-		, false );
-	starsBuffers->add( { 50.0f, utils::Vec3{ -1, 1, 0 }, utils::Vec2{ 1, 1 } } );
-	starsBuffers->add( { 50.0f, utils::Vec3{ 1, 1, 0 }, utils::Vec2{ 1, 0.5 } } );
-	starsBuffers->add( { 50.0f, utils::Vec3{ 1, -1, 0 }, utils::Vec2{ 0.5, 1 } } );
-	starsBuffers->add( { 50.0f, utils::Vec3{ -1, -1, 0 }, utils::Vec2{ 1.5, 1.5 } } );
-	scene.addBillboardBuffer( "stars", starsBuffers );
-	auto stars = std::make_shared< render::Billboard >( "stars", *starsBuffers );
-	stars->dimensions( utils::IVec2{ 1, 1 } );
-	stars->moveTo( utils::Vec3{ 0, 0, 50 } );
-	stars->material( starsMat );
-	scene.add( stars );
-	auto halos = std::make_shared< render::Billboard >( "halos", *starsBuffers );
-	halos->dimensions( utils::IVec2{ 2, 2 } );
-	halos->moveTo( utils::Vec3{ 0, 0, 50 } );
-	halos->material( halosMat );
-	scene.add( halos );
-
-	auto linesMat = std::make_shared< render::Material >();
-	linesMat->ambient( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
-	linesMat->diffuse( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
-	linesMat->emissive( renderer::RgbColour{ 1.0, 1.0, 0.5 } );
-	scene.materials().addElement( "lines", linesMat );
-	auto lines = std::make_shared< render::PolyLine >( "lines" );
-	lines->add( { utils::Vec3{ -1, 1, 0 }, utils::Vec3{ 1, 1, 0 } } );
-	lines->add( { utils::Vec3{ 1, 1, 0 }, utils::Vec3{ 1, -1, 0 } } );
-	lines->add( { utils::Vec3{ 1, -1, 0 }, utils::Vec3{ -1, -1, 0 } } );
-	lines->add( { utils::Vec3{ -1, -1, 0 }, utils::Vec3{ -1, 1, 0 } } );
-	lines->moveTo( utils::Vec3{ 0, 0, 50 } );
-	lines->material( linesMat );
-	scene.add( lines );
-*/
 	auto coinMat = doCreateOverlayMaterial( "coin", renderer::RgbColour{ 0, 1, 0 }, 1 );
 	auto coin = std::make_shared< render::TextOverlay >();
 	coin->position( utils::IVec2{ 200, 200 } );
