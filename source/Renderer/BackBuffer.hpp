@@ -41,11 +41,6 @@ namespace renderer
 		*	Destructeur.
 		*/
 		virtual ~BackBuffer() = default;
-		/**
-		*\return
-		*	La texture du back buffer.
-		*/
-		virtual Texture const & getTexture()const = 0;
 	};
 }
 

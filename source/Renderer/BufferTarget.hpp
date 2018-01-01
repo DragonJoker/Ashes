@@ -16,7 +16,7 @@ namespace renderer
 	*	Masques de bits décrivant les propriétés pour un type de mémoire.
 	*\~english
 	*\brief
-	*	Bimask specifying properties for a memory type.
+	*	Bitmask specifying properties for a memory type.
 	*/
 	enum class BufferTarget
 		: uint32_t
@@ -29,7 +29,10 @@ namespace renderer
 		eStorageBuffer = 0x00000020,
 		eIndexBuffer = 0x00000040,
 		eVertexBuffer = 0x00000080,
-		eIndirectBuffer = 0x00000100,
+		eDispatchIndirectBuffer = 0x00000100,
+		eDrawIndirectBuffer = 0x00000200,
+		ePackBuffer = 0x00000400,
+		eUnpackBuffer = 0x00000400,
 	};
 	Utils_ImplementFlag( BufferTarget )
 }

@@ -36,7 +36,7 @@ namespace vk_renderer
 		*\return
 		*	La texture du back buffer.
 		*/
-		inline Texture const & getTexture()const override
+		inline Texture const & getTexture()const
 		{
 			return m_texture;
 		}

@@ -26,6 +26,22 @@ namespace render
 
 	namespace
 	{
+		template< typename OvType >
+		struct OverlayFinder
+		{
+			OverlayFinder( OvType const & overlay )
+				: m_overlay{ overlay }
+			{
+			}
+
+			bool operator()( RenderOverlayPtr< OvType > const & lookup )
+			{
+				return lookup->m_overlay.get() == &m_overlay;
+			}
+
+			OvType const & m_overlay;
+		};
+
 		std::vector< OverlayPtr > doSortPerZIndex( OverlayList const & overlays
 			, utils::IVec2 const & size )
 		{
@@ -653,10 +669,7 @@ namespace render
 		commandBuffer.setScissor( m_viewport.scissor() );
 		auto it = std::find_if( overlays.m_overlays.begin()
 			, overlays.m_overlays.end()
-			, [&overlay]( RenderOverlayPtr< PanelOverlay > const & lookup )
-			{
-				return lookup->m_overlay.get() == &overlay;
-			} );
+			, OverlayFinder< PanelOverlay >{ overlay } );
 		assert( it != overlays.m_overlays.end() );
 		doDrawBuffer( commandBuffer
 			, *overlays.m_buffer
@@ -679,10 +692,7 @@ namespace render
 		auto & panelOverlays = m_borderOverlaysPanels[nodeType];
 		auto itPanel = std::find_if( panelOverlays.m_overlays.begin()
 			, panelOverlays.m_overlays.end()
-			, [&overlay]( RenderOverlayPtr< BorderPanelOverlay > const & lookup )
-			{
-				return lookup->m_overlay.get() == &overlay;
-			} );
+			, OverlayFinder< BorderPanelOverlay >{ overlay } );
 		assert( itPanel != panelOverlays.m_overlays.end() );
 		doDrawBuffer( commandBuffer
 			, *panelOverlays.m_buffer
@@ -690,13 +700,10 @@ namespace render
 			, 1u
 			, node
 			, *( *itPanel )->m_descriptor );
-		auto & borderOverlays = m_borderOverlaysPanels[nodeType];
+		auto & borderOverlays = m_borderOverlaysBorders[nodeType];
 		auto itBorder = std::find_if( borderOverlays.m_overlays.begin()
 			, borderOverlays.m_overlays.end()
-			, [&overlay]( RenderOverlayPtr< BorderPanelOverlay > const & lookup )
-			{
-				return lookup->m_overlay.get() == &overlay;
-			} );
+			, OverlayFinder< BorderPanelOverlay >{ overlay } );
 		assert( itBorder != borderOverlays.m_overlays.end() );
 		doDrawBuffer( commandBuffer
 			, *borderOverlays.m_buffer
@@ -715,32 +722,27 @@ namespace render
 		commandBuffer.bindPipeline( *m_textNode.m_pipeline );
 		commandBuffer.setViewport( m_viewport.viewport() );
 		commandBuffer.setScissor( m_viewport.scissor() );
-		std::vector< RenderOverlayPtr< TextOverlay > >::const_iterator itText;
-		auto itVbo = std::find_if( m_textOverlays.begin()
+		auto it = std::find_if( m_textOverlays.begin()
 			, m_textOverlays.end()
-			, [&overlay, &itText]( TextOverlayVbo const & vboLookup )
+			, [&overlay, &commandBuffer, count, this]( TextOverlayVbo const & vboLookup )
 			{
-				auto it = std::find_if( vboLookup.m_overlays.begin()
+				auto itText = std::find_if( vboLookup.m_overlays.begin()
 					, vboLookup.m_overlays.end()
-					, [&overlay]( RenderOverlayPtr< TextOverlay > const & lookup )
-					{
-						return lookup->m_overlay.get() == &overlay;
-					} );
+					, OverlayFinder< TextOverlay >{ overlay } );
 
-				if ( it != vboLookup.m_overlays.end() )
+				if ( itText != vboLookup.m_overlays.end() )
 				{
-					itText = it;
+					doDrawBuffer( commandBuffer
+						, *vboLookup.m_buffer
+						, ( *itText )->m_index * m_maxCharsPerBuffer
+						, std::min( count, m_maxCharsPerBuffer )
+						, m_textNode
+						, *( *itText )->m_descriptor );
 				}
 
-				return it != vboLookup.m_overlays.end();
+				return itText != vboLookup.m_overlays.end();
 			} );
-		assert( itVbo != m_textOverlays.end() );
-		doDrawBuffer( commandBuffer
-			, *itVbo->m_buffer
-			, ( *itText )->m_index * m_maxCharsPerBuffer
-			, std::min( count, m_maxCharsPerBuffer )
-			, m_textNode
-			, *( *itText )->m_descriptor );
+		assert( it != m_textOverlays.end() );
 	}
 
 	void OverlayRenderer::doDrawBuffer( renderer::CommandBuffer const & commandBuffer
@@ -751,7 +753,7 @@ namespace render
 		, renderer::DescriptorSet const & descriptor )const
 	{
 		commandBuffer.bindVertexBuffer( buffer
-			, offset );
+			, offset * sizeof( Overlay::Quad ) );
 		commandBuffer.bindDescriptorSet( descriptor
 			, *node.m_pipelineLayout );
 		commandBuffer.draw( count * 6u
@@ -768,7 +770,7 @@ namespace render
 		, renderer::DescriptorSet const & descriptor )const
 	{
 		commandBuffer.bindVertexBuffer( buffer
-			, offset );
+			, offset * sizeof( BorderPanelOverlay::BorderQuads ) );
 		commandBuffer.bindDescriptorSet( descriptor
 			, *node.m_pipelineLayout );
 		commandBuffer.draw( count * 6u * 8u

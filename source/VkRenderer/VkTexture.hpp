@@ -61,31 +61,6 @@ namespace vk_renderer
 		void generateMipmaps()const override;
 		/**
 		*\brief
-		*	Mappe la mémoire du tampon en RAM.
-		*\param[in] offset
-		*	L'offset à partir duquel la mémoire du tampon est mappée.
-		*\param[in] size
-		*	La taille en octets de la mémoire à mapper.
-		*\param[in] flags
-		*	Indicateurs de configuration du mapping.
-		*\return
-		*	\p nullptr si le mapping a échoué.
-		*/
-		renderer::Texture::Mapped lock( uint32_t offset
-			, uint32_t size
-			, renderer::MemoryMapFlags flags )const override;
-		/**
-		*\brief
-		*	Unmappe la mémoire du tampon de la RAM.
-		*\param[in] size
-		*	La taille en octets de la mémoire mappée.
-		*\param[in] modified
-		*	Dit si le tampon a été modifié, et donc si la VRAM doit être mise à jour.
-		*/
-		void unlock( uint32_t size
-			, bool modified )const override;
-		/**
-		*\brief
 		*	Active la texture.
 		*\param[in] unit
 		*	L'indice de l'unité sur laquelle la texture doit être activée.
@@ -153,13 +128,6 @@ namespace vk_renderer
 		*	La barrière mémoire.
 		*/
 		renderer::ImageMemoryBarrier makeDepthStencilAttachment()const override;
-		/**
-		*\brief
-		*	Prépare une barrière mémoire de transition vers un layout de destination de dessin.
-		*\return
-		*	La barrière mémoire.
-		*/
-		renderer::ImageMemoryBarrier makeDrawDestination()const override;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de source de presentation.

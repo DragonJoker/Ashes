@@ -662,6 +662,13 @@ void main()
 #ifdef OPACITY_MAP
 	pxl_fragColour.a *= [texture2D]( mapOpacity, vtx_texture ).r;
 #endif
+#ifdef ALPHA_TEST
+	if ( pxl_fragColour.a < 0.5 )
+	{
+		discard;
+	}
+	pxl_fragColour.a = 1.0;
+#endif
 	[gl_FragColor] = pxl_fragColour;
 }
 )"

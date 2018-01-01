@@ -67,6 +67,26 @@ namespace renderer
 				, details::FormatGetter< T >::value
 				, offset );
 		}
+		/**
+		*\return
+		*	Le point d'attache du layout.
+		*/
+		inline uint32_t getBindingSlot()const
+		{
+			return m_bindingSlot;
+		}
+		/**
+		*\return
+		*	La taille d'un élément du layout.
+		*/
+		inline uint32_t getStride()const
+		{
+			return m_stride;
+		}
+
+	private:
+		uint32_t m_bindingSlot;
+		uint32_t m_stride;
 	};
 	/**
 	*\brief

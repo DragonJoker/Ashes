@@ -19,20 +19,6 @@ namespace renderer
 	*/
 	class Texture
 	{
-	public:
-		/**
-		*\brief
-		*	Contient les informations d'une image mappée en RAM.
-		*/
-		struct Mapped
-		{
-			uint8_t * data;
-			uint64_t size;
-			uint64_t rowPitch;
-			uint64_t arrayPitch;
-			uint64_t depthPitch;
-		};
-
 	protected:
 		/**
 		*\brief
@@ -86,31 +72,6 @@ namespace renderer
 		*	Génère les mipmaps de la texture.
 		*/
 		virtual void generateMipmaps()const = 0;
-		/**
-		*\brief
-		*	Mappe la mémoire du tampon en RAM.
-		*\param[in] offset
-		*	L'offset à partir duquel la mémoire du tampon est mappée.
-		*\param[in] size
-		*	La taille en octets de la mémoire à mapper.
-		*\param[in] flags
-		*	Indicateurs de configuration du mapping.
-		*\return
-		*	\p nullptr si le mapping a échoué.
-		*/
-		virtual Mapped lock( uint32_t offset
-			, uint32_t size
-			, MemoryMapFlags flags )const = 0;
-		/**
-		*\brief
-		*	Unmappe la mémoire du tampon de la RAM.
-		*\param[in] size
-		*	La taille en octets de la mémoire mappée.
-		*\param[in] modified
-		*	Dit si le tampon a été modifié, et donc si la VRAM doit être mise à jour.
-		*/
-		virtual void unlock( uint32_t size
-			, bool modified )const = 0;
 		/**
 		*\brief
 		*	Active la texture.
@@ -180,13 +141,6 @@ namespace renderer
 		*	La barrière mémoire.
 		*/
 		virtual ImageMemoryBarrier makeDepthStencilAttachment()const = 0;
-		/**
-		*\brief
-		*	Prépare une barrière mémoire de transition vers un layout de destination de dessin.
-		*\return
-		*	La barrière mémoire.
-		*/
-		virtual ImageMemoryBarrier makeDrawDestination()const = 0;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de source de presentation.

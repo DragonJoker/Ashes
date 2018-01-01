@@ -1,6 +1,6 @@
 project( VkRenderer )
 
-option( VKRENDERER_GLSL_TO_SPV "Enable Comping from GLSL to SPIR-V, using glslang and SPIRV libraries" TRUE )
+option( VKRENDERER_GLSL_TO_SPV "Enable Compiling from GLSL to SPIR-V, using glslang and SPIRV libraries" TRUE )
 
 if ( VKRENDERER_GLSL_TO_SPV )
 	set( VKRENDERER_GLSL_TO_SPV 1 )

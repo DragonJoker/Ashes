@@ -12,9 +12,46 @@ namespace renderer
 {
 	/**
 	*\brief
+	*	Attache dans un set descripteur.
+	*/
+	class DescriptorSetBinding
+	{
+	public:
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*/
+		DescriptorSetBinding( DescriptorSetLayoutBinding const & layoutBinding )
+			: m_binding{ layoutBinding }
+		{
+		}
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*/
+		virtual ~DescriptorSetBinding() = default;
+		/**
+		*\return
+		*	L'attache de layout.
+		*/
+		inline DescriptorSetLayoutBinding const & getBinding()const
+		{
+			return m_binding;
+		}
+
+	private:
+		DescriptorSetLayoutBinding const & m_binding;
+	};
+	/**
+	*\brief
 	*	Attache de type sampler + texture.
 	*/
 	class CombinedTextureSamplerBinding
+		: public DescriptorSetBinding
 	{
 	public:
 		/**
@@ -30,18 +67,10 @@ namespace renderer
 		CombinedTextureSamplerBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, Texture const & view
 			, Sampler const & sampler )
-			: m_binding{ layoutBinding }
+			: DescriptorSetBinding{ layoutBinding }
 			, m_view{ view }
 			, m_sampler{ sampler }
 		{
-		}
-		/**
-		*\return
-		*	L'attache.
-		*/
-		inline DescriptorSetLayoutBinding const & getBinding()const
-		{
-			return m_binding;
 		}
 		/**
 		*\return
@@ -61,7 +90,6 @@ namespace renderer
 		}
 
 	private:
-		DescriptorSetLayoutBinding const & m_binding;
 		Texture const & m_view;
 		Sampler const & m_sampler;
 	};
@@ -70,6 +98,7 @@ namespace renderer
 	*	Attache de type texture échantillonnée.
 	*/
 	class SampledTextureBinding
+		: public DescriptorSetBinding
 	{
 	public:
 		/**
@@ -82,17 +111,9 @@ namespace renderer
 		*/
 		SampledTextureBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, Texture const & view )
-			: m_binding{ layoutBinding }
+			: DescriptorSetBinding{ layoutBinding }
 			, m_view{ view }
 		{
-		}
-		/**
-		*\return
-		*	L'attache.
-		*/
-		inline DescriptorSetLayoutBinding const & getBinding()const
-		{
-			return m_binding;
 		}
 		/**
 		*\return
@@ -104,7 +125,6 @@ namespace renderer
 		}
 
 	private:
-		DescriptorSetLayoutBinding const & m_binding;
 		Texture const & m_view;
 	};
 	/**
@@ -112,6 +132,7 @@ namespace renderer
 	*	Attache de type tampon de variables uniformes.
 	*/
 	class UniformBufferBinding
+		: public DescriptorSetBinding
 	{
 	public:
 		/**
@@ -127,18 +148,10 @@ namespace renderer
 		UniformBufferBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, UniformBufferBase const & uniformBuffer
 			, uint32_t offset )
-			: m_binding{ layoutBinding }
+			: DescriptorSetBinding{ layoutBinding }
 			, m_uniformBuffer{ uniformBuffer }
 			, m_offset{ offset }
 		{
-		}
-		/**
-		*\return
-		*	L'attache.
-		*/
-		inline DescriptorSetLayoutBinding const & getBinding()const
-		{
-			return m_binding;
 		}
 		/**
 		*\return
@@ -158,7 +171,6 @@ namespace renderer
 		}
 
 	private:
-		DescriptorSetLayoutBinding const & m_binding;
 		UniformBufferBase const & m_uniformBuffer;
 		uint32_t m_offset;
 	};

@@ -45,6 +45,14 @@ namespace renderer
 		*	Destructeur.
 		*/
 		virtual ~Connection() = default;
+		/**
+		*\return
+		*	Le descripteur de la fenêtre.
+		*/
+		WindowHandle const & getHandle()const
+		{
+			return m_handle;
+		}
 
 	protected:
 		WindowHandle m_handle;

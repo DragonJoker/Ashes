@@ -55,7 +55,7 @@ namespace renderer
 			return m_size;
 		}
 
-	private:
+	protected:
 		Device const & m_device;
 		uint32_t m_size;
 	};

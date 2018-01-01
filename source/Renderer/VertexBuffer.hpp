@@ -92,17 +92,6 @@ namespace renderer
 		{
 			return m_buffer->getSize() / sizeof( T );
 		}
-		/**
-		*\return
-		*	Le tampon GPU.
-		*/
-		inline VertexBufferBase const & getVbo()const
-		{
-			return *m_vbo;
-		}
-
-	private:
-		VertexBufferBasePtr m_vbo;
 	};
 	/**
 	*\brief

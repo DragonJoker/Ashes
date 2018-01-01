@@ -16,7 +16,7 @@ namespace renderer
 	*	Masques de bits décrivant les propriétés pour un type de mémoire.
 	*\~english
 	*\brief
-	*	Bimask specifying properties for a memory type.
+	*	Bitmask specifying properties for a memory type.
 	*/
 	enum class DescriptorType
 		: uint32_t

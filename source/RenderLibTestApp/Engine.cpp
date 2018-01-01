@@ -176,29 +176,29 @@ void Engine::doInitialise3DElements()
 	//	scene.add( object );
 	//}
 
-//	auto texture = scene.textures().findElement( "texture.bmp" );
-//
-//	if ( !texture )
-//	{
-//		texture = std::make_shared< render::Texture >( *m_device );
-//		render::loadTexture( m_window->getStagingBuffer()
-//			, m_window->getDefaultResources().getCommandBuffer()
-//			, utils::getFileBinaryContent( "texture.bmp" )
-//			, *texture );
-//		scene.textures().addElement( "texture.bmp", texture );
-//	}
-//
-//	auto opacity = scene.textures().findElement( "halo.bmp" );
-//
-//	if ( !opacity )
-//	{
-//		opacity = std::make_shared< render::Texture >( *m_device );
-//		render::loadTexture( m_window->getStagingBuffer()
-//			, m_window->getDefaultResources().getCommandBuffer()
-//			, utils::getFileBinaryContent( "halo.bmp" )
-//			, *opacity );
-//		scene.textures().addElement( "halo.bmp", opacity );
-//	}
+	auto texture = scene.textures().findElement( "texture.bmp" );
+
+	if ( !texture )
+	{
+		texture = std::make_shared< render::Texture >( *m_device );
+		render::loadTexture( m_window->getStagingBuffer()
+			, m_window->getDefaultResources().getCommandBuffer()
+			, utils::getFileBinaryContent( "texture.bmp" )
+			, *texture );
+		scene.textures().addElement( "texture.bmp", texture );
+	}
+
+	auto opacity = scene.textures().findElement( "halo.bmp" );
+
+	if ( !opacity )
+	{
+		opacity = std::make_shared< render::Texture >( *m_device );
+		render::loadTexture( m_window->getStagingBuffer()
+			, m_window->getDefaultResources().getCommandBuffer()
+			, utils::getFileBinaryContent( "halo.bmp" )
+			, *opacity );
+		scene.textures().addElement( "halo.bmp", opacity );
+	}
 ///*
 //	auto pickedMat = std::make_shared< render::Material >();
 //	pickedMat->opacityMap( opacity );
@@ -281,47 +281,70 @@ void Engine::doInitialise3DElements()
 //	lines->material( linesMat );
 //	scene.add( lines );
 //*/
-	{
-		auto content = utils::getFileBinaryContent( "arial.ttf" );
-		render::FontPtr font = std::make_unique< render::Font >( "Arial", 32u );
-		utils::FontLoader loader{ "arial.ttf" };
-		render::loadFont( loader, *font );
-		m_fontTexture = std::make_unique< render::FontTexture >( *m_device
-			, m_window->getStagingBuffer()
-			, m_window->getDefaultResources().getCommandBuffer()
-			, std::move( font ) );
-	}
-	auto coinMat = doCreateOverlayMaterial( "coin", renderer::RgbColour{ 0, 1, 0 }, 1 );
-	auto coin = std::make_shared< render::TextOverlay >();
-	coin->position( utils::IVec2{ 200, 200 } );
-	coin->material( coinMat );
-	coin->caption( "coin !!" );
-	coin->fontTexture( *m_fontTexture );
-	scene.addOverlay( "coin", coin );
+	//{
+	//	auto content = utils::getFileBinaryContent( "arial.ttf" );
+	//	render::FontPtr font = std::make_unique< render::Font >( "Arial", 32u );
+	//	utils::FontLoader loader{ "arial.ttf" };
+	//	render::loadFont( loader, *font );
+	//	m_fontTexture = std::make_unique< render::FontTexture >( *m_device
+	//		, m_window->getStagingBuffer()
+	//		, m_window->getDefaultResources().getCommandBuffer()
+	//		, std::move( font ) );
+	//}
+	//auto coinMat = doCreateOverlayMaterial( "coin", renderer::RgbColour{ 0, 1, 0 }, 1 );
+	//auto coin = std::make_shared< render::TextOverlay >();
+	//coin->position( utils::IVec2{ 200, 200 } );
+	//coin->material( coinMat );
+	//coin->caption( "coin !!" );
+	//coin->fontTexture( *m_fontTexture );
+	//scene.addOverlay( "coin", coin );
 
-	auto glopMat = doCreateOverlayMaterial( "glop", renderer::RgbColour{ 1, 0, 0 }, 1 );
-	auto glop = std::make_shared< render::TextOverlay >();
-	glop->position( utils::IVec2{ 400, 200 } );
-	glop->material( glopMat );
-	glop->caption( "glop !" );
-	glop->fontTexture( *m_fontTexture );
-	scene.addOverlay( "glop", glop );
+	//auto glopMat = doCreateOverlayMaterial( "glop", renderer::RgbColour{ 1, 0, 0 }, 1 );
+	//auto glop = std::make_shared< render::TextOverlay >();
+	//glop->position( utils::IVec2{ 400, 300 } );
+	//glop->material( glopMat );
+	//glop->caption( "glop !" );
+	//glop->fontTexture( *m_fontTexture );
+	//scene.addOverlay( "glop", glop );
 
 	//auto miaouMat = doCreateOverlayMaterial( "miaou", renderer::RgbColour{ 0, 1, 0 }, 1.0 );
+	//miaouMat->alphaTest( true );
 	//miaouMat->diffuseMap( texture );
+	//miaouMat->opacityMap( opacity );
 	//auto miaou = std::make_shared< render::PanelOverlay >();
 	//miaou->position( utils::IVec2{ 100, 100 } );
 	//miaou->size( utils::IVec2{ 200, 200 } );
 	//miaou->material( miaouMat );
 	//scene.addOverlay( "miaou", miaou );
 
-	//auto bizuizuiMat = doCreateOverlayMaterial( "bizuizui", renderer::RgbColour{ 0, 1, 0 }, 1.0 );
+	//auto bizuizuiMat = doCreateOverlayMaterial( "bizuizui", renderer::RgbColour{ 0, 0, 1 }, 1.0 );
 	//bizuizuiMat->diffuseMap( texture );
+	//bizuizuiMat->opacityMap( opacity );
 	//auto bizuizui = std::make_shared< render::PanelOverlay >();
 	//bizuizui->position( utils::IVec2{ 400, 100 } );
 	//bizuizui->size( utils::IVec2{ 200, 200 } );
 	//bizuizui->material( bizuizuiMat );
 	//scene.addOverlay( "bizuizui", bizuizui );
+
+	auto trucPanelMat = doCreateOverlayMaterial( "trucPanel", renderer::RgbColour{ 0, 0, 1 }, 1.0 );
+	auto trucBorderMat = doCreateOverlayMaterial( "trucBorder", renderer::RgbColour{ 1, 0, 1 }, 1.0 );
+	auto truc = std::make_shared< render::BorderPanelOverlay >();
+	truc->position( utils::IVec2{ 700, 100 } );
+	truc->size( utils::IVec2{ 200, 200 } );
+	truc->borderSize( utils::IVec4{ 20, 20, 20, 20 } );
+	truc->material( trucPanelMat );
+	truc->borderMaterial( trucBorderMat );
+	scene.addOverlay( "truc", truc );
+
+	auto bidulePanelMat = doCreateOverlayMaterial( "bidulePanel", renderer::RgbColour{ 0, 1, 1 }, 1.0 );
+	auto biduleBorderMat = doCreateOverlayMaterial( "biduleBorder", renderer::RgbColour{ 1, 1, 0 }, 1.0 );
+	auto bidule = std::make_shared< render::BorderPanelOverlay >();
+	bidule->position( utils::IVec2{ 1000, 100 } );
+	bidule->size( utils::IVec2{ 200, 200 } );
+	bidule->borderSize( utils::IVec4{ 20, 20, 20, 20 } );
+	bidule->material( bidulePanelMat );
+	bidule->borderMaterial( biduleBorderMat );
+	scene.addOverlay( "bidule", bidule );
 
 	//m_onObjectPicked = m_window->picking().onObjectPicked.connect
 	//	( std::bind( &Engine::onObjectPicked

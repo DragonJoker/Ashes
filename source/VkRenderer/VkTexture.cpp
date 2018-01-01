@@ -13,18 +13,6 @@ namespace vk_renderer
 {
 	namespace
 	{
-		renderer::Texture::Mapped doConvert( vk::Image::Mapped const & mapped )
-		{
-			return Texture::Mapped
-			{
-				mapped.data,
-				mapped.size,
-				mapped.rowPitch,
-				mapped.arrayPitch,
-				mapped.depthPitch,
-			};
-		}
-
 		renderer::ImageMemoryBarrier doConvert( Texture const & texture
 			, VkImageMemoryBarrier const & barrier )
 		{
@@ -75,20 +63,6 @@ namespace vk_renderer
 		//m_texture->bind( 0 );
 		//m_texture->generateMipmaps();
 		//m_texture->unbind( 0 );
-	}
-
-	renderer::Texture::Mapped Texture::lock( uint32_t offset
-		, uint32_t size
-		, renderer::MemoryMapFlags flags )const
-	{
-		return doConvert( m_nonOwnedTexture->lock( offset
-			, size
-			, flags ) );
-	}
-
-	void Texture::unlock( uint32_t size
-		, bool modified )const
-	{
 	}
 
 	void Texture::bindAsShaderInput( renderer::CommandBuffer const & commandBuffer
@@ -149,12 +123,6 @@ namespace vk_renderer
 	{
 		assert( m_nonOwnedTexture );
 		return doConvert( *this, m_nonOwnedTexture->makeDepthStencilAttachment() );
-	}
-
-	renderer::ImageMemoryBarrier Texture::makeDrawDestination()const
-	{
-		assert( m_nonOwnedTexture );
-		return doConvert( *this, m_nonOwnedTexture->makeDrawDestination() );
 	}
 
 	renderer::ImageMemoryBarrier Texture::makePresentSource()const

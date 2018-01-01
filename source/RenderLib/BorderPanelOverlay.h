@@ -244,7 +244,7 @@ namespace render
 		//! La taille de la bordure.
 		utils::IVec4 m_borderSize;
 		//! Le nom du matériau de la bordure.
-		BorderPosition m_borderPosition;
+		BorderPosition m_borderPosition{ BorderPosition::eMiddle };
 		//! Les données du tampon de sommets.
 		Quad m_panelQuad;
 		//! Les données du tampon de sommets pour la bordure.
