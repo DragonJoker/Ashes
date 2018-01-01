@@ -71,6 +71,7 @@ include_directories(
 add_subdirectory( FreeType )
 add_subdirectory( Utils )
 add_subdirectory( Renderer )
+add_subdirectory( GlRenderer )
 add_subdirectory( VkRenderer )
 add_subdirectory( RenderLib )
 

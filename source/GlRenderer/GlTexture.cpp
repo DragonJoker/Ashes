@@ -1,0 +1,264 @@
+#include "GlTexture.hpp"
+
+#include "GlCommandBuffer.hpp"
+#include "GlDevice.hpp"
+#include "GlImageMemoryBarrier.hpp"
+#include "GlRenderingResources.hpp"
+#include "GlStagingBuffer.hpp"
+
+namespace gl_renderer
+{
+	namespace details
+	{
+		GLenum getFormat( utils::PixelFormat format )
+		{
+			switch ( format )
+			{
+			case utils::PixelFormat::eL8:
+				return GL_RED;
+
+			case utils::PixelFormat::eL8A8:
+				return GL_RG;
+
+			case utils::PixelFormat::eR8G8B8:
+				return GL_RGB;
+
+			case utils::PixelFormat::eRGB565:
+				return GL_RGB;
+
+			case utils::PixelFormat::eR8G8B8A8:
+				return GL_RGBA;
+
+			case utils::PixelFormat::eB8G8R8A8:
+				return GL_BGRA;
+
+			case utils::PixelFormat::eRGBA5551:
+				return GL_RGBA;
+
+			case utils::PixelFormat::eRGBA4444:
+				return GL_RGBA;
+
+			case utils::PixelFormat::eD16:
+				return GL_DEPTH;
+
+			case utils::PixelFormat::eD24S8:
+				return GL_DEPTH_STENCIL;
+
+			case utils::PixelFormat::eS8:
+				return GL_STENCIL;
+
+			default:
+				assert( false && "Unsupported pixel format." );
+				return GL_RGBA8;
+			}
+		}
+
+		GLenum getType( utils::PixelFormat format )
+		{
+			switch ( format )
+			{
+			case utils::PixelFormat::eL8:
+				return GL_UNSIGNED_BYTE;
+
+			case utils::PixelFormat::eL8A8:
+				return GL_UNSIGNED_BYTE;
+
+			case utils::PixelFormat::eR8G8B8:
+				return GL_UNSIGNED_BYTE;
+
+			case utils::PixelFormat::eRGB565:
+				return GL_UNSIGNED_SHORT_5_6_5;
+
+			case utils::PixelFormat::eR8G8B8A8:
+				return GL_UNSIGNED_BYTE;
+
+			case utils::PixelFormat::eB8G8R8A8:
+				return GL_UNSIGNED_BYTE;
+
+			case utils::PixelFormat::eRGBA5551:
+				return GL_UNSIGNED_SHORT_5_5_5_1;
+
+			case utils::PixelFormat::eRGBA4444:
+				return GL_UNSIGNED_SHORT_4_4_4_4;
+
+			case utils::PixelFormat::eD16:
+				return GL_UNSIGNED_SHORT;
+
+			case utils::PixelFormat::eD24S8:
+				return GL_UNSIGNED_INT_24_8;
+
+			case utils::PixelFormat::eS8:
+				return GL_UNSIGNED_BYTE;
+
+			default:
+				assert( false && "Unsupported pixel format." );
+				return GL_RGBA8;
+			}
+		}
+
+		renderer::ImageAspectFlags getAspectFlag( utils::PixelFormat format )
+		{
+			switch ( format )
+			{
+			case utils::PixelFormat::eL8:
+			case utils::PixelFormat::eL8A8:
+			case utils::PixelFormat::eR8G8B8:
+			case utils::PixelFormat::eRGB565:
+			case utils::PixelFormat::eR8G8B8A8:
+			case utils::PixelFormat::eB8G8R8A8:
+			case utils::PixelFormat::eRGBA5551:
+			case utils::PixelFormat::eRGBA4444:
+				return renderer::ImageAspectFlag::eColour;
+
+			case utils::PixelFormat::eD16:
+				return renderer::ImageAspectFlag::eDepth;
+
+			case utils::PixelFormat::eD24S8:
+				return renderer::ImageAspectFlag::eDepth | renderer::ImageAspectFlag::eStencil;
+
+			case utils::PixelFormat::eS8:
+				return renderer::ImageAspectFlag::eStencil;
+
+			default:
+				assert( false && "Unsupported pixel format." );
+				return renderer::ImageAspectFlag::eColour;
+			}
+		}
+	}
+
+	Texture::Texture( renderer::Device const & device )
+		: renderer::Texture{ device }
+	{
+		glGenTextures( 1, &m_texture );
+	}
+
+	Texture::~Texture()
+	{
+		glDeleteTextures( 1, &m_texture );
+	}
+
+	void Texture::setImage( utils::PixelFormat format
+		, utils::IVec2 const & size
+		, renderer::ImageUsageFlags usageFlags
+		, renderer::ImageTiling tiling )
+	{
+		m_format = format;
+		m_size = size;
+		glTexImage2D( GL_TEXTURE_2D
+			, 0
+			, convert( m_format )
+			, m_size.x
+			, m_size.y
+			, 0
+			, details::getFormat( m_format )
+			, details::getType( m_format )
+			, nullptr );
+	}
+
+	void Texture::generateMipmaps()const
+	{
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_2D, m_texture );
+		glGenerateMipmap( GL_TEXTURE_2D );
+		glBindTexture( GL_TEXTURE_2D, 0 );
+	}
+
+	void Texture::bindAsShaderInput( renderer::CommandBuffer const & commandBuffer
+		, uint32_t unit )const
+	{
+		assert( m_texture != GL_INVALID_INDEX );
+		commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
+			, renderer::PipelineStageFlag::eFragmentShader
+			, makeShaderInputResource() );
+	}
+
+	void Texture::bindAsShaderOutput( renderer::CommandBuffer const & commandBuffer
+		, uint32_t unit )const
+	{
+		assert( m_texture != GL_INVALID_INDEX );
+		commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
+			, renderer::PipelineStageFlag::eFragmentShader
+			, makeColourAttachment() );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeGeneralLayout( renderer::AccessFlags accessFlags )const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eGeneral
+			, ~( 0u )
+			, accessFlags );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeTransferDestination()const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eTransferDstOptimal
+			, ~( 0u )
+			, renderer::AccessFlag::eTransferWrite );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeTransferSource()const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eTransferSrcOptimal
+			, ~( 0u )
+			, renderer::AccessFlag::eShaderRead );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeShaderInputResource()const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eShaderReadOnlyOptimal
+			, ~( 0u )
+			, renderer::AccessFlag::eTransferRead );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeDepthStencilReadOnly()const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eDepthStencilReadOnlyOptimal
+			, ~( 0u )
+			, renderer::AccessFlag::eShaderRead );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeColourAttachment()const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eColourAttachmentOptimal
+			, ~( 0u )
+			, renderer::AccessFlag::eColourAttachmentWrite );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeDepthStencilAttachment()const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eDepthStencilAttachmentOptimal
+			, ~( 0u )
+			, renderer::AccessFlag::eColourAttachmentWrite );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makePresentSource()const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::ePresentSrc
+			, ~( 0u )
+			, renderer::AccessFlag::eMemoryRead );
+	}
+
+	renderer::ImageMemoryBarrier Texture::doMakeLayoutTransition( renderer::ImageLayout layout
+		, uint32_t queueFamily
+		, renderer::AccessFlags dstAccessMask )const
+	{
+		// On fait passer le layout de l'image � un autre layout, via une barri�re.
+		return renderer::ImageMemoryBarrier
+		{
+			0u,                                      // srcAccessMask
+			dstAccessMask,                           // dstAccessMask
+			renderer::ImageLayout::eUndefined,       // oldLayout
+			layout,                                  // newLayout
+			~( 0u ),                                 // srcQueueFamilyIndex
+			queueFamily,                             // dstQueueFamilyIndex
+			*this,                                   // image
+			renderer::ImageSubresourceRange          // subresourceRange
+			{
+				details::getAspectFlag( m_format ),
+				0u,
+				1u,
+				0u,
+				1u
+			}
+		};
+	}
+}
