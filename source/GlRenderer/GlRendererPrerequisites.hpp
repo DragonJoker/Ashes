@@ -38,7 +38,15 @@
 
 namespace gl_renderer
 {
+	class CommandBase;
 	class Context;
+	class FrameBuffer;
+	class Pipeline;
+	class RenderPass;
+	class Texture;
 
 	using ContextPtr = std::unique_ptr< Context >;
+	using CommandPtr = std::unique_ptr< CommandBase >;
+
+	using CommandArray = std::vector< CommandPtr >;
 }

@@ -10,13 +10,31 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Convertit un utils::PixelFormat en VkFormat.
+	*	Récupère le format interne OpenGL pour le utils::PixelFormat donné.
 	*\param[in] format
 	*	Le utils::PixelFormat.
 	*\return
-	*	Le VkFormat.
+	*	Le format interne OpenGL.
 	*/
-	GLenum convert( utils::PixelFormat const & format )noexcept;
+	GLenum getInternal( utils::PixelFormat const & format )noexcept;
+	/**
+	*\brief
+	*	Récupère le format OpenGL pour le utils::PixelFormat donné.
+	*\param[in] format
+	*	Le utils::PixelFormat.
+	*\return
+	*	Le format OpenGL.
+	*/
+	GLenum getFormat( utils::PixelFormat format )noexcept;
+	/**
+	*\brief
+	*	Récupère le type de données OpenGL pour le utils::PixelFormat donné.
+	*\param[in] format
+	*	Le utils::PixelFormat.
+	*\return
+	*	Le type de données OpenGL.
+	*/
+	GLenum getType( utils::PixelFormat format )noexcept;
 	/**
 	*\brief
 	*	Convertit un VkFormat en utils::PixelFormat.

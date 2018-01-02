@@ -23,4 +23,18 @@ namespace vk_renderer
 			barrier.getSize()
 		};
 	}
+
+	renderer::BufferMemoryBarrier convert( BufferBase const & bufferBase, VkBufferMemoryBarrier const & barrier )
+	{
+		return renderer::BufferMemoryBarrier
+		{
+			convertAccessFlags( barrier.srcAccessMask ),
+			convertAccessFlags( barrier.dstAccessMask ),
+			barrier.srcQueueFamilyIndex,
+			barrier.dstQueueFamilyIndex,
+			bufferBase,
+			barrier.offset,
+			barrier.size
+		};
+	}
 }

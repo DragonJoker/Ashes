@@ -187,4 +187,9 @@ namespace gl_renderer
 	{
 		glFinish();
 	}
+
+	void Device::swapBuffers()const
+	{
+		m_context->swapBuffers();
+	}
 }

@@ -56,12 +56,12 @@ namespace renderer
 		*\return
 		*	\p WaitResult::eSuccess ou \p WaitResult::eTimeOut en cas de succès.
 		*/ 
-		virtual WaitResult wait( uint32_t timeout ) = 0;
+		virtual WaitResult wait( uint32_t timeout )const = 0;
 		/**
 		*\brief
 		*	Remet la barrière en non signalée.
 		*/ 
-		virtual void reset() = 0;
+		virtual void reset()const = 0;
 	};
 }
 

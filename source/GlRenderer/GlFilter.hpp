@@ -17,4 +17,15 @@ namespace gl_renderer
 	*	Le VkFilter.
 	*/
 	GLenum convert( renderer::Filter const & filter );
+	/**
+	*\brief
+	*	Convertit un renderer::Filter en VkFilter, en tenant compte d'un mode de mipmapping.
+	*\param[in] filter
+	*	Le renderer::Filter.
+	*\param[in] mode
+	*	Le mode de mipmapping.
+	*\return
+	*	Le VkFilter.
+	*/
+	GLenum convert( renderer::Filter const & filter, renderer::MipmapMode mode );
 }

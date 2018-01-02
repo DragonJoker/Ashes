@@ -9,51 +9,10 @@ See LICENSE file in root folder.
 #include "GlFence.hpp"
 #include "GlSemaphore.hpp"
 #include "GlSwapChain.hpp"
+#include "Commands/GlCommandBase.hpp"
 
 namespace gl_renderer
 {
-	//namespace
-	//{
-	//	vk::CommandBufferCRefArray convert( renderer::CommandBufferCRefArray const & values )
-	//	{
-	//		vk::CommandBufferCRefArray result;
-	//		result.reserve( values.size() );
-
-	//		for ( auto & value : values )
-	//		{
-	//			result.emplace_back( static_cast< CommandBuffer const & >( value.get() ).getCommandBuffer() );
-	//		}
-
-	//		return result;
-	//	}
-
-	//	vk::SemaphoreCRefArray convert( renderer::SemaphoreCRefArray const & values )
-	//	{
-	//		vk::SemaphoreCRefArray result;
-	//		result.reserve( values.size() );
-
-	//		for ( auto & value : values )
-	//		{
-	//			result.emplace_back( static_cast< Semaphore const & >( value.get() ).getSemaphore() );
-	//		}
-
-	//		return result;
-	//	}
-
-	//	vk::SwapChainCRefArray convert( renderer::SwapChainCRefArray const & values )
-	//	{
-	//		vk::SwapChainCRefArray result;
-	//		result.reserve( values.size() );
-
-	//		for ( auto & value : values )
-	//		{
-	//			result.emplace_back( static_cast< SwapChain const & >( value.get() ).getSwapChain() );
-	//		}
-
-	//		return result;
-	//	}
-	//}
-
 	Queue::Queue()
 	{
 	}
@@ -61,9 +20,14 @@ namespace gl_renderer
 	bool Queue::submit( renderer::CommandBuffer const & commandBuffer
 		, renderer::Fence const * fence )const
 	{
-		return false;
-		//return vk::checkError( m_queue.submit( static_cast< CommandBuffer const & >( commandBuffer ).getCommandBuffer()
-		//	, fence ? &static_cast< Fence const * >( fence )->getFence() : nullptr ) );
+		for ( auto & command : static_cast< CommandBuffer const & >( commandBuffer ).getCommands() )
+		{
+			command->apply();
+		}
+
+		return fence
+			? fence->wait( ~( 0u ) ) == renderer::WaitResult::eSuccess
+			: true;
 	}
 
 	bool Queue::submit( renderer::CommandBuffer const & commandBuffer
@@ -72,12 +36,14 @@ namespace gl_renderer
 		, renderer::Semaphore const & semaphoreToSignal
 		, renderer::Fence const * fence )const
 	{
-		return false;
-		//return vk::checkError( m_queue.submit( static_cast< CommandBuffer const & >( commandBuffer ).getCommandBuffer()
-		//	, static_cast< Semaphore const & >( semaphoreToWait ).getSemaphore()
-		//	, semaphoreStage
-		//	, static_cast< Semaphore const & >( semaphoreToSignal ).getSemaphore()
-		//	, fence ? &static_cast< Fence const * >( fence )->getFence() : nullptr ) );
+		for ( auto & command : static_cast< CommandBuffer const & >( commandBuffer ).getCommands() )
+		{
+			command->apply();
+		}
+
+		return fence
+			? fence->wait( ~( 0u ) ) == renderer::WaitResult::eSuccess
+			: true;
 	}
 
 	bool Queue::submit( renderer::CommandBufferCRefArray const & commandBuffers
@@ -86,19 +52,24 @@ namespace gl_renderer
 		, renderer::SemaphoreCRefArray const & semaphoresToSignal
 		, renderer::Fence const * fence )const
 	{
-		return false;
-		//return vk::checkError( m_queue.submit( convert( commandBuffers )
-		//	, convert( semaphoresToWait )
-		//	, convert< VkPipelineStageFlags >( semaphoresStage )
-		//	, convert( semaphoresToSignal )
-		//	, fence ? &static_cast< Fence const * >( fence )->getFence() : nullptr ) );
+		for ( auto & commandBuffer : commandBuffers )
+		{
+			for ( auto & command : static_cast< CommandBuffer const & >( commandBuffer.get() ).getCommands() )
+			{
+				command->apply();
+			}
+		}
+
+		return fence
+			? fence->wait( ~( 0u ) ) == renderer::WaitResult::eSuccess
+			: true;
 	}
 
 	bool Queue::present( renderer::SwapChainCRefArray const & swapChains
 		, renderer::UInt32Array const & imagesIndex
 		, renderer::SemaphoreCRefArray const & semaphoresToWait )const
 	{
-		return false;
+		return true;
 		//return vk::checkError( m_queue.present( convert( swapChains )
 		//	, imagesIndex
 		//	, convert( semaphoresToWait ) ) );
@@ -106,7 +77,7 @@ namespace gl_renderer
 
 	bool Queue::waitIdle()const
 	{
-		return false;
-		//return vk::checkError( m_queue.waitIdle() );
+		glFinish();
+		return true;
 	}
 }

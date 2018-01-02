@@ -37,7 +37,7 @@ namespace gl_renderer
 
 			if ( !res )
 			{
-				throw std::runtime_error{ "Texture data copy failed: " + vk::getLastError() };
+				throw std::runtime_error{ "Texture data copy failed." };
 			}
 
 			res = m_device.getGraphicsQueue().submit( commandBuffer
@@ -45,7 +45,7 @@ namespace gl_renderer
 
 			if ( !res )
 			{
-				throw std::runtime_error{ "Texture data copy failed: " + vk::getLastError() };
+				throw std::runtime_error{ "Texture data copy failed." };
 			}
 
 			m_device.getGraphicsQueue().waitIdle();
@@ -57,7 +57,7 @@ namespace gl_renderer
 	{
 		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0
 			, size
-			, 0 );
+			, renderer::MemoryMapFlag::eWrite );
 
 		if ( !buffer )
 		{
@@ -67,8 +67,7 @@ namespace gl_renderer
 		std::memcpy( buffer
 			, data
 			, size );
-		static_cast< BufferBase const & >( getBuffer() ).getBuffer().unlock( size
-			, true );
+		static_cast< BufferBase const & >( getBuffer() ).unlock( size, true );
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( renderer::CommandBuffer const & commandBuffer
@@ -76,19 +75,17 @@ namespace gl_renderer
 		, uint32_t offset
 		, renderer::BufferBase const & buffer )const
 	{
-		auto & cb = static_cast< CommandBuffer const & >( commandBuffer );
-
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
 		{
-			cb.getCommandBuffer().copyBuffer( static_cast< BufferBase const & >( getBuffer() ).getBuffer()
-				, static_cast< BufferBase const & >( buffer ).getBuffer()
+			commandBuffer.copyBuffer( getBuffer()
+				, buffer
 				, size
 				, offset );
 			bool res = commandBuffer.end();
 
 			if ( !res )
 			{
-				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
+				throw std::runtime_error{ "Buffer data copy failed." };
 			}
 
 			res = m_device.getGraphicsQueue().submit( commandBuffer
@@ -96,7 +93,7 @@ namespace gl_renderer
 
 			if ( !res )
 			{
-				throw std::runtime_error{ "Texture data copy failed: " + vk::getLastError() };
+				throw std::runtime_error{ "Texture data copy failed." };
 			}
 
 			m_device.getGraphicsQueue().waitIdle();
@@ -109,22 +106,20 @@ namespace gl_renderer
 		, renderer::VertexBufferBase const & buffer
 		, renderer::PipelineStageFlags const & flags )const
 	{
-		auto & cb = static_cast< CommandBuffer const & >( commandBuffer );
-
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
 		{
-			cb.getCommandBuffer().copyBuffer( static_cast< BufferBase const & >( getBuffer() ).getBuffer()
-				, static_cast< BufferBase const & >( buffer.getBuffer() ).getBuffer()
+			commandBuffer.copyBuffer( getBuffer()
+				, buffer.getBuffer()
 				, size
 				, offset );
-			cb.getCommandBuffer().memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
-				, convert( flags )
-				, static_cast< BufferBase const & >( buffer.getBuffer() ).getBuffer().makeVertexShaderInputResource() );
+			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
+				, flags
+				, buffer.getBuffer().makeVertexShaderInputResource() );
 			bool res = commandBuffer.end();
 
 			if ( !res )
 			{
-				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
+				throw std::runtime_error{ "Buffer data copy failed." };
 			}
 
 			res = m_device.getGraphicsQueue().submit( commandBuffer
@@ -132,7 +127,7 @@ namespace gl_renderer
 
 			if ( !res )
 			{
-				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
+				throw std::runtime_error{ "Buffer data copy failed." };
 			}
 
 			m_device.getGraphicsQueue().waitIdle();
@@ -145,22 +140,20 @@ namespace gl_renderer
 		, renderer::UniformBufferBase const & buffer
 		, renderer::PipelineStageFlags const & flags )const
 	{
-		auto & cb = static_cast< CommandBuffer const & >( commandBuffer );
-
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
 		{
-			cb.getCommandBuffer().copyBuffer( static_cast< BufferBase const & >( getBuffer() ).getBuffer()
-				, static_cast< BufferBase const & >( buffer.getBuffer() ).getBuffer()
+			commandBuffer.copyBuffer( getBuffer()
+				, buffer.getBuffer()
 				, size
 				, offset );
-			cb.getCommandBuffer().memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
-				, convert( flags )
-				, static_cast< BufferBase const & >( buffer.getBuffer() ).getBuffer().makeUniformBufferInput() );
+			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
+				, flags
+				, buffer.getBuffer().makeUniformBufferInput() );
 			bool res = commandBuffer.end();
 
 			if ( !res )
 			{
-				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
+				throw std::runtime_error{ "Buffer data copy failed." };
 			}
 
 			res = m_device.getGraphicsQueue().submit( commandBuffer
@@ -168,7 +161,7 @@ namespace gl_renderer
 
 			if ( !res )
 			{
-				throw std::runtime_error{ "Buffer data copy failed: " + vk::getLastError() };
+				throw std::runtime_error{ "Buffer data copy failed." };
 			}
 
 			m_device.getGraphicsQueue().waitIdle();

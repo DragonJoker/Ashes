@@ -101,13 +101,13 @@ namespace renderer
 		}
 
 	private:
-		StencilOp const m_failOp;
-		StencilOp const m_passOp;
-		StencilOp const m_depthFailOp;
-		CompareOp const m_compareOp;
-		uint32_t const m_compareMask;
-		uint32_t const m_writeMask;
-		uint32_t const m_reference;
+		StencilOp m_failOp;
+		StencilOp m_passOp;
+		StencilOp m_depthFailOp;
+		CompareOp m_compareOp;
+		uint32_t m_compareMask;
+		uint32_t m_writeMask;
+		uint32_t m_reference;
 	};
 }
 

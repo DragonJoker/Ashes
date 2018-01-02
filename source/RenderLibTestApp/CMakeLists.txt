@@ -39,6 +39,7 @@ target_link_libraries( ${PROJECT_NAME}
 	${VkLib_LIBRARIES}
 	Utils
 	Renderer
+	GlRenderer
 	VkRenderer
 	RenderLib
 	FreeType

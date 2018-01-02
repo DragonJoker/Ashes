@@ -19,6 +19,13 @@ See LICENSE file in root folder.
 #include "GlTexture.hpp"
 #include "GlUniformBuffer.hpp"
 
+#include "Commands/GlBeginRenderPassCommand.hpp"
+#include "Commands/GlBindPipelineCommand.hpp"
+#include "Commands/GlClearCommand.hpp"
+#include "Commands/GlEndRenderPassCommand.hpp"
+#include "Commands/GlScissorCommand.hpp"
+#include "Commands/GlViewportCommand.hpp"
+
 namespace gl_renderer
 {
 	CommandBuffer::CommandBuffer( renderer::Device const & device
@@ -30,7 +37,8 @@ namespace gl_renderer
 
 	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags )const
 	{
-		return true;// m_commandBuffer->begin( convert( flags ) );
+		m_beginFlags = flags;
+		return true;
 	}
 
 	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags
@@ -41,24 +49,24 @@ namespace gl_renderer
 		, renderer::QueryControlFlags queryFlags
 		, renderer::QueryPipelineStatisticFlags pipelineStatistics )const
 	{
+		m_beginFlags = flags;
 		return true;
-		//return m_commandBuffer->begin( convert( flags )
-		//	, static_cast< RenderPass const & >( renderPass ).getRenderPass()
-		//	, subpass
-		//	, static_cast< FrameBuffer const & >( frameBuffer ).getFrameBuffer()
-		//	, occlusionQueryEnable
-		//	, queryFlags
-		//	, pipelineStatistics );
 	}
 
 	bool CommandBuffer::end()const
 	{
-		return true;//vk::checkError( m_commandBuffer->end() );
+		if ( checkFlag( m_beginFlags, renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
+		{
+			m_commands.clear();
+		}
+
+		return glGetError() == GL_NO_ERROR;
 	}
 
 	bool CommandBuffer::reset( renderer::CommandBufferResetFlags flags )const
 	{
-		return true;//vk::checkError( m_commandBuffer->reset( convert( flags ) ) );
+		m_commands.clear();
+		return true;
 	}
 
 	void CommandBuffer::beginRenderPass( renderer::RenderPass const & renderPass
@@ -66,39 +74,42 @@ namespace gl_renderer
 		, renderer::ClearValueArray const & clearValues
 		, renderer::SubpassContents contents )const
 	{
-		//m_commandBuffer->beginRenderPass( static_cast< RenderPass const & >( renderPass ).getRenderPass()
-		//	, static_cast< FrameBuffer const & >( frameBuffer ).getFrameBuffer()
-		//	, convert< VkClearValue >( clearValues )
-		//	, convert( contents ) );
+		m_commands.emplace_back( std::make_unique< BeginRenderPassCommand >( renderPass
+			, frameBuffer
+			, clearValues
+			, contents ) );
 	}
 
 	void CommandBuffer::nextSubpass( renderer::SubpassContents contents )const
 	{
-		//m_commandBuffer->nextSubpass( convert( contents ) );
 	}
 
 	void CommandBuffer::endRenderPass()const
 	{
-		//m_commandBuffer->endRenderPass();
+		m_commands.emplace_back( std::make_unique< EndRenderPassCommand >() );
 	}
 
 	void CommandBuffer::executeCommands( renderer::CommandBufferCRefArray const & commands )const
 	{
-		//m_commandBuffer->executeCommands( convert( commands ) );
+		for ( auto & commandBuffer : commands )
+		{
+			for ( auto & command : static_cast< CommandBuffer const & >( commandBuffer.get() ).getCommands() )
+			{
+				m_commands.emplace_back( command->clone() );
+			}
+		}
 	}
 
 	void CommandBuffer::clear( renderer::Texture const & image
 		, renderer::RgbaColour const & colour )const
 	{
-		//m_commandBuffer->clear( static_cast< Texture const & >( image ).getImage()
-		//	, convert( colour ) );
+		m_commands.emplace_back( std::make_unique< ClearCommand >( image, colour ) );
 	}
 
 	void CommandBuffer::bindPipeline( renderer::Pipeline const & pipeline
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
-		//m_commandBuffer->bindPipeline( static_cast< Pipeline const & >( pipeline ).getPipeline()
-		//	, convert( bindingPoint ) );
+		m_commands.emplace_back( std::make_unique< BindPipelineCommand >( pipeline, bindingPoint ) );
 	}
 
 	void CommandBuffer::bindVertexBuffer( renderer::VertexBufferBase const & vertexBuffer
@@ -160,12 +171,12 @@ namespace gl_renderer
 
 	void CommandBuffer::setViewport( renderer::Viewport const & viewport )const
 	{
-		//m_commandBuffer->setViewport( convert( viewport ) );
+		m_commands.emplace_back( std::make_unique< ViewportCommand >( viewport ) );
 	}
 
 	void CommandBuffer::setScissor( renderer::Scissor const & scissor )const
 	{
-		//m_commandBuffer->setScissor( convert( scissor ) );
+		m_commands.emplace_back( std::make_unique< ScissorCommand >( scissor ) );
 	}
 
 	void CommandBuffer::draw( uint32_t vtxCount

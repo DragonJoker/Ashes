@@ -342,10 +342,15 @@ namespace vkapp
 		}
 
 		m_program = m_device->createShaderProgram();
-		m_program->createModule( dumpBinaryFile( shadersFolder / "vert.spv" )
+		//m_program->createModule( dumpBinaryFile( shadersFolder / "vert.spv" )
+		//	, renderer::ShaderStageFlag::eVertex );
+		//m_program->createModule( dumpBinaryFile( shadersFolder / "frag.spv" )
+		//	, renderer::ShaderStageFlag::eFragment );
+		m_program->createModule( dumpTextFile( shadersFolder / "shader.vert" )
 			, renderer::ShaderStageFlag::eVertex );
-		m_program->createModule( dumpBinaryFile( shadersFolder / "frag.spv" )
+		m_program->createModule( dumpTextFile( shadersFolder / "shader.frag" )
 			, renderer::ShaderStageFlag::eFragment );
+		m_program->link();
 		m_pipeline = m_device->createPipeline( *m_pipelineLayout
 			, *m_program
 			, { *m_vertexLayout }
@@ -427,7 +432,6 @@ namespace vkapp
 		else
 		{
 			m_timer->Stop();
-			std::cerr << "Can't render: " << vk::getLastError() << std::endl;
 		}
 	}
 

@@ -16,6 +16,7 @@ namespace renderer
 	*/
 	enum class MipmapMode
 	{
+		eNone,
 		eNearest,
 		eLinear,
 		Utils_EnumBounds( eNearest )

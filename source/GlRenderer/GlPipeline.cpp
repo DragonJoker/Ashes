@@ -9,22 +9,6 @@
 
 namespace gl_renderer
 {
-	//namespace
-	//{
-	//	vk::VertexLayoutCRefArray convert( renderer::VertexLayoutCRefArray const & layouts )
-	//	{
-	//		vk::VertexLayoutCRefArray result;
-	//		result.reserve( layouts.size() );
-
-	//		for ( auto & layout : layouts )
-	//		{
-	//			result.emplace_back( *static_cast< VertexLayout const & >( layout.get() ).getLayout() );
-	//		}
-
-	//		return result;
-	//	}
-	//}
-
 	Pipeline::Pipeline( renderer::Device const & device
 		, renderer::PipelineLayout const & layout
 		, renderer::ShaderProgram const & program
@@ -41,49 +25,43 @@ namespace gl_renderer
 			, topology
 			, rasterisationState
 			, colourBlendState }
-		//, m_pipeline{ static_cast< Device const & >( device ).createPipeline( static_cast< PipelineLayout const & >( layout ).getLayout()
-		//	, static_cast< ShaderProgram const & >( program ).getProgram()
-		//	, convert( vertexLayouts )
-		//	, static_cast< RenderPass const & >( renderPass ).getRenderPass()
-		//	, convert( topology )
-		//	, convert( rasterisationState )
-		//	, convert( colourBlendState ) ) }
+		, m_cbState{ colourBlendState }
+		, m_rsState{ rasterisationState }
 	{
 	}
 
 	renderer::Pipeline & Pipeline::finish()
 	{
-		//m_pipeline->finish();
 		return *this;
 	}
 
 	renderer::Pipeline & Pipeline::multisampleState( renderer::MultisampleState const & state )
 	{
-		//m_pipeline->multisampleState( convert( state ) );
+		m_msState = state;
 		return *this;
 	}
 
 	renderer::Pipeline & Pipeline::depthStencilState( renderer::DepthStencilState const & state )
 	{
-		//m_pipeline->depthStencilState( convert( state ) );
+		m_dsState = state;
 		return *this;
 	}
 
 	renderer::Pipeline & Pipeline::tessellationState( renderer::TessellationState const & state )
 	{
-		//m_pipeline->tessellationState( convert( state ) );
+		m_tsState = state;
 		return *this;
 	}
 
 	renderer::Pipeline & Pipeline::viewport( renderer::Viewport const & viewport )
 	{
-		//m_pipeline->viewport( convert( viewport ) );
+		m_viewport = viewport;
 		return *this;
 	}
 
 	renderer::Pipeline & Pipeline::scissor( renderer::Scissor const & scissor )
 	{
-		//m_pipeline->scissor( convert( scissor ) );
+		m_scissor = scissor;
 		return *this;
 	}
 }

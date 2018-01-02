@@ -18,8 +18,8 @@ namespace renderer
 	class TessellationState
 	{
 	public:
-		TessellationState( TessellationStateFlags flags
-			, uint32_t patchControlPoints );
+		TessellationState( TessellationStateFlags flags = 0u
+			, uint32_t patchControlPoints = 0u );
 		/**
 		*\return
 		*	Les indicateurs de l'état.

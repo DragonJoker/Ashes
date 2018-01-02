@@ -7,7 +7,8 @@
 #include <Renderer/Renderer.hpp>
 #include <Renderer/RenderingResources.hpp>
 
-#include <VkRenderer/VkRenderer.hpp>
+#include <VkRenderer/VkCreateRenderer.hpp>
+#include <GlRenderer/GlCreateRenderer.hpp>
 
 #include <VkLib/FlagCombination.hpp>
 
@@ -132,7 +133,7 @@ namespace utils
 		{
 			if ( doPrepareDC( m_hdc ) )
 			{
-				m_renderer = std::make_unique< vk_renderer::Renderer >();
+				m_renderer = vk_renderer::createRenderer();
 				RECT rect;
 				::GetClientRect( m_hwnd, &rect );
 				m_size.x = rect.right - rect.left;

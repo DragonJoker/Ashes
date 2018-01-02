@@ -22,7 +22,7 @@ namespace gl_renderer
 		}
 	}
 
-	renderer::WaitResult Fence::wait( uint32_t timeout )
+	renderer::WaitResult Fence::wait( uint32_t timeout )const
 	{
 		if ( !m_fence )
 		{
@@ -30,14 +30,14 @@ namespace gl_renderer
 		}
 
 		auto res = glClientWaitSync( m_fence, GL_SYNC_FLUSH_COMMANDS_BIT, timeout );
-		return res == VK_SUCCESS
+		return ( res == GL_ALREADY_SIGNALED || res == GL_CONDITION_SATISFIED )
 			? renderer::WaitResult::eSuccess
-			: ( res == VK_TIMEOUT
+			: ( res == GL_TIMEOUT_EXPIRED
 				? renderer::WaitResult::eTimeOut
 				: renderer::WaitResult::eError );
 	}
 
-	void Fence::reset()
+	void Fence::reset()const
 	{
 		if ( m_fence )
 		{

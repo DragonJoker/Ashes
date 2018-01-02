@@ -37,12 +37,12 @@ namespace vk_renderer
 		*\return
 		*	\p WaitResult::eSuccess ou \p WaitResult::eTimeOut en cas de succès.
 		*/ 
-		renderer::WaitResult wait( uint32_t timeout )override;
+		renderer::WaitResult wait( uint32_t timeout )const override;
 		/**
 		*\brief
 		*	Remet la barrière en non signalée.
 		*/ 
-		void reset()override;
+		void reset()const override;
 		/**
 		*\return
 		*	La vk::Fence.

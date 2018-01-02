@@ -158,14 +158,19 @@ namespace gl_renderer
 		}
 	}
 
-	void X11Context::setCurrent()
+	void X11Context::setCurrent()const
 	{
 		glXMakeCurrent( m_display, m_drawable, m_glxContext );
 	}
 
-	void X11Context::endCurrent()
+	void X11Context::endCurrent()const
 	{
 		glXMakeCurrent( m_display, 0, nullptr );
+	}
+
+	void X11Context::swapBuffers()const
+	{
+		glXSwapBuffers( m_display, m_drawable );
 	}
 
 	XVisualInfo * X11Context::doCreateVisualInfoWithFBConfig( RenderWindow * p_window, IntArray p_arrayAttribs, int p_screen )

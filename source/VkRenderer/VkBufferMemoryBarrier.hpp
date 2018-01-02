@@ -9,6 +9,7 @@ See LICENSE file in root folder
 
 namespace vk_renderer
 {
+	class BufferBase;
 	/**
 	*\brief
 	*	Convertit un renderer::BufferMemoryBarrier en VkBufferMemoryBarrier.
@@ -18,4 +19,13 @@ namespace vk_renderer
 	*	Le VkBufferMemoryBarrier.
 	*/
 	VkBufferMemoryBarrier convert( renderer::BufferMemoryBarrier const & barrier );
+	/**
+	*\brief
+	*	Convertit un VkBufferMemoryBarrier en renderer::BufferMemoryBarrier.
+	*\param[in] flags
+	*	Le VkBufferMemoryBarrier.
+	*\return
+	*	Le renderer::BufferMemoryBarrier.
+	*/
+	renderer::BufferMemoryBarrier convert( BufferBase const & bufferBase, VkBufferMemoryBarrier const & barrier );
 }

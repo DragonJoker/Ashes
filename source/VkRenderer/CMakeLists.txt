@@ -14,8 +14,6 @@ if ( VKRENDERER_GLSL_TO_SPV )
 		)
 		set( BinaryLibraries
 			${BinaryLibraries}
-			${glslang_LIBRARIES}
-			${SPIRV_LIBRARIES}
 			PARENT_SCOPE
 		)
 	endif ()
@@ -56,7 +54,9 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 		*.inc
 	)
 
-	add_library( ${PROJECT_NAME} STATIC
+	add_definitions( -DVkRenderer_EXPORTS )
+
+	add_library( ${PROJECT_NAME} SHARED
 		${${PROJECT_NAME}_SRC_FILES}
 		${${PROJECT_NAME}_HDR_FILES}
 		${${PROJECT_NAME}_CONFIG_HEADER}
@@ -71,6 +71,8 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 
 	target_link_libraries( ${PROJECT_NAME}
 		${VkLib_LIBRARIES}
+		${glslang_LIBRARIES}
+		${SPIRV_LIBRARIES}
 		Renderer
 	)
 

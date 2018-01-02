@@ -37,10 +37,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 	endif()
 
 	include_directories(
-		${CMAKE_SOURCE_DIR}/VkLib
-		${CMAKE_BINARY_DIR}/VkLib
 		${CMAKE_BINARY_DIR}/Renderer
-		${CMAKE_BINARY_DIR}/VkRenderer
 		${CMAKE_SOURCE_DIR}
 		${wxWidgets_INCLUDE_DIRS}
 		${GTK2_INCLUDE_DIRS}
@@ -64,11 +61,18 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		${VkLib_LIBRARIES}
 		Utils
 		Renderer
+		GlRenderer
 		VkRenderer
 		${BinaryLibraries}
 		${wxWidgets_LIBRARIES}
 		${GTK2_LIBRARIES}
 	)
+
+	add_dependencies( ${PROJECT_NAME}
+		GlRenderer
+		VkRenderer
+	)
+
 	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Main" )
 

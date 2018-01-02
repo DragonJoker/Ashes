@@ -16,7 +16,7 @@ namespace vk_renderer
 	{
 	}
 
-	renderer::WaitResult Fence::wait( uint32_t timeout )
+	renderer::WaitResult Fence::wait( uint32_t timeout )const
 	{
 		auto res = m_fence.wait( timeout );
 		return res == VK_SUCCESS
@@ -26,7 +26,7 @@ namespace vk_renderer
 				: renderer::WaitResult::eError );
 	}
 
-	void Fence::reset()
+	void Fence::reset()const
 	{
 		m_fence.reset();
 	}

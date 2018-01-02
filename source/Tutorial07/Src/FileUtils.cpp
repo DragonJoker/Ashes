@@ -40,6 +40,26 @@ namespace vkapp
 		return result;
 	}
 
+	std::string dumpTextFile( std::string const & path )
+	{
+		std::ifstream file( path, std::ios::binary );
+
+		if ( file.fail() )
+		{
+			throw std::runtime_error{ "Could not open file " + path };
+		}
+
+		auto begin = file.tellg();
+		file.seekg( 0, std::ios::end );
+		auto end = file.tellg();
+
+		std::string result( static_cast< size_t >( end - begin ) + 1, '\0' );
+		file.seekg( 0, std::ios::beg );
+		file.read( reinterpret_cast< char * >( result.data() ), end - begin );
+
+		return result;
+	}
+
 	UInt32Array dumpSpvFile( std::string const & path )
 	{
 		std::ifstream file( path, std::ios::binary );

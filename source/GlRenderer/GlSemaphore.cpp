@@ -10,7 +10,6 @@ namespace gl_renderer
 {
 	Semaphore::Semaphore( renderer::Device const & device )
 		: renderer::Semaphore{ device }
-		, m_semaphore{ static_cast< Device const & >( device ).getDevice() }
 	{
 	}
 }

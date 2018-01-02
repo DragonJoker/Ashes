@@ -8,7 +8,7 @@
 #define ___VkRenderer_RenderBuffer_HPP___
 #pragma once
 
-#include "GlRendererPrerequisites.hpp"
+#include "GlTexture.hpp"
 
 #include <Renderer/RenderBuffer.hpp>
 
@@ -33,11 +33,6 @@ namespace gl_renderer
 			, renderer::IVec2 const & size );
 		/**
 		*\brief
-		*	Destructeur.
-		*/
-		~RenderBuffer();
-		/**
-		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout d'attache couleur.
 		*\return
 		*	La barrière mémoire.
@@ -52,7 +47,7 @@ namespace gl_renderer
 		renderer::ImageMemoryBarrier makeDepthStencilAttachment()const override;
 
 	private:
-		GLuint m_name;
+		Texture m_texture;
 	};
 }
 

@@ -2,7 +2,8 @@
 
 #include "RenderPanel.hpp"
 
-#include <VkRenderer/VkRenderer.hpp>
+#include <GlRenderer/GlCreateRenderer.hpp>
+#include <VkRenderer/VkCreateRenderer.hpp>
 
 #include <wx/sizer.h>
 
@@ -21,8 +22,9 @@ namespace vkapp
 
 		try
 		{
-			m_renderer = std::make_unique< vk_renderer::Renderer >();
-			std::cout << "Vulkan instance created." << std::endl;
+			m_renderer = gl_renderer::createRenderer();
+			//m_renderer = vk_renderer::createRenderer();
+			std::cout << "Renderer instance created." << std::endl;
 			m_panel = wxMakeWindowPtr< RenderPanel >( this, WindowSize, *m_renderer );
 
 			wxBoxSizer * sizer{ new wxBoxSizer{ wxVERTICAL } };

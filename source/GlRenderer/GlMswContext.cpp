@@ -1,8 +1,11 @@
 #if defined( _WIN32 )
 
 #include "GlMswContext.hpp"
+#include "GlDebug.hpp"
 
 #include <Renderer/PlatformWindowHandle.hpp>
+
+#include <GL/wglew.h>
 
 namespace gl_renderer
 {
@@ -47,6 +50,7 @@ namespace gl_renderer
 			m_vendor = ( char const * )glGetString( GL_VENDOR );
 			m_renderer = ( char const * )glGetString( GL_RENDERER );
 			m_version = ( char const * )glGetString( GL_VERSION );
+			loadDebugFunctions();
 
 			double fversion{ 0u };
 			std::stringstream stream( m_version );
@@ -61,6 +65,12 @@ namespace gl_renderer
 				wglDeleteContext( m_hContext );
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
+			else
+			{
+				setCurrent();
+				initialiseDebugFunctions();
+				wglSwapIntervalEXT( 0 );
+			}
 		}
 	}
 
@@ -70,6 +80,7 @@ namespace gl_renderer
 		{
 			if ( m_hDC )
 			{
+				endCurrent();
 				wglDeleteContext( m_hContext );
 				::ReleaseDC( m_hWnd, m_hDC );
 			}
@@ -79,14 +90,19 @@ namespace gl_renderer
 		}
 	}
 
-	void MswContext::setCurrent()
+	void MswContext::setCurrent()const
 	{
 		wglMakeCurrent( m_hDC, m_hContext );
 	}
 
-	void MswContext::endCurrent()
+	void MswContext::endCurrent()const
 	{
 		wglMakeCurrent( nullptr, nullptr );
+	}
+
+	void MswContext::swapBuffers()const
+	{
+		::SwapBuffers( m_hDC );
 	}
 
 	HGLRC MswContext::doCreateDummyContext()
@@ -110,7 +126,10 @@ namespace gl_renderer
 		pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 		pfd.iPixelType = PFD_TYPE_RGBA;
 		pfd.iLayerType = PFD_MAIN_PLANE;
-		pfd.cColorBits = 32;
+		pfd.cColorBits = 24;
+		pfd.cRedBits = 8;
+		pfd.cGreenBits = 8;
+		pfd.cBlueBits = 8;
 
 		int pixelFormats = ::ChoosePixelFormat( m_hDC, &pfd );
 
@@ -133,26 +152,26 @@ namespace gl_renderer
 			HGLRC hContext = m_hContext;
 			std::vector< int > attribList
 			{
-				GL_MAJOR_VERSION, m_major,
-				GL_MINOR_VERSION, m_minor,
-				GL_CONTEXT_FLAGS, C3D_GL_CONTEXT_CREATION_DEFAULT_FLAGS,
-				GL_CONTEXT_PROFILE_MASK, C3D_GL_CONTEXT_CREATION_DEFAULT_MASK,
+				WGL_CONTEXT_MAJOR_VERSION_ARB, m_major,
+				WGL_CONTEXT_MINOR_VERSION_ARB, m_minor,
+				WGL_CONTEXT_FLAGS_ARB, C3D_GL_CONTEXT_CREATION_DEFAULT_FLAGS,
+				WGL_CONTEXT_PROFILE_MASK_ARB, C3D_GL_CONTEXT_CREATION_DEFAULT_MASK,
 				0
 			};
 
 			setCurrent();
+			glGetError();
 
-			if ( glewIsSupported( "ARB_create_context" ) )
+			if ( wglewIsSupported( "WGL_ARB_create_context" ) )
 			{
 				glCreateContextAttribs = ( PFNGLCREATECONTEXTATTRIBS )wglGetProcAddress( "wglCreateContextAttribsARB" );
 			}
 			else
 			{
-				glCreateContextAttribs = ( PFNGLCREATECONTEXTATTRIBS )wglGetProcAddress( "wglCreateContextAttribsEXT" );
+				glCreateContextAttribs = ( PFNGLCREATECONTEXTATTRIBS )wglGetProcAddress( "wglCreateContextAttribsARB" );
 			}
 
 			m_hContext = glCreateContextAttribs( m_hDC, nullptr, attribList.data() );
-
 			endCurrent();
 			wglDeleteContext( hContext );
 			result = m_hContext != nullptr;
@@ -160,7 +179,7 @@ namespace gl_renderer
 			if ( !result )
 			{
 				std::stringstream error;
-				error << "Failed to create a " << m_major << "." << m_minor << " OpenGL context.";
+				error << "Failed to create a " << m_major << "." << m_minor << " OpenGL context (0x" << std::hex << glGetError() << ").";
 				throw std::runtime_error{ error.str() };
 			}
 		}

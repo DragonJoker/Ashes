@@ -117,9 +117,6 @@ namespace gl_renderer
 		}
 
 	private:
-		bool doCheckNeedReset( VkResult errCode
-			, bool acquisition
-			, char const * const action );
 		void doResetSwapChain();
 
 	private:

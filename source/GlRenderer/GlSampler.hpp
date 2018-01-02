@@ -40,17 +40,22 @@ namespace gl_renderer
 			, renderer::Filter magFilter
 			, renderer::MipmapMode mipFilter );
 		/**
-		*\return
-		*	L'échantillonneur vulkan.
+		*\brief
+		*	Destructeur.
 		*/
-		inline vk::Sampler const & getSampler()const noexcept
+		~Sampler();
+		/**
+		*\return
+		*	L'échantillonneur OpenGL.
+		*/
+		inline GLuint getSampler()const noexcept
 		{
-			return *m_sampler;
+			return m_sampler;
 		}
 
 	private:
 		//! L'échantillonneur.
-		vk::SamplerPtr m_sampler;
+		GLuint m_sampler;
 	};
 }
 

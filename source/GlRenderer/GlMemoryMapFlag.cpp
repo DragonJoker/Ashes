@@ -1,6 +1,6 @@
 #include "GlMemoryMapFlag.hpp"
 
-namespace vk_renderer
+namespace gl_renderer
 {
 	GLuint convert( renderer::MemoryMapFlags const & flags )
 	{

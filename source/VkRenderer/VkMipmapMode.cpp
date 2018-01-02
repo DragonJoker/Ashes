@@ -6,6 +6,9 @@ namespace vk_renderer
 	{
 		switch ( mode )
 		{
+		case renderer::MipmapMode::eNone:
+			return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+
 		case renderer::MipmapMode::eNearest:
 			return VK_SAMPLER_MIPMAP_MODE_NEAREST;
 

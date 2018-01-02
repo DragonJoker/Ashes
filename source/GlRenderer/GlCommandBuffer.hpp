@@ -5,6 +5,7 @@ See LICENSE file in root folder
 #pragma once
 
 #include "GlClearValue.hpp"
+#include "Commands/GlCommandBase.hpp"
 
 #include <Renderer/CommandBuffer.hpp>
 
@@ -381,5 +382,17 @@ namespace gl_renderer
 		*/
 		void copyImage( renderer::StagingBuffer const & src
 			, renderer::Texture const & dst )const override;
+		/**
+		*\return
+		*	Le tableau de commandes.
+		*/
+		inline CommandArray const & getCommands()const
+		{
+			return m_commands;
+		}
+
+	private:
+		mutable renderer::CommandBufferUsageFlags m_beginFlags;
+		mutable CommandArray m_commands;
 	};
 }

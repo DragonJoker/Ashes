@@ -58,5 +58,16 @@ namespace gl_renderer
 		*/
 		renderer::FrameBufferPtr createFrameBuffer( utils::IVec2 const & dimensions
 			, renderer::TextureCRefArray const & textures )const override;
+		/**
+		*\return
+		*	Le statut de vidage.
+		*/
+		inline bool getClear()const
+		{
+			return m_clear;
+		}
+
+	private:
+		bool m_clear;
 	};
 }

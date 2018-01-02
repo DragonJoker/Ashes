@@ -41,8 +41,6 @@ namespace gl_renderer
 
 	GLenum convert( renderer::ShaderStageFlag const & flag )
 	{
-		VkShaderStageFlags result{ 0 };
-
 		switch ( flag )
 		{
 		case renderer::ShaderStageFlag::eVertex:

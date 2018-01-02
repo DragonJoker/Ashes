@@ -27,6 +27,11 @@ namespace gl_renderer
 		ShaderProgram( renderer::Device const & device );
 		/**
 		*\brief
+		*	Destructeur.
+		*/
+		~ShaderProgram();
+		/**
+		*\brief
 		*	Crée un module de shader et l'ajoute à la liste.
 		*\param[in] shader
 		*	Le code GLSL du shader.
@@ -47,14 +52,20 @@ namespace gl_renderer
 			, renderer::ShaderStageFlag stage )override;
 		/**
 		*\brief
+		*	Lie les modules du programme.
+		*/
+		void link()override;
+		/**
+		*\brief
 		*	Le début du tableau de modules.
 		*/
-		inline vk::ShaderProgram const & getProgram()const
+		inline GLuint getProgram()const
 		{
-			return *m_program;
+			return m_program;
 		}
 
 	private:
-		vk::ShaderProgramPtr m_program;
+		GLuint m_program;
+		renderer::UInt32Array m_shaders;
 	};
 }

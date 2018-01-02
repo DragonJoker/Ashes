@@ -2,6 +2,8 @@
 
 #include "GlDevice.hpp"
 
+#include <Renderer/BufferMemoryBarrier.hpp>
+
 namespace gl_renderer
 {
 	BufferBase::BufferBase( renderer::Device const & device
@@ -15,7 +17,9 @@ namespace gl_renderer
 		, m_target{ convert( target ) }
 	{
 		glGenBuffers( 1, &m_buffer );
+		glBindBuffer( m_target, m_buffer );
 		glBufferData( m_target, size, nullptr, GL_DYNAMIC_DRAW );
+		glBindBuffer( m_target, 0u );
 	}
 
 	BufferBase::~BufferBase()
@@ -25,7 +29,7 @@ namespace gl_renderer
 
 	uint8_t * BufferBase::lock( uint32_t offset
 		, uint32_t size
-		, renderer::MemoryMapFlags const & flags )const
+		, renderer::MemoryMapFlags flags )const
 	{
 		glBindBuffer( m_target, m_buffer );
 		return reinterpret_cast< uint8_t * >( glMapBufferRange( m_target, offset, size, convert( flags ) ) );
@@ -36,5 +40,60 @@ namespace gl_renderer
 	{
 		glUnmapBuffer( m_target );
 		glBindBuffer( m_target, 0u );
+	}
+
+	renderer::BufferMemoryBarrier BufferBase::makeTransferDestination()const
+	{
+		return renderer::BufferMemoryBarrier{ renderer::AccessFlag::eTransferWrite
+			, renderer::AccessFlag::eTransferWrite
+			, 0u
+			, 0u
+			, *this
+			, 0u
+			, getSize() };
+	}
+
+	renderer::BufferMemoryBarrier BufferBase::makeTransferSource()const
+	{
+		return renderer::BufferMemoryBarrier{ renderer::AccessFlag::eTransferRead
+			, renderer::AccessFlag::eTransferRead
+			, 0u
+			, 0u
+			, *this
+			, 0u
+			, getSize() };
+	}
+
+	renderer::BufferMemoryBarrier BufferBase::makeVertexShaderInputResource()const
+	{
+		return renderer::BufferMemoryBarrier{ renderer::AccessFlag::eShaderRead
+			, renderer::AccessFlag::eShaderRead
+			, 0u
+			, 0u
+			, *this
+			, 0u
+			, getSize() };
+	}
+
+	renderer::BufferMemoryBarrier BufferBase::makeUniformBufferInput()const
+	{
+		return renderer::BufferMemoryBarrier{ renderer::AccessFlag::eUniformRead
+			, renderer::AccessFlag::eUniformRead
+			, 0u
+			, 0u
+			, *this
+			, 0u
+			, getSize() };
+	}
+
+	renderer::BufferMemoryBarrier BufferBase::makeMemoryTransitionBarrier( renderer::AccessFlags dstAccess )const
+	{
+		return renderer::BufferMemoryBarrier{ dstAccess
+			, dstAccess
+			, 0u
+			, 0u
+			, *this
+			, 0u
+			, getSize() };
 	}
 }

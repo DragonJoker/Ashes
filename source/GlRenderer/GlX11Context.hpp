@@ -15,8 +15,9 @@ namespace gl_renderer
 		X11Context( renderer::ConnectionPtr && connection );
 		~X11Context();
 
-		void setCurrent()override;
-		void endCurrent()override;
+		void setCurrent()const override;
+		void endCurrent()const override;
+		void swapBuffers()const override;
 
 		inline GLXContext getContext()
 		{

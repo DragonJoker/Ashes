@@ -215,26 +215,26 @@ void Engine::doInitialise3DElements()
 //	m_picked->show( false );
 //	scene.add( m_picked );
 //*/
-//	auto billboardMat = std::make_shared< render::Material >();
-//	billboardMat->diffuseMap( texture );
-//	//billboardMat->opacityMap( opacity );
-//	billboardMat->ambient( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
-//	billboardMat->diffuse( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
-//	billboardMat->emissive( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
-//	scene.materials().addElement( "billboard", billboardMat );
-//	auto billboardBuffers = std::make_shared< render::BillboardBuffer >( *m_device
-//		, false );
-//	billboardBuffers->add( { -100.0f, utils::Vec3{ 1, 0, 0 }, utils::Vec2{ 1, 1 } } );
-//	//billboardBuffers->add( { -100.0f, utils::Vec3{ 0, 1, 0 }, utils::Vec2{ 1, 0.5 } } );
-//	//billboardBuffers->add( { -100.0f, utils::Vec3{ -1, 0, 0 }, utils::Vec2{ 0.5, 1 } } );
-//	//billboardBuffers->add( { -100.0f, utils::Vec3{ 0, -1, 0 }, utils::Vec2{ 1.5, 1.5 } } );
-//	scene.addBillboardBuffer( "billboard", billboardBuffers );
-//	auto billboard = std::make_shared< render::Billboard >( "billboard", *billboardBuffers );
-//	billboard->dimensions( utils::IVec2{ 1, 1 } );
-//	billboard->moveTo( utils::Vec3{ 0, 0, 50 } );
-//	billboard->scale( utils::Vec3{ 1.5, 1.5, 1.5 } );
-//	billboard->material( billboardMat );
-//	scene.add( billboard );
+	auto billboardMat = std::make_shared< render::Material >();
+	//billboardMat->diffuseMap( texture );
+	//billboardMat->opacityMap( opacity );
+	billboardMat->ambient( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
+	billboardMat->diffuse( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
+	billboardMat->emissive( renderer::RgbColour{ 1.0, 0.0, 0.5 } );
+	scene.materials().addElement( "billboard", billboardMat );
+	auto billboardBuffer = std::make_shared< render::BillboardBuffer >( *m_device
+		, false );
+	billboardBuffer->add( { -100.0f, utils::Vec3{ 1, 0, 0 }, utils::Vec2{ 1, 1 } } );
+	//billboardBuffer->add( { -100.0f, utils::Vec3{ 0, 1, 0 }, utils::Vec2{ 1, 0.5 } } );
+	//billboardBuffer->add( { -100.0f, utils::Vec3{ -1, 0, 0 }, utils::Vec2{ 0.5, 1 } } );
+	//billboardBuffer->add( { -100.0f, utils::Vec3{ 0, -1, 0 }, utils::Vec2{ 1.5, 1.5 } } );
+	scene.addBillboardBuffer( "billboard", billboardBuffer );
+	auto billboard = std::make_shared< render::Billboard >( "billboard", *billboardBuffer );
+	billboard->dimensions( utils::IVec2{ 1, 1 } );
+	billboard->moveTo( utils::Vec3{ 0, 0, 50 } );
+	billboard->scale( utils::Vec3{ 1.5, 1.5, 1.5 } );
+	billboard->material( billboardMat );
+	scene.add( billboard );
 ///*
 //	auto starsMat = std::make_shared< render::Material >();
 //	starsMat->opacityMap( opacity );
@@ -326,25 +326,25 @@ void Engine::doInitialise3DElements()
 	//bizuizui->material( bizuizuiMat );
 	//scene.addOverlay( "bizuizui", bizuizui );
 
-	auto trucPanelMat = doCreateOverlayMaterial( "trucPanel", renderer::RgbColour{ 0, 0, 1 }, 1.0 );
-	auto trucBorderMat = doCreateOverlayMaterial( "trucBorder", renderer::RgbColour{ 1, 0, 1 }, 1.0 );
-	auto truc = std::make_shared< render::BorderPanelOverlay >();
-	truc->position( utils::IVec2{ 700, 100 } );
-	truc->size( utils::IVec2{ 200, 200 } );
-	truc->borderSize( utils::IVec4{ 20, 20, 20, 20 } );
-	truc->material( trucPanelMat );
-	truc->borderMaterial( trucBorderMat );
-	scene.addOverlay( "truc", truc );
+	//auto trucPanelMat = doCreateOverlayMaterial( "trucPanel", renderer::RgbColour{ 0, 0, 1 }, 1.0 );
+	//auto trucBorderMat = doCreateOverlayMaterial( "trucBorder", renderer::RgbColour{ 1, 0, 1 }, 1.0 );
+	//auto truc = std::make_shared< render::BorderPanelOverlay >();
+	//truc->position( utils::IVec2{ 700, 100 } );
+	//truc->size( utils::IVec2{ 200, 200 } );
+	//truc->borderSize( utils::IVec4{ 20, 20, 20, 20 } );
+	//truc->material( trucPanelMat );
+	//truc->borderMaterial( trucBorderMat );
+	//scene.addOverlay( "truc", truc );
 
-	auto bidulePanelMat = doCreateOverlayMaterial( "bidulePanel", renderer::RgbColour{ 0, 1, 1 }, 1.0 );
-	auto biduleBorderMat = doCreateOverlayMaterial( "biduleBorder", renderer::RgbColour{ 1, 1, 0 }, 1.0 );
-	auto bidule = std::make_shared< render::BorderPanelOverlay >();
-	bidule->position( utils::IVec2{ 1000, 100 } );
-	bidule->size( utils::IVec2{ 200, 200 } );
-	bidule->borderSize( utils::IVec4{ 20, 20, 20, 20 } );
-	bidule->material( bidulePanelMat );
-	bidule->borderMaterial( biduleBorderMat );
-	scene.addOverlay( "bidule", bidule );
+	//auto bidulePanelMat = doCreateOverlayMaterial( "bidulePanel", renderer::RgbColour{ 0, 1, 1 }, 1.0 );
+	//auto biduleBorderMat = doCreateOverlayMaterial( "biduleBorder", renderer::RgbColour{ 1, 1, 0 }, 1.0 );
+	//auto bidule = std::make_shared< render::BorderPanelOverlay >();
+	//bidule->position( utils::IVec2{ 1000, 100 } );
+	//bidule->size( utils::IVec2{ 200, 200 } );
+	//bidule->borderSize( utils::IVec4{ 20, 20, 20, 20 } );
+	//bidule->material( bidulePanelMat );
+	//bidule->borderMaterial( biduleBorderMat );
+	//scene.addOverlay( "bidule", bidule );
 
 	//m_onObjectPicked = m_window->picking().onObjectPicked.connect
 	//	( std::bind( &Engine::onObjectPicked

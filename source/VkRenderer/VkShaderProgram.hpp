@@ -48,6 +48,13 @@ namespace vk_renderer
 			, renderer::ShaderStageFlag stage )override;
 		/**
 		*\brief
+		*	Lie les modules du programme.
+		*/
+		void link()override
+		{
+		}
+		/**
+		*\brief
 		*	Le début du tableau de modules.
 		*/
 		inline vk::ShaderProgram const & getProgram()const

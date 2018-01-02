@@ -17,8 +17,9 @@ namespace gl_renderer
 		MswContext( renderer::ConnectionPtr && connection );
 		~MswContext();
 
-		void setCurrent()override;
-		void endCurrent()override;
+		void setCurrent()const override;
+		void endCurrent()const override;
+		void swapBuffers()const override;
 
 		inline HDC getHDC()const
 		{

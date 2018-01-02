@@ -18,12 +18,18 @@ namespace gl_renderer
 			, minFilter
 			, magFilter
 			, mipFilter }
-		, m_sampler{ static_cast< Device const & >( device ).getDevice().createSampler( convert( minFilter )
-			, convert( magFilter )
-			, convert( mipFilter )
-			, convert( wrapS )
-			, convert( wrapT )
-			, convert( wrapR ) ) }
 	{
+		glGenSamplers( 1, &m_sampler );
+		glBindSampler( 0u, m_sampler );
+		glSamplerParameteri( m_sampler, GL_TEXTURE_MIN_FILTER, convert( minFilter, mipFilter ) );
+		glSamplerParameteri( m_sampler, GL_TEXTURE_MAG_FILTER, convert( magFilter ) );
+		glSamplerParameteri( m_sampler, GL_TEXTURE_WRAP_S, convert( wrapS ) );
+		glSamplerParameteri( m_sampler, GL_TEXTURE_WRAP_T, convert( wrapT ) );
+		glSamplerParameteri( m_sampler, GL_TEXTURE_WRAP_R, convert( wrapR ) );
+	}
+
+	Sampler::~Sampler()
+	{
+		glDeleteSamplers( 1, &m_sampler );
 	}
 }

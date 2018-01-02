@@ -902,6 +902,7 @@ void main()
 		auto program = device.createShaderProgram();
 		program->createModule( vtx, renderer::ShaderStageFlag::eVertex );
 		program->createModule( pxl, renderer::ShaderStageFlag::eFragment );
+		program->link();
 		return program;
 	}
 

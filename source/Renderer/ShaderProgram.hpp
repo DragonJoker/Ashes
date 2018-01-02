@@ -55,6 +55,11 @@ namespace renderer
 		*/
 		virtual void createModule( ByteArray const & shader
 			, ShaderStageFlag stage ) = 0;
+		/**
+		*\brief
+		*	Lie les modules du programme.
+		*/
+		virtual void link() = 0;
 	};
 }
 

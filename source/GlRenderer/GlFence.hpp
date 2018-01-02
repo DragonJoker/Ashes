@@ -41,14 +41,14 @@ namespace gl_renderer
 		*\return
 		*	\p WaitResult::eSuccess ou \p WaitResult::eTimeOut en cas de succès.
 		*/ 
-		renderer::WaitResult wait( uint32_t timeout )override;
+		renderer::WaitResult wait( uint32_t timeout )const override;
 		/**
 		*\brief
 		*	Remet la barrière en non signalée.
 		*/ 
-		void reset()override;
+		void reset()const override;
 
 	private:
-		GLsync m_fence{ nullptr };
+		mutable GLsync m_fence{ nullptr };
 	};
 }

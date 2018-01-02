@@ -19,12 +19,17 @@ namespace gl_renderer
 		*\brief
 		*	Active le contexte.
 		*/
-		virtual void setCurrent() = 0;
+		virtual void setCurrent()const = 0;
 		/**
 		*\brief
 		*	Désactive le contexte.
 		*/
-		virtual void endCurrent() = 0;
+		virtual void endCurrent()const = 0;
+		/**
+		*\brief
+		*	Echange les tampons.
+		*/
+		virtual void swapBuffers()const = 0;
 		/**
 		*\brief
 		*	Crée un contexte.

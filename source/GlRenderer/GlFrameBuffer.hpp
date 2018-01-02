@@ -28,6 +28,17 @@ namespace gl_renderer
 		*	n'est pas possible, une std::runtime_error est lancée.
 		*\param[in] dimensions
 		*	Les dimensions du tampon d'images.
+		*/
+		FrameBuffer( renderer::RenderPass const & renderPass
+			, utils::IVec2 const & dimensions );
+		/**
+		*\brief
+		*	Crée un FrameBuffer compatible avec la passe de rendu donnée.
+		*\remarks
+		*	Si la compatibilité entre les textures voulues et les formats de la passe de rendu
+		*	n'est pas possible, une std::runtime_error est lancée.
+		*\param[in] dimensions
+		*	Les dimensions du tampon d'images.
 		*\param[in] textures
 		*	Les textures voulues pour le tampon d'images à créer.
 		*/

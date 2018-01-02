@@ -7,27 +7,11 @@ See LICENSE file in root folder.
 #include "GlFrameBuffer.hpp"
 #include "GlDevice.hpp"
 #include "GlCommandBuffer.hpp"
-#include "GlRenderPassState.hpp"
 #include "GlRenderSubpass.hpp"
 #include "GlTexture.hpp"
 
 namespace gl_renderer
 {
-	namespace
-	{
-		std::vector< vk::RenderSubpass > doConvert( renderer::RenderSubpassPtrArray const & subpasses )
-		{
-			std::vector< vk::RenderSubpass > result;
-
-			for ( auto & subpass : subpasses )
-			{
-				result.emplace_back( static_cast< RenderSubpass const & >( *subpass ).getRenderSubpass() );
-			}
-
-			return result;
-		}
-	}
-
 	RenderPass::RenderPass( renderer::Device const & device
 		, std::vector< utils::PixelFormat > const & formats
 		, renderer::RenderSubpassPtrArray const & subpasses
@@ -42,13 +26,7 @@ namespace gl_renderer
 			, finalState
 			, clear
 			, samplesCount }
-		, m_renderPass( static_cast< Device const & >( device ).getDevice()
-			, convert< VkFormat >( formats )
-			, doConvert( subpasses )
-			, convert( initialState )
-			, convert( finalState )
-			, clear
-			, convert( samplesCount ) )
+		, m_clear{ clear }
 	{
 	}
 

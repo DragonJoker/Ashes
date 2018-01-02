@@ -21,12 +21,12 @@ namespace gl_renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] gl_renderer
+		*\param[in] renderer
 		*	L'instance de Renderer.
 		*\param[in] connection
 		*	La connection à l'application.
 		*/
-		Device( renderer::Renderer const & gl_renderer
+		Device( renderer::Renderer const & renderer
 			, renderer::ConnectionPtr && connection );
 		/**
 		*\brief
@@ -204,6 +204,11 @@ namespace gl_renderer
 		*	Attend que le périphérique soit inactif.
 		*/
 		void waitIdle()const;
+		/**
+		*\brief
+		*	Echange les tampons.
+		*/
+		void swapBuffers()const;
 		/**
 		*\brief
 		*	Le numéro de version.
