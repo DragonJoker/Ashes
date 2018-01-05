@@ -10,7 +10,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Classe de base d'une commande.
+	*	Commande de dessin non indexé.
 	*/
 	class DrawCommand
 		: public CommandBase
@@ -19,10 +19,29 @@ namespace gl_renderer
 		/**
 		*\brief
 		*	Constructeur.
+		*\param[in] vtxCount
+		*	Nombre de sommets.
+		*\param[in] instCount
+		*	Nombre d'instances.
+		*\param[in] firstVertex
+		*	Index du premier sommet.
+		*\param[in] firstInstance
+		*	Index de la première instance.
 		*/
-		DrawCommand();
+		DrawCommand( uint32_t vtxCount
+			, uint32_t instCount
+			, uint32_t firstVertex
+			, uint32_t firstInstance
+			, renderer::PrimitiveTopology mode );
 
 		void apply()const override;
 		CommandPtr clone()const override;
+
+	private:
+		uint32_t m_vtxCount;
+		uint32_t m_instCount;
+		uint32_t m_firstVertex;
+		uint32_t m_firstInstance;
+		GLenum m_mode;
 	};
 }

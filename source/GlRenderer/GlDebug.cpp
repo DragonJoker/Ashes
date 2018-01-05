@@ -17,13 +17,13 @@ namespace gl_api
 {
 	/**
 	*\brief
-	*	R�cup�re une fonction dans la dll OpenGL actuellement charg�e
+	*	Récupère une fonction dans la dll OpenGL actuellement chargée
 	*\param[in] p_strName
 	*	Le nom de la fonction
 	*\param[in] p_func
-	*	Re�oit la fonction
+	*	Reçoit la fonction
 	*\return
-	*	true si la fonction a �t� trouv�e, false sinon
+	*	true si la fonction a été trouvée, false sinon
 	*/
 	template< typename Func >
 	bool getFunction( std::string const & p_strName, Func & p_func )

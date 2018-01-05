@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 #include "VkCommandPool.hpp"
 #include "VkConnection.hpp"
 #include "VkDescriptorSetLayout.hpp"
+#include "VkGeometryBuffers.hpp"
 #include "VkPipeline.hpp"
 #include "VkPipelineLayout.hpp"
 #include "VkQueue.hpp"
@@ -68,6 +69,60 @@ namespace vk_renderer
 	{
 		return std::make_unique< VertexLayout >( bindingSlot
 			, stride );
+	}
+
+	renderer::GeometryBuffersPtr Device::createGeometryBuffers( renderer::VertexBufferBase const & vbo
+		, uint64_t vboOffset
+		, renderer::VertexLayout const & layout )const
+	{
+		return std::make_unique< GeometryBuffers >( vbo
+			, vboOffset
+			, layout );
+	}
+
+	renderer::GeometryBuffersPtr Device::createGeometryBuffers( renderer::VertexBufferBase const & vbo
+		, uint64_t vboOffset
+		, renderer::VertexLayout const & layout
+		, renderer::BufferBase const & ibo
+		, uint64_t iboOffset
+		, renderer::IndexType type )const
+	{
+		return std::make_unique< GeometryBuffers >( vbo
+			, vboOffset
+			, layout
+			, ibo
+			, iboOffset
+			, type );
+	}
+
+	renderer::GeometryBuffersPtr Device::createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
+		, std::vector< uint64_t > vboOffsets
+		, renderer::VertexLayoutCRefArray const & layouts )const
+	{
+		return std::make_unique< GeometryBuffers >( vbos
+			, vboOffsets
+			, layouts );
+	}
+
+	renderer::GeometryBuffersPtr Device::createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
+		, std::vector< uint64_t > vboOffsets
+		, renderer::VertexLayoutCRefArray const & layouts
+		, renderer::BufferBase const & ibo
+		, uint64_t iboOffset
+		, renderer::IndexType type )const
+	{
+		return std::make_unique< GeometryBuffers >( vbos
+			, vboOffsets
+			, layouts
+			, ibo
+			, iboOffset
+			, type );
+	}
+
+	renderer::PipelineLayoutPtr Device::createPipelineLayout()const
+	{
+		return std::make_unique< PipelineLayout >( *this
+			, nullptr );
 	}
 
 	renderer::PipelineLayoutPtr Device::createPipelineLayout( renderer::DescriptorSetLayout const & layout )const

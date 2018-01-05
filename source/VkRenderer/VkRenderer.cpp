@@ -14,6 +14,7 @@
 namespace vk_renderer
 {
 	Renderer::Renderer()
+		: renderer::Renderer{}
 	{
 # if VKRENDERER_GLSL_TO_SPV
 

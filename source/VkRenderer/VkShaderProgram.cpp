@@ -165,8 +165,21 @@ namespace vk_renderer
 		auto messages = ( EShMessages )( EShMsgSpvRules | EShMsgVulkanRules );
 		auto glstage = doGetLanguage( stage );
 
+		std::string source = shader;
+
+		if ( stage == renderer::ShaderStageFlag::eVertex )
+		{
+			std::string const lookup = "gl_Position.y = -gl_Position.y;";
+			auto it = source.find( lookup );
+
+			if ( it != std::string::npos )
+			{
+				source.replace( it, lookup.size(), "" );
+			}
+		}
+
 		glslang::TShader glshader{ glstage };
-		char const * const str = shader.c_str();
+		char const * const str = source.c_str();
 		glshader.setStrings( &str, 1 );
 
 		if ( !glshader.parse( &resources, 100, false, messages ) )

@@ -10,6 +10,8 @@
 
 #include <Renderer/RendererPrerequisites.hpp>
 #include <Renderer/DescriptorSet.hpp>
+#include <Renderer/GeometryBuffers.hpp>
+#include <Renderer/VertexLayout.hpp>
 
 #include <Utils/Quaternion.hpp>
 #include <Utils/UtilsSignal.hpp>
@@ -220,14 +222,18 @@ namespace render
 	*/
 	struct RenderSubmesh
 	{
-		RenderSubmesh( renderer::DescriptorSetPool const & pool
+		RenderSubmesh( renderer::Device const & device
+			, renderer::DescriptorSetPool const & pool
 			, MeshPtr mesh
 			, SubmeshPtr submesh
 			, MaterialPtr material
 			, ObjectPtr object
 			, uint32_t index
 			, renderer::UniformBuffer< MatrixUbo > const & mtxUbo
-			, renderer::UniformBuffer< MaterialUbo > const & matUbo );
+			, renderer::UniformBuffer< MaterialUbo > const & matUbo
+			, renderer::VertexLayout const & posLayout
+			, renderer::VertexLayoutPtr const & nmlLayout
+			, renderer::VertexLayoutPtr const & texLayout );
 		//! Le maillage.
 		MeshPtr m_mesh;
 		//! Le sous-maillage.
@@ -238,6 +244,8 @@ namespace render
 		ObjectPtr m_object;
 		//! Le descriptor set.
 		renderer::DescriptorSetPtr m_descriptor;
+		//! Le tampon de géométries.
+		renderer::GeometryBuffersPtr m_vao;
 	};
 	//! Un vecteur de RenderSubmesh.
 	using RenderSubmeshVector = std::vector< RenderSubmesh >;
@@ -247,16 +255,20 @@ namespace render
 	*/
 	struct RenderBillboard
 	{
-		RenderBillboard( renderer::DescriptorSetPool const & pool
+		RenderBillboard( renderer::Device const & device
+			, renderer::DescriptorSetPool const & pool
 			, BillboardPtr billboard
 			, uint32_t index
 			, renderer::UniformBuffer< MatrixUbo > const & mtxUbo
 			, renderer::UniformBuffer< MaterialUbo > const & matUbo
-			, renderer::UniformBuffer< BillboardUbo > const & billboardUbo );
+			, renderer::UniformBuffer< BillboardUbo > const & billboardUbo
+			, renderer::VertexLayout const & layout );
 		//! Le billboard.
 		BillboardPtr m_billboard;
 		//! Le descriptor set.
 		renderer::DescriptorSetPtr m_descriptor;
+		//! Le tampon de géométries.
+		renderer::GeometryBuffersPtr m_vao;
 	};
 	//! Un vecteur de RenderBillboard.
 	using RenderBillboardVector = std::vector< RenderBillboard >;
@@ -266,16 +278,20 @@ namespace render
 	*/
 	struct RenderPolyLine
 	{
-		RenderPolyLine( renderer::DescriptorSetPool const & pool
+		RenderPolyLine( renderer::Device const & device
+			, renderer::DescriptorSetPool const & pool
 			, PolyLinePtr line
 			, uint32_t index
 			, renderer::UniformBuffer< MatrixUbo > const & mtxUbo
 			, renderer::UniformBuffer< MaterialUbo > const & matUbo
-			, renderer::UniformBuffer< LineUbo > const & lineUbo );
+			, renderer::UniformBuffer< LineUbo > const & lineUbo
+			, renderer::VertexLayout const & layout );
 		//! La polyligne.
 		PolyLinePtr m_line;
 		//! Le descriptor set.
 		renderer::DescriptorSetPtr m_descriptor;
+		//! Le tampon de géométries.
+		renderer::GeometryBuffersPtr m_vao;
 	};
 	//! Un vecteur de RenderPolyLine.
 	using RenderPolyLineVector = std::vector< RenderPolyLine >;

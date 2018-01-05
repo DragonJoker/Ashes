@@ -15,9 +15,9 @@ namespace renderer
 	protected:
 		/**
 		*\brief
-		*	Constructeur, initialise l'instance de Vulkan.
+		*	Constructeur, initialise l'instance de renderer.
 		*/
-		Renderer() = default;
+		Renderer();
 
 	public:
 		/**

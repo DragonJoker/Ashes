@@ -254,6 +254,8 @@ namespace render
 		renderer::VertexBufferPtr< Vertex > m_vbo;
 		//! Le layout de sommets du tampon.
 		renderer::VertexLayoutPtr m_layout;
+		//! Le tampon ¨de géométries.
+		renderer::GeometryBuffersPtr m_vao;
 		//! Le pool de descripteurs.
 		renderer::DescriptorSetPoolPtr m_descriptorPool;
 		//! Le set de descripteurs.
@@ -268,6 +270,7 @@ namespace render
 		mutable bool m_pick{ false };
 		//! Les informations de débogage.
 		Debug m_debug;
+		//! Dit si le VBO est initialisé.
 		bool m_vboInitialised{ false };
 		//! Les ressources de rendu de la frame actuelle.
 		renderer::RenderingResources * m_resources{ nullptr };

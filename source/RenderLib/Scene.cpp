@@ -242,11 +242,11 @@ namespace render
 		static utils::LogarithmicRange< 2, float > threshRange{ 0 + offset, 1 + offset };
 		auto percent = m_state.zoomBounds().invpercent( m_state.zoom() );
 		m_currentThreshold = m_threshold.range().value( percent );
-		// First, initialise the billboards that need to be.
-		for ( auto & billboard : m_newBillboardBuffers )
-		{
-			billboard->initialise();
-		}
+		//// First, initialise the billboards that need to be.
+		//for ( auto & billboard : m_newBillboardBuffers )
+		//{
+		//	billboard->initialise();
+		//}
 
 		if ( m_currentThreshold != m_previousThreshold )
 		{

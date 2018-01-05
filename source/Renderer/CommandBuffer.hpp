@@ -185,35 +185,11 @@ namespace renderer
 			, PipelineBindPoint bindingPoint = PipelineBindPoint::eGraphics )const = 0;
 		/**
 		*\brief
-		*	Active un tampon de sommets.
-		*\param[in] vertexBuffer
-		*	Le tampon de sommets.
-		*\param[in] offset
-		*	L'offset du premier sommet dans le tampon.
+		*	Active des tampons de géométrie.
+		*\param[in] geometryBuffers
+		*	Les tampons de géométrie.
 		*/
-		virtual void bindVertexBuffer( VertexBufferBase const & vertexBuffer
-			, uint64_t offset )const = 0;
-		/**
-		*\brief
-		*	Active des tampons de sommets.
-		*\param[in] vertexBuffers
-		*	Les tampons de sommets.
-		*\param[in] offsets
-		*	L'offset du premier sommet pour chaque tampon.
-		*/
-		virtual void bindVertexBuffers( std::vector< std::reference_wrapper< VertexBufferBase const > > const & vertexBuffers
-			, std::vector< uint64_t > offsets )const = 0;
-		/**
-		*\brief
-		*	Active un tampon de sommets.
-		*\param[in] vertexBuffer
-		*	Le tampon de sommets.
-		*\param[in] offset
-		*	L'offset du premier sommet dans le tampon.
-		*/
-		virtual void bindIndexBuffer( BufferBase const & indexBuffer
-			, uint64_t offset
-			, IndexType type )const = 0;
+		virtual void bindGeometryBuffers( GeometryBuffers const & geometryBuffers )const = 0;
 		/**
 		*\brief
 		*	Active un descriptor set.

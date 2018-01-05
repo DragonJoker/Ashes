@@ -95,6 +95,17 @@ namespace renderer
 		*	La nouvelle valeur.
 		*/
 		virtual Pipeline & scissor( Scissor const & scissor ) = 0;
+		/**
+		*\return
+		*	Le type de primitives dessinées via ce pipeline.
+		*/
+		inline PrimitiveTopology getPrimitiveType()const
+		{
+			return m_topology;
+		}
+
+	private:
+		PrimitiveTopology m_topology;
 	};
 }
 

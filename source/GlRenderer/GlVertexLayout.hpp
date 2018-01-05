@@ -45,6 +45,22 @@ namespace gl_renderer
 		renderer::AttributeBase createAttribute( uint32_t location
 			, renderer::AttributeFormat format
 			, uint32_t offset )override;
+		/**
+		*\return
+		*	Le début du tableau d'attributs.
+		*/
+		inline std::vector< AttributeBase >::const_iterator begin()const
+		{
+			return m_attributes.begin();
+		}
+		/**
+		*\return
+		*	La fin du tableau d'attributs.
+		*/
+		inline std::vector< AttributeBase >::const_iterator end()const
+		{
+			return m_attributes.end();
+		}
 
 	private:
 		std::vector< AttributeBase > m_attributes;

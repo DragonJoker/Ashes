@@ -5,6 +5,8 @@ See LICENSE file in root folder.
 #include "GlBindPipelineCommand.hpp"
 
 #include "GlRenderer/GlPipeline.hpp"
+#include "GlRenderer/GlPipelineLayout.hpp"
+#include "GlRenderer/GlShaderProgram.hpp"
 
 namespace gl_renderer
 {
@@ -254,6 +256,8 @@ namespace gl_renderer
 	BindPipelineCommand::BindPipelineCommand( renderer::Pipeline const & pipeline
 		, renderer::PipelineBindPoint bindingPoint )
 		: m_pipeline{ static_cast< Pipeline const & > ( pipeline ) }
+		, m_layout{ static_cast< PipelineLayout const & > ( m_pipeline.getLayout() ) }
+		, m_program{ static_cast< ShaderProgram const & > ( m_pipeline.getProgram() ) }
 		, m_bindingPoint{ bindingPoint }
 	{
 	}
@@ -287,6 +291,8 @@ namespace gl_renderer
 		{
 			doApply( m_pipeline.getScissor() );
 		}
+
+		glUseProgram( m_program.getProgram() );
 	}
 
 	CommandPtr BindPipelineCommand::clone()const

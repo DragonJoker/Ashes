@@ -10,7 +10,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Classe de base d'une commande.
+	*	Commande de copie du contenu d'un tampon dans une image.
 	*/
 	class CopyImageCommand
 		: public CommandBase
@@ -19,10 +19,21 @@ namespace gl_renderer
 		/**
 		*\brief
 		*	Constructeur.
+		*\param[in] src
+		*	Le tampon source.
+		*\param[in] dst
+		*	L'image destination.
 		*/
-		CopyImageCommand();
+		CopyImageCommand( renderer::BufferBase const & src
+			, renderer::Texture const & dst );
 
 		void apply()const override;
 		CommandPtr clone()const override;
+
+	private:
+		BufferBase const & m_src;
+		Texture const & m_dst;
+		GLenum m_format;
+		GLenum m_type;
 	};
 }

@@ -53,6 +53,14 @@ namespace renderer
 		{
 			return *m_buffer;
 		}
+		/**
+		*\return
+		*	Le périphérique logique.
+		*/
+		inline Device const & getDevice()const
+		{
+			return m_device;
+		}
 
 	protected:
 		Device const & m_device;
@@ -91,6 +99,40 @@ namespace renderer
 		inline uint32_t getCount()const
 		{
 			return m_buffer->getSize() / sizeof( T );
+		}
+		/**
+		*\brief
+		*	Mappe la mémoire du tampon en RAM.
+		*\param[in] offset
+		*	L'offset à partir duquel la mémoire du tampon est mappée.
+		*\param[in] size
+		*	La taille en octets de la mémoire à mapper.
+		*\param[in] flags
+		*	Indicateurs de configuration du mapping.
+		*\return
+		*	\p nullptr si le mapping a échoué.
+		*/
+		inline T * lock( uint32_t offset
+			, uint32_t size
+			, MemoryMapFlags flags )const
+		{
+			return reinterpret_cast< T * >( m_buffer->lock( uint32_t( offset * sizeof( T ) )
+				, uint32_t( size * sizeof( T ) )
+				, flags ) );
+		}
+		/**
+		*\brief
+		*	Unmappe la mémoire du tampon de la RAM.
+		*\param[in] size
+		*	La taille en octets de la mémoire mappée.
+		*\param[in] modified
+		*	Dit si le tampon a été modifié, et donc si la VRAM doit être mise à jour.
+		*/
+		inline void unlock( uint32_t size
+			, bool modified )const
+		{
+			m_buffer->unlock( uint32_t( size * sizeof( T ) )
+				, modified );
 		}
 	};
 	/**

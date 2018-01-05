@@ -79,6 +79,81 @@ namespace vk_renderer
 			, uint32_t stride )const override;
 		/**
 		*\brief
+		*	Crée tampon de géométries.
+		*\param[in] layout
+		*	Le layout des descripteurs utilisés par le pipeline.
+		*\return
+		*	Le layout créé.
+		*/
+		renderer::GeometryBuffersPtr createGeometryBuffers( renderer::VertexBufferBase const & vbo
+			, uint64_t vboOffset
+			, renderer::VertexLayout const & layout )const override;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] vbo
+		*	Le VBO.
+		*\param[in] vboOffset
+		*	L'offset du premier sommet dans le VBO.
+		*\param[in] layout
+		*	Le layout.
+		*\param[in] ibo
+		*	L'IBO.
+		*\param[in] iboOffset
+		*	L'offset du premier sommet dans l'IBO.
+		*\param[in] type
+		*	Le type des indices.
+		*/
+		renderer::GeometryBuffersPtr createGeometryBuffers( renderer::VertexBufferBase const & vbo
+			, uint64_t vboOffset
+			, renderer::VertexLayout const & layout
+			, renderer::BufferBase const & ibo
+			, uint64_t iboOffset
+			, renderer::IndexType type )const override;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] vbos
+		*	Les VBOs.
+		*\param[in] vboOffsets
+		*	L'offset du premier sommet pour chaque VBO.
+		*\param[in] layouts
+		*	Les layouts, un par vbo de \p vbos.
+		*/
+		renderer::GeometryBuffersPtr createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
+			, std::vector< uint64_t > vboOffsets
+			, renderer::VertexLayoutCRefArray const & layouts )const override;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] vbos
+		*	Les VBOs.
+		*\param[in] vboOffsets
+		*	L'offset du premier sommet pour chaque VBO.
+		*\param[in] layouts
+		*	Les layouts, un par vbo de \p vbos.
+		*\param[in] ibo
+		*	L'IBO.
+		*\param[in] iboOffset
+		*	L'offset du premier sommet dans l'IBO.
+		*\param[in] type
+		*	Le type des indices.
+		*/
+		renderer::GeometryBuffersPtr createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
+			, std::vector< uint64_t > vboOffsets
+			, renderer::VertexLayoutCRefArray const & layouts
+			, renderer::BufferBase const & ibo
+			, uint64_t iboOffset
+			, renderer::IndexType type )const override;
+		/**
+		*\brief
+		*	Crée un layout de pipeline.
+		*\return
+		*	Le layout créé.
+		*/
+		renderer::PipelineLayoutPtr createPipelineLayout()const override;
+		/**
+		*\brief
 		*	Crée un layout de pipeline.
 		*\param[in] layout
 		*	Le layout des descripteurs utilisés par le pipeline.

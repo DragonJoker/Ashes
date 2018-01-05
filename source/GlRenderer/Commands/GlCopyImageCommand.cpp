@@ -4,14 +4,56 @@ See LICENSE file in root folder.
 */
 #include "GlCopyImageCommand.hpp"
 
+#include "GlRenderer/GlBuffer.hpp"
+#include "GlRenderer/GlTexture.hpp"
+
 namespace gl_renderer
 {
-	CopyImageCommand::CopyImageCommand()
+	CopyImageCommand::CopyImageCommand( renderer::BufferBase const & src
+		, renderer::Texture const & dst )
+		: m_src{ static_cast< BufferBase const & >( src ) }
+		, m_dst{ static_cast< Texture const & >( dst ) }
+		, m_format{ getFormat( m_dst.getFormat() ) }
+		, m_type{ getType( m_dst.getFormat() ) }
 	{
 	}
 
 	void CopyImageCommand::apply()const
 	{
+		glBindTexture( GL_TEXTURE_2D, m_dst.getImage() );
+		glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_src.getBuffer() );
+		glTexSubImage2D( GL_TEXTURE_2D
+			, 0
+			, 0
+			, 0
+			, m_dst.getDimensions().x
+			, m_dst.getDimensions().y
+			, m_format
+			, m_type
+			, nullptr );
+		glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0u );
+		glBindTexture( GL_TEXTURE_2D, 0u );
+		//glBindTexture( GL_TEXTURE_2D, m_dst.getImage() );
+		//auto size = m_dst.getDimensions().x * m_dst.getDimensions().y * getSize( m_dst.getFormat() );
+		//auto buffer = m_src.lock( 0u
+		//	, size
+		//	, renderer::MemoryMapFlag::eRead );
+
+		//if ( buffer )
+		//{
+		//	glTexSubImage2D( GL_TEXTURE_2D
+		//		, 0
+		//		, 0
+		//		, 0
+		//		, m_dst.getDimensions().x
+		//		, m_dst.getDimensions().y
+		//		, m_format
+		//		, m_type
+		//		, buffer );
+		//	m_src.unlock( size, false );
+		//}
+
+		//glBindTexture( GL_TEXTURE_2D, 0u );
 	}
 
 	CommandPtr CopyImageCommand::clone()const

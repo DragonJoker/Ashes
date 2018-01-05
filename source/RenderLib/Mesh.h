@@ -115,6 +115,7 @@ namespace render
 		*/
 		inline renderer::VertexBuffer< utils::Vec3 > const & getNormals()const noexcept
 		{
+			assert( m_normal );
 			return *m_normal;
 		}
 		/**
@@ -123,6 +124,7 @@ namespace render
 		*/
 		inline renderer::VertexBuffer< utils::Vec2 > const & getTexCoords()const noexcept
 		{
+			assert( m_texcoord );
 			return *m_texcoord;
 		}
 

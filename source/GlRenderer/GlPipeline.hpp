@@ -191,8 +191,26 @@ namespace gl_renderer
 		{
 			return m_scissor.value();
 		}
+		/**
+		*\return
+		*	Le PipelineLayout.
+		*/
+		inline renderer::PipelineLayout const & getLayout()const
+		{
+			return m_layout;
+		}
+		/**
+		*\return
+		*	Le ShaderProgram.
+		*/
+		inline renderer::ShaderProgram const & getProgram()const
+		{
+			return m_program;
+		}
 
 	private:
+		renderer::PipelineLayout const & m_layout;
+		renderer::ShaderProgram const & m_program;
 		renderer::ColourBlendState m_cbState;
 		renderer::RasterisationState m_rsState;
 		std::optional< renderer::MultisampleState > m_msState;

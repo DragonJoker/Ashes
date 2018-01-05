@@ -6,6 +6,7 @@
 namespace gl_renderer
 {
 	Renderer::Renderer()
+		: renderer::Renderer{}
 	{
 	}
 

@@ -105,10 +105,10 @@ namespace gl_renderer
 			return GL_UNSIGNED_SHORT_5_6_5;
 
 		case utils::PixelFormat::eR8G8B8A8:
-			return GL_UNSIGNED_BYTE;
+			return GL_UNSIGNED_INT_8_8_8_8;
 
 		case utils::PixelFormat::eB8G8R8A8:
-			return GL_UNSIGNED_BYTE;
+			return GL_UNSIGNED_INT_8_8_8_8;
 
 		case utils::PixelFormat::eRGBA5551:
 			return GL_UNSIGNED_SHORT_5_5_5_1;
@@ -128,6 +128,49 @@ namespace gl_renderer
 		default:
 			assert( false && "Unsupported pixel format." );
 			return GL_RGBA8;
+		}
+	}
+
+	uint32_t getSize( utils::PixelFormat format )noexcept
+	{
+		switch ( format )
+		{
+		case utils::PixelFormat::eL8:
+			return 1u;
+
+		case utils::PixelFormat::eL8A8:
+			return 2u;
+
+		case utils::PixelFormat::eR8G8B8:
+			return 3u;
+
+		case utils::PixelFormat::eRGB565:
+			return 2u;
+
+		case utils::PixelFormat::eR8G8B8A8:
+			return 4u;
+
+		case utils::PixelFormat::eB8G8R8A8:
+			return 4u;
+
+		case utils::PixelFormat::eRGBA5551:
+			return 2u;
+
+		case utils::PixelFormat::eRGBA4444:
+			return 2u;
+
+		case utils::PixelFormat::eD16:
+			return 2u;
+
+		case utils::PixelFormat::eD24S8:
+			return 4u;
+
+		case utils::PixelFormat::eS8:
+			return 1u;
+
+		default:
+			assert( false && "Unsupported pixel format." );
+			return 0u;
 		}
 	}
 

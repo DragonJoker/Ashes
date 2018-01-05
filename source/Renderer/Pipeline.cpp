@@ -14,6 +14,7 @@ namespace renderer
 		, PrimitiveTopology topology
 		, RasterisationState const & rasterisationState
 		, ColourBlendState const & colourBlendState )
+		: m_topology{ topology }
 	{
 	}
 }

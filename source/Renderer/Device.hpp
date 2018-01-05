@@ -105,12 +105,87 @@ namespace renderer
 		/**
 		*\brief
 		*	Crée un layout de pipeline.
+		*\return
+		*	Le layout créé.
+		*/
+		virtual PipelineLayoutPtr createPipelineLayout()const = 0;
+		/**
+		*\brief
+		*	Crée un layout de pipeline.
 		*\param[in] layout
 		*	Le layout des descripteurs utilisés par le pipeline.
 		*\return
 		*	Le layout créé.
 		*/
 		virtual PipelineLayoutPtr createPipelineLayout( DescriptorSetLayout const & layout )const = 0;
+		/**
+		*\brief
+		*	Crée tampon de géométries.
+		*\param[in] layout
+		*	Le layout des descripteurs utilisés par le pipeline.
+		*\return
+		*	Le layout créé.
+		*/
+		virtual GeometryBuffersPtr createGeometryBuffers( VertexBufferBase const & vbo
+			, uint64_t vboOffset
+			, VertexLayout const & layout )const = 0;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] vbo
+		*	Le VBO.
+		*\param[in] vboOffset
+		*	L'offset du premier sommet dans le VBO.
+		*\param[in] layout
+		*	Le layout.
+		*\param[in] ibo
+		*	L'IBO.
+		*\param[in] iboOffset
+		*	L'offset du premier sommet dans l'IBO.
+		*\param[in] type
+		*	Le type des indices.
+		*/
+		virtual GeometryBuffersPtr createGeometryBuffers( VertexBufferBase const & vbo
+			, uint64_t vboOffset
+			, VertexLayout const & layout
+			, BufferBase const & ibo
+			, uint64_t iboOffset
+			, IndexType type )const = 0;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] vbos
+		*	Les VBOs.
+		*\param[in] vboOffsets
+		*	L'offset du premier sommet pour chaque VBO.
+		*\param[in] layouts
+		*	Les layouts, un par vbo de \p vbos.
+		*/
+		virtual GeometryBuffersPtr createGeometryBuffers( VertexBufferCRefArray const & vbos
+			, std::vector< uint64_t > vboOffsets
+			, VertexLayoutCRefArray const & layouts )const = 0;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] vbos
+		*	Les VBOs.
+		*\param[in] vboOffsets
+		*	L'offset du premier sommet pour chaque VBO.
+		*\param[in] layouts
+		*	Les layouts, un par vbo de \p vbos.
+		*\param[in] ibo
+		*	L'IBO.
+		*\param[in] iboOffset
+		*	L'offset du premier sommet dans l'IBO.
+		*\param[in] type
+		*	Le type des indices.
+		*/
+		virtual GeometryBuffersPtr createGeometryBuffers( VertexBufferCRefArray const & vbos
+			, std::vector< uint64_t > vboOffsets
+			, VertexLayoutCRefArray const & layouts
+			, BufferBase const & ibo
+			, uint64_t iboOffset
+			, IndexType type )const = 0;
 		/**
 		*\brief
 		*	Crée un pipeline.

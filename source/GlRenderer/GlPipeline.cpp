@@ -25,6 +25,8 @@ namespace gl_renderer
 			, topology
 			, rasterisationState
 			, colourBlendState }
+		, m_layout{ layout }
+		, m_program{ program }
 		, m_cbState{ colourBlendState }
 		, m_rsState{ rasterisationState }
 	{

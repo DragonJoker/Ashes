@@ -169,35 +169,11 @@ namespace gl_renderer
 			, renderer::PipelineBindPoint bindingPoint )const override;
 		/**
 		*\brief
-		*	Active un tampon de sommets.
-		*\param[in] vertexBuffer
-		*	Le tampon de sommets.
-		*\param[in] offset
-		*	L'offset du premier sommet dans le tampon.
+		*	Active des tampons de géométrie.
+		*\param[in] geometryBuffers
+		*	Les tampons de géométrie.
 		*/
-		void bindVertexBuffer( renderer::VertexBufferBase const & vertexBuffer
-			, uint64_t offset )const override;
-		/**
-		*\brief
-		*	Active des tampons de sommets.
-		*\param[in] vertexBuffers
-		*	Les tampons de sommets.
-		*\param[in] offsets
-		*	L'offset du premier sommet pour chaque tampon.
-		*/
-		void bindVertexBuffers( std::vector< std::reference_wrapper< renderer::VertexBufferBase const > > const & vertexBuffers
-			, std::vector< uint64_t > offsets )const override;
-		/**
-		*\brief
-		*	Active un tampon de sommets.
-		*\param[in] vertexBuffer
-		*	Le tampon de sommets.
-		*\param[in] offset
-		*	L'offset du premier sommet dans le tampon.
-		*/
-		void bindIndexBuffer( renderer::BufferBase const & indexBuffer
-			, uint64_t offset
-			, renderer::IndexType type )const override;
+		void bindGeometryBuffers( renderer::GeometryBuffers const & geometryBuffers )const override;
 		/**
 		*\brief
 		*	Active un descriptor set.
@@ -392,7 +368,9 @@ namespace gl_renderer
 		}
 
 	private:
-		mutable renderer::CommandBufferUsageFlags m_beginFlags;
+		mutable renderer::CommandBufferUsageFlags m_beginFlags{ 0u };
 		mutable CommandArray m_commands;
+		mutable renderer::Pipeline const * m_currentPipeline{ nullptr };
+		mutable renderer::IndexType m_indexType{ renderer::IndexType::eUInt32 };
 	};
 }

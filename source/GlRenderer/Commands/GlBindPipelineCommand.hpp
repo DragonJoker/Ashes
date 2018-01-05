@@ -32,6 +32,8 @@ namespace gl_renderer
 
 	private:
 		Pipeline const & m_pipeline;
+		PipelineLayout const & m_layout;
+		ShaderProgram const & m_program;
 		renderer::PipelineBindPoint m_bindingPoint;
 	};
 }

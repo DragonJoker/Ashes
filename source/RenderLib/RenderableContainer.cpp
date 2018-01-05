@@ -156,14 +156,18 @@ namespace render
 			auto nodeType = UberShader::nodeType( material->opacityType()
 				, material->textureFlags() );
 			auto & node = m_renderer.getObjectNode( nodeType );
-			m_renderObjects[size_t( nodeType )].emplace_back( *node.m_descriptorPool
+			m_renderObjects[size_t( nodeType )].emplace_back( m_device
+				, *node.m_descriptorPool
 				, object->mesh()
 				, *mshit
 				, material
 				, object
 				, uint32_t( m_renderObjects[size_t( nodeType )].size() )
 				, *node.m_mtxUbo
-				, *node.m_matUbo );
+				, *node.m_matUbo
+				, *node.m_posLayout
+				, node.m_nmlLayout
+				, node.m_texLayout );
 			++mshit;
 			++mtlit;
 		}
@@ -227,12 +231,14 @@ namespace render
 		auto nodeType = UberShader::nodeType( material.opacityType()
 			, material.textureFlags() );
 		auto & node = m_renderer.getBillboardNode( nodeType );
-		m_renderBillboards[size_t( nodeType )].emplace_back( *node.m_descriptorPool
+		m_renderBillboards[size_t( nodeType )].emplace_back( m_device
+			, *node.m_descriptorPool
 			, billboard
 			, uint32_t( m_renderBillboards[size_t( nodeType )].size() )
 			, *node.m_mtxUbo
 			, *node.m_matUbo
-			, *node.m_billboardUbo );
+			, *node.m_billboardUbo
+			, *node.m_layout );
 	}
 
 	void RenderableContainer::doRemove( BillboardPtr billboard )
@@ -283,12 +289,14 @@ namespace render
 		auto nodeType = UberShader::nodeType( material.opacityType()
 			, material.textureFlags() );
 		auto & node = m_renderer.getPolyLineNode();
-		m_renderLines[size_t( nodeType )].emplace_back( *node.m_descriptorPool
+		m_renderLines[size_t( nodeType )].emplace_back( m_device
+			, *node.m_descriptorPool
 			, lines
 			, uint32_t( m_renderLines[size_t( nodeType )].size() )
 			, *node.m_mtxUbo
 			, *node.m_matUbo
-			, *node.m_lineUbo );
+			, *node.m_lineUbo
+			, *node.m_layout );
 	}
 
 	void RenderableContainer::doRemove( PolyLinePtr lines )

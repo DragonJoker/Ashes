@@ -13,12 +13,7 @@ namespace gl_renderer
 		, utils::IVec2 const & size )
 		: renderer::SwapChain{ device, size }
 	{
-		m_renderingResources.resize( 3 );
-
-		for ( auto & resource : m_renderingResources )
-		{
-			resource = std::make_unique< RenderingResources >( device );
-		}
+		m_renderingResources.emplace_back( std::make_unique< RenderingResources >( device ) );
 	}
 
 	void SwapChain::reset( utils::IVec2 const & size )
@@ -57,7 +52,6 @@ namespace gl_renderer
 	renderer::RenderingResources * SwapChain::getResources()
 	{
 		auto & resources = *m_renderingResources[m_resourceIndex];
-		m_resourceIndex = ( m_resourceIndex + 1 ) % m_renderingResources.size();
 
 		if ( resources.waitRecord( vk::FenceTimeout ) )
 		{

@@ -10,6 +10,7 @@ See LICENSE file in root folder.
 #include "GlDescriptorSet.hpp"
 #include "GlDevice.hpp"
 #include "GlFrameBuffer.hpp"
+#include "GlGeometryBuffers.hpp"
 #include "GlImageMemoryBarrier.hpp"
 #include "GlPipeline.hpp"
 #include "GlPipelineLayout.hpp"
@@ -20,7 +21,13 @@ See LICENSE file in root folder.
 #include "GlUniformBuffer.hpp"
 
 #include "Commands/GlBeginRenderPassCommand.hpp"
+#include "Commands/GlBindDescriptorSetCommand.hpp"
+#include "Commands/GlBindGeometryBuffersCommand.hpp"
 #include "Commands/GlBindPipelineCommand.hpp"
+#include "Commands/GlCopyBufferCommand.hpp"
+#include "Commands/GlCopyImageCommand.hpp"
+#include "Commands/GlDrawCommand.hpp"
+#include "Commands/GlDrawIndexedCommand.hpp"
 #include "Commands/GlClearCommand.hpp"
 #include "Commands/GlEndRenderPassCommand.hpp"
 #include "Commands/GlScissorCommand.hpp"
@@ -49,17 +56,13 @@ namespace gl_renderer
 		, renderer::QueryControlFlags queryFlags
 		, renderer::QueryPipelineStatisticFlags pipelineStatistics )const
 	{
+		m_commands.clear();
 		m_beginFlags = flags;
 		return true;
 	}
 
 	bool CommandBuffer::end()const
 	{
-		if ( checkFlag( m_beginFlags, renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
-		{
-			m_commands.clear();
-		}
-
 		return glGetError() == GL_NO_ERROR;
 	}
 
@@ -109,37 +112,18 @@ namespace gl_renderer
 	void CommandBuffer::bindPipeline( renderer::Pipeline const & pipeline
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
+		m_currentPipeline = &pipeline;
 		m_commands.emplace_back( std::make_unique< BindPipelineCommand >( pipeline, bindingPoint ) );
 	}
 
-	void CommandBuffer::bindVertexBuffer( renderer::VertexBufferBase const & vertexBuffer
-		, uint64_t offset )const
+	void CommandBuffer::bindGeometryBuffers( renderer::GeometryBuffers const & geometryBuffers )const
 	{
-		//m_commandBuffer->bindVertexBuffer( static_cast< BufferBase const & >( vertexBuffer.getBuffer() ).getBuffer()
-		//	, offset );
-	}
+		m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( geometryBuffers ) );
 
-	void CommandBuffer::bindVertexBuffers( std::vector< std::reference_wrapper< renderer::VertexBufferBase const > > const & vertexBuffers
-		, std::vector< uint64_t > offsets )const
-	{
-		//std::vector< std::reference_wrapper< vk::Buffer const > > buffers;
-
-		//for ( auto & buffer : vertexBuffers )
-		//{
-		//	buffers.emplace_back( static_cast< BufferBase const & >( buffer.get().getBuffer() ).getBuffer() );
-		//}
-
-		//m_commandBuffer->bindVertexBuffers( buffers
-		//	, offsets );
-	}
-
-	void CommandBuffer::bindIndexBuffer( renderer::BufferBase const & indexBuffer
-		, uint64_t offset
-		, renderer::IndexType type )const
-	{
-		//m_commandBuffer->bindIndexBuffer( static_cast< BufferBase const & >( indexBuffer ).getBuffer()
-		//	, offset
-		//	, convert( type ) );
+		if ( geometryBuffers.hasIbo() )
+		{
+			m_indexType = geometryBuffers.getIbo().type;
+		}
 	}
 
 	void CommandBuffer::memoryBarrier( renderer::PipelineStageFlags after
@@ -164,6 +148,7 @@ namespace gl_renderer
 		, renderer::PipelineLayout const & layout
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
+		m_commands.emplace_back( std::make_unique< BindDescriptorSetCommand >( descriptorSet, layout, bindingPoint ) );
 		//m_commandBuffer->bindDescriptorSet( static_cast< DescriptorSet const & >( descriptorSet ).getDescriptorSet()
 		//	, static_cast< PipelineLayout const & >( layout ).getLayout()
 		//	, convert( bindingPoint ) );
@@ -184,10 +169,11 @@ namespace gl_renderer
 		, uint32_t firstVertex
 		, uint32_t firstInstance )const
 	{
-		//m_commandBuffer->draw( vtxCount
-		//	, instCount
-		//	, firstVertex
-		//	, firstInstance );
+		m_commands.emplace_back( std::make_unique< DrawCommand >( vtxCount
+			, instCount
+			, firstVertex
+			, firstInstance
+			, m_currentPipeline->getPrimitiveType() ) );
 	}
 
 	void CommandBuffer::drawIndexed( uint32_t indexCount
@@ -196,11 +182,13 @@ namespace gl_renderer
 		, uint32_t vertexOffset
 		, uint32_t firstInstance )const
 	{
-		//m_commandBuffer->drawIndexed( indexCount
-		//	, instCount
-		//	, firstIndex
-		//	, vertexOffset
-		//	, firstInstance );
+		m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( indexCount
+			, instCount
+			, firstIndex
+			, vertexOffset
+			, firstInstance
+			, m_currentPipeline->getPrimitiveType()
+			, m_indexType ) );
 	}
 
 	void CommandBuffer::copyBuffer( renderer::BufferBase const & src
@@ -208,10 +196,10 @@ namespace gl_renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		//m_commandBuffer->copyBuffer( static_cast< BufferBase const & >( src ).getBuffer()
-		//	, static_cast< BufferBase const & >( dst ).getBuffer()
-		//	, size
-		//	, offset );
+		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src
+			, dst
+			, size
+			, offset ) );
 	}
 
 	void CommandBuffer::copyBuffer( renderer::BufferBase const & src
@@ -219,10 +207,10 @@ namespace gl_renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		//m_commandBuffer->copyBuffer( static_cast< BufferBase const & >( src ).getBuffer()
-		//	, static_cast< BufferBase const & >( dst.getBuffer() ).getBuffer()
-		//	, size
-		//	, offset );
+		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src
+			, dst.getBuffer()
+			, size
+			, offset ) );
 	}
 
 	void CommandBuffer::copyBuffer( renderer::VertexBufferBase const & src
@@ -230,10 +218,10 @@ namespace gl_renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		//m_commandBuffer->copyBuffer( static_cast< BufferBase const & >( src.getBuffer() ).getBuffer()
-		//	, static_cast< BufferBase const & >( dst ).getBuffer()
-		//	, size
-		//	, offset );
+		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src.getBuffer()
+			, dst
+			, size
+			, offset ) );
 	}
 
 	void CommandBuffer::copyBuffer( renderer::VertexBufferBase const & src
@@ -241,10 +229,10 @@ namespace gl_renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		//m_commandBuffer->copyBuffer( static_cast< BufferBase const & >( src.getBuffer() ).getBuffer()
-		//	, static_cast< BufferBase const & >( dst.getBuffer() ).getBuffer()
-		//	, size
-		//	, offset );
+		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src.getBuffer()
+			, dst.getBuffer()
+			, size
+			, offset ) );
 	}
 
 	void CommandBuffer::copyBuffer( renderer::BufferBase const & src
@@ -252,10 +240,10 @@ namespace gl_renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		//m_commandBuffer->copyBuffer( static_cast< BufferBase const & >( src ).getBuffer()
-		//	, static_cast< BufferBase const & >( dst.getBuffer() ).getBuffer()
-		//	, size
-		//	, offset );
+		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src
+			, dst.getBuffer()
+			, size
+			, offset ) );
 	}
 
 	void CommandBuffer::copyBuffer( renderer::UniformBufferBase const & src
@@ -263,10 +251,10 @@ namespace gl_renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		//m_commandBuffer->copyBuffer( static_cast< BufferBase const & >( src.getBuffer() ).getBuffer()
-		//	, static_cast< BufferBase const & >( dst ).getBuffer()
-		//	, size
-		//	, offset );
+		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src.getBuffer()
+			, dst
+			, size
+			, offset ) );
 	}
 
 	void CommandBuffer::copyBuffer( renderer::UniformBufferBase const & src
@@ -274,23 +262,23 @@ namespace gl_renderer
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		//m_commandBuffer->copyBuffer( static_cast< BufferBase const & >( src.getBuffer() ).getBuffer()
-		//	, static_cast< BufferBase const & >( dst.getBuffer() ).getBuffer()
-		//	, size
-		//	, offset );
+		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src.getBuffer()
+			, dst.getBuffer()
+			, size
+			, offset ) );
 	}
 
 	void CommandBuffer::copyImage( renderer::BufferBase const & src
 		, renderer::Texture const & dst )const
 	{
-		//m_commandBuffer->copyImage( static_cast< BufferBase const & >( src ).getBuffer()
-		//	, static_cast< Texture const & >( dst ).getImage() );
+		m_commands.emplace_back( std::make_unique< CopyImageCommand >( src
+			, dst ) );
 	}
 
 	void CommandBuffer::copyImage( renderer::StagingBuffer const & src
 		, renderer::Texture const & dst )const
 	{
-		//m_commandBuffer->copyImage( static_cast< BufferBase const & >( src.getBuffer() ).getBuffer()
-		//	, static_cast< Texture const & >( dst ).getImage() );
+		m_commands.emplace_back( std::make_unique< CopyImageCommand >( src.getBuffer()
+			, dst ) );
 	}
 }

@@ -114,6 +114,14 @@ namespace gl_renderer
 			assert( m_buffer != GL_INVALID_INDEX );
 			return m_buffer;
 		}
+		/**
+		*\return
+		*	La cible du tampon.
+		*/
+		inline GLenum getTarget()const
+		{
+			return m_target;
+		}
 
 	private:
 		GLuint m_buffer{ GL_INVALID_INDEX };

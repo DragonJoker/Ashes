@@ -10,6 +10,7 @@ See LICENSE file in root folder.
 #include "VkDescriptorSet.hpp"
 #include "VkDevice.hpp"
 #include "VkFrameBuffer.hpp"
+#include "VkGeometryBuffers.hpp"
 #include "VkImageMemoryBarrier.hpp"
 #include "VkPipeline.hpp"
 #include "VkPipelineLayout.hpp"
@@ -20,7 +21,6 @@ See LICENSE file in root folder.
 #include "VkTexture.hpp"
 #include "VkUniformBuffer.hpp"
 #include "VkViewport.hpp"
-
 
 namespace vk_renderer
 {
@@ -127,34 +127,27 @@ namespace vk_renderer
 			, convert( bindingPoint ) );
 	}
 
-	void CommandBuffer::bindVertexBuffer( renderer::VertexBufferBase const & vertexBuffer
-		, uint64_t offset )const
-	{
-		m_commandBuffer->bindVertexBuffer( static_cast< BufferBase const & >( vertexBuffer.getBuffer() ).getBuffer()
-			, offset );
-	}
-
-	void CommandBuffer::bindVertexBuffers( std::vector< std::reference_wrapper< renderer::VertexBufferBase const > > const & vertexBuffers
-		, std::vector< uint64_t > offsets )const
+	void CommandBuffer::bindGeometryBuffers( renderer::GeometryBuffers const & geometryBuffers )const
 	{
 		std::vector< std::reference_wrapper< vk::Buffer const > > buffers;
+		std::vector< uint64_t > offsets;
 
-		for ( auto & buffer : vertexBuffers )
+		for ( auto & vbo : geometryBuffers.getVbos() )
 		{
-			buffers.emplace_back( static_cast< BufferBase const & >( buffer.get().getBuffer() ).getBuffer() );
+			buffers.emplace_back( static_cast< BufferBase const & >( vbo.vbo.getBuffer() ).getBuffer() );
+			offsets.emplace_back( vbo.offset );
 		}
 
 		m_commandBuffer->bindVertexBuffers( buffers
 			, offsets );
-	}
 
-	void CommandBuffer::bindIndexBuffer( renderer::BufferBase const & indexBuffer
-		, uint64_t offset
-		, renderer::IndexType type )const
-	{
-		m_commandBuffer->bindIndexBuffer( static_cast< BufferBase const & >( indexBuffer ).getBuffer()
-			, offset
-			, convert( type ) );
+		if ( geometryBuffers.hasIbo() )
+		{
+			auto & ibo = geometryBuffers.getIbo();
+			m_commandBuffer->bindIndexBuffer( static_cast< BufferBase const & >( ibo.buffer ).getBuffer()
+				, ibo.offset
+				, convert( ibo.type ) );
+		}
 	}
 
 	void CommandBuffer::memoryBarrier( renderer::PipelineStageFlags after

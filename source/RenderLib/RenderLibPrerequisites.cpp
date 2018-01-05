@@ -4,13 +4,17 @@
 #include "FontLoader.h"
 #include "Font.h"
 #include "Material.h"
+#include "Mesh.h"
 #include "PolyLine.h"
+#include "Submesh.h"
 #include "Texture.h"
 
+#include <Renderer/Buffer.hpp>
 #include <Renderer/DescriptorSet.hpp>
 #include <Renderer/DescriptorSetLayout.hpp>
 #include <Renderer/DescriptorSetPool.hpp>
 #include <Renderer/DescriptorSetLayoutBinding.hpp>
+#include <Renderer/Device.hpp>
 #include <Renderer/UniformBuffer.hpp>
 
 #include <Utils/StringUtils.hpp>
@@ -50,14 +54,18 @@ namespace render
 		}
 	}
 
-	RenderSubmesh::RenderSubmesh( renderer::DescriptorSetPool const & pool
+	RenderSubmesh::RenderSubmesh( renderer::Device const & device
+		, renderer::DescriptorSetPool const & pool
 		, MeshPtr mesh
 		, SubmeshPtr submesh
 		, MaterialPtr material
 		, ObjectPtr object
 		, uint32_t index
 		, renderer::UniformBuffer< MatrixUbo > const & mtxUbo
-		, renderer::UniformBuffer< MaterialUbo > const & matUbo )
+		, renderer::UniformBuffer< MaterialUbo > const & matUbo
+		, renderer::VertexLayout const & posLayout
+		, renderer::VertexLayoutPtr const & nmlLayout
+		, renderer::VertexLayoutPtr const & texLayout )
 		: m_mesh{ mesh }
 		, m_submesh{ submesh }
 		, m_material{ material }
@@ -86,14 +94,44 @@ namespace render
 		}
 
 		m_descriptor->update();
+		renderer::VertexBufferCRefArray vbos;
+		renderer::VertexLayoutCRefArray layouts;
+		std::vector< uint64_t > offsets;
+
+		vbos.emplace_back( m_mesh->getPositions() );
+		layouts.emplace_back( posLayout );
+		offsets.emplace_back( 0ull );
+
+		if ( nmlLayout )
+		{
+			vbos.emplace_back( m_mesh->getNormals() );
+			layouts.emplace_back( *nmlLayout );
+			offsets.emplace_back( 0ull );
+		}
+
+		if ( texLayout )
+		{
+			vbos.emplace_back( m_mesh->getTexCoords() );
+			layouts.emplace_back( *texLayout );
+			offsets.emplace_back( 0ull );
+		}
+
+		m_vao = device.createGeometryBuffers( vbos
+			, offsets
+			, layouts
+			, m_submesh->getIbo().getBuffer()
+			, 0ull
+			, renderer::IndexType::eUInt16 );
 	}
 
-	RenderBillboard::RenderBillboard( renderer::DescriptorSetPool const & pool
+	RenderBillboard::RenderBillboard( renderer::Device const & device
+		, renderer::DescriptorSetPool const & pool
 		, BillboardPtr billboard
 		, uint32_t index
 		, renderer::UniformBuffer< MatrixUbo > const & mtxUbo
 		, renderer::UniformBuffer< MaterialUbo > const & matUbo
-		, renderer::UniformBuffer< BillboardUbo > const & billboardUbo )
+		, renderer::UniformBuffer< BillboardUbo > const & billboardUbo
+		, renderer::VertexLayout const & layout )
 		: m_billboard{ billboard }
 		, m_descriptor{ pool.createDescriptorSet() }
 	{
@@ -124,14 +162,20 @@ namespace render
 		}
 
 		m_descriptor->update();
+
+		m_vao = device.createGeometryBuffers( m_billboard->buffer().vbo()
+			, 0ull
+			, layout );
 	}
 
-	RenderPolyLine::RenderPolyLine( renderer::DescriptorSetPool const & pool
+	RenderPolyLine::RenderPolyLine( renderer::Device const & device
+		, renderer::DescriptorSetPool const & pool
 		, PolyLinePtr line
 		, uint32_t index
 		, renderer::UniformBuffer< MatrixUbo > const & mtxUbo
 		, renderer::UniformBuffer< MaterialUbo > const & matUbo
-		, renderer::UniformBuffer< LineUbo > const & lineUbo )
+		, renderer::UniformBuffer< LineUbo > const & lineUbo
+		, renderer::VertexLayout const & layout )
 		: m_line{ line }
 		, m_descriptor{ pool.createDescriptorSet() }
 	{
@@ -162,6 +206,10 @@ namespace render
 		}
 
 		m_descriptor->update();
+
+		//m_vao = device.createGeometryBuffers( m_line->buffer()
+		//	, 0ull
+		//	, layout );
 	}
 
 	void loadTexture( renderer::StagingBuffer const & stagingBuffer

@@ -131,7 +131,8 @@ namespace render
 		}
 
 		template< typename Data, typename OvType >
-		bool doAddOverlay( OverlayPtr overlay
+		bool doAddOverlay( uint32_t maxCharsPerBuffer
+			, OverlayPtr overlay
 			, OverlayNode const & node
 			, OverlayVbo< Data, OvType > & vbo )
 		{
@@ -154,6 +155,9 @@ namespace render
 				vbo.m_overlays.push_back( makeRenderOverlay( *node.m_descriptorPool
 					, std::static_pointer_cast< OvType >( overlay )
 					, uint32_t( vbo.m_overlays.size() )
+					, maxCharsPerBuffer
+					, *vbo.m_buffer
+					, *node.m_layout
 					, *node.m_overlayUbo ) );
 				result = true;
 			}
@@ -346,31 +350,45 @@ namespace render
 
 	//*************************************************************************
 	
-	template< typename OvType >
+	template< typename OvType, typename Data >
 	RenderOverlayPtr< OvType > makeRenderOverlay( renderer::DescriptorSetPool const & pool
 		, std::shared_ptr< OvType > overlay
 		, uint32_t index
+		, uint32_t maxCharsPerBuffer
+		, renderer::VertexBuffer< Data > const & vbo
+		, renderer::VertexLayout const & layout
 		, renderer::UniformBuffer< OverlayUbo > const & overlayUbo )
 	{
-		return std::make_unique< RenderOverlay< OvType > >( pool
+		auto result = std::make_unique< RenderOverlay< OvType > >( pool
 			, overlay
 			, index
 			, overlayUbo
 			, overlay->material().hasOpacityMap()
 				? &overlay->material().opacityMap()
-				: nullptr );
+			: nullptr );
+		result->m_vao = vbo.getDevice().createGeometryBuffers( vbo
+			, index * sizeof( Data )
+			, layout );
+		return result;
 	}
 	
 	RenderOverlayPtr< TextOverlay > makeRenderOverlay( renderer::DescriptorSetPool const & pool
 		, TextOverlayPtr overlay
 		, uint32_t index
+		, uint32_t maxCharsPerBuffer
+		, renderer::VertexBuffer< Overlay::Quad > const & vbo
+		, renderer::VertexLayout const & layout
 		, renderer::UniformBuffer< OverlayUbo > const & overlayUbo )
 	{
-		return std::make_unique< RenderOverlay< TextOverlay > >( pool
+		auto result = std::make_unique< RenderOverlay< TextOverlay > >( pool
 			, overlay
 			, index
 			, overlayUbo
 			, &overlay->fontTexture().texture() );
+		result->m_vao = vbo.getDevice().createGeometryBuffers( vbo
+			, index * maxCharsPerBuffer * sizeof( Overlay::Quad )
+			, layout );
+		return result;
 	}
 
 	//*************************************************************************
@@ -378,7 +396,8 @@ namespace render
 	template< typename Data, typename OvType >
 	OverlayVbo< Data, OvType >::OverlayVbo( renderer::Device const & device
 		, uint32_t count )
-		: m_buffer{ renderer::makeVertexBuffer< Data >( device
+		: m_device{ device }
+		, m_buffer{ renderer::makeVertexBuffer< Data >( device
 			, count
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
@@ -458,7 +477,8 @@ namespace render
 		auto & material = overlay->material();
 		auto node = UberShader::nodeType( material.opacityType()
 			, material.textureFlags() );
-		doAddOverlay( overlay
+		doAddOverlay( m_maxCharsPerBuffer
+			, overlay
 			, m_panelNodes[size_t( node )]
 			, m_panelOverlays[size_t( node )] );
 		m_connections[overlay.get()] = overlay->onChanged.connect( [this]( Overlay & overlay )
@@ -474,10 +494,12 @@ namespace render
 		auto & material = overlay->material();
 		auto node = UberShader::nodeType( material.opacityType()
 			, material.textureFlags() );
-		doAddOverlay( overlay
+		doAddOverlay( m_maxCharsPerBuffer
+			, overlay
 			, m_borderNodesPanel[size_t( node )]
 			, m_borderOverlaysPanels[size_t( node )] );
-		doAddOverlay( overlay
+		doAddOverlay( m_maxCharsPerBuffer
+			, overlay
 			, m_borderNodesBorder[size_t( node )]
 			, m_borderOverlaysBorders[size_t( node )] );
 		m_connections[overlay.get()] = overlay->onChanged.connect( [this]( Overlay & overlay )
@@ -489,7 +511,8 @@ namespace render
 
 	void OverlayRenderer::registerOverlay( TextOverlayPtr overlay )
 	{
-		doAddOverlay( overlay
+		doAddOverlay( m_maxCharsPerBuffer
+			, overlay
 			, m_textNode
 			, m_textOverlays[m_textOverlays.size() - 1] );
 		m_connections[overlay.get()] = overlay->onChanged.connect( [this]( Overlay & overlay )
@@ -672,8 +695,7 @@ namespace render
 			, OverlayFinder< PanelOverlay >{ overlay } );
 		assert( it != overlays.m_overlays.end() );
 		doDrawBuffer( commandBuffer
-			, *overlays.m_buffer
-			, ( *it )->m_index
+			, *( *it )->m_vao
 			, 1u
 			, node
 			, *( *it )->m_descriptor );
@@ -695,8 +717,7 @@ namespace render
 			, OverlayFinder< BorderPanelOverlay >{ overlay } );
 		assert( itPanel != panelOverlays.m_overlays.end() );
 		doDrawBuffer( commandBuffer
-			, *panelOverlays.m_buffer
-			, ( *itPanel )->m_index
+			, *( *itPanel )->m_vao
 			, 1u
 			, node
 			, *( *itPanel )->m_descriptor );
@@ -706,9 +727,8 @@ namespace render
 			, OverlayFinder< BorderPanelOverlay >{ overlay } );
 		assert( itBorder != borderOverlays.m_overlays.end() );
 		doDrawBuffer( commandBuffer
-			, *borderOverlays.m_buffer
-			, ( *itBorder )->m_index
-			, 1u
+			, *( *itBorder )->m_vao
+			, 8u
 			, node
 			, *( *itBorder )->m_descriptor );
 	}
@@ -733,8 +753,9 @@ namespace render
 				if ( itText != vboLookup.m_overlays.end() )
 				{
 					doDrawBuffer( commandBuffer
-						, *vboLookup.m_buffer
-						, ( *itText )->m_index * m_maxCharsPerBuffer
+						//, *vboLookup.m_buffer
+						//, ( *itText )->m_index * m_maxCharsPerBuffer
+						, *( *itText )->m_vao
 						, std::min( count, m_maxCharsPerBuffer )
 						, m_textNode
 						, *( *itText )->m_descriptor );
@@ -746,14 +767,12 @@ namespace render
 	}
 
 	void OverlayRenderer::doDrawBuffer( renderer::CommandBuffer const & commandBuffer
-		, renderer::VertexBuffer< Overlay::Quad > const & buffer
-		, uint32_t offset
+		, renderer::GeometryBuffers const & buffer
 		, uint32_t count
 		, OverlayNode const & node
 		, renderer::DescriptorSet const & descriptor )const
 	{
-		commandBuffer.bindVertexBuffer( buffer
-			, offset * sizeof( Overlay::Quad ) );
+		commandBuffer.bindGeometryBuffers( buffer );
 		commandBuffer.bindDescriptorSet( descriptor
 			, *node.m_pipelineLayout );
 		commandBuffer.draw( count * 6u
@@ -762,22 +781,20 @@ namespace render
 			, 0u );
 	}
 
-	void OverlayRenderer::doDrawBuffer( renderer::CommandBuffer const & commandBuffer
-		, renderer::VertexBuffer< BorderPanelOverlay::BorderQuads > const & buffer
-		, uint32_t offset
-		, uint32_t count
-		, OverlayNode const & node
-		, renderer::DescriptorSet const & descriptor )const
-	{
-		commandBuffer.bindVertexBuffer( buffer
-			, offset * sizeof( BorderPanelOverlay::BorderQuads ) );
-		commandBuffer.bindDescriptorSet( descriptor
-			, *node.m_pipelineLayout );
-		commandBuffer.draw( count * 6u * 8u
-			, 1u
-			, 0u
-			, 0u );
-	}
+	//void OverlayRenderer::doDrawBuffer( renderer::CommandBuffer const & commandBuffer
+	//	, renderer::GeometryBuffers const & buffer
+	//	, uint32_t count
+	//	, OverlayNode const & node
+	//	, renderer::DescriptorSet const & descriptor )const
+	//{
+	//	commandBuffer.bindGeometryBuffers( buffer );
+	//	commandBuffer.bindDescriptorSet( descriptor
+	//		, *node.m_pipelineLayout );
+	//	commandBuffer.draw( count * 6u * 8u
+	//		, 1u
+	//		, 0u
+	//		, 0u );
+	//}
 
 	void OverlayRenderer::onOverlayChanged( Overlay & overlay )
 	{

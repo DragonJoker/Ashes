@@ -87,6 +87,7 @@ namespace renderer
 	class Device;
 	class Fence;
 	class FrameBuffer;
+	class GeometryBuffers;
 	class ImageMemoryBarrier;
 	class ImageSubresourceRange;
 	class IWindowHandle;
@@ -159,6 +160,7 @@ namespace renderer
 	using DescriptorSetPtr = std::unique_ptr< DescriptorSet >;
 	using DevicePtr = std::unique_ptr< Device >;
 	using FencePtr = std::unique_ptr< Fence >;
+	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
 	using IWindowHandlePtr = std::unique_ptr< IWindowHandle >;
 	using PipelineLayoutPtr = std::unique_ptr< PipelineLayout >;
 	using QueuePtr = std::unique_ptr< Queue >;
@@ -196,12 +198,14 @@ namespace renderer
 	using SwapChainCRef = std::reference_wrapper< SwapChain const >;
 	using TextureCRef = std::reference_wrapper< Texture const >;
 	using VertexLayoutCRef = std::reference_wrapper< VertexLayout const >;
+	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;
 
 	using CommandBufferCRefArray = std::vector< CommandBufferCRef >;
 	using SemaphoreCRefArray = std::vector< SemaphoreCRef >;
 	using SwapChainCRefArray = std::vector< SwapChainCRef >;
 	using TextureCRefArray = std::vector< TextureCRef >;
 	using VertexLayoutCRefArray = std::vector< VertexLayoutCRef >;
+	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
 	/**\}*/
 	/**
 	*\name Typedefs d'attributs de sommets.

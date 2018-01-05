@@ -113,6 +113,7 @@ namespace render
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
 		, m_layout{ renderer::makeLayout< RenderWindow::Vertex >( device, 0u ) }
+		, m_vao{ device.createGeometryBuffers( *m_vbo, 0ull, *m_layout ) }
 		, m_descriptorPool{ m_descriptorLayout->createPool( 1u ) }
 		, m_descriptor{ m_descriptorPool->createDescriptorSet() }
 		, m_viewport{ dimensions }
@@ -284,7 +285,7 @@ namespace render
 			commandBuffer.bindPipeline( *m_pipeline );
 			commandBuffer.setViewport( m_viewport.viewport() );
 			commandBuffer.setScissor( m_viewport.scissor() );
-			commandBuffer.bindVertexBuffer( *m_vbo, 0u );
+			commandBuffer.bindGeometryBuffers( *m_vao );
 			commandBuffer.bindDescriptorSet( *m_descriptor, *m_pipelineLayout );
 			commandBuffer.draw( m_vbo->getCount()
 				, 1u

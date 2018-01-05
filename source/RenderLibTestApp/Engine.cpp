@@ -229,6 +229,7 @@ void Engine::doInitialise3DElements()
 	//billboardBuffer->add( { -100.0f, utils::Vec3{ -1, 0, 0 }, utils::Vec2{ 0.5, 1 } } );
 	//billboardBuffer->add( { -100.0f, utils::Vec3{ 0, -1, 0 }, utils::Vec2{ 1.5, 1.5 } } );
 	scene.addBillboardBuffer( "billboard", billboardBuffer );
+	billboardBuffer->initialise();
 	auto billboard = std::make_shared< render::Billboard >( "billboard", *billboardBuffer );
 	billboard->dimensions( utils::IVec2{ 1, 1 } );
 	billboard->moveTo( utils::Vec3{ 0, 0, 50 } );

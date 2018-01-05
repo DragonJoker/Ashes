@@ -37,6 +37,15 @@ namespace gl_renderer
 	GLenum getType( utils::PixelFormat format )noexcept;
 	/**
 	*\brief
+	*	Récupère le taille des données pour le utils::PixelFormat donné.
+	*\param[in] format
+	*	Le utils::PixelFormat.
+	*\return
+	*	La taille des données.
+	*/
+	uint32_t getSize( utils::PixelFormat format )noexcept;
+	/**
+	*\brief
 	*	Convertit un VkFormat en utils::PixelFormat.
 	*\param[in] format
 	*	Le VkFormat.

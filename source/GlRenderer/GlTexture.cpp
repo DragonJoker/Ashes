@@ -58,6 +58,7 @@ namespace gl_renderer
 	{
 		m_format = format;
 		m_size = size;
+		glBindTexture( GL_TEXTURE_2D, m_texture );
 		glTexImage2D( GL_TEXTURE_2D
 			, 0
 			, gl_renderer::getInternal( m_format )
@@ -67,6 +68,7 @@ namespace gl_renderer
 			, gl_renderer::getFormat( m_format )
 			, gl_renderer::getType( m_format )
 			, nullptr );
+		glBindTexture( GL_TEXTURE_2D, 0 );
 	}
 
 	void Texture::generateMipmaps()const

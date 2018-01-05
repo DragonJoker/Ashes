@@ -16,6 +16,7 @@
 #include <Renderer/DescriptorSet.hpp>
 #include <Renderer/DescriptorSetLayout.hpp>
 #include <Renderer/DescriptorSetPool.hpp>
+#include <Renderer/GeometryBuffers.hpp>
 #include <Renderer/Pipeline.hpp>
 #include <Renderer/PipelineLayout.hpp>
 #include <Renderer/ShaderProgram.hpp>
@@ -98,6 +99,8 @@ namespace render
 		std::shared_ptr< OvType > m_overlay;
 		//! Le descriptor set.
 		renderer::DescriptorSetPtr m_descriptor;
+		//! Le VAO.
+		renderer::GeometryBuffersPtr m_vao;
 	};
 	template< typename OvType >
 	using RenderOverlayPtr = std::unique_ptr< RenderOverlay< OvType > >;
@@ -106,6 +109,7 @@ namespace render
 	{
 		OverlayVbo( renderer::Device const & device
 			, uint32_t count = 1u );
+		renderer::Device const & m_device;
 		renderer::VertexBufferPtr< Data > m_buffer;
 		std::vector< Data > m_data;
 		std::vector< RenderOverlayPtr< OvType > > m_overlays;
@@ -263,28 +267,7 @@ namespace render
 		*	Le noeud de rendu.
 		*/
 		void doDrawBuffer( renderer::CommandBuffer const & commandBuffer
-			, renderer::VertexBuffer< Overlay::Quad > const & buffer
-			, uint32_t offset
-			, uint32_t count
-			, OverlayNode const & node
-			, renderer::DescriptorSet const & descriptor )const;
-		/**
-		*brief
-		*	Fonction de dessin d'une incrustation.
-		*param[in] buffer
-		*	Le tampon de la géométrie de l'incrustation.
-		*param[in] count
-		*	Le nombre de sommets.
-		*param[in] transform
-		*	La matrice de transformation de l'incrustation.
-		*param[in] material
-		*	Le matériau de l'incrustation.
-		*param[in] node
-		*	Le noeud de rendu.
-		*/
-		void doDrawBuffer( renderer::CommandBuffer const & commandBuffer
-			, renderer::VertexBuffer< BorderPanelOverlay::BorderQuads > const & buffer
-			, uint32_t offset
+			, renderer::GeometryBuffers const & buffer
 			, uint32_t count
 			, OverlayNode const & node
 			, renderer::DescriptorSet const & descriptor )const;

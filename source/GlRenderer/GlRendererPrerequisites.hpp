@@ -38,11 +38,15 @@
 
 namespace gl_renderer
 {
+	class BufferBase;
 	class CommandBase;
 	class Context;
 	class FrameBuffer;
+	class GeometryBuffers;
 	class Pipeline;
+	class PipelineLayout;
 	class RenderPass;
+	class ShaderProgram;
 	class Texture;
 
 	using ContextPtr = std::unique_ptr< Context >;

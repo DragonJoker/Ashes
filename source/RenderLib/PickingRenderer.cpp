@@ -415,13 +415,7 @@ namespace render
 						, renderer::PipelineStageFlag::eVertexShader | renderer::PipelineStageFlag::eFragmentShader );
 					commandBuffer.bindDescriptorSet( *object.m_descriptor
 						, *node.m_pipelineLayout );
-					commandBuffer.bindVertexBuffers( { std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getPositions() ) )
-							, std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getNormals() ) )
-							, std::ref( static_cast< renderer::VertexBufferBase const & >( object.m_mesh->getTexCoords() ) ) }
-						, { 0u, 0u, 0u } );
-					commandBuffer.bindIndexBuffer( object.m_submesh->getIbo().getBuffer()
-						, 0u
-						, renderer::IndexType::eUInt16 );
+					commandBuffer.bindGeometryBuffers( *object.m_vao );
 					//node.m_scale->bind();
 					commandBuffer.draw( object.m_submesh->getIndexCount()
 						, 1u
@@ -477,8 +471,7 @@ namespace render
 						, node.m_pickUbo.getDatas()
 						, node.m_pickUbo
 						, renderer::PipelineStageFlag::eVertexShader | renderer::PipelineStageFlag::eFragmentShader );
-					commandBuffer.bindVertexBuffer( billboard.m_billboard->buffer().vbo()
-						, 0u );
+					commandBuffer.bindGeometryBuffers( *billboard.m_vao );
 					commandBuffer.draw( billboard.m_billboard->buffer().count() * 6
 						, 1u
 						, 0u

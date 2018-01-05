@@ -40,6 +40,30 @@ namespace renderer
 		*	Destructeur.
 		*/
 		virtual ~AttributeBase() = default;
+		/**
+		*\return
+		*	Le format de l'attribut dans le tampon.
+		*/
+		inline AttributeFormat getFormat()const
+		{
+			return m_format;
+		}
+		/**
+		*\return
+		*	La position de l'attribut dans le shader.
+		*/
+		inline uint32_t getLocation()const
+		{
+			return m_location;
+		}
+		/**
+		*\return
+		*	La position de l'attribut dans le tampon.
+		*/
+		inline uint32_t getOffset()const
+		{
+			return m_offset;
+		}
 
 	private:
 		AttributeFormat m_format;

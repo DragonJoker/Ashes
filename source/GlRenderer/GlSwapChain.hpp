@@ -121,7 +121,6 @@ namespace gl_renderer
 
 	private:
 		utils::RgbaColour m_clearColour;
-		utils::IVec2 m_dimensions;
 		utils::PixelFormat m_format;
 	};
 }
