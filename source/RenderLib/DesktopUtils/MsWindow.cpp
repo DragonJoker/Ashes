@@ -1,16 +1,16 @@
 #include "MsWindow.h"
 
 #include <RenderLib/RenderLibPrerequisites.h>
+#include <RenderLib/FileUtils.hpp>
 
 #include <Renderer/Connection.hpp>
 #include <Renderer/PlatformWindowHandle.hpp>
 #include <Renderer/Renderer.hpp>
 #include <Renderer/RenderingResources.hpp>
 
-#include <VkRenderer/VkCreateRenderer.hpp>
-#include <GlRenderer/GlCreateRenderer.hpp>
-
 #include <VkLib/FlagCombination.hpp>
+
+#include <Utils/DynamicLibrary.hpp>
 
 #include <Windows.h>
 #include <windowsx.h>
@@ -131,9 +131,30 @@ namespace utils
 		}
 		else
 		{
+			StringArray files;
+
+			if ( render::listDirectoryFiles( render::getExecutableDirectory(), files, false ) )
+			{
+				for ( auto file : files )
+				{
+					if ( file.find( ".dll" ) != std::string::npos
+						|| file.find( ".so" ) != std::string::npos )
+						try
+					{
+						utils::DynamicLibrary lib{ file };
+						m_plugins.emplace_back( std::move( lib )
+							, m_factory );
+					}
+					catch ( std::exception & exc )
+					{
+						std::clog << exc.what() << std::endl;
+					}
+				}
+			}
+
 			if ( doPrepareDC( m_hdc ) )
 			{
-				m_renderer = vk_renderer::createRenderer();
+				m_renderer = m_factory.create( "gl" );
 				RECT rect;
 				::GetClientRect( m_hwnd, &rect );
 				m_size.x = rect.right - rect.left;

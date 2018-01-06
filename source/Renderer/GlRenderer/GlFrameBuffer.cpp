@@ -27,7 +27,7 @@ namespace gl_renderer
 				return GL_STENCIL_ATTACHMENT;
 
 			default:
-				colours.push_back( texture.getImage() );
+				colours.push_back( uint32_t( GL_COLOR_ATTACHMENT0 + colours.size() ) );
 				return GLenum( GL_COLOR_ATTACHMENT0 + colours.size() - 1u );
 			}
 		}
@@ -51,7 +51,7 @@ namespace gl_renderer
 
 		for ( auto & texture : textures )
 		{
-			glFramebufferTexture2D( m_frameBuffer
+			glFramebufferTexture2D( GL_FRAMEBUFFER
 				, getAttachmentType( static_cast< Texture const & >( texture.get() ), colours )
 				, GL_TEXTURE_2D
 				, static_cast< Texture const & >( texture.get() ).getImage()

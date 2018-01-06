@@ -5,6 +5,8 @@ See LICENSE file in root folder
 #pragma once
 
 #include <chrono>
+#include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -18,6 +20,12 @@ namespace utils
 	using Clock = std::chrono::high_resolution_clock;
 	using Milliseconds = std::chrono::milliseconds;
 
+	template< class Obj
+		, class Key
+		, class PtrType = std::shared_ptr< Obj >
+		, typename Creator = std::function< PtrType() >
+		, class Predicate = std::less< std::string > >
+	class Factory;
 	template< typename T >
 	class Vec2T;
 	template< typename T >
@@ -31,7 +39,7 @@ namespace utils
 	template< typename Function >
 	class Signal;
 	/**
-	*\name Typedefs g�n�ralistes.
+	*\name Typedefs généralistes.
 	*/
 	/**\{*/
 	using Vec2 = Vec2T< float >;

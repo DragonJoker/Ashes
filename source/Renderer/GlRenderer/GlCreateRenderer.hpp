@@ -18,7 +18,7 @@
 #	define GlRenderer_API
 #endif
 
-namespace gl_renderer
+extern "C"
 {
 	/**
 	*\brief
@@ -26,5 +26,5 @@ namespace gl_renderer
 	*\param[in] connection
 	*	La connection avec la fenêtre.
 	*/
-	GlRenderer_API renderer::RendererPtr createRenderer();
+	GlRenderer_API renderer::Renderer * createRenderer();
 }

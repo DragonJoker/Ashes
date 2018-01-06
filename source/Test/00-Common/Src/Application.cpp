@@ -1,5 +1,6 @@
 #include "Application.hpp"
 
+#include "FileUtils.hpp"
 #include "MainFrame.hpp"
 
 #include <wx/cmdline.h>
@@ -240,6 +241,27 @@ namespace common
 
 		wxInitAllImageHandlers();
 		bool result = false;
+
+		StringArray files;
+
+		if ( listDirectoryFiles( getExecutableDirectory(), files, false ) )
+		{
+			for ( auto file : files )
+			{
+				if ( file.find( ".dll" ) != std::string::npos 
+					|| file.find( ".so" ) != std::string::npos )
+				try
+				{
+					utils::DynamicLibrary lib{ file };
+					m_plugins.emplace_back( std::move( lib )
+						, m_factory );
+				}
+				catch ( std::exception & exc )
+				{
+					std::clog << exc.what() << std::endl;
+				}
+			}
+		}
 
 		try
 		{

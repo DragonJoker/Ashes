@@ -1,7 +1,5 @@
 #include "MainFrame.hpp"
-
-#include <GlRenderer/GlCreateRenderer.hpp>
-#include <VkRenderer/VkCreateRenderer.hpp>
+#include "Application.hpp"
 
 #include <wx/sizer.h>
 
@@ -10,7 +8,8 @@
 namespace common
 {
 	MainFrame::MainFrame( wxString const & name
-		, wxString const & rendererName )
+		, wxString const & rendererName
+		, RendererFactory & factory )
 		: wxFrame{ nullptr
 		, wxID_ANY
 		, name + wxT( " (" ) + rendererName + wxT( ")" )
@@ -19,6 +18,7 @@ namespace common
 		, wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxRESIZE_BORDER | wxMAXIMIZE_BOX }
 		, m_name{ name }
 		, m_rendererName{ rendererName }
+		, m_factory{ factory }
 	{
 	}
 
@@ -29,14 +29,7 @@ namespace common
 
 		try
 		{
-			if ( m_rendererName == wxT( "gl" ) )
-			{
-				m_renderer = gl_renderer::createRenderer();
-			}
-			else
-			{
-				m_renderer = vk_renderer::createRenderer();
-			}
+			m_renderer = m_factory.create( m_rendererName.ToStdString() );
 
 			std::cout << "Renderer instance created." << std::endl;
 			m_panel = doCreatePanel( WindowSize, *m_renderer );

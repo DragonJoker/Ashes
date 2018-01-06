@@ -24,6 +24,8 @@
 #include <Renderer/VertexLayout.hpp>
 #include <Renderer/Viewport.hpp>
 
+#include <FileUtils.hpp>
+
 #include <fstream>
 #include <cstring>
 

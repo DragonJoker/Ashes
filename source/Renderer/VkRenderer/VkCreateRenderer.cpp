@@ -1,10 +1,10 @@
 #include "VkCreateRenderer.hpp"
 #include "VkRenderer.hpp"
 
-namespace vk_renderer
+extern "C"
 {
-	VkRenderer_API renderer::RendererPtr createRenderer()
+	VkRenderer_API renderer::Renderer * createRenderer()
 	{
-		return std::make_unique< Renderer >();
+		return new vk_renderer::Renderer;
 	}
 }

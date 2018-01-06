@@ -27,7 +27,7 @@ namespace vkapp
 /**
 *\~french
 *\brief
-*	DÃ©clare la fonction wxGetApp() permettant d'accÃ©der Ã  l'application
+*	Déclare la fonction wxGetApp() permettant d'accéder à l'application
 *	depuis partout.
 *\~english
 *\brief

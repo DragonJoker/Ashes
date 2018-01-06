@@ -10,7 +10,11 @@
 
 #include "DesktopUtilsPrerequisites.h"
 
+#include <RenderLib/RendererPlugin.hpp>
+
 #include <Renderer/Renderer.hpp>
+
+#include <Utils/Factory.hpp>
 
 struct HINSTANCE__;
 using HINSTANCE = struct HINSTANCE__ *;
@@ -168,6 +172,8 @@ namespace utils
 		uint32_t m_frameIndex{ 0 };
 		size_t m_frameCount{ 0 };
 		std::array< char, 256 > m_title;
+		render::RendererFactory m_factory;
+		std::vector< render::RendererPlugin > m_plugins;
 
 #if !defined( NDEBUG )
 #	if defined( _WIN32 )

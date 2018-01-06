@@ -13,7 +13,8 @@ namespace common
 	{
 	public:
 		MainFrame( wxString const & name
-			, wxString const & rendererName );
+			, wxString const & rendererName
+			, RendererFactory & factory );
 
 		void initialise();
 		void cleanup();
@@ -30,6 +31,7 @@ namespace common
 		wxString m_name;
 		wxString m_rendererName;
 		renderer::RendererPtr m_renderer;
+		RendererFactory & m_factory;
 		wxPanel * m_panel{ nullptr };
 		std::array< std::chrono::microseconds, FrameSamplesCount > m_framesTimes;
 		uint32_t m_frameIndex{ 0 };

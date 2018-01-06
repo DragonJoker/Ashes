@@ -21,9 +21,6 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		set( BinaryLibraries
 			${BinaryLibraries}
 			dl
-			${VkLib_LIBRARIES}
-			${glslang_LIBRARIES}
-			${SPIRV_LIBRARIES}
 		)
 	endif()
 

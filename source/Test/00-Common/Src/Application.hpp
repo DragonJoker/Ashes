@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Prerequisites.hpp"
+#include "RendererPlugin.hpp"
+
+#include <Utils/Factory.hpp>
 
 #include <wx/app.h>
 
@@ -25,7 +27,7 @@ namespace common
 		bool doParseCommandLine();
 		virtual MainFrame * doCreateMainFrame( wxString const & rendererName ) = 0;
 
-	private:
+	protected:
 		wxString m_name;
 		wxString m_rendererName;
 		bool m_allocated{ false };
@@ -33,5 +35,7 @@ namespace common
 		std::streambuf * m_cout;
 		std::streambuf * m_cerr;
 		std::streambuf * m_clog;
+		std::vector< RendererPlugin > m_plugins;
+		RendererFactory m_factory;
 	};
 }

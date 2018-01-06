@@ -32,6 +32,8 @@
 
 #include <Utils/Transform.hpp>
 
+#include <FileUtils.hpp>
+
 #include <chrono>
 
 namespace vkapp

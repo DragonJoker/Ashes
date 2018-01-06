@@ -13,6 +13,7 @@
 #include <Renderer/GeometryBuffers.hpp>
 #include <Renderer/VertexLayout.hpp>
 
+#include <Utils/Factory.hpp>
 #include <Utils/Quaternion.hpp>
 #include <Utils/UtilsSignal.hpp>
 
@@ -26,6 +27,8 @@
 namespace render
 {
 	static uint32_t constexpr MaxObjectsCount = 100u;
+	using RendererFactory = utils::Factory< renderer::Renderer, std::string, renderer::RendererPtr >;
+
 	//! Les données de l'UBO contenant les matrices.
 	struct MatrixUbo
 	{

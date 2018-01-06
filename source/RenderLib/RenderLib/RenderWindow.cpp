@@ -94,7 +94,7 @@ namespace render
 		, m_drawSemaphore{ device.createSemaphore() }
 		, m_stagingBuffer{ std::make_unique< renderer::StagingBuffer >( device
 			, 0u
-			, 1000000u ) }
+			, 10000000u ) }
 		, m_descriptorLayout{ doCreateDescriptorLayout( device ) }
 		, m_pipelineLayout{ device.createPipelineLayout( *m_descriptorLayout ) }
 		, m_target{ std::make_unique< RenderTarget >( device, dimensions, utils::PixelFormat::eR8G8B8A8 ) }

@@ -1,10 +1,10 @@
 #include "GlCreateRenderer.hpp"
 #include "GlRenderer.hpp"
 
-namespace gl_renderer
+extern "C"
 {
-	GlRenderer_API renderer::RendererPtr createRenderer()
+	GlRenderer_API renderer::Renderer * createRenderer()
 	{
-		return std::make_unique< Renderer >();
+		return new gl_renderer::Renderer;
 	}
 }

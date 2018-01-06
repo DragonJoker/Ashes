@@ -1,0 +1,32 @@
+#pragma once
+
+#include "RenderLibPrerequisites.h"
+
+#include <Utils/DynamicLibrary.hpp>
+
+namespace render
+{
+	/**
+	*\brief
+	*	Gère un plugin de rendu (wrappe la fonction de création).
+	*/
+	class RendererPlugin
+	{
+	private:
+		using CreatorFunction = renderer::Renderer *( * )();
+
+	public:
+		RendererPlugin( RendererPlugin const & ) = delete;
+		RendererPlugin( RendererPlugin && ) = default;
+		RendererPlugin & operator=( RendererPlugin const & ) = delete;
+		RendererPlugin & operator=( RendererPlugin && ) = default;
+
+		RendererPlugin( utils::DynamicLibrary && library
+			, RendererFactory & factory );
+		renderer::RendererPtr create();
+
+	private:
+		utils::DynamicLibrary m_library;
+		CreatorFunction m_creator;
+	};
+}

@@ -18,7 +18,7 @@
 #	define VkRenderer_API
 #endif
 
-namespace vk_renderer
+extern "C"
 {
 	/**
 	*\brief
@@ -26,5 +26,5 @@ namespace vk_renderer
 	*\param[in] connection
 	*	La connection avec la fenêtre.
 	*/
-	VkRenderer_API renderer::RendererPtr createRenderer();
+	VkRenderer_API renderer::Renderer * createRenderer();
 }
