@@ -34,8 +34,9 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 	endif()
 
 	include_directories(
-		${CMAKE_BINARY_DIR}/Renderer
-		${CMAKE_SOURCE_DIR}
+		${CMAKE_BINARY_DIR}/Renderer/Renderer
+		${CMAKE_SOURCE_DIR}/Core
+		${CMAKE_SOURCE_DIR}/Renderer
 		${wxWidgets_INCLUDE_DIRS}
 		${GTK2_INCLUDE_DIRS}
 	)

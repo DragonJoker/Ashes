@@ -1,4 +1,4 @@
-project( DesktopUtils )
+project( RenderLib )
 
 file( GLOB ${PROJECT_NAME}_SRC_FILES
 	*.c
@@ -14,33 +14,31 @@ file( GLOB ${PROJECT_NAME}_HDR_FILES
 	*.inc
 )
 
+file( GLOB ${PROJECT_NAME}_DBG_FILES
+	*.natvis
+)
+
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_BINARY_DIR}/Renderer
-	${CMAKE_SOURCE_DIR}/FreeType/include
-	${CMAKE_SOURCE_DIR}/FreeType/include/freetype
 )
-
-add_forced_include( "${CMAKE_CURRENT_SOURCE_DIR}/pch.h" )
 
 add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
+	${${PROJECT_NAME}_DBG_FILES}
 )
 
 add_target_precompiled_header( ${PROJECT_NAME}
-	pch.h
-	pch.cpp
+	RenderLibPch.hpp
+	RenderLibPch.cpp
 	${CMAKE_CXX_FLAGS}
 	${${PROJECT_NAME}_SRC_FILES}
 )
 
 add_dependencies( ${PROJECT_NAME}
-	GlRenderer
-	VkRenderer
-	RenderLib
-	FreeType
+	Renderer
 )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Main" )
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Render" )

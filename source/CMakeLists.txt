@@ -83,21 +83,12 @@ find_package( VkLib )
 
 include_directories(
 	${VkLib_INCLUDE_DIR}
+	${CMAKE_BINARY_DIR}/Renderer/Renderer
+	${CMAKE_SOURCE_DIR}/Core
+	${CMAKE_SOURCE_DIR}/Renderer
 )
 
-add_subdirectory( FreeType )
-add_subdirectory( Utils )
+add_subdirectory( Core )
 add_subdirectory( Renderer )
-add_subdirectory( GlRenderer )
-add_subdirectory( VkRenderer )
 add_subdirectory( RenderLib )
-
-if ( ANDROID )
-	add_subdirectory( AndroidUtils )
-	add_subdirectory( RenderLibTestApp )
-elseif (WIN32)
-	add_subdirectory( DesktopUtils )
-	add_subdirectory( RenderLibTestApp )
-endif ()
-
 add_subdirectory( Test )
