@@ -111,8 +111,8 @@ namespace gl_renderer
 		*/
 		inline GLuint getBuffer()const
 		{
-			assert( m_buffer != GL_INVALID_INDEX );
-			return m_buffer;
+			assert( m_glName != GL_INVALID_INDEX );
+			return m_glName;
 		}
 		/**
 		*\return
@@ -124,7 +124,7 @@ namespace gl_renderer
 		}
 
 	private:
-		GLuint m_buffer{ GL_INVALID_INDEX };
+		GLuint m_glName{ GL_INVALID_INDEX };
 		GLenum m_target;
 	};
 }

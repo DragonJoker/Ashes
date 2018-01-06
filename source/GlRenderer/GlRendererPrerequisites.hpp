@@ -6,8 +6,7 @@
 */
 #pragma once
 
-#define GLEW_STATIC 1
-#include <GL/glew.h>
+#include "GL/glew.h"
 
 #include "GlAccessFlag.hpp"
 #include "GlAttributeFormat.hpp"
@@ -41,6 +40,7 @@ namespace gl_renderer
 	class BufferBase;
 	class CommandBase;
 	class Context;
+	class DescriptorSet;
 	class FrameBuffer;
 	class GeometryBuffers;
 	class Pipeline;

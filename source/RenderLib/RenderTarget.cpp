@@ -62,7 +62,9 @@ namespace render
 			, doGetFinalState() ) }
 		, m_colour{ device.createTexture() }
 		, m_depth{ device.createTexture() }
-		, m_stagingBuffer{ device.createStagingBuffer( 10000000u ) }
+		, m_stagingBuffer{ std::make_unique< renderer::StagingBuffer >( device
+			, 0u
+			, 10000000u ) }
 	{
 		m_colour->setImage( format
 			, dimensions

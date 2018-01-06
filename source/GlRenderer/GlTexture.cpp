@@ -4,7 +4,6 @@
 #include "GlDevice.hpp"
 #include "GlImageMemoryBarrier.hpp"
 #include "GlRenderingResources.hpp"
-#include "GlStagingBuffer.hpp"
 
 namespace gl_renderer
 {
@@ -73,28 +72,9 @@ namespace gl_renderer
 
 	void Texture::generateMipmaps()const
 	{
-		glActiveTexture( GL_TEXTURE0 );
 		glBindTexture( GL_TEXTURE_2D, m_texture );
 		glGenerateMipmap( GL_TEXTURE_2D );
 		glBindTexture( GL_TEXTURE_2D, 0 );
-	}
-
-	void Texture::bindAsShaderInput( renderer::CommandBuffer const & commandBuffer
-		, uint32_t unit )const
-	{
-		assert( m_texture != GL_INVALID_INDEX );
-		commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
-			, renderer::PipelineStageFlag::eFragmentShader
-			, makeShaderInputResource() );
-	}
-
-	void Texture::bindAsShaderOutput( renderer::CommandBuffer const & commandBuffer
-		, uint32_t unit )const
-	{
-		assert( m_texture != GL_INVALID_INDEX );
-		commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
-			, renderer::PipelineStageFlag::eFragmentShader
-			, makeColourAttachment() );
 	}
 
 	renderer::ImageMemoryBarrier Texture::makeGeneralLayout( renderer::AccessFlags accessFlags )const

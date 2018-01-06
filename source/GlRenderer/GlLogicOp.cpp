@@ -1,4 +1,4 @@
-#include "GlLogicOp.hpp"
+#include "GlRendererPrerequisites.hpp"
 
 namespace gl_renderer
 {

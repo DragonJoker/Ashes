@@ -3,8 +3,12 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#if defined( __linux__ )
 #include "GlContext.hpp"
+
+#if RENDERLIB_XLIB
+
+#include "GL/glew.h"
+#include "GL/glxew.h"
 
 namespace gl_renderer
 {
@@ -25,8 +29,8 @@ namespace gl_renderer
 		}
 
 	private:
-		XVisualInfo * doCreateVisualInfoWithFBConfig( std::vector< int > const & arrayAttribs, int screen );
-		XVisualInfo * doCreateVisualInfoWithoutFBConfig( std::vector< int > const & arrayAttribs, int screen );
+		XVisualInfo * doCreateVisualInfoWithFBConfig( std::vector< int > arrayAttribs, int screen );
+		XVisualInfo * doCreateVisualInfoWithoutFBConfig( std::vector< int > arrayAttribs, int screen );
 		bool doCreateGl3Context();
 
 	protected:

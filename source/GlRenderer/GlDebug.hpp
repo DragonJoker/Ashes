@@ -4,6 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
+#include "GlRendererPrerequisites.hpp"
 #include <string>
 
 #if !defined( CALLBACK )

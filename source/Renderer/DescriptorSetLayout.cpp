@@ -4,6 +4,8 @@ See LICENSE file in root folder.
 */
 #include "DescriptorSetLayout.hpp"
 
+#include <algorithm>
+
 namespace renderer
 {
 	DescriptorSetLayout::DescriptorSetLayout( Device const & device

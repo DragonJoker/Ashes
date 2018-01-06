@@ -39,31 +39,31 @@ namespace gl_renderer
 
 	renderer::Pipeline & Pipeline::multisampleState( renderer::MultisampleState const & state )
 	{
-		m_msState = state;
+		m_msState = std::make_unique< renderer::MultisampleState >( state );
 		return *this;
 	}
 
 	renderer::Pipeline & Pipeline::depthStencilState( renderer::DepthStencilState const & state )
 	{
-		m_dsState = state;
+		m_dsState = std::make_unique< renderer::DepthStencilState >( state );
 		return *this;
 	}
 
 	renderer::Pipeline & Pipeline::tessellationState( renderer::TessellationState const & state )
 	{
-		m_tsState = state;
+		m_tsState = std::make_unique< renderer::TessellationState >( state );
 		return *this;
 	}
 
 	renderer::Pipeline & Pipeline::viewport( renderer::Viewport const & viewport )
 	{
-		m_viewport = viewport;
+		m_viewport = std::make_unique< renderer::Viewport >( viewport );
 		return *this;
 	}
 
 	renderer::Pipeline & Pipeline::scissor( renderer::Scissor const & scissor )
 	{
-		m_scissor = scissor;
+		m_scissor = std::make_unique< renderer::Scissor >( scissor );
 		return *this;
 	}
 }

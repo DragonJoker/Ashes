@@ -6,7 +6,6 @@ See LICENSE file in root folder.
 #define ___Renderer_PipelineStageFlag_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
 #include <Utils/FlagCombination.hpp>
 
 namespace renderer

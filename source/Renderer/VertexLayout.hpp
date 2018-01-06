@@ -6,7 +6,9 @@ See LICENSE file in root folder.
 #define ___Renderer_VertexLayout_HPP___
 #pragma once
 
-#include "Attribute.hpp"
+#include "AttributeBase.hpp"
+#include "Device.hpp"
+#include "FormatGetter.hpp"
 
 #include <vector>
 

@@ -15,7 +15,7 @@
 #		define VkRenderer_API __declspec( dllimport )
 #	endif
 #else
-#	define GlRenderer_API
+#	define VkRenderer_API
 #endif
 
 namespace vk_renderer

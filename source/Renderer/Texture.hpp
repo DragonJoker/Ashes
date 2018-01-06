@@ -74,22 +74,6 @@ namespace renderer
 		virtual void generateMipmaps()const = 0;
 		/**
 		*\brief
-		*	Active la texture.
-		*\param[in] unit
-		*	L'indice de l'unité sur laquelle la texture doit être activée.
-		*/
-		virtual void bindAsShaderInput( CommandBuffer const & commandBuffer
-			, uint32_t unit )const = 0;
-		/**
-		*\brief
-		*	Active la texture.
-		*\param[in] unit
-		*	L'indice de l'unité sur laquelle la texture doit être activée.
-		*/
-		virtual void bindAsShaderOutput( CommandBuffer const & commandBuffer
-			, uint32_t unit )const = 0;
-		/**
-		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout général.
 		*\param[in] accessFlags
 		*	Les accès voulus, une fois que la transition est effectuée.

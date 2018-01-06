@@ -23,7 +23,7 @@ namespace gl_renderer
 			view,
 			sampler
 		};
-		m_bindings.push_back( result );
+		m_combinedTextureSamplers.push_back( result );
 		return result;
 	}
 
@@ -35,7 +35,7 @@ namespace gl_renderer
 			layoutBinding,
 			view
 		};
-		m_bindings.push_back( result );
+		m_sampledTextures.push_back( result );
 		return result;
 	}
 
@@ -49,7 +49,7 @@ namespace gl_renderer
 			uniformBuffer,
 			offset
 		};
-		m_bindings.push_back( result );
+		m_uniformBuffers.push_back( result );
 		return result;
 	}
 

@@ -12,6 +12,7 @@
 #include <Renderer/Viewport.hpp>
 
 #include <Utils/Angle.hpp>
+#include <Utils/Mat4.hpp>
 
 namespace render
 {

@@ -6,8 +6,6 @@ See LICENSE file in root folder.
 #define ___Renderer_BlendOp_HPP___
 #pragma once
 
-#include <Utils/FlagCombination.hpp>
-
 namespace renderer
 {
 	/**

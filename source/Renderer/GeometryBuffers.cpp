@@ -20,7 +20,7 @@ namespace renderer
 		, uint64_t iboOffset
 		, IndexType type )
 		: m_vbos{ 1, { vbo, vboOffset, layout } }
-		, m_ibo{ IBO{ ibo, iboOffset, type } }
+		, m_ibo{ std::make_unique< IBO >( ibo, iboOffset, type ) }
 	{
 	}
 
@@ -44,7 +44,7 @@ namespace renderer
 		, BufferBase const & ibo
 		, uint64_t iboOffset
 		, IndexType type )
-		: m_ibo{ IBO{ ibo, iboOffset, type } }
+		: m_ibo{ std::make_unique< IBO >( ibo, iboOffset, type ) }
 	{
 		assert( vbos.size() == vboOffsets.size() );
 		assert( vbos.size() == layouts.size() );

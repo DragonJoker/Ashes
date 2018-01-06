@@ -19,8 +19,6 @@
 #include <Renderer/TessellationState.hpp>
 #include <Renderer/Viewport.hpp>
 
-#include <optional>
-
 namespace gl_renderer
 {
 	/**
@@ -101,7 +99,7 @@ namespace gl_renderer
 		*/
 		inline bool hasMultisampleState()const
 		{
-			return m_msState.has_value();
+			return m_msState != nullptr;
 		}
 		/**
 		*\return
@@ -109,7 +107,7 @@ namespace gl_renderer
 		*/
 		inline bool hasDepthStencilState()const
 		{
-			return m_dsState.has_value();
+			return m_dsState != nullptr;
 		}
 		/**
 		*\return
@@ -117,7 +115,7 @@ namespace gl_renderer
 		*/
 		inline bool hasTessellationState()const
 		{
-			return m_tsState.has_value();
+			return m_tsState != nullptr;
 		}
 		/**
 		*\return
@@ -125,7 +123,7 @@ namespace gl_renderer
 		*/
 		inline bool hasViewport()const
 		{
-			return m_viewport.has_value();
+			return m_viewport != nullptr;
 		}
 		/**
 		*\return
@@ -133,7 +131,7 @@ namespace gl_renderer
 		*/
 		inline bool hasScissor()const
 		{
-			return m_scissor.has_value();
+			return m_scissor != nullptr;
 		}
 		/**
 		*\return
@@ -157,7 +155,8 @@ namespace gl_renderer
 		*/
 		inline renderer::MultisampleState const & getMultisampleState()const
 		{
-			return m_msState.value();
+		    assert( m_msState );
+			return *m_msState;
 		}
 		/**
 		*\return
@@ -165,7 +164,8 @@ namespace gl_renderer
 		*/
 		inline renderer::DepthStencilState const & getDepthStencilState()const
 		{
-			return m_dsState.value();
+		    assert( m_dsState );
+			return *m_dsState;
 		}
 		/**
 		*\return
@@ -173,7 +173,8 @@ namespace gl_renderer
 		*/
 		inline renderer::TessellationState const & getTessellationState()const
 		{
-			return m_tsState.value();
+		    assert( m_tsState );
+			return *m_tsState;
 		}
 		/**
 		*\return
@@ -181,7 +182,8 @@ namespace gl_renderer
 		*/
 		inline renderer::Viewport const & getViewport()const
 		{
-			return m_viewport.value();
+		    assert( m_viewport );
+			return *m_viewport;
 		}
 		/**
 		*\return
@@ -189,7 +191,8 @@ namespace gl_renderer
 		*/
 		inline renderer::Scissor const & getScissor()const
 		{
-			return m_scissor.value();
+		    assert( m_scissor );
+			return *m_scissor;
 		}
 		/**
 		*\return
@@ -213,11 +216,11 @@ namespace gl_renderer
 		renderer::ShaderProgram const & m_program;
 		renderer::ColourBlendState m_cbState;
 		renderer::RasterisationState m_rsState;
-		std::optional< renderer::MultisampleState > m_msState;
-		std::optional< renderer::DepthStencilState > m_dsState;
-		std::optional< renderer::TessellationState > m_tsState;
-		std::optional< renderer::Viewport > m_viewport;
-		std::optional< renderer::Scissor > m_scissor;
+		std::unique_ptr< renderer::MultisampleState > m_msState;
+		std::unique_ptr< renderer::DepthStencilState > m_dsState;
+		std::unique_ptr< renderer::TessellationState > m_tsState;
+		std::unique_ptr< renderer::Viewport > m_viewport;
+		std::unique_ptr< renderer::Scissor > m_scissor;
 	};
 }
 

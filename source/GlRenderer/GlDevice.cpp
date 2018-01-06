@@ -19,7 +19,6 @@ See LICENSE file in root folder.
 #include "GlSampler.hpp"
 #include "GlSemaphore.hpp"
 #include "GlShaderProgram.hpp"
-#include "GlStagingBuffer.hpp"
 #include "GlSwapChain.hpp"
 #include "GlTexture.hpp"
 #include "GlUniformBuffer.hpp"
@@ -181,11 +180,6 @@ namespace gl_renderer
 			, size
 			, target
 			, memoryFlags );
-	}
-
-	renderer::StagingBufferPtr Device::createStagingBuffer( uint32_t size )const
-	{
-		return std::make_shared< StagingBuffer >( *this, size );
 	}
 
 	renderer::UniformBufferBasePtr Device::createUniformBuffer( uint32_t count

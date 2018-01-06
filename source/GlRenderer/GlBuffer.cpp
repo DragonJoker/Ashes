@@ -16,22 +16,22 @@ namespace gl_renderer
 			, flags }
 		, m_target{ convert( target ) }
 	{
-		glGenBuffers( 1, &m_buffer );
-		glBindBuffer( m_target, m_buffer );
+		glGenBuffers( 1, &m_glName );
+		glBindBuffer( m_target, m_glName );
 		glBufferData( m_target, size, nullptr, GL_DYNAMIC_DRAW );
 		glBindBuffer( m_target, 0u );
 	}
 
 	BufferBase::~BufferBase()
 	{
-		glDeleteBuffers( 1, &m_buffer );
+		glDeleteBuffers( 1, &m_glName );
 	}
 
 	uint8_t * BufferBase::lock( uint32_t offset
 		, uint32_t size
 		, renderer::MemoryMapFlags flags )const
 	{
-		glBindBuffer( m_target, m_buffer );
+		glBindBuffer( m_target, m_glName );
 		return reinterpret_cast< uint8_t * >( glMapBufferRange( m_target, offset, size, convert( flags ) ) );
 	}
 

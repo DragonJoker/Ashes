@@ -13,11 +13,11 @@ See LICENSE file in root folder.
 //
 //*************************************************************************************************
 
-#if defined( RENDERLIB_WIN32 )
+#if RENDERLIB_WIN32
 #	include <windows.h>
-#elif defined( RENDERLIB_XLIB )
+#elif RENDERLIB_XLIB
 #	include <GL/glx.h>
-#elif defined( RENDERLIB_ANDROID )
+#elif RENDERLIB_ANDROID
 #	include <EGL/egl.h>
 #else
 #	error "Yet unsupported OS"
@@ -26,7 +26,7 @@ See LICENSE file in root folder.
 namespace renderer
 {
 
-#if defined( RENDERLIB_WIN32 )
+#if RENDERLIB_WIN32
 
 	class IMswWindowHandle
 		: public IWindowHandle
@@ -64,7 +64,7 @@ namespace renderer
 		HWND m_hWnd;
 	};
 
-#elif defined( RENDERLIB_XLIB )
+#elif RENDERLIB_XLIB
 
 	class IXWindowHandle
 		: public IWindowHandle
@@ -101,7 +101,7 @@ namespace renderer
 		Display * m_display;
 	};
 
-#elif defined( RENDERLIB_ANDROID )
+#elif RENDERLIB_ANDROID
 
 	class IEglWindowHandle
 		: public IWindowHandle

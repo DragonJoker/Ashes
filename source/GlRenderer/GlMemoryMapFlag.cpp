@@ -1,4 +1,4 @@
-#include "GlMemoryMapFlag.hpp"
+#include "GlRendererPrerequisites.hpp"
 
 namespace gl_renderer
 {

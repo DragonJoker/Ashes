@@ -10,22 +10,32 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Classe de base d'une commande.
+	*	Commande d'activation d'un set de descripteurs.
 	*/
-	class BindGeometryBuffersCommand
+	class BindDescriptorSetCommand
 		: public CommandBase
 	{
 	public:
 		/**
 		*\brief
 		*	Constructeur.
+		*\param[in] descriptorSet
+		*	Le descriptor set.
+		*\param[in] layout
+		*	Le layout de pipeline.
+		*\param[in] bindingPoint
+		*	Le point d'attache du set.
 		*/
-		BindGeometryBuffersCommand( renderer::GeometryBuffers const & vao );
+		BindDescriptorSetCommand( renderer::DescriptorSet const & descriptorSet
+			, renderer::PipelineLayout const & layout
+			, renderer::PipelineBindPoint bindingPoint );
 
 		void apply()const override;
 		CommandPtr clone()const override;
 
 	private:
-		GeometryBuffers const & m_vao;
+		DescriptorSet const & m_descriptorSet;
+		PipelineLayout const & m_layout;
+		renderer::PipelineBindPoint m_bindingPoint;
 	};
 }

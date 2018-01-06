@@ -84,7 +84,7 @@ namespace gl_renderer
 					break;
 				}
 
-				glPolygonOffsetClamp( state.getDepthBiasConstantFactor()
+				glPolygonOffsetClampEXT( state.getDepthBiasConstantFactor()
 					, state.getDepthBiasSlopeFactor()
 					, state.getDepthBiasClamp() );
 			}

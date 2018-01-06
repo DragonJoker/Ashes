@@ -5,7 +5,6 @@
 #include "VkImageMemoryBarrier.hpp"
 #include "VkImageSubresourceRange.hpp"
 #include "VkRenderingResources.hpp"
-#include "VkStagingBuffer.hpp"
 
 #include <VkLib/Queue.hpp>
 
@@ -63,24 +62,6 @@ namespace vk_renderer
 		//m_texture->bind( 0 );
 		//m_texture->generateMipmaps();
 		//m_texture->unbind( 0 );
-	}
-
-	void Texture::bindAsShaderInput( renderer::CommandBuffer const & commandBuffer
-		, uint32_t unit )const
-	{
-		assert( m_nonOwnedTexture );
-		static_cast< CommandBuffer const & >( commandBuffer ).getCommandBuffer().memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
-			, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
-			, m_nonOwnedTexture->makeShaderInputResource() );
-	}
-
-	void Texture::bindAsShaderOutput( renderer::CommandBuffer const & commandBuffer
-		, uint32_t unit )const
-	{
-		assert( m_nonOwnedTexture );
-		static_cast< CommandBuffer const & >( commandBuffer ).getCommandBuffer().memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
-			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-			, m_nonOwnedTexture->makeColourAttachment() );
 	}
 
 	renderer::ImageMemoryBarrier Texture::makeGeneralLayout( renderer::AccessFlags accessFlags )const

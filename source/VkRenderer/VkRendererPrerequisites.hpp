@@ -13,6 +13,7 @@
 #include "VkBlendFactor.hpp"
 #include "VkBlendOp.hpp"
 #include "VkBufferTarget.hpp"
+#include "VkClearValue.hpp"
 #include "VkColourComponentFlag.hpp"
 #include "VkCommandBufferResetFlag.hpp"
 #include "VkCommandBufferUsageFlag.hpp"

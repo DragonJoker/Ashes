@@ -6,13 +6,11 @@ See LICENSE file in root folder.
 #define ___Renderer_AttributeFormat_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
-
 namespace renderer
 {
 	/**
 	*\brief
-	*	Liste des formats d'attributs supportés.
+	*	Liste des formats d'attributs supportï¿½s.
 	*/
 	enum class AttributeFormat
 	{

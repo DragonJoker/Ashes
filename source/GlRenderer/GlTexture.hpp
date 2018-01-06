@@ -55,22 +55,6 @@ namespace gl_renderer
 		void generateMipmaps()const override;
 		/**
 		*\brief
-		*	Active la texture.
-		*\param[in] unit
-		*	L'indice de l'unité sur laquelle la texture doit être activée.
-		*/
-		void bindAsShaderInput( renderer::CommandBuffer const & commandBuffer
-			, uint32_t unit )const override;
-		/**
-		*\brief
-		*	Active la texture.
-		*\param[in] unit
-		*	L'indice de l'unité sur laquelle la texture doit être activée.
-		*/
-		void bindAsShaderOutput( renderer::CommandBuffer const & commandBuffer
-			, uint32_t unit )const override;
-		/**
-		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout général.
 		*\param[in] accessFlags
 		*	Les accès voulus, une fois que la transition est effectuée.
@@ -131,7 +115,7 @@ namespace gl_renderer
 		renderer::ImageMemoryBarrier makePresentSource()const override;
 		/**
 		*\return
-		*	L'image vulkan.
+		*	L'image OpenGL.
 		*/
 		inline GLuint getImage()const noexcept
 		{

@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-#if defined( VK_USE_PLATFORM_WIN32_KHR )
+#if RENDERLIB_WIN32
 
 	Connection::Connection( renderer::Renderer const & renderer
 		, uint32_t deviceIndex
@@ -25,29 +25,37 @@ namespace vk_renderer
 	{
 	}
 
-#elif defined( VK_USE_PLATFORM_XCB_KHR )
+#elif RENDERLIB_XLIB
 
-	Connection::Connection( Renderer const & renderer
-		, xcb_connection_t * connection
-		, xcb_window_t handle )
-		: m_connection{ renderer.getInstance()
-			, renderer.getPhysicalDevice()
-			, connection
-			, handle }
+	Connection::Connection( renderer::Renderer const & renderer
+		, uint32_t deviceIndex
+		, renderer::WindowHandle && handle )
+		: renderer::Connection{ renderer
+			, deviceIndex
+			, std::move( handle ) }
+		, m_connection{ static_cast< Renderer const & >( renderer ).getInstance()
+			, static_cast< Renderer const & >( renderer ).getPhysicalDevice( deviceIndex )
+			, m_handle.getInternal< renderer::IXWindowHandle >().getDisplay()
+			, m_handle.getInternal< renderer::IXWindowHandle >().getDrawable() }
+	{
+	}
+
+#elif RENDERLIB_XCB
+
+	Connection::Connection( renderer::Renderer const & renderer
+		, uint32_t deviceIndex
+		, renderer::WindowHandle && handle )
+		: renderer::Connection{ renderer
+			, deviceIndex
+			, std::move( handle ) }
+		, m_connection{ static_cast< Renderer const & >( renderer ).getInstance()
+			, static_cast< Renderer const & >( renderer ).getPhysicalDevice( deviceIndex )
+			, m_handle.getInternal< renderer::IXcbWindowHandle >().getConnection()
+			, m_handle.getInternal< renderer::IXcbWindowHandle >().getHandle() }
 	{
 	}
 
 #else
-
-	Connection::Connection( Renderer const & renderer
-		, Display * display
-		, Window window )
-		: m_connection{ renderer.getInstance()
-			, renderer.getPhysicalDevice()
-			, display
-			, window }
-	{
-	}
 
 #endif
 }

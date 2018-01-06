@@ -228,13 +228,6 @@ namespace gl_renderer
 			, renderer::MemoryPropertyFlags memoryFlags )const override;
 		/**
 		*\brief
-		*	Crée un tampon de transfert.
-		*\param[in] size
-		*	La taille du tampon.
-		*/
-		renderer::StagingBufferPtr createStagingBuffer( uint32_t size )const override;
-		/**
-		*\brief
 		*	Crée un tampon d'uniformes.
 		*\param[in] size
 		*	La taille du tampon.

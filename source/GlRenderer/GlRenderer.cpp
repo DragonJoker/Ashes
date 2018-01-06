@@ -1,6 +1,7 @@
 #include "GlRenderer.hpp"
 
 #include "GlConnection.hpp"
+#include "GlContext.hpp"
 #include "GlDevice.hpp"
 
 namespace gl_renderer

@@ -16,7 +16,6 @@ See LICENSE file in root folder.
 #include "GlPipelineLayout.hpp"
 #include "GlRenderingResources.hpp"
 #include "GlRenderPass.hpp"
-#include "GlStagingBuffer.hpp"
 #include "GlTexture.hpp"
 #include "GlUniformBuffer.hpp"
 
@@ -44,6 +43,7 @@ namespace gl_renderer
 
 	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags )const
 	{
+		m_commands.clear();
 		m_beginFlags = flags;
 		return true;
 	}
@@ -148,10 +148,9 @@ namespace gl_renderer
 		, renderer::PipelineLayout const & layout
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
-		m_commands.emplace_back( std::make_unique< BindDescriptorSetCommand >( descriptorSet, layout, bindingPoint ) );
-		//m_commandBuffer->bindDescriptorSet( static_cast< DescriptorSet const & >( descriptorSet ).getDescriptorSet()
-		//	, static_cast< PipelineLayout const & >( layout ).getLayout()
-		//	, convert( bindingPoint ) );
+		m_commands.emplace_back( std::make_unique< BindDescriptorSetCommand >( descriptorSet
+			, layout
+			, bindingPoint ) );
 	}
 
 	void CommandBuffer::setViewport( renderer::Viewport const & viewport )const

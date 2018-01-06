@@ -8,7 +8,6 @@ See LICENSE file in root folder.
 
 #include "RendererPrerequisites.hpp"
 
-#include <optional>
 #include <vector>
 
 namespace renderer
@@ -20,7 +19,7 @@ namespace renderer
 	class GeometryBuffers
 	{
 	public:
-		struct VBO 
+		struct VBO
 		{
 			VertexBufferBase const & vbo;
 			uint64_t offset;
@@ -29,6 +28,15 @@ namespace renderer
 
 		struct IBO
 		{
+		    IBO( BufferBase const & buffer
+                , uint64_t offset
+                , IndexType type )
+                : buffer{ buffer }
+                , offset{ offset }
+                , type{ type }
+		    {
+		    }
+
 			BufferBase const & buffer;
 			uint64_t offset;
 			IndexType type;
@@ -124,7 +132,7 @@ namespace renderer
 		*/
 		inline bool hasIbo()const
 		{
-			return m_ibo.has_value();
+			return m_ibo != nullptr;
 		}
 		/**
 		*\return
@@ -132,12 +140,13 @@ namespace renderer
 		*/
 		inline IBO const & getIbo()const
 		{
-			return m_ibo.value();
+		    assert( m_ibo != nullptr );
+			return *m_ibo;
 		}
 
 	protected:
 		std::vector< VBO > m_vbos;
-		std::optional< IBO > m_ibo;
+		std::unique_ptr< IBO > m_ibo;
 	};
 }
 

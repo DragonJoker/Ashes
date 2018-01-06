@@ -12,6 +12,7 @@
 #include <Renderer/RenderPassState.hpp>
 #include <Renderer/RenderSubpass.hpp>
 #include <Renderer/RenderSubpassState.hpp>
+#include <Renderer/StagingBuffer.hpp>
 
 namespace render
 {
@@ -92,7 +93,9 @@ namespace render
 		, m_colour{ device.createTexture() }
 		, m_depth{ device.createTexture() }
 		, m_buffer( PickingWidth * PickingWidth )
-		, m_stagingBuffer{ device.createStagingBuffer() }
+		, m_stagingBuffer{ std::make_unique< renderer::StagingBuffer >( device
+			, 0u
+			, 1000000u ) }
 		, m_commandPool{ device.createCommandPool( device.getGraphicsQueue().getFamilyIndex() ) }
 		, m_commandBuffer{ m_commandPool->createCommandBuffer() }
 	{

@@ -4,7 +4,9 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Renderer/Attribute.hpp>
+#include <Renderer/AttributeBase.hpp>
+
+#include <VkLib/VertexAttribute.hpp>
 
 namespace vk_renderer
 {

@@ -10,7 +10,6 @@ See LICENSE file in root folder.
 
 #include <Renderer/GeometryBuffers.hpp>
 
-#include <optional>
 #include <vector>
 
 namespace vk_renderer

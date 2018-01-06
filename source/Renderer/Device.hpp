@@ -238,7 +238,7 @@ namespace renderer
 			, WrapMode wrapR
 			, Filter minFilter
 			, Filter magFilter
-			, MipmapMode mipFilter = MipmapMode::eNearest )const = 0;
+			, MipmapMode mipFilter = MipmapMode::eNone )const = 0;
 		/**
 		*\brief
 		*	Crée un tampon GPU.
@@ -252,13 +252,6 @@ namespace renderer
 		virtual BufferBasePtr createBuffer( uint32_t size
 			, BufferTargets target
 			, MemoryPropertyFlags memoryFlags )const = 0;
-		/**
-		*\brief
-		*	Crée un tampon de transfert.
-		*\param[in] size
-		*	La taille du tampon.
-		*/
-		virtual StagingBufferPtr createStagingBuffer( uint32_t size = 10000000u )const = 0;
 		/**
 		*\brief
 		*	Crée un tampon d'uniformes.

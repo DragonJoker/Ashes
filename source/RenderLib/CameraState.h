@@ -9,6 +9,7 @@
 #pragma once
 
 #include <Utils/Angle.hpp>
+#include <Utils/Quaternion.hpp>
 #include <Utils/RangedValue.hpp>
 
 namespace render

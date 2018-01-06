@@ -8,6 +8,7 @@
 #define ___RenderLib_UberShader_HPP___
 #pragma once
 
+#include "RenderLibPrerequisites.h"
 #include <VkLib/FlagCombination.hpp>
 
 namespace render

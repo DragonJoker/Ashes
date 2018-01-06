@@ -16,6 +16,11 @@ namespace common
 
 		void updateFps( std::chrono::microseconds const & duration );
 
+		inline wxString const & getRendererName()const
+		{
+			return m_rendererName;
+		}
+
 	private:
 		bool doParseCommandLine();
 		virtual MainFrame * doCreateMainFrame( wxString const & rendererName ) = 0;

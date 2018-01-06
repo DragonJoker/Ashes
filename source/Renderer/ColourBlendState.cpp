@@ -27,8 +27,8 @@ namespace renderer
 
 	ColourBlendState const & ColourBlendState::createDefault()
 	{
-		static ColourBlendState const default = doCreateDefault();
-		return default;
+		static ColourBlendState const defaultValue = doCreateDefault();
+		return defaultValue;
 	}
 
 	void ColourBlendState::addAttachment( ColourBlendStateAttachment const & attachment )

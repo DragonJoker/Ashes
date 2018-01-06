@@ -6,8 +6,6 @@ See LICENSE file in root folder.
 #define ___Renderer_PipelineBindPoint_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
-
 namespace renderer
 {
 	/**

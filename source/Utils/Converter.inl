@@ -2,6 +2,9 @@
 This file belongs to VkLib.
 See LICENSE file in root folder
 */
+#include <cassert>
+#include <cstring>
+
 namespace utils
 {
 	namespace details
@@ -396,7 +399,7 @@ namespace utils
 				, size_t dsts )
 			{
 				assert( srcs == dsts );
-				memcpy( dst, src, srcs );
+				std::memcpy( dst, src, srcs );
 			}
 		};
 	}

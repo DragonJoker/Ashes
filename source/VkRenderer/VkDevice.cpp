@@ -18,7 +18,6 @@ See LICENSE file in root folder.
 #include "VkSampler.hpp"
 #include "VkSemaphore.hpp"
 #include "VkShaderProgram.hpp"
-#include "VkStagingBuffer.hpp"
 #include "VkSwapChain.hpp"
 #include "VkTexture.hpp"
 #include "VkUniformBuffer.hpp"
@@ -183,11 +182,6 @@ namespace vk_renderer
 			, size
 			, target
 			, memoryFlags );
-	}
-
-	renderer::StagingBufferPtr Device::createStagingBuffer( uint32_t size )const
-	{
-		return std::make_shared< StagingBuffer >( *this, size );
 	}
 
 	renderer::UniformBufferBasePtr Device::createUniformBuffer( uint32_t count

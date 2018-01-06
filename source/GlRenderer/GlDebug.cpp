@@ -2,14 +2,16 @@
 
 #include <cstdint>
 #include <iostream>
+#include <sstream>
 
-#if defined( _WIN32 )
+#if RENDERLIB_WIN32
 #   include <Windows.h>
-#else
-#   include <GL/glx.h>
+#	include "GL/glew.h"
+#	include "GL/wglew.h"
+#elif RENDERLIB_XLIB
+#	include "GL/glew.h"
+#   include "GL/glxew.h"
 #endif
-
-#include <GL/glew.h>
 
 //*************************************************************************************************
 
@@ -28,9 +30,9 @@ namespace gl_api
 	template< typename Func >
 	bool getFunction( std::string const & p_strName, Func & p_func )
 	{
-#if defined( _WIN32 )
+#if RENDERLIB_WIN32
 		p_func = reinterpret_cast< Func >( wglGetProcAddress( p_strName.c_str() ) );
-#elif defined( __linux__ )
+#elif RENDERLIB_XLIB
 		p_func = reinterpret_cast< Func >( glXGetProcAddress( ( GLubyte const * )p_strName.c_str() ) );
 #endif
 		return p_func != NULL;

@@ -420,7 +420,9 @@ namespace render
 		, m_textNode{ device, renderPass, true, OpacityType::eAlphaTest, TextureFlag::eOpacity }
 		, m_drawCommandBuffer{ commandPool.createCommandBuffer( false ) }
 		, m_updateCommandBuffer{ commandPool.createCommandBuffer() }
-		, m_stagingBuffer{ device.createStagingBuffer( uint32_t( MaxObjectsCount * maxCharsPerBuffer * sizeof( BorderPanelOverlay::BorderQuads ) ) ) }
+		, m_stagingBuffer{ std::make_unique< renderer::StagingBuffer >( device
+			, 0u
+			, uint32_t( MaxObjectsCount * maxCharsPerBuffer * sizeof( BorderPanelOverlay::BorderQuads ) ) ) }
 		, m_panelOverlays
 		{
 			PanelOverlayVbo{ device, MaxObjectsCount },

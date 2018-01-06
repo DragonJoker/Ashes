@@ -14,12 +14,12 @@ namespace vkapp
 {
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, renderer::Renderer const & vulkan )
+		, renderer::Renderer const & renderer )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 	{
 		try
 		{
-			doCreateDevice( vulkan );
+			doCreateDevice( renderer );
 			std::cout << "Logical device created." << std::endl;
 		}
 		catch ( std::exception & )
@@ -41,8 +41,8 @@ namespace vkapp
 		m_device.reset();
 	}
 
-	void RenderPanel::doCreateDevice( renderer::Renderer const & vulkan )
+	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
 	{
-		m_device = vulkan.createDevice( common::makeConnection( this, vulkan ) );
+		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
 	}
 }

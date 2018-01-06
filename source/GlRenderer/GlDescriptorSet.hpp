@@ -76,9 +76,35 @@ namespace gl_renderer
 		*	Met à jour toutes les attaches du descripteur.
 		*/
 		void update()const override;
+		/**
+		*\brief
+		*	Le tableau d'attaches de type sampler + texture..
+		*/
+		inline std::vector< renderer::CombinedTextureSamplerBinding > const & getCombinedTextureSamplers()const
+		{
+			return m_combinedTextureSamplers;
+		}
+		/**
+		*\brief
+		*	Le tableau d'attaches de type texture échantillonnée.
+		*/
+		inline std::vector< renderer::SampledTextureBinding > const & getSampledTextures()const
+		{
+			return m_sampledTextures;
+		}
+		/**
+		*\brief
+		*	Le tableau d'attaches de type tampon de variables uniformes.
+		*/
+		inline std::vector< renderer::UniformBufferBinding > const & getUniformBuffers()const
+		{
+			return m_uniformBuffers;
+		}
 
 	private:
-		std::vector< renderer::DescriptorSetBinding > m_bindings;
+		std::vector< renderer::CombinedTextureSamplerBinding > m_combinedTextureSamplers;
+		std::vector< renderer::SampledTextureBinding > m_sampledTextures;
+		std::vector< renderer::UniformBufferBinding > m_uniformBuffers;
 	};
 }
 

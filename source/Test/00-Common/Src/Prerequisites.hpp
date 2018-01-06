@@ -35,7 +35,7 @@ namespace common
 	*	The GPU chosen to bind the window and the GPU.
 	*/
 	renderer::ConnectionPtr makeConnection( wxWindow * window
-		, renderer::Renderer const & vulkan );
+		, renderer::Renderer const & renderer );
 	/**
 	*\~french
 	*\brief

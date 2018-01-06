@@ -14,6 +14,7 @@ namespace gl_renderer
 		, renderer::AttributeFormat format
 		, uint32_t offset )
 	{
-		return m_attributes.emplace_back( *this, format, location, offset );
+		m_attributes.emplace_back( *this, format, location, offset );
+		return m_attributes.back();
 	}
 }

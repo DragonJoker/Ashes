@@ -27,13 +27,13 @@ namespace common
 #endif
 
 	renderer::ConnectionPtr makeConnection( wxWindow * window
-		, renderer::Renderer const & vulkan )
+		, renderer::Renderer const & renderer )
 	{
 #if defined( __WXMSW__ )
 
 		auto handle = renderer::WindowHandle{ std::make_unique< renderer::IMswWindowHandle >( wxGetInstance()
 			, window->GetHandle() ) };
-		return vulkan.createConnection( 0u
+		return renderer.createConnection( 0u
 			, std::move( handle ) );
 
 #else
@@ -59,9 +59,9 @@ namespace common
 			}
 		}
 
-		return vulkan.createConnection( 0u
-			, renderer::WindowHandle{ std::make_unique< renderer::IXWindowHandle >( xdisplay
-				, xwindow ) } );
+		return renderer.createConnection( 0u
+			, renderer::WindowHandle{ std::make_unique< renderer::IXWindowHandle >( xwindow
+				, xdisplay ) } );
 
 #endif
 	}
@@ -112,7 +112,7 @@ namespace common
 
 		std::string result( static_cast< size_t >( end - begin ) + 1u, '\0' );
 		file.seekg( 0, std::ios::beg );
-		file.read( reinterpret_cast< char * >( result.data() ), end - begin );
+		file.read( reinterpret_cast< char * >( &result[0] ), end - begin );
 
 		return result;
 	}

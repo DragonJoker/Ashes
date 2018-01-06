@@ -6,7 +6,6 @@ See LICENSE file in root folder.
 #define ___Renderer_CommandPoolCreateFlag_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
 #include <Utils/FlagCombination.hpp>
 
 namespace renderer

@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Renderer_PrimitiveTopology_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include <Utils/UtilsPrerequisites.hpp>
 
 namespace renderer
 {

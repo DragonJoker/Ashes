@@ -8,6 +8,7 @@
 #define ___RenderLib_Movable_HPP___
 #pragma once
 
+#include "RenderLibPrerequisites.h"
 #include <Utils/Quaternion.hpp>
 
 namespace render

@@ -17,7 +17,6 @@ See LICENSE file in root folder.
 #include "VkRenderingResources.hpp"
 #include "VkRenderPass.hpp"
 #include "VkScissor.hpp"
-#include "VkStagingBuffer.hpp"
 #include "VkTexture.hpp"
 #include "VkUniformBuffer.hpp"
 #include "VkViewport.hpp"

@@ -5,6 +5,7 @@
 #include <Renderer/DescriptorSetLayoutBinding.hpp>
 #include <Renderer/Device.hpp>
 #include <Renderer/FrameBuffer.hpp>
+#include <Renderer/ImageMemoryBarrier.hpp>
 #include <Renderer/MultisampleState.hpp>
 #include <Renderer/Queue.hpp>
 #include <Renderer/RenderBuffer.hpp>
@@ -91,7 +92,9 @@ namespace render
 			, renderer::CommandPoolCreateFlag::eResetCommandBuffer ) }
 		, m_drawCommandBuffer{ m_drawCommandPool->createCommandBuffer() }
 		, m_drawSemaphore{ device.createSemaphore() }
-		, m_stagingBuffer{ device.createStagingBuffer() }
+		, m_stagingBuffer{ std::make_unique< renderer::StagingBuffer >( device
+			, 0u
+			, 1000000u ) }
 		, m_descriptorLayout{ doCreateDescriptorLayout( device ) }
 		, m_pipelineLayout{ device.createPipelineLayout( *m_descriptorLayout ) }
 		, m_target{ std::make_unique< RenderTarget >( device, dimensions, utils::PixelFormat::eR8G8B8A8 ) }
@@ -274,8 +277,9 @@ namespace render
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 		{
 			m_swapChain->preRenderCommands( index, commandBuffer );
-			texture.bindAsShaderInput( commandBuffer
-				, 0u );
+			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
+				, renderer::PipelineStageFlag::eFragmentShader
+				, texture.makeShaderInputResource() );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, frameBuffer
 				, {

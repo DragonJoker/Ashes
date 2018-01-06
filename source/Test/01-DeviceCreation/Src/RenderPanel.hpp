@@ -13,11 +13,11 @@
 namespace vkapp
 {
 	/**
-	*@~french
-	*@brief
+	*\~french
+	*\brief
 	*	Le panneau de rendu.
-	*@~english
-	*@brief
+	*\~english
+	*\brief
 	*	The render panel.
 	*/
 	class RenderPanel
@@ -25,50 +25,50 @@ namespace vkapp
 	{
 	public:
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Constructeur.
 		*	Initialise le device logique.
-		*@param parent
+		*\param parent
 		*	La fenêtre parente.
-		*@param size
+		*\param size
 		*	La taille de la fenêtre.
-		*@param instance
+		*\param instance
 		*	L'instance Vulkan.
-		*@~english
-		*@brief
+		*\~english
+		*\brief
 		*	Constructor.
 		*	Initialises the logical device.
-		*@param parent
+		*\param parent
 		*	The parent window.
-		*@param size
+		*\param size
 		*	The window dimensions.
-		*@param instance
+		*\param instance
 		*	The Vulkan instance.
 		*/
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
-			, renderer::Renderer const & vulkan );
+			, renderer::Renderer const & renderer );
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Destructeur.
-		*@~english
-		*@brief
+		*\~english
+		*\brief
 		*	Destructor.
 		*/
 		~RenderPanel();
 
 	private:
 		/**
-		*@~french
-		*@brief
+		*\~french
+		*\brief
 		*	Crée le device logique.
-		*@~english
-		*@brief
+		*\~english
+		*\brief
 		*	Creates the logical device.
 		*/
-		void doCreateDevice( renderer::Renderer const & vulkan );
+		void doCreateDevice( renderer::Renderer const & renderer );
 
 	private:
 		renderer::DevicePtr m_device;

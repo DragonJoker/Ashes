@@ -23,6 +23,7 @@ if ( ANDROID OR CMAKE_COMPILER_IS_GNUCXX )
 	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y" )
 	add_definitions(
 		-fdiagnostics-color=auto
+		-fPIC
 	)
 elseif ( MSVC )
   add_definitions(
@@ -93,9 +94,10 @@ add_subdirectory( RenderLib )
 
 if ( ANDROID )
 	add_subdirectory( AndroidUtils )
-else ()
+	add_subdirectory( RenderLibTestApp )
+elseif (WIN32)
 	add_subdirectory( DesktopUtils )
+	add_subdirectory( RenderLibTestApp )
 endif ()
 
 add_subdirectory( Test )
-add_subdirectory( RenderLibTestApp )

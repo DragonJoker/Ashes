@@ -33,27 +33,7 @@ namespace gl_renderer
 			, nullptr );
 		glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0u );
 		glBindTexture( GL_TEXTURE_2D, 0u );
-		//glBindTexture( GL_TEXTURE_2D, m_dst.getImage() );
-		//auto size = m_dst.getDimensions().x * m_dst.getDimensions().y * getSize( m_dst.getFormat() );
-		//auto buffer = m_src.lock( 0u
-		//	, size
-		//	, renderer::MemoryMapFlag::eRead );
-
-		//if ( buffer )
-		//{
-		//	glTexSubImage2D( GL_TEXTURE_2D
-		//		, 0
-		//		, 0
-		//		, 0
-		//		, m_dst.getDimensions().x
-		//		, m_dst.getDimensions().y
-		//		, m_format
-		//		, m_type
-		//		, buffer );
-		//	m_src.unlock( size, false );
-		//}
-
-		//glBindTexture( GL_TEXTURE_2D, 0u );
+		m_dst.generateMipmaps();
 	}
 
 	CommandPtr CopyImageCommand::clone()const

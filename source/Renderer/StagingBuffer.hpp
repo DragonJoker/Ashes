@@ -19,7 +19,7 @@ namespace renderer
 	*/
 	class StagingBuffer
 	{
-	protected:
+	public:
 		/**
 		*\~french
 		*\brief
@@ -32,17 +32,6 @@ namespace renderer
 		StagingBuffer( Device const & device
 			, BufferTargets target
 			, uint32_t size = 10000000u );
-
-	public:
-		/**
-		*\~english
-		*\brief
-		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
-		*/
-		virtual ~StagingBuffer() = default;
 		/**
 		*\~french
 		*\brief
@@ -52,9 +41,9 @@ namespace renderer
 		*\param[out] texture
 		*	La texture de destination.
 		*/
-		virtual void copyTextureData( CommandBuffer const & commandBuffer
+		void copyTextureData( CommandBuffer const & commandBuffer
 			, ByteArray const & data
-			, Texture const & texture )const = 0;
+			, Texture const & texture )const;
 		/**
 		*\~french
 		*\brief
@@ -557,27 +546,29 @@ namespace renderer
 			return *m_buffer;
 		}
 
+	protected:
+		virtual void doCopyToStagingBuffer( uint8_t const * const data
+			, uint32_t size )const;
+
 	private:
 		template< typename T >
 		inline void doCopyUniformDataToStagingBuffer( T const * const data
 			, uint32_t count
 			, uint32_t offset )const;
-		virtual void doCopyToStagingBuffer( uint8_t const * const data
-			, uint32_t size )const = 0;
-		virtual void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
+		void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 			, uint32_t size
 			, uint32_t offset
-			, BufferBase const & buffer )const = 0;
-		virtual void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
+			, BufferBase const & buffer )const;
+		void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 			, uint32_t size
 			, uint32_t offset
 			, VertexBufferBase const & buffer
-			, PipelineStageFlags const & flags )const = 0;
-		virtual void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
+			, PipelineStageFlags const & flags )const;
+		void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 			, uint32_t size
 			, uint32_t offset
 			, UniformBufferBase const & buffer
-			, PipelineStageFlags const & flags )const = 0;
+			, PipelineStageFlags const & flags )const;
 
 	protected:
 		Device const & m_device;

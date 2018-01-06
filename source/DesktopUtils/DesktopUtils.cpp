@@ -67,11 +67,14 @@ namespace utils
 	{
 #if _MSC_VER
 		::OutputDebugStringA( log.c_str() );
+#	define LocalTime( tm, ti ) localtime_s( &tm, &ti )
+#else
+#	define LocalTime( tm, ti ) tm = *localtime( &ti )
 #endif
 		std::tm today = { 0 };
 		time_t ttime;
 		time( &ttime );
-		localtime_s( &today, &ttime );
+		LocalTime( today, ttime );
 		char buffer[33] = { 0 };
 		strftime( buffer, 32, "%Y-%m-%d %H:%M:%S", &today );
 		std::string timeStamp = buffer;

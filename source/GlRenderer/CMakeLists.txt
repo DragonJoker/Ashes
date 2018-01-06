@@ -1,20 +1,21 @@
 project( GlRenderer )
 
 find_package( OpenGL )
-find_package( GLEW )
 
-if ( OpenGL_FOUND AND GLEW_FOUND )
+if ( OpenGL_FOUND )
 	include_directories(
 		${CMAKE_SOURCE_DIR}
 		${CMAKE_BINARY_DIR}/Renderer
 		${CMAKE_CURRENT_BINARY_DIR}
-		${GLEW_INCLUDE_DIR}
 	)
 
-	file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-		*.c
+	file( GLOB_RECURSE ${PROJECT_NAME}_CXX_FILES
 		*.cc
 		*.cpp
+	)
+
+	file( GLOB_RECURSE ${PROJECT_NAME}_C_FILES
+		*.c
 	)
 
 	file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
@@ -25,10 +26,14 @@ if ( OpenGL_FOUND AND GLEW_FOUND )
 		*.inc
 	)
 
-	add_definitions( -DGlRenderer_EXPORTS )
+	add_definitions(
+		-DGlRenderer_EXPORTS
+		-DGLEW_STATIC=1
+	)
 
 	add_library( ${PROJECT_NAME} SHARED
-		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_C_FILES}
+		${${PROJECT_NAME}_CXX_FILES}
 		${${PROJECT_NAME}_HDR_FILES}
 	)
 
@@ -36,13 +41,11 @@ if ( OpenGL_FOUND AND GLEW_FOUND )
 		GlRendererPch.hpp
 		GlRendererPch.cpp
 		${CMAKE_CXX_FLAGS}
-		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_CXX_FILES}
 	)
 
 	target_link_libraries( ${PROJECT_NAME}
 		${OPENGL_gl_LIBRARY}
-		optimized ${GLEW_LIBRARY_RELEASE}
-		debug ${GLEW_LIBRARY_DEBUG}
 		Renderer
 	)
 
@@ -56,8 +59,5 @@ if ( OpenGL_FOUND AND GLEW_FOUND )
 else ()
 	if ( NOT OpenGL_FOUND )
 		message( SEND_ERROR "OpenGL library not found." )
-	endif ()
-	if ( NOT GLEW_FOUND )
-		message( SEND_ERROR "GLEW library not found." )
 	endif ()
 endif ()

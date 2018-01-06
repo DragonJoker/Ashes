@@ -1,4 +1,4 @@
-#include "GlPixelFormat.hpp"
+#include "GlRendererPrerequisites.hpp"
 
 namespace gl_renderer
 {
@@ -62,7 +62,7 @@ namespace gl_renderer
 			return GL_RGB;
 
 		case utils::PixelFormat::eR8G8B8A8:
-			return GL_RGBA;
+			return GL_ABGR_EXT;
 
 		case utils::PixelFormat::eB8G8R8A8:
 			return GL_BGRA;

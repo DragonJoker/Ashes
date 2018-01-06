@@ -21,6 +21,9 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		set( BinaryLibraries
 			${BinaryLibraries}
 			dl
+			${VkLib_LIBRARIES}
+			${glslang_LIBRARIES}
+			${SPIRV_LIBRARIES}
 		)
 	endif()
 
@@ -39,6 +42,9 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 
 	add_subdirectory( 00-Common )
 	add_subdirectory( 01-DeviceCreation )
-	add_subdirectory( 02-VertexLayout )
-	add_subdirectory( 05-DescriptorSets )
+	add_subdirectory( 02-SwapChainCreation )
+	add_subdirectory( 03-VertexLayout )
+	add_subdirectory( 04-StagingBuffer )
+	add_subdirectory( 05-Texture )
+	add_subdirectory( 06-DescriptorSets )
 endif ()
