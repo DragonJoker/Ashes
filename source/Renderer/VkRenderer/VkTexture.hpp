@@ -10,9 +10,6 @@
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/Image.hpp>
-#include <VkLib/Sampler.hpp>
-
 #include <Renderer/Texture.hpp>
 
 #include <Utils/Vec2.hpp>
@@ -33,15 +30,17 @@ namespace vk_renderer
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		Texture( renderer::Device const & device );
+		Texture( Device const & device );
 		/**
 		*\brief
 		*	Constructeur.
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		Texture( renderer::Device const & device
-			, vk::Image const & image );
+		Texture( Device const & device
+			, utils::PixelFormat format
+			, utils::IVec2 const & dimensions
+			, VkImage image );
 		/**
 		*\brief
 		*	Charge l'image de la texture.
@@ -120,18 +119,68 @@ namespace vk_renderer
 		*/
 		renderer::ImageMemoryBarrier makePresentSource()const override;
 		/**
+		*\~french
 		*\return
-		*	L'image vulkan.
+		*	La vue sur l'image.
+		*\~english
+		*\return
+		*	The image view.
 		*/
-		inline vk::Image const & getImage()const noexcept
+		inline TextureView const & getView()const
 		{
-			assert( m_nonOwnedTexture );
-			return *m_nonOwnedTexture;
+			return *m_view;
+		}
+		/**
+		*\~french
+		*\brief
+		*	Opérateur de conversion implicite vers VkImage.
+		*\~english
+		*\brief
+		*	VkImage implicit cast operator.
+		*/
+		inline operator VkImage const &( )const
+		{
+			return m_image;
 		}
 
 	private:
-		vk::ImagePtr m_ownedTexture;
-		vk::Image const * m_nonOwnedTexture{ nullptr };
+		/**
+		*\~french
+		*\brief
+		*	Prépare une barrière mémoire de transition de l'image vers un autre layout.
+		*\param[in] layout
+		*	Le layout vers lequel on fait la transition.
+		*\param[in] queueFamily
+		*	La file référençant l'image après la transition.
+		*\param[in] dstAccessMask
+		*	Les accès voulus, une fois que la transition est effectuée.
+		*\return
+		*	La barrière mémoire.
+		*\~english
+		*\brief
+		*	Prepares a layout transition memory barrier.
+		*\param[in] layout
+		*	The destination layout.
+		*\param[in] queueFamily
+		*	The queue referencing the image after the transition.
+		*\param[in] dstAccessMask
+		*	The wanted access after the transition is done.
+		*\return
+		*	The memory barrier.
+		*/
+		renderer::ImageMemoryBarrier doMakeLayoutTransition( renderer::ImageLayout layout
+			, uint32_t queueFamily
+			, renderer::AccessFlags dstAccessMask )const;
+
+	private:
+		Device const & m_device;
+		VkImage m_image{};
+		TextureViewPtr m_view;
+		ImageStoragePtr m_storage;
+		bool m_owner{};
+		mutable renderer::AccessFlags m_currentAccessMask{};
+		mutable renderer::ImageLayout m_currentLayout{};
+		mutable uint32_t m_currentQueueFamily{ 0 };
 	};
 }
 

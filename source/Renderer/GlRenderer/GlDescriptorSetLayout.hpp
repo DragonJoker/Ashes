@@ -16,7 +16,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Classe wrappant un vk::DescriptorLayout.
+	*	Layout de descripteurs.
 	*/
 	class DescriptorSetLayout
 		: public renderer::DescriptorSetLayout

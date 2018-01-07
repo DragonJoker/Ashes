@@ -29,16 +29,9 @@ namespace vk_renderer
 		*\param[in] primary
 		*	Dit si le tampon est un tampon de commandes primaire (\p true) ou secondaire (\p false).
 		*/
-		CommandBuffer( renderer::Device const & device
-			, renderer::CommandPool const & pool
+		CommandBuffer( Device const & device
+			, CommandPool const & pool
 			, bool primary );
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*/
-		CommandBuffer( vk::CommandBufferPtr && commandBuffer );
 		/**
 		*\brief
 		*	Démarre l'enregistrement du tampon de commandes.
@@ -366,15 +359,48 @@ namespace vk_renderer
 		void copyImage( renderer::StagingBuffer const & src
 			, renderer::Texture const & dst )const override;
 		/**
+		*\~french
 		*\return
-		*	Le tampon de commandes vulkan.
+		*	Le pipeline actuellement actif.
+		*\~english
+		*\return
+		*	The currently active pipeline.
 		*/
-		vk::CommandBuffer const & getCommandBuffer()const
+		inline Pipeline const & getCurrentPipeline()const
 		{
-			return *m_commandBuffer;
+			assert( m_currentPipeline && "No pipeline bound." );
+			return *m_currentPipeline;
+		}
+		/**
+		*\~french
+		*\return
+		*	Dit si un pipeline est actif.
+		*\~english
+		*\return
+		*	Tells if a pipeline is active.
+		*/
+		inline bool isPipelineBound()const
+		{
+			return m_currentPipeline != nullptr;
+		}
+		/**
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkCommandBuffer.
+		*\~english
+		*\brief
+		*	VkCommandBuffer implicit cast operator.
+		*/
+		inline operator VkCommandBuffer const &( )const
+		{
+			return m_commandBuffer;
 		}
 
 	private:
-		vk::CommandBufferPtr m_commandBuffer;
+		Device const & m_device;
+		CommandPool const & m_pool;
+		VkCommandBuffer m_commandBuffer{};
+		mutable Pipeline const * m_currentPipeline{ nullptr };
+		mutable VkCommandBufferInheritanceInfo m_inheritanceInfo;
 	};
 }

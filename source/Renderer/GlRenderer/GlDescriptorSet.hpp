@@ -18,7 +18,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Classe template wrappant un vk::DescriptorSet.
+	*	Set de descripteurs.
 	*/
 	class DescriptorSet
 		: public renderer::DescriptorSet

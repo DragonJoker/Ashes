@@ -6,9 +6,9 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	vk::ColourBlendStateAttachment convert( renderer::ColourBlendStateAttachment const & state )
+	VkPipelineColorBlendAttachmentState convert( renderer::ColourBlendStateAttachment const & state )
 	{
-		return vk::ColourBlendStateAttachment
+		return VkPipelineColorBlendAttachmentState
 		{
 			state.isBlendEnabled(),
 			convert( state.getSrcColourBlendFactor() ),

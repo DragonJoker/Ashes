@@ -6,7 +6,6 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/Connection.hpp>
 #include <Renderer/Connection.hpp>
 
 namespace vk_renderer
@@ -29,19 +28,80 @@ namespace vk_renderer
 		*\param[in] handle
 		*	Le descripteur de la fenêtre.
 		*/
-		Connection( renderer::Renderer const & renderer
+		Connection( Renderer const & renderer
 			, uint32_t deviceIndex
 			, renderer::WindowHandle && handle );
 		/**
+		*\~french
 		*\return
-		*	La connection vulkan.
+		*	Les capacités de la surface de présentation.
+		*\~english
+		*\return
+		*	The presentation surface's capabilites.
 		*/
-		vk::Connection & getConnection()
+		VkSurfaceCapabilitiesKHR getSurfaceCapabilities()const;
+		/**
+		*\~french
+		*\return
+		*	La surface de présentation.
+		*\~english
+		*\return
+		*	The presentation surface.
+		*/
+		inline auto getPresentSurface()const
 		{
-			return m_connection;
+			return m_presentSurface;
+		}
+		/**
+		*\~french
+		*\return
+		*	L'index du type de file graphique.
+		*\~english
+		*\return
+		*	The graphic queue's family index.
+		*/
+		inline auto getGraphicsQueueFamilyIndex()const
+		{
+			return m_graphicsQueueFamilyIndex;
+		}
+		/**
+		*\~french
+		*\return
+		*	L'index du type de file de présentation.
+		*\~english
+		*\return
+		*	The presentation queue's family index.
+		*/
+		inline auto getPresentQueueFamilyIndex()const
+		{
+			return m_graphicsQueueFamilyIndex;
 		}
 
 	private:
-		vk::Connection m_connection;
+		/**
+		*\~french
+		*\brief
+		*	Crée la surface liée à la fenêtre.
+		*\~english
+		*\brief
+		*	Creates the surface associated to the window.
+		*/
+		void doCreatePresentSurface();
+		/**
+		*\~french
+		*\brief
+		*	Récupère les informations de présentation.
+		*\~english
+		*\brief
+		*	Retrieves the presentation informations.
+		*/
+		void doRetrievePresentationInfos();
+
+	private:
+		Renderer const & m_renderer;
+		PhysicalDevice const & m_gpu;
+		VkSurfaceKHR m_presentSurface{ VK_NULL_HANDLE };
+		uint32_t m_graphicsQueueFamilyIndex{ std::numeric_limits< uint32_t >::max() };
+		uint32_t m_presentQueueFamilyIndex{ std::numeric_limits< uint32_t >::max() };
 	};
 }

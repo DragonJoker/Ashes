@@ -12,7 +12,7 @@ namespace renderer
 {
 	/**
 	*\brief
-	*	Encapsulation d'un vk::CommandBuffer.
+	*	Tampon de commandes.
 	*/
 	class CommandBuffer
 	{

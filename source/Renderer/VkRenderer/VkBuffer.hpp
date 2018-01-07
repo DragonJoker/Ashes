@@ -8,7 +8,7 @@
 #define ___VkRenderer_Buffer_HPP___
 #pragma once
 
-#include "VkRendererPrerequisites.hpp"
+#include "VkMemoryStorage.hpp"
 
 #include <VkLib/Buffer.hpp>
 #include <Renderer/Buffer.hpp>
@@ -102,16 +102,24 @@ namespace vk_renderer
 		*/
 		renderer::BufferMemoryBarrier makeMemoryTransitionBarrier( renderer::AccessFlags dstAccess )const override;
 		/**
-		*\return
-		*	Le tampon.
+		*\~french
+		*\brief
+		*	Opérateur de conversion implicite vers VkBuffer.
+		*\~english
+		*\brief
+		*	VkBuffer implicit cast operator.
 		*/
-		inline vk::Buffer const & getBuffer()const
+		inline operator VkBuffer const &( )const
 		{
 			return m_buffer;
 		}
 
 	private:
-		vk::Buffer m_buffer;
+		Device const & m_device;
+		uint32_t m_size{ 0u };
+		VkBuffer m_buffer{ VK_NULL_HANDLE };
+		BufferStoragePtr m_storage;
+		mutable VkAccessFlags m_currentAccessMask{ VK_ACCESS_MEMORY_WRITE_BIT };
 	};
 }
 

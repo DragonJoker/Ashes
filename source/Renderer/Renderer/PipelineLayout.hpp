@@ -14,7 +14,7 @@ namespace renderer
 {
 	/**
 	*\brief
-	*	Wrapper de vk::PipelineLayout.
+	*	Layout de pipeline.
 	*/
 	class PipelineLayout
 	{

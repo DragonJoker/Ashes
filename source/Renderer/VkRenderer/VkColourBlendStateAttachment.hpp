@@ -13,11 +13,11 @@ namespace vk_renderer
 {
 	/**
 	*\brief
-	*	Convertit un renderer::ColourBlendStateAttachment en vk::ColourBlendStateAttachment.
+	*	Convertit un renderer::ColourBlendStateAttachment en VkPipelineColorBlendAttachmentState.
 	*\param[in] flags
 	*	Le renderer::ColourBlendState.
 	*\return
-	*	Le vk::ColourBlendStateAttachment.
+	*	Le VkPipelineColorBlendAttachmentState.
 	*/
-	vk::ColourBlendStateAttachment convert( renderer::ColourBlendStateAttachment const & state );
+	VkPipelineColorBlendAttachmentState convert( renderer::ColourBlendStateAttachment const & state );
 }

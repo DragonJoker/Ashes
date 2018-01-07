@@ -8,9 +8,8 @@
 #define ___VkRenderer_UniformBuffer_HPP___
 #pragma once
 
-#include "VkDevice.hpp"
+#include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/UniformBuffer.hpp>
 #include <Renderer/UniformBuffer.hpp>
 
 namespace vk_renderer
@@ -48,12 +47,7 @@ namespace vk_renderer
 		*\return
 		*	L'offset réel.
 		*/
-		uint32_t getOffset( uint32_t count )const
-		{
-			return vk::UniformBuffer::getOffset( static_cast< Device const & >( m_device ).getDevice()
-				, count
-				, this->getSize() );
-		}
+		uint32_t getOffset( uint32_t count )const;
 
 	protected:
 		/**

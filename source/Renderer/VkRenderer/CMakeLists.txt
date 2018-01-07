@@ -2,6 +2,10 @@ project( VkRenderer )
 
 option( VKRENDERER_GLSL_TO_SPV "Enable Compiling from GLSL to SPIR-V, using glslang and SPIRV libraries" TRUE )
 
+set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
+set( ${PROJECT_NAME}_VERSION_MINOR 1 )
+set( ${PROJECT_NAME}_VERSION_BUILD 0 )
+
 if ( VKRENDERER_GLSL_TO_SPV )
 	set( VKRENDERER_GLSL_TO_SPV 1 )
 	find_package( glslang )

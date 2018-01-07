@@ -3,18 +3,20 @@ This file belongs to Renderer.
 See LICENSE file in root folder.
 */
 #include "VkBackBuffer.hpp"
-
-#include "VkSwapChain.hpp"
-#include "VkTexture.hpp"
+#include "VkDevice.hpp"
+#include "VkMemoryStorage.hpp"
 
 namespace vk_renderer
 {
-	BackBuffer::BackBuffer( renderer::Device const & device
+	BackBuffer::BackBuffer( Device const & device
 		, renderer::SwapChain const & swapChain
-		, uint32_t imageIndex )
+		, uint32_t imageIndex
+		, utils::PixelFormat format
+		, utils::IVec2 const & dimensions
+		, Texture && texture )
 		: renderer::BackBuffer{ device, swapChain, imageIndex }
-		, m_backBuffer{ *static_cast< SwapChain const & >( swapChain ).getSwapChain().getBackBuffers()[imageIndex] }
-		, m_texture{ device, m_backBuffer.getImage() }
+		, m_image{ std::move( texture ) }
+		, m_view{ device, texture, format }
 	{
 	}
 }

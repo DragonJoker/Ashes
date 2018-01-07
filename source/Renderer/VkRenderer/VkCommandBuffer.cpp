@@ -38,19 +38,13 @@ namespace vk_renderer
 		}
 	}
 
-	CommandBuffer::CommandBuffer( renderer::Device const & device
-		, renderer::CommandPool const & pool
+	CommandBuffer::CommandBuffer( Device const & device
+		, CommandPool const & pool
 		, bool primary )
 		: renderer::CommandBuffer{ device, pool, primary }
 		, m_commandBuffer{ std::make_unique< vk::CommandBuffer >( static_cast< Device const & >( device ).getDevice()
 			, static_cast< CommandPool const & >( pool ).getCommandPool()
 			, primary ) }
-	{
-	}
-
-	CommandBuffer::CommandBuffer( vk::CommandBufferPtr && commandBuffer )
-		: renderer::CommandBuffer{}
-		, m_commandBuffer{ std::move( commandBuffer ) }
 	{
 	}
 

@@ -53,7 +53,7 @@ namespace gl_renderer
 	{
 		auto & resources = *m_renderingResources[m_resourceIndex];
 
-		if ( resources.waitRecord( vk::FenceTimeout ) )
+		if ( resources.waitRecord( renderer::FenceTimeout ) )
 		{
 			uint32_t backBuffer{ 0u };
 			resources.setBackBuffer( backBuffer );

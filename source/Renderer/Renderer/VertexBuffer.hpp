@@ -14,7 +14,7 @@ namespace renderer
 {
 	/**
 	*\brief
-	*	Classe wrappant un vk::VertexBuffer.
+	*	Tampon de sommets.
 	*/
 	class VertexBufferBase
 	{
@@ -69,7 +69,7 @@ namespace renderer
 	};
 	/**
 	*\brief
-	*	Classe template wrappant un vk::VertexBuffer.
+	*	Tampon de sommets, typé.
 	*/
 	template< typename T >
 	class VertexBuffer

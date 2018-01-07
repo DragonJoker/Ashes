@@ -13,11 +13,46 @@ namespace vk_renderer
 			, size
 			, target
 			, flags }
+		, m_device{ static_cast< Device const & >( device ) }
 		, m_buffer{ static_cast< Device const & >( device ).getDevice()
 			, size
 			, convert( target )
 			, convert( flags ) }
 	{
+		VkBufferCreateInfo bufferCreate
+		{
+			VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+			nullptr,
+			0,                                                // flags
+			size,                                             // size
+			convert( flags ),                                 // usage
+			VK_SHARING_MODE_EXCLUSIVE,                        // sharingMode
+			0,                                                // queueFamilyIndexCount
+			nullptr                                           // pQueueFamilyIndices
+		};
+		DEBUG_DUMP( bufferCreate );
+		auto res = CreateBuffer( m_device
+			, &bufferCreate
+			, nullptr
+			, &m_buffer );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Buffer creation failed: " + getLastError() };
+		}
+
+		m_storage = std::make_unique< BufferStorage >( m_device
+			, m_buffer
+			, memoryFlags );
+		res = BindBufferMemory( m_device
+			, m_buffer
+			, *m_storage
+			, 0 );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Buffer memory binding failed: " + getLastError() };
+		}
 	}
 
 	uint8_t * BufferBase::lock( uint32_t offset

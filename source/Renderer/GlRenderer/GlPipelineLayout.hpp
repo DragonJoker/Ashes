@@ -12,7 +12,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Wrapper de vk::PipelineLayout.
+	*	Layout de pipeline.
 	*/
 	class PipelineLayout
 		: public renderer::PipelineLayout
@@ -28,8 +28,5 @@ namespace gl_renderer
 		*/
 		PipelineLayout( renderer::Device const & device
 			, renderer::DescriptorSetLayout const * layout );
-
-	private:
-		//vk::PipelineLayoutPtr m_layout;
 	};
 }

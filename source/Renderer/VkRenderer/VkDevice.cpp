@@ -25,18 +25,85 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	Device::Device( renderer::Renderer const & renderer
-		, renderer::ConnectionPtr && connection )
+	Device::Device( Renderer const & renderer
+		, PhysicalDevice const & gpu
+		, ConnectionPtr && connection )
 		: renderer::Device{ renderer, *connection }
-		, m_device{ static_cast< Renderer const & >( renderer ).getInstance()
-			, static_cast< Renderer const & >( renderer ).getPhysicalDevice()
-			, std::move( static_cast< Connection & >( *connection ).getConnection() ) }
+		, m_renderer{ renderer }
+		, m_gpu{ gpu }
+		, m_connection{ std::move( connection ) }
 		, m_version{ "Vulkan 1.0.0" }
 	{
-		m_presentQueue = std::make_unique< Queue >( m_device.getPresentQueue() );
-		m_graphicsQueue = std::make_unique< Queue >( m_device.getGraphicsQueue() );
-		m_presentCommandPool = std::make_unique< CommandPool >( *this, m_device.getPresentCommandPool() );
-		m_graphicsCommandPool = std::make_unique< CommandPool >( *this, m_device.getGraphicsCommandPool() );
+		std::vector< VkDeviceQueueCreateInfo > queueCreateInfos;
+		std::vector< float > queuePriorities = { 1.0f };
+
+		queueCreateInfos.push_back(
+		{
+			VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,                 // sType
+			nullptr,                                                    // pNext
+			0,                                                          // flags
+			m_connection->getGraphicsQueueFamilyIndex(),                // queueFamilyIndex
+			static_cast< uint32_t >( queuePriorities.size() ),          // queueCount
+			queuePriorities.data()                                      // pQueuePriorities
+		} );
+
+		if ( m_connection->getPresentQueueFamilyIndex() != m_connection->getGraphicsQueueFamilyIndex() )
+		{
+			queueCreateInfos.push_back(
+			{
+				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,             // sType
+				nullptr,                                                // pNext
+				0,                                                      // flags
+				m_connection->getPresentQueueFamilyIndex(),             // queueFamilyIndex
+				static_cast< uint32_t >( queuePriorities.size() ),      // queueCount
+				queuePriorities.data()                                  // pQueuePriorities
+			} );
+		}
+
+		VkDeviceCreateInfo deviceInfo
+		{
+			VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+			nullptr,
+			0,                                                                               // flags
+			static_cast< uint32_t >( queueCreateInfos.size() ),                              // queueCreateInfoCount
+			queueCreateInfos.data(),                                                         // pQueueCreateInfos
+			static_cast< uint32_t >( m_gpu.getLayerNames().size() ),                         // enabledLayerCount
+			m_gpu.getLayerNames().empty() ? nullptr : m_gpu.getLayerNames().data(),          // ppEnabledLayerNames
+			static_cast< uint32_t >( m_gpu.getExtensionNames().size() ),                     // enabledExtensionCount
+			m_gpu.getExtensionNames().empty() ? nullptr : m_gpu.getExtensionNames().data(),  // ppEnabledExtensionNames
+			nullptr                                                                          // pEnabledFeatures
+		};
+		DEBUG_DUMP( deviceInfo );
+
+		auto res = CreateDevice( m_gpu, &deviceInfo, nullptr, &m_device );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "LogicalDevice creation failed: " + getLastError() };
+		}
+
+		m_presentCommandPool = std::make_unique< CommandPool >( *this
+			, getPresentQueue().getFamilyIndex()
+			, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT );
+		m_presentQueue = std::make_unique< Queue >( *this, getPresentQueue().getFamilyIndex() );
+
+		if ( getGraphicsQueue().getFamilyIndex() != getPresentQueue().getFamilyIndex() )
+		{
+			m_graphicsQueue = std::make_unique< Queue >( *this, getGraphicsQueue().getFamilyIndex() );
+			m_graphicsCommandPool = std::make_unique< CommandPool >( *this
+				, getGraphicsQueue().getFamilyIndex()
+				, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT );
+		}
+		else
+		{
+			m_graphicsQueue = std::unique_ptr< Queue >( m_presentQueue.get() );
+			m_graphicsCommandPool = std::unique_ptr< CommandPool >( m_presentCommandPool.get() );
+		}
+
+		m_presentQueue = std::make_unique< Queue >( *m_presentQueue );
+		m_graphicsQueue = std::make_unique< Queue >( *m_graphicsQueue );
+		m_presentCommandPool = std::make_unique< CommandPool >( *this, *m_presentCommandPool );
+		m_graphicsCommandPool = std::make_unique< CommandPool >( *this, *m_graphicsCommandPool );
 	}
 
 	renderer::RenderPassPtr Device::createRenderPass( std::vector< utils::PixelFormat > const & formats
@@ -236,6 +303,24 @@ namespace vk_renderer
 
 	void Device::waitIdle()const
 	{
-		m_device.waitIdle();
+		DeviceWaitIdle( m_device );
+	}
+
+	VkMemoryRequirements Device::getBufferMemoryRequirements( VkBuffer buffer )const
+	{
+		VkMemoryRequirements requirements;
+		GetBufferMemoryRequirements( m_device
+			, buffer
+			, &requirements );
+		return requirements;
+	}
+
+	VkMemoryRequirements Device::getImageMemoryRequirements( VkImage image )const
+	{
+		VkMemoryRequirements requirements;
+		GetImageMemoryRequirements( m_device
+			, image
+			, &requirements );
+		return requirements;
 	}
 }

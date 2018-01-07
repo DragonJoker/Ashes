@@ -12,8 +12,12 @@ See LICENSE file in root folder.
 namespace vk_renderer
 {
 	/**
+	*\~french
 	*\brief
 	*	Classe encapsulant une VkQueue.
+	*\~english
+	*\brief
+	*	VkQueue wrapper.
 	*/
 	class Queue
 		: public renderer::Queue
@@ -25,7 +29,8 @@ namespace vk_renderer
 		*\param[in] queue
 		*	La vk::Queue.
 		*/
-		Queue( vk::Queue const & queue );
+		Queue( Device const & device
+			, uint32_t familyIndex );
 		/**
 		*\brief
 		*	Met en attente des tampons de commandes.
@@ -91,6 +96,15 @@ namespace vk_renderer
 			, renderer::SemaphoreCRefArray const & semaphoresToWait )const override;
 		/**
 		*\brief
+		*	Présente la file à Vulkan.
+		*\return
+		*	\p true si tout s'est bien passé.
+		*/ 
+		VkResult presentBackBuffer( SwapChainCRefArray const & swapChains
+			, renderer::UInt32Array const & imagesIndex
+			, SemaphoreCRefArray const & semaphoresToWait )const;
+		/**
+		*\brief
 		*	Attend que la file soit inactive.
 		*\return
 		*	\p true si tout s'est bien passé.
@@ -102,18 +116,24 @@ namespace vk_renderer
 		*/
 		inline uint32_t getFamilyIndex()const override
 		{
-			return m_queue.getFamilyIndex();
+			return m_familyIndex;
 		}
 		/**
-		*\return
-		*	La vk::Queue.
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkQueue.
+		*\~english
+		*\brief
+		*	VkQueue implicit cast operator.
 		*/
-		inline vk::Queue const & getQueue()const
+		inline operator VkQueue const &( )const
 		{
 			return m_queue;
 		}
 
 	private:
-		vk::Queue const & m_queue;
+		Device const & m_device;
+		VkQueue m_queue{ VK_NULL_HANDLE };
+		uint32_t m_familyIndex{ 0u };
 	};
 }

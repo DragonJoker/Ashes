@@ -14,7 +14,7 @@ namespace renderer
 {
 	/**
 	*\brief
-	*	Wrapper de vk::ColourBlendState.
+	*	Etat de mélange.
 	*/
 	class ColourBlendState
 	{

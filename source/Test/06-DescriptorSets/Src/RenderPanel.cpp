@@ -209,7 +209,7 @@ namespace vkapp
 		{
 			uint8_t * data = image.GetData();
 			uint32_t size = image.GetSize().x * image.GetSize().y;
-			vk::ByteArray buffer( size * 4 );
+			renderer::ByteArray buffer( size * 4 );
 
 			if ( image.HasAlpha() )
 			{

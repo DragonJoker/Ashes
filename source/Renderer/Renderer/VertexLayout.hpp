@@ -16,7 +16,7 @@ namespace renderer
 {
 	/**
 	*\brief
-	*	Classe template wrappant un vk::VertexBuffer.
+	*	Layou de sommets.
 	*/
 	class VertexLayout
 	{

@@ -287,7 +287,7 @@ namespace vkapp
 		else
 		{
 			m_timer->Stop();
-			std::cerr << "Can't render: " << vk::getLastError() << std::endl;
+			std::cerr << "Can't render" << std::endl;
 		}
 	}
 

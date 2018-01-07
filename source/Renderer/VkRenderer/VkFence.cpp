@@ -8,17 +8,44 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	Fence::Fence( renderer::Device const & device
+	Fence::Fence( Device const & device
 		, renderer::FenceCreateFlags flags )
 		: renderer::Fence{ device, flags }
-		, m_fence{ static_cast< Device const & >( device ).getDevice()
-			, convert( flags ) }
+		, m_device{ device }
 	{
+		VkFenceCreateInfo createInfo
+		{
+			VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+			nullptr,
+			convert( flags )   // flags
+		};
+		DEBUG_DUMP( createInfo );
+		auto res = CreateFence( device
+			, &createInfo
+			, nullptr
+			, &m_fence );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Fence creation failed: " + getLastError() };
+		}
+	}
+
+	Fence::~Fence()
+	{
+		DestroyFence( m_device
+			, m_fence
+			, nullptr );
 	}
 
 	renderer::WaitResult Fence::wait( uint32_t timeout )const
 	{
-		auto res = m_fence.wait( timeout );
+		auto res = WaitForFences( m_device
+			, 1
+			, &m_fence
+			, VK_TRUE
+			, timeout );
+		checkError( res );
 		return res == VK_SUCCESS
 			? renderer::WaitResult::eSuccess
 			: ( res == VK_TIMEOUT
@@ -28,6 +55,8 @@ namespace vk_renderer
 
 	void Fence::reset()const
 	{
-		m_fence.reset();
+		ResetFences( m_device
+			, 1
+			, &m_fence );
 	}
 }

@@ -6,14 +6,17 @@ See LICENSE file in root folder.
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/RenderPass.hpp>
 #include <Renderer/RenderPass.hpp>
+#include <Renderer/RenderPassState.hpp>
 
 namespace vk_renderer
 {
 	/**
 	*\brief
 	*	Description d'une passe de rendu (pouvant contenir plusieurs sous-passes).
+	*\~english
+	*\brief
+	*	Describes a render pass (which can contain one or more render subpasses).
 	*/
 	class RenderPass
 		: public renderer::RenderPass
@@ -36,14 +39,40 @@ namespace vk_renderer
 		*	Dit si l'on veut vider le contenu des images au chargement de la passe.
 		*\param[in] samplesCount
 		*	Le nombre d'échantillons (pour le multisampling).
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical connection to the GPU.
+		*\param[in] formats
+		*	The attachments pixels formats.
+		*\param[in] subpasses
+		*	The rendersubpasses (at least one is necessary).
+		*\param[in] initialState
+		*	The state wanted at the beginning of the pass.
+		*\param[in] finalState
+		*	The state attained at the end of the pass.
+		*\param[in] clear
+		*	Tells if we want to clear the images at the beginning of the pass.
+		*\param[in] samplesCount
+		*	The samples count (for multisampling).
 		*/
-		RenderPass( renderer::Device const & device
+		RenderPass( Device const & device
 			, std::vector< utils::PixelFormat > const & formats
 			, renderer::RenderSubpassPtrArray const & subpasses
 			, renderer::RenderPassState const & initialState
 			, renderer::RenderPassState const & finalState
 			, bool clear
 			, renderer::SampleCountFlag samplesCount );
+		/**
+		*\~french
+		*\brief
+		*	Destructeur.
+		*\~english
+		*\brief
+		*	Destructor.
+		*/
+		~RenderPass();
 		/**
 		*\brief
 		*	Crée un FrameBuffer compatible avec la passe de rendu.
@@ -56,19 +85,41 @@ namespace vk_renderer
 		*	Les textures voulues pour le tampon d'images à créer.
 		*\return
 		*	Le FrameBuffer créé.
+		*\~english
+		*\brief
+		*	Creates a frame buffer compatible with this render pass.
+		*\remarks
+		*	If the compatibility between wanted views and the render pass' formats
+		*	is not possible, a std::runtime_error will be thrown.
+		*\param[in] width, height
+		*	The frame buffer's dimensions.
+		*\param[in] views
+		*	The views on the images from which the frame buffer is to br created.
+		*\return
+		*	The created frame buffer.
 		*/
 		renderer::FrameBufferPtr createFrameBuffer( utils::IVec2 const & dimensions
 			, renderer::TextureCRefArray const & textures )const override;
 		/**
-		*\return
-		*	La vk::RenderPass.
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkRenderPass.
+		*\~english
+		*\brief
+		*	VkRenderPass implicit cast operator.
 		*/
-		inline vk::RenderPass const & getRenderPass()const
+		inline operator VkRenderPass const &( )const
 		{
 			return m_renderPass;
 		}
 
 	private:
-		vk::RenderPass m_renderPass;
+		Device const & m_device;
+		std::vector< utils::PixelFormat > m_formats;
+		VkRenderPass m_renderPass{};
+		renderer::SampleCountFlag m_samplesCount{};
+		renderer::RenderSubpassPtrArray m_subpasses;
+		renderer::RenderPassState m_initialState;
+		renderer::RenderPassState m_finalState;
 	};
 }
