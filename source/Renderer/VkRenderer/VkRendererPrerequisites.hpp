@@ -81,7 +81,9 @@ namespace vk_renderer
 	class CommandPool;
 	class Connection;
 	class DescriptorSet;
+	class DescriptorSetBinding;
 	class DescriptorSetLayout;
+	class DescriptorSetLayoutBinding;
 	class DescriptorSetPool;
 	class Device;
 	class Pipeline;
@@ -90,6 +92,7 @@ namespace vk_renderer
 	class Renderer;
 	class RenderPass;
 	class RenderSubpass;
+	class Sampler;
 	class Semaphore;
 	class SwapChain;
 	class Texture;
@@ -103,6 +106,7 @@ namespace vk_renderer
 	using BufferStoragePtr = std::unique_ptr< BufferStorage >;
 	using ConnectionPtr = std::unique_ptr< Connection >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
+	using DescriptorSetBindingPtr = std::unique_ptr< DescriptorSetBinding >;
 	using ImageStoragePtr = std::unique_ptr< ImageStorage >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using QueuePtr = std::unique_ptr< Queue >;

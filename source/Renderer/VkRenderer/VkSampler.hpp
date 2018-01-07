@@ -24,6 +24,7 @@ namespace vk_renderer
 	{
 	public:
 		/**
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] device
@@ -32,8 +33,21 @@ namespace vk_renderer
 		*	Les modes de wrap de texture.
 		*\param[in] minFilter, magFilter
 		*	Les filtres de minification et magnification.
+		*\param[in] mipFilter
+		*	Le mode de mipmapping.
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical connection to the GPU.
+		*\param[in] minFilter, magFilter
+		*\param[in] wrapS, wrapT, wrapR
+		*	The  S, T and R address mode.
+		*	The minification and magnification filter.
+		*\param[in] mipFilter
+		*	The mipmapping mode.
 		*/
-		Sampler( renderer::Device const & device
+		Sampler( Device const & device
 			, renderer::WrapMode wrapS
 			, renderer::WrapMode wrapT
 			, renderer::WrapMode wrapR
@@ -41,17 +55,30 @@ namespace vk_renderer
 			, renderer::Filter magFilter
 			, renderer::MipmapMode mipFilter );
 		/**
-		*\return
-		*	L'échantillonneur vulkan.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*\~english
+		*\brief
+		*	Destructor.
 		*/
-		inline vk::Sampler const & getSampler()const noexcept
+		~Sampler();
+		/**
+		*\~french
+		*\brief
+		*	Opérateur de conversion implicite vers VkSampler.
+		*\~english
+		*\brief
+		*	VkSampler implicit cast operator.
+		*/
+		inline operator VkSampler const &( )const
 		{
-			return *m_sampler;
+			return m_sampler;
 		}
 
 	private:
-		//! L'échantillonneur.
-		vk::SamplerPtr m_sampler;
+		Device const & m_device;
+		VkSampler m_sampler{};
 	};
 }
 

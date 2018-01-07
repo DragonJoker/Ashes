@@ -1,6 +1,7 @@
 #include "VkDescriptorSet.hpp"
 
 #include "VkBuffer.hpp"
+#include "VkDescriptorSetBinding.hpp"
 #include "VkDescriptorSetLayoutBinding.hpp"
 #include "VkDescriptorSetLayout.hpp"
 #include "VkDescriptorSetPool.hpp"
@@ -15,9 +16,9 @@ namespace vk_renderer
 		: renderer::DescriptorSet{ pool }
 		, m_device{ device }
 		, m_pool{ pool }
-		, m_layout{ pool.getLayout() }
+		, m_layout{ static_cast< DescriptorSetLayout const & >( pool.getLayout() ) }
 	{
-		auto layouts = makeVkArray< VkDescriptorSetLayout >( DescriptorSetLayoutCRefArray{ pool.getLayout() } );
+		auto layouts = makeVkArray< VkDescriptorSetLayout >( DescriptorSetLayoutCRefArray{ m_layout } );
 		VkDescriptorSetAllocateInfo allocateInfo
 		{
 			VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
@@ -52,27 +53,28 @@ namespace vk_renderer
 		, renderer::Texture const & view
 		, renderer::Sampler const & sampler )
 	{
-		m_descriptorSet->createBinding( convert( layoutBinding )
-			, static_cast< Texture const & >( view ).getImage().getView()
-			, static_cast< Sampler const & >( sampler ).getSampler() );
-		return renderer::CombinedTextureSamplerBinding
+		auto result = CombinedTextureSamplerBinding
 		{
 			layoutBinding,
-			view,
-			sampler
+			*this,
+			static_cast< Texture const & >( view ),
+			static_cast< Sampler const & >( sampler )
 		};
+		m_bindings.push_back( result );
+		return result;
 	}
 
 	renderer::SampledTextureBinding DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 		, renderer::Texture const & view )
 	{
-		m_descriptorSet->createBinding( convert( layoutBinding )
-			, static_cast< Texture const & >( view ).getImage().getView() );
-		return renderer::SampledTextureBinding
+		auto result = SampledTextureBinding
 		{
 			layoutBinding,
-			view
+			*this,
+			static_cast< Texture const & >( view )
 		};
+		m_bindings.push_back( result );
+		return result;
 	}
 
 	renderer::UniformBufferBinding DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
@@ -80,19 +82,23 @@ namespace vk_renderer
 		, uint32_t offset )
 	{
 		offset = uniformBuffer.getOffset( offset );
-		m_descriptorSet->createBinding( convert( layoutBinding )
-			, static_cast< BufferBase const & >( uniformBuffer.getBuffer() ).getBuffer()
-			, offset
-			, uniformBuffer.getSize() );
-		return renderer::UniformBufferBinding
+		auto result = UniformBufferBinding
 		{
 			layoutBinding,
+			*this,
 			uniformBuffer,
 			offset
 		};
+		m_bindings.push_back( result );
+		return result;
 	}
 	void DescriptorSet::update()const
 	{
-		m_descriptorSet->update();
+		DEBUG_DUMP( writes );
+		UpdateDescriptorSets( m_device
+			, static_cast< uint32_t >( m_bindings.size() )
+			, m_bindings.data()
+			, 0
+			, nullptr );
 	}
 }

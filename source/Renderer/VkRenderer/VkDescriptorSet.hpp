@@ -10,7 +10,6 @@
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/DescriptorSet.hpp>
 #include <Renderer/DescriptorSet.hpp>
 
 #include <vector>
@@ -155,6 +154,7 @@ namespace vk_renderer
 		DescriptorSetPool const & m_pool;
 		DescriptorSetLayout const & m_layout;
 		VkDescriptorSet m_descriptorSet{};
+		std::vector< VkWriteDescriptorSet > m_bindings;
 	};
 }
 
