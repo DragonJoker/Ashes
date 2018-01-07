@@ -4,7 +4,11 @@ See LICENSE file in root folder.
 */
 #include "VkFrameBuffer.hpp"
 
+#include "VkCommandBuffer.hpp"
 #include "VkDevice.hpp"
+#include "VkFence.hpp"
+#include "VkImageMemoryBarrier.hpp"
+#include "VkMemoryStorage.hpp"
 #include "VkQueue.hpp"
 #include "VkRenderPass.hpp"
 #include "VkTexture.hpp"
@@ -84,18 +88,18 @@ namespace vk_renderer
 		Texture image{ m_device
 			, format
 			, utils::IVec2{ width, height }
-			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-			, VK_IMAGE_USAGE_TRANSFER_DST_BIT
-			, VK_IMAGE_TILING_LINEAR };
+			, renderer::ImageUsageFlag::eTransferDst
+			, renderer::ImageTiling::eLinear
+			, renderer::MemoryPropertyFlag::eHostVisible | renderer::MemoryPropertyFlag::eHostCoherent };
 
 		// Do the actual blit from the swapchain image to our host visible destination image
-		CommandBuffer copyCmd{ m_device, m_device.getGraphicsCommandPool() };
+		CommandBuffer copyCmd{ m_device, m_device.getGraphicsCommandPool(), true };
 		copyCmd.begin();
-		copyCmd.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VK_PIPELINE_STAGE_TRANSFER_BIT
+		copyCmd.memoryBarrier( renderer::PipelineStageFlag::eTransfer
+			, renderer::PipelineStageFlag::eTransfer
 			, image.makeTransferDestination() );
-		copyCmd.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VK_PIPELINE_STAGE_TRANSFER_BIT 
+		copyCmd.memoryBarrier( renderer::PipelineStageFlag::eTransfer
+			, renderer::PipelineStageFlag::eTransfer
 			, attachImage.makeTransferSource() );
 
 		VkImageCopy imageCopyRegion{};
@@ -111,9 +115,9 @@ namespace vk_renderer
 		imageCopyRegion.srcOffset.z = 0u;
 
 		copyCmd.copyImage( imageCopyRegion, attachImage, image );
-		copyCmd.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VK_PIPELINE_STAGE_TRANSFER_BIT
-			, image.makeGeneralLayout( VK_ACCESS_MEMORY_READ_BIT ) );
+		copyCmd.memoryBarrier( renderer::PipelineStageFlag::eTransfer
+			, renderer::PipelineStageFlag::eTransfer
+			, image.makeGeneralLayout( renderer::AccessFlag::eMemoryRead ) );
 
 		copyCmd.end();
 
@@ -131,13 +135,5 @@ namespace vk_renderer
 			std::memcpy( data, mapped.data, mapped.size );
 			image.unlock( uint32_t( VK_WHOLE_SIZE ), false );
 		}
-		m_frameBuffer->download( static_cast< Queue const & >( queue ).getQueue()
-			, index
-			, xoffset
-			, yoffset
-			, width
-			, height
-			, convert( format )
-			, data );
 	}
 }

@@ -74,10 +74,15 @@ namespace vk_renderer
 
 	static const std::string ShortName = "VkLib";
 
+	class Attribute;
 	class BackBuffer;
+	class Buffer;
 	class CommandBuffer;
 	class CommandPool;
 	class Connection;
+	class DescriptorSet;
+	class DescriptorSetLayout;
+	class DescriptorSetPool;
 	class Device;
 	class Pipeline;
 	class PhysicalDevice;
@@ -91,6 +96,8 @@ namespace vk_renderer
 	class TextureView;
 	class VertexBufferBase;
 	class VertexLayout;
+
+	using AttributeArray = std::vector< Attribute >;
 
 	using BackBufferPtr = std::unique_ptr< BackBuffer >;
 	using BufferStoragePtr = std::unique_ptr< BufferStorage >;
@@ -106,6 +113,7 @@ namespace vk_renderer
 	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
 
 	using CommandBufferCRef = std::reference_wrapper< CommandBuffer const >;
+	using DescriptorSetLayoutCRef = std::reference_wrapper< DescriptorSetLayout const >;
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;
 	using SwapChainCRef = std::reference_wrapper< SwapChain const >;
 	using TextureCRef = std::reference_wrapper< Texture const >;
@@ -114,6 +122,7 @@ namespace vk_renderer
 	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;
 
 	using CommandBufferCRefArray = std::vector< CommandBufferCRef >;
+	using DescriptorSetLayoutCRefArray = std::vector< DescriptorSetLayoutCRef >;
 	using SemaphoreCRefArray = std::vector< SemaphoreCRef >;
 	using SwapChainCRefArray = std::vector< SwapChainCRef >;
 	using TextureCRefArray = std::vector< TextureCRef >;

@@ -17,8 +17,21 @@
 namespace vk_renderer
 {
 	/**
+	*\~french
 	*\brief
-	*	Une texture, avec son image et son échantillonneur.
+	*	Classe encapsulant le concept d'image Vulkan.
+	*\remarks
+	*	Gère la transition de layouts.
+	*	Dépendant du fait que l'image provienne de la swap chain
+	*	ou d'une ressource, la VkImage sera détruite par le parent
+	*	correspondant.
+	*\~english
+	*\brief
+	*	Class wrapping the Vulkan image concept.
+	*\remarks
+	*	Handles the layouts transition.
+	*	Depending on wheter the image comes from a resource or a swap chain,
+	*	The VkImage will be destroyed or not.
 	*/
 	class Texture
 		: public renderer::Texture
@@ -41,6 +54,63 @@ namespace vk_renderer
 			, utils::PixelFormat format
 			, utils::IVec2 const & dimensions
 			, VkImage image );
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
+		*/
+		Texture( Device const & device
+			, utils::PixelFormat format
+			, utils::IVec2 const & dimensions
+			, renderer::ImageUsageFlags usageFlags
+			, renderer::ImageTiling tiling
+			, renderer::MemoryPropertyFlags memoryFlags );
+		/**
+		*\~french
+		*\brief
+		*	Mappe la mémoire du tampon en RAM.
+		*\param[in] offset
+		*	L'offset à partir duquel la mémoire du tampon est mappée.
+		*\param[in] size
+		*	La taille en octets de la mémoire à mapper.
+		*\param[in] flags
+		*	Indicateurs de configuration du mapping.
+		*\return
+		*	\p nullptr si le mapping a échoué.
+		*\~english
+		*\brief
+		*	Maps the buffer's memory in RAM.
+		*\param[in] offset
+		*	The memory mapping starting offset.
+		*\param[in] size
+		*	The memory mappping size.
+		*\param[in] flags
+		*	The memory mapping flags.
+		*\return
+		*	\p nullptr if the mapping failed.
+		*/
+		renderer::Texture::Mapped lock( uint32_t offset
+			, uint32_t size
+			, VkMemoryMapFlags flags )const;
+		/**
+		*\~french
+		*\brief
+		*	Unmappe la mémoire du tampon de la RAM.
+		*\param[in] size
+		*	La taille en octets de la mémoire mappée.
+		*\param[in] modified
+		*	Dit si le tampon a été modifié, et donc si la VRAM doit être mise à jour.
+		*\~english
+		*\brief
+		*	Unmaps the buffer's memory from the RAM.
+		*\param[in] size
+		*	The mapped memory size.
+		*\param[in] modified
+		*	Tells it the buffer has been modified, and whether the VRAM must be updated or not.
+		*/
+		void unlock( uint32_t size
+			, bool modified )const;
 		/**
 		*\brief
 		*	Charge l'image de la texture.
@@ -144,6 +214,19 @@ namespace vk_renderer
 		}
 
 	private:
+		/**
+		*\brief
+		*	Charge l'image de la texture.
+		*\param[in] format
+		*	Le format de l'image.
+		*\param[in] size
+		*	Les dimensions de l'image.
+		*/
+		void doSetImage( utils::PixelFormat format
+			, utils::IVec2 const & size
+			, renderer::ImageUsageFlags usageFlags
+			, renderer::ImageTiling tiling
+			, renderer::MemoryPropertyFlags memoryFlags );
 		/**
 		*\~french
 		*\brief

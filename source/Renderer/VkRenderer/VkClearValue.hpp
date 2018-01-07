@@ -5,7 +5,6 @@ See LICENSE file in root folder
 #pragma once
 
 #include <Renderer/ClearValue.hpp>
-#include <VkLib/VkLibPrerequisites.hpp>
 
 namespace vk_renderer
 {

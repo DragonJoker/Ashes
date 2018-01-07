@@ -96,6 +96,14 @@ namespace vk_renderer
 			, utils::PixelFormat format
 			, uint8_t * data )const noexcept;
 		/**
+		*\return
+		*	Les dimensions du tampon.
+		*/
+		inline utils::IVec2 const & getDimensions()const noexcept
+		{
+			return m_dimensions;
+		}
+		/**
 		*\~french
 		*\brief
 		*	Conversion implicite vers VkFramebuffer.
@@ -112,5 +120,6 @@ namespace vk_renderer
 		Device const & m_device;
 		TextureViewCRefArray m_views;
 		VkFramebuffer m_framebuffer{};
+		utils::IVec2 m_dimensions;
 	};
 }

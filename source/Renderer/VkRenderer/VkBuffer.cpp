@@ -5,19 +5,15 @@
 
 namespace vk_renderer
 {
-	BufferBase::BufferBase( renderer::Device const & device
+	Buffer::Buffer( Device const & device
 		, uint32_t size
 		, renderer::BufferTargets target
-		, renderer::MemoryPropertyFlags flags )
+		, renderer::MemoryPropertyFlags memoryFlags )
 		: renderer::BufferBase{ device
 			, size
 			, target
-			, flags }
-		, m_device{ static_cast< Device const & >( device ) }
-		, m_buffer{ static_cast< Device const & >( device ).getDevice()
-			, size
-			, convert( target )
-			, convert( flags ) }
+			, memoryFlags }
+		, m_device{ device }
 	{
 		VkBufferCreateInfo bufferCreate
 		{
@@ -25,7 +21,7 @@ namespace vk_renderer
 			nullptr,
 			0,                                                // flags
 			size,                                             // size
-			convert( flags ),                                 // usage
+			convert( memoryFlags ),                           // usage
 			VK_SHARING_MODE_EXCLUSIVE,                        // sharingMode
 			0,                                                // queueFamilyIndexCount
 			nullptr                                           // pQueueFamilyIndices
@@ -43,7 +39,7 @@ namespace vk_renderer
 
 		m_storage = std::make_unique< BufferStorage >( m_device
 			, m_buffer
-			, memoryFlags );
+			, convert( memoryFlags ) );
 		res = BindBufferMemory( m_device
 			, m_buffer
 			, *m_storage
@@ -55,41 +51,61 @@ namespace vk_renderer
 		}
 	}
 
-	uint8_t * BufferBase::lock( uint32_t offset
+	Buffer::~Buffer()
+	{
+		DestroyBuffer( m_device, m_buffer, nullptr );
+	}
+
+	uint8_t * Buffer::lock( uint32_t offset
 		, uint32_t size
 		, renderer::MemoryMapFlags flags )const
 	{
-		return m_buffer.lock( offset, size, flags );
+		return m_storage->lock( offset
+			, size
+			, convert( flags ) );
 	}
 
-	void BufferBase::unlock( uint32_t size
+	void Buffer::unlock( uint32_t size
 		, bool modified )const
 	{
-		m_buffer.unlock( size, modified );
+		m_storage->unlock( size
+			, modified );
 	}
 
-	renderer::BufferMemoryBarrier BufferBase::makeTransferDestination()const
+	renderer::BufferMemoryBarrier Buffer::makeTransferDestination()const
 	{
-		return convert( *this, m_buffer.makeTransferDestination() );
+		return makeMemoryTransitionBarrier( renderer::AccessFlag::eTransferWrite );
 	}
 
-	renderer::BufferMemoryBarrier BufferBase::makeTransferSource()const
+	renderer::BufferMemoryBarrier Buffer::makeTransferSource()const
 	{
-		return convert( *this, m_buffer.makeTransferSource() );
+		return makeMemoryTransitionBarrier( renderer::AccessFlag::eTransferRead );
 	}
 
-	renderer::BufferMemoryBarrier BufferBase::makeVertexShaderInputResource()const
+	renderer::BufferMemoryBarrier Buffer::makeVertexShaderInputResource()const
 	{
-		return convert( *this, m_buffer.makeVertexShaderInputResource() );
+		return makeMemoryTransitionBarrier( renderer::AccessFlag::eVertexAttributeRead );
 	}
 
-	renderer::BufferMemoryBarrier BufferBase::makeUniformBufferInput()const
+	renderer::BufferMemoryBarrier Buffer::makeUniformBufferInput()const
 	{
-		return convert( *this, m_buffer.makeUniformBufferInput() );
+		return makeMemoryTransitionBarrier( renderer::AccessFlag::eUniformRead );
 	}
 
-	renderer::BufferMemoryBarrier BufferBase::makeMemoryTransitionBarrier( renderer::AccessFlags dstAccess )const
+	renderer::BufferMemoryBarrier Buffer::makeMemoryTransitionBarrier( renderer::AccessFlags dstAccess )const
 	{
-		return convert( *this, m_buffer.makeMemoryTransitionBarrier( convert( dstAccess ) ) );
+		renderer::BufferMemoryBarrier memoryBarrier
+		{
+			m_currentAccessMask,                              // srcAccessMask
+			dstAccess,                                        // dstAccessMask
+			VK_QUEUE_FAMILY_IGNORED,                          // srcQueueFamilyIndex
+			VK_QUEUE_FAMILY_IGNORED,                          // dstQueueFamilyIndex
+			*this,                                            // buffer
+			0,                                                // offset
+			VK_WHOLE_SIZE                                     // size
+		};
+		DEBUG_DUMP( memoryBarrier );
+		m_currentAccessMask = dstAccess;
+		return memoryBarrier;
 	}
 }

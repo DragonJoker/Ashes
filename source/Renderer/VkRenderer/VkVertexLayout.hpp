@@ -10,8 +10,6 @@
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/VertexLayout.hpp>
-
 #include <Renderer/VertexLayout.hpp>
 
 #include <vector>
@@ -48,16 +46,69 @@ namespace vk_renderer
 			, renderer::AttributeFormat format
 			, uint32_t offset )override;
 		/**
+		*\~french
 		*\return
-		*	Le layout vulkan.
+		*	La description des données du tampon.
+		*\~english
+		*\return
+		*	The buffer's data description.
 		*/
-		inline vk::VertexLayoutPtr getLayout()const
+		inline VkVertexInputBindingDescription getDescription()const
 		{
-			return m_layout;
+			return m_bindingDescription;
+		}
+		/**
+		*\~french
+		*\return
+		*	Le début du tableau d'attributs.
+		*\~english
+		*\return
+		*	The attributes array beginning.
+		*/
+		inline auto begin()const
+		{
+			return m_attributes.begin();
+		}
+		/**
+		*\~french
+		*\return
+		*	Le début du tableau d'attributs.
+		*\~english
+		*\return
+		*	The attributes array beginning.
+		*/
+		inline auto begin()
+		{
+			return m_attributes.begin();
+		}
+		/**
+		*\~french
+		*\return
+		*	La fin du tableau d'attributs.
+		*\~english
+		*\return
+		*	The attributes array end.
+		*/
+		inline auto end()const
+		{
+			return m_attributes.end();
+		}
+		/**
+		*\~french
+		*\return
+		*	La fin du tableau d'attributs.
+		*\~english
+		*\return
+		*	The attributes array end.
+		*/
+		inline auto end()
+		{
+			return m_attributes.end();
 		}
 
 	private:
-		vk::VertexLayoutPtr m_layout;
+		VkVertexInputBindingDescription m_bindingDescription{};
+		AttributeArray m_attributes;
 	};
 }
 

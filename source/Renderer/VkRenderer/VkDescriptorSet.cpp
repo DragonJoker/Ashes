@@ -2,6 +2,7 @@
 
 #include "VkBuffer.hpp"
 #include "VkDescriptorSetLayoutBinding.hpp"
+#include "VkDescriptorSetLayout.hpp"
 #include "VkDescriptorSetPool.hpp"
 #include "VkSampler.hpp"
 #include "VkTexture.hpp"
@@ -9,10 +10,42 @@
 
 namespace vk_renderer
 {
-	DescriptorSet::DescriptorSet( renderer::DescriptorSetPool const & pool )
+	DescriptorSet::DescriptorSet( Device const & device
+		, DescriptorSetPool const & pool )
 		: renderer::DescriptorSet{ pool }
-		, m_descriptorSet{ static_cast< DescriptorSetPool const & >( pool ).getPool().createDescriptorSet() }
+		, m_device{ device }
+		, m_pool{ pool }
+		, m_layout{ pool.getLayout() }
 	{
+		auto layouts = makeVkArray< VkDescriptorSetLayout >( DescriptorSetLayoutCRefArray{ pool.getLayout() } );
+		VkDescriptorSetAllocateInfo allocateInfo
+		{
+			VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
+			nullptr,                                        // pNext
+			pool,                                           // descriptorPool
+			static_cast< uint32_t >( layouts.size() ),      // descriptorSetCount
+			layouts.data()                                  // pSetLayouts
+		};
+		DEBUG_DUMP( allocateInfo );
+		auto res = AllocateDescriptorSets( m_device
+			, &allocateInfo
+			, &m_descriptorSet );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Descriptor set allocation failed: " + getLastError() };
+		}
+	}
+
+	DescriptorSet::~DescriptorSet()
+	{
+		if ( !m_pool.hasAutomaticFree() )
+		{
+			FreeDescriptorSets( m_device
+				, m_pool
+				, 1u
+				, &m_descriptorSet );
+		}
 	}
 
 	renderer::CombinedTextureSamplerBinding DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding

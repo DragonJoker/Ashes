@@ -6,14 +6,16 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/CommandPool.hpp>
 #include <Renderer/CommandPool.hpp>
 
 namespace vk_renderer
 {
 	/**
 	*\brief
-	*	Encapsulation d'un vk::CommandPool.
+	*	Encapsulation d'un VkCommandPool.
+	*\~english
+	*\brief
+	*	VkCommandPool wrapper.
 	*/
 	class CommandPool
 		: public renderer::CommandPool
@@ -27,21 +29,29 @@ namespace vk_renderer
 		*\param[in] queueFamilyIndex
 		*	L'index de la famille à laquelle appartient le pool.
 		*\param[in] flags
-		*	Combinaison binaire de VkCommandPoolCreateFlagBits.
+		*	Combinaison binaire de renderer::CommandPoolCreateFlag.
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical connection to the GPU.
+		*\param[in] queueFamilyIndex
+		*	The pool's owner family index.
+		*\param[in] flags
+		*	renderer::CommandPoolCreateFlag bitwise OR combination.
 		*/
-		CommandPool( renderer::Device const & device
+		CommandPool( Device const & device
 			, uint32_t queueFamilyIndex
 			, renderer::CommandPoolCreateFlags flags = 0 );
 		/**
+		*\~french
 		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] pool
-		*	Le vk::CommandPool.
+		*	Destructeur.
+		*\~english
+		*\brief
+		*	Destructor.
 		*/
-		CommandPool( renderer::Device const & device
-			, vk::CommandPool const & pool );
+		~CommandPool();
 		/**
 		*\brief
 		*	Crée un tampon de commandes.
@@ -49,20 +59,30 @@ namespace vk_renderer
 		*	Dit si le tampon est un tampon de commandes primaire (\p true) ou secondaire (\p false).
 		*\return
 		*	Le tampon de commandes créé.
+		*\~english
+		*\brief
+		*	Creates a command buffer.
+		*\param[in] primary
+		*	Tells if the command buffer is primary (\p true), or not (\p false).
+		*\return
+		*	The created command buffer.
 		*/
 		renderer::CommandBufferPtr createCommandBuffer( bool primary )const override;
 		/**
-		*\return
-		*	Le vk::CommandPool.
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkCommandPool.
+		*\~english
+		*\brief
+		*	VkCommandPool implicit cast operator.
 		*/
-		vk::CommandPool const & getCommandPool()const
+		inline operator VkCommandPool const &( )const
 		{
-			assert( m_nonOwnedCommandPool );
-			return *m_nonOwnedCommandPool;
+			return m_commandPool;
 		}
 
 	private:
-		vk::CommandPoolPtr m_ownedCommandPool;
-		vk::CommandPool const * m_nonOwnedCommandPool;
+		Device const & m_device;
+		VkCommandPool m_commandPool{};
 	};
 }

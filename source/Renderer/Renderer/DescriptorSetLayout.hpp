@@ -44,6 +44,11 @@ namespace renderer
 		*/
 		DescriptorSetLayoutBinding const & getBinding( uint32_t point )const;
 		/**
+		*\return
+		*	Les attaches de descripteurs.
+		*/
+		DescriptorSetLayoutBindingArray const & getBindings()const;
+		/**
 		*\brief
 		*	Crée un pool pour les descripteurs qui utiliseront ce layout.
 		*\param[in] maxSets

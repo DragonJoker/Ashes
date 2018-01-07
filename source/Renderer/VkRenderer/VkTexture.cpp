@@ -59,10 +59,75 @@ namespace vk_renderer
 			, m_format );
 	}
 
+	Texture::Texture( Device const & device
+		, utils::PixelFormat format
+		, utils::IVec2 const & dimensions
+		, renderer::ImageUsageFlags usageFlags
+		, renderer::ImageTiling tiling
+		, renderer::MemoryPropertyFlags memoryFlags )
+		: renderer::Texture{ device }
+		, m_device{ device }
+		, m_owner{ true }
+		, m_currentLayout{ renderer::ImageLayout::eUndefined }
+		, m_currentAccessMask{ 0 }
+	{
+		doSetImage( format
+			, dimensions
+			, usageFlags
+			, tiling
+			, memoryFlags );
+	}
+
+	renderer::Texture::Mapped Texture::lock( uint32_t offset
+		, uint32_t size
+		, VkMemoryMapFlags flags )const
+	{
+		renderer::Texture::Mapped mapped{};
+		VkImageSubresource subResource{};
+		subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		VkSubresourceLayout subResourceLayout;
+		GetImageSubresourceLayout( m_device, m_image, &subResource, &subResourceLayout );
+
+		mapped.data = m_storage->lock( offset
+			, size
+			, flags );
+
+		if ( mapped.data )
+		{
+			mapped.arrayPitch = subResourceLayout.arrayPitch;
+			mapped.depthPitch = subResourceLayout.depthPitch;
+			mapped.rowPitch = subResourceLayout.rowPitch;
+			mapped.size = subResourceLayout.size;
+			mapped.data += subResourceLayout.offset;
+		}
+
+		return mapped;
+	}
+
+	void Texture::unlock( uint32_t size
+		, bool modified )const
+	{
+		m_storage->unlock( size
+			, modified );
+	}
+
 	void Texture::setImage( utils::PixelFormat format
 		, utils::IVec2 const & size
 		, renderer::ImageUsageFlags usageFlags
 		, renderer::ImageTiling tiling )
+	{
+		doSetImage( format
+			, size
+			, usageFlags
+			, tiling
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
+	}
+
+	void Texture::doSetImage( utils::PixelFormat format
+		, utils::IVec2 const & size
+		, renderer::ImageUsageFlags usageFlags
+		, renderer::ImageTiling tiling
+		, renderer::MemoryPropertyFlags memoryFlags )
 	{
 		assert( m_owner );
 		m_format = format;
@@ -102,7 +167,7 @@ namespace vk_renderer
 
 		m_storage = std::make_unique< ImageStorage >( m_device
 			, m_image
-			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+			, convert( memoryFlags ) );
 		res = BindImageMemory( m_device
 			, m_image
 			, *m_storage
