@@ -18,7 +18,7 @@ namespace vk_renderer
 	*\brief
 	*	Classe wrappant un vk::UniformBuffer.
 	*/
-	class UniformBufferBase
+	class UniformBuffer
 		: public renderer::UniformBufferBase
 	{
 	public:
@@ -34,7 +34,7 @@ namespace vk_renderer
 		*\param[in] flags
 		*	Les indicateurs de mémoire du tampon.
 		*/
-		UniformBufferBase( renderer::Device const & device
+		UniformBuffer( renderer::Device const & device
 			, uint32_t count
 			, uint32_t size
 			, renderer::BufferTargets target

@@ -74,8 +74,6 @@ namespace vkapp
 			throw;
 		}
 
-		DEBUG_WRITE( AppName.ToStdString() + ".log" );
-
 		m_timer->Start( TimerTimeMs );
 
 		Connect( int( Ids::RenderTimer ), wxEVT_TIMER, wxTimerEventHandler( RenderPanel::onTimer ), nullptr, this );

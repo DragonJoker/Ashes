@@ -8,8 +8,6 @@
 #include "VkQueue.hpp"
 #include "VkTextureView.hpp"
 
-#include <VkLib/Queue.hpp>
-
 namespace vk_renderer
 {
 	namespace
@@ -250,7 +248,7 @@ namespace vk_renderer
 		, uint32_t queueFamily
 		, renderer::AccessFlags dstAccessMask )const
 	{
-		// On fait passer le layout de l'image à un autre layout, via une barrière.
+		// On fait passer le layout de l'image ï¿½ un autre layout, via une barriï¿½re.
 		renderer::ImageMemoryBarrier transitionBarrier
 		{
 			m_currentAccessMask,                     // srcAccessMask
@@ -264,7 +262,7 @@ namespace vk_renderer
 			*this,                                   // image
 			m_view->getSubResourceRange()            // subresourceRange
 		};
-		DEBUG_DUMP( transitionBarrier );
+		DEBUG_DUMP( convert( transitionBarrier ) );
 		m_currentAccessMask = dstAccessMask;
 		m_currentLayout = layout;
 		m_currentQueueFamily = queueFamily == VK_QUEUE_FAMILY_IGNORED

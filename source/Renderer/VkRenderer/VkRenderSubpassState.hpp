@@ -13,27 +13,27 @@ namespace vk_renderer
 	/**
 	*\~french
 	*\brief
-	*	Description d'un état d'une sous passe de rendu.
+	*	Description d'un ï¿½tat d'une sous passe de rendu.
 	*\~english
 	*\brief
 	*	Describes the state of a render subpass.
 	*/
 	struct RenderSubpassState
 	{
-		//!\~french		Les indicateurs d'état du pipeline.
+		//!\~french		Les indicateurs d'ï¿½tat du pipeline.
 		//!\~english	Pipeline stage flags.
 		VkPipelineStageFlags m_pipelineStage;
-		//!\~french		Les indicateurs d'accès.
+		//!\~french		Les indicateurs d'accï¿½s.
 		//!\~english	Access flags.
 		VkAccessFlags m_access;
 	};
 	/**
 	*\brief
-	*	Convertit un renderer::RenderSubpassState en vk::RenderSubpassState.
+	*	Convertit un renderer::RenderSubpassState en RenderSubpassState.
 	*\param[in] state
 	*	Le renderer::RenderSubpassState.
 	*\return
-	*	Le vk::RenderSubpassState.
+	*	Le RenderSubpassState.
 	*/
 	RenderSubpassState convert( renderer::RenderSubpassState const & state );
 }

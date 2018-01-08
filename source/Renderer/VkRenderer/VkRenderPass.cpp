@@ -17,13 +17,13 @@ namespace vk_renderer
 {
 	namespace
 	{
-		renderer::RenderSubpassPtrArray doConvert( RenderSubpassPtrArray const & subpasses )
+		RenderSubpassCRefArray doConvert( renderer::RenderSubpassPtrArray const & subpasses )
 		{
-			renderer::RenderSubpassPtrArray result;
+			RenderSubpassCRefArray result;
 
 			for ( auto & subpass : subpasses )
 			{
-				result.emplace_back( subpass );
+				result.emplace_back( static_cast< RenderSubpass const & >( *subpass ) );
 			}
 
 			return result;
@@ -46,7 +46,7 @@ namespace vk_renderer
 			, samplesCount }
 		, m_device{ device }
 		, m_formats{ formats }
-		, m_subpasses{ subpasses }
+		, m_subpasses{ doConvert( subpasses ) }
 		, m_samplesCount{ samplesCount }
 		, m_initialState{ initialState }
 		, m_finalState{ finalState }
@@ -113,7 +113,7 @@ namespace vk_renderer
 
 		for ( auto const & subpass : m_subpasses )
 		{
-			auto const & state = static_cast< RenderSubpass const & >( *subpass ).getNeededState();
+			auto const & state = subpass.get().getNeededState();
 
 			if ( currentState.m_pipelineStage != state.getPipelineStage()
 				|| currentState.m_access != state.getAccess() )
@@ -132,7 +132,7 @@ namespace vk_renderer
 
 			currentState = convert( state );
 			++subpassIndex;
-			descriptions.push_back( static_cast< RenderSubpass const & >( *subpass ).retrieveDescription() );
+			descriptions.push_back( subpass.get() );
 		}
 
 		if ( currentState.m_pipelineStage != m_finalState.getPipelineStage()

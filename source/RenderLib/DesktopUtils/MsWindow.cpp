@@ -8,12 +8,12 @@
 #include <Renderer/Renderer.hpp>
 #include <Renderer/RenderingResources.hpp>
 
-#include <VkLib/FlagCombination.hpp>
-
 #include <Utils/DynamicLibrary.hpp>
 
 #include <Windows.h>
 #include <windowsx.h>
+
+#include <iostream>
 
 namespace utils
 {

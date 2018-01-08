@@ -54,7 +54,7 @@ namespace vk_renderer
 		*\return
 		*	This subpass' VkSubpassDescription.
 		*/
-		VkSubpassDescription retrieveDescription()const;
+		VkSubpassDescription const & retrieveDescription()const;
 		/**
 		*\~french
 		*\return
@@ -66,6 +66,18 @@ namespace vk_renderer
 		inline renderer::RenderSubpassState const & getNeededState()const
 		{
 			return m_neededState;
+		}
+		/**
+		*\~french
+		*\brief
+		*	Opérateur de conversion implicite vers VkSubpassDescription.
+		*\~english
+		*\brief
+		*	VkSubpassDescription implicit cast operator.
+		*/
+		inline operator VkSubpassDescription const &( )const
+		{
+			return m_description;
 		}
 
 	private:

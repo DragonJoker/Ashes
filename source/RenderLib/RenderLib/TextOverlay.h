@@ -26,7 +26,7 @@ namespace render
 		eMaxLineHeight,
 		//! La hauteur des lignes est la plus grande hauteur des caractères de la police.
 		eMaxFontHeight,
-		VkLib_EnumBounds( eOwnHeight )
+		Utils_EnumBounds( eOwnHeight )
 	};
 	/**
 	*\brief
@@ -40,7 +40,7 @@ namespace render
 		eCenter,
 		//! Aligné à droite.
 		eRight,
-		VkLib_EnumBounds( eLeft )
+		Utils_EnumBounds( eLeft )
 	};
 	/**
 	*\brief

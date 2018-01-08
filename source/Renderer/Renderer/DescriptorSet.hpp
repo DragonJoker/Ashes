@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -7,8 +7,6 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "DescriptorSetBinding.hpp"
-
-#include <VkLib/DescriptorSet.hpp>
 
 #include <vector>
 

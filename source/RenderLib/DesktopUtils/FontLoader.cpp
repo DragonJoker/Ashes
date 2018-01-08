@@ -1,5 +1,6 @@
 #include "FontLoader.h"
 
+#include <iostream>
 #include <sstream>
 
 #if __GNUG__

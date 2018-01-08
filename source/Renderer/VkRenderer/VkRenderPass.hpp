@@ -118,7 +118,7 @@ namespace vk_renderer
 		std::vector< utils::PixelFormat > m_formats;
 		VkRenderPass m_renderPass{};
 		renderer::SampleCountFlag m_samplesCount{};
-		renderer::RenderSubpassPtrArray m_subpasses;
+		RenderSubpassCRefArray m_subpasses;
 		renderer::RenderPassState m_initialState;
 		renderer::RenderPassState m_finalState;
 	};

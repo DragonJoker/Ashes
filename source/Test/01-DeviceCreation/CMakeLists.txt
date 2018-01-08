@@ -34,6 +34,6 @@ add_dependencies( ${PROJECT_NAME}
 	00-Common
 )
 
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Test" )
 

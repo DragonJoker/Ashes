@@ -44,13 +44,13 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 		${CMAKE_CURRENT_BINARY_DIR}
 	)
 
-	file( GLOB ${PROJECT_NAME}_SRC_FILES
+	file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 		*.c
 		*.cc
 		*.cpp
 	)
 
-	file( GLOB ${PROJECT_NAME}_HDR_FILES
+	file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 		*.h
 		*.hh
 		*.hpp
@@ -74,9 +74,9 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 	)
 
 	target_link_libraries( ${PROJECT_NAME}
-		${VkLib_LIBRARIES}
 		${glslang_LIBRARIES}
 		${SPIRV_LIBRARIES}
+		Utils
 		Renderer
 	)
 
@@ -84,7 +84,8 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 		Renderer
 	)
 
-	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+	parse_subdir_files( vulkan "vulkan" )
+	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
 else ()
 	if ( NOT glslang_FOUND )

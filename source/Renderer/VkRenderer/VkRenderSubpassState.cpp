@@ -10,8 +10,8 @@ namespace vk_renderer
 	{
 		return RenderSubpassState
 		{
-			convert( state.getPipelineStage() ),
-			convert( state.getAccess() )
+			state.getPipelineStage(),
+			state.getAccess()
 		};
 	}
 }

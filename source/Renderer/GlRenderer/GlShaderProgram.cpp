@@ -6,6 +6,8 @@ See LICENSE file in root folder.
 
 #include "GlDevice.hpp"
 
+#include <iostream>
+
 namespace gl_renderer
 {
 	namespace

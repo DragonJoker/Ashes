@@ -11,9 +11,6 @@ See LICENSE file in root folder.
 #include "MemoryPropertyFlag.hpp"
 #include "RenderingResources.hpp"
 
-#include <VkLib/LogicalDevice.hpp>
-#include <VkLib/UniformBuffer.hpp>
-
 namespace renderer
 {
 	/**

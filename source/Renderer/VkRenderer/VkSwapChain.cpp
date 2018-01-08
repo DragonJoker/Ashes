@@ -2,6 +2,7 @@
 
 #include "VkBackBuffer.hpp"
 #include "VkCommandBuffer.hpp"
+#include "VkCommandPool.hpp"
 #include "VkDevice.hpp"
 #include "VkFrameBuffer.hpp"
 #include "VkImageMemoryBarrier.hpp"
@@ -11,9 +12,6 @@
 #include "VkRenderPass.hpp"
 #include "VkSemaphore.hpp"
 #include "VkTexture.hpp"
-
-#include <VkLib/BackBuffer.hpp>
-#include <VkLib/LogicalDevice.hpp>
 
 namespace vk_renderer
 {
@@ -77,7 +75,7 @@ namespace vk_renderer
 		for ( auto & commandBuffer : result )
 		{
 			commandBuffer = std::make_unique< CommandBuffer >( m_device
-				, m_device.getGraphicsCommandPool()
+				, static_cast< CommandPool const & >( m_device.getGraphicsCommandPool() )
 				, true );
 		}
 
@@ -105,7 +103,7 @@ namespace vk_renderer
 		auto & resources = *m_renderingResources[m_resourceIndex];
 		m_resourceIndex = ( m_resourceIndex + 1 ) % m_renderingResources.size();
 
-		if ( resources.waitRecord( vk::FenceTimeout ) )
+		if ( resources.waitRecord( renderer::FenceTimeout ) )
 		{
 			uint32_t backBuffer{ 0u };
 			auto res = AcquireNextImageKHR( m_device
@@ -125,7 +123,7 @@ namespace vk_renderer
 			return nullptr;
 		}
 
-		std::cerr << "Can't render: " << vk::getLastError() << std::endl;
+		std::cerr << "Can't render: " << getLastError() << std::endl;
 		return nullptr;
 	}
 
@@ -394,7 +392,7 @@ namespace vk_renderer
 			break;
 
 		default:
-			std::cerr << action << " failed: " << vk::getLastError() << std::endl;
+			std::cerr << action << " failed: " << getLastError() << std::endl;
 			break;
 		}
 

@@ -7,6 +7,8 @@
 #include "GlSemaphore.hpp"
 #include "GlTexture.hpp"
 
+#include <iostream>
+
 namespace gl_renderer
 {
 	SwapChain::SwapChain( renderer::Device const & device

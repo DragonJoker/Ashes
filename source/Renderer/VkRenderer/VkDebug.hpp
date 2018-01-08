@@ -1363,13 +1363,13 @@ namespace vk_renderer
 //!@~french		Dump une/des variable(s) Vulkan
 //!@~english	Dumps Vulkan variable(s)
 #	define DEBUG_DUMP( value )\
-	vk::Debug::dump( value )
+	vk_renderer::Debug::dump( value )
 
 //!@~french		Ecrit le contenu du dump dans un flux.
 //!@~english	Writes the trace content to a stream.
 #	define DEBUG_WRITE( file )\
 	std::ofstream l_file{ file };\
-	vk::Debug::write( l_file )
+	vk_renderer::Debug::write( l_file )
 
 #else
 

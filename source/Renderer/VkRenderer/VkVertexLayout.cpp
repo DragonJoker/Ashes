@@ -24,7 +24,7 @@ namespace vk_renderer
 			, format
 			, location
 			, offset );
-		assert( m_bindingDescription.stride >= offset + size );
+		assert( m_bindingDescription.stride >= offset + getSize( format ) );
 		return m_attributes.back();
 	}
 }

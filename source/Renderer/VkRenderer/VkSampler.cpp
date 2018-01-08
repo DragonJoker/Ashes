@@ -2,8 +2,6 @@
 
 #include "VkDevice.hpp"
 
-#include <VkLib/LogicalDevice.hpp>
-
 namespace vk_renderer
 {
 	Sampler::Sampler( Device const & device

@@ -9,7 +9,6 @@
 #pragma once
 
 #include "RenderLibPrerequisites.h"
-#include <VkLib/FlagCombination.hpp>
 
 namespace render
 {
@@ -39,7 +38,7 @@ namespace render
 		//! Programme avec texture d'opacité.
 		eOpacity = 0x02,
 	};
-	VkLib_ImplementFlag( TextureFlag )
+	Utils_ImplementFlag( TextureFlag )
 	/**
 	*\brief
 	*	Enumération des types de programme de rendu.
@@ -72,7 +71,7 @@ namespace render
 		eTextOverlay,
 		//! Texture en plein écran.
 		eTexture,
-		VkLib_EnumBounds( eObject )
+		Utils_EnumBounds( eObject )
 	};
 	/**
 	*\brief

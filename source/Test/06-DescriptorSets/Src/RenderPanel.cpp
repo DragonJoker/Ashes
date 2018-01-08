@@ -96,7 +96,6 @@ namespace vkapp
 			doCreatePipeline();
 			std::cout << "Pipeline created." << std::endl;
 			doPrepareFrames();
-			DEBUG_WRITE( "tutorial07.log" );
 
 			m_timer->Start( TimerTimeMs );
 

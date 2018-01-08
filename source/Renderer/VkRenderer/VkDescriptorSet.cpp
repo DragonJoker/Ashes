@@ -94,7 +94,7 @@ namespace vk_renderer
 	}
 	void DescriptorSet::update()const
 	{
-		DEBUG_DUMP( writes );
+		DEBUG_DUMP( makeVkArray< VkWriteDescriptorSet >( m_bindings ) );
 		UpdateDescriptorSets( m_device
 			, static_cast< uint32_t >( m_bindings.size() )
 			, m_bindings.data()

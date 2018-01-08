@@ -18,13 +18,13 @@ namespace vk_renderer
 			convert( barrier.getDstAccessMask() ),
 			barrier.getSrcQueueFamilyIndex(),
 			barrier.getDstQueueFamilyIndex(),
-			static_cast< BufferBase const & >( barrier.getBuffer() ).getBuffer(),
+			static_cast< Buffer const & >( barrier.getBuffer() ),
 			barrier.getOffset(),
 			barrier.getSize()
 		};
 	}
 
-	renderer::BufferMemoryBarrier convert( BufferBase const & bufferBase, VkBufferMemoryBarrier const & barrier )
+	renderer::BufferMemoryBarrier convert( Buffer const & bufferBase, VkBufferMemoryBarrier const & barrier )
 	{
 		return renderer::BufferMemoryBarrier
 		{

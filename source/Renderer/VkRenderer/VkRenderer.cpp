@@ -130,6 +130,8 @@ namespace vk_renderer
 		glslang::FinalizeProcess();
 
 #endif
+
+		DEBUG_WRITE( "VkRenderer.log" );
 	}
 
 	renderer::DevicePtr Renderer::createDevice( renderer::ConnectionPtr && connection )const
@@ -191,13 +193,13 @@ namespace vk_renderer
 		// Il est possible, bien que rare, que le nombre de couches
 		// d'instance change. Par exemple, en installant quelque chose
 		// qui ajoute de nouvelles couches que le loader utiliserait
-		// entre la requête initiale pour le compte et la récupération
+		// entre la requï¿½te initiale pour le compte et la rï¿½cupï¿½ration
 		// des VkLayerProperties. Le loader l'indique en retournant
-		// VK_INCOMPLETE et en mettant à jour le compte.
-		// Le compte va alors être mis à jour avec le nombre d'entrées
-		// chargées dans le pointeur de données, dans le cas où
-		// le nombre de couches a diminué ou est inférieur à la taille
-		// donnée.
+		// VK_INCOMPLETE et en mettant ï¿½ jour le compte.
+		// Le compte va alors ï¿½tre mis ï¿½ jour avec le nombre d'entrï¿½es
+		// chargï¿½es dans le pointeur de donnï¿½es, dans le cas oï¿½
+		// le nombre de couches a diminuï¿½ ou est infï¿½rieur ï¿½ la taille
+		// donnï¿½e.
 		do
 		{
 			uint32_t instanceLayerCount{ 0 };
@@ -222,7 +224,7 @@ namespace vk_renderer
 		doInitLayerExtensionProperties( layerProperties );
 		m_instanceLayersProperties.push_back( layerProperties );
 
-		// On récupère la liste d'extensions pour chaque couche de l'instance.
+		// On rï¿½cupï¿½re la liste d'extensions pour chaque couche de l'instance.
 		for ( auto prop : vkProperties )
 		{
 			LayerProperties layerProperties{ prop };
@@ -241,7 +243,7 @@ namespace vk_renderer
 		VkResult res{ VK_SUCCESS };
 		char * name{ layerProps.m_properties.layerName };
 
-		// Récupération des extensions supportées par la couche.
+		// Rï¿½cupï¿½ration des extensions supportï¿½es par la couche.
 		do
 		{
 			uint32_t extensionCount{ 0 };
@@ -350,7 +352,7 @@ namespace vk_renderer
 	void Renderer::doEnumerateDevices()
 	{
 		uint32_t gpuCount{ 0 };
-		// On récupère les GPU physiques.
+		// On rï¿½cupï¿½re les GPU physiques.
 		auto res = EnumeratePhysicalDevices( m_instance
 			, &gpuCount
 			, nullptr );
@@ -368,6 +370,11 @@ namespace vk_renderer
 		if ( !checkError( res ) )
 		{
 			throw std::runtime_error{ "GPU enumeration failed: " + getLastError() };
+		}
+
+		if ( !gpuCount )
+		{
+			throw std::runtime_error{ "No GPU supporting vulkan." };
 		}
 
 		// Et on les stocke dans des PhysicalDevice.

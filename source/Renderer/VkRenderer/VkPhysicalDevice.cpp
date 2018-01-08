@@ -56,13 +56,6 @@ namespace vk_renderer
 		assert( queueCount >= 1 );
 	}
 
-	renderer::DevicePtr PhysicalDevice::createLogicalDevice( renderer::Connection && connection )
-	{
-		return std::make_unique< Device >( m_renderer
-			, *this
-			, std::move( connection ) );
-	}
-
 	bool PhysicalDevice::deduceMemoryType( uint32_t typeBits
 		, VkMemoryPropertyFlags requirements
 		, uint32_t & typeIndex )const

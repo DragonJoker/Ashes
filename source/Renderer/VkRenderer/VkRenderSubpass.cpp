@@ -16,7 +16,7 @@ namespace vk_renderer
 		, m_device{ device }
 		, m_neededState{ neededState }
 	{
-		// On cr�e les attaches pour les tampons de couleur et de profondeur.
+		// On crée les attaches pour les tampons de couleur et de profondeur.
 		uint32_t index{ 0 };
 
 		for ( auto const & format : formats )
@@ -32,11 +32,8 @@ namespace vk_renderer
 
 			++index;
 		}
-	}
 
-	VkSubpassDescription RenderSubpass::retrieveDescription()const
-	{
-		return
+		m_description =
 		{
 			0u,                                                      // flags
 			VK_PIPELINE_BIND_POINT_GRAPHICS,                         // pipelineBindPoint
@@ -46,10 +43,15 @@ namespace vk_renderer
 			m_colourReferences.data(),                               // pColorAttachments
 			nullptr,                                                 // pResolveAttachments
 			m_depthReference.attachment == 0xFFFFFFFF                // pDepthStencilAttachment
-				? nullptr
-				: &m_depthReference,
+			? nullptr
+			: &m_depthReference,
 			0u,                                                      // preserveAttachmentCount
 			nullptr,                                                 // pPreserveAttachments
 		};
+	}
+
+	VkSubpassDescription const & RenderSubpass::retrieveDescription()const
+	{
+		return m_description;
 	}
 }

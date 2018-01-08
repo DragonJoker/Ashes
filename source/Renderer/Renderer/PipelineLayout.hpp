@@ -8,8 +8,6 @@ See LICENSE file in root folder.
 
 #include "RendererPrerequisites.hpp"
 
-#include <VkLib/PipelineLayout.hpp>
-
 namespace renderer
 {
 	/**

@@ -34,7 +34,7 @@ namespace render
 		eNear,
 		//! Arrière plan.
 		eFar,
-		VkLib_EnumBounds( eLeft )
+		Utils_EnumBounds( eLeft )
 	};
 	/**
 	\brief

@@ -109,8 +109,7 @@ namespace vk_renderer
 			, 1u
 			, &submitInfo
 			, fence ? static_cast< VkFence const & >( *static_cast< Fence const * >( fence ) ) : VK_NULL_HANDLE );
-		checkError( res );
-		return res;
+		return checkError( res );
 	}
 
 	bool Queue::submit( renderer::CommandBufferCRefArray const & commandBuffers

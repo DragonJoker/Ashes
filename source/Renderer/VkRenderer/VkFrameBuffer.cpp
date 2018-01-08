@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "VkFrameBuffer.hpp"
 
 #include "VkCommandBuffer.hpp"
+#include "VkCommandPool.hpp"
 #include "VkDevice.hpp"
 #include "VkFence.hpp"
 #include "VkImageMemoryBarrier.hpp"
@@ -93,7 +94,9 @@ namespace vk_renderer
 			, renderer::MemoryPropertyFlag::eHostVisible | renderer::MemoryPropertyFlag::eHostCoherent };
 
 		// Do the actual blit from the swapchain image to our host visible destination image
-		CommandBuffer copyCmd{ m_device, m_device.getGraphicsCommandPool(), true };
+		CommandBuffer copyCmd{ m_device
+			, static_cast< CommandPool const & >( m_device.getGraphicsCommandPool() )
+			, true };
 		copyCmd.begin();
 		copyCmd.memoryBarrier( renderer::PipelineStageFlag::eTransfer
 			, renderer::PipelineStageFlag::eTransfer

@@ -12,8 +12,6 @@ See LICENSE file in root folder.
 #include "Queue.hpp"
 #include "RasterisationState.hpp"
 
-#include <VkLib/LogicalDevice.hpp>
-
 namespace renderer
 {
 	/**

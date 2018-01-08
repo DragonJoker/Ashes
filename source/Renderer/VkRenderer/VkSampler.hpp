@@ -10,7 +10,6 @@
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/Sampler.hpp>
 #include <Renderer/Sampler.hpp>
 
 namespace vk_renderer

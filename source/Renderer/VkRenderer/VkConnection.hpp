@@ -76,6 +76,18 @@ namespace vk_renderer
 		{
 			return m_graphicsQueueFamilyIndex;
 		}
+		/**
+		*\~french
+		*\return
+		*	Le périphérique physique.
+		*\~english
+		*\return
+		*	The physical device.
+		*/
+		inline PhysicalDevice const & getGpu()const
+		{
+			return m_gpu;
+		}
 
 	private:
 		/**

@@ -7,8 +7,6 @@
 #include "VkRenderingResources.hpp"
 #include "VkTexture.hpp"
 
-#include <VkLib/Queue.hpp>
-
 namespace vk_renderer
 {
 	TextureView::TextureView( Device const & device

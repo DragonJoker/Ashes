@@ -16,7 +16,7 @@ namespace vk_renderer
 {
 	/**
 	*\brief
-	*	Classe template wrappant un vk::DescriptorLayout.
+	*	Classe wrappant un VkDescriptorSetLayout.
 	*/
 	class DescriptorSetLayout
 		: public renderer::DescriptorSetLayout

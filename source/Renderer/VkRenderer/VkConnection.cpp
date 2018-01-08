@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 
 #include <Renderer/PlatformWindowHandle.hpp>
 
+#include "vulkan/vk_platform.h"
+
 namespace vk_renderer
 {
 	Connection::Connection( Renderer const & renderer

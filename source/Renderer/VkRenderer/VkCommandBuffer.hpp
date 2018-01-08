@@ -13,7 +13,7 @@ namespace vk_renderer
 	/**
 	*\~french
 	*\brief
-	*	Encapsulation d'un vk::CommandBuffer.
+	*	Encapsulation d'un VkCommandBuffer.
 	*/
 	class CommandBuffer
 		: public renderer::CommandBuffer

@@ -3,16 +3,39 @@
 #include "VkDescriptorSetLayout.hpp"
 #include "VkDevice.hpp"
 
-#include <VkLib/LogicalDevice.hpp>
-
 namespace vk_renderer
 {
-	PipelineLayout::PipelineLayout( renderer::Device const & device
+	PipelineLayout::PipelineLayout( Device const & device
 		, renderer::DescriptorSetLayout const * layout )
 		: renderer::PipelineLayout{ device, layout }
-		, m_layout{ static_cast< Device const & >( device ).getDevice().createPipelineLayout( layout 
-			? &static_cast< DescriptorSetLayout const & >( *layout ).getLayout()
-			: nullptr ) }
+		, m_device{ device }
 	{
+		VkDescriptorSetLayout dslayout{ VK_NULL_HANDLE };
+
+		if ( layout )
+		{
+			dslayout = *static_cast< DescriptorSetLayout const * >( layout );
+		}
+
+		VkPipelineLayoutCreateInfo createInfo
+		{
+			VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+			nullptr,
+			0,                                                            // flags
+			layout ? 1u : 0u,                                             // setLayoutCount
+			layout ? &dslayout : nullptr,                                 // pSetLayouts
+			0u,                                                           // pushConstantRangeCount
+			nullptr                                                       // pPushConstantRanges
+		};
+		DEBUG_DUMP( createInfo );
+		auto res = CreatePipelineLayout( m_device
+			, &createInfo
+			, nullptr
+			, &m_layout );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Pipeline layout creation failed: " + getLastError() };
+		}
 	}
 }

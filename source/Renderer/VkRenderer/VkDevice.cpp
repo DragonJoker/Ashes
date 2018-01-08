@@ -26,12 +26,11 @@ See LICENSE file in root folder.
 namespace vk_renderer
 {
 	Device::Device( Renderer const & renderer
-		, PhysicalDevice const & gpu
-		, ConnectionPtr && connection )
+		, renderer::ConnectionPtr && connection )
 		: renderer::Device{ renderer, *connection }
 		, m_renderer{ renderer }
-		, m_gpu{ gpu }
-		, m_connection{ std::move( connection ) }
+		, m_connection{ static_cast< Connection * >( connection.release() ) }
+		, m_gpu{ m_connection->getGpu() }
 		, m_version{ "Vulkan 1.0.0" }
 	{
 		std::vector< VkDeviceQueueCreateInfo > queueCreateInfos;
@@ -42,7 +41,7 @@ namespace vk_renderer
 			VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,                 // sType
 			nullptr,                                                    // pNext
 			0,                                                          // flags
-			m_connection->getGraphicsQueueFamilyIndex(),                // queueFamilyIndex
+			m_connection->getGraphicsQueueFamilyIndex(),                 // queueFamilyIndex
 			static_cast< uint32_t >( queuePriorities.size() ),          // queueCount
 			queuePriorities.data()                                      // pQueuePriorities
 		} );
@@ -54,7 +53,7 @@ namespace vk_renderer
 				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,             // sType
 				nullptr,                                                // pNext
 				0,                                                      // flags
-				m_connection->getPresentQueueFamilyIndex(),             // queueFamilyIndex
+				m_connection->getPresentQueueFamilyIndex(),              // queueFamilyIndex
 				static_cast< uint32_t >( queuePriorities.size() ),      // queueCount
 				queuePriorities.data()                                  // pQueuePriorities
 			} );
@@ -84,7 +83,7 @@ namespace vk_renderer
 
 		m_presentCommandPool = std::make_unique< CommandPool >( *this
 			, getPresentQueue().getFamilyIndex()
-			, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT );
+			, renderer::CommandPoolCreateFlag::eResetCommandBuffer | renderer::CommandPoolCreateFlag::eTransient );
 		m_presentQueue = std::make_unique< Queue >( *this, getPresentQueue().getFamilyIndex() );
 
 		if ( getGraphicsQueue().getFamilyIndex() != getPresentQueue().getFamilyIndex() )
@@ -92,18 +91,15 @@ namespace vk_renderer
 			m_graphicsQueue = std::make_unique< Queue >( *this, getGraphicsQueue().getFamilyIndex() );
 			m_graphicsCommandPool = std::make_unique< CommandPool >( *this
 				, getGraphicsQueue().getFamilyIndex()
-				, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT );
+				, renderer::CommandPoolCreateFlag::eResetCommandBuffer | renderer::CommandPoolCreateFlag::eTransient );
 		}
 		else
 		{
-			m_graphicsQueue = std::unique_ptr< Queue >( m_presentQueue.get() );
-			m_graphicsCommandPool = std::unique_ptr< CommandPool >( m_presentCommandPool.get() );
+			m_graphicsCommandPool = std::make_unique< CommandPool >( *this
+				, getPresentQueue().getFamilyIndex()
+				, renderer::CommandPoolCreateFlag::eResetCommandBuffer | renderer::CommandPoolCreateFlag::eTransient );
+			m_graphicsQueue = std::make_unique< Queue >( *this, getPresentQueue().getFamilyIndex() );
 		}
-
-		m_presentQueue = std::make_unique< Queue >( *m_presentQueue );
-		m_graphicsQueue = std::make_unique< Queue >( *m_graphicsQueue );
-		m_presentCommandPool = std::make_unique< CommandPool >( *this, *m_presentCommandPool );
-		m_graphicsCommandPool = std::make_unique< CommandPool >( *this, *m_graphicsCommandPool );
 	}
 
 	renderer::RenderPassPtr Device::createRenderPass( std::vector< utils::PixelFormat > const & formats
@@ -245,7 +241,7 @@ namespace vk_renderer
 		, renderer::BufferTargets target
 		, renderer::MemoryPropertyFlags memoryFlags )const
 	{
-		return std::make_unique< BufferBase >( *this
+		return std::make_unique< Buffer >( *this
 			, size
 			, target
 			, memoryFlags );
@@ -256,7 +252,7 @@ namespace vk_renderer
 		, renderer::BufferTargets target
 		, renderer::MemoryPropertyFlags memoryFlags )const
 	{
-		return std::make_unique< UniformBufferBase >( *this
+		return std::make_unique< UniformBuffer >( *this
 			, count
 			, size
 			, target

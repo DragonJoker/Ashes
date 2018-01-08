@@ -6,7 +6,6 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/ColourBlendStateAttachment.hpp>
 #include <Renderer/ColourBlendStateAttachment.hpp>
 
 namespace vk_renderer

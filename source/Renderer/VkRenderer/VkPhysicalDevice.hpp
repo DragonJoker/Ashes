@@ -40,23 +40,6 @@ namespace vk_renderer
 		/**
 		*\~french
 		*\brief
-		*	Crée un GPU logique associé au GPU physique et à la connection donnée.
-		*\param[in,out] connection
-		*	La connexion au système de fenêtrage (déplacée dans le GPU logique).
-		*\return
-		*	Le GPU logique créé.
-		*\~english
-		*\brief
-		*	Creates a logical device, linked to this physical GPU and given connection.
-		*\param[in,out] connection
-		*	The connection to window system (moved into logical device).
-		*\return
-		*	The created logical device.
-		*/ 
-		renderer::DevicePtr createLogicalDevice( renderer::Connection && connection );
-		/**
-		*\~french
-		*\brief
 		*	Déduit le type de mémoire à allouer, en fonction des informations données.
 		*\param[in] typeBits
 		*	Il y a 32 types de mémoire décrits dans VkPhysicalDeviceMemoryProperties.

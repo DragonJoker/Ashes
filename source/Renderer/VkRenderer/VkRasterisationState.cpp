@@ -6,11 +6,13 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	vk::RasterisationState convert( renderer::RasterisationState const & state )
+	VkPipelineRasterizationStateCreateInfo convert( renderer::RasterisationState const & state )
 	{
-		return vk::RasterisationState
+		return VkPipelineRasterizationStateCreateInfo
 		{
-			state.getFlags(),
+			VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+			nullptr,
+			convert( state.getFlags() ),
 			state.isDepthClampEnabled(),
 			state.isRasteriserDiscardEnabled(),
 			convert( state.getPolygonMode() ),

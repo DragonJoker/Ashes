@@ -18,7 +18,7 @@ namespace vk_renderer
 {
 	/**
 	*\brief
-	*	Classe template wrappant un vk::DescriptorSet.
+	*	Classe wrappant un VkDescriptorSet.
 	*/
 	class DescriptorSet
 		: public renderer::DescriptorSet

@@ -3,19 +3,25 @@
 #include "VkDevice.hpp"
 #include "VkImageMemoryBarrier.hpp"
 
-#include <VkLib/Queue.hpp>
-
 namespace vk_renderer
 {
-	RenderBuffer::RenderBuffer( renderer::Device const & device
+	RenderBuffer::RenderBuffer( Device const & device
 		, utils::PixelFormat format
 		, renderer::IVec2 const & size )
 		: renderer::RenderBuffer{ device, format, size }
-		, m_image{ static_cast< Device const & >( device ).getDevice().createImage( convert( format )
-			, size.x
-			, size.y
-			, convert( renderer::MemoryPropertyFlags{ renderer::MemoryPropertyFlag::eLazilyAllocated | renderer::MemoryPropertyFlag::eDeviceLocal } ) ) }
-		, m_texture{ device, *m_image }
+		, m_format{ convert( format ) }
+		, m_texture{ device
+			, format
+			, size
+			, isDepthStencilFormat( m_format )
+				? renderer::ImageUsageFlag::eDepthStencilAttachment
+					: isDepthFormat( m_format )
+						? renderer::ImageUsageFlag::eDepthStencilAttachment
+						: isStencilFormat( m_format )
+							? renderer::ImageUsageFlag::eDepthStencilAttachment
+							: renderer::ImageUsageFlag::eColourAttachment
+			, renderer::ImageTiling::eOptimal
+			, renderer::MemoryPropertyFlag::eLazilyAllocated | renderer::MemoryPropertyFlag::eDeviceLocal }
 	{
 		makeDepthStencilAttachment();
 	}

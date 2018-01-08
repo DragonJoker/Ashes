@@ -4,7 +4,6 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
 #include <Renderer/CullModeFlag.hpp>
 
 namespace vk_renderer

@@ -10,7 +10,6 @@
 
 #include "VkMemoryStorage.hpp"
 
-#include <VkLib/Buffer.hpp>
 #include <Renderer/Buffer.hpp>
 
 namespace vk_renderer

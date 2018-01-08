@@ -6,7 +6,6 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/Fence.hpp>
 #include <Renderer/Fence.hpp>
 
 namespace vk_renderer

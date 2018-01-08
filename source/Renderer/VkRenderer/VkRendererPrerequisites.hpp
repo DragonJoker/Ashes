@@ -6,7 +6,29 @@
 */
 #pragma once
 
+#include <Renderer/Config.hpp>
+
 #include "VkConfig.hpp"
+
+#define VK_USE_PLATFORM_EXTENSIONS
+
+#if RENDERLIB_WIN32
+#	define VK_USE_PLATFORM_WIN32_KHR
+#elif RENDERLIB_XCB
+#	define VK_USE_PLATFORM_XCB_KHR
+#elif RENDERLIB_XLIB
+#	define VK_USE_PLATFORM_XLIB_KHR
+#elif RENDERLIB_ANDROID
+#	define VK_USE_PLATFORM_ANDROID_KHR
+#endif
+
+#include "vulkan/vulkan.h"
+
+#ifdef min
+#	undef min
+#	undef max
+#	undef abs
+#endif
 
 #include "VkAccessFlag.hpp"
 #include "VkAttributeFormat.hpp"
@@ -56,7 +78,6 @@
 
 #include <Renderer/RendererPrerequisites.hpp>
 
-
 namespace vk_renderer
 {
 #if defined( VK_API_VERSION_1_0 )
@@ -87,6 +108,7 @@ namespace vk_renderer
 	class DescriptorSetPool;
 	class Device;
 	class Pipeline;
+	class PipelineLayout;
 	class PhysicalDevice;
 	class Queue;
 	class Renderer;
@@ -94,6 +116,7 @@ namespace vk_renderer
 	class RenderSubpass;
 	class Sampler;
 	class Semaphore;
+	class ShaderProgram;
 	class SwapChain;
 	class Texture;
 	class TextureView;
@@ -118,6 +141,7 @@ namespace vk_renderer
 
 	using CommandBufferCRef = std::reference_wrapper< CommandBuffer const >;
 	using DescriptorSetLayoutCRef = std::reference_wrapper< DescriptorSetLayout const >;
+	using RenderSubpassCRef = std::reference_wrapper< RenderSubpass const >;
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;
 	using SwapChainCRef = std::reference_wrapper< SwapChain const >;
 	using TextureCRef = std::reference_wrapper< Texture const >;
@@ -127,6 +151,7 @@ namespace vk_renderer
 
 	using CommandBufferCRefArray = std::vector< CommandBufferCRef >;
 	using DescriptorSetLayoutCRefArray = std::vector< DescriptorSetLayoutCRef >;
+	using RenderSubpassCRefArray = std::vector< RenderSubpassCRef >;
 	using SemaphoreCRefArray = std::vector< SemaphoreCRef >;
 	using SwapChainCRefArray = std::vector< SwapChainCRef >;
 	using TextureCRefArray = std::vector< TextureCRef >;

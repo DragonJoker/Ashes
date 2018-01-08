@@ -27,8 +27,7 @@ namespace vk_renderer
 		*	La connection à l'application.
 		*/
 		Device( Renderer const & renderer
-			, PhysicalDevice const & gpu
-			, ConnectionPtr && connection );
+			, renderer::ConnectionPtr && connection );
 		/**
 		*\brief
 		*	Crée une passe de rendu.
@@ -413,7 +412,7 @@ namespace vk_renderer
 		}
 		/**
 		*\brief
-		*	Le vk::Device.
+		*	Le VkDevice.
 		*/
 		inline operator VkDevice const &()const
 		{
@@ -426,9 +425,5 @@ namespace vk_renderer
 		PhysicalDevice const & m_gpu;
 		VkDevice m_device{ VK_NULL_HANDLE };
 		ConnectionPtr m_connection;
-		CommandPoolPtr m_presentCommandPool;
-		CommandPoolPtr m_graphicsCommandPool;
-		QueuePtr m_presentQueue;
-		QueuePtr m_graphicsQueue;
 	};
 }

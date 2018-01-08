@@ -8,11 +8,13 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	vk::DepthStencilState convert( renderer::DepthStencilState const & state )
+	VkPipelineDepthStencilStateCreateInfo convert( renderer::DepthStencilState const & state )
 	{
-		return vk::DepthStencilState
+		return VkPipelineDepthStencilStateCreateInfo
 		{
-			state.getFlags(),
+			VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+			nullptr,
+			convert( state.getFlags() ),
 			state.isDepthTestEnabled(),
 			state.isDepthWriteEnabled(),
 			convert( state.getDepthCompareOp() ),

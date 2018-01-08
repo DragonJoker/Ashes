@@ -4,8 +4,6 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "vulkan/vulkan.h"
-
 namespace vk_renderer
 {
 

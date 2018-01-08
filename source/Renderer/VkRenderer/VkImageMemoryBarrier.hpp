@@ -6,8 +6,6 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/VkLibPrerequisites.hpp>
-
 #include <Renderer/ImageMemoryBarrier.hpp>
 
 namespace vk_renderer

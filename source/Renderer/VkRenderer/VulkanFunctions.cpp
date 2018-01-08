@@ -2,12 +2,12 @@
 This file belongs to VkLib.
 See LICENSE file in root folder.
 */
-#include "VkLibPrerequisites.hpp"
+#include "VkRendererPrerequisites.hpp"
 
-namespace vk
+namespace vk_renderer
 {
 
 #define VK_LIB_FUNCTION( fun ) PFN_vk##fun fun;
-#include "FunctionsList.inl"
+#include "VulkanFunctionsList.inl"
 
 }

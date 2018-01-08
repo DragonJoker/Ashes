@@ -8,8 +8,6 @@ See LICENSE file in root folder.
 
 #include "RendererPrerequisites.hpp"
 
-#include <VkLib/DescriptorPool.hpp>
-
 #include <vector>
 
 namespace renderer
