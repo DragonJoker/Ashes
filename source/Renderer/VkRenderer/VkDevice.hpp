@@ -1,4 +1,4 @@
-/*
+﻿/*
 This file belongs to Renderer.
 See LICENSE file in root folder
 */
@@ -422,8 +422,8 @@ namespace vk_renderer
 	private:
 		std::string m_version;
 		Renderer const & m_renderer;
+		ConnectionPtr m_connection;
 		PhysicalDevice const & m_gpu;
 		VkDevice m_device{ VK_NULL_HANDLE };
-		ConnectionPtr m_connection;
 	};
 }

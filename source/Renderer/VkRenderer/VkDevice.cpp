@@ -1,4 +1,4 @@
-/*
+﻿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -80,26 +80,24 @@ namespace vk_renderer
 		{
 			throw std::runtime_error{ "LogicalDevice creation failed: " + getLastError() };
 		}
-
+		
+		m_presentQueue = std::make_unique< Queue >( *this, m_connection->getPresentQueueFamilyIndex() );
 		m_presentCommandPool = std::make_unique< CommandPool >( *this
-			, getPresentQueue().getFamilyIndex()
+			, m_presentQueue->getFamilyIndex()
 			, renderer::CommandPoolCreateFlag::eResetCommandBuffer | renderer::CommandPoolCreateFlag::eTransient );
-		m_presentQueue = std::make_unique< Queue >( *this, getPresentQueue().getFamilyIndex() );
 
-		if ( getGraphicsQueue().getFamilyIndex() != getPresentQueue().getFamilyIndex() )
+		if ( m_connection->getGraphicsQueueFamilyIndex() != m_connection->getPresentQueueFamilyIndex() )
 		{
-			m_graphicsQueue = std::make_unique< Queue >( *this, getGraphicsQueue().getFamilyIndex() );
-			m_graphicsCommandPool = std::make_unique< CommandPool >( *this
-				, getGraphicsQueue().getFamilyIndex()
-				, renderer::CommandPoolCreateFlag::eResetCommandBuffer | renderer::CommandPoolCreateFlag::eTransient );
+			m_graphicsQueue = std::make_unique< Queue >( *this, m_connection->getGraphicsQueueFamilyIndex() );
 		}
 		else
 		{
-			m_graphicsCommandPool = std::make_unique< CommandPool >( *this
-				, getPresentQueue().getFamilyIndex()
-				, renderer::CommandPoolCreateFlag::eResetCommandBuffer | renderer::CommandPoolCreateFlag::eTransient );
-			m_graphicsQueue = std::make_unique< Queue >( *this, getPresentQueue().getFamilyIndex() );
+			m_graphicsQueue = std::make_unique< Queue >( *this, m_connection->getPresentQueueFamilyIndex() );
 		}
+
+		m_graphicsCommandPool = std::make_unique< CommandPool >( *this
+			, m_graphicsQueue->getFamilyIndex()
+			, renderer::CommandPoolCreateFlag::eResetCommandBuffer | renderer::CommandPoolCreateFlag::eTransient );
 	}
 
 	renderer::RenderPassPtr Device::createRenderPass( std::vector< utils::PixelFormat > const & formats
