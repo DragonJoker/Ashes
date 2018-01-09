@@ -1,4 +1,4 @@
-/*
+﻿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -203,7 +203,7 @@ namespace vk_renderer
 		, renderer::ClearValueArray const & clearValues
 		, renderer::SubpassContents contents )const
 	{
-		auto vkclearValues = convert< VkClearValue >( clearValues );
+		auto & vkclearValues = static_cast< RenderPass const & >( renderPass ).getClearValues( clearValues );
 		auto & vkfbo = static_cast< FrameBuffer const & >( frameBuffer );
 		VkRenderPassBeginInfo beginInfo
 		{

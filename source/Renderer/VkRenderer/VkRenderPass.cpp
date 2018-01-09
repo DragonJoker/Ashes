@@ -1,4 +1,4 @@
-/*
+﻿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -204,5 +204,11 @@ namespace vk_renderer
 			, *this
 			, dimensions
 			, textures );
+	}
+
+	std::vector< VkClearValue > const & RenderPass::getClearValues (renderer::ClearValueArray const & clearValues)const
+	{
+		m_clearValues = convert< VkClearValue >( clearValues );
+		return m_clearValues;
 	}
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -100,6 +100,7 @@ namespace vk_renderer
 		*/
 		renderer::FrameBufferPtr createFrameBuffer( utils::IVec2 const & dimensions
 			, renderer::TextureCRefArray const & textures )const override;
+		std::vector< VkClearValue > const & getClearValues (renderer::ClearValueArray const & clearValues)const;
 		/**
 		*\~french
 		*\brief
@@ -121,5 +122,6 @@ namespace vk_renderer
 		RenderSubpassCRefArray m_subpasses;
 		renderer::RenderPassState m_initialState;
 		renderer::RenderPassState m_finalState;
+		mutable std::vector< VkClearValue > m_clearValues;
 	};
 }
