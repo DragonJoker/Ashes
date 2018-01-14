@@ -4,9 +4,8 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "VkRendererPrerequisites.hpp"
+#include "VkShaderModule.hpp"
 
-#include <VkLib/ShaderProgram.hpp>
 #include <Renderer/ShaderProgram.hpp>
 
 namespace vk_renderer
@@ -25,7 +24,7 @@ namespace vk_renderer
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		ShaderProgram( renderer::Device const & device );
+		ShaderProgram( Device const & device );
 		/**
 		*\brief
 		*	Crée un module de shader et l'ajoute à la liste.
@@ -54,15 +53,32 @@ namespace vk_renderer
 		{
 		}
 		/**
+		*\~french
 		*\brief
 		*	Le début du tableau de modules.
+		*\~english
+		*\brief
+		*	The beginning of the modules array.
 		*/
-		inline vk::ShaderProgram const & getProgram()const
+		inline auto begin()const
 		{
-			return *m_program;
+			return m_modules.begin();
+		}
+		/**
+		*\~french
+		*\brief
+		*	La fin du tableau de modules.
+		*\~english
+		*\brief
+		*	The end of the modules array.
+		*/
+		inline auto end()const
+		{
+			return m_modules.end();
 		}
 
 	private:
-		vk::ShaderProgramPtr m_program;
+		Device const & m_device;
+		std::vector< ShaderModule > m_modules;
 	};
 }

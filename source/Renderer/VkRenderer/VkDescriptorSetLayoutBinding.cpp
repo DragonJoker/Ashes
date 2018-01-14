@@ -6,9 +6,9 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	vk::DescriptorLayoutBinding convert( renderer::DescriptorSetLayoutBinding const & binding )
+	VkDescriptorSetLayoutBinding convert( renderer::DescriptorSetLayoutBinding const & binding )
 	{
-		return vk::DescriptorLayoutBinding
+		return VkDescriptorSetLayoutBinding
 		{
 			binding.getBindingPoint(),
 			convert( binding.getDescriptorType() ),

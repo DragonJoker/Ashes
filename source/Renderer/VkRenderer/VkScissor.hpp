@@ -6,7 +6,6 @@ See LICENSE file in root folder.
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/Scissor.hpp>
 #include <Renderer/Scissor.hpp>
 
 namespace vk_renderer
@@ -19,5 +18,5 @@ namespace vk_renderer
 	*\return
 	*	Le vk::Viewport.
 	*/
-	vk::Scissor convert( renderer::Scissor const & scissor );
+	VkRect2D convert( renderer::Scissor const & scissor );
 }

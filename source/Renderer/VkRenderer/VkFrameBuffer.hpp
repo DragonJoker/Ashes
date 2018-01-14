@@ -6,7 +6,6 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/FrameBuffer.hpp>
 #include <Renderer/FrameBuffer.hpp>
 
 namespace vk_renderer
@@ -23,7 +22,7 @@ namespace vk_renderer
 	public:
 		/**
 		*\brief
-		*	Crée un FrameBuffer compatible avec la passe de rendu donnée.
+		*	Constructeur, crée un FrameBuffer compatible avec la passe de rendu donnée.
 		*\remarks
 		*	Si la compatibilité entre les textures voulues et les formats de la passe de rendu
 		*	n'est pas possible, une std::runtime_error est lancée.
@@ -31,31 +30,62 @@ namespace vk_renderer
 		*	Les dimensions du tampon d'images.
 		*\param[in] textures
 		*	Les textures voulues pour le tampon d'images à créer.
+		*\~english
+		*\brief
+		*	Constructor, creates a frame buffer compatible with given render pass.
+		*\param[in] device
+		*	The logical connection to the GPU.
+		*\param[in] renderPass
+		*	The render pass with which this framebuffer is compatible.
+		*\param[in] dimensions
+		*	The frame buffer's dimensions.
+		*\param[in] textures
+		*	The attachments.
 		*/
-		FrameBuffer( renderer::RenderPass const & renderPass
+		FrameBuffer( Device const & device
+			, RenderPass const & renderPass
 			, utils::IVec2 const & dimensions
 			, renderer::TextureCRefArray const & textures );
 		/**
+		*\~french
 		*\brief
-		*	Wrappe un vk::FrameBuffer.
-		*\param[in] frameBuffer
-		*	Lee vk::FrameBuffer à wrapper.
+		*	Destructeur.
+		*\~english
+		*\brief
+		*	Destructor.
 		*/
-		FrameBuffer( vk::FrameBufferPtr && frameBuffer );
+		~FrameBuffer();
 		/**
 		*\brief
 		*	Copie des données dans la RAM.
-		*\remarks
-		*	Pour utiliser cette fonction, il faut que le tampon soit activé.
+		*\param[in] queue
+		*	La file utilisée pour la copie.
+		*\param[in] index
+		*	L'index de l'attache.
 		*\param[in] xoffset, yoffset
 		*	Le décalage à partir duquel les données seront copiées, par rapport
-		*	au d�but du stockage de la texture, en VRAM.
+		*	au début du stockage de la texture, en VRAM.
 		*\param[in] width, height
 		*	Les dimensions des données à copier.
 		*\param[in] format
 		*	Le format voulu pour les données.
 		*\param[out] data
 		*	Reçoit les données copiées.
+		*\~english
+		*\brief
+		*	Copies data from an attach in RAM.
+		*\param[in] queue
+		*	The queue used for the copy.
+		*\param[in] index
+		*	The attach index.
+		*\param[in] xoffset, yoffset
+		*	The X and Y offsets.
+		*\param[in] width, height
+		*	The data copy dimensions.
+		*\param[in] format
+		*	The wanted format for the copy.
+		*\param[out] data
+		*	Receives copied data.
 		*/
 		void download( renderer::Queue const & queue
 			, uint32_t index
@@ -67,15 +97,29 @@ namespace vk_renderer
 			, uint8_t * data )const noexcept;
 		/**
 		*\return
-		*	Le Framebuffer vulkan.
+		*	Les dimensions du tampon.
 		*/
-		inline vk::FrameBuffer const & getFrameBuffer()const
+		inline utils::IVec2 const & getDimensions()const noexcept
 		{
-			assert( m_frameBuffer );
-			return *m_frameBuffer;
+			return m_dimensions;
+		}
+		/**
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkFramebuffer.
+		*\~english
+		*\brief
+		*	VkFramebuffer implicit cast operator.
+		*/
+		inline operator VkFramebuffer const &( )const
+		{
+			return m_framebuffer;
 		}
 
 	private:
-		vk::FrameBufferPtr m_frameBuffer;
+		Device const & m_device;
+		TextureViewCRefArray m_views;
+		VkFramebuffer m_framebuffer{};
+		utils::IVec2 m_dimensions;
 	};
 }

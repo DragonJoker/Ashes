@@ -17,6 +17,10 @@ namespace renderer
 	class DescriptorSetBinding
 	{
 	public:
+		DescriptorSetBinding( DescriptorSetBinding const & ) = delete;
+		DescriptorSetBinding( DescriptorSetBinding && ) = default;
+		DescriptorSetBinding & operator=( DescriptorSetBinding const & ) = delete;
+		DescriptorSetBinding & operator=( DescriptorSetBinding && ) = default;
 		/**
 		*\brief
 		*	Constructeur.
@@ -54,6 +58,10 @@ namespace renderer
 		: public DescriptorSetBinding
 	{
 	public:
+		CombinedTextureSamplerBinding( CombinedTextureSamplerBinding const & ) = delete;
+		CombinedTextureSamplerBinding( CombinedTextureSamplerBinding && ) = default;
+		CombinedTextureSamplerBinding & operator=( CombinedTextureSamplerBinding const & ) = delete;
+		CombinedTextureSamplerBinding & operator=( CombinedTextureSamplerBinding && ) = default;
 		/**
 		*\brief
 		*	Constructeur.
@@ -101,6 +109,10 @@ namespace renderer
 		: public DescriptorSetBinding
 	{
 	public:
+		SampledTextureBinding( SampledTextureBinding const & ) = delete;
+		SampledTextureBinding( SampledTextureBinding && ) = default;
+		SampledTextureBinding & operator=( SampledTextureBinding const & ) = delete;
+		SampledTextureBinding & operator=( SampledTextureBinding && ) = default;
 		/**
 		*\brief
 		*	Constructeur.
@@ -135,6 +147,10 @@ namespace renderer
 		: public DescriptorSetBinding
 	{
 	public:
+		UniformBufferBinding( UniformBufferBinding const & ) = delete;
+		UniformBufferBinding( UniformBufferBinding && ) = default;
+		UniformBufferBinding & operator=( UniformBufferBinding const & ) = delete;
+		UniformBufferBinding & operator=( UniformBufferBinding && ) = default;
 		/**
 		*\brief
 		*	Crée une attache de type tampon de variables uniformes.

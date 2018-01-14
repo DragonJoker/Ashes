@@ -6,12 +6,12 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	vk::RenderSubpassState convert( renderer::RenderSubpassState const & state )
+	RenderSubpassState convert( renderer::RenderSubpassState const & state )
 	{
-		return vk::RenderSubpassState
+		return RenderSubpassState
 		{
-			convert( state.getPipelineStage() ),
-			convert( state.getAccess() )
+			state.getPipelineStage(),
+			state.getAccess()
 		};
 	}
 }

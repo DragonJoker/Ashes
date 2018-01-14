@@ -31,6 +31,14 @@ using longptr_t = int64_t;
 using longptr_t = long;
 #endif
 
+#if !defined( CALLBACK )
+#	if defined( _WIN32 )
+#		define CALLBACK __stdcall
+#	else
+#		define CALLBACK
+#	endif
+#endif
+
 namespace utils
 {
 	/**

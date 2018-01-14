@@ -24,6 +24,8 @@ See LICENSE file in root folder.
 #include "GlUniformBuffer.hpp"
 #include "GlVertexLayout.hpp"
 
+#include <iostream>
+
 namespace gl_renderer
 {
 	Device::Device( renderer::Renderer const & renderer

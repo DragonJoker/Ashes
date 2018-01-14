@@ -1,12 +1,11 @@
-/*
+﻿/*
 This file belongs to Renderer.
 See LICENSE file in root folder
 */
 #pragma once
 
-#include "VkRendererPrerequisites.hpp"
+#include "VkConnection.hpp"
 
-#include <VkLib/LogicalDevice.hpp>
 #include <Renderer/Device.hpp>
 
 namespace vk_renderer
@@ -27,7 +26,7 @@ namespace vk_renderer
 		*\param[in] connection
 		*	La connection à l'application.
 		*/
-		Device( renderer::Renderer const & vk_renderer
+		Device( Renderer const & renderer
 			, renderer::ConnectionPtr && connection );
 		/**
 		*\brief
@@ -274,6 +273,40 @@ namespace vk_renderer
 		*/
 		void waitIdle()const;
 		/**
+		*\~french
+		*\brief
+		*	Récupère les propriétés mémoire requises pour le tampon donné.
+		*\param[in] buffer
+		*	Le tampon.
+		*return
+		*	Les propriétés mémoire.
+		*\~english
+		*\brief
+		*	Retrieves the memory requirements for given buffer.
+		*\param[in] buffer
+		*	The buffer.
+		*return
+		*	The memory requirements.
+		*/
+		VkMemoryRequirements getBufferMemoryRequirements( VkBuffer buffer )const;
+		/**
+		*\~french
+		*\brief
+		*	Récupère les propriétés mémoire requises pour le tampon donné.
+		*\param[in] image
+		*	L'image.
+		*return
+		*	Les propriétés mémoire.
+		*\~english
+		*\brief
+		*	Retrieves the memory requirements for given buffer.
+		*\param[in] image
+		*	The image.
+		*return
+		*	The memory requirements.
+		*/
+		VkMemoryRequirements getImageMemoryRequirements( VkImage image )const;
+		/**
 		*\brief
 		*	Le numéro de version.
 		*/
@@ -282,16 +315,115 @@ namespace vk_renderer
 			return m_version;
 		}
 		/**
-		*\brief
-		*	Le vk::Device.
+		*\~french
+		*\return
+		*	Le pool de commandes de présentation.
+		*\~english
+		*\return
+		*	The presentation command pool.
 		*/
-		inline vk::LogicalDevice const & getDevice()const
+		inline auto const & getPresentCommandPool()const
+		{
+			return *m_presentCommandPool;
+		}
+		/**
+		*\~french
+		*\return
+		*	Le pool de commandes de dessin.
+		*\~english
+		*\return
+		*	The graphics command pool.
+		*/
+		inline auto const & getGraphicsCommandPool()const
+		{
+			return *m_graphicsCommandPool;
+		}
+		/**
+		*\~french
+		*\return
+		*	La file de présentation.
+		*\~english
+		*\return
+		*	The presentation queue.
+		*/
+		inline auto const & getPresentQueue()const
+		{
+			return *m_presentQueue;
+		}
+		/**
+		*\~french
+		*\return
+		*	La file de dessin.
+		*\~english
+		*\return
+		*	The graphics queue.
+		*/
+		inline auto const & getGraphicsQueue()const
+		{
+			return *m_graphicsQueue;
+		}
+		/**
+		*\~french
+		*\return
+		*	Le GPU physique.
+		*\~english
+		*\return
+		*	The physical device.
+		*/
+		inline PhysicalDevice const & getPhysicalDevice()const
+		{
+			return m_gpu;
+		}
+		/**
+		*\~french
+		*\return
+		*	La connection à l'application.
+		*\~english
+		*\return
+		*	The connection to the application.
+		*/
+		inline Connection const & getConnection()const
+		{
+			return *m_connection;
+		}
+		/**
+		*\~french
+		*\return
+		*	La surface de présentation.
+		*\~english
+		*\return
+		*	The presentation surface.
+		*/
+		inline auto getPresentSurface()const
+		{
+			return m_connection->getPresentSurface();
+		}
+		/**
+		*\~french
+		*\return
+		*	Les capacités de la surface de présentation.
+		*\~english
+		*\return
+		*	The presentation surface's capabilities.
+		*/
+		inline auto getSurfaceCapabilities()const
+		{
+			return m_connection->getSurfaceCapabilities();
+		}
+		/**
+		*\brief
+		*	Le VkDevice.
+		*/
+		inline operator VkDevice const &()const
 		{
 			return m_device;
 		}
 
 	private:
-		vk::LogicalDevice m_device;
 		std::string m_version;
+		Renderer const & m_renderer;
+		ConnectionPtr m_connection;
+		PhysicalDevice const & m_gpu;
+		VkDevice m_device{ VK_NULL_HANDLE };
 	};
 }

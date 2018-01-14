@@ -10,9 +10,6 @@
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/Image.hpp>
-#include <VkLib/Sampler.hpp>
-
 #include <Renderer/Texture.hpp>
 
 #include <Utils/Vec2.hpp>
@@ -20,8 +17,21 @@
 namespace vk_renderer
 {
 	/**
+	*\~french
 	*\brief
-	*	Une texture, avec son image et son échantillonneur.
+	*	Classe encapsulant le concept d'image Vulkan.
+	*\remarks
+	*	Gère la transition de layouts.
+	*	Dépendant du fait que l'image provienne de la swap chain
+	*	ou d'une ressource, la VkImage sera détruite par le parent
+	*	correspondant.
+	*\~english
+	*\brief
+	*	Class wrapping the Vulkan image concept.
+	*\remarks
+	*	Handles the layouts transition.
+	*	Depending on wheter the image comes from a resource or a swap chain,
+	*	The VkImage will be destroyed or not.
 	*/
 	class Texture
 		: public renderer::Texture
@@ -33,15 +43,74 @@ namespace vk_renderer
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		Texture( renderer::Device const & device );
+		Texture( Device const & device );
 		/**
 		*\brief
 		*	Constructeur.
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		Texture( renderer::Device const & device
-			, vk::Image const & image );
+		Texture( Device const & device
+			, utils::PixelFormat format
+			, utils::IVec2 const & dimensions
+			, VkImage image );
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
+		*/
+		Texture( Device const & device
+			, utils::PixelFormat format
+			, utils::IVec2 const & dimensions
+			, renderer::ImageUsageFlags usageFlags
+			, renderer::ImageTiling tiling
+			, renderer::MemoryPropertyFlags memoryFlags );
+		/**
+		*\~french
+		*\brief
+		*	Mappe la mémoire du tampon en RAM.
+		*\param[in] offset
+		*	L'offset à partir duquel la mémoire du tampon est mappée.
+		*\param[in] size
+		*	La taille en octets de la mémoire à mapper.
+		*\param[in] flags
+		*	Indicateurs de configuration du mapping.
+		*\return
+		*	\p nullptr si le mapping a échoué.
+		*\~english
+		*\brief
+		*	Maps the buffer's memory in RAM.
+		*\param[in] offset
+		*	The memory mapping starting offset.
+		*\param[in] size
+		*	The memory mappping size.
+		*\param[in] flags
+		*	The memory mapping flags.
+		*\return
+		*	\p nullptr if the mapping failed.
+		*/
+		renderer::Texture::Mapped lock( uint32_t offset
+			, uint32_t size
+			, VkMemoryMapFlags flags )const;
+		/**
+		*\~french
+		*\brief
+		*	Unmappe la mémoire du tampon de la RAM.
+		*\param[in] size
+		*	La taille en octets de la mémoire mappée.
+		*\param[in] modified
+		*	Dit si le tampon a été modifié, et donc si la VRAM doit être mise à jour.
+		*\~english
+		*\brief
+		*	Unmaps the buffer's memory from the RAM.
+		*\param[in] size
+		*	The mapped memory size.
+		*\param[in] modified
+		*	Tells it the buffer has been modified, and whether the VRAM must be updated or not.
+		*/
+		void unlock( uint32_t size
+			, bool modified )const;
 		/**
 		*\brief
 		*	Charge l'image de la texture.
@@ -120,18 +189,81 @@ namespace vk_renderer
 		*/
 		renderer::ImageMemoryBarrier makePresentSource()const override;
 		/**
+		*\~french
 		*\return
-		*	L'image vulkan.
+		*	La vue sur l'image.
+		*\~english
+		*\return
+		*	The image view.
 		*/
-		inline vk::Image const & getImage()const noexcept
+		inline TextureView const & getView()const
 		{
-			assert( m_nonOwnedTexture );
-			return *m_nonOwnedTexture;
+			return *m_view;
+		}
+		/**
+		*\~french
+		*\brief
+		*	Opérateur de conversion implicite vers VkImage.
+		*\~english
+		*\brief
+		*	VkImage implicit cast operator.
+		*/
+		inline operator VkImage const &( )const
+		{
+			return m_image;
 		}
 
 	private:
-		vk::ImagePtr m_ownedTexture;
-		vk::Image const * m_nonOwnedTexture{ nullptr };
+		/**
+		*\brief
+		*	Charge l'image de la texture.
+		*\param[in] format
+		*	Le format de l'image.
+		*\param[in] size
+		*	Les dimensions de l'image.
+		*/
+		void doSetImage( utils::PixelFormat format
+			, utils::IVec2 const & size
+			, renderer::ImageUsageFlags usageFlags
+			, renderer::ImageTiling tiling
+			, renderer::MemoryPropertyFlags memoryFlags );
+		/**
+		*\~french
+		*\brief
+		*	Prépare une barrière mémoire de transition de l'image vers un autre layout.
+		*\param[in] layout
+		*	Le layout vers lequel on fait la transition.
+		*\param[in] queueFamily
+		*	La file référençant l'image après la transition.
+		*\param[in] dstAccessMask
+		*	Les accès voulus, une fois que la transition est effectuée.
+		*\return
+		*	La barrière mémoire.
+		*\~english
+		*\brief
+		*	Prepares a layout transition memory barrier.
+		*\param[in] layout
+		*	The destination layout.
+		*\param[in] queueFamily
+		*	The queue referencing the image after the transition.
+		*\param[in] dstAccessMask
+		*	The wanted access after the transition is done.
+		*\return
+		*	The memory barrier.
+		*/
+		renderer::ImageMemoryBarrier doMakeLayoutTransition( renderer::ImageLayout layout
+			, uint32_t queueFamily
+			, renderer::AccessFlags dstAccessMask )const;
+
+	private:
+		Device const & m_device;
+		VkImage m_image{};
+		TextureViewPtr m_view;
+		ImageStoragePtr m_storage;
+		bool m_owner{};
+		mutable renderer::AccessFlags m_currentAccessMask{};
+		mutable renderer::ImageLayout m_currentLayout{};
+		mutable uint32_t m_currentQueueFamily{ 0 };
 	};
 }
 

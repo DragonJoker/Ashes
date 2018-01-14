@@ -19,7 +19,7 @@ namespace common
 	/**
 	*\~french
 	*\brief
-	*	Crée une vk::Connection associant une fenêtre et un GPU.
+	*	Crée une renderer::Connection associant une fenêtre et un GPU.
 	*\param[in] window
 	*	Fenêtre utilisée pour récupérer les informations dépendantes de la plateforme cible.
 	*\param[in] vulkan
@@ -28,7 +28,7 @@ namespace common
 	*	Le GPU choisi pour associer Vulkan à la fenêtre.
 	*\~english
 	*\brief
-	*	Creates a vk::Connection binding a window to a GPU.
+	*	Creates a renderer::Connection binding a window to a GPU.
 	*\param[in] window
 	*	The window used to retrieve the platform dependant informations.
 	*\param[in] vulkan

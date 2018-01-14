@@ -11,8 +11,6 @@ See LICENSE file in root folder.
 #	include <SPIRV/GlslangToSpv.h>
 #endif
 
-#include <VkLib/LogicalDevice.hpp>
-
 namespace vk_renderer
 {
 
@@ -147,9 +145,9 @@ namespace vk_renderer
 
 #endif
 
-	ShaderProgram::ShaderProgram( renderer::Device const & device )
+	ShaderProgram::ShaderProgram( Device const & device )
 		: renderer::ShaderProgram{ device }
-		, m_program{ static_cast< Device const & >( device ).getDevice().createShaderProgram() }
+		, m_device{ device }
 	{
 	}
 
@@ -201,7 +199,7 @@ namespace vk_renderer
 
 		renderer::UInt32Array spirv;
 		glslang::GlslangToSpv( *glprogram.getIntermediate( glstage ), spirv );
-		m_program->createModule( spirv, convert( stage ) );
+		m_modules.emplace_back( m_device, spirv, stage );
 
 #else
 
@@ -213,6 +211,6 @@ namespace vk_renderer
 	void ShaderProgram::createModule( renderer::ByteArray const & fileData
 		, renderer::ShaderStageFlag stage )
 	{
-		m_program->createModule( fileData, convert( stage ) );
+		m_modules.emplace_back( m_device, fileData, stage );
 	}
 }

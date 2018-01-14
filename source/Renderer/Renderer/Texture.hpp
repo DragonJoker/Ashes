@@ -19,6 +19,24 @@ namespace renderer
 	*/
 	class Texture
 	{
+	public:
+		/**
+		*\~french
+		*\brief
+		*	Contient les informations d'une image mappée en RAM.
+		*\~english
+		*\brief
+		*	Contains an image mapped in RAM informations.
+		*/
+		struct Mapped
+		{
+			uint8_t * data;
+			uint64_t size;
+			uint64_t rowPitch;
+			uint64_t arrayPitch;
+			uint64_t depthPitch;
+		};
+
 	protected:
 		/**
 		*\brief

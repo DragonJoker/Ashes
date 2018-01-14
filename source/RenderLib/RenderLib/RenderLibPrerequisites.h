@@ -183,7 +183,7 @@ namespace render
 		eOpa,
 		//! Noeud avec textures d'opacité et de diffuse.
 		eOpaDiff,
-		VkLib_EnumBounds( eNoTex )
+		Utils_EnumBounds( eNoTex )
 	};
 	/**
 	*\brief
@@ -217,7 +217,7 @@ namespace render
 		eAlphaTestOpa,
 		//! Noeud avec alpha testing, avec textures d'opacité et de diffuse.
 		eAlphaTestOpaDiff,
-		VkLib_EnumBounds( eOpaque )
+		Utils_EnumBounds( eOpaque )
 	};
 	/**
 	*\brief

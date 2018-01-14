@@ -6,18 +6,34 @@ See LICENSE file in root folder.
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/VkLibPrerequisites.hpp>
 #include <Renderer/RenderSubpassState.hpp>
 
 namespace vk_renderer
 {
 	/**
+	*\~french
 	*\brief
-	*	Convertit un renderer::RenderSubpassState en vk::RenderSubpassState.
+	*	Description d'un �tat d'une sous passe de rendu.
+	*\~english
+	*\brief
+	*	Describes the state of a render subpass.
+	*/
+	struct RenderSubpassState
+	{
+		//!\~french		Les indicateurs d'�tat du pipeline.
+		//!\~english	Pipeline stage flags.
+		VkPipelineStageFlags m_pipelineStage;
+		//!\~french		Les indicateurs d'acc�s.
+		//!\~english	Access flags.
+		VkAccessFlags m_access;
+	};
+	/**
+	*\brief
+	*	Convertit un renderer::RenderSubpassState en RenderSubpassState.
 	*\param[in] state
 	*	Le renderer::RenderSubpassState.
 	*\return
-	*	Le vk::RenderSubpassState.
+	*	Le RenderSubpassState.
 	*/
-	vk::RenderSubpassState convert( renderer::RenderSubpassState const & state );
+	RenderSubpassState convert( renderer::RenderSubpassState const & state );
 }

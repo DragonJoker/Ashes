@@ -4,35 +4,38 @@
 #include "VkDescriptorSetPool.hpp"
 #include "VkDevice.hpp"
 
-#include <VkLib/LogicalDevice.hpp>
-
 namespace vk_renderer
 {
-	namespace
-	{
-		std::vector< vk::DescriptorLayoutBinding > doConvert( renderer::DescriptorSetLayoutBindingArray const & bindings )
-		{
-			std::vector< vk::DescriptorLayoutBinding > result;
-			result.reserve( bindings.size() );
-
-			for ( auto & binding : bindings )
-			{
-				result.emplace_back( convert( binding ) );
-			}
-
-			return result;
-		}
-	}
-
-	DescriptorSetLayout::DescriptorSetLayout( renderer::Device const & device
+	DescriptorSetLayout::DescriptorSetLayout( Device const & device
 		, renderer::DescriptorSetLayoutBindingArray && bindings )
 		: renderer::DescriptorSetLayout{ device, std::move( bindings ) }
-		, m_layout{ static_cast< Device const & >( device ).getDevice().createDescriptorLayout( doConvert( m_bindings ) ) }
+		, m_device{ device }
 	{
+		auto vkbindings = convert< VkDescriptorSetLayoutBinding >( m_bindings );
+		VkDescriptorSetLayoutCreateInfo createInfo
+		{
+			VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,  // sType
+			nullptr,                                              // pNext
+			0,                                                    // flags
+			static_cast< uint32_t >( vkbindings.size() ),         // bindingCount
+			vkbindings.data()                                     // pBindings
+		};
+		DEBUG_DUMP( createInfo );
+		auto res = CreateDescriptorSetLayout( m_device
+			, &createInfo
+			, nullptr
+			, &m_layout );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Descriptor set layout creation failed: " + getLastError() };
+		}
 	}
 
 	renderer::DescriptorSetPoolPtr DescriptorSetLayout::createPool( uint32_t maxSets )const
 	{
-		return std::make_unique< DescriptorSetPool >( *this, maxSets );
+		return std::make_unique< DescriptorSetPool >( m_device
+			, *this
+			, maxSets );
 	}
 }

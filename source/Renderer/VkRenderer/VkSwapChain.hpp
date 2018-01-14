@@ -10,8 +10,6 @@
 #include "VkRendererPrerequisites.hpp"
 #include "VkRenderingResources.hpp"
 
-#include <VkLib/SwapChain.hpp>
-
 #include <Renderer/SwapChain.hpp>
 
 #include <Utils/UtilsSignal.hpp>
@@ -23,116 +21,227 @@ namespace vk_renderer
 	{
 	public:
 		/**
+		*\~french
 		*\brief
 		*	Constructeur.
+		*\param[in] device
+		*	La connexion logique au GPU.
+		*\param[in] size
+		*	Les dimensions de la surface de rendu.
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical connection to the GPU.
+		*\param[in] size
+		*	The render surface dimensions.
 		*/
-		SwapChain( renderer::Device const & device
+		SwapChain( Device const & device
 			, utils::IVec2 const & size );
 		/**
+		*\~french
 		*\brief
-		*	Réinitialise la swap chain.
+		*	Destructeur.
+		*\~english
+		*\brief
+		*	Destructor.
+		*/
+		~SwapChain();
+		/**
+		*\~french
+		*\brief
+		*	Rï¿½initialise la swap chain.
+		*\~english
+		*\brief
+		*	Resets the swap chain.
 		*/
 		void reset( utils::IVec2 const & size );
 		/**
+		*\~french
 		*\brief
-		*	Crée les tampons d'image des back buffers, compatibles avec la passe de rendu donnée.
+		*	Crï¿½e les tampons d'image des back buffers, compatibles avec la passe de rendu donnï¿½e.
 		*\param[in] renderPass
 		*	La passe de rendu.
 		*\return
 		*	Les tampons d'images.
+		*\~english
+		*\brief
+		*	Creates the back buffers' frame buffers, compatible with given render pass.
+		*\param[in] renderPass
+		*	The render pass.
+		*\return
+		*	The frame buffers.
 		*/
 		renderer::FrameBufferPtrArray createFrameBuffers( renderer::RenderPass const & renderPass )const override;
 		/**
+		*\~french
 		*\brief
-		*	Crée les tampons d'image des back buffers, compatibles avec la passe de rendu donnée.
-		*\param[in] renderPass
-		*	La passe de rendu.
+		*	Crï¿½e les tampons de commandes des back buffers.
 		*\return
-		*	Les tampons d'images.
+		*	Les tampons de commandes.
+		*\~english
+		*\brief
+		*	Creates the back buffers' command buffers.
+		*\return
+		*	The command buffers.
 		*/
 		renderer::CommandBufferPtrArray createCommandBuffers()const override;
 		/**
+		*\~french
 		*\brief
-		*	Enregistre des commandes de pré-rendu.
+		*	Enregistre des commandes de prï¿½-rendu.
 		*\param[in] index
 		*	L'indice de l'image.
 		*\param[in] commandBuffer
 		*	Le tampon de commandes recevant les commandes.
+		*\~english
+		*\brief
+		*	Registers pre-render commands.
+		*\param[in] index
+		*	The index of the backbuffer.
+		*\param[in] commandBuffer
+		*	The command buffer receiving the commands.
 		*/
 		void preRenderCommands( uint32_t index
 			, renderer::CommandBuffer const & commandBuffer )const override;
 		/**
+		*\~french
 		*\brief
 		*	Enregistre des commandes de post-rendu.
 		*\param[in] index
 		*	L'indice de l'image.
 		*\param[in] commandBuffer
 		*	Le tampon de commandes recevant les commandes.
+		*\~english
+		*\brief
+		*	Registers post-render commands.
+		*\param[in] index
+		*	The index of the backbuffer.
+		*\param[in] commandBuffer
+		*	The command buffer receiving the commands.
 		*/
 		void postRenderCommands( uint32_t index
 			, renderer::CommandBuffer const & commandBuffer )const override;;
 		/**
+		*\~french
 		*\return
-		*	Récupère les ressources de rendu actives.
+		*	Rï¿½cupï¿½re les ressources de rendu actives.
+		*\~english
+		*\return
+		*	The active rendering resources.
 		*/
 		renderer::RenderingResources * getResources()override;
 		/**
-		*\return
-		*	Présente les ressources de rendu.
+		*\~french
+		*\brief
+		*	Rend l'image utilisï¿½e ï¿½ la swap chain, pour la dessiner.
+		*\param[in] resources
+		*	Les ressources de rendu.
+		*\~english
+		*\brief
+		*	Gives back the backbuffer to the swap chain, to present it.
+		*\param[in] resources
+		*	The rendering resources.
 		*/
 		void present( renderer::RenderingResources & resources )override;
 		/**
+		*\~french
+		*\return
+		*	Les tampons d'images.
+		*\~english
+		*\return
+		*	The back buffers.
+		*/
+		inline auto const & getBackBuffers()const
+		{
+			return m_backBuffers;
+		}
+		/**
+		*\~french
 		*\brief
-		*	Définit la couleur de vidage de la swapchain.
-		*\param[in] value
+		*	Dï¿½finit couleur de vidage.
+		*\param[in] colour
 		*	La nouvelle valeur.
+		*\~english
+		*\brief
+		*	Defines the clear colour.
+		*\param[in] colour
+		*	The new value.
 		*/
 		inline void setClearColour( utils::RgbaColour const & value )override
 		{
-			m_swapChain->setClearColour( convert( value ) );
+			m_clearColour = convert( value );
 		}
 		/**
-		*\brief
-		*	Définit la couleur de vidage de la swapchain.
-		*\param[in] value
-		*	La nouvelle valeur.
+		*\~french
+		*\return
+		*	La couleur de vidage.
+		*\~english
+		*\return
+		*	The clear colour.
 		*/
 		inline utils::RgbaColour getClearColour()const override
 		{
-			return convert( m_swapChain->getClearColour() );
+			return convert( m_clearColour );
 		}
 		/**
+		*\~french
 		*\return
 		*	Les dimensions de la swap chain.
+		*\~french
+		*\return
+		*	The swap chain dimensions.
 		*/
 		inline utils::IVec2 getDimensions()const override
 		{
-			return { m_swapChain->getWidth(), m_swapChain->getHeight() };
+			return m_dimensions;
 		}
 		/**
+		*\~french
 		*\return
-		*	Les format des pixels de la swap chain.
+		*	Le format des images de la swap chain.
+		*\~english
+		*\return
+		*	The swap chain's images pixels format.
 		*/
 		inline utils::PixelFormat getFormat()const override
 		{
-			return convert( m_swapChain->getFormat() );
+			return m_format;
 		}
 		/**
-		*\return
-		*	La swap chain de vulkan.
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkSwapchainKHR.
+		*\~english
+		*\brief
+		*	VkSwapchainKHR implicit cast operator.
 		*/
-		inline vk::SwapChain const & getSwapChain()const
+		inline operator VkSwapchainKHR const &( )const
 		{
-			return *m_swapChain;
+			return m_swapChain;
 		}
 
 	private:
+		uint32_t doGetImageCount();
+		void doSelectFormat( VkPhysicalDevice gpu );
+		VkPresentModeKHR doSelectPresentMode();
+		void doCreateSwapChain();
+		void doCreateBackBuffers();
 		bool doCheckNeedReset( VkResult errCode
 			, bool acquisition
 			, char const * const action );
 		void doResetSwapChain();
 
 	private:
-		vk::SwapChainPtr m_swapChain;
+		Device const & m_device;
+		utils::PixelFormat m_format{};
+		VkColorSpaceKHR m_colorSpace;
+		VkSwapchainKHR m_swapChain{};
+		VkSurfaceKHR m_surface{};
+		VkSurfaceCapabilitiesKHR m_surfaceCapabilities{};
+		utils::IVec2 m_dimensions;
+		uint32_t m_currentBuffer{};
+		BackBufferPtrArray m_backBuffers;
+		VkClearColorValue m_clearColour{};
 	};
 }

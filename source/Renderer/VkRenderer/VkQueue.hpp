@@ -6,27 +6,42 @@ See LICENSE file in root folder.
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/Queue.hpp>
 #include <Renderer/Queue.hpp>
 
 namespace vk_renderer
 {
 	/**
+	*\~french
 	*\brief
 	*	Classe encapsulant une VkQueue.
+	*\~english
+	*\brief
+	*	VkQueue wrapper.
 	*/
 	class Queue
 		: public renderer::Queue
 	{
 	public:
 		/**
+		*\~french
 		*\brief
 		*	Constructeur.
-		*\param[in] queue
-		*	La vk::Queue.
+		*\param[in] device
+		*	Le LogicalDevice parent.
+		*\param[in] familyIndex
+		*	L'index du type de file.
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical connection to the GPU.
+		*\param[in] familyIndex
+		*	The queue's family index.
 		*/
-		Queue( vk::Queue const & queue );
+		Queue( Device const & device
+			, uint32_t familyIndex );
 		/**
+		*\~french
 		*\brief
 		*	Met en attente des tampons de commandes.
 		*\param[in] commandBuffer
@@ -35,10 +50,20 @@ namespace vk_renderer
 		*	Une barrière optionnelle.
 		*\return
 		*	\p true si tout s'est bien passé.
+		*\~english
+		*\brief
+		*	Submits given command buffers.
+		*\param[in] commandBuffer
+		*	The command buffer.
+		*\param[in] fence
+		*	An optional fence.
+		*\return
+		*	\p true on ok.
 		*/
 		bool submit( renderer::CommandBuffer const & commandBuffer
 			, renderer::Fence const * fence )const override;
 		/**
+		*\~french
 		*\brief
 		*	Met en attente des tampons de commandes.
 		*\param[in] commandBuffer
@@ -53,6 +78,21 @@ namespace vk_renderer
 		*	Une barrière optionnelle.
 		*\return
 		*	\p true si tout s'est bien passé.
+		*\~english
+		*\brief
+		*	Submits given command buffer.
+		*\param[in] commandBuffer
+		*	The command buffer.
+		*\param[in] semaphoreToWait
+		*	The semaphore to wait.
+		*\param[in] semaphoreStage
+		*	The semaphore stage.
+		*\param[in] semaphoreToSignal
+		*	The semaphore to signal.
+		*\param[in] fence
+		*	An optional fence.
+		*\return
+		*	\p true on ok.
 		*/ 
 		bool submit( renderer::CommandBuffer const & commandBuffer
 			, renderer::Semaphore const & semaphoreToWait
@@ -60,6 +100,7 @@ namespace vk_renderer
 			, renderer::Semaphore const & semaphoreToSignal
 			, renderer::Fence const * fence )const override;
 		/**
+		*\~french
 		*\brief
 		*	Met en attente des tampons de commandes.
 		*\param[in] commandBuffers
@@ -74,6 +115,21 @@ namespace vk_renderer
 		*	Une barrière optionnelle.
 		*\return
 		*	\p true si tout s'est bien passé.
+		*\~english
+		*\brief
+		*	Submits given command buffers.
+		*\param[in] commandBuffers
+		*	The command buffers.
+		*\param[in] semaphoresToWait
+		*	The semaphores to wait.
+		*\param[in] semaphoresStage
+		*	The semaphores respective stages.
+		*\param[in] semaphoresToSignal
+		*	The semaphores to signal.
+		*\param[in] fence
+		*	An optional fence.
+		*\return
+		*	\p true on ok.
 		*/ 
 		bool submit( renderer::CommandBufferCRefArray const & commandBuffers
 			, renderer::SemaphoreCRefArray const & semaphoresToWait
@@ -81,39 +137,76 @@ namespace vk_renderer
 			, renderer::SemaphoreCRefArray const & semaphoresToSignal
 			, renderer::Fence const * fence )const override;
 		/**
+		*\~french
 		*\brief
 		*	Présente la file à Vulkan.
 		*\return
 		*	\p true si tout s'est bien passé.
+		*\~english
+		*\brief
+		*	present the queue to Vulkan.
+		*\return
+		*	\p true on ok.
 		*/ 
 		bool present( renderer::SwapChainCRefArray const & swapChains
 			, renderer::UInt32Array const & imagesIndex
 			, renderer::SemaphoreCRefArray const & semaphoresToWait )const override;
 		/**
+		*\~french
+		*\brief
+		*	Présente la file à Vulkan.
+		*\return
+		*	\p true si tout s'est bien passé.
+		*\~english
+		*\brief
+		*	present the queue to Vulkan.
+		*\return
+		*	\p true on ok.
+		*/ 
+		VkResult presentBackBuffer( SwapChainCRefArray const & swapChains
+			, renderer::UInt32Array const & imagesIndex
+			, SemaphoreCRefArray const & semaphoresToWait )const;
+		/**
+		*\~french
 		*\brief
 		*	Attend que la file soit inactive.
 		*\return
 		*	\p true si tout s'est bien passé.
+		*\~english
+		*\brief
+		*	Waits for the queue to be idle.
+		*\return
+		*	\p true on ok.
 		*/
 		bool waitIdle()const override;
 		/**
+		*\~french
 		*\return
 		*	L'index de la famille de la file.
+		*\~english
+		*\return
+		*	The queue's family index.
 		*/
 		inline uint32_t getFamilyIndex()const override
 		{
-			return m_queue.getFamilyIndex();
+			return m_familyIndex;
 		}
 		/**
-		*\return
-		*	La vk::Queue.
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkQueue.
+		*\~english
+		*\brief
+		*	VkQueue implicit cast operator.
 		*/
-		inline vk::Queue const & getQueue()const
+		inline operator VkQueue const &( )const
 		{
 			return m_queue;
 		}
 
 	private:
-		vk::Queue const & m_queue;
+		Device const & m_device;
+		VkQueue m_queue{ VK_NULL_HANDLE };
+		uint32_t m_familyIndex{ 0u };
 	};
 }

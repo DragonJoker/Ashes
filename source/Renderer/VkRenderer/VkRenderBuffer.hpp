@@ -8,9 +8,10 @@
 #define ___VkRenderer_RenderBuffer_HPP___
 #pragma once
 
-#include "VkRendererPrerequisites.hpp"
-
+#include "VkMemoryStorage.hpp"
 #include "VkTexture.hpp"
+#include "VkTextureView.hpp"
+
 #include <Renderer/RenderBuffer.hpp>
 
 namespace vk_renderer
@@ -29,7 +30,7 @@ namespace vk_renderer
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		RenderBuffer( renderer::Device const & device
+		RenderBuffer( Device const & device
 			, utils::PixelFormat format
 			, renderer::IVec2 const & size );
 		/**
@@ -50,13 +51,13 @@ namespace vk_renderer
 		*\return
 		*	L'image vulkan.
 		*/
-		inline vk::Image const & getImage()const noexcept
+		inline Texture const & getImage()const noexcept
 		{
-			return *m_image;
+			return m_texture;
 		}
 
 	private:
-		vk::ImagePtr m_image;
+		VkFormat m_format;
 		Texture m_texture;
 	};
 }

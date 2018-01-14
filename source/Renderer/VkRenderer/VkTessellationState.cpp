@@ -6,10 +6,12 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	vk::TessellationState convert( renderer::TessellationState const & state )
+	VkPipelineTessellationStateCreateInfo convert( renderer::TessellationState const & state )
 	{
-		return vk::TessellationState
+		return VkPipelineTessellationStateCreateInfo
 		{
+			VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO,
+			nullptr,
 			convert( state.getFlags() ),
 			state.getControlPoints()
 		};

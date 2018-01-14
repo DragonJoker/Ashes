@@ -9,8 +9,6 @@ See LICENSE file in root folder.
 #include "ColourBlendState.hpp"
 #include "RasterisationState.hpp"
 
-#include <VkLib/Pipeline.hpp>
-
 namespace renderer
 {
 	/**

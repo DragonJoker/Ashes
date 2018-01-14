@@ -144,6 +144,7 @@ namespace vkapp
 		renderer::RenderPassPtr m_renderPass;
 		std::vector< renderer::FrameBufferPtr > m_frameBuffers;
 		renderer::CommandBufferPtrArray m_commandBuffers;
+		utils::Connection< renderer::SwapChain::OnReset > m_swapChainReset;
 		wxTimer * m_timer{ nullptr };
 	};
 }

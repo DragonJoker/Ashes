@@ -26,7 +26,7 @@ namespace vk_renderer
 		*\param[in] device
 		*	Le Device parent.
 		*/
-		RenderingResources( renderer::Device const & device );
+		RenderingResources( Device const & device );
 		/**
 		*\brief
 		*	Attend que le tampon de commandes soit prêt à l'enregistrement.
@@ -36,6 +36,9 @@ namespace vk_renderer
 		*	\p true si l'attente n'est pas sortie en timeout.
 		*/
 		bool waitRecord( uint32_t timeout )override;
+
+	private:
+		Device const & m_device;
 	};
 }
 

@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -8,15 +8,13 @@ See LICENSE file in root folder.
 
 #include "DescriptorSetBinding.hpp"
 
-#include <VkLib/DescriptorSet.hpp>
-
 #include <vector>
 
 namespace renderer
 {
 	/**
 	*\brief
-	*	Classe template wrappant un vk::DescriptorSet.
+	*	Set de descripteurs.
 	*/
 	class DescriptorSet
 	{
@@ -51,7 +49,7 @@ namespace renderer
 		*\return
 		*	L'attache créée.
 		*/
-		virtual CombinedTextureSamplerBinding createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		virtual CombinedTextureSamplerBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, Texture const & view
 			, Sampler const & sampler ) = 0;
 		/**
@@ -64,7 +62,7 @@ namespace renderer
 		*\return
 		*	L'attache créée.
 		*/
-		virtual SampledTextureBinding createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		virtual SampledTextureBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, Texture const & view ) = 0;
 		/**
 		*\brief
@@ -76,7 +74,7 @@ namespace renderer
 		*\return
 		*	L'attache créée.
 		*/
-		virtual UniformBufferBinding createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		virtual UniformBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, UniformBufferBase const & uniformBuffer
 			, uint32_t offset ) = 0;
 		/**
@@ -90,7 +88,7 @@ namespace renderer
 		*	L'attache créée.
 		*/
 		template< typename T >
-		inline UniformBufferBinding createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		inline UniformBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, UniformBuffer< T > const & uniformBuffer
 			, uint32_t offset )
 		{

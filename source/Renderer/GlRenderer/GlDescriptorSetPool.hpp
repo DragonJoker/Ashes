@@ -16,7 +16,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Classe template wrappant un vk::DescriptorSetPool.
+	*	Pool de sets de descripteurs.
 	*/
 	class DescriptorSetPool
 		: public renderer::DescriptorSetPool

@@ -32,8 +32,6 @@ namespace vkapp
 			m_device.reset();
 			throw;
 		}
-
-		DEBUG_WRITE( AppName.ToStdString() + ".log" );
 	}
 
 	RenderPanel::~RenderPanel()

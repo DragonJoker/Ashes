@@ -12,7 +12,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Encapsulation d'un vk::CommandPool.
+	*	Emulation d'un pool de commandes, à la manière de Vulkan.
 	*/
 	class CommandPool
 		: public renderer::CommandPool

@@ -15,6 +15,7 @@ namespace common
 		MainFrame( wxString const & name
 			, wxString const & rendererName
 			, RendererFactory & factory );
+		virtual ~MainFrame() = default;
 
 		void initialise();
 		void cleanup();

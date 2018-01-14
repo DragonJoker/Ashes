@@ -6,14 +6,13 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/PipelineLayout.hpp>
 #include <Renderer/PipelineLayout.hpp>
 
 namespace vk_renderer
 {
 	/**
 	*\brief
-	*	Wrapper de vk::PipelineLayout.
+	*	Wrapper de VkPipelineLayout.
 	*/
 	class PipelineLayout
 		: public renderer::PipelineLayout
@@ -27,7 +26,7 @@ namespace vk_renderer
 		*\param[in] layout
 		*	Le layout des descripteurs du pipeline.
 		*/
-		PipelineLayout( renderer::Device const & device
+		PipelineLayout( Device const & device
 			, renderer::DescriptorSetLayout const * layout );
 		/**
 		*\~french
@@ -37,12 +36,13 @@ namespace vk_renderer
 		*\brief
 		*	VkPipelineLayout implicit cast operator.
 		*/
-		inline vk::PipelineLayout const & getLayout()const
+		inline operator VkPipelineLayout const &( )const
 		{
-			return *m_layout;
+			return m_layout;
 		}
 
 	private:
-		vk::PipelineLayoutPtr m_layout;
+		Device const & m_device;
+		VkPipelineLayout m_layout{ VK_NULL_HANDLE };
 	};
 }

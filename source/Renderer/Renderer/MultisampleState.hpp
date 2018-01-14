@@ -13,7 +13,7 @@ namespace renderer
 	/**
 	*\~french
 	*\brief
-	*	Etat de multi-échantillonnage.
+	*	Etat de multi-ï¿½chantillonnage.
 	*/
 	class MultisampleState
 	{
@@ -22,17 +22,17 @@ namespace renderer
 		*\brief
 		*	Constructeur.
 		*\param[in] flags
-		*	Les indicateurs de l'état.
+		*	Les indicateurs de l'ï¿½tat.
 		*\param[in] rasterisationSamples
-		*	Le nombre d'échantillons par pixel, lors de la rastérisation.
+		*	Le nombre d'ï¿½chantillons par pixel, lors de la rastï¿½risation.
 		*\param[in] sampleShadingEnable
-		*	Détermine si l'exécution du shader de fragment s'exécute par fragment (\p false) ou par échantillon (\p true).
+		*	Dï¿½termine si l'exï¿½cution du shader de fragment s'exï¿½cute par fragment (\p false) ou par ï¿½chantillon (\p true).
 		*\param[in] minSampleShading
-		*	La fraction minimale de shader par échantillon.
+		*	La fraction minimale de shader par ï¿½chantillon.
 		*\param[in] alphaToCoverageEnable
-		*	Dit si une valeur de couverture temporaire est générée, à partir de la composante alpha de la première couleur sortie du fragment.
+		*	Dit si une valeur de couverture temporaire est gï¿½nï¿½rï¿½e, ï¿½ partir de la composante alpha de la premiï¿½re couleur sortie du fragment.
 		*\param[in] alphaToOneEnable
-		*	Dit si la composante alpha de la première couleur sortie du fragment est remplacée par 1.
+		*	Dit si la composante alpha de la premiï¿½re couleur sortie du fragment est remplacï¿½e par 1.
 		*/
 		MultisampleState( MultisampleStateFlags flags = 0
 			, SampleCountFlag rasterisationSamples = SampleCountFlag::e1
@@ -44,19 +44,19 @@ namespace renderer
 		*\brief
 		*	Constructeur.
 		*\param[in] flags
-		*	Les indicateurs de l'état.
+		*	Les indicateurs de l'ï¿½tat.
 		*\param[in] rasterisationSamples
-		*	Le nombre d'échantillons par pixel, lors de la rastérisation.
+		*	Le nombre d'ï¿½chantillons par pixel, lors de la rastï¿½risation.
 		*\param[in] sampleShadingEnable
-		*	Détermine si l'exécution du shader de fragment s'exécute par fragment (\p false) ou par échantillon (\p true).
+		*	Dï¿½termine si l'exï¿½cution du shader de fragment s'exï¿½cute par fragment (\p false) ou par ï¿½chantillon (\p true).
 		*\param[in] minSampleShading
-		*	La fraction minimale de shader par échantillon.
+		*	La fraction minimale de shader par ï¿½chantillon.
 		*\param[in] sampleMask
-		*	Le masque de couverture, combiné via un ET binaire avec l'information de couverture générée lors de la rastérisation.
+		*	Le masque de couverture, combinï¿½ via un ET binaire avec l'information de couverture gï¿½nï¿½rï¿½e lors de la rastï¿½risation.
 		*\param[in] alphaToCoverageEnable
-		*	Dit si une valeur de couverture temporaire est générée, à partir de la composante alpha de la première couleur sortie du fragment.
+		*	Dit si une valeur de couverture temporaire est gï¿½nï¿½rï¿½e, ï¿½ partir de la composante alpha de la premiï¿½re couleur sortie du fragment.
 		*\param[in] alphaToOneEnable
-		*	Dit si la composante alpha de la première couleur sortie du fragment est remplacée par 1.
+		*	Dit si la composante alpha de la premiï¿½re couleur sortie du fragment est remplacï¿½e par 1.
 		*/
 		MultisampleState( MultisampleStateFlags flags
 			, SampleCountFlag rasterisationSamples
@@ -67,7 +67,7 @@ namespace renderer
 			, bool alphaToOneEnable );
 		/**
 		*\return
-		*	Les indicateurs de l'état.
+		*	Les indicateurs de l'ï¿½tat.
 		*/
 		inline MultisampleStateFlags getFlags()const
 		{
@@ -75,7 +75,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Le nombre d'échantillons par pixel, lors de la rastérisation.
+		*	Le nombre d'ï¿½chantillons par pixel, lors de la rastï¿½risation.
 		*/
 		inline SampleCountFlag getRasterisationSamples()const
 		{
@@ -83,7 +83,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Détermine si l'exécution du shader de fragment s'exécute par fragment (\p false) ou par échantillon (\p true).
+		*	Dï¿½termine si l'exï¿½cution du shader de fragment s'exï¿½cute par fragment (\p false) ou par ï¿½chantillon (\p true).
 		*/
 		inline bool isSampleShadingEnabled()const
 		{
@@ -91,7 +91,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	La fraction minimale de shader par échantillon.
+		*	La fraction minimale de shader par ï¿½chantillon.
 		*/
 		inline float getMinSampleShading()const
 		{
@@ -99,15 +99,15 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Le masque de couverture, combiné via un ET binaire avec l'information de couverture générée lors de la rastérisation.
+		*	Le masque de couverture, combinï¿½ via un ET binaire avec l'information de couverture gï¿½nï¿½rï¿½e lors de la rastï¿½risation.
 		*/
-		inline uint32_t getSampleMask()const
+		inline uint32_t const & getSampleMask()const
 		{
 			return m_sampleMask;
 		}
 		/**
 		*\return
-		*	Dit si une valeur de couverture temporaire est générée, à partir de la composante alpha de la première couleur sortie du fragment.
+		*	Dit si une valeur de couverture temporaire est gï¿½nï¿½rï¿½e, ï¿½ partir de la composante alpha de la premiï¿½re couleur sortie du fragment.
 		*/
 		inline bool isAlphaToCoverageEnabled()const
 		{
@@ -115,7 +115,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Dit si la composante alpha de la première couleur sortie du fragment est remplacée par 1.
+		*	Dit si la composante alpha de la premiï¿½re couleur sortie du fragment est remplacï¿½e par 1.
 		*/
 		inline bool isAlphaToOneEnabled()const
 		{

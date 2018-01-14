@@ -5,14 +5,11 @@
 #include "VkFence.hpp"
 #include "VkSemaphore.hpp"
 
-#include <VkLib/CommandPool.hpp>
-#include <VkLib/LogicalDevice.hpp>
-#include <VkLib/Queue.hpp>
-
 namespace vk_renderer
 {
-	RenderingResources::RenderingResources( renderer::Device const & device )
+	RenderingResources::RenderingResources( Device const & device )
 		: renderer::RenderingResources{ device }
+		, m_device{ device }
 	{
 		m_commandBuffer = m_device.getGraphicsCommandPool().createCommandBuffer();
 		m_imageAvailableSemaphore = std::make_unique< Semaphore >( m_device );

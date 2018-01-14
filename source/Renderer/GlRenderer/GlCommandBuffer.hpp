@@ -13,7 +13,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Encapsulation d'un vk::CommandBuffer.
+	*	Emulation d'un command buffer, à la manière de Vulkan.
 	*/
 	class CommandBuffer
 		: public renderer::CommandBuffer
