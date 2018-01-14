@@ -317,6 +317,39 @@ namespace vk_renderer
 	/**
 	*\~french
 	*\brief
+	*	Crée un tableau de descripteurs Vulkan à partir d'un tableau de pointeurs sur des objets.
+	*\remarks
+	*	On présuppose ici que les objets ont des opérateurs de conversion implicite vers les descripteurs Vulkan.
+	*\param[in] input
+	*	Le tableau d'objets.
+	*\return
+	*	Le tableau de descripteurs Vulkan.
+	*\~english
+	*\brief
+	*	Creates a Vulkan handles array from an objects pointers array.
+	*\remarks
+	*	One prerequisite is that the object class has an implicit convertion operator to the Vulkan handle.
+	*\param[in] input
+	*	The objects array.
+	*\return
+	*	The Vulkan handles array.
+	*/
+	template< typename VkType, typename LibType >
+	inline std::vector< VkType > makeVkArray( std::vector< std::unique_ptr< LibType > > const & input )
+	{
+		std::vector< VkType > result;
+		result.reserve( input.size() );
+
+		for ( auto const & element : input )
+		{
+			result.emplace_back( *element );
+		}
+
+		return result;
+	}
+	/**
+	*\~french
+	*\brief
 	*	Crée un tableau de descripteurs Vulkan à partir d'un tableau de références sur des objets.
 	*\remarks
 	*	On présuppose ici que les objets ont des opérateurs de conversion implicite vers les descripteurs Vulkan.
@@ -366,6 +399,29 @@ namespace vk_renderer
 		for ( auto & value : values )
 		{
 			result.emplace_back( convert( value ) );
+		}
+
+		return result;
+	}
+	/**
+	*\brief
+	*	Convertit un tableau de RendererType en tableau de VkType.
+	*\remarks
+	*	Un prérequis à cette fonction est que la fonction VkType convert( RendererType ) existe.
+	*\param[in] values
+	*	Le tableau de RendererType.
+	*\return
+	*	Le tableau de VkType.
+	*/
+	template< typename VkType, typename ItType >
+	std::vector< VkType > convert( ItType begin, ItType end )
+	{
+		std::vector< VkType > result;
+		result.reserve( std::distance( begin, end ) );
+
+		for ( auto it = begin; it != end; ++it )
+		{
+			result.emplace_back( convert( *it ) );
 		}
 
 		return result;

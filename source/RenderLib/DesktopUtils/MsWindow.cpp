@@ -154,7 +154,7 @@ namespace utils
 
 			if ( doPrepareDC( m_hdc ) )
 			{
-				m_renderer = m_factory.create( "gl" );
+				m_renderer = m_factory.create( "vk" );
 				RECT rect;
 				::GetClientRect( m_hwnd, &rect );
 				m_size.x = rect.right - rect.left;

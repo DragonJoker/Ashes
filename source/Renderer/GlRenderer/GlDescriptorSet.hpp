@@ -43,7 +43,7 @@ namespace gl_renderer
 		*\return
 		*	L'attache créée.
 		*/
-		renderer::CombinedTextureSamplerBinding createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		renderer::CombinedTextureSamplerBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 			, renderer::Texture const & view
 			, renderer::Sampler const & sampler );
 		/**
@@ -56,7 +56,7 @@ namespace gl_renderer
 		*\return
 		*	L'attache créée.
 		*/
-		renderer::SampledTextureBinding createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		renderer::SampledTextureBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 			, renderer::Texture const & view );
 		/**
 		*\brief
@@ -68,7 +68,7 @@ namespace gl_renderer
 		*\return
 		*	L'attache créée.
 		*/
-		renderer::UniformBufferBinding createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		renderer::UniformBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 			, renderer::UniformBufferBase const & uniformBuffer
 			, uint32_t offset );
 		/**

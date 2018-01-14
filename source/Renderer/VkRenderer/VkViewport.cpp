@@ -10,10 +10,10 @@ namespace vk_renderer
 	{
 		return VkViewport
 		{
-			float( viewport.getSize().x ),
-			float( viewport.getSize().y ),
 			float( viewport.getOffset().x ),
 			float( viewport.getOffset().y ),
+			float( viewport.getSize().x ),
+			float( viewport.getSize().y ),
 			0.0f,                 // minDepth
 			1.0f                  // maxDepth
 		};

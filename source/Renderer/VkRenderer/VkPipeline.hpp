@@ -117,8 +117,8 @@ namespace vk_renderer
 		RenderPass const & m_renderPass;
 		VkPrimitiveTopology m_topology;
 		VkPipelineRasterizationStateCreateInfo m_rasterisationState;
-		VkPipelineColorBlendStateCreateInfo m_colourBlendState;
 		std::vector< VkPipelineColorBlendAttachmentState > m_colourBlendStateAttachments;
+		VkPipelineColorBlendStateCreateInfo m_colourBlendState;
 		std::unique_ptr< VkViewport > m_viewport;
 		std::unique_ptr< VkRect2D > m_scissor;
 		std::unique_ptr< VkPipelineMultisampleStateCreateInfo > m_multisampleState;

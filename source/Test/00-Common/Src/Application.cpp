@@ -296,6 +296,7 @@ namespace common
 #	endif
 #endif
 
+		m_plugins.clear();
 		delete m_cout;
 		delete m_cerr;
 		delete m_clog;

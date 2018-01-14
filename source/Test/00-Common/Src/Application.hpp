@@ -13,6 +13,7 @@ namespace common
 	{
 	public:
 		App( wxString const & name );
+		virtual ~App() = default;
 		bool OnInit()override;
 		int OnExit()override;
 

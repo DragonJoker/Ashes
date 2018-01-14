@@ -31,7 +31,8 @@ namespace vk_renderer
 			m_view,                                         // imageView
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL        // imageLayout
 		}
-		, m_write
+	{
+		m_write =
 		{
 			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,         // sType
 			nullptr,                                        // pNext
@@ -43,8 +44,7 @@ namespace vk_renderer
 			&m_info,                                        // pImageInfo
 			nullptr,                                        // pBufferInfo
 			nullptr                                         // pTexelBufferView
-		}
-	{
+		};
 	}
 
 	//************************************************************************************************
@@ -60,7 +60,8 @@ namespace vk_renderer
 			m_view,                                         // imageView
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL        // imageLayout
 		}
-		, m_write
+	{
+		m_write =
 		{
 			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,         // sType
 			nullptr,                                        // pNext
@@ -72,8 +73,7 @@ namespace vk_renderer
 			&m_info,                                        // pImageInfo
 			nullptr,                                        // pBufferInfo
 			nullptr                                         // pTexelBufferView
-		}
-	{
+		};
 	}
 
 	//************************************************************************************************
@@ -90,7 +90,8 @@ namespace vk_renderer
 			offset,                                         // offset
 			uniformBuffer.getSize()                         // range
 		}
-		, m_write
+	{
+		m_write =
 		{
 			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,         // sType
 			nullptr,                                        // pNext
@@ -102,8 +103,7 @@ namespace vk_renderer
 			nullptr,                                        // pImageInfo
 			&m_info,                                        // pBufferInfo
 			nullptr                                         // pTexelBufferView
-		}
-	{
+		};
 	}
 
 	//************************************************************************************************

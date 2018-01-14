@@ -40,6 +40,8 @@ namespace vk_renderer
 
 	DescriptorSet::~DescriptorSet()
 	{
+		m_bindings.clear();
+
 		if ( !m_pool.hasAutomaticFree() )
 		{
 			FreeDescriptorSets( m_device
@@ -49,55 +51,44 @@ namespace vk_renderer
 		}
 	}
 
-	renderer::CombinedTextureSamplerBinding DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+	renderer::CombinedTextureSamplerBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 		, renderer::Texture const & view
 		, renderer::Sampler const & sampler )
 	{
-		auto result = CombinedTextureSamplerBinding
-		{
-			layoutBinding,
-			*this,
-			static_cast< Texture const & >( view ),
-			static_cast< Sampler const & >( sampler )
-		};
-		m_bindings.push_back( result );
-		return result;
+		m_bindings.emplace_back( std::make_unique< CombinedTextureSamplerBinding >( layoutBinding
+			, *this
+			, static_cast< Texture const & >( view )
+			, static_cast< Sampler const & >( sampler ) ) );
+		return static_cast< CombinedTextureSamplerBinding const & >( *m_bindings.back() );
 	}
 
-	renderer::SampledTextureBinding DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+	renderer::SampledTextureBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 		, renderer::Texture const & view )
 	{
-		auto result = SampledTextureBinding
-		{
-			layoutBinding,
-			*this,
-			static_cast< Texture const & >( view )
-		};
-		m_bindings.push_back( result );
-		return result;
+		m_bindings.emplace_back( std::make_unique< SampledTextureBinding >( layoutBinding
+			, *this
+			, static_cast< Texture const & >( view ) ) );
+		return static_cast< SampledTextureBinding const & >( *m_bindings.back() );
 	}
 
-	renderer::UniformBufferBinding DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+	renderer::UniformBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 		, renderer::UniformBufferBase const & uniformBuffer
 		, uint32_t offset )
 	{
 		offset = uniformBuffer.getOffset( offset );
-		auto result = UniformBufferBinding
-		{
-			layoutBinding,
-			*this,
-			uniformBuffer,
-			offset
-		};
-		m_bindings.push_back( result );
-		return result;
+		m_bindings.emplace_back( std::make_unique< UniformBufferBinding >( layoutBinding
+			, *this
+			, uniformBuffer
+			, offset ) );
+		return static_cast< UniformBufferBinding const & >( *m_bindings.back() );
 	}
 	void DescriptorSet::update()const
 	{
-		DEBUG_DUMP( makeVkArray< VkWriteDescriptorSet >( m_bindings ) );
+		auto bindings = makeVkArray < VkWriteDescriptorSet >( m_bindings );
+		DEBUG_DUMP( bindings );
 		UpdateDescriptorSets( m_device
-			, static_cast< uint32_t >( m_bindings.size() )
-			, m_bindings.data()
+			, static_cast< uint32_t >( bindings.size() )
+			, bindings.data()
 			, 0
 			, nullptr );
 	}

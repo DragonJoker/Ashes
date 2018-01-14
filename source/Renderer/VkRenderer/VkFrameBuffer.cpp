@@ -40,6 +40,7 @@ namespace vk_renderer
 		: renderer::FrameBuffer{ renderPass, dimensions, textures }
 		, m_device{ device }
 		, m_views{ convert( textures ) }
+		, m_dimensions{ dimensions }
 	{
 		auto attachments = makeVkArray< VkImageView >( m_views );
 

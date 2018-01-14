@@ -21,7 +21,7 @@ namespace vk_renderer
 			nullptr,
 			0,                                                // flags
 			size,                                             // size
-			convert( memoryFlags ),                           // usage
+			convert( target ),                                // usage
 			VK_SHARING_MODE_EXCLUSIVE,                        // sharingMode
 			0,                                                // queueFamilyIndexCount
 			nullptr                                           // pQueueFamilyIndices

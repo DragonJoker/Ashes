@@ -79,8 +79,6 @@ if ( MSVC )
 	string( REGEX REPLACE "/Zi" "/ZI" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG} )
 endif ()
 
-find_package( VkLib )
-
 include_directories(
 	${VkLib_INCLUDE_DIR}
 	${CMAKE_BINARY_DIR}/Renderer/Renderer

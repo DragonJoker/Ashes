@@ -192,6 +192,7 @@ namespace vkapp
 	{
 		delete m_timer;
 		m_device->waitIdle();
+		m_commandBuffer.reset();
 		m_commandBuffers.clear();
 		m_frameBuffers.clear();
 		m_sampler.reset();
@@ -251,7 +252,9 @@ namespace vkapp
 				, m_uniformBuffer->getDatas()
 				, *m_uniformBuffer
 				, renderer::PipelineStageFlag::eVertexShader );
+			doCreateFrameBuffer();
 			doPrepareOffscreenFrame();
+			doCreateMainDescriptorSet();
 			doPrepareMainFrames();
 		} );
 	}
@@ -479,7 +482,7 @@ namespace vkapp
 		renderer::RenderSubpassPtrArray subpasses;
 		subpasses.emplace_back( m_device->createRenderSubpass( formats
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
-		m_offscreenRenderPass = m_device->createRenderPass( formats
+		m_mainRenderPass = m_device->createRenderPass( formats
 			, subpasses
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 			, renderer::AccessFlag::eColourAttachmentWrite
@@ -658,7 +661,7 @@ namespace vkapp
 			auto before = std::chrono::high_resolution_clock::now();
 			auto & queue = m_device->getGraphicsQueue();
 			auto res = queue.submit( *m_commandBuffer
-				, &resources->getFence() );
+				, nullptr );
 
 			if ( res )
 			{

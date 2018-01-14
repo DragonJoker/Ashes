@@ -55,6 +55,7 @@ namespace vk_renderer
 		, m_renderPass{ static_cast< RenderPass const & >( renderPass ) }
 		, m_topology{ convert( topology ) }
 		, m_rasterisationState{ convert( rasterisationState ) }
+		, m_colourBlendStateAttachments{ convert< VkPipelineColorBlendAttachmentState >( colourBlendState.begin(), colourBlendState.end() ) }
 		, m_colourBlendState{ convert( colourBlendState, m_colourBlendStateAttachments ) }
 	{
 	}

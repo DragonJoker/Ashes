@@ -75,9 +75,9 @@ namespace vk_renderer
 		*\return
 		*	The created binding.
 		*/
-		renderer::CombinedTextureSamplerBinding createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		renderer::CombinedTextureSamplerBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 			, renderer::Texture const & view
-			, renderer::Sampler const & sampler );
+			, renderer::Sampler const & sampler )override;
 		/**
 		*\~french
 		*\brief
@@ -98,8 +98,8 @@ namespace vk_renderer
 		*\return
 		*	The created binding.
 		*/
-		renderer::SampledTextureBinding createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::Texture const & view );
+		renderer::SampledTextureBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, renderer::Texture const & view )override;
 		/**
 		*\~french
 		*\brief
@@ -124,9 +124,9 @@ namespace vk_renderer
 		*\return
 		*	The created binding.
 		*/
-		renderer::UniformBufferBinding createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		renderer::UniformBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 			, renderer::UniformBufferBase const & uniformBuffer
-			, uint32_t offset );
+			, uint32_t offset )override;
 		/**
 		*\~french
 		*\brief
@@ -154,7 +154,7 @@ namespace vk_renderer
 		DescriptorSetPool const & m_pool;
 		DescriptorSetLayout const & m_layout;
 		VkDescriptorSet m_descriptorSet{};
-		std::vector< VkWriteDescriptorSet > m_bindings;
+		std::vector< DescriptorSetBindingPtr > m_bindings;
 	};
 }
 
