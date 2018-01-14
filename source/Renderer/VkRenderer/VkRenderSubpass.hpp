@@ -6,8 +6,8 @@ See LICENSE file in root folder.
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/RenderSubpass.hpp>
 #include <Renderer/RenderSubpass.hpp>
+#include <Renderer/RenderSubpassState.hpp>
 
 namespace vk_renderer
 {
@@ -43,19 +43,48 @@ namespace vk_renderer
 		*\param[in] neededState
 		*	The state wanted for this subpass execution.
 		*/
-		RenderSubpass( renderer::Device const & device
+		RenderSubpass( Device const & device
 			, std::vector< utils::PixelFormat > const & formats
 			, renderer::RenderSubpassState const & neededState );
 		/**
+		*\~french
 		*\return
-		*	La vk::RenderSubpass.
+		*	La VkSubpassDescription de cette sous passe.
+		*\~english
+		*\return
+		*	This subpass' VkSubpassDescription.
 		*/
-		inline vk::RenderSubpass const & getRenderSubpass()const
+		VkSubpassDescription const & retrieveDescription()const;
+		/**
+		*\~french
+		*\return
+		*	L'état voulu pour l'exécution de cette sous passe.
+		*\~english
+		*\return
+		*	The state needed to execute this subpass.
+		*/
+		inline renderer::RenderSubpassState const & getNeededState()const
 		{
-			return m_subPass;
+			return m_neededState;
+		}
+		/**
+		*\~french
+		*\brief
+		*	Opérateur de conversion implicite vers VkSubpassDescription.
+		*\~english
+		*\brief
+		*	VkSubpassDescription implicit cast operator.
+		*/
+		inline operator VkSubpassDescription const &( )const
+		{
+			return m_description;
 		}
 
 	private:
-		vk::RenderSubpass m_subPass;
+		Device const & m_device;
+		VkSubpassDescription m_description{};
+		renderer::RenderSubpassState m_neededState{ 0u, 0u };
+		std::vector< VkAttachmentReference > m_colourReferences;
+		VkAttachmentReference m_depthReference{ 0xFFFFFFFF, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 	};
 }

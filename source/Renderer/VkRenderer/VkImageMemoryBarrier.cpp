@@ -17,7 +17,7 @@ namespace vk_renderer
 			convert( barrier.getNewLayout() ),
 			barrier.getSrcQueueFamilyIndex(),
 			barrier.getDstQueueFamilyIndex(),
-			static_cast< Texture const & >( barrier.getImage() ).getImage(),
+			static_cast< Texture const & >( barrier.getImage() ),
 			convert( barrier.getSubresourceRange() )
 		};
 	}

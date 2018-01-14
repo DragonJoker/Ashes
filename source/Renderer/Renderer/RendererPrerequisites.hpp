@@ -120,6 +120,15 @@ namespace renderer
 	struct ClearValue;
 
 	/**
+	*\~french
+	*\brief
+	*	Temps en nanosecondes à attendre pour qu'un tampon de commandes soit exécuté.
+	*\~english
+	*\brief
+	*	Nanoseconds time to wait for a command buffer to be executed.
+	*/
+	static const uint32_t FenceTimeout = 100000000;
+	/**
 	*\name Typedefs généralistes.
 	*/
 	/**\{*/

@@ -10,47 +10,67 @@
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/DescriptorLayout.hpp>
 #include <Renderer/DescriptorSetLayout.hpp>
 
 namespace vk_renderer
 {
 	/**
 	*\brief
-	*	Classe template wrappant un vk::DescriptorLayout.
+	*	Classe wrappant un VkDescriptorSetLayout.
 	*/
 	class DescriptorSetLayout
 		: public renderer::DescriptorSetLayout
 	{
 	public:
 		/**
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] device
-		*	Le périphérique logique.
+		*	Le pï¿½riphï¿½rique logique.
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical connection to the GPU.
+		*\param[in] bindings
+		*	The bindings.
 		*/
-		DescriptorSetLayout( renderer::Device const & device
+		DescriptorSetLayout( Device const & device
 			, renderer::DescriptorSetLayoutBindingArray && bindings );
 		/**
-		*\return
-		*	Le descriptor layout vulkan.
-		*/
-		inline vk::DescriptorLayout const & getLayout()const
-		{
-			return *m_layout;
-		}
-		/**
+		*\~french
 		*\brief
-		*	Crée un pool pour les descripteurs qui utiliseront ce layout.
+		*	Crï¿½e un pool pour les descripteurs qui utiliseront ce layout.
 		*\param[in] maxSets
-		*	Le nombre maximum de sets que le pool peut créer.
+		*	Le nombre maximum de sets que le pool peut crï¿½er.
 		*\return
-		*	Le pool.
+		*	Le pool crÃ©Ã©.
+		*\~english
+		*\brief
+		*	Creates a descriptor pool.
+		*\param[in] maxSets
+		*	The maximum sets count the pool can create.
+		*\return
+		*	The created pool.
 		*/
 		renderer::DescriptorSetPoolPtr createPool( uint32_t maxSets )const override;
+		/**
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkDescriptorSetLayout.
+		*\~english
+		*\brief
+		*	VkDescriptorSetLayout implicit cast operator.
+		*/
+		inline operator VkDescriptorSetLayout const &( )const
+		{
+			return m_layout;
+		}
 
 	private:
-		vk::DescriptorLayoutPtr m_layout;
+		Device const & m_device;
+		VkDescriptorSetLayout m_layout{};
 	};
 }
 

@@ -13,44 +13,32 @@ namespace gl_renderer
 	{
 	}
 
-	renderer::CombinedTextureSamplerBinding DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+	renderer::CombinedTextureSamplerBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 		, renderer::Texture const & view
 		, renderer::Sampler const & sampler )
 	{
-		renderer::CombinedTextureSamplerBinding result
-		{
-			layoutBinding,
-			view,
-			sampler
-		};
-		m_combinedTextureSamplers.push_back( result );
-		return result;
+		m_combinedTextureSamplers.emplace_back( layoutBinding
+			, view
+			, sampler );
+		return m_combinedTextureSamplers.back();
 	}
 
-	renderer::SampledTextureBinding DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+	renderer::SampledTextureBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 		, renderer::Texture const & view )
 	{
-		renderer::SampledTextureBinding result
-		{
-			layoutBinding,
-			view
-		};
-		m_sampledTextures.push_back( result );
-		return result;
+		m_sampledTextures.emplace_back( layoutBinding
+			, view );
+		return m_sampledTextures.back();
 	}
 
-	renderer::UniformBufferBinding DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+	renderer::UniformBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 		, renderer::UniformBufferBase const & uniformBuffer
 		, uint32_t offset )
 	{
-		renderer::UniformBufferBinding result
-		{
-			layoutBinding,
-			uniformBuffer,
-			offset
-		};
-		m_uniformBuffers.push_back( result );
-		return result;
+		m_uniformBuffers.emplace_back( layoutBinding
+			, uniformBuffer
+			, offset );
+		return m_uniformBuffers.back();
 	}
 
 	void DescriptorSet::update()const

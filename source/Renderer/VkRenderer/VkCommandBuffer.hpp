@@ -6,20 +6,21 @@ See LICENSE file in root folder
 
 #include "VkClearValue.hpp"
 
-#include <VkLib/CommandBuffer.hpp>
 #include <Renderer/CommandBuffer.hpp>
 
 namespace vk_renderer
 {
 	/**
+	*\~french
 	*\brief
-	*	Encapsulation d'un vk::CommandBuffer.
+	*	Encapsulation d'un VkCommandBuffer.
 	*/
 	class CommandBuffer
 		: public renderer::CommandBuffer
 	{
 	public:
 		/**
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] device
@@ -28,17 +29,92 @@ namespace vk_renderer
 		*	Le pool de tampons de commandes.
 		*\param[in] primary
 		*	Dit si le tampon est un tampon de commandes primaire (\p true) ou secondaire (\p false).
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical connection to the GPU.
+		*\param[in] pool
+		*	The pool from which the command buffer is allocated.
+		*\param[in] primary
+		*	Specifies if the command buffer is primary (\p true) or secondary (\p false).
 		*/
-		CommandBuffer( renderer::Device const & device
-			, renderer::CommandPool const & pool
+		CommandBuffer( Device const & device
+			, CommandPool const & pool
 			, bool primary );
 		/**
+		*\~french
 		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
+		*	Destructeur.
+		*\~english
+		*\brief
+		*	Destructor.
 		*/
-		CommandBuffer( vk::CommandBufferPtr && commandBuffer );
+		~CommandBuffer();
+		/**
+		*\~french
+		*\brief
+		*	Copie les données d'un tampon vers une image.
+		*\param[in] copyInfo
+		*	Les informations de la copie.
+		*\param[in] src
+		*	Le tampon source.
+		*\param[in] dst
+		*	L'image destination.
+		*\~english
+		*\brief
+		*	Copies data from a buffer to an image.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination image.
+		*/
+		void copyImage( VkBufferImageCopy const & copyInfo
+			, Buffer const & src
+			, Texture const & dst )const;
+		/**
+		*\~french
+		*\brief
+		*	Copie les données d'un tampon vers une image.
+		*\param[in] src
+		*	Le tampon source.
+		*\param[in] dst
+		*	L'image destination.
+		*\~english
+		*\brief
+		*	Copies data from a buffer to an image.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination image.
+		*/
+		void copyImage( Texture const & src
+			, Texture const & dst )const;
+		/**
+		*\~french
+		*\brief
+		*	Copie les données d'une image vers une autre.
+		*\param[in] copyInfo
+		*	Les informations de la copie.
+		*\param[in] src
+		*	L'image source.
+		*\param[in] dst
+		*	L'image destination.
+		*\~english
+		*\brief
+		*	Copies data from an image to another one.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source image.
+		*\param[in] dst
+		*	The destination image.
+		*/
+		void copyImage( VkImageCopy const & copyInfo
+			, Texture const & src
+			, Texture const & dst )const;
 		/**
 		*\brief
 		*	Démarre l'enregistrement du tampon de commandes.
@@ -366,15 +442,48 @@ namespace vk_renderer
 		void copyImage( renderer::StagingBuffer const & src
 			, renderer::Texture const & dst )const override;
 		/**
+		*\~french
 		*\return
-		*	Le tampon de commandes vulkan.
+		*	Le pipeline actuellement actif.
+		*\~english
+		*\return
+		*	The currently active pipeline.
 		*/
-		vk::CommandBuffer const & getCommandBuffer()const
+		inline Pipeline const & getCurrentPipeline()const
 		{
-			return *m_commandBuffer;
+			assert( m_currentPipeline && "No pipeline bound." );
+			return *m_currentPipeline;
+		}
+		/**
+		*\~french
+		*\return
+		*	Dit si un pipeline est actif.
+		*\~english
+		*\return
+		*	Tells if a pipeline is active.
+		*/
+		inline bool isPipelineBound()const
+		{
+			return m_currentPipeline != nullptr;
+		}
+		/**
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkCommandBuffer.
+		*\~english
+		*\brief
+		*	VkCommandBuffer implicit cast operator.
+		*/
+		inline operator VkCommandBuffer const &( )const
+		{
+			return m_commandBuffer;
 		}
 
 	private:
-		vk::CommandBufferPtr m_commandBuffer;
+		Device const & m_device;
+		CommandPool const & m_pool;
+		VkCommandBuffer m_commandBuffer{};
+		mutable Pipeline const * m_currentPipeline{ nullptr };
+		mutable VkCommandBufferInheritanceInfo m_inheritanceInfo;
 	};
 }

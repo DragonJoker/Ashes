@@ -26,7 +26,7 @@ namespace renderer
 		assert( size < getBuffer().getSize() );
 		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0
 			, size
-			, renderer::MemoryMapFlag::eWrite | renderer::MemoryMapFlag::eInvalidateRange );
+			, MemoryMapFlag::eWrite | MemoryMapFlag::eInvalidateRange );
 
 		if ( !buffer )
 		{
@@ -39,22 +39,22 @@ namespace renderer
 		static_cast< BufferBase const & >( getBuffer() ).unlock( size, true );
 	}
 
-	void StagingBuffer::copyTextureData( renderer::CommandBuffer const & commandBuffer
-		, vk::ByteArray const & data
-		, renderer::Texture const & texture )const
+	void StagingBuffer::copyTextureData( CommandBuffer const & commandBuffer
+		, ByteArray const & data
+		, Texture const & texture )const
 	{
 		doCopyToStagingBuffer( data.data()
 			, uint32_t( data.size() ) );
 
-		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
+		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
 		{
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
-				, renderer::PipelineStageFlag::eTransfer
+			commandBuffer.memoryBarrier( PipelineStageFlag::eTopOfPipe
+				, PipelineStageFlag::eTransfer
 				, texture.makeTransferDestination() );
 			commandBuffer.copyImage( *this
 				, texture );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
-				, renderer::PipelineStageFlag::eFragmentShader
+			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+				, PipelineStageFlag::eFragmentShader
 				, texture.makeShaderInputResource() );
 			bool res = commandBuffer.end();
 
@@ -75,12 +75,12 @@ namespace renderer
 		}
 	}
 
-	void StagingBuffer::doCopyFromStagingBuffer( renderer::CommandBuffer const & commandBuffer
+	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 		, uint32_t size
 		, uint32_t offset
-		, renderer::BufferBase const & buffer )const
+		, BufferBase const & buffer )const
 	{
-		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
+		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
 		{
 			commandBuffer.copyBuffer( getBuffer()
 				, buffer
@@ -105,19 +105,19 @@ namespace renderer
 		}
 	}
 
-	void StagingBuffer::doCopyFromStagingBuffer( renderer::CommandBuffer const & commandBuffer
+	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 		, uint32_t size
 		, uint32_t offset
-		, renderer::VertexBufferBase const & buffer
-		, renderer::PipelineStageFlags const & flags )const
+		, VertexBufferBase const & buffer
+		, PipelineStageFlags const & flags )const
 	{
-		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
+		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
 		{
 			commandBuffer.copyBuffer( getBuffer()
 				, buffer.getBuffer()
 				, size
 				, offset );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
+			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 				, flags
 				, buffer.getBuffer().makeVertexShaderInputResource() );
 			bool res = commandBuffer.end();
@@ -139,19 +139,19 @@ namespace renderer
 		}
 	}
 
-	void StagingBuffer::doCopyFromStagingBuffer( renderer::CommandBuffer const & commandBuffer
+	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 		, uint32_t size
 		, uint32_t offset
-		, renderer::UniformBufferBase const & buffer
-		, renderer::PipelineStageFlags const & flags )const
+		, UniformBufferBase const & buffer
+		, PipelineStageFlags const & flags )const
 	{
-		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
+		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
 		{
 			commandBuffer.copyBuffer( getBuffer()
 				, buffer.getBuffer()
 				, size
 				, offset );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
+			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 				, flags
 				, buffer.getBuffer().makeUniformBufferInput() );
 			bool res = commandBuffer.end();

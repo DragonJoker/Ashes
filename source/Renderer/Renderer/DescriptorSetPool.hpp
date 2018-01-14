@@ -8,15 +8,13 @@ See LICENSE file in root folder.
 
 #include "RendererPrerequisites.hpp"
 
-#include <VkLib/DescriptorPool.hpp>
-
 #include <vector>
 
 namespace renderer
 {
 	/**
 	*\brief
-	*	Classe template wrappant un vk::DescriptorSetPool.
+	*	Pool de sets de descripteurs.
 	*/
 	class DescriptorSetPool
 	{

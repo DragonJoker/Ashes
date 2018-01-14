@@ -6,15 +6,13 @@ See LICENSE file in root folder.
 
 #include <Renderer/AttributeBase.hpp>
 
-#include <VkLib/VertexAttribute.hpp>
-
 namespace vk_renderer
 {
 	/**
 	*\brief
 	*	Classe encapsulant le concept d'attribut de sommet.
 	*/
-	class AttributeBase
+	class Attribute
 		: public renderer::AttributeBase
 	{
 	public:
@@ -28,12 +26,24 @@ namespace vk_renderer
 		*\param[in] offset
 		*	La position de l'attribut dans le tampon.
 		*/
-		AttributeBase( renderer::VertexLayout & layout
+		Attribute( VertexLayout & layout
 			, renderer::AttributeFormat format
 			, uint32_t location
 			, uint32_t offset );
+		/**
+		*\~french
+		*\brief
+		*	Opérateur de conversion implicite vers VkVertexInputAttributeDescription.
+		*\~english
+		*\brief
+		*	VkVertexInputAttributeDescription implicit cast operator.
+		*/
+		inline operator VkVertexInputAttributeDescription const &( )const
+		{
+			return m_description;
+		}
 
 	private:
-		vk::VertexAttribute const & m_attribute;
+		VkVertexInputAttributeDescription m_description;
 	};
 }

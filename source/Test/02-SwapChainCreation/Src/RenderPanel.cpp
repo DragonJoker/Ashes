@@ -56,8 +56,6 @@ namespace vkapp
 			throw;
 		}
 
-		DEBUG_WRITE( AppName.ToStdString() + ".log" );
-
 		m_timer->Start( TimerTimeMs );
 
 		Connect( int( Ids::RenderTimer ), wxEVT_TIMER, wxTimerEventHandler( RenderPanel::onTimer ), nullptr, this );
@@ -85,6 +83,10 @@ namespace vkapp
 		wxSize size{ GetClientSize() };
 		m_swapChain = m_device->createSwapChain( { size.x, size.y } );
 		m_swapChain->setClearColour( utils::RgbaColour{ 1.0f, 0.8f, 0.4f, 0.0f } );
+		m_swapChainReset = m_swapChain->onReset.connect( [this]()
+		{
+			doResetSwapChain();
+		} );
 	}
 
 	void RenderPanel::doCreateRenderPass()
@@ -157,7 +159,7 @@ namespace vkapp
 		else
 		{
 			m_timer->Stop();
-			std::cerr << "Can't render: " << vk::getLastError() << std::endl;
+			std::cerr << "Can't render" << std::endl;
 		}
 	}
 

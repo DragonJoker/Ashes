@@ -11,7 +11,6 @@
 #include "VkColourBlendState.hpp"
 #include "VkRasterisationState.hpp"
 
-#include <VkLib/Pipeline.hpp>
 #include <Renderer/Pipeline.hpp>
 
 namespace vk_renderer
@@ -40,7 +39,7 @@ namespace vk_renderer
 		*\param[in] topology
 		*	La topologie d'affichage des sommets affichés via ce pipeline.
 		*/
-		Pipeline( renderer::Device const & device
+		Pipeline( Device const & device
 			, renderer::PipelineLayout const & layout
 			, renderer::ShaderProgram const & program
 			, renderer::VertexLayoutCRefArray const & vertexLayouts
@@ -48,6 +47,15 @@ namespace vk_renderer
 			, renderer::PrimitiveTopology topology
 			, renderer::RasterisationState const & rasterisationState
 			, renderer::ColourBlendState const & colourBlendState );
+		/**
+		*\~french
+		*\brief
+		*	Destructeur.
+		*\~english
+		*\brief
+		*	Destructor.
+		*/
+		~Pipeline();
 		/**
 		*\brief
 		*	Crée le pipeline.
@@ -89,17 +97,34 @@ namespace vk_renderer
 		*/
 		renderer::Pipeline & scissor( renderer::Scissor const & scissor )override;
 		/**
-		*\return
-		*	Les dimensions de la texture.
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkPipeline.
+		*\~english
+		*\brief
+		*	VkPipeline implicit cast operator.
 		*/
-		inline vk::Pipeline const & getPipeline()const noexcept
+		inline operator VkPipeline const &( )const
 		{
-			return *m_pipeline;
+			return m_pipeline;
 		}
 
 	private:
-		//! Le pipeline de rendu.
-		vk::PipelinePtr m_pipeline;
+		Device const & m_device;
+		PipelineLayout const & m_layout;
+		ShaderProgram const & m_shader;
+		VertexLayoutCRefArray m_vertexLayouts;
+		RenderPass const & m_renderPass;
+		VkPrimitiveTopology m_topology;
+		VkPipelineRasterizationStateCreateInfo m_rasterisationState;
+		std::vector< VkPipelineColorBlendAttachmentState > m_colourBlendStateAttachments;
+		VkPipelineColorBlendStateCreateInfo m_colourBlendState;
+		std::unique_ptr< VkViewport > m_viewport;
+		std::unique_ptr< VkRect2D > m_scissor;
+		std::unique_ptr< VkPipelineMultisampleStateCreateInfo > m_multisampleState;
+		std::unique_ptr< VkPipelineDepthStencilStateCreateInfo > m_depthStencilState;
+		std::unique_ptr< VkPipelineTessellationStateCreateInfo > m_tessellationState;
+		VkPipeline m_pipeline{ VK_NULL_HANDLE };
 	};
 }
 

@@ -4,7 +4,6 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
 #include <Renderer/BufferMemoryBarrier.hpp>
 
 namespace vk_renderer
@@ -27,5 +26,5 @@ namespace vk_renderer
 	*\return
 	*	Le renderer::BufferMemoryBarrier.
 	*/
-	renderer::BufferMemoryBarrier convert( BufferBase const & bufferBase, VkBufferMemoryBarrier const & barrier );
+	renderer::BufferMemoryBarrier convert( Buffer const & bufferBase, VkBufferMemoryBarrier const & barrier );
 }

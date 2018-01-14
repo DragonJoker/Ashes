@@ -31,11 +31,11 @@ namespace renderer
 		*\param[in] layerCount
 		*	Le nombre de couches.
 		*/
-		ImageSubresourceRange( ImageAspectFlags aspectMask
-			, uint32_t baseMipLevel
-			, uint32_t levelCount
-			, uint32_t baseArrayLayer
-			, uint32_t layerCount );
+		ImageSubresourceRange( ImageAspectFlags aspectMask = 0u
+			, uint32_t baseMipLevel = 0u
+			, uint32_t levelCount = 0u
+			, uint32_t baseArrayLayer = 0u
+			, uint32_t layerCount = 0u );
 		/**
 		*\return
 		*	Masques de bits décrivant les aspects d'une image.

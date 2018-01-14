@@ -18,7 +18,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Classe template wrappant un vk::VertexBuffer.
+	*	Layout de sommet.
 	*/
 	class VertexLayout
 		: public renderer::VertexLayout

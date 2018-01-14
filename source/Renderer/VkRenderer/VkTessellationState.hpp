@@ -6,18 +6,17 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/TessellationState.hpp>
 #include <Renderer/TessellationState.hpp>
 
 namespace vk_renderer
 {
 	/**
 	*\brief
-	*	Convertit un renderer::TessellationState en vk::TessellationState.
+	*	Convertit un renderer::TessellationState en VkPipelineTessellationStateCreateInfo.
 	*\param[in] state
 	*	Le renderer::TessellationState.
 	*\return
-	*	Le vk::TessellationState.
+	*	Le VkPipelineTessellationStateCreateInfo.
 	*/
-	vk::TessellationState convert( renderer::TessellationState const & state );
+	VkPipelineTessellationStateCreateInfo convert( renderer::TessellationState const & state );
 }

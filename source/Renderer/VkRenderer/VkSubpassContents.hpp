@@ -5,7 +5,6 @@ See LICENSE file in root folder
 #pragma once
 
 #include <Renderer/RendererPrerequisites.hpp>
-#include <VkLib/FlagCombination.hpp>
 
 namespace vk_renderer
 {

@@ -5,8 +5,8 @@ See LICENSE file in root folder
 #pragma once
 
 #include "VkTexture.hpp"
+#include "VkTextureView.hpp"
 
-#include <VkLib/BackBuffer.hpp>
 #include <Renderer/BackBuffer.hpp>
 
 namespace vk_renderer
@@ -29,28 +29,52 @@ namespace vk_renderer
 		*\param[in] imageIndex
 		*	L'index de l'image, parmi les images de la swap chain.
 		*/
-		BackBuffer( renderer::Device const & device
+		BackBuffer( Device const & device
 			, renderer::SwapChain const & swapchain
-			, uint32_t imageIndex );
+			, uint32_t imageIndex
+			, utils::PixelFormat format
+			, utils::IVec2 const & dimensions
+			, Texture && texture );
 		/**
+		*\~french
 		*\return
-		*	La texture du back buffer.
+		*	L'index de l'image dans la swap chain.
+		*\~english
+		*\return
+		*	The image index, inside the swap chain.
+		*/
+		inline uint32_t getImageIndex()const
+		{
+			return m_imageIndex;
+		}
+		/**
+		*\~french
+		*\return
+		*	L'image du back buffer.
+		*\~english
+		*\return
+		*	The back buffer image.
 		*/
 		inline Texture const & getTexture()const
 		{
-			return m_texture;
+			return m_image;
 		}
 		/**
+		*\~french
 		*\return
-		*	Le vk::BackBuffer.
+		*	La vue sur l'image.
+		*\~english
+		*\return
+		*	The image view.
 		*/
-		inline vk::BackBuffer const & getBackBuffer()const
+		inline TextureView const & getView()const
 		{
-			return m_backBuffer;
+			return m_view;
 		}
 
 	private:
-		vk::BackBuffer & m_backBuffer;
-		Texture const & m_texture;
+		Texture m_image;
+		TextureView m_view;
+		uint32_t m_imageIndex{ 0u };
 	};
 }

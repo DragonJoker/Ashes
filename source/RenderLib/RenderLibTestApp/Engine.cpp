@@ -7,14 +7,15 @@
 #include <DesktopUtils/ObjLoader.h>
 #include <DesktopUtils/Log.h>
 
-#include <array>
-#include <string>
-
 #include <RenderLib/Billboard.h>
 #include <RenderLib/Object.h>
 #include <RenderLib/PanelOverlay.h>
 #include <RenderLib/PolyLine.h>
 #include <RenderLib/Scene.h>
+
+#include <array>
+#include <iostream>
+#include <string>
 
 Engine::Engine()
 	: MsWindow{}

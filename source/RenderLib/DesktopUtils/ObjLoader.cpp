@@ -13,6 +13,8 @@
 
 #include <Utils/StringUtils.hpp>
 
+#include <iostream>
+
 namespace utils
 {
 	namespace

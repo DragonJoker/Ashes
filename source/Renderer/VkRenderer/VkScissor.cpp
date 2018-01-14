@@ -6,9 +6,9 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	vk::Scissor convert( renderer::Scissor const & scissor )
+	VkRect2D convert( renderer::Scissor const & scissor )
 	{
-		return vk::Scissor
+		return VkRect2D
 		{
 			scissor.getOffset().x,
 			scissor.getOffset().y,

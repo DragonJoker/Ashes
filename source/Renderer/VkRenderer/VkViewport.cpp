@@ -6,14 +6,16 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	vk::Viewport convert( renderer::Viewport const & viewport )
+	VkViewport convert( renderer::Viewport const & viewport )
 	{
-		return vk::Viewport
+		return VkViewport
 		{
-			uint32_t( viewport.getSize().x ),
-			uint32_t( viewport.getSize().y ),
-			viewport.getOffset().x,
-			viewport.getOffset().y
+			float( viewport.getOffset().x ),
+			float( viewport.getOffset().y ),
+			float( viewport.getSize().x ),
+			float( viewport.getSize().y ),
+			0.0f,                 // minDepth
+			1.0f                  // maxDepth
 		};
 	}
 }

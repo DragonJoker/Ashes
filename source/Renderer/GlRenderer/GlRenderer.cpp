@@ -4,6 +4,8 @@
 #include "GlContext.hpp"
 #include "GlDevice.hpp"
 
+#include <iostream>
+
 namespace gl_renderer
 {
 	Renderer::Renderer()

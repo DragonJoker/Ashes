@@ -21,7 +21,7 @@ namespace renderer
 		*\brief
 		*	Constructeur.
 		*\param[in] device
-		*	Le périphérique logique.
+		*	Le pï¿½riphï¿½rique logique.
 		*\param[in] bindings
 		*	Les attaches du layout.
 		*/
@@ -40,14 +40,22 @@ namespace renderer
 		virtual ~DescriptorSetLayout() = default;
 		/**
 		*\return
-		*	L'attache de descripteur au point d'attache donné.
+		*	L'attache de descripteur au point d'attache donnï¿½.
 		*/
 		DescriptorSetLayoutBinding const & getBinding( uint32_t point )const;
 		/**
+		*\return
+		*	Les attaches de descripteurs.
+		*/
+		inline DescriptorSetLayoutBindingArray const & getBindings()const
+		{
+			return m_bindings;
+		}
+		/**
 		*\brief
-		*	Crée un pool pour les descripteurs qui utiliseront ce layout.
+		*	Crï¿½e un pool pour les descripteurs qui utiliseront ce layout.
 		*\param[in] maxSets
-		*	Le nombre maximum de sets que le pool peut créer.
+		*	Le nombre maximum de sets que le pool peut crï¿½er.
 		*\return
 		*	Le pool.
 		*/

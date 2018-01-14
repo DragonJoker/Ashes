@@ -6,7 +6,6 @@ See LICENSE file in root folder.
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/Viewport.hpp>
 #include <Renderer/Viewport.hpp>
 
 namespace vk_renderer
@@ -19,5 +18,5 @@ namespace vk_renderer
 	*\return
 	*	Le vk::Viewport.
 	*/
-	vk::Viewport convert( renderer::Viewport const & viewport );
+	VkViewport convert( renderer::Viewport const & viewport );
 }

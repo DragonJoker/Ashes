@@ -2,6 +2,10 @@ project( VkRenderer )
 
 option( VKRENDERER_GLSL_TO_SPV "Enable Compiling from GLSL to SPIR-V, using glslang and SPIRV libraries" TRUE )
 
+set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
+set( ${PROJECT_NAME}_VERSION_MINOR 1 )
+set( ${PROJECT_NAME}_VERSION_BUILD 0 )
+
 if ( VKRENDERER_GLSL_TO_SPV )
 	set( VKRENDERER_GLSL_TO_SPV 1 )
 	find_package( glslang )
@@ -40,13 +44,13 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 		${CMAKE_CURRENT_BINARY_DIR}
 	)
 
-	file( GLOB ${PROJECT_NAME}_SRC_FILES
+	file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 		*.c
 		*.cc
 		*.cpp
 	)
 
-	file( GLOB ${PROJECT_NAME}_HDR_FILES
+	file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 		*.h
 		*.hh
 		*.hpp
@@ -70,9 +74,9 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 	)
 
 	target_link_libraries( ${PROJECT_NAME}
-		${VkLib_LIBRARIES}
 		${glslang_LIBRARIES}
 		${SPIRV_LIBRARIES}
+		Utils
 		Renderer
 	)
 
@@ -80,7 +84,8 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 		Renderer
 	)
 
-	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+	parse_subdir_files( vulkan "vulkan" )
+	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
 else ()
 	if ( NOT glslang_FOUND )

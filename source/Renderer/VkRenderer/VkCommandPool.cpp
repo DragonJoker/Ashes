@@ -9,22 +9,34 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	CommandPool::CommandPool( renderer::Device const & device
+	CommandPool::CommandPool( Device const & device
 		, uint32_t queueFamilyIndex
 		, renderer::CommandPoolCreateFlags flags )
 		: renderer::CommandPool{ device, queueFamilyIndex, flags }
-		, m_ownedCommandPool{ std::make_unique< vk::CommandPool >( static_cast< Device const & >( device ).getDevice()
-			, queueFamilyIndex
-			, convert( flags ) ) }
-		, m_nonOwnedCommandPool{ m_ownedCommandPool.get() }
+		, m_device{ device }
 	{
+		VkCommandPoolCreateInfo createInfo
+		{
+			VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+			nullptr,
+			convert( flags ),                         // flags
+			queueFamilyIndex                          // queueFamilyIndex
+		};
+		DEBUG_DUMP( createInfo );
+		auto res = CreateCommandPool( m_device
+			, &createInfo
+			, nullptr
+			, &m_commandPool );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "CommandPool creation failed: " + getLastError() };
+		}
 	}
 
-	CommandPool::CommandPool( renderer::Device const & device
-		, vk::CommandPool const & pool )
-		: renderer::CommandPool{ device, 0u, 0u }
-		, m_nonOwnedCommandPool{ &pool }
+	CommandPool::~CommandPool()
 	{
+		DestroyCommandPool( m_device, m_commandPool, nullptr );
 	}
 
 	renderer::CommandBufferPtr CommandPool::createCommandBuffer( bool primary )const

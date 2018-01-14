@@ -4,7 +4,6 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
 #include <Utils/PixelFormat.hpp>
 
 namespace vk_renderer

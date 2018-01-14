@@ -4,7 +4,6 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <VkLib/VkLibPrerequisites.hpp>
 #include <Renderer/AttributeFormat.hpp>
 
 namespace vk_renderer
@@ -20,7 +19,7 @@ namespace vk_renderer
 	VkFormat convert( renderer::AttributeFormat format );
 	/**
 	*\brief
-	*	Récupère la taille en octets du format donné.
+	*	Rï¿½cupï¿½re la taille en octets du format donnï¿½.
 	*\param[in] flags
 	*	Le renderer::AttributeFormat.
 	*\return

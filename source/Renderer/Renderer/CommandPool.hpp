@@ -12,7 +12,7 @@ namespace renderer
 {
 	/**
 	*\brief
-	*	Encapsulation d'un vk::CommandPool.
+	*	Pool de tampons de commandes.
 	*/
 	class CommandPool
 	{

@@ -6,18 +6,17 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/DescriptorLayoutBinding.hpp>
 #include <Renderer/DescriptorSetLayoutBinding.hpp>
 
 namespace vk_renderer
 {
 	/**
 	*\brief
-	*	Convertit un renderer::DescriptorSetLayoutBinding en vk::DescriptorLayoutBinding.
+	*	Convertit un renderer::DescriptorSetLayoutBinding en VkDescriptorSetLayoutBinding.
 	*\param[in] flags
 	*	Le renderer::DescriptorSetLayoutBinding.
 	*\return
-	*	Le vk::DescriptorLayoutBinding.
+	*	Le VkDescriptorSetLayoutBinding.
 	*/
-	vk::DescriptorLayoutBinding convert( renderer::DescriptorSetLayoutBinding const & binding );
+	VkDescriptorSetLayoutBinding convert( renderer::DescriptorSetLayoutBinding const & binding );
 }

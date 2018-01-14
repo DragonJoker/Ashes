@@ -74,8 +74,6 @@ namespace vkapp
 			throw;
 		}
 
-		DEBUG_WRITE( AppName.ToStdString() + ".log" );
-
 		m_timer->Start( TimerTimeMs );
 
 		Connect( int( Ids::RenderTimer ), wxEVT_TIMER, wxTimerEventHandler( RenderPanel::onTimer ), nullptr, this );
@@ -287,7 +285,7 @@ namespace vkapp
 		else
 		{
 			m_timer->Stop();
-			std::cerr << "Can't render: " << vk::getLastError() << std::endl;
+			std::cerr << "Can't render" << std::endl;
 		}
 	}
 

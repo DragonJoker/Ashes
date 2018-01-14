@@ -6,18 +6,17 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <VkLib/RasterisationState.hpp>
 #include <Renderer/RasterisationState.hpp>
 
 namespace vk_renderer
 {
 	/**
 	*\brief
-	*	Convertit un renderer::RasterisationState en vk::RasterisationState.
+	*	Convertit un renderer::RasterisationState en VkPipelineRasterizationStateCreateInfo.
 	*\param[in] state
 	*	Le renderer::RasterisationState.
 	*\return
-	*	Le vk::RasterisationState.
+	*	Le VkPipelineRasterizationStateCreateInfo.
 	*/
-	vk::RasterisationState convert( renderer::RasterisationState const & state );
+	VkPipelineRasterizationStateCreateInfo convert( renderer::RasterisationState const & state );
 }

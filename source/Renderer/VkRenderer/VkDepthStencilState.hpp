@@ -6,18 +6,17 @@ See LICENSE file in root folder
 
 #include "VkStencilOpState.hpp"
 
-#include <VkLib/DepthStencilState.hpp>
 #include <Renderer/DepthStencilState.hpp>
 
 namespace vk_renderer
 {
 	/**
 	*\brief
-	*	Convertit un renderer::DepthStencilState en vk::DepthStencilState.
+	*	Convertit un renderer::DepthStencilState en VkPipelineDepthStencilStateCreateInfo.
 	*\param[in] state
 	*	Le renderer::DepthStencilState.
 	*\return
-	*	Le vk::DepthStencilState.
+	*	Le VkPipelineDepthStencilStateCreateInfo.
 	*/
-	vk::DepthStencilState convert( renderer::DepthStencilState const & state );
+	VkPipelineDepthStencilStateCreateInfo convert( renderer::DepthStencilState const & state );
 }

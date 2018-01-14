@@ -16,7 +16,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Classe wrappant un vk::UniformBuffer.
+	*	Tampon de variables uniformes.
 	*/
 	class UniformBufferBase
 		: public renderer::UniformBufferBase
