@@ -2,22 +2,22 @@ project( Renderer )
 
 include_directories(
 	${CMAKE_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_BINARY_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/Src
+	${CMAKE_CURRENT_BINARY_DIR}/Src
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	*.c
-	*.cc
-	*.cpp
+	Src/*.c
+	Src/*.cc
+	Src/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	*.h
-	*.hh
-	*.hpp
-	*.inl
-	*.inc
+	Src/*.h
+	Src/*.hh
+	Src/*.hpp
+	Src/*.inl
+	Src/*.inc
 )
 
 set( RENDERLIB_WIN32 0 )
@@ -34,11 +34,11 @@ else ()
 endif ()
 
 set( ${PROJECT_NAME}_CONFIG_HEADER
-	${CMAKE_CURRENT_BINARY_DIR}/Config.hpp
+	${CMAKE_CURRENT_BINARY_DIR}/Src/Config.hpp
 )
 
 configure_file(
-	${CMAKE_CURRENT_SOURCE_DIR}/Config.hpp.in
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/Config.hpp.in
 	${${PROJECT_NAME}_CONFIG_HEADER}
 	NEWLINE_STYLE LF
 )
@@ -50,8 +50,8 @@ add_library( ${PROJECT_NAME} STATIC
 )
 
 add_target_precompiled_header( ${PROJECT_NAME}
-	RendererPch.hpp
-	RendererPch.cpp
+	Src/RendererPch.hpp
+	Src/RendererPch.cpp
 	${CMAKE_CXX_FLAGS}
 	${${PROJECT_NAME}_SRC_FILES}
 )
@@ -60,16 +60,16 @@ add_dependencies( ${PROJECT_NAME}
 	Utils
 )
 
-parse_subdir_files( Buffer "Buffer" )
-parse_subdir_files( Command "Command" )
-parse_subdir_files( Core "Core" )
-parse_subdir_files( Descriptor "Descriptor" )
-parse_subdir_files( Enum "Enum" )
-parse_subdir_files( Image "Image" )
-parse_subdir_files( Pipeline "Pipeline" )
-parse_subdir_files( RenderPass "RenderPass" )
-parse_subdir_files( Shader "Shader" )
-parse_subdir_files( Sync "Sync" )
+parse_subdir_files( Src/Buffer "Buffer" )
+parse_subdir_files( Src/Command "Command" )
+parse_subdir_files( Src/Core "Core" )
+parse_subdir_files( Src/Descriptor "Descriptor" )
+parse_subdir_files( Src/Enum "Enum" )
+parse_subdir_files( Src/Image "Image" )
+parse_subdir_files( Src/Pipeline "Pipeline" )
+parse_subdir_files( Src/RenderPass "RenderPass" )
+parse_subdir_files( Src/Shader "Shader" )
+parse_subdir_files( Src/Sync "Sync" )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )

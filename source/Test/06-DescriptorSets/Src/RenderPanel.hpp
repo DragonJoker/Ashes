@@ -2,12 +2,12 @@
 
 #include "Prerequisites.hpp"
 
-#include <Renderer/Core/Connection.hpp>
-#include <Renderer/Core/Device.hpp>
-#include <Renderer/Pipeline/Pipeline.hpp>
-#include <Renderer/Pipeline/PipelineLayout.hpp>
-#include <Renderer/Image/Sampler.hpp>
-#include <Renderer/Core/SwapChain.hpp>
+#include <Core/Connection.hpp>
+#include <Core/Device.hpp>
+#include <Pipeline/Pipeline.hpp>
+#include <Pipeline/PipelineLayout.hpp>
+#include <Image/Sampler.hpp>
+#include <Core/SwapChain.hpp>
 
 #include <Utils/UtilsSignal.hpp>
 

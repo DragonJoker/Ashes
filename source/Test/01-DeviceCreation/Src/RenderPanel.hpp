@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <Renderer/Core/Device.hpp>
+#include <Core/Device.hpp>
 
 #include <Utils/UtilsSignal.hpp>
 

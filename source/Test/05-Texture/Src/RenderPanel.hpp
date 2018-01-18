@@ -2,15 +2,15 @@
 
 #include "Prerequisites.hpp"
 
-#include <Renderer/Descriptor/DescriptorSetLayout.hpp>
-#include <Renderer/Descriptor/DescriptorSetPool.hpp>
-#include <Renderer/Descriptor/DescriptorSet.hpp>
-#include <Renderer/RenderPass/FrameBuffer.hpp>
-#include <Renderer/Image/Texture.hpp>
-#include <Renderer/RenderPass/RenderPass.hpp>
-#include <Renderer/Image/Sampler.hpp>
-#include <Renderer/Buffer/StagingBuffer.hpp>
-#include <Renderer/Core/SwapChain.hpp>
+#include <Descriptor/DescriptorSetLayout.hpp>
+#include <Descriptor/DescriptorSetPool.hpp>
+#include <Descriptor/DescriptorSet.hpp>
+#include <RenderPass/FrameBuffer.hpp>
+#include <Image/Texture.hpp>
+#include <RenderPass/RenderPass.hpp>
+#include <Image/Sampler.hpp>
+#include <Buffer/StagingBuffer.hpp>
+#include <Core/SwapChain.hpp>
 
 namespace vkapp
 {

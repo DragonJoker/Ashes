@@ -2,9 +2,9 @@
 
 #include "Camera.h"
 
-#include <Renderer/Buffer/StagingBuffer.hpp>
-#include <Renderer/Buffer/VertexBuffer.hpp>
-#include <Renderer/Pipeline/VertexLayout.hpp>
+#include <Buffer/StagingBuffer.hpp>
+#include <Buffer/VertexBuffer.hpp>
+#include <Pipeline/VertexLayout.hpp>
 
 namespace render
 {

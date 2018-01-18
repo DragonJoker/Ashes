@@ -12,7 +12,7 @@
 
 #include <RenderLib/RendererPlugin.hpp>
 
-#include <Renderer/Core/Renderer.hpp>
+#include <Core/Renderer.hpp>
 
 #include <Utils/Factory.hpp>
 

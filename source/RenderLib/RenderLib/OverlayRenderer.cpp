@@ -2,15 +2,15 @@
 
 #include "Texture.h"
 
-#include <Renderer/Shader/Attribute.hpp>
-#include <Renderer/Pipeline/DepthStencilState.hpp>
-#include <Renderer/Descriptor/DescriptorSet.hpp>
-#include <Renderer/Descriptor/DescriptorSetLayoutBinding.hpp>
-#include <Renderer/Descriptor/DescriptorSetPool.hpp>
-#include <Renderer/Pipeline/MultisampleState.hpp>
-#include <Renderer/Buffer/StagingBuffer.hpp>
-#include <Renderer/Buffer/VertexBuffer.hpp>
-#include <Renderer/Pipeline/VertexLayout.hpp>
+#include <Shader/Attribute.hpp>
+#include <Pipeline/DepthStencilState.hpp>
+#include <Descriptor/DescriptorSet.hpp>
+#include <Descriptor/DescriptorSetLayoutBinding.hpp>
+#include <Descriptor/DescriptorSetPool.hpp>
+#include <Pipeline/MultisampleState.hpp>
+#include <Buffer/StagingBuffer.hpp>
+#include <Buffer/VertexBuffer.hpp>
+#include <Pipeline/VertexLayout.hpp>
 
 #include "BorderPanelOverlay.h"
 #include "ElementsList.h"
