@@ -156,8 +156,8 @@ namespace utils
 
 	render::Glyph FontLoader::loadGlyph( char c )const
 	{
-		utils::IVec2 size;
-		utils::IVec2 bearing;
+		renderer::IVec2 size;
+		renderer::IVec2 bearing;
 		uint32_t advance{ 0 };
 		render::ByteArray buffer;
 

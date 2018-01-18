@@ -37,11 +37,28 @@ namespace vk_renderer
 	public:
 		CombinedTextureSamplerBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 			, DescriptorSet const & descriptorSet
-			, Texture const & texture
+			, TextureView const & texture
 			, Sampler const & sampler );
 
 	private:
 		TextureView const & m_view;
+		Sampler const & m_sampler;
+		VkDescriptorImageInfo m_info;
+	};
+	/**
+	*\brief
+	*	Attache de type sampler.
+	*/
+	class SamplerBinding
+		: public renderer::SamplerBinding
+		, public DescriptorSetBinding
+	{
+	public:
+		SamplerBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, DescriptorSet const & descriptorSet
+			, Sampler const & sampler );
+
+	private:
 		Sampler const & m_sampler;
 		VkDescriptorImageInfo m_info;
 	};
@@ -56,7 +73,8 @@ namespace vk_renderer
 	public:
 		SampledTextureBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 			, DescriptorSet const & descriptorSet
-			, Texture const & texture );
+			, TextureView const & texture
+			, renderer::ImageLayout layout );
 
 	private:
 		TextureView const & m_view;
@@ -64,7 +82,24 @@ namespace vk_renderer
 	};
 	/**
 	*\brief
-	*	Attache de type tampon de variables uniformes.
+	*	Attache de type texture de stockage.
+	*/
+	class StorageTextureBinding
+		: public renderer::StorageTextureBinding
+		, public DescriptorSetBinding
+	{
+	public:
+		StorageTextureBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, DescriptorSet const & descriptorSet
+			, TextureView const & texture );
+
+	private:
+		TextureView const & m_view;
+		VkDescriptorImageInfo m_info;
+	};
+	/**
+	*\brief
+	*	Attache de type tampon uniforme.
 	*/
 	class UniformBufferBinding
 		: public renderer::UniformBufferBinding
@@ -73,11 +108,65 @@ namespace vk_renderer
 	public:
 		UniformBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 			, DescriptorSet const & descriptorSet
-			, renderer::UniformBufferBase const & uniformBuffer
+			, UniformBuffer const & uniformBuffer
 			, uint32_t offset );
 
 	private:
 		Buffer const & m_uniformBuffer;
 		VkDescriptorBufferInfo m_info;
+	};
+	/**
+	*\brief
+	*	Attache de type tampon de stockage.
+	*/
+	class StorageBufferBinding
+		: public renderer::StorageBufferBinding
+		, public DescriptorSetBinding
+	{
+	public:
+		StorageBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, DescriptorSet const & descriptorSet
+			, Buffer const & storageBuffer
+			, uint32_t offset );
+
+	private:
+		Buffer const & m_buffer;
+		VkDescriptorBufferInfo m_info;
+	};
+	/**
+	*\brief
+	*	Attache de type tampon uniforme de texels.
+	*/
+	class UniformTexelBufferBinding
+		: public renderer::UniformTexelBufferBinding
+		, public DescriptorSetBinding
+	{
+	public:
+		UniformTexelBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, DescriptorSet const & descriptorSet
+			, UniformBuffer const & uniformBuffer
+			, BufferView const & view );
+
+	private:
+		Buffer const & m_uniformBuffer;
+		BufferView const & m_view;
+	};
+	/**
+	*\brief
+	*	Attache de type tampon de stockage de texels.
+	*/
+	class StorageTexelBufferBinding
+		: public renderer::StorageTexelBufferBinding
+		, public DescriptorSetBinding
+	{
+	public:
+		StorageTexelBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, DescriptorSet const & descriptorSet
+			, Buffer const & storageBuffer
+			, BufferView const & view );
+
+	private:
+		Buffer const & m_buffer;
+		BufferView const & m_view;
 	};
 }

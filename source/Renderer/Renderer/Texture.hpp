@@ -66,7 +66,7 @@ namespace renderer
 		*\param[in] data
 		*	Les données de l'image.
 		*/
-		void setImage( utils::PixelFormat format
+		void setImage( PixelFormat format
 			, IVec2 const & size
 			, ByteArray const & data
 			, StagingBuffer const & stagingBuffer
@@ -81,7 +81,7 @@ namespace renderer
 		*\param[in] size
 		*	Les dimensions de l'image.
 		*/
-		virtual void setImage( utils::PixelFormat format
+		virtual void setImage( PixelFormat format
 			, IVec2 const & size
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
 			, ImageTiling tiling = ImageTiling::eOptimal ) = 0;
@@ -154,7 +154,7 @@ namespace renderer
 		*\return
 		*	Le format des pixels de la texture.
 		*/
-		inline utils::PixelFormat getFormat()const noexcept
+		inline PixelFormat getFormat()const noexcept
 		{
 			return m_format;
 		}
@@ -162,15 +162,28 @@ namespace renderer
 		*\return
 		*	Les dimensions de la texture.
 		*/
-		inline utils::IVec2 const & getDimensions()const noexcept
+		inline IVec2 const & getDimensions()const noexcept
 		{
 			return m_size;
+		}
+		/**
+		*\~french
+		*\return
+		*	La vue sur l'image.
+		*\~english
+		*\return
+		*	The image view.
+		*/
+		inline TextureView const & getView()const
+		{
+			return *m_view;
 		}
 
 	protected:
 		Device const & m_device;
-		utils::IVec2 m_size;
-		utils::PixelFormat m_format{ utils::PixelFormat::eR8G8B8 };
+		IVec2 m_size;
+		PixelFormat m_format{ PixelFormat::eR8G8B8 };
+		TextureViewPtr m_view;
 	};
 }
 

@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	RenderBuffer::RenderBuffer( Device const & device
-		, utils::PixelFormat format
+		, PixelFormat format
 		, IVec2 const & size )
 		: m_device{ device }
 		, m_format{ format }

@@ -175,10 +175,10 @@ namespace vkapp
 		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
 		renderer::DescriptorSetPoolPtr m_descriptorPool;
 		renderer::DescriptorSetPtr m_descriptorSet;
-		renderer::UniformBufferPtr< utils::Mat4 > m_uniformBuffer;
+		renderer::UniformBufferPtr< renderer::Mat4 > m_uniformBuffer;
 		std::vector< TexturedVertexData > m_vertexData;
 		std::vector< renderer::FrameBufferPtr > m_frameBuffers;
 		std::vector< renderer::CommandBufferPtr > m_commandBuffers;
-		utils::Connection< renderer::SwapChain::OnReset > m_swapChainReset;
+		renderer::SignalConnection< renderer::SwapChain::OnReset > m_swapChainReset;
 	};
 }

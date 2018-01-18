@@ -48,8 +48,8 @@ namespace render
 		*\param[in] data
 		*	Les données de l'image.
 		*/
-		void image( utils::PixelFormat format
-			, utils::IVec2 const & size
+		void image( renderer::PixelFormat format
+			, renderer::IVec2 const & size
 			, ByteArray const & data
 			, renderer::StagingBuffer const & stagingBuffer
 			, renderer::CommandBuffer const & commandBuffer );
@@ -57,7 +57,7 @@ namespace render
 		*\return
 		*	Le format des pixels de la texture.
 		*/
-		inline utils::PixelFormat format()const noexcept
+		inline renderer::PixelFormat format()const noexcept
 		{
 			return m_format;
 		}
@@ -65,7 +65,7 @@ namespace render
 		*\return
 		*	Les dimensions de la texture.
 		*/
-		inline utils::IVec2 const & dimensions()const noexcept
+		inline renderer::IVec2 const & dimensions()const noexcept
 		{
 			return m_size;
 		}
@@ -88,9 +88,9 @@ namespace render
 
 	private:
 		//! Les dimensions de l'image.
-		utils::IVec2 m_size;
+		renderer::IVec2 m_size;
 		//! Le format des données de l'image.
-		utils::PixelFormat m_format{ utils::PixelFormat::eR8G8B8 };
+		renderer::PixelFormat m_format{ renderer::PixelFormat::eR8G8B8 };
 		//! La texture.
 		renderer::TexturePtr m_texture;
 		//! L'échantillonneur.

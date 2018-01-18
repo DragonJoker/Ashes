@@ -35,8 +35,8 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		BufferBase const & m_src;
-		BufferBase const & m_dst;
+		Buffer const & m_src;
+		Buffer const & m_dst;
 		uint32_t m_size;
 		uint32_t m_offset;
 	};

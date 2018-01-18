@@ -31,7 +31,7 @@ namespace vk_renderer
 		*	Le périphérique logique.
 		*/
 		RenderBuffer( Device const & device
-			, utils::PixelFormat format
+			, renderer::PixelFormat format
 			, renderer::IVec2 const & size );
 		/**
 		*\brief

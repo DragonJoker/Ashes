@@ -339,8 +339,8 @@ namespace render
 	{
 		if ( !objects.empty() )
 		{
-			utils::Mat4 const & projection = camera.projection();
-			utils::Mat4 const & view = camera.view();
+			renderer::Mat4 const & projection = camera.projection();
+			renderer::Mat4 const & view = camera.view();
 			uint32_t index = 0u;
 
 			for ( auto & object : objects )
@@ -382,9 +382,9 @@ namespace render
 	{
 		if ( !billboards.empty() )
 		{
-			utils::Mat4 const & projection = camera.projection();
-			utils::Mat4 const & view = camera.view();
-			utils::Vec3 const & position = camera.position();
+			renderer::Mat4 const & projection = camera.projection();
+			renderer::Mat4 const & view = camera.view();
+			renderer::Vec3 const & position = camera.position();
 			uint32_t index = 0u;
 
 			for ( auto & billboard : billboards )
@@ -405,7 +405,7 @@ namespace render
 					matData.opacity = billboard.m_billboard->material().opacity();
 					auto & billboardData = node.m_billboardUbo->getData( index );
 					billboardData.camera = position;
-					billboardData.dimensions = utils::Vec2{ billboard.m_billboard->dimensions() };
+					billboardData.dimensions = renderer::Vec2{ billboard.m_billboard->dimensions() };
 				}
 
 				++index;
@@ -435,9 +435,9 @@ namespace render
 	{
 		if ( !lines.empty() )
 		{
-			utils::Mat4 const & projection = camera.projection();
-			utils::Mat4 const & view = camera.view();
-			utils::Vec3 const & position = camera.position();
+			renderer::Mat4 const & projection = camera.projection();
+			renderer::Mat4 const & view = camera.view();
+			renderer::Vec3 const & position = camera.position();
 			uint32_t index = 0u;
 
 			for ( auto & line : lines )

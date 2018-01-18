@@ -28,8 +28,8 @@ namespace gl_renderer
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		RenderBuffer( renderer::Device const & device
-			, utils::PixelFormat format
+		RenderBuffer( Device const & device
+			, renderer::PixelFormat format
 			, renderer::IVec2 const & size );
 		/**
 		*\brief

@@ -58,8 +58,8 @@ namespace render
 			for ( auto c : lineText )
 			{
 				Glyph const & glyph{ m_fontTexture->font()[c] };
-				DisplayableChar character{ utils::IVec2{}
-					, utils::IVec2{ glyph.advance(), glyph.size().y }
+				DisplayableChar character{ renderer::IVec2{}
+					, renderer::IVec2{ glyph.advance(), glyph.size().y }
 					, glyph };
 
 				if ( glyph.character() == ' '
@@ -130,13 +130,13 @@ namespace render
 		for ( auto character : word )
 		{
 			Glyph const & glyph = m_fontTexture->font()[character];
-			utils::IVec2 charSize( glyph.advance(), glyph.size().y );
+			renderer::IVec2 charSize( glyph.advance(), glyph.size().y );
 
 			left += glyph.bearing().x;
 
 			if ( charSize.x > 0 )
 			{
-				line.m_characters.push_back( { utils::IVec2{ left, 0 }, charSize, glyph } );
+				line.m_characters.push_back( { renderer::IVec2{ left, 0 }, charSize, glyph } );
 			}
 
 			left += charSize.x;
@@ -198,7 +198,7 @@ namespace render
 			m_quads.reserve( m_previousCaption.size() );
 
 			DisplayableLineArray lines = doPrepareText();
-			utils::Vec2 texDim{ m_fontTexture->texture().dimensions() };
+			renderer::Vec2 texDim{ m_fontTexture->texture().dimensions() };
 
 			for ( auto const & line : lines )
 			{
@@ -225,7 +225,7 @@ namespace render
 					//
 					auto const fontUvTopCrop = topCrop / texDim.y;
 					auto const fontUvBottomCrop = bottomCrop / texDim.y;
-					utils::IVec2 const fontUvPosition = m_fontTexture->glyphPosition( c.m_glyph.character() );
+					renderer::IVec2 const fontUvPosition = m_fontTexture->glyphPosition( c.m_glyph.character() );
 					auto const fontUvTopUncropped = fontUvPosition.y / texDim.y;
 					auto const fontUvLeft = fontUvPosition.x / texDim.x;
 					auto const fontUvRight = fontUvLeft + ( c.m_size.x / texDim.x );

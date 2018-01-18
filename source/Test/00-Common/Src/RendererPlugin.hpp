@@ -21,12 +21,12 @@ namespace common
 		RendererPlugin & operator=( RendererPlugin const & ) = delete;
 		RendererPlugin & operator=( RendererPlugin && ) = default;
 
-		RendererPlugin( utils::DynamicLibrary && library
+		RendererPlugin( renderer::DynamicLibrary && library
 			, RendererFactory & factory );
 		renderer::RendererPtr create();
 
 	private:
-		utils::DynamicLibrary m_library;
+		renderer::DynamicLibrary m_library;
 		CreatorFunction m_creator;
 	};
 }

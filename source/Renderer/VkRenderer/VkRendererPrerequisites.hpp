@@ -34,6 +34,7 @@
 #include "VkAttributeFormat.hpp"
 #include "VkBlendFactor.hpp"
 #include "VkBlendOp.hpp"
+#include "VkBorderColour.hpp"
 #include "VkBufferTarget.hpp"
 #include "VkClearValue.hpp"
 #include "VkColourComponentFlag.hpp"
@@ -70,6 +71,7 @@
 #include "VkStencilOp.hpp"
 #include "VkSubpassContents.hpp"
 #include "VkTessellationStateFlag.hpp"
+#include "VkTextureType.hpp"
 #include "VkWrapMode.hpp"
 
 #include "VkDebug.hpp"
@@ -98,6 +100,7 @@ namespace vk_renderer
 	class Attribute;
 	class BackBuffer;
 	class Buffer;
+	class BufferView;
 	class CommandBuffer;
 	class CommandPool;
 	class Connection;
@@ -120,6 +123,7 @@ namespace vk_renderer
 	class SwapChain;
 	class Texture;
 	class TextureView;
+	class UniformBuffer;
 	class VertexBufferBase;
 	class VertexLayout;
 

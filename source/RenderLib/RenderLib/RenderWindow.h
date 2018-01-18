@@ -47,9 +47,9 @@ namespace render
 		struct Vertex
 		{
 			//! Une position en 2D.
-			utils::Vec2 position;
+			renderer::Vec2 position;
 			//! Les coordonnées de texture.
-			utils::Vec2 texture;
+			renderer::Vec2 texture;
 		};
 
 	public:
@@ -64,7 +64,7 @@ namespace render
 		*	Le loader de police.
 		*/
 		RenderWindow( renderer::Device const & device
-			, utils::IVec2 const & dimensions
+			, renderer::IVec2 const & dimensions
 			, render::FontLoader & loader
 			, bool debug );
 		/**
@@ -112,7 +112,7 @@ namespace render
 		*\param[in] size
 		*	Les dimensions du viewport.
 		*/
-		void resize( utils::IVec2 const & size )noexcept;
+		void resize( renderer::IVec2 const & size )noexcept;
 		/**
 		*\return
 		*	Récupère les ressources de rendu par défaut.
@@ -183,7 +183,7 @@ namespace render
 		*\param[in] position
 		*	La position de la souris.
 		*/
-		inline void pick( utils::IVec2 const & position )
+		inline void pick( renderer::IVec2 const & position )
 		{
 			m_pickPosition = position;
 			m_pick = true;
@@ -245,7 +245,7 @@ namespace render
 		//! La scène qui sera dessinée.
 		Scene m_scene;
 		//! Les dimensions de la fenêtre.
-		utils::IVec2 m_size;
+		renderer::IVec2 m_size;
 		//! L'échantillonneur de la texture de la cible de rendu.
 		renderer::SamplerPtr m_sampler;
 		//! Le programme shader utilisé pour le rendu dans la fenêtre.
@@ -263,7 +263,7 @@ namespace render
 		//! Le viewport du rendu dans la fenêtre.
 		Viewport m_viewport;
 		//! La position voulue pour le picking.
-		utils::IVec2 m_pickPosition;
+		renderer::IVec2 m_pickPosition;
 		//! L'instance de picking.
 		//Picking m_picking;
 		//! Dit si on doit exécuter le picking lors du dessin de la prochaine frame.

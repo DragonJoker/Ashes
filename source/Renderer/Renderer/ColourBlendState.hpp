@@ -21,7 +21,7 @@ namespace renderer
 	public:
 		ColourBlendState( bool logicOpEnable = false
 			, LogicOp logicOp = LogicOp::eCopy
-			, utils::Vec4 const & blendConstants = { 0.0f, 0.0f, 0.0f, 0.0f } );
+			, Vec4 const & blendConstants = { 0.0f, 0.0f, 0.0f, 0.0f } );
 		/**
 		*\return
 		*	Un ColourBlendState avec une attache couleur par défaut.
@@ -54,7 +54,7 @@ namespace renderer
 		*\return
 		*	Les constantes de mélange.
 		*/
-		inline utils::Vec4 const & getBlendConstants()const
+		inline Vec4 const & getBlendConstants()const
 		{
 			return m_blendConstants;
 		}
@@ -78,7 +78,7 @@ namespace renderer
 	private:
 		bool const m_logicOpEnable;
 		LogicOp const m_logicOp;
-		utils::Vec4 const m_blendConstants;
+		Vec4 const m_blendConstants;
 		ColourBlendStateAttachmentArray m_attachs;
 	};
 }

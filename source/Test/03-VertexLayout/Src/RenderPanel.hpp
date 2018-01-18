@@ -165,7 +165,7 @@ namespace vkapp
 		renderer::VertexLayoutPtr m_vertexLayout;
 		std::vector< renderer::FrameBufferPtr > m_frameBuffers;
 		renderer::CommandBufferPtrArray m_commandBuffers;
-		utils::Connection< renderer::SwapChain::OnReset > m_swapChainReset;
+		renderer::SignalConnection< renderer::SwapChain::OnReset > m_swapChainReset;
 		wxTimer * m_timer{ nullptr };
 	};
 }

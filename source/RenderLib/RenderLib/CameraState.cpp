@@ -26,8 +26,8 @@ namespace render
 		m_fovy = utils::Angle{ 45.0_degrees };
 		m_angleX = 0.0_radians;
 		m_angleY = 0.0_radians;
-		m_quatX = utils::Quaternion{};
-		m_quatY = utils::Quaternion{};
+		m_quatX = renderer::Quaternion{};
+		m_quatY = renderer::Quaternion{};
 	}
 
 	void CameraState::update()
@@ -70,8 +70,8 @@ namespace render
 		}
 	}
 
-	utils::Quaternion CameraState::rotation()const noexcept
+	renderer::Quaternion CameraState::rotation()const noexcept
 	{
-		return utils::Quaternion{ utils::Vec3T< utils::Radians >{ m_angleX.value(), m_angleY.value(), 0.0_radians } };// m_quatY * m_quatX;
+		return renderer::Quaternion{ renderer::Vec3T< utils::Radians >{ m_angleX.value(), m_angleY.value(), 0.0_radians } };// m_quatY * m_quatX;
 	}
 }

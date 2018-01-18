@@ -303,7 +303,7 @@ namespace vkapp
 			}
 
 			m_texture = m_device->createTexture();
-			m_texture->setImage( utils::PixelFormat::eR8G8B8A8
+			m_texture->setImage( renderer::PixelFormat::eR8G8B8A8
 				, { image.GetSize().x, image.GetSize().y } );
 			m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 				, renderer::WrapMode::eClampToEdge
@@ -322,7 +322,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_uniformBuffer = std::make_unique< renderer::UniformBuffer< utils::Mat4 > >( *m_device
+		m_uniformBuffer = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( *m_device
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -359,7 +359,7 @@ namespace vkapp
 		m_offscreenDescriptorPool = m_offscreenDescriptorLayout->createPool( 1u );
 		m_offscreenDescriptorSet = m_offscreenDescriptorPool->createDescriptorSet();
 		m_offscreenDescriptorSet->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
-			, *m_texture
+			, m_texture->getView()
 			, *m_sampler );
 		m_offscreenDescriptorSet->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
 			, *m_uniformBuffer
@@ -369,7 +369,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenRenderPass()
 	{
-		std::vector< utils::PixelFormat > formats{ { utils::PixelFormat::eR8G8B8A8 } };
+		std::vector< renderer::PixelFormat > formats{ { renderer::PixelFormat::eR8G8B8A8 } };
 		renderer::RenderSubpassPtrArray subpasses;
 		subpasses.emplace_back( m_device->createRenderSubpass( formats
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
@@ -387,7 +387,7 @@ namespace vkapp
 	{
 		auto size = GetClientSize();
 		m_renderTarget = m_device->createTexture();
-		m_renderTarget->setImage( utils::PixelFormat::eR8G8B8A8
+		m_renderTarget->setImage( renderer::PixelFormat::eR8G8B8A8
 			, { size.GetWidth(), size.GetHeight() }
 		, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
 
@@ -402,9 +402,9 @@ namespace vkapp
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( *m_device, 0 );
-		m_offscreenVertexLayout->createAttribute< utils::Vec4 >( 0u
+		m_offscreenVertexLayout->createAttribute< renderer::Vec4 >( 0u
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_offscreenVertexLayout->createAttribute< utils::Vec2 >( 1u
+		m_offscreenVertexLayout->createAttribute< renderer::Vec2 >( 1u
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 		m_stagingBuffer->copyVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_offscreenVertexData
@@ -471,14 +471,14 @@ namespace vkapp
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )
-			, *m_renderTarget
+			, m_renderTarget->getView()
 			, *m_sampler );
 		m_mainDescriptorSet->update();
 	}
 
 	void RenderPanel::doCreateMainRenderPass()
 	{
-		std::vector< utils::PixelFormat > formats{ { m_swapChain->getFormat() } };
+		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
 		renderer::RenderSubpassPtrArray subpasses;
 		subpasses.emplace_back( m_device->createRenderSubpass( formats
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
@@ -545,9 +545,9 @@ namespace vkapp
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( *m_device, 0 );
-		m_mainVertexLayout->createAttribute< utils::Vec4 >( 0u
+		m_mainVertexLayout->createAttribute< renderer::Vec4 >( 0u
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_mainVertexLayout->createAttribute< utils::Vec2 >( 1u
+		m_mainVertexLayout->createAttribute< renderer::Vec2 >( 1u
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 		m_stagingBuffer->copyVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_mainVertexData

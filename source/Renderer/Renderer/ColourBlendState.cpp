@@ -18,7 +18,7 @@ namespace renderer
 
 	ColourBlendState::ColourBlendState( bool logicOpEnable
 		, LogicOp logicOp
-		, utils::Vec4 const & blendConstants )
+		, Vec4 const & blendConstants )
 		: m_logicOpEnable{ logicOpEnable }
 		, m_logicOp{ logicOp }
 		, m_blendConstants{ blendConstants }

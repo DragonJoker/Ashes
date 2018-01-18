@@ -43,7 +43,7 @@ namespace render
 		};
 
 		std::vector< OverlayPtr > doSortPerZIndex( OverlayList const & overlays
-			, utils::IVec2 const & size )
+			, renderer::IVec2 const & size )
 		{
 			std::vector< OverlayPtr > result;
 
@@ -227,7 +227,7 @@ namespace render
 			, renderer::CommandBuffer const & commandBuffer
 			, OverlayNode & node
 			, uint32_t count
-			, utils::Mat4 const & projection
+			, renderer::Mat4 const & projection
 			, OverlayVbo< Data, OvType > & vbo )
 		{
 			if ( !vbo.m_overlays.empty() )
@@ -238,7 +238,7 @@ namespace render
 				{
 					auto & data = node.m_overlayUbo->getData( index );
 					data.modelProj = projection * overlay->m_overlay->transform();
-					data.colour = utils::RgbaColour{ overlay->m_overlay->material().ambient()
+					data.colour = renderer::RgbaColour{ overlay->m_overlay->material().ambient()
 						, overlay->m_overlay->material().opacity() };
 					doCopyBuffer( *overlay->m_overlay
 						, uint32_t( index * count )
@@ -278,9 +278,9 @@ namespace render
 		, m_descriptorLayout{ doCreateDescriptorLayout( device, textures, text ) }
 		, m_descriptorPool{ m_descriptorLayout->createPool( MaxObjectsCount ) }
 	{
-		m_layout->createAttribute< utils::Vec2 >( 0u
+		m_layout->createAttribute< renderer::Vec2 >( 0u
 			, offsetof( TextOverlay::Vertex, position ) );
-		m_layout->createAttribute< utils::Vec2 >( 1u
+		m_layout->createAttribute< renderer::Vec2 >( 1u
 			, offsetof( TextOverlay::Vertex, texture ) );
 
 		renderer::ColourBlendState bsState;
@@ -334,14 +334,14 @@ namespace render
 		if ( material.hasDiffuseMap() )
 		{
 			m_descriptor->createBinding( m_pool.getLayout().getBinding( UberShader::TextureDiffuseBinding )
-				, material.diffuseMap().texture()
+				, material.diffuseMap().texture().getView()
 				, material.diffuseMap().sampler() );
 		}
 
 		if ( m_opacity )
 		{
 			m_descriptor->createBinding( m_pool.getLayout().getBinding( UberShader::TextureOpacityBinding )
-				, m_opacity->texture()
+				, m_opacity->texture().getView()
 				, m_opacity->sampler() );
 		}
 
@@ -410,7 +410,7 @@ namespace render
 	OverlayRenderer::OverlayRenderer( renderer::Device const & device
 		, renderer::RenderPass const & renderPass
 		, renderer::CommandPool const & commandPool
-		, utils::IVec2 const & size
+		, renderer::IVec2 const & size
 		, uint32_t maxCharsPerBuffer )
 		: m_device{ device }
 		, m_renderPass{ renderPass }
@@ -664,7 +664,7 @@ namespace render
 		m_sizeChanged = false;
 	}
 
-	void OverlayRenderer::resize( utils::IVec2 const & size )
+	void OverlayRenderer::resize( renderer::IVec2 const & size )
 	{
 		if ( m_viewport.size() != size )
 		{

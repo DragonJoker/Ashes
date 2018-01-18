@@ -91,35 +91,35 @@ namespace vk_renderer
 		auto const & srcRange = src.getView().getSubResourceRange();
 		auto const & dstRange = dst.getView().getSubResourceRange();
 		copyImage( VkImageCopy
-		{
-			{                                                   // srcSubresource
-				VK_IMAGE_ASPECT_COLOR_BIT,                          // aspectMask
-				srcRange.getBaseMipLevel(),                         // mipLevel
-				srcRange.getBaseArrayLayer(),                       // baseArrayLayer
-				srcRange.getLayerCount()                            // layerCount
-			},
-			{                                                   // srcOffset
-				0,                                                  // x
-				0,                                                  // y
-				0                                                   // z
-			},
-			{                                                   // dstSubresource
-				VK_IMAGE_ASPECT_COLOR_BIT,                          // aspectMask
-				dstRange.getBaseMipLevel(),                         // mipLevel
-				dstRange.getBaseArrayLayer(),                       // baseArrayLayer
-				dstRange.getLayerCount()                            // layerCount
-			},
-			{                                                   // dstOffset
-				0,                                                  // x
-				0,                                                  // y
-				0                                                   // z
-			},
-			{                                                   // extent
-				uint32_t( dst.getDimensions().x ),                  // width
-				uint32_t( dst.getDimensions().y ),                  // height
-				1u                                                  // depth
+			{
+				{                                                   // srcSubresource
+					VK_IMAGE_ASPECT_COLOR_BIT,                          // aspectMask
+					srcRange.getBaseMipLevel(),                         // mipLevel
+					srcRange.getBaseArrayLayer(),                       // baseArrayLayer
+					srcRange.getLayerCount()                            // layerCount
+				},
+				{                                                   // srcOffset
+					0,                                                  // x
+					0,                                                  // y
+					0                                                   // z
+				},
+				{                                                   // dstSubresource
+					VK_IMAGE_ASPECT_COLOR_BIT,                          // aspectMask
+					dstRange.getBaseMipLevel(),                         // mipLevel
+					dstRange.getBaseArrayLayer(),                       // baseArrayLayer
+					dstRange.getLayerCount()                            // layerCount
+				},
+				{                                                   // dstOffset
+					0,                                                  // x
+					0,                                                  // y
+					0                                                   // z
+				},
+				{                                                   // extent
+					uint32_t( dst.getDimensions().x ),                  // width
+					uint32_t( dst.getDimensions().y ),                  // height
+					1u                                                  // depth
+				}
 			}
-		}
 			, src
 			, dst );
 	}

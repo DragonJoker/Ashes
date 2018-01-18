@@ -202,7 +202,7 @@ namespace vkapp
 		renderer::DescriptorSetPtr m_descriptorSet;
 		std::vector< renderer::FrameBufferPtr > m_frameBuffers;
 		renderer::CommandBufferPtrArray m_commandBuffers;
-		utils::Connection< renderer::SwapChain::OnReset > m_swapChainReset;
+		renderer::SignalConnection< renderer::SwapChain::OnReset > m_swapChainReset;
 		wxTimer * m_timer{ nullptr };
 		size_t m_resourceIndex{ 0 };
 		std::vector< TexturedVertexData > m_vertexData;

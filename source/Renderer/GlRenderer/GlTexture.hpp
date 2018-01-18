@@ -30,7 +30,7 @@ namespace gl_renderer
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		Texture( renderer::Device const & device );
+		Texture( Device const & device );
 		/**
 		*\brief
 		*	Destructeur.
@@ -44,8 +44,8 @@ namespace gl_renderer
 		*\param[in] size
 		*	Les dimensions de l'image.
 		*/
-		void setImage( utils::PixelFormat format
-			, utils::IVec2 const & size
+		void setImage( renderer::PixelFormat format
+			, renderer::IVec2 const & size
 			, renderer::ImageUsageFlags usageFlags = renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
 			, renderer::ImageTiling tiling = renderer::ImageTiling::eOptimal )override;
 		/**
@@ -129,6 +129,7 @@ namespace gl_renderer
 			, renderer::AccessFlags dstAccessMask )const;
 
 	private:
+		Device const & m_device;
 		GLuint m_texture{ GL_INVALID_INDEX };
 	};
 }

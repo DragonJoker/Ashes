@@ -97,7 +97,7 @@ namespace render
 		*\return
 		*	Les dimensions du maillage.
 		*/
-		inline utils::Vec3 const & boundaries()const noexcept
+		inline renderer::Vec3 const & boundaries()const noexcept
 		{
 			return m_boundaries;
 		}
@@ -105,7 +105,7 @@ namespace render
 		*\return
 		*	Le tampon contenant les positions.
 		*/
-		inline renderer::VertexBuffer< utils::Vec3 > const & getPositions()const noexcept
+		inline renderer::VertexBuffer< renderer::Vec3 > const & getPositions()const noexcept
 		{
 			return *m_positions;
 		}
@@ -113,7 +113,7 @@ namespace render
 		*\return
 		*	Le tampon contenant les normales.
 		*/
-		inline renderer::VertexBuffer< utils::Vec3 > const & getNormals()const noexcept
+		inline renderer::VertexBuffer< renderer::Vec3 > const & getNormals()const noexcept
 		{
 			assert( m_normal );
 			return *m_normal;
@@ -122,7 +122,7 @@ namespace render
 		*\return
 		*	Le tampon contenant les coordonnées de texture.
 		*/
-		inline renderer::VertexBuffer< utils::Vec2 > const & getTexCoords()const noexcept
+		inline renderer::VertexBuffer< renderer::Vec2 > const & getTexCoords()const noexcept
 		{
 			assert( m_texcoord );
 			return *m_texcoord;
@@ -130,15 +130,15 @@ namespace render
 
 	private:
 		//! Les positions des sommets.
-		renderer::VertexBufferPtr< utils::Vec3 > m_positions;
+		renderer::VertexBufferPtr< renderer::Vec3 > m_positions;
 		//! Les normales des sommets.
-		renderer::VertexBufferPtr< utils::Vec3 > m_normal;
+		renderer::VertexBufferPtr< renderer::Vec3 > m_normal;
 		//! Les coordonnées de texture des sommets.
-		renderer::VertexBufferPtr< utils::Vec2 > m_texcoord;
+		renderer::VertexBufferPtr< renderer::Vec2 > m_texcoord;
 		//! Les sous-maillages.
 		SubmeshArray m_submeshes;
 		//! Les dimensions du maillage.
-		utils::Vec3 m_boundaries;
+		renderer::Vec3 m_boundaries;
 	};
 }
 

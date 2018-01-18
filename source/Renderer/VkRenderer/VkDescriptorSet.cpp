@@ -1,12 +1,13 @@
 #include "VkDescriptorSet.hpp"
 
 #include "VkBuffer.hpp"
+#include "VkBufferView.hpp"
 #include "VkDescriptorSetBinding.hpp"
 #include "VkDescriptorSetLayoutBinding.hpp"
 #include "VkDescriptorSetLayout.hpp"
 #include "VkDescriptorSetPool.hpp"
 #include "VkSampler.hpp"
-#include "VkTexture.hpp"
+#include "VkTextureView.hpp"
 #include "VkUniformBuffer.hpp"
 
 namespace vk_renderer
@@ -52,23 +53,43 @@ namespace vk_renderer
 	}
 
 	renderer::CombinedTextureSamplerBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::Texture const & view
+		, renderer::TextureView const & view
 		, renderer::Sampler const & sampler )
 	{
 		m_bindings.emplace_back( std::make_unique< CombinedTextureSamplerBinding >( layoutBinding
 			, *this
-			, static_cast< Texture const & >( view )
+			, static_cast< TextureView const & >( view )
 			, static_cast< Sampler const & >( sampler ) ) );
 		return static_cast< CombinedTextureSamplerBinding const & >( *m_bindings.back() );
 	}
 
+	renderer::SamplerBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		, renderer::Sampler const & sampler )
+	{
+		m_bindings.emplace_back( std::make_unique< SamplerBinding >( layoutBinding
+			, *this
+			, static_cast< Sampler const & >( sampler ) ) );
+		return static_cast< SamplerBinding const & >( *m_bindings.back() );
+	}
+
 	renderer::SampledTextureBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::Texture const & view )
+		, renderer::TextureView const & view
+		, renderer::ImageLayout layout )
 	{
 		m_bindings.emplace_back( std::make_unique< SampledTextureBinding >( layoutBinding
 			, *this
-			, static_cast< Texture const & >( view ) ) );
+			, static_cast< TextureView const & >( view )
+			, layout ) );
 		return static_cast< SampledTextureBinding const & >( *m_bindings.back() );
+	}
+
+	renderer::StorageTextureBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		, renderer::TextureView const & view )
+	{
+		m_bindings.emplace_back( std::make_unique< StorageTextureBinding >( layoutBinding
+			, *this
+			, static_cast< TextureView const & >( view ) ) );
+		return static_cast< StorageTextureBinding const & >( *m_bindings.back() );
 	}
 
 	renderer::UniformBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
@@ -78,10 +99,44 @@ namespace vk_renderer
 		offset = uniformBuffer.getOffset( offset );
 		m_bindings.emplace_back( std::make_unique< UniformBufferBinding >( layoutBinding
 			, *this
-			, uniformBuffer
+			, static_cast< UniformBuffer const & >( uniformBuffer )
 			, offset ) );
 		return static_cast< UniformBufferBinding const & >( *m_bindings.back() );
 	}
+
+	renderer::StorageBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		, renderer::BufferBase const & storageBuffer
+		, uint32_t offset )
+	{
+		m_bindings.emplace_back( std::make_unique< StorageBufferBinding >( layoutBinding
+			, *this
+			, static_cast< Buffer const & >( storageBuffer )
+			, offset ) );
+		return static_cast< StorageBufferBinding const & >( *m_bindings.back() );
+	}
+
+	renderer::UniformTexelBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		, renderer::UniformBufferBase const & uniformBuffer
+		, renderer::BufferView const & view )
+	{
+		m_bindings.emplace_back( std::make_unique< UniformTexelBufferBinding >( layoutBinding
+			, *this
+			, static_cast< UniformBuffer const & >( uniformBuffer )
+			, static_cast< BufferView const & >( view ) ) );
+		return static_cast< UniformTexelBufferBinding const & >( *m_bindings.back() );
+	}
+
+	renderer::StorageTexelBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		, renderer::BufferBase const & storageBuffer
+		, renderer::BufferView const & view )
+	{
+		m_bindings.emplace_back( std::make_unique< StorageTexelBufferBinding >( layoutBinding
+			, *this
+			, static_cast< Buffer const & >( storageBuffer )
+			, static_cast< BufferView const & >( view ) ) );
+		return static_cast< StorageTexelBufferBinding const & >( *m_bindings.back() );
+	}
+
 	void DescriptorSet::update()const
 	{
 		auto bindings = makeVkArray < VkWriteDescriptorSet >( m_bindings );

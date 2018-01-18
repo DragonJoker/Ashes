@@ -1336,6 +1336,21 @@ namespace vk_renderer
 			return dump.str();
 		}
 
+		static inline std::string subDump( VkBufferViewCreateInfo const & value, std::string const & tabs )
+		{
+			std::stringstream dump;
+			dump << tabs << "{" << std::endl;
+			dump << tabs << "\t" << "sType: " << value.sType << std::endl;
+			dump << tabs << "\t" << "pNext: " << value.pNext << std::endl;
+			dump << tabs << "\t" << "flags: " << value.flags << std::endl;
+			dump << tabs << "\t" << "buffer: " << value.buffer << std::endl;
+			dump << tabs << "\t" << "format: " << value.format << std::endl;
+			dump << tabs << "\t" << "offset: " << value.offset << std::endl;
+			dump << tabs << "\t" << "range: " << value.range << std::endl;
+			dump << tabs << "}" << std::endl;
+			return dump.str();
+		}
+
 #ifdef VK_USE_PLATFORM_WIN32_KHR
 
 		static inline std::string subDump( VkWin32SurfaceCreateInfoKHR const & value, std::string const & tabs )

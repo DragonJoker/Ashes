@@ -39,6 +39,6 @@ namespace vk_renderer
 		VulkanLibrary();
 
 	private:
-		utils::DynamicLibrary m_library;
+		renderer::DynamicLibrary m_library;
 	};
 }

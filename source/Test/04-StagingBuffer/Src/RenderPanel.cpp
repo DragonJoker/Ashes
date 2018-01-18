@@ -130,7 +130,7 @@ namespace vkapp
 	{
 		wxSize size{ GetClientSize() };
 		m_swapChain = m_device->createSwapChain( { size.x, size.y } );
-		m_swapChain->setClearColour( utils::RgbaColour{ 1.0f, 0.8f, 0.4f, 0.0f } );
+		m_swapChain->setClearColour( renderer::RgbaColour{ 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			doResetSwapChain();
@@ -139,7 +139,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateRenderPass()
 	{
-		std::vector< utils::PixelFormat > formats{ { m_swapChain->getFormat() } };
+		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
 		renderer::RenderSubpassPtrArray subpasses;
 		subpasses.emplace_back( m_device->createRenderSubpass( formats
 			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput

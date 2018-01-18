@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -58,7 +58,7 @@ namespace vk_renderer
 		*	The samples count (for multisampling).
 		*/
 		RenderPass( Device const & device
-			, std::vector< utils::PixelFormat > const & formats
+			, std::vector< renderer::PixelFormat > const & formats
 			, renderer::RenderSubpassPtrArray const & subpasses
 			, renderer::RenderPassState const & initialState
 			, renderer::RenderPassState const & finalState
@@ -98,7 +98,7 @@ namespace vk_renderer
 		*\return
 		*	The created frame buffer.
 		*/
-		renderer::FrameBufferPtr createFrameBuffer( utils::IVec2 const & dimensions
+		renderer::FrameBufferPtr createFrameBuffer( renderer::IVec2 const & dimensions
 			, renderer::TextureCRefArray const & textures )const override;
 		std::vector< VkClearValue > const & getClearValues (renderer::ClearValueArray const & clearValues)const;
 		/**
@@ -116,7 +116,7 @@ namespace vk_renderer
 
 	private:
 		Device const & m_device;
-		std::vector< utils::PixelFormat > m_formats;
+		std::vector< renderer::PixelFormat > m_formats;
 		VkRenderPass m_renderPass{};
 		renderer::SampleCountFlag m_samplesCount{};
 		RenderSubpassCRefArray m_subpasses;

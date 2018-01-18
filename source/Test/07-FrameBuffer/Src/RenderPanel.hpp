@@ -221,7 +221,7 @@ namespace vkapp
 		renderer::SamplerPtr m_sampler;
 		renderer::TexturePtr m_renderTarget;
 		renderer::FrameBufferPtr m_frameBuffer;
-		renderer::UniformBufferPtr< utils::Mat4 > m_uniformBuffer;
+		renderer::UniformBufferPtr< renderer::Mat4 > m_uniformBuffer;
 
 		renderer::CommandBufferPtr m_commandBuffer;
 		renderer::RenderPassPtr m_offscreenRenderPass;
@@ -250,6 +250,6 @@ namespace vkapp
 
 		std::vector< renderer::FrameBufferPtr > m_frameBuffers;
 		std::vector< renderer::CommandBufferPtr > m_commandBuffers;
-		utils::Connection< renderer::SwapChain::OnReset > m_swapChainReset;
+		renderer::SignalConnection< renderer::SwapChain::OnReset > m_swapChainReset;
 	};
 }

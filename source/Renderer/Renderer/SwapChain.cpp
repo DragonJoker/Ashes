@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	SwapChain::SwapChain( Device const & device
-		, utils::IVec2 const & size )
+		, IVec2 const & size )
 		: m_device{ device }
 		, m_dimensions{ size }
 	{

@@ -43,7 +43,7 @@ namespace render
 
 		template< typename MapT, typename NodeT >
 		inline void doPickFromList( MapT const & map
-			, utils::IVec4 const & data
+			, renderer::IVec4 const & data
 			, NodeT *& result )
 		{
 			using Traits = NodeTraits< NodeT >;
@@ -56,9 +56,9 @@ namespace render
 		static int constexpr PickingWidth = 50;
 		static int constexpr PickingOffset = PickingWidth / 2;
 
-		std::vector< utils::PixelFormat > doGetPixelFormats()
+		std::vector< renderer::PixelFormat > doGetPixelFormats()
 		{
-			return { utils::PixelFormat::eR8G8B8A8, utils::PixelFormat::eD16 };
+			return { renderer::PixelFormat::eR8G8B8A8, renderer::PixelFormat::eD16 };
 		}
 
 		renderer::RenderSubpassState doGetSubpassState()
@@ -83,7 +83,7 @@ namespace render
 	}
 
 	Picking::Picking( renderer::Device const & device
-		, utils::IVec2 const & size )
+		, renderer::IVec2 const & size )
 		: m_renderPass{ device.createRenderPass( doGetPixelFormats()
 			, doGetSubPasses( device )
 			, doGetColourPassState()
@@ -99,8 +99,8 @@ namespace render
 		, m_commandPool{ device.createCommandPool( device.getGraphicsQueue().getFamilyIndex() ) }
 		, m_commandBuffer{ m_commandPool->createCommandBuffer() }
 	{
-		m_colour->setImage( utils::PixelFormat::eR8G8B8A8, size, renderer::ImageUsageFlag::eColourAttachment );
-		m_depth->setImage( utils::PixelFormat::eD16, size, renderer::ImageUsageFlag::eDepthStencilAttachment );
+		m_colour->setImage( renderer::PixelFormat::eR8G8B8A8, size, renderer::ImageUsageFlag::eColourAttachment );
+		m_depth->setImage( renderer::PixelFormat::eD16, size, renderer::ImageUsageFlag::eDepthStencilAttachment );
 		m_frameBuffer = m_renderPass->createFrameBuffer( size
 			, { *m_colour, *m_depth } );
 		m_renderer.initialise();
@@ -111,7 +111,7 @@ namespace render
 	}
 
 	Picking::NodeType Picking::pick( renderer::Queue const & queue
-		, utils::IVec2 const & position
+		, renderer::IVec2 const & position
 		, Camera const & camera
 		, float zoomPercent
 		, RenderSubmeshArray const & objects
@@ -141,7 +141,7 @@ namespace render
 
 	Picking::Pixel Picking::doFboPick( renderer::CommandBuffer const & commandBuffer
 		, renderer::Queue const & queue
-		, utils::IVec2 const & position
+		, renderer::IVec2 const & position
 		, Camera const & camera
 		, float zoomPercent
 		, RenderSubmeshArray const & objects
@@ -154,7 +154,7 @@ namespace render
 			commandBuffer.beginRenderPass( *m_renderPass
 				, *m_frameBuffer
 				, {
-					renderer::ClearValue{ utils::RgbaColour{ 0, 0, 0, 1 } },
+					renderer::ClearValue{ renderer::RgbaColour{ 0, 0, 0, 1 } },
 					renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0 } }
 				}
 				, renderer::SubpassContents::eInline );
@@ -171,7 +171,7 @@ namespace render
 		}
 
 		memset( m_buffer.data(), 0xFF, m_buffer.size() * sizeof( Pixel ) );
-		utils::IVec2 offset
+		renderer::IVec2 offset
 		{
 			m_size.x - position.x - PickingOffset,
 			m_size.y - position.y - PickingOffset
@@ -182,7 +182,7 @@ namespace render
 			, uint32_t( offset.y )
 			, PickingWidth
 			, PickingWidth
-			, utils::PixelFormat::eR8G8B8A8
+			, renderer::PixelFormat::eR8G8B8A8
 			, reinterpret_cast< uint8_t * >( m_buffer.data() ) );
 
 		return m_buffer[( PickingOffset * PickingWidth ) + PickingOffset - 1];
@@ -219,7 +219,7 @@ namespace render
 		return ret;
 	}
 
-	utils::IVec4 Picking::doUnpackPixel( Pixel pixel )
+	renderer::IVec4 Picking::doUnpackPixel( Pixel pixel )
 	{
 		static constexpr uint8_t ObjectTypeMask{ ObjectMask | BillboardMask };
 		static constexpr uint8_t NodeTypeMask{ 0x3F };
@@ -232,35 +232,35 @@ namespace render
 		{
 		case ObjectMask:
 			objectType = int( ObjectType::eObject );
-			return utils::IVec4{ objectType, nodeType, doUnpackObjectPixel( pixel ) };
+			return renderer::IVec4{ objectType, nodeType, doUnpackObjectPixel( pixel ) };
 
 		case BillboardMask:
 			objectType = int( ObjectType::eBillboard );
-			return utils::IVec4{ objectType, nodeType, doUnpackBillboardPixel( pixel ) };
+			return renderer::IVec4{ objectType, nodeType, doUnpackBillboardPixel( pixel ) };
 
 		default:
 			assert( false && "Unsupported object type" );
-			return utils::IVec4{};
+			return renderer::IVec4{};
 			break;
 		}
 	}
 
-	utils::IVec2 Picking::doUnpackBillboardPixel( Pixel pixel )
+	renderer::IVec2 Picking::doUnpackBillboardPixel( Pixel pixel )
 	{
 		auto index = ( uint32_t( pixel.r ) << 6 )
 			| ( uint32_t( pixel.g & 0xFC ) >> 2 );
 		auto instance = ( uint32_t( pixel.g & 0x03 ) << 16 )
 			| ( uint32_t( pixel.b ) << 8 )
 			| ( uint32_t( pixel.a ) );
-		return utils::IVec2{ index, instance };
+		return renderer::IVec2{ index, instance };
 	}
 
-	utils::IVec2 Picking::doUnpackObjectPixel( Pixel pixel )
+	renderer::IVec2 Picking::doUnpackObjectPixel( Pixel pixel )
 	{
 		auto index = ( uint32_t( pixel.r ) << 24 )
 			| ( uint32_t( pixel.g ) << 16 )
 			| ( uint32_t( pixel.b ) << 8 )
 			| ( uint32_t( pixel.a ) );
-		return utils::IVec2{ index, 0 };
+		return renderer::IVec2{ index, 0 };
 	}
 }

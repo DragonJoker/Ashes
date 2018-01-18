@@ -18,7 +18,7 @@ namespace gl_renderer
 	*\brief
 	*	Classe regroupant les ressources de rendu nécessaires au dessin d'une image.
 	*/
-	class BufferBase
+	class Buffer
 		: public renderer::BufferBase
 	{
 	public:
@@ -34,7 +34,7 @@ namespace gl_renderer
 		*\param[in] flags
 		*	Les indicateurs de mémoire du tampon.
 		*/
-		BufferBase( renderer::Device const & device
+		Buffer( renderer::Device const & device
 			, uint32_t size
 			, renderer::BufferTargets target
 			, renderer::MemoryPropertyFlags flags );
@@ -42,7 +42,7 @@ namespace gl_renderer
 		*\brief
 		*	Destructeur.
 		*/
-		~BufferBase();
+		~Buffer();
 		/**
 		*\brief
 		*	Mappe la mémoire du tampon en RAM.

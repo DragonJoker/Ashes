@@ -35,7 +35,7 @@ namespace renderer
 		*\return
 		*	L'offset du ciseau.
 		*/
-		inline utils::IVec2 const & getOffset()const
+		inline IVec2 const & getOffset()const
 		{
 			return m_offset;
 		}
@@ -43,14 +43,14 @@ namespace renderer
 		*\return
 		*	Les dimensions du ciseau.
 		*/
-		inline utils::IVec2 const & getSize()const
+		inline IVec2 const & getSize()const
 		{
 			return m_size;
 		}
 
 	private:
-		utils::IVec2 m_offset;
-		utils::IVec2 m_size;
+		IVec2 m_offset;
+		IVec2 m_size;
 	};
 }
 

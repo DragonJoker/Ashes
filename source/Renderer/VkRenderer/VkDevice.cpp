@@ -1,10 +1,11 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
 #include "VkDevice.hpp"
 
 #include "VkBuffer.hpp"
+#include "VkBufferView.hpp"
 #include "VkCommandPool.hpp"
 #include "VkConnection.hpp"
 #include "VkDescriptorSetLayout.hpp"
@@ -20,6 +21,7 @@ See LICENSE file in root folder.
 #include "VkShaderProgram.hpp"
 #include "VkSwapChain.hpp"
 #include "VkTexture.hpp"
+#include "VkTextureView.hpp"
 #include "VkUniformBuffer.hpp"
 #include "VkVertexLayout.hpp"
 
@@ -100,7 +102,7 @@ namespace vk_renderer
 			, renderer::CommandPoolCreateFlag::eResetCommandBuffer | renderer::CommandPoolCreateFlag::eTransient );
 	}
 
-	renderer::RenderPassPtr Device::createRenderPass( std::vector< utils::PixelFormat > const & formats
+	renderer::RenderPassPtr Device::createRenderPass( std::vector< renderer::PixelFormat > const & formats
 		, renderer::RenderSubpassPtrArray const & subpasses
 		, renderer::RenderPassState const & initialState
 		, renderer::RenderPassState const & finalState
@@ -116,7 +118,7 @@ namespace vk_renderer
 			, samplesCount );
 	}
 
-	renderer::RenderSubpassPtr Device::createRenderSubpass( std::vector< utils::PixelFormat > const & formats
+	renderer::RenderSubpassPtr Device::createRenderSubpass( std::vector< renderer::PixelFormat > const & formats
 		, renderer::RenderSubpassState const & neededState )const
 	{
 		return std::make_unique< RenderSubpass >( *this
@@ -219,12 +221,34 @@ namespace vk_renderer
 		return std::make_shared< Texture >( *this );
 	}
 
+	renderer::TextureViewPtr Device::createTextureView( renderer::Texture const & texture
+		, renderer::PixelFormat format
+		, uint32_t baseMipLevel
+		, uint32_t levelCount
+		, uint32_t baseArrayLayer
+		, uint32_t layerCount )const
+	{
+		return std::make_shared< TextureView >( *this
+			, static_cast< Texture const & >( texture )
+			, format
+			, baseMipLevel
+			, levelCount
+			, baseArrayLayer
+			, layerCount );
+	}
+
 	renderer::SamplerPtr Device::createSampler( renderer::WrapMode wrapS
 		, renderer::WrapMode wrapT
 		, renderer::WrapMode wrapR
 		, renderer::Filter minFilter
 		, renderer::Filter magFilter
-		, renderer::MipmapMode mipFilter )const
+		, renderer::MipmapMode mipFilter
+		, float minLod
+		, float maxLod
+		, float lodBias
+		, renderer::BorderColour borderColour
+		, float maxAnisotropy
+		, renderer::CompareOp compareOp )const
 	{
 		return std::make_unique< Sampler >( *this
 			, wrapS
@@ -232,7 +256,13 @@ namespace vk_renderer
 			, wrapR
 			, minFilter
 			, magFilter
-			, mipFilter );
+			, mipFilter
+			, minLod
+			, maxLod
+			, lodBias
+			, borderColour
+			, maxAnisotropy
+			, compareOp );
 	}
 
 	renderer::BufferBasePtr Device::createBuffer( uint32_t size
@@ -243,6 +273,18 @@ namespace vk_renderer
 			, size
 			, target
 			, memoryFlags );
+	}
+
+	renderer::BufferViewPtr Device::createBufferView( renderer::BufferBase const & buffer
+		, renderer::PixelFormat format
+		, uint32_t offset
+		, uint32_t range )const
+	{
+		return std::make_unique< BufferView >( *this
+			, static_cast< Buffer const & >( buffer )
+			, format
+			, offset
+			, range );
 	}
 
 	renderer::UniformBufferBasePtr Device::createUniformBuffer( uint32_t count
@@ -257,7 +299,7 @@ namespace vk_renderer
 			, memoryFlags );
 	}
 
-	renderer::SwapChainPtr Device::createSwapChain( utils::IVec2 const & size )const
+	renderer::SwapChainPtr Device::createSwapChain( renderer::IVec2 const & size )const
 	{
 		renderer::SwapChainPtr result;
 

@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 namespace renderer
 {
-	ClearValue::ClearValue( utils::RgbaColour const & colour )
+	ClearValue::ClearValue( RgbaColour const & colour )
 		: m_colour{ colour }
 		, m_isColour{ true }
 	{

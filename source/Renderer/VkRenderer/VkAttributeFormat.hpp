@@ -17,13 +17,4 @@ namespace vk_renderer
 	*	Le VkFormat.
 	*/
 	VkFormat convert( renderer::AttributeFormat format );
-	/**
-	*\brief
-	*	R�cup�re la taille en octets du format donn�.
-	*\param[in] flags
-	*	Le renderer::AttributeFormat.
-	*\return
-	*	La taille.
-	*/
-	uint32_t getSize( renderer::AttributeFormat format );
 }

@@ -29,14 +29,14 @@ namespace render
 		*\param[in] size
 		*	Les dimensions du viewport.
 		*/
-		Viewport( utils::IVec2 const & size )noexcept;
+		Viewport( renderer::IVec2 const & size )noexcept;
 		/**
 		*\brief
 		*	Redimensionne le viewport.
 		*\param[in] size
 		*	Les dimensions du viewport.
 		*/
-		void resize( utils::IVec2 const & size )noexcept;
+		void resize( renderer::IVec2 const & size )noexcept;
 		/**
 		*\brief
 		*	Définit le viewport en tant que projection orthographique.
@@ -66,7 +66,7 @@ namespace render
 		*\return
 		*	La matrice de projection du viewport.
 		*/
-		inline utils::Mat4 const & transform()const noexcept
+		inline renderer::Mat4 const & transform()const noexcept
 		{
 			return m_projection;
 		}
@@ -74,7 +74,7 @@ namespace render
 		*\return
 		*	Les dimensions du viewport.
 		*/
-		inline utils::IVec2 const & size()const noexcept
+		inline renderer::IVec2 const & size()const noexcept
 		{
 			return m_size;
 		}
@@ -115,9 +115,9 @@ namespace render
 
 	private:
 		//! Les dimensions du viewport.
-		utils::IVec2 m_size;
+		renderer::IVec2 m_size;
 		//! La matrice de projection.
-		utils::Mat4 m_projection;
+		renderer::Mat4 m_projection;
 		//! L'angle d'ouverture verticale.
 		utils::Angle m_fovy;
 		//! Le viewport du renderer.

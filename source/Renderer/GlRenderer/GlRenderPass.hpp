@@ -37,7 +37,7 @@ namespace gl_renderer
 		*	Le nombre d'échantillons (pour le multisampling).
 		*/
 		RenderPass( renderer::Device const & device
-			, std::vector< utils::PixelFormat > const & formats
+			, std::vector< renderer::PixelFormat > const & formats
 			, renderer::RenderSubpassPtrArray const & subpasses
 			, renderer::RenderPassState const & initialState
 			, renderer::RenderPassState const & finalState
@@ -56,7 +56,7 @@ namespace gl_renderer
 		*\return
 		*	Le FrameBuffer créé.
 		*/
-		renderer::FrameBufferPtr createFrameBuffer( utils::IVec2 const & dimensions
+		renderer::FrameBufferPtr createFrameBuffer( renderer::IVec2 const & dimensions
 			, renderer::TextureCRefArray const & textures )const override;
 		/**
 		*\return

@@ -14,7 +14,7 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	RenderPass::RenderPass( Device const & device
-		, std::vector< utils::PixelFormat > const & formats
+		, std::vector< PixelFormat > const & formats
 		, RenderSubpassPtrArray const & subpasses
 		, RenderPassState const & initialState
 		, RenderPassState const & finalState

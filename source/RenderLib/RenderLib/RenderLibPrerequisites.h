@@ -33,23 +33,23 @@ namespace render
 	struct MatrixUbo
 	{
 		//! La variable uniforme contenant la matrice de projection.
-		utils::Mat4 projection;
+		renderer::Mat4 projection;
 		//! La variable uniforme contenant la matrice de vue.
-		utils::Mat4 view;
+		renderer::Mat4 view;
 		//! La variable uniforme contenant la matrice du modèle.
-		utils::Mat4 model;
+		renderer::Mat4 model;
 	};
 	//! Les données de l'UBO contenant les informations du matériau.
 	struct MaterialUbo
 	{
 		//! La variable uniforme contenant la couleur ambiante.
-		utils::Vec3 ambient;
+		renderer::Vec3 ambient;
 		//! La variable uniforme contenant la couleur diffuse.
-		utils::Vec3 diffuse;
+		renderer::Vec3 diffuse;
 		//! La variable uniforme contenant la couleur spéculaire.
-		utils::Vec3 specular;
+		renderer::Vec3 specular;
 		//! La variable uniforme contenant la couleur émissive.
-		utils::Vec3 emissive;
+		renderer::Vec3 emissive;
 		//! La variable uniforme contenant l'exposant spéculaire.
 		float exponent;
 		//! La variable uniforme contenant l'opacité
@@ -59,9 +59,9 @@ namespace render
 	struct BillboardUbo
 	{
 		//! La variable uniforme contenant les dimensions du billboard.
-		utils::Vec2 dimensions;
+		renderer::Vec2 dimensions;
 		//! La variable uniforme contenant la position de la caméra.
-		utils::Vec3 camera;
+		renderer::Vec3 camera;
 	};
 	//! Les données de l'UBO contenant les variables liées à la ligne.
 	struct LineUbo
@@ -73,7 +73,7 @@ namespace render
 		//! La variable uniforme contenant l'échelle.
 		float lineScale;
 		//! La variable uniforme contenant la position de la caméra.
-		utils::Vec3 camera;
+		renderer::Vec3 camera;
 	};
 	/**
 	*\name Typedefs généralistes.
@@ -81,8 +81,8 @@ namespace render
 	/**\{*/
 	using ByteArray = renderer::ByteArray;
 	using UInt16Array = renderer::UInt16Array;
-	using Vec3Array = utils::Vec3Array;
-	using Vec2Array = utils::Vec2Array;
+	using Vec3Array = renderer::Vec3Array;
+	using Vec2Array = renderer::Vec2Array;
 	/**\}*/
 	/**
 	*\name Prédéclarations.
@@ -326,7 +326,7 @@ namespace render
 	void loadTexture( renderer::StagingBuffer const & stagingBuffer
 		, renderer::CommandBuffer const & commandBuffer
 		, ByteArray const & fileContent
-		, utils::PixelFormat format
+		, renderer::PixelFormat format
 		, Texture & texture );
 	/**
 	*\brief
@@ -352,31 +352,31 @@ namespace render
 	*\name Opérateurs de flux.
 	*/
 	/**\{*/
-	inline std::ostream & operator<<( std::ostream & stream, utils::Vec2 const & value )
+	inline std::ostream & operator<<( std::ostream & stream, renderer::Vec2 const & value )
 	{
 		stream << value.x << ", " << value.y;
 		return stream;
 	}
 
-	inline std::ostream & operator<<( std::ostream & stream, utils::Vec3 const & value )
+	inline std::ostream & operator<<( std::ostream & stream, renderer::Vec3 const & value )
 	{
 		stream << value.x << ", " << value.y << ", " << value.z;
 		return stream;
 	}
 
-	inline std::ostream & operator<<( std::ostream & stream, utils::Vec4 const & value )
+	inline std::ostream & operator<<( std::ostream & stream, renderer::Vec4 const & value )
 	{
 		stream << value.x << ", " << value.y << ", " << value.z << ", " << value.w;
 		return stream;
 	}
 
-	inline std::ostream & operator<<( std::ostream & stream, utils::Quaternion const & value )
+	inline std::ostream & operator<<( std::ostream & stream, renderer::Quaternion const & value )
 	{
 		stream << value.x << ", " << value.y << ", " << value.z << ", " << value.w;
 		return stream;
 	}
 
-	inline std::ostream & operator<<( std::ostream & stream, utils::Mat4 const & value )
+	inline std::ostream & operator<<( std::ostream & stream, renderer::Mat4 const & value )
 	{
 		stream << value[0].x << ", " << value[0].y << ", " << value[0].z << ", " << value[0].w << "\n";
 		stream << value[1].x << ", " << value[1].y << ", " << value[1].z << ", " << value[1].w << "\n";

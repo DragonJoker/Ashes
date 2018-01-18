@@ -38,7 +38,13 @@ namespace gl_renderer
 			, renderer::WrapMode wrapR
 			, renderer::Filter minFilter
 			, renderer::Filter magFilter
-			, renderer::MipmapMode mipFilter );
+			, renderer::MipmapMode mipFilter
+			, float minLod
+			, float maxLod
+			, float lodBias
+			, renderer::BorderColour borderColour
+			, float maxAnisotropy
+			, renderer::CompareOp compareOp );
 		/**
 		*\brief
 		*	Destructeur.

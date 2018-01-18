@@ -70,7 +70,7 @@ typedef struct VkLayerDispatchTable_ {
     PFN_vkCreateQueryPool CreateQueryPool;
     PFN_vkDestroyQueryPool DestroyQueryPool;
     PFN_vkGetQueryPoolResults GetQueryPoolResults;
-    PFN_vkCreateBuffer CreateBuffer;
+	PFN_vkCreateBuffer CreateBuffer;
     PFN_vkDestroyBuffer DestroyBuffer;
     PFN_vkCreateBufferView CreateBufferView;
     PFN_vkDestroyBufferView DestroyBufferView;

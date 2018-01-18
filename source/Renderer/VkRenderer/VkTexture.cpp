@@ -40,8 +40,8 @@ namespace vk_renderer
 	}
 
 	Texture::Texture( Device const & device
-		, utils::PixelFormat format
-		, utils::IVec2 const & dimensions
+		, renderer::PixelFormat format
+		, renderer::IVec2 const & dimensions
 		, VkImage image )
 		: renderer::Texture{ device }
 		, m_device{ device }
@@ -52,14 +52,18 @@ namespace vk_renderer
 	{
 		m_format = format;
 		m_size = dimensions;
-		m_view = std::make_unique< TextureView >( device
+		m_view = std::make_unique< TextureView >( m_device
 			, *this
-			, m_format );
+			, m_format
+			, 0u
+			, 1u
+			, 0u
+			, 1u );
 	}
 
 	Texture::Texture( Device const & device
-		, utils::PixelFormat format
-		, utils::IVec2 const & dimensions
+		, renderer::PixelFormat format
+		, renderer::IVec2 const & dimensions
 		, renderer::ImageUsageFlags usageFlags
 		, renderer::ImageTiling tiling
 		, renderer::MemoryPropertyFlags memoryFlags )
@@ -109,8 +113,8 @@ namespace vk_renderer
 			, modified );
 	}
 
-	void Texture::setImage( utils::PixelFormat format
-		, utils::IVec2 const & size
+	void Texture::setImage( renderer::PixelFormat format
+		, renderer::IVec2 const & size
 		, renderer::ImageUsageFlags usageFlags
 		, renderer::ImageTiling tiling )
 	{
@@ -119,10 +123,17 @@ namespace vk_renderer
 			, usageFlags
 			, tiling
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
+		m_view = std::make_unique< TextureView >( m_device
+			, *this
+			, m_format
+			, 0u
+			, 1u
+			, 0u
+			, 1u );
 	}
 
-	void Texture::doSetImage( utils::PixelFormat format
-		, utils::IVec2 const & size
+	void Texture::doSetImage( renderer::PixelFormat format
+		, renderer::IVec2 const & size
 		, renderer::ImageUsageFlags usageFlags
 		, renderer::ImageTiling tiling
 		, renderer::MemoryPropertyFlags memoryFlags )
@@ -175,10 +186,6 @@ namespace vk_renderer
 		{
 			throw std::runtime_error{ "Image storage binding failed: " + getLastError() };
 		}
-
-		m_view = std::make_unique< TextureView >( m_device
-			, *this
-			, m_format );
 	}
 
 	void Texture::generateMipmaps()const

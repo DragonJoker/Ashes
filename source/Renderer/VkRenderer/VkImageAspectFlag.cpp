@@ -33,22 +33,22 @@ namespace vk_renderer
 	{
 		renderer::ImageAspectFlags result{ 0 };
 
-		if ( utils::checkFlag( flags, VK_IMAGE_ASPECT_COLOR_BIT ) )
+		if ( renderer::checkFlag( flags, VK_IMAGE_ASPECT_COLOR_BIT ) )
 		{
 			result |= renderer::ImageAspectFlag::eColour;
 		}
 
-		if ( utils::checkFlag( flags, VK_IMAGE_ASPECT_DEPTH_BIT ) )
+		if ( renderer::checkFlag( flags, VK_IMAGE_ASPECT_DEPTH_BIT ) )
 		{
 			result |= renderer::ImageAspectFlag::eDepth;
 		}
 
-		if ( utils::checkFlag( flags, VK_IMAGE_ASPECT_STENCIL_BIT ) )
+		if ( renderer::checkFlag( flags, VK_IMAGE_ASPECT_STENCIL_BIT ) )
 		{
 			result |= renderer::ImageAspectFlag::eStencil;
 		}
 
-		if ( utils::checkFlag( flags, VK_IMAGE_ASPECT_METADATA_BIT ) )
+		if ( renderer::checkFlag( flags, VK_IMAGE_ASPECT_METADATA_BIT ) )
 		{
 			result |= renderer::ImageAspectFlag::eMetaData;
 		}

@@ -10,14 +10,26 @@ namespace vk_renderer
 		, renderer::WrapMode wrapR
 		, renderer::Filter minFilter
 		, renderer::Filter magFilter
-		, renderer::MipmapMode mipFilter )
+		, renderer::MipmapMode mipFilter
+		, float minLod
+		, float maxLod
+		, float lodBias
+		, renderer::BorderColour borderColour
+		, float maxAnisotropy
+		, renderer::CompareOp compareOp )
 		: renderer::Sampler{ device
 			, wrapS
 			, wrapT
 			, wrapR
 			, minFilter
 			, magFilter
-			, mipFilter }
+			, mipFilter
+			, minLod
+			, maxLod
+			, lodBias
+			, borderColour
+			, maxAnisotropy
+			, compareOp }
 		, m_device{ device }
 	{
 		VkSamplerCreateInfo createInfo
@@ -31,14 +43,14 @@ namespace vk_renderer
 			convert( wrapS ),                                     // addressModeU
 			convert( wrapT ),                                     // addressModeV
 			convert( wrapR ),                                     // addressModeW
-			0.0f,                                                 // mipLodBias
-			VK_FALSE,                                             // anisotropyEnable
-			1.0f,                                                 // maxAnisotropy
-			VK_FALSE,                                             // compareEnable
-			VK_COMPARE_OP_ALWAYS,                                 // compareOp
-			0.0f,                                                 // minLod
-			0.0f,                                                 // maxLod
-			VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK,              // borderColor
+			lodBias,                                              // mipLodBias
+			maxAnisotropy != 1.0f,                                // anisotropyEnable
+			maxAnisotropy,                                        // maxAnisotropy
+			compareOp != renderer::CompareOp::eAlways,            // compareEnable
+			convert( compareOp ),                                 // compareOp
+			minLod,                                               // minLod
+			maxLod,                                               // maxLod
+			convert( borderColour ),                              // borderColor
 			VK_FALSE                                              // unnormalizedCoordinates
 		};
 		DEBUG_DUMP( createInfo );

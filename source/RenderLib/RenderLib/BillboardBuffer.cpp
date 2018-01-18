@@ -51,7 +51,7 @@ namespace render
 	void BillboardBuffer::cull( renderer::StagingBuffer const & stagingBuffer
 		, renderer::CommandBuffer const & commandBuffer
 		, Camera const & camera
-		, utils::Vec3 const & position
+		, renderer::Vec3 const & position
 		, float scale )
 	{
 		assert( m_vbo && "Billboard VBO is not initialised." );

@@ -11,12 +11,12 @@ namespace vk_renderer
 	BackBuffer::BackBuffer( Device const & device
 		, renderer::SwapChain const & swapChain
 		, uint32_t imageIndex
-		, utils::PixelFormat format
-		, utils::IVec2 const & dimensions
+		, renderer::PixelFormat format
+		, renderer::IVec2 const & dimensions
 		, Texture && texture )
 		: renderer::BackBuffer{ device, swapChain, imageIndex }
 		, m_image{ std::move( texture ) }
-		, m_view{ device, texture, format }
+		, m_view{ device, texture, format, 0u, 1u, 0u, 1u }
 	{
 	}
 }

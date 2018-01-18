@@ -34,28 +34,28 @@ namespace vk_renderer
 			std::string prefix( "" );
 
 			// Error that may result in undefined behaviour
-			if ( utils::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
+			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
 			{
 				prefix += "ERROR:";
 			};
 			// Warnings may hint at unexpected / non-spec API usage
-			if ( utils::checkFlag( flags, VK_DEBUG_REPORT_WARNING_BIT_EXT ) )
+			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_WARNING_BIT_EXT ) )
 			{
 				prefix += "WARNING:";
 			};
 			// May indicate sub-optimal usage of the API
-			if ( utils::checkFlag( flags, VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) )
+			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) )
 			{
 				prefix += "PERFORMANCE:";
 			};
 			// Informal messages that may become handy during debugging
-			if ( utils::checkFlag( flags, VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) )
+			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) )
 			{
 				prefix += "INFO:";
 			}
 			// Diagnostic info from the Vulkan loader and layers
 			// Usually not helpful in terms of API usage, but may help to debug layer and loader problems 
-			if ( utils::checkFlag( flags, VK_DEBUG_REPORT_DEBUG_BIT_EXT ) )
+			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_DEBUG_BIT_EXT ) )
 			{
 				prefix += "DEBUG:";
 			}
@@ -66,7 +66,7 @@ namespace vk_renderer
 
 #if defined( __ANDROID__ )
 
-			if ( utils::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
+			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
 			{
 				LOGE( "%s", debugMessage.str().c_str() );
 			}
@@ -79,7 +79,7 @@ namespace vk_renderer
 
 #else
 
-			if ( utils::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
+			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
 			{
 				std::cerr << debugMessage.str() << std::endl;
 			}

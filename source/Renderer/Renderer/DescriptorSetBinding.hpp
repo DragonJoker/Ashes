@@ -52,7 +52,7 @@ namespace renderer
 	};
 	/**
 	*\brief
-	*	Attache de type sampler + texture.
+	*	Attache de type échantillonneur + texture.
 	*/
 	class CombinedTextureSamplerBinding
 		: public DescriptorSetBinding
@@ -73,7 +73,7 @@ namespace renderer
 		*	L'échantillonneur.
 		*/
 		CombinedTextureSamplerBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, Texture const & view
+			, TextureView const & view
 			, Sampler const & sampler )
 			: DescriptorSetBinding{ layoutBinding }
 			, m_view{ view }
@@ -84,7 +84,7 @@ namespace renderer
 		*\return
 		*	L'image.
 		*/
-		inline Texture const & getTexture()const
+		inline TextureView const & getTexture()const
 		{
 			return m_view;
 		}
@@ -98,7 +98,45 @@ namespace renderer
 		}
 
 	private:
-		Texture const & m_view;
+		TextureView const & m_view;
+		Sampler const & m_sampler;
+	};
+	/**
+	*\brief
+	*	Attache de type échantillonneur.
+	*/
+	class SamplerBinding
+		: public DescriptorSetBinding
+	{
+	public:
+		SamplerBinding( SamplerBinding const & ) = delete;
+		SamplerBinding( SamplerBinding && ) = default;
+		SamplerBinding & operator=( SamplerBinding const & ) = delete;
+		SamplerBinding & operator=( SamplerBinding && ) = default;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] sampler
+		*	L'échantillonneur.
+		*/
+		SamplerBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, Sampler const & sampler )
+			: DescriptorSetBinding{ layoutBinding }
+			, m_sampler{ sampler }
+		{
+		}
+		/**
+		*\return
+		*	L'échantillonneur.
+		*/
+		inline Sampler const & getSampler()const
+		{
+			return m_sampler;
+		}
+
+	private:
 		Sampler const & m_sampler;
 	};
 	/**
@@ -120,9 +158,60 @@ namespace renderer
 		*	L'attache de layout.
 		*\param[in] view
 		*	L'image.
+		*\param[in] layout
+		*	Le layout de l'image.
 		*/
 		SampledTextureBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, Texture const & view )
+			, TextureView const & view
+			, ImageLayout layout )
+			: DescriptorSetBinding{ layoutBinding }
+			, m_view{ view }
+			, m_layout{ layout }
+		{
+		}
+		/**
+		*\return
+		*	L'image.
+		*/
+		inline TextureView const & getView()const
+		{
+			return m_view;
+		}
+		/**
+		*\return
+		*	Le layout de l'image.
+		*/
+		inline ImageLayout getLayout()const
+		{
+			return m_layout;
+		}
+
+	private:
+		TextureView const & m_view;
+		ImageLayout m_layout;
+	};
+	/**
+	*\brief
+	*	Attache de type texture de stockage.
+	*/
+	class StorageTextureBinding
+		: public DescriptorSetBinding
+	{
+	public:
+		StorageTextureBinding( StorageTextureBinding const & ) = delete;
+		StorageTextureBinding( StorageTextureBinding && ) = default;
+		StorageTextureBinding & operator=( StorageTextureBinding const & ) = delete;
+		StorageTextureBinding & operator=( StorageTextureBinding && ) = default;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] view
+		*	L'image.
+		*/
+		StorageTextureBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, TextureView const & view )
 			: DescriptorSetBinding{ layoutBinding }
 			, m_view{ view }
 		{
@@ -131,13 +220,13 @@ namespace renderer
 		*\return
 		*	L'image.
 		*/
-		inline Texture const & getTexture()const
+		inline TextureView const & getView()const
 		{
 			return m_view;
 		}
 
 	private:
-		Texture const & m_view;
+		TextureView const & m_view;
 	};
 	/**
 	*\brief
@@ -153,7 +242,7 @@ namespace renderer
 		UniformBufferBinding & operator=( UniformBufferBinding && ) = default;
 		/**
 		*\brief
-		*	Crée une attache de type tampon de variables uniformes.
+		*	Constructeur.
 		*\param[in] layoutBinding
 		*	L'attache de layout.
 		*\param[in] uniformBuffer
@@ -189,6 +278,163 @@ namespace renderer
 	private:
 		UniformBufferBase const & m_uniformBuffer;
 		uint32_t m_offset;
+	};
+	/**
+	*\brief
+	*	Attache de type tampon de stockage.
+	*/
+	class StorageBufferBinding
+		: public DescriptorSetBinding
+	{
+	public:
+		StorageBufferBinding( StorageBufferBinding const & ) = delete;
+		StorageBufferBinding( StorageBufferBinding && ) = default;
+		StorageBufferBinding & operator=( StorageBufferBinding const & ) = delete;
+		StorageBufferBinding & operator=( StorageBufferBinding && ) = default;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] storageBuffer
+		*	Le tampon GPU.
+		*\return
+		*	L'attache créée.
+		*/
+		StorageBufferBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, BufferBase const & storageBuffer
+			, uint32_t offset )
+			: DescriptorSetBinding{ layoutBinding }
+			, m_buffer{ storageBuffer }
+			, m_offset{ offset }
+		{
+		}
+		/**
+		*\return
+		*	Le tampon GPU.
+		*/
+		inline BufferBase const & getBuffer()const
+		{
+			return m_buffer;
+		}
+		/**
+		*\return
+		*	L'offset.
+		*/
+		inline uint32_t getOffset()const
+		{
+			return m_offset;
+		}
+
+	private:
+		BufferBase const & m_buffer;
+		uint32_t m_offset;
+	};
+	/**
+	*\brief
+	*	Attache de type tampon uniforme de texels.
+	*/
+	class UniformTexelBufferBinding
+		: public DescriptorSetBinding
+	{
+	public:
+		UniformTexelBufferBinding( UniformTexelBufferBinding const & ) = delete;
+		UniformTexelBufferBinding( UniformTexelBufferBinding && ) = default;
+		UniformTexelBufferBinding & operator=( UniformTexelBufferBinding const & ) = delete;
+		UniformTexelBufferBinding & operator=( UniformTexelBufferBinding && ) = default;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] uniformBuffer
+		*	Le tampon.
+		*\param[in] view
+		*	La vue sur le tampon.
+		*\return
+		*	L'attache créée.
+		*/
+		UniformTexelBufferBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, UniformBufferBase const & uniformBuffer
+			, BufferView const & view )
+			: DescriptorSetBinding{ layoutBinding }
+			, m_uniformBuffer{ uniformBuffer }
+			, m_view{ view }
+		{
+		}
+		/**
+		*\return
+		*	Le tampon.
+		*/
+		inline UniformBufferBase const & getBuffer()const
+		{
+			return m_uniformBuffer;
+		}
+		/**
+		*\return
+		*	La vue.
+		*/
+		inline BufferView const & getView()const
+		{
+			return m_view;
+		}
+
+	private:
+		UniformBufferBase const & m_uniformBuffer;
+		BufferView const & m_view;
+	};
+	/**
+	*\brief
+	*	Attache de type tampon de stockage de texels.
+	*/
+	class StorageTexelBufferBinding
+		: public DescriptorSetBinding
+	{
+	public:
+		StorageTexelBufferBinding( StorageTexelBufferBinding const & ) = delete;
+		StorageTexelBufferBinding( StorageTexelBufferBinding && ) = default;
+		StorageTexelBufferBinding & operator=( StorageTexelBufferBinding const & ) = delete;
+		StorageTexelBufferBinding & operator=( StorageTexelBufferBinding && ) = default;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] storageBuffer
+		*	Le tampon.
+		*\param[in] view
+		*	La vue sur le tampon.
+		*\return
+		*	L'attache créée.
+		*/
+		StorageTexelBufferBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, BufferBase const & storageBuffer
+			, BufferView const & view )
+			: DescriptorSetBinding{ layoutBinding }
+			, m_buffer{ storageBuffer }
+			, m_view{ view }
+		{
+		}
+		/**
+		*\return
+		*	Le tampon.
+		*/
+		inline BufferBase const & getBuffer()const
+		{
+			return m_buffer;
+		}
+		/**
+		*\return
+		*	La vue.
+		*/
+		inline BufferView const & getView()const
+		{
+			return m_view;
+		}
+
+	private:
+		BufferBase const & m_buffer;
+		BufferView const & m_view;
 	};
 }
 

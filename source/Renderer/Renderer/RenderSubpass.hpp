@@ -44,7 +44,7 @@ namespace renderer
 		*	The state wanted for this subpass execution.
 		*/
 		RenderSubpass( Device const & device
-			, std::vector< utils::PixelFormat > const & formats
+			, std::vector< PixelFormat > const & formats
 			, RenderSubpassState const & neededState );
 
 	public:

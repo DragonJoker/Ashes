@@ -36,7 +36,7 @@ namespace render
 		*\return
 		*	La matrice de transformation de l'objet.
 		*/
-		inline utils::Mat4 const & transform()const noexcept
+		inline renderer::Mat4 const & transform()const noexcept
 		{
 			return m_transform;
 		}
@@ -46,9 +46,9 @@ namespace render
 		*\param[in] scale
 		*	Le vecteur représentant la mise à l'échelle à appliquer.
 		*/
-		inline void scale( utils::Vec3 const & scale )noexcept
+		inline void scale( renderer::Vec3 const & scale )noexcept
 		{
-			static const utils::Vec3 noChangeScale{ 1, 1, 1 };
+			static const renderer::Vec3 noChangeScale{ 1, 1, 1 };
 
 			if ( scale != noChangeScale )
 			{
@@ -62,7 +62,7 @@ namespace render
 		*\param[in] scale
 		*	Le vecteur représentant la mise à l'échelle à appliquer.
 		*/
-		inline void rescale( utils::Vec3 const & scale )noexcept
+		inline void rescale( renderer::Vec3 const & scale )noexcept
 		{
 			if ( scale != m_scale )
 			{
@@ -76,9 +76,9 @@ namespace render
 		*\param[in] translate
 		*	Le vecteur représentant la translation à appliquer.
 		*/
-		inline void translate( utils::Vec3 const & translate )noexcept
+		inline void translate( renderer::Vec3 const & translate )noexcept
 		{
-			static const utils::Vec3 noChangeTranslate;
+			static const renderer::Vec3 noChangeTranslate;
 
 			if ( translate != noChangeTranslate )
 			{
@@ -92,7 +92,7 @@ namespace render
 		*\param[in] position
 		*	La nouvelle position.
 		*/
-		inline void moveTo( utils::Vec3 const & position )noexcept
+		inline void moveTo( renderer::Vec3 const & position )noexcept
 		{
 			if ( position != m_position )
 			{
@@ -106,9 +106,9 @@ namespace render
 		*\param[in] rotation
 		*	Le quaternion représentant la rotation à appliquer.
 		*/
-		inline void rotate( utils::Quaternion const & rotation )noexcept
+		inline void rotate( renderer::Quaternion const & rotation )noexcept
 		{
-			static const utils::Quaternion noChangeRotate;
+			static const renderer::Quaternion noChangeRotate;
 
 			if ( rotation != noChangeRotate )
 			{
@@ -122,7 +122,7 @@ namespace render
 		*\param[in] orientation
 		*	La nouvelle orientation.
 		*/
-		inline void reorient( utils::Quaternion const & orientation )noexcept
+		inline void reorient( renderer::Quaternion const & orientation )noexcept
 		{
 			if ( orientation != m_orientation )
 			{
@@ -134,7 +134,7 @@ namespace render
 		*\return
 		*	La position de l'objet.
 		*/
-		inline utils::Vec3 const & position()const noexcept
+		inline renderer::Vec3 const & position()const noexcept
 		{
 			return m_position;
 		}
@@ -142,7 +142,7 @@ namespace render
 		*\return
 		*	L'échelle de l'objet.
 		*/
-		inline utils::Vec3 const & scale()const noexcept
+		inline renderer::Vec3 const & scale()const noexcept
 		{
 			return m_scale;
 		}
@@ -150,7 +150,7 @@ namespace render
 		*\return
 		*	L'orientation de l'objet.
 		*/
-		inline utils::Quaternion const & orientation()const noexcept
+		inline renderer::Quaternion const & orientation()const noexcept
 		{
 			return m_orientation;
 		}
@@ -192,13 +192,13 @@ namespace render
 	protected:
 
 		//! La position de l'objet dans le monde.
-		utils::Vec3 m_position{ 0, 0, 0 };
+		renderer::Vec3 m_position{ 0, 0, 0 };
 		//! L'échelle de l'objet dans le monde.
-		utils::Vec3 m_scale{ 1, 1, 1 };
+		renderer::Vec3 m_scale{ 1, 1, 1 };
 		//! L'orientation de l'objet dans le monde.
-		utils::Quaternion m_orientation;
+		renderer::Quaternion m_orientation;
 		//! La matrice de transformation de l'objet.
-		utils::Mat4 m_transform;
+		renderer::Mat4 m_transform;
 		// Le nom de l'objet.
 		std::string m_name;
 		//! Le statut de visibilité.

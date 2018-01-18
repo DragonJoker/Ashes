@@ -89,7 +89,7 @@ namespace render
 		*	La taille voulue pour le FBO.
 		 */
 		Picking( renderer::Device const & device
-			, utils::IVec2 const & size );
+			, renderer::IVec2 const & size );
 		/**
 		*\brief
 		*	Destructeur.
@@ -112,7 +112,7 @@ namespace render
 		*	Picking::NodeType::eNone si rien n'a été pické.
 		*/
 		NodeType pick( renderer::Queue const & queue
-			, utils::IVec2 const & position
+			, renderer::IVec2 const & position
 			, Camera const & camera
 			, float zoomPercent
 			, RenderSubmeshArray const & objects
@@ -154,7 +154,7 @@ namespace render
 		*/
 		Pixel doFboPick( renderer::CommandBuffer const & commandBuffer
 			, renderer::Queue const & queue
-			, utils::IVec2 const & position
+			, renderer::IVec2 const & position
 			, Camera const & camera
 			, float zoomPercent
 			, RenderSubmeshArray const & objects
@@ -176,7 +176,7 @@ namespace render
 			, RenderBillboardArray const & billboards )const;
 		/**
 		*\brief
-		*	Unpacke les données d'un pixel dans un utils::IVec4.
+		*	Unpacke les données d'un pixel dans un renderer::IVec4.
 		*\remarks
 		*	Utilise les informations listées dans la documentation de la
 		*	classe.
@@ -185,10 +185,10 @@ namespace render
 		*\return
 		*	Le données unpacked.
 		*/
-		static utils::IVec4 doUnpackPixel( Pixel pixel );
+		static renderer::IVec4 doUnpackPixel( Pixel pixel );
 		/**
 		*\brief
-		*	Unpacke les données d'un pixel de billboard dans un utils::IVec2.
+		*	Unpacke les données d'un pixel de billboard dans un renderer::IVec2.
 		*\remarks
 		*	Utilise les informations listées dans la documentation de la
 		*	classe.
@@ -197,10 +197,10 @@ namespace render
 		*\return
 		*	Le données unpacked (index de billboard, et index d'instance).
 		*/
-		static utils::IVec2 doUnpackBillboardPixel( Pixel pixel );
+		static renderer::IVec2 doUnpackBillboardPixel( Pixel pixel );
 		/**
 		*\brief
-		*	Unpacke les données d'un pixel dans un utils::IVec4.
+		*	Unpacke les données d'un pixel dans un renderer::IVec4.
 		*\remarks
 		*	Utilise les informations listées dans la documentation de la
 		*	classe.
@@ -209,7 +209,7 @@ namespace render
 		*\return
 		*	Le données unpacked (index de maillage).
 		*/
-		static utils::IVec2 doUnpackObjectPixel( Pixel pixel );
+		static renderer::IVec2 doUnpackObjectPixel( Pixel pixel );
 
 	private:
 		//! La passe de rendu de picking.
@@ -217,7 +217,7 @@ namespace render
 		//! Le renderer.
 		PickingRenderer m_renderer;
 		//! Les dimensions de l'image.
-		utils::IVec2 m_size;
+		renderer::IVec2 m_size;
 		//! La texture recevant le rendu couleur.
 		renderer::TexturePtr m_colour;
 		//! La texture recevant le rendu profondeur.

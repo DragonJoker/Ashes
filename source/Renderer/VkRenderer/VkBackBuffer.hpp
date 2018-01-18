@@ -32,8 +32,8 @@ namespace vk_renderer
 		BackBuffer( Device const & device
 			, renderer::SwapChain const & swapchain
 			, uint32_t imageIndex
-			, utils::PixelFormat format
-			, utils::IVec2 const & dimensions
+			, renderer::PixelFormat format
+			, renderer::IVec2 const & dimensions
 			, Texture && texture );
 		/**
 		*\~french

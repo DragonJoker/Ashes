@@ -51,8 +51,8 @@ namespace vk_renderer
 		*	Le périphérique logique.
 		*/
 		Texture( Device const & device
-			, utils::PixelFormat format
-			, utils::IVec2 const & dimensions
+			, renderer::PixelFormat format
+			, renderer::IVec2 const & dimensions
 			, VkImage image );
 		/**
 		*\brief
@@ -61,8 +61,8 @@ namespace vk_renderer
 		*	Le périphérique logique.
 		*/
 		Texture( Device const & device
-			, utils::PixelFormat format
-			, utils::IVec2 const & dimensions
+			, renderer::PixelFormat format
+			, renderer::IVec2 const & dimensions
 			, renderer::ImageUsageFlags usageFlags
 			, renderer::ImageTiling tiling
 			, renderer::MemoryPropertyFlags memoryFlags );
@@ -119,8 +119,8 @@ namespace vk_renderer
 		*\param[in] size
 		*	Les dimensions de l'image.
 		*/
-		void setImage( utils::PixelFormat format
-			, utils::IVec2 const & size
+		void setImage( renderer::PixelFormat format
+			, renderer::IVec2 const & size
 			, renderer::ImageUsageFlags usageFlags = renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
 			, renderer::ImageTiling tiling = renderer::ImageTiling::eOptimal )override;
 		/**
@@ -190,18 +190,6 @@ namespace vk_renderer
 		renderer::ImageMemoryBarrier makePresentSource()const override;
 		/**
 		*\~french
-		*\return
-		*	La vue sur l'image.
-		*\~english
-		*\return
-		*	The image view.
-		*/
-		inline TextureView const & getView()const
-		{
-			return *m_view;
-		}
-		/**
-		*\~french
 		*\brief
 		*	Opérateur de conversion implicite vers VkImage.
 		*\~english
@@ -222,8 +210,8 @@ namespace vk_renderer
 		*\param[in] size
 		*	Les dimensions de l'image.
 		*/
-		void doSetImage( utils::PixelFormat format
-			, utils::IVec2 const & size
+		void doSetImage( renderer::PixelFormat format
+			, renderer::IVec2 const & size
 			, renderer::ImageUsageFlags usageFlags
 			, renderer::ImageTiling tiling
 			, renderer::MemoryPropertyFlags memoryFlags );
@@ -258,7 +246,6 @@ namespace vk_renderer
 	private:
 		Device const & m_device;
 		VkImage m_image{};
-		TextureViewPtr m_view;
 		ImageStoragePtr m_storage;
 		bool m_owner{};
 		mutable renderer::AccessFlags m_currentAccessMask{};

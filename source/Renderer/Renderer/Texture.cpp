@@ -3,6 +3,7 @@ This file belongs to Renderer.
 See LICENSE file in root folder.
 */
 #include "Texture.hpp"
+#include "TextureView.hpp"
 
 #include "StagingBuffer.hpp"
 
@@ -13,7 +14,7 @@ namespace renderer
 	{
 	}
 
-	void Texture::setImage( utils::PixelFormat format
+	void Texture::setImage( PixelFormat format
 		, IVec2 const & size
 		, ByteArray const & data
 		, StagingBuffer const & stagingBuffer
