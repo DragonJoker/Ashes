@@ -12,7 +12,7 @@ namespace vk_renderer
 		, renderer::SwapChain const & swapChain
 		, uint32_t imageIndex
 		, renderer::PixelFormat format
-		, renderer::IVec2 const & dimensions
+		, renderer::UIVec2 const & dimensions
 		, Texture && texture )
 		: renderer::BackBuffer{ device, swapChain, imageIndex }
 		, m_image{ std::move( texture ) }

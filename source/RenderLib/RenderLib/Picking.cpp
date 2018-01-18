@@ -83,7 +83,7 @@ namespace render
 	}
 
 	Picking::Picking( renderer::Device const & device
-		, renderer::IVec2 const & size )
+		, renderer::UIVec2 const & size )
 		: m_renderPass{ device.createRenderPass( doGetPixelFormats()
 			, doGetSubPasses( device )
 			, doGetColourPassState()
@@ -99,8 +99,12 @@ namespace render
 		, m_commandPool{ device.createCommandPool( device.getGraphicsQueue().getFamilyIndex() ) }
 		, m_commandBuffer{ m_commandPool->createCommandBuffer() }
 	{
-		m_colour->setImage( renderer::PixelFormat::eR8G8B8A8, size, renderer::ImageUsageFlag::eColourAttachment );
-		m_depth->setImage( renderer::PixelFormat::eD16, size, renderer::ImageUsageFlag::eDepthStencilAttachment );
+		m_colour->setImage( renderer::PixelFormat::eR8G8B8A8
+			, size
+			, renderer::ImageUsageFlag::eColourAttachment );
+		m_depth->setImage( renderer::PixelFormat::eD16
+			, size
+			, renderer::ImageUsageFlag::eDepthStencilAttachment );
 		m_frameBuffer = m_renderPass->createFrameBuffer( size
 			, { *m_colour, *m_depth } );
 		m_renderer.initialise();
@@ -111,7 +115,7 @@ namespace render
 	}
 
 	Picking::NodeType Picking::pick( renderer::Queue const & queue
-		, renderer::IVec2 const & position
+		, renderer::UIVec2 const & position
 		, Camera const & camera
 		, float zoomPercent
 		, RenderSubmeshArray const & objects
@@ -141,7 +145,7 @@ namespace render
 
 	Picking::Pixel Picking::doFboPick( renderer::CommandBuffer const & commandBuffer
 		, renderer::Queue const & queue
-		, renderer::IVec2 const & position
+		, renderer::UIVec2 const & position
 		, Camera const & camera
 		, float zoomPercent
 		, RenderSubmeshArray const & objects

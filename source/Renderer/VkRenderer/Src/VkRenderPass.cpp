@@ -178,7 +178,7 @@ namespace vk_renderer
 		DestroyRenderPass( m_device, m_renderPass, nullptr );
 	}
 
-	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::IVec2 const & dimensions
+	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::UIVec2 const & dimensions
 		, renderer::TextureCRefArray const & textures )const
 	{
 		// On v�rifie la compatibilit� des vues demand�s pour le framebuffer � cr�er.

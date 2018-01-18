@@ -34,14 +34,14 @@ namespace gl_renderer
 	}
 
 	FrameBuffer::FrameBuffer( renderer::RenderPass const & renderPass
-		, renderer::IVec2 const & dimensions )
+		, renderer::UIVec2 const & dimensions )
 		: renderer::FrameBuffer{ renderPass, dimensions, renderer::TextureCRefArray{} }
 		, m_frameBuffer{ 0u }
 	{
 	}
 
 	FrameBuffer::FrameBuffer( renderer::RenderPass const & renderPass
-		, renderer::IVec2 const & dimensions
+		, renderer::UIVec2 const & dimensions
 		, renderer::TextureCRefArray const & textures )
 		: renderer::FrameBuffer{ renderPass, dimensions, textures }
 	{

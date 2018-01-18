@@ -43,7 +43,7 @@ namespace render
 		};
 
 		std::vector< OverlayPtr > doSortPerZIndex( OverlayList const & overlays
-			, renderer::IVec2 const & size )
+			, renderer::UIVec2 const & size )
 		{
 			std::vector< OverlayPtr > result;
 
@@ -53,8 +53,8 @@ namespace render
 				auto ovRightBottom = ovLeftTop + overlay.second->size();
 
 				if ( overlay.second->visible()
-					&& ovLeftTop.x < size.x
-					&& ovLeftTop.y < size.y
+					&& ovLeftTop.x < int( size.x )
+					&& ovLeftTop.y < int( size.y )
 					&& ovRightBottom.x > 0
 					&& ovRightBottom.y > 0 )
 				{
@@ -410,7 +410,7 @@ namespace render
 	OverlayRenderer::OverlayRenderer( renderer::Device const & device
 		, renderer::RenderPass const & renderPass
 		, renderer::CommandPool const & commandPool
-		, renderer::IVec2 const & size
+		, renderer::UIVec2 const & size
 		, uint32_t maxCharsPerBuffer )
 		: m_device{ device }
 		, m_renderPass{ renderPass }
@@ -664,7 +664,7 @@ namespace render
 		m_sizeChanged = false;
 	}
 
-	void OverlayRenderer::resize( renderer::IVec2 const & size )
+	void OverlayRenderer::resize( renderer::UIVec2 const & size )
 	{
 		if ( m_viewport.size() != size )
 		{

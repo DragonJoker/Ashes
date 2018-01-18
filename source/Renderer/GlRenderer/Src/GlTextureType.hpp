@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include <RendererPrerequisites.hpp>
 
-namespace renderer
+namespace gl_renderer
 {
 	/**
 	*\brief

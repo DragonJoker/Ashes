@@ -25,15 +25,15 @@ namespace gl_renderer
 		*	Constructeur.
 		*/
 		SwapChain( renderer::Device const & device
-			, renderer::IVec2 const & size );
+			, renderer::UIVec2 const & size );
 		/**
 		*\brief
-		*	Réinitialise la swap chain.
+		*	Rï¿½initialise la swap chain.
 		*/
-		void reset( renderer::IVec2 const & size );
+		void reset( renderer::UIVec2 const & size )override;
 		/**
 		*\brief
-		*	Crée les tampons d'image des back buffers, compatibles avec la passe de rendu donnée.
+		*	Crï¿½e les tampons d'image des back buffers, compatibles avec la passe de rendu donnï¿½e.
 		*\param[in] renderPass
 		*	La passe de rendu.
 		*\return
@@ -42,7 +42,7 @@ namespace gl_renderer
 		renderer::FrameBufferPtrArray createFrameBuffers( renderer::RenderPass const & renderPass )const override;
 		/**
 		*\brief
-		*	Crée les tampons d'image des back buffers, compatibles avec la passe de rendu donnée.
+		*	Crï¿½e les tampons d'image des back buffers, compatibles avec la passe de rendu donnï¿½e.
 		*\param[in] renderPass
 		*	La passe de rendu.
 		*\return
@@ -51,7 +51,7 @@ namespace gl_renderer
 		renderer::CommandBufferPtrArray createCommandBuffers()const override;
 		/**
 		*\brief
-		*	Enregistre des commandes de pré-rendu.
+		*	Enregistre des commandes de prï¿½-rendu.
 		*\param[in] index
 		*	L'indice de l'image.
 		*\param[in] commandBuffer
@@ -71,17 +71,17 @@ namespace gl_renderer
 			, renderer::CommandBuffer const & commandBuffer )const override;;
 		/**
 		*\return
-		*	Récupère les ressources de rendu actives.
+		*	Rï¿½cupï¿½re les ressources de rendu actives.
 		*/
 		renderer::RenderingResources * getResources()override;
 		/**
 		*\return
-		*	Présente les ressources de rendu.
+		*	Prï¿½sente les ressources de rendu.
 		*/
 		void present( renderer::RenderingResources & resources )override;
 		/**
 		*\brief
-		*	Définit la couleur de vidage de la swapchain.
+		*	Dï¿½finit la couleur de vidage de la swapchain.
 		*\param[in] value
 		*	La nouvelle valeur.
 		*/
@@ -91,7 +91,7 @@ namespace gl_renderer
 		}
 		/**
 		*\brief
-		*	Définit la couleur de vidage de la swapchain.
+		*	Dï¿½finit la couleur de vidage de la swapchain.
 		*\param[in] value
 		*	La nouvelle valeur.
 		*/
@@ -103,7 +103,7 @@ namespace gl_renderer
 		*\return
 		*	Les dimensions de la swap chain.
 		*/
-		inline renderer::IVec2 getDimensions()const override
+		inline renderer::UIVec2 getDimensions()const override
 		{
 			return m_dimensions;
 		}

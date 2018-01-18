@@ -98,7 +98,7 @@ namespace vk_renderer
 		*\return
 		*	The created frame buffer.
 		*/
-		renderer::FrameBufferPtr createFrameBuffer( renderer::IVec2 const & dimensions
+		renderer::FrameBufferPtr createFrameBuffer( renderer::UIVec2 const & dimensions
 			, renderer::TextureCRefArray const & textures )const override;
 		std::vector< VkClearValue > const & getClearValues (renderer::ClearValueArray const & clearValues)const;
 		/**

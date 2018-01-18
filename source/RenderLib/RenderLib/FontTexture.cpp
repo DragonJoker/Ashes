@@ -15,7 +15,7 @@ namespace render
 			uint32_t const count = uint32_t( std::ceil( std::distance
 				( font.begin()
 				, font.end() ) / 16.0 ) );
-			renderer::IVec2 size{ maxWidth * 16, maxHeight * count };
+			renderer::UIVec2 size{ maxWidth * 16, maxHeight * count };
 			auto it = font.begin();
 			uint32_t const totalWidth = size.x;
 			uint32_t offsetY = size.y - maxHeight;

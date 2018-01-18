@@ -33,7 +33,7 @@ namespace vk_renderer
 			, renderer::SwapChain const & swapchain
 			, uint32_t imageIndex
 			, renderer::PixelFormat format
-			, renderer::IVec2 const & dimensions
+			, renderer::UIVec2 const & dimensions
 			, Texture && texture );
 		/**
 		*\~french

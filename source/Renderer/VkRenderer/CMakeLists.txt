@@ -86,7 +86,7 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 		Renderer
 	)
 
-	parse_subdir_files( vulkan "vulkan" )
+	parse_subdir_files( Src/vulkan "vulkan" )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
 else ()

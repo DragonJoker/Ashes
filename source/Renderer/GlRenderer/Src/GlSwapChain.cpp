@@ -12,13 +12,13 @@
 namespace gl_renderer
 {
 	SwapChain::SwapChain( renderer::Device const & device
-		, renderer::IVec2 const & size )
+		, renderer::UIVec2 const & size )
 		: renderer::SwapChain{ device, size }
 	{
 		m_renderingResources.emplace_back( std::make_unique< RenderingResources >( device ) );
 	}
 
-	void SwapChain::reset( renderer::IVec2 const & size )
+	void SwapChain::reset( renderer::UIVec2 const & size )
 	{
 		m_dimensions = size;
 		doResetSwapChain();

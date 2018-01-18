@@ -138,7 +138,7 @@ namespace render
 		explicit OverlayRenderer( renderer::Device const & device
 			, renderer::RenderPass const & renderPass
 			, renderer::CommandPool const & commandPool
-			, renderer::IVec2 const & size
+			, renderer::UIVec2 const & size
 			, uint32_t maxCharsPerBuffer = 600 );
 		/**
 		*brief
@@ -200,7 +200,7 @@ namespace render
 		*param[in] size
 		*	Les dimensions de la fenêtre de rendu.
 		*/
-		void resize( renderer::IVec2 const & size );
+		void resize( renderer::UIVec2 const & size );
 		/**
 		*brief
 		*	Met à jour les tampons des incrustations.

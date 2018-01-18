@@ -41,7 +41,7 @@ namespace vk_renderer
 
 	Texture::Texture( Device const & device
 		, renderer::PixelFormat format
-		, renderer::IVec2 const & dimensions
+		, renderer::UIVec2 const & dimensions
 		, VkImage image )
 		: renderer::Texture{ device }
 		, m_device{ device }
@@ -51,7 +51,7 @@ namespace vk_renderer
 		, m_currentAccessMask{ renderer::AccessFlag::eMemoryRead }
 	{
 		m_format = format;
-		m_size = dimensions;
+		m_size = renderer::UIVec3{ dimensions[0], dimensions[1], 0u };
 		m_view = std::make_unique< TextureView >( m_device
 			, *this
 			, m_format
@@ -63,7 +63,7 @@ namespace vk_renderer
 
 	Texture::Texture( Device const & device
 		, renderer::PixelFormat format
-		, renderer::IVec2 const & dimensions
+		, renderer::UIVec2 const & dimensions
 		, renderer::ImageUsageFlags usageFlags
 		, renderer::ImageTiling tiling
 		, renderer::MemoryPropertyFlags memoryFlags )
@@ -73,9 +73,9 @@ namespace vk_renderer
 		, m_currentLayout{ renderer::ImageLayout::eUndefined }
 		, m_currentAccessMask{ 0 }
 	{
-		doSetImage( format
-			, dimensions
-			, usageFlags
+		m_format = format;
+		m_size = renderer::UIVec3{ dimensions[0], dimensions[1], 0u };
+		doSetImage2D( usageFlags
 			, tiling
 			, memoryFlags );
 	}
@@ -113,34 +113,63 @@ namespace vk_renderer
 			, modified );
 	}
 
-	void Texture::setImage( renderer::PixelFormat format
-		, renderer::IVec2 const & size
-		, renderer::ImageUsageFlags usageFlags
-		, renderer::ImageTiling tiling )
-	{
-		doSetImage( format
-			, size
-			, usageFlags
-			, tiling
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_view = std::make_unique< TextureView >( m_device
-			, *this
-			, m_format
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
-	}
-
-	void Texture::doSetImage( renderer::PixelFormat format
-		, renderer::IVec2 const & size
-		, renderer::ImageUsageFlags usageFlags
+	void Texture::doSetImage1D( renderer::ImageUsageFlags usageFlags
 		, renderer::ImageTiling tiling
 		, renderer::MemoryPropertyFlags memoryFlags )
 	{
 		assert( m_owner );
-		m_format = format;
-		m_size = size;
+		VkImageCreateInfo createInfo
+		{
+			VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+			nullptr,
+			0,                                                    // flags
+			VK_IMAGE_TYPE_1D,                                     // imageType
+			convert( m_format ),                                  // format
+			{                                                     // extent
+				uint32_t( m_size[0] ),                                // width
+				1u,                                                   // height
+				1u                                                    // depth
+			},
+			1,                                                    // mipLevels
+			m_layerCount ? m_layerCount : 1u,                     // arrayLayers
+			convert( m_samples ),                                 // samples
+			convert( tiling ),                                    // tiling
+			convert( usageFlags ),                                // usage
+			VK_SHARING_MODE_EXCLUSIVE,                            // sharingMode
+			0,                                                    // queueFamilyIndexCount
+			nullptr,                                              // pQueueFamilyIndices
+			VK_IMAGE_LAYOUT_UNDEFINED                             // initialLayout
+		};
+		DEBUG_DUMP( createInfo );
+		auto res = CreateImage( m_device
+			, &createInfo
+			, nullptr
+			, &m_image );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Image creation failed: " + getLastError() };
+		}
+
+		m_storage = std::make_unique< ImageStorage >( m_device
+			, m_image
+			, convert( memoryFlags ) );
+		res = BindImageMemory( m_device
+			, m_image
+			, *m_storage
+			, 0 );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Image storage binding failed: " + getLastError() };
+		}
+	}
+
+	void Texture::doSetImage2D( renderer::ImageUsageFlags usageFlags
+		, renderer::ImageTiling tiling
+		, renderer::MemoryPropertyFlags memoryFlags )
+	{
+		assert( m_owner );
 		VkImageCreateInfo createInfo
 		{
 			VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
@@ -149,13 +178,65 @@ namespace vk_renderer
 			VK_IMAGE_TYPE_2D,                                     // imageType
 			convert( m_format ),                                  // format
 			{                                                     // extent
-				uint32_t( m_size.x ),                                 // width
-				uint32_t( m_size.y ),                                 // height
+				uint32_t( m_size[0] ),                                // width
+				uint32_t( m_size[1] ),                                // height
 				1                                                     // depth
 			},
 			1,                                                    // mipLevels
-			1,                                                    // arrayLayers
-			VK_SAMPLE_COUNT_1_BIT,                                // samples
+			m_layerCount ? m_layerCount : 1u,                     // arrayLayers
+			convert( m_samples ),                                 // samples
+			convert( tiling ),                                    // tiling
+			convert( usageFlags ),                                // usage
+			VK_SHARING_MODE_EXCLUSIVE,                            // sharingMode
+			0,                                                    // queueFamilyIndexCount
+			nullptr,                                              // pQueueFamilyIndices
+			VK_IMAGE_LAYOUT_UNDEFINED                             // initialLayout
+		};
+		DEBUG_DUMP( createInfo );
+		auto res = CreateImage( m_device
+			, &createInfo
+			, nullptr
+			, &m_image );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Image creation failed: " + getLastError() };
+		}
+
+		m_storage = std::make_unique< ImageStorage >( m_device
+			, m_image
+			, convert( memoryFlags ) );
+		res = BindImageMemory( m_device
+			, m_image
+			, *m_storage
+			, 0 );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Image storage binding failed: " + getLastError() };
+		}
+	}
+
+	void Texture::doSetImage3D( renderer::ImageUsageFlags usageFlags
+		, renderer::ImageTiling tiling
+		, renderer::MemoryPropertyFlags memoryFlags )
+	{
+		assert( m_owner );
+		VkImageCreateInfo createInfo
+		{
+			VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+			nullptr,
+			0,                                                    // flags
+			VK_IMAGE_TYPE_3D,                                     // imageType
+			convert( m_format ),                                  // format
+			{                                                     // extent
+				uint32_t( m_size[0] ),                                // width
+				uint32_t( m_size[1] ),                                // height
+				uint32_t( m_size[2] ),                                // depth
+			},
+			1u,                                                   // mipLevels
+			1u,                                                   // arrayLayers
+			convert( m_samples ),                                 // samples
 			convert( tiling ),                                    // tiling
 			convert( usageFlags ),                                // usage
 			VK_SHARING_MODE_EXCLUSIVE,                            // sharingMode

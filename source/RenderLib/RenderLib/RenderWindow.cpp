@@ -77,7 +77,7 @@ namespace render
 	//*********************************************************************************************
 
 	RenderWindow::RenderWindow( renderer::Device const & device
-		, renderer::IVec2 const & dimensions
+		, renderer::UIVec2 const & dimensions
 		, render::FontLoader & loader
 		, bool debug )
 		: m_device{ device }
@@ -260,7 +260,7 @@ namespace render
 		}
 	}
 
-	void RenderWindow::resize( renderer::IVec2 const & size )noexcept
+	void RenderWindow::resize( renderer::UIVec2 const & size )noexcept
 	{
 		m_size = size;
 		m_viewport.resize( m_size );

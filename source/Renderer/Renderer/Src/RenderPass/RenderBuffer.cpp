@@ -11,7 +11,7 @@ namespace renderer
 {
 	RenderBuffer::RenderBuffer( Device const & device
 		, PixelFormat format
-		, IVec2 const & size )
+		, UIVec2 const & size )
 		: m_device{ device }
 		, m_format{ format }
 		, m_size{ size }

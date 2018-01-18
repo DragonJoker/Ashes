@@ -1,6 +1,6 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace vk_renderer
+namespace gl_renderer
 {
 	GLenum convert( renderer::TextureType const & value )
 	{

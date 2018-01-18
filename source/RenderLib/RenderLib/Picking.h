@@ -89,7 +89,7 @@ namespace render
 		*	La taille voulue pour le FBO.
 		 */
 		Picking( renderer::Device const & device
-			, renderer::IVec2 const & size );
+			, renderer::UIVec2 const & size );
 		/**
 		*\brief
 		*	Destructeur.
@@ -112,7 +112,7 @@ namespace render
 		*	Picking::NodeType::eNone si rien n'a été pické.
 		*/
 		NodeType pick( renderer::Queue const & queue
-			, renderer::IVec2 const & position
+			, renderer::UIVec2 const & position
 			, Camera const & camera
 			, float zoomPercent
 			, RenderSubmeshArray const & objects
@@ -154,7 +154,7 @@ namespace render
 		*/
 		Pixel doFboPick( renderer::CommandBuffer const & commandBuffer
 			, renderer::Queue const & queue
-			, renderer::IVec2 const & position
+			, renderer::UIVec2 const & position
 			, Camera const & camera
 			, float zoomPercent
 			, RenderSubmeshArray const & objects
@@ -217,7 +217,7 @@ namespace render
 		//! Le renderer.
 		PickingRenderer m_renderer;
 		//! Les dimensions de l'image.
-		renderer::IVec2 m_size;
+		renderer::UIVec2 m_size;
 		//! La texture recevant le rendu couleur.
 		renderer::TexturePtr m_colour;
 		//! La texture recevant le rendu profondeur.

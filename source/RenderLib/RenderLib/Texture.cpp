@@ -1,5 +1,6 @@
 #include "Texture.h"
 
+#include <Buffer/StagingBuffer.hpp>
 #include <Core/Device.hpp>
 #include <Image/Sampler.hpp>
 #include <Image/Texture.hpp>
@@ -22,7 +23,7 @@ namespace render
 	}
 
 	void Texture::image( renderer::PixelFormat format
-		, renderer::IVec2 const & size
+		, renderer::UIVec2 const & size
 		, ByteArray const & data
 		, renderer::StagingBuffer const & stagingBuffer
 		, renderer::CommandBuffer const & commandBuffer )
@@ -31,12 +32,12 @@ namespace render
 		m_size = size;
 		m_texture->setImage( m_format
 			, m_size
-			, data
-			, stagingBuffer
-			, commandBuffer
 			, renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
 			, m_format == renderer::PixelFormat::eR8G8B8
 				? renderer::ImageTiling::eLinear
 				: renderer::ImageTiling::eOptimal );
+		stagingBuffer.copyTextureData( commandBuffer
+			, data
+			, *m_texture );
 	}
 }
