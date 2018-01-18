@@ -8,20 +8,20 @@
 #include "Submesh.h"
 #include "Texture.h"
 
-#include <Renderer/Pipeline/ColourBlendState.hpp>
-#include <Renderer/Pipeline/ColourBlendStateAttachment.hpp>
-#include <Renderer/Pipeline/DepthStencilState.hpp>
-#include <Renderer/Descriptor/DescriptorSet.hpp>
-#include <Renderer/Descriptor/DescriptorSetLayout.hpp>
-#include <Renderer/Descriptor/DescriptorSetLayoutBinding.hpp>
-#include <Renderer/Descriptor/DescriptorSetPool.hpp>
-#include <Renderer/Sync/ImageMemoryBarrier.hpp>
-#include <Renderer/Pipeline/MultisampleState.hpp>
-#include <Renderer/Pipeline/PipelineLayout.hpp>
-#include <Renderer/Core/RenderingResources.hpp>
-#include <Renderer/RenderPass/RenderPass.hpp>
-#include <Renderer/Buffer/StagingBuffer.hpp>
-#include <Renderer/Pipeline/VertexLayout.hpp>
+#include <Pipeline/ColourBlendState.hpp>
+#include <Pipeline/ColourBlendStateAttachment.hpp>
+#include <Pipeline/DepthStencilState.hpp>
+#include <Descriptor/DescriptorSet.hpp>
+#include <Descriptor/DescriptorSetLayout.hpp>
+#include <Descriptor/DescriptorSetLayoutBinding.hpp>
+#include <Descriptor/DescriptorSetPool.hpp>
+#include <Sync/ImageMemoryBarrier.hpp>
+#include <Pipeline/MultisampleState.hpp>
+#include <Pipeline/PipelineLayout.hpp>
+#include <Core/RenderingResources.hpp>
+#include <RenderPass/RenderPass.hpp>
+#include <Buffer/StagingBuffer.hpp>
+#include <Pipeline/VertexLayout.hpp>
 
 #include <algorithm>
 

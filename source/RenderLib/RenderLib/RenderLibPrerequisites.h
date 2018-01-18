@@ -8,10 +8,10 @@
 #define ___RenderLib_RenderLibPrerequisites_HPP___
 #pragma once
 
-#include <Renderer/RendererPrerequisites.hpp>
-#include <Renderer/Descriptor/DescriptorSet.hpp>
-#include <Renderer/Buffer/GeometryBuffers.hpp>
-#include <Renderer/Pipeline/VertexLayout.hpp>
+#include <RendererPrerequisites.hpp>
+#include <Descriptor/DescriptorSet.hpp>
+#include <Buffer/GeometryBuffers.hpp>
+#include <Pipeline/VertexLayout.hpp>
 
 #include <Utils/Factory.hpp>
 #include <Utils/Quaternion.hpp>

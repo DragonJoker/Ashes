@@ -1,8 +1,8 @@
 #include "Prerequisites.hpp"
 
-#include <Renderer/Core/Connection.hpp>
-#include <Renderer/Core/PlatformWindowHandle.hpp>
-#include <Renderer/Core/Renderer.hpp>
+#include <Core/Connection.hpp>
+#include <Core/PlatformWindowHandle.hpp>
+#include <Core/Renderer.hpp>
 
 #if defined( __WXGTK__ )
 #	include <gdk/gdkx.h>

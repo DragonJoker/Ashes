@@ -10,8 +10,8 @@
 
 #include "RenderLibPrerequisites.h"
 
-#include <Renderer/Image/Sampler.hpp>
-#include <Renderer/Image/Texture.hpp>
+#include <Image/Sampler.hpp>
+#include <Image/Texture.hpp>
 
 namespace render
 {

@@ -3,8 +3,8 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
-#include <Renderer/Core/Connection.hpp>
-#include <Renderer/Core/Device.hpp>
+#include <Core/Connection.hpp>
+#include <Core/Device.hpp>
 
 #include <Utils/Transform.hpp>
 

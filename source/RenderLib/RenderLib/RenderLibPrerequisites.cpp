@@ -9,13 +9,13 @@
 #include "Submesh.h"
 #include "Texture.h"
 
-#include <Renderer/Buffer/Buffer.hpp>
-#include <Renderer/Descriptor/DescriptorSet.hpp>
-#include <Renderer/Descriptor/DescriptorSetLayout.hpp>
-#include <Renderer/Descriptor/DescriptorSetPool.hpp>
-#include <Renderer/Descriptor/DescriptorSetLayoutBinding.hpp>
-#include <Renderer/Core/Device.hpp>
-#include <Renderer/Buffer/UniformBuffer.hpp>
+#include <Buffer/Buffer.hpp>
+#include <Descriptor/DescriptorSet.hpp>
+#include <Descriptor/DescriptorSetLayout.hpp>
+#include <Descriptor/DescriptorSetPool.hpp>
+#include <Descriptor/DescriptorSetLayoutBinding.hpp>
+#include <Core/Device.hpp>
+#include <Buffer/UniformBuffer.hpp>
 
 #include <Utils/StringUtils.hpp>
 #include <Utils/Converter.hpp>

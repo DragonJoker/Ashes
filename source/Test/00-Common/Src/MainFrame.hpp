@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <Renderer/Core/Renderer.hpp>
+#include <Core/Renderer.hpp>
 
 #include <wx/frame.h>
 

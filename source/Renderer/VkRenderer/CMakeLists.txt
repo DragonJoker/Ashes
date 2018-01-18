@@ -28,11 +28,11 @@ else ()
 endif ()
 
 set( ${PROJECT_NAME}_CONFIG_HEADER
-	${CMAKE_CURRENT_BINARY_DIR}/VkConfig.hpp
+	${CMAKE_CURRENT_BINARY_DIR}/Src/VkConfig.hpp
 )
 
 configure_file(
-	${CMAKE_CURRENT_SOURCE_DIR}/VkConfig.hpp.in
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/VkConfig.hpp.in
 	${${PROJECT_NAME}_CONFIG_HEADER}
 	NEWLINE_STYLE LF
 )
@@ -40,23 +40,24 @@ configure_file(
 if ( glslang_FOUND AND SPIRV_FOUND )
 	include_directories(
 		${CMAKE_SOURCE_DIR}
-		${CMAKE_BINARY_DIR}/Renderer/Renderer
-		${CMAKE_SOURCE_DIR}/Renderer/Renderer
-		${CMAKE_CURRENT_BINARY_DIR}
+		${CMAKE_BINARY_DIR}/Renderer/Renderer/Src
+		${CMAKE_SOURCE_DIR}/Renderer/Renderer/Src
+		${CMAKE_CURRENT_SOURCE_DIR}/Src
+		${CMAKE_CURRENT_BINARY_DIR}/Src
 	)
 
 	file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-		*.c
-		*.cc
-		*.cpp
+		Src/*.c
+		Src/*.cc
+		Src/*.cpp
 	)
 
 	file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-		*.h
-		*.hh
-		*.hpp
-		*.inl
-		*.inc
+		Src/*.h
+		Src/*.hh
+		Src/*.hpp
+		Src/*.inl
+		Src/*.inc
 	)
 
 	add_definitions( -DVkRenderer_EXPORTS )
@@ -68,8 +69,8 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 	)
 
 	add_target_precompiled_header( ${PROJECT_NAME}
-		VkRendererPch.hpp
-		VkRendererPch.cpp
+		Src/VkRendererPch.hpp
+		Src/VkRendererPch.cpp
 		${CMAKE_CXX_FLAGS}
 		${${PROJECT_NAME}_SRC_FILES}
 	)

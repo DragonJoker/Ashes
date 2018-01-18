@@ -2,7 +2,7 @@
 
 #include "Submesh.h"
 
-#include <Renderer/Buffer/StagingBuffer.hpp>
+#include <Buffer/StagingBuffer.hpp>
 
 namespace render
 {

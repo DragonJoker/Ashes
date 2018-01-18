@@ -8,7 +8,7 @@
 #define ___RenderLib_Mesh_H___
 #pragma once
 
-#include <Renderer/Buffer/VertexBuffer.hpp>
+#include <Buffer/VertexBuffer.hpp>
 
 #include "Material.h"
 

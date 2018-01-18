@@ -5,14 +5,15 @@ find_package( OpenGL )
 if ( OpenGL_FOUND )
 	include_directories(
 		${CMAKE_SOURCE_DIR}
-		${CMAKE_BINARY_DIR}/Renderer/Renderer
-		${CMAKE_SOURCE_DIR}/Renderer/Renderer
-		${CMAKE_CURRENT_BINARY_DIR}
+		${CMAKE_BINARY_DIR}/Renderer/Renderer/Src
+		${CMAKE_SOURCE_DIR}/Renderer/Renderer/Src
+		${CMAKE_CURRENT_SOURCE_DIR}/Src
+		${CMAKE_CURRENT_BINARY_DIR}/Src
 	)
 
 	file( GLOB_RECURSE ${PROJECT_NAME}_CXX_FILES
-		*.cc
-		*.cpp
+		Src/*.cc
+		Src/*.cpp
 	)
 
 	file( GLOB_RECURSE ${PROJECT_NAME}_C_FILES
@@ -20,11 +21,11 @@ if ( OpenGL_FOUND )
 	)
 
 	file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-		*.h
-		*.hh
-		*.hpp
-		*.inl
-		*.inc
+		Src/*.h
+		Src/*.hh
+		Src/*.hpp
+		Src/*.inl
+		Src/*.inc
 	)
 
 	add_definitions(
@@ -39,8 +40,8 @@ if ( OpenGL_FOUND )
 	)
 
 	add_target_precompiled_header( ${PROJECT_NAME}
-		GlRendererPch.hpp
-		GlRendererPch.cpp
+		Src/GlRendererPch.hpp
+		Src/GlRendererPch.cpp
 		${CMAKE_CXX_FLAGS}
 		${${PROJECT_NAME}_CXX_FILES}
 	)

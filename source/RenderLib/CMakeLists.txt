@@ -1,8 +1,7 @@
 include_directories(
 	${CMAKE_SOURCE_DIR}/RenderLib
-	${CMAKE_BINARY_DIR}/Renderer/Renderer
-	${CMAKE_SOURCE_DIR}/Renderer/
-	${CMAKE_SOURCE_DIR}/Renderer/Renderer
+	${CMAKE_BINARY_DIR}/Renderer/Renderer/Src
+	${CMAKE_SOURCE_DIR}/Renderer/Renderer/Src
 )
 
 add_subdirectory( RenderLib )
