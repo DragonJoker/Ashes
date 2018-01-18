@@ -64,7 +64,7 @@ namespace render
 		*	Le loader de police.
 		*/
 		RenderWindow( renderer::Device const & device
-			, renderer::IVec2 const & dimensions
+			, renderer::UIVec2 const & dimensions
 			, render::FontLoader & loader
 			, bool debug );
 		/**
@@ -112,7 +112,7 @@ namespace render
 		*\param[in] size
 		*	Les dimensions du viewport.
 		*/
-		void resize( renderer::IVec2 const & size )noexcept;
+		void resize( renderer::UIVec2 const & size )noexcept;
 		/**
 		*\return
 		*	Récupère les ressources de rendu par défaut.
@@ -245,7 +245,7 @@ namespace render
 		//! La scène qui sera dessinée.
 		Scene m_scene;
 		//! Les dimensions de la fenêtre.
-		renderer::IVec2 m_size;
+		renderer::UIVec2 m_size;
 		//! L'échantillonneur de la texture de la cible de rendu.
 		renderer::SamplerPtr m_sampler;
 		//! Le programme shader utilisé pour le rendu dans la fenêtre.

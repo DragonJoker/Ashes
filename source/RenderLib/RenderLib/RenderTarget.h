@@ -33,7 +33,7 @@ namespace render
 		*	Le format des pixels de la texture recevant le rendu.
 		*/
 		RenderTarget( renderer::Device const & device
-			, renderer::IVec2 const & dimensions
+			, renderer::UIVec2 const & dimensions
 			, renderer::PixelFormat format );
 		/**
 		*\brief
@@ -73,7 +73,7 @@ namespace render
 		*\return
 		*	Les dimensions de la cible.
 		*/
-		inline renderer::IVec2 const & getDimensions()const noexcept
+		inline renderer::UIVec2 const & getDimensions()const noexcept
 		{
 			return m_size;
 		}
@@ -107,7 +107,7 @@ namespace render
 
 	private:
 		//! Les dimensions de la cible.
-		renderer::IVec2 m_size;
+		renderer::UIVec2 m_size;
 		//! La passe de rendu.
 		renderer::RenderPassPtr m_renderPass;
 		//! La texture recevant le rendu couleurs.

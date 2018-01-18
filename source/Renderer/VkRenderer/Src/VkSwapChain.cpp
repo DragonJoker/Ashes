@@ -16,18 +16,17 @@
 namespace vk_renderer
 {
 	SwapChain::SwapChain( Device const & device
-		, renderer::IVec2 const & size )
+		, renderer::UIVec2 const & size )
 		: renderer::SwapChain{ device, size }
 		, m_device{ device }
 		, m_surface{ device.getPresentSurface() }
-		, m_dimensions{ size }
 	{
 		m_surfaceCapabilities = m_device.getSurfaceCapabilities();
 
 		// On choisit le format de la surface.
 		doSelectFormat( m_device.getPhysicalDevice() );
 
-		// On cr�e la swap chain.
+		// On crée la swap chain.
 		doCreateSwapChain();
 
 		// Puis les tampons d'images.
@@ -47,7 +46,7 @@ namespace vk_renderer
 		DestroySwapchainKHR( m_device, m_swapChain, nullptr );
 	}
 
-	void SwapChain::reset( renderer::IVec2 const & size )
+	void SwapChain::reset( renderer::UIVec2 const & size )
 	{
 		m_dimensions = size;
 		doResetSwapChain();
@@ -248,25 +247,25 @@ namespace vk_renderer
 		// width et height valent soient tous les deux -1 ou tous les deux autre chose que -1.
 		if ( m_surfaceCapabilities.currentExtent.width == uint32_t( -1 ) )
 		{
-			// Si les dimensions de la surface sont ind�finies, elles sont initialis�es
+			// Si les dimensions de la surface sont indéfinies, elles sont initialisées
 			// aux dimensions des images requises.
 			swapChainExtent.width = m_dimensions.x;
 			swapChainExtent.height = m_dimensions.y;
 		}
 		else
 		{
-			// Si les dimensions de la surface sont d�finies, alors les dimensions de la swap chain
+			// Si les dimensions de la surface sont définies, alors les dimensions de la swap chain
 			// doivent correspondre.
 			swapChainExtent = m_surfaceCapabilities.currentExtent;
 		}
 
-		// Parfois, les images doivent �tre transform�es avant d'�tre pr�sent�es (lorsque l'orientation
-		// du p�riph�rique est diff�rente de l'orientation par d�faut, par exemple).
-		// Si la transformation sp�cifi�e est diff�rente de la transformation par d�faut, le moteur de 
-		// pr�sentation va transformer l'image lors de la pr�sentation. Cette op�ration peut avoir un
+		// Parfois, les images doivent être transformées avant d'être présentées (lorsque l'orientation
+		// du périphérique est différente de l'orientation par défaut, par exemple).
+		// Si la transformation spécifiée est différente de la transformation par défaut, le moteur de 
+		// présentation va transformer l'image lors de la présentation. Cette opération peut avoir un
 		// impact sur les performances sur certaines plateformes.
-		// Ici, nous ne voulons aucune transformation, donc si la transformation identit� est support�e,
-		// nous l'utilisons, sinon nous utiliserons la m�me transformation que la transformation courante.
+		// Ici, nous ne voulons aucune transformation, donc si la transformation identité est supportée,
+		// nous l'utilisons, sinon nous utiliserons la même transformation que la transformation courante.
 		VkSurfaceTransformFlagBitsKHR preTransform{};
 
 		if ( m_surfaceCapabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR )
@@ -312,7 +311,7 @@ namespace vk_renderer
 			throw std::runtime_error{ "Swap chain creation failed: " + getLastError() };
 		}
 
-		// On supprime la pr�c�dente swap chain au cas o� il y en avait une.
+		// On supprime la précédente swap chain au cas où il y en avait une.
 		if ( oldSwapChain != VK_NULL_HANDLE )
 		{
 			DestroySwapchainKHR( m_device
@@ -323,7 +322,7 @@ namespace vk_renderer
 
 	void SwapChain::doCreateBackBuffers()
 	{
-		// On r�cup�re les images de la swapchain.
+		// On récupère les images de la swapchain.
 		uint32_t imageCount{ 0u };
 		auto res = GetSwapchainImagesKHR( m_device
 			, m_swapChain
@@ -346,7 +345,7 @@ namespace vk_renderer
 			throw std::runtime_error{ "Swap chain images retrieval failed: " + getLastError() };
 		}
 
-		// Et on cr�e des BackBuffers � partir de ces images.
+		// Et on crée des BackBuffers à partir de ces images.
 		m_backBuffers.reserve( imageCount );
 		uint32_t index{ 0u };
 
@@ -409,7 +408,7 @@ namespace vk_renderer
 		m_surfaceCapabilities = m_device.getSurfaceCapabilities();
 		// On choisit le format de la surface.
 		doSelectFormat( m_device.getPhysicalDevice() );
-		// On cr�e la swap chain.
+		// On crée la swap chain.
 		doCreateSwapChain();
 		// Puis les tampons d'images.
 		doCreateBackBuffers();

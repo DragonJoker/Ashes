@@ -67,7 +67,7 @@ void Engine::onMinimise()
 {
 }
 
-void Engine::onRestore( renderer::IVec2 const & event )
+void Engine::onRestore( renderer::UIVec2 const & event )
 {
 	if ( m_window )
 	{
@@ -75,7 +75,7 @@ void Engine::onRestore( renderer::IVec2 const & event )
 	}
 }
 
-void Engine::onResize( renderer::IVec2 const & event )
+void Engine::onResize( renderer::UIVec2 const & event )
 {
 	if ( m_window )
 	{
@@ -151,7 +151,7 @@ void Engine::doInitialise3DElements()
 	// Initialise the render window
 	utils::FontLoader loader{ "arial.ttf" };
 	m_window = std::make_unique< render::RenderWindow >( *m_device
-		, renderer::IVec2{ width, height }
+		, renderer::UIVec2{ width, height }
 		, loader
 		, false );
 	m_window->viewport().fovY( utils::Angle{ 45.0_degrees } );

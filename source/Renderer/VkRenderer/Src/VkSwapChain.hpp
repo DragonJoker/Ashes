@@ -37,7 +37,7 @@ namespace vk_renderer
 		*	The render surface dimensions.
 		*/
 		SwapChain( Device const & device
-			, renderer::IVec2 const & size );
+			, renderer::UIVec2 const & size );
 		/**
 		*\~french
 		*\brief
@@ -55,7 +55,7 @@ namespace vk_renderer
 		*\brief
 		*	Resets the swap chain.
 		*/
-		void reset( renderer::IVec2 const & size );
+		void reset( renderer::UIVec2 const & size )override;
 		/**
 		*\~french
 		*\brief
@@ -192,7 +192,7 @@ namespace vk_renderer
 		*\return
 		*	The swap chain dimensions.
 		*/
-		inline renderer::IVec2 getDimensions()const override
+		inline renderer::UIVec2 getDimensions()const override
 		{
 			return m_dimensions;
 		}
@@ -216,7 +216,7 @@ namespace vk_renderer
 		*\brief
 		*	VkSwapchainKHR implicit cast operator.
 		*/
-		inline operator VkSwapchainKHR const &( )const
+		inline operator VkSwapchainKHR const &()const
 		{
 			return m_swapChain;
 		}
@@ -232,14 +232,13 @@ namespace vk_renderer
 			, char const * const action );
 		void doResetSwapChain();
 
-	private:
+	protected:
 		Device const & m_device;
 		renderer::PixelFormat m_format{};
 		VkColorSpaceKHR m_colorSpace;
 		VkSwapchainKHR m_swapChain{};
 		VkSurfaceKHR m_surface{};
 		VkSurfaceCapabilitiesKHR m_surfaceCapabilities{};
-		renderer::IVec2 m_dimensions;
 		uint32_t m_currentBuffer{};
 		BackBufferPtrArray m_backBuffers;
 		VkClearColorValue m_clearColour{};

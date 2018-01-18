@@ -38,7 +38,7 @@ namespace render
 
 	Scene::Scene( renderer::Device const & device
 		, renderer::RenderPass const & renderPass
-		, renderer::IVec2 const & size
+		, renderer::UIVec2 const & size
 		, OverlayRenderer & overlayRenderer )
 		: RenderableContainer{ device, renderPass }
 		, m_camera{ size }
@@ -128,7 +128,7 @@ namespace render
 			, 2.0f * percent + ( 1.0f - percent ) / 100.0f );
 	}
 
-	void Scene::resize( renderer::IVec2 const & size )noexcept
+	void Scene::resize( renderer::UIVec2 const & size )noexcept
 	{
 		m_camera.resize( size );
 	}

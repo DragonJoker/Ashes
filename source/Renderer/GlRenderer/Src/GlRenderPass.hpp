@@ -56,7 +56,7 @@ namespace gl_renderer
 		*\return
 		*	Le FrameBuffer créé.
 		*/
-		renderer::FrameBufferPtr createFrameBuffer( renderer::IVec2 const & dimensions
+		renderer::FrameBufferPtr createFrameBuffer( renderer::UIVec2 const & dimensions
 			, renderer::TextureCRefArray const & textures )const override;
 		/**
 		*\return

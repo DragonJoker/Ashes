@@ -257,7 +257,7 @@ namespace render
 			}
 
 			texture.image( format
-				, renderer::IVec2{ x, y }
+				, renderer::UIVec2{ x, y }
 				, ByteArray{ data, data + r * x * y }
 				, stagingBuffer
 				, commandBuffer );
@@ -321,7 +321,7 @@ namespace render
 			}
 
 			texture.image( format
-				, renderer::IVec2{ x, y }
+				, renderer::UIVec2{ x, y }
 				, buffer
 				, stagingBuffer
 				, commandBuffer );

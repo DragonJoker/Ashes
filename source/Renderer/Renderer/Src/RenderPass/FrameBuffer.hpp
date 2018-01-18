@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -36,7 +36,7 @@ namespace renderer
 		*	Les textures voulues pour le tampon d'images à créer.
 		*/
 		FrameBuffer( RenderPass const & renderPass
-			, IVec2 const & dimensions
+			, UIVec2 const & dimensions
 			, TextureCRefArray const & textures );
 
 	public:

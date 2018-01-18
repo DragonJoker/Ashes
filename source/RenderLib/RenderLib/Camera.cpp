@@ -4,7 +4,7 @@
 
 namespace render
 {
-	Camera::Camera( renderer::IVec2 const & size )
+	Camera::Camera( renderer::UIVec2 const & size )
 		: m_viewport{ size }
 		, m_frustum{ m_viewport }
 	{
@@ -32,7 +32,7 @@ namespace render
 		return result;
 	}
 
-	void Camera::resize( renderer::IVec2 const & size )noexcept
+	void Camera::resize( renderer::UIVec2 const & size )noexcept
 	{
 		m_viewport.resize( size );
 	}

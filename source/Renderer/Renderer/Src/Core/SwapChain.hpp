@@ -1,4 +1,4 @@
-/*
+﻿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -18,7 +18,7 @@ namespace renderer
 		*	Constructeur.
 		*/
 		SwapChain( Device const & device
-			, IVec2 const & size );
+			, UIVec2 const & size );
 
 	public:
 		/**
@@ -32,17 +32,17 @@ namespace renderer
 		virtual ~SwapChain() = default;
 		/**
 		*\return
-		*	R�cup�re les ressources de rendu actives.
+		*	Récupère les ressources de rendu actives.
 		*/
 		virtual RenderingResources * getResources() = 0;
 		/**
 		*\brief
-		*	R�initialise la swap chain.
+		*	Réinitialise la swap chain.
 		*/
-		virtual void reset( IVec2 const & size ) = 0;
+		virtual void reset( UIVec2 const & size ) = 0;
 		/**
 		*\brief
-		*	Cr�e les tampons d'image des back buffers, compatibles avec la passe de rendu donn�e.
+		*	Crée les tampons d'image des back buffers, compatibles avec la passe de rendu donnée.
 		*\param[in] renderPass
 		*	La passe de rendu.
 		*\return
@@ -51,7 +51,7 @@ namespace renderer
 		virtual FrameBufferPtrArray createFrameBuffers( RenderPass const & renderPass )const = 0;
 		/**
 		*\brief
-		*	Cr�e les tampons d'image des back buffers, compatibles avec la passe de rendu donn�e.
+		*	Crée les tampons d'image des back buffers, compatibles avec la passe de rendu donnée.
 		*\param[in] renderPass
 		*	La passe de rendu.
 		*\return
@@ -60,7 +60,7 @@ namespace renderer
 		virtual CommandBufferPtrArray createCommandBuffers()const = 0;
 		/**
 		*\brief
-		*	Enregistre des commandes de pr�-rendu.
+		*	Enregistre des commandes de pré-rendu.
 		*\param[in] index
 		*	L'indice de l'image.
 		*\param[in] commandBuffer
@@ -80,19 +80,19 @@ namespace renderer
 			, CommandBuffer const & commandBuffer )const = 0;
 		/**
 		*\return
-		*	Pr�sente les ressources de rendu.
+		*	Présente les ressources de rendu.
 		*/
 		virtual void present( RenderingResources & resources ) = 0;
 		/**
 		*\brief
-		*	D�finit la couleur de vidage de la swapchain.
+		*	Définit la couleur de vidage de la swapchain.
 		*\param[in] value
 		*	La nouvelle valeur.
 		*/
 		virtual void setClearColour( RgbaColour const & value ) = 0;
 		/**
 		*\brief
-		*	D�finit la couleur de vidage de la swapchain.
+		*	Définit la couleur de vidage de la swapchain.
 		*\param[in] value
 		*	La nouvelle valeur.
 		*/
@@ -101,7 +101,7 @@ namespace renderer
 		*\return
 		*	Les dimensions de la swap chain.
 		*/
-		virtual IVec2 getDimensions()const = 0;
+		virtual UIVec2 getDimensions()const = 0;
 		/**
 		*\return
 		*	Les format des pixels de la swap chain.
@@ -109,7 +109,7 @@ namespace renderer
 		virtual PixelFormat getFormat()const = 0;
 		/**
 		*\return
-		*	R�cup�re les ressources de rendu par d�faut.
+		*	Récupère les ressources de rendu par défaut.
 		*/
 		inline RenderingResources const & getDefaultResources()const
 		{
@@ -117,7 +117,7 @@ namespace renderer
 		}
 
 	public:
-		//! Le signal lev� lorsque la swap chain est recr��e.
+		//! Le signal levé lorsque la swap chain est recréée.
 		using OnResetFunc = std::function< void() >;
 		using OnReset = Signal< OnResetFunc >;
 		OnReset onReset;
@@ -125,8 +125,8 @@ namespace renderer
 	protected:
 		Device const & m_device;
 		//! Les dimensions de la swap chain
-		IVec2 m_dimensions;
-		//! Les ressources de rendu li�es � la swap chain.
+		UIVec2 m_dimensions;
+		//! Les ressources de rendu liées à la swap chain.
 		std::vector< RenderingResourcesPtr > m_renderingResources;
 		//! L'indice de la ressource de rendu active.
 		mutable size_t m_resourceIndex{ 0 };

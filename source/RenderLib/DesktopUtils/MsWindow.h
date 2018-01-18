@@ -63,7 +63,7 @@ namespace utils
 		*\return
 		*	Les dimensions de la fenêtre.
 		*/
-		inline renderer::IVec2 size()const
+		inline renderer::UIVec2 size()const
 		{
 			return m_size;
 		}
@@ -93,12 +93,12 @@ namespace utils
 		*\brief
 		*	Réaffichage de la fenêtre après une minimisation.
 		*/
-		virtual void onRestore( renderer::IVec2 const & event ) = 0;
+		virtual void onRestore( renderer::UIVec2 const & event ) = 0;
 		/**
 		*\brief
 		*	Redimensionnement de la fenêtre.
 		*/
-		virtual void onResize( renderer::IVec2 const & event ) = 0;
+		virtual void onResize( renderer::UIVec2 const & event ) = 0;
 		/**
 		*\brief
 		*	D�placement de la souris.
@@ -146,7 +146,7 @@ namespace utils
 		void doCreate();
 		void doDestroy();
 		void doMinimise();
-		void doRestore( renderer::IVec2 const & size );
+		void doRestore( renderer::UIVec2 const & size );
 		bool doPrepareDC( HDC hdc );
 		void doRegisterClass( HINSTANCE hInstance
 			, std::string const & className
@@ -171,7 +171,7 @@ namespace utils
 		HWND m_hwnd{ nullptr };
 		HDC m_hdc{ nullptr };
 		HGLRC m_context{ nullptr };
-		renderer::IVec2 m_size;
+		renderer::UIVec2 m_size;
 		int m_timer{ -1 };
 		static std::map< HWND, MsWindow * > sm_instances;
 		bool m_minimised{ false };

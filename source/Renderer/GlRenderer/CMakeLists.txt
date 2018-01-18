@@ -55,8 +55,8 @@ if ( OpenGL_FOUND )
 		Renderer
 	)
 
-	parse_subdir_files( Commands "Commands" )
-	parse_subdir_files( GL "GL" )
+	parse_subdir_files( Src/Commands "Commands" )
+	parse_subdir_files( Src/GL "GL" )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
 else ()

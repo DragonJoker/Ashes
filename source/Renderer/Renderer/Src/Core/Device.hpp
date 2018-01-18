@@ -358,7 +358,7 @@ namespace renderer
 		*\param[in] size
 		*	Les dimensions souhaitées.
 		*/
-		virtual SwapChainPtr createSwapChain( IVec2 const & size )const = 0;
+		virtual SwapChainPtr createSwapChain( UIVec2 const & size )const = 0;
 		/**
 		*\~french
 		*\brief

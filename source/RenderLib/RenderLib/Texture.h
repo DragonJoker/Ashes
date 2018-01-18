@@ -49,7 +49,7 @@ namespace render
 		*	Les données de l'image.
 		*/
 		void image( renderer::PixelFormat format
-			, renderer::IVec2 const & size
+			, renderer::UIVec2 const & size
 			, ByteArray const & data
 			, renderer::StagingBuffer const & stagingBuffer
 			, renderer::CommandBuffer const & commandBuffer );
@@ -65,7 +65,7 @@ namespace render
 		*\return
 		*	Les dimensions de la texture.
 		*/
-		inline renderer::IVec2 const & dimensions()const noexcept
+		inline renderer::UIVec2 const & dimensions()const noexcept
 		{
 			return m_size;
 		}
@@ -88,7 +88,7 @@ namespace render
 
 	private:
 		//! Les dimensions de l'image.
-		renderer::IVec2 m_size;
+		renderer::UIVec2 m_size;
 		//! Le format des données de l'image.
 		renderer::PixelFormat m_format{ renderer::PixelFormat::eR8G8B8 };
 		//! La texture.

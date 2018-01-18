@@ -150,7 +150,7 @@ namespace gl_renderer
 		/**
 		*\copydoc		renderer::Device::createSwapChain
 		*/
-		renderer::SwapChainPtr createSwapChain( renderer::IVec2 const & size )const override;
+		renderer::SwapChainPtr createSwapChain( renderer::UIVec2 const & size )const override;
 		/**
 		*\copydoc		renderer::Device::createSemaphore
 		*/

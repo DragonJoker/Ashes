@@ -7,7 +7,7 @@ namespace vk_renderer
 {
 	RenderBuffer::RenderBuffer( Device const & device
 		, renderer::PixelFormat format
-		, renderer::IVec2 const & size )
+		, renderer::UIVec2 const & size )
 		: renderer::RenderBuffer{ device, format, size }
 		, m_format{ convert( format ) }
 		, m_texture{ device

@@ -30,7 +30,7 @@ namespace gl_renderer
 		*	Les dimensions du tampon d'images.
 		*/
 		FrameBuffer( renderer::RenderPass const & renderPass
-			, renderer::IVec2 const & dimensions );
+			, renderer::UIVec2 const & dimensions );
 		/**
 		*\brief
 		*	Crée un FrameBuffer compatible avec la passe de rendu donnée.
@@ -43,7 +43,7 @@ namespace gl_renderer
 		*	Les textures voulues pour le tampon d'images à créer.
 		*/
 		FrameBuffer( renderer::RenderPass const & renderPass
-			, renderer::IVec2 const & dimensions
+			, renderer::UIVec2 const & dimensions
 			, renderer::TextureCRefArray const & textures );
 		/**
 		*\brief

@@ -53,7 +53,7 @@ namespace render
 	}
 
 	RenderTarget::RenderTarget( renderer::Device const & device
-		, renderer::IVec2 const & dimensions
+		, renderer::UIVec2 const & dimensions
 		, renderer::PixelFormat format )
 		: m_size{ dimensions }
 		, m_renderPass{ device.createRenderPass( doGetPixelFormats()

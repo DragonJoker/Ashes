@@ -39,12 +39,12 @@ public:
 	*\brief
 	*	Réaffichage de la fenêtre après une minimisation.
 	*/
-	void onRestore( renderer::IVec2 const & event )override;
+	void onRestore( renderer::UIVec2 const & event )override;
 	/**
 	*\brief
 	*	Initialisation de la fenêtre.
 	*/
-	void onResize( renderer::IVec2 const & event )override;
+	void onResize( renderer::UIVec2 const & event )override;
 	/**
 	*\brief
 	*	Déplacement de la souris.

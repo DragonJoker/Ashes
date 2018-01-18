@@ -38,18 +38,6 @@ namespace gl_renderer
 		~Texture();
 		/**
 		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
-		*/
-		void setImage( renderer::PixelFormat format
-			, renderer::IVec2 const & size
-			, renderer::ImageUsageFlags usageFlags = renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
-			, renderer::ImageTiling tiling = renderer::ImageTiling::eOptimal )override;
-		/**
-		*\brief
 		*	Génère les mipmaps de la texture.
 		*/
 		void generateMipmaps()const override;
@@ -127,10 +115,29 @@ namespace gl_renderer
 		renderer::ImageMemoryBarrier doMakeLayoutTransition( renderer::ImageLayout layout
 			, uint32_t queueFamily
 			, renderer::AccessFlags dstAccessMask )const;
+		/**
+		*\copydoc	renderer::Texture::doSetImage1D
+		*/
+		void doSetImage1D( renderer::ImageUsageFlags usageFlags
+			, renderer::ImageTiling tiling
+			, renderer::MemoryPropertyFlags memoryFlags )override;
+		/**
+		*\copydoc	renderer::Texture::doSetImage2D
+		*/
+		void doSetImage2D( renderer::ImageUsageFlags usageFlags
+			, renderer::ImageTiling tiling
+			, renderer::MemoryPropertyFlags memoryFlags )override;
+		/**
+		*\copydoc	renderer::Texture::doSetImage3D
+		*/
+		void doSetImage3D( renderer::ImageUsageFlags usageFlags
+			, renderer::ImageTiling tiling
+			, renderer::MemoryPropertyFlags memoryFlags )override;
 
 	private:
 		Device const & m_device;
 		GLuint m_texture{ GL_INVALID_INDEX };
+		GLuint m_glType{ GL_INVALID_INDEX };
 	};
 }
 

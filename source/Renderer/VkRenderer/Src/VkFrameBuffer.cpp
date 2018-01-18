@@ -35,7 +35,7 @@ namespace vk_renderer
 
 	FrameBuffer::FrameBuffer( Device const & device
 		, RenderPass const & renderPass
-		, renderer::IVec2 const & dimensions
+		, renderer::UIVec2 const & dimensions
 		, renderer::TextureCRefArray const & textures )
 		: renderer::FrameBuffer{ renderPass, dimensions, textures }
 		, m_device{ device }
@@ -89,7 +89,7 @@ namespace vk_renderer
 		// Create the linear tiled destination image to copy to and to read the memory from
 		Texture image{ m_device
 			, format
-			, renderer::IVec2{ width, height }
+			, renderer::UIVec2{ width, height }
 			, renderer::ImageUsageFlag::eTransferDst
 			, renderer::ImageTiling::eLinear
 			, renderer::MemoryPropertyFlag::eHostVisible | renderer::MemoryPropertyFlag::eHostCoherent };

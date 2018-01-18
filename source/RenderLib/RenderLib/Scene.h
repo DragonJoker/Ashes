@@ -46,7 +46,7 @@ namespace render
 		*/
 		Scene( renderer::Device const & device
 			, renderer::RenderPass const & renderPass
-			, renderer::IVec2 const & size
+			, renderer::UIVec2 const & size
 			, OverlayRenderer & overlayRenderer );
 		/**
 		*\brief
@@ -85,7 +85,7 @@ namespace render
 		*\param[in] size
 		*	Les nouvelles dimensions.
 		*/
-		void resize( renderer::IVec2 const & size )noexcept;
+		void resize( renderer::UIVec2 const & size )noexcept;
 		/**
 		*\brief
 		*	Ajoute un objet à la scène.

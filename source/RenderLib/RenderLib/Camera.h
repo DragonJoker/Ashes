@@ -26,7 +26,7 @@ namespace render
 		*\param[in] size
 		*	La taille initiale de la zone de rendu.
 		*/
-		Camera( renderer::IVec2 const & size );
+		Camera( renderer::UIVec2 const & size );
 		/**
 		*\brief
 		*	Met à jour la matrice de vue.
@@ -40,7 +40,7 @@ namespace render
 		*\param[in] size
 		*	Les nouvelles dimensions.
 		*/
-		void resize( renderer::IVec2 const & size )noexcept;
+		void resize( renderer::UIVec2 const & size )noexcept;
 		/**
 		*\brief
 		*	Vérifie si le point donné est visible par la caméra.

@@ -32,7 +32,7 @@ namespace vk_renderer
 		*/
 		RenderBuffer( Device const & device
 			, renderer::PixelFormat format
-			, renderer::IVec2 const & size );
+			, renderer::UIVec2 const & size );
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout d'attache couleur.

@@ -25,7 +25,7 @@ namespace renderer
 		*/
 		RenderBuffer( Device const & device
 			, PixelFormat format
-			, IVec2 const & size );
+			, UIVec2 const & size );
 
 	public:
 		/**
@@ -63,14 +63,14 @@ namespace renderer
 		*\return
 		*	Les dimensions de la texture.
 		*/
-		inline IVec2 const & getDimensions()const noexcept
+		inline UIVec2 const & getDimensions()const noexcept
 		{
 			return m_size;
 		}
 
 	private:
 		Device const & m_device;
-		IVec2 m_size;
+		UIVec2 m_size;
 		PixelFormat m_format{ PixelFormat::eR8G8B8 };
 	};
 }
