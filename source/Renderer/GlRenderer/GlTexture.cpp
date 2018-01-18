@@ -4,32 +4,33 @@
 #include "GlDevice.hpp"
 #include "GlImageMemoryBarrier.hpp"
 #include "GlRenderingResources.hpp"
+#include "GlTextureView.hpp"
 
 namespace gl_renderer
 {
 	namespace
 	{
-		renderer::ImageAspectFlags getAspectFlag( utils::PixelFormat format )
+		renderer::ImageAspectFlags getAspectFlag( renderer::PixelFormat format )
 		{
 			switch ( format )
 			{
-			case utils::PixelFormat::eL8:
-			case utils::PixelFormat::eL8A8:
-			case utils::PixelFormat::eR8G8B8:
-			case utils::PixelFormat::eRGB565:
-			case utils::PixelFormat::eR8G8B8A8:
-			case utils::PixelFormat::eB8G8R8A8:
-			case utils::PixelFormat::eRGBA5551:
-			case utils::PixelFormat::eRGBA4444:
+			case renderer::PixelFormat::eL8:
+			case renderer::PixelFormat::eL8A8:
+			case renderer::PixelFormat::eR8G8B8:
+			case renderer::PixelFormat::eRGB565:
+			case renderer::PixelFormat::eR8G8B8A8:
+			case renderer::PixelFormat::eB8G8R8A8:
+			case renderer::PixelFormat::eRGBA5551:
+			case renderer::PixelFormat::eRGBA4444:
 				return renderer::ImageAspectFlag::eColour;
 
-			case utils::PixelFormat::eD16:
+			case renderer::PixelFormat::eD16:
 				return renderer::ImageAspectFlag::eDepth;
 
-			case utils::PixelFormat::eD24S8:
+			case renderer::PixelFormat::eD24S8:
 				return renderer::ImageAspectFlag::eDepth | renderer::ImageAspectFlag::eStencil;
 
-			case utils::PixelFormat::eS8:
+			case renderer::PixelFormat::eS8:
 				return renderer::ImageAspectFlag::eStencil;
 
 			default:
@@ -39,8 +40,9 @@ namespace gl_renderer
 		}
 	}
 
-	Texture::Texture( renderer::Device const & device )
+	Texture::Texture( Device const & device )
 		: renderer::Texture{ device }
+		, m_device{ device }
 	{
 		glGenTextures( 1, &m_texture );
 	}
@@ -50,8 +52,8 @@ namespace gl_renderer
 		glDeleteTextures( 1, &m_texture );
 	}
 
-	void Texture::setImage( utils::PixelFormat format
-		, utils::IVec2 const & size
+	void Texture::setImage( renderer::PixelFormat format
+		, renderer::IVec2 const & size
 		, renderer::ImageUsageFlags usageFlags
 		, renderer::ImageTiling tiling )
 	{
@@ -68,6 +70,13 @@ namespace gl_renderer
 			, gl_renderer::getType( m_format )
 			, nullptr );
 		glBindTexture( GL_TEXTURE_2D, 0 );
+		m_view = std::make_unique< TextureView >( m_device
+			, *this
+			, m_format
+			, 0u
+			, 1u
+			, 0u
+			, 1u );
 	}
 
 	void Texture::generateMipmaps()const

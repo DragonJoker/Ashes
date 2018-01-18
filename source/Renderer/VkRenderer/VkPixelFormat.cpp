@@ -2,41 +2,41 @@
 
 namespace vk_renderer
 {
-	VkFormat convert( utils::PixelFormat const & format )noexcept
+	VkFormat convert( renderer::PixelFormat const & format )noexcept
 	{
 		switch ( format )
 		{
-		case utils::PixelFormat::eL8:
+		case renderer::PixelFormat::eL8:
 			return VK_FORMAT_R8_UINT;
 
-		case utils::PixelFormat::eL8A8:
+		case renderer::PixelFormat::eL8A8:
 			return VK_FORMAT_R8G8_UINT;
 
-		case utils::PixelFormat::eR8G8B8:
+		case renderer::PixelFormat::eR8G8B8:
 			return VK_FORMAT_R8G8B8_UINT;
 
-		case utils::PixelFormat::eRGB565:
+		case renderer::PixelFormat::eRGB565:
 			return VK_FORMAT_R5G6B5_UNORM_PACK16;
 
-		case utils::PixelFormat::eR8G8B8A8:
+		case renderer::PixelFormat::eR8G8B8A8:
 			return VK_FORMAT_R8G8B8A8_UNORM;
 
-		case utils::PixelFormat::eB8G8R8A8:
+		case renderer::PixelFormat::eB8G8R8A8:
 			return VK_FORMAT_B8G8R8A8_UNORM;
 
-		case utils::PixelFormat::eRGBA5551:
+		case renderer::PixelFormat::eRGBA5551:
 			return VK_FORMAT_R5G5B5A1_UNORM_PACK16;
 
-		case utils::PixelFormat::eRGBA4444:
+		case renderer::PixelFormat::eRGBA4444:
 			return VK_FORMAT_R4G4B4A4_UNORM_PACK16;
 
-		case utils::PixelFormat::eD16:
+		case renderer::PixelFormat::eD16:
 			return VK_FORMAT_D16_UNORM;
 
-		case utils::PixelFormat::eD24S8:
+		case renderer::PixelFormat::eD24S8:
 			return VK_FORMAT_D24_UNORM_S8_UINT;
 
-		case utils::PixelFormat::eS8:
+		case renderer::PixelFormat::eS8:
 			return VK_FORMAT_S8_UINT;
 
 		default:
@@ -45,46 +45,46 @@ namespace vk_renderer
 		}
 	}
 
-	utils::PixelFormat convert( VkFormat const & format )noexcept
+	renderer::PixelFormat convert( VkFormat const & format )noexcept
 	{
 		switch ( format )
 		{
 		case VK_FORMAT_R8_UINT:
-			return utils::PixelFormat::eL8;
+			return renderer::PixelFormat::eL8;
 
 		case VK_FORMAT_R8G8_UINT:
-			return utils::PixelFormat::eL8A8;
+			return renderer::PixelFormat::eL8A8;
 
 		case VK_FORMAT_R8G8B8_UINT:
-			return utils::PixelFormat::eR8G8B8;
+			return renderer::PixelFormat::eR8G8B8;
 
 		case VK_FORMAT_R5G6B5_UNORM_PACK16:
-			return utils::PixelFormat::eRGB565;
+			return renderer::PixelFormat::eRGB565;
 
 		case VK_FORMAT_R8G8B8A8_UNORM:
-			return utils::PixelFormat::eR8G8B8A8;
+			return renderer::PixelFormat::eR8G8B8A8;
 
 		case VK_FORMAT_B8G8R8A8_UNORM:
-			return utils::PixelFormat::eB8G8R8A8;
+			return renderer::PixelFormat::eB8G8R8A8;
 
 		case VK_FORMAT_R5G5B5A1_UNORM_PACK16:
-			return utils::PixelFormat::eRGBA5551;
+			return renderer::PixelFormat::eRGBA5551;
 
 		case VK_FORMAT_R4G4B4A4_UNORM_PACK16:
-			return utils::PixelFormat::eRGBA4444;
+			return renderer::PixelFormat::eRGBA4444;
 
 		case VK_FORMAT_D16_UNORM:
-			return utils::PixelFormat::eD16;
+			return renderer::PixelFormat::eD16;
 
 		case VK_FORMAT_D24_UNORM_S8_UINT:
-			return utils::PixelFormat::eD24S8;
+			return renderer::PixelFormat::eD24S8;
 
 		case VK_FORMAT_S8_UINT:
-			return utils::PixelFormat::eS8;
+			return renderer::PixelFormat::eS8;
 
 		default:
 			assert( false && "Unsupported pixel format." );
-			return utils::PixelFormat::eR8G8B8A8;
+			return renderer::PixelFormat::eR8G8B8A8;
 		}
 	}
 }

@@ -12,6 +12,7 @@
 #include "GlAttributeFormat.hpp"
 #include "GlBlendFactor.hpp"
 #include "GlBlendOp.hpp"
+#include "GlBorderColour.hpp"
 #include "GlBufferTarget.hpp"
 #include "GlColourComponentFlag.hpp"
 #include "GlCompareOp.hpp"
@@ -31,16 +32,19 @@
 #include "GlSampleCountFlag.hpp"
 #include "GlShaderStageFlag.hpp"
 #include "GlStencilOp.hpp"
+#include "GlTextureType.hpp"
 #include "GlWrapMode.hpp"
 
 #include <Renderer/RendererPrerequisites.hpp>
 
 namespace gl_renderer
 {
-	class BufferBase;
+	class Buffer;
+	class BufferView;
 	class CommandBase;
 	class Context;
 	class DescriptorSet;
+	class Device;
 	class FrameBuffer;
 	class GeometryBuffers;
 	class Pipeline;
@@ -48,6 +52,7 @@ namespace gl_renderer
 	class RenderPass;
 	class ShaderProgram;
 	class Texture;
+	class TextureView;
 
 	using ContextPtr = std::unique_ptr< Context >;
 	using CommandPtr = std::unique_ptr< CommandBase >;

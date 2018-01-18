@@ -17,9 +17,9 @@ namespace render
 {
 	namespace
 	{
-		std::vector< utils::PixelFormat > doGetPixelFormats()
+		std::vector< renderer::PixelFormat > doGetPixelFormats()
 		{
-			return { utils::PixelFormat::eR8G8B8A8, utils::PixelFormat::eD24S8 };
+			return { renderer::PixelFormat::eR8G8B8A8, renderer::PixelFormat::eD24S8 };
 		}
 
 		renderer::RenderSubpassState doGetSubpassState()
@@ -53,8 +53,8 @@ namespace render
 	}
 
 	RenderTarget::RenderTarget( renderer::Device const & device
-		, utils::IVec2 const & dimensions
-		, utils::PixelFormat format )
+		, renderer::IVec2 const & dimensions
+		, renderer::PixelFormat format )
 		: m_size{ dimensions }
 		, m_renderPass{ device.createRenderPass( doGetPixelFormats()
 			, doGetRenderSubpasses( device)
@@ -69,7 +69,7 @@ namespace render
 		m_colour->setImage( format
 			, dimensions
 			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
-		m_depth->setImage( utils::PixelFormat::eD24S8
+		m_depth->setImage( renderer::PixelFormat::eD24S8
 			, dimensions
 			, renderer::ImageUsageFlag::eDepthStencilAttachment );
 		m_framebuffer = m_renderPass->createFrameBuffer( dimensions

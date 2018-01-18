@@ -27,7 +27,7 @@ namespace renderer
 	*/
 	struct ClearValue
 	{
-		ClearValue( utils::RgbaColour const & colour );
+		ClearValue( RgbaColour const & colour );
 		ClearValue( DepthStencilClearValue const & depthStencil );
 
 		bool isColour()const
@@ -35,7 +35,7 @@ namespace renderer
 			return m_isColour;
 		}
 
-		utils::RgbaColour const & colour()const
+		RgbaColour const & colour()const
 		{
 			assert( m_isColour );
 			return m_colour;
@@ -49,7 +49,7 @@ namespace renderer
 
 	private:
 		bool m_isColour{ false };
-		utils::RgbaColour m_colour;
+		RgbaColour m_colour;
 		DepthStencilClearValue m_depthStencil;
 	};
 }

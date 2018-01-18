@@ -16,7 +16,7 @@
 namespace vk_renderer
 {
 	SwapChain::SwapChain( Device const & device
-		, utils::IVec2 const & size )
+		, renderer::IVec2 const & size )
 		: renderer::SwapChain{ device, size }
 		, m_device{ device }
 		, m_surface{ device.getPresentSurface() }
@@ -47,7 +47,7 @@ namespace vk_renderer
 		DestroySwapchainKHR( m_device, m_swapChain, nullptr );
 	}
 
-	void SwapChain::reset( utils::IVec2 const & size )
+	void SwapChain::reset( renderer::IVec2 const & size )
 	{
 		m_dimensions = size;
 		doResetSwapChain();
@@ -181,7 +181,7 @@ namespace vk_renderer
 		// sera renvoy�.
 		if ( formatCount == 1u && surfFormats[0].format == VK_FORMAT_UNDEFINED )
 		{
-			m_format = utils::PixelFormat::eB8G8R8A8;
+			m_format = renderer::PixelFormat::eB8G8R8A8;
 		}
 		else
 		{

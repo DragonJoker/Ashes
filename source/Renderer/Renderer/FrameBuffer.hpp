@@ -36,7 +36,7 @@ namespace renderer
 		*	Les textures voulues pour le tampon d'images à créer.
 		*/
 		FrameBuffer( RenderPass const & renderPass
-			, utils::IVec2 const & dimensions
+			, IVec2 const & dimensions
 			, TextureCRefArray const & textures );
 
 	public:
@@ -70,7 +70,7 @@ namespace renderer
 			, uint32_t yoffset
 			, uint32_t width
 			, uint32_t height
-			, utils::PixelFormat format
+			, PixelFormat format
 			, uint8_t * data )const noexcept = 0;
 	};
 }

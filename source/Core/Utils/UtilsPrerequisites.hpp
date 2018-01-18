@@ -4,6 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
+#include <cassert>
 #include <chrono>
 #include <functional>
 #include <memory>
@@ -49,6 +50,9 @@ namespace utils
 	using IVec2 = Vec2T< int >;
 	using IVec3 = Vec3T< int >;
 	using IVec4 = Vec4T< int >;
+	using UIVec2 = Vec2T< uint32_t >;
+	using UIVec3 = Vec3T< uint32_t >;
+	using UIVec4 = Vec4T< uint32_t >;
 	using Quaternion = QuaternionT< float >;
 	using RgbaColour = Vec4;
 	using RgbColour = Vec3;

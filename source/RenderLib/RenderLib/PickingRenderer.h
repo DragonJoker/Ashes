@@ -47,11 +47,11 @@ namespace render
 		struct MatrixUbo
 		{
 			//! La variable uniforme contenant la matrice de projection.
-			utils::Mat4 projection;
+			renderer::Mat4 projection;
 			//! La variable uniforme contenant la matrice de vue.
-			utils::Mat4 view;
+			renderer::Mat4 view;
 			//! La variable uniforme contenant la matrice du modèle.
-			utils::Mat4 model;
+			renderer::Mat4 model;
 		};
 		struct PickingUbo
 		{
@@ -63,9 +63,9 @@ namespace render
 		struct BillboardUbo
 		{
 			//! La variable uniforme contenant les dimensions du billboard.
-			utils::Vec2 dimensions;
+			renderer::Vec2 dimensions;
 			//! La variable uniforme contenant la position de la caméra.
-			utils::Vec3 camera;
+			renderer::Vec3 camera;
 		};
 		/**
 		*\brief

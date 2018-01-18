@@ -36,7 +36,7 @@ namespace render
 		*\return
 		*	La rotation voulue pour la caméra.
 		*/
-		utils::Quaternion rotation()const noexcept;
+		renderer::Quaternion rotation()const noexcept;
 		/**
 		*\brief
 		*	Définit les angles d'ouverture minimal et maximal.
@@ -62,7 +62,7 @@ namespace render
 		*param[in] value
 		*	La nouvelle valeur.
 		*/
-		inline void velocity( utils::Vec2 const & value )noexcept
+		inline void velocity( renderer::Vec2 const & value )noexcept
 		{
 			m_velocityX = utils::Degrees{ value.x };
 			m_velocityY = utils::Degrees{ value.y };
@@ -106,9 +106,9 @@ namespace render
 			m_angleRange
 		};
 		//! La rotation sur l'axe X.
-		utils::Quaternion m_quatX;
+		renderer::Quaternion m_quatX;
 		//! La rotation sur l'axe Y.
-		utils::Quaternion m_quatY;
+		renderer::Quaternion m_quatY;
 		//! L'intervalle de vitesse de rotation.
 		utils::Range< utils::Degrees > m_velocityRange
 		{

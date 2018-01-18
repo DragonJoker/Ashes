@@ -26,7 +26,7 @@ namespace vk_renderer
 
 			for ( auto & texture : textures )
 			{
-				result.emplace_back( static_cast< Texture const & >( texture.get() ).getView() );
+				result.emplace_back( static_cast< TextureView const & >( texture.get().getView() ) );
 			}
 
 			return result;
@@ -35,7 +35,7 @@ namespace vk_renderer
 
 	FrameBuffer::FrameBuffer( Device const & device
 		, RenderPass const & renderPass
-		, utils::IVec2 const & dimensions
+		, renderer::IVec2 const & dimensions
 		, renderer::TextureCRefArray const & textures )
 		: renderer::FrameBuffer{ renderPass, dimensions, textures }
 		, m_device{ device }
@@ -82,14 +82,14 @@ namespace vk_renderer
 		, uint32_t yoffset
 		, uint32_t width
 		, uint32_t height
-		, utils::PixelFormat format
+		, renderer::PixelFormat format
 		, uint8_t * data )const noexcept
 	{
 		auto & attachImage = m_views[index].get().getImage();
 		// Create the linear tiled destination image to copy to and to read the memory from
 		Texture image{ m_device
 			, format
-			, utils::IVec2{ width, height }
+			, renderer::IVec2{ width, height }
 			, renderer::ImageUsageFlag::eTransferDst
 			, renderer::ImageTiling::eLinear
 			, renderer::MemoryPropertyFlag::eHostVisible | renderer::MemoryPropertyFlag::eHostCoherent };
@@ -118,7 +118,9 @@ namespace vk_renderer
 		imageCopyRegion.srcOffset.y = yoffset;
 		imageCopyRegion.srcOffset.z = 0u;
 
-		copyCmd.copyImage( imageCopyRegion, attachImage, image );
+		copyCmd.copyImage( imageCopyRegion
+			, static_cast< Texture const & >( attachImage )
+			, image );
 		copyCmd.memoryBarrier( renderer::PipelineStageFlag::eTransfer
 			, renderer::PipelineStageFlag::eTransfer
 			, image.makeGeneralLayout( renderer::AccessFlag::eMemoryRead ) );

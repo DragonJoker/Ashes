@@ -32,8 +32,8 @@ namespace render
 	*/
 	struct OverlayUbo
 	{
-		utils::Mat4 modelProj;
-		utils::Vec4 colour;
+		renderer::Mat4 modelProj;
+		renderer::Vec4 colour;
 	};
 	/**
 	*\brief
@@ -138,7 +138,7 @@ namespace render
 		explicit OverlayRenderer( renderer::Device const & device
 			, renderer::RenderPass const & renderPass
 			, renderer::CommandPool const & commandPool
-			, utils::IVec2 const & size
+			, renderer::IVec2 const & size
 			, uint32_t maxCharsPerBuffer = 600 );
 		/**
 		*brief
@@ -200,7 +200,7 @@ namespace render
 		*param[in] size
 		*	Les dimensions de la fenêtre de rendu.
 		*/
-		void resize( utils::IVec2 const & size );
+		void resize( renderer::IVec2 const & size );
 		/**
 		*brief
 		*	Met à jour les tampons des incrustations.
@@ -287,11 +287,11 @@ namespace render
 		BorderOverlayPanelVboArray m_borderOverlaysPanels;
 		BorderOverlayBorderVboArray m_borderOverlaysBorders;
 		std::vector< TextOverlayVbo > m_textOverlays;
-		std::map< Overlay *, utils::Connection< OnOverlayChanged > > m_connections;
+		std::map< Overlay *, renderer::SignalConnection< OnOverlayChanged > > m_connections;
 		uint32_t m_maxCharsPerBuffer;
 		mutable bool m_sizeChanged{ true };
 		mutable bool m_changed{ true };
-		utils::Mat4 m_transform;
+		renderer::Mat4 m_transform;
 		Viewport m_viewport;
 	};
 }

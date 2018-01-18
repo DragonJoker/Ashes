@@ -21,8 +21,8 @@ namespace render
 	{
 	}
 
-	void Texture::image( utils::PixelFormat format
-		, utils::IVec2 const & size
+	void Texture::image( renderer::PixelFormat format
+		, renderer::IVec2 const & size
 		, ByteArray const & data
 		, renderer::StagingBuffer const & stagingBuffer
 		, renderer::CommandBuffer const & commandBuffer )
@@ -35,7 +35,7 @@ namespace render
 			, stagingBuffer
 			, commandBuffer
 			, renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
-			, m_format == utils::PixelFormat::eR8G8B8
+			, m_format == renderer::PixelFormat::eR8G8B8
 				? renderer::ImageTiling::eLinear
 				: renderer::ImageTiling::eOptimal );
 	}

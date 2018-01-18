@@ -13,7 +13,7 @@ namespace render
 		, Vec3Array const & nml
 		, Vec2Array const & tex )
 	{
-		m_positions = renderer::makeVertexBuffer< utils::Vec3 >( device
+		m_positions = renderer::makeVertexBuffer< renderer::Vec3 >( device
 			, uint32_t( pos.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -24,7 +24,7 @@ namespace render
 
 		if ( !nml.empty() )
 		{
-			m_normal = renderer::makeVertexBuffer< utils::Vec3 >( device
+			m_normal = renderer::makeVertexBuffer< renderer::Vec3 >( device
 				, uint32_t( nml.size() )
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -36,7 +36,7 @@ namespace render
 
 		if ( !tex.empty() )
 		{
-			m_texcoord = renderer::makeVertexBuffer< utils::Vec2 >( device
+			m_texcoord = renderer::makeVertexBuffer< renderer::Vec2 >( device
 				, uint32_t( tex.size() )
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -46,13 +46,13 @@ namespace render
 				, renderer::PipelineStageFlag::eVertexInput );
 		}
 
-		utils::Vec3 min
+		renderer::Vec3 min
 		{
 			std::numeric_limits< float >::max(),
 			std::numeric_limits< float >::max(),
 			std::numeric_limits< float >::max()
 		};
-		utils::Vec3 max
+		renderer::Vec3 max
 		{
 			std::numeric_limits< float >::lowest(),
 			std::numeric_limits< float >::lowest(),

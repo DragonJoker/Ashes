@@ -10,7 +10,7 @@
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/ImageSubresourceRange.hpp>
+#include <Renderer/TextureView.hpp>
 
 #include <Utils/Vec2.hpp>
 
@@ -25,6 +25,7 @@ namespace vk_renderer
 	*	Vulkan image view wrapper.
 	*/
 	class TextureView
+		: public renderer::TextureView
 	{
 	public:
 		/**
@@ -36,7 +37,15 @@ namespace vk_renderer
 		*\param[in] image
 		*	L'image sur laquelle la vue est créée.
 		*\param[in] format
-		*	Le format des pixels de l'image.
+		*	Le format des pixels de la vue.
+		*\param[in] baseMipLevel
+		*	Le premier niveau de mipmap accessible à la vue.
+		*\param[in] levelCount
+		*	Le nombre de niveaux de mipmap (à partir de \p baseMipLevel) accessibles à la vue.
+		*\param[in] baseArrayLayer
+		*	La première couche de tableau accessible à la vue.
+		*\param[in] layerCount
+		*	Le nombre de couches de tableau (à partir de \p baseArrayLayer) accessibles à la vue.
 		*\~english
 		*\brief
 		*	Constructor.
@@ -45,47 +54,23 @@ namespace vk_renderer
 		*\param[in] image
 		*	The image from which the view is created.
 		*\param[in] format
-		*	The image's pixels format.
+		*	The view's pixels format.
+		*\param[in] baseMipLevel
+		*	The first mipmap level accessible to the view.
+		*\param[in] levelCount
+		*	The number of mipmap levels (starting from \p baseMipLevel) accessible to the view.
+		*\param[in] baseArrayLayer
+		*	The first array layer accessible to the view.
+		*\param[in] layerCount
+		*	The number of array layers (starting from \p baseArrayLayer) accessible to the view.
 		*/
 		TextureView( Device const & device
 			, Texture const & image
-			, utils::PixelFormat format );
-		/**
-		*\~french
-		*\brief
-		*	Constructeur par copie.
-		*\~english
-		*\brief
-		*	Copy constructor.
-		*/
-		TextureView( TextureView const & ) = delete;
-		/**
-		*\~french
-		*\brief
-		*	Opérateur d'affectation par copie.
-		*\~english
-		*\brief
-		*	Copy assignment operator.
-		*/
-		TextureView & operator=( TextureView const & ) = delete;
-		/**
-		*\~french
-		*\brief
-		*	Constructeur par déplacement.
-		*\~english
-		*\brief
-		*	Move constructor.
-		*/
-		TextureView( TextureView && rhs )noexcept;
-		/**
-		*\~french
-		*\brief
-		*	Opérateur d'affectation par déplacement.
-		*\~english
-		*\brief
-		*	Move assignment operator.
-		*/
-		TextureView & operator=( TextureView && rhs )noexcept;
+			, renderer::PixelFormat format
+			, uint32_t baseMipLevel
+			, uint32_t levelCount
+			, uint32_t baseArrayLayer
+			, uint32_t layerCount );
 		/**
 		*\~french
 		*\brief
@@ -95,42 +80,6 @@ namespace vk_renderer
 		*	Destructor.
 		*/
 		~TextureView();
-		/**
-		*\~french
-		*\return
-		*	Le format de l'image de la vue.
-		*\~english
-		*\return
-		*	The view's image's pixels format.
-		*/
-		inline VkFormat getFormat()const
-		{
-			return m_format;
-		}
-		/**
-		*\~french
-		*\return
-		*	L'image de la vue.
-		*\~english
-		*\return
-		*	The view's image.
-		*/
-		inline Texture const & getImage()const
-		{
-			return m_image;
-		}
-		/**
-		*\~french
-		*\return
-		*	Les informations de la ressource liée à l'image.
-		*\~english
-		*\return
-		*	The image's resource information.
-		*/
-		inline renderer::ImageSubresourceRange const & getSubResourceRange()const
-		{
-			return m_subResourceRange;
-		}
 		/**
 		*\~french
 		*\brief
@@ -143,30 +92,10 @@ namespace vk_renderer
 		{
 			return m_view;
 		}
-		/**
-		*\~french
-		*\brief
-		*	Echange les valeurs de deux ImageView.
-		*\param[in] lhs, rhs
-		*	Les valeurs à échanger.
-		*\~english
-		*\brief
-		*	Swaps two ImageView.
-		*\param[in,out] lhs, rhs
-		*	The values to swap.
-		*/
-		void swap( TextureView & lhs, TextureView & rhs )noexcept
-		{
-			std::swap( lhs.m_format, rhs.m_format );
-			std::swap( lhs.m_view, rhs.m_view );
-		}
 
 	private:
 		Device const & m_device;
-		Texture const & m_image;
-		VkFormat m_format{};
 		VkImageView m_view{};
-		renderer::ImageSubresourceRange m_subResourceRange{};
 	};
 }
 

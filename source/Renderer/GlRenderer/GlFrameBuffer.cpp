@@ -17,13 +17,13 @@ namespace gl_renderer
 		{
 			switch ( texture.getFormat() )
 			{
-			case utils::PixelFormat::eD16:
+			case renderer::PixelFormat::eD16:
 				return GL_DEPTH_ATTACHMENT;
 
-			case utils::PixelFormat::eD24S8:
+			case renderer::PixelFormat::eD24S8:
 				return GL_DEPTH_STENCIL_ATTACHMENT;
 
-			case utils::PixelFormat::eS8:
+			case renderer::PixelFormat::eS8:
 				return GL_STENCIL_ATTACHMENT;
 
 			default:
@@ -34,14 +34,14 @@ namespace gl_renderer
 	}
 
 	FrameBuffer::FrameBuffer( renderer::RenderPass const & renderPass
-		, utils::IVec2 const & dimensions )
+		, renderer::IVec2 const & dimensions )
 		: renderer::FrameBuffer{ renderPass, dimensions, renderer::TextureCRefArray{} }
 		, m_frameBuffer{ 0u }
 	{
 	}
 
 	FrameBuffer::FrameBuffer( renderer::RenderPass const & renderPass
-		, utils::IVec2 const & dimensions
+		, renderer::IVec2 const & dimensions
 		, renderer::TextureCRefArray const & textures )
 		: renderer::FrameBuffer{ renderPass, dimensions, textures }
 	{
@@ -76,7 +76,7 @@ namespace gl_renderer
 		, uint32_t yoffset
 		, uint32_t width
 		, uint32_t height
-		, utils::PixelFormat format
+		, renderer::PixelFormat format
 		, uint8_t * data )const noexcept
 	{
 		glReadPixels( xoffset

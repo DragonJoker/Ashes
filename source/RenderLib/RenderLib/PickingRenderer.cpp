@@ -126,11 +126,11 @@ namespace render
 		, renderer::ShaderProgramPtr && program
 		, NodeType type )
 		: RenderNode{ device, std::move( layout ), std::move( program ) }
-		, m_posLayout{ renderer::makeLayout< utils::Vec3 > ( device, 0u ) }
-		, m_texLayout{ renderer::makeLayout< utils::Vec2 >( device, 1u ) }
+		, m_posLayout{ renderer::makeLayout< renderer::Vec3 > ( device, 0u ) }
+		, m_texLayout{ renderer::makeLayout< renderer::Vec2 >( device, 1u ) }
 	{
-		m_posLayout->createAttribute< utils::Vec3 >( 0u, 0u );
-		m_texLayout->createAttribute< utils::Vec2 >( 1u, 0u );
+		m_posLayout->createAttribute< renderer::Vec3 >( 0u, 0u );
+		m_texLayout->createAttribute< renderer::Vec2 >( 1u, 0u );
 		m_pipelineLayout = device.createPipelineLayout( *m_descriptorLayout );
 		m_pipeline = device.createPipeline( *m_pipelineLayout
 			, *m_program
@@ -158,9 +158,9 @@ namespace render
 			, renderer::MemoryPropertyFlag::eDeviceLocal }
 		, m_layout{ renderer::makeLayout< BillboardBuffer::Vertex >( device, 0u ) }
 	{
-		m_layout->createAttribute< utils::Vec3 >( 0u, offsetof( BillboardData, center ) );
-		m_layout->createAttribute< utils::Vec2 >( 1u, offsetof( BillboardData, scale ) );
-		m_layout->createAttribute< utils::Vec2 >( 2u, offsetof( BillboardBuffer::Vertex, texture ) );
+		m_layout->createAttribute< renderer::Vec3 >( 0u, offsetof( BillboardData, center ) );
+		m_layout->createAttribute< renderer::Vec2 >( 1u, offsetof( BillboardData, scale ) );
+		m_layout->createAttribute< renderer::Vec2 >( 2u, offsetof( BillboardBuffer::Vertex, texture ) );
 		m_layout->createAttribute< float >( 3u, offsetof( BillboardBuffer::Vertex, id ) );
 		m_pipelineLayout = device.createPipelineLayout( *m_descriptorLayout );
 		m_descriptor->createBinding( m_descriptorPool->getLayout().getBinding( UberShader::UboBillboardBinding )
@@ -389,8 +389,8 @@ namespace render
 	{
 		if ( !objects.empty() )
 		{
-			utils::Mat4 const & projection = camera.projection();
-			utils::Mat4 const & view = camera.view();
+			renderer::Mat4 const & projection = camera.projection();
+			renderer::Mat4 const & view = camera.view();
 			node.m_mtxUbo.getData().projection = projection;
 			node.m_mtxUbo.getData().view = view;
 			//node.m_scale->value( m_objectScale.value( zoomPercent ) );
@@ -438,13 +438,13 @@ namespace render
 	{
 		if ( !billboards.empty() )
 		{
-			utils::Mat4 const & projection = camera.projection();
-			utils::Mat4 const & view = camera.view();
-			utils::Vec3 const & position = camera.position();
+			renderer::Mat4 const & projection = camera.projection();
+			renderer::Mat4 const & view = camera.view();
+			renderer::Vec3 const & position = camera.position();
 			node.m_mtxUbo.getData().projection = projection;
 			node.m_mtxUbo.getData().view = view;
 			node.m_billboardUbo.getData().camera = position;
-			node.m_billboardUbo.getData().dimensions = utils::Vec2{ 30.0, 30.0 };
+			node.m_billboardUbo.getData().dimensions = renderer::Vec2{ 30.0, 30.0 };
 			stagingBuffer.copyUniformData( commandBuffer
 				, node.m_billboardUbo.getDatas()
 				, node.m_billboardUbo

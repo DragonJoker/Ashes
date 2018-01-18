@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -31,7 +31,7 @@ namespace vk_renderer
 	}
 
 	RenderPass::RenderPass( Device const & device
-		, std::vector< utils::PixelFormat > const & formats
+		, std::vector< renderer::PixelFormat > const & formats
 		, renderer::RenderSubpassPtrArray const & subpasses
 		, renderer::RenderPassState const & initialState
 		, renderer::RenderPassState const & finalState
@@ -178,7 +178,7 @@ namespace vk_renderer
 		DestroyRenderPass( m_device, m_renderPass, nullptr );
 	}
 
-	renderer::FrameBufferPtr RenderPass::createFrameBuffer( utils::IVec2 const & dimensions
+	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::IVec2 const & dimensions
 		, renderer::TextureCRefArray const & textures )const
 	{
 		// On v�rifie la compatibilit� des vues demand�s pour le framebuffer � cr�er.

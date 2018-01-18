@@ -84,7 +84,7 @@ namespace render
 		*\param[in] value
 		*	La nouvelle valeur.
 		*/
-		inline void dimensions( utils::IVec2 const & value )
+		inline void dimensions( renderer::IVec2 const & value )
 		{
 			m_dimensions = value;
 		}
@@ -92,7 +92,7 @@ namespace render
 		*\return
 		*	Les dimensions des billboards.
 		*/
-		inline utils::IVec2 const & dimensions()const
+		inline renderer::IVec2 const & dimensions()const
 		{
 			return m_dimensions;
 		}
@@ -101,7 +101,7 @@ namespace render
 		//! Le matériau.
 		MaterialPtr m_material;
 		//! Les dimensions des billboards.
-		utils::IVec2 m_dimensions;
+		renderer::IVec2 m_dimensions;
 		//! Les données du billboard.
 		BillboardBuffer & m_buffer;
 	};

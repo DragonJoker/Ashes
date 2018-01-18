@@ -31,7 +31,7 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		BufferBase const & m_src;
+		Buffer const & m_src;
 		Texture const & m_dst;
 		GLenum m_format;
 		GLenum m_type;

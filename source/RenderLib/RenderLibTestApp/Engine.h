@@ -39,12 +39,12 @@ public:
 	*\brief
 	*	Réaffichage de la fenêtre après une minimisation.
 	*/
-	void onRestore( utils::IVec2 const & event )override;
+	void onRestore( renderer::IVec2 const & event )override;
 	/**
 	*\brief
 	*	Initialisation de la fenêtre.
 	*/
-	void onResize( utils::IVec2 const & event )override;
+	void onResize( renderer::IVec2 const & event )override;
 	/**
 	*\brief
 	*	Déplacement de la souris.
@@ -145,7 +145,7 @@ private:
 
 	render::RenderWindowPtr m_window;
 
-	utils::IVec2 m_mouse;
+	renderer::IVec2 m_mouse;
 
 	utils::Connection< render::OnObjectPicked > m_onObjectPicked;
 	utils::Connection< render::OnBillboardPicked > m_onBillboardPicked;

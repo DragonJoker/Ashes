@@ -49,9 +49,9 @@ namespace render
 			return device.createDescriptorSetLayout( std::move( bindings ) );
 		}
 
-		std::vector< utils::PixelFormat > doGetPixelFormats()
+		std::vector< renderer::PixelFormat > doGetPixelFormats()
 		{
-			return { utils::PixelFormat::eB8G8R8A8 };
+			return { renderer::PixelFormat::eB8G8R8A8 };
 		}
 
 		renderer::RenderSubpassState doGetSubpassState()
@@ -77,7 +77,7 @@ namespace render
 	//*********************************************************************************************
 
 	RenderWindow::RenderWindow( renderer::Device const & device
-		, utils::IVec2 const & dimensions
+		, renderer::IVec2 const & dimensions
 		, render::FontLoader & loader
 		, bool debug )
 		: m_device{ device }
@@ -97,7 +97,7 @@ namespace render
 			, 10000000u ) }
 		, m_descriptorLayout{ doCreateDescriptorLayout( device ) }
 		, m_pipelineLayout{ device.createPipelineLayout( *m_descriptorLayout ) }
-		, m_target{ std::make_unique< RenderTarget >( device, dimensions, utils::PixelFormat::eR8G8B8A8 ) }
+		, m_target{ std::make_unique< RenderTarget >( device, dimensions, renderer::PixelFormat::eR8G8B8A8 ) }
 		, m_overlayRenderer{ device, m_target->getRenderPass(), *m_drawCommandPool, dimensions }
 		, m_scene{ device, m_target->getRenderPass(), dimensions, m_overlayRenderer }
 		, m_size{ dimensions }
@@ -123,13 +123,13 @@ namespace render
 		//, m_picking{ device, dimensions }
 		, m_debug{ device, *m_stagingBuffer, m_swapChain->getDefaultResources().getCommandBuffer(), debug, m_scene, loader }
 	{
-		m_layout->createAttribute< utils::Vec2 >( 0u
+		m_layout->createAttribute< renderer::Vec2 >( 0u
 			, uint32_t( offsetof( RenderWindow::Vertex, position ) ) );
-		m_layout->createAttribute< utils::Vec2 >( 1u
+		m_layout->createAttribute< renderer::Vec2 >( 1u
 			, uint32_t( offsetof( RenderWindow::Vertex, texture ) ) );
 
 		m_descriptor->createBinding( m_descriptorPool->getLayout().getBinding( UberShader::TextureDiffuseBinding )
-			, m_target->getTexture()
+			, m_target->getTexture().getView()
 			, *m_sampler );
 		m_descriptor->update();
 		uint32_t index = 0u;
@@ -260,7 +260,7 @@ namespace render
 		}
 	}
 
-	void RenderWindow::resize( utils::IVec2 const & size )noexcept
+	void RenderWindow::resize( renderer::IVec2 const & size )noexcept
 	{
 		m_size = size;
 		m_viewport.resize( m_size );
@@ -283,7 +283,7 @@ namespace render
 			commandBuffer.beginRenderPass( *m_renderPass
 				, frameBuffer
 				, {
-					renderer::ClearValue{ utils::RgbaColour{ 1.0, 1.0, 0.0, 1.0 } }
+					renderer::ClearValue{ renderer::RgbaColour{ 1.0, 1.0, 0.0, 1.0 } }
 				}
 				, renderer::SubpassContents::eInline );
 			commandBuffer.bindPipeline( *m_pipeline );

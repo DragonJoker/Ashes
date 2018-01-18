@@ -27,7 +27,7 @@ namespace renderer
 		*	Le périphérique logique.
 		*/
 		RenderBuffer( Device const & device
-			, utils::PixelFormat format
+			, PixelFormat format
 			, IVec2 const & size );
 
 	public:
@@ -58,7 +58,7 @@ namespace renderer
 		*\return
 		*	Le format des pixels de la texture.
 		*/
-		inline utils::PixelFormat getFormat()const noexcept
+		inline PixelFormat getFormat()const noexcept
 		{
 			return m_format;
 		}
@@ -66,15 +66,15 @@ namespace renderer
 		*\return
 		*	Les dimensions de la texture.
 		*/
-		inline utils::IVec2 const & getDimensions()const noexcept
+		inline IVec2 const & getDimensions()const noexcept
 		{
 			return m_size;
 		}
 
 	private:
 		Device const & m_device;
-		utils::IVec2 m_size;
-		utils::PixelFormat m_format{ utils::PixelFormat::eR8G8B8 };
+		IVec2 m_size;
+		PixelFormat m_format{ PixelFormat::eR8G8B8 };
 	};
 }
 

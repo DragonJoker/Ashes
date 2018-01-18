@@ -52,81 +52,51 @@ namespace vk_renderer
 		*/
 		~DescriptorSet();
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type image et échantillonneur combinés.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] view
-		*	L'image.
-		*\param[in] sampler
-		*	L'échantillonneur.
-		*\return
-		*	L'attache créée.
-		*\~english
-		*\brief
-		*	Creates a combined image and sampler binding.
-		*\param[in] layoutBinding
-		*	The layout binding.
-		*\param[in] view
-		*	The image.
-		*\param[in] sampler
-		*	The sampler.
-		*\return
-		*	The created binding.
+		*\copydoc	renderer::createBinding
 		*/
 		renderer::CombinedTextureSamplerBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::Texture const & view
+			, renderer::TextureView const & view
 			, renderer::Sampler const & sampler )override;
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type image échantillonée.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] view
-		*	L'image.
-		*\return
-		*	L'attache créée.
-		*\~english
-		*\brief
-		*	Creates a sampled image binding.
-		*\param[in] layoutBinding
-		*	The layout binding.
-		*\param[in] view
-		*	The image.
-		*\return
-		*	The created binding.
+		*\copydoc	renderer::createBinding
+		*/
+		renderer::SamplerBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, renderer::Sampler const & sampler )override;
+		/**
+		*\copydoc	renderer::createBinding
 		*/
 		renderer::SampledTextureBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::Texture const & view )override;
+			, renderer::TextureView const & view
+			, renderer::ImageLayout layout )override;
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon de variables uniformes.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] uniformBuffer
-		*	Le tampon.
-		*\return
-		*	L'attache créée.
-		*\~english
-		*\brief
-		*	Creates a uniform variables buffer binding.
-		*\param[in] layoutBinding
-		*	The layout binding.
-		*\param[in] uniformBuffer
-		*	The buffer.
-		*\param[in] offset
-		*	The attach's offset in the buffer.
-		*\param[in] size
-		*	The attach's size in the buffer.
-		*\return
-		*	The created binding.
+		*\copydoc	renderer::createBinding
+		*/
+		renderer::StorageTextureBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, renderer::TextureView const & view )override;
+		/**
+		*\copydoc	renderer::createBinding
 		*/
 		renderer::UniformBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 			, renderer::UniformBufferBase const & uniformBuffer
 			, uint32_t offset )override;
+		/**
+		*\copydoc	renderer::createBinding
+		*/
+		renderer::StorageBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, renderer::BufferBase const & storageBuffer
+			, uint32_t offset )override;
+		/**
+		*\copydoc	renderer::createBinding
+		*/
+		renderer::UniformTexelBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, renderer::UniformBufferBase const & uniformBuffer
+			, renderer::BufferView const & view )override;
+		/**
+		*\copydoc	renderer::createBinding
+		*/
+		renderer::StorageTexelBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, renderer::BufferBase const & storageBuffer
+			, renderer::BufferView const & view )override;
 		/**
 		*\~french
 		*\brief

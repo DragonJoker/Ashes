@@ -6,7 +6,7 @@
 
 namespace gl_renderer
 {
-	BufferBase::BufferBase( renderer::Device const & device
+	Buffer::Buffer( renderer::Device const & device
 		, uint32_t size
 		, renderer::BufferTargets target
 		, renderer::MemoryPropertyFlags flags )
@@ -22,12 +22,12 @@ namespace gl_renderer
 		glBindBuffer( m_target, 0u );
 	}
 
-	BufferBase::~BufferBase()
+	Buffer::~Buffer()
 	{
 		glDeleteBuffers( 1, &m_glName );
 	}
 
-	uint8_t * BufferBase::lock( uint32_t offset
+	uint8_t * Buffer::lock( uint32_t offset
 		, uint32_t size
 		, renderer::MemoryMapFlags flags )const
 	{
@@ -35,14 +35,14 @@ namespace gl_renderer
 		return reinterpret_cast< uint8_t * >( glMapBufferRange( m_target, offset, size, convert( flags ) ) );
 	}
 
-	void BufferBase::unlock( uint32_t size
+	void Buffer::unlock( uint32_t size
 		, bool modified )const
 	{
 		glUnmapBuffer( m_target );
 		glBindBuffer( m_target, 0u );
 	}
 
-	renderer::BufferMemoryBarrier BufferBase::makeTransferDestination()const
+	renderer::BufferMemoryBarrier Buffer::makeTransferDestination()const
 	{
 		return renderer::BufferMemoryBarrier{ renderer::AccessFlag::eTransferWrite
 			, renderer::AccessFlag::eTransferWrite
@@ -53,7 +53,7 @@ namespace gl_renderer
 			, getSize() };
 	}
 
-	renderer::BufferMemoryBarrier BufferBase::makeTransferSource()const
+	renderer::BufferMemoryBarrier Buffer::makeTransferSource()const
 	{
 		return renderer::BufferMemoryBarrier{ renderer::AccessFlag::eTransferRead
 			, renderer::AccessFlag::eTransferRead
@@ -64,7 +64,7 @@ namespace gl_renderer
 			, getSize() };
 	}
 
-	renderer::BufferMemoryBarrier BufferBase::makeVertexShaderInputResource()const
+	renderer::BufferMemoryBarrier Buffer::makeVertexShaderInputResource()const
 	{
 		return renderer::BufferMemoryBarrier{ renderer::AccessFlag::eShaderRead
 			, renderer::AccessFlag::eShaderRead
@@ -75,7 +75,7 @@ namespace gl_renderer
 			, getSize() };
 	}
 
-	renderer::BufferMemoryBarrier BufferBase::makeUniformBufferInput()const
+	renderer::BufferMemoryBarrier Buffer::makeUniformBufferInput()const
 	{
 		return renderer::BufferMemoryBarrier{ renderer::AccessFlag::eUniformRead
 			, renderer::AccessFlag::eUniformRead
@@ -86,7 +86,7 @@ namespace gl_renderer
 			, getSize() };
 	}
 
-	renderer::BufferMemoryBarrier BufferBase::makeMemoryTransitionBarrier( renderer::AccessFlags dstAccess )const
+	renderer::BufferMemoryBarrier Buffer::makeMemoryTransitionBarrier( renderer::AccessFlags dstAccess )const
 	{
 		return renderer::BufferMemoryBarrier{ dstAccess
 			, dstAccess

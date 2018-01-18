@@ -12,8 +12,8 @@ namespace gl_renderer
 		, renderer::BufferBase const & dst
 		, uint32_t size
 		, uint32_t offset )
-		: m_src{ static_cast< BufferBase const & >( src ) }
-		, m_dst{ static_cast< BufferBase const & >( dst ) }
+		: m_src{ static_cast< Buffer const & >( src ) }
+		, m_dst{ static_cast< Buffer const & >( dst ) }
 		, m_size{ size }
 		, m_offset{ offset }
 	{

@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 namespace vk_renderer
 {
 	RenderSubpass::RenderSubpass( Device const & device
-		, std::vector< utils::PixelFormat > const & formats
+		, std::vector< renderer::PixelFormat > const & formats
 		, renderer::RenderSubpassState const & neededState )
 		: renderer::RenderSubpass{ device, formats, neededState }
 		, m_device{ device }

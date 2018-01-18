@@ -194,7 +194,7 @@ namespace vkapp
 		std::array< VertexData, 4 > m_vertexData;
 		std::vector< renderer::FrameBufferPtr > m_frameBuffers;
 		renderer::CommandBufferPtrArray m_commandBuffers;
-		utils::Connection< renderer::SwapChain::OnReset > m_swapChainReset;
+		renderer::SignalConnection< renderer::SwapChain::OnReset > m_swapChainReset;
 		wxTimer * m_timer{ nullptr };
 	};
 }

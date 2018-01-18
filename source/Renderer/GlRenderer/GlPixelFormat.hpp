@@ -10,47 +10,47 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Récupère le format interne OpenGL pour le utils::PixelFormat donné.
+	*	Récupère le format interne OpenGL pour le renderer::PixelFormat donné.
 	*\param[in] format
-	*	Le utils::PixelFormat.
+	*	Le renderer::PixelFormat.
 	*\return
 	*	Le format interne OpenGL.
 	*/
-	GLenum getInternal( utils::PixelFormat const & format )noexcept;
+	GLenum getInternal( renderer::PixelFormat const & format )noexcept;
 	/**
 	*\brief
-	*	Récupère le format OpenGL pour le utils::PixelFormat donné.
+	*	Récupère le format OpenGL pour le renderer::PixelFormat donné.
 	*\param[in] format
-	*	Le utils::PixelFormat.
+	*	Le renderer::PixelFormat.
 	*\return
 	*	Le format OpenGL.
 	*/
-	GLenum getFormat( utils::PixelFormat format )noexcept;
+	GLenum getFormat( renderer::PixelFormat format )noexcept;
 	/**
 	*\brief
-	*	Récupère le type de données OpenGL pour le utils::PixelFormat donné.
+	*	Récupère le type de données OpenGL pour le renderer::PixelFormat donné.
 	*\param[in] format
-	*	Le utils::PixelFormat.
+	*	Le renderer::PixelFormat.
 	*\return
 	*	Le type de données OpenGL.
 	*/
-	GLenum getType( utils::PixelFormat format )noexcept;
+	GLenum getType( renderer::PixelFormat format )noexcept;
 	/**
 	*\brief
-	*	Récupère le taille des données pour le utils::PixelFormat donné.
+	*	Récupère le taille des données pour le renderer::PixelFormat donné.
 	*\param[in] format
-	*	Le utils::PixelFormat.
+	*	Le renderer::PixelFormat.
 	*\return
 	*	La taille des données.
 	*/
-	uint32_t getSize( utils::PixelFormat format )noexcept;
+	uint32_t getSize( renderer::PixelFormat format )noexcept;
 	/**
 	*\brief
-	*	Convertit un VkFormat en utils::PixelFormat.
+	*	Convertit un VkFormat en renderer::PixelFormat.
 	*\param[in] format
 	*	Le VkFormat.
 	*\return
-	*	Le utils::PixelFormat.
+	*	Le renderer::PixelFormat.
 	*/
-	utils::PixelFormat convert( GLenum format )noexcept;
+	renderer::PixelFormat convert( GLenum format )noexcept;
 }

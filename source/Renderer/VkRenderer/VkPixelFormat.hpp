@@ -10,20 +10,20 @@ namespace vk_renderer
 {
 	/**
 	*\brief
-	*	Convertit un utils::PixelFormat en VkFormat.
+	*	Convertit un renderer::PixelFormat en VkFormat.
 	*\param[in] format
-	*	Le utils::PixelFormat.
+	*	Le renderer::PixelFormat.
 	*\return
 	*	Le VkFormat.
 	*/
-	VkFormat convert( utils::PixelFormat const & format )noexcept;
+	VkFormat convert( renderer::PixelFormat const & format )noexcept;
 	/**
 	*\brief
-	*	Convertit un VkFormat en utils::PixelFormat.
+	*	Convertit un VkFormat en renderer::PixelFormat.
 	*\param[in] format
 	*	Le VkFormat.
 	*\return
-	*	Le utils::PixelFormat.
+	*	Le renderer::PixelFormat.
 	*/
-	utils::PixelFormat convert( VkFormat const & format )noexcept;
+	renderer::PixelFormat convert( VkFormat const & format )noexcept;
 }

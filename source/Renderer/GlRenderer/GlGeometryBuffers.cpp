@@ -71,14 +71,14 @@ namespace gl_renderer
 		for ( auto & vbo : getVbos() )
 		{
 			glBindBuffer( GL_ARRAY_BUFFER
-				, static_cast< BufferBase const & >( vbo.vbo.getBuffer() ).getBuffer() );
+				, static_cast< Buffer const & >( vbo.vbo.getBuffer() ).getBuffer() );
 
 			for ( auto & attribute : static_cast< VertexLayout const & >( vbo.layout ) )
 			{
 				glEnableVertexAttribArray( attribute.getLocation() );
 				glVertexAttribPointer( attribute.getLocation()
-					, getSize( attribute.getFormat() )
-					, convert( attribute.getFormat() )
+					, getCount( attribute.getFormat() )
+					, getType( attribute.getFormat() )
 					, false
 					, vbo.layout.getStride()
 					, BufferOffset( vbo.offset + attribute.getOffset() ) );
@@ -88,7 +88,7 @@ namespace gl_renderer
 		if ( hasIbo() )
 		{
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER
-				, static_cast< BufferBase const & >( getIbo().buffer ).getBuffer() );
+				, static_cast< Buffer const & >( getIbo().buffer ).getBuffer() );
 		}
 
 		glBindVertexArray( 0u );

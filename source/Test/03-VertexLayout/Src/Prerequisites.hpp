@@ -14,8 +14,8 @@ namespace vkapp
 	*/
 	struct VertexData
 	{
-		utils::Vec4 position;
-		utils::Vec4 colour;
+		renderer::Vec4 position;
+		renderer::Vec4 colour;
 	};
 
 	static wxString const AppName = wxT( "03-VertexLayout" );

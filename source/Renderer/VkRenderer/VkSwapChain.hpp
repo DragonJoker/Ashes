@@ -37,7 +37,7 @@ namespace vk_renderer
 		*	The render surface dimensions.
 		*/
 		SwapChain( Device const & device
-			, utils::IVec2 const & size );
+			, renderer::IVec2 const & size );
 		/**
 		*\~french
 		*\brief
@@ -55,7 +55,7 @@ namespace vk_renderer
 		*\brief
 		*	Resets the swap chain.
 		*/
-		void reset( utils::IVec2 const & size );
+		void reset( renderer::IVec2 const & size );
 		/**
 		*\~french
 		*\brief
@@ -168,7 +168,7 @@ namespace vk_renderer
 		*\param[in] colour
 		*	The new value.
 		*/
-		inline void setClearColour( utils::RgbaColour const & value )override
+		inline void setClearColour( renderer::RgbaColour const & value )override
 		{
 			m_clearColour = convert( value );
 		}
@@ -180,7 +180,7 @@ namespace vk_renderer
 		*\return
 		*	The clear colour.
 		*/
-		inline utils::RgbaColour getClearColour()const override
+		inline renderer::RgbaColour getClearColour()const override
 		{
 			return convert( m_clearColour );
 		}
@@ -192,7 +192,7 @@ namespace vk_renderer
 		*\return
 		*	The swap chain dimensions.
 		*/
-		inline utils::IVec2 getDimensions()const override
+		inline renderer::IVec2 getDimensions()const override
 		{
 			return m_dimensions;
 		}
@@ -204,7 +204,7 @@ namespace vk_renderer
 		*\return
 		*	The swap chain's images pixels format.
 		*/
-		inline utils::PixelFormat getFormat()const override
+		inline renderer::PixelFormat getFormat()const override
 		{
 			return m_format;
 		}
@@ -234,12 +234,12 @@ namespace vk_renderer
 
 	private:
 		Device const & m_device;
-		utils::PixelFormat m_format{};
+		renderer::PixelFormat m_format{};
 		VkColorSpaceKHR m_colorSpace;
 		VkSwapchainKHR m_swapChain{};
 		VkSurfaceKHR m_surface{};
 		VkSurfaceCapabilitiesKHR m_surfaceCapabilities{};
-		utils::IVec2 m_dimensions;
+		renderer::IVec2 m_dimensions;
 		uint32_t m_currentBuffer{};
 		BackBufferPtrArray m_backBuffers;
 		VkClearColorValue m_clearColour{};

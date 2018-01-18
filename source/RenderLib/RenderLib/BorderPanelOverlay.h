@@ -63,7 +63,7 @@ namespace render
 		*\param[in] size
 		*	La nouvelle valeur.
 		*/
-		inline void size( utils::IVec2 const & size )noexcept
+		inline void size( renderer::IVec2 const & size )noexcept
 		{
 			m_sizeChanged |= ( size != m_size );
 			m_size = size;
@@ -92,7 +92,7 @@ namespace render
 		*\return
 		*	Les dimensions de la bordure
 		*/
-		utils::IVec4 borderSize()const
+		renderer::IVec4 borderSize()const
 		{
 			return m_borderSize;
 		}
@@ -102,7 +102,7 @@ namespace render
 		*\param[in] size
 		*	La nouvelle valeur
 		*/
-		inline void borderSize( utils::IVec4 const & size )
+		inline void borderSize( renderer::IVec4 const & size )
 		{
 			m_borderSize = size;
 			m_borderChanged = true;
@@ -242,7 +242,7 @@ namespace render
 		//! Le matériau de la bordure.
 		MaterialPtr m_borderMaterial;
 		//! La taille de la bordure.
-		utils::IVec4 m_borderSize;
+		renderer::IVec4 m_borderSize;
 		//! Le nom du matériau de la bordure.
 		BorderPosition m_borderPosition{ BorderPosition::eMiddle };
 		//! Les données du tampon de sommets.
@@ -250,11 +250,11 @@ namespace render
 		//! Les données du tampon de sommets pour la bordure.
 		BorderQuads m_borderQuads;
 		//!Les UV du panneau.
-		utils::Vec4 m_uv{ 0.33f, 0.33f, 0.66f, 0.66f };
+		renderer::Vec4 m_uv{ 0.33f, 0.33f, 0.66f, 0.66f };
 		//! Les UV de la partie extérieure de la bordure.
-		utils::Vec4 m_borderOuterUv{ 0.0f, 0.0f, 1.0f, 1.0f };
+		renderer::Vec4 m_borderOuterUv{ 0.0f, 0.0f, 1.0f, 1.0f };
 		//! Les UV de la partie intérieure de la bordure.
-		utils::Vec4 m_borderInnerUv{ 0.33f, 0.33f, 0.66f, 0.66f };
+		renderer::Vec4 m_borderInnerUv{ 0.33f, 0.33f, 0.66f, 0.66f };
 		//! Dit si la bordure a changé, de quelque manière que ce soit.
 		bool m_borderChanged{ true };
 		//! Dit si la taille de l'incrustation a changé.

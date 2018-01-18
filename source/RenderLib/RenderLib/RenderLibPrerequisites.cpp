@@ -39,10 +39,10 @@ namespace render
 			return uint32_t( atoi( text.c_str() ) );
 		}
 
-		utils::IVec2 getIVec2( std::string const & text )
+		renderer::IVec2 getIVec2( std::string const & text )
 		{
 			auto infos = utils::split( text, " ", 3, false );
-			utils::IVec2 ret;
+			renderer::IVec2 ret;
 
 			if ( infos.size() == 2 )
 			{
@@ -82,14 +82,14 @@ namespace render
 		if ( material->hasDiffuseMap() )
 		{
 			m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::TextureDiffuseBinding )
-				, material->diffuseMap().texture()
+				, material->diffuseMap().texture().getView()
 				, material->diffuseMap().sampler() );
 		}
 
 		if ( material->hasOpacityMap() )
 		{
 			m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::TextureOpacityBinding )
-				, material->opacityMap().texture()
+				, material->opacityMap().texture().getView()
 				, material->opacityMap().sampler() );
 		}
 
@@ -150,14 +150,14 @@ namespace render
 		if ( material.hasDiffuseMap() )
 		{
 			m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::TextureDiffuseBinding )
-				, material.diffuseMap().texture()
+				, material.diffuseMap().texture().getView()
 				, material.diffuseMap().sampler() );
 		}
 
 		if ( material.hasOpacityMap() )
 		{
 			m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::TextureOpacityBinding )
-				, material.opacityMap().texture()
+				, material.opacityMap().texture().getView()
 				, material.opacityMap().sampler() );
 		}
 
@@ -194,14 +194,14 @@ namespace render
 		if ( material.hasDiffuseMap() )
 		{
 			m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::TextureDiffuseBinding )
-				, material.diffuseMap().texture()
+				, material.diffuseMap().texture().getView()
 				, material.diffuseMap().sampler() );
 		}
 
 		if ( material.hasOpacityMap() )
 		{
 			m_descriptor->createBinding( pool.getLayout().getBinding( UberShader::TextureOpacityBinding )
-				, material.opacityMap().texture()
+				, material.opacityMap().texture().getView()
 				, material.opacityMap().sampler() );
 		}
 
@@ -230,34 +230,34 @@ namespace render
 
 		if ( data )
 		{
-			utils::PixelFormat format;
+			renderer::PixelFormat format;
 
 			switch ( r )
 			{
 			case 1:
-				format = utils::PixelFormat::eL8;
+				format = renderer::PixelFormat::eL8;
 				break;
 
 			case 2:
-				format = utils::PixelFormat::eL8A8;
+				format = renderer::PixelFormat::eL8A8;
 				break;
 
 			case 3:
-				format = utils::PixelFormat::eR8G8B8;
+				format = renderer::PixelFormat::eR8G8B8;
 				break;
 
 			case 4:
-				format = utils::PixelFormat::eR8G8B8A8;
+				format = renderer::PixelFormat::eR8G8B8A8;
 				break;
 
 			default:
 				assert( "Unsupported component count" );
-				format = utils::PixelFormat::eR8G8B8A8;
+				format = renderer::PixelFormat::eR8G8B8A8;
 				break;
 			}
 
 			texture.image( format
-				, utils::IVec2{ x, y }
+				, renderer::IVec2{ x, y }
 				, ByteArray{ data, data + r * x * y }
 				, stagingBuffer
 				, commandBuffer );
@@ -268,7 +268,7 @@ namespace render
 	void loadTexture( renderer::StagingBuffer const & stagingBuffer
 		, renderer::CommandBuffer const & commandBuffer
 		, ByteArray const & fileContent
-		, utils::PixelFormat format
+		, renderer::PixelFormat format
 		, Texture & texture )
 	{
 		int x = 0;
@@ -288,7 +288,7 @@ namespace render
 			switch ( n )
 			{
 			case 1:
-				utils::convertBuffer< utils::PixelFormat::eL8 >( data
+				utils::convertBuffer< renderer::PixelFormat::eL8 >( data
 					, size_t( n * x * y )
 					, buffer.data()
 					, format
@@ -296,7 +296,7 @@ namespace render
 				break;
 
 			case 2:
-				utils::convertBuffer< utils::PixelFormat::eL8A8 >( data
+				utils::convertBuffer< renderer::PixelFormat::eL8A8 >( data
 					, size_t( n * x * y )
 					, buffer.data()
 					, format
@@ -304,7 +304,7 @@ namespace render
 				break;
 
 			case 3:
-				utils::convertBuffer< utils::PixelFormat::eR8G8B8 >( data
+				utils::convertBuffer< renderer::PixelFormat::eR8G8B8 >( data
 					, size_t( n * x * y )
 					, buffer.data()
 					, format
@@ -312,7 +312,7 @@ namespace render
 				break;
 
 			case 4:
-				utils::convertBuffer< utils::PixelFormat::eR8G8B8A8 >( data
+				utils::convertBuffer< renderer::PixelFormat::eR8G8B8A8 >( data
 					, size_t( n * x * y )
 					, buffer.data()
 					, format
@@ -321,7 +321,7 @@ namespace render
 			}
 
 			texture.image( format
-				, utils::IVec2{ x, y }
+				, renderer::IVec2{ x, y }
 				, buffer
 				, stagingBuffer
 				, commandBuffer );

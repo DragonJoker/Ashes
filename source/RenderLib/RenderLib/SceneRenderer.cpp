@@ -128,13 +128,13 @@ namespace render
 		, renderer::ShaderProgramPtr && program
 		, NodeType type )
 		: RenderNode{ device, std::move( layout ), std::move( program ) }
-		, m_posLayout{ renderer::makeLayout< utils::Vec3 >( device, 0u ) }
-		, m_nmlLayout{ renderer::makeLayout< utils::Vec3 >( device, 1u ) }
-		, m_texLayout{ renderer::makeLayout< utils::Vec2 >( device, 2u ) }
+		, m_posLayout{ renderer::makeLayout< renderer::Vec3 >( device, 0u ) }
+		, m_nmlLayout{ renderer::makeLayout< renderer::Vec3 >( device, 1u ) }
+		, m_texLayout{ renderer::makeLayout< renderer::Vec2 >( device, 2u ) }
 	{
-		m_posLayout->createAttribute< utils::Vec3 >( 0u, 0u );
-		m_nmlLayout->createAttribute< utils::Vec3 >( 1u, 0u );
-		m_texLayout->createAttribute< utils::Vec2 >( 2u, 0u );
+		m_posLayout->createAttribute< renderer::Vec3 >( 0u, 0u );
+		m_nmlLayout->createAttribute< renderer::Vec3 >( 1u, 0u );
+		m_texLayout->createAttribute< renderer::Vec2 >( 2u, 0u );
 		m_pipelineLayout = device.createPipelineLayout( *m_descriptorLayout );
 		m_pipeline = device.createPipeline( *m_pipelineLayout
 			, *m_program
@@ -162,9 +162,9 @@ namespace render
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
 		, m_layout{ renderer::makeLayout< BillboardBuffer::Vertex >( device, 0u ) }
 	{
-		m_layout->createAttribute< utils::Vec3 >( 0u, offsetof( BillboardData, center ) );
-		m_layout->createAttribute< utils::Vec2 >( 1u, offsetof( BillboardData, scale ) );
-		m_layout->createAttribute< utils::Vec2 >( 2u, offsetof( BillboardBuffer::Vertex, texture ) );
+		m_layout->createAttribute< renderer::Vec3 >( 0u, offsetof( BillboardData, center ) );
+		m_layout->createAttribute< renderer::Vec2 >( 1u, offsetof( BillboardData, scale ) );
+		m_layout->createAttribute< renderer::Vec2 >( 2u, offsetof( BillboardBuffer::Vertex, texture ) );
 		m_pipelineLayout = device.createPipelineLayout( *m_descriptorLayout );
 		m_pipeline = device.createPipeline( *m_pipelineLayout
 			, *m_program
@@ -198,9 +198,9 @@ namespace render
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
 		, m_layout{ renderer::makeLayout< PolyLine::Vertex >( device, 0u ) }
 	{
-		m_layout->createAttribute< utils::Vec3 >( 0u
+		m_layout->createAttribute< renderer::Vec3 >( 0u
 			, offsetof( PolyLine::Vertex, m_position ) );
-		m_layout->createAttribute< utils::Vec2 >( 1u
+		m_layout->createAttribute< renderer::Vec2 >( 1u
 			, offsetof( PolyLine::Vertex, m_normal ) );
 		m_pipelineLayout = device.createPipelineLayout( *m_descriptorLayout );
 		m_pipeline = device.createPipeline( *m_pipelineLayout

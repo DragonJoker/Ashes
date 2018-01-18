@@ -18,7 +18,7 @@ namespace vk_renderer
 		return result;
 	}
 
-	VkClearColorValue convert( utils::RgbaColour const & colour )
+	VkClearColorValue convert( renderer::RgbaColour const & colour )
 	{
 		return VkClearColorValue
 		{
@@ -26,9 +26,9 @@ namespace vk_renderer
 		};
 	}
 
-	utils::RgbaColour convert( VkClearColorValue const & colour )
+	renderer::RgbaColour convert( VkClearColorValue const & colour )
 	{
-		return utils::RgbaColour
+		return renderer::RgbaColour
 		{
 			colour.float32[0],
 			colour.float32[1],

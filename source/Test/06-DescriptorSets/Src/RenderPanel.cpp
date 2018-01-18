@@ -237,7 +237,7 @@ namespace vkapp
 			}
 
 			m_texture = m_device->createTexture();
-			m_texture->setImage( utils::PixelFormat::eR8G8B8A8
+			m_texture->setImage( renderer::PixelFormat::eR8G8B8A8
 				, { image.GetSize().x, image.GetSize().y } );
 			m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 				, renderer::WrapMode::eClampToEdge
@@ -256,7 +256,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_uniformBuffer = std::make_unique< renderer::UniformBuffer< utils::Mat4 > >( *m_device
+		m_uniformBuffer = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( *m_device
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -286,7 +286,7 @@ namespace vkapp
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
-			, *m_texture
+			, m_texture->getView()
 			, *m_sampler );
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 1u )
 			, *m_uniformBuffer
@@ -296,7 +296,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateRenderPass()
 	{
-		std::vector< utils::PixelFormat > formats{ { m_swapChain->getFormat() } };
+		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
 		renderer::RenderSubpassPtrArray subpasses;
 		subpasses.emplace_back( m_device->createRenderSubpass( formats
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
@@ -317,9 +317,9 @@ namespace vkapp
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( *m_device, 0 );
-		m_vertexLayout->createAttribute< utils::Vec4 >( 0u
+		m_vertexLayout->createAttribute< renderer::Vec4 >( 0u
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_vertexLayout->createAttribute< utils::Vec2 >( 1u
+		m_vertexLayout->createAttribute< renderer::Vec2 >( 1u
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 		m_stagingBuffer->copyVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData

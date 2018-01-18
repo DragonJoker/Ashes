@@ -2,7 +2,7 @@
 
 namespace gl_renderer
 {
-	GLenum convert( renderer::AttributeFormat format )
+	GLenum getType( renderer::AttributeFormat format )
 	{
 		switch ( format )
 		{
@@ -24,7 +24,7 @@ namespace gl_renderer
 		}
 	}
 
-	uint32_t getSize( renderer::AttributeFormat format )
+	uint32_t getCount( renderer::AttributeFormat format )
 	{
 		switch ( format )
 		{

@@ -16,14 +16,14 @@ namespace gl_renderer
 	*\return
 	*	Le VkFormat.
 	*/
-	GLenum convert( renderer::AttributeFormat format );
+	GLenum getType( renderer::AttributeFormat format );
 	/**
 	*\brief
-	*	Récupère la taille en octets du format donné.
+	*	Récupère le nombre d'éléments du format donné.
 	*\param[in] flags
 	*	Le renderer::AttributeFormat.
 	*\return
-	*	La taille.
+	*	Le compte.
 	*/
-	uint32_t getSize( renderer::AttributeFormat format );
+	uint32_t getCount( renderer::AttributeFormat format );
 }

@@ -26,7 +26,7 @@ namespace render
 		*\param[in] size
 		*	La taille initiale de la zone de rendu.
 		*/
-		Camera( utils::IVec2 const & size );
+		Camera( renderer::IVec2 const & size );
 		/**
 		*\brief
 		*	Met à jour la matrice de vue.
@@ -40,7 +40,7 @@ namespace render
 		*\param[in] size
 		*	Les nouvelles dimensions.
 		*/
-		void resize( utils::IVec2 const & size )noexcept;
+		void resize( renderer::IVec2 const & size )noexcept;
 		/**
 		*\brief
 		*	Vérifie si le point donné est visible par la caméra.
@@ -50,12 +50,12 @@ namespace render
 		*	\p false si la position est dans le frustum du viewport orienté
 		*	par la vue de la caméra.
 		*/
-		bool visible( utils::Vec3 const & position )const;
+		bool visible( renderer::Vec3 const & position )const;
 		/**
 		*\return
 		*	La position de la caméra.
 		*/
-		inline utils::Vec3 const & position()const noexcept
+		inline renderer::Vec3 const & position()const noexcept
 		{
 			return m_position;
 		}
@@ -63,7 +63,7 @@ namespace render
 		*\return
 		*	La matrice de vue.
 		*/
-		inline utils::Mat4 const & view()const noexcept
+		inline renderer::Mat4 const & view()const noexcept
 		{
 			return m_transform;
 		}
@@ -71,7 +71,7 @@ namespace render
 		*\return
 		*	La matrice de projection.
 		*/
-		inline utils::Mat4 const & projection()const noexcept
+		inline renderer::Mat4 const & projection()const noexcept
 		{
 			return m_viewport.transform();
 		}
@@ -81,10 +81,10 @@ namespace render
 		*\param[in] translate
 		*	Le vecteur représentant la translation à appliquer.
 		*/
-		inline void translate( utils::Vec3 const & translate )noexcept
+		inline void translate( renderer::Vec3 const & translate )noexcept
 		{
 			m_position += translate;
-			m_changed |= translate != utils::Vec3{};
+			m_changed |= translate != renderer::Vec3{};
 		}
 		/**
 		*\brief
@@ -92,7 +92,7 @@ namespace render
 		*\param[in] position
 		*	La nouvelle position.
 		*/
-		inline void moveTo( utils::Vec3 const & position )noexcept
+		inline void moveTo( renderer::Vec3 const & position )noexcept
 		{
 			m_changed |= position != m_position;
 			m_position = position;
@@ -103,10 +103,10 @@ namespace render
 		*\param[in] rotation
 		*	Le quaternion représentant la rotation à appliquer.
 		*/
-		inline void rotate( utils::Quaternion const & rotation )noexcept
+		inline void rotate( renderer::Quaternion const & rotation )noexcept
 		{
 			m_orientation *= rotation;
-			m_changed |= rotation != utils::Quaternion{};
+			m_changed |= rotation != renderer::Quaternion{};
 		}
 		/**
 		*\brief
@@ -114,7 +114,7 @@ namespace render
 		*\param[in] orientation
 		*	La nouvelle orientation.
 		*/
-		inline void reorient( utils::Quaternion const & orientation )noexcept
+		inline void reorient( renderer::Quaternion const & orientation )noexcept
 		{
 			m_changed |= orientation != m_orientation;
 			m_orientation = orientation;
@@ -162,11 +162,11 @@ namespace render
 
 	private:
 		//! La position de la caméra dans le monde.
-		utils::Vec3 m_position;
+		renderer::Vec3 m_position;
 		//! L'orientation de la caméra dans le monde.
-		utils::Quaternion m_orientation;
+		renderer::Quaternion m_orientation;
 		//! La matrice de vue.
-		utils::Mat4 m_transform;
+		renderer::Mat4 m_transform;
 		//! Le viewport.
 		Viewport m_viewport;
 		//! Le frustum, dans l'espace vue.

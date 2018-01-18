@@ -25,12 +25,12 @@ namespace gl_renderer
 		*	Constructeur.
 		*/
 		SwapChain( renderer::Device const & device
-			, utils::IVec2 const & size );
+			, renderer::IVec2 const & size );
 		/**
 		*\brief
 		*	Réinitialise la swap chain.
 		*/
-		void reset( utils::IVec2 const & size );
+		void reset( renderer::IVec2 const & size );
 		/**
 		*\brief
 		*	Crée les tampons d'image des back buffers, compatibles avec la passe de rendu donnée.
@@ -85,7 +85,7 @@ namespace gl_renderer
 		*\param[in] value
 		*	La nouvelle valeur.
 		*/
-		inline void setClearColour( utils::RgbaColour const & value )override
+		inline void setClearColour( renderer::RgbaColour const & value )override
 		{
 			m_clearColour = value;
 		}
@@ -95,7 +95,7 @@ namespace gl_renderer
 		*\param[in] value
 		*	La nouvelle valeur.
 		*/
-		inline utils::RgbaColour getClearColour()const override
+		inline renderer::RgbaColour getClearColour()const override
 		{
 			return m_clearColour;
 		}
@@ -103,7 +103,7 @@ namespace gl_renderer
 		*\return
 		*	Les dimensions de la swap chain.
 		*/
-		inline utils::IVec2 getDimensions()const override
+		inline renderer::IVec2 getDimensions()const override
 		{
 			return m_dimensions;
 		}
@@ -111,7 +111,7 @@ namespace gl_renderer
 		*\return
 		*	Les format des pixels de la swap chain.
 		*/
-		inline utils::PixelFormat getFormat()const override
+		inline renderer::PixelFormat getFormat()const override
 		{
 			return m_format;
 		}
@@ -120,7 +120,7 @@ namespace gl_renderer
 		void doResetSwapChain();
 
 	private:
-		utils::RgbaColour m_clearColour;
-		utils::PixelFormat m_format;
+		renderer::RgbaColour m_clearColour;
+		renderer::PixelFormat m_format;
 	};
 }

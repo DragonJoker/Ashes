@@ -38,7 +38,7 @@ namespace renderer
 		*	Le nombre d'échantillons (pour le multisampling).
 		*/
 		RenderPass( Device const & device
-			, std::vector< utils::PixelFormat > const & formats
+			, std::vector< PixelFormat > const & formats
 			, RenderSubpassPtrArray const & subpasses
 			, RenderPassState const & initialState
 			, RenderPassState const & finalState
@@ -68,7 +68,7 @@ namespace renderer
 		*\return
 		*	Le FrameBuffer créé.
 		*/
-		virtual FrameBufferPtr createFrameBuffer( utils::IVec2 const & dimensions
+		virtual FrameBufferPtr createFrameBuffer( IVec2 const & dimensions
 			, TextureCRefArray const & textures )const = 0;
 	};
 }

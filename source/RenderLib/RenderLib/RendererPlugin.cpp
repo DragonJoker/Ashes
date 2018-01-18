@@ -6,7 +6,7 @@
 
 namespace render
 {
-	RendererPlugin::RendererPlugin( utils::DynamicLibrary && library
+	RendererPlugin::RendererPlugin( renderer::DynamicLibrary && library
 		, RendererFactory & factory )
 		: m_library{ std::move( library ) }
 		, m_creator{ nullptr }

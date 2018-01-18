@@ -12,6 +12,7 @@ See LICENSE file in root folder.
 #include "AttributeFormat.hpp"
 #include "BlendFactor.hpp"
 #include "BlendOp.hpp"
+#include "BorderColour.hpp"
 #include "BufferTarget.hpp"
 #include "ColourComponentFlag.hpp"
 #include "CommandBufferResetFlag.hpp"
@@ -46,9 +47,10 @@ See LICENSE file in root folder.
 #include "StencilOp.hpp"
 #include "SubpassContents.hpp"
 #include "TessellationStateFlag.hpp"
+#include "TextureType.hpp"
 #include "WrapMode.hpp"
 
-#include <Utils/PixelFormat.hpp>
+#include "UtilsMapping.hpp"
 
 #include <cassert>
 #include <ctime>
@@ -69,11 +71,14 @@ namespace renderer
 	class UniformBuffer;
 	template< typename T >
 	class VertexBuffer;
+	template< typename T >
+	class ShaderStorageBuffer;
 
 	class AttributeBase;
 	class BackBuffer;
 	class BufferBase;
 	class BufferMemoryBarrier;
+	class BufferView;
 	class ColourBlendState;
 	class ColourBlendStateAttachment;
 	class CommandBuffer;
@@ -107,11 +112,13 @@ namespace renderer
 	class Semaphore;
 	class Scissor;
 	class ShaderProgram;
+	class ShaderStorageBufferBase;
 	class StagingBuffer;
 	class StencilOpState;
 	class SwapChain;
 	class TessellationState;
 	class Texture;
+	class TextureView;
 	class UniformBufferBase;
 	class VertexBufferBase;
 	class VertexLayout;
@@ -128,27 +135,11 @@ namespace renderer
 	*	Nanoseconds time to wait for a command buffer to be executed.
 	*/
 	static const uint32_t FenceTimeout = 100000000;
+
 	/**
 	*\name Typedefs généralistes.
 	*/
 	/**\{*/
-	using Vec2 = utils::Vec2;
-	using Vec3 = utils::Vec3;
-	using Vec4 = utils::Vec4;
-	using Mat4 = utils::Mat4;
-	using IVec2 = utils::IVec2;
-	using IVec3 = utils::IVec3;
-	using IVec4 = utils::IVec4;
-	using Quaternion = utils::Quaternion;
-	using RgbaColour = utils::RgbaColour;
-	using RgbColour = utils::RgbColour;
-	using ByteArray = utils::ByteArray;
-	using UInt16Array = utils::UInt16Array;
-	using UInt32Array = utils::UInt32Array;
-	using Vec3Array = utils::Vec3Array;
-	using Vec2Array = utils::Vec2Array;
-	using StringArray = utils::StringArray;
-
 	template< typename T >
 	using AttributePtr = std::unique_ptr< Attribute< T > >;
 	template< typename T >
@@ -157,9 +148,12 @@ namespace renderer
 	using UniformBufferPtr = std::unique_ptr< UniformBuffer< T > >;
 	template< typename T >
 	using VertexBufferPtr = std::unique_ptr< VertexBuffer< T > >;
+	template< typename T >
+	using ShaderStorageBufferPtr = std::unique_ptr< ShaderStorageBuffer< T > >;
 
 	using AttributeBasePtr = std::unique_ptr< AttributeBase >;
 	using BufferBasePtr = std::unique_ptr< BufferBase >;
+	using BufferViewPtr = std::unique_ptr< BufferView >;
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
 	using ConnectionPtr = std::unique_ptr< Connection >;
@@ -180,6 +174,7 @@ namespace renderer
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
 	using SemaphorePtr = std::unique_ptr< Semaphore >;
 	using ShaderProgramPtr = std::unique_ptr< ShaderProgram >;
+	using ShaderStorageBufferBasePtr = std::unique_ptr< ShaderStorageBufferBase >;
 	using SwapChainPtr = std::unique_ptr< SwapChain >;
 	using VertexBufferBasePtr = std::unique_ptr< VertexBufferBase >;
 	using VertexLayoutPtr = std::unique_ptr< VertexLayout >;
@@ -191,6 +186,7 @@ namespace renderer
 	using SamplerPtr = std::shared_ptr< Sampler >;
 	using StagingBufferPtr = std::shared_ptr< StagingBuffer >;
 	using TexturePtr = std::shared_ptr< Texture >;
+	using TextureViewPtr = std::shared_ptr< TextureView >;
 
 	using FrameBufferPtrArray = std::vector< FrameBufferPtr >;
 	using CommandBufferPtrArray = std::vector< CommandBufferPtr >;

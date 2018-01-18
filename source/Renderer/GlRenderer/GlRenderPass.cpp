@@ -13,7 +13,7 @@ See LICENSE file in root folder.
 namespace gl_renderer
 {
 	RenderPass::RenderPass( renderer::Device const & device
-		, std::vector< utils::PixelFormat > const & formats
+		, std::vector< renderer::PixelFormat > const & formats
 		, renderer::RenderSubpassPtrArray const & subpasses
 		, renderer::RenderPassState const & initialState
 		, renderer::RenderPassState const & finalState
@@ -30,7 +30,7 @@ namespace gl_renderer
 	{
 	}
 
-	renderer::FrameBufferPtr RenderPass::createFrameBuffer( utils::IVec2 const & dimensions
+	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::IVec2 const & dimensions
 		, renderer::TextureCRefArray const & textures )const
 	{
 		return std::make_shared< FrameBuffer >( *this

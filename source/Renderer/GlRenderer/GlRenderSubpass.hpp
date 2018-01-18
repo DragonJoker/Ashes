@@ -43,7 +43,7 @@ namespace gl_renderer
 		*	The state wanted for this subpass execution.
 		*/
 		RenderSubpass( renderer::Device const & device
-			, std::vector< utils::PixelFormat > const & formats
+			, std::vector< renderer::PixelFormat > const & formats
 			, renderer::RenderSubpassState const & neededState );
 	};
 }
