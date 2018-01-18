@@ -6,7 +6,7 @@
 */
 #pragma once
 
-#include <Renderer/Renderer.hpp>
+#include <Renderer/Core/Renderer.hpp>
 
 #ifdef _WIN32
 #	ifdef VkRenderer_EXPORTS

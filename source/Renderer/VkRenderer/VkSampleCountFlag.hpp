@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Renderer/SampleCountFlag.hpp>
+#include <Renderer/Enum/SampleCountFlag.hpp>
 
 namespace vk_renderer
 {

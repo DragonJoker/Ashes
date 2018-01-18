@@ -10,7 +10,7 @@
 
 #include "GlAttribute.hpp"
 
-#include <Renderer/VertexLayout.hpp>
+#include <Renderer/Pipeline/VertexLayout.hpp>
 
 #include <vector>
 

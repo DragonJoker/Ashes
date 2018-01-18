@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #include "VkPhysicalDevice.hpp"
 #include "VkRenderer.hpp"
 
-#include <Renderer/PlatformWindowHandle.hpp>
+#include <Renderer/Core/PlatformWindowHandle.hpp>
 
 #include "vulkan/vk_platform.h"
 

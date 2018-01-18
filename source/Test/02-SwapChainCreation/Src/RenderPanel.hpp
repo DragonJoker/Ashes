@@ -2,8 +2,8 @@
 
 #include "Prerequisites.hpp"
 
-#include <Renderer/Device.hpp>
-#include <Renderer/SwapChain.hpp>
+#include <Renderer/Core/Device.hpp>
+#include <Renderer/Core/SwapChain.hpp>
 
 #include <Utils/UtilsSignal.hpp>
 

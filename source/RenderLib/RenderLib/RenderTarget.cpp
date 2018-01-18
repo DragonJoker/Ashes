@@ -3,15 +3,15 @@
 #include "OverlayRenderer.h"
 #include "Scene.h"
 
-#include <Renderer/FrameBuffer.hpp>
-#include <Renderer/ImageMemoryBarrier.hpp>
-#include <Renderer/RenderBuffer.hpp>
-#include <Renderer/RenderPass.hpp>
-#include <Renderer/RenderPassState.hpp>
-#include <Renderer/RenderSubpass.hpp>
-#include <Renderer/RenderSubpassState.hpp>
-#include <Renderer/StagingBuffer.hpp>
-#include <Renderer/Texture.hpp>
+#include <Renderer/RenderPass/FrameBuffer.hpp>
+#include <Renderer/Sync/ImageMemoryBarrier.hpp>
+#include <Renderer/RenderPass/RenderBuffer.hpp>
+#include <Renderer/RenderPass/RenderPass.hpp>
+#include <Renderer/RenderPass/RenderPassState.hpp>
+#include <Renderer/RenderPass/RenderSubpass.hpp>
+#include <Renderer/RenderPass/RenderSubpassState.hpp>
+#include <Renderer/Buffer/StagingBuffer.hpp>
+#include <Renderer/Image/Texture.hpp>
 
 namespace render
 {

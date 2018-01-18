@@ -10,7 +10,7 @@
 
 #include "RenderLibPrerequisites.h"
 
-#include <Renderer/RenderPass.hpp>
+#include <Renderer/RenderPass/RenderPass.hpp>
 
 namespace render
 {

@@ -2,8 +2,8 @@
 
 #include "Material.h"
 
-#include <Renderer/Device.hpp>
-#include <Renderer/ShaderProgram.hpp>
+#include <Renderer/Core/Device.hpp>
+#include <Renderer/Shader/ShaderProgram.hpp>
 
 #include <Utils/StringUtils.hpp>
 

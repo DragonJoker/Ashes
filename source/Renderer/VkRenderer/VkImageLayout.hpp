@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/ImageLayout.hpp>
+#include <Renderer/Enum/ImageLayout.hpp>
 
 namespace vk_renderer
 {

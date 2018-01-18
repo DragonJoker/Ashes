@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Renderer/PrimitiveTopology.hpp>
+#include <Renderer/Enum/PrimitiveTopology.hpp>
 
 namespace vk_renderer
 {

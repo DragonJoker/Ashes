@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/BufferTarget.hpp>
+#include <Renderer/Enum/BufferTarget.hpp>
 
 namespace gl_renderer
 {

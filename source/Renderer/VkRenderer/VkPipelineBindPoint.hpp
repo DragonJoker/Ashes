@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Renderer/PipelineBindPoint.hpp>
+#include <Renderer/Enum/PipelineBindPoint.hpp>
 
 namespace vk_renderer
 {

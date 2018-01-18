@@ -10,7 +10,7 @@
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/BufferView.hpp>
+#include <Renderer/Buffer/BufferView.hpp>
 
 #include <Utils/Vec2.hpp>
 

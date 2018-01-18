@@ -15,17 +15,17 @@
 #include "RenderTarget.h"
 #include "Scene.h"
 
-#include <Renderer/Attribute.hpp>
-#include <Renderer/CommandBuffer.hpp>
-#include <Renderer/CommandPool.hpp>
-#include <Renderer/DescriptorSet.hpp>
-#include <Renderer/DescriptorSetLayout.hpp>
-#include <Renderer/DescriptorSetPool.hpp>
-#include <Renderer/ShaderProgram.hpp>
-#include <Renderer/StagingBuffer.hpp>
-#include <Renderer/Pipeline.hpp>
-#include <Renderer/PipelineLayout.hpp>
-#include <Renderer/SwapChain.hpp>
+#include <Renderer/Shader/Attribute.hpp>
+#include <Renderer/Command/CommandBuffer.hpp>
+#include <Renderer/Command/CommandPool.hpp>
+#include <Renderer/Descriptor/DescriptorSet.hpp>
+#include <Renderer/Descriptor/DescriptorSetLayout.hpp>
+#include <Renderer/Descriptor/DescriptorSetPool.hpp>
+#include <Renderer/Shader/ShaderProgram.hpp>
+#include <Renderer/Buffer/StagingBuffer.hpp>
+#include <Renderer/Pipeline/Pipeline.hpp>
+#include <Renderer/Pipeline/PipelineLayout.hpp>
+#include <Renderer/Core/SwapChain.hpp>
 
 namespace render
 {

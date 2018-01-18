@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "VkShaderModule.hpp"
 
-#include <Renderer/ShaderProgram.hpp>
+#include <Renderer/Shader/ShaderProgram.hpp>
 
 namespace vk_renderer
 {

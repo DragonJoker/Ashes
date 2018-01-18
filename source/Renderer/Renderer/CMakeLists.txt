@@ -2,16 +2,17 @@ project( Renderer )
 
 include_directories(
 	${CMAKE_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
 )
 
-file( GLOB ${PROJECT_NAME}_SRC_FILES
+file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 	*.c
 	*.cc
 	*.cpp
 )
 
-file( GLOB ${PROJECT_NAME}_HDR_FILES
+file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 	*.h
 	*.hh
 	*.hpp
@@ -58,6 +59,17 @@ add_target_precompiled_header( ${PROJECT_NAME}
 add_dependencies( ${PROJECT_NAME}
 	Utils
 )
+
+parse_subdir_files( Buffer "Buffer" )
+parse_subdir_files( Command "Command" )
+parse_subdir_files( Core "Core" )
+parse_subdir_files( Descriptor "Descriptor" )
+parse_subdir_files( Enum "Enum" )
+parse_subdir_files( Image "Image" )
+parse_subdir_files( Pipeline "Pipeline" )
+parse_subdir_files( RenderPass "RenderPass" )
+parse_subdir_files( Shader "Shader" )
+parse_subdir_files( Sync "Sync" )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )

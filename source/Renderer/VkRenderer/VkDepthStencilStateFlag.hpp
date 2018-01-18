@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/DepthStencilStateFlag.hpp>
+#include <Renderer/Enum/DepthStencilStateFlag.hpp>
 
 namespace vk_renderer
 {

@@ -1,1 +1,1 @@
-#include <Renderer/ImageMemoryBarrier.hpp>
+#include <Renderer/Sync/ImageMemoryBarrier.hpp>

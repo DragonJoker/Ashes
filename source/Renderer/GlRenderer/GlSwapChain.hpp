@@ -10,7 +10,7 @@
 #include "GlRendererPrerequisites.hpp"
 #include "GlRenderingResources.hpp"
 
-#include <Renderer/SwapChain.hpp>
+#include <Renderer/Core/SwapChain.hpp>
 
 #include <Utils/UtilsSignal.hpp>
 

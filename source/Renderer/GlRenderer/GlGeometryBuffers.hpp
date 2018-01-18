@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Renderer/GeometryBuffers.hpp>
+#include <Renderer/Buffer/GeometryBuffers.hpp>
 
 namespace gl_renderer
 {

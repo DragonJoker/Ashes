@@ -8,6 +8,8 @@
 
 #include "GL/glew.h"
 
+#include <Renderer/RendererPrerequisites.hpp>
+
 #include "GlAccessFlag.hpp"
 #include "GlAttributeFormat.hpp"
 #include "GlBlendFactor.hpp"
@@ -34,8 +36,6 @@
 #include "GlStencilOp.hpp"
 #include "GlTextureType.hpp"
 #include "GlWrapMode.hpp"
-
-#include <Renderer/RendererPrerequisites.hpp>
 
 namespace gl_renderer
 {

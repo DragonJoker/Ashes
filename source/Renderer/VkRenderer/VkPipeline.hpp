@@ -11,7 +11,7 @@
 #include "VkColourBlendState.hpp"
 #include "VkRasterisationState.hpp"
 
-#include <Renderer/Pipeline.hpp>
+#include <Renderer/Pipeline/Pipeline.hpp>
 
 namespace vk_renderer
 {

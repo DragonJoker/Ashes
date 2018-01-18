@@ -13,14 +13,14 @@
 #include "Viewport.h"
 #include "UberShader.h"
 
-#include <Renderer/DescriptorSet.hpp>
-#include <Renderer/DescriptorSetLayout.hpp>
-#include <Renderer/DescriptorSetPool.hpp>
-#include <Renderer/GeometryBuffers.hpp>
-#include <Renderer/Pipeline.hpp>
-#include <Renderer/PipelineLayout.hpp>
-#include <Renderer/ShaderProgram.hpp>
-#include <Renderer/UniformBuffer.hpp>
+#include <Renderer/Descriptor/DescriptorSet.hpp>
+#include <Renderer/Descriptor/DescriptorSetLayout.hpp>
+#include <Renderer/Descriptor/DescriptorSetPool.hpp>
+#include <Renderer/Buffer/GeometryBuffers.hpp>
+#include <Renderer/Pipeline/Pipeline.hpp>
+#include <Renderer/Pipeline/PipelineLayout.hpp>
+#include <Renderer/Shader/ShaderProgram.hpp>
+#include <Renderer/Buffer/UniformBuffer.hpp>
 
 #include <unordered_map>
 

@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Renderer/PipelineLayout.hpp>
+#include <Renderer/Pipeline/PipelineLayout.hpp>
 
 namespace gl_renderer
 {

@@ -10,7 +10,7 @@
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Renderer/Sampler.hpp>
+#include <Renderer/Image/Sampler.hpp>
 
 namespace gl_renderer
 {

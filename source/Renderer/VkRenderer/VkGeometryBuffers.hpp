@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/GeometryBuffers.hpp>
+#include <Renderer/Buffer/GeometryBuffers.hpp>
 
 #include <vector>
 

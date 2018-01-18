@@ -16,7 +16,6 @@ file( GLOB ${PROJECT_NAME}_HDR_FILES
 
 include_directories(
 	${CMAKE_SOURCE_DIR}
-	${CMAKE_BINARY_DIR}/Renderer
 )
 
 set( TARGET_RSC

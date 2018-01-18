@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/ClearValue.hpp>
+#include <Renderer/RenderPass/ClearValue.hpp>
 
 namespace vk_renderer
 {

@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/FrameBuffer.hpp>
+#include <Renderer/RenderPass/FrameBuffer.hpp>
 
 namespace vk_renderer
 {

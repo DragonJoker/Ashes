@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/DescriptorSetLayoutBinding.hpp>
+#include <Renderer/Descriptor/DescriptorSetLayoutBinding.hpp>
 
 namespace vk_renderer
 {

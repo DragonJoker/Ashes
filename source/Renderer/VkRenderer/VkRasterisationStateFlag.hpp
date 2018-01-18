@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/RasterisationStateFlag.hpp>
+#include <Renderer/Enum/RasterisationStateFlag.hpp>
 
 namespace vk_renderer
 {

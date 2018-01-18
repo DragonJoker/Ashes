@@ -2,7 +2,7 @@
 
 #include "GlDevice.hpp"
 
-#include <Renderer/BufferMemoryBarrier.hpp>
+#include <Renderer/Sync/BufferMemoryBarrier.hpp>
 
 namespace gl_renderer
 {

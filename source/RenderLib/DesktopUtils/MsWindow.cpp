@@ -3,10 +3,10 @@
 #include <RenderLib/RenderLibPrerequisites.h>
 #include <RenderLib/FileUtils.hpp>
 
-#include <Renderer/Connection.hpp>
-#include <Renderer/PlatformWindowHandle.hpp>
-#include <Renderer/Renderer.hpp>
-#include <Renderer/RenderingResources.hpp>
+#include <Renderer/Core/Connection.hpp>
+#include <Renderer/Core/PlatformWindowHandle.hpp>
+#include <Renderer/Core/Renderer.hpp>
+#include <Renderer/Core/RenderingResources.hpp>
 
 #include <Utils/DynamicLibrary.hpp>
 

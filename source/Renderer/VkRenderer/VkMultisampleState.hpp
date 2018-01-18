@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/MultisampleState.hpp>
+#include <Renderer/Pipeline/MultisampleState.hpp>
 
 namespace vk_renderer
 {

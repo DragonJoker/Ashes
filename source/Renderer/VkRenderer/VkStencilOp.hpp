@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/StencilOp.hpp>
+#include <Renderer/Enum/StencilOp.hpp>
 
 namespace vk_renderer
 {

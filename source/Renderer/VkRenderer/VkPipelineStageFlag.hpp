@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Renderer/PipelineStageFlag.hpp>
+#include <Renderer/Enum/PipelineStageFlag.hpp>
 
 namespace vk_renderer
 {

@@ -40,7 +40,8 @@ configure_file(
 if ( glslang_FOUND AND SPIRV_FOUND )
 	include_directories(
 		${CMAKE_SOURCE_DIR}
-		${CMAKE_BINARY_DIR}/Renderer
+		${CMAKE_BINARY_DIR}/Renderer/Renderer
+		${CMAKE_SOURCE_DIR}/Renderer/Renderer
 		${CMAKE_CURRENT_BINARY_DIR}
 	)
 

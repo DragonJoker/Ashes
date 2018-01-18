@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Renderer/Connection.hpp>
+#include <Renderer/Core/Connection.hpp>
 
 #include <Utils/Factory.hpp>
 #include <Utils/Mat4.hpp>

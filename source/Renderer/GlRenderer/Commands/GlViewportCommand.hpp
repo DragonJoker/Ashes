@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "GlCommandBase.hpp"
 
-#include <Renderer/Viewport.hpp>
+#include <Renderer/Pipeline/Viewport.hpp>
 
 namespace gl_renderer
 {

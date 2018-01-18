@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/PipelineLayout.hpp>
+#include <Renderer/Pipeline/PipelineLayout.hpp>
 
 namespace vk_renderer
 {

@@ -18,11 +18,11 @@
 #include "Picking.h"
 #include "RenderableContainer.h"
 #include "TextOverlay.h"
-#include <Renderer/Texture.hpp>
+#include <Renderer/Image/Texture.hpp>
 #include "UberShader.h"
 #include "Viewport.h"
 
-#include <Renderer/ShaderProgram.hpp>
+#include <Renderer/Shader/ShaderProgram.hpp>
 
 #include <Utils/Range.hpp>
 

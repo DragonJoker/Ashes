@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Renderer/Filter.hpp>
+#include <Renderer/Enum/Filter.hpp>
 
 namespace gl_renderer
 {

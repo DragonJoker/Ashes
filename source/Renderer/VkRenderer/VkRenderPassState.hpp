@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/RenderPassState.hpp>
+#include <Renderer/RenderPass/RenderPassState.hpp>
 
 namespace vk_renderer
 {

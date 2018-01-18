@@ -10,7 +10,7 @@
 
 #include "GlDevice.hpp"
 
-#include <Renderer/UniformBuffer.hpp>
+#include <Renderer/Buffer/UniformBuffer.hpp>
 
 namespace gl_renderer
 {

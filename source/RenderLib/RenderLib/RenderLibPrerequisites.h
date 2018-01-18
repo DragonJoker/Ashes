@@ -9,9 +9,9 @@
 #pragma once
 
 #include <Renderer/RendererPrerequisites.hpp>
-#include <Renderer/DescriptorSet.hpp>
-#include <Renderer/GeometryBuffers.hpp>
-#include <Renderer/VertexLayout.hpp>
+#include <Renderer/Descriptor/DescriptorSet.hpp>
+#include <Renderer/Buffer/GeometryBuffers.hpp>
+#include <Renderer/Pipeline/VertexLayout.hpp>
 
 #include <Utils/Factory.hpp>
 #include <Utils/Quaternion.hpp>

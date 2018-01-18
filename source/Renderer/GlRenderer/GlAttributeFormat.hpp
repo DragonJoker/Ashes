@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Renderer/AttributeFormat.hpp>
+#include <Renderer/Enum/AttributeFormat.hpp>
 
 namespace gl_renderer
 {
@@ -19,7 +19,7 @@ namespace gl_renderer
 	GLenum getType( renderer::AttributeFormat format );
 	/**
 	*\brief
-	*	Récupère le nombre d'éléments du format donné.
+	*	Rï¿½cupï¿½re le nombre d'ï¿½lï¿½ments du format donnï¿½.
 	*\param[in] flags
 	*	Le renderer::AttributeFormat.
 	*\return

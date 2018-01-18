@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/FenceCreateFlag.hpp>
+#include <Renderer/Enum/FenceCreateFlag.hpp>
 
 namespace vk_renderer
 {

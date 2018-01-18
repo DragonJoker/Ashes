@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Renderer/WrapMode.hpp>
+#include <Renderer/Enum/WrapMode.hpp>
 
 namespace gl_renderer
 {

@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/PolygonMode.hpp>
+#include <Renderer/Enum/PolygonMode.hpp>
 
 namespace vk_renderer
 {
