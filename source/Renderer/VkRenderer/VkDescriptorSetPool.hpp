@@ -10,7 +10,7 @@
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/DescriptorSetPool.hpp>
+#include <Renderer/Descriptor/DescriptorSetPool.hpp>
 
 #include <vector>
 

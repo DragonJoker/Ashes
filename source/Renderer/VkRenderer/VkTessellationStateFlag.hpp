@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/TessellationStateFlag.hpp>
+#include <Renderer/Enum/TessellationStateFlag.hpp>
 
 namespace vk_renderer
 {

@@ -10,7 +10,7 @@
 
 #include "RenderLibPrerequisites.h"
 
-#include <Renderer/Buffer.hpp>
+#include <Renderer/Buffer/Buffer.hpp>
 
 namespace render
 {

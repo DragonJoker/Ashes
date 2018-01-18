@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/FrontFace.hpp>
+#include <Renderer/Enum/FrontFace.hpp>
 
 namespace gl_renderer
 {

@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "GlCommandBase.hpp"
 
-#include <Renderer/Scissor.hpp>
+#include <Renderer/Pipeline/Scissor.hpp>
 
 namespace gl_renderer
 {

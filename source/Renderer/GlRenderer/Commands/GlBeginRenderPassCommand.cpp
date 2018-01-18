@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #include "GlRenderer/GlFrameBuffer.hpp"
 #include "GlRenderer/GlRenderPass.hpp"
 
-#include <Renderer/ClearValue.hpp>
+#include <Renderer/RenderPass/ClearValue.hpp>
 
 namespace gl_renderer
 {

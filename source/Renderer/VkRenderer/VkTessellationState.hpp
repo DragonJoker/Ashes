@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/TessellationState.hpp>
+#include <Renderer/Pipeline/TessellationState.hpp>
 
 namespace vk_renderer
 {

@@ -7,7 +7,7 @@ See LICENSE file in root folder
 #include "VkTexture.hpp"
 #include "VkTextureView.hpp"
 
-#include <Renderer/BackBuffer.hpp>
+#include <Renderer/Core/BackBuffer.hpp>
 
 namespace vk_renderer
 {

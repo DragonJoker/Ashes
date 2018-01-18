@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/QueryPipelineStatisticFlag.hpp>
+#include <Renderer/Enum/QueryPipelineStatisticFlag.hpp>
 
 namespace vk_renderer
 {

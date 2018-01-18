@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/LogicOp.hpp>
+#include <Renderer/Enum/LogicOp.hpp>
 
 namespace gl_renderer
 {

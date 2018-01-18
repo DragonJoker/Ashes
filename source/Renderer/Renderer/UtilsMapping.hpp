@@ -6,12 +6,12 @@ See LICENSE file in root folder.
 #define ___Renderer_UtilsMapping_HPP___
 #pragma once
 
-#include "PixelFormat.hpp"
-
 #include <Utils/Angle.hpp>
 #include <Utils/DynamicLibrary.hpp>
+#include <Utils/FlagCombination.hpp>
 #include <Utils/Mat4.hpp>
 #include <Utils/PlaneEquation.hpp>
+#include <Utils/PixelFormat.hpp>
 #include <Utils/Quaternion.hpp>
 #include <Utils/Range.hpp>
 #include <Utils/RangedValue.hpp>
@@ -66,5 +66,7 @@ namespace renderer
 	using utils::checkFlag;
 	/**\}*/
 }
+
+#include "PixelFormat.hpp"
 
 #endif

@@ -24,6 +24,9 @@ See LICENSE file in root folder.
 #include "VkUniformBuffer.hpp"
 #include "VkViewport.hpp"
 
+#include <Renderer/Buffer/StagingBuffer.hpp>
+#include <Renderer/Buffer/VertexBuffer.hpp>
+
 namespace vk_renderer
 {
 	namespace

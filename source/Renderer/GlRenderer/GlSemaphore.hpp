@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Renderer/Semaphore.hpp>
+#include <Renderer/Sync/Semaphore.hpp>
 
 namespace gl_renderer
 {

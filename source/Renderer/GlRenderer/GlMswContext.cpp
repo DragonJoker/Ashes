@@ -3,7 +3,7 @@
 #include "GlMswContext.hpp"
 #include "GlDebug.hpp"
 
-#include <Renderer/PlatformWindowHandle.hpp>
+#include <Renderer/Core/PlatformWindowHandle.hpp>
 
 #include "GL/wglew.h"
 

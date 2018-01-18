@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/ImageAspectFlag.hpp>
+#include <Renderer/Enum/ImageAspectFlag.hpp>
 
 namespace vk_renderer
 {

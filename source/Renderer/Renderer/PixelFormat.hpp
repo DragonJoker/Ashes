@@ -1,10 +1,10 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
+#ifndef ___Renderer_PixelFormat_HPP___
+#define ___Renderer_PixelFormat_HPP___
 #pragma once
-
-#include <Utils/PixelFormat.hpp>
 
 namespace renderer
 {
@@ -24,7 +24,7 @@ namespace renderer
 	*\return
 	*	\p true if it is usable in depth and stencil buffers.
 	*/
-	bool isDepthStencilFormat( utils::PixelFormat format );
+	bool isDepthStencilFormat( renderer::PixelFormat format );
 	/**
 	*\~french
 	*\brief
@@ -41,7 +41,7 @@ namespace renderer
 	*\return
 	*	\p true if it is usable in stencil buffers.
 	*/
-	bool isStencilFormat( utils::PixelFormat format );
+	bool isStencilFormat( renderer::PixelFormat format );
 	/**
 	*\~french
 	*\brief
@@ -58,5 +58,7 @@ namespace renderer
 	*\return
 	*	\p true if it is usable in depth buffers.
 	*/
-	bool isDepthFormat( utils::PixelFormat format );
+	bool isDepthFormat( renderer::PixelFormat format );
 }
+
+#endif

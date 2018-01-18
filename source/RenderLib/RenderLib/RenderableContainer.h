@@ -10,8 +10,8 @@
 
 #include "SceneRenderer.h"
 
-#include <Renderer/DescriptorSetLayout.hpp>
-#include <Renderer/DescriptorSetPool.hpp>
+#include <Renderer/Descriptor/DescriptorSetLayout.hpp>
+#include <Renderer/Descriptor/DescriptorSetPool.hpp>
 
 #include <functional>
 #include <unordered_map>

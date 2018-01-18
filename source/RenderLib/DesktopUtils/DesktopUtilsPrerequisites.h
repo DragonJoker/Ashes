@@ -17,7 +17,7 @@
 #include <RenderLib/Material.h>
 #include <RenderLib/Mesh.h>
 #include <RenderLib/Object.h>
-#include <Renderer/Texture.hpp>
+#include <Renderer/Image/Texture.hpp>
 
 #include <cstdlib>
 #include <cstring>

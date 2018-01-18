@@ -3,7 +3,7 @@
 #if RENDERLIB_XLIB
 #include "GlDebug.hpp"
 
-#include <Renderer/PlatformWindowHandle.hpp>
+#include <Renderer/Core/PlatformWindowHandle.hpp>
 
 #include <unistd.h>
 #include <iostream>

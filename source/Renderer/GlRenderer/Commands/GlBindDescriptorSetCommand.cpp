@@ -12,7 +12,7 @@ See LICENSE file in root folder.
 #include "GlRenderer/GlTextureView.hpp"
 #include "GlRenderer/GlUniformBuffer.hpp"
 
-#include <Renderer/DescriptorSetLayoutBinding.hpp>
+#include <Renderer/Descriptor/DescriptorSetLayoutBinding.hpp>
 
 namespace gl_renderer
 {

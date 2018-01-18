@@ -7,8 +7,8 @@ See LICENSE file in root folder.
 #include "GlRenderer/GlBuffer.hpp"
 #include "GlRenderer/GlTexture.hpp"
 
-#include <Renderer/ImageSubresourceRange.hpp>
-#include <Renderer/TextureView.hpp>
+#include <Renderer/Image/ImageSubresourceRange.hpp>
+#include <Renderer/Image/TextureView.hpp>
 
 namespace gl_renderer
 {

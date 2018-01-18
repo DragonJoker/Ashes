@@ -8,11 +8,11 @@
 #include "Submesh.h"
 #include "Viewport.h"
 
-#include <Renderer/RenderPass.hpp>
-#include <Renderer/RenderPassState.hpp>
-#include <Renderer/RenderSubpass.hpp>
-#include <Renderer/RenderSubpassState.hpp>
-#include <Renderer/StagingBuffer.hpp>
+#include <Renderer/RenderPass/RenderPass.hpp>
+#include <Renderer/RenderPass/RenderPassState.hpp>
+#include <Renderer/RenderPass/RenderSubpass.hpp>
+#include <Renderer/RenderPass/RenderSubpassState.hpp>
+#include <Renderer/Buffer/StagingBuffer.hpp>
 
 namespace render
 {

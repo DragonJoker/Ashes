@@ -2,21 +2,21 @@
 
 #include "Scene.h"
 
-#include <Renderer/DescriptorSetLayoutBinding.hpp>
-#include <Renderer/Device.hpp>
-#include <Renderer/FrameBuffer.hpp>
-#include <Renderer/ImageMemoryBarrier.hpp>
-#include <Renderer/MultisampleState.hpp>
-#include <Renderer/Queue.hpp>
-#include <Renderer/RenderBuffer.hpp>
-#include <Renderer/RenderingResources.hpp>
-#include <Renderer/RenderPass.hpp>
-#include <Renderer/RenderPassState.hpp>
-#include <Renderer/RenderSubpass.hpp>
-#include <Renderer/RenderSubpassState.hpp>
-#include <Renderer/Sampler.hpp>
-#include <Renderer/Texture.hpp>
-#include <Renderer/VertexBuffer.hpp>
+#include <Renderer/Descriptor/DescriptorSetLayoutBinding.hpp>
+#include <Renderer/Core/Device.hpp>
+#include <Renderer/RenderPass/FrameBuffer.hpp>
+#include <Renderer/Sync/ImageMemoryBarrier.hpp>
+#include <Renderer/Pipeline/MultisampleState.hpp>
+#include <Renderer/Command/Queue.hpp>
+#include <Renderer/RenderPass/RenderBuffer.hpp>
+#include <Renderer/Core/RenderingResources.hpp>
+#include <Renderer/RenderPass/RenderPass.hpp>
+#include <Renderer/RenderPass/RenderPassState.hpp>
+#include <Renderer/RenderPass/RenderSubpass.hpp>
+#include <Renderer/RenderPass/RenderSubpassState.hpp>
+#include <Renderer/Image/Sampler.hpp>
+#include <Renderer/Image/Texture.hpp>
+#include <Renderer/Buffer/VertexBuffer.hpp>
 
 namespace render
 {

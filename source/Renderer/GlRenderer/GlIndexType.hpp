@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Renderer/IndexType.hpp>
+#include <Renderer/Enum/IndexType.hpp>
 
 namespace gl_renderer
 {

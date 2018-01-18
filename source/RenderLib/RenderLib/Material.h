@@ -8,7 +8,7 @@
 #define ___RenderLib_Material_HPP___
 #pragma once
 
-#include <Renderer/Texture.hpp>
+#include <Renderer/Image/Texture.hpp>
 #include "UberShader.h"
 
 namespace render

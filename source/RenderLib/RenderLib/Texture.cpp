@@ -1,8 +1,8 @@
 #include "Texture.h"
 
-#include <Renderer/Device.hpp>
-#include <Renderer/Sampler.hpp>
-#include <Renderer/Texture.hpp>
+#include <Renderer/Core/Device.hpp>
+#include <Renderer/Image/Sampler.hpp>
+#include <Renderer/Image/Texture.hpp>
 
 namespace render
 {

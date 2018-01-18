@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "VkClearValue.hpp"
 
-#include <Renderer/CommandBuffer.hpp>
+#include <Renderer/Command/CommandBuffer.hpp>
 
 namespace vk_renderer
 {

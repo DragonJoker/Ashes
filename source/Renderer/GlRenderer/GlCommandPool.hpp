@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Renderer/CommandPool.hpp>
+#include <Renderer/Command/CommandPool.hpp>
 
 namespace gl_renderer
 {

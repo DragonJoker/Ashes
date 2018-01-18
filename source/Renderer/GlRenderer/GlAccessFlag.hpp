@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/AccessFlag.hpp>
+#include <Renderer/Enum/AccessFlag.hpp>
 
 namespace gl_renderer
 {

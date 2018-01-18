@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Renderer/ImageUsageFlag.hpp>
+#include <Renderer/Enum/ImageUsageFlag.hpp>
 
 namespace vk_renderer
 {

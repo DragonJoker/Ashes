@@ -10,7 +10,7 @@
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/DescriptorSetLayout.hpp>
+#include <Renderer/Descriptor/DescriptorSetLayout.hpp>
 
 namespace vk_renderer
 {

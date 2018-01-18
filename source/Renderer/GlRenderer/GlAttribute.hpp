@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Renderer/AttributeBase.hpp>
+#include <Renderer/Shader/AttributeBase.hpp>
 
 namespace gl_renderer
 {

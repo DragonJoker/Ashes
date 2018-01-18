@@ -10,18 +10,18 @@
 
 #include "Material.h"
 #include "Mesh.h"
-#include <Renderer/Texture.hpp>
+#include <Renderer/Image/Texture.hpp>
 #include "UberShader.h"
 
-#include <Renderer/CommandBuffer.hpp>
-#include <Renderer/CommandPool.hpp>
-#include <Renderer/DescriptorSet.hpp>
-#include <Renderer/DescriptorSetLayout.hpp>
-#include <Renderer/DescriptorSetPool.hpp>
-#include <Renderer/Pipeline.hpp>
-#include <Renderer/PipelineLayout.hpp>
-#include <Renderer/ShaderProgram.hpp>
-#include <Renderer/UniformBuffer.hpp>
+#include <Renderer/Command/CommandBuffer.hpp>
+#include <Renderer/Command/CommandPool.hpp>
+#include <Renderer/Descriptor/DescriptorSet.hpp>
+#include <Renderer/Descriptor/DescriptorSetLayout.hpp>
+#include <Renderer/Descriptor/DescriptorSetPool.hpp>
+#include <Renderer/Pipeline/Pipeline.hpp>
+#include <Renderer/Pipeline/PipelineLayout.hpp>
+#include <Renderer/Shader/ShaderProgram.hpp>
+#include <Renderer/Buffer/UniformBuffer.hpp>
 
 #include <array>
 #include <functional>

@@ -10,7 +10,7 @@
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/UniformBuffer.hpp>
+#include <Renderer/Buffer/UniformBuffer.hpp>
 
 namespace vk_renderer
 {

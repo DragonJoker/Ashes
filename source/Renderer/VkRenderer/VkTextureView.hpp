@@ -10,7 +10,7 @@
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/TextureView.hpp>
+#include <Renderer/Image/TextureView.hpp>
 
 #include <Utils/Vec2.hpp>
 

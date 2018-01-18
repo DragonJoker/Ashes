@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/MemoryMapFlag.hpp>
+#include <Renderer/Enum/MemoryMapFlag.hpp>
 
 namespace gl_renderer
 {

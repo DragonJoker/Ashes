@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Renderer/Queue.hpp>
+#include <Renderer/Command/Queue.hpp>
 
 namespace gl_renderer
 {

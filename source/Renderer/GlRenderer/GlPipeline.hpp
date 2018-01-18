@@ -10,14 +10,14 @@
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Renderer/Pipeline.hpp>
-#include <Renderer/ColourBlendState.hpp>
-#include <Renderer/DepthStencilState.hpp>
-#include <Renderer/MultisampleState.hpp>
-#include <Renderer/RasterisationState.hpp>
-#include <Renderer/Scissor.hpp>
-#include <Renderer/TessellationState.hpp>
-#include <Renderer/Viewport.hpp>
+#include <Renderer/Pipeline/Pipeline.hpp>
+#include <Renderer/Pipeline/ColourBlendState.hpp>
+#include <Renderer/Pipeline/DepthStencilState.hpp>
+#include <Renderer/Pipeline/MultisampleState.hpp>
+#include <Renderer/Pipeline/RasterisationState.hpp>
+#include <Renderer/Pipeline/Scissor.hpp>
+#include <Renderer/Pipeline/TessellationState.hpp>
+#include <Renderer/Pipeline/Viewport.hpp>
 
 namespace gl_renderer
 {

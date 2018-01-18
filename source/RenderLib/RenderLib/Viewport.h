@@ -8,8 +8,8 @@
 #define ___RenderLib_Viewport_HPP___
 #pragma once
 
-#include <Renderer/Scissor.hpp>
-#include <Renderer/Viewport.hpp>
+#include <Renderer/Pipeline/Scissor.hpp>
+#include <Renderer/Pipeline/Viewport.hpp>
 
 #include <Utils/Angle.hpp>
 #include <Utils/Mat4.hpp>

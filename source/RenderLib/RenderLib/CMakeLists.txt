@@ -20,7 +20,6 @@ file( GLOB ${PROJECT_NAME}_DBG_FILES
 
 include_directories(
 	${CMAKE_SOURCE_DIR}
-	${CMAKE_BINARY_DIR}/Renderer
 )
 
 add_library( ${PROJECT_NAME} STATIC

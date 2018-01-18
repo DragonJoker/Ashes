@@ -10,11 +10,11 @@
 
 #include "PickingRenderer.h"
 
-#include <Renderer/CommandBuffer.hpp>
-#include <Renderer/CommandPool.hpp>
-#include <Renderer/FrameBuffer.hpp>
-#include <Renderer/RenderBuffer.hpp>
-#include <Renderer/Texture.hpp>
+#include <Renderer/Command/CommandBuffer.hpp>
+#include <Renderer/Command/CommandPool.hpp>
+#include <Renderer/RenderPass/FrameBuffer.hpp>
+#include <Renderer/RenderPass/RenderBuffer.hpp>
+#include <Renderer/Image/Texture.hpp>
 
 #include <Utils/UtilsSignal.hpp>
 

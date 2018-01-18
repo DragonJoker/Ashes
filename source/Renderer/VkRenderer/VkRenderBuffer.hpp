@@ -12,7 +12,7 @@
 #include "VkTexture.hpp"
 #include "VkTextureView.hpp"
 
-#include <Renderer/RenderBuffer.hpp>
+#include <Renderer/RenderPass/RenderBuffer.hpp>
 
 namespace vk_renderer
 {

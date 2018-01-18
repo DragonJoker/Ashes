@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/BlendOp.hpp>
+#include <Renderer/Enum/BlendOp.hpp>
 
 namespace gl_renderer
 {

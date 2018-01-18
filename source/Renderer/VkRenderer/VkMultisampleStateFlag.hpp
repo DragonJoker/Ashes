@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/MultisampleStateFlag.hpp>
+#include <Renderer/Enum/MultisampleStateFlag.hpp>
 
 namespace vk_renderer
 {

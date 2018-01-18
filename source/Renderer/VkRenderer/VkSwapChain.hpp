@@ -10,7 +10,7 @@
 #include "VkRendererPrerequisites.hpp"
 #include "VkRenderingResources.hpp"
 
-#include <Renderer/SwapChain.hpp>
+#include <Renderer/Core/SwapChain.hpp>
 
 #include <Utils/UtilsSignal.hpp>
 

@@ -10,7 +10,7 @@
 
 #include "GlTexture.hpp"
 
-#include <Renderer/RenderBuffer.hpp>
+#include <Renderer/RenderPass/RenderBuffer.hpp>
 
 namespace gl_renderer
 {

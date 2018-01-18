@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/MemoryPropertyFlag.hpp>
+#include <Renderer/Enum/MemoryPropertyFlag.hpp>
 
 namespace vk_renderer
 {

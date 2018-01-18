@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/CullModeFlag.hpp>
+#include <Renderer/Enum/CullModeFlag.hpp>
 
 namespace gl_renderer
 {

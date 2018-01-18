@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 #include "GlBuffer.hpp"
 #include "GlVertexLayout.hpp"
 
-#include <Renderer/VertexBuffer.hpp>
+#include <Renderer/Buffer/VertexBuffer.hpp>
 
 #define BufferOffset( n ) ( ( uint8_t * )nullptr + ( n ) )
 

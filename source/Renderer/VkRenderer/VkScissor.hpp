@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/Scissor.hpp>
+#include <Renderer/Pipeline/Scissor.hpp>
 
 namespace vk_renderer
 {

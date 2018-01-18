@@ -3,13 +3,13 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
-#include <Renderer/Connection.hpp>
-#include <Renderer/Device.hpp>
-#include <Renderer/RenderingResources.hpp>
-#include <Renderer/RenderPass.hpp>
-#include <Renderer/RenderPassState.hpp>
-#include <Renderer/RenderSubpass.hpp>
-#include <Renderer/RenderSubpassState.hpp>
+#include <Renderer/Core/Connection.hpp>
+#include <Renderer/Core/Device.hpp>
+#include <Renderer/Core/RenderingResources.hpp>
+#include <Renderer/RenderPass/RenderPass.hpp>
+#include <Renderer/RenderPass/RenderPassState.hpp>
+#include <Renderer/RenderPass/RenderSubpass.hpp>
+#include <Renderer/RenderPass/RenderSubpassState.hpp>
 
 #include <Utils/Transform.hpp>
 

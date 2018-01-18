@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/RasterisationState.hpp>
+#include <Renderer/Pipeline/RasterisationState.hpp>
 
 namespace vk_renderer
 {

@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/ImageTiling.hpp>
+#include <Renderer/Enum/ImageTiling.hpp>
 
 namespace gl_renderer
 {

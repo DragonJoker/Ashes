@@ -6,7 +6,7 @@
 */
 #pragma once
 
-#include <Renderer/Config.hpp>
+#include <Config.hpp>
 
 #include "VkConfig.hpp"
 

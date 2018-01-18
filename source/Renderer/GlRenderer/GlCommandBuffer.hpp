@@ -7,7 +7,7 @@ See LICENSE file in root folder
 #include "GlClearValue.hpp"
 #include "Commands/GlCommandBase.hpp"
 
-#include <Renderer/CommandBuffer.hpp>
+#include <Renderer/Command/CommandBuffer.hpp>
 
 namespace gl_renderer
 {

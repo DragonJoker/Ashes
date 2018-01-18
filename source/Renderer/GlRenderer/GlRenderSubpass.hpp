@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Renderer/RenderSubpass.hpp>
+#include <Renderer/RenderPass/RenderSubpass.hpp>
 
 namespace gl_renderer
 {

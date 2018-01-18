@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/DescriptorType.hpp>
+#include <Renderer/Enum/DescriptorType.hpp>
 
 namespace vk_renderer
 {

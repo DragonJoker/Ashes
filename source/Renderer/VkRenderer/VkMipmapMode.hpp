@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Renderer/MipmapMode.hpp>
+#include <Renderer/Enum/MipmapMode.hpp>
 
 namespace vk_renderer
 {

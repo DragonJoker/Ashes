@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "VkStencilOpState.hpp"
 
-#include <Renderer/DepthStencilState.hpp>
+#include <Renderer/Pipeline/DepthStencilState.hpp>
 
 namespace vk_renderer
 {

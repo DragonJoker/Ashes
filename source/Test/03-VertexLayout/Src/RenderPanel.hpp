@@ -2,9 +2,9 @@
 
 #include "Prerequisites.hpp"
 
-#include <Renderer/FrameBuffer.hpp>
-#include <Renderer/RenderPass.hpp>
-#include <Renderer/SwapChain.hpp>
+#include <Renderer/RenderPass/FrameBuffer.hpp>
+#include <Renderer/RenderPass/RenderPass.hpp>
+#include <Renderer/Core/SwapChain.hpp>
 
 #include <Utils/UtilsSignal.hpp>
 

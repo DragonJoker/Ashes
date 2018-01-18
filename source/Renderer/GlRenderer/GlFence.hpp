@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Renderer/Fence.hpp>
+#include <Renderer/Sync/Fence.hpp>
 
 namespace gl_renderer
 {

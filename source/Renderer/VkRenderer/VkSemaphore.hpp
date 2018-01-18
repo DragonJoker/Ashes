@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Renderer/Semaphore.hpp>
+#include <Renderer/Sync/Semaphore.hpp>
 
 namespace vk_renderer
 {

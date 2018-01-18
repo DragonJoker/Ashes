@@ -3,7 +3,7 @@
 #include "GlDevice.hpp"
 #include "GlImageMemoryBarrier.hpp"
 
-#include <Renderer/ImageSubresourceRange.hpp>
+#include <Renderer/Image/ImageSubresourceRange.hpp>
 
 namespace gl_renderer
 {

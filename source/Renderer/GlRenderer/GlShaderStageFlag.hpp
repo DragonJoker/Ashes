@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/ShaderStageFlag.hpp>
+#include <Renderer/Enum/ShaderStageFlag.hpp>
 
 namespace gl_renderer
 {

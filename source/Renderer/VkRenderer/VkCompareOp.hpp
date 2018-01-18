@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Renderer/CompareOp.hpp>
+#include <Renderer/Enum/CompareOp.hpp>
 
 namespace vk_renderer
 {

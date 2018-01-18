@@ -10,7 +10,7 @@
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Renderer/BufferView.hpp>
+#include <Renderer/Buffer/BufferView.hpp>
 
 namespace gl_renderer
 {

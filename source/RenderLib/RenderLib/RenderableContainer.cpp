@@ -6,9 +6,9 @@
 #include "PolyLine.h"
 #include "Submesh.h"
 
-#include <Renderer/DescriptorSetLayoutBinding.hpp>
-#include <Renderer/StagingBuffer.hpp>
-#include <Renderer/VertexLayout.hpp>
+#include <Renderer/Descriptor/DescriptorSetLayoutBinding.hpp>
+#include <Renderer/Buffer/StagingBuffer.hpp>
+#include <Renderer/Pipeline/VertexLayout.hpp>
 
 #include <algorithm>
 

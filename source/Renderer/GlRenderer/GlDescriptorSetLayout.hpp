@@ -10,7 +10,7 @@
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Renderer/DescriptorSetLayout.hpp>
+#include <Renderer/Descriptor/DescriptorSetLayout.hpp>
 
 namespace gl_renderer
 {

@@ -32,6 +32,9 @@ See LICENSE file in root folder.
 #include "Commands/GlScissorCommand.hpp"
 #include "Commands/GlViewportCommand.hpp"
 
+#include <Renderer/Buffer/StagingBuffer.hpp>
+#include <Renderer/Buffer/VertexBuffer.hpp>
+
 namespace gl_renderer
 {
 	CommandBuffer::CommandBuffer( renderer::Device const & device

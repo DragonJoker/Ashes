@@ -10,7 +10,7 @@
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Renderer/DescriptorSetPool.hpp>
+#include <Renderer/Descriptor/DescriptorSetPool.hpp>
 
 namespace gl_renderer
 {
