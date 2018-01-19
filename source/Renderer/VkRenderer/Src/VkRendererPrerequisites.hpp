@@ -6,9 +6,9 @@
 */
 #pragma once
 
-#include <Config.hpp>
+#include <RendererConfig.hpp>
 
-#include "VkConfig.hpp"
+#include "VkRendererConfig.hpp"
 
 #define VK_USE_PLATFORM_EXTENSIONS
 
