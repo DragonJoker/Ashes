@@ -1,6 +1,7 @@
 #include "DynamicLibrary.hpp"
 
 #include <sstream>
+#include <iostream>
 
 #if defined( _WIN32 )
 #	include <Windows.h>
@@ -51,27 +52,47 @@ namespace utils
 
 		if ( !m_library )
 		{
-			std::stringstream error;
-			error << "Can't load dynamic library at [" << m_path << "]: ";
-			error << "Error code: " << std::hex << ::GetLastError();
-			throw std::runtime_error{ error.str() };
+			std::stringstream stream;
+			stream << "Couldn't load dynamic library at [" << m_path << "]: ";
+			stream << "Error code: " << std::hex << ::GetLastError();
+			std::cerr << stream.str() << std::endl;
+			throw std::runtime_error{ stream.str() };
 		}
 	}
 
 	void DynamicLibrary::doClose()noexcept
 	{
 		UINT oldMode = ::SetErrorMode( SEM_FAILCRITICALERRORS );
-		::FreeLibrary( static_cast< HMODULE >( m_library ) );
+
+		try
+		{
+			::FreeLibrary( static_cast< HMODULE >( m_library ) );
+		}
+		catch ( ... )
+		{
+			std::cerr << "Couldn't unload dynamic library" << std::endl;
+		}
+
 		::SetErrorMode( oldMode );
 		m_library = nullptr;
 	}
 
 	void * DynamicLibrary::doGetFunction( std::string const & name )noexcept
 	{
-		void * result = nullptr;
 		UINT oldMode = ::SetErrorMode( SEM_FAILCRITICALERRORS );
-		result = ::GetProcAddress( static_cast< HMODULE >( m_library ), name.c_str() );
+		::GetLastError();
+		void * result = result = ::GetProcAddress( static_cast< HMODULE >( m_library ), name.c_str() );
+		auto error = ::GetLastError();
 		::SetErrorMode( oldMode );
+
+		if ( error != ERROR_SUCCESS && !result )
+		{
+			std::stringstream stream;
+			stream << "Couldn't load function [" + name + "]: ";
+			stream << "Error code: " << std::hex << error;
+			std::cerr << stream.str() << std::endl;
+		}
+
 		return result;
 	}
 
@@ -83,14 +104,15 @@ namespace utils
 
 		if ( !m_library )
 		{
-			std::stringstream error;
-			error << "Can't load dynamic library at [" << m_path << "]: ";
-			error << "Error code: " << std::hex << dlerror();
+			std::stringstream stream;
+			stream << "Couldn't load dynamic library at [" << m_path << "]: ";
+			stream << "Error code: " << std::hex << dlerror();
+			std::cerr << stream.str() << std::endl;
 			throw std::runtime_error{ error.str() };
 		}
 	}
 
-	void DynamicLibrary::doClose()throw( )
+	void DynamicLibrary::doClose()noexcept
 	{
 		try
 		{
@@ -98,34 +120,22 @@ namespace utils
 		}
 		catch ( ... )
 		{
-			std::cerr << "Can't unload dynamic library" << std::endl;
+			std::cerr << "Couldn't unload dynamic library" << std::endl;
 		}
 	}
 
 	void * DynamicLibrary::doGetFunction( std::string const & name )noexcept
 	{
-		void * result = nullptr;
+		dlerror();
+		void * result = dlsym( m_library, name.c_str() );
+		auto error = dlerror();
 
-		try
+		if ( error && !result )
 		{
-			dlerror();
-			result = dlsym( m_library, name.c_str() );
-			auto error = dlerror();
-
-			if ( error != NULL )
-			{
-				throw std::runtime_error{ std::string( error ) };
-			}
-		}
-		catch ( std::exception & exc )
-		{
-			result = nullptr;
-			std::cerr << "Can't load function [" + name + "]: " + exc.what() << std::endl;
-		}
-		catch ( ... )
-		{
-			result = nullptr;
-			std::cerr << "Can't load function [" + name + "]: Unknown error." << std::endl;
+			std::stringstream stream;
+			stream << "Couldn't load function [" + name + "]: ";
+			stream << "Error code: " << std::hex << std::string( error );
+			std::cerr << stream.str() << std::endl;
 		}
 
 		return result;
