@@ -288,6 +288,12 @@ namespace vk_renderer
 		void endQuery( renderer::QueryPool const & pool
 			, uint32_t query )const override;
 		/**
+		*\copydoc	renderer::CommandBuffer:writeTimestamp
+		*/
+		void writeTimestamp( renderer::PipelineStageFlag pipelineStage
+			, renderer::QueryPool const & pool
+			, uint32_t query )const override;
+		/**
 		*\~french
 		*\return
 		*	Le pipeline actuellement actif.

@@ -13,6 +13,7 @@ See LICENSE file in root folder.
 #include "GlGeometryBuffers.hpp"
 #include "GlPipeline.hpp"
 #include "GlPipelineLayout.hpp"
+#include "GlQueryPool.hpp"
 #include "GlQueue.hpp"
 #include "GlRenderer.hpp"
 #include "GlRenderPass.hpp"
@@ -274,6 +275,16 @@ namespace gl_renderer
 	renderer::ShaderProgramPtr Device::createShaderProgram()const
 	{
 		return std::make_unique< ShaderProgram >( *this );
+	}
+
+	renderer::QueryPoolPtr Device::createQueryPool( renderer::QueryType type
+		, uint32_t count
+		, renderer::QueryPipelineStatisticFlags pipelineStatistics )const
+	{
+		return std::make_unique< QueryPool >( *this
+			, type
+			, count
+			, pipelineStatistics );
 	}
 
 	void Device::waitIdle()const

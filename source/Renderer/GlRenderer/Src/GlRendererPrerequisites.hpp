@@ -31,6 +31,8 @@
 #include "GlPixelFormat.hpp"
 #include "GlPolygonMode.hpp"
 #include "GlPrimitiveTopology.hpp"
+#include "GlQueryResultFlag.hpp"
+#include "GlQueryType.hpp"
 #include "GlSampleCountFlag.hpp"
 #include "GlShaderStageFlag.hpp"
 #include "GlStencilOp.hpp"
@@ -49,6 +51,7 @@ namespace gl_renderer
 	class GeometryBuffers;
 	class Pipeline;
 	class PipelineLayout;
+	class QueryPool;
 	class RenderPass;
 	class ShaderProgram;
 	class Texture;

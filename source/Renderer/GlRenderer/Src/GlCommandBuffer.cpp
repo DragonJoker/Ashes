@@ -19,6 +19,7 @@ See LICENSE file in root folder.
 #include "GlTexture.hpp"
 #include "GlUniformBuffer.hpp"
 
+#include "Commands/GlBeginQueryCommand.hpp"
 #include "Commands/GlBeginRenderPassCommand.hpp"
 #include "Commands/GlBindDescriptorSetCommand.hpp"
 #include "Commands/GlBindGeometryBuffersCommand.hpp"
@@ -28,9 +29,12 @@ See LICENSE file in root folder.
 #include "Commands/GlDrawCommand.hpp"
 #include "Commands/GlDrawIndexedCommand.hpp"
 #include "Commands/GlClearCommand.hpp"
+#include "Commands/GlEndQueryCommand.hpp"
 #include "Commands/GlEndRenderPassCommand.hpp"
+#include "Commands/GlResetQueryPoolCommand.hpp"
 #include "Commands/GlScissorCommand.hpp"
 #include "Commands/GlViewportCommand.hpp"
+#include "Commands/GlWriteTimestampCommand.hpp"
 
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
@@ -282,5 +286,39 @@ namespace gl_renderer
 	{
 		m_commands.emplace_back( std::make_unique< CopyImageCommand >( src.getBuffer()
 			, dst ) );
+	}
+
+	void CommandBuffer::resetQueryPool( renderer::QueryPool const & pool
+		, uint32_t firstQuery
+		, uint32_t queryCount )const
+	{
+		m_commands.emplace_back( std::make_unique< ResetQueryPoolCommand >( pool
+			, firstQuery
+			, queryCount ) );
+	}
+
+	void CommandBuffer::beginQuery( renderer::QueryPool const & pool
+		, uint32_t query
+		, renderer::QueryControlFlags flags )const
+	{
+		m_commands.emplace_back( std::make_unique< BeginQueryCommand >( pool
+			, query
+			, flags ) );
+	}
+
+	void CommandBuffer::endQuery( renderer::QueryPool const & pool
+		, uint32_t query )const
+	{
+		m_commands.emplace_back( std::make_unique< EndQueryCommand >( pool
+			, query ) );
+	}
+
+	void CommandBuffer::writeTimestamp( renderer::PipelineStageFlag pipelineStage
+		, renderer::QueryPool const & pool
+		, uint32_t query )const
+	{
+		m_commands.emplace_back( std::make_unique< WriteTimestampCommand >( pipelineStage
+			, pool
+			, query ) );
 	}
 }

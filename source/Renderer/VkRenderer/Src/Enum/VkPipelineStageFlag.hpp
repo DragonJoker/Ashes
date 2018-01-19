@@ -17,4 +17,13 @@ namespace vk_renderer
 	*	Le VkCommandBufferUsageFlags.
 	*/
 	VkPipelineStageFlags convert( renderer::PipelineStageFlags const & flags );
+	/**
+	*\brief
+	*	Convertit un renderer::PipelineStageFlag en VkPipelineStageFlagBits.
+	*\param[in] flags
+	*	Le renderer::PipelineStageFlag.
+	*\return
+	*	Le VkPipelineStageFlagBits.
+	*/
+	VkPipelineStageFlagBits convert( renderer::PipelineStageFlag const & flags );
 }
