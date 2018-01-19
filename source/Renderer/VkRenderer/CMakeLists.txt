@@ -28,11 +28,11 @@ else ()
 endif ()
 
 set( ${PROJECT_NAME}_CONFIG_HEADER
-	${CMAKE_CURRENT_BINARY_DIR}/Src/VkConfig.hpp
+	${CMAKE_CURRENT_BINARY_DIR}/Src/VkRendererConfig.hpp
 )
 
 configure_file(
-	${CMAKE_CURRENT_SOURCE_DIR}/Src/VkConfig.hpp.in
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/VkRendererConfig.hpp.in
 	${${PROJECT_NAME}_CONFIG_HEADER}
 	NEWLINE_STYLE LF
 )
@@ -86,7 +86,19 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 		Renderer
 	)
 
+	parse_subdir_files( Src/Buffer "Buffer" )
+	parse_subdir_files( Src/Command "Command" )
+	parse_subdir_files( Src/Core "Core" )
+	parse_subdir_files( Src/Descriptor "Descriptor" )
+	parse_subdir_files( Src/Enum "Enum" )
+	parse_subdir_files( Src/Image "Image" )
+	parse_subdir_files( Src/Miscellaneous "Miscellaneous" )
+	parse_subdir_files( Src/Pipeline "Pipeline" )
+	parse_subdir_files( Src/RenderPass "RenderPass" )
+	parse_subdir_files( Src/Shader "Shader" )
+	parse_subdir_files( Src/Sync "Sync" )
 	parse_subdir_files( Src/vulkan "vulkan" )
+
 	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
 else ()
