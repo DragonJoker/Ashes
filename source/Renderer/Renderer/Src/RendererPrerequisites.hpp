@@ -42,6 +42,8 @@ See LICENSE file in root folder.
 #include "Enum/PrimitiveTopology.hpp"
 #include "Enum/QueryControlFlag.hpp"
 #include "Enum/QueryPipelineStatisticFlag.hpp"
+#include "Enum/QueryResultFlag.hpp"
+#include "Enum/QueryType.hpp"
 #include "Enum/RasterisationStateFlag.hpp"
 #include "Enum/SampleCountFlag.hpp"
 #include "Enum/ShaderStageFlag.hpp"
@@ -98,6 +100,7 @@ namespace renderer
 	class MultisampleState;
 	class Pipeline;
 	class PipelineLayout;
+	class QueryPool;
 	class Queue;
 	class RasterisationState;
 	class RenderBuffer;
@@ -165,6 +168,7 @@ namespace renderer
 	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
 	using IWindowHandlePtr = std::unique_ptr< IWindowHandle >;
 	using PipelineLayoutPtr = std::unique_ptr< PipelineLayout >;
+	using QueryPoolPtr = std::unique_ptr< QueryPool >;
 	using QueuePtr = std::unique_ptr< Queue >;
 	using RenderBufferPtr = std::unique_ptr< RenderBuffer >;
 	using RendererPtr = std::unique_ptr< Renderer >;
