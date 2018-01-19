@@ -165,10 +165,16 @@ namespace gl_renderer
 		*/
 		virtual renderer::ShaderProgramPtr createShaderProgram()const override;
 		/**
+		*\copydoc	renderer::Device::createQueryPool
+		*/
+		renderer::QueryPoolPtr createQueryPool( renderer::QueryType type
+			, uint32_t count
+			, renderer::QueryPipelineStatisticFlags pipelineStatistics )const override;
+		/**
 		*\brief
 		*	Attend que le périphérique soit inactif.
 		*/
-		void waitIdle()const;
+		void waitIdle()const override;
 		/**
 		*\brief
 		*	Echange les tampons.

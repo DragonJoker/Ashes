@@ -1,4 +1,4 @@
-#include "VkQueryControlFlag.hpp"
+#include "VkQueryResultFlag.hpp"
 
 namespace vk_renderer
 {

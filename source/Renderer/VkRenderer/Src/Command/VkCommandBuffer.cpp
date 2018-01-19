@@ -556,4 +556,14 @@ namespace vk_renderer
 			, static_cast< QueryPool const & >( pool )
 			, query );
 	}
+
+	void CommandBuffer::writeTimestamp( renderer::PipelineStageFlag pipelineStage
+		, renderer::QueryPool const & pool
+		, uint32_t query )const
+	{
+		CmdWriteTimestamp( m_commandBuffer
+			, convert( pipelineStage )
+			, static_cast< QueryPool const & >( pool )
+			, query );
+	}
 }

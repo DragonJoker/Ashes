@@ -120,8 +120,8 @@ namespace renderer
 		virtual void getResults( uint32_t firstQuery
 			, uint32_t queryCount
 			, uint32_t stride
-			, renderer::QueryResultFlags flags
-			, renderer::UInt64Array & data )const = 0;
+			, QueryResultFlags flags
+			, UInt64Array & data )const = 0;
 		/**
 		*\~english
 		*\return

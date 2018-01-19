@@ -438,6 +438,29 @@ namespace renderer
 		*/
 		virtual void endQuery( QueryPool const & pool
 			, uint32_t query )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Writes a timestamp to given query result.
+		*\param[in] pipelineStage
+		*	Specifies the stage of the pipeline.
+		*\param[in] pool
+		*	The query pool.
+		*\param[in] query
+		*	The query index.
+		*\~french
+		*\brief
+		*	Ecrit un timestamp dans le résultat d'une requête.
+		*\param[in] pipelineStage
+		*	Définit l'étape du pipeline.
+		*\param[in] pool
+		*	Le pool de requêtes.
+		*\param[in] query
+		*	L'index de la requête.
+		*/
+		virtual void writeTimestamp( PipelineStageFlag pipelineStage
+			, QueryPool const & pool
+			, uint32_t query )const = 0;
 	};
 }
 
