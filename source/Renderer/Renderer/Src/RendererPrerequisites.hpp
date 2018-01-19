@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Renderer_Prerequisites_HPP___
 #pragma once
 
-#include "Config.hpp"
+#include "RendererConfig.hpp"
 #include "UtilsMapping.hpp"
 
 #include "Enum/AccessFlag.hpp"

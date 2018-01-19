@@ -34,11 +34,11 @@ else ()
 endif ()
 
 set( ${PROJECT_NAME}_CONFIG_HEADER
-	${CMAKE_CURRENT_BINARY_DIR}/Src/Config.hpp
+	${CMAKE_CURRENT_BINARY_DIR}/Src/RendererConfig.hpp
 )
 
 configure_file(
-	${CMAKE_CURRENT_SOURCE_DIR}/Src/Config.hpp.in
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/RendererConfig.hpp.in
 	${${PROJECT_NAME}_CONFIG_HEADER}
 	NEWLINE_STYLE LF
 )
