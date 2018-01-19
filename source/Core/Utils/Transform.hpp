@@ -63,6 +63,23 @@ namespace utils
 		, Vec3T< T > const & up );
 	/**
 	*\brief
+	*	Calcule une matrice de projection en perspective.
+	*\param[in] fovy
+	*	L'angle d'ouverture verticale.
+	*\param[in] aspect
+	*	Le ratio largeur / hauteur.
+	*\param[in] zNear
+	*	La position du premier plan (pour le clipping).
+	*\param[in] zNear
+	*	La position de l'arrière plan (pour le clipping).
+	*/
+	template< typename T >
+	Mat4T< T > perspective( RadiansT< T > fovy
+		, T aspect
+		, T zNear
+		, T zFar );
+	/**
+	*\brief
 	*	Calcule une matrice de projection en perspective sans clipping
 	*	d'arrière plan.
 	*\param[in] fovy

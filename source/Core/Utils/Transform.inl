@@ -7,7 +7,8 @@ See LICENSE file in root folder
 namespace utils
 {
 	template< typename T >
-	Mat4T< T > translate( Mat4T< T > const & m, Vec3T< T > const & v )
+	Mat4T< T > translate( Mat4T< T > const & m
+		, Vec3T< T > const & v )
 	{
 		Mat4T< T > result{ m };
 		result[3] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3];
@@ -15,7 +16,8 @@ namespace utils
 	}
 
 	template< typename T >
-	Mat4T< T > scale( Mat4T< T > const & m, Vec3T< T > const & v )
+	Mat4T< T > scale( Mat4T< T > const & m
+		, Vec3T< T > const & v )
 	{
 		Mat4T< T > result{ noInit };
 		result[0] = m[0] * v[0];
@@ -26,7 +28,9 @@ namespace utils
 	}
 
 	template< typename T >
-	Mat4T< T > rotate( Mat4T< T > const & m, T angle, Vec3T< T > const & v )
+	Mat4T< T > rotate( Mat4T< T > const & m
+		, T angle
+		, Vec3T< T > const & v )
 	{
 		T const a = angle;
 		T const c = cos( a );
@@ -82,7 +86,27 @@ namespace utils
 	}
 
 	template< typename T >
-	Mat4T< T > infinitePerspective( RadiansT< T > fovy, T aspect, T zNear )
+	Mat4T< T > perspective( RadiansT< T > fovy
+		, T aspect
+		, T zNear
+		, T zFar )
+	{
+		T const tanHalfFovy = tan( fovy / static_cast< T >( 2 ) );
+
+		Mat4T< T > result{ T{ 0 } };
+		result[0][0] = static_cast< T >( 1 ) / ( aspect * tanHalfFovy );
+		result[1][1] = static_cast< T >( 1 ) / ( tanHalfFovy );
+		result[2][3] = -static_cast< T >( 1 );
+		result[2][2] = -( zFar + zNear ) / ( zFar - zNear );
+		result[3][2] = -( static_cast< T >( 2 ) * zFar * zNear ) / ( zFar - zNear );
+
+		return result;
+	}
+
+	template< typename T >
+	Mat4T< T > infinitePerspective( RadiansT< T > fovy
+		, T aspect
+		, T zNear )
 	{
 		T const range = tan( fovy / static_cast< T >( 2 ) ) * zNear;
 		T const left = -range * aspect;
