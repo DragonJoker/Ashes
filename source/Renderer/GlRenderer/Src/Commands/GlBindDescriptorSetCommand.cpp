@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "GlBindDescriptorSetCommand.hpp"
 
 #include "GlBuffer.hpp"
+#include "GlBufferView.hpp"
 #include "GlDescriptorSet.hpp"
 #include "GlPipelineLayout.hpp"
 #include "GlSampler.hpp"
@@ -70,16 +71,16 @@ namespace gl_renderer
 
 		void bind( renderer::UniformTexelBufferBinding const & binding )
 		{
-			glBindBufferBase( GL_TEXTURE_BUFFER
-				, binding.getBinding().getBindingPoint()
-				, static_cast< Buffer const & >( binding.getBuffer().getBuffer() ).getBuffer() );
+			glActiveTexture( GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
+			glBindTexture( GL_TEXTURE_BUFFER
+				, static_cast< BufferView const & >( binding.getView() ).getImage() );
 		}
 
 		void bind( renderer::StorageTexelBufferBinding const & binding )
 		{
-			glBindBufferBase( GL_SHADER_STORAGE_BUFFER
-				, binding.getBinding().getBindingPoint()
-				, static_cast< Buffer const & >( binding.getBuffer() ).getBuffer() );
+			glActiveTexture( GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
+			glBindTexture( GL_TEXTURE_BUFFER
+				, static_cast< BufferView const & >( binding.getView() ).getImage() );
 		}
 	}
 
