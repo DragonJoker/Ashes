@@ -17,7 +17,7 @@ if ( OpenGL_FOUND )
 	)
 
 	file( GLOB_RECURSE ${PROJECT_NAME}_C_FILES
-		*.c
+		Src/*.c
 	)
 
 	file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
@@ -55,8 +55,19 @@ if ( OpenGL_FOUND )
 		Renderer
 	)
 
-	parse_subdir_files( Src/Commands "Commands" )
+	parse_subdir_files( Src/Buffer "Buffer" )
+	parse_subdir_files( Src/Command "Command" )
+	parse_subdir_files( Src/Command/Commands "Command\\\\Commands" )
+	parse_subdir_files( Src/Core "Core" )
+	parse_subdir_files( Src/Descriptor "Descriptor" )
+	parse_subdir_files( Src/Enum "Enum" )
 	parse_subdir_files( Src/GL "GL" )
+	parse_subdir_files( Src/Image "Image" )
+	parse_subdir_files( Src/Miscellaneous "Miscellaneous" )
+	parse_subdir_files( Src/Pipeline "Pipeline" )
+	parse_subdir_files( Src/RenderPass "RenderPass" )
+	parse_subdir_files( Src/Shader "Shader" )
+	parse_subdir_files( Src/Sync "Sync" )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
 else ()
