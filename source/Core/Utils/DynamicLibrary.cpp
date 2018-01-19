@@ -47,33 +47,13 @@ namespace utils
 
 	void DynamicLibrary::doOpen()
 	{
-		try
-		{
-			m_library = ::LoadLibraryA( m_path.c_str() );
+		m_library = ::LoadLibraryA( m_path.c_str() );
 
-			if ( !m_library )
-			{
-				std::stringstream error;
-				error << "Error code: " << std::hex << ::GetLastError();
-				throw std::runtime_error{ error.str() };
-			}
-		}
-		catch ( std::exception & exc )
-		{
-			std::stringstream error;
-			error << "Can't load dynamic library at [" << m_path << "]: ";
-			error << exc.what();
-			m_library = nullptr;
-			m_path.clear();
-			throw std::runtime_error{ error.str() };
-		}
-		catch ( ... )
+		if ( !m_library )
 		{
 			std::stringstream error;
 			error << "Can't load dynamic library at [" << m_path << "]: ";
 			error << "Error code: " << std::hex << ::GetLastError();
-			m_library = nullptr;
-			m_path.clear();
 			throw std::runtime_error{ error.str() };
 		}
 	}
@@ -99,33 +79,13 @@ namespace utils
 
 	void DynamicLibrary::doOpen()
 	{
-		try
-		{
-			m_library = dlopen( m_path.c_str(), RTLD_LAZY );
+		m_library = dlopen( m_path.c_str(), RTLD_LAZY );
 
-			if ( !m_library )
-			{
-				std::stringstream error;
-				error << "Error code: " << std::hex << dlerror();
-				throw std::runtime_error{ error.str() };
-			}
-		}
-		catch ( std::exception & exc )
-		{
-			std::stringstream error;
-			error << "Can't load dynamic library at [" << m_path << "]: ";
-			error << exc.what();
-			m_library = nullptr;
-			m_path.clear();
-			throw std::runtime_error{ error.str() };
-		}
-		catch ( ... )
+		if ( !m_library )
 		{
 			std::stringstream error;
 			error << "Can't load dynamic library at [" << m_path << "]: ";
 			error << "Error code: " << std::hex << dlerror();
-			m_library = nullptr;
-			m_path.clear();
 			throw std::runtime_error{ error.str() };
 		}
 	}

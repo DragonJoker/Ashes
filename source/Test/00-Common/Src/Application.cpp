@@ -241,7 +241,6 @@ namespace common
 
 		wxInitAllImageHandlers();
 		bool result = false;
-
 		StringArray files;
 
 		if ( listDirectoryFiles( getExecutableDirectory(), files, false ) )

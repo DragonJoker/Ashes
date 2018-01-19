@@ -60,6 +60,7 @@ namespace renderer
 	using UInt16Array = utils::UInt16Array;
 	using UInt32Array = utils::UInt32Array;
 	using UInt64Array = std::vector< uint64_t >;
+	using FloatArray = std::vector< float >;
 	using Vec3Array = utils::Vec3Array;
 	using Vec2Array = utils::Vec2Array;
 	using StringArray = utils::StringArray;
