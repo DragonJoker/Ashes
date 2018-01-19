@@ -199,14 +199,23 @@ namespace vk_renderer
 
 	//************************************************************************************************
 
-	UniformTexelBufferBinding::UniformTexelBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+	TexelBufferBinding::TexelBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 		, DescriptorSet const & descriptorSet
-		, UniformBuffer const & uniformBuffer
+		, Buffer const & buffer
 		, BufferView const & view )
-		: renderer::UniformTexelBufferBinding{ layoutBinding, uniformBuffer, view }
-		, m_uniformBuffer{ static_cast< Buffer const & >( uniformBuffer.getBuffer() ) }
+		: renderer::TexelBufferBinding{ layoutBinding, buffer, view }
+		, m_buffer{ buffer }
 		, m_view{ view }
+		, m_info
+		{
+			m_buffer,                                       // buffer
+			view.getOffset(),                               // offset
+			view.getRange()                                 // range
+		}
 	{
+		auto type = checkFlag( buffer.getTargets(), renderer::BufferTarget::eStorageBuffer )
+			? VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER
+			: VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
 		m_write =
 		{
 			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,         // sType
@@ -215,34 +224,9 @@ namespace vk_renderer
 			layoutBinding.getBindingPoint(),                // dstBinding
 			0u,                                             // dstArrayElement
 			1u,                                             // descriptorCount
-			VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER,        // descriptorType
+			type,                                           // descriptorType
 			nullptr,                                        // pImageInfo
-			nullptr,                                        // pBufferInfo
-			&static_cast< VkBufferView const & >( m_view )  // pTexelBufferView
-		};
-	}
-
-	//************************************************************************************************
-
-	StorageTexelBufferBinding::StorageTexelBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, DescriptorSet const & descriptorSet
-		, Buffer const & storageBuffer
-		, BufferView const & view )
-		: renderer::StorageTexelBufferBinding{ layoutBinding, storageBuffer, view }
-		, m_buffer{ storageBuffer }
-		, m_view{ view }
-	{
-		m_write =
-		{
-			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,         // sType
-			nullptr,                                        // pNext
-			descriptorSet,                                  // dstSet
-			layoutBinding.getBindingPoint(),                // dstBinding
-			0u,                                             // dstArrayElement
-			1u,                                             // descriptorCount
-			VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,        // descriptorType
-			nullptr,                                        // pImageInfo
-			nullptr,                                        // pBufferInfo
+			&m_info,                                        // pBufferInfo
 			&static_cast< VkBufferView const & >( m_view )  // pTexelBufferView
 		};
 	}

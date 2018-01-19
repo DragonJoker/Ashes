@@ -165,17 +165,6 @@ namespace vk_renderer
 
 		std::string source = shader;
 
-		if ( stage == renderer::ShaderStageFlag::eVertex )
-		{
-			std::string const lookup = "gl_Position.y = -gl_Position.y;";
-			auto it = source.find( lookup );
-
-			if ( it != std::string::npos )
-			{
-				source.replace( it, lookup.size(), "" );
-			}
-		}
-
 		glslang::TShader glshader{ glstage };
 		char const * const str = source.c_str();
 		glshader.setStrings( &str, 1 );

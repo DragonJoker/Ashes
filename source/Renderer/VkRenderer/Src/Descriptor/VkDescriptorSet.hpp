@@ -88,14 +88,8 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::createBinding
 		*/
-		renderer::UniformTexelBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::UniformBufferBase const & uniformBuffer
-			, renderer::BufferView const & view )override;
-		/**
-		*\copydoc	renderer::createBinding
-		*/
-		renderer::StorageTexelBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::BufferBase const & storageBuffer
+		renderer::TexelBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, renderer::BufferBase const & buffer
 			, renderer::BufferView const & view )override;
 		/**
 		*\~french

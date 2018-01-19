@@ -51,7 +51,10 @@ namespace vk_renderer
 		, m_currentAccessMask{ renderer::AccessFlag::eMemoryRead }
 	{
 		m_format = format;
+		m_type = renderer::TextureType::e2D;
 		m_size = renderer::UIVec3{ dimensions[0], dimensions[1], 0u };
+		m_layerCount = 0u;
+		m_samples = renderer::SampleCountFlag::e1;
 		m_view = std::make_unique< TextureView >( m_device
 			, *this
 			, m_format
@@ -74,7 +77,10 @@ namespace vk_renderer
 		, m_currentAccessMask{ 0 }
 	{
 		m_format = format;
+		m_type = renderer::TextureType::e2D;
 		m_size = renderer::UIVec3{ dimensions[0], dimensions[1], 0u };
+		m_layerCount = 0u;
+		m_samples = renderer::SampleCountFlag::e1;
 		doSetImage2D( usageFlags
 			, tiling
 			, memoryFlags );

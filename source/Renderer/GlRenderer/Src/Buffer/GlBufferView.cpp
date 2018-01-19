@@ -13,7 +13,10 @@ namespace gl_renderer
 		: renderer::BufferView{ device, buffer, format, offset, range }
 	{
 		glGenTextures( 1, &m_name );
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture( GL_TEXTURE_BUFFER, m_name );
 		glTexBufferRange( GL_TEXTURE_BUFFER, getInternal( format ), buffer.getBuffer(), offset, range );
+		glBindTexture( GL_TEXTURE_BUFFER, 0u );
 	}
 
 	BufferView::~BufferView()

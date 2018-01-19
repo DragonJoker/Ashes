@@ -135,32 +135,14 @@ namespace vk_renderer
 	};
 	/**
 	*\brief
-	*	Attache de type tampon uniforme de texels.
+	*	Attache de type tampon de texels.
 	*/
-	class UniformTexelBufferBinding
-		: public renderer::UniformTexelBufferBinding
+	class TexelBufferBinding
+		: public renderer::TexelBufferBinding
 		, public DescriptorSetBinding
 	{
 	public:
-		UniformTexelBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, DescriptorSet const & descriptorSet
-			, UniformBuffer const & uniformBuffer
-			, BufferView const & view );
-
-	private:
-		Buffer const & m_uniformBuffer;
-		BufferView const & m_view;
-	};
-	/**
-	*\brief
-	*	Attache de type tampon de stockage de texels.
-	*/
-	class StorageTexelBufferBinding
-		: public renderer::StorageTexelBufferBinding
-		, public DescriptorSetBinding
-	{
-	public:
-		StorageTexelBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		TexelBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 			, DescriptorSet const & descriptorSet
 			, Buffer const & storageBuffer
 			, BufferView const & view );
@@ -168,5 +150,6 @@ namespace vk_renderer
 	private:
 		Buffer const & m_buffer;
 		BufferView const & m_view;
+		VkDescriptorBufferInfo m_info;
 	};
 }

@@ -35,5 +35,6 @@ namespace gl_renderer
 		Texture const & m_dst;
 		GLenum m_format;
 		GLenum m_type;
+		GLenum m_target;
 	};
 }

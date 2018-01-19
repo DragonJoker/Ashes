@@ -24,8 +24,8 @@ namespace gl_renderer
 			glActiveTexture( GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
 			glBindSampler( binding.getBinding().getBindingPoint()
 				, static_cast< Sampler const & >( binding.getSampler() ).getSampler() );
-			glBindTexture( GL_TEXTURE_2D
-				, static_cast< Texture const & >( binding.getTexture().getImage() ).getImage() );
+			glBindTexture( convert( binding.getView().getImage().getType() )
+				, static_cast< Texture const & >( binding.getView().getImage() ).getImage() );
 		}
 
 		void bind( renderer::SamplerBinding const & binding )
@@ -37,7 +37,7 @@ namespace gl_renderer
 		void bind( renderer::SampledTextureBinding const & binding )
 		{
 			glActiveTexture( GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
-			glBindTexture( GL_TEXTURE_2D
+			glBindTexture( convert( binding.getView().getImage().getType() )
 				, static_cast< Texture const & >( binding.getView().getImage() ).getImage() );
 		}
 
@@ -69,14 +69,7 @@ namespace gl_renderer
 				, static_cast< Buffer const & >( binding.getBuffer() ).getBuffer() );
 		}
 
-		void bind( renderer::UniformTexelBufferBinding const & binding )
-		{
-			glActiveTexture( GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
-			glBindTexture( GL_TEXTURE_BUFFER
-				, static_cast< BufferView const & >( binding.getView() ).getImage() );
-		}
-
-		void bind( renderer::StorageTexelBufferBinding const & binding )
+		void bind( renderer::TexelBufferBinding const & binding )
 		{
 			glActiveTexture( GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
 			glBindTexture( GL_TEXTURE_BUFFER
@@ -125,12 +118,7 @@ namespace gl_renderer
 			bind( descriptor );
 		}
 
-		for ( auto & descriptor : m_descriptorSet.getUniformTexelBuffers() )
-		{
-			bind( descriptor );
-		}
-
-		for ( auto & descriptor : m_descriptorSet.getStorageTexelBuffers() )
+		for ( auto & descriptor : m_descriptorSet.getTexelBuffers() )
 		{
 			bind( descriptor );
 		}

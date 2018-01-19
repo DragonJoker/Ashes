@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -84,7 +84,7 @@ namespace renderer
 		*\return
 		*	L'image.
 		*/
-		inline TextureView const & getTexture()const
+		inline TextureView const & getView()const
 		{
 			return m_view;
 		}
@@ -332,86 +332,33 @@ namespace renderer
 	};
 	/**
 	*\brief
-	*	Attache de type tampon uniforme de texels.
+	*	Attache de type tampon de texels.
 	*/
-	class UniformTexelBufferBinding
+	class TexelBufferBinding
 		: public DescriptorSetBinding
 	{
 	public:
-		UniformTexelBufferBinding( UniformTexelBufferBinding const & ) = delete;
-		UniformTexelBufferBinding( UniformTexelBufferBinding && ) = default;
-		UniformTexelBufferBinding & operator=( UniformTexelBufferBinding const & ) = delete;
-		UniformTexelBufferBinding & operator=( UniformTexelBufferBinding && ) = default;
+		TexelBufferBinding( TexelBufferBinding const & ) = delete;
+		TexelBufferBinding( TexelBufferBinding && ) = default;
+		TexelBufferBinding & operator=( TexelBufferBinding const & ) = delete;
+		TexelBufferBinding & operator=( TexelBufferBinding && ) = default;
 		/**
 		*\brief
 		*	Constructeur.
 		*\param[in] layoutBinding
 		*	L'attache de layout.
-		*\param[in] uniformBuffer
+		*\param[in] buffer
 		*	Le tampon.
 		*\param[in] view
 		*	La vue sur le tampon.
 		*\return
 		*	L'attache créée.
 		*/
-		UniformTexelBufferBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, UniformBufferBase const & uniformBuffer
+		TexelBufferBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, BufferBase const & buffer
 			, BufferView const & view )
 			: DescriptorSetBinding{ layoutBinding }
-			, m_uniformBuffer{ uniformBuffer }
-			, m_view{ view }
-		{
-		}
-		/**
-		*\return
-		*	Le tampon.
-		*/
-		inline UniformBufferBase const & getBuffer()const
-		{
-			return m_uniformBuffer;
-		}
-		/**
-		*\return
-		*	La vue.
-		*/
-		inline BufferView const & getView()const
-		{
-			return m_view;
-		}
-
-	private:
-		UniformBufferBase const & m_uniformBuffer;
-		BufferView const & m_view;
-	};
-	/**
-	*\brief
-	*	Attache de type tampon de stockage de texels.
-	*/
-	class StorageTexelBufferBinding
-		: public DescriptorSetBinding
-	{
-	public:
-		StorageTexelBufferBinding( StorageTexelBufferBinding const & ) = delete;
-		StorageTexelBufferBinding( StorageTexelBufferBinding && ) = default;
-		StorageTexelBufferBinding & operator=( StorageTexelBufferBinding const & ) = delete;
-		StorageTexelBufferBinding & operator=( StorageTexelBufferBinding && ) = default;
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] storageBuffer
-		*	Le tampon.
-		*\param[in] view
-		*	La vue sur le tampon.
-		*\return
-		*	L'attache créée.
-		*/
-		StorageTexelBufferBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, BufferBase const & storageBuffer
-			, BufferView const & view )
-			: DescriptorSetBinding{ layoutBinding }
-			, m_buffer{ storageBuffer }
+			, m_buffer{ buffer }
 			, m_view{ view }
 		{
 		}
