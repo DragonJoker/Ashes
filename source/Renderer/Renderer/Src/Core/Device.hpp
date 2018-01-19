@@ -385,6 +385,29 @@ namespace renderer
 		/**
 		*\~french
 		*\brief
+		*	Creates a query pool.
+		*\param[in] type
+		*	The query type.
+		*\param[in] count
+		*	The number of queries managed by the pool.
+		*\param[in] pipelineStatistics
+		*	Specifies the counters to be returned in queries.
+		*\~french
+		*\brief
+		*	Crée un pool de requêtes.
+		*\param[in] type
+		*	Le type de requête.
+		*\param[in] count
+		*	Le nombre de requêtes gérées par le pool.
+		*\param[in] pipelineStatistics
+		*	Définit les compteurs que les requêtes retournent.
+		*/
+		virtual QueryPoolPtr createQueryPool( QueryType type
+			, uint32_t count
+			, QueryPipelineStatisticFlags pipelineStatistics )const = 0;
+		/**
+		*\~french
+		*\brief
 		*	Attend que le périphérique soit inactif.
 		*/
 		virtual void waitIdle()const = 0;

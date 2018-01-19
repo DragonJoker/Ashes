@@ -374,6 +374,70 @@ namespace renderer
 		*/
 		virtual void copyImage( StagingBuffer const & src
 			, Texture const & dst )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Resets a range of queries in a query pool.
+		*\param[in] pool
+		*	The query pool.
+		*\param[in] firstQuery
+		*	The first query index.
+		*\param[in] queryCount
+		*	The number of queries (starting at \p firstQuery).
+		*\~french
+		*\brief
+		*	Réinitialise un intervalle de requêtes d'un pool.
+		*\param[in] pool
+		*	Le pool de requêtes.
+		*\param[in] firstQuery
+		*	L'index de la première requête.
+		*\param[in] queryCount
+		*	Le nombre de requêtes (à partir de \p firstQuery).
+		*/
+		virtual void resetQueryPool( QueryPool const & pool
+			, uint32_t firstQuery
+			, uint32_t queryCount )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Begins a query.
+		*\param[in] pool
+		*	The query pool.
+		*\param[in] query
+		*	The query index.
+		*\param[in] flags
+		*	The constraints on the types of queries that can be performed.
+		*\~french
+		*\brief
+		*	Démarre un requête.
+		*\param[in] pool
+		*	Le pool de requêtes.
+		*\param[in] query
+		*	L'index de la requête.
+		*\param[in] flags
+		*	Les contraintes sur les types de requête qui peuvent être effectuées.
+		*/
+		virtual void beginQuery( QueryPool const & pool
+			, uint32_t query
+			, QueryControlFlags flags )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Ends a query.
+		*\param[in] pool
+		*	The query pool.
+		*\param[in] query
+		*	The query index.
+		*\~french
+		*\brief
+		*	Termine une requête.
+		*\param[in] pool
+		*	Le pool de requêtes.
+		*\param[in] query
+		*	L'index de la requête.
+		*/
+		virtual void endQuery( QueryPool const & pool
+			, uint32_t query )const = 0;
 	};
 }
 
