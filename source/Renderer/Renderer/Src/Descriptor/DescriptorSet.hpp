@@ -198,54 +198,27 @@ namespace renderer
 		/**
 		*\~french
 		*\brief
-		*	Crée une attache de type tampon uniforme de texels.
+		*	Crée une attache de type tampon de texels.
 		*\param[in] layoutBinding
 		*	L'attache de layout.
-		*\param[in] uniformBuffer
+		*\param[in] buffer
 		*	Le tampon.
-		*\param[in] view
-		*	La vue sur le tampon.
 		*\return
 		*	L'attache créée.
 		*\~english
 		*\brief
-		*	Creates a texel uniform buffer binding.
+		*	Creates a texel buffer binding.
 		*\param[in] layoutBinding
 		*	The layout binding.
-		*\param[in] uniformBuffer
+		*\param[in] buffer
 		*	The buffer.
 		*\param[in] view
 		*	The view to the buffer.
 		*\return
 		*	The created binding.
 		*/
-		virtual UniformTexelBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, UniformBufferBase const & uniformBuffer
-			, BufferView const & view ) = 0;
-		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon de stockage de texels.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] storageBuffer
-		*	Le tampon.
-		*\return
-		*	L'attache créée.
-		*\~english
-		*\brief
-		*	Creates a texel storage buffer binding.
-		*\param[in] layoutBinding
-		*	The layout binding.
-		*\param[in] storageBuffer
-		*	The buffer.
-		*\param[in] view
-		*	The view to the buffer.
-		*\return
-		*	The created binding.
-		*/
-		virtual StorageTexelBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, BufferBase const & storageBuffer
+		virtual TexelBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, BufferBase const & buffer
 			, BufferView const & view ) = 0;
 		/**
 		*\~french
@@ -312,10 +285,10 @@ namespace renderer
 		/**
 		*\~french
 		*\brief
-		*	Crée une attache de type tampon uniforme de texels.
+		*	Crée une attache de type tampon de texels.
 		*\param[in] layoutBinding
 		*	L'attache de layout.
-		*\param[in] uniformBuffer
+		*\param[in] buffer
 		*	Le tampon.
 		*\param[in] view
 		*	La vue sur le tampon.
@@ -323,10 +296,10 @@ namespace renderer
 		*	L'attache créée.
 		*\~english
 		*\brief
-		*	Creates a texel uniform buffer binding.
+		*	Creates a texel buffer binding.
 		*\param[in] layoutBinding
 		*	The layout binding.
-		*\param[in] uniformBuffer
+		*\param[in] buffer
 		*	The buffer.
 		*\param[in] view
 		*	The view to the buffer.
@@ -334,21 +307,21 @@ namespace renderer
 		*	The created binding.
 		*/
 		template< typename T >
-		inline UniformTexelBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, UniformBuffer< T > const & uniformBuffer
+		inline TexelBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, UniformBuffer< T > const & buffer
 			, BufferView const & view )
 		{
 			return createBinding( layoutBinding
-				, uniformBuffer.getUbo()
+				, buffer.getUbo()
 				, view );
 		}
 		/**
 		*\~french
 		*\brief
-		*	Crée une attache de type tampon de stockage de texels.
+		*	Crée une attache de type tampon de texels.
 		*\param[in] layoutBinding
 		*	L'attache de layout.
-		*\param[in] storageBuffer
+		*\param[in] buffer
 		*	Le tampon.
 		*\param[in] view
 		*	La vue sur le tampon.
@@ -356,10 +329,10 @@ namespace renderer
 		*	L'attache créée.
 		*\~english
 		*\brief
-		*	Creates a texel storage buffer binding.
+		*	Creates a texel buffer binding.
 		*\param[in] layoutBinding
 		*	The layout binding.
-		*\param[in] storageBuffer
+		*\param[in] buffer
 		*	The buffer.
 		*\param[in] view
 		*	The view to the buffer.
@@ -367,12 +340,12 @@ namespace renderer
 		*	The created binding.
 		*/
 		template< typename T >
-		inline StorageTexelBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, Buffer< T > const & storageBuffer
+		inline TexelBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, Buffer< T > const & buffer
 			, BufferView const & view )
 		{
 			return createBinding( layoutBinding
-				, storageBuffer.getBuffer()
+				, buffer.getBuffer()
 				, view );
 		}
 		/**

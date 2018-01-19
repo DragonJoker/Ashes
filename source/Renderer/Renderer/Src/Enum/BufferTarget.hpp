@@ -30,7 +30,7 @@ namespace renderer
 		eDispatchIndirectBuffer = 0x00000100,
 		eDrawIndirectBuffer = 0x00000200,
 		ePackBuffer = 0x00000400,
-		eUnpackBuffer = 0x00000400,
+		eUnpackBuffer = 0x00000800,
 	};
 	Utils_ImplementFlag( BufferTarget )
 }

@@ -121,7 +121,7 @@ namespace gl_renderer
 		case GL_DEBUG_TYPE_OTHER:				stream << "    Type: Other\n";					break;
 		}
 
-		stream << "ID: " << id << "\n";
+		stream << "    ID: " << id << "\n";
 
 		switch ( severity )
 		{
@@ -131,7 +131,7 @@ namespace gl_renderer
 		case GL_DEBUG_SEVERITY_NOTIFICATION:	stream << "    Severity: Notification\n";	break;
 		}
 
-		stream << "Message: " << message;
+		stream << "    Message: " << message;
 
 		if ( severity != GL_DEBUG_SEVERITY_NOTIFICATION )
 		{
@@ -156,7 +156,7 @@ namespace gl_renderer
 		case GL_DEBUG_CATEGORY_OTHER_AMD:				stream << "Category: Other\n";					break;
 		}
 
-		stream << "ID: " << id << "\n";
+		stream << "    ID: " << id << "\n";
 
 		switch ( severity )
 		{
@@ -165,7 +165,7 @@ namespace gl_renderer
 		case GL_DEBUG_SEVERITY_LOW_AMD:					stream << "Severity: Low\n";					break;
 		}
 
-		stream << "Message: " << message;
+		stream << "    Message: " << message;
 		std::cout << stream.str() << std::endl;
 	}
 

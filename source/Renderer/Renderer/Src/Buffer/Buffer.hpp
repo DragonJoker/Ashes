@@ -110,10 +110,19 @@ namespace renderer
 		{
 			return m_size;
 		}
+		/**
+		*\return
+		*	Les cibles du tampon.
+		*/
+		inline BufferTargets getTargets()const
+		{
+			return m_target;
+		}
 
 	protected:
 		Device const & m_device;
 		uint32_t m_size;
+		BufferTargets m_target;
 	};
 	/**
 	*\brief

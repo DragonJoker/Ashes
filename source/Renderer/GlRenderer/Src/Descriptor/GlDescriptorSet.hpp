@@ -1,4 +1,4 @@
-﻿/**
+/**
 *\file
 *	VertexBuffer.h
 *\author
@@ -68,14 +68,8 @@ namespace gl_renderer
 		/**
 		*\copydoc		renderer::DescriptorSet::createBinding
 		*/
-		renderer::UniformTexelBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::UniformBufferBase const & uniformBuffer
-			, renderer::BufferView const & view )override;
-		/**
-		*\copydoc		renderer::DescriptorSet::createBinding
-		*/
-		renderer::StorageTexelBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::BufferBase const & storageBuffer
+		renderer::TexelBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, renderer::BufferBase const & buffer
 			, renderer::BufferView const & view )override;
 		/**
 		*\copydoc		renderer::DescriptorSet::createBinding
@@ -133,17 +127,9 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type tampon uniforme de texels.
 		*/
-		inline std::vector< renderer::UniformTexelBufferBinding > const & getUniformTexelBuffers()const
+		inline std::vector< renderer::TexelBufferBinding > const & getTexelBuffers()const
 		{
-			return m_uniformTexelBuffers;
-		}
-		/**
-		*\brief
-		*	Le tableau d'attaches de type tampon de stockage de texels.
-		*/
-		inline std::vector< renderer::StorageTexelBufferBinding > const & getStorageTexelBuffers()const
-		{
-			return m_storageTexelBuffers;
+			return m_texelBuffers;
 		}
 
 	private:
@@ -153,8 +139,7 @@ namespace gl_renderer
 		std::vector< renderer::StorageTextureBinding > m_storageTextures;
 		std::vector< renderer::UniformBufferBinding > m_uniformBuffers;
 		std::vector< renderer::StorageBufferBinding > m_storageBuffers;
-		std::vector< renderer::UniformTexelBufferBinding > m_uniformTexelBuffers;
-		std::vector< renderer::StorageTexelBufferBinding > m_storageTexelBuffers;
+		std::vector< renderer::TexelBufferBinding > m_texelBuffers;
 	};
 }
 

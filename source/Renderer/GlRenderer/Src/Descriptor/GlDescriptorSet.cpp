@@ -69,24 +69,14 @@ namespace gl_renderer
 		return m_storageBuffers.back();
 	}
 
-	renderer::UniformTexelBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::UniformBufferBase const & uniformBuffer
+	renderer::TexelBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		, renderer::BufferBase const & buffer
 		, renderer::BufferView const & view )
 	{
-		m_uniformTexelBuffers.emplace_back( layoutBinding
-			, uniformBuffer
+		m_texelBuffers.emplace_back( layoutBinding
+			, buffer
 			, view );
-		return m_uniformTexelBuffers.back();
-	}
-
-	renderer::StorageTexelBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::BufferBase const & storageBuffer
-		, renderer::BufferView const & view )
-	{
-		m_storageTexelBuffers.emplace_back( layoutBinding
-			, storageBuffer
-			, view );
-		return m_storageTexelBuffers.back();
+		return m_texelBuffers.back();
 	}
 
 	void DescriptorSet::update()const

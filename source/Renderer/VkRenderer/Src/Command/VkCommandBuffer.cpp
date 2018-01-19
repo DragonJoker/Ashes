@@ -514,9 +514,9 @@ namespace vk_renderer
 					0                                                   // z
 				},
 				{                                                   // imageExtent
-					uint32_t( dst.getDimensions().x ),                  // width
-					uint32_t( dst.getDimensions().y ),                  // height
-					1u                                                  // depth
+					uint32_t( dst.getDimensions()[0] ),                 // width
+					uint32_t( std::max( 1u, dst.getDimensions()[1] ) ), // height
+					uint32_t( std::max( 1u, dst.getDimensions()[2] ) )  // depth
 				}
 			}
 			, buffer

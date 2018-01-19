@@ -25,7 +25,7 @@ namespace vk_renderer
 			nullptr,
 			0,                                              // flags
 			static_cast< Texture const & >( getImage() ),   // image
-			VK_IMAGE_VIEW_TYPE_2D,                          // viewType
+			convert( getImage().getType() ),                // viewType
 			convert( getFormat() ),                         // format
 			{                                               // components
 				VK_COMPONENT_SWIZZLE_IDENTITY,                  // r

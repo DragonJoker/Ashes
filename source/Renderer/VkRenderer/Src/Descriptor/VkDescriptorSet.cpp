@@ -115,26 +115,15 @@ namespace vk_renderer
 		return static_cast< StorageBufferBinding const & >( *m_bindings.back() );
 	}
 
-	renderer::UniformTexelBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::UniformBufferBase const & uniformBuffer
+	renderer::TexelBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		, renderer::BufferBase const & buffer
 		, renderer::BufferView const & view )
 	{
-		m_bindings.emplace_back( std::make_unique< UniformTexelBufferBinding >( layoutBinding
+		m_bindings.emplace_back( std::make_unique< TexelBufferBinding >( layoutBinding
 			, *this
-			, static_cast< UniformBuffer const & >( uniformBuffer )
+			, static_cast< Buffer const & >( buffer )
 			, static_cast< BufferView const & >( view ) ) );
-		return static_cast< UniformTexelBufferBinding const & >( *m_bindings.back() );
-	}
-
-	renderer::StorageTexelBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::BufferBase const & storageBuffer
-		, renderer::BufferView const & view )
-	{
-		m_bindings.emplace_back( std::make_unique< StorageTexelBufferBinding >( layoutBinding
-			, *this
-			, static_cast< Buffer const & >( storageBuffer )
-			, static_cast< BufferView const & >( view ) ) );
-		return static_cast< StorageTexelBufferBinding const & >( *m_bindings.back() );
+		return static_cast< TexelBufferBinding const & >( *m_bindings.back() );
 	}
 
 	void DescriptorSet::update()const
