@@ -24,6 +24,51 @@ namespace renderer
 		eAll = 0x0000001F,
 	};
 	Utils_ImplementFlag( ShaderStageFlag )
+	/**
+	*\~english
+	*\brief
+	*	Gets the name of the given element type.
+	*\param[in] value
+	*	The element type.
+	*\return
+	*	The name.
+	*\~french
+	*\brief
+	*	Récupère le nom du type d'élément donné.
+	*\param[in] value
+	*	Le type d'élément.
+	*\return
+	*	Le nom.
+	*/
+	inline std::string getName( ShaderStageFlag value )
+	{
+		switch ( value )
+		{
+		case ShaderStageFlag::eVertex:
+			return "vertex";
+
+		case ShaderStageFlag::eTessellationControl:
+			return "tess_control";
+
+		case ShaderStageFlag::eTessellationEvaluation:
+			return "tess_eval";
+
+		case ShaderStageFlag::eGeometry:
+			return "geometry";
+
+		case ShaderStageFlag::eFragment:
+			return "fragment";
+
+		case ShaderStageFlag::eCompute:
+			return "compute";
+
+		default:
+			assert( false && "Unsupported ShaderStageFlag." );
+			throw std::runtime_error{ "Unsupported ShaderStageFlag" };
+		}
+
+		return 0;
+	}
 }
 
 #endif

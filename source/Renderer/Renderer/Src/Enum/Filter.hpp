@@ -24,6 +24,39 @@ namespace renderer
 		eLinear,
 		Utils_EnumBounds( eNearest )
 	};
+	/**
+	*\~english
+	*\brief
+	*	Gets the name of the given element type.
+	*\param[in] value
+	*	The element type.
+	*\return
+	*	The name.
+	*\~french
+	*\brief
+	*	Récupère le nom du type d'élément donné.
+	*\param[in] value
+	*	Le type d'élément.
+	*\return
+	*	Le nom.
+	*/
+	inline std::string getName( Filter value )
+	{
+		switch ( value )
+		{
+		case Filter::eNearest:
+			return "nearest";
+
+		case Filter::eLinear:
+			return "linear";
+
+		default:
+			assert( false && "Unsupported Filter." );
+			throw std::runtime_error{ "Unsupported Filter" };
+		}
+
+		return 0;
+	}
 }
 
 #endif

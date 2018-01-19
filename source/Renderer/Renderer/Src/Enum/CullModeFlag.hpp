@@ -21,6 +21,45 @@ namespace renderer
 		eFrontAndBack = 0x00000003,
 	};
 	Utils_ImplementFlag( CullModeFlag )
+	/**
+	*\~english
+	*\brief
+	*	Gets the name of the given element type.
+	*\param[in] value
+	*	The element type.
+	*\return
+	*	The name.
+	*\~french
+	*\brief
+	*	Récupère le nom du type d'élément donné.
+	*\param[in] value
+	*	Le type d'élément.
+	*\return
+	*	Le nom.
+	*/
+	inline std::string getName( CullModeFlag value )
+	{
+		switch ( value )
+		{
+		case CullModeFlag::eNone:
+			return "none";
+
+		case CullModeFlag::eFront:
+			return "front";
+
+		case CullModeFlag::eBack:
+			return "back";
+
+		case CullModeFlag::eFrontAndBack:
+			return "both";
+
+		default:
+			assert( false && "Unsupported CullModeFlag." );
+			throw std::runtime_error{ "Unsupported CullModeFlag" };
+		}
+
+		return 0;
+	}
 }
 
 #endif
