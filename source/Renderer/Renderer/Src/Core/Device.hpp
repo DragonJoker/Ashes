@@ -229,8 +229,10 @@ namespace renderer
 		*\~french
 		*\brief
 		*	Crée une texture.
+		*\param[in] initialLayout
+		*	Le layout initial pour l'image.
 		*/
-		virtual TexturePtr createTexture()const = 0;
+		virtual TexturePtr createTexture( ImageLayout initialLayout = ImageLayout::eUndefined )const = 0;
 		/**
 		*\~french
 		*\brief

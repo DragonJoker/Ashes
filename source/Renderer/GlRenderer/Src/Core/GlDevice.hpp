@@ -102,7 +102,7 @@ namespace gl_renderer
 		/**
 		*\copydoc		renderer::Device::createTexture
 		*/
-		renderer::TexturePtr createTexture()const override;
+		renderer::TexturePtr createTexture( renderer::ImageLayout initialLayout )const override;
 		/**
 		*\copydoc		renderer::Device::createTextureView
 		*/

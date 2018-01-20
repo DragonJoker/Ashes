@@ -29,6 +29,11 @@ namespace vk_renderer
 		Device( Renderer const & renderer
 			, renderer::ConnectionPtr && connection );
 		/**
+		*\brief
+		*	Destructeur.
+		*/
+		~Device();
+		/**
 		*\copydoc	renderer::Device::createRenderPass
 		*/
 		renderer::RenderPassPtr createRenderPass( std::vector< renderer::PixelFormat > const & formats
@@ -102,7 +107,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::Device::createTexture
 		*/
-		renderer::TexturePtr createTexture()const override;
+		renderer::TexturePtr createTexture( renderer::ImageLayout initialLayout )const override;
 		/**
 		*\copydoc	renderer::Device::createTextureView
 		*/
