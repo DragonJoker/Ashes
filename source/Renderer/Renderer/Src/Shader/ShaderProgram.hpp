@@ -60,6 +60,16 @@ namespace renderer
 		*	Lie les modules du programme.
 		*/
 		virtual void link() = 0;
+		/**
+		*\brief
+		*	Dit si le SPIR-V est supporté.
+		*/
+		virtual bool isSPIRVSupported() = 0;
+		/**
+		*\brief
+		*	Dit si le GLSL est supporté.
+		*/
+		virtual bool isGLSLSupported() = 0;
 	};
 }
 

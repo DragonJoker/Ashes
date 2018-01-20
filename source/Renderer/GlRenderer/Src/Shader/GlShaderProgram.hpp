@@ -57,6 +57,22 @@ namespace gl_renderer
 		void link()override;
 		/**
 		*\brief
+		*	Dit si le SPIR-V est supporté.
+		*/
+		inline bool isSPIRVSupported()override
+		{
+			return false;
+		}
+		/**
+		*\brief
+		*	Dit si le GLSL est supporté.
+		*/
+		inline bool isGLSLSupported()override
+		{
+			return true;
+		}
+		/**
+		*\brief
 		*	Le début du tableau de modules.
 		*/
 		inline GLuint getProgram()const
