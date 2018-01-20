@@ -81,7 +81,7 @@ namespace utils
 		*\brief
 		*	Implicit convertion to the basic integer type.
 		*/
-		inline operator BaseType const &()const noexcept
+		inline explicit operator BaseType const &()const noexcept
 		{
 			return m_value;
 		}
@@ -194,6 +194,24 @@ namespace utils
 	inline FlagCombination< FlagType > operator|
 		( FlagCombination< FlagType > const & lhs
 		, FlagType const & rhs )noexcept
+	{
+		FlagCombination< FlagType > ret{ lhs };
+		return ret |= rhs;
+	}
+
+	template< typename FlagType >
+	inline FlagCombination< FlagType > operator&
+		( FlagCombination< FlagType > const & lhs
+		, typename FlagCombination< FlagType >::BaseType const & rhs )noexcept
+	{
+		FlagCombination< FlagType > ret{ lhs };
+		return ret &= rhs;
+	}
+
+	template< typename FlagType >
+	inline FlagCombination< FlagType > operator|
+		( FlagCombination< FlagType > const & lhs
+		, typename FlagCombination< FlagType >::BaseType const & rhs )noexcept
 	{
 		FlagCombination< FlagType > ret{ lhs };
 		return ret |= rhs;
@@ -399,27 +417,15 @@ namespace utils
 //!@~english	Implements binary combination operators on a scoped enum.
 #define Utils_ImplementFlag( FlagType )\
 	using FlagType##s = utils::FlagCombination< FlagType >;\
-	inline constexpr typename utils::FlagCombination< FlagType >::BaseType\
-	operator|\
-		( FlagType lhs\
-		, FlagType rhs )\
+	inline FlagType##s operator|( FlagType lhs, FlagType rhs )\
 	{\
-		using Type = typename utils::FlagCombination< FlagType >::BaseType;\
-		return Type( lhs ) | Type( rhs );\
+		return FlagType##s( lhs ) | rhs;\
 	}\
-	inline constexpr typename utils::FlagCombination< FlagType >::BaseType\
-	operator|\
-		( typename utils::FlagCombination< FlagType >::BaseType lhs\
-		, FlagType rhs )\
+	inline FlagType##s operator|( FlagType##s::BaseType lhs, FlagType rhs )\
 	{\
-		using Type = typename utils::FlagCombination< FlagType >::BaseType;\
-		return lhs | Type( rhs );\
+		return FlagType##s( lhs ) | rhs;\
 	}\
-	inline constexpr typename utils::FlagCombination< FlagType >::BaseType\
-	operator|\
-		( FlagType lhs\
-		, typename utils::FlagCombination< FlagType >::BaseType rhs )\
+	inline FlagType##s operator|( FlagType lhs, FlagType##s::BaseType rhs )\
 	{\
-		using Type = typename utils::FlagCombination< FlagType >::BaseType;\
-		return Type( lhs ) | rhs;\
+		return FlagType##s( lhs ) | rhs;\
 	}
