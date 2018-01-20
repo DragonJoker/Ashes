@@ -114,8 +114,8 @@ namespace vk_renderer
 		{
 			auto const & state = subpass.get().getNeededState();
 
-			if ( currentState.m_pipelineStage != state.getPipelineStage()
-				|| currentState.m_access != state.getAccess() )
+			if ( currentState.m_pipelineStage != convert( state.getPipelineStage() )
+				|| currentState.m_access != convert( state.getAccess() ) )
 			{
 				dependencies.push_back(
 				{
@@ -134,8 +134,8 @@ namespace vk_renderer
 			descriptions.push_back( subpass.get() );
 		}
 
-		if ( currentState.m_pipelineStage != m_finalState.getPipelineStage()
-			|| currentState.m_access != m_finalState.getAccess() )
+		if ( currentState.m_pipelineStage != convert( m_finalState.getPipelineStage() )
+			|| currentState.m_access != convert( m_finalState.getAccess() ) )
 		{
 			dependencies.push_back(
 			{

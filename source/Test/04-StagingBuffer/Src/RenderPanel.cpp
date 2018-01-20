@@ -225,8 +225,9 @@ namespace vkapp
 		m_pipelineLayout = m_device->createPipelineLayout();
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		m_program = m_device->createShaderProgram();
 
-		if ( wxGetApp().getRendererName() != wxT( "gl" ) )
+		if ( m_program->isSPIRVSupported() )
 		{
 			if ( !wxFileExists( shadersFolder / "vert.spv" )
 				|| !wxFileExists( shadersFolder / "frag.spv" ) )
@@ -234,7 +235,6 @@ namespace vkapp
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			m_program = m_device->createShaderProgram();
 			m_program->createModule( common::dumpBinaryFile( shadersFolder / "vert.spv" )
 				, renderer::ShaderStageFlag::eVertex );
 			m_program->createModule( common::dumpBinaryFile( shadersFolder / "frag.spv" )
@@ -249,7 +249,6 @@ namespace vkapp
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			m_program = m_device->createShaderProgram();
 			m_program->createModule( common::dumpTextFile( shadersFolder / "shader.vert" )
 				, renderer::ShaderStageFlag::eVertex );
 			m_program->createModule( common::dumpTextFile( shadersFolder / "shader.frag" )

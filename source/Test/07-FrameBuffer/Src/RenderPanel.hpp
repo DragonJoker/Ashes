@@ -229,12 +229,14 @@ namespace vkapp
 		renderer::PipelineLayoutPtr m_offscreenPipelineLayout;
 		renderer::PipelinePtr m_offscreenPipeline;
 		renderer::VertexBufferPtr< TexturedVertexData > m_offscreenVertexBuffer;
+		renderer::BufferPtr< uint16_t > m_offscreenIndexBuffer;
 		renderer::VertexLayoutPtr m_offscreenVertexLayout;
 		renderer::GeometryBuffersPtr m_offscreenGeometryBuffers;
 		renderer::DescriptorSetLayoutPtr m_offscreenDescriptorLayout;
 		renderer::DescriptorSetPoolPtr m_offscreenDescriptorPool;
 		renderer::DescriptorSetPtr m_offscreenDescriptorSet;
 		std::vector< TexturedVertexData > m_offscreenVertexData;
+		renderer::UInt16Array m_offscreenIndexData;
 
 		renderer::RenderPassPtr m_mainRenderPass;
 		renderer::ShaderProgramPtr m_mainProgram;

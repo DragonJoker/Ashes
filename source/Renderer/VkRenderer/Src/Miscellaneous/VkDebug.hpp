@@ -1397,8 +1397,8 @@ namespace vk_renderer
 //!@~french		Ecrit le contenu du dump dans un flux.
 //!@~english	Writes the trace content to a stream.
 #	define DEBUG_WRITE( file )\
-	std::ofstream l_file{ file };\
-	vk_renderer::Debug::write( l_file )
+	std::ofstream debugDumpFile{ file };\
+	vk_renderer::Debug::write( debugDumpFile )
 
 #else
 

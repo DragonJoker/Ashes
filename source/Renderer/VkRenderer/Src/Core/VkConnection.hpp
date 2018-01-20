@@ -32,6 +32,11 @@ namespace vk_renderer
 			, uint32_t deviceIndex
 			, renderer::WindowHandle && handle );
 		/**
+		*\brief
+		*	Destructeur, détruit la surface KHR.
+		*/
+		~Connection();
+		/**
 		*\~french
 		*\return
 		*	Les capacités de la surface de présentation.

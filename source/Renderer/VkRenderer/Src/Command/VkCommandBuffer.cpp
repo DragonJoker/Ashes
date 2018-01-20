@@ -174,14 +174,14 @@ namespace vk_renderer
 			subpass,                                            // subpass;
 			static_cast< FrameBuffer const & >( frameBuffer ),  // framebuffer;
 			occlusionQueryEnable,                               // occlusionQueryEnable;
-			queryFlags,                                         // queryFlags;
-			pipelineStatistics                                  // pipelineStatistics;
+			convert( queryFlags ),                              // queryFlags;
+			convert( pipelineStatistics )                       // pipelineStatistics;
 		};
 		VkCommandBufferBeginInfo cmdBufInfo
 		{
 			VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 			nullptr,
-			flags,                                       // flags
+			convert( flags ),                            // flags
 			&m_inheritanceInfo                           // pInheritanceInfo
 		};
 		DEBUG_DUMP( cmdBufInfo );
@@ -199,7 +199,7 @@ namespace vk_renderer
 
 	bool CommandBuffer::reset( renderer::CommandBufferResetFlags flags )const
 	{
-		auto res = ResetCommandBuffer( m_commandBuffer, flags );
+		auto res = ResetCommandBuffer( m_commandBuffer, convert( flags ) );
 		return checkError( res );
 	}
 

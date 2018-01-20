@@ -115,14 +115,23 @@ namespace vk_renderer
 
 	Renderer::~Renderer()
 	{
-		if ( m_msgCallback != VK_NULL_HANDLE )
-		{
-			m_destroyDebugReportCallback( m_instance, m_msgCallback, nullptr );
-		}
-
 		if ( m_instance != VK_NULL_HANDLE )
 		{
+			if ( m_msgCallback != VK_NULL_HANDLE )
+			{
+				m_destroyDebugReportCallback( m_instance, m_msgCallback, nullptr );
+				m_createDebugReportCallback = VK_NULL_HANDLE;
+				m_destroyDebugReportCallback = VK_NULL_HANDLE;
+				m_debugReportMessage = VK_NULL_HANDLE;
+				m_msgCallback = VK_NULL_HANDLE;
+			}
+
+			m_instanceLayersProperties.clear();
+			m_instanceExtensionNames.clear();
+			m_instanceLayerNames.clear();
+			m_gpus.clear();
 			DestroyInstance( m_instance, nullptr );
+			m_instance = VK_NULL_HANDLE;
 		}
 
 # if VKRENDERER_GLSL_TO_SPV
