@@ -49,8 +49,24 @@ namespace vk_renderer
 		*\brief
 		*	Lie les modules du programme.
 		*/
-		void link()override
+		inline void link()override
 		{
+		}
+		/**
+		*\brief
+		*	Dit si le SPIR-V est supporté.
+		*/
+		inline bool isSPIRVSupported()override
+		{
+			return true;
+		}
+		/**
+		*\brief
+		*	Dit si le GLSL est supporté.
+		*/
+		inline bool isGLSLSupported()override
+		{
+			return VKRENDERER_GLSL_TO_SPV != 0;
 		}
 		/**
 		*\~french
