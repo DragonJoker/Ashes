@@ -29,12 +29,39 @@ namespace vk_renderer
 		}
 	}
 
-	Texture::Texture( Device const & device )
+	Texture::Texture( Texture && rhs )
+		: renderer::Texture{ std::move( rhs ) }
+		, m_device{ rhs.m_device }
+		, m_image{ rhs.m_image }
+		, m_owner{ rhs.m_owner }
+		, m_currentLayout{ rhs.m_currentLayout }
+		, m_currentAccessMask{ rhs.m_currentAccessMask }
+	{
+		rhs.m_image = VK_NULL_HANDLE;
+	}
+
+	Texture & Texture::operator=( Texture && rhs )
+	{
+		renderer::Texture::operator=( std::move( rhs ) );
+
+		if ( &rhs != this )
+		{
+			m_image = rhs.m_image;
+			m_owner = rhs.m_owner;
+			m_currentLayout = rhs.m_currentLayout;
+			m_currentAccessMask = rhs.m_currentAccessMask;
+			rhs.m_image = VK_NULL_HANDLE;
+		}
+
+		return *this;
+	}
+
+	Texture::Texture( Device const & device, renderer::ImageLayout initialLayout )
 		: renderer::Texture{ device }
 		, m_device{ device }
 		, m_image{}
 		, m_owner{ true }
-		, m_currentLayout{ renderer::ImageLayout::eUndefined }
+		, m_currentLayout{ initialLayout }
 		, m_currentAccessMask{ 0 }
 	{
 	}
@@ -84,6 +111,18 @@ namespace vk_renderer
 		doSetImage2D( usageFlags
 			, tiling
 			, memoryFlags );
+	}
+
+	Texture::~Texture()
+	{
+		m_view.reset();
+
+		if ( m_owner )
+		{
+			DestroyImage( m_device
+				, m_image
+				, nullptr );
+		}
 	}
 
 	renderer::Texture::Mapped Texture::lock( uint32_t offset

@@ -156,7 +156,7 @@ namespace gl_renderer
 		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
 	}
 
-	renderer::TexturePtr Device::createTexture()const
+	renderer::TexturePtr Device::createTexture( renderer::ImageLayout initialLayout )const
 	{
 		return std::make_shared< Texture >( *this );
 	}

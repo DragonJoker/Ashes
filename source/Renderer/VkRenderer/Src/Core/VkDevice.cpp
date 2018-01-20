@@ -104,6 +104,15 @@ namespace vk_renderer
 			, renderer::CommandPoolCreateFlag::eResetCommandBuffer | renderer::CommandPoolCreateFlag::eTransient );
 	}
 
+	Device::~Device()
+	{
+		m_graphicsCommandPool.reset();
+		m_graphicsQueue.reset();
+		m_presentCommandPool.reset();
+		m_presentQueue.reset();
+		DestroyDevice( m_device, nullptr );
+	}
+
 	renderer::RenderPassPtr Device::createRenderPass( std::vector< renderer::PixelFormat > const & formats
 		, renderer::RenderSubpassPtrArray const & subpasses
 		, renderer::RenderPassState const & initialState
@@ -218,9 +227,9 @@ namespace vk_renderer
 		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
 	}
 
-	renderer::TexturePtr Device::createTexture()const
+	renderer::TexturePtr Device::createTexture( renderer::ImageLayout initialLayout )const
 	{
-		return std::make_shared< Texture >( *this );
+		return std::make_shared< Texture >( *this, initialLayout );
 	}
 
 	renderer::TextureViewPtr Device::createTextureView( renderer::Texture const & texture

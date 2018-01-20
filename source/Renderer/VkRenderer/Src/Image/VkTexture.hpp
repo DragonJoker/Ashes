@@ -37,13 +37,19 @@ namespace vk_renderer
 		: public renderer::Texture
 	{
 	public:
+		Texture( Texture const & ) = delete;
+		Texture & operator=( Texture const & ) = delete;
+		Texture( Texture && rhs );
+		Texture & operator=( Texture && rhs );
 		/**
 		*\brief
 		*	Constructeur.
 		*\param[in] device
 		*	Le périphérique logique.
+		*\param[in] initialLayout
+		*	Le layout initial de l'image.
 		*/
-		Texture( Device const & device );
+		Texture( Device const & device, renderer::ImageLayout initialLayout );
 		/**
 		*\brief
 		*	Constructeur.
@@ -66,6 +72,11 @@ namespace vk_renderer
 			, renderer::ImageUsageFlags usageFlags
 			, renderer::ImageTiling tiling
 			, renderer::MemoryPropertyFlags memoryFlags );
+		/**
+		*\brief
+		*	Destructeur.
+		*/
+		~Texture();
 		/**
 		*\~french
 		*\brief

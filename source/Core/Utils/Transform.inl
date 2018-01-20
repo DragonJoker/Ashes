@@ -33,11 +33,11 @@ namespace utils
 		, Vec3T< T > const & v )
 	{
 		T const a = angle;
-		T const c = cos( a );
-		T const s = sin( a );
+		T const c = T( std::cos( a ) );
+		T const s = T( std::sin( a ) );
 
 		Vec3T< T > axis( normalize( v ) );
-		Vec3T< T > temp( ( T( 1 ) - c ) * axis );
+		Vec3T< T > temp( axis * ( T( 1 ) - c ) );
 
 		Mat4T< T > rotate{ noInit };
 		rotate[0][0] = c + temp[0] * axis[0];
@@ -97,8 +97,12 @@ namespace utils
 		result[0][0] = static_cast< T >( 1 ) / ( aspect * tanHalfFovy );
 		result[1][1] = static_cast< T >( 1 ) / ( tanHalfFovy );
 		result[2][3] = -static_cast< T >( 1 );
-		result[2][2] = -( zFar + zNear ) / ( zFar - zNear );
-		result[3][2] = -( static_cast< T >( 2 ) * zFar * zNear ) / ( zFar - zNear );
+		// [0, 1]
+		result[2][2] = zFar / ( zNear - zFar );
+		result[3][2] = -( zFar * zNear ) / ( zFar - zNear );
+		//// [-1, 1]
+		//result[2][2] = ( zFar + zNear ) / ( zFar - zNear );
+		//result[3][2] = -( static_cast< T >( 2 ) * zFar * zNear ) / ( zFar - zNear );
 
 		return result;
 	}
@@ -134,10 +138,14 @@ namespace utils
 		Mat4T< T > result{ 1 };
 		result[0][0] = static_cast< T >( 2 ) / ( right - left );
 		result[1][1] = static_cast< T >( 2 ) / ( top - bottom );
-		result[3][0] = - ( right + left ) / ( right - left );
-		result[3][1] = - ( top + bottom ) / ( top - bottom );
-		result[2][2] = - static_cast< T >( 2 ) / ( zFar - zNear );
-		result[3][2] = - ( zFar + zNear ) / ( zFar - zNear );
+		result[3][0] = -( right + left ) / ( right - left );
+		result[3][1] = -( top + bottom ) / ( top - bottom );
+		// [0, 1]
+		result[2][2] = -static_cast< T >( 1 ) / ( zFar - zNear );
+		result[3][2] = -zNear / ( zFar - zNear );
+		//// [-1, 1]
+		//result[2][2] = - static_cast< T >( 2 ) / ( zFar - zNear );
+		//result[3][2] = - ( zFar + zNear ) / ( zFar - zNear );
 
 		return result;
 	}
