@@ -29,6 +29,11 @@ namespace vk_renderer
 		PipelineLayout( Device const & device
 			, renderer::DescriptorSetLayout const * layout );
 		/**
+		*\brief
+		*	Destructeur.
+		*/
+		~PipelineLayout();
+		/**
 		*\~french
 		*\brief
 		*	Conversion implicite vers VkPipelineLayout.

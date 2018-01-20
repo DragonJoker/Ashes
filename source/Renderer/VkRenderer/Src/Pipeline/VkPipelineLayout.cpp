@@ -38,4 +38,11 @@ namespace vk_renderer
 			throw std::runtime_error{ "Pipeline layout creation failed: " + getLastError() };
 		}
 	}
+
+	PipelineLayout::~PipelineLayout()
+	{
+		DestroyPipelineLayout( m_device
+			, m_layout
+			, nullptr );
+	}
 }

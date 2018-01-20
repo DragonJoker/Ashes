@@ -24,6 +24,16 @@ namespace vk_renderer
 		doRetrievePresentationInfos();
 	}
 
+	Connection::~Connection()
+	{
+		if ( m_presentSurface != VK_NULL_HANDLE )
+		{
+			DestroySurfaceKHR( m_renderer
+				, m_presentSurface
+				, nullptr );
+		}
+	}
+
 #if RENDERLIB_WIN32
 
 	void Connection::doCreatePresentSurface()

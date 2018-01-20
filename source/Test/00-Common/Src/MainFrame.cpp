@@ -68,14 +68,17 @@ namespace common
 			, m_framesTimes.begin() + count
 			, std::chrono::microseconds{ 0 } ).count() / float( count );
 		m_frameIndex = ++m_frameIndex % FrameSamplesCount;
-		wxString title;
+		std::stringstream title;
 		auto ms = duration.count() / 1000.0f;
 		auto avgms = averageTime / 1000.0f;
-		title << wxT( " - (Instant) " ) << ms << wxT( " ms" );
-		title << wxT( " - " ) << ( 1000.0f / ms ) << " fps";
-		title << wxT( " - (Average) " ) << avgms << wxT( " ms" );
-		title << wxT( " - " ) << ( 1000.0f / avgms ) << " fps";
-		SetTitle( m_name + wxT( " (" ) + m_rendererName + wxT( ")" ) + title );
+#ifndef NDEBUG
+		title << " - Debug";
+#endif
+		title << " - (Instant) " << std::setw( 6 ) << std::setprecision( 4 ) << ms << " ms";
+		title << " - " << std::setw( 5 ) << int( 1000.0f / ms ) << " fps";
+		title << " - (Average) " << std::setw( 6 ) << std::setprecision( 4 ) << avgms << " ms";
+		title << " - " << std::setw( 5 ) << int( 1000.0f / avgms ) << " fps";
+		SetTitle( m_name + wxT( " (" ) + m_rendererName + wxT( ")" ) + wxString( title.str() ) );
 	}
 
 	wxBEGIN_EVENT_TABLE( MainFrame, wxFrame )

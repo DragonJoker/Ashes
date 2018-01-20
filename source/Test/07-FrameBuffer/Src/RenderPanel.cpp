@@ -74,6 +74,10 @@ namespace vkapp
 				}
 			}
 		}
+		, m_offscreenIndexData
+		{
+			0, 1, 2, 2, 1, 3
+		}
 		, m_mainVertexData
 		{
 			{
@@ -174,6 +178,7 @@ namespace vkapp
 			m_offscreenPipeline.reset();
 			m_offscreenPipelineLayout.reset();
 			m_offscreenProgram.reset();
+			m_offscreenIndexBuffer.reset();
 			m_offscreenVertexBuffer.reset();
 			m_offscreenGeometryBuffers.reset();
 			m_offscreenRenderPass.reset();
@@ -216,6 +221,7 @@ namespace vkapp
 		m_offscreenPipeline.reset();
 		m_offscreenPipelineLayout.reset();
 		m_offscreenProgram.reset();
+		m_offscreenIndexBuffer.reset();
 		m_offscreenVertexBuffer.reset();
 		m_offscreenGeometryBuffers.reset();
 		m_offscreenRenderPass.reset();
@@ -389,7 +395,7 @@ namespace vkapp
 		m_renderTarget = m_device->createTexture();
 		m_renderTarget->setImage( renderer::PixelFormat::eR8G8B8A8
 			, { size.GetWidth(), size.GetHeight() }
-		, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
+			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
 
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { size.GetWidth(), size.GetHeight() }
 			, { *m_renderTarget } );
@@ -397,22 +403,35 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
-		m_offscreenVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
-			, uint32_t( m_offscreenVertexData.size() )
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( *m_device, 0 );
 		m_offscreenVertexLayout->createAttribute< renderer::Vec4 >( 0u
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 		m_offscreenVertexLayout->createAttribute< renderer::Vec2 >( 1u
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+
+		m_offscreenVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
+			, uint32_t( m_offscreenVertexData.size() )
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_stagingBuffer->copyVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_offscreenVertexData
 			, *m_offscreenVertexBuffer
 			, renderer::PipelineStageFlag::eVertexInput );
+
+		m_offscreenIndexBuffer = renderer::makeBuffer< uint16_t >( *m_device
+			, uint32_t( m_offscreenIndexData.size() )
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
+		m_stagingBuffer->copyBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
+			, m_offscreenIndexData
+			, *m_offscreenIndexBuffer );
+
 		m_offscreenGeometryBuffers = m_device->createGeometryBuffers( *m_offscreenVertexBuffer
 			, 0u
-			, *m_offscreenVertexLayout );
+			, *m_offscreenVertexLayout
+			, m_offscreenIndexBuffer->getBuffer()
+			, 0u
+			, renderer::IndexType::eUInt16 );
 	}
 
 	void RenderPanel::doCreateOffscreenPipeline()
@@ -420,8 +439,9 @@ namespace vkapp
 		m_offscreenPipelineLayout = m_device->createPipelineLayout( *m_offscreenDescriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		m_offscreenProgram = m_device->createShaderProgram();
 
-		if ( wxGetApp().getRendererName() != wxT( "gl" ) )
+		if ( m_offscreenProgram->isSPIRVSupported() )
 		{
 			if ( !wxFileExists( shadersFolder / "offscreen_vert.spv" )
 				|| !wxFileExists( shadersFolder / "offscreen_frag.spv" ) )
@@ -429,7 +449,6 @@ namespace vkapp
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			m_offscreenProgram = m_device->createShaderProgram();
 			m_offscreenProgram->createModule( common::dumpBinaryFile( shadersFolder / "offscreen_vert.spv" )
 				, renderer::ShaderStageFlag::eVertex );
 			m_offscreenProgram->createModule( common::dumpBinaryFile( shadersFolder / "offscreen_frag.spv" )
@@ -444,7 +463,6 @@ namespace vkapp
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			m_offscreenProgram = m_device->createShaderProgram();
 			m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.vert" )
 				, renderer::ShaderStageFlag::eVertex );
 			m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.frag" )
@@ -456,7 +474,7 @@ namespace vkapp
 			, *m_offscreenProgram
 			, { *m_offscreenVertexLayout }
 			, *m_offscreenRenderPass
-			, renderer::PrimitiveTopology::eTriangleStrip );
+			, renderer::PrimitiveTopology::eTriangleList );
 		m_offscreenPipeline->multisampleState( renderer::MultisampleState{} );
 		m_offscreenPipeline->finish();
 	}
@@ -485,11 +503,11 @@ namespace vkapp
 		m_mainRenderPass = m_device->createRenderPass( formats
 			, subpasses
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-			, renderer::AccessFlag::eColourAttachmentWrite
-			, { renderer::ImageLayout::eColourAttachmentOptimal } }
+				, renderer::AccessFlag::eColourAttachmentWrite
+				, { renderer::ImageLayout::eColourAttachmentOptimal } }
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-			, renderer::AccessFlag::eColourAttachmentWrite
-			, { renderer::ImageLayout::eColourAttachmentOptimal } } );
+				, renderer::AccessFlag::eColourAttachmentWrite
+				, { renderer::ImageLayout::eColourAttachmentOptimal } } );
 	}
 
 	void RenderPanel::doPrepareOffscreenFrame()
@@ -521,7 +539,7 @@ namespace vkapp
 			commandBuffer.bindGeometryBuffers( *m_offscreenGeometryBuffers );
 			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSet
 				, *m_offscreenPipelineLayout );
-			commandBuffer.draw( 4u, 1u, 0u, 0u );
+			commandBuffer.drawIndexed( 6u, 1u, 0u, 0u, 0u );
 			commandBuffer.endRenderPass();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
@@ -540,19 +558,21 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainVertexBuffer()
 	{
-		m_mainVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
-			, uint32_t( m_mainVertexData.size() )
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( *m_device, 0 );
 		m_mainVertexLayout->createAttribute< renderer::Vec4 >( 0u
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 		m_mainVertexLayout->createAttribute< renderer::Vec2 >( 1u
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+
+		m_mainVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
+			, uint32_t( m_mainVertexData.size() )
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_stagingBuffer->copyVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_mainVertexData
 			, *m_mainVertexBuffer
 			, renderer::PipelineStageFlag::eVertexInput );
+
 		m_mainGeometryBuffers = m_device->createGeometryBuffers( *m_mainVertexBuffer
 			, 0u
 			, *m_mainVertexLayout );
@@ -563,8 +583,9 @@ namespace vkapp
 		m_mainPipelineLayout = m_device->createPipelineLayout( *m_mainDescriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		m_mainProgram = m_device->createShaderProgram();
 
-		if ( wxGetApp().getRendererName() != wxT( "gl" ) )
+		if ( m_mainProgram->isSPIRVSupported() )
 		{
 			if ( !wxFileExists( shadersFolder / "main_vert.spv" )
 				|| !wxFileExists( shadersFolder / "main_frag.spv" ) )
@@ -572,7 +593,6 @@ namespace vkapp
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			m_mainProgram = m_device->createShaderProgram();
 			m_mainProgram->createModule( common::dumpBinaryFile( shadersFolder / "main_vert.spv" )
 				, renderer::ShaderStageFlag::eVertex );
 			m_mainProgram->createModule( common::dumpBinaryFile( shadersFolder / "main_frag.spv" )
@@ -587,7 +607,6 @@ namespace vkapp
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			m_mainProgram = m_device->createShaderProgram();
 			m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.vert" )
 				, renderer::ShaderStageFlag::eVertex );
 			m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.frag" )

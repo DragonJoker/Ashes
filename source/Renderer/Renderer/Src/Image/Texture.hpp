@@ -44,6 +44,10 @@ namespace renderer
 		Texture( Device const & device );
 
 	public:
+		Texture( Texture const & ) = delete;
+		Texture & operator=( Texture const & ) = delete;
+		Texture( Texture && rhs );
+		Texture & operator=( Texture && rhs );
 		/**
 		*\~english
 		*\brief

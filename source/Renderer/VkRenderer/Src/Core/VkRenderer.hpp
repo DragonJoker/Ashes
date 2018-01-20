@@ -138,13 +138,13 @@ namespace vk_renderer
 	private:
 		VulkanLibrary m_library;
 		VkInstance m_instance{ VK_NULL_HANDLE };
-		std::vector< LayerProperties > m_instanceLayersProperties;
-		std::vector< char const * > m_instanceExtensionNames;
-		std::vector< char const * > m_instanceLayerNames;
-		std::vector< PhysicalDevicePtr > m_gpus;
 		PFN_vkCreateDebugReportCallbackEXT m_createDebugReportCallback{ VK_NULL_HANDLE };
 		PFN_vkDestroyDebugReportCallbackEXT m_destroyDebugReportCallback{ VK_NULL_HANDLE };
 		PFN_vkDebugReportMessageEXT m_debugReportMessage{ VK_NULL_HANDLE };
 		VkDebugReportCallbackEXT m_msgCallback{ VK_NULL_HANDLE };
+		std::vector< LayerProperties > m_instanceLayersProperties;
+		std::vector< char const * > m_instanceExtensionNames;
+		std::vector< char const * > m_instanceLayerNames;
+		std::vector< PhysicalDevicePtr > m_gpus;
 	};
 }

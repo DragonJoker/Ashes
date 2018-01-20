@@ -27,7 +27,7 @@ namespace vk_renderer
 		*\brief
 		*	Constructeur.
 		*\param[in] device
-		*	Le p�riph�rique logique.
+		*	Le périphérique logique.
 		*\~english
 		*\brief
 		*	Constructor.
@@ -41,9 +41,18 @@ namespace vk_renderer
 		/**
 		*\~french
 		*\brief
-		*	Cr�e un pool pour les descripteurs qui utiliseront ce layout.
+		*	Destructeur.
+		*\~english
+		*\brief
+		*	Destructor.
+		*/
+		~DescriptorSetLayout();
+		/**
+		*\~french
+		*\brief
+		*	Cr&e un pool pour les descripteurs qui utiliseront ce layout.
 		*\param[in] maxSets
-		*	Le nombre maximum de sets que le pool peut cr�er.
+		*	Le nombre maximum de sets que le pool peut cr&er.
 		*\return
 		*	Le pool créé.
 		*\~english

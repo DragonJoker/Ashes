@@ -105,7 +105,7 @@ namespace vk_renderer
 			VK_WHOLE_SIZE                                     // size
 		};
 		DEBUG_DUMP( convert( memoryBarrier ) );
-		m_currentAccessMask = dstAccess;
+		m_currentAccessMask = convert( dstAccess );
 		return memoryBarrier;
 	}
 }

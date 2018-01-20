@@ -9,6 +9,32 @@ See LICENSE file in root folder.
 
 namespace renderer
 {
+	Texture::Texture( Texture && rhs )
+		: m_device{ rhs.m_device }
+		, m_format{ rhs.m_format }
+		, m_type{ rhs.m_type }
+		, m_size{ rhs.m_size }
+		, m_layerCount{ rhs.m_layerCount }
+		, m_samples{ rhs.m_samples }
+		, m_view{ std::move( rhs.m_view ) }
+	{
+	}
+
+	Texture & Texture::operator=( Texture && rhs )
+	{
+		if ( &rhs != this )
+		{
+			m_format = rhs.m_format;
+			m_type = rhs.m_type;
+			m_size = rhs.m_size;
+			m_layerCount = rhs.m_layerCount;
+			m_samples = rhs.m_samples;
+			m_view = std::move( rhs.m_view );
+		}
+
+		return *this;
+	}
+
 	Texture::Texture( Device const & device )
 		: m_device{ device }
 	{
