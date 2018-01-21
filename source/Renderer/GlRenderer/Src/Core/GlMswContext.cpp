@@ -68,6 +68,7 @@ namespace gl_renderer
 			else
 			{
 				setCurrent();
+				glClipControl( GL_UPPER_LEFT, GL_ZERO_TO_ONE );
 				initialiseDebugFunctions();
 				wglSwapIntervalEXT( 0 );
 			}

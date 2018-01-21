@@ -149,63 +149,19 @@ namespace vkapp
 	void RenderPanel::doCreateTexture()
 	{
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-		if ( !wxFileExists( shadersFolder / "texture.png" ) )
-		{
-			throw std::runtime_error{ "Couldn't find truck texture." };
-		}
-
-		wxImage image{ shadersFolder / "texture.png", wxBITMAP_TYPE_PNG };
-
-		if ( image.IsOk() )
-		{
-			uint8_t * data = image.GetData();
-			auto dimensions = image.GetSize();
-			auto size = uint32_t( dimensions.x * sizeof( float ) );
-			renderer::ByteArray buffer( size * 4 );
-
-			if ( image.HasAlpha() )
-			{
-				uint8_t * alpha = image.GetData();
-				auto it = buffer.begin();
-
-				for ( uint32_t i{ 0u }; i < size; ++i )
-				{
-					*it++ = *data++;
-					*it++ = *data++;
-					*it++ = *data++;
-					*it++ = *alpha++;
-				}
-			}
-			else
-			{
-				auto it = buffer.begin();
-
-				for ( uint32_t i{ 0u }; i < size; ++i )
-				{
-					*it++ = *data++;
-					*it++ = *data++;
-					*it++ = *data++;
-					*it++ = 0xFF;
-				}
-			}
-
-			m_textureBuffer = renderer::makeBuffer< renderer::Vec4 >( *m_device
-				, image.GetSize().x
-				, renderer::BufferTarget::eUniformTexelBuffer | renderer::BufferTarget::eTransferDst
-				, renderer::MemoryPropertyFlag::eDeviceLocal );
-			m_textureView = m_device->createBufferView( m_textureBuffer->getBuffer()
-				, renderer::PixelFormat::eR8G8B8A8
-				, 0u
-				, buffer.size() );
-			m_stagingBuffer->copyBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
-				, buffer
-				, *m_textureBuffer );
-		}
-		else
-		{
-			throw std::runtime_error{ "Failed to load truck texture image" };
-		}
+		auto image = common::loadImage( shadersFolder / "texture.png" );
+		m_textureBuffer = renderer::makeBuffer< renderer::Vec4 >( *m_device
+			, image.size[0]
+			, renderer::BufferTarget::eUniformTexelBuffer | renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
+		image.data.resize( image.size[0] * 4 + 1 );
+		m_textureView = m_device->createBufferView( m_textureBuffer->getBuffer()
+			, image.format
+			, 0u
+			, image.data.size() );
+		m_stagingBuffer->copyBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
+			, image.data
+			, *m_textureBuffer );
 	}
 
 	void RenderPanel::doCreateDescriptorSet()

@@ -24,6 +24,7 @@
 #include <Pipeline/VertexLayout.hpp>
 #include <Pipeline/Viewport.hpp>
 #include <RenderPass/FrameBuffer.hpp>
+#include <RenderPass/RenderBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
@@ -47,6 +48,7 @@ namespace vkapp
 		}	Ids;
 
 		static int const TimerTimeMs = 10;
+		static renderer::PixelFormat const DepthFormat = renderer::PixelFormat::eD32F;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
@@ -238,7 +240,7 @@ namespace vkapp
 			, 2.0f * wRatio
 			, -2.0f * hRatio
 			, 2.0f * hRatio
-			, -10.0f
+			, 0.0f
 			, 10.0f );
 #else
 		auto width = float( size.x );
@@ -277,62 +279,17 @@ namespace vkapp
 	void RenderPanel::doCreateTexture()
 	{
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-		if ( !wxFileExists( shadersFolder / "texture.png" ) )
-		{
-			throw std::runtime_error{ "Couldn't find truck texture." };
-		}
-
-		wxImage image{ shadersFolder / "texture.png", wxBITMAP_TYPE_PNG };
-
-		if ( image.IsOk() )
-		{
-			uint8_t * data = image.GetData();
-			uint32_t size = image.GetSize().x * image.GetSize().y;
-			renderer::ByteArray buffer( size * 4 );
-
-			if ( image.HasAlpha() )
-			{
-				uint8_t * alpha = image.GetData();
-				auto it = buffer.begin();
-
-				for ( uint32_t i{ 0u }; i < size; ++i )
-				{
-					*it++ = *data++;
-					*it++ = *data++;
-					*it++ = *data++;
-					*it++ = *alpha++;
-				}
-			}
-			else
-			{
-				auto it = buffer.begin();
-
-				for ( uint32_t i{ 0u }; i < size; ++i )
-				{
-					*it++ = *data++;
-					*it++ = *data++;
-					*it++ = *data++;
-					*it++ = 0xFF;
-				}
-			}
-
-			m_texture = m_device->createTexture();
-			m_texture->setImage( renderer::PixelFormat::eR8G8B8A8
-				, { image.GetSize().x, image.GetSize().y } );
-			m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
-				, renderer::WrapMode::eClampToEdge
-				, renderer::WrapMode::eClampToEdge
-				, renderer::Filter::eLinear
-				, renderer::Filter::eLinear );
-			m_stagingBuffer->copyTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
-				, buffer
-				, *m_texture );
-		}
-		else
-		{
-			throw std::runtime_error{ "Failed to load truck texture image" };
-		}
+		auto image = common::loadImage( shadersFolder / "texture.png" );
+		m_texture = m_device->createTexture();
+		m_texture->setImage( image.format, image.size );
+		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
+			, renderer::WrapMode::eClampToEdge
+			, renderer::WrapMode::eClampToEdge
+			, renderer::Filter::eLinear
+			, renderer::Filter::eLinear );
+		m_stagingBuffer->copyTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+			, image.data
+			, *m_texture );
 	}
 
 	void RenderPanel::doCreateUniformBuffer()
@@ -379,7 +336,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenRenderPass()
 	{
-		std::vector< renderer::PixelFormat > formats{ { renderer::PixelFormat::eR8G8B8A8, renderer::PixelFormat::eD24S8 } };
+		std::vector< renderer::PixelFormat > formats{ { renderer::PixelFormat::eR8G8B8A8, DepthFormat } };
 		renderer::RenderSubpassPtrArray subpasses;
 		subpasses.emplace_back( m_device->createRenderSubpass( formats
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
@@ -401,7 +358,7 @@ namespace vkapp
 			, { size.GetWidth(), size.GetHeight() }
 			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
 		m_renderTargetDepth = m_device->createTexture();
-		m_renderTargetDepth->setImage( renderer::PixelFormat::eD24S8
+		m_renderTargetDepth->setImage( DepthFormat
 			, { size.GetWidth(), size.GetHeight() }
 			, renderer::ImageUsageFlag::eDepthStencilAttachment );
 
@@ -428,6 +385,7 @@ namespace vkapp
 
 		m_offscreenIndexBuffer = renderer::makeBuffer< uint16_t >( *m_device
 			, uint32_t( m_offscreenIndexData.size() )
+
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_stagingBuffer->copyBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
@@ -482,7 +440,8 @@ namespace vkapp
 			, *m_offscreenProgram
 			, { *m_offscreenVertexLayout }
 			, *m_offscreenRenderPass
-			, renderer::PrimitiveTopology::eTriangleList );
+			, renderer::PrimitiveTopology::eTriangleList
+			, renderer::RasterisationState{ 0, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone } );
 		m_offscreenPipeline->multisampleState( renderer::MultisampleState{} );
 		m_offscreenPipeline->depthStencilState( renderer::DepthStencilState{} );
 		m_offscreenPipeline->finish();
@@ -533,8 +492,8 @@ namespace vkapp
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
 				, m_renderTargetColour->makeColourAttachment() );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eColourAttachmentOutput
+			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
+				, renderer::PipelineStageFlag::eEarlyFragmentTests
 				, m_renderTargetDepth->makeDepthStencilAttachment() );
 			commandBuffer.beginRenderPass( *m_offscreenRenderPass
 				, frameBuffer
@@ -657,7 +616,7 @@ namespace vkapp
 				m_swapChain->preRenderCommands( i, commandBuffer );
 				commandBuffer.beginRenderPass( *m_mainRenderPass
 					, frameBuffer
-					, { renderer::ClearValue{ m_swapChain->getClearColour() } }
+					, { renderer::ClearValue{ { 1.0, 0.0, 0.0, 1.0 } } }
 					, renderer::SubpassContents::eInline );
 				commandBuffer.bindPipeline( *m_mainPipeline );
 				commandBuffer.setViewport( { uint32_t( dimensions.x )
@@ -689,19 +648,24 @@ namespace vkapp
 
 	void RenderPanel::doUpdate()
 	{
-		static renderer::Mat4 originalTransform = []()
+		static renderer::Mat4 const originalTranslate = []()
 		{
 			renderer::Mat4 result;
-			utils::translate( result, { 0, 0, 5 } );
+			result = utils::translate( result, { 0, 0, -5 } );
+			return result;
+		}();
+		static renderer::Mat4 const originalRotate = []()
+		{
+			renderer::Mat4 result;
 			result = utils::rotate( result
 				, float( utils::DegreeToRadian * 45.0 )
 				, { 0, 0, 1 } );
 			return result;
-		}( );
+		}();
 		m_rotate = utils::rotate( m_rotate
 			, float( utils::DegreeToRadian )
 			, { 0, 1, 0 } );
-		m_objectUbo->getData( 0 ) = m_rotate * originalTransform;
+		m_objectUbo->getData( 0 ) = originalTranslate * m_rotate * originalRotate;
 		m_stagingBuffer->copyUniformData( *m_updateCommandBuffer
 			, m_objectUbo->getDatas()
 			, *m_objectUbo

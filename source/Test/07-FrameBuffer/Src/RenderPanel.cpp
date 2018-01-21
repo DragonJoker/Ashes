@@ -229,62 +229,17 @@ namespace vkapp
 	void RenderPanel::doCreateTexture()
 	{
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-		if ( !wxFileExists( shadersFolder / "texture.png" ) )
-		{
-			throw std::runtime_error{ "Couldn't find truck texture." };
-		}
-
-		wxImage image{ shadersFolder / "texture.png", wxBITMAP_TYPE_PNG };
-
-		if ( image.IsOk() )
-		{
-			uint8_t * data = image.GetData();
-			uint32_t size = image.GetSize().x * image.GetSize().y;
-			renderer::ByteArray buffer( size * 4 );
-
-			if ( image.HasAlpha() )
-			{
-				uint8_t * alpha = image.GetData();
-				auto it = buffer.begin();
-
-				for ( uint32_t i{ 0u }; i < size; ++i )
-				{
-					*it++ = *data++;
-					*it++ = *data++;
-					*it++ = *data++;
-					*it++ = *alpha++;
-				}
-			}
-			else
-			{
-				auto it = buffer.begin();
-
-				for ( uint32_t i{ 0u }; i < size; ++i )
-				{
-					*it++ = *data++;
-					*it++ = *data++;
-					*it++ = *data++;
-					*it++ = 0xFF;
-				}
-			}
-
-			m_texture = m_device->createTexture();
-			m_texture->setImage( renderer::PixelFormat::eR8G8B8A8
-				, { image.GetSize().x, image.GetSize().y } );
-			m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
-				, renderer::WrapMode::eClampToEdge
-				, renderer::WrapMode::eClampToEdge
-				, renderer::Filter::eLinear
-				, renderer::Filter::eLinear );
-			m_stagingBuffer->copyTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
-				, buffer
-				, *m_texture );
-		}
-		else
-		{
-			throw std::runtime_error{ "Failed to load truck texture image" };
-		}
+		auto image = common::loadImage( shadersFolder / "texture.png" );
+		m_texture = m_device->createTexture();
+		m_texture->setImage( image.format, image.size );
+		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
+			, renderer::WrapMode::eClampToEdge
+			, renderer::WrapMode::eClampToEdge
+			, renderer::Filter::eLinear
+			, renderer::Filter::eLinear );
+		m_stagingBuffer->copyTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+			, image.data
+			, *m_texture );
 	}
 
 	void RenderPanel::doCreateUniformBuffer()

@@ -14,6 +14,43 @@ namespace common
 	/**
 	*\~english
 	*\brief
+	*	An image data.
+	*\~french
+	*\brief
+	*	Les données d'une image.
+	*/
+	struct ImageData
+	{
+		//!\~english	The image dimensions.
+		//!\~french		Les dimensions de l'image.
+		renderer::UIVec2 size;
+		//!\~english	The image buffer.
+		//!\~french		Le tampon de l'image.
+		renderer::ByteArray data;
+		//!\~english	The image pixel format.
+		//!\~french		Les format des pixels de l'image.
+		renderer::PixelFormat format;
+	};
+	/**
+	*\~english
+	*\brief
+	*	Loads an image.
+	*\param[in] path
+	*	The image gile path.
+	*\return
+	*	The image data.
+	*\~french
+	*\brief
+	*	Charge une image.
+	*\param[in] path
+	*	Le chemin d'accès à l'image.
+	*\return
+	*	Les données de l'image.
+	*/
+	ImageData loadImage( std::string const & path );
+	/**
+	*\~english
+	*\brief
 	*	List all files in a directory, recursively or not.
 	*\param[in] folderPath
 	*	The directory path.

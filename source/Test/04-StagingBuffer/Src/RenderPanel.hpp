@@ -107,15 +107,6 @@ namespace vkapp
 		/**
 		*\~french
 		*\brief
-		*	Copie les données depuis le tampon intermédiaire vers le tampon de sommets.
-		*\~english
-		*\brief
-		*	Copies data from the staging buffer to the vertex buffer.
-		*/
-		void doCopyVertexData();
-		/**
-		*\~french
-		*\brief
 		*	Crée le pipeline de rendu.
 		*\~english
 		*\brief
@@ -138,7 +129,7 @@ namespace vkapp
 		*\param[in] backBuffer
 		*	The image on which the frame will be rendered.
 		*/
-		bool doPrepareFrames();
+		void doPrepareFrames();
 		/**
 		*\~french
 		*\brief
@@ -191,7 +182,7 @@ namespace vkapp
 		renderer::VertexBufferPtr< VertexData > m_vertexBuffer;
 		renderer::GeometryBuffersPtr m_geometryBuffers;
 		renderer::StagingBufferPtr m_stagingBuffer;
-		std::array< VertexData, 4 > m_vertexData;
+		std::vector< VertexData > m_vertexData;
 		std::vector< renderer::FrameBufferPtr > m_frameBuffers;
 		renderer::CommandBufferPtrArray m_commandBuffers;
 		renderer::SignalConnection< renderer::SwapChain::OnReset > m_swapChainReset;

@@ -6,26 +6,27 @@ See LICENSE file in root folder.
 
 #include "Buffer/GlBuffer.hpp"
 #include "Buffer/GlBufferView.hpp"
+#include "Buffer/GlGeometryBuffers.hpp"
+#include "Buffer/GlUniformBuffer.hpp"
 #include "Command/GlCommandPool.hpp"
+#include "Command/GlQueue.hpp"
 #include "Core/GlConnection.hpp"
 #include "Core/GlContext.hpp"
-#include "Descriptor/GlDescriptorSetLayout.hpp"
-#include "Buffer/GlGeometryBuffers.hpp"
-#include "Pipeline/GlPipeline.hpp"
-#include "Pipeline/GlPipelineLayout.hpp"
-#include "Miscellaneous/GlQueryPool.hpp"
-#include "Command/GlQueue.hpp"
 #include "Core/GlRenderer.hpp"
-#include "RenderPass/GlRenderPass.hpp"
-#include "RenderPass/GlRenderSubpass.hpp"
-#include "Image/GlSampler.hpp"
-#include "Sync/GlSemaphore.hpp"
-#include "Shader/GlShaderProgram.hpp"
 #include "Core/GlSwapChain.hpp"
+#include "Descriptor/GlDescriptorSetLayout.hpp"
+#include "Image/GlSampler.hpp"
 #include "Image/GlTexture.hpp"
 #include "Image/GlTextureView.hpp"
-#include "Buffer/GlUniformBuffer.hpp"
+#include "Miscellaneous/GlQueryPool.hpp"
+#include "Pipeline/GlPipeline.hpp"
+#include "Pipeline/GlPipelineLayout.hpp"
 #include "Pipeline/GlVertexLayout.hpp"
+#include "RenderPass/GlRenderBuffer.hpp"
+#include "RenderPass/GlRenderPass.hpp"
+#include "RenderPass/GlRenderSubpass.hpp"
+#include "Shader/GlShaderProgram.hpp"
+#include "Sync/GlSemaphore.hpp"
 
 #include <iostream>
 
@@ -159,6 +160,12 @@ namespace gl_renderer
 	renderer::TexturePtr Device::createTexture( renderer::ImageLayout initialLayout )const
 	{
 		return std::make_shared< Texture >( *this );
+	}
+
+	renderer::RenderBufferPtr Device::createRenderBuffer( renderer::PixelFormat format
+		, renderer::UIVec2 const & size )
+	{
+		return std::make_unique< RenderBuffer >( *this, format, size );
 	}
 
 	renderer::TextureViewPtr Device::createTextureView( renderer::Texture const & texture
@@ -303,8 +310,8 @@ namespace gl_renderer
 		result[0][0] = float( 1 ) / ( aspect * tanHalfFovy );
 		result[1][1] = float( 1 ) / ( tanHalfFovy );
 		result[2][3] = -float( 1 );
-		result[2][2] = -( zFar + zNear ) / ( zFar - zNear );
-		result[3][2] = -( float( 2 ) * zFar * zNear ) / ( zFar - zNear );
+		result[2][2] = zFar / ( zNear - zFar );
+		result[3][2] = -( zFar * zNear ) / ( zFar - zNear );
 
 		return result;
 	}
@@ -316,13 +323,13 @@ namespace gl_renderer
 		, float zNear
 		, float zFar )
 	{
-		renderer::Mat4 result( 1 );
+		renderer::Mat4 result{ 1 };
 		result[0][0] = float( 2 ) / ( right - left );
 		result[1][1] = float( 2 ) / ( top - bottom );
 		result[3][0] = -( right + left ) / ( right - left );
 		result[3][1] = -( top + bottom ) / ( top - bottom );
-		result[2][2] = -float( 2 ) / ( zFar - zNear );
-		result[3][2] = -( zFar + zNear ) / ( zFar - zNear );
+		result[2][2] = -float( 1 ) / ( zFar - zNear );
+		result[3][2] = -zNear / ( zFar - zNear );
 
 		return result;
 	}

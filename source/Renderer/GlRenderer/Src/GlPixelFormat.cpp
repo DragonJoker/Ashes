@@ -65,7 +65,11 @@ namespace gl_renderer
 			return GL_RGB;
 
 		case renderer::PixelFormat::eR8G8B8A8:
+#if defined( _WIN32 )
 			return GL_ABGR_EXT;
+#else
+			return GL_RGBA;
+#endif
 
 		case renderer::PixelFormat::eB8G8R8A8:
 			return GL_BGRA;
