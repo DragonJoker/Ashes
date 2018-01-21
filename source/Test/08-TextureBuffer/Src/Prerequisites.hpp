@@ -18,7 +18,7 @@ namespace vkapp
 		renderer::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "09-TextureBuffer" );
+	static wxString const AppName = wxT( "08-TextureBuffer" );
 
 	class RenderPanel;
 	class MainFrame;

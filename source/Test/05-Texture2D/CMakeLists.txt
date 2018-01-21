@@ -1,4 +1,4 @@
-project( 07-FrameBuffer )
+project( 05-Texture2D )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )

@@ -1,4 +1,4 @@
-project( 08-Texture1D )
+project( 07-Texture1D )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
