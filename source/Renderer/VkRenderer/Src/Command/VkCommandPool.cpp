@@ -23,7 +23,7 @@ namespace vk_renderer
 			queueFamilyIndex                          // queueFamilyIndex
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = CreateCommandPool( m_device
+		auto res = vk::CreateCommandPool( m_device
 			, &createInfo
 			, nullptr
 			, &m_commandPool );
@@ -36,7 +36,7 @@ namespace vk_renderer
 
 	CommandPool::~CommandPool()
 	{
-		DestroyCommandPool( m_device, m_commandPool, nullptr );
+		vk::DestroyCommandPool( m_device, m_commandPool, nullptr );
 	}
 
 	renderer::CommandBufferPtr CommandPool::createCommandBuffer( bool primary )const

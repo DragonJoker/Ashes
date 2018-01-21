@@ -28,7 +28,7 @@ namespace vk_renderer
 	{
 		if ( m_presentSurface != VK_NULL_HANDLE )
 		{
-			DestroySurfaceKHR( m_renderer
+			vk::DestroySurfaceKHR( m_renderer
 				, m_presentSurface
 				, nullptr );
 		}
@@ -47,7 +47,7 @@ namespace vk_renderer
 			m_handle.getInternal< renderer::IMswWindowHandle >().getHwnd(),
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = CreateWin32SurfaceKHR( m_renderer
+		auto res = vk::CreateWin32SurfaceKHR( m_renderer
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
@@ -110,7 +110,7 @@ namespace vk_renderer
 	{
 		// On r�cup�re les capacit�s de la surface.
 		VkSurfaceCapabilitiesKHR caps;
-		auto res = GetPhysicalDeviceSurfaceCapabilitiesKHR( m_gpu
+		auto res = vk::GetPhysicalDeviceSurfaceCapabilitiesKHR( m_gpu
 			, m_presentSurface
 			, &caps );
 
@@ -132,7 +132,7 @@ namespace vk_renderer
 
 		for ( auto & present : supportsPresent )
 		{
-			GetPhysicalDeviceSurfaceSupportKHR( m_gpu
+			vk::GetPhysicalDeviceSurfaceSupportKHR( m_gpu
 				, i
 				, m_presentSurface
 				, &present );

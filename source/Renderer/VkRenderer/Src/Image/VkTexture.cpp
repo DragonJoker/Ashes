@@ -1,4 +1,4 @@
-#include "Image/VkTexture.hpp"
+﻿#include "Image/VkTexture.hpp"
 
 #include "Command/VkCommandBuffer.hpp"
 #include "Core/VkDevice.hpp"
@@ -119,7 +119,7 @@ namespace vk_renderer
 
 		if ( m_owner )
 		{
-			DestroyImage( m_device
+			vk::DestroyImage( m_device
 				, m_image
 				, nullptr );
 		}
@@ -133,7 +133,7 @@ namespace vk_renderer
 		VkImageSubresource subResource{};
 		subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		VkSubresourceLayout subResourceLayout;
-		GetImageSubresourceLayout( m_device, m_image, &subResource, &subResourceLayout );
+		vk::GetImageSubresourceLayout( m_device, m_image, &subResource, &subResourceLayout );
 
 		mapped.data = m_storage->lock( offset
 			, size
@@ -183,10 +183,10 @@ namespace vk_renderer
 			VK_SHARING_MODE_EXCLUSIVE,                            // sharingMode
 			0,                                                    // queueFamilyIndexCount
 			nullptr,                                              // pQueueFamilyIndices
-			VK_IMAGE_LAYOUT_UNDEFINED                             // initialLayout
+			convert( m_currentLayout )                            // initialLayout
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = CreateImage( m_device
+		auto res = vk::CreateImage( m_device
 			, &createInfo
 			, nullptr
 			, &m_image );
@@ -199,7 +199,7 @@ namespace vk_renderer
 		m_storage = std::make_unique< ImageStorage >( m_device
 			, m_image
 			, convert( memoryFlags ) );
-		res = BindImageMemory( m_device
+		res = vk::BindImageMemory( m_device
 			, m_image
 			, *m_storage
 			, 0 );
@@ -235,10 +235,10 @@ namespace vk_renderer
 			VK_SHARING_MODE_EXCLUSIVE,                            // sharingMode
 			0,                                                    // queueFamilyIndexCount
 			nullptr,                                              // pQueueFamilyIndices
-			VK_IMAGE_LAYOUT_UNDEFINED                             // initialLayout
+			convert( m_currentLayout )                            // initialLayout
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = CreateImage( m_device
+		auto res = vk::CreateImage( m_device
 			, &createInfo
 			, nullptr
 			, &m_image );
@@ -251,7 +251,7 @@ namespace vk_renderer
 		m_storage = std::make_unique< ImageStorage >( m_device
 			, m_image
 			, convert( memoryFlags ) );
-		res = BindImageMemory( m_device
+		res = vk::BindImageMemory( m_device
 			, m_image
 			, *m_storage
 			, 0 );
@@ -287,10 +287,10 @@ namespace vk_renderer
 			VK_SHARING_MODE_EXCLUSIVE,                            // sharingMode
 			0,                                                    // queueFamilyIndexCount
 			nullptr,                                              // pQueueFamilyIndices
-			VK_IMAGE_LAYOUT_UNDEFINED                             // initialLayout
+			convert( m_currentLayout )                            // initialLayout
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = CreateImage( m_device
+		auto res = vk::CreateImage( m_device
 			, &createInfo
 			, nullptr
 			, &m_image );
@@ -303,7 +303,7 @@ namespace vk_renderer
 		m_storage = std::make_unique< ImageStorage >( m_device
 			, m_image
 			, convert( memoryFlags ) );
-		res = BindImageMemory( m_device
+		res = vk::BindImageMemory( m_device
 			, m_image
 			, *m_storage
 			, 0 );
@@ -367,7 +367,7 @@ namespace vk_renderer
 	{
 		return doMakeLayoutTransition( renderer::ImageLayout::eDepthStencilAttachmentOptimal
 			, m_device.getGraphicsQueue().getFamilyIndex()
-			, renderer::AccessFlag::eColourAttachmentWrite );
+			, renderer::AccessFlag::eDepthStencilAttachmentWrite );
 	}
 
 	renderer::ImageMemoryBarrier Texture::makePresentSource()const
@@ -381,7 +381,7 @@ namespace vk_renderer
 		, uint32_t queueFamily
 		, renderer::AccessFlags dstAccessMask )const
 	{
-		// On fait passer le layout de l'image � un autre layout, via une barri�re.
+		// On fait passer le layout de l'image à un autre layout, via une barrière.
 		renderer::ImageMemoryBarrier transitionBarrier
 		{
 			m_currentAccessMask,                     // srcAccessMask

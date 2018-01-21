@@ -3,32 +3,33 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
+#include <Buffer/GeometryBuffers.hpp>
+#include <Buffer/StagingBuffer.hpp>
+#include <Buffer/UniformBuffer.hpp>
+#include <Buffer/VertexBuffer.hpp>
+#include <Command/Queue.hpp>
 #include <Core/BackBuffer.hpp>
 #include <Core/Connection.hpp>
+#include <Core/Device.hpp>
+#include <Core/Renderer.hpp>
+#include <Core/SwapChain.hpp>
 #include <Descriptor/DescriptorSet.hpp>
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
-#include <Core/Device.hpp>
-#include <RenderPass/FrameBuffer.hpp>
-#include <Buffer/GeometryBuffers.hpp>
-#include <Sync/ImageMemoryBarrier.hpp>
+#include <Image/Texture.hpp>
+#include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/MultisampleState.hpp>
-#include <Command/Queue.hpp>
+#include <Pipeline/Scissor.hpp>
+#include <Pipeline/VertexLayout.hpp>
+#include <Pipeline/Viewport.hpp>
+#include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Core/Renderer.hpp>
-#include <Pipeline/Scissor.hpp>
 #include <Shader/ShaderProgram.hpp>
-#include <Buffer/StagingBuffer.hpp>
-#include <Core/SwapChain.hpp>
-#include <Image/Texture.hpp>
-#include <Buffer/UniformBuffer.hpp>
-#include <Buffer/VertexBuffer.hpp>
-#include <Pipeline/VertexLayout.hpp>
-#include <Pipeline/Viewport.hpp>
+#include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Utils/Transform.hpp>
 
@@ -56,48 +57,32 @@ namespace vkapp
 		, m_offscreenVertexData
 		{
 			{
-				{
-					{ -200.0f, -200.0f, 0.0f, 1.0f },
-					{ -0.1f, -0.1f },
-				},
-				{
-					{ -200.0f, 200.0f, 0.0f, 1.0f },
-					{ -0.1f, 1.1f },
-				},
-				{
-					{ 200.0f, -200.0f, 0.0f, 1.0f },
-					{ 1.1f, -0.1f },
-				},
-				{
-					{ 200.0f, 200.0f, 0.0f, 1.0f },
-					{ 1.1f, 1.1f },
-				}
-			}
+				{ -200.0f, -200.0f, 0.0f, 1.0f },
+				{ -0.1f, -0.1f },
+			},
+			{
+				{ -200.0f, 200.0f, 0.0f, 1.0f },
+				{ -0.1f, 1.1f },
+			},
+			{
+				{ 200.0f, -200.0f, 0.0f, 1.0f },
+				{ 1.1f, -0.1f },
+			},
+			{
+				{ 200.0f, 200.0f, 0.0f, 1.0f },
+				{ 1.1f, 1.1f },
+			},
 		}
 		, m_offscreenIndexData
 		{
-			0, 1, 2, 2, 1, 3
+			0, 1, 2, 2, 1, 3,
 		}
 		, m_mainVertexData
 		{
-			{
-				{
-					{ -1.0f, -1.0f, 0.0f, 1.0f },
-					{ 0.0f, 0.0f },
-				},
-				{
-					{ -1.0f, 1.0f, 0.0f, 1.0f },
-					{ 0.0f, 1.0f },
-				},
-				{
-					{ 1.0f, -1.0f, 0.0f, 1.0f },
-					{ 1.0f, 0.0f },
-				},
-				{
-					{ 1.0f, 1.0f, 0.0f, 1.0f },
-					{ 1.0f, 1.0f },
-				}
-			}
+			{ { -1.0, -1.0, 0.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, +1.0, 0.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
 		}
 	{
 		try
@@ -148,55 +133,26 @@ namespace vkapp
 		}
 		catch ( std::exception & )
 		{
-			delete m_timer;
-
-			if ( m_device )
-			{
-				m_device->waitIdle();
-			}
-
-			m_commandBuffers.clear();
-			m_frameBuffers.clear();
-			m_sampler.reset();
-			m_texture.reset();
-			m_stagingBuffer.reset();
-
-			m_uniformBuffer.reset();
-			m_mainDescriptorSet.reset();
-			m_mainDescriptorPool.reset();
-			m_mainDescriptorLayout.reset();
-			m_mainPipeline.reset();
-			m_mainPipelineLayout.reset();
-			m_mainProgram.reset();
-			m_mainVertexBuffer.reset();
-			m_mainGeometryBuffers.reset();
-			m_mainRenderPass.reset();
-
-			m_offscreenDescriptorSet.reset();
-			m_offscreenDescriptorPool.reset();
-			m_offscreenDescriptorLayout.reset();
-			m_offscreenPipeline.reset();
-			m_offscreenPipelineLayout.reset();
-			m_offscreenProgram.reset();
-			m_offscreenIndexBuffer.reset();
-			m_offscreenVertexBuffer.reset();
-			m_offscreenGeometryBuffers.reset();
-			m_offscreenRenderPass.reset();
-
-			m_frameBuffer.reset();
-			m_renderTarget.reset();
-
-			m_swapChain.reset();
-			m_device.reset();
-
+			doCleanup();
 			throw;
 		}
 	}
 
 	RenderPanel::~RenderPanel()
 	{
+		doCleanup();
+	}
+
+	void RenderPanel::doCleanup()
+	{
 		delete m_timer;
-		m_device->waitIdle();
+
+		if ( m_device )
+		{
+			m_device->waitIdle();
+		}
+
+		m_updateCommandBuffer.reset();
 		m_commandBuffer.reset();
 		m_commandBuffers.clear();
 		m_frameBuffers.clear();
@@ -204,7 +160,7 @@ namespace vkapp
 		m_texture.reset();
 		m_stagingBuffer.reset();
 
-		m_uniformBuffer.reset();
+		m_matrixUbo.reset();
 		m_mainDescriptorSet.reset();
 		m_mainDescriptorPool.reset();
 		m_mainDescriptorLayout.reset();
@@ -227,10 +183,27 @@ namespace vkapp
 		m_offscreenRenderPass.reset();
 
 		m_frameBuffer.reset();
-		m_renderTarget.reset();
+		m_renderTargetColour.reset();
 
 		m_swapChain.reset();
 		m_device.reset();
+	}
+
+	void RenderPanel::doUpdateProjection()
+	{
+		auto size = m_swapChain->getDimensions();
+		float halfWidth = static_cast< float >( size.x ) * 0.5f;
+		float halfHeight = static_cast< float >( size.y ) * 0.5f;
+		m_matrixUbo->getData( 0u ) = m_device->ortho( -halfWidth
+			, halfWidth
+			, -halfHeight
+			, halfHeight
+			, -1.0f
+			, 1.0f );
+		m_stagingBuffer->copyUniformData( *m_updateCommandBuffer
+			, m_matrixUbo->getDatas()
+			, *m_matrixUbo
+			, renderer::PipelineStageFlag::eVertexShader );
 	}
 
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
@@ -245,24 +218,12 @@ namespace vkapp
 		m_swapChain->setClearColour( { 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
-			auto size = m_swapChain->getDimensions();
-			float halfWidth = static_cast< float >( size.x ) * 0.5f;
-			float halfHeight = static_cast< float >( size.y ) * 0.5f;
-			m_uniformBuffer->getData( 0u ) = utils::ortho( -halfWidth
-				, halfWidth
-				, -halfHeight
-				, halfHeight
-				, -1.0f
-				, 1.0f );
-			m_stagingBuffer->copyUniformData( m_swapChain->getDefaultResources().getCommandBuffer()
-				, m_uniformBuffer->getDatas()
-				, *m_uniformBuffer
-				, renderer::PipelineStageFlag::eVertexShader );
 			doCreateFrameBuffer();
 			doPrepareOffscreenFrame();
 			doCreateMainDescriptorSet();
 			doPrepareMainFrames();
 		} );
+		m_updateCommandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
 	}
 
 	void RenderPanel::doCreateTexture()
@@ -328,23 +289,10 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_uniformBuffer = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( *m_device
+		m_matrixUbo = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( *m_device
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		auto size = m_swapChain->getDimensions();
-		float halfWidth = static_cast< float >( size.x ) * 0.5f;
-		float halfHeight = static_cast< float >( size.y ) * 0.5f;
-		m_uniformBuffer->getData( 0u ) = utils::ortho( -halfWidth
-			, halfWidth
-			, -halfHeight
-			, halfHeight
-			, -1.0f
-			, 1.0f );
-		m_stagingBuffer->copyUniformData( m_swapChain->getDefaultResources().getCommandBuffer()
-			, m_uniformBuffer->getDatas()
-			, *m_uniformBuffer
-			, renderer::PipelineStageFlag::eVertexShader );
 	}
 
 	void RenderPanel::doCreateStagingBuffer()
@@ -359,7 +307,7 @@ namespace vkapp
 		std::vector< renderer::DescriptorSetLayoutBinding > bindings
 		{
 			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
-			renderer::DescriptorSetLayoutBinding{ 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex }
+			renderer::DescriptorSetLayoutBinding{ 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex },
 		};
 		m_offscreenDescriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
 		m_offscreenDescriptorPool = m_offscreenDescriptorLayout->createPool( 1u );
@@ -368,7 +316,7 @@ namespace vkapp
 			, m_texture->getView()
 			, *m_sampler );
 		m_offscreenDescriptorSet->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
-			, *m_uniformBuffer
+			, *m_matrixUbo
 			, 0u );
 		m_offscreenDescriptorSet->update();
 	}
@@ -392,13 +340,13 @@ namespace vkapp
 	void RenderPanel::doCreateFrameBuffer()
 	{
 		auto size = GetClientSize();
-		m_renderTarget = m_device->createTexture();
-		m_renderTarget->setImage( renderer::PixelFormat::eR8G8B8A8
+		m_renderTargetColour = m_device->createTexture();
+		m_renderTargetColour->setImage( renderer::PixelFormat::eR8G8B8A8
 			, { size.GetWidth(), size.GetHeight() }
 			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
 
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { size.GetWidth(), size.GetHeight() }
-			, { *m_renderTarget } );
+			, { *m_renderTargetColour } );
 	}
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()
@@ -474,8 +422,10 @@ namespace vkapp
 			, *m_offscreenProgram
 			, { *m_offscreenVertexLayout }
 			, *m_offscreenRenderPass
-			, renderer::PrimitiveTopology::eTriangleList );
+			, renderer::PrimitiveTopology::eTriangleList
+			, renderer::RasterisationState{ 0, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone } );
 		m_offscreenPipeline->multisampleState( renderer::MultisampleState{} );
+		m_offscreenPipeline->depthStencilState( renderer::DepthStencilState{} );
 		m_offscreenPipeline->finish();
 	}
 
@@ -489,7 +439,7 @@ namespace vkapp
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )
-			, m_renderTarget->getView()
+			, m_renderTargetColour->getView()
 			, *m_sampler );
 		m_mainDescriptorSet->update();
 	}
@@ -512,6 +462,7 @@ namespace vkapp
 
 	void RenderPanel::doPrepareOffscreenFrame()
 	{
+		doUpdateProjection();
 		m_commandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
 		wxSize size{ GetClientSize() };
 		auto & commandBuffer = *m_commandBuffer;
@@ -522,11 +473,11 @@ namespace vkapp
 			auto dimensions = m_swapChain->getDimensions();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
-				, m_renderTarget->makeColourAttachment() );
+				, m_renderTargetColour->makeColourAttachment() );
 			commandBuffer.beginRenderPass( *m_offscreenRenderPass
 				, frameBuffer
 				, { renderer::ClearValue{ m_swapChain->getClearColour() } }
-			, renderer::SubpassContents::eInline );
+				, renderer::SubpassContents::eInline );
 			commandBuffer.bindPipeline( *m_offscreenPipeline );
 			commandBuffer.setViewport( { uint32_t( dimensions.x )
 				, uint32_t( dimensions.y )
@@ -539,11 +490,15 @@ namespace vkapp
 			commandBuffer.bindGeometryBuffers( *m_offscreenGeometryBuffers );
 			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSet
 				, *m_offscreenPipelineLayout );
-			commandBuffer.drawIndexed( 6u, 1u, 0u, 0u, 0u );
+			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() )
+				, 1u
+				, 0u
+				, 0u
+				, 0u );
 			commandBuffer.endRenderPass();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
-				, m_renderTarget->makeShaderInputResource() );
+				, m_renderTargetColour->makeShaderInputResource() );
 
 			auto res = commandBuffer.end();
 

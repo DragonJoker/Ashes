@@ -22,7 +22,7 @@ namespace vk_renderer
 			m_library.getFunction( "vkGetInstanceProcAddr", GetInstanceProcAddr );
 
 #define VK_LIB_FUNCTION( fun )\
-			if ( !( m_library.getFunction( "vk"#fun, fun ) ) )\
+			if ( !( m_library.getFunction( "vk"#fun, vk::fun ) ) )\
 			{\
 				throw std::runtime_error{ std::string{ "Couldn't load function " } + "vk"#fun };\
 			}

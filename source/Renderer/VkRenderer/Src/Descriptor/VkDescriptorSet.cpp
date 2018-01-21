@@ -29,7 +29,7 @@ namespace vk_renderer
 			layouts.data()                                  // pSetLayouts
 		};
 		DEBUG_DUMP( allocateInfo );
-		auto res = AllocateDescriptorSets( m_device
+		auto res = vk::AllocateDescriptorSets( m_device
 			, &allocateInfo
 			, &m_descriptorSet );
 
@@ -45,7 +45,7 @@ namespace vk_renderer
 
 		if ( !m_pool.hasAutomaticFree() )
 		{
-			FreeDescriptorSets( m_device
+			vk::FreeDescriptorSets( m_device
 				, m_pool
 				, 1u
 				, &m_descriptorSet );
@@ -130,7 +130,7 @@ namespace vk_renderer
 	{
 		auto bindings = makeVkArray < VkWriteDescriptorSet >( m_bindings );
 		DEBUG_DUMP( bindings );
-		UpdateDescriptorSets( m_device
+		vk::UpdateDescriptorSets( m_device
 			, static_cast< uint32_t >( bindings.size() )
 			, bindings.data()
 			, 0

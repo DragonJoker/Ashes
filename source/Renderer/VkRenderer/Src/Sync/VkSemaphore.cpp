@@ -19,7 +19,7 @@ namespace vk_renderer
 			0                                         // flags
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = CreateSemaphore( m_device, &createInfo, nullptr, &m_semaphore );
+		auto res = vk::CreateSemaphore( m_device, &createInfo, nullptr, &m_semaphore );
 
 		if ( !checkError( res ) )
 		{
@@ -29,6 +29,6 @@ namespace vk_renderer
 
 	Semaphore::~Semaphore()
 	{
-		DestroySemaphore( m_device, m_semaphore, nullptr );
+		vk::DestroySemaphore( m_device, m_semaphore, nullptr );
 	}
 }

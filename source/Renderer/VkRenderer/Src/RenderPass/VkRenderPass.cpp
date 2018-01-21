@@ -164,7 +164,7 @@ namespace vk_renderer
 		};
 		DEBUG_DUMP( renderPassInfo );
 
-		auto res = CreateRenderPass( m_device, &renderPassInfo, nullptr, &m_renderPass );
+		auto res = vk::CreateRenderPass( m_device, &renderPassInfo, nullptr, &m_renderPass );
 
 		if ( !checkError( res ) )
 		{
@@ -174,7 +174,7 @@ namespace vk_renderer
 
 	RenderPass::~RenderPass()
 	{
-		DestroyRenderPass( m_device, m_renderPass, nullptr );
+		vk::DestroyRenderPass( m_device, m_renderPass, nullptr );
 	}
 
 	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::UIVec2 const & dimensions

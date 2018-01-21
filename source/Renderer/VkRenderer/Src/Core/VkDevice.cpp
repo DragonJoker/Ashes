@@ -78,7 +78,7 @@ namespace vk_renderer
 		};
 		DEBUG_DUMP( deviceInfo );
 
-		auto res = CreateDevice( m_gpu, &deviceInfo, nullptr, &m_device );
+		auto res = vk::CreateDevice( m_gpu, &deviceInfo, nullptr, &m_device );
 
 		if ( !checkError( res ) )
 		{
@@ -110,7 +110,7 @@ namespace vk_renderer
 		m_graphicsQueue.reset();
 		m_presentCommandPool.reset();
 		m_presentQueue.reset();
-		DestroyDevice( m_device, nullptr );
+		vk::DestroyDevice( m_device, nullptr );
 	}
 
 	renderer::RenderPassPtr Device::createRenderPass( std::vector< renderer::PixelFormat > const & formats
@@ -360,13 +360,48 @@ namespace vk_renderer
 
 	void Device::waitIdle()const
 	{
-		DeviceWaitIdle( m_device );
+		vk::DeviceWaitIdle( m_device );
+	}
+
+	renderer::Mat4 Device::perspective( renderer::Radians fovy
+		, float aspect
+		, float zNear
+		, float zFar )
+	{
+		float const tanHalfFovy = tan( fovy / float( 2 ) );
+
+		renderer::Mat4 result( float( 0 ) );
+		result[0][0] = float( 1 ) / ( aspect * tanHalfFovy );
+		result[1][1] = float( 1 ) / ( tanHalfFovy );
+		result[2][3] = -float( 1 );
+		result[2][2] = zFar / ( zNear - zFar );
+		result[3][2] = -( zFar * zNear ) / ( zFar - zNear );
+
+		return result;
+	}
+
+	renderer::Mat4 Device::ortho( float left
+		, float right
+		, float bottom
+		, float top
+		, float zNear
+		, float zFar )
+	{
+		renderer::Mat4 result{ 1 };
+		result[0][0] = float( 2 ) / ( right - left );
+		result[1][1] = float( 2 ) / ( top - bottom );
+		result[3][0] = -( right + left ) / ( right - left );
+		result[3][1] = -( top + bottom ) / ( top - bottom );
+		result[2][2] = -float( 1 ) / ( zFar - zNear );
+		result[3][2] = -zNear / ( zFar - zNear );
+
+		return result;
 	}
 
 	VkMemoryRequirements Device::getBufferMemoryRequirements( VkBuffer buffer )const
 	{
 		VkMemoryRequirements requirements;
-		GetBufferMemoryRequirements( m_device
+		vk::GetBufferMemoryRequirements( m_device
 			, buffer
 			, &requirements );
 		return requirements;
@@ -375,7 +410,7 @@ namespace vk_renderer
 	VkMemoryRequirements Device::getImageMemoryRequirements( VkImage image )const
 	{
 		VkMemoryRequirements requirements;
-		GetImageMemoryRequirements( m_device
+		vk::GetImageMemoryRequirements( m_device
 			, image
 			, &requirements );
 		return requirements;

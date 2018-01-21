@@ -28,7 +28,7 @@ namespace vk_renderer
 			nullptr                                                       // pPushConstantRanges
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = CreatePipelineLayout( m_device
+		auto res = vk::CreatePipelineLayout( m_device
 			, &createInfo
 			, nullptr
 			, &m_layout );
@@ -41,7 +41,7 @@ namespace vk_renderer
 
 	PipelineLayout::~PipelineLayout()
 	{
-		DestroyPipelineLayout( m_device
+		vk::DestroyPipelineLayout( m_device
 			, m_layout
 			, nullptr );
 	}
