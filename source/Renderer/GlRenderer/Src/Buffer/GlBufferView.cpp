@@ -12,15 +12,15 @@ namespace gl_renderer
 		, uint32_t range )
 		: renderer::BufferView{ device, buffer, format, offset, range }
 	{
-		glGenTextures( 1, &m_name );
-		glActiveTexture( GL_TEXTURE0 );
-		glBindTexture( GL_TEXTURE_BUFFER, m_name );
-		glTexBufferRange( GL_TEXTURE_BUFFER, getInternal( format ), buffer.getBuffer(), offset, range );
-		glBindTexture( GL_TEXTURE_BUFFER, 0u );
+		glLogCall( glGenTextures, 1, &m_name );
+		glLogCall( glActiveTexture, GL_TEXTURE0 );
+		glLogCall( glBindTexture, GL_TEXTURE_BUFFER, m_name );
+		glLogCall( glTexBufferRange, GL_TEXTURE_BUFFER, getInternal( format ), buffer.getBuffer(), offset, range );
+		glLogCall( glBindTexture, GL_TEXTURE_BUFFER, 0u );
 	}
 
 	BufferView::~BufferView()
 	{
-		glDeleteTextures( 1, &m_name );
+		glLogCall( glDeleteTextures, 1, &m_name );
 	}
 }

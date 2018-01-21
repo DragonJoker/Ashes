@@ -54,29 +54,31 @@ namespace gl_renderer
 
 	GeometryBuffers::~GeometryBuffers()noexcept
 	{
-		glDeleteVertexArrays( 1, &m_vao );
+		glLogCall( glDeleteVertexArrays, 1, &m_vao );
 	}
 
 	void GeometryBuffers::doInitialise()
 	{
-		glCreateVertexArrays( 1, &m_vao );
+		glLogCall( glCreateVertexArrays, 1, &m_vao );
 
 		if ( m_vao == GL_INVALID_INDEX )
 		{
 			throw std::runtime_error{ "Couldn't create VAO" };
 		}
 
-		glBindVertexArray( m_vao );
+		glLogCall( glBindVertexArray, m_vao );
 
 		for ( auto & vbo : getVbos() )
 		{
-			glBindBuffer( GL_ARRAY_BUFFER
+			glLogCall( glBindBuffer
+				, GL_ARRAY_BUFFER
 				, static_cast< Buffer const & >( vbo.vbo.getBuffer() ).getBuffer() );
 
 			for ( auto & attribute : static_cast< VertexLayout const & >( vbo.layout ) )
 			{
-				glEnableVertexAttribArray( attribute.getLocation() );
-				glVertexAttribPointer( attribute.getLocation()
+				glLogCall( glEnableVertexAttribArray, attribute.getLocation() );
+				glLogCall( glVertexAttribPointer
+					, attribute.getLocation()
 					, getCount( attribute.getFormat() )
 					, getType( attribute.getFormat() )
 					, false
@@ -87,10 +89,11 @@ namespace gl_renderer
 
 		if ( hasIbo() )
 		{
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER
+			glLogCall( glBindBuffer
+				, GL_ELEMENT_ARRAY_BUFFER
 				, static_cast< Buffer const & >( getIbo().buffer ).getBuffer() );
 		}
 
-		glBindVertexArray( 0u );
+		glLogCall( glBindVertexArray, 0u );
 	}
 }

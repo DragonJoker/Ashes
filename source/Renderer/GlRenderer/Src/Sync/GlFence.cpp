@@ -18,7 +18,7 @@ namespace gl_renderer
 	{
 		if ( m_fence )
 		{
-			glDeleteSync( m_fence );
+			glLogCall( glDeleteSync, m_fence );
 		}
 	}
 
@@ -26,10 +26,10 @@ namespace gl_renderer
 	{
 		if ( !m_fence )
 		{
-			m_fence = glFenceSync( GL_SYNC_GPU_COMMANDS_COMPLETE, 0u );
+			m_fence = glLogCall( glFenceSync, GL_SYNC_GPU_COMMANDS_COMPLETE, 0u );
 		}
 
-		auto res = glClientWaitSync( m_fence, GL_SYNC_FLUSH_COMMANDS_BIT, timeout );
+		auto res = glLogCall( glClientWaitSync, m_fence, GL_SYNC_FLUSH_COMMANDS_BIT, timeout );
 		return ( res == GL_ALREADY_SIGNALED || res == GL_CONDITION_SATISFIED )
 			? renderer::WaitResult::eSuccess
 			: ( res == GL_TIMEOUT_EXPIRED
@@ -41,7 +41,7 @@ namespace gl_renderer
 	{
 		if ( m_fence )
 		{
-			glDeleteSync( m_fence );
+			glLogCall( glDeleteSync, m_fence );
 			m_fence = nullptr;
 		}
 	}

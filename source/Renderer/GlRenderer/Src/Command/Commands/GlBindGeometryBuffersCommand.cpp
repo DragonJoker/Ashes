@@ -15,7 +15,7 @@ namespace gl_renderer
 
 	void BindGeometryBuffersCommand::apply()const
 	{
-		glBindVertexArray( m_vao.getVao() );
+		glLogCall( glBindVertexArray, m_vao.getVao() );
 	}
 
 	CommandPtr BindGeometryBuffersCommand::clone()const

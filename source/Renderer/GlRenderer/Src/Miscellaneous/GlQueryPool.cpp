@@ -12,12 +12,12 @@ namespace gl_renderer
 		, m_device{ device }
 		, m_names( size_t( count ), GLuint( GL_INVALID_INDEX ) )
 	{
-		glGenQueries( GLsizei( m_names.size() ), m_names.data() );
+		glLogCall( glGenQueries, GLsizei( m_names.size() ), m_names.data() );
 	}
 
 	QueryPool::~QueryPool()
 	{
-		glDeleteQueries( GLsizei( m_names.size() ), m_names.data() );
+		glLogCall( glDeleteQueries, GLsizei( m_names.size() ), m_names.data() );
 	}
 
 	void QueryPool::getResults( uint32_t firstQuery
@@ -34,7 +34,7 @@ namespace gl_renderer
 
 		for ( auto it = begin; it != end; ++it )
 		{
-			glGetQueryObjectuiv( *it, convert( flags ), buffer );
+			glLogCall( glGetQueryObjectuiv, *it, convert( flags ), buffer );
 			++buffer;
 		}
 	}
@@ -53,7 +53,7 @@ namespace gl_renderer
 
 		for ( auto it = begin; it != end; ++it )
 		{
-			glGetQueryObjectui64v( *it, convert( flags ), buffer );
+			glLogCall( glGetQueryObjectui64v, *it, convert( flags ), buffer );
 			++buffer;
 		}
 	}

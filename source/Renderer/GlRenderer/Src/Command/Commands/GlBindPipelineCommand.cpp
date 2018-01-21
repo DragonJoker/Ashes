@@ -16,11 +16,11 @@ namespace gl_renderer
 		{
 			if ( state.isLogicOpEnabled() )
 			{
-				glLogicOp( convert( state.getLogicOp() ) );
+				glLogCall( glLogicOp, convert( state.getLogicOp() ) );
 			}
 
 			auto & blendConstants = state.getBlendConstants();
-			glBlendColor( blendConstants.r, blendConstants.g, blendConstants.b, blendConstants.a );
+			glLogCall( glBlendColor, blendConstants.r, blendConstants.g, blendConstants.b, blendConstants.a );
 			bool blend = false;
 			GLuint buf = 0u;
 
@@ -29,10 +29,12 @@ namespace gl_renderer
 				if ( blendState.isBlendEnabled() )
 				{
 					blend = true;
-					glBlendEquationSeparatei( buf
+					glLogCall( glBlendEquationSeparatei
+						, buf
 						, convert( blendState.getColourBlendOp() )
 						, convert( blendState.getAlphaBlendOp() ) );
-					glBlendFuncSeparatei( buf
+					glLogCall( glBlendFuncSeparatei
+						, buf
 						, convert( blendState.getSrcColourBlendFactor() )
 						, convert( blendState.getDstColourBlendFactor() )
 						, convert( blendState.getSrcAlphaBlendFactor() )
@@ -44,11 +46,11 @@ namespace gl_renderer
 
 			if ( blend )
 			{
-				glEnable( GL_BLEND );
+				glLogCall( glEnable, GL_BLEND );
 			}
 			else
 			{
-				glDisable( GL_BLEND );
+				glLogCall( glDisable, GL_BLEND );
 			}
 		}
 
@@ -56,35 +58,35 @@ namespace gl_renderer
 		{
 			if ( state.getCullMode() != renderer::CullModeFlag::eNone )
 			{
-				glEnable( GL_CULL_FACE );
-				glCullFace( convert( state.getCullMode() ) );
-				glFrontFace( convert( state.getFrontFace() ) );
+				glLogCall( glEnable, GL_CULL_FACE );
+				glLogCall( glCullFace, convert( state.getCullMode() ) );
+				glLogCall( glFrontFace, convert( state.getFrontFace() ) );
 			}
 			else
 			{
-				glDisable( GL_CULL_FACE );
+				glLogCall( glDisable, GL_CULL_FACE );
 			}
 
-			glPolygonMode( GL_FRONT_AND_BACK, convert( state.getPolygonMode() ) );
+			glLogCall( glPolygonMode, GL_FRONT_AND_BACK, convert( state.getPolygonMode() ) );
 
 			if ( state.isDepthBiasEnabled() )
 			{
 				switch ( state.getPolygonMode() )
 				{
 				case renderer::PolygonMode::eFill:
-					glEnable( GL_POLYGON_OFFSET_FILL );
+					glLogCall( glEnable, GL_POLYGON_OFFSET_FILL );
 					break;
 
 				case renderer::PolygonMode::eLine:
-					glEnable( GL_POLYGON_OFFSET_LINE );
+					glLogCall( glEnable, GL_POLYGON_OFFSET_LINE );
 					break;
 
 				case renderer::PolygonMode::ePoint:
-					glEnable( GL_POLYGON_OFFSET_POINT );
+					glLogCall( glEnable, GL_POLYGON_OFFSET_POINT );
 					break;
 				}
 
-				glPolygonOffsetClampEXT( state.getDepthBiasConstantFactor()
+				glLogCall( glPolygonOffsetClampEXT, state.getDepthBiasConstantFactor()
 					, state.getDepthBiasSlopeFactor()
 					, state.getDepthBiasClamp() );
 			}
@@ -93,40 +95,40 @@ namespace gl_renderer
 				switch ( state.getPolygonMode() )
 				{
 				case renderer::PolygonMode::eFill:
-					glDisable( GL_POLYGON_OFFSET_FILL );
+					glLogCall( glDisable, GL_POLYGON_OFFSET_FILL );
 					break;
 
 				case renderer::PolygonMode::eLine:
-					glDisable( GL_POLYGON_OFFSET_LINE );
+					glLogCall( glDisable, GL_POLYGON_OFFSET_LINE );
 					break;
 
 				case renderer::PolygonMode::ePoint:
-					glDisable( GL_POLYGON_OFFSET_POINT );
+					glLogCall( glDisable, GL_POLYGON_OFFSET_POINT );
 					break;
 				}
 			}
 
 			if ( state.isDepthClampEnabled() )
 			{
-				glEnable( GL_DEPTH_CLAMP );
+				glLogCall( glEnable, GL_DEPTH_CLAMP );
 			}
 			else
 			{
-				glDisable( GL_DEPTH_CLAMP );
+				glLogCall( glDisable, GL_DEPTH_CLAMP );
 			}
 
 			if ( state.isRasteriserDiscardEnabled() )
 			{
-				glEnable( GL_RASTERIZER_DISCARD );
+				glLogCall( glEnable, GL_RASTERIZER_DISCARD );
 			}
 			else
 			{
-				glDisable( GL_RASTERIZER_DISCARD );
+				glLogCall( glDisable, GL_RASTERIZER_DISCARD );
 			}
 
 			if ( state.getPolygonMode() == renderer::PolygonMode::eLine )
 			{
-				glLineWidth( state.getLineWidth() );
+				glLogCall( glLineWidth, state.getLineWidth() );
 			}
 		}
 
@@ -134,29 +136,29 @@ namespace gl_renderer
 		{
 			if ( state.getRasterisationSamples() != renderer::SampleCountFlag::e1 )
 			{
-				glEnable( GL_MULTISAMPLE );
+				glLogCall( glEnable, GL_MULTISAMPLE );
 
 				if ( state.isAlphaToCoverageEnabled() )
 				{
-					glEnable( GL_SAMPLE_ALPHA_TO_COVERAGE );
+					glLogCall( glEnable, GL_SAMPLE_ALPHA_TO_COVERAGE );
 				}
 				else
 				{
-					glDisable( GL_SAMPLE_ALPHA_TO_COVERAGE );
+					glLogCall( glDisable, GL_SAMPLE_ALPHA_TO_COVERAGE );
 				}
 
 				if ( state.isAlphaToOneEnabled() )
 				{
-					glEnable( GL_SAMPLE_ALPHA_TO_ONE );
+					glLogCall( glEnable, GL_SAMPLE_ALPHA_TO_ONE );
 				}
 				else
 				{
-					glDisable( GL_SAMPLE_ALPHA_TO_ONE );
+					glLogCall( glDisable, GL_SAMPLE_ALPHA_TO_ONE );
 				}
 			}
 			else
 			{
-				glDisable( GL_MULTISAMPLE );
+				glLogCall( glDisable, GL_MULTISAMPLE );
 			}
 		}
 
@@ -164,61 +166,67 @@ namespace gl_renderer
 		{
 			if ( state.isDepthWriteEnabled() )
 			{
-				glDepthMask( GL_TRUE );
+				glLogCall( glDepthMask, GL_TRUE );
 			}
 			else
 			{
-				glDepthMask( GL_FALSE );
+				glLogCall( glDepthMask, GL_FALSE );
 			}
 
 			if ( state.isDepthTestEnabled() )
 			{
-				glEnable( GL_DEPTH_TEST );
-				glDepthFunc( convert( state.getDepthCompareOp() ) );
+				glLogCall( glEnable, GL_DEPTH_TEST );
+				glLogCall( glDepthFunc, convert( state.getDepthCompareOp() ) );
 			}
 			else
 			{
-				glDisable( GL_DEPTH_TEST );
+				glLogCall( glDisable, GL_DEPTH_TEST );
 			}
 
 			if ( state.isStencilTestEnabled() )
 			{
-				glEnable( GL_STENCIL_TEST );
+				glLogCall( glEnable, GL_STENCIL_TEST );
 
-				glStencilMaskSeparate( GL_BACK
+				glLogCall( glStencilMaskSeparate
+					, GL_BACK
 					, state.getBackStencilOp().getWriteMask() );
-				glStencilFuncSeparate( GL_BACK
+				glLogCall( glStencilFuncSeparate
+					, GL_BACK
 					, convert( state.getBackStencilOp().getCompareOp() )
 					, state.getBackStencilOp().getReference()
 					, state.getBackStencilOp().getCompareMask() );
-				glStencilOpSeparate( GL_BACK
+				glLogCall( glStencilOpSeparate
+					, GL_BACK
 					, convert( state.getBackStencilOp().getFailOp() )
 					, convert( state.getBackStencilOp().getDepthFailOp() )
 					, convert( state.getBackStencilOp().getPassOp() ) );
-				glStencilMaskSeparate( GL_FRONT
+				glLogCall( glStencilMaskSeparate
+					, GL_FRONT
 					, state.getFrontStencilOp().getWriteMask() );
-				glStencilFuncSeparate( GL_FRONT
+				glLogCall( glStencilFuncSeparate
+					, GL_FRONT
 					, convert( state.getFrontStencilOp().getCompareOp() )
 					, state.getFrontStencilOp().getReference()
 					, state.getFrontStencilOp().getCompareMask() );
-				glStencilOpSeparate( GL_FRONT
+				glLogCall( glStencilOpSeparate
+					, GL_FRONT
 					, convert( state.getFrontStencilOp().getFailOp() )
 					, convert( state.getFrontStencilOp().getDepthFailOp() )
 					, convert( state.getFrontStencilOp().getPassOp() ) );
 			}
 			else
 			{
-				glDisable( GL_STENCIL_TEST );
+				glLogCall( glDisable, GL_STENCIL_TEST );
 			}
 
 			if ( state.isDepthBoundsTestEnabled() )
 			{
-				glEnable( GL_DEPTH_CLAMP );
-				glDepthRange( state.getMinDepthBounds(), state.getMaxDepthBounds() );
+				glLogCall( glEnable, GL_DEPTH_CLAMP );
+				glLogCall( glDepthRange, state.getMinDepthBounds(), state.getMaxDepthBounds() );
 			}
 			else
 			{
-				glDisable( GL_DEPTH_CLAMP );
+				glLogCall( glDisable, GL_DEPTH_CLAMP );
 			}
 		}
 
@@ -226,13 +234,14 @@ namespace gl_renderer
 		{
 			if ( state.getControlPoints() )
 			{
-				glPatchParameteri( GL_PATCH_VERTICES, int( state.getControlPoints() ) );
+				glLogCall( glPatchParameteri, GL_PATCH_VERTICES, int( state.getControlPoints() ) );
 			}
 		}
 
 		void doApply( renderer::Viewport const & state )
 		{
-			glViewport( state.getOffset().x
+			glLogCall( glViewport
+				, state.getOffset().x
 				, state.getOffset().y
 				, state.getSize().x
 				, state.getSize().y );
@@ -240,7 +249,8 @@ namespace gl_renderer
 
 		void doApply( renderer::Scissor const & state )
 		{
-			glScissor( state.getOffset().x
+			glLogCall( glScissor
+				, state.getOffset().x
 				, state.getOffset().y
 				, state.getSize().x
 				, state.getSize().y );
@@ -274,7 +284,7 @@ namespace gl_renderer
 			doApply( m_pipeline.getScissor() );
 		}
 
-		glUseProgram( m_program.getProgram() );
+		glLogCall( glUseProgram, m_program.getProgram() );
 	}
 
 	CommandPtr BindPipelineCommand::clone()const

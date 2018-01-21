@@ -124,8 +124,8 @@ namespace gl_renderer
 		, renderer::TextureCRefArray const & textures )
 		: renderer::FrameBuffer{ renderPass, dimensions, textures }
 	{
-		glGenFramebuffers( 1, &m_frameBuffer );
-		glBindFramebuffer( GL_FRAMEBUFFER, m_frameBuffer );
+		glLogCall( glGenFramebuffers, 1, &m_frameBuffer );
+		glLogCall( glBindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer );
 		renderer::UInt32Array colours;
 
 		for ( auto & texture : textures )
@@ -151,7 +151,8 @@ namespace gl_renderer
 				colours.push_back( attachment.point + attachment.index );
 			}
 
-			glFramebufferTexture2D( GL_FRAMEBUFFER
+			glLogCall( glFramebufferTexture2D
+				, GL_FRAMEBUFFER
 				, attachment.point
 				, GL_TEXTURE_2D
 				, attachment.object
@@ -160,15 +161,15 @@ namespace gl_renderer
 		}
 
 		doCheck( glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
-		glDrawBuffers( GLsizei( colours.size() ), colours.data() );
-		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+		glLogCall( glDrawBuffers, GLsizei( colours.size() ), colours.data() );
+		glLogCall( glBindFramebuffer, GL_FRAMEBUFFER, 0 );
 	}
 
 	FrameBuffer::~FrameBuffer()
 	{
 		if ( m_frameBuffer > 0u )
 		{
-			glDeleteFramebuffers( 1, &m_frameBuffer );
+			glLogCall( glDeleteFramebuffers, 1, &m_frameBuffer );
 		}
 	}
 
@@ -181,15 +182,16 @@ namespace gl_renderer
 		, renderer::PixelFormat format
 		, uint8_t * data )const noexcept
 	{
-		glBindFramebuffer( GL_FRAMEBUFFER, m_frameBuffer );
-		glReadBuffer( m_colourAttaches[index].point );
-		glReadPixels( xoffset
+		glLogCall( glBindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer );
+		glLogCall( glReadBuffer, m_colourAttaches[index].point );
+		glLogCall( glReadPixels
+			, xoffset
 			, yoffset
 			, width
 			, height
 			, getFormat( format )
 			, getType( format )
 			, data );
-		glBindFramebuffer( GL_FRAMEBUFFER, 0u );
+		glLogCall( glBindFramebuffer, GL_FRAMEBUFFER, 0u );
 	}
 }
