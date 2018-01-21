@@ -21,7 +21,9 @@ namespace vk_renderer
 
 		for ( auto const & format : formats )
 		{
-			if ( isDepthStencilFormat( convert( format ) ) )
+			if ( renderer::isDepthStencilFormat( format )
+				|| renderer::isDepthFormat( format )
+				|| renderer::isStencilFormat( format ) )
 			{
 				m_depthReference.attachment = index;
 			}
@@ -43,8 +45,8 @@ namespace vk_renderer
 			m_colourReferences.data(),                               // pColorAttachments
 			nullptr,                                                 // pResolveAttachments
 			m_depthReference.attachment == 0xFFFFFFFF                // pDepthStencilAttachment
-			? nullptr
-			: &m_depthReference,
+				? nullptr
+				: &m_depthReference,
 			0u,                                                      // preserveAttachmentCount
 			nullptr,                                                 // pPreserveAttachments
 		};

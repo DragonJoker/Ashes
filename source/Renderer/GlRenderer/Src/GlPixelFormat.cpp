@@ -36,6 +36,9 @@ namespace gl_renderer
 		case renderer::PixelFormat::eD24S8:
 			return GL_DEPTH24_STENCIL8;
 
+		case renderer::PixelFormat::eD32F:
+			return GL_DEPTH_COMPONENT32F;
+
 		case renderer::PixelFormat::eS8:
 			return GL_STENCIL_INDEX8;
 
@@ -74,7 +77,8 @@ namespace gl_renderer
 			return GL_RGBA;
 
 		case renderer::PixelFormat::eD16:
-			return GL_DEPTH;
+		case renderer::PixelFormat::eD32F:
+			return GL_DEPTH_COMPONENT;
 
 		case renderer::PixelFormat::eD24S8:
 			return GL_DEPTH_STENCIL;
@@ -122,6 +126,9 @@ namespace gl_renderer
 		case renderer::PixelFormat::eD24S8:
 			return GL_UNSIGNED_INT_24_8;
 
+		case renderer::PixelFormat::eD32F:
+			return GL_FLOAT;
+
 		case renderer::PixelFormat::eS8:
 			return GL_UNSIGNED_BYTE;
 
@@ -163,6 +170,9 @@ namespace gl_renderer
 			return 2u;
 
 		case renderer::PixelFormat::eD24S8:
+			return 4u;
+
+		case renderer::PixelFormat::eD32F:
 			return 4u;
 
 		case renderer::PixelFormat::eS8:
@@ -207,6 +217,9 @@ namespace gl_renderer
 
 		case GL_DEPTH24_STENCIL8:
 			return renderer::PixelFormat::eD24S8;
+
+		case GL_DEPTH_COMPONENT32F:
+			return renderer::PixelFormat::eD32F;
 
 		case GL_STENCIL_INDEX8:
 			return renderer::PixelFormat::eS8;

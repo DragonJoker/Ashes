@@ -34,6 +34,8 @@ namespace utils
 		eD16,
 		//! Profondeur en 24 bits, stencil en 8 bits (pour les render buffers uniquement).
 		eD24S8,
+		//! Profondeur en flottant 32 bits (pour les render buffers uniquement).
+		eD32F,
 		//! Stencil en 8 bits (pour les render buffers uniquement).
 		eS8,
 	};

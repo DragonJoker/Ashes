@@ -14,6 +14,7 @@ namespace renderer
 
 	bool isDepthFormat( PixelFormat format )
 	{
-		return format == PixelFormat::eD16;
+		return format == PixelFormat::eD16
+			|| format == PixelFormat::eD32F;
 	}
 }
