@@ -221,7 +221,7 @@ namespace vkapp
 	void RenderPanel::doUpdateProjection()
 	{
 		auto size = m_swapChain->getDimensions();
-#if 1
+#if 0
 		float halfWidth = static_cast< float >( size.x ) * 0.5f;
 		float halfHeight = static_cast< float >( size.y ) * 0.5f;
 		float wRatio = 1.0f;

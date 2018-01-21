@@ -7,7 +7,7 @@ namespace vkapp
 	/**
 	*\~french
 	*\brief
-	*	Les donn�es d'un sommet textur�.
+	*	Les données d'un sommet texturé.
 	*\~english
 	*\brief
 	*	The data for one textured vertex.
@@ -17,10 +17,9 @@ namespace vkapp
 		renderer::Vec4 position;
 		renderer::Vec2 uv;
 	};
-
-	static wxString const AppName = wxT( "08-Texture1D" );
-
 	class RenderPanel;
 	class MainFrame;
 	class Application;
+
+	static wxString const AppName = wxT( "09-FrameBuffer" );
 }

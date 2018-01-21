@@ -1,4 +1,4 @@
-project( 09-TextureBuffer )
+project( 09-FrameBuffer )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
