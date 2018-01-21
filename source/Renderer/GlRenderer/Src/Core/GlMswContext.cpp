@@ -130,6 +130,7 @@ namespace gl_renderer
 		pfd.cRedBits = 8;
 		pfd.cGreenBits = 8;
 		pfd.cBlueBits = 8;
+		pfd.cDepthBits = 0;
 
 		int pixelFormats = ::ChoosePixelFormat( m_hDC, &pfd );
 

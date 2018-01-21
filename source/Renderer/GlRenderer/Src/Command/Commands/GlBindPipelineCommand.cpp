@@ -220,20 +220,14 @@ namespace gl_renderer
 			{
 				glDisable( GL_DEPTH_CLAMP );
 			}
-
-			if ( state.isDepthWriteEnabled() )
-			{
-				glDepthMask( GL_TRUE );
-			}
-			else
-			{
-				glDepthMask( GL_FALSE );
-			}
 		}
 
 		void doApply( renderer::TessellationState const & state )
 		{
-			glPatchParameteri( GL_PATCH_VERTICES, int( state.getControlPoints() ) );
+			if ( state.getControlPoints() )
+			{
+				glPatchParameteri( GL_PATCH_VERTICES, int( state.getControlPoints() ) );
+			}
 		}
 
 		void doApply( renderer::Viewport const & state )
@@ -266,21 +260,9 @@ namespace gl_renderer
 	{
 		doApply( m_pipeline.getColourBlendState() );
 		doApply( m_pipeline.getRasterisationState() );
-
-		if ( m_pipeline.hasMultisampleState() )
-		{
-			doApply( m_pipeline.getMultisampleState() );
-		}
-
-		if ( m_pipeline.hasDepthStencilState() )
-		{
-			doApply( m_pipeline.getDepthStencilState() );
-		}
-
-		if ( m_pipeline.hasTessellationState() )
-		{
-			doApply( m_pipeline.getTessellationState() );
-		}
+		doApply( m_pipeline.getDepthStencilState() );
+		doApply( m_pipeline.getMultisampleState() );
+		doApply( m_pipeline.getTessellationState() );
 
 		if ( m_pipeline.hasViewport() )
 		{

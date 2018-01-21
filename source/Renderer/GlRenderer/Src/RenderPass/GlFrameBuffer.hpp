@@ -82,8 +82,41 @@ namespace gl_renderer
 			assert( m_frameBuffer != GL_INVALID_INDEX );
 			return m_frameBuffer;
 		}
+		/**
+		*\~english
+		*\return
+		*	The colour attachments array.
+		*\~french
+		*\return
+		*	Le tableau des attaches couleur.
+		*/
+		inline auto const & getColourAttaches()const
+		{
+			return m_colourAttaches;
+		}
+		/**
+		*\~english
+		*\return
+		*	The depth and/or stencil attachments array.
+		*\~french
+		*\return
+		*	Le tableau des attaches profondeur et/ou stencil.
+		*/
+		inline auto const & getDepthStencilAttaches()const
+		{
+			return m_depthStencilAttaches;
+		}
 
 	private:
+		struct Attachment
+		{
+			GLenum point;
+			GLuint index;
+			GLuint object;
+			GLenum type;
+		};
 		GLuint m_frameBuffer{ GL_INVALID_INDEX };
+		std::vector< Attachment > m_colourAttaches;
+		std::vector< Attachment > m_depthStencilAttaches;
 	};
 }

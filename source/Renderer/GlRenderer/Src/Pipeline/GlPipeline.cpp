@@ -29,6 +29,7 @@ namespace gl_renderer
 		, m_program{ program }
 		, m_cbState{ colourBlendState }
 		, m_rsState{ rasterisationState }
+		, m_dsState{ 0u, false, false }
 	{
 	}
 
@@ -39,19 +40,19 @@ namespace gl_renderer
 
 	renderer::Pipeline & Pipeline::multisampleState( renderer::MultisampleState const & state )
 	{
-		m_msState = std::make_unique< renderer::MultisampleState >( state );
+		m_msState = state;
 		return *this;
 	}
 
 	renderer::Pipeline & Pipeline::depthStencilState( renderer::DepthStencilState const & state )
 	{
-		m_dsState = std::make_unique< renderer::DepthStencilState >( state );
+		m_dsState = state;
 		return *this;
 	}
 
 	renderer::Pipeline & Pipeline::tessellationState( renderer::TessellationState const & state )
 	{
-		m_tsState = std::make_unique< renderer::TessellationState >( state );
+		m_tsState = state;
 		return *this;
 	}
 

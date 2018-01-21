@@ -95,30 +95,6 @@ namespace gl_renderer
 		renderer::Pipeline & scissor( renderer::Scissor const & scissor )override;
 		/**
 		*\return
-		*	\p true si le MultisampleState est défini.
-		*/
-		inline bool hasMultisampleState()const
-		{
-			return m_msState != nullptr;
-		}
-		/**
-		*\return
-		*	\p true si le DepthStencilState est défini.
-		*/
-		inline bool hasDepthStencilState()const
-		{
-			return m_dsState != nullptr;
-		}
-		/**
-		*\return
-		*	\p true si le TessellationState est défini.
-		*/
-		inline bool hasTessellationState()const
-		{
-			return m_tsState != nullptr;
-		}
-		/**
-		*\return
 		*	\p true si le Viewport est défini.
 		*/
 		inline bool hasViewport()const
@@ -151,21 +127,19 @@ namespace gl_renderer
 		}
 		/**
 		*\return
-		*	Le MultisampleState.
-		*/
-		inline renderer::MultisampleState const & getMultisampleState()const
-		{
-		    assert( m_msState );
-			return *m_msState;
-		}
-		/**
-		*\return
 		*	Le DepthStencilState.
 		*/
 		inline renderer::DepthStencilState const & getDepthStencilState()const
 		{
-		    assert( m_dsState );
-			return *m_dsState;
+			return m_dsState;
+		}
+		/**
+		*\return
+		*	Le MultisampleState.
+		*/
+		inline renderer::MultisampleState const & getMultisampleState()const
+		{
+			return m_msState;
 		}
 		/**
 		*\return
@@ -173,8 +147,7 @@ namespace gl_renderer
 		*/
 		inline renderer::TessellationState const & getTessellationState()const
 		{
-		    assert( m_tsState );
-			return *m_tsState;
+			return m_tsState;
 		}
 		/**
 		*\return
@@ -182,7 +155,7 @@ namespace gl_renderer
 		*/
 		inline renderer::Viewport const & getViewport()const
 		{
-		    assert( m_viewport );
+			assert( m_viewport );
 			return *m_viewport;
 		}
 		/**
@@ -191,7 +164,7 @@ namespace gl_renderer
 		*/
 		inline renderer::Scissor const & getScissor()const
 		{
-		    assert( m_scissor );
+			assert( m_scissor );
 			return *m_scissor;
 		}
 		/**
@@ -216,9 +189,9 @@ namespace gl_renderer
 		renderer::ShaderProgram const & m_program;
 		renderer::ColourBlendState m_cbState;
 		renderer::RasterisationState m_rsState;
-		std::unique_ptr< renderer::MultisampleState > m_msState;
-		std::unique_ptr< renderer::DepthStencilState > m_dsState;
-		std::unique_ptr< renderer::TessellationState > m_tsState;
+		renderer::DepthStencilState m_dsState;
+		renderer::MultisampleState m_msState;
+		renderer::TessellationState m_tsState;
 		std::unique_ptr< renderer::Viewport > m_viewport;
 		std::unique_ptr< renderer::Scissor > m_scissor;
 	};

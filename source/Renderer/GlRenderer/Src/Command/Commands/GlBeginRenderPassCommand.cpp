@@ -28,26 +28,45 @@ namespace gl_renderer
 		if ( m_renderPass.getClear() )
 		{
 			GLbitfield mask = 0u;
+			GLint colourIndex = 0u;
+			GLint depthStencilIndex = 0u;
 
 			for ( auto & clearValue : m_clearValues )
 			{
 				if ( clearValue.isColour() )
 				{
 					auto & colour = clearValue.colour();
-					glClearColor( colour.r, colour.g, colour.b, colour.a );
+					glClearBufferfv( GL_COLOR, colourIndex, colour.data );
 					mask |= GL_COLOR_BUFFER_BIT;
+					++colourIndex;
 				}
 				else
 				{
 					auto & depthStencil = clearValue.depthStencil();
-					glClearDepth( depthStencil.depth );
-					glClearStencil( int( depthStencil.stencil ) );
-					mask |= GL_DEPTH_BUFFER_BIT;
-					mask |= GL_STENCIL_BUFFER_BIT;
+					auto & attach = m_frameBuffer.getDepthStencilAttaches()[depthStencilIndex];
+
+					switch ( attach.type )
+					{
+					case GL_DEPTH:
+						glClearBufferfv( GL_DEPTH, 0u, &depthStencil.depth );
+						mask |= GL_DEPTH_BUFFER_BIT;
+						break;
+
+					case GL_STENCIL:
+						glClearBufferuiv( GL_STENCIL, 0u, &depthStencil.stencil );
+						mask |= GL_STENCIL_BUFFER_BIT;
+						break;
+
+					case GL_DEPTH_STENCIL:
+						glClearBufferfi( GL_DEPTH_STENCIL, 0u, depthStencil.depth, depthStencil.stencil );
+						mask |= GL_DEPTH_BUFFER_BIT;
+						mask |= GL_STENCIL_BUFFER_BIT;
+						break;
+					}
+
+					++depthStencilIndex;
 				}
 			}
-
-			glClear( mask );
 		}
 	}
 
