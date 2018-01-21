@@ -21,5 +21,5 @@ namespace vkapp
 	class MainFrame;
 	class Application;
 
-	static wxString const AppName = wxT( "06-DescriptorSets" );
+	static wxString const AppName = wxT( "06-UniformBuffers" );
 }
