@@ -25,6 +25,7 @@ namespace gl_renderer
 				return renderer::ImageAspectFlag::eColour;
 
 			case renderer::PixelFormat::eD16:
+			case renderer::PixelFormat::eD32F:
 				return renderer::ImageAspectFlag::eDepth;
 
 			case renderer::PixelFormat::eD24S8:

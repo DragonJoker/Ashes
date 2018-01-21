@@ -19,6 +19,7 @@ namespace gl_renderer
 			switch ( texture.getFormat() )
 			{
 			case renderer::PixelFormat::eD16:
+			case renderer::PixelFormat::eD32F:
 				return GL_DEPTH_ATTACHMENT;
 
 			case renderer::PixelFormat::eD24S8:
@@ -37,6 +38,7 @@ namespace gl_renderer
 			switch ( texture.getFormat() )
 			{
 			case renderer::PixelFormat::eD16:
+			case renderer::PixelFormat::eD32F:
 				return GL_DEPTH;
 
 			case renderer::PixelFormat::eD24S8:

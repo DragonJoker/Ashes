@@ -15,7 +15,6 @@ namespace utils
 		case PixelFormat::eL8:
 		case PixelFormat::eS8:
 			return 1;
-			break;
 
 		case PixelFormat::eL8A8:
 		case PixelFormat::eRGB565:
@@ -23,19 +22,16 @@ namespace utils
 		case PixelFormat::eRGBA4444:
 		case PixelFormat::eD16:
 			return 2;
-			break;
 
 		case PixelFormat::eD24S8:
+		case PixelFormat::eD32F:
 			return 4;
-			break;
 
 		case PixelFormat::eR8G8B8:
 			return 3;
-			break;
 
 		case PixelFormat::eR8G8B8A8:
 			return 4;
-			break;
 
 		default:
 			assert( false && "Unsupported pixel format" );

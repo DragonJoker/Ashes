@@ -1,4 +1,4 @@
-/*
+﻿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -50,14 +50,16 @@ namespace vk_renderer
 		, m_initialState{ initialState }
 		, m_finalState{ finalState }
 	{
-		// On cr�e les attaches pour les tampons de couleur et de profondeur.
+		// On crée les attaches pour les tampons de couleur et de profondeur.
 		std::vector< VkAttachmentDescription > attachments;
 		attachments.reserve( m_formats.size() );
 		uint32_t index{ 0 };
 
 		for ( auto const & format : m_formats )
 		{
-			if ( isDepthStencilFormat( convert( format ) ) )
+			if ( renderer::isDepthStencilFormat( format )
+				|| renderer::isDepthFormat( format )
+				|| renderer::isStencilFormat( format ) )
 			{
 				attachments.push_back(
 				{
@@ -149,7 +151,7 @@ namespace vk_renderer
 			} );
 		}
 
-		// Enfin on cr�e la passe
+		// Enfin on crée la passe
 		VkRenderPassCreateInfo renderPassInfo
 		{
 			VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
@@ -180,7 +182,7 @@ namespace vk_renderer
 	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::UIVec2 const & dimensions
 		, renderer::TextureCRefArray const & textures )const
 	{
-		// On v�rifie la compatibilit� des vues demand�s pour le framebuffer � cr�er.
+		// On vérifie la compatibilité des vues demandés pour le framebuffer à créer.
 		auto it = std::find_if( textures.begin()
 			, textures.end()
 			, [this]( std::reference_wrapper< renderer::Texture const > const & view )
@@ -198,7 +200,7 @@ namespace vk_renderer
 			throw std::runtime_error{ "Incompatible views for framebuffer creation from this render pass." };
 		}
 
-		// On cr�e le framebuffer.
+		// On crée le framebuffer.
 		return std::make_unique< FrameBuffer >( m_device
 			, *this
 			, dimensions

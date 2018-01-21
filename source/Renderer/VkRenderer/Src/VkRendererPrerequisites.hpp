@@ -208,57 +208,6 @@ namespace vk_renderer
 	/**
 	*\~french
 	*\brief
-	*	Dit si le format Vulkan donné est un format utilisable pour les tampons de profondeur et stencil.
-	*\param[in] format
-	*	Le format Vulkan à tester.
-	*\return
-	*	\p true s'il l'est...
-	*\~english
-	*\brief
-	*	Tells if the given Vulkan format is usable in depth and stencil buffers.
-	*\param[in] format
-	*	The Vulkan format.
-	*\return
-	*	\p true if it is usable in depth and stencil buffers.
-	*/
-	bool isDepthStencilFormat( VkFormat format );
-	/**
-	*\~french
-	*\brief
-	*	Dit si le format Vulkan donné est un format utilisable pour les tampons de stencil.
-	*\param[in] format
-	*	Le format Vulkan à tester.
-	*\return
-	*	\p true s'il l'est...
-	*\~english
-	*\brief
-	*	Tells if the given Vulkan format is usable in stencil buffers.
-	*\param[in] format
-	*	The Vulkan format.
-	*\return
-	*	\p true if it is usable in stencil buffers.
-	*/
-	bool isStencilFormat( VkFormat format );
-	/**
-	*\~french
-	*\brief
-	*	Dit si le format Vulkan donné est un format utilisable pour les tampons de profondeur.
-	*\param[in] format
-	*	Le format Vulkan à tester.
-	*\return
-	*	\p true s'il l'est...
-	*\~english
-	*\brief
-	*	Tells if the given Vulkan format is usable in depth buffers.
-	*\param[in] format
-	*	The Vulkan format.
-	*\return
-	*	\p true if it is usable in depth buffers.
-	*/
-	bool isDepthFormat( VkFormat format );
-	/**
-	*\~french
-	*\brief
 	*	Crée un tableau de descripteurs Vulkan à partir d'un tableau d'objets.
 	*\remarks
 	*	On présuppose ici que les objets ont des opérateurs de conversion implicite vers les descripteurs Vulkan.

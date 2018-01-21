@@ -13,11 +13,11 @@ namespace vk_renderer
 		, m_texture{ device
 			, format
 			, size
-			, isDepthStencilFormat( m_format )
+			, renderer::isDepthStencilFormat( format )
 				? renderer::ImageUsageFlag::eDepthStencilAttachment
-					: isDepthFormat( m_format )
+					: renderer::isDepthFormat( format )
 						? renderer::ImageUsageFlag::eDepthStencilAttachment
-						: isStencilFormat( m_format )
+						: renderer::isStencilFormat( format )
 							? renderer::ImageUsageFlag::eDepthStencilAttachment
 							: renderer::ImageUsageFlag::eColourAttachment
 			, renderer::ImageTiling::eOptimal

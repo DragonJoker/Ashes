@@ -25,6 +25,7 @@ namespace gl_renderer
 
 			case renderer::PixelFormat::eD16:
 			case renderer::PixelFormat::eD24S8:
+			case renderer::PixelFormat::eD32F:
 			case renderer::PixelFormat::eS8:
 				return renderer::ImageUsageFlag::eDepthStencilAttachment;
 

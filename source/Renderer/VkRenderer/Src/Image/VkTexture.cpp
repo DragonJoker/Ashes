@@ -1,4 +1,4 @@
-﻿#include "Image/VkTexture.hpp"
+#include "Image/VkTexture.hpp"
 
 #include "Command/VkCommandBuffer.hpp"
 #include "Core/VkDevice.hpp"
@@ -26,6 +26,32 @@ namespace vk_renderer
 				texture,
 				convert( barrier.subresourceRange )
 			};
+		}
+
+		renderer::PixelFormat findSupportedFormat( const std::vector< renderer::PixelFormat > & candidates
+			, VkImageTiling tiling
+			, VkFormatFeatureFlags features
+			, PhysicalDevice const & physicalDevice )
+		{
+			for ( renderer::PixelFormat format : candidates )
+			{
+				VkFormatProperties props;
+				vk::GetPhysicalDeviceFormatProperties( physicalDevice
+					, convert( format )
+					, &props );
+
+				if ( tiling == VK_IMAGE_TILING_LINEAR && ( props.linearTilingFeatures & features ) == features )
+				{
+					return format;
+				}
+
+				if ( tiling == VK_IMAGE_TILING_OPTIMAL && ( props.optimalTilingFeatures & features ) == features )
+				{
+					return format;
+				}
+			}
+
+			throw std::runtime_error( "failed to find supported format!" );
 		}
 	}
 
@@ -77,7 +103,19 @@ namespace vk_renderer
 		, m_currentLayout{ renderer::ImageLayout::ePresentSrc }
 		, m_currentAccessMask{ renderer::AccessFlag::eMemoryRead }
 	{
-		m_format = format;
+		if ( renderer::isDepthFormat( format )
+			|| renderer::isDepthStencilFormat( format ) )
+		{
+			m_format = findSupportedFormat( { format }
+				, VK_IMAGE_TILING_OPTIMAL
+				, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+				, m_device.getPhysicalDevice() );
+		}
+		else
+		{
+			m_format = format;
+		}
+
 		m_type = renderer::TextureType::e2D;
 		m_size = renderer::UIVec3{ dimensions[0], dimensions[1], 0u };
 		m_layerCount = 0u;
@@ -103,6 +141,19 @@ namespace vk_renderer
 		, m_currentLayout{ renderer::ImageLayout::eUndefined }
 		, m_currentAccessMask{ 0 }
 	{
+		if ( renderer::isDepthFormat( format )
+			|| renderer::isDepthStencilFormat( format ) )
+		{
+			m_format = findSupportedFormat( { format }
+				, VK_IMAGE_TILING_OPTIMAL
+				, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+				, m_device.getPhysicalDevice() );
+		}
+		else
+		{
+			m_format = format;
+		}
+
 		m_format = format;
 		m_type = renderer::TextureType::e2D;
 		m_size = renderer::UIVec3{ dimensions[0], dimensions[1], 0u };
@@ -214,6 +265,16 @@ namespace vk_renderer
 		, renderer::ImageTiling tiling
 		, renderer::MemoryPropertyFlags memoryFlags )
 	{
+		if ( ( renderer::isDepthFormat( m_format )
+			|| renderer::isDepthStencilFormat( m_format ) )
+			&& checkFlag( usageFlags, renderer::ImageUsageFlag::eDepthStencilAttachment ) )
+		{
+			m_format = findSupportedFormat( { m_format }
+				, convert( tiling )
+				, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+				, m_device.getPhysicalDevice() );
+		}
+
 		assert( m_owner );
 		VkImageCreateInfo createInfo
 		{

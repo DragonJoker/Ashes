@@ -1,4 +1,4 @@
-/*
+﻿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -108,7 +108,7 @@ namespace vk_renderer
 
 	VkSurfaceCapabilitiesKHR Connection::getSurfaceCapabilities()const
 	{
-		// On r�cup�re les capacit�s de la surface.
+		// On récupère les capacités de la surface.
 		VkSurfaceCapabilitiesKHR caps;
 		auto res = vk::GetPhysicalDeviceSurfaceCapabilitiesKHR( m_gpu
 			, m_presentSurface
@@ -124,7 +124,7 @@ namespace vk_renderer
 
 	void Connection::doRetrievePresentationInfos()
 	{
-		// Parcours des propri�t�s des files, pour v�rifier leur support de la pr�sentation.
+		// Parcours des propriétés des files, pour vérifier leur support de la pr�sentation.
 		std::vector< VkBool32 > supportsPresent( static_cast< uint32_t >( m_gpu.getQueueProperties().size() ) );
 		uint32_t i{ 0u };
 		m_graphicsQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
@@ -146,7 +146,7 @@ namespace vk_renderer
 					m_graphicsQueueFamilyIndex = i;
 				}
 
-				// Si une file supporte les graphismes et la pr�sentation, on la pr�f�re.
+				// Si une file supporte les graphismes et la présentation, on la préfère.
 				if ( present )
 				{
 					m_graphicsQueueFamilyIndex = i;
@@ -171,7 +171,7 @@ namespace vk_renderer
 			}
 		}
 
-		// Si on n'en a pas trouv�, on g�n�re une erreur.
+		// Si on n'en a pas trouvé, on génère une erreur.
 		if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
 			|| m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
 		{
