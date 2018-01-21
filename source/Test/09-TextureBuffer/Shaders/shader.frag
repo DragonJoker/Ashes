@@ -9,5 +9,5 @@ layout( location = 0 ) out vec4 pxl_colour;
 
 void main()
 {
-	pxl_colour = texelFetch( mapColour, int( clamp( vtx_texcoord * 512, 0.0, 512.0 ) ) );
+	pxl_colour = texelFetch( mapColour, int( clamp( vtx_texcoord * 512, 0.0, 511.0 ) ) );
 }

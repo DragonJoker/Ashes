@@ -73,16 +73,14 @@ namespace vkapp
 			std::cout << "Logical device created." << std::endl;
 			doCreateSwapChain();
 			std::cout << "Swapchain created." << std::endl;
+			doCreateStagingBuffer();
+			std::cout << "Staging buffer created." << std::endl;
 			doCreateRenderPass();
 			std::cout << "Render pass created." << std::endl;
 			doCreateVertexBuffer();
 			std::cout << "Vertex buffer created." << std::endl;
 			doCreatePipeline();
 			std::cout << "Pipeline created." << std::endl;
-			doCreateStagingBuffer();
-			std::cout << "Staging buffer created." << std::endl;
-			doCopyVertexData();
-			std::cout << "Vertex data copied." << std::endl;
 			doPrepareFrames();
 			std::cout << "Frames prepared." << std::endl;
 		}
@@ -142,8 +140,7 @@ namespace vkapp
 		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
 		renderer::RenderSubpassPtrArray subpasses;
 		subpasses.emplace_back( m_device->createRenderSubpass( formats
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-			, renderer::AccessFlag::eColourAttachmentWrite } ) );
+			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
 		m_renderPass = m_device->createRenderPass( formats
 			, std::move( subpasses )
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eBottomOfPipe
@@ -160,13 +157,18 @@ namespace vkapp
 			, uint32_t( m_vertexData.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_vertexLayout = m_device->createVertexLayout( 0u, sizeof( VertexData ) );
-		m_vertexLayout->createAttribute( 0u
-			, renderer::AttributeFormat::eVec4f
-			, offsetof( VertexData, position ) );
-		m_vertexLayout->createAttribute( 1u
-			, renderer::AttributeFormat::eVec4f
-			, offsetof( VertexData, colour ) );
+		m_vertexLayout =  renderer::makeLayout< VertexData >( *m_device, 0u );
+		m_vertexLayout->createAttribute< renderer::Vec4 >( 0u
+			, uint32_t( offsetof( VertexData, position ) ) );
+		m_vertexLayout->createAttribute< renderer::Vec4 >( 1u
+			, uint32_t( offsetof( VertexData, colour ) ) );
+		m_stagingBuffer->copyVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
+			, m_vertexData
+			, *m_vertexBuffer
+			, renderer::PipelineStageFlag::eVertexInput );
+		m_geometryBuffers = m_device->createGeometryBuffers( *m_vertexBuffer
+			, 0u
+			, *m_vertexLayout );
 	}
 
 	void RenderPanel::doCreateStagingBuffer()
@@ -174,50 +176,6 @@ namespace vkapp
 		m_stagingBuffer = std::make_unique< renderer::StagingBuffer >( *m_device
 			, 0u
 			, 4000u );
-		renderer::ByteArray array{ reinterpret_cast< uint8_t * >( m_vertexData.data() )
-			, reinterpret_cast< uint8_t * >( m_vertexData.data() ) + sizeof( m_vertexData ) };
-		auto buffer = m_stagingBuffer->getBuffer().lock( 0
-			, uint32_t( array.size() )
-			, renderer::MemoryMapFlag::eWrite | renderer::MemoryMapFlag::eInvalidateBuffer );
-
-		if ( !buffer )
-		{
-			throw std::runtime_error{ "Staging buffer storage memory mapping failed." };
-		}
-
-		std::memcpy( buffer, array.data(), array.size() );
-		m_stagingBuffer->getBuffer().unlock( uint32_t( array.size() ), true );
-	}
-
-	void RenderPanel::doCopyVertexData()
-	{
-		auto & resources = m_swapChain->getDefaultResources();;
-		auto & commandBuffer = resources.getCommandBuffer();
-
-		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
-		{
-			commandBuffer.copyBuffer( m_stagingBuffer->getBuffer()
-				, m_vertexBuffer->getBuffer()
-				, uint32_t( sizeof( m_vertexData ) ) );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
-				, renderer::PipelineStageFlag::eVertexInput
-				, m_vertexBuffer->getBuffer().makeVertexShaderInputResource() );
-
-			if ( !commandBuffer.end() )
-			{
-				throw std::runtime_error{ "Vertex data copy failed" };
-			}
-
-			auto res = m_device->getGraphicsQueue().submit( commandBuffer
-				, nullptr );
-
-			if ( !res )
-			{
-				throw std::runtime_error{ "Vertex data copy failed" };
-			}
-
-			m_device->waitIdle();
-		}
 	}
 
 	void RenderPanel::doCreatePipeline()
@@ -263,19 +221,15 @@ namespace vkapp
 			, renderer::PrimitiveTopology::eTriangleStrip );
 		m_pipeline->multisampleState( renderer::MultisampleState{} );
 		m_pipeline->finish();
-		m_geometryBuffers = m_device->createGeometryBuffers( { *m_vertexBuffer }
-			, { 0ull }
-		, { *m_vertexLayout } );
 	}
 
-	bool RenderPanel::doPrepareFrames()
+	void RenderPanel::doPrepareFrames()
 	{
-		bool result{ true };
 		m_commandBuffers = m_swapChain->createCommandBuffers();
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
-		wxSize size{ GetClientSize() };
+		auto dimensions = m_swapChain->getDimensions();
 
-		for ( size_t i = 0u; i < m_commandBuffers.size() && result; ++i )
+		for ( size_t i = 0u; i < m_commandBuffers.size(); ++i )
 		{
 			auto & frameBuffer = *m_frameBuffers[i];
 			auto & commandBuffer = *m_commandBuffers[i];
@@ -287,22 +241,28 @@ namespace vkapp
 					, { m_swapChain->getClearColour() }
 					, renderer::SubpassContents::eInline );
 				commandBuffer.bindPipeline( *m_pipeline );
-				commandBuffer.setViewport( renderer::Viewport{ uint32_t( size.x ), uint32_t( size.y ), 0, 0 } );
-				commandBuffer.setScissor( renderer::Scissor{ 0, 0, uint32_t( size.x ), uint32_t( size.y ) } );
+				commandBuffer.setViewport( { uint32_t( dimensions.x )
+					, uint32_t( dimensions.y )
+					, 0
+					, 0 } );
+				commandBuffer.setScissor( { 0
+					, 0
+					, uint32_t( dimensions.x )
+					, uint32_t( dimensions.y ) } );
 				commandBuffer.bindGeometryBuffers( *m_geometryBuffers );
 				commandBuffer.draw( 4u, 1u, 0u, 0u );
 				commandBuffer.endRenderPass();
 
-				result = commandBuffer.end();
+				auto res = commandBuffer.end();
 
-				if ( !result )
+				if ( !res )
 				{
-					std::cerr << "Command buffers recording failed" << std::endl;
+					std::stringstream stream;
+					stream << "Command buffers recording failed.";
+					throw std::runtime_error{ stream.str() };
 				}
 			}
 		}
-
-		return result;
 	}
 
 	void RenderPanel::doDraw()

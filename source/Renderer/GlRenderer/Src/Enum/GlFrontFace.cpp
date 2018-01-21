@@ -7,10 +7,10 @@ namespace gl_renderer
 		switch ( value )
 		{
 		case renderer::FrontFace::eCounterClockwise:
-			return GL_CCW;
+			return GL_CW;
 
 		case renderer::FrontFace::eClockwise:
-			return GL_CW;
+			return GL_CCW;
 
 		default:
 			assert( false && "Unsupported front face mode");

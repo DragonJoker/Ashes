@@ -109,6 +109,11 @@ namespace vk_renderer
 		*/
 		renderer::TexturePtr createTexture( renderer::ImageLayout initialLayout )const override;
 		/**
+		*\copydoc	renderer::Device::createRenderBuffer
+		*/
+		renderer::RenderBufferPtr createRenderBuffer( renderer::PixelFormat format
+			, renderer::UIVec2 const & size )override;
+		/**
 		*\copydoc	renderer::Device::createTextureView
 		*/
 		renderer::TextureViewPtr createTextureView( renderer::Texture const & texture

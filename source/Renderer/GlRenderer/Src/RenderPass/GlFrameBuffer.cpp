@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #include "Command/GlQueue.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 #include "Image/GlTexture.hpp"
+#include "Image/GlTextureView.hpp"
 
 #include <iostream>
 
@@ -156,11 +157,11 @@ namespace gl_renderer
 				, attachment.point
 				, GL_TEXTURE_2D
 				, attachment.object
-				, 0 );
-			doCheck( glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+				, texture.get().getView().getSubResourceRange().getBaseMipLevel() );
+			doCheck( glLogCall( glCheckFramebufferStatus, GL_FRAMEBUFFER ) );
 		}
 
-		doCheck( glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+		doCheck( glLogCall( glCheckFramebufferStatus, GL_FRAMEBUFFER ) );
 		glLogCall( glDrawBuffers, GLsizei( colours.size() ), colours.data() );
 		glLogCall( glBindFramebuffer, GL_FRAMEBUFFER, 0 );
 	}

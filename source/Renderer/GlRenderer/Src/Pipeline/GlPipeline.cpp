@@ -29,7 +29,7 @@ namespace gl_renderer
 		, m_program{ program }
 		, m_cbState{ colourBlendState }
 		, m_rsState{ rasterisationState }
-		, m_dsState{ 0u, false, false }
+		, m_dsState{ 0u, false, true, renderer::CompareOp::eLess,  }
 	{
 	}
 

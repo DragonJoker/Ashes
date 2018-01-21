@@ -22,6 +22,10 @@ namespace renderer
 		*	Constructeur.
 		*\param[in] device
 		*	Le périphérique logique.
+		*\param[in] format
+		*	Le format du tampon.
+		*\param[in] size
+		*	Les dimensions du tampon.
 		*/
 		RenderBuffer( Device const & device
 			, PixelFormat format

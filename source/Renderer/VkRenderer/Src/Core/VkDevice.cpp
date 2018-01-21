@@ -22,6 +22,7 @@ See LICENSE file in root folder.
 #include "Pipeline/VkPipeline.hpp"
 #include "Pipeline/VkPipelineLayout.hpp"
 #include "Pipeline/VkVertexLayout.hpp"
+#include "RenderPass/VkRenderBuffer.hpp"
 #include "RenderPass/VkRenderPass.hpp"
 #include "RenderPass/VkRenderSubpass.hpp"
 #include "Shader/VkShaderProgram.hpp"
@@ -230,6 +231,12 @@ namespace vk_renderer
 	renderer::TexturePtr Device::createTexture( renderer::ImageLayout initialLayout )const
 	{
 		return std::make_shared< Texture >( *this, initialLayout );
+	}
+
+	renderer::RenderBufferPtr Device::createRenderBuffer( renderer::PixelFormat format
+		, renderer::UIVec2 const & size )
+	{
+		return std::make_unique< RenderBuffer >( *this, format, size );
 	}
 
 	renderer::TextureViewPtr Device::createTextureView( renderer::Texture const & texture

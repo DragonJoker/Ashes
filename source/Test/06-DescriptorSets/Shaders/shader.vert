@@ -19,8 +19,5 @@ layout( location = 0 ) out vec2 vtx_texcoord;
 void main()
 {
 	gl_Position = mtxProjection * position;
-#ifndef VULKAN
-	gl_Position.y = -gl_Position.y;
-#endif
 	vtx_texcoord = texcoord;
 }

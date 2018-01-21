@@ -171,6 +171,54 @@ namespace common
 
 #endif
 
+	ImageData loadImage( std::string const & path )
+	{
+		if ( !wxFileExists( wxString( path ) ) )
+		{
+			throw std::runtime_error{ "Couldn't find image file." };
+		}
+
+		wxImage image{ path, wxBITMAP_TYPE_PNG };
+
+		if ( !image.IsOk() )
+		{
+			throw std::runtime_error{ "Couldn't load image file." };
+		}
+
+		uint8_t * data = image.GetData();
+		ImageData result;
+		result.format = renderer::PixelFormat::eR8G8B8A8;
+		result.size = { uint32_t( image.GetSize().x ), uint32_t( image.GetSize().y ) };
+		uint32_t size = image.GetSize().x * image.GetSize().y;
+		result.data.resize( size * 4 );
+		auto it = result.data.begin();
+
+		if ( image.HasAlpha() )
+		{
+			uint8_t * alpha = image.GetAlpha();
+
+			for ( uint32_t i{ 0u }; i < size; ++i )
+			{
+				*it++ = *data++;
+				*it++ = *data++;
+				*it++ = *data++;
+				*it++ = *alpha++;
+			}
+		}
+		else
+		{
+			for ( uint32_t i{ 0u }; i < size; ++i )
+			{
+				*it++ = *data++;
+				*it++ = *data++;
+				*it++ = *data++;
+				*it++ = 0xFF;
+			}
+		}
+
+		return result;
+	}
+
 	std::string dumpTextFile( std::string const & path )
 	{
 		std::ifstream file( path );
