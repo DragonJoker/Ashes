@@ -12,7 +12,7 @@ namespace gl_renderer
 
 	void EndRenderPassCommand::apply()const
 	{
-		glBindFramebuffer( GL_FRAMEBUFFER, 0u );
+		glLogCall( glBindFramebuffer, GL_FRAMEBUFFER, 0u );
 	}
 
 	CommandPtr EndRenderPassCommand::clone()const

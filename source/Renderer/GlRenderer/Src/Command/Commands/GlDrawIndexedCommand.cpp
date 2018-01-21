@@ -27,7 +27,8 @@ namespace gl_renderer
 	{
 		if ( m_instCount > 1 )
 		{
-			glDrawElementsInstancedBaseInstance( m_mode
+			glLogCall( glDrawElementsInstancedBaseInstance
+				, m_mode
 				, m_indexCount
 				, m_type
 				, ( ( GLvoid * )m_firstIndex )
@@ -36,7 +37,8 @@ namespace gl_renderer
 		}
 		else
 		{
-			glDrawElementsBaseVertex( m_mode
+			glLogCall( glDrawElementsBaseVertex
+				, m_mode
 				, m_indexCount
 				, m_type
 				, ( ( GLvoid * )m_firstIndex )

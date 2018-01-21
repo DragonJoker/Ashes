@@ -21,23 +21,27 @@ namespace gl_renderer
 	{
 		void bind( renderer::CombinedTextureSamplerBinding const & binding )
 		{
-			glActiveTexture( GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
-			glBindSampler( binding.getBinding().getBindingPoint()
+			glLogCall( glActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
+			glLogCall( glBindSampler
+				, binding.getBinding().getBindingPoint()
 				, static_cast< Sampler const & >( binding.getSampler() ).getSampler() );
-			glBindTexture( convert( binding.getView().getImage().getType() )
+			glLogCall( glBindTexture
+				, convert( binding.getView().getImage().getType() )
 				, static_cast< Texture const & >( binding.getView().getImage() ).getImage() );
 		}
 
 		void bind( renderer::SamplerBinding const & binding )
 		{
-			glBindSampler( binding.getBinding().getBindingPoint()
+			glLogCall( glBindSampler
+				, binding.getBinding().getBindingPoint()
 				, static_cast< Sampler const & >( binding.getSampler() ).getSampler() );
 		}
 
 		void bind( renderer::SampledTextureBinding const & binding )
 		{
-			glActiveTexture( GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
-			glBindTexture( convert( binding.getView().getImage().getType() )
+			glLogCall( glActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
+			glLogCall( glBindTexture
+				, convert( binding.getView().getImage().getType() )
 				, static_cast< Texture const & >( binding.getView().getImage() ).getImage() );
 		}
 
@@ -45,8 +49,9 @@ namespace gl_renderer
 		{
 			auto & view = binding.getView();
 			auto & range = view.getSubResourceRange();
-			glActiveTexture( GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
-			glBindImageTexture( binding.getBinding().getBindingPoint()
+			glLogCall( glActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
+			glLogCall( glBindImageTexture
+				, binding.getBinding().getBindingPoint()
 				, static_cast< Texture const & >( view.getImage() ).getImage()
 				, range.getBaseMipLevel()
 				, range.getLayerCount() > 0
@@ -57,22 +62,25 @@ namespace gl_renderer
 
 		void bind( renderer::UniformBufferBinding const & binding )
 		{
-			glBindBufferBase( GL_UNIFORM_BUFFER
+			glLogCall( glBindBufferBase
+				, GL_UNIFORM_BUFFER
 				, binding.getBinding().getBindingPoint()
 				, static_cast< Buffer const & >( binding.getUniformBuffer().getBuffer() ).getBuffer() );
 		}
 
 		void bind( renderer::StorageBufferBinding const & binding )
 		{
-			glBindBufferBase( GL_SHADER_STORAGE_BUFFER
+			glLogCall( glBindBufferBase
+				, GL_SHADER_STORAGE_BUFFER
 				, binding.getBinding().getBindingPoint()
 				, static_cast< Buffer const & >( binding.getBuffer() ).getBuffer() );
 		}
 
 		void bind( renderer::TexelBufferBinding const & binding )
 		{
-			glActiveTexture( GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
-			glBindTexture( GL_TEXTURE_BUFFER
+			glLogCall( glActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
+			glLogCall( glBindTexture
+				, GL_TEXTURE_BUFFER
 				, static_cast< BufferView const & >( binding.getView() ).getImage() );
 		}
 	}

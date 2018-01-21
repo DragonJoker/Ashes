@@ -25,13 +25,14 @@ namespace gl_renderer
 	void CopyImageCommand::apply()const
 	{
 		auto & range = m_dst.getView().getSubResourceRange();
-		glBindTexture( m_target, m_dst.getImage() );
-		glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_src.getBuffer() );
+		glLogCall( glBindTexture, m_target, m_dst.getImage() );
+		glLogCall( glBindBuffer, GL_PIXEL_UNPACK_BUFFER, m_src.getBuffer() );
 
 		switch ( m_target )
 		{
 		case GL_TEXTURE_1D:
-			glTexSubImage1D( m_target
+			glLogCall( glTexSubImage1D
+				, m_target
 				, range.getBaseMipLevel()
 				, 0
 				, m_dst.getDimensions()[0]
@@ -41,7 +42,8 @@ namespace gl_renderer
 			break;
 
 		case GL_TEXTURE_2D:
-			glTexSubImage2D( m_target
+			glLogCall( glTexSubImage2D
+				, m_target
 				, range.getBaseMipLevel()
 				, 0
 				, 0
@@ -53,7 +55,8 @@ namespace gl_renderer
 			break;
 
 		case GL_TEXTURE_3D:
-			glTexSubImage3D( m_target
+			glLogCall( glTexSubImage3D
+				, m_target
 				, range.getBaseMipLevel()
 				, 0
 				, 0
@@ -67,8 +70,8 @@ namespace gl_renderer
 			break;
 		}
 
-		glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0u );
-		glBindTexture( m_target, 0u );
+		glLogCall( glBindBuffer, GL_PIXEL_UNPACK_BUFFER, 0u );
+		glLogCall( glBindTexture, m_target, 0u );
 		m_dst.generateMipmaps();
 	}
 

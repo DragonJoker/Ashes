@@ -23,11 +23,10 @@ namespace gl_renderer
 
 	void BeginRenderPassCommand::apply()const
 	{
-		glBindFramebuffer( GL_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
+		glLogCall( glBindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
 
 		if ( m_renderPass.getClear() )
 		{
-			GLbitfield mask = 0u;
 			GLint colourIndex = 0u;
 			GLint depthStencilIndex = 0u;
 
@@ -36,31 +35,27 @@ namespace gl_renderer
 				if ( clearValue.isColour() )
 				{
 					auto & colour = clearValue.colour();
-					glClearBufferfv( GL_COLOR, colourIndex, colour.data );
-					mask |= GL_COLOR_BUFFER_BIT;
+					glLogCall( glClearBufferfv, GL_COLOR, colourIndex, colour.data );
 					++colourIndex;
 				}
 				else
 				{
 					auto & depthStencil = clearValue.depthStencil();
 					auto & attach = m_frameBuffer.getDepthStencilAttaches()[depthStencilIndex];
+					auto stencil = GLint( depthStencil.stencil );
 
 					switch ( attach.type )
 					{
 					case GL_DEPTH:
-						glClearBufferfv( GL_DEPTH, 0u, &depthStencil.depth );
-						mask |= GL_DEPTH_BUFFER_BIT;
+						glLogCall( glClearBufferfv, GL_DEPTH, 0u, &depthStencil.depth );
 						break;
 
 					case GL_STENCIL:
-						glClearBufferuiv( GL_STENCIL, 0u, &depthStencil.stencil );
-						mask |= GL_STENCIL_BUFFER_BIT;
+						glLogCall( glClearBufferiv, GL_STENCIL, 0u, &stencil );
 						break;
 
 					case GL_DEPTH_STENCIL:
-						glClearBufferfi( GL_DEPTH_STENCIL, 0u, depthStencil.depth, depthStencil.stencil );
-						mask |= GL_DEPTH_BUFFER_BIT;
-						mask |= GL_STENCIL_BUFFER_BIT;
+						glLogCall( glClearBufferfi, GL_DEPTH_STENCIL, 0u, depthStencil.depth, stencil );
 						break;
 					}
 
