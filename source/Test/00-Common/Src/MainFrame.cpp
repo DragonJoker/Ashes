@@ -74,9 +74,9 @@ namespace common
 #ifndef NDEBUG
 		title << " - Debug";
 #endif
-		title << " - (Instant) " << std::setw( 6 ) << std::setprecision( 4 ) << ms << " ms";
+		title << " - (Inst) " << std::setw( 6 ) << std::setprecision( 4 ) << ms << " ms";
 		title << " - " << std::setw( 5 ) << int( 1000.0f / ms ) << " fps";
-		title << " - (Average) " << std::setw( 6 ) << std::setprecision( 4 ) << avgms << " ms";
+		title << " - (Avg) " << std::setw( 6 ) << std::setprecision( 4 ) << avgms << " ms";
 		title << " - " << std::setw( 5 ) << int( 1000.0f / avgms ) << " fps";
 		SetTitle( m_name + wxT( " (" ) + m_rendererName + wxT( ")" ) + wxString( title.str() ) );
 	}

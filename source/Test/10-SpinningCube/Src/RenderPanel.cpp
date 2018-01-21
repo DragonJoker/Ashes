@@ -110,7 +110,6 @@ namespace vkapp
 			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
 		}
 	{
-		m_translate = utils::translate( m_translate, { 0, 0, -5 } );
 		try
 		{
 			doCreateDevice( renderer );
@@ -220,32 +219,35 @@ namespace vkapp
 	void RenderPanel::doUpdateProjection()
 	{
 		auto size = m_swapChain->getDimensions();
-		//float halfWidth = float( size.x ) * 0.5f;
-		//float halfHeight = float( size.y ) * 0.5f;
-		//float hRatio = 1.0f;
-		//float wRatio = 1.0f;
+#if 1
+		float halfWidth = static_cast< float >( size.x ) * 0.5f;
+		float halfHeight = static_cast< float >( size.y ) * 0.5f;
+		float wRatio = 1.0f;
+		float hRatio = 1.0f;
 
-		//if ( halfHeight > halfWidth )
-		//{
-		//	hRatio = halfHeight / halfWidth;
-		//}
-		//else
-		//{
-		//	wRatio = halfWidth / halfHeight;
-		//}
+		if ( halfHeight > halfWidth )
+		{
+			hRatio = halfHeight / halfWidth;
+		}
+		else
+		{
+			wRatio = halfWidth / halfHeight;
+		}
 
-		//m_matrixUbo->getData( 0u ) = utils::ortho( -2.0f * wRatio
-		//	, 2.0f * wRatio
-		//	, -2.0f * hRatio
-		//	, 2.0f * hRatio
-		//	, -10.0f
-		//	, 10.0f );
+		m_matrixUbo->getData( 0u ) = m_device->ortho( -2.0f * wRatio
+			, 2.0f * wRatio
+			, -2.0f * hRatio
+			, 2.0f * hRatio
+			, -10.0f
+			, 10.0f );
+#else
 		auto width = float( size.x );
 		auto height = float( size.y );
-		m_matrixUbo->getData( 0u ) = utils::perspective( utils::toRadians( 90.0_degrees )
+		m_matrixUbo->getData( 0u ) = m_device->perspective( utils::toRadians( 90.0_degrees )
 			, width / height
 			, 0.01f
 			, 100.0f );
+#endif
 		m_stagingBuffer->copyUniformData( *m_updateCommandBuffer
 			, m_matrixUbo->getDatas()
 			, *m_matrixUbo
@@ -397,14 +399,14 @@ namespace vkapp
 		m_renderTargetColour = m_device->createTexture();
 		m_renderTargetColour->setImage( renderer::PixelFormat::eR8G8B8A8
 			, { size.GetWidth(), size.GetHeight() }
-		, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
-		m_renderTargetDepth = m_device->createTexture( renderer::ImageLayout::eDepthStencilAttachmentOptimal );
+			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
+		m_renderTargetDepth = m_device->createTexture();
 		m_renderTargetDepth->setImage( renderer::PixelFormat::eD24S8
 			, { size.GetWidth(), size.GetHeight() }
 			, renderer::ImageUsageFlag::eDepthStencilAttachment );
 
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { size.GetWidth(), size.GetHeight() }
-		, { *m_renderTargetColour, *m_renderTargetDepth } );
+			, { *m_renderTargetColour, *m_renderTargetDepth } );
 	}
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()
@@ -531,9 +533,12 @@ namespace vkapp
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
 				, m_renderTargetColour->makeColourAttachment() );
+			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::PipelineStageFlag::eColourAttachmentOutput
+				, m_renderTargetDepth->makeDepthStencilAttachment() );
 			commandBuffer.beginRenderPass( *m_offscreenRenderPass
 				, frameBuffer
-				, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, ~0u } } }
+				, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
 				, renderer::SubpassContents::eInline );
 			commandBuffer.bindPipeline( *m_offscreenPipeline );
 			commandBuffer.setViewport( { uint32_t( dimensions.x )
@@ -556,7 +561,6 @@ namespace vkapp
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
 				, m_renderTargetColour->makeShaderInputResource() );
-
 			auto res = commandBuffer.end();
 
 			if ( !res )
@@ -654,7 +658,7 @@ namespace vkapp
 				commandBuffer.beginRenderPass( *m_mainRenderPass
 					, frameBuffer
 					, { renderer::ClearValue{ m_swapChain->getClearColour() } }
-				, renderer::SubpassContents::eInline );
+					, renderer::SubpassContents::eInline );
 				commandBuffer.bindPipeline( *m_mainPipeline );
 				commandBuffer.setViewport( { uint32_t( dimensions.x )
 					, uint32_t( dimensions.y )
@@ -685,10 +689,19 @@ namespace vkapp
 
 	void RenderPanel::doUpdate()
 	{
+		static renderer::Mat4 originalTransform = []()
+		{
+			renderer::Mat4 result;
+			utils::translate( result, { 0, 0, 5 } );
+			result = utils::rotate( result
+				, float( utils::DegreeToRadian * 45.0 )
+				, { 0, 0, 1 } );
+			return result;
+		}( );
 		m_rotate = utils::rotate( m_rotate
 			, float( utils::DegreeToRadian )
 			, { 0, 1, 0 } );
-		m_objectUbo->getData( 0 ) = m_translate * m_rotate;
+		m_objectUbo->getData( 0 ) = m_rotate * originalTransform;
 		m_stagingBuffer->copyUniformData( *m_updateCommandBuffer
 			, m_objectUbo->getDatas()
 			, *m_objectUbo

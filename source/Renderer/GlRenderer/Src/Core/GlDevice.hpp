@@ -171,10 +171,25 @@ namespace gl_renderer
 			, uint32_t count
 			, renderer::QueryPipelineStatisticFlags pipelineStatistics )const override;
 		/**
-		*\brief
-		*	Attend que le périphérique soit inactif.
+		*\copydoc	renderer::Device::createQueryPool
 		*/
 		void waitIdle()const override;
+		/**
+		*\copydoc	renderer::Device::perspective
+		*/
+		renderer::Mat4 perspective( renderer::Radians fovy
+			, float aspect
+			, float zNear
+			, float zFar )override;
+		/**
+		*\copydoc	renderer::Device::ortho
+		*/
+		renderer::Mat4 ortho( float left
+			, float right
+			, float bottom
+			, float top
+			, float zNear
+			, float zFar )override;
 		/**
 		*\brief
 		*	Echange les tampons.

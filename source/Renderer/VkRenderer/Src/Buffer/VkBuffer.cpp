@@ -27,7 +27,7 @@ namespace vk_renderer
 			nullptr                                           // pQueueFamilyIndices
 		};
 		DEBUG_DUMP( bufferCreate );
-		auto res = CreateBuffer( m_device
+		auto res = vk::CreateBuffer( m_device
 			, &bufferCreate
 			, nullptr
 			, &m_buffer );
@@ -40,7 +40,7 @@ namespace vk_renderer
 		m_storage = std::make_unique< BufferStorage >( m_device
 			, m_buffer
 			, convert( memoryFlags ) );
-		res = BindBufferMemory( m_device
+		res = vk::BindBufferMemory( m_device
 			, m_buffer
 			, *m_storage
 			, 0 );
@@ -53,7 +53,7 @@ namespace vk_renderer
 
 	Buffer::~Buffer()
 	{
-		DestroyBuffer( m_device, m_buffer, nullptr );
+		vk::DestroyBuffer( m_device, m_buffer, nullptr );
 	}
 
 	uint8_t * Buffer::lock( uint32_t offset

@@ -292,6 +292,41 @@ namespace gl_renderer
 		glFinish();
 	}
 
+	renderer::Mat4 Device::perspective( renderer::Radians fovy
+		, float aspect
+		, float zNear
+		, float zFar )
+	{
+		float const tanHalfFovy = tan( fovy / float( 2 ) );
+
+		renderer::Mat4 result( float( 0 ) );
+		result[0][0] = float( 1 ) / ( aspect * tanHalfFovy );
+		result[1][1] = float( 1 ) / ( tanHalfFovy );
+		result[2][3] = -float( 1 );
+		result[2][2] = -( zFar + zNear ) / ( zFar - zNear );
+		result[3][2] = -( float( 2 ) * zFar * zNear ) / ( zFar - zNear );
+
+		return result;
+	}
+
+	renderer::Mat4 Device::ortho( float left
+		, float right
+		, float bottom
+		, float top
+		, float zNear
+		, float zFar )
+	{
+		renderer::Mat4 result( 1 );
+		result[0][0] = float( 2 ) / ( right - left );
+		result[1][1] = float( 2 ) / ( top - bottom );
+		result[3][0] = -( right + left ) / ( right - left );
+		result[3][1] = -( top + bottom ) / ( top - bottom );
+		result[2][2] = -float( 2 ) / ( zFar - zNear );
+		result[3][2] = -( zFar + zNear ) / ( zFar - zNear );
+
+		return result;
+	}
+
 	void Device::swapBuffers()const
 	{
 		m_context->swapBuffers();

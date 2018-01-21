@@ -7,14 +7,14 @@ See LICENSE file in root folder.
 #pragma once
 
 #include <Utils/Angle.hpp>
+#include <Utils/Degrees.hpp>
 #include <Utils/DynamicLibrary.hpp>
 #include <Utils/FlagCombination.hpp>
 #include <Utils/Mat4.hpp>
 #include <Utils/PlaneEquation.hpp>
 #include <Utils/PixelFormat.hpp>
 #include <Utils/Quaternion.hpp>
-#include <Utils/Range.hpp>
-#include <Utils/RangedValue.hpp>
+#include <Utils/Radians.hpp>
 #include <Utils/UtilsSignal.hpp>
 #include <Utils/Vec2.hpp>
 #include <Utils/Vec3.hpp>
@@ -52,6 +52,9 @@ namespace renderer
 	using Quaternion = utils::Quaternion;
 	using RgbaColour = utils::RgbaColour;
 	using RgbColour = utils::RgbColour;
+	using Radians = utils::Radians;
+	using Degrees = utils::Degrees;
+	using Angle = utils::Angle;
 	using PixelFormat = utils::PixelFormat;
 	using Clock = utils::Clock;
 	using Milliseconds = utils::Milliseconds;

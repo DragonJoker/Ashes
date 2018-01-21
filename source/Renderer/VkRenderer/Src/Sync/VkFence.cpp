@@ -20,7 +20,7 @@ namespace vk_renderer
 			convert( flags )   // flags
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = CreateFence( device
+		auto res = vk::CreateFence( device
 			, &createInfo
 			, nullptr
 			, &m_fence );
@@ -33,14 +33,14 @@ namespace vk_renderer
 
 	Fence::~Fence()
 	{
-		DestroyFence( m_device
+		vk::DestroyFence( m_device
 			, m_fence
 			, nullptr );
 	}
 
 	renderer::WaitResult Fence::wait( uint32_t timeout )const
 	{
-		auto res = WaitForFences( m_device
+		auto res = vk::WaitForFences( m_device
 			, 1
 			, &m_fence
 			, VK_TRUE
@@ -55,7 +55,7 @@ namespace vk_renderer
 
 	void Fence::reset()const
 	{
-		ResetFences( m_device
+		vk::ResetFences( m_device
 			, 1
 			, &m_fence );
 	}

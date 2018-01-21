@@ -35,7 +35,7 @@ namespace vk_renderer
 			poolSizes.data()                                    // pPoolSizes
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = CreateDescriptorPool( m_device
+		auto res = vk::CreateDescriptorPool( m_device
 			, &createInfo
 			, nullptr
 			, &m_pool );
@@ -48,7 +48,7 @@ namespace vk_renderer
 
 	DescriptorSetPool::~DescriptorSetPool()
 	{
-		DestroyDescriptorPool( m_device, m_pool, nullptr );
+		vk::DestroyDescriptorPool( m_device, m_pool, nullptr );
 	}
 
 	renderer::DescriptorSetPtr DescriptorSetPool::createDescriptorSet()const

@@ -179,7 +179,7 @@ namespace vkapp
 			auto size = m_swapChain->getDimensions();
 			float halfWidth = static_cast< float >( size.x ) * 0.5f;
 			float halfHeight = static_cast< float >( size.y ) * 0.5f;
-			m_uniformBuffer->getData( 0u ) = utils::ortho( -halfWidth
+			m_uniformBuffer->getData( 0u ) = m_device->ortho( -halfWidth
 				, halfWidth
 				, -halfHeight
 				, halfHeight
@@ -263,7 +263,7 @@ namespace vkapp
 		auto size = m_swapChain->getDimensions();
 		float halfWidth = static_cast< float >( size.x ) * 0.5f;
 		float halfHeight = static_cast< float >( size.y ) * 0.5f;
-		m_uniformBuffer->getData( 0u ) = utils::ortho( -halfWidth
+		m_uniformBuffer->getData( 0u ) = m_device->ortho( -halfWidth
 			, halfWidth
 			, -halfHeight
 			, halfHeight

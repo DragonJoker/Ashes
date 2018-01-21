@@ -30,6 +30,24 @@ namespace vkapp
 		/**
 		*\~french
 		*\brief
+		*	Nettoie l'instance.
+		*\~english
+		*\brief
+		*	Cleans up the instance.
+		*/
+		void doCleanup();
+		/**
+		*\~french
+		*\brief
+		*	Met à jour la matrice de projection.
+		*\~english
+		*\brief
+		*	Updates the projection matrix.
+		*/
+		void doUpdateProjection();
+		/**
+		*\~french
+		*\brief
 		*	Crée le device logique.
 		*\~english
 		*\brief
@@ -219,11 +237,12 @@ namespace vkapp
 		renderer::StagingBufferPtr m_stagingBuffer;
 		renderer::TexturePtr m_texture;
 		renderer::SamplerPtr m_sampler;
-		renderer::TexturePtr m_renderTarget;
+		renderer::TexturePtr m_renderTargetColour;
 		renderer::FrameBufferPtr m_frameBuffer;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_uniformBuffer;
+		renderer::UniformBufferPtr< renderer::Mat4 > m_matrixUbo;
 
 		renderer::CommandBufferPtr m_commandBuffer;
+		renderer::CommandBufferPtr m_updateCommandBuffer;
 		renderer::RenderPassPtr m_offscreenRenderPass;
 		renderer::ShaderProgramPtr m_offscreenProgram;
 		renderer::PipelineLayoutPtr m_offscreenPipelineLayout;

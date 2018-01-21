@@ -43,7 +43,7 @@ namespace vk_renderer
 	SwapChain::~SwapChain()
 	{
 		m_backBuffers.clear();
-		DestroySwapchainKHR( m_device, m_swapChain, nullptr );
+		vk::DestroySwapchainKHR( m_device, m_swapChain, nullptr );
 	}
 
 	void SwapChain::reset( renderer::UIVec2 const & size )
@@ -105,7 +105,7 @@ namespace vk_renderer
 		if ( resources.waitRecord( renderer::FenceTimeout ) )
 		{
 			uint32_t backBuffer{ 0u };
-			auto res = AcquireNextImageKHR( m_device
+			auto res = vk::AcquireNextImageKHR( m_device
 				, m_swapChain
 				, std::numeric_limits< uint64_t >::max()
 				, static_cast< Semaphore const & >( resources.getImageAvailableSemaphore() )
@@ -155,7 +155,7 @@ namespace vk_renderer
 	{
 		// On r�cup�re la liste de VkFormat support�s par la surface.
 		uint32_t formatCount{ 0u };
-		auto res = GetPhysicalDeviceSurfaceFormatsKHR( gpu
+		auto res = vk::GetPhysicalDeviceSurfaceFormatsKHR( gpu
 			, m_surface
 			, &formatCount
 			, nullptr );
@@ -166,7 +166,7 @@ namespace vk_renderer
 		}
 
 		std::vector< VkSurfaceFormatKHR > surfFormats{ formatCount };
-		res = GetPhysicalDeviceSurfaceFormatsKHR( gpu, m_surface
+		res = vk::GetPhysicalDeviceSurfaceFormatsKHR( gpu, m_surface
 			, &formatCount
 			, surfFormats.data() );
 
@@ -195,7 +195,7 @@ namespace vk_renderer
 	{
 		// On r�cup�re la liste de VkPresentModeKHR support�s par la surface.
 		uint32_t presentModeCount{};
-		auto res = GetPhysicalDeviceSurfacePresentModesKHR( m_device.getPhysicalDevice()
+		auto res = vk::GetPhysicalDeviceSurfacePresentModesKHR( m_device.getPhysicalDevice()
 			, m_surface
 			, &presentModeCount
 			, nullptr );
@@ -206,7 +206,7 @@ namespace vk_renderer
 		}
 
 		std::vector< VkPresentModeKHR > presentModes{ presentModeCount };
-		res = GetPhysicalDeviceSurfacePresentModesKHR( m_device.getPhysicalDevice()
+		res = vk::GetPhysicalDeviceSurfacePresentModesKHR( m_device.getPhysicalDevice()
 			, m_surface
 			, &presentModeCount
 			, presentModes.data() );
@@ -301,7 +301,7 @@ namespace vk_renderer
 			oldSwapChain,                                                             // oldSwapchain
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = CreateSwapchainKHR( m_device
+		auto res = vk::CreateSwapchainKHR( m_device
 			, &createInfo
 			, nullptr
 			, &m_swapChain );
@@ -314,7 +314,7 @@ namespace vk_renderer
 		// On supprime la précédente swap chain au cas où il y en avait une.
 		if ( oldSwapChain != VK_NULL_HANDLE )
 		{
-			DestroySwapchainKHR( m_device
+			vk::DestroySwapchainKHR( m_device
 				, oldSwapChain
 				, nullptr );
 		}
@@ -324,7 +324,7 @@ namespace vk_renderer
 	{
 		// On récupère les images de la swapchain.
 		uint32_t imageCount{ 0u };
-		auto res = GetSwapchainImagesKHR( m_device
+		auto res = vk::GetSwapchainImagesKHR( m_device
 			, m_swapChain
 			, &imageCount
 			, nullptr );
@@ -335,7 +335,7 @@ namespace vk_renderer
 		}
 
 		std::vector< VkImage > swapChainImages( imageCount );
-		res = GetSwapchainImagesKHR( m_device
+		res = vk::GetSwapchainImagesKHR( m_device
 			, m_swapChain
 			, &imageCount
 			, &swapChainImages[0] );
@@ -403,7 +403,7 @@ namespace vk_renderer
 		m_device.waitIdle();
 		auto colour = m_clearColour;
 		m_backBuffers.clear();
-		DestroySwapchainKHR( m_device, m_swapChain, nullptr );
+		vk::DestroySwapchainKHR( m_device, m_swapChain, nullptr );
 		m_renderingResources.clear();
 		m_surfaceCapabilities = m_device.getSurfaceCapabilities();
 		// On choisit le format de la surface.

@@ -244,7 +244,6 @@ namespace vkapp
 	private:
 		wxTimer * m_timer{ nullptr };
 		renderer::Mat4 m_rotate;
-		renderer::Mat4 m_translate;
 
 		renderer::DevicePtr m_device;
 		renderer::SwapChainPtr m_swapChain;

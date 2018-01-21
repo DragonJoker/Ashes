@@ -130,7 +130,7 @@ namespace vk_renderer
 			m_instanceExtensionNames.clear();
 			m_instanceLayerNames.clear();
 			m_gpus.clear();
-			DestroyInstance( m_instance, nullptr );
+			vk::DestroyInstance( m_instance, nullptr );
 			m_instance = VK_NULL_HANDLE;
 		}
 
@@ -212,7 +212,7 @@ namespace vk_renderer
 		do
 		{
 			uint32_t instanceLayerCount{ 0 };
-			res = EnumerateInstanceLayerProperties( &instanceLayerCount, nullptr );
+			res = vk::EnumerateInstanceLayerProperties( &instanceLayerCount, nullptr );
 
 			if ( checkError( res ) )
 			{
@@ -223,7 +223,7 @@ namespace vk_renderer
 				else
 				{
 					vkProperties.resize( instanceLayerCount );
-					res = EnumerateInstanceLayerProperties( &instanceLayerCount
+					res = vk::EnumerateInstanceLayerProperties( &instanceLayerCount
 						, vkProperties.data() );
 				}
 			}
@@ -256,7 +256,7 @@ namespace vk_renderer
 		do
 		{
 			uint32_t extensionCount{ 0 };
-			res = EnumerateInstanceExtensionProperties( name
+			res = vk::EnumerateInstanceExtensionProperties( name
 				, &extensionCount
 				, nullptr );
 
@@ -265,7 +265,7 @@ namespace vk_renderer
 				if ( extensionCount > 0 )
 				{
 					layerProps.m_extensions.resize( extensionCount );
-					res = EnumerateInstanceExtensionProperties( name
+					res = vk::EnumerateInstanceExtensionProperties( name
 						, &extensionCount
 						, layerProps.m_extensions.data() );
 				}
@@ -312,7 +312,7 @@ namespace vk_renderer
 		};
 		DEBUG_DUMP( instInfo );
 
-		auto res = CreateInstance( &instInfo, nullptr, &m_instance );
+		auto res = vk::CreateInstance( &instInfo, nullptr, &m_instance );
 
 		if ( !checkError( res ) )
 		{
@@ -362,7 +362,7 @@ namespace vk_renderer
 	{
 		uint32_t gpuCount{ 0 };
 		// On r�cup�re les GPU physiques.
-		auto res = EnumeratePhysicalDevices( m_instance
+		auto res = vk::EnumeratePhysicalDevices( m_instance
 			, &gpuCount
 			, nullptr );
 
@@ -372,7 +372,7 @@ namespace vk_renderer
 		}
 
 		std::vector< VkPhysicalDevice > gpus( gpuCount, VK_NULL_HANDLE );
-		res = EnumeratePhysicalDevices( m_instance
+		res = vk::EnumeratePhysicalDevices( m_instance
 			, &gpuCount
 			, gpus.data() );
 

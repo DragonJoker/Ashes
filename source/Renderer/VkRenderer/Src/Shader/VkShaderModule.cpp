@@ -43,7 +43,7 @@ namespace vk_renderer
 			fileData.data()                                             // pCode
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = CreateShaderModule( m_device
+		auto res = vk::CreateShaderModule( m_device
 			, &createInfo
 			, nullptr
 			, &m_shader );
@@ -69,7 +69,7 @@ namespace vk_renderer
 			reinterpret_cast< uint32_t const * >( fileData.data() )     // pCode
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = CreateShaderModule( m_device
+		auto res = vk::CreateShaderModule( m_device
 			, &createInfo
 			, nullptr
 			, &m_shader );
@@ -84,7 +84,7 @@ namespace vk_renderer
 	{
 		if ( m_shader != VK_NULL_HANDLE )
 		{
-			DestroyShaderModule( m_device, m_shader, nullptr );
+			vk::DestroyShaderModule( m_device, m_shader, nullptr );
 		}
 	}
 }
