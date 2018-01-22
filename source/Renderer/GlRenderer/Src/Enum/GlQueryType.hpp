@@ -8,13 +8,20 @@ See LICENSE file in root folder
 
 namespace gl_renderer
 {
+	enum GlQueryType
+		: GLenum
+	{
+		GL_QUERY_TYPE_SAMPLES_PASSED = 0x8914,
+		GL_QUERY_TYPE_PRIMITIVES_GENERATED = 0x8C87,
+		GL_QUERY_TYPE_TIMESTAMP = 0x8E28,
+	};
 	/**
 	*\brief
-	*	Convertit un renderer::QueryType en GLuint.
+	*	Convertit un renderer::QueryType en GlQueryType.
 	*\param[in] value
 	*	Le renderer::QueryType.
 	*\return
-	*	Le GLuint.
+	*	Le GlQueryType.
 	*/
-	GLenum convert( renderer::QueryType const & value );
+	GlQueryType convert( renderer::QueryType const & value );
 }

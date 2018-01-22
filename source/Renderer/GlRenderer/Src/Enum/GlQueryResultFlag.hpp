@@ -8,6 +8,12 @@ See LICENSE file in root folder
 
 namespace gl_renderer
 {
+	enum GlQueryResultFlag
+	{
+		GL_QUERY_RESULT = 0x8866,
+		GL_QUERY_RESULT_NO_WAIT = 0x9194,
+	};
+	Utils_ImplementFlag( GlQueryResultFlag );
 	/**
 	*\brief
 	*	Convertit un renderer::QueryResultFlags en GLuint.

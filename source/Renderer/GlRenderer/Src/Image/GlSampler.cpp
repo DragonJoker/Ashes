@@ -4,6 +4,21 @@
 
 namespace gl_renderer
 {
+	enum SamplerParameter
+	{
+		GL_SAMPLER_PARAMETER_BORDER_COLOR = 0x1004,
+		GL_SAMPLER_PARAMETER_MAG_FILTER = 0x2800,
+		GL_SAMPLER_PARAMETER_MIN_FILTER = 0x2801,
+		GL_SAMPLER_PARAMETER_WRAP_S = 0x2802,
+		GL_SAMPLER_PARAMETER_WRAP_T = 0x2803,
+		GL_SAMPLER_PARAMETER_WRAP_R = 0x8072,
+		GL_SAMPLER_PARAMETER_MIN_LOD = 0x813A,
+		GL_SAMPLER_PARAMETER_MAX_LOD = 0x813B,
+		GL_SAMPLER_PARAMETER_COMPARE_MODE = 0x884C,
+		GL_SAMPLER_PARAMETER_COMPARE_FUNC = 0x884D,
+		GL_SAMPLER_PARAMETER_COMPARE_REF_TO_TEXTURE = 0x884E
+	};
+
 	Sampler::Sampler( renderer::Device const & device
 		, renderer::WrapMode wrapS
 		, renderer::WrapMode wrapT
@@ -31,20 +46,20 @@ namespace gl_renderer
 			, maxAnisotropy
 			, compareOp }
 	{
-		glLogCall( glGenSamplers, 1, &m_sampler );
-		glLogCall( glBindSampler, 0u, m_sampler );
-		glLogCall( glSamplerParameteri, m_sampler, GL_TEXTURE_MIN_FILTER, convert( minFilter, mipFilter ) );
-		glLogCall( glSamplerParameteri, m_sampler, GL_TEXTURE_MAG_FILTER, convert( magFilter ) );
-		glLogCall( glSamplerParameteri, m_sampler, GL_TEXTURE_WRAP_S, convert( wrapS ) );
-		glLogCall( glSamplerParameteri, m_sampler, GL_TEXTURE_WRAP_T, convert( wrapT ) );
-		glLogCall( glSamplerParameteri, m_sampler, GL_TEXTURE_WRAP_R, convert( wrapR ) );
-		glLogCall( glSamplerParameterf, m_sampler, GL_TEXTURE_MIN_LOD, minLod );
-		glLogCall( glSamplerParameterf, m_sampler, GL_TEXTURE_MAX_LOD, maxLod );
+		glLogCall( gl::GenSamplers, 1, &m_sampler );
+		glLogCall( gl::BindSampler, 0u, m_sampler );
+		glLogCall( gl::SamplerParameteri, m_sampler, GL_SAMPLER_PARAMETER_MIN_FILTER, convert( minFilter, mipFilter ) );
+		glLogCall( gl::SamplerParameteri, m_sampler, GL_SAMPLER_PARAMETER_MAG_FILTER, convert( magFilter ) );
+		glLogCall( gl::SamplerParameteri, m_sampler, GL_SAMPLER_PARAMETER_WRAP_S, convert( wrapS ) );
+		glLogCall( gl::SamplerParameteri, m_sampler, GL_SAMPLER_PARAMETER_WRAP_T, convert( wrapT ) );
+		glLogCall( gl::SamplerParameteri, m_sampler, GL_SAMPLER_PARAMETER_WRAP_R, convert( wrapR ) );
+		glLogCall( gl::SamplerParameterf, m_sampler, GL_SAMPLER_PARAMETER_MIN_LOD, minLod );
+		glLogCall( gl::SamplerParameterf, m_sampler, GL_SAMPLER_PARAMETER_MAX_LOD, maxLod );
 
 		if ( compareOp != renderer::CompareOp::eAlways )
 		{
-			glLogCall( glSamplerParameteri, m_sampler, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
-			glLogCall( glSamplerParameteri, m_sampler, GL_TEXTURE_COMPARE_FUNC, convert( compareOp ) );
+			glLogCall( gl::SamplerParameteri, m_sampler, GL_SAMPLER_PARAMETER_COMPARE_MODE, GL_SAMPLER_PARAMETER_COMPARE_REF_TO_TEXTURE );
+			glLogCall( gl::SamplerParameteri, m_sampler, GL_SAMPLER_PARAMETER_COMPARE_FUNC, convert( compareOp ) );
 		}
 
 		float fvalues[4] = { 0.0f };
@@ -53,21 +68,21 @@ namespace gl_renderer
 		switch ( borderColour )
 		{
 		case renderer::BorderColour::eFloatTransparentBlack:
-			glLogCall( glSamplerParameterfv, m_sampler, GL_TEXTURE_BORDER_COLOR, fvalues );
+			glLogCall( gl::SamplerParameterfv, m_sampler, GL_SAMPLER_PARAMETER_BORDER_COLOR, fvalues );
 			break;
 
 		case renderer::BorderColour::eIntTransparentBlack:
-			glLogCall( glSamplerParameteriv, m_sampler, GL_TEXTURE_BORDER_COLOR, ivalues );
+			glLogCall( gl::SamplerParameteriv, m_sampler, GL_SAMPLER_PARAMETER_BORDER_COLOR, ivalues );
 			break;
 
 		case renderer::BorderColour::eFloatOpaqueBlack:
 			fvalues[3] = 1.0f;
-			glLogCall( glSamplerParameterfv, m_sampler, GL_TEXTURE_BORDER_COLOR, fvalues );
+			glLogCall( gl::SamplerParameterfv, m_sampler, GL_SAMPLER_PARAMETER_BORDER_COLOR, fvalues );
 			break;
 
 		case renderer::BorderColour::eIntOpaqueBlack:
 			ivalues[3] = 255;
-			glLogCall( glSamplerParameteriv, m_sampler, GL_TEXTURE_BORDER_COLOR, ivalues );
+			glLogCall( gl::SamplerParameteriv, m_sampler, GL_SAMPLER_PARAMETER_BORDER_COLOR, ivalues );
 			break;
 
 		case renderer::BorderColour::eFloatOpaqueWhite:
@@ -75,7 +90,7 @@ namespace gl_renderer
 			fvalues[1] = 1.0f;
 			fvalues[2] = 1.0f;
 			fvalues[3] = 1.0f;
-			glLogCall( glSamplerParameterfv, m_sampler, GL_TEXTURE_BORDER_COLOR, fvalues );
+			glLogCall( gl::SamplerParameterfv, m_sampler, GL_SAMPLER_PARAMETER_BORDER_COLOR, fvalues );
 			break;
 
 		case renderer::BorderColour::eIntOpaqueWhite:
@@ -83,13 +98,13 @@ namespace gl_renderer
 			ivalues[1] = 255;
 			ivalues[2] = 255;
 			ivalues[3] = 255;
-			glLogCall( glSamplerParameteriv, m_sampler, GL_TEXTURE_BORDER_COLOR, ivalues );
+			glLogCall( gl::SamplerParameteriv, m_sampler, GL_SAMPLER_PARAMETER_BORDER_COLOR, ivalues );
 			break;
 		}
 	}
 
 	Sampler::~Sampler()
 	{
-		glLogCall( glDeleteSamplers, 1, &m_sampler );
+		glLogCall( gl::DeleteSamplers, 1, &m_sampler );
 	}
 }

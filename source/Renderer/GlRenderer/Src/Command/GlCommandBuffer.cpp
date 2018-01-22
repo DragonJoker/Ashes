@@ -72,7 +72,7 @@ namespace gl_renderer
 
 	bool CommandBuffer::end()const
 	{
-		return glGetError() == GL_NO_ERROR;
+		return gl::GetError() == GL_NO_ERROR;
 	}
 
 	bool CommandBuffer::reset( renderer::CommandBufferResetFlags flags )const

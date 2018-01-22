@@ -2,23 +2,23 @@
 
 namespace gl_renderer
 {
-	GLenum convert( renderer::Filter const & filter )
+	GLFilter convert( renderer::Filter const & filter )
 	{
 		switch ( filter )
 		{
 		case renderer::Filter::eNearest:
-			return GL_NEAREST;
+			return GL_FILTER_NEAREST;
 
 		case renderer::Filter::eLinear:
-			return GL_LINEAR;
+			return GL_FILTER_LINEAR;
 
 		default:
 			assert( false );
-			return GL_NEAREST;
+			return GL_FILTER_NEAREST;
 		}
 	}
 
-	GLenum convert( renderer::Filter const & filter, renderer::MipmapMode mode )
+	GLFilter convert( renderer::Filter const & filter, renderer::MipmapMode mode )
 	{
 		switch ( filter )
 		{
@@ -26,39 +26,39 @@ namespace gl_renderer
 			switch ( mode )
 			{
 			case renderer::MipmapMode::eNone:
-				return GL_NEAREST;
+				return GL_FILTER_NEAREST;
 
 			case renderer::MipmapMode::eNearest:
-				return GL_NEAREST_MIPMAP_NEAREST;
+				return GL_FILTER_NEAREST_MIPMAP_NEAREST;
 
 			case renderer::MipmapMode::eLinear:
-				return GL_NEAREST_MIPMAP_LINEAR;
+				return GL_FILTER_NEAREST_MIPMAP_LINEAR;
 
 			default:
 				assert( false );
-				return GL_NEAREST;
+				return GL_FILTER_NEAREST;
 			}
 
 		case renderer::Filter::eLinear:
 			switch ( mode )
 			{
 			case renderer::MipmapMode::eNone:
-				return GL_LINEAR;
+				return GL_FILTER_LINEAR;
 
 			case renderer::MipmapMode::eNearest:
-				return GL_LINEAR_MIPMAP_NEAREST;
+				return GL_FILTER_LINEAR_MIPMAP_NEAREST;
 
 			case renderer::MipmapMode::eLinear:
-				return GL_LINEAR_MIPMAP_LINEAR;
+				return GL_FILTER_LINEAR_MIPMAP_LINEAR;
 
 			default:
 				assert( false );
-				return GL_LINEAR;
+				return GL_FILTER_LINEAR;
 			}
 
 		default:
 			assert( false );
-			return GL_NEAREST;
+			return GL_FILTER_NEAREST;
 		}
 	}
 }

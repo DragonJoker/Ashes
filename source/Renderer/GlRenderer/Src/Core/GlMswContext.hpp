@@ -5,6 +5,7 @@ See LICENSE file in root folder
 
 #if defined( _WIN32 )
 #include "Core/GlContext.hpp"
+#include "Miscellaneous/OpenGLLibrary.hpp"
 
 #include <Windows.h>
 
@@ -37,6 +38,7 @@ namespace gl_renderer
 		bool doCreateGl3Context();
 
 	private:
+		std::unique_ptr< OpenGLLibrary > m_opengl;
 		HDC m_hDC;
 		HGLRC m_hContext;
 		HWND m_hWnd;

@@ -2,7 +2,7 @@
 
 namespace gl_renderer
 {
-	GLenum convert( renderer::ImageAspectFlags const & flags )
+	GlImageAspectFlags convert( renderer::ImageAspectFlags const & flags )
 	{
 		GLenum result{ 0 };
 

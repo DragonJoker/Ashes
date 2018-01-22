@@ -2,143 +2,143 @@
 
 namespace gl_renderer
 {
-	GLenum getInternal( renderer::PixelFormat const & format )noexcept
+	GlInternal getInternal( renderer::PixelFormat const & format )noexcept
 	{
 		switch ( format )
 		{
 		case renderer::PixelFormat::eL8:
-			return GL_R8;
+			return GL_INTERNAL_R8;
 
 		case renderer::PixelFormat::eL8A8:
-			return GL_RG8;
+			return GL_INTERNAL_R8G8;
 
 		case renderer::PixelFormat::eR8G8B8:
-			return GL_RGB8;
+			return GL_INTERNAL_R8G8B8;
 
 		case renderer::PixelFormat::eRGB565:
-			return GL_RGB565;
+			return GL_INTERNAL_R5G6B5;
 
 		case renderer::PixelFormat::eR8G8B8A8:
-			return GL_RGBA8;
+			return GL_INTERNAL_R8G8B8A8;
 
 		case renderer::PixelFormat::eB8G8R8A8:
-			return GL_BGRA8_EXT;
+			return GL_INTERNAL_B8G8R8A8;
 
 		case renderer::PixelFormat::eRGBA5551:
-			return GL_RGB5_A1;
+			return GL_INTERNAL_R5G5B5A1;
 
 		case renderer::PixelFormat::eRGBA4444:
-			return GL_RGBA4;
+			return GL_INTERNAL_R4G4B4A4;
 
 		case renderer::PixelFormat::eD16:
-			return GL_DEPTH_COMPONENT16;
+			return GL_INTERNAL_D16;
 
 		case renderer::PixelFormat::eD24S8:
-			return GL_DEPTH24_STENCIL8;
+			return GL_INTERNAL_D24S8;
 
 		case renderer::PixelFormat::eD32F:
-			return GL_DEPTH_COMPONENT32F;
+			return GL_INTERNAL_D32F;
 
 		case renderer::PixelFormat::eS8:
-			return GL_STENCIL_INDEX8;
+			return GL_INTERNAL_S8;
 
 		default:
 			assert( false && "Unsupported pixel format." );
-			return GL_RGBA8;
+			return GL_INTERNAL_R8G8B8A8;
 		}
 	}
 
-	GLenum getFormat( renderer::PixelFormat format )noexcept
+	GlFormat getFormat( renderer::PixelFormat format )noexcept
 	{
 		switch ( format )
 		{
 		case renderer::PixelFormat::eL8:
-			return GL_RED;
+			return GL_FORMAT_R;
 
 		case renderer::PixelFormat::eL8A8:
-			return GL_RG;
+			return GL_FORMAT_RG;
 
 		case renderer::PixelFormat::eR8G8B8:
-			return GL_RGB;
+			return GL_FORMAT_RGB;
 
 		case renderer::PixelFormat::eRGB565:
-			return GL_RGB;
+			return GL_FORMAT_RGB;
 
 		case renderer::PixelFormat::eR8G8B8A8:
 #if defined( _WIN32 )
-			return GL_ABGR_EXT;
+			return GL_FORMAT_ABGR;
 #else
-			return GL_RGBA;
+			return GL_FORMAT_RGBA;
 #endif
 
 		case renderer::PixelFormat::eB8G8R8A8:
-			return GL_BGRA;
+			return GL_FORMAT_BGRA;
 
 		case renderer::PixelFormat::eRGBA5551:
-			return GL_RGBA;
+			return GL_FORMAT_RGBA;
 
 		case renderer::PixelFormat::eRGBA4444:
-			return GL_RGBA;
+			return GL_FORMAT_RGBA;
 
 		case renderer::PixelFormat::eD16:
 		case renderer::PixelFormat::eD32F:
-			return GL_DEPTH_COMPONENT;
+			return GL_FORMAT_D;
 
 		case renderer::PixelFormat::eD24S8:
-			return GL_DEPTH_STENCIL;
+			return GL_FORMAT_DS;
 
 		case renderer::PixelFormat::eS8:
-			return GL_STENCIL;
+			return GL_FORMAT_S;
 
 		default:
 			assert( false && "Unsupported pixel format." );
-			return GL_RGBA8;
+			return GL_FORMAT_RGBA;
 		}
 	}
 
-	GLenum getType( renderer::PixelFormat format )noexcept
+	GlType getType( renderer::PixelFormat format )noexcept
 	{
 		switch ( format )
 		{
 		case renderer::PixelFormat::eL8:
-			return GL_UNSIGNED_BYTE;
+			return GL_TYPE_UI8;
 
 		case renderer::PixelFormat::eL8A8:
-			return GL_UNSIGNED_BYTE;
+			return GL_TYPE_UI8;
 
 		case renderer::PixelFormat::eR8G8B8:
-			return GL_UNSIGNED_BYTE;
+			return GL_TYPE_UI8;
 
 		case renderer::PixelFormat::eRGB565:
-			return GL_UNSIGNED_SHORT_5_6_5;
+			return GL_TYPE_UI565;
 
 		case renderer::PixelFormat::eR8G8B8A8:
-			return GL_UNSIGNED_INT_8_8_8_8;
+			return GL_TYPE_UI8888;
 
 		case renderer::PixelFormat::eB8G8R8A8:
-			return GL_UNSIGNED_INT_8_8_8_8;
+			return GL_TYPE_UI8888;
 
 		case renderer::PixelFormat::eRGBA5551:
-			return GL_UNSIGNED_SHORT_5_5_5_1;
+			return GL_TYPE_US5551;
 
 		case renderer::PixelFormat::eRGBA4444:
-			return GL_UNSIGNED_SHORT_4_4_4_4;
+			return GL_TYPE_US4444;
 
 		case renderer::PixelFormat::eD16:
-			return GL_UNSIGNED_SHORT;
+			return GL_TYPE_UI16;
 
 		case renderer::PixelFormat::eD24S8:
-			return GL_UNSIGNED_INT_24_8;
+			return GL_TYPE_UI24_8;
 
 		case renderer::PixelFormat::eD32F:
-			return GL_FLOAT;
+			return GL_TYPE_F;
 
 		case renderer::PixelFormat::eS8:
-			return GL_UNSIGNED_BYTE;
+			return GL_TYPE_UI8;
 
 		default:
 			assert( false && "Unsupported pixel format." );
-			return GL_RGBA8;
+			return GL_TYPE_UI8888;
 		}
 	}
 
@@ -188,44 +188,44 @@ namespace gl_renderer
 		}
 	}
 
-	renderer::PixelFormat convert( GLenum format )noexcept
+	renderer::PixelFormat convert( GlInternal format )noexcept
 	{
 		switch ( format )
 		{
-		case GL_R8:
+		case GL_INTERNAL_R8:
 			return renderer::PixelFormat::eL8;
 
-		case GL_RG8:
+		case GL_INTERNAL_R8G8:
 			return renderer::PixelFormat::eL8A8;
 
-		case GL_RGB8:
+		case GL_INTERNAL_R8G8B8:
 			return renderer::PixelFormat::eR8G8B8;
 
-		case GL_RGB565:
+		case GL_INTERNAL_R5G6B5:
 			return renderer::PixelFormat::eRGB565;
 
-		case GL_RGBA8:
+		case GL_INTERNAL_R8G8B8A8:
 			return renderer::PixelFormat::eR8G8B8A8;
 
-		case GL_BGRA:
+		case GL_INTERNAL_B8G8R8A8:
 			return renderer::PixelFormat::eB8G8R8A8;
 
-		case GL_RGB5_A1:
+		case GL_INTERNAL_R5G5B5A1:
 			return renderer::PixelFormat::eRGBA5551;
 
-		case GL_RGBA4:
+		case GL_INTERNAL_R4G4B4A4:
 			return renderer::PixelFormat::eRGBA4444;
 
-		case GL_DEPTH_COMPONENT16:
+		case GL_INTERNAL_D16:
 			return renderer::PixelFormat::eD16;
 
-		case GL_DEPTH24_STENCIL8:
+		case GL_INTERNAL_D24S8:
 			return renderer::PixelFormat::eD24S8;
 
-		case GL_DEPTH_COMPONENT32F:
+		case GL_INTERNAL_D32F:
 			return renderer::PixelFormat::eD32F;
 
-		case GL_STENCIL_INDEX8:
+		case GL_INTERNAL_S8:
 			return renderer::PixelFormat::eS8;
 
 		default:

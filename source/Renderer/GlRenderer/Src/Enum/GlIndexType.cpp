@@ -2,19 +2,19 @@
 
 namespace gl_renderer
 {
-	GLenum convert( renderer::IndexType const & type )
+	GlIndexType convert( renderer::IndexType const & type )
 	{
 		switch ( type )
 		{
 		case renderer::IndexType::eUInt16:
-			return GL_UNSIGNED_SHORT;
+			return GL_INDEX_TYPE_UINT16;
 
 		case renderer::IndexType::eUInt32:
-			return GL_UNSIGNED_INT;
+			return GL_INDEX_TYPE_UINT32;
 
 		default:
 			assert( false && "Unsupported index type" );
-			return GL_UNSIGNED_INT;
+			return GL_INDEX_TYPE_UINT32;
 		}
 	}
 }

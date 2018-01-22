@@ -7,9 +7,6 @@ See LICENSE file in root folder
 
 #if RENDERLIB_XLIB
 
-#include "GL/glew.h"
-#include "GL/glxew.h"
-
 namespace gl_renderer
 {
 	class X11Context

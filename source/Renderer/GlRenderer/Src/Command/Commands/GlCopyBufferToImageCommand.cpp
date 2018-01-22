@@ -26,13 +26,13 @@ namespace gl_renderer
 
 	void CopyBufferToImageCommand::apply()const
 	{
-		glLogCall( glBindTexture, m_target, m_dst.getImage() );
-		glLogCall( glBindBuffer, GL_PIXEL_UNPACK_BUFFER, m_src.getBuffer() );
+		glLogCall( gl::BindTexture, m_target, m_dst.getImage() );
+		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, m_src.getBuffer() );
 
 		switch ( m_target )
 		{
 		case GL_TEXTURE_1D:
-			glLogCall( glTexSubImage1D
+			glLogCall( gl::TexSubImage1D
 				, m_target
 				, m_copyInfo.imageSubresource.mipLevel
 				, m_copyInfo.imageOffset[0]
@@ -43,7 +43,7 @@ namespace gl_renderer
 			break;
 
 		case GL_TEXTURE_2D:
-			glLogCall( glTexSubImage2D
+			glLogCall( gl::TexSubImage2D
 				, m_target
 				, m_copyInfo.imageSubresource.mipLevel
 				, m_copyInfo.imageOffset[0]
@@ -56,7 +56,7 @@ namespace gl_renderer
 			break;
 
 		case GL_TEXTURE_3D:
-			glLogCall( glTexSubImage3D
+			glLogCall( gl::TexSubImage3D
 				, m_target
 				, m_copyInfo.imageSubresource.mipLevel
 				, m_copyInfo.imageOffset[0]
@@ -71,8 +71,8 @@ namespace gl_renderer
 			break;
 		}
 
-		glLogCall( glBindBuffer, GL_PIXEL_UNPACK_BUFFER, 0u );
-		glLogCall( glBindTexture, m_target, 0u );
+		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, 0u );
+		glLogCall( gl::BindTexture, m_target, 0u );
 		m_dst.generateMipmaps();
 	}
 

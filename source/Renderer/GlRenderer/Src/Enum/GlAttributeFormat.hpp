@@ -8,15 +8,23 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
+	enum GlAttributeFormatBaseType
+		: GLenum
+	{
+		GL_ATTRIBUTE_FORMAT_BASE_TYPE_INT = 0x1404,
+		GL_ATTRIBUTE_FORMAT_BASE_TYPE_UNSIGNED_INT = 0x1405,
+		GL_ATTRIBUTE_FORMAT_BASE_TYPE_FLOAT = 0x1406,
+	};
+
 	/**
 	*\brief
-	*	Convertit un renderer::AttributeFormat en VkFormat.
+	*	Convertit un renderer::AttributeFormat en GlAttributeFormatBaseType.
 	*\param[in] flags
 	*	Le renderer::AttributeFormat.
 	*\return
-	*	Le VkFormat.
+	*	Le GlAttributeFormatBaseType.
 	*/
-	GLenum getType( renderer::AttributeFormat format );
+	GlAttributeFormatBaseType getType( renderer::AttributeFormat format );
 	/**
 	*\brief
 	*	R�cup�re le nombre d'�l�ments du format donn�.

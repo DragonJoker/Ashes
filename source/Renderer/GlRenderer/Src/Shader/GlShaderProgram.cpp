@@ -12,17 +12,25 @@ namespace gl_renderer
 {
 	namespace
 	{
+		enum GlShaderInfo
+		{
+			GL_INFO_COMPILE_STATUS = 0x8B81,
+			GL_INFO_LINK_STATUS = 0x8B82,
+			GL_INFO_LOG_LENGTH = 0x8B84,
+			GL_INFO_ATTACHED_SHADERS = 0x8B85,
+		};
+
 		std::string doRetrieveCompilerLog( GLuint shaderName )
 		{
 			std::string log;
 			int infologLength = 0;
 			int charsWritten = 0;
-			glLogCall( glGetShaderiv, shaderName, GL_INFO_LOG_LENGTH, &infologLength );
+			glLogCall( gl::GetShaderiv, shaderName, GL_INFO_LOG_LENGTH, &infologLength );
 
 			if ( infologLength > 0 )
 			{
 				std::vector< char > infoLog( infologLength + 1 );
-				glLogCall( glGetShaderInfoLog, shaderName, infologLength, &charsWritten, infoLog.data() );
+				glLogCall( gl::GetShaderInfoLog, shaderName, infologLength, &charsWritten, infoLog.data() );
 				log = infoLog.data();
 			}
 
@@ -63,12 +71,12 @@ namespace gl_renderer
 			std::string log;
 			int infologLength = 0;
 			int charsWritten = 0;
-			glLogCall( glGetProgramiv, programName, GL_INFO_LOG_LENGTH, &infologLength );
+			glLogCall( gl::GetProgramiv, programName, GL_INFO_LOG_LENGTH, &infologLength );
 
 			if ( infologLength > 0 )
 			{
 				std::vector< char > infoLog( infologLength + 1 );
-				glLogCall( glGetProgramInfoLog, programName, infologLength, &charsWritten, infoLog.data() );
+				glLogCall( gl::GetProgramInfoLog, programName, infologLength, &charsWritten, infoLog.data() );
 				log = infoLog.data();
 			}
 
@@ -83,7 +91,7 @@ namespace gl_renderer
 
 	ShaderProgram::ShaderProgram( renderer::Device const & device )
 		: renderer::ShaderProgram{ device }
-		, m_program{ glCreateProgram() }
+		, m_program{ gl::CreateProgram() }
 	{
 	}
 
@@ -91,16 +99,16 @@ namespace gl_renderer
 	{
 		for ( auto shaderName : m_shaders )
 		{
-			glLogCall( glDeleteShader, shaderName );
+			glLogCall( gl::DeleteShader, shaderName );
 		}
 
-		glLogCall( glDeleteProgram, m_program );
+		glLogCall( gl::DeleteProgram, m_program );
 	}
 
 	void ShaderProgram::createModule( std::string const & shader
 		, renderer::ShaderStageFlag stage )
 	{
-		auto shaderName = glLogCall( glCreateShader, convert( stage ) );
+		auto shaderName = glLogCall( gl::CreateShader, convert( stage ) );
 
 		std::vector< char > buffer( shader.size() + 1 );
 
@@ -112,19 +120,19 @@ namespace gl_renderer
 
 		auto length = int( shader.size() );
 		auto data = buffer.data();
-		glLogCall( glShaderSource, shaderName, 1, const_cast< const char ** >( &data ), &length );
-		glLogCall( glCompileShader, shaderName );
+		glLogCall( gl::ShaderSource, shaderName, 1, const_cast< const char ** >( &data ), &length );
+		glLogCall( gl::CompileShader, shaderName );
 		int compiled = 0;
-		glLogCall( glGetShaderiv, shaderName, GL_COMPILE_STATUS, &compiled );
+		glLogCall( gl::GetShaderiv, shaderName, GL_INFO_COMPILE_STATUS, &compiled );
 
 		if ( !doCheckCompileErrors( compiled != 0, shaderName ) )
 		{
-			glLogCall( glDeleteShader, shaderName );
+			glLogCall( gl::DeleteShader, shaderName );
 			throw std::runtime_error{ "Shader compilation failed." };
 		}
 
 		m_shaders.push_back( shaderName );
-		glLogCall( glAttachShader, m_program, shaderName );
+		glLogCall( gl::AttachShader, m_program, shaderName );
 	}
 
 	void ShaderProgram::createModule( renderer::ByteArray const & fileData
@@ -136,10 +144,10 @@ namespace gl_renderer
 	void ShaderProgram::link()
 	{
 		int attached = 0;
-		glLogCall( glGetProgramiv, m_program, GL_ATTACHED_SHADERS, &attached );
-		glLogCall( glLinkProgram, m_program );
+		glLogCall( gl::GetProgramiv, m_program, GL_INFO_ATTACHED_SHADERS, &attached );
+		glLogCall( gl::LinkProgram, m_program );
 		int linked = 0;
-		glLogCall( glGetProgramiv, m_program, GL_LINK_STATUS, &linked );
+		glLogCall( gl::GetProgramiv, m_program, GL_INFO_LINK_STATUS, &linked );
 		auto linkerLog = doRetrieveLinkerLog( m_program );
 		bool result = false;
 

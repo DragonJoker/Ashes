@@ -77,7 +77,7 @@ namespace gl_renderer
 
 	bool Queue::waitIdle()const
 	{
-		glLogCall( glFinish );
+		glLogCall( gl::Finish );
 		return true;
 	}
 }

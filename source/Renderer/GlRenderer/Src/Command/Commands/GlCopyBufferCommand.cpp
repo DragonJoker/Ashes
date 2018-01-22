@@ -21,16 +21,16 @@ namespace gl_renderer
 
 	void CopyBufferCommand::apply()const
 	{
-		glLogCall( glBindBuffer, GL_COPY_READ_BUFFER, m_src.getBuffer() );
-		glLogCall( glBindBuffer, GL_COPY_WRITE_BUFFER, m_dst.getBuffer() );
-		glLogCall( glCopyBufferSubData
-			, GL_COPY_READ_BUFFER
-			, GL_COPY_WRITE_BUFFER
+		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_COPY_READ, m_src.getBuffer() );
+		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_COPY_WRITE, m_dst.getBuffer() );
+		glLogCall( gl::CopyBufferSubData
+			, GL_BUFFER_TARGET_COPY_READ
+			, GL_BUFFER_TARGET_COPY_WRITE
 			, m_copyInfo.srcOffset
 			, m_copyInfo.dstOffset
 			, m_copyInfo.size );
-		glLogCall( glBindBuffer, GL_COPY_WRITE_BUFFER, 0u );
-		glLogCall( glBindBuffer, GL_COPY_READ_BUFFER, 0u );
+		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_COPY_WRITE, 0u );
+		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_COPY_READ, 0u );
 	}
 
 	CommandPtr CopyBufferCommand::clone()const

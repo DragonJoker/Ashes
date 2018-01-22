@@ -13,7 +13,7 @@ namespace gl_renderer
 
 	void ScissorCommand::apply()const
 	{
-		glLogCall( glScissor
+		glLogCall( gl::Scissor
 			, m_scissor.getOffset().x
 			, m_scissor.getOffset().y
 			, m_scissor.getSize().x

@@ -5,7 +5,7 @@
 
 #include <Core/PlatformWindowHandle.hpp>
 
-#include "GL/wglew.h"
+#include <Windows.h>
 
 namespace gl_renderer
 {
@@ -36,20 +36,10 @@ namespace gl_renderer
 		{
 			m_hContext = wglCreateContext( m_hDC );
 			setCurrent();
-			GLenum error = glewInit();
-
-			if ( GLEW_OK != error )
-			{
-				std::stringstream stream;
-				stream << "Error: %s" << glewGetErrorString( error );
-				endCurrent();
-				wglDeleteContext( m_hContext );
-				throw std::runtime_error{ stream.str() };
-			}
-
-			m_vendor = ( char const * )glGetString( GL_VENDOR );
-			m_renderer = ( char const * )glGetString( GL_RENDERER );
-			m_version = ( char const * )glGetString( GL_VERSION );
+			m_opengl = std::make_unique< OpenGLLibrary >();
+			m_vendor = ( char const * )gl::GetString( GL_VENDOR );
+			m_renderer = ( char const * )gl::GetString( GL_RENDERER );
+			m_version = ( char const * )gl::GetString( GL_VERSION );
 			loadDebugFunctions();
 
 			double fversion{ 0u };
@@ -62,15 +52,15 @@ namespace gl_renderer
 
 			if ( !doCreateGl3Context() )
 			{
-				wglDeleteContext( m_hContext );
+				wgl::DeleteContext( m_hContext );
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
 			else
 			{
 				setCurrent();
-				glClipControl( GL_UPPER_LEFT, GL_ZERO_TO_ONE );
+				glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
 				initialiseDebugFunctions();
-				wglSwapIntervalEXT( 0 );
+				wgl::SwapIntervalEXT( 0 );
 			}
 		}
 	}
@@ -162,26 +152,17 @@ namespace gl_renderer
 			};
 
 			setCurrent();
-			glGetError();
-
-			if ( wglewIsSupported( "WGL_ARB_create_context" ) )
-			{
-				glCreateContextAttribs = ( PFNGLCREATECONTEXTATTRIBS )wglGetProcAddress( "wglCreateContextAttribsARB" );
-			}
-			else
-			{
-				glCreateContextAttribs = ( PFNGLCREATECONTEXTATTRIBS )wglGetProcAddress( "wglCreateContextAttribsARB" );
-			}
-
+			gl::GetError();
+			glCreateContextAttribs = ( PFNGLCREATECONTEXTATTRIBS )wglGetProcAddress( "wglCreateContextAttribsARB" );
 			m_hContext = glCreateContextAttribs( m_hDC, nullptr, attribList.data() );
 			endCurrent();
-			wglDeleteContext( hContext );
+			wgl::DeleteContext( hContext );
 			result = m_hContext != nullptr;
 
 			if ( !result )
 			{
 				std::stringstream error;
-				error << "Failed to create a " << m_major << "." << m_minor << " OpenGL context (0x" << std::hex << glGetError() << ").";
+				error << "Failed to create a " << m_major << "." << m_minor << " OpenGL context (0x" << std::hex << gl::GetError() << ").";
 				throw std::runtime_error{ error.str() };
 			}
 		}

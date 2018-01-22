@@ -19,7 +19,7 @@ namespace gl_renderer
 
 	void ClearCommand::apply()const
 	{
-		glLogCall( glClearTexImage, m_image.getImage(), 0, m_format, m_type, m_colour.data );
+		glLogCall( gl::ClearTexImage, m_image.getImage(), 0, m_format, m_type, m_colour.data );
 	}
 
 	CommandPtr ClearCommand::clone()const

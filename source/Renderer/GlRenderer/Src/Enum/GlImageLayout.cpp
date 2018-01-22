@@ -2,14 +2,14 @@
 
 namespace gl_renderer
 {
-	GLenum convert( renderer::ImageLayout const & layout )
+	GlImageLayout convert( renderer::ImageLayout const & layout )
 	{
 		switch ( layout )
 		{
 		case renderer::ImageLayout::eUndefined:
 		case renderer::ImageLayout::ePreinitialised:
 		case renderer::ImageLayout::ePresentSrc:
-			return 0;
+			return GL_LAYOUT_UNDEFINED_EXT;
 
 		case renderer::ImageLayout::eGeneral:
 			return GL_LAYOUT_GENERAL_EXT;
@@ -34,15 +34,15 @@ namespace gl_renderer
 
 		default:
 			assert( false && "Unsupported image layout" );
-			return 0;
+			return GL_LAYOUT_UNDEFINED_EXT;
 		}
 	}
 
-	renderer::ImageLayout convertImageLayout( GLenum layout )
+	renderer::ImageLayout convertImageLayout( GlImageLayout layout )
 	{
 		switch ( layout )
 		{
-		case 0:
+		case GL_LAYOUT_UNDEFINED_EXT:
 			return renderer::ImageLayout::eUndefined;
 
 		case GL_LAYOUT_GENERAL_EXT:

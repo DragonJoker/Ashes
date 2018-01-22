@@ -16,31 +16,31 @@ namespace gl_renderer
 			, flags }
 		, m_target{ convert( target ) }
 	{
-		glLogCall( glGenBuffers, 1, &m_glName );
-		glLogCall( glBindBuffer, m_target, m_glName );
-		glLogCall( glBufferStorage, m_target, size, nullptr, convert( flags ) );
-		glLogCall( glBindBuffer, m_target, 0u );
+		glLogCall( gl::GenBuffers, 1, &m_glName );
+		glLogCall( gl::BindBuffer, m_target, m_glName );
+		glLogCall( gl::BufferStorage, m_target, size, nullptr, GLbitfield( convert( flags ) ) );
+		glLogCall( gl::BindBuffer, m_target, 0u );
 	}
 
 	Buffer::~Buffer()
 	{
-		glLogCall( glDeleteBuffers, 1, &m_glName );
+		glLogCall( gl::DeleteBuffers, 1, &m_glName );
 	}
 
 	uint8_t * Buffer::lock( uint32_t offset
 		, uint32_t size
 		, renderer::MemoryMapFlags flags )const
 	{
-		glLogCall( glBindBuffer, m_target, m_glName );
-		auto result = glLogCall( glMapBufferRange, m_target, offset, size, convert( flags ) );
+		glLogCall( gl::BindBuffer, m_target, m_glName );
+		auto result = glLogCall( gl::MapBufferRange, m_target, offset, size, GLbitfield( convert( flags ) ) );
 		return reinterpret_cast< uint8_t * >( result );
 	}
 
 	void Buffer::unlock( uint32_t size
 		, bool modified )const
 	{
-		glLogCall( glUnmapBuffer, m_target );
-		glLogCall( glBindBuffer, m_target, 0u );
+		glLogCall( gl::UnmapBuffer, m_target );
+		glLogCall( gl::BindBuffer, m_target, 0u );
 	}
 
 	renderer::BufferMemoryBarrier Buffer::makeTransferDestination()const

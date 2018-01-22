@@ -8,13 +8,18 @@ See LICENSE file in root folder
 
 namespace gl_renderer
 {
+	enum GlImageTiling
+	{
+		GL_OPTIMAL_TILING_EXT = 0x9584,
+		GL_LINEAR_TILING_EXT = 0x9585,
+	};
 	/**
 	*\brief
-	*	Convertit un renderer::ImageTiling en VkImageTiling.
+	*	Convertit un renderer::ImageTiling en GlImageTiling.
 	*\param[in] value
 	*	Le renderer::ImageTiling.
 	*\return
-	*	Le VkImageTiling.
+	*	Le GlImageTiling.
 	*/
-	GLenum convert( renderer::ImageTiling const & value );
+	GlImageTiling convert( renderer::ImageTiling const & value );
 }

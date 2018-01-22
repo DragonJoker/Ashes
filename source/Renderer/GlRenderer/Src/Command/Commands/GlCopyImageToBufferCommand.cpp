@@ -26,16 +26,16 @@ namespace gl_renderer
 
 	void CopyImageToBufferCommand::apply()const
 	{
-		glLogCall( glBindTexture, m_target, m_src.getImage() );
-		glLogCall( glBindBuffer, GL_PIXEL_PACK_BUFFER, m_dst.getBuffer() );
-		glLogCall( glGetTexImage
+		glLogCall( gl::BindTexture, m_target, m_src.getImage() );
+		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_PACK, m_dst.getBuffer() );
+		glLogCall( gl::GetTexImage
 			, m_target
 			, m_copyInfo.imageSubresource.mipLevel
 			, m_format
 			, m_type
 			, nullptr );
-		glLogCall( glBindBuffer, GL_PIXEL_PACK_BUFFER, 0u );
-		glLogCall( glBindTexture, m_target, 0u );
+		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_PACK, 0u );
+		glLogCall( gl::BindTexture, m_target, 0u );
 	}
 
 	CommandPtr CopyImageToBufferCommand::clone()const
