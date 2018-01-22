@@ -4,6 +4,8 @@ See LICENSE file in root folder.
 */
 #include "GlEndRenderPassCommand.hpp"
 
+#include "RenderPass/GlFrameBuffer.hpp"
+
 namespace gl_renderer
 {
 	EndRenderPassCommand::EndRenderPassCommand()
@@ -12,7 +14,7 @@ namespace gl_renderer
 
 	void EndRenderPassCommand::apply()const
 	{
-		glLogCall( glBindFramebuffer, GL_FRAMEBUFFER, 0u );
+		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, 0u );
 	}
 
 	CommandPtr EndRenderPassCommand::clone()const

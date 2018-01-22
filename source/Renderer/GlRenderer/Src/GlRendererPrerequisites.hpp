@@ -8,7 +8,7 @@
 
 #include <RendererPrerequisites.hpp>
 
-#include "GL/glew.h"
+#include "Miscellaneous/OpenGLFunctions.hpp"
 #include "GlPixelFormat.hpp"
 
 #include "Enum/GlAccessFlag.hpp"

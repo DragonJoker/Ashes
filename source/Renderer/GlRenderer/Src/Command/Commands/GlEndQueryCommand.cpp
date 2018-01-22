@@ -16,7 +16,7 @@ namespace gl_renderer
 
 	void EndQueryCommand::apply()const
 	{
-		glLogCall( glEndQuery, m_target );
+		glLogCall( gl::EndQuery, m_target );
 	}
 
 	CommandPtr EndQueryCommand::clone()const

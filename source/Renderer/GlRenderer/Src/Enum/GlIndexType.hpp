@@ -8,13 +8,19 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
+	enum GlIndexType
+		: GLenum
+	{
+		GL_INDEX_TYPE_UINT16 = 0x1403,
+		GL_INDEX_TYPE_UINT32 = 0x1405,
+	};
 	/**
 	*\brief
-	*	Convertit un renderer::IndexType en VkIndexType.
+	*	Convertit un renderer::IndexType en GlIndexType.
 	*\param[in] type
 	*	Le renderer::IndexType.
 	*\return
-	*	Le VkIndexType.
+	*	Le GlIndexType.
 	*/
-	GLenum convert( renderer::IndexType const & type );
+	GlIndexType convert( renderer::IndexType const & type );
 }

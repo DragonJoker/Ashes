@@ -7,14 +7,14 @@ namespace gl_renderer
 		switch ( mode )
 		{
 		case renderer::MipmapMode::eNearest:
-			return GL_NEAREST_MIPMAP_NEAREST;
+			return GL_FILTER_NEAREST_MIPMAP_NEAREST;
 
 		case renderer::MipmapMode::eLinear:
-			return GL_LINEAR_MIPMAP_LINEAR;
+			return GL_FILTER_LINEAR_MIPMAP_LINEAR;
 
 		default:
 			assert( false );
-			return GL_NEAREST_MIPMAP_NEAREST;
+			return GL_FILTER_NEAREST_MIPMAP_NEAREST;
 		}
 	}
 }

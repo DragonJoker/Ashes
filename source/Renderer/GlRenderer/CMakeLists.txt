@@ -16,10 +16,6 @@ if ( OpenGL_FOUND )
 		Src/*.cpp
 	)
 
-	file( GLOB_RECURSE ${PROJECT_NAME}_C_FILES
-		Src/*.c
-	)
-
 	file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 		Src/*.h
 		Src/*.hh
@@ -34,7 +30,6 @@ if ( OpenGL_FOUND )
 	)
 
 	add_library( ${PROJECT_NAME} SHARED
-		${${PROJECT_NAME}_C_FILES}
 		${${PROJECT_NAME}_CXX_FILES}
 		${${PROJECT_NAME}_HDR_FILES}
 	)
@@ -61,7 +56,6 @@ if ( OpenGL_FOUND )
 	parse_subdir_files( Src/Core "Core" )
 	parse_subdir_files( Src/Descriptor "Descriptor" )
 	parse_subdir_files( Src/Enum "Enum" )
-	parse_subdir_files( Src/GL "GL" )
 	parse_subdir_files( Src/Image "Image" )
 	parse_subdir_files( Src/Miscellaneous "Miscellaneous" )
 	parse_subdir_files( Src/Pipeline "Pipeline" )

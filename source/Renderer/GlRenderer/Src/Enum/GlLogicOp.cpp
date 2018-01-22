@@ -2,61 +2,61 @@
 
 namespace gl_renderer
 {
-	GLenum convert( renderer::LogicOp const & value )
+	GlLogicOp convert( renderer::LogicOp const & value )
 	{
 		switch ( value )
 		{
 		case renderer::LogicOp::eClear:
-			return GL_CLEAR;
+			return GL_LOGIC_OP_CLEAR;
 
 		case renderer::LogicOp::eAnd:
-			return GL_AND;
+			return GL_LOGIC_OP_AND;
 
 		case renderer::LogicOp::eAndReverse:
-			return GL_AND_REVERSE;
+			return GL_LOGIC_OP_AND_REVERSE;
 
 		case renderer::LogicOp::eCopy:
-			return GL_COPY;
+			return GL_LOGIC_OP_COPY;
 
 		case renderer::LogicOp::eAndInverted:
-			return GL_AND_INVERTED;
+			return GL_LOGIC_OP_AND_INVERTED;
 
 		case renderer::LogicOp::eNoOp:
-			return GL_NOOP;
+			return GL_LOGIC_OP_NOOP;
 
 		case renderer::LogicOp::eXor:
-			return GL_XOR;
+			return GL_LOGIC_OP_XOR;
 
 		case renderer::LogicOp::eOr:
-			return GL_OR;
+			return GL_LOGIC_OP_OR;
 
 		case renderer::LogicOp::eNor:
-			return GL_NOR;
+			return GL_LOGIC_OP_NOR;
 
 		case renderer::LogicOp::eEquivalent:
-			return GL_EQUIV;
+			return GL_LOGIC_OP_EQUIV;
 
 		case renderer::LogicOp::eInvert:
-			return GL_INVERT;
+			return GL_LOGIC_OP_INVERT;
 
 		case renderer::LogicOp::eOrReverse:
-			return GL_OR_REVERSE;
+			return GL_LOGIC_OP_OR_REVERSE;
 
 		case renderer::LogicOp::eCopyInverted:
-			return GL_COPY_INVERTED;
+			return GL_LOGIC_OP_COPY_INVERTED;
 
 		case renderer::LogicOp::eOrInverted:
-			return GL_OR_INVERTED;
+			return GL_LOGIC_OP_OR_INVERTED;
 
 		case renderer::LogicOp::eNand:
-			return GL_NAND;
+			return GL_LOGIC_OP_NAND;
 
 		case renderer::LogicOp::eSet:
-			return GL_SET;
+			return GL_LOGIC_OP_SET;
 
 		default:
 			assert( false && "Unsupported logic operator");
-			return GL_COPY;
+			return GL_LOGIC_OP_COPY;
 		}
 	}
 }

@@ -10,11 +10,11 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Convertit un renderer::MipmapMode en VkSamplerMipmapMode.
+	*	Convertit un renderer::MipmapMode en GlFilter.
 	*\param[in] mode
 	*	Le renderer::MipmapMode.
 	*\return
-	*	Le VkSamplerMipmapMode.
+	*	Le GlFilter.
 	*/
 	GLenum convert( renderer::MipmapMode const & mode );
 }

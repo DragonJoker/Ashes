@@ -28,9 +28,9 @@ namespace gl_renderer
 
 	void CopyImageCommand::apply()const
 	{
-		glLogCall( glBindTexture, m_srcTarget, m_src.getImage() );
-		glLogCall( glBindTexture, m_dstTarget, m_dst.getImage() );
-		glLogCall( glCopyImageSubData
+		glLogCall( gl::BindTexture, m_srcTarget, m_src.getImage() );
+		glLogCall( gl::BindTexture, m_dstTarget, m_dst.getImage() );
+		glLogCall( gl::CopyImageSubData
 			, m_src.getImage()
 			, m_srcTarget
 			, m_copyInfo.srcSubresource.mipLevel
@@ -46,8 +46,8 @@ namespace gl_renderer
 			, m_copyInfo.extent[0]
 			, m_copyInfo.extent[1]
 			, m_copyInfo.extent[2] );
-		glLogCall( glBindTexture, m_dstTarget, 0u );
-		glLogCall( glBindTexture, m_srcTarget, 0u );
+		glLogCall( gl::BindTexture, m_dstTarget, 0u );
+		glLogCall( gl::BindTexture, m_srcTarget, 0u );
 		m_dst.generateMipmaps();
 	}
 

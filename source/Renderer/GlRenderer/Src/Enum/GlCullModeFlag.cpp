@@ -2,21 +2,21 @@
 
 namespace gl_renderer
 {
-	GLenum convert( renderer::CullModeFlags const & flags )
+	GlCullMode convert( renderer::CullModeFlags const & flags )
 	{
-		GLenum result{ 0 };
+		GlCullMode result{ GL_CULL_MODE_NONE };
 
 		if ( checkFlag( flags, renderer::CullModeFlag::eFrontAndBack ) )
 		{
-			result = GL_FRONT_AND_BACK;
+			result = GL_CULL_MODE_FRONT_AND_BACK;
 		}
 		else if ( checkFlag( flags, renderer::CullModeFlag::eFront ) )
 		{
-			result = GL_FRONT;
+			result = GL_CULL_MODE_FRONT;
 		}
 		else if ( checkFlag( flags, renderer::CullModeFlag::eBack ) )
 		{
-			result = GL_BACK;
+			result = GL_CULL_MODE_BACK;
 		}
 
 		return result;

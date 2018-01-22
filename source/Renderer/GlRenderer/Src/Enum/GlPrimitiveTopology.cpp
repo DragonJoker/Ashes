@@ -2,46 +2,46 @@
 
 namespace gl_renderer
 {
-	GLenum convert( renderer::PrimitiveTopology const & topology )
+	GlPrimitiveTopolgy convert( renderer::PrimitiveTopology const & topology )
 	{
 		switch ( topology )
 		{
 		case renderer::PrimitiveTopology::ePointList:
-			return GL_POINTS;
+			return GL_PRIMITIVE_TOPOLOGY_POINT_LIST;
 
 		case renderer::PrimitiveTopology::eLineList:
-			return GL_LINES;
+			return GL_PRIMITIVE_TOPOLOGY_LINE_LIST;
 
 		case renderer::PrimitiveTopology::eLineStrip:
-			return GL_LINE_STRIP;
+			return GL_PRIMITIVE_TOPOLOGY_LINE_STRIP;
 
 		case renderer::PrimitiveTopology::eTriangleList:
-			return GL_TRIANGLES;
+			return GL_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
 		case renderer::PrimitiveTopology::eTriangleStrip:
-			return GL_TRIANGLE_STRIP;
+			return GL_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 
 		case renderer::PrimitiveTopology::eTriangleFan:
-			return GL_TRIANGLE_FAN;
+			return GL_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
 
 		case renderer::PrimitiveTopology::eLineListWithAdjacency:
-			return GL_LINES_ADJACENCY;
+			return GL_PRIMITIVE_TOPOLOGY_LINE_LIST_ADJACENCY;
 
 		case renderer::PrimitiveTopology::eLineStripWithAdjacency:
-			return GL_LINE_STRIP_ADJACENCY;
+			return GL_PRIMITIVE_TOPOLOGY_LINE_STRIP_ADJACENCY;
 
 		case renderer::PrimitiveTopology::eTriangleListWithAdjacency:
-			return GL_TRIANGLES_ADJACENCY;
+			return GL_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_ADJACENCY;
 
 		case renderer::PrimitiveTopology::eTriangleStripWithAdjacency:
-			return GL_TRIANGLE_STRIP_ADJACENCY;
+			return GL_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_ADJACENCY;
 
 		case renderer::PrimitiveTopology::ePatchList:
-			return GL_PATCHES;
+			return GL_PRIMITIVE_TOPOLOGY_PATCH_LIST;
 
 		default:
 			assert( false );
-			return GL_TRIANGLES;
+			return GL_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		}
 	}
 }

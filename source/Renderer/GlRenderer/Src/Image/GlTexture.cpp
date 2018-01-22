@@ -45,12 +45,12 @@ namespace gl_renderer
 		: renderer::Texture{ device }
 		, m_device{ device }
 	{
-		glLogCall( glGenTextures, 1, &m_texture );
+		glLogCall( gl::GenTextures, 1, &m_texture );
 	}
 
 	Texture::~Texture()
 	{
-		glLogCall( glDeleteTextures, 1, &m_texture );
+		glLogCall( gl::DeleteTextures, 1, &m_texture );
 	}
 
 	void Texture::doSetImage1D( renderer::ImageUsageFlags usageFlags
@@ -58,11 +58,11 @@ namespace gl_renderer
 		, renderer::MemoryPropertyFlags memoryFlags )
 	{
 		m_glType = convert( m_type );
-		glLogCall( glBindTexture, m_glType, m_texture );
+		glLogCall( gl::BindTexture, m_glType, m_texture );
 
 		if ( m_layerCount )
 		{
-			glLogCall( glTexImage2D
+			glLogCall( gl::TexImage2D
 				, m_glType
 				, 0
 				, gl_renderer::getInternal( m_format )
@@ -75,7 +75,7 @@ namespace gl_renderer
 		}
 		else
 		{
-			glLogCall( glTexImage1D
+			glLogCall( gl::TexImage1D
 				, m_glType
 				, 0
 				, gl_renderer::getInternal( m_format )
@@ -86,7 +86,7 @@ namespace gl_renderer
 				, nullptr );
 		}
 
-		glLogCall( glBindTexture, m_glType, 0 );
+		glLogCall( gl::BindTexture, m_glType, 0 );
 	}
 
 	void Texture::doSetImage2D( renderer::ImageUsageFlags usageFlags
@@ -94,11 +94,11 @@ namespace gl_renderer
 		, renderer::MemoryPropertyFlags memoryFlags )
 	{
 		m_glType = convert( m_type );
-		glLogCall( glBindTexture, m_glType, m_texture );
+		glLogCall( gl::BindTexture, m_glType, m_texture );
 
 		if ( m_layerCount )
 		{
-			glLogCall( glTexImage3D
+			glLogCall( gl::TexImage3D
 				, m_glType
 				, 0
 				, gl_renderer::getInternal( m_format )
@@ -112,7 +112,7 @@ namespace gl_renderer
 		}
 		else if ( m_samples != renderer::SampleCountFlag::e1 )
 		{
-			glLogCall( glTexImage2DMultisample
+			glLogCall( gl::TexImage2DMultisample
 				, m_glType
 				, GLsizei( m_samples )
 				, gl_renderer::getInternal( m_format )
@@ -122,7 +122,7 @@ namespace gl_renderer
 		}
 		else
 		{
-			glLogCall( glTexImage2D
+			glLogCall( gl::TexImage2D
 				, m_glType
 				, 0
 				, gl_renderer::getInternal( m_format )
@@ -134,7 +134,7 @@ namespace gl_renderer
 				, nullptr );
 		}
 
-		glLogCall( glBindTexture, m_glType, 0 );
+		glLogCall( gl::BindTexture, m_glType, 0 );
 	}
 
 	void Texture::doSetImage3D( renderer::ImageUsageFlags usageFlags
@@ -142,11 +142,11 @@ namespace gl_renderer
 		, renderer::MemoryPropertyFlags memoryFlags )
 	{
 		m_glType = convert( m_type );
-		glLogCall( glBindTexture, m_glType, m_texture );
+		glLogCall( gl::BindTexture, m_glType, m_texture );
 
 		if ( m_samples != renderer::SampleCountFlag::e1 )
 		{
-			glLogCall( glTexImage3DMultisample
+			glLogCall( gl::TexImage3DMultisample
 				, m_glType
 				, GLsizei( m_samples )
 				, gl_renderer::getInternal( m_format )
@@ -157,7 +157,7 @@ namespace gl_renderer
 		}
 		else
 		{
-			glLogCall( glTexImage3D
+			glLogCall( gl::TexImage3D
 				, m_glType
 				, 0
 				, gl_renderer::getInternal( m_format )
@@ -170,14 +170,14 @@ namespace gl_renderer
 				, nullptr );
 		}
 
-		glLogCall( glBindTexture, m_glType, 0 );
+		glLogCall( gl::BindTexture, m_glType, 0 );
 	}
 
 	void Texture::generateMipmaps()const
 	{
-		glLogCall( glBindTexture, m_glType, m_texture );
-		glLogCall( glGenerateMipmap, m_glType );
-		glLogCall( glBindTexture, m_glType, 0 );
+		glLogCall( gl::BindTexture, m_glType, m_texture );
+		glLogCall( gl::GenerateMipmap, m_glType );
+		glLogCall( gl::BindTexture, m_glType, 0 );
 	}
 
 	renderer::ImageMemoryBarrier Texture::makeGeneralLayout( renderer::AccessFlags accessFlags )const

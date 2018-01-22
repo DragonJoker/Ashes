@@ -17,7 +17,7 @@ namespace gl_renderer
 
 	void WriteTimestampCommand::apply()const
 	{
-		glLogCall( glQueryCounter, m_query, GL_TIMESTAMP );
+		glLogCall( gl::QueryCounter, m_query, GL_QUERY_TYPE_TIMESTAMP );
 	}
 
 	CommandPtr WriteTimestampCommand::clone()const

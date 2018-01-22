@@ -6,12 +6,10 @@
 
 #if RENDERLIB_WIN32
 #   include <Windows.h>
-#	include "GL/glew.h"
-#	include "GL/wglew.h"
 #elif RENDERLIB_XLIB
-#	include "GL/glew.h"
-#   include "GL/glxew.h"
 #endif
+
+#include <GL/GL.h>
 
 //*************************************************************************************************
 
@@ -48,6 +46,52 @@ namespace gl_api
 
 namespace gl_renderer
 {
+	enum GlDebugOutput
+		: GLenum
+	{
+		GL_DEBUG_OUTPUT_SYNCHRONOUS = 0x8242,
+	};
+	enum GlDebugSource
+		: GLenum
+	{
+		GL_DEBUG_SOURCE_API = 0x8246,
+		GL_DEBUG_SOURCE_WINDOW_SYSTEM = 0x8247,
+		GL_DEBUG_SOURCE_SHADER_COMPILER = 0x8248,
+		GL_DEBUG_SOURCE_THIRD_PARTY = 0x8249,
+		GL_DEBUG_SOURCE_APPLICATION = 0x824A,
+		GL_DEBUG_SOURCE_OTHER = 0x824B,
+	};
+	enum GlDebugType
+	{
+		GL_DEBUG_TYPE_ERROR = 0x824C,
+		GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR = 0x824D,
+		GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR = 0x824E,
+		GL_DEBUG_TYPE_PORTABILITY = 0x824F,
+		GL_DEBUG_TYPE_PERFORMANCE = 0x8250,
+		GL_DEBUG_TYPE_OTHER = 0x8251,
+		GL_DEBUG_TYPE_MARKER = 0x8268,
+		GL_DEBUG_TYPE_PUSH_GROUP = 0x8269,
+		GL_DEBUG_TYPE_POP_GROUP = 0x826A,
+	};
+	enum GlDebugSeverity
+	{
+		GL_DEBUG_SEVERITY_NOTIFICATION = 0x826B,
+		GL_DEBUG_SEVERITY_HIGH = 0x9146,
+		GL_DEBUG_SEVERITY_MEDIUM = 0x9147,
+		GL_DEBUG_SEVERITY_LOW = 0x9148,
+	};
+	enum GlDebugCategory
+	{
+		GL_DEBUG_CATEGORY_API_ERROR_AMD = 0x9149,
+		GL_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD = 0x914A,
+		GL_DEBUG_CATEGORY_DEPRECATION_AMD = 0x914B,
+		GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD = 0x914C,
+		GL_DEBUG_CATEGORY_PERFORMANCE_AMD = 0x914D,
+		GL_DEBUG_CATEGORY_SHADER_COMPILER_AMD = 0x914E,
+		GL_DEBUG_CATEGORY_APPLICATION_AMD = 0x914F,
+		GL_DEBUG_CATEGORY_OTHER_AMD = 0x9150,
+	};
+
 	using PFNGLDEBUGPROC = void ( CALLBACK * )( uint32_t source, uint32_t type, uint32_t id, uint32_t severity, int length, const char * message, void * userParam );
 	using PFNGLDEBUGAMDPROC = void ( CALLBACK * )( uint32_t id, uint32_t category, uint32_t severity, int length, const char* message, void* userParam );
 	using PFNGLDEBUGMESSAGECALLBACK = void ( CALLBACK * )( PFNGLDEBUGPROC callback, void * userParam );
@@ -85,12 +129,12 @@ namespace gl_renderer
 #if !defined( NDEBUG )
 		if ( glDebugMessageCallback )
 		{
-			glDebugMessageCallback( PFNGLDEBUGPROC( &callbackDebugLog ), NULL );
+			glDebugMessageCallback( PFNGLDEBUGPROC( &callbackDebugLog ), nullptr );
 			glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
 		}
 		else if ( glDebugMessageCallbackAMD )
 		{
-			glDebugMessageCallbackAMD( PFNGLDEBUGAMDPROC( &callbackDebugLogAMD ), NULL );
+			glDebugMessageCallbackAMD( PFNGLDEBUGAMDPROC( &callbackDebugLogAMD ), nullptr );
 			glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
 		}
 #endif
@@ -160,9 +204,9 @@ namespace gl_renderer
 
 		switch ( severity )
 		{
-		case GL_DEBUG_SEVERITY_HIGH_AMD:				stream << "Severity: High\n";					break;
-		case GL_DEBUG_SEVERITY_MEDIUM_AMD:				stream << "Severity: Medium\n";					break;
-		case GL_DEBUG_SEVERITY_LOW_AMD:					stream << "Severity: Low\n";					break;
+		case GL_DEBUG_SEVERITY_HIGH:					stream << "Severity: High\n";					break;
+		case GL_DEBUG_SEVERITY_MEDIUM:					stream << "Severity: Medium\n";					break;
+		case GL_DEBUG_SEVERITY_LOW:						stream << "Severity: Low\n";					break;
 		}
 
 		stream << "    Message: " << message;

@@ -15,41 +15,55 @@ namespace gl_renderer
 {
 	namespace
 	{
-		GLenum getAttachmentPoint( Texture const & texture )
+		enum GlFramebufferStatus
+			: GLenum
+		{
+			GL_FRAMEBUFFER_STATUS_UNDEFINED = 0x8219,
+			GL_FRAMEBUFFER_STATUS_COMPLETE = 0x8CD5,
+			GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT = 0x8CD6,
+			GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT = 0x8CD7,
+			GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER = 0x8CDB,
+			GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER = 0x8CDC,
+			GL_FRAMEBUFFER_STATUS_UNSUPPORTED = 0x8CDD,
+			GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE = 0x8D56,
+			GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
+		};
+
+		GlAttachmentPoint getAttachmentPoint( Texture const & texture )
 		{
 			switch ( texture.getFormat() )
 			{
 			case renderer::PixelFormat::eD16:
 			case renderer::PixelFormat::eD32F:
-				return GL_DEPTH_ATTACHMENT;
+				return GL_ATTACHMENT_POINT_DEPTH;
 
 			case renderer::PixelFormat::eD24S8:
-				return GL_DEPTH_STENCIL_ATTACHMENT;
+				return GL_ATTACHMENT_POINT_DEPTH_STENCIL;
 
 			case renderer::PixelFormat::eS8:
-				return GL_STENCIL_ATTACHMENT;
+				return GL_ATTACHMENT_POINT_STENCIL;
 
 			default:
-				return GL_COLOR_ATTACHMENT0;
+				return GL_ATTACHMENT_POINT_COLOR0;
 			}
 		}
 
-		GLenum getAttachmentType( Texture const & texture )
+		GlAttachmentType getAttachmentType( Texture const & texture )
 		{
 			switch ( texture.getFormat() )
 			{
 			case renderer::PixelFormat::eD16:
 			case renderer::PixelFormat::eD32F:
-				return GL_DEPTH;
+				return GL_ATTACHMENT_TYPE_DEPTH;
 
 			case renderer::PixelFormat::eD24S8:
-				return GL_DEPTH_STENCIL;
+				return GL_ATTACHMENT_TYPE_DEPTH_STENCIL;
 
 			case renderer::PixelFormat::eS8:
-				return GL_STENCIL;
+				return GL_ATTACHMENT_TYPE_STENCIL;
 
 			default:
-				return GL_COLOR;
+				return GL_ATTACHMENT_TYPE_COLOR;
 			}
 		}
 
@@ -62,40 +76,40 @@ namespace gl_renderer
 				assert( false );
 				break;
 
-			case GL_FRAMEBUFFER_COMPLETE:
+			case GL_FRAMEBUFFER_STATUS_COMPLETE:
 				break;
 
-			case GL_FRAMEBUFFER_UNDEFINED:
+			case GL_FRAMEBUFFER_STATUS_UNDEFINED:
 				std::cerr << "The specified framebuffer is the default read or draw framebuffer, but the default framebuffer does not exist." << std::endl;
 				assert( false );
 				break;
 
-			case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT:
 				std::cerr << "At least one of the framebuffer attachment points are framebuffer incomplete." << std::endl;
 				assert( false );
 				break;
 
-			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT:
 				std::cerr << "The framebuffer does not have at least one image attached to it." << std::endl;
 				assert( false );
 				break;
 
-			case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER:
 				std::cerr << "The value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for any color attachment point(s) named by GL_DRAW_BUFFERi." << std::endl;
 				assert( false );
 				break;
 
-			case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER:
 				std::cerr << "GL_READ_BUFFER is not GL_NONE and the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for the color attachment point named by GL_READ_BUFFER." << std::endl;
 				assert( false );
 				break;
 
-			case GL_FRAMEBUFFER_UNSUPPORTED:
+			case GL_FRAMEBUFFER_STATUS_UNSUPPORTED:
 				std::cerr << "The combination of internal formats of the attached images violates an implementation-dependent set of restrictions." << std::endl;
 				assert( false );
 				break;
 
-			case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE:
 				std::cerr << "One of the following:" << std::endl;
 				std::cerr << "  - The value of GL_RENDERBUFFER_SAMPLES is not the same for all attached renderbuffers;" << std::endl;
 				std::cerr << "  - The value of GL_TEXTURE_SAMPLES is the not same for all attached textures;" << std::endl;
@@ -105,7 +119,7 @@ namespace gl_renderer
 				assert( false );
 				break;
 
-			case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS:
 				std::cerr << "At least one framebuffer attachment is layered, and any populated attachment is not layered, or all populated color attachments are not from textures of the same target." << std::endl;
 				assert( false );
 				break;
@@ -125,8 +139,8 @@ namespace gl_renderer
 		, renderer::TextureCRefArray const & textures )
 		: renderer::FrameBuffer{ renderPass, dimensions, textures }
 	{
-		glLogCall( glGenFramebuffers, 1, &m_frameBuffer );
-		glLogCall( glBindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer );
+		glLogCall( gl::GenFramebuffers, 1, &m_frameBuffer );
+		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer );
 		renderer::UInt32Array colours;
 
 		for ( auto & texture : textures )
@@ -139,9 +153,9 @@ namespace gl_renderer
 				getAttachmentType( static_cast< Texture const & >( texture.get() ) ),
 			};
 
-			if ( attachment.point == GL_DEPTH_STENCIL_ATTACHMENT
-				|| attachment.point == GL_DEPTH_ATTACHMENT
-				|| attachment.point == GL_STENCIL_ATTACHMENT )
+			if ( attachment.point == GL_ATTACHMENT_POINT_DEPTH_STENCIL
+				|| attachment.point == GL_ATTACHMENT_POINT_DEPTH
+				|| attachment.point == GL_ATTACHMENT_POINT_STENCIL )
 			{
 				m_depthStencilAttaches.push_back( attachment );
 			}
@@ -152,25 +166,25 @@ namespace gl_renderer
 				colours.push_back( attachment.point + attachment.index );
 			}
 
-			glLogCall( glFramebufferTexture2D
+			glLogCall( gl::FramebufferTexture2D
 				, GL_FRAMEBUFFER
 				, attachment.point
 				, GL_TEXTURE_2D
 				, attachment.object
 				, texture.get().getView().getSubResourceRange().getBaseMipLevel() );
-			doCheck( glLogCall( glCheckFramebufferStatus, GL_FRAMEBUFFER ) );
+			doCheck( glLogCall( gl::CheckFramebufferStatus, GL_FRAMEBUFFER ) );
 		}
 
-		doCheck( glLogCall( glCheckFramebufferStatus, GL_FRAMEBUFFER ) );
-		glLogCall( glDrawBuffers, GLsizei( colours.size() ), colours.data() );
-		glLogCall( glBindFramebuffer, GL_FRAMEBUFFER, 0 );
+		doCheck( glLogCall( gl::CheckFramebufferStatus, GL_FRAMEBUFFER ) );
+		glLogCall( gl::DrawBuffers, GLsizei( colours.size() ), colours.data() );
+		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, 0 );
 	}
 
 	FrameBuffer::~FrameBuffer()
 	{
 		if ( m_frameBuffer > 0u )
 		{
-			glLogCall( glDeleteFramebuffers, 1, &m_frameBuffer );
+			glLogCall( gl::DeleteFramebuffers, 1, &m_frameBuffer );
 		}
 	}
 
@@ -183,9 +197,9 @@ namespace gl_renderer
 		, renderer::PixelFormat format
 		, uint8_t * data )const noexcept
 	{
-		glLogCall( glBindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer );
-		glLogCall( glReadBuffer, m_colourAttaches[index].point );
-		glLogCall( glReadPixels
+		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer );
+		glLogCall( gl::ReadBuffer, m_colourAttaches[index].point );
+		glLogCall( gl::ReadPixels
 			, xoffset
 			, yoffset
 			, width
@@ -193,6 +207,6 @@ namespace gl_renderer
 			, getFormat( format )
 			, getType( format )
 			, data );
-		glLogCall( glBindFramebuffer, GL_FRAMEBUFFER, 0u );
+		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, 0u );
 	}
 }

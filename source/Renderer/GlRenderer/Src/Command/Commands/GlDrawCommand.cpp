@@ -23,7 +23,7 @@ namespace gl_renderer
 	{
 		if ( m_instCount > 1 )
 		{
-			glLogCall( glDrawArraysInstancedBaseInstance
+			glLogCall( gl::DrawArraysInstancedBaseInstance
 				, m_mode
 				, m_firstVertex
 				, m_vtxCount
@@ -32,7 +32,7 @@ namespace gl_renderer
 		}
 		else
 		{
-			glLogCall( glDrawArrays
+			glLogCall( gl::DrawArrays
 				, m_mode
 				, m_firstVertex
 				, m_vtxCount );

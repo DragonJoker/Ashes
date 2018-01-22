@@ -13,7 +13,7 @@ namespace gl_renderer
 
 	void ViewportCommand::apply()const
 	{
-		glLogCall( glViewport
+		glLogCall( gl::Viewport
 			, m_viewport.getOffset().x
 			, m_viewport.getOffset().y
 			, m_viewport.getSize().x

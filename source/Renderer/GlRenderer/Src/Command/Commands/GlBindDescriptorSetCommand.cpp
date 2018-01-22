@@ -21,26 +21,26 @@ namespace gl_renderer
 	{
 		void bind( renderer::CombinedTextureSamplerBinding const & binding )
 		{
-			glLogCall( glActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
-			glLogCall( glBindSampler
+			glLogCall( gl::ActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
+			glLogCall( gl::BindSampler
 				, binding.getBinding().getBindingPoint()
 				, static_cast< Sampler const & >( binding.getSampler() ).getSampler() );
-			glLogCall( glBindTexture
+			glLogCall( gl::BindTexture
 				, convert( binding.getView().getImage().getType() )
 				, static_cast< Texture const & >( binding.getView().getImage() ).getImage() );
 		}
 
 		void bind( renderer::SamplerBinding const & binding )
 		{
-			glLogCall( glBindSampler
+			glLogCall( gl::BindSampler
 				, binding.getBinding().getBindingPoint()
 				, static_cast< Sampler const & >( binding.getSampler() ).getSampler() );
 		}
 
 		void bind( renderer::SampledTextureBinding const & binding )
 		{
-			glLogCall( glActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
-			glLogCall( glBindTexture
+			glLogCall( gl::ActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
+			glLogCall( gl::BindTexture
 				, convert( binding.getView().getImage().getType() )
 				, static_cast< Texture const & >( binding.getView().getImage() ).getImage() );
 		}
@@ -49,38 +49,38 @@ namespace gl_renderer
 		{
 			auto & view = binding.getView();
 			auto & range = view.getSubResourceRange();
-			glLogCall( glActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
-			glLogCall( glBindImageTexture
+			glLogCall( gl::ActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
+			glLogCall( gl::BindImageTexture
 				, binding.getBinding().getBindingPoint()
 				, static_cast< Texture const & >( view.getImage() ).getImage()
 				, range.getBaseMipLevel()
 				, range.getLayerCount() > 0
 				, range.getBaseArrayLayer()
-				, GL_READ_WRITE
+				, GL_ACCESS_TYPE_READ_WRITE
 				, getFormat( view.getFormat() ) );
 		}
 
 		void bind( renderer::UniformBufferBinding const & binding )
 		{
-			glLogCall( glBindBufferBase
-				, GL_UNIFORM_BUFFER
+			glLogCall( gl::BindBufferBase
+				, GL_BUFFER_TARGET_UNIFORM
 				, binding.getBinding().getBindingPoint()
 				, static_cast< Buffer const & >( binding.getUniformBuffer().getBuffer() ).getBuffer() );
 		}
 
 		void bind( renderer::StorageBufferBinding const & binding )
 		{
-			glLogCall( glBindBufferBase
-				, GL_SHADER_STORAGE_BUFFER
+			glLogCall( gl::BindBufferBase
+				, GL_BUFFER_TARGET_SHADER_STORAGE
 				, binding.getBinding().getBindingPoint()
 				, static_cast< Buffer const & >( binding.getBuffer() ).getBuffer() );
 		}
 
 		void bind( renderer::TexelBufferBinding const & binding )
 		{
-			glLogCall( glActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
-			glLogCall( glBindTexture
-				, GL_TEXTURE_BUFFER
+			glLogCall( gl::ActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
+			glLogCall( gl::BindTexture
+				, GL_BUFFER_TARGET_TEXTURE
 				, static_cast< BufferView const & >( binding.getView() ).getImage() );
 		}
 	}

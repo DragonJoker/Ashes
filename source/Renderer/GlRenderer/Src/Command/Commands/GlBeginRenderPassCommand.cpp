@@ -11,6 +11,15 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
+	enum GlClearTarget
+		: GLenum
+	{
+		GL_CLEAR_TARGET_COLOR = 0x1800,
+		GL_CLEAR_TARGET_DEPTH = 0x1801,
+		GL_CLEAR_TARGET_STENCIL = 0x1802,
+		GL_CLEAR_TARGET_DEPTH_STENCIL = 0x84F9,
+	};
+
 	BeginRenderPassCommand::BeginRenderPassCommand( renderer::RenderPass const & renderPass
 		, renderer::FrameBuffer const & frameBuffer
 		, renderer::ClearValueArray const & clearValues
@@ -23,7 +32,7 @@ namespace gl_renderer
 
 	void BeginRenderPassCommand::apply()const
 	{
-		glLogCall( glBindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
+		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
 
 		if ( m_renderPass.getClear() )
 		{
@@ -35,7 +44,7 @@ namespace gl_renderer
 				if ( clearValue.isColour() )
 				{
 					auto & colour = clearValue.colour();
-					glLogCall( glClearBufferfv, GL_COLOR, colourIndex, colour.data );
+					glLogCall( gl::ClearBufferfv, GL_CLEAR_TARGET_COLOR, colourIndex, colour.data );
 					++colourIndex;
 				}
 				else
@@ -46,16 +55,16 @@ namespace gl_renderer
 
 					switch ( attach.type )
 					{
-					case GL_DEPTH:
-						glLogCall( glClearBufferfv, GL_DEPTH, 0u, &depthStencil.depth );
+					case GL_ATTACHMENT_TYPE_DEPTH:
+						glLogCall( gl::ClearBufferfv, GL_CLEAR_TARGET_DEPTH, 0u, &depthStencil.depth );
 						break;
 
-					case GL_STENCIL:
-						glLogCall( glClearBufferiv, GL_STENCIL, 0u, &stencil );
+					case GL_ATTACHMENT_TYPE_STENCIL:
+						glLogCall( gl::ClearBufferiv, GL_CLEAR_TARGET_STENCIL, 0u, &stencil );
 						break;
 
-					case GL_DEPTH_STENCIL:
-						glLogCall( glClearBufferfi, GL_DEPTH_STENCIL, 0u, depthStencil.depth, stencil );
+					case GL_ATTACHMENT_TYPE_DEPTH_STENCIL:
+						glLogCall( gl::ClearBufferfi, GL_CLEAR_TARGET_DEPTH_STENCIL, 0u, depthStencil.depth, stencil );
 						break;
 					}
 

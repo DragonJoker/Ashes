@@ -2,7 +2,7 @@
 
 namespace gl_renderer
 {
-	GLenum convert( renderer::ImageTiling const & value )
+	GlImageTiling convert( renderer::ImageTiling const & value )
 	{
 		switch ( value )
 		{

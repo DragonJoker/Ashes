@@ -2,37 +2,37 @@
 
 namespace gl_renderer
 {
-	GLenum convert( renderer::StencilOp const & value )
+	GlStencilOp convert( renderer::StencilOp const & value )
 	{
 		switch ( value )
 		{
 		case renderer::StencilOp::eKeep:
-			return GL_KEEP;
+			return GL_STENCIL_OP_KEEP;
 
 		case renderer::StencilOp::eZero:
-			return GL_ZERO;
+			return GL_STENCIL_OP_ZERO;
 
 		case renderer::StencilOp::eReplace:
-			return GL_REPLACE;
+			return GL_STENCIL_OP_REPLACE;
 
 		case renderer::StencilOp::eIncrementAndClamp:
-			return GL_INCR;
+			return GL_STENCIL_OP_INCR;
 
 		case renderer::StencilOp::eDecrementAndClamp:
-			return GL_DECR;
+			return GL_STENCIL_OP_DECR;
 
 		case renderer::StencilOp::eInvert:
-			return GL_INVERT;
+			return GL_STENCIL_OP_INVERT;
 
 		case renderer::StencilOp::eIncrementAndWrap:
-			return GL_INCR_WRAP;
+			return GL_STENCIL_OP_INCR_WRAP;
 
 		case renderer::StencilOp::eDecrementAndWrap:
-			return GL_DECR_WRAP;
+			return GL_STENCIL_OP_DECR_WRAP;
 
 		default:
 			assert( false && "Unsupported stencil operator");
-			return GL_KEEP;
+			return GL_STENCIL_OP_KEEP;
 		}
 	}
 }

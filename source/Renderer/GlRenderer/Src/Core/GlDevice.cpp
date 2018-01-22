@@ -296,7 +296,7 @@ namespace gl_renderer
 
 	void Device::waitIdle()const
 	{
-		glLogCall( glFinish );
+		glLogCall( gl::Finish );
 	}
 
 	renderer::Mat4 Device::perspective( renderer::Radians fovy
