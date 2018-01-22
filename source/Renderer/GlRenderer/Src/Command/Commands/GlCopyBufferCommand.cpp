@@ -6,31 +6,31 @@ See LICENSE file in root folder.
 
 #include "Buffer/GlBuffer.hpp"
 
+#include <Miscellaneous/BufferCopy.hpp>
+
 namespace gl_renderer
 {
-	CopyBufferCommand::CopyBufferCommand( renderer::BufferBase const & src
-		, renderer::BufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )
+	CopyBufferCommand::CopyBufferCommand( renderer::BufferCopy const & copyInfo
+		, renderer::BufferBase const & src
+		, renderer::BufferBase const & dst )
 		: m_src{ static_cast< Buffer const & >( src ) }
 		, m_dst{ static_cast< Buffer const & >( dst ) }
-		, m_size{ size }
-		, m_offset{ offset }
+		, m_copyInfo{ copyInfo }
 	{
 	}
 
 	void CopyBufferCommand::apply()const
 	{
-		glLogCall( glBindBuffer, m_src.getTarget(), m_src.getBuffer() );
-		glLogCall( glBindBuffer, m_dst.getTarget(), m_dst.getBuffer() );
+		glLogCall( glBindBuffer, GL_COPY_READ_BUFFER, m_src.getBuffer() );
+		glLogCall( glBindBuffer, GL_COPY_WRITE_BUFFER, m_dst.getBuffer() );
 		glLogCall( glCopyBufferSubData
-			, m_src.getTarget()
-			, m_dst.getTarget()
-			, 0u
-			, m_offset
-			, m_size );
-		glLogCall( glBindBuffer, m_src.getTarget(), 0u );
-		glLogCall( glBindBuffer, m_dst.getTarget(), 0u );
+			, GL_COPY_READ_BUFFER
+			, GL_COPY_WRITE_BUFFER
+			, m_copyInfo.srcOffset
+			, m_copyInfo.dstOffset
+			, m_copyInfo.size );
+		glLogCall( glBindBuffer, GL_COPY_WRITE_BUFFER, 0u );
+		glLogCall( glBindBuffer, GL_COPY_READ_BUFFER, 0u );
 	}
 
 	CommandPtr CopyBufferCommand::clone()const

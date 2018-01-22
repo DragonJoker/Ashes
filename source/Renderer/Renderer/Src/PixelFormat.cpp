@@ -17,4 +17,15 @@ namespace renderer
 		return format == PixelFormat::eD16
 			|| format == PixelFormat::eD32F;
 	}
+
+	ImageAspectFlags getAspectMask( renderer::PixelFormat format )
+	{
+		return isDepthStencilFormat( format )
+			? renderer::ImageAspectFlags( renderer::ImageAspectFlag::eDepth | renderer::ImageAspectFlag::eStencil )
+			: isDepthFormat( format )
+				? renderer::ImageAspectFlags( renderer::ImageAspectFlag::eDepth )
+				: isStencilFormat( format )
+					? renderer::ImageAspectFlags( renderer::ImageAspectFlag::eStencil )
+					: renderer::ImageAspectFlags( renderer::ImageAspectFlag::eColour );
+	}
 }

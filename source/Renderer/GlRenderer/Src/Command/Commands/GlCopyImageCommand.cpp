@@ -4,7 +4,6 @@ See LICENSE file in root folder.
 */
 #include "GlCopyImageCommand.hpp"
 
-#include "Buffer/GlBuffer.hpp"
 #include "Image/GlTexture.hpp"
 
 #include <Image/ImageSubresourceRange.hpp>
@@ -12,66 +11,43 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	CopyImageCommand::CopyImageCommand( renderer::BufferBase const & src
+	CopyImageCommand::CopyImageCommand( renderer::ImageCopy const & copyInfo
+		, renderer::Texture const & src
 		, renderer::Texture const & dst )
-		: m_src{ static_cast< Buffer const & >( src ) }
+		: m_copyInfo{ copyInfo }
+		, m_src{ static_cast< Texture const & >( src ) }
 		, m_dst{ static_cast< Texture const & >( dst ) }
-		, m_format{ getFormat( m_dst.getFormat() ) }
-		, m_type{ getType( m_dst.getFormat() ) }
-		, m_target{ convert( m_dst.getType() ) }
+		, m_srcFormat{ getFormat( m_src.getFormat() ) }
+		, m_srcType{ getType( m_src.getFormat() ) }
+		, m_srcTarget{ convert( m_src.getType() ) }
+		, m_dstFormat{ getFormat( m_dst.getFormat() ) }
+		, m_dstType{ getType( m_dst.getFormat() ) }
+		, m_dstTarget{ convert( m_dst.getType() ) }
 	{
 	}
 
 	void CopyImageCommand::apply()const
 	{
-		auto & range = m_dst.getView().getSubResourceRange();
-		glLogCall( glBindTexture, m_target, m_dst.getImage() );
-		glLogCall( glBindBuffer, GL_PIXEL_UNPACK_BUFFER, m_src.getBuffer() );
-
-		switch ( m_target )
-		{
-		case GL_TEXTURE_1D:
-			glLogCall( glTexSubImage1D
-				, m_target
-				, range.getBaseMipLevel()
-				, 0
-				, m_dst.getDimensions()[0]
-				, m_format
-				, m_type
-				, nullptr );
-			break;
-
-		case GL_TEXTURE_2D:
-			glLogCall( glTexSubImage2D
-				, m_target
-				, range.getBaseMipLevel()
-				, 0
-				, 0
-				, m_dst.getDimensions()[0]
-				, m_dst.getDimensions()[1]
-				, m_format
-				, m_type
-				, nullptr );
-			break;
-
-		case GL_TEXTURE_3D:
-			glLogCall( glTexSubImage3D
-				, m_target
-				, range.getBaseMipLevel()
-				, 0
-				, 0
-				, 0
-				, m_dst.getDimensions()[0]
-				, m_dst.getDimensions()[1]
-				, m_dst.getDimensions()[2]
-				, m_format
-				, m_type
-				, nullptr );
-			break;
-		}
-
-		glLogCall( glBindBuffer, GL_PIXEL_UNPACK_BUFFER, 0u );
-		glLogCall( glBindTexture, m_target, 0u );
+		glLogCall( glBindTexture, m_srcTarget, m_src.getImage() );
+		glLogCall( glBindTexture, m_dstTarget, m_dst.getImage() );
+		glLogCall( glCopyImageSubData
+			, m_src.getImage()
+			, m_srcTarget
+			, m_copyInfo.srcSubresource.mipLevel
+			, m_copyInfo.srcOffset[0]
+			, m_copyInfo.srcOffset[1]
+			, m_copyInfo.srcOffset[2]
+			, m_dst.getImage()
+			, m_dstTarget
+			, m_copyInfo.dstSubresource.mipLevel
+			, m_copyInfo.dstOffset[0]
+			, m_copyInfo.dstOffset[1]
+			, m_copyInfo.dstOffset[2]
+			, m_copyInfo.extent[0]
+			, m_copyInfo.extent[1]
+			, m_copyInfo.extent[2] );
+		glLogCall( glBindTexture, m_dstTarget, 0u );
+		glLogCall( glBindTexture, m_srcTarget, 0u );
 		m_dst.generateMipmaps();
 	}
 

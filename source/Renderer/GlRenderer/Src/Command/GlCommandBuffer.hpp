@@ -128,63 +128,28 @@ namespace gl_renderer
 			, uint32_t vertexOffset
 			, uint32_t firstInstance )const override;
 		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
+		*\copydoc	renderer::CommandBuffer:copyToImage
 		*/
-		void copyBuffer( renderer::BufferBase const & src
-			, renderer::BufferBase const & dst
-			, uint32_t size
-			, uint32_t offset )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
-		*/
-		void copyBuffer( renderer::BufferBase const & src
-			, renderer::VertexBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
-		*/
-		void copyBuffer( renderer::VertexBufferBase const & src
-			, renderer::BufferBase const & dst
-			, uint32_t size
-			, uint32_t offset )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
-		*/
-		void copyBuffer( renderer::VertexBufferBase const & src
-			, renderer::VertexBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
-		*/
-		void copyBuffer( renderer::BufferBase const & src
-			, renderer::UniformBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
-		*/
-		void copyBuffer( renderer::UniformBufferBase const & src
-			, renderer::BufferBase const & dst
-			, uint32_t size
-			, uint32_t offset )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
-		*/
-		void copyBuffer( renderer::UniformBufferBase const & src
-			, renderer::UniformBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyImage
-		*/
-		void copyImage( renderer::BufferBase const & src
+		void copyToImage( renderer::BufferImageCopy const & copyInfo
+			, renderer::BufferBase const & src
 			, renderer::Texture const & dst )const override;
 		/**
+		*\copydoc	renderer::CommandBuffer:copyToBuffer
+		*/
+		void copyToBuffer( renderer::BufferImageCopy const & copyInfo
+			, renderer::Texture const & src
+			, renderer::BufferBase const & dst )const override;
+		/**
+		*\copydoc	renderer::CommandBuffer:copyBuffer
+		*/
+		void copyBuffer( renderer::BufferCopy const & copyInfo
+			, renderer::BufferBase const & src
+			, renderer::BufferBase const & dst )const override;
+		/**
 		*\copydoc	renderer::CommandBuffer:copyImage
 		*/
-		void copyImage( renderer::StagingBuffer const & src
+		void copyImage( renderer::ImageCopy const & copyInfo
+			, renderer::Texture const & src
 			, renderer::Texture const & dst )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:resetQueryPool

@@ -43,35 +43,121 @@ namespace renderer
 		, ByteArray const & data
 		, Texture const & texture )const
 	{
-		doCopyToStagingBuffer( data.data()
-			, uint32_t( data.size() ) );
-
-		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
+		if ( data.size() < getBuffer().getSize() )
 		{
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTopOfPipe
-				, PipelineStageFlag::eTransfer
-				, texture.makeTransferDestination() );
-			commandBuffer.copyImage( *this
-				, texture );
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, PipelineStageFlag::eFragmentShader
-				, texture.makeShaderInputResource() );
-			bool res = commandBuffer.end();
+			doCopyToStagingBuffer( data.data()
+				, uint32_t( data.size() ) );
 
-			if ( !res )
+			if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
 			{
-				throw std::runtime_error{ "Texture data copy failed." };
+				commandBuffer.memoryBarrier( PipelineStageFlag::eTopOfPipe
+					, PipelineStageFlag::eTransfer
+					, texture.makeTransferDestination() );
+				commandBuffer.copyToImage( BufferImageCopy
+					{
+						0u,
+						0u,
+						0u,
+						{
+							getAspectMask( texture.getFormat() ),
+							0u,
+							0u,
+							1u,
+						},
+						{
+							0,
+							0,
+							0
+						},
+						{
+							texture.getDimensions()[0],
+							std::max( 1u, texture.getDimensions()[1] ),
+							std::max( 1u, texture.getDimensions()[2] )
+						}
+					}
+					, getBuffer()
+					, texture );
+				commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+					, PipelineStageFlag::eFragmentShader
+					, texture.makeShaderInputResource() );
+				bool res = commandBuffer.end();
+
+				if ( !res )
+				{
+					throw std::runtime_error{ "Texture data copy failed." };
+				}
+
+				res = m_device.getGraphicsQueue().submit( commandBuffer
+					, nullptr );
+
+				if ( !res )
+				{
+					throw std::runtime_error{ "Texture data copy failed." };
+				}
+
+				m_device.getGraphicsQueue().waitIdle();
 			}
+		}
+		else
+		{
+			size_t remaining = data.size();
+			size_t offset = 0u;
 
-			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, nullptr );
-
-			if ( !res )
+			while ( remaining > data.size() )
 			{
-				throw std::runtime_error{ "Texture data copy failed." };
-			}
+				doCopyToStagingBuffer( data.data() + offset
+					, uint32_t( getBuffer().getSize() ) );
 
-			m_device.getGraphicsQueue().waitIdle();
+				if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
+				{
+					commandBuffer.memoryBarrier( PipelineStageFlag::eTopOfPipe
+						, PipelineStageFlag::eTransfer
+						, texture.makeTransferDestination() );
+					commandBuffer.copyToImage( BufferImageCopy
+						{
+							0u,
+							0u,
+							0u,
+							{
+								getAspectMask( texture.getFormat() ),
+								0u,
+								0u,
+								1u,
+							},
+							{
+								0,
+								0,
+								0
+							},
+							{
+								texture.getDimensions()[0],
+								std::max( 1u, texture.getDimensions()[1] ),
+								std::max( 1u, texture.getDimensions()[2] )
+							}
+						}
+						, getBuffer()
+						, texture );
+					commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+						, PipelineStageFlag::eFragmentShader
+						, texture.makeShaderInputResource() );
+					bool res = commandBuffer.end();
+
+					if ( !res )
+					{
+						throw std::runtime_error{ "Texture data copy failed." };
+					}
+
+					res = m_device.getGraphicsQueue().submit( commandBuffer
+						, nullptr );
+
+					if ( !res )
+					{
+						throw std::runtime_error{ "Texture data copy failed." };
+					}
+
+					m_device.getGraphicsQueue().waitIdle();
+				}
+			}
 		}
 	}
 

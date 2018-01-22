@@ -25,7 +25,9 @@ See LICENSE file in root folder.
 #include "Commands/GlBindGeometryBuffersCommand.hpp"
 #include "Commands/GlBindPipelineCommand.hpp"
 #include "Commands/GlCopyBufferCommand.hpp"
+#include "Commands/GlCopyBufferToImageCommand.hpp"
 #include "Commands/GlCopyImageCommand.hpp"
+#include "Commands/GlCopyImageToBufferCommand.hpp"
 #include "Commands/GlDrawCommand.hpp"
 #include "Commands/GlDrawIndexedCommand.hpp"
 #include "Commands/GlClearCommand.hpp"
@@ -197,94 +199,39 @@ namespace gl_renderer
 			, m_indexType ) );
 	}
 
-	void CommandBuffer::copyBuffer( renderer::BufferBase const & src
-		, renderer::BufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
-	{
-		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src
-			, dst
-			, size
-			, offset ) );
-	}
-
-	void CommandBuffer::copyBuffer( renderer::BufferBase const & src
-		, renderer::VertexBufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
-	{
-		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src
-			, dst.getBuffer()
-			, size
-			, offset ) );
-	}
-
-	void CommandBuffer::copyBuffer( renderer::VertexBufferBase const & src
-		, renderer::BufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
-	{
-		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src.getBuffer()
-			, dst
-			, size
-			, offset ) );
-	}
-
-	void CommandBuffer::copyBuffer( renderer::VertexBufferBase const & src
-		, renderer::VertexBufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
-	{
-		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src.getBuffer()
-			, dst.getBuffer()
-			, size
-			, offset ) );
-	}
-
-	void CommandBuffer::copyBuffer( renderer::BufferBase const & src
-		, renderer::UniformBufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
-	{
-		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src
-			, dst.getBuffer()
-			, size
-			, offset ) );
-	}
-
-	void CommandBuffer::copyBuffer( renderer::UniformBufferBase const & src
-		, renderer::BufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
-	{
-		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src.getBuffer()
-			, dst
-			, size
-			, offset ) );
-	}
-
-	void CommandBuffer::copyBuffer( renderer::UniformBufferBase const & src
-		, renderer::UniformBufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
-	{
-		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( src.getBuffer()
-			, dst.getBuffer()
-			, size
-			, offset ) );
-	}
-
-	void CommandBuffer::copyImage( renderer::BufferBase const & src
+	void CommandBuffer::copyToImage( renderer::BufferImageCopy const & copyInfo
+		, renderer::BufferBase const & src
 		, renderer::Texture const & dst )const
 	{
-		m_commands.emplace_back( std::make_unique< CopyImageCommand >( src
+		m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( copyInfo
+			, src
 			, dst ) );
 	}
 
-	void CommandBuffer::copyImage( renderer::StagingBuffer const & src
+	void CommandBuffer::copyToBuffer( renderer::BufferImageCopy const & copyInfo
+		, renderer::Texture const & src
+		, renderer::BufferBase const & dst )const
+	{
+		m_commands.emplace_back( std::make_unique< CopyImageToBufferCommand >( copyInfo
+			, src
+			, dst ) );
+	}
+
+	void CommandBuffer::copyBuffer( renderer::BufferCopy const & copyInfo
+		, renderer::BufferBase const & src
+		, renderer::BufferBase const & dst )const
+	{
+		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( copyInfo
+			, src
+			, dst ) );
+	}
+
+	void CommandBuffer::copyImage( renderer::ImageCopy const & copyInfo
+		, renderer::Texture const & src
 		, renderer::Texture const & dst )const
 	{
-		m_commands.emplace_back( std::make_unique< CopyImageCommand >( src.getBuffer()
+		m_commands.emplace_back( std::make_unique< CopyImageCommand >( copyInfo
+			, src
 			, dst ) );
 	}
 

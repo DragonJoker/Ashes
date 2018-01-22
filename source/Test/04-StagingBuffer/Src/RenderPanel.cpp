@@ -157,15 +157,17 @@ namespace vkapp
 			, uint32_t( m_vertexData.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
+		m_stagingBuffer->copyVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
+			, m_vertexData
+			, *m_vertexBuffer
+			, renderer::PipelineStageFlag::eVertexInput );
+
 		m_vertexLayout =  renderer::makeLayout< VertexData >( *m_device, 0u );
 		m_vertexLayout->createAttribute< renderer::Vec4 >( 0u
 			, uint32_t( offsetof( VertexData, position ) ) );
 		m_vertexLayout->createAttribute< renderer::Vec4 >( 1u
 			, uint32_t( offsetof( VertexData, colour ) ) );
-		m_stagingBuffer->copyVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
-			, m_vertexData
-			, *m_vertexBuffer
-			, renderer::PipelineStageFlag::eVertexInput );
+
 		m_geometryBuffers = m_device->createGeometryBuffers( *m_vertexBuffer
 			, 0u
 			, *m_vertexLayout );
