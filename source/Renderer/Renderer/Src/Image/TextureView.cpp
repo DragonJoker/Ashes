@@ -14,13 +14,7 @@ namespace renderer
 		, m_image{ image }
 		, m_subResourceRange
 		{
-			isDepthStencilFormat( m_format )
-				? renderer::ImageAspectFlags( renderer::ImageAspectFlag::eDepth | renderer::ImageAspectFlag::eStencil )
-				: isDepthFormat( m_format )
-					? renderer::ImageAspectFlags( renderer::ImageAspectFlag::eDepth )
-					: isStencilFormat( m_format )
-						? renderer::ImageAspectFlags( renderer::ImageAspectFlag::eStencil )
-						: renderer::ImageAspectFlags( renderer::ImageAspectFlag::eColour ),
+			getAspectMask( m_format ),
 			baseMipLevel,
 			levelCount,
 			baseArrayLayer,

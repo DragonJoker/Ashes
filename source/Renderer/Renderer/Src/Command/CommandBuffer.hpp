@@ -6,6 +6,9 @@ See LICENSE file in root folder.
 #define ___Renderer_CommandBuffer_HPP___
 #pragma once
 
+#include "Miscellaneous/BufferCopy.hpp"
+#include "Miscellaneous/BufferImageCopy.hpp"
+#include "Miscellaneous/ImageCopy.hpp"
 #include "RenderPass/ClearValue.hpp"
 
 namespace renderer
@@ -257,122 +260,96 @@ namespace renderer
 			, uint32_t vertexOffset
 			, uint32_t firstInstance )const = 0;
 		/**
-		*\brief
-		*	Copie les données d'un tampon vers un autre tampon.
-		*\param[in] src
-		*	Le tampon source.
-		*\param[in] dst
-		*	Le tampon destination.
-		*\param[in] size
-		*	La taille des données à copier.
-		*/
-		virtual void copyBuffer( BufferBase const & src
-			, BufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const = 0;
-		/**
-		*\brief
-		*	Copie les données d'un tampon vers un autre tampon.
-		*\param[in] src
-		*	Le tampon source.
-		*\param[in] dst
-		*	Le tampon destination.
-		*\param[in] size
-		*	La taille des données à copier.
-		*/
-		virtual void copyBuffer( BufferBase const & src
-			, VertexBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const = 0;
-		/**
-		*\brief
-		*	Copie les données d'un tampon vers un autre tampon.
-		*\param[in] src
-		*	Le tampon source.
-		*\param[in] dst
-		*	Le tampon destination.
-		*\param[in] size
-		*	La taille des données à copier.
-		*/
-		virtual void copyBuffer( VertexBufferBase const & src
-			, BufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const = 0;
-		/**
-		*\brief
-		*	Copie les données d'un tampon vers un autre tampon.
-		*\param[in] src
-		*	Le tampon source.
-		*\param[in] dst
-		*	Le tampon destination.
-		*\param[in] size
-		*	La taille des données à copier.
-		*/
-		virtual void copyBuffer( VertexBufferBase const & src
-			, VertexBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const = 0;
-		/**
-		*\brief
-		*	Copie les données d'un tampon vers un autre tampon.
-		*\param[in] src
-		*	Le tampon source.
-		*\param[in] dst
-		*	Le tampon destination.
-		*\param[in] size
-		*	La taille des données à copier.
-		*/
-		virtual void copyBuffer( BufferBase const & src
-			, UniformBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const = 0;
-		/**
-		*\brief
-		*	Copie les données d'un tampon vers un autre tampon.
-		*\param[in] src
-		*	Le tampon source.
-		*\param[in] dst
-		*	Le tampon destination.
-		*\param[in] size
-		*	La taille des données à copier.
-		*/
-		virtual void copyBuffer( UniformBufferBase const & src
-			, BufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const = 0;
-		/**
-		*\brief
-		*	Copie les données d'un tampon vers un autre tampon.
-		*\param[in] src
-		*	Le tampon source.
-		*\param[in] dst
-		*	Le tampon destination.
-		*\param[in] size
-		*	La taille des données à copier.
-		*/
-		virtual void copyBuffer( UniformBufferBase const & src
-			, UniformBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const = 0;
-		/**
+		*\~french
 		*\brief
 		*	Copie les données d'un tampon vers une image.
+		*\param[in] copyInfo
+		*	Les informations de la copie.
 		*\param[in] src
 		*	Le tampon source.
 		*\param[in] dst
 		*	L'image destination.
+		*\~english
+		*\brief
+		*	Copies data from a buffer to an image.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination image.
 		*/
-		virtual void copyImage( BufferBase const & src
+		virtual void copyToImage( BufferImageCopy const & copyInfo
+			, BufferBase const & src
 			, Texture const & dst )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Copie les données d'un tampon vers une image.
+		*\param[in] copyInfo
+		*	Les informations de la copie.
 		*\param[in] src
 		*	Le tampon source.
 		*\param[in] dst
 		*	L'image destination.
+		*\~english
+		*\brief
+		*	Copies data from a buffer to an image.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination image.
 		*/
-		virtual void copyImage( StagingBuffer const & src
+		virtual void copyToBuffer( BufferImageCopy const & copyInfo
+			, Texture const & src
+			, BufferBase const & dst )const = 0;
+		/**
+		*\~french
+		*\brief
+		*	Copie les données d'une image vers une autre.
+		*\param[in] copyInfo
+		*	Les informations de la copie.
+		*\param[in] src
+		*	L'image source.
+		*\param[in] dst
+		*	L'image destination.
+		*\~english
+		*\brief
+		*	Copies data from an image to another one.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source image.
+		*\param[in] dst
+		*	The destination image.
+		*/
+		virtual void copyBuffer( BufferCopy const & copyInfo
+			, BufferBase const & src
+			, BufferBase const & dst )const = 0;
+		/**
+		*\~french
+		*\brief
+		*	Copie les données d'une image vers une autre.
+		*\param[in] copyInfo
+		*	Les informations de la copie.
+		*\param[in] src
+		*	L'image source.
+		*\param[in] dst
+		*	L'image destination.
+		*\~english
+		*\brief
+		*	Copies data from an image to another one.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source image.
+		*\param[in] dst
+		*	The destination image.
+		*/
+		virtual void copyImage( ImageCopy const & copyInfo
+			, Texture const & src
 			, Texture const & dst )const = 0;
 		/**
 		*\~english
@@ -461,6 +438,122 @@ namespace renderer
 		virtual void writeTimestamp( PipelineStageFlag pipelineStage
 			, QueryPool const & pool
 			, uint32_t query )const = 0;
+		/**
+		*\brief
+		*	Copie les données d'un tampon vers un autre tampon.
+		*\param[in] src
+		*	Le tampon source.
+		*\param[in] dst
+		*	Le tampon destination.
+		*\param[in] size
+		*	La taille des données à copier.
+		*/
+		void copyBuffer( BufferBase const & src
+			, BufferBase const & dst
+			, uint32_t size
+			, uint32_t offset = 0 )const;
+		/**
+		*\brief
+		*	Copie les données d'un tampon vers un autre tampon.
+		*\param[in] src
+		*	Le tampon source.
+		*\param[in] dst
+		*	Le tampon destination.
+		*\param[in] size
+		*	La taille des données à copier.
+		*/
+		void copyBuffer( BufferBase const & src
+			, VertexBufferBase const & dst
+			, uint32_t size
+			, uint32_t offset = 0 )const;
+		/**
+		*\brief
+		*	Copie les données d'un tampon vers un autre tampon.
+		*\param[in] src
+		*	Le tampon source.
+		*\param[in] dst
+		*	Le tampon destination.
+		*\param[in] size
+		*	La taille des données à copier.
+		*/
+		void copyBuffer( VertexBufferBase const & src
+			, BufferBase const & dst
+			, uint32_t size
+			, uint32_t offset = 0 )const;
+		/**
+		*\brief
+		*	Copie les données d'un tampon vers un autre tampon.
+		*\param[in] src
+		*	Le tampon source.
+		*\param[in] dst
+		*	Le tampon destination.
+		*\param[in] size
+		*	La taille des données à copier.
+		*/
+		void copyBuffer( VertexBufferBase const & src
+			, VertexBufferBase const & dst
+			, uint32_t size
+			, uint32_t offset = 0 )const;
+		/**
+		*\brief
+		*	Copie les données d'un tampon vers un autre tampon.
+		*\param[in] src
+		*	Le tampon source.
+		*\param[in] dst
+		*	Le tampon destination.
+		*\param[in] size
+		*	La taille des données à copier.
+		*/
+		void copyBuffer( BufferBase const & src
+			, UniformBufferBase const & dst
+			, uint32_t size
+			, uint32_t offset = 0 )const;
+		/**
+		*\brief
+		*	Copie les données d'un tampon vers un autre tampon.
+		*\param[in] src
+		*	Le tampon source.
+		*\param[in] dst
+		*	Le tampon destination.
+		*\param[in] size
+		*	La taille des données à copier.
+		*/
+		void copyBuffer( UniformBufferBase const & src
+			, BufferBase const & dst
+			, uint32_t size
+			, uint32_t offset = 0 )const;
+		/**
+		*\brief
+		*	Copie les données d'un tampon vers un autre tampon.
+		*\param[in] src
+		*	Le tampon source.
+		*\param[in] dst
+		*	Le tampon destination.
+		*\param[in] size
+		*	La taille des données à copier.
+		*/
+		void copyBuffer( UniformBufferBase const & src
+			, UniformBufferBase const & dst
+			, uint32_t size
+			, uint32_t offset = 0 )const;
+		/**
+		*\~french
+		*\brief
+		*	Copie les données d'une image vers une autre.
+		*\param[in] src
+		*	L'image source.
+		*\param[in] dst
+		*	L'image destination.
+		*\~english
+		*\brief
+		*	Copies data from an image to another one.
+		*\param[in] src
+		*	The source image.
+		*\param[in] dst
+		*	The destination image.
+		*/
+		void copyImage( Texture const & src
+			, Texture const & dst )const;
 	};
 }
 

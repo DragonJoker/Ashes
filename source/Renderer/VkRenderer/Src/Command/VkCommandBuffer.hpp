@@ -52,70 +52,6 @@ namespace vk_renderer
 		*/
 		~CommandBuffer();
 		/**
-		*\~french
-		*\brief
-		*	Copie les données d'un tampon vers une image.
-		*\param[in] copyInfo
-		*	Les informations de la copie.
-		*\param[in] src
-		*	Le tampon source.
-		*\param[in] dst
-		*	L'image destination.
-		*\~english
-		*\brief
-		*	Copies data from a buffer to an image.
-		*\param[in] copyInfo
-		*	The copy informations.
-		*\param[in] src
-		*	The source buffer.
-		*\param[in] dst
-		*	The destination image.
-		*/
-		void copyImage( VkBufferImageCopy const & copyInfo
-			, Buffer const & src
-			, Texture const & dst )const;
-		/**
-		*\~french
-		*\brief
-		*	Copie les données d'un tampon vers une image.
-		*\param[in] src
-		*	Le tampon source.
-		*\param[in] dst
-		*	L'image destination.
-		*\~english
-		*\brief
-		*	Copies data from a buffer to an image.
-		*\param[in] src
-		*	The source buffer.
-		*\param[in] dst
-		*	The destination image.
-		*/
-		void copyImage( Texture const & src
-			, Texture const & dst )const;
-		/**
-		*\~french
-		*\brief
-		*	Copie les données d'une image vers une autre.
-		*\param[in] copyInfo
-		*	Les informations de la copie.
-		*\param[in] src
-		*	L'image source.
-		*\param[in] dst
-		*	L'image destination.
-		*\~english
-		*\brief
-		*	Copies data from an image to another one.
-		*\param[in] copyInfo
-		*	The copy informations.
-		*\param[in] src
-		*	The source image.
-		*\param[in] dst
-		*	The destination image.
-		*/
-		void copyImage( VkImageCopy const & copyInfo
-			, Texture const & src
-			, Texture const & dst )const;
-		/**
 		*\copydoc	renderer::CommandBuffer:begin
 		*/
 		bool begin( renderer::CommandBufferUsageFlags flags = 0u )const override;
@@ -212,63 +148,28 @@ namespace vk_renderer
 			, uint32_t vertexOffset
 			, uint32_t firstInstance )const override;
 		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
+		*\copydoc	renderer::CommandBuffer:copyToImage
 		*/
-		void copyBuffer( renderer::BufferBase const & src
-			, renderer::BufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
-		*/
-		void copyBuffer( renderer::BufferBase const & src
-			, renderer::VertexBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
-		*/
-		void copyBuffer( renderer::VertexBufferBase const & src
-			, renderer::BufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
-		*/
-		void copyBuffer( renderer::VertexBufferBase const & src
-			, renderer::VertexBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
-		*/
-		void copyBuffer( renderer::BufferBase const & src
-			, renderer::UniformBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
-		*/
-		void copyBuffer( renderer::UniformBufferBase const & src
-			, renderer::BufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyBuffer
-		*/
-		void copyBuffer( renderer::UniformBufferBase const & src
-			, renderer::UniformBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:copyImage
-		*/
-		void copyImage( renderer::BufferBase const & src
+		void copyToImage( renderer::BufferImageCopy const & copyInfo
+			, renderer::BufferBase const & src
 			, renderer::Texture const & dst )const override;
 		/**
+		*\copydoc	renderer::CommandBuffer:copyToBuffer
+		*/
+		void copyToBuffer( renderer::BufferImageCopy const & copyInfo
+			, renderer::Texture const & src
+			, renderer::BufferBase const & dst )const override;
+		/**
+		*\copydoc	renderer::CommandBuffer:copyBuffer
+		*/
+		void copyBuffer( renderer::BufferCopy const & copyInfo
+			, renderer::BufferBase const & src
+			, renderer::BufferBase const & dst )const override;
+		/**
 		*\copydoc	renderer::CommandBuffer:copyImage
 		*/
-		void copyImage( renderer::StagingBuffer const & src
+		void copyImage( renderer::ImageCopy const & copyInfo
+			, renderer::Texture const & src
 			, renderer::Texture const & dst )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:resetQueryPool

@@ -15,6 +15,9 @@ See LICENSE file in root folder.
 #include "Image/VkImageSubresourceRange.hpp"
 #include "Image/VkTexture.hpp"
 #include "Image/VkTextureView.hpp"
+#include "Miscellaneous/VkBufferCopy.hpp"
+#include "Miscellaneous/VkBufferImageCopy.hpp"
+#include "Miscellaneous/VkImageCopy.hpp"
 #include "Miscellaneous/VkQueryPool.hpp"
 #include "Pipeline/VkPipeline.hpp"
 #include "Pipeline/VkPipelineLayout.hpp"
@@ -74,73 +77,6 @@ namespace vk_renderer
 	CommandBuffer::~CommandBuffer()
 	{
 		vk::FreeCommandBuffers( m_device, m_pool, 1, &m_commandBuffer );
-	}
-
-	void CommandBuffer::copyImage( VkBufferImageCopy const & copyInfo
-		, Buffer const & src
-		, Texture const & dst )const
-	{
-		DEBUG_DUMP( copyInfo );
-		vk::CmdCopyBufferToImage( m_commandBuffer
-			, src
-			, dst
-			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-			, 1
-			, &copyInfo );
-	}
-
-
-	void CommandBuffer::copyImage( Texture const & src
-		, Texture const & dst )const
-	{
-		auto const & srcRange = src.getView().getSubResourceRange();
-		auto const & dstRange = dst.getView().getSubResourceRange();
-		copyImage( VkImageCopy
-			{
-				{                                                   // srcSubresource
-					VK_IMAGE_ASPECT_COLOR_BIT,                          // aspectMask
-					srcRange.getBaseMipLevel(),                         // mipLevel
-					srcRange.getBaseArrayLayer(),                       // baseArrayLayer
-					srcRange.getLayerCount()                            // layerCount
-				},
-				{                                                   // srcOffset
-					0,                                                  // x
-					0,                                                  // y
-					0                                                   // z
-				},
-				{                                                   // dstSubresource
-					VK_IMAGE_ASPECT_COLOR_BIT,                          // aspectMask
-					dstRange.getBaseMipLevel(),                         // mipLevel
-					dstRange.getBaseArrayLayer(),                       // baseArrayLayer
-					dstRange.getLayerCount()                            // layerCount
-				},
-				{                                                   // dstOffset
-					0,                                                  // x
-					0,                                                  // y
-					0                                                   // z
-				},
-				{                                                   // extent
-					uint32_t( dst.getDimensions().x ),                  // width
-					uint32_t( dst.getDimensions().y ),                  // height
-					1u                                                  // depth
-				}
-			}
-			, src
-			, dst );
-	}
-
-	void CommandBuffer::copyImage( VkImageCopy const & copyInfo
-		, Texture const & src
-		, Texture const & dst )const
-	{
-		DEBUG_DUMP( copyInfo );
-		vk::CmdCopyImage( m_commandBuffer
-			, src
-			, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
-			, dst
-			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-			, 1
-			, &copyInfo );
 	}
 
 	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags )const
@@ -406,129 +342,62 @@ namespace vk_renderer
 			, firstInstance );
 	}
 
-	void CommandBuffer::copyBuffer( renderer::BufferBase const & src
-		, renderer::BufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
+	void CommandBuffer::copyToImage( renderer::BufferImageCopy const & copyInfo
+		, renderer::BufferBase const & src
+		, renderer::Texture const & dst )const
 	{
-		VkBufferCopy copyInfo
-		{
-			0,                                                // srcOffset
-			offset,                                           // dstOffset
-			size                                              // size
-		};
-		DEBUG_DUMP( copyInfo );
+		auto vkcopyInfo = convert( copyInfo );
+		DEBUG_DUMP( vkcopyInfo );
+		vk::CmdCopyBufferToImage( m_commandBuffer
+			, static_cast< Buffer const & >( src )
+			, static_cast< Texture const & >( dst )
+			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+			, 1
+			, &vkcopyInfo );
+	}
+
+	void CommandBuffer::copyToBuffer( renderer::BufferImageCopy const & copyInfo
+		, renderer::Texture const & src
+		, renderer::BufferBase const & dst )const
+	{
+		auto vkcopyInfo = convert( copyInfo );
+		DEBUG_DUMP( vkcopyInfo );
+		vk::CmdCopyImageToBuffer( m_commandBuffer
+			, static_cast< Texture const & >( src )
+			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+			, static_cast< Buffer const & >( dst )
+			, 1
+			, &vkcopyInfo );
+	}
+
+	void CommandBuffer::copyBuffer( renderer::BufferCopy const & copyInfo
+		, renderer::BufferBase const & src
+		, renderer::BufferBase const & dst )const
+	{
+		auto vkcopyInfo = convert( copyInfo );
+		DEBUG_DUMP( vkcopyInfo );
 		vk::CmdCopyBuffer( m_commandBuffer
 			, static_cast< Buffer const & >( src )
 			, static_cast< Buffer const & >( dst )
-			, 1u
-			, &copyInfo );
+			, 1
+			, &vkcopyInfo );
 	}
 
-	void CommandBuffer::copyBuffer( renderer::BufferBase const & src
-		, renderer::VertexBufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
-	{
-		copyBuffer( src
-			, dst.getBuffer()
-			, size
-			, offset );
-	}
-
-	void CommandBuffer::copyBuffer( renderer::VertexBufferBase const & src
-		, renderer::BufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
-	{
-		copyBuffer( src.getBuffer()
-			, dst
-			, size
-			, offset );
-	}
-
-	void CommandBuffer::copyBuffer( renderer::VertexBufferBase const & src
-		, renderer::VertexBufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
-	{
-		copyBuffer( src.getBuffer()
-			, dst.getBuffer()
-			, size
-			, offset );
-	}
-
-	void CommandBuffer::copyBuffer( renderer::BufferBase const & src
-		, renderer::UniformBufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
-	{
-		copyBuffer( src
-			, dst.getBuffer()
-			, size
-			, offset );
-	}
-
-	void CommandBuffer::copyBuffer( renderer::UniformBufferBase const & src
-		, renderer::BufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
-	{
-		copyBuffer( src.getBuffer()
-			, dst
-			, size
-			, offset );
-	}
-
-	void CommandBuffer::copyBuffer( renderer::UniformBufferBase const & src
-		, renderer::UniformBufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
-	{
-		copyBuffer( src.getBuffer()
-			, dst.getBuffer()
-			, size
-			, offset );
-	}
-
-	void CommandBuffer::copyImage( renderer::BufferBase const & src
+	void CommandBuffer::copyImage( renderer::ImageCopy const & copyInfo
+		, renderer::Texture const & src
 		, renderer::Texture const & dst )const
 	{
-		auto const & texture = static_cast< Texture const & >( dst );
-		auto const & buffer = static_cast< Buffer const & >( src );
-		auto const & range = texture.getView().getSubResourceRange();
-		copyImage( VkBufferImageCopy
-			{
-				0,                                                  // bufferOffset
-				0,                                                  // bufferRowLength
-				0,                                                  // bufferImageHeight
-				{                                                   // imageSubresource
-					VK_IMAGE_ASPECT_COLOR_BIT,                          // aspectMask
-					range.getBaseMipLevel(),                            // mipLevel
-					range.getBaseArrayLayer(),                          // baseArrayLayer
-					range.getLayerCount()                               // layerCount
-				},
-				{                                                   // imageOffset
-					0,                                                  // x
-					0,                                                  // y
-					0                                                   // z
-				},
-				{                                                   // imageExtent
-					uint32_t( dst.getDimensions()[0] ),                 // width
-					uint32_t( std::max( 1u, dst.getDimensions()[1] ) ), // height
-					uint32_t( std::max( 1u, dst.getDimensions()[2] ) )  // depth
-				}
-			}
-			, buffer
-			, texture );
+		auto vkcopyInfo = convert( copyInfo );
+		DEBUG_DUMP( vkcopyInfo );
+		vk::CmdCopyImage( m_commandBuffer
+			, static_cast< Texture const & >( src )
+			, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+			, static_cast< Texture const & >( dst )
+			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+			, 1
+			, &vkcopyInfo );
 	}
 
-	void CommandBuffer::copyImage( renderer::StagingBuffer const & src
-		, renderer::Texture const & dst )const
-	{
-		copyImage( src.getBuffer()
-			, dst );
-	}
 	void CommandBuffer::resetQueryPool( renderer::QueryPool const & pool
 		, uint32_t firstQuery
 		, uint32_t queryCount )const

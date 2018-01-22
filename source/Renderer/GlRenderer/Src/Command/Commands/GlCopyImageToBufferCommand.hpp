@@ -6,15 +6,15 @@ See LICENSE file in root folder
 
 #include "GlCommandBase.hpp"
 
-#include <Miscellaneous/BufferCopy.hpp>
+#include <Miscellaneous/BufferImageCopy.hpp>
 
 namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Commande copie d'un vertex buffer.
+	*	Commande de copie du contenu d'une image dans un tampon.
 	*/
-	class CopyBufferCommand
+	class CopyImageToBufferCommand
 		: public CommandBase
 	{
 	public:
@@ -24,20 +24,23 @@ namespace gl_renderer
 		*\param[in] copyInfo
 		*	Les informations de copie.
 		*\param[in] src
-		*	Le tampon source.
+		*	L'image source.
 		*\param[in] dst
 		*	Le tampon destination.
 		*/
-		CopyBufferCommand( renderer::BufferCopy const & copyInfo
-			, renderer::BufferBase const & src
+		CopyImageToBufferCommand( renderer::BufferImageCopy const & copyInfo
+			, renderer::Texture const & src
 			, renderer::BufferBase const & dst );
 
 		void apply()const override;
 		CommandPtr clone()const override;
 
 	private:
-		Buffer const & m_src;
+		renderer::BufferImageCopy m_copyInfo;
+		Texture const & m_src;
 		Buffer const & m_dst;
-		renderer::BufferCopy m_copyInfo;
+		GLenum m_format;
+		GLenum m_type;
+		GLenum m_target;
 	};
 }

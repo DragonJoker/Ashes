@@ -18,7 +18,7 @@ namespace gl_renderer
 	{
 		glLogCall( glGenBuffers, 1, &m_glName );
 		glLogCall( glBindBuffer, m_target, m_glName );
-		glLogCall( glBufferData, m_target, size, nullptr, GL_DYNAMIC_DRAW );
+		glLogCall( glBufferStorage, m_target, size, nullptr, convert( flags ) );
 		glLogCall( glBindBuffer, m_target, 0u );
 	}
 

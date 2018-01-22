@@ -75,6 +75,10 @@ namespace renderer
 	template< typename T >
 	class ShaderStorageBuffer;
 
+	struct BufferCopy;
+	struct BufferImageCopy;
+	struct ImageCopy;
+
 	class AttributeBase;
 	class BackBuffer;
 	class BufferBase;

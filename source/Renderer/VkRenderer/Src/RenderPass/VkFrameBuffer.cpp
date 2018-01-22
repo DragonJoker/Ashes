@@ -106,17 +106,17 @@ namespace vk_renderer
 			, renderer::PipelineStageFlag::eTransfer
 			, attachImage.makeTransferSource() );
 
-		VkImageCopy imageCopyRegion{};
-		imageCopyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		renderer::ImageCopy imageCopyRegion{};
+		imageCopyRegion.srcSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
 		imageCopyRegion.srcSubresource.layerCount = 1;
-		imageCopyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		imageCopyRegion.dstSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
 		imageCopyRegion.dstSubresource.layerCount = 1;
-		imageCopyRegion.extent.width = width;
-		imageCopyRegion.extent.height = height;
-		imageCopyRegion.extent.depth = 1;
-		imageCopyRegion.srcOffset.x = xoffset;
-		imageCopyRegion.srcOffset.y = yoffset;
-		imageCopyRegion.srcOffset.z = 0u;
+		imageCopyRegion.extent[0] = width;
+		imageCopyRegion.extent[1] = height;
+		imageCopyRegion.extent[2] = 1;
+		imageCopyRegion.srcOffset[0] = xoffset;
+		imageCopyRegion.srcOffset[1] = yoffset;
+		imageCopyRegion.srcOffset[2] = 0u;
 
 		copyCmd.copyImage( imageCopyRegion
 			, static_cast< Texture const & >( attachImage )

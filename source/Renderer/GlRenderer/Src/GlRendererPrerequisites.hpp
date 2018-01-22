@@ -28,6 +28,7 @@
 #include "Enum/GlIndexType.hpp"
 #include "Enum/GlLogicOp.hpp"
 #include "Enum/GlMemoryMapFlag.hpp"
+#include "Enum/GlMemoryPropertyFlag.hpp"
 #include "Enum/GlMipmapMode.hpp"
 #include "Enum/GlPolygonMode.hpp"
 #include "Enum/GlPrimitiveTopology.hpp"
