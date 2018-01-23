@@ -23,7 +23,7 @@ namespace common
 	{
 		//!\~english	The image dimensions.
 		//!\~french		Les dimensions de l'image.
-		renderer::UIVec2 size;
+		renderer::UIVec3 size;
 		//!\~english	The image buffer.
 		//!\~french		Le tampon de l'image.
 		renderer::ByteArray data;

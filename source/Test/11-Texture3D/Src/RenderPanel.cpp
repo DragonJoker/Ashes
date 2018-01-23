@@ -1,7 +1,8 @@
-﻿#include "RenderPanel.hpp"
+#include "RenderPanel.hpp"
 
 #include "Application.hpp"
 #include "MainFrame.hpp"
+#include "RawDataProcessor.hpp"
 
 #include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/StagingBuffer.hpp>
@@ -49,7 +50,6 @@ namespace vkapp
 		}	Ids;
 
 		static int constexpr TimerTimeMs = 10;
-		static uint32_t constexpr TextureDepth = 512u;
 		static renderer::PixelFormat constexpr DepthFormat = renderer::PixelFormat::eD32F;
 	}
 
@@ -58,54 +58,6 @@ namespace vkapp
 		, renderer::Renderer const & renderer )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
-		, m_offscreenVertexData
-		{
-			// Front
-			{ { -1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0, 1.0 } },
-			{ { -1.0, +1.0, +1.0, 1.0 }, { 0.0, 1.0, 1.0 } },
-			{ { +1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0, 1.0 } },
-			{ { +1.0, +1.0, +1.0, 1.0 }, { 1.0, 1.0, 1.0 } },
-			// Top
-			{ { -1.0, +1.0, +1.0, 1.0 }, { 0.0, 1.0, 1.0 } },
-			{ { -1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0, 0.0 } },
-			{ { +1.0, +1.0, +1.0, 1.0 }, { 1.0, 1.0, 1.0 } },
-			{ { +1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0, 0.0 } },
-			// Back
-			{ { -1.0, +1.0, -1.0, 1.0 }, { 0.0, 0.0, 0.0 } },
-			{ { -1.0, -1.0, -1.0, 1.0 }, { 0.0, 1.0, 0.0 } },
-			{ { +1.0, +1.0, -1.0, 1.0 }, { 1.0, 0.0, 0.0 } },
-			{ { +1.0, -1.0, -1.0, 1.0 }, { 1.0, 1.0, 0.0 } },
-			// Bottom
-			{ { -1.0, -1.0, -1.0, 1.0 }, { 0.0, 0.0, 0.0 } },
-			{ { -1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0, 1.0 } },
-			{ { +1.0, -1.0, -1.0, 1.0 }, { 1.0, 0.0, 0.0 } },
-			{ { +1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0, 1.0 } },
-			// Right
-			{ { +1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0, 1.0 } },
-			{ { +1.0, +1.0, +1.0, 1.0 }, { 1.0, 1.0, 1.0 } },
-			{ { +1.0, -1.0, -1.0, 1.0 }, { 1.0, 0.0, 0.0 } },
-			{ { +1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0, 0.0 } },
-			// Left
-			{ { -1.0, -1.0, -1.0, 1.0 }, { 0.0, 0.0, 0.0 } },
-			{ { -1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0, 0.0 } },
-			{ { -1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0, 1.0 } },
-			{ { -1.0, +1.0, +1.0, 1.0 }, { 0.0, 1.0, 1.0 } },
-		}
-		, m_offscreenIndexData
-		{
-			// Front
-			0, 1, 2, 2, 1, 3,
-			// Top
-			4, 5, 6, 6, 5, 7,
-			// Back
-			8, 9, 10, 10, 9, 11,
-			// Bottom
-			12, 13, 14, 14, 13, 15,
-			// Right
-			16, 17, 18, 18, 17, 19,
-			// Left
-			20, 21, 22, 22, 21, 23,
-		}
 		, m_mainVertexData
 		{
 			{ { -1.0, -1.0, 0.0, 1.0 }, { 0.0, 0.0 } },
@@ -114,6 +66,23 @@ namespace vkapp
 			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
 		}
 	{
+		for ( auto i = 0u; i < 100u; ++i )
+		{
+			auto w = i / 99.0;
+			auto index = uint32_t( m_offscreenVertexData.size() );
+			m_offscreenIndexData.push_back( index + 0 );
+			m_offscreenIndexData.push_back( index + 1 );
+			m_offscreenIndexData.push_back( index + 2 );
+			m_offscreenIndexData.push_back( index + 2 );
+			m_offscreenIndexData.push_back( index + 1 );
+			m_offscreenIndexData.push_back( index + 3 );
+
+			m_offscreenVertexData.push_back( { { -1.0, -1.0, w - 0.5, 1.0 }, { 0.0, 0.0, w } } );
+			m_offscreenVertexData.push_back( { { -1.0, +1.0, w - 0.5, 1.0 }, { 0.0, 1.0, w } } );
+			m_offscreenVertexData.push_back( { { +1.0, -1.0, w - 0.5, 1.0 }, { 1.0, 0.0, w } } );
+			m_offscreenVertexData.push_back( { { +1.0, +1.0, w - 0.5, 1.0 }, { 1.0, 1.0, w } } );
+		}
+
 		try
 		{
 			doCreateDevice( renderer );
@@ -165,6 +134,7 @@ namespace vkapp
 			, wxSizeEventHandler( RenderPanel::onSize )
 			, nullptr
 			, this );
+		m_time = renderer::Clock::now();
 	}
 
 	RenderPanel::~RenderPanel()
@@ -284,12 +254,15 @@ namespace vkapp
 	void RenderPanel::doCreateTexture()
 	{
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-		auto image = common::loadImage( shadersFolder / "texture.png" );
+		common::ImageData image;
+		image.size = renderer::UIVec3{ 256u, 256u, 109u };
+		image.format = renderer::PixelFormat::eR8G8B8A8;
+		readFile( shadersFolder / "head256x256x109", image.size, image.data );
 		m_texture = m_device->createTexture();
-		m_texture->setImage( image.format, { image.size[0], image.size[1], TextureDepth } );
-		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
-			, renderer::WrapMode::eClampToEdge
-			, renderer::WrapMode::eClampToEdge
+		m_texture->setImage( image.format, { image.size[0], image.size[1], image.size[2] } );
+		m_sampler = m_device->createSampler( renderer::WrapMode::eRepeat
+			, renderer::WrapMode::eRepeat
+			, renderer::WrapMode::eRepeat
 			, renderer::Filter::eLinear
 			, renderer::Filter::eLinear );
 		m_view = m_device->createTextureView( *m_texture
@@ -299,18 +272,12 @@ namespace vkapp
 			, 1u
 			, 0u
 			, 1u );
-		renderer::ByteArray data( image.data.size() * TextureDepth );
-		auto buffer = data.data();
-		auto size = image.data.size();
+		auto buffer = image.data.data();
+		auto size = image.size[0] * image.size[1] * 4;
 
-		for ( size_t i = 0u; i < TextureDepth; ++i )
+		for ( size_t i = 0u; i < image.size[2]; ++i )
 		{
-			std::memcpy( buffer, image.data.data(), size );
-			buffer += size;
-		}
-
-		for ( size_t i = 0u; i < TextureDepth; ++i )
-		{
+			renderer::ByteArray layer( buffer, buffer + size );
 			m_stagingBuffer->copyTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
 				, {
 					m_view->getSubResourceRange().getAspectMask(),
@@ -320,8 +287,9 @@ namespace vkapp
 				}
 				, { 0, 0, i }
 				, { image.size[0], image.size[1], 1u }
-				, image.data
+				, layer
 				, *m_view );
+			buffer += size;
 		}
 
 		m_texture->generateMipmaps();
@@ -486,14 +454,25 @@ namespace vkapp
 			m_offscreenProgram->link();
 		}
 
+		renderer::ColourBlendState cbstate{};
+		cbstate.addAttachment( {
+			true,
+			renderer::BlendFactor::eSrcAlpha,
+			renderer::BlendFactor::eInvSrcAlpha,
+			renderer::BlendOp::eAdd,
+			renderer::BlendFactor::eSrcAlpha,
+			renderer::BlendFactor::eInvSrcAlpha,
+			renderer::BlendOp::eAdd
+		} );
 		m_offscreenPipeline = m_device->createPipeline( *m_offscreenPipelineLayout
 			, *m_offscreenProgram
 			, { *m_offscreenVertexLayout }
 			, *m_offscreenRenderPass
 			, renderer::PrimitiveTopology::eTriangleList
-			, renderer::RasterisationState{ 0, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone } );
+			, renderer::RasterisationState{ 0, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone }
+			, cbstate );
 		m_offscreenPipeline->multisampleState( renderer::MultisampleState{} );
-		m_offscreenPipeline->depthStencilState( renderer::DepthStencilState{} );
+		m_offscreenPipeline->depthStencilState( renderer::DepthStencilState{ 0u, false } );
 		m_offscreenPipeline->finish();
 	}
 
@@ -701,21 +680,13 @@ namespace vkapp
 		static renderer::Mat4 const originalTranslate = []()
 		{
 			renderer::Mat4 result;
-			result = utils::translate( result, { 0, 0, -5 } );
+			result = utils::translate( result, { 0, 0, -1.5 } );
 			return result;
-		}();
-		static renderer::Mat4 const originalRotate = []()
-		{
-			renderer::Mat4 result;
-			result = utils::rotate( result
-				, float( utils::DegreeToRadian * 45.0 )
-				, { 0, 0, 1 } );
-			return result;
-		}();
+		}( );
 		m_rotate = utils::rotate( m_rotate
 			, float( utils::DegreeToRadian )
 			, { 0, 1, 0 } );
-		m_objectUbo->getData( 0 ) = originalTranslate * m_rotate * originalRotate;
+		m_objectUbo->getData( 0 ) = originalTranslate * m_rotate;
 		m_stagingBuffer->copyUniformData( *m_updateCommandBuffer
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
