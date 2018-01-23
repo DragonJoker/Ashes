@@ -73,7 +73,6 @@ namespace gl_renderer
 
 		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, 0u );
 		glLogCall( gl::BindTexture, m_target, 0u );
-		m_dst.getTexture().generateMipmaps();
 	}
 
 	CommandPtr CopyBufferToImageCommand::clone()const
