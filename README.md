@@ -65,6 +65,6 @@ Tests depth buffer, depth test, and multiple uniform buffers.
 Demonstrates load and display of a 3D texture.
 
 ### [Texture Cube](source/Test/12-TextureCube/)
-<img src="./screenshots/11.png" height="72px" align="right">
+<img src="./screenshots/12.png" height="72px" align="right">
 
 Loads a cube texture and displays it as a skybox.
