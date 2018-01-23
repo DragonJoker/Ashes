@@ -1,6 +1,5 @@
-#include "Sync/VkImageMemoryBarrier.hpp"
+#include "VkRendererPrerequisites.hpp"
 
-#include "Image/VkImageSubresourceRange.hpp"
 #include "Image/VkTexture.hpp"
 
 namespace vk_renderer

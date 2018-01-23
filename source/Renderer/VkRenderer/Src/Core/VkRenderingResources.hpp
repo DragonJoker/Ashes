@@ -8,6 +8,8 @@
 #define ___VkRenderer_RenderingResources_HPP___
 #pragma once
 
+#include "VkRendererPrerequisites.hpp"
+
 #include <Core/RenderingResources.hpp>
 
 namespace vk_renderer

@@ -4,8 +4,6 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "VkRendererPrerequisites.hpp"
-
 #include <Pipeline/RasterisationState.hpp>
 
 namespace vk_renderer

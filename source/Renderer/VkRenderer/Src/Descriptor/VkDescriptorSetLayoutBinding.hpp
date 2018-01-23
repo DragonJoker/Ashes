@@ -2,9 +2,9 @@
 This file belongs to Renderer.
 See LICENSE file in root folder
 */
+#ifndef ___VkRenderer_DescriptorSetLayoutBinding_HPP___
+#define ___VkRenderer_DescriptorSetLayoutBinding_HPP___
 #pragma once
-
-#include "VkRendererPrerequisites.hpp"
 
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 
@@ -20,3 +20,5 @@ namespace vk_renderer
 	*/
 	VkDescriptorSetLayoutBinding convert( renderer::DescriptorSetLayoutBinding const & binding );
 }
+
+#endif

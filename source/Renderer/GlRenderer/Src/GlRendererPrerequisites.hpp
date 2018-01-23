@@ -176,10 +176,10 @@ namespace gl_renderer
 
 #if GL_LOG_CALLS
 #	define glLogCall( Name, ... )\
-	executeFunction( ##Name, #Name, __VA_ARGS__ )
+	executeFunction( Name, #Name, __VA_ARGS__ )
 #else
 #	define glLogCall( Name, ... )\
-	( ##Name( __VA_ARGS__ ) )
+	( Name( __VA_ARGS__ ) )
 #endif
 
 	class Buffer;

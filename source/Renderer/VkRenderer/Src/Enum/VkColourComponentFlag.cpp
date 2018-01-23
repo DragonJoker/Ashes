@@ -1,4 +1,4 @@
-#include "VkColourComponentFlag.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 namespace vk_renderer
 {

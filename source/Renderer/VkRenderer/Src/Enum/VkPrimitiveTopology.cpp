@@ -1,4 +1,4 @@
-#include "VkPrimitiveTopology.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 namespace vk_renderer
 {

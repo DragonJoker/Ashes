@@ -2,7 +2,7 @@
 
 namespace gl_renderer
 {
-	GLenum convert( renderer::TextureType const & value )
+	GlTextureType convert( renderer::TextureType const & value )
 	{
 		switch ( value )
 		{

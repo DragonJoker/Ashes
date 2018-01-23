@@ -1,6 +1,4 @@
-#include "VkImageCopy.hpp"
-
-#include "Image/VkImageSubresourceLayers.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 namespace vk_renderer
 {

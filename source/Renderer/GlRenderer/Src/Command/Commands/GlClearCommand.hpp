@@ -22,20 +22,20 @@ namespace gl_renderer
 		*\brief
 		*	Constructeur.
 		*\param[in] image
-		*	L'image à vider.
+		*	L'image ï¿½ vider.
 		*\param[in] colour
 		*	La couleur de vidage.
 		*/
-		ClearCommand( renderer::Texture const & image
+		ClearCommand( renderer::TextureView const & image
 			, renderer::RgbaColour const & colour );
 
 		void apply()const override;
 		CommandPtr clone()const override;
 
 	private:
-		Texture const & m_image;
+		TextureView const & m_image;
 		renderer::RgbaColour m_colour;
-		GLenum m_format;
-		GLenum m_type;
+		GlFormat m_format;
+		GlType m_type;
 	};
 }

@@ -10,7 +10,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Commande de fin d'une requête.
+	*	Commande de fin d'une requï¿½te.
 	*/
 	class EndQueryCommand
 		: public CommandBase
@@ -22,6 +22,6 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		GLenum m_target;
+		GlQueryType m_target;
 	};
 }

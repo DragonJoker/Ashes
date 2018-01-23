@@ -16,22 +16,22 @@ namespace gl_renderer
 			, flags }
 		, m_target{ convert( target ) }
 	{
-		glLogCall( gl::GenBuffers, 1, &m_glName );
-		glLogCall( gl::BindBuffer, m_target, m_glName );
+		glLogCall( gl::GenBuffers, 1, &m_name );
+		glLogCall( gl::BindBuffer, m_target, m_name );
 		glLogCall( gl::BufferStorage, m_target, size, nullptr, GLbitfield( convert( flags ) ) );
 		glLogCall( gl::BindBuffer, m_target, 0u );
 	}
 
 	Buffer::~Buffer()
 	{
-		glLogCall( gl::DeleteBuffers, 1, &m_glName );
+		glLogCall( gl::DeleteBuffers, 1, &m_name );
 	}
 
 	uint8_t * Buffer::lock( uint32_t offset
 		, uint32_t size
 		, renderer::MemoryMapFlags flags )const
 	{
-		glLogCall( gl::BindBuffer, m_target, m_glName );
+		glLogCall( gl::BindBuffer, m_target, m_name );
 		auto result = glLogCall( gl::MapBufferRange, m_target, offset, size, GLbitfield( convert( flags ) ) );
 		return reinterpret_cast< uint8_t * >( result );
 	}

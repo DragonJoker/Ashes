@@ -108,7 +108,7 @@ namespace utils
 			stream << "Couldn't load dynamic library at [" << m_path << "]: ";
 			stream << "Error code: " << std::hex << dlerror();
 			std::cerr << stream.str() << std::endl;
-			throw std::runtime_error{ error.str() };
+			throw std::runtime_error{ stream.str() };
 		}
 	}
 

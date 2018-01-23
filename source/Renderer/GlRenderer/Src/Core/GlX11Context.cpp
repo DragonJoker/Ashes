@@ -38,7 +38,6 @@ namespace gl_renderer
 			func = reinterpret_cast< Func >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name.c_str() ) ) );
 			return func != nullptr;
 		}
-
 	}
 
 	X11Context::X11Context( renderer::ConnectionPtr && connection )
@@ -92,51 +91,41 @@ namespace gl_renderer
 		{
 			m_glxContext = glXCreateContext( m_display, visualInfo, nullptr, GL_TRUE );
 
-			if ( m_glxContext )
+			if ( !m_glxContext )
 			{
-				glXMakeCurrent( m_display, m_drawable, m_glxContext );
-				GLenum error = glewInit();
-
-				if ( GLEW_OK != error )
-				{
-					std::stringstream stream;
-					stream << "Error: %s" << glewGetErrorString( error );
-					endCurrent();
-					glXDestroyContext( m_display, m_glxContext );
-					throw std::runtime_error{ stream.str() };
-				}
-
-				m_vendor = ( char const * )glGetString( GL_VENDOR );
-				m_renderer = ( char const * )glGetString( GL_RENDERER );
-				m_version = ( char const * )glGetString( GL_VERSION );
-				loadDebugFunctions();
-
-				double fversion{ 0u };
-				std::stringstream stream( m_version );
-				stream >> fversion;
-				auto version = int( fversion * 10 );
-				m_major = version / 10;
-				m_minor = version % 10;
-				glXMakeCurrent( m_display, 0, nullptr );
-
-				if ( m_major >= 3 )
-				{
-					if ( !doCreateGl3Context() )
-					{
-						glXDestroyContext( m_display, m_glxContext );
-						throw std::runtime_error{ "The supported OpenGL version is insufficient." };
-					}
-
-					setCurrent();
-					initialiseDebugFunctions();
-				}
-				else
-				{
-					glXDestroyContext( m_display, m_glxContext );
-					throw std::runtime_error{ "The supported OpenGL version is insufficient." };
-				}
+				throw std::runtime_error{ "Could not create a rendering context." };
 			}
 
+			setCurrent();
+			m_opengl = std::make_unique< OpenGLLibrary >();
+			m_vendor = ( char const * )glGetString( GL_VENDOR );
+			m_renderer = ( char const * )glGetString( GL_RENDERER );
+			m_version = ( char const * )glGetString( GL_VERSION );
+			loadDebugFunctions();
+
+			double fversion{ 0u };
+			std::stringstream stream( m_version );
+			stream >> fversion;
+			auto version = int( fversion * 10 );
+			m_major = version / 10;
+			m_minor = version % 10;
+			endCurrent();
+
+			if ( m_major < 4 )
+			{
+				glXDestroyContext( m_display, m_glxContext );
+				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
+			}
+
+			if ( !doCreateGl3Context() )
+			{
+				glXDestroyContext( m_display, m_glxContext );
+				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
+			}
+
+			setCurrent();
+			glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
+			initialiseDebugFunctions();
 			XFree( visualInfo );
 		}
 	}
@@ -145,6 +134,7 @@ namespace gl_renderer
 	{
 		try
 		{
+			endCurrent();
 			glXDestroyContext( m_display, m_glxContext );
 			XFree( m_fbConfig );
 		}
@@ -228,20 +218,26 @@ namespace gl_renderer
 
 	bool X11Context::doCreateGl3Context()
 	{
+		using PFNGLCREATECONTEXTATTRIBS = GLXContext ( * )( Display *dpy, GLXFBConfig config, GLXContext share_context, Bool direct, const int *attrib_list );
+		PFNGLCREATECONTEXTATTRIBS glCreateContextAttribs;
 		bool result = false;
-
-		if ( glxewIsSupported( "GLX_ARB_create_context" ) )
+		std::vector< int > attribList
 		{
-			std::vector< int > attribList
-			{
-				GLX_CONTEXT_MAJOR_VERSION_ARB, m_major,
-				GLX_CONTEXT_MINOR_VERSION_ARB, m_minor,
-				GLX_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
-				GLX_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
-				0
-			};
+			GLX_CONTEXT_MAJOR_VERSION_ARB, m_major,
+			GLX_CONTEXT_MINOR_VERSION_ARB, m_minor,
+			GLX_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
+			GLX_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
+			0
+		};
+
+		setCurrent();
+		gl::GetError();
+
+		if ( getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs ) )
+		{
+			auto glxContext = glCreateContextAttribs( m_display, m_fbConfig[0], nullptr, true, attribList.data() );
 			glXDestroyContext( m_display, m_glxContext );
-			m_glxContext = glXCreateContextAttribsARB( m_display, m_fbConfig[0], nullptr, true, attribList.data() );
+			m_glxContext = glxContext;
 			result = m_glxContext != nullptr;
 
 			if ( result )
@@ -255,9 +251,7 @@ namespace gl_renderer
 		}
 		else
 		{
-			//It's not possible to make a GL 3.x and later context. Use the old style context (GL 2.1 and before)
-			std::cerr << "GlContext::create - Can't create OpenGL >= 3.x context, since glCreateContextAttribs is not supported." << std::endl;
-			result = true;
+			std::cerr << "GlContext::create - Couldn't load glXCreateContextAttribsARB function." << std::endl;
 		}
 
 		return result;

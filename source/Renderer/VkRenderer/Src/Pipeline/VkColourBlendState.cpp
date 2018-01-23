@@ -2,7 +2,7 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
-#include "Pipeline/VkColourBlendState.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 namespace vk_renderer
 {

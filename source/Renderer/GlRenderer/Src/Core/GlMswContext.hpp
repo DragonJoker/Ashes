@@ -3,11 +3,12 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#if defined( _WIN32 )
 #include "Core/GlContext.hpp"
-#include "Miscellaneous/OpenGLLibrary.hpp"
 
-#include <Windows.h>
+#if RENDERLIB_WIN32
+#	include "Miscellaneous/OpenGLLibrary.hpp"
+
+#	include <Windows.h>
 
 namespace gl_renderer
 {

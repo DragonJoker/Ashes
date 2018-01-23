@@ -2,7 +2,7 @@
 This file belongs to Renderer.
 See LICENSE file in root folder
 */
-#include "VkBufferMemoryBarrier.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 #include "Buffer/VkBuffer.hpp"
 

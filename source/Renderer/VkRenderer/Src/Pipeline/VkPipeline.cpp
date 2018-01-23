@@ -2,17 +2,11 @@
 
 #include "Core/VkDevice.hpp"
 #include "Core/VkRenderingResources.hpp"
-#include "Pipeline/VkColourBlendState.hpp"
-#include "Pipeline/VkDepthStencilState.hpp"
-#include "Pipeline/VkMultisampleState.hpp"
 #include "Pipeline/VkPipelineLayout.hpp"
-#include "Pipeline/VkScissor.hpp"
 #include "Pipeline/VkVertexLayout.hpp"
-#include "Pipeline/VkViewport.hpp"
 #include "RenderPass/VkRenderPass.hpp"
 #include "Shader/VkAttribute.hpp"
 #include "Shader/VkShaderProgram.hpp"
-#include "VkTessellationState.hpp"
 
 namespace vk_renderer
 {

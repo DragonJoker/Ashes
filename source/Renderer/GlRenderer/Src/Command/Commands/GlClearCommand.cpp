@@ -4,13 +4,13 @@ See LICENSE file in root folder.
 */
 #include "GlClearCommand.hpp"
 
-#include "Image/GlTexture.hpp"
+#include "Image/GlTextureView.hpp"
 
 namespace gl_renderer
 {
-	ClearCommand::ClearCommand( renderer::Texture const & image
+	ClearCommand::ClearCommand( renderer::TextureView const & image
 		, renderer::RgbaColour const & colour )
-		: m_image{ static_cast< Texture const & >( image ) }
+		: m_image{ static_cast< TextureView const & >( image ) }
 		, m_colour{ colour }
 		, m_format{ getFormat( m_image.getFormat() ) }
 		, m_type{ getType( m_image.getFormat() ) }

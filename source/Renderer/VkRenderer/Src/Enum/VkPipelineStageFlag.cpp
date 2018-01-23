@@ -1,4 +1,4 @@
-#include "VkPipelineStageFlag.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 namespace vk_renderer
 {

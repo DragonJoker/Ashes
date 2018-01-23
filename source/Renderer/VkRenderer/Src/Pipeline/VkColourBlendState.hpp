@@ -4,8 +4,6 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Pipeline/VkColourBlendStateAttachment.hpp"
-
 #include <Pipeline/ColourBlendState.hpp>
 
 namespace vk_renderer

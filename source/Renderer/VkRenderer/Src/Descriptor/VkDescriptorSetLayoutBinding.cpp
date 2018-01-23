@@ -2,7 +2,7 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
-#include "Descriptor/VkDescriptorSetLayoutBinding.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 namespace vk_renderer
 {
