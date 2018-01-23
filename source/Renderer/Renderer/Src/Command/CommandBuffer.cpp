@@ -129,7 +129,7 @@ namespace renderer
 					srcRange.getBaseArrayLayer(),
 					srcRange.getLayerCount()
 				},
-				{                                                   // srcOffset
+				IVec3{                                              // srcOffset
 					0,                                                  // x
 					0,                                                  // y
 					0                                                   // z
@@ -140,12 +140,12 @@ namespace renderer
 					dstRange.getBaseArrayLayer(),
 					dstRange.getLayerCount()
 				},
-				{                                                   // dstOffset
+				IVec3{                                              // dstOffset
 					0,                                                  // x
 					0,                                                  // y
 					0                                                   // z
 				},
-				{                                                   // extent
+				UIVec3{                                             // extent
 					uint32_t( dst.getTexture().getDimensions()[0] ),
 					uint32_t( dst.getTexture().getDimensions()[1] ),
 					uint32_t( dst.getTexture().getDimensions()[2] ),

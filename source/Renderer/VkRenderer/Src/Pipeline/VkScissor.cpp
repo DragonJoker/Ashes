@@ -10,10 +10,10 @@ namespace vk_renderer
 	{
 		return VkRect2D
 		{
-			scissor.getOffset().x,
-			scissor.getOffset().y,
-			uint32_t( scissor.getSize().x ),
-			uint32_t( scissor.getSize().y )
+			scissor.getOffset()[0],
+			scissor.getOffset()[1],
+			uint32_t( scissor.getSize()[0] ),
+			uint32_t( scissor.getSize()[1] )
 		};
 	}
 }

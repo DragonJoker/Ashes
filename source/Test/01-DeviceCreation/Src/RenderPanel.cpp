@@ -39,6 +39,7 @@ namespace vkapp
 		if ( m_device )
 		{
 			m_device->waitIdle();
+			m_device->disable();
 			m_device.reset();
 		}
 	}
@@ -46,5 +47,6 @@ namespace vkapp
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
+		m_device->enable();
 	}
 }

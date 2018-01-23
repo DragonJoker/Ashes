@@ -249,8 +249,8 @@ namespace vk_renderer
 		{
 			// Si les dimensions de la surface sont indéfinies, elles sont initialisées
 			// aux dimensions des images requises.
-			swapChainExtent.width = m_dimensions.x;
-			swapChainExtent.height = m_dimensions.y;
+			swapChainExtent.width = m_dimensions[0];
+			swapChainExtent.height = m_dimensions[1];
 		}
 		else
 		{

@@ -19,7 +19,7 @@ namespace renderer
 	public:
 		ColourBlendState( bool logicOpEnable = false
 			, LogicOp logicOp = LogicOp::eCopy
-			, Vec4 const & blendConstants = { 0.0f, 0.0f, 0.0f, 0.0f } );
+			, Vec4 const & blendConstants = Vec4{ 0.0f, 0.0f, 0.0f, 0.0f } );
 		/**
 		*\return
 		*	Un ColourBlendState avec une attache couleur par d�faut.

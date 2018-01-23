@@ -189,6 +189,7 @@ namespace vkapp
 			m_renderTargetColour.reset();
 
 			m_swapChain.reset();
+			m_device->disable();
 			m_device.reset();
 		}
 	}
@@ -225,7 +226,7 @@ namespace vkapp
 			, 0.01f
 			, 100.0f );
 #endif
-		m_stagingBuffer->copyUniformData( *m_updateCommandBuffer
+		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_matrixUbo->getDatas()
 			, *m_matrixUbo
 			, renderer::PipelineStageFlag::eVertexShader );
@@ -234,6 +235,7 @@ namespace vkapp
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
+		m_device->enable();
 	}
 
 	void RenderPanel::doCreateSwapChain()
@@ -278,7 +280,7 @@ namespace vkapp
 		for ( size_t i = 0u; i < image.size[2]; ++i )
 		{
 			renderer::ByteArray layer( buffer, buffer + size );
-			m_stagingBuffer->copyTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+			m_stagingBuffer->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
 				, {
 					m_view->getSubResourceRange().getAspectMask(),
 					m_view->getSubResourceRange().getBaseMipLevel(),
@@ -396,7 +398,7 @@ namespace vkapp
 			, uint32_t( m_offscreenVertexData.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_stagingBuffer->copyVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
+		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_offscreenVertexData
 			, *m_offscreenVertexBuffer
 			, renderer::PipelineStageFlag::eVertexInput );
@@ -406,7 +408,7 @@ namespace vkapp
 
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_stagingBuffer->copyBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
+		m_stagingBuffer->uploadBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_offscreenIndexData
 			, *m_offscreenIndexBuffer );
 
@@ -572,7 +574,7 @@ namespace vkapp
 			, uint32_t( m_mainVertexData.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_stagingBuffer->copyVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
+		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_mainVertexData
 			, *m_mainVertexBuffer
 			, renderer::PipelineStageFlag::eVertexInput );
@@ -687,7 +689,7 @@ namespace vkapp
 			, float( utils::DegreeToRadian )
 			, { 0, 1, 0 } );
 		m_objectUbo->getData( 0 ) = originalTranslate * m_rotate;
-		m_stagingBuffer->copyUniformData( *m_updateCommandBuffer
+		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
 			, renderer::PipelineStageFlag::eVertexShader );

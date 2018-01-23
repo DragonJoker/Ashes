@@ -130,6 +130,7 @@ namespace vkapp
 			m_vertexBuffer.reset();
 			m_renderPass.reset();
 			m_swapChain.reset();
+			m_device->disable();
 			m_device.reset();
 		}
 	}
@@ -137,6 +138,7 @@ namespace vkapp
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
+		m_device->enable();
 	}
 
 	void RenderPanel::doCreateSwapChain()
@@ -163,7 +165,7 @@ namespace vkapp
 			, image.format
 			, 0u
 			, image.data.size() );
-		m_stagingBuffer->copyBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
+		m_stagingBuffer->uploadBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, image.data
 			, *m_textureBuffer );
 	}
@@ -210,7 +212,7 @@ namespace vkapp
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 		m_vertexLayout->createAttribute< renderer::Vec2 >( 1u
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
-		m_stagingBuffer->copyVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
+		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData
 			, *m_vertexBuffer
 			, renderer::PipelineStageFlag::eVertexInput );

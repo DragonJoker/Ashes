@@ -373,12 +373,12 @@ namespace vk_renderer
 		vk::DeviceWaitIdle( m_device );
 	}
 
-	renderer::Mat4 Device::perspective( renderer::Radians fovy
+	renderer::Mat4 Device::perspective( renderer::Angle fovy
 		, float aspect
 		, float zNear
 		, float zFar )
 	{
-		float const tanHalfFovy = tan( fovy / float( 2 ) );
+		float const tanHalfFovy = tan( float( fovy ) / float( 2 ) );
 
 		renderer::Mat4 result( float( 0 ) );
 		result[0][0] = float( 1 ) / ( aspect * tanHalfFovy );

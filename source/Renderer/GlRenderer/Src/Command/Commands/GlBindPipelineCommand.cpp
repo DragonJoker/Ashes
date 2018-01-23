@@ -243,19 +243,19 @@ namespace gl_renderer
 		void doApply( renderer::Viewport const & state )
 		{
 			glLogCall( gl::Viewport
-				, state.getOffset().x
-				, state.getOffset().y
-				, state.getSize().x
-				, state.getSize().y );
+				, state.getOffset()[0]
+				, state.getOffset()[1]
+				, state.getSize()[0]
+				, state.getSize()[1] );
 		}
 
 		void doApply( renderer::Scissor const & state )
 		{
 			glLogCall( gl::Scissor
-				, state.getOffset().x
-				, state.getOffset().y
-				, state.getSize().x
-				, state.getSize().y );
+				, state.getOffset()[0]
+				, state.getOffset()[1]
+				, state.getSize()[0]
+				, state.getSize()[1] );
 		}
 	}
 

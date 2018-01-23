@@ -14,11 +14,11 @@ namespace renderer
 	{
 	}
 
-	Mat4 Device::infinitePerspective( Radians fovy
+	Mat4 Device::infinitePerspective( Angle fovy
 		, float aspect
 		, float zNear )
 	{
-		float const range = tan( fovy / float( 2 ) ) * zNear;
+		float const range = tan( float( fovy ) / float( 2 ) ) * zNear;
 		float const left = -range * aspect;
 		float const right = range * aspect;
 		float const bottom = -range;

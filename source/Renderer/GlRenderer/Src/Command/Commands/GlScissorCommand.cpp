@@ -14,10 +14,10 @@ namespace gl_renderer
 	void ScissorCommand::apply()const
 	{
 		glLogCall( gl::Scissor
-			, m_scissor.getOffset().x
-			, m_scissor.getOffset().y
-			, m_scissor.getSize().x
-			, m_scissor.getSize().y );
+			, m_scissor.getOffset()[0]
+			, m_scissor.getOffset()[1]
+			, m_scissor.getSize()[0]
+			, m_scissor.getSize()[1] );
 	}
 
 	CommandPtr ScissorCommand::clone()const

@@ -29,6 +29,14 @@ namespace gl_renderer
 		Device( renderer::Renderer const & renderer
 			, renderer::ConnectionPtr && connection );
 		/**
+		*\copydoc	renderer::Device::enable
+		*/
+		void enable()const override;
+		/**
+		*\copydoc	renderer::Device::disable
+		*/
+		void disable()const override;
+		/**
 		*\copydoc		renderer::Device::createRenderPass
 		*/
 		renderer::RenderPassPtr createRenderPass( std::vector< renderer::PixelFormat > const & formats
@@ -183,7 +191,7 @@ namespace gl_renderer
 		/**
 		*\copydoc	renderer::Device::perspective
 		*/
-		renderer::Mat4 perspective( renderer::Radians fovy
+		renderer::Mat4 perspective( renderer::Angle fovy
 			, float aspect
 			, float zNear
 			, float zFar )override;
