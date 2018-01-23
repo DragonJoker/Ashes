@@ -42,8 +42,23 @@ namespace renderer
 		*	La texture de destination.
 		*/
 		void copyTextureData( CommandBuffer const & commandBuffer
+			, ImageSubresourceLayers const & subresourceLayers
+			, IVec3 const & offset
+			, UIVec3 const & extent
 			, ByteArray const & data
-			, Texture const & texture )const;
+			, TextureView const & texture )const;
+		/**
+		*\~french
+		*\brief
+		*	Copie les données d'une image dans une texture, en passant par le tampon de transfert.
+		*\param[in] data
+		*	Les données à copier.
+		*\param[out] texture
+		*	La texture de destination.
+		*/
+		void copyTextureData( CommandBuffer const & commandBuffer
+			, ByteArray const & data
+			, TextureView const & texture )const;
 		/**
 		*\~french
 		*\brief

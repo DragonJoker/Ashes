@@ -75,7 +75,7 @@ namespace gl_renderer
 		/**
 		*\copydoc	renderer::CommandBuffer:clear
 		*/
-		void clear( renderer::Texture const & image
+		void clear( renderer::TextureView const & image
 			, renderer::RgbaColour const & colour )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:memoryBarrier
@@ -132,12 +132,12 @@ namespace gl_renderer
 		*/
 		void copyToImage( renderer::BufferImageCopy const & copyInfo
 			, renderer::BufferBase const & src
-			, renderer::Texture const & dst )const override;
+			, renderer::TextureView const & dst )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:copyToBuffer
 		*/
 		void copyToBuffer( renderer::BufferImageCopy const & copyInfo
-			, renderer::Texture const & src
+			, renderer::TextureView const & src
 			, renderer::BufferBase const & dst )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:copyBuffer
@@ -149,8 +149,8 @@ namespace gl_renderer
 		*\copydoc	renderer::CommandBuffer:copyImage
 		*/
 		void copyImage( renderer::ImageCopy const & copyInfo
-			, renderer::Texture const & src
-			, renderer::Texture const & dst )const override;
+			, renderer::TextureView const & src
+			, renderer::TextureView const & dst )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:resetQueryPool
 		*/

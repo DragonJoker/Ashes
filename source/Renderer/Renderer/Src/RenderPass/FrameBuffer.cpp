@@ -16,7 +16,7 @@ namespace renderer
 
 	FrameBuffer::FrameBuffer( RenderPass const & renderPass
 		, UIVec2 const & dimensions
-		, TextureCRefArray const & textures )
+		, TextureViewCRefArray const & textures )
 	{
 	}
 }

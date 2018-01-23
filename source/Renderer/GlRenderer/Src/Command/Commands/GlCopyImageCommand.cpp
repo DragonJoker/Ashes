@@ -5,18 +5,18 @@ See LICENSE file in root folder.
 #include "GlCopyImageCommand.hpp"
 
 #include "Image/GlTexture.hpp"
+#include "Image/GlTextureView.hpp"
 
 #include <Image/ImageSubresourceRange.hpp>
-#include <Image/TextureView.hpp>
 
 namespace gl_renderer
 {
 	CopyImageCommand::CopyImageCommand( renderer::ImageCopy const & copyInfo
-		, renderer::Texture const & src
-		, renderer::Texture const & dst )
+		, renderer::TextureView const & src
+		, renderer::TextureView const & dst )
 		: m_copyInfo{ copyInfo }
-		, m_src{ static_cast< Texture const & >( src ) }
-		, m_dst{ static_cast< Texture const & >( dst ) }
+		, m_src{ static_cast< TextureView const & >( src ) }
+		, m_dst{ static_cast< TextureView const & >( dst ) }
 		, m_srcFormat{ getFormat( m_src.getFormat() ) }
 		, m_srcType{ getType( m_src.getFormat() ) }
 		, m_srcTarget{ convert( m_src.getType() ) }
@@ -48,7 +48,7 @@ namespace gl_renderer
 			, m_copyInfo.extent[2] );
 		glLogCall( gl::BindTexture, m_dstTarget, 0u );
 		glLogCall( gl::BindTexture, m_srcTarget, 0u );
-		m_dst.generateMipmaps();
+		m_dst.getTexture().generateMipmaps();
 	}
 
 	CommandPtr CopyImageCommand::clone()const

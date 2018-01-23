@@ -190,13 +190,13 @@ namespace vk_renderer
 			, vkCommands.data() );
 	}
 
-	void CommandBuffer::clear( renderer::Texture const & image
+	void CommandBuffer::clear( renderer::TextureView const & image
 		, renderer::RgbaColour const & colour )const
 	{
 		auto vkcolour = convert( colour );
-		auto vksubresourceRange = convert( static_cast< Texture const & >( image ).getView().getSubResourceRange() );
+		auto vksubresourceRange = convert( image.getSubResourceRange() );
 		vk::CmdClearColorImage( m_commandBuffer
-			, static_cast< Texture const & >( image )
+			, static_cast< Texture const & >( image.getTexture() )
 			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 			, &vkcolour
 			, 1
@@ -344,26 +344,26 @@ namespace vk_renderer
 
 	void CommandBuffer::copyToImage( renderer::BufferImageCopy const & copyInfo
 		, renderer::BufferBase const & src
-		, renderer::Texture const & dst )const
+		, renderer::TextureView const & dst )const
 	{
 		auto vkcopyInfo = convert( copyInfo );
 		DEBUG_DUMP( vkcopyInfo );
 		vk::CmdCopyBufferToImage( m_commandBuffer
 			, static_cast< Buffer const & >( src )
-			, static_cast< Texture const & >( dst )
+			, static_cast< Texture const & >( dst.getTexture() )
 			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 			, 1
 			, &vkcopyInfo );
 	}
 
 	void CommandBuffer::copyToBuffer( renderer::BufferImageCopy const & copyInfo
-		, renderer::Texture const & src
+		, renderer::TextureView const & src
 		, renderer::BufferBase const & dst )const
 	{
 		auto vkcopyInfo = convert( copyInfo );
 		DEBUG_DUMP( vkcopyInfo );
 		vk::CmdCopyImageToBuffer( m_commandBuffer
-			, static_cast< Texture const & >( src )
+			, static_cast< Texture const & >( src.getTexture() )
 			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 			, static_cast< Buffer const & >( dst )
 			, 1
@@ -384,15 +384,15 @@ namespace vk_renderer
 	}
 
 	void CommandBuffer::copyImage( renderer::ImageCopy const & copyInfo
-		, renderer::Texture const & src
-		, renderer::Texture const & dst )const
+		, renderer::TextureView const & src
+		, renderer::TextureView const & dst )const
 	{
 		auto vkcopyInfo = convert( copyInfo );
 		DEBUG_DUMP( vkcopyInfo );
 		vk::CmdCopyImage( m_commandBuffer
-			, static_cast< Texture const & >( src )
+			, static_cast< Texture const & >( src.getTexture() )
 			, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
-			, static_cast< Texture const & >( dst )
+			, static_cast< Texture const & >( dst.getTexture() )
 			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 			, 1
 			, &vkcopyInfo );

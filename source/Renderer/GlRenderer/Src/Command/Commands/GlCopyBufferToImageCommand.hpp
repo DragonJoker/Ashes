@@ -30,17 +30,17 @@ namespace gl_renderer
 		*/
 		CopyBufferToImageCommand( renderer::BufferImageCopy const & copyInfo
 			, renderer::BufferBase const & src
-			, renderer::Texture const & dst );
+			, renderer::TextureView const & dst );
 
 		void apply()const override;
 		CommandPtr clone()const override;
 
 	private:
 		Buffer const & m_src;
-		Texture const & m_dst;
+		TextureView const & m_dst;
 		renderer::BufferImageCopy m_copyInfo;
-		GLenum m_format;
-		GLenum m_type;
-		GLenum m_target;
+		GlFormat m_format;
+		GlType m_type;
+		GlTextureType m_target;
 	};
 }

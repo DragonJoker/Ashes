@@ -112,7 +112,7 @@ namespace gl_renderer
 		}
 	}
 
-	void CommandBuffer::clear( renderer::Texture const & image
+	void CommandBuffer::clear( renderer::TextureView const & image
 		, renderer::RgbaColour const & colour )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearCommand >( image, colour ) );
@@ -201,7 +201,7 @@ namespace gl_renderer
 
 	void CommandBuffer::copyToImage( renderer::BufferImageCopy const & copyInfo
 		, renderer::BufferBase const & src
-		, renderer::Texture const & dst )const
+		, renderer::TextureView const & dst )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( copyInfo
 			, src
@@ -209,7 +209,7 @@ namespace gl_renderer
 	}
 
 	void CommandBuffer::copyToBuffer( renderer::BufferImageCopy const & copyInfo
-		, renderer::Texture const & src
+		, renderer::TextureView const & src
 		, renderer::BufferBase const & dst )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyImageToBufferCommand >( copyInfo
@@ -227,8 +227,8 @@ namespace gl_renderer
 	}
 
 	void CommandBuffer::copyImage( renderer::ImageCopy const & copyInfo
-		, renderer::Texture const & src
-		, renderer::Texture const & dst )const
+		, renderer::TextureView const & src
+		, renderer::TextureView const & dst )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyImageCommand >( copyInfo
 			, src

@@ -29,7 +29,7 @@ namespace gl_renderer
 			GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
 		};
 
-		GlAttachmentPoint getAttachmentPoint( Texture const & texture )
+		GlAttachmentPoint getAttachmentPoint( TextureView const & texture )
 		{
 			switch ( texture.getFormat() )
 			{
@@ -48,7 +48,7 @@ namespace gl_renderer
 			}
 		}
 
-		GlAttachmentType getAttachmentType( Texture const & texture )
+		GlAttachmentType getAttachmentType( TextureView const & texture )
 		{
 			switch ( texture.getFormat() )
 			{
@@ -129,28 +129,28 @@ namespace gl_renderer
 
 	FrameBuffer::FrameBuffer( renderer::RenderPass const & renderPass
 		, renderer::UIVec2 const & dimensions )
-		: renderer::FrameBuffer{ renderPass, dimensions, renderer::TextureCRefArray{} }
+		: renderer::FrameBuffer{ renderPass, dimensions, renderer::TextureViewCRefArray{} }
 		, m_frameBuffer{ 0u }
 	{
 	}
 
 	FrameBuffer::FrameBuffer( renderer::RenderPass const & renderPass
 		, renderer::UIVec2 const & dimensions
-		, renderer::TextureCRefArray const & textures )
-		: renderer::FrameBuffer{ renderPass, dimensions, textures }
+		, renderer::TextureViewCRefArray const & views )
+		: renderer::FrameBuffer{ renderPass, dimensions, views }
 	{
 		glLogCall( gl::GenFramebuffers, 1, &m_frameBuffer );
 		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer );
 		renderer::UInt32Array colours;
 
-		for ( auto & texture : textures )
+		for ( auto & view : views )
 		{
 			Attachment attachment
 			{
-				getAttachmentPoint( static_cast< Texture const & >( texture.get() ) ),
+				getAttachmentPoint( static_cast< TextureView const & >( view.get() ) ),
 				0u,
-				static_cast< Texture const & >( texture.get() ).getImage(),
-				getAttachmentType( static_cast< Texture const & >( texture.get() ) ),
+				static_cast< TextureView const & >( view.get() ).getImage(),
+				getAttachmentType( static_cast< TextureView const & >( view.get() ) ),
 			};
 
 			if ( attachment.point == GL_ATTACHMENT_POINT_DEPTH_STENCIL
@@ -171,7 +171,7 @@ namespace gl_renderer
 				, attachment.point
 				, GL_TEXTURE_2D
 				, attachment.object
-				, texture.get().getView().getSubResourceRange().getBaseMipLevel() );
+				, view.get().getSubResourceRange().getBaseMipLevel() );
 			doCheck( glLogCall( gl::CheckFramebufferStatus, GL_FRAMEBUFFER ) );
 		}
 

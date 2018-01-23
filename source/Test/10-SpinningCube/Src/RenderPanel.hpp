@@ -249,9 +249,12 @@ namespace vkapp
 		renderer::SwapChainPtr m_swapChain;
 		renderer::StagingBufferPtr m_stagingBuffer;
 		renderer::TexturePtr m_texture;
+		renderer::TextureViewPtr m_view;
 		renderer::SamplerPtr m_sampler;
 		renderer::TexturePtr m_renderTargetColour;
+		renderer::TextureViewPtr m_renderTargetColourView;
 		renderer::TexturePtr m_renderTargetDepth;
+		renderer::TextureViewPtr m_renderTargetDepthView;
 		renderer::FrameBufferPtr m_frameBuffer;
 		renderer::UniformBufferPtr< renderer::Mat4 > m_matrixUbo;
 		renderer::UniformBufferPtr< renderer::Mat4 > m_objectUbo;

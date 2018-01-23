@@ -85,7 +85,7 @@ namespace gl_renderer
 		*/
 		FrameBuffer( renderer::RenderPass const & renderPass
 			, renderer::UIVec2 const & dimensions
-			, renderer::TextureCRefArray const & textures );
+			, renderer::TextureViewCRefArray const & textures );
 		/**
 		*\brief
 		*	Destructeur

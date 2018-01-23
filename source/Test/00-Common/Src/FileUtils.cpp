@@ -97,7 +97,7 @@ namespace common
 			, DirectoryFuncType directoryFunction
 			, FileFuncType fileFunction )
 		{
-			REQUIRE( !folderPath.empty() );
+			assert( !folderPath.empty() );
 			bool result = false;
 			DIR * dir;
 

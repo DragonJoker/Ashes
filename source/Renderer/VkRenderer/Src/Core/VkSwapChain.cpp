@@ -60,7 +60,7 @@ namespace vk_renderer
 		for ( size_t i = 0u; i < result.size(); ++i )
 		{
 			result[i] = static_cast< RenderPass const & >( renderPass ).createFrameBuffer( m_dimensions
-				, { m_backBuffers[i]->getTexture() } );
+				, { m_backBuffers[i]->getView() } );
 		}
 
 		return result;
@@ -86,7 +86,7 @@ namespace vk_renderer
 	{
 		commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 			, renderer::PipelineStageFlag::eColourAttachmentOutput
-			, m_backBuffers[index]->getTexture().makeColourAttachment() );
+			, m_backBuffers[index]->getTexture().makeColourAttachment( m_backBuffers[index]->getView().getSubResourceRange() ) );
 	}
 
 	void SwapChain::postRenderCommands( uint32_t index
@@ -94,7 +94,7 @@ namespace vk_renderer
 	{
 		commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 			, renderer::PipelineStageFlag::eBottomOfPipe
-			, m_backBuffers[index]->getTexture().makePresentSource() );
+			, m_backBuffers[index]->getTexture().makePresentSource( m_backBuffers[index]->getView().getSubResourceRange() ) );
 	}
 
 	renderer::RenderingResources * SwapChain::getResources()

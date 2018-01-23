@@ -16,7 +16,6 @@ namespace renderer
 		, m_size{ rhs.m_size }
 		, m_layerCount{ rhs.m_layerCount }
 		, m_samples{ rhs.m_samples }
-		, m_view{ std::move( rhs.m_view ) }
 	{
 	}
 
@@ -29,7 +28,6 @@ namespace renderer
 			m_size = rhs.m_size;
 			m_layerCount = rhs.m_layerCount;
 			m_samples = rhs.m_samples;
-			m_view = std::move( rhs.m_view );
 		}
 
 		return *this;
@@ -53,12 +51,6 @@ namespace renderer
 		doSetImage1D( usageFlags
 			, tiling
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_view = m_device.createTextureView( *this
-			, m_format
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
 	}
 
 	void Texture::setImage( PixelFormat format
@@ -75,12 +67,6 @@ namespace renderer
 		doSetImage2D( usageFlags
 			, tiling
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_view = m_device.createTextureView( *this
-			, m_format
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
 	}
 
 	void Texture::setImage( PixelFormat format
@@ -97,12 +83,6 @@ namespace renderer
 		doSetImage3D( usageFlags
 			, tiling
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_view = m_device.createTextureView( *this
-			, m_format
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
 	}
 
 	void Texture::setImage( PixelFormat format
@@ -112,19 +92,13 @@ namespace renderer
 		, ImageTiling tiling )
 	{
 		m_format = format;
-		m_type = TextureType::e1D;
+		m_type = TextureType::e1DArray;
 		m_size = UIVec3{ size, 0u, 0u };
 		m_layerCount = layerCount;
 		m_samples = SampleCountFlag::e1;
 		doSetImage1D( usageFlags
 			, tiling
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_view = m_device.createTextureView( *this
-			, m_format
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
 	}
 
 	void Texture::setImage( PixelFormat format
@@ -134,18 +108,12 @@ namespace renderer
 		, ImageTiling tiling )
 	{
 		m_format = format;
-		m_type = TextureType::e2D;
+		m_type = TextureType::e2DArray;
 		m_size = UIVec3{ size[0], size[1], 0u };
 		m_layerCount = layerCount;
 		m_samples = SampleCountFlag::e1;
 		doSetImage2D( usageFlags
 			, tiling
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_view = m_device.createTextureView( *this
-			, m_format
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
 	}
 }

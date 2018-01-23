@@ -37,7 +37,7 @@ namespace renderer
 		*/
 		FrameBuffer( RenderPass const & renderPass
 			, UIVec2 const & dimensions
-			, TextureCRefArray const & textures );
+			, TextureViewCRefArray const & textures );
 
 	public:
 		/**

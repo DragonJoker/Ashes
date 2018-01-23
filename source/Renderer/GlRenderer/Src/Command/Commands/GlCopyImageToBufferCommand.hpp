@@ -29,7 +29,7 @@ namespace gl_renderer
 		*	Le tampon destination.
 		*/
 		CopyImageToBufferCommand( renderer::BufferImageCopy const & copyInfo
-			, renderer::Texture const & src
+			, renderer::TextureView const & src
 			, renderer::BufferBase const & dst );
 
 		void apply()const override;
@@ -37,10 +37,10 @@ namespace gl_renderer
 
 	private:
 		renderer::BufferImageCopy m_copyInfo;
-		Texture const & m_src;
+		TextureView const & m_src;
 		Buffer const & m_dst;
-		GLenum m_format;
-		GLenum m_type;
-		GLenum m_target;
+		GlFormat m_format;
+		GlType m_type;
+		GlTextureType m_target;
 	};
 }

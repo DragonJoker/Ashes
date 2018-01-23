@@ -116,11 +116,11 @@ namespace renderer
 		copyBuffer( copyInfo, src.getBuffer(), dst.getBuffer() );
 	}
 
-	void CommandBuffer::copyImage( Texture const & src
-		, Texture const & dst )const
+	void CommandBuffer::copyImage( TextureView const & src
+		, TextureView const & dst )const
 	{
-		auto const & srcRange = src.getView().getSubResourceRange();
-		auto const & dstRange = dst.getView().getSubResourceRange();
+		auto const & srcRange = src.getSubResourceRange();
+		auto const & dstRange = dst.getSubResourceRange();
 		copyImage( ImageCopy
 			{
 				{                                                   // srcSubresource
@@ -146,9 +146,9 @@ namespace renderer
 					0                                                   // z
 				},
 				{                                                   // extent
-					uint32_t( dst.getDimensions()[0] ),
-					uint32_t( dst.getDimensions()[1] ),
-					uint32_t( dst.getDimensions()[2] ),
+					uint32_t( dst.getTexture().getDimensions()[0] ),
+					uint32_t( dst.getTexture().getDimensions()[1] ),
+					uint32_t( dst.getTexture().getDimensions()[2] ),
 				}
 			}
 			, src

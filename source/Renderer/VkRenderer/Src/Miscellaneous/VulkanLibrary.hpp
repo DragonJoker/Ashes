@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "VulkanFunctions.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 #include <Utils/DynamicLibrary.hpp>
 

@@ -51,11 +51,19 @@ namespace gl_renderer
 
 	renderer::ImageMemoryBarrier RenderBuffer::makeColourAttachment()const
 	{
-		return m_texture.makeColourAttachment();
+		return m_texture.makeColourAttachment( { renderer::getAspectMask( m_texture.getFormat() )
+			, 0u
+			, 1u
+			, 0u
+			, 1u } );
 	}
 
 	renderer::ImageMemoryBarrier RenderBuffer::makeDepthStencilAttachment()const
 	{
-		return m_texture.makeDepthStencilAttachment();
+		return m_texture.makeDepthStencilAttachment( { renderer::getAspectMask( m_texture.getFormat() )
+			, 0u
+			, 1u
+			, 0u
+			, 1u } );
 	}
 }

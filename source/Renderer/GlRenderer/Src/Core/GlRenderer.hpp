@@ -45,7 +45,5 @@ namespace gl_renderer
 		*/
 		renderer::ConnectionPtr createConnection( uint32_t deviceIndex
 			, renderer::WindowHandle && handle )const override;
-
-	private:
 	};
 }
