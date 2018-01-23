@@ -58,3 +58,8 @@ Tests frame buffers, and index buffers too.
 <img src="./screenshots/10.png" height="72px" align="right">
 
 Tests depth buffer, depth test, and multiple uniform buffers.
+
+### [Texture 3D](source/Test/11-Texture3D/)
+<img src="./screenshots/11.gif" height="72px" align="right">
+
+Demonstrates load and display of a 3D texture.
