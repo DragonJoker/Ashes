@@ -127,6 +127,7 @@ namespace gl_renderer
 			glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
 			initialiseDebugFunctions();
 			XFree( visualInfo );
+			endCurrent();
 		}
 	}
 
@@ -134,7 +135,6 @@ namespace gl_renderer
 	{
 		try
 		{
-			endCurrent();
 			glXDestroyContext( m_display, m_glxContext );
 			XFree( m_fbConfig );
 		}

@@ -60,6 +60,7 @@ namespace gl_renderer
 			glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
 			initialiseDebugFunctions();
 			wgl::SwapIntervalEXT( 0 );
+			endCurrent();
 		}
 	}
 
@@ -69,7 +70,6 @@ namespace gl_renderer
 		{
 			if ( m_hDC )
 			{
-				endCurrent();
 				wglDeleteContext( m_hContext );
 				::ReleaseDC( m_hWnd, m_hDC );
 			}

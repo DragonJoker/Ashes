@@ -52,8 +52,8 @@ namespace vk_renderer
 			renderPass,                                         // renderPass
 			static_cast< uint32_t >( attachments.size() ),      // attachmentCount
 			attachments.data(),                                 // pAttachments
-			uint32_t( dimensions.x ),                           // width
-			uint32_t( dimensions.y ),                           // height
+			uint32_t( dimensions[0] ),                          // width
+			uint32_t( dimensions[1] ),                          // height
 			1u                                                  // layers
 		};
 		DEBUG_DUMP( createInfo );

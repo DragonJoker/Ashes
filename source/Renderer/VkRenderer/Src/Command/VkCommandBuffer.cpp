@@ -159,8 +159,8 @@ namespace vk_renderer
 					0                                                 // y
 				},
 				{                                                 // extent
-					uint32_t( vkfbo.getDimensions().x ),              // width
-					uint32_t( vkfbo.getDimensions().y ),              // height
+					uint32_t( vkfbo.getDimensions()[0] ),             // width
+					uint32_t( vkfbo.getDimensions()[1] ),             // height
 				}
 			},
 			uint32_t( vkclearValues.size() ),                   // clearValueCount
