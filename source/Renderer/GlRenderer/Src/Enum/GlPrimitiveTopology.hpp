@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	enum GlPrimitiveTopolgy
+	enum GlPrimitiveTopology
 		: GLenum
 	{
 		GL_PRIMITIVE_TOPOLOGY_POINT_LIST = 0x0000,
@@ -32,5 +32,5 @@ namespace gl_renderer
 	*\return
 	*	Le GlPrimitiveTopolgy.
 	*/
-	GlPrimitiveTopolgy convert( renderer::PrimitiveTopology const & topology );
+	GlPrimitiveTopology convert( renderer::PrimitiveTopology const & topology );
 }

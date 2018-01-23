@@ -2,7 +2,7 @@
 
 namespace gl_renderer
 {
-	GlPrimitiveTopolgy convert( renderer::PrimitiveTopology const & topology )
+	GlPrimitiveTopology convert( renderer::PrimitiveTopology const & topology )
 	{
 		switch ( topology )
 		{

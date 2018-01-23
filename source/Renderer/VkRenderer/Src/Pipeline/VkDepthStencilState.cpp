@@ -2,9 +2,7 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
-#include "Pipeline/VkDepthStencilState.hpp"
-
-#include "VkStencilOpState.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 namespace vk_renderer
 {

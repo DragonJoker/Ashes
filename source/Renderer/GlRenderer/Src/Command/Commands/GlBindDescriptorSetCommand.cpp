@@ -26,8 +26,8 @@ namespace gl_renderer
 				, binding.getBinding().getBindingPoint()
 				, static_cast< Sampler const & >( binding.getSampler() ).getSampler() );
 			glLogCall( gl::BindTexture
-				, convert( binding.getView().getImage().getType() )
-				, static_cast< Texture const & >( binding.getView().getImage() ).getImage() );
+				, convert( binding.getView().getType() )
+				, static_cast< TextureView const & >( binding.getView() ).getImage() );
 		}
 
 		void bind( renderer::SamplerBinding const & binding )
@@ -41,8 +41,8 @@ namespace gl_renderer
 		{
 			glLogCall( gl::ActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
 			glLogCall( gl::BindTexture
-				, convert( binding.getView().getImage().getType() )
-				, static_cast< Texture const & >( binding.getView().getImage() ).getImage() );
+				, convert( binding.getView().getType() )
+				, static_cast< TextureView const & >( binding.getView() ).getImage() );
 		}
 
 		void bind( renderer::StorageTextureBinding const & binding )
@@ -52,7 +52,7 @@ namespace gl_renderer
 			glLogCall( gl::ActiveTexture, GL_TEXTURE0 + binding.getBinding().getBindingPoint() );
 			glLogCall( gl::BindImageTexture
 				, binding.getBinding().getBindingPoint()
-				, static_cast< Texture const & >( view.getImage() ).getImage()
+				, static_cast< TextureView const & >( view ).getImage()
 				, range.getBaseMipLevel()
 				, range.getLayerCount() > 0
 				, range.getBaseArrayLayer()

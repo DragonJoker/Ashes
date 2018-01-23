@@ -10,7 +10,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Commande de dessin non indexé.
+	*	Commande de dessin non indexï¿½.
 	*/
 	class DrawCommand
 		: public CommandBase
@@ -26,7 +26,7 @@ namespace gl_renderer
 		*\param[in] firstVertex
 		*	Index du premier sommet.
 		*\param[in] firstInstance
-		*	Index de la première instance.
+		*	Index de la premiï¿½re instance.
 		*/
 		DrawCommand( uint32_t vtxCount
 			, uint32_t instCount
@@ -42,6 +42,6 @@ namespace gl_renderer
 		uint32_t m_instCount;
 		uint32_t m_firstVertex;
 		uint32_t m_firstInstance;
-		GLenum m_mode;
+		GlPrimitiveTopology m_mode;
 	};
 }

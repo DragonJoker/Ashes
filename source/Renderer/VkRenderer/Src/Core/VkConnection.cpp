@@ -9,8 +9,6 @@ See LICENSE file in root folder.
 
 #include <Core/PlatformWindowHandle.hpp>
 
-#include "vulkan/vk_platform.h"
-
 namespace vk_renderer
 {
 	Connection::Connection( Renderer const & renderer
@@ -70,7 +68,30 @@ namespace vk_renderer
 			m_handle.getInternal< renderer::IXcbWindowHandle >().getConnection(),
 			m_handle.getInternal< renderer::IXcbWindowHandle >().getHandle(),
 		};
-		auto res = CreateXcbSurfaceKHR( m_renderer
+		auto res = vk::CreateXcbSurfaceKHR( m_renderer
+			, &createInfo
+			, nullptr
+			, &m_presentSurface );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Presentation surface creation failed: " + getLastError() };
+		}
+	}
+
+#elif RENDERLIB_XLIB
+
+	void Connection::doCreatePresentSurface()
+	{
+		VkXlibSurfaceCreateInfoKHR createInfo
+		{
+			VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
+			nullptr,
+			0,
+			m_handle.getInternal< renderer::IXWindowHandle >().getDisplay(),
+			m_handle.getInternal< renderer::IXWindowHandle >().getDrawable(),
+		};
+		auto res = vk::CreateXlibSurfaceKHR( m_renderer
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
@@ -83,26 +104,7 @@ namespace vk_renderer
 
 #else
 
-	void Connection::doCreatePresentSurface()
-	{
-		VkXlibSurfaceCreateInfoKHR createInfo
-		{
-			VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
-			nullptr,
-			0,
-			m_handle.getInternal< renderer::IXWindowHandle >().getDisplay(),
-			m_handle.getInternal< renderer::IXWindowHandle >().getDrawable(),
-		};
-		auto res = CreateXlibSurfaceKHR( m_renderer
-			, &createInfo
-			, nullptr
-			, &m_presentSurface );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Presentation surface creation failed: " + getLastError() };
-		}
-	}
+#	error "Unsupported window system."
 
 #endif
 

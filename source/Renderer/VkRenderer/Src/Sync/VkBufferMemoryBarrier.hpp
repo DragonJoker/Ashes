@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 namespace vk_renderer
 {
-	class BufferBase;
+	class Buffer;
 	/**
 	*\brief
 	*	Convertit un renderer::BufferMemoryBarrier en VkBufferMemoryBarrier.

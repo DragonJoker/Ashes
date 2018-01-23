@@ -6,8 +6,6 @@ See LICENSE file in root folder.
 #define ___VkRenderer_ImageSubresourceLayers_HPP___
 #pragma once
 
-#include "VkRendererPrerequisites.hpp"
-
 #include <Image/ImageSubresourceLayers.hpp>
 
 namespace vk_renderer

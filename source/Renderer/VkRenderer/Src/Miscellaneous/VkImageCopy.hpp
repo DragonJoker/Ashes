@@ -6,8 +6,6 @@ See LICENSE file in root folder.
 #define ___VkRenderer_ImageCopy_HPP___
 #pragma once
 
-#include "VkRendererPrerequisites.hpp"
-
 #include <Miscellaneous/ImageCopy.hpp>
 
 namespace vk_renderer

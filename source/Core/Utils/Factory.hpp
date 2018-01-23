@@ -9,6 +9,7 @@ See LICENSE file in root folder
 
 #include <type_traits>
 #include <functional>
+#include <iostream>
 
 namespace utils
 {

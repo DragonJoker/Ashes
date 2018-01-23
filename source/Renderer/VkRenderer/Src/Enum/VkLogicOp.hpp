@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Enum/LogicOp.hpp>
+#include <RendererPrerequisites.hpp>
 
 namespace vk_renderer
 {

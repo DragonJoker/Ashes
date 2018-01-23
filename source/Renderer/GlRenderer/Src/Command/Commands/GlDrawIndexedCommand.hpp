@@ -10,7 +10,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Commande de dessin indexé.
+	*	Commande de dessin indexï¿½.
 	*/
 	class DrawIndexedCommand
 		: public CommandBase
@@ -27,9 +27,9 @@ namespace gl_renderer
 		*\param[in] firstIndex
 		*	Index du premier indice.
 		*\param[in] vertexOffset
-		*	La valeur ajoutée à l'indice du sommet avant d'indexer le tampon de sommets.
+		*	La valeur ajoutï¿½e ï¿½ l'indice du sommet avant d'indexer le tampon de sommets.
 		*\param[in] firstInstance
-		*	Index de la première instance.
+		*	Index de la premiï¿½re instance.
 		*/
 		DrawIndexedCommand( uint32_t indexCount
 			, uint32_t instCount
@@ -48,7 +48,7 @@ namespace gl_renderer
 		size_t m_firstIndex;
 		uint32_t m_vertexOffset;
 		uint32_t m_firstInstance;
-		GLenum m_mode;
-		GLenum m_type;
+		GlPrimitiveTopology m_mode;
+		GlIndexType m_type;
 	};
 }

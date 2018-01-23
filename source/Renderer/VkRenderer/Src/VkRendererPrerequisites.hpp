@@ -8,8 +8,6 @@
 
 #include <RendererConfig.hpp>
 
-#include "VkRendererConfig.hpp"
-
 #define VK_USE_PLATFORM_EXTENSIONS
 
 #if RENDERLIB_WIN32
@@ -20,7 +18,11 @@
 #	define VK_USE_PLATFORM_XLIB_KHR
 #elif RENDERLIB_ANDROID
 #	define VK_USE_PLATFORM_ANDROID_KHR
+#else
+#	define VK_USE_PLATFORM_XLIB_KHR
 #endif
+
+#include "VkRendererConfig.hpp"
 
 #include "vulkan/vulkan.h"
 
@@ -76,6 +78,24 @@
 #include "Enum/VkTessellationStateFlag.hpp"
 #include "Enum/VkTextureType.hpp"
 #include "Enum/VkWrapMode.hpp"
+#include "Descriptor/VkDescriptorSetLayoutBinding.hpp"
+#include "Image/VkImageSubresourceLayers.hpp"
+#include "Image/VkImageSubresourceRange.hpp"
+#include "Miscellaneous/VkBufferCopy.hpp"
+#include "Miscellaneous/VkBufferImageCopy.hpp"
+#include "Miscellaneous/VkImageCopy.hpp"
+#include "Pipeline/VkColourBlendState.hpp"
+#include "Pipeline/VkColourBlendStateAttachment.hpp"
+#include "Pipeline/VkDepthStencilState.hpp"
+#include "Pipeline/VkMultisampleState.hpp"
+#include "Pipeline/VkRasterisationState.hpp"
+#include "Pipeline/VkStencilOpState.hpp"
+#include "Pipeline/VkTessellationState.hpp"
+#include "Pipeline/VkViewport.hpp"
+#include "Pipeline/VkScissor.hpp"
+#include "RenderPass/VkClearValue.hpp"
+#include "Sync/VkBufferMemoryBarrier.hpp"
+#include "Sync/VkImageMemoryBarrier.hpp"
 
 #include "Miscellaneous/VkDebug.hpp"
 #include "Miscellaneous/VkError.hpp"

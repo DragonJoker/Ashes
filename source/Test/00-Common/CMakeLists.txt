@@ -18,6 +18,10 @@ add_library( ${PROJECT_NAME} STATIC
 	${HEADER_FILES}
 )
 
+target_link_libraries( ${PROJECT_NAME}
+	Renderer
+)
+
 add_dependencies( ${PROJECT_NAME}
 	GlRenderer
 	VkRenderer

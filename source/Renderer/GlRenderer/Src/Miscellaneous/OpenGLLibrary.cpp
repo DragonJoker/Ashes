@@ -4,7 +4,19 @@ See LICENSE file in root folder.
 */
 #include "Miscellaneous/OpenGLLibrary.hpp"
 
-#include <GL/GL.h>
+#if RENDERLIB_WIN32
+#elif RENDERLIB_XLIB
+#	include <X11/Xlib.h>
+#	include <GL/glx.h>
+#else
+#	include <X11/Xlib.h>
+#	include <GL/glx.h>
+#endif
+
+#include <GL/gl.h>
+
+#include <iostream>
+#include <stdexcept>
 
 namespace gl_renderer
 {
@@ -14,11 +26,23 @@ namespace gl_renderer
 		template< typename FuncT >
 		bool getFunction( char const * const name, FuncT & function )
 		{
-			function = ( FuncT )wglGetProcAddress( name );
+			function = reinterpret_cast< FuncT >( wglGetProcAddress( name ) );
 			return function != nullptr;
 		}
 #elif RENDERLIB_XLIB
+		template< typename FuncT >
+		bool getFunction( char const * const name, FuncT & function )
+		{
+			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
+			return function != nullptr;
+		}
 #else
+		template< typename FuncT >
+		bool getFunction( char const * const name, FuncT & function )
+		{
+			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
+			return function != nullptr;
+		}
 #endif
 	}
 

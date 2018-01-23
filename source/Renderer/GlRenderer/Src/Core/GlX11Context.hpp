@@ -6,6 +6,10 @@ See LICENSE file in root folder
 #include "Core/GlContext.hpp"
 
 #if RENDERLIB_XLIB
+#	include "Miscellaneous/OpenGLLibrary.hpp"
+
+#	include <X11/Xlib.h>
+#	include <GL/glx.h>
 
 namespace gl_renderer
 {
@@ -31,6 +35,7 @@ namespace gl_renderer
 		bool doCreateGl3Context();
 
 	protected:
+		std::unique_ptr< OpenGLLibrary > m_opengl;
 		GLXContext m_glxContext;
 		int m_glxVersion;
 		Display * m_display;

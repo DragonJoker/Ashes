@@ -111,21 +111,21 @@ namespace gl_renderer
 		*/
 		inline GLuint getBuffer()const
 		{
-			assert( m_glName != GL_INVALID_INDEX );
-			return m_glName;
+			assert( m_name != GL_INVALID_INDEX );
+			return m_name;
 		}
 		/**
 		*\return
 		*	La cible du tampon.
 		*/
-		inline GLenum getTarget()const
+		inline GlBufferTarget getTarget()const
 		{
 			return m_target;
 		}
 
 	private:
-		GLuint m_glName{ GL_INVALID_INDEX };
-		GLenum m_target;
+		GLuint m_name{ GL_INVALID_INDEX };
+		GlBufferTarget m_target;
 	};
 }
 

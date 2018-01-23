@@ -1,8 +1,8 @@
 #include "Core/GlContext.hpp"
 
-#if defined( _WIN32 )
+#if RENDERLIB_WIN32
 #	include "GlMswContext.hpp"
-#elif defined( __linux )
+#elif RENDERLIB_XLIB
 #	include "GlX11Context.hpp"
 #endif
 

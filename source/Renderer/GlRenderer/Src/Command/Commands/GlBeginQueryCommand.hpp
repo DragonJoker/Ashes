@@ -10,7 +10,7 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Commande de démarrage d'une requête.
+	*	Commande de dï¿½marrage d'une requï¿½te.
 	*/
 	class BeginQueryCommand
 		: public CommandBase
@@ -23,7 +23,7 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		GLenum m_target;
+		GlQueryType m_target;
 		GLuint m_query;
 	};
 }

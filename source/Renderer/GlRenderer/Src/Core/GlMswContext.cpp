@@ -55,13 +55,11 @@ namespace gl_renderer
 				wgl::DeleteContext( m_hContext );
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
-			else
-			{
-				setCurrent();
-				glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
-				initialiseDebugFunctions();
-				wgl::SwapIntervalEXT( 0 );
-			}
+
+			setCurrent();
+			glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
+			initialiseDebugFunctions();
+			wgl::SwapIntervalEXT( 0 );
 		}
 	}
 
@@ -154,9 +152,10 @@ namespace gl_renderer
 			setCurrent();
 			gl::GetError();
 			glCreateContextAttribs = ( PFNGLCREATECONTEXTATTRIBS )wglGetProcAddress( "wglCreateContextAttribsARB" );
-			m_hContext = glCreateContextAttribs( m_hDC, nullptr, attribList.data() );
+			hContext = glCreateContextAttribs( m_hDC, nullptr, attribList.data() );
 			endCurrent();
-			wgl::DeleteContext( hContext );
+			wgl::DeleteContext( m_hContext );
+			m_hContext = hContext;
 			result = m_hContext != nullptr;
 
 			if ( !result )

@@ -8,8 +8,7 @@
 #define ___VkRenderer_Pipeline_HPP___
 #pragma once
 
-#include "Pipeline/VkColourBlendState.hpp"
-#include "Pipeline/VkRasterisationState.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 #include <Pipeline/Pipeline.hpp>
 

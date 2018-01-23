@@ -1,4 +1,4 @@
-#include "VkIndexType.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 namespace vk_renderer
 {

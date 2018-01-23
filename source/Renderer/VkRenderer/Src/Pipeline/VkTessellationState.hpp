@@ -4,8 +4,6 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "VkRendererPrerequisites.hpp"
-
 #include <Pipeline/TessellationState.hpp>
 
 namespace vk_renderer

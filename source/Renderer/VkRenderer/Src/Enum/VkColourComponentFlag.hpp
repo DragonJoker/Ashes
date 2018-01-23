@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Enum/ColourComponentFlag.hpp>
+#include <RendererPrerequisites.hpp>
 
 namespace vk_renderer
 {
