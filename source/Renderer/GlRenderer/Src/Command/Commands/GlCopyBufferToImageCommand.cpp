@@ -12,6 +12,20 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
+	namespace
+	{
+		GlTextureType convert( renderer::TextureType type
+			, uint32_t layer )
+		{
+			if ( type == renderer::TextureType::eCube )
+			{
+				return GlTextureType( GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer );
+			}
+
+			return gl_renderer::convert( type );
+		}
+	}
+
 	CopyBufferToImageCommand::CopyBufferToImageCommand( renderer::BufferImageCopy const & copyInfo
 		, renderer::BufferBase const & src
 		, renderer::TextureView const & dst )
@@ -21,6 +35,7 @@ namespace gl_renderer
 		, m_format{ getFormat( m_dst.getFormat() ) }
 		, m_type{ getType( m_dst.getFormat() ) }
 		, m_target{ convert( m_dst.getType() ) }
+		, m_copyTarget{ convert( m_dst.getType(), m_copyInfo.imageSubresource.baseArrayLayer ) }
 	{
 	}
 
@@ -33,7 +48,7 @@ namespace gl_renderer
 		{
 		case GL_TEXTURE_1D:
 			glLogCall( gl::TexSubImage1D
-				, m_target
+				, m_copyTarget
 				, m_copyInfo.imageSubresource.mipLevel
 				, m_copyInfo.imageOffset[0]
 				, m_copyInfo.imageExtent[0]
@@ -43,8 +58,9 @@ namespace gl_renderer
 			break;
 
 		case GL_TEXTURE_2D:
+		case GL_TEXTURE_CUBE_MAP:
 			glLogCall( gl::TexSubImage2D
-				, m_target
+				, m_copyTarget
 				, m_copyInfo.imageSubresource.mipLevel
 				, m_copyInfo.imageOffset[0]
 				, m_copyInfo.imageOffset[1]
@@ -57,7 +73,7 @@ namespace gl_renderer
 
 		case GL_TEXTURE_3D:
 			glLogCall( gl::TexSubImage3D
-				, m_target
+				, m_copyTarget
 				, m_copyInfo.imageSubresource.mipLevel
 				, m_copyInfo.imageOffset[0]
 				, m_copyInfo.imageOffset[1]

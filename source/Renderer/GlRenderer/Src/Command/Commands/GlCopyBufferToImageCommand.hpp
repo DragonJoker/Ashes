@@ -42,5 +42,6 @@ namespace gl_renderer
 		GlFormat m_format;
 		GlType m_type;
 		GlTextureType m_target;
+		GlTextureType m_copyTarget;
 	};
 }
