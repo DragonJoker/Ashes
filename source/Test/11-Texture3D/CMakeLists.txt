@@ -19,7 +19,7 @@ file( GLOB GLSL_SHADER_FILES
 )
 
 file( GLOB SHADER_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/Shaders/*.*
+	${CMAKE_CURRENT_SOURCE_DIR}/Shaders/*
 )
 
 source_group( "Shader Files" FILES ${GLSL_SHADER_FILES} )
