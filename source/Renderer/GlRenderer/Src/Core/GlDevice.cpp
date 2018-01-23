@@ -169,6 +169,7 @@ namespace gl_renderer
 	}
 
 	renderer::TextureViewPtr Device::createTextureView( renderer::Texture const & texture
+		, renderer::TextureType type
 		, renderer::PixelFormat format
 		, uint32_t baseMipLevel
 		, uint32_t levelCount
@@ -177,6 +178,7 @@ namespace gl_renderer
 	{
 		return std::make_shared< TextureView >( *this
 			, static_cast< Texture const & >( texture )
+			, type
 			, format
 			, baseMipLevel
 			, levelCount

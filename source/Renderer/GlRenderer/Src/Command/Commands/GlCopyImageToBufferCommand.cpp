@@ -5,7 +5,7 @@ See LICENSE file in root folder.
 #include "GlCopyImageToBufferCommand.hpp"
 
 #include "Buffer/GlBuffer.hpp"
-#include "Image/GlTexture.hpp"
+#include "Image/GlTextureView.hpp"
 
 #include <Image/ImageSubresourceRange.hpp>
 #include <Image/TextureView.hpp>
@@ -13,10 +13,10 @@ See LICENSE file in root folder.
 namespace gl_renderer
 {
 	CopyImageToBufferCommand::CopyImageToBufferCommand( renderer::BufferImageCopy const & copyInfo
-		, renderer::Texture const & src
+		, renderer::TextureView const & src
 		, renderer::BufferBase const & dst )
 		: m_copyInfo{ copyInfo }
-		, m_src{ static_cast< Texture const & >( src ) }
+		, m_src{ static_cast< TextureView const & >( src ) }
 		, m_dst{ static_cast< Buffer const & >( dst ) }
 		, m_format{ getFormat( m_src.getFormat() ) }
 		, m_type{ getType( m_src.getFormat() ) }

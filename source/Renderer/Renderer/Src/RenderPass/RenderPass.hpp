@@ -67,7 +67,7 @@ namespace renderer
 		*	Le FrameBuffer créé.
 		*/
 		virtual FrameBufferPtr createFrameBuffer( UIVec2 const & dimensions
-			, TextureCRefArray const & textures )const = 0;
+			, TextureViewCRefArray const & textures )const = 0;
 	};
 }
 

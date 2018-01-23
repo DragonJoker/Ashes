@@ -65,12 +65,7 @@ namespace vkapp
 		}
 		catch ( std::exception & )
 		{
-			if ( m_device )
-			{
-				m_device->waitIdle();
-			}
-
-			m_device.reset();
+			doCleanup();
 			throw;
 		}
 
@@ -82,18 +77,27 @@ namespace vkapp
 
 	RenderPanel::~RenderPanel()
 	{
+		doCleanup();
+	}
+
+	void RenderPanel::doCleanup()
+	{
 		delete m_timer;
-		m_device->waitIdle();
-		m_geometryBuffers.reset();
-		m_pipeline.reset();
-		m_pipelineLayout.reset();
-		m_program.reset();
-		m_commandBuffers.clear();
-		m_frameBuffers.clear();
-		m_vertexBuffer.reset();
-		m_renderPass.reset();
-		m_swapChain.reset();
-		m_device.reset();
+
+		if ( m_device )
+		{
+			m_device->waitIdle();
+			m_geometryBuffers.reset();
+			m_pipeline.reset();
+			m_pipelineLayout.reset();
+			m_program.reset();
+			m_commandBuffers.clear();
+			m_frameBuffers.clear();
+			m_vertexBuffer.reset();
+			m_renderPass.reset();
+			m_swapChain.reset();
+			m_device.reset();
+		}
 	}
 
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )

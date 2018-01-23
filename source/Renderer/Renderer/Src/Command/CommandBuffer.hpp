@@ -148,7 +148,7 @@ namespace renderer
 		*\param[in] colour
 		*	La couleur de vidage.
 		*/
-		virtual void clear( Texture const & image
+		virtual void clear( TextureView const & image
 			, RgbaColour const & colour )const = 0;
 		/**
 		*\brief
@@ -281,7 +281,7 @@ namespace renderer
 		*/
 		virtual void copyToImage( BufferImageCopy const & copyInfo
 			, BufferBase const & src
-			, Texture const & dst )const = 0;
+			, TextureView const & dst )const = 0;
 		/**
 		*\~french
 		*\brief
@@ -303,7 +303,7 @@ namespace renderer
 		*	The destination image.
 		*/
 		virtual void copyToBuffer( BufferImageCopy const & copyInfo
-			, Texture const & src
+			, TextureView const & src
 			, BufferBase const & dst )const = 0;
 		/**
 		*\~french
@@ -349,8 +349,8 @@ namespace renderer
 		*	The destination image.
 		*/
 		virtual void copyImage( ImageCopy const & copyInfo
-			, Texture const & src
-			, Texture const & dst )const = 0;
+			, TextureView const & src
+			, TextureView const & dst )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -552,8 +552,8 @@ namespace renderer
 		*\param[in] dst
 		*	The destination image.
 		*/
-		void copyImage( Texture const & src
-			, Texture const & dst )const;
+		void copyImage( TextureView const & src
+			, TextureView const & dst )const;
 	};
 }
 

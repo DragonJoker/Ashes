@@ -24,19 +24,23 @@ namespace vkapp
 		}
 		catch ( std::exception & )
 		{
-			if ( m_device )
-			{
-				m_device->waitIdle();
-			}
-
-			m_device.reset();
+			doCleanup();
 			throw;
 		}
 	}
 
 	RenderPanel::~RenderPanel()
 	{
-		m_device.reset();
+		doCleanup();
+	}
+
+	void RenderPanel::doCleanup()
+	{
+		if ( m_device )
+		{
+			m_device->waitIdle();
+			m_device.reset();
+		}
 	}
 
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )

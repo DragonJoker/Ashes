@@ -117,6 +117,7 @@ namespace vk_renderer
 		*\copydoc	renderer::Device::createTextureView
 		*/
 		renderer::TextureViewPtr createTextureView( renderer::Texture const & texture
+			, renderer::TextureType type
 			, renderer::PixelFormat format
 			, uint32_t baseMipLevel
 			, uint32_t levelCount

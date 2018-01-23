@@ -65,6 +65,15 @@ namespace vkapp
 		/**
 		*\~french
 		*\brief
+		*	Nettoie l'instance.
+		*\~english
+		*\brief
+		*	Cleans up the instance.
+		*/
+		void doCleanup();
+		/**
+		*\~french
+		*\brief
 		*	Crée le device logique.
 		*\~english
 		*\brief

@@ -49,28 +49,29 @@ namespace gl_renderer
 		*\return
 		*	La barrière mémoire.
 		*/
-		renderer::ImageMemoryBarrier makeGeneralLayout( renderer::AccessFlags accessFlags )const override;
+		renderer::ImageMemoryBarrier makeGeneralLayout( renderer::ImageSubresourceRange const & range
+			, renderer::AccessFlags accessFlags )const override;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de destination de transfert.
 		*\return
 		*	La barrière mémoire.
 		*/
-		renderer::ImageMemoryBarrier makeTransferDestination()const override;
+		renderer::ImageMemoryBarrier makeTransferDestination( renderer::ImageSubresourceRange const & range )const override;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de source de transfert.
 		*\return
 		*	La barrière mémoire.
 		*/
-		renderer::ImageMemoryBarrier makeTransferSource()const override;
+		renderer::ImageMemoryBarrier makeTransferSource( renderer::ImageSubresourceRange const & range )const override;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de ressource d'entrée (lecture seule) d'un shader.
 		*\return
 		*	La barrière mémoire.
 		*/
-		renderer::ImageMemoryBarrier makeShaderInputResource()const override;
+		renderer::ImageMemoryBarrier makeShaderInputResource( renderer::ImageSubresourceRange const & range )const override;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de ressource d'entrée (lecture seule) d'un shader.
@@ -79,28 +80,28 @@ namespace gl_renderer
 		*\return
 		*	La barrière mémoire.
 		*/
-		renderer::ImageMemoryBarrier makeDepthStencilReadOnly()const override;
+		renderer::ImageMemoryBarrier makeDepthStencilReadOnly( renderer::ImageSubresourceRange const & range )const override;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout d'attache couleur.
 		*\return
 		*	La barrière mémoire.
 		*/
-		renderer::ImageMemoryBarrier makeColourAttachment()const override;
+		renderer::ImageMemoryBarrier makeColourAttachment( renderer::ImageSubresourceRange const & range )const override;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout d'attache profondeur/stencil.
 		*\return
 		*	La barrière mémoire.
 		*/
-		renderer::ImageMemoryBarrier makeDepthStencilAttachment()const override;
+		renderer::ImageMemoryBarrier makeDepthStencilAttachment( renderer::ImageSubresourceRange const & range )const override;
 		/**
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de source de presentation.
 		*\return
 		*	La barrière mémoire.
 		*/
-		renderer::ImageMemoryBarrier makePresentSource()const override;
+		renderer::ImageMemoryBarrier makePresentSource( renderer::ImageSubresourceRange const & range )const override;
 		/**
 		*\return
 		*	L'image OpenGL.
@@ -114,7 +115,8 @@ namespace gl_renderer
 	private:
 		renderer::ImageMemoryBarrier doMakeLayoutTransition( renderer::ImageLayout layout
 			, uint32_t queueFamily
-			, renderer::AccessFlags dstAccessMask )const;
+			, renderer::AccessFlags dstAccessMask
+			, renderer::ImageSubresourceRange const & range )const;
 		/**
 		*\copydoc	renderer::Texture::doSetImage1D
 		*/
@@ -136,8 +138,8 @@ namespace gl_renderer
 
 	private:
 		Device const & m_device;
+		GlTextureType m_target;
 		GLuint m_texture{ GL_INVALID_INDEX };
-		GLuint m_glType{ GL_INVALID_INDEX };
 	};
 }
 

@@ -65,6 +65,15 @@ namespace vkapp
 		/**
 		*\~french
 		*\brief
+		*	Nettoie l'instance.
+		*\~english
+		*\brief
+		*	Cleans up the instance.
+		*/
+		void doCleanup();
+		/**
+		*\~french
+		*\brief
 		*	Crée le device logique.
 		*\~english
 		*\brief
@@ -196,6 +205,7 @@ namespace vkapp
 		renderer::GeometryBuffersPtr m_geometryBuffers;
 		renderer::StagingBufferPtr m_stagingBuffer;
 		renderer::TexturePtr m_texture;
+		renderer::TextureViewPtr m_view;
 		renderer::SamplerPtr m_sampler;
 		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
 		renderer::DescriptorSetPoolPtr m_descriptorPool;

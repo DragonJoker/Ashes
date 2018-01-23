@@ -54,6 +54,7 @@ See LICENSE file in root folder.
 #include "Enum/WrapMode.hpp"
 
 #include <cassert>
+#include <cstring>
 #include <ctime>
 #include <functional>
 #include <iomanip>
@@ -208,14 +209,14 @@ namespace renderer
 	using CommandBufferCRef = std::reference_wrapper< CommandBuffer const >;
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;
 	using SwapChainCRef = std::reference_wrapper< SwapChain const >;
-	using TextureCRef = std::reference_wrapper< Texture const >;
+	using TextureViewCRef = std::reference_wrapper< TextureView const >;
 	using VertexLayoutCRef = std::reference_wrapper< VertexLayout const >;
 	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;
 
 	using CommandBufferCRefArray = std::vector< CommandBufferCRef >;
 	using SemaphoreCRefArray = std::vector< SemaphoreCRef >;
 	using SwapChainCRefArray = std::vector< SwapChainCRef >;
-	using TextureCRefArray = std::vector< TextureCRef >;
+	using TextureViewCRefArray = std::vector< TextureViewCRef >;
 	using VertexLayoutCRefArray = std::vector< VertexLayoutCRef >;
 	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
 	/**\}*/

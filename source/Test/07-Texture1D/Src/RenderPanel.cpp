@@ -91,12 +91,7 @@ namespace vkapp
 		}
 		catch ( std::exception & )
 		{
-			if ( m_device )
-			{
-				m_device->waitIdle();
-			}
-
-			m_device.reset();
+			doCleanup();
 			throw;
 		}
 
@@ -108,25 +103,35 @@ namespace vkapp
 
 	RenderPanel::~RenderPanel()
 	{
+		doCleanup();
+	}
+
+	void RenderPanel::doCleanup()
+	{
 		delete m_timer;
-		m_device->waitIdle();
-		m_descriptorSet.reset();
-		m_descriptorPool.reset();
-		m_descriptorLayout.reset();
-		m_sampler.reset();
-		m_texture.reset();
-		m_stagingBuffer.reset();
-		m_pipeline.reset();
-		m_vertexLayout.reset();
-		m_program.reset();
-		m_pipelineLayout.reset();
-		m_geometryBuffers.reset();
-		m_commandBuffers.clear();
-		m_frameBuffers.clear();
-		m_vertexBuffer.reset();
-		m_renderPass.reset();
-		m_swapChain.reset();
-		m_device.reset();
+
+		if ( m_device )
+		{
+			m_device->waitIdle();
+			m_descriptorSet.reset();
+			m_descriptorPool.reset();
+			m_descriptorLayout.reset();
+			m_sampler.reset();
+			m_view.reset();
+			m_texture.reset();
+			m_stagingBuffer.reset();
+			m_pipeline.reset();
+			m_vertexLayout.reset();
+			m_program.reset();
+			m_pipelineLayout.reset();
+			m_geometryBuffers.reset();
+			m_commandBuffers.clear();
+			m_frameBuffers.clear();
+			m_vertexBuffer.reset();
+			m_renderPass.reset();
+			m_swapChain.reset();
+			m_device.reset();
+		}
 	}
 
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
@@ -151,6 +156,13 @@ namespace vkapp
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		m_texture = m_device->createTexture();
 		m_texture->setImage( image.format, image.size.x );
+		m_view = m_device->createTextureView( *m_texture
+			, m_texture->getType()
+			, image.format
+			, 0u
+			, 1u
+			, 0u
+			, 1u );
 		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
@@ -158,7 +170,7 @@ namespace vkapp
 			, renderer::Filter::eLinear );
 		m_stagingBuffer->copyTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, image.data
-			, *m_texture );
+			, *m_view );
 	}
 
 	void RenderPanel::doCreateDescriptorSet()
@@ -171,7 +183,7 @@ namespace vkapp
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
-			, m_texture->getView()
+			, *m_view
 			, *m_sampler );
 		m_descriptorSet->update();
 	}

@@ -7,10 +7,13 @@ See LICENSE file in root folder.
 #include "Command/VkCommandBuffer.hpp"
 #include "Core/VkDevice.hpp"
 #include "Image/VkTexture.hpp"
+#include "Image/VkTextureView.hpp"
 #include "RenderPass/VkFrameBuffer.hpp"
 #include "RenderPass/VkRenderPassState.hpp"
 #include "RenderPass/VkRenderSubpass.hpp"
 #include "RenderPass/VkRenderSubpassState.hpp"
+
+#include <algorithm>
 
 namespace vk_renderer
 {
@@ -180,12 +183,12 @@ namespace vk_renderer
 	}
 
 	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::UIVec2 const & dimensions
-		, renderer::TextureCRefArray const & textures )const
+		, renderer::TextureViewCRefArray const & textures )const
 	{
 		// On vérifie la compatibilité des vues demandés pour le framebuffer à créer.
 		auto it = std::find_if( textures.begin()
 			, textures.end()
-			, [this]( std::reference_wrapper< renderer::Texture const > const & view )
+			, [this]( std::reference_wrapper< renderer::TextureView const > const & view )
 		{
 			return m_formats.end() == std::find_if( m_formats.begin()
 				, m_formats.end()

@@ -36,6 +36,8 @@ namespace gl_renderer
 		*	La connexion logique au GPU.
 		*\param[in] image
 		*	L'image sur laquelle la vue est créée.
+		*\param[in] type
+		*	Le type de texture de la vue.
 		*\param[in] format
 		*	Le format des pixels de la vue.
 		*\param[in] baseMipLevel
@@ -53,6 +55,8 @@ namespace gl_renderer
 		*	The logical connection to the GPU.
 		*\param[in] image
 		*	The image from which the view is created.
+		*\param[in] type
+		*	The view's texture type.
 		*\param[in] format
 		*	The view's pixels format.
 		*\param[in] baseMipLevel
@@ -66,6 +70,7 @@ namespace gl_renderer
 		*/
 		TextureView( Device const & device
 			, Texture const & image
+			, renderer::TextureType type
 			, renderer::PixelFormat format
 			, uint32_t baseMipLevel
 			, uint32_t levelCount
@@ -80,9 +85,20 @@ namespace gl_renderer
 		*	Destructor.
 		*/
 		~TextureView();
+		/**
+		*\return
+		*	L'image OpenGL.
+		*/
+		inline GLuint getImage()const noexcept
+		{
+			assert( m_texture != GL_INVALID_INDEX );
+			return m_texture;
+		}
 
 	private:
 		Device const & m_device;
+		GlTextureType m_target;
+		GLuint m_texture{ GL_INVALID_INDEX };
 	};
 }
 

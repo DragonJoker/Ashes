@@ -25,6 +25,7 @@ See LICENSE file in root folder.
 #include "RenderPass/VkRenderBuffer.hpp"
 #include "RenderPass/VkRenderPass.hpp"
 #include "RenderPass/VkRenderSubpass.hpp"
+#include "Shader/VkAttribute.hpp"
 #include "Shader/VkShaderProgram.hpp"
 #include "Sync/VkSemaphore.hpp"
 
@@ -240,6 +241,7 @@ namespace vk_renderer
 	}
 
 	renderer::TextureViewPtr Device::createTextureView( renderer::Texture const & texture
+		, renderer::TextureType type
 		, renderer::PixelFormat format
 		, uint32_t baseMipLevel
 		, uint32_t levelCount
@@ -248,6 +250,7 @@ namespace vk_renderer
 	{
 		return std::make_shared< TextureView >( *this
 			, static_cast< Texture const & >( texture )
+			, type
 			, format
 			, baseMipLevel
 			, levelCount

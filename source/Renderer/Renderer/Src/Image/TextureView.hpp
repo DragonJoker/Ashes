@@ -31,6 +31,8 @@ namespace renderer
 		*	La connexion logique au GPU.
 		*\param[in] image
 		*	L'image sur laquelle la vue est créée.
+		*\param[in] type
+		*	Le type de texture de la vue.
 		*\param[in] format
 		*	Le format des pixels de la vue.
 		*\param[in] baseMipLevel
@@ -48,6 +50,8 @@ namespace renderer
 		*	The logical connection to the GPU.
 		*\param[in] image
 		*	The image from which the view is created.
+		*\param[in] type
+		*	The view's texture type.
 		*\param[in] format
 		*	The view's pixels format.
 		*\param[in] baseMipLevel
@@ -61,6 +65,7 @@ namespace renderer
 		*/
 		TextureView( Device const & device
 			, Texture const & image
+			, TextureType type
 			, PixelFormat format
 			, uint32_t baseMipLevel
 			, uint32_t levelCount
@@ -77,6 +82,18 @@ namespace renderer
 		*	Destructor.
 		*/
 		virtual ~TextureView() = default;
+		/**
+		*\~french
+		*\return
+		*	Le type de texture.
+		*\~english
+		*\return
+		*	The texture type.
+		*/
+		inline TextureType getType()const
+		{
+			return m_type;
+		}
 		/**
 		*\~french
 		*\return
@@ -97,7 +114,7 @@ namespace renderer
 		*\return
 		*	The view's image.
 		*/
-		inline Texture const & getImage()const
+		inline Texture const & getTexture()const
 		{
 			return m_image;
 		}
@@ -117,6 +134,7 @@ namespace renderer
 	private:
 		Device const & m_device;
 		Texture const & m_image;
+		TextureType m_type{ TextureType::eCount };
 		PixelFormat m_format{};
 		ImageSubresourceRange m_subResourceRange{};
 	};

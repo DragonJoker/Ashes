@@ -6,18 +6,18 @@ See LICENSE file in root folder.
 
 #include "Buffer/GlBuffer.hpp"
 #include "Image/GlTexture.hpp"
+#include "Image/GlTextureView.hpp"
 
 #include <Image/ImageSubresourceRange.hpp>
-#include <Image/TextureView.hpp>
 
 namespace gl_renderer
 {
 	CopyBufferToImageCommand::CopyBufferToImageCommand( renderer::BufferImageCopy const & copyInfo
 		, renderer::BufferBase const & src
-		, renderer::Texture const & dst )
+		, renderer::TextureView const & dst )
 		: m_copyInfo{ copyInfo }
 		, m_src{ static_cast< Buffer const & >( src ) }
-		, m_dst{ static_cast< Texture const & >( dst ) }
+		, m_dst{ static_cast< TextureView const & >( dst ) }
 		, m_format{ getFormat( m_dst.getFormat() ) }
 		, m_type{ getType( m_dst.getFormat() ) }
 		, m_target{ convert( m_dst.getType() ) }
@@ -73,7 +73,7 @@ namespace gl_renderer
 
 		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, 0u );
 		glLogCall( gl::BindTexture, m_target, 0u );
-		m_dst.generateMipmaps();
+		m_dst.getTexture().generateMipmaps();
 	}
 
 	CommandPtr CopyBufferToImageCommand::clone()const

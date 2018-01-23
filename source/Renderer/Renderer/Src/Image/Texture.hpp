@@ -11,8 +11,12 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~english
 	*\brief
-	*	Une texture, avec son image et son échantillonneur.
+	*	A texture image.
+	*\~french
+	*\brief
+	*	L'image d'une texture.
 	*/
 	class Texture
 	{
@@ -36,10 +40,16 @@ namespace renderer
 
 	protected:
 		/**
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] device
 		*	Le périphérique logique.
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
 		*/
 		Texture( Device const & device );
 
@@ -58,24 +68,56 @@ namespace renderer
 		*/
 		virtual ~Texture() = default;
 		/**
+		*\~french
 		*\brief
 		*	Charge l'image de la texture.
 		*\param[in] format
 		*	Le format de l'image.
 		*\param[in] size
 		*	Les dimensions de l'image.
+		*\param[in] usageFlags
+		*	Les indicateurs d'utilisation de l'image.
+		*\param[in] tiling
+		*	Le mode de tiling de l'image.
+		*\~english
+		*\brief
+		*	Loads the texture image.
+		*\param[in] format
+		*	The pixel format.
+		*\param[in] size
+		*	The image dimensions.
+		*\param[in] usageFlags
+		*	The image usage flags.
+		*\param[in] tiling
+		*	The image tiling mode.
 		*/
 		void setImage( PixelFormat format
 			, uint32_t size
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
 			, ImageTiling tiling = ImageTiling::eOptimal );
 		/**
+		*\~french
 		*\brief
 		*	Charge l'image de la texture.
 		*\param[in] format
 		*	Le format de l'image.
 		*\param[in] size
 		*	Les dimensions de l'image.
+		*\param[in] usageFlags
+		*	Les indicateurs d'utilisation de l'image.
+		*\param[in] tiling
+		*	Le mode de tiling de l'image.
+		*\~english
+		*\brief
+		*	Loads the texture image.
+		*\param[in] format
+		*	The pixel format.
+		*\param[in] size
+		*	The image dimensions.
+		*\param[in] usageFlags
+		*	The image usage flags.
+		*\param[in] tiling
+		*	The image tiling mode.
 		*/
 		void setImage( PixelFormat format
 			, UIVec2 const & size
@@ -83,12 +125,28 @@ namespace renderer
 			, ImageTiling tiling = ImageTiling::eOptimal
 			, SampleCountFlag samples = SampleCountFlag::e1 );
 		/**
+		*\~french
 		*\brief
 		*	Charge l'image de la texture.
 		*\param[in] format
 		*	Le format de l'image.
 		*\param[in] size
 		*	Les dimensions de l'image.
+		*\param[in] usageFlags
+		*	Les indicateurs d'utilisation de l'image.
+		*\param[in] tiling
+		*	Le mode de tiling de l'image.
+		*\~english
+		*\brief
+		*	Loads the texture image.
+		*\param[in] format
+		*	The pixel format.
+		*\param[in] size
+		*	The image dimensions.
+		*\param[in] usageFlags
+		*	The image usage flags.
+		*\param[in] tiling
+		*	The image tiling mode.
 		*/
 		void setImage( PixelFormat format
 			, UIVec3 const & size
@@ -96,12 +154,32 @@ namespace renderer
 			, ImageTiling tiling = ImageTiling::eOptimal
 			, SampleCountFlag samples = SampleCountFlag::e1 );
 		/**
+		*\~french
 		*\brief
 		*	Charge l'image de la texture.
 		*\param[in] format
 		*	Le format de l'image.
 		*\param[in] size
 		*	Les dimensions de l'image.
+		*\param[in] layerCount
+		*	Le nombre de couches.
+		*\param[in] usageFlags
+		*	Les indicateurs d'utilisation de l'image.
+		*\param[in] tiling
+		*	Le mode de tiling de l'image.
+		*\~english
+		*\brief
+		*	Loads the texture image.
+		*\param[in] format
+		*	The pixel format.
+		*\param[in] size
+		*	The image dimensions.
+		*\param[in] layerCount
+		*	The number of layers.
+		*\param[in] usageFlags
+		*	The image usage flags.
+		*\param[in] tiling
+		*	The image tiling mode.
 		*/
 		void setImage( PixelFormat format
 			, uint32_t size
@@ -109,12 +187,32 @@ namespace renderer
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
 			, ImageTiling tiling = ImageTiling::eOptimal );
 		/**
+		*\~french
 		*\brief
 		*	Charge l'image de la texture.
 		*\param[in] format
 		*	Le format de l'image.
 		*\param[in] size
 		*	Les dimensions de l'image.
+		*\param[in] layerCount
+		*	Le nombre de couches.
+		*\param[in] usageFlags
+		*	Les indicateurs d'utilisation de l'image.
+		*\param[in] tiling
+		*	Le mode de tiling de l'image.
+		*\~english
+		*\brief
+		*	Loads the texture image.
+		*\param[in] format
+		*	The pixel format.
+		*\param[in] size
+		*	The image dimensions.
+		*\param[in] layerCount
+		*	The number of layers.
+		*\param[in] usageFlags
+		*	The image usage flags.
+		*\param[in] tiling
+		*	The image tiling mode.
 		*/
 		void setImage( PixelFormat format
 			, UIVec2 const & size
@@ -122,81 +220,142 @@ namespace renderer
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
 			, ImageTiling tiling = ImageTiling::eOptimal );
 		/**
+		*\~french
 		*\brief
 		*	Génère les mipmaps de la texture.
+		*\~english
+		*\brief
+		*	Generates the texture mipmaps.
 		*/
 		virtual void generateMipmaps()const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout général.
 		*\param[in] accessFlags
 		*	Les accès voulus, une fois que la transition est effectuée.
 		*\return
 		*	La barrière mémoire.
+		*\~english
+		*\brief
+		*	Prepares a memory barrier, for a general layout.
+		*\param[in] accessFlags
+		*	The wanted access flags, once the transition is done.
+		*\return
+		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makeGeneralLayout( AccessFlags accessFlags )const = 0;
+		virtual ImageMemoryBarrier makeGeneralLayout( ImageSubresourceRange const & range
+			, AccessFlags accessFlags )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de destination de transfert.
 		*\return
 		*	La barrière mémoire.
+		*\~english
+		*\brief
+		*	Prepares a memory barrier, for a transfer destination layout.
+		*\return
+		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makeTransferDestination()const = 0;
+		virtual ImageMemoryBarrier makeTransferDestination( ImageSubresourceRange const & range )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de source de transfert.
 		*\return
 		*	La barrière mémoire.
+		*\~english
+		*\brief
+		*	Prepares a memory barrier, for a transfer source layout.
+		*\return
+		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makeTransferSource()const = 0;
+		virtual ImageMemoryBarrier makeTransferSource( ImageSubresourceRange const & range )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de ressource d'entrée (lecture seule) d'un shader.
 		*\return
 		*	La barrière mémoire.
-		*/
-		virtual ImageMemoryBarrier makeShaderInputResource()const = 0;
-		/**
+		*\~english
 		*\brief
-		*	Prépare une barrière mémoire de transition vers un layout de ressource d'entrée (lecture seule) d'un shader.
-		*\remarks
-		*	Spécifique aux images prondeur et/ou stencil.
+		*	Prepares a memory barrier, for an input shader resource layout.
+		*\return
+		*	The memory barrier.
+		*/
+		virtual ImageMemoryBarrier makeShaderInputResource( ImageSubresourceRange const & range )const = 0;
+		/**
+		*\~french
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de ressource de lecture de profondeur et/ou stencil.
 		*\return
 		*	La barrière mémoire.
+		*\~english
+		*\brief
+		*	Prepares a memory barrier, for a depth ant/or stencil read only layout.
+		*\return
+		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makeDepthStencilReadOnly()const = 0;
+		virtual ImageMemoryBarrier makeDepthStencilReadOnly( ImageSubresourceRange const & range )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout d'attache couleur.
 		*\return
 		*	La barrière mémoire.
-		*/
-		virtual ImageMemoryBarrier makeColourAttachment()const = 0;
-		/**
+		*\~english
 		*\brief
-		*	Prépare une barrière mémoire de transition vers un layout d'attache profondeur/stencil.
+		*	Prepares a memory barrier, for a colour attachment layout.
+		*\return
+		*	The memory barrier.
+		*/
+		virtual ImageMemoryBarrier makeColourAttachment( ImageSubresourceRange const & range )const = 0;
+		/**
+		*\~french
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout d'attache profondeur et/ou stencil.
 		*\return
 		*	La barrière mémoire.
+		*\~english
+		*\brief
+		*	Prepares a memory barrier, for a depth and/or stencil attachment layout.
+		*\return
+		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makeDepthStencilAttachment()const = 0;
+		virtual ImageMemoryBarrier makeDepthStencilAttachment( ImageSubresourceRange const & range )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de source de presentation.
 		*\return
 		*	La barrière mémoire.
+		*\~english
+		*\brief
+		*	Prepares a memory barrier, for a presentation source layout.
+		*\return
+		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makePresentSource()const = 0;
+		virtual ImageMemoryBarrier makePresentSource( ImageSubresourceRange const & range )const = 0;
 		/**
+		*\~french
 		*\return
 		*	Le format des pixels de la texture.
+		*\~english
+		*\return
+		*	The texture pixel format.
 		*/
 		inline PixelFormat getFormat()const noexcept
 		{
 			return m_format;
 		}
 		/**
+		*\~french
 		*\return
 		*	Les dimensions de la texture.
+		*\~english
+		*\return
+		*	The texture dimensions.
 		*/
 		inline UIVec3 const & getDimensions()const noexcept
 		{
@@ -214,49 +373,73 @@ namespace renderer
 		{
 			return m_type;
 		}
-		/**
-		*\~french
-		*\return
-		*	La vue sur l'image.
-		*\~english
-		*\return
-		*	The image view.
-		*/
-		inline TextureView const & getView()const
-		{
-			return *m_view;
-		}
 
 	private:
 		/**
+		*\~french
 		*\brief
 		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
+		*\param[in] usageFlags
+		*	Les indicateurs d'utilisation de l'image.
+		*\param[in] tiling
+		*	Le mode de tiling de l'image.
+		*\param[in] memoryFlags
+		*	Les indicateurs de mémoire de l'image.
+		*\~english
+		*\brief
+		*	Loads the texture image.
+		*\param[in] usageFlags
+		*	The image usage flags.
+		*\param[in] tiling
+		*	The image tiling mode.
+		*\param[in] memoryFlags
+		*	The image memory flags.
 		*/
 		virtual void doSetImage1D( ImageUsageFlags usageFlags
 			, ImageTiling tiling
 			, MemoryPropertyFlags memoryFlags ) = 0;
 		/**
+		*\~french
 		*\brief
 		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
+		*\param[in] usageFlags
+		*	Les indicateurs d'utilisation de l'image.
+		*\param[in] tiling
+		*	Le mode de tiling de l'image.
+		*\param[in] memoryFlags
+		*	Les indicateurs de mémoire de l'image.
+		*\~english
+		*\brief
+		*	Loads the texture image.
+		*\param[in] usageFlags
+		*	The image usage flags.
+		*\param[in] tiling
+		*	The image tiling mode.
+		*\param[in] memoryFlags
+		*	The image memory flags.
 		*/
 		virtual void doSetImage2D( ImageUsageFlags usageFlags
 			, ImageTiling tiling
 			, MemoryPropertyFlags memoryFlags ) = 0;
 		/**
+		*\~french
 		*\brief
 		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
+		*\param[in] usageFlags
+		*	Les indicateurs d'utilisation de l'image.
+		*\param[in] tiling
+		*	Le mode de tiling de l'image.
+		*\param[in] memoryFlags
+		*	Les indicateurs de mémoire de l'image.
+		*\~english
+		*\brief
+		*	Loads the texture image.
+		*\param[in] usageFlags
+		*	The image usage flags.
+		*\param[in] tiling
+		*	The image tiling mode.
+		*\param[in] memoryFlags
+		*	The image memory flags.
 		*/
 		virtual void doSetImage3D( ImageUsageFlags usageFlags
 			, ImageTiling tiling
@@ -269,7 +452,6 @@ namespace renderer
 		uint32_t m_layerCount{ 0u };
 		PixelFormat m_format{ PixelFormat::eR8G8B8 };
 		SampleCountFlag m_samples{ SampleCountFlag::e1 };
-		TextureViewPtr m_view;
 	};
 }
 

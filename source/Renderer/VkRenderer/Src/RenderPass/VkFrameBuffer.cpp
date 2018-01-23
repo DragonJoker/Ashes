@@ -19,14 +19,14 @@ namespace vk_renderer
 {
 	namespace
 	{
-		TextureViewCRefArray convert( renderer::TextureCRefArray const & textures )
+		TextureViewCRefArray convert( renderer::TextureViewCRefArray const & textures )
 		{
 			TextureViewCRefArray result;
 			result.reserve( textures.size() );
 
 			for ( auto & texture : textures )
 			{
-				result.emplace_back( static_cast< TextureView const & >( texture.get().getView() ) );
+				result.emplace_back( static_cast< TextureView const & >( texture.get() ) );
 			}
 
 			return result;
@@ -36,7 +36,7 @@ namespace vk_renderer
 	FrameBuffer::FrameBuffer( Device const & device
 		, RenderPass const & renderPass
 		, renderer::UIVec2 const & dimensions
-		, renderer::TextureCRefArray const & textures )
+		, renderer::TextureViewCRefArray const & textures )
 		: renderer::FrameBuffer{ renderPass, dimensions, textures }
 		, m_device{ device }
 		, m_views{ convert( textures ) }
@@ -85,7 +85,8 @@ namespace vk_renderer
 		, renderer::PixelFormat format
 		, uint8_t * data )const noexcept
 	{
-		auto & attachImage = m_views[index].get().getImage();
+		auto & attachView = m_views[index].get();
+		auto & attachImage = attachView.getTexture();
 		// Create the linear tiled destination image to copy to and to read the memory from
 		Texture image{ m_device
 			, format
@@ -93,6 +94,14 @@ namespace vk_renderer
 			, renderer::ImageUsageFlag::eTransferDst
 			, renderer::ImageTiling::eLinear
 			, renderer::MemoryPropertyFlag::eHostVisible | renderer::MemoryPropertyFlag::eHostCoherent };
+		TextureView view{ m_device
+			, image
+			, image.getType()
+			, image.getFormat()
+			, 0u
+			, 1u
+			, 0u
+			, 1u };
 
 		// Do the actual blit from the swapchain image to our host visible destination image
 		CommandBuffer copyCmd{ m_device
@@ -101,10 +110,10 @@ namespace vk_renderer
 		copyCmd.begin();
 		copyCmd.memoryBarrier( renderer::PipelineStageFlag::eTransfer
 			, renderer::PipelineStageFlag::eTransfer
-			, image.makeTransferDestination() );
+			, image.makeTransferDestination( view.getSubResourceRange() ) );
 		copyCmd.memoryBarrier( renderer::PipelineStageFlag::eTransfer
 			, renderer::PipelineStageFlag::eTransfer
-			, attachImage.makeTransferSource() );
+			, attachImage.makeTransferSource( attachView.getSubResourceRange() ) );
 
 		renderer::ImageCopy imageCopyRegion{};
 		imageCopyRegion.srcSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
@@ -119,11 +128,12 @@ namespace vk_renderer
 		imageCopyRegion.srcOffset[2] = 0u;
 
 		copyCmd.copyImage( imageCopyRegion
-			, static_cast< Texture const & >( attachImage )
-			, image );
+			, attachView
+			, view );
 		copyCmd.memoryBarrier( renderer::PipelineStageFlag::eTransfer
 			, renderer::PipelineStageFlag::eTransfer
-			, image.makeGeneralLayout( renderer::AccessFlag::eMemoryRead ) );
+			, image.makeGeneralLayout( view.getSubResourceRange()
+				, renderer::AccessFlag::eMemoryRead ) );
 
 		copyCmd.end();
 
