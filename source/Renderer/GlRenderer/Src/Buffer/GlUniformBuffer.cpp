@@ -4,7 +4,7 @@
 
 namespace gl_renderer
 {
-	UniformBufferBase::UniformBufferBase( renderer::Device const & device
+	UniformBuffer::UniformBuffer( renderer::Device const & device
 		, uint32_t count
 		, uint32_t size
 		, renderer::BufferTargets target
@@ -20,7 +20,7 @@ namespace gl_renderer
 			, flags );
 	}
 
-	void UniformBufferBase::doCreateBuffer( uint32_t count
+	void UniformBuffer::doCreateBuffer( uint32_t count
 		, renderer::BufferTargets target
 		, renderer::MemoryPropertyFlags flags )
 	{

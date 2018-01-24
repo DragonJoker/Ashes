@@ -175,6 +175,11 @@ namespace gl_renderer
 			, renderer::QueryPool const & pool
 			, uint32_t query )const override;
 		/**
+		*\copydoc	renderer::CommandBuffer:pushConstants
+		*/
+		void pushConstants( renderer::PipelineLayout const & layout
+			, renderer::PushConstantsBuffer const & pcb )const override;
+		/**
 		*\return
 		*	Le tableau de commandes.
 		*/
