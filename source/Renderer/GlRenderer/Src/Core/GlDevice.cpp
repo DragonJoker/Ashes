@@ -251,7 +251,7 @@ namespace gl_renderer
 		, renderer::BufferTargets target
 		, renderer::MemoryPropertyFlags memoryFlags )const
 	{
-		return std::make_unique< UniformBufferBase >( *this
+		return std::make_unique< UniformBuffer >( *this
 			, count
 			, size
 			, target

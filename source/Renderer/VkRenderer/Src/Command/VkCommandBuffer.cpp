@@ -29,6 +29,7 @@ See LICENSE file in root folder.
 #include "Sync/VkBufferMemoryBarrier.hpp"
 #include "Sync/VkImageMemoryBarrier.hpp"
 
+#include <Buffer/PushConstantsBuffer.hpp>
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
 
@@ -434,5 +435,16 @@ namespace vk_renderer
 			, convert( pipelineStage )
 			, static_cast< QueryPool const & >( pool )
 			, query );
+	}
+
+	void CommandBuffer::pushConstants( renderer::PipelineLayout const & layout
+		, renderer::PushConstantsBuffer const & pcb )const
+	{
+		vk::CmdPushConstants( m_commandBuffer
+			, static_cast< PipelineLayout const & >( layout )
+			, convert( pcb.getStageFlags() )
+			, pcb.getOffset()
+			, pcb.getSize()
+			, pcb.getData() );
 	}
 }

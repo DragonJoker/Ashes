@@ -33,6 +33,7 @@ See LICENSE file in root folder.
 #include "Commands/GlClearCommand.hpp"
 #include "Commands/GlEndQueryCommand.hpp"
 #include "Commands/GlEndRenderPassCommand.hpp"
+#include "Commands/GlPushConstantsCommand.hpp"
 #include "Commands/GlResetQueryPoolCommand.hpp"
 #include "Commands/GlScissorCommand.hpp"
 #include "Commands/GlViewportCommand.hpp"
@@ -267,5 +268,12 @@ namespace gl_renderer
 		m_commands.emplace_back( std::make_unique< WriteTimestampCommand >( pipelineStage
 			, pool
 			, query ) );
+	}
+
+	void CommandBuffer::pushConstants( renderer::PipelineLayout const & layout
+		, renderer::PushConstantsBuffer const & pcb )const
+	{
+		m_commands.emplace_back( std::make_unique< PushConstantsCommand >( layout
+			, pcb ) );
 	}
 }
