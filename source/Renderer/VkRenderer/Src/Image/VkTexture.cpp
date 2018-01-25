@@ -200,6 +200,122 @@ namespace vk_renderer
 			, modified );
 	}
 
+	renderer::TextureViewPtr Texture::createView( renderer::TextureType type
+		, renderer::PixelFormat format
+		, uint32_t baseMipLevel
+		, uint32_t levelCount
+		, uint32_t baseArrayLayer
+		, uint32_t layerCount )const
+	{
+		return std::make_shared< TextureView >( m_device
+			, *this
+			, type
+			, format
+			, baseMipLevel
+			, levelCount
+			, baseArrayLayer
+			, layerCount );
+	}
+
+	void Texture::generateMipmaps()const
+	{
+		//m_texture->bind( 0 );
+		//m_texture->generateMipmaps();
+		//m_texture->unbind( 0 );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeGeneralLayout( renderer::ImageSubresourceRange const & range, renderer::AccessFlags accessFlags )const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eGeneral
+			, VK_QUEUE_FAMILY_IGNORED
+			, accessFlags
+			, range );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeTransferDestination( renderer::ImageSubresourceRange const & range )const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eTransferDstOptimal
+			, VK_QUEUE_FAMILY_IGNORED
+			, renderer::AccessFlag::eTransferWrite
+			, range );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeTransferSource( renderer::ImageSubresourceRange const & range )const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eTransferSrcOptimal
+			, VK_QUEUE_FAMILY_IGNORED
+			, renderer::AccessFlag::eTransferRead
+			, range );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeShaderInputResource( renderer::ImageSubresourceRange const & range )const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eShaderReadOnlyOptimal
+			, VK_QUEUE_FAMILY_IGNORED
+			, renderer::AccessFlag::eShaderRead
+			, range );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeDepthStencilReadOnly( renderer::ImageSubresourceRange const & range )const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eDepthStencilReadOnlyOptimal
+			, m_device.getGraphicsQueue().getFamilyIndex()
+			, renderer::AccessFlag::eShaderRead
+			, range );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeColourAttachment( renderer::ImageSubresourceRange const & range )const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eColourAttachmentOptimal
+			, m_device.getGraphicsQueue().getFamilyIndex()
+			, renderer::AccessFlag::eColourAttachmentWrite
+			, range );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makeDepthStencilAttachment( renderer::ImageSubresourceRange const & range )const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::eDepthStencilAttachmentOptimal
+			, m_device.getGraphicsQueue().getFamilyIndex()
+			, renderer::AccessFlag::eDepthStencilAttachmentWrite
+			, range );
+	}
+
+	renderer::ImageMemoryBarrier Texture::makePresentSource( renderer::ImageSubresourceRange const & range )const
+	{
+		return doMakeLayoutTransition( renderer::ImageLayout::ePresentSrc
+			, m_device.getPresentQueue().getFamilyIndex()
+			, renderer::AccessFlag::eMemoryRead
+			, range );
+	}
+
+	renderer::ImageMemoryBarrier Texture::doMakeLayoutTransition( renderer::ImageLayout layout
+		, uint32_t queueFamily
+		, renderer::AccessFlags dstAccessMask
+		, renderer::ImageSubresourceRange const & range )const
+	{
+		// On fait passer le layout de l'image à un autre layout, via une barrière.
+		renderer::ImageMemoryBarrier transitionBarrier
+		{
+			m_currentAccessMask,                     // srcAccessMask
+			dstAccessMask,                           // dstAccessMask
+			m_currentLayout,                         // oldLayout
+			layout,                                  // newLayout
+			queueFamily == VK_QUEUE_FAMILY_IGNORED   // srcQueueFamilyIndex
+				? VK_QUEUE_FAMILY_IGNORED
+				: m_currentQueueFamily,
+			queueFamily,                             // dstQueueFamilyIndex
+			*this,                                   // image
+			range                                    // subresourceRange
+		};
+		DEBUG_DUMP( convert( transitionBarrier ) );
+		m_currentAccessMask = dstAccessMask;
+		m_currentLayout = layout;
+		m_currentQueueFamily = queueFamily == VK_QUEUE_FAMILY_IGNORED
+			? m_currentQueueFamily
+			: queueFamily;
+		return transitionBarrier;
+	}
+
 	void Texture::doSetImage1D( renderer::ImageUsageFlags usageFlags
 		, renderer::ImageTiling tiling
 		, renderer::MemoryPropertyFlags memoryFlags )
@@ -364,104 +480,5 @@ namespace vk_renderer
 		{
 			throw std::runtime_error{ "Image storage binding failed: " + getLastError() };
 		}
-	}
-
-	void Texture::generateMipmaps()const
-	{
-		//m_texture->bind( 0 );
-		//m_texture->generateMipmaps();
-		//m_texture->unbind( 0 );
-	}
-
-	renderer::ImageMemoryBarrier Texture::makeGeneralLayout( renderer::ImageSubresourceRange const & range, renderer::AccessFlags accessFlags )const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eGeneral
-			, VK_QUEUE_FAMILY_IGNORED
-			, accessFlags
-			, range );
-	}
-
-	renderer::ImageMemoryBarrier Texture::makeTransferDestination( renderer::ImageSubresourceRange const & range )const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eTransferDstOptimal
-			, VK_QUEUE_FAMILY_IGNORED
-			, renderer::AccessFlag::eTransferWrite
-			, range );
-	}
-
-	renderer::ImageMemoryBarrier Texture::makeTransferSource( renderer::ImageSubresourceRange const & range )const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eTransferSrcOptimal
-			, VK_QUEUE_FAMILY_IGNORED
-			, renderer::AccessFlag::eTransferRead
-			, range );
-	}
-
-	renderer::ImageMemoryBarrier Texture::makeShaderInputResource( renderer::ImageSubresourceRange const & range )const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eShaderReadOnlyOptimal
-			, VK_QUEUE_FAMILY_IGNORED
-			, renderer::AccessFlag::eShaderRead
-			, range );
-	}
-
-	renderer::ImageMemoryBarrier Texture::makeDepthStencilReadOnly( renderer::ImageSubresourceRange const & range )const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eDepthStencilReadOnlyOptimal
-			, m_device.getGraphicsQueue().getFamilyIndex()
-			, renderer::AccessFlag::eShaderRead
-			, range );
-	}
-
-	renderer::ImageMemoryBarrier Texture::makeColourAttachment( renderer::ImageSubresourceRange const & range )const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eColourAttachmentOptimal
-			, m_device.getGraphicsQueue().getFamilyIndex()
-			, renderer::AccessFlag::eColourAttachmentWrite
-			, range );
-	}
-
-	renderer::ImageMemoryBarrier Texture::makeDepthStencilAttachment( renderer::ImageSubresourceRange const & range )const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eDepthStencilAttachmentOptimal
-			, m_device.getGraphicsQueue().getFamilyIndex()
-			, renderer::AccessFlag::eDepthStencilAttachmentWrite
-			, range );
-	}
-
-	renderer::ImageMemoryBarrier Texture::makePresentSource( renderer::ImageSubresourceRange const & range )const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::ePresentSrc
-			, m_device.getPresentQueue().getFamilyIndex()
-			, renderer::AccessFlag::eMemoryRead
-			, range );
-	}
-
-	renderer::ImageMemoryBarrier Texture::doMakeLayoutTransition( renderer::ImageLayout layout
-		, uint32_t queueFamily
-		, renderer::AccessFlags dstAccessMask
-		, renderer::ImageSubresourceRange const & range )const
-	{
-		// On fait passer le layout de l'image à un autre layout, via une barrière.
-		renderer::ImageMemoryBarrier transitionBarrier
-		{
-			m_currentAccessMask,                     // srcAccessMask
-			dstAccessMask,                           // dstAccessMask
-			m_currentLayout,                         // oldLayout
-			layout,                                  // newLayout
-			queueFamily == VK_QUEUE_FAMILY_IGNORED   // srcQueueFamilyIndex
-				? VK_QUEUE_FAMILY_IGNORED
-				: m_currentQueueFamily,
-			queueFamily,                             // dstQueueFamilyIndex
-			*this,                                   // image
-			range                                    // subresourceRange
-		};
-		DEBUG_DUMP( convert( transitionBarrier ) );
-		m_currentAccessMask = dstAccessMask;
-		m_currentLayout = layout;
-		m_currentQueueFamily = queueFamily == VK_QUEUE_FAMILY_IGNORED
-			? m_currentQueueFamily
-			: queueFamily;
-		return transitionBarrier;
 	}
 }

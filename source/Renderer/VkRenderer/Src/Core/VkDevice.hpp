@@ -126,16 +126,6 @@ namespace vk_renderer
 		renderer::RenderBufferPtr createRenderBuffer( renderer::PixelFormat format
 			, renderer::UIVec2 const & size )override;
 		/**
-		*\copydoc	renderer::Device::createTextureView
-		*/
-		renderer::TextureViewPtr createTextureView( renderer::Texture const & texture
-			, renderer::TextureType type
-			, renderer::PixelFormat format
-			, uint32_t baseMipLevel
-			, uint32_t levelCount
-			, uint32_t baseArrayLayer
-			, uint32_t layerCount )const override;
-		/**
 		*\copydoc	renderer::Device::createSampler
 		*/
 		renderer::SamplerPtr createSampler( renderer::WrapMode wrapS

@@ -240,24 +240,6 @@ namespace vk_renderer
 		return std::make_unique< RenderBuffer >( *this, format, size );
 	}
 
-	renderer::TextureViewPtr Device::createTextureView( renderer::Texture const & texture
-		, renderer::TextureType type
-		, renderer::PixelFormat format
-		, uint32_t baseMipLevel
-		, uint32_t levelCount
-		, uint32_t baseArrayLayer
-		, uint32_t layerCount )const
-	{
-		return std::make_shared< TextureView >( *this
-			, static_cast< Texture const & >( texture )
-			, type
-			, format
-			, baseMipLevel
-			, levelCount
-			, baseArrayLayer
-			, layerCount );
-	}
-
 	renderer::SamplerPtr Device::createSampler( renderer::WrapMode wrapS
 		, renderer::WrapMode wrapT
 		, renderer::WrapMode wrapR

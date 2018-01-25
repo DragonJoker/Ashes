@@ -87,6 +87,18 @@ namespace utils
 		}
 		/**
 		*\~french
+		*\brief
+		*	Conversion implicite vers bool.
+		*\~english
+		*\brief
+		*	Implicit convertion to bool.
+		*/
+		inline operator bool()const noexcept
+		{
+			return m_value != BaseType{};
+		}
+		/**
+		*\~french
 		*\name Opérateurs binaires membres.
 		*\~english
 		*\name Member binary operators.

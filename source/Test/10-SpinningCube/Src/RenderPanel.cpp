@@ -288,8 +288,7 @@ namespace vkapp
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		m_texture = m_device->createTexture();
 		m_texture->setImage( image.format, { image.size[0], image.size[1] } );
-		m_view = m_device->createTextureView( *m_texture
-			, m_texture->getType()
+		m_view = m_texture->createView( m_texture->getType()
 			, image.format
 			, 0u
 			, 1u
@@ -370,8 +369,7 @@ namespace vkapp
 		m_renderTargetColour->setImage( renderer::PixelFormat::eR8G8B8A8
 			, { size.GetWidth(), size.GetHeight() }
 			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
-		m_renderTargetColourView = m_device->createTextureView( *m_renderTargetColour
-			, m_renderTargetColour->getType()
+		m_renderTargetColourView = m_renderTargetColour->createView( m_renderTargetColour->getType()
 			, m_renderTargetColour->getFormat()
 			, 0u
 			, 1u
@@ -382,8 +380,7 @@ namespace vkapp
 		m_renderTargetDepth->setImage( DepthFormat
 			, { size.GetWidth(), size.GetHeight() }
 			, renderer::ImageUsageFlag::eDepthStencilAttachment );
-		m_renderTargetDepthView = m_device->createTextureView( *m_renderTargetDepth
-			, m_renderTargetDepth->getType()
+		m_renderTargetDepthView = m_renderTargetDepth->createView( m_renderTargetDepth->getType()
 			, m_renderTargetDepth->getFormat()
 			, 0u
 			, 1u

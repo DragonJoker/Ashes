@@ -40,11 +40,9 @@ namespace renderer
 		}
 	}
 
-	PushConstantsBuffer::PushConstantsBuffer( Device const & device
-		, ShaderStageFlags stageFlags
+	PushConstantsBuffer::PushConstantsBuffer( ShaderStageFlags stageFlags
 		, PushConstantArray const & variables )
-		: m_device{ device }
-		, m_stageFlags{ stageFlags }
+		: m_stageFlags{ stageFlags }
 		, m_variables{ variables }
 		, m_offset{ deduceBaseOffset( m_variables ) }
 		, m_data( deduceSize( m_variables, m_offset ) )
