@@ -83,8 +83,7 @@ namespace renderer
 		*\param[in] variables
 		*	The constants contained in the buffer.
 		*/
-		PushConstantsBuffer( Device const & device
-			, ShaderStageFlags stageFlags
+		PushConstantsBuffer( ShaderStageFlags stageFlags
 			, PushConstantArray const & variables );
 		/**
 		*\~english
@@ -135,6 +134,18 @@ namespace renderer
 			return m_data.data();
 		}
 		/**
+		*\~english
+		*\brief
+		*	A pointer to the buffer data.
+		*\~french
+		*\brief
+		*	Un pointeur sur les données du tampon.
+		*/
+		inline uint8_t * getData()
+		{
+			return m_data.data();
+		}
+		/**
 		*\return
 		*	Le début du tableau de constantes.
 		*/
@@ -152,7 +163,6 @@ namespace renderer
 		}
 
 	protected:
-		Device const & m_device;
 		ShaderStageFlags m_stageFlags;
 		PushConstantArray m_variables;
 		uint32_t m_offset;

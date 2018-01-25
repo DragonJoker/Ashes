@@ -283,8 +283,7 @@ namespace vkapp
 	{
 		m_texture = m_device->createTexture();
 		m_texture->setImage( renderer::PixelFormat::eR8G8B8A8, { 512, 512 }, 6 );
-		m_view = m_device->createTextureView( *m_texture
-			, renderer::TextureType::eCube
+		m_view = m_texture->createView( renderer::TextureType::eCube
 			, renderer::PixelFormat::eR8G8B8A8
 			, 0u
 			, 1u
@@ -389,8 +388,7 @@ namespace vkapp
 		m_renderTargetColour->setImage( renderer::PixelFormat::eR8G8B8A8
 			, { size.GetWidth(), size.GetHeight() }
 			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
-		m_renderTargetColourView = m_device->createTextureView( *m_renderTargetColour
-			, m_renderTargetColour->getType()
+		m_renderTargetColourView = m_renderTargetColour->createView( m_renderTargetColour->getType()
 			, m_renderTargetColour->getFormat()
 			, 0u
 			, 1u

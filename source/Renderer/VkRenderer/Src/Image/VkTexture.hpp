@@ -123,6 +123,15 @@ namespace vk_renderer
 		void unlock( uint32_t size
 			, bool modified )const;
 		/**
+		*\copydoc	renderer::Texture::createView
+		*/
+		renderer::TextureViewPtr createView( renderer::TextureType type
+			, renderer::PixelFormat format
+			, uint32_t baseMipLevel
+			, uint32_t levelCount
+			, uint32_t baseArrayLayer
+			, uint32_t layerCount )const override;
+		/**
 		*\copydoc	renderer::Texture::generateMipmaps
 		*/
 		void generateMipmaps()const override;
