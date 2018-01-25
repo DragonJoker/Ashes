@@ -11,8 +11,6 @@
 
 #include <Core/SwapChain.hpp>
 
-#include <Utils/UtilsSignal.hpp>
-
 namespace gl_renderer
 {
 	class SwapChain

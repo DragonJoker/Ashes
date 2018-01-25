@@ -151,6 +151,38 @@ namespace utils
 		*/
 		T const & operator[]( size_t index )const noexcept;
 		/**
+		*\~english
+		*\brief
+		*	Retrieves a constant pointer to the values.
+		*\return
+		*	The pointer.
+		*\~french
+		*\brief
+		*	Récupère un pointeur constant sur les valeurs.
+		*\return
+		*	Le pointeur.
+		*/
+		inline T const * constPtr()const
+		{
+			return &data[0];
+		}
+		/**
+		*\~english
+		*\brief
+		*	Retrieves a pointer to the values.
+		*\return
+		*	The pointer.
+		*\~french
+		*\brief
+		*	Récupère un pointeur sur les valeurs.
+		*\return
+		*	Le pointeur.
+		*/
+		inline T * ptr()
+		{
+			return &data[0];
+		}
+		/**
 		*\name Opérateurs arithmétiques membres.
 		*/
 		/**\{*/

@@ -8,7 +8,7 @@
 
 #include <Core/Renderer.hpp>
 
-#ifdef _WIN32
+#if defined( _WIN32 ) && !defined( GlRenderer_STATIC_LIB )
 #	ifdef GlRenderer_EXPORTS
 #		define GlRenderer_API __declspec( dllexport )
 #	else

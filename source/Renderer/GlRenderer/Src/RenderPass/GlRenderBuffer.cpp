@@ -11,28 +11,11 @@ namespace gl_renderer
 	{
 		renderer::ImageUsageFlag getAttachmentFlag( renderer::PixelFormat format )
 		{
-			switch ( format )
-			{
-			case renderer::PixelFormat::eL8:
-			case renderer::PixelFormat::eL8A8:
-			case renderer::PixelFormat::eR8G8B8:
-			case renderer::PixelFormat::eRGB565:
-			case renderer::PixelFormat::eR8G8B8A8:
-			case renderer::PixelFormat::eB8G8R8A8:
-			case renderer::PixelFormat::eRGBA5551:
-			case renderer::PixelFormat::eRGBA4444:
-				return renderer::ImageUsageFlag::eColourAttachment;
-
-			case renderer::PixelFormat::eD16:
-			case renderer::PixelFormat::eD24S8:
-			case renderer::PixelFormat::eD32F:
-			case renderer::PixelFormat::eS8:
-				return renderer::ImageUsageFlag::eDepthStencilAttachment;
-
-			default:
-				assert( false && "Unsupported pixel format." );
-				return renderer::ImageUsageFlag::eColourAttachment;
-			}
+			return ( renderer::isDepthFormat( format ) 
+					|| renderer::isDepthStencilFormat( format )
+					|| renderer::isStencilFormat( format ) )
+				? renderer::ImageUsageFlag::eDepthStencilAttachment
+				: renderer::ImageUsageFlag::eColourAttachment;
 		}
 	}
 

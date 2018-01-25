@@ -5,8 +5,6 @@
 #include "Core/VkPhysicalDevice.hpp"
 #include "Core/VkSwapChain.hpp"
 
-#include <Utils/FlagCombination.hpp>
-
 # if VKRENDERER_GLSL_TO_SPV
 #	include <glslang/Public/ShaderLang.h>
 #endif

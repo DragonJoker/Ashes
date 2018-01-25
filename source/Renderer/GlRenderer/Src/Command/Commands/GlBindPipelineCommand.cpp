@@ -20,7 +20,11 @@ namespace gl_renderer
 			}
 
 			auto & blendConstants = state.getBlendConstants();
-			glLogCall( gl::BlendColor, blendConstants.r, blendConstants.g, blendConstants.b, blendConstants.a );
+			glLogCall( gl::BlendColor
+				, blendConstants[0]
+				, blendConstants[1]
+				, blendConstants[2]
+				, blendConstants[3] );
 			bool blend = false;
 			GLuint buf = 0u;
 

@@ -22,7 +22,7 @@ namespace vk_renderer
 	{
 		return VkClearColorValue
 		{
-			{ colour.r, colour.g, colour.b, colour.a }
+			{ colour[0], colour[1], colour[2], colour[3] }
 		};
 	}
 
