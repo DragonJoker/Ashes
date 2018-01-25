@@ -11,8 +11,6 @@
 
 #include <Core/SwapChain.hpp>
 
-#include <Utils/UtilsSignal.hpp>
-
 namespace vk_renderer
 {
 	class SwapChain

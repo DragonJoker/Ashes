@@ -6,8 +6,6 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
-#include <Utils/DynamicLibrary.hpp>
-
 namespace vk_renderer
 {
 	extern PFN_vkGetInstanceProcAddr GetInstanceProcAddr;

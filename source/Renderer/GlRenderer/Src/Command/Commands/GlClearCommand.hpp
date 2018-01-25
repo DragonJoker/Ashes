@@ -6,8 +6,6 @@ See LICENSE file in root folder
 
 #include "GlCommandBase.hpp"
 
-#include <Utils/Vec4.hpp>
-
 namespace gl_renderer
 {
 	/**

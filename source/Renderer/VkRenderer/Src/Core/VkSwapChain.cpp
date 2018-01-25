@@ -180,7 +180,7 @@ namespace vk_renderer
 		// sera renvoy�.
 		if ( formatCount == 1u && surfFormats[0].format == VK_FORMAT_UNDEFINED )
 		{
-			m_format = renderer::PixelFormat::eB8G8R8A8;
+			m_format = convert( VK_FORMAT_R8G8B8A8_UNORM );
 		}
 		else
 		{

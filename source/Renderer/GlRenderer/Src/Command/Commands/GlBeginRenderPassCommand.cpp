@@ -44,7 +44,10 @@ namespace gl_renderer
 				if ( clearValue.isColour() )
 				{
 					auto & colour = clearValue.colour();
-					glLogCall( gl::ClearBufferfv, GL_CLEAR_TARGET_COLOR, colourIndex, colour.data );
+					glLogCall( gl::ClearBufferfv
+						, GL_CLEAR_TARGET_COLOR
+						, colourIndex
+						, colour.constPtr() );
 					++colourIndex;
 				}
 				else

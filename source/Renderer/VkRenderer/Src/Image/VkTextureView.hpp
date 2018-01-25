@@ -12,8 +12,6 @@
 
 #include <Image/TextureView.hpp>
 
-#include <Utils/Vec2.hpp>
-
 namespace vk_renderer
 {
 	/**

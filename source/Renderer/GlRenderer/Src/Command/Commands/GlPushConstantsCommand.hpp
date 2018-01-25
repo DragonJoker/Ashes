@@ -23,5 +23,6 @@ namespace gl_renderer
 
 	private:
 		renderer::PushConstantsBuffer const & m_pcb;
+		renderer::ByteArray m_data;
 	};
 }

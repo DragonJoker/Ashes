@@ -11,12 +11,13 @@ namespace gl_renderer
 	PushConstantsCommand::PushConstantsCommand( renderer::PipelineLayout const & layout
 		, renderer::PushConstantsBuffer const & pcb )
 		: m_pcb{ pcb }
+		, m_data{ pcb.getData(), pcb.getData() + pcb.getSize() }
 	{
 	}
 
 	void PushConstantsCommand::apply()const
 	{
-		auto buffer = m_pcb.getData();
+		auto buffer = m_data.data();
 
 		for ( auto & constant : m_pcb )
 		{

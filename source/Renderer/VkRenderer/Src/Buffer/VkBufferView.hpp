@@ -12,8 +12,6 @@
 
 #include <Buffer/BufferView.hpp>
 
-#include <Utils/Vec2.hpp>
-
 namespace vk_renderer
 {
 	/**

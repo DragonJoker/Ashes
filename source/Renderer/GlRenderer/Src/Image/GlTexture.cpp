@@ -8,39 +8,6 @@
 
 namespace gl_renderer
 {
-	namespace
-	{
-		renderer::ImageAspectFlags getAspectFlag( renderer::PixelFormat format )
-		{
-			switch ( format )
-			{
-			case renderer::PixelFormat::eL8:
-			case renderer::PixelFormat::eL8A8:
-			case renderer::PixelFormat::eR8G8B8:
-			case renderer::PixelFormat::eRGB565:
-			case renderer::PixelFormat::eR8G8B8A8:
-			case renderer::PixelFormat::eB8G8R8A8:
-			case renderer::PixelFormat::eRGBA5551:
-			case renderer::PixelFormat::eRGBA4444:
-				return renderer::ImageAspectFlag::eColour;
-
-			case renderer::PixelFormat::eD16:
-			case renderer::PixelFormat::eD32F:
-				return renderer::ImageAspectFlag::eDepth;
-
-			case renderer::PixelFormat::eD24S8:
-				return renderer::ImageAspectFlag::eDepth | renderer::ImageAspectFlag::eStencil;
-
-			case renderer::PixelFormat::eS8:
-				return renderer::ImageAspectFlag::eStencil;
-
-			default:
-				assert( false && "Unsupported pixel format." );
-				return renderer::ImageAspectFlag::eColour;
-			}
-		}
-	}
-
 	Texture::Texture( Device const & device )
 		: renderer::Texture{ device }
 		, m_device{ device }
