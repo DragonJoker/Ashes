@@ -41,6 +41,7 @@ namespace gl_renderer
 			m_renderer = ( char const * )gl::GetString( GL_RENDERER );
 			m_version = ( char const * )gl::GetString( GL_VERSION );
 			loadDebugFunctions();
+			endCurrent();
 
 			double fversion{ 0u };
 			std::stringstream stream( m_version );
@@ -48,7 +49,35 @@ namespace gl_renderer
 			auto version = int( fversion * 10 );
 			m_major = version / 10;
 			m_minor = version % 10;
-			endCurrent();
+
+			if ( version >= 33 )
+			{
+				m_glslVersion = version * 10;
+			}
+			else if ( version >= 32 )
+			{
+				m_glslVersion = 150;
+			}
+			else if ( version >= 31 )
+			{
+				m_glslVersion = 140;
+			}
+			else if ( version >= 30 )
+			{
+				m_glslVersion = 130;
+			}
+			else if ( version >= 21 )
+			{
+				m_glslVersion = 120;
+			}
+			else if ( version >= 20 )
+			{
+				m_glslVersion = 110;
+			}
+			else
+			{
+				m_glslVersion = 100;
+			}
 
 			if ( !doCreateGl3Context() )
 			{
