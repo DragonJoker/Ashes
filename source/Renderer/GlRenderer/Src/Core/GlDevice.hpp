@@ -199,17 +199,28 @@ namespace gl_renderer
 		*	Echange les tampons.
 		*/
 		void swapBuffers()const;
-		/**
-		*\brief
-		*	Le numéro de version.
-		*/
-		inline std::string const & getVersion()const
+
+		inline std::string const & getVendor()const
 		{
-			return m_version;
+			return m_context->getVendor();
+		}
+
+		inline std::string const & getRenderer()const
+		{
+			return m_context->getRenderer();
+		}
+
+		inline std::string const & getVersionString()const
+		{
+			return m_context->getVersion();
+		}
+
+		inline uint32_t getGlslVersion()const
+		{
+			return m_context->getGlslVersion();
 		}
 
 	private:
 		ContextPtr m_context;
-		std::string m_version;
 	};
 }
