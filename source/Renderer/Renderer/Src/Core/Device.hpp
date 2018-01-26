@@ -419,7 +419,7 @@ namespace renderer
 		virtual Mat4 perspective( Angle fovy
 			, float aspect
 			, float zNear
-			, float zFar ) = 0;
+			, float zFar )const = 0;
 		/**
 		*\brief
 		*	Calcule une matrice de projection orthographique.
@@ -435,7 +435,7 @@ namespace renderer
 			, float bottom
 			, float top
 			, float zNear
-			, float zFar ) = 0;
+			, float zFar )const = 0;
 		/**
 		*\brief
 		*	Calcule une matrice de projection en perspective sans clipping
@@ -449,7 +449,7 @@ namespace renderer
 		*/
 		Mat4 infinitePerspective( Angle fovy
 			, float aspect
-			, float zNear );
+			, float zNear )const;
 		/**
 		*\~french
 		*\brief

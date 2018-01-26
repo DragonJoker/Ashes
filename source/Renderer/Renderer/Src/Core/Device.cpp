@@ -16,7 +16,7 @@ namespace renderer
 
 	Mat4 Device::infinitePerspective( Angle fovy
 		, float aspect
-		, float zNear )
+		, float zNear )const
 	{
 		float const range = tan( float( fovy ) / float( 2 ) ) * zNear;
 		float const left = -range * aspect;
