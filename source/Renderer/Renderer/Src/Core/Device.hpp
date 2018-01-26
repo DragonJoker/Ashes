@@ -43,6 +43,15 @@ namespace renderer
 		*/
 		virtual ~Device() = default;
 		/**
+		*\~english
+		*\return
+		*	The clip direction for the rendering API.
+		*\~french
+		*\return
+		*	La direction de clipping pour l'API de rendu.
+		*/
+		ClipDirection getClipDirection()const;
+		/**
 		*\~french
 		*\brief
 		*	Active le contexte du périphérique (pour OpenGL).
@@ -503,6 +512,7 @@ namespace renderer
 		}
 
 	protected:
+		Renderer const & m_renderer;
 		QueuePtr m_presentQueue;
 		QueuePtr m_graphicsQueue;
 		CommandPoolPtr m_presentCommandPool;

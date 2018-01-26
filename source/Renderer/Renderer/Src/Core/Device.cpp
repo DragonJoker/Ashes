@@ -11,6 +11,7 @@ namespace renderer
 {
 	Device::Device( Renderer const & renderer
 		, Connection const & connection )
+		: m_renderer{ renderer }
 	{
 	}
 
@@ -31,5 +32,10 @@ namespace renderer
 		result[2][3] = -float( 1 );
 		result[3][2] = -float( 2 ) * zNear;
 		return result;
+	}
+
+	ClipDirection Device::getClipDirection()const
+	{
+		return m_renderer.getClipDirection();
 	}
 }
