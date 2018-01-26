@@ -282,7 +282,8 @@ namespace vkapp
 			, *m_sampler );
 		m_offscreenDescriptorSet->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
 			, *m_matrixUbo
-			, 0u );
+			, 0u
+			, 1u );
 		m_offscreenDescriptorSet->update();
 	}
 

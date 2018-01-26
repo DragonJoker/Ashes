@@ -239,7 +239,8 @@ namespace vkapp
 			, *m_sampler );
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 1u )
 			, *m_uniformBuffer
-			, 0u );
+			, 0u
+			, 1u );
 		m_descriptorSet->update();
 	}
 
