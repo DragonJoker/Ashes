@@ -249,3 +249,4 @@ ModelManifest.xml
 /source/Renderer/*.gch
 /source/Core/FreeType
 /source/RenderLib
+/.vscode
