@@ -81,21 +81,9 @@ namespace utils
 		*\brief
 		*	Implicit convertion to the basic integer type.
 		*/
-		inline explicit operator BaseType const &()const noexcept
+		inline operator BaseType const &()const noexcept
 		{
 			return m_value;
-		}
-		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers bool.
-		*\~english
-		*\brief
-		*	Implicit convertion to bool.
-		*/
-		inline operator bool()const noexcept
-		{
-			return m_value != BaseType{};
 		}
 		/**
 		*\~french
