@@ -247,3 +247,5 @@ ModelManifest.xml
 /doc/GlLib
 /doc/html
 /source/Renderer/*.gch
+/source/Core/FreeType
+/source/RenderLib
