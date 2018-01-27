@@ -47,7 +47,7 @@ namespace vkapp
 			RenderTimer = 42
 		}	Ids;
 
-		static int const TimerTimeMs = 10;
+		static int const TimerTimeMs = 40;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
@@ -317,8 +317,10 @@ namespace vkapp
 			, 0u
 			, 1u );
 
+		renderer::TextureAttachmentPtrArray attaches;
+		attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( *m_renderTargetColourView ) );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { size.GetWidth(), size.GetHeight() }
-			, { *m_renderTargetColourView } );
+			, std::move( attaches ) );
 	}
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()

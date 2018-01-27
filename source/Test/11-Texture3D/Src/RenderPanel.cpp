@@ -26,7 +26,6 @@
 #include <Pipeline/VertexLayout.hpp>
 #include <Pipeline/Viewport.hpp>
 #include <RenderPass/FrameBuffer.hpp>
-#include <RenderPass/RenderBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
@@ -49,7 +48,7 @@ namespace vkapp
 			RenderTimer = 42
 		}	Ids;
 
-		static int constexpr TimerTimeMs = 10;
+		static int constexpr TimerTimeMs = 20;
 		static renderer::PixelFormat constexpr DepthFormat = renderer::PixelFormat::eD32F;
 	}
 
@@ -380,9 +379,11 @@ namespace vkapp
 			, 1u
 			, 0u
 			, 1u );
-
+		renderer::TextureAttachmentPtrArray attaches;
+		attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( *m_renderTargetColourView ) );
+		attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( *m_renderTargetDepthView ) );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { size.GetWidth(), size.GetHeight() }
-			, { *m_renderTargetColourView, *m_renderTargetDepthView } );
+			, std::move( attaches ) );
 	}
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()
