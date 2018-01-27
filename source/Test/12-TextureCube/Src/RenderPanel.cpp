@@ -25,7 +25,6 @@
 #include <Pipeline/VertexLayout.hpp>
 #include <Pipeline/Viewport.hpp>
 #include <RenderPass/FrameBuffer.hpp>
-#include <RenderPass/RenderBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
@@ -48,7 +47,7 @@ namespace vkapp
 			RenderTimer = 42
 		}	Ids;
 
-		static int const TimerTimeMs = 10;
+		static int const TimerTimeMs = 20;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
@@ -396,9 +395,10 @@ namespace vkapp
 			, 1u
 			, 0u
 			, 1u );
-
+		renderer::TextureAttachmentPtrArray attaches;
+		attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( *m_renderTargetColourView ) );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { size.GetWidth(), size.GetHeight() }
-			, { *m_renderTargetColourView } );
+			, std::move( attaches ) );
 	}
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()

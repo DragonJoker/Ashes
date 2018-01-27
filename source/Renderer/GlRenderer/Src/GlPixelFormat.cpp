@@ -185,7 +185,7 @@ namespace gl_renderer
 			return GL_FORMAT_RGB;
 
 		case renderer::PixelFormat::eR8G8B8A8:
-#if defined( _WIN32 )
+#if defined( _WIN32 ) || defined( __linux__ )
 			return GL_FORMAT_ABGR;
 #else
 			return GL_FORMAT_RGBA;
