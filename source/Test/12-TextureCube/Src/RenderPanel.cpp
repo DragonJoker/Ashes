@@ -246,7 +246,8 @@ namespace vkapp
 #else
 		auto width = float( size.x );
 		auto height = float( size.y );
-		m_matrixUbo->getData( 0u ) = m_device->perspective( utils::toRadians( 90.0_degrees )
+		auto ratio = width / height;
+		m_matrixUbo->getData( 0u ) = m_device->perspective( utils::toRadians( 90.0_degrees ) / ratio
 			, width / height
 			, 0.01f
 			, 100.0f );
