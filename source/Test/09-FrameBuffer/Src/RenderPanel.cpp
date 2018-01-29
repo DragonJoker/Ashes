@@ -392,8 +392,7 @@ namespace vkapp
 			m_offscreenProgram->link();
 		}
 
-		m_offscreenPipeline = m_device->createPipeline( *m_offscreenPipelineLayout
-			, *m_offscreenProgram
+		m_offscreenPipeline = m_offscreenPipelineLayout->createPipeline( *m_offscreenProgram
 			, { *m_offscreenVertexLayout }
 			, *m_offscreenRenderPass
 			, renderer::PrimitiveTopology::eTriangleList
@@ -447,7 +446,7 @@ namespace vkapp
 			auto dimensions = m_swapChain->getDimensions();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
-				, m_renderTargetColour->makeColourAttachment( m_renderTargetColourView->getSubResourceRange() ) );
+				, m_renderTargetColourView->makeColourAttachment() );
 			commandBuffer.beginRenderPass( *m_offscreenRenderPass
 				, frameBuffer
 				, { renderer::ClearValue{ m_swapChain->getClearColour() } }
@@ -472,7 +471,7 @@ namespace vkapp
 			commandBuffer.endRenderPass();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
-				, m_renderTargetColour->makeShaderInputResource( m_renderTargetColourView->getSubResourceRange() ) );
+				, m_renderTargetColourView->makeShaderInputResource() );
 
 			auto res = commandBuffer.end();
 
@@ -543,8 +542,7 @@ namespace vkapp
 			m_mainProgram->link();
 		}
 
-		m_mainPipeline = m_device->createPipeline( *m_mainPipelineLayout
-			, *m_mainProgram
+		m_mainPipeline = m_mainPipelineLayout->createPipeline( *m_mainProgram
 			, { *m_mainVertexLayout }
 			, *m_mainRenderPass
 			, renderer::PrimitiveTopology::eTriangleStrip );

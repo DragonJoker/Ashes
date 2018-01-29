@@ -17,6 +17,26 @@ namespace common
 	static wxSize const WindowSize{ 800, 600 };
 	using RendererFactory = utils::Factory< renderer::Renderer, std::string, renderer::RendererPtr >;
 	/**
+	*\~english
+	*\brief
+	*	An image data.
+	*\~french
+	*\brief
+	*	Les données d'une image.
+	*/
+	struct ImageData
+	{
+		//!\~english	The image dimensions.
+		//!\~french		Les dimensions de l'image.
+		renderer::UIVec3 size;
+		//!\~english	The image buffer.
+		//!\~french		Le tampon de l'image.
+		renderer::ByteArray data;
+		//!\~english	The image pixel format.
+		//!\~french		Les format des pixels de l'image.
+		renderer::PixelFormat format;
+	};
+	/**
 	*\~french
 	*\brief
 	*	Crée une renderer::Connection associant une fenêtre et un GPU.

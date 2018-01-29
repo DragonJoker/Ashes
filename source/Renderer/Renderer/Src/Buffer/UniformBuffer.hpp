@@ -190,8 +190,8 @@ namespace renderer
 		inline void upload( uint32_t offset = 0u
 			, uint32_t range = 1u )
 		{
-			assert( range + offset < m_data.size() );
-			auto size = getOffset( uint32_t( sizeof( T ) ) );
+			assert( range + offset <= m_data.size() );
+			auto size = getOffset( 1u );
 
 			if ( auto buffer = m_ubo->getBuffer().lock( offset * size
 				, range * size
