@@ -73,3 +73,9 @@ Loads a cube texture and displays it as a skybox.
 <img src="./screenshots/13.png" height="72px" align="right">
 
 Demonstrates the use of push constants, by displaying two cubes with different colour modifiers, stored in push constants.
+
+
+### [Render to Cube](source/Test/14-RenderToCube/)
+<img src="./screenshots/14.png" height="72px" align="right">
+
+Tests render to cube, by taking an equirectangular texture, and loading it into a skybox.
