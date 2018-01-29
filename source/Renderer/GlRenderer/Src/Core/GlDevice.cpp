@@ -19,7 +19,6 @@ See LICENSE file in root folder.
 #include "Image/GlTexture.hpp"
 #include "Image/GlTextureView.hpp"
 #include "Miscellaneous/GlQueryPool.hpp"
-#include "Pipeline/GlPipeline.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "Pipeline/GlVertexLayout.hpp"
 #include "RenderPass/GlRenderPass.hpp"
@@ -103,24 +102,6 @@ namespace gl_renderer
 		return std::make_unique< PipelineLayout >( *this
 			, setLayouts
 			, pushConstantRanges );
-	}
-
-	renderer::PipelinePtr Device::createPipeline( renderer::PipelineLayout const & layout
-		, renderer::ShaderProgram const & program
-		, renderer::VertexLayoutCRefArray const & vertexLayouts
-		, renderer::RenderPass const & renderPass
-		, renderer::PrimitiveTopology topology
-		, renderer::RasterisationState const & rasterisationState
-		, renderer::ColourBlendState const & colourBlendState )const
-	{
-		return std::make_shared< Pipeline >( *this
-			, layout
-			, program
-			, vertexLayouts
-			, renderPass
-			, topology
-			, rasterisationState
-			, colourBlendState );
 	}
 
 	renderer::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( renderer::DescriptorSetLayoutBindingArray && bindings )const

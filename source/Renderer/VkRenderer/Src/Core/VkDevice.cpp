@@ -19,7 +19,6 @@ See LICENSE file in root folder.
 #include "Image/VkTexture.hpp"
 #include "Image/VkTextureView.hpp"
 #include "Miscellaneous/VkQueryPool.hpp"
-#include "Pipeline/VkPipeline.hpp"
 #include "Pipeline/VkPipelineLayout.hpp"
 #include "Pipeline/VkVertexLayout.hpp"
 #include "RenderPass/VkRenderPass.hpp"
@@ -175,24 +174,6 @@ namespace vk_renderer
 		return std::make_unique< PipelineLayout >( *this
 			, setLayouts
 			, pushConstantRanges );
-	}
-
-	renderer::PipelinePtr Device::createPipeline( renderer::PipelineLayout const & layout
-		, renderer::ShaderProgram const & program
-		, renderer::VertexLayoutCRefArray const & vertexLayouts
-		, renderer::RenderPass const & renderPass
-		, renderer::PrimitiveTopology topology
-		, renderer::RasterisationState const & rasterisationState
-		, renderer::ColourBlendState const & colourBlendState )const
-	{
-		return std::make_shared< Pipeline >( *this
-			, layout
-			, program
-			, vertexLayouts
-			, renderPass
-			, topology
-			, rasterisationState
-			, colourBlendState );
 	}
 
 	renderer::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( renderer::DescriptorSetLayoutBindingArray && bindings )const

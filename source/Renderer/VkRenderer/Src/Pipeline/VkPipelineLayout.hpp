@@ -47,6 +47,15 @@ namespace vk_renderer
 		*/
 		~PipelineLayout();
 		/**
+		*\copydoc	renderer::PipelineLayout::createPipeline
+		*/
+		renderer::PipelinePtr createPipeline( renderer::ShaderProgram const & program
+			, renderer::VertexLayoutCRefArray const & vertexLayouts
+			, renderer::RenderPass const & renderPass
+			, renderer::PrimitiveTopology topology
+			, renderer::RasterisationState const & rasterisationState
+			, renderer::ColourBlendState const & colourBlendState )const override;
+		/**
 		*\~french
 		*\brief
 		*	Conversion implicite vers VkPipelineLayout.

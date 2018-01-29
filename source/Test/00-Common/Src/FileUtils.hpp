@@ -14,26 +14,6 @@ namespace common
 	/**
 	*\~english
 	*\brief
-	*	An image data.
-	*\~french
-	*\brief
-	*	Les données d'une image.
-	*/
-	struct ImageData
-	{
-		//!\~english	The image dimensions.
-		//!\~french		Les dimensions de l'image.
-		renderer::UIVec3 size;
-		//!\~english	The image buffer.
-		//!\~french		Le tampon de l'image.
-		renderer::ByteArray data;
-		//!\~english	The image pixel format.
-		//!\~french		Les format des pixels de l'image.
-		renderer::PixelFormat format;
-	};
-	/**
-	*\~english
-	*\brief
 	*	Loads an image.
 	*\param[in] path
 	*	The image gile path.

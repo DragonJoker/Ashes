@@ -220,8 +220,7 @@ namespace vkapp
 			m_program->link();
 		}
 
-		m_pipeline = m_device->createPipeline( *m_pipelineLayout
-			, *m_program
+		m_pipeline = m_pipelineLayout->createPipeline( *m_program
 			, { *m_vertexLayout }
 			, *m_renderPass
 			, renderer::PrimitiveTopology::eTriangleStrip );

@@ -187,30 +187,6 @@ namespace renderer
 		/**
 		*\~french
 		*\brief
-		*	Crée un pipeline.
-		*\param[in] layout
-		*	Le layout du pipeline.
-		*\param[in] program
-		*	Le programme shader.
-		*\param[in] vertexBuffers
-		*	Les tampons de sommets utilisés.
-		*\param[in] renderPass
-		*	La passe de rendu.
-		*\param[in] topology
-		*	La topologie d'affichage des sommets affichés via ce pipeline.
-		*\return
-		*	Le pipeline créé.
-		*/
-		virtual PipelinePtr createPipeline( PipelineLayout const & layout
-			, ShaderProgram const & program
-			, VertexLayoutCRefArray const & vertexLayouts
-			, RenderPass const & renderPass
-			, PrimitiveTopology topology
-			, RasterisationState const & rasterisationState = RasterisationState{}
-			, ColourBlendState const & colourBlendState = ColourBlendState::createDefault() )const = 0;
-		/**
-		*\~french
-		*\brief
 		*	Crée un layout de set de descripteurs.
 		*\param[in] bindings
 		*	Les attaches du layout.

@@ -2,6 +2,7 @@
 
 #include "Descriptor/VkDescriptorSetLayout.hpp"
 #include "Core/VkDevice.hpp"
+#include "Pipeline/VkPipeline.hpp"
 
 namespace vk_renderer
 {
@@ -54,6 +55,23 @@ namespace vk_renderer
 		{
 			throw std::runtime_error{ "Pipeline layout creation failed: " + getLastError() };
 		}
+	}
+
+	renderer::PipelinePtr PipelineLayout::createPipeline( renderer::ShaderProgram const & program
+		, renderer::VertexLayoutCRefArray const & vertexLayouts
+		, renderer::RenderPass const & renderPass
+		, renderer::PrimitiveTopology topology
+		, renderer::RasterisationState const & rasterisationState
+		, renderer::ColourBlendState const & colourBlendState )const
+	{
+		return std::make_shared< Pipeline >( m_device
+			, *this
+			, program
+			, vertexLayouts
+			, renderPass
+			, topology
+			, rasterisationState
+			, colourBlendState );
 	}
 
 	PipelineLayout::~PipelineLayout()

@@ -73,16 +73,6 @@ namespace vk_renderer
 		renderer::PipelineLayoutPtr createPipelineLayout( renderer::DescriptorSetLayoutCRefArray const & setLayouts
 			, renderer::PushConstantRangeCRefArray const & pushConstantRanges )const override;
 		/**
-		*\copydoc	renderer::Device::createPipeline
-		*/
-		renderer::PipelinePtr createPipeline( renderer::PipelineLayout const & layout
-			, renderer::ShaderProgram const & program
-			, renderer::VertexLayoutCRefArray const & vertexLayouts
-			, renderer::RenderPass const & renderPass
-			, renderer::PrimitiveTopology topology
-			, renderer::RasterisationState const & rasterisationState
-			, renderer::ColourBlendState const & colourBlendState )const override;
-		/**
 		*\copydoc	renderer::Device::createDescriptorSetLayout
 		*/
 		renderer::DescriptorSetLayoutPtr createDescriptorSetLayout( renderer::DescriptorSetLayoutBindingArray && bindings )const override;

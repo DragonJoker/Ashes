@@ -38,8 +38,20 @@ namespace gl_renderer
 		*\param[in] pushConstantRanges
 		*	Les intervalles de push constants.
 		*/
-		PipelineLayout( renderer::Device const & device
+		PipelineLayout( Device const & device
 			, renderer::DescriptorSetLayoutCRefArray const & setLayouts
 			, renderer::PushConstantRangeCRefArray const & pushConstantRanges );
+		/**
+		*\copydoc		renderer::PipelineLayout::createPipeline
+		*/
+		renderer::PipelinePtr createPipeline( renderer::ShaderProgram const & program
+			, renderer::VertexLayoutCRefArray const & vertexLayouts
+			, renderer::RenderPass const & renderPass
+			, renderer::PrimitiveTopology topology
+			, renderer::RasterisationState const & rasterisationState
+			, renderer::ColourBlendState const & colourBlendState )const override;
+
+	private:
+		Device const & m_device;
 	};
 }
