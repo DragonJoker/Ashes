@@ -6,8 +6,9 @@
 namespace gl_renderer
 {
 	PipelineLayout::PipelineLayout( renderer::Device const & device
-		, renderer::DescriptorSetLayout const * layout )
-		: renderer::PipelineLayout{ device, layout }
+		, renderer::DescriptorSetLayoutCRefArray const & setLayouts
+		, renderer::PushConstantRangeCRefArray const & pushConstantRanges )
+		: renderer::PipelineLayout{ device, setLayouts, pushConstantRanges }
 	{
 	}
 }

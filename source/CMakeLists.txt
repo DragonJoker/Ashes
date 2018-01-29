@@ -89,4 +89,3 @@ include_directories(
 add_subdirectory( Core )
 add_subdirectory( Renderer )
 add_subdirectory( Test )
-add_subdirectory( RenderLib )
