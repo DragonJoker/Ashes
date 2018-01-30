@@ -453,6 +453,58 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Creates a pipeline layout.
+		*\param[in] pushConstantRange
+		*	The push constants range.
+		*\return
+		*	The created layout.
+		*\~french
+		*\brief
+		*	Crée un layout de pipeline.
+		*\param[in] pushConstantRange
+		*	L'intervalle de push constants.
+		*\return
+		*	Le layout créé.
+		*/
+		PipelineLayoutPtr createPipelineLayout( PushConstantRange const & pushConstantRange )const;
+		/**
+		*\~english
+		*\brief
+		*	Creates a pipeline layout.
+		*\param[in] layout
+		*	The descriptor set layout.
+		*\param[in] pushConstantRange
+		*	The push constants range.
+		*\return
+		*	The created layout.
+		*\~french
+		*\brief
+		*	Crée un layout de pipeline.
+		*\param[in] layout
+		*	Le layout des descripteurs utilisés par le pipeline.
+		*\param[in] pushConstantRange
+		*	L'intervalle de push constants.
+		*\return
+		*	Le layout créé.
+		*/
+		PipelineLayoutPtr createPipelineLayout( DescriptorSetLayout const & layout
+			, PushConstantRange const & pushConstantRange )const;
+		/**
+		*\~english
+		*\brief
+		*	Creates a pipeline layout.
+		*\param[in] setLayouts
+		*	The descriptor sets layouts.
+		*\~french
+		*\brief
+		*	Crée un layout de pipeline.
+		*\param[in] setLayouts
+		*	Les layouts des descripteurs du pipeline.
+		*/
+		PipelineLayoutPtr createPipelineLayout( DescriptorSetLayoutCRefArray const & layouts )const;
+		/**
+		*\~english
+		*\brief
+		*	Creates a pipeline layout.
 		*\param[in] pushConstantRanges
 		*	The push constants ranges.
 		*\return
@@ -465,7 +517,7 @@ namespace renderer
 		*\return
 		*	Le layout créé.
 		*/
-		PipelineLayoutPtr createPipelineLayout( PushConstantRangeCRefArray const & pushConstantRanges );
+		PipelineLayoutPtr createPipelineLayout( PushConstantRangeCRefArray const & pushConstantRanges )const;
 		/**
 		*\~french
 		*\brief

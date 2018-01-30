@@ -11,7 +11,8 @@ See LICENSE file in root folder.
 
 namespace renderer
 {
-	DescriptorSet::DescriptorSet( DescriptorSetPool const & pool )
+	DescriptorSet::DescriptorSet( DescriptorSetPool const & pool, uint32_t bindingPoint )
+		: m_bindingPoint{ bindingPoint }
 	{
 		pool.allocate( 1u );
 	}

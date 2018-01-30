@@ -289,7 +289,7 @@ namespace vk_renderer
 		vk::CmdBindDescriptorSets( m_commandBuffer
 			, convert( bindingPoint )
 			, static_cast< PipelineLayout const & >( layout )
-			, 0u
+			, descriptorSet.getBindingPoint()
 			, 1u
 			, &set
 			, 0u

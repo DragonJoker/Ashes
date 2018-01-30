@@ -61,18 +61,9 @@ namespace vk_renderer
 		*/
 		~DescriptorSetPool();
 		/**
-		*\~french
-		*\brief
-		*	Crée un descriptor set correspondant au layout défini pour ce pool.
-		*\return
-		*	Le descriptor set créé.
-		*\~english
-		*\brief
-		*	Creates a descriptor set, matching the layout defined for this pool.
-		*\return
-		*	The created descriptor set.
+		*\copydoc	renderer::DescriptorSetPool::createDescriptorSet
 		*/
-		renderer::DescriptorSetPtr createDescriptorSet()const override;
+		renderer::DescriptorSetPtr createDescriptorSet( uint32_t bindingPoint )const override;
 		/**
 		*\~french
 		*\brief

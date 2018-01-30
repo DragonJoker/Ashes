@@ -20,6 +20,14 @@ namespace renderer
 	{
 	protected:
 		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] layout
+		*	The layout from which the pool will be created.
+		*\param[in] maxSets
+		*	The maximum sets count that can be created from this pool.
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] layout
@@ -40,6 +48,12 @@ namespace renderer
 		*/
 		virtual ~DescriptorSetPool() = default;
 		/**
+		*\~english
+		*\brief
+		*	Allocates a descriptor set.
+		*\param[in] count
+		*	The number of sets.
+		*\~french
 		*\brief
 		*	Alloue des descripteurs.
 		*\param[in] count
@@ -47,13 +61,27 @@ namespace renderer
 		*/
 		virtual void allocate( uint32_t count )const;
 		/**
+		*\~english
+		*\brief
+		*	Creates a descriptor set matching the layout defined for this pool.
+		*\param[in] bindingPoint
+		*	The binding point for the set.
+		*\return
+		*	The created descriptor set.
+		*\~french
 		*\brief
 		*	Crée un descriptor set correspondant au layout défini pour ce pool.
+		*\param[in] bindingPoint
+		*	Le point d'attache du set.
 		*\return
 		*	Le descriptor set créé.
 		*/
-		virtual DescriptorSetPtr createDescriptorSet()const = 0;
+		virtual DescriptorSetPtr createDescriptorSet( uint32_t bindingPoint = 0u )const = 0;
 		/**
+		*\~english
+		*\return
+		*	The descriptor set layout.
+		*\~french
 		*\return
 		*	Le layout de descriptor set.
 		*/
