@@ -295,7 +295,7 @@ namespace vkapp
 			, renderer::Filter::eLinear
 			, renderer::Filter::eLinear );
 
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		std::array< std::string, 6u > paths
 		{
 			"01-right.png",

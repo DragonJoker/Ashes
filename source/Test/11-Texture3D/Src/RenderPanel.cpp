@@ -254,7 +254,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateTexture()
 	{
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		common::ImageData image;
 		image.size = renderer::UIVec3{ 256u, 256u, 109u };
 		image.format = renderer::PixelFormat::eR8G8B8A8;

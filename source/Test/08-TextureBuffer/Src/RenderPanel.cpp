@@ -154,7 +154,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateTexture()
 	{
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		m_textureBuffer = renderer::makeBuffer< renderer::Vec4 >( *m_device
 			, image.size[0]
