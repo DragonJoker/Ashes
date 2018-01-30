@@ -4,15 +4,6 @@
 #include <fstream>
 #include <sstream>
 
-#include <Buffer/GeometryBuffers.hpp>
-#include <Buffer/VertexBuffer.hpp>
-#include <Descriptor/DescriptorSet.hpp>
-#include <Descriptor/DescriptorSetLayout.hpp>
-#include <Descriptor/DescriptorSetPool.hpp>
-#include <Pipeline/Pipeline.hpp>
-#include <Pipeline/PipelineLayout.hpp>
-#include <Pipeline/VertexLayout.hpp>
-
 #include <Utils/StringUtils.hpp>
 
 #include <assimp/Importer.hpp> // C++ importer interface
@@ -216,8 +207,7 @@ namespace common
 
 			if ( doLoadTexture( folder, difTexName, image ) )
 			{
-				material.textures.push_back( Texture{} );
-				material.textures[index].data = std::move( image );
+				material.textures.emplace_back( std::move( image ) );
 				material.data.textureOperators[index].diffuse = 1;
 
 				if ( image.opacity )
@@ -230,8 +220,7 @@ namespace common
 
 			if ( doLoadTexture( folder, spcTexName, image ) )
 			{
-				material.textures.push_back( Texture{} );
-				material.textures[index].data = std::move( image );
+				material.textures.emplace_back( std::move( image ) );
 				material.data.textureOperators[index].specular = 1;
 
 				if ( image.opacity )
@@ -244,24 +233,21 @@ namespace common
 
 			if ( doLoadTexture( folder, emiTexName, image ) )
 			{
-				material.textures.push_back( Texture{} );
-				material.textures[index].data = std::move( image );
+				material.textures.emplace_back( std::move( image ) );
 				material.data.textureOperators[index].emissive = 1;
 				++index;
 			}
 
 			if ( doLoadTexture( folder, shnTexName, image ) )
 			{
-				material.textures.push_back( Texture{} );
-				material.textures[index].data = std::move( image );
+				material.textures.emplace_back( std::move( image ) );
 				material.data.textureOperators[index].shininess = 1;
 				++index;
 			}
 
 			if ( doLoadTexture( folder, opaTexName, image ) )
 			{
-				material.textures.push_back( Texture{} );
-				material.textures[index].data = std::move( image );
+				material.textures.emplace_back( std::move( image ) );
 
 				if ( image.opacity )
 				{

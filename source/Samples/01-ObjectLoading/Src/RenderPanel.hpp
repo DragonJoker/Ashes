@@ -249,11 +249,13 @@ namespace vkapp
 		renderer::UniformBufferPtr< renderer::Mat4 > m_objectUbo;
 		renderer::UniformBufferPtr< common::MaterialData > m_materialUbo;
 		renderer::CommandBufferPtr m_updateCommandBuffer;
+		common::Object m_object;
 
 		renderer::CommandBufferPtr m_commandBuffer;
 		renderer::RenderPassPtr m_offscreenRenderPass;
 		renderer::ShaderProgramPtr m_offscreenProgram;
-		common::Object m_object;
+		common::ObjectNode m_opaqueObject;
+		common::ObjectNode m_alphaBlendedObject;
 		renderer::DescriptorSetLayoutPtr m_offscreenDescriptorLayout;
 		renderer::DescriptorSetPoolPtr m_offscreenDescriptorPool;
 

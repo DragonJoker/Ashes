@@ -135,16 +135,36 @@ namespace vkapp
 			m_frameBuffers.clear();
 			m_sampler.reset();
 
-			for ( auto & submesh : m_object )
+			for ( auto & submesh : m_opaqueObject )
 			{
 				submesh.descriptorSetUbos.reset();
 				submesh.descriptorSetTextures.reset();
 				submesh.pipeline.reset();
 				submesh.pipelineLayout.reset();
 				submesh.geometryBuffers.reset();
-				submesh.vbo.vbo.reset();
-				submesh.vbo.layout.reset();
-				submesh.ibo.ibo.reset();
+				submesh.vbo.reset();
+				submesh.vertexLayout.reset();
+				submesh.ibo.reset();
+				submesh.material.pool.reset();
+				submesh.material.layout.reset();
+
+				for ( auto & texture : submesh.material.textures )
+				{
+					texture.view.reset();
+					texture.texture.reset();
+				}
+			}
+
+			for ( auto & submesh : m_alphaBlendedObject )
+			{
+				submesh.descriptorSetUbos.reset();
+				submesh.descriptorSetTextures.reset();
+				submesh.pipeline.reset();
+				submesh.pipelineLayout.reset();
+				submesh.geometryBuffers.reset();
+				submesh.vbo.reset();
+				submesh.vertexLayout.reset();
+				submesh.ibo.reset();
 				submesh.material.pool.reset();
 				submesh.material.layout.reset();
 
@@ -260,127 +280,145 @@ namespace vkapp
 		{
 			// Initialise material textures.
 			bool needsBlending = submesh.material.data.opacity < 1.0f;
+			common::SubmeshNode submeshNode;
 
 			for ( uint32_t index = 0u; index < submesh.material.data.texturesCount; ++index )
 			{
+				common::TextureNode textureNode;
 				auto & texture = submesh.material.textures[index];
-				texture.texture = m_device->createTexture();
-				texture.texture->setImage( texture.data.format
-					, { texture.data.size[0], texture.data.size[1] } );
-				texture.view = texture.texture->createView( texture.texture->getType()
-					, texture.data.format
+				textureNode.texture = m_device->createTexture();
+				textureNode.texture->setImage( texture.format
+					, { texture.size[0], texture.size[1] } );
+				textureNode.view = textureNode.texture->createView( textureNode.texture->getType()
+					, textureNode.texture->getFormat()
 					, 0u
 					, 1u
 					, 0u
 					, 1u );
 				m_stagingBuffer->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
-					, texture.data.data
-					, *texture.view );
+					, texture.data
+					, *textureNode.view );
 				needsBlending |= submesh.material.data.textureOperators[index].opacity != 0;
+				submeshNode.material.textures.emplace_back( std::move( textureNode ) );
 			}
 
 			m_materialUbo->getData( matIndex ) = submesh.material.data;
 
 			// Initialise descriptor set for UBOs
-			submesh.descriptorSetUbos = m_offscreenDescriptorPool->createDescriptorSet( 0u );
-			submesh.descriptorSetUbos->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
+			submeshNode.descriptorSetUbos = m_offscreenDescriptorPool->createDescriptorSet( 0u );
+			submeshNode.descriptorSetUbos->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
 				, *m_matrixUbo
 				, 0u
 				, 1u );
-			submesh.descriptorSetUbos->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
+			submeshNode.descriptorSetUbos->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
 				, *m_objectUbo
 				, 0u
 				, 1u );
-			submesh.descriptorSetUbos->createBinding( m_offscreenDescriptorLayout->getBinding( 2u )
+			submeshNode.descriptorSetUbos->createBinding( m_offscreenDescriptorLayout->getBinding( 2u )
 				, *m_materialUbo
 				, matIndex
 				, 1u );
-			submesh.descriptorSetUbos->update();
+			submeshNode.descriptorSetUbos->update();
 
 			// Initialise descriptor set for textures.
 			renderer::DescriptorSetLayoutBindingArray bindings;
 			bindings.emplace_back( 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment, 6u );
-			submesh.material.layout = m_device->createDescriptorSetLayout( std::move( bindings ) );
-			submesh.material.pool = submesh.material.layout->createPool( 1u );
-			submesh.descriptorSetTextures = submesh.material.pool->createDescriptorSet( 1u );
+			submeshNode.material.layout = m_device->createDescriptorSetLayout( std::move( bindings ) );
+			submeshNode.material.pool = submeshNode.material.layout->createPool( 1u );
+			submeshNode.descriptorSetTextures = submeshNode.material.pool->createDescriptorSet( 1u );
 
 			for ( uint32_t index = 0u; index < submesh.material.data.texturesCount; ++index )
 			{
-				submesh.descriptorSetTextures->createBinding( submesh.material.layout->getBinding( 0u, index )
-					, *submesh.material.textures[index].view
+				submeshNode.descriptorSetTextures->createBinding( submeshNode.material.layout->getBinding( 0u, index )
+					, *submeshNode.material.textures[index].view
 					, *m_sampler
 					, index );
 			}
 
-			submesh.descriptorSetTextures->update();
+			submeshNode.descriptorSetTextures->update();
 
 			// Initialise vertex layout.
-			submesh.vbo.layout = m_device->createVertexLayout( 0u, sizeof( common::Vertex ) );
-			submesh.vbo.layout->createAttribute< renderer::Vec3 >( 0u, offsetof( common::Vertex, position ) );
-			submesh.vbo.layout->createAttribute< renderer::Vec3 >( 1u, offsetof( common::Vertex, normal ) );
-			submesh.vbo.layout->createAttribute< renderer::Vec3 >( 2u, offsetof( common::Vertex, tangent ) );
-			submesh.vbo.layout->createAttribute< renderer::Vec3 >( 3u, offsetof( common::Vertex, bitangent ) );
-			submesh.vbo.layout->createAttribute< renderer::Vec2 >( 4u, offsetof( common::Vertex, texture ) );
+			submeshNode.vertexLayout = m_device->createVertexLayout( 0u, sizeof( common::Vertex ) );
+			submeshNode.vertexLayout->createAttribute< renderer::Vec3 >( 0u, offsetof( common::Vertex, position ) );
+			submeshNode.vertexLayout->createAttribute< renderer::Vec3 >( 1u, offsetof( common::Vertex, normal ) );
+			submeshNode.vertexLayout->createAttribute< renderer::Vec3 >( 2u, offsetof( common::Vertex, tangent ) );
+			submeshNode.vertexLayout->createAttribute< renderer::Vec3 >( 3u, offsetof( common::Vertex, bitangent ) );
+			submeshNode.vertexLayout->createAttribute< renderer::Vec2 >( 4u, offsetof( common::Vertex, texture ) );
 
 			// Initialise geometry buffers.
-			submesh.vbo.vbo = renderer::makeVertexBuffer< common::Vertex >( *m_device
+			submeshNode.vbo = renderer::makeVertexBuffer< common::Vertex >( *m_device
 				, uint32_t( submesh.vbo.data.size() )
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
 			m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 				, submesh.vbo.data
-				, *submesh.vbo.vbo
+				, *submeshNode.vbo
 				, renderer::PipelineStageFlag::eVertexInput );
-			submesh.ibo.ibo = renderer::makeBuffer< uint32_t >( *m_device
+			submeshNode.ibo = renderer::makeBuffer< uint32_t >( *m_device
 				, uint32_t( submesh.ibo.data.size() )
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
 			m_stagingBuffer->uploadBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
 				, submesh.ibo.data
-				, *submesh.ibo.ibo );
-			submesh.geometryBuffers = m_device->createGeometryBuffers( *submesh.vbo.vbo
+				, *submeshNode.ibo );
+			submeshNode.geometryBuffers = m_device->createGeometryBuffers( *submeshNode.vbo
 				, 0u
-				, *submesh.vbo.layout
-				, submesh.ibo.ibo->getBuffer()
+				, *submeshNode.vertexLayout
+				, submeshNode.ibo->getBuffer()
 				, 0u
 				, renderer::IndexType::eUInt32 );
 
 			// Initialise the pipeline
 			renderer::ColourBlendState blendState;
+			renderer::RasterisationState rasterisationState;
 			
 			if ( needsBlending )
 			{
 				blendState.addAttachment( renderer::ColourBlendStateAttachment{ true
 					, renderer::BlendFactor::eSrcAlpha
-					, renderer::BlendFactor::eSrcAlpha
-					, renderer::BlendOp::eAdd
 					, renderer::BlendFactor::eInvSrcAlpha
+					, renderer::BlendOp::eAdd
+					, renderer::BlendFactor::eSrcAlpha
 					, renderer::BlendFactor::eInvSrcAlpha
 					, renderer::BlendOp::eAdd } );
+				rasterisationState = renderer::RasterisationState{ 0u
+					, false
+					, false
+					, renderer::PolygonMode::eFill
+					, renderer::CullModeFlag::eNone };
 			}
 			else
 			{
 				blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
 			}
 			
-			if ( submesh.material.layout )
+			if ( submeshNode.material.layout )
 			{
-				submesh.pipelineLayout = m_device->createPipelineLayout( { *m_offscreenDescriptorLayout, *submesh.material.layout } );
+				submeshNode.pipelineLayout = m_device->createPipelineLayout( { *m_offscreenDescriptorLayout, *submeshNode.material.layout } );
 			}
 			else
 			{
-				submesh.pipelineLayout = m_device->createPipelineLayout( *m_offscreenDescriptorLayout );
+				submeshNode.pipelineLayout = m_device->createPipelineLayout( *m_offscreenDescriptorLayout );
 			}
 
-			submesh.pipeline = submesh.pipelineLayout->createPipeline( *m_offscreenProgram
-				, { *submesh.vbo.layout }
+			submeshNode.pipeline = submeshNode.pipelineLayout->createPipeline( *m_offscreenProgram
+				, { *submeshNode.vertexLayout }
 				, *m_offscreenRenderPass
 				, renderer::PrimitiveTopology::eTriangleList
-				, renderer::RasterisationState{}
+				, rasterisationState
 				, blendState );
-			submesh.pipeline->multisampleState( renderer::MultisampleState{} );
-			submesh.pipeline->depthStencilState( renderer::DepthStencilState{} );
-			submesh.pipeline->finish();
+			submeshNode.pipeline->multisampleState( renderer::MultisampleState{} );
+			submeshNode.pipeline->depthStencilState( renderer::DepthStencilState{} );
+			submeshNode.pipeline->finish();
+
+			if ( needsBlending )
+			{
+				m_alphaBlendedObject.emplace_back( std::move( submeshNode ) );
+			}
+			else
+			{
+				m_opaqueObject.emplace_back( std::move( submeshNode ) );
+			}
 
 			++matIndex;
 		}
@@ -480,7 +518,7 @@ namespace vkapp
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 		m_offscreenProgram = m_device->createShaderProgram();
 
-		if ( false && m_offscreenProgram->isSPIRVSupported() )
+		if ( m_offscreenProgram->isSPIRVSupported() )
 		{
 			if ( !wxFileExists( shadersFolder / "offscreen_vert.spv" )
 				|| !wxFileExists( shadersFolder / "offscreen_frag.spv" ) )
@@ -565,7 +603,7 @@ namespace vkapp
 
 			uint32_t matIndex = 0u;
 
-			for ( auto & submesh : m_object )
+			for ( auto & submesh : m_opaqueObject )
 			{
 				commandBuffer.bindPipeline( *submesh.pipeline );
 				commandBuffer.setViewport( { uint32_t( dimensions.x )
@@ -582,7 +620,31 @@ namespace vkapp
 				commandBuffer.bindDescriptorSet( *submesh.descriptorSetTextures
 					, *submesh.pipelineLayout );
 
-				commandBuffer.drawIndexed( uint32_t( submesh.ibo.ibo->getBuffer().getSize() / sizeof( uint32_t ) )
+				commandBuffer.drawIndexed( uint32_t( submesh.ibo->getBuffer().getSize() / sizeof( uint32_t ) )
+					, 1u
+					, 0u
+					, 0u
+					, 0u );
+			}
+
+			for ( auto & submesh : m_alphaBlendedObject )
+			{
+				commandBuffer.bindPipeline( *submesh.pipeline );
+				commandBuffer.setViewport( { uint32_t( dimensions.x )
+					, uint32_t( dimensions.y )
+					, 0
+					, 0 } );
+				commandBuffer.setScissor( { 0
+					, 0
+					, uint32_t( dimensions.x )
+					, uint32_t( dimensions.y ) } );
+				commandBuffer.bindGeometryBuffers( *submesh.geometryBuffers );
+				commandBuffer.bindDescriptorSet( *submesh.descriptorSetUbos
+					, *submesh.pipelineLayout );
+				commandBuffer.bindDescriptorSet( *submesh.descriptorSetTextures
+					, *submesh.pipelineLayout );
+
+				commandBuffer.drawIndexed( uint32_t( submesh.ibo->getBuffer().getSize() / sizeof( uint32_t ) )
 					, 1u
 					, 0u
 					, 0u
@@ -726,14 +788,17 @@ namespace vkapp
 			result = utils::translate( result, { 0, 0, -5 } );
 			return result;
 		}();
+		static renderer::Clock::time_point save = renderer::Clock::now();
+		auto duration = std::chrono::duration_cast< std::chrono::microseconds >( renderer::Clock::now() - save );
 		m_rotate = utils::rotate( m_rotate
-			, float( utils::DegreeToRadian )
+			, float( utils::DegreeToRadian ) * ( duration.count() / 20000.0f )
 			, { 0, 1, 0 } );
 		m_objectUbo->getData( 0 ) = originalTranslate * m_rotate;
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
 			, renderer::PipelineStageFlag::eVertexShader );
+		save = renderer::Clock::now();
 	}
 
 	void RenderPanel::doDraw()

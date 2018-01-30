@@ -72,7 +72,7 @@ float getOpacity( int index, vec4 sampled )
 		, float( ( opacity & 0x02 ) >> 1 )
 		, float( ( opacity & 0x04 ) >> 2 )
 		, float( ( opacity & 0x08 ) >> 3 ) );
-	return max( length( channel * sampled ), max( 0.0, 1.0 - float( opacity ) ) );
+	return max( length( channel * sampled ), min( 1.0, 1.0 - float( opacity ) ) );
 }
 
 void main()
@@ -92,6 +92,11 @@ void main()
 		emissive *= getEmissive( i, sampled );
 		shininess *= getShininess( i, sampled );
 		opacity *= getOpacity( i, sampled );
+	}
+
+	if ( opacity < 0.5 )
+	{
+		discard;
 	}
 
 	pxl_colour = vec4( diffuse, opacity );
