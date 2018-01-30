@@ -10,8 +10,8 @@ namespace gl_renderer
 	{
 	}
 
-	renderer::DescriptorSetPtr DescriptorSetPool::createDescriptorSet()const
+	renderer::DescriptorSetPtr DescriptorSetPool::createDescriptorSet( uint32_t bindingPoint )const
 	{
-		return std::make_unique< DescriptorSet >( *this );
+		return std::make_unique< DescriptorSet >( *this, bindingPoint );
 	}
 }

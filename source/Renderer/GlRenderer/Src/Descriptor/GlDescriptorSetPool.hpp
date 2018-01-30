@@ -31,12 +31,9 @@ namespace gl_renderer
 		DescriptorSetPool( renderer::DescriptorSetLayout const & layout
 			, uint32_t maxSets );
 		/**
-		*\brief
-		*	Crée un descriptor set correspondant au layout défini pour ce pool.
-		*\return
-		*	Le descriptor set créé.
+		*\copydoc	renderer::DescriptorSetPool::createDescriptorSet
 		*/
-		renderer::DescriptorSetPtr createDescriptorSet()const override;
+		renderer::DescriptorSetPtr createDescriptorSet( uint32_t bindingPoint )const override;
 	};
 }
 

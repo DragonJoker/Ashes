@@ -21,7 +21,7 @@ namespace vk_renderer
 			poolSizes.push_back(
 			{
 				convert( binding.getDescriptorType() ),         // type
-				maxSets                                         // descriptorCount
+				maxSets * binding.getDescriptorsCount()         // descriptorCount
 			} );
 		}
 
@@ -51,9 +51,10 @@ namespace vk_renderer
 		vk::DestroyDescriptorPool( m_device, m_pool, nullptr );
 	}
 
-	renderer::DescriptorSetPtr DescriptorSetPool::createDescriptorSet()const
+	renderer::DescriptorSetPtr DescriptorSetPool::createDescriptorSet( uint32_t bindingPoint )const
 	{
 		return std::make_unique< DescriptorSet >( m_device
-			, *this );
+			, *this
+			, bindingPoint );
 	}
 }
