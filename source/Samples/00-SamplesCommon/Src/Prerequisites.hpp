@@ -19,6 +19,13 @@ namespace common
 
 	static uint32_t constexpr MAX_TEXTURES = 6u;
 
+	/**
+	*\~english
+	*\name Loaded data.
+	*\~french
+	*\name Données chargées.
+	*/
+	/**\{*/
 	struct Image
 	{
 		renderer::UIVec2 size;
@@ -36,12 +43,6 @@ namespace common
 		float normalModifier{ 0.0f };
 		renderer::Vec2 fill; // align to 16 bytes.
 	};
-	struct Texture
-	{
-		Image data;
-		renderer::TexturePtr texture;
-		renderer::TextureViewPtr view;
-	};
 	struct MaterialData
 	{
 		renderer::RgbaColour diffuse;
@@ -56,9 +57,7 @@ namespace common
 	struct Material
 	{
 		MaterialData data;
-		std::vector< Texture > textures;
-		renderer::DescriptorSetLayoutPtr layout;
-		renderer::DescriptorSetPoolPtr pool;
+		std::vector< Image > textures;
 	};
 	struct Vertex
 	{
@@ -72,26 +71,51 @@ namespace common
 	{
 		std::vector< Vertex > data;
 		bool hasNormals{ false }; // true implies that it will also have tangents and bitangents
-		renderer::VertexBufferPtr< Vertex > vbo;
-		renderer::VertexLayoutPtr layout;
 	};
 	struct IndexBuffer
 	{
 		std::vector< uint32_t > data;
-		renderer::BufferPtr< uint32_t > ibo;
 	};
 	struct Submesh
 	{
 		VertexBuffer vbo;
 		IndexBuffer ibo;
 		Material material;
+	};
+	using Object = std::vector< Submesh >;
+	/**\}*/
+	/**
+	*\~english
+	*\name Rendered data.
+	*\~french
+	*\name Données rendues.
+	*/
+	/**\{*/
+	struct TextureNode
+	{
+		renderer::TexturePtr texture;
+		renderer::TextureViewPtr view;
+	};
+	struct MaterialNode
+	{
+		std::vector< TextureNode > textures;
+		renderer::DescriptorSetLayoutPtr layout;
+		renderer::DescriptorSetPoolPtr pool;
+	};
+	struct SubmeshNode
+	{
+		MaterialNode material;
+		renderer::VertexBufferPtr< Vertex > vbo;
+		renderer::VertexLayoutPtr vertexLayout;
+		renderer::BufferPtr< uint32_t > ibo;
 		renderer::DescriptorSetPtr descriptorSetTextures;
 		renderer::DescriptorSetPtr descriptorSetUbos;
 		renderer::GeometryBuffersPtr geometryBuffers;
 		renderer::PipelineLayoutPtr pipelineLayout;
 		renderer::PipelinePtr pipeline;
 	};
-	using Object = std::vector< Submesh >;
+	using ObjectNode = std::vector< SubmeshNode >;
+	/**\}*/
 
 	renderer::ConnectionPtr makeConnection( wxWindow * window
 		, renderer::Renderer const & renderer );

@@ -10,6 +10,8 @@ It is a WIP, the library is really far from complete!!
 
 ## Test applications
 
+These applications are used to validate the basic functionalities of the library.
+
 ### [Device creation](source/Test/01-DeviceCreation/)
 
 Most basic example, initialises the logical device.
@@ -79,3 +81,13 @@ Demonstrates the use of push constants, by displaying two cubes with different c
 <img src="./screenshots/14.png" height="72px" align="right">
 
 Tests render to cube, by taking an equirectangular texture, and loading it into a skybox.
+
+
+## Sample applications
+
+These applications use the library in a more complex way, closer to what would be done within an engine.
+
+### [Object Loading](source/Samples/01-ObjectLoading/)
+<img src="./screenshots/s01.png" height="72px" align="right">
+
+Loads an object, with textures, and displays it.
