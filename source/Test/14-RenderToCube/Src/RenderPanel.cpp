@@ -287,7 +287,7 @@ namespace vkapp
 			, { 512, 512 }
 			, 6
 			, renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eColourAttachment );
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		EquirectangularToCube equiToCube{ shadersFolder / "BasketballCourt_4k.jpg"
 			, *m_device
 			, *m_texture };

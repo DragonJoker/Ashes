@@ -232,7 +232,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateTexture()
 	{
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		m_texture = m_device->createTexture();
 		m_texture->setImage( image.format, { image.size[0], image.size[1] } );
