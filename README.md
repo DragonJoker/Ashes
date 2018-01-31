@@ -91,3 +91,8 @@ These applications use the library in a more complex way, closer to what would b
 <img src="./screenshots/s01.png" height="72px" align="right">
 
 Loads an object, with textures, and displays it.
+
+### [Lighting](source/Samples/02-Lighting/)
+<img src="./screenshots/s02.png" height="72px" align="right">
+
+Applies lights to the previously loaded object.
