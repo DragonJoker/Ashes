@@ -94,10 +94,5 @@ void main()
 		opacity *= getOpacity( i, sampled );
 	}
 
-	if ( opacity < 0.5 )
-	{
-		discard;
-	}
-
 	pxl_colour = vec4( diffuse, opacity );
 }
