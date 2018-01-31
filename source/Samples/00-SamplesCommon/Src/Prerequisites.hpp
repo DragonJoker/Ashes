@@ -18,6 +18,7 @@ namespace common
 	using RendererFactory = utils::Factory< renderer::Renderer, std::string, renderer::RendererPtr >;
 
 	static uint32_t constexpr MAX_TEXTURES = 6u;
+	static uint32_t constexpr MAX_LIGHTS = 10u;
 
 	/**
 	*\~english
@@ -33,6 +34,7 @@ namespace common
 		renderer::PixelFormat format;
 		bool opacity{ false };
 	};
+
 	struct TextureOperators
 	{
 		int diffuse{ 0 }; // 0 or 1
@@ -43,6 +45,7 @@ namespace common
 		float normalModifier{ 0.0f };
 		renderer::Vec2 fill; // align to 16 bytes.
 	};
+
 	struct MaterialData
 	{
 		renderer::RgbaColour diffuse;
@@ -54,11 +57,13 @@ namespace common
 		float fill;
 		std::array< TextureOperators, MAX_TEXTURES > textureOperators;
 	};
+
 	struct Material
 	{
 		MaterialData data;
 		std::vector< Image > textures;
 	};
+
 	struct Vertex
 	{
 		renderer::Vec3 position;
@@ -67,22 +72,67 @@ namespace common
 		renderer::Vec3 bitangent;
 		renderer::Vec2 texture;
 	};
+
 	struct VertexBuffer
 	{
 		std::vector< Vertex > data;
 		bool hasNormals{ false }; // true implies that it will also have tangents and bitangents
 	};
+
 	struct IndexBuffer
 	{
 		std::vector< uint32_t > data;
 	};
+
 	struct Submesh
 	{
 		VertexBuffer vbo;
 		IndexBuffer ibo;
 		Material material;
 	};
+
 	using Object = std::vector< Submesh >;
+	/**\}*/
+	/**
+	*\~english
+	*\name Lighting.
+	*\~french
+	*\name Eclairage.
+	*/
+	/**\{*/
+	struct Light
+	{
+		renderer::Vec4 colour;
+		renderer::Vec4 intensities;
+	};
+
+	struct DirectionalLight
+	{
+		Light base;
+		renderer::Vec4 direction;
+	};
+
+	struct PointLight
+	{
+		Light base;
+		renderer::Vec4 position;
+		renderer::Vec4 attenation;
+	};
+
+	struct SpotLight
+	{
+		PointLight base;
+		renderer::Vec4 direction;
+		renderer::Vec4 coeffs;// .x = cutoff, .y = exponent
+	};
+
+	struct LightsData
+	{
+		renderer::IVec4 lightsCount;
+		DirectionalLight directionalLights[MAX_LIGHTS];
+		PointLight pointLights[MAX_LIGHTS];
+		SpotLight spotLights[MAX_LIGHTS];
+	};
 	/**\}*/
 	/**
 	*\~english
@@ -96,12 +146,14 @@ namespace common
 		renderer::TexturePtr texture;
 		renderer::TextureViewPtr view;
 	};
+
 	struct MaterialNode
 	{
 		std::vector< TextureNode > textures;
 		renderer::DescriptorSetLayoutPtr layout;
 		renderer::DescriptorSetPoolPtr pool;
 	};
+
 	struct SubmeshNode
 	{
 		MaterialNode material;
@@ -114,6 +166,7 @@ namespace common
 		renderer::PipelineLayoutPtr pipelineLayout;
 		renderer::PipelinePtr pipeline;
 	};
+
 	using ObjectNode = std::vector< SubmeshNode >;
 	/**\}*/
 
