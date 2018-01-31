@@ -371,6 +371,7 @@ namespace vkapp
 			// Initialise the pipeline
 			renderer::ColourBlendState blendState;
 			renderer::RasterisationState rasterisationState;
+			renderer::DepthStencilState depthStencilState;
 			
 			if ( needsBlending )
 			{
@@ -386,6 +387,9 @@ namespace vkapp
 					, false
 					, renderer::PolygonMode::eFill
 					, renderer::CullModeFlag::eNone };
+				depthStencilState = renderer::DepthStencilState{ 0u
+					, true
+					, false };
 			}
 			else
 			{
@@ -408,7 +412,7 @@ namespace vkapp
 				, rasterisationState
 				, blendState );
 			submeshNode.pipeline->multisampleState( renderer::MultisampleState{} );
-			submeshNode.pipeline->depthStencilState( renderer::DepthStencilState{} );
+			submeshNode.pipeline->depthStencilState( depthStencilState );
 			submeshNode.pipeline->finish();
 
 			if ( needsBlending )
