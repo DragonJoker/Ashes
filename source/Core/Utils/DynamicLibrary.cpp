@@ -63,16 +63,7 @@ namespace utils
 	void DynamicLibrary::doClose()noexcept
 	{
 		UINT oldMode = ::SetErrorMode( SEM_FAILCRITICALERRORS );
-
-		try
-		{
-			::FreeLibrary( static_cast< HMODULE >( m_library ) );
-		}
-		catch ( ... )
-		{
-			std::cerr << "Couldn't unload dynamic library" << std::endl;
-		}
-
+		::FreeLibrary( static_cast< HMODULE >( m_library ) );
 		::SetErrorMode( oldMode );
 		m_library = nullptr;
 	}
@@ -114,14 +105,7 @@ namespace utils
 
 	void DynamicLibrary::doClose()noexcept
 	{
-		try
-		{
-			dlclose( m_library );
-		}
-		catch ( ... )
-		{
-			std::cerr << "Couldn't unload dynamic library" << std::endl;
-		}
+		dlclose( m_library );
 	}
 
 	void * DynamicLibrary::doGetFunction( std::string const & name )noexcept

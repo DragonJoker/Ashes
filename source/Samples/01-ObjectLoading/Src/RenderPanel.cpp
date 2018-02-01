@@ -354,7 +354,7 @@ namespace vkapp
 				, submesh.vbo.data
 				, *submeshNode.vbo
 				, renderer::PipelineStageFlag::eVertexInput );
-			submeshNode.ibo = renderer::makeBuffer< uint32_t >( *m_device
+			submeshNode.ibo = renderer::makeBuffer< common::Face >( *m_device
 				, uint32_t( submesh.ibo.data.size() )
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eDeviceLocal );

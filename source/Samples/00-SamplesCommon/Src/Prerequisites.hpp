@@ -40,10 +40,11 @@ namespace common
 		int diffuse{ 0 }; // 0 or 1
 		int specular{ 0 }; // 0 or 1
 		int emissive{ 0 }; // 0 or 1
+		int normal{ 0 }; // 0 for none, 1 for normals, 2 for inverted normals
 		uint32_t shininess{ 0 }; // 0 for none, 1 for R, 2 for G, 4 for B, 8 for A
 		uint32_t opacity{ 0 }; // 0 for none, 1 for R, 2 for G, 4 for B, 8 for A
-		float normalModifier{ 0.0f };
-		renderer::Vec2 fill; // align to 16 bytes.
+		uint32_t height{ 0 }; // 0 for none, 1 for R, 2 for G, 4 for B, 8 for A
+		float fill; // align to 16 bytes.
 	};
 
 	struct MaterialData
@@ -61,6 +62,7 @@ namespace common
 	struct Material
 	{
 		MaterialData data;
+		bool hasOpacity{ false };
 		std::vector< Image > textures;
 	};
 
@@ -79,9 +81,16 @@ namespace common
 		bool hasNormals{ false }; // true implies that it will also have tangents and bitangents
 	};
 
+	struct Face
+	{
+		uint32_t a;
+		uint32_t b;
+		uint32_t c;
+	};
+
 	struct IndexBuffer
 	{
-		std::vector< uint32_t > data;
+		std::vector< Face > data;
 	};
 
 	struct Submesh
@@ -159,7 +168,7 @@ namespace common
 		MaterialNode material;
 		renderer::VertexBufferPtr< Vertex > vbo;
 		renderer::VertexLayoutPtr vertexLayout;
-		renderer::BufferPtr< uint32_t > ibo;
+		renderer::BufferPtr< Face > ibo;
 		renderer::DescriptorSetPtr descriptorSetTextures;
 		renderer::DescriptorSetPtr descriptorSetUbos;
 		renderer::GeometryBuffersPtr geometryBuffers;

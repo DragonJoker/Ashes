@@ -214,7 +214,7 @@ namespace common
 		m_clog = new LogStreambuf< DebugLogStreambufTraits >( m_name.ToStdString()
 			, std::clog );
 
-#if !defined( NDEBUG )
+#if 1//!defined( NDEBUG )
 #	if defined( _WIN32 )
 
 		if ( ::AllocConsole() )

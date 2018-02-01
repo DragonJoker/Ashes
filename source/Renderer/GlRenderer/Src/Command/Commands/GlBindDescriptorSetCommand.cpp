@@ -22,7 +22,7 @@ namespace gl_renderer
 		void bind( renderer::CombinedTextureSamplerBinding const & binding )
 		{
 			glLogCall( gl::ActiveTexture
-				, GL_TEXTURE0 + binding.getBinding().getBindingPoint() + binding.getIndex() );
+				, GlTextureUnit( GL_TEXTURE0 + binding.getBinding().getBindingPoint() + binding.getIndex() ) );
 			glLogCall( gl::BindTexture
 				, convert( binding.getView().getType() )
 				, static_cast< TextureView const & >( binding.getView() ).getImage() );
@@ -41,7 +41,7 @@ namespace gl_renderer
 		void bind( renderer::SampledTextureBinding const & binding )
 		{
 			glLogCall( gl::ActiveTexture
-				, GL_TEXTURE0 + binding.getBinding().getBindingPoint() + binding.getIndex() );
+				, GlTextureUnit( GL_TEXTURE0 + binding.getBinding().getBindingPoint() + binding.getIndex() ) );
 			glLogCall( gl::BindTexture
 				, convert( binding.getView().getType() )
 				, static_cast< TextureView const & >( binding.getView() ).getImage() );
@@ -52,7 +52,7 @@ namespace gl_renderer
 			auto & view = binding.getView();
 			auto & range = view.getSubResourceRange();
 			glLogCall( gl::ActiveTexture
-				, GL_TEXTURE0 + binding.getBinding().getBindingPoint() + binding.getIndex() );
+				, GlTextureUnit( GL_TEXTURE0 + binding.getBinding().getBindingPoint() + binding.getIndex() ) );
 			glLogCall( gl::BindImageTexture
 				, binding.getBinding().getBindingPoint() + binding.getIndex()
 				, static_cast< TextureView const & >( view ).getImage()
@@ -86,7 +86,7 @@ namespace gl_renderer
 		void bind( renderer::TexelBufferBinding const & binding )
 		{
 			glLogCall( gl::ActiveTexture
-				, GL_TEXTURE0 + binding.getBinding().getBindingPoint() + binding.getIndex() );
+				, GlTextureUnit( GL_TEXTURE0 + binding.getBinding().getBindingPoint() + binding.getIndex() ) );
 			glLogCall( gl::BindTexture
 				, GL_BUFFER_TARGET_TEXTURE
 				, static_cast< BufferView const & >( binding.getView() ).getImage() );

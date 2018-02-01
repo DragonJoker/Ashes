@@ -44,7 +44,6 @@ namespace gl_renderer
 	typedef struct __GLsync *GLsync;
 
 	static GLuint constexpr GL_INVALID_INDEX = ~GLuint( 0u );
-	static GLuint constexpr GL_TEXTURE0 = 0x84C0;
 	static GLuint constexpr GL_NO_ERROR = 0;
 	static GLboolean constexpr GL_TRUE = 1;
 	static GLboolean constexpr GL_FALSE = 0;

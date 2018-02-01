@@ -11,8 +11,10 @@ namespace common
 	class App
 		: public wxApp
 	{
-	public:
+	protected:
 		App( wxString const & name );
+
+	public:
 		virtual ~App() = default;
 		bool OnInit()override;
 		int OnExit()override;
@@ -32,10 +34,10 @@ namespace common
 		wxString m_name;
 		wxString m_rendererName;
 		bool m_allocated{ false };
-		MainFrame * m_mainFrame;
-		std::streambuf * m_cout;
-		std::streambuf * m_cerr;
-		std::streambuf * m_clog;
+		MainFrame * m_mainFrame{ nullptr };
+		std::streambuf * m_cout{ nullptr };
+		std::streambuf * m_cerr{ nullptr };
+		std::streambuf * m_clog{ nullptr };
 		std::vector< RendererPlugin > m_plugins;
 		RendererFactory m_factory;
 	};
