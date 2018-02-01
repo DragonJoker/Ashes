@@ -8,10 +8,11 @@ struct TextureOperator
 	int diffuse; // 0 or 1
 	int specular; // 0 or 1
 	int emissive; // 0 or 1
+	int normal; // 0 for none, 1 for normals, 2 for inverted normals
 	uint shininess; // 0 for none, 1 for R, 2 for G, 4 for B, 8 for A
 	uint opacity; // 0 for none, 1 for R, 2 for G, 4 for B, 8 for A
-	float normalModifier;
-	vec2 fill; // align to 16 bytes.
+	uint height; // 0 for none, 1 for R, 2 for G, 4 for B, 8 for A
+	float fill; // align to 16 bytes.
 };
 
 struct Material
@@ -40,39 +41,37 @@ layout( location = 3 ) in vec2 vtx_texcoord;
 
 layout( location = 0 ) out vec4 pxl_colour;
 
-vec3 getDiffuse( int index, vec4 sampled )
+vec3 getDiffuse( TextureOperator operator, vec4 sampled, vec3 diffuse )
 {
-	return material.textureOperators[index].diffuse * sampled.rgb;
+	return mix( diffuse, diffuse * sampled.rgb, float( operator.diffuse ) );
 }
 
-vec3 getSpecular( int index, vec4 sampled )
+vec3 getSpecular( TextureOperator operator, vec4 sampled, vec3 specular )
 {
-	return material.textureOperators[index].specular * sampled.rgb;
+	return mix( specular, specular * sampled.rgb, float( operator.specular ) );
 }
 
-vec3 getEmissive( int index, vec4 sampled )
+vec3 getEmissive( TextureOperator operator, vec4 sampled, vec3 emissive )
 {
-	return material.textureOperators[index].emissive * sampled.rgb;
+	return mix( emissive, emissive * sampled.rgb, float( operator.emissive ) );
 }
 
-float getShininess( int index, vec4 sampled )
+float getShininess( TextureOperator operator, vec4 sampled, float shininess )
 {
-	uint shininess = material.textureOperators[index].shininess;
-	vec4 channel = vec4( float( ( shininess & 0x01 ) >> 0 )
-		, float( ( shininess & 0x02 ) >> 1 )
-		, float( ( shininess & 0x04 ) >> 2 )
-		, float( ( shininess & 0x08 ) >> 3 ) );
-	return length( channel * sampled );
+	vec4 channel = vec4( float( ( operator.shininess & 0x01 ) >> 0 )
+		, float( ( operator.shininess & 0x02 ) >> 1 )
+		, float( ( operator.shininess & 0x04 ) >> 2 )
+		, float( ( operator.shininess & 0x08 ) >> 3 ) );
+	return mix( shininess, shininess * length( channel * sampled ), float( operator.shininess ) );
 }
 
-float getOpacity( int index, vec4 sampled )
+float getOpacity( TextureOperator operator, vec4 sampled, float opacity )
 {
-	uint opacity = material.textureOperators[index].opacity;
-	vec4 channel = vec4( float( ( opacity & 0x01 ) >> 0 )
-		, float( ( opacity & 0x02 ) >> 1 )
-		, float( ( opacity & 0x04 ) >> 2 )
-		, float( ( opacity & 0x08 ) >> 3 ) );
-	return max( length( channel * sampled ), min( 1.0, 1.0 - float( opacity ) ) );
+	vec4 channel = vec4( float( ( operator.opacity & 0x01 ) >> 0 )
+		, float( ( operator.opacity & 0x02 ) >> 1 )
+		, float( ( operator.opacity & 0x04 ) >> 2 )
+		, float( ( operator.opacity & 0x08 ) >> 3 ) );
+	return mix( opacity, opacity * max( length( channel * sampled ), min( 1.0, 1.0 - float( opacity ) ) ), float( operator.opacity ) );
 }
 
 void main()
@@ -87,11 +86,17 @@ void main()
 	for ( int i = 0; i < material.texturesCount; ++i )
 	{
 		vec4 sampled = texture( textures[i], vtx_texcoord );
-		diffuse *= getDiffuse( i, sampled );
-		specular *= getSpecular( i, sampled );
-		emissive *= getEmissive( i, sampled );
-		shininess *= getShininess( i, sampled );
-		opacity *= getOpacity( i, sampled );
+		TextureOperator operator = material.textureOperators[i];
+		opacity = getOpacity( operator, sampled, opacity );
+		diffuse = getDiffuse( operator, sampled, diffuse );
+		specular = getSpecular( operator, sampled, specular );
+		emissive = getEmissive( operator, sampled, emissive );
+		shininess = getShininess( operator, sampled, shininess );
+	}
+	
+	if ( opacity < 0.5 )
+	{
+		discard;
 	}
 
 	pxl_colour = vec4( diffuse, opacity );
