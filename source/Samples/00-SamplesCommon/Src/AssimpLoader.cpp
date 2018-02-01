@@ -127,7 +127,7 @@ namespace common
 
 			if ( shininess > 0 )
 			{
-				material.data.shininess = shininess / 128.0f;
+				material.data.shininess = shininess / 16.0;
 			}
 		}
 
