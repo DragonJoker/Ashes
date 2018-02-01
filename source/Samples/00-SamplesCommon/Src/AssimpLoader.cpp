@@ -123,10 +123,11 @@ namespace common
 			material.data.specular = renderer::RgbaColour{ specular.r, specular.g, specular.b, 1.0f };
 			material.data.specular *= shininessStrength;
 			material.data.emissive = renderer::RgbaColour{ emissive.r, emissive.g, emissive.b, 1.0f };
+			material.hasOpacity = opacity < 1.0f;
 
 			if ( shininess > 0 )
 			{
-				material.data.shininess = shininess;
+				material.data.shininess = shininess / 128.0f;
 			}
 		}
 
@@ -248,6 +249,7 @@ namespace common
 			if ( doLoadTexture( folder, opaTexName, image ) )
 			{
 				material.textures.emplace_back( std::move( image ) );
+				material.hasOpacity = true;
 
 				if ( image.opacity )
 				{
@@ -256,6 +258,19 @@ namespace common
 				else
 				{
 					material.data.textureOperators[index].opacity = 1;
+				}
+
+				++index;
+			}
+
+			if ( doLoadTexture( folder, nmlTexName, image ) )
+			{
+				material.textures.emplace_back( std::move( image ) );
+				material.data.textureOperators[index].normal = 1;
+
+				if ( image.opacity )
+				{
+					material.data.textureOperators[index].height = 8;
 				}
 
 				++index;
@@ -274,8 +289,6 @@ namespace common
 			| aiProcess_OptimizeMeshes
 			| aiProcess_OptimizeGraph
 			| aiProcess_FixInfacingNormals
-			| aiProcess_LimitBoneWeights
-			| aiProcess_Debone
 			| aiProcess_GenSmoothNormals
 			| aiProcess_CalcTangentSpace
 			| aiProcess_FlipWindingOrder
@@ -312,10 +325,31 @@ namespace common
 
 						if ( face.mNumIndices == 3 )
 						{
-							submesh.ibo.data.push_back( face.mIndices[0] );
-							submesh.ibo.data.push_back( face.mIndices[1] );
-							submesh.ibo.data.push_back( face.mIndices[2] );
+							submesh.ibo.data.push_back( Face
+							{
+								face.mIndices[0],
+								face.mIndices[1],
+								face.mIndices[2]
+							} );
 						}
+					}
+
+					if ( submesh.material.hasOpacity
+						&& submesh.vbo.hasNormals )
+					{
+						auto inverted = submesh;
+
+						for ( auto & vertex : inverted.vbo.data )
+						{
+							vertex.normal = -vertex.normal;
+						}
+
+						for ( auto & face : inverted.ibo.data )
+						{
+							std::swap( face.a, face.c );
+						}
+
+						result.emplace_back( std::move( inverted ) );
 					}
 
 					result.emplace_back( std::move( submesh ) );
@@ -325,12 +359,17 @@ namespace common
 			// Rescale the model to size 4.
 			auto diff = max - min;
 			float scale = 8.0f / std::max( diff[0], std::max( diff[1], diff[2] ) );
+			min *= scale;
+			max *= scale;
+			renderer::Vec3 offset{ ( max - min ) / -2.0f };
+			offset[0] = 0.0;
+			offset[2] = 0.0;
 
 			for ( auto & submesh : result )
 			{
 				for ( auto & vertex : submesh.vbo.data )
 				{
-					vertex.position *= scale;
+					vertex.position = offset + ( vertex.position * scale );
 				}
 			}
 		}

@@ -141,7 +141,6 @@ namespace gl_renderer
 		int linked = 0;
 		glLogCall( gl::GetProgramiv, m_program, GL_INFO_LINK_STATUS, &linked );
 		auto linkerLog = doRetrieveLinkerLog( m_program );
-		bool result = false;
 
 		if ( linked
 			&& attached == int( m_shaders.size() )
