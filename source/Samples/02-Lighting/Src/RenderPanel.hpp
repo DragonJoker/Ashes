@@ -72,12 +72,14 @@ namespace vkapp
 		renderer::UniformBufferPtr< common::LightsData > m_lightsUbo;
 		renderer::CommandBufferPtr m_updateCommandBuffer;
 		common::Object m_object;
+		uint32_t m_nodesCount;
 
 		renderer::CommandBufferPtr m_commandBuffer;
 		renderer::RenderPassPtr m_offscreenRenderPass;
 		renderer::ShaderProgramPtr m_offscreenProgram;
-		common::ObjectNode m_opaqueObject;
-		common::ObjectNode m_alphaBlendedObject;
+		common::ObjectNodes m_opaqueObject;
+		common::ObjectNodes m_alphaBlendedObject;
+		common::SubmeshNodes m_submeshNodes;
 		renderer::DescriptorSetLayoutPtr m_offscreenDescriptorLayout;
 		renderer::DescriptorSetPoolPtr m_offscreenDescriptorPool;
 

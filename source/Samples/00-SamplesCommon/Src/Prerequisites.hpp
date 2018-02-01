@@ -55,7 +55,7 @@ namespace common
 		float shininess{ 0.0f };
 		float opacity{ 1.0f };
 		uint32_t texturesCount{ 0u };
-		float fill;
+		int backFace{ 0 }; // 0 or 1
 		std::array< TextureOperators, MAX_TEXTURES > textureOperators;
 	};
 
@@ -97,7 +97,7 @@ namespace common
 	{
 		VertexBuffer vbo;
 		IndexBuffer ibo;
-		Material material;
+		std::vector< Material > materials;
 	};
 
 	using Object = std::vector< Submesh >;
@@ -156,27 +156,31 @@ namespace common
 		renderer::TextureViewPtr view;
 	};
 
+	struct SubmeshNode;
+	using SubmeshNodePtr = std::shared_ptr< SubmeshNode >;
+
 	struct MaterialNode
 	{
+		SubmeshNodePtr submesh;
 		std::vector< TextureNode > textures;
 		renderer::DescriptorSetLayoutPtr layout;
 		renderer::DescriptorSetPoolPtr pool;
-	};
-
-	struct SubmeshNode
-	{
-		MaterialNode material;
-		renderer::VertexBufferPtr< Vertex > vbo;
-		renderer::VertexLayoutPtr vertexLayout;
-		renderer::BufferPtr< Face > ibo;
 		renderer::DescriptorSetPtr descriptorSetTextures;
 		renderer::DescriptorSetPtr descriptorSetUbos;
-		renderer::GeometryBuffersPtr geometryBuffers;
 		renderer::PipelineLayoutPtr pipelineLayout;
 		renderer::PipelinePtr pipeline;
 	};
 
-	using ObjectNode = std::vector< SubmeshNode >;
+	struct SubmeshNode
+	{
+		renderer::VertexBufferPtr< Vertex > vbo;
+		renderer::VertexLayoutPtr vertexLayout;
+		renderer::BufferPtr< Face > ibo;
+		renderer::GeometryBuffersPtr geometryBuffers;
+	};
+
+	using ObjectNodes = std::vector< MaterialNode >;
+	using SubmeshNodes = std::vector< SubmeshNodePtr >;
 	/**\}*/
 
 	renderer::ConnectionPtr makeConnection( wxWindow * window

@@ -151,6 +151,7 @@ namespace common
 				}
 
 				path = folder / path;
+				std::clog << "  Loading texture " << path << std::endl;
 
 				try
 				{
@@ -214,6 +215,7 @@ namespace common
 				if ( image.opacity )
 				{
 					material.data.textureOperators[index].opacity = 8u;
+					material.hasOpacity = true;
 				}
 
 				++index;
@@ -300,6 +302,14 @@ namespace common
 		{
 			renderer::Vec3 min{ std::numeric_limits< float >::max() };
 			renderer::Vec3 max{ std::numeric_limits< float >::lowest() };
+			static Material const defaultMaterial
+			{
+				{
+					renderer::RgbaColour{ 1, 1, 1, 1 },
+					renderer::RgbaColour{ 1, 1, 1, 1 },
+					renderer::RgbaColour{ 0, 0, 0, 0 },
+				}
+			};
 
 			for ( size_t meshIndex = 0; meshIndex < aiScene->mNumMeshes; ++meshIndex )
 			{
@@ -313,8 +323,14 @@ namespace common
 						auto & aiMaterial = *aiScene->mMaterials[aiMesh.mMaterialIndex];
 						aiString mtlname;
 						aiMaterial.Get( AI_MATKEY_NAME, mtlname );
-						doProcessPassBaseComponents( submesh.material, aiMaterial );
-						doProcessPassTextures( folder, submesh.material, aiMaterial );
+						Material material;
+						doProcessPassBaseComponents( material, aiMaterial );
+						doProcessPassTextures( folder, material, aiMaterial );
+						submesh.materials.push_back( material );
+					}
+					else
+					{
+						submesh.materials.push_back( defaultMaterial );
 					}
 
 					submesh.vbo.data = doCreateVertexBuffer( aiMesh, min, max );
@@ -334,22 +350,23 @@ namespace common
 						}
 					}
 
-					if ( submesh.material.hasOpacity
-						&& submesh.vbo.hasNormals )
+					if ( submesh.materials[0].hasOpacity )
 					{
-						auto inverted = submesh;
+						Material material = submesh.materials[0];
+						auto it = std::find_if( material.data.textureOperators.begin()
+							, material.data.textureOperators.end()
+							, []( TextureOperators const & operators )
+							{
+								return operators.normal != 0;
+							} );
+						material.data.backFace = 1;
 
-						for ( auto & vertex : inverted.vbo.data )
+						if ( it != material.data.textureOperators.end() )
 						{
-							vertex.normal = -vertex.normal;
+							it->normal = 2;
 						}
 
-						for ( auto & face : inverted.ibo.data )
-						{
-							std::swap( face.a, face.c );
-						}
-
-						result.emplace_back( std::move( inverted ) );
+						submesh.materials.push_back( material );
 					}
 
 					result.emplace_back( std::move( submesh ) );
