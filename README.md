@@ -96,3 +96,8 @@ Loads an object, with textures, and displays it.
 <img src="./screenshots/s02.png" height="72px" align="right">
 
 Applies lights to the previously loaded object.
+
+### [Normal Mapping](source/Samples/03-NormalMapping/)
+<img src="./screenshots/s03.png" height="72px" align="right">
+
+Applies normal mapping.
