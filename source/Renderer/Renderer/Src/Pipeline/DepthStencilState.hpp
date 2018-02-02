@@ -143,7 +143,27 @@ namespace renderer
 		StencilOpState m_back;
 		float m_minDepthBounds;
 		float m_maxDepthBounds;
+		friend bool operator==( DepthStencilState const & lhs, DepthStencilState const & rhs );
 	};
+
+	inline bool operator==( DepthStencilState const & lhs, DepthStencilState const & rhs )
+	{
+		return lhs.m_flags == rhs.m_flags
+			&& lhs.m_depthTestEnable == rhs.m_depthTestEnable
+			&& lhs.m_depthWriteEnable == rhs.m_depthWriteEnable
+			&& lhs.m_depthCompareOp == rhs.m_depthCompareOp
+			&& lhs.m_depthBoundsTestEnable == rhs.m_depthBoundsTestEnable
+			&& lhs.m_stencilTestEnable == rhs.m_stencilTestEnable
+			&& lhs.m_front == rhs.m_front
+			&& lhs.m_back == rhs.m_back
+			&& lhs.m_minDepthBounds == rhs.m_minDepthBounds
+			&& lhs.m_maxDepthBounds == rhs.m_maxDepthBounds;
+	}
+
+	inline bool operator!=( DepthStencilState const & lhs, DepthStencilState const & rhs )
+	{
+		return !( lhs == rhs );
+	}
 }
 
 #endif

@@ -127,7 +127,7 @@ namespace common
 
 			if ( shininess > 0 )
 			{
-				material.data.shininess = shininess / 16.0;
+				material.data.shininess = shininess / 4096.0;
 			}
 		}
 
@@ -283,7 +283,8 @@ namespace common
 	}
 
 	Object loadObject( std::string const & folder
-		, std::string const & fileName )
+		, std::string const & fileName
+		, float rescale )
 	{
 		Assimp::Importer importer;
 		uint32_t flags = aiProcess_Triangulate
@@ -373,9 +374,9 @@ namespace common
 				}
 			}
 
-			// Rescale the model to size 4.
+			// Rescale the model.
 			auto diff = max - min;
-			float scale = 8.0f / std::max( diff[0], std::max( diff[1], diff[2] ) );
+			float scale = rescale / std::max( diff[0], std::max( diff[1], diff[2] ) );
 			min *= scale;
 			max *= scale;
 			renderer::Vec3 offset{ ( max - min ) / -2.0f };

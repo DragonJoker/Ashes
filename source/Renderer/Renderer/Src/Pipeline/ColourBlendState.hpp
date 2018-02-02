@@ -74,11 +74,32 @@ namespace renderer
 		}
 
 	private:
-		bool const m_logicOpEnable;
-		LogicOp const m_logicOp;
-		Vec4 const m_blendConstants;
+		bool m_logicOpEnable;
+		LogicOp m_logicOp;
+		Vec4 m_blendConstants;
 		ColourBlendStateAttachmentArray m_attachs;
+		friend bool operator==( ColourBlendState const & lhs, ColourBlendState const & rhs );
 	};
+
+	inline bool operator==( ColourBlendState const & lhs, ColourBlendState const & rhs )
+	{
+		auto result = lhs.m_blendConstants == rhs.m_blendConstants
+			&& lhs.m_logicOp == rhs.m_logicOp
+			&& lhs.m_logicOpEnable == rhs.m_logicOpEnable
+			&& lhs.m_attachs.size() == rhs.m_attachs.size();
+
+		for ( size_t i = 0; i < lhs.m_attachs.size() && result; ++i )
+		{
+			result = lhs.m_attachs[i] == rhs.m_attachs[i];
+		}
+
+		return result;
+	}
+
+	inline bool operator!=( ColourBlendState const & lhs, ColourBlendState const & rhs )
+	{
+		return !( lhs == rhs );
+	}
 }
 
 #endif

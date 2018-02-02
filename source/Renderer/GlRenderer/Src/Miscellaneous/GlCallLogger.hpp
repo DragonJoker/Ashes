@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include <iostream>
 
-#define GL_LOG_CALLS 0
+#define GL_LOG_CALLS 1
 
 namespace gl_renderer
 {

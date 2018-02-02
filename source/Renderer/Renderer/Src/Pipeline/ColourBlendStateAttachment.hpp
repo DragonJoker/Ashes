@@ -125,7 +125,25 @@ namespace renderer
 		BlendFactor m_dstAlphaBlendFactor;
 		BlendOp m_alphaBlendOp;
 		ColourComponentFlags m_colorWriteMask;
+		friend bool operator==( ColourBlendStateAttachment const & lhs, ColourBlendStateAttachment const & rhs );
 	};
+
+	inline bool operator==( ColourBlendStateAttachment const & lhs, ColourBlendStateAttachment const & rhs )
+	{
+		return lhs.m_blendEnable == rhs.m_blendEnable
+			&& lhs.m_srcColorBlendFactor == rhs.m_srcColorBlendFactor
+			&& lhs.m_dstColorBlendFactor == rhs.m_dstColorBlendFactor
+			&& lhs.m_colorBlendOp == rhs.m_colorBlendOp
+			&& lhs.m_srcAlphaBlendFactor == rhs.m_srcAlphaBlendFactor
+			&& lhs.m_dstAlphaBlendFactor == rhs.m_dstAlphaBlendFactor
+			&& lhs.m_alphaBlendOp == rhs.m_alphaBlendOp
+			&& lhs.m_colorWriteMask == rhs.m_colorWriteMask;
+	}
+
+	inline bool operator!=( ColourBlendStateAttachment const & lhs, ColourBlendStateAttachment const & rhs )
+	{
+		return !( lhs == rhs );
+	}
 }
 
 #endif

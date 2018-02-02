@@ -21,7 +21,8 @@ namespace common
 	*	L'objet chargé.
 	*/
 	Object loadObject( std::string const & folder
-		, std::string const & fileName );
+		, std::string const & fileName
+		, float rescale = 8.0f );
 }
 
 #endif
