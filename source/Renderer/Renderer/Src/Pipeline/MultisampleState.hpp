@@ -130,7 +130,24 @@ namespace renderer
 		uint32_t m_sampleMask;
 		bool m_alphaToCoverageEnable;
 		bool m_alphaToOneEnable;
+		friend bool operator==( MultisampleState const & lhs, MultisampleState const & rhs );
 	};
+
+	inline bool operator==( MultisampleState const & lhs, MultisampleState const & rhs )
+	{
+		return lhs.m_flags == rhs.m_flags
+			&& lhs.m_rasterizationSamples == rhs.m_rasterizationSamples
+			&& lhs.m_sampleShadingEnable == rhs.m_sampleShadingEnable
+			&& lhs.m_minSampleShading == rhs.m_minSampleShading
+			&& lhs.m_sampleMask == rhs.m_sampleMask
+			&& lhs.m_alphaToCoverageEnable == rhs.m_alphaToCoverageEnable
+			&& lhs.m_alphaToOneEnable == rhs.m_alphaToOneEnable;
+	}
+
+	inline bool operator!=( MultisampleState const & lhs, MultisampleState const & rhs )
+	{
+		return !( lhs == rhs );
+	}
 }
 
 #endif

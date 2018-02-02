@@ -28,7 +28,7 @@ namespace gl_renderer
 		*\param[in] primary
 		*	Dit si le tampon est un tampon de commandes primaire (\p true) ou secondaire (\p false).
 		*/
-		CommandBuffer( renderer::Device const & device
+		CommandBuffer( Device const & device
 			, renderer::CommandPool const & pool
 			, bool primary );
 		/**
@@ -202,6 +202,7 @@ namespace gl_renderer
 		}
 
 	private:
+		Device const & m_device;
 		mutable renderer::CommandBufferUsageFlags m_beginFlags{ 0u };
 		mutable CommandArray m_commands;
 		mutable renderer::Pipeline const * m_currentPipeline{ nullptr };

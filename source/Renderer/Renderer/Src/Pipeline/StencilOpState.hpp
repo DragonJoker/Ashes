@@ -108,7 +108,24 @@ namespace renderer
 		uint32_t m_compareMask;
 		uint32_t m_writeMask;
 		uint32_t m_reference;
+		friend bool operator==( StencilOpState const & lhs, StencilOpState const & rhs );
 	};
+
+	inline bool operator==( StencilOpState const & lhs, StencilOpState const & rhs )
+	{
+		return lhs.m_failOp == rhs.m_failOp
+			&& lhs.m_passOp == rhs.m_passOp
+			&& lhs.m_depthFailOp == rhs.m_depthFailOp
+			&& lhs.m_compareOp == rhs.m_compareOp
+			&& lhs.m_compareMask == rhs.m_compareMask
+			&& lhs.m_writeMask == rhs.m_writeMask
+			&& lhs.m_reference == rhs.m_reference;
+	}
+
+	inline bool operator!=( StencilOpState const & lhs, StencilOpState const & rhs )
+	{
+		return !( lhs == rhs );
+	}
 }
 
 #endif

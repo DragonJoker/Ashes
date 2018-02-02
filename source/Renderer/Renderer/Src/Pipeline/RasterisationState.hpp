@@ -155,7 +155,28 @@ namespace renderer
 		float m_depthBiasClamp;
 		float m_depthBiasSlopeFactor;
 		float m_lineWidth;
+		friend bool operator==( RasterisationState const & lhs, RasterisationState const & rhs );
 	};
+
+	inline bool operator==( RasterisationState const & lhs, RasterisationState const & rhs )
+	{
+		return lhs.m_flags == rhs.m_flags
+			&& lhs.m_depthClampEnable == rhs.m_depthClampEnable
+			&& lhs.m_rasteriserDiscardEnable == rhs.m_rasteriserDiscardEnable
+			&& lhs.m_polygonMode == rhs.m_polygonMode
+			&& lhs.m_cullMode == rhs.m_cullMode
+			&& lhs.m_frontFace == rhs.m_frontFace
+			&& lhs.m_depthBiasEnable == rhs.m_depthBiasEnable
+			&& lhs.m_depthBiasConstantFactor == rhs.m_depthBiasConstantFactor
+			&& lhs.m_depthBiasClamp == rhs.m_depthBiasClamp
+			&& lhs.m_depthBiasSlopeFactor == rhs.m_depthBiasSlopeFactor
+			&& lhs.m_lineWidth == rhs.m_lineWidth;
+	}
+
+	inline bool operator!=( RasterisationState const & lhs, RasterisationState const & rhs )
+	{
+		return !( lhs == rhs );
+	}
 }
 
 #endif
