@@ -768,7 +768,6 @@ namespace vkapp
 
 		if ( resources )
 		{
-			auto before = std::chrono::high_resolution_clock::now();
 			auto & queue = m_device->getGraphicsQueue();
 			auto res = queue.submit( *m_commandBuffer
 				, nullptr );
@@ -782,9 +781,6 @@ namespace vkapp
 					, &resources->getFence() );
 				m_swapChain->present( *resources );
 			}
-
-			auto after = std::chrono::high_resolution_clock::now();
-			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
 		}
 		else
 		{
@@ -803,8 +799,11 @@ namespace vkapp
 	{
 		if ( event.GetId() == int( Ids::RenderTimer ) )
 		{
+			auto before = std::chrono::high_resolution_clock::now();
 			doUpdate();
 			doDraw();
+			auto after = std::chrono::high_resolution_clock::now();
+			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
 		}
 	}
 
