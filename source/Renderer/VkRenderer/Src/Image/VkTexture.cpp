@@ -2,6 +2,7 @@
 
 #include "Command/VkCommandBuffer.hpp"
 #include "Core/VkDevice.hpp"
+#include "Core/VkRenderer.hpp"
 #include "Sync/VkImageMemoryBarrier.hpp"
 #include "Image/VkImageSubresourceRange.hpp"
 #include "Miscellaneous/VkMemoryStorage.hpp"
@@ -28,7 +29,8 @@ namespace vk_renderer
 			};
 		}
 
-		renderer::PixelFormat findSupportedFormat( const std::vector< renderer::PixelFormat > & candidates
+		renderer::PixelFormat findSupportedFormat( Device const & device
+			, const std::vector< renderer::PixelFormat > & candidates
 			, VkImageTiling tiling
 			, VkFormatFeatureFlags features
 			, PhysicalDevice const & physicalDevice )
@@ -36,7 +38,7 @@ namespace vk_renderer
 			for ( renderer::PixelFormat format : candidates )
 			{
 				VkFormatProperties props;
-				vk::GetPhysicalDeviceFormatProperties( physicalDevice
+				device.getRenderer().GetPhysicalDeviceFormatProperties( physicalDevice
 					, convert( format )
 					, &props );
 
@@ -98,7 +100,8 @@ namespace vk_renderer
 		if ( renderer::isDepthFormat( format )
 			|| renderer::isDepthStencilFormat( format ) )
 		{
-			m_format = findSupportedFormat( { format }
+			m_format = findSupportedFormat( m_device
+				, { format }
 				, VK_IMAGE_TILING_OPTIMAL
 				, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
 				, m_device.getPhysicalDevice() );
@@ -127,7 +130,8 @@ namespace vk_renderer
 		if ( renderer::isDepthFormat( format )
 			|| renderer::isDepthStencilFormat( format ) )
 		{
-			m_format = findSupportedFormat( { format }
+			m_format = findSupportedFormat( m_device
+				, { format }
 				, VK_IMAGE_TILING_OPTIMAL
 				, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
 				, m_device.getPhysicalDevice() );
@@ -151,7 +155,7 @@ namespace vk_renderer
 	{
 		if ( m_owner )
 		{
-			vk::DestroyImage( m_device
+			m_device.DestroyImage( m_device
 				, m_image
 				, nullptr );
 		}
@@ -165,7 +169,7 @@ namespace vk_renderer
 		VkImageSubresource subResource{};
 		subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		VkSubresourceLayout subResourceLayout;
-		vk::GetImageSubresourceLayout( m_device, m_image, &subResource, &subResourceLayout );
+		m_device.GetImageSubresourceLayout( m_device, m_image, &subResource, &subResourceLayout );
 
 		mapped.data = m_storage->lock( offset
 			, size
@@ -242,7 +246,7 @@ namespace vk_renderer
 			VK_IMAGE_LAYOUT_UNDEFINED                             // initialLayout
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = vk::CreateImage( m_device
+		auto res = m_device.CreateImage( m_device
 			, &createInfo
 			, nullptr
 			, &m_image );
@@ -255,7 +259,7 @@ namespace vk_renderer
 		m_storage = std::make_unique< ImageStorage >( m_device
 			, m_image
 			, convert( memoryFlags ) );
-		res = vk::BindImageMemory( m_device
+		res = m_device.BindImageMemory( m_device
 			, m_image
 			, *m_storage
 			, 0 );
@@ -274,7 +278,8 @@ namespace vk_renderer
 			|| renderer::isDepthStencilFormat( m_format ) )
 			&& checkFlag( usageFlags, renderer::ImageUsageFlag::eDepthStencilAttachment ) )
 		{
-			m_format = findSupportedFormat( { m_format }
+			m_format = findSupportedFormat( m_device
+				, { m_format }
 				, convert( tiling )
 				, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
 				, m_device.getPhysicalDevice() );
@@ -304,7 +309,7 @@ namespace vk_renderer
 			VK_IMAGE_LAYOUT_UNDEFINED                             // initialLayout
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = vk::CreateImage( m_device
+		auto res = m_device.CreateImage( m_device
 			, &createInfo
 			, nullptr
 			, &m_image );
@@ -317,7 +322,7 @@ namespace vk_renderer
 		m_storage = std::make_unique< ImageStorage >( m_device
 			, m_image
 			, convert( memoryFlags ) );
-		res = vk::BindImageMemory( m_device
+		res = m_device.BindImageMemory( m_device
 			, m_image
 			, *m_storage
 			, 0 );
@@ -356,7 +361,7 @@ namespace vk_renderer
 			VK_IMAGE_LAYOUT_UNDEFINED                             // initialLayout
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = vk::CreateImage( m_device
+		auto res = m_device.CreateImage( m_device
 			, &createInfo
 			, nullptr
 			, &m_image );
@@ -369,7 +374,7 @@ namespace vk_renderer
 		m_storage = std::make_unique< ImageStorage >( m_device
 			, m_image
 			, convert( memoryFlags ) );
-		res = vk::BindImageMemory( m_device
+		res = m_device.BindImageMemory( m_device
 			, m_image
 			, *m_storage
 			, 0 );

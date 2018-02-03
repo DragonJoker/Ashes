@@ -14,10 +14,6 @@
 
 namespace vk_renderer
 {
-	/**
-	*\brief
-	*	Classe wrappant un vk::UniformBuffer.
-	*/
 	class UniformBuffer
 		: public renderer::UniformBufferBase
 	{

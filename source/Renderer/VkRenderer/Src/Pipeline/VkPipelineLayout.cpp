@@ -46,7 +46,7 @@ namespace vk_renderer
 				: vkranges.data()
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = vk::CreatePipelineLayout( m_device
+		auto res = m_device.CreatePipelineLayout( m_device
 			, &createInfo
 			, nullptr
 			, &m_layout );
@@ -76,7 +76,7 @@ namespace vk_renderer
 
 	PipelineLayout::~PipelineLayout()
 	{
-		vk::DestroyPipelineLayout( m_device
+		m_device.DestroyPipelineLayout( m_device
 			, m_layout
 			, nullptr );
 	}

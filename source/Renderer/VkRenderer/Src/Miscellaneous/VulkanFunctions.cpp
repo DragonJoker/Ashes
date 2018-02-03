@@ -6,9 +6,4 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	namespace vk
-	{
-#define VK_LIB_FUNCTION( fun ) PFN_vk##fun fun;
-#include "VulkanFunctionsList.inl"
-	}
 }

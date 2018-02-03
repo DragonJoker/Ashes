@@ -100,12 +100,30 @@ namespace vk_renderer
 
 	Renderer::Renderer()
 		: renderer::Renderer{ renderer::ClipDirection::eTopDown }
+#if defined( _WIN32 )
+		, m_library{ "vulkan-1.dll" }
+#elif defined( __linux__ )
+		, m_library{ "libvulkan.so.1" }
+#else
+#	error Unsupported platform
+#endif
 	{
 # if VKRENDERER_GLSL_TO_SPV
 
 		glslang::InitializeProcess();
 
 #endif
+
+		m_library.getFunction( "vkGetInstanceProcAddr", GetInstanceProcAddr );
+
+		if ( !GetInstanceProcAddr )
+		{
+			throw std::runtime_error{ std::string{ "Couldn't load vkGetInstanceProcAddr" } };
+		}
+
+#define VK_LIB_GLOBAL_FUNCTION( fun ) fun = reinterpret_cast< PFN_vk##fun >( GetInstanceProcAddr( nullptr, "vk"#fun ) );
+#include "Miscellaneous/VulkanFunctionsList.inl"
+
 		doInitLayersProperties();
 		doInitInstance();
 		doEnumerateDevices();
@@ -117,10 +135,7 @@ namespace vk_renderer
 		{
 			if ( m_msgCallback != VK_NULL_HANDLE )
 			{
-				m_destroyDebugReportCallback( m_instance, m_msgCallback, nullptr );
-				m_createDebugReportCallback = VK_NULL_HANDLE;
-				m_destroyDebugReportCallback = VK_NULL_HANDLE;
-				m_debugReportMessage = VK_NULL_HANDLE;
+				DestroyDebugReportCallbackEXT( m_instance, m_msgCallback, nullptr );
 				m_msgCallback = VK_NULL_HANDLE;
 			}
 
@@ -128,7 +143,7 @@ namespace vk_renderer
 			m_instanceExtensionNames.clear();
 			m_instanceLayerNames.clear();
 			m_gpus.clear();
-			vk::DestroyInstance( m_instance, nullptr );
+			DestroyInstance( m_instance, nullptr );
 			m_instance = VK_NULL_HANDLE;
 		}
 
@@ -206,7 +221,7 @@ namespace vk_renderer
 		do
 		{
 			uint32_t instanceLayerCount{ 0 };
-			res = vk::EnumerateInstanceLayerProperties( &instanceLayerCount, nullptr );
+			res = EnumerateInstanceLayerProperties( &instanceLayerCount, nullptr );
 
 			if ( checkError( res ) )
 			{
@@ -217,7 +232,7 @@ namespace vk_renderer
 				else
 				{
 					vkProperties.resize( instanceLayerCount );
-					res = vk::EnumerateInstanceLayerProperties( &instanceLayerCount
+					res = EnumerateInstanceLayerProperties( &instanceLayerCount
 						, vkProperties.data() );
 				}
 			}
@@ -250,7 +265,7 @@ namespace vk_renderer
 		do
 		{
 			uint32_t extensionCount{ 0 };
-			res = vk::EnumerateInstanceExtensionProperties( name
+			res = EnumerateInstanceExtensionProperties( name
 				, &extensionCount
 				, nullptr );
 
@@ -259,7 +274,7 @@ namespace vk_renderer
 				if ( extensionCount > 0 )
 				{
 					layerProps.m_extensions.resize( extensionCount );
-					res = vk::EnumerateInstanceExtensionProperties( name
+					res = EnumerateInstanceExtensionProperties( name
 						, &extensionCount
 						, layerProps.m_extensions.data() );
 				}
@@ -306,12 +321,15 @@ namespace vk_renderer
 		};
 		DEBUG_DUMP( instInfo );
 
-		auto res = vk::CreateInstance( &instInfo, nullptr, &m_instance );
+		auto res = CreateInstance( &instInfo, nullptr, &m_instance );
 
 		if ( !checkError( res ) )
 		{
 			throw std::runtime_error{ "Instance initialisation failed: " + getLastError() };
 		}
+
+#define VK_LIB_INSTANCE_FUNCTION( fun ) fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
+#include "Miscellaneous/VulkanFunctionsList.inl"
 
 #if !defined( NDEBUG )
 		// The report flags determine what type of messages for the layers will be displayed
@@ -324,31 +342,27 @@ namespace vk_renderer
 
 	void Renderer::doSetupDebugging( VkDebugReportFlagsEXT flags )
 	{
-		m_createDebugReportCallback = reinterpret_cast< PFN_vkCreateDebugReportCallbackEXT >( GetInstanceProcAddr( m_instance
-			, "vkCreateDebugReportCallbackEXT" ) );
-		m_destroyDebugReportCallback = reinterpret_cast< PFN_vkDestroyDebugReportCallbackEXT >( GetInstanceProcAddr( m_instance
-			, "vkDestroyDebugReportCallbackEXT" ) );
-		m_debugReportMessage = reinterpret_cast< PFN_vkDebugReportMessageEXT >( GetInstanceProcAddr( m_instance
-			, "vkDebugReportMessageEXT" ) );
-
-		VkDebugReportCallbackCreateInfoEXT dbgCreateInfo
+		if ( CreateDebugReportCallbackEXT )
 		{
-			VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT,
-			nullptr,
-			flags,
-			( PFN_vkDebugReportCallbackEXT )MyDebugReportCallback,
-			this
-		};
+			VkDebugReportCallbackCreateInfoEXT dbgCreateInfo
+			{
+				VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT,
+				nullptr,
+				flags,
+				( PFN_vkDebugReportCallbackEXT )MyDebugReportCallback,
+				this
+			};
 
-		VkResult res = m_createDebugReportCallback(
-			m_instance,
-			&dbgCreateInfo,
-			nullptr,
-			&m_msgCallback );
+			VkResult res = CreateDebugReportCallbackEXT(
+				m_instance,
+				&dbgCreateInfo,
+				nullptr,
+				&m_msgCallback );
 
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Debug initialisation failed: " + getLastError() };
+			if ( !checkError( res ) )
+			{
+				throw std::runtime_error{ "Debug initialisation failed: " + getLastError() };
+			}
 		}
 	}
 
@@ -356,7 +370,7 @@ namespace vk_renderer
 	{
 		uint32_t gpuCount{ 0 };
 		// On r�cup�re les GPU physiques.
-		auto res = vk::EnumeratePhysicalDevices( m_instance
+		auto res = EnumeratePhysicalDevices( m_instance
 			, &gpuCount
 			, nullptr );
 
@@ -366,7 +380,7 @@ namespace vk_renderer
 		}
 
 		std::vector< VkPhysicalDevice > gpus( gpuCount, VK_NULL_HANDLE );
-		res = vk::EnumeratePhysicalDevices( m_instance
+		res = EnumeratePhysicalDevices( m_instance
 			, &gpuCount
 			, gpus.data() );
 
@@ -387,5 +401,17 @@ namespace vk_renderer
 		{
 			m_gpus.push_back( std::make_unique< PhysicalDevice >( *this, gpu ) );
 		}
+	}
+
+	PFN_vkVoidFunction Renderer::getInstanceProcAddr( char const * const name )
+	{
+		auto result = GetInstanceProcAddr( m_instance, name );
+
+		if ( !result )
+		{
+			std::cerr << std::string{ "Couldn't load function " } << name << std::endl;
+		}
+
+		return result;
 	}
 }
