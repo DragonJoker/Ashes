@@ -178,7 +178,7 @@ namespace vk_renderer
 		};
 		DEBUG_DUMP( pipeline );
 		DEBUG_WRITE( "pipeline.log" );
-		auto res = vk::CreateGraphicsPipelines( m_device
+		auto res = m_device.CreateGraphicsPipelines( m_device
 			, VK_NULL_HANDLE
 			, 1
 			, &pipeline
@@ -195,7 +195,7 @@ namespace vk_renderer
 
 	Pipeline::~Pipeline()
 	{
-		vk::DestroyPipeline( m_device, m_pipeline, nullptr );
+		m_device.DestroyPipeline( m_device, m_pipeline, nullptr );
 	}
 
 	renderer::Pipeline & Pipeline::multisampleState( renderer::MultisampleState const & state )

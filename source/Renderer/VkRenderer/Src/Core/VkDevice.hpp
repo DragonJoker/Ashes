@@ -264,6 +264,18 @@ namespace vk_renderer
 		/**
 		*\~french
 		*\return
+		*	L'API de rendu.
+		*\~english
+		*\return
+		*	The rendering API.
+		*/
+		inline Renderer const & getRenderer()const
+		{
+			return m_renderer;
+		}
+		/**
+		*\~french
+		*\return
 		*	La connection à l'application.
 		*\~english
 		*\return
@@ -305,6 +317,9 @@ namespace vk_renderer
 		{
 			return m_device;
 		}
+
+#define VK_LIB_DEVICE_FUNCTION( fun ) PFN_vk##fun fun;
+#	include "Miscellaneous/VulkanFunctionsList.inl"
 
 	private:
 		/**
