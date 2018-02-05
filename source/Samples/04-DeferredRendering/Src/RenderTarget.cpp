@@ -1,15 +1,23 @@
 #include "RenderTarget.hpp"
 
+#include "OpaqueRendering.hpp"
+#include "TransparentRendering.hpp"
+
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/UniformBuffer.hpp>
 #include <Command/Queue.hpp>
+#include <Descriptor/DescriptorSet.hpp>
+#include <Descriptor/DescriptorSetLayout.hpp>
+#include <Descriptor/DescriptorSetPool.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
+#include <Pipeline/PipelineLayout.hpp>
 #include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
+#include <Shader/ShaderProgram.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Utils/Transform.hpp>
@@ -26,11 +34,13 @@ namespace vkapp
 	RenderTarget::RenderTarget( renderer::Device const & device
 		, renderer::UniformBuffer< common::LightsData > const & lightsUbo
 		, renderer::UIVec2 const & size
-		, common::Object && object )
+		, common::Object && object
+		, common::ImagePtrArray && images )
 		: m_device{ device }
 		, m_lightsUbo{ lightsUbo }
-		, m_size{ size }
 		, m_object{ std::move( object ) }
+		, m_images{ std::move( images ) }
+		, m_size{ size }
 	{
 		try
 		{
@@ -38,12 +48,10 @@ namespace vkapp
 			std::cout << "Staging buffer created." << std::endl;
 			doCreateUniformBuffer();
 			std::cout << "Uniform buffers created." << std::endl;
+			doCreateTextures();
+			std::cout << "Textures created." << std::endl;
 			doCreateRenderPass();
 			std::cout << "Offscreen render pass created." << std::endl;
-			doCreateFrameBuffer();
-			std::cout << "Frame buffer created." << std::endl;
-			doPrepareFrame();
-			std::cout << "Frame prepared." << std::endl;
 		}
 		catch ( std::exception & )
 		{
@@ -60,40 +68,14 @@ namespace vkapp
 
 	void RenderTarget::resize( renderer::UIVec2 const & size )
 	{
-#if 0
-		float halfWidth = static_cast< float >( size.x ) * 0.5f;
-		float halfHeight = static_cast< float >( size.y ) * 0.5f;
-		float wRatio = 1.0f;
-		float hRatio = 1.0f;
-
-		if ( halfHeight > halfWidth )
+		if ( size != m_size )
 		{
-			hRatio = halfHeight / halfWidth;
+			m_size = size;
+			doUpdateMatrixUbo();
+			doUpdateRenderViews();
+			m_opaque->update( *m_colourView, *m_depthView );
+			m_transparent->update( *m_colourView, *m_depthView );
 		}
-		else
-		{
-			wRatio = halfWidth / halfHeight;
-		}
-
-		m_matrixUbo->getData( 0u ) = m_device->ortho( -2.0f * wRatio
-			, 2.0f * wRatio
-			, -2.0f * hRatio
-			, 2.0f * hRatio
-			, 0.0f
-			, 10.0f );
-#else
-		auto width = float( size[0] );
-		auto height = float( size[1] );
-		m_matrixUbo->getData( 0u ) = m_device.perspective( utils::toRadians( 90.0_degrees )
-			, width / height
-			, 0.01f
-			, 100.0f );
-#endif
-		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
-			, m_matrixUbo->getDatas()
-			, *m_matrixUbo
-			, renderer::PipelineStageFlag::eVertexShader );
-		m_size = size;
 	}
 
 	void RenderTarget::update()
@@ -119,9 +101,8 @@ namespace vkapp
 
 	void RenderTarget::draw()
 	{
-		auto & queue = m_device.getGraphicsQueue();
-		auto res = queue.submit( *m_commandBuffer
-			, nullptr );
+		m_opaque->draw();
+		m_transparent->draw();
 	}
 
 	void RenderTarget::doCleanup()
@@ -133,19 +114,23 @@ namespace vkapp
 		m_matrixUbo.reset();
 		m_objectUbo.reset();
 
-		m_frameBuffer.reset();
-		m_renderPass.reset();
+		m_transparent.reset();
+		m_opaque.reset();
 		m_depthView.reset();
 		m_depth.reset();
 		m_colourView.reset();
 		m_colour.reset();
+
+		m_images.clear();
+		m_textureNodes.clear();
 	}
 
 	void RenderTarget::doCreateStagingBuffer()
 	{
+		m_updateCommandBuffer = m_device.getGraphicsCommandPool().createCommandBuffer();
 		m_stagingBuffer = std::make_unique< renderer::StagingBuffer >( m_device
 			, 0u
-			, 65u * 1024u );
+			, 200u * 1024u * 1024u );
 	}
 
 	void RenderTarget::doCreateUniformBuffer()
@@ -160,24 +145,101 @@ namespace vkapp
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 	}
 
-	void RenderTarget::doCreateRenderPass()
+	void RenderTarget::doCreateTextures()
 	{
-		std::vector< renderer::PixelFormat > formats{ { renderer::PixelFormat::eR8G8B8A8, DepthFormat } };
-		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device.createRenderSubpass( formats
-			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
-		m_renderPass = m_device.createRenderPass( formats
-			, subpasses
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite
-				, { renderer::ImageLayout::eColourAttachmentOptimal, renderer::ImageLayout::eDepthStencilAttachmentOptimal } }
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite
-				, { renderer::ImageLayout::eColourAttachmentOptimal, renderer::ImageLayout::eDepthStencilAttachmentOptimal } } );
+		for ( auto & image : m_images )
+		{
+			common::TextureNodePtr textureNode = std::make_shared< common::TextureNode >();
+			textureNode->image = image;
+			textureNode->texture = m_device.createTexture();
+			textureNode->texture->setImage( image->format
+				, { image->size[0], image->size[1] }
+				, 4u
+				, renderer::ImageUsageFlag::eTransferSrc | renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled );
+			textureNode->view = textureNode->texture->createView( textureNode->texture->getType()
+				, textureNode->texture->getFormat()
+				, 0u
+				, 4u
+				, 0u
+				, 1u );
+			auto view = textureNode->texture->createView( textureNode->texture->getType()
+				, textureNode->texture->getFormat()
+				, 0u
+				, 1u
+				, 0u
+				, 1u );
+			m_stagingBuffer->uploadTextureData( *m_updateCommandBuffer
+				, image->data
+				, *view );
+			textureNode->texture->generateMipmaps();
+			m_textureNodes.emplace_back( textureNode );
+		}
 	}
 
-	void RenderTarget::doCreateFrameBuffer()
+	void RenderTarget::doCreateRenderPass()
 	{
+		doUpdateMatrixUbo();
+		doUpdateRenderViews();
+		m_opaque = std::make_unique< OpaqueRendering >( m_device
+			, m_object
+			, *m_matrixUbo
+			, *m_objectUbo
+			, m_lightsUbo
+			, *m_stagingBuffer
+			, *m_colourView
+			, *m_depthView
+			, m_textureNodes );
+		m_transparent = std::make_unique< TransparentRendering >( m_device
+			, m_object
+			, *m_matrixUbo
+			, *m_objectUbo
+			, m_lightsUbo
+			, *m_stagingBuffer
+			, *m_colourView
+			, *m_depthView
+			, m_textureNodes );
+	}
+
+	void RenderTarget::doUpdateMatrixUbo()
+	{
+#if 0
+		float halfWidth = static_cast< float >( m_size[0] ) * 0.5f;
+		float halfHeight = static_cast< float >( m_size[1] ) * 0.5f;
+		float wRatio = 1.0f;
+		float hRatio = 1.0f;
+
+		if ( halfHeight > halfWidth )
+		{
+			hRatio = halfHeight / halfWidth;
+		}
+		else
+		{
+			wRatio = halfWidth / halfHeight;
+		}
+
+		m_matrixUbo->getData( 0u ) = m_device->ortho( -2.0f * wRatio
+			, 2.0f * wRatio
+			, -2.0f * hRatio
+			, 2.0f * hRatio
+			, 0.0f
+			, 10.0f );
+#else
+		auto width = float( m_size[0] );
+		auto height = float( m_size[1] );
+		m_matrixUbo->getData( 0u ) = m_device.perspective( utils::toRadians( 90.0_degrees )
+			, width / height
+			, 0.01f
+			, 100.0f );
+#endif
+		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
+			, m_matrixUbo->getDatas()
+			, *m_matrixUbo
+			, renderer::PipelineStageFlag::eVertexShader );
+	}
+
+	void RenderTarget::doUpdateRenderViews()
+	{
+		m_colourView.reset();
 		m_colour = m_device.createTexture();
 		m_colour->setImage( renderer::PixelFormat::eR8G8B8A8
 			, m_size
@@ -189,6 +251,7 @@ namespace vkapp
 			, 0u
 			, 1u );
 
+		m_depthView.reset();
 		m_depth = m_device.createTexture();
 		m_depth->setImage( DepthFormat
 			, m_size
@@ -199,50 +262,5 @@ namespace vkapp
 			, 1u
 			, 0u
 			, 1u );
-		renderer::TextureAttachmentPtrArray attaches;
-		attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( *m_colourView ) );
-		attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( *m_depthView ) );
-		m_frameBuffer = m_renderPass->createFrameBuffer( m_size
-			, std::move( attaches ) );
-	}
-
-	void RenderTarget::doPrepareFrame()
-	{
-		resize( m_size );
-		m_commandBuffer = m_device.getGraphicsCommandPool().createCommandBuffer();
-		auto & commandBuffer = *m_commandBuffer;
-		auto & frameBuffer = *m_frameBuffer;
-
-		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
-		{
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eColourAttachmentOutput
-				, m_colourView->makeColourAttachment() );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
-				, renderer::PipelineStageFlag::eEarlyFragmentTests
-				, m_depthView->makeDepthStencilAttachment() );
-			commandBuffer.beginRenderPass( *m_renderPass
-				, frameBuffer
-				, { renderer::ClearValue{ { 1.0f, 0.8f, 0.4f, 0.0f } }
-					, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
-				, renderer::SubpassContents::eInline );
-
-			// Opaque pass
-
-			// Transparent pass
-
-			commandBuffer.endRenderPass();
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eBottomOfPipe
-				, m_colourView->makeShaderInputResource() );
-			auto res = commandBuffer.end();
-
-			if ( !res )
-			{
-				std::stringstream stream;
-				stream << "Command buffers recording failed.";
-				throw std::runtime_error{ stream.str() };
-			}
-		}
 	}
 }

@@ -20,7 +20,9 @@ namespace vkapp
 
 	static wxString const AppName = wxT( "04-DeferredRendering" );
 
-	class RenderPanel;
-	class MainFrame;
 	class Application;
+	class MainFrame;
+	class OpaqueRendering;
+	class RenderPanel;
+	class TransparentRendering;
 }

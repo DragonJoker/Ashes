@@ -47,7 +47,6 @@ namespace vkapp
 	private:
 		wxTimer * m_timer{ nullptr };
 		std::vector< TexturedVertexData > m_vertexData;
-		common::Object m_object;
 
 		renderer::DevicePtr m_device;
 		renderer::SwapChainPtr m_swapChain;
