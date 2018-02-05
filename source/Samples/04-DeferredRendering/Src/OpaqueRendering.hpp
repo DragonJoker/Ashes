@@ -2,101 +2,50 @@
 
 #include "Prerequisites.hpp"
 
-#include <Core/Connection.hpp>
-#include <Core/Device.hpp>
-#include <Pipeline/Pipeline.hpp>
-#include <Pipeline/PipelineLayout.hpp>
-#include <Image/Sampler.hpp>
-#include <Core/SwapChain.hpp>
-
-#include <Utils/UtilsSignal.hpp>
-
-#include <AssimpLoader.hpp>
-
-#include <wx/panel.h>
-
-#include <array>
-
 namespace vkapp
 {
-	class RenderPanel
-		: public wxPanel
+	class OpaqueRendering
 	{
 	public:
-		RenderPanel( wxWindow * parent
-			, wxSize const & size
-			, renderer::Renderer const & renderer );
-		~RenderPanel();
+		OpaqueRendering( renderer::Device const & device
+			, common::Object const & submeshes
+			, renderer::UniformBuffer< renderer::Mat4 > const & matrixUbo
+			, renderer::UniformBuffer< renderer::Mat4 > const & objectUbo
+			, renderer::UniformBuffer< common::LightsData > const & lightsUbo
+			, renderer::StagingBuffer & stagingBuffer
+			, renderer::TextureView const & colourView
+			, renderer::TextureView const & depthView
+			, common::TextureNodePtrArray const & textureNodes );
+		void update( renderer::TextureView const & colourView
+			, renderer::TextureView const & depthView );
+		void draw()const;
 
 	private:
-		void doCleanup();
-		void doUpdateProjection();
-		void doCreateDevice( renderer::Renderer const & renderer );
-		void doCreateSwapChain();
-		void doInitialiseObject();
-		void doInitialiseLights();
-		void doCreateUniformBuffer();
-		void doCreateStagingBuffer();
-		void doCreateOffscreenDescriptorSet();
-		void doCreateOffscreenRenderPass();
-		void doCreateFrameBuffer();
-		void doCreateOffscreenProgram();
-		void doPrepareOffscreenFrame();
-		void doCreateMainDescriptorSet();
-		void doCreateMainRenderPass();
-		void doCreateMainVertexBuffer();
-		void doCreateMainPipeline();
-		void doPrepareMainFrames();
-		void doUpdate();
-		void doDraw();
-		void doResetSwapChain();
-		void onTimer( wxTimerEvent & event );
-		void onSize( wxSizeEvent & event );
-
-	private:
-		wxTimer * m_timer{ nullptr };
-		renderer::Mat4 m_rotate;
-
-		renderer::DevicePtr m_device;
-		renderer::SwapChainPtr m_swapChain;
-		renderer::StagingBufferPtr m_stagingBuffer;
+		renderer::Device const & m_device;
+		renderer::UniformBuffer< renderer::Mat4 > const & m_matrixUbo;
+		renderer::UniformBuffer< renderer::Mat4 > const & m_objectUbo;
+		renderer::UniformBuffer< common::LightsData > const & m_lightsUbo;
+		renderer::TextureView const * m_colourView{ nullptr };
+		renderer::TextureView const * m_depthView{ nullptr };
+		renderer::TexturePtr m_diffuse{ nullptr };
+		renderer::TextureViewPtr m_diffuseView{ nullptr };
+		renderer::TexturePtr m_specular{ nullptr };
+		renderer::TextureViewPtr m_specularView{ nullptr };
+		renderer::TexturePtr m_emissive{ nullptr };
+		renderer::TextureViewPtr m_emissiveView{ nullptr };
+		renderer::TexturePtr m_normal{ nullptr };
+		renderer::TextureViewPtr m_normalView{ nullptr };
 		renderer::SamplerPtr m_sampler;
-		renderer::TexturePtr m_renderTargetColour;
-		renderer::TextureViewPtr m_renderTargetColourView;
-		renderer::TexturePtr m_renderTargetDepth;
-		renderer::TextureViewPtr m_renderTargetDepthView;
-		renderer::FrameBufferPtr m_frameBuffer;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_matrixUbo;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_objectUbo;
-		renderer::UniformBufferPtr< common::MaterialData > m_materialUbo;
-		renderer::UniformBufferPtr< common::LightsData > m_lightsUbo;
 		renderer::CommandBufferPtr m_updateCommandBuffer;
-		common::Object m_object;
-		uint32_t m_nodesCount;
-
 		renderer::CommandBufferPtr m_commandBuffer;
-		renderer::RenderPassPtr m_offscreenRenderPass;
-		renderer::ShaderProgramPtr m_offscreenProgram;
-		common::ObjectNodes m_opaqueObject;
-		common::ObjectNodes m_alphaBlendedObject;
+		renderer::UniformBufferPtr< common::MaterialData > m_materialsUbo;
+		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
+		renderer::DescriptorSetPoolPtr m_descriptorPool;
+		renderer::ShaderProgramPtr m_program;
+		renderer::RenderPassPtr m_renderPass;
+		renderer::FrameBufferPtr m_frameBuffer;
 		common::SubmeshNodes m_submeshNodes;
-		renderer::DescriptorSetLayoutPtr m_offscreenDescriptorLayout;
-		renderer::DescriptorSetPoolPtr m_offscreenDescriptorPool;
-
-		renderer::RenderPassPtr m_mainRenderPass;
-		renderer::ShaderProgramPtr m_mainProgram;
-		renderer::PipelineLayoutPtr m_mainPipelineLayout;
-		renderer::PipelinePtr m_mainPipeline;
-		renderer::VertexBufferPtr< TexturedVertexData > m_mainVertexBuffer;
-		renderer::VertexLayoutPtr m_mainVertexLayout;
-		renderer::GeometryBuffersPtr m_mainGeometryBuffers;
-		renderer::DescriptorSetLayoutPtr m_mainDescriptorLayout;
-		renderer::DescriptorSetPoolPtr m_mainDescriptorPool;
-		renderer::DescriptorSetPtr m_mainDescriptorSet;
-		std::vector< TexturedVertexData > m_mainVertexData;
-
-		std::vector< renderer::FrameBufferPtr > m_frameBuffers;
-		std::vector< renderer::CommandBufferPtr > m_commandBuffers;
-		renderer::SignalConnection< renderer::SwapChain::OnReset > m_swapChainReset;
+		common::ObjectNodes m_renderNodes;
+		uint32_t m_nodesCount;
 	};
 }

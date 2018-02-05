@@ -74,10 +74,12 @@ namespace vkapp
 				, 1024u * 64u );
 			doInitialiseLights();
 			std::cout << "Lights initialised." << std::endl;
+			common::ImagePtrArray images;
 			m_renderTarget = std::make_unique< RenderTarget >( *m_device
 				, *m_lightsUbo
 				, renderer::UIVec2{ size.GetWidth(), size.GetHeight() }
-				, common::loadObject( common::getPath( common::getExecutableDirectory() ) / "share" / "Assets" / "Nyra", "Nyra_pose.fbx" ) );
+				, common::loadObject( common::getPath( common::getExecutableDirectory() ) / "share" / "Assets" / "Nyra", "Nyra_pose.fbx", images )
+				, std::move( images ) );
 			m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 				, renderer::WrapMode::eClampToEdge
 				, renderer::WrapMode::eClampToEdge
@@ -137,11 +139,14 @@ namespace vkapp
 			m_descriptorLayout.reset();
 			m_pipeline.reset();
 			m_pipelineLayout.reset();
+
 			m_program.reset();
 			m_vertexBuffer.reset();
 			m_geometryBuffers.reset();
 			m_vertexLayout.reset();
 			m_renderPass.reset();
+			m_sampler.reset();
+			m_stagingBuffer.reset();
 
 			m_swapChain.reset();
 			m_device->disable();
