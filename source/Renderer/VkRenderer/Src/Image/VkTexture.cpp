@@ -1,6 +1,7 @@
 #include "Image/VkTexture.hpp"
 
 #include "Command/VkCommandBuffer.hpp"
+#include "Command/VkQueue.hpp"
 #include "Core/VkDevice.hpp"
 #include "Core/VkRenderer.hpp"
 #include "Sync/VkImageMemoryBarrier.hpp"
@@ -213,9 +214,57 @@ namespace vk_renderer
 
 	void Texture::generateMipmaps()const
 	{
-		//m_texture->bind( 0 );
-		//m_texture->generateMipmaps();
-		//m_texture->unbind( 0 );
+		auto const width = int32_t( getDimensions()[0] );
+		auto const height = int32_t( getDimensions()[1] );
+		auto commandBuffer = m_device.getGraphicsCommandPool().createCommandBuffer();
+		auto & vkCommandBuffer = static_cast< CommandBuffer const & >( *commandBuffer );
+
+		if ( commandBuffer->begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
+		{
+			TextureView srcView{ m_device, *this, getType(), getFormat(), 0, 1u, 0u, 1u };
+			vkCommandBuffer.memoryBarrier( convert( renderer::PipelineStageFlag::eFragmentShader )
+				, convert( renderer::PipelineStageFlag::eTopOfPipe )
+				, srcView.makeTransferSource() );
+
+			for ( uint32_t i = 1; i < m_mipmapLevels; ++i )
+			{
+				TextureView dstView{ m_device, *this, getType(), getFormat(), i, 1u, 0u, 1u };
+				vkCommandBuffer.memoryBarrier( convert( renderer::PipelineStageFlag::eFragmentShader )
+					, convert( renderer::PipelineStageFlag::eTopOfPipe )
+					, dstView.makeTransferDestination() );
+
+				int32_t const mipWidth = width >> i;
+				int32_t const mipHeight = height >> i;
+
+				VkImageBlit imageBlit = {};
+				imageBlit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+				imageBlit.srcSubresource.baseArrayLayer = 0;
+				imageBlit.srcSubresource.layerCount = 1;
+				imageBlit.srcSubresource.mipLevel = 0;
+				imageBlit.srcOffsets[0] = { 0, 0, 0 };
+				imageBlit.srcOffsets[1] = { width, height, 1 };
+
+				imageBlit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+				imageBlit.dstSubresource.baseArrayLayer = 0;
+				imageBlit.dstSubresource.layerCount = 1;
+				imageBlit.dstSubresource.mipLevel = i;
+				imageBlit.dstOffsets[0] = { 0, 0, 0 };
+				imageBlit.dstOffsets[1] = { mipWidth, mipHeight, 1 };
+
+				m_device.CmdBlitImage( vkCommandBuffer
+					, m_image
+					, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+					, m_image
+					, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+					, 1
+					, &imageBlit
+					, VK_FILTER_LINEAR );
+			}
+
+			commandBuffer->end();
+			m_device.getGraphicsQueue().submit( *commandBuffer, nullptr );
+			m_device.waitIdle();
+		}
 	}
 
 	void Texture::doSetImage1D( renderer::ImageUsageFlags usageFlags
@@ -235,7 +284,7 @@ namespace vk_renderer
 				1u,                                                   // height
 				1u                                                    // depth
 			},
-			1,                                                    // mipLevels
+			m_mipmapLevels,                                       // mipLevels
 			m_layerCount ? m_layerCount : 1u,                     // arrayLayers
 			convert( m_samples ),                                 // samples
 			convert( tiling ),                                    // tiling
@@ -298,7 +347,7 @@ namespace vk_renderer
 				uint32_t( m_size[1] ),                                // height
 				1                                                     // depth
 			},
-			1,                                                    // mipLevels
+			m_mipmapLevels,                                       // mipLevels
 			m_layerCount ? m_layerCount : 1u,                     // arrayLayers
 			convert( m_samples ),                                 // samples
 			convert( tiling ),                                    // tiling
@@ -350,7 +399,7 @@ namespace vk_renderer
 				uint32_t( m_size[1] ),                                // height
 				uint32_t( m_size[2] ),                                // depth
 			},
-			1u,                                                   // mipLevels
+			m_mipmapLevels,                                       // mipLevels
 			1u,                                                   // arrayLayers
 			convert( m_samples ),                                 // samples
 			convert( tiling ),                                    // tiling

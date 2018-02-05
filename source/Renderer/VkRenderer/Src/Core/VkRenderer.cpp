@@ -194,7 +194,7 @@ namespace vk_renderer
 	{
 		for ( auto const & props : m_instanceLayersProperties )
 		{
-#if !defined( NDEBUG )
+#if 1//!defined( NDEBUG )
 			if ( std::string{ props.m_properties.layerName }.find( "validation" ) != std::string::npos
 				|| std::string{ props.m_properties.description }.find( "LunarG Validation" ) != std::string::npos )
 			{
@@ -292,7 +292,7 @@ namespace vk_renderer
 		completeLayerNames( m_instanceLayerNames );
 		m_instanceExtensionNames.push_back( VK_KHR_SURFACE_EXTENSION_NAME );
 		m_instanceExtensionNames.push_back( VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME );
-#if !defined( NDEBUG )
+#if 1//!defined( NDEBUG )
 		m_instanceExtensionNames.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
 #endif
 		checkExtensionsAvailability( m_instanceLayersProperties.front().m_extensions, m_instanceExtensionNames );
@@ -331,7 +331,7 @@ namespace vk_renderer
 #define VK_LIB_INSTANCE_FUNCTION( fun ) fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
 #include "Miscellaneous/VulkanFunctionsList.inl"
 
-#if !defined( NDEBUG )
+#if 1//!defined( NDEBUG )
 		// The report flags determine what type of messages for the layers will be displayed
 		// For validating (debugging) an appplication the error and warning bits should suffice
 		VkDebugReportFlagsEXT debugReportFlags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
