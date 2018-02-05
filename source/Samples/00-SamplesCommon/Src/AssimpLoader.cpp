@@ -15,6 +15,69 @@ namespace common
 {
 	namespace
 	{
+		bool doLoadTexture( std::string const & folder
+			, aiString const & name
+			, ImagePtr & data
+			, std::map< std::string, ImagePtr > & images )
+		{
+			bool result = false;
+			auto it = images.find( name.C_Str() );
+
+			if ( it != images.end() )
+			{
+				data = it->second;
+				return true;
+			}
+
+			if ( name.length > 0 )
+			{
+				folder;
+				std::string path = name.C_Str();
+				auto index = 0u;
+				utils::replace( path, R"(\)", "/" );
+
+				if ( path.find( '/' ) != std::string::npos )
+				{
+					index = path.find_last_of( '/' ) + 1;
+					path = path.substr( index );
+				}
+
+				std::clog << "  Loading texture " << path << std::endl;
+				path = folder / path;
+
+				try
+				{
+					data = std::make_shared< Image >( common::loadImage( path ) );
+					result = true;
+				}
+				catch ( std::runtime_error & )
+				{
+					utils::replace( path, ".tga", ".jpg" );
+					try
+					{
+						data = std::make_shared< Image >( common::loadImage( path ) );
+						result = true;
+					}
+					catch ( std::runtime_error & )
+					{
+						utils::replace( path, ".tga", ".png" );
+						try
+						{
+							data = std::make_shared< Image >( common::loadImage( path ) );
+							result = true;
+						}
+						catch ( std::runtime_error & )
+						{
+						}
+					}
+				}
+
+				images.insert( { std::string{ name.C_Str() }, data } );
+			}
+
+			return result;
+		}
+
 		template< typename aiMeshType >
 		std::vector< Vertex > doCreateVertexBuffer( aiMeshType const & aiMesh
 			, renderer::Vec3 & min
@@ -131,62 +194,10 @@ namespace common
 			}
 		}
 
-		bool doLoadTexture( std::string const & folder
-			, aiString const & name
-			, Image & data )
-		{
-			bool result = false;
-
-			if ( name.length > 0 )
-			{
-				folder;
-				std::string path = name.C_Str();
-				auto index = 0u;
-				utils::replace( path, R"(\)", "/" );
-
-				if ( path.find( '/' ) != std::string::npos )
-				{
-					index = path.find_last_of( '/' )  + 1;
-					path = path.substr( index );
-				}
-
-				path = folder / path;
-				std::clog << "  Loading texture " << path << std::endl;
-
-				try
-				{
-					data = common::loadImage( path );
-					result = true;
-				}
-				catch ( std::runtime_error & )
-				{
-					utils::replace( path, ".tga", ".jpg" );
-					try
-					{
-						data = common::loadImage( path );
-						result = true;
-					}
-					catch ( std::runtime_error & )
-					{
-						utils::replace( path, ".tga", ".png" );
-						try
-						{
-							data = common::loadImage( path );
-							result = true;
-						}
-						catch ( std::runtime_error & )
-						{
-						}
-					}
-				}
-			}
-
-			return result;
-		}
-
 		void doProcessPassTextures( std::string const & folder
 			, Material & material
-			, aiMaterial const & aiMaterial )
+			, aiMaterial const & aiMaterial
+			, std::map< std::string, ImagePtr > & images )
 		{
 			aiString ambTexName;
 			aiMaterial.Get( AI_MATKEY_TEXTURE( aiTextureType_AMBIENT, 0 ), ambTexName );
@@ -204,15 +215,16 @@ namespace common
 			aiMaterial.Get( AI_MATKEY_TEXTURE( aiTextureType_OPACITY, 0 ), opaTexName );
 			aiString shnTexName;
 			aiMaterial.Get( AI_MATKEY_TEXTURE( aiTextureType_SHININESS, 0 ), shnTexName );
-			Image image;
+			ImagePtr image;
 			auto index = 0u;
+			auto it = images.find( difTexName.C_Str() );
 
-			if ( doLoadTexture( folder, difTexName, image ) )
+			if ( doLoadTexture( folder, difTexName, image, images ) )
 			{
-				material.textures.emplace_back( std::move( image ) );
+				material.textures.push_back( image );
 				material.data.textureOperators[index].diffuse = 1;
 
-				if ( image.opacity )
+				if ( image->opacity )
 				{
 					material.data.textureOperators[index].opacity = 8u;
 					material.hasOpacity = true;
@@ -221,12 +233,12 @@ namespace common
 				++index;
 			}
 
-			if ( doLoadTexture( folder, spcTexName, image ) )
+			if ( doLoadTexture( folder, spcTexName, image, images ) )
 			{
-				material.textures.emplace_back( std::move( image ) );
+				material.textures.push_back( image );
 				material.data.textureOperators[index].specular = 1;
 
-				if ( image.opacity )
+				if ( image->opacity )
 				{
 					material.data.textureOperators[index].shininess = 8u;
 				}
@@ -234,26 +246,26 @@ namespace common
 				++index;
 			}
 
-			if ( doLoadTexture( folder, emiTexName, image ) )
+			if ( doLoadTexture( folder, emiTexName, image, images ) )
 			{
-				material.textures.emplace_back( std::move( image ) );
+				material.textures.push_back( image );
 				material.data.textureOperators[index].emissive = 1;
 				++index;
 			}
 
-			if ( doLoadTexture( folder, shnTexName, image ) )
+			if ( doLoadTexture( folder, shnTexName, image, images ) )
 			{
-				material.textures.emplace_back( std::move( image ) );
+				material.textures.push_back( image );
 				material.data.textureOperators[index].shininess = 1;
 				++index;
 			}
 
-			if ( doLoadTexture( folder, opaTexName, image ) )
+			if ( doLoadTexture( folder, opaTexName, image, images ) )
 			{
-				material.textures.emplace_back( std::move( image ) );
+				material.textures.push_back( image );
 				material.hasOpacity = true;
 
-				if ( image.opacity )
+				if ( image->opacity )
 				{
 					material.data.textureOperators[index].opacity = 8;
 				}
@@ -265,12 +277,12 @@ namespace common
 				++index;
 			}
 
-			if ( doLoadTexture( folder, nmlTexName, image ) )
+			if ( doLoadTexture( folder, nmlTexName, image, images ) )
 			{
-				material.textures.emplace_back( std::move( image ) );
+				material.textures.push_back( image );
 				material.data.textureOperators[index].normal = 1;
 
-				if ( image.opacity )
+				if ( image->opacity )
 				{
 					material.data.textureOperators[index].height = 8;
 				}
@@ -284,6 +296,7 @@ namespace common
 
 	Object loadObject( std::string const & folder
 		, std::string const & fileName
+		, common::ImagePtrArray & images
 		, float rescale )
 	{
 		Assimp::Importer importer;
@@ -312,6 +325,8 @@ namespace common
 				}
 			};
 
+			std::map< std::string, ImagePtr > uniqueImages;
+
 			for ( size_t meshIndex = 0; meshIndex < aiScene->mNumMeshes; ++meshIndex )
 			{
 				auto & aiMesh = *aiScene->mMeshes[meshIndex];
@@ -326,7 +341,7 @@ namespace common
 						aiMaterial.Get( AI_MATKEY_NAME, mtlname );
 						Material material;
 						doProcessPassBaseComponents( material, aiMaterial );
-						doProcessPassTextures( folder, material, aiMaterial );
+						doProcessPassTextures( folder, material, aiMaterial, uniqueImages );
 						submesh.materials.push_back( material );
 					}
 					else
@@ -389,6 +404,11 @@ namespace common
 				{
 					vertex.position = offset + ( vertex.position * scale );
 				}
+			}
+
+			for ( auto & image : uniqueImages )
+			{
+				images.emplace_back( std::move( image.second ) );
 			}
 		}
 

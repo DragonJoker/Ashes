@@ -63,7 +63,7 @@ namespace vkapp
 			{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
 			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
 		}
-		, m_object{ common::loadObject( common::getPath( common::getExecutableDirectory() ) / "share" / "Assets" / "Nyra", "Nyra_pose.fbx" ) }
+		, m_object{ common::loadObject( common::getPath( common::getExecutableDirectory() ) / "share" / "Assets" / "Nyra", "Nyra_pose.fbx", m_images ) }
 	{
 		try
 		{
@@ -81,11 +81,14 @@ namespace vkapp
 			std::cout << "Offscreen render pass created." << std::endl;
 			doCreateOffscreenProgram();
 			std::cout << "Offscreen pipeline created." << std::endl;
+			doCreateTextures();
+			std::cout << "Textures created." << std::endl;
 			doInitialiseObject();
 			std::cout << "Object created." << std::endl;
 			doCreateFrameBuffer();
 			std::cout << "Frame buffer created." << std::endl;
 			doPrepareOffscreenFrame();
+			std::cout << "Offscreen frame prepared." << std::endl;
 			doCreateMainDescriptorSet();
 			std::cout << "Main descriptor set created." << std::endl;
 			doCreateMainRenderPass();
@@ -95,6 +98,7 @@ namespace vkapp
 			doCreateMainPipeline();
 			std::cout << "Main pipeline created." << std::endl;
 			doPrepareMainFrames();
+			std::cout << "Main frames prepared." << std::endl;
 		}
 		catch ( std::exception & )
 		{
@@ -137,6 +141,7 @@ namespace vkapp
 			m_opaqueObject.clear();
 			m_alphaBlendedObject.clear();
 			m_submeshNodes.clear();
+			m_textureNodes.clear();
 
 			m_stagingBuffer.reset();
 
@@ -230,6 +235,37 @@ namespace vkapp
 		m_updateCommandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
 	}
 
+	void RenderPanel::doCreateTextures()
+	{
+		for ( auto & image : m_images )
+		{
+			common::TextureNodePtr textureNode = std::make_shared< common::TextureNode >();
+			textureNode->image = image;
+			textureNode->texture = m_device->createTexture();
+			textureNode->texture->setImage( image->format
+				, { image->size[0], image->size[1] }
+				, 4u
+				, renderer::ImageUsageFlag::eTransferSrc | renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled );
+			textureNode->view = textureNode->texture->createView( textureNode->texture->getType()
+				, textureNode->texture->getFormat()
+				, 0u
+				, 4u
+				, 0u
+				, 1u );
+			auto view = textureNode->texture->createView( textureNode->texture->getType()
+				, textureNode->texture->getFormat()
+				, 0u
+				, 1u
+				, 0u
+				, 1u );
+			m_stagingBuffer->uploadTextureData( *m_updateCommandBuffer
+				, image->data
+				, *view );
+			textureNode->texture->generateMipmaps();
+			m_textureNodes.emplace_back( textureNode );
+		}
+	}
+
 	void RenderPanel::doInitialiseObject()
 	{
 		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
@@ -283,22 +319,15 @@ namespace vkapp
 				// Initialise material textures.
 				for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
 				{
-					common::TextureNode textureNode;
 					auto & texture = material.textures[index];
-					textureNode.texture = m_device->createTexture();
-					textureNode.texture->setImage( texture.format
-						, { texture.size[0], texture.size[1] } );
-					textureNode.view = textureNode.texture->createView( textureNode.texture->getType()
-						, textureNode.texture->getFormat()
-						, 0u
-						, 1u
-						, 0u
-						, 1u );
-					m_stagingBuffer->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
-						, texture.data
-						, *textureNode.view );
-					needsBlending |= material.data.textureOperators[index].opacity != 0;
-					materialNode.textures.emplace_back( std::move( textureNode ) );
+					auto it = std::find_if( m_textureNodes.begin()
+						, m_textureNodes.end()
+						, [&texture]( common::TextureNodePtr const & lookup )
+						{
+							return lookup->image == texture;
+						} );
+					assert( it != m_textureNodes.end() );
+					materialNode.textures.push_back( *it );
 				}
 
 				m_materialUbo->getData( matIndex ) = material.data;
@@ -329,7 +358,7 @@ namespace vkapp
 				for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
 				{
 					materialNode.descriptorSetTextures->createBinding( materialNode.layout->getBinding( 0u, index )
-						, *materialNode.textures[index].view
+						, *materialNode.textures[index]->view
 						, *m_sampler
 						, index );
 				}

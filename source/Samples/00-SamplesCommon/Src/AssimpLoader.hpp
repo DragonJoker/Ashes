@@ -22,6 +22,7 @@ namespace common
 	*/
 	Object loadObject( std::string const & folder
 		, std::string const & fileName
+		, common::ImagePtrArray & images
 		, float rescale = 8.0f );
 }
 

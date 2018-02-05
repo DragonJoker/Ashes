@@ -16,6 +16,9 @@ include( Platform )
 include( FileUtils )
 include( PCHSupport )
 
+option( RENDERER_BUILD_TESTS "Build Renderer test applications" TRUE )
+option( RENDERER_BUILD_SAMPLES "Build Renderer sample applications" TRUE )
+
 # Organize projects into folders
 set_property( GLOBAL PROPERTY USE_FOLDERS ON )
 
@@ -88,5 +91,11 @@ include_directories(
 
 add_subdirectory( Core )
 add_subdirectory( Renderer )
-add_subdirectory( Test )
-add_subdirectory( Samples )
+
+if ( RENDERER_BUILD_TESTS )
+	add_subdirectory( Test )
+endif ()
+
+if ( RENDERER_BUILD_SAMPLES )
+	add_subdirectory( Samples )
+endif ()
