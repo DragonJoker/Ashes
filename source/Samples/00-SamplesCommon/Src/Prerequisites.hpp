@@ -24,7 +24,7 @@ namespace common
 	*\~english
 	*\name Loaded data.
 	*\~french
-	*\name Données chargées.
+	*\name Donnï¿½es chargï¿½es.
 	*/
 	/**\{*/
 	struct Image
@@ -34,6 +34,9 @@ namespace common
 		renderer::PixelFormat format;
 		bool opacity{ false };
 	};
+
+	using ImagePtr = std::shared_ptr< Image >;
+	using ImagePtrArray = std::vector< ImagePtr >;
 
 	struct TextureOperators
 	{
@@ -63,7 +66,7 @@ namespace common
 	{
 		MaterialData data;
 		bool hasOpacity{ false };
-		std::vector< Image > textures;
+		ImagePtrArray textures;
 	};
 
 	struct Vertex
@@ -147,14 +150,18 @@ namespace common
 	*\~english
 	*\name Rendered data.
 	*\~french
-	*\name Données rendues.
+	*\name Donnï¿½es rendues.
 	*/
 	/**\{*/
 	struct TextureNode
 	{
+		ImagePtr image;
 		renderer::TexturePtr texture;
 		renderer::TextureViewPtr view;
 	};
+
+	using TextureNodePtr = std::shared_ptr< TextureNode >;
+	using TextureNodePtrArray = std::vector< TextureNodePtr >;
 
 	struct SubmeshNode;
 	using SubmeshNodePtr = std::shared_ptr< SubmeshNode >;
@@ -162,7 +169,7 @@ namespace common
 	struct MaterialNode
 	{
 		SubmeshNodePtr submesh;
-		std::vector< TextureNode > textures;
+		TextureNodePtrArray textures;
 		renderer::DescriptorSetLayoutPtr layout;
 		renderer::DescriptorSetPoolPtr pool;
 		renderer::DescriptorSetPtr descriptorSetTextures;

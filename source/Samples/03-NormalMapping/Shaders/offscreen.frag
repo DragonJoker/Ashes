@@ -81,17 +81,17 @@ layout( location = 0 ) out vec4 pxl_colour;
 
 vec3 getDiffuse( TextureOperator operator, vec4 sampled, vec3 diffuse )
 {
-	return mix( diffuse, diffuse * sampled.rgb, float( operator.diffuse ) );
+	return mix( diffuse, /*diffuse * */sampled.rgb, float( operator.diffuse ) );
 }
 
 vec3 getSpecular( TextureOperator operator, vec4 sampled, vec3 specular )
 {
-	return mix( specular, specular * sampled.rgb, float( operator.specular ) );
+	return mix( specular, /*specular * */sampled.rgb, float( operator.specular ) );
 }
 
 vec3 getEmissive( TextureOperator operator, vec4 sampled, vec3 emissive )
 {
-	return mix( emissive, emissive * sampled.rgb, float( operator.emissive ) );
+	return mix( emissive, /*emissive * */sampled.rgb, float( operator.emissive ) );
 }
 
 float getShininess( TextureOperator operator, vec4 sampled, float shininess )
@@ -100,7 +100,7 @@ float getShininess( TextureOperator operator, vec4 sampled, float shininess )
 		, float( ( operator.shininess & 0x02 ) >> 1 )
 		, float( ( operator.shininess & 0x04 ) >> 2 )
 		, float( ( operator.shininess & 0x08 ) >> 3 ) );
-	return mix( shininess, shininess * length( channel * sampled ), float( operator.shininess ) );
+	return mix( shininess, /*shininess * */length( channel * sampled ), float( operator.shininess ) );
 }
 
 float getOpacity( TextureOperator operator, vec4 sampled, float opacity )
@@ -109,7 +109,7 @@ float getOpacity( TextureOperator operator, vec4 sampled, float opacity )
 		, float( ( operator.opacity & 0x02 ) >> 1 )
 		, float( ( operator.opacity & 0x04 ) >> 2 )
 		, float( ( operator.opacity & 0x08 ) >> 3 ) );
-	return mix( opacity, opacity * max( length( channel * sampled ), min( 1.0, 1.0 - float( opacity ) ) ), float( operator.opacity ) );
+	return mix( opacity, /*opacity * */max( length( channel * sampled ), min( 1.0, 1.0 - float( opacity ) ) ), float( operator.opacity ) );
 }
 
 vec3 getNormal( TextureOperator operator, vec4 sampled, vec3 tangent, vec3 bitangent, vec3 normal )

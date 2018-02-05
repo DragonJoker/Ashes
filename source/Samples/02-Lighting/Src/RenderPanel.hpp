@@ -33,10 +33,11 @@ namespace vkapp
 		void doUpdateProjection();
 		void doCreateDevice( renderer::Renderer const & renderer );
 		void doCreateSwapChain();
-		void doInitialiseObject();
-		void doInitialiseLights();
 		void doCreateUniformBuffer();
 		void doCreateStagingBuffer();
+		void doInitialiseObject();
+		void doCreateTextures();
+		void doInitialiseLights();
 		void doCreateOffscreenDescriptorSet();
 		void doCreateOffscreenRenderPass();
 		void doCreateFrameBuffer();
@@ -71,7 +72,9 @@ namespace vkapp
 		renderer::UniformBufferPtr< common::MaterialData > m_materialUbo;
 		renderer::UniformBufferPtr< common::LightsData > m_lightsUbo;
 		renderer::CommandBufferPtr m_updateCommandBuffer;
+		common::ImagePtrArray m_images;
 		common::Object m_object;
+		common::TextureNodePtrArray m_textureNodes;
 		uint32_t m_nodesCount;
 
 		renderer::CommandBufferPtr m_commandBuffer;
