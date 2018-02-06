@@ -59,7 +59,7 @@ namespace vk_renderer
 			1u                                                  // layers
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = m_device.CreateFramebuffer( device
+		auto res = m_device.vkCreateFramebuffer( device
 			, &createInfo
 			, nullptr
 			, &m_framebuffer );
@@ -74,7 +74,7 @@ namespace vk_renderer
 	{
 		if ( m_framebuffer )
 		{
-			m_device.DestroyFramebuffer( m_device, m_framebuffer, nullptr );
+			m_device.vkDestroyFramebuffer( m_device, m_framebuffer, nullptr );
 		}
 	}
 

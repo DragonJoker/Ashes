@@ -1,4 +1,4 @@
-#include "Core/VkRenderer.hpp"
+﻿#include "Core/VkRenderer.hpp"
 
 #include "Core/VkConnection.hpp"
 #include "Core/VkDevice.hpp"
@@ -7,6 +7,12 @@
 
 # if VKRENDERER_GLSL_TO_SPV
 #	include <glslang/Public/ShaderLang.h>
+#endif
+
+#if !defined( NDEBUG )
+#	define LOAD_VALIDATION_LAYERS 1
+#else
+#	define LOAD_VALIDATION_LAYERS 0
 #endif
 
 namespace vk_renderer
@@ -121,7 +127,7 @@ namespace vk_renderer
 			throw std::runtime_error{ std::string{ "Couldn't load vkGetInstanceProcAddr" } };
 		}
 
-#define VK_LIB_GLOBAL_FUNCTION( fun ) fun = reinterpret_cast< PFN_vk##fun >( GetInstanceProcAddr( nullptr, "vk"#fun ) );
+#define VK_LIB_GLOBAL_FUNCTION( fun ) fun = reinterpret_cast< PFN_##fun >( GetInstanceProcAddr( nullptr, #fun ) );
 #include "Miscellaneous/VulkanFunctionsList.inl"
 
 		doInitLayersProperties();
@@ -135,7 +141,7 @@ namespace vk_renderer
 		{
 			if ( m_msgCallback != VK_NULL_HANDLE )
 			{
-				DestroyDebugReportCallbackEXT( m_instance, m_msgCallback, nullptr );
+				vkDestroyDebugReportCallbackEXT( m_instance, m_msgCallback, nullptr );
 				m_msgCallback = VK_NULL_HANDLE;
 			}
 
@@ -143,7 +149,7 @@ namespace vk_renderer
 			m_instanceExtensionNames.clear();
 			m_instanceLayerNames.clear();
 			m_gpus.clear();
-			DestroyInstance( m_instance, nullptr );
+			vkDestroyInstance( m_instance, nullptr );
 			m_instance = VK_NULL_HANDLE;
 		}
 
@@ -194,7 +200,7 @@ namespace vk_renderer
 	{
 		for ( auto const & props : m_instanceLayersProperties )
 		{
-#if 1//!defined( NDEBUG )
+#if LOAD_VALIDATION_LAYERS
 			if ( std::string{ props.m_properties.layerName }.find( "validation" ) != std::string::npos
 				|| std::string{ props.m_properties.description }.find( "LunarG Validation" ) != std::string::npos )
 			{
@@ -211,17 +217,17 @@ namespace vk_renderer
 		// Il est possible, bien que rare, que le nombre de couches
 		// d'instance change. Par exemple, en installant quelque chose
 		// qui ajoute de nouvelles couches que le loader utiliserait
-		// entre la requ�te initiale pour le compte et la r�cup�ration
+		// entre la requête initiale pour le compte et la récupération
 		// des VkLayerProperties. Le loader l'indique en retournant
-		// VK_INCOMPLETE et en mettant � jour le compte.
-		// Le compte va alors �tre mis � jour avec le nombre d'entr�es
-		// charg�es dans le pointeur de donn�es, dans le cas o�
-		// le nombre de couches a diminu� ou est inf�rieur � la taille
-		// donn�e.
+		// VK_INCOMPLETE et en mettant à jour le compte.
+		// Le compte va alors être mis à jour avec le nombre d'entrées
+		// chargées dans le pointeur de données, dans le cas où
+		// le nombre de couches a diminué ou est inférieur à la taille
+		// donnée.
 		do
 		{
 			uint32_t instanceLayerCount{ 0 };
-			res = EnumerateInstanceLayerProperties( &instanceLayerCount, nullptr );
+			res = vkEnumerateInstanceLayerProperties( &instanceLayerCount, nullptr );
 
 			if ( checkError( res ) )
 			{
@@ -232,7 +238,7 @@ namespace vk_renderer
 				else
 				{
 					vkProperties.resize( instanceLayerCount );
-					res = EnumerateInstanceLayerProperties( &instanceLayerCount
+					res = vkEnumerateInstanceLayerProperties( &instanceLayerCount
 						, vkProperties.data() );
 				}
 			}
@@ -242,7 +248,7 @@ namespace vk_renderer
 		doInitLayerExtensionProperties( layerProperties );
 		m_instanceLayersProperties.push_back( layerProperties );
 
-		// On r�cup�re la liste d'extensions pour chaque couche de l'instance.
+		// On récupère la liste d'extensions pour chaque couche de l'instance.
 		for ( auto prop : vkProperties )
 		{
 			LayerProperties layerProperties{ prop };
@@ -261,11 +267,11 @@ namespace vk_renderer
 		VkResult res{ VK_SUCCESS };
 		char * name{ layerProps.m_properties.layerName };
 
-		// R�cup�ration des extensions support�es par la couche.
+		// Récupération des extensions supportées par la couche.
 		do
 		{
 			uint32_t extensionCount{ 0 };
-			res = EnumerateInstanceExtensionProperties( name
+			res = vkEnumerateInstanceExtensionProperties( name
 				, &extensionCount
 				, nullptr );
 
@@ -274,7 +280,7 @@ namespace vk_renderer
 				if ( extensionCount > 0 )
 				{
 					layerProps.m_extensions.resize( extensionCount );
-					res = EnumerateInstanceExtensionProperties( name
+					res = vkEnumerateInstanceExtensionProperties( name
 						, &extensionCount
 						, layerProps.m_extensions.data() );
 				}
@@ -292,7 +298,7 @@ namespace vk_renderer
 		completeLayerNames( m_instanceLayerNames );
 		m_instanceExtensionNames.push_back( VK_KHR_SURFACE_EXTENSION_NAME );
 		m_instanceExtensionNames.push_back( VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME );
-#if 1//!defined( NDEBUG )
+#if LOAD_VALIDATION_LAYERS
 		m_instanceExtensionNames.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
 #endif
 		checkExtensionsAvailability( m_instanceLayersProperties.front().m_extensions, m_instanceExtensionNames );
@@ -321,17 +327,17 @@ namespace vk_renderer
 		};
 		DEBUG_DUMP( instInfo );
 
-		auto res = CreateInstance( &instInfo, nullptr, &m_instance );
+		auto res = vkCreateInstance( &instInfo, nullptr, &m_instance );
 
 		if ( !checkError( res ) )
 		{
 			throw std::runtime_error{ "Instance initialisation failed: " + getLastError() };
 		}
 
-#define VK_LIB_INSTANCE_FUNCTION( fun ) fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
+#define VK_LIB_INSTANCE_FUNCTION( fun ) fun = reinterpret_cast< PFN_##fun >( getInstanceProcAddr( #fun ) );
 #include "Miscellaneous/VulkanFunctionsList.inl"
 
-#if 1//!defined( NDEBUG )
+#if LOAD_VALIDATION_LAYERS
 		// The report flags determine what type of messages for the layers will be displayed
 		// For validating (debugging) an appplication the error and warning bits should suffice
 		VkDebugReportFlagsEXT debugReportFlags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
@@ -342,7 +348,7 @@ namespace vk_renderer
 
 	void Renderer::doSetupDebugging( VkDebugReportFlagsEXT flags )
 	{
-		if ( CreateDebugReportCallbackEXT )
+		if ( vkCreateDebugReportCallbackEXT )
 		{
 			VkDebugReportCallbackCreateInfoEXT dbgCreateInfo
 			{
@@ -353,7 +359,7 @@ namespace vk_renderer
 				this
 			};
 
-			VkResult res = CreateDebugReportCallbackEXT(
+			VkResult res = vkCreateDebugReportCallbackEXT(
 				m_instance,
 				&dbgCreateInfo,
 				nullptr,
@@ -369,8 +375,8 @@ namespace vk_renderer
 	void Renderer::doEnumerateDevices()
 	{
 		uint32_t gpuCount{ 0 };
-		// On r�cup�re les GPU physiques.
-		auto res = EnumeratePhysicalDevices( m_instance
+		// On récupère les GPU physiques.
+		auto res = vkEnumeratePhysicalDevices( m_instance
 			, &gpuCount
 			, nullptr );
 
@@ -380,7 +386,7 @@ namespace vk_renderer
 		}
 
 		std::vector< VkPhysicalDevice > gpus( gpuCount, VK_NULL_HANDLE );
-		res = EnumeratePhysicalDevices( m_instance
+		res = vkEnumeratePhysicalDevices( m_instance
 			, &gpuCount
 			, gpus.data() );
 

@@ -78,14 +78,14 @@ namespace vk_renderer
 		};
 		DEBUG_DUMP( deviceInfo );
 
-		auto res = renderer.CreateDevice( m_gpu, &deviceInfo, nullptr, &m_device );
+		auto res = renderer.vkCreateDevice( m_gpu, &deviceInfo, nullptr, &m_device );
 
 		if ( !checkError( res ) )
 		{
 			throw std::runtime_error{ "LogicalDevice creation failed: " + getLastError() };
 		}
 
-#define VK_LIB_DEVICE_FUNCTION( fun ) fun = reinterpret_cast< PFN_vk##fun >( renderer.GetDeviceProcAddr( m_device, "vk"#fun ) );
+#define VK_LIB_DEVICE_FUNCTION( fun ) fun = reinterpret_cast< PFN_##fun >( renderer.vkGetDeviceProcAddr( m_device, #fun ) );
 #include "Miscellaneous/VulkanFunctionsList.inl"
 
 		m_presentQueue = std::make_unique< Queue >( *this, m_connection->getPresentQueueFamilyIndex() );
@@ -113,7 +113,7 @@ namespace vk_renderer
 		m_graphicsQueue.reset();
 		m_presentCommandPool.reset();
 		m_presentQueue.reset();
-		DestroyDevice( m_device, nullptr );
+		vkDestroyDevice( m_device, nullptr );
 	}
 
 	renderer::RenderPassPtr Device::createRenderPass( std::vector< renderer::PixelFormat > const & formats
@@ -301,7 +301,7 @@ namespace vk_renderer
 
 	void Device::waitIdle()const
 	{
-		DeviceWaitIdle( m_device );
+		vkDeviceWaitIdle( m_device );
 	}
 
 	renderer::Mat4 Device::perspective( renderer::Angle fovy
@@ -342,7 +342,7 @@ namespace vk_renderer
 	VkMemoryRequirements Device::getBufferMemoryRequirements( VkBuffer buffer )const
 	{
 		VkMemoryRequirements requirements;
-		GetBufferMemoryRequirements( m_device
+		vkGetBufferMemoryRequirements( m_device
 			, buffer
 			, &requirements );
 		return requirements;
@@ -351,7 +351,7 @@ namespace vk_renderer
 	VkMemoryRequirements Device::getImageMemoryRequirements( VkImage image )const
 	{
 		VkMemoryRequirements requirements;
-		GetImageMemoryRequirements( m_device
+		vkGetImageMemoryRequirements( m_device
 			, image
 			, &requirements );
 		return requirements;

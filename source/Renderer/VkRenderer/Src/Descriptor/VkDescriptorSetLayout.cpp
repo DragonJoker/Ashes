@@ -21,7 +21,7 @@ namespace vk_renderer
 			vkbindings.data()                                     // pBindings
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = m_device.CreateDescriptorSetLayout( m_device
+		auto res = m_device.vkCreateDescriptorSetLayout( m_device
 			, &createInfo
 			, nullptr
 			, &m_layout );
@@ -34,7 +34,7 @@ namespace vk_renderer
 
 	DescriptorSetLayout::~DescriptorSetLayout()
 	{
-		m_device.DestroyDescriptorSetLayout( m_device
+		m_device.vkDestroyDescriptorSetLayout( m_device
 			, m_layout
 			, nullptr );
 	}

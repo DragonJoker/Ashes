@@ -318,7 +318,7 @@ namespace vk_renderer
 			return m_device;
 		}
 
-#define VK_LIB_DEVICE_FUNCTION( fun ) PFN_vk##fun fun;
+#define VK_LIB_DEVICE_FUNCTION( fun ) PFN_##fun fun;
 #	include "Miscellaneous/VulkanFunctionsList.inl"
 
 	private:
