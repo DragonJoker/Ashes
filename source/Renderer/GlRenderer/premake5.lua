@@ -19,8 +19,7 @@ includedirs{
 
 links{
 	"Utils",
-	"Renderer",
-	"opengl32"
+	"Renderer"
 }
 
 if ( os.istarget( "Windows" ) )
