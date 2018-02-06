@@ -48,7 +48,7 @@ namespace gl_renderer
 		, renderer::ImageTiling tiling
 		, renderer::MemoryPropertyFlags memoryFlags )
 	{
-		if ( m_layerCount )
+		if ( m_layerCount > 1 )
 		{
 			m_target = GL_TEXTURE_1D_ARRAY;
 		}
@@ -59,7 +59,7 @@ namespace gl_renderer
 
 		glLogCall( gl::BindTexture, m_target, m_texture );
 
-		if ( m_layerCount )
+		if ( m_layerCount > 1 )
 		{
 			glLogCall( gl::TexStorage2D
 				, m_target
@@ -84,7 +84,7 @@ namespace gl_renderer
 		, renderer::ImageTiling tiling
 		, renderer::MemoryPropertyFlags memoryFlags )
 	{
-		if ( m_layerCount )
+		if ( m_layerCount > 1 )
 		{
 			if ( m_samples > renderer::SampleCountFlag::e1 )
 			{
@@ -106,7 +106,7 @@ namespace gl_renderer
 
 		glLogCall( gl::BindTexture, m_target, m_texture );
 
-		if ( m_layerCount )
+		if ( m_layerCount > 1 )
 		{
 			if ( m_samples > renderer::SampleCountFlag::e1 )
 			{
