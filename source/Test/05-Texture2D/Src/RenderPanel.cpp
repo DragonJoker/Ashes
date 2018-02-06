@@ -251,7 +251,6 @@ namespace vkapp
 				, renderer::ShaderStageFlag::eVertex );
 			m_program->createModule( common::dumpBinaryFile( shadersFolder / "frag.spv" )
 				, renderer::ShaderStageFlag::eFragment );
-			m_program->link();
 		}
 		else
 		{
@@ -265,7 +264,6 @@ namespace vkapp
 				, renderer::ShaderStageFlag::eVertex );
 			m_program->createModule( common::dumpTextFile( shadersFolder / "shader.frag" )
 				, renderer::ShaderStageFlag::eFragment );
-			m_program->link();
 		}
 
 		m_pipeline = m_pipelineLayout->createPipeline( *m_program

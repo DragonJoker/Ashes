@@ -522,7 +522,6 @@ namespace vkapp
 				, renderer::ShaderStageFlag::eVertex );
 			m_offscreenProgram->createModule( common::dumpBinaryFile( shadersFolder / "offscreen_frag.spv" )
 				, renderer::ShaderStageFlag::eFragment );
-			m_offscreenProgram->link();
 		}
 		else
 		{
@@ -536,7 +535,6 @@ namespace vkapp
 				, renderer::ShaderStageFlag::eVertex );
 			m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.frag" )
 				, renderer::ShaderStageFlag::eFragment );
-			m_offscreenProgram->link();
 		}
 	}
 
@@ -697,7 +695,6 @@ namespace vkapp
 				, renderer::ShaderStageFlag::eVertex );
 			m_mainProgram->createModule( common::dumpBinaryFile( shadersFolder / "main_frag.spv" )
 				, renderer::ShaderStageFlag::eFragment );
-			m_mainProgram->link();
 		}
 		else
 		{
@@ -711,7 +708,6 @@ namespace vkapp
 				, renderer::ShaderStageFlag::eVertex );
 			m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.frag" )
 				, renderer::ShaderStageFlag::eFragment );
-			m_mainProgram->link();
 		}
 
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( *m_mainProgram

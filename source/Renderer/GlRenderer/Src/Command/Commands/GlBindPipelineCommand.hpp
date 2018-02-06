@@ -8,6 +8,16 @@ See LICENSE file in root folder
 
 namespace gl_renderer
 {
+	void apply( Device const & device
+		, renderer::ColourBlendState const & state );
+	void apply( Device const & device
+		, renderer::RasterisationState const & state );
+	void apply( Device const & device
+		, renderer::MultisampleState const & state );
+	void apply( Device const & device
+		, renderer::DepthStencilState const & state );
+	void apply( Device const & device
+		, renderer::TessellationState const & state );
 	/**
 	*\brief
 	*	Commande d'activation d'un pipeline: shaders, tests, �tats, ...

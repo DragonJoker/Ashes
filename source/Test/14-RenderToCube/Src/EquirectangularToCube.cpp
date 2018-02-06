@@ -133,7 +133,6 @@ namespace vkapp
 					, renderer::ShaderStageFlag::eVertex );
 				result->createModule( common::dumpBinaryFile( shadersFolder / "equirectangular_frag.spv" )
 					, renderer::ShaderStageFlag::eFragment );
-				result->link();
 			}
 			else
 			{
@@ -147,7 +146,6 @@ namespace vkapp
 					, renderer::ShaderStageFlag::eVertex );
 				result->createModule( common::dumpTextFile( shadersFolder / "equirectangular.frag" )
 					, renderer::ShaderStageFlag::eFragment );
-				result->link();
 			}
 
 			return result;
