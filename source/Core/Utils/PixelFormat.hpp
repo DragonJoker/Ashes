@@ -30,6 +30,8 @@ namespace utils
 		eRGBA5551,
 		//! RGBA avec4 bits par composante.
 		eRGBA4444,
+		//! RGBA avec composante 32 bits flottant.
+		eRGBA32F,
 		//! Profondeur en 16 bits (pour les render buffers uniquement).
 		eD16,
 		//! Profondeur en 24 bits, stencil en 8 bits (pour les render buffers uniquement).
