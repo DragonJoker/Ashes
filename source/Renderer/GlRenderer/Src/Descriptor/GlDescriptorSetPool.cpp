@@ -5,7 +5,8 @@
 namespace gl_renderer
 {
 	DescriptorSetPool::DescriptorSetPool( renderer::DescriptorSetLayout const & layout
-		, uint32_t maxSets )
+		, uint32_t maxSets
+		, bool automaticFree )
 		: renderer::DescriptorSetPool{ layout, maxSets }
 	{
 	}

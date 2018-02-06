@@ -9,10 +9,12 @@ namespace vk_renderer
 {
 	DescriptorSetPool::DescriptorSetPool( Device const & device
 		, DescriptorSetLayout const & layout
-		, uint32_t maxSets )
+		, uint32_t maxSets
+		, bool automaticFree )
 		: renderer::DescriptorSetPool{ layout, maxSets }
 		, m_device{ device }
 		, m_layout{ layout }
+		, m_automaticFree{ automaticFree }
 	{
 		std::vector< VkDescriptorPoolSize > poolSizes;
 
@@ -29,7 +31,9 @@ namespace vk_renderer
 		{
 			VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,      // sType
 			nullptr,                                            // pNext
-			0,                                                  // flags
+			m_automaticFree                                     // flags
+				? 0u
+				: VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
 			maxSets,                                            // maxSets
 			uint32_t( poolSizes.size() ),                       // poolSizeCount
 			poolSizes.data()                                    // pPoolSizes

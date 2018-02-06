@@ -50,7 +50,7 @@ namespace renderer
 		*\brief
 		*	Destructor.
 		*/
-		virtual ~DescriptorSet() = default;
+		virtual ~DescriptorSet();
 		/**
 		*\~french
 		*\return
@@ -448,6 +448,7 @@ namespace renderer
 		virtual void update()const = 0;
 
 	private:
+		DescriptorSetPool const & m_pool;
 		uint32_t m_bindingPoint;
 	};
 }

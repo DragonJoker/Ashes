@@ -50,7 +50,8 @@ namespace vk_renderer
 		*/
 		DescriptorSetPool( Device const & device
 			, DescriptorSetLayout const & layout
-			, uint32_t maxSets );
+			, uint32_t maxSets
+			, bool automaticFree );
 		/**
 		*\~french
 		*\brief
@@ -74,7 +75,7 @@ namespace vk_renderer
 		*/
 		inline bool hasAutomaticFree()const
 		{
-			return true;
+			return m_automaticFree;
 		}
 		/**
 		*\~french
@@ -93,6 +94,7 @@ namespace vk_renderer
 		Device const & m_device;
 		DescriptorSetLayout const & m_layout;
 		VkDescriptorPool m_pool{};
+		bool m_automaticFree;
 	};
 }
 

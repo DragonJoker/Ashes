@@ -18,6 +18,8 @@ namespace renderer
 	*/
 	class DescriptorSetPool
 	{
+		friend class DescriptorSet;
+
 	protected:
 		/**
 		*\~english
@@ -50,19 +52,6 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
-		*	Allocates a descriptor set.
-		*\param[in] count
-		*	The number of sets.
-		*\~french
-		*\brief
-		*	Alloue des descripteurs.
-		*\param[in] count
-		*	Le nombre de descripteurs.
-		*/
-		virtual void allocate( uint32_t count )const;
-		/**
-		*\~english
-		*\brief
 		*	Creates a descriptor set matching the layout defined for this pool.
 		*\param[in] bindingPoint
 		*	The binding point for the set.
@@ -89,6 +78,34 @@ namespace renderer
 		{
 			return m_layout;
 		}
+
+	private:
+		/**
+		*\~english
+		*\brief
+		*	Allocates a descriptor set.
+		*\param[in] count
+		*	The number of sets.
+		*\~french
+		*\brief
+		*	Alloue des descripteurs.
+		*\param[in] count
+		*	Le nombre de descripteurs.
+		*/
+		void allocate( uint32_t count )const;
+		/**
+		*\~english
+		*\brief
+		*	Allocates a descriptor set.
+		*\param[in] count
+		*	The number of sets.
+		*\~french
+		*\brief
+		*	Alloue des descripteurs.
+		*\param[in] count
+		*	Le nombre de descripteurs.
+		*/
+		void deallocate( uint32_t count )const;
 
 	private:
 		DescriptorSetLayout const & m_layout;
