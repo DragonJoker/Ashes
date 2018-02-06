@@ -267,7 +267,6 @@ namespace vkapp
 				, renderer::ShaderStageFlag::eVertex );
 			m_program->createModule( common::dumpBinaryFile( shadersFolder / "main_frag.spv" )
 				, renderer::ShaderStageFlag::eFragment );
-			m_program->link();
 		}
 		else
 		{
@@ -281,7 +280,6 @@ namespace vkapp
 				, renderer::ShaderStageFlag::eVertex );
 			m_program->createModule( common::dumpTextFile( shadersFolder / "main.frag" )
 				, renderer::ShaderStageFlag::eFragment );
-			m_program->link();
 		}
 
 		m_pipelineLayout = m_device->createPipelineLayout( *m_descriptorLayout );
@@ -309,6 +307,9 @@ namespace vkapp
 			{
 				auto dimensions = m_swapChain->getDimensions();
 				m_swapChain->preRenderCommands( i, commandBuffer );
+				commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
+					, renderer::PipelineStageFlag::eFragmentShader
+					, m_renderTarget->getColourView().makeShaderInputResource() );
 				commandBuffer.beginRenderPass( *m_renderPass
 					, frameBuffer
 					, { renderer::ClearValue{ { 1.0, 0.0, 0.0, 1.0 } } }
