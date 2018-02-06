@@ -30,6 +30,9 @@ namespace vk_renderer
 		case renderer::PixelFormat::eRGBA4444:
 			return VK_FORMAT_R4G4B4A4_UNORM_PACK16;
 
+		case renderer::PixelFormat::eRGBA32F:
+			return VK_FORMAT_R32G32B32A32_SFLOAT;
+
 		case renderer::PixelFormat::eD16:
 			return VK_FORMAT_D16_UNORM;
 
@@ -75,6 +78,9 @@ namespace vk_renderer
 
 		case VK_FORMAT_R4G4B4A4_UNORM_PACK16:
 			return renderer::PixelFormat::eRGBA4444;
+
+		case VK_FORMAT_R32G32B32A32_SFLOAT:
+			return renderer::PixelFormat::eRGBA32F;
 
 		case VK_FORMAT_D16_UNORM:
 			return renderer::PixelFormat::eD16;

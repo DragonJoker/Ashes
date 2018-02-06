@@ -30,6 +30,9 @@ namespace gl_renderer
 		case gl_renderer::GL_INTERNAL_R4G4B4A4:
 			return "GL_RGBA4";
 
+		case gl_renderer::GL_INTERNAL_RGBA32F:
+			return "GL_RGBA32F";
+
 		case gl_renderer::GL_INTERNAL_D16:
 			return "GL_DEPTH_COMPONENT16";
 
@@ -150,6 +153,9 @@ namespace gl_renderer
 		case renderer::PixelFormat::eRGBA4444:
 			return GL_INTERNAL_R4G4B4A4;
 
+		case renderer::PixelFormat::eRGBA32F:
+			return GL_INTERNAL_RGBA32F;
+
 		case renderer::PixelFormat::eD16:
 			return GL_INTERNAL_D16;
 
@@ -200,6 +206,9 @@ namespace gl_renderer
 		case renderer::PixelFormat::eRGBA4444:
 			return GL_FORMAT_RGBA;
 
+		case renderer::PixelFormat::eRGBA32F:
+			return GL_FORMAT_RGBA;
+
 		case renderer::PixelFormat::eD16:
 		case renderer::PixelFormat::eD32F:
 			return GL_FORMAT_D;
@@ -243,6 +252,9 @@ namespace gl_renderer
 
 		case renderer::PixelFormat::eRGBA4444:
 			return GL_TYPE_US4444;
+
+		case renderer::PixelFormat::eRGBA32F:
+			return GL_TYPE_F;
 
 		case renderer::PixelFormat::eD16:
 			return GL_TYPE_UI16;
@@ -290,6 +302,9 @@ namespace gl_renderer
 		case renderer::PixelFormat::eRGBA4444:
 			return 2u;
 
+		case renderer::PixelFormat::eRGBA32F:
+			return 128u;
+
 		case renderer::PixelFormat::eD16:
 			return 2u;
 
@@ -335,6 +350,9 @@ namespace gl_renderer
 
 		case GL_INTERNAL_R4G4B4A4:
 			return renderer::PixelFormat::eRGBA4444;
+
+		case GL_INTERNAL_RGBA32F:
+			return renderer::PixelFormat::eRGBA32F;
 
 		case GL_INTERNAL_D16:
 			return renderer::PixelFormat::eD16;
