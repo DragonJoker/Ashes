@@ -39,10 +39,12 @@ namespace vk_renderer
 			, nullptr );
 	}
 
-	renderer::DescriptorSetPoolPtr DescriptorSetLayout::createPool( uint32_t maxSets )const
+	renderer::DescriptorSetPoolPtr DescriptorSetLayout::createPool( uint32_t maxSets
+		, bool automaticFree )const
 	{
 		return std::make_unique< DescriptorSetPool >( m_device
 			, *this
-			, maxSets );
+			, maxSets
+			, automaticFree );
 	}
 }
