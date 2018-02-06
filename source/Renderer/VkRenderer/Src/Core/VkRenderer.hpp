@@ -8,8 +8,6 @@
 
 #include "VkRendererPrerequisites.hpp"
 
-#include "Miscellaneous/VulkanLibrary.hpp"
-
 #include <Core/Renderer.hpp>
 
 namespace vk_renderer
@@ -85,8 +83,8 @@ namespace vk_renderer
 		}
 
 		PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
-#define VK_LIB_GLOBAL_FUNCTION( fun ) PFN_vk##fun fun;
-#define VK_LIB_INSTANCE_FUNCTION( fun ) PFN_vk##fun fun;
+#define VK_LIB_GLOBAL_FUNCTION( fun ) PFN_##fun fun;
+#define VK_LIB_INSTANCE_FUNCTION( fun ) PFN_##fun fun;
 #	include "Miscellaneous/VulkanFunctionsList.inl"
 
 	private:

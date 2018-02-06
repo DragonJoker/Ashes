@@ -26,7 +26,7 @@ namespace vk_renderer
 	{
 		if ( m_presentSurface != VK_NULL_HANDLE )
 		{
-			m_renderer.DestroySurfaceKHR( m_renderer
+			m_renderer.vkDestroySurfaceKHR( m_renderer
 				, m_presentSurface
 				, nullptr );
 		}
@@ -45,7 +45,7 @@ namespace vk_renderer
 			m_handle.getInternal< renderer::IMswWindowHandle >().getHwnd(),
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = m_renderer.CreateWin32SurfaceKHR( m_renderer
+		auto res = m_renderer.vkCreateWin32SurfaceKHR( m_renderer
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
@@ -68,7 +68,7 @@ namespace vk_renderer
 			m_handle.getInternal< renderer::IXcbWindowHandle >().getConnection(),
 			m_handle.getInternal< renderer::IXcbWindowHandle >().getHandle(),
 		};
-		auto res = m_device.CreateXcbSurfaceKHR( m_renderer
+		auto res = m_renderer.vkCreateXcbSurfaceKHR( m_renderer
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
@@ -91,7 +91,7 @@ namespace vk_renderer
 			m_handle.getInternal< renderer::IXWindowHandle >().getDisplay(),
 			m_handle.getInternal< renderer::IXWindowHandle >().getDrawable(),
 		};
-		auto res = m_device.CreateXlibSurfaceKHR( m_renderer
+		auto res = m_renderer.vkCreateXlibSurfaceKHR( m_renderer
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
@@ -112,7 +112,7 @@ namespace vk_renderer
 	{
 		// On récupère les capacités de la surface.
 		VkSurfaceCapabilitiesKHR caps;
-		auto res = m_renderer.GetPhysicalDeviceSurfaceCapabilitiesKHR( m_gpu
+		auto res = m_renderer.vkGetPhysicalDeviceSurfaceCapabilitiesKHR( m_gpu
 			, m_presentSurface
 			, &caps );
 
@@ -134,7 +134,7 @@ namespace vk_renderer
 
 		for ( auto & present : supportsPresent )
 		{
-			m_renderer.GetPhysicalDeviceSurfaceSupportKHR( m_gpu
+			m_renderer.vkGetPhysicalDeviceSurfaceSupportKHR( m_gpu
 				, i
 				, m_presentSurface
 				, &present );

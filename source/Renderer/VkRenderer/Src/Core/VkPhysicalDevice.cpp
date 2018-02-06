@@ -16,7 +16,7 @@ namespace vk_renderer
 	{
 		// On récupère les extensions supportées par le GPU.
 		uint32_t extensionCount{ 0 };
-		auto res = m_renderer.EnumerateDeviceExtensionProperties( m_gpu
+		auto res = m_renderer.vkEnumerateDeviceExtensionProperties( m_gpu
 			, nullptr
 			, &extensionCount
 			, nullptr );
@@ -27,7 +27,7 @@ namespace vk_renderer
 		}
 
 		std::vector< VkExtensionProperties > extensions( extensionCount );
-		res = m_renderer.EnumerateDeviceExtensionProperties( m_gpu
+		res = m_renderer.vkEnumerateDeviceExtensionProperties( m_gpu
 			, nullptr
 			, &extensionCount
 			, extensions.data() );
@@ -42,17 +42,17 @@ namespace vk_renderer
 		checkExtensionsAvailability( extensions, m_deviceExtensionNames );
 
 		// Puis les capacités du GPU.
-		m_renderer.GetPhysicalDeviceMemoryProperties( m_gpu, &m_memoryProperties );
-		m_renderer.GetPhysicalDeviceProperties( m_gpu, &m_properties );
-		m_renderer.GetPhysicalDeviceFeatures( m_gpu, &m_features );
+		m_renderer.vkGetPhysicalDeviceMemoryProperties( m_gpu, &m_memoryProperties );
+		m_renderer.vkGetPhysicalDeviceProperties( m_gpu, &m_properties );
+		m_renderer.vkGetPhysicalDeviceFeatures( m_gpu, &m_features );
 
 		// Et enfin les propriétés des familles de files du GPU.
 		uint32_t queueCount{ 0 };
-		m_renderer.GetPhysicalDeviceQueueFamilyProperties( m_gpu, &queueCount, nullptr );
+		m_renderer.vkGetPhysicalDeviceQueueFamilyProperties( m_gpu, &queueCount, nullptr );
 		assert( queueCount >= 1 );
 
 		m_queueProperties.resize( queueCount );
-		m_renderer.GetPhysicalDeviceQueueFamilyProperties( m_gpu, &queueCount, m_queueProperties.data() );
+		m_renderer.vkGetPhysicalDeviceQueueFamilyProperties( m_gpu, &queueCount, m_queueProperties.data() );
 		assert( queueCount >= 1 );
 	}
 

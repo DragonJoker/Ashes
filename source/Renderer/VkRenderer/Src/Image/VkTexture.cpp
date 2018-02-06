@@ -39,7 +39,7 @@ namespace vk_renderer
 			for ( renderer::PixelFormat format : candidates )
 			{
 				VkFormatProperties props;
-				device.getRenderer().GetPhysicalDeviceFormatProperties( physicalDevice
+				device.getRenderer().vkGetPhysicalDeviceFormatProperties( physicalDevice
 					, convert( format )
 					, &props );
 
@@ -156,7 +156,7 @@ namespace vk_renderer
 	{
 		if ( m_owner )
 		{
-			m_device.DestroyImage( m_device
+			m_device.vkDestroyImage( m_device
 				, m_image
 				, nullptr );
 		}
@@ -170,7 +170,7 @@ namespace vk_renderer
 		VkImageSubresource subResource{};
 		subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		VkSubresourceLayout subResourceLayout;
-		m_device.GetImageSubresourceLayout( m_device, m_image, &subResource, &subResourceLayout );
+		m_device.vkGetImageSubresourceLayout( m_device, m_image, &subResource, &subResourceLayout );
 
 		mapped.data = m_storage->lock( offset
 			, size
@@ -251,7 +251,7 @@ namespace vk_renderer
 				imageBlit.dstOffsets[0] = { 0, 0, 0 };
 				imageBlit.dstOffsets[1] = { mipWidth, mipHeight, 1 };
 
-				m_device.CmdBlitImage( vkCommandBuffer
+				m_device.vkCmdBlitImage( vkCommandBuffer
 					, m_image
 					, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
 					, m_image
@@ -295,7 +295,7 @@ namespace vk_renderer
 			VK_IMAGE_LAYOUT_UNDEFINED                             // initialLayout
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = m_device.CreateImage( m_device
+		auto res = m_device.vkCreateImage( m_device
 			, &createInfo
 			, nullptr
 			, &m_image );
@@ -308,7 +308,7 @@ namespace vk_renderer
 		m_storage = std::make_unique< ImageStorage >( m_device
 			, m_image
 			, convert( memoryFlags ) );
-		res = m_device.BindImageMemory( m_device
+		res = m_device.vkBindImageMemory( m_device
 			, m_image
 			, *m_storage
 			, 0 );
@@ -358,7 +358,7 @@ namespace vk_renderer
 			VK_IMAGE_LAYOUT_UNDEFINED                             // initialLayout
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = m_device.CreateImage( m_device
+		auto res = m_device.vkCreateImage( m_device
 			, &createInfo
 			, nullptr
 			, &m_image );
@@ -371,7 +371,7 @@ namespace vk_renderer
 		m_storage = std::make_unique< ImageStorage >( m_device
 			, m_image
 			, convert( memoryFlags ) );
-		res = m_device.BindImageMemory( m_device
+		res = m_device.vkBindImageMemory( m_device
 			, m_image
 			, *m_storage
 			, 0 );
@@ -410,7 +410,7 @@ namespace vk_renderer
 			VK_IMAGE_LAYOUT_UNDEFINED                             // initialLayout
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = m_device.CreateImage( m_device
+		auto res = m_device.vkCreateImage( m_device
 			, &createInfo
 			, nullptr
 			, &m_image );
@@ -423,7 +423,7 @@ namespace vk_renderer
 		m_storage = std::make_unique< ImageStorage >( m_device
 			, m_image
 			, convert( memoryFlags ) );
-		res = m_device.BindImageMemory( m_device
+		res = m_device.vkBindImageMemory( m_device
 			, m_image
 			, *m_storage
 			, 0 );
