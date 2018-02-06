@@ -134,6 +134,11 @@ namespace gl_renderer
 		return getName( value );
 	}
 
+	inline std::string toString( GlFilter value )
+	{
+		return getName( value );
+	}
+
 	inline std::string toString( GlFrontFace value )
 	{
 		return getName( value );

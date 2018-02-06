@@ -43,7 +43,7 @@ namespace gl_renderer
 		FrameBuffer const & m_srcFrameBuffer;
 		FrameBuffer const & m_dstFrameBuffer;
 		renderer::ImageBlit m_blitInfo;
-		GLFilter m_filter;
+		GlFilter m_filter;
 		GlImageAspectFlags m_mask;
 		GLuint m_fbo;
 	};
