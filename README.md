@@ -101,8 +101,3 @@ Applies lights to the previously loaded object.
 <img src="./screenshots/s03.png" height="72px" align="right">
 
 Applies normal mapping.
-
-### [Deferred Rendering](source/Samples/04-DeferredRendering/)
-<img src="./screenshots/s04.png" height="72px" align="right">
-
-Deferred rendering implementation for opaque objects.

@@ -149,7 +149,7 @@ namespace vk_renderer
 
 		if ( mapped.data )
 		{
-			std::memcpy( data, mapped.data, mapped.size );
+			std::memcpy( data, mapped.data, size_t( mapped.size ) );
 			image.unlock( uint32_t( VK_WHOLE_SIZE ), false );
 		}
 	}
