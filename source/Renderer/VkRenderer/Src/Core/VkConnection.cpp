@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -56,6 +56,29 @@ namespace vk_renderer
 		}
 	}
 
+#elif RENDERLIB_ANDROID
+
+	void Connection::doCreatePresentSurface()
+	{
+		VkAndroidSurfaceCreateInfoKHR createInfo =
+		{
+			VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
+			nullptr,
+			0,
+			m_handle.getInternal< renderer::IAndroidWindowHandle >().getWindow(),
+		};
+		DEBUG_DUMP( createInfo );
+		auto res = m_renderer.vkCreateAndroidSurfaceKHR( m_renderer
+			, &createInfo
+			, nullptr
+			, &m_presentSurface );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Presentation surface creation failed: " + getLastError() };
+		}
+	}
+
 #elif RENDERLIB_XCB
 
 	void Connection::doCreatePresentSurface()
@@ -69,6 +92,52 @@ namespace vk_renderer
 			m_handle.getInternal< renderer::IXcbWindowHandle >().getHandle(),
 		};
 		auto res = m_renderer.vkCreateXcbSurfaceKHR( m_renderer
+			, &createInfo
+			, nullptr
+			, &m_presentSurface );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Presentation surface creation failed: " + getLastError() };
+		}
+	}
+
+#elif RENDERLIB_MIR
+
+	void Connection::doCreatePresentSurface()
+	{
+		VkMirSurfaceCreateInfoKHR createInfo =
+		{
+			VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR,
+			nullptr,
+			flags,
+			m_handle.getInternal< renderer::IMirWindowHandle >().getConnection(),
+			m_handle.getInternal< renderer::IMirWindowHandle >().getSurface(),
+		};
+		auto res = m_renderer.vkCreateMirSurfaceKHR( m_renderer
+			, &createInfo
+			, nullptr
+			, &m_presentSurface );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Presentation surface creation failed: " + getLastError() };
+		}
+	}
+
+#elif RENDERLIB_WAYLAND
+
+	void Connection::doCreatePresentSurface()
+	{
+		VkWaylandSurfaceCreateInfoKHR createInfo =
+		{
+			VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR,
+			nullptr,
+			0,
+			m_handle.getInternal< renderer::IWaylandWindowHandle >().getDisplay(),
+			m_handle.getInternal< renderer::IWaylandWindowHandle >().getSurface(),
+		};
+		auto res = m_renderer.vkCreateWaylandSurfaceKHR( m_renderer
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
