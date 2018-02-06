@@ -168,7 +168,7 @@ namespace gl_renderer
 
 			glLogCall( gl::FramebufferTexture2D
 				, GL_FRAMEBUFFER
-				, attachment.point
+				, GlAttachmentPoint( attachment.point + attachment.index )
 				, GL_TEXTURE_2D
 				, attachment.object
 				, attach->getView().getSubResourceRange().getBaseMipLevel() );
