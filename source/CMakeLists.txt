@@ -83,7 +83,6 @@ if ( MSVC )
 endif ()
 
 include_directories(
-	${VkLib_INCLUDE_DIR}
 	${CMAKE_BINARY_DIR}/Renderer/Renderer
 	${CMAKE_SOURCE_DIR}/Core
 	${CMAKE_SOURCE_DIR}/Renderer

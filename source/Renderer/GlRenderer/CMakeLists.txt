@@ -26,7 +26,6 @@ if ( OpenGL_FOUND )
 
 	add_definitions(
 		-DGlRenderer_EXPORTS
-		-DGLEW_STATIC=1
 	)
 
 	add_library( ${PROJECT_NAME} SHARED
