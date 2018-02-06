@@ -255,7 +255,7 @@ namespace vkapp
 		m_depth = m_device.createTexture();
 		m_depth->setImage( DepthFormat
 			, m_size
-			, renderer::ImageUsageFlag::eDepthStencilAttachment );
+			, renderer::ImageUsageFlag::eDepthStencilAttachment | renderer::ImageUsageFlag::eSampled );
 		m_depthView = m_depth->createView( m_depth->getType()
 			, m_depth->getFormat()
 			, 0u

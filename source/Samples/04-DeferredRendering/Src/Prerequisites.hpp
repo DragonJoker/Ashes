@@ -4,19 +4,19 @@
 
 namespace vkapp
 {
-	/**
-	*\~french
-	*\brief
-	*	Les donn�es d'un sommet textur�.
-	*\~english
-	*\brief
-	*	The data for one textured vertex.
-	*/
 	struct TexturedVertexData
 	{
 		renderer::Vec4 position;
 		renderer::Vec2 uv;
 	};
+
+	struct GeometryPassTexture
+	{
+		renderer::TexturePtr texture;
+		renderer::TextureViewPtr view;
+	};
+
+	using GeometryPassResult = std::array < GeometryPassTexture, 4u >;
 
 	static wxString const AppName = wxT( "04-DeferredRendering" );
 

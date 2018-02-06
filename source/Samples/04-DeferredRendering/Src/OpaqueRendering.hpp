@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Prerequisites.hpp"
+#include "GeometryPass.hpp"
+#include "LightingPass.hpp"
 
 namespace vkapp
 {
@@ -27,25 +28,7 @@ namespace vkapp
 		renderer::UniformBuffer< common::LightsData > const & m_lightsUbo;
 		renderer::TextureView const * m_colourView{ nullptr };
 		renderer::TextureView const * m_depthView{ nullptr };
-		renderer::TexturePtr m_diffuse{ nullptr };
-		renderer::TextureViewPtr m_diffuseView{ nullptr };
-		renderer::TexturePtr m_specular{ nullptr };
-		renderer::TextureViewPtr m_specularView{ nullptr };
-		renderer::TexturePtr m_emissive{ nullptr };
-		renderer::TextureViewPtr m_emissiveView{ nullptr };
-		renderer::TexturePtr m_normal{ nullptr };
-		renderer::TextureViewPtr m_normalView{ nullptr };
-		renderer::SamplerPtr m_sampler;
-		renderer::CommandBufferPtr m_updateCommandBuffer;
-		renderer::CommandBufferPtr m_commandBuffer;
-		renderer::UniformBufferPtr< common::MaterialData > m_materialsUbo;
-		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
-		renderer::DescriptorSetPoolPtr m_descriptorPool;
-		renderer::ShaderProgramPtr m_program;
-		renderer::RenderPassPtr m_renderPass;
-		renderer::FrameBufferPtr m_frameBuffer;
-		common::SubmeshNodes m_submeshNodes;
-		common::ObjectNodes m_renderNodes;
-		uint32_t m_nodesCount;
+		GeometryPass m_geometryPass;
+		LightingPass m_lightingPass;
 	};
 }

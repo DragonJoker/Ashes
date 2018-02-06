@@ -4,7 +4,6 @@
 #extension GL_KHR_vulkan_glsl : enable
 
 #define MAX_TEXTURES 6
-#define MAX_LIGHTS 10
 
 struct TextureOperator
 {
@@ -30,43 +29,9 @@ struct Material
 	TextureOperator textureOperators[MAX_TEXTURES];
 };
 
-struct Light
-{
-	vec4 colour;
-	vec4 intensities;
-};
-
-struct DirectionalLight
-{
-	Light base;
-	vec4 direction;
-};
-
-struct PointLight
-{
-	Light base;
-	vec4 position;
-	vec4 attenation;
-};
-
-struct SpotLight
-{
-	PointLight base;
-	vec4 direction;
-	vec4 coeffs;// .x = cutoff, .y = exponent
-};
-
 layout( set=0, binding=2 ) uniform ObjectMaterial
 {
 	Material material;
-};
-
-layout( set=0, binding=3 ) uniform Lights
-{
-	ivec4 lightsCount;
-	DirectionalLight directionalLights[MAX_LIGHTS];
-	PointLight pointLights[MAX_LIGHTS];
-	SpotLight spotLights[MAX_LIGHTS];
 };
 
 layout( set=1, binding=0 ) uniform sampler2D textures[MAX_TEXTURES];
@@ -77,7 +42,10 @@ layout( location = 2 ) in vec3 vtx_bitangent;
 layout( location = 3 ) in vec2 vtx_texcoord;
 layout( location = 4 ) in vec3 vtx_worldPosition;
 
-layout( location = 0 ) out vec4 pxl_colour;
+layout( location = 0 ) out vec4 pxl_diffuse;
+layout( location = 1 ) out vec4 pxl_specular;
+layout( location = 2 ) out vec4 pxl_emissive;
+layout( location = 3 ) out vec4 pxl_normal;
 
 vec3 getDiffuse( TextureOperator operator, vec4 sampled, vec3 diffuse )
 {
@@ -119,26 +87,8 @@ vec3 getNormal( TextureOperator operator, vec4 sampled, vec3 tangent, vec3 bitan
 	return mix( normal, normalize( tbn * mapNormal ), float( operator.normal ) );
 }
 
-void computeLight( Light light, vec3 direction, vec3 normal, float shininess, out vec3 diffuse, out vec3 specular )
-{
-	float diffuseFactor = max( dot( normal, -direction ), 0.0 );
-	diffuse += light.colour.xyz * light.intensities.x * diffuseFactor;
-	vec3 vertexToEye = normalize( -vtx_worldPosition );
-	vec3 lightReflect = normalize( reflect( direction, normal ) );
-	float specularFactor = max( dot( vertexToEye, lightReflect ), 0.0 );
-	specularFactor = pow( specularFactor, light.intensities.y );
-	specular += vec3( light.colour * shininess * specularFactor );
-}
-
-void computeDirectionalLight( int index, vec3 normal, float shininess, out vec3 diffuse, out vec3 specular )
-{
-	DirectionalLight light = directionalLights[index];
-	computeLight( light.base, light.direction.xyz, normal, shininess, diffuse, specular );
-}
-
 void main()
 {
-	pxl_colour = vec4( 0.0, 0.0, 0.0, 1.0 );
 	vec3 diffuse = material.diffuse.rgb;
 	vec3 specular = material.specular.rgb;
 	vec3 emissive = material.emissive.rgb;
@@ -166,15 +116,8 @@ void main()
 		discard;
 	}
 
-	float normalCoeff = ( 3.0 - 2 * float( material.backFace ) ) - 2.0; // put from {0, 1} to {1, -1}
-	normal = /*normalCoeff * */normalize( normal );
-	vec3 lightDiffuse = vec3( 0.0, 0.0, 0.0 );
-	vec3 lightSpecular = vec3( 0.0, 0.0, 0.0 );
-
-	for ( int i = 0; i < lightsCount.x; ++i )
-	{
-		computeDirectionalLight( i, normal, shininess, lightDiffuse, lightSpecular );
-	}
-
-	pxl_colour = vec4( diffuse * ( lightDiffuse + lightSpecular ), opacity );
+	pxl_diffuse = vec4( diffuse, 1.0 );
+	pxl_specular = vec4( specular, shininess );
+	pxl_emissive = vec4( emissive, 1.0 );
+	pxl_normal = vec4( normal, 1.0 );
 }
