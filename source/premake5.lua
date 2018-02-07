@@ -12,7 +12,7 @@ workspace( "RendererLib" )
 
 sourceDir = os.getcwd()
 rootDir = path.getdirectory( sourceDir )
-binaryDir = path.join( rootDir, "build_premake" )
+binaryDir = path.join( rootDir, "build", "premake" )
 modulesDir = path.join( sourceDir, "Premake" )
 
 configurations{ "Debug", "Release" }
@@ -32,7 +32,7 @@ filter( "configurations:Release" )
 	defines( "NDEBUG" )
 	optimize( "On" )
 
-outputDir = path.join( rootDir, "pre_binaries" )
+outputDir = path.join( rootDir, "binaries" )
 executableDir = "bin"
 staticLibDir = "lib"
 assetsDir = "share"
@@ -58,4 +58,9 @@ include( "Renderer/premake5.lua" )
 if _OPTIONS["build-tests"] then
 	group( "Test" )
 	include( "Test/premake5.lua" )
+end
+
+if _OPTIONS["build-samples"] then
+	group( "Samples" )
+	include( "Samples/premake5.lua" )
 end
