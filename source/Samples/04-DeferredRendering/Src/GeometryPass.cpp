@@ -55,7 +55,7 @@ namespace vkapp
 		renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
 			, renderer::TextureView const & depthView )
 		{
-			std::vector< renderer::PixelFormat > formats
+			std::vector< renderer::PixelFormat > const formats
 			{
 				depthView.getFormat(),
 				renderer::PixelFormat::eRGBA32F,
@@ -63,25 +63,33 @@ namespace vkapp
 				renderer::PixelFormat::eRGBA32F,
 				renderer::PixelFormat::eRGBA32F,
 			};
-			renderer::RenderSubpassPtrArray subpasses;
-			subpasses.emplace_back( device.createRenderSubpass( formats
-				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
-			renderer::ImageLayoutArray layouts
+			renderer::ImageLayoutArray const initialLayouts
+			{
+				renderer::ImageLayout::eUndefined,
+				renderer::ImageLayout::eUndefined,
+				renderer::ImageLayout::eUndefined,
+				renderer::ImageLayout::eUndefined,
+				renderer::ImageLayout::eUndefined,
+			};
+			renderer::ImageLayoutArray const finalLayouts
 			{
 				renderer::ImageLayout::eDepthStencilAttachmentOptimal,
-				renderer::ImageLayout::eColourAttachmentOptimal,
-				renderer::ImageLayout::eColourAttachmentOptimal,
-				renderer::ImageLayout::eColourAttachmentOptimal,
-				renderer::ImageLayout::eColourAttachmentOptimal,
+				renderer::ImageLayout::eShaderReadOnlyOptimal,
+				renderer::ImageLayout::eShaderReadOnlyOptimal,
+				renderer::ImageLayout::eShaderReadOnlyOptimal,
+				renderer::ImageLayout::eShaderReadOnlyOptimal,
 			};
+			renderer::RenderSubpassPtrArray subpasses;
+			subpasses.emplace_back( device.createRenderSubpass( formats
+				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite | renderer::AccessFlag::eColourAttachmentRead } ) );
 			return device.createRenderPass( formats
 				, subpasses
-				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eColourAttachmentWrite
-					, layouts }
-				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eColourAttachmentWrite
-					, layouts } );
+				, renderer::RenderPassState{ renderer::PipelineStageFlag::eFragmentShader
+					, renderer::AccessFlag::eShaderRead
+					, initialLayouts }
+				, renderer::RenderPassState{ renderer::PipelineStageFlag::eFragmentShader
+					, renderer::AccessFlag::eShaderRead
+					, finalLayouts } );
 		}
 
 		renderer::FrameBufferPtr doCreateFrameBuffer( renderer::RenderPass const & renderPass
@@ -287,11 +295,18 @@ namespace vkapp
 							materialNode.pipelineLayout = m_device.createPipelineLayout( *m_descriptorLayout );
 						}
 
+						renderer::ColourBlendState blendState;
+						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
+						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
+						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
+						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
+
 						materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_program
 							, { *submeshNode->vertexLayout }
 							, *m_renderPass
 							, renderer::PrimitiveTopology::eTriangleList
-							, rasterisationState );
+							, rasterisationState
+							, blendState );
 						materialNode.pipeline->multisampleState( renderer::MultisampleState{} );
 						materialNode.pipeline->depthStencilState( renderer::DepthStencilState{} );
 						materialNode.pipeline->finish();
@@ -328,21 +343,6 @@ namespace vkapp
 
 			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 			{
-				commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eVertexShader
-					, renderer::PipelineStageFlag::eColourAttachmentOutput
-					, m_result[0].view->makeColourAttachment() );
-				commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eVertexShader
-					, renderer::PipelineStageFlag::eColourAttachmentOutput
-					, m_result[1].view->makeColourAttachment() );
-				commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eVertexShader
-					, renderer::PipelineStageFlag::eColourAttachmentOutput
-					, m_result[2].view->makeColourAttachment() );
-				commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eVertexShader
-					, renderer::PipelineStageFlag::eColourAttachmentOutput
-					, m_result[3].view->makeColourAttachment() );
-				commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
-					, renderer::PipelineStageFlag::eEarlyFragmentTests
-					, depthView.makeDepthStencilAttachment() );
 				commandBuffer.beginRenderPass( *m_renderPass
 					, *m_frameBuffer
 					, { depth, colour, colour, colour, colour }
@@ -384,6 +384,7 @@ namespace vkapp
 	void GeometryPass::draw()const
 	{
 		m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
+		m_device.getGraphicsQueue().waitIdle();
 	}
 
 	void GeometryPass::doCreateResult()

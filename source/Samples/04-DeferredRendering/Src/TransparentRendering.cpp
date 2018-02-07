@@ -401,5 +401,6 @@ namespace vkapp
 	void TransparentRendering::draw()const
 	{
 		m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
+		m_device.getGraphicsQueue().waitIdle();
 	}
 }

@@ -1,0 +1,17 @@
+dofile "../Premake/FindwxWidgets.lua"
+
+include( "00-Common/premake5.lua" )
+include( "01-DeviceCreation/premake5.lua" )
+include( "02-SwapChainCreation/premake5.lua" )
+include( "03-VertexLayout/premake5.lua" )
+include( "04-StagingBuffer/premake5.lua" )
+include( "05-Texture2D/premake5.lua" )
+include( "06-UniformBuffers/premake5.lua" )
+include( "07-Texture1D/premake5.lua" )
+include( "08-TextureBuffer/premake5.lua" )
+include( "09-FrameBuffer/premake5.lua" )
+include( "10-SpinningCube/premake5.lua" )
+include( "11-Texture3D/premake5.lua" )
+include( "12-TextureCube/premake5.lua" )
+include( "13-PushConstants/premake5.lua" )
+include( "14-RenderToCube/premake5.lua" )
