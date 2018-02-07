@@ -36,11 +36,10 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::Device::createRenderPass
 		*/
-		renderer::RenderPassPtr createRenderPass( std::vector< renderer::PixelFormat > const & formats
+		renderer::RenderPassPtr createRenderPass( renderer::RenderPassAttachmentArray const & attaches
 			, renderer::RenderSubpassPtrArray const & subpasses
 			, renderer::RenderPassState const & initialState
 			, renderer::RenderPassState const & finalState
-			, bool clear
 			, renderer::SampleCountFlag samplesCount )const override;
 		/**
 		*\copydoc	renderer::Device::createRenderSubpass

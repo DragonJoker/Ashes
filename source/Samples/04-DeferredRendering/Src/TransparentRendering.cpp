@@ -24,7 +24,7 @@
 #include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <RenderPass/TextureAttachment.hpp>
+#include <RenderPass/FrameBufferAttachment.hpp>
 #include <Shader/ShaderProgram.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
@@ -79,23 +79,47 @@ namespace vkapp
 			};
 		}
 
+		renderer::RenderPassAttachmentArray doGetAttaches( renderer::TextureView const & colourView
+			, renderer::TextureView const & depthView )
+		{
+			renderer::RenderPassAttachmentArray result;
+			auto formats = doGetFormats( colourView, depthView );
+
+			for ( auto format : formats )
+			{
+				result.push_back( { format, false } );
+			}
+
+			return result;
+		}
+
 		renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
 			, renderer::TextureView const & colourView
 			, renderer::TextureView const & depthView )
 		{
 			auto formats = doGetFormats( colourView, depthView );
+			auto attaches = doGetAttaches( colourView, depthView );
+			renderer::ImageLayoutArray const initialLayouts
+			{
+				renderer::ImageLayout::eColourAttachmentOptimal,
+				renderer::ImageLayout::eDepthStencilAttachmentOptimal,
+			};
+			renderer::ImageLayoutArray const finalLayouts
+			{
+				renderer::ImageLayout::eShaderReadOnlyOptimal,
+				renderer::ImageLayout::eDepthStencilAttachmentOptimal,
+			};
 			renderer::RenderSubpassPtrArray subpasses;
 			subpasses.emplace_back( device.createRenderSubpass( formats
 				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
-			return device.createRenderPass( formats
+			return device.createRenderPass( attaches
 				, subpasses
 				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 					, renderer::AccessFlag::eColourAttachmentWrite
-					, { renderer::ImageLayout::eColourAttachmentOptimal, renderer::ImageLayout::eDepthStencilAttachmentOptimal } }
-				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eColourAttachmentWrite
-					, { renderer::ImageLayout::eColourAttachmentOptimal, renderer::ImageLayout::eDepthStencilAttachmentOptimal } }
-				, false );
+					, initialLayouts }
+				, renderer::RenderPassState{ renderer::PipelineStageFlag::eFragmentShader
+					, renderer::AccessFlag::eShaderRead
+					, finalLayouts } );
 		}
 
 		renderer::FrameBufferPtr doCreateFrameBuffer( renderer::RenderPass const & renderPass
@@ -103,9 +127,9 @@ namespace vkapp
 			, renderer::TextureView const & depthView )
 		{
 			auto formats = doGetFormats( colourView, depthView );
-			renderer::TextureAttachmentPtrArray attaches;
-			attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( colourView ) );
-			attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( depthView ) );
+			renderer::FrameBufferAttachmentArray attaches;
+			attaches.emplace_back( *( renderPass.begin() + 0u ), colourView );
+			attaches.emplace_back( *( renderPass.begin() + 1u ), depthView );
 			auto dimensions = colourView.getTexture().getDimensions();
 			return renderPass.createFrameBuffer( renderer::UIVec2{ dimensions[0], dimensions[1] }
 				, std::move( attaches ) );
@@ -353,20 +377,13 @@ namespace vkapp
 
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 		{
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eEarlyFragmentTests
-				, depthView.makeDepthStencilAttachment() );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eColourAttachmentOutput
-				, colourView.makeColourAttachment() );
+			commandBuffer.beginRenderPass( *m_renderPass
+				, *m_frameBuffer
+				, { colour, depth }
+			, renderer::SubpassContents::eInline );
 
 			if ( m_nodesCount )
 			{
-				commandBuffer.beginRenderPass( *m_renderPass
-					, *m_frameBuffer
-					, { colour, depth }
-					, renderer::SubpassContents::eInline );
-
 				for ( auto & node : m_renderNodes )
 				{
 					commandBuffer.bindPipeline( *node.pipeline );
@@ -383,24 +400,21 @@ namespace vkapp
 						, *node.pipelineLayout );
 					commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
 						, *node.pipelineLayout );
-
 					commandBuffer.drawIndexed( uint32_t( node.submesh->ibo->getBuffer().getSize() / sizeof( uint32_t ) )
 						, 1u
 						, 0u
 						, 0u
 						, 0u );
 				}
-
-				commandBuffer.endRenderPass();
 			}
 
+			commandBuffer.endRenderPass();
 			commandBuffer.end();
 		}
 	}
 
-	void TransparentRendering::draw()const
+	bool TransparentRendering::draw()const
 	{
-		m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
-		m_device.getGraphicsQueue().waitIdle();
+		return m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
 	}
 }

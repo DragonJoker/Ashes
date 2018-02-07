@@ -11,18 +11,19 @@ namespace vkapp
 	{
 	public:
 		LightingPass( renderer::Device const & device
-			, renderer::UniformBuffer< renderer::Mat4 > const & matrixUbo
 			, renderer::UniformBuffer< common::LightsData > const & lightsUbo
 			, renderer::StagingBuffer & stagingBuffer
+			, renderer::TextureView const & depthView
 			, renderer::TextureView const & colourView );
-		void update( renderer::TextureView const & colourView
+		void update( renderer::Mat4 const & viewProj
+			, renderer::StagingBuffer & stagingBuffer
+			, renderer::TextureView const & colourView
 			, renderer::TextureView const & depthView
 			, GeometryPassResult const & geometryBuffers );
-		void draw()const;
+		bool draw()const;
 
 	private:
 		renderer::Device const & m_device;
-		renderer::UniformBuffer< renderer::Mat4 > const & m_matrixUbo;
 		renderer::UniformBuffer< common::LightsData > const & m_lightsUbo;
 		renderer::TextureView const * m_colourView{ nullptr };
 		renderer::TextureView const * m_depthView{ nullptr };
@@ -30,9 +31,13 @@ namespace vkapp
 
 		renderer::CommandBufferPtr m_updateCommandBuffer;
 		renderer::CommandBufferPtr m_commandBuffer;
-		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
-		renderer::DescriptorSetPoolPtr m_descriptorPool;
-		renderer::DescriptorSetPtr m_descriptorSet;
+		renderer::UniformBufferPtr< renderer::Mat4 > m_matrixUbo;
+		renderer::DescriptorSetLayoutPtr m_uboDescriptorLayout;
+		renderer::DescriptorSetPoolPtr m_uboDescriptorPool;
+		renderer::DescriptorSetPtr m_uboDescriptorSet;
+		renderer::DescriptorSetLayoutPtr m_gbufferDescriptorLayout;
+		renderer::DescriptorSetPoolPtr m_gbufferDescriptorPool;
+		renderer::DescriptorSetPtr m_gbufferDescriptorSet;
 		renderer::ShaderProgramPtr m_program;
 		renderer::RenderPassPtr m_renderPass;
 		renderer::SamplerPtr m_sampler;

@@ -29,8 +29,8 @@ namespace gl_renderer
 		*	L'image destination.
 		*/
 		BlitImageCommand( renderer::ImageBlit const & blitInfo
-			, renderer::TextureAttachment const & src
-			, renderer::TextureAttachment const & dst
+			, renderer::FrameBufferAttachment const & src
+			, renderer::FrameBufferAttachment const & dst
 			, renderer::Filter filter );
 		~BlitImageCommand();
 

@@ -242,8 +242,8 @@ namespace gl_renderer
 	}
 
 	void CommandBuffer::blitImage( renderer::ImageBlit const & blitInfo
-		, renderer::TextureAttachment const & src
-		, renderer::TextureAttachment const & dst
+		, renderer::FrameBufferAttachment const & src
+		, renderer::FrameBufferAttachment const & dst
 		, renderer::Filter filter )const
 	{
 		m_commands.emplace_back( std::make_unique< BlitImageCommand >( blitInfo

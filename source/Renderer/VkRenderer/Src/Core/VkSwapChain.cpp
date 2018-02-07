@@ -14,7 +14,7 @@
 #include "Sync/VkImageMemoryBarrier.hpp"
 #include "Sync/VkSemaphore.hpp"
 
-#include <RenderPass/TextureAttachment.hpp>
+#include <RenderPass/FrameBufferAttachment.hpp>
 
 namespace vk_renderer
 {
@@ -62,8 +62,8 @@ namespace vk_renderer
 
 		for ( size_t i = 0u; i < result.size(); ++i )
 		{
-			renderer::TextureAttachmentPtrArray attaches;
-			attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( m_backBuffers[i]->getView() ) );
+			renderer::FrameBufferAttachmentArray attaches;
+			attaches.emplace_back( *renderPass.begin(), m_backBuffers[i]->getView() );
 			result[i] = static_cast< RenderPass const & >( renderPass ).createFrameBuffer( m_dimensions
 				, std::move( attaches ) );
 		}

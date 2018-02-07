@@ -26,6 +26,7 @@ namespace utils
 		case PixelFormat::eRGBA32F:
 			return 128u;
 
+		case PixelFormat::eL32F:
 		case PixelFormat::eD24S8:
 		case PixelFormat::eD32F:
 			return 4u;

@@ -15,7 +15,7 @@ namespace vkapp
 			, renderer::TextureView const & depthView
 			, common::TextureNodePtrArray const & textureNodes );
 		void update( renderer::TextureView const & depthView );
-		void draw()const;
+		bool draw()const;
 
 		inline GeometryPassResult const & getResult()
 		{

@@ -98,18 +98,19 @@ namespace vkapp
 	void RenderPanel::doCreateRenderPass()
 	{
 		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
+		renderer::RenderPassAttachmentArray attaches{ { m_swapChain->getFormat(), true } };
 		renderer::RenderSubpassPtrArray subpasses;
 		subpasses.emplace_back( m_device->createRenderSubpass( formats
 			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 			, renderer::AccessFlag::eColourAttachmentWrite } ) );
-		m_renderPass = m_device->createRenderPass( formats
+		m_renderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eBottomOfPipe
-			, renderer::AccessFlag::eMemoryRead
-			, { renderer::ImageLayout::ePresentSrc } }
+				, renderer::AccessFlag::eMemoryRead
+				, { renderer::ImageLayout::ePresentSrc } }
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eBottomOfPipe
-			, renderer::AccessFlag::eMemoryRead
-			, { renderer::ImageLayout::ePresentSrc } } );
+				, renderer::AccessFlag::eMemoryRead
+				, { renderer::ImageLayout::ePresentSrc } } );
 	}
 
 	bool RenderPanel::doPrepareFrames()

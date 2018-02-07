@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Renderer_FrameBuffer_HPP___
 #pragma once
 
-#include "TextureAttachment.hpp"
+#include "FrameBufferAttachment.hpp"
 
 namespace renderer
 {
@@ -37,7 +37,7 @@ namespace renderer
 		*/
 		FrameBuffer( RenderPass const & renderPass
 			, UIVec2 const & dimensions
-			, TextureAttachmentPtrArray && textures );
+			, FrameBufferAttachmentArray && textures );
 
 	public:
 		/**
@@ -74,7 +74,7 @@ namespace renderer
 			, uint8_t * data )const noexcept = 0;
 
 	protected:
-		TextureAttachmentPtrArray m_attachments;
+		FrameBufferAttachmentArray m_attachments;
 	};
 }
 

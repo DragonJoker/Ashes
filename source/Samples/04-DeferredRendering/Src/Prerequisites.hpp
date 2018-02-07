@@ -16,7 +16,7 @@ namespace vkapp
 		renderer::TextureViewPtr view;
 	};
 
-	using GeometryPassResult = std::array < GeometryPassTexture, 4u >;
+	using GeometryPassResult = std::array < GeometryPassTexture, 5u >;
 
 	static wxString const AppName = wxT( "04-DeferredRendering" );
 

@@ -116,19 +116,17 @@ namespace vk_renderer
 		vkDestroyDevice( m_device, nullptr );
 	}
 
-	renderer::RenderPassPtr Device::createRenderPass( std::vector< renderer::PixelFormat > const & formats
+	renderer::RenderPassPtr Device::createRenderPass( renderer::RenderPassAttachmentArray const & attaches
 		, renderer::RenderSubpassPtrArray const & subpasses
 		, renderer::RenderPassState const & initialState
 		, renderer::RenderPassState const & finalState
-		, bool clear
 		, renderer::SampleCountFlag samplesCount )const
 	{
 		return std::make_unique< RenderPass >( *this
-			, formats
+			, attaches
 			, subpasses
 			, initialState
 			, finalState
-			, clear
 			, samplesCount );
 	}
 

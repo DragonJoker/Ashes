@@ -15,20 +15,20 @@ See LICENSE file in root folder.
 #include "Sync/VkFence.hpp"
 #include "Sync/VkImageMemoryBarrier.hpp"
 
-#include <RenderPass/TextureAttachment.hpp>
+#include <RenderPass/FrameBufferAttachment.hpp>
 
 namespace vk_renderer
 {
 	namespace
 	{
-		TextureViewCRefArray convert( renderer::TextureAttachmentPtrArray const & attachs )
+		TextureViewCRefArray convert( renderer::FrameBufferAttachmentArray const & attachs )
 		{
 			TextureViewCRefArray result;
 			result.reserve( attachs.size() );
 
 			for ( auto & attach : attachs )
 			{
-				result.emplace_back( static_cast< TextureView const & >( static_cast< renderer::TextureAttachment const & >( *attach ).getView() ) );
+				result.emplace_back( static_cast< TextureView const & >( attach.getView() ) );
 			}
 
 			return result;
@@ -38,7 +38,7 @@ namespace vk_renderer
 	FrameBuffer::FrameBuffer( Device const & device
 		, RenderPass const & renderPass
 		, renderer::UIVec2 const & dimensions
-		, renderer::TextureAttachmentPtrArray && attachments )
+		, renderer::FrameBufferAttachmentArray && attachments )
 		: renderer::FrameBuffer{ renderPass, dimensions, std::move( attachments ) }
 		, m_device{ device }
 		, m_views{ convert( m_attachments ) }

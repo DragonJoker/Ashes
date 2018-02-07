@@ -32,7 +32,7 @@ See LICENSE file in root folder.
 #include <Buffer/PushConstantsBuffer.hpp>
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
-#include <RenderPass/TextureAttachment.hpp>
+#include <RenderPass/FrameBufferAttachment.hpp>
 
 namespace vk_renderer
 {
@@ -401,16 +401,16 @@ namespace vk_renderer
 	}
 
 	void CommandBuffer::blitImage( renderer::ImageBlit const & blit
-		, renderer::TextureAttachment const & src
-		, renderer::TextureAttachment const & dst
+		, renderer::FrameBufferAttachment const & src
+		, renderer::FrameBufferAttachment const & dst
 		, renderer::Filter filter )const
 	{
 		auto vkblitInfo = convert( blit );
 		DEBUG_DUMP( vkblitInfo );
 		m_device.vkCmdBlitImage( m_commandBuffer
-			, static_cast< Texture const & >( static_cast< renderer::TextureAttachment const & >( src ).getTexture() )
+			, static_cast< Texture const & >( static_cast< renderer::FrameBufferAttachment const & >( src ).getTexture() )
 			, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
-			, static_cast< Texture const & >( static_cast< renderer::TextureAttachment const & >( dst ).getTexture() )
+			, static_cast< Texture const & >( static_cast< renderer::FrameBufferAttachment const & >( dst ).getTexture() )
 			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 			, 1
 			, &vkblitInfo

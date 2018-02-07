@@ -42,10 +42,11 @@ layout( location = 2 ) in vec3 vtx_bitangent;
 layout( location = 3 ) in vec2 vtx_texcoord;
 layout( location = 4 ) in vec3 vtx_worldPosition;
 
-layout( location = 0 ) out vec4 pxl_diffuse;
-layout( location = 1 ) out vec4 pxl_specular;
-layout( location = 2 ) out vec4 pxl_emissive;
-layout( location = 3 ) out vec4 pxl_normal;
+layout( location = 0 ) out float pxl_depth;
+layout( location = 1 ) out vec4 pxl_diffuse;
+layout( location = 2 ) out vec4 pxl_specular;
+layout( location = 3 ) out vec4 pxl_emissive;
+layout( location = 4 ) out vec4 pxl_normal;
 
 vec3 getDiffuse( TextureOperator operator, vec4 sampled, vec3 diffuse )
 {
@@ -116,6 +117,7 @@ void main()
 		discard;
 	}
 
+	pxl_depth = gl_FragCoord.z;
 	pxl_diffuse = vec4( diffuse, 1.0 );
 	pxl_specular = vec4( specular, shininess );
 	pxl_emissive = vec4( emissive, 1.0 );
