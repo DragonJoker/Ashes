@@ -30,6 +30,18 @@ namespace utils
 	}
 
 	template< typename T >
+	Mat4T< T >::Mat4T( Vec4T< T > const & col0
+		, Vec4T< T > const & col1
+		, Vec4T< T > const & col2
+		, Vec4T< T > const & col3 )
+		: col0{ col0 }
+		, col1{ col1 }
+		, col2{ col2 }
+		, col3{ col3 }
+	{
+	}
+
+	template< typename T >
 	template< typename U >
 	Mat4T< T >::Mat4T( Mat4T< U > const & rhs )noexcept
 		: col0{ rhs.col0 }
@@ -47,6 +59,7 @@ namespace utils
 		col1 = rhs.col1;
 		col2 = rhs.col2;
 		col3 = rhs.col3;
+		return *this;
 	}
 
 	template< typename T >
@@ -71,6 +84,7 @@ namespace utils
 		col1 += rhs.col1;
 		col2 += rhs.col2;
 		col3 += rhs.col3;
+		return *this;
 	}
 
 	template< typename T >
@@ -81,6 +95,7 @@ namespace utils
 		col1 -= rhs.col1;
 		col2 -= rhs.col2;
 		col3 -= rhs.col3;
+		return *this;
 	}
 
 	template< typename T >
@@ -112,6 +127,7 @@ namespace utils
 		col1 += rhs;
 		col2 += rhs;
 		col3 += rhs;
+		return *this;
 	}
 
 	template< typename T >
@@ -122,6 +138,7 @@ namespace utils
 		col1 -= rhs;
 		col2 -= rhs;
 		col3 -= rhs;
+		return *this;
 	}
 
 	template< typename T >
@@ -132,6 +149,7 @@ namespace utils
 		col1 *= rhs;
 		col2 *= rhs;
 		col3 *= rhs;
+		return *this;
 	}
 
 	template< typename T >
@@ -142,6 +160,7 @@ namespace utils
 		col1 /= rhs;
 		col2 /= rhs;
 		col3 /= rhs;
+		return *this;
 	}
 
 	template< typename T >
@@ -243,5 +262,63 @@ namespace utils
 		Vec4T< T > const add1 = mul2 + mul3;
 		Vec4T< T > const add2 = add0 + add1;
 		return add2;
+	}
+
+	template< typename T >
+	inline Mat4T< T > inverse( Mat4T< T > const & m )
+	{
+		T coef00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
+		T coef02 = m[1][2] * m[3][3] - m[3][2] * m[1][3];
+		T coef03 = m[1][2] * m[2][3] - m[2][2] * m[1][3];
+
+		T coef04 = m[2][1] * m[3][3] - m[3][1] * m[2][3];
+		T coef06 = m[1][1] * m[3][3] - m[3][1] * m[1][3];
+		T coef07 = m[1][1] * m[2][3] - m[2][1] * m[1][3];
+
+		T coef08 = m[2][1] * m[3][2] - m[3][1] * m[2][2];
+		T coef10 = m[1][1] * m[3][2] - m[3][1] * m[1][2];
+		T coef11 = m[1][1] * m[2][2] - m[2][1] * m[1][2];
+
+		T coef12 = m[2][0] * m[3][3] - m[3][0] * m[2][3];
+		T coef14 = m[1][0] * m[3][3] - m[3][0] * m[1][3];
+		T coef15 = m[1][0] * m[2][3] - m[2][0] * m[1][3];
+
+		T coef16 = m[2][0] * m[3][2] - m[3][0] * m[2][2];
+		T coef18 = m[1][0] * m[3][2] - m[3][0] * m[1][2];
+		T coef19 = m[1][0] * m[2][2] - m[2][0] * m[1][2];
+
+		T coef20 = m[2][0] * m[3][1] - m[3][0] * m[2][1];
+		T coef22 = m[1][0] * m[3][1] - m[3][0] * m[1][1];
+		T coef23 = m[1][0] * m[2][1] - m[2][0] * m[1][1];
+
+		Vec4T< T > fac0( coef00, coef00, coef02, coef03 );
+		Vec4T< T > fac1( coef04, coef04, coef06, coef07 );
+		Vec4T< T > fac2( coef08, coef08, coef10, coef11 );
+		Vec4T< T > fac3( coef12, coef12, coef14, coef15 );
+		Vec4T< T > fac4( coef16, coef16, coef18, coef19 );
+		Vec4T< T > fac5( coef20, coef20, coef22, coef23 );
+
+		Vec4T< T > vec0( m[1][0], m[0][0], m[0][0], m[0][0] );
+		Vec4T< T > vec1( m[1][1], m[0][1], m[0][1], m[0][1] );
+		Vec4T< T > vec2( m[1][2], m[0][2], m[0][2], m[0][2] );
+		Vec4T< T > vec3( m[1][3], m[0][3], m[0][3], m[0][3] );
+
+		Vec4T< T > inv0( vec1 * fac0 - vec2 * fac1 + vec3 * fac2 );
+		Vec4T< T > inv1( vec0 * fac0 - vec2 * fac3 + vec3 * fac4 );
+		Vec4T< T > inv2( vec0 * fac1 - vec1 * fac3 + vec3 * fac5 );
+		Vec4T< T > inv3( vec0 * fac2 - vec1 * fac4 + vec2 * fac5 );
+
+		Vec4T< T > signA( +1, -1, +1, -1 );
+		Vec4T< T > signB( -1, +1, -1, +1 );
+		Mat4T< T > inverted( inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB );
+
+		Vec4T< T > row0( inverted[0][0], inverted[1][0], inverted[2][0], inverted[3][0] );
+
+		Vec4T< T > dot0( m[0] * row0 );
+		T dot1 = ( dot0.x + dot0.y ) + ( dot0.z + dot0.w );
+
+		T oneOverDeterminant = static_cast< T >( 1 ) / dot1;
+
+		return inverted * oneOverDeterminant;
 	}
 }

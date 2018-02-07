@@ -9,6 +9,9 @@ namespace vk_renderer
 		case renderer::PixelFormat::eL8:
 			return VK_FORMAT_R8_UINT;
 
+		case renderer::PixelFormat::eL32F:
+			return VK_FORMAT_R32_SFLOAT;
+
 		case renderer::PixelFormat::eL8A8:
 			return VK_FORMAT_R8G8_UINT;
 
@@ -57,6 +60,9 @@ namespace vk_renderer
 		{
 		case VK_FORMAT_R8_UINT:
 			return renderer::PixelFormat::eL8;
+
+		case VK_FORMAT_R32_SFLOAT:
+			return renderer::PixelFormat::eL32F;
 
 		case VK_FORMAT_R8G8_UINT:
 			return renderer::PixelFormat::eL8A8;

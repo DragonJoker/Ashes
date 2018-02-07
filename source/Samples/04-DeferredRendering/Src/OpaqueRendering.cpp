@@ -24,7 +24,7 @@
 #include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <RenderPass/TextureAttachment.hpp>
+#include <RenderPass/FrameBufferAttachment.hpp>
 #include <Shader/ShaderProgram.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
@@ -78,15 +78,31 @@ namespace vkapp
 				depthView.getFormat()
 			};
 		}
+
+		renderer::RenderPassAttachmentArray doGetAttaches( renderer::TextureView const & depthView
+			, renderer::TextureView const & colourView )
+		{
+			renderer::RenderPassAttachmentArray result;
+			auto formats = doGetFormats( depthView, colourView );
+
+			for ( auto format : formats )
+			{
+				result.push_back( { format, false } );
+			}
+
+			return result;
+		}
+
 		renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
 			, renderer::TextureView const & colourView
 			, renderer::TextureView const & depthView )
 		{
 			auto formats = doGetFormats( colourView, depthView );
+			auto attaches = doGetAttaches( colourView, depthView );
 			renderer::RenderSubpassPtrArray subpasses;
 			subpasses.emplace_back( device.createRenderSubpass( formats
 				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
-			return device.createRenderPass( formats
+			return device.createRenderPass( attaches
 				, subpasses
 				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 					, renderer::AccessFlag::eColourAttachmentWrite
@@ -101,9 +117,9 @@ namespace vkapp
 			, renderer::TextureView const & depthView )
 		{
 			auto formats = doGetFormats( colourView, depthView );
-			renderer::TextureAttachmentPtrArray attaches;
-			attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( colourView ) );
-			attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( depthView ) );
+			renderer::FrameBufferAttachmentArray attaches;
+			attaches.emplace_back( *( renderPass.begin() + 0u ), depthView );
+			attaches.emplace_back( *( renderPass.begin() + 1u ), colourView );
 			auto dimensions = colourView.getTexture().getDimensions();
 			return renderPass.createFrameBuffer( renderer::UIVec2{ dimensions[0], dimensions[1] }
 				, std::move( attaches ) );
@@ -174,6 +190,7 @@ namespace vkapp
 		, m_matrixUbo{ matrixUbo }
 		, m_objectUbo{ objectUbo }
 		, m_lightsUbo{ lightsUbo }
+		, m_stagingBuffer{ stagingBuffer }
 		, m_geometryPass{ device
 			, submeshes
 			, matrixUbo
@@ -182,9 +199,9 @@ namespace vkapp
 			, depthView
 			, textureNodes }
 		, m_lightingPass{ device
-			, matrixUbo
 			, lightsUbo
 			, stagingBuffer
+			, depthView
 			, colourView }
 	{
 		update( colourView, depthView );
@@ -196,14 +213,17 @@ namespace vkapp
 		m_colourView = &colourView;
 		m_depthView = &depthView;
 		m_geometryPass.update( depthView );
-		m_lightingPass.update( colourView
+		m_lightingPass.update( m_matrixUbo.getData( 0u )
+			, m_stagingBuffer
+			, colourView
 			, depthView
 			, m_geometryPass.getResult() );
 	}
 
-	void OpaqueRendering::draw()const
+	bool OpaqueRendering::draw()const
 	{
-		m_geometryPass.draw();
-		m_lightingPass.draw();
+		auto result = m_geometryPass.draw();
+		result &= m_lightingPass.draw();
+		return result;
 	}
 }

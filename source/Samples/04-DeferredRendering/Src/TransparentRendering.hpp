@@ -18,7 +18,7 @@ namespace vkapp
 			, common::TextureNodePtrArray const & textureNodes );
 		void update( renderer::TextureView const & colourView
 			, renderer::TextureView const & depthView );
-		void draw()const;
+		bool draw()const;
 
 	private:
 		renderer::Device const & m_device;

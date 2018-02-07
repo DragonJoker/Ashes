@@ -353,10 +353,11 @@ namespace vkapp
 	void RenderPanel::doCreateOffscreenRenderPass()
 	{
 		std::vector< renderer::PixelFormat > formats{ { renderer::PixelFormat::eR8G8B8A8 } };
+		renderer::RenderPassAttachmentArray attaches{ { renderer::PixelFormat::eR8G8B8A8, true } };
 		renderer::RenderSubpassPtrArray subpasses;
 		subpasses.emplace_back( m_device->createRenderSubpass( formats
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
-		m_offscreenRenderPass = m_device->createRenderPass( formats
+		m_offscreenRenderPass = m_device->createRenderPass( attaches
 			, subpasses
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite
@@ -379,8 +380,8 @@ namespace vkapp
 			, 1u
 			, 0u
 			, 1u );
-		renderer::TextureAttachmentPtrArray attaches;
-		attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( *m_renderTargetColourView ) );
+		renderer::FrameBufferAttachmentArray attaches;
+		attaches.emplace_back( *( m_offscreenRenderPass->begin() + 0u ), *m_renderTargetColourView );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { size.GetWidth(), size.GetHeight() }
 			, std::move( attaches ) );
 	}
@@ -481,10 +482,11 @@ namespace vkapp
 	void RenderPanel::doCreateMainRenderPass()
 	{
 		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
+		renderer::RenderPassAttachmentArray attaches{ { m_swapChain->getFormat(), true } };
 		renderer::RenderSubpassPtrArray subpasses;
 		subpasses.emplace_back( m_device->createRenderSubpass( formats
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
-		m_mainRenderPass = m_device->createRenderPass( formats
+		m_mainRenderPass = m_device->createRenderPass( attaches
 			, subpasses
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite

@@ -28,7 +28,7 @@ namespace vkapp
 {
 	namespace
 	{
-		static renderer::PixelFormat const DepthFormat = renderer::PixelFormat::eD32F;
+		static renderer::PixelFormat const DepthFormat = renderer::PixelFormat::eD24S8;
 	}
 
 	RenderTarget::RenderTarget( renderer::Device const & device
@@ -99,10 +99,11 @@ namespace vkapp
 		save = renderer::Clock::now();
 	}
 
-	void RenderTarget::draw()
+	bool RenderTarget::draw()
 	{
-		m_opaque->draw();
-		m_transparent->draw();
+		auto result = m_opaque->draw();
+		result &= m_transparent->draw();
+		return result;
 	}
 
 	void RenderTarget::doCleanup()
@@ -243,7 +244,7 @@ namespace vkapp
 		m_colour = m_device.createTexture();
 		m_colour->setImage( renderer::PixelFormat::eR8G8B8A8
 			, m_size
-			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
+			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst );
 		m_colourView = m_colour->createView( m_colour->getType()
 			, m_colour->getFormat()
 			, 0u

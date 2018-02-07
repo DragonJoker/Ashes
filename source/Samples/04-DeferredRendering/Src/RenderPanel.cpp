@@ -214,17 +214,26 @@ namespace vkapp
 	void RenderPanel::doCreateRenderPass()
 	{
 		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
+		renderer::RenderPassAttachmentArray attaches{ { m_swapChain->getFormat(), true } };
+		renderer::ImageLayoutArray const initialLayouts
+		{
+			renderer::ImageLayout::eColourAttachmentOptimal,
+		};
+		renderer::ImageLayoutArray const finalLayouts
+		{
+			renderer::ImageLayout::eColourAttachmentOptimal,
+		};
 		renderer::RenderSubpassPtrArray subpasses;
 		subpasses.emplace_back( m_device->createRenderSubpass( formats
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
-		m_renderPass = m_device->createRenderPass( formats
+		m_renderPass = m_device->createRenderPass( attaches
 			, subpasses
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite
-				, { renderer::ImageLayout::eColourAttachmentOptimal } }
+				, initialLayouts }
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite
-				, { renderer::ImageLayout::eColourAttachmentOptimal } } );
+				, finalLayouts } );
 	}
 
 	void RenderPanel::doCreateVertexBuffer()
@@ -307,9 +316,6 @@ namespace vkapp
 			{
 				auto dimensions = m_swapChain->getDimensions();
 				m_swapChain->preRenderCommands( i, commandBuffer );
-				commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::PipelineStageFlag::eFragmentShader
-					, m_renderTarget->getColourView().makeShaderInputResource() );
 				commandBuffer.beginRenderPass( *m_renderPass
 					, frameBuffer
 					, { renderer::ClearValue{ { 1.0, 0.0, 0.0, 1.0 } } }
@@ -349,26 +355,44 @@ namespace vkapp
 
 	void RenderPanel::doDraw()
 	{
-		auto resources = m_swapChain->getResources();
-
-		if ( resources )
+		try
 		{
-			auto before = std::chrono::high_resolution_clock::now();
-			m_renderTarget->draw();
+			auto resources = m_swapChain->getResources();
 
-			m_device->getGraphicsQueue().submit( *m_commandBuffers[resources->getBackBuffer()]
+			if ( !resources )
+			{
+				throw std::runtime_error{ "Couldn't acquire next frame from swap chain." };
+			}
+			auto before = std::chrono::high_resolution_clock::now();
+			auto result = m_renderTarget->draw();
+
+			if ( !result )
+			{
+				throw std::runtime_error{ "Couldn't render offscreen frame." };
+			}
+
+			result = m_device->getGraphicsQueue().submit( *m_commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
+
+			if ( !result )
+			{
+				throw std::runtime_error{ "Couldn't render main frame." };
+			}
+
 			m_swapChain->present( *resources );
 
 			auto after = std::chrono::high_resolution_clock::now();
 			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
 		}
-		else
+		catch ( std::exception & exc )
 		{
 			m_timer->Stop();
+			wxMessageBox( exc.what()
+				, wxMessageBoxCaptionStr
+				, wxICON_ERROR );
 		}
 	}
 

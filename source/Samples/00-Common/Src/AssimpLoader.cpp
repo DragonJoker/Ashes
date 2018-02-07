@@ -227,7 +227,6 @@ namespace common
 				if ( image->opacity )
 				{
 					material.data.textureOperators[index].opacity = 8u;
-					//material.hasOpacity = true;
 				}
 
 				++index;
@@ -260,22 +259,22 @@ namespace common
 				++index;
 			}
 
-			//if ( doLoadTexture( folder, opaTexName, image, images ) )
-			//{
-			//	material.textures.push_back( image );
-			//	material.hasOpacity = true;
+			if ( doLoadTexture( folder, opaTexName, image, images ) )
+			{
+				material.textures.push_back( image );
+				material.hasOpacity = true;
 
-			//	if ( image->opacity )
-			//	{
-			//		material.data.textureOperators[index].opacity = 8;
-			//	}
-			//	else
-			//	{
-			//		material.data.textureOperators[index].opacity = 1;
-			//	}
+				if ( image->opacity )
+				{
+					material.data.textureOperators[index].opacity = 8;
+				}
+				else
+				{
+					material.data.textureOperators[index].opacity = 1;
+				}
 
-			//	++index;
-			//}
+				++index;
+			}
 
 			if ( doLoadTexture( folder, nmlTexName, image, images ) )
 			{

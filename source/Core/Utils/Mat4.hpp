@@ -61,6 +61,16 @@ namespace utils
 		Mat4T( U const & v )noexcept;
 		/**
 		*\brief
+		*	Constructeur, depuis 4 colonnes.
+		*\param[in] col0, col1, col2, col3
+		*	Les 4 colonnes de la matrice.
+		*/
+		Mat4T( Vec4T< T > const & col0
+			, Vec4T< T > const & col1
+			, Vec4T< T > const & col2
+			, Vec4T< T > const & col3 );
+		/**
+		*\brief
 		*	Constructeur de conversion.
 		*\param[in] rhs
 		*	La matrice à convertir.
@@ -199,6 +209,21 @@ namespace utils
 	template< typename T >
 	inline Vec4T< T > operator*( Mat4T< T > const & lhs
 		, Vec4T< T > const & rhs )noexcept;
+	/**\}*/
+	/**
+	*\name Opérateurs arithmétiques.
+	*/
+	/**\{*/
+	/**
+	*\~english
+	*\brief
+	*	Return the inverse of a squared matrix.
+	*\~french
+	*\brief
+	*	Retourne l'inverse d'une matrice carrée.
+	*/
+	template< typename T >
+	inline Mat4T< T > inverse( Mat4T< T > const & matrix );
 	/**\}*/
 }
 

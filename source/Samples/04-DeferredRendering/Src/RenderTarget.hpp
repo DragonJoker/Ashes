@@ -17,7 +17,7 @@ namespace vkapp
 		~RenderTarget();
 		void resize( renderer::UIVec2 const & size );
 		void update();
-		void draw();
+		bool draw();
 
 		inline renderer::TextureView const & getColourView()const
 		{

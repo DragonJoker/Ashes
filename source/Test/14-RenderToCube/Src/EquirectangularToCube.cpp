@@ -227,6 +227,7 @@ namespace vkapp
 		auto size = renderer::UIVec2{ texture.getDimensions()[0], texture.getDimensions()[1] };
 		uint32_t face = 0u;
 		std::vector< renderer::PixelFormat > formats{ 1u, m_target.getFormat() };
+		renderer::RenderPassAttachmentArray rpAttaches{ 1u, { m_target.getFormat(), true } };
 
 		for ( auto & facePipeline : m_faces )
 		{
@@ -246,7 +247,7 @@ namespace vkapp
 			renderer::RenderSubpassPtrArray subpasses;
 			subpasses.emplace_back( m_device.createRenderSubpass( formats
 				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
-			facePipeline.renderPass = m_device.createRenderPass( formats
+			facePipeline.renderPass = m_device.createRenderPass( rpAttaches
 				, subpasses
 				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 					, renderer::AccessFlag::eColourAttachmentWrite
@@ -254,8 +255,8 @@ namespace vkapp
 				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 					, renderer::AccessFlag::eColourAttachmentWrite
 					, { renderer::ImageLayout::eColourAttachmentOptimal } } );
-			renderer::TextureAttachmentPtrArray attaches;
-			attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( *facePipeline.view ) );
+			renderer::FrameBufferAttachmentArray attaches;
+			attaches.emplace_back( *facePipeline.renderPass->begin(), *facePipeline.view );
 			facePipeline.frameBuffer = facePipeline.renderPass->createFrameBuffer( size
 				, std::move( attaches ) );
 			facePipeline.pipeline = m_pipelineLayout->createPipeline( *m_program

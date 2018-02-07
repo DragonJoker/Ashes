@@ -24,7 +24,7 @@
 #include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <RenderPass/TextureAttachment.hpp>
+#include <RenderPass/FrameBufferAttachment.hpp>
 #include <Shader/ShaderProgram.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
@@ -52,19 +52,40 @@ namespace vkapp
 			return result;
 		}
 
-		renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
-			, renderer::TextureView const & depthView )
+		std::vector< renderer::PixelFormat > doGetFormats( renderer::TextureView const & depthView )
 		{
-			std::vector< renderer::PixelFormat > const formats
+			return std::vector< renderer::PixelFormat >
 			{
 				depthView.getFormat(),
+				renderer::PixelFormat::eL32F,
 				renderer::PixelFormat::eRGBA32F,
 				renderer::PixelFormat::eRGBA32F,
 				renderer::PixelFormat::eRGBA32F,
 				renderer::PixelFormat::eRGBA32F,
 			};
+		}
+
+		renderer::RenderPassAttachmentArray doGetAttaches( renderer::TextureView const & depthView )
+		{
+			renderer::RenderPassAttachmentArray result;
+			auto formats = doGetFormats( depthView );
+
+			for ( auto format : formats )
+			{
+				result.push_back( { format, true } );
+			}
+
+			return result;
+		}
+
+		renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
+			, renderer::TextureView const & depthView )
+		{
+			auto const formats{ doGetFormats( depthView ) };
+			auto const attaches{ doGetAttaches( depthView ) };
 			renderer::ImageLayoutArray const initialLayouts
 			{
+				renderer::ImageLayout::eUndefined,
 				renderer::ImageLayout::eUndefined,
 				renderer::ImageLayout::eUndefined,
 				renderer::ImageLayout::eUndefined,
@@ -78,11 +99,12 @@ namespace vkapp
 				renderer::ImageLayout::eShaderReadOnlyOptimal,
 				renderer::ImageLayout::eShaderReadOnlyOptimal,
 				renderer::ImageLayout::eShaderReadOnlyOptimal,
+				renderer::ImageLayout::eShaderReadOnlyOptimal,
 			};
 			renderer::RenderSubpassPtrArray subpasses;
 			subpasses.emplace_back( device.createRenderSubpass( formats
 				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite | renderer::AccessFlag::eColourAttachmentRead } ) );
-			return device.createRenderPass( formats
+			return device.createRenderPass( attaches
 				, subpasses
 				, renderer::RenderPassState{ renderer::PipelineStageFlag::eFragmentShader
 					, renderer::AccessFlag::eShaderRead
@@ -96,20 +118,14 @@ namespace vkapp
 			, renderer::TextureView const & depthView
 			, GeometryPassResult const & textures )
 		{
-			std::vector< renderer::PixelFormat > formats
-			{
-				depthView.getFormat(),
-				renderer::PixelFormat::eRGBA32F,
-				renderer::PixelFormat::eRGBA32F,
-				renderer::PixelFormat::eRGBA32F,
-				renderer::PixelFormat::eRGBA32F,
-			};
-			renderer::TextureAttachmentPtrArray attaches;
-			attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( depthView ) );
-			attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( *textures[0].view ) );
-			attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( *textures[1].view ) );
-			attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( *textures[2].view ) );
-			attaches.emplace_back( std::make_unique< renderer::TextureAttachment >( *textures[3].view ) );
+			auto const formats{ doGetFormats( depthView ) };
+			renderer::FrameBufferAttachmentArray attaches;
+			attaches.emplace_back( *( renderPass.begin() + 0u ), depthView );
+			attaches.emplace_back( *( renderPass.begin() + 1u ), *textures[0].view );
+			attaches.emplace_back( *( renderPass.begin() + 2u ), *textures[1].view );
+			attaches.emplace_back( *( renderPass.begin() + 3u ), *textures[2].view );
+			attaches.emplace_back( *( renderPass.begin() + 4u ), *textures[3].view );
+			attaches.emplace_back( *( renderPass.begin() + 5u ), *textures[4].view );
 			auto dimensions = depthView.getTexture().getDimensions();
 			return renderPass.createFrameBuffer( renderer::UIVec2{ dimensions[0], dimensions[1] }
 				, std::move( attaches ) );
@@ -275,6 +291,25 @@ namespace vkapp
 
 						materialNode.descriptorSetTextures->update();
 						renderer::RasterisationState rasterisationState;
+						renderer::DepthStencilState depthStencilState
+						{
+							0u,
+							true,
+							true,
+							renderer::CompareOp::eLess,
+							false,
+							true,
+							renderer::StencilOpState
+							{
+								renderer::StencilOp::eKeep,
+								renderer::StencilOp::eIncrementAndClamp,
+							},
+							renderer::StencilOpState
+							{
+								renderer::StencilOp::eKeep,
+								renderer::StencilOp::eIncrementAndClamp,
+							}
+						};
 
 						if ( material.data.backFace )
 						{
@@ -300,6 +335,7 @@ namespace vkapp
 						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
 						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
 						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
+						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
 
 						materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_program
 							, { *submeshNode->vertexLayout }
@@ -308,7 +344,7 @@ namespace vkapp
 							, rasterisationState
 							, blendState );
 						materialNode.pipeline->multisampleState( renderer::MultisampleState{} );
-						materialNode.pipeline->depthStencilState( renderer::DepthStencilState{} );
+						materialNode.pipeline->depthStencilState( depthStencilState );
 						materialNode.pipeline->finish();
 						m_renderNodes.emplace_back( std::move( materialNode ) );
 						++matIndex;
@@ -345,7 +381,7 @@ namespace vkapp
 			{
 				commandBuffer.beginRenderPass( *m_renderPass
 					, *m_frameBuffer
-					, { depth, colour, colour, colour, colour }
+					, { depth, colour, colour, colour, colour, colour }
 					, renderer::SubpassContents::eInline );
 
 				if ( m_nodesCount )
@@ -381,18 +417,27 @@ namespace vkapp
 		}
 	}
 
-	void GeometryPass::draw()const
+	bool GeometryPass::draw()const
 	{
-		m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
-		m_device.getGraphicsQueue().waitIdle();
+		return m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
 	}
 
 	void GeometryPass::doCreateResult()
 	{
+		static renderer::PixelFormat const formats[]
+		{
+			renderer::PixelFormat::eL32F,
+			utils::PixelFormat::eRGBA32F,
+			utils::PixelFormat::eRGBA32F,
+			utils::PixelFormat::eRGBA32F,
+			utils::PixelFormat::eRGBA32F,
+		};
+		size_t index = 0u;
+
 		for ( auto & texture : m_result )
 		{
 			texture.texture = m_device.createTexture();
-			texture.texture->setImage( utils::PixelFormat::eRGBA32F
+			texture.texture->setImage( formats[index]
 				, m_size
 				, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
 			texture.view = texture.texture->createView( renderer::TextureType::e2D
@@ -401,6 +446,7 @@ namespace vkapp
 				, 1u
 				, 0u
 				, 1u );
+			++index;
 		}
 	}
 }
