@@ -1,3 +1,13 @@
+newoption  {
+  trigger     = "build-tests",
+  description = "Enables tests build"
+}
+
+newoption {
+  trigger     = "build-samples",
+  description = "Enables tests build"
+}
+
 workspace( "RendererLib" )
 
 sourceDir = os.getcwd()
@@ -23,8 +33,9 @@ filter( "configurations:Release" )
 	optimize( "On" )
 
 outputDir = path.join( rootDir, "pre_binaries" )
-binaryLibDir = "bin"
+executableDir = "bin"
 staticLibDir = "lib"
+assetsDir = "share"
 
 if ( os.istarget( "Windows" ) )
 then
@@ -39,6 +50,12 @@ then
 end
 
 include( "libs_config.lua" )
+group( "Core" )
 include( "Core/premake5.lua" )
+group( "Renderer" )
 include( "Renderer/premake5.lua" )
-include( "Test/premake5.lua" )
+
+if _OPTIONS["build-tests"] then
+	group( "Test" )
+	include( "Test/premake5.lua" )
+end
