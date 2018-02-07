@@ -1,4 +1,5 @@
-project( 05-Texture2D )
+set( FOLDER_NAME 05-Texture2D )
+project( "Test-${FOLDER_NAME}" )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
@@ -30,14 +31,14 @@ target_link_libraries( ${PROJECT_NAME}
 	${VkLib_LIBRARIES}
 	Utils
 	Renderer
-	00-Common
+	Test-00-Common
 	${BinaryLibraries}
 	${wxWidgets_LIBRARIES}
 	${GTK2_LIBRARIES}
 )
 
 add_dependencies( ${PROJECT_NAME}
-	00-Common
+	Test-00-Common
 )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
@@ -48,12 +49,12 @@ foreach( SHADER ${SHADER_FILES} )
 		TARGET ${PROJECT_NAME}
 		POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E make_directory
-			$<$<CONFIG:Debug>:${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/share/${PROJECT_NAME}/Shaders>
-			$<$<CONFIG:Release>:${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/share/${PROJECT_NAME}/Shaders>
-			$<$<CONFIG:RelWithDebInfo>:${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/share/${PROJECT_NAME}/Shaders>
+			$<$<CONFIG:Debug>:${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/share/${FOLDER_NAME}/Shaders>
+			$<$<CONFIG:Release>:${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/share/${FOLDER_NAME}/Shaders>
+			$<$<CONFIG:RelWithDebInfo>:${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/share/${FOLDER_NAME}/Shaders>
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SHADER}
-			$<$<CONFIG:Debug>:${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/share/${PROJECT_NAME}/Shaders>
-			$<$<CONFIG:Release>:${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/share/${PROJECT_NAME}/Shaders>
-			$<$<CONFIG:RelWithDebInfo>:${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/share/${PROJECT_NAME}/Shaders>
+			$<$<CONFIG:Debug>:${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/share/${FOLDER_NAME}/Shaders>
+			$<$<CONFIG:Release>:${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/share/${FOLDER_NAME}/Shaders>
+			$<$<CONFIG:RelWithDebInfo>:${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/share/${FOLDER_NAME}/Shaders>
 	)
 endforeach()

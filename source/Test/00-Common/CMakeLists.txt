@@ -1,4 +1,4 @@
-project( 00-Common )
+project( Test-00-Common )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )

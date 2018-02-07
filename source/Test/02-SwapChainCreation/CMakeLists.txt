@@ -1,4 +1,5 @@
-project( 02-SwapChainCreation )
+set( FOLDER_NAME 02-SwapChainCreation )
+project( "Test-${FOLDER_NAME}" )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
@@ -24,14 +25,14 @@ target_link_libraries( ${PROJECT_NAME}
 	${VkLib_LIBRARIES}
 	Utils
 	Renderer
-	00-Common
+	Test-00-Common
 	${BinaryLibraries}
 	${wxWidgets_LIBRARIES}
 	${GTK2_LIBRARIES}
 )
 
 add_dependencies( ${PROJECT_NAME}
-	00-Common
+	Test-00-Common
 )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )

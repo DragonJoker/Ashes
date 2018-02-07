@@ -41,7 +41,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 		${ASSIMP_INCLUDE_DIR}
 	)
 
-	add_subdirectory( 00-SamplesCommon )
+	add_subdirectory( 00-Common )
 	add_subdirectory( 01-ObjectLoading )
 	add_subdirectory( 02-Lighting )
 	add_subdirectory( 03-NormalMapping )
