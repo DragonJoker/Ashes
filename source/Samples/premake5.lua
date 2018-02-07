@@ -11,7 +11,7 @@ for i, folder in ipairs( folders ) do
 
 		location( currentBinaryDir )
 
-		if ( folder == "00-SamplesCommon" ) then
+		if ( folder == "00-Common" ) then
 			kind( "StaticLib" )
 			targetdir( path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", staticLibDir ) )
 			includedirs{
@@ -35,14 +35,14 @@ for i, folder in ipairs( folders ) do
 				path.join( sourceDir, "Core" ),
 				path.join( sourceDir, "Renderer", "Renderer", "Src" ),
 				path.join( binaryDir, "Renderer", "Renderer", "Src" ),
-				path.join( sourceDir, "Samples", "00-SamplesCommon", "Src" ),
+				path.join( sourceDir, "Samples", "00-Common", "Src" ),
 				path.join( currentBinaryDir, "Src" ),
 				path.join( currentSourceDir, "Src" )
 			}
 			links{
 				"Utils",
 				"Renderer",
-				"Sample-00-SamplesCommon"
+				"Sample-00-Common"
 			}
 			shadersFolder = path.join( sourceDir, "Samples", folder, "Shaders" )
 			if ( os.isdir( shadersFolder ) ) then
@@ -50,6 +50,9 @@ for i, folder in ipairs( folders ) do
 					"{COPY} " .. shadersFolder .. " " .. path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", assetsDir, folder, "Shaders" )
 				}
 			end
+			forceincludes( "PrecompiledHeader.hpp" )
+			pchheader( "PrecompiledHeader.hpp" )
+			pchsource( folder .. "/Src/PrecompiledHeader.cpp" )
 		end
 
 		files{ currentSourceDir .. "/Src/**.hpp",
