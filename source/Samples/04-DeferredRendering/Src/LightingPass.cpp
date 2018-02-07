@@ -203,24 +203,6 @@ namespace vkapp
 
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 		{
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eFragmentShader
-				, renderer::PipelineStageFlag::eColourAttachmentOutput
-				, colourView.makeColourAttachment() );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eFragmentShader
-				, depthView.makeShaderInputResource() );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eFragmentShader
-				, result[0].view->makeShaderInputResource() );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eFragmentShader
-				, result[1].view->makeShaderInputResource() );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eFragmentShader
-				, result[2].view->makeShaderInputResource() );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eFragmentShader
-				, result[3].view->makeShaderInputResource() );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, *m_frameBuffer
 				, { colour }
@@ -249,5 +231,6 @@ namespace vkapp
 	void LightingPass::draw()const
 	{
 		m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
+		m_device.getGraphicsQueue().waitIdle();
 	}
 }

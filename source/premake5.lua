@@ -41,3 +41,4 @@ end
 include( "libs_config.lua" )
 include( "Core/premake5.lua" )
 include( "Renderer/premake5.lua" )
+include( "Test/premake5.lua" )
