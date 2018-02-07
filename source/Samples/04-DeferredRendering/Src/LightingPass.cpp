@@ -65,15 +65,11 @@ namespace vkapp
 		renderer::RenderPassAttachmentArray doGetAttaches( renderer::TextureView const & depthView
 			, renderer::TextureView const & colourView )
 		{
-			renderer::RenderPassAttachmentArray result;
-			auto formats = doGetFormats( depthView, colourView );
-
-			for ( auto format : formats )
+			return renderer::RenderPassAttachmentArray
 			{
-				result.push_back( { format, false } );
-			}
-
-			return result;
+				{ depthView.getFormat(), false },
+				{ colourView.getFormat(), true }
+			};
 		}
 
 		renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
