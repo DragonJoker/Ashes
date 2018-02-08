@@ -5,12 +5,20 @@ RendererLib is a rendering library written in C++14, matching closely Vulkan int
 Vulkan and OpenGL renderers are actually written.
 It comes with a set of test applications, to validate the API.
 
-It is a WIP, the library is really far from complete!!
+I've started this project because I need to upgrade my 3D engine (Castor3D), to use Vulkan, and I needed that kind of library, to replace my current renderer (OpenGL).
+I needed a way to work with OpenGL like we need to work with Vulkan.
+
+It is still a WIP, the library is far from complete!!
 
 
 ## Test applications
 
 These applications are used to validate the basic functionalities of the library.
+
+#### Test apps to implement
+- Instantiation.
+- Billboards.
+- Compute particle system.
 
 ### [Device creation](source/Test/01-DeviceCreation/)
 
