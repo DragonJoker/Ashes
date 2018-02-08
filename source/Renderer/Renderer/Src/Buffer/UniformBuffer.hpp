@@ -248,7 +248,7 @@ namespace renderer
 			, uint32_t range = 1u )
 		{
 			assert( range + offset <= m_data.size() );
-			auto size = getOffset( 1u );
+			auto size = getAlignedSize();
 
 			if ( auto buffer = m_ubo->getBuffer().lock( offset * size
 				, range * size
