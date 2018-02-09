@@ -95,6 +95,11 @@ namespace gl_renderer
 		void bindPipeline( renderer::Pipeline const & pipeline
 			, renderer::PipelineBindPoint bindingPoint )const override;
 		/**
+		*\copydoc	renderer::CommandBuffer:bindPipeline
+		*/
+		void bindPipeline( renderer::ComputePipeline const & pipeline
+			, renderer::PipelineBindPoint bindingPoint )const override;
+		/**
 		*\copydoc	renderer::CommandBuffer:bindGeometryBuffers
 		*/
 		void bindGeometryBuffers( renderer::GeometryBuffers const & geometryBuffers )const override;
@@ -206,6 +211,7 @@ namespace gl_renderer
 		mutable renderer::CommandBufferUsageFlags m_beginFlags{ 0u };
 		mutable CommandArray m_commands;
 		mutable renderer::Pipeline const * m_currentPipeline{ nullptr };
+		mutable renderer::ComputePipeline const * m_currentComputePipeline{ nullptr };
 		mutable renderer::IndexType m_indexType{ renderer::IndexType::eUInt32 };
 	};
 }

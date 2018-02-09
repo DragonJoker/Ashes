@@ -60,6 +60,7 @@ namespace gl_renderer
 	class Buffer;
 	class BufferView;
 	class CommandBase;
+	class ComputePipeline;
 	class Context;
 	class DescriptorSet;
 	class Device;

@@ -2,6 +2,7 @@
 
 #include "Core/GlDevice.hpp"
 #include "Descriptor/GlDescriptorSetLayout.hpp"
+#include "Pipeline/GlComputePipeline.hpp"
 #include "Pipeline/GlPipeline.hpp"
 
 namespace gl_renderer
@@ -21,7 +22,7 @@ namespace gl_renderer
 		, renderer::RasterisationState const & rasterisationState
 		, renderer::ColourBlendState const & colourBlendState )const
 	{
-		return std::make_shared< Pipeline >( m_device
+		return std::make_unique< Pipeline >( m_device
 			, *this
 			, program
 			, vertexLayouts
@@ -29,5 +30,12 @@ namespace gl_renderer
 			, topology
 			, rasterisationState
 			, colourBlendState );
+	}
+
+	renderer::ComputePipelinePtr PipelineLayout::createPipeline( renderer::ShaderProgram const & program )const
+	{
+		return std::make_unique< ComputePipeline >( m_device
+			, *this
+			, program );
 	}
 }

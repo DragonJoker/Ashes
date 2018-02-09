@@ -24,6 +24,7 @@ namespace vk_renderer
 	template<> std::string const VkTypeNamer< VkCommandBufferInheritanceInfo >::Name = "VkCommandBufferInheritanceInfo";
 	template<> std::string const VkTypeNamer< VkCommandPoolCreateInfo >::Name = "VkCommandPoolCreateInfo";
 	template<> std::string const VkTypeNamer< VkComponentMapping >::Name = "VkComponentMapping";
+	template<> std::string const VkTypeNamer< VkComputePipelineCreateInfo >::Name = "VkComputePipelineCreateInfo";
 	template<> std::string const VkTypeNamer< VkDescriptorBufferInfo >::Name = "VkDescriptorBufferInfo";
 	template<> std::string const VkTypeNamer< VkDescriptorImageInfo >::Name = "VkDescriptorImageInfo";
 	template<> std::string const VkTypeNamer< VkDescriptorPoolCreateInfo >::Name = "VkDescriptorPoolCreateInfo";

@@ -54,7 +54,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::CommandBuffer:begin
 		*/
-		bool begin( renderer::CommandBufferUsageFlags flags = 0u )const override;
+		bool begin( renderer::CommandBufferUsageFlags flags )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:begin
 		*/
@@ -62,9 +62,9 @@ namespace vk_renderer
 			, renderer::RenderPass const & renderPass
 			, uint32_t subpass
 			, renderer::FrameBuffer const & frameBuffer
-			, bool occlusionQueryEnable = false
-			, renderer::QueryControlFlags queryFlags = 0u
-			, renderer::QueryPipelineStatisticFlags pipelineStatistics = 0u )const override;
+			, bool occlusionQueryEnable
+			, renderer::QueryControlFlags queryFlags
+			, renderer::QueryPipelineStatisticFlags pipelineStatistics )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:end
 		*/
@@ -72,7 +72,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::CommandBuffer:reset
 		*/
-		bool reset( renderer::CommandBufferResetFlags flags = 0u )const override;
+		bool reset( renderer::CommandBufferResetFlags flags )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:beginRenderPass
 		*/
@@ -113,7 +113,12 @@ namespace vk_renderer
 		*\copydoc	renderer::CommandBuffer:bindPipeline
 		*/
 		void bindPipeline( renderer::Pipeline const & pipeline
-			, renderer::PipelineBindPoint bindingPoint = renderer::PipelineBindPoint::eGraphics )const override;
+			, renderer::PipelineBindPoint bindingPoint )const override;
+		/**
+		*\copydoc	renderer::CommandBuffer:bindPipeline
+		*/
+		void bindPipeline( renderer::ComputePipeline const & pipeline
+			, renderer::PipelineBindPoint bindingPoint )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:bindGeometryBuffers
 		*/
@@ -123,7 +128,7 @@ namespace vk_renderer
 		*/
 		void bindDescriptorSet( renderer::DescriptorSet const & descriptorSet
 			, renderer::PipelineLayout const & layout
-			, renderer::PipelineBindPoint bindingPoint = renderer::PipelineBindPoint::eGraphics )const override;
+			, renderer::PipelineBindPoint bindingPoint )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:setViewport
 		*/
@@ -255,6 +260,7 @@ namespace vk_renderer
 		CommandPool const & m_pool;
 		VkCommandBuffer m_commandBuffer{};
 		mutable Pipeline const * m_currentPipeline{ nullptr };
+		mutable ComputePipeline const * m_currentComputePipeline{ nullptr };
 		mutable VkCommandBufferInheritanceInfo m_inheritanceInfo;
 	};
 }

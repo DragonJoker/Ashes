@@ -935,6 +935,21 @@ namespace vk_renderer
 			return dump.str();
 		}
 
+		static inline std::string subDump( VkComputePipelineCreateInfo const & value, std::string const & tabs )
+		{
+			std::stringstream dump;
+			dump << tabs << "{" << std::endl;
+			dump << tabs << "\t" << "sType: " << value.sType << std::endl;
+			dump << tabs << "\t" << "pNext:" << value.pNext << std::endl;
+			dump << tabs << "\t" << "flags: " << value.flags << std::endl;
+			dump << tabs << "\t" << "stage: " << std::endl << subDump( value.stage, tabs + "\t" ) << std::endl;
+			dump << tabs << "\t" << "layout: " << value.layout << std::endl;
+			dump << tabs << "\t" << "basePipelineHandle: " << value.basePipelineHandle << std::endl;
+			dump << tabs << "\t" << "basePipelineIndex: " << value.basePipelineIndex << std::endl;
+			dump << tabs << "}" << std::endl;
+			return dump.str();
+		}
+
 		static inline std::string subDump( VkCommandBufferAllocateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;

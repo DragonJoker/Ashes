@@ -128,6 +128,7 @@ namespace vk_renderer
 	class BufferView;
 	class CommandBuffer;
 	class CommandPool;
+	class ComputePipeline;
 	class Connection;
 	class DescriptorSet;
 	class DescriptorSetBinding;

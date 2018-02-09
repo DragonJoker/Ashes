@@ -98,6 +98,7 @@ namespace renderer
 	class ColourBlendStateAttachment;
 	class CommandBuffer;
 	class CommandPool;
+	class ComputePipeline;
 	class Connection;
 	class DepthStencilState;
 	class DescriptorSet;
@@ -175,6 +176,7 @@ namespace renderer
 	using BufferViewPtr = std::unique_ptr< BufferView >;
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
+	using ComputePipelinePtr = std::unique_ptr< ComputePipeline >;
 	using ConnectionPtr = std::unique_ptr< Connection >;
 	using DescriptorSetLayoutPtr = std::unique_ptr< DescriptorSetLayout >;
 	using DescriptorSetLayoutBindingPtr = std::unique_ptr< DescriptorSetLayoutBinding >;
@@ -184,6 +186,7 @@ namespace renderer
 	using FencePtr = std::unique_ptr< Fence >;
 	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
 	using IWindowHandlePtr = std::unique_ptr< IWindowHandle >;
+	using PipelinePtr = std::unique_ptr< Pipeline >;
 	using PipelineLayoutPtr = std::unique_ptr< PipelineLayout >;
 	using QueryPoolPtr = std::unique_ptr< QueryPool >;
 	using QueuePtr = std::unique_ptr< Queue >;
@@ -210,7 +213,6 @@ namespace renderer
 	using RenderPassAttachmentArray = std::vector< RenderPassAttachment >;
 
 	using FrameBufferPtr = std::shared_ptr< FrameBuffer >;
-	using PipelinePtr = std::shared_ptr< Pipeline >;
 	using SamplerPtr = std::shared_ptr< Sampler >;
 	using StagingBufferPtr = std::shared_ptr< StagingBuffer >;
 	using TexturePtr = std::shared_ptr< Texture >;
