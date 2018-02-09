@@ -8,16 +8,17 @@ It comes with a set of test applications, to validate the API.
 I've started this project because I need to upgrade my 3D engine (Castor3D), to use Vulkan, and I needed that kind of library, to replace my current renderer (OpenGL).
 I needed a way to work with OpenGL like we need to work with Vulkan.
 
+To build it, you can use either CMake or premake.
+
 It is still a WIP, the library is far from complete!!
 
 
 ## Test applications
 
-These applications are used to validate the basic functionalities of the library.
-
 #### Test apps to implement
-- Billboards.
-- Compute particle system.
+- Compute pipeline.
+
+These applications are used to validate the basic functionalities of the library.
 
 ### [Device creation](source/Test/01-DeviceCreation/)
 
@@ -95,6 +96,10 @@ Tests hardware instantiation, by rendering 1'000'000 cubes.
 
 
 ## Sample applications
+
+#### Sample apps to implement
+- Billboards.
+- Compute particle system.
 
 These applications use the library in a more complex way, closer to what would be done within an engine.
 
