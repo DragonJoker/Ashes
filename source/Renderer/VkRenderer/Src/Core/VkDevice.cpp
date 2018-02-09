@@ -139,10 +139,12 @@ namespace vk_renderer
 	}
 
 	renderer::VertexLayoutPtr Device::createVertexLayout( uint32_t bindingSlot
-		, uint32_t stride )const
+		, uint32_t stride
+		, renderer::VertexInputRate inputRate )const
 	{
 		return std::make_unique< VertexLayout >( bindingSlot
-			, stride );
+			, stride
+			, inputRate );
 	}
 
 	renderer::GeometryBuffersPtr Device::createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos

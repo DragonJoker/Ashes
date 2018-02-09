@@ -18,6 +18,9 @@ namespace vk_renderer
 		case renderer::AttributeFormat::eVec4f:
 			return VK_FORMAT_R32G32B32A32_SFLOAT;
 
+		case renderer::AttributeFormat::eMat4f:
+			return VK_FORMAT_R32G32B32A32_SFLOAT;
+
 		case renderer::AttributeFormat::eInt:
 			return VK_FORMAT_R32_SINT;
 

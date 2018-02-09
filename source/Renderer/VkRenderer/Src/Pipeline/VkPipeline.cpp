@@ -84,7 +84,28 @@ namespace vk_renderer
 
 			for ( auto const & attribute : vb.get() )
 			{
-				vertexAttributeDescriptions.emplace_back( attribute );
+				if ( attribute.getFormat() == renderer::AttributeFormat::eMat4f )
+				{
+					uint32_t offset = attribute.getOffset();
+					uint32_t location = attribute.getLocation();
+					uint32_t divisor = attribute.getDivisor() * 4u;
+
+					for ( auto i = 0u; i < 4u; ++i )
+					{
+						auto attrib = Attribute{ vb.get()
+							, renderer::AttributeFormat::eVec4f
+							, location
+							, offset
+							, divisor };
+						vertexAttributeDescriptions.emplace_back( attrib );
+						++location;
+						offset += 16u;
+					}
+				}
+				else
+				{
+					vertexAttributeDescriptions.emplace_back( attribute );
+				}
 			}
 		}
 

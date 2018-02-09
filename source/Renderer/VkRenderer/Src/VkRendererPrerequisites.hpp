@@ -77,6 +77,7 @@
 #include "Enum/VkSubpassContents.hpp"
 #include "Enum/VkTessellationStateFlag.hpp"
 #include "Enum/VkTextureType.hpp"
+#include "Enum/VkVertexInputRate.hpp"
 #include "Enum/VkWrapMode.hpp"
 #include "Descriptor/VkDescriptorSetLayoutBinding.hpp"
 #include "Image/VkImageSubresourceLayers.hpp"

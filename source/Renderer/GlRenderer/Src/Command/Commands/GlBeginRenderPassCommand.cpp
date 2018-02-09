@@ -19,7 +19,6 @@ namespace gl_renderer
 		, m_frameBuffer{ static_cast< FrameBuffer const & >( frameBuffer ) }
 		, m_clearValues{ clearValues }
 	{
-		assert( m_clearValues.size() == m_frameBuffer.getSize() );
 	}
 
 	void BeginRenderPassCommand::apply()const

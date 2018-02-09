@@ -26,9 +26,10 @@ namespace gl_renderer
 		*\param[in] offset
 		*	La position de l'attribut dans le tampon.
 		*/
-		AttributeBase( renderer::VertexLayout & layout
+		AttributeBase( renderer::VertexLayout const & layout
 			, renderer::AttributeFormat format
 			, uint32_t location
-			, uint32_t offset );
+			, uint32_t offset
+			, uint32_t divisor );
 	};
 }

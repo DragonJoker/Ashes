@@ -30,6 +30,8 @@
 
 #include <FileUtils.hpp>
 
+#include <algorithm>
+
 namespace vkapp
 {
 	namespace

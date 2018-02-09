@@ -52,7 +52,8 @@ namespace gl_renderer
 		*\copydoc		renderer::Device::createVertexLayout
 		*/
 		renderer::VertexLayoutPtr createVertexLayout( uint32_t bindingSlot
-			, uint32_t stride )const override;
+			, uint32_t stride
+			, renderer::VertexInputRate inputRate )const override;
 		/**
 		*\copydoc		renderer::Device::createGeometryBuffers
 		*/

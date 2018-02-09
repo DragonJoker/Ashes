@@ -33,18 +33,15 @@ namespace gl_renderer
 		*	La taille en octets séparant un élément du suivant, dans le tampon.
 		*/
 		VertexLayout( uint32_t bindingSlot
-			, uint32_t stride );
+			, uint32_t stride
+			, renderer::VertexInputRate inputRate );
 		/**
-		*\brief
-		*	Crée un attribut de sommet.
-		*\param[in] location
-		*	La position de l'attribut dans le shader.
-		*\param[in] offset
-		*	La position de l'attribut dans le tampon.
+		*\copydoc renderer::VertexLayout::createAttribute
 		*/
 		renderer::AttributeBase createAttribute( uint32_t location
 			, renderer::AttributeFormat format
-			, uint32_t offset )override;
+			, uint32_t offset
+			, uint32_t divisor )override;
 		/**
 		*\return
 		*	Le début du tableau d'attributs.

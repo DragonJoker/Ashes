@@ -36,7 +36,6 @@
 
 #include <FileUtils.hpp>
 
-#include <algorithm>
 #include <chrono>
 
 namespace vkapp
@@ -48,8 +47,9 @@ namespace vkapp
 			RenderTimer = 42
 		}	Ids;
 
-		static int const TimerTimeMs = 20;
+		static int constexpr TimerTimeMs = 40;
 		static renderer::PixelFormat const DepthFormat = renderer::PixelFormat::eD32F;
+		static uint32_t constexpr ObjectCount = 100;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
@@ -57,6 +57,54 @@ namespace vkapp
 		, renderer::Renderer const & renderer )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
+		, m_offscreenVertexData
+		{
+			// Front
+			{ { -1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, +1.0, +1.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, +1.0, +1.0, 1.0 }, { 1.0, 1.0 } },
+			// Top
+			{ { -1.0, +1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, +1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
+			// Back
+			{ { -1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
+			{ { -1.0, -1.0, -1.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, -1.0, -1.0, 1.0 }, { 0.0, 0.0 } },
+			// Bottom
+			{ { -1.0, -1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
+			{ { -1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, -1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
+			// Right
+			{ { +1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
+			{ { +1.0, +1.0, +1.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, -1.0, -1.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
+			// Left
+			{ { -1.0, -1.0, -1.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
+			{ { -1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
+			{ { -1.0, +1.0, +1.0, 1.0 }, { 1.0, 1.0 } },
+		}
+		, m_offscreenIndexData
+		{
+			// Front
+			0, 1, 2, 2, 1, 3,
+			// Top
+			4, 5, 6, 6, 5, 7,
+			// Back
+			8, 9, 10, 10, 9, 11,
+			// Bottom
+			12, 13, 14, 14, 13, 15,
+			// Right
+			16, 17, 18, 18, 17, 19,
+			// Left
+			20, 21, 22, 22, 21, 23,
+		}
 		, m_mainVertexData
 		{
 			{ { -1.0, -1.0, 0.0, 1.0 }, { 0.0, 0.0 } },
@@ -64,7 +112,6 @@ namespace vkapp
 			{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
 			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
 		}
-		, m_object{ common::loadObject( common::getPath( common::getExecutableDirectory() ) / "share" / "Assets" / "Nyra", "Nyra_pose.fbx", m_images ) }
 	{
 		try
 		{
@@ -74,24 +121,21 @@ namespace vkapp
 			std::cout << "Swap chain created." << std::endl;
 			doCreateStagingBuffer();
 			std::cout << "Staging buffer created." << std::endl;
+			doCreateTexture();
+			std::cout << "Truck texture created." << std::endl;
 			doCreateUniformBuffer();
 			std::cout << "Uniform buffer created." << std::endl;
 			doCreateOffscreenDescriptorSet();
 			std::cout << "Offscreen descriptor set created." << std::endl;
 			doCreateOffscreenRenderPass();
 			std::cout << "Offscreen render pass created." << std::endl;
-			doCreateOffscreenProgram();
-			std::cout << "Offscreen pipeline created." << std::endl;
-			doCreateTextures();
-			std::cout << "Textures created." << std::endl;
-			doInitialiseObject();
-			std::cout << "Object created." << std::endl;
-			doInitialiseLights();
-			std::cout << "Lights initialised." << std::endl;
 			doCreateFrameBuffer();
 			std::cout << "Frame buffer created." << std::endl;
+			doCreateOffscreenVertexBuffer();
+			std::cout << "Offscreen vertex buffer created." << std::endl;
+			doCreateOffscreenPipeline();
+			std::cout << "Offscreen pipeline created." << std::endl;
 			doPrepareOffscreenFrame();
-			std::cout << "Offscreen frame prepared." << std::endl;
 			doCreateMainDescriptorSet();
 			std::cout << "Main descriptor set created." << std::endl;
 			doCreateMainRenderPass();
@@ -101,7 +145,6 @@ namespace vkapp
 			doCreateMainPipeline();
 			std::cout << "Main pipeline created." << std::endl;
 			doPrepareMainFrames();
-			std::cout << "Main frames prepared." << std::endl;
 		}
 		catch ( std::exception & )
 		{
@@ -119,6 +162,26 @@ namespace vkapp
 		Connect( wxID_ANY
 			, wxEVT_SIZE
 			, wxSizeEventHandler( RenderPanel::onSize )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_LEFT_DOWN
+			, wxMouseEventHandler( RenderPanel::onMouseLDown )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_LEFT_DCLICK
+			, wxMouseEventHandler( RenderPanel::onMouseLDoubleClick )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_LEFT_UP
+			, wxMouseEventHandler( RenderPanel::onMouseLUp )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_MOTION
+			, wxMouseEventHandler( RenderPanel::onMouseMove )
 			, nullptr
 			, this );
 	}
@@ -141,17 +204,11 @@ namespace vkapp
 			m_commandBuffers.clear();
 			m_frameBuffers.clear();
 			m_sampler.reset();
-			m_opaqueObject.clear();
-			m_alphaBlendedObject.clear();
-			m_submeshNodes.clear();
-			m_textureNodes.clear();
-
+			m_view.reset();
+			m_texture.reset();
 			m_stagingBuffer.reset();
 
-			m_lightsUbo.reset();
-			m_materialUbo.reset();
 			m_matrixUbo.reset();
-			m_objectUbo.reset();
 			m_mainDescriptorSet.reset();
 			m_mainDescriptorPool.reset();
 			m_mainDescriptorLayout.reset();
@@ -159,13 +216,21 @@ namespace vkapp
 			m_mainPipelineLayout.reset();
 			m_mainProgram.reset();
 			m_mainVertexBuffer.reset();
+			m_mainVertexBuffer.reset();
 			m_mainGeometryBuffers.reset();
-			m_mainVertexLayout.reset();
 			m_mainRenderPass.reset();
 
+			m_offscreenDescriptorSet.reset();
 			m_offscreenDescriptorPool.reset();
 			m_offscreenDescriptorLayout.reset();
+			m_offscreenPipeline.reset();
+			m_offscreenPipelineLayout.reset();
 			m_offscreenProgram.reset();
+			m_offscreenMatrixBuffer.reset();
+			m_offscreenMatrixLayout.reset();
+			m_offscreenIndexBuffer.reset();
+			m_offscreenVertexBuffer.reset();
+			m_offscreenGeometryBuffers.reset();
 			m_offscreenRenderPass.reset();
 
 			m_frameBuffer.reset();
@@ -198,24 +263,20 @@ namespace vkapp
 			wRatio = halfWidth / halfHeight;
 		}
 
-		m_matrixUbo->getData( 0u ) = m_device->ortho( -2.0f * wRatio
+		m_projection = m_device->ortho( -2.0f * wRatio
 			, 2.0f * wRatio
 			, -2.0f * hRatio
 			, 2.0f * hRatio
 			, 0.0f
-			, 10.0f );
+			, 1000.0f );
 #else
 		auto width = float( size.x );
 		auto height = float( size.y );
-		m_matrixUbo->getData( 0u ) = m_device->perspective( utils::toRadians( 90.0_degrees )
+		m_projection = m_device->perspective( utils::toRadians( 90.0_degrees )
 			, width / height
 			, 0.01f
-			, 100.0f );
+			, 1000.0f );
 #endif
-		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
-			, m_matrixUbo->getDatas()
-			, *m_matrixUbo
-			, renderer::PipelineStageFlag::eVertexShader );
 	}
 
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
@@ -239,232 +300,31 @@ namespace vkapp
 		m_updateCommandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
 	}
 
-	void RenderPanel::doCreateTextures()
+	void RenderPanel::doCreateTexture()
 	{
-		for ( auto & image : m_images )
-		{
-			common::TextureNodePtr textureNode = std::make_shared< common::TextureNode >();
-			textureNode->image = image;
-			textureNode->texture = m_device->createTexture();
-			textureNode->texture->setImage( image->format
-				, { image->size[0], image->size[1] }
-				, 4u
-				, renderer::ImageUsageFlag::eTransferSrc | renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled );
-			textureNode->view = textureNode->texture->createView( textureNode->texture->getType()
-				, textureNode->texture->getFormat()
-				, 0u
-				, 1u
-				, 0u
-				, 1u );
-			auto view = textureNode->texture->createView( textureNode->texture->getType()
-				, textureNode->texture->getFormat()
-				, 0u
-				, 1u
-				, 0u
-				, 1u );
-			m_stagingBuffer->uploadTextureData( *m_updateCommandBuffer
-				, image->data
-				, *view );
-			textureNode->texture->generateMipmaps();
-			m_textureNodes.emplace_back( textureNode );
-		}
-	}
-
-	void RenderPanel::doInitialiseObject()
-	{
+		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
+		auto image = common::loadImage( shadersFolder / "texture.png" );
+		m_texture = m_device->createTexture();
+		m_texture->setImage( image.format, { image.size[0], image.size[1] } );
+		m_view = m_texture->createView( m_texture->getType()
+			, image.format
+			, 0u
+			, 1u
+			, 0u
+			, 1u );
 		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
 			, renderer::Filter::eLinear
 			, renderer::Filter::eLinear );
-		uint32_t matIndex = 0u;
-
-		for ( auto & submesh : m_object )
-		{
-			m_submeshNodes.push_back( std::make_shared< common::SubmeshNode >() );
-			common::SubmeshNodePtr submeshNode = m_submeshNodes.back();
-
-			// Initialise vertex layout.
-			submeshNode->vertexLayout = m_device->createVertexLayout( 0u, sizeof( common::Vertex ) );
-			submeshNode->vertexLayout->createAttribute< renderer::Vec3 >( 0u, offsetof( common::Vertex, position ) );
-			submeshNode->vertexLayout->createAttribute< renderer::Vec3 >( 1u, offsetof( common::Vertex, normal ) );
-			submeshNode->vertexLayout->createAttribute< renderer::Vec3 >( 2u, offsetof( common::Vertex, tangent ) );
-			submeshNode->vertexLayout->createAttribute< renderer::Vec3 >( 3u, offsetof( common::Vertex, bitangent ) );
-			submeshNode->vertexLayout->createAttribute< renderer::Vec2 >( 4u, offsetof( common::Vertex, texture ) );
-
-			// Initialise geometry buffers.
-			submeshNode->vbo = renderer::makeVertexBuffer< common::Vertex >( *m_device
-				, uint32_t( submesh.vbo.data.size() )
-				, renderer::BufferTarget::eTransferDst
-				, renderer::MemoryPropertyFlag::eDeviceLocal );
-			m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
-				, submesh.vbo.data
-				, *submeshNode->vbo
-				, renderer::PipelineStageFlag::eVertexInput );
-			submeshNode->ibo = renderer::makeBuffer< common::Face >( *m_device
-				, uint32_t( submesh.ibo.data.size() )
-				, renderer::BufferTarget::eTransferDst
-				, renderer::MemoryPropertyFlag::eDeviceLocal );
-			m_stagingBuffer->uploadBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
-				, submesh.ibo.data
-				, *submeshNode->ibo );
-			submeshNode->geometryBuffers = m_device->createGeometryBuffers( *submeshNode->vbo
-				, 0u
-				, *submeshNode->vertexLayout
-				, submeshNode->ibo->getBuffer()
-				, 0u
-				, renderer::IndexType::eUInt32 );
-
-			for ( auto & material : submesh.materials )
-			{
-				bool needsBlending = material.data.opacity < 1.0f;
-				common::MaterialNode materialNode{ submeshNode };
-
-				// Initialise material textures.
-				for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
-				{
-					auto & texture = material.textures[index];
-					auto it = std::find_if( m_textureNodes.begin()
-						, m_textureNodes.end()
-						, [&texture]( common::TextureNodePtr const & lookup )
-						{
-							return lookup->image == texture;
-						} );
-					assert( it != m_textureNodes.end() );
-					materialNode.textures.push_back( *it );
-				}
-
-				m_materialUbo->getData( matIndex ) = material.data;
-
-				// Initialise descriptor set for UBOs
-				materialNode.descriptorSetUbos = m_offscreenDescriptorPool->createDescriptorSet( 0u );
-				materialNode.descriptorSetUbos->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
-					, *m_matrixUbo
-					, 0u
-					, 1u );
-				materialNode.descriptorSetUbos->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
-					, *m_objectUbo
-					, 0u
-					, 1u );
-				materialNode.descriptorSetUbos->createBinding( m_offscreenDescriptorLayout->getBinding( 2u )
-					, *m_materialUbo
-					, matIndex
-					, 1u );
-				materialNode.descriptorSetUbos->createBinding( m_offscreenDescriptorLayout->getBinding( 3u )
-					, *m_lightsUbo
-					, 0u
-					, 1u );
-				materialNode.descriptorSetUbos->update();
-
-				// Initialise descriptor set for textures.
-				renderer::DescriptorSetLayoutBindingArray bindings;
-				bindings.emplace_back( 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment, 6u );
-				materialNode.layout = m_device->createDescriptorSetLayout( std::move( bindings ) );
-				materialNode.pool = materialNode.layout->createPool( 1u );
-				materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
-
-				for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
-				{
-					materialNode.descriptorSetTextures->createBinding( materialNode.layout->getBinding( 0u, index )
-						, *materialNode.textures[index]->view
-						, *m_sampler
-						, index );
-				}
-
-				materialNode.descriptorSetTextures->update();
-
-				// Initialise the pipeline
-				renderer::RasterisationState rasterisationState;
-
-				if ( material.data.backFace )
-				{
-					rasterisationState = renderer::RasterisationState{ 0u
-						, false
-						, false
-						, renderer::PolygonMode::eFill
-						, renderer::CullModeFlag::eFront };
-				}
-
-				if ( materialNode.layout )
-				{
-					materialNode.pipelineLayout = m_device->createPipelineLayout( { *m_offscreenDescriptorLayout, *materialNode.layout } );
-				}
-				else
-				{
-					materialNode.pipelineLayout = m_device->createPipelineLayout( *m_offscreenDescriptorLayout );
-				}
-
-				materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_offscreenProgram
-					, { *submeshNode->vertexLayout }
-					, *m_offscreenRenderPass
-					, renderer::PrimitiveTopology::eTriangleList
-					, rasterisationState );
-				materialNode.pipeline->multisampleState( renderer::MultisampleState{} );
-				materialNode.pipeline->depthStencilState( renderer::DepthStencilState{} );
-				materialNode.pipeline->finish();
-
-				if ( needsBlending )
-				{
-					m_alphaBlendedObject.emplace_back( std::move( materialNode ) );
-				}
-				else
-				{
-					m_opaqueObject.emplace_back( std::move( materialNode ) );
-				}
-
-				++matIndex;
-			}
-		}
-
-		// Fill Materials Ubo
-		m_stagingBuffer->uploadUniformData( m_swapChain->getDefaultResources().getCommandBuffer()
-			, m_materialUbo->getDatas()
-			, *m_materialUbo
-			, renderer::PipelineStageFlag::eFragmentShader );
-	}
-
-	void RenderPanel::doInitialiseLights()
-	{
-		auto & lights = m_lightsUbo->getData( 0u );
-		lights.lightsCount[0] = 1;
-		common::DirectionalLight directional
-		{
-			{
-				renderer::Vec4{ 1, 1, 1, 1 },
-				renderer::Vec4{ 0.75, 1.0, 0.0, 0.0 }
-			},
-			renderer::Vec4{ 1.0, -0.25, -1.0, 0.0 }
-		};
-		lights.directionalLights[0] = directional;
-
-		m_stagingBuffer->uploadUniformData( m_swapChain->getDefaultResources().getCommandBuffer()
-			, m_lightsUbo->getDatas()
-			, *m_lightsUbo
-			, renderer::PipelineStageFlag::eFragmentShader );
+		m_stagingBuffer->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+			, image.data
+			, *m_view );
 	}
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_nodesCount = 0u;
-
-		for ( auto & submesh : m_object )
-		{
-			m_nodesCount += uint32_t( submesh.materials.size() );
-		}
-
 		m_matrixUbo = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( *m_device
-			, 1u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_objectUbo = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( *m_device
-			, 1u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_materialUbo = std::make_unique< renderer::UniformBuffer< common::MaterialData > >( *m_device
-			, m_nodesCount
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_lightsUbo = std::make_unique< renderer::UniformBuffer< common::LightsData > >( *m_device
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -474,20 +334,27 @@ namespace vkapp
 	{
 		m_stagingBuffer = std::make_unique< renderer::StagingBuffer >( *m_device
 			, 0u
-			, 200u * 1024u * 1024u );
+			, ObjectCount * ObjectCount * ObjectCount * 64u );
 	}
 
 	void RenderPanel::doCreateOffscreenDescriptorSet()
 	{
 		std::vector< renderer::DescriptorSetLayoutBinding > bindings
 		{
-			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex },
+			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
 			renderer::DescriptorSetLayoutBinding{ 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex },
-			renderer::DescriptorSetLayoutBinding{ 2u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment },
-			renderer::DescriptorSetLayoutBinding{ 3u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment },
 		};
 		m_offscreenDescriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
-		m_offscreenDescriptorPool = m_offscreenDescriptorLayout->createPool( m_nodesCount );
+		m_offscreenDescriptorPool = m_offscreenDescriptorLayout->createPool( 1u );
+		m_offscreenDescriptorSet = m_offscreenDescriptorPool->createDescriptorSet();
+		m_offscreenDescriptorSet->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
+			, *m_view
+			, *m_sampler );
+		m_offscreenDescriptorSet->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
+			, *m_matrixUbo
+			, 0u
+			, 1u );
+		m_offscreenDescriptorSet->update();
 	}
 
 	void RenderPanel::doCreateOffscreenRenderPass()
@@ -542,38 +409,108 @@ namespace vkapp
 			, std::move( attaches ) );
 	}
 
-	void RenderPanel::doCreateOffscreenProgram()
+	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
+		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( *m_device, 0 );
+		m_offscreenVertexLayout->createAttribute< renderer::Vec4 >( 0u
+			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+		m_offscreenVertexLayout->createAttribute< renderer::Vec2 >( 1u
+			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+
+		m_offscreenVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
+			, uint32_t( m_offscreenVertexData.size() )
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
+		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
+			, m_offscreenVertexData
+			, *m_offscreenVertexBuffer
+			, renderer::PipelineStageFlag::eVertexInput );
+
+		m_offscreenIndexBuffer = renderer::makeBuffer< uint16_t >( *m_device
+			, uint32_t( m_offscreenIndexData.size() )
+
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
+		m_stagingBuffer->uploadBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
+			, m_offscreenIndexData
+			, *m_offscreenIndexBuffer );
+
+		m_offscreenMatrixLayout = renderer::makeLayout< renderer::Mat4 >( *m_device, 1u, renderer::VertexInputRate::eInstance );
+		m_offscreenMatrixLayout->createAttribute< renderer::Mat4 >( 2u, 0u, 1u );
+
+		auto init = ObjectCount * -2.0f;
+		renderer::Vec3 position{ init, init, init };
+		std::vector< renderer::Mat4 > matrices;
+		matrices.reserve( ObjectCount * ObjectCount * ObjectCount );
+
+		for ( auto i = 0u; i < ObjectCount; ++i )
+		{
+			position[1] = init;
+
+			for ( auto j = 0u; j < ObjectCount; ++j )
+			{
+				position[2] = init;
+
+				for ( auto k = 0u; k < ObjectCount; ++k )
+				{
+					matrices.emplace_back(
+						renderer::Vec4{ 1, 0, 0, 0 },
+						renderer::Vec4{ 0, 1, 0, 0 },
+						renderer::Vec4{ 0, 0, 1, 0 },
+						renderer::Vec4{ position[0], position[1], position[2], 1 }
+					);
+					position[2] += 4;
+				}
+
+				position[1] += 4;
+			}
+
+			position[0] += 4;
+		}
+
+		m_offscreenMatrixBuffer = renderer::makeVertexBuffer< renderer::Mat4 >( *m_device
+			, ObjectCount * ObjectCount * ObjectCount
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
+		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
+			, matrices
+			, *m_offscreenMatrixBuffer
+			, renderer::PipelineStageFlag::eVertexInput );
+
+		m_offscreenGeometryBuffers = m_device->createGeometryBuffers( { *m_offscreenVertexBuffer, *m_offscreenMatrixBuffer }
+			, { 0u, 0u }
+			, { *m_offscreenVertexLayout, *m_offscreenMatrixLayout }
+			, m_offscreenIndexBuffer->getBuffer()
+			, 0u
+			, renderer::IndexType::eUInt16 );
+	}
+
+	void RenderPanel::doCreateOffscreenPipeline()
+	{
+		m_offscreenPipelineLayout = m_device->createPipelineLayout( *m_offscreenDescriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 		m_offscreenProgram = m_device->createShaderProgram();
 
-		if ( false && m_offscreenProgram->isSPIRVSupported() )
+		if ( !wxFileExists( shadersFolder / "offscreen.vert" )
+			|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
 		{
-			if ( !wxFileExists( shadersFolder / "offscreen_vert.spv" )
-				|| !wxFileExists( shadersFolder / "offscreen_frag.spv" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			m_offscreenProgram->createModule( common::dumpBinaryFile( shadersFolder / "offscreen_vert.spv" )
-				, renderer::ShaderStageFlag::eVertex );
-			m_offscreenProgram->createModule( common::dumpBinaryFile( shadersFolder / "offscreen_frag.spv" )
-				, renderer::ShaderStageFlag::eFragment );
+			throw std::runtime_error{ "Shader files are missing" };
 		}
-		else
-		{
-			if ( !wxFileExists( shadersFolder / "offscreen.vert" )
-				|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
 
-			m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.vert" )
-				, renderer::ShaderStageFlag::eVertex );
-			m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.frag" )
-				, renderer::ShaderStageFlag::eFragment );
-		}
+		m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.vert" )
+			, renderer::ShaderStageFlag::eVertex );
+		m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.frag" )
+			, renderer::ShaderStageFlag::eFragment );
+
+		m_offscreenPipeline = m_offscreenPipelineLayout->createPipeline( *m_offscreenProgram
+			, { *m_offscreenVertexLayout, *m_offscreenMatrixLayout }
+			, *m_offscreenRenderPass
+			, renderer::PrimitiveTopology::eTriangleList
+			, renderer::RasterisationState{ 0, false, false, renderer::PolygonMode::eFill/*, renderer::CullModeFlag::eNone*/ } );
+		m_offscreenPipeline->multisampleState( renderer::MultisampleState{} );
+		m_offscreenPipeline->depthStencilState( renderer::DepthStencilState{} );
+		m_offscreenPipeline->finish();
 	}
 
 	void RenderPanel::doCreateMainDescriptorSet()
@@ -628,56 +565,24 @@ namespace vkapp
 			commandBuffer.beginRenderPass( *m_offscreenRenderPass
 				, frameBuffer
 				, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
-			, renderer::SubpassContents::eInline );
-
-			for ( auto & node : m_opaqueObject )
-			{
-				commandBuffer.bindPipeline( *node.pipeline );
-				commandBuffer.setViewport( { uint32_t( dimensions.x )
-					, uint32_t( dimensions.y )
-					, 0
-					, 0 } );
-				commandBuffer.setScissor( { 0
-					, 0
-					, uint32_t( dimensions.x )
-					, uint32_t( dimensions.y ) } );
-				commandBuffer.bindGeometryBuffers( *node.submesh->geometryBuffers );
-				commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
-					, *node.pipelineLayout );
-				commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
-					, *node.pipelineLayout );
-
-				commandBuffer.drawIndexed( uint32_t( node.submesh->ibo->getBuffer().getSize() / sizeof( uint32_t ) )
-					, 1u
-					, 0u
-					, 0u
-					, 0u );
-			}
-
-			for ( auto & node : m_alphaBlendedObject )
-			{
-				commandBuffer.bindPipeline( *node.pipeline );
-				commandBuffer.setViewport( { uint32_t( dimensions.x )
-					, uint32_t( dimensions.y )
-					, 0
-					, 0 } );
-				commandBuffer.setScissor( { 0
-					, 0
-					, uint32_t( dimensions.x )
-					, uint32_t( dimensions.y ) } );
-				commandBuffer.bindGeometryBuffers( *node.submesh->geometryBuffers );
-				commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
-					, *node.pipelineLayout );
-				commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
-					, *node.pipelineLayout );
-
-				commandBuffer.drawIndexed( uint32_t( node.submesh->ibo->getBuffer().getSize() / sizeof( uint32_t ) )
-					, 1u
-					, 0u
-					, 0u
-					, 0u );
-			}
-
+				, renderer::SubpassContents::eInline );
+			commandBuffer.bindPipeline( *m_offscreenPipeline );
+			commandBuffer.setViewport( { uint32_t( dimensions.x )
+				, uint32_t( dimensions.y )
+				, 0
+				, 0 } );
+			commandBuffer.setScissor( { 0
+				, 0
+				, uint32_t( dimensions.x )
+				, uint32_t( dimensions.y ) } );
+			commandBuffer.bindGeometryBuffers( *m_offscreenGeometryBuffers );
+			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSet
+				, *m_offscreenPipelineLayout );
+			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() )
+				, m_offscreenMatrixBuffer->getCount()
+				, 0u
+				, 0u
+				, 0u );
 			commandBuffer.endRenderPass();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
@@ -807,23 +712,12 @@ namespace vkapp
 
 	void RenderPanel::doUpdate()
 	{
-		static renderer::Mat4 const originalTranslate = []()
-		{
-			renderer::Mat4 result;
-			result = utils::translate( result, { 0, 0, -5 } );
-			return result;
-		}();
-		static renderer::Clock::time_point save = renderer::Clock::now();
-		auto duration = std::chrono::duration_cast< std::chrono::microseconds >( renderer::Clock::now() - save );
-		m_rotate = utils::rotate( m_rotate
-			, float( utils::DegreeToRadian ) * ( duration.count() / 20000.0f )
-			, { 0, 1, 0 } );
-		m_objectUbo->getData( 0 ) = originalTranslate * m_rotate;
+		m_camera.update();
+		m_matrixUbo->getData( 0u ) = m_projection * m_camera.getView();
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
-			, m_objectUbo->getDatas()
-			, *m_objectUbo
+			, m_matrixUbo->getDatas()
+			, *m_matrixUbo
 			, renderer::PipelineStageFlag::eVertexShader );
-		save = renderer::Clock::now();
 	}
 
 	void RenderPanel::doDraw()
@@ -878,5 +772,39 @@ namespace vkapp
 		doResetSwapChain();
 		m_timer->Start( TimerTimeMs );
 		event.Skip();
+	}
+
+	void RenderPanel::onMouseLDoubleClick( wxMouseEvent & event )
+	{
+		m_moveCamera = false;
+		m_camera.reset();
+	}
+
+	void RenderPanel::onMouseLDown( wxMouseEvent & event )
+	{
+		m_moveCamera = true;
+		m_previousMousePosition[0] = event.GetPosition().x;
+		m_previousMousePosition[1] = event.GetPosition().y;
+	}
+
+	void RenderPanel::onMouseLUp( wxMouseEvent & event )
+	{
+		m_moveCamera = false;
+	}
+
+	void RenderPanel::onMouseMove( wxMouseEvent & event )
+	{
+		if ( m_moveCamera )
+		{
+			auto size = GetClientSize();
+			auto currentPosition = renderer::IVec2{ event.GetPosition().x, event.GetPosition().y };
+			auto delta = currentPosition - m_previousMousePosition;
+			renderer::Quaternion result;
+			result = utils::yaw( result, renderer::Radians{ float( -delta[0] ) / size.GetWidth() } );
+			result = utils::pitch( result, renderer::Radians{ float( delta[1] ) / size.GetHeight() } );
+			m_camera.rotate( result );
+			m_previousMousePosition[0] = event.GetPosition().x;
+			m_previousMousePosition[1] = event.GetPosition().y;
+		}
 	}
 }
