@@ -4,14 +4,6 @@
 
 namespace vkapp
 {
-	/**
-	*\~french
-	*\brief
-	*	Les données d'un sommet.
-	*\~english
-	*\brief
-	*	The data for one vertex.
-	*/
 	struct VertexData
 	{
 		renderer::Vec4 position;
