@@ -19,6 +19,7 @@ See LICENSE file in root folder.
 #include "Miscellaneous/VkBufferImageCopy.hpp"
 #include "Miscellaneous/VkImageCopy.hpp"
 #include "Miscellaneous/VkQueryPool.hpp"
+#include "Pipeline/VkComputePipeline.hpp"
 #include "Pipeline/VkPipeline.hpp"
 #include "Pipeline/VkPipelineLayout.hpp"
 #include "Pipeline/VkScissor.hpp"
@@ -212,6 +213,15 @@ namespace vk_renderer
 			, convert( bindingPoint )
 			, static_cast< Pipeline const & >( pipeline ) );
 		m_currentPipeline = &static_cast< Pipeline const & >( pipeline );
+	}
+
+	void CommandBuffer::bindPipeline( renderer::ComputePipeline const & pipeline
+		, renderer::PipelineBindPoint bindingPoint )const
+	{
+		m_device.vkCmdBindPipeline( m_commandBuffer
+			, convert( bindingPoint )
+			, static_cast< ComputePipeline const & >( pipeline ) );
+		m_currentComputePipeline = &static_cast< ComputePipeline const & >( pipeline );
 	}
 
 	void CommandBuffer::bindGeometryBuffers( renderer::GeometryBuffers const & geometryBuffers )const
@@ -470,6 +480,7 @@ namespace vk_renderer
 		, uint32_t groupCountY
 		, uint32_t groupCountZ )const
 	{
+		assert( m_currentComputePipeline && "No compute pipeline bound." );
 		m_device.vkCmdDispatch( m_commandBuffer
 			, groupCountX
 			, groupCountY

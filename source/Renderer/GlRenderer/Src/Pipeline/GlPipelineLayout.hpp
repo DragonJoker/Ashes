@@ -50,6 +50,10 @@ namespace gl_renderer
 			, renderer::PrimitiveTopology topology
 			, renderer::RasterisationState const & rasterisationState
 			, renderer::ColourBlendState const & colourBlendState )const override;
+		/**
+		*\copydoc	renderer::PipelineLayout::createPipeline
+		*/
+		renderer::ComputePipelinePtr createPipeline( renderer::ShaderProgram const & program )const override;
 
 	private:
 		Device const & m_device;

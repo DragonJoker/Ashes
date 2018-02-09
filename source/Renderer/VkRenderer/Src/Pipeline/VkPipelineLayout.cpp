@@ -2,6 +2,7 @@
 
 #include "Descriptor/VkDescriptorSetLayout.hpp"
 #include "Core/VkDevice.hpp"
+#include "Pipeline/VkComputePipeline.hpp"
 #include "Pipeline/VkPipeline.hpp"
 
 namespace vk_renderer
@@ -57,6 +58,13 @@ namespace vk_renderer
 		}
 	}
 
+	PipelineLayout::~PipelineLayout()
+	{
+		m_device.vkDestroyPipelineLayout( m_device
+			, m_layout
+			, nullptr );
+	}
+
 	renderer::PipelinePtr PipelineLayout::createPipeline( renderer::ShaderProgram const & program
 		, renderer::VertexLayoutCRefArray const & vertexLayouts
 		, renderer::RenderPass const & renderPass
@@ -64,7 +72,7 @@ namespace vk_renderer
 		, renderer::RasterisationState const & rasterisationState
 		, renderer::ColourBlendState const & colourBlendState )const
 	{
-		return std::make_shared< Pipeline >( m_device
+		return std::make_unique< Pipeline >( m_device
 			, *this
 			, program
 			, vertexLayouts
@@ -74,10 +82,10 @@ namespace vk_renderer
 			, colourBlendState );
 	}
 
-	PipelineLayout::~PipelineLayout()
+	renderer::ComputePipelinePtr PipelineLayout::createPipeline( renderer::ShaderProgram const & program )const
 	{
-		m_device.vkDestroyPipelineLayout( m_device
-			, m_layout
-			, nullptr );
+		return std::make_unique< ComputePipeline >( m_device
+			, *this
+			, program );
 	}
 }

@@ -21,6 +21,7 @@ See LICENSE file in root folder.
 
 #include "Commands/GlBeginQueryCommand.hpp"
 #include "Commands/GlBeginRenderPassCommand.hpp"
+#include "Commands/GlBindComputePipelineCommand.hpp"
 #include "Commands/GlBindDescriptorSetCommand.hpp"
 #include "Commands/GlBindGeometryBuffersCommand.hpp"
 #include "Commands/GlBindPipelineCommand.hpp"
@@ -129,6 +130,13 @@ namespace gl_renderer
 	{
 		m_currentPipeline = &pipeline;
 		m_commands.emplace_back( std::make_unique< BindPipelineCommand >( m_device, pipeline, bindingPoint ) );
+	}
+
+	void CommandBuffer::bindPipeline( renderer::ComputePipeline const & pipeline
+		, renderer::PipelineBindPoint bindingPoint )const
+	{
+		m_currentComputePipeline = &pipeline;
+		m_commands.emplace_back( std::make_unique< BindComputePipelineCommand >( m_device, pipeline, bindingPoint ) );
 	}
 
 	void CommandBuffer::bindGeometryBuffers( renderer::GeometryBuffers const & geometryBuffers )const

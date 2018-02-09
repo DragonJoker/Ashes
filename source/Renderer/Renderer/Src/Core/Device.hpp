@@ -579,6 +579,15 @@ namespace renderer
 		/**
 		*\~french
 		*\return
+		*	La file de calcul.
+		*/
+		inline Queue const & getComputeQueue()const
+		{
+			return *m_computeQueue;
+		}
+		/**
+		*\~french
+		*\return
 		*	La file de dessin.
 		*/
 		inline Queue const & getGraphicsQueue()const
@@ -593,6 +602,15 @@ namespace renderer
 		inline CommandPool const & getPresentCommandPool()const
 		{
 			return *m_presentCommandPool;
+		}
+		/**
+		*\~french
+		*\return
+		*	Le pool de tampons de commandes pour la file de calcul.
+		*/
+		inline CommandPool const & getComputeCommandPool()const
+		{
+			return *m_computeCommandPool;
 		}
 		/**
 		*\~french
@@ -631,8 +649,10 @@ namespace renderer
 	protected:
 		Renderer const & m_renderer;
 		QueuePtr m_presentQueue;
+		QueuePtr m_computeQueue;
 		QueuePtr m_graphicsQueue;
 		CommandPoolPtr m_presentCommandPool;
+		CommandPoolPtr m_computeCommandPool;
 		CommandPoolPtr m_graphicsCommandPool;
 		std::string m_version;
 	};

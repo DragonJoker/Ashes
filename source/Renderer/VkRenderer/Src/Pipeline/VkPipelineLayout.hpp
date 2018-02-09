@@ -56,6 +56,10 @@ namespace vk_renderer
 			, renderer::RasterisationState const & rasterisationState
 			, renderer::ColourBlendState const & colourBlendState )const override;
 		/**
+		*\copydoc	renderer::PipelineLayout::createPipeline
+		*/
+		renderer::ComputePipelinePtr createPipeline( renderer::ShaderProgram const & program )const override;
+		/**
 		*\~french
 		*\brief
 		*	Conversion implicite vers VkPipelineLayout.

@@ -269,8 +269,10 @@ namespace gl_renderer
 		, m_context{ Context::create( std::move( connection ) ) }
 	{
 		m_presentQueue = std::make_unique< Queue >();
+		m_computeQueue = std::make_unique< Queue >();
 		m_graphicsQueue = std::make_unique< Queue >();
 		m_presentCommandPool = std::make_unique< CommandPool >( *this, 0u );
+		m_computeCommandPool = std::make_unique< CommandPool >( *this, 0u );
 		m_graphicsCommandPool = std::make_unique< CommandPool >( *this, 0u );
 
 		enable();

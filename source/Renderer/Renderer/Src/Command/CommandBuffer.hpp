@@ -24,12 +24,18 @@ namespace renderer
 	protected:
 		CommandBuffer( CommandBuffer const & ) = delete;
 		CommandBuffer & operator=( CommandBuffer const & ) = delete;
-		/**
-		*\brief
-		*	Constructeur par défaut.
-		*/
 		CommandBuffer() = default;
 		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] pool
+		*	The parent command buffer pool.
+		*\param[in] primary
+		*	Tells if the command buffer is primary (\p true) or not (\p false).
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] device
@@ -54,6 +60,14 @@ namespace renderer
 		*/
 		virtual ~CommandBuffer() = default;
 		/**
+		*\~english
+		*\brief
+		*	Starts recording the command buffer.
+		*\param[in] flags
+		*	The usage flags for the command buffer.
+		*\return
+		*	\p false on any problem.
+		*\~french
 		*\brief
 		*	Démarre l'enregistrement du tampon de commandes.
 		*\param[in] flags
@@ -63,6 +77,26 @@ namespace renderer
 		*/
 		virtual bool begin( CommandBufferUsageFlags flags = 0u )const = 0;
 		/**
+		*\~english
+		*\brief
+		*	Starts recording the command buffer as a secondary command buffer.
+		*\param[in] flags
+		*	The usage flags for the command buffer.
+		*\param[in] renderPass
+		*	The render pass with which the buffer is compatible, and int which it can execute.
+		*\param[in] subpass
+		*	The index of the subpass into which this buffer will be executed.
+		*\param[in] frameBuffer
+		*	The frame buffer into which the command buffer will render.
+		*\param[in] occlusionQueryEnable
+		*	Tells if the command buffer can be executed while an occlusion query is active on main command buffer.
+		*\param[in] queryFlags
+		*	The occlusion query flags that can be used by an active occlusion query on the main command buffer, when this buffer is executed.
+		*\param[in] pipelineStatistics
+		*	Tells which pipeline statistics can be counted by an active query on the main command buffer, when this buffer is executed.
+		*\return
+		*	\p false on any error.
+		*\~french
 		*\brief
 		*	Démarre l'enregistrement du tampon de commandes en tant que tampon secondaire.
 		*\param[in] flags
@@ -92,6 +126,7 @@ namespace renderer
 			, QueryControlFlags queryFlags = 0u
 			, QueryPipelineStatisticFlags pipelineStatistics = 0u )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Termine l'enregistrement du tampon de commandes.
 		*\return
@@ -99,6 +134,7 @@ namespace renderer
 		*/
 		virtual bool end()const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Réinitialise le tampon de commandes et le met dans un état où il peut à nouveau enregistrer des commandes.
 		*\param[in] flags
@@ -108,6 +144,7 @@ namespace renderer
 		*/
 		virtual bool reset( CommandBufferResetFlags flags = 0u )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Démarre une passe de rendu.
 		*\param[in] renderPass
@@ -124,6 +161,7 @@ namespace renderer
 			, ClearValueArray const & clearValues
 			, SubpassContents contents )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Passe à la sous-passe suivante.
 		*\param[in] contents
@@ -136,6 +174,7 @@ namespace renderer
 		*/
 		virtual void endRenderPass()const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Execute des tampons de commande secondaires.
 		*\param[in] commands
@@ -143,6 +182,7 @@ namespace renderer
 		*/
 		virtual void executeCommands( CommandBufferCRefArray const & commands )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Vide l'image avec la couleur de vidage.
 		*\param[in] image
@@ -153,6 +193,7 @@ namespace renderer
 		virtual void clear( TextureView const & image
 			, RgbaColour const & colour )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Met en place une barrière de transition d'état de tampon.
 		*\param[in] after
@@ -166,6 +207,7 @@ namespace renderer
 			, PipelineStageFlags before
 			, BufferMemoryBarrier const & transitionBarrier )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Met en place une barrière de transition de layout d'image.
 		*\param[in] after
@@ -179,6 +221,7 @@ namespace renderer
 			, PipelineStageFlags before
 			, ImageMemoryBarrier const & transitionBarrier )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Active un pipeline: shaders, tests, états, ...
 		*\param[in] pipeline
@@ -189,6 +232,25 @@ namespace renderer
 		virtual void bindPipeline( Pipeline const & pipeline
 			, PipelineBindPoint bindingPoint = PipelineBindPoint::eGraphics )const = 0;
 		/**
+		*\~english
+		*\brief
+		*	Binds a compute pipeline.
+		*\param[in] pipeline
+		*	The pipeline.
+		*\param[in] bindingPoint
+		*	The pipeline binding point.
+		*\~french
+		*\brief
+		*	Active un pipeline de calcul.
+		*\param[in] pipeline
+		*	Le pipeline à activer.
+		*\param[in] bindingPoint
+		*	Le point d'attache du pipeline.
+		*/
+		virtual void bindPipeline( ComputePipeline const & pipeline
+			, PipelineBindPoint bindingPoint = PipelineBindPoint::eGraphics )const = 0;
+		/**
+		*\~french
 		*\brief
 		*	Active des tampons de géométrie.
 		*\param[in] geometryBuffers
@@ -196,6 +258,7 @@ namespace renderer
 		*/
 		virtual void bindGeometryBuffers( GeometryBuffers const & geometryBuffers )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Active un descriptor set.
 		*\param[in] descriptorSet
@@ -209,6 +272,7 @@ namespace renderer
 			, PipelineLayout const & layout
 			, PipelineBindPoint bindingPoint = PipelineBindPoint::eGraphics )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Définit le viewport du pipeline.
 		*\remarks
@@ -218,6 +282,7 @@ namespace renderer
 		*/
 		virtual void setViewport( Viewport const & viewport )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Définit le ciseau du pipeline.
 		*\remarks
@@ -227,6 +292,7 @@ namespace renderer
 		*/
 		virtual void setScissor( Scissor const & scissor )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Dessine des sommets.
 		*\param[in] vtxCount
@@ -243,6 +309,7 @@ namespace renderer
 			, uint32_t firstVertex
 			, uint32_t firstInstance )const = 0;
 		/**
+		*\~french
 		*\brief
 		*	Dessine des sommets.
 		*\param[in] indexCount
