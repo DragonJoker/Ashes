@@ -30,7 +30,7 @@ namespace vkapp
 
 	private:
 		/**
-		*name
+		*\name
 		*	Initialisation.
 		*/
 		/**@{*/
@@ -54,7 +54,7 @@ namespace vkapp
 		void doPrepareMainFrames();
 		/**@}*/
 		/**
-		*name
+		*\name
 		*	Rendering.
 		*/
 		/**@{*/
@@ -63,7 +63,7 @@ namespace vkapp
 		void doResetSwapChain();
 		/**@}*/
 		/**
-		*name
+		*\name
 		*	Events.
 		*/
 		/**@{*/
@@ -82,8 +82,9 @@ namespace vkapp
 		renderer::Mat4 m_projection;
 		Camera m_camera;
 		/**
-		*name
+		*\name
 		*	Global.
+		*/
 		/**@{*/
 		renderer::DevicePtr m_device;
 		renderer::SwapChainPtr m_swapChain;
@@ -100,7 +101,7 @@ namespace vkapp
 		renderer::CommandBufferPtr m_updateCommandBuffer;
 		/**@}*/
 		/**
-		*name
+		*\name
 		*	Offscreen.
 		*/
 		/**@{*/
@@ -122,7 +123,7 @@ namespace vkapp
 		renderer::UInt16Array m_offscreenIndexData;
 		/**@}*/
 		/**
-		*name
+		*\name
 		*	Main.
 		*/
 		/**@{*/
@@ -139,7 +140,7 @@ namespace vkapp
 		std::vector< TexturedVertexData > m_mainVertexData;
 		/**@}*/
 		/**
-		*name
+		*\name
 		*	Swapchain.
 		*/
 		/**@{*/

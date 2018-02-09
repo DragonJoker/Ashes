@@ -4,14 +4,6 @@
 
 namespace vkapp
 {
-	/**
-	*\~french
-	*\brief
-	*	Les données d'un sommet texturé.
-	*\~english
-	*\brief
-	*	The data for one textured vertex.
-	*/
 	struct TexturedVertexData
 	{
 		renderer::Vec4 position;
