@@ -36,6 +36,7 @@
 
 #include <FileUtils.hpp>
 
+#include <algorithm>
 #include <chrono>
 
 namespace vkapp

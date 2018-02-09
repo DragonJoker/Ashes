@@ -16,7 +16,6 @@ It is still a WIP, the library is far from complete!!
 These applications are used to validate the basic functionalities of the library.
 
 #### Test apps to implement
-- Instantiation.
 - Billboards.
 - Compute particle system.
 
@@ -84,11 +83,15 @@ Loads a cube texture and displays it as a skybox.
 
 Demonstrates the use of push constants, by displaying two cubes with different colour modifiers, stored in push constants.
 
-
 ### [Render to Cube](source/Test/14-RenderToCube/)
 <img src="./screenshots/14.png" height="72px" align="right">
 
 Tests render to cube, by taking an equirectangular texture, and loading it into a skybox.
+
+### [Instantiation](source/Test/15-Instantiation/)
+<img src="./screenshots/15.png" height="72px" align="right">
+
+Tests hardware instantiation, by rendering 1'000'000 cubes.
 
 
 ## Sample applications

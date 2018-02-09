@@ -29,10 +29,11 @@ namespace renderer
 		*\param[in] offset
 		*	La position de l'attribut dans le tampon.
 		*/
-		AttributeBase( VertexLayout & layout
+		AttributeBase( VertexLayout const & layout
 			, AttributeFormat format
 			, uint32_t location
-			, uint32_t offset );
+			, uint32_t offset
+			, uint32_t divisor );
 
 	public:
 		/**
@@ -64,11 +65,20 @@ namespace renderer
 		{
 			return m_offset;
 		}
+		/**
+		*\return
+		*	La position de l'attribut dans le tampon.
+		*/
+		inline uint32_t getDivisor()const
+		{
+			return m_divisor;
+		}
 
 	private:
 		AttributeFormat m_format;
 		uint32_t m_location;
 		uint32_t m_offset;
+		uint32_t m_divisor;
 	};
 }
 

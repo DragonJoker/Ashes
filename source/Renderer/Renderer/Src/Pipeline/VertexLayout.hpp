@@ -15,22 +15,30 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~french
 	*\brief
-	*	Layou de sommets.
+	*	The layout of a vertex inside a vertex buffer.
+	*\~french
+	*\brief
+	*	Layout d'un sommet dans un tampon de sommets.
 	*/
 	class VertexLayout
 	{
 	protected:
 		/**
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] bindingSlot
 		*	Le point d'attache du tampon associé.
+		*\param[in] inputRate
+		*	La cadence d'entrée.
 		*\param[in] stride
 		*	La taille en octets séparant un élément du suivant, dans le tampon.
 		*/
 		VertexLayout( uint32_t bindingSlot
-			, uint32_t stride );
+			, uint32_t stride
+			, VertexInputRate inputRate );
 
 	public:
 		/**
@@ -43,6 +51,7 @@ namespace renderer
 		*/
 		virtual ~VertexLayout() = default;
 		/**
+		*\~french
 		*\brief
 		*	Crée un attribut de sommet.
 		*\param[in] location
@@ -52,8 +61,10 @@ namespace renderer
 		*/
 		virtual AttributeBase createAttribute( uint32_t location
 			, AttributeFormat format
-			, uint32_t offset ) = 0;
+			, uint32_t offset
+			, uint32_t divisor = 0u ) = 0;
 		/**
+		*\~french
 		*\brief
 		*	Crée un attribut de sommet.
 		*\param[in] location
@@ -63,13 +74,16 @@ namespace renderer
 		*/
 		template< typename T >
 		inline AttributeBase createAttribute( uint32_t location
-			, uint32_t offset )
+			, uint32_t offset
+			, uint32_t divisor = 0u )
 		{
 			return createAttribute( location
 				, details::FormatGetter< T >::value
-				, offset );
+				, offset
+				, divisor );
 		}
 		/**
+		*\~french
 		*\return
 		*	Le point d'attache du layout.
 		*/
@@ -78,6 +92,7 @@ namespace renderer
 			return m_bindingSlot;
 		}
 		/**
+		*\~french
 		*\return
 		*	La taille d'un élément du layout.
 		*/
@@ -85,25 +100,40 @@ namespace renderer
 		{
 			return m_stride;
 		}
+		/**
+		*\~french
+		*\return
+		*	La cadence d'entrée.
+		*/
+		inline VertexInputRate getInputRate()const
+		{
+			return m_inputRate;
+		}
 
 	private:
 		uint32_t m_bindingSlot;
 		uint32_t m_stride;
+		VertexInputRate m_inputRate;
 	};
 	/**
+	*\~french
 	*\brief
 	*	Crée un layout de sommets.
 	*\param[in] bindingSlot
 	*	Le point d'attache du tampon associé.
+	*\param[in] inputRate
+	*	La cadence d'entrée.
 	*\return
 	*	Le layout créé.
 	*/
 	template< typename T >
 	VertexLayoutPtr makeLayout( Device const & device
-		, uint32_t bindingSlot )
+		, uint32_t bindingSlot
+		, VertexInputRate inputRate = VertexInputRate::eVertex )
 	{
 		return device.createVertexLayout( bindingSlot
-			, uint32_t( sizeof( T ) ) );
+			, uint32_t( sizeof( T ) )
+			, inputRate );
 	}
 }
 

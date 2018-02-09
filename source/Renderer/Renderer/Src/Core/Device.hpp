@@ -124,7 +124,7 @@ namespace renderer
 		*\param[in] neededState
 		*	The state wanted for this subpass execution.
 		*\return
-		*	The created subpass
+		*	The created subpass.
 		*/
 		virtual RenderSubpassPtr createRenderSubpass( std::vector< PixelFormat > const & formats
 			, RenderSubpassState const & neededState )const = 0;
@@ -136,11 +136,25 @@ namespace renderer
 		*	Le point d'attache du tampon associé.
 		*\param[in] stride
 		*	La taille en octets séparant un élément du suivant, dans le tampon.
+		*\param[in] inputRate
+		*	La cadence d'entrée.
 		*\return
 		*	Le layout créé.
+		*\~english
+		*\brief
+		*	Creates a vertex layout.
+		*\param[in] bindingSlot
+		*	The binding point for associated buffer.
+		*\param[in] stride
+		*	The byte size from one element to the next one, in the buffer.
+		*\param[in] inputRate
+		*	The input rate (for instantiation).
+		*\return
+		*	The created layout.
 		*/
 		virtual VertexLayoutPtr createVertexLayout( uint32_t bindingSlot
-			, uint32_t stride )const = 0;
+			, uint32_t stride
+			, VertexInputRate inputRate = VertexInputRate::eVertex )const = 0;
 		/**
 		*\~english
 		*\brief
