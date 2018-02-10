@@ -65,6 +65,7 @@ namespace vkapp
 		renderer::GeometryBuffersPtr m_geometryBuffers;
 		renderer::VertexBufferPtr< VertexData > m_vertexBuffer;
 		renderer::VertexLayoutPtr m_vertexLayout;
+		renderer::QueryPoolPtr m_queryPool;
 		/**@}*/
 		/**
 		*\name

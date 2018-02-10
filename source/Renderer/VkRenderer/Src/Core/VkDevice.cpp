@@ -38,6 +38,7 @@ namespace vk_renderer
 		, m_gpu{ m_connection->getGpu() }
 		, m_version{ "Vulkan 1.0.0" }
 	{
+		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
 		std::vector< VkDeviceQueueCreateInfo > queueCreateInfos;
 		std::vector< float > queuePriorities = { 1.0f };
 

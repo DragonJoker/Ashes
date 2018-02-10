@@ -80,6 +80,7 @@ namespace vkapp
 		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
 		renderer::DescriptorSetPoolPtr m_descriptorPool;
 		renderer::DescriptorSetPtr m_descriptorSet;
+		renderer::QueryPoolPtr m_queryPool;
 		/**@}*/
 		/**
 		*\name

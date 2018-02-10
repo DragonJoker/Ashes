@@ -19,6 +19,7 @@
 #include <Descriptor/DescriptorSetPool.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
+#include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/Scissor.hpp>
@@ -49,7 +50,7 @@ namespace vkapp
 
 		static int constexpr TimerTimeMs = 40;
 		static renderer::PixelFormat const DepthFormat = renderer::PixelFormat::eD32F;
-		static uint32_t constexpr ObjectCount = 1;
+		static uint32_t constexpr ObjectCount = 100;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
@@ -371,11 +372,13 @@ namespace vkapp
 			, renderer::PipelineStageFlag::eVertexInput );
 
 		m_offscreenBillboardLayout = renderer::makeLayout< BillboardData >( *m_device, 1u, renderer::VertexInputRate::eInstance );
-		m_offscreenBillboardLayout->createAttribute< renderer::Vec3 >( 2u, offsetof( BillboardData, offset ) );
-		m_offscreenBillboardLayout->createAttribute< renderer::IVec2 >( 3u, offsetof( BillboardData, dimensions ) );
+		m_offscreenBillboardLayout->createAttribute< renderer::Vec3 >( 2u
+			, offsetof( BillboardData, offset ) );
+		m_offscreenBillboardLayout->createAttribute< renderer::IVec2 >( 3u
+			, offsetof( BillboardData, dimensions ) );
 
 		auto init = ObjectCount * -2.0f;
-		renderer::Vec3 position{ init, init, -2.0f };
+		renderer::Vec3 position{ init, init, init };
 		std::vector< BillboardData > billboards;
 		billboards.reserve( ObjectCount * ObjectCount * ObjectCount );
 
@@ -506,9 +509,7 @@ namespace vkapp
 			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSet
 				, *m_offscreenPipelineLayout );
 			commandBuffer.draw( uint32_t( m_offscreenVertexData.size() )
-				, m_offscreenBillboardBuffer->getCount()
-				, 0u
-				, 0u );
+				, m_offscreenBillboardBuffer->getCount() );
 			commandBuffer.endRenderPass();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
@@ -604,7 +605,7 @@ namespace vkapp
 				commandBuffer.bindGeometryBuffers( *m_mainGeometryBuffers );
 				commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
 					, *m_mainPipelineLayout );
-				commandBuffer.draw( 4u, 1u, 0u, 0u );
+				commandBuffer.draw( 4u );
 				commandBuffer.endRenderPass();
 				m_swapChain->postRenderCommands( i, commandBuffer );
 

@@ -1,30 +1,31 @@
 #include "RenderPanel.hpp"
 #include "Application.hpp"
 
-#include <Core/BackBuffer.hpp>
-#include <Sync/BufferMemoryBarrier.hpp>
+#include <Buffer/GeometryBuffers.hpp>
+#include <Buffer/VertexBuffer.hpp>
 #include <Command/CommandBuffer.hpp>
+#include <Core/BackBuffer.hpp>
 #include <Core/Connection.hpp>
 #include <Core/Device.hpp>
-#include <Buffer/GeometryBuffers.hpp>
-#include <Sync/ImageMemoryBarrier.hpp>
+#include <Core/Renderer.hpp>
+#include <Core/RenderingResources.hpp>
+#include <Core/SwapChain.hpp>
+#include <Enum/SubpassContents.hpp>
+#include <Image/Texture.hpp>
+#include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
-#include <Core/Renderer.hpp>
-#include <Core/RenderingResources.hpp>
+#include <Pipeline/Scissor.hpp>
+#include <Pipeline/VertexLayout.hpp>
+#include <Pipeline/Viewport.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Pipeline/Scissor.hpp>
 #include <Shader/ShaderProgram.hpp>
-#include <Enum/SubpassContents.hpp>
-#include <Core/SwapChain.hpp>
-#include <Image/Texture.hpp>
-#include <Buffer/VertexBuffer.hpp>
-#include <Pipeline/VertexLayout.hpp>
-#include <Pipeline/Viewport.hpp>
+#include <Sync/BufferMemoryBarrier.hpp>
+#include <Sync/ImageMemoryBarrier.hpp>
 
 #include <FileUtils.hpp>
 
@@ -113,6 +114,7 @@ namespace vkapp
 		if ( m_device )
 		{
 			m_device->waitIdle();
+			m_queryPool.reset();
 			m_descriptorSet.reset();
 			m_descriptorPool.reset();
 			m_descriptorLayout.reset();
@@ -236,32 +238,16 @@ namespace vkapp
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 		m_program = m_device->createShaderProgram();
 
-		if ( m_program->isSPIRVSupported() )
+		if ( !wxFileExists( shadersFolder / "shader.vert" )
+			|| !wxFileExists( shadersFolder / "shader.frag" ) )
 		{
-			if ( !wxFileExists( shadersFolder / "vert.spv" )
-				|| !wxFileExists( shadersFolder / "frag.spv" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			m_program->createModule( common::dumpBinaryFile( shadersFolder / "vert.spv" )
-				, renderer::ShaderStageFlag::eVertex );
-			m_program->createModule( common::dumpBinaryFile( shadersFolder / "frag.spv" )
-				, renderer::ShaderStageFlag::eFragment );
+			throw std::runtime_error{ "Shader files are missing" };
 		}
-		else
-		{
-			if ( !wxFileExists( shadersFolder / "shader.vert" )
-				|| !wxFileExists( shadersFolder / "shader.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
 
-			m_program->createModule( common::dumpTextFile( shadersFolder / "shader.vert" )
-				, renderer::ShaderStageFlag::eVertex );
-			m_program->createModule( common::dumpTextFile( shadersFolder / "shader.frag" )
-				, renderer::ShaderStageFlag::eFragment );
-		}
+		m_program->createModule( common::dumpTextFile( shadersFolder / "shader.vert" )
+			, renderer::ShaderStageFlag::eVertex );
+		m_program->createModule( common::dumpTextFile( shadersFolder / "shader.frag" )
+			, renderer::ShaderStageFlag::eFragment );
 
 		m_pipeline = m_pipelineLayout->createPipeline( *m_program
 			, { *m_vertexLayout }
@@ -273,6 +259,9 @@ namespace vkapp
 
 	void RenderPanel::doPrepareFrames()
 	{
+		m_queryPool = m_device->createQueryPool( renderer::QueryType::eTimestamp
+			, 2u
+			, 0u );
 		m_commandBuffers = m_swapChain->createCommandBuffers();
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
 		auto dimensions = m_swapChain->getDimensions();
@@ -284,11 +273,17 @@ namespace vkapp
 
 			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 			{
+				commandBuffer.resetQueryPool( *m_queryPool
+					, 0u
+					, 2u );
 				m_swapChain->preRenderCommands( i, commandBuffer );
 				commandBuffer.beginRenderPass( *m_renderPass
 					, frameBuffer
 					, { m_swapChain->getClearColour() }
 					, renderer::SubpassContents::eInline );
+				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+					, *m_queryPool
+					, 0u );
 				commandBuffer.bindPipeline( *m_pipeline );
 				commandBuffer.setViewport( { uint32_t( dimensions.x )
 					, uint32_t( dimensions.y )
@@ -301,7 +296,10 @@ namespace vkapp
 				commandBuffer.bindGeometryBuffers( *m_geometryBuffers );
 				commandBuffer.bindDescriptorSet( *m_descriptorSet
 					, *m_pipelineLayout );
-				commandBuffer.draw( 4u, 1u, 0u, 0u );
+				commandBuffer.draw( 4u );
+				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+					, *m_queryPool
+					, 1u );
 				commandBuffer.endRenderPass();
 				m_swapChain->postRenderCommands( i, commandBuffer );
 
@@ -331,9 +329,18 @@ namespace vkapp
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
 			m_swapChain->present( *resources );
+			renderer::UInt32Array values{ 0u, 0u };
+			m_queryPool->getResults( 0u
+				, 2u
+				, 0u
+				, renderer::QueryResultFlag::eWait
+				, values );
 
+			// Elapsed time in nanoseconds
+			auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getTimestampPeriod() ) ) };
 			auto after = std::chrono::high_resolution_clock::now();
-			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
+			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
+				, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
 		}
 		else
 		{

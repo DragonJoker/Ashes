@@ -269,6 +269,7 @@ namespace gl_renderer
 		: renderer::Device{ renderer, *connection }
 		, m_context{ Context::create( std::move( connection ) ) }
 	{
+		m_timestampPeriod = 1;
 		m_presentQueue = std::make_unique< Queue >();
 		m_computeQueue = std::make_unique< Queue >();
 		m_graphicsQueue = std::make_unique< Queue >();

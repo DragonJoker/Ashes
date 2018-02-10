@@ -106,6 +106,7 @@ namespace vkapp
 		renderer::DescriptorSetPoolPtr m_offscreenDescriptorPool;
 		renderer::DescriptorSetPtr m_offscreenDescriptorSet;
 		renderer::UInt16Array m_offscreenIndexData;
+		renderer::QueryPoolPtr m_queryPool;
 		/**@}*/
 		/**
 		*\name

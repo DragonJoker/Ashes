@@ -21,6 +21,7 @@
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
 #include <Miscellaneous/PushConstantRange.hpp>
+#include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/Scissor.hpp>
@@ -208,6 +209,7 @@ namespace vkapp
 			m_mainGeometryBuffers.reset();
 			m_mainRenderPass.reset();
 
+			m_queryPool.reset();
 			m_offscreenDescriptorSets[0].reset();
 			m_offscreenDescriptorSets[1].reset();
 			m_offscreenDescriptorPool.reset();
@@ -455,32 +457,16 @@ namespace vkapp
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 		m_offscreenProgram = m_device->createShaderProgram();
 
-		if ( m_offscreenProgram->isSPIRVSupported() )
+		if ( !wxFileExists( shadersFolder / "offscreen.vert" )
+			|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
 		{
-			if ( !wxFileExists( shadersFolder / "offscreen_vert.spv" )
-				|| !wxFileExists( shadersFolder / "offscreen_frag.spv" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			m_offscreenProgram->createModule( common::dumpBinaryFile( shadersFolder / "offscreen_vert.spv" )
-				, renderer::ShaderStageFlag::eVertex );
-			m_offscreenProgram->createModule( common::dumpBinaryFile( shadersFolder / "offscreen_frag.spv" )
-				, renderer::ShaderStageFlag::eFragment );
+			throw std::runtime_error{ "Shader files are missing" };
 		}
-		else
-		{
-			if ( !wxFileExists( shadersFolder / "offscreen.vert" )
-				|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
 
-			m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.vert" )
-				, renderer::ShaderStageFlag::eVertex );
-			m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.frag" )
-				, renderer::ShaderStageFlag::eFragment );
-		}
+		m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.vert" )
+			, renderer::ShaderStageFlag::eVertex );
+		m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.frag" )
+			, renderer::ShaderStageFlag::eFragment );
 
 		m_offscreenPipeline = m_offscreenPipelineLayout->createPipeline( *m_offscreenProgram
 			, { *m_offscreenVertexLayout }
@@ -527,6 +513,9 @@ namespace vkapp
 	void RenderPanel::doPrepareOffscreenFrame()
 	{
 		doUpdateProjection();
+		m_queryPool = m_device->createQueryPool( renderer::QueryType::eTimestamp
+			, 2u
+			, 0u );
 		m_commandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
 		wxSize size{ GetClientSize() };
 		auto & commandBuffer = *m_commandBuffer;
@@ -535,6 +524,9 @@ namespace vkapp
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 		{
 			auto dimensions = m_swapChain->getDimensions();
+			commandBuffer.resetQueryPool( *m_queryPool
+				, 0u
+				, 2u );
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
 				, m_renderTargetColourView->makeColourAttachment() );
@@ -545,6 +537,9 @@ namespace vkapp
 				, frameBuffer
 				, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
 				, renderer::SubpassContents::eInline );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+				, *m_queryPool
+				, 0u );
 			commandBuffer.bindPipeline( *m_offscreenPipeline );
 			commandBuffer.setViewport( { uint32_t( dimensions.x )
 				, uint32_t( dimensions.y )
@@ -559,20 +554,15 @@ namespace vkapp
 				, *m_offscreenPipelineLayout );
 			commandBuffer.pushConstants( *m_offscreenPipelineLayout
 				, m_objectPcbs[0] );
-			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() )
-				, 1u
-				, 0u
-				, 0u
-				, 0u );
+			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
 			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSets[1]
 				, *m_offscreenPipelineLayout );
 			commandBuffer.pushConstants( *m_offscreenPipelineLayout
 				, m_objectPcbs[1] );
-			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() )
-				, 1u
-				, 0u
-				, 0u
-				, 0u );
+			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+				, *m_queryPool
+				, 1u );
 			commandBuffer.endRenderPass();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
@@ -617,32 +607,16 @@ namespace vkapp
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 		m_mainProgram = m_device->createShaderProgram();
 
-		if ( m_mainProgram->isSPIRVSupported() )
+		if ( !wxFileExists( shadersFolder / "main.vert" )
+			|| !wxFileExists( shadersFolder / "main.frag" ) )
 		{
-			if ( !wxFileExists( shadersFolder / "main_vert.spv" )
-				|| !wxFileExists( shadersFolder / "main_frag.spv" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			m_mainProgram->createModule( common::dumpBinaryFile( shadersFolder / "main_vert.spv" )
-				, renderer::ShaderStageFlag::eVertex );
-			m_mainProgram->createModule( common::dumpBinaryFile( shadersFolder / "main_frag.spv" )
-				, renderer::ShaderStageFlag::eFragment );
+			throw std::runtime_error{ "Shader files are missing" };
 		}
-		else
-		{
-			if ( !wxFileExists( shadersFolder / "main.vert" )
-				|| !wxFileExists( shadersFolder / "main.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
 
-			m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.vert" )
-				, renderer::ShaderStageFlag::eVertex );
-			m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.frag" )
-				, renderer::ShaderStageFlag::eFragment );
-		}
+		m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.vert" )
+			, renderer::ShaderStageFlag::eVertex );
+		m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.frag" )
+			, renderer::ShaderStageFlag::eFragment );
 
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( *m_mainProgram
 			, { *m_mainVertexLayout }
@@ -684,7 +658,7 @@ namespace vkapp
 				commandBuffer.bindGeometryBuffers( *m_mainGeometryBuffers );
 				commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
 					, *m_mainPipelineLayout );
-				commandBuffer.draw( 4u, 1u, 0u, 0u );
+				commandBuffer.draw( 4u );
 				commandBuffer.endRenderPass();
 				m_swapChain->postRenderCommands( i, commandBuffer );
 
@@ -755,10 +729,19 @@ namespace vkapp
 					, resources->getRenderingFinishedSemaphore()
 					, &resources->getFence() );
 				m_swapChain->present( *resources );
-			}
+				renderer::UInt32Array values{ 0u, 0u };
+				m_queryPool->getResults( 0u
+					, 2u
+					, 0u
+					, renderer::QueryResultFlag::eWait
+					, values );
 
-			auto after = std::chrono::high_resolution_clock::now();
-			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
+				// Elapsed time in nanoseconds
+				auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getTimestampPeriod() ) ) };
+				auto after = std::chrono::high_resolution_clock::now();
+				wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
+					, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
+			}
 		}
 		else
 		{

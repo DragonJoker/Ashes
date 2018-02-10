@@ -23,7 +23,7 @@ layout( location = 0 ) out vec2 vtx_texcoord;
 void main()
 {
 	vec3 right = vec3( mtxView[0][0], mtxView[1][0], mtxView[2][0] );
-	vec3 up = -vec3( mtxView[0][1], mtxView[1][1], mtxView[2][1] );
+	vec3 up = vec3( mtxView[0][1], mtxView[1][1], mtxView[2][1] );
 	float width = dimensions.x;
 	float height = dimensions.y;
 	vec4 mPosition = vec4( offset, 1.0 );
