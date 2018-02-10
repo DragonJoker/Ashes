@@ -237,11 +237,7 @@ namespace vkapp
 		m_texture = m_device->createTexture();
 		m_texture->setImage( image.format, { image.size[0], image.size[1] } );
 		m_view = m_texture->createView( m_texture->getType()
-			, image.format
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
+			, image.format );
 		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
@@ -312,11 +308,7 @@ namespace vkapp
 			, { size.GetWidth(), size.GetHeight() }
 			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
 		m_renderTargetColourView = m_renderTargetColour->createView( m_renderTargetColour->getType()
-			, renderer::PixelFormat::eR8G8B8A8
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
+			, renderer::PixelFormat::eR8G8B8A8 );
 
 		renderer::FrameBufferAttachmentArray attaches;
 		attaches.emplace_back( *m_offscreenRenderPass->begin(), *m_renderTargetColourView );

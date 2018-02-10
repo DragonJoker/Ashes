@@ -223,6 +223,7 @@ namespace renderer
 	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
 
 	using CommandBufferCRef = std::reference_wrapper< CommandBuffer const >;
+	using DescriptorSetCRef = std::reference_wrapper< DescriptorSet const >;
 	using DescriptorSetLayoutCRef = std::reference_wrapper< DescriptorSetLayout const >;
 	using PushConstantRangeCRef = std::reference_wrapper< PushConstantRange const >;
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;
@@ -232,6 +233,7 @@ namespace renderer
 	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;
 
 	using CommandBufferCRefArray = std::vector< CommandBufferCRef >;
+	using DescriptorSetCRefArray = std::vector< DescriptorSetCRef >;
 	using DescriptorSetLayoutCRefArray = std::vector< DescriptorSetLayoutCRef >;
 	using PushConstantRangeCRefArray = std::vector< PushConstantRangeCRef >;
 	using SemaphoreCRefArray = std::vector< SemaphoreCRef >;

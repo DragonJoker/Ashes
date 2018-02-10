@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <Core/Connection.hpp>
 
@@ -24,7 +24,7 @@ namespace common
 	*\~english
 	*\name Loaded data.
 	*\~french
-	*\name Donn�es charg�es.
+	*\name Données chargées.
 	*/
 	/**\{*/
 	struct Image
@@ -150,7 +150,7 @@ namespace common
 	*\~english
 	*\name Rendered data.
 	*\~french
-	*\name Donn�es rendues.
+	*\name Données rendues.
 	*/
 	/**\{*/
 	struct TextureNode

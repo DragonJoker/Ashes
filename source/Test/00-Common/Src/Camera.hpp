@@ -30,6 +30,21 @@ namespace vkapp
 			return m_transform;
 		}
 
+		inline renderer::Vec3 const & getPosition()const
+		{
+			return m_position;
+		}
+
+		inline renderer::Quaternion const & getRotation()const
+		{
+			return m_rotation;
+		}
+
+		inline renderer::Quaternion & getRotation()
+		{
+			return m_rotation;
+		}
+
 	private:
 		renderer::Vec3 m_position;
 		renderer::Quaternion m_rotation;

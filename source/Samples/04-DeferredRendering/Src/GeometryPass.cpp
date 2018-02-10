@@ -443,11 +443,7 @@ namespace vkapp
 				, m_size
 				, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
 			texture.view = texture.texture->createView( renderer::TextureType::e2D
-				, texture.texture->getFormat()
-				, 0u
-				, 1u
-				, 0u
-				, 1u );
+				, texture.texture->getFormat() );
 			++index;
 		}
 	}

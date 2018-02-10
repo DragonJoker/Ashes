@@ -159,11 +159,7 @@ namespace vkapp
 		m_texture = m_device->createTexture();
 		m_texture->setImage( image.format, { image.size[0], image.size[1] } );
 		m_view = m_texture->createView( m_texture->getType()
-			, image.format
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
+			, image.format );
 		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
