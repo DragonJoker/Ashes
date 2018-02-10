@@ -15,9 +15,6 @@ It is still a WIP, the library is far from complete!!
 
 ## Test applications
 
-#### Test apps to implement
-- Compute pipeline.
-
 These applications are used to validate the basic functionalities of the library.
 
 ### [Device creation](source/Test/01-DeviceCreation/)
@@ -93,6 +90,11 @@ Tests render to cube, by taking an equirectangular texture, and loading it into 
 <img src="./screenshots/15.png" height="72px" align="right">
 
 Tests hardware instantiation, by rendering 1'000'000 cubes.
+
+### [Compute Pipeline](source/Test/16-ComputePipeline/)
+<img src="./screenshots/16.png" height="72px" align="right">
+
+Tests Compute pipeline, by processing the output of the PushConstants sample to add a graphical effect.
 
 
 ## Sample applications
