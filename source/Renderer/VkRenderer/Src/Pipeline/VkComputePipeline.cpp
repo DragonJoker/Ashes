@@ -30,7 +30,7 @@ namespace vk_renderer
 
 		VkComputePipelineCreateInfo pipeline
 		{
-			VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+			VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
 			nullptr,
 			0,                                                            // flags
 			shaderStage,                                                  // stage

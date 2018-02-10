@@ -126,6 +126,10 @@ namespace gl_renderer
 		*/
 		renderer::SemaphorePtr createSemaphore()const override;
 		/**
+		*\copydoc	renderer::Device::createFence
+		*/
+		renderer::FencePtr createFence( renderer::FenceCreateFlags flags = 0 )const override;
+		/**
 		*\copydoc		renderer::Device::createCommandPool
 		*/
 		renderer::CommandPoolPtr createCommandPool( uint32_t queueFamilyIndex

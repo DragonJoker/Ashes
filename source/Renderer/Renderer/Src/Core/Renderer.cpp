@@ -6,8 +6,10 @@ See LICENSE file in root folder.
 
 namespace renderer
 {
-	Renderer::Renderer( ClipDirection clipDirection )
+	Renderer::Renderer( ClipDirection clipDirection
+		, std::string const & name )
 		: m_clipDirection{ clipDirection }
+		, m_name{ name }
 	{
 	}
 }

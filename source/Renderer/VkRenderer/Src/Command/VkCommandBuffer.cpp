@@ -94,6 +94,7 @@ namespace vk_renderer
 		DEBUG_DUMP( cmdBufInfo );
 		auto res = m_device.vkBeginCommandBuffer( m_commandBuffer, &cmdBufInfo );
 		m_currentPipeline = nullptr;
+		m_currentComputePipeline = nullptr;
 		return checkError( res );
 	}
 
@@ -126,6 +127,7 @@ namespace vk_renderer
 		DEBUG_DUMP( cmdBufInfo );
 		auto res = m_device.vkBeginCommandBuffer( m_commandBuffer, &cmdBufInfo );
 		m_currentPipeline = nullptr;
+		m_currentComputePipeline = nullptr;
 		return checkError( res );
 	}
 
@@ -133,6 +135,7 @@ namespace vk_renderer
 	{
 		auto res = m_device.vkEndCommandBuffer( m_commandBuffer );
 		m_currentPipeline = nullptr;
+		m_currentComputePipeline = nullptr;
 		return checkError( res );
 	}
 
@@ -294,7 +297,7 @@ namespace vk_renderer
 		, renderer::PipelineLayout const & layout
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
-		assert( m_currentPipeline && "No pipeline bound." );
+		assert( ( m_currentPipeline || m_currentComputePipeline ) && "No pipeline bound." );
 		VkDescriptorSet set{ static_cast< DescriptorSet const & >( descriptorSet ) };
 		m_device.vkCmdBindDescriptorSets( m_commandBuffer
 			, convert( bindingPoint )
