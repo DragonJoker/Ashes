@@ -78,6 +78,11 @@ namespace gl_renderer
 		void clear( renderer::TextureView const & image
 			, renderer::RgbaColour const & colour )const override;
 		/**
+		*\copydoc	renderer::CommandBuffer:clear
+		*/
+		void clear( renderer::TextureView const & image
+			, renderer::DepthStencilClearValue const & value )const override;
+		/**
 		*\copydoc	renderer::CommandBuffer:memoryBarrier
 		*/
 		void memoryBarrier( renderer::PipelineStageFlags after
@@ -106,7 +111,7 @@ namespace gl_renderer
 		/**
 		*\copydoc	renderer::CommandBuffer:bindDescriptorSet
 		*/
-		void bindDescriptorSet( renderer::DescriptorSet const & descriptorSet
+		void bindDescriptorSets( renderer::DescriptorSetCRefArray const & descriptorSets
 			, renderer::PipelineLayout const & layout
 			, renderer::PipelineBindPoint bindingPoint )const override;
 		/**

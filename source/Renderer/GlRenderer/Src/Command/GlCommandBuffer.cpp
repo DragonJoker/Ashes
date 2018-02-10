@@ -27,6 +27,8 @@ See LICENSE file in root folder.
 #include "Commands/GlBindPipelineCommand.hpp"
 #include "Commands/GlBlitImageCommand.hpp"
 #include "Commands/GlBufferMemoryBarrierCommand.hpp"
+#include "Commands/GlClearColourCommand.hpp"
+#include "Commands/GlClearDepthStencilCommand.hpp"
 #include "Commands/GlCopyBufferCommand.hpp"
 #include "Commands/GlCopyBufferToImageCommand.hpp"
 #include "Commands/GlCopyImageCommand.hpp"
@@ -34,7 +36,6 @@ See LICENSE file in root folder.
 #include "Commands/GlDispatchCommand.hpp"
 #include "Commands/GlDrawCommand.hpp"
 #include "Commands/GlDrawIndexedCommand.hpp"
-#include "Commands/GlClearCommand.hpp"
 #include "Commands/GlEndQueryCommand.hpp"
 #include "Commands/GlEndRenderPassCommand.hpp"
 #include "Commands/GlImageMemoryBarrierCommand.hpp"
@@ -122,7 +123,13 @@ namespace gl_renderer
 	void CommandBuffer::clear( renderer::TextureView const & image
 		, renderer::RgbaColour const & colour )const
 	{
-		m_commands.emplace_back( std::make_unique< ClearCommand >( image, colour ) );
+		m_commands.emplace_back( std::make_unique< ClearColourCommand >( image, colour ) );
+	}
+
+	void CommandBuffer::clear( renderer::TextureView const & image
+		, renderer::DepthStencilClearValue const & value )const
+	{
+		m_commands.emplace_back( std::make_unique< ClearDepthStencilCommand >( image, value ) );
 	}
 
 	void CommandBuffer::bindPipeline( renderer::Pipeline const & pipeline
@@ -167,13 +174,16 @@ namespace gl_renderer
 			, transitionBarrier ) );
 	}
 
-	void CommandBuffer::bindDescriptorSet( renderer::DescriptorSet const & descriptorSet
+	void CommandBuffer::bindDescriptorSets( renderer::DescriptorSetCRefArray const & descriptorSets
 		, renderer::PipelineLayout const & layout
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
-		m_commands.emplace_back( std::make_unique< BindDescriptorSetCommand >( descriptorSet
-			, layout
-			, bindingPoint ) );
+		for ( auto & descriptorSet : descriptorSets )
+		{
+			m_commands.emplace_back( std::make_unique< BindDescriptorSetCommand >( descriptorSet.get()
+				, layout
+				, bindingPoint ) );
+		}
 	}
 
 	void CommandBuffer::setViewport( renderer::Viewport const & viewport )const
