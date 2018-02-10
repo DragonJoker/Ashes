@@ -307,11 +307,7 @@ namespace vkapp
 		m_texture = m_device->createTexture();
 		m_texture->setImage( image.format, { image.size[0], image.size[1] } );
 		m_view = m_texture->createView( m_texture->getType()
-			, image.format
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
+			, image.format );
 		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
@@ -386,22 +382,14 @@ namespace vkapp
 			, { size.GetWidth(), size.GetHeight() }
 			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
 		m_renderTargetColourView = m_renderTargetColour->createView( m_renderTargetColour->getType()
-			, m_renderTargetColour->getFormat()
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
+			, m_renderTargetColour->getFormat() );
 
 		m_renderTargetDepth = m_device->createTexture();
 		m_renderTargetDepth->setImage( DepthFormat
 			, { size.GetWidth(), size.GetHeight() }
 			, renderer::ImageUsageFlag::eDepthStencilAttachment );
 		m_renderTargetDepthView = m_renderTargetDepth->createView( m_renderTargetDepth->getType()
-			, m_renderTargetDepth->getFormat()
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
+			, m_renderTargetDepth->getFormat() );
 		renderer::FrameBufferAttachmentArray attaches;
 		attaches.emplace_back( *( m_offscreenRenderPass->begin() + 0u ), *m_renderTargetColourView );
 		attaches.emplace_back( *( m_offscreenRenderPass->begin() + 1u ), *m_renderTargetDepthView );
@@ -436,7 +424,7 @@ namespace vkapp
 			, *m_offscreenIndexBuffer );
 
 		m_offscreenMatrixLayout = renderer::makeLayout< renderer::Mat4 >( *m_device, 1u, renderer::VertexInputRate::eInstance );
-		m_offscreenMatrixLayout->createAttribute< renderer::Mat4 >( 2u, 0u, 1u );
+		m_offscreenMatrixLayout->createAttribute< renderer::Mat4 >( 2u, 0u );
 
 		auto init = ObjectCount * -2.0f;
 		renderer::Vec3 position{ init, init, init };
@@ -799,10 +787,9 @@ namespace vkapp
 			auto size = GetClientSize();
 			auto currentPosition = renderer::IVec2{ event.GetPosition().x, event.GetPosition().y };
 			auto delta = currentPosition - m_previousMousePosition;
-			renderer::Quaternion result;
-			result = utils::yaw( result, renderer::Radians{ float( -delta[0] ) / size.GetWidth() } );
+			auto & result = m_camera.getRotation();
 			result = utils::pitch( result, renderer::Radians{ float( delta[1] ) / size.GetHeight() } );
-			m_camera.rotate( result );
+			result = utils::yaw( result, renderer::Radians{ float( -delta[0] ) / size.GetWidth() } );
 			m_previousMousePosition[0] = event.GetPosition().x;
 			m_previousMousePosition[1] = event.GetPosition().y;
 		}

@@ -88,15 +88,13 @@ namespace vk_renderer
 				{
 					uint32_t offset = attribute.getOffset();
 					uint32_t location = attribute.getLocation();
-					uint32_t divisor = attribute.getDivisor() * 4u;
 
 					for ( auto i = 0u; i < 4u; ++i )
 					{
 						auto attrib = Attribute{ vb.get()
 							, renderer::AttributeFormat::eVec4f
 							, location
-							, offset
-							, divisor };
+							, offset };
 						vertexAttributeDescriptions.emplace_back( attrib );
 						++location;
 						offset += 16u;

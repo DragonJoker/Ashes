@@ -76,7 +76,7 @@ namespace gl_renderer
 					auto format = attribute.getFormat();
 					uint32_t offset = attribute.getOffset();
 					uint32_t location = attribute.getLocation();
-					uint32_t divisor = attribute.getDivisor();
+					uint32_t divisor = 1u;
 
 					if ( attribute.getFormat() == renderer::AttributeFormat::eMat4f )
 					{

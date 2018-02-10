@@ -13,16 +13,12 @@ namespace gl_renderer
 
 	renderer::AttributeBase VertexLayout::createAttribute( uint32_t location
 		, renderer::AttributeFormat format
-		, uint32_t offset
-		, uint32_t divisor )
+		, uint32_t offset )
 	{
 		m_attributes.emplace_back( *this
 			, format
 			, location
-			, offset
-			, getInputRate() == renderer::VertexInputRate::eVertex
-				? 0u
-				: divisor );
+			, offset );
 		return m_attributes.back();
 	}
 }

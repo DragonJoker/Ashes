@@ -31,8 +31,7 @@ namespace vk_renderer
 		Attribute( VertexLayout const & layout
 			, renderer::AttributeFormat format
 			, uint32_t location
-			, uint32_t offset
-			, uint32_t inputRate );
+			, uint32_t offset );
 		/**
 		*\~french
 		*\brief
