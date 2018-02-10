@@ -248,7 +248,7 @@ namespace renderer
 		*	Le point d'attache du pipeline.
 		*/
 		virtual void bindPipeline( ComputePipeline const & pipeline
-			, PipelineBindPoint bindingPoint = PipelineBindPoint::eGraphics )const = 0;
+			, PipelineBindPoint bindingPoint = PipelineBindPoint::eCompute )const = 0;
 		/**
 		*\~french
 		*\brief

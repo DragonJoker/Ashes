@@ -25,6 +25,7 @@ See LICENSE file in root folder.
 #include "RenderPass/VkRenderSubpass.hpp"
 #include "Shader/VkAttribute.hpp"
 #include "Shader/VkShaderProgram.hpp"
+#include "Sync/VkFence.hpp"
 #include "Sync/VkSemaphore.hpp"
 
 namespace vk_renderer
@@ -139,6 +140,8 @@ namespace vk_renderer
 		m_graphicsQueue.reset();
 		m_presentCommandPool.reset();
 		m_presentQueue.reset();
+		m_computeCommandPool.reset();
+		m_computeQueue.reset();
 		vkDestroyDevice( m_device, nullptr );
 	}
 
@@ -300,6 +303,11 @@ namespace vk_renderer
 	renderer::SemaphorePtr Device::createSemaphore()const
 	{
 		return std::make_unique< Semaphore >( *this );
+	}
+
+	renderer::FencePtr Device::createFence( renderer::FenceCreateFlags flags )const
+	{
+		return std::make_unique< Fence >( *this, flags );
 	}
 
 	renderer::CommandPoolPtr Device::createCommandPool( uint32_t queueFamilyIndex

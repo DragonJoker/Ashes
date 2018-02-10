@@ -16,5 +16,6 @@ namespace gl_renderer
 		, m_layout{ layout }
 		, m_program{ static_cast< ShaderProgram const & >( program ) }
 	{
+		m_program.link();
 	}
 }

@@ -105,7 +105,7 @@ namespace vk_renderer
 	}
 
 	Renderer::Renderer()
-		: renderer::Renderer{ renderer::ClipDirection::eTopDown }
+		: renderer::Renderer{ renderer::ClipDirection::eTopDown, "vk" }
 #if defined( _WIN32 )
 		, m_library{ "vulkan-1.dll" }
 #elif defined( __linux__ )

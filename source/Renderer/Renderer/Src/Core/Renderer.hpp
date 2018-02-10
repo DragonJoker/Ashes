@@ -17,7 +17,8 @@ namespace renderer
 		*\brief
 		*	Constructeur, initialise l'instance de renderer.
 		*/
-		Renderer( ClipDirection clipDirection );
+		Renderer( ClipDirection clipDirection
+			, std::string const & name );
 
 	public:
 		/**
@@ -56,9 +57,22 @@ namespace renderer
 		{
 			return m_clipDirection;
 		}
+		/**
+		*\~english
+		*\return
+		*	The clip direction for the rendering API.
+		*\~french
+		*\return
+		*	La direction de clipping pour l'API de rendu.
+		*/
+		inline std::string const & getName()const
+		{
+			return m_name;
+		}
 
 	private:
 		ClipDirection m_clipDirection;
+		std::string m_name;
 	};
 }
 

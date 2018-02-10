@@ -24,6 +24,7 @@ See LICENSE file in root folder.
 #include "RenderPass/GlRenderPass.hpp"
 #include "RenderPass/GlRenderSubpass.hpp"
 #include "Shader/GlShaderProgram.hpp"
+#include "Sync/GlFence.hpp"
 #include "Sync/GlSemaphore.hpp"
 
 #include <iostream>
@@ -442,6 +443,11 @@ namespace gl_renderer
 	renderer::SemaphorePtr Device::createSemaphore()const
 	{
 		return std::make_unique< Semaphore >( *this );
+	}
+
+	renderer::FencePtr Device::createFence( renderer::FenceCreateFlags flags )const
+	{
+		return std::make_unique< Fence >( *this, flags );
 	}
 
 	renderer::CommandPoolPtr Device::createCommandPool( uint32_t queueFamilyIndex
