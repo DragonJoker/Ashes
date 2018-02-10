@@ -50,6 +50,18 @@ namespace vk_renderer
 
 			return result;
 		}
+
+		DescriptorSetCRefArray convert( renderer::DescriptorSetCRefArray const & descriptors )
+		{
+			DescriptorSetCRefArray result;
+
+			for ( auto & descriptor : descriptors )
+			{
+				result.emplace_back( static_cast< DescriptorSet const & >( descriptor.get() ) );
+			}
+
+			return result;
+		}
 	}
 
 	CommandBuffer::CommandBuffer( Device const & device
@@ -209,6 +221,19 @@ namespace vk_renderer
 			, &vksubresourceRange );
 	}
 
+	void CommandBuffer::clear( renderer::TextureView const & image
+		, renderer::DepthStencilClearValue const & value )const
+	{
+		auto vkclear = convert( value );
+		auto vksubresourceRange = convert( image.getSubResourceRange() );
+		m_device.vkCmdClearDepthStencilImage( m_commandBuffer
+			, static_cast< Texture const & >( image.getTexture() )
+			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+			, &vkclear
+			, 1
+			, &vksubresourceRange );
+	}
+
 	void CommandBuffer::bindPipeline( renderer::Pipeline const & pipeline
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
@@ -293,18 +318,18 @@ namespace vk_renderer
 			, &vktb );
 	}
 
-	void CommandBuffer::bindDescriptorSet( renderer::DescriptorSet const & descriptorSet
+	void CommandBuffer::bindDescriptorSets( renderer::DescriptorSetCRefArray const & descriptorSets
 		, renderer::PipelineLayout const & layout
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
 		assert( ( m_currentPipeline || m_currentComputePipeline ) && "No pipeline bound." );
-		VkDescriptorSet set{ static_cast< DescriptorSet const & >( descriptorSet ) };
+		auto vkDescriptors = makeVkArray< VkDescriptorSet >( convert( descriptorSets ) );
 		m_device.vkCmdBindDescriptorSets( m_commandBuffer
 			, convert( bindingPoint )
 			, static_cast< PipelineLayout const & >( layout )
-			, descriptorSet.getBindingPoint()
-			, 1u
-			, &set
+			, descriptorSets.begin()->get().getBindingPoint()
+			, uint32_t( descriptorSets.size() )
+			, vkDescriptors.data()
 			, 0u
 			, nullptr );
 	}
