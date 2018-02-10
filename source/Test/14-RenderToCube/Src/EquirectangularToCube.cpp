@@ -47,11 +47,7 @@ namespace vkapp
 			texture.setImage( image.format, renderer::UIVec2{ image.size[0], image.size[1] } );
 
 			auto result = texture.createView( renderer::TextureType::e2D
-				, image.format
-				, 0u
-				, 1u
-				, 0u
-				, 1u );
+				, image.format );
 
 			stagingBuffer.uploadTextureData( commandBuffer
 				, image.data.data()

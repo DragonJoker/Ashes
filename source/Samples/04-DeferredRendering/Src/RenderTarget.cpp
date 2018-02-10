@@ -161,15 +161,9 @@ namespace vkapp
 			textureNode->view = textureNode->texture->createView( textureNode->texture->getType()
 				, textureNode->texture->getFormat()
 				, 0u
-				, 4u
-				, 0u
-				, 1u );
+				, 4u );
 			auto view = textureNode->texture->createView( textureNode->texture->getType()
-				, textureNode->texture->getFormat()
-				, 0u
-				, 1u
-				, 0u
-				, 1u );
+				, textureNode->texture->getFormat() );
 			m_stagingBuffer->uploadTextureData( *m_updateCommandBuffer
 				, image->data
 				, *view );
@@ -247,11 +241,7 @@ namespace vkapp
 			, m_size
 			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst );
 		m_colourView = m_colour->createView( m_colour->getType()
-			, m_colour->getFormat()
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
+			, m_colour->getFormat() );
 
 		m_depthView.reset();
 		m_depth = m_device.createTexture();
@@ -259,10 +249,6 @@ namespace vkapp
 			, m_size
 			, renderer::ImageUsageFlag::eDepthStencilAttachment | renderer::ImageUsageFlag::eSampled );
 		m_depthView = m_depth->createView( m_depth->getType()
-			, m_depth->getFormat()
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
+			, m_depth->getFormat() );
 	}
 }

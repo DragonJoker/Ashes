@@ -392,11 +392,7 @@ namespace vkapp
 			, { size.GetWidth(), size.GetHeight() }
 			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
 		m_renderTargetColourView = m_renderTargetColour->createView( m_renderTargetColour->getType()
-			, m_renderTargetColour->getFormat()
-			, 0u
-			, 1u
-			, 0u
-			, 1u );
+			, m_renderTargetColour->getFormat() );
 		renderer::FrameBufferAttachmentArray attaches;
 		attaches.emplace_back( *( m_offscreenRenderPass->begin() + 0u ), *m_renderTargetColourView );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { size.GetWidth(), size.GetHeight() }
