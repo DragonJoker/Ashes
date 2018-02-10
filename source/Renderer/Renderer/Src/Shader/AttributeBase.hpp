@@ -11,6 +11,7 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~french
 	*\brief
 	*	Classe encapsulant le concept d'attribut de sommet.
 	*/
@@ -18,10 +19,22 @@ namespace renderer
 	{
 	protected:
 		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] layout
+		*	The parent vertex layout.
+		*\param[in] format
+		*	The attribute format, in the shader.
+		*\param[in] location
+		*	The attribute location in the shader.
+		*\param[in] offset
+		*	The attribute location in the buffer.
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] layout
-		*	Le layout de sommets associé.
+		*	Le layout de sommets parent.
 		*\param[in] format
 		*	Le format de l'attribut dans le tampon.
 		*\param[in] location
@@ -32,16 +45,23 @@ namespace renderer
 		AttributeBase( VertexLayout const & layout
 			, AttributeFormat format
 			, uint32_t location
-			, uint32_t offset
-			, uint32_t divisor );
+			, uint32_t offset );
 
 	public:
 		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
 		*\brief
 		*	Destructeur.
 		*/
 		virtual ~AttributeBase() = default;
 		/**
+		*\~french
+		*\return
+		*	Le format de l'attribut dans le tampon.
+		*\~french
 		*\return
 		*	Le format de l'attribut dans le tampon.
 		*/
@@ -50,6 +70,10 @@ namespace renderer
 			return m_format;
 		}
 		/**
+		*\~french
+		*\return
+		*	The attribute location in the shader.
+		*\~french
 		*\return
 		*	La position de l'attribut dans le shader.
 		*/
@@ -58,6 +82,10 @@ namespace renderer
 			return m_location;
 		}
 		/**
+		*\~french
+		*\return
+		*	The attribute location in the buffer.
+		*\~french
 		*\return
 		*	La position de l'attribut dans le tampon.
 		*/
@@ -65,20 +93,11 @@ namespace renderer
 		{
 			return m_offset;
 		}
-		/**
-		*\return
-		*	La position de l'attribut dans le tampon.
-		*/
-		inline uint32_t getDivisor()const
-		{
-			return m_divisor;
-		}
 
 	private:
 		AttributeFormat m_format;
 		uint32_t m_location;
 		uint32_t m_offset;
-		uint32_t m_divisor;
 	};
 }
 

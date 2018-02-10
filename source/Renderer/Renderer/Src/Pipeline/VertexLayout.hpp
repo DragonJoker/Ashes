@@ -26,6 +26,15 @@ namespace renderer
 	{
 	protected:
 		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] bindingSlot
+		*	The binding slot of the associated buffer.
+		*\param[in] inputRate
+		*	The layout input rate.
+		*\param[in] stride
+		*	The byte size to go from an element to the next one, in the buffer.
 		*\~french
 		*\brief
 		*	Constructeur.
@@ -51,19 +60,36 @@ namespace renderer
 		*/
 		virtual ~VertexLayout() = default;
 		/**
+		*\~english
+		*\brief
+		*	Creates a vertex attribute.
+		*\param[in] location
+		*	The attribute location, in the shader.
+		*\param[in] format
+		*	The attribute format, in the shader.
+		*\param[in] offset
+		*	The attribute location, in the buffer.
 		*\~french
 		*\brief
 		*	Crée un attribut de sommet.
 		*\param[in] location
-		*	La position de l'attribut dans le shader.
+		*	La position de l'attribut, dans le shader.
+		*\param[in] format
+		*	Le format de l'attribut, dans le shader.
 		*\param[in] offset
-		*	La position de l'attribut dans le tampon.
+		*	La position de l'attribut, dans le tampon.
 		*/
 		virtual AttributeBase createAttribute( uint32_t location
 			, AttributeFormat format
-			, uint32_t offset
-			, uint32_t divisor = 0u ) = 0;
+			, uint32_t offset ) = 0;
 		/**
+		*\~english
+		*\brief
+		*	Creates a vertex attribute.
+		*\param[in] location
+		*	The attribute location in the shader.
+		*\param[in] offset
+		*	The attribute location in the buffer.
 		*\~french
 		*\brief
 		*	Crée un attribut de sommet.
@@ -74,33 +100,40 @@ namespace renderer
 		*/
 		template< typename T >
 		inline AttributeBase createAttribute( uint32_t location
-			, uint32_t offset
-			, uint32_t divisor = 0u )
+			, uint32_t offset )
 		{
 			return createAttribute( location
 				, details::FormatGetter< T >::value
-				, offset
-				, divisor );
+				, offset );
 		}
 		/**
 		*\~french
 		*\return
-		*	Le point d'attache du layout.
+		*	The binding slot of the associated buffer.
+		*\~french
+		*\return
+		*	Le point d'attache du tampon associé.
 		*/
 		inline uint32_t getBindingSlot()const
 		{
 			return m_bindingSlot;
 		}
 		/**
+		*\~english
+		*\return
+		*	The byte size to go from an element to the next one, in the buffer.
 		*\~french
 		*\return
-		*	La taille d'un élément du layout.
+		*	La taille en octets séparant un élément du suivant, dans le tampon.
 		*/
 		inline uint32_t getStride()const
 		{
 			return m_stride;
 		}
 		/**
+		*\~english
+		*\return
+		*	The input rate.
 		*\~french
 		*\return
 		*	La cadence d'entrée.
@@ -116,15 +149,24 @@ namespace renderer
 		VertexInputRate m_inputRate;
 	};
 	/**
+	*\~english
+	*\brief
+	*	Creates a vertex layout.
+	*\param[in] device
+	*	The logical device, that will effectively create the vertex layout.
+	*\param[in] bindingSlot
+	*	The binding slot of the associated buffer.
+	*\param[in] inputRate
+	*	The layout input rate.
 	*\~french
 	*\brief
-	*	Crée un layout de sommets.
+	*	Crée un layout de sommet.
+	*\param[in] device
+	*	Le périphérique logique, qui va effectivement créer le layout de sommet.
 	*\param[in] bindingSlot
 	*	Le point d'attache du tampon associé.
 	*\param[in] inputRate
 	*	La cadence d'entrée.
-	*\return
-	*	Le layout créé.
 	*/
 	template< typename T >
 	VertexLayoutPtr makeLayout( Device const & device

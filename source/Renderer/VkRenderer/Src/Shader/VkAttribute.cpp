@@ -7,9 +7,8 @@ namespace vk_renderer
 	Attribute::Attribute( VertexLayout const & layout
 		, renderer::AttributeFormat format
 		, uint32_t location
-		, uint32_t offset
-		, uint32_t inputRate )
-		: renderer::AttributeBase{ layout, format, location, offset, inputRate }
+		, uint32_t offset )
+		: renderer::AttributeBase{ layout, format, location, offset }
 		, m_description
 		{
 			location,

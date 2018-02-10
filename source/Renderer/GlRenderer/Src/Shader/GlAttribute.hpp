@@ -29,7 +29,6 @@ namespace gl_renderer
 		AttributeBase( renderer::VertexLayout const & layout
 			, renderer::AttributeFormat format
 			, uint32_t location
-			, uint32_t offset
-			, uint32_t divisor );
+			, uint32_t offset );
 	};
 }

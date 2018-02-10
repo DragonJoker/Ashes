@@ -40,8 +40,7 @@ namespace gl_renderer
 		*/
 		renderer::AttributeBase createAttribute( uint32_t location
 			, renderer::AttributeFormat format
-			, uint32_t offset
-			, uint32_t divisor )override;
+			, uint32_t offset )override;
 		/**
 		*\return
 		*	Le début du tableau d'attributs.
