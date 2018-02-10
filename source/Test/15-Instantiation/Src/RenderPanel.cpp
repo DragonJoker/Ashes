@@ -628,32 +628,16 @@ namespace vkapp
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 		m_mainProgram = m_device->createShaderProgram();
 
-		if ( m_mainProgram->isSPIRVSupported() )
+		if ( !wxFileExists( shadersFolder / "main.vert" )
+			|| !wxFileExists( shadersFolder / "main.frag" ) )
 		{
-			if ( !wxFileExists( shadersFolder / "main_vert.spv" )
-				|| !wxFileExists( shadersFolder / "main_frag.spv" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			m_mainProgram->createModule( common::dumpBinaryFile( shadersFolder / "main_vert.spv" )
-				, renderer::ShaderStageFlag::eVertex );
-			m_mainProgram->createModule( common::dumpBinaryFile( shadersFolder / "main_frag.spv" )
-				, renderer::ShaderStageFlag::eFragment );
+			throw std::runtime_error{ "Shader files are missing" };
 		}
-		else
-		{
-			if ( !wxFileExists( shadersFolder / "main.vert" )
-				|| !wxFileExists( shadersFolder / "main.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
 
-			m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.vert" )
-				, renderer::ShaderStageFlag::eVertex );
-			m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.frag" )
-				, renderer::ShaderStageFlag::eFragment );
-		}
+		m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.vert" )
+			, renderer::ShaderStageFlag::eVertex );
+		m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.frag" )
+			, renderer::ShaderStageFlag::eFragment );
 
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( *m_mainProgram
 			, { *m_mainVertexLayout }

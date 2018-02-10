@@ -19,6 +19,8 @@ namespace common
 
 		void initialise();
 		void cleanup();
+		void updateFps( std::chrono::microseconds const & durationGpu
+			, std::chrono::microseconds const & durationCpu );
 		void updateFps( std::chrono::microseconds const & duration );
 
 	private:
@@ -34,7 +36,8 @@ namespace common
 		renderer::RendererPtr m_renderer;
 		RendererFactory & m_factory;
 		wxPanel * m_panel{ nullptr };
-		std::array< std::chrono::microseconds, FrameSamplesCount > m_framesTimes;
+		std::array< std::chrono::microseconds, FrameSamplesCount > m_cpuFramesTimes;
+		std::array< std::chrono::microseconds, FrameSamplesCount > m_gpuFramesTimes;
 		uint32_t m_frameIndex{ 0 };
 		size_t m_frameCount{ 0 };
 	};

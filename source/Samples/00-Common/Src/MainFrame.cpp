@@ -59,13 +59,49 @@ namespace common
 		m_renderer.reset();
 	}
 
+	void MainFrame::updateFps( std::chrono::microseconds const & durationGpu
+		, std::chrono::microseconds const & durationCpu )
+	{
+		++m_frameCount;
+		m_gpuFramesTimes[m_frameIndex] = durationGpu;
+		m_cpuFramesTimes[m_frameIndex] = durationCpu;
+		m_frameIndex = ++m_frameIndex % FrameSamplesCount;
+		auto count = std::min( m_frameCount, m_cpuFramesTimes.size() );
+
+		std::stringstream title;
+#ifndef NDEBUG
+		title << " Debug";
+#endif
+		auto averageCpuTime = std::accumulate( m_cpuFramesTimes.begin()
+			, m_cpuFramesTimes.begin() + count
+			, std::chrono::microseconds{ 0 } ).count() / float( count );
+		auto cpuMs = durationCpu.count() / 1000.0f;
+		auto cpuAvgms = averageCpuTime / 1000.0f;
+		title << " [CPU: I " << std::setw( 6 ) << std::setprecision( 4 ) << cpuMs << "ms";
+		title << " (" << std::setw( 5 ) << int( 1000.0f / cpuMs ) << "fps)";
+		title << ", A " << std::setw( 6 ) << std::setprecision( 4 ) << cpuAvgms << "ms";
+		title << " (" << std::setw( 5 ) << int( 1000.0f / cpuAvgms ) << "fps)";
+
+		auto averageGpuTime = std::accumulate( m_gpuFramesTimes.begin()
+			, m_gpuFramesTimes.begin() + count
+			, std::chrono::microseconds{ 0 } ).count() / float( count );
+		auto gpuMs = durationGpu.count() / 1000.0f;
+		auto gpuAvgms = averageGpuTime / 1000.0f;
+		title << " [GPU: I " << std::setw( 6 ) << std::setprecision( 4 ) << gpuMs << "ms";
+		title << " (" << std::setw( 5 ) << int( 1000.0f / gpuMs ) << "fps)";
+		title << ", A " << std::setw( 6 ) << std::setprecision( 4 ) << gpuAvgms << "ms";
+		title << " (" << std::setw( 5 ) << int( 1000.0f / gpuAvgms ) << "fps)";
+
+		SetTitle( m_name + wxT( " (" ) + m_rendererName + wxT( ")" ) + wxString( title.str() ) );
+	}
+
 	void MainFrame::updateFps( std::chrono::microseconds const & duration )
 	{
 		++m_frameCount;
-		m_framesTimes[m_frameIndex] = duration;
-		auto count = std::min( m_frameCount, m_framesTimes.size() );
-		auto averageTime = std::accumulate( m_framesTimes.begin()
-			, m_framesTimes.begin() + count
+		m_cpuFramesTimes[m_frameIndex] = duration;
+		auto count = std::min( m_frameCount, m_cpuFramesTimes.size() );
+		auto averageTime = std::accumulate( m_cpuFramesTimes.begin()
+			, m_cpuFramesTimes.begin() + count
 			, std::chrono::microseconds{ 0 } ).count() / float( count );
 		m_frameIndex = ++m_frameIndex % FrameSamplesCount;
 		std::stringstream title;
