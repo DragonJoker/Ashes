@@ -19,6 +19,7 @@
 #include <Descriptor/DescriptorSetPool.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
+#include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/Scissor.hpp>
@@ -136,6 +137,7 @@ namespace vkapp
 			doCreateOffscreenPipeline();
 			std::cout << "Offscreen pipeline created." << std::endl;
 			doPrepareOffscreenFrame();
+			std::cout << "Offscreen frame prepared." << std::endl;
 			doCreateMainDescriptorSet();
 			std::cout << "Main descriptor set created." << std::endl;
 			doCreateMainRenderPass();
@@ -145,6 +147,7 @@ namespace vkapp
 			doCreateMainPipeline();
 			std::cout << "Main pipeline created." << std::endl;
 			doPrepareMainFrames();
+			std::cout << "Main frames prepared." << std::endl;
 		}
 		catch ( std::exception & )
 		{
@@ -220,6 +223,7 @@ namespace vkapp
 			m_mainGeometryBuffers.reset();
 			m_mainRenderPass.reset();
 
+			m_queryPool.reset();
 			m_offscreenDescriptorSet.reset();
 			m_offscreenDescriptorPool.reset();
 			m_offscreenDescriptorLayout.reset();
@@ -537,13 +541,19 @@ namespace vkapp
 	{
 		doUpdateProjection();
 		m_commandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
+		m_queryPool = m_device->createQueryPool( renderer::QueryType::eTimestamp
+			, 2u
+			, 0u );
 		wxSize size{ GetClientSize() };
 		auto & commandBuffer = *m_commandBuffer;
 		auto & frameBuffer = *m_frameBuffer;
+		auto dimensions = m_swapChain->getDimensions();
 
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 		{
-			auto dimensions = m_swapChain->getDimensions();
+			commandBuffer.resetQueryPool( *m_queryPool
+				, 0u
+				, 2u );
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
 				, m_renderTargetColourView->makeColourAttachment() );
@@ -553,7 +563,10 @@ namespace vkapp
 			commandBuffer.beginRenderPass( *m_offscreenRenderPass
 				, frameBuffer
 				, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
-				, renderer::SubpassContents::eInline );
+			, renderer::SubpassContents::eInline );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+				, *m_queryPool
+				, 0u );
 			commandBuffer.bindPipeline( *m_offscreenPipeline );
 			commandBuffer.setViewport( { uint32_t( dimensions.x )
 				, uint32_t( dimensions.y )
@@ -567,10 +580,10 @@ namespace vkapp
 			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSet
 				, *m_offscreenPipelineLayout );
 			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() )
-				, m_offscreenMatrixBuffer->getCount()
-				, 0u
-				, 0u
-				, 0u );
+				, m_offscreenMatrixBuffer->getCount() );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+				, *m_queryPool
+				, 1u );
 			commandBuffer.endRenderPass();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
@@ -682,7 +695,7 @@ namespace vkapp
 				commandBuffer.bindGeometryBuffers( *m_mainGeometryBuffers );
 				commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
 					, *m_mainPipelineLayout );
-				commandBuffer.draw( 4u, 1u, 0u, 0u );
+				commandBuffer.draw( 4u );
 				commandBuffer.endRenderPass();
 				m_swapChain->postRenderCommands( i, commandBuffer );
 
@@ -721,16 +734,26 @@ namespace vkapp
 
 			if ( res )
 			{
+				renderer::UInt32Array values{ 0u, 0u };
+				m_queryPool->getResults( 0u
+					, 2u
+					, 0u
+					, renderer::QueryResultFlag::eWait
+					, values );
+
 				auto res = queue.submit( *m_commandBuffers[resources->getBackBuffer()]
 					, resources->getImageAvailableSemaphore()
 					, renderer::PipelineStageFlag::eColourAttachmentOutput
 					, resources->getRenderingFinishedSemaphore()
 					, &resources->getFence() );
 				m_swapChain->present( *resources );
-			}
 
-			auto after = std::chrono::high_resolution_clock::now();
-			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
+				// Elapsed time in nanoseconds
+				auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getTimestampPeriod() ) ) };
+				auto after = std::chrono::high_resolution_clock::now();
+				wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
+					, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
+			}
 		}
 		else
 		{

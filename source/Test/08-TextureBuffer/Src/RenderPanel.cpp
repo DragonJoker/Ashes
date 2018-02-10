@@ -13,6 +13,7 @@
 #include <Core/SwapChain.hpp>
 #include <Enum/SubpassContents.hpp>
 #include <Image/Texture.hpp>
+#include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
@@ -114,6 +115,7 @@ namespace vkapp
 		if ( m_device )
 		{
 			m_device->waitIdle();
+			m_queryPool.reset();
 			m_descriptorSet.reset();
 			m_descriptorPool.reset();
 			m_descriptorLayout.reset();
@@ -273,6 +275,9 @@ namespace vkapp
 
 	void RenderPanel::doPrepareFrames()
 	{
+		m_queryPool = m_device->createQueryPool( renderer::QueryType::eTimestamp
+			, 2u
+			, 0u );
 		m_commandBuffers = m_swapChain->createCommandBuffers();
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
 		auto dimensions = m_swapChain->getDimensions();
@@ -284,11 +289,17 @@ namespace vkapp
 
 			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 			{
+				commandBuffer.resetQueryPool( *m_queryPool
+					, 0u
+					, 2u );
 				m_swapChain->preRenderCommands( i, commandBuffer );
 				commandBuffer.beginRenderPass( *m_renderPass
 					, frameBuffer
 					, { m_swapChain->getClearColour() }
 					, renderer::SubpassContents::eInline );
+				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+					, *m_queryPool
+					, 0u );
 				commandBuffer.bindPipeline( *m_pipeline );
 				commandBuffer.setViewport( { uint32_t( dimensions.x )
 					, uint32_t( dimensions.y )
@@ -301,7 +312,10 @@ namespace vkapp
 				commandBuffer.bindGeometryBuffers( *m_geometryBuffers );
 				commandBuffer.bindDescriptorSet( *m_descriptorSet
 					, *m_pipelineLayout );
-				commandBuffer.draw( 4u, 1u, 0u, 0u );
+				commandBuffer.draw( 4u );
+				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+					, *m_queryPool
+					, 1u );
 				commandBuffer.endRenderPass();
 				m_swapChain->postRenderCommands( i, commandBuffer );
 
@@ -331,9 +345,18 @@ namespace vkapp
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
 			m_swapChain->present( *resources );
+			renderer::UInt32Array values{ 0u, 0u };
+			m_queryPool->getResults( 0u
+				, 2u
+				, 0u
+				, renderer::QueryResultFlag::eWait
+				, values );
 
+			// Elapsed time in nanoseconds
+			auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getTimestampPeriod() ) ) };
 			auto after = std::chrono::high_resolution_clock::now();
-			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
+			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
+				, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
 		}
 		else
 		{

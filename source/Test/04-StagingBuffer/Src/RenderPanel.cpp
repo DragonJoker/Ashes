@@ -1,29 +1,30 @@
 #include "RenderPanel.hpp"
 #include "Application.hpp"
 
-#include <Core/BackBuffer.hpp>
-#include <Sync/BufferMemoryBarrier.hpp>
+#include <Buffer/GeometryBuffers.hpp>
+#include <Buffer/VertexBuffer.hpp>
 #include <Command/CommandBuffer.hpp>
+#include <Core/BackBuffer.hpp>
 #include <Core/Connection.hpp>
 #include <Core/Device.hpp>
-#include <Buffer/GeometryBuffers.hpp>
+#include <Core/Renderer.hpp>
+#include <Core/RenderingResources.hpp>
+#include <Core/SwapChain.hpp>
+#include <Enum/SubpassContents.hpp>
+#include <Image/Texture.hpp>
+#include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
-#include <Core/Renderer.hpp>
-#include <Core/RenderingResources.hpp>
+#include <Pipeline/Scissor.hpp>
+#include <Pipeline/VertexLayout.hpp>
+#include <Pipeline/Viewport.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Pipeline/Scissor.hpp>
 #include <Shader/ShaderProgram.hpp>
-#include <Enum/SubpassContents.hpp>
-#include <Core/SwapChain.hpp>
-#include <Image/Texture.hpp>
-#include <Buffer/VertexBuffer.hpp>
-#include <Pipeline/VertexLayout.hpp>
-#include <Pipeline/Viewport.hpp>
+#include <Sync/BufferMemoryBarrier.hpp>
 
 #include <FileUtils.hpp>
 
@@ -108,7 +109,7 @@ namespace vkapp
 		if ( m_device )
 		{
 			m_device->waitIdle();
-			m_device->waitIdle();
+			m_queryPool.reset();
 			m_stagingBuffer.reset();
 			m_pipeline.reset();
 			m_vertexLayout.reset();
@@ -232,6 +233,9 @@ namespace vkapp
 
 	void RenderPanel::doPrepareFrames()
 	{
+		m_queryPool = m_device->createQueryPool( renderer::QueryType::eTimestamp
+			, 2u
+			, 0u );
 		m_commandBuffers = m_swapChain->createCommandBuffers();
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
 		auto dimensions = m_swapChain->getDimensions();
@@ -243,10 +247,16 @@ namespace vkapp
 
 			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 			{
+				commandBuffer.resetQueryPool( *m_queryPool
+					, 0u
+					, 2u );
 				commandBuffer.beginRenderPass( *m_renderPass
 					, frameBuffer
 					, { m_swapChain->getClearColour() }
 					, renderer::SubpassContents::eInline );
+				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+					, *m_queryPool
+					, 0u );
 				commandBuffer.bindPipeline( *m_pipeline );
 				commandBuffer.setViewport( { uint32_t( dimensions.x )
 					, uint32_t( dimensions.y )
@@ -257,7 +267,10 @@ namespace vkapp
 					, uint32_t( dimensions.x )
 					, uint32_t( dimensions.y ) } );
 				commandBuffer.bindGeometryBuffers( *m_geometryBuffers );
-				commandBuffer.draw( 4u, 1u, 0u, 0u );
+				commandBuffer.draw( 4u );
+				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+					, *m_queryPool
+					, 1u );
 				commandBuffer.endRenderPass();
 
 				auto res = commandBuffer.end();
@@ -286,9 +299,18 @@ namespace vkapp
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
 			m_swapChain->present( *resources );
+			renderer::UInt32Array values{ 0u, 0u };
+			m_queryPool->getResults( 0u
+				, 2u
+				, 0u
+				, renderer::QueryResultFlag::eWait
+				, values );
 
+			// Elapsed time in nanoseconds
+			auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getTimestampPeriod() ) ) };
 			auto after = std::chrono::high_resolution_clock::now();
-			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
+			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
+				, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
 		}
 		else
 		{

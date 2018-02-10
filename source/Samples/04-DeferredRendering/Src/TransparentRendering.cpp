@@ -402,11 +402,7 @@ namespace vkapp
 						, *node.pipelineLayout );
 					commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
 						, *node.pipelineLayout );
-					commandBuffer.drawIndexed( uint32_t( node.submesh->ibo->getBuffer().getSize() / sizeof( uint32_t ) )
-						, 1u
-						, 0u
-						, 0u
-						, 0u );
+					commandBuffer.drawIndexed( uint32_t( node.submesh->ibo->getBuffer().getSize() / sizeof( uint32_t ) ) );
 				}
 			}
 

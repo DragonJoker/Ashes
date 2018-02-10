@@ -70,6 +70,7 @@ namespace vkapp
 		renderer::GeometryBuffersPtr m_geometryBuffers;
 		renderer::StagingBufferPtr m_stagingBuffer;
 		std::vector< VertexData > m_vertexData;
+		renderer::QueryPoolPtr m_queryPool;
 		/**@}*/
 		/**
 		*\name

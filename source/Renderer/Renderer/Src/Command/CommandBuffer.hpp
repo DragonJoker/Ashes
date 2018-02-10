@@ -435,9 +435,9 @@ namespace renderer
 		*	Index de la première instance.
 		*/
 		virtual void draw( uint32_t vtxCount
-			, uint32_t instCount
-			, uint32_t firstVertex
-			, uint32_t firstInstance )const = 0;
+			, uint32_t instCount = 1u
+			, uint32_t firstVertex = 0u
+			, uint32_t firstInstance = 0u )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -467,10 +467,10 @@ namespace renderer
 		*	Index de la première instance.
 		*/
 		virtual void drawIndexed( uint32_t indexCount
-			, uint32_t instCount
-			, uint32_t firstIndex
-			, uint32_t vertexOffset
-			, uint32_t firstInstance )const = 0;
+			, uint32_t instCount = 1u
+			, uint32_t firstIndex = 0u
+			, uint32_t vertexOffset = 0u
+			, uint32_t firstInstance = 0u )const = 0;
 		/**
 		*\~french
 		*\brief

@@ -291,7 +291,7 @@ namespace vkapp
 			commandBuffer.bindDescriptorSet( *facePipeline.descriptorSet
 				, *m_pipelineLayout );
 			commandBuffer.bindGeometryBuffers( *m_geometryBuffers );
-			commandBuffer.draw( 36u, 1u, 0u, 0u );
+			commandBuffer.draw( 36u );
 			commandBuffer.endRenderPass();
 		}
 

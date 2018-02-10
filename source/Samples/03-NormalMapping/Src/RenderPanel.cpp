@@ -632,11 +632,7 @@ namespace vkapp
 				commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
 					, *node.pipelineLayout );
 
-				commandBuffer.drawIndexed( uint32_t( node.submesh->ibo->getBuffer().getSize() / sizeof( uint32_t ) )
-					, 1u
-					, 0u
-					, 0u
-					, 0u );
+				commandBuffer.drawIndexed( uint32_t( node.submesh->ibo->getBuffer().getSize() / sizeof( uint32_t ) ) );
 			}
 
 			for ( auto & node : m_alphaBlendedObject )
@@ -656,11 +652,7 @@ namespace vkapp
 				commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
 					, *node.pipelineLayout );
 
-				commandBuffer.drawIndexed( uint32_t( node.submesh->ibo->getBuffer().getSize() / sizeof( uint32_t ) )
-					, 1u
-					, 0u
-					, 0u
-					, 0u );
+				commandBuffer.drawIndexed( uint32_t( node.submesh->ibo->getBuffer().getSize() / sizeof( uint32_t ) ) );
 			}
 
 			commandBuffer.endRenderPass();
@@ -774,7 +766,7 @@ namespace vkapp
 				commandBuffer.bindGeometryBuffers( *m_mainGeometryBuffers );
 				commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
 					, *m_mainPipelineLayout );
-				commandBuffer.draw( 4u, 1u, 0u, 0u );
+				commandBuffer.draw( 4u );
 				commandBuffer.endRenderPass();
 				m_swapChain->postRenderCommands( i, commandBuffer );
 

@@ -825,6 +825,18 @@ namespace renderer
 		{
 			return m_renderer;
 		}
+		/**
+		*\~english
+		*\return
+		*	The number of nanoseconds it takes for timestamp value to be incremented by 1.
+		*\~french
+		*\return
+		*	Le nombre de nanosecondes qu'il faut pour que la valeur d'un timestamp soit incrémentée de 1.
+		*/
+		inline uint32_t getTimestampPeriod()const
+		{
+			return m_timestampPeriod;
+		}
 
 	private:
 		/**
@@ -859,6 +871,7 @@ namespace renderer
 		CommandPoolPtr m_computeCommandPool;
 		CommandPoolPtr m_graphicsCommandPool;
 		std::string m_version;
+		uint32_t m_timestampPeriod;
 	};
 }
 

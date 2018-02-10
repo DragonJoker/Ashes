@@ -123,6 +123,7 @@ namespace vkapp
 		renderer::DescriptorSetPtr m_offscreenDescriptorSets[2];
 		std::vector< TexturedVertexData > m_offscreenVertexData;
 		renderer::UInt16Array m_offscreenIndexData;
+		renderer::QueryPoolPtr m_offscreenQueryPool;
 		/**
 		*\name
 		*	Compute.
@@ -137,6 +138,7 @@ namespace vkapp
 		renderer::PipelineLayoutPtr m_computePipelineLayout;
 		renderer::ShaderProgramPtr m_computeProgram;
 		renderer::ComputePipelinePtr m_computePipeline;
+		renderer::QueryPoolPtr m_computeQueryPool;
 		/**@}*/
 		/**
 		*\name

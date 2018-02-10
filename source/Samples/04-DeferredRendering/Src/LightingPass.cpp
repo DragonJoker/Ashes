@@ -288,10 +288,7 @@ namespace vkapp
 				, *m_pipelineLayout );
 			commandBuffer.bindDescriptorSet( *m_uboDescriptorSet
 				, *m_pipelineLayout );
-			commandBuffer.draw( 4u
-				, 1u
-				, 0u
-				, 0u );
+			commandBuffer.draw( 4u );
 			commandBuffer.endRenderPass();
 			commandBuffer.end();
 		}

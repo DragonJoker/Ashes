@@ -21,6 +21,7 @@
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
 #include <Miscellaneous/PushConstantRange.hpp>
+#include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/ComputePipeline.hpp>
 #include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/MultisampleState.hpp>
@@ -218,7 +219,8 @@ namespace vkapp
 			m_mainVertexLayout.reset();
 			m_mainGeometryBuffers.reset();
 			m_mainRenderPass.reset();
-			
+
+			m_computeQueryPool.reset();
 			m_computePipeline.reset();
 			m_computePipelineLayout.reset();
 			m_computeProgram.reset();
@@ -229,6 +231,7 @@ namespace vkapp
 			m_computeFence.reset();
 			m_computeUbo.reset();
 
+			m_offscreenQueryPool.reset();
 			m_offscreenDescriptorSets[0].reset();
 			m_offscreenDescriptorSets[1].reset();
 			m_offscreenDescriptorPool.reset();
@@ -541,6 +544,9 @@ namespace vkapp
 	void RenderPanel::doPrepareOffscreenFrame()
 	{
 		doUpdateProjection();
+		m_offscreenQueryPool = m_device->createQueryPool( renderer::QueryType::eTimestamp
+			, 2u
+			, 0u );
 		m_commandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
 		wxSize size{ GetClientSize() };
 		auto & commandBuffer = *m_commandBuffer;
@@ -549,6 +555,9 @@ namespace vkapp
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 		{
 			auto dimensions = m_swapChain->getDimensions();
+			commandBuffer.resetQueryPool( *m_offscreenQueryPool
+				, 0u
+				, 2u );
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
 				, m_renderTargetColourView->makeColourAttachment() );
@@ -558,7 +567,10 @@ namespace vkapp
 			commandBuffer.beginRenderPass( *m_offscreenRenderPass
 				, frameBuffer
 				, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
-			, renderer::SubpassContents::eInline );
+				, renderer::SubpassContents::eInline );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+				, *m_offscreenQueryPool
+				, 0u );
 			commandBuffer.bindPipeline( *m_offscreenPipeline );
 			commandBuffer.setViewport( { uint32_t( dimensions.x )
 				, uint32_t( dimensions.y )
@@ -573,20 +585,15 @@ namespace vkapp
 				, *m_offscreenPipelineLayout );
 			commandBuffer.pushConstants( *m_offscreenPipelineLayout
 				, m_objectPcbs[0] );
-			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() )
-				, 1u
-				, 0u
-				, 0u
-				, 0u );
+			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
 			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSets[1]
 				, *m_offscreenPipelineLayout );
 			commandBuffer.pushConstants( *m_offscreenPipelineLayout
 				, m_objectPcbs[1] );
-			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() )
-				, 1u
-				, 0u
-				, 0u
-				, 0u );
+			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+				, *m_offscreenQueryPool
+				, 1u );
 			commandBuffer.endRenderPass();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
@@ -647,12 +654,21 @@ namespace vkapp
 	void RenderPanel::doPrepareCompute()
 	{
 		wxSize size{ GetClientSize() };
+		m_computeQueryPool = m_device->createQueryPool( renderer::QueryType::eTimestamp
+			, 2u
+			, 0u );
 		m_computeFence = m_device->createFence( renderer::FenceCreateFlag::eSignaled );
 		m_computeCommandBuffer = m_device->getComputeCommandPool().createCommandBuffer();
 		auto & commandBuffer = *m_computeCommandBuffer;
 
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 		{
+			commandBuffer.resetQueryPool( *m_computeQueryPool
+				, 0u
+				, 2u );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+				, *m_computeQueryPool
+				, 0u );
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eComputeShader
 				, m_renderTargetColourView->makeGeneralLayout( renderer::AccessFlag::eShaderWrite ) );
@@ -662,6 +678,9 @@ namespace vkapp
 				, renderer::PipelineBindPoint::eCompute );
 			commandBuffer.dispatch( size.GetWidth() / 16u
 				, size.GetHeight() / 16u
+				, 1u );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+				, *m_computeQueryPool
 				, 1u );
 			commandBuffer.end();
 		}
@@ -747,7 +766,7 @@ namespace vkapp
 				commandBuffer.bindGeometryBuffers( *m_mainGeometryBuffers );
 				commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
 					, *m_mainPipelineLayout );
-				commandBuffer.draw( 4u, 1u, 0u, 0u );
+				commandBuffer.draw( 4u );
 				commandBuffer.endRenderPass();
 				m_swapChain->postRenderCommands( i, commandBuffer );
 
@@ -832,10 +851,26 @@ namespace vkapp
 					, resources->getRenderingFinishedSemaphore()
 					, &resources->getFence() );
 				m_swapChain->present( *resources );
-			}
+				renderer::UInt32Array values1{ 0u, 0u };
+				renderer::UInt32Array values2{ 0u, 0u };
+				m_offscreenQueryPool->getResults( 0u
+					, 2u
+					, 0u
+					, renderer::QueryResultFlag::eWait
+					, values1 );
+				m_computeQueryPool->getResults( 0u
+					, 2u
+					, 0u
+					, renderer::QueryResultFlag::eWait
+					, values1 );
 
-			auto after = std::chrono::high_resolution_clock::now();
-			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
+				// Elapsed time in nanoseconds
+				auto elapsed1 = std::chrono::nanoseconds{ uint64_t( ( values1[1] - values1[0] ) / float( m_device->getTimestampPeriod() ) ) };
+				auto elapsed2 = std::chrono::nanoseconds{ uint64_t( ( values2[1] - values2[0] ) / float( m_device->getTimestampPeriod() ) ) };
+				auto after = std::chrono::high_resolution_clock::now();
+				wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed1 + elapsed2 )
+					, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
+			}
 		}
 		else
 		{
