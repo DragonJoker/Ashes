@@ -85,6 +85,7 @@ namespace vkapp
 		common::SubmeshNodes m_submeshNodes;
 		renderer::DescriptorSetLayoutPtr m_offscreenDescriptorLayout;
 		renderer::DescriptorSetPoolPtr m_offscreenDescriptorPool;
+		renderer::QueryPoolPtr m_offscreenQueryPool;
 
 		renderer::RenderPassPtr m_mainRenderPass;
 		renderer::ShaderProgramPtr m_mainProgram;

@@ -180,6 +180,7 @@ namespace vkapp
 			m_mainGeometryBuffers.reset();
 			m_mainRenderPass.reset();
 
+			m_offscreenQueryPool.reset();
 			m_offscreenDescriptorSet.reset();
 			m_offscreenDescriptorPool.reset();
 			m_offscreenDescriptorLayout.reset();
@@ -478,6 +479,9 @@ namespace vkapp
 	void RenderPanel::doPrepareOffscreenFrame()
 	{
 		doUpdateProjection();
+		m_offscreenQueryPool = m_device->createQueryPool( renderer::QueryType::eTimestamp
+			, 2u
+			, 0u );
 		m_commandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
 		wxSize size{ GetClientSize() };
 		auto & commandBuffer = *m_commandBuffer;
@@ -486,6 +490,9 @@ namespace vkapp
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 		{
 			auto dimensions = m_swapChain->getDimensions();
+			commandBuffer.resetQueryPool( *m_offscreenQueryPool
+				, 0u
+				, 2u );
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
 				, m_renderTargetColourView->makeColourAttachment() );
@@ -496,6 +503,9 @@ namespace vkapp
 				, frameBuffer
 				, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
 				, renderer::SubpassContents::eInline );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+				, *m_offscreenQueryPool
+				, 0u );
 			commandBuffer.bindPipeline( *m_offscreenPipeline );
 			commandBuffer.setViewport( { uint32_t( dimensions.x )
 				, uint32_t( dimensions.y )
@@ -510,6 +520,9 @@ namespace vkapp
 				, *m_offscreenPipelineLayout );
 			commandBuffer.draw( uint32_t( m_offscreenVertexData.size() )
 				, m_offscreenBillboardBuffer->getCount() );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+				, *m_offscreenQueryPool
+				, 1u );
 			commandBuffer.endRenderPass();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
@@ -654,10 +667,19 @@ namespace vkapp
 					, resources->getRenderingFinishedSemaphore()
 					, &resources->getFence() );
 				m_swapChain->present( *resources );
-			}
+				renderer::UInt32Array values{ 0u, 0u };
+				m_offscreenQueryPool->getResults( 0u
+					, 2u
+					, 0u
+					, renderer::QueryResultFlag::eWait
+					, values );
 
-			auto after = std::chrono::high_resolution_clock::now();
-			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
+				// Elapsed time in nanoseconds
+				auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getTimestampPeriod() ) ) };
+				auto after = std::chrono::high_resolution_clock::now();
+				wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
+					, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
+			}
 		}
 		else
 		{
@@ -715,8 +737,8 @@ namespace vkapp
 			auto currentPosition = renderer::IVec2{ event.GetPosition().x, event.GetPosition().y };
 			auto delta = currentPosition - m_previousMousePosition;
 			auto & result = m_camera.getRotation();
-			result = utils::yaw( result, renderer::Radians{ float( -delta[0] ) / size.GetWidth() } );
 			result = utils::pitch( result, renderer::Radians{ float( delta[1] ) / size.GetHeight() } );
+			result = utils::yaw( result, renderer::Radians{ float( -delta[0] ) / size.GetWidth() } );
 			m_previousMousePosition[0] = event.GetPosition().x;
 			m_previousMousePosition[1] = event.GetPosition().y;
 		}

@@ -18,5 +18,9 @@ vec2 sampleSphericalMap( vec3 v )
 void main()
 {
 	vec2 uv = sampleSphericalMap( normalize( vtx_position ) );
+#ifdef VULKAN
+	pxl_colour = vec4( texture( mapColour, vec2( uv.x, 1.0 - uv.y ) ).rgb, 1.0 );
+#else
 	pxl_colour = vec4( texture( mapColour, vec2( uv.x, uv.y ) ).rgb, 1.0 );
+#endif
 }

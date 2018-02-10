@@ -117,32 +117,16 @@ namespace vkapp
 			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 			auto result = device.createShaderProgram();
 
-			if ( result->isSPIRVSupported() )
+			if ( !wxFileExists( shadersFolder / "equirectangular.vert" )
+				|| !wxFileExists( shadersFolder / "equirectangular.frag" ) )
 			{
-				if ( !wxFileExists( shadersFolder / "equirectangular_vert.spv" )
-					|| !wxFileExists( shadersFolder / "equirectangular_frag.spv" ) )
-				{
-					throw std::runtime_error{ "Shader files are missing" };
-				}
-
-				result->createModule( common::dumpBinaryFile( shadersFolder / "equirectangular_vert.spv" )
-					, renderer::ShaderStageFlag::eVertex );
-				result->createModule( common::dumpBinaryFile( shadersFolder / "equirectangular_frag.spv" )
-					, renderer::ShaderStageFlag::eFragment );
+				throw std::runtime_error{ "Shader files are missing" };
 			}
-			else
-			{
-				if ( !wxFileExists( shadersFolder / "equirectangular.vert" )
-					|| !wxFileExists( shadersFolder / "equirectangular.frag" ) )
-				{
-					throw std::runtime_error{ "Shader files are missing" };
-				}
 
-				result->createModule( common::dumpTextFile( shadersFolder / "equirectangular.vert" )
-					, renderer::ShaderStageFlag::eVertex );
-				result->createModule( common::dumpTextFile( shadersFolder / "equirectangular.frag" )
-					, renderer::ShaderStageFlag::eFragment );
-			}
+			result->createModule( common::dumpTextFile( shadersFolder / "equirectangular.vert" )
+				, renderer::ShaderStageFlag::eVertex );
+			result->createModule( common::dumpTextFile( shadersFolder / "equirectangular.frag" )
+				, renderer::ShaderStageFlag::eFragment );
 
 			return result;
 		}

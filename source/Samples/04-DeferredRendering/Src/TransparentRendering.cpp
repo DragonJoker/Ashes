@@ -41,32 +41,16 @@ namespace vkapp
 			renderer::ShaderProgramPtr result = device.createShaderProgram();
 			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
-			if ( false && result->isSPIRVSupported() )
+			if ( !wxFileExists( shadersFolder / "transparent.vert" )
+				|| !wxFileExists( shadersFolder / "transparent.frag" ) )
 			{
-				if ( !wxFileExists( shadersFolder / "transparent_vert.spv" )
-					|| !wxFileExists( shadersFolder / "transparent_frag.spv" ) )
-				{
-					throw std::runtime_error{ "Shader files are missing" };
-				}
-
-				result->createModule( common::dumpBinaryFile( shadersFolder / "transparent_vert.spv" )
-					, renderer::ShaderStageFlag::eVertex );
-				result->createModule( common::dumpBinaryFile( shadersFolder / "transparent_frag.spv" )
-					, renderer::ShaderStageFlag::eFragment );
+				throw std::runtime_error{ "Shader files are missing" };
 			}
-			else
-			{
-				if ( !wxFileExists( shadersFolder / "transparent.vert" )
-					|| !wxFileExists( shadersFolder / "transparent.frag" ) )
-				{
-					throw std::runtime_error{ "Shader files are missing" };
-				}
 
-				result->createModule( common::dumpTextFile( shadersFolder / "transparent.vert" )
-					, renderer::ShaderStageFlag::eVertex );
-				result->createModule( common::dumpTextFile( shadersFolder / "transparent.frag" )
-					, renderer::ShaderStageFlag::eFragment );
-			}
+			result->createModule( common::dumpTextFile( shadersFolder / "transparent.vert" )
+				, renderer::ShaderStageFlag::eVertex );
+			result->createModule( common::dumpTextFile( shadersFolder / "transparent.frag" )
+				, renderer::ShaderStageFlag::eFragment );
 
 			return result;
 		}

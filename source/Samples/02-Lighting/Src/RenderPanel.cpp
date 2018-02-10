@@ -19,6 +19,7 @@
 #include <Descriptor/DescriptorSetPool.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
+#include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/Scissor.hpp>
@@ -163,6 +164,7 @@ namespace vkapp
 			m_mainVertexLayout.reset();
 			m_mainRenderPass.reset();
 
+			m_offscreenQueryPool.reset();
 			m_offscreenDescriptorPool.reset();
 			m_offscreenDescriptorLayout.reset();
 			m_offscreenProgram.reset();
@@ -532,32 +534,16 @@ namespace vkapp
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 		m_offscreenProgram = m_device->createShaderProgram();
 
-		if ( false && m_offscreenProgram->isSPIRVSupported() )
+		if ( !wxFileExists( shadersFolder / "offscreen.vert" )
+			|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
 		{
-			if ( !wxFileExists( shadersFolder / "offscreen_vert.spv" )
-				|| !wxFileExists( shadersFolder / "offscreen_frag.spv" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			m_offscreenProgram->createModule( common::dumpBinaryFile( shadersFolder / "offscreen_vert.spv" )
-				, renderer::ShaderStageFlag::eVertex );
-			m_offscreenProgram->createModule( common::dumpBinaryFile( shadersFolder / "offscreen_frag.spv" )
-				, renderer::ShaderStageFlag::eFragment );
+			throw std::runtime_error{ "Shader files are missing" };
 		}
-		else
-		{
-			if ( !wxFileExists( shadersFolder / "offscreen.vert" )
-				|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
 
-			m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.vert" )
-				, renderer::ShaderStageFlag::eVertex );
-			m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.frag" )
-				, renderer::ShaderStageFlag::eFragment );
-		}
+		m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.vert" )
+			, renderer::ShaderStageFlag::eVertex );
+		m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.frag" )
+			, renderer::ShaderStageFlag::eFragment );
 	}
 
 	void RenderPanel::doCreateMainDescriptorSet()
@@ -595,6 +581,9 @@ namespace vkapp
 	void RenderPanel::doPrepareOffscreenFrame()
 	{
 		doUpdateProjection();
+		m_offscreenQueryPool = m_device->createQueryPool( renderer::QueryType::eTimestamp
+			, 2u
+			, 0u );
 		m_commandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
 		wxSize size{ GetClientSize() };
 		auto & commandBuffer = *m_commandBuffer;
@@ -603,6 +592,9 @@ namespace vkapp
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 		{
 			auto dimensions = m_swapChain->getDimensions();
+			commandBuffer.resetQueryPool( *m_offscreenQueryPool
+				, 0u
+				, 2u );
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
 				, m_renderTargetColourView->makeColourAttachment() );
@@ -612,7 +604,10 @@ namespace vkapp
 			commandBuffer.beginRenderPass( *m_offscreenRenderPass
 				, frameBuffer
 				, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
-			, renderer::SubpassContents::eInline );
+				, renderer::SubpassContents::eInline );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+				, *m_offscreenQueryPool
+				, 0u );
 
 			for ( auto & node : m_opaqueObject )
 			{
@@ -654,6 +649,9 @@ namespace vkapp
 				commandBuffer.drawIndexed( uint32_t( node.submesh->ibo->getBuffer().getSize() / sizeof( uint32_t ) ) );
 			}
 
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+				, *m_offscreenQueryPool
+				, 1u );
 			commandBuffer.endRenderPass();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
@@ -698,21 +696,6 @@ namespace vkapp
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 		m_mainProgram = m_device->createShaderProgram();
 
-		if ( m_mainProgram->isSPIRVSupported() )
-		{
-			if ( !wxFileExists( shadersFolder / "main_vert.spv" )
-				|| !wxFileExists( shadersFolder / "main_frag.spv" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			m_mainProgram->createModule( common::dumpBinaryFile( shadersFolder / "main_vert.spv" )
-				, renderer::ShaderStageFlag::eVertex );
-			m_mainProgram->createModule( common::dumpBinaryFile( shadersFolder / "main_frag.spv" )
-				, renderer::ShaderStageFlag::eFragment );
-		}
-		else
-		{
 			if ( !wxFileExists( shadersFolder / "main.vert" )
 				|| !wxFileExists( shadersFolder / "main.frag" ) )
 			{
@@ -723,7 +706,6 @@ namespace vkapp
 				, renderer::ShaderStageFlag::eVertex );
 			m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.frag" )
 				, renderer::ShaderStageFlag::eFragment );
-		}
 
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( *m_mainProgram
 			, { *m_mainVertexLayout }
@@ -821,10 +803,19 @@ namespace vkapp
 					, resources->getRenderingFinishedSemaphore()
 					, &resources->getFence() );
 				m_swapChain->present( *resources );
-			}
+				renderer::UInt32Array values{ 0u, 0u };
+				m_offscreenQueryPool->getResults( 0u
+					, 2u
+					, 0u
+					, renderer::QueryResultFlag::eWait
+					, values );
 
-			auto after = std::chrono::high_resolution_clock::now();
-			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
+				// Elapsed time in nanoseconds
+				auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getTimestampPeriod() ) ) };
+				auto after = std::chrono::high_resolution_clock::now();
+				wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
+					, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
+			}
 		}
 		else
 		{
