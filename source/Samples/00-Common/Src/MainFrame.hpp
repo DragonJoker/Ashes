@@ -15,7 +15,7 @@ namespace common
 		MainFrame( wxString const & name
 			, wxString const & rendererName
 			, RendererFactory & factory );
-		virtual ~MainFrame() = default;
+		virtual ~MainFrame();
 
 		void initialise();
 		void cleanup();
@@ -24,18 +24,21 @@ namespace common
 		void updateFps( std::chrono::microseconds const & duration );
 
 	private:
-		virtual wxPanel * doCreatePanel( wxSize const & size, renderer::Renderer const & renderer ) = 0;
+		virtual RenderPanel * doCreatePanel( wxSize const & size, renderer::Renderer const & renderer ) = 0;
 
 		wxDECLARE_EVENT_TABLE();
-		void OnClose( wxCloseEvent & event );
+		void onClose( wxCloseEvent & event );
+		void onTimer( wxTimerEvent & event );
+		void onSize( wxSizeEvent & event );
 
 	private:
 		static size_t constexpr FrameSamplesCount = 1000;
+		wxTimer * m_timer{ nullptr };
 		wxString m_name;
 		wxString m_rendererName;
 		renderer::RendererPtr m_renderer;
 		RendererFactory & m_factory;
-		wxPanel * m_panel{ nullptr };
+		RenderPanel * m_panel{ nullptr };
 		std::array< std::chrono::microseconds, FrameSamplesCount > m_cpuFramesTimes;
 		std::array< std::chrono::microseconds, FrameSamplesCount > m_gpuFramesTimes;
 		uint32_t m_frameIndex{ 0 };

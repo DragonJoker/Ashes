@@ -23,6 +23,12 @@ namespace common
 	static uint32_t constexpr MAX_TEXTURES = 6u;
 	static uint32_t constexpr MAX_LIGHTS = 10u;
 
+	struct TexturedVertexData
+	{
+		renderer::Vec4 position;
+		renderer::Vec2 uv;
+	};
+
 	/**
 	*\~english
 	*\name Loaded data.
@@ -198,4 +204,7 @@ namespace common
 
 	class Application;
 	class MainFrame;
+	class OpaqueRendering;
+	class RenderPanel;
+	class TransparentRendering;
 }

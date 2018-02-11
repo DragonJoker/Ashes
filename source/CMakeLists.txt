@@ -86,6 +86,7 @@ include_directories(
 	${CMAKE_BINARY_DIR}/Renderer/Renderer
 	${CMAKE_SOURCE_DIR}/Core
 	${CMAKE_SOURCE_DIR}/Renderer
+	${CMAKE_SOURCE_DIR}/external/imgui
 )
 
 add_subdirectory( Core )
