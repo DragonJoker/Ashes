@@ -59,7 +59,7 @@ namespace vkapp
 			return std::vector< renderer::PixelFormat >
 			{
 				depthView.getFormat(),
-				renderer::PixelFormat::eL32F,
+				renderer::PixelFormat::eR32F,
 				renderer::PixelFormat::eRGBA32F,
 				renderer::PixelFormat::eRGBA32F,
 				renderer::PixelFormat::eRGBA32F,
@@ -424,7 +424,7 @@ namespace vkapp
 	{
 		static renderer::PixelFormat const formats[]
 		{
-			renderer::PixelFormat::eL32F,
+			renderer::PixelFormat::eR32F,
 			utils::PixelFormat::eRGBA32F,
 			utils::PixelFormat::eRGBA32F,
 			utils::PixelFormat::eRGBA32F,

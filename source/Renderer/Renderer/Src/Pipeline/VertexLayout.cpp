@@ -4,6 +4,8 @@ See LICENSE file in root folder.
 */
 #include "Pipeline/VertexLayout.hpp"
 
+#include "Shader/Attribute.hpp"
+
 namespace renderer
 {
 	VertexLayout::VertexLayout( uint32_t bindingSlot
@@ -13,5 +15,16 @@ namespace renderer
 		, m_stride{ stride }
 		, m_inputRate{ inputRate }
 	{
+	}
+
+	Attribute VertexLayout::createAttribute( uint32_t location
+		, AttributeFormat format
+		, uint32_t offset )
+	{
+		m_attributes.emplace_back( *this
+			, format
+			, location
+			, offset );
+		return m_attributes.back();
 	}
 }

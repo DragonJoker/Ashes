@@ -15,7 +15,10 @@
 namespace common
 {
 	static wxSize const WindowSize{ 800, 600 };
-	using RendererFactory = utils::Factory< renderer::Renderer, std::string, renderer::RendererPtr >;
+	using RendererFactory = utils::Factory< renderer::Renderer
+		, std::string
+		, renderer::RendererPtr
+		, std::function< renderer::RendererPtr( bool ) > >;
 	/**
 	*\~english
 	*\brief

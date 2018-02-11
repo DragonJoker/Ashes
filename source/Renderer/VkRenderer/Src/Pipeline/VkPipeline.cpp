@@ -91,18 +91,18 @@ namespace vk_renderer
 
 					for ( auto i = 0u; i < 4u; ++i )
 					{
-						auto attrib = Attribute{ vb.get()
+						auto attrib = renderer::Attribute{ vb.get()
 							, renderer::AttributeFormat::eVec4f
 							, location
 							, offset };
-						vertexAttributeDescriptions.emplace_back( attrib );
+						vertexAttributeDescriptions.emplace_back( convert( attrib ) );
 						++location;
 						offset += 16u;
 					}
 				}
 				else
 				{
-					vertexAttributeDescriptions.emplace_back( attribute );
+					vertexAttributeDescriptions.emplace_back( convert( attribute ) );
 				}
 			}
 		}

@@ -833,7 +833,7 @@ namespace renderer
 		*\return
 		*	Le nombre de nanosecondes qu'il faut pour que la valeur d'un timestamp soit incrémentée de 1.
 		*/
-		inline uint32_t getTimestampPeriod()const
+		inline float getTimestampPeriod()const
 		{
 			return m_timestampPeriod;
 		}
@@ -871,7 +871,7 @@ namespace renderer
 		CommandPoolPtr m_computeCommandPool;
 		CommandPoolPtr m_graphicsCommandPool;
 		std::string m_version;
-		uint32_t m_timestampPeriod;
+		float m_timestampPeriod;
 	};
 }
 

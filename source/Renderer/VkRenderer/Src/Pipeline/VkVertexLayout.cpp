@@ -16,16 +16,4 @@ namespace vk_renderer
 		}
 	{
 	}
-
-	renderer::AttributeBase VertexLayout::createAttribute( uint32_t location
-		, renderer::AttributeFormat format
-		, uint32_t offset )
-	{
-		m_attributes.emplace_back( *this
-			, format
-			, location
-			, offset );
-		assert( m_bindingDescription.stride >= offset + getSize( format ) );
-		return m_attributes.back();
-	}
 }

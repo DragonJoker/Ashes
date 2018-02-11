@@ -29,7 +29,11 @@ namespace common
 
 		try
 		{
-			m_renderer = m_factory.create( m_rendererName.ToStdString() );
+#if !defined( NDEBUG )
+			m_renderer = m_factory.create( m_rendererName.ToStdString(), true );
+#else
+			m_renderer = m_factory.create( m_rendererName.ToStdString(), false );
+#endif
 
 			std::cout << "Renderer instance created." << std::endl;
 			m_panel = doCreatePanel( WindowSize, *m_renderer );

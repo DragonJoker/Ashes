@@ -18,7 +18,8 @@ namespace renderer
 		*	Constructeur, initialise l'instance de renderer.
 		*/
 		Renderer( ClipDirection clipDirection
-			, std::string const & name );
+			, std::string const & name
+			, bool enableValidation );
 
 	public:
 		/**
@@ -48,6 +49,18 @@ namespace renderer
 		/**
 		*\~english
 		*\return
+		*	The validation activation status.
+		*\~french
+		*\return
+		*	Le statut d'activation de la validation.
+		*/
+		inline bool isValidationEnabled()const
+		{
+			return m_enableValidation;
+		}
+		/**
+		*\~english
+		*\return
 		*	The clip direction for the rendering API.
 		*\~french
 		*\return
@@ -73,6 +86,7 @@ namespace renderer
 	private:
 		ClipDirection m_clipDirection;
 		std::string m_name;
+		bool m_enableValidation;
 	};
 }
 

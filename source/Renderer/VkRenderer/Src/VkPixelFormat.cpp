@@ -6,32 +6,23 @@ namespace vk_renderer
 	{
 		switch ( format )
 		{
-		case renderer::PixelFormat::eL8:
+		case renderer::PixelFormat::eR8:
 			return VK_FORMAT_R8_UINT;
 
-		case renderer::PixelFormat::eL32F:
+		case renderer::PixelFormat::eR32F:
 			return VK_FORMAT_R32_SFLOAT;
 
-		case renderer::PixelFormat::eL8A8:
+		case renderer::PixelFormat::eR8G8:
 			return VK_FORMAT_R8G8_UINT;
 
 		case renderer::PixelFormat::eR8G8B8:
 			return VK_FORMAT_R8G8B8_UINT;
-
-		case renderer::PixelFormat::eRGB565:
-			return VK_FORMAT_R5G6B5_UNORM_PACK16;
 
 		case renderer::PixelFormat::eR8G8B8A8:
 			return VK_FORMAT_R8G8B8A8_UNORM;
 
 		case renderer::PixelFormat::eB8G8R8A8:
 			return VK_FORMAT_B8G8R8A8_UNORM;
-
-		case renderer::PixelFormat::eRGBA5551:
-			return VK_FORMAT_R5G5B5A1_UNORM_PACK16;
-
-		case renderer::PixelFormat::eRGBA4444:
-			return VK_FORMAT_R4G4B4A4_UNORM_PACK16;
 
 		case renderer::PixelFormat::eRGBA32F:
 			return VK_FORMAT_R32G32B32A32_SFLOAT;
@@ -59,31 +50,22 @@ namespace vk_renderer
 		switch ( format )
 		{
 		case VK_FORMAT_R8_UINT:
-			return renderer::PixelFormat::eL8;
+			return renderer::PixelFormat::eR8;
 
 		case VK_FORMAT_R32_SFLOAT:
-			return renderer::PixelFormat::eL32F;
+			return renderer::PixelFormat::eR32F;
 
 		case VK_FORMAT_R8G8_UINT:
-			return renderer::PixelFormat::eL8A8;
+			return renderer::PixelFormat::eR8G8;
 
 		case VK_FORMAT_R8G8B8_UINT:
 			return renderer::PixelFormat::eR8G8B8;
-
-		case VK_FORMAT_R5G6B5_UNORM_PACK16:
-			return renderer::PixelFormat::eRGB565;
 
 		case VK_FORMAT_R8G8B8A8_UNORM:
 			return renderer::PixelFormat::eR8G8B8A8;
 
 		case VK_FORMAT_B8G8R8A8_UNORM:
 			return renderer::PixelFormat::eB8G8R8A8;
-
-		case VK_FORMAT_R5G5B5A1_UNORM_PACK16:
-			return renderer::PixelFormat::eRGBA5551;
-
-		case VK_FORMAT_R4G4B4A4_UNORM_PACK16:
-			return renderer::PixelFormat::eRGBA4444;
 
 		case VK_FORMAT_R32G32B32A32_SFLOAT:
 			return renderer::PixelFormat::eRGBA32F;

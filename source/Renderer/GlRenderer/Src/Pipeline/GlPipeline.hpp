@@ -4,8 +4,8 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___VkRenderer_Pipeline_HPP___
-#define ___VkRenderer_Pipeline_HPP___
+#ifndef ___GlRenderer_Pipeline_HPP___
+#define ___GlRenderer_Pipeline_HPP___
 #pragma once
 
 #include "GlRendererPrerequisites.hpp"
@@ -46,7 +46,7 @@ namespace gl_renderer
 		*	La topologie d'affichage des sommets affichés via ce pipeline.
 		*/
 		Pipeline( Device const & device
-			, renderer::PipelineLayout const & layout
+			, PipelineLayout const & layout
 			, renderer::ShaderProgram const & program
 			, renderer::VertexLayoutCRefArray const & vertexLayouts
 			, renderer::RenderPass const & renderPass
@@ -171,7 +171,7 @@ namespace gl_renderer
 		*\return
 		*	Le PipelineLayout.
 		*/
-		inline renderer::PipelineLayout const & getLayout()const
+		inline PipelineLayout const & getLayout()const
 		{
 			return m_layout;
 		}
@@ -186,8 +186,10 @@ namespace gl_renderer
 
 	private:
 		Device const & m_device;
-		renderer::PipelineLayout const & m_layout;
+		PipelineLayout const & m_layout;
 		ShaderProgram const & m_program;
+		renderer::VertexLayoutCRefArray m_vertexLayouts;
+		renderer::RenderPass const & m_renderPass;
 		renderer::ColourBlendState m_cbState;
 		renderer::RasterisationState m_rsState;
 		renderer::DepthStencilState m_dsState;

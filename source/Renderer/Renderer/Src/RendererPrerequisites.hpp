@@ -68,8 +68,6 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	template< typename T >
-	class Attribute;
-	template< typename T >
 	class Buffer;
 	template< typename T >
 	class UniformBuffer;
@@ -89,7 +87,7 @@ namespace renderer
 	struct PushConstantRange;
 	struct RenderPassAttachment;
 
-	class AttributeBase;
+	class Attribute;
 	class BackBuffer;
 	class BufferBase;
 	class BufferMemoryBarrier;
@@ -159,8 +157,6 @@ namespace renderer
 	*/
 	/**\{*/
 	template< typename T >
-	using AttributePtr = std::unique_ptr< Attribute< T > >;
-	template< typename T >
 	using BufferPtr = std::unique_ptr< Buffer< T > >;
 	template< typename T >
 	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBuffer< T > >;
@@ -171,7 +167,7 @@ namespace renderer
 	template< typename T >
 	using ShaderStorageBufferPtr = std::unique_ptr< ShaderStorageBuffer< T > >;
 
-	using AttributeBasePtr = std::unique_ptr< AttributeBase >;
+	using AttributeBasePtr = std::unique_ptr< Attribute >;
 	using BufferBasePtr = std::unique_ptr< BufferBase >;
 	using BufferViewPtr = std::unique_ptr< BufferView >;
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
@@ -202,6 +198,7 @@ namespace renderer
 	using VertexLayoutPtr = std::unique_ptr< VertexLayout >;
 	using UniformBufferBasePtr = std::unique_ptr< UniformBufferBase >;
 
+	using AttributeArray = std::vector< Attribute >;
 	using ClearValueArray = std::vector< ClearValue >;
 	using ColourBlendStateAttachmentArray = std::vector< ColourBlendStateAttachment >;
 	using DescriptorSetLayoutBindingArray = std::vector< DescriptorSetLayoutBinding >;
@@ -241,19 +238,6 @@ namespace renderer
 	using TextureViewCRefArray = std::vector< TextureViewCRef >;
 	using VertexLayoutCRefArray = std::vector< VertexLayoutCRef >;
 	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
-	/**\}*/
-	/**
-	*\name Typedefs d'attributs de sommets.
-	*/
-	/**\{*/
-	using FloatAttribute = Attribute< float >;
-	using Vec2Attribute = Attribute< Vec2 >;
-	using Vec3Attribute = Attribute< Vec3 >;
-	using Vec4Attribute = Attribute< Vec4 >;
-	using FloatAttributePtr = AttributePtr< float >;
-	using Vec2AttributePtr = AttributePtr< Vec2 >;
-	using Vec3AttributePtr = AttributePtr< Vec3 >;
-	using Vec4AttributePtr = AttributePtr< Vec4 >;
 	/**\}*/
 	/**
 	*\name Signaux.

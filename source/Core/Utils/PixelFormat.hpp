@@ -1,5 +1,5 @@
 /*
-This file belongs to VkLib.
+This file belongs to RendererLib.
 See LICENSE file in root folder
 */
 #pragma once
@@ -9,41 +9,64 @@ See LICENSE file in root folder
 namespace utils
 {
 	/**
+	*\~english
+	*\brief
+	*	Supported pixel formats enumeration.
+	*\~french
 	*\brief
 	*	Enumération des formats de pixels de texture supportés.
 	*/
 	enum class PixelFormat
 	{
-		//! Luminance 8 bits.
-		eL8,
-		//! Luminance 32 bits flottant.
-		eL32F,
-		//! Luminance 8 bits + Alpha 8 bits.
-		eL8A8,
-		//! RGB avec 8 bits par composante.
+		//!\~english	1 integer component on 8 bits.
+		//!\~french		1 composante entière sur 8 bits.
+		eR8,
+		//!\~english	1 floating point component on 32 bits.
+		//!\~french		1 composante flottante sur 32 bits.
+		eR32F,
+		//!\~english	2 integer components on 8 bits.
+		//!\~french		2 composantes entières sur 8 bits.
+		eR8G8,
+		//!\~english	2 floating point components on 32 bits.
+		//!\~french		2 composantes flottantes sur 32 bits.
+		eRG32F,
+		//!\~english	3 integer components on 8 bits.
+		//!\~french		3 composantes entières sur 8 bits.
 		eR8G8B8,
-		//! RGB sur 16 bits.
-		eRGB565,
-		//! RGBA avec 8 bits par composante.
+		//!\~english	3 floating point components on 32 bits.
+		//!\~french		3 composantes flottantes sur 32 bits.
+		eRGB32F,
+		//!\~english	4 integer components on 8 bits, RGBA.
+		//!\~french		4 composantes entières sur 8 bits, RGBA.
 		eR8G8B8A8,
-		//! BGRA avec 8 bits par composante.
+		//!\~english	4 integer components on 8 bits, BGRA.
+		//!\~french		4 composantes entières sur 8 bits, BGRA.
 		eB8G8R8A8,
-		//! RGBA sur 16 bits.
-		eRGBA5551,
-		//! RGBA avec4 bits par composante.
-		eRGBA4444,
-		//! RGBA avec composante 32 bits flottant.
+		//!\~english	4 floating point components on 32 bits.
+		//!\~french		4 composantes flottantes sur 32 bits.
 		eRGBA32F,
-		//! Profondeur en 16 bits.
+		//!\~english	Integer depth on 16 bits.
+		//!\~french		Profondeur entière sur 16 bits.
 		eD16,
-		//! Profondeur en 24 bits, stencil en 8 bits.
+		//!\~english	Integer depth on 24 bits, stencil on 8 bits.
+		//!\~french		Profondeur entière sur 24 bits, stencil sur 8 bits.
 		eD24S8,
-		//! Profondeur en flottant 32 bits.
+		//!\~english	Floating point depth on 32 bits.
+		//!\~french		Profondeur flottante sur 32 bits.
 		eD32F,
-		//! Stencil en 8 bits.
+		//!\~english	Stencil on 8 bits.
+		//!\~french		Stencil sur 8 bits.
 		eS8,
 	};
 	/**
+	*\~english
+	*\brief
+	*	Retrieves the byte size of given pixel format.
+	*\param[in] format
+	*	The pixel format.
+	*\return
+	*	The byte size.
+	*\~french
 	*\brief
 	*	Donne le nombre d'octets du format de pixels donné.
 	*\param[in] format
