@@ -1,5 +1,5 @@
 ﻿/*
-This file belongs to VkLib.
+This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #ifndef ___GlRenderer_OpenGLDefines_HPP___
@@ -210,7 +210,11 @@ namespace gl_renderer
 	using PFN_glGetFloatv = void ( GLAPIENTRY * )( GLenum pname, GLfloat * data );
 	using PFN_glGetIntegerv = void ( GLAPIENTRY * )( GLenum pname, GLint * data );
 	using PFN_glGetProgramInfoLog = void ( GLAPIENTRY * )( GLuint program, GLsizei bufSize, GLsizei* length, GLchar* infoLog );
+	using PFN_glGetProgramInterfaceiv = void ( GLAPIENTRY * )( GLuint program, GLenum programInterface, GLenum pname, GLint * params );
 	using PFN_glGetProgramiv = void ( GLAPIENTRY * )( GLuint program, GLenum pname, GLint* param );
+	using PFN_glGetProgramResourceiv = void ( GLAPIENTRY * )( GLuint program, GLenum programInterface, GLuint index, GLsizei propCount, const GLenum * props, GLsizei bufSize, GLsizei * length, GLint * params );
+	using PFN_glGetProgramResourceIndex = GLuint ( GLAPIENTRY * )( GLuint program, GLenum programInterface, const char * name );
+	using PFN_glGetProgramResourceName = void ( GLAPIENTRY * )( GLuint program, GLenum programInterface, GLuint index, GLsizei bufSize, GLsizei * length, char * name );
 	using PFN_glGetQueryObjectui64v = void ( GLAPIENTRY * )( GLuint id, GLenum pname, GLuint64 * params );
 	using PFN_glGetQueryObjectuiv = void ( GLAPIENTRY * )( GLuint id, GLenum pname, GLuint * params );
 	using PFN_glGetShaderInfoLog = void ( GLAPIENTRY * )( GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog );

@@ -175,7 +175,7 @@ namespace gl_renderer
 			return m_context->getVendor();
 		}
 
-		inline std::string const & getRenderer()const
+		inline std::string const & getRendererName()const
 		{
 			return m_context->getRenderer();
 		}

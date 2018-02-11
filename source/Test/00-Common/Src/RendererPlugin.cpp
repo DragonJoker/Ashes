@@ -32,14 +32,14 @@ namespace common
 		}
 
 		auto creator = m_creator;
-		factory.registerType( name, [creator]()
+		factory.registerType( name, [creator]( bool enableValidation )
 			{
-				return renderer::RendererPtr{ creator() };
+				return renderer::RendererPtr{ creator( enableValidation ) };
 			} );
 	}
 
-	renderer::RendererPtr RendererPlugin::create()
+	renderer::RendererPtr RendererPlugin::create( bool enableValidation )
 	{
-		return renderer::RendererPtr{ m_creator() };
+		return renderer::RendererPtr{ m_creator( enableValidation ) };
 	}
 }

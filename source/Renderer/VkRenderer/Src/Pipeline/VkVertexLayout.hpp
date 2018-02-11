@@ -32,12 +32,6 @@ namespace vk_renderer
 			, uint32_t stride
 			, renderer::VertexInputRate inputRate );
 		/**
-		*\copydoc renderer::VertexLayout::createAttribute
-		*/
-		renderer::AttributeBase createAttribute( uint32_t location
-			, renderer::AttributeFormat format
-			, uint32_t offset )override;
-		/**
 		*\~french
 		*\return
 		*	La description des données du tampon.
@@ -49,58 +43,9 @@ namespace vk_renderer
 		{
 			return m_bindingDescription;
 		}
-		/**
-		*\~french
-		*\return
-		*	Le début du tableau d'attributs.
-		*\~english
-		*\return
-		*	The attributes array beginning.
-		*/
-		inline auto begin()const
-		{
-			return m_attributes.begin();
-		}
-		/**
-		*\~french
-		*\return
-		*	Le début du tableau d'attributs.
-		*\~english
-		*\return
-		*	The attributes array beginning.
-		*/
-		inline auto begin()
-		{
-			return m_attributes.begin();
-		}
-		/**
-		*\~french
-		*\return
-		*	La fin du tableau d'attributs.
-		*\~english
-		*\return
-		*	The attributes array end.
-		*/
-		inline auto end()const
-		{
-			return m_attributes.end();
-		}
-		/**
-		*\~french
-		*\return
-		*	La fin du tableau d'attributs.
-		*\~english
-		*\return
-		*	The attributes array end.
-		*/
-		inline auto end()
-		{
-			return m_attributes.end();
-		}
 
 	private:
 		VkVertexInputBindingDescription m_bindingDescription{};
-		AttributeArray m_attributes;
 	};
 }
 

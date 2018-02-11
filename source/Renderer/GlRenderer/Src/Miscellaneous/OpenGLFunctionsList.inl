@@ -1,5 +1,5 @@
 /*
-This file belongs to VkLib.
+This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 
@@ -100,7 +100,11 @@ GL_LIB_FUNCTION( GenQueries )
 GL_LIB_FUNCTION( GenSamplers )
 GL_LIB_FUNCTION( GenerateMipmap )
 GL_LIB_FUNCTION( GetProgramInfoLog )
+GL_LIB_FUNCTION( GetProgramInterfaceiv )
 GL_LIB_FUNCTION( GetProgramiv )
+GL_LIB_FUNCTION( GetProgramResourceiv )
+GL_LIB_FUNCTION( GetProgramResourceIndex )
+GL_LIB_FUNCTION( GetProgramResourceName )
 GL_LIB_FUNCTION( GetQueryObjectui64v )
 GL_LIB_FUNCTION( GetQueryObjectuiv )
 GL_LIB_FUNCTION( GetShaderInfoLog )

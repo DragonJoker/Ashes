@@ -4,7 +4,6 @@ See LICENSE file in root folder.
 */
 #include "Buffer/GlGeometryBuffers.hpp"
 
-#include "Shader/GlAttribute.hpp"
 #include "Buffer/GlBuffer.hpp"
 #include "Pipeline/GlVertexLayout.hpp"
 

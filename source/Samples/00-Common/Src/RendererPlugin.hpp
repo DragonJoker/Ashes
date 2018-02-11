@@ -13,7 +13,7 @@ namespace common
 	class RendererPlugin
 	{
 	private:
-		using CreatorFunction = renderer::Renderer *( * )();
+		using CreatorFunction = renderer::Renderer *( * )( bool );
 
 	public:
 		RendererPlugin( RendererPlugin const & ) = delete;
@@ -23,7 +23,7 @@ namespace common
 
 		RendererPlugin( renderer::DynamicLibrary && library
 			, RendererFactory & factory );
-		renderer::RendererPtr create();
+		renderer::RendererPtr create( bool enableValidation );
 
 	private:
 		renderer::DynamicLibrary m_library;

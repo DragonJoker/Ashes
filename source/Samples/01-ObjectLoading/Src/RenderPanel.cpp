@@ -804,11 +804,8 @@ namespace vkapp
 	{
 		if ( event.GetId() == int( Ids::RenderTimer ) )
 		{
-			auto before = std::chrono::high_resolution_clock::now();
 			doUpdate();
 			doDraw();
-			auto after = std::chrono::high_resolution_clock::now();
-			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
 		}
 	}
 

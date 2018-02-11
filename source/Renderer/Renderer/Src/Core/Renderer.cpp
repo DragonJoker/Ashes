@@ -7,9 +7,11 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	Renderer::Renderer( ClipDirection clipDirection
-		, std::string const & name )
+		, std::string const & name
+		, bool enableValidation )
 		: m_clipDirection{ clipDirection }
 		, m_name{ name }
+		, m_enableValidation{ enableValidation }
 	{
 	}
 }

@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "Core/Device.hpp"
-#include "Shader/AttributeBase.hpp"
+#include "Shader/Attribute.hpp"
 #include "Shader/FormatGetter.hpp"
 
 #include <vector>
@@ -79,9 +79,9 @@ namespace renderer
 		*\param[in] offset
 		*	La position de l'attribut, dans le tampon.
 		*/
-		virtual AttributeBase createAttribute( uint32_t location
+		Attribute createAttribute( uint32_t location
 			, AttributeFormat format
-			, uint32_t offset ) = 0;
+			, uint32_t offset );
 		/**
 		*\~english
 		*\brief
@@ -99,7 +99,7 @@ namespace renderer
 		*	La position de l'attribut dans le tampon.
 		*/
 		template< typename T >
-		inline AttributeBase createAttribute( uint32_t location
+		inline Attribute createAttribute( uint32_t location
 			, uint32_t offset )
 		{
 			return createAttribute( location
@@ -142,8 +142,59 @@ namespace renderer
 		{
 			return m_inputRate;
 		}
+		/**
+		*\~french
+		*\return
+		*	Le début du tableau d'attributs.
+		*\~english
+		*\return
+		*	The attributes array beginning.
+		*/
+		inline auto begin()const
+		{
+			return m_attributes.begin();
+		}
+		/**
+		*\~french
+		*\return
+		*	Le début du tableau d'attributs.
+		*\~english
+		*\return
+		*	The attributes array beginning.
+		*/
+		inline auto begin()
+		{
+			return m_attributes.begin();
+		}
+		/**
+		*\~french
+		*\return
+		*	La fin du tableau d'attributs.
+		*\~english
+		*\return
+		*	The attributes array end.
+		*/
+		inline auto end()const
+		{
+			return m_attributes.end();
+		}
+		/**
+		*\~french
+		*\return
+		*	La fin du tableau d'attributs.
+		*\~english
+		*\return
+		*	The attributes array end.
+		*/
+		inline auto end()
+		{
+			return m_attributes.end();
+		}
 
 	private:
+
+	private:
+		AttributeArray m_attributes;
 		uint32_t m_bindingSlot;
 		uint32_t m_stride;
 		VertexInputRate m_inputRate;
