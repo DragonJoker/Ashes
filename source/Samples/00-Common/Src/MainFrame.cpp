@@ -1,5 +1,6 @@
 #include "MainFrame.hpp"
 #include "Application.hpp"
+#include "RenderPanel.hpp"
 
 #include <wx/sizer.h>
 
@@ -7,6 +8,16 @@
 
 namespace common
 {
+	namespace
+	{
+		enum class Ids
+		{
+			RenderTimer = 42
+		}	Ids;
+
+		static int const TimerTimeMs = 20;
+	}
+
 	MainFrame::MainFrame( wxString const & name
 		, wxString const & rendererName
 		, RendererFactory & factory )
@@ -19,7 +30,13 @@ namespace common
 		, m_name{ name }
 		, m_rendererName{ rendererName }
 		, m_factory{ factory }
+		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 	{
+	}
+
+	MainFrame::~MainFrame()
+	{
+		delete m_timer;
 	}
 
 	void MainFrame::initialise()
@@ -37,6 +54,14 @@ namespace common
 
 			std::cout << "Renderer instance created." << std::endl;
 			m_panel = doCreatePanel( WindowSize, *m_renderer );
+			m_panel->initialise( *m_renderer );
+
+			Connect( int( Ids::RenderTimer )
+				, wxEVT_TIMER
+				, wxTimerEventHandler( MainFrame::onTimer )
+				, nullptr
+				, this );
+			m_timer->Start( TimerTimeMs );
 
 			wxBoxSizer * sizer{ new wxBoxSizer{ wxVERTICAL } };
 			sizer->Add( m_panel, wxSizerFlags{ 1 }.Expand() );
@@ -122,12 +147,43 @@ namespace common
 	}
 
 	wxBEGIN_EVENT_TABLE( MainFrame, wxFrame )
-		EVT_CLOSE( MainFrame::OnClose )
+		EVT_CLOSE( MainFrame::onClose )
 	wxEND_EVENT_TABLE()
 
-	void MainFrame::OnClose( wxCloseEvent & event )
+	void MainFrame::onClose( wxCloseEvent & event )
 	{
 		cleanup();
 		event.Skip( true );
+	}
+
+	void MainFrame::onTimer( wxTimerEvent & event )
+	{
+		if ( event.GetId() == int( Ids::RenderTimer ) )
+		{
+			try
+			{
+				std::chrono::microseconds cpu;
+				std::chrono::microseconds gpu;
+
+				m_panel->update();
+				m_panel->draw( cpu, gpu );
+				updateFps( gpu, cpu );
+			}
+			catch ( std::exception & exc )
+			{
+				m_timer->Stop();
+				wxMessageBox( exc.what()
+					, wxMessageBoxCaptionStr
+					, wxICON_ERROR );
+			}
+		}
+	}
+
+	void MainFrame::onSize( wxSizeEvent & event )
+	{
+		m_timer->Stop();
+		m_panel->resize( event.GetSize() );
+		m_timer->Start( TimerTimeMs );
+		event.Skip();
 	}
 }
