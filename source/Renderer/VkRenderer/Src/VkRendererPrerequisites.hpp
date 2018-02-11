@@ -90,6 +90,7 @@
 #include "Pipeline/VkColourBlendState.hpp"
 #include "Pipeline/VkColourBlendStateAttachment.hpp"
 #include "Pipeline/VkDepthStencilState.hpp"
+#include "Pipeline/VkInputAssemblyState.hpp"
 #include "Pipeline/VkMultisampleState.hpp"
 #include "Pipeline/VkRasterisationState.hpp"
 #include "Pipeline/VkStencilOpState.hpp"

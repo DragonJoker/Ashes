@@ -52,7 +52,7 @@ namespace vk_renderer
 		renderer::PipelinePtr createPipeline( renderer::ShaderProgram const & program
 			, renderer::VertexLayoutCRefArray const & vertexLayouts
 			, renderer::RenderPass const & renderPass
-			, renderer::PrimitiveTopology topology
+			, renderer::InputAssemblyState const & inputAssemblyState
 			, renderer::RasterisationState const & rasterisationState
 			, renderer::ColourBlendState const & colourBlendState )const override;
 		/**

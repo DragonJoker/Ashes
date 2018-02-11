@@ -14,6 +14,7 @@
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
 #include <Pipeline/DepthStencilState.hpp>
+#include <Pipeline/InputAssemblyState.hpp>
 #include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
@@ -342,7 +343,7 @@ namespace vkapp
 						materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_program
 							, { *submeshNode->vertexLayout }
 							, *m_renderPass
-							, renderer::PrimitiveTopology::eTriangleList
+							, { renderer::PrimitiveTopology::eTriangleList }
 							, rasterisationState
 							, blendState );
 						materialNode.pipeline->multisampleState( renderer::MultisampleState{} );

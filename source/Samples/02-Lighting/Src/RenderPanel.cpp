@@ -21,6 +21,7 @@
 #include <Image/TextureView.hpp>
 #include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/DepthStencilState.hpp>
+#include <Pipeline/InputAssemblyState.hpp>
 #include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/Scissor.hpp>
 #include <Pipeline/VertexLayout.hpp>
@@ -391,7 +392,7 @@ namespace vkapp
 				materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_offscreenProgram
 					, { *submeshNode->vertexLayout }
 					, *m_offscreenRenderPass
-					, renderer::PrimitiveTopology::eTriangleList
+					, renderer::InputAssemblyState{}
 					, rasterisationState );
 				materialNode.pipeline->multisampleState( renderer::MultisampleState{} );
 				materialNode.pipeline->depthStencilState( renderer::DepthStencilState{} );
@@ -710,7 +711,7 @@ namespace vkapp
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( *m_mainProgram
 			, { *m_mainVertexLayout }
 			, *m_mainRenderPass
-			, renderer::PrimitiveTopology::eTriangleStrip );
+			, { renderer::PrimitiveTopology::eTriangleStrip } );
 		m_mainPipeline->multisampleState( renderer::MultisampleState{} );
 		m_mainPipeline->finish();
 	}

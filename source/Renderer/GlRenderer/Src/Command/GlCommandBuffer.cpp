@@ -12,6 +12,7 @@ See LICENSE file in root folder.
 #include "Core/GlRenderingResources.hpp"
 #include "Descriptor/GlDescriptorSet.hpp"
 #include "Image/GlTexture.hpp"
+#include "Pipeline/GlComputePipeline.hpp"
 #include "Pipeline/GlPipeline.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
@@ -135,14 +136,14 @@ namespace gl_renderer
 	void CommandBuffer::bindPipeline( renderer::Pipeline const & pipeline
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
-		m_currentPipeline = &pipeline;
+		m_currentPipeline = &static_cast< Pipeline const & >( pipeline );
 		m_commands.emplace_back( std::make_unique< BindPipelineCommand >( m_device, pipeline, bindingPoint ) );
 	}
 
 	void CommandBuffer::bindPipeline( renderer::ComputePipeline const & pipeline
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
-		m_currentComputePipeline = &pipeline;
+		m_currentComputePipeline = &static_cast< ComputePipeline const & >( pipeline );
 		m_commands.emplace_back( std::make_unique< BindComputePipelineCommand >( m_device, pipeline, bindingPoint ) );
 	}
 
@@ -205,7 +206,7 @@ namespace gl_renderer
 			, instCount
 			, firstVertex
 			, firstInstance
-			, m_currentPipeline->getPrimitiveType() ) );
+			, m_currentPipeline->getInputAssemblyState().getTopology() ) );
 	}
 
 	void CommandBuffer::drawIndexed( uint32_t indexCount
@@ -219,7 +220,7 @@ namespace gl_renderer
 			, firstIndex
 			, vertexOffset
 			, firstInstance
-			, m_currentPipeline->getPrimitiveType()
+			, m_currentPipeline->getInputAssemblyState().getTopology()
 			, m_indexType ) );
 	}
 

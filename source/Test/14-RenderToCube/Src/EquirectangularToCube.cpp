@@ -13,6 +13,7 @@
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
 #include <Pipeline/DepthStencilState.hpp>
+#include <Pipeline/InputAssemblyState.hpp>
 #include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/Scissor.hpp>
 #include <Pipeline/VertexLayout.hpp>
@@ -242,7 +243,7 @@ namespace vkapp
 			facePipeline.pipeline = m_pipelineLayout->createPipeline( *m_program
 				, { *m_vertexLayout }
 				, *facePipeline.renderPass
-				, renderer::PrimitiveTopology::eTriangleList );
+				, { renderer::PrimitiveTopology::eTriangleList } );
 			facePipeline.pipeline->multisampleState( renderer::MultisampleState{} );
 			facePipeline.pipeline->viewport( { size[0], size[1], 0, 0 } );
 			facePipeline.pipeline->scissor( { 0, 0, size[0], size[1] } );

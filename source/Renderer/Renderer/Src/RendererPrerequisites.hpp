@@ -110,6 +110,7 @@ namespace renderer
 	class GeometryBuffers;
 	class ImageMemoryBarrier;
 	class ImageSubresourceRange;
+	class InputAssemblyState;
 	class IWindowHandle;
 	class MultisampleState;
 	class Pipeline;
