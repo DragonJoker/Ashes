@@ -215,8 +215,8 @@ namespace gl_renderer
 		Device const & m_device;
 		mutable renderer::CommandBufferUsageFlags m_beginFlags{ 0u };
 		mutable CommandArray m_commands;
-		mutable renderer::Pipeline const * m_currentPipeline{ nullptr };
-		mutable renderer::ComputePipeline const * m_currentComputePipeline{ nullptr };
+		mutable Pipeline const * m_currentPipeline{ nullptr };
+		mutable ComputePipeline const * m_currentComputePipeline{ nullptr };
 		mutable renderer::IndexType m_indexType{ renderer::IndexType::eUInt32 };
 	};
 }

@@ -31,7 +31,7 @@ namespace vk_renderer
 		, renderer::ShaderProgram const & program
 		, renderer::VertexLayoutCRefArray const & vertexLayouts
 		, renderer::RenderPass const & renderPass
-		, renderer::PrimitiveTopology topology
+		, renderer::InputAssemblyState const & inputAssemblyState
 		, renderer::RasterisationState const & rasterisationState
 		, renderer::ColourBlendState const & colourBlendState )
 		: renderer::Pipeline{ device
@@ -39,7 +39,7 @@ namespace vk_renderer
 			, program
 			, vertexLayouts
 			, renderPass
-			, topology
+			, inputAssemblyState
 			, rasterisationState
 			, colourBlendState }
 		, m_device{ device }
@@ -47,7 +47,7 @@ namespace vk_renderer
 		, m_shader{ static_cast< ShaderProgram const & >( program ) }
 		, m_vertexLayouts{ convert( vertexLayouts ) }
 		, m_renderPass{ static_cast< RenderPass const & >( renderPass ) }
-		, m_topology{ convert( topology ) }
+		, m_inputAssemblyState{ convert( inputAssemblyState ) }
 		, m_rasterisationState{ convert( rasterisationState ) }
 		, m_colourBlendStateAttachments{ convert< VkPipelineColorBlendAttachmentState >( colourBlendState.begin(), colourBlendState.end() ) }
 		, m_colourBlendState{ convert( colourBlendState, m_colourBlendStateAttachments ) }
@@ -118,16 +118,6 @@ namespace vk_renderer
 			vertexAttributeDescriptions.data()                            // pVertexAttributeDescriptions
 		};
 
-		// Le format de l'affichage des sommets.
-		VkPipelineInputAssemblyStateCreateInfo inputAssemblyState
-		{
-			VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-			nullptr,
-			0,                                                            // flags
-			m_topology,                                                   // topology
-			VK_FALSE                                                      // primitiveRestartEnable
-		};
-
 		// Le viewport.
 		VkPipelineViewportStateCreateInfo viewportState
 		{
@@ -175,7 +165,7 @@ namespace vk_renderer
 			static_cast< uint32_t >( shaderStage.size() ),                // stageCount
 			shaderStage.data(),                                           // pStages
 			&vertexInputState,                                            // pVertexInputState;
-			&inputAssemblyState,                                          // pInputAssemblyState
+			&m_inputAssemblyState,                                        // pInputAssemblyState
 			m_tessellationState                                           // pTessellationState
 				? m_tessellationState.get()
 				: nullptr,

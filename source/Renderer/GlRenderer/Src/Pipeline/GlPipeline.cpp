@@ -21,7 +21,7 @@ namespace gl_renderer
 		, renderer::ShaderProgram const & program
 		, renderer::VertexLayoutCRefArray const & vertexLayouts
 		, renderer::RenderPass const & renderPass
-		, renderer::PrimitiveTopology topology
+		, renderer::InputAssemblyState const & inputAssemblyState
 		, renderer::RasterisationState const & rasterisationState
 		, renderer::ColourBlendState const & colourBlendState )
 		: renderer::Pipeline{ device
@@ -29,7 +29,7 @@ namespace gl_renderer
 			, program
 			, vertexLayouts
 			, renderPass
-			, topology
+			, inputAssemblyState
 			, rasterisationState
 			, colourBlendState }
 		, m_device{ device }
@@ -37,6 +37,7 @@ namespace gl_renderer
 		, m_program{ static_cast< ShaderProgram const & >( program ) }
 		, m_vertexLayouts{ vertexLayouts }
 		, m_renderPass{ renderPass }
+		, m_iaState{ inputAssemblyState }
 		, m_cbState{ colourBlendState }
 		, m_rsState{ rasterisationState }
 		, m_dsState{ 0u, false, true, renderer::CompareOp::eLess,  }

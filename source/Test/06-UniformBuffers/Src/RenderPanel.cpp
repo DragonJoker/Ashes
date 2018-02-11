@@ -19,6 +19,7 @@
 #include <Descriptor/DescriptorSetPool.hpp>
 #include <Image/Texture.hpp>
 #include <Miscellaneous/QueryPool.hpp>
+#include <Pipeline/InputAssemblyState.hpp>
 #include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/Scissor.hpp>
 #include <Pipeline/VertexLayout.hpp>
@@ -307,7 +308,7 @@ namespace vkapp
 		m_pipeline = m_pipelineLayout->createPipeline( *m_program
 			, { *m_vertexLayout }
 			, *m_renderPass
-			, renderer::PrimitiveTopology::eTriangleStrip );
+			, { renderer::PrimitiveTopology::eTriangleStrip } );
 		m_pipeline->multisampleState( renderer::MultisampleState{} );
 		m_pipeline->finish();
 	}

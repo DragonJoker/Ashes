@@ -18,7 +18,7 @@ namespace gl_renderer
 	renderer::PipelinePtr PipelineLayout::createPipeline( renderer::ShaderProgram const & program
 		, renderer::VertexLayoutCRefArray const & vertexLayouts
 		, renderer::RenderPass const & renderPass
-		, renderer::PrimitiveTopology topology
+		, renderer::InputAssemblyState const & inputAssemblyState
 		, renderer::RasterisationState const & rasterisationState
 		, renderer::ColourBlendState const & colourBlendState )const
 	{
@@ -27,7 +27,7 @@ namespace gl_renderer
 			, program
 			, vertexLayouts
 			, renderPass
-			, topology
+			, inputAssemblyState
 			, rasterisationState
 			, colourBlendState );
 	}

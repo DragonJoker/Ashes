@@ -95,7 +95,7 @@ namespace renderer
 		virtual PipelinePtr createPipeline( ShaderProgram const & program
 			, VertexLayoutCRefArray const & vertexLayouts
 			, RenderPass const & renderPass
-			, PrimitiveTopology topology
+			, InputAssemblyState const & inputAssemblyState
 			, RasterisationState const & rasterisationState = RasterisationState{}
 			, ColourBlendState const & colourBlendState = ColourBlendState::createDefault() )const = 0;
 		/**
