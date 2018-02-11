@@ -296,7 +296,7 @@ namespace renderer
 			, uint32_t size
 			, MemoryMapFlags flags )const
 		{
-			reinterpret_cast< T * >( m_buffer->lock( uint32_t( offset * sizeof( T ) )
+			return reinterpret_cast< T * >( m_buffer->lock( uint32_t( offset * sizeof( T ) )
 				, uint32_t( size * sizeof( T ) )
 				, flags ) );
 		}
