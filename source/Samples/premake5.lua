@@ -19,7 +19,8 @@ for i, folder in ipairs( folders ) do
 				path.join( sourceDir, "Renderer", "Renderer", "Src" ),
 				path.join( binaryDir, "Renderer", "Renderer", "Src" ),
 				path.join( currentBinaryDir, "Src" ),
-				path.join( currentSourceDir, "Src" )
+				path.join( currentSourceDir, "Src" ),
+				path.join( sourceDir, "external", "imgui" )
 			}
 			links{
 				"Utils",
@@ -28,6 +29,22 @@ for i, folder in ipairs( folders ) do
 			postbuildcommands {
 				"{COPY} " .. path.join( sourceDir, "Samples", "Assets" ) .. " " .. path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", assetsDir, "Assets" )
 			}
+			shadersFolder = path.join( sourceDir, "Samples", folder, "Shaders" )
+			if ( os.isdir( shadersFolder ) ) then
+				postbuildcommands {
+					"{COPY} " .. shadersFolder .. " " .. path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", assetsDir, "Sample-" .. folder, "Shaders" )
+				}
+			end
+			forceincludes( "PrecompiledHeader.hpp" )
+			pchheader( "PrecompiledHeader.hpp" )
+			pchsource( folder .. "/Src/PrecompiledHeader.cpp" )
+			files{ currentSourceDir .. "/Src/**.hpp",
+				currentSourceDir .. "/Src/**.inl",
+				currentSourceDir .. "/Src/**.cpp",
+				path.join( sourceDir, "external", "imgui", "imgui.cpp" ),
+				path.join( sourceDir, "external", "imgui", "imgui_draw.cpp" ),
+			}
+
 		else
 			kind( "WindowedApp" )
 			targetdir( path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", executableDir ) )
@@ -37,7 +54,8 @@ for i, folder in ipairs( folders ) do
 				path.join( binaryDir, "Renderer", "Renderer", "Src" ),
 				path.join( sourceDir, "Samples", "00-Common", "Src" ),
 				path.join( currentBinaryDir, "Src" ),
-				path.join( currentSourceDir, "Src" )
+				path.join( currentSourceDir, "Src" ),
+				path.join( sourceDir, "external", "imgui" )
 			}
 			links{
 				"Utils",
@@ -53,12 +71,12 @@ for i, folder in ipairs( folders ) do
 			forceincludes( "PrecompiledHeader.hpp" )
 			pchheader( "PrecompiledHeader.hpp" )
 			pchsource( folder .. "/Src/PrecompiledHeader.cpp" )
-		end
+			files{ currentSourceDir .. "/Src/**.hpp",
+				currentSourceDir .. "/Src/**.inl",
+				currentSourceDir .. "/Src/**.cpp"
+			}
 
-		files{ currentSourceDir .. "/Src/**.hpp",
-			currentSourceDir .. "/Src/**.inl",
-			currentSourceDir .. "/Src/**.cpp"
-		}
+		end
 
 		vpaths{ ["Header Files"] = "**.hpp" }
 		vpaths{ ["Header Files"] = "**.inl" }
