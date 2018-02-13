@@ -306,6 +306,47 @@ namespace gl_renderer
 			}
 		}
 
+		bool areCompatible( renderer::AttributeFormat lhs, renderer::AttributeFormat rhs )
+		{
+			if ( lhs == rhs )
+			{
+				return true;
+			}
+
+			switch ( lhs )
+			{
+			case renderer::AttributeFormat::eVec4f:
+			case renderer::AttributeFormat::eVec4i:
+			case renderer::AttributeFormat::eVec4ui:
+			case renderer::AttributeFormat::eColour:
+				return rhs == renderer::AttributeFormat::eVec4f
+					|| rhs == renderer::AttributeFormat::eVec4i
+					|| rhs == renderer::AttributeFormat::eVec4ui
+					|| rhs == renderer::AttributeFormat::eColour;
+			case renderer::AttributeFormat::eVec3f:
+			case renderer::AttributeFormat::eVec3i:
+			case renderer::AttributeFormat::eVec3ui:
+				return rhs == renderer::AttributeFormat::eVec3f
+					|| rhs == renderer::AttributeFormat::eVec3i
+					|| rhs == renderer::AttributeFormat::eVec3ui;
+			case renderer::AttributeFormat::eVec2f:
+			case renderer::AttributeFormat::eVec2i:
+			case renderer::AttributeFormat::eVec2ui:
+				return rhs == renderer::AttributeFormat::eVec3f
+					|| rhs == renderer::AttributeFormat::eVec3i
+					|| rhs == renderer::AttributeFormat::eVec3ui;
+			case renderer::AttributeFormat::eInt:
+			case renderer::AttributeFormat::eUInt:
+			case renderer::AttributeFormat::eFloat:
+				return rhs == renderer::AttributeFormat::eInt
+					|| rhs == renderer::AttributeFormat::eUInt
+					|| rhs == renderer::AttributeFormat::eFloat;
+			default:
+				assert( false );
+				return false;
+			}
+		}
+
 		renderer::AttributeFormat convertAttribute( GlslAttributeType type )
 		{
 			switch ( type )
@@ -479,7 +520,7 @@ namespace gl_renderer
 						, attributes.end()
 						, [&values]( AttrSpec const & lookup )
 						{
-							return lookup.format == convertAttribute( GlslAttributeType( values[0] ) )
+							return areCompatible( lookup.format, convertAttribute( GlslAttributeType( values[0] ) ) )
 								&& lookup.location == values[2];
 						} );
 

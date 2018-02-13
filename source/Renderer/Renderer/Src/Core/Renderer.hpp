@@ -73,10 +73,10 @@ namespace renderer
 		/**
 		*\~english
 		*\return
-		*	The clip direction for the rendering API.
+		*	The internal renderer name.
 		*\~french
 		*\return
-		*	La direction de clipping pour l'API de rendu.
+		*	La nom interne du renderer.
 		*/
 		inline std::string const & getName()const
 		{
