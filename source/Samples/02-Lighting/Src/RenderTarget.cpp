@@ -1,7 +1,10 @@
 #include "RenderTarget.hpp"
 
-#include "OpaqueRendering.hpp"
-#include "TransparentRendering.hpp"
+#include "NodesRenderer.hpp"
+
+#include <FileUtils.hpp>
+#include <OpaqueRendering.hpp>
+#include <TransparentRendering.hpp>
 
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/UniformBuffer.hpp>
@@ -10,6 +13,28 @@
 
 namespace vkapp
 {
+	namespace
+	{
+		renderer::ShaderProgramPtr doCreateProgram( renderer::Device const & device )
+		{
+			renderer::ShaderProgramPtr result = device.createShaderProgram();
+			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+
+			if ( !wxFileExists( shadersFolder / "offscreen.vert" )
+				|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			result->createModule( common::dumpTextFile( shadersFolder / "offscreen.vert" )
+				, renderer::ShaderStageFlag::eVertex );
+			result->createModule( common::dumpTextFile( shadersFolder / "offscreen.frag" )
+				, renderer::ShaderStageFlag::eFragment );
+
+			return result;
+		}
+	}
+
 	RenderTarget::RenderTarget( renderer::Device const & device
 		, renderer::UIVec2 const & size
 		, common::Object && object
@@ -63,15 +88,18 @@ namespace vkapp
 		, common::Object const & submeshes
 		, common::TextureNodePtrArray const & textureNodes )
 	{
-		return std::make_unique< OpaqueRendering >( device
-			, stagingBuffer
-			, colourView
-			, depthView
+		return std::make_unique< common::OpaqueRendering >( std::make_unique< NodesRenderer >( device
+				, doCreateProgram( device )
+				, std::vector< renderer::PixelFormat >{ colourView.getFormat(), depthView.getFormat() }
+				, true
+				, true
+				, *m_matrixUbo
+				, *m_objectUbo
+				, *m_lightsUbo )
 			, submeshes
-			, textureNodes
-			, *m_matrixUbo
-			, *m_objectUbo
-			, *m_lightsUbo );
+			, stagingBuffer
+			, renderer::TextureViewCRefArray{ colourView, depthView }
+			, textureNodes );
 	}
 
 	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( renderer::Device const & device
@@ -81,15 +109,18 @@ namespace vkapp
 		, common::Object const & submeshes
 		, common::TextureNodePtrArray const & textureNodes )
 	{
-		return std::make_unique< TransparentRendering >( device
-			, stagingBuffer
-			, colourView
-			, depthView
+		return std::make_unique< common::TransparentRendering >( std::make_unique< NodesRenderer >( device
+				, doCreateProgram( device )
+				, std::vector< renderer::PixelFormat >{ colourView.getFormat(), depthView.getFormat() }
+				, false
+				, false
+				, *m_matrixUbo
+				, *m_objectUbo
+				, *m_lightsUbo )
 			, submeshes
-			, textureNodes
-			, *m_matrixUbo
-			, *m_objectUbo
-			, *m_lightsUbo );
+			, stagingBuffer
+			, renderer::TextureViewCRefArray{ colourView, depthView }
+			, textureNodes );
 	}
 
 	void RenderTarget::doUpdateMatrixUbo( renderer::UIVec2 const & size )

@@ -211,10 +211,12 @@ namespace common
 
 	class Application;
 	class MainFrame;
+	class NodesRenderer;
 	class OpaqueRendering;
 	class RenderPanel;
 	class TransparentRendering;
 
+	using NodesRendererPtr = std::unique_ptr< NodesRenderer >;
 	using OpaqueRenderingPtr = std::unique_ptr< OpaqueRendering >;
 	using TransparentRenderingPtr = std::unique_ptr< TransparentRendering >;
 }

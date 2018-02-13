@@ -1,40 +1,34 @@
-#include "TransparentRendering.hpp"
+#include "NodesRenderer.hpp"
 
 namespace vkapp
 {
-	TransparentRendering::TransparentRendering( renderer::Device const & device
-		, renderer::StagingBuffer & stagingBuffer
-		, renderer::TextureView const & colourView
-		, renderer::TextureView const & depthView
-		, common::Object const & submeshes
-		, common::TextureNodePtrArray const & textureNodes
+	NodesRenderer::NodesRenderer( renderer::Device const & device
+		, renderer::ShaderProgramPtr && program
+		, std::vector< renderer::PixelFormat > const & formats
+		, bool clearViews
+		, bool opaqueNodes
 		, renderer::UniformBuffer< renderer::Mat4 > const & matrixUbo
 		, renderer::UniformBuffer< renderer::Mat4 > const & objectUbo
 		, renderer::UniformBuffer< common::LightsData > const & lightsUbo )
-		: common::TransparentRendering{ device
-			, AppName.ToStdString()
-			, "offscreen"
-			, colourView.getFormat()
-			, depthView.getFormat() }
+		: common::NodesRenderer{ device
+			, std::move( program )
+			, formats
+			, clearViews
+			, opaqueNodes }
 		, m_matrixUbo{ matrixUbo }
 		, m_objectUbo{ objectUbo }
 		, m_lightsUbo{ lightsUbo }
 	{
-		doInitialise( submeshes
-			, stagingBuffer
-			, colourView
-			, depthView
-			, textureNodes );
 	}
 
-	void TransparentRendering::doFillDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )
+	void NodesRenderer::doFillDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )
 	{
 		bindings.emplace_back( 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex );
 		bindings.emplace_back( 2u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex );
 		bindings.emplace_back( 3u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment );
 	}
 
-	void TransparentRendering::doFillDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
+	void NodesRenderer::doFillDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
 		, renderer::DescriptorSet & descriptorSet )
 	{
 		descriptorSet.createBinding( descriptorLayout.getBinding( 1u )
