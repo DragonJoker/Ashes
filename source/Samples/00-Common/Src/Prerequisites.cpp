@@ -90,4 +90,16 @@ namespace common
 			1.0f
 		};
 	}
+
+	std::vector< renderer::PixelFormat > getFormats( renderer::TextureViewCRefArray const & views )
+	{
+		std::vector< renderer::PixelFormat > result;
+
+		for ( auto view : views )
+		{
+			result.push_back( view.get().getFormat() );
+		}
+
+		return result;
+	}
 }

@@ -71,8 +71,8 @@ namespace common
 			m_size = size;
 			doUpdateRenderViews();
 			doResize( size );
-			m_opaque->update( { *m_colourView, *m_depthView } );
-			m_transparent->update( { *m_colourView, *m_depthView } );
+			m_opaque->update( *this );
+			m_transparent->update( *this );
 		}
 	}
 
@@ -95,14 +95,12 @@ namespace common
 	{
 		m_opaque = doCreateOpaqueRendering( m_device
 			, *m_stagingBuffer
-			, *m_colourView
-			, *m_depthView
+			, { *m_depthView, *m_colourView }
 			, m_object
 			, m_textureNodes );
 		m_transparent = doCreateTransparentRendering( m_device
 			, *m_stagingBuffer
-			, *m_colourView
-			, *m_depthView
+			, { *m_depthView, *m_colourView }
 			, m_object
 			, m_textureNodes );
 	}

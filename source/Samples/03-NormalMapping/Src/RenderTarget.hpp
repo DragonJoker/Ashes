@@ -20,14 +20,12 @@ namespace vkapp
 		virtual void doResize( renderer::UIVec2 const & size )override;
 		common::OpaqueRenderingPtr doCreateOpaqueRendering( renderer::Device const & device
 			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureView const & colourView
-			, renderer::TextureView const & depthView
+			, renderer::TextureViewCRefArray const & views
 			, common::Object const & submeshes
 			, common::TextureNodePtrArray const & textureNodes )override;
 		common::TransparentRenderingPtr doCreateTransparentRendering( renderer::Device const & device
 			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureView const & colourView
-			, renderer::TextureView const & depthView
+			, renderer::TextureViewCRefArray const & views
 			, common::Object const & submeshes
 			, common::TextureNodePtrArray const & textureNodes )override;
 		void doUpdateMatrixUbo( renderer::UIVec2 const & size );

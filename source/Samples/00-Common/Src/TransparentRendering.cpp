@@ -15,9 +15,9 @@ namespace common
 			, textureNodes );
 	}
 
-	void TransparentRendering::update( renderer::TextureViewCRefArray const & views )
+	void TransparentRendering::update( RenderTarget const & target )
 	{
-		m_renderer->update( views );
+		m_renderer->update( target );
 	}
 
 	bool TransparentRendering::draw( std::chrono::nanoseconds & gpu )const

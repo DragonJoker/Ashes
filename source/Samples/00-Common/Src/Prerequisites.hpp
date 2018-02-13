@@ -209,11 +209,13 @@ namespace common
 	renderer::ConnectionPtr makeConnection( wxWindow * window
 		, renderer::Renderer const & renderer );
 
+	std::vector< renderer::PixelFormat > getFormats( renderer::TextureViewCRefArray const & views );
 	class Application;
 	class MainFrame;
 	class NodesRenderer;
 	class OpaqueRendering;
 	class RenderPanel;
+	class RenderTarget;
 	class TransparentRendering;
 
 	using NodesRendererPtr = std::unique_ptr< NodesRenderer >;

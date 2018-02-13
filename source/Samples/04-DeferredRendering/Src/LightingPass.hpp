@@ -13,14 +13,12 @@ namespace vkapp
 		LightingPass( renderer::Device const & device
 			, renderer::UniformBuffer< common::LightsData > const & lightsUbo
 			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureView const & depthView
-			, renderer::TextureView const & colourView );
+			, renderer::TextureViewCRefArray const & views );
 		void update( renderer::Mat4 const & viewProj
 			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureView const & colourView
-			, renderer::TextureView const & depthView
+			, renderer::TextureViewCRefArray const & views
 			, GeometryPassResult const & geometryBuffers );
-		bool draw()const;
+		bool draw( std::chrono::nanoseconds & gpu )const;
 
 	private:
 		renderer::Device const & m_device;
@@ -47,5 +45,6 @@ namespace vkapp
 		renderer::PipelineLayoutPtr m_pipelineLayout;
 		renderer::PipelinePtr m_pipeline;
 		renderer::FrameBufferPtr m_frameBuffer;
+		renderer::QueryPoolPtr m_queryPool;
 	};
 }
