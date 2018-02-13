@@ -28,6 +28,7 @@
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 #include <Shader/ShaderProgram.hpp>
+#include <Sync/BufferMemoryBarrier.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <varargs.h>
@@ -98,7 +99,7 @@ namespace common
 		bool updateCmdBuffers = false;
 		auto vertexBufferSize = uint32_t( imDrawData->TotalVtxCount );
 
-		if ( !m_vertexBuffer || m_vertexCount < vertexBufferSize )
+		if ( !m_vertexBuffer || m_vertexCount != vertexBufferSize )
 		{
 			m_vertexBuffer.reset();
 			m_vertexCount = vertexBufferSize;
@@ -338,7 +339,7 @@ namespace common
 
 		renderer::FrameBufferAttachmentArray attaches
 		{
-			{ rpAttaches[0], *m_targetView }
+			{ *m_renderPass->begin(), *m_targetView }
 		};
 		m_frameBuffer = m_renderPass->createFrameBuffer( size
 			, std::move( attaches ) );
@@ -378,6 +379,12 @@ namespace common
 			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
 				, renderer::PipelineStageFlag::eFragmentShader
 				, m_fontView->makeShaderInputResource() );
+			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
+				, renderer::PipelineStageFlag::eFragmentShader
+				, m_vertexBuffer->getBuffer().makeVertexShaderInputResource() );
+			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
+				, renderer::PipelineStageFlag::eFragmentShader
+				, m_indexBuffer->getBuffer().makeVertexShaderInputResource() );
 			m_commandBuffer->beginRenderPass( *m_renderPass
 				, *m_frameBuffer
 				, { renderer::RgbaColour{ 1.0, 1.0, 1.0, 0.0 } }

@@ -38,9 +38,23 @@
 #include "FileUtils.hpp"
 
 #include <chrono>
+#include <numeric>
 
 namespace common
 {
+	namespace
+	{
+		wxString getName( wxString const & name
+			, wxString const & rendererName )
+		{
+			auto result = name + wxT( " (" ) + rendererName + wxT( ")" );
+#if !defined( NDEBUG )
+			result += wxT( " - Debug" );
+#endif
+			return result;
+		}
+	}
+
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
 		, std::string const & appName
@@ -119,6 +133,11 @@ namespace common
 			, nullptr
 			, this );
 		Connect( GetId()
+			, wxEVT_LEFT_DCLICK
+			, wxMouseEventHandler( RenderPanel::onMouseLDClick )
+			, nullptr
+			, this );
+		Connect( GetId()
 			, wxEVT_RIGHT_DOWN
 			, wxMouseEventHandler( RenderPanel::onMouseRDown )
 			, nullptr
@@ -126,6 +145,11 @@ namespace common
 		Connect( GetId()
 			, wxEVT_RIGHT_UP
 			, wxMouseEventHandler( RenderPanel::onMouseRUp )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_RIGHT_DCLICK
+			, wxMouseEventHandler( RenderPanel::onMouseRDClick )
 			, nullptr
 			, this );
 		Connect( GetId()
@@ -144,8 +168,7 @@ namespace common
 		save = renderer::Clock::now();
 	}
 
-	void RenderPanel::draw( std::chrono::microseconds & cpu
-		, std::chrono::microseconds & gpu )
+	void RenderPanel::draw()
 	{
 		if ( m_ready )
 		{
@@ -155,8 +178,11 @@ namespace common
 			{
 				throw std::runtime_error{ "Couldn't acquire next frame from swap chain." };
 			}
-			auto before = std::chrono::high_resolution_clock::now();
-			auto result = m_renderTarget->draw( m_gpu );
+
+			auto result = m_renderTarget->draw( m_frameTime );
+			++m_frameCount;
+			m_framesTimes[m_frameIndex] = m_frameTime;
+			m_frameIndex = ++m_frameIndex % FrameSamplesCount;
 
 			if ( !result )
 			{
@@ -177,12 +203,6 @@ namespace common
 			}
 
 			m_swapChain->present( *resources );
-
-			auto after = std::chrono::high_resolution_clock::now();
-			m_cpu = std::chrono::duration_cast< std::chrono::microseconds >( after - before );
-
-			cpu = m_cpu;
-			gpu = m_gpu;
 		}
 	}
 
@@ -309,7 +329,7 @@ namespace common
 	void RenderPanel::doCreatePipeline()
 	{
 		wxSize size{ GetClientSize() };
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / m_appName / "Shaders";
+		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 		m_program = m_device->createShaderProgram();
 
 		if ( !wxFileExists( shadersFolder / "main.vert" )
@@ -399,14 +419,26 @@ namespace common
 		ImGui::SetNextWindowPos( ImVec2( 10, 10 ) );
 		ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver );
 		ImGui::Begin( "RendererLib Sample", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove );
-		ImGui::TextUnformatted( m_appDesc.c_str() );
+		ImGui::TextUnformatted( getName( m_appDesc, m_device->getRenderer().getName() ).c_str() );
 		//ImGui::TextUnformatted( m_device->getRendererName() );
-		auto millis = m_gpu.count() / 1000.0f;
-		ImGui::Text( "%.2f ms/frame (%.1d fps)", millis, int( 1000.0f / millis ) );
+
+		auto count = std::min( m_frameCount, m_framesTimes.size() );
+
+		if ( count )
+		{
+			auto instmillis = m_frameTime.count() / 1000.0f;
+			auto averageGpuTime = std::accumulate( m_framesTimes.begin()
+				, m_framesTimes.begin() + count
+				, std::chrono::microseconds{ 0 } ) / count;
+			auto avrgmillis = averageGpuTime.count() / 1000.0f;
+			ImGui::Text( "Instant: %.2f ms/frame (%5d fps)", instmillis, int( 1000.0f / instmillis ) );
+			ImGui::Text( "Average: %.2f ms/frame (%5d fps)", avrgmillis, int( 1000.0f / avrgmillis ) );
+		}
 
 #if RENDERLIB_ANDROID
 		ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, ImVec2( 0.0f, 5.0f * UIOverlay->scale ) );
 #endif
+
 		ImGui::PushItemWidth( 110.0f );
 		doUpdateOverlays( *m_gui );
 		ImGui::PopItemWidth();
@@ -420,6 +452,10 @@ namespace common
 		ImGui::Render();
 
 		m_gui->update();
+
+#if RENDERLIB_ANDROID
+		m_mouse.left = false;
+#endif
 	}
 
 	void RenderPanel::onSize( wxSizeEvent & event )
@@ -445,6 +481,13 @@ namespace common
 		m_mouse.position[1] = event.GetPosition().y;
 	}
 
+	void RenderPanel::onMouseLDClick( wxMouseEvent & event )
+	{
+		m_mouse.left = true;
+		m_mouse.position[0] = event.GetPosition().x;
+		m_mouse.position[1] = event.GetPosition().y;
+	}
+
 	void RenderPanel::onMouseRDown( wxMouseEvent & event )
 	{
 		m_mouse.right = true;
@@ -455,6 +498,13 @@ namespace common
 	void RenderPanel::onMouseRUp( wxMouseEvent & event )
 	{
 		m_mouse.right = false;
+		m_mouse.position[0] = event.GetPosition().x;
+		m_mouse.position[1] = event.GetPosition().y;
+	}
+
+	void RenderPanel::onMouseRDClick( wxMouseEvent & event )
+	{
+		m_mouse.right = true;
 		m_mouse.position[0] = event.GetPosition().x;
 		m_mouse.position[1] = event.GetPosition().y;
 	}

@@ -38,8 +38,7 @@ namespace common
 		~RenderPanel();
 		void initialise( renderer::Renderer const & renderer );
 		void update();
-		void draw( std::chrono::microseconds & cpu
-			, std::chrono::microseconds & gpu );
+		void draw();
 
 	private:
 		virtual void doInitialise( renderer::Device const & device
@@ -57,20 +56,25 @@ namespace common
 		void onSize( wxSizeEvent & event );
 		void onMouseLDown( wxMouseEvent & event );
 		void onMouseLUp( wxMouseEvent & event );
+		void onMouseLDClick( wxMouseEvent & event );
 		void onMouseRDown( wxMouseEvent & event );
 		void onMouseRUp( wxMouseEvent & event );
+		void onMouseRDClick( wxMouseEvent & event );
 		void onMouseMove( wxMouseEvent & event );
 
 	protected:
 		std::unique_ptr< RenderTarget > m_renderTarget;
 
 	private:
+		static size_t constexpr FrameSamplesCount = 1000;
 		std::string m_appName;
 		std::string m_appDesc;
 		bool m_ready{ false };
 		MouseState m_mouse;
-		std::chrono::microseconds m_cpu;
-		std::chrono::microseconds m_gpu;
+		std::chrono::microseconds m_frameTime;
+		std::array< std::chrono::microseconds, FrameSamplesCount > m_framesTimes;
+		uint32_t m_frameIndex{ 0 };
+		size_t m_frameCount{ 0 };
 		std::vector< TexturedVertexData > m_vertexData;
 		std::unique_ptr< Gui > m_gui;
 
