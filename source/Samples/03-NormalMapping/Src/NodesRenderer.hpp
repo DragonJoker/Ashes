@@ -2,20 +2,19 @@
 
 #include "Prerequisites.hpp"
 
-#include <TransparentRendering.hpp>
+#include <NodesRenderer.hpp>
 
 namespace vkapp
 {
-	class TransparentRendering
-		: public common::TransparentRendering
+	class NodesRenderer
+		: public common::NodesRenderer
 	{
 	public:
-		TransparentRendering( renderer::Device const & device
-			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureView const & colourView
-			, renderer::TextureView const & depthView
-			, common::Object const & submeshes
-			, common::TextureNodePtrArray const & textureNodes
+		NodesRenderer( renderer::Device const & device
+			, renderer::ShaderProgramPtr && program
+			, std::vector< renderer::PixelFormat > const & formats
+			, bool clearViews
+			, bool opaqueNodes
 			, renderer::UniformBuffer< renderer::Mat4 > const & matrixUbo
 			, renderer::UniformBuffer< renderer::Mat4 > const & objectUbo
 			, renderer::UniformBuffer< common::LightsData > const & lightsUbo );

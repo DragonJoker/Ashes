@@ -71,8 +71,8 @@ namespace common
 			m_size = size;
 			doUpdateRenderViews();
 			doResize( size );
-			m_opaque->update( *m_colourView, *m_depthView );
-			m_transparent->update( *m_colourView, *m_depthView );
+			m_opaque->update( { *m_colourView, *m_depthView } );
+			m_transparent->update( { *m_colourView, *m_depthView } );
 		}
 	}
 
