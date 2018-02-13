@@ -80,6 +80,8 @@ namespace common
 
 	void MainFrame::cleanup()
 	{
+		m_timer->Stop();
+
 		if ( m_panel )
 		{
 			m_panel->Destroy();
@@ -162,8 +164,8 @@ namespace common
 		{
 			try
 			{
-				std::chrono::microseconds cpu;
-				std::chrono::microseconds gpu;
+				std::chrono::microseconds cpu{ 0ull };
+				std::chrono::microseconds gpu{ 0ull };
 
 				m_panel->update();
 				m_panel->draw( cpu, gpu );
@@ -177,13 +179,5 @@ namespace common
 					, wxICON_ERROR );
 			}
 		}
-	}
-
-	void MainFrame::onSize( wxSizeEvent & event )
-	{
-		m_timer->Stop();
-		m_panel->resize( event.GetSize() );
-		m_timer->Start( TimerTimeMs );
-		event.Skip();
 	}
 }

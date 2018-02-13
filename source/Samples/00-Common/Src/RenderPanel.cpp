@@ -43,9 +43,11 @@ namespace common
 {
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, std::string const & appName )
+		, std::string const & appName
+		, std::string const & appDesc )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 		, m_appName{ appName }
+		, m_appDesc{ appDesc }
 		, m_vertexData
 		{
 			{ { -1.0, -1.0, 0.0, 1.0 }, { 0.0, 0.0 } },
@@ -73,7 +75,11 @@ namespace common
 			m_stagingBuffer = std::make_unique< renderer::StagingBuffer >( *m_device
 				, 0u
 				, 1024u * 64u );
-			doInitialise();
+			doInitialise( *m_device
+				, { size.GetWidth(), size.GetHeight() } );
+			m_gui = std::make_unique< Gui >( *m_device
+				, renderer::UIVec2{ size.GetWidth(), size.GetHeight() } );
+			m_gui->updateView( m_renderTarget->getColourView() );
 			m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 				, renderer::WrapMode::eClampToEdge
 				, renderer::WrapMode::eClampToEdge
@@ -89,71 +95,108 @@ namespace common
 			std::cout << "Main pipeline created." << std::endl;
 			doPrepareFrames();
 			std::cout << "Main frames prepared." << std::endl;
+			m_ready = true;
 		}
 		catch ( std::exception & )
 		{
 			doCleanup();
 			throw;
 		}
+
+		Connect( wxID_ANY
+			, wxEVT_SIZE
+			, wxSizeEventHandler( RenderPanel::onSize )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_LEFT_DOWN
+			, wxMouseEventHandler( RenderPanel::onMouseLDown )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_LEFT_UP
+			, wxMouseEventHandler( RenderPanel::onMouseLUp )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_RIGHT_DOWN
+			, wxMouseEventHandler( RenderPanel::onMouseRDown )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_RIGHT_UP
+			, wxMouseEventHandler( RenderPanel::onMouseRUp )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_MOTION
+			, wxMouseEventHandler( RenderPanel::onMouseMove )
+			, nullptr
+			, this );
 	}
 
 	void RenderPanel::update()
 	{
-		m_renderTarget->update();
+		static renderer::Clock::time_point save = renderer::Clock::now();
+		auto duration = std::chrono::duration_cast< std::chrono::microseconds >( renderer::Clock::now() - save );
+		m_renderTarget->update( duration );
+		doUpdateGui( duration );
+		save = renderer::Clock::now();
 	}
 
 	void RenderPanel::draw( std::chrono::microseconds & cpu
 		, std::chrono::microseconds & gpu )
 	{
-		auto resources = m_swapChain->getResources();
-
-		if ( !resources )
+		if ( m_ready )
 		{
-			throw std::runtime_error{ "Couldn't acquire next frame from swap chain." };
+			auto resources = m_swapChain->getResources();
+
+			if ( !resources )
+			{
+				throw std::runtime_error{ "Couldn't acquire next frame from swap chain." };
+			}
+			auto before = std::chrono::high_resolution_clock::now();
+			auto result = m_renderTarget->draw( m_gpu );
+
+			if ( !result )
+			{
+				throw std::runtime_error{ "Couldn't render offscreen frame." };
+			}
+
+			m_gui->submit( m_device->getGraphicsQueue() );
+
+			result = m_device->getGraphicsQueue().submit( *m_commandBuffers[resources->getBackBuffer()]
+				, resources->getImageAvailableSemaphore()
+				, renderer::PipelineStageFlag::eColourAttachmentOutput
+				, resources->getRenderingFinishedSemaphore()
+				, &resources->getFence() );
+
+			if ( !result )
+			{
+				throw std::runtime_error{ "Couldn't render main frame." };
+			}
+
+			m_swapChain->present( *resources );
+
+			auto after = std::chrono::high_resolution_clock::now();
+			m_cpu = std::chrono::duration_cast< std::chrono::microseconds >( after - before );
+
+			cpu = m_cpu;
+			gpu = m_gpu;
 		}
-		auto before = std::chrono::high_resolution_clock::now();
-		auto result = m_renderTarget->draw( gpu );
-
-		if ( !result )
-		{
-			throw std::runtime_error{ "Couldn't render offscreen frame." };
-		}
-
-		result = m_device->getGraphicsQueue().submit( *m_commandBuffers[resources->getBackBuffer()]
-			, resources->getImageAvailableSemaphore()
-			, renderer::PipelineStageFlag::eColourAttachmentOutput
-			, resources->getRenderingFinishedSemaphore()
-			, &resources->getFence() );
-
-		if ( !result )
-		{
-			throw std::runtime_error{ "Couldn't render main frame." };
-		}
-
-		m_swapChain->present( *resources );
-
-		auto after = std::chrono::high_resolution_clock::now();
-		cpu = std::chrono::duration_cast< std::chrono::microseconds >( after - before );
-	}
-
-	void RenderPanel::resize( wxSize const & size )
-	{
-		m_device->waitIdle();
-		m_swapChain->reset( { size.GetWidth(), size.GetHeight() } );
-	}
-
-	void RenderPanel::doInitialise()
-	{
 	}
 
 	void RenderPanel::doCleanup()
 	{
+		m_ready = false;
+
 		if ( m_device )
 		{
 			m_device->waitIdle();
 
+			m_gui.reset();
+
 			m_renderTarget.reset();
-			m_lightsUbo.reset();
 			m_commandBuffers.clear();
 			m_frameBuffers.clear();
 
@@ -191,32 +234,10 @@ namespace common
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			m_renderTarget->resize( m_swapChain->getDimensions() );
+			m_gui->updateView( m_renderTarget->getColourView() );
 			doCreateDescriptorSet();
 			doPrepareFrames();
 		} );
-	}
-
-	void RenderPanel::doInitialiseLights()
-	{
-		m_lightsUbo = std::make_unique< renderer::UniformBuffer< common::LightsData > >( *m_device
-			, 1u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		auto & lights = m_lightsUbo->getData( 0u );
-		lights.lightsCount[0] = 1;
-		common::DirectionalLight directional
-		{
-			{
-				renderer::Vec4{ 1, 1, 1, 1 },
-				renderer::Vec4{ 0.75, 1.0, 0.0, 0.0 }
-			},
-			renderer::Vec4{ 1.0, -0.25, -1.0, 0.0 }
-		};
-		lights.directionalLights[0] = directional;
-		m_stagingBuffer->uploadUniformData( m_swapChain->getDefaultResources().getCommandBuffer()
-			, m_lightsUbo->getDatas()
-			, *m_lightsUbo
-			, renderer::PipelineStageFlag::eFragmentShader );
 	}
 	
 	void RenderPanel::doCreateDescriptorSet()
@@ -224,12 +245,16 @@ namespace common
 		std::vector< renderer::DescriptorSetLayoutBinding > bindings
 		{
 			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
+			renderer::DescriptorSetLayoutBinding{ 1u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
 		};
 		m_descriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
 			, m_renderTarget->getColourView()
+			, *m_sampler );
+		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 1u )
+			, m_gui->getTargetView()
 			, *m_sampler );
 		m_descriptorSet->update();
 	}
@@ -311,6 +336,7 @@ namespace common
 	{
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
 		m_commandBuffers = m_swapChain->createCommandBuffers();
+		static renderer::ClearValue const clearValue{ { 1.0, 0.0, 0.0, 1.0 } };
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
 		{
@@ -325,7 +351,7 @@ namespace common
 				m_swapChain->preRenderCommands( i, commandBuffer );
 				commandBuffer.beginRenderPass( *m_renderPass
 					, frameBuffer
-					, { renderer::ClearValue{ { 1.0, 0.0, 0.0, 1.0 } } }
+					, { clearValue }
 					, renderer::SubpassContents::eInline );
 				commandBuffer.bindPipeline( *m_pipeline );
 				commandBuffer.setViewport( { uint32_t( dimensions.x )
@@ -353,5 +379,89 @@ namespace common
 				}
 			}
 		}
+	}
+
+	void RenderPanel::doUpdateGui( std::chrono::microseconds const & duration )
+	{
+		auto size = GetClientSize();
+		ImGuiIO & io = ImGui::GetIO();
+
+		io.DisplaySize = ImVec2( float( size.GetWidth() ), float( size.GetHeight() ) );
+		io.DeltaTime = std::chrono::duration_cast< std::chrono::milliseconds >( duration ).count() / 1000.0f;
+
+		io.MousePos = ImVec2( m_mouse.position[0], m_mouse.position[1] );
+		io.MouseDown[0] = m_mouse.left;
+		io.MouseDown[1] = m_mouse.right;
+
+		ImGui::NewFrame();
+
+		ImGui::PushStyleVar( ImGuiStyleVar_WindowRounding, 10 );
+		ImGui::SetNextWindowPos( ImVec2( 10, 10 ) );
+		ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver );
+		ImGui::Begin( "RendererLib Sample", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove );
+		ImGui::TextUnformatted( m_appDesc.c_str() );
+		//ImGui::TextUnformatted( m_device->getRendererName() );
+		auto millis = m_gpu.count() / 1000.0f;
+		ImGui::Text( "%.2f ms/frame (%.1d fps)", millis, int( 1000.0f / millis ) );
+
+#if RENDERLIB_ANDROID
+		ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, ImVec2( 0.0f, 5.0f * UIOverlay->scale ) );
+#endif
+		ImGui::PushItemWidth( 110.0f );
+		doUpdateOverlays( *m_gui );
+		ImGui::PopItemWidth();
+
+#if RENDERLIB_ANDROID
+		ImGui::PopStyleVar();
+#endif
+
+		ImGui::End();
+		ImGui::PopStyleVar();
+		ImGui::Render();
+
+		m_gui->update();
+	}
+
+	void RenderPanel::onSize( wxSizeEvent & event )
+	{
+		m_ready = false;
+		m_device->waitIdle();
+		m_swapChain->reset( { event.GetSize().GetWidth(), event.GetSize().GetHeight() } );
+		m_ready = true;
+		event.Skip();
+	}
+
+	void RenderPanel::onMouseLDown( wxMouseEvent & event )
+	{
+		m_mouse.left = true;
+		m_mouse.position[0] = event.GetPosition().x;
+		m_mouse.position[1] = event.GetPosition().y;
+	}
+
+	void RenderPanel::onMouseLUp( wxMouseEvent & event )
+	{
+		m_mouse.left = false;
+		m_mouse.position[0] = event.GetPosition().x;
+		m_mouse.position[1] = event.GetPosition().y;
+	}
+
+	void RenderPanel::onMouseRDown( wxMouseEvent & event )
+	{
+		m_mouse.right = true;
+		m_mouse.position[0] = event.GetPosition().x;
+		m_mouse.position[1] = event.GetPosition().y;
+	}
+
+	void RenderPanel::onMouseRUp( wxMouseEvent & event )
+	{
+		m_mouse.right = false;
+		m_mouse.position[0] = event.GetPosition().x;
+		m_mouse.position[1] = event.GetPosition().y;
+	}
+
+	void RenderPanel::onMouseMove( wxMouseEvent & event )
+	{
+		m_mouse.position[0] = event.GetPosition().x;
+		m_mouse.position[1] = event.GetPosition().y;
 	}
 }

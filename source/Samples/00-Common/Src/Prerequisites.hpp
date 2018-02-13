@@ -23,6 +23,13 @@ namespace common
 	static uint32_t constexpr MAX_TEXTURES = 6u;
 	static uint32_t constexpr MAX_LIGHTS = 10u;
 
+	struct SceneData
+	{
+		renderer::Mat4 mtxProjection;
+		renderer::Mat4 mtxView;
+		renderer::Vec4 cameraPosition;
+	};
+
 	struct TexturedVertexData
 	{
 		renderer::Vec4 position;
@@ -56,7 +63,7 @@ namespace common
 		uint32_t shininess{ 0 }; // 0 for none, 1 for R, 2 for G, 4 for B, 8 for A
 		uint32_t opacity{ 0 }; // 0 for none, 1 for R, 2 for G, 4 for B, 8 for A
 		uint32_t height{ 0 }; // 0 for none, 1 for R, 2 for G, 4 for B, 8 for A
-		float fill; // align to 16 bytes.
+		float fill{ 0.0f }; // align to 16 bytes.
 	};
 
 	struct MaterialData
@@ -207,4 +214,7 @@ namespace common
 	class OpaqueRendering;
 	class RenderPanel;
 	class TransparentRendering;
+
+	using OpaqueRenderingPtr = std::unique_ptr< OpaqueRendering >;
+	using TransparentRenderingPtr = std::unique_ptr< TransparentRendering >;
 }

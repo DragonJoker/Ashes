@@ -23,11 +23,11 @@ struct Material
 	float shininess;
 	float opacity;
 	int texturesCount;
-	float fill; // align to 16 bytes.
+	int backface;
 	TextureOperator textureOperators[MAX_TEXTURES];
 };
 
-layout( set=0, binding=2 ) uniform ObjectMaterial
+layout( set=0, binding=0 ) uniform ObjectMaterial
 {
 	Material material;
 };

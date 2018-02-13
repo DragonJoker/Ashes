@@ -11,18 +11,24 @@
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
 #include <Image/Texture.hpp>
+#include <Image/TextureView.hpp>
 #include <Miscellaneous/PushConstantRange.hpp>
+#include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/InputAssemblyState.hpp>
+#include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
 #include <Pipeline/Scissor.hpp>
 #include <Pipeline/VertexLayout.hpp>
 #include <Pipeline/Viewport.hpp>
+#include <RenderPass/FrameBuffer.hpp>
+#include <RenderPass/FrameBufferAttachment.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 #include <Shader/ShaderProgram.hpp>
+#include <Sync/ImageMemoryBarrier.hpp>
 
 #include <varargs.h>
 
@@ -41,16 +47,10 @@ namespace common
 	}
 
 	Gui::Gui( renderer::Device const & device
-		, renderer::UIVec2 const & size
-		, renderer::PixelFormat colourFormat
-		, renderer::PixelFormat depthFormat
-		, std::vector< renderer::FrameBufferPtr > const & frameBuffers )
+		, renderer::UIVec2 const & size )
 		: m_device{ device }
-		, m_frameBuffers{ frameBuffers }
 		, m_size{ size }
 		, m_pushConstants{ renderer::ShaderStageFlag::eVertex, doCreateConstants() }
-		, m_colourFormat{ colourFormat }
-		, m_depthFormat{ depthFormat }
 	{
 		// Init ImGui
 		// Color scheme
@@ -68,10 +68,22 @@ namespace common
 		io.DisplaySize = ImVec2( float( size[0] ), float( size[1] ) );
 		io.FontGlobalScale = 1.0f;
 
-		m_cmdBuffers.resize( frameBuffers.size() );
-
 		doPrepareResources();
-		doPreparePipeline();
+	}
+
+	void Gui::updateView( renderer::TextureView const & colourView )
+	{
+		if ( m_colourView != &colourView )
+		{
+			bool first = m_colourView == nullptr;
+			m_colourView = &colourView;
+			doPreparePipeline();
+
+			if ( !first )
+			{
+				doUpdateCommandBuffers();
+			}
+		}
 	}
 
 	void Gui::update()
@@ -88,32 +100,12 @@ namespace common
 
 		if ( !m_vertexBuffer || m_vertexCount < vertexBufferSize )
 		{
-			if ( m_vertexBuffer )
-			{
-				m_vertexBuffer->unlock( m_vertexCount, true );
-			}
-
 			m_vertexBuffer.reset();
 			m_vertexCount = vertexBufferSize;
 			m_vertexBuffer = renderer::makeVertexBuffer< ImDrawVert >( m_device
 				, m_vertexCount
 				, renderer::BufferTargets{ 0u }
 				, renderer::MemoryPropertyFlag::eHostVisible );
-
-			if ( auto buffer = m_vertexBuffer->lock( 0u
-				, m_vertexCount
-				, renderer::MemoryMapFlag::eInvalidateRange | renderer::MemoryMapFlag::eWrite ) )
-			{
-				for ( int n = 0; n < imDrawData->CmdListsCount; n++ )
-				{
-					const ImDrawList * cmdList = imDrawData->CmdLists[n];
-					memcpy( buffer, cmdList->VtxBuffer.Data, cmdList->VtxBuffer.Size * sizeof( ImDrawVert ) );
-					buffer += cmdList->VtxBuffer.Size;
-				}
-
-				m_vertexBuffer->unlock( m_vertexCount, true );
-			}
-
 			updateCmdBuffers = true;
 		}
 
@@ -121,37 +113,51 @@ namespace common
 
 		if ( !m_indexBuffer || m_indexCount < indexBufferSize )
 		{
-			if ( m_indexBuffer )
-			{
-				m_indexBuffer->unlock( m_indexCount, true );
-			}
-
 			m_indexBuffer.reset();
 			m_indexCount = indexBufferSize;
 			m_indexBuffer = renderer::makeBuffer< ImDrawIdx >( m_device
 				, m_indexCount
 				, renderer::BufferTarget::eIndexBuffer
 				, renderer::MemoryPropertyFlag::eHostVisible );
+			updateCmdBuffers = true;
+		}
 
-			if ( auto buffer = m_indexBuffer->lock( 0u
-				, m_indexCount
-				, renderer::MemoryMapFlag::eInvalidateRange | renderer::MemoryMapFlag::eWrite ) )
+		if ( auto vtx = m_vertexBuffer->lock( 0u
+			, m_vertexCount
+			, renderer::MemoryMapFlag::eInvalidateRange | renderer::MemoryMapFlag::eWrite ) )
+		{
+			for ( int n = 0; n < imDrawData->CmdListsCount; n++ )
 			{
-				for ( int n = 0; n < imDrawData->CmdListsCount; n++ )
-				{
-					const ImDrawList * cmdList = imDrawData->CmdLists[n];
-					memcpy( buffer, cmdList->IdxBuffer.Data, cmdList->IdxBuffer.Size * sizeof( ImDrawIdx ) );
-					buffer += cmdList->IdxBuffer.Size;
-				}
-
-				m_indexBuffer->unlock( m_indexCount, true );
+				const ImDrawList * cmdList = imDrawData->CmdLists[n];
+				memcpy( vtx, cmdList->VtxBuffer.Data, cmdList->VtxBuffer.Size * sizeof( ImDrawVert ) );
+				vtx += cmdList->VtxBuffer.Size;
 			}
 
-			updateCmdBuffers = true;
+			m_vertexBuffer->unlock( m_vertexCount, true );
+		}
+
+		if ( auto idx = m_indexBuffer->lock( 0u
+			, m_indexCount
+			, renderer::MemoryMapFlag::eInvalidateRange | renderer::MemoryMapFlag::eWrite ) )
+		{
+			for ( int n = 0; n < imDrawData->CmdListsCount; n++ )
+			{
+				const ImDrawList * cmdList = imDrawData->CmdLists[n];
+				memcpy( idx, cmdList->IdxBuffer.Data, cmdList->IdxBuffer.Size * sizeof( ImDrawIdx ) );
+				idx += cmdList->IdxBuffer.Size;
+			}
+
+			m_indexBuffer->unlock( m_indexCount, true );
 		}
 
 		if ( updateCmdBuffers )
 		{
+			m_geometryBuffers = m_device.createGeometryBuffers( *m_vertexBuffer
+				, 0u
+				, *m_vertexLayout
+				, m_indexBuffer->getBuffer()
+				, 0u
+				, renderer::IndexType::eUInt16 );
 			doUpdateCommandBuffers();
 		}
 	}
@@ -164,10 +170,9 @@ namespace common
 		doUpdateCommandBuffers();
 	}
 
-	void Gui::submit( renderer::Queue & queue
-		, uint32_t bufferindex )
+	void Gui::submit( renderer::Queue const & queue )
 	{
-		queue.submit( *m_cmdBuffers[bufferindex]
+		queue.submit( *m_commandBuffer
 			, m_fence.get() );
 		m_fence->wait( renderer::FenceTimeout );
 		m_fence->reset();
@@ -196,12 +201,12 @@ namespace common
 		return ImGui::InputFloat( caption, value, step, step * 10.0f, precision );
 	}
 
-	bool Gui::sliderFloat( const char* caption, float* value, float min, float max )
+	bool Gui::sliderFloat( char const * caption, float* value, float min, float max )
 	{
 		return ImGui::SliderFloat( caption, value, min, max );
 	}
 
-	bool Gui::sliderInt( const char* caption, int32_t* value, int32_t min, int32_t max )
+	bool Gui::sliderInt( char const * caption, int32_t* value, int32_t min, int32_t max )
 	{
 		return ImGui::SliderInt( caption, value, min, max );
 	}
@@ -272,11 +277,7 @@ namespace common
 
 		m_commandPool = m_device.createCommandPool( m_device.getGraphicsQueue().getFamilyIndex()
 			, renderer::CommandPoolCreateFlag::eResetCommandBuffer );
-
-		for ( auto & commandBuffer : m_cmdBuffers )
-		{
-			commandBuffer = m_commandPool->createCommandBuffer();
-		}
+		m_commandBuffer = m_commandPool->createCommandBuffer();
 
 		renderer::DescriptorSetLayoutBindingArray bindings
 		{
@@ -285,47 +286,84 @@ namespace common
 		m_descriptorSetLayout = m_device.createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorPool = m_descriptorSetLayout->createPool( 2u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
+		m_descriptorSet->createBinding( m_descriptorSetLayout->getBinding( 0u )
+			, *m_fontView
+			, *m_sampler );
+		m_descriptorSet->update();
 
 		renderer::PushConstantRange range{ renderer::ShaderStageFlag::eVertex, 0u, m_pushConstants.getSize() };
 		m_pipelineLayout = m_device.createPipelineLayout( *m_descriptorSetLayout
 			, range );
 
 		m_fence = m_device.createFence();
-	}
-
-	void Gui::doPreparePipeline()
-	{
-		m_vertexLayout = renderer::makeLayout< ImDrawVert >( m_device, 0u );
-		m_vertexLayout->createAttribute( 0u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, pos ) );
-		m_vertexLayout->createAttribute( 1u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, uv ) );
-		m_vertexLayout->createAttribute( 2u, renderer::AttributeFormat::eColour, offsetof( ImDrawVert, col ) );
-		
-		std::vector< renderer::PixelFormat > formats{ { m_colourFormat } };
-		renderer::RenderPassAttachmentArray attaches
-		{
-			{ m_colourFormat, false },
-		};
-		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device.createRenderSubpass( formats
-			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentRead | renderer::AccessFlag::eColourAttachmentWrite } ) );
-		m_renderPass = m_device.createRenderPass( attaches
-			, subpasses
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eBottomOfPipe
-				, renderer::AccessFlag::eMemoryRead
-				, { renderer::ImageLayout::eColourAttachmentOptimal } }
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eBottomOfPipe
-				, renderer::AccessFlag::eMemoryRead
-				, { renderer::ImageLayout::eColourAttachmentOptimal } } );
 
 		std::string shadersFolder = getPath( getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 		m_program = m_device.createShaderProgram();
 		m_program->createModule( dumpTextFile( shadersFolder / "gui.vert" ), renderer::ShaderStageFlag::eVertex );
 		m_program->createModule( dumpTextFile( shadersFolder / "gui.frag" ), renderer::ShaderStageFlag::eFragment );
 
+		m_vertexLayout = renderer::makeLayout< ImDrawVert >( m_device, 0u );
+		m_vertexLayout->createAttribute( 0u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, pos ) );
+		m_vertexLayout->createAttribute( 1u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, uv ) );
+		m_vertexLayout->createAttribute( 2u, renderer::AttributeFormat::eColour, offsetof( ImDrawVert, col ) );
+	}
+
+	void Gui::doPreparePipeline()
+	{
+		auto dimensions = m_colourView->getTexture().getDimensions();
+		auto size = renderer::UIVec2{ dimensions[0], dimensions[1] };
+		m_target = m_device.createTexture();
+		m_target->setImage( m_colourView->getFormat()
+			, size
+			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
+		m_targetView = m_target->createView( renderer::TextureType::e2D
+			, m_target->getFormat() );
+
+		std::vector< renderer::PixelFormat > formats{ { m_targetView->getFormat() } };
+		renderer::RenderPassAttachmentArray rpAttaches
+		{
+			{ m_targetView->getFormat(), true },
+		};
+		renderer::RenderSubpassPtrArray subpasses;
+		subpasses.emplace_back( m_device.createRenderSubpass( formats
+			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentRead | renderer::AccessFlag::eColourAttachmentWrite } ) );
+		m_renderPass = m_device.createRenderPass( rpAttaches
+			, subpasses
+			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite
+				, { renderer::ImageLayout::eShaderReadOnlyOptimal } }
+			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite
+				, { renderer::ImageLayout::eShaderReadOnlyOptimal } } );
+
+		renderer::FrameBufferAttachmentArray attaches
+		{
+			{ rpAttaches[0], *m_targetView }
+		};
+		m_frameBuffer = m_renderPass->createFrameBuffer( size
+			, std::move( attaches ) );
+
+		renderer::ColourBlendState cbState;
+		cbState.addAttachment( renderer::ColourBlendStateAttachment
+		{
+			true,
+			renderer::BlendFactor::eSrcAlpha,
+			renderer::BlendFactor::eInvSrcAlpha,
+			renderer::BlendOp::eAdd,
+			renderer::BlendFactor::eSrcAlpha,
+			renderer::BlendFactor::eInvSrcAlpha,
+			renderer::BlendOp::eAdd
+		} );
+
 		m_pipeline = m_pipelineLayout->createPipeline( *m_program
 			, { *m_vertexLayout }
 			, *m_renderPass
-			, { renderer::PrimitiveTopology::eTriangleList } );
+			, { renderer::PrimitiveTopology::eTriangleList }
+			, { 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone }
+		, cbState );
+		m_pipeline->multisampleState( renderer::MultisampleState{} );
+		m_pipeline->depthStencilState( renderer::DepthStencilState{} );
+		m_pipeline->finish();
 	}
 
 	void Gui::doUpdateCommandBuffers()
@@ -335,54 +373,54 @@ namespace common
 		m_pushConstants.getData()->scale = renderer::Vec2{ 2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y };
 		m_pushConstants.getData()->translate = renderer::Vec2{ -1.0f };
 
-		for ( auto & commandBuffer : m_cmdBuffers )
+		if ( m_commandBuffer->begin() )
 		{
-			if ( commandBuffer->begin() )
+			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
+				, renderer::PipelineStageFlag::eFragmentShader
+				, m_fontView->makeShaderInputResource() );
+			m_commandBuffer->beginRenderPass( *m_renderPass
+				, *m_frameBuffer
+				, { renderer::RgbaColour{ 1.0, 1.0, 1.0, 0.0 } }
+				, renderer::SubpassContents::eInline );
+			m_commandBuffer->bindPipeline( *m_pipeline );
+			m_commandBuffer->bindDescriptorSet( *m_descriptorSet
+				, *m_pipelineLayout );
+			m_commandBuffer->bindGeometryBuffers( *m_geometryBuffers );
+			m_commandBuffer->setViewport( { uint32_t( ImGui::GetIO().DisplaySize.x )
+				, uint32_t( ImGui::GetIO().DisplaySize.y )
+				, 0
+				, 0 } );
+			m_commandBuffer->setScissor( { 0
+				, 0 
+				, uint32_t( ImGui::GetIO().DisplaySize.x )
+				, uint32_t( ImGui::GetIO().DisplaySize.y ) } );
+			m_commandBuffer->pushConstants( *m_pipelineLayout, m_pushConstants );
+			ImDrawData * imDrawData = ImGui::GetDrawData();
+			int32_t vertexOffset = 0;
+			int32_t indexOffset = 0;
+
+			for ( int32_t j = 0; j < imDrawData->CmdListsCount; j++ )
 			{
-				commandBuffer->beginRenderPass( *m_renderPass
-					, *m_frameBuffers[index]
-					, { renderer::RgbaColour{ 1.0, 1.0, 1.0, 1.0 } }
-					, renderer::SubpassContents::eInline );
-				commandBuffer->bindPipeline( *m_pipeline );
-				commandBuffer->bindDescriptorSet( *m_descriptorSet
-					, *m_pipelineLayout );
-				commandBuffer->bindGeometryBuffers( *m_geometryBuffers );
-				commandBuffer->setViewport( { uint32_t( ImGui::GetIO().DisplaySize.x )
-					, uint32_t( ImGui::GetIO().DisplaySize.y )
-					, 0
-					, 0 } );
-				commandBuffer->setScissor( { 0
-					, 0 
-					, uint32_t( ImGui::GetIO().DisplaySize.x )
-					, uint32_t( ImGui::GetIO().DisplaySize.y ) } );
-				commandBuffer->pushConstants( *m_pipelineLayout, m_pushConstants );
-				ImDrawData * imDrawData = ImGui::GetDrawData();
-				int32_t vertexOffset = 0;
-				int32_t indexOffset = 0;
+				ImDrawList const * cmdList = imDrawData->CmdLists[j];
 
-				for ( int32_t j = 0; j < imDrawData->CmdListsCount; j++ )
+				for ( int32_t k = 0; k < cmdList->CmdBuffer.Size; k++ )
 				{
-					ImDrawList const * cmdList = imDrawData->CmdLists[j];
-
-					for ( int32_t k = 0; k < cmdList->CmdBuffer.Size; k++ )
-					{
-						ImDrawCmd const * cmd = &cmdList->CmdBuffer[k];
-						commandBuffer->setScissor( {
-							std::max( int32_t( cmd->ClipRect.x ), 0 ),
-							std::max( int32_t( cmd->ClipRect.y ), 0 ),
-							uint32_t( cmd->ClipRect.z - cmd->ClipRect.x ),
-							uint32_t( cmd->ClipRect.w - cmd->ClipRect.y ),
-						} );
-						commandBuffer->drawIndexed( cmd->ElemCount, 1u, indexOffset, vertexOffset );
-						indexOffset += cmd->ElemCount;
-					}
-
-					vertexOffset += cmdList->VtxBuffer.Size;
+					ImDrawCmd const * cmd = &cmdList->CmdBuffer[k];
+					m_commandBuffer->setScissor( {
+						std::max( int32_t( cmd->ClipRect.x ), 0 ),
+						std::max( int32_t( cmd->ClipRect.y ), 0 ),
+						uint32_t( cmd->ClipRect.z - cmd->ClipRect.x ),
+						uint32_t( cmd->ClipRect.w - cmd->ClipRect.y ),
+					} );
+					m_commandBuffer->drawIndexed( cmd->ElemCount, 1u, indexOffset, vertexOffset );
+					indexOffset += cmd->ElemCount;
 				}
 
-				commandBuffer->endRenderPass();
-				commandBuffer->end();
+				vertexOffset += cmdList->VtxBuffer.Size;
 			}
+
+			m_commandBuffer->endRenderPass();
+			m_commandBuffer->end();
 		}
 	}
 }

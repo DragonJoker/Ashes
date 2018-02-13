@@ -2,7 +2,7 @@
 
 #include <Utils/Transform.hpp>
 
-namespace vkapp
+namespace common
 {
 	void Camera::update()
 	{

@@ -15,7 +15,7 @@ namespace common
 			, ImagePtrArray && images );
 		~RenderTarget();
 		void resize( renderer::UIVec2 const & size );
-		void update();
+		void update( std::chrono::microseconds const & duration );
 		bool draw( std::chrono::microseconds & gpu );
 
 		inline renderer::TextureView const & getColourView()const
@@ -29,30 +29,41 @@ namespace common
 	private:
 		void doCleanup();
 		void doCreateStagingBuffer();
-		void doCreateUniformBuffer();
 		void doCreateTextures();
 		void doCreateRenderPass();
-		void doUpdateMatrixUbo();
 		void doUpdateRenderViews();
 
-		virtual void doCreateOpaqueRendering() = 0;
-		virtual void doCreateTransparentRendering() = 0;
+		virtual void doUpdate( std::chrono::microseconds const & duration ) = 0;
+		virtual void doResize( renderer::UIVec2 const & size ) = 0;
+
+		virtual OpaqueRenderingPtr doCreateOpaqueRendering( renderer::Device const & device
+			, renderer::StagingBuffer & stagingBuffer
+			, renderer::TextureView const & colourView
+			, renderer::TextureView const & depthView
+			, Object const & submeshes
+			, TextureNodePtrArray const & textureNodes ) = 0;
+		virtual TransparentRenderingPtr doCreateTransparentRendering( renderer::Device const & device
+			, renderer::StagingBuffer & stagingBuffer
+			, renderer::TextureView const & colourView
+			, renderer::TextureView const & depthView
+			, Object const & submeshes
+			, TextureNodePtrArray const & textureNodes ) = 0;
+
+	protected:
+		renderer::Device const & m_device;
+		renderer::StagingBufferPtr m_stagingBuffer;
+		renderer::CommandBufferPtr m_updateCommandBuffer;
 
 	private:
-		renderer::Device const & m_device;
 		renderer::UIVec2 m_size;
 		ImagePtrArray m_images;
 		Object m_object;
 		TextureNodePtrArray m_textureNodes;
 		renderer::Mat4 m_rotate;
-		renderer::StagingBufferPtr m_stagingBuffer;
 		renderer::TexturePtr m_colour;
 		renderer::TextureViewPtr m_colourView;
 		renderer::TexturePtr m_depth;
 		renderer::TextureViewPtr m_depthView;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_matrixUbo;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_objectUbo;
-		renderer::CommandBufferPtr m_updateCommandBuffer;
 		renderer::CommandBufferPtr m_commandBuffer;
 		std::shared_ptr< OpaqueRendering > m_opaque;
 		std::shared_ptr< TransparentRendering > m_transparent;
