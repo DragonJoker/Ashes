@@ -29,7 +29,7 @@ struct Material
 	TextureOperator textureOperators[MAX_TEXTURES];
 };
 
-layout( set=0, binding=2 ) uniform ObjectMaterial
+layout( set=0, binding=0 ) uniform ObjectMaterial
 {
 	Material material;
 };

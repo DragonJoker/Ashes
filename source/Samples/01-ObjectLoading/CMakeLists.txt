@@ -51,7 +51,7 @@ add_target_precompiled_header( ${PROJECT_NAME}
 	Src/PrecompiledHeader.hpp
 	Src/PrecompiledHeader.cpp
 	${CMAKE_CXX_FLAGS}
-	${${PROJECT_NAME}_SRC_FILES}
+	${SOURCE_FILES}
 )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )

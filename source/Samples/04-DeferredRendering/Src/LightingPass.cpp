@@ -13,6 +13,7 @@
 #include <Descriptor/DescriptorSetPool.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
+#include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/InputAssemblyState.hpp>
 #include <Pipeline/MultisampleState.hpp>
@@ -192,8 +193,7 @@ namespace vkapp
 	LightingPass::LightingPass( renderer::Device const & device
 		, renderer::UniformBuffer< common::LightsData > const & lightsUbo
 		, renderer::StagingBuffer & stagingBuffer
-		, renderer::TextureView const & depthView
-		, renderer::TextureView const & colourView )
+		, renderer::TextureViewCRefArray const & views )
 		: m_device{ device }
 		, m_lightsUbo{ lightsUbo }
 		, m_updateCommandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
@@ -205,7 +205,7 @@ namespace vkapp
 		, m_uboDescriptorPool{ m_uboDescriptorLayout->createPool( 1u ) }
 		, m_uboDescriptorSet{ doCreateUboDescriptorSet( *m_uboDescriptorPool, m_lightsUbo, *m_matrixUbo ) }
 		, m_program{ doCreateProgram( m_device ) }
-		, m_renderPass{ doCreateRenderPass( m_device, depthView, colourView ) }
+		, m_renderPass{ doCreateRenderPass( m_device, views[0].get(), views[1].get() ) }
 		, m_sampler{ m_device.createSampler( renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
@@ -221,6 +221,7 @@ namespace vkapp
 			, { *m_vertexLayout }
 			, *m_renderPass
 			, { renderer::PrimitiveTopology::eTriangleStrip } ) }
+		, m_queryPool{ m_device.createQueryPool( renderer::QueryType::eTimestamp, 2u, 0u ) }
 	{
 		m_pipeline->multisampleState( renderer::MultisampleState{} );
 		m_pipeline->depthStencilState( renderer::DepthStencilState
@@ -235,13 +236,12 @@ namespace vkapp
 
 	void LightingPass::update( renderer::Mat4 const & viewProj
 		, renderer::StagingBuffer & stagingBuffer
-		, renderer::TextureView const & colourView
-		, renderer::TextureView const & depthView
+		, renderer::TextureViewCRefArray const & views
 		, GeometryPassResult const & geometryBuffers )
 	{
 		m_geometryBuffers = &geometryBuffers;
-		m_colourView = &colourView;
-		m_depthView = &depthView;
+		m_depthView = &views[0].get();
+		m_colourView = &views[1].get();
 
 		m_matrixUbo->getData( 0u ) = utils::inverse( viewProj );
 		stagingBuffer.uploadUniformData( *m_updateCommandBuffer
@@ -249,17 +249,17 @@ namespace vkapp
 			, *m_matrixUbo
 			, renderer::PipelineStageFlag::eFragmentShader );
 
-		auto dimensions = depthView.getTexture().getDimensions();
+		auto dimensions = m_depthView->getTexture().getDimensions();
 		auto size = renderer::UIVec2{ dimensions[0], dimensions[1] };
-		m_frameBuffer = doCreateFrameBuffer( *m_renderPass, depthView, colourView );
+		m_frameBuffer = doCreateFrameBuffer( *m_renderPass, *m_depthView, *m_colourView );
 		m_gbufferDescriptorSet.reset();
 		m_gbufferDescriptorSet = m_gbufferDescriptorPool->createDescriptorSet( 0u );
-		auto & result = *m_geometryBuffers;
+		auto & gbuffer = *m_geometryBuffers;
 
-		for ( size_t i = 0; i < result.size(); ++i )
+		for ( size_t i = 0; i < gbuffer.size(); ++i )
 		{
 			m_gbufferDescriptorSet->createBinding( m_gbufferDescriptorLayout->getBinding( i )
-				, *result[i].view
+				, *gbuffer[i].view
 				, *m_sampler );
 		}
 
@@ -271,6 +271,18 @@ namespace vkapp
 
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 		{
+			commandBuffer.resetQueryPool( *m_queryPool, 0u, 2u );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+				, *m_queryPool
+				, 0u );
+
+			for ( auto & texture : gbuffer )
+			{
+				commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
+					, renderer::PipelineStageFlag::eFragmentShader
+					, texture.view->makeShaderInputResource() );
+			}
+
 			commandBuffer.beginRenderPass( *m_renderPass
 				, *m_frameBuffer
 				, { depth, colour }
@@ -291,12 +303,28 @@ namespace vkapp
 				, *m_pipelineLayout );
 			commandBuffer.draw( 4u );
 			commandBuffer.endRenderPass();
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+				, *m_queryPool
+				, 1u );
 			commandBuffer.end();
 		}
 	}
 
-	bool LightingPass::draw()const
+	bool LightingPass::draw( std::chrono::nanoseconds & gpu )const
 	{
-		return m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
+		bool result = m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
+
+		if ( result )
+		{
+			renderer::UInt32Array values{ 0u, 0u };
+			m_queryPool->getResults( 0u
+				, 2u
+				, 0u
+				, renderer::QueryResultFlag::eWait
+				, values );
+			gpu += std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device.getTimestampPeriod() ) ) };
+		}
+
+		return result;
 	}
 }

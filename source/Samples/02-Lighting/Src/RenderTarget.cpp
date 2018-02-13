@@ -83,14 +83,13 @@ namespace vkapp
 
 	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( renderer::Device const & device
 		, renderer::StagingBuffer & stagingBuffer
-		, renderer::TextureView const & colourView
-		, renderer::TextureView const & depthView
+		, renderer::TextureViewCRefArray const & views
 		, common::Object const & submeshes
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::OpaqueRendering >( std::make_unique< NodesRenderer >( device
 				, doCreateProgram( device )
-				, std::vector< renderer::PixelFormat >{ colourView.getFormat(), depthView.getFormat() }
+				, common::getFormats( views )
 				, true
 				, true
 				, *m_matrixUbo
@@ -98,20 +97,19 @@ namespace vkapp
 				, *m_lightsUbo )
 			, submeshes
 			, stagingBuffer
-			, renderer::TextureViewCRefArray{ colourView, depthView }
+			, views
 			, textureNodes );
 	}
 
 	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( renderer::Device const & device
 		, renderer::StagingBuffer & stagingBuffer
-		, renderer::TextureView const & colourView
-		, renderer::TextureView const & depthView
+		, renderer::TextureViewCRefArray const & views
 		, common::Object const & submeshes
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::TransparentRendering >( std::make_unique< NodesRenderer >( device
 				, doCreateProgram( device )
-				, std::vector< renderer::PixelFormat >{ colourView.getFormat(), depthView.getFormat() }
+				, common::getFormats( views )
 				, false
 				, false
 				, *m_matrixUbo
@@ -119,7 +117,7 @@ namespace vkapp
 				, *m_lightsUbo )
 			, submeshes
 			, stagingBuffer
-			, renderer::TextureViewCRefArray{ colourView, depthView }
+			, views
 			, textureNodes );
 	}
 

@@ -26,12 +26,20 @@ namespace common
 			, std::vector< renderer::PixelFormat > const & formats
 			, bool clearViews
 			, bool opaqueNodes );
-		void update( renderer::TextureViewCRefArray const & views );
+		virtual void update( RenderTarget const & target );
 		bool draw( std::chrono::nanoseconds & gpu )const;
 		void initialise( Object const & submeshes
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::TextureViewCRefArray const & views
 			, common::TextureNodePtrArray const & textureNodes );
+
+		inline renderer::Device const & getDevice()const
+		{
+			return m_device;
+		}
+
+	protected:
+		void doUpdate( renderer::TextureViewCRefArray const & views );
 
 	private:
 		virtual void doFillDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings ) = 0;
@@ -41,6 +49,7 @@ namespace common
 	protected:
 		renderer::Device const & m_device;
 		bool m_opaqueNodes;
+		renderer::UIVec2 m_size;
 		std::vector< renderer::TextureView const * > m_views;
 		renderer::SamplerPtr m_sampler;
 		renderer::CommandBufferPtr m_updateCommandBuffer;

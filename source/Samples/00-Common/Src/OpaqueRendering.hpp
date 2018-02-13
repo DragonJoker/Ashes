@@ -12,10 +12,10 @@ namespace common
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::TextureViewCRefArray const & views
 			, common::TextureNodePtrArray const & textureNodes );
-		virtual void update( renderer::TextureViewCRefArray const & views );
+		virtual void update( RenderTarget const & target );
 		virtual bool draw( std::chrono::nanoseconds & gpu )const;
 
-	private:
+	protected:
 		NodesRendererPtr m_renderer;
 	};
 }

@@ -3,92 +3,72 @@
 #include "OpaqueRendering.hpp"
 #include "TransparentRendering.hpp"
 
+#include <FileUtils.hpp>
+#include <OpaqueRendering.hpp>
+#include <TransparentRendering.hpp>
+
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/UniformBuffer.hpp>
-#include <Command/Queue.hpp>
-#include <Descriptor/DescriptorSet.hpp>
-#include <Descriptor/DescriptorSetLayout.hpp>
-#include <Descriptor/DescriptorSetPool.hpp>
-#include <Image/Texture.hpp>
-#include <Image/TextureView.hpp>
-#include <Pipeline/PipelineLayout.hpp>
-#include <Pipeline/Pipeline.hpp>
-#include <RenderPass/FrameBuffer.hpp>
-#include <RenderPass/RenderPass.hpp>
-#include <RenderPass/RenderPassState.hpp>
-#include <RenderPass/RenderSubpass.hpp>
-#include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/ShaderProgram.hpp>
-#include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Utils/Transform.hpp>
-
-#include <chrono>
 
 namespace vkapp
 {
 	namespace
 	{
-		static renderer::PixelFormat const DepthFormat = renderer::PixelFormat::eD24S8;
+		renderer::ShaderProgramPtr doCreateProgram( renderer::Device const & device
+			, std::string const & shader )
+		{
+			renderer::ShaderProgramPtr result = device.createShaderProgram();
+			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+
+			if ( !wxFileExists( shadersFolder / ( shader + ".vert" ) )
+				|| !wxFileExists( shadersFolder / ( shader + ".frag" ) ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			result->createModule( common::dumpTextFile( shadersFolder / ( shader + ".vert" ) )
+				, renderer::ShaderStageFlag::eVertex );
+			result->createModule( common::dumpTextFile( shadersFolder / ( shader + ".frag" ) )
+				, renderer::ShaderStageFlag::eFragment );
+
+			return result;
+		}
 	}
 
 	RenderTarget::RenderTarget( renderer::Device const & device
-		, renderer::UniformBuffer< common::LightsData > const & lightsUbo
 		, renderer::UIVec2 const & size
 		, common::Object && object
 		, common::ImagePtrArray && images )
-		: m_device{ device }
-		, m_lightsUbo{ lightsUbo }
-		, m_object{ std::move( object ) }
-		, m_images{ std::move( images ) }
-		, m_size{ size }
+		: common::RenderTarget{ device, size, std::move( object ), std::move( images ) }
+		, m_matrixUbo{ renderer::makeUniformBuffer< renderer::Mat4 >( device
+			, 1u
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
+		, m_objectUbo{ renderer::makeUniformBuffer< renderer::Mat4 >( device
+			, 1u
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
+		, m_lightsUbo{ renderer::makeUniformBuffer< common::LightsData >( device
+			, 1u
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
 	{
-		try
-		{
-			doCreateStagingBuffer();
-			std::cout << "Staging buffer created." << std::endl;
-			doCreateUniformBuffer();
-			std::cout << "Uniform buffers created." << std::endl;
-			doCreateTextures();
-			std::cout << "Textures created." << std::endl;
-			doCreateRenderPass();
-			std::cout << "Offscreen render pass created." << std::endl;
-		}
-		catch ( std::exception & )
-		{
-			doCleanup();
-			throw;
-		}
-
+		doCreateGBuffer();
+		doInitialise();
+		doUpdateMatrixUbo( size );
+		doInitialiseLights();
 	}
 
-	RenderTarget::~RenderTarget()
-	{
-		doCleanup();
-	}
-
-	void RenderTarget::resize( renderer::UIVec2 const & size )
-	{
-		if ( size != m_size )
-		{
-			m_size = size;
-			doUpdateMatrixUbo();
-			doUpdateRenderViews();
-			m_opaque->update( *m_colourView, *m_depthView );
-			m_transparent->update( *m_colourView, *m_depthView );
-		}
-	}
-
-	void RenderTarget::update()
+	void RenderTarget::doUpdate( std::chrono::microseconds const & duration )
 	{
 		static renderer::Mat4 const originalTranslate = []()
 		{
 			renderer::Mat4 result;
 			result = utils::translate( result, { 0, 0, -5 } );
 			return result;
-		}( );
-		static renderer::Clock::time_point save = renderer::Clock::now();
-		auto duration = std::chrono::duration_cast< std::chrono::microseconds >( renderer::Clock::now() - save );
+		}();
 		m_rotate = utils::rotate( m_rotate
 			, float( utils::DegreeToRadian ) * ( duration.count() / 20000.0f )
 			, { 0, 1, 0 } );
@@ -97,110 +77,58 @@ namespace vkapp
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
 			, renderer::PipelineStageFlag::eVertexShader );
-		save = renderer::Clock::now();
 	}
 
-	bool RenderTarget::draw()
+	void RenderTarget::doResize( renderer::UIVec2 const & size )
 	{
-		auto result = m_opaque->draw();
-		result &= m_transparent->draw();
-		return result;
+		doUpdateMatrixUbo( size );
+		doCreateGBuffer();
 	}
 
-	void RenderTarget::doCleanup()
+	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( renderer::Device const & device
+		, renderer::StagingBuffer & stagingBuffer
+		, renderer::TextureViewCRefArray const & views
+		, common::Object const & submeshes
+		, common::TextureNodePtrArray const & textureNodes )
 	{
-		m_updateCommandBuffer.reset();
-
-		m_stagingBuffer.reset();
-
-		m_matrixUbo.reset();
-		m_objectUbo.reset();
-
-		m_transparent.reset();
-		m_opaque.reset();
-		m_depthView.reset();
-		m_depth.reset();
-		m_colourView.reset();
-		m_colour.reset();
-
-		m_images.clear();
-		m_textureNodes.clear();
-	}
-
-	void RenderTarget::doCreateStagingBuffer()
-	{
-		m_updateCommandBuffer = m_device.getGraphicsCommandPool().createCommandBuffer();
-		m_stagingBuffer = std::make_unique< renderer::StagingBuffer >( m_device
-			, 0u
-			, 200u * 1024u * 1024u );
-	}
-
-	void RenderTarget::doCreateUniformBuffer()
-	{
-		m_matrixUbo = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( m_device
-			, 1u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_objectUbo = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( m_device
-			, 1u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-	}
-
-	void RenderTarget::doCreateTextures()
-	{
-		for ( auto & image : m_images )
-		{
-			common::TextureNodePtr textureNode = std::make_shared< common::TextureNode >();
-			textureNode->image = image;
-			textureNode->texture = m_device.createTexture();
-			textureNode->texture->setImage( image->format
-				, { image->size[0], image->size[1] }
-				, 4u
-				, renderer::ImageUsageFlag::eTransferSrc | renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled );
-			textureNode->view = textureNode->texture->createView( textureNode->texture->getType()
-				, textureNode->texture->getFormat()
-				, 0u
-				, 4u );
-			auto view = textureNode->texture->createView( textureNode->texture->getType()
-				, textureNode->texture->getFormat() );
-			m_stagingBuffer->uploadTextureData( *m_updateCommandBuffer
-				, image->data
-				, *view );
-			textureNode->texture->generateMipmaps();
-			m_textureNodes.emplace_back( textureNode );
-		}
-	}
-
-	void RenderTarget::doCreateRenderPass()
-	{
-		doUpdateMatrixUbo();
-		doUpdateRenderViews();
-		m_opaque = std::make_unique< OpaqueRendering >( m_device
-			, m_object
+		return std::make_unique< OpaqueRendering >( std::make_unique< GeometryPass >( device
+				, doCreateProgram( device, "opaque_gp" )
+				, m_gbuffer
+				, views[0].get().getFormat()
+				, *m_matrixUbo
+				, *m_objectUbo )
+			, submeshes
+			, stagingBuffer
+			, m_gbuffer
+			, views
+			, textureNodes
 			, *m_matrixUbo
-			, *m_objectUbo
-			, m_lightsUbo
-			, *m_stagingBuffer
-			, *m_colourView
-			, *m_depthView
-			, m_textureNodes );
-		m_transparent = std::make_unique< TransparentRendering >( m_device
-			, m_object
-			, *m_matrixUbo
-			, *m_objectUbo
-			, m_lightsUbo
-			, *m_stagingBuffer
-			, *m_colourView
-			, *m_depthView
-			, m_textureNodes );
+			, *m_lightsUbo );
 	}
 
-	void RenderTarget::doUpdateMatrixUbo()
+	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( renderer::Device const & device
+		, renderer::StagingBuffer & stagingBuffer
+		, renderer::TextureViewCRefArray const & views
+		, common::Object const & submeshes
+		, common::TextureNodePtrArray const & textureNodes )
+	{
+		return std::make_unique< common::TransparentRendering >( std::make_unique< TransparentRendering >( device
+				, doCreateProgram( device, "transparent" )
+				, common::getFormats( views )
+				, *m_matrixUbo
+				, *m_objectUbo
+				, *m_lightsUbo )
+			, submeshes
+			, stagingBuffer
+			, views
+			, textureNodes );
+	}
+
+	void RenderTarget::doUpdateMatrixUbo( renderer::UIVec2 const & size )
 	{
 #if 0
-		float halfWidth = static_cast< float >( m_size[0] ) * 0.5f;
-		float halfHeight = static_cast< float >( m_size[1] ) * 0.5f;
+		float halfWidth = static_cast< float >( size[0] ) * 0.5f;
+		float halfHeight = static_cast< float >( size[1] ) * 0.5f;
 		float wRatio = 1.0f;
 		float hRatio = 1.0f;
 
@@ -220,8 +148,8 @@ namespace vkapp
 			, 0.0f
 			, 10.0f );
 #else
-		auto width = float( m_size[0] );
-		auto height = float( m_size[1] );
+		auto width = float( size[0] );
+		auto height = float( size[1] );
 		m_matrixUbo->getData( 0u ) = m_device.perspective( utils::toRadians( 90.0_degrees )
 			, width / height
 			, 0.01f
@@ -233,22 +161,52 @@ namespace vkapp
 			, renderer::PipelineStageFlag::eVertexShader );
 	}
 
-	void RenderTarget::doUpdateRenderViews()
+	void RenderTarget::doInitialiseLights()
 	{
-		m_colourView.reset();
-		m_colour = m_device.createTexture();
-		m_colour->setImage( renderer::PixelFormat::eR8G8B8A8
-			, m_size
-			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst );
-		m_colourView = m_colour->createView( m_colour->getType()
-			, m_colour->getFormat() );
+		auto & lights = m_lightsUbo->getData( 0u );
+		lights.lightsCount[0] = 1;
+		common::DirectionalLight directional
+		{
+			{
+				renderer::Vec4{ 1, 1, 1, 1 },
+				renderer::Vec4{ 0.75, 1.0, 0.0, 0.0 }
+			},
+			renderer::Vec4{ 1.0, -0.25, -1.0, 0.0 }
+		};
+		lights.directionalLights[0] = directional;
 
-		m_depthView.reset();
-		m_depth = m_device.createTexture();
-		m_depth->setImage( DepthFormat
-			, m_size
-			, renderer::ImageUsageFlag::eDepthStencilAttachment | renderer::ImageUsageFlag::eSampled );
-		m_depthView = m_depth->createView( m_depth->getType()
-			, m_depth->getFormat() );
+		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
+			, m_lightsUbo->getDatas()
+			, *m_lightsUbo
+			, renderer::PipelineStageFlag::eFragmentShader );
+	}
+
+	void RenderTarget::doCreateGBuffer()
+	{
+		static renderer::PixelFormat const formats[]
+		{
+			renderer::PixelFormat::eR32F,
+			utils::PixelFormat::eRGBA32F,
+			utils::PixelFormat::eRGBA32F,
+			utils::PixelFormat::eRGBA32F,
+			utils::PixelFormat::eRGBA32F,
+		};
+		size_t index = 0u;
+		renderer::UIVec2 size
+		{
+			getColourView().getTexture().getDimensions()[0],
+			getColourView().getTexture().getDimensions()[1],
+		};
+
+		for ( auto & texture : m_gbuffer )
+		{
+			texture.texture = m_device.createTexture();
+			texture.texture->setImage( formats[index]
+				, size
+				, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
+			texture.view = texture.texture->createView( renderer::TextureType::e2D
+				, texture.texture->getFormat() );
+			++index;
+		}
 	}
 }

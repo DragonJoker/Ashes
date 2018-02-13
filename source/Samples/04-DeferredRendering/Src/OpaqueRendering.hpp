@@ -3,33 +3,29 @@
 #include "GeometryPass.hpp"
 #include "LightingPass.hpp"
 
+#include <OpaqueRendering.hpp>
+
 namespace vkapp
 {
 	class OpaqueRendering
+		: public common::OpaqueRendering
 	{
 	public:
-		OpaqueRendering( renderer::Device const & device
+		OpaqueRendering( std::unique_ptr< GeometryPass > && renderer
 			, common::Object const & submeshes
-			, renderer::UniformBuffer< renderer::Mat4 > const & matrixUbo
-			, renderer::UniformBuffer< renderer::Mat4 > const & objectUbo
-			, renderer::UniformBuffer< common::LightsData > const & lightsUbo
 			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureView const & colourView
-			, renderer::TextureView const & depthView
-			, common::TextureNodePtrArray const & textureNodes );
-		void update( renderer::TextureView const & colourView
-			, renderer::TextureView const & depthView );
-		bool draw()const;
+			, GeometryPassResult const & gbuffer
+			, renderer::TextureViewCRefArray const & views
+			, common::TextureNodePtrArray const & textureNodes
+			, renderer::UniformBuffer< renderer::Mat4 > const & matrixUbo
+			, renderer::UniformBuffer< common::LightsData > const & lightsUbo );
+		void update( common::RenderTarget const & target )override;
+		bool draw( std::chrono::nanoseconds & gpu )const override;
 
 	private:
-		renderer::Device const & m_device;
 		renderer::UniformBuffer< renderer::Mat4 > const & m_matrixUbo;
-		renderer::UniformBuffer< renderer::Mat4 > const & m_objectUbo;
 		renderer::UniformBuffer< common::LightsData > const & m_lightsUbo;
 		renderer::StagingBuffer & m_stagingBuffer;
-		renderer::TextureView const * m_colourView{ nullptr };
-		renderer::TextureView const * m_depthView{ nullptr };
-		GeometryPass m_geometryPass;
 		LightingPass m_lightingPass;
 	};
 }

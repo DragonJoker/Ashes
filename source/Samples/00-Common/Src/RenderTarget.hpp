@@ -23,6 +23,11 @@ namespace common
 			return *m_colourView;
 		}
 
+		inline renderer::TextureView const & getDepthView()const
+		{
+			return *m_depthView;
+		}
+
 	protected:
 		void doInitialise();
 
@@ -38,14 +43,12 @@ namespace common
 
 		virtual OpaqueRenderingPtr doCreateOpaqueRendering( renderer::Device const & device
 			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureView const & colourView
-			, renderer::TextureView const & depthView
+			, renderer::TextureViewCRefArray const & views
 			, Object const & submeshes
 			, TextureNodePtrArray const & textureNodes ) = 0;
 		virtual TransparentRenderingPtr doCreateTransparentRendering( renderer::Device const & device
 			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureView const & colourView
-			, renderer::TextureView const & depthView
+			, renderer::TextureViewCRefArray const & views
 			, Object const & submeshes
 			, TextureNodePtrArray const & textureNodes ) = 0;
 

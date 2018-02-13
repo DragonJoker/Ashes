@@ -1,5 +1,7 @@
 #include "GeometryPass.hpp"
 
+#include "RenderTarget.hpp"
+
 #include <Buffer/Buffer.hpp>
 #include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/StagingBuffer.hpp>
@@ -55,393 +57,77 @@ namespace vkapp
 			return result;
 		}
 
-		std::vector< renderer::PixelFormat > doGetFormats( renderer::TextureView const & depthView )
+		std::vector< renderer::PixelFormat > doGetFormats( GeometryPassResult const & gbuffer
+			, renderer::PixelFormat depthFormat )
 		{
-			return std::vector< renderer::PixelFormat >
+			std::vector< renderer::PixelFormat > result
 			{
-				depthView.getFormat(),
-				renderer::PixelFormat::eR32F,
-				renderer::PixelFormat::eRGBA32F,
-				renderer::PixelFormat::eRGBA32F,
-				renderer::PixelFormat::eRGBA32F,
-				renderer::PixelFormat::eRGBA32F,
+				depthFormat,
 			};
-		}
 
-		renderer::RenderPassAttachmentArray doGetAttaches( renderer::TextureView const & depthView )
-		{
-			renderer::RenderPassAttachmentArray result;
-			auto formats = doGetFormats( depthView );
-
-			for ( auto format : formats )
+			for ( auto & texture : gbuffer )
 			{
-				result.push_back( { format, true } );
+				result.push_back( texture.view->getFormat() );
 			}
 
 			return result;
 		}
 
-		renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
-			, renderer::TextureView const & depthView )
+		renderer::TextureViewCRefArray doGetViews( GeometryPassResult const & gbuffer
+			, renderer::TextureView const & depthview )
 		{
-			auto const formats{ doGetFormats( depthView ) };
-			auto const attaches{ doGetAttaches( depthView ) };
-			renderer::ImageLayoutArray const initialLayouts
+			renderer::TextureViewCRefArray result
 			{
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::eUndefined,
+				depthview
 			};
-			renderer::ImageLayoutArray const finalLayouts
+
+			for ( auto & texture : gbuffer )
 			{
-				renderer::ImageLayout::eDepthStencilAttachmentOptimal,
-				renderer::ImageLayout::eShaderReadOnlyOptimal,
-				renderer::ImageLayout::eShaderReadOnlyOptimal,
-				renderer::ImageLayout::eShaderReadOnlyOptimal,
-				renderer::ImageLayout::eShaderReadOnlyOptimal,
-				renderer::ImageLayout::eShaderReadOnlyOptimal,
-			};
-			renderer::RenderSubpassPtrArray subpasses;
-			subpasses.emplace_back( device.createRenderSubpass( formats
-				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite | renderer::AccessFlag::eColourAttachmentRead } ) );
-			return device.createRenderPass( attaches
-				, subpasses
-				, renderer::RenderPassState{ renderer::PipelineStageFlag::eFragmentShader
-					, renderer::AccessFlag::eShaderRead
-					, initialLayouts }
-				, renderer::RenderPassState{ renderer::PipelineStageFlag::eFragmentShader
-					, renderer::AccessFlag::eShaderRead
-					, finalLayouts } );
-		}
-
-		renderer::FrameBufferPtr doCreateFrameBuffer( renderer::RenderPass const & renderPass
-			, renderer::TextureView const & depthView
-			, GeometryPassResult const & textures )
-		{
-			auto const formats{ doGetFormats( depthView ) };
-			renderer::FrameBufferAttachmentArray attaches;
-			attaches.emplace_back( *( renderPass.begin() + 0u ), depthView );
-			attaches.emplace_back( *( renderPass.begin() + 1u ), *textures[0].view );
-			attaches.emplace_back( *( renderPass.begin() + 2u ), *textures[1].view );
-			attaches.emplace_back( *( renderPass.begin() + 3u ), *textures[2].view );
-			attaches.emplace_back( *( renderPass.begin() + 4u ), *textures[3].view );
-			attaches.emplace_back( *( renderPass.begin() + 5u ), *textures[4].view );
-			auto dimensions = depthView.getTexture().getDimensions();
-			return renderPass.createFrameBuffer( renderer::UIVec2{ dimensions[0], dimensions[1] }
-				, std::move( attaches ) );
-		}
-
-		renderer::UniformBufferPtr< common::MaterialData > doCreateMaterialsUbo( renderer::Device const & device
-			, common::Object const & submeshes
-			, uint32_t & count )
-		{
-			count = 0u;
-
-			for ( auto & submesh : submeshes )
-			{
-				count += std::count_if( submesh.materials.begin()
-					, submesh.materials.end()
-					, []( common::Material const & lookup )
-					{
-						return !lookup.hasOpacity;
-					} );
-			}
-
-			renderer::UniformBufferPtr< common::MaterialData > result;
-
-			if ( count )
-			{
-				result = std::make_unique< renderer::UniformBuffer< common::MaterialData > >( device
-					, count
-					, renderer::BufferTarget::eTransferDst
-					, renderer::MemoryPropertyFlag::eDeviceLocal );
+				result.emplace_back( *texture.view );
 			}
 
 			return result;
-		}
-
-		renderer::DescriptorSetLayoutPtr doCreateDescriptorLayout( renderer::Device const & device )
-		{
-			std::vector< renderer::DescriptorSetLayoutBinding > bindings
-			{
-				renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex },
-				renderer::DescriptorSetLayoutBinding{ 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex },
-				renderer::DescriptorSetLayoutBinding{ 2u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment },
-			};
-			return device.createDescriptorSetLayout( std::move( bindings ) );
 		}
 	}
 
 	GeometryPass::GeometryPass( renderer::Device const & device
-		, common::Object const & submeshes
+		, renderer::ShaderProgramPtr && program
+		, GeometryPassResult const & gbuffer
+		, renderer::PixelFormat depthFormat
 		, renderer::UniformBuffer< renderer::Mat4 > const & matrixUbo
-		, renderer::UniformBuffer< renderer::Mat4 > const & objectUbo
-		, renderer::StagingBuffer & stagingBuffer
-		, renderer::TextureView const & depthView
-		, common::TextureNodePtrArray const & textureNodes )
-		: m_device{ device }
+		, renderer::UniformBuffer< renderer::Mat4 > const & objectUbo )
+		: common::NodesRenderer{ device
+			, std::move( program )
+			, doGetFormats( gbuffer, depthFormat )
+			, true
+			, true }
 		, m_matrixUbo{ matrixUbo }
 		, m_objectUbo{ objectUbo }
-		, m_sampler{ m_device.createSampler( renderer::WrapMode::eClampToEdge
-			, renderer::WrapMode::eClampToEdge
-			, renderer::WrapMode::eClampToEdge
-			, renderer::Filter::eLinear
-			, renderer::Filter::eLinear ) }
-		, m_updateCommandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
-		, m_commandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
-		, m_materialsUbo{ doCreateMaterialsUbo( device, submeshes, m_nodesCount ) }
-		, m_descriptorLayout{ doCreateDescriptorLayout( device ) }
-		, m_descriptorPool{ m_descriptorLayout->createPool( m_nodesCount ) }
-		, m_program{ doCreateProgram( m_device ) }
 	{
-		m_renderPass = doCreateRenderPass( m_device, depthView );
-
-		if ( m_nodesCount )
-		{
-			uint32_t matIndex = 0u;
-
-			for ( auto & submesh : submeshes )
-			{
-				m_submeshNodes.push_back( std::make_shared< common::SubmeshNode >() );
-				common::SubmeshNodePtr submeshNode = m_submeshNodes.back();
-
-				// Initialise vertex layout.
-				submeshNode->vertexLayout = m_device.createVertexLayout( 0u, sizeof( common::Vertex ) );
-				submeshNode->vertexLayout->createAttribute< renderer::Vec3 >( 0u, offsetof( common::Vertex, position ) );
-				submeshNode->vertexLayout->createAttribute< renderer::Vec3 >( 1u, offsetof( common::Vertex, normal ) );
-				submeshNode->vertexLayout->createAttribute< renderer::Vec3 >( 2u, offsetof( common::Vertex, tangent ) );
-				submeshNode->vertexLayout->createAttribute< renderer::Vec3 >( 3u, offsetof( common::Vertex, bitangent ) );
-				submeshNode->vertexLayout->createAttribute< renderer::Vec2 >( 4u, offsetof( common::Vertex, texture ) );
-
-				// Initialise geometry buffers.
-				submeshNode->vbo = renderer::makeVertexBuffer< common::Vertex >( m_device
-					, uint32_t( submesh.vbo.data.size() )
-					, renderer::BufferTarget::eTransferDst
-					, renderer::MemoryPropertyFlag::eDeviceLocal );
-				stagingBuffer.uploadVertexData( *m_updateCommandBuffer
-					, submesh.vbo.data
-					, *submeshNode->vbo
-					, renderer::PipelineStageFlag::eVertexInput );
-				submeshNode->ibo = renderer::makeBuffer< common::Face >( m_device
-					, uint32_t( submesh.ibo.data.size() )
-					, renderer::BufferTarget::eTransferDst
-					, renderer::MemoryPropertyFlag::eDeviceLocal );
-				stagingBuffer.uploadBufferData( *m_updateCommandBuffer
-					, submesh.ibo.data
-					, *submeshNode->ibo );
-				submeshNode->geometryBuffers = m_device.createGeometryBuffers( *submeshNode->vbo
-					, 0u
-					, *submeshNode->vertexLayout
-					, submeshNode->ibo->getBuffer()
-					, 0u
-					, renderer::IndexType::eUInt32 );
-
-				for ( auto & material : submesh.materials )
-				{
-					if ( !material.hasOpacity )
-					{
-						common::MaterialNode materialNode{ submeshNode };
-
-						// Initialise material textures.
-						for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
-						{
-							auto & texture = material.textures[index];
-							auto it = std::find_if( textureNodes.begin()
-								, textureNodes.end()
-								, [&texture]( common::TextureNodePtr const & lookup )
-								{
-									return lookup->image == texture;
-								} );
-							assert( it != textureNodes.end() );
-							materialNode.textures.push_back( *it );
-						}
-
-						m_materialsUbo->getData( matIndex ) = material.data;
-
-						// Initialise descriptor set for UBOs
-						materialNode.descriptorSetUbos = m_descriptorPool->createDescriptorSet( 0u );
-						materialNode.descriptorSetUbos->createBinding( m_descriptorLayout->getBinding( 0u )
-							, m_matrixUbo
-							, 0u
-							, 1u );
-						materialNode.descriptorSetUbos->createBinding( m_descriptorLayout->getBinding( 1u )
-							, m_objectUbo
-							, 0u
-							, 1u );
-						materialNode.descriptorSetUbos->createBinding( m_descriptorLayout->getBinding( 2u )
-							, *m_materialsUbo
-							, matIndex
-							, 1u );
-						materialNode.descriptorSetUbos->update();
-
-						// Initialise descriptor set for textures.
-						renderer::DescriptorSetLayoutBindingArray bindings;
-						bindings.emplace_back( 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment, 6u );
-						materialNode.layout = m_device.createDescriptorSetLayout( std::move( bindings ) );
-						materialNode.pool = materialNode.layout->createPool( 1u );
-						materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
-
-						for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
-						{
-							materialNode.descriptorSetTextures->createBinding( materialNode.layout->getBinding( 0u, index )
-								, *materialNode.textures[index]->view
-								, *m_sampler
-								, index );
-						}
-
-						materialNode.descriptorSetTextures->update();
-						renderer::RasterisationState rasterisationState;
-						renderer::DepthStencilState depthStencilState
-						{
-							0u,
-							true,
-							true,
-							renderer::CompareOp::eLess,
-							false,
-							true,
-							renderer::StencilOpState
-							{
-								renderer::StencilOp::eKeep,
-								renderer::StencilOp::eIncrementAndClamp,
-							},
-							renderer::StencilOpState
-							{
-								renderer::StencilOp::eKeep,
-								renderer::StencilOp::eIncrementAndClamp,
-							}
-						};
-
-						if ( material.data.backFace )
-						{
-							rasterisationState = renderer::RasterisationState{ 0u
-								, false
-								, false
-								, renderer::PolygonMode::eFill
-								, renderer::CullModeFlag::eFront };
-						}
-
-						// Initialise the pipeline
-						if ( materialNode.layout )
-						{
-							materialNode.pipelineLayout = m_device.createPipelineLayout( { *m_descriptorLayout, *materialNode.layout } );
-						}
-						else
-						{
-							materialNode.pipelineLayout = m_device.createPipelineLayout( *m_descriptorLayout );
-						}
-
-						renderer::ColourBlendState blendState;
-						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
-						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
-						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
-						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
-						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
-
-						materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_program
-							, { *submeshNode->vertexLayout }
-							, *m_renderPass
-							, { renderer::PrimitiveTopology::eTriangleList }
-							, rasterisationState
-							, blendState );
-						materialNode.pipeline->multisampleState( renderer::MultisampleState{} );
-						materialNode.pipeline->depthStencilState( depthStencilState );
-						materialNode.pipeline->finish();
-						m_renderNodes.emplace_back( std::move( materialNode ) );
-						++matIndex;
-					}
-				}
-			}
-
-			// Fill Materials Ubo
-			stagingBuffer.uploadUniformData( *m_updateCommandBuffer
-				, m_materialsUbo->getDatas()
-				, *m_materialsUbo
-				, renderer::PipelineStageFlag::eFragmentShader );
-		}
 	}
 
-	void GeometryPass::update( renderer::TextureView const & depthView )
+	void GeometryPass::update( common::RenderTarget const & target )
 	{
-		auto dimensions = depthView.getTexture().getDimensions();
-		auto size = renderer::UIVec2{ dimensions[0], dimensions[1] };
-
-		if ( size != m_size )
-		{
-			m_size = size;
-			doCreateResult();
-			m_frameBuffer = doCreateFrameBuffer( *m_renderPass
-				, depthView
-				, m_result );
-			m_commandBuffer->reset();
-			auto & commandBuffer = *m_commandBuffer;
-			static renderer::RgbaColour const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
-			static renderer::DepthStencilClearValue const depth{ 1.0, 0 };
-
-			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
-			{
-				commandBuffer.beginRenderPass( *m_renderPass
-					, *m_frameBuffer
-					, { depth, colour, colour, colour, colour, colour }
-					, renderer::SubpassContents::eInline );
-
-				if ( m_nodesCount )
-				{
-					for ( auto & node : m_renderNodes )
-					{
-						commandBuffer.bindPipeline( *node.pipeline );
-						commandBuffer.setViewport( { size[0]
-							, size[1]
-							, 0
-							, 0 } );
-						commandBuffer.setScissor( { 0
-							, 0
-							, size[0]
-							, size[1] } );
-						commandBuffer.bindGeometryBuffers( *node.submesh->geometryBuffers );
-						commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
-							, *node.pipelineLayout );
-						commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
-							, *node.pipelineLayout );
-
-						commandBuffer.drawIndexed( uint32_t( node.submesh->ibo->getBuffer().getSize() / sizeof( uint32_t ) ) );
-					}
-				}
-
-				commandBuffer.endRenderPass();
-				commandBuffer.end();
-			}
-		}
+		doUpdate( doGetViews( static_cast< RenderTarget const & >( target ).getGBuffer()
+			, target.getDepthView() ) );
 	}
 
-	bool GeometryPass::draw()const
+	void GeometryPass::doFillDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )
 	{
-		return m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
+		bindings.emplace_back( 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex );
+		bindings.emplace_back( 2u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex );
 	}
 
-	void GeometryPass::doCreateResult()
+	void GeometryPass::doFillDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
+		, renderer::DescriptorSet & descriptorSet )
 	{
-		static renderer::PixelFormat const formats[]
-		{
-			renderer::PixelFormat::eR32F,
-			utils::PixelFormat::eRGBA32F,
-			utils::PixelFormat::eRGBA32F,
-			utils::PixelFormat::eRGBA32F,
-			utils::PixelFormat::eRGBA32F,
-		};
-		size_t index = 0u;
-
-		for ( auto & texture : m_result )
-		{
-			texture.texture = m_device.createTexture();
-			texture.texture->setImage( formats[index]
-				, m_size
-				, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
-			texture.view = texture.texture->createView( renderer::TextureType::e2D
-				, texture.texture->getFormat() );
-			++index;
-		}
+		descriptorSet.createBinding( descriptorLayout.getBinding( 1u )
+			, m_matrixUbo
+			, 0u
+			, 1u );
+		descriptorSet.createBinding( descriptorLayout.getBinding( 2u )
+			, m_objectUbo
+			, 0u
+			, 1u );
 	}
 }

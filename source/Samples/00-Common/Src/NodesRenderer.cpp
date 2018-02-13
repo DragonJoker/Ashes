@@ -1,6 +1,7 @@
 #include "NodesRenderer.hpp"
 
 #include "FileUtils.hpp"
+#include "RenderTarget.hpp"
 
 #include <Buffer/Buffer.hpp>
 #include <Buffer/GeometryBuffers.hpp>
@@ -43,24 +44,31 @@ namespace common
 			, bool clearViews )
 		{
 			renderer::RenderPassAttachmentArray attaches;
+			renderer::ImageLayoutArray initialLayouts;
+			renderer::ImageLayoutArray finalLayouts;
 
 			for ( auto format : formats )
 			{
 				attaches.push_back( { format, clearViews } );
+
+				if ( renderer::isDepthFormat( format )
+					|| renderer::isStencilFormat( format )
+					|| renderer::isDepthStencilFormat( format ) )
+				{
+					initialLayouts.push_back( renderer::ImageLayout::eDepthStencilAttachmentOptimal );
+					finalLayouts.push_back( renderer::ImageLayout::eDepthStencilAttachmentOptimal );
+				}
+				else
+				{
+					initialLayouts.push_back( clearViews
+						? renderer::ImageLayout::eShaderReadOnlyOptimal
+						: renderer::ImageLayout::eColourAttachmentOptimal );
+					finalLayouts.push_back( clearViews
+						? renderer::ImageLayout::eColourAttachmentOptimal
+						: renderer::ImageLayout::eShaderReadOnlyOptimal );
+				}
 			}
 
-			renderer::ImageLayoutArray const initialLayouts
-			{
-				clearViews
-					? renderer::ImageLayout::eShaderReadOnlyOptimal
-					: renderer::ImageLayout::eColourAttachmentOptimal,
-				renderer::ImageLayout::eDepthStencilAttachmentOptimal,
-			};
-			renderer::ImageLayoutArray const finalLayouts
-			{
-				renderer::ImageLayout::eColourAttachmentOptimal,
-				renderer::ImageLayout::eDepthStencilAttachmentOptimal,
-			};
 			renderer::RenderSubpassPtrArray subpasses;
 			subpasses.emplace_back( device.createRenderSubpass( formats
 				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
@@ -87,7 +95,6 @@ namespace common
 				attaches.emplace_back( *it, view.get() );
 				++it;
 			}
-
 
 			auto dimensions = views[0].get().getTexture().getDimensions();
 			return renderPass.createFrameBuffer( renderer::UIVec2{ dimensions[0], dimensions[1] }
@@ -145,61 +152,9 @@ namespace common
 	{
 	}
 
-	void NodesRenderer::update( renderer::TextureViewCRefArray const & views )
+	void NodesRenderer::update( RenderTarget const & target )
 	{
-		m_views.clear();
-
-		for ( auto & view : views )
-		{
-			m_views.push_back( &view.get() );
-		}
-
-		m_frameBuffer = doCreateFrameBuffer( *m_renderPass, views );
-		m_commandBuffer->reset();
-		auto & commandBuffer = *m_commandBuffer;
-		static renderer::RgbaColour const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
-		static renderer::DepthStencilClearValue const depth{ 1.0, 0 };
-		auto size = m_frameBuffer->getDimensions();
-
-		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
-		{
-			commandBuffer.resetQueryPool( *m_queryPool, 0u, 2u );
-			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
-				, *m_queryPool
-				, 0u );
-			commandBuffer.beginRenderPass( *m_renderPass
-				, *m_frameBuffer
-				, { colour, depth }
-				, renderer::SubpassContents::eInline );
-
-			if ( m_nodesCount )
-			{
-				for ( auto & node : m_renderNodes )
-				{
-					commandBuffer.bindPipeline( *node.pipeline );
-					commandBuffer.setViewport( { size[0]
-						, size[1]
-						, 0
-						, 0 } );
-					commandBuffer.setScissor( { 0
-						, 0
-						, size[0]
-						, size[1] } );
-					commandBuffer.bindGeometryBuffers( *node.submesh->geometryBuffers );
-					commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
-						, *node.pipelineLayout );
-					commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
-						, *node.pipelineLayout );
-					commandBuffer.drawIndexed( node.submesh->ibo->getCount() * 3u );
-				}
-			}
-
-			commandBuffer.endRenderPass();
-			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
-				, *m_queryPool
-				, 1u );
-			commandBuffer.end();
-		}
+		doUpdate( { target.getDepthView(), target.getColourView() } );
 	}
 
 	bool NodesRenderer::draw( std::chrono::nanoseconds & gpu )const
@@ -355,11 +310,24 @@ namespace common
 							materialNode.pipelineLayout = m_device.createPipelineLayout( *m_descriptorLayout );
 						}
 
+						renderer::ColourBlendState blendState;
+
+						for ( auto & attach : *m_renderPass )
+						{
+							if ( !renderer::isDepthFormat( attach.pixelFormat )
+								&& !renderer::isStencilFormat( attach.pixelFormat )
+								&& !renderer::isDepthStencilFormat( attach.pixelFormat ) )
+							{
+								blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
+							}
+						}
+
 						materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_program
 							, { *submeshNode->vertexLayout }
 							, *m_renderPass
 							, { renderer::PrimitiveTopology::eTriangleList }
-							, rasterisationState );
+							, rasterisationState
+							, blendState );
 						materialNode.pipeline->multisampleState( renderer::MultisampleState{} );
 						materialNode.pipeline->depthStencilState( renderer::DepthStencilState{} );
 						materialNode.pipeline->finish();
@@ -377,7 +345,82 @@ namespace common
 					, renderer::PipelineStageFlag::eFragmentShader );
 			}
 
-			update( views );
+			doUpdate( views );
+		}
+	}
+	void NodesRenderer::doUpdate( renderer::TextureViewCRefArray const & views )
+	{
+		assert( !views.empty() );
+		auto dimensions = views[0].get().getTexture().getDimensions();
+		auto size = renderer::UIVec2{ dimensions[0], dimensions[1] };
+
+		if ( size != m_size )
+		{
+			m_size = size;
+			m_views.clear();
+			static renderer::RgbaColour const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
+			static renderer::DepthStencilClearValue const depth{ 1.0, 0 };
+			renderer::ClearValueArray clearValues;
+
+			for ( auto & view : views )
+			{
+				m_views.push_back( &view.get() );
+
+				if ( !renderer::isDepthFormat( view.get().getFormat() )
+					&& !renderer::isStencilFormat( view.get().getFormat() )
+					&& !renderer::isDepthStencilFormat( view.get().getFormat() ) )
+				{
+					clearValues.emplace_back( colour );
+				}
+				else
+				{
+					clearValues.emplace_back( depth );
+				}
+			}
+
+			m_frameBuffer = doCreateFrameBuffer( *m_renderPass, views );
+			m_commandBuffer->reset();
+			auto & commandBuffer = *m_commandBuffer;
+
+			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
+			{
+				commandBuffer.resetQueryPool( *m_queryPool, 0u, 2u );
+				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+					, *m_queryPool
+					, 0u );
+				commandBuffer.beginRenderPass( *m_renderPass
+					, *m_frameBuffer
+					, clearValues
+					, renderer::SubpassContents::eInline );
+
+				if ( m_nodesCount )
+				{
+					for ( auto & node : m_renderNodes )
+					{
+						commandBuffer.bindPipeline( *node.pipeline );
+						commandBuffer.setViewport( { size[0]
+							, size[1]
+							, 0
+							, 0 } );
+						commandBuffer.setScissor( { 0
+							, 0
+							, size[0]
+							, size[1] } );
+						commandBuffer.bindGeometryBuffers( *node.submesh->geometryBuffers );
+						commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
+							, *node.pipelineLayout );
+						commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
+							, *node.pipelineLayout );
+						commandBuffer.drawIndexed( node.submesh->ibo->getCount() * 3u );
+					}
+				}
+
+				commandBuffer.endRenderPass();
+				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+					, *m_queryPool
+					, 1u );
+				commandBuffer.end();
+			}
 		}
 	}
 }
