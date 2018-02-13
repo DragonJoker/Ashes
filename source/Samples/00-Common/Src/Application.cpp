@@ -302,17 +302,6 @@ namespace common
 		return wxApp::OnExit();
 	}
 
-	void App::updateFps( std::chrono::microseconds const & durationGpu
-		, std::chrono::microseconds const & durationCpu )
-	{
-		m_mainFrame->updateFps( durationGpu, durationCpu );
-	}
-
-	void App::updateFps( std::chrono::microseconds const & duration )
-	{
-		m_mainFrame->updateFps( duration );
-	}
-
 	bool App::doParseCommandLine()
 	{
 		wxCmdLineParser parser( wxApp::argc, wxApp::argv );

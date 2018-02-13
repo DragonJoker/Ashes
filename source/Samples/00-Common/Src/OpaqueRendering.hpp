@@ -26,9 +26,9 @@ namespace common
 			, std::string const & shader
 			, renderer::PixelFormat const & colourFormat
 			, renderer::PixelFormat const & depthFormat );
-		void update( renderer::TextureView const & colourView
+		virtual void update( renderer::TextureView const & colourView
 			, renderer::TextureView const & depthView );
-		bool draw( std::chrono::nanoseconds & gpu )const;
+		virtual bool draw( std::chrono::nanoseconds & gpu )const;
 
 	protected:
 		void doInitialise( Object const & submeshes
@@ -42,7 +42,7 @@ namespace common
 		virtual void doFillDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
 			, renderer::DescriptorSet & descriptorSet ) = 0;
 
-	private:
+	protected:
 		renderer::Device const & m_device;
 		renderer::TextureView const * m_colourView{ nullptr };
 		renderer::TextureView const * m_depthView{ nullptr };

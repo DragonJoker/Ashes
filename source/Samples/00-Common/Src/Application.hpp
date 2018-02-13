@@ -19,10 +19,6 @@ namespace common
 		bool OnInit()override;
 		int OnExit()override;
 
-		void updateFps( std::chrono::microseconds const & durationGpu
-			, std::chrono::microseconds const & durationCpu );
-		void updateFps( std::chrono::microseconds const & duration );
-
 		inline wxString const & getRendererName()const
 		{
 			return m_rendererName;

@@ -17,7 +17,7 @@ namespace gl_renderer
 			case renderer::IndexType::eUInt32:
 				return 4u;
 			default:
-				assert( "Unsupported index type" );
+				assert( false && "Unsupported index type" );
 				return 1u;
 			}
 		}
