@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-namespace vkapp
+namespace common
 {
 	class Camera
 	{

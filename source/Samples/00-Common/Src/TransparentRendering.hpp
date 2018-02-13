@@ -2,6 +2,20 @@
 
 #include "Prerequisites.hpp"
 
+#include <Buffer/UniformBuffer.hpp>
+#include <Command/CommandBuffer.hpp>
+#include <Descriptor/DescriptorSet.hpp>
+#include <Descriptor/DescriptorSetLayout.hpp>
+#include <Descriptor/DescriptorSetPool.hpp>
+#include <Image/Sampler.hpp>
+#include <Miscellaneous/QueryPool.hpp>
+#include <Pipeline/Pipeline.hpp>
+#include <Pipeline/PipelineLayout.hpp>
+#include <RenderPass/RenderPass.hpp>
+#include <RenderPass/FrameBuffer.hpp>
+#include <RenderPass/RenderPass.hpp>
+#include <Shader/ShaderProgram.hpp>
+
 namespace common
 {
 	class TransparentRendering
@@ -9,8 +23,7 @@ namespace common
 	public:
 		TransparentRendering( renderer::Device const & device
 			, std::string const & appName
-			, renderer::UniformBuffer< renderer::Mat4 > const & matrixUbo
-			, renderer::UniformBuffer< renderer::Mat4 > const & objectUbo
+			, std::string const & shader
 			, renderer::PixelFormat const & colourFormat
 			, renderer::PixelFormat const & depthFormat );
 		void update( renderer::TextureView const & colourView
@@ -26,12 +39,11 @@ namespace common
 
 	private:
 		virtual void doFillDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings ) = 0;
-		virtual void doFillDescriptorSet( renderer::DescriptorSet & descriptorSet ) = 0;
+		virtual void doFillDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
+			, renderer::DescriptorSet & descriptorSet ) = 0;
 
 	private:
 		renderer::Device const & m_device;
-		renderer::UniformBuffer< renderer::Mat4 > const & m_matrixUbo;
-		renderer::UniformBuffer< renderer::Mat4 > const & m_objectUbo;
 		renderer::TextureView const * m_colourView{ nullptr };
 		renderer::TextureView const * m_depthView{ nullptr };
 		renderer::SamplerPtr m_sampler;

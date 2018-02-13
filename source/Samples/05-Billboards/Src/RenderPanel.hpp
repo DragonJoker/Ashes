@@ -94,7 +94,7 @@ namespace vkapp
 		bool m_moveCamera{ false };
 		renderer::IVec2 m_previousMousePosition;
 		renderer::Mat4 m_projection;
-		Camera m_camera;
+		common::Camera m_camera;
 		/**
 		*\name
 		*	Global.

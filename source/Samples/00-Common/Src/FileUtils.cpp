@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-#if defined( _WIN32 )
+#if defined( RENDERLIB_WIN32 )
 
 #include <cstdio>
 #include <cstring>

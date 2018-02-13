@@ -29,7 +29,6 @@ namespace common
 		wxDECLARE_EVENT_TABLE();
 		void onClose( wxCloseEvent & event );
 		void onTimer( wxTimerEvent & event );
-		void onSize( wxSizeEvent & event );
 
 	private:
 		static size_t constexpr FrameSamplesCount = 1000;

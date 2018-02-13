@@ -27,5 +27,9 @@ void main()
 {
 	vtx_colour = colour;
 	vtx_texcoord = texcoord;
+#ifdef VULKAN
 	gl_Position = vec4( position * pushConstants.scale + pushConstants.translate, 0.0, 1.0 );
+#else
+	gl_Position = vec4( position * scale + translate, 0.0, 1.0 );
+#endif
 }

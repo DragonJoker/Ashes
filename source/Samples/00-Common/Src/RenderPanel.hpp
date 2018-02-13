@@ -1,6 +1,8 @@
 #pragma once
 
+#include "Camera.hpp"
 #include "RenderTarget.hpp"
+#include "Gui.hpp"
 
 #include <Core/Connection.hpp>
 #include <Core/Device.hpp>
@@ -20,41 +22,63 @@ namespace common
 	class RenderPanel
 		: public wxPanel
 	{
+	private:
+		struct MouseState
+		{
+			renderer::UIVec2 position;
+			bool left{ false };
+			bool right{ false };
+		};
+
 	public:
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
-			, std::string const & appName );
+			, std::string const & appName
+			, std::string const & appDesc );
 		~RenderPanel();
 		void initialise( renderer::Renderer const & renderer );
 		void update();
 		void draw( std::chrono::microseconds & cpu
 			, std::chrono::microseconds & gpu );
-		void resize( wxSize const & size );
 
 	private:
-		virtual void doInitialise() = 0;
+		virtual void doInitialise( renderer::Device const & device
+			, renderer::UIVec2 const & size ) = 0;
+		virtual void doUpdateOverlays( Gui const & gui ) = 0;
 		void doCleanup();
 		void doCreateDevice( renderer::Renderer const & renderer );
 		void doCreateSwapChain();
-		void doInitialiseLights();
 		void doCreateDescriptorSet();
 		void doCreateRenderPass();
 		void doCreateVertexBuffer();
 		void doCreatePipeline();
 		void doPrepareFrames();
+		void doUpdateGui( std::chrono::microseconds const & duration );
+		void onSize( wxSizeEvent & event );
+		void onMouseLDown( wxMouseEvent & event );
+		void onMouseLUp( wxMouseEvent & event );
+		void onMouseRDown( wxMouseEvent & event );
+		void onMouseRUp( wxMouseEvent & event );
+		void onMouseMove( wxMouseEvent & event );
+
+	protected:
+		std::unique_ptr< RenderTarget > m_renderTarget;
 
 	private:
-		std::string const & m_appName;
+		std::string m_appName;
+		std::string m_appDesc;
+		bool m_ready{ false };
+		MouseState m_mouse;
+		std::chrono::microseconds m_cpu;
+		std::chrono::microseconds m_gpu;
 		std::vector< TexturedVertexData > m_vertexData;
+		std::unique_ptr< Gui > m_gui;
 
 		renderer::DevicePtr m_device;
 		renderer::SwapChainPtr m_swapChain;
 		renderer::StagingBufferPtr m_stagingBuffer;
-		renderer::UniformBufferPtr< common::LightsData > m_lightsUbo;
 
-		std::unique_ptr< RenderTarget > m_renderTarget;
 		renderer::SamplerPtr m_sampler;
-
 		renderer::RenderPassPtr m_renderPass;
 		renderer::ShaderProgramPtr m_program;
 		renderer::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
