@@ -19,8 +19,8 @@ namespace vkapp
 		void update( common::RenderTarget const & target )override;
 
 	private:
-		void doFillDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )override;
-		void doFillDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
+		void doFillObjectDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )override;
+		void doFillObjectDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
 			, renderer::DescriptorSet & descriptorSet )override;
 
 	private:

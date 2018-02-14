@@ -19,13 +19,13 @@ namespace vkapp
 	{
 	}
 
-	void NodesRenderer::doFillDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )
+	void NodesRenderer::doFillObjectDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )
 	{
 		bindings.emplace_back( 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex );
 		bindings.emplace_back( 2u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex );
 	}
 
-	void NodesRenderer::doFillDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
+	void NodesRenderer::doFillObjectDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
 		, renderer::DescriptorSet & descriptorSet )
 	{
 		descriptorSet.createBinding( descriptorLayout.getBinding( 1u )

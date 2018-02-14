@@ -99,7 +99,6 @@ Tests Compute pipeline, by processing the output of the PushConstants sample to 
 ## Sample applications
 
 #### Sample apps to implement
-- Billboards.
 - Compute particle system.
 
 These applications use the library in a more complex way, closer to what would be done within an engine.
@@ -123,3 +122,8 @@ Applies normal mapping.
 <img src="./screenshots/s04.png" height="72px" align="right">
 
 Deferred rendering implementation for opaque objects
+
+### [Billboards](source/Samples/04-Billboards/)
+<img src="./screenshots/s05.png" height="72px" align="right">
+
+Billboards sample.

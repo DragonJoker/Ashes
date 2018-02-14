@@ -31,7 +31,7 @@ namespace common
 		void initialise( Scene const & scene
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::TextureViewCRefArray const & views
-			, common::TextureNodePtrArray const & textureNodes );
+			, TextureNodePtrArray const & textureNodes );
 
 		inline renderer::Device const & getDevice()const
 		{
@@ -42,9 +42,32 @@ namespace common
 		void doUpdate( renderer::TextureViewCRefArray const & views );
 
 	private:
-		virtual void doFillDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings ) = 0;
-		virtual void doFillDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
-			, renderer::DescriptorSet & descriptorSet ) = 0;
+		void doInitialiseObject( Object const & object
+			, renderer::StagingBuffer & stagingBuffer
+			, TextureNodePtrArray const & textureNodes
+			, uint32_t & matIndex );
+		void doInitialiseBillboard( Billboard const & billboard
+			, renderer::StagingBuffer & stagingBuffer
+			, TextureNodePtrArray const & textureNodes
+			, uint32_t & matIndex );
+
+		virtual void doFillObjectDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )
+		{
+		}
+
+		virtual void doFillObjectDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
+			, renderer::DescriptorSet & descriptorSet )
+		{
+		}
+
+		virtual void doFillBillboardDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )
+		{
+		}
+
+		virtual void doFillBillboardDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
+			, renderer::DescriptorSet & descriptorSet )
+		{
+		}
 
 	protected:
 		renderer::Device const & m_device;
@@ -55,15 +78,26 @@ namespace common
 		renderer::CommandBufferPtr m_updateCommandBuffer;
 		renderer::CommandBufferPtr m_commandBuffer;
 		renderer::UniformBufferPtr< MaterialData > m_materialsUbo;
-		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
-		renderer::DescriptorSetPoolPtr m_descriptorPool;
+
+		renderer::DescriptorSetLayoutPtr m_objectDescriptorLayout;
+		renderer::DescriptorSetPoolPtr m_objectDescriptorPool;
+		renderer::VertexLayoutPtr m_objectVertexLayout;
 		renderer::ShaderProgramPtr m_objectProgram;
+
+		renderer::DescriptorSetLayoutPtr m_billboardDescriptorLayout;
+		renderer::DescriptorSetPoolPtr m_billboardDescriptorPool;
+		renderer::VertexLayoutPtr m_billboardVertexLayout;
+		renderer::VertexLayoutPtr m_billboardInstanceLayout;
 		renderer::ShaderProgramPtr m_billboardProgram;
+
 		renderer::RenderPassPtr m_renderPass;
 		renderer::FrameBufferPtr m_frameBuffer;
 		renderer::QueryPoolPtr m_queryPool;
 		SubmeshNodes m_submeshNodes;
-		ObjectNodes m_renderNodes;
-		uint32_t m_nodesCount;
+		ObjectNodes m_submeshRenderNodes;
+		BillboardNodes m_billboardNodes;
+		BillboardListNodes m_billboardRenderNodes;
+		uint32_t m_objectsCount;
+		uint32_t m_billboardsCount;
 	};
 }

@@ -2,6 +2,7 @@
 
 #include "Prerequisites.hpp"
 
+#include <Camera.hpp>
 #include <RenderTarget.hpp>
 
 namespace vkapp
@@ -15,7 +16,18 @@ namespace vkapp
 			, common::Scene && scene
 			, common::ImagePtrArray && images );
 
+		inline void enableMoveCamera( bool enable )
+		{
+			m_moveCamera = enable;
+		}
+
+		inline void updateMousePosition( renderer::IVec2 const & position )
+		{
+			m_currentMousePosition = position;
+		}
+
 	private:
+		void doUpdateProjection( renderer::UIVec2 const & size );
 		void doUpdate( std::chrono::microseconds const & duration )override;
 		virtual void doResize( renderer::UIVec2 const & size )override;
 		common::OpaqueRenderingPtr doCreateOpaqueRendering( renderer::Device const & device
@@ -28,11 +40,12 @@ namespace vkapp
 			, renderer::TextureViewCRefArray const & views
 			, common::Scene const & scene
 			, common::TextureNodePtrArray const & textureNodes )override;
-		void doUpdateMatrixUbo( renderer::UIVec2 const & size );
 
 	private:
 		renderer::UniformBufferPtr< common::SceneData > m_sceneUbo;
-		renderer::UniformBufferPtr< common::ObjectData > m_objectUbo;
-		renderer::Mat4 m_rotate;
+		renderer::IVec2 m_previousMousePosition;
+		renderer::IVec2 m_currentMousePosition;
+		common::Camera m_camera;
+		bool m_moveCamera{ false };
 	};
 }

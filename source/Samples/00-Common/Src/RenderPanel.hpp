@@ -44,6 +44,11 @@ namespace common
 		virtual void doInitialise( renderer::Device const & device
 			, renderer::UIVec2 const & size ) = 0;
 		virtual void doUpdateOverlays( Gui const & gui ) = 0;
+
+		virtual void doUpdate()
+		{
+		}
+
 		void doCleanup();
 		void doCreateDevice( renderer::Renderer const & renderer );
 		void doCreateSwapChain();
@@ -64,13 +69,13 @@ namespace common
 
 	protected:
 		std::unique_ptr< RenderTarget > m_renderTarget;
+		MouseState m_mouse;
 
 	private:
 		static size_t constexpr FrameSamplesCount = 1000;
 		std::string m_appName;
 		std::string m_appDesc;
 		bool m_ready{ false };
-		MouseState m_mouse;
 		std::chrono::microseconds m_frameTime;
 		std::array< std::chrono::microseconds, FrameSamplesCount > m_framesTimes;
 		uint32_t m_frameIndex{ 0 };
