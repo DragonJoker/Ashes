@@ -55,6 +55,8 @@
 
 #include "Miscellaneous/GlCallLogger.hpp"
 
+#include "Miscellaneous/GlDebug.hpp"
+
 namespace gl_renderer
 {
 	class Buffer;

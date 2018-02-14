@@ -528,7 +528,7 @@ namespace gl_renderer
 					{
 						attributes.erase( it );
 					}
-					else
+					else if ( name.find( "gl_" ) != 0u )
 					{
 						std::stringstream stream;
 						stream << ValidationError
