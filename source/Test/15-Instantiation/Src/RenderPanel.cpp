@@ -421,8 +421,7 @@ namespace vkapp
 
 		m_offscreenIndexBuffer = renderer::makeBuffer< uint16_t >( *m_device
 			, uint32_t( m_offscreenIndexData.size() )
-
-			, renderer::BufferTarget::eTransferDst
+			, renderer::BufferTarget::eIndexBuffer | renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_stagingBuffer->uploadBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_offscreenIndexData

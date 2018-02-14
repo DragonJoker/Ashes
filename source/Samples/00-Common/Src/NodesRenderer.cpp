@@ -145,32 +145,34 @@ namespace common
 		renderer::UniformBufferPtr< common::MaterialData > doCreateMaterialsUbo( renderer::Device const & device
 			, Scene const & scene
 			, bool m_opaqueNodes
-			, uint32_t & count )
+			, uint32_t & objectsCount
+			, uint32_t & billboardsCount )
 		{
-			count = 0u;
+			objectsCount = 0u;
+			billboardsCount = 0u;
 
 			for ( auto & submesh : scene.object )
 			{
-				count += std::count_if( submesh.materials.begin()
+				objectsCount += std::count_if( submesh.materials.begin()
 					, submesh.materials.end()
 					, [&m_opaqueNodes]( common::Material const & lookup )
-					{
-						return lookup.hasOpacity == !m_opaqueNodes;
-					} );
+				{
+					return lookup.hasOpacity == !m_opaqueNodes;
+				} );
 			}
 
 			if ( !scene.billboard.list.empty()
 				&& scene.billboard.material.hasOpacity != m_opaqueNodes )
 			{
-				++count;
+				++billboardsCount;
 			}
 
 			renderer::UniformBufferPtr< common::MaterialData > result;
 
-			if ( count )
+			if ( objectsCount + billboardsCount )
 			{
 				result = std::make_unique< renderer::UniformBuffer< common::MaterialData > >( device
-					, count
+					, objectsCount + billboardsCount
 					, renderer::BufferTarget::eTransferDst
 					, renderer::MemoryPropertyFlag::eDeviceLocal );
 			}
@@ -231,170 +233,28 @@ namespace common
 		m_materialsUbo = doCreateMaterialsUbo( m_device
 			, scene
 			, m_opaqueNodes
-			, m_nodesCount );
-		std::vector< renderer::DescriptorSetLayoutBinding > bindings
+			, m_objectsCount
+			, m_billboardsCount );
+
+		uint32_t matIndex = 0u;
+		doInitialiseObject( scene.object
+			, stagingBuffer
+			, textureNodes
+			, matIndex );
+		doInitialiseBillboard( scene.billboard
+			, stagingBuffer
+			, textureNodes
+			, matIndex );
+
+		if ( m_objectsCount || m_billboardsCount )
 		{
-			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment },
-		};
-		doFillDescriptorLayoutBindings( bindings );
-		m_descriptorLayout = m_device.createDescriptorSetLayout( std::move( bindings ) );
-		m_descriptorPool = m_descriptorLayout->createPool( m_nodesCount );
-
-		if ( m_nodesCount )
-		{
-			uint32_t matIndex = 0u;
-
-			for ( auto & submesh : scene.object )
-			{
-				std::vector< Material > compatibleMaterials;
-
-				for ( auto & material : submesh.materials )
-				{
-					if ( material.hasOpacity == !m_opaqueNodes )
-					{
-						compatibleMaterials.push_back( material );
-					}
-				}
-
-				if ( !compatibleMaterials.empty() )
-				{
-					m_submeshNodes.push_back( std::make_shared< common::SubmeshNode >() );
-					common::SubmeshNodePtr submeshNode = m_submeshNodes.back();
-
-					// Initialise vertex layout.
-					submeshNode->vertexLayout = m_device.createVertexLayout( 0u, sizeof( common::Vertex ) );
-					submeshNode->vertexLayout->createAttribute< renderer::Vec3 >( 0u, offsetof( common::Vertex, position ) );
-					submeshNode->vertexLayout->createAttribute< renderer::Vec3 >( 1u, offsetof( common::Vertex, normal ) );
-					submeshNode->vertexLayout->createAttribute< renderer::Vec3 >( 2u, offsetof( common::Vertex, tangent ) );
-					submeshNode->vertexLayout->createAttribute< renderer::Vec3 >( 3u, offsetof( common::Vertex, bitangent ) );
-					submeshNode->vertexLayout->createAttribute< renderer::Vec2 >( 4u, offsetof( common::Vertex, texture ) );
-
-					// Initialise geometry buffers.
-					submeshNode->vbo = renderer::makeVertexBuffer< common::Vertex >( m_device
-						, uint32_t( submesh.vbo.data.size() )
-						, renderer::BufferTarget::eTransferDst
-						, renderer::MemoryPropertyFlag::eDeviceLocal );
-					stagingBuffer.uploadVertexData( *m_updateCommandBuffer
-						, submesh.vbo.data
-						, *submeshNode->vbo
-						, renderer::PipelineStageFlag::eVertexInput );
-					submeshNode->ibo = renderer::makeBuffer< common::Face >( m_device
-						, uint32_t( submesh.ibo.data.size() )
-						, renderer::BufferTarget::eTransferDst
-						, renderer::MemoryPropertyFlag::eDeviceLocal );
-					stagingBuffer.uploadBufferData( *m_updateCommandBuffer
-						, submesh.ibo.data
-						, *submeshNode->ibo );
-					submeshNode->geometryBuffers = m_device.createGeometryBuffers( *submeshNode->vbo
-						, 0u
-						, *submeshNode->vertexLayout
-						, submeshNode->ibo->getBuffer()
-						, 0u
-						, renderer::IndexType::eUInt32 );
-
-					for ( auto & material : compatibleMaterials )
-					{
-						common::MaterialNode materialNode{ submeshNode };
-
-						// Initialise material textures.
-						for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
-						{
-							auto & texture = material.textures[index];
-							auto it = std::find_if( textureNodes.begin()
-								, textureNodes.end()
-								, [&texture]( common::TextureNodePtr const & lookup )
-								{
-									return lookup->image == texture;
-								} );
-							assert( it != textureNodes.end() );
-							materialNode.textures.push_back( *it );
-						}
-
-						m_materialsUbo->getData( matIndex ) = material.data;
-
-						// Initialise descriptor set for UBOs
-						materialNode.descriptorSetUbos = m_descriptorPool->createDescriptorSet( 0u );
-						materialNode.descriptorSetUbos->createBinding( m_descriptorLayout->getBinding( 0u )
-							, *m_materialsUbo
-							, matIndex
-							, 1u );
-						doFillDescriptorSet( *m_descriptorLayout, *materialNode.descriptorSetUbos );
-						materialNode.descriptorSetUbos->update();
-
-						// Initialise descriptor set for textures.
-						renderer::DescriptorSetLayoutBindingArray bindings;
-						bindings.emplace_back( 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment, 6u );
-						materialNode.layout = m_device.createDescriptorSetLayout( std::move( bindings ) );
-						materialNode.pool = materialNode.layout->createPool( 1u );
-						materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
-
-						for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
-						{
-							materialNode.descriptorSetTextures->createBinding( materialNode.layout->getBinding( 0u, index )
-								, *materialNode.textures[index]->view
-								, *m_sampler
-								, index );
-						}
-
-						materialNode.descriptorSetTextures->update();
-						renderer::RasterisationState rasterisationState;
-
-						if ( material.data.backFace )
-						{
-							rasterisationState = renderer::RasterisationState{ 0u
-								, false
-								, false
-								, renderer::PolygonMode::eFill
-								, renderer::CullModeFlag::eFront };
-						}
-
-						// Initialise the pipeline
-						if ( materialNode.layout )
-						{
-							materialNode.pipelineLayout = m_device.createPipelineLayout( { *m_descriptorLayout, *materialNode.layout } );
-						}
-						else
-						{
-							materialNode.pipelineLayout = m_device.createPipelineLayout( *m_descriptorLayout );
-						}
-
-						renderer::ColourBlendState blendState;
-
-						for ( auto & attach : *m_renderPass )
-						{
-							if ( !renderer::isDepthFormat( attach.pixelFormat )
-								&& !renderer::isStencilFormat( attach.pixelFormat )
-								&& !renderer::isDepthStencilFormat( attach.pixelFormat ) )
-							{
-								blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
-							}
-						}
-
-						materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_objectProgram
-							, { *submeshNode->vertexLayout }
-							, *m_renderPass
-							, { renderer::PrimitiveTopology::eTriangleList }
-							, rasterisationState
-							, blendState );
-						materialNode.pipeline->multisampleState( renderer::MultisampleState{} );
-						materialNode.pipeline->depthStencilState( renderer::DepthStencilState{} );
-						materialNode.pipeline->finish();
-						m_renderNodes.emplace_back( std::move( materialNode ) );
-						++matIndex;
-					}
-				}
-			}
-
-			if ( !m_submeshNodes.empty() )
-			{
-				stagingBuffer.uploadUniformData( *m_updateCommandBuffer
-					, m_materialsUbo->getDatas()
-					, *m_materialsUbo
-					, renderer::PipelineStageFlag::eFragmentShader );
-			}
-
-			doUpdate( views );
+			stagingBuffer.uploadUniformData( *m_updateCommandBuffer
+				, m_materialsUbo->getDatas()
+				, *m_materialsUbo
+				, renderer::PipelineStageFlag::eFragmentShader );
 		}
+
+		doUpdate( views );
 	}
 	void NodesRenderer::doUpdate( renderer::TextureViewCRefArray const & views )
 	{
@@ -441,26 +301,42 @@ namespace common
 					, clearValues
 					, renderer::SubpassContents::eInline );
 
-				if ( m_nodesCount )
+				for ( auto & node : m_submeshRenderNodes )
 				{
-					for ( auto & node : m_renderNodes )
-					{
-						commandBuffer.bindPipeline( *node.pipeline );
-						commandBuffer.setViewport( { size[0]
-							, size[1]
-							, 0
-							, 0 } );
-						commandBuffer.setScissor( { 0
-							, 0
-							, size[0]
-							, size[1] } );
-						commandBuffer.bindGeometryBuffers( *node.submesh->geometryBuffers );
-						commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
-							, *node.pipelineLayout );
-						commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
-							, *node.pipelineLayout );
-						commandBuffer.drawIndexed( node.submesh->ibo->getCount() * 3u );
-					}
+					commandBuffer.bindPipeline( *node.pipeline );
+					commandBuffer.setViewport( { size[0]
+						, size[1]
+						, 0
+						, 0 } );
+					commandBuffer.setScissor( { 0
+						, 0
+						, size[0]
+						, size[1] } );
+					commandBuffer.bindGeometryBuffers( *node.instance->geometryBuffers );
+					commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
+						, *node.pipelineLayout );
+					commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
+						, *node.pipelineLayout );
+					commandBuffer.drawIndexed( node.instance->ibo->getCount() * 3u );
+				}
+
+				for ( auto & node : m_billboardRenderNodes )
+				{
+					commandBuffer.bindPipeline( *node.pipeline );
+					commandBuffer.setViewport( { size[0]
+						, size[1]
+						, 0
+						, 0 } );
+					commandBuffer.setScissor( { 0
+						, 0
+						, size[0]
+						, size[1] } );
+					commandBuffer.bindGeometryBuffers( *node.instance->geometryBuffers );
+					commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
+						, *node.pipelineLayout );
+					commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
+						, *node.pipelineLayout );
+					commandBuffer.draw( 4u, node.instance->instance->getCount() );
 				}
 
 				commandBuffer.endRenderPass();
@@ -468,6 +344,304 @@ namespace common
 					, *m_queryPool
 					, 1u );
 				commandBuffer.end();
+			}
+		}
+	}
+
+	void NodesRenderer::doInitialiseBillboard( Billboard const & billboard
+		, renderer::StagingBuffer & stagingBuffer
+		, TextureNodePtrArray const & textureNodes
+		, uint32_t & matIndex )
+	{
+		if ( !billboard.list.empty() )
+		{
+			std::vector< renderer::DescriptorSetLayoutBinding > bindings
+			{
+				renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment },
+			};
+			doFillBillboardDescriptorLayoutBindings( bindings );
+			m_billboardDescriptorLayout = m_device.createDescriptorSetLayout( std::move( bindings ) );
+			m_billboardDescriptorPool = m_billboardDescriptorLayout->createPool( m_billboardsCount );
+
+			// Initialise vertex layout.
+			m_billboardVertexLayout = renderer::makeLayout< Vertex >( m_device, 0u, renderer::VertexInputRate::eVertex );
+			m_billboardVertexLayout->createAttribute< decltype( Vertex::position ) >( 0u, offsetof( Vertex, position ) );
+			m_billboardVertexLayout->createAttribute< decltype( Vertex::normal ) >( 1u, offsetof( Vertex, normal ) );
+			m_billboardVertexLayout->createAttribute< decltype( Vertex::tangent ) >( 2u, offsetof( Vertex, tangent ) );
+			m_billboardVertexLayout->createAttribute< decltype( Vertex::bitangent ) >( 3u, offsetof( Vertex, bitangent ) );
+			m_billboardVertexLayout->createAttribute< decltype( Vertex::texture ) >( 4u, offsetof( Vertex, texture ) );
+			// Initialise instance layout.
+			m_billboardInstanceLayout = renderer::makeLayout< BillboardInstanceData >( m_device, 1u, renderer::VertexInputRate::eInstance );
+			m_billboardInstanceLayout->createAttribute< decltype( BillboardInstanceData::offset ) >( 5u, offsetof( BillboardInstanceData, offset ) );
+			m_billboardInstanceLayout->createAttribute< decltype( BillboardInstanceData::dimensions ) >( 6u, offsetof( BillboardInstanceData, dimensions ) );
+
+			if ( billboard.material.hasOpacity == !m_opaqueNodes )
+			{
+				std::vector< Vertex > vertexData
+				{
+					{ { 0.0, 0.0, 0.0 }, { 0.0, 0.0, -1.0 }, { 1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 }, { -0.5, -0.5 } },
+					{ { 0.0, 0.0, 0.0 }, { 0.0, 0.0, -1.0 }, { 1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 }, { -0.5, +0.5 } },
+					{ { 0.0, 0.0, 0.0 }, { 0.0, 0.0, -1.0 }, { 1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 }, { +0.5, -0.5 } },
+					{ { 0.0, 0.0, 0.0 }, { 0.0, 0.0, -1.0 }, { 1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 }, { +0.5, +0.5 } },
+				};
+				m_billboardNodes.push_back( std::make_shared< BillboardNode >() );
+				BillboardNodePtr billboardNode = m_billboardNodes.back();
+
+				// Initialise geometry buffers.
+				billboardNode->vbo = renderer::makeVertexBuffer< Vertex >( m_device
+					, uint32_t( vertexData.size() )
+					, renderer::BufferTarget::eTransferDst
+					, renderer::MemoryPropertyFlag::eDeviceLocal );
+				stagingBuffer.uploadVertexData( *m_updateCommandBuffer
+					, vertexData
+					, *billboardNode->vbo
+					, renderer::PipelineStageFlag::eVertexInput );
+				billboardNode->instance = renderer::makeVertexBuffer< BillboardInstanceData >( m_device
+					, uint32_t( billboard.list.size() )
+					, renderer::BufferTarget::eTransferDst
+					, renderer::MemoryPropertyFlag::eDeviceLocal );
+				stagingBuffer.uploadVertexData( *m_updateCommandBuffer
+					, billboard.list
+					, *billboardNode->instance
+					, renderer::PipelineStageFlag::eVertexInput );
+				billboardNode->geometryBuffers = m_device.createGeometryBuffers( { *billboardNode->vbo, *billboardNode->instance }
+					, { 0u, 0u }
+					, { *m_billboardVertexLayout, *m_billboardInstanceLayout } );
+
+				auto & material = billboard.material;
+				BillboardMaterialNode materialNode{ billboardNode };
+
+				// Initialise material textures.
+				for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
+				{
+					auto & texture = material.textures[index];
+					auto it = std::find_if( textureNodes.begin()
+						, textureNodes.end()
+						, [&texture]( TextureNodePtr const & lookup )
+					{
+						return lookup->image == texture;
+					} );
+					assert( it != textureNodes.end() );
+					materialNode.textures.push_back( *it );
+				}
+
+				m_materialsUbo->getData( matIndex ) = material.data;
+
+				// Initialise descriptor set for UBOs
+				materialNode.descriptorSetUbos = m_billboardDescriptorPool->createDescriptorSet( 0u );
+				materialNode.descriptorSetUbos->createBinding( m_billboardDescriptorLayout->getBinding( 0u )
+					, *m_materialsUbo
+					, matIndex
+					, 1u );
+				doFillBillboardDescriptorSet( *m_billboardDescriptorLayout, *materialNode.descriptorSetUbos );
+				materialNode.descriptorSetUbos->update();
+
+				// Initialise descriptor set for textures.
+				renderer::DescriptorSetLayoutBindingArray bindings;
+				bindings.emplace_back( 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment, 6u );
+				materialNode.layout = m_device.createDescriptorSetLayout( std::move( bindings ) );
+				materialNode.pool = materialNode.layout->createPool( 1u );
+				materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
+
+				for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
+				{
+					materialNode.descriptorSetTextures->createBinding( materialNode.layout->getBinding( 0u, index )
+						, *materialNode.textures[index]->view
+						, *m_sampler
+						, index );
+				}
+
+				materialNode.descriptorSetTextures->update();
+				renderer::RasterisationState rasterisationState{ 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone };
+
+				// Initialise the pipeline
+				if ( materialNode.layout )
+				{
+					materialNode.pipelineLayout = m_device.createPipelineLayout( { *m_billboardDescriptorLayout, *materialNode.layout } );
+				}
+				else
+				{
+					materialNode.pipelineLayout = m_device.createPipelineLayout( *m_billboardDescriptorLayout );
+				}
+
+				renderer::ColourBlendState blendState;
+
+				for ( auto & attach : *m_renderPass )
+				{
+					if ( !renderer::isDepthFormat( attach.pixelFormat )
+						&& !renderer::isStencilFormat( attach.pixelFormat )
+						&& !renderer::isDepthStencilFormat( attach.pixelFormat ) )
+					{
+						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
+					}
+				}
+
+				materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_billboardProgram
+					, { *m_billboardVertexLayout, *m_billboardInstanceLayout }
+					, *m_renderPass
+					, { renderer::PrimitiveTopology::eTriangleStrip }
+					, rasterisationState
+					, blendState );
+				materialNode.pipeline->multisampleState( renderer::MultisampleState{} );
+				materialNode.pipeline->depthStencilState( renderer::DepthStencilState{} );
+				materialNode.pipeline->finish();
+				m_billboardRenderNodes.emplace_back( std::move( materialNode ) );
+				++matIndex;
+			}
+		}
+	}
+
+	void NodesRenderer::doInitialiseObject( Object const & object
+		, renderer::StagingBuffer & stagingBuffer
+		, common::TextureNodePtrArray const & textureNodes
+		, uint32_t & matIndex )
+	{
+		std::vector< renderer::DescriptorSetLayoutBinding > bindings
+		{
+			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment },
+		};
+		doFillObjectDescriptorLayoutBindings( bindings );
+		m_objectDescriptorLayout = m_device.createDescriptorSetLayout( std::move( bindings ) );
+		m_objectDescriptorPool = m_objectDescriptorLayout->createPool( m_objectsCount );
+
+		// Initialise vertex layout.
+		m_objectVertexLayout = renderer::makeLayout< Vertex >( m_device, 0u );
+		m_objectVertexLayout->createAttribute< renderer::Vec3 >( 0u, offsetof( common::Vertex, position ) );
+		m_objectVertexLayout->createAttribute< renderer::Vec3 >( 1u, offsetof( common::Vertex, normal ) );
+		m_objectVertexLayout->createAttribute< renderer::Vec3 >( 2u, offsetof( common::Vertex, tangent ) );
+		m_objectVertexLayout->createAttribute< renderer::Vec3 >( 3u, offsetof( common::Vertex, bitangent ) );
+		m_objectVertexLayout->createAttribute< renderer::Vec2 >( 4u, offsetof( common::Vertex, texture ) );
+
+		for ( auto & submesh : object )
+		{
+			std::vector< Material > compatibleMaterials;
+
+			for ( auto & material : submesh.materials )
+			{
+				if ( material.hasOpacity == !m_opaqueNodes )
+				{
+					compatibleMaterials.push_back( material );
+				}
+			}
+
+			if ( !compatibleMaterials.empty() )
+			{
+				m_submeshNodes.push_back( std::make_shared< common::SubmeshNode >() );
+				common::SubmeshNodePtr submeshNode = m_submeshNodes.back();
+
+				// Initialise geometry buffers.
+				submeshNode->vbo = renderer::makeVertexBuffer< common::Vertex >( m_device
+					, uint32_t( submesh.vbo.data.size() )
+					, renderer::BufferTarget::eTransferDst
+					, renderer::MemoryPropertyFlag::eDeviceLocal );
+				stagingBuffer.uploadVertexData( *m_updateCommandBuffer
+					, submesh.vbo.data
+					, *submeshNode->vbo
+					, renderer::PipelineStageFlag::eVertexInput );
+				submeshNode->ibo = renderer::makeBuffer< common::Face >( m_device
+					, uint32_t( submesh.ibo.data.size() )
+					, renderer::BufferTarget::eTransferDst
+					, renderer::MemoryPropertyFlag::eDeviceLocal );
+				stagingBuffer.uploadBufferData( *m_updateCommandBuffer
+					, submesh.ibo.data
+					, *submeshNode->ibo );
+				submeshNode->geometryBuffers = m_device.createGeometryBuffers( *submeshNode->vbo
+					, 0u
+					, *m_objectVertexLayout
+					, submeshNode->ibo->getBuffer()
+					, 0u
+					, renderer::IndexType::eUInt32 );
+
+				for ( auto & material : compatibleMaterials )
+				{
+					common::SubmeshMaterialNode materialNode{ submeshNode };
+
+					// Initialise material textures.
+					for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
+					{
+						auto & texture = material.textures[index];
+						auto it = std::find_if( textureNodes.begin()
+							, textureNodes.end()
+							, [&texture]( common::TextureNodePtr const & lookup )
+							{
+								return lookup->image == texture;
+							} );
+						assert( it != textureNodes.end() );
+						materialNode.textures.push_back( *it );
+					}
+
+					m_materialsUbo->getData( matIndex ) = material.data;
+
+					// Initialise descriptor set for UBOs
+					materialNode.descriptorSetUbos = m_objectDescriptorPool->createDescriptorSet( 0u );
+					materialNode.descriptorSetUbos->createBinding( m_objectDescriptorLayout->getBinding( 0u )
+						, *m_materialsUbo
+						, matIndex
+						, 1u );
+					doFillObjectDescriptorSet( *m_objectDescriptorLayout, *materialNode.descriptorSetUbos );
+					materialNode.descriptorSetUbos->update();
+
+					// Initialise descriptor set for textures.
+					renderer::DescriptorSetLayoutBindingArray bindings;
+					bindings.emplace_back( 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment, 6u );
+					materialNode.layout = m_device.createDescriptorSetLayout( std::move( bindings ) );
+					materialNode.pool = materialNode.layout->createPool( 1u );
+					materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
+
+					for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
+					{
+						materialNode.descriptorSetTextures->createBinding( materialNode.layout->getBinding( 0u, index )
+							, *materialNode.textures[index]->view
+							, *m_sampler
+							, index );
+					}
+
+					materialNode.descriptorSetTextures->update();
+					renderer::RasterisationState rasterisationState;
+
+					if ( material.data.backFace )
+					{
+						rasterisationState = renderer::RasterisationState{ 0u
+							, false
+							, false
+							, renderer::PolygonMode::eFill
+							, renderer::CullModeFlag::eFront };
+					}
+
+					// Initialise the pipeline
+					if ( materialNode.layout )
+					{
+						materialNode.pipelineLayout = m_device.createPipelineLayout( { *m_objectDescriptorLayout, *materialNode.layout } );
+					}
+					else
+					{
+						materialNode.pipelineLayout = m_device.createPipelineLayout( *m_objectDescriptorLayout );
+					}
+
+					renderer::ColourBlendState blendState;
+
+					for ( auto & attach : *m_renderPass )
+					{
+						if ( !renderer::isDepthFormat( attach.pixelFormat )
+							&& !renderer::isStencilFormat( attach.pixelFormat )
+							&& !renderer::isDepthStencilFormat( attach.pixelFormat ) )
+						{
+							blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
+						}
+					}
+
+					materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_objectProgram
+						, { *m_objectVertexLayout }
+						, *m_renderPass
+						, { renderer::PrimitiveTopology::eTriangleList }
+						, rasterisationState
+						, blendState );
+					materialNode.pipeline->multisampleState( renderer::MultisampleState{} );
+					materialNode.pipeline->depthStencilState( renderer::DepthStencilState{} );
+					materialNode.pipeline->finish();
+					m_submeshRenderNodes.emplace_back( std::move( materialNode ) );
+					++matIndex;
+				}
 			}
 		}
 	}

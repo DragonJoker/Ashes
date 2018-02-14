@@ -38,7 +38,7 @@ namespace common
 	struct BillboardInstanceData
 	{
 		renderer::Vec3 offset;
-		renderer::IVec2 dimensions;
+		renderer::Vec2 dimensions;
 	};
 
 	struct TexturedVertexData
@@ -196,12 +196,10 @@ namespace common
 	using TextureNodePtr = std::shared_ptr< TextureNode >;
 	using TextureNodePtrArray = std::vector< TextureNodePtr >;
 
-	struct SubmeshNode;
-	using SubmeshNodePtr = std::shared_ptr< SubmeshNode >;
-
+	template< typename NodeType >
 	struct MaterialNode
 	{
-		SubmeshNodePtr submesh;
+		std::shared_ptr< NodeType > instance;
 		TextureNodePtrArray textures;
 		renderer::DescriptorSetLayoutPtr layout;
 		renderer::DescriptorSetPoolPtr pool;
@@ -214,13 +212,27 @@ namespace common
 	struct SubmeshNode
 	{
 		renderer::VertexBufferPtr< Vertex > vbo;
-		renderer::VertexLayoutPtr vertexLayout;
 		renderer::BufferPtr< Face > ibo;
 		renderer::GeometryBuffersPtr geometryBuffers;
 	};
 
-	using ObjectNodes = std::vector< MaterialNode >;
+	struct BillboardNode
+	{
+		renderer::VertexBufferPtr< Vertex > vbo;
+		renderer::VertexBufferPtr< BillboardInstanceData > instance;
+		renderer::GeometryBuffersPtr geometryBuffers;
+	};
+
+	using SubmeshNodePtr = std::shared_ptr< SubmeshNode >;
+	using BillboardNodePtr = std::shared_ptr< BillboardNode >;
+	using SubmeshMaterialNode = MaterialNode< SubmeshNode >;
+	using BillboardMaterialNode = MaterialNode< BillboardNode >;
+
+	using ObjectNodes = std::vector< SubmeshMaterialNode >;
+	using BillboardListNodes = std::vector< BillboardMaterialNode >;
+
 	using SubmeshNodes = std::vector< SubmeshNodePtr >;
+	using BillboardNodes = std::vector< BillboardNodePtr >;
 	/**\}*/
 
 	renderer::ConnectionPtr makeConnection( wxWindow * window

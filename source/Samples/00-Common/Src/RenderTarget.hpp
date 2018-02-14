@@ -56,9 +56,9 @@ namespace common
 		renderer::Device const & m_device;
 		renderer::StagingBufferPtr m_stagingBuffer;
 		renderer::CommandBufferPtr m_updateCommandBuffer;
+		renderer::UIVec2 m_size;
 
 	private:
-		renderer::UIVec2 m_size;
 		ImagePtrArray m_images;
 		Scene m_scene;
 		TextureNodePtrArray m_textureNodes;

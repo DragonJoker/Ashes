@@ -15,11 +15,11 @@ namespace vkapp
 			, std::vector< renderer::PixelFormat > const & formats
 			, bool clearViews
 			, bool opaqueNodes
-			, renderer::UniformBuffer< common::SceneData > const & matrixUbo );
+			, renderer::UniformBuffer< common::SceneData > const & sceneUbo );
 
 	private:
-		void doFillDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )override;
-		void doFillDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
+		void doFillBillboardDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )override;
+		void doFillBillboardDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
 			, renderer::DescriptorSet & descriptorSet )override;
 
 	private:

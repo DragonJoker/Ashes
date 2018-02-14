@@ -163,6 +163,7 @@ namespace common
 	{
 		static renderer::Clock::time_point save = renderer::Clock::now();
 		auto duration = std::chrono::duration_cast< std::chrono::microseconds >( renderer::Clock::now() - save );
+		doUpdate();
 		m_renderTarget->update( duration );
 		doUpdateGui( duration );
 		save = renderer::Clock::now();
@@ -172,13 +173,6 @@ namespace common
 	{
 		if ( m_ready )
 		{
-			auto resources = m_swapChain->getResources();
-
-			if ( !resources )
-			{
-				throw std::runtime_error{ "Couldn't acquire next frame from swap chain." };
-			}
-
 			auto result = m_renderTarget->draw( m_frameTime );
 			++m_frameCount;
 			m_framesTimes[m_frameIndex] = m_frameTime;
@@ -190,6 +184,13 @@ namespace common
 			}
 
 			m_gui->submit( m_device->getGraphicsQueue() );
+
+			auto resources = m_swapChain->getResources();
+
+			if ( !resources )
+			{
+				throw std::runtime_error{ "Couldn't acquire next frame from swap chain." };
+			}
 
 			result = m_device->getGraphicsQueue().submit( *m_commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
@@ -427,12 +428,17 @@ namespace common
 		if ( count )
 		{
 			auto instmillis = m_frameTime.count() / 1000.0f;
+			std::sort( m_framesTimes.begin()
+				, m_framesTimes.begin() + count );
+			auto minGpuTime = *m_framesTimes.begin();
+			auto maxGpuTime = *( m_framesTimes.begin() + count - 1 );
 			auto averageGpuTime = std::accumulate( m_framesTimes.begin()
 				, m_framesTimes.begin() + count
 				, std::chrono::microseconds{ 0 } ) / count;
 			auto avrgmillis = averageGpuTime.count() / 1000.0f;
 			ImGui::Text( "Instant: %.2f ms/frame (%5d fps)", instmillis, int( 1000.0f / instmillis ) );
 			ImGui::Text( "Average: %.2f ms/frame (%5d fps)", avrgmillis, int( 1000.0f / avrgmillis ) );
+			ImGui::Text( "Min: %.2f ms, Max %.2f ms", ( minGpuTime.count() / 1000.0f ), ( maxGpuTime.count() / 1000.0f ) );
 		}
 
 #if RENDERLIB_ANDROID
