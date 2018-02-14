@@ -3,17 +3,17 @@
 namespace vkapp
 {
 	TransparentRendering::TransparentRendering( renderer::Device const & device
-		, renderer::ShaderProgramPtr && program
+		, std::string const & fragmentShaderFile
 		, std::vector< renderer::PixelFormat > const & formats
-		, renderer::UniformBuffer< renderer::Mat4 > const & matrixUbo
-		, renderer::UniformBuffer< renderer::Mat4 > const & objectUbo
+		, renderer::UniformBuffer< common::SceneData > const & sceneUbo
+		, renderer::UniformBuffer< common::ObjectData > const & objectUbo
 		, renderer::UniformBuffer< common::LightsData > const & lightsUbo )
 		: common::NodesRenderer{ device
-			, std::move( program )
+			, fragmentShaderFile
 			, formats
 			, false
 			, false }
-		, m_matrixUbo{ matrixUbo }
+		, m_sceneUbo{ sceneUbo }
 		, m_objectUbo{ objectUbo }
 		, m_lightsUbo{ lightsUbo }
 	{
@@ -30,7 +30,7 @@ namespace vkapp
 		, renderer::DescriptorSet & descriptorSet )
 	{
 		descriptorSet.createBinding( descriptorLayout.getBinding( 1u )
-			, m_matrixUbo
+			, m_sceneUbo
 			, 0u
 			, 1u );
 		descriptorSet.createBinding( descriptorLayout.getBinding( 2u )

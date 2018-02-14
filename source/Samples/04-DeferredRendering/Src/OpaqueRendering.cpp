@@ -56,19 +56,19 @@ namespace vkapp
 	}
 
 	OpaqueRendering::OpaqueRendering( std::unique_ptr< GeometryPass > && renderer
-		, common::Object const & submeshes
+		, common::Scene const & scene
 		, renderer::StagingBuffer & stagingBuffer
 		, GeometryPassResult const & gbuffer
 		, renderer::TextureViewCRefArray const & views
 		, common::TextureNodePtrArray const & textureNodes
-		, renderer::UniformBuffer< renderer::Mat4 > const & matrixUbo
+		, renderer::UniformBuffer< common::SceneData > const & sceneUbo
 		, renderer::UniformBuffer< common::LightsData > const & lightsUbo )
 		: common::OpaqueRendering{ std::move( renderer )
-			, submeshes
+			, scene
 			, stagingBuffer
 			, doGetViews( gbuffer, views )
 			, textureNodes }
-		, m_matrixUbo{ matrixUbo }
+		, m_sceneUbo{ sceneUbo }
 		, m_lightsUbo{ lightsUbo }
 		, m_stagingBuffer{ stagingBuffer }
 		, m_lightingPass{ m_renderer->getDevice()
@@ -76,7 +76,7 @@ namespace vkapp
 			, stagingBuffer
 			, views }
 	{
-		m_lightingPass.update( m_matrixUbo.getData( 0u )
+		m_lightingPass.update( m_sceneUbo.getData( 0u )
 			, m_stagingBuffer
 			, views
 			, gbuffer );
@@ -85,7 +85,7 @@ namespace vkapp
 	void OpaqueRendering::update( common::RenderTarget const & target )
 	{
 		m_renderer->update( target );
-		m_lightingPass.update( m_matrixUbo.getData( 0u )
+		m_lightingPass.update( m_sceneUbo.getData( 0u )
 			, m_stagingBuffer
 			, { target.getDepthView(), target.getColourView() }
 			, static_cast< RenderTarget const & >( target ).getGBuffer() );

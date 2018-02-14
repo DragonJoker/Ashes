@@ -8,7 +8,7 @@ namespace common
 	{
 	public:
 		TransparentRendering( NodesRendererPtr && renderer
-			, Object const & submeshes
+			, Scene const & scene
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::TextureViewCRefArray const & views
 			, common::TextureNodePtrArray const & textureNodes );

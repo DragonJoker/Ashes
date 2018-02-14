@@ -1,9 +1,11 @@
 #version 450
 #extension GL_KHR_vulkan_glsl : enable
 
-layout( set=0, binding=1 ) uniform Matrix
+layout( set=0, binding=1 ) uniform Scene
 {
 	mat4 mtxProjection;
+	mat4 mtxView;
+	vec4 cameraPosition;
 };
 
 layout( set=0, binding=2 ) uniform Object
@@ -30,9 +32,11 @@ layout( location = 4 ) out vec3 vtx_worldPosition;
 
 void main()
 {
-	vtx_worldPosition = ( mtxModel * vec4( position, 1.0 ) ).xyz;
-	gl_Position = mtxProjection * mtxModel * vec4( position, 1.0 );
+	vec4 worldPosition = mtxModel * vec4( position, 1.0 );
+	gl_Position = mtxProjection * mtxView * worldPosition;
 	mat3 mtxNormal = mat3( transpose( inverse( mtxModel ) ) );
+
+	vtx_worldPosition = worldPosition.xyz;
 	vtx_normal = mtxNormal * normal;
 	vtx_tangent = mtxNormal * tangent;
 	vtx_bitangent = mtxNormal * bitangent;

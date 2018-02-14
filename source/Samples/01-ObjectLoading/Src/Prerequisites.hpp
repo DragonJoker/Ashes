@@ -4,20 +4,6 @@
 
 namespace vkapp
 {
-	/**
-	*\~french
-	*\brief
-	*	Les donn�es d'un sommet textur�.
-	*\~english
-	*\brief
-	*	The data for one textured vertex.
-	*/
-	struct TexturedVertexData
-	{
-		renderer::Vec4 position;
-		renderer::Vec2 uv;
-	};
-
 	static wxString const AppName = wxT( "01-ObjectLoading" );
 	static wxString const AppDesc = wxT( "Object Loading" );
 

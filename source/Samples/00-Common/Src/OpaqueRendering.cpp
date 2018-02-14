@@ -1,15 +1,17 @@
 #include "OpaqueRendering.hpp"
 
+#include "Scene.hpp"
+
 namespace common
 {
 	OpaqueRendering::OpaqueRendering( NodesRendererPtr && renderer
-		, Object const & submeshes
+		, Scene const & scene
 		, renderer::StagingBuffer & stagingBuffer
 		, renderer::TextureViewCRefArray const & views
 		, common::TextureNodePtrArray const & textureNodes )
 		: m_renderer{ std::move( renderer ) }
 	{
-		m_renderer->initialise( submeshes
+		m_renderer->initialise( scene
 			, stagingBuffer
 			, views
 			, textureNodes );

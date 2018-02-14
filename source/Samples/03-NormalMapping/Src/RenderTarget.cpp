@@ -13,38 +13,16 @@
 
 namespace vkapp
 {
-	namespace
-	{
-		renderer::ShaderProgramPtr doCreateProgram( renderer::Device const & device )
-		{
-			renderer::ShaderProgramPtr result = device.createShaderProgram();
-			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-			if ( !wxFileExists( shadersFolder / "offscreen.vert" )
-				|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			result->createModule( common::dumpTextFile( shadersFolder / "offscreen.vert" )
-				, renderer::ShaderStageFlag::eVertex );
-			result->createModule( common::dumpTextFile( shadersFolder / "offscreen.frag" )
-				, renderer::ShaderStageFlag::eFragment );
-
-			return result;
-		}
-	}
-
 	RenderTarget::RenderTarget( renderer::Device const & device
 		, renderer::UIVec2 const & size
-		, common::Object && object
+		, common::Scene && scene
 		, common::ImagePtrArray && images )
-		: common::RenderTarget{ device, size, std::move( object ), std::move( images ) }
-		, m_matrixUbo{ renderer::makeUniformBuffer< renderer::Mat4 >( device
+		: common::RenderTarget{ device, size, std::move( scene ), std::move( images ) }
+		, m_sceneUbo{ renderer::makeUniformBuffer< common::SceneData >( device
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_objectUbo{ renderer::makeUniformBuffer< renderer::Mat4 >( device
+		, m_objectUbo{ renderer::makeUniformBuffer< common::ObjectData >( device
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
@@ -69,7 +47,7 @@ namespace vkapp
 		m_rotate = utils::rotate( m_rotate
 			, float( utils::DegreeToRadian ) * ( duration.count() / 20000.0f )
 			, { 0, 1, 0 } );
-		m_objectUbo->getData( 0 ) = originalTranslate * m_rotate;
+		m_objectUbo->getData( 0 ).mtxModel = originalTranslate * m_rotate;
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
@@ -84,18 +62,18 @@ namespace vkapp
 	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( renderer::Device const & device
 		, renderer::StagingBuffer & stagingBuffer
 		, renderer::TextureViewCRefArray const & views
-		, common::Object const & submeshes
+		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::OpaqueRendering >( std::make_unique< NodesRenderer >( device
-				, doCreateProgram( device )
+				, common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, true
 				, true
-				, *m_matrixUbo
+				, *m_sceneUbo
 				, *m_objectUbo
 				, *m_lightsUbo )
-			, submeshes
+			, scene
 			, stagingBuffer
 			, views
 			, textureNodes );
@@ -104,18 +82,18 @@ namespace vkapp
 	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( renderer::Device const & device
 		, renderer::StagingBuffer & stagingBuffer
 		, renderer::TextureViewCRefArray const & views
-		, common::Object const & submeshes
+		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::TransparentRendering >( std::make_unique< NodesRenderer >( device
-				, doCreateProgram( device )
+				, common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, false
 				, false
-				, *m_matrixUbo
+				, *m_sceneUbo
 				, *m_objectUbo
 				, *m_lightsUbo )
-			, submeshes
+			, scene
 			, stagingBuffer
 			, views
 			, textureNodes );
@@ -138,7 +116,7 @@ namespace vkapp
 			wRatio = halfWidth / halfHeight;
 		}
 
-		m_matrixUbo->getData( 0u ) = m_device->ortho( -2.0f * wRatio
+		m_sceneUbo->getData( 0u ).mtxProjection = m_device->ortho( -2.0f * wRatio
 			, 2.0f * wRatio
 			, -2.0f * hRatio
 			, 2.0f * hRatio
@@ -147,14 +125,14 @@ namespace vkapp
 #else
 		auto width = float( size[0] );
 		auto height = float( size[1] );
-		m_matrixUbo->getData( 0u ) = m_device.perspective( utils::toRadians( 90.0_degrees )
+		m_sceneUbo->getData( 0u ).mtxProjection = m_device.perspective( utils::toRadians( 90.0_degrees )
 			, width / height
 			, 0.01f
 			, 100.0f );
 #endif
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
-			, m_matrixUbo->getDatas()
-			, *m_matrixUbo
+			, m_sceneUbo->getDatas()
+			, *m_sceneUbo
 			, renderer::PipelineStageFlag::eVertexShader );
 	}
 

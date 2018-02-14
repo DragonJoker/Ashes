@@ -76,19 +76,6 @@ namespace vkapp
 		/**@}*/
 
 	private:
-		struct SceneData
-		{
-			renderer::Mat4 mtxProjection;
-			renderer::Mat4 mtxView;
-			renderer::Vec4 cameraPosition;
-		};
-
-		struct BillboardData
-		{
-			renderer::Vec3 offset;
-			renderer::IVec2 dimensions;
-		};
-
 	private:
 		wxTimer * m_timer{ nullptr };
 		bool m_moveCamera{ false };
@@ -111,7 +98,7 @@ namespace vkapp
 		renderer::TexturePtr m_renderTargetDepth;
 		renderer::TextureViewPtr m_renderTargetDepthView;
 		renderer::FrameBufferPtr m_frameBuffer;
-		renderer::UniformBufferPtr< SceneData > m_sceneUbo;
+		renderer::UniformBufferPtr< common::SceneData > m_sceneUbo;
 		renderer::CommandBufferPtr m_updateCommandBuffer;
 		/**@}*/
 		/**
@@ -124,15 +111,15 @@ namespace vkapp
 		renderer::ShaderProgramPtr m_offscreenProgram;
 		renderer::PipelineLayoutPtr m_offscreenPipelineLayout;
 		renderer::PipelinePtr m_offscreenPipeline;
-		renderer::VertexBufferPtr< TexturedVertexData > m_offscreenVertexBuffer;
+		renderer::VertexBufferPtr< common::TexturedVertexData > m_offscreenVertexBuffer;
 		renderer::VertexLayoutPtr m_offscreenVertexLayout;
-		renderer::VertexBufferPtr< BillboardData > m_offscreenBillboardBuffer;
+		renderer::VertexBufferPtr< common::BillboardInstanceData > m_offscreenBillboardBuffer;
 		renderer::VertexLayoutPtr m_offscreenBillboardLayout;
 		renderer::GeometryBuffersPtr m_offscreenGeometryBuffers;
 		renderer::DescriptorSetLayoutPtr m_offscreenDescriptorLayout;
 		renderer::DescriptorSetPoolPtr m_offscreenDescriptorPool;
 		renderer::DescriptorSetPtr m_offscreenDescriptorSet;
-		std::vector< TexturedVertexData > m_offscreenVertexData;
+		std::vector< common::TexturedVertexData > m_offscreenVertexData;
 		renderer::QueryPoolPtr m_offscreenQueryPool;
 		/**@}*/
 		/**
@@ -144,13 +131,13 @@ namespace vkapp
 		renderer::ShaderProgramPtr m_mainProgram;
 		renderer::PipelineLayoutPtr m_mainPipelineLayout;
 		renderer::PipelinePtr m_mainPipeline;
-		renderer::VertexBufferPtr< TexturedVertexData > m_mainVertexBuffer;
+		renderer::VertexBufferPtr< common::TexturedVertexData > m_mainVertexBuffer;
 		renderer::VertexLayoutPtr m_mainVertexLayout;
 		renderer::GeometryBuffersPtr m_mainGeometryBuffers;
 		renderer::DescriptorSetLayoutPtr m_mainDescriptorLayout;
 		renderer::DescriptorSetPoolPtr m_mainDescriptorPool;
 		renderer::DescriptorSetPtr m_mainDescriptorSet;
-		std::vector< TexturedVertexData > m_mainVertexData;
+		std::vector< common::TexturedVertexData > m_mainVertexData;
 		/**@}*/
 		/**
 		*\name
