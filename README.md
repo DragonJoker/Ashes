@@ -123,7 +123,7 @@ Applies normal mapping.
 
 Deferred rendering implementation for opaque objects
 
-### [Billboards](source/Samples/04-Billboards/)
+### [Billboards](source/Samples/05-Billboards/)
 <img src="./screenshots/s05.png" height="72px" align="right">
 
 Billboards sample.
