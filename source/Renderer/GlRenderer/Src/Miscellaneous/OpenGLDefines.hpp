@@ -168,6 +168,7 @@ namespace gl_renderer
 	using PFN_glCopyImageSubData = void ( GLAPIENTRY * )( GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei srcWidth, GLsizei srcHeight, GLsizei srcDepth );
 	using PFN_glCreateProgram = GLuint( GLAPIENTRY * )( void );
 	using PFN_glCreateShader = GLuint( GLAPIENTRY * )( GLenum type );
+	using PFN_glCreateShaderProgramv = GLuint( GLAPIENTRY * )( GLenum type​, GLsizei count​, const char ** strings​ );
 	using PFN_glCreateVertexArrays = void ( GLAPIENTRY * )( GLsizei n, GLuint* arrays );
 	using PFN_glCullFace = void ( GLAPIENTRY * )( GLenum mode );
 	using PFN_glDeleteBuffers = void ( GLAPIENTRY * )( GLsizei n, const GLuint * buffers );

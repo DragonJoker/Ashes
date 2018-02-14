@@ -44,25 +44,13 @@ namespace gl_renderer
 	void DrawIndexedCommand::apply()const
 	{
 		glLogCommand( "DrawIndexedCommand" );
-		if ( m_instCount > 1 )
-		{
 			glLogCall( gl::DrawElementsInstancedBaseInstance
 				, m_mode
 				, m_indexCount
 				, m_type
-				, ( ( GLvoid * )m_firstIndex )
+				, ( ( GLvoid * )( m_firstIndex * m_size ) )
 				, m_instCount
 				, m_firstInstance );
-		}
-		else
-		{
-			glLogCall( gl::DrawElementsBaseVertex
-				, m_mode
-				, m_indexCount
-				, m_type
-				, ( ( GLvoid * )( m_firstIndex * m_size ) )
-				, m_vertexOffset );
-		}
 	}
 
 	CommandPtr DrawIndexedCommand::clone()const

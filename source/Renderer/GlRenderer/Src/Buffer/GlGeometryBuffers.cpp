@@ -80,7 +80,6 @@ namespace gl_renderer
 					if ( attribute.getFormat() == renderer::AttributeFormat::eMat4f )
 					{
 						format = renderer::AttributeFormat::eVec4f;
-						//divisor *= 4u;
 
 						for ( auto i = 0u; i < 4u; ++i )
 						{
