@@ -14,7 +14,7 @@ namespace vkapp
 			, renderer::UniformBuffer< common::LightsData > const & lightsUbo
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::TextureViewCRefArray const & views );
-		void update( renderer::Mat4 const & viewProj
+		void update( common::SceneData const & sceneData
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::TextureViewCRefArray const & views
 			, GeometryPassResult const & geometryBuffers );
@@ -29,7 +29,7 @@ namespace vkapp
 
 		renderer::CommandBufferPtr m_updateCommandBuffer;
 		renderer::CommandBufferPtr m_commandBuffer;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_matrixUbo;
+		renderer::UniformBufferPtr< common::SceneData > m_sceneUbo;
 		renderer::DescriptorSetLayoutPtr m_uboDescriptorLayout;
 		renderer::DescriptorSetPoolPtr m_uboDescriptorPool;
 		renderer::DescriptorSetPtr m_uboDescriptorSet;
@@ -39,7 +39,7 @@ namespace vkapp
 		renderer::ShaderProgramPtr m_program;
 		renderer::RenderPassPtr m_renderPass;
 		renderer::SamplerPtr m_sampler;
-		renderer::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
+		renderer::VertexBufferPtr< common::TexturedVertexData > m_vertexBuffer;
 		renderer::VertexLayoutPtr m_vertexLayout;
 		renderer::GeometryBuffersPtr m_vao;
 		renderer::PipelineLayoutPtr m_pipelineLayout;

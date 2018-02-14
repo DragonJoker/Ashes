@@ -35,10 +35,10 @@ namespace common
 
 	RenderTarget::RenderTarget( renderer::Device const & device
 		, renderer::UIVec2 const & size
-		, common::Object && object
-		, common::ImagePtrArray && images )
+		, Scene && scene
+		, ImagePtrArray && images )
 		: m_device{ device }
-		, m_object{ std::move( object ) }
+		, m_scene{ std::move( scene ) }
 		, m_images{ std::move( images ) }
 		, m_size{ size }
 	{
@@ -96,12 +96,12 @@ namespace common
 		m_opaque = doCreateOpaqueRendering( m_device
 			, *m_stagingBuffer
 			, { *m_depthView, *m_colourView }
-			, m_object
+			, m_scene
 			, m_textureNodes );
 		m_transparent = doCreateTransparentRendering( m_device
 			, *m_stagingBuffer
 			, { *m_depthView, *m_colourView }
-			, m_object
+			, m_scene
 			, m_textureNodes );
 	}
 

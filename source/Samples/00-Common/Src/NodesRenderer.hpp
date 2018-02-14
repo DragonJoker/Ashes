@@ -22,13 +22,13 @@ namespace common
 	{
 	public:
 		NodesRenderer( renderer::Device const & device
-			, renderer::ShaderProgramPtr && program
+			, std::string const & fragmentShaderFile
 			, std::vector< renderer::PixelFormat > const & formats
 			, bool clearViews
 			, bool opaqueNodes );
 		virtual void update( RenderTarget const & target );
 		bool draw( std::chrono::nanoseconds & gpu )const;
-		void initialise( Object const & submeshes
+		void initialise( Scene const & scene
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::TextureViewCRefArray const & views
 			, common::TextureNodePtrArray const & textureNodes );
@@ -57,7 +57,8 @@ namespace common
 		renderer::UniformBufferPtr< MaterialData > m_materialsUbo;
 		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
 		renderer::DescriptorSetPoolPtr m_descriptorPool;
-		renderer::ShaderProgramPtr m_program;
+		renderer::ShaderProgramPtr m_objectProgram;
+		renderer::ShaderProgramPtr m_billboardProgram;
 		renderer::RenderPassPtr m_renderPass;
 		renderer::FrameBufferPtr m_frameBuffer;
 		renderer::QueryPoolPtr m_queryPool;

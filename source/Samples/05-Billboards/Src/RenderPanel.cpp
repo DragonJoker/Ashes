@@ -281,7 +281,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_sceneUbo = std::make_unique< renderer::UniformBuffer< SceneData > >( *m_device
+		m_sceneUbo = std::make_unique< renderer::UniformBuffer< common::SceneData > >( *m_device
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -358,13 +358,13 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
-		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( *m_device, 0 );
+		m_offscreenVertexLayout = renderer::makeLayout< common::TexturedVertexData >( *m_device, 0 );
 		m_offscreenVertexLayout->createAttribute< renderer::Vec4 >( 0u
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+			, uint32_t( offsetof( common::TexturedVertexData, position ) ) );
 		m_offscreenVertexLayout->createAttribute< renderer::Vec2 >( 1u
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+			, uint32_t( offsetof( common::TexturedVertexData, uv ) ) );
 
-		m_offscreenVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
+		m_offscreenVertexBuffer = renderer::makeVertexBuffer< common::TexturedVertexData >( *m_device
 			, uint32_t( m_offscreenVertexData.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -373,15 +373,15 @@ namespace vkapp
 			, *m_offscreenVertexBuffer
 			, renderer::PipelineStageFlag::eVertexInput );
 
-		m_offscreenBillboardLayout = renderer::makeLayout< BillboardData >( *m_device, 1u, renderer::VertexInputRate::eInstance );
+		m_offscreenBillboardLayout = renderer::makeLayout< common::BillboardData >( *m_device, 1u, renderer::VertexInputRate::eInstance );
 		m_offscreenBillboardLayout->createAttribute< renderer::Vec3 >( 2u
-			, offsetof( BillboardData, offset ) );
+			, offsetof( common::BillboardData, offset ) );
 		m_offscreenBillboardLayout->createAttribute< renderer::IVec2 >( 3u
-			, offsetof( BillboardData, dimensions ) );
+			, offsetof( common::BillboardData, dimensions ) );
 
 		auto init = ObjectCount * -2.0f;
 		renderer::Vec3 position{ init, init, init };
-		std::vector< BillboardData > billboards;
+		std::vector< common::BillboardData > billboards;
 		billboards.reserve( ObjectCount * ObjectCount * ObjectCount );
 
 		for ( auto i = 0u; i < ObjectCount; ++i )
@@ -404,7 +404,7 @@ namespace vkapp
 			position[0] += 4;
 		}
 
-		m_offscreenBillboardBuffer = renderer::makeVertexBuffer< BillboardData >( *m_device
+		m_offscreenBillboardBuffer = renderer::makeVertexBuffer< common::BillboardData >( *m_device
 			, ObjectCount * ObjectCount * ObjectCount
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -541,13 +541,13 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainVertexBuffer()
 	{
-		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( *m_device, 0 );
+		m_mainVertexLayout = renderer::makeLayout< common::TexturedVertexData >( *m_device, 0 );
 		m_mainVertexLayout->createAttribute< renderer::Vec4 >( 0u
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+			, uint32_t( offsetof( common::TexturedVertexData, position ) ) );
 		m_mainVertexLayout->createAttribute< renderer::Vec2 >( 1u
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+			, uint32_t( offsetof( common::TexturedVertexData, uv ) ) );
 
-		m_mainVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
+		m_mainVertexBuffer = renderer::makeVertexBuffer< common::TexturedVertexData >( *m_device
 			, uint32_t( m_mainVertexData.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );

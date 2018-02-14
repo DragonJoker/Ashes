@@ -2,6 +2,7 @@
 
 #include "FileUtils.hpp"
 #include "RenderTarget.hpp"
+#include "Scene.hpp"
 
 #include <Buffer/Buffer.hpp>
 #include <Buffer/GeometryBuffers.hpp>
@@ -39,6 +40,46 @@ namespace common
 {
 	namespace
 	{
+		renderer::ShaderProgramPtr doCreateObjectProgram( renderer::Device const & device
+			, std::string const & fragmentShaderFile )
+		{
+			renderer::ShaderProgramPtr result = device.createShaderProgram();
+			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
+
+			if ( !wxFileExists( shadersFolder / "object.vert" )
+				|| !wxFileExists( fragmentShaderFile ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			result->createModule( common::dumpTextFile( shadersFolder / "object.vert" )
+				, renderer::ShaderStageFlag::eVertex );
+			result->createModule( common::dumpTextFile( fragmentShaderFile )
+				, renderer::ShaderStageFlag::eFragment );
+
+			return result;
+		}
+
+		renderer::ShaderProgramPtr doCreateBillboardProgram( renderer::Device const & device
+			, std::string const & fragmentShaderFile )
+		{
+			renderer::ShaderProgramPtr result = device.createShaderProgram();
+			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
+
+			if ( !wxFileExists( shadersFolder / "billboard.vert" )
+				|| !wxFileExists( fragmentShaderFile ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			result->createModule( common::dumpTextFile( shadersFolder / "billboard.vert" )
+				, renderer::ShaderStageFlag::eVertex );
+			result->createModule( common::dumpTextFile( fragmentShaderFile )
+				, renderer::ShaderStageFlag::eFragment );
+
+			return result;
+		}
+
 		renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
 			, std::vector< renderer::PixelFormat > const & formats
 			, bool clearViews )
@@ -102,13 +143,13 @@ namespace common
 		}
 
 		renderer::UniformBufferPtr< common::MaterialData > doCreateMaterialsUbo( renderer::Device const & device
-			, common::Object const & submeshes
+			, Scene const & scene
 			, bool m_opaqueNodes
 			, uint32_t & count )
 		{
 			count = 0u;
 
-			for ( auto & submesh : submeshes )
+			for ( auto & submesh : scene.object )
 			{
 				count += std::count_if( submesh.materials.begin()
 					, submesh.materials.end()
@@ -116,6 +157,12 @@ namespace common
 					{
 						return lookup.hasOpacity == !m_opaqueNodes;
 					} );
+			}
+
+			if ( !scene.billboard.list.empty()
+				&& scene.billboard.material.hasOpacity != m_opaqueNodes )
+			{
+				++count;
 			}
 
 			renderer::UniformBufferPtr< common::MaterialData > result;
@@ -133,7 +180,7 @@ namespace common
 	}
 
 	NodesRenderer::NodesRenderer( renderer::Device const & device
-		, renderer::ShaderProgramPtr && program
+		, std::string const & fragmentShaderFile
 		, std::vector< renderer::PixelFormat > const & formats
 		, bool clearViews
 		, bool opaqueNodes )
@@ -146,7 +193,8 @@ namespace common
 			, renderer::Filter::eLinear ) }
 		, m_updateCommandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
 		, m_commandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
-		, m_program{ std::move( program ) }
+		, m_objectProgram{ doCreateObjectProgram( m_device, fragmentShaderFile ) }
+		, m_billboardProgram{ doCreateBillboardProgram( m_device, fragmentShaderFile ) }
 		, m_renderPass{ doCreateRenderPass( m_device, formats, clearViews ) }
 		, m_queryPool{ m_device.createQueryPool( renderer::QueryType::eTimestamp, 2u, 0u ) }
 	{
@@ -175,13 +223,13 @@ namespace common
 		return result;
 	}
 
-	void NodesRenderer::initialise( Object const & submeshes
+	void NodesRenderer::initialise( Scene const & scene
 		, renderer::StagingBuffer & stagingBuffer
 		, renderer::TextureViewCRefArray const & views
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		m_materialsUbo = doCreateMaterialsUbo( m_device
-			, submeshes
+			, scene
 			, m_opaqueNodes
 			, m_nodesCount );
 		std::vector< renderer::DescriptorSetLayoutBinding > bindings
@@ -196,7 +244,7 @@ namespace common
 		{
 			uint32_t matIndex = 0u;
 
-			for ( auto & submesh : submeshes )
+			for ( auto & submesh : scene.object )
 			{
 				std::vector< Material > compatibleMaterials;
 
@@ -322,7 +370,7 @@ namespace common
 							}
 						}
 
-						materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_program
+						materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_objectProgram
 							, { *submeshNode->vertexLayout }
 							, *m_renderPass
 							, { renderer::PrimitiveTopology::eTriangleList }

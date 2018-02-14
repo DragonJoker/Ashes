@@ -141,7 +141,7 @@ namespace vkapp
 
 		renderer::DescriptorSetPtr doCreateUboDescriptorSet( renderer::DescriptorSetPool const & pool
 			, renderer::UniformBuffer< common::LightsData > const & lightsUbo
-			, renderer::UniformBuffer< renderer::Mat4 > const & matrixUbo )
+			, renderer::UniformBuffer< common::SceneData > const & sceneUbo )
 		{
 			auto & layout = pool.getLayout();
 			auto result = pool.createDescriptorSet( 1u );
@@ -150,25 +150,25 @@ namespace vkapp
 				, 0u
 				, 1u );
 			result->createBinding( layout.getBinding( 1u )
-				, matrixUbo
+				, sceneUbo
 				, 0u
 				, 1u );
 			result->update();
 			return result;
 		}
 
-		renderer::VertexBufferPtr< TexturedVertexData > doCreateVertexBuffer( renderer::Device const & device
+		renderer::VertexBufferPtr< common::TexturedVertexData > doCreateVertexBuffer( renderer::Device const & device
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::CommandBuffer const & commandBuffer )
 		{
-			std::vector< TexturedVertexData > vertexData
+			std::vector< common::TexturedVertexData > vertexData
 			{
 				{ { -1.0, -1.0, 0.0, 1.0 }, { 0.0, 0.0 } },
 				{ { -1.0, +1.0, 0.0, 1.0 }, { 0.0, 1.0 } },
 				{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
 				{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
 			};
-			auto result = renderer::makeVertexBuffer< TexturedVertexData >( device
+			auto result = renderer::makeVertexBuffer< common::TexturedVertexData >( device
 				, uint32_t( vertexData.size() )
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -181,11 +181,11 @@ namespace vkapp
 
 		renderer::VertexLayoutPtr doCreateVertexLayout( renderer::Device const & device )
 		{
-			auto result = renderer::makeLayout< TexturedVertexData >( device, 0 );
+			auto result = renderer::makeLayout< common::TexturedVertexData >( device, 0 );
 			result->createAttribute< renderer::Vec4 >( 0u
-				, uint32_t( offsetof( TexturedVertexData, position ) ) );
+				, uint32_t( offsetof( common::TexturedVertexData, position ) ) );
 			result->createAttribute< renderer::Vec2 >( 1u
-				, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+				, uint32_t( offsetof( common::TexturedVertexData, uv ) ) );
 			return result;
 		}
 	}
@@ -198,12 +198,12 @@ namespace vkapp
 		, m_lightsUbo{ lightsUbo }
 		, m_updateCommandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
 		, m_commandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
-		, m_matrixUbo{ renderer::makeUniformBuffer< renderer::Mat4 >( device, 1u, renderer::BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal ) }
+		, m_sceneUbo{ renderer::makeUniformBuffer< common::SceneData >( device, 1u, renderer::BufferTarget::eTransferDst, renderer::MemoryPropertyFlag::eDeviceLocal ) }
 		, m_gbufferDescriptorLayout{ doCreateGBufferDescriptorLayout( m_device ) }
 		, m_gbufferDescriptorPool{ m_gbufferDescriptorLayout->createPool( 1u, false ) }
 		, m_uboDescriptorLayout{ doCreateUboDescriptorLayout( m_device ) }
 		, m_uboDescriptorPool{ m_uboDescriptorLayout->createPool( 1u ) }
-		, m_uboDescriptorSet{ doCreateUboDescriptorSet( *m_uboDescriptorPool, m_lightsUbo, *m_matrixUbo ) }
+		, m_uboDescriptorSet{ doCreateUboDescriptorSet( *m_uboDescriptorPool, m_lightsUbo, *m_sceneUbo ) }
 		, m_program{ doCreateProgram( m_device ) }
 		, m_renderPass{ doCreateRenderPass( m_device, views[0].get(), views[1].get() ) }
 		, m_sampler{ m_device.createSampler( renderer::WrapMode::eClampToEdge
@@ -234,7 +234,7 @@ namespace vkapp
 		m_pipeline->finish();
 	}
 
-	void LightingPass::update( renderer::Mat4 const & viewProj
+	void LightingPass::update( common::SceneData const & sceneData
 		, renderer::StagingBuffer & stagingBuffer
 		, renderer::TextureViewCRefArray const & views
 		, GeometryPassResult const & geometryBuffers )
@@ -243,10 +243,10 @@ namespace vkapp
 		m_depthView = &views[0].get();
 		m_colourView = &views[1].get();
 
-		m_matrixUbo->getData( 0u ) = utils::inverse( viewProj );
+		m_sceneUbo->getData( 0u ).mtxProjection = utils::inverse( sceneData.mtxProjection );
 		stagingBuffer.uploadUniformData( *m_updateCommandBuffer
-			, m_matrixUbo->getDatas()
-			, *m_matrixUbo
+			, m_sceneUbo->getDatas()
+			, *m_sceneUbo
 			, renderer::PipelineStageFlag::eFragmentShader );
 
 		auto dimensions = m_depthView->getTexture().getDimensions();

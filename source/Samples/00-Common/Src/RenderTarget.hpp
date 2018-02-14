@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Prerequisites.hpp"
+#include "Scene.hpp"
 
 #include <Core/Device.hpp>
 
@@ -11,7 +11,7 @@ namespace common
 	public:
 		RenderTarget( renderer::Device const & device
 			, renderer::UIVec2 const & size
-			, Object && object
+			, Scene && scene
 			, ImagePtrArray && images );
 		~RenderTarget();
 		void resize( renderer::UIVec2 const & size );
@@ -44,12 +44,12 @@ namespace common
 		virtual OpaqueRenderingPtr doCreateOpaqueRendering( renderer::Device const & device
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::TextureViewCRefArray const & views
-			, Object const & submeshes
+			, Scene const & scene
 			, TextureNodePtrArray const & textureNodes ) = 0;
 		virtual TransparentRenderingPtr doCreateTransparentRendering( renderer::Device const & device
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::TextureViewCRefArray const & views
-			, Object const & submeshes
+			, Scene const & scene
 			, TextureNodePtrArray const & textureNodes ) = 0;
 
 	protected:
@@ -60,7 +60,7 @@ namespace common
 	private:
 		renderer::UIVec2 m_size;
 		ImagePtrArray m_images;
-		Object m_object;
+		Scene m_scene;
 		TextureNodePtrArray m_textureNodes;
 		renderer::Mat4 m_rotate;
 		renderer::TexturePtr m_colour;

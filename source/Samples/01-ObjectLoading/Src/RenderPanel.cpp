@@ -22,9 +22,11 @@ namespace vkapp
 		, renderer::UIVec2 const & size )
 	{
 		common::ImagePtrArray images;
+		common::Scene scene;
+		scene.object = common::loadObject( common::getPath( common::getExecutableDirectory() ) / "share" / "Assets" / "Nyra", "Nyra_pose.fbx", images );
 		m_renderTarget = std::make_unique< RenderTarget >( device
 			, size
-			, common::loadObject( common::getPath( common::getExecutableDirectory() ) / "share" / "Assets" / "Nyra", "Nyra_pose.fbx", images )
+			, std::move( scene )
 			, std::move( images ) );
 	}
 

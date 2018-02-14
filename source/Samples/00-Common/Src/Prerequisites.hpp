@@ -30,6 +30,17 @@ namespace common
 		renderer::Vec4 cameraPosition;
 	};
 
+	struct ObjectData
+	{
+		renderer::Mat4 mtxModel;
+	};
+
+	struct BillboardInstanceData
+	{
+		renderer::Vec3 offset;
+		renderer::IVec2 dimensions;
+	};
+
 	struct TexturedVertexData
 	{
 		renderer::Vec4 position;
@@ -120,6 +131,12 @@ namespace common
 	};
 
 	using Object = std::vector< Submesh >;
+
+	struct Billboard
+	{
+		Material material;
+		std::vector< BillboardInstanceData > list;
+	};
 	/**\}*/
 	/**
 	*\~english
@@ -210,6 +227,9 @@ namespace common
 		, renderer::Renderer const & renderer );
 
 	std::vector< renderer::PixelFormat > getFormats( renderer::TextureViewCRefArray const & views );
+
+	struct Scene;
+
 	class Application;
 	class MainFrame;
 	class NodesRenderer;

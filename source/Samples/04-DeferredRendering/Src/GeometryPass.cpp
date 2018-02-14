@@ -39,24 +39,6 @@ namespace vkapp
 {
 	namespace
 	{
-		renderer::ShaderProgramPtr doCreateProgram( renderer::Device const & device )
-		{
-			renderer::ShaderProgramPtr result = device.createShaderProgram();
-			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-			if ( !wxFileExists( shadersFolder / "opaque_gp.vert" )
-				|| !wxFileExists( shadersFolder / "opaque_gp.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			result->createModule( common::dumpTextFile( shadersFolder / "opaque_gp.vert" )
-				, renderer::ShaderStageFlag::eVertex );
-			result->createModule( common::dumpTextFile( shadersFolder / "opaque_gp.frag" )
-				, renderer::ShaderStageFlag::eFragment );
-			return result;
-		}
-
 		std::vector< renderer::PixelFormat > doGetFormats( GeometryPassResult const & gbuffer
 			, renderer::PixelFormat depthFormat )
 		{
@@ -91,17 +73,17 @@ namespace vkapp
 	}
 
 	GeometryPass::GeometryPass( renderer::Device const & device
-		, renderer::ShaderProgramPtr && program
+		, std::string const & fragmentShaderFile
 		, GeometryPassResult const & gbuffer
 		, renderer::PixelFormat depthFormat
-		, renderer::UniformBuffer< renderer::Mat4 > const & matrixUbo
-		, renderer::UniformBuffer< renderer::Mat4 > const & objectUbo )
+		, renderer::UniformBuffer< common::SceneData > const & sceneUbo
+		, renderer::UniformBuffer< common::ObjectData > const & objectUbo )
 		: common::NodesRenderer{ device
-			, std::move( program )
+			, fragmentShaderFile
 			, doGetFormats( gbuffer, depthFormat )
 			, true
 			, true }
-		, m_matrixUbo{ matrixUbo }
+		, m_sceneUbo{ sceneUbo }
 		, m_objectUbo{ objectUbo }
 	{
 	}
@@ -122,7 +104,7 @@ namespace vkapp
 		, renderer::DescriptorSet & descriptorSet )
 	{
 		descriptorSet.createBinding( descriptorLayout.getBinding( 1u )
-			, m_matrixUbo
+			, m_sceneUbo
 			, 0u
 			, 1u );
 		descriptorSet.createBinding( descriptorLayout.getBinding( 2u )
