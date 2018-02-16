@@ -376,14 +376,14 @@ namespace vkapp
 		std::vector< renderer::PixelFormat > formats{ { renderer::PixelFormat::eR8G8B8A8, DepthFormat } };
 		renderer::RenderPassAttachmentArray attaches
 		{
-			{ renderer::PixelFormat::eR8G8B8A8, true },
-			{ DepthFormat, true }
+			renderer::RenderPassAttachment::createColourAttachment( 0u, renderer::PixelFormat::eR8G8B8A8, true ),
+			renderer::RenderPassAttachment::createDepthStencilAttachment( DepthFormat, true ),
 		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( formats
+		subpasses.emplace_back( m_device->createRenderSubpass( attaches
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
 		m_offscreenRenderPass = m_device->createRenderPass( attaches
-			, subpasses
+			, std::move( subpasses )
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite
 				, { renderer::ImageLayout::eColourAttachmentOptimal, renderer::ImageLayout::eDepthStencilAttachmentOptimal } }
@@ -497,12 +497,12 @@ namespace vkapp
 	void RenderPanel::doCreateMainRenderPass()
 	{
 		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
-		renderer::RenderPassAttachmentArray attaches{ { m_swapChain->getFormat(), true } };
+		renderer::RenderPassAttachmentArray attaches{ renderer::RenderPassAttachment::createColourAttachment( 0u, m_swapChain->getFormat(), true ) };
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( formats
+		subpasses.emplace_back( m_device->createRenderSubpass( attaches
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
 		m_mainRenderPass = m_device->createRenderPass( attaches
-			, subpasses
+			, std::move( subpasses )
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite
 				, { renderer::ImageLayout::eColourAttachmentOptimal } }

@@ -208,7 +208,7 @@ namespace vkapp
 		auto size = renderer::UIVec2{ texture.getDimensions()[0], texture.getDimensions()[1] };
 		uint32_t face = 0u;
 		std::vector< renderer::PixelFormat > formats{ 1u, m_target.getFormat() };
-		renderer::RenderPassAttachmentArray rpAttaches{ 1u, { m_target.getFormat(), true } };
+		renderer::RenderPassAttachmentArray rpAttaches{ renderer::RenderPassAttachment::createColourAttachment( 0u, m_target.getFormat(), true ) };
 
 		for ( auto & facePipeline : m_faces )
 		{
@@ -226,10 +226,10 @@ namespace vkapp
 		for ( auto & facePipeline : m_faces )
 		{
 			renderer::RenderSubpassPtrArray subpasses;
-			subpasses.emplace_back( m_device.createRenderSubpass( formats
+			subpasses.emplace_back( m_device.createRenderSubpass( rpAttaches
 				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
 			facePipeline.renderPass = m_device.createRenderPass( rpAttaches
-				, subpasses
+				, std::move( subpasses )
 				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 					, renderer::AccessFlag::eColourAttachmentWrite
 					, { renderer::ImageLayout::eColourAttachmentOptimal } }

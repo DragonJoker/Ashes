@@ -283,7 +283,7 @@ namespace common
 	void RenderPanel::doCreateRenderPass()
 	{
 		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
-		renderer::RenderPassAttachmentArray attaches{ { m_swapChain->getFormat(), true } };
+		renderer::RenderPassAttachmentArray attaches{ renderer::RenderPassAttachment::createColourAttachment( 0u, m_swapChain->getFormat(), true ) };
 		renderer::ImageLayoutArray const initialLayouts
 		{
 			renderer::ImageLayout::eColourAttachmentOptimal,
@@ -293,10 +293,10 @@ namespace common
 			renderer::ImageLayout::eColourAttachmentOptimal,
 		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( formats
+		subpasses.emplace_back( m_device->createRenderSubpass( attaches
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
 		m_renderPass = m_device->createRenderPass( attaches
-			, subpasses
+			, std::move( subpasses )
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite
 				, initialLayouts }

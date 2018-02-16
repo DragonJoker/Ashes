@@ -85,22 +85,22 @@ namespace common
 			, bool clearViews )
 		{
 			renderer::RenderPassAttachmentArray attaches;
+			renderer::UInt32Array selected;
 			renderer::ImageLayoutArray initialLayouts;
 			renderer::ImageLayoutArray finalLayouts;
+			uint32_t index{ 0u };
 
 			for ( auto format : formats )
 			{
-				attaches.push_back( { format, clearViews } );
-
-				if ( renderer::isDepthFormat( format )
-					|| renderer::isStencilFormat( format )
-					|| renderer::isDepthStencilFormat( format ) )
+				if ( renderer::isDepthOrStencilFormat( format ) )
 				{
+					attaches.push_back( renderer::RenderPassAttachment::createDepthStencilAttachment( format, clearViews ) );
 					initialLayouts.push_back( renderer::ImageLayout::eDepthStencilAttachmentOptimal );
 					finalLayouts.push_back( renderer::ImageLayout::eDepthStencilAttachmentOptimal );
 				}
 				else
 				{
+					attaches.push_back( renderer::RenderPassAttachment::createColourAttachment( index++, format, clearViews ) );
 					initialLayouts.push_back( clearViews
 						? renderer::ImageLayout::eShaderReadOnlyOptimal
 						: renderer::ImageLayout::eColourAttachmentOptimal );
@@ -111,10 +111,10 @@ namespace common
 			}
 
 			renderer::RenderSubpassPtrArray subpasses;
-			subpasses.emplace_back( device.createRenderSubpass( formats
+			subpasses.emplace_back( device.createRenderSubpass( attaches
 				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
 			return device.createRenderPass( attaches
-				, subpasses
+				, std::move( subpasses )
 				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 					, renderer::AccessFlag::eColourAttachmentWrite
 					, initialLayouts }
@@ -274,9 +274,7 @@ namespace common
 			{
 				m_views.push_back( &view.get() );
 
-				if ( !renderer::isDepthFormat( view.get().getFormat() )
-					&& !renderer::isStencilFormat( view.get().getFormat() )
-					&& !renderer::isDepthStencilFormat( view.get().getFormat() ) )
+				if ( !renderer::isDepthOrStencilFormat( view.get().getFormat() ) )
 				{
 					clearValues.emplace_back( colour );
 				}
@@ -468,9 +466,7 @@ namespace common
 
 				for ( auto & attach : *m_renderPass )
 				{
-					if ( !renderer::isDepthFormat( attach.pixelFormat )
-						&& !renderer::isStencilFormat( attach.pixelFormat )
-						&& !renderer::isDepthStencilFormat( attach.pixelFormat ) )
+					if ( !renderer::isDepthOrStencilFormat( attach.getFormat() ) )
 					{
 						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
 					}
@@ -622,9 +618,7 @@ namespace common
 
 					for ( auto & attach : *m_renderPass )
 					{
-						if ( !renderer::isDepthFormat( attach.pixelFormat )
-							&& !renderer::isStencilFormat( attach.pixelFormat )
-							&& !renderer::isDepthStencilFormat( attach.pixelFormat ) )
+						if ( !renderer::isDepthOrStencilFormat( attach.getFormat() ) )
 						{
 							blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
 						}

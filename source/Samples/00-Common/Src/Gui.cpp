@@ -323,13 +323,13 @@ namespace common
 		std::vector< renderer::PixelFormat > formats{ { m_targetView->getFormat() } };
 		renderer::RenderPassAttachmentArray rpAttaches
 		{
-			{ m_targetView->getFormat(), true },
+			renderer::RenderPassAttachment::createColourAttachment( 0u, m_targetView->getFormat(), true ),
 		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device.createRenderSubpass( formats
+		subpasses.emplace_back( m_device.createRenderSubpass( rpAttaches
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentRead | renderer::AccessFlag::eColourAttachmentWrite } ) );
 		m_renderPass = m_device.createRenderPass( rpAttaches
-			, subpasses
+			, std::move( subpasses )
 			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite
 				, { renderer::ImageLayout::eShaderReadOnlyOptimal } }
