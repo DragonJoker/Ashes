@@ -69,8 +69,8 @@ namespace vkapp
 		{
 			return renderer::RenderPassAttachmentArray
 			{
-				{ depthView.getFormat(), false },
-				{ colourView.getFormat(), true }
+				renderer::RenderPassAttachment::createDepthStencilAttachment( depthView.getFormat(), false ),
+				renderer::RenderPassAttachment::createColourAttachment( 0u, colourView.getFormat(), true )
 			};
 		}
 
@@ -91,10 +91,10 @@ namespace vkapp
 				renderer::ImageLayout::eColourAttachmentOptimal,
 			};
 			renderer::RenderSubpassPtrArray subpasses;
-			subpasses.emplace_back( device.createRenderSubpass( formats
+			subpasses.emplace_back( device.createRenderSubpass( attaches
 				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
 			return device.createRenderPass( attaches
-				, subpasses
+				, std::move( subpasses )
 				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 					, renderer::AccessFlag::eColourAttachmentWrite
 					, initialLayouts }
