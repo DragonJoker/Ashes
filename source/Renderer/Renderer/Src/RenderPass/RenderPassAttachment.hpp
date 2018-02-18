@@ -2,8 +2,8 @@
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
-#ifndef ___Renderer_TextureAttachment_HPP___
-#define ___Renderer_TextureAttachment_HPP___
+#ifndef ___Renderer_RenderPassAttachment_HPP___
+#define ___Renderer_RenderPassAttachment_HPP___
 #pragma once
 
 #include "RendererPrerequisites.hpp"
@@ -33,6 +33,8 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Creates a depth and/or stencil attachment.
+		*\param[in] index
+		*	The attach index.
 		*\param[in] format
 		*	The attach pixel format.
 		*\param[in] clear
@@ -40,14 +42,16 @@ namespace renderer
 		*\~french
 		*\brief
 		*	Crée une attache de type profondeur et/ou stencil.
+		*\param[in] index
+		*	L'indice de l'attache.
 		*\param[in] format
 		*	Le format des pixels de l'attache.
 		*\param[in] clear
 		*	Dit si l'attache est vidée lors du démarrage de la passe de rendu.
 		*/
-		static inline RenderPassAttachment createDepthStencilAttachment( PixelFormat format, bool clear )
+		static inline RenderPassAttachment createDepthStencilAttachment( uint32_t index, PixelFormat format, bool clear )
 		{
-			return RenderPassAttachment{ 0u, format, clear };
+			return RenderPassAttachment{ index, format, clear };
 		}
 		/**
 		*\~english

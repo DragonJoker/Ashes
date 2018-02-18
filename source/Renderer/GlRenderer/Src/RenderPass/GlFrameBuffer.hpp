@@ -64,6 +64,19 @@ namespace gl_renderer
 		*/
 		void setDrawBuffers( renderer::RenderPassAttachmentArray const & attaches )const;
 		/**
+		*\~english
+		*\brief
+		*	Sets the draw buffers.
+		*\param[in] attaches
+		*	The attaches.
+		*\~french
+		*\brief
+		*	Définit les tampons d'écriture.
+		*\param[in] attaches
+		*	Les attaches.
+		*/
+		void setDrawBuffers( renderer::RenderSubpassAttachmentArray const & attaches )const;
+		/**
 		*\return
 		*	Le Framebuffer OpenGL.
 		*/

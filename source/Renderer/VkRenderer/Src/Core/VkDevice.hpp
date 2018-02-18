@@ -44,7 +44,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::Device::createRenderSubpass
 		*/
-		renderer::RenderSubpassPtr createRenderSubpass( renderer::RenderPassAttachmentArray const & attaches
+		renderer::RenderSubpassPtr createRenderSubpass( renderer::RenderSubpassAttachmentArray const & attaches
 			, renderer::RenderSubpassState const & neededState )const override;
 		/**
 		*\copydoc	renderer::Device::createVertexLayout

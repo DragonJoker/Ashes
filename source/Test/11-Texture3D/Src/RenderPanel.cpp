@@ -344,10 +344,15 @@ namespace vkapp
 		renderer::RenderPassAttachmentArray attaches
 		{
 			renderer::RenderPassAttachment::createColourAttachment( 0u, renderer::PixelFormat::eR8G8B8A8, true ),
-			renderer::RenderPassAttachment::createDepthStencilAttachment( DepthFormat, true ),
+			renderer::RenderPassAttachment::createDepthStencilAttachment( 1u, DepthFormat, true ),
+		};
+		renderer::RenderSubpassAttachmentArray subAttaches
+		{
+			renderer::RenderSubpassAttachment{ attaches[0], renderer::ImageLayout::eColourAttachmentOptimal },
+			renderer::RenderSubpassAttachment{ attaches[1], renderer::ImageLayout::eDepthStencilAttachmentOptimal },
 		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( attaches
+		subpasses.emplace_back( m_device->createRenderSubpass( subAttaches
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
 		m_offscreenRenderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
@@ -474,8 +479,9 @@ namespace vkapp
 	{
 		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
 		renderer::RenderPassAttachmentArray attaches{ renderer::RenderPassAttachment::createColourAttachment( 0u, m_swapChain->getFormat(), true ) };
+		renderer::RenderSubpassAttachmentArray subAttaches{ renderer::RenderSubpassAttachment{ attaches[0], renderer::ImageLayout::eColourAttachmentOptimal } };
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( attaches
+		subpasses.emplace_back( m_device->createRenderSubpass( subAttaches
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
 		m_mainRenderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )

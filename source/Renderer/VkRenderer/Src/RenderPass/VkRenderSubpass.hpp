@@ -44,7 +44,7 @@ namespace vk_renderer
 		*	The state wanted for this subpass execution.
 		*/
 		RenderSubpass( Device const & device
-			, renderer::RenderPassAttachmentArray const & attaches
+			, renderer::RenderSubpassAttachmentArray const & attaches
 			, renderer::RenderSubpassState const & neededState );
 		/**
 		*\~french

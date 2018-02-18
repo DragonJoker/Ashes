@@ -7,32 +7,30 @@ See LICENSE file in root folder.
 #include "Core/VkDevice.hpp"
 #include "RenderPass/VkRenderSubpassState.hpp"
 
-#include <RenderPass/RenderPassAttachment.hpp>
+#include <RenderPass/RenderSubpassAttachment.hpp>
 
 namespace vk_renderer
 {
 	RenderSubpass::RenderSubpass( Device const & device
-		, renderer::RenderPassAttachmentArray const & attaches
+		, renderer::RenderSubpassAttachmentArray const & attaches
 		, renderer::RenderSubpassState const & neededState )
 		: renderer::RenderSubpass{ device, attaches, neededState }
 		, m_device{ device }
 		, m_neededState{ neededState }
 	{
 		// On crée les attaches pour les tampons de couleur et de profondeur.
-		uint32_t index{ 0 };
-
 		for ( auto const & attach : attaches )
 		{
 			if ( renderer::isDepthOrStencilFormat( attach.getFormat() ) )
 			{
-				m_depthReference.attachment = index;
+				m_depthReference = { attach.getIndex()
+					, convert( attach.getLayout() ) };
 			}
 			else
 			{
-				m_colourReferences.push_back( { index, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
+				m_colourReferences.push_back( { attach.getIndex()
+					, convert( attach.getLayout() ) } );
 			}
-
-			++index;
 		}
 
 		m_description =
