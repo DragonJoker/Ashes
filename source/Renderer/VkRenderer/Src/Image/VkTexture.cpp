@@ -222,14 +222,16 @@ namespace vk_renderer
 			TextureView srcView{ m_device, *this, getType(), getFormat(), 0, 1u, 0u, 1u };
 			vkCommandBuffer.memoryBarrier( convert( renderer::PipelineStageFlag::eFragmentShader )
 				, convert( renderer::PipelineStageFlag::eTopOfPipe )
-				, srcView.makeTransferSource() );
+				, srcView.makeTransferSource( renderer::ImageLayout::eUndefined
+					, 0u ) );
 
 			for ( uint32_t i = 1; i < m_mipmapLevels; ++i )
 			{
 				TextureView dstView{ m_device, *this, getType(), getFormat(), i, 1u, 0u, 1u };
 				vkCommandBuffer.memoryBarrier( convert( renderer::PipelineStageFlag::eFragmentShader )
 					, convert( renderer::PipelineStageFlag::eTopOfPipe )
-					, dstView.makeTransferDestination() );
+					, dstView.makeTransferDestination( renderer::ImageLayout::eUndefined
+						, 0u ) );
 
 				int32_t const mipWidth = width >> i;
 				int32_t const mipHeight = height >> i;

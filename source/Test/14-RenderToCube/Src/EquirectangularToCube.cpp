@@ -267,7 +267,8 @@ namespace vkapp
 		{
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
-				, facePipeline.view->makeColourAttachment() );
+				, facePipeline.view->makeColourAttachment( renderer::ImageLayout::eUndefined
+					, 0u ) );
 			commandBuffer.beginRenderPass( *facePipeline.renderPass
 				, *facePipeline.frameBuffer
 				, { renderer::RgbaColour{ 0, 0, 0, 0 } }

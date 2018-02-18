@@ -86,110 +86,263 @@ namespace renderer
 		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout général.
-		*\param[in] accessFlags
-		*	Les accès voulus, une fois que la transition est effectuée.
+		*\param[in] srcLayout
+		*	Le layout source.
+		*\param[in] srcAccessFlags
+		*	Les accès source.
+		*\param[in] dstAccessFlags
+		*	Les accès destination.
+		*\param[in] srcQueueFamily
+		*	La famille de file source, pour un transfer de famille de file.
+		*\param[in] dstQueueFamily
+		*	La famille de file destination, pour un transfer de famille de file.
 		*\return
 		*	La barrière mémoire.
 		*\~english
 		*\brief
-		*	Prepares a memory barrier, for a general layout.
-		*\param[in] accessFlags
-		*	The wanted access flags, once the transition is done.
+		*	Prepares a transition memory barrier, for a general layout.
+		*\param[in] srcLayout
+		*	The old layout.
+		*\param[in] srcAccessFlags
+		*	The source access mask.
+		*\param[in] dstAccessFlags
+		*	The destination access mask.
+		*\param[in] srcQueueFamily
+		*	The source queue family, for a queue family transfer.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, for a queue family transfer.
 		*\return
 		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makeGeneralLayout( AccessFlags accessFlags )const = 0;
+		ImageMemoryBarrier makeGeneralLayout( ImageLayout srcLayout
+			, AccessFlags srcAccessFlags
+			, AccessFlags dstAccessFlags
+			, uint32_t srcQueueFamily = ~( 0u )
+			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
 		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de destination de transfert.
+		*\param[in] srcLayout
+		*	Le layout source.
+		*\param[in] srcAccessFlags
+		*	Les accès source.
+		*\param[in] srcQueueFamily
+		*	La famille de file source, pour un transfer de famille de file.
+		*\param[in] dstQueueFamily
+		*	La famille de file destination, pour un transfer de famille de file.
 		*\return
 		*	La barrière mémoire.
 		*\~english
 		*\brief
-		*	Prepares a memory barrier, for a transfer destination layout.
+		*	Prepares a transition memory barrier, for a transfer destination layout.
+		*\param[in] srcLayout
+		*	The old layout.
+		*\param[in] srcAccessFlags
+		*	The source access mask.
+		*\param[in] srcQueueFamily
+		*	The source queue family, for a queue family transfer.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, for a queue family transfer.
 		*\return
 		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makeTransferDestination()const = 0;
+		ImageMemoryBarrier makeTransferDestination( ImageLayout srcLayout
+			, AccessFlags srcAccessFlags
+			, uint32_t srcQueueFamily = ~( 0u )
+			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
 		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de source de transfert.
+		*\param[in] srcLayout
+		*	Le layout source.
+		*\param[in] srcAccessFlags
+		*	Les accès source.
+		*\param[in] srcQueueFamily
+		*	La famille de file source, pour un transfer de famille de file.
+		*\param[in] dstQueueFamily
+		*	La famille de file destination, pour un transfer de famille de file.
 		*\return
 		*	La barrière mémoire.
 		*\~english
 		*\brief
-		*	Prepares a memory barrier, for a transfer source layout.
+		*	Prepares a transition memory barrier, for a transfer source layout.
+		*\param[in] srcLayout
+		*	The old layout.
+		*\param[in] srcAccessFlags
+		*	The source access mask.
+		*\param[in] srcQueueFamily
+		*	The source queue family, for a queue family transfer.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, for a queue family transfer.
 		*\return
 		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makeTransferSource()const = 0;
+		ImageMemoryBarrier makeTransferSource( ImageLayout srcLayout
+			, AccessFlags srcAccessFlags
+			, uint32_t srcQueueFamily = ~( 0u )
+			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
 		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de ressource d'entrée (lecture seule) d'un shader.
+		*\param[in] srcLayout
+		*	Le layout source.
+		*\param[in] srcAccessFlags
+		*	Les accès source.
+		*\param[in] srcQueueFamily
+		*	La famille de file source, pour un transfer de famille de file.
+		*\param[in] dstQueueFamily
+		*	La famille de file destination, pour un transfer de famille de file.
 		*\return
 		*	La barrière mémoire.
 		*\~english
 		*\brief
-		*	Prepares a memory barrier, for an input shader resource layout.
+		*	Prepares a transition memory barrier, for an input shader resource layout.
+		*\param[in] srcLayout
+		*	The old layout.
+		*\param[in] srcAccessFlags
+		*	The source access mask.
+		*\param[in] srcQueueFamily
+		*	The source queue family, for a queue family transfer.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, for a queue family transfer.
 		*\return
 		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makeShaderInputResource()const = 0;
+		ImageMemoryBarrier makeShaderInputResource( ImageLayout srcLayout
+			, AccessFlags srcAccessFlags
+			, uint32_t srcQueueFamily = ~( 0u )
+			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
 		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de ressource de lecture de profondeur et/ou stencil.
+		*\param[in] srcLayout
+		*	Le layout source.
+		*\param[in] srcAccessFlags
+		*	Les accès source.
+		*\param[in] srcQueueFamily
+		*	La famille de file source, pour un transfer de famille de file.
+		*\param[in] dstQueueFamily
+		*	La famille de file destination, pour un transfer de famille de file.
 		*\return
 		*	La barrière mémoire.
 		*\~english
 		*\brief
-		*	Prepares a memory barrier, for a depth ant/or stencil read only layout.
+		*	Prepares a transition memory barrier, for a depth ant/or stencil read only layout.
+		*\param[in] srcLayout
+		*	The old layout.
+		*\param[in] srcAccessFlags
+		*	The source access mask.
+		*\param[in] srcQueueFamily
+		*	The source queue family, for a queue family transfer.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, for a queue family transfer.
 		*\return
 		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makeDepthStencilReadOnly()const = 0;
+		ImageMemoryBarrier makeDepthStencilReadOnly( ImageLayout srcLayout
+			, AccessFlags srcAccessFlags
+			, uint32_t srcQueueFamily = ~( 0u )
+			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
 		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout d'attache couleur.
+		*\param[in] srcLayout
+		*	Le layout source.
+		*\param[in] srcAccessFlags
+		*	Les accès source.
+		*\param[in] srcQueueFamily
+		*	La famille de file source, pour un transfer de famille de file.
+		*\param[in] dstQueueFamily
+		*	La famille de file destination, pour un transfer de famille de file.
 		*\return
 		*	La barrière mémoire.
 		*\~english
 		*\brief
-		*	Prepares a memory barrier, for a colour attachment layout.
+		*	Prepares a transition memory barrier, for a colour attachment layout.
+		*\param[in] srcLayout
+		*	The old layout.
+		*\param[in] srcAccessFlags
+		*	The source access mask.
+		*\param[in] srcQueueFamily
+		*	The source queue family, for a queue family transfer.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, for a queue family transfer.
 		*\return
 		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makeColourAttachment()const = 0;
+		ImageMemoryBarrier makeColourAttachment( ImageLayout srcLayout
+			, AccessFlags srcAccessFlags
+			, uint32_t srcQueueFamily = ~( 0u )
+			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
 		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout d'attache profondeur et/ou stencil.
+		*\param[in] srcLayout
+		*	Le layout source.
+		*\param[in] srcAccessFlags
+		*	Les accès source.
+		*\param[in] srcQueueFamily
+		*	La famille de file source, pour un transfer de famille de file.
+		*\param[in] dstQueueFamily
+		*	La famille de file destination, pour un transfer de famille de file.
 		*\return
 		*	La barrière mémoire.
 		*\~english
 		*\brief
-		*	Prepares a memory barrier, for a depth and/or stencil attachment layout.
+		*	Prepares a transition memory barrier, for a depth and/or stencil attachment layout.
+		*\param[in] srcLayout
+		*	The old layout.
+		*\param[in] srcAccessFlags
+		*	The source access mask.
+		*\param[in] srcQueueFamily
+		*	The source queue family, for a queue family transfer.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, for a queue family transfer.
 		*\return
 		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makeDepthStencilAttachment()const = 0;
+		ImageMemoryBarrier makeDepthStencilAttachment( ImageLayout srcLayout
+			, AccessFlags srcAccessFlags
+			, uint32_t srcQueueFamily = ~( 0u )
+			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
 		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout de source de presentation.
+		*\param[in] srcLayout
+		*	Le layout source.
+		*\param[in] srcAccessFlags
+		*	Les accès source.
+		*\param[in] srcQueueFamily
+		*	La famille de file source, pour un transfer de famille de file.
+		*\param[in] dstQueueFamily
+		*	La famille de file destination, pour un transfer de famille de file.
 		*\return
 		*	La barrière mémoire.
 		*\~english
 		*\brief
-		*	Prepares a memory barrier, for a presentation source layout.
+		*	Prepares a transition memory barrier, for a presentation source layout.
+		*\param[in] srcLayout
+		*	The old layout.
+		*\param[in] srcAccessFlags
+		*	The source access mask.
+		*\param[in] srcQueueFamily
+		*	The source queue family, for a queue family transfer.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, for a queue family transfer.
 		*\return
 		*	The memory barrier.
 		*/
-		virtual ImageMemoryBarrier makePresentSource()const = 0;
+		ImageMemoryBarrier makePresentSource( ImageLayout srcLayout
+			, AccessFlags srcAccessFlags
+			, uint32_t srcQueueFamily = ~( 0u )
+			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
 		*\~french
 		*\return
@@ -238,6 +391,48 @@ namespace renderer
 		{
 			return m_subResourceRange;
 		}
+
+	private:
+		/**
+		*\~french
+		*\brief
+		*	Prépare une barrière mémoire de transition.
+		*\param[in] srcLayout
+		*	Le layout source.
+		*\param[in] dstLayout
+		*	Le layout destination.
+		*\param[in] srcAccessFlags
+		*	Les accès source.
+		*\param[in] dstAccessFlags
+		*	Les accès destination.
+		*\param[in] srcQueueFamily
+		*	La famille de file source, pour un transfer de famille de file.
+		*\param[in] dstQueueFamily
+		*	La famille de file destination, pour un transfer de famille de file.
+		*\return
+		*	La barrière mémoire.
+		*\~english
+		*\brief
+		*	Prepares a transition memory barrier.
+		*\param[in] srcLayout
+		*	The old layout.
+		*\param[in] srcAccessFlags
+		*	The source access mask.
+		*\param[in] dstAccessFlags
+		*	The destination access mask.
+		*\param[in] srcQueueFamily
+		*	The source queue family, for a queue family transfer.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, for a queue family transfer.
+		*\return
+		*	The memory barrier.
+		*/
+		virtual ImageMemoryBarrier doMakeLayoutTransition( ImageLayout srcLayout
+			, ImageLayout dstLayout
+			, AccessFlags srcAccessFlags
+			, AccessFlags dstAccessMask
+			, uint32_t srcQueueFamily
+			, uint32_t dstQueueFamily )const = 0;
 
 	private:
 		Device const & m_device;

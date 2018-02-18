@@ -35,7 +35,7 @@ namespace common
 			, wxSize const & size
 			, std::string const & appName
 			, std::string const & appDesc );
-		~RenderPanel();
+		virtual ~RenderPanel();
 		void initialise( renderer::Renderer const & renderer );
 		void update();
 		void draw();

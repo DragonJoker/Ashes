@@ -91,7 +91,8 @@ namespace vk_renderer
 	{
 		commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 			, renderer::PipelineStageFlag::eColourAttachmentOutput
-			, m_backBuffers[index]->getView().makeColourAttachment() );
+			, m_backBuffers[index]->getView().makeColourAttachment( renderer::ImageLayout::ePresentSrc
+				, renderer::AccessFlag::eMemoryRead ) );
 	}
 
 	void SwapChain::postRenderCommands( uint32_t index
@@ -99,7 +100,8 @@ namespace vk_renderer
 	{
 		commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 			, renderer::PipelineStageFlag::eBottomOfPipe
-			, m_backBuffers[index]->getView().makePresentSource() );
+			, m_backBuffers[index]->getView().makePresentSource( renderer::ImageLayout::eColourAttachmentOptimal
+				, renderer::AccessFlag::eColourAttachmentWrite ) );
 	}
 
 	renderer::RenderingResources * SwapChain::getResources()

@@ -13,7 +13,7 @@ namespace common
 			, renderer::UIVec2 const & size
 			, Scene && scene
 			, ImagePtrArray && images );
-		~RenderTarget();
+		virtual ~RenderTarget();
 		void resize( renderer::UIVec2 const & size );
 		void update( std::chrono::microseconds const & duration );
 		bool draw( std::chrono::microseconds & gpu );
@@ -30,6 +30,18 @@ namespace common
 
 	protected:
 		void doInitialise();
+
+		inline OpaqueRendering const & getOpaqueRendering()const
+		{
+			assert( m_opaque );
+			return *m_opaque;
+		}
+
+		inline TransparentRendering const & getTransparentRendering()const
+		{
+			assert( m_transparent );
+			return *m_transparent;
+		}
 
 	private:
 		void doCleanup();

@@ -6,6 +6,11 @@
 #include "Core/GlRenderingResources.hpp"
 #include "Image/GlTextureView.hpp"
 
+#ifdef max
+#	undef max
+#	undef min
+#endif
+
 namespace gl_renderer
 {
 	Texture::Texture( Device const & device )

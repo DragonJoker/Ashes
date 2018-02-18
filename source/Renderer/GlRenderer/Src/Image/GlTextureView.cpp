@@ -35,76 +35,30 @@ namespace gl_renderer
 		glLogCall( gl::DeleteTextures, 1, &m_texture );
 	}
 
-	renderer::ImageMemoryBarrier TextureView::makeGeneralLayout( renderer::AccessFlags accessFlags )const
+	GLuint TextureView::getImage()const noexcept
 	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eGeneral
-			, ~( 0u )
-			, accessFlags );
+		assert( m_texture != GL_INVALID_INDEX );
+		return m_texture;
 	}
 
-	renderer::ImageMemoryBarrier TextureView::makeTransferDestination()const
+	renderer::ImageMemoryBarrier TextureView::doMakeLayoutTransition( renderer::ImageLayout srcLayout
+		, renderer::ImageLayout dstLayout
+		, renderer::AccessFlags srcAccessFlags
+		, renderer::AccessFlags dstAccessMask
+		, uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
 	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eTransferDstOptimal
-			, ~( 0u )
-			, renderer::AccessFlag::eTransferWrite );
-	}
-
-	renderer::ImageMemoryBarrier TextureView::makeTransferSource()const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eTransferSrcOptimal
-			, ~( 0u )
-			, renderer::AccessFlag::eShaderRead );
-	}
-
-	renderer::ImageMemoryBarrier TextureView::makeShaderInputResource()const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eShaderReadOnlyOptimal
-			, ~( 0u )
-			, renderer::AccessFlag::eTransferRead );
-	}
-
-	renderer::ImageMemoryBarrier TextureView::makeDepthStencilReadOnly()const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eDepthStencilReadOnlyOptimal
-			, ~( 0u )
-			, renderer::AccessFlag::eShaderRead );
-	}
-
-	renderer::ImageMemoryBarrier TextureView::makeColourAttachment()const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eColourAttachmentOptimal
-			, ~( 0u )
-			, renderer::AccessFlag::eColourAttachmentWrite );
-	}
-
-	renderer::ImageMemoryBarrier TextureView::makeDepthStencilAttachment()const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::eDepthStencilAttachmentOptimal
-			, ~( 0u )
-			, renderer::AccessFlag::eColourAttachmentWrite );
-	}
-
-	renderer::ImageMemoryBarrier TextureView::makePresentSource()const
-	{
-		return doMakeLayoutTransition( renderer::ImageLayout::ePresentSrc
-			, ~( 0u )
-			, renderer::AccessFlag::eMemoryRead );
-	}
-
-	renderer::ImageMemoryBarrier TextureView::doMakeLayoutTransition( renderer::ImageLayout layout
-		, uint32_t queueFamily
-		, renderer::AccessFlags dstAccessMask )const
-	{
-		return renderer::ImageMemoryBarrier
+		renderer::ImageMemoryBarrier transitionBarrier
 		{
-			0u,                                      // srcAccessMask
-			dstAccessMask,                           // dstAccessMask
-			renderer::ImageLayout::eUndefined,       // oldLayout
-			layout,                                  // newLayout
-			~( 0u ),                                 // srcQueueFamilyIndex
-			queueFamily,                             // dstQueueFamilyIndex
-			getTexture(),                            // image
-			getSubResourceRange()                    // subresourceRange
+			srcAccessFlags,
+			dstAccessMask,
+			srcLayout,
+			dstLayout,
+			srcQueueFamily,
+			dstQueueFamily,
+			getTexture(),
+			getSubResourceRange()
 		};
+		return transitionBarrier;
 	}
 }
