@@ -148,6 +148,15 @@ namespace vk_renderer
 		*/
 		void waitIdle()const override;
 		/**
+		*\copydoc	renderer::Device::frustum
+		*/
+		renderer::Mat4 frustum( float left
+			, float right
+			, float bottom
+			, float top
+			, float zNear
+			, float zFar )const override;
+		/**
 		*\copydoc	renderer::Device::perspective
 		*/
 		renderer::Mat4 perspective( renderer::Angle fovy
