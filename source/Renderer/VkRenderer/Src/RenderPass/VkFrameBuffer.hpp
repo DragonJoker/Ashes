@@ -56,46 +56,6 @@ namespace vk_renderer
 		*/
 		~FrameBuffer();
 		/**
-		*\brief
-		*	Copie des données dans la RAM.
-		*\param[in] queue
-		*	La file utilisée pour la copie.
-		*\param[in] index
-		*	L'index de l'attache.
-		*\param[in] xoffset, yoffset
-		*	Le décalage à partir duquel les données seront copiées, par rapport
-		*	au début du stockage de la texture, en VRAM.
-		*\param[in] width, height
-		*	Les dimensions des données à copier.
-		*\param[in] format
-		*	Le format voulu pour les données.
-		*\param[out] data
-		*	Reçoit les données copiées.
-		*\~english
-		*\brief
-		*	Copies data from an attach in RAM.
-		*\param[in] queue
-		*	The queue used for the copy.
-		*\param[in] index
-		*	The attach index.
-		*\param[in] xoffset, yoffset
-		*	The X and Y offsets.
-		*\param[in] width, height
-		*	The data copy dimensions.
-		*\param[in] format
-		*	The wanted format for the copy.
-		*\param[out] data
-		*	Receives copied data.
-		*/
-		void download( renderer::Queue const & queue
-			, uint32_t index
-			, uint32_t xoffset
-			, uint32_t yoffset
-			, uint32_t width
-			, uint32_t height
-			, renderer::PixelFormat format
-			, uint8_t * data )const noexcept;
-		/**
 		*\return
 		*	Les dimensions du tampon.
 		*/

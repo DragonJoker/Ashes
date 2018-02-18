@@ -50,29 +50,6 @@ namespace renderer
 		*/
 		virtual ~FrameBuffer() = default;
 		/**
-		*\brief
-		*	Copie des données dans la RAM.
-		*\remarks
-		*	Pour utiliser cette fonction, il faut que le tampon soit activé.
-		*\param[in] xoffset, yoffset
-		*	Le décalage à partir duquel les données seront copiées, par rapport
-		*	au début du stockage de la texture, en VRAM.
-		*\param[in] width, height
-		*	Les dimensions des données à copier.
-		*\param[in] format
-		*	Le format voulu pour les données.
-		*\param[out] data
-		*	Reçoit les données copiées.
-		*/
-		virtual void download( Queue const & queue
-			, uint32_t index
-			, uint32_t xoffset
-			, uint32_t yoffset
-			, uint32_t width
-			, uint32_t height
-			, PixelFormat format
-			, uint8_t * data )const noexcept = 0;
-		/**
 		*\~english
 		*\return
 		*	The beginning of the attaches array.

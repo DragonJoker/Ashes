@@ -158,7 +158,9 @@ namespace gl_renderer
 			Attachment attachment
 			{
 				getAttachmentPoint( static_cast< TextureView const & >( attach.getView() ) ),
-				static_cast< TextureView const & >( attach.getView() ).getImage(),
+				attach.getView().getTexture().getType() == renderer::TextureType::e2D
+					? static_cast< Texture const & >( attach.getView().getTexture() ).getImage()
+					: static_cast< TextureView const & >( attach.getView() ).getImage(),
 				getAttachmentType( static_cast< TextureView const & >( attach.getView() ) ),
 			};
 
@@ -193,28 +195,6 @@ namespace gl_renderer
 		{
 			glLogCall( gl::DeleteFramebuffers, 1, &m_frameBuffer );
 		}
-	}
-
-	void FrameBuffer::download( renderer::Queue const & queue
-		, uint32_t index
-		, uint32_t xoffset
-		, uint32_t yoffset
-		, uint32_t width
-		, uint32_t height
-		, renderer::PixelFormat format
-		, uint8_t * data )const noexcept
-	{
-		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer );
-		glLogCall( gl::ReadBuffer, m_colourAttaches[index].point );
-		glLogCall( gl::ReadPixels
-			, xoffset
-			, yoffset
-			, width
-			, height
-			, getFormat( format )
-			, getType( format )
-			, data );
-		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, 0u );
 	}
 
 	void FrameBuffer::setDrawBuffers( renderer::RenderPassAttachmentArray const & attaches )const

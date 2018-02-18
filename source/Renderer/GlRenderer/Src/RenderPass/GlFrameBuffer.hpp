@@ -51,29 +51,6 @@ namespace gl_renderer
 		*/
 		~FrameBuffer();
 		/**
-		*\brief
-		*	Copie des données dans la RAM.
-		*\remarks
-		*	Pour utiliser cette fonction, il faut que le tampon soit activé.
-		*\param[in] xoffset, yoffset
-		*	Le décalage à partir duquel les données seront copiées, par rapport
-		*	au d�but du stockage de la texture, en VRAM.
-		*\param[in] width, height
-		*	Les dimensions des données à copier.
-		*\param[in] format
-		*	Le format voulu pour les données.
-		*\param[out] data
-		*	Reçoit les données copiées.
-		*/
-		void download( renderer::Queue const & queue
-			, uint32_t index
-			, uint32_t xoffset
-			, uint32_t yoffset
-			, uint32_t width
-			, uint32_t height
-			, renderer::PixelFormat format
-			, uint8_t * data )const noexcept;
-		/**
 		*\~english
 		*\brief
 		*	Sets the draw buffers.
