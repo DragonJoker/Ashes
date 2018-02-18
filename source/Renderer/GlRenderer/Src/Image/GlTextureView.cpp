@@ -13,8 +13,17 @@ namespace gl_renderer
 		, uint32_t baseMipLevel
 		, uint32_t levelCount
 		, uint32_t baseArrayLayer
-		, uint32_t layerCount )
-		: renderer::TextureView{ device, texture, type, format, baseMipLevel, levelCount, baseArrayLayer, layerCount }
+		, uint32_t layerCount
+		, renderer::ComponentMapping const & mapping )
+		: renderer::TextureView{ device
+			, texture
+			, type
+			, format
+			, baseMipLevel
+			, levelCount
+			, baseArrayLayer
+			, layerCount
+			, mapping }
 		, m_device{ device }
 		, m_target{ convert( type ) }
 	{
@@ -28,6 +37,29 @@ namespace gl_renderer
 			, levelCount
 			, baseArrayLayer
 			, layerCount );
+		glLogCall( gl::BindTexture, m_target, m_texture );
+
+		if ( mapping.r != renderer::ComponentSwizzle::eIdentity )
+		{
+			glLogCall( gl::TexParameteri, m_target, GL_SWIZZLE_R, convert( mapping.r ) );
+		}
+
+		if ( mapping.g != renderer::ComponentSwizzle::eIdentity )
+		{
+			glLogCall( gl::TexParameteri, m_target, GL_SWIZZLE_G, convert( mapping.g ) );
+		}
+
+		if ( mapping.b != renderer::ComponentSwizzle::eIdentity )
+		{
+			glLogCall( gl::TexParameteri, m_target, GL_SWIZZLE_B, convert( mapping.b ) );
+		}
+
+		if ( mapping.a != renderer::ComponentSwizzle::eIdentity )
+		{
+			glLogCall( gl::TexParameteri, m_target, GL_SWIZZLE_A, convert( mapping.a ) );
+		}
+
+		glLogCall( gl::BindTexture, m_target, 0u );
 	}
 
 	TextureView::~TextureView()

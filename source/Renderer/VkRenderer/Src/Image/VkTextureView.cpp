@@ -3,6 +3,7 @@
 #include "Command/VkCommandBuffer.hpp"
 #include "Core/VkDevice.hpp"
 #include "Sync/VkImageMemoryBarrier.hpp"
+#include "Image/VkComponentMapping.hpp"
 #include "Image/VkImageSubresourceRange.hpp"
 #include "Core/VkRenderingResources.hpp"
 #include "Image/VkTexture.hpp"
@@ -16,24 +17,28 @@ namespace vk_renderer
 		, uint32_t baseMipLevel
 		, uint32_t levelCount
 		, uint32_t baseArrayLayer
-		, uint32_t layerCount )
-		: renderer::TextureView{ device, image, type, format, baseMipLevel, levelCount, baseArrayLayer, layerCount }
+		, uint32_t layerCount
+		, renderer::ComponentMapping const & mapping )
+		: renderer::TextureView{ device
+			, image
+			, type
+			, format
+			, baseMipLevel
+			, levelCount
+			, baseArrayLayer
+			, layerCount
+			, mapping }
 		, m_device{ device }
 	{
 		VkImageViewCreateInfo createInfo
 		{
 			VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 			nullptr,
-			0,                                              // flags
-			static_cast< Texture const & >( getTexture() ), // image
-			convert( type ),                                // viewType
-			convert( getFormat() ),                         // format
-			{                                               // components
-				VK_COMPONENT_SWIZZLE_IDENTITY,                  // r
-				VK_COMPONENT_SWIZZLE_IDENTITY,                  // g
-				VK_COMPONENT_SWIZZLE_IDENTITY,                  // b
-				VK_COMPONENT_SWIZZLE_IDENTITY                   // a
-			},
+			0,
+			static_cast< Texture const & >( getTexture() ),
+			convert( type ),
+			convert( getFormat() ),
+			convert( mapping ),
 			convert( getSubResourceRange() )
 		};
 		DEBUG_DUMP( createInfo );

@@ -124,6 +124,11 @@ namespace gl_renderer
 		return getName( value );
 	}
 
+	inline std::string toString( GlComponentSwizzle value )
+	{
+		return getName( value );
+	}
+
 	inline std::string toString( GlCullMode value )
 	{
 		return getName( value );
@@ -235,6 +240,11 @@ namespace gl_renderer
 	}
 
 	inline std::string toString( GlStencilOp value )
+	{
+		return getName( value );
+	}
+
+	inline std::string toString( GlSwizzle value )
 	{
 		return getName( value );
 	}

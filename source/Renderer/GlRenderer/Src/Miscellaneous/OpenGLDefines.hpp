@@ -248,6 +248,7 @@ namespace gl_renderer
 	using PFN_glTexImage2DMultisample = void ( GLAPIENTRY * )( GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations );
 	using PFN_glTexImage3D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const void * pixels );
 	using PFN_glTexImage3DMultisample = void ( GLAPIENTRY * )( GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations );
+	using PFN_glTexParameteri = void( GLAPIENTRY * )( GLenum target​, GLenum pname​, GLint param );
 	using PFN_glTexSubImage1D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const void *pixels );
 	using PFN_glTexSubImage2D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void *pixels );
 	using PFN_glTexSubImage3D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void *pixels );

@@ -15,8 +15,14 @@ namespace vk_renderer
 		case renderer::PixelFormat::eR8G8:
 			return VK_FORMAT_R8G8_UINT;
 
+		case renderer::PixelFormat::eRG32F:
+			return VK_FORMAT_R32G32_SFLOAT;
+
 		case renderer::PixelFormat::eR8G8B8:
 			return VK_FORMAT_R8G8B8_UINT;
+
+		case renderer::PixelFormat::eRGB32F:
+			return VK_FORMAT_R32G32B32_SFLOAT;
 
 		case renderer::PixelFormat::eR8G8B8A8:
 			return VK_FORMAT_R8G8B8A8_UNORM;

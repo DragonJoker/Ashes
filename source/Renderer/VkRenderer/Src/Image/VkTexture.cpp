@@ -166,7 +166,7 @@ namespace vk_renderer
 	{
 		renderer::Texture::Mapped mapped{};
 		VkImageSubresource subResource{};
-		subResource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		subResource.aspectMask = getImageAspectFlags( getFormat() );
 		VkSubresourceLayout subResourceLayout;
 		m_device.vkGetImageSubresourceLayout( m_device, m_image, &subResource, &subResourceLayout );
 
@@ -198,7 +198,8 @@ namespace vk_renderer
 		, uint32_t baseMipLevel
 		, uint32_t levelCount
 		, uint32_t baseArrayLayer
-		, uint32_t layerCount )const
+		, uint32_t layerCount
+		, renderer::ComponentMapping const & mapping )const
 	{
 		return std::make_shared< TextureView >( m_device
 			, *this
@@ -207,7 +208,8 @@ namespace vk_renderer
 			, baseMipLevel
 			, levelCount
 			, baseArrayLayer
-			, layerCount );
+			, layerCount
+			, mapping );
 	}
 
 	void Texture::generateMipmaps()const
@@ -219,7 +221,15 @@ namespace vk_renderer
 
 		if ( commandBuffer->begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
 		{
-			TextureView srcView{ m_device, *this, getType(), getFormat(), 0, 1u, 0u, 1u };
+			TextureView srcView{ m_device
+				, *this
+				, getType()
+				, getFormat()
+				, 0
+				, 1u
+				, 0u
+				, 1u
+				, renderer::ComponentMapping{} };
 			vkCommandBuffer.memoryBarrier( convert( renderer::PipelineStageFlag::eFragmentShader )
 				, convert( renderer::PipelineStageFlag::eTopOfPipe )
 				, srcView.makeTransferSource( renderer::ImageLayout::eUndefined
@@ -227,7 +237,15 @@ namespace vk_renderer
 
 			for ( uint32_t i = 1; i < m_mipmapLevels; ++i )
 			{
-				TextureView dstView{ m_device, *this, getType(), getFormat(), i, 1u, 0u, 1u };
+				TextureView dstView{ m_device
+					, *this
+					, getType()
+					, getFormat()
+					, i
+					, 1u
+					, 0u
+					, 1u
+					, renderer::ComponentMapping{} };
 				vkCommandBuffer.memoryBarrier( convert( renderer::PipelineStageFlag::eFragmentShader )
 					, convert( renderer::PipelineStageFlag::eTopOfPipe )
 					, dstView.makeTransferDestination( renderer::ImageLayout::eUndefined
@@ -237,14 +255,14 @@ namespace vk_renderer
 				int32_t const mipHeight = height >> i;
 
 				VkImageBlit imageBlit = {};
-				imageBlit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+				imageBlit.srcSubresource.aspectMask = getImageAspectFlags( getFormat() );
 				imageBlit.srcSubresource.baseArrayLayer = 0;
 				imageBlit.srcSubresource.layerCount = 1;
 				imageBlit.srcSubresource.mipLevel = 0;
 				imageBlit.srcOffsets[0] = { 0, 0, 0 };
 				imageBlit.srcOffsets[1] = { width, height, 1 };
 
-				imageBlit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+				imageBlit.dstSubresource.aspectMask = getImageAspectFlags( getFormat() );
 				imageBlit.dstSubresource.baseArrayLayer = 0;
 				imageBlit.dstSubresource.layerCount = 1;
 				imageBlit.dstSubresource.mipLevel = i;

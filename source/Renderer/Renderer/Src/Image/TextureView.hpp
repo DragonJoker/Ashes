@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 
 #include "RendererPrerequisites.hpp"
 
+#include "Image/ComponentMapping.hpp"
 #include "Image/ImageSubresourceRange.hpp"
 
 namespace renderer
@@ -70,7 +71,8 @@ namespace renderer
 			, uint32_t baseMipLevel
 			, uint32_t levelCount
 			, uint32_t baseArrayLayer
-			, uint32_t layerCount );
+			, uint32_t layerCount
+			, ComponentMapping const & mapping );
 
 	public:
 		/**
