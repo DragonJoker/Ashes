@@ -122,9 +122,9 @@ namespace renderer
 	*\return
 	*	Le nom.
 	*/
-	inline std::string getName( AttributeFormat p_type )
+	inline std::string getName( AttributeFormat type )
 	{
-		switch ( p_type )
+		switch ( type )
 		{
 		case AttributeFormat::eFloat:
 			return "float";

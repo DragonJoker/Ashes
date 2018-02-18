@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <Core/Connection.hpp>
+#include <Core/Renderer.hpp>
 
 #include <Utils/Factory.hpp>
 #include <Utils/Mat4.hpp>
@@ -18,7 +19,7 @@ namespace common
 	using RendererFactory = utils::Factory< renderer::Renderer
 		, std::string
 		, renderer::RendererPtr
-		, std::function< renderer::RendererPtr( bool ) > >;
+		, std::function< renderer::RendererPtr( renderer::Renderer::Configuration const & ) > >;
 
 	static uint32_t constexpr MAX_TEXTURES = 6u;
 	static uint32_t constexpr MAX_LIGHTS = 10u;
