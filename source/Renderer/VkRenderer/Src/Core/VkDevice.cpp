@@ -339,6 +339,25 @@ namespace vk_renderer
 		vkDeviceWaitIdle( m_device );
 	}
 
+	renderer::Mat4 Device::frustum( float left
+		, float right
+		, float bottom
+		, float top
+		, float zNear
+		, float zFar )const
+	{
+		renderer::Mat4 result( float( 0 ) );
+		result[0][0] = ( float( 2 ) * zNear ) / ( right - left );
+		result[1][1] = ( float( 2 ) * zNear ) / ( top - bottom );
+		result[2][0] = ( right + left ) / ( right - left );
+		result[2][1] = ( top + bottom ) / ( top - bottom );
+		result[2][3] = float( -1 );
+		result[2][2] = zFar / ( zNear - zFar );
+		result[3][2] = -( zFar * zNear ) / ( zFar - zNear );
+
+		return result;
+	}
+
 	renderer::Mat4 Device::perspective( renderer::Angle fovy
 		, float aspect
 		, float zNear

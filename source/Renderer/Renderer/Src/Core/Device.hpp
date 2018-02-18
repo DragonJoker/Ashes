@@ -481,6 +481,32 @@ namespace renderer
 			, uint32_t count
 			, QueryPipelineStatisticFlags pipelineStatistics )const = 0;
 		/**
+		*\~english
+		*\brief
+		*	Computes an frustum projection matrix.
+		*\param[in] left, right
+		*	The left and right planes position.
+		*\param[in] top, bottom
+		*	The top and bottom planes position.
+		*\param[in] zNear, zFar
+		*	The near and far planes position.
+		*\~french
+		*\brief
+		*	Calcule une matrice de projection frustum.
+		*\param[in] left, right
+		*	La position des plans gauche et droite.
+		*\param[in] top, bottom
+		*	La position des plans haut et bas.
+		*\param[in] zNear, zFar
+		*	La position des premier et arrière plans.
+		*/
+		virtual Mat4 frustum( float left
+			, float right
+			, float bottom
+			, float top
+			, float zNear
+			, float zFar )const = 0;
+		/**
 		*\english
 		*	Computes a perspective projection matrix.
 		*\param[in] fovy
