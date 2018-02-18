@@ -2,6 +2,8 @@
 
 #include "Prerequisites.hpp"
 
+#include <Core/Renderer.hpp>
+
 #include <Utils/DynamicLibrary.hpp>
 
 namespace common
@@ -13,7 +15,7 @@ namespace common
 	class RendererPlugin
 	{
 	private:
-		using CreatorFunction = renderer::Renderer *( * )( bool );
+		using CreatorFunction = renderer::Renderer *( * )( renderer::Renderer::Configuration const & );
 
 	public:
 		RendererPlugin( RendererPlugin const & ) = delete;
@@ -23,7 +25,7 @@ namespace common
 
 		RendererPlugin( renderer::DynamicLibrary && library
 			, RendererFactory & factory );
-		renderer::RendererPtr create( bool enableValidation );
+		renderer::RendererPtr create( renderer::Renderer::Configuration const & configuration );
 
 	private:
 		renderer::DynamicLibrary m_library;

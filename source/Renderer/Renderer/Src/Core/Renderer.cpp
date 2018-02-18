@@ -8,10 +8,10 @@ namespace renderer
 {
 	Renderer::Renderer( ClipDirection clipDirection
 		, std::string const & name
-		, bool enableValidation )
-		: m_clipDirection{ clipDirection }
+		, Configuration const & configuration )
+		: m_configuration{ configuration }
+		, m_clipDirection{ clipDirection }
 		, m_name{ name }
-		, m_enableValidation{ enableValidation }
 	{
 	}
 }

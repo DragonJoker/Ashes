@@ -12,6 +12,20 @@ namespace renderer
 {
 	class Renderer
 	{
+	public:
+		struct Configuration
+		{
+			//!\~french		Le nom de l'application.
+			//!\~english	The application name.
+			std::string appName;
+			//!\~french		Le nom du moteur utilisé par l'application.
+			//!\~english	The name of the engine used by the application.
+			std::string engineName;
+			//!\~french		Dit si la couche de validation doit être activée.
+			//!\~english	Tells if the validation layer must be enabled.
+			bool enableValidation;
+		};
+
 	protected:
 		/**
 		*\brief
@@ -19,7 +33,7 @@ namespace renderer
 		*/
 		Renderer( ClipDirection clipDirection
 			, std::string const & name
-			, bool enableValidation );
+			, Configuration const & configuration );
 
 	public:
 		/**
@@ -56,7 +70,7 @@ namespace renderer
 		*/
 		inline bool isValidationEnabled()const
 		{
-			return m_enableValidation;
+			return m_configuration.enableValidation;
 		}
 		/**
 		*\~english
@@ -83,10 +97,12 @@ namespace renderer
 			return m_name;
 		}
 
+	protected:
+		Configuration m_configuration;
+
 	private:
 		ClipDirection m_clipDirection;
 		std::string m_name;
-		bool m_enableValidation;
 	};
 }
 

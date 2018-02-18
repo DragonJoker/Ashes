@@ -47,7 +47,7 @@ namespace vk_renderer
 			VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,                 // sType
 			nullptr,                                                    // pNext
 			0,                                                          // flags
-			m_connection->getGraphicsQueueFamilyIndex(),                 // queueFamilyIndex
+			m_connection->getGraphicsQueueFamilyIndex(),                // queueFamilyIndex
 			static_cast< uint32_t >( queuePriorities.size() ),          // queueCount
 			queuePriorities.data()                                      // pQueuePriorities
 		} );
@@ -59,7 +59,7 @@ namespace vk_renderer
 				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,             // sType
 				nullptr,                                                // pNext
 				0,                                                      // flags
-				m_connection->getPresentQueueFamilyIndex(),              // queueFamilyIndex
+				m_connection->getPresentQueueFamilyIndex(),             // queueFamilyIndex
 				static_cast< uint32_t >( queuePriorities.size() ),      // queueCount
 				queuePriorities.data()                                  // pQueuePriorities
 			} );

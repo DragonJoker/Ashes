@@ -8,8 +8,8 @@
 
 namespace gl_renderer
 {
-	Renderer::Renderer( bool enableValidation )
-		: renderer::Renderer{ renderer::ClipDirection::eBottomUp, "gl", enableValidation }
+	Renderer::Renderer( Configuration const & configuration )
+		: renderer::Renderer{ renderer::ClipDirection::eBottomUp, "gl", configuration }
 	{
 	}
 

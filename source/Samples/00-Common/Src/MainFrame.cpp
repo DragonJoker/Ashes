@@ -46,11 +46,17 @@ namespace common
 
 		try
 		{
+			renderer::Renderer::Configuration config
+			{
+				m_name.ToStdString(),
+				"RendererLib",
 #if !defined( NDEBUG )
-			m_renderer = m_factory.create( m_rendererName.ToStdString(), true );
+				true,
 #else
-			m_renderer = m_factory.create( m_rendererName.ToStdString(), false );
+				false,
 #endif
+			};
+			m_renderer = m_factory.create( m_rendererName.ToStdString(), config );
 
 			std::cout << "Renderer instance created." << std::endl;
 			m_panel = doCreatePanel( WindowSize, *m_renderer );
