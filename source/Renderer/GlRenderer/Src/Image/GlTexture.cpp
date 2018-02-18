@@ -30,7 +30,8 @@ namespace gl_renderer
 		, uint32_t baseMipLevel
 		, uint32_t levelCount
 		, uint32_t baseArrayLayer
-		, uint32_t layerCount )const
+		, uint32_t layerCount
+		, renderer::ComponentMapping const & mapping )const
 	{
 		return std::make_shared< TextureView >( m_device
 			, *this
@@ -39,7 +40,8 @@ namespace gl_renderer
 			, baseMipLevel
 			, levelCount
 			, baseArrayLayer
-			, layerCount );
+			, layerCount
+			, mapping );
 	}
 
 	void Texture::generateMipmaps()const

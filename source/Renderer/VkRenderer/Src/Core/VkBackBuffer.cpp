@@ -23,7 +23,8 @@ namespace vk_renderer
 			, 0u
 			, 1u
 			, 0u
-			, 1u }
+			, 1u
+			, renderer::ComponentMapping{} }
 	{
 	}
 }

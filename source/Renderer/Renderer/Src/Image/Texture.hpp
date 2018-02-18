@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Renderer_Texture_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include "ComponentMapping.hpp"
 
 namespace renderer
 {
@@ -413,7 +413,8 @@ namespace renderer
 			, uint32_t baseMipLevel = 0u
 			, uint32_t levelCount = 1u
 			, uint32_t baseArrayLayer = 0u
-			, uint32_t layerCount=  1u )const = 0;
+			, uint32_t layerCount = 1u
+			, ComponentMapping const & mapping = ComponentMapping{} )const = 0;
 		/**
 		*\~french
 		*\brief

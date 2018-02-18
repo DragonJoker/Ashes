@@ -11,7 +11,8 @@ namespace renderer
 		, uint32_t baseMipLevel
 		, uint32_t levelCount
 		, uint32_t baseArrayLayer
-		, uint32_t layerCount )
+		, uint32_t layerCount
+		, ComponentMapping const & mapping )
 		: m_device{ device }
 		, m_format{ format }
 		, m_image{ image }

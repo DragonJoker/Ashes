@@ -24,6 +24,7 @@
 #include "Enum/GlClipInfo.hpp"
 #include "Enum/GlColourComponentFlag.hpp"
 #include "Enum/GlCompareOp.hpp"
+#include "Enum/GlComponentSwizzle.hpp"
 #include "Enum/GlCullModeFlag.hpp"
 #include "Enum/GlFenceWaitFlag.hpp"
 #include "Enum/GlFilter.hpp"

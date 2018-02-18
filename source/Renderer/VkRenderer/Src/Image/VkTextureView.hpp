@@ -73,7 +73,8 @@ namespace vk_renderer
 			, uint32_t baseMipLevel
 			, uint32_t levelCount
 			, uint32_t baseArrayLayer
-			, uint32_t layerCount );
+			, uint32_t layerCount
+			, renderer::ComponentMapping const & mapping );
 		/**
 		*\~french
 		*\brief
