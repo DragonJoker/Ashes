@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 #include "Image/GlTexture.hpp"
 #include "Image/GlTextureView.hpp"
 
+#include <RenderPass/RenderSubpassAttachment.hpp>
+
 #include <iostream>
 
 namespace gl_renderer
@@ -204,6 +206,22 @@ namespace gl_renderer
 		for ( auto & attach : attaches )
 		{
 			if ( !renderer::isDepthOrStencilFormat( attach.getFormat() ) )
+			{
+				colours.push_back( getAttachmentPoint( attach.getFormat() ) + attach.getIndex() );
+			}
+		}
+
+		glLogCall( gl::DrawBuffers, GLsizei( colours.size() ), colours.data() );
+	}
+
+	void FrameBuffer::setDrawBuffers( renderer::RenderSubpassAttachmentArray const & attaches )const
+	{
+		renderer::UInt32Array colours;
+
+		for ( auto & attach : attaches )
+		{
+			if ( attach.getLayout() == renderer::ImageLayout::eColourAttachmentOptimal
+				&& !renderer::isDepthOrStencilFormat( attach.getFormat() ) )
 			{
 				colours.push_back( getAttachmentPoint( attach.getFormat() ) + attach.getIndex() );
 			}

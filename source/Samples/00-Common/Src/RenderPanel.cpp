@@ -292,8 +292,12 @@ namespace common
 		{
 			renderer::ImageLayout::eColourAttachmentOptimal,
 		};
+		renderer::RenderSubpassAttachmentArray subAttaches
+		{
+			renderer::RenderSubpassAttachment{ attaches[0], renderer::ImageLayout::eColourAttachmentOptimal },
+		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( attaches
+		subpasses.emplace_back( m_device->createRenderSubpass( subAttaches
 			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
 		m_renderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )

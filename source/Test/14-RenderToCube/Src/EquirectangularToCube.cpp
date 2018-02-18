@@ -225,8 +225,9 @@ namespace vkapp
 
 		for ( auto & facePipeline : m_faces )
 		{
+			renderer::RenderSubpassAttachmentArray subAttaches{ renderer::RenderSubpassAttachment{ rpAttaches[0], renderer::ImageLayout::eColourAttachmentOptimal } };
 			renderer::RenderSubpassPtrArray subpasses;
-			subpasses.emplace_back( m_device.createRenderSubpass( rpAttaches
+			subpasses.emplace_back( m_device.createRenderSubpass( subAttaches
 				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
 			facePipeline.renderPass = m_device.createRenderPass( rpAttaches
 				, std::move( subpasses )

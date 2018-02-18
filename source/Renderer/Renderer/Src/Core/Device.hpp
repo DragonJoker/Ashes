@@ -142,7 +142,7 @@ namespace renderer
 		*\return
 		*	The created subpass.
 		*/
-		virtual RenderSubpassPtr createRenderSubpass( RenderPassAttachmentArray const & attaches
+		virtual RenderSubpassPtr createRenderSubpass( RenderSubpassAttachmentArray const & attaches
 			, RenderSubpassState const & neededState )const = 0;
 		/**
 		*\~french

@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	RenderSubpass::RenderSubpass( Device const & device
-		, RenderPassAttachmentArray const & attaches
+		, RenderSubpassAttachmentArray const & attaches
 		, RenderSubpassState const & neededState )
 	{
 	}

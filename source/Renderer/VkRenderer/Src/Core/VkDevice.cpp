@@ -160,7 +160,7 @@ namespace vk_renderer
 			, samplesCount );
 	}
 
-	renderer::RenderSubpassPtr Device::createRenderSubpass( renderer::RenderPassAttachmentArray const & attaches
+	renderer::RenderSubpassPtr Device::createRenderSubpass( renderer::RenderSubpassAttachmentArray const & attaches
 		, renderer::RenderSubpassState const & neededState )const
 	{
 		return std::make_unique< RenderSubpass >( *this

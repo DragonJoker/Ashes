@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Renderer_RenderSubpass_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include "RenderSubpassAttachment.hpp"
 
 namespace renderer
 {
@@ -42,7 +42,7 @@ namespace renderer
 		*	The state wanted for this subpass execution.
 		*/
 		RenderSubpass( Device const & device
-			, RenderPassAttachmentArray const & attaches
+			, RenderSubpassAttachmentArray const & attaches
 			, RenderSubpassState const & neededState );
 
 	public:

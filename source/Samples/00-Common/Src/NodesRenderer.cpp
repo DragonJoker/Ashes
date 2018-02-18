@@ -85,7 +85,7 @@ namespace common
 			, bool clearViews )
 		{
 			renderer::RenderPassAttachmentArray attaches;
-			renderer::UInt32Array selected;
+			renderer::RenderSubpassAttachmentArray subAttaches;
 			renderer::ImageLayoutArray initialLayouts;
 			renderer::ImageLayoutArray finalLayouts;
 			uint32_t index{ 0u };
@@ -94,13 +94,15 @@ namespace common
 			{
 				if ( renderer::isDepthOrStencilFormat( format ) )
 				{
-					attaches.push_back( renderer::RenderPassAttachment::createDepthStencilAttachment( format, clearViews ) );
+					attaches.push_back( renderer::RenderPassAttachment::createDepthStencilAttachment( index++, format, clearViews ) );
+					subAttaches.emplace_back( renderer::RenderSubpassAttachment{ attaches.back(), renderer::ImageLayout::eDepthStencilAttachmentOptimal } );
 					initialLayouts.push_back( renderer::ImageLayout::eDepthStencilAttachmentOptimal );
 					finalLayouts.push_back( renderer::ImageLayout::eDepthStencilAttachmentOptimal );
 				}
 				else
 				{
 					attaches.push_back( renderer::RenderPassAttachment::createColourAttachment( index++, format, clearViews ) );
+					subAttaches.emplace_back( renderer::RenderSubpassAttachment{ attaches.back(), renderer::ImageLayout::eColourAttachmentOptimal } );
 					initialLayouts.push_back( clearViews
 						? renderer::ImageLayout::eShaderReadOnlyOptimal
 						: renderer::ImageLayout::eColourAttachmentOptimal );
@@ -111,7 +113,7 @@ namespace common
 			}
 
 			renderer::RenderSubpassPtrArray subpasses;
-			subpasses.emplace_back( device.createRenderSubpass( attaches
+			subpasses.emplace_back( device.createRenderSubpass( subAttaches
 				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
 			return device.createRenderPass( attaches
 				, std::move( subpasses )

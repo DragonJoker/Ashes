@@ -125,6 +125,7 @@ namespace renderer
 	class RenderPassAttachment;
 	class RenderPassState;
 	class RenderSubpass;
+	class RenderSubpassAttachment;
 	class RenderSubpassState;
 	class Sampler;
 	class Semaphore;
@@ -210,8 +211,9 @@ namespace renderer
 	using ImageLayoutArray = std::vector< ImageLayout >;
 	using PipelineStageFlagsArray = std::vector< PipelineStageFlags >;
 	using PushConstantArray = std::vector< PushConstant >;
-	using RenderSubpassArray = std::vector< RenderSubpass >;
 	using RenderPassAttachmentArray = std::vector< RenderPassAttachment >;
+	using RenderSubpassArray = std::vector< RenderSubpass >;
+	using RenderSubpassAttachmentArray = std::vector< RenderSubpassAttachment >;
 
 	using FrameBufferPtr = std::shared_ptr< FrameBuffer >;
 	using SamplerPtr = std::shared_ptr< Sampler >;

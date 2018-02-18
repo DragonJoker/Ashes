@@ -6,8 +6,8 @@ See LICENSE file in root folder.
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <RenderPass/RenderPassAttachment.hpp>
 #include <RenderPass/RenderSubpass.hpp>
+#include <RenderPass/RenderSubpassAttachment.hpp>
 
 namespace gl_renderer
 {
@@ -44,15 +44,15 @@ namespace gl_renderer
 		*	The state wanted for this subpass execution.
 		*/
 		RenderSubpass( renderer::Device const & device
-			, renderer::RenderPassAttachmentArray const & attaches
+			, renderer::RenderSubpassAttachmentArray const & attaches
 			, renderer::RenderSubpassState const & neededState );
 
-		inline renderer::RenderPassAttachmentArray const & getAttaches()const
+		inline renderer::RenderSubpassAttachmentArray const & getAttaches()const
 		{
 			return m_attaches;
 		}
 
 	private:
-		renderer::RenderPassAttachmentArray m_attaches;
+		renderer::RenderSubpassAttachmentArray m_attaches;
 	};
 }
