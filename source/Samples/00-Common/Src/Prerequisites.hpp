@@ -23,6 +23,11 @@ namespace common
 	static uint32_t constexpr MAX_TEXTURES = 6u;
 	static uint32_t constexpr MAX_LIGHTS = 10u;
 
+	struct NonTexturedVertex2DData
+	{
+		renderer::Vec2 position;
+	};
+
 	struct SceneData
 	{
 		renderer::Mat4 mtxProjection;

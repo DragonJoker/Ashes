@@ -429,14 +429,14 @@ namespace vkapp
 		m_renderTargetColour = m_device->createTexture();
 		m_renderTargetColour->setImage( ColourFormat
 			, { size.GetWidth(), size.GetHeight() }
-		, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eStorage );
+			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eStorage );
 		m_renderTargetColourView = m_renderTargetColour->createView( m_renderTargetColour->getType()
 			, m_renderTargetColour->getFormat() );
 
 		m_renderTargetDepth = m_device->createTexture();
 		m_renderTargetDepth->setImage( DepthFormat
 			, { size.GetWidth(), size.GetHeight() }
-		, renderer::ImageUsageFlag::eDepthStencilAttachment );
+			, renderer::ImageUsageFlag::eDepthStencilAttachment );
 		m_renderTargetDepthView = m_renderTargetDepth->createView( m_renderTargetDepth->getType()
 			, m_renderTargetDepth->getFormat() );
 		renderer::FrameBufferAttachmentArray attaches;
@@ -561,10 +561,12 @@ namespace vkapp
 				, 2u );
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
-				, m_renderTargetColourView->makeColourAttachment() );
+				, m_renderTargetColourView->makeColourAttachment( renderer::ImageLayout::eShaderReadOnlyOptimal
+					, renderer::AccessFlag::eShaderRead ) );
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
 				, renderer::PipelineStageFlag::eEarlyFragmentTests
-				, m_renderTargetDepthView->makeDepthStencilAttachment() );
+				, m_renderTargetDepthView->makeDepthStencilAttachment( renderer::ImageLayout::eUndefined
+					, 0u ) );
 			commandBuffer.beginRenderPass( *m_offscreenRenderPass
 				, frameBuffer
 				, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
@@ -598,7 +600,9 @@ namespace vkapp
 			commandBuffer.endRenderPass();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
-				, m_renderTargetColourView->makeShaderInputResource() );
+				, m_renderTargetColourView->makeGeneralLayout( renderer::ImageLayout::eColourAttachmentOptimal
+					, renderer::AccessFlag::eColourAttachmentWrite
+					, renderer::AccessFlag::eShaderWrite ) );
 			auto res = commandBuffer.end();
 
 			if ( !res )
@@ -670,9 +674,6 @@ namespace vkapp
 			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
 				, *m_computeQueryPool
 				, 0u );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eComputeShader
-				, m_renderTargetColourView->makeGeneralLayout( renderer::AccessFlag::eShaderWrite ) );
 			commandBuffer.bindPipeline( *m_computePipeline );
 			commandBuffer.bindDescriptorSet( *m_computeDescriptorSet
 				, *m_computePipelineLayout
@@ -680,6 +681,10 @@ namespace vkapp
 			commandBuffer.dispatch( size.GetWidth() / 16u
 				, size.GetHeight() / 16u
 				, 1u );
+			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eBottomOfPipe
+				, renderer::PipelineStageFlag::eFragmentShader
+				, m_renderTargetColourView->makeShaderInputResource( renderer::ImageLayout::eGeneral
+					, renderer::AccessFlag::eShaderWrite ) );
 			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
 				, *m_computeQueryPool
 				, 1u );

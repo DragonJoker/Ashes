@@ -378,7 +378,8 @@ namespace common
 		{
 			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
 				, renderer::PipelineStageFlag::eFragmentShader
-				, m_fontView->makeShaderInputResource() );
+				, m_fontView->makeShaderInputResource( renderer::ImageLayout::eUndefined
+					, 0u ) );
 			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
 				, renderer::PipelineStageFlag::eFragmentShader
 				, m_vertexBuffer->getBuffer().makeVertexShaderInputResource() );

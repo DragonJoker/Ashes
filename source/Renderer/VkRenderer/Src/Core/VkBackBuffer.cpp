@@ -23,9 +23,7 @@ namespace vk_renderer
 			, 0u
 			, 1u
 			, 0u
-			, 1u
-			, renderer::ImageLayout::ePresentSrc
-			, renderer::AccessFlag::eMemoryRead }
+			, 1u }
 	{
 	}
 }

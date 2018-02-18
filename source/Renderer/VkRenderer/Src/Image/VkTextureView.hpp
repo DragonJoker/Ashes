@@ -73,9 +73,7 @@ namespace vk_renderer
 			, uint32_t baseMipLevel
 			, uint32_t levelCount
 			, uint32_t baseArrayLayer
-			, uint32_t layerCount
-			, renderer::ImageLayout initialLayout = renderer::ImageLayout::eUndefined
-			, renderer::AccessFlags initialAccessMask = 0u );
+			, uint32_t layerCount );
 		/**
 		*\~french
 		*\brief
@@ -86,38 +84,6 @@ namespace vk_renderer
 		*/
 		~TextureView();
 		/**
-		*\copydoc	renderer::TextureView::makeGeneralLayout
-		*/
-		renderer::ImageMemoryBarrier makeGeneralLayout( renderer::AccessFlags accessFlags )const override;
-		/**
-		*\copydoc	renderer::TextureView::makeTransferDestination
-		*/
-		renderer::ImageMemoryBarrier makeTransferDestination()const override;
-		/**
-		*\copydoc	renderer::TextureView::makeTransferSource
-		*/
-		renderer::ImageMemoryBarrier makeTransferSource()const override;
-		/**
-		*\copydoc	renderer::TextureView::makeShaderInputResource
-		*/
-		renderer::ImageMemoryBarrier makeShaderInputResource()const override;
-		/**
-		*\copydoc	renderer::TextureView::makeDepthStencilReadOnly
-		*/
-		renderer::ImageMemoryBarrier makeDepthStencilReadOnly()const override;
-		/**
-		*\copydoc	renderer::TextureView::makeColourAttachment
-		*/
-		renderer::ImageMemoryBarrier makeColourAttachment()const override;
-		/**
-		*\copydoc	renderer::TextureView::makeDepthStencilAttachment
-		*/
-		renderer::ImageMemoryBarrier makeDepthStencilAttachment()const override;
-		/**
-		*\copydoc	renderer::TextureView::makePresentSource
-		*/
-		renderer::ImageMemoryBarrier makePresentSource()const override;
-		/**
 		*\~french
 		*\brief
 		*	Conversion implicite vers VkImageView.
@@ -125,22 +91,25 @@ namespace vk_renderer
 		*\brief
 		*	VkImageView implicit cast operator.
 		*/
-		inline operator VkImageView const &( )const
+		inline operator VkImageView const &()const
 		{
 			return m_view;
 		}
 
 	private:
-		renderer::ImageMemoryBarrier doMakeLayoutTransition( renderer::ImageLayout layout
-			, uint32_t queueFamily
-			, renderer::AccessFlags dstAccessMask )const;
+		/**
+		*\copydoc	renderer::TextureView::doMakeLayoutTransition
+		*/
+		renderer::ImageMemoryBarrier doMakeLayoutTransition( renderer::ImageLayout srcLayout
+			, renderer::ImageLayout dstLayout
+			, renderer::AccessFlags srcAccessFlags
+			, renderer::AccessFlags dstAccessMask
+			, uint32_t srcQueueFamily
+			, uint32_t dstQueueFamily )const override;
 
 	private:
 		Device const & m_device;
 		VkImageView m_view{};
-		mutable renderer::AccessFlags m_currentAccessMask{};
-		mutable renderer::ImageLayout m_currentLayout{};
-		mutable uint32_t m_currentQueueFamily{ 0 };
 	};
 }
 

@@ -36,7 +36,8 @@ namespace renderer
 		{
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTopOfPipe
 				, PipelineStageFlag::eTransfer
-				, view.makeTransferDestination() );
+				, view.makeTransferDestination( ImageLayout::eUndefined
+					, 0u ) );
 			commandBuffer.copyToImage( BufferImageCopy
 				{
 					0u,
@@ -54,7 +55,8 @@ namespace renderer
 				, view );
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 				, PipelineStageFlag::eFragmentShader
-				, view.makeShaderInputResource() );
+				, view.makeShaderInputResource( ImageLayout::eTransferDstOptimal
+					, renderer::AccessFlag::eTransferWrite ) );
 			bool res = commandBuffer.end();
 
 			if ( !res )
@@ -107,7 +109,8 @@ namespace renderer
 		{
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTopOfPipe
 				, PipelineStageFlag::eTransfer
-				, view.makeTransferSource() );
+				, view.makeTransferSource( ImageLayout::eUndefined
+					, 0u ) );
 			commandBuffer.copyToBuffer( BufferImageCopy
 				{
 					0u,
@@ -125,7 +128,8 @@ namespace renderer
 				, getBuffer() );
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 				, PipelineStageFlag::eFragmentShader
-				, view.makeShaderInputResource() );
+				, view.makeShaderInputResource( ImageLayout::eTransferSrcOptimal
+					, renderer::AccessFlag::eTransferRead ) );
 			bool res = commandBuffer.end();
 
 			if ( !res )

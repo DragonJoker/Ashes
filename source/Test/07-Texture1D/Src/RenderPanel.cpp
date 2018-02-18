@@ -54,19 +54,19 @@ namespace vkapp
 		{
 			{
 				{ -0.7f, -0.7f, 0.0f, 1.0f },
-				{ -0.1f, -0.1f },
+				{ -0.1f },
 			},
 			{
 				{ -0.7f, 0.7f, 0.0f, 1.0f },
-				{ -0.1f, 1.1f },
+				{ -0.1f },
 			},
 			{
 				{ 0.7f, -0.7f, 0.0f, 1.0f },
-				{ 1.1f, -0.1f },
+				{ 1.1f },
 			},
 			{
 				{ 0.7f, 0.7f, 0.0f, 1.0f },
-				{ 1.1f, 1.1f },
+				{ 1.1f },
 			}
 		} }
 	{
@@ -212,10 +212,8 @@ namespace vkapp
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( *m_device, 0 );
-		m_vertexLayout->createAttribute< renderer::Vec4 >( 0u
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_vertexLayout->createAttribute< renderer::Vec2 >( 1u
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+		createVertexAttribute( m_vertexLayout, TexturedVertexData, position, 0u );
+		createVertexAttribute( m_vertexLayout, TexturedVertexData, uv, 1u );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData
 			, *m_vertexBuffer

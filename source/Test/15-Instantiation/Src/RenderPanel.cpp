@@ -556,10 +556,12 @@ namespace vkapp
 				, 2u );
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
-				, m_renderTargetColourView->makeColourAttachment() );
+				, m_renderTargetColourView->makeColourAttachment( renderer::ImageLayout::eShaderReadOnlyOptimal
+					, renderer::AccessFlag::eShaderRead ) );
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
 				, renderer::PipelineStageFlag::eEarlyFragmentTests
-				, m_renderTargetDepthView->makeDepthStencilAttachment() );
+				, m_renderTargetDepthView->makeDepthStencilAttachment( renderer::ImageLayout::eUndefined
+					, 0u ) );
 			commandBuffer.beginRenderPass( *m_offscreenRenderPass
 				, frameBuffer
 				, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
@@ -587,7 +589,8 @@ namespace vkapp
 			commandBuffer.endRenderPass();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
-				, m_renderTargetColourView->makeShaderInputResource() );
+				, m_renderTargetColourView->makeShaderInputResource( renderer::ImageLayout::eColourAttachmentOptimal
+					, renderer::AccessFlag::eColourAttachmentWrite ) );
 			auto res = commandBuffer.end();
 
 			if ( !res )

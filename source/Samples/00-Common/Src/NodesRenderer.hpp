@@ -26,6 +26,7 @@ namespace common
 			, std::vector< renderer::PixelFormat > const & formats
 			, bool clearViews
 			, bool opaqueNodes );
+		virtual ~NodesRenderer() = default;
 		virtual void update( RenderTarget const & target );
 		bool draw( std::chrono::nanoseconds & gpu )const;
 		void initialise( Scene const & scene

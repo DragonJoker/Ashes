@@ -7,7 +7,7 @@ namespace vkapp
 	struct TexturedVertexData
 	{
 		renderer::Vec4 position;
-		renderer::Vec2 uv;
+		float uv;
 	};
 
 	static wxString const AppName = wxT( "07-Texture1D" );

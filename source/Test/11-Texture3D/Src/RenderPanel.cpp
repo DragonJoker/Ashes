@@ -263,7 +263,9 @@ namespace vkapp
 		image.format = renderer::PixelFormat::eR8G8B8A8;
 		readFile( shadersFolder / "head256x256x109", image.size, image.data );
 		m_texture = m_device->createTexture();
-		m_texture->setImage( image.format, { image.size[0], image.size[1], image.size[2] } );
+		m_texture->setImage( image.format
+			, { image.size[0], image.size[1], image.size[2] }
+			, renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eTransferSrc | renderer::ImageUsageFlag::eSampled );
 		m_sampler = m_device->createSampler( renderer::WrapMode::eRepeat
 			, renderer::WrapMode::eRepeat
 			, renderer::WrapMode::eRepeat
@@ -290,8 +292,6 @@ namespace vkapp
 				, *m_view );
 			buffer += size;
 		}
-
-		m_texture->generateMipmaps();
 	}
 
 	void RenderPanel::doCreateUniformBuffer()
@@ -506,10 +506,12 @@ namespace vkapp
 				, 2u );
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
-				, m_renderTargetColourView->makeColourAttachment() );
+				, m_renderTargetColourView->makeColourAttachment( renderer::ImageLayout::eShaderReadOnlyOptimal
+					, renderer::AccessFlag::eShaderRead ) );
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
 				, renderer::PipelineStageFlag::eEarlyFragmentTests
-				, m_renderTargetDepthView->makeDepthStencilAttachment() );
+				, m_renderTargetDepthView->makeDepthStencilAttachment( renderer::ImageLayout::eUndefined
+					, 0u ) );
 			commandBuffer.beginRenderPass( *m_offscreenRenderPass
 				, frameBuffer
 				, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
@@ -536,7 +538,8 @@ namespace vkapp
 			commandBuffer.endRenderPass();
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::PipelineStageFlag::eBottomOfPipe
-				, m_renderTargetColourView->makeShaderInputResource() );
+				, m_renderTargetColourView->makeShaderInputResource( renderer::ImageLayout::eColourAttachmentOptimal
+					, renderer::AccessFlag::eColourAttachmentWrite ) );
 			auto res = commandBuffer.end();
 
 			if ( !res )

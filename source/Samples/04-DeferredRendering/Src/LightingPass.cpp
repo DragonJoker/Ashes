@@ -280,7 +280,8 @@ namespace vkapp
 			{
 				commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
 					, renderer::PipelineStageFlag::eFragmentShader
-					, texture.view->makeShaderInputResource() );
+					, texture.view->makeShaderInputResource( renderer::ImageLayout::eColourAttachmentOptimal
+						, renderer::AccessFlag::eColourAttachmentWrite ) );
 			}
 
 			commandBuffer.beginRenderPass( *m_renderPass
