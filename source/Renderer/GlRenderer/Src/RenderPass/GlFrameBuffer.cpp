@@ -160,7 +160,8 @@ namespace gl_renderer
 			Attachment attachment
 			{
 				getAttachmentPoint( static_cast< TextureView const & >( attach.getView() ) ),
-				attach.getView().getTexture().getType() == renderer::TextureType::e2D
+				( attach.getView().getTexture().getType() == renderer::TextureType::e2D
+					&& attach.getView().getType() == renderer::TextureType::e2D )
 					? static_cast< Texture const & >( attach.getView().getTexture() ).getImage()
 					: static_cast< TextureView const & >( attach.getView() ).getImage(),
 				getAttachmentType( static_cast< TextureView const & >( attach.getView() ) ),
