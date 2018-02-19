@@ -21,6 +21,130 @@
 
 #include <GLFW/glfw3native.h>
 
+struct Application
+{
+	renderer::SwapChainPtr swapChain;
+	std::vector< renderer::FrameBufferPtr > frameBuffers;
+	renderer::CommandBufferPtrArray commandBuffers;
+	renderer::RenderPassPtr renderPass;
+};
+
+std::string processCommandLine( int argc, char ** argv );
+std::vector< common::RendererPlugin > doListPlugins( common::RendererFactory & factory );
+renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
+	, renderer::SwapChain const & swapChain );
+void doPrepareFrames( Application & application );
+void onWindowResized( GLFWwindow * window, int width, int height );
+
+int main( int argc, char * argv[] )
+{
+	// First, we need to retrieve the RendererLib plugins
+	common::RendererFactory factory;
+	auto plugins = doListPlugins( factory );
+
+	// Then we check in the command line if the user has wanted a specific plugin to be used.
+	std::string rendererName = processCommandLine( argc, argv );
+
+	// With that informations, we can now create the renderer instance.
+	renderer::Renderer::Configuration config
+	{
+		"GLFW Template",
+		"RendererLib",
+#if !defined( NDEBUG )
+		true,
+#else
+		false,
+#endif
+	};
+	renderer::RendererPtr renderer = factory.create( rendererName, config );
+
+	// Now we need a window.
+	static constexpr uint32_t width = 800u;
+	static constexpr uint32_t height = 600u;
+	glfwInit();
+	glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API );
+	GLFWwindow * window = glfwCreateWindow( int( width ), int( height ), "GLFW Template", nullptr, nullptr );
+	Application app;
+	glfwSetWindowUserPointer( window, &app );
+	glfwSetWindowSizeCallback( window, onWindowResized );
+
+	// We retrieve this window's native handle, and create the logical device from it.
+	auto hWnd = glfwGetWin32Window( window );
+	auto handle = renderer::WindowHandle{ std::make_unique< renderer::IMswWindowHandle >( nullptr, hWnd ) };
+	renderer::DevicePtr device = renderer->createDevice( renderer->createConnection( 0u, std::move( handle ) ) );
+
+	// This is the only lines related to OpenGL : context activation (\p enable), and deactivation (\p disable).
+	device->enable();
+
+	// Retrieve the swapchain and set it up.
+	app.swapChain = device->createSwapChain( { width, height } );
+	app.swapChain->setClearColour( renderer::RgbaColour{ 1.0f, 0.8f, 0.4f, 0.0f } );
+
+	// We retrieve the render pass that we'll be using to do our stuff on the swapchain surface.
+	app.renderPass = doCreateRenderPass( *device, *app.swapChain );
+
+	// From all those things, we can now prepare our frames (one per framebuffer).
+	doPrepareFrames( app );
+
+	// Here we connect to the swap chain reset signal, to handle resizes and other device lost problems.
+	auto swapChainReset = app.swapChain->onReset.connect( [&device, &app]()
+	{
+		// We only prepare our frames again.
+		doPrepareFrames( app );
+	} );
+
+	while ( !glfwWindowShouldClose( window ) )
+	{
+		glfwPollEvents();
+
+		// Acquire the next frame to present.
+		auto resources = app.swapChain->getResources();
+
+		if ( resources )
+		{
+			// Submit the command buffer to the graphics queue.
+			auto res = device->getGraphicsQueue().submit( *app.commandBuffers[resources->getBackBuffer()]
+				, resources->getImageAvailableSemaphore()
+				, renderer::PipelineStageFlag::eColourAttachmentOutput
+				, resources->getRenderingFinishedSemaphore()
+				, &resources->getFence() );
+			// And we present the frame to the swap chain surface.
+			app.swapChain->present( *resources );
+		}
+		else
+		{
+			std::cerr << "Can't render" << std::endl;
+		}
+	}
+
+	// Before destroying any resource, we need to make sure the device is idle.
+	device->waitIdle();
+	app.commandBuffers.clear();
+	app.frameBuffers.clear();
+	app.renderPass.reset();
+	app.swapChain.reset();
+	device->disable();
+	device.reset();
+
+	glfwTerminate();
+	renderer.reset();
+	return 0;
+}
+
+std::string processCommandLine( int argc, char ** argv )
+{
+	std::string result = "vk";
+
+	if ( argc > 1 )
+	{
+		result = argv[1];
+		result = result.substr( result.find( '-' ) + 1 );
+		result = result.substr( result.find( '/' ) + 1 );
+	}
+
+	return result;
+}
+
 std::vector< common::RendererPlugin > doListPlugins( common::RendererFactory & factory )
 {
 	common::StringArray files;
@@ -95,17 +219,9 @@ renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
 			, finalLayouts } );
 }
 
-struct Application
-{
-	renderer::SwapChainPtr swapChain;
-	std::vector< renderer::FrameBufferPtr > frameBuffers;
-	renderer::CommandBufferPtrArray commandBuffers;
-	renderer::RenderPassPtr renderPass;
-};
-
 void doPrepareFrames( Application & application )
 {
-	// We now retrieve the framebuffers and command buffers for each backbuffer of the swapchain.
+	// We retrieve the framebuffers and command buffers for each backbuffer of the swapchain.
 	application.frameBuffers = application.swapChain->createFrameBuffers( *application.renderPass );
 	application.commandBuffers = application.swapChain->createCommandBuffers();
 
@@ -135,111 +251,4 @@ static void onWindowResized( GLFWwindow * window, int width, int height )
 {
 	Application * app = reinterpret_cast< Application * >( glfwGetWindowUserPointer( window ) );
 	app->swapChain->reset( renderer::UIVec2{ width, height } );
-}
-
-int main( int argc, char * argv[] )
-{
-	// First, we need to retrieve the RendererLib plugins
-	common::RendererFactory factory;
-	auto plugins = doListPlugins( factory );
-
-	// Then we check in the command line if the user has wanted a specific plugin to be used.
-	std::string rendererName = "vk";
-
-	if ( argc > 1 )
-	{
-		rendererName = argv[1];
-		rendererName = rendererName.substr( rendererName.find( '-' ) + 1 );
-		rendererName = rendererName.substr( rendererName.find( '/' ) + 1 );
-	}
-
-	// With that informations, we can already create the renderer instance.
-	renderer::Renderer::Configuration config
-	{
-		"GLFW Template",
-		"RendererLib",
-#if !defined( NDEBUG )
-		true,
-#else
-		false,
-#endif
-	};
-	renderer::RendererPtr renderer = factory.create( rendererName, config );
-
-	// Now we need a window.
-	static constexpr uint32_t width = 800u;
-	static constexpr uint32_t height = 600u;
-	glfwInit();
-	glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API );
-	GLFWwindow * window = glfwCreateWindow( int( width ), int( height ), "GLFW Template", nullptr, nullptr );
-	Application app;
-	glfwSetWindowUserPointer( window, &app );
-	glfwSetWindowSizeCallback( window, onWindowResized );
-
-	// We retrieve this window's native handle, and create the logical device from it.
-	auto hWnd = glfwGetWin32Window( window );
-	auto handle = renderer::WindowHandle{ std::make_unique< renderer::IMswWindowHandle >( nullptr
-		, hWnd ) };
-
-	{
-		renderer::DevicePtr device = renderer->createDevice( renderer->createConnection( 0u, std::move( handle ) ) );
-
-		// This is the only line related to OpenGL : context activation.
-		device->enable();
-
-		// Retrieve the swapchain and set it up.
-		app.swapChain = device->createSwapChain( { width, height } );
-		app.swapChain->setClearColour( renderer::RgbaColour{ 1.0f, 0.8f, 0.4f, 0.0f } );
-
-		// We retrieve the render pass that we'll be using to do our stuff on the swapchain surface.
-		app.renderPass = doCreateRenderPass( *device, *app.swapChain );
-
-		// From all those things, we can now prepare our frames (one per framebuffer).
-		doPrepareFrames( app );
-
-		// Here we connect to the swap chain reset signal, to handle resizes and other device lost problems.
-		auto swapChainReset = app.swapChain->onReset.connect( [&device, &app]()
-		{
-			// We retrieve those once again, since the swap chain has been reset.
-			app.frameBuffers = app.swapChain->createFrameBuffers( *app.renderPass );
-			app.commandBuffers = app.swapChain->createCommandBuffers();
-			// And we prepare our frames again.
-			doPrepareFrames( app );
-		} );
-
-		while ( !glfwWindowShouldClose( window ) )
-		{
-			glfwPollEvents();
-
-			// Acquire the next frame to present.
-			auto resources = app.swapChain->getResources();
-
-			if ( resources )
-			{
-				// Submit the command buffer to the graphics queue.
-				auto res = device->getGraphicsQueue().submit( *app.commandBuffers[resources->getBackBuffer()]
-					, resources->getImageAvailableSemaphore()
-					, renderer::PipelineStageFlag::eColourAttachmentOutput
-					, resources->getRenderingFinishedSemaphore()
-					, &resources->getFence() );
-				// And we present the frame to the swap chain surface.
-				app.swapChain->present( *resources );
-			}
-			else
-			{
-				std::cerr << "Can't render" << std::endl;
-			}
-		}
-
-		// Before destroying any resource, we need to make sure the device is idle.
-		device->waitIdle();
-		app.commandBuffers.clear();
-		app.frameBuffers.clear();
-		app.renderPass.reset();
-		app.swapChain.reset();
-		device->disable();
-		device.reset();
-	}
-
-	return 0;
 }
