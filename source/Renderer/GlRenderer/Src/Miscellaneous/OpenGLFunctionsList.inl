@@ -39,7 +39,6 @@ GL_LIB_BASE_FUNCTION( Viewport )
 
 #undef GL_LIB_BASE_FUNCTION
 
-// Extended WGL functions
 #ifndef GL_LIB_FUNCTION
 #	define GL_LIB_FUNCTION( x )
 #endif
@@ -64,7 +63,6 @@ GL_LIB_FUNCTION( ClearBufferfi )
 GL_LIB_FUNCTION( ClearBufferfv )
 GL_LIB_FUNCTION( ClearBufferiv )
 GL_LIB_FUNCTION( ClearBufferuiv )
-GL_LIB_FUNCTION( ClearTexImage )
 GL_LIB_FUNCTION( ClientWaitSync )
 GL_LIB_FUNCTION( ClipControl )
 GL_LIB_FUNCTION( CompileShader )
@@ -157,6 +155,14 @@ GL_LIB_FUNCTION( VertexAttribDivisor )
 GL_LIB_FUNCTION( VertexAttribPointer )
 
 #undef GL_LIB_FUNCTION
+
+#ifndef GL_LIB_FUNCTION_OPT
+#	define GL_LIB_FUNCTION_OPT( x )
+#endif
+
+GL_LIB_FUNCTION_OPT( ClearTexImage )
+
+#undef GL_LIB_FUNCTION_OPT
 
 // Functions from Window.h or WinGDI.h
 #ifndef WGL_LIB_BASE_FUNCTION
