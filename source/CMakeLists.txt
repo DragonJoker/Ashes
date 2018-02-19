@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 2.8 )
 
-set( MAIN_PROJECT_NAME "RenderLib" )
+set( MAIN_PROJECT_NAME "RendererLib" )
 
 # Used to look for external modules
 set( CMAKE_MODULE_PATH

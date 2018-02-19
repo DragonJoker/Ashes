@@ -28,12 +28,10 @@ install:
   - cmd: if "%platform%"=="x64"   set CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64
   - cmd: if "%platform%"=="Win32" set PLATFORM_NAME=x86
   - cmd: if "%platform%"=="x64"   set PLATFORM_NAME=x64
-  - cmd: if "%configuration%"=="Release" set DEPS_CONFIG_NAME=release
-  - cmd: if "%configuration%"=="Debug"   set DEPS_CONFIG_NAME=debug
   - cmd: cd C:\projects\RendererLib
   - cmd: md build
   - cmd: cd build
-  - cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration% ../source -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DRENDERER_BUILD_TEMPLATES=OFF -DRENDERER_BUILD_TESTS=OFF -DRENDERER_BUILD_SAMPLES=OFF -DVKRENDERER_GLSL_TO_SPV=OFF
+  - cmake -G "%CMAKE_GENERATOR_NAME%" ../source -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DRENDERER_BUILD_TEMPLATES=OFF -DRENDERER_BUILD_TESTS=OFF -DRENDERER_BUILD_SAMPLES=OFF -DVKRENDERER_GLSL_TO_SPV=OFF
 
 build:
   project: build/RendererLib.sln
