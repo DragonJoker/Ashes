@@ -16,7 +16,7 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
-	*\~french
+	*\~english
 	*\brief
 	*	A command buffer.
 	*\~french
