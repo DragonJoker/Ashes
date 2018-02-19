@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -16,7 +16,7 @@ namespace renderer
 	*	Specifies an image blit operation.
 	*\~french
 	*\brief
-	*	Définit une opération de copie rapide d'image.
+	*	DÃ©finit une opÃ©ration de copie rapide d'image.
 	*/
 	struct ImageBlit
 	{
@@ -26,7 +26,7 @@ namespace renderer
 		*	Specifies the specific image subresources of the image used for the source image data.
 		*\~french
 		*\brief
-		*	Spécifie les sous-ressources d'image spécifiques à l'image utilisée en tant que source.
+		*	SpÃ©cifie les sous-ressources d'image spÃ©cifiques Ã  l'image utilisÃ©e en tant que source.
 		*/
 		ImageSubresourceLayers srcSubresource;
 		/**
@@ -35,7 +35,7 @@ namespace renderer
 		*	Select the initial x, y, and z offsets in texels of the sub-regions of the source image data.
 		*\~french
 		*\brief
-		*	Selectionne les décalages \p x, \p y et \p z des sous-régions de l'image source.
+		*	Selectionne les dÃ©calages \p x, \p y et \p z des sous-rÃ©gions de l'image source.
 		*/
 		IVec3 srcOffset;
 		/**
@@ -44,7 +44,7 @@ namespace renderer
 		*	Specifies the specific image subresources of the image used for the destination image data.
 		*\~french
 		*\brief
-		*	Spécifie les sous-ressources d'image spécifiques à l'image utilisée en tant que detination.
+		*	SpÃ©cifie les sous-ressources d'image spÃ©cifiques Ã  l'image utilisÃ©e en tant que detination.
 		*/
 		ImageSubresourceLayers dstSubresource;
 		/**
@@ -53,7 +53,7 @@ namespace renderer
 		*	Select the initial x, y, and z offsets in texels of the sub-regions of the destination image data.
 		*\~french
 		*\brief
-		*	Selectionne les décalages \p x, \p y et \p z des sous-régions de l'image destination.
+		*	Selectionne les dÃ©calages \p x, \p y et \p z des sous-rÃ©gions de l'image destination.
 		*/
 		IVec3 dstOffset;
 	};

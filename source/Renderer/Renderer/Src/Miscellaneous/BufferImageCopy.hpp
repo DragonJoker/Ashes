@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -16,7 +16,7 @@ namespace renderer
 	*	Specifies a buffer image copy operation.
 	*\~french
 	*\brief
-	*	Définit une opération de copie d'image depuis, ou vers, un tampon.
+	*	DÃ©finit une opÃ©ration de copie d'image depuis, ou vers, un tampon.
 	*/
 	struct BufferImageCopy
 	{
@@ -26,7 +26,7 @@ namespace renderer
 		*	The offset in bytes from the start of the buffer where the image data is copied from or to.
 		*\~french
 		*\brief
-		*	Le décalage en octets depuis le début du tampon, depuis ou vers où les données de l'image sont copiées.
+		*	Le dÃ©calage en octets depuis le dÃ©but du tampon, depuis ou vers oÃ¹ les donnÃ©es de l'image sont copiÃ©es.
 		*/
 		uint32_t bufferOffset;
 		/**
@@ -37,9 +37,9 @@ namespace renderer
 		*	If either \p bufferRowLength is zero, that aspect of the buffer memory is considered to be tightly packed according to the \p imageExtent.
 		*\~french
 		*\brief
-		*	Spécifie les données en mémoire du tampon d'une sous-région d'une image en 2, ou 3 dimensions d'un image plus large, et contrôle le calcul d'adressage des données dans la mémoire du tampon.
+		*	SpÃ©cifie les donnÃ©es en mÃ©moire du tampon d'une sous-rÃ©gion d'une image en 2, ou 3 dimensions d'un image plus large, et contrÃ´le le calcul d'adressage des donnÃ©es dans la mÃ©moire du tampon.
 		*\remarks
-		*	Si \p bufferRowLength vaut 0, cet aspect de la mémoire du tampon est considéré comme étroitement ordonnées, en fonction de \p imageExtent.
+		*	Si \p bufferRowLength vaut 0, cet aspect de la mÃ©moire du tampon est considÃ©rÃ© comme Ã©troitement ordonnÃ©es, en fonction de \p imageExtent.
 		*/
 		uint32_t bufferRowLength;
 		/**
@@ -50,9 +50,9 @@ namespace renderer
 		*	If either \p bufferImageHeight is zero, that aspect of the buffer memory is considered to be tightly packed according to the \p imageExtent.
 		*\~french
 		*\brief
-		*	Spécifie les données en mémoire du tampon d'une sous-région d'une image en 2, ou 3 dimensions d'un image plus large, et contrôle le calcul d'adressage des données dans la mémoire du tampon.
+		*	SpÃ©cifie les donnÃ©es en mÃ©moire du tampon d'une sous-rÃ©gion d'une image en 2, ou 3 dimensions d'un image plus large, et contrÃ´le le calcul d'adressage des donnÃ©es dans la mÃ©moire du tampon.
 		*\remarks
-		*	Si \p bufferImageHeight vaut 0, cet aspect de la mémoire du tampon est considéré comme étroitement ordonnées, en fonction de \p imageExtent.
+		*	Si \p bufferImageHeight vaut 0, cet aspect de la mÃ©moire du tampon est considÃ©rÃ© comme Ã©troitement ordonnÃ©es, en fonction de \p imageExtent.
 		*/
 		uint32_t bufferImageHeight;
 		/**
@@ -61,7 +61,7 @@ namespace renderer
 		*	Specifies the specific image subresources of the image used for the source or destination image data.
 		*\~french
 		*\brief
-		*	Spécifie les sous-ressources d'image spécifiques à l'image utilisée en tant que source ou destination.
+		*	SpÃ©cifie les sous-ressources d'image spÃ©cifiques Ã  l'image utilisÃ©e en tant que source ou destination.
 		*/
 		ImageSubresourceLayers imageSubresource;
 		/**
@@ -70,7 +70,7 @@ namespace renderer
 		*	Selects the initial \p x, \p y, \p z offsets in texels of the sub-region of the source or destination image data.
 		*\~french
 		*\brief
-		*	Sélectionne les décalages en \p x, \p y, \p z, en texels de la sous-région de l'image source ou destination.
+		*	SÃ©lectionne les dÃ©calages en \p x, \p y, \p z, en texels de la sous-rÃ©gion de l'image source ou destination.
 		*/
 		IVec3 imageOffset;
 		/**
@@ -79,7 +79,7 @@ namespace renderer
 		*	The size in texels of the image to copy in \p width, \p height and \p depth.
 		*\~french
 		*\brief
-		*	Les dimensions en texels de l'image à copier, en tant que \p largeur, \p hauteur, et \p profondeur.
+		*	Les dimensions en texels de l'image Ã  copier, en tant que \p largeur, \p hauteur, et \p profondeur.
 		*/
 		UIVec3 imageExtent;
 	};

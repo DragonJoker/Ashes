@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -13,7 +13,7 @@ namespace renderer
 	/**
 	*\~french
 	*\brief
-	*	Un état de tessellation.
+	*	Un Ã©tat de tessellation.
 	*/
 	class TessellationState
 	{
@@ -22,7 +22,7 @@ namespace renderer
 			, uint32_t patchControlPoints = 0u );
 		/**
 		*\return
-		*	Les indicateurs de l'état.
+		*	Les indicateurs de l'Ã©tat.
 		*/
 		inline TessellationStateFlags const & getFlags()const
 		{
@@ -30,7 +30,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Le nombre de points de contrôle par patch.
+		*	Le nombre de points de contrÃ´le par patch.
 		*/
 		inline uint32_t const & getControlPoints()const
 		{

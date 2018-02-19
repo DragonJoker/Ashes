@@ -13,6 +13,9 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~english
+	*\brief
+	*	Class wrapping the VBOs and the IBO of a mesh.
 	*\~french
 	*\brief
 	*	Classe encapsulant les VBOs et l'IBO d'un mesh.

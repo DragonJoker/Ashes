@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -12,7 +12,7 @@ namespace renderer
 {
 	/**
 	*\brief
-	*	Spécifie l'intervalle de sous-ressource d'une image.
+	*	SpÃ©cifie l'intervalle de sous-ressource d'une image.
 	*/
 	class ImageSubresourceRange
 	{
@@ -21,7 +21,7 @@ namespace renderer
 		*\brief
 		*	Constructeur.
 		*\param[in] aspectMask
-		*	Masques de bits décrivant les aspects d'une image.
+		*	Masques de bits dÃ©crivant les aspects d'une image.
 		*\param[in] baseMipLevel
 		*	Le niveau de base de mipmap.
 		*\param[in] levelCount
@@ -38,7 +38,7 @@ namespace renderer
 			, uint32_t layerCount = ~( 0u ) );
 		/**
 		*\return
-		*	Masques de bits décrivant les aspects d'une image.
+		*	Masques de bits dÃ©crivant les aspects d'une image.
 		*/
 		inline ImageAspectFlags getAspectMask()const
 		{
