@@ -513,7 +513,7 @@ namespace gl_renderer
 
 			getProgramInterfaceInfos( program
 				, GLSL_INTERFACE_PROGRAM_INPUT
-				, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION, GLSL_PROPERTY_LOCATION_COMPONENT }
+				, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
 				, [&attributes]( std::string name, std::vector< GLint > const & values )
 				{
 					auto it = std::find_if( attributes.begin()
@@ -564,7 +564,7 @@ namespace gl_renderer
 
 			getProgramInterfaceInfos( program
 				, GLSL_INTERFACE_PROGRAM_OUTPUT
-				, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION, GLSL_PROPERTY_LOCATION_COMPONENT }
+				, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
 				, [&attaches]( std::string name, std::vector< GLint > const & values )
 				{
 					auto it = std::find_if( attaches.begin()
