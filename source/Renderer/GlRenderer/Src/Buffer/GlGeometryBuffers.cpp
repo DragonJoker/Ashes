@@ -39,7 +39,7 @@ namespace gl_renderer
 
 	void GeometryBuffers::doInitialise()
 	{
-		glLogCall( gl::CreateVertexArrays, 1, &m_vao );
+		glLogCall( gl::GenVertexArrays, 1, &m_vao );
 
 		if ( m_vao == GL_INVALID_INDEX )
 		{

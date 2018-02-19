@@ -71,7 +71,6 @@ GL_LIB_FUNCTION( CopyImageSubData )
 GL_LIB_FUNCTION( CreateProgram )
 GL_LIB_FUNCTION( CreateShader )
 GL_LIB_FUNCTION( CreateShaderProgramv )
-GL_LIB_FUNCTION( CreateVertexArrays )
 GL_LIB_FUNCTION( DeleteBuffers )
 GL_LIB_FUNCTION( DeleteFramebuffers )
 GL_LIB_FUNCTION( DeleteProgram )
@@ -99,6 +98,7 @@ GL_LIB_FUNCTION( GenFramebuffers )
 GL_LIB_FUNCTION( GenQueries )
 GL_LIB_FUNCTION( GenSamplers )
 GL_LIB_FUNCTION( GenerateMipmap )
+GL_LIB_FUNCTION( GenVertexArrays )
 GL_LIB_FUNCTION( GetProgramInfoLog )
 GL_LIB_FUNCTION( GetProgramInterfaceiv )
 GL_LIB_FUNCTION( GetProgramiv )
@@ -183,3 +183,9 @@ WGL_LIB_BASE_FUNCTION( MakeCurrent )
 WGL_LIB_FUNCTION( SwapIntervalEXT )
 
 #undef WGL_LIB_FUNCTION
+
+#ifndef WGL_LIB_FUNCTION_OPT
+#	define WGL_LIB_FUNCTION_OPT( x )
+#endif
+
+#undef WGL_LIB_FUNCTION_OPT

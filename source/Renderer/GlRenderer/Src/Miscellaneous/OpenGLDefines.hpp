@@ -169,7 +169,6 @@ namespace gl_renderer
 	using PFN_glCreateProgram = GLuint( GLAPIENTRY * )( void );
 	using PFN_glCreateShader = GLuint( GLAPIENTRY * )( GLenum type );
 	using PFN_glCreateShaderProgramv = GLuint( GLAPIENTRY * )( GLenum type​, GLsizei count​, const char ** strings​ );
-	using PFN_glCreateVertexArrays = void ( GLAPIENTRY * )( GLsizei n, GLuint* arrays );
 	using PFN_glCullFace = void ( GLAPIENTRY * )( GLenum mode );
 	using PFN_glDeleteBuffers = void ( GLAPIENTRY * )( GLsizei n, const GLuint * buffers );
 	using PFN_glDeleteFramebuffers = void ( GLAPIENTRY * )( GLsizei n, const GLuint* framebuffers );
@@ -207,6 +206,7 @@ namespace gl_renderer
 	using PFN_glGenSamplers = void ( GLAPIENTRY * )( GLsizei count, GLuint * samplers );
 	using PFN_glGenTextures = void ( GLAPIENTRY * )( GLsizei n, GLuint * textures );
 	using PFN_glGenerateMipmap = void ( GLAPIENTRY * )( GLenum target );
+	using PFN_glGenVertexArrays = void ( GLAPIENTRY * )( GLsizei n, GLuint * arrays );
 	using PFN_glGetError = GLenum( GLAPIENTRY * )( void );
 	using PFN_glGetFloatv = void ( GLAPIENTRY * )( GLenum pname, GLfloat * data );
 	using PFN_glGetIntegerv = void ( GLAPIENTRY * )( GLenum pname, GLint * data );
