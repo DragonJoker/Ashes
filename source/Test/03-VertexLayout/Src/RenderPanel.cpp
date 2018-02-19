@@ -201,9 +201,9 @@ namespace vkapp
 			throw std::runtime_error{ "Shader files are missing" };
 		}
 
-		m_program->createModule( common::dumpTextFile( shadersFolder / "shader.vert" )
+		m_program->createModule( common::parseShaderFile( *m_device, shadersFolder / "shader.vert" )
 			, renderer::ShaderStageFlag::eVertex );
-		m_program->createModule( common::dumpTextFile( shadersFolder / "shader.frag" )
+		m_program->createModule( common::parseShaderFile( *m_device, shadersFolder / "shader.frag" )
 			, renderer::ShaderStageFlag::eFragment );
 
 		m_pipeline = m_pipelineLayout->createPipeline( *m_program
