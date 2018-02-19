@@ -1,7 +1,7 @@
 version: '{branch}-rev{build}'
 
 os:
-  - Visual Studio 2015
+  - Visual Studio 2017
 
 platform:
   - Win32
@@ -24,8 +24,8 @@ branches:
 install:
   - cmd: git submodule init
   - cmd: git submodule update
-  - cmd: if "%platform%"=="Win32" set CMAKE_GENERATOR_NAME=Visual Studio 14 2015
-  - cmd: if "%platform%"=="x64"   set CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64
+  - cmd: if "%platform%"=="Win32" set CMAKE_GENERATOR_NAME=Visual Studio 15 2017
+  - cmd: if "%platform%"=="x64"   set CMAKE_GENERATOR_NAME=Visual Studio 15 2017 Win64
   - cmd: if "%platform%"=="Win32" set PLATFORM_NAME=x86
   - cmd: if "%platform%"=="x64"   set PLATFORM_NAME=x64
   - cmd: cd C:\projects\RendererLib
