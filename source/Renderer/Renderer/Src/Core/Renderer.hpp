@@ -28,8 +28,12 @@ namespace renderer
 
 	protected:
 		/**
+		*\~french
 		*\brief
-		*	Constructeur, initialise l'instance de renderer.
+		*	Constructor, initialises the rendering instance.
+		*\~french
+		*\brief
+		*	Constructeur, initialise l'instance de rendu.
 		*/
 		Renderer( ClipDirection clipDirection
 			, std::string const & name
@@ -37,22 +41,38 @@ namespace renderer
 
 	public:
 		/**
+		*\~french
+		*\brief
+		*	Destructor.
+		*\~french
 		*\brief
 		*	Destructeur.
 		*/
 		virtual ~Renderer() = default;
 		/**
+		*\~french
 		*\brief
-		*	Crée le périphérique logique.
+		*	Creates a logical device.
+		*\param[in] connection
+		*	The connection to the window.
+		*\~french
+		*\brief
+		*	Crée un périphérique logique.
 		*\param[in] connection
 		*	La connection avec la fenêtre.
 		*/
 		virtual DevicePtr createDevice( ConnectionPtr && connection )const = 0;
 		/**
+		*\~french
 		*\brief
-		*	Constructeur.
-		*\param[in] renderer
-		*	L'instance de Renderer.
+		*	Crée une connection entre un périphérique physique et une fenêtre.
+		*\param[in] deviceIndex
+		*	L'indice du périphérique physique.
+		*\param[in] handle
+		*	Le descripteur de la fenêtre.
+		*\~french
+		*\brief
+		*	Creates a connection between a physical device and a window.
 		*\param[in] deviceIndex
 		*	L'indice du périphérique physique.
 		*\param[in] handle

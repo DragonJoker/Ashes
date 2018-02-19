@@ -526,7 +526,7 @@ namespace renderer
 		*	Constructor.
 		*\param[in] layoutBinding
 		*	The layout binding.
-		*\param[in] storageBuffer
+		*\param[in] buffer
 		*	The GPU buffer.
 		*\param[in] view
 		*	The view to the buffer.

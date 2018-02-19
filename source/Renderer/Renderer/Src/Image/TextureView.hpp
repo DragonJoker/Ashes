@@ -44,6 +44,8 @@ namespace renderer
 		*	La première couche de tableau accessible à la vue.
 		*\param[in] layerCount
 		*	Le nombre de couches de tableau (à partir de \p baseArrayLayer) accessibles à la vue.
+		*\param[in] mapping
+		*	Le mapping des composantes de couleur.
 		*\~english
 		*\brief
 		*	Constructor.
@@ -63,6 +65,8 @@ namespace renderer
 		*	The first array layer accessible to the view.
 		*\param[in] layerCount
 		*	The number of array layers (starting from \p baseArrayLayer) accessible to the view.
+		*\param[in] mapping
+		*	The colours component mapping.
 		*/
 		TextureView( Device const & device
 			, Texture const & image

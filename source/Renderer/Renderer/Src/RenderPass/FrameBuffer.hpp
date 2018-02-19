@@ -11,25 +11,32 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~english
+	*\brief
+	*	Class wrapping the concept of a Framebuffer.
+	*\~french
 	*\brief
 	*	Classe encapsulant le concept de Framebuffer.
-	*\remarks
-	*	Contient les tampons de profondeur et de couleur.
 	*/
 	class FrameBuffer
 	{
 	protected:
-		/**
-		*\brief
-		*	Crée un FrameBuffer.
-		*/
 		FrameBuffer();
 		/**
+		*\~english
+		*\brief
+		*	Creates a framebuffer compatible with the given render pass.
+		*\param[in] renderPass
+		*	The render pass, containing the attachments.
+		*\param[in] dimensions
+		*	The frame buffer dimensions.
+		*\param[in] textures
+		*	The attachments wanted for the framebuffer.
+		*\~french
 		*\brief
 		*	Crée un FrameBuffer compatible avec la passe de rendu donnée.
-		*\remarks
-		*	Si la compatibilité entre les textures voulues et les formats de la passe de rendu
-		*	n'est pas possible, une std::runtime_error est lancée.
+		*\param[in] renderPass
+		*	La passe de rendu, contenant les attaches.
 		*\param[in] dimensions
 		*	Les dimensions du tampon d'images.
 		*\param[in] textures

@@ -11,8 +11,12 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~english
 	*\brief
-	*	Encapsulation de la connexion à une application dépendant de la plateforme.
+	*	Connection between a physical device and a window.
+	*\~french
+	*\brief
+	*	Connection entre un périphérique physique et une fenêtre.
 	*/
 	class Connection
 	{
@@ -22,6 +26,16 @@ namespace renderer
 		Connection( Connection && rhs ) = default;
 		Connection & operator=( Connection && rhs ) = default;
 		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] renderer
+		*	The Renderer instance.
+		*\param[in] deviceIndex
+		*	The physical device index.
+		*\param[in] handle
+		*	The window handle.
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] renderer
@@ -46,6 +60,10 @@ namespace renderer
 		*/
 		virtual ~Connection() = default;
 		/**
+		*\~french
+		*\return
+		*	The window handle.
+		*\~french
 		*\return
 		*	Le descripteur de la fenêtre.
 		*/

@@ -62,14 +62,14 @@ namespace renderer
 		*	Creates a graphics pipeline using this layout.
 		*\param[in] program
 		*	The shader program.
-		*\param[in] vertexBuffers
-		*	The vertex buffers used.
+		*\param[in] vertexLayouts
+		*	The vertex layout used by the pipeline.
 		*\param[in] renderPass
 		*	The render pass.
-		*\param[in] topology
-		*	The rendering topology.
+		*\param[in] inputAssemblyState
+		*	The input assembly state.
 		*\param[in] rasterisationState
-		*	The rasterisation state.
+		*	The rasterisation state state.
 		*\param[in] colourBlendState
 		*	The colour blend state.
 		*\return
@@ -79,16 +79,16 @@ namespace renderer
 		*	Crée un pipeline graphique utilisant ce layout.
 		*\param[in] program
 		*	Le programme shader.
-		*\param[in] vertexBuffers
-		*	Les tampons de sommets utilisés.
+		*\param[in] vertexLayouts
+		*	Le layout de sommets utilisé par le pipeline.
 		*\param[in] renderPass
 		*	La passe de rendu.
-		*\param[in] topology
-		*	La topologie d'affichage des sommets affichés via ce pipeline.
+		*\param[in] inputAssemblyState
+		*	L'état d'assemblage des entrées.
 		*\param[in] rasterisationState
 		*	L'état de rastérisation.
 		*\param[in] colourBlendState
-		*	L'état de mélange de couleurs.
+		*	L'état de mélange des couleurs.
 		*\return
 		*	Le pipeline créé.
 		*/

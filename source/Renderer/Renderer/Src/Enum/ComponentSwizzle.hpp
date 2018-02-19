@@ -58,9 +58,9 @@ namespace renderer
 	*\return
 	*	Le nom.
 	*/
-	inline std::string getName( ComponentSwizzle type )
+	inline std::string getName( ComponentSwizzle value )
 	{
-		switch ( type )
+		switch ( value )
 		{
 		case ComponentSwizzle::eIdentity:
 			return "identity";

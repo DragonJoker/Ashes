@@ -331,8 +331,8 @@ namespace renderer
 	*	Helper function tor create a Buffer< T >.
 	*\param[in] device
 	*	The logical device.
-	*\param[in] size
-	*	The buffer size.
+	*\param[in] count
+	*	The buffer elements count.
 	*\param[in] target
 	*	The buffer usage flags.
 	*\param[in] flags

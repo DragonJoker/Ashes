@@ -294,6 +294,18 @@ namespace renderer
 		*	The minification and magnification filters.
 		*\param[in] mipFilter
 		*	The mipmap filter.
+		*\param[in] minLod
+		*	Minimal LOD Level.
+		*\param[in] maxLod
+		*	Maximal LOD Level.
+		*\param[in] lodBias
+		*	The texture LOD offset.
+		*\param[in] borderColour
+		*	Texture border colour.
+		*\param[in] maxAnisotropy
+		*	Maximal anisotropic filtering value.
+		*\param[in] compareOp
+		*	The comparison operator, for depth maps.
 		*\~french
 		*\brief
 		*	Crée un échantillonneur.
@@ -303,6 +315,18 @@ namespace renderer
 		*	Les filtres de minification et magnification.
 		*\param[in] mipFilter
 		*	Le filtre de mipmap.
+		*\param[in] minLod
+		*	Niveau de LOD minimal.
+		*\param[in] maxLod
+		*	Niveau de LOD maximal.
+		*\param[in] lodBias
+		*	Le décalage de LOD de la texture.
+		*\param[in] borderColour
+		*	Couleur des bords de la texture.
+		*\param[in] maxAnisotropy
+		*	Valeur maximale pour le filtrage anisotropique.
+		*\param[in] compareOp
+		*	L'opérateur de comparaison, pour les textures de profondeur.
 		*/
 		virtual SamplerPtr createSampler( WrapMode wrapS
 			, WrapMode wrapT
@@ -377,7 +401,7 @@ namespace renderer
 		*	The size of one element in the buffer.
 		*\param[in] target
 		*	The buffer usage flags.
-		*\param[in] flags
+		*\param[in] memoryFlags
 		*	The buffer memory flags.
 		*\~french
 		*\brief
@@ -388,7 +412,7 @@ namespace renderer
 		*	La taille d'un élément.
 		*\param[in] target
 		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] flags
+		*\param[in] memoryFlags
 		*	Les indicateurs de mémoire du tampon.
 		*/
 		virtual UniformBufferBasePtr createUniformBuffer( uint32_t count
@@ -507,7 +531,7 @@ namespace renderer
 			, float zNear
 			, float zFar )const = 0;
 		/**
-		*\english
+		*\~english
 		*	Computes a perspective projection matrix.
 		*\param[in] fovy
 		*	The vertical aperture angle.
@@ -526,7 +550,7 @@ namespace renderer
 		*	Le ratio largeur / hauteur.
 		*\param[in] zNear
 		*	La position du premier plan (pour le clipping).
-		*\param[in] zNear
+		*\param[in] zFar
 		*	La position de l'arrière plan (pour le clipping).
 		*/
 		virtual Mat4 perspective( Angle fovy
@@ -560,7 +584,7 @@ namespace renderer
 			, float zNear
 			, float zFar )const = 0;
 		/**
-		*\english
+		*\~english
 		*	Computes a perspective projection matrix with no far plane clipping.
 		*\param[in] fovy
 		*	The vertical aperture angle.
@@ -716,14 +740,14 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Creates a pipeline layout.
-		*\param[in] setLayouts
+		*\param[in] layouts
 		*	The descriptor sets layouts.
 		*\return
 		*	The created layout.
 		*\~french
 		*\brief
 		*	Crée un layout de pipeline.
-		*\param[in] setLayouts
+		*\param[in] layouts
 		*	Les layouts des descripteurs du pipeline.
 		*\return
 		*	Le layout créé.

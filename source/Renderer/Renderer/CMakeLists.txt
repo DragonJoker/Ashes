@@ -1,5 +1,10 @@
 project( Renderer )
 
+set( ${PROJECT_NAME}_DESCRIPTION "RendererLib library" )
+set( ${PROJECT_NAME}_VERSION_MAJOR 1 )
+set( ${PROJECT_NAME}_VERSION_MINOR 0 )
+set( ${PROJECT_NAME}_VERSION_BUILD 0 )
+
 include_directories(
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/Src
@@ -76,3 +81,7 @@ parse_subdir_files( Src/Sync "Sync" )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
+
+target_add_doc( ${PROJECT_NAME} "French" "*.h *.hpp" )
+target_add_doc( ${PROJECT_NAME} "English" "*.h *.hpp" )
+

@@ -369,7 +369,7 @@ namespace utils
 	*\~english
 	*\brief
 	*	Adds a flag to given combination.
-	*\param[in,out] value
+	*\param[in] value
 	*	The combination.
 	*\param[in] flag
 	*	The flag to add.
@@ -396,7 +396,7 @@ namespace utils
 	*\~english
 	*\brief
 	*	Removes a flag from given combination.
-	*\param[in,out] value
+	*\param[in] value
 	*	The combination.
 	*\param[in] flag
 	*	The flag to remove.
