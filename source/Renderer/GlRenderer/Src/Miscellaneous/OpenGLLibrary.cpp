@@ -4,6 +4,8 @@ See LICENSE file in root folder.
 */
 #include "Miscellaneous/OpenGLLibrary.hpp"
 
+#include <RendererPrerequisites.hpp>
+
 #if RENDERLIB_WIN32
 #elif RENDERLIB_XLIB
 #	include <X11/Xlib.h>
