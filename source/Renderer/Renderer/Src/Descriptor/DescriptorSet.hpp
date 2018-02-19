@@ -130,6 +130,8 @@ namespace renderer
 		*	L'attache de layout.
 		*\param[in] view
 		*	L'image.
+		*\param[in] layout
+		*	Le layout de l'image.
 		*\param[in] index
 		*	L'indice dans le tableau.
 		*\return
@@ -141,6 +143,8 @@ namespace renderer
 		*	The layout binding.
 		*\param[in] view
 		*	The image.
+		*\param[in] layout
+		*	The image layout.
 		*\param[in] index
 		*	The array index.
 		*\return
@@ -259,6 +263,8 @@ namespace renderer
 		*	L'attache de layout.
 		*\param[in] buffer
 		*	Le tampon.
+		*\param[in] view
+		*	La vue sur le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
 		*\return
@@ -289,6 +295,10 @@ namespace renderer
 		*	L'attache de layout.
 		*\param[in] uniformBuffer
 		*	Le tampon.
+		*\param[in] offset
+		*	Le décalage de l'attache dans le tampon.
+		*\param[in] range
+		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
 		*\return
@@ -302,6 +312,8 @@ namespace renderer
 		*	The buffer.
 		*\param[in] offset
 		*	The attach's offset in the buffer.
+		*\param[in] range
+		*	The amount of data that can be read from the buffer.
 		*\param[in] index
 		*	The array index.
 		*\return
@@ -328,6 +340,10 @@ namespace renderer
 		*	L'attache de layout.
 		*\param[in] storageBuffer
 		*	Le tampon.
+		*\param[in] offset
+		*	Le décalage de l'attache dans le tampon.
+		*\param[in] range
+		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
 		*\return
@@ -341,6 +357,8 @@ namespace renderer
 		*	The buffer.
 		*\param[in] offset
 		*	The attach's offset in the buffer.
+		*\param[in] range
+		*	The amount of data that can be read from the buffer.
 		*\param[in] index
 		*	The array index.
 		*\return

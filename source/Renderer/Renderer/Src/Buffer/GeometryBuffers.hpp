@@ -1,4 +1,4 @@
-/*
+﻿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -13,6 +13,7 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~french
 	*\brief
 	*	Classe encapsulant les VBOs et l'IBO d'un mesh.
 	*/
@@ -28,14 +29,14 @@ namespace renderer
 
 		struct IBO
 		{
-		    IBO( BufferBase const & buffer
-                , uint64_t offset
-                , IndexType type )
-                : buffer{ buffer }
-                , offset{ offset }
-                , type{ type }
-		    {
-		    }
+			IBO( BufferBase const & buffer
+				, uint64_t offset
+				, IndexType type )
+				: buffer{ buffer }
+				, offset{ offset }
+				, type{ type }
+			{
+			}
 
 			BufferBase const & buffer;
 			uint64_t offset;
@@ -44,6 +45,16 @@ namespace renderer
 
 	public:
 		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] vbos
+		*	The VBOs.
+		*\param[in] vboOffsets
+		*	The offset for the first vertex of each VBO.
+		*\param[in] layouts
+		*	The layouts, one per VBO in \p vbos.
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] vbos
@@ -57,6 +68,22 @@ namespace renderer
 			, std::vector< uint64_t > vboOffsets
 			, VertexLayoutCRefArray const & layouts );
 		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] vbos
+		*	The VBOs.
+		*\param[in] vboOffsets
+		*	The offset for the first vertex of each VBO.
+		*\param[in] layouts
+		*	The layouts, one per VBO in \p vbos.
+		*\param[in] ibo
+		*	The IBO.
+		*\param[in] iboOffset
+		*	The offset of the first index in the IBO.
+		*\param[in] type
+		*	The indices type.
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] vbos
@@ -79,11 +106,19 @@ namespace renderer
 			, uint64_t iboOffset
 			, IndexType type );
 		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
 		*\brief
 		*	Destructeur.
 		*/
 		virtual ~GeometryBuffers() = default;
 		/**
+		*\~english
+		*\return
+		*	The VBOs.
+		*\~french
 		*\return
 		*	Les VBOs.
 		*/
@@ -92,14 +127,22 @@ namespace renderer
 			return m_vbos;
 		}
 		/**
+		*\~english
 		*\return
-		*	\p true si l'IBO est d�fini.
+		*	\p true if the IBO is defined.
+		*\~french
+		*\return
+		*	\p true si l'IBO est défini.
 		*/
 		inline bool hasIbo()const
 		{
 			return m_ibo != nullptr;
 		}
 		/**
+		*\~english
+		*\return
+		*	The IBO.
+		*\~french
 		*\return
 		*	L'IBO.
 		*/

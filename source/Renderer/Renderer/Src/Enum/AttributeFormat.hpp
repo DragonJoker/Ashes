@@ -9,6 +9,10 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~english
+	*\brief
+	*	The suppported attribute formats list.
+	*\~french
 	*\brief
 	*	Liste des formats d'attributs supportés.
 	*/
@@ -122,9 +126,9 @@ namespace renderer
 	*\return
 	*	Le nom.
 	*/
-	inline std::string getName( AttributeFormat type )
+	inline std::string getName( AttributeFormat value )
 	{
-		switch ( type )
+		switch ( value )
 		{
 		case AttributeFormat::eFloat:
 			return "float";

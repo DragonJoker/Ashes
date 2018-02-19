@@ -14,6 +14,10 @@ namespace renderer
 	{
 	protected:
 		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\~french
 		*\brief
 		*	Constructeur.
 		*/
@@ -31,16 +35,36 @@ namespace renderer
 		*/
 		virtual ~SwapChain() = default;
 		/**
+		*\~french
+		*\return
+		*	Retrieve the active rendering resources..
+		*\remarks
+		*	In Vulkan, this function takes care of the backbuffer image acquisition.
+		*\~french
 		*\return
 		*	Récupère les ressources de rendu actives.
+		*\remarks
+		*	En Vulkan, cette fonction s'occupe de la récupération de l'image depuis le backbuffer.
 		*/
 		virtual RenderingResources * getResources() = 0;
 		/**
+		*\~french
+		*\brief
+		*	Resets the swap chain.
+		*\~french
 		*\brief
 		*	Réinitialise la swap chain.
 		*/
 		virtual void reset( UIVec2 const & size ) = 0;
 		/**
+		*\~french
+		*\brief
+		*	Creates the backbuffers' framebuffers, compativle with given render pass.
+		*\param[in] renderPass
+		*	The render pass.
+		*\return
+		*	The framebuffers.
+		*\~french
 		*\brief
 		*	Crée les tampons d'image des back buffers, compatibles avec la passe de rendu donnée.
 		*\param[in] renderPass
@@ -50,40 +74,70 @@ namespace renderer
 		*/
 		virtual FrameBufferPtrArray createFrameBuffers( RenderPass const & renderPass )const = 0;
 		/**
+		*\~french
 		*\brief
-		*	Crée les tampons d'image des back buffers, compatibles avec la passe de rendu donnée.
-		*\param[in] renderPass
-		*	La passe de rendu.
+		*	Creates the backbuffers' framebuffers
+		*\return
+		*	The framebuffers.
+		*\~french
+		*\brief
+		*	Crée les tampons d'image des back buffers.
 		*\return
 		*	Les tampons d'images.
 		*/
 		virtual CommandBufferPtrArray createCommandBuffers()const = 0;
 		/**
+		*\~french
+		*\brief
+		*	Records pre-render commands.
+		*\param[in] index
+		*	The backbuffer image index.
+		*\param[in] commandBuffer
+		*	The command buffer recording the commands.
+		*\~french
 		*\brief
 		*	Enregistre des commandes de pré-rendu.
 		*\param[in] index
-		*	L'indice de l'image.
+		*	L'indice de l'image du backbuffer.
 		*\param[in] commandBuffer
 		*	Le tampon de commandes recevant les commandes.
 		*/
 		virtual void preRenderCommands( uint32_t index
 			, CommandBuffer const & commandBuffer )const = 0;
 		/**
+		*\~french
+		*\brief
+		*	Records post-render commands.
+		*\param[in] index
+		*	The backbuffer image index.
+		*\param[in] commandBuffer
+		*	The command buffer recording the commands.
+		*\~french
 		*\brief
 		*	Enregistre des commandes de post-rendu.
 		*\param[in] index
-		*	L'indice de l'image.
+		*	L'indice de l'image du backbuffer.
 		*\param[in] commandBuffer
 		*	Le tampon de commandes recevant les commandes.
 		*/
 		virtual void postRenderCommands( uint32_t index
 			, CommandBuffer const & commandBuffer )const = 0;
 		/**
+		*\~french
+		*\return
+		*	Presents the rendering resources.
+		*\~french
 		*\return
 		*	Présente les ressources de rendu.
 		*/
 		virtual void present( RenderingResources & resources ) = 0;
 		/**
+		*\~french
+		*\brief
+		*	Defines the clear colour of the swapchain.
+		*\param[in] value
+		*	The new value.
+		*\~french
 		*\brief
 		*	Définit la couleur de vidage de la swapchain.
 		*\param[in] value
@@ -91,23 +145,37 @@ namespace renderer
 		*/
 		virtual void setClearColour( RgbaColour const & value ) = 0;
 		/**
-		*\brief
-		*	Définit la couleur de vidage de la swapchain.
-		*\param[in] value
-		*	La nouvelle valeur.
+		*\~french
+		*\return
+		*	The clear colour of the swapchain.
+		*\~french
+		*\return
+		*	La couleur de vidage de la swapchain.
 		*/
 		virtual RgbaColour getClearColour()const = 0;
 		/**
+		*\~french
+		*\return
+		*	The swap chain dimensions.
+		*\~french
 		*\return
 		*	Les dimensions de la swap chain.
 		*/
 		virtual UIVec2 getDimensions()const = 0;
 		/**
+		*\~french
+		*\return
+		*	The swapchain pixe format.
+		*\~french
 		*\return
 		*	Les format des pixels de la swap chain.
 		*/
 		virtual PixelFormat getFormat()const = 0;
 		/**
+		*\~french
+		*\return
+		*	Retrieves the default rendering resources.
+		*\~french
 		*\return
 		*	Récupère les ressources de rendu par défaut.
 		*/
@@ -117,18 +185,16 @@ namespace renderer
 		}
 
 	public:
-		//! Le signal levé lorsque la swap chain est recréée.
 		using OnResetFunc = std::function< void() >;
 		using OnReset = Signal< OnResetFunc >;
+		//!\~english	The signal raised when the swapchain is reset.
+		//!\~french		Le signal levé lorsque la swap chain est recréée.
 		OnReset onReset;
 
 	protected:
 		Device const & m_device;
-		//! Les dimensions de la swap chain
 		UIVec2 m_dimensions;
-		//! Les ressources de rendu liées à la swap chain.
 		std::vector< RenderingResourcesPtr > m_renderingResources;
-		//! L'indice de la ressource de rendu active.
 		mutable size_t m_resourceIndex{ 0 };
 	};
 }

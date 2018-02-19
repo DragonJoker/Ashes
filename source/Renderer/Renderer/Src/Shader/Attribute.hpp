@@ -11,6 +11,9 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~english
+	*\brief
+	*	Class wrapping the concept of a vertex attribute.
 	*\~french
 	*\brief
 	*	Classe encapsulant le concept d'attribut de sommet.
@@ -56,9 +59,9 @@ namespace renderer
 		*/
 		virtual ~Attribute() = default;
 		/**
-		*\~french
+		*\~english
 		*\return
-		*	Le format de l'attribut dans le tampon.
+		*	The format of the attribute in the buffer.
 		*\~french
 		*\return
 		*	Le format de l'attribut dans le tampon.

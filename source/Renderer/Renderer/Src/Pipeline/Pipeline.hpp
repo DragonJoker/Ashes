@@ -12,6 +12,10 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~english
+	*\brief
+	*	A rendering pipeline.
+	*\~french
 	*\brief
 	*	Un pipeline de rendu.
 	*/
@@ -19,6 +23,26 @@ namespace renderer
 	{
 	protected:
 		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The parent device.
+		*\param[in] layout
+		*	The pipeline layout.
+		*\param[in] program
+		*	The shader program.
+		*\param[in] vertexLayouts
+		*	The vertex layout used by the pipeline.
+		*\param[in] renderPass
+		*	The render pass.
+		*\param[in] inputAssemblyState
+		*	The input assembly state.
+		*\param[in] rasterisationState
+		*	The rasterisation state state.
+		*\param[in] colourBlendState
+		*	The colour blend state.
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] device
@@ -27,12 +51,16 @@ namespace renderer
 		*	Le layout du pipeline.
 		*\param[in] program
 		*	Le programme shader.
-		*\param[in] vertexBuffers
-		*	Les tampons de sommets utilisés.
+		*\param[in] vertexLayouts
+		*	Le layout de sommets utilisé par le pipeline.
 		*\param[in] renderPass
 		*	La passe de rendu.
 		*\param[in] inputAssemblyState
 		*	L'état d'assemblage des entrées.
+		*\param[in] rasterisationState
+		*	L'état de rastérisation.
+		*\param[in] colourBlendState
+		*	L'état de mélange des couleurs.
 		*/
 		Pipeline( Device const & device
 			, PipelineLayout const & layout
@@ -54,11 +82,21 @@ namespace renderer
 		*/
 		virtual ~Pipeline() = default;
 		/**
+		*\~english
+		*\brief
+		*	Creates the pipeline.
+		*\~french
 		*\brief
 		*	Crée le pipeline.
 		*/
 		virtual Pipeline & finish() = 0;
 		/**
+		*\~english
+		*\brief
+		*	Specifies the MultisampleState.
+		*\param[in] state
+		*	he new value.
+		*\~french
 		*\brief
 		*	Définit le MultisampleState.
 		*\param[in] state
@@ -66,6 +104,12 @@ namespace renderer
 		*/
 		virtual Pipeline & multisampleState( MultisampleState const & state ) = 0;
 		/**
+		*\~english
+		*\brief
+		*	Specifies the DepthStencilState.
+		*\param[in] state
+		*	he new value.
+		*\~french
 		*\brief
 		*	Définit le DepthStencilState.
 		*\param[in] state
@@ -73,6 +117,12 @@ namespace renderer
 		*/
 		virtual Pipeline & depthStencilState( DepthStencilState const & state ) = 0;
 		/**
+		*\~english
+		*\brief
+		*	Specifies the TessellationState.
+		*\param[in] state
+		*	he new value.
+		*\~french
 		*\brief
 		*	Définit le TessellationState.
 		*\param[in] state
@@ -80,6 +130,12 @@ namespace renderer
 		*/
 		virtual Pipeline & tessellationState( TessellationState const & state ) = 0;
 		/**
+		*\~english
+		*\brief
+		*	Specifies the Viewport.
+		*\param[in] viewport
+		*	he new value.
+		*\~french
 		*\brief
 		*	Définit le Viewport.
 		*\param[in] viewport
@@ -87,6 +143,12 @@ namespace renderer
 		*/
 		virtual Pipeline & viewport( Viewport const & viewport ) = 0;
 		/**
+		*\~english
+		*\brief
+		*	Specifies the scissor.
+		*\param[in] scissor
+		*	he new value.
+		*\~french
 		*\brief
 		*	Définit le Scissor.
 		*\param[in] scissor

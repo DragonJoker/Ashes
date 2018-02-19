@@ -39,6 +39,8 @@ namespace renderer
 		*	Couleur des bords de la texture.
 		*\param[in] maxAnisotropy
 		*	Valeur maximale pour le filtrage anisotropique.
+		*\param[in] compareOp
+		*	L'opérateur de comparaison, pour les textures de profondeur.
 		*\~english
 		*\brief
 		*	Constructor.
@@ -60,6 +62,8 @@ namespace renderer
 		*	Texture border colour.
 		*\param[in] maxAnisotropy
 		*	Maximal anisotropic filtering value.
+		*\param[in] compareOp
+		*	The comparison operator, for depth maps.
 		*/
 		Sampler( Device const & device
 			, WrapMode wrapS

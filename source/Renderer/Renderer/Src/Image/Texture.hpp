@@ -107,6 +107,8 @@ namespace renderer
 		*	Les indicateurs d'utilisation de l'image.
 		*\param[in] tiling
 		*	Le mode de tiling de l'image.
+		*\param[in] samples
+		*	Le nombre d'échantillons de l'image.
 		*\~english
 		*\brief
 		*	Loads the texture image.
@@ -118,6 +120,8 @@ namespace renderer
 		*	The image usage flags.
 		*\param[in] tiling
 		*	The image tiling mode.
+		*\param[in] samples
+		*	The image samples count.
 		*/
 		void setImage( PixelFormat format
 			, UIVec2 const & size
@@ -136,6 +140,8 @@ namespace renderer
 		*	Les indicateurs d'utilisation de l'image.
 		*\param[in] tiling
 		*	Le mode de tiling de l'image.
+		*\param[in] samples
+		*	Le nombre d'échantillons de l'image.
 		*\~english
 		*\brief
 		*	Loads the texture image.
@@ -147,6 +153,8 @@ namespace renderer
 		*	The image usage flags.
 		*\param[in] tiling
 		*	The image tiling mode.
+		*\param[in] samples
+		*	The image samples count.
 		*/
 		void setImage( PixelFormat format
 			, UIVec3 const & size
@@ -227,6 +235,8 @@ namespace renderer
 		*	Le format de l'image.
 		*\param[in] size
 		*	Les dimensions de l'image.
+		*\param[in] mipmapLevels
+		*	Le nombre de niveaux de mipmaps de la texture.
 		*\param[in] usageFlags
 		*	Les indicateurs d'utilisation de l'image.
 		*\param[in] tiling
@@ -238,6 +248,8 @@ namespace renderer
 		*	The pixel format.
 		*\param[in] size
 		*	The image dimensions.
+		*\param[in] mipmapLevels
+		*	The mipmap levels count for the texture.
 		*\param[in] usageFlags
 		*	The image usage flags.
 		*\param[in] tiling
@@ -256,10 +268,14 @@ namespace renderer
 		*	Le format de l'image.
 		*\param[in] size
 		*	Les dimensions de l'image.
+		*\param[in] mipmapLevels
+		*	Le nombre de niveaux de mipmaps de la texture.
 		*\param[in] usageFlags
 		*	Les indicateurs d'utilisation de l'image.
 		*\param[in] tiling
 		*	Le mode de tiling de l'image.
+		*\param[in] samples
+		*	Le nombre d'échantillons de l'image.
 		*\~english
 		*\brief
 		*	Loads the texture image.
@@ -267,10 +283,14 @@ namespace renderer
 		*	The pixel format.
 		*\param[in] size
 		*	The image dimensions.
+		*\param[in] mipmapLevels
+		*	The mipmap levels count for the texture.
 		*\param[in] usageFlags
 		*	The image usage flags.
 		*\param[in] tiling
 		*	The image tiling mode.
+		*\param[in] samples
+		*	The image samples count.
 		*/
 		void setImage( PixelFormat format
 			, UIVec2 const & size
@@ -286,10 +306,14 @@ namespace renderer
 		*	Le format de l'image.
 		*\param[in] size
 		*	Les dimensions de l'image.
+		*\param[in] mipmapLevels
+		*	Le nombre de niveaux de mipmaps de la texture.
 		*\param[in] usageFlags
 		*	Les indicateurs d'utilisation de l'image.
 		*\param[in] tiling
 		*	Le mode de tiling de l'image.
+		*\param[in] samples
+		*	Le nombre d'échantillons de l'image.
 		*\~english
 		*\brief
 		*	Loads the texture image.
@@ -297,10 +321,14 @@ namespace renderer
 		*	The pixel format.
 		*\param[in] size
 		*	The image dimensions.
+		*\param[in] mipmapLevels
+		*	The mipmap levels count for the texture.
 		*\param[in] usageFlags
 		*	The image usage flags.
 		*\param[in] tiling
 		*	The image tiling mode.
+		*\param[in] samples
+		*	The image samples count.
 		*/
 		void setImage( PixelFormat format
 			, UIVec3 const & size
@@ -318,6 +346,8 @@ namespace renderer
 		*	Les dimensions de l'image.
 		*\param[in] layerCount
 		*	Le nombre de couches.
+		*\param[in] mipmapLevels
+		*	Le nombre de niveaux de mipmaps de la texture.
 		*\param[in] usageFlags
 		*	Les indicateurs d'utilisation de l'image.
 		*\param[in] tiling
@@ -331,6 +361,8 @@ namespace renderer
 		*	The image dimensions.
 		*\param[in] layerCount
 		*	The number of layers.
+		*\param[in] mipmapLevels
+		*	The mipmap levels count for the texture.
 		*\param[in] usageFlags
 		*	The image usage flags.
 		*\param[in] tiling
@@ -352,6 +384,8 @@ namespace renderer
 		*	Les dimensions de l'image.
 		*\param[in] layerCount
 		*	Le nombre de couches.
+		*\param[in] mipmapLevels
+		*	Le nombre de niveaux de mipmaps de la texture.
 		*\param[in] usageFlags
 		*	Les indicateurs d'utilisation de l'image.
 		*\param[in] tiling
@@ -365,6 +399,8 @@ namespace renderer
 		*	The image dimensions.
 		*\param[in] layerCount
 		*	The number of layers.
+		*\param[in] mipmapLevels
+		*	The mipmap levels count for the texture.
 		*\param[in] usageFlags
 		*	The image usage flags.
 		*\param[in] tiling
@@ -392,6 +428,8 @@ namespace renderer
 		*	La première couche de tableau accessible à la vue.
 		*\param[in] layerCount
 		*	Le nombre de couches de tableau (à partir de \p baseArrayLayer) accessibles à la vue.
+		*\param[in] mapping
+		*	Le mapping des composantes de couleur.
 		*\~english
 		*\brief
 		*	Creates a view to the texture.
@@ -407,6 +445,8 @@ namespace renderer
 		*	The first array layer accessible to the view.
 		*\param[in] layerCount
 		*	The number of array layers (starting from \p baseArrayLayer) accessible to the view.
+		*\param[in] mapping
+		*	The colours component mapping.
 		*/
 		virtual TextureViewPtr createView( TextureType type
 			, PixelFormat format

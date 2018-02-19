@@ -15,6 +15,7 @@ project( ${MAIN_PROJECT_NAME} )
 include( Platform )
 include( FileUtils )
 include( PCHSupport )
+include( Doxygen )
 
 option( RENDERER_BUILD_TESTS "Build Renderer test applications" TRUE )
 option( RENDERER_BUILD_SAMPLES "Build Renderer sample applications" TRUE )

@@ -357,7 +357,7 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Binds descriptor sets to the command buffer.
-		*\param[in] descriptorSets
+		*\param[in] descriptorSet
 		*	The descriptor sets.
 		*\param[in] layout
 		*	The pipeline layout used to program the binding.
@@ -366,7 +366,7 @@ namespace renderer
 		*\~french
 		*\brief
 		*	Active des descriptor sets.
-		*\param[in] descriptorSets
+		*\param[in] descriptorSet
 		*	Les descriptor sets.
 		*\param[in] layout
 		*	Le layout de pipeline.
@@ -567,23 +567,23 @@ namespace renderer
 		*\~french
 		*\brief
 		*	Copie une image vers une autre.
+		*\param[in] blit
+		*	La configuration de la copie.
 		*\param[in] src
 		*	L'image source.
 		*\param[in] dst
 		*	L'image destination.
-		*\param[in] blit
-		*	La configuration de la copie.
 		*\param[in] filter
 		*	Le filtre appliqué si la copie nécessite une mise à l'échelle.
 		*\~english
 		*\brief
 		*	Blits an image to another one.
+		*\param[in] blit
+		*	The blit configuration.
 		*\param[in] src
 		*	The source image.
 		*\param[in] dst
 		*	The destination image.
-		*\param[in] blit
-		*	The blit configuration.
 		*\param[in] filter
 		*	The filter applied if the blit requires scaling.
 		*/
@@ -684,15 +684,15 @@ namespace renderer
 		*	Met à jour les valeurs de push constants.
 		*\param[in] layout
 		*	Le layout de pipeline utilisé pour programmer la mise à jour des push constants.
-		*\param[in] stageFlags
-		*	Spécifie les niveaux de shaders qui vont utiliser les push constants dans l'intervalle mis à jour.
+		*\param[in] pcb
+		*	Le tampon de push constants.
 		*\~english
 		*\brief
 		*	Updates the values of push constants.
 		*\param[in] layout
 		*	The pipeline layout used to program the push constants updates.
-		*\param[in] stageFlags
-		*	Specifies the shader stages that will use the push constants in the updated range.
+		*\param[in] pcb
+		*	The push constants buffer.
 		*/
 		virtual void pushConstants( PipelineLayout const & layout
 			, PushConstantsBufferBase const & pcb )const = 0;
@@ -953,15 +953,15 @@ namespace renderer
 		*	Met à jour les valeurs de push constants.
 		*\param[in] layout
 		*	Le layout de pipeline utilisé pour programmer la mise à jour des push constants.
-		*\param[in] stageFlags
-		*	Spécifie les niveaux de shaders qui vont utiliser les push constants dans l'intervalle mis à jour.
+		*\param[in] pcb
+		*	Le tampon de push constants.
 		*\~english
 		*\brief
 		*	Updates the values of push constants.
 		*\param[in] layout
 		*	The pipeline layout used to program the push constants updates.
-		*\param[in] stageFlags
-		*	Specifies the shader stages that will use the push constants in the updated range.
+		*\param[in] pcb
+		*	The push constants buffer.
 		*/
 		template< typename T >
 		inline void pushConstants( PipelineLayout const & layout
