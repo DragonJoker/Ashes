@@ -2,11 +2,14 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
+#include "GlRendererPrerequisites.hpp"
+
 #include "Miscellaneous/OpenGLLibrary.hpp"
 
-#include <RendererPrerequisites.hpp>
-
 #if RENDERLIB_WIN32
+#	include <Windows.h>
+#	include <wingdi.h>
+#	undef MemoryBarrier
 #elif RENDERLIB_XLIB
 #	include <X11/Xlib.h>
 #	include <GL/glx.h>
@@ -75,7 +78,7 @@ namespace gl_renderer
 				throw std::runtime_error{ std::string{ "Couldn't load function " } + "wgl"#fun };\
 			}
 #	define WGL_LIB_FUNCTION_OPT( fun )\
-			if ( !( getFunction( "wgl"#fun, gl::fun ) ) )\
+			if ( !( getFunction( "wgl"#fun, wgl::fun ) ) )\
 			{\
 				std::cerr <<  "Couldn't load function " << "wgl"#fun << std::endl;\
 			}
