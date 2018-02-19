@@ -1,3 +1,9 @@
+|         Server     | Result |
+|:------------------:|--------|
+|  Travis CI (Linux) | [![Build Status](https://travis-ci.org/DragonJoker/RendererLib.svg?branch=development)](https://travis-ci.org/DragonJoker/RendererLib) |
+| AppVeyor (Windows) | [![Build Status](https://ci.appveyor.com/api/projects/status/github/DragonJoker/rendererlib?branch=development&svg=true)](https://ci.appveyor.com/project/DragonJoker/rendererlib) |
+
+
 RendererLib
 ===========
 
