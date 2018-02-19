@@ -31,7 +31,7 @@
 #include <Sync/BufferMemoryBarrier.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
-#include <varargs.h>
+#include <stdarg.h>
 
 namespace common
 {

@@ -1,8 +1,9 @@
 #include "FileUtils.hpp"
 
-#include <cassert>
-
 #include <RendererPrerequisites.hpp>
+
+#include <cassert>
+#include <iostream>
 
 #if RENDERLIB_WIN32
 
@@ -10,7 +11,6 @@
 #include <cstring>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <iostream>
 
 #include <direct.h>
 #include <Shlobj.h>

@@ -2,6 +2,9 @@
 
 #include "Scene.hpp"
 
+#include <Pipeline/VertexLayout.hpp>
+#include <RenderPass/RenderSubpass.hpp>
+
 namespace common
 {
 	OpaqueRendering::OpaqueRendering( NodesRendererPtr && renderer

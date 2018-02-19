@@ -2,6 +2,10 @@
 
 #include <Core/Connection.hpp>
 #include <Core/Renderer.hpp>
+#include <Image/Texture.hpp>
+#include <Image/TextureView.hpp>
+#include <Pipeline/VertexLayout.hpp>
+#include <RenderPass/RenderSubpass.hpp>
 
 #include <Utils/Factory.hpp>
 #include <Utils/Mat4.hpp>

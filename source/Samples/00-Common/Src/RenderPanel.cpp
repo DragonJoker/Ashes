@@ -37,6 +37,7 @@
 
 #include "FileUtils.hpp"
 
+#include <algorithm>
 #include <chrono>
 #include <numeric>
 

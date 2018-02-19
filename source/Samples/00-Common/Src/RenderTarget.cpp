@@ -13,6 +13,7 @@
 #include <Image/TextureView.hpp>
 #include <Pipeline/PipelineLayout.hpp>
 #include <Pipeline/Pipeline.hpp>
+#include <Pipeline/VertexLayout.hpp>
 #include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderPassState.hpp>

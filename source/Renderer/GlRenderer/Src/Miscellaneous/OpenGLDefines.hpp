@@ -168,7 +168,7 @@ namespace gl_renderer
 	using PFN_glCopyImageSubData = void ( GLAPIENTRY * )( GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei srcWidth, GLsizei srcHeight, GLsizei srcDepth );
 	using PFN_glCreateProgram = GLuint( GLAPIENTRY * )( void );
 	using PFN_glCreateShader = GLuint( GLAPIENTRY * )( GLenum type );
-	using PFN_glCreateShaderProgramv = GLuint( GLAPIENTRY * )( GLenum type​, GLsizei count​, const char ** strings​ );
+	using PFN_glCreateShaderProgramv = GLuint( GLAPIENTRY * )( GLenum type, GLsizei count, const char ** strings );
 	using PFN_glCullFace = void ( GLAPIENTRY * )( GLenum mode );
 	using PFN_glDeleteBuffers = void ( GLAPIENTRY * )( GLsizei n, const GLuint * buffers );
 	using PFN_glDeleteFramebuffers = void ( GLAPIENTRY * )( GLsizei n, const GLuint* framebuffers );
@@ -248,7 +248,7 @@ namespace gl_renderer
 	using PFN_glTexImage2DMultisample = void ( GLAPIENTRY * )( GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations );
 	using PFN_glTexImage3D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const void * pixels );
 	using PFN_glTexImage3DMultisample = void ( GLAPIENTRY * )( GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations );
-	using PFN_glTexParameteri = void( GLAPIENTRY * )( GLenum target​, GLenum pname​, GLint param );
+	using PFN_glTexParameteri = void( GLAPIENTRY * )( GLenum target, GLenum pname, GLint param );
 	using PFN_glTexSubImage1D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const void *pixels );
 	using PFN_glTexSubImage2D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void *pixels );
 	using PFN_glTexSubImage3D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void *pixels );

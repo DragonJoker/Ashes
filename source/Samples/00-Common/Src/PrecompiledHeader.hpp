@@ -81,7 +81,7 @@
 #endif
 
 
-#if defined( RENDERLIB_WIN32 )
+#if RENDERLIB_WIN32
 
 #include <cstdio>
 #include <cstring>

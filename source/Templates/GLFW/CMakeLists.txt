@@ -22,6 +22,11 @@ if( GLFW_FOUND )
 		${GLFW_LIBRARIES}
 	)
 
+	if ( UNIX )
+		target_link_libraries( ${PROJECT_NAME}
+			dl
+		)
+	endif ()
 	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Templates" )
 

@@ -3,6 +3,7 @@
 #include <Core/Connection.hpp>
 #include <Core/PlatformWindowHandle.hpp>
 #include <Core/Renderer.hpp>
+#include <Image/TextureView.hpp>
 
 #if defined( __WXGTK__ )
 #	include <gdk/gdkx.h>

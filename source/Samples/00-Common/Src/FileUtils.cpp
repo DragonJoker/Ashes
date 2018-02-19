@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-#if defined( RENDERLIB_WIN32 )
+#if RENDERLIB_WIN32
 
 #include <cstdio>
 #include <cstring>
@@ -26,7 +26,7 @@
 
 namespace common
 {
-#if defined( _WIN32 )
+#if RENDERLIB_WIN32
 
 	static char constexpr PathSeparator = '\\';
 
@@ -285,7 +285,7 @@ namespace common
 		return path.substr( 0, path.find_last_of( PathSeparator ) );
 	}
 
-#if defined( _WIN32 )
+#if RENDERLIB_WIN32
 
 	std::string getExecutableDirectory()
 	{
