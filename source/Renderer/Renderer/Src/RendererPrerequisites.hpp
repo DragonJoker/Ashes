@@ -166,8 +166,6 @@ namespace renderer
 	template< typename T >
 	using VertexBufferPtr = std::unique_ptr< VertexBuffer< T > >;
 	template< typename T >
-	using ShaderStorageBufferPtr = std::unique_ptr< ShaderStorageBuffer< T > >;
-	template< typename T >
 	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBuffer< T > >;
 
 	using AttributeBasePtr = std::unique_ptr< Attribute >;
