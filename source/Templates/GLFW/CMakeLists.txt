@@ -1,3 +1,5 @@
+project( GLFW-Template )
+
 find_package( GLFW )
 
 if( GLFW_FOUND )

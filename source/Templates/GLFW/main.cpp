@@ -133,8 +133,9 @@ int main( int argc, char * argv[] )
 
 	if ( argc > 1 )
 	{
-		rendererName = argv[2];
+		rendererName = argv[1];
 		rendererName = rendererName.substr( rendererName.find( '-' ) + 1 );
+		rendererName = rendererName.substr( rendererName.find( '/' ) + 1 );
 	}
 
 	// With that informations, we can already create the renderer instance.
