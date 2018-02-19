@@ -95,22 +95,31 @@ renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
 			, finalLayouts } );
 }
 
-void doPrepareFrames( renderer::SwapChain const & swapChain
-	, renderer::RenderPass const & renderPass
-	, std::vector< renderer::FrameBufferPtr > const & frameBuffers
-	, renderer::CommandBufferPtrArray const & commandBuffers )
+struct Application
 {
+	renderer::SwapChainPtr swapChain;
+	std::vector< renderer::FrameBufferPtr > frameBuffers;
+	renderer::CommandBufferPtrArray commandBuffers;
+	renderer::RenderPassPtr renderPass;
+};
+
+void doPrepareFrames( Application & application )
+{
+	// We now retrieve the framebuffers and command buffers for each backbuffer of the swapchain.
+	application.frameBuffers = application.swapChain->createFrameBuffers( *application.renderPass );
+	application.commandBuffers = application.swapChain->createCommandBuffers();
+
 	// We'll simply clear the swap chain, using its colour defined previously.
-	for ( size_t i = 0u; i < commandBuffers.size(); ++i )
+	for ( size_t i = 0u; i < application.commandBuffers.size(); ++i )
 	{
-		auto & frameBuffer = *frameBuffers[i];
-		auto & commandBuffer = *commandBuffers[i];
+		auto & frameBuffer = *application.frameBuffers[i];
+		auto & commandBuffer = *application.commandBuffers[i];
 
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 		{
-			commandBuffer.beginRenderPass( renderPass
+			commandBuffer.beginRenderPass( *application.renderPass
 				, frameBuffer
-				, { swapChain.getClearColour() }
+				, { application.swapChain->getClearColour() }
 			, renderer::SubpassContents::eInline );
 			commandBuffer.endRenderPass();
 
@@ -120,6 +129,12 @@ void doPrepareFrames( renderer::SwapChain const & swapChain
 			}
 		}
 	}
+}
+
+static void onWindowResized( GLFWwindow * window, int width, int height )
+{
+	Application * app = reinterpret_cast< Application * >( glfwGetWindowUserPointer( window ) );
+	app->swapChain->reset( renderer::UIVec2{ width, height } );
 }
 
 int main( int argc, char * argv[] )
@@ -157,6 +172,9 @@ int main( int argc, char * argv[] )
 	glfwInit();
 	glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API );
 	GLFWwindow * window = glfwCreateWindow( int( width ), int( height ), "GLFW Template", nullptr, nullptr );
+	Application app;
+	glfwSetWindowUserPointer( window, &app );
+	glfwSetWindowSizeCallback( window, onWindowResized );
 
 	// We retrieve this window's native handle, and create the logical device from it.
 	auto hWnd = glfwGetWin32Window( window );
@@ -170,27 +188,23 @@ int main( int argc, char * argv[] )
 		device->enable();
 
 		// Retrieve the swapchain and set it up.
-		renderer::SwapChainPtr swapChain = device->createSwapChain( { width, height } );
-		swapChain->setClearColour( renderer::RgbaColour{ 1.0f, 0.8f, 0.4f, 0.0f } );
+		app.swapChain = device->createSwapChain( { width, height } );
+		app.swapChain->setClearColour( renderer::RgbaColour{ 1.0f, 0.8f, 0.4f, 0.0f } );
 
 		// We retrieve the render pass that we'll be using to do our stuff on the swapchain surface.
-		renderer::RenderPassPtr renderPass = doCreateRenderPass( *device, *swapChain );
-
-		// We now retrieve the framebuffers and command buffers for each backbuffer of the swapchain.
-		std::vector< renderer::FrameBufferPtr > frameBuffers = swapChain->createFrameBuffers( *renderPass );
-		renderer::CommandBufferPtrArray commandBuffers = swapChain->createCommandBuffers();
+		app.renderPass = doCreateRenderPass( *device, *app.swapChain );
 
 		// From all those things, we can now prepare our frames (one per framebuffer).
-		doPrepareFrames( *swapChain, *renderPass, frameBuffers, commandBuffers );
+		doPrepareFrames( app );
 
 		// Here we connect to the swap chain reset signal, to handle resizes and other device lost problems.
-		auto swapChainReset = swapChain->onReset.connect( [&swapChain, &renderPass, &frameBuffers, &commandBuffers]()
+		auto swapChainReset = app.swapChain->onReset.connect( [&device, &app]()
 		{
 			// We retrieve those once again, since the swap chain has been reset.
-			frameBuffers = swapChain->createFrameBuffers( *renderPass );
-			commandBuffers = swapChain->createCommandBuffers();
+			app.frameBuffers = app.swapChain->createFrameBuffers( *app.renderPass );
+			app.commandBuffers = app.swapChain->createCommandBuffers();
 			// And we prepare our frames again.
-			doPrepareFrames( *swapChain, *renderPass, frameBuffers, commandBuffers );
+			doPrepareFrames( app );
 		} );
 
 		while ( !glfwWindowShouldClose( window ) )
@@ -198,18 +212,18 @@ int main( int argc, char * argv[] )
 			glfwPollEvents();
 
 			// Acquire the next frame to present.
-			auto resources = swapChain->getResources();
+			auto resources = app.swapChain->getResources();
 
 			if ( resources )
 			{
 				// Submit the command buffer to the graphics queue.
-				auto res = device->getGraphicsQueue().submit( *commandBuffers[resources->getBackBuffer()]
+				auto res = device->getGraphicsQueue().submit( *app.commandBuffers[resources->getBackBuffer()]
 					, resources->getImageAvailableSemaphore()
 					, renderer::PipelineStageFlag::eColourAttachmentOutput
 					, resources->getRenderingFinishedSemaphore()
 					, &resources->getFence() );
 				// And we present the frame to the swap chain surface.
-				swapChain->present( *resources );
+				app.swapChain->present( *resources );
 			}
 			else
 			{
@@ -219,10 +233,10 @@ int main( int argc, char * argv[] )
 
 		// Before destroying any resource, we need to make sure the device is idle.
 		device->waitIdle();
-		commandBuffers.clear();
-		frameBuffers.clear();
-		renderPass.reset();
-		swapChain.reset();
+		app.commandBuffers.clear();
+		app.frameBuffers.clear();
+		app.renderPass.reset();
+		app.swapChain.reset();
 		device->disable();
 		device.reset();
 	}
