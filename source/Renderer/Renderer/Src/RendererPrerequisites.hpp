@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -76,8 +76,6 @@ namespace renderer
 	class PushConstantsBuffer;
 	template< typename T >
 	class VertexBuffer;
-	template< typename T >
-	class ShaderStorageBuffer;
 
 	struct BufferCopy;
 	struct BufferImageCopy;

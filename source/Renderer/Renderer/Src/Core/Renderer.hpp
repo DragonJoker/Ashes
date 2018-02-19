@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -10,6 +10,14 @@ See LICENSE file in root folder.
 
 namespace renderer
 {
+	/**
+	*\~english
+	*\brief
+	*	The class initialising the rendering instance.
+	*\~french
+	*\brief
+	*	Classe initialisant l'instance de rendu.
+	*/
 	class Renderer
 	{
 	public:

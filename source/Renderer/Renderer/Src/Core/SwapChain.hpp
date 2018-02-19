@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -10,6 +10,18 @@ See LICENSE file in root folder.
 
 namespace renderer
 {
+	/**
+	*\~english
+	*\brief
+	*	Class holding the concept of a swapchain.
+	*\remarks
+	*	Provides the ability to present rendering results to a surface.
+	*\~french
+	*\brief
+	*	Classe gérant le concept de swapchain.
+	*\remarks
+	*	Fournit la possibilité de présenter le résultat d'un rendu à une surface.
+	*/
 	class SwapChain
 	{
 	protected:

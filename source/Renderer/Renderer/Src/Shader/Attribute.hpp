@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -71,7 +71,7 @@ namespace renderer
 			return m_format;
 		}
 		/**
-		*\~french
+		*\~english
 		*\return
 		*	The attribute location in the shader.
 		*\~french
@@ -83,7 +83,7 @@ namespace renderer
 			return m_location;
 		}
 		/**
-		*\~french
+		*\~english
 		*\return
 		*	The attribute location in the buffer.
 		*\~french
@@ -95,7 +95,7 @@ namespace renderer
 			return m_offset;
 		}
 		/**
-		*\~french
+		*\~english
 		*\return
 		*	The parent vertex layout.
 		*\~french
