@@ -1,6 +1,10 @@
 #include "FileUtils.hpp"
 
+#include <Core/Device.hpp>
+#include <Core/Renderer.hpp>
+
 #include <cassert>
+#include <regex>
 
 #if defined( _WIN32 )
 
@@ -237,6 +241,35 @@ namespace common
 		file.read( reinterpret_cast< char * >( &result[0] ), end - begin );
 
 		return result;
+	}
+
+	std::string parseShaderFile( renderer::Device const & device
+		, std::string const & path )
+	{
+		auto content = dumpTextFile( path );
+
+		if ( device.getRenderer().getName() == "vk" )
+		{
+			content = R"(#version 450
+#extension GL_KHR_vulkan_glsl : enable
+
+)" + content;
+		}
+		else if ( device.getRenderer().getName() == "gl" )
+		{
+			content = R"(#version 420
+#extension GL_ARB_explicit_attrib_location : enable
+#extension GL_ARB_explicit_uniform_location : enable
+
+)" + content;
+
+			std::regex regex{ R"(set[ ]*=[ ]*\d*, )" };
+			content = std::regex_replace( content.data()
+				, regex
+				, "" );
+		}
+
+		return content;
 	}
 
 	renderer::ByteArray dumpBinaryFile( std::string const & path )

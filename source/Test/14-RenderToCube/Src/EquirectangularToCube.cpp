@@ -124,9 +124,9 @@ namespace vkapp
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			result->createModule( common::dumpTextFile( shadersFolder / "equirectangular.vert" )
+			result->createModule( common::parseShaderFile( device, shadersFolder / "equirectangular.vert" )
 				, renderer::ShaderStageFlag::eVertex );
-			result->createModule( common::dumpTextFile( shadersFolder / "equirectangular.frag" )
+			result->createModule( common::parseShaderFile( device, shadersFolder / "equirectangular.frag" )
 				, renderer::ShaderStageFlag::eFragment );
 
 			return result;

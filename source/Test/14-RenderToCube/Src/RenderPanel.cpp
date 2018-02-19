@@ -433,9 +433,9 @@ namespace vkapp
 			throw std::runtime_error{ "Shader files are missing" };
 		}
 
-		m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.vert" )
+		m_offscreenProgram->createModule( common::parseShaderFile( *m_device, shadersFolder / "offscreen.vert" )
 			, renderer::ShaderStageFlag::eVertex );
-		m_offscreenProgram->createModule( common::dumpTextFile( shadersFolder / "offscreen.frag" )
+		m_offscreenProgram->createModule( common::parseShaderFile( *m_device, shadersFolder / "offscreen.frag" )
 			, renderer::ShaderStageFlag::eFragment );
 
 		m_offscreenPipeline = m_offscreenPipelineLayout->createPipeline( *m_offscreenProgram
@@ -576,9 +576,9 @@ namespace vkapp
 			throw std::runtime_error{ "Shader files are missing" };
 		}
 
-		m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.vert" )
+		m_mainProgram->createModule( common::parseShaderFile( *m_device, shadersFolder / "main.vert" )
 			, renderer::ShaderStageFlag::eVertex );
-		m_mainProgram->createModule( common::dumpTextFile( shadersFolder / "main.frag" )
+		m_mainProgram->createModule( common::parseShaderFile( *m_device, shadersFolder / "main.frag" )
 			, renderer::ShaderStageFlag::eFragment );
 
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( *m_mainProgram
