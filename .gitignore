@@ -22,6 +22,7 @@ bld/
 [Bb]in/
 [Bb]inaries/
 [Oo]bj/
+[Dd]oc/
 _generation/
 
 # Visual Studio 2015 cache/options directory

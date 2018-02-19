@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -12,7 +12,7 @@ namespace renderer
 {
 	/**
 	*\brief
-	*	L'état de stencil et profondeur.
+	*	L'Ã©tat de stencil et profondeur.
 	*/
 	class DepthStencilState
 	{
@@ -21,21 +21,21 @@ namespace renderer
 		*\brief
 		*	Constructeur.
 		*\param[in] flags
-		*	Les indicateurs de l'état.
+		*	Les indicateurs de l'Ã©tat.
 		*\param[in] depthTestEnable
 		*	Le statut d'activation du test de profondeur.
 		*\param[in] depthWriteEnable
-		*	Le statut d'activation de l'écriture de profondeur.
+		*	Le statut d'activation de l'Ã©criture de profondeur.
 		*\param[in] depthCompareOp
-		*	L'opérateur de comparaison de profondeur.
+		*	L'opÃ©rateur de comparaison de profondeur.
 		*\param[in] depthBoundsTestEnable
 		*	Le statut d'activation du test des bornes de profondeur.
 		*\param[in] stencilTestEnable
 		*	Le statut d'activation du test de stencil.
 		*\param[in] front
-		*	L'état de stencil pour les faces avant.
+		*	L'Ã©tat de stencil pour les faces avant.
 		*\param[in] back
-		*	L'état de stencil pour les faces arrière.
+		*	L'Ã©tat de stencil pour les faces arriÃ¨re.
 		*\param[in] minDepthBounds
 		*	La borne profondeur minimale.
 		*\param[in] maxDepthBounds
@@ -57,7 +57,7 @@ namespace renderer
 		*	The hash for this state.
 		*\~french
 		*\return
-		*	Le hash de cet état.
+		*	Le hash de cet Ã©tat.
 		*/
 		inline uint8_t getHash()const
 		{
@@ -65,7 +65,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Les indicateurs de l'état.
+		*	Les indicateurs de l'Ã©tat.
 		*/
 		inline DepthStencilStateFlags getFlags()const
 		{
@@ -81,7 +81,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Le statut d'activation de l'écriture de profondeur.
+		*	Le statut d'activation de l'Ã©criture de profondeur.
 		*/
 		inline bool isDepthWriteEnabled()const
 		{
@@ -89,7 +89,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'opérateur de comparaison de profondeur.
+		*	L'opÃ©rateur de comparaison de profondeur.
 		*/
 		inline CompareOp getDepthCompareOp()const
 		{
@@ -113,7 +113,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'état de stencil pour les faces avant.
+		*	L'Ã©tat de stencil pour les faces avant.
 		*/
 		inline StencilOpState getFrontStencilOp()const
 		{
@@ -121,7 +121,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'état de stencil pour les faces arrière.
+		*	L'Ã©tat de stencil pour les faces arriÃ¨re.
 		*/
 		inline StencilOpState getBackStencilOp()const
 		{

@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -12,7 +12,7 @@ namespace renderer
 {
 	/**
 	*\brief
-	*	Etat de rastérisation.
+	*	Etat de rastÃ©risation.
 	*/
 	class RasterisationState
 	{
@@ -21,17 +21,17 @@ namespace renderer
 		*\brief
 		*	Constructeur.
 		*\param[in] flags
-		*	Les indicateurs de l'état.
+		*	Les indicateurs de l'Ã©tat.
 		*\param[in] depthClampEnable
 		*	Le statut d'activation du bornage en profondeur.
 		*\param[in] rasteriserDiscardEnable
-		*	Le statut de désactivation du rastériseur.
+		*	Le statut de dÃ©sactivation du rastÃ©riseur.
 		*\param[in] polygonMode
 		*	Le mode d'affichage des polygones.
 		*\param[in] cullMode
 		*	Le mode de culling.
 		*\param[in] frontFace
-		*	L'orientation des faces qui seront considérées comme faisant face à la caméra.
+		*	L'orientation des faces qui seront considÃ©rÃ©es comme faisant face Ã  la camÃ©ra.
 		*\param[in] depthBiasEnable
 		*	Le statut d'activation du biais de profondeur.
 		*\param[in] depthBiasConstantFactor
@@ -39,7 +39,7 @@ namespace renderer
 		*\param[in] depthBiasClamp
 		*	La borne maximale du biais de profondeur.
 		*\param[in] depthBiasSlopeFactor
-		*	Le facteur de biais de profondeur, par rapport à la pente.
+		*	Le facteur de biais de profondeur, par rapport Ã  la pente.
 		*\param[in] lineWidth
 		*	La largeur des lignes.
 		*/
@@ -60,7 +60,7 @@ namespace renderer
 		*	The hash for this state.
 		*\~french
 		*\return
-		*	Le hash de cet état.
+		*	Le hash de cet Ã©tat.
 		*/
 		inline uint16_t getHash()const
 		{
@@ -68,7 +68,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Les indicateurs de l'état.
+		*	Les indicateurs de l'Ã©tat.
 		*/
 		inline RasterisationStateFlags getFlags()const
 		{
@@ -84,7 +84,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Le statut de désactivation du rastériseur.
+		*	Le statut de dÃ©sactivation du rastÃ©riseur.
 		*/
 		inline bool isRasteriserDiscardEnabled()const
 		{
@@ -108,7 +108,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'orientation des faces qui seront considérées comme faisant face à la caméra.
+		*	L'orientation des faces qui seront considÃ©rÃ©es comme faisant face Ã  la camÃ©ra.
 		*/
 		inline FrontFace getFrontFace()const
 		{
@@ -140,7 +140,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Le facteur de biais de profondeur, par rapport à la pente.
+		*	Le facteur de biais de profondeur, par rapport Ã  la pente.
 		*/
 		inline float getDepthBiasSlopeFactor()const
 		{

@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -13,7 +13,7 @@ namespace renderer
 	/**
 	*\~french
 	*\brief
-	*	Etat puor une opération stencil.
+	*	Etat puor une opÃ©ration stencil.
 	*/
 	class StencilOpState
 	{
@@ -22,19 +22,19 @@ namespace renderer
 		*\brief
 		*	Constructeur
 		*\param[in] failOp
-		*	L'opération lors d'un échec du test de stencil.
+		*	L'opÃ©ration lors d'un Ã©chec du test de stencil.
 		*\param[in] passOp
-		*	L'opération lors de la réussite des tests stencil et profondeur.
+		*	L'opÃ©ration lors de la rÃ©ussite des tests stencil et profondeur.
 		*\param[in] depthFailOp
-		*	L'opération lors d'un échec du test de profondeur.
+		*	L'opÃ©ration lors d'un Ã©chec du test de profondeur.
 		*\param[in] compareOp
-		*	L'opérateur de comparaison stencil.
+		*	L'opÃ©rateur de comparaison stencil.
 		*\param[in] compareMask
-		*	Le masque appliqué à la valeur lue pour comparaison.
+		*	Le masque appliquÃ© Ã  la valeur lue pour comparaison.
 		*\param[in] writeMask
-		*	Le masque appliqué à la valeur écrite.
+		*	Le masque appliquÃ© Ã  la valeur Ã©crite.
 		*\param[in] reference
-		*	La valeur de référence lors des comparaisons stencil.
+		*	La valeur de rÃ©fÃ©rence lors des comparaisons stencil.
 		*/
 		StencilOpState( StencilOp failOp = StencilOp::eKeep
 			, StencilOp passOp = StencilOp::eKeep
@@ -49,7 +49,7 @@ namespace renderer
 		*	The hash for this state.
 		*\~french
 		*\return
-		*	Le hash de cet état.
+		*	Le hash de cet Ã©tat.
 		*/
 		inline uint16_t getHash()const
 		{
@@ -57,7 +57,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'opération lors d'un échec du test de stencil.
+		*	L'opÃ©ration lors d'un Ã©chec du test de stencil.
 		*/
 		inline StencilOp getFailOp()const
 		{
@@ -65,7 +65,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'opération lors de la réussite des tests stencil et profondeur.
+		*	L'opÃ©ration lors de la rÃ©ussite des tests stencil et profondeur.
 		*/
 		inline StencilOp getPassOp()const
 		{
@@ -73,7 +73,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'opération lors d'un échec du test de profondeur.
+		*	L'opÃ©ration lors d'un Ã©chec du test de profondeur.
 		*/
 		inline StencilOp getDepthFailOp()const
 		{
@@ -81,7 +81,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'opérateur de comparaison stencil.
+		*	L'opÃ©rateur de comparaison stencil.
 		*/
 		inline CompareOp getCompareOp()const
 		{
@@ -89,7 +89,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Le masque appliqué à la valeur lue pour comparaison.
+		*	Le masque appliquÃ© Ã  la valeur lue pour comparaison.
 		*/
 		inline uint32_t getCompareMask()const
 		{
@@ -97,7 +97,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Le masque appliqué à la valeur écrite.
+		*	Le masque appliquÃ© Ã  la valeur Ã©crite.
 		*/
 		inline uint32_t getWriteMask()const
 		{
@@ -105,7 +105,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	La valeur de référence lors des comparaisons stencil.
+		*	La valeur de rÃ©fÃ©rence lors des comparaisons stencil.
 		*/
 		inline uint32_t getReference()const
 		{

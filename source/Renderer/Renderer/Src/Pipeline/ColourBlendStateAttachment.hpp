@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -24,21 +24,21 @@ namespace renderer
 		*\brief
 		*	Constructeur
 		*\param[in] blendEnable
-		*	Le statut d'activation du mélange.
+		*	Le statut d'activation du mÃ©lange.
 		*\param[in] srcColorBlendFactor
-		*	L'opérateur de mélange couleur sur la source.
+		*	L'opÃ©rateur de mÃ©lange couleur sur la source.
 		*\param[in] dstColorBlendFactor
-		*	L'opérateur de mélange couleur sur la destination.
+		*	L'opÃ©rateur de mÃ©lange couleur sur la destination.
 		*\param[in] colorBlendOp
-		*	L'opération de mélange couleur.
+		*	L'opÃ©ration de mÃ©lange couleur.
 		*\param[in] srcAlphaBlendFactor
-		*	L'opérateur de mélange alpha sur la source.
+		*	L'opÃ©rateur de mÃ©lange alpha sur la source.
 		*\param[in] dstAlphaBlendFactor
-		*	L'opérateur de mélange alpha sur la destination.
+		*	L'opÃ©rateur de mÃ©lange alpha sur la destination.
 		*\param[in] alphaBlendOp
-		*	L'opération de mélange alpha.
+		*	L'opÃ©ration de mÃ©lange alpha.
 		*\param[in] colorWriteMask
-		*	Le masque d'écriture de couleur.
+		*	Le masque d'Ã©criture de couleur.
 		*/
 		ColourBlendStateAttachment( bool blendEnable = false
 			, BlendFactor srcColorBlendFactor = BlendFactor::eOne
@@ -57,7 +57,7 @@ namespace renderer
 		*	The hash for this state.
 		*\~french
 		*\return
-		*	Le hash de cet état.
+		*	Le hash de cet Ã©tat.
 		*/
 		inline uint32_t getHash()const
 		{
@@ -65,7 +65,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Le statut d'activation du mélange.
+		*	Le statut d'activation du mÃ©lange.
 		*/
 		inline bool isBlendEnabled()const
 		{
@@ -73,7 +73,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'opérateur de mélange couleur sur la source.
+		*	L'opÃ©rateur de mÃ©lange couleur sur la source.
 		*/
 		inline BlendFactor getSrcColourBlendFactor()const
 		{
@@ -81,7 +81,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'opérateur de mélange couleur sur la destination.
+		*	L'opÃ©rateur de mÃ©lange couleur sur la destination.
 		*/
 		inline BlendFactor getDstColourBlendFactor()const
 		{
@@ -89,7 +89,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'opération de mélange couleur.
+		*	L'opÃ©ration de mÃ©lange couleur.
 		*/
 		inline BlendOp getColourBlendOp()const
 		{
@@ -97,7 +97,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'opérateur de mélange alpha sur la source.
+		*	L'opÃ©rateur de mÃ©lange alpha sur la source.
 		*/
 		inline BlendFactor getSrcAlphaBlendFactor()const
 		{
@@ -105,7 +105,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'opérateur de mélange alpha sur la destination.
+		*	L'opÃ©rateur de mÃ©lange alpha sur la destination.
 		*/
 		inline BlendFactor getDstAlphaBlendFactor()const
 		{
@@ -113,7 +113,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	L'opération de mélange alpha.
+		*	L'opÃ©ration de mÃ©lange alpha.
 		*/
 		inline BlendOp getAlphaBlendOp()const
 		{
@@ -121,7 +121,7 @@ namespace renderer
 		}
 		/**
 		*\return
-		*	Le masque d'écriture de couleur.
+		*	Le masque d'Ã©criture de couleur.
 		*/
 		inline ColourComponentFlags getColourWriteMask()const
 		{
