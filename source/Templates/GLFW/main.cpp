@@ -17,6 +17,8 @@
 
 #if RENDERLIB_WIN32
 #	define GLFW_EXPOSE_NATIVE_WIN32
+#elif RENDERLIB_XLIB
+#	define GLFW_EXPOSE_NATIVE_X11
 #endif
 
 #include <GLFW/glfw3native.h>
@@ -68,9 +70,17 @@ int main( int argc, char * argv[] )
 	glfwSetWindowUserPointer( window, &app );
 	glfwSetWindowSizeCallback( window, onWindowResized );
 
+#if RENDERLIB_WIN32
 	// We retrieve this window's native handle, and create the logical device from it.
 	auto hWnd = glfwGetWin32Window( window );
 	auto handle = renderer::WindowHandle{ std::make_unique< renderer::IMswWindowHandle >( nullptr, hWnd ) };
+#elif RENDERLIB_XLIB
+	auto display = glfwGetX11Display();
+	auto drawable = glfwGetX11Window( window );
+	auto handle = renderer::WindowHandle{ std::make_unique< renderer::IXWindowHandle >( drawable, display ) };
+#else
+#	error "Unimplemented."
+#endif
 	renderer::DevicePtr device = renderer->createDevice( renderer->createConnection( 0u, std::move( handle ) ) );
 
 	// This is the only lines related to OpenGL : context activation (\p enable), and deactivation (\p disable).
@@ -247,7 +257,7 @@ void doPrepareFrames( Application & application )
 	}
 }
 
-static void onWindowResized( GLFWwindow * window, int width, int height )
+void onWindowResized( GLFWwindow * window, int width, int height )
 {
 	Application * app = reinterpret_cast< Application * >( glfwGetWindowUserPointer( window ) );
 	app->swapChain->reset( renderer::UIVec2{ width, height } );

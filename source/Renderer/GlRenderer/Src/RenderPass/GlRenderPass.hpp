@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "GlRenderSubPass.hpp"
+#include "GlRenderSubpass.hpp"
 
 #include <RenderPass/RenderPass.hpp>
 

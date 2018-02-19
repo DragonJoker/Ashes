@@ -7,6 +7,8 @@
 #include "Shader/GlShaderProgram.hpp"
 #include "Pipeline/GlVertexLayout.hpp"
 
+#include <algorithm>
+
 #if defined( interface )
 #	undef interface
 #endif
