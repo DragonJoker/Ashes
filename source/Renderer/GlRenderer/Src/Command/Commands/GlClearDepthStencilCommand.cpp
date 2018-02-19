@@ -21,32 +21,39 @@ namespace gl_renderer
 	{
 		glLogCommand( "ClearDepthStencilCommand" );
 
-		if ( renderer::isDepthStencilFormat( m_image.getFormat() ) )
+		if ( gl::ClearTexImage )
 		{
-			glLogCall( gl::ClearTexImage
-				, m_image.getImage()
-				, 0
-				, m_format
-				, m_type
-				, &m_value.depth );
+			if ( renderer::isDepthStencilFormat( m_image.getFormat() ) )
+			{
+				glLogCall( gl::ClearTexImage
+					, m_image.getImage()
+					, 0
+					, m_format
+					, m_type
+					, &m_value.depth );
+			}
+			else if ( renderer::isStencilFormat( m_image.getFormat() ) )
+			{
+				glLogCall( gl::ClearTexImage
+					, m_image.getImage()
+					, 0
+					, m_format
+					, m_type
+					, &m_value.stencil );
+			}
+			else if ( renderer::isDepthFormat( m_image.getFormat() ) )
+			{
+				glLogCall( gl::ClearTexImage
+					, m_image.getImage()
+					, 0
+					, m_format
+					, m_type
+					, &m_value.depth );
+			}
 		}
-		else if ( renderer::isStencilFormat( m_image.getFormat() ) )
+		else
 		{
-			glLogCall( gl::ClearTexImage
-				, m_image.getImage()
-				, 0
-				, m_format
-				, m_type
-				, &m_value.stencil );
-		}
-		else if ( renderer::isDepthFormat( m_image.getFormat() ) )
-		{
-			glLogCall( gl::ClearTexImage
-				, m_image.getImage()
-				, 0
-				, m_format
-				, m_type
-				, &m_value.depth );
+			std::cerr << "Unsupported command : ClearDepthStencilCommand" << std::endl;
 		}
 	}
 

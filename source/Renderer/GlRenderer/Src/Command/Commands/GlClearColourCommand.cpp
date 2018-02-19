@@ -20,12 +20,20 @@ namespace gl_renderer
 	void ClearColourCommand::apply()const
 	{
 		glLogCommand( "ClearColourCommand" );
-		glLogCall( gl::ClearTexImage
-			, m_image.getImage()
-			, 0
-			, m_format
-			, m_type
-			, m_colour.constPtr() );
+
+		if ( gl::ClearTexImage )
+		{
+			glLogCall( gl::ClearTexImage
+				, m_image.getImage()
+				, 0
+				, m_format
+				, m_type
+				, m_colour.constPtr() );
+		}
+		else
+		{
+			std::cerr << "Unsupported command : ClearColourCommand" << std::endl;
+		}
 	}
 
 	CommandPtr ClearColourCommand::clone()const

@@ -52,11 +52,15 @@ namespace gl_renderer
 		{
 #define GL_LIB_BASE_FUNCTION( fun )\
 			gl::fun = ( PFN_gl##fun )&gl##fun;
-
 #define GL_LIB_FUNCTION( fun )\
 			if ( !( getFunction( "gl"#fun, gl::fun ) ) )\
 			{\
 				throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
+			}
+#define GL_LIB_FUNCTION_OPT( fun )\
+			if ( !( getFunction( "gl"#fun, gl::fun ) ) )\
+			{\
+				std::cerr << "Couldn't load function " << "gl"#fun << std::endl;\
 			}
 #include "OpenGLFunctionsList.inl"
 
@@ -67,6 +71,11 @@ namespace gl_renderer
 			if ( !( getFunction( "wgl"#fun, wgl::fun ) ) )\
 			{\
 				throw std::runtime_error{ std::string{ "Couldn't load function " } + "wgl"#fun };\
+			}
+#	define WGL_LIB_FUNCTION_OPT( fun )\
+			if ( !( getFunction( "wgl"#fun, gl::fun ) ) )\
+			{\
+				std::cerr <<  "Couldn't load function " << "wgl"#fun << std::endl;\
 			}
 #	include "OpenGLFunctionsList.inl"
 #elif RENDERLIB_XLIB
