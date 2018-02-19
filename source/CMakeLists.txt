@@ -17,6 +17,7 @@ include( FileUtils )
 include( PCHSupport )
 include( Doxygen )
 
+option( RENDERER_BUILD_TEMPLATES "Build Renderer template applications" TRUE )
 option( RENDERER_BUILD_TESTS "Build Renderer test applications" TRUE )
 option( RENDERER_BUILD_SAMPLES "Build Renderer sample applications" TRUE )
 
@@ -92,6 +93,10 @@ include_directories(
 
 add_subdirectory( Core )
 add_subdirectory( Renderer )
+
+if ( RENDERER_BUILD_TEMPLATES )
+	add_subdirectory( Templates )
+endif ()
 
 if ( RENDERER_BUILD_TESTS )
 	add_subdirectory( Test )
