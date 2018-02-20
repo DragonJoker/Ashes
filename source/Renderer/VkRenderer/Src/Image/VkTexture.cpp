@@ -186,11 +186,15 @@ namespace vk_renderer
 		return mapped;
 	}
 
-	void Texture::unlock( uint32_t size
-		, bool modified )const
+	void Texture::flush( uint32_t offset
+		, uint32_t size )const
 	{
-		m_storage->unlock( size
-			, modified );
+		m_storage->flush( offset, size );
+	}
+
+	void Texture::unlock()const
+	{
+		m_storage->unlock();
 	}
 
 	renderer::TextureViewPtr Texture::createView( renderer::TextureType type

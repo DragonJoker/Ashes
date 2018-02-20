@@ -260,7 +260,8 @@ namespace renderer
 					buffer += size;
 				}
 
-				m_ubo->getBuffer().unlock( size, true );
+				m_ubo->getBuffer().flush( offset * size, range * size );
+				m_ubo->getBuffer().unlock();
 			}
 		}
 
