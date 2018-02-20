@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -173,7 +173,7 @@ namespace renderer
 		, uint32_t size )const
 	{
 		assert( size <= getBuffer().getSize() );
-		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0
+		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0u
 			, size
 			, MemoryMapFlag::eWrite | MemoryMapFlag::eInvalidateRange );
 
@@ -185,7 +185,8 @@ namespace renderer
 		std::memcpy( buffer
 			, data
 			, size );
-		static_cast< BufferBase const & >( getBuffer() ).unlock( size, true );
+		getBuffer().flush( 0u, size );
+		getBuffer().unlock();
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
@@ -310,7 +311,7 @@ namespace renderer
 		, uint32_t size )const
 	{
 		assert( size <= getBuffer().getSize() );
-		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0
+		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0u
 			, size
 			, MemoryMapFlag::eRead );
 
@@ -322,7 +323,8 @@ namespace renderer
 		std::memcpy( data
 			, buffer
 			, size );
-		static_cast< BufferBase const & >( getBuffer() ).unlock( size, true );
+		getBuffer().flush( 0u, size );
+		getBuffer().unlock();
 	}
 
 	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & commandBuffer

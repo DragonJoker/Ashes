@@ -82,21 +82,30 @@ namespace vk_renderer
 		/**
 		*\~french
 		*\brief
-		*	Unmappe la mémoire du tampon de la RAM.
+		*	Met à jour la VRAM.
+		*\param[in] offset
+		*	L'offset de la mémoire mappée.
 		*\param[in] size
 		*	La taille en octets de la mémoire mappée.
-		*\param[in] modified
-		*	Dit si le tampon a été modifié, et donc si la VRAM doit être mise à jour.
+		*\~english
+		*\brief
+		*	Updates the VRAM.
+		*\param[in] offset
+		*	The mapped memory starting offset.
+		*\param[in] size
+		*	The mapped memory size.
+		*/
+		inline void flush( uint32_t offset
+			, uint32_t size )const;
+		/**
+		*\~french
+		*\brief
+		*	Unmappe la mémoire du tampon de la RAM.
 		*\~english
 		*\brief
 		*	Unmaps the buffer's memory from the RAM.
-		*\param[in] size
-		*	The mapped memory size.
-		*\param[in] modified
-		*	Tells it the buffer has been modified, and whether the VRAM must be updated or not.
 		*/
-		inline void unlock( uint32_t size
-			, bool modified )const;
+		inline void unlock()const;
 		/**
 		*\~french
 		*\brief

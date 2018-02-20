@@ -134,7 +134,8 @@ namespace common
 				vtx += cmdList->VtxBuffer.Size;
 			}
 
-			m_vertexBuffer->unlock( m_vertexCount, true );
+			m_vertexBuffer->flush( 0u, m_vertexCount );
+			m_vertexBuffer->unlock();
 		}
 
 		if ( auto idx = m_indexBuffer->lock( 0u
@@ -148,7 +149,8 @@ namespace common
 				idx += cmdList->IdxBuffer.Size;
 			}
 
-			m_indexBuffer->unlock( m_indexCount, true );
+			m_indexBuffer->flush( 0u, m_indexCount );
+			m_indexBuffer->unlock();
 		}
 
 		if ( updateCmdBuffers )
