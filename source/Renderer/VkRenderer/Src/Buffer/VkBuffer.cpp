@@ -65,11 +65,15 @@ namespace vk_renderer
 			, convert( flags ) );
 	}
 
-	void Buffer::unlock( uint32_t size
-		, bool modified )const
+	void Buffer::flush( uint32_t offset
+		, uint32_t size )const
 	{
-		m_storage->unlock( size
-			, modified );
+		m_storage->flush( offset, size );
+	}
+
+	void Buffer::unlock()const
+	{
+		m_storage->unlock();
 	}
 
 	renderer::BufferMemoryBarrier Buffer::makeTransferDestination()const

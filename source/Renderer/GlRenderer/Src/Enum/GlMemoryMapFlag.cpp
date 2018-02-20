@@ -88,16 +88,12 @@ namespace gl_renderer
 			result |= GL_MEMORY_MAP_INVALIDATE_BUFFER_BIT;
 		}
 
-		if ( checkFlag( flags, renderer::MemoryMapFlag::eFlushExplicit ) )
-		{
-			result |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
-		}
-
 		if ( checkFlag( flags, renderer::MemoryMapFlag::eUnsynchronised ) )
 		{
 			result |= GL_MEMORY_MAP_UNSYNCHRONIZED_BIT;
 		}
 
+		result |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
 		return result;
 	}
 }

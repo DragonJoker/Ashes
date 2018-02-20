@@ -101,6 +101,43 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 
 	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
+
+	if ( WIN32 )
+		#We install each .dll in <install_dir>/bin folder
+		install(
+			TARGETS ${PROJECT_NAME}
+			COMPONENT ${PROJECT_NAME}
+			CONFIGURATIONS Release RelWithDebInfo
+			EXPORT ${PROJECT_NAME}
+			RUNTIME DESTINATION bin
+			ARCHIVE DESTINATION lib
+			LIBRARY DESTINATION lib
+		)
+		install(
+			TARGETS ${PROJECT_NAME}
+			COMPONENT ${PROJECT_NAME}
+			CONFIGURATIONS Debug
+			EXPORT ${PROJECT_NAME}
+			RUNTIME DESTINATION bin/Debug
+			ARCHIVE DESTINATION lib/Debug
+			LIBRARY DESTINATION lib/Debug
+		)
+	else ()
+		#We install each .so in <install_dir>/lib folder
+		install(
+			TARGETS ${PROJECT_NAME}
+			COMPONENT ${PROJECT_NAME}
+			CONFIGURATIONS Release RelWithDebInfo
+			EXPORT ${PROJECT_NAME}
+			LIBRARY DESTINATION lib
+		)
+		install(
+			TARGETS ${PROJECT_NAME}
+			COMPONENT ${PROJECT_NAME}
+			CONFIGURATIONS Debug
+			LIBRARY DESTINATION lib/Debug
+		)
+	endif()
 else ()
 	if ( NOT glslang_FOUND )
 		message( SEND_ERROR "glslang library not found." )

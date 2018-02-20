@@ -194,7 +194,8 @@ namespace gl_renderer
 	using PFN_glEnableVertexAttribArray = void ( GLAPIENTRY * )( GLuint index );
 	using PFN_glEndQuery = void ( GLAPIENTRY * )( GLenum target );
 	using PFN_glFenceSync = GLsync( GLAPIENTRY * )( GLenum condition, GLbitfield flags );
-	using PFN_glFinish = void ( GLAPIENTRY * )( void );
+	using PFN_glFinish = void ( GLAPIENTRY * )();
+	using PFN_glFlushMappedBufferRange = void ( GLAPIENTRY * )( GLenum target, GLintptr offset, GLsizeiptr length );
 	using PFN_glFramebufferTexture1D = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level );
 	using PFN_glFramebufferTexture2D = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level );
 	using PFN_glFramebufferTexture3D = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint layer );

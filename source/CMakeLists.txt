@@ -15,6 +15,7 @@ project( ${MAIN_PROJECT_NAME} )
 include( Platform )
 include( FileUtils )
 include( PCHSupport )
+include( Project )
 include( Doxygen )
 
 option( RENDERER_BUILD_TEMPLATES "Build Renderer template applications" TRUE )

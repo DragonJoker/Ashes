@@ -90,21 +90,30 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
-		*	Unmaps the buffer's memory from RAM.
+		*	Updates the VRAM.
+		*\param[in] offset
+		*	The mapped memory starting offset.
 		*\param[in] size
 		*	The range size.
-		*\param[in] modified
-		*	Tells if the memory has changed, and VRAM must be updated.
+		*\~french
+		*\brief
+		*	Met à jour la VRAM.
+		*\param[in] offset
+		*	L'offset de la mémoire mappée.
+		*\param[in] size
+		*	La taille en octets de la mémoire mappée.
+		*/
+		virtual void flush( uint32_t offset
+			, uint32_t size )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Unmaps the buffer's memory from RAM.
 		*\~french
 		*\brief
 		*	Unmappe la mémoire du tampon de la RAM.
-		*\param[in] size
-		*	La taille en octets de la mémoire mappée.
-		*\param[in] modified
-		*	Dit si le tampon a été modifié, et donc si la VRAM doit être mise à jour.
 		*/
-		virtual void unlock( uint32_t size
-			, bool modified )const = 0;
+		virtual void unlock()const = 0;
 		/**
 		*\~english
 		*\brief
@@ -303,23 +312,36 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
-		*	Unmaps the buffer's memory from RAM.
+		*	Updates the VRAM.
+		*\param[in] offset
+		*	The mapped memory starting offset.
 		*\param[in] size
 		*	The range size.
-		*\param[in] modified
-		*	Tells if the memory has changed, and VRAM must be updated.
+		*\~french
+		*\brief
+		*	Met à jour la VRAM.
+		*\param[in] offset
+		*	L'offset de la mémoire mappée.
+		*\param[in] size
+		*	La taille en octets de la mémoire mappée.
+		*/
+		inline void flush( uint32_t offset
+			, uint32_t size )const
+		{
+			m_buffer->flush( uint32_t( offset * sizeof( T ) )
+				, uint32_t( size * sizeof( T ) ) );
+		}
+		/**
+		*\~english
+		*\brief
+		*	Unmaps the buffer's memory from RAM.
 		*\~french
 		*\brief
 		*	Unmappe la mémoire du tampon de la RAM.
-		*\param[in] size
-		*	La taille en octets de la mémoire mappée.
-		*\param[in] modified
-		*	Dit si le tampon a été modifié, et donc si la VRAM doit être mise à jour.
 		*/
-		inline void unlock( uint32_t size
-			, bool modified )const
+		virtual void unlock()const
 		{
-			m_buffer->unlock( size * sizeof( T ), modified );
+			m_buffer->unlock();
 		}
 
 	private:

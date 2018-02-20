@@ -39,8 +39,13 @@ namespace gl_renderer
 		return reinterpret_cast< uint8_t * >( result );
 	}
 
-	void Buffer::unlock( uint32_t size
-		, bool modified )const
+	void Buffer::flush( uint32_t offset
+		, uint32_t size )const
+	{
+		glLogCall( gl::FlushMappedBufferRange, m_copyTarget, offset, size );
+	}
+
+	void Buffer::unlock()const
 	{
 		glLogCall( gl::UnmapBuffer, m_copyTarget );
 		glLogCall( gl::BindBuffer, m_copyTarget, 0u );

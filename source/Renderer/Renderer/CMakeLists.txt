@@ -85,3 +85,19 @@ set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
 target_add_doc( ${PROJECT_NAME} "French" "*.h *.hpp" )
 target_add_doc( ${PROJECT_NAME} "English" "*.h *.hpp" )
 
+#We copy each lib in <install_dir>/lib folder
+install(
+	TARGETS ${PROJECT_NAME}
+	COMPONENT ${PROJECT_NAME}_dev
+	CONFIGURATIONS Release RelWithDebInfo
+	EXPORT ${PROJECT_NAME}
+	ARCHIVE DESTINATION lib
+)
+install(
+	TARGETS ${PROJECT_NAME}
+	COMPONENT ${PROJECT_NAME}_dev
+	CONFIGURATIONS Debug
+	ARCHIVE DESTINATION lib/Debug
+)
+#For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
+target_install_headers( ${PROJECT_NAME} Src )
