@@ -175,16 +175,16 @@ namespace vkapp
 		m_vertexLayout->createAttribute( 1u
 			, renderer::AttributeFormat::eVec4f
 			, offsetof( VertexData, colour ) );
-		VertexData * buffer = m_vertexBuffer->lock( 0u
-			, uint32_t( data.size() )
-			, renderer::MemoryMapFlag::eWrite | renderer::MemoryMapFlag::eInvalidateBuffer );
 
-		if ( buffer )
+		if ( auto * buffer = m_vertexBuffer->lock( 0u
+			, uint32_t( data.size() )
+			, renderer::MemoryMapFlag::eWrite | renderer::MemoryMapFlag::eInvalidateBuffer ) )
 		{
 			std::copy( data.begin()
 				, data.end()
 				, buffer );
-			m_vertexBuffer->unlock( uint32_t( data.size() ), true );
+			m_vertexBuffer->flush( 0u, uint32_t( data.size() ) );
+			m_vertexBuffer->unlock();
 		}
 	}
 

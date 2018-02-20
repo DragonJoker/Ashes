@@ -98,28 +98,29 @@ namespace vk_renderer
 	}
 
 	template< typename VkType, bool Image >
-	inline void MemoryStorage< VkType, Image >::unlock( uint32_t size
-		, bool modified )const
+	inline void MemoryStorage< VkType, Image >::flush( uint32_t offset
+		, uint32_t size )const
 	{
-		if ( modified )
+		VkMappedMemoryRange flushRange
 		{
-			VkMappedMemoryRange flushRange
-			{
-				VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,
-				nullptr,
-				m_memory,                                         // memory
-				0,                                                // offset
-				size                                              // size
-			};
-			DEBUG_DUMP( flushRange );
-			auto res = m_device.vkFlushMappedMemoryRanges( m_device, 1, &flushRange );
+			VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,
+			nullptr,
+			m_memory,                                         // memory
+			0,                                                // offset
+			size                                              // size
+		};
+		DEBUG_DUMP( flushRange );
+		auto res = m_device.vkFlushMappedMemoryRanges( m_device, 1, &flushRange );
 
-			if ( !checkError( res ) )
-			{
-				std::cerr << "Storage memory range flush failed: " << getLastError() << std::endl;
-			}
+		if ( !checkError( res ) )
+		{
+			std::cerr << "Storage memory range flush failed: " << getLastError() << std::endl;
 		}
+	}
 
+	template< typename VkType, bool Image >
+	inline void MemoryStorage< VkType, Image >::unlock()const
+	{
 		m_device.vkUnmapMemory( m_device, m_memory );
 	}
 
