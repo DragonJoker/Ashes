@@ -51,6 +51,7 @@ namespace vk_renderer
 		, m_rasterisationState{ convert( rasterisationState ) }
 		, m_colourBlendStateAttachments{ convert< VkPipelineColorBlendAttachmentState >( colourBlendState.begin(), colourBlendState.end() ) }
 		, m_colourBlendState{ convert( colourBlendState, m_colourBlendStateAttachments ) }
+		, m_lineWidth{ rasterisationState.hasLineWidth() }
 	{
 	}
 
@@ -145,6 +146,11 @@ namespace vk_renderer
 		if ( !m_scissor )
 		{
 			dynamicStates.push_back( VK_DYNAMIC_STATE_SCISSOR );
+		}
+
+		if ( !m_lineWidth )
+		{
+			dynamicStates.push_back( VK_DYNAMIC_STATE_LINE_WIDTH );
 		}
 
 		VkPipelineDynamicStateCreateInfo dynamicState

@@ -183,7 +183,8 @@ namespace gl_renderer
 				}
 			}
 
-			if ( state.getPolygonMode() == renderer::PolygonMode::eLine )
+			if ( state.getPolygonMode() == renderer::PolygonMode::eLine
+				&& state.hasLineWidth() )
 			{
 				glLogCall( gl::LineWidth, state.getLineWidth() );
 			}

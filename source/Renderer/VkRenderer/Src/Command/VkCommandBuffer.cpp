@@ -254,7 +254,6 @@ namespace vk_renderer
 
 	void CommandBuffer::bindGeometryBuffers( renderer::GeometryBuffers const & geometryBuffers )const
 	{
-		assert( m_currentPipeline && "No pipeline bound." );
 		std::vector< std::reference_wrapper< Buffer const > > buffers;
 		std::vector< uint64_t > offsets;
 
@@ -322,7 +321,6 @@ namespace vk_renderer
 		, renderer::PipelineLayout const & layout
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
-		assert( ( m_currentPipeline || m_currentComputePipeline ) && "No pipeline bound." );
 		auto vkDescriptors = makeVkArray< VkDescriptorSet >( convert( descriptorSets ) );
 		m_device.vkCmdBindDescriptorSets( m_commandBuffer
 			, convert( bindingPoint )
@@ -336,7 +334,6 @@ namespace vk_renderer
 
 	void CommandBuffer::setViewport( renderer::Viewport const & viewport )const
 	{
-		assert( m_currentPipeline && "No pipeline bound." );
 		auto vkviewport = convert( viewport );
 		m_device.vkCmdSetViewport( m_commandBuffer
 			, 0u
@@ -346,7 +343,6 @@ namespace vk_renderer
 
 	void CommandBuffer::setScissor( renderer::Scissor const & scissor )const
 	{
-		assert( m_currentPipeline && "No pipeline bound." );
 		auto vkscissor = convert( scissor );
 		m_device.vkCmdSetScissor( m_commandBuffer
 			, 0u
@@ -513,5 +509,10 @@ namespace vk_renderer
 			, groupCountX
 			, groupCountY
 			, groupCountZ );
+	}
+
+	void CommandBuffer::setLineWidth( float width )const
+	{
+		m_device.vkCmdSetLineWidth( m_commandBuffer, width );
 	}
 }

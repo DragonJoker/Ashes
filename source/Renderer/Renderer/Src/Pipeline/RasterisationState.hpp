@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -17,6 +17,11 @@ namespace renderer
 	class RasterisationState
 	{
 	public:
+		RasterisationState( RasterisationState const & rhs );
+		RasterisationState( RasterisationState && rhs ) = default;
+		RasterisationState & operator=( RasterisationState const & rhs );
+		RasterisationState & operator=( RasterisationState && rhs ) = default;
+		~RasterisationState() = default;
 		/**
 		*\brief
 		*	Constructeur.
@@ -43,6 +48,41 @@ namespace renderer
 		*\param[in] lineWidth
 		*	La largeur des lignes.
 		*/
+		RasterisationState( float lineWidth
+			, RasterisationStateFlags flags = 0
+			, bool depthClampEnable = false
+			, bool rasteriserDiscardEnable = false
+			, PolygonMode polygonMode = PolygonMode::eFill
+			, CullModeFlags cullMode = CullModeFlag::eBack
+			, FrontFace frontFace = FrontFace::eCounterClockwise
+			, bool depthBiasEnable = false
+			, float depthBiasConstantFactor = 0.0f
+			, float depthBiasClamp = 0.0f
+			, float depthBiasSlopeFactor = 0.0f );
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] flags
+		*	Les indicateurs de l'état.
+		*\param[in] depthClampEnable
+		*	Le statut d'activation du bornage en profondeur.
+		*\param[in] rasteriserDiscardEnable
+		*	Le statut de désactivation du rastériseur.
+		*\param[in] polygonMode
+		*	Le mode d'affichage des polygones.
+		*\param[in] cullMode
+		*	Le mode de culling.
+		*\param[in] frontFace
+		*	L'orientation des faces qui seront considérées comme faisant face à la caméra.
+		*\param[in] depthBiasEnable
+		*	Le statut d'activation du biais de profondeur.
+		*\param[in] depthBiasConstantFactor
+		*	Le facteur du biais de profondeur.
+		*\param[in] depthBiasClamp
+		*	La borne maximale du biais de profondeur.
+		*\param[in] depthBiasSlopeFactor
+		*	Le facteur de biais de profondeur, par rapport à la pente.
+		*/
 		RasterisationState( RasterisationStateFlags flags = 0
 			, bool depthClampEnable = false
 			, bool rasteriserDiscardEnable = false
@@ -52,108 +92,82 @@ namespace renderer
 			, bool depthBiasEnable = false
 			, float depthBiasConstantFactor = 0.0f
 			, float depthBiasClamp = 0.0f
-			, float depthBiasSlopeFactor = 0.0f
-			, float lineWidth = 1.0f );
+			, float depthBiasSlopeFactor = 0.0f );
 		/**
 		*\~english
-		*\return
-		*	The hash for this state.
+		*name
+		*	Getters.
 		*\~french
-		*\return
-		*	Le hash de cet état.
+		*name
+		*	Accesseurs.
 		*/
+		/**@{*/
 		inline uint16_t getHash()const
 		{
 			return m_hash;
 		}
-		/**
-		*\return
-		*	Les indicateurs de l'état.
-		*/
+
 		inline RasterisationStateFlags getFlags()const
 		{
 			return m_flags;
 		}
-		/**
-		*\return
-		*	Le statut d'activation du bornage en profondeur.
-		*/
+
 		inline bool isDepthClampEnabled()const
 		{
 			return m_depthClampEnable;
 		}
-		/**
-		*\return
-		*	Le statut de désactivation du rastériseur.
-		*/
+
 		inline bool isRasteriserDiscardEnabled()const
 		{
 			return m_rasteriserDiscardEnable;
 		}
-		/**
-		*\return
-		*	Le mode d'affichage des polygones.
-		*/
+
 		inline PolygonMode getPolygonMode()const
 		{
 			return m_polygonMode;
 		}
-		/**
-		*\return
-		*	Le mode de culling.
-		*/
+
 		inline CullModeFlags getCullMode()const
 		{
 			return m_cullMode;
 		}
-		/**
-		*\return
-		*	L'orientation des faces qui seront considérées comme faisant face à la caméra.
-		*/
+
 		inline FrontFace getFrontFace()const
 		{
 			return m_frontFace;
 		}
-		/**
-		*\return
-		*	Le statut d'activation du biais de profondeur.
-		*/
+
 		inline bool isDepthBiasEnabled()const
 		{
 			return m_depthBiasEnable;
 		}
-		/**
-		*\return
-		*	Le facteur du biais de profondeur.
-		*/
+
 		inline float getDepthBiasConstantFactor()const
 		{
 			return m_depthBiasConstantFactor;
 		}
-		/**
-		*\return
-		*	La borne maximale du biais de profondeur.
-		*/
+
 		inline float getDepthBiasClamp()const
 		{
 			return m_depthBiasClamp;
 		}
-		/**
-		*\return
-		*	Le facteur de biais de profondeur, par rapport à la pente.
-		*/
+
 		inline float getDepthBiasSlopeFactor()const
 		{
 			return m_depthBiasSlopeFactor;
 		}
-		/**
-		*\return
-		*	La largeur des lignes.
-		*/
+
+		inline bool hasLineWidth()const
+		{
+			return m_lineWidth != nullptr;
+		}
+
 		inline float getLineWidth()const
 		{
-			return m_lineWidth;
+			assert( m_lineWidth );
+			return *m_lineWidth;
 		}
+		/**@}*/
 
 	private:
 		RasterisationStateFlags m_flags;
@@ -167,7 +181,7 @@ namespace renderer
 		float m_depthBiasConstantFactor;
 		float m_depthBiasClamp;
 		float m_depthBiasSlopeFactor;
-		float m_lineWidth;
+		std::unique_ptr< float > m_lineWidth;
 		friend bool operator==( RasterisationState const & lhs, RasterisationState const & rhs );
 	};
 
@@ -177,7 +191,10 @@ namespace renderer
 			&& lhs.m_depthBiasConstantFactor == rhs.m_depthBiasConstantFactor
 			&& lhs.m_depthBiasClamp == rhs.m_depthBiasClamp
 			&& lhs.m_depthBiasSlopeFactor == rhs.m_depthBiasSlopeFactor
-			&& lhs.m_lineWidth == rhs.m_lineWidth;
+			&& (lhs.m_lineWidth == rhs.m_lineWidth
+				&& ( lhs.m_lineWidth
+					? *lhs.m_lineWidth == *rhs.m_lineWidth
+					: true ) );
 	}
 
 	inline bool operator!=( RasterisationState const & lhs, RasterisationState const & rhs )
