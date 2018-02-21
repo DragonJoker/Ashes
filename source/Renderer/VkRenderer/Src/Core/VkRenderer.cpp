@@ -374,8 +374,8 @@ namespace vk_renderer
 
 	void Renderer::doEnumerateDevices()
 	{
-		uint32_t gpuCount{ 0 };
 		// On récupère les GPU physiques.
+		uint32_t gpuCount{ 0u };
 		auto res = vkEnumeratePhysicalDevices( m_instance
 			, &gpuCount
 			, nullptr );
@@ -406,6 +406,7 @@ namespace vk_renderer
 		for ( auto gpu : gpus )
 		{
 			m_gpus.push_back( std::make_unique< PhysicalDevice >( *this, gpu ) );
+			m_gpuInfos.push_back( m_gpus.back()->getInfo() );
 		}
 	}
 

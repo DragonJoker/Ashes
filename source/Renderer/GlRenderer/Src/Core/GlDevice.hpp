@@ -7,6 +7,7 @@ See LICENSE file in root folder
 #include "Core/GlContext.hpp"
 
 #include <Core/Device.hpp>
+#include <Miscellaneous/PhysicalDeviceInfo.hpp>
 #include <Pipeline/ColourBlendState.hpp>
 #include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/MultisampleState.hpp>
@@ -174,6 +175,13 @@ namespace gl_renderer
 			, float zNear
 			, float zFar )const override;
 		/**
+		*\copydoc	renderer::Device::getPhysicalDeviceInfo
+		*/
+		inline renderer::PhysicalDeviceInfo const & getPhysicalDeviceInfo()const override
+		{
+			return m_info;
+		}
+		/**
 		*\brief
 		*	Echange les tampons.
 		*/
@@ -251,6 +259,7 @@ namespace gl_renderer
 
 	private:
 		ContextPtr m_context;
+		renderer::PhysicalDeviceInfo m_info;
 		mutable renderer::Scissor m_scissor{ 0, 0, 0, 0 };
 		mutable renderer::Viewport m_viewport{ 0, 0, 0, 0 };
 		mutable renderer::ColourBlendState m_cbState;

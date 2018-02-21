@@ -145,6 +145,28 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
+		*	Invalidates the buffer content.
+		*\param[in] offset
+		*	The mapped memory starting offset.
+		*\param[in] size
+		*	The range size.
+		*\~french
+		*\brief
+		*	Invalide le contenu du tampon.
+		*\param[in] offset
+		*	L'offset de la mémoire mappée.
+		*\param[in] size
+		*	La taille en octets de la mémoire mappée.
+		*/
+		inline void invalidate( uint32_t offset
+			, uint32_t size )const
+		{
+			m_buffer->invalidate( uint32_t( offset * sizeof( T ) )
+				, uint32_t( size * sizeof( T ) ) );
+		}
+		/**
+		*\~english
+		*\brief
 		*	Unmaps the buffer's memory from RAM.
 		*\~french
 		*\brief

@@ -714,6 +714,19 @@ namespace renderer
 		/**
 		*\~french
 		*\brief
+		*	Définit la largeur des lignes, si celle-ci est un état dynamique du pipeline.
+		*\param[in] width
+		*	La largeur voulue.
+		*\~english
+		*\brief
+		*	Specifies the lines width, if this is a dynamic state in the pipeline.
+		*\param[in] width
+		*	The wanted width.
+		*/
+		virtual void setLineWidth( float width )const = 0;
+		/**
+		*\~french
+		*\brief
 		*	Copie les données d'un tampon vers un autre tampon.
 		*\param[in] src
 		*	Le tampon source.

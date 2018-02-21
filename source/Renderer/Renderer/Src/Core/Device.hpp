@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -781,6 +781,15 @@ namespace renderer
 		virtual void waitIdle()const = 0;
 		/**
 		*\~english
+		*\return
+		*	The parent physical device informations.
+		*\~french
+		*\return
+		*	Les informations du périphérique physique parent.
+		*/
+		virtual PhysicalDeviceInfo const & getPhysicalDeviceInfo()const = 0;
+		/**
+		*\~english
 		*\brief
 		*	The version number.
 		*\~french
@@ -790,6 +799,18 @@ namespace renderer
 		inline std::string const & getVersion()const
 		{
 			return m_version;
+		}
+		/**
+		*\~english
+		*\brief
+		*	The device name.
+		*\~french
+		*\brief
+		*	Le nom du device.
+		*/
+		inline std::string const & getName()const
+		{
+			return m_name;
 		}
 		/**
 		*\~english
@@ -921,6 +942,7 @@ namespace renderer
 		CommandPoolPtr m_computeCommandPool;
 		CommandPoolPtr m_graphicsCommandPool;
 		std::string m_version;
+		std::string m_name;
 		float m_timestampPeriod;
 	};
 }

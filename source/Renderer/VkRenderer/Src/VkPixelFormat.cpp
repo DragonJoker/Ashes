@@ -42,6 +42,9 @@ namespace vk_renderer
 		case renderer::PixelFormat::eD32F:
 			return VK_FORMAT_D32_SFLOAT;
 
+		case renderer::PixelFormat::eD32FS8:
+			return VK_FORMAT_D32_SFLOAT_S8_UINT;
+
 		case renderer::PixelFormat::eS8:
 			return VK_FORMAT_S8_UINT;
 
@@ -84,6 +87,9 @@ namespace vk_renderer
 
 		case VK_FORMAT_D32_SFLOAT:
 			return renderer::PixelFormat::eD32F;
+
+		case VK_FORMAT_D32_SFLOAT_S8_UINT:
+			return renderer::PixelFormat::eD32FS8;
 
 		case VK_FORMAT_S8_UINT:
 			return renderer::PixelFormat::eS8;

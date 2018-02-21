@@ -55,6 +55,37 @@ namespace vk_renderer
 		doResetSwapChain();
 	}
 
+	renderer::FrameBufferAttachmentArray SwapChain::doPrepareAttaches( uint32_t backBuffer
+		, renderer::RenderPassAttachmentArray const & attaches )const
+	{
+		renderer::FrameBufferAttachmentArray result;
+
+		for ( auto & attach : attaches )
+		{
+			if ( !renderer::isDepthOrStencilFormat( attach.getFormat() ) )
+			{
+				result.emplace_back( attach, m_backBuffers[backBuffer]->getView() );
+			}
+			else
+			{
+				if ( !m_depth )
+				{
+					m_depth = m_device.createTexture( renderer::ImageLayout::eUndefined );
+					m_depth->setImage( attach.getFormat()
+						, getDimensions()
+						, renderer::ImageUsageFlag::eDepthStencilAttachment );
+					m_depthView = m_depth->createView( renderer::TextureType::e2D
+						, attach.getFormat() );
+				}
+
+				result.emplace_back( attach, *m_depthView );
+			}
+		}
+
+		return result;
+	}
+
+
 	renderer::FrameBufferPtrArray SwapChain::createFrameBuffers( renderer::RenderPass const & renderPass )const
 	{
 		renderer::FrameBufferPtrArray result;
@@ -62,8 +93,7 @@ namespace vk_renderer
 
 		for ( size_t i = 0u; i < result.size(); ++i )
 		{
-			renderer::FrameBufferAttachmentArray attaches;
-			attaches.emplace_back( *renderPass.begin(), m_backBuffers[i]->getView() );
+			auto attaches = doPrepareAttaches( uint32_t( i ), renderPass.getAttaches() );
 			result[i] = static_cast< RenderPass const & >( renderPass ).createFrameBuffer( m_dimensions
 				, std::move( attaches ) );
 		}

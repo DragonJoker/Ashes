@@ -223,6 +223,10 @@ namespace vk_renderer
 			, uint32_t groupCountY
 			, uint32_t groupCountZ )const override;
 		/**
+		*\copydoc	renderer::CommandBuffer::setLineWidth
+		*/
+		void setLineWidth( float width )const override;
+		/**
 		*\~french
 		*\return
 		*	Le pipeline actuellement actif.

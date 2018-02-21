@@ -1,10 +1,11 @@
-﻿#include "RendererPrerequisites.hpp"
+#include "RendererPrerequisites.hpp"
 
 namespace renderer
 {
 	bool isDepthStencilFormat( PixelFormat format )
 	{
-		return format == PixelFormat::eD24S8;
+		return format == PixelFormat::eD24S8
+			|| format == PixelFormat::eD32FS8;
 	}
 
 	bool isStencilFormat( PixelFormat format )
@@ -57,6 +58,8 @@ namespace renderer
 			return "D24S8";
 		case renderer::PixelFormat::eD32F:
 			return "D32F";
+		case renderer::PixelFormat::eD32FS8:
+			return "D32FS8";
 		case renderer::PixelFormat::eS8:
 			return "S8";
 

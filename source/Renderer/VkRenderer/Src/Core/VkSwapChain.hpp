@@ -228,6 +228,8 @@ namespace vk_renderer
 			, bool acquisition
 			, char const * const action );
 		void doResetSwapChain();
+		renderer::FrameBufferAttachmentArray doPrepareAttaches( uint32_t backBuffer
+			, renderer::RenderPassAttachmentArray const & attaches )const;
 
 	protected:
 		Device const & m_device;
@@ -239,5 +241,7 @@ namespace vk_renderer
 		uint32_t m_currentBuffer{};
 		BackBufferPtrArray m_backBuffers;
 		VkClearColorValue m_clearColour{};
+		mutable renderer::TexturePtr m_depth;
+		mutable renderer::TextureViewPtr m_depthView;
 	};
 }

@@ -54,6 +54,9 @@ namespace utils
 		//!\~english	Floating point depth on 32 bits.
 		//!\~french		Profondeur flottante sur 32 bits.
 		eD32F,
+		//!\~english	Floating point depth on 32 bits, stencil on 8 bits.
+		//!\~french		Profondeur flottante sur 32 bits, stencil sur 8 bits.
+		eD32FS8,
 		//!\~english	Stencil on 8 bits.
 		//!\~french		Stencil sur 8 bits.
 		eS8,

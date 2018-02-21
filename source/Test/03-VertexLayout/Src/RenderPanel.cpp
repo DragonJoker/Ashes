@@ -209,7 +209,8 @@ namespace vkapp
 		m_pipeline = m_pipelineLayout->createPipeline( *m_program
 			, { *m_vertexLayout }
 			, *m_renderPass
-			, { renderer::PrimitiveTopology::eTriangleStrip } );
+			, { renderer::PrimitiveTopology::eTriangleStrip }
+			, renderer::RasterisationState{ 1.0f } );
 		m_pipeline->multisampleState( renderer::MultisampleState{} );
 		m_pipeline->finish();
 		m_geometryBuffers = m_device->createGeometryBuffers( { *m_vertexBuffer }
