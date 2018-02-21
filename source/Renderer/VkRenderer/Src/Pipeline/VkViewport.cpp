@@ -14,8 +14,8 @@ namespace vk_renderer
 			float( viewport.getOffset()[1] ),
 			float( viewport.getSize()[0] ),
 			float( viewport.getSize()[1] ),
-			0.0f,                 // minDepth
-			1.0f                  // maxDepth
+			viewport.getDepthBounds()[0],
+			viewport.getDepthBounds()[1]
 		};
 	}
 }

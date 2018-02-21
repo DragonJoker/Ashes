@@ -27,6 +27,9 @@ namespace gl_renderer
 				, m_viewport.getOffset()[1]
 				, m_viewport.getSize()[0]
 				, m_viewport.getSize()[1] );
+			glLogCall( gl::DepthRange
+				, m_viewport.getDepthBounds()[0]
+				, m_viewport.getDepthBounds()[1] );
 			save = m_viewport;
 		}
 	}
