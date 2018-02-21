@@ -268,7 +268,9 @@ namespace gl_renderer
 		, renderer::ConnectionPtr && connection )
 		: renderer::Device{ renderer, *connection }
 		, m_context{ Context::create( std::move( connection ) ) }
+		, m_info{ m_context->getRenderer(), "", m_context->getVersion() }
 	{
+		m_name = m_context->getRenderer();
 		m_timestampPeriod = 1;
 		m_presentQueue = std::make_unique< Queue >();
 		m_computeQueue = std::make_unique< Queue >();

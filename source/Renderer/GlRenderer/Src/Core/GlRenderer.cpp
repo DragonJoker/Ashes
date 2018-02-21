@@ -4,6 +4,8 @@
 #include "Core/GlContext.hpp"
 #include "Core/GlDevice.hpp"
 
+#include <Miscellaneous/PhysicalDeviceInfo.hpp>
+
 #include <iostream>
 
 namespace gl_renderer
@@ -11,6 +13,7 @@ namespace gl_renderer
 	Renderer::Renderer( Configuration const & configuration )
 		: renderer::Renderer{ renderer::ClipDirection::eBottomUp, "gl", configuration }
 	{
+		m_gpuInfos.push_back( renderer::PhysicalDeviceInfo{} );
 	}
 
 	renderer::DevicePtr Renderer::createDevice( renderer::ConnectionPtr && connection )const

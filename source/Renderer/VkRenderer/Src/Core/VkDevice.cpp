@@ -38,6 +38,7 @@ namespace vk_renderer
 		, m_gpu{ m_connection->getGpu() }
 		, m_version{ "Vulkan 1.0.0" }
 	{
+		m_name = m_gpu.getProperties().deviceName;
 		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
 		std::vector< VkDeviceQueueCreateInfo > queueCreateInfos;
 		std::vector< float > queuePriorities = { 1.0f };
@@ -391,6 +392,11 @@ namespace vk_renderer
 		result[3][2] = -zNear / ( zFar - zNear );
 
 		return result;
+	}
+
+	renderer::PhysicalDeviceInfo const & Device::getPhysicalDeviceInfo()const
+	{
+		return m_gpu.getInfo();
 	}
 
 	VkMemoryRequirements Device::getBufferMemoryRequirements( VkBuffer buffer )const

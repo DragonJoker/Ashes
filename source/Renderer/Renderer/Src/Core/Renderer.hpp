@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "Core/WindowHandle.hpp"
+#include "Miscellaneous/PhysicalDeviceInfo.hpp"
 
 namespace renderer
 {
@@ -115,6 +116,30 @@ namespace renderer
 		/**
 		*\~english
 		*\return
+		*	The number of available GPUs.
+		*\~french
+		*\return
+		*	Le nombre de GPU disponibles.
+		*/
+		inline uint32_t getGpuCount()const
+		{
+			return uint32_t( m_gpuInfos.size() );
+		}
+		/**
+		*\~english
+		*\return
+		*	The number of available GPUs.
+		*\~french
+		*\return
+		*	Le nombre de GPU disponibles.
+		*/
+		inline PhysicalDeviceInfo const & getPhysicalDeviceInfo( uint32_t index )const
+		{
+			return m_gpuInfos[index];
+		}
+		/**
+		*\~english
+		*\return
 		*	The internal renderer name.
 		*\~french
 		*\return
@@ -127,6 +152,7 @@ namespace renderer
 
 	protected:
 		Configuration m_configuration;
+		std::vector< PhysicalDeviceInfo > m_gpuInfos;
 
 	private:
 		ClipDirection m_clipDirection;
