@@ -26,18 +26,20 @@ macro( target_install_subdir_headers TARGET_NAME SRCDIR SUBDIR CURDIR )
 endmacro()
 
 macro( target_install_headers TARGET_NAME SRCDIR )
-	if ( NOT ${SRCDIR} STREQUAL "" )
-		set( SRCDIR ${SRCDIR}/ )
+	if ( "${SRCDIR}" STREQUAL "" )
+		set( _SRCDIR ${SRCDIR} )
+	else ()
+		set( _SRCDIR ${SRCDIR}/ )
 	endif ()
-	list_subdirs( _SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/${SRCDIR} )
+	list_subdirs( _SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/${_SRCDIR} )
 	foreach( _SUBDIR ${_SUBDIRS} )
-		target_install_subdir_headers( ${TARGET_NAME} ${SRCDIR} ${_SUBDIR} "" )
-		list_subdirs( _SUBSUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/${SRCDIR}${_SUBDIR} )
+		target_install_subdir_headers( ${TARGET_NAME} ${_SRCDIR} ${_SUBDIR} "" )
+		list_subdirs( _SUBSUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/${_SRCDIR}${_SUBDIR} )
 		foreach( _SUBSUBDIR ${_SUBSUBDIRS} )
-			target_install_subdir_headers( ${TARGET_NAME} ${SRCDIR} ${_SUBSUBDIR} "${_SUBDIR}/" )
-			list_subdirs( _SUBSUBSUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/${SRCDIR}${_SUBDIR}/${_SUBSUBDIR} )
+			target_install_subdir_headers( ${TARGET_NAME} ${_SRCDIR} ${_SUBSUBDIR} "${_SUBDIR}/" )
+			list_subdirs( _SUBSUBSUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/${_SRCDIR}${_SUBDIR}/${_SUBSUBDIR} )
 			foreach( _SUBSUBSUBDIR ${_SUBSUBSUBDIRS} )
-				target_install_subdir_headers( ${TARGET_NAME} ${SRCDIR} ${_SUBSUBSUBDIR} "${_SUBDIR}/${_SUBSUBDIR}/" )
+				target_install_subdir_headers( ${TARGET_NAME} ${_SRCDIR} ${_SUBSUBSUBDIR} "${_SUBDIR}/${_SUBSUBDIR}/" )
 			endforeach()
 		endforeach()
 	endforeach()
@@ -45,12 +47,12 @@ macro( target_install_headers TARGET_NAME SRCDIR )
 	file(
 		GLOB
 			TARGET_HEADERS
-			${CMAKE_CURRENT_SOURCE_DIR}/${SUBDIR}/*.h
-			${CMAKE_CURRENT_SOURCE_DIR}/${SUBDIR}/*.hpp
-			${CMAKE_CURRENT_SOURCE_DIR}/${SUBDIR}/*.inl
-			${CMAKE_CURRENT_BINARY_DIR}/${SUBDIR}/*.h
-			${CMAKE_CURRENT_BINARY_DIR}/${SUBDIR}/*.hpp
-			${CMAKE_CURRENT_BINARY_DIR}/${SUBDIR}/*.inl
+			${CMAKE_CURRENT_SOURCE_DIR}/${_SRCDIR}*.h
+			${CMAKE_CURRENT_SOURCE_DIR}/${_SRCDIR}*.hpp
+			${CMAKE_CURRENT_SOURCE_DIR}/${_SRCDIR}*.inl
+			${CMAKE_CURRENT_BINARY_DIR}/${_SRCDIR}*.h
+			${CMAKE_CURRENT_BINARY_DIR}/${_SRCDIR}*.hpp
+			${CMAKE_CURRENT_BINARY_DIR}/${_SRCDIR}*.inl
 	)
 	install(
 		FILES ${TARGET_HEADERS}
