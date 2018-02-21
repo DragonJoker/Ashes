@@ -213,6 +213,9 @@ namespace gl_renderer
 		case renderer::PixelFormat::eD32F:
 			return GL_INTERNAL_D32F;
 
+		case renderer::PixelFormat::eD32FS8:
+			return GL_INTERNAL_D32FS8;
+
 		case renderer::PixelFormat::eS8:
 			return GL_INTERNAL_S8;
 
@@ -256,6 +259,7 @@ namespace gl_renderer
 			return GL_FORMAT_D;
 
 		case renderer::PixelFormat::eD24S8:
+		case renderer::PixelFormat::eD32FS8:
 			return GL_FORMAT_DS;
 
 		case renderer::PixelFormat::eS8:
@@ -301,6 +305,9 @@ namespace gl_renderer
 		case renderer::PixelFormat::eD32F:
 			return GL_TYPE_F;
 
+		case renderer::PixelFormat::eD32FS8:
+			return GL_TYPE_32F_UI24_8;
+
 		case renderer::PixelFormat::eS8:
 			return GL_TYPE_UI8;
 
@@ -343,6 +350,9 @@ namespace gl_renderer
 
 		case GL_INTERNAL_D32F:
 			return renderer::PixelFormat::eD32F;
+
+		case GL_INTERNAL_D32FS8:
+			return renderer::PixelFormat::eD32FS8;
 
 		case GL_INTERNAL_S8:
 			return renderer::PixelFormat::eS8;

@@ -40,6 +40,7 @@ namespace gl_renderer
 				return GL_ATTACHMENT_POINT_DEPTH;
 
 			case renderer::PixelFormat::eD24S8:
+			case renderer::PixelFormat::eD32FS8:
 				return GL_ATTACHMENT_POINT_DEPTH_STENCIL;
 
 			case renderer::PixelFormat::eS8:
@@ -64,6 +65,7 @@ namespace gl_renderer
 				return GL_ATTACHMENT_TYPE_DEPTH;
 
 			case renderer::PixelFormat::eD24S8:
+			case renderer::PixelFormat::eD32FS8:
 				return GL_ATTACHMENT_TYPE_DEPTH_STENCIL;
 
 			case renderer::PixelFormat::eS8:
