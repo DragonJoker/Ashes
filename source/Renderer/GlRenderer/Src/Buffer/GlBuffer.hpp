@@ -55,6 +55,11 @@ namespace gl_renderer
 		void flush( uint32_t offset
 			, uint32_t size )const override;
 		/**
+		*\copydoc	renderer::BufferBase::invalidate
+		*/
+		void invalidate( uint32_t offset
+			, uint32_t size )const override;
+		/**
 		*\copydoc	renderer::BufferBase::unlock
 		*/
 		void unlock()const override;
