@@ -504,7 +504,7 @@ namespace vkapp
 			, { *m_offscreenVertexLayout, *m_offscreenMatrixLayout }
 			, *m_offscreenRenderPass
 			, { renderer::PrimitiveTopology::eTriangleList }
-			, renderer::RasterisationState{ 0, false, false, renderer::PolygonMode::eFill/*, renderer::CullModeFlag::eNone*/ } );
+			, renderer::RasterisationState{ 1.0f, 0, false, false, renderer::PolygonMode::eFill/*, renderer::CullModeFlag::eNone*/ } );
 		m_offscreenPipeline->multisampleState( renderer::MultisampleState{} );
 		m_offscreenPipeline->depthStencilState( renderer::DepthStencilState{} );
 		m_offscreenPipeline->finish();
@@ -651,7 +651,8 @@ namespace vkapp
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( *m_mainProgram
 			, { *m_mainVertexLayout }
 			, *m_mainRenderPass
-			, { renderer::PrimitiveTopology::eTriangleStrip } );
+			, { renderer::PrimitiveTopology::eTriangleStrip }
+			, renderer::RasterisationState{ 1.0f } );
 		m_mainPipeline->multisampleState( renderer::MultisampleState{} );
 		m_mainPipeline->finish();
 	}

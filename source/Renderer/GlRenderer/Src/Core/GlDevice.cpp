@@ -269,6 +269,7 @@ namespace gl_renderer
 		: renderer::Device{ renderer, *connection }
 		, m_context{ Context::create( std::move( connection ) ) }
 		, m_info{ m_context->getRenderer(), "", m_context->getVersion() }
+		, m_rsState{ 1.0f }
 	{
 		m_name = m_context->getRenderer();
 		m_timestampPeriod = 1;

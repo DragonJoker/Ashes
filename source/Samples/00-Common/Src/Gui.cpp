@@ -366,7 +366,7 @@ namespace common
 			, { *m_vertexLayout }
 			, *m_renderPass
 			, { renderer::PrimitiveTopology::eTriangleList }
-			, { 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone }
+			, { 1.0f, 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone }
 		, cbState );
 		m_pipeline->multisampleState( renderer::MultisampleState{} );
 		m_pipeline->depthStencilState( renderer::DepthStencilState{} );

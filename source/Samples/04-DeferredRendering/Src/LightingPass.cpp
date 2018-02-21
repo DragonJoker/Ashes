@@ -225,7 +225,8 @@ namespace vkapp
 		, m_pipeline{ m_pipelineLayout->createPipeline( *m_program
 			, { *m_vertexLayout }
 			, *m_renderPass
-			, { renderer::PrimitiveTopology::eTriangleStrip } ) }
+			, { renderer::PrimitiveTopology::eTriangleStrip }
+			, renderer::RasterisationState{ 1.0f } ) }
 		, m_queryPool{ m_device.createQueryPool( renderer::QueryType::eTimestamp, 2u, 0u ) }
 	{
 		m_pipeline->multisampleState( renderer::MultisampleState{} );
