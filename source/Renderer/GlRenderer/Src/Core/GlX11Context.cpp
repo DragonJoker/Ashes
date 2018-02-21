@@ -99,7 +99,7 @@ namespace gl_renderer
 			setCurrent();
 			m_opengl = std::make_unique< OpenGLLibrary >();
 			m_info.name = ( char const * )glGetString( GL_RENDERER );
-			m_info.version = ( char const * )glGetString( GL_VERSION );
+			m_info.apiVersion = ( char const * )glGetString( GL_VERSION );
 			loadDebugFunctions();
 			endCurrent();
 
