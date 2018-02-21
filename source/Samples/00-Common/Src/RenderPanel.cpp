@@ -353,7 +353,8 @@ namespace common
 		m_pipeline = m_pipelineLayout->createPipeline( *m_program
 			, { *m_vertexLayout }
 			, *m_renderPass
-			, { renderer::PrimitiveTopology::eTriangleStrip } );
+			, { renderer::PrimitiveTopology::eTriangleStrip }
+			, renderer::RasterisationState{ 1.0f } );
 		m_pipeline->multisampleState( renderer::MultisampleState{} );
 		m_pipeline->finish();
 	}
@@ -426,7 +427,7 @@ namespace common
 		ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver );
 		ImGui::Begin( "RendererLib Sample", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove );
 		ImGui::TextUnformatted( getName( m_appDesc, m_device->getRenderer().getName() ).c_str() );
-		//ImGui::TextUnformatted( m_device->getRendererName() );
+		ImGui::TextUnformatted( m_device->getName().c_str() );
 
 		auto count = std::min( m_frameCount, m_framesTimes.size() );
 

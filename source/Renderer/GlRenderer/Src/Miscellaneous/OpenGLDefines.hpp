@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -223,6 +223,7 @@ namespace gl_renderer
 	using PFN_glGetShaderiv = void ( GLAPIENTRY * )( GLuint shader, GLenum pname, GLint* param );
 	using PFN_glGetString = GLubyte *( GLAPIENTRY * )( GLenum name ); 
 	using PFN_glGetTexImage = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum format, GLenum type, void *pixels );
+	using PFN_glInvalidateBufferSubData = void ( GLAPIENTRY * )( GLuint buffer, GLintptr offset, GLsizeiptr length );
 	using PFN_glLineWidth = void ( GLAPIENTRY * )( GLfloat width );
 	using PFN_glLinkProgram = void ( GLAPIENTRY * )( GLuint program );
 	using PFN_glLogicOp = void ( GLAPIENTRY * )( GLenum opcode );

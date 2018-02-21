@@ -173,6 +173,10 @@ namespace vk_renderer
 			, float zNear
 			, float zFar )const override;
 		/**
+		*\copydoc	renderer::Device::getPhysicalDeviceInfo
+		*/
+		 renderer::PhysicalDeviceInfo const & getPhysicalDeviceInfo()const override;
+		/**
 		*\~french
 		*\brief
 		*	Récupère les propriétés mémoire requises pour le tampon donné.

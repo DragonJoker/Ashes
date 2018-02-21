@@ -452,7 +452,7 @@ namespace common
 				}
 
 				materialNode.descriptorSetTextures->update();
-				renderer::RasterisationState rasterisationState{ 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone };
+				renderer::RasterisationState rasterisationState{ 1.0f, 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone };
 
 				// Initialise the pipeline
 				if ( materialNode.layout )
@@ -595,11 +595,12 @@ namespace common
 					}
 
 					materialNode.descriptorSetTextures->update();
-					renderer::RasterisationState rasterisationState;
+					renderer::RasterisationState rasterisationState{ 1.0f };
 
 					if ( material.data.backFace )
 					{
-						rasterisationState = renderer::RasterisationState{ 0u
+						rasterisationState = renderer::RasterisationState{ 1.0f
+							, 0u
 							, false
 							, false
 							, renderer::PolygonMode::eFill

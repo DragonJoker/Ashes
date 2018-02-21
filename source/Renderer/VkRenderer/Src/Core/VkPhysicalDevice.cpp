@@ -9,6 +9,23 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
+	namespace
+	{
+		std::string getName( VkPhysicalDeviceType type )
+		{
+			switch ( type )
+			{
+#define STR(r) case VK_PHYSICAL_DEVICE_TYPE_ ##r: return #r
+				STR( OTHER );
+				STR( INTEGRATED_GPU );
+				STR( DISCRETE_GPU );
+				STR( VIRTUAL_GPU );
+#undef STR
+			default: return "UNKNOWN_DEVICE_TYPE";
+			}
+		}
+
+	}
 	PhysicalDevice::PhysicalDevice( Renderer & renderer
 		, VkPhysicalDevice gpu )
 		: m_gpu{ gpu }
@@ -45,6 +62,12 @@ namespace vk_renderer
 		m_renderer.vkGetPhysicalDeviceMemoryProperties( m_gpu, &m_memoryProperties );
 		m_renderer.vkGetPhysicalDeviceProperties( m_gpu, &m_properties );
 		m_renderer.vkGetPhysicalDeviceFeatures( m_gpu, &m_features );
+
+		m_info.name = m_properties.deviceName;
+		m_info.type = getName( m_properties.deviceType );
+		std::stringstream api;
+		api << ( m_properties.apiVersion >> 22 ) << "." << ( ( m_properties.apiVersion >> 12 ) & 0x3ff ) << "." << ( m_properties.apiVersion & 0xfff );
+		m_info.apiVersion = api.str();
 
 		// Et enfin les propriétés des familles de files du GPU.
 		uint32_t queueCount{ 0 };

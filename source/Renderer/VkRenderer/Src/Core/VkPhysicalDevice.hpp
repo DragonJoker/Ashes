@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #include "VkRendererPrerequisites.hpp"
 
+#include <Miscellaneous/PhysicalDeviceInfo.hpp>
+
 namespace vk_renderer
 {
 	/**
@@ -129,6 +131,18 @@ namespace vk_renderer
 		}
 		/**
 		*\~french
+		*\return
+		*	Les informations du périphérique.
+		*\~english
+		*\return
+		*	The device informations.
+		*/
+		inline renderer::PhysicalDeviceInfo const & getInfo()const
+		{
+			return m_info;
+		}
+		/**
+		*\~french
 		*\brief
 		*	Conversion implicite vers VkPhysicalDevice.
 		*\~english
@@ -149,5 +163,6 @@ namespace vk_renderer
 		std::vector< VkQueueFamilyProperties > m_queueProperties;
 		std::vector< char const * > m_deviceExtensionNames;
 		std::vector< char const * > m_deviceLayerNames;
+		renderer::PhysicalDeviceInfo m_info;
 	};
 }

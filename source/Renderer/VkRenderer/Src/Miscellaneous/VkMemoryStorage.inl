@@ -101,7 +101,7 @@ namespace vk_renderer
 	inline void MemoryStorage< VkType, Image >::flush( uint32_t offset
 		, uint32_t size )const
 	{
-		VkMappedMemoryRange flushRange
+		VkMappedMemoryRange mappedRange
 		{
 			VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,
 			nullptr,
@@ -109,12 +109,33 @@ namespace vk_renderer
 			0,                                                // offset
 			size                                              // size
 		};
-		DEBUG_DUMP( flushRange );
-		auto res = m_device.vkFlushMappedMemoryRanges( m_device, 1, &flushRange );
+		DEBUG_DUMP( mappedRange );
+		auto res = m_device.vkFlushMappedMemoryRanges( m_device, 1, &mappedRange );
 
 		if ( !checkError( res ) )
 		{
 			std::cerr << "Storage memory range flush failed: " << getLastError() << std::endl;
+		}
+	}
+
+	template< typename VkType, bool Image >
+	inline void MemoryStorage< VkType, Image >::invalidate( uint32_t offset
+		, uint32_t size )const
+	{
+		VkMappedMemoryRange mappedRange
+		{
+			VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,
+			nullptr,
+			m_memory,                                         // memory
+			0,                                                // offset
+			size                                              // size
+		};
+		DEBUG_DUMP( mappedRange );
+		auto res = m_device.vkInvalidateMappedMemoryRanges( m_device, 1, &mappedRange );
+
+		if ( !checkError( res ) )
+		{
+			std::cerr << "Storage memory range invalidate failed: " << getLastError() << std::endl;
 		}
 	}
 

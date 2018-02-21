@@ -82,6 +82,7 @@ namespace renderer
 	struct ClearValue;
 	struct ImageCopy;
 	struct ImageBlit;
+	struct PhysicalDeviceInfo;
 	struct PushConstant;
 	struct PushConstantRange;
 

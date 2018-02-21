@@ -44,6 +44,7 @@ See LICENSE file in root folder.
 #include "Commands/GlPushConstantsCommand.hpp"
 #include "Commands/GlResetQueryPoolCommand.hpp"
 #include "Commands/GlScissorCommand.hpp"
+#include "Commands/GlSetLineWidthCommand.hpp"
 #include "Commands/GlViewportCommand.hpp"
 #include "Commands/GlWriteTimestampCommand.hpp"
 
@@ -327,5 +328,10 @@ namespace gl_renderer
 		m_commands.emplace_back( std::make_unique< DispatchCommand >( groupCountX
 			, groupCountY 
 			, groupCountZ ) );
+	}
+
+	void CommandBuffer::setLineWidth( float width )const
+	{
+		m_commands.emplace_back( std::make_unique< SetLineWidthCommand >( width ) );
 	}
 }

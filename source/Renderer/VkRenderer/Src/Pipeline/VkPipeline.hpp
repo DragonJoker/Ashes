@@ -89,6 +89,7 @@ namespace vk_renderer
 		std::unique_ptr< VkPipelineMultisampleStateCreateInfo > m_multisampleState;
 		std::unique_ptr< VkPipelineDepthStencilStateCreateInfo > m_depthStencilState;
 		std::unique_ptr< VkPipelineTessellationStateCreateInfo > m_tessellationState;
+		bool m_lineWidth;
 		VkPipeline m_pipeline{ VK_NULL_HANDLE };
 	};
 }

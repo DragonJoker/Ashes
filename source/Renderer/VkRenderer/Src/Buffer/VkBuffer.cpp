@@ -71,6 +71,12 @@ namespace vk_renderer
 		m_storage->flush( offset, size );
 	}
 
+	void Buffer::invalidate( uint32_t offset
+		, uint32_t size )const
+	{
+		m_storage->invalidate( offset, size );
+	}
+
 	void Buffer::unlock()const
 	{
 		m_storage->unlock();

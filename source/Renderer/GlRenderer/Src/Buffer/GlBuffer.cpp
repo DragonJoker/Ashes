@@ -45,6 +45,12 @@ namespace gl_renderer
 		glLogCall( gl::FlushMappedBufferRange, m_copyTarget, offset, size );
 	}
 
+	void Buffer::invalidate( uint32_t offset
+		, uint32_t size )const
+	{
+		glLogCall( gl::InvalidateBufferSubData, m_copyTarget, offset, size );
+	}
+
 	void Buffer::unlock()const
 	{
 		glLogCall( gl::UnmapBuffer, m_copyTarget );
