@@ -68,6 +68,8 @@ namespace vk_renderer
 		std::stringstream api;
 		api << ( m_properties.apiVersion >> 22 ) << "." << ( ( m_properties.apiVersion >> 12 ) & 0x3ff ) << "." << ( m_properties.apiVersion & 0xfff );
 		m_info.apiVersion = api.str();
+		m_info.fillModeNonSolid = m_features.fillModeNonSolid;
+		m_info.wideLines = m_features.wideLines;
 
 		// Et enfin les propriétés des familles de files du GPU.
 		uint32_t queueCount{ 0 };

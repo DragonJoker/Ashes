@@ -790,30 +790,6 @@ namespace renderer
 		virtual PhysicalDeviceInfo const & getPhysicalDeviceInfo()const = 0;
 		/**
 		*\~english
-		*\brief
-		*	The version number.
-		*\~french
-		*\brief
-		*	Le numéro de version.
-		*/
-		inline std::string const & getVersion()const
-		{
-			return m_version;
-		}
-		/**
-		*\~english
-		*\brief
-		*	The device name.
-		*\~french
-		*\brief
-		*	Le nom du device.
-		*/
-		inline std::string const & getName()const
-		{
-			return m_name;
-		}
-		/**
-		*\~english
 		*\return
 		*	The presentation queue.
 		*\~french
@@ -941,8 +917,6 @@ namespace renderer
 		CommandPoolPtr m_presentCommandPool;
 		CommandPoolPtr m_computeCommandPool;
 		CommandPoolPtr m_graphicsCommandPool;
-		std::string m_version;
-		std::string m_name;
 		float m_timestampPeriod;
 	};
 }

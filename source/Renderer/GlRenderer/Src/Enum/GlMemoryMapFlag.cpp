@@ -63,19 +63,22 @@ namespace gl_renderer
 
 		if ( checkFlag( flags, renderer::MemoryMapFlag::eRead ) )
 		{
-			result = GL_MEMORY_MAP_READ_BIT;
+			result |= GL_MEMORY_MAP_READ_BIT;
 		}
-		else if ( checkFlag( flags, renderer::MemoryMapFlag::eWrite ) )
+
+		if ( checkFlag( flags, renderer::MemoryMapFlag::eWrite ) )
 		{
-			result = GL_MEMORY_MAP_WRITE_BIT;
+			result |= GL_MEMORY_MAP_WRITE_BIT;
 		}
-		else if ( checkFlag( flags, renderer::MemoryMapFlag::ePersistent ) )
+
+		if ( checkFlag( flags, renderer::MemoryMapFlag::ePersistent ) )
 		{
-			result = GL_MEMORY_MAP_PERSISTENT_BIT;
+			result |= GL_MEMORY_MAP_PERSISTENT_BIT;
 		}
-		else if ( checkFlag( flags, renderer::MemoryMapFlag::eCoherent ) )
+
+		if ( checkFlag( flags, renderer::MemoryMapFlag::eCoherent ) )
 		{
-			result = GL_MEMORY_MAP_COHERENT_BIT;
+			result |= GL_MEMORY_MAP_COHERENT_BIT;
 		}
 
 		if ( checkFlag( flags, renderer::MemoryMapFlag::eInvalidateRange ) )

@@ -47,6 +47,24 @@ namespace renderer
 		*	La version supportée de l'API de rendu.
 		*/
 		std::string apiVersion;
+		/**
+		*\~english
+		*\brief
+		*	The support of non solid fill mode.
+		*\~french
+		*\brief
+		*	Le support des modes non solide.
+		*/
+		bool fillModeNonSolid{ false };
+		/**
+		*\~english
+		*\brief
+		*	The support of wide lines.
+		*\~french
+		*\brief
+		*	Le support des lignes larges.
+		*/
+		bool wideLines{ false };
 	};
 }
 
