@@ -6,92 +6,234 @@ namespace gl_renderer
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_INTERNAL_R8G8B8:
+		case GL_INTERNAL_R8G8B8:
 			return "GL_RGB8";
 
-		case gl_renderer::GL_INTERNAL_R8G8B8A8:
+		case GL_INTERNAL_R8G8B8A8:
 			return "GL_RGBA8";
 
-		case gl_renderer::GL_INTERNAL_R4G4B4A4:
+		case GL_INTERNAL_R4G4B4A4:
 			return "GL_RGBA4";
 
-		case gl_renderer::GL_INTERNAL_R5G5B5A1:
+		case GL_INTERNAL_R5G5B5A1:
 			return "GL_RGB5_A1";
 
-		case gl_renderer::GL_INTERNAL_D16:
+		case GL_INTERNAL_D16:
 			return "GL_DEPTH_COMPONENT16";
 
-		case gl_renderer::GL_INTERNAL_D24:
+		case GL_INTERNAL_D24:
 			return "GL_DEPTH_COMPONENT24";
 
-		case gl_renderer::GL_INTERNAL_D32:
+		case GL_INTERNAL_D32:
 			return "GL_DEPTH_COMPONENT32";
 
-		case gl_renderer::GL_INTERNAL_R8:
+		case GL_INTERNAL_R8:
 			return "GL_R8";
 
-		case gl_renderer::GL_INTERNAL_R8G8:
+		case GL_INTERNAL_R8G8:
 			return "GL_RG8";
 
-		case gl_renderer::GL_INTERNAL_R16F:
+		case GL_INTERNAL_R16F:
 			return "GL_R16F";
 
-		case gl_renderer::GL_INTERNAL_R32F:
+		case GL_INTERNAL_R32F:
 			return "GL_R32F";
 
-		case gl_renderer::GL_INTERNAL_RG16F:
+		case GL_INTERNAL_RG16F:
 			return "GL_RG16F";
 
-		case gl_renderer::GL_INTERNAL_RG32F:
+		case GL_INTERNAL_RG32F:
 			return "GL_RG32F";
 
-		case gl_renderer::GL_INTERNAL_DXT1:
-			return "GL_COMPRESSED_S3TC_DXT1";
-
-		case gl_renderer::GL_INTERNAL_DXT3:
-			return "GL_COMPRESSED_S3TC_DXT3";
-
-		case gl_renderer::GL_INTERNAL_DXT5:
-			return "GL_COMPRESSED_S3TC_DXT5";
-
-		case gl_renderer::GL_INTERNAL_D24S8:
+		case GL_INTERNAL_D24S8:
 			return "GL_DEPTH_COMPONENT24_S8";
 
-		case gl_renderer::GL_INTERNAL_RGBA32F:
+		case GL_INTERNAL_RGBA32F:
 			return "GL_RGBA32F";
 
-		case gl_renderer::GL_INTERNAL_RGB32F:
+		case GL_INTERNAL_RGB32F:
 			return "GL_RGB32F";
 
-		case gl_renderer::GL_INTERNAL_RGBA16F:
+		case GL_INTERNAL_RGBA16F:
 			return "GL_RGBA16F";
 
-		case gl_renderer::GL_INTERNAL_RGB16F:
+		case GL_INTERNAL_RGB16F:
 			return "GL_RGB16F";
 
-		case gl_renderer::GL_INTERNAL_R8G8B8_SRGB:
+		case GL_INTERNAL_R8G8B8_SRGB:
 			return "GL_SRGB8";
 
-		case gl_renderer::GL_INTERNAL_R8G8B8A8_SRGB:
+		case GL_INTERNAL_R8G8B8A8_SRGB:
 			return "GL_SRGBA8";
 
-		case gl_renderer::GL_INTERNAL_D32F:
+		case GL_INTERNAL_D32F:
 			return "GL_DEPTH_COMPONENT32F";
 
-		case gl_renderer::GL_INTERNAL_D32FS8:
+		case GL_INTERNAL_D32FS8:
 			return "GL_DEPTH32F_STENCIL8";
 
-		case gl_renderer::GL_INTERNAL_S1:
+		case GL_INTERNAL_S1:
 			return "GL_STENCIL_INDEX1";
 
-		case gl_renderer::GL_INTERNAL_S8:
+		case GL_INTERNAL_S8:
 			return "GL_STENCIL_INDEX8";
 
-		case gl_renderer::GL_INTERNAL_R5G6B5:
-			return "GL_RGB565";
+		case GL_INTERNAL_R5G6B5:
+			return "GL_COMPRESSED_R5G6B5";
 
-		case gl_renderer::GL_INTERNAL_B8G8R8A8:
-			return "GL_BGRA8";
+		case GL_INTERNAL_B8G8R8A8:
+			return "GL_COMPRESSED_B8G8R8A8";
+
+		case GL_INTERNAL_RGB_S3TC_DXT1:
+			return "GL_COMPRESSED_RGB_S3TC_DXT1";
+
+		case GL_INTERNAL_RGBA_S3TC_DXT1:
+			return "GL_COMPRESSED_RGBA_S3TC_DXT1";
+
+		case GL_INTERNAL_RGBA_S3TC_DXT3:
+			return "GL_COMPRESSED_RGBA_S3TC_DXT3";
+
+		case GL_INTERNAL_RGBA_S3TC_DXT5:
+			return "GL_COMPRESSED_RGBA_S3TC_DXT5";
+
+		case GL_INTERNAL_SRGB_S3TC_DXT1:
+			return "GL_COMPRESSED_SRGB_S3TC_DXT1";
+
+		case GL_INTERNAL_SRGB_ALPHA_S3TC_DXT1:
+			return "GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1";
+
+		case GL_INTERNAL_SRGB_ALPHA_S3TC_DXT3:
+			return "GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3";
+
+		case GL_INTERNAL_SRGB_ALPHA_S3TC_DXT5:
+			return "GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5";
+
+		case GL_INTERNAL_RED_RGTC1:
+			return "GL_COMPRESSED_RED_RGTC1";
+
+		case GL_INTERNAL_SIGNED_RED_RGTC1:
+			return "GL_COMPRESSED_SIGNED_RED_RGTC1";
+
+		case GL_INTERNAL_RG_RGTC2:
+			return "GL_COMPRESSED_RG_RGTC2";
+
+		case GL_INTERNAL_SIGNED_RG_RGTC2:
+			return "GL_COMPRESSED_SIGNED_RG_RGTC2";
+
+		case GL_INTERNAL_RGB8_ETC2:
+			return "GL_COMPRESSED_RGB8_ETC2";
+
+		case GL_INTERNAL_SRGB8_ETC2:
+			return "GL_COMPRESSED_SRGB8_ETC2";
+
+		case GL_INTERNAL_RGB8_PUNCHTHROUGH_ALPHA1_ETC2:
+			return "GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2";
+
+		case GL_INTERNAL_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2:
+			return "GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2";
+
+		case GL_INTERNAL_RGBA8_ETC2_EAC:
+			return "GL_COMPRESSED_RGBA8_ETC2_EAC";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ETC2_EAC:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC";
+
+		case GL_INTERNAL_R11_EAC:
+			return "GL_COMPRESSED_R11_EAC";
+
+		case GL_INTERNAL_SIGNED_R11_EAC:
+			return "GL_COMPRESSED_SIGNED_R11_EAC";
+
+		case GL_INTERNAL_RG11_EAC:
+			return "GL_COMPRESSED_RG11_EAC";
+
+		case GL_INTERNAL_SIGNED_RG11_EAC:
+			return "GL_COMPRESSED_SIGNED_RG11_EAC";
+
+		case GL_INTERNAL_RGBA_ASTC_4x4:
+			return "GL_COMPRESSED_RGBA_ASTC_4x4";
+
+		case GL_INTERNAL_RGBA_ASTC_5x4:
+			return "GL_COMPRESSED_RGBA_ASTC_5x4";
+
+		case GL_INTERNAL_RGBA_ASTC_5x5:
+			return "GL_COMPRESSED_RGBA_ASTC_5x5";
+
+		case GL_INTERNAL_RGBA_ASTC_6x5:
+			return "GL_COMPRESSED_RGBA_ASTC_6x5";
+
+		case GL_INTERNAL_RGBA_ASTC_6x6:
+			return "GL_COMPRESSED_RGBA_ASTC_6x6";
+
+		case GL_INTERNAL_RGBA_ASTC_8x5:
+			return "GL_COMPRESSED_RGBA_ASTC_8x5";
+
+		case GL_INTERNAL_RGBA_ASTC_8x6:
+			return "GL_COMPRESSED_RGBA_ASTC_8x6";
+
+		case GL_INTERNAL_RGBA_ASTC_8x8:
+			return "GL_COMPRESSED_RGBA_ASTC_8x8";
+
+		case GL_INTERNAL_RGBA_ASTC_10x5:
+			return "GL_COMPRESSED_RGBA_ASTC_10x5";
+
+		case GL_INTERNAL_RGBA_ASTC_10x6:
+			return "GL_COMPRESSED_RGBA_ASTC_10x6";
+
+		case GL_INTERNAL_RGBA_ASTC_10x8:
+			return "GL_COMPRESSED_RGBA_ASTC_10x8";
+
+		case GL_INTERNAL_RGBA_ASTC_10x10:
+			return "GL_COMPRESSED_RGBA_ASTC_10x10";
+
+		case GL_INTERNAL_RGBA_ASTC_12x10:
+			return "GL_COMPRESSED_RGBA_ASTC_12x10";
+
+		case GL_INTERNAL_RGBA_ASTC_12x12:
+			return "GL_COMPRESSED_RGBA_ASTC_12x12";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_4x4:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_5x4:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_5x5:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_6x5:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_6x6:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_8x5:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_8x6:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_8x8:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_10x5:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_10x6:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_10x8:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_10x10:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_12x10:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10";
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_12x12:
+			return "GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12";
+
 
 		default:
 			assert( false && "Unupported GlInternal" );
@@ -218,6 +360,150 @@ namespace gl_renderer
 
 		case renderer::PixelFormat::eS8:
 			return GL_INTERNAL_S8;
+
+		case renderer::PixelFormat::eBC1_RGB:
+			return GL_INTERNAL_RGB_S3TC_DXT1;
+
+		case renderer::PixelFormat::eBC1_RGBA:
+			return GL_INTERNAL_RGBA_S3TC_DXT1;
+
+		case renderer::PixelFormat::eBC1_SRGB:
+			return GL_INTERNAL_SRGB_S3TC_DXT1;
+
+		case renderer::PixelFormat::eBC1_SRGBA:
+			return GL_INTERNAL_SRGB_ALPHA_S3TC_DXT1;
+
+		case renderer::PixelFormat::eBC2_RGBA:
+			return GL_INTERNAL_RGBA_S3TC_DXT3;
+
+		case renderer::PixelFormat::eBC2_SRGBA:
+			return GL_INTERNAL_SRGB_ALPHA_S3TC_DXT3;
+
+		case renderer::PixelFormat::eBC3_RGBA:
+			return GL_INTERNAL_RGBA_S3TC_DXT5;
+
+		case renderer::PixelFormat::eBC3_SRGBA:
+			return GL_INTERNAL_SRGB_ALPHA_S3TC_DXT5;
+
+		case renderer::PixelFormat::eBC4:
+			return GL_INTERNAL_RED_RGTC1;
+
+		case renderer::PixelFormat::eBC5_RG:
+			return GL_INTERNAL_RG_RGTC2;
+
+		case renderer::PixelFormat::eASTC_4x4_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_4x4;
+
+		case renderer::PixelFormat::eASTC_4x4_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_4x4;
+
+		case renderer::PixelFormat::eASTC_5x4_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_5x4;
+
+		case renderer::PixelFormat::eASTC_5x4_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_5x4;
+
+		case renderer::PixelFormat::eASTC_5x5_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_5x5;
+
+		case renderer::PixelFormat::eASTC_5x5_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_5x5;
+
+		case renderer::PixelFormat::eASTC_6x5_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_6x5;
+
+		case renderer::PixelFormat::eASTC_6x5_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_6x5;
+
+		case renderer::PixelFormat::eASTC_6x6_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_6x6;
+
+		case renderer::PixelFormat::eASTC_6x6_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_6x6;
+
+		case renderer::PixelFormat::eASTC_8x5_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_8x5;
+
+		case renderer::PixelFormat::eASTC_8x5_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_8x5;
+
+		case renderer::PixelFormat::eASTC_8x6_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_8x6;
+
+		case renderer::PixelFormat::eASTC_8x6_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_8x6;
+
+		case renderer::PixelFormat::eASTC_8x8_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_8x8;
+
+		case renderer::PixelFormat::eASTC_8x8_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_8x8;
+
+		case renderer::PixelFormat::eASTC_10x5_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_10x5;
+
+		case renderer::PixelFormat::eASTC_10x5_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_10x5;
+
+		case renderer::PixelFormat::eASTC_10x6_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_10x6;
+
+		case renderer::PixelFormat::eASTC_10x6_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_10x6;
+
+		case renderer::PixelFormat::eASTC_10x8_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_10x8;
+
+		case renderer::PixelFormat::eASTC_10x8_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_10x8;
+
+		case renderer::PixelFormat::eASTC_10x10_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_10x10;
+
+		case renderer::PixelFormat::eASTC_10x10_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_10x10;
+
+		case renderer::PixelFormat::eASTC_12x10_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_12x10;
+
+		case renderer::PixelFormat::eASTC_12x10_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_12x10;
+
+		case renderer::PixelFormat::eASTC_12x12_RGBA:
+			return GL_INTERNAL_RGBA_ASTC_12x12;
+
+		case renderer::PixelFormat::eASTC_12x12_SRGBA:
+			return GL_INTERNAL_SRGB8_ALPHA8_ASTC_12x12;
+
+		case renderer::PixelFormat::eETC2_R8G8B8:
+			return GL_INTERNAL_RGB8_ETC2;
+
+		case renderer::PixelFormat::eETC2_R8G8B8_SRGB:
+			return GL_INTERNAL_SRGB8_ETC2;
+
+		case renderer::PixelFormat::eETC2_R8G8B8A1:
+			return GL_INTERNAL_RGB8_PUNCHTHROUGH_ALPHA1_ETC2;
+
+		case renderer::PixelFormat::eETC2_R8G8B8A1_SRGB:
+			return GL_INTERNAL_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2;
+
+		case renderer::PixelFormat::eETC2_R8G8B8A8:
+			return GL_INTERNAL_RGBA8_ETC2_EAC;
+
+		case renderer::PixelFormat::eETC2_R8G8B8A8_SRGB:
+			return GL_INTERNAL_SRGB8_ALPHA8_ETC2_EAC;
+
+		case renderer::PixelFormat::eEAC_R11U:
+			return GL_INTERNAL_R11_EAC;
+
+		case renderer::PixelFormat::eEAC_R11S:
+			return GL_INTERNAL_SIGNED_R11_EAC;
+
+		case renderer::PixelFormat::eEAC_R11G11U:
+			return GL_INTERNAL_RG11_EAC;
+
+		case renderer::PixelFormat::eEAC_R11G11S:
+			return GL_INTERNAL_SIGNED_RG11_EAC;
 
 		default:
 			assert( false && "Unsupported pixel format." );
@@ -356,6 +642,150 @@ namespace gl_renderer
 
 		case GL_INTERNAL_S8:
 			return renderer::PixelFormat::eS8;
+
+		case GL_INTERNAL_RGB_S3TC_DXT1:
+			return renderer::PixelFormat::eBC1_RGB;
+
+		case GL_INTERNAL_RGBA_S3TC_DXT1:
+			return renderer::PixelFormat::eBC1_RGBA;
+
+		case GL_INTERNAL_SRGB_S3TC_DXT1:
+			return renderer::PixelFormat::eBC1_SRGB;
+
+		case GL_INTERNAL_SRGB_ALPHA_S3TC_DXT1:
+			return renderer::PixelFormat::eBC1_SRGBA;
+
+		case GL_INTERNAL_RGBA_S3TC_DXT3:
+			return renderer::PixelFormat::eBC2_RGBA;
+
+		case GL_INTERNAL_SRGB_ALPHA_S3TC_DXT3:
+			return renderer::PixelFormat::eBC2_SRGBA;
+
+		case GL_INTERNAL_RGBA_S3TC_DXT5:
+			return renderer::PixelFormat::eBC3_RGBA;
+
+		case GL_INTERNAL_SRGB_ALPHA_S3TC_DXT5:
+			return renderer::PixelFormat::eBC3_SRGBA;
+
+		case GL_INTERNAL_RED_RGTC1:
+			return renderer::PixelFormat::eBC4;
+
+		case GL_INTERNAL_RG_RGTC2:
+			return renderer::PixelFormat::eBC5_RG;
+
+		case GL_INTERNAL_RGBA_ASTC_4x4:
+			return renderer::PixelFormat::eASTC_4x4_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_4x4:
+			return renderer::PixelFormat::eASTC_4x4_SRGBA;
+
+		case GL_INTERNAL_RGBA_ASTC_5x4:
+			return renderer::PixelFormat::eASTC_5x4_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_5x4:
+			return renderer::PixelFormat::eASTC_5x4_SRGBA;
+
+		case GL_INTERNAL_RGBA_ASTC_5x5:
+			return renderer::PixelFormat::eASTC_5x5_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_5x5:
+			return renderer::PixelFormat::eASTC_5x5_SRGBA;
+
+		case GL_INTERNAL_RGBA_ASTC_6x5:
+			return renderer::PixelFormat::eASTC_6x5_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_6x5:
+			return renderer::PixelFormat::eASTC_6x5_SRGBA;
+
+		case GL_INTERNAL_RGBA_ASTC_6x6:
+			return renderer::PixelFormat::eASTC_6x6_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_6x6:
+			return renderer::PixelFormat::eASTC_6x6_SRGBA;
+
+		case GL_INTERNAL_RGBA_ASTC_8x5:
+			return renderer::PixelFormat::eASTC_8x5_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_8x5:
+			return renderer::PixelFormat::eASTC_8x5_SRGBA;
+
+		case GL_INTERNAL_RGBA_ASTC_8x6:
+			return renderer::PixelFormat::eASTC_8x6_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_8x6:
+			return renderer::PixelFormat::eASTC_8x6_SRGBA;
+
+		case GL_INTERNAL_RGBA_ASTC_8x8:
+			return renderer::PixelFormat::eASTC_8x8_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_8x8:
+			return renderer::PixelFormat::eASTC_8x8_SRGBA;
+
+		case GL_INTERNAL_RGBA_ASTC_10x5:
+			return renderer::PixelFormat::eASTC_10x5_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_10x5:
+			return renderer::PixelFormat::eASTC_10x5_SRGBA;
+
+		case GL_INTERNAL_RGBA_ASTC_10x6:
+			return renderer::PixelFormat::eASTC_10x6_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_10x6:
+			return renderer::PixelFormat::eASTC_10x6_SRGBA;
+
+		case GL_INTERNAL_RGBA_ASTC_10x8:
+			return renderer::PixelFormat::eASTC_10x8_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_10x8:
+			return renderer::PixelFormat::eASTC_10x8_SRGBA;
+
+		case GL_INTERNAL_RGBA_ASTC_10x10:
+			return renderer::PixelFormat::eASTC_10x10_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_10x10:
+			return renderer::PixelFormat::eASTC_10x10_SRGBA;
+
+		case GL_INTERNAL_RGBA_ASTC_12x10:
+			return renderer::PixelFormat::eASTC_12x10_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_12x10:
+			return renderer::PixelFormat::eASTC_12x10_SRGBA;
+
+		case GL_INTERNAL_RGBA_ASTC_12x12:
+			return renderer::PixelFormat::eASTC_12x12_RGBA;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ASTC_12x12:
+			return renderer::PixelFormat::eASTC_12x12_SRGBA;
+
+		case GL_INTERNAL_RGB8_ETC2:
+			return renderer::PixelFormat::eETC2_R8G8B8;
+
+		case GL_INTERNAL_SRGB8_ETC2:
+			return renderer::PixelFormat::eETC2_R8G8B8_SRGB;
+
+		case GL_INTERNAL_RGB8_PUNCHTHROUGH_ALPHA1_ETC2:
+			return renderer::PixelFormat::eETC2_R8G8B8A1;
+
+		case GL_INTERNAL_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2:
+			return renderer::PixelFormat::eETC2_R8G8B8A1_SRGB;
+
+		case GL_INTERNAL_RGBA8_ETC2_EAC:
+			return renderer::PixelFormat::eETC2_R8G8B8A8;
+
+		case GL_INTERNAL_SRGB8_ALPHA8_ETC2_EAC:
+			return renderer::PixelFormat::eETC2_R8G8B8A8_SRGB;
+
+		case GL_INTERNAL_R11_EAC:
+			return renderer::PixelFormat::eEAC_R11U;
+
+		case GL_INTERNAL_SIGNED_R11_EAC:
+			return renderer::PixelFormat::eEAC_R11S;
+
+		case GL_INTERNAL_RG11_EAC:
+			return renderer::PixelFormat::eEAC_R11G11U;
+
+		case GL_INTERNAL_SIGNED_RG11_EAC:
+			return renderer::PixelFormat::eEAC_R11G11S;
 
 		default:
 			assert( false && "Unsupported pixel format." );
