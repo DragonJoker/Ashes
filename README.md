@@ -101,17 +101,17 @@ Tests hardware instantiation, by rendering 1'000'000 cubes.
 
 Tests Compute pipeline, by processing the output of the PushConstants sample to add a graphical effect.
 
-### [Compute Pipeline](source/Test/17-CompressedTexture2D/)
+### [Compressed Texture 2D](source/Test/17-CompressedTexture2D/)
 <img src="./screenshots/17.png" height="72px" align="right">
 
 Tests loading a texture 2D, compressed in either BC3, ASTC 8x8 or ETC2, depending on support by the rendering API.
 
-### [Compute Pipeline](source/Test/18-Texture2DMipmaps/)
+### [Texture 2D Mipmaps](source/Test/18-Texture2DMipmaps/)
 <img src="./screenshots/18.png" height="72px" align="right">
 
 Tests loading a texture 2D and its mipmap levels from a file.
 
-### [Compute Pipeline](source/Test/19-CompressedTexture2DArray/)
+### [Compressed Texture 2D Array](source/Test/19-CompressedTexture2DArray/)
 <img src="./screenshots/19.png" height="72px" align="right">
 
 Tests loading a texture 2D array, compressed in either BC3, ASTC 8x8 or ETC2, depending on support by the rendering API.
