@@ -233,17 +233,17 @@ namespace gl_renderer
 			, m_indexType ) );
 	}
 
-	void CommandBuffer::copyToImage( renderer::BufferImageCopy const & copyInfo
+	void CommandBuffer::copyToImage( renderer::BufferImageCopyArray const & copyInfo
 		, renderer::BufferBase const & src
-		, renderer::TextureView const & dst )const
+		, renderer::Texture const & dst )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( copyInfo
 			, src
 			, dst ) );
 	}
 
-	void CommandBuffer::copyToBuffer( renderer::BufferImageCopy const & copyInfo
-		, renderer::TextureView const & src
+	void CommandBuffer::copyToBuffer( renderer::BufferImageCopyArray const & copyInfo
+		, renderer::Texture const & src
 		, renderer::BufferBase const & dst )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyImageToBufferCommand >( copyInfo

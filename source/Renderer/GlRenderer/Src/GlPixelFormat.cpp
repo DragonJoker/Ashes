@@ -516,16 +516,66 @@ namespace gl_renderer
 		switch ( format )
 		{
 		case renderer::PixelFormat::eR8:
+		case renderer::PixelFormat::eBC4:
+		case renderer::PixelFormat::eEAC_R11U:
+		case renderer::PixelFormat::eEAC_R11S:
 			return GL_FORMAT_R;
 
 		case renderer::PixelFormat::eR8G8:
+		case renderer::PixelFormat::eBC5_RG:
+		case renderer::PixelFormat::eEAC_R11G11U:
+		case renderer::PixelFormat::eEAC_R11G11S:
 			return GL_FORMAT_RG;
 
 		case renderer::PixelFormat::eR32F:
 			return GL_FORMAT_R;
 
 		case renderer::PixelFormat::eR8G8B8:
+		case renderer::PixelFormat::eBC1_RGB:
+		case renderer::PixelFormat::eBC1_SRGB:
+		case renderer::PixelFormat::eETC2_R8G8B8:
+		case renderer::PixelFormat::eETC2_R8G8B8_SRGB:
 			return GL_FORMAT_RGB;
+
+		case renderer::PixelFormat::eETC2_R8G8B8A1:
+		case renderer::PixelFormat::eETC2_R8G8B8A1_SRGB:
+		case renderer::PixelFormat::eBC1_RGBA:
+		case renderer::PixelFormat::eBC1_SRGBA:
+		case renderer::PixelFormat::eBC2_RGBA:
+		case renderer::PixelFormat::eBC2_SRGBA:
+		case renderer::PixelFormat::eBC3_RGBA:
+		case renderer::PixelFormat::eBC3_SRGBA:
+		case renderer::PixelFormat::eASTC_4x4_RGBA:
+		case renderer::PixelFormat::eASTC_4x4_SRGBA:
+		case renderer::PixelFormat::eASTC_5x4_RGBA:
+		case renderer::PixelFormat::eASTC_5x4_SRGBA:
+		case renderer::PixelFormat::eASTC_5x5_RGBA:
+		case renderer::PixelFormat::eASTC_5x5_SRGBA:
+		case renderer::PixelFormat::eASTC_6x5_RGBA:
+		case renderer::PixelFormat::eASTC_6x5_SRGBA:
+		case renderer::PixelFormat::eASTC_6x6_RGBA:
+		case renderer::PixelFormat::eASTC_6x6_SRGBA:
+		case renderer::PixelFormat::eASTC_8x5_RGBA:
+		case renderer::PixelFormat::eASTC_8x5_SRGBA:
+		case renderer::PixelFormat::eASTC_8x6_RGBA:
+		case renderer::PixelFormat::eASTC_8x6_SRGBA:
+		case renderer::PixelFormat::eASTC_8x8_RGBA:
+		case renderer::PixelFormat::eASTC_8x8_SRGBA:
+		case renderer::PixelFormat::eASTC_10x5_RGBA:
+		case renderer::PixelFormat::eASTC_10x5_SRGBA:
+		case renderer::PixelFormat::eASTC_10x6_RGBA:
+		case renderer::PixelFormat::eASTC_10x6_SRGBA:
+		case renderer::PixelFormat::eASTC_10x8_RGBA:
+		case renderer::PixelFormat::eASTC_10x8_SRGBA:
+		case renderer::PixelFormat::eASTC_10x10_RGBA:
+		case renderer::PixelFormat::eASTC_10x10_SRGBA:
+		case renderer::PixelFormat::eASTC_12x10_RGBA:
+		case renderer::PixelFormat::eASTC_12x10_SRGBA:
+		case renderer::PixelFormat::eASTC_12x12_RGBA:
+		case renderer::PixelFormat::eASTC_12x12_SRGBA:
+		case renderer::PixelFormat::eETC2_R8G8B8A8:
+		case renderer::PixelFormat::eETC2_R8G8B8A8_SRGB:
+			return GL_FORMAT_RGBA;
 
 		case renderer::PixelFormat::eR8G8B8A8:
 #if defined( _WIN32 ) || defined( __linux__ )
@@ -595,6 +645,56 @@ namespace gl_renderer
 			return GL_TYPE_32F_UI24_8;
 
 		case renderer::PixelFormat::eS8:
+			return GL_TYPE_UI8;
+
+		case renderer::PixelFormat::eBC1_RGB:
+		case renderer::PixelFormat::eBC1_RGBA:
+		case renderer::PixelFormat::eBC1_SRGB:
+		case renderer::PixelFormat::eBC1_SRGBA:
+		case renderer::PixelFormat::eBC2_RGBA:
+		case renderer::PixelFormat::eBC2_SRGBA:
+		case renderer::PixelFormat::eBC3_RGBA:
+		case renderer::PixelFormat::eBC3_SRGBA:
+		case renderer::PixelFormat::eBC4:
+		case renderer::PixelFormat::eBC5_RG:
+		case renderer::PixelFormat::eASTC_4x4_RGBA:
+		case renderer::PixelFormat::eASTC_4x4_SRGBA:
+		case renderer::PixelFormat::eASTC_5x4_RGBA:
+		case renderer::PixelFormat::eASTC_5x4_SRGBA:
+		case renderer::PixelFormat::eASTC_5x5_RGBA:
+		case renderer::PixelFormat::eASTC_5x5_SRGBA:
+		case renderer::PixelFormat::eASTC_6x5_RGBA:
+		case renderer::PixelFormat::eASTC_6x5_SRGBA:
+		case renderer::PixelFormat::eASTC_6x6_RGBA:
+		case renderer::PixelFormat::eASTC_6x6_SRGBA:
+		case renderer::PixelFormat::eASTC_8x5_RGBA:
+		case renderer::PixelFormat::eASTC_8x5_SRGBA:
+		case renderer::PixelFormat::eASTC_8x6_RGBA:
+		case renderer::PixelFormat::eASTC_8x6_SRGBA:
+		case renderer::PixelFormat::eASTC_8x8_RGBA:
+		case renderer::PixelFormat::eASTC_8x8_SRGBA:
+		case renderer::PixelFormat::eASTC_10x5_RGBA:
+		case renderer::PixelFormat::eASTC_10x5_SRGBA:
+		case renderer::PixelFormat::eASTC_10x6_RGBA:
+		case renderer::PixelFormat::eASTC_10x6_SRGBA:
+		case renderer::PixelFormat::eASTC_10x8_RGBA:
+		case renderer::PixelFormat::eASTC_10x8_SRGBA:
+		case renderer::PixelFormat::eASTC_10x10_RGBA:
+		case renderer::PixelFormat::eASTC_10x10_SRGBA:
+		case renderer::PixelFormat::eASTC_12x10_RGBA:
+		case renderer::PixelFormat::eASTC_12x10_SRGBA:
+		case renderer::PixelFormat::eASTC_12x12_RGBA:
+		case renderer::PixelFormat::eASTC_12x12_SRGBA:
+		case renderer::PixelFormat::eETC2_R8G8B8:
+		case renderer::PixelFormat::eETC2_R8G8B8_SRGB:
+		case renderer::PixelFormat::eETC2_R8G8B8A1:
+		case renderer::PixelFormat::eETC2_R8G8B8A1_SRGB:
+		case renderer::PixelFormat::eETC2_R8G8B8A8:
+		case renderer::PixelFormat::eETC2_R8G8B8A8_SRGB:
+		case renderer::PixelFormat::eEAC_R11U:
+		case renderer::PixelFormat::eEAC_R11S:
+		case renderer::PixelFormat::eEAC_R11G11U:
+		case renderer::PixelFormat::eEAC_R11G11S:
 			return GL_TYPE_UI8;
 
 		default:

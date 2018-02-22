@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -82,6 +82,15 @@ namespace renderer
 		*	Les dimensions en texels de l'image à copier, en tant que \p largeur, \p hauteur, et \p profondeur.
 		*/
 		UIVec3 imageExtent;
+		/**
+		*\~english
+		*\brief
+		*	Specifies the size of the level data (used in OpenGL, for compressed formats).
+		*\~french
+		*\brief
+		*	Spécifie la taille des données d'un niveau (utilisé en OpenGL, pour les formats compressés).
+		*/
+		uint32_t levelSize;
 	};
 }
 

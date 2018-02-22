@@ -52,7 +52,7 @@ namespace renderer
 					}
 				}
 				, getBuffer()
-				, view );
+				, view.getTexture() );
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 				, PipelineStageFlag::eFragmentShader
 				, view.makeShaderInputResource( ImageLayout::eTransferDstOptimal
@@ -124,7 +124,7 @@ namespace renderer
 						std::max( 1u, extent[2] )
 					}
 				}
-				, view
+				, view.getTexture()
 				, getBuffer() );
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 				, PipelineStageFlag::eFragmentShader

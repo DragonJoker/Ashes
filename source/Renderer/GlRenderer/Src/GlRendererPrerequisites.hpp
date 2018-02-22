@@ -80,6 +80,7 @@ namespace gl_renderer
 
 	using ContextPtr = std::unique_ptr< Context >;
 	using CommandPtr = std::unique_ptr< CommandBase >;
+	using TextureViewPtr = std::unique_ptr< TextureView >;
 
 	using RenderSubpassCRef = std::reference_wrapper< RenderSubpass const >;
 

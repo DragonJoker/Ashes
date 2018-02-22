@@ -62,6 +62,18 @@ namespace vk_renderer
 
 			return result;
 		}
+
+		std::vector< VkBufferImageCopy > convert( renderer::BufferImageCopyArray const & copies )
+		{
+			std::vector< VkBufferImageCopy > result;
+
+			for ( auto & copy : copies )
+			{
+				result.emplace_back( vk_renderer::convert( copy ) );
+			}
+
+			return result;
+		}
 	}
 
 	CommandBuffer::CommandBuffer( Device const & device
@@ -378,32 +390,32 @@ namespace vk_renderer
 			, firstInstance );
 	}
 
-	void CommandBuffer::copyToImage( renderer::BufferImageCopy const & copyInfo
+	void CommandBuffer::copyToImage( renderer::BufferImageCopyArray const & copyInfo
 		, renderer::BufferBase const & src
-		, renderer::TextureView const & dst )const
+		, renderer::Texture const & dst )const
 	{
 		auto vkcopyInfo = convert( copyInfo );
 		DEBUG_DUMP( vkcopyInfo );
 		m_device.vkCmdCopyBufferToImage( m_commandBuffer
 			, static_cast< Buffer const & >( src )
-			, static_cast< Texture const & >( dst.getTexture() )
+			, static_cast< Texture const & >( dst )
 			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-			, 1
-			, &vkcopyInfo );
+			, uint32_t( vkcopyInfo.size() )
+			, vkcopyInfo.data() );
 	}
 
-	void CommandBuffer::copyToBuffer( renderer::BufferImageCopy const & copyInfo
-		, renderer::TextureView const & src
+	void CommandBuffer::copyToBuffer( renderer::BufferImageCopyArray const & copyInfo
+		, renderer::Texture const & src
 		, renderer::BufferBase const & dst )const
 	{
 		auto vkcopyInfo = convert( copyInfo );
 		DEBUG_DUMP( vkcopyInfo );
 		m_device.vkCmdCopyImageToBuffer( m_commandBuffer
-			, static_cast< Texture const & >( src.getTexture() )
+			, static_cast< Texture const & >( src )
 			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 			, static_cast< Buffer const & >( dst )
-			, 1
-			, &vkcopyInfo );
+			, uint32_t( vkcopyInfo.size() )
+			, vkcopyInfo.data() );
 	}
 
 	void CommandBuffer::copyBuffer( renderer::BufferCopy const & copyInfo
