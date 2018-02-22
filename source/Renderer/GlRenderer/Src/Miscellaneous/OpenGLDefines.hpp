@@ -232,6 +232,8 @@ namespace gl_renderer
 	using PFN_glGetTexImage = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum format, GLenum type, void *pixels );
 	using PFN_glGetTexLevelParameterfv = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum pname, GLfloat * params );
 	using PFN_glGetTexLevelParameteriv = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum pname, GLint * params );
+	using PFN_glGetTexParameterfv = void ( GLAPIENTRY * )( GLenum target, GLenum pname, GLfloat * params );
+	using PFN_glGetTexParameteriv = void ( GLAPIENTRY * )( GLenum target, GLenum pname, GLint * params );
 	using PFN_glInvalidateBufferSubData = void ( GLAPIENTRY * )( GLuint buffer, GLintptr offset, GLsizeiptr length );
 	using PFN_glLineWidth = void ( GLAPIENTRY * )( GLfloat width );
 	using PFN_glLinkProgram = void ( GLAPIENTRY * )( GLuint program );

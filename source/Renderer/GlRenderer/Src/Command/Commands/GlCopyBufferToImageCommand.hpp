@@ -36,17 +36,15 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		void applyOne( renderer::BufferImageCopy const & copyInfo
-			, renderer::TextureView const & view
-			, GlTextureType copyTarget )const;
+		void applyOne( renderer::BufferImageCopy const & copyInfo )const;
 
 	private:
 		Buffer const & m_src;
 		Texture const & m_dst;
 		renderer::BufferImageCopyArray m_copyInfo;
-		GlInternal m_format;
+		GlFormat m_format;
+		GlInternal m_internal;
 		GlType m_type;
-		std::vector< GlTextureType > m_copyTargets;
-		std::vector< renderer::TextureViewPtr > m_views;
+		GlTextureType m_copyTarget;
 	};
 }

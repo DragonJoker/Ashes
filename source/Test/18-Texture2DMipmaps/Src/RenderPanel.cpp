@@ -160,28 +160,8 @@ namespace vkapp
 	void RenderPanel::doCreateTexture()
 	{
 		std::string assetsFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
-		gli::texture2d tex2D;
-		renderer::PixelFormat format;
-
-		if ( m_device->getPhysicalDeviceInfo().textureCompressionASTC_LDR )
-		{
-			format = renderer::PixelFormat::eASTC_8x8_RGBA;
-			tex2D = gli::texture2d( gli::load( assetsFolder / "stonefloor01_color_astc_8x8_unorm.ktx" ) );
-		}
-		else if ( m_device->getPhysicalDeviceInfo().textureCompressionBC )
-		{
-			format = renderer::PixelFormat::eBC3_RGBA;
-			tex2D = gli::texture2d( gli::load( assetsFolder / "stonefloor01_color_bc3_unorm.ktx" ) );
-		}
-		else if ( m_device->getPhysicalDeviceInfo().textureCompressionETC2 )
-		{
-			format = renderer::PixelFormat::eETC2_R8G8B8;
-			tex2D = gli::texture2d( gli::load( assetsFolder / "stonefloor01_color_etc2_unorm.ktx" ) );
-		}
-		else
-		{
-			throw std::runtime_error{ "No compressed texture format supported." };
-		}
+		renderer::PixelFormat format = renderer::PixelFormat::eR8G8B8A8;
+		gli::texture2d tex2D( gli::load( assetsFolder / "metalplate01_rgba.ktx" ) );
 
 		// Create a host-visible staging buffer that contains the raw image data
 		renderer::BufferBasePtr stagingBuffer = m_device->createBuffer( uint32_t( tex2D.size() )

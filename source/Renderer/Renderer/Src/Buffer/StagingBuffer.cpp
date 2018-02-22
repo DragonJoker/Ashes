@@ -64,8 +64,10 @@ namespace renderer
 				throw std::runtime_error{ "Texture data copy failed." };
 			}
 
+			auto fence = m_device.createFence();
 			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, nullptr );
+				, fence.get() );
+			fence->wait( FenceTimeout );
 
 			if ( !res )
 			{
@@ -137,8 +139,10 @@ namespace renderer
 				throw std::runtime_error{ "Texture data copy failed." };
 			}
 
+			auto fence = m_device.createFence();
 			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, nullptr );
+				, fence.get() );
+			fence->wait( FenceTimeout );
 
 			if ( !res )
 			{
@@ -214,8 +218,10 @@ namespace renderer
 				throw std::runtime_error{ "Buffer data copy failed." };
 			}
 
+			auto fence = m_device.createFence();
 			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, nullptr );
+				, fence.get() );
+			fence->wait( FenceTimeout );
 
 			if ( !res )
 			{
@@ -255,8 +261,10 @@ namespace renderer
 				throw std::runtime_error{ "Buffer data copy failed." };
 			}
 
+			auto fence = m_device.createFence();
 			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, nullptr );
+				, fence.get() );
+			fence->wait( FenceTimeout );
 
 			if ( !res )
 			{
@@ -295,8 +303,10 @@ namespace renderer
 				throw std::runtime_error{ "Buffer data copy failed." };
 			}
 
+			auto fence = m_device.createFence();
 			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, nullptr );
+				, fence.get() );
+			fence->wait( FenceTimeout );
 
 			if ( !res )
 			{
@@ -352,8 +362,10 @@ namespace renderer
 				throw std::runtime_error{ "Buffer data copy failed." };
 			}
 
+			auto fence = m_device.createFence();
 			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, nullptr );
+				, fence.get() );
+			fence->wait( FenceTimeout );
 
 			if ( !res )
 			{
@@ -393,8 +405,10 @@ namespace renderer
 				throw std::runtime_error{ "Buffer data copy failed." };
 			}
 
+			auto fence = m_device.createFence();
 			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, nullptr );
+				, fence.get() );
+			fence->wait( FenceTimeout );
 
 			if ( !res )
 			{
@@ -433,8 +447,10 @@ namespace renderer
 				throw std::runtime_error{ "Buffer data copy failed." };
 			}
 
+			auto fence = m_device.createFence();
 			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, nullptr );
+				, fence.get() );
+			fence->wait( FenceTimeout );
 
 			if ( !res )
 			{

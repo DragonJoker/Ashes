@@ -49,6 +49,8 @@
 #include "Enum/GlShaderInfo.hpp"
 #include "Enum/GlShaderStageFlag.hpp"
 #include "Enum/GlStencilOp.hpp"
+#include "Enum/GlTexLevelParameter.hpp"
+#include "Enum/GlTexParameter.hpp"
 #include "Enum/GlTextureType.hpp"
 #include "Enum/GlTextureUnit.hpp"
 #include "Enum/GlTweak.hpp"

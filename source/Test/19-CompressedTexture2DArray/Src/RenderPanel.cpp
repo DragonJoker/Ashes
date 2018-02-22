@@ -70,7 +70,7 @@ namespace vkapp
 					{ 0.7f, 0.7f, 0.0f, 1.0f },
 					{ 1.0f, 1.0f },
 				}
-		} }
+			} }
 	{
 		try
 		{
@@ -82,6 +82,8 @@ namespace vkapp
 			std::cout << "Staging buffer created." << std::endl;
 			doCreateTexture();
 			std::cout << "Texture created." << std::endl;
+			doCreateUniformBuffer();
+			std::cout << "Uniform buffer created." << std::endl;
 			doCreateDescriptorSet();
 			std::cout << "Descriptor set created." << std::endl;
 			doCreateRenderPass();
@@ -121,6 +123,7 @@ namespace vkapp
 			m_descriptorSet.reset();
 			m_descriptorPool.reset();
 			m_descriptorLayout.reset();
+			m_uniformBuffer.reset();
 			m_sampler.reset();
 			m_view.reset();
 			m_texture.reset();
@@ -157,26 +160,34 @@ namespace vkapp
 		} );
 	}
 
+	void RenderPanel::doCreateUniformBuffer()
+	{
+		m_uniformBuffer = renderer::makeUniformBuffer< LayerSelect >( *m_device
+			, 1u
+			, 0u
+			, renderer::MemoryPropertyFlag::eHostVisible | renderer::MemoryPropertyFlag::eHostCoherent );
+	}
+
 	void RenderPanel::doCreateTexture()
 	{
 		std::string assetsFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
-		gli::texture2d tex2D;
+		gli::texture2d_array tex2DArray;
 		renderer::PixelFormat format;
 
 		if ( m_device->getPhysicalDeviceInfo().textureCompressionASTC_LDR )
 		{
 			format = renderer::PixelFormat::eASTC_8x8_RGBA;
-			tex2D = gli::texture2d( gli::load( assetsFolder / "stonefloor01_color_astc_8x8_unorm.ktx" ) );
+			tex2DArray = gli::texture2d_array( gli::load( assetsFolder / "terrain_texturearray_astc_8x8_unorm.ktx" ) );
 		}
 		else if ( m_device->getPhysicalDeviceInfo().textureCompressionBC )
 		{
 			format = renderer::PixelFormat::eBC3_RGBA;
-			tex2D = gli::texture2d( gli::load( assetsFolder / "stonefloor01_color_bc3_unorm.ktx" ) );
+			tex2DArray = gli::texture2d_array( gli::load( assetsFolder / "terrain_texturearray_bc3_unorm.ktx" ) );
 		}
 		else if ( m_device->getPhysicalDeviceInfo().textureCompressionETC2 )
 		{
 			format = renderer::PixelFormat::eETC2_R8G8B8;
-			tex2D = gli::texture2d( gli::load( assetsFolder / "stonefloor01_color_etc2_unorm.ktx" ) );
+			tex2DArray = gli::texture2d_array( gli::load( assetsFolder / "terrain_texturearray_etc2_unorm.ktx" ) );
 		}
 		else
 		{
@@ -184,7 +195,7 @@ namespace vkapp
 		}
 
 		// Create a host-visible staging buffer that contains the raw image data
-		renderer::BufferBasePtr stagingBuffer = m_device->createBuffer( uint32_t( tex2D.size() )
+		renderer::BufferBasePtr stagingBuffer = m_device->createBuffer( uint32_t( tex2DArray.size() )
 			, renderer::BufferTarget::eTransferSrc
 			, renderer::MemoryPropertyFlag::eHostVisible | renderer::MemoryPropertyFlag::eHostCoherent );
 
@@ -192,36 +203,40 @@ namespace vkapp
 		uint8_t * data = stagingBuffer->lock( 0u
 			, stagingBuffer->getSize()
 			, renderer::MemoryMapFlag::eWrite );
-		memcpy( data, tex2D.data(), tex2D.size() );
+		memcpy( data, tex2DArray.data(), tex2DArray.size() );
 		stagingBuffer->unlock();
 
 		// Create the texture image
 		m_texture = m_device->createTexture();
-		m_texture->setImage( format
-			, { tex2D.extent().x, tex2D.extent().y }
-			, tex2D.levels() );
+		m_texture->setImageArray( format
+			, { tex2DArray.extent().x, tex2DArray.extent().y }
+			, uint32_t( tex2DArray.layers() )
+			, uint32_t( tex2DArray.levels() ) );
 
 		// Prepare copy regions
 		std::vector< renderer::BufferImageCopy > bufferCopyRegions;
 		uint32_t offset{ 0u };
 
-		for ( uint32_t level = 0; level < tex2D.levels(); level++ )
+		for ( uint32_t layer = 0; layer < tex2DArray.layers(); layer++ )
 		{
-			renderer::BufferImageCopy bufferCopyRegion = {};
-			bufferCopyRegion.imageSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
-			bufferCopyRegion.imageSubresource.mipLevel = level;
-			bufferCopyRegion.imageSubresource.baseArrayLayer = 0u;
-			bufferCopyRegion.imageSubresource.layerCount = 1u;
-			bufferCopyRegion.imageExtent[0] = static_cast< uint32_t >( tex2D[level].extent().x );
-			bufferCopyRegion.imageExtent[1] = static_cast< uint32_t >( tex2D[level].extent().y );
-			bufferCopyRegion.imageExtent[2] = 1;
-			bufferCopyRegion.bufferOffset = offset;
-			bufferCopyRegion.levelSize = tex2D[level].size();
+			for ( uint32_t level = 0; level < tex2DArray.levels(); level++ )
+			{
+				renderer::BufferImageCopy bufferCopyRegion = {};
+				bufferCopyRegion.imageSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
+				bufferCopyRegion.imageSubresource.mipLevel = level;
+				bufferCopyRegion.imageSubresource.baseArrayLayer = layer;
+				bufferCopyRegion.imageSubresource.layerCount = 1u;
+				bufferCopyRegion.imageExtent[0] = static_cast< uint32_t >( tex2DArray[layer][level].extent().x );
+				bufferCopyRegion.imageExtent[1] = static_cast< uint32_t >( tex2DArray[layer][level].extent().y );
+				bufferCopyRegion.imageExtent[2] = 1;
+				bufferCopyRegion.bufferOffset = offset;
+				bufferCopyRegion.levelSize = tex2DArray[layer][level].size();
 
-			bufferCopyRegions.push_back( bufferCopyRegion );
+				bufferCopyRegions.push_back( bufferCopyRegion );
 
-			// Increase offset into staging buffer for next level / face
-			offset += uint32_t( tex2D[level].size() );
+				// Increase offset into staging buffer for next level / face
+				offset += uint32_t( tex2DArray[layer][level].size() );
+			}
 		}
 
 		auto cmdBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
@@ -229,9 +244,9 @@ namespace vkapp
 		{
 			renderer::ImageAspectFlag::eColour,
 			0,
-			uint32_t( tex2D.levels() ),
+			uint32_t( tex2DArray.levels() ),
 			0,
-			1,
+			uint32_t( tex2DArray.layers() ),
 		};
 		cmdBuffer->begin();
 
@@ -239,15 +254,15 @@ namespace vkapp
 		cmdBuffer->memoryBarrier( renderer::PipelineStageFlag::eAllCommands
 			, renderer::PipelineStageFlag::eAllCommands
 			, renderer::ImageMemoryBarrier{ 0u
-				, renderer::AccessFlag::eTransferWrite
-				, renderer::ImageLayout::eUndefined
-				, renderer::ImageLayout::eTransferDstOptimal
-				, ~( 0u )
-				, ~( 0u )
-				, *m_texture
-				, subresourceRange } );
+			, renderer::AccessFlag::eTransferWrite
+			, renderer::ImageLayout::eUndefined
+			, renderer::ImageLayout::eTransferDstOptimal
+			, ~( 0u )
+			, ~( 0u )
+			, *m_texture
+			, subresourceRange } );
 
-		// Copy the cube map faces from the staging buffer to the optimal tiled image.
+	// Copy the cube map faces from the staging buffer to the optimal tiled image.
 		cmdBuffer->copyToImage( bufferCopyRegions
 			, *stagingBuffer
 			, *m_texture );
@@ -256,13 +271,13 @@ namespace vkapp
 		cmdBuffer->memoryBarrier( renderer::PipelineStageFlag::eAllCommands
 			, renderer::PipelineStageFlag::eAllCommands
 			, renderer::ImageMemoryBarrier{ renderer::AccessFlag::eTransferWrite
-				, renderer::AccessFlag::eShaderRead
-				, renderer::ImageLayout::eTransferDstOptimal
-				, renderer::ImageLayout::eShaderReadOnlyOptimal
-				, ~( 0u )
-				, ~( 0u )
-				, *m_texture
-				, subresourceRange } );
+			, renderer::AccessFlag::eShaderRead
+			, renderer::ImageLayout::eTransferDstOptimal
+			, renderer::ImageLayout::eShaderReadOnlyOptimal
+			, ~( 0u )
+			, ~( 0u )
+			, *m_texture
+			, subresourceRange } );
 
 		cmdBuffer->end();
 		auto fence = m_device->createFence();
@@ -280,14 +295,17 @@ namespace vkapp
 		m_view = m_texture->createView( m_texture->getType()
 			, format
 			, 0u
-			, uint32_t( tex2D.levels() ) );
+			, uint32_t( tex2DArray.levels() )
+			, 0u
+			, uint32_t( tex2DArray.layers() ) );
 	}
 
 	void RenderPanel::doCreateDescriptorSet()
 	{
 		std::vector< renderer::DescriptorSetLayoutBinding > bindings
 		{
-			{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment }
+			{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
+			{ 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment }
 		};
 		m_descriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
@@ -295,6 +313,8 @@ namespace vkapp
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
 			, *m_view
 			, *m_sampler );
+		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 1u )
+			, *m_uniformBuffer );
 		m_descriptorSet->update();
 	}
 
@@ -365,7 +385,7 @@ namespace vkapp
 			, { *m_vertexLayout }
 			, *m_renderPass
 			, { renderer::PrimitiveTopology::eTriangleStrip }
-			, renderer::RasterisationState{ 1.0f } );
+		, renderer::RasterisationState{ 1.0f } );
 		m_pipeline->multisampleState( renderer::MultisampleState{} );
 		m_pipeline->finish();
 	}
@@ -392,7 +412,7 @@ namespace vkapp
 				commandBuffer.beginRenderPass( *m_renderPass
 					, frameBuffer
 					, { m_swapChain->getClearColour() }
-					, renderer::SubpassContents::eInline );
+				, renderer::SubpassContents::eInline );
 				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
 					, *m_queryPool
 					, 0u );
@@ -424,6 +444,33 @@ namespace vkapp
 				}
 			}
 		}
+	}
+
+	void RenderPanel::doUpdate()
+	{
+		auto & data = m_uniformBuffer->getData( 0u );
+		data.percent += 0.1f;
+
+		if ( data.percent > 1.0f )
+		{
+			m_src++;
+			m_dst++;
+			data.percent = 0.0f;
+		}
+
+		if ( m_src >= m_texture->getLayerCount() )
+		{
+			m_src = 0;
+		}
+
+		if ( m_dst >= m_texture->getLayerCount() )
+		{
+			m_dst = 0;
+		}
+
+		data.src = float( m_src ) / m_texture->getLayerCount();
+		data.dst = float( m_dst ) / m_texture->getLayerCount();
+		m_uniformBuffer->upload();
 	}
 
 	void RenderPanel::doDraw()
@@ -468,6 +515,7 @@ namespace vkapp
 	{
 		if ( event.GetId() == int( Ids::RenderTimer ) )
 		{
+			doUpdate();
 			doDraw();
 		}
 	}

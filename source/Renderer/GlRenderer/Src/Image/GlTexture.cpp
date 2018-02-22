@@ -84,6 +84,12 @@ namespace gl_renderer
 				, m_size[0] );
 		}
 
+		int levels = 0;
+		gl::GetTexParameteriv( m_target, GL_TEXTURE_IMMUTABLE_LEVELS, &levels );
+		assert( levels == m_mipmapLevels );
+		int format = 0;
+		gl::GetTexParameteriv( m_target, GL_TEXTURE_IMMUTABLE_FORMAT, &format );
+		assert( format != 0 );
 		glLogCall( gl::BindTexture, m_target, 0 );
 	}
 
@@ -157,6 +163,12 @@ namespace gl_renderer
 				, m_size[1] );
 		}
 
+		int levels = 0;
+		gl::GetTexParameteriv( m_target, GL_TEXTURE_IMMUTABLE_LEVELS, &levels );
+		assert( levels == m_mipmapLevels );
+		int format = 0;
+		gl::GetTexParameteriv( m_target, GL_TEXTURE_IMMUTABLE_FORMAT, &format );
+		assert( format != 0 );
 		glLogCall( gl::BindTexture, m_target, 0 );
 	}
 
@@ -173,6 +185,13 @@ namespace gl_renderer
 			, m_size[0]
 			, m_size[1]
 			, m_size[2] );
+		int levels = 0;
+		gl::GetTexParameteriv( m_target, GL_TEXTURE_IMMUTABLE_LEVELS, &levels );
+		assert( levels == m_mipmapLevels );
+		int format = 0;
+		gl::GetTexParameteriv( m_target, GL_TEXTURE_IMMUTABLE_FORMAT, &format );
+		assert( format != 0 );
+		glLogCall( gl::BindTexture, m_target, 0 );
 		glLogCall( gl::BindTexture, m_target, 0 );
 	}
 }
