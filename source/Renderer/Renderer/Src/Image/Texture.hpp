@@ -94,7 +94,8 @@ namespace renderer
 		void setImage( PixelFormat format
 			, uint32_t size
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal );
+			, ImageTiling tiling = ImageTiling::eOptimal
+			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
 		/**
 		*\~french
 		*\brief
@@ -127,7 +128,8 @@ namespace renderer
 			, UIVec2 const & size
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
 			, ImageTiling tiling = ImageTiling::eOptimal
-			, SampleCountFlag samples = SampleCountFlag::e1 );
+			, SampleCountFlag samples = SampleCountFlag::e1
+			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
 		/**
 		*\~french
 		*\brief
@@ -160,7 +162,8 @@ namespace renderer
 			, UIVec3 const & size
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
 			, ImageTiling tiling = ImageTiling::eOptimal
-			, SampleCountFlag samples = SampleCountFlag::e1 );
+			, SampleCountFlag samples = SampleCountFlag::e1
+			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
 		/**
 		*\~french
 		*\brief
@@ -193,7 +196,8 @@ namespace renderer
 			, uint32_t size
 			, uint32_t layerCount
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal );
+			, ImageTiling tiling = ImageTiling::eOptimal
+			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
 		/**
 		*\~french
 		*\brief
@@ -226,7 +230,8 @@ namespace renderer
 			, UIVec2 const & size
 			, uint32_t layerCount
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal );
+			, ImageTiling tiling = ImageTiling::eOptimal
+			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
 		/**
 		*\~french
 		*\brief
@@ -259,7 +264,8 @@ namespace renderer
 			, uint32_t size
 			, uint32_t mipmapLevels
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal );
+			, ImageTiling tiling = ImageTiling::eOptimal
+			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
 		/**
 		*\~french
 		*\brief
@@ -297,7 +303,8 @@ namespace renderer
 			, uint32_t mipmapLevels
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
 			, ImageTiling tiling = ImageTiling::eOptimal
-			, SampleCountFlag samples = SampleCountFlag::e1 );
+			, SampleCountFlag samples = SampleCountFlag::e1
+			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
 		/**
 		*\~french
 		*\brief
@@ -335,7 +342,8 @@ namespace renderer
 			, uint32_t mipmapLevels
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
 			, ImageTiling tiling = ImageTiling::eOptimal
-			, SampleCountFlag samples = SampleCountFlag::e1 );
+			, SampleCountFlag samples = SampleCountFlag::e1
+			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
 		/**
 		*\~french
 		*\brief
@@ -373,7 +381,8 @@ namespace renderer
 			, uint32_t layerCount
 			, uint32_t mipmapLevels
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal );
+			, ImageTiling tiling = ImageTiling::eOptimal
+			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
 		/**
 		*\~french
 		*\brief
@@ -411,7 +420,8 @@ namespace renderer
 			, uint32_t layerCount
 			, uint32_t mipmapLevels
 			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal );
+			, ImageTiling tiling = ImageTiling::eOptimal
+			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
 		/**
 		*\~french
 		*\brief

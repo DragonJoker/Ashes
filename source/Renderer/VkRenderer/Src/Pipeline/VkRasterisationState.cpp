@@ -22,7 +22,7 @@ namespace vk_renderer
 			state.getDepthBiasConstantFactor(),
 			state.getDepthBiasClamp(),
 			state.getDepthBiasSlopeFactor(),
-			state.getLineWidth()
+			state.hasLineWidth() ? state.getLineWidth() : 1.0f
 		};
 	}
 }

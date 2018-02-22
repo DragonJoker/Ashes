@@ -18,7 +18,7 @@ namespace renderer
 	*/
 	class VertexBufferBase
 	{
-	protected:
+	public:
 		/**
 		*\brief
 		*	Constructeur.
@@ -35,8 +35,6 @@ namespace renderer
 			, uint32_t size
 			, BufferTargets target
 			, MemoryPropertyFlags flags );
-
-	public:
 		/**
 		*\return
 		*	La taille du tampon.

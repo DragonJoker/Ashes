@@ -211,14 +211,6 @@ namespace vk_renderer
 		*/
 		VkMemoryRequirements getImageMemoryRequirements( VkImage image )const;
 		/**
-		*\brief
-		*	Le numéro de version.
-		*/
-		inline std::string const & getVersion()const
-		{
-			return m_version;
-		}
-		/**
 		*\~french
 		*\return
 		*	Le pool de commandes de présentation.
@@ -353,7 +345,6 @@ namespace vk_renderer
 		}
 
 	private:
-		std::string m_version;
 		Renderer const & m_renderer;
 		ConnectionPtr m_connection;
 		PhysicalDevice const & m_gpu;

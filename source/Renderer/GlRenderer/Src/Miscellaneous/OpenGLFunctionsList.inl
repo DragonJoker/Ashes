@@ -9,6 +9,10 @@ See LICENSE file in root folder.
 #endif
 
 GL_LIB_BASE_FUNCTION( BindTexture )
+GL_LIB_BASE_FUNCTION( Clear )
+GL_LIB_BASE_FUNCTION( ClearColor )
+GL_LIB_BASE_FUNCTION( ClearDepth )
+GL_LIB_BASE_FUNCTION( ClearStencil )
 GL_LIB_BASE_FUNCTION( CullFace )
 GL_LIB_BASE_FUNCTION( DeleteTextures )
 GL_LIB_BASE_FUNCTION( DepthFunc )

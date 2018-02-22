@@ -8,6 +8,8 @@ See LICENSE file in root folder
 
 #include "Core/GlConnection.hpp"
 
+#include <Miscellaneous/PhysicalDeviceInfo.hpp>
+
 namespace gl_renderer
 {
 	class Context
@@ -38,19 +40,9 @@ namespace gl_renderer
 		*/
 		static ContextPtr create( renderer::ConnectionPtr && connection );
 
-		inline std::string const & getVendor()const
+		inline renderer::PhysicalDeviceInfo const & getInfo()const
 		{
-			return m_vendor;
-		}
-
-		inline std::string const & getRenderer()const
-		{
-			return m_renderer;
-		}
-
-		inline std::string const & getVersion()const
-		{
-			return m_version;
+			return m_info;
 		}
 
 		inline uint32_t getGlslVersion()const
@@ -60,12 +52,10 @@ namespace gl_renderer
 
 	protected:
 		renderer::ConnectionPtr m_connection;
-		std::string m_vendor;
-		std::string m_renderer;
-		std::string m_version;
-		int m_major;
-		int m_minor;
-		uint32_t m_glslVersion;
+		renderer::PhysicalDeviceInfo m_info;
+		int m_major{ 0 };
+		int m_minor{ 0 };
+		uint32_t m_glslVersion{ 0u };
 	};
 }
 

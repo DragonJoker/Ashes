@@ -210,7 +210,7 @@ renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
 	// We expect the attach to have been presented to the surface, so it should be a present source.
 	renderer::ImageLayoutArray initialLayouts
 	{
-		renderer::ImageLayout::ePresentSrc
+		renderer::ImageLayout::eUndefined
 	};
 	// The final layouts are the layouts into which the attachments are transitioned at the end of the render pass.
 	// We want the attach to be presented to the surface, so we make it a present source.
