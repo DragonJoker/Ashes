@@ -37,14 +37,13 @@ namespace gl_renderer
 			m_hContext = wglCreateContext( m_hDC );
 			setCurrent();
 			m_opengl = std::make_unique< OpenGLLibrary >();
-			m_vendor = ( char const * )gl::GetString( GL_VENDOR );
-			m_renderer = ( char const * )gl::GetString( GL_RENDERER );
-			m_version = ( char const * )gl::GetString( GL_VERSION );
+			m_info.name = ( char const * )gl::GetString( GL_RENDERER );
+			m_info.apiVersion = ( char const * )gl::GetString( GL_VERSION );
 			loadDebugFunctions();
 			endCurrent();
 
 			double fversion{ 0u };
-			std::stringstream stream( m_version );
+			std::stringstream stream( m_info.apiVersion );
 			stream >> fversion;
 			auto version = int( fversion * 10 );
 			m_major = version / 10;
@@ -86,8 +85,6 @@ namespace gl_renderer
 			}
 
 			setCurrent();
-			glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
-			initialiseDebugFunctions();
 			wgl::SwapIntervalEXT( 0 );
 			endCurrent();
 		}

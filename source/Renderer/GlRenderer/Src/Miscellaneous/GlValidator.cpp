@@ -318,25 +318,50 @@ namespace gl_renderer
 			switch ( lhs )
 			{
 			case renderer::AttributeFormat::eVec4f:
+				return rhs == renderer::AttributeFormat::eVec3f
+					|| rhs == renderer::AttributeFormat::eVec4f
+					|| rhs == renderer::AttributeFormat::eVec4i
+					|| rhs == renderer::AttributeFormat::eVec4ui
+					|| rhs == renderer::AttributeFormat::eColour;
 			case renderer::AttributeFormat::eVec4i:
+				return rhs == renderer::AttributeFormat::eVec3i
+					|| rhs == renderer::AttributeFormat::eVec4f
+					|| rhs == renderer::AttributeFormat::eVec4i
+					|| rhs == renderer::AttributeFormat::eVec4ui
+					|| rhs == renderer::AttributeFormat::eColour;
 			case renderer::AttributeFormat::eVec4ui:
+				return rhs == renderer::AttributeFormat::eVec3ui
+					|| rhs == renderer::AttributeFormat::eVec4f
+					|| rhs == renderer::AttributeFormat::eVec4i
+					|| rhs == renderer::AttributeFormat::eVec4ui
+					|| rhs == renderer::AttributeFormat::eColour;
 			case renderer::AttributeFormat::eColour:
-				return rhs == renderer::AttributeFormat::eVec4f
+				return rhs == renderer::AttributeFormat::eVec3f
+					|| rhs == renderer::AttributeFormat::eVec4f
 					|| rhs == renderer::AttributeFormat::eVec4i
 					|| rhs == renderer::AttributeFormat::eVec4ui
 					|| rhs == renderer::AttributeFormat::eColour;
 			case renderer::AttributeFormat::eVec3f:
+				return rhs == renderer::AttributeFormat::eVec4f
+					|| rhs == renderer::AttributeFormat::eVec3f
+					|| rhs == renderer::AttributeFormat::eVec3i
+					|| rhs == renderer::AttributeFormat::eVec3ui;
 			case renderer::AttributeFormat::eVec3i:
+				return rhs == renderer::AttributeFormat::eVec4i
+					|| rhs == renderer::AttributeFormat::eVec3f
+					|| rhs == renderer::AttributeFormat::eVec3i
+					|| rhs == renderer::AttributeFormat::eVec3ui;
 			case renderer::AttributeFormat::eVec3ui:
-				return rhs == renderer::AttributeFormat::eVec3f
+				return rhs == renderer::AttributeFormat::eVec4ui
+					|| rhs == renderer::AttributeFormat::eVec3f
 					|| rhs == renderer::AttributeFormat::eVec3i
 					|| rhs == renderer::AttributeFormat::eVec3ui;
 			case renderer::AttributeFormat::eVec2f:
 			case renderer::AttributeFormat::eVec2i:
 			case renderer::AttributeFormat::eVec2ui:
-				return rhs == renderer::AttributeFormat::eVec3f
-					|| rhs == renderer::AttributeFormat::eVec3i
-					|| rhs == renderer::AttributeFormat::eVec3ui;
+				return rhs == renderer::AttributeFormat::eVec2f
+					|| rhs == renderer::AttributeFormat::eVec2i
+					|| rhs == renderer::AttributeFormat::eVec2ui;
 			case renderer::AttributeFormat::eInt:
 			case renderer::AttributeFormat::eUInt:
 			case renderer::AttributeFormat::eFloat:

@@ -262,16 +262,29 @@ namespace gl_renderer
 				glLogCall( gl::PatchParameteri, GL_PATCH_VERTICES, int( state.getControlPoints() ) );
 			}
 		}
-	}
+
+		static GLenum constexpr GL_ALIASED_LINE_WIDTH_RANGE = 0x846E;
+		static GLenum constexpr GL_SMOOTH_LINE_WIDTH_RANGE = 0x0B22;
+}
 
 	Device::Device( renderer::Renderer const & renderer
 		, renderer::ConnectionPtr && connection )
 		: renderer::Device{ renderer, *connection }
 		, m_context{ Context::create( std::move( connection ) ) }
-		, m_info{ m_context->getRenderer(), "", m_context->getVersion() }
+		, m_info{ m_context->getInfo() }
 		, m_rsState{ 1.0f }
 	{
-		m_name = m_context->getRenderer();
+		enable();
+		m_info.fillModeNonSolid = true;
+		GLint range[2];
+		glLogCall( gl::GetIntegerv, GL_ALIASED_LINE_WIDTH_RANGE, range );
+		m_info.wideLines = ( range[1] > 1 );
+		glLogCall( gl::GetIntegerv, GL_SMOOTH_LINE_WIDTH_RANGE, range );
+		m_info.wideLines &= ( range[1] > 1 );
+		glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
+		initialiseDebugFunctions();
+		disable();
+
 		m_timestampPeriod = 1;
 		m_presentQueue = std::make_unique< Queue >();
 		m_computeQueue = std::make_unique< Queue >();

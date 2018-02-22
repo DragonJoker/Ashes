@@ -187,21 +187,6 @@ namespace gl_renderer
 		*/
 		void swapBuffers()const;
 
-		inline std::string const & getVendor()const
-		{
-			return m_context->getVendor();
-		}
-
-		inline std::string const & getRendererName()const
-		{
-			return m_context->getRenderer();
-		}
-
-		inline std::string const & getVersionString()const
-		{
-			return m_context->getVersion();
-		}
-
 		inline uint32_t getGlslVersion()const
 		{
 			return m_context->getGlslVersion();

@@ -49,6 +49,48 @@ namespace gl_renderer
 				++depthStencilIndex;
 			}
 		}
+
+		GLbitfield doClearBack( renderer::RenderPassAttachment const & attach
+			, renderer::ClearValue const & clearValue
+			, GLint & colourIndex
+			, GLint & depthStencilIndex )
+		{
+			GLbitfield result{ 0u };
+
+			if ( clearValue.isColour() )
+			{
+				auto & colour = clearValue.colour();
+				glLogCall( gl::ClearColor, colour[0], colour[1], colour[2], colour[3] );
+				result = GL_COLOR_BUFFER_BIT;
+				++colourIndex;
+			}
+			else
+			{
+				auto & depthStencil = clearValue.depthStencil();
+				auto stencil = GLint( depthStencil.stencil );
+
+				if ( renderer::isDepthStencilFormat( attach.getFormat() ) )
+				{
+					glLogCall( gl::ClearDepth, depthStencil.depth );
+					glLogCall( gl::ClearStencil, depthStencil.stencil );
+					result = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+				}
+				else if ( renderer::isDepthFormat( attach.getFormat() ) )
+				{
+					glLogCall( gl::ClearDepth, depthStencil.depth );
+					result = GL_DEPTH_BUFFER_BIT;
+				}
+				else if ( renderer::isStencilFormat( attach.getFormat() ) )
+				{
+					glLogCall( gl::ClearStencil, depthStencil.stencil );
+					result = GL_STENCIL_BUFFER_BIT;
+				}
+
+				++depthStencilIndex;
+			}
+
+			return result;
+		}
 	}
 
 	BeginRenderPassCommand::BeginRenderPassCommand( renderer::RenderPass const & renderPass
@@ -62,7 +104,7 @@ namespace gl_renderer
 		, m_clearValues{ clearValues }
 	{
 		assert( ( m_frameBuffer.getFrameBuffer() && m_frameBuffer.getSize() == m_clearValues.size() )
-			|| ( !m_frameBuffer.getFrameBuffer() && m_renderPass.getSize() == m_clearValues.size() ) );
+			|| !m_frameBuffer.getFrameBuffer() );
 	}
 
 	void BeginRenderPassCommand::apply()const
@@ -97,21 +139,25 @@ namespace gl_renderer
 		}
 		else if ( !m_clearValues.empty() )
 		{
+			GLbitfield bitfield{ 0u };
 			auto it = m_renderPass.begin();
 
 			for ( size_t i = 0; i < m_renderPass.getSize(); ++i )
 			{
 				auto & clearValue = m_clearValues[i];
 				auto & attach = *it;
+				++it;
 
 				if ( attach.getClear() )
 				{
-					doClear( attach
+					bitfield |= doClearBack( attach
 						, clearValue
 						, colourIndex
 						, depthStencilIndex );
 				}
 			}
+
+			glLogCall( gl::Clear, bitfield );
 		}
 	}
 

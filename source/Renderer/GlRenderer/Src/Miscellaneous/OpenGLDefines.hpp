@@ -156,10 +156,14 @@ namespace gl_renderer
 	using PFN_glBlitFramebuffer = void ( GLAPIENTRY * )( GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter );
 	using PFN_glBufferStorage = void ( GLAPIENTRY * )( GLenum target, GLsizeiptr size, const void * data, GLbitfield flags );
 	using PFN_glCheckFramebufferStatus = GLenum( GLAPIENTRY * )( GLenum target );
+	using PFN_glClear = void ( GLAPIENTRY * )( GLbitfield mask );
+	using PFN_glClearDepth = void ( GLAPIENTRY * )( GLdouble depth );
+	using PFN_glClearStencil = void ( GLAPIENTRY * )( GLint stencil );
 	using PFN_glClearBufferfi = void ( GLAPIENTRY * )( GLenum buffer, GLint drawBuffer, GLfloat depth, GLint stencil );
 	using PFN_glClearBufferfv = void ( GLAPIENTRY * )( GLenum buffer, GLint drawBuffer, const GLfloat* value );
 	using PFN_glClearBufferiv = void ( GLAPIENTRY * )( GLenum buffer, GLint drawBuffer, const GLint* value );
 	using PFN_glClearBufferuiv = void ( GLAPIENTRY * )( GLenum buffer, GLint drawBuffer, const GLuint* value );
+	using PFN_glClearColor = void ( GLAPIENTRY * )( GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha );
 	using PFN_glClearTexImage = void ( GLAPIENTRY * )( GLuint texture, GLint level, GLenum format, GLenum type, const void *data );
 	using PFN_glClientWaitSync = GLenum( GLAPIENTRY * )( GLsync GLsync, GLbitfield flags, GLuint64 timeout );
 	using PFN_glClipControl = void ( GLAPIENTRY * )( GLenum origin, GLenum depth );

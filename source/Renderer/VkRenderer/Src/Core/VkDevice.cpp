@@ -36,9 +36,7 @@ namespace vk_renderer
 		, m_renderer{ renderer }
 		, m_connection{ static_cast< Connection * >( connection.release() ) }
 		, m_gpu{ m_connection->getGpu() }
-		, m_version{ "Vulkan 1.0.0" }
 	{
-		m_name = m_gpu.getProperties().deviceName;
 		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
 		std::vector< VkDeviceQueueCreateInfo > queueCreateInfos;
 		std::vector< float > queuePriorities = { 1.0f };

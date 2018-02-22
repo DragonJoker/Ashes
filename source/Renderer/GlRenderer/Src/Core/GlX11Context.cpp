@@ -98,14 +98,13 @@ namespace gl_renderer
 
 			setCurrent();
 			m_opengl = std::make_unique< OpenGLLibrary >();
-			m_vendor = ( char const * )glGetString( GL_VENDOR );
-			m_renderer = ( char const * )glGetString( GL_RENDERER );
-			m_version = ( char const * )glGetString( GL_VERSION );
+			m_info.name = ( char const * )glGetString( GL_RENDERER );
+			m_info.apiVersion = ( char const * )glGetString( GL_VERSION );
 			loadDebugFunctions();
 			endCurrent();
 
 			double fversion{ 0u };
-			std::stringstream stream( m_version );
+			std::stringstream stream( m_info.apiVersion );
 			stream >> fversion;
 			auto version = int( fversion * 10 );
 			m_major = version / 10;
@@ -151,11 +150,7 @@ namespace gl_renderer
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
 
-			setCurrent();
-			glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
-			initialiseDebugFunctions();
 			XFree( visualInfo );
-			endCurrent();
 		}
 	}
 
