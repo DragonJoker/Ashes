@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -16,6 +16,24 @@ namespace renderer
 		, CommandPool const & pool
 		, bool primary )
 	{
+	}
+
+	void CommandBuffer::copyToImage( BufferImageCopy const & copyInfo
+		, BufferBase const & src
+		, Texture const & dst )const
+	{
+		copyToImage( BufferImageCopyArray{ 1u, copyInfo }
+			, src
+			, dst );
+	}
+
+	void CommandBuffer::copyToBuffer( BufferImageCopy const & copyInfo
+		, Texture const & src
+		, BufferBase const & dst )const
+	{
+		copyToBuffer( BufferImageCopyArray{ 1u, copyInfo }
+			, src
+			, dst );
 	}
 
 	void CommandBuffer::copyBuffer( BufferBase const & src

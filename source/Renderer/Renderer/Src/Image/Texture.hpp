@@ -489,6 +489,18 @@ namespace renderer
 		/**
 		*\~french
 		*\return
+		*	Le nombre de couches.
+		*\~english
+		*\return
+		*	The layers count.
+		*/
+		inline uint32_t getLayerCount()const noexcept
+		{
+			return m_layerCount;
+		}
+		/**
+		*\~french
+		*\return
 		*	Le nombre de niveaux de mipmaps.
 		*\~english
 		*\return

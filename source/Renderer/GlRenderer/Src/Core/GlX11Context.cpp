@@ -98,8 +98,7 @@ namespace gl_renderer
 
 			setCurrent();
 			m_opengl = std::make_unique< OpenGLLibrary >();
-			m_info.name = ( char const * )glGetString( GL_RENDERER );
-			m_info.apiVersion = ( char const * )glGetString( GL_VERSION );
+			doInitialiseBaseInfo();
 			loadDebugFunctions();
 			endCurrent();
 
@@ -150,6 +149,9 @@ namespace gl_renderer
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
 
+			setCurrent();
+			doInitialiseInfo();
+			endCurrent();
 			XFree( visualInfo );
 		}
 	}

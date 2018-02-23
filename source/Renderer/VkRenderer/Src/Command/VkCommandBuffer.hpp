@@ -158,16 +158,16 @@ namespace vk_renderer
 			, uint32_t vertexOffset
 			, uint32_t firstInstance )const override;
 		/**
-		*\copydoc	renderer::CommandBuffer:copyToImage
+		*\copydoc	renderer::CommandBuffer::copyToImage
 		*/
-		void copyToImage( renderer::BufferImageCopy const & copyInfo
+		void copyToImage( renderer::BufferImageCopyArray const & copyInfo
 			, renderer::BufferBase const & src
-			, renderer::TextureView const & dst )const override;
+			, renderer::Texture const & dst )const override;
 		/**
-		*\copydoc	renderer::CommandBuffer:copyToBuffer
+		*\copydoc	renderer::CommandBuffer::copyToBuffer
 		*/
-		void copyToBuffer( renderer::BufferImageCopy const & copyInfo
-			, renderer::TextureView const & src
+		void copyToBuffer( renderer::BufferImageCopyArray const & copyInfo
+			, renderer::Texture const & src
 			, renderer::BufferBase const & dst )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:copyBuffer

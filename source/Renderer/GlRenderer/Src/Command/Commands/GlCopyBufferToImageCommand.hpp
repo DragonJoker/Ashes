@@ -28,20 +28,23 @@ namespace gl_renderer
 		*\param[in] dst
 		*	L'image destination.
 		*/
-		CopyBufferToImageCommand( renderer::BufferImageCopy const & copyInfo
+		CopyBufferToImageCommand( renderer::BufferImageCopyArray const & copyInfo
 			, renderer::BufferBase const & src
-			, renderer::TextureView const & dst );
+			, renderer::Texture const & dst );
 
 		void apply()const override;
 		CommandPtr clone()const override;
 
 	private:
+		void applyOne( renderer::BufferImageCopy const & copyInfo )const;
+
+	private:
 		Buffer const & m_src;
-		TextureView const & m_dst;
-		renderer::BufferImageCopy m_copyInfo;
+		Texture const & m_dst;
+		renderer::BufferImageCopyArray m_copyInfo;
 		GlFormat m_format;
+		GlInternal m_internal;
 		GlType m_type;
-		GlTextureType m_target;
 		GlTextureType m_copyTarget;
 	};
 }

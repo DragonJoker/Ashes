@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -26,7 +26,7 @@ namespace renderer
 	*\return
 	*	\p true if it is usable in depth and stencil buffers.
 	*/
-	bool isDepthStencilFormat( renderer::PixelFormat format );
+	bool isDepthStencilFormat( renderer::PixelFormat format )noexcept;
 	/**
 	*\~french
 	*\brief
@@ -43,7 +43,7 @@ namespace renderer
 	*\return
 	*	\p true if it is usable in stencil buffers.
 	*/
-	bool isStencilFormat( renderer::PixelFormat format );
+	bool isStencilFormat( renderer::PixelFormat format )noexcept;
 	/**
 	*\~french
 	*\brief
@@ -60,7 +60,20 @@ namespace renderer
 	*\return
 	*	\p true if it is usable in depth buffers.
 	*/
-	bool isDepthFormat( renderer::PixelFormat format );
+	bool isDepthFormat( renderer::PixelFormat format )noexcept;
+	/**
+	*\~english
+	*\brief
+	*	Tells if given pixel format is a compressed pixel format.
+	*\param[in] format
+	*	The pixel format.
+	*\~french
+	*\brief
+	*	Dit si le format de pixels donné est un format compressé.
+	*\param[in] format
+	*	Le format de pixel.
+	*/
+	bool isCompressedFormat( PixelFormat format )noexcept;
 	/**
 	*\~french
 	*\brief
@@ -77,7 +90,7 @@ namespace renderer
 	*\return
 	*	\p true if it is usable in depth and/or stencil buffers.
 	*/
-	inline bool isDepthOrStencilFormat( renderer::PixelFormat format )
+	inline bool isDepthOrStencilFormat( renderer::PixelFormat format )noexcept
 	{
 		return isDepthStencilFormat( format )
 			|| isStencilFormat( format )
@@ -99,7 +112,7 @@ namespace renderer
 	*\return
 	*	The aspects.
 	*/
-	ImageAspectFlags getAspectMask( renderer::PixelFormat format );
+	ImageAspectFlags getAspectMask( renderer::PixelFormat format )noexcept;
 	/**
 	*\~english
 	*\brief

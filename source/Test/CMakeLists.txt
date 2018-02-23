@@ -34,6 +34,8 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		${CMAKE_SOURCE_DIR}/Core
 		${CMAKE_BINARY_DIR}/Renderer/Renderer/Src
 		${CMAKE_SOURCE_DIR}/Renderer/Renderer/Src
+		${CMAKE_SOURCE_DIR}/external/gli
+		${CMAKE_SOURCE_DIR}/external/glm
 		${wxWidgets_INCLUDE_DIRS}
 		${GTK2_INCLUDE_DIRS}
 	)
@@ -55,4 +57,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 	add_subdirectory( 14-RenderToCube )
 	add_subdirectory( 15-Instantiation )
 	add_subdirectory( 16-ComputePipeline )
+	add_subdirectory( 17-CompressedTexture2D )
+	add_subdirectory( 18-Texture2DMipmaps )
+	add_subdirectory( 19-CompressedTexture2DArray )
 endif ()

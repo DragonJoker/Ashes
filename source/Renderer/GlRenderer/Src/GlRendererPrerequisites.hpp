@@ -49,6 +49,8 @@
 #include "Enum/GlShaderInfo.hpp"
 #include "Enum/GlShaderStageFlag.hpp"
 #include "Enum/GlStencilOp.hpp"
+#include "Enum/GlTexLevelParameter.hpp"
+#include "Enum/GlTexParameter.hpp"
 #include "Enum/GlTextureType.hpp"
 #include "Enum/GlTextureUnit.hpp"
 #include "Enum/GlTweak.hpp"
@@ -80,6 +82,7 @@ namespace gl_renderer
 
 	using ContextPtr = std::unique_ptr< Context >;
 	using CommandPtr = std::unique_ptr< CommandBase >;
+	using TextureViewPtr = std::unique_ptr< TextureView >;
 
 	using RenderSubpassCRef = std::reference_wrapper< RenderSubpass const >;
 

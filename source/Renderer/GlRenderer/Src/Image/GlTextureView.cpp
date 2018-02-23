@@ -59,6 +59,18 @@ namespace gl_renderer
 			glLogCall( gl::TexParameteri, m_target, GL_SWIZZLE_A, convert( mapping.a ) );
 		}
 
+		int minLevel = 0;
+		gl::GetTexParameteriv( m_target, GL_TEXTURE_VIEW_MIN_LEVEL, &minLevel );
+		assert( minLevel == baseMipLevel );
+		int numLevels = 0;
+		gl::GetTexParameteriv( m_target, GL_TEXTURE_VIEW_NUM_LEVELS, &numLevels );
+		assert( numLevels == levelCount );
+		int minLayer = 0;
+		gl::GetTexParameteriv( m_target, GL_TEXTURE_VIEW_MIN_LAYER, &minLayer );
+		assert( minLayer == baseArrayLayer );
+		int numLayers = 0;
+		gl::GetTexParameteriv( m_target, GL_TEXTURE_VIEW_NUM_LAYERS, &numLayers );
+		assert( numLayers == layerCount );
 		glLogCall( gl::BindTexture, m_target, 0u );
 	}
 

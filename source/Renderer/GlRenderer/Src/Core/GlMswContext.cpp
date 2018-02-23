@@ -37,8 +37,7 @@ namespace gl_renderer
 			m_hContext = wglCreateContext( m_hDC );
 			setCurrent();
 			m_opengl = std::make_unique< OpenGLLibrary >();
-			m_info.name = ( char const * )gl::GetString( GL_RENDERER );
-			m_info.apiVersion = ( char const * )gl::GetString( GL_VERSION );
+			doInitialiseBaseInfo();
 			loadDebugFunctions();
 			endCurrent();
 
@@ -86,6 +85,7 @@ namespace gl_renderer
 
 			setCurrent();
 			wgl::SwapIntervalEXT( 0 );
+			doInitialiseInfo();
 			endCurrent();
 		}
 	}

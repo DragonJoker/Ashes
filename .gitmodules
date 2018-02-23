@@ -1,0 +1,6 @@
+[submodule "source/external/gli"]
+	path = source/external/gli
+	url = https://github.com/g-truc/gli.git
+[submodule "source/external/glm"]
+	path = source/external/glm
+	url = https://github.com/g-truc/glm.git
