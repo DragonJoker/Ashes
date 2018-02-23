@@ -144,6 +144,36 @@ namespace vk_renderer
 		return static_cast< TexelBufferBinding const & >( *m_bindings.back() );
 	}
 
+	renderer::DynamicUniformBufferBinding const & DescriptorSet::createDynamicBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		, renderer::UniformBufferBase const & uniformBuffer
+		, uint32_t offset
+		, uint32_t range
+		, uint32_t index )
+	{
+		m_bindings.emplace_back( std::make_unique< DynamicUniformBufferBinding >( layoutBinding
+			, *this
+			, static_cast< UniformBuffer const & >( uniformBuffer )
+			, offset
+			, range
+			, index ) );
+		return static_cast< DynamicUniformBufferBinding const & >( *m_bindings.back() );
+	}
+
+	renderer::DynamicStorageBufferBinding const & DescriptorSet::createDynamicBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		, renderer::BufferBase const & storageBuffer
+		, uint32_t offset
+		, uint32_t range
+		, uint32_t index )
+	{
+		m_bindings.emplace_back( std::make_unique< DynamicStorageBufferBinding >( layoutBinding
+			, *this
+			, static_cast< Buffer const & >( storageBuffer )
+			, offset
+			, range
+			, index ) );
+		return static_cast< DynamicStorageBufferBinding const & >( *m_bindings.back() );
+	}
+
 	void DescriptorSet::update()const
 	{
 		auto bindings = makeVkArray < VkWriteDescriptorSet >( m_bindings );

@@ -331,6 +331,7 @@ namespace vk_renderer
 
 	void CommandBuffer::bindDescriptorSets( renderer::DescriptorSetCRefArray const & descriptorSets
 		, renderer::PipelineLayout const & layout
+		, renderer::UInt32Array const & dynamicOffsets
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
 		auto vkDescriptors = makeVkArray< VkDescriptorSet >( convert( descriptorSets ) );
@@ -340,8 +341,8 @@ namespace vk_renderer
 			, descriptorSets.begin()->get().getBindingPoint()
 			, uint32_t( descriptorSets.size() )
 			, vkDescriptors.data()
-			, 0u
-			, nullptr );
+			, uint32_t( dynamicOffsets.size() )
+			, dynamicOffsets.data() );
 	}
 
 	void CommandBuffer::setViewport( renderer::Viewport const & viewport )const

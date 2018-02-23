@@ -116,6 +116,11 @@ Tests loading a texture 2D and its mipmap levels from a file.
 
 Tests loading a texture 2D array, compressed in either BC3, ASTC 8x8 or ETC2, depending on support by the rendering API.
 
+### [Dynamic Uniform Buffers](source/Test/20-DynamicUniformBuffer/)
+<img src="./screenshots/20.png" height="72px" align="right">
+
+Takes the push constant test case and uses dynamic buffer descriptor instead of multiple descriptors.
+
 
 ## Sample applications
 

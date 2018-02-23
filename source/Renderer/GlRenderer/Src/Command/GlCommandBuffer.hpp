@@ -113,6 +113,7 @@ namespace gl_renderer
 		*/
 		void bindDescriptorSets( renderer::DescriptorSetCRefArray const & descriptorSets
 			, renderer::PipelineLayout const & layout
+			, renderer::UInt32Array const & dynamicOffsets
 			, renderer::PipelineBindPoint bindingPoint )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer::setViewport
