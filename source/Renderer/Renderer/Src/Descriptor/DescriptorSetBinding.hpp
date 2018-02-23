@@ -574,6 +574,172 @@ namespace renderer
 		BufferBase const & m_buffer;
 		BufferView const & m_view;
 	};
+	/**
+	*\~english
+	*\brief
+	*	Dynamic uniform buffer descriptor.
+	*\~french
+	*\brief
+	*	Attache de type tampon de variables uniformes dynamique.
+	*/
+	class DynamicUniformBufferBinding
+		: public DescriptorSetBinding
+	{
+	public:
+		DynamicUniformBufferBinding( DynamicUniformBufferBinding const & ) = delete;
+		DynamicUniformBufferBinding( DynamicUniformBufferBinding && ) = default;
+		DynamicUniformBufferBinding & operator=( DynamicUniformBufferBinding const & ) = delete;
+		DynamicUniformBufferBinding & operator=( DynamicUniformBufferBinding && ) = default;
+		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] uniformBuffer
+		*	The uniform buffer.
+		*\param[in] offset
+		*	The offset in the buffer.
+		*\param[in] range
+		*	The range size in the buffer.
+		*\param[in] index
+		*	The array index.
+		*\~french
+		*\brief
+		*	Constructeur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] uniformBuffer
+		*	Le tampon.
+		*\param[in] offset
+		*	Le décalage dans tampon.
+		*\param[in] range
+		*	La taille de l'intervalle dans le tampon.
+		*\param[in] index
+		*	L'index de tableau.
+		*/
+		DynamicUniformBufferBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, UniformBufferBase const & uniformBuffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index )
+			: DescriptorSetBinding{ layoutBinding, index }
+			, m_uniformBuffer{ uniformBuffer }
+			, m_offset{ offset }
+			, m_range{ range }
+		{
+		}
+		/**
+		*\~english
+		*\name Getters.
+		*\~french
+		*\name Accesseurs.
+		*/
+		/**\{*/
+		inline UniformBufferBase const & getUniformBuffer()const
+		{
+			return m_uniformBuffer;
+		}
+
+		inline uint32_t getOffset()const
+		{
+			return m_offset;
+		}
+
+		inline uint32_t getRange()const
+		{
+			return m_range;
+		}
+		/**\}*/
+
+	private:
+		UniformBufferBase const & m_uniformBuffer;
+		uint32_t m_offset;
+		uint32_t m_range;
+	};
+	/**
+	*\~english
+	*\brief
+	*	Dynamic storage buffer descriptor.
+	*\~french
+	*\brief
+	*	Attache de type tampon de stockage dynamique.
+	*/
+	class DynamicStorageBufferBinding
+		: public DescriptorSetBinding
+	{
+	public:
+		DynamicStorageBufferBinding( DynamicStorageBufferBinding const & ) = delete;
+		DynamicStorageBufferBinding( DynamicStorageBufferBinding && ) = default;
+		DynamicStorageBufferBinding & operator=( DynamicStorageBufferBinding const & ) = delete;
+		DynamicStorageBufferBinding & operator=( DynamicStorageBufferBinding && ) = default;
+		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] storageBuffer
+		*	The GPU buffer.
+		*\param[in] offset
+		*	The offset in the buffer.
+		*\param[in] range
+		*	The range size in the buffer.
+		*\param[in] index
+		*	The array index.
+		*\~french
+		*\brief
+		*	Constructeur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] storageBuffer
+		*	Le tampon GPU.
+		*\param[in] offset
+		*	Le décalage dans tampon.
+		*\param[in] range
+		*	La taille de l'intrvalle dans le tampon.
+		*\param[in] index
+		*	L'index de tableau.
+		*/
+		DynamicStorageBufferBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, BufferBase const & storageBuffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index )
+			: DescriptorSetBinding{ layoutBinding, index }
+			, m_buffer{ storageBuffer }
+			, m_offset{ offset }
+			, m_range{ range }
+		{
+		}
+		/**
+		*\~english
+		*\name Getters.
+		*\~french
+		*\name Accesseurs.
+		*/
+		/**\{*/
+		inline BufferBase const & getBuffer()const
+		{
+			return m_buffer;
+		}
+
+		inline uint32_t getOffset()const
+		{
+			return m_offset;
+		}
+
+		inline uint32_t getRange()const
+		{
+			return m_range;
+		}
+		/**\}*/
+
+	private:
+		BufferBase const & m_buffer;
+		uint32_t m_offset;
+		uint32_t m_range;
+	};
 }
 
 #endif

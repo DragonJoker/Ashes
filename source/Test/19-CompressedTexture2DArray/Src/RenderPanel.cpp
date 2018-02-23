@@ -468,8 +468,8 @@ namespace vkapp
 			m_dst = 0;
 		}
 
-		data.src = float( m_src ) / m_texture->getLayerCount();
-		data.dst = float( m_dst ) / m_texture->getLayerCount();
+		data.src = float( m_src );
+		data.dst = float( m_dst );
 		m_uniformBuffer->upload();
 	}
 

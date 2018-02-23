@@ -161,4 +161,44 @@ namespace vk_renderer
 		BufferView const & m_view;
 		VkDescriptorBufferInfo m_info;
 	};
+	/**
+	*\brief
+	*	Attache de type tampon uniforme dynamique.
+	*/
+	class DynamicUniformBufferBinding
+		: public renderer::DynamicUniformBufferBinding
+		, public DescriptorSetBinding
+	{
+	public:
+		DynamicUniformBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, DescriptorSet const & descriptorSet
+			, UniformBuffer const & uniformBuffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index );
+
+	private:
+		Buffer const & m_uniformBuffer;
+		VkDescriptorBufferInfo m_info;
+	};
+	/**
+	*\brief
+	*	Attache de type tampon de stockage dynamique.
+	*/
+	class DynamicStorageBufferBinding
+		: public renderer::DynamicStorageBufferBinding
+		, public DescriptorSetBinding
+	{
+	public:
+		DynamicStorageBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, DescriptorSet const & descriptorSet
+			, Buffer const & storageBuffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index );
+
+	private:
+		Buffer const & m_buffer;
+		VkDescriptorBufferInfo m_info;
+	};
 }

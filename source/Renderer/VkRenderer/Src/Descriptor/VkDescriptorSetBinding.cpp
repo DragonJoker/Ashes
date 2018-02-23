@@ -238,4 +238,68 @@ namespace vk_renderer
 	}
 
 	//************************************************************************************************
+
+	DynamicUniformBufferBinding::DynamicUniformBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		, DescriptorSet const & descriptorSet
+		, UniformBuffer const & uniformBuffer
+		, uint32_t offset
+		, uint32_t range
+		, uint32_t index )
+		: renderer::DynamicUniformBufferBinding{ layoutBinding, uniformBuffer, offset, range, index }
+		, m_uniformBuffer{ static_cast< Buffer const & >( uniformBuffer.getBuffer() ) }
+		, m_info
+		{
+			m_uniformBuffer,
+			offset,
+			range
+		}
+	{
+		m_write =
+		{
+			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,         // sType
+			nullptr,                                        // pNext
+			descriptorSet,                                  // dstSet
+			layoutBinding.getBindingPoint(),                // dstBinding
+			index,                                          // dstArrayElement
+			1u,                                             // descriptorCount
+			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,      // descriptorType
+			nullptr,                                        // pImageInfo
+			&m_info,                                        // pBufferInfo
+			nullptr                                         // pTexelBufferView
+		};
+	}
+
+	//************************************************************************************************
+
+	DynamicStorageBufferBinding::DynamicStorageBufferBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+		, DescriptorSet const & descriptorSet
+		, Buffer const & storageBuffer
+		, uint32_t offset
+		, uint32_t range
+		, uint32_t index )
+		: renderer::DynamicStorageBufferBinding{ layoutBinding, storageBuffer, offset, range, index }
+		, m_buffer{ storageBuffer }
+		, m_info
+		{
+			m_buffer,
+			offset,
+			range,
+		}
+	{
+		m_write =
+		{
+			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,         // sType
+			nullptr,                                        // pNext
+			descriptorSet,                                  // dstSet
+			layoutBinding.getBindingPoint(),                // dstBinding
+			index,                                          // dstArrayElement
+			1u,                                             // descriptorCount
+			VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC,      // descriptorType
+			nullptr,                                        // pImageInfo
+			&m_info,                                        // pBufferInfo
+			nullptr                                         // pTexelBufferView
+		};
+	}
+
+	//************************************************************************************************
 }
