@@ -8,6 +8,8 @@
 
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 
+#include <algorithm>
+
 namespace gl_renderer
 {
 	DescriptorSet::DescriptorSet( renderer::DescriptorSetPool const & pool, uint32_t bindingPoint )
