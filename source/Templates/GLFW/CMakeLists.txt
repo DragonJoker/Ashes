@@ -22,6 +22,11 @@ if( GLFW_FOUND )
 		${GLFW_LIBRARIES}
 	)
 
+	add_dependencies(
+		GlRenderer
+		VkRenderer
+	)
+
 	if ( UNIX )
 		target_link_libraries( ${PROJECT_NAME}
 			dl

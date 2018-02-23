@@ -201,6 +201,7 @@ namespace renderer
 	using UniformBufferBasePtr = std::unique_ptr< UniformBufferBase >;
 
 	using AttributeArray = std::vector< Attribute >;
+	using BufferImageCopyArray = std::vector< BufferImageCopy >;
 	using ClearValueArray = std::vector< ClearValue >;
 	using ColourBlendStateAttachmentArray = std::vector< ColourBlendStateAttachment >;
 	using DescriptorSetLayoutBindingArray = std::vector< DescriptorSetLayoutBinding >;

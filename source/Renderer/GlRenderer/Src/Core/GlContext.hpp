@@ -51,8 +51,16 @@ namespace gl_renderer
 		}
 
 	protected:
+		void doInitialiseBaseInfo();
+		void doInitialiseInfo();
+
+	private:
+		bool doFindExtension( std::string const & name );
+
+	protected:
 		renderer::ConnectionPtr m_connection;
 		renderer::PhysicalDeviceInfo m_info;
+		renderer::StringArray m_extensions;
 		int m_major{ 0 };
 		int m_minor{ 0 };
 		uint32_t m_glslVersion{ 0u };

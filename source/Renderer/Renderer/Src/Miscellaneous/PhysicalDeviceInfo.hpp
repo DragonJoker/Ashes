@@ -65,6 +65,33 @@ namespace renderer
 		*	Le support des lignes larges.
 		*/
 		bool wideLines{ false };
+		/**
+		*\~english
+		*\brief
+		*	The support for BC compressed texture formats.
+		*\~french
+		*\brief
+		*	Le support des formats de texture compressés en BC.
+		*/
+		bool textureCompressionBC{ false };
+		/**
+		*\~english
+		*\brief
+		*	The support for LDR ASTC compressed texture formats.
+		*\~french
+		*\brief
+		*	Le support des formats de texture compressés en ASTC LDR.
+		*/
+		bool textureCompressionASTC_LDR{ false };
+		/**
+		*\~english
+		*\brief
+		*	The support for ETC2 compressed texture formats.
+		*\~french
+		*\brief
+		*	Le support des formats de texture compressés en ETC2.
+		*/
+		bool textureCompressionETC2{ false };
 	};
 }
 

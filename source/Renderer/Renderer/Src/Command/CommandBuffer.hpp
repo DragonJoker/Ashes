@@ -491,9 +491,9 @@ namespace renderer
 		*\param[in] dst
 		*	The destination image.
 		*/
-		virtual void copyToImage( BufferImageCopy const & copyInfo
+		virtual void copyToImage( BufferImageCopyArray const & copyInfo
 			, BufferBase const & src
-			, TextureView const & dst )const = 0;
+			, Texture const & dst )const = 0;
 		/**
 		*\~french
 		*\brief
@@ -514,8 +514,8 @@ namespace renderer
 		*\param[in] dst
 		*	The destination image.
 		*/
-		virtual void copyToBuffer( BufferImageCopy const & copyInfo
-			, TextureView const & src
+		virtual void copyToBuffer( BufferImageCopyArray const & copyInfo
+			, Texture const & src
 			, BufferBase const & dst )const = 0;
 		/**
 		*\~french
@@ -724,6 +724,52 @@ namespace renderer
 		*	The wanted width.
 		*/
 		virtual void setLineWidth( float width )const = 0;
+		/**
+		*\~french
+		*\brief
+		*	Copie les données d'un tampon vers une image.
+		*\param[in] copyInfo
+		*	Les informations de la copie.
+		*\param[in] src
+		*	Le tampon source.
+		*\param[in] dst
+		*	L'image destination.
+		*\~english
+		*\brief
+		*	Copies data from a buffer to an image.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination image.
+		*/
+		void copyToImage( BufferImageCopy const & copyInfo
+			, BufferBase const & src
+			, Texture const & dst )const;
+		/**
+		*\~french
+		*\brief
+		*	Copie les données d'un tampon vers une image.
+		*\param[in] copyInfo
+		*	Les informations de la copie.
+		*\param[in] src
+		*	Le tampon source.
+		*\param[in] dst
+		*	L'image destination.
+		*\~english
+		*\brief
+		*	Copies data from a buffer to an image.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination image.
+		*/
+		void copyToBuffer( BufferImageCopy const & copyInfo
+			, Texture const & src
+			, BufferBase const & dst )const;
 		/**
 		*\~french
 		*\brief

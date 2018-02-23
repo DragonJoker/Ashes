@@ -249,6 +249,16 @@ namespace gl_renderer
 		return getName( value );
 	}
 
+	inline std::string toString( GlTexLevelParameter value )
+	{
+		return getName( value );
+	}
+
+	inline std::string toString( GlTexParameter value )
+	{
+		return getName( value );
+	}
+
 	inline std::string toString( GlTextureType value )
 	{
 		return getName( value );
