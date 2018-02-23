@@ -186,12 +186,14 @@ namespace gl_renderer
 
 	void CommandBuffer::bindDescriptorSets( renderer::DescriptorSetCRefArray const & descriptorSets
 		, renderer::PipelineLayout const & layout
+		, renderer::UInt32Array const & dynamicOffsets
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
 		for ( auto & descriptorSet : descriptorSets )
 		{
 			m_commands.emplace_back( std::make_unique< BindDescriptorSetCommand >( descriptorSet.get()
 				, layout
+				, dynamicOffsets
 				, bindingPoint ) );
 		}
 	}

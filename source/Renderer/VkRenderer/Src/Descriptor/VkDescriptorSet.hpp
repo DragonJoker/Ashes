@@ -106,6 +106,22 @@ namespace vk_renderer
 			, renderer::BufferView const & view
 			, uint32_t index )override;
 		/**
+		*\copydoc	renderer::DescriptorSet::createDynamicBinding
+		*/
+		renderer::DynamicUniformBufferBinding const & createDynamicBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, renderer::UniformBufferBase const & uniformBuffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index = 0u )override;
+		/**
+		*\copydoc	renderer::DescriptorSet::createDynamicBinding
+		*/
+		renderer::DynamicStorageBufferBinding const & createDynamicBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, renderer::BufferBase const & storageBuffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index )override;
+		/**
 		*\copydoc	renderer::DescriptorSet::update
 		*/
 		void update()const override;

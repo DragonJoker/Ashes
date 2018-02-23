@@ -91,6 +91,22 @@ namespace gl_renderer
 			, renderer::BufferView const & view
 			, uint32_t index )override;
 		/**
+		*\copydoc	renderer::DescriptorSet::createDynamicBinding
+		*/
+		renderer::DynamicUniformBufferBinding const & createDynamicBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, renderer::UniformBufferBase const & uniformBuffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index = 0u )override;
+		/**
+		*\copydoc		renderer::DescriptorSet::createDynamicBinding
+		*/
+		renderer::DynamicStorageBufferBinding const & createDynamicBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
+			, renderer::BufferBase const & storageBuffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index )override;
+		/**
 		*\copydoc		renderer::DescriptorSet::update
 		*/
 		void update()const override;
@@ -98,7 +114,7 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type sampler + texture.
 		*/
-		inline std::vector< renderer::CombinedTextureSamplerBinding > const & getCombinedTextureSamplers()const
+		inline std::vector< std::unique_ptr< renderer::CombinedTextureSamplerBinding > > const & getCombinedTextureSamplers()const
 		{
 			return m_combinedTextureSamplers;
 		}
@@ -106,7 +122,7 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type sampler.
 		*/
-		inline std::vector< renderer::SamplerBinding > const & getSamplers()const
+		inline std::vector< std::unique_ptr< renderer::SamplerBinding > > const & getSamplers()const
 		{
 			return m_samplers;
 		}
@@ -114,7 +130,7 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type texture échantillonnée.
 		*/
-		inline std::vector< renderer::SampledTextureBinding > const & getSampledTextures()const
+		inline std::vector< std::unique_ptr< renderer::SampledTextureBinding > > const & getSampledTextures()const
 		{
 			return m_sampledTextures;
 		}
@@ -122,7 +138,7 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type texture de stockage.
 		*/
-		inline std::vector< renderer::StorageTextureBinding > const & getStorageTextures()const
+		inline std::vector< std::unique_ptr< renderer::StorageTextureBinding > > const & getStorageTextures()const
 		{
 			return m_storageTextures;
 		}
@@ -130,7 +146,7 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type tampon uniforme.
 		*/
-		inline std::vector< renderer::UniformBufferBinding > const & getUniformBuffers()const
+		inline std::vector< std::unique_ptr< renderer::UniformBufferBinding > > const & getUniformBuffers()const
 		{
 			return m_uniformBuffers;
 		}
@@ -138,7 +154,7 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type tampon de stockage.
 		*/
-		inline std::vector< renderer::StorageBufferBinding > const & getStorageBuffers()const
+		inline std::vector< std::unique_ptr< renderer::StorageBufferBinding > > const & getStorageBuffers()const
 		{
 			return m_storageBuffers;
 		}
@@ -146,19 +162,30 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type tampon uniforme de texels.
 		*/
-		inline std::vector< renderer::TexelBufferBinding > const & getTexelBuffers()const
+		inline std::vector< std::unique_ptr< renderer::TexelBufferBinding > > const & getTexelBuffers()const
 		{
 			return m_texelBuffers;
 		}
+		/**
+		*\brief
+		*	Le tableau d'attaches de type tampon dynamique.
+		*/
+		inline std::vector< std::reference_wrapper< renderer::DescriptorSetBinding > > const & getDynamicBuffers()const
+		{
+			return m_dynamicBuffers;
+		}
 
 	private:
-		std::vector< renderer::CombinedTextureSamplerBinding > m_combinedTextureSamplers;
-		std::vector< renderer::SamplerBinding > m_samplers;
-		std::vector< renderer::SampledTextureBinding > m_sampledTextures;
-		std::vector< renderer::StorageTextureBinding > m_storageTextures;
-		std::vector< renderer::UniformBufferBinding > m_uniformBuffers;
-		std::vector< renderer::StorageBufferBinding > m_storageBuffers;
-		std::vector< renderer::TexelBufferBinding > m_texelBuffers;
+		std::vector< std::unique_ptr< renderer::CombinedTextureSamplerBinding > > m_combinedTextureSamplers;
+		std::vector< std::unique_ptr< renderer::SamplerBinding > > m_samplers;
+		std::vector< std::unique_ptr< renderer::SampledTextureBinding > > m_sampledTextures;
+		std::vector< std::unique_ptr< renderer::StorageTextureBinding > > m_storageTextures;
+		std::vector< std::unique_ptr< renderer::UniformBufferBinding > > m_uniformBuffers;
+		std::vector< std::unique_ptr< renderer::StorageBufferBinding > > m_storageBuffers;
+		std::vector< std::unique_ptr< renderer::TexelBufferBinding > > m_texelBuffers;
+		std::vector< std::unique_ptr< renderer::DynamicUniformBufferBinding > > m_dynamicUniformBuffers;
+		std::vector< std::unique_ptr< renderer::DynamicStorageBufferBinding > > m_dynamicStorageBuffers;
+		mutable std::vector< std::reference_wrapper< renderer::DescriptorSetBinding > > m_dynamicBuffers;
 	};
 }
 

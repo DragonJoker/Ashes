@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -290,6 +290,88 @@ namespace renderer
 		/**
 		*\~french
 		*\brief
+		*	Crée une attache de type tampon uniforme dynamique.
+		*\remarks
+		*	Permet de spécifier un offset supplémentaire au moment du binding du descripteur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] uniformBuffer
+		*	Le tampon.
+		*\param[in] offset
+		*	Le décalage de l'attache dans le tampon.
+		*\param[in] range
+		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
+		*\param[in] index
+		*	L'indice dans le tableau.
+		*\return
+		*	L'attache créée.
+		*\~english
+		*\brief
+		*	Creates a dynamic uniform buffer binding.
+		*\remarks
+		*	Allow specification of an additional offset at descriptor's binding time.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] uniformBuffer
+		*	The buffer.
+		*\param[in] offset
+		*	The attach's offset in the buffer.
+		*\param[in] range
+		*	The amount of data that can be read from the buffer.
+		*\param[in] index
+		*	The array index.
+		*\return
+		*	The created binding.
+		*/
+		virtual DynamicUniformBufferBinding const & createDynamicBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, UniformBufferBase const & uniformBuffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index = 0u ) = 0;
+		/**
+		*\~french
+		*\brief
+		*	Crée une attache de type tampon de stockage dynamique.
+		*\remarks
+		*	Permet de spécifier un offset supplémentaire au moment du binding du descripteur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] storageBuffer
+		*	Le tampon.
+		*\param[in] offset
+		*	Le décalage de l'attache dans le tampon.
+		*\param[in] range
+		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
+		*\param[in] index
+		*	L'indice dans le tableau.
+		*\return
+		*	L'attache créée.
+		*\~english
+		*\brief
+		*	Creates a dynamic storage buffer binding.
+		*\remarks
+		*	Allow specification of an additional offset at descriptor's binding time.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] storageBuffer
+		*	The buffer.
+		*\param[in] offset
+		*	The attach's offset in the buffer.
+		*\param[in] range
+		*	The amount of data that can be read from the buffer.
+		*\param[in] index
+		*	The array index.
+		*\return
+		*	The created binding.
+		*/
+		virtual DynamicStorageBufferBinding const & createDynamicBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, BufferBase const & storageBuffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index = 0u ) = 0;
+		/**
+		*\~french
+		*\brief
 		*	Crée une attache de type tampon de variables uniformes.
 		*\param[in] layoutBinding
 		*	L'attache de layout.
@@ -453,6 +535,104 @@ namespace renderer
 			return createBinding( layoutBinding
 				, buffer.getBuffer()
 				, view
+				, index );
+		}
+		/**
+		*\~french
+		*\brief
+		*	Crée une attache de type tampon de variables uniformes dynamique.
+		*\remarks
+		*	Permet de spécifier un offset supplémentaire au moment du binding du descripteur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] uniformBuffer
+		*	Le tampon.
+		*\param[in] offset
+		*	Le décalage de l'attache dans le tampon.
+		*\param[in] range
+		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
+		*\param[in] index
+		*	L'indice dans le tableau.
+		*\return
+		*	L'attache créée.
+		*\~english
+		*\brief
+		*	Creates a dynamic uniform buffer binding.
+		*\remarks
+		*	Allow specification of an additional offset at descriptor's binding time.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] uniformBuffer
+		*	The buffer.
+		*\param[in] offset
+		*	The attach's offset in the buffer.
+		*\param[in] range
+		*	The amount of data that can be read from the buffer.
+		*\param[in] index
+		*	The array index.
+		*\return
+		*	The created binding.
+		*/
+		template< typename T >
+		inline DynamicUniformBufferBinding const & createDynamicBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, UniformBuffer< T > const & uniformBuffer
+			, uint32_t offset = 0u
+			, uint32_t range = 1u
+			, uint32_t index = 0u )
+		{
+			return createDynamicBinding( layoutBinding
+				, uniformBuffer.getUbo()
+				, offset * uniformBuffer.getAlignedSize()
+				, range * sizeof( T )
+				, index );
+		}
+		/**
+		*\~french
+		*\brief
+		*	Crée une attache de type tampon de stockage dynamique.
+		*\remarks
+		*	Permet de spécifier un offset supplémentaire au moment du binding du descripteur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] storageBuffer
+		*	Le tampon.
+		*\param[in] offset
+		*	Le décalage de l'attache dans le tampon.
+		*\param[in] range
+		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
+		*\param[in] index
+		*	L'indice dans le tableau.
+		*\return
+		*	L'attache créée.
+		*\~english
+		*\brief
+		*	Creates a dynamic storage buffer binding.
+		*\remarks
+		*	Allow specification of an additional offset at descriptor's binding time.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] storageBuffer
+		*	The buffer.
+		*\param[in] offset
+		*	The attach's offset in the buffer.
+		*\param[in] range
+		*	The amount of data that can be read from the buffer.
+		*\param[in] index
+		*	The array index.
+		*\return
+		*	The created binding.
+		*/
+		template< typename T >
+		inline DynamicStorageBufferBinding const & createDynamicBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, Buffer< T > const & storageBuffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index = 0u )
+		{
+			return createDynamicBinding( layoutBinding
+				, storageBuffer.getBuffer()
+				, offset
+				, range
 				, index );
 		}
 		/**

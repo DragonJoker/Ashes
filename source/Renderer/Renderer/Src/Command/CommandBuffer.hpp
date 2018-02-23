@@ -372,9 +372,12 @@ namespace renderer
 		*	Le layout de pipeline.
 		*\param[in] bindingPoint
 		*	Le point d'attache du set.
+		*\param[in] dynamicOffsets
+		*	Les offsets des .
 		*/
 		virtual void bindDescriptorSets( DescriptorSetCRefArray const & descriptorSet
 			, PipelineLayout const & layout
+			, renderer::UInt32Array const & dynamicOffsets
 			, PipelineBindPoint bindingPoint = PipelineBindPoint::eGraphics )const = 0;
 		/**
 		*\~english
@@ -820,10 +823,70 @@ namespace renderer
 		*/
 		inline void bindDescriptorSet( DescriptorSet const & descriptorSet
 			, PipelineLayout const & layout
+			, renderer::UInt32Array const & dynamicOffsets
 			, PipelineBindPoint bindingPoint = PipelineBindPoint::eGraphics )const
 		{
-			bindDescriptorSets( { descriptorSet }
+			bindDescriptorSets( DescriptorSetCRefArray{ descriptorSet }
 				, layout
+				, dynamicOffsets
+				, bindingPoint );
+		}
+		/**
+		*\~english
+		*\brief
+		*	Binds a descriptor set to the command buffer.
+		*\param[in] descriptorSet
+		*	The descriptor set.
+		*\param[in] layout
+		*	The pipeline layout used to program the binding.
+		*\param[in] bindingPoint
+		*	Indicates whether the descriptor wil be used by graphics or compute pipeline.
+		*\~french
+		*\brief
+		*	Active un descriptor set.
+		*\param[in] descriptorSet
+		*	Le descriptor set.
+		*\param[in] layout
+		*	Le layout de pipeline.
+		*\param[in] bindingPoint
+		*	Le point d'attache du set.
+		*/
+		inline void bindDescriptorSet( DescriptorSet const & descriptorSet
+			, PipelineLayout const & layout
+			, PipelineBindPoint bindingPoint = PipelineBindPoint::eGraphics )const
+		{
+			bindDescriptorSets( DescriptorSetCRefArray{ descriptorSet }
+				, layout
+				, UInt32Array{}
+				, bindingPoint );
+		}
+		/**
+		*\~english
+		*\brief
+		*	Binds descriptor sets to the command buffer.
+		*\param[in] descriptorSet
+		*	The descriptor sets.
+		*\param[in] layout
+		*	The pipeline layout used to program the binding.
+		*\param[in] bindingPoint
+		*	Indicates whether the descriptor wil be used by graphics or compute pipeline.
+		*\~french
+		*\brief
+		*	Active des descriptor sets.
+		*\param[in] descriptorSet
+		*	Les descriptor sets.
+		*\param[in] layout
+		*	Le layout de pipeline.
+		*\param[in] bindingPoint
+		*	Le point d'attache du set.
+		*/
+		inline void bindDescriptorSets( DescriptorSetCRefArray const & descriptorSet
+			, PipelineLayout const & layout
+			, PipelineBindPoint bindingPoint = PipelineBindPoint::eGraphics )const
+		{
+			bindDescriptorSets( descriptorSet
+				, layout
+				, UInt32Array{}
 				, bindingPoint );
 		}
 		/**
