@@ -42,9 +42,6 @@ namespace gl_renderer
 
 	void Context::doInitialiseInfo()
 	{
-		static GLenum constexpr GL_ALIASED_LINE_WIDTH_RANGE = 0x846E;
-		static GLenum constexpr GL_SMOOTH_LINE_WIDTH_RANGE = 0x0B22;
-
 		m_info.fillModeNonSolid = true;
 		GLint range[2];
 		glLogCall( gl::GetIntegerv, GL_ALIASED_LINE_WIDTH_RANGE, range );
