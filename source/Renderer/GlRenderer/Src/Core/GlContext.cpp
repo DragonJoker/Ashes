@@ -6,6 +6,7 @@
 #	include "GlX11Context.hpp"
 #endif
 
+#include <algorithm>
 #include <iterator>
 
 namespace gl_renderer
