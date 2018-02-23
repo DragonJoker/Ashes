@@ -47,6 +47,15 @@ namespace renderer
 		*	Le nom de la variable, la taille de la variable est déduite de là.
 		*/
 		AttributeFormat format;
+		/**
+		*\~english
+		*\brief
+		*	The dimensions of the array, if the constant is an array.
+		*\~french
+		*\brief
+		*	Les dimensions du tableau, si la constante est un tableau.
+		*/
+		uint32_t arraySize{ 1u };
 	};
 	/**
 	*\~english
