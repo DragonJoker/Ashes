@@ -6,6 +6,8 @@
 #	include "GlX11Context.hpp"
 #endif
 
+#include <iterator>
+
 namespace gl_renderer
 {
 	Context::Context( renderer::ConnectionPtr && connection )
