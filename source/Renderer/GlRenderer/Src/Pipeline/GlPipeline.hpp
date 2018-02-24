@@ -20,6 +20,8 @@
 #include <Pipeline/TessellationState.hpp>
 #include <Pipeline/Viewport.hpp>
 
+#include <optional>
+
 namespace gl_renderer
 {
 	/**
@@ -37,44 +39,14 @@ namespace gl_renderer
 		/**@{*/
 		Pipeline( Device const & device
 			, PipelineLayout const & layout
-			, renderer::ShaderProgram const & program
-			, renderer::VertexLayoutCRefArray const & vertexLayouts
-			, renderer::RenderPass const & renderPass
-			, renderer::InputAssemblyState const & inputAssemblyState
-			, renderer::RasterisationState const & rasterisationState
-			, renderer::ColourBlendState const & colourBlendState );
-		/**@}*/
-		/**
-		*\copydoc	renderer::Pipeline::finish
-		*/
-		renderer::Pipeline & finish()override;
-		/**
-		*\copydoc	renderer::Pipeline::finish
-		*/
-		renderer::Pipeline & multisampleState( renderer::MultisampleState const & state )override;
-		/**
-		*\copydoc	renderer::Pipeline::finish
-		*/
-		renderer::Pipeline & depthStencilState( renderer::DepthStencilState const & state )override;
-		/**
-		*\copydoc	renderer::Pipeline::finish
-		*/
-		renderer::Pipeline & tessellationState( renderer::TessellationState const & state )override;
-		/**
-		*\copydoc	renderer::Pipeline::finish
-		*/
-		renderer::Pipeline & viewport( renderer::Viewport const & viewport )override;
-		/**
-		*\copydoc	renderer::Pipeline::finish
-		*/
-		renderer::Pipeline & scissor( renderer::Scissor const & scissor )override;
+			, renderer::GraphicsPipelineCreateInfo const & createInfo );
 		/**
 		*\return
 		*	\p true si le Viewport est défini.
 		*/
 		inline bool hasViewport()const
 		{
-			return m_viewport != nullptr;
+			return m_viewport.has_value();
 		}
 		/**
 		*\return
@@ -82,7 +54,7 @@ namespace gl_renderer
 		*/
 		inline bool hasScissor()const
 		{
-			return m_scissor != nullptr;
+			return m_scissor.has_value();
 		}
 		/**
 		*\return
@@ -179,8 +151,8 @@ namespace gl_renderer
 		renderer::DepthStencilState m_dsState;
 		renderer::MultisampleState m_msState;
 		renderer::TessellationState m_tsState;
-		std::unique_ptr< renderer::Viewport > m_viewport;
-		std::unique_ptr< renderer::Scissor > m_scissor;
+		std::optional< renderer::Viewport > m_viewport;
+		std::optional< renderer::Scissor > m_scissor;
 	};
 }
 

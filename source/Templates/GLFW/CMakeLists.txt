@@ -32,7 +32,7 @@ if( GLFW_FOUND )
 			dl
 		)
 	endif ()
-	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
+	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Templates" )
 
 endif ()

@@ -61,7 +61,7 @@ if ( OpenGL_FOUND )
 	parse_subdir_files( Src/RenderPass "RenderPass" )
 	parse_subdir_files( Src/Shader "Shader" )
 	parse_subdir_files( Src/Sync "Sync" )
-	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
+	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
 
 	if ( WIN32 )

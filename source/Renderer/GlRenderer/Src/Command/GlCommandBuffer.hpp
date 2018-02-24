@@ -221,6 +221,7 @@ namespace gl_renderer
 		mutable renderer::CommandBufferUsageFlags m_beginFlags{ 0u };
 		mutable CommandArray m_commands;
 		mutable Pipeline const * m_currentPipeline{ nullptr };
+		mutable std::vector< std::pair < renderer::PipelineLayout const *, renderer::PushConstantsBufferBase const * > > m_pushConstantBuffers;
 		mutable ComputePipeline const * m_currentComputePipeline{ nullptr };
 		mutable renderer::IndexType m_indexType{ renderer::IndexType::eUInt32 };
 		mutable uint32_t m_currentSubpass;

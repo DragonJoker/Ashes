@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -6,8 +6,8 @@ See LICENSE file in root folder.
 #define ___Renderer_PipelineLayout_HPP___
 #pragma once
 
-#include "ColourBlendState.hpp"
-#include "RasterisationState.hpp"
+#include "Miscellaneous/GraphicsPipelineCreateInfo.hpp"
+#include "Pipeline.hpp"
 
 namespace renderer
 {
@@ -60,6 +60,23 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Creates a graphics pipeline using this layout.
+		*\param[in] createInfo
+		*	The creation informations.
+		*\return
+		*	The created pipeline.
+		*\~french
+		*\brief
+		*	Crée un pipeline graphique utilisant ce layout.
+		*\param[in] createInfo
+		*	Les informations de création.
+		*\return
+		*	Le pipeline créé.
+		*/
+		virtual PipelinePtr createPipeline( GraphicsPipelineCreateInfo const & createInfo )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Creates a graphics pipeline using this layout.
 		*\param[in] program
 		*	The shader program.
 		*\param[in] vertexLayouts
@@ -92,12 +109,24 @@ namespace renderer
 		*\return
 		*	Le pipeline créé.
 		*/
-		virtual PipelinePtr createPipeline( ShaderProgram const & program
+		inline PipelinePtr createPipeline( ShaderProgram const & program
 			, VertexLayoutCRefArray const & vertexLayouts
 			, RenderPass const & renderPass
 			, InputAssemblyState const & inputAssemblyState
 			, RasterisationState const & rasterisationState = RasterisationState{}
-			, ColourBlendState const & colourBlendState = ColourBlendState::createDefault() )const = 0;
+			, ColourBlendState const & colourBlendState = ColourBlendState::createDefault() )const
+		{
+			return createPipeline( GraphicsPipelineCreateInfo
+			{
+				program,
+				renderPass,
+				vertexLayouts,
+				inputAssemblyState,
+				rasterisationState,
+				MultisampleState{},
+				colourBlendState,
+			} );
+		}
 		/**
 		*\~english
 		*\brief

@@ -80,11 +80,14 @@ namespace renderer
 	struct BufferCopy;
 	struct BufferImageCopy;
 	struct ClearValue;
+	struct GraphicsPipelineCreateInfo;
 	struct ImageCopy;
 	struct ImageBlit;
 	struct PhysicalDeviceInfo;
 	struct PushConstant;
 	struct PushConstantRange;
+	struct SpecialisationInfo;
+	struct SpecialisationMapEntry;
 
 	class Attribute;
 	class BackBuffer;

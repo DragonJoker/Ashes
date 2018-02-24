@@ -44,12 +44,7 @@ namespace gl_renderer
 		/**
 		*\copydoc		renderer::PipelineLayout::createPipeline
 		*/
-		renderer::PipelinePtr createPipeline( renderer::ShaderProgram const & program
-			, renderer::VertexLayoutCRefArray const & vertexLayouts
-			, renderer::RenderPass const & renderPass
-			, renderer::InputAssemblyState const & inputAssemblyState
-			, renderer::RasterisationState const & rasterisationState
-			, renderer::ColourBlendState const & colourBlendState )const override;
+		renderer::PipelinePtr createPipeline( renderer::GraphicsPipelineCreateInfo const & createInfo )const override;
 		/**
 		*\copydoc	renderer::PipelineLayout::createPipeline
 		*/

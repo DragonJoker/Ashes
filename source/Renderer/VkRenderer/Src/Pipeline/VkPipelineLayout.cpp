@@ -65,21 +65,11 @@ namespace vk_renderer
 			, nullptr );
 	}
 
-	renderer::PipelinePtr PipelineLayout::createPipeline( renderer::ShaderProgram const & program
-		, renderer::VertexLayoutCRefArray const & vertexLayouts
-		, renderer::RenderPass const & renderPass
-		, renderer::InputAssemblyState const & inputAssemblyState
-		, renderer::RasterisationState const & rasterisationState
-		, renderer::ColourBlendState const & colourBlendState )const
+	renderer::PipelinePtr PipelineLayout::createPipeline( renderer::GraphicsPipelineCreateInfo const & createInfo )const
 	{
 		return std::make_unique< Pipeline >( m_device
 			, *this
-			, program
-			, vertexLayouts
-			, renderPass
-			, inputAssemblyState
-			, rasterisationState
-			, colourBlendState );
+			, createInfo );
 	}
 
 	renderer::ComputePipelinePtr PipelineLayout::createPipeline( renderer::ShaderProgram const & program )const
