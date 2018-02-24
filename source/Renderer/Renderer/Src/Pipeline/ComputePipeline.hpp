@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Renderer_ComputePipeline_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include "Miscellaneous/ComputePipelineCreateInfo.hpp"
 
 namespace renderer
 {
@@ -18,18 +18,28 @@ namespace renderer
 	{
 	protected:
 		/**
+		*\~english
+		*\brief
+		*	Constructir.
+		*\param[in] device
+		*	The parent logical device.
+		*\param[in] layout
+		*	The pipeline layout.
+		*\param[in] createInfo
+		*	The pipeline creation informations.
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] device
-		*	Le LogicalDevice parent.
+		*	Le device parent.
 		*\param[in] layout
 		*	Le layout du pipeline.
 		*\param[in] program
-		*	Le programme shader.
+		*	Les informations de creation du pipeline.
 		*/
 		ComputePipeline( Device const & device
 			, PipelineLayout const & layout
-			, ShaderProgram const & program );
+			, ComputePipelineCreateInfo const & createInfo );
 
 	public:
 		/**
@@ -41,6 +51,22 @@ namespace renderer
 		*	Destructeur.
 		*/
 		virtual ~ComputePipeline() = default;
+		/**
+		*\~english
+		*\return
+		*	The parent layout.
+		*\~french
+		*\return
+		*	Le layout parent.
+		*/
+		inline PipelineLayout const & getLayout()const
+		{
+			return m_layout;
+		}
+
+	protected:
+		ComputePipelineCreateInfo m_createInfo;
+		PipelineLayout const & m_layout;
 	};
 }
 

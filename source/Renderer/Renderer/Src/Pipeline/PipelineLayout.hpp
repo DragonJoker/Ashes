@@ -6,8 +6,8 @@ See LICENSE file in root folder.
 #define ___Renderer_PipelineLayout_HPP___
 #pragma once
 
-#include "Miscellaneous/GraphicsPipelineCreateInfo.hpp"
 #include "Pipeline.hpp"
+#include "ComputePipeline.hpp"
 
 namespace renderer
 {
@@ -73,6 +73,23 @@ namespace renderer
 		*	Le pipeline créé.
 		*/
 		virtual PipelinePtr createPipeline( GraphicsPipelineCreateInfo const & createInfo )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Creates a compute pipeline using this layout.
+		*\param[in] createInfo
+		*	The creation informations.
+		*\return
+		*	The created pipeline.
+		*\~french
+		*\brief
+		*	Crée un pipeline de calcul utilisant ce layout.
+		*\param[in] createInfo
+		*	Les informations de création.
+		*\return
+		*	Le pipeline créé.
+		*/
+		virtual ComputePipelinePtr createPipeline( ComputePipelineCreateInfo const & createInfo )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -143,7 +160,13 @@ namespace renderer
 		*\return
 		*	Le pipeline créé.
 		*/
-		virtual ComputePipelinePtr createPipeline( ShaderProgram const & program )const = 0;
+		inline ComputePipelinePtr createPipeline( ShaderProgram const & program )const
+		{
+			return createPipeline( ComputePipelineCreateInfo
+			{
+				program
+			} );
+		}
 	};
 }
 

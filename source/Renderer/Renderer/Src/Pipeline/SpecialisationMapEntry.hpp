@@ -41,12 +41,21 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
-		*	The byte size of the specialization constant value within the supplied data buffer.
+		*	The variable format, the size of the variable is deduced from that.
 		*\~french
 		*\brief
-		*	La taille de la valeur de la constante de spécialisation dans le tampon de données.
+		*	Le format de la variable, la taille de la variable est déduite de là.
 		*/
-		uint32_t size;
+		AttributeFormat format;
+		/**
+		*\~english
+		*\brief
+		*	The dimensions of the array, if the constant is an array, used in OpenGL renderer.
+		*\~french
+		*\brief
+		*	Les dimensions du tableau, si la constante est un tableau, utilisé dans le renderer OpenGL.
+		*/
+		uint32_t arraySize{ 1u };
 	};
 }
 

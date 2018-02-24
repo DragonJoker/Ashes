@@ -12,7 +12,7 @@ namespace vk_renderer
 		{
 			state.constantID,
 			state.offset,
-			state.size,
+			renderer::getSize( state.format ),
 		};
 	}
 }

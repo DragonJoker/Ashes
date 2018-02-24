@@ -55,9 +55,22 @@ namespace renderer
 		*	Destructeur.
 		*/
 		virtual ~Pipeline() = default;
+		/**
+		*\~english
+		*\return
+		*	The parent layout.
+		*\~french
+		*\return
+		*	Le layout parent.
+		*/
+		inline PipelineLayout const & getLayout()const
+		{
+			return m_layout;
+		}
 
 	protected:
-		renderer::GraphicsPipelineCreateInfo m_createInfo;
+		GraphicsPipelineCreateInfo m_createInfo;
+		PipelineLayout const & m_layout;
 	};
 }
 

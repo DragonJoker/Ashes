@@ -72,10 +72,10 @@ namespace vk_renderer
 			, createInfo );
 	}
 
-	renderer::ComputePipelinePtr PipelineLayout::createPipeline( renderer::ShaderProgram const & program )const
+	renderer::ComputePipelinePtr PipelineLayout::createPipeline( renderer::ComputePipelineCreateInfo const & createInfo )const
 	{
 		return std::make_unique< ComputePipeline >( m_device
 			, *this
-			, program );
+			, createInfo );
 	}
 }

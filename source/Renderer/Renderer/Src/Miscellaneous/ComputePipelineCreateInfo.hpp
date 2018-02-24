@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Renderer_ComputePipelineCreateInfo_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include "Pipeline/SpecialisationInfo.hpp"
 
 namespace renderer
 {
@@ -20,6 +20,8 @@ namespace renderer
 	*/
 	struct ComputePipelineCreateInfo
 	{
+		std::reference_wrapper< ShaderProgram const > program;
+		std::map< ShaderStageFlag, SpecialisationInfo > specialisationInfo;
 	};
 }
 

@@ -53,7 +53,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::PipelineLayout::createPipeline
 		*/
-		renderer::ComputePipelinePtr createPipeline( renderer::ShaderProgram const & program )const override;
+		renderer::ComputePipelinePtr createPipeline( renderer::ComputePipelineCreateInfo const & createInfo )const override;
 		/**
 		*\~french
 		*\brief

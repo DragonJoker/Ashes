@@ -155,6 +155,12 @@ namespace gl_renderer
 				, *pcb.second ) );
 		}
 
+		for ( auto & pcb : m_currentPipeline->getConstantsPcbs() )
+		{
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_currentPipeline->getLayout()
+				, pcb ) );
+		}
+
 		m_pushConstantBuffers.clear();
 	}
 
@@ -168,6 +174,12 @@ namespace gl_renderer
 		{
 			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( *pcb.first
 				, *pcb.second ) );
+		}
+
+		for ( auto & pcb : m_currentComputePipeline->getConstantsPcbs() )
+		{
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_currentComputePipeline->getLayout()
+				, pcb ) );
 		}
 
 		m_pushConstantBuffers.clear();

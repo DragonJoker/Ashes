@@ -10,6 +10,7 @@ namespace renderer
 		, PipelineLayout const & layout
 		, GraphicsPipelineCreateInfo const & createInfo )
 		: m_createInfo{ createInfo }
+		, m_layout{ layout }
 	{
 	}
 }
