@@ -96,6 +96,7 @@
 #include "Pipeline/VkMultisampleState.hpp"
 #include "Pipeline/VkRasterisationState.hpp"
 #include "Pipeline/VkSpecialisationInfo.hpp"
+#include "Pipeline/VkSpecialisationMapEntry.hpp"
 #include "Pipeline/VkStencilOpState.hpp"
 #include "Pipeline/VkTessellationState.hpp"
 #include "Pipeline/VkViewport.hpp"

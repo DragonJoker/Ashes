@@ -23,15 +23,15 @@ namespace renderer
 		, m_alphaBlendOp{ alphaBlendOp }
 		, m_colorWriteMask{ colorWriteMask }
 		, m_hash
-		{ uint64_t(
-			( uint64_t( m_blendEnable ) << 31 )
-			| ( uint64_t( m_srcColorBlendFactor ) << 26 )
-			| ( uint64_t( m_dstColorBlendFactor ) << 21 )
-			| ( uint64_t( m_colorBlendOp ) << 18 )
-			| ( uint64_t( m_srcAlphaBlendFactor ) << 13 )
-			| ( uint64_t( m_dstAlphaBlendFactor ) << 8 )
-			| ( uint64_t( m_alphaBlendOp ) << 5 )
-			| ( uint64_t( m_colorWriteMask ) << 1 )
+		{ uint32_t(
+			( uint32_t( m_blendEnable ) << 31 )
+			| ( uint32_t( m_srcColorBlendFactor ) << 26 )
+			| ( uint32_t( m_dstColorBlendFactor ) << 21 )
+			| ( uint32_t( m_colorBlendOp ) << 18 )
+			| ( uint32_t( m_srcAlphaBlendFactor ) << 13 )
+			| ( uint32_t( m_dstAlphaBlendFactor ) << 8 )
+			| ( uint32_t( m_alphaBlendOp ) << 5 )
+			| ( uint32_t( m_colorWriteMask ) << 1 )
 		) }
 	{
 	}

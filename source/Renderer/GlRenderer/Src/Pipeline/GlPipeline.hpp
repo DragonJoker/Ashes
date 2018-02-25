@@ -21,8 +21,6 @@
 #include <Pipeline/TessellationState.hpp>
 #include <Pipeline/Viewport.hpp>
 
-#include <optional>
-
 namespace gl_renderer
 {
 	/**
@@ -47,7 +45,7 @@ namespace gl_renderer
 		*/
 		inline bool hasViewport()const
 		{
-			return m_viewport.has_value();
+			return (bool)m_viewport;
 		}
 		/**
 		*\return
@@ -55,7 +53,7 @@ namespace gl_renderer
 		*/
 		inline bool hasScissor()const
 		{
-			return m_scissor.has_value();
+			return (bool)m_scissor;
 		}
 		/**
 		*\return

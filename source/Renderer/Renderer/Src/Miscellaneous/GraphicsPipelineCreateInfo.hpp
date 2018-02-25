@@ -17,7 +17,6 @@ See LICENSE file in root folder.
 #include "Pipeline/Viewport.hpp"
 
 #include <map>
-#include <optional>
 
 namespace renderer
 {
