@@ -21,15 +21,16 @@ namespace vk_renderer
 		, DescriptorSet const & descriptorSet
 		, TextureView const & view
 		, Sampler const & sampler
+		, renderer::ImageLayout layout
 		, uint32_t index )
-		: renderer::CombinedTextureSamplerBinding{ layoutBinding, view, sampler, index }
+		: renderer::CombinedTextureSamplerBinding{ layoutBinding, view, sampler, layout, index }
 		, m_view{ view }
 		, m_sampler{ sampler }
 		, m_info
 		{
 			m_sampler,                                      // sampler
 			m_view,                                         // imageView
-			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL        // imageLayout
+			convert( layout )                               // imageLayout
 		}
 	{
 		m_write =

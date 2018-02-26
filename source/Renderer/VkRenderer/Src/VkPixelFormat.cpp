@@ -7,19 +7,19 @@ namespace vk_renderer
 		switch ( format )
 		{
 		case renderer::PixelFormat::eR8:
-			return VK_FORMAT_R8_UINT;
+			return VK_FORMAT_R8_UNORM;
 
 		case renderer::PixelFormat::eR32F:
 			return VK_FORMAT_R32_SFLOAT;
 
 		case renderer::PixelFormat::eR8G8:
-			return VK_FORMAT_R8G8_UINT;
+			return VK_FORMAT_R8G8_UNORM;
 
 		case renderer::PixelFormat::eRG32F:
 			return VK_FORMAT_R32G32_SFLOAT;
 
 		case renderer::PixelFormat::eR8G8B8:
-			return VK_FORMAT_R8G8B8_UINT;
+			return VK_FORMAT_R8G8B8_UNORM;
 
 		case renderer::PixelFormat::eRGB32F:
 			return VK_FORMAT_R32G32B32_SFLOAT;

@@ -20,11 +20,13 @@ namespace gl_renderer
 	renderer::CombinedTextureSamplerBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 		, renderer::TextureView const & view
 		, renderer::Sampler const & sampler
+		, renderer::ImageLayout layout
 		, uint32_t index )
 	{
 		m_combinedTextureSamplers.emplace_back( std::make_unique< renderer::CombinedTextureSamplerBinding >( layoutBinding
 			, view
 			, sampler
+			, layout
 			, index ) );
 		return *m_combinedTextureSamplers.back();
 	}
