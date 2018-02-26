@@ -249,13 +249,14 @@ namespace vkapp
 		m_program->createModule( common::parseShaderFile( *m_device, shadersFolder / "shader.frag" )
 			, renderer::ShaderStageFlag::eFragment );
 
-		m_pipeline = m_pipelineLayout->createPipeline( *m_program
-			, { *m_vertexLayout }
-			, *m_renderPass
-			, { renderer::PrimitiveTopology::eTriangleStrip }
-			, renderer::RasterisationState{ 1.0f } );
-		m_pipeline->multisampleState( renderer::MultisampleState{} );
-		m_pipeline->finish();
+		m_pipeline = m_pipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
+		{
+			*m_program,
+			*m_renderPass,
+			{ *m_vertexLayout },
+			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleStrip },
+			renderer::RasterisationState{ 1.0f }
+		} );
 	}
 
 	void RenderPanel::doPrepareFrames()

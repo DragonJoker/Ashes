@@ -44,7 +44,7 @@ namespace renderer
 		*	The variable format, the size of the variable is deduced from that.
 		*\~french
 		*\brief
-		*	Le nom de la variable, la taille de la variable est déduite de là.
+		*	Le format de la variable, la taille de la variable est déduite de là.
 		*/
 		AttributeFormat format;
 		/**

@@ -66,6 +66,16 @@ See LICENSE file in root folder.
 #include <sstream>
 #include <vector>
 
+#if defined( _MSC_VER )
+#	include <optional>
+#else
+#	include <experimental/optional>
+namespace std
+{
+	using experimental::optional;
+}
+#endif
+
 namespace renderer
 {
 	template< typename T >
@@ -80,11 +90,14 @@ namespace renderer
 	struct BufferCopy;
 	struct BufferImageCopy;
 	struct ClearValue;
+	struct GraphicsPipelineCreateInfo;
 	struct ImageCopy;
 	struct ImageBlit;
 	struct PhysicalDeviceInfo;
 	struct PushConstant;
 	struct PushConstantRange;
+	struct SpecialisationInfo;
+	struct SpecialisationMapEntry;
 
 	class Attribute;
 	class BackBuffer;

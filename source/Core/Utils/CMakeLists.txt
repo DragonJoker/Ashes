@@ -19,7 +19,7 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_HDR_FILES}
 )
 
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
+set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Core" )
 
 #We copy each lib in <install_dir>/lib folder

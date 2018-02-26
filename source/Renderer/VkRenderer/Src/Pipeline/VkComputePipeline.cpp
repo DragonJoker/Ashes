@@ -2,31 +2,62 @@
 
 #include "Core/VkDevice.hpp"
 #include "Pipeline/VkPipelineLayout.hpp"
+#include "Pipeline/VkSpecialisationInfo.hpp"
+#include "Pipeline/VkSpecialisationMapEntry.hpp"
 #include "Shader/VkShaderProgram.hpp"
 
 namespace vk_renderer
 {
 	ComputePipeline::ComputePipeline( Device const & device
 		, renderer::PipelineLayout const & layout
-		, renderer::ShaderProgram const & program )
+		, renderer::ComputePipelineCreateInfo const & createInfo )
 		: renderer::ComputePipeline{ device
 			, layout
-			, program }
+			, createInfo }
 		, m_device{ device }
 		, m_layout{ static_cast< PipelineLayout const & >( layout ) }
-		, m_shader{ static_cast< ShaderProgram const & >( program ) }
+		, m_shader{ static_cast< ShaderProgram const & >( m_createInfo.program.get() ) }
 	{
 		auto & module = *m_shader.begin();
-		VkPipelineShaderStageCreateInfo shaderStage
+		VkPipelineShaderStageCreateInfo shaderStage;
+
+		if ( !m_createInfo.specialisationInfo.empty() )
 		{
-			VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-			nullptr,
-			0,                                                        // flags
-			module.getStage(),                                        // stage
-			VkShaderModule( module ),                                 // module
-			"main",                                                   // pName
-			nullptr,                                                  // pSpecializationInfo
-		};
+			m_specialisationEntries.resize( m_createInfo.specialisationInfo.size() );
+			uint32_t index = 0;
+
+			for ( auto & info : m_createInfo.specialisationInfo )
+			{
+				auto stage = convert( info.first );
+				m_specialisationEntries = convert< VkSpecializationMapEntry >( info.second.mapEntries.begin(), info.second.mapEntries.end() );
+				m_specialisationInfos = convert( info.second, m_specialisationEntries );
+				++index;
+			}
+
+			shaderStage = VkPipelineShaderStageCreateInfo
+			{
+				VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+				nullptr,
+				0,                                                        // flags
+				module.getStage(),                                        // stage
+				VkShaderModule( module ),                                 // module
+				"main",                                                   // pName
+				&m_specialisationInfos,                                   // pSpecializationInfo
+			};
+		}
+		else
+		{
+			shaderStage = VkPipelineShaderStageCreateInfo
+			{
+				VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+				nullptr,
+				0,                                                        // flags
+				module.getStage(),                                        // stage
+				VkShaderModule( module ),                                 // module
+				"main",                                                   // pName
+				nullptr,                                                  // pSpecializationInfo
+			};
+		}
 
 		VkComputePipelineCreateInfo pipeline
 		{

@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -8,12 +8,9 @@ namespace renderer
 {
 	Pipeline::Pipeline( Device const & device
 		, PipelineLayout const & layout
-		, ShaderProgram const & program
-		, VertexLayoutCRefArray const & vertexLayouts
-		, RenderPass const & renderPass
-		, InputAssemblyState const & inputAssemblyState
-		, RasterisationState const & rasterisationState
-		, ColourBlendState const & colourBlendState )
+		, GraphicsPipelineCreateInfo const & createInfo )
+		: m_createInfo{ createInfo }
+		, m_layout{ layout }
 	{
 	}
 }

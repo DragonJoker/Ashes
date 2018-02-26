@@ -10,7 +10,7 @@ namespace vkapp
 		renderer::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "13-PushConstants" );
+	static wxString const AppName = wxT( "20-DynamicUniformBuffer" );
 
 	class RenderPanel;
 	class MainFrame;

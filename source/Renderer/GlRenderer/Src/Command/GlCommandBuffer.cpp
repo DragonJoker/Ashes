@@ -83,6 +83,7 @@ namespace gl_renderer
 
 	bool CommandBuffer::end()const
 	{
+		m_pushConstantBuffers.clear();
 		return gl::GetError() == GL_NO_ERROR;
 	}
 
@@ -147,6 +148,20 @@ namespace gl_renderer
 	{
 		m_currentPipeline = &static_cast< Pipeline const & >( pipeline );
 		m_commands.emplace_back( std::make_unique< BindPipelineCommand >( m_device, pipeline, bindingPoint ) );
+
+		for ( auto & pcb : m_pushConstantBuffers )
+		{
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( *pcb.first
+				, *pcb.second ) );
+		}
+
+		for ( auto & pcb : m_currentPipeline->getConstantsPcbs() )
+		{
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_currentPipeline->getLayout()
+				, pcb ) );
+		}
+
+		m_pushConstantBuffers.clear();
 	}
 
 	void CommandBuffer::bindPipeline( renderer::ComputePipeline const & pipeline
@@ -154,6 +169,20 @@ namespace gl_renderer
 	{
 		m_currentComputePipeline = &static_cast< ComputePipeline const & >( pipeline );
 		m_commands.emplace_back( std::make_unique< BindComputePipelineCommand >( m_device, pipeline, bindingPoint ) );
+
+		for ( auto & pcb : m_pushConstantBuffers )
+		{
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( *pcb.first
+				, *pcb.second ) );
+		}
+
+		for ( auto & pcb : m_currentComputePipeline->getConstantsPcbs() )
+		{
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_currentComputePipeline->getLayout()
+				, pcb ) );
+		}
+
+		m_pushConstantBuffers.clear();
 	}
 
 	void CommandBuffer::bindGeometryBuffers( renderer::GeometryBuffers const & geometryBuffers )const
@@ -319,8 +348,15 @@ namespace gl_renderer
 	void CommandBuffer::pushConstants( renderer::PipelineLayout const & layout
 		, renderer::PushConstantsBufferBase const & pcb )const
 	{
-		m_commands.emplace_back( std::make_unique< PushConstantsCommand >( layout
-			, pcb ) );
+		if ( m_currentPipeline || m_currentComputePipeline )
+		{
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( layout
+				, pcb ) );
+		}
+		else
+		{
+			m_pushConstantBuffers.emplace_back( &layout, &pcb );
+		}
 	}
 
 	void CommandBuffer::dispatch( uint32_t groupCountX
