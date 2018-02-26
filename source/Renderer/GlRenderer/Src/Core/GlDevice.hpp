@@ -6,6 +6,7 @@ See LICENSE file in root folder
 
 #include "Core/GlContext.hpp"
 
+#include <Buffer/VertexBuffer.hpp>
 #include <Core/Device.hpp>
 #include <Miscellaneous/PhysicalDeviceInfo.hpp>
 #include <Pipeline/ColourBlendState.hpp>
@@ -36,6 +37,7 @@ namespace gl_renderer
 		*/
 		Device( renderer::Renderer const & renderer
 			, renderer::ConnectionPtr && connection );
+		~Device();
 		/**
 		*\copydoc		renderer::Device::createRenderPass
 		*/
@@ -232,6 +234,16 @@ namespace gl_renderer
 			return m_currentProgram;
 		}
 
+		inline renderer::GeometryBuffers const & getEmptyIndexedVao()const
+		{
+			return *m_dummyIndexed.geometryBuffers;
+		}
+
+		inline renderer::GeometryBuffers const & getEmptyNonIndexedVao()const
+		{
+			return *m_dummyNonIndexed.geometryBuffers;
+		}
+
 	private:
 		/**
 		*\copydoc	renderer::Device::enable
@@ -245,6 +257,18 @@ namespace gl_renderer
 	private:
 		ContextPtr m_context;
 		renderer::PhysicalDeviceInfo m_info;
+		// Mimic the behavior in Vulkan, when no IBO nor VBO is bound.
+		struct
+		{
+			renderer::BufferPtr< uint32_t > indexBuffer;
+			renderer::VertexBufferPtr< renderer::Vec3 > vertexBuffer;
+			renderer::GeometryBuffersPtr geometryBuffers;
+		} m_dummyIndexed;
+		struct
+		{
+			renderer::VertexBufferPtr< renderer::Vec3 > vertexBuffer;
+			renderer::GeometryBuffersPtr geometryBuffers;
+		} m_dummyNonIndexed;
 		mutable renderer::Scissor m_scissor{ 0, 0, 0, 0 };
 		mutable renderer::Viewport m_viewport{ 0, 0, 0, 0 };
 		mutable renderer::ColourBlendState m_cbState;
