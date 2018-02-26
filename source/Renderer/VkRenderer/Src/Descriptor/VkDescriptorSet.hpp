@@ -62,6 +62,7 @@ namespace vk_renderer
 		renderer::CombinedTextureSamplerBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 			, renderer::TextureView const & view
 			, renderer::Sampler const & sampler
+			, renderer::ImageLayout layout
 			, uint32_t index )override;
 		/**
 		*\copydoc	renderer::DescriptorSet::createBinding

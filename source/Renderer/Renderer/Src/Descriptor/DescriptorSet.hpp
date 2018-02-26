@@ -94,6 +94,7 @@ namespace renderer
 		virtual CombinedTextureSamplerBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, TextureView const & view
 			, Sampler const & sampler
+			, ImageLayout layout = ImageLayout::eShaderReadOnlyOptimal
 			, uint32_t index = 0u ) = 0;
 		/**
 		*\~french

@@ -56,12 +56,14 @@ namespace vk_renderer
 	renderer::CombinedTextureSamplerBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
 		, renderer::TextureView const & view
 		, renderer::Sampler const & sampler
+		, renderer::ImageLayout layout
 		, uint32_t index )
 	{
 		m_bindings.emplace_back( std::make_unique< CombinedTextureSamplerBinding >( layoutBinding
 			, *this
 			, static_cast< TextureView const & >( view )
 			, static_cast< Sampler const & >( sampler )
+			, layout
 			, index ) );
 		return static_cast< CombinedTextureSamplerBinding const & >( *m_bindings.back() );
 	}
