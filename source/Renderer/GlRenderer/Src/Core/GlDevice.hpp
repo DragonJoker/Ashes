@@ -11,6 +11,7 @@ See LICENSE file in root folder
 #include <Miscellaneous/PhysicalDeviceInfo.hpp>
 #include <Pipeline/ColourBlendState.hpp>
 #include <Pipeline/DepthStencilState.hpp>
+#include <Pipeline/InputAssemblyState.hpp>
 #include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/RasterisationState.hpp>
 #include <Pipeline/Scissor.hpp>
@@ -229,6 +230,11 @@ namespace gl_renderer
 			return m_tsState;
 		}
 
+		inline renderer::InputAssemblyState & getCurrentInputAssemblyState()const
+		{
+			return m_iaState;
+		}
+
 		inline GLuint & getCurrentProgram()const
 		{
 			return m_currentProgram;
@@ -276,6 +282,7 @@ namespace gl_renderer
 		mutable renderer::MultisampleState m_msState;
 		mutable renderer::RasterisationState m_rsState;
 		mutable renderer::TessellationState m_tsState;
+		mutable renderer::InputAssemblyState m_iaState;
 		mutable GLuint m_currentProgram;
 	};
 }
