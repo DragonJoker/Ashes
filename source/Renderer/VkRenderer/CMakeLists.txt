@@ -99,7 +99,7 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 	parse_subdir_files( Src/Sync "Sync" )
 	parse_subdir_files( Src/vulkan "vulkan" )
 
-	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14 )
+	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
 
 	if ( WIN32 )

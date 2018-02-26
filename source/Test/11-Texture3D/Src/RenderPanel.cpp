@@ -449,15 +449,18 @@ namespace vkapp
 			renderer::BlendFactor::eInvSrcAlpha,
 			renderer::BlendOp::eAdd
 		} );
-		m_offscreenPipeline = m_offscreenPipelineLayout->createPipeline( *m_offscreenProgram
-			, { *m_offscreenVertexLayout }
-			, *m_offscreenRenderPass
-			, { renderer::PrimitiveTopology::eTriangleList }
-			, renderer::RasterisationState{ 1.0f, 0, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone }
-			, cbstate );
-		m_offscreenPipeline->multisampleState( renderer::MultisampleState{} );
-		m_offscreenPipeline->depthStencilState( renderer::DepthStencilState{ 0u, false } );
-		m_offscreenPipeline->finish();
+
+		m_offscreenPipeline = m_offscreenPipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
+		{
+			*m_offscreenProgram,
+			*m_offscreenRenderPass,
+			{ *m_offscreenVertexLayout },
+			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
+			renderer::RasterisationState{ 1.0f, 0, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone },
+			renderer::MultisampleState{},
+			cbstate,
+			renderer::DepthStencilState{ 0u, false }
+		} );
 	}
 
 	void RenderPanel::doCreateMainDescriptorSet()
@@ -597,13 +600,14 @@ namespace vkapp
 		m_mainProgram->createModule( common::parseShaderFile( *m_device, shadersFolder / "main.frag" )
 			, renderer::ShaderStageFlag::eFragment );
 
-		m_mainPipeline = m_mainPipelineLayout->createPipeline( *m_mainProgram
-			, { *m_mainVertexLayout }
-			, *m_mainRenderPass
-			, { renderer::PrimitiveTopology::eTriangleStrip }
-			, renderer::RasterisationState{ 1.0f } );
-		m_mainPipeline->multisampleState( renderer::MultisampleState{} );
-		m_mainPipeline->finish();
+		m_mainPipeline = m_mainPipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
+		{
+			*m_mainProgram,
+			*m_mainRenderPass,
+			{ *m_mainVertexLayout },
+			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleStrip },
+			renderer::RasterisationState{ 1.0f }
+		} );
 	}
 
 	void RenderPanel::doPrepareMainFrames()

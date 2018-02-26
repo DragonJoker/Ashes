@@ -241,15 +241,22 @@ namespace vkapp
 			attaches.emplace_back( *facePipeline.renderPass->begin(), *facePipeline.view );
 			facePipeline.frameBuffer = facePipeline.renderPass->createFrameBuffer( size
 				, std::move( attaches ) );
-			facePipeline.pipeline = m_pipelineLayout->createPipeline( *m_program
-				, { *m_vertexLayout }
-				, *facePipeline.renderPass
-				, { renderer::PrimitiveTopology::eTriangleList }
-				, { 1.0f } );
-			facePipeline.pipeline->multisampleState( renderer::MultisampleState{} );
-			facePipeline.pipeline->viewport( { size[0], size[1], 0, 0 } );
-			facePipeline.pipeline->scissor( { 0, 0, size[0], size[1] } );
-			facePipeline.pipeline->finish();
+
+			facePipeline.pipeline = m_pipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
+			{
+				*m_program,
+				*facePipeline.renderPass,
+				{ *m_vertexLayout },
+				renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
+				renderer::RasterisationState{ 1.0f },
+				renderer::MultisampleState{},
+				renderer::ColourBlendState::createDefault(),
+				renderer::DepthStencilState{ 0u, false, false },
+				renderer::TessellationState{},
+				renderer::Viewport{ size[0], size[1], 0, 0 },
+				renderer::Scissor{ 0, 0, size[0], size[1] }
+			} );
+
 			facePipeline.descriptorSet = m_descriptorPool->createDescriptorSet();
 			facePipeline.descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
 				, *m_matrixUbo

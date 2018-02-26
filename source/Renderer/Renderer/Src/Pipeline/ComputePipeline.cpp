@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -8,7 +8,9 @@ namespace renderer
 {
 	ComputePipeline::ComputePipeline( Device const & device
 		, PipelineLayout const & layout
-		, ShaderProgram const & program )
+		, ComputePipelineCreateInfo const & createInfo )
+		: m_createInfo{ createInfo }
+		, m_layout{ layout }
 	{
 	}
 }

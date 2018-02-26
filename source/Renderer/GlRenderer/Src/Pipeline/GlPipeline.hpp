@@ -10,6 +10,7 @@
 
 #include "GlRendererPrerequisites.hpp"
 
+#include <Buffer/PushConstantsBuffer.hpp>
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/ColourBlendState.hpp>
 #include <Pipeline/DepthStencilState.hpp>
@@ -37,44 +38,14 @@ namespace gl_renderer
 		/**@{*/
 		Pipeline( Device const & device
 			, PipelineLayout const & layout
-			, renderer::ShaderProgram const & program
-			, renderer::VertexLayoutCRefArray const & vertexLayouts
-			, renderer::RenderPass const & renderPass
-			, renderer::InputAssemblyState const & inputAssemblyState
-			, renderer::RasterisationState const & rasterisationState
-			, renderer::ColourBlendState const & colourBlendState );
-		/**@}*/
-		/**
-		*\copydoc	renderer::Pipeline::finish
-		*/
-		renderer::Pipeline & finish()override;
-		/**
-		*\copydoc	renderer::Pipeline::finish
-		*/
-		renderer::Pipeline & multisampleState( renderer::MultisampleState const & state )override;
-		/**
-		*\copydoc	renderer::Pipeline::finish
-		*/
-		renderer::Pipeline & depthStencilState( renderer::DepthStencilState const & state )override;
-		/**
-		*\copydoc	renderer::Pipeline::finish
-		*/
-		renderer::Pipeline & tessellationState( renderer::TessellationState const & state )override;
-		/**
-		*\copydoc	renderer::Pipeline::finish
-		*/
-		renderer::Pipeline & viewport( renderer::Viewport const & viewport )override;
-		/**
-		*\copydoc	renderer::Pipeline::finish
-		*/
-		renderer::Pipeline & scissor( renderer::Scissor const & scissor )override;
+			, renderer::GraphicsPipelineCreateInfo const & createInfo );
 		/**
 		*\return
 		*	\p true si le Viewport est défini.
 		*/
 		inline bool hasViewport()const
 		{
-			return m_viewport != nullptr;
+			return (bool)m_viewport;
 		}
 		/**
 		*\return
@@ -82,7 +53,7 @@ namespace gl_renderer
 		*/
 		inline bool hasScissor()const
 		{
-			return m_scissor != nullptr;
+			return (bool)m_scissor;
 		}
 		/**
 		*\return
@@ -166,6 +137,14 @@ namespace gl_renderer
 		{
 			return m_program;
 		}
+		/**
+		*\return
+		*	Le tampon de push constants correspondant aux constantes de spécialisation.
+		*/
+		inline std::vector< renderer::PushConstantsBufferBase > const & getConstantsPcbs()const
+		{
+			return m_constantsPcbs;
+		}
 
 	private:
 		Device const & m_device;
@@ -179,8 +158,9 @@ namespace gl_renderer
 		renderer::DepthStencilState m_dsState;
 		renderer::MultisampleState m_msState;
 		renderer::TessellationState m_tsState;
-		std::unique_ptr< renderer::Viewport > m_viewport;
-		std::unique_ptr< renderer::Scissor > m_scissor;
+		std::optional< renderer::Viewport > m_viewport;
+		std::optional< renderer::Scissor > m_scissor;
+		std::vector< renderer::PushConstantsBufferBase > m_constantsPcbs;
 	};
 }
 
