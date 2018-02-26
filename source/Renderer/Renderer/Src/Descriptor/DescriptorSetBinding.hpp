@@ -121,10 +121,12 @@ namespace renderer
 		CombinedTextureSamplerBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, TextureView const & view
 			, Sampler const & sampler
+			, ImageLayout layout
 			, uint32_t index )
 			: DescriptorSetBinding{ layoutBinding, index }
 			, m_view{ view }
 			, m_sampler{ sampler }
+			, m_layout{ layout }
 		{
 		}
 		/**
@@ -143,11 +145,17 @@ namespace renderer
 		{
 			return m_sampler;
 		}
+
+		inline ImageLayout getLayout()const
+		{
+			return m_layout;
+		}
 		/**\}*/
 
 	private:
 		TextureView const & m_view;
 		Sampler const & m_sampler;
+		ImageLayout m_layout;
 	};
 	/**
 	*\~english

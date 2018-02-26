@@ -39,12 +39,14 @@ namespace vk_renderer
 			, DescriptorSet const & descriptorSet
 			, TextureView const & texture
 			, Sampler const & sampler
+			, renderer::ImageLayout layout
 			, uint32_t index );
 
 	private:
 		TextureView const & m_view;
 		Sampler const & m_sampler;
 		VkDescriptorImageInfo m_info;
+		VkImageLayout m_layout;
 	};
 	/**
 	*\brief
