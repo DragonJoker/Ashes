@@ -57,6 +57,7 @@
 #include "Enum/GlWrapMode.hpp"
 
 #include "Miscellaneous/GlCallLogger.hpp"
+#include "Pipeline/GlSpecialisationInfo.hpp"
 
 #include "Miscellaneous/GlDebug.hpp"
 

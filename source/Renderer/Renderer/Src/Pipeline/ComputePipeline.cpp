@@ -8,8 +8,8 @@ namespace renderer
 {
 	ComputePipeline::ComputePipeline( Device const & device
 		, PipelineLayout const & layout
-		, ComputePipelineCreateInfo const & createInfo )
-		: m_createInfo{ createInfo }
+		, ComputePipelineCreateInfo && createInfo )
+		: m_createInfo{ std::move( createInfo ) }
 		, m_layout{ layout }
 	{
 	}

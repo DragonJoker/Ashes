@@ -29,7 +29,7 @@ namespace vk_renderer
 		/**@{*/
 		Pipeline( Device const & device
 			, renderer::PipelineLayout const & layout
-			, renderer::GraphicsPipelineCreateInfo const & createInfo );
+			, renderer::GraphicsPipelineCreateInfo && createInfo );
 		~Pipeline();
 		/**
 		*\~french

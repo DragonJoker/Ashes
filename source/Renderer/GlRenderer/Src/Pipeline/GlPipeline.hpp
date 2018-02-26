@@ -38,7 +38,7 @@ namespace gl_renderer
 		/**@{*/
 		Pipeline( Device const & device
 			, PipelineLayout const & layout
-			, renderer::GraphicsPipelineCreateInfo const & createInfo );
+			, renderer::GraphicsPipelineCreateInfo && createInfo );
 		/**
 		*\return
 		*	\p true si le Viewport est défini.
