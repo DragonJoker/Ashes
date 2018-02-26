@@ -139,6 +139,14 @@ namespace gl_renderer
 		}
 		/**
 		*\return
+		*	Dit si le pipeline a des sommets.
+		*/
+		inline bool hasVertexLayout()const
+		{
+			return !m_vertexLayouts.empty();
+		}
+		/**
+		*\return
 		*	Le tampon de push constants correspondant aux constantes de spécialisation.
 		*/
 		inline std::vector< renderer::PushConstantsBufferBase > const & getConstantsPcbs()const
