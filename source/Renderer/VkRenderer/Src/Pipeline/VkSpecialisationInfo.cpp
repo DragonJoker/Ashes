@@ -8,15 +8,15 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	VkSpecializationInfo convert( renderer::SpecialisationInfo const & state
+	VkSpecializationInfo convert( renderer::SpecialisationInfoBase const & state
 		, std::vector< VkSpecializationMapEntry > const & mapEntries )
 	{
 		return VkSpecializationInfo
 		{
 			uint32_t( mapEntries.size() ),
 			mapEntries.data(),
-			uint32_t( state.data.size() ),
-			state.data.data()
+			uint32_t( state.getSize() ),
+			state.getData()
 		};
 	}
 }

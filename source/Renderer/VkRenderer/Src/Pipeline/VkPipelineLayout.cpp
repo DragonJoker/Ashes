@@ -65,17 +65,17 @@ namespace vk_renderer
 			, nullptr );
 	}
 
-	renderer::PipelinePtr PipelineLayout::createPipeline( renderer::GraphicsPipelineCreateInfo const & createInfo )const
+	renderer::PipelinePtr PipelineLayout::createPipeline( renderer::GraphicsPipelineCreateInfo && createInfo )const
 	{
 		return std::make_unique< Pipeline >( m_device
 			, *this
-			, createInfo );
+			, std::move( createInfo ) );
 	}
 
-	renderer::ComputePipelinePtr PipelineLayout::createPipeline( renderer::ComputePipelineCreateInfo const & createInfo )const
+	renderer::ComputePipelinePtr PipelineLayout::createPipeline( renderer::ComputePipelineCreateInfo && createInfo )const
 	{
 		return std::make_unique< ComputePipeline >( m_device
 			, *this
-			, createInfo );
+			, std::move( createInfo ) );
 	}
 }

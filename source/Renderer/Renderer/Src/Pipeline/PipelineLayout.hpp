@@ -72,7 +72,7 @@ namespace renderer
 		*\return
 		*	Le pipeline créé.
 		*/
-		virtual PipelinePtr createPipeline( GraphicsPipelineCreateInfo const & createInfo )const = 0;
+		virtual PipelinePtr createPipeline( GraphicsPipelineCreateInfo && createInfo )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -89,7 +89,7 @@ namespace renderer
 		*\return
 		*	Le pipeline créé.
 		*/
-		virtual ComputePipelinePtr createPipeline( ComputePipelineCreateInfo const & createInfo )const = 0;
+		virtual ComputePipelinePtr createPipeline( ComputePipelineCreateInfo && createInfo )const = 0;
 		/**
 		*\~english
 		*\brief

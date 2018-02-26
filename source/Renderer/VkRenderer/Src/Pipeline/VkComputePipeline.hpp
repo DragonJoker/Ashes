@@ -34,7 +34,7 @@ namespace vk_renderer
 		*/
 		ComputePipeline( Device const & device
 			, renderer::PipelineLayout const & layout
-			, renderer::ComputePipelineCreateInfo const & createInfo );
+			, renderer::ComputePipelineCreateInfo && createInfo );
 		/**
 		*\~french
 		*\brief
