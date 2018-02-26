@@ -12,6 +12,7 @@ See LICENSE file in root folder.
 #include "Command/GlQueue.hpp"
 #include "Core/GlConnection.hpp"
 #include "Core/GlContext.hpp"
+#include "Core/GlDummyIndexBuffer.hpp"
 #include "Core/GlRenderer.hpp"
 #include "Core/GlSwapChain.hpp"
 #include "Descriptor/GlDescriptorSetLayout.hpp"
@@ -262,7 +263,7 @@ namespace gl_renderer
 				glLogCall( gl::PatchParameteri, GL_PATCH_VERTICES, int( state.getControlPoints() ) );
 			}
 		}
-}
+	}
 
 	Device::Device( renderer::Renderer const & renderer
 		, renderer::ConnectionPtr && connection )
@@ -289,6 +290,33 @@ namespace gl_renderer
 		doApply( m_msState );
 		doApply( m_rsState );
 		doApply( m_tsState );
+		m_dummyIndexed.indexBuffer = renderer::makeBuffer< uint32_t >( *this
+			, sizeof( dummyIndex ) / sizeof( dummyIndex[0] )
+			, renderer::BufferTarget::eIndexBuffer
+			, renderer::MemoryPropertyFlag::eHostVisible | renderer::MemoryPropertyFlag::eHostCoherent );
+
+		if ( auto * buffer = m_dummyIndexed.indexBuffer->lock( 0u
+			, sizeof( dummyIndex ) / sizeof( dummyIndex[0] )
+			, renderer::MemoryMapFlag::eWrite ) )
+		{
+			std::memcpy( buffer, dummyIndex, sizeof( dummyIndex ) );
+			m_dummyIndexed.indexBuffer->unlock();
+		}
+
+		m_dummyIndexed.geometryBuffers = this->createGeometryBuffers( renderer::VertexBufferCRefArray{}
+			, {}
+			, {}
+			, m_dummyIndexed.indexBuffer->getBuffer()
+			, 0u
+			, renderer::IndexType::eUInt32 );
+		disable();
+	}
+
+	Device::~Device()
+	{
+		enable();
+		m_dummyIndexed.geometryBuffers.reset();
+		m_dummyIndexed.indexBuffer.reset();
 		disable();
 	}
 

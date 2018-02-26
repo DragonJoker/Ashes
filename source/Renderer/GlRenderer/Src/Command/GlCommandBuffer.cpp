@@ -242,11 +242,25 @@ namespace gl_renderer
 		, uint32_t firstVertex
 		, uint32_t firstInstance )const
 	{
-		m_commands.emplace_back( std::make_unique< DrawCommand >( vtxCount
-			, instCount
-			, firstVertex
-			, firstInstance
-			, m_currentPipeline->getInputAssemblyState().getTopology() ) );
+		if ( !m_currentPipeline->hasVertexLayout() )
+		{
+			bindGeometryBuffers( m_device.getEmptyIndexedVao() );
+			m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( vtxCount
+				, instCount
+				, 0u
+				, firstVertex
+				, firstInstance
+				, m_currentPipeline->getInputAssemblyState().getTopology()
+				, m_indexType ) );
+		}
+		else
+		{
+			m_commands.emplace_back( std::make_unique< DrawCommand >( vtxCount
+				, instCount
+				, firstVertex
+				, firstInstance
+				, m_currentPipeline->getInputAssemblyState().getTopology() ) );
+		}
 	}
 
 	void CommandBuffer::drawIndexed( uint32_t indexCount
@@ -255,6 +269,11 @@ namespace gl_renderer
 		, uint32_t vertexOffset
 		, uint32_t firstInstance )const
 	{
+		if ( !m_currentPipeline->hasVertexLayout() )
+		{
+			bindGeometryBuffers( m_device.getEmptyIndexedVao() );
+		}
+
 		m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( indexCount
 			, instCount
 			, firstIndex
