@@ -16,6 +16,6 @@ namespace vk_renderer
 	*\return
 	*	Le VkSpecializationInfo.
 	*/
-	VkSpecializationInfo convert( renderer::SpecialisationInfo const & state
+	VkSpecializationInfo convert( renderer::SpecialisationInfoBase const & state
 		, std::vector< VkSpecializationMapEntry > const & mapEntries );
 }

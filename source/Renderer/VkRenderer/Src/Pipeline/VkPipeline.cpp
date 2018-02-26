@@ -30,10 +30,10 @@ namespace vk_renderer
 
 	Pipeline::Pipeline( Device const & device
 		, renderer::PipelineLayout const & layout
-		, renderer::GraphicsPipelineCreateInfo const & createInfo )
+		, renderer::GraphicsPipelineCreateInfo && createInfo )
 		: renderer::Pipeline{ device
 			, layout
-			, createInfo }
+			, std::move( createInfo ) }
 		, m_device{ device }
 		, m_layout{ static_cast< PipelineLayout const & >( layout ) }
 		, m_shader{ static_cast< ShaderProgram const & >( m_createInfo.program.get() ) }
@@ -74,8 +74,8 @@ namespace vk_renderer
 			for ( auto & info : m_createInfo.specialisationInfo )
 			{
 				auto stage = convert( info.first );
-				m_specialisationEntries[index] = convert< VkSpecializationMapEntry >( info.second.mapEntries.begin(), info.second.mapEntries.end() );
-				m_specialisationInfos[stage] = convert( info.second, m_specialisationEntries[index] );
+				m_specialisationEntries[index] = convert< VkSpecializationMapEntry >( info.second->begin(), info.second->end() );
+				m_specialisationInfos[stage] = convert( *info.second, m_specialisationEntries[index] );
 				++index;
 			}
 		}

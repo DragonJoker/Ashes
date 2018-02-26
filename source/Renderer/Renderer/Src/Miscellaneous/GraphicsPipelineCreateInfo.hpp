@@ -41,7 +41,7 @@ namespace renderer
 		std::optional< TessellationState > tessellationState;
 		std::optional< Viewport > viewport;
 		std::optional< Scissor > scissor;
-		std::map< ShaderStageFlag, SpecialisationInfo > specialisationInfo;
+		std::map< ShaderStageFlag, SpecialisationInfoBasePtr > specialisationInfo;
 	};
 }
 

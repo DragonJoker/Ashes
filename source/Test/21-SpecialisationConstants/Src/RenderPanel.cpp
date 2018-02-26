@@ -461,16 +461,13 @@ namespace vkapp
 			renderer::ColourBlendState::createDefault(),
 			renderer::DepthStencilState{},
 		};
-		createInfoRed.specialisationInfo[renderer::ShaderStageFlag::eFragment] = renderer::SpecialisationInfo
-		{
+		auto specialisationInfoRed = renderer::makeSpecialisationInfo(
 			{
 				{ 0u, 0u, renderer::AttributeFormat::eInt }
-			},
-			renderer::ByteArray( size_t( 4u ), uint8_t( 0u ) )
-		};
-		int v = 0;
-		std::memcpy( createInfoRed.specialisationInfo[renderer::ShaderStageFlag::eFragment].data.data(), &v, sizeof( int ) );
-		m_offscreenPipelines.red = m_offscreenPipelineLayout->createPipeline( createInfoRed );
+			}
+			, int( 0 ) );
+		createInfoRed.specialisationInfo[renderer::ShaderStageFlag::eFragment] = std::move( specialisationInfoRed );
+		m_offscreenPipelines.red = m_offscreenPipelineLayout->createPipeline( std::move( createInfoRed ) );
 		renderer::GraphicsPipelineCreateInfo createInfoGreen
 		{
 			*m_offscreenProgram,
@@ -482,16 +479,13 @@ namespace vkapp
 			renderer::ColourBlendState::createDefault(),
 			renderer::DepthStencilState{},
 		};
-		createInfoGreen.specialisationInfo[renderer::ShaderStageFlag::eFragment] = renderer::SpecialisationInfo
-		{
+		auto specialisationInfoGreen = renderer::makeSpecialisationInfo(
 			{
 				{ 0u, 0u, renderer::AttributeFormat::eInt }
-			},
-			renderer::ByteArray( size_t( 4u ), uint8_t( 0u ) )
-		};
-		v = 1;
-		std::memcpy( createInfoGreen.specialisationInfo[renderer::ShaderStageFlag::eFragment].data.data(), &v, sizeof( int ) );
-		m_offscreenPipelines.green = m_offscreenPipelineLayout->createPipeline( createInfoGreen );
+			}
+			, int( 1 ) );
+		createInfoGreen.specialisationInfo[renderer::ShaderStageFlag::eFragment] = std::move( specialisationInfoGreen );
+		m_offscreenPipelines.green = m_offscreenPipelineLayout->createPipeline( std::move( createInfoGreen ) );
 	}
 
 	void RenderPanel::doCreateMainDescriptorSet()

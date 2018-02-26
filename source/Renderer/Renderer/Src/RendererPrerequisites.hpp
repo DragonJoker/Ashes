@@ -85,6 +85,8 @@ namespace renderer
 	template< typename T >
 	class PushConstantsBuffer;
 	template< typename T >
+	class SpecialisationInfo;
+	template< typename T >
 	class VertexBuffer;
 
 	struct BufferCopy;
@@ -96,7 +98,6 @@ namespace renderer
 	struct PhysicalDeviceInfo;
 	struct PushConstant;
 	struct PushConstantRange;
-	struct SpecialisationInfo;
 	struct SpecialisationMapEntry;
 
 	class Attribute;
@@ -144,6 +145,7 @@ namespace renderer
 	class Scissor;
 	class ShaderProgram;
 	class ShaderStorageBufferBase;
+	class SpecialisationInfoBase;
 	class StagingBuffer;
 	class StencilOpState;
 	class SwapChain;
@@ -181,6 +183,8 @@ namespace renderer
 	using VertexBufferPtr = std::unique_ptr< VertexBuffer< T > >;
 	template< typename T >
 	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBuffer< T > >;
+	template< typename T >
+	using SpecialisationInfoPtr = std::unique_ptr< SpecialisationInfo< T > >;
 
 	using AttributeBasePtr = std::unique_ptr< Attribute >;
 	using BufferBasePtr = std::unique_ptr< BufferBase >;
@@ -208,6 +212,7 @@ namespace renderer
 	using SemaphorePtr = std::unique_ptr< Semaphore >;
 	using ShaderProgramPtr = std::unique_ptr< ShaderProgram >;
 	using ShaderStorageBufferBasePtr = std::unique_ptr< ShaderStorageBufferBase >;
+	using SpecialisationInfoBasePtr = std::unique_ptr< SpecialisationInfoBase >;
 	using SwapChainPtr = std::unique_ptr< SwapChain >;
 	using VertexBufferBasePtr = std::unique_ptr< VertexBufferBase >;
 	using VertexLayoutPtr = std::unique_ptr< VertexLayout >;
@@ -225,6 +230,7 @@ namespace renderer
 	using RenderPassAttachmentArray = std::vector< RenderPassAttachment >;
 	using RenderSubpassArray = std::vector< RenderSubpass >;
 	using RenderSubpassAttachmentArray = std::vector< RenderSubpassAttachment >;
+	using SpecialisationMapEntryArray = std::vector< SpecialisationMapEntry >;
 
 	using FrameBufferPtr = std::shared_ptr< FrameBuffer >;
 	using SamplerPtr = std::shared_ptr< Sampler >;

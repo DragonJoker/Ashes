@@ -39,7 +39,7 @@ namespace renderer
 		*/
 		ComputePipeline( Device const & device
 			, PipelineLayout const & layout
-			, ComputePipelineCreateInfo const & createInfo );
+			, ComputePipelineCreateInfo && createInfo );
 
 	public:
 		/**

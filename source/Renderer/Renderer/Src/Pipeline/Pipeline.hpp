@@ -43,7 +43,7 @@ namespace renderer
 		*/
 		Pipeline( Device const & device
 			, PipelineLayout const & layout
-			, GraphicsPipelineCreateInfo const & createInfo );
+			, GraphicsPipelineCreateInfo && createInfo );
 
 	public:
 		/**

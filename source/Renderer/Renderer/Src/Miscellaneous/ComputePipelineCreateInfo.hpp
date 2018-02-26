@@ -21,7 +21,7 @@ namespace renderer
 	struct ComputePipelineCreateInfo
 	{
 		std::reference_wrapper< ShaderProgram const > program;
-		std::map< ShaderStageFlag, SpecialisationInfo > specialisationInfo;
+		std::map< ShaderStageFlag, SpecialisationInfoBasePtr > specialisationInfo;
 	};
 }
 
