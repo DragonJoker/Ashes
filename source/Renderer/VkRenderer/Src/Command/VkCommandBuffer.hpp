@@ -59,12 +59,7 @@ namespace vk_renderer
 		*\copydoc	renderer::CommandBuffer:begin
 		*/
 		bool begin( renderer::CommandBufferUsageFlags flags
-			, renderer::RenderPass const & renderPass
-			, uint32_t subpass
-			, renderer::FrameBuffer const & frameBuffer
-			, bool occlusionQueryEnable
-			, renderer::QueryControlFlags queryFlags
-			, renderer::QueryPipelineStatisticFlags pipelineStatistics )const override;
+			, renderer::CommandBufferInheritanceInfo const & inheritanceInfo )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:end
 		*/

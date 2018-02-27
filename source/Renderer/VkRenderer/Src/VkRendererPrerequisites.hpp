@@ -80,6 +80,7 @@
 #include "Enum/VkTextureType.hpp"
 #include "Enum/VkVertexInputRate.hpp"
 #include "Enum/VkWrapMode.hpp"
+#include "Command/VkCommandBufferInheritanceInfo.hpp"
 #include "Descriptor/VkDescriptorSetLayoutBinding.hpp"
 #include "Image/VkComponentMapping.hpp"
 #include "Image/VkImageSubresourceLayers.hpp"
