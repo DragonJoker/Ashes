@@ -86,18 +86,8 @@ namespace renderer
 		*	Starts recording the command buffer as a secondary command buffer.
 		*\param[in] flags
 		*	The usage flags for the command buffer.
-		*\param[in] renderPass
-		*	The render pass with which the buffer is compatible, and int which it can execute.
-		*\param[in] subpass
-		*	The index of the subpass into which this buffer will be executed.
-		*\param[in] frameBuffer
-		*	The frame buffer into which the command buffer will render.
-		*\param[in] occlusionQueryEnable
-		*	Tells if the command buffer can be executed while an occlusion query is active on main command buffer.
-		*\param[in] queryFlags
-		*	The occlusion query flags that can be used by an active occlusion query on the main command buffer, when this buffer is executed.
-		*\param[in] pipelineStatistics
-		*	Tells which pipeline statistics can be counted by an active query on the main command buffer, when this buffer is executed.
+		*\param[in] inheritanceInfo
+		*	The inheritance informations.
 		*\return
 		*	\p false on any error.
 		*\~french
@@ -105,30 +95,13 @@ namespace renderer
 		*	Démarre l'enregistrement du tampon de commandes en tant que tampon secondaire.
 		*\param[in] flags
 		*	Les indicateurs de type de charge qui sera affectée au tampon.
-		*\param[in] renderPass
-		*	La passe de rendu avec laquelle le tampon sera compatible, et dans laquelle il peut s'exécuter.
-		*\param[in] subpass
-		*	L'indice de la sous-passe au sein de laquelle le tampon de commandes sera exécuté.
-		*\param[in] frameBuffer
-		*	Le tampon d'images dans lequel le tampon de commandes va effectuer son rendu.
-		*\param[in] occlusionQueryEnable
-		*	Indique si le tampon de commandes peut être exécuté alors qu'une requête d'occlusion est active sur le tampon principal.
-		*\param[in] queryFlags
-		*	Les indicateurs de requête d'occlusion pouvant être utilisées par une requête d'occlusion active sur le tampon principal,
-		*	lorsque ce tampon est exécuté.
-		*\param[in] pipelineStatistics
-		*	Indique quelles statistique de pipeline peuvent être comptées par une requête active sur le tampon principal,
-		*	lorsque ce tampon est exécuté.
+		*\param[in] inheritanceInfo
+		*	Les informations d'héritage.
 		*\return
 		*	\p false en cas d'erreur.
 		*/
 		virtual bool begin( CommandBufferUsageFlags flags
-			, RenderPass const & renderPass
-			, uint32_t subpass
-			, FrameBuffer const & frameBuffer
-			, bool occlusionQueryEnable = false
-			, QueryControlFlags queryFlags = 0u
-			, QueryPipelineStatisticFlags pipelineStatistics = 0u )const = 0;
+			, CommandBufferInheritanceInfo const & inheritanceInfo )const = 0;
 		/**
 		*\~english
 		*\brief
