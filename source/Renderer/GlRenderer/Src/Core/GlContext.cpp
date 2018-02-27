@@ -51,24 +51,22 @@ namespace gl_renderer
 		m_info.wideLines &= ( range[1] > 1 );
 		glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
 
-		if ( doFindExtension( "GL_ARB_ES3_compatibility" )
+		m_info.textureCompressionETC2 = doFindExtension( "GL_ARB_ES3_compatibility" )
 			&& doFindExtension( "ARB_ES2_compatibility" )
 			&& doFindExtension( "ARB_invalidate_subdata" )
-			&& doFindExtension( "ARB_texture_storage" ) )
-		{
-			m_info.textureCompressionETC2 = true;
-		}
+			&& doFindExtension( "ARB_texture_storage" );
 
-		if ( doFindExtension( "GL_KHR_texture_compression_astc_ldr" ) )
-		{
-			m_info.textureCompressionASTC_LDR = true;
-		}
+		m_info.textureCompressionASTC_LDR = doFindExtension( "GL_KHR_texture_compression_astc_ldr" );
 
-		if ( doFindExtension( "GL_EXT_texture_compression_s3tc" )
-			&& doFindExtension( "GL_EXT_texture_sRGB" ) )
-		{
-			m_info.textureCompressionBC = true;
-		}
+		m_info.textureCompressionBC = doFindExtension( "GL_EXT_texture_compression_s3tc" )
+			&& doFindExtension( "GL_EXT_texture_sRGB" );
+
+		m_info.samplerAnisotropy = doFindExtension( "GL_ARB_texture_filter_anisotropic" )
+			|| doFindExtension( "GL_EXT_texture_filter_anisotropic" );
+
+		m_info.multiDrawIndirect = doFindExtension( "GL_ARB_multi_draw_indirect" )
+			&& doFindExtension( "GL_ARB_draw_indirect" )
+			&& doFindExtension( "GL_ARB_base_instance" );
 	}
 
 	bool Context::doFindExtension( std::string const & name )

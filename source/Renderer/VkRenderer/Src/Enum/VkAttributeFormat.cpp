@@ -36,6 +36,18 @@ namespace vk_renderer
 		case renderer::AttributeFormat::eColour:
 			return VK_FORMAT_R8G8B8A8_UNORM;
 
+		case renderer::AttributeFormat::eUInt:
+			return VK_FORMAT_R32_UINT;
+
+		case renderer::AttributeFormat::eVec2ui:
+			return VK_FORMAT_R32G32_UINT;
+
+		case renderer::AttributeFormat::eVec3ui:
+			return VK_FORMAT_R32G32B32_UINT;
+
+		case renderer::AttributeFormat::eVec4ui:
+			return VK_FORMAT_R32G32B32A32_UINT;
+
 		default:
 			assert( false && "Unsupported attribute format." );
 			return VK_FORMAT_R32G32B32A32_SFLOAT;

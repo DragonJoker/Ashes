@@ -448,6 +448,62 @@ namespace renderer
 			, uint32_t vertexOffset = 0u
 			, uint32_t firstInstance = 0u )const = 0;
 		/**
+		*\~english
+		*\brief
+		*	Perform an indirect draw.
+		*\param[in] buffer
+		*	The buffer containing draw parameters.
+		*\param[in] offset
+		*	The byte offset into \p buffer where parameters begin.
+		*\param[in] drawCount
+		*	The number of draws to execute, and can be zero.
+		*\param[in] stride
+		*	The byte stride between successive sets of draw parameters.
+		*\~french
+		*\brief
+		*	Effectue un dessin indirect.
+		*\param[in] buffer
+		*	Le tampon contenant les paramètres de dessin.
+		*\param[in] offset
+		*	L'offset en octets dans \p buffer, où les paramètres commencent.
+		*\param[in] drawCount
+		*	Le nombre de dessins à effectuer, peut être zéro.
+		*\param[in] stride
+		*	Le stride en octets entre deux ensembles successifs de paramètres de dessin.
+		*/
+		virtual void drawIndirect( BufferBase const & buffer
+			, uint32_t offset
+			, uint32_t drawCount
+			, uint32_t stride )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Perform an indexed indirect draw.
+		*\param[in] buffer
+		*	The buffer containing draw parameters.
+		*\param[in] offset
+		*	The byte offset into \p buffer where parameters begin.
+		*\param[in] drawCount
+		*	The number of draws to execute, and can be zero.
+		*\param[in] stride
+		*	The byte stride between successive sets of draw parameters.
+		*\~french
+		*\brief
+		*	Effectue un dessin indirect indexé.
+		*\param[in] buffer
+		*	Le tampon contenant les paramètres de dessin.
+		*\param[in] offset
+		*	L'offset en octets dans \p buffer, où les paramètres commencent.
+		*\param[in] drawCount
+		*	Le nombre de dessins à effectuer, peut être zéro.
+		*\param[in] stride
+		*	Le stride en octets entre deux ensembles successifs de paramètres de dessin.
+		*/
+		virtual void drawIndexedIndirect( BufferBase const & buffer
+			, uint32_t offset
+			, uint32_t drawCount
+			, uint32_t stride )const = 0;
+		/**
 		*\~french
 		*\brief
 		*	Copie les données d'un tampon vers une image.
@@ -677,7 +733,7 @@ namespace renderer
 		*\brief
 		*	Distribue des éléments de calcul.
 		*\param[in] groupCountX, groupCountY, groupCountZ
-		*	Le nombre de groupes de travail locaux à distribuer dans les dimensions Xy, Y, et Z.
+		*	Le nombre de groupes de travail locaux à distribuer dans les dimensions X, Y, et Z.
 		*\~english
 		*\brief
 		*	Dispatch compute work items.
@@ -687,6 +743,24 @@ namespace renderer
 		virtual void dispatch( uint32_t groupCountX
 			, uint32_t groupCountY
 			, uint32_t groupCountZ )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Dispatch compute work items using indirect parameters.
+		*\param[in] buffer
+		*	The buffer containing dispatch parameters.
+		*\param[in] offset
+		*	The byte offset into \p buffer where parameters begin.
+		*\~french
+		*\brief
+		*	Distribue des éléments de calcul en utilisant des paramètres indirects.
+		*\param[in] buffer
+		*	Le tampon contenant les paramètres de distribution.
+		*\param[in] offset
+		*	L'offset en octets dans \p buffer, où les paramètres commencent.
+		*/
+		virtual void dispatchIndirect( BufferBase const & buffer
+			, uint32_t offset )const = 0;
 		/**
 		*\~french
 		*\brief

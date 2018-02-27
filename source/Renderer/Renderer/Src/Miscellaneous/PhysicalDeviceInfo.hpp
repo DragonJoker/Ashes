@@ -92,6 +92,24 @@ namespace renderer
 		*	Le support des formats de texture compressés en ETC2.
 		*/
 		bool textureCompressionETC2{ false };
+		/**
+		*\~english
+		*\brief
+		*	The support for anisotropic filtering.
+		*\~french
+		*\brief
+		*	Le support du filtrage anisotropique.
+		*/
+		bool samplerAnisotropy{ false };
+		/**
+		*\~english
+		*\brief
+		*	The support for multi draw indirect.
+		*\~french
+		*\brief
+		*	Le support du multi draw indirect.
+		*/
+		bool multiDrawIndirect{ false };
 	};
 }
 

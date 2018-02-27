@@ -16,16 +16,6 @@ namespace gl_renderer
 		: public CommandBase
 	{
 	public:
-		struct DrawElementsIndirectCommand
-		{
-			GLuint  count;
-			GLuint  instanceCount;
-			GLuint  firstIndex;
-			GLuint  baseVertex;
-			GLuint  baseInstance;
-		};
-
-	public:
 		/**
 		*\brief
 		*	Constructeur.
