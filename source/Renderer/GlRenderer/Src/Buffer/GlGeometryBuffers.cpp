@@ -13,6 +13,21 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
+	namespace
+	{
+		bool isInteger( renderer::AttributeFormat format )
+		{
+			return format == renderer::AttributeFormat::eInt
+				|| format == renderer::AttributeFormat::eUInt
+				|| format == renderer::AttributeFormat::eVec2i
+				|| format == renderer::AttributeFormat::eVec2ui
+				|| format == renderer::AttributeFormat::eVec3i
+				|| format == renderer::AttributeFormat::eVec3ui
+				|| format == renderer::AttributeFormat::eVec4i
+				|| format == renderer::AttributeFormat::eVec4ui;
+		}
+	}
+
 	GeometryBuffers::GeometryBuffers( renderer::VertexBufferCRefArray const & vbos
 		, std::vector< uint64_t > offsets
 		, renderer::VertexLayoutCRefArray const & layouts )
@@ -59,13 +74,26 @@ namespace gl_renderer
 				for ( auto & attribute : static_cast< VertexLayout const & >( vbo.layout ) )
 				{
 					glLogCall( gl::EnableVertexAttribArray, attribute.getLocation() );
-					glLogCall( gl::VertexAttribPointer
-						, attribute.getLocation()
-						, getCount( attribute.getFormat() )
-						, getType( attribute.getFormat() )
-						, false
-						, vbo.layout.getStride()
-						, BufferOffset( vbo.offset + attribute.getOffset() ) );
+
+					if ( isInteger( attribute.getFormat() ) )
+					{
+						glLogCall( gl::VertexAttribIPointer
+							, attribute.getLocation()
+							, getCount( attribute.getFormat() )
+							, getType( attribute.getFormat() )
+							, vbo.layout.getStride()
+							, BufferOffset( vbo.offset + attribute.getOffset() ) );
+					}
+					else
+					{
+						glLogCall( gl::VertexAttribPointer
+							, attribute.getLocation()
+							, getCount( attribute.getFormat() )
+							, getType( attribute.getFormat() )
+							, false
+							, vbo.layout.getStride()
+							, BufferOffset( vbo.offset + attribute.getOffset() ) );
+					}
 				}
 			}
 			else
@@ -101,13 +129,27 @@ namespace gl_renderer
 					else
 					{
 						glLogCall( gl::EnableVertexAttribArray, location );
-						glLogCall( gl::VertexAttribPointer
-							, location
-							, getCount( format )
-							, getType( format )
-							, false
-							, vbo.layout.getStride()
-							, BufferOffset( vbo.offset + offset ) );
+
+						if ( isInteger( attribute.getFormat() ) )
+						{
+							glLogCall( gl::VertexAttribIPointer
+								, location
+								, getCount( format )
+								, getType( format )
+								, vbo.layout.getStride()
+								, BufferOffset( vbo.offset + offset ) );
+						}
+						else
+						{
+							glLogCall( gl::VertexAttribPointer
+								, location
+								, getCount( format )
+								, getType( format )
+								, false
+								, vbo.layout.getStride()
+								, BufferOffset( vbo.offset + offset ) );
+						}
+
 						glLogCall( gl::VertexAttribDivisor
 							, location
 							, divisor );

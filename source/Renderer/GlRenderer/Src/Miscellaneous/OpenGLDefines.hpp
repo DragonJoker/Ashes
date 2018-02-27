@@ -290,6 +290,7 @@ namespace gl_renderer
 	using PFN_glUnmapBuffer = GLboolean( GLAPIENTRY * )( GLenum target );
 	using PFN_glUseProgram = void ( GLAPIENTRY * )( GLuint program );
 	using PFN_glVertexAttribDivisor = void ( GLAPIENTRY * )( GLuint index, GLuint divisor );
+	using PFN_glVertexAttribIPointer = void ( GLAPIENTRY * )( GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer );
 	using PFN_glVertexAttribPointer = void ( GLAPIENTRY * )( GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer );
 	using PFN_glViewport = void ( GLAPIENTRY * )( GLint x, GLint y, GLsizei width, GLsizei height );
 }
