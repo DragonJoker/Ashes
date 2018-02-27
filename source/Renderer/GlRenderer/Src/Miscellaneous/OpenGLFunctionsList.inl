@@ -166,6 +166,7 @@ GL_LIB_FUNCTION( UnmapBuffer )
 GL_LIB_FUNCTION( UseProgram )
 GL_LIB_FUNCTION( VertexAttribDivisor )
 GL_LIB_FUNCTION( VertexAttribPointer )
+GL_LIB_FUNCTION( VertexAttribIPointer )
 
 #undef GL_LIB_FUNCTION
 
