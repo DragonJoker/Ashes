@@ -69,12 +69,7 @@ namespace gl_renderer
 	}
 
 	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags
-		, renderer::RenderPass const & renderPass
-		, uint32_t subpass
-		, renderer::FrameBuffer const & frameBuffer
-		, bool occlusionQueryEnable
-		, renderer::QueryControlFlags queryFlags
-		, renderer::QueryPipelineStatisticFlags pipelineStatistics )const
+		, renderer::CommandBufferInheritanceInfo const & inheritanceInfo )const
 	{
 		m_commands.clear();
 		m_beginFlags = flags;
@@ -84,7 +79,7 @@ namespace gl_renderer
 	bool CommandBuffer::end()const
 	{
 		m_pushConstantBuffers.clear();
-		return gl::GetError() == GL_NO_ERROR;
+		return true;
 	}
 
 	bool CommandBuffer::reset( renderer::CommandBufferResetFlags flags )const

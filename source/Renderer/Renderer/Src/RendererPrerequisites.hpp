@@ -92,6 +92,7 @@ namespace renderer
 	struct BufferCopy;
 	struct BufferImageCopy;
 	struct ClearValue;
+	struct CommandBufferInheritanceInfo;
 	struct GraphicsPipelineCreateInfo;
 	struct ImageCopy;
 	struct ImageBlit;

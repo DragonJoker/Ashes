@@ -123,24 +123,9 @@ namespace vk_renderer
 	}
 
 	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags
-		, renderer::RenderPass const & renderPass
-		, uint32_t subpass
-		, renderer::FrameBuffer const & frameBuffer
-		, bool occlusionQueryEnable
-		, renderer::QueryControlFlags queryFlags
-		, renderer::QueryPipelineStatisticFlags pipelineStatistics )const
+		, renderer::CommandBufferInheritanceInfo const & inheritanceInfo )const
 	{
-		m_inheritanceInfo = VkCommandBufferInheritanceInfo
-		{
-			VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO,  // sType;
-			nullptr,                                            // pNext;
-			static_cast< RenderPass const & >( renderPass ),    // renderPass;
-			subpass,                                            // subpass;
-			static_cast< FrameBuffer const & >( frameBuffer ),  // framebuffer;
-			occlusionQueryEnable,                               // occlusionQueryEnable;
-			convert( queryFlags ),                              // queryFlags;
-			convert( pipelineStatistics )                       // pipelineStatistics;
-		};
+		m_inheritanceInfo = convert( inheritanceInfo );
 		VkCommandBufferBeginInfo cmdBufInfo
 		{
 			VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
