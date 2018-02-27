@@ -197,6 +197,7 @@ namespace gl_renderer
 	using PFN_glDrawElementsBaseVertex = void ( GLAPIENTRY * )( GLenum mode, GLsizei count, GLenum type, void *indices, GLint basevertex );
 	using PFN_glDrawElementsInstanced = void ( GLAPIENTRY * )( GLenum mode, GLsizei count, GLenum type, const void * indices, GLsizei primcount );
 	using PFN_glDrawElementsInstancedBaseInstance = void ( GLAPIENTRY * )( GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei primcount, GLuint baseinstance );
+	using PFN_glDrawElementsInstancedBaseVertexBaseInstance = void ( GLAPIENTRY * )( GLenum mode, GLsizei count, GLenum type, GLvoid *indices, GLsizei primcount, GLint basevertex, GLuint baseinstance );
 	using PFN_glEnable = void ( GLAPIENTRY * )( GLenum cap );
 	using PFN_glEnableVertexAttribArray = void ( GLAPIENTRY * )( GLuint index );
 	using PFN_glEndQuery = void ( GLAPIENTRY * )( GLenum target );
