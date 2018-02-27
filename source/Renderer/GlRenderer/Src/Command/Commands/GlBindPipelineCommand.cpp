@@ -12,6 +12,39 @@ See LICENSE file in root folder.
 namespace gl_renderer
 {
 	void apply( Device const & device
+		, renderer::InputAssemblyState const & state )
+	{
+		auto & save = device.getCurrentInputAssemblyState();
+
+		if ( state != save )
+		{
+			if ( state.getTopology() != save.getTopology() )
+			{
+				if ( state.getTopology() == renderer::PrimitiveTopology::ePointList )
+				{
+					glLogCall( gl::Enable, GL_PROGRAM_POINT_SIZE );
+				}
+				else
+				{
+					glLogCall( gl::Disable, GL_PROGRAM_POINT_SIZE );
+				}
+			}
+
+			if ( state.isPrimitiveRestartEnabled() != save.isPrimitiveRestartEnabled() )
+			{
+				if ( state.isPrimitiveRestartEnabled() )
+				{
+					glLogCall( gl::Enable, GL_PRIMITIVE_RESTART );
+				}
+				else
+				{
+					glLogCall( gl::Disable, GL_PRIMITIVE_RESTART );
+				}
+			}
+		}
+	}
+
+	void apply( Device const & device
 		, renderer::ColourBlendState const & state )
 	{
 		auto & save = device.getCurrentBlendState();
@@ -391,6 +424,7 @@ namespace gl_renderer
 	void BindPipelineCommand::apply()const
 	{
 		glLogCommand( "BindPipelineCommand" );
+		gl_renderer::apply( m_device, m_pipeline.getInputAssemblyState() );
 		gl_renderer::apply( m_device, m_pipeline.getColourBlendState() );
 		gl_renderer::apply( m_device, m_pipeline.getRasterisationState() );
 		gl_renderer::apply( m_device, m_pipeline.getDepthStencilState() );
