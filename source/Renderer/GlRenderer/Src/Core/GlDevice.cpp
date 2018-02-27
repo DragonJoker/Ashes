@@ -263,6 +263,27 @@ namespace gl_renderer
 				glLogCall( gl::PatchParameteri, GL_PATCH_VERTICES, int( state.getControlPoints() ) );
 			}
 		}
+
+		void doApply( renderer::InputAssemblyState const & state )
+		{
+			if ( state.getTopology() == renderer::PrimitiveTopology::ePointList )
+			{
+				glLogCall( gl::Enable, GL_PROGRAM_POINT_SIZE );
+			}
+			else
+			{
+				glLogCall( gl::Disable, GL_PROGRAM_POINT_SIZE );
+			}
+
+			if ( state.isPrimitiveRestartEnabled() )
+			{
+				glLogCall( gl::Enable, GL_PRIMITIVE_RESTART );
+			}
+			else
+			{
+				glLogCall( gl::Disable, GL_PRIMITIVE_RESTART );
+			}
+		}
 	}
 
 	Device::Device( renderer::Renderer const & renderer
@@ -290,6 +311,7 @@ namespace gl_renderer
 		doApply( m_msState );
 		doApply( m_rsState );
 		doApply( m_tsState );
+		doApply( m_iaState );
 		m_dummyIndexed.indexBuffer = renderer::makeBuffer< uint32_t >( *this
 			, sizeof( dummyIndex ) / sizeof( dummyIndex[0] )
 			, renderer::BufferTarget::eIndexBuffer
