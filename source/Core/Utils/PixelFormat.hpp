@@ -51,6 +51,9 @@ namespace utils
 		//!\~english	4 integer components on 8 bits, BGRA.
 		//!\~french		4 composantes entières sur 8 bits, BGRA.
 		eB8G8R8A8,
+		//!\~english	4 floating point components on 16 bits.
+		//!\~french		4 composantes flottantes sur 16 bits.
+		eRGBA16F,
 		//!\~english	4 floating point components on 32 bits.
 		//!\~french		4 composantes flottantes sur 32 bits.
 		eRGBA32F,
