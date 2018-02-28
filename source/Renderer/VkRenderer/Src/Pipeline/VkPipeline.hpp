@@ -48,7 +48,9 @@ namespace vk_renderer
 		Device const & m_device;
 		PipelineLayout const & m_layout;
 		ShaderProgram const & m_shader;
-		VertexLayoutCRefArray m_vertexLayouts;
+		std::vector< VkVertexInputAttributeDescription > m_vertexAttributes;
+		std::vector< VkVertexInputBindingDescription > m_vertexBindings;
+		VkPipelineVertexInputStateCreateInfo m_vertexInputState;
 		RenderPass const & m_renderPass;
 		VkPipelineInputAssemblyStateCreateInfo m_inputAssemblyState;
 		VkPipelineRasterizationStateCreateInfo m_rasterisationState;

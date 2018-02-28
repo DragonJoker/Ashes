@@ -34,7 +34,7 @@ namespace vk_renderer
 		*/
 		GeometryBuffers( renderer::VertexBufferCRefArray const & vbos
 			, std::vector< uint64_t > offsets
-			, renderer::VertexLayoutCRefArray const & layouts );
+			, renderer::VertexInputState const & vertexInputState );
 		/**
 		*\brief
 		*	Constructeur.
@@ -53,7 +53,7 @@ namespace vk_renderer
 		*/
 		GeometryBuffers( renderer::VertexBufferCRefArray const & vbos
 			, std::vector< uint64_t > offsets
-			, renderer::VertexLayoutCRefArray const & layouts
+			, renderer::VertexInputState const & vertexInputState
 			, renderer::BufferBase const & ibo
 			, uint64_t offset
 			, renderer::IndexType type );

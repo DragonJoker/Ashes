@@ -105,6 +105,9 @@ namespace renderer
 	struct RenderSubpassAttachment;
 	struct RenderSubpassState;
 	struct SpecialisationMapEntry;
+	struct VertexInputAttributeDescription;
+	struct VertexInputBindingDescription;
+	struct VertexInputState;
 
 	class Attribute;
 	class BackBuffer;
@@ -233,6 +236,8 @@ namespace renderer
 	using RenderSubpassArray = std::vector< RenderSubpass >;
 	using RenderSubpassAttachmentArray = std::vector< RenderSubpassAttachment >;
 	using SpecialisationMapEntryArray = std::vector< SpecialisationMapEntry >;
+	using VertexInputAttributeDescriptionArray = std::vector< VertexInputAttributeDescription >;
+	using VertexInputBindingDescriptionArray = std::vector< VertexInputBindingDescription >;
 
 	using FrameBufferPtr = std::shared_ptr< FrameBuffer >;
 	using SamplerPtr = std::shared_ptr< Sampler >;

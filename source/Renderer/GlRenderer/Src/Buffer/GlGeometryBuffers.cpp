@@ -5,9 +5,9 @@ See LICENSE file in root folder.
 #include "Buffer/GlGeometryBuffers.hpp"
 
 #include "Buffer/GlBuffer.hpp"
-#include "Pipeline/GlVertexLayout.hpp"
 
 #include <Buffer/VertexBuffer.hpp>
+#include <Pipeline/VertexLayout.hpp>
 
 namespace gl_renderer
 {
@@ -28,19 +28,19 @@ namespace gl_renderer
 
 	GeometryBuffers::GeometryBuffers( renderer::VertexBufferCRefArray const & vbos
 		, std::vector< uint64_t > offsets
-		, renderer::VertexLayoutCRefArray const & layouts )
-		: renderer::GeometryBuffers{ vbos, offsets, layouts }
+		, renderer::VertexInputState const & vertexInputState )
+		: renderer::GeometryBuffers{ vbos, offsets, vertexInputState }
 	{
 		doInitialise();
 	}
 
 	GeometryBuffers::GeometryBuffers( renderer::VertexBufferCRefArray const & vbos
 		, std::vector< uint64_t > offsets
-		, renderer::VertexLayoutCRefArray const & layouts
+		, renderer::VertexInputState const & vertexInputState
 		, renderer::BufferBase const & ibo
 		, uint64_t iboOffset
 		, renderer::IndexType type )
-		: renderer::GeometryBuffers{ vbos, offsets, layouts, ibo, iboOffset, type }
+		: renderer::GeometryBuffers{ vbos, offsets, vertexInputState, ibo, iboOffset, type }
 	{
 		doInitialise();
 	}
@@ -67,91 +67,67 @@ namespace gl_renderer
 				, GL_BUFFER_TARGET_ARRAY
 				, static_cast< Buffer const & >( vbo.vbo.getBuffer() ).getBuffer() );
 
-			if ( vbo.layout.getInputRate() == renderer::VertexInputRate::eVertex )
+			if ( vbo.binding.inputRate == renderer::VertexInputRate::eVertex )
 			{
-				for ( auto & attribute : static_cast< VertexLayout const & >( vbo.layout ) )
+				for ( auto & attribute : vbo.attributes )
 				{
-					glLogCall( gl::EnableVertexAttribArray, attribute.getLocation() );
+					glLogCall( gl::EnableVertexAttribArray, attribute.location );
 
-					if ( isInteger( attribute.getFormat() ) )
+					if ( isInteger( attribute.format ) )
 					{
 						glLogCall( gl::VertexAttribIPointer
-							, attribute.getLocation()
-							, getCount( attribute.getFormat() )
-							, getType( attribute.getFormat() )
-							, vbo.layout.getStride()
-							, BufferOffset( vbo.offset + attribute.getOffset() ) );
+							, attribute.location
+							, getCount( attribute.format )
+							, getType( attribute.format )
+							, vbo.binding.stride
+							, BufferOffset( vbo.offset + attribute.offset ) );
 					}
 					else
 					{
 						glLogCall( gl::VertexAttribPointer
-							, attribute.getLocation()
-							, getCount( attribute.getFormat() )
-							, getType( attribute.getFormat() )
+							, attribute.location
+							, getCount( attribute.format )
+							, getType( attribute.format )
 							, false
-							, vbo.layout.getStride()
-							, BufferOffset( vbo.offset + attribute.getOffset() ) );
+							, vbo.binding.stride
+							, BufferOffset( vbo.offset + attribute.offset ) );
 					}
 				}
 			}
 			else
 			{
-				for ( auto & attribute : static_cast< VertexLayout const & >( vbo.layout ) )
+				for ( auto & attribute : vbo.attributes )
 				{
-					auto format = attribute.getFormat();
-					uint32_t offset = attribute.getOffset();
-					uint32_t location = attribute.getLocation();
+					auto format = attribute.format;
+					uint32_t offset = attribute.offset;
+					uint32_t location = attribute.location;
 					uint32_t divisor = 1u;
 
-					if ( attribute.getFormat() == renderer::AttributeFormat::eMat4f )
-					{
-						format = renderer::AttributeFormat::eVec4f;
+					glLogCall( gl::EnableVertexAttribArray, location );
 
-						for ( auto i = 0u; i < 4u; ++i )
-						{
-							glLogCall( gl::EnableVertexAttribArray, location );
-							glLogCall( gl::VertexAttribPointer
-								, location
-								, getCount( format )
-								, getType( format )
-								, false
-								, vbo.layout.getStride()
-								, BufferOffset( vbo.offset + offset ) );
-							glLogCall( gl::VertexAttribDivisor
-								, location
-								, divisor );
-							++location;
-							offset += 16u;
-						}
+					if ( isInteger( attribute.format ) )
+					{
+						glLogCall( gl::VertexAttribIPointer
+							, location
+							, getCount( format )
+							, getType( format )
+							, vbo.binding.stride
+							, BufferOffset( vbo.offset + offset ) );
 					}
 					else
 					{
-						glLogCall( gl::EnableVertexAttribArray, location );
-
-						if ( isInteger( attribute.getFormat() ) )
-						{
-							glLogCall( gl::VertexAttribIPointer
-								, location
-								, getCount( format )
-								, getType( format )
-								, vbo.layout.getStride()
-								, BufferOffset( vbo.offset + offset ) );
-						}
-						else
-						{
-							glLogCall( gl::VertexAttribPointer
-								, location
-								, getCount( format )
-								, getType( format )
-								, false
-								, vbo.layout.getStride()
-								, BufferOffset( vbo.offset + offset ) );
-						}
-
-						glLogCall( gl::VertexAttribDivisor
+						glLogCall( gl::VertexAttribPointer
 							, location
-							, divisor );
+							, getCount( format )
+							, getType( format )
+							, false
+							, vbo.binding.stride
+							, BufferOffset( vbo.offset + offset ) );
 					}
+
+					glLogCall( gl::VertexAttribDivisor
+						, location
+						, divisor );
 				}
 			}
 		}

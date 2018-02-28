@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -24,7 +24,7 @@ namespace renderer
 	*/
 	class VertexLayout
 	{
-	protected:
+	public:
 		/**
 		*\~english
 		*\brief
@@ -48,8 +48,6 @@ namespace renderer
 		VertexLayout( uint32_t bindingSlot
 			, uint32_t stride
 			, VertexInputRate inputRate );
-
-	public:
 		/**
 		*\~english
 		*\brief
@@ -58,7 +56,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~VertexLayout() = default;
+		~VertexLayout() = default;
 		/**
 		*\~english
 		*\brief
@@ -203,8 +201,6 @@ namespace renderer
 	*\~english
 	*\brief
 	*	Creates a vertex layout.
-	*\param[in] device
-	*	The logical device, that will effectively create the vertex layout.
 	*\param[in] bindingSlot
 	*	The binding slot of the associated buffer.
 	*\param[in] inputRate
@@ -212,19 +208,16 @@ namespace renderer
 	*\~french
 	*\brief
 	*	Crée un layout de sommet.
-	*\param[in] device
-	*	Le périphérique logique, qui va effectivement créer le layout de sommet.
 	*\param[in] bindingSlot
 	*	Le point d'attache du tampon associé.
 	*\param[in] inputRate
 	*	La cadence d'entrée.
 	*/
 	template< typename T >
-	VertexLayoutPtr makeLayout( Device const & device
-		, uint32_t bindingSlot
+	VertexLayoutPtr makeLayout( uint32_t bindingSlot
 		, VertexInputRate inputRate = VertexInputRate::eVertex )
 	{
-		return device.createVertexLayout( bindingSlot
+		return std::make_unique< VertexLayout >( bindingSlot
 			, uint32_t( sizeof( T ) )
 			, inputRate );
 	}

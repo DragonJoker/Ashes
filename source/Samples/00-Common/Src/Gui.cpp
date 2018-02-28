@@ -19,6 +19,7 @@
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
 #include <Pipeline/Scissor.hpp>
+#include <Pipeline/VertexInputState.hpp>
 #include <Pipeline/VertexLayout.hpp>
 #include <Pipeline/Viewport.hpp>
 #include <RenderPass/FrameBuffer.hpp>
@@ -304,7 +305,7 @@ namespace common
 		m_program->createModule( dumpTextFile( shadersFolder / "gui.vert" ), renderer::ShaderStageFlag::eVertex );
 		m_program->createModule( dumpTextFile( shadersFolder / "gui.frag" ), renderer::ShaderStageFlag::eFragment );
 
-		m_vertexLayout = renderer::makeLayout< ImDrawVert >( m_device, 0u );
+		m_vertexLayout = renderer::makeLayout< ImDrawVert >( 0u );
 		m_vertexLayout->createAttribute( 0u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, pos ) );
 		m_vertexLayout->createAttribute( 1u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, uv ) );
 		m_vertexLayout->createAttribute( 2u, renderer::AttributeFormat::eUInt, offsetof( ImDrawVert, col ) );
@@ -376,9 +377,9 @@ namespace common
 		{
 			*m_program,
 			*m_renderPass,
-			{ *m_vertexLayout },
-			{ renderer::PrimitiveTopology::eTriangleList },
-			{ 1.0f, 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone },
+			renderer::VertexInputState::create( *m_vertexLayout ),
+			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
+			renderer::RasterisationState{ 1.0f, 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone },
 			renderer::MultisampleState{},
 			cbState,
 			renderer::DepthStencilState{},

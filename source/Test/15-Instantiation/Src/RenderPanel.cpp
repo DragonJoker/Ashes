@@ -427,7 +427,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
-		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( *m_device, 0 );
+		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
 		m_offscreenVertexLayout->createAttribute< renderer::Vec4 >( 0u
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 		m_offscreenVertexLayout->createAttribute< renderer::Vec2 >( 1u
@@ -450,7 +450,7 @@ namespace vkapp
 			, m_offscreenIndexData
 			, *m_offscreenIndexBuffer );
 
-		m_offscreenMatrixLayout = renderer::makeLayout< renderer::Mat4 >( *m_device, 1u, renderer::VertexInputRate::eInstance );
+		m_offscreenMatrixLayout = renderer::makeLayout< renderer::Mat4 >( 1u, renderer::VertexInputRate::eInstance );
 		m_offscreenMatrixLayout->createAttribute< renderer::Mat4 >( 2u, 0u );
 
 		auto init = ObjectCount * -2.0f;
@@ -522,7 +522,7 @@ namespace vkapp
 		{
 			*m_offscreenProgram,
 			*m_offscreenRenderPass,
-			{ *m_offscreenVertexLayout, *m_offscreenMatrixLayout },
+			renderer::VertexInputState::create( { *m_offscreenVertexLayout, *m_offscreenMatrixLayout } ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
 			renderer::RasterisationState{ 1.0f, 0, false, false, renderer::PolygonMode::eFill },
 			renderer::MultisampleState{},
@@ -634,7 +634,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainVertexBuffer()
 	{
-		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( *m_device, 0 );
+		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
 		m_mainVertexLayout->createAttribute< renderer::Vec4 >( 0u
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 		m_mainVertexLayout->createAttribute< renderer::Vec2 >( 1u
@@ -676,7 +676,7 @@ namespace vkapp
 		{
 			*m_mainProgram,
 			*m_mainRenderPass,
-			{ *m_mainVertexLayout },
+			renderer::VertexInputState::create( *m_mainVertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleStrip },
 			renderer::RasterisationState{ 1.0f }
 		} );

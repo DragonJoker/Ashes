@@ -392,14 +392,14 @@ namespace common
 			m_billboardDescriptorPool = m_billboardDescriptorLayout->createPool( m_billboardsCount );
 
 			// Initialise vertex layout.
-			m_billboardVertexLayout = renderer::makeLayout< Vertex >( m_device, 0u, renderer::VertexInputRate::eVertex );
+			m_billboardVertexLayout = renderer::makeLayout< Vertex >( 0u, renderer::VertexInputRate::eVertex );
 			m_billboardVertexLayout->createAttribute< decltype( Vertex::position ) >( 0u, offsetof( Vertex, position ) );
 			m_billboardVertexLayout->createAttribute< decltype( Vertex::normal ) >( 1u, offsetof( Vertex, normal ) );
 			m_billboardVertexLayout->createAttribute< decltype( Vertex::tangent ) >( 2u, offsetof( Vertex, tangent ) );
 			m_billboardVertexLayout->createAttribute< decltype( Vertex::bitangent ) >( 3u, offsetof( Vertex, bitangent ) );
 			m_billboardVertexLayout->createAttribute< decltype( Vertex::texture ) >( 4u, offsetof( Vertex, texture ) );
 			// Initialise instance layout.
-			m_billboardInstanceLayout = renderer::makeLayout< BillboardInstanceData >( m_device, 1u, renderer::VertexInputRate::eInstance );
+			m_billboardInstanceLayout = renderer::makeLayout< BillboardInstanceData >( 1u, renderer::VertexInputRate::eInstance );
 			m_billboardInstanceLayout->createAttribute< decltype( BillboardInstanceData::offset ) >( 5u, offsetof( BillboardInstanceData, offset ) );
 			m_billboardInstanceLayout->createAttribute< decltype( BillboardInstanceData::dimensions ) >( 6u, offsetof( BillboardInstanceData, dimensions ) );
 
@@ -507,7 +507,7 @@ namespace common
 				{
 					*m_billboardProgram,
 					*m_renderPass,
-					{ *m_billboardVertexLayout, *m_billboardInstanceLayout },
+					renderer::VertexInputState::create( { *m_billboardVertexLayout, *m_billboardInstanceLayout } ),
 					{ renderer::PrimitiveTopology::eTriangleStrip },
 					rasterisationState,
 					renderer::MultisampleState{},
@@ -534,7 +534,7 @@ namespace common
 		m_objectDescriptorPool = m_objectDescriptorLayout->createPool( m_objectsCount );
 
 		// Initialise vertex layout.
-		m_objectVertexLayout = renderer::makeLayout< Vertex >( m_device, 0u );
+		m_objectVertexLayout = renderer::makeLayout< Vertex >( 0u );
 		m_objectVertexLayout->createAttribute< renderer::Vec3 >( 0u, offsetof( common::Vertex, position ) );
 		m_objectVertexLayout->createAttribute< renderer::Vec3 >( 1u, offsetof( common::Vertex, normal ) );
 		m_objectVertexLayout->createAttribute< renderer::Vec3 >( 2u, offsetof( common::Vertex, tangent ) );
@@ -663,7 +663,7 @@ namespace common
 					{
 						*m_objectProgram,
 						*m_renderPass,
-						{ *m_objectVertexLayout },
+						renderer::VertexInputState::create( *m_objectVertexLayout ),
 						{ renderer::PrimitiveTopology::eTriangleList },
 						rasterisationState,
 						renderer::MultisampleState{},

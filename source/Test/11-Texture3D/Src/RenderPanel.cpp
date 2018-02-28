@@ -407,7 +407,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
-		m_offscreenVertexLayout = renderer::makeLayout< UVWVertexData >( *m_device, 0 );
+		m_offscreenVertexLayout = renderer::makeLayout< UVWVertexData >( 0 );
 		m_offscreenVertexLayout->createAttribute< renderer::Vec4 >( 0u
 			, uint32_t( offsetof( UVWVertexData, position ) ) );
 		m_offscreenVertexLayout->createAttribute< renderer::Vec3 >( 1u
@@ -472,7 +472,7 @@ namespace vkapp
 		{
 			*m_offscreenProgram,
 			*m_offscreenRenderPass,
-			{ *m_offscreenVertexLayout },
+			renderer::VertexInputState::create( *m_offscreenVertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
 			renderer::RasterisationState{ 1.0f, 0, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone },
 			renderer::MultisampleState{},
@@ -583,7 +583,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainVertexBuffer()
 	{
-		m_mainVertexLayout = renderer::makeLayout< UVVertexData >( *m_device, 0 );
+		m_mainVertexLayout = renderer::makeLayout< UVVertexData >( 0 );
 		m_mainVertexLayout->createAttribute< renderer::Vec4 >( 0u
 			, uint32_t( offsetof( UVVertexData, position ) ) );
 		m_mainVertexLayout->createAttribute< renderer::Vec2 >( 1u
@@ -625,7 +625,7 @@ namespace vkapp
 		{
 			*m_mainProgram,
 			*m_mainRenderPass,
-			{ *m_mainVertexLayout },
+			renderer::VertexInputState::create( *m_mainVertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleStrip },
 			renderer::RasterisationState{ 1.0f }
 		} );
