@@ -47,26 +47,6 @@ namespace gl_renderer
 		*/
 		renderer::CommandBufferPtrArray createCommandBuffers()const override;
 		/**
-		*\brief
-		*	Enregistre des commandes de pr�-rendu.
-		*\param[in] index
-		*	L'indice de l'image.
-		*\param[in] commandBuffer
-		*	Le tampon de commandes recevant les commandes.
-		*/
-		void preRenderCommands( uint32_t index
-			, renderer::CommandBuffer const & commandBuffer )const override;
-		/**
-		*\brief
-		*	Enregistre des commandes de post-rendu.
-		*\param[in] index
-		*	L'indice de l'image.
-		*\param[in] commandBuffer
-		*	Le tampon de commandes recevant les commandes.
-		*/
-		void postRenderCommands( uint32_t index
-			, renderer::CommandBuffer const & commandBuffer )const override;;
-		/**
 		*\return
 		*	R�cup�re les ressources de rendu actives.
 		*/

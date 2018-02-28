@@ -28,7 +28,6 @@
 #include <Pipeline/Viewport.hpp>
 #include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
-#include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 #include <Shader/ShaderProgram.hpp>
@@ -288,20 +287,35 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenRenderPass()
 	{
-		std::vector< renderer::PixelFormat > formats{ { renderer::PixelFormat::eR8G8B8A8 } };
-		renderer::RenderPassAttachmentArray attaches{ renderer::RenderPassAttachment::createColourAttachment( 0u, renderer::PixelFormat::eR8G8B8A8, true ) };
-		renderer::RenderSubpassAttachmentArray subAttaches{ renderer::RenderSubpassAttachment{ attaches[0], renderer::ImageLayout::eColourAttachmentOptimal } };
+		renderer::RenderPassAttachmentArray attaches
+		{
+			{
+				0u,
+				renderer::PixelFormat::eR8G8B8A8,
+				renderer::SampleCountFlag::e1,
+				renderer::AttachmentLoadOp::eClear,
+				renderer::AttachmentStoreOp::eStore,
+				renderer::AttachmentLoadOp::eDontCare,
+				renderer::AttachmentStoreOp::eDontCare,
+				renderer::ImageLayout::eUndefined,
+				renderer::ImageLayout::eShaderReadOnlyOptimal,
+			}
+		};
+		renderer::RenderSubpassAttachmentArray subAttaches
+		{
+			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
+		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( subAttaches
-			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
+		subpasses.emplace_back( m_device->createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite }
+			, subAttaches ) );
 		m_offscreenRenderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite
-				, { renderer::ImageLayout::eColourAttachmentOptimal } }
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite
-				, { renderer::ImageLayout::eColourAttachmentOptimal } } );
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite }
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eShaderRead } );
 	}
 
 	void RenderPanel::doCreateFrameBuffer()
@@ -398,20 +412,35 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainRenderPass()
 	{
-		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
-		renderer::RenderPassAttachmentArray attaches{ renderer::RenderPassAttachment::createColourAttachment( 0u, m_swapChain->getFormat(), true ) };
-		renderer::RenderSubpassAttachmentArray subAttaches{ renderer::RenderSubpassAttachment{ attaches[0], renderer::ImageLayout::eColourAttachmentOptimal } };
+		renderer::RenderPassAttachmentArray attaches
+		{
+			{
+				0u,
+				m_swapChain->getFormat(),
+				renderer::SampleCountFlag::e1,
+				renderer::AttachmentLoadOp::eClear,
+				renderer::AttachmentStoreOp::eStore,
+				renderer::AttachmentLoadOp::eDontCare,
+				renderer::AttachmentStoreOp::eDontCare,
+				renderer::ImageLayout::eUndefined,
+				renderer::ImageLayout::ePresentSrc,
+			}
+		};
+		renderer::RenderSubpassAttachmentArray subAttaches
+		{
+			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
+		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( subAttaches
-			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
+		subpasses.emplace_back( m_device->createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite }
+			, subAttaches ) );
 		m_mainRenderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite
-				, { renderer::ImageLayout::eColourAttachmentOptimal } }
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite
-				, { renderer::ImageLayout::eColourAttachmentOptimal } } );
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
+				, renderer::AccessFlag::eMemoryRead }
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
+				, renderer::AccessFlag::eMemoryRead } );
 	}
 
 	void RenderPanel::doPrepareOffscreenFrame()
@@ -431,10 +460,6 @@ namespace vkapp
 			commandBuffer.resetQueryPool( *m_queryPool
 				, 0u
 				, 2u );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eColourAttachmentOutput
-				, m_renderTargetColourView->makeColourAttachment( renderer::ImageLayout::eShaderReadOnlyOptimal
-					, renderer::AccessFlag::eShaderRead ) );
 			commandBuffer.beginRenderPass( *m_offscreenRenderPass
 				, frameBuffer
 				, { renderer::ClearValue{ m_swapChain->getClearColour() } }
@@ -459,10 +484,6 @@ namespace vkapp
 				, *m_queryPool
 				, 1u );
 			commandBuffer.endRenderPass();
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eBottomOfPipe
-				, m_renderTargetColourView->makeShaderInputResource( renderer::ImageLayout::eColourAttachmentOptimal
-					, renderer::AccessFlag::eColourAttachmentWrite ) );
 
 			auto res = commandBuffer.end();
 
@@ -540,7 +561,6 @@ namespace vkapp
 			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 			{
 				auto dimensions = m_swapChain->getDimensions();
-				m_swapChain->preRenderCommands( i, commandBuffer );
 				commandBuffer.beginRenderPass( *m_mainRenderPass
 					, frameBuffer
 					, { renderer::ClearValue{ m_swapChain->getClearColour() } }
@@ -559,7 +579,6 @@ namespace vkapp
 					, *m_mainPipelineLayout );
 				commandBuffer.draw( 4u );
 				commandBuffer.endRenderPass();
-				m_swapChain->postRenderCommands( i, commandBuffer );
 
 				auto res = commandBuffer.end();
 

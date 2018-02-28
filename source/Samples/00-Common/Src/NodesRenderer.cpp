@@ -27,7 +27,6 @@
 #include <Pipeline/VertexLayout.hpp>
 #include <Pipeline/Viewport.hpp>
 #include <RenderPass/RenderPass.hpp>
-#include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 #include <RenderPass/FrameBufferAttachment.hpp>
@@ -86,6 +85,7 @@ namespace common
 		{
 			renderer::RenderPassAttachmentArray attaches;
 			renderer::RenderSubpassAttachmentArray subAttaches;
+			renderer::RenderSubpassAttachment depthSubAttach{ renderer::AttachmentUnused, renderer::ImageLayout::eUndefined };
 			renderer::ImageLayoutArray initialLayouts;
 			renderer::ImageLayoutArray finalLayouts;
 			uint32_t index{ 0u };
@@ -94,35 +94,63 @@ namespace common
 			{
 				if ( renderer::isDepthOrStencilFormat( format ) )
 				{
-					attaches.push_back( renderer::RenderPassAttachment::createDepthStencilAttachment( index++, format, clearViews ) );
-					subAttaches.emplace_back( renderer::RenderSubpassAttachment{ attaches.back(), renderer::ImageLayout::eDepthStencilAttachmentOptimal } );
-					initialLayouts.push_back( renderer::ImageLayout::eDepthStencilAttachmentOptimal );
-					finalLayouts.push_back( renderer::ImageLayout::eDepthStencilAttachmentOptimal );
+					attaches.push_back(
+					{
+						index,
+						format,
+						renderer::SampleCountFlag::e1,
+						clearViews ? renderer::AttachmentLoadOp::eClear : renderer::AttachmentLoadOp::eDontCare,
+						renderer::AttachmentStoreOp::eStore,
+						( clearViews && renderer::isStencilFormat( format ) ) ? renderer::AttachmentLoadOp::eClear : renderer::AttachmentLoadOp::eDontCare,
+						renderer::AttachmentStoreOp::eDontCare,
+						renderer::ImageLayout::eUndefined,
+						renderer::ImageLayout::eDepthStencilAttachmentOptimal
+					} );
+					depthSubAttach = { index, renderer::ImageLayout::eDepthStencilAttachmentOptimal };
 				}
 				else
 				{
-					attaches.push_back( renderer::RenderPassAttachment::createColourAttachment( index++, format, clearViews ) );
-					subAttaches.emplace_back( renderer::RenderSubpassAttachment{ attaches.back(), renderer::ImageLayout::eColourAttachmentOptimal } );
-					initialLayouts.push_back( clearViews
-						? renderer::ImageLayout::eShaderReadOnlyOptimal
-						: renderer::ImageLayout::eColourAttachmentOptimal );
-					finalLayouts.push_back( clearViews
-						? renderer::ImageLayout::eColourAttachmentOptimal
-						: renderer::ImageLayout::eShaderReadOnlyOptimal );
+					attaches.push_back(
+					{
+						index,
+						format,
+						renderer::SampleCountFlag::e1,
+						clearViews ? renderer::AttachmentLoadOp::eClear : renderer::AttachmentLoadOp::eDontCare,
+						renderer::AttachmentStoreOp::eStore,
+						renderer::AttachmentLoadOp::eDontCare,
+						renderer::AttachmentStoreOp::eDontCare,
+						renderer::ImageLayout::eUndefined,
+						clearViews ? renderer::ImageLayout::eColourAttachmentOptimal : renderer::ImageLayout::eShaderReadOnlyOptimal
+					} );
+					subAttaches.emplace_back( renderer::RenderSubpassAttachment{ index, renderer::ImageLayout::eColourAttachmentOptimal } );
 				}
+				++index;
 			}
 
 			renderer::RenderSubpassPtrArray subpasses;
-			subpasses.emplace_back( device.createRenderSubpass( subAttaches
-				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
+
+			if ( depthSubAttach.attachment != renderer::AttachmentUnused )
+			{
+				subpasses.emplace_back( device.createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+					, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+						, renderer::AccessFlag::eColourAttachmentWrite }
+					, subAttaches
+					, depthSubAttach ) );
+			}
+			else
+			{
+				subpasses.emplace_back( device.createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+					, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+						, renderer::AccessFlag::eColourAttachmentWrite }
+					, subAttaches ) );
+			}
+
 			return device.createRenderPass( attaches
 				, std::move( subpasses )
-				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eColourAttachmentWrite
-					, initialLayouts }
-				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eColourAttachmentWrite
-					, finalLayouts } );
+				, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+					, renderer::AccessFlag::eColourAttachmentWrite }
+				, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+					, renderer::AccessFlag::eColourAttachmentWrite } );
 		}
 
 		renderer::FrameBufferPtr doCreateFrameBuffer( renderer::RenderPass const & renderPass
@@ -448,6 +476,7 @@ namespace common
 					materialNode.descriptorSetTextures->createBinding( materialNode.layout->getBinding( 0u, index )
 						, *materialNode.textures[index]->view
 						, *m_sampler
+						, renderer::ImageLayout::eShaderReadOnlyOptimal
 						, index );
 				}
 
@@ -468,21 +497,23 @@ namespace common
 
 				for ( auto & attach : *m_renderPass )
 				{
-					if ( !renderer::isDepthOrStencilFormat( attach.getFormat() ) )
+					if ( !renderer::isDepthOrStencilFormat( attach.format ) )
 					{
 						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
 					}
 				}
 
-				materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_billboardProgram
-					, { *m_billboardVertexLayout, *m_billboardInstanceLayout }
-					, *m_renderPass
-					, { renderer::PrimitiveTopology::eTriangleStrip }
-					, rasterisationState
-					, blendState );
-				materialNode.pipeline->multisampleState( renderer::MultisampleState{} );
-				materialNode.pipeline->depthStencilState( renderer::DepthStencilState{} );
-				materialNode.pipeline->finish();
+				materialNode.pipeline = materialNode.pipelineLayout->createPipeline( 
+				{
+					*m_billboardProgram,
+					*m_renderPass,
+					{ *m_billboardVertexLayout, *m_billboardInstanceLayout },
+					{ renderer::PrimitiveTopology::eTriangleStrip },
+					rasterisationState,
+					renderer::MultisampleState{},
+					blendState,
+					renderer::DepthStencilState{}
+				} );
 				m_billboardRenderNodes.emplace_back( std::move( materialNode ) );
 				++matIndex;
 			}
@@ -591,6 +622,7 @@ namespace common
 						materialNode.descriptorSetTextures->createBinding( materialNode.layout->getBinding( 0u, index )
 							, *materialNode.textures[index]->view
 							, *m_sampler
+							, renderer::ImageLayout::eShaderReadOnlyOptimal
 							, index );
 					}
 
@@ -621,21 +653,23 @@ namespace common
 
 					for ( auto & attach : *m_renderPass )
 					{
-						if ( !renderer::isDepthOrStencilFormat( attach.getFormat() ) )
+						if ( !renderer::isDepthOrStencilFormat( attach.format ) )
 						{
 							blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
 						}
 					}
 
-					materialNode.pipeline = materialNode.pipelineLayout->createPipeline( *m_objectProgram
-						, { *m_objectVertexLayout }
-						, *m_renderPass
-						, { renderer::PrimitiveTopology::eTriangleList }
-						, rasterisationState
-						, blendState );
-					materialNode.pipeline->multisampleState( renderer::MultisampleState{} );
-					materialNode.pipeline->depthStencilState( renderer::DepthStencilState{} );
-					materialNode.pipeline->finish();
+					materialNode.pipeline = materialNode.pipelineLayout->createPipeline(
+					{
+						*m_objectProgram,
+						*m_renderPass,
+						{ *m_objectVertexLayout },
+						{ renderer::PrimitiveTopology::eTriangleList },
+						rasterisationState,
+						renderer::MultisampleState{},
+						blendState,
+						renderer::DepthStencilState{}
+					} );
 					m_submeshRenderNodes.emplace_back( std::move( materialNode ) );
 					++matIndex;
 				}

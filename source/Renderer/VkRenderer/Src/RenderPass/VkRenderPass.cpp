@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -9,9 +9,9 @@ See LICENSE file in root folder.
 #include "Image/VkTexture.hpp"
 #include "Image/VkTextureView.hpp"
 #include "RenderPass/VkFrameBuffer.hpp"
-#include "RenderPass/VkRenderPassState.hpp"
 #include "RenderPass/VkRenderSubpass.hpp"
-#include "RenderPass/VkRenderSubpassState.hpp"
+
+#include <RenderPass/RenderSubpassState.hpp>
 
 #include <algorithm>
 
@@ -35,66 +35,36 @@ namespace vk_renderer
 	RenderPass::RenderPass( Device const & device
 		, renderer::RenderPassAttachmentArray const & attaches
 		, renderer::RenderSubpassPtrArray && subpasses
-		, renderer::RenderPassState const & initialState
-		, renderer::RenderPassState const & finalState
-		, renderer::SampleCountFlag samplesCount )
+		, renderer::RenderSubpassState const & initialState
+		, renderer::RenderSubpassState const & finalState )
 		: renderer::RenderPass{ device
 			, attaches
 			, std::move( subpasses )
 			, initialState
-			, finalState
-			, samplesCount }
+			, finalState }
 		, m_device{ device }
 		, m_subpasses{ doConvert( renderer::RenderPass::getSubpasses() ) }
-		, m_samplesCount{ samplesCount }
 		, m_initialState{ initialState }
 		, m_finalState{ finalState }
 	{
 		// On crée les attaches pour les tampons de couleur et de profondeur.
 		std::vector< VkAttachmentDescription > attachments;
 		attachments.reserve( getSize() );
-		uint32_t index{ 0 };
 
 		for ( auto const & attach : *this )
 		{
-			if ( renderer::isDepthOrStencilFormat( attach.getFormat() ) )
+			attachments.push_back(
 			{
-				attachments.push_back(
-				{
-					0u,                                             // flags
-					convert( attach.getFormat() ),                  // format
-					convert( m_samplesCount ),                      // samples
-					attach.getClear()                               // loadOp
-						? VK_ATTACHMENT_LOAD_OP_CLEAR
-						: VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-					VK_ATTACHMENT_STORE_OP_STORE,                   // storeOp
-					attach.getClear()                               // stencilLoadOp
-						? VK_ATTACHMENT_LOAD_OP_CLEAR
-						: VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-					VK_ATTACHMENT_STORE_OP_STORE,                   // stencilStoreOp
-					convert( *( m_initialState.begin() + index ) ), // initialLayout
-					convert( *( m_finalState.begin() + index ) )    // finalLayout
-				} );
-			}
-			else
-			{
-				attachments.push_back(
-				{
-					0u,                                             // flags
-					convert( attach.getFormat() ),                  // format
-					convert( m_samplesCount ),                      // samples
-					attach.getClear()                               // loadOp
-						? VK_ATTACHMENT_LOAD_OP_CLEAR
-						: VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-					VK_ATTACHMENT_STORE_OP_STORE,                   // storeOp
-					VK_ATTACHMENT_LOAD_OP_DONT_CARE,                // stencilLoadOp
-					VK_ATTACHMENT_STORE_OP_DONT_CARE,               // stencilStoreOp
-					convert( *( m_initialState.begin() + index ) ), // initialLayout
-					convert( *( m_finalState.begin() + index ) )    // finalLayout
-				} );
-			}
-
-			++index;
+				0u,                                             // flags
+				convert( attach.format ),                       // format
+				convert( attach.samples ),                      // samples
+				convert( attach.loadOp ),                       // loadOp
+				convert( attach.storeOp ),                      // storeOp
+				convert( attach.stencilLoadOp ),                // stencilLoadOp
+				convert( attach.stencilStoreOp ),               // stencilStoreOp
+				convert( attach.initialLayout ),                // initialLayout
+				convert( attach.finalLayout )                   // finalLayout
+			} );
 		}
 
 		assert( !m_subpasses.empty() && "Can't create a render pass without subpass." );
@@ -103,48 +73,46 @@ namespace vk_renderer
 		descriptions.reserve( m_subpasses.size() );
 		std::vector< VkSubpassDependency > dependencies;
 		dependencies.reserve( 1 + m_subpasses.size() );
-		RenderSubpassState currentState
-		{
-			convert( m_initialState.getPipelineStage() ),
-			convert( m_initialState.getAccess() )
-		};
+		auto pipelineStage = convert( m_initialState.pipelineStage );
+		auto access = convert( m_initialState.access );
 		uint32_t subpassIndex = VK_SUBPASS_EXTERNAL;
 
 		for ( auto const & subpass : m_subpasses )
 		{
 			auto const & state = subpass.get().getNeededState();
 
-			if ( currentState.m_pipelineStage != convert( state.getPipelineStage() )
-				|| currentState.m_access != convert( state.getAccess() ) )
+			if ( pipelineStage != convert( state.pipelineStage )
+				|| access != convert( state.access ) )
 			{
 				dependencies.push_back(
 				{
 					subpassIndex,                                    // srcSubpass
 					subpassIndex + 1,                                // dstSubpass
-					currentState.m_pipelineStage,                    // srcStageMask
-					convert( state.getPipelineStage() ),             // dstStageMask
-					currentState.m_access,                           // srcAccessMask
-					convert( state.getAccess() ),                    // dstAccessMask
+					pipelineStage,                                   // srcStageMask
+					convert( state.pipelineStage ),                  // dstStageMask
+					access,                                          // srcAccessMask
+					convert( state.access ),                         // dstAccessMask
 					VK_DEPENDENCY_BY_REGION_BIT                      // dependencyFlags
 				} );
 			}
 
-			currentState = convert( state );
+			pipelineStage = convert( state.pipelineStage );
+			access = convert( state.access );
 			++subpassIndex;
 			descriptions.push_back( subpass.get() );
 		}
 
-		if ( currentState.m_pipelineStage != convert( m_finalState.getPipelineStage() )
-			|| currentState.m_access != convert( m_finalState.getAccess() ) )
+		if ( pipelineStage != convert( m_finalState.pipelineStage )
+			|| access != convert( m_finalState.access ) )
 		{
 			dependencies.push_back(
 			{
 				subpassIndex,                                        // srcSubpass
 				VK_SUBPASS_EXTERNAL,                                 // dstSubpass
-				currentState.m_pipelineStage,                        // srcStageMask
-				convert( m_finalState.getPipelineStage() ),          // dstStageMask
-				currentState.m_access,                               // srcAccessMask
-				convert( m_finalState.getAccess() ),                 // dstAccessMask
+				pipelineStage,                                       // srcStageMask
+				convert( m_finalState.pipelineStage ),               // dstStageMask
+				access,                                              // srcAccessMask
+				convert( m_finalState.access ),                      // dstAccessMask
 				VK_DEPENDENCY_BY_REGION_BIT                          // dependencyFlags
 			} );
 		}

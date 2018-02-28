@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -6,10 +6,11 @@ See LICENSE file in root folder.
 #define ___Renderer_RenderSubpassAttachment_HPP___
 #pragma once
 
-#include "RenderPassAttachment.hpp"
+#include "RendererPrerequisites.hpp"
 
 namespace renderer
 {
+	static constexpr uint32_t AttachmentUnused = ~( 0u);
 	/**
 	*\~english
 	*\brief
@@ -18,55 +19,28 @@ namespace renderer
 	*\brief
 	*	Une attache à une sous-passe de rendu.
 	*/
-	class RenderSubpassAttachment
+	struct RenderSubpassAttachment
 	{
-	public:
-		inline RenderSubpassAttachment( RenderPassAttachment const & attach
-			, ImageLayout layout )
-			: m_attach{ attach }
-			, m_layout{ layout }
-		{
-		}
 		/**
 		*\~english
-		*\return
-		*	The attach index.
+		*\brief
+		*	The index of the attachment of the render pass.
+		*	If any color or depth/stencil attachments are renderer::AttachmentUnused, then no writes occur for those attachments.
 		*\~french
-		*\return
-		*	L'indice de l'attache.
+		*\brief
+		*	L'indice de l'attache dans la passe de rendu.
+		*	Si une attache couleur ou profondeur/stencil vaut renderer::AttachmentUnused, alors rien n'est écrit dans cette attache.
 		*/
-		inline uint32_t getIndex()const
-		{
-			return m_attach.getIndex();
-		}
+		uint32_t attachment;
 		/**
 		*\~english
-		*\return
-		*	The attach pixel format.
+		*\brief
+		*	Specifies the layout the attachment uses during the subpass.
 		*\~french
-		*\return
-		*	Le format des pixels de l'attache.
+		*\brief
+		*	Définit le layout que l'attache utilise pendant la sous-passe.
 		*/
-		inline PixelFormat getFormat()const
-		{
-			return m_attach.getFormat();
-		}
-		/**
-		*\~english
-		*\return
-		*	The attach image layout.
-		*\~french
-		*\return
-		*	Le layout de l'image.
-		*/
-		inline ImageLayout getLayout()const
-		{
-			return m_layout;
-		}
-
-	private:
-		RenderPassAttachment m_attach;
-		ImageLayout m_layout;
+		ImageLayout layout;
 	};
 }
 

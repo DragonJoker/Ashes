@@ -27,7 +27,6 @@
 #include <Pipeline/Viewport.hpp>
 #include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
-#include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 #include <Shader/ShaderProgram.hpp>
@@ -283,31 +282,35 @@ namespace common
 
 	void RenderPanel::doCreateRenderPass()
 	{
-		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
-		renderer::RenderPassAttachmentArray attaches{ renderer::RenderPassAttachment::createColourAttachment( 0u, m_swapChain->getFormat(), true ) };
-		renderer::ImageLayoutArray const initialLayouts
+		renderer::RenderPassAttachmentArray attaches
 		{
-			renderer::ImageLayout::eColourAttachmentOptimal,
-		};
-		renderer::ImageLayoutArray const finalLayouts
-		{
-			renderer::ImageLayout::eColourAttachmentOptimal,
+			{
+				0u,
+				m_swapChain->getFormat(),
+				renderer::SampleCountFlag::e1,
+				renderer::AttachmentLoadOp::eClear,
+				renderer::AttachmentStoreOp::eStore,
+				renderer::AttachmentLoadOp::eDontCare,
+				renderer::AttachmentStoreOp::eDontCare,
+				renderer::ImageLayout::eUndefined,
+				renderer::ImageLayout::ePresentSrc,
+			}
 		};
 		renderer::RenderSubpassAttachmentArray subAttaches
 		{
-			renderer::RenderSubpassAttachment{ attaches[0], renderer::ImageLayout::eColourAttachmentOptimal },
+			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
 		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( subAttaches
-			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
+		subpasses.emplace_back( m_device->createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite }
+			, subAttaches ) );
 		m_renderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite
-				, initialLayouts }
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite
-				, finalLayouts } );
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
+				, renderer::AccessFlag::eMemoryRead }
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
+				, renderer::AccessFlag::eMemoryRead } );
 	}
 
 	void RenderPanel::doCreateVertexBuffer()
@@ -350,13 +353,15 @@ namespace common
 			, renderer::ShaderStageFlag::eFragment );
 
 		m_pipelineLayout = m_device->createPipelineLayout( *m_descriptorLayout );
-		m_pipeline = m_pipelineLayout->createPipeline( *m_program
-			, { *m_vertexLayout }
-			, *m_renderPass
-			, { renderer::PrimitiveTopology::eTriangleStrip }
-			, renderer::RasterisationState{ 1.0f } );
-		m_pipeline->multisampleState( renderer::MultisampleState{} );
-		m_pipeline->finish();
+		m_pipeline = m_pipelineLayout->createPipeline(
+		{
+			*m_program,
+			*m_renderPass,
+			{ *m_vertexLayout },
+			{ renderer::PrimitiveTopology::eTriangleStrip },
+			renderer::RasterisationState{ 1.0f },
+			renderer::MultisampleState{},
+		} );
 	}
 
 	void RenderPanel::doPrepareFrames()
@@ -375,7 +380,6 @@ namespace common
 			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 			{
 				auto dimensions = m_swapChain->getDimensions();
-				m_swapChain->preRenderCommands( i, commandBuffer );
 				commandBuffer.beginRenderPass( *m_renderPass
 					, frameBuffer
 					, { clearValue }
@@ -394,7 +398,6 @@ namespace common
 					, *m_pipelineLayout );
 				commandBuffer.draw( 4u );
 				commandBuffer.endRenderPass();
-				m_swapChain->postRenderCommands( i, commandBuffer );
 
 				auto res = commandBuffer.end();
 

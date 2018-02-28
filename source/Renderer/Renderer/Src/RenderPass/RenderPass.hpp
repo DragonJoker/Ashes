@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -35,8 +35,6 @@ namespace renderer
 		*	L'état voulu en début de passe.
 		*\param[in] finalState
 		*	L'état voulu en fin de passe.
-		*\param[in] samplesCount
-		*	Le nombre d'échantillons (pour le multisampling).
 		*\~english
 		*\brief
 		*	Constructor.
@@ -49,16 +47,13 @@ namespace renderer
 		*\param[in] initialState
 		*	The state wanted at the beginning of the pass.
 		*\param[in] finalState
-		*	The state attained at the end of the pass.
-		*\param[in] samplesCount
-		*	The samples count (for multisampling).
+		*	The state wanted at the end of the pass.
 		*/
 		RenderPass( Device const & device
 			, RenderPassAttachmentArray const & attaches
 			, RenderSubpassPtrArray && subpasses
-			, RenderPassState const & initialState
-			, RenderPassState const & finalState
-			, SampleCountFlag samplesCount = SampleCountFlag::e1 );
+			, RenderSubpassState const & initialState
+			, RenderSubpassState const & finalState );
 
 	public:
 		/**

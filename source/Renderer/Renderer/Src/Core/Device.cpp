@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 #include "Core/Renderer.hpp"
 #include "Core/SwapChain.hpp"
 #include "Pipeline/PipelineLayout.hpp"
+#include "RenderPass/RenderSubpass.hpp"
 
 namespace renderer
 {
@@ -46,6 +47,33 @@ namespace renderer
 		result[2][3] = -float( 1 );
 		result[3][2] = -float( 2 ) * zNear;
 		return result;
+	}
+
+	RenderSubpassPtr Device::createRenderSubpass( PipelineBindPoint pipelineBindPoint
+		, RenderSubpassState const & state
+		, RenderSubpassAttachmentArray const & colourAttaches )const
+	{
+		return createRenderSubpass( pipelineBindPoint
+			, state
+			, RenderSubpassAttachmentArray{}
+			, colourAttaches
+			, RenderSubpassAttachmentArray{}
+			, nullptr
+			, UInt32Array{} );
+	}
+
+	RenderSubpassPtr Device::createRenderSubpass( PipelineBindPoint pipelineBindPoint
+		, RenderSubpassState const & state
+		, RenderSubpassAttachmentArray const & colourAttaches
+		, RenderSubpassAttachment const & depthAttach )const
+	{
+		return createRenderSubpass( pipelineBindPoint
+			, state
+			, RenderSubpassAttachmentArray{}
+			, colourAttaches
+			, RenderSubpassAttachmentArray{}
+			, &depthAttach
+			, UInt32Array{} );
 	}
 
 	ClipDirection Device::getClipDirection()const

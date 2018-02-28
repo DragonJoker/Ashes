@@ -85,42 +85,6 @@ namespace vk_renderer
 		renderer::CommandBufferPtrArray createCommandBuffers()const override;
 		/**
 		*\~french
-		*\brief
-		*	Enregistre des commandes de pr�-rendu.
-		*\param[in] index
-		*	L'indice de l'image.
-		*\param[in] commandBuffer
-		*	Le tampon de commandes recevant les commandes.
-		*\~english
-		*\brief
-		*	Registers pre-render commands.
-		*\param[in] index
-		*	The index of the backbuffer.
-		*\param[in] commandBuffer
-		*	The command buffer receiving the commands.
-		*/
-		void preRenderCommands( uint32_t index
-			, renderer::CommandBuffer const & commandBuffer )const override;
-		/**
-		*\~french
-		*\brief
-		*	Enregistre des commandes de post-rendu.
-		*\param[in] index
-		*	L'indice de l'image.
-		*\param[in] commandBuffer
-		*	Le tampon de commandes recevant les commandes.
-		*\~english
-		*\brief
-		*	Registers post-render commands.
-		*\param[in] index
-		*	The index of the backbuffer.
-		*\param[in] commandBuffer
-		*	The command buffer receiving the commands.
-		*/
-		void postRenderCommands( uint32_t index
-			, renderer::CommandBuffer const & commandBuffer )const override;;
-		/**
-		*\~french
 		*\return
 		*	R�cup�re les ressources de rendu actives.
 		*\~english

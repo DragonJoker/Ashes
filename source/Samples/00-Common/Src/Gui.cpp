@@ -24,7 +24,6 @@
 #include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/FrameBufferAttachment.hpp>
 #include <RenderPass/RenderPass.hpp>
-#include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 #include <Shader/ShaderProgram.hpp>
@@ -308,7 +307,7 @@ namespace common
 		m_vertexLayout = renderer::makeLayout< ImDrawVert >( m_device, 0u );
 		m_vertexLayout->createAttribute( 0u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, pos ) );
 		m_vertexLayout->createAttribute( 1u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, uv ) );
-		m_vertexLayout->createAttribute( 2u, renderer::AttributeFormat::eColour, offsetof( ImDrawVert, col ) );
+		m_vertexLayout->createAttribute( 2u, renderer::AttributeFormat::eUInt, offsetof( ImDrawVert, col ) );
 	}
 
 	void Gui::doPreparePipeline()
@@ -321,27 +320,38 @@ namespace common
 			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
 		m_targetView = m_target->createView( renderer::TextureType::e2D
 			, m_target->getFormat() );
-
-		std::vector< renderer::PixelFormat > formats{ { m_targetView->getFormat() } };
+		
 		renderer::RenderPassAttachmentArray rpAttaches
 		{
-			renderer::RenderPassAttachment::createColourAttachment( 0u, m_targetView->getFormat(), true ),
+			{
+				0u,
+				m_targetView->getFormat(),
+				renderer::SampleCountFlag::e1,
+				renderer::AttachmentLoadOp::eClear,
+				renderer::AttachmentStoreOp::eStore,
+				renderer::AttachmentLoadOp::eDontCare,
+				renderer::AttachmentStoreOp::eDontCare,
+				renderer::ImageLayout::eUndefined,
+				renderer::ImageLayout::eShaderReadOnlyOptimal,
+			}
 		};
 		renderer::RenderSubpassAttachmentArray subAttaches
 		{
-			renderer::RenderSubpassAttachment{ rpAttaches[0], renderer::ImageLayout::eColourAttachmentOptimal },
+			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
 		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device.createRenderSubpass( subAttaches
-			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentRead | renderer::AccessFlag::eColourAttachmentWrite } ) );
+		subpasses.emplace_back( m_device.createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+			, {
+				renderer::PipelineStageFlag::eColourAttachmentOutput,
+				renderer::AccessFlag::eColourAttachmentRead | renderer::AccessFlag::eColourAttachmentWrite
+			}
+			, subAttaches ) );
 		m_renderPass = m_device.createRenderPass( rpAttaches
 			, std::move( subpasses )
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite
-				, { renderer::ImageLayout::eShaderReadOnlyOptimal } }
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite
-				, { renderer::ImageLayout::eShaderReadOnlyOptimal } } );
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite }
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eShaderRead } );
 
 		renderer::FrameBufferAttachmentArray attaches
 		{
@@ -362,15 +372,17 @@ namespace common
 			renderer::BlendOp::eAdd
 		} );
 
-		m_pipeline = m_pipelineLayout->createPipeline( *m_program
-			, { *m_vertexLayout }
-			, *m_renderPass
-			, { renderer::PrimitiveTopology::eTriangleList }
-			, { 1.0f, 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone }
-		, cbState );
-		m_pipeline->multisampleState( renderer::MultisampleState{} );
-		m_pipeline->depthStencilState( renderer::DepthStencilState{} );
-		m_pipeline->finish();
+		m_pipeline = m_pipelineLayout->createPipeline(
+		{
+			*m_program,
+			*m_renderPass,
+			{ *m_vertexLayout },
+			{ renderer::PrimitiveTopology::eTriangleList },
+			{ 1.0f, 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone },
+			renderer::MultisampleState{},
+			cbState,
+			renderer::DepthStencilState{},
+		} );
 	}
 
 	void Gui::doUpdateCommandBuffers()
