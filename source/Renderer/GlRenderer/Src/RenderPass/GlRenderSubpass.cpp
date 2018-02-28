@@ -9,10 +9,15 @@ See LICENSE file in root folder.
 namespace gl_renderer
 {
 	RenderSubpass::RenderSubpass( renderer::Device const & device
-		, renderer::RenderSubpassAttachmentArray const & attaches
-		, renderer::RenderSubpassState const & neededState )
-		: renderer::RenderSubpass{ device, attaches, neededState }
-		, m_attaches{ attaches }
+		, renderer::PipelineBindPoint pipelineBindPoint
+		, renderer::RenderSubpassState const & state
+		, renderer::RenderSubpassAttachmentArray const & inputAttaches
+		, renderer::RenderSubpassAttachmentArray const & colourAttaches
+		, renderer::RenderSubpassAttachmentArray const & resolveAttaches
+		, renderer::RenderSubpassAttachment const * depthAttach
+		, renderer::UInt32Array const & preserveAttaches )
+		: renderer::RenderSubpass{ device, pipelineBindPoint, state, inputAttaches, colourAttaches, resolveAttaches, depthAttach, preserveAttaches }
+		, m_attaches{ colourAttaches }
 	{
 	}
 }

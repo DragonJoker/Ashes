@@ -20,7 +20,6 @@
 #include <Pipeline/Viewport.hpp>
 #include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
-#include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 #include <Shader/ShaderProgram.hpp>
@@ -208,7 +207,24 @@ namespace vkapp
 		auto size = renderer::UIVec2{ texture.getDimensions()[0], texture.getDimensions()[1] };
 		uint32_t face = 0u;
 		std::vector< renderer::PixelFormat > formats{ 1u, m_target.getFormat() };
-		renderer::RenderPassAttachmentArray rpAttaches{ renderer::RenderPassAttachment::createColourAttachment( 0u, m_target.getFormat(), true ) };
+		renderer::RenderPassAttachmentArray rpAttaches
+		{
+			{
+				0u,
+				m_target.getFormat(),
+				renderer::SampleCountFlag::e1,
+				renderer::AttachmentLoadOp::eClear,
+				renderer::AttachmentStoreOp::eStore,
+				renderer::AttachmentLoadOp::eDontCare,
+				renderer::AttachmentStoreOp::eDontCare,
+				renderer::ImageLayout::eUndefined,
+				renderer::ImageLayout::eShaderReadOnlyOptimal,
+			}
+		};
+		renderer::RenderSubpassAttachmentArray subAttaches
+		{
+			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
+		};
 
 		for ( auto & facePipeline : m_faces )
 		{
@@ -225,18 +241,18 @@ namespace vkapp
 
 		for ( auto & facePipeline : m_faces )
 		{
-			renderer::RenderSubpassAttachmentArray subAttaches{ renderer::RenderSubpassAttachment{ rpAttaches[0], renderer::ImageLayout::eColourAttachmentOptimal } };
 			renderer::RenderSubpassPtrArray subpasses;
-			subpasses.emplace_back( m_device.createRenderSubpass( subAttaches
-				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
+			subpasses.emplace_back( m_device.createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+				, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+					, renderer::AccessFlag::eColourAttachmentWrite }
+				, subAttaches ) );
 			facePipeline.renderPass = m_device.createRenderPass( rpAttaches
 				, std::move( subpasses )
-				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eColourAttachmentWrite
-					, { renderer::ImageLayout::eColourAttachmentOptimal } }
-				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eColourAttachmentWrite
-					, { renderer::ImageLayout::eColourAttachmentOptimal } } );
+				, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+					, renderer::AccessFlag::eColourAttachmentWrite }
+				, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+					, renderer::AccessFlag::eShaderRead } );
+
 			renderer::FrameBufferAttachmentArray attaches;
 			attaches.emplace_back( *facePipeline.renderPass->begin(), *facePipeline.view );
 			facePipeline.frameBuffer = facePipeline.renderPass->createFrameBuffer( size

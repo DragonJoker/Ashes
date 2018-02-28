@@ -30,15 +30,13 @@ namespace gl_renderer
 	RenderPass::RenderPass( renderer::Device const & device
 		, renderer::RenderPassAttachmentArray const & attaches
 		, renderer::RenderSubpassPtrArray && subpasses
-		, renderer::RenderPassState const & initialState
-		, renderer::RenderPassState const & finalState
-		, renderer::SampleCountFlag samplesCount )
+		, renderer::RenderSubpassState const & initialState
+		, renderer::RenderSubpassState const & finalState )
 		: renderer::RenderPass{ device
 			, attaches
 			, std::move( subpasses )
 			, initialState
-			, finalState
-			, samplesCount }
+			, finalState }
 		, m_subpasses{ doConvert( renderer::RenderPass::getSubpasses() ) }
 	{
 	}

@@ -5,48 +5,67 @@ See LICENSE file in root folder.
 #include "RenderPass/VkRenderSubpass.hpp"
 
 #include "Core/VkDevice.hpp"
-#include "RenderPass/VkRenderSubpassState.hpp"
 
 #include <RenderPass/RenderSubpassAttachment.hpp>
 
 namespace vk_renderer
 {
 	RenderSubpass::RenderSubpass( Device const & device
-		, renderer::RenderSubpassAttachmentArray const & attaches
-		, renderer::RenderSubpassState const & neededState )
-		: renderer::RenderSubpass{ device, attaches, neededState }
+		, renderer::PipelineBindPoint pipelineBindPoint
+		, renderer::RenderSubpassState const & state
+		, renderer::RenderSubpassAttachmentArray const & inputAttaches
+		, renderer::RenderSubpassAttachmentArray const & colourAttaches
+		, renderer::RenderSubpassAttachmentArray const & resolveAttaches
+		, renderer::RenderSubpassAttachment const * depthAttach
+		, renderer::UInt32Array const & preserveAttaches )
+		: renderer::RenderSubpass{ device, pipelineBindPoint, state, inputAttaches, colourAttaches, resolveAttaches, depthAttach, preserveAttaches }
 		, m_device{ device }
-		, m_neededState{ neededState }
+		, m_neededState{ state }
+		, m_preserveAttaches{ preserveAttaches }
 	{
 		// On crée les attaches pour les tampons de couleur et de profondeur.
-		for ( auto const & attach : attaches )
+		for ( auto const & attach : inputAttaches )
 		{
-			if ( renderer::isDepthOrStencilFormat( attach.getFormat() ) )
-			{
-				m_depthReference = { attach.getIndex()
-					, convert( attach.getLayout() ) };
-			}
-			else
-			{
-				m_colourReferences.push_back( { attach.getIndex()
-					, convert( attach.getLayout() ) } );
-			}
+			m_inputReferences.push_back( { attach.attachment, convert( attach.layout ) } );
+		}
+
+		for ( auto const & attach : colourAttaches )
+		{
+			m_colourReferences.push_back( { attach.attachment, convert( attach.layout ) } );
+		}
+
+		for ( auto const & attach : resolveAttaches )
+		{
+			m_resolveReferences.push_back( { attach.attachment, convert( attach.layout ) } );
+		}
+
+		if ( depthAttach )
+		{
+			m_depthReference = { depthAttach->attachment, convert( depthAttach->layout ) };
 		}
 
 		m_description =
 		{
 			0u,                                                      // flags
-			VK_PIPELINE_BIND_POINT_GRAPHICS,                         // pipelineBindPoint
-			0u,                                                      // inputAttachmentCount
-			nullptr,                                                 // pInputAttachments
-			static_cast< uint32_t >( m_colourReferences.size() ),    // colorAttachmentCount
-			m_colourReferences.data(),                               // pColorAttachments
-			nullptr,                                                 // pResolveAttachments
-			m_depthReference.attachment == 0xFFFFFFFF                // pDepthStencilAttachment
+			convert( pipelineBindPoint ),                            // pipelineBindPoint
+			uint32_t( m_inputReferences.size() ),                    // inputAttachmentCount
+			m_inputReferences.empty()                                // pInputAttachments
 				? nullptr
-				: &m_depthReference,
-			0u,                                                      // preserveAttachmentCount
-			nullptr,                                                 // pPreserveAttachments
+				: m_inputReferences.data(),
+			uint32_t( m_colourReferences.size() ),                   // colorAttachmentCount
+			m_colourReferences.empty()                               // pColorAttachments
+				? nullptr
+				: m_colourReferences.data(),
+			m_resolveReferences.empty()                              // pResolveAttachments
+				? nullptr
+				: m_resolveReferences.data(),
+			depthAttach                                              // pDepthStencilAttachment
+				? &m_depthReference
+				: nullptr,
+			uint32_t( m_preserveAttaches.size() ),                   // preserveAttachmentCount
+			m_preserveAttaches.empty()                               // pPreserveAttachments
+				? nullptr
+				: m_preserveAttaches.data()
 		};
 	}
 

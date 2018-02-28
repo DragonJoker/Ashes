@@ -31,7 +31,6 @@
 #include <Pipeline/Viewport.hpp>
 #include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
-#include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 #include <Shader/ShaderProgram.hpp>
@@ -404,28 +403,47 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenRenderPass()
 	{
-		std::vector< renderer::PixelFormat > formats{ { ColourFormat, DepthFormat } };
 		renderer::RenderPassAttachmentArray attaches
 		{
-			renderer::RenderPassAttachment::createColourAttachment( 0u, ColourFormat, true ),
-			renderer::RenderPassAttachment::createDepthStencilAttachment( 1u, DepthFormat, true ),
+			{
+				0u,
+				ColourFormat,
+				renderer::SampleCountFlag::e1,
+				renderer::AttachmentLoadOp::eClear,
+				renderer::AttachmentStoreOp::eStore,
+				renderer::AttachmentLoadOp::eDontCare,
+				renderer::AttachmentStoreOp::eDontCare,
+				renderer::ImageLayout::eUndefined,
+				renderer::ImageLayout::eShaderReadOnlyOptimal,
+			},
+			{
+				1u,
+				DepthFormat,
+				renderer::SampleCountFlag::e1,
+				renderer::AttachmentLoadOp::eClear,
+				renderer::AttachmentStoreOp::eStore,
+				renderer::AttachmentLoadOp::eDontCare,
+				renderer::AttachmentStoreOp::eDontCare,
+				renderer::ImageLayout::eUndefined,
+				renderer::ImageLayout::eDepthStencilAttachmentOptimal,
+			}
 		};
 		renderer::RenderSubpassAttachmentArray subAttaches
 		{
-			renderer::RenderSubpassAttachment{ attaches[0], renderer::ImageLayout::eColourAttachmentOptimal },
-			renderer::RenderSubpassAttachment{ attaches[1], renderer::ImageLayout::eDepthStencilAttachmentOptimal },
+			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
 		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( subAttaches
-			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
+		subpasses.emplace_back( m_device->createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite }
+			, subAttaches
+			, { 1u, renderer::ImageLayout::eDepthStencilAttachmentOptimal } ) );
 		m_offscreenRenderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-			, renderer::AccessFlag::eColourAttachmentWrite
-			, { renderer::ImageLayout::eColourAttachmentOptimal, renderer::ImageLayout::eDepthStencilAttachmentOptimal } }
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-			, renderer::AccessFlag::eColourAttachmentWrite
-			, { renderer::ImageLayout::eColourAttachmentOptimal, renderer::ImageLayout::eDepthStencilAttachmentOptimal } } );
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite }
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eShaderRead } );
 	}
 
 	void RenderPanel::doCreateFrameBuffer()
@@ -535,20 +553,35 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainRenderPass()
 	{
-		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
-		renderer::RenderPassAttachmentArray attaches{ renderer::RenderPassAttachment::createColourAttachment( 0u, m_swapChain->getFormat(), true ) };
-		renderer::RenderSubpassAttachmentArray subAttaches{ renderer::RenderSubpassAttachment{ attaches[0], renderer::ImageLayout::eColourAttachmentOptimal } };
+		renderer::RenderPassAttachmentArray attaches
+		{
+			{
+				0u,
+				m_swapChain->getFormat(),
+				renderer::SampleCountFlag::e1,
+				renderer::AttachmentLoadOp::eClear,
+				renderer::AttachmentStoreOp::eStore,
+				renderer::AttachmentLoadOp::eDontCare,
+				renderer::AttachmentStoreOp::eDontCare,
+				renderer::ImageLayout::eUndefined,
+				renderer::ImageLayout::ePresentSrc,
+			}
+		};
+		renderer::RenderSubpassAttachmentArray subAttaches
+		{
+			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
+		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( subAttaches
-			, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
+		subpasses.emplace_back( m_device->createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::AccessFlag::eColourAttachmentWrite }
+			, subAttaches ) );
 		m_mainRenderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-			, renderer::AccessFlag::eColourAttachmentWrite
-			, { renderer::ImageLayout::eColourAttachmentOptimal } }
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-			, renderer::AccessFlag::eColourAttachmentWrite
-			, { renderer::ImageLayout::eColourAttachmentOptimal } } );
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
+				, renderer::AccessFlag::eMemoryRead }
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
+				, renderer::AccessFlag::eMemoryRead } );
 	}
 
 	void RenderPanel::doPrepareOffscreenFrame()
@@ -568,14 +601,6 @@ namespace vkapp
 			commandBuffer.resetQueryPool( *m_offscreenQueryPool
 				, 0u
 				, 2u );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eColourAttachmentOutput
-				, m_renderTargetColourView->makeColourAttachment( renderer::ImageLayout::eShaderReadOnlyOptimal
-					, renderer::AccessFlag::eShaderRead ) );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
-				, renderer::PipelineStageFlag::eEarlyFragmentTests
-				, m_renderTargetDepthView->makeDepthStencilAttachment( renderer::ImageLayout::eUndefined
-					, 0u ) );
 			commandBuffer.beginRenderPass( *m_offscreenRenderPass
 				, frameBuffer
 				, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
@@ -607,11 +632,6 @@ namespace vkapp
 				, *m_offscreenQueryPool
 				, 1u );
 			commandBuffer.endRenderPass();
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::PipelineStageFlag::eBottomOfPipe
-				, m_renderTargetColourView->makeGeneralLayout( renderer::ImageLayout::eColourAttachmentOptimal
-					, renderer::AccessFlag::eColourAttachmentWrite
-					, renderer::AccessFlag::eShaderWrite ) );
 			auto res = commandBuffer.end();
 
 			if ( !res )
@@ -690,10 +710,6 @@ namespace vkapp
 			commandBuffer.dispatch( size.GetWidth() / 16u
 				, size.GetHeight() / 16u
 				, 1u );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eBottomOfPipe
-				, renderer::PipelineStageFlag::eFragmentShader
-				, m_renderTargetColourView->makeShaderInputResource( renderer::ImageLayout::eGeneral
-					, renderer::AccessFlag::eShaderWrite ) );
 			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
 				, *m_computeQueryPool
 				, 1u );
@@ -766,7 +782,6 @@ namespace vkapp
 			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 			{
 				auto dimensions = m_swapChain->getDimensions();
-				m_swapChain->preRenderCommands( i, commandBuffer );
 				commandBuffer.beginRenderPass( *m_mainRenderPass
 					, frameBuffer
 					, { renderer::ClearValue{ { 1.0, 0.0, 0.0, 1.0 } } }
@@ -785,7 +800,6 @@ namespace vkapp
 					, *m_mainPipelineLayout );
 				commandBuffer.draw( 4u );
 				commandBuffer.endRenderPass();
-				m_swapChain->postRenderCommands( i, commandBuffer );
 
 				auto res = commandBuffer.end();
 

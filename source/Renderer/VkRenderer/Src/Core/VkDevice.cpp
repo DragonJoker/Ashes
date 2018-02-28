@@ -147,24 +147,32 @@ namespace vk_renderer
 
 	renderer::RenderPassPtr Device::createRenderPass( renderer::RenderPassAttachmentArray const & attaches
 		, renderer::RenderSubpassPtrArray && subpasses
-		, renderer::RenderPassState const & initialState
-		, renderer::RenderPassState const & finalState
-		, renderer::SampleCountFlag samplesCount )const
+		, renderer::RenderSubpassState const & initialState
+		, renderer::RenderSubpassState const & finalState )const
 	{
 		return std::make_unique< RenderPass >( *this
 			, attaches
 			, std::move( subpasses )
 			, initialState
-			, finalState
-			, samplesCount );
+			, finalState );
 	}
 
-	renderer::RenderSubpassPtr Device::createRenderSubpass( renderer::RenderSubpassAttachmentArray const & attaches
-		, renderer::RenderSubpassState const & neededState )const
+	renderer::RenderSubpassPtr Device::createRenderSubpass( renderer::PipelineBindPoint pipelineBindPoint
+		, renderer::RenderSubpassState const & state
+		, renderer::RenderSubpassAttachmentArray const & inputAttaches
+		, renderer::RenderSubpassAttachmentArray const & colourAttaches
+		, renderer::RenderSubpassAttachmentArray const & resolveAttaches
+		, renderer::RenderSubpassAttachment const * depthAttach
+		, renderer::UInt32Array const & preserveAttaches )const
 	{
 		return std::make_unique< RenderSubpass >( *this
-			, attaches
-			, neededState );
+			, pipelineBindPoint
+			, state
+			, inputAttaches
+			, colourAttaches
+			, resolveAttaches
+			, depthAttach
+			, preserveAttaches );
 	}
 
 	renderer::VertexLayoutPtr Device::createVertexLayout( uint32_t bindingSlot

@@ -23,7 +23,6 @@
 #include <Pipeline/VertexLayout.hpp>
 #include <Pipeline/Viewport.hpp>
 #include <RenderPass/RenderPass.hpp>
-#include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 #include <RenderPass/FrameBufferAttachment.hpp>
@@ -69,8 +68,28 @@ namespace vkapp
 		{
 			return renderer::RenderPassAttachmentArray
 			{
-				renderer::RenderPassAttachment::createDepthStencilAttachment( 0u, depthView.getFormat(), false ),
-				renderer::RenderPassAttachment::createColourAttachment( 1u, colourView.getFormat(), true )
+				{
+					0u,
+					depthView.getFormat(),
+					renderer::SampleCountFlag::e1,
+					renderer::AttachmentLoadOp::eLoad,
+					renderer::AttachmentStoreOp::eStore,
+					renderer::AttachmentLoadOp::eLoad,
+					renderer::AttachmentStoreOp::eStore,
+					renderer::ImageLayout::eUndefined,
+					renderer::ImageLayout::eDepthStencilAttachmentOptimal,
+				},
+				{
+					1u,
+					colourView.getFormat(),
+					renderer::SampleCountFlag::e1,
+					renderer::AttachmentLoadOp::eClear,
+					renderer::AttachmentStoreOp::eStore,
+					renderer::AttachmentLoadOp::eDontCare,
+					renderer::AttachmentStoreOp::eDontCare,
+					renderer::ImageLayout::eUndefined,
+					renderer::ImageLayout::eDepthStencilAttachmentOptimal,
+				}
 			};
 		}
 
@@ -78,34 +97,21 @@ namespace vkapp
 			, renderer::TextureView const & depthView
 			, renderer::TextureView const & colourView )
 		{
-			auto formats = doGetFormats( depthView, colourView );
-			auto attaches = doGetAttaches( depthView, colourView );
-			renderer::ImageLayoutArray const initialLayouts
-			{
-				renderer::ImageLayout::eDepthStencilAttachmentOptimal,
-				renderer::ImageLayout::eUndefined,
-			};
-			renderer::ImageLayoutArray const finalLayouts
-			{
-				renderer::ImageLayout::eDepthStencilAttachmentOptimal,
-				renderer::ImageLayout::eColourAttachmentOptimal,
-			};
 			renderer::RenderSubpassAttachmentArray subAttaches
 			{
-				renderer::RenderSubpassAttachment{ attaches[0], renderer::ImageLayout::eDepthStencilAttachmentOptimal },
-				renderer::RenderSubpassAttachment{ attaches[1], renderer::ImageLayout::eColourAttachmentOptimal },
+				renderer::RenderSubpassAttachment{ 1u, renderer::ImageLayout::eColourAttachmentOptimal },
 			};
 			renderer::RenderSubpassPtrArray subpasses;
-			subpasses.emplace_back( device.createRenderSubpass( subAttaches
-				, { renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite } ) );
-			return device.createRenderPass( attaches
+			subpasses.emplace_back( device.createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+				, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput, renderer::AccessFlag::eColourAttachmentWrite }
+				, subAttaches
+				, renderer::RenderSubpassAttachment{ 0u, renderer::ImageLayout::eDepthStencilAttachmentOptimal } ) );
+			return device.createRenderPass( doGetAttaches( depthView, colourView )
 				, std::move( subpasses )
-				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eColourAttachmentWrite
-					, initialLayouts }
-				, renderer::RenderPassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eColourAttachmentWrite
-					, finalLayouts } );
+				, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+					, renderer::AccessFlag::eColourAttachmentWrite }
+				, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
+					, renderer::AccessFlag::eColourAttachmentWrite } );
 		}
 
 		renderer::FrameBufferPtr doCreateFrameBuffer( renderer::RenderPass const & renderPass
@@ -222,22 +228,20 @@ namespace vkapp
 			, 0u
 			, *m_vertexLayout ) }
 		, m_pipelineLayout{ m_device.createPipelineLayout( { *m_gbufferDescriptorLayout, *m_uboDescriptorLayout } ) }
-		, m_pipeline{ m_pipelineLayout->createPipeline( *m_program
-			, { *m_vertexLayout }
-			, *m_renderPass
-			, { renderer::PrimitiveTopology::eTriangleStrip }
-			, renderer::RasterisationState{ 1.0f } ) }
+		, m_pipeline{ m_pipelineLayout->createPipeline( 
+			{
+				*m_program,
+				*m_renderPass,
+				{ *m_vertexLayout },
+				{ renderer::PrimitiveTopology::eTriangleStrip },
+				renderer::RasterisationState{ 1.0f },
+				renderer::MultisampleState{},
+				renderer::ColourBlendState::createDefault(),
+				renderer::DepthStencilState{ 0u, false, false, renderer::CompareOp::eLess }
+			} )
+		}
 		, m_queryPool{ m_device.createQueryPool( renderer::QueryType::eTimestamp, 2u, 0u ) }
 	{
-		m_pipeline->multisampleState( renderer::MultisampleState{} );
-		m_pipeline->depthStencilState( renderer::DepthStencilState
-		{
-			0u,
-			false,
-			false,
-			renderer::CompareOp::eLess
-		} );
-		m_pipeline->finish();
 	}
 
 	void LightingPass::update( common::SceneData const & sceneData

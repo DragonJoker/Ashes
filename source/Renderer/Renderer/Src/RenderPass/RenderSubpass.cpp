@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -10,8 +10,13 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	RenderSubpass::RenderSubpass( Device const & device
-		, RenderSubpassAttachmentArray const & attaches
-		, RenderSubpassState const & neededState )
+		, PipelineBindPoint pipelineBindPoint
+		, RenderSubpassState const & state
+		, RenderSubpassAttachmentArray const & inputAttaches
+		, RenderSubpassAttachmentArray const & colourAttaches
+		, RenderSubpassAttachmentArray const & resolveAttaches
+		, RenderSubpassAttachment const * depthAttach
+		, UInt32Array const & preserveAttaches )
 	{
 	}
 }

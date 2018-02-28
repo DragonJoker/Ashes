@@ -100,42 +100,6 @@ namespace renderer
 		virtual CommandBufferPtrArray createCommandBuffers()const = 0;
 		/**
 		*\~french
-		*\brief
-		*	Records pre-render commands.
-		*\param[in] index
-		*	The backbuffer image index.
-		*\param[in] commandBuffer
-		*	The command buffer recording the commands.
-		*\~french
-		*\brief
-		*	Enregistre des commandes de pré-rendu.
-		*\param[in] index
-		*	L'indice de l'image du backbuffer.
-		*\param[in] commandBuffer
-		*	Le tampon de commandes recevant les commandes.
-		*/
-		virtual void preRenderCommands( uint32_t index
-			, CommandBuffer const & commandBuffer )const = 0;
-		/**
-		*\~french
-		*\brief
-		*	Records post-render commands.
-		*\param[in] index
-		*	The backbuffer image index.
-		*\param[in] commandBuffer
-		*	The command buffer recording the commands.
-		*\~french
-		*\brief
-		*	Enregistre des commandes de post-rendu.
-		*\param[in] index
-		*	L'indice de l'image du backbuffer.
-		*\param[in] commandBuffer
-		*	Le tampon de commandes recevant les commandes.
-		*/
-		virtual void postRenderCommands( uint32_t index
-			, CommandBuffer const & commandBuffer )const = 0;
-		/**
-		*\~french
 		*\return
 		*	Presents the rendering resources.
 		*\~french

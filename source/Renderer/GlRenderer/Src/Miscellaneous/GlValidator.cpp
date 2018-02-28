@@ -585,7 +585,7 @@ namespace gl_renderer
 
 			for ( auto & attach : renderPass )
 			{
-				if ( !renderer::isDepthOrStencilFormat( attach.getFormat() ) )
+				if ( !renderer::isDepthOrStencilFormat( attach.format ) )
 				{
 					attaches.push_back( attach );
 				}
@@ -600,7 +600,7 @@ namespace gl_renderer
 						, attaches.end()
 						, [&values]( renderer::RenderPassAttachment const & lookup )
 						{
-							return areCompatible( lookup.getFormat(), convertPixelFormat( GlslAttributeType( values[0] ) ) );
+							return areCompatible( lookup.format, convertPixelFormat( GlslAttributeType( values[0] ) ) );
 						} );
 
 					if ( it != attaches.end() )
@@ -622,7 +622,7 @@ namespace gl_renderer
 			for ( auto & attach : attaches )
 			{
 				std::cerr << ValidationWarning
-					<< "Render pass has an attahment of type " << renderer::getName( attach.getFormat() )
+					<< "Render pass has an attahment of type " << renderer::getName( attach.format )
 					<< ", which is not used by the program" << std::endl;
 			}
 		}

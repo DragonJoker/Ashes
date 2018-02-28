@@ -158,7 +158,7 @@ namespace gl_renderer
 
 		for ( auto & attach : m_attachments )
 		{
-			auto index = attach.getAttachment().getIndex();
+			auto index = attach.getAttachment().index;
 			Attachment attachment
 			{
 				getAttachmentPoint( static_cast< TextureView const & >( attach.getView() ) ),
@@ -208,9 +208,9 @@ namespace gl_renderer
 
 		for ( auto & attach : attaches )
 		{
-			if ( !renderer::isDepthOrStencilFormat( attach.getFormat() ) )
+			if ( !renderer::isDepthOrStencilFormat( attach.format ) )
 			{
-				colours.push_back( getAttachmentPoint( attach.getFormat() ) + attach.getIndex() );
+				colours.push_back( getAttachmentPoint( attach.format ) + attach.index );
 			}
 		}
 
@@ -223,11 +223,7 @@ namespace gl_renderer
 
 		for ( auto & attach : attaches )
 		{
-			if ( attach.getLayout() == renderer::ImageLayout::eColourAttachmentOptimal
-				&& !renderer::isDepthOrStencilFormat( attach.getFormat() ) )
-			{
-				colours.push_back( getAttachmentPoint( attach.getFormat() ) + attach.getIndex() );
-			}
+			colours.push_back( GL_ATTACHMENT_POINT_COLOR0 + attach.attachment );
 		}
 
 		glLogCall( gl::DrawBuffers, GLsizei( colours.size() ), colours.data() );

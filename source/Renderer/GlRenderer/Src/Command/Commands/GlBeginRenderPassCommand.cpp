@@ -33,15 +33,15 @@ namespace gl_renderer
 				auto & depthStencil = clearValue.depthStencil();
 				auto stencil = GLint( depthStencil.stencil );
 
-				if ( renderer::isDepthStencilFormat( attach.getFormat() ) )
+				if ( renderer::isDepthStencilFormat( attach.format ) )
 				{
 					glLogCall( gl::ClearBufferfi, GL_CLEAR_TARGET_DEPTH_STENCIL, 0u, depthStencil.depth, stencil );
 				}
-				else if ( renderer::isDepthFormat( attach.getFormat() ) )
+				else if ( renderer::isDepthFormat( attach.format ) )
 				{
 					glLogCall( gl::ClearBufferfv, GL_CLEAR_TARGET_DEPTH, 0u, &depthStencil.depth );
 				}
-				else if ( renderer::isStencilFormat( attach.getFormat() ) )
+				else if ( renderer::isStencilFormat( attach.format ) )
 				{
 					glLogCall( gl::ClearBufferiv, GL_CLEAR_TARGET_STENCIL, 0u, &stencil );
 				}
@@ -69,18 +69,18 @@ namespace gl_renderer
 				auto & depthStencil = clearValue.depthStencil();
 				auto stencil = GLint( depthStencil.stencil );
 
-				if ( renderer::isDepthStencilFormat( attach.getFormat() ) )
+				if ( renderer::isDepthStencilFormat( attach.format ) )
 				{
 					glLogCall( gl::ClearDepth, depthStencil.depth );
 					glLogCall( gl::ClearStencil, depthStencil.stencil );
 					result = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 				}
-				else if ( renderer::isDepthFormat( attach.getFormat() ) )
+				else if ( renderer::isDepthFormat( attach.format ) )
 				{
 					glLogCall( gl::ClearDepth, depthStencil.depth );
 					result = GL_DEPTH_BUFFER_BIT;
 				}
-				else if ( renderer::isStencilFormat( attach.getFormat() ) )
+				else if ( renderer::isStencilFormat( attach.format ) )
 				{
 					glLogCall( gl::ClearStencil, depthStencil.stencil );
 					result = GL_STENCIL_BUFFER_BIT;
@@ -126,7 +126,7 @@ namespace gl_renderer
 				auto & attach = *it;
 				++it;
 
-				if ( attach.getAttachment().getClear() )
+				if ( attach.getAttachment().loadOp == renderer::AttachmentLoadOp::eClear )
 				{
 					doClear( attach.getAttachment()
 						, clearValue
@@ -148,7 +148,7 @@ namespace gl_renderer
 				auto & attach = *it;
 				++it;
 
-				if ( attach.getClear() )
+				if ( attach.loadOp == renderer::AttachmentLoadOp::eClear )
 				{
 					bitfield |= doClearBack( attach
 						, clearValue
