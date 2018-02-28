@@ -343,6 +343,9 @@ namespace gl_renderer
 		case renderer::PixelFormat::eB8G8R8A8:
 			return GL_INTERNAL_B8G8R8A8;
 
+		case renderer::PixelFormat::eRGBA16F:
+			return GL_INTERNAL_RGBA16F;
+
 		case renderer::PixelFormat::eRGBA32F:
 			return GL_INTERNAL_RGBA32F;
 
@@ -587,6 +590,7 @@ namespace gl_renderer
 		case renderer::PixelFormat::eB8G8R8A8:
 			return GL_FORMAT_BGRA;
 
+		case renderer::PixelFormat::eRGBA16F:
 		case renderer::PixelFormat::eRGBA32F:
 			return GL_FORMAT_RGBA;
 
@@ -628,6 +632,9 @@ namespace gl_renderer
 
 		case renderer::PixelFormat::eB8G8R8A8:
 			return GL_TYPE_UI8888;
+
+		case renderer::PixelFormat::eRGBA16F:
+			return GL_TYPE_HF;
 
 		case renderer::PixelFormat::eRGBA32F:
 			return GL_TYPE_F;
@@ -724,6 +731,9 @@ namespace gl_renderer
 
 		case GL_INTERNAL_B8G8R8A8:
 			return renderer::PixelFormat::eB8G8R8A8;
+
+		case GL_INTERNAL_RGBA16F:
+			return renderer::PixelFormat::eRGBA16F;
 
 		case GL_INTERNAL_RGBA32F:
 			return renderer::PixelFormat::eRGBA32F;

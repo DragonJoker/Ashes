@@ -55,6 +55,8 @@ namespace renderer
 			return "R8G8B8A8";
 		case PixelFormat::eB8G8R8A8:
 			return "B8G8R8A8";
+		case PixelFormat::eRGBA16F:
+			return "RGBA16F";
 		case PixelFormat::eRGBA32F:
 			return "RGBA32F";
 		case PixelFormat::eD16:
