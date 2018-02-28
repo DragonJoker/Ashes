@@ -1,4 +1,4 @@
-#include "Pipeline/VkVertexInputState.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 namespace vk_renderer
 {
