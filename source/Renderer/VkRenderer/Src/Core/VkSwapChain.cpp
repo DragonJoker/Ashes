@@ -1,4 +1,4 @@
-﻿#include "Core/VkSwapChain.hpp"
+#include "Core/VkSwapChain.hpp"
 
 #include "Command/VkCommandBuffer.hpp"
 #include "Command/VkCommandPool.hpp"
@@ -62,7 +62,7 @@ namespace vk_renderer
 
 		for ( auto & attach : attaches )
 		{
-			if ( !renderer::isDepthOrStencilFormat( attach.getFormat() ) )
+			if ( !renderer::isDepthOrStencilFormat( attach.format ) )
 			{
 				result.emplace_back( attach, m_backBuffers[backBuffer]->getView() );
 			}
@@ -71,11 +71,11 @@ namespace vk_renderer
 				if ( !m_depth )
 				{
 					m_depth = m_device.createTexture( renderer::ImageLayout::eUndefined );
-					m_depth->setImage( attach.getFormat()
+					m_depth->setImage( attach.format
 						, getDimensions()
 						, renderer::ImageUsageFlag::eDepthStencilAttachment );
 					m_depthView = m_depth->createView( renderer::TextureType::e2D
-						, attach.getFormat() );
+						, attach.format );
 				}
 
 				result.emplace_back( attach, *m_depthView );
@@ -114,24 +114,6 @@ namespace vk_renderer
 		}
 
 		return result;
-	}
-
-	void SwapChain::preRenderCommands( uint32_t index
-		, renderer::CommandBuffer const & commandBuffer )const
-	{
-		commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-			, renderer::PipelineStageFlag::eColourAttachmentOutput
-			, m_backBuffers[index]->getView().makeColourAttachment( renderer::ImageLayout::ePresentSrc
-				, renderer::AccessFlag::eMemoryRead ) );
-	}
-
-	void SwapChain::postRenderCommands( uint32_t index
-		, renderer::CommandBuffer const & commandBuffer )const
-	{
-		commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-			, renderer::PipelineStageFlag::eBottomOfPipe
-			, m_backBuffers[index]->getView().makePresentSource( renderer::ImageLayout::eColourAttachmentOptimal
-				, renderer::AccessFlag::eColourAttachmentWrite ) );
 	}
 
 	renderer::RenderingResources * SwapChain::getResources()

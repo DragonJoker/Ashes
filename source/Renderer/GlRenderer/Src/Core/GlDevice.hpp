@@ -44,14 +44,18 @@ namespace gl_renderer
 		*/
 		renderer::RenderPassPtr createRenderPass( renderer::RenderPassAttachmentArray const & attaches
 			, renderer::RenderSubpassPtrArray && subpasses
-			, renderer::RenderPassState const & initialState
-			, renderer::RenderPassState const & finalState
-			, renderer::SampleCountFlag samplesCount )const override;
+			, renderer::RenderSubpassState const & initialState
+			, renderer::RenderSubpassState const & finalState )const override;
 		/**
 		*\copydoc		renderer::Device::createRenderSubpass
 		*/
-		renderer::RenderSubpassPtr createRenderSubpass( renderer::RenderSubpassAttachmentArray const & attaches
-			, renderer::RenderSubpassState const & neededState )const override;
+		renderer::RenderSubpassPtr createRenderSubpass( renderer::PipelineBindPoint pipelineBindPoint
+			, renderer::RenderSubpassState const & state
+			, renderer::RenderSubpassAttachmentArray const & inputAttaches
+			, renderer::RenderSubpassAttachmentArray const & colourAttaches
+			, renderer::RenderSubpassAttachmentArray const & resolveAttaches
+			, renderer::RenderSubpassAttachment const * depthAttach
+			, renderer::UInt32Array const & preserveAttaches )const override;
 		/**
 		*\copydoc		renderer::Device::createVertexLayout
 		*/

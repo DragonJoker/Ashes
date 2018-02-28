@@ -7,7 +7,6 @@
 #include <Core/Device.hpp>
 #include <Core/RenderingResources.hpp>
 #include <RenderPass/RenderPass.hpp>
-#include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 
@@ -97,21 +96,35 @@ namespace vkapp
 
 	void RenderPanel::doCreateRenderPass()
 	{
-		std::vector< renderer::PixelFormat > formats{ { m_swapChain->getFormat() } };
-		renderer::RenderPassAttachmentArray attaches{ renderer::RenderPassAttachment::createColourAttachment( 0u, m_swapChain->getFormat(), true ) };
-		renderer::RenderSubpassAttachmentArray subAttaches{ renderer::RenderSubpassAttachment{ attaches[0], renderer::ImageLayout::eColourAttachmentOptimal } };
+		renderer::RenderPassAttachmentArray attaches
+		{
+			{
+				0u,
+				m_swapChain->getFormat(),
+				renderer::SampleCountFlag::e1,
+				renderer::AttachmentLoadOp::eClear,
+				renderer::AttachmentStoreOp::eStore,
+				renderer::AttachmentLoadOp::eDontCare,
+				renderer::AttachmentStoreOp::eDontCare,
+				renderer::ImageLayout::eUndefined,
+				renderer::ImageLayout::ePresentSrc,
+			}
+		};
+		renderer::RenderSubpassAttachmentArray subAttaches
+		{
+			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
+		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( subAttaches
+		subpasses.emplace_back( m_device->createRenderSubpass( renderer::PipelineBindPoint::eGraphics
 			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-			, renderer::AccessFlag::eColourAttachmentWrite } ) );
+				, renderer::AccessFlag::eColourAttachmentWrite }
+			, subAttaches ) );
 		m_renderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eBottomOfPipe
-				, renderer::AccessFlag::eMemoryRead
-				, { renderer::ImageLayout::ePresentSrc } }
-			, renderer::RenderPassState{ renderer::PipelineStageFlag::eBottomOfPipe
-				, renderer::AccessFlag::eMemoryRead
-				, { renderer::ImageLayout::ePresentSrc } } );
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
+				, renderer::AccessFlag::eMemoryRead }
+			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
+				, renderer::AccessFlag::eMemoryRead } );
 	}
 
 	bool RenderPanel::doPrepareFrames()

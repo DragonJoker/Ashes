@@ -36,6 +36,8 @@
 #include "RenderPass/VkClearValue.hpp"
 
 #include "Enum/VkAccessFlag.hpp"
+#include "Enum/VkAttachmentLoadOp.hpp"
+#include "Enum/VkAttachmentStoreOp.hpp"
 #include "Enum/VkAttributeFormat.hpp"
 #include "Enum/VkBlendFactor.hpp"
 #include "Enum/VkBlendOp.hpp"

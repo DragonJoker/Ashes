@@ -23,29 +23,14 @@ namespace gl_renderer
 		: public renderer::RenderSubpass
 	{
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	La connexion logique au GPU.
-		*\param[in] formats
-		*	Les formats des attaches voulues pour la passe.
-		*\param[in] neededState
-		*	L'état voulu pour l'exécution de cette sous passe.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The logical connection to the GPU.
-		*\param[in] formats
-		*	The attachments pixels formats.
-		*\param[in] neededState
-		*	The state wanted for this subpass execution.
-		*/
 		RenderSubpass( renderer::Device const & device
-			, renderer::RenderSubpassAttachmentArray const & attaches
-			, renderer::RenderSubpassState const & neededState );
+			, renderer::PipelineBindPoint pipelineBindPoint
+			, renderer::RenderSubpassState const & state
+			, renderer::RenderSubpassAttachmentArray const & inputAttaches
+			, renderer::RenderSubpassAttachmentArray const & colourAttaches
+			, renderer::RenderSubpassAttachmentArray const & resolveAttaches
+			, renderer::RenderSubpassAttachment const * depthAttach
+			, renderer::UInt32Array const & preserveAttaches );
 
 		inline renderer::RenderSubpassAttachmentArray const & getAttaches()const
 		{

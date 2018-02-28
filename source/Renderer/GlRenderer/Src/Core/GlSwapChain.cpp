@@ -42,16 +42,6 @@ namespace gl_renderer
 		return result;
 	}
 
-	void SwapChain::preRenderCommands( uint32_t index
-		, renderer::CommandBuffer const & commandBuffer )const
-	{
-	}
-
-	void SwapChain::postRenderCommands( uint32_t index
-		, renderer::CommandBuffer const & commandBuffer )const
-	{
-	}
-
 	renderer::RenderingResources * SwapChain::getResources()
 	{
 		auto & resources = *m_renderingResources[m_resourceIndex];

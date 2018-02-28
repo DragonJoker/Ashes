@@ -10,6 +10,8 @@ See LICENSE file in root folder.
 #include "UtilsMapping.hpp"
 
 #include "Enum/AccessFlag.hpp"
+#include "Enum/AttachmentLoadOp.hpp"
+#include "Enum/AttachmentStoreOp.hpp"
 #include "Enum/AttributeFormat.hpp"
 #include "Enum/BlendFactor.hpp"
 #include "Enum/BlendOp.hpp"
@@ -99,6 +101,9 @@ namespace renderer
 	struct PhysicalDeviceInfo;
 	struct PushConstant;
 	struct PushConstantRange;
+	struct RenderPassAttachment;
+	struct RenderSubpassAttachment;
+	struct RenderSubpassState;
 	struct SpecialisationMapEntry;
 
 	class Attribute;
@@ -136,11 +141,7 @@ namespace renderer
 	class Renderer;
 	class RenderingResources;
 	class RenderPass;
-	class RenderPassAttachment;
-	class RenderPassState;
 	class RenderSubpass;
-	class RenderSubpassAttachment;
-	class RenderSubpassState;
 	class Sampler;
 	class Semaphore;
 	class Scissor;

@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -18,106 +18,91 @@ namespace renderer
 	*\brief
 	*	Une attache à une passe de rendu.
 	*/
-	class RenderPassAttachment
+	struct RenderPassAttachment
 	{
-	private:
-		inline RenderPassAttachment( uint32_t index, PixelFormat format, bool clear )
-			: m_index{ index }
-			, m_format{ format }
-			, m_clear{ clear }
-		{
-		}
-
-	public:
 		/**
 		*\~english
 		*\brief
-		*	Creates a depth and/or stencil attachment.
-		*\param[in] index
-		*	The attach index.
-		*\param[in] format
-		*	The attach pixel format.
-		*\param[in] clear
-		*	Tells if the attach is cleared when the render pass is started.
-		*\~french
-		*\brief
-		*	Crée une attache de type profondeur et/ou stencil.
-		*\param[in] index
-		*	L'indice de l'attache.
-		*\param[in] format
-		*	Le format des pixels de l'attache.
-		*\param[in] clear
-		*	Dit si l'attache est vidée lors du démarrage de la passe de rendu.
-		*/
-		static inline RenderPassAttachment createDepthStencilAttachment( uint32_t index, PixelFormat format, bool clear )
-		{
-			return RenderPassAttachment{ index, format, clear };
-		}
-		/**
-		*\~english
-		*\brief
-		*	Creates a colour attachment.
-		*\param[in] index
-		*	The attach index.
-		*\param[in] format
-		*	The attach pixel format.
-		*\param[in] clear
-		*	Tells if the attach is cleared when the render pass is started.
-		*\~french
-		*\brief
-		*	Crée une attache de type couleur.
-		*\param[in] index
-		*	L'indice de l'attache.
-		*\param[in] format
-		*	Le format des pixels de l'attache.
-		*\param[in] clear
-		*	Dit si l'attache est vidée lors du démarrage de la passe de rendu.
-		*/
-		static inline RenderPassAttachment createColourAttachment( uint32_t index, PixelFormat format, bool clear )
-		{
-			return RenderPassAttachment{ index, format, clear };
-		}
-		/**
-		*\~english
-		*\return
 		*	The attach index.
 		*\~french
-		*\return
+		*\brief
 		*	L'indice de l'attache.
 		*/
-		inline uint32_t getIndex()const
-		{
-			return m_index;
-		}
+		uint32_t index;
 		/**
 		*\~english
-		*\return
+		*\brief
 		*	The attach pixel format.
 		*\~french
-		*\return
+		*\brief
 		*	Le format des pixels de l'attache.
 		*/
-		inline PixelFormat getFormat()const
-		{
-			return m_format;
-		}
+		PixelFormat format;
 		/**
 		*\~english
-		*\return
-		*	Tells if the attach is cleared when the render pass is started.
+		*\brief
+		*	The number of samples of the image as defined in renderer::SampleCountFlag.
 		*\~french
-		*\return
-		*	Dit si l'attache est vidée lors du démarrage de la passe de rendu.
+		*\brief
+		*	Le nombre d'échantillons de l'image tel que défini dans renderer::SampleCountFlag.
 		*/
-		inline bool getClear()const
-		{
-			return m_clear;
-		}
-
-	private:
-		uint32_t m_index;
-		PixelFormat m_format;
-		bool m_clear;
+		SampleCountFlag samples;
+		/**
+		*\~english
+		*\brief
+		*	Specifies how the contents of color and depth components of the attachment are treated at the beginning of the subpass where it is first used.
+		*\~french
+		*\brief
+		*	Spécifie comment le contenu des composantes couleur et profondeur de l'attache sont traitées au début de la sous-passe où elles sont utilisées pour la première fois.
+		*/
+		AttachmentLoadOp loadOp;
+		/**
+		*\~english
+		*\brief
+		*	Specifies how the contents of color and depth components of the attachment are treated at the end of the subpass where it is last used.
+		*\~french
+		*\brief
+		*	Spécifie comment le contenu des composantes couleur et profondeur de l'attache sont traitées à la fin de la sous-passe où elles sont utilisées pour la dernière fois.
+		*/
+		AttachmentStoreOp storeOp;
+		/**
+		*\~english
+		*\brief
+		*	Specifies how the contents of stencil components of the attachment are treated at the beginning of the subpass where it is first used.
+		*\~french
+		*\brief
+		*	Spécifie comment le contenu des composantes stencil de l'attache sont traitées au début de la sous-passe où elles sont utilisées pour la première fois.
+		*/
+		AttachmentLoadOp stencilLoadOp;
+		/**
+		*\~english
+		*\brief
+		*	Specifies how the contents of stencil components of the attachment are treated at the end of the last subpass where it is used.
+		*\~french
+		*\brief
+		*	Spécifie comment le contenu des composantes stencil de l'attache sont traitées à la fin de la sous-passe où elles sont utilisées pour la dernière fois.
+		*/
+		AttachmentStoreOp stencilStoreOp;
+		/**
+		*\~english
+		*\brief
+		*	The layout the attachment image subresource will be in when a render pass instance begins.
+		*\~french
+		*\brief
+		*	Le layout de la sous-ressource de l'image de l'attache, lorsqu'une instance de la passe de rendu commence.
+		*/
+		ImageLayout initialLayout;
+		/**
+		*\~english
+		*\brief
+		*	The layout the attachment image subresource will be transitioned to when a render pass instance ends.
+		*	During a render pass instance, an attachment can use a different layout in each subpass, if desired.
+		*\~french
+		*\brief
+		*	Le layout vers lequel la sous-ressource de l'image de l'attache sera transitionné, lorsqu'une instance de la passe de rendu termine.
+		*	Pendant une instanec de passe de rendu, une attache peut utiliser différents layouts pour chaque sous-pass, si on le souhaite.
+		*/
+		ImageLayout finalLayout;
 	};
 }
 

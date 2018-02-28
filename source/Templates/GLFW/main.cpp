@@ -8,7 +8,6 @@
 #include <Core/SwapChain.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderPassAttachment.hpp>
-#include <RenderPass/RenderPassState.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassAttachment.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
@@ -185,12 +184,30 @@ std::vector< common::RendererPlugin > doListPlugins( common::RendererFactory & f
 renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
 	, renderer::SwapChain const & swapChain )
 {
-	// We'll have only one colour attachment for the render pass,
-	// for which the format is the swapchain's pixel format,
-	// and we want to clear it at the beginning of the render pass (\p true parameter).
 	renderer::RenderPassAttachmentArray attaches
-	{ 
-		renderer::RenderPassAttachment::createColourAttachment( 0u, swapChain.getFormat(), true )
+	{
+		// We'll have only one colour attachment for the render pass.
+		{
+			0u,
+			// The format is the swapchain's pixel format.
+			swapChain.getFormat(),
+			// Multisampling is disabled for this attach.
+			renderer::SampleCountFlag::e1,
+			// We want to clear the attach at the beginning of the render pass.
+			renderer::AttachmentLoadOp::eClear,
+			// And we want its result to be stored at the end of the render pass.
+			renderer::AttachmentStoreOp::eStore,
+			// We don't care about stencil attachment.
+			renderer::AttachmentLoadOp::eDontCare,
+			// We don't care about stencil attachment.
+			renderer::AttachmentStoreOp::eDontCare,
+			// The initial layout is the layout expected for the attachment at the beginning of the render pass.
+			// We expect the attach to have been presented to the surface, so it should be either a present source or undefined.
+			renderer::ImageLayout::eUndefined,
+			// The final layout is the layouts into which the attachment is transitioned at the end of the render pass.
+			// We want the attach to be presented to the surface, so we make it a present source.
+			renderer::ImageLayout::ePresentSrc,
+		}
 	};
 	// A render pass always has at least one subpass.
 	// In our case, this subpass is also the only one,
@@ -198,35 +215,22 @@ renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
 	// We want this attachment to be transitioned to colour attachment, so we can write into it.
 	renderer::RenderSubpassAttachmentArray subAttaches
 	{
-		renderer::RenderSubpassAttachment{ attaches[0], renderer::ImageLayout::eColourAttachmentOptimal }
+		renderer::RenderSubpassAttachment{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
 	};
 	// We now create the subpasses.
 	// The subpass state is used to setup the needed states at the beginning of the subpass.
 	renderer::RenderSubpassPtrArray subpasses;
-	subpasses.emplace_back( device.createRenderSubpass( subAttaches
+	subpasses.emplace_back( device.createRenderSubpass( renderer::PipelineBindPoint::eGraphics
 		, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-			, renderer::AccessFlag::eColourAttachmentWrite } ) );
-	// The initial layouts are the layouts expected for each attachment at the beginning of the render pass.
-	// We expect the attach to have been presented to the surface, so it should be a present source.
-	renderer::ImageLayoutArray initialLayouts
-	{
-		renderer::ImageLayout::eUndefined
-	};
-	// The final layouts are the layouts into which the attachments are transitioned at the end of the render pass.
-	// We want the attach to be presented to the surface, so we make it a present source.
-	renderer::ImageLayoutArray finalLayouts
-	{
-		renderer::ImageLayout::ePresentSrc
-	};
+			, renderer::AccessFlag::eColourAttachmentWrite }
+		, subAttaches ) );
 	// Eventually, we create the render pass, using all previously built informations.
 	return device.createRenderPass( attaches
 		, std::move( subpasses )
-		, renderer::RenderPassState{ renderer::PipelineStageFlag::eBottomOfPipe
-			, renderer::AccessFlag::eMemoryRead
-			, initialLayouts }
-		, renderer::RenderPassState{ renderer::PipelineStageFlag::eBottomOfPipe
-			, renderer::AccessFlag::eMemoryRead
-			, finalLayouts } );
+		, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
+			, renderer::AccessFlag::eMemoryRead }
+		, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
+			, renderer::AccessFlag::eMemoryRead } );
 }
 
 void doPrepareFrames( Application & application )
