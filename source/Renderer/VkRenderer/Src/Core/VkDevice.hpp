@@ -51,23 +51,17 @@ namespace vk_renderer
 			, renderer::RenderSubpassAttachment const * depthAttach
 			, renderer::UInt32Array const & preserveAttaches )const override;
 		/**
-		*\copydoc	renderer::Device::createVertexLayout
+		*\copydoc	renderer::Device::createGeometryBuffers
 		*/
-		renderer::VertexLayoutPtr createVertexLayout( uint32_t bindingSlot
-			, uint32_t stride
-			, renderer::VertexInputRate inputRate )const override;
+		renderer::GeometryBuffersPtr createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
+			, std::vector< uint64_t > vboOffsets
+			, renderer::VertexInputState const & vertexInputState )const override;
 		/**
 		*\copydoc	renderer::Device::createGeometryBuffers
 		*/
 		renderer::GeometryBuffersPtr createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
 			, std::vector< uint64_t > vboOffsets
-			, renderer::VertexLayoutCRefArray const & layouts )const override;
-		/**
-		*\copydoc	renderer::Device::createGeometryBuffers
-		*/
-		renderer::GeometryBuffersPtr createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
-			, std::vector< uint64_t > vboOffsets
-			, renderer::VertexLayoutCRefArray const & layouts
+			, renderer::VertexInputState const & vertexInputState
 			, renderer::BufferBase const & ibo
 			, uint64_t iboOffset
 			, renderer::IndexType type )const override;

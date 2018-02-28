@@ -161,7 +161,7 @@ namespace vkapp
 
 		renderer::VertexLayoutPtr doCreateVertexLayout( renderer::Device & device )
 		{
-			auto result = device.createVertexLayout( 0u, uint32_t( sizeof( VertexData ) ) );
+			auto result = renderer::makeLayout< VertexData >( 0u );
 			result->createAttribute< Vec4 >( 0u, 0u );
 			return result;
 		}
@@ -262,7 +262,7 @@ namespace vkapp
 			{
 				*m_program,
 				*facePipeline.renderPass,
-				{ *m_vertexLayout },
+				renderer::VertexInputState::create( *m_vertexLayout ),
 				renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
 				renderer::RasterisationState{ 1.0f },
 				renderer::MultisampleState{},

@@ -143,7 +143,8 @@ namespace gl_renderer
 		*/
 		inline bool hasVertexLayout()const
 		{
-			return !m_vertexLayouts.empty();
+			return !m_vertexInputState.vertexBindingDescriptions.empty()
+				&& !m_vertexInputState.vertexAttributeDescriptions.empty();
 		}
 		/**
 		*\return
@@ -158,7 +159,7 @@ namespace gl_renderer
 		Device const & m_device;
 		PipelineLayout const & m_layout;
 		ShaderProgram const & m_program;
-		renderer::VertexLayoutCRefArray m_vertexLayouts;
+		renderer::VertexInputState m_vertexInputState;
 		renderer::RenderPass const & m_renderPass;
 		renderer::InputAssemblyState m_iaState;
 		renderer::ColourBlendState m_cbState;

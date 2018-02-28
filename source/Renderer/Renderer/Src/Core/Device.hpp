@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -165,33 +165,6 @@ namespace renderer
 			, RenderSubpassAttachment const * depthAttach
 			, UInt32Array const & preserveAttaches )const = 0;
 		/**
-		*\~french
-		*\brief
-		*	Crée un layout de sommets.
-		*\param[in] bindingSlot
-		*	Le point d'attache du tampon associé.
-		*\param[in] stride
-		*	La taille en octets séparant un élément du suivant, dans le tampon.
-		*\param[in] inputRate
-		*	La cadence d'entrée.
-		*\return
-		*	Le layout créé.
-		*\~english
-		*\brief
-		*	Creates a vertex layout.
-		*\param[in] bindingSlot
-		*	The binding point for associated buffer.
-		*\param[in] stride
-		*	The byte size from one element to the next one, in the buffer.
-		*\param[in] inputRate
-		*	The input rate (for instantiation).
-		*\return
-		*	The created layout.
-		*/
-		virtual VertexLayoutPtr createVertexLayout( uint32_t bindingSlot
-			, uint32_t stride
-			, VertexInputRate inputRate = VertexInputRate::eVertex )const = 0;
-		/**
 		*\~english
 		*\brief
 		*	Creates a pipeline layout.
@@ -221,8 +194,8 @@ namespace renderer
 		*	The VBOs.
 		*\param[in] vboOffsets
 		*	The offset for the first vertex of each VBO.
-		*\param[in] layouts
-		*	The vertex layouts, one for each VBO.
+		*\param[in] vertexInputState
+		*	The vertex input state.
 		*\~french
 		*\brief
 		*	Crée tampon de géométries.
@@ -230,12 +203,12 @@ namespace renderer
 		*	Les VBOs.
 		*\param[in] vboOffsets
 		*	L'offset du premier sommet pour chaque VBO.
-		*\param[in] layouts
-		*	Les layouts, un par vbo de \p vbos.
+		*\param[in] vertexInputState
+		*	L'état d'entrée de sommets.
 		*/
 		virtual GeometryBuffersPtr createGeometryBuffers( VertexBufferCRefArray const & vbos
 			, std::vector< uint64_t > vboOffsets
-			, VertexLayoutCRefArray const & layouts )const = 0;
+			, VertexInputState const & vertexInputState )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -244,8 +217,8 @@ namespace renderer
 		*	The VBOs.
 		*\param[in] vboOffsets
 		*	The offset for the first vertex of each VBO.
-		*\param[in] layouts
-		*	The vertex layouts, one for each VBO.
+		*\param[in] vertexInputState
+		*	The vertex input state.
 		*\param[in] ibo
 		*	The IBO.
 		*\param[in] iboOffset
@@ -259,8 +232,8 @@ namespace renderer
 		*	Les VBOs.
 		*\param[in] vboOffsets
 		*	L'offset du premier sommet pour chaque VBO.
-		*\param[in] layouts
-		*	Les layouts, un par vbo de \p vbos.
+		*\param[in] vertexInputState
+		*	L'état d'entrée de sommets.
 		*\param[in] ibo
 		*	L'IBO.
 		*\param[in] iboOffset
@@ -270,7 +243,7 @@ namespace renderer
 		*/
 		virtual GeometryBuffersPtr createGeometryBuffers( VertexBufferCRefArray const & vbos
 			, std::vector< uint64_t > vboOffsets
-			, VertexLayoutCRefArray const & layouts
+			, VertexInputState const & vertexInputState
 			, BufferBase const & ibo
 			, uint64_t iboOffset
 			, IndexType type )const = 0;
@@ -689,6 +662,29 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Creates a geometry buffers.
+		*\param[in] vbos
+		*	The VBOs.
+		*\param[in] vboOffsets
+		*	The offset for the first vertex of each VBO.
+		*\param[in] layouts
+		*	The vertex layouts, one for each VBO.
+		*\~french
+		*\brief
+		*	Crée tampon de géométries.
+		*\param[in] vbos
+		*	Les VBOs.
+		*\param[in] vboOffsets
+		*	L'offset du premier sommet pour chaque VBO.
+		*\param[in] layouts
+		*	Les layouts, un par vbo de \p vbos.
+		*/
+		GeometryBuffersPtr createGeometryBuffers( VertexBufferCRefArray const & vbos
+			, std::vector< uint64_t > vboOffsets
+			, VertexLayoutCRefArray const & layouts )const;
+		/**
+		*\~english
+		*\brief
+		*	Creates a geometry buffers.
 		*\param[in] vbo
 		*	The VBO.
 		*\param[in] vboOffset
@@ -743,6 +739,44 @@ namespace renderer
 		GeometryBuffersPtr createGeometryBuffers( VertexBufferBase const & vbo
 			, uint64_t vboOffset
 			, VertexLayout const & layout
+			, BufferBase const & ibo
+			, uint64_t iboOffset
+			, IndexType type )const;
+		/**
+		*\~english
+		*\brief
+		*	Creates a geometry buffers.
+		*\param[in] vbos
+		*	The VBOs.
+		*\param[in] vboOffsets
+		*	The offset for the first vertex of each VBO.
+		*\param[in] layouts
+		*	The vertex layouts, one for each VBO.
+		*\param[in] ibo
+		*	The IBO.
+		*\param[in] iboOffset
+		*	The offset of the first index in the IBO.
+		*\param[in] type
+		*	LThe index type.
+		*\~french
+		*\brief
+		*	Crée tampon de géométries.
+		*\param[in] vbos
+		*	Les VBOs.
+		*\param[in] vboOffsets
+		*	L'offset du premier sommet pour chaque VBO.
+		*\param[in] layouts
+		*	Les layouts, un par vbo de \p vbos.
+		*\param[in] ibo
+		*	L'IBO.
+		*\param[in] iboOffset
+		*	L'offset du premier indice dans l'IBO.
+		*\param[in] type
+		*	Le type des indices.
+		*/
+		GeometryBuffersPtr createGeometryBuffers( VertexBufferCRefArray const & vbos
+			, std::vector< uint64_t > vboOffsets
+			, VertexLayoutCRefArray const & layouts
 			, BufferBase const & ibo
 			, uint64_t iboOffset
 			, IndexType type )const;

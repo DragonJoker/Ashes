@@ -6,7 +6,6 @@
 #include "Core/GlRenderingResources.hpp"
 #include "Miscellaneous/GlValidator.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
-#include "Pipeline/GlVertexLayout.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 #include "Shader/GlShaderProgram.hpp"
 
@@ -25,7 +24,7 @@ namespace gl_renderer
 		, m_device{ device }
 		, m_layout{ layout }
 		, m_program{ static_cast< ShaderProgram const & >( m_createInfo.program.get() ) }
-		, m_vertexLayouts{ m_createInfo.vertexLayouts }
+		, m_vertexInputState{ m_createInfo.vertexInputState }
 		, m_renderPass{ m_createInfo.renderPass.get() }
 		, m_iaState{ m_createInfo.inputAssemblyState }
 		, m_cbState{ m_createInfo.colourBlendState }
@@ -63,7 +62,7 @@ namespace gl_renderer
 		{
 			validatePipeline( m_layout
 				, m_program
-				, m_vertexLayouts
+				, m_vertexInputState
 				, m_renderPass );
 		}
 	}

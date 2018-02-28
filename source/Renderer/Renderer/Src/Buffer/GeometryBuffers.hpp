@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -6,7 +6,8 @@ See LICENSE file in root folder.
 #define ___Renderer_GeometryBuffers_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include "Pipeline/VertexInputAttributeDescription.hpp"
+#include "Pipeline/VertexInputBindingDescription.hpp"
 
 #include <vector>
 
@@ -27,7 +28,8 @@ namespace renderer
 		{
 			VertexBufferBase const & vbo;
 			uint64_t offset;
-			VertexLayout const & layout;
+			VertexInputBindingDescription binding;
+			VertexInputAttributeDescriptionArray attributes;
 		};
 
 		struct IBO
@@ -55,8 +57,8 @@ namespace renderer
 		*	The VBOs.
 		*\param[in] vboOffsets
 		*	The offset for the first vertex of each VBO.
-		*\param[in] layouts
-		*	The layouts, one per VBO in \p vbos.
+		*\param[in] vertexInputState
+		*	The vertex input state.
 		*\~french
 		*\brief
 		*	Constructeur.
@@ -64,12 +66,12 @@ namespace renderer
 		*	Les VBOs.
 		*\param[in] vboOffsets
 		*	L'offset du premier sommet pour chaque VBO.
-		*\param[in] layouts
-		*	Les layouts, un par vbo de \p vbos.
+		*\param[in] vertexInputState
+		*	L'état d'entrée de sommets.
 		*/
 		GeometryBuffers( VertexBufferCRefArray const & vbos
 			, std::vector< uint64_t > vboOffsets
-			, VertexLayoutCRefArray const & layouts );
+			, VertexInputState const & vertexInputState );
 		/**
 		*\~english
 		*\brief
@@ -104,7 +106,7 @@ namespace renderer
 		*/
 		GeometryBuffers( VertexBufferCRefArray const & vbos
 			, std::vector< uint64_t > vboOffsets
-			, VertexLayoutCRefArray const & layouts
+			, VertexInputState const & vertexInputState
 			, BufferBase const & ibo
 			, uint64_t iboOffset
 			, IndexType type );

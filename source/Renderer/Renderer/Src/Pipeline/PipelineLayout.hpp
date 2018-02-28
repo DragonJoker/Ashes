@@ -137,7 +137,7 @@ namespace renderer
 			{
 				program,
 				renderPass,
-				vertexLayouts,
+				VertexInputState::create( vertexLayouts ),
 				inputAssemblyState,
 				rasterisationState,
 				MultisampleState{},

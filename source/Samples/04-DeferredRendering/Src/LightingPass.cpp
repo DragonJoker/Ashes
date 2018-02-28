@@ -192,7 +192,7 @@ namespace vkapp
 
 		renderer::VertexLayoutPtr doCreateVertexLayout( renderer::Device const & device )
 		{
-			auto result = renderer::makeLayout< common::TexturedVertexData >( device, 0 );
+			auto result = renderer::makeLayout< common::TexturedVertexData >( 0 );
 			result->createAttribute< renderer::Vec4 >( 0u
 				, uint32_t( offsetof( common::TexturedVertexData, position ) ) );
 			result->createAttribute< renderer::Vec2 >( 1u
@@ -232,7 +232,7 @@ namespace vkapp
 			{
 				*m_program,
 				*m_renderPass,
-				{ *m_vertexLayout },
+				renderer::VertexInputState::create( *m_vertexLayout ),
 				{ renderer::PrimitiveTopology::eTriangleStrip },
 				renderer::RasterisationState{ 1.0f },
 				renderer::MultisampleState{},
