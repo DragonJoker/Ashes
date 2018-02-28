@@ -35,8 +35,11 @@ See LICENSE file in root folder.
 #include "Commands/GlCopyImageCommand.hpp"
 #include "Commands/GlCopyImageToBufferCommand.hpp"
 #include "Commands/GlDispatchCommand.hpp"
+#include "Commands/GlDispatchIndirectCommand.hpp"
 #include "Commands/GlDrawCommand.hpp"
 #include "Commands/GlDrawIndexedCommand.hpp"
+#include "Commands/GlDrawIndexedIndirectCommand.hpp"
+#include "Commands/GlDrawIndirectCommand.hpp"
 #include "Commands/GlEndQueryCommand.hpp"
 #include "Commands/GlEndRenderPassCommand.hpp"
 #include "Commands/GlImageMemoryBarrierCommand.hpp"
@@ -278,6 +281,31 @@ namespace gl_renderer
 			, m_indexType ) );
 	}
 
+	void CommandBuffer::drawIndirect( renderer::BufferBase const & buffer
+		, uint32_t offset
+		, uint32_t drawCount
+		, uint32_t stride )const
+	{
+		m_commands.emplace_back( std::make_unique< DrawIndirectCommand >( buffer
+			, offset
+			, drawCount
+			, stride
+			, m_currentPipeline->getInputAssemblyState().getTopology() ) );
+	}
+
+	void CommandBuffer::drawIndexedIndirect( renderer::BufferBase const & buffer
+		, uint32_t offset
+		, uint32_t drawCount
+		, uint32_t stride )const
+	{
+		m_commands.emplace_back( std::make_unique< DrawIndexedIndirectCommand >( buffer
+			, offset
+			, drawCount
+			, stride
+			, m_currentPipeline->getInputAssemblyState().getTopology()
+			, m_indexType ) );
+	}
+
 	void CommandBuffer::copyToImage( renderer::BufferImageCopyArray const & copyInfo
 		, renderer::BufferBase const & src
 		, renderer::Texture const & dst )const
@@ -380,6 +408,13 @@ namespace gl_renderer
 		m_commands.emplace_back( std::make_unique< DispatchCommand >( groupCountX
 			, groupCountY 
 			, groupCountZ ) );
+	}
+
+	void CommandBuffer::dispatchIndirect( renderer::BufferBase const & buffer
+		, uint32_t offset )const
+	{
+		m_commands.emplace_back( std::make_unique< DispatchIndirectCommand >( buffer
+			, offset ) );
 	}
 
 	void CommandBuffer::setLineWidth( float width )const

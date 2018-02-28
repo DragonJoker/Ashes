@@ -73,6 +73,7 @@ namespace vk_renderer
 		m_info.textureCompressionASTC_LDR = m_features.textureCompressionASTC_LDR;
 		m_info.textureCompressionBC = m_features.textureCompressionBC;
 		m_info.textureCompressionETC2 = m_features.textureCompressionETC2;
+		m_info.multiDrawIndirect = m_features.multiDrawIndirect;
 
 		// Et enfin les propriétés des familles de files du GPU.
 		uint32_t queueCount{ 0 };

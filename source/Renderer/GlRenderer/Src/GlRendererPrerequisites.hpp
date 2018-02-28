@@ -61,6 +61,8 @@
 
 #include "Miscellaneous/GlDebug.hpp"
 
+#define BufferOffset( n ) ( ( uint8_t * )nullptr + ( n ) )
+
 namespace gl_renderer
 {
 	class Buffer;

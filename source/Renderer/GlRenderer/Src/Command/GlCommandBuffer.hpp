@@ -134,6 +134,20 @@ namespace gl_renderer
 			, uint32_t vertexOffset
 			, uint32_t firstInstance )const override;
 		/**
+		*\copydoc	renderer::CommandBuffer:drawIndirect
+		*/
+		void drawIndirect( renderer::BufferBase const & buffer
+			, uint32_t offset
+			, uint32_t drawCount
+			, uint32_t stride )const override;
+		/**
+		*\copydoc	renderer::CommandBuffer:drawIndexedIndirect
+		*/
+		void drawIndexedIndirect( renderer::BufferBase const & buffer
+			, uint32_t offset
+			, uint32_t drawCount
+			, uint32_t stride )const override;
+		/**
 		*\copydoc	renderer::CommandBuffer::copyToImage
 		*/
 		void copyToImage( renderer::BufferImageCopyArray const & copyInfo
@@ -198,6 +212,11 @@ namespace gl_renderer
 		void dispatch( uint32_t groupCountX
 			, uint32_t groupCountY
 			, uint32_t groupCountZ )const override;
+		/**
+		*\copydoc	renderer::CommandBuffer:dispatchIndirect
+		*/
+		void dispatchIndirect( renderer::BufferBase const & buffer
+			, uint32_t offset )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer::setLineWidth
 		*/
