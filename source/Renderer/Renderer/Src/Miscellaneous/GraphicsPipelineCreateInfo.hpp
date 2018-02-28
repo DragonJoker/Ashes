@@ -14,6 +14,7 @@ See LICENSE file in root folder.
 #include "Pipeline/Scissor.hpp"
 #include "Pipeline/SpecialisationInfo.hpp"
 #include "Pipeline/TessellationState.hpp"
+#include "Pipeline/VertexInputState.hpp"
 #include "Pipeline/Viewport.hpp"
 
 #include <map>
@@ -32,7 +33,7 @@ namespace renderer
 	{
 		std::reference_wrapper< ShaderProgram const > program;
 		std::reference_wrapper< RenderPass const > renderPass;
-		VertexLayoutCRefArray vertexLayouts;
+		VertexInputState vertexInputState;
 		InputAssemblyState inputAssemblyState = InputAssemblyState{};
 		RasterisationState rasterisationState = RasterisationState{};
 		MultisampleState multisampleState = MultisampleState{};

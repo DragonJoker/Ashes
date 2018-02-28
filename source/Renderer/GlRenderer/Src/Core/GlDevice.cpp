@@ -21,7 +21,6 @@ See LICENSE file in root folder.
 #include "Image/GlTextureView.hpp"
 #include "Miscellaneous/GlQueryPool.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
-#include "Pipeline/GlVertexLayout.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 #include "RenderPass/GlRenderSubpass.hpp"
 #include "Shader/GlShaderProgram.hpp"
@@ -372,34 +371,25 @@ namespace gl_renderer
 			, preserveAttaches );
 	}
 
-	renderer::VertexLayoutPtr Device::createVertexLayout( uint32_t bindingSlot
-		, uint32_t stride
-		, renderer::VertexInputRate inputRate )const
-	{
-		return std::make_unique< VertexLayout >( bindingSlot
-			, stride
-			, inputRate );
-	}
-
 	renderer::GeometryBuffersPtr Device::createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
 		, std::vector< uint64_t > vboOffsets
-		, renderer::VertexLayoutCRefArray const & layouts )const
+		, renderer::VertexInputState const & vertexInputState )const
 	{
 		return std::make_unique< GeometryBuffers >( vbos
 			, vboOffsets
-			, layouts );
+			, vertexInputState );
 	}
 
 	renderer::GeometryBuffersPtr Device::createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
 		, std::vector< uint64_t > vboOffsets
-		, renderer::VertexLayoutCRefArray const & layouts
+		, renderer::VertexInputState const & vertexInputState
 		, renderer::BufferBase const & ibo
 		, uint64_t iboOffset
 		, renderer::IndexType type )const
 	{
 		return std::make_unique< GeometryBuffers >( vbos
 			, vboOffsets
-			, layouts
+			, vertexInputState
 			, ibo
 			, iboOffset
 			, type );

@@ -356,7 +356,7 @@ namespace vkapp
 			, uint32_t( m_vertexData.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( *m_device, 0 );
+		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
 		m_vertexLayout->createAttribute< renderer::Vec4 >( 0u
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 		m_vertexLayout->createAttribute< renderer::Vec2 >( 1u
@@ -399,7 +399,7 @@ namespace vkapp
 		{
 			*m_program,
 			*m_renderPass,
-			{ *m_vertexLayout },
+			renderer::VertexInputState::create( *m_vertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleStrip },
 			renderer::RasterisationState{ 1.0f }
 		} );

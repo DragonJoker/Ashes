@@ -14,7 +14,7 @@ namespace gl_renderer
 {
 	void validatePipeline( PipelineLayout const & layout
 		, ShaderProgram const & m_program
-		, renderer::VertexLayoutCRefArray const & vertexLayouts
+		, renderer::VertexInputState const & vertexInputState
 		, renderer::RenderPass const & renderPass );
 }
 

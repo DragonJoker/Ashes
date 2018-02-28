@@ -5,29 +5,15 @@
 #include "Pipeline/VkPipelineLayout.hpp"
 #include "Pipeline/VkSpecialisationInfo.hpp"
 #include "Pipeline/VkSpecialisationMapEntry.hpp"
-#include "Pipeline/VkVertexLayout.hpp"
+#include "Pipeline/VkVertexInputAttributeDescription.hpp"
+#include "Pipeline/VkVertexInputBindingDescription.hpp"
+#include "Pipeline/VkVertexInputState.hpp"
 #include "RenderPass/VkRenderPass.hpp"
 #include "Shader/VkAttribute.hpp"
 #include "Shader/VkShaderProgram.hpp"
 
 namespace vk_renderer
 {
-	namespace
-	{
-		VertexLayoutCRefArray convert( renderer::VertexLayoutCRefArray const & layouts )
-		{
-			VertexLayoutCRefArray result;
-			result.reserve( layouts.size() );
-
-			for ( auto & layout : layouts )
-			{
-				result.emplace_back( static_cast< VertexLayout const & >( layout.get() ) );
-			}
-
-			return result;
-		}
-	}
-
 	Pipeline::Pipeline( Device const & device
 		, renderer::PipelineLayout const & layout
 		, renderer::GraphicsPipelineCreateInfo && createInfo )
@@ -37,7 +23,9 @@ namespace vk_renderer
 		, m_device{ device }
 		, m_layout{ static_cast< PipelineLayout const & >( layout ) }
 		, m_shader{ static_cast< ShaderProgram const & >( m_createInfo.program.get() ) }
-		, m_vertexLayouts{ convert( m_createInfo.vertexLayouts ) }
+		, m_vertexAttributes{ convert< VkVertexInputAttributeDescription >( m_createInfo.vertexInputState.vertexAttributeDescriptions ) }
+		, m_vertexBindings{ convert< VkVertexInputBindingDescription >( m_createInfo.vertexInputState.vertexBindingDescriptions ) }
+		, m_vertexInputState{ convert( m_createInfo.vertexInputState, m_vertexAttributes, m_vertexBindings ) }
 		, m_renderPass{ static_cast< RenderPass const & >( m_createInfo.renderPass.get() ) }
 		, m_inputAssemblyState{ convert( m_createInfo.inputAssemblyState ) }
 		, m_rasterisationState{ convert( m_createInfo.rasterisationState ) }
@@ -115,51 +103,6 @@ namespace vk_renderer
 			}
 		}
 
-		// Les informations des données contenues dans les tampons de sommets.
-		std::vector< VkVertexInputBindingDescription > vertexBindingDescriptions;
-		std::vector< VkVertexInputAttributeDescription > vertexAttributeDescriptions;
-		vertexBindingDescriptions.reserve( m_vertexLayouts.size() );
-
-		for ( auto const & vb : m_vertexLayouts )
-		{
-			vertexBindingDescriptions.push_back( vb.get().getDescription() );
-
-			for ( auto const & attribute : vb.get() )
-			{
-				if ( attribute.getFormat() == renderer::AttributeFormat::eMat4f )
-				{
-					uint32_t offset = attribute.getOffset();
-					uint32_t location = attribute.getLocation();
-
-					for ( auto i = 0u; i < 4u; ++i )
-					{
-						auto attrib = renderer::Attribute{ vb.get()
-							, renderer::AttributeFormat::eVec4f
-							, location
-							, offset };
-						vertexAttributeDescriptions.emplace_back( convert( attrib ) );
-						++location;
-						offset += 16u;
-					}
-				}
-				else
-				{
-					vertexAttributeDescriptions.emplace_back( convert( attribute ) );
-				}
-			}
-		}
-
-		VkPipelineVertexInputStateCreateInfo vertexInputState
-		{
-			VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-			nullptr,
-			0,                                                            // flags
-			static_cast< uint32_t >( vertexBindingDescriptions.size() ),  // vertexBindingDescriptionCount
-			vertexBindingDescriptions.data(),                             // pVertexBindingDescriptions
-			static_cast< uint32_t >( vertexAttributeDescriptions.size() ),// vertexAttributeDescriptionCount
-			vertexAttributeDescriptions.data()                            // pVertexAttributeDescriptions
-		};
-
 		// Le viewport.
 		VkPipelineViewportStateCreateInfo viewportState
 		{
@@ -211,7 +154,7 @@ namespace vk_renderer
 			0,                                                            // flags
 			static_cast< uint32_t >( shaderStage.size() ),                // stageCount
 			shaderStage.data(),                                           // pStages
-			&vertexInputState,                                            // pVertexInputState;
+			&m_vertexInputState,                                          // pVertexInputState;
 			&m_inputAssemblyState,                                        // pInputAssemblyState
 			m_tessellationState                                           // pTessellationState
 				? &m_tessellationState.value()

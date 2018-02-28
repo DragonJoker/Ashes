@@ -5,7 +5,9 @@
 #include "Core/GlRenderingResources.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 #include "Shader/GlShaderProgram.hpp"
-#include "Pipeline/GlVertexLayout.hpp"
+
+#include <Pipeline/VertexInputAttributeDescription.hpp>
+#include <Pipeline/VertexInputState.hpp>
 
 #include <algorithm>
 
@@ -523,7 +525,7 @@ namespace gl_renderer
 		}
 
 		void doValidateInputs( GLuint program
-			, renderer::VertexLayoutCRefArray const & vertexLayouts )
+			, renderer::VertexInputState const & vertexInputState )
 		{
 			struct AttrSpec
 			{
@@ -532,12 +534,9 @@ namespace gl_renderer
 			};
 			std::vector< AttrSpec > attributes;
 
-			for ( auto & vertexLayout : vertexLayouts )
+			for ( auto & attribute : vertexInputState.vertexAttributeDescriptions )
 			{
-				for ( auto & attribute : vertexLayout.get() )
-				{
-					attributes.push_back( { attribute.getFormat(), attribute.getLocation() } );
-				}
+				attributes.push_back( { attribute.format, attribute.location } );
 			}
 
 			getProgramInterfaceInfos( program
@@ -694,10 +693,10 @@ namespace gl_renderer
 
 	void validatePipeline( PipelineLayout const & layout
 		, ShaderProgram const & m_program
-		, renderer::VertexLayoutCRefArray const & vertexLayouts
+		, renderer::VertexInputState const & vertexInputState
 		, renderer::RenderPass const & renderPass )
 	{
-		doValidateInputs( m_program.getProgram(), vertexLayouts );
+		doValidateInputs( m_program.getProgram(), vertexInputState );
 		doValidateOutputs( m_program.getProgram(), renderPass );
 		//doValidateUbos( m_program.getProgram() );
 		//doValidateSsbos( m_program.getProgram() );
