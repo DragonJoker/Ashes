@@ -9,8 +9,6 @@ See LICENSE file in root folder.
 
 #include <Buffer/VertexBuffer.hpp>
 
-#define BufferOffset( n ) ( ( uint8_t * )nullptr + ( n ) )
-
 namespace gl_renderer
 {
 	namespace

@@ -376,6 +376,32 @@ namespace vk_renderer
 			, firstInstance );
 	}
 
+	void CommandBuffer::drawIndirect( renderer::BufferBase const & buffer
+		, uint32_t offset
+		, uint32_t drawCount
+		, uint32_t stride )const
+	{
+		assert( m_currentPipeline && "No pipeline bound." );
+		m_device.vkCmdDrawIndirect( m_commandBuffer
+			, static_cast< Buffer const & >( buffer )
+			, offset
+			, drawCount
+			, stride );
+	}
+
+	void CommandBuffer::drawIndexedIndirect( renderer::BufferBase const & buffer
+		, uint32_t offset
+		, uint32_t drawCount
+		, uint32_t stride )const
+	{
+		assert( m_currentPipeline && "No pipeline bound." );
+		m_device.vkCmdDrawIndexedIndirect( m_commandBuffer
+			, static_cast< Buffer const & >( buffer )
+			, offset
+			, drawCount
+			, stride );
+	}
+
 	void CommandBuffer::copyToImage( renderer::BufferImageCopyArray const & copyInfo
 		, renderer::BufferBase const & src
 		, renderer::Texture const & dst )const
@@ -507,6 +533,15 @@ namespace vk_renderer
 			, groupCountX
 			, groupCountY
 			, groupCountZ );
+	}
+
+	void CommandBuffer::dispatchIndirect( renderer::BufferBase const & buffer
+		, uint32_t offset )const
+	{
+		assert( m_currentComputePipeline && "No pipeline bound." );
+		m_device.vkCmdDispatchIndirect( m_commandBuffer
+			, static_cast< Buffer const & >( buffer )
+			, offset );
 	}
 
 	void CommandBuffer::setLineWidth( float width )const
