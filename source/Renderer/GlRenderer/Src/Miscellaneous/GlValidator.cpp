@@ -278,10 +278,12 @@ namespace gl_renderer
 			case renderer::PixelFormat::eR8G8B8:
 				return rhs == renderer::PixelFormat::eRGB32F
 					|| rhs == renderer::PixelFormat::eR8G8B8;
+			case renderer::PixelFormat::eRGBA16F:
 			case renderer::PixelFormat::eRGBA32F:
 			case renderer::PixelFormat::eR8G8B8A8:
 			case renderer::PixelFormat::eB8G8R8A8:
-				return rhs == renderer::PixelFormat::eRGBA32F
+				return rhs == renderer::PixelFormat::eRGBA16F
+					|| rhs == renderer::PixelFormat::eRGBA32F
 					|| rhs == renderer::PixelFormat::eR8G8B8A8
 					|| rhs == renderer::PixelFormat::eB8G8R8A8;
 			default:

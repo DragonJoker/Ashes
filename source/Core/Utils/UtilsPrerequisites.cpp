@@ -37,6 +37,9 @@ namespace utils
 		case PixelFormat::eRGB32F:
 			return 12u;
 
+		case PixelFormat::eRGBA16F:
+			return 8u;
+
 		case PixelFormat::eRGBA32F:
 			return 16u;
 
