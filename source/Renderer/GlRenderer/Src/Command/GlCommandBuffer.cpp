@@ -203,7 +203,7 @@ namespace gl_renderer
 
 	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding
 		, renderer::BufferCRefArray const & buffers
-		, renderer::SizeTArray offsets )const
+		, renderer::UInt64Array offsets )const
 	{
 		assert( buffers.size() == offsets.size() );
 		uint32_t binding = firstBinding;
@@ -219,7 +219,7 @@ namespace gl_renderer
 	}
 
 	void CommandBuffer::bindIndexBuffer( renderer::BufferBase const & buffer
-		, size_t offset
+		, uint64_t offset
 		, renderer::IndexType indexType )const
 	{
 		auto & glBuffer = static_cast< Buffer const & >( buffer );

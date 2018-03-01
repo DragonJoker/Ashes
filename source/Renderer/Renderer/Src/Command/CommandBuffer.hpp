@@ -335,7 +335,7 @@ namespace renderer
 		*/
 		virtual void bindVertexBuffers( uint32_t firstBinding
 			, BufferCRefArray const & buffers
-			, SizeTArray offsets )const = 0;
+			, UInt64Array offsets )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -357,7 +357,7 @@ namespace renderer
 		*	Dit si les indices sont traités en 16 bits ou 32 bits.
 		*/
 		virtual void bindIndexBuffer( BufferBase const & buffer
-			, size_t offset
+			, uint64_t offset
 			, IndexType indexType )const = 0;
 		/**
 		*\~english
@@ -829,7 +829,7 @@ namespace renderer
 		*/
 		void bindVertexBuffer( uint32_t binding
 			, BufferBase const & buffer
-			, size_t offset )const;
+			, uint64_t offset )const;
 		/**
 		*\~french
 		*\brief

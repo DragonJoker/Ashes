@@ -100,7 +100,7 @@ namespace gl_renderer
 	struct BufferObjectBinding
 	{
 		GLuint bo;
-		size_t offset;
+		uint64_t offset;
 		Buffer const * buffer;
 	};
 	using VboBindings = std::map< uint32_t, BufferObjectBinding >;

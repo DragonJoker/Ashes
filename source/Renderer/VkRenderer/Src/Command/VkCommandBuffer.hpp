@@ -124,12 +124,12 @@ namespace vk_renderer
 		*/
 		void bindVertexBuffers( uint32_t firstBinding
 			, renderer::BufferCRefArray const & buffers
-			, renderer::SizeTArray offsets )const override;
+			, renderer::UInt64Array offsets )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:bindIndexBuffer
 		*/
 		void bindIndexBuffer( renderer::BufferBase const & buffer
-			, size_t offset
+			, uint64_t offset
 			, renderer::IndexType indexType )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:bindDescriptorSet

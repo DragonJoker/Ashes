@@ -250,7 +250,7 @@ namespace vk_renderer
 
 	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding
 		, renderer::BufferCRefArray const & buffers
-		, renderer::SizeTArray offsets )const
+		, renderer::UInt64Array offsets )const
 	{
 		std::vector< std::reference_wrapper< Buffer const > > vkbuffers;
 
@@ -267,7 +267,7 @@ namespace vk_renderer
 	}
 
 	void CommandBuffer::bindIndexBuffer( renderer::BufferBase const & buffer
-		, size_t offset
+		, uint64_t offset
 		, renderer::IndexType indexType )const
 	{
 		m_device.vkCmdBindIndexBuffer( m_commandBuffer

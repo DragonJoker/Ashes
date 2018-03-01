@@ -20,11 +20,11 @@ namespace renderer
 
 	void CommandBuffer::bindVertexBuffer( uint32_t binding
 		, BufferBase const & buffer
-		, size_t offset )const
+		, uint64_t offset )const
 	{
 		bindVertexBuffers( binding
 			, BufferCRefArray{ buffer }
-			, SizeTArray{ offset } );
+			, UInt64Array{ offset } );
 	}
 
 	void CommandBuffer::copyToImage( BufferImageCopy const & copyInfo

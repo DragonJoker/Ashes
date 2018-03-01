@@ -20,7 +20,7 @@ namespace gl_renderer
 		struct VBO
 		{
 			VBO( GLuint vbo
-				, size_t offset
+				, uint64_t offset
 				, renderer::VertexInputBindingDescription binding
 				, renderer::VertexInputAttributeDescriptionArray attributes )
 				: vbo{ vbo }
@@ -31,7 +31,7 @@ namespace gl_renderer
 			}
 
 			GLuint vbo;
-			size_t offset;
+			uint64_t offset;
 			renderer::VertexInputBindingDescription binding;
 			renderer::VertexInputAttributeDescriptionArray attributes;
 		};
@@ -39,7 +39,7 @@ namespace gl_renderer
 		struct IBO
 		{
 			IBO( GLuint ibo
-				, size_t offset
+				, uint64_t offset
 				, renderer::IndexType type )
 				: ibo{ ibo }
 				, offset{ offset }
@@ -48,7 +48,7 @@ namespace gl_renderer
 			}
 
 			GLuint ibo;
-			size_t offset;
+			uint64_t offset;
 			renderer::IndexType type;
 		};
 
