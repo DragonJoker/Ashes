@@ -316,16 +316,49 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
-		*	Enables geometry buffers (VBO, EBO, ...).
-		*\param[in] geometryBuffers
-		*	Les tampons de géométrie.
+		*	Binds vertex buffers to the command buffer.
+		*\param[in] firstBinding
+		*	The index of the first vertex input binding whose state is updated by the command.
+		*\param[in] buffers
+		*	The array of buffer handles.
+		*\param[in] offsets
+		*	The array of buffer offsets.
 		*\~french
 		*\brief
-		*	Active des tampons de géométrie (VBO, IBO, ...).
-		*\param[in] geometryBuffers
-		*	Les tampons de géométrie.
+		*	Active des tampons de sommets sur le tampon de commandes.
+		*\param[in] firstBinding
+		*	L'indice de la première attache d'entrée de sommets dont l'état est mis à jour par la commande.
+		*\param[in] buffers
+		*	Un tableau de tampons de sommets.
+		*\param[in] offsets
+		*	Un tableau d'offsets dans les tampons.
 		*/
-		virtual void bindGeometryBuffers( GeometryBuffers const & geometryBuffers )const = 0;
+		virtual void bindVertexBuffers( uint32_t firstBinding
+			, BufferCRefArray const & buffers
+			, UInt64Array offsets )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Binds an index buffer to the command buffer.
+		*\param[in] buffer
+		*	The buffer being bound.
+		*\param[in] offset
+		*	The starting offset in bytes within buffer used in index buffer address calculations.
+		*\param[in] type
+		*	Tells whether the indices are treated as 16 bits or 32 bits.
+		*\~french
+		*\brief
+		*	Active un tampon d'indices sur le tampon de commandes.
+		*\param[in] buffer
+		*	Le tampon à activer.
+		*\param[in] offset
+		*	L'offset de départ en octets dans le tampon, utilisé pour le calcul des indices.
+		*\param[in] type
+		*	Dit si les indices sont traités en 16 bits ou 32 bits.
+		*/
+		virtual void bindIndexBuffer( BufferBase const & buffer
+			, uint64_t offset
+			, IndexType indexType )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -774,6 +807,29 @@ namespace renderer
 		*	The wanted width.
 		*/
 		virtual void setLineWidth( float width )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Binds a vertex buffer to the command buffer.
+		*\param[in] binding
+		*	The index of the vertex input binding whose state is updated by the command.
+		*\param[in] buffers
+		*	The array of buffer handles.
+		*\param[in] offsets
+		*	The array of buffer offsets.
+		*\~french
+		*\brief
+		*	Active un tampon de sommets sur le tampon de commandes.
+		*\param[in] firstBinding
+		*	L'indice de l'attache d'entrée de sommets dont l'état est mis à jour par la commande.
+		*\param[in] buffers
+		*	Le tampon de sommets.
+		*\param[in] offsets
+		*	L'offsets dans le tampon.
+		*/
+		void bindVertexBuffer( uint32_t binding
+			, BufferBase const & buffer
+			, uint64_t offset )const;
 		/**
 		*\~french
 		*\brief

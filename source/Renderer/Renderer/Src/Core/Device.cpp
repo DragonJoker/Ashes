@@ -4,7 +4,6 @@ See LICENSE file in root folder.
 */
 #include "Core/Device.hpp"
 
-#include "Buffer/GeometryBuffers.hpp"
 #include "Core/Renderer.hpp"
 #include "Core/SwapChain.hpp"
 #include "Pipeline/PipelineLayout.hpp"
@@ -80,54 +79,6 @@ namespace renderer
 	ClipDirection Device::getClipDirection()const
 	{
 		return m_renderer.getClipDirection();
-	}
-
-	GeometryBuffersPtr Device::createGeometryBuffers( VertexBufferCRefArray const & vbos
-		, std::vector< uint64_t > vboOffsets
-		, VertexLayoutCRefArray const & layouts )const
-	{
-		return createGeometryBuffers( vbos
-			, vboOffsets
-			, VertexInputState::create( layouts ) );
-	}
-
-	GeometryBuffersPtr Device::createGeometryBuffers( VertexBufferBase const & vbo
-		, uint64_t vboOffset
-		, VertexLayout const & layout )const
-	{
-		return createGeometryBuffers( VertexBufferCRefArray{ vbo }
-			, UInt64Array{ vboOffset }
-			, VertexInputState::create( VertexLayoutCRefArray{ layout } ) );
-	}
-
-	GeometryBuffersPtr Device::createGeometryBuffers( VertexBufferCRefArray const & vbos
-		, std::vector< uint64_t > vboOffsets
-		, VertexLayoutCRefArray const & layouts
-		, BufferBase const & ibo
-		, uint64_t iboOffset
-		, IndexType type )const
-	{
-		return createGeometryBuffers( vbos
-			, vboOffsets
-			, VertexInputState::create( layouts )
-			, ibo
-			, iboOffset
-			, type );
-	}
-
-	GeometryBuffersPtr Device::createGeometryBuffers( VertexBufferBase const & vbo
-		, uint64_t vboOffset
-		, VertexLayout const & layout
-		, BufferBase const & ibo
-		, uint64_t iboOffset
-		, IndexType type )const
-	{
-		return createGeometryBuffers( VertexBufferCRefArray{ vbo }
-			, UInt64Array{ vboOffset }
-			, VertexInputState::create( VertexLayoutCRefArray{ layout } )
-			, ibo
-			, iboOffset
-			, type );
 	}
 
 	PipelineLayoutPtr Device::createPipelineLayout()const

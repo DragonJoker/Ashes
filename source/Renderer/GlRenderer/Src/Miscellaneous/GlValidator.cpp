@@ -539,32 +539,62 @@ namespace gl_renderer
 				attributes.push_back( { attribute.format, attribute.location } );
 			}
 
+			auto findAttribute = [&attributes]( std::string const & name
+				, GlslAttributeType glslType
+				, uint32_t location )
+			{
+				auto it = std::find_if( attributes.begin()
+					, attributes.end()
+					, [&glslType, &location]( AttrSpec const & lookup )
+				{
+					return areCompatible( lookup.format, convertAttribute( glslType ) )
+						&& lookup.location == location;
+				} );
+
+				if ( it != attributes.end() )
+				{
+					attributes.erase( it );
+				}
+				else if ( name.find( "gl_" ) != 0u )
+				{
+					std::stringstream stream;
+					stream << ValidationError
+						<< "Attribute [" << name
+						<< "], of type: " << getName( glslType )
+						<< ", at location: " << location
+						<< " is used in the shader program, but is not listed in the vertex layouts" << std::endl;
+					throw std::logic_error{ stream.str() };
+				}
+			};
+
 			getProgramInterfaceInfos( program
 				, GLSL_INTERFACE_PROGRAM_INPUT
 				, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
-				, [&attributes]( std::string name, std::vector< GLint > const & values )
+				, [&attributes, &findAttribute]( std::string const & name, std::vector< GLint > const & values )
 				{
-					auto it = std::find_if( attributes.begin()
-						, attributes.end()
-						, [&values]( AttrSpec const & lookup )
-						{
-							return areCompatible( lookup.format, convertAttribute( GlslAttributeType( values[0] ) ) )
-								&& lookup.location == values[2];
-						} );
+					auto glslType = GlslAttributeType( values[0] );
+					auto location = uint32_t( values[2] );
 
-					if ( it != attributes.end() )
+					switch ( glslType )
 					{
-						attributes.erase( it );
-					}
-					else if ( name.find( "gl_" ) != 0u )
-					{
-						std::stringstream stream;
-						stream << ValidationError
-							<< "Attribute [" << name
-							<< "], of type: " << getName( GlslAttributeType( values[0] ) )
-							<< ", at location: " << values[2]
-							<< " is used in the shader program, but is not listed in the vertex layouts" << std::endl;
-						throw std::logic_error{ stream.str() };
+					case GLSL_ATTRIBUTE_FLOAT_MAT2:
+						findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC2, location + 0u );
+						findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC2, location + 1u );
+						break;
+					case GLSL_ATTRIBUTE_FLOAT_MAT3:
+						findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC3, location + 0u );
+						findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC3, location + 1u );
+						findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC3, location + 2u );
+						break;
+					case GLSL_ATTRIBUTE_FLOAT_MAT4:
+						findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC4, location + 0u );
+						findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC4, location + 1u );
+						findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC4, location + 2u );
+						findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC4, location + 3u );
+						break;
+					default:
+						findAttribute( name, glslType, location );
+						break;
 					}
 				} );
 

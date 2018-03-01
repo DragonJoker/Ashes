@@ -1,6 +1,5 @@
 #include "EquirectangularToCube.hpp"
 
-#include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/UniformBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
@@ -166,13 +165,6 @@ namespace vkapp
 			return result;
 		}
 
-		renderer::GeometryBuffersPtr doCreateGeometryBuffer( renderer::Device & device
-			, renderer::VertexBufferBase const & vbo
-			, renderer::VertexLayout const & layout )
-		{
-			return device.createGeometryBuffers( vbo, 0u, layout );
-		}
-
 		renderer::DescriptorSetLayoutPtr doCreateDescriptorSetLayout( renderer::Device & device )
 		{
 			renderer::DescriptorSetLayoutBindingArray bindings
@@ -199,7 +191,6 @@ namespace vkapp
 		, m_program{ doCreateProgram( m_device ) }
 		, m_vertexBuffer{ doCreateVertexBuffer( m_device, *m_commandBuffer, m_stagingBuffer ) }
 		, m_vertexLayout{ doCreateVertexLayout( m_device ) }
-		, m_geometryBuffers{ doCreateGeometryBuffer( m_device, *m_vertexBuffer, *m_vertexLayout ) }
 		, m_descriptorLayout{ doCreateDescriptorSetLayout( m_device ) }
 		, m_descriptorPool{ m_descriptorLayout->createPool( 6u ) }
 		, m_pipelineLayout{ m_device.createPipelineLayout( *m_descriptorLayout ) }
@@ -301,7 +292,7 @@ namespace vkapp
 			commandBuffer.bindPipeline( *facePipeline.pipeline );
 			commandBuffer.bindDescriptorSet( *facePipeline.descriptorSet
 				, *m_pipelineLayout );
-			commandBuffer.bindGeometryBuffers( *m_geometryBuffers );
+			commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
 			commandBuffer.draw( 36u );
 			commandBuffer.endRenderPass();
 		}

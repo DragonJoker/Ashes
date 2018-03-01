@@ -7,12 +7,29 @@ See LICENSE file in root folder.
 #include "Buffer/GlBuffer.hpp"
 
 #include <Buffer/VertexBuffer.hpp>
-#include <Pipeline/VertexLayout.hpp>
+
+#include <algorithm>
 
 namespace gl_renderer
 {
 	namespace
 	{
+		renderer::VertexInputAttributeDescriptionArray getAttributes( renderer::VertexInputAttributeDescriptionArray const & attributes
+			, uint32_t bindingSlot )
+		{
+			renderer::VertexInputAttributeDescriptionArray result;
+
+			for ( auto & attribute : attributes )
+			{
+				if ( attribute.binding == bindingSlot )
+				{
+					result.push_back( attribute );
+				}
+			}
+
+			return result;
+		}
+
 		bool isInteger( renderer::AttributeFormat format )
 		{
 			return format == renderer::AttributeFormat::eInt
@@ -26,23 +43,13 @@ namespace gl_renderer
 		}
 	}
 
-	GeometryBuffers::GeometryBuffers( renderer::VertexBufferCRefArray const & vbos
-		, std::vector< uint64_t > offsets
-		, renderer::VertexInputState const & vertexInputState )
-		: renderer::GeometryBuffers{ vbos, offsets, vertexInputState }
-	{
-		doInitialise();
-	}
-
-	GeometryBuffers::GeometryBuffers( renderer::VertexBufferCRefArray const & vbos
-		, std::vector< uint64_t > offsets
+	GeometryBuffers::GeometryBuffers( VboBindings const & vbos
+		, IboBinding const & ibo
 		, renderer::VertexInputState const & vertexInputState
-		, renderer::BufferBase const & ibo
-		, uint64_t iboOffset
 		, renderer::IndexType type )
-		: renderer::GeometryBuffers{ vbos, offsets, vertexInputState, ibo, iboOffset, type }
+		: m_vbos{ createVBOs( vbos, vertexInputState ) }
+		, m_ibo{ bool( ibo ) ? std::make_unique< IBO >( ibo.value().bo, ibo.value().offset, type ) : nullptr }
 	{
-		doInitialise();
 	}
 
 	GeometryBuffers::~GeometryBuffers()noexcept
@@ -50,7 +57,7 @@ namespace gl_renderer
 		glLogCall( gl::DeleteVertexArrays, 1, &m_vao );
 	}
 
-	void GeometryBuffers::doInitialise()
+	void GeometryBuffers::initialise()
 	{
 		glLogCall( gl::GenVertexArrays, 1, &m_vao );
 
@@ -61,11 +68,11 @@ namespace gl_renderer
 
 		glLogCall( gl::BindVertexArray, m_vao );
 
-		for ( auto & vbo : getVbos() )
+		for ( auto & vbo : m_vbos )
 		{
 			glLogCall( gl::BindBuffer
 				, GL_BUFFER_TARGET_ARRAY
-				, static_cast< Buffer const & >( vbo.vbo.getBuffer() ).getBuffer() );
+				, vbo.vbo );
 
 			if ( vbo.binding.inputRate == renderer::VertexInputRate::eVertex )
 			{
@@ -132,13 +139,40 @@ namespace gl_renderer
 			}
 		}
 
-		if ( hasIbo() )
+		if ( m_ibo )
 		{
 			glLogCall( gl::BindBuffer
 				, GL_BUFFER_TARGET_ELEMENT_ARRAY
-				, static_cast< Buffer const & >( getIbo().buffer ).getBuffer() );
+				, m_ibo->ibo );
 		}
 
 		glLogCall( gl::BindVertexArray, 0u );
+	}
+
+	std::vector< GeometryBuffers::VBO > GeometryBuffers::createVBOs( VboBindings const & vbos
+		, renderer::VertexInputState const & vertexInputState )
+	{
+		std::vector< GeometryBuffers::VBO > result;
+		assert( vbos.size() == vertexInputState.vertexBindingDescriptions.size() );
+		result.reserve( vbos.size() );
+
+		for ( auto & binding : vbos )
+		{
+			auto it = std::find_if( vertexInputState.vertexBindingDescriptions.begin()
+				, vertexInputState.vertexBindingDescriptions.end()
+				, [&binding]( renderer::VertexInputBindingDescription const & lookup )
+			{
+				return lookup.binding == binding.first;
+			} );
+			assert( it != vertexInputState.vertexBindingDescriptions.end() );
+			auto & vbo = binding.second;
+			result.emplace_back( vbo.bo
+				, vbo.offset
+				, *it
+				, getAttributes( vertexInputState.vertexAttributeDescriptions
+					, it->binding ) );
+		}
+
+		return result;
 	}
 }

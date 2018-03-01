@@ -100,9 +100,17 @@ namespace gl_renderer
 		void bindPipeline( renderer::ComputePipeline const & pipeline
 			, renderer::PipelineBindPoint bindingPoint )const override;
 		/**
-		*\copydoc	renderer::CommandBuffer::bindGeometryBuffers
+		*\copydoc	renderer::CommandBuffer:bindVertexBuffers
 		*/
-		void bindGeometryBuffers( renderer::GeometryBuffers const & geometryBuffers )const override;
+		void bindVertexBuffers( uint32_t firstBinding
+			, renderer::BufferCRefArray const & buffers
+			, renderer::UInt64Array offsets )const override;
+		/**
+		*\copydoc	renderer::CommandBuffer:bindIndexBuffer
+		*/
+		void bindIndexBuffer( renderer::BufferBase const & buffer
+			, uint64_t offset
+			, renderer::IndexType indexType )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer::bindDescriptorSet
 		*/
@@ -230,16 +238,30 @@ namespace gl_renderer
 			return m_commands;
 		}
 
+		void initialiseGeometryBuffers()const;
+
+	private:
+		void doBindVao()const;
+
+	private:
 	private:
 		Device const & m_device;
-		mutable renderer::CommandBufferUsageFlags m_beginFlags{ 0u };
 		mutable CommandArray m_commands;
-		mutable Pipeline const * m_currentPipeline{ nullptr };
-		mutable std::vector< std::pair < renderer::PipelineLayout const *, renderer::PushConstantsBufferBase const * > > m_pushConstantBuffers;
-		mutable ComputePipeline const * m_currentComputePipeline{ nullptr };
-		mutable renderer::IndexType m_indexType{ renderer::IndexType::eUInt32 };
-		mutable uint32_t m_currentSubpass;
-		mutable renderer::RenderPass const * m_currentRenderPass;
-		mutable renderer::FrameBuffer const * m_currentFrameBuffer;
+		struct State
+		{
+			renderer::CommandBufferUsageFlags m_beginFlags{ 0u };
+			Pipeline const * m_currentPipeline{ nullptr };
+			std::vector< std::pair < renderer::PipelineLayout const *, renderer::PushConstantsBufferBase const * > > m_pushConstantBuffers;
+			ComputePipeline const * m_currentComputePipeline{ nullptr };
+			uint32_t m_currentSubpass = 0u;
+			renderer::RenderPass const * m_currentRenderPass{ nullptr };
+			renderer::FrameBuffer const * m_currentFrameBuffer{ nullptr };
+			VboBindings m_boundVbos;
+			IboBinding m_boundIbo;
+			renderer::IndexType m_indexType;
+			GeometryBuffers * m_boundVao{ nullptr };
+			GeometryBuffersRefArray m_vaos;
+		};
+		mutable State m_state;
 	};
 }

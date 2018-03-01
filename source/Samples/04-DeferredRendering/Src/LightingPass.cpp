@@ -1,7 +1,6 @@
 #include "LightingPass.hpp"
 
 #include <Buffer/Buffer.hpp>
-#include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/CommandBuffer.hpp>
@@ -224,9 +223,6 @@ namespace vkapp
 			, renderer::Filter::eNearest ) }
 		, m_vertexBuffer{ doCreateVertexBuffer( m_device, stagingBuffer, *m_updateCommandBuffer ) }
 		, m_vertexLayout{ doCreateVertexLayout( m_device ) }
-		, m_vao{ m_device.createGeometryBuffers( *m_vertexBuffer
-			, 0u
-			, *m_vertexLayout ) }
 		, m_pipelineLayout{ m_device.createPipelineLayout( { *m_gbufferDescriptorLayout, *m_uboDescriptorLayout } ) }
 		, m_pipeline{ m_pipelineLayout->createPipeline( 
 			{
@@ -307,7 +303,7 @@ namespace vkapp
 				, 0
 				, size[0]
 				, size[1] } );
-			commandBuffer.bindGeometryBuffers( *m_vao );
+			commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
 			commandBuffer.bindDescriptorSet( *m_gbufferDescriptorSet
 				, *m_pipelineLayout );
 			commandBuffer.bindDescriptorSet( *m_uboDescriptorSet

@@ -8,7 +8,7 @@
 #define ___GlRenderer_Pipeline_HPP___
 #pragma once
 
-#include "GlRendererPrerequisites.hpp"
+#include "Buffer/GlGeometryBuffers.hpp"
 
 #include <Buffer/PushConstantsBuffer.hpp>
 #include <Pipeline/Pipeline.hpp>
@@ -20,6 +20,8 @@
 #include <Pipeline/Scissor.hpp>
 #include <Pipeline/TessellationState.hpp>
 #include <Pipeline/Viewport.hpp>
+
+#include <unordered_map>
 
 namespace gl_renderer
 {
@@ -39,6 +41,11 @@ namespace gl_renderer
 		Pipeline( Device const & device
 			, PipelineLayout const & layout
 			, renderer::GraphicsPipelineCreateInfo && createInfo );
+		GeometryBuffers * findGeometryBuffers( VboBindings const & vbos
+			, IboBinding const & ibo )const;
+		GeometryBuffersRef createGeometryBuffers( VboBindings vbos
+			, IboBinding const & ibo
+			, renderer::IndexType type )const;
 		/**
 		*\return
 		*	\p true si le Viewport est défini.
@@ -105,6 +112,14 @@ namespace gl_renderer
 		}
 		/**
 		*\return
+		*	Le VertexInputState.
+		*/
+		inline renderer::VertexInputState const & getVertexInputState()const
+		{
+			return m_vertexInputState;
+		}
+		/**
+		*\return
 		*	Le Viewport.
 		*/
 		inline renderer::Viewport const & getViewport()const
@@ -148,6 +163,14 @@ namespace gl_renderer
 		}
 		/**
 		*\return
+		*	Le hash du VertexInputState.
+		*/
+		inline size_t getVertexInputStateHash()const
+		{
+			return m_vertexInputStateHash;
+		}
+		/**
+		*\return
 		*	Le tampon de push constants correspondant aux constantes de spécialisation.
 		*/
 		inline std::vector< renderer::PushConstantsBufferBase > const & getConstantsPcbs()const
@@ -170,6 +193,9 @@ namespace gl_renderer
 		std::optional< renderer::Viewport > m_viewport;
 		std::optional< renderer::Scissor > m_scissor;
 		std::vector< renderer::PushConstantsBufferBase > m_constantsPcbs;
+		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;
+		mutable std::unordered_map< GLuint, BufferDestroyConnection > m_connections;
+		size_t m_vertexInputStateHash;
 	};
 }
 

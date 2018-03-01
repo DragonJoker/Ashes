@@ -120,9 +120,17 @@ namespace vk_renderer
 		void bindPipeline( renderer::ComputePipeline const & pipeline
 			, renderer::PipelineBindPoint bindingPoint )const override;
 		/**
-		*\copydoc	renderer::CommandBuffer:bindGeometryBuffers
+		*\copydoc	renderer::CommandBuffer:bindVertexBuffers
 		*/
-		void bindGeometryBuffers( renderer::GeometryBuffers const & geometryBuffers )const override;
+		void bindVertexBuffers( uint32_t firstBinding
+			, renderer::BufferCRefArray const & buffers
+			, renderer::UInt64Array offsets )const override;
+		/**
+		*\copydoc	renderer::CommandBuffer:bindIndexBuffer
+		*/
+		void bindIndexBuffer( renderer::BufferBase const & buffer
+			, uint64_t offset
+			, renderer::IndexType indexType )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer:bindDescriptorSet
 		*/

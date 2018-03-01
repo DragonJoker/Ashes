@@ -26,10 +26,10 @@ out gl_PerVertex
 void main() 
 {
 	vtx_colour = vec4(
-		float((colour >> 24) & 0xFF) / 255.0,
+		float((colour >>  0) & 0xFF) / 255.0,
+		float((colour >>  8) & 0xFF) / 255.0,
 		float((colour >> 16) & 0xFF) / 255.0,
-		float((colour >> 8) & 0xFF) / 255.0,
-		float(colour & 0xFF) / 255.0);
+		float((colour >> 24) & 0xFF) / 255.0);
 	vtx_texcoord = texcoord;
 #ifdef VULKAN
 	gl_Position = vec4( position * pushConstants.scale + pushConstants.translate, 0.0, 1.0 );

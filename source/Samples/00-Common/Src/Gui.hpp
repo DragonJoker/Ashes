@@ -50,7 +50,6 @@ namespace common
 		renderer::PushConstantsBuffer< PushConstBlock > m_pushConstants;
 		renderer::VertexBufferPtr< ImDrawVert > m_vertexBuffer;
 		renderer::BufferPtr< ImDrawIdx > m_indexBuffer;
-		renderer::GeometryBuffersPtr m_geometryBuffers;
 		renderer::TexturePtr m_target;
 		renderer::TextureViewPtr m_targetView;
 		uint32_t m_vertexCount = 0;

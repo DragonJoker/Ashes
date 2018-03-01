@@ -6,7 +6,6 @@ See LICENSE file in root folder.
 
 #include "Buffer/VkBuffer.hpp"
 #include "Buffer/VkBufferView.hpp"
-#include "Buffer/VkGeometryBuffers.hpp"
 #include "Buffer/VkUniformBuffer.hpp"
 #include "Command/VkCommandPool.hpp"
 #include "Command/VkQueue.hpp"
@@ -172,30 +171,6 @@ namespace vk_renderer
 			, resolveAttaches
 			, depthAttach
 			, preserveAttaches );
-	}
-
-	renderer::GeometryBuffersPtr Device::createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
-		, std::vector< uint64_t > vboOffsets
-		, renderer::VertexInputState const & vertexInputState )const
-	{
-		return std::make_unique< GeometryBuffers >( vbos
-			, vboOffsets
-			, vertexInputState );
-	}
-
-	renderer::GeometryBuffersPtr Device::createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
-		, std::vector< uint64_t > vboOffsets
-		, renderer::VertexInputState const & vertexInputState
-		, renderer::BufferBase const & ibo
-		, uint64_t iboOffset
-		, renderer::IndexType type )const
-	{
-		return std::make_unique< GeometryBuffers >( vbos
-			, vboOffsets
-			, vertexInputState
-			, ibo
-			, iboOffset
-			, type );
 	}
 
 	renderer::PipelineLayoutPtr Device::createPipelineLayout( renderer::DescriptorSetLayoutCRefArray const & setLayouts

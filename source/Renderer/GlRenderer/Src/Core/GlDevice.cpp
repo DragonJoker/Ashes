@@ -324,12 +324,12 @@ namespace gl_renderer
 			m_dummyIndexed.indexBuffer->unlock();
 		}
 
-		m_dummyIndexed.geometryBuffers = this->createGeometryBuffers( renderer::VertexBufferCRefArray{}
-			, {}
-			, {}
-			, m_dummyIndexed.indexBuffer->getBuffer()
-			, 0u
+		auto & indexBuffer = static_cast< Buffer const & >( m_dummyIndexed.indexBuffer->getBuffer() );
+		m_dummyIndexed.geometryBuffers = std::make_unique< GeometryBuffers >( VboBindings{}
+			, BufferObjectBinding{ indexBuffer.getBuffer(), 0u, &indexBuffer }
+			, renderer::VertexInputState{}
 			, renderer::IndexType::eUInt32 );
+		m_dummyIndexed.geometryBuffers->initialise();
 		disable();
 	}
 
@@ -369,30 +369,6 @@ namespace gl_renderer
 			, resolveAttaches
 			, depthAttach
 			, preserveAttaches );
-	}
-
-	renderer::GeometryBuffersPtr Device::createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
-		, std::vector< uint64_t > vboOffsets
-		, renderer::VertexInputState const & vertexInputState )const
-	{
-		return std::make_unique< GeometryBuffers >( vbos
-			, vboOffsets
-			, vertexInputState );
-	}
-
-	renderer::GeometryBuffersPtr Device::createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
-		, std::vector< uint64_t > vboOffsets
-		, renderer::VertexInputState const & vertexInputState
-		, renderer::BufferBase const & ibo
-		, uint64_t iboOffset
-		, renderer::IndexType type )const
-	{
-		return std::make_unique< GeometryBuffers >( vbos
-			, vboOffsets
-			, vertexInputState
-			, ibo
-			, iboOffset
-			, type );
 	}
 
 	renderer::PipelineLayoutPtr Device::createPipelineLayout( renderer::DescriptorSetLayoutCRefArray const & setLayouts

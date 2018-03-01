@@ -5,7 +5,6 @@ See LICENSE file in root folder.
 #include "Command/VkCommandBuffer.hpp"
 
 #include "Buffer/VkBuffer.hpp"
-#include "Buffer/VkGeometryBuffers.hpp"
 #include "Buffer/VkUniformBuffer.hpp"
 #include "Command/VkCommandPool.hpp"
 #include "Core/VkDevice.hpp"
@@ -249,31 +248,32 @@ namespace vk_renderer
 		m_currentComputePipeline = &static_cast< ComputePipeline const & >( pipeline );
 	}
 
-	void CommandBuffer::bindGeometryBuffers( renderer::GeometryBuffers const & geometryBuffers )const
+	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding
+		, renderer::BufferCRefArray const & buffers
+		, renderer::UInt64Array offsets )const
 	{
-		std::vector< std::reference_wrapper< Buffer const > > buffers;
-		std::vector< uint64_t > offsets;
+		std::vector< std::reference_wrapper< Buffer const > > vkbuffers;
 
-		for ( auto & vbo : geometryBuffers.getVbos() )
+		for ( auto & buffer : buffers )
 		{
-			buffers.emplace_back( static_cast< Buffer const & >( vbo.vbo.getBuffer() ) );
-			offsets.emplace_back( vbo.offset );
+			vkbuffers.emplace_back( static_cast< Buffer const & >( buffer.get() ) );
 		}
 
 		m_device.vkCmdBindVertexBuffers( m_commandBuffer
-			, 0u
-			, uint32_t( buffers.size() )
-			, makeVkArray< VkBuffer >( buffers ).data()
+			, firstBinding
+			, uint32_t( vkbuffers.size() )
+			, makeVkArray< VkBuffer >( vkbuffers ).data()
 			, offsets.data() );
+	}
 
-		if ( geometryBuffers.hasIbo() )
-		{
-			auto & ibo = geometryBuffers.getIbo();
-			m_device.vkCmdBindIndexBuffer( m_commandBuffer
-				, static_cast< Buffer const & >( ibo.buffer )
-				, ibo.offset
-				, convert( ibo.type ) );
-		}
+	void CommandBuffer::bindIndexBuffer( renderer::BufferBase const & buffer
+		, uint64_t offset
+		, renderer::IndexType indexType )const
+	{
+		m_device.vkCmdBindIndexBuffer( m_commandBuffer
+			, static_cast< Buffer const & >( buffer )
+			, offset
+			, convert( indexType ) );
 	}
 
 	void CommandBuffer::memoryBarrier( renderer::PipelineStageFlags after
