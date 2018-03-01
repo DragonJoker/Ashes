@@ -157,7 +157,8 @@ namespace gl_renderer
 
 			if ( src != dst )
 			{
-				m_state.m_boundIbo.swap( IboBinding{} );
+				IboBinding empty{};
+				m_state.m_boundIbo.swap( empty );
 				m_state.m_boundVbos.clear();
 			}
 		}
