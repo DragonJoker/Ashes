@@ -3,7 +3,6 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
-#include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/UniformBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
@@ -197,7 +196,6 @@ namespace vkapp
 			m_mainPipelineLayout.reset();
 			m_mainProgram.reset();
 			m_mainVertexBuffer.reset();
-			m_mainGeometryBuffers.reset();
 			m_mainRenderPass.reset();
 
 			m_queryPool.reset();
@@ -209,7 +207,6 @@ namespace vkapp
 			m_offscreenProgram.reset();
 			m_offscreenIndexBuffer.reset();
 			m_offscreenVertexBuffer.reset();
-			m_offscreenGeometryBuffers.reset();
 			m_offscreenRenderPass.reset();
 
 			m_frameBuffer.reset();
@@ -438,13 +435,6 @@ namespace vkapp
 		m_stagingBuffer->uploadBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_offscreenIndexData
 			, *m_offscreenIndexBuffer );
-
-		m_offscreenGeometryBuffers = m_device->createGeometryBuffers( *m_offscreenVertexBuffer
-			, 0u
-			, *m_offscreenVertexLayout
-			, m_offscreenIndexBuffer->getBuffer()
-			, 0u
-			, renderer::IndexType::eUInt16 );
 	}
 
 	void RenderPanel::doCreateOffscreenPipeline()
@@ -559,7 +549,8 @@ namespace vkapp
 				, 0
 				, uint32_t( dimensions.x )
 				, uint32_t( dimensions.y ) } );
-			commandBuffer.bindGeometryBuffers( *m_offscreenGeometryBuffers );
+			commandBuffer.bindVertexBuffer( 0u, m_offscreenVertexBuffer->getBuffer(), 0u );
+			commandBuffer.bindIndexBuffer( m_offscreenIndexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
 			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSet
 				, *m_offscreenPipelineLayout );
 			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
@@ -594,10 +585,6 @@ namespace vkapp
 			, m_mainVertexData
 			, *m_mainVertexBuffer
 			, renderer::PipelineStageFlag::eVertexInput );
-
-		m_mainGeometryBuffers = m_device->createGeometryBuffers( *m_mainVertexBuffer
-			, 0u
-			, *m_mainVertexLayout );
 	}
 
 	void RenderPanel::doCreateMainPipeline()
@@ -656,7 +643,7 @@ namespace vkapp
 					, 0
 					, uint32_t( dimensions.x )
 					, uint32_t( dimensions.y ) } );
-				commandBuffer.bindGeometryBuffers( *m_mainGeometryBuffers );
+				commandBuffer.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
 				commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
 					, *m_mainPipelineLayout );
 				commandBuffer.draw( 4u );

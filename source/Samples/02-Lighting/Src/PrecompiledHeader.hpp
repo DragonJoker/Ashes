@@ -5,7 +5,6 @@
 #include <FileUtils.hpp>
 #include <MainFrame.hpp>
 
-#include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/PushConstantsBuffer.hpp>
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/UniformBuffer.hpp>

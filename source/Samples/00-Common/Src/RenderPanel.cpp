@@ -3,7 +3,6 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
-#include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/UniformBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
@@ -229,7 +228,6 @@ namespace common
 
 			m_program.reset();
 			m_vertexBuffer.reset();
-			m_geometryBuffers.reset();
 			m_vertexLayout.reset();
 			m_renderPass.reset();
 			m_sampler.reset();
@@ -329,10 +327,6 @@ namespace common
 			, m_vertexData
 			, *m_vertexBuffer
 			, renderer::PipelineStageFlag::eVertexInput );
-
-		m_geometryBuffers = m_device->createGeometryBuffers( *m_vertexBuffer
-			, 0u
-			, *m_vertexLayout );
 	}
 
 	void RenderPanel::doCreatePipeline()
@@ -393,7 +387,7 @@ namespace common
 					, 0
 					, uint32_t( dimensions.x )
 					, uint32_t( dimensions.y ) } );
-				commandBuffer.bindGeometryBuffers( *m_geometryBuffers );
+				commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
 				commandBuffer.bindDescriptorSet( *m_descriptorSet
 					, *m_pipelineLayout );
 				commandBuffer.draw( 4u );

@@ -108,7 +108,6 @@ namespace vkapp
 		renderer::VertexBufferPtr< UVWVertexData > m_offscreenVertexBuffer;
 		renderer::BufferPtr< uint16_t > m_offscreenIndexBuffer;
 		renderer::VertexLayoutPtr m_offscreenVertexLayout;
-		renderer::GeometryBuffersPtr m_offscreenGeometryBuffers;
 		renderer::DescriptorSetLayoutPtr m_offscreenDescriptorLayout;
 		renderer::DescriptorSetPoolPtr m_offscreenDescriptorPool;
 		renderer::DescriptorSetPtr m_offscreenDescriptorSet;
@@ -127,7 +126,6 @@ namespace vkapp
 		renderer::PipelinePtr m_mainPipeline;
 		renderer::VertexBufferPtr< UVVertexData > m_mainVertexBuffer;
 		renderer::VertexLayoutPtr m_mainVertexLayout;
-		renderer::GeometryBuffersPtr m_mainGeometryBuffers;
 		renderer::DescriptorSetLayoutPtr m_mainDescriptorLayout;
 		renderer::DescriptorSetPoolPtr m_mainDescriptorPool;
 		renderer::DescriptorSetPtr m_mainDescriptorSet;

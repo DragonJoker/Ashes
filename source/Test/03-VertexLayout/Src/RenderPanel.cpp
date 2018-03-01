@@ -1,7 +1,6 @@
 #include "RenderPanel.hpp"
 #include "Application.hpp"
 
-#include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/CommandBuffer.hpp>
 #include <Core/BackBuffer.hpp>
@@ -88,7 +87,6 @@ namespace vkapp
 		{
 			m_device->waitIdle();
 			m_queryPool.reset();
-			m_geometryBuffers.reset();
 			m_pipeline.reset();
 			m_pipelineLayout.reset();
 			m_program.reset();
@@ -227,9 +225,6 @@ namespace vkapp
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleStrip },
 			renderer::RasterisationState{ 1.0f }
 		} );
-		m_geometryBuffers = m_device->createGeometryBuffers( { *m_vertexBuffer }
-			, { 0ull }
-			, { *m_vertexLayout } );
 	}
 
 	bool RenderPanel::doPrepareFrames()
@@ -262,7 +257,7 @@ namespace vkapp
 				commandBuffer.bindPipeline( *m_pipeline );
 				commandBuffer.setViewport( renderer::Viewport{ uint32_t( size.x ), uint32_t( size.y ), 0, 0 } );
 				commandBuffer.setScissor( renderer::Scissor{ 0, 0, uint32_t( size.x ), uint32_t( size.y ) } );
-				commandBuffer.bindGeometryBuffers( *m_geometryBuffers );
+				commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
 				commandBuffer.draw( 4u );
 				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
 					, *m_queryPool

@@ -101,6 +101,9 @@ namespace gl_renderer
 			return m_target;
 		}
 
+	public:
+		mutable BufferDestroySignal onDestroy;
+
 	private:
 		GLuint m_name{ GL_INVALID_INDEX };
 		GlBufferTarget m_target;

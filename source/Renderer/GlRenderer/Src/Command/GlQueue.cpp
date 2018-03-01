@@ -25,6 +25,8 @@ namespace gl_renderer
 	{
 		for ( auto & commandBuffer : commandBuffers )
 		{
+			static_cast< CommandBuffer const & >( commandBuffer.get() ).initialiseGeometryBuffers();
+
 			for ( auto & command : static_cast< CommandBuffer const & >( commandBuffer.get() ).getCommands() )
 			{
 				command->apply();

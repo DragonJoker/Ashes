@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <Core/Connection.hpp>
 #include <Core/Renderer.hpp>
@@ -223,14 +223,12 @@ namespace common
 	{
 		renderer::VertexBufferPtr< Vertex > vbo;
 		renderer::BufferPtr< Face > ibo;
-		renderer::GeometryBuffersPtr geometryBuffers;
 	};
 
 	struct BillboardNode
 	{
 		renderer::VertexBufferPtr< Vertex > vbo;
 		renderer::VertexBufferPtr< BillboardInstanceData > instance;
-		renderer::GeometryBuffersPtr geometryBuffers;
 	};
 
 	using SubmeshNodePtr = std::shared_ptr< SubmeshNode >;

@@ -9,6 +9,7 @@ See LICENSE file in root folder
 #include <functional>
 #include <set>
 #include <map>
+#include <mutex>
 
 namespace utils
 {
@@ -147,6 +148,7 @@ namespace utils
 			// supprime la connection de m_connections, invalidant ainsi
 			// l'itérateur, donc on ne peut pas utiliser un for_each, ni
 			// un range for loop.
+			std::unique_lock< std::recursive_mutex > lock( m_mutex );
 			auto it = m_connections.begin();
 
 			while ( it != m_connections.end() )
@@ -220,6 +222,7 @@ namespace utils
 		*/
 		void addConnection( my_connection & connection )
 		{
+			std::unique_lock< std::recursive_mutex > lock( m_mutex );
 			m_connections.insert( &connection );
 		}
 		/**
@@ -230,6 +233,7 @@ namespace utils
 		*/
 		void remConnection( my_connection & connection )
 		{
+			std::unique_lock< std::recursive_mutex > lock( m_mutex );
 			assert( m_connections.find( &connection ) != m_connections.end() );
 			m_connections.erase( &connection );
 		}
@@ -239,5 +243,6 @@ namespace utils
 		std::map< uint32_t, Function > m_slots;
 		//! Lq liste des connections à ce signal.
 		std::set< my_connection_ptr > m_connections;
+		std::recursive_mutex m_mutex;
 	};
 }

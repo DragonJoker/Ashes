@@ -3,7 +3,6 @@
 #include "FileUtils.hpp"
 
 #include <Buffer/Buffer.hpp>
-#include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/VertexBuffer.hpp>
 #include <Buffer/StagingBuffer.hpp>
 #include <Core/Device.hpp>
@@ -155,12 +154,6 @@ namespace common
 
 		if ( updateCmdBuffers )
 		{
-			m_geometryBuffers = m_device.createGeometryBuffers( *m_vertexBuffer
-				, 0u
-				, *m_vertexLayout
-				, m_indexBuffer->getBuffer()
-				, 0u
-				, renderer::IndexType::eUInt16 );
 			doUpdateCommandBuffers();
 		}
 	}
@@ -412,7 +405,8 @@ namespace common
 			m_commandBuffer->bindPipeline( *m_pipeline );
 			m_commandBuffer->bindDescriptorSet( *m_descriptorSet
 				, *m_pipelineLayout );
-			m_commandBuffer->bindGeometryBuffers( *m_geometryBuffers );
+			m_commandBuffer->bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
+			m_commandBuffer->bindIndexBuffer( m_indexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
 			m_commandBuffer->setViewport( { uint32_t( ImGui::GetIO().DisplaySize.x )
 				, uint32_t( ImGui::GetIO().DisplaySize.y )
 				, 0

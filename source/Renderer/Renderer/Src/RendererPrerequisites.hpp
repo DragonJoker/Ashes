@@ -129,7 +129,6 @@ namespace renderer
 	class Device;
 	class Fence;
 	class FrameBuffer;
-	class GeometryBuffers;
 	class ImageMemoryBarrier;
 	class ImageSubresourceRange;
 	class InputAssemblyState;
@@ -204,7 +203,6 @@ namespace renderer
 	using DescriptorSetPtr = std::unique_ptr< DescriptorSet >;
 	using DevicePtr = std::unique_ptr< Device >;
 	using FencePtr = std::unique_ptr< Fence >;
-	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
 	using IWindowHandlePtr = std::unique_ptr< IWindowHandle >;
 	using PipelinePtr = std::unique_ptr< Pipeline >;
 	using PipelineLayoutPtr = std::unique_ptr< PipelineLayout >;
@@ -249,6 +247,7 @@ namespace renderer
 	using CommandBufferPtrArray = std::vector< CommandBufferPtr >;
 	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
 
+	using BufferCRef = std::reference_wrapper< BufferBase const >;
 	using CommandBufferCRef = std::reference_wrapper< CommandBuffer const >;
 	using DescriptorSetCRef = std::reference_wrapper< DescriptorSet const >;
 	using DescriptorSetLayoutCRef = std::reference_wrapper< DescriptorSetLayout const >;
@@ -259,6 +258,7 @@ namespace renderer
 	using VertexLayoutCRef = std::reference_wrapper< VertexLayout const >;
 	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;
 
+	using BufferCRefArray = std::vector< BufferCRef >;
 	using CommandBufferCRefArray = std::vector< CommandBufferCRef >;
 	using DescriptorSetCRefArray = std::vector< DescriptorSetCRef >;
 	using DescriptorSetLayoutCRefArray = std::vector< DescriptorSetLayoutCRef >;

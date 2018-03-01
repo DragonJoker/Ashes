@@ -57,21 +57,6 @@ namespace gl_renderer
 			, renderer::RenderSubpassAttachment const * depthAttach
 			, renderer::UInt32Array const & preserveAttaches )const override;
 		/**
-		*\copydoc		renderer::Device::createGeometryBuffers
-		*/
-		renderer::GeometryBuffersPtr createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
-			, std::vector< uint64_t > vboOffsets
-			, renderer::VertexInputState const & vertexInputState )const override;
-		/**
-		*\copydoc		renderer::Device::createGeometryBuffers
-		*/
-		renderer::GeometryBuffersPtr createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
-			, std::vector< uint64_t > vboOffsets
-			, renderer::VertexInputState const & vertexInputState
-			, renderer::BufferBase const & ibo
-			, uint64_t iboOffset
-			, renderer::IndexType type )const override;
-		/**
 		*\copydoc		renderer::Device::createPipelineLayout
 		*/
 		renderer::PipelineLayoutPtr createPipelineLayout( renderer::DescriptorSetLayoutCRefArray const & setLayouts
@@ -238,14 +223,14 @@ namespace gl_renderer
 			return m_currentProgram;
 		}
 
-		inline renderer::GeometryBuffers const & getEmptyIndexedVao()const
+		inline GeometryBuffers & getEmptyIndexedVao()const
 		{
 			return *m_dummyIndexed.geometryBuffers;
 		}
 
-		inline renderer::GeometryBuffers const & getEmptyNonIndexedVao()const
+		inline renderer::BufferBase const & getEmptyIndexedVaoIdx()const
 		{
-			return *m_dummyNonIndexed.geometryBuffers;
+			return m_dummyIndexed.indexBuffer->getBuffer();
 		}
 
 	private:
@@ -262,17 +247,12 @@ namespace gl_renderer
 		ContextPtr m_context;
 		renderer::PhysicalDeviceInfo m_info;
 		// Mimic the behavior in Vulkan, when no IBO nor VBO is bound.
-		struct
+		mutable struct
 		{
 			renderer::BufferPtr< uint32_t > indexBuffer;
 			renderer::VertexBufferPtr< renderer::Vec3 > vertexBuffer;
-			renderer::GeometryBuffersPtr geometryBuffers;
+			GeometryBuffersPtr geometryBuffers;
 		} m_dummyIndexed;
-		struct
-		{
-			renderer::VertexBufferPtr< renderer::Vec3 > vertexBuffer;
-			renderer::GeometryBuffersPtr geometryBuffers;
-		} m_dummyNonIndexed;
 		mutable renderer::Scissor m_scissor{ 0, 0, 0, 0 };
 		mutable renderer::Viewport m_viewport{ 0, 0, 0, 0 };
 		mutable renderer::ColourBlendState m_cbState;

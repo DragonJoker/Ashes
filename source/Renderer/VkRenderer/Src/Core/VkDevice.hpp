@@ -51,21 +51,6 @@ namespace vk_renderer
 			, renderer::RenderSubpassAttachment const * depthAttach
 			, renderer::UInt32Array const & preserveAttaches )const override;
 		/**
-		*\copydoc	renderer::Device::createGeometryBuffers
-		*/
-		renderer::GeometryBuffersPtr createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
-			, std::vector< uint64_t > vboOffsets
-			, renderer::VertexInputState const & vertexInputState )const override;
-		/**
-		*\copydoc	renderer::Device::createGeometryBuffers
-		*/
-		renderer::GeometryBuffersPtr createGeometryBuffers( renderer::VertexBufferCRefArray const & vbos
-			, std::vector< uint64_t > vboOffsets
-			, renderer::VertexInputState const & vertexInputState
-			, renderer::BufferBase const & ibo
-			, uint64_t iboOffset
-			, renderer::IndexType type )const override;
-		/**
 		*\copydoc	renderer::Device::createPipelineLayout
 		*/
 		renderer::PipelineLayoutPtr createPipelineLayout( renderer::DescriptorSetLayoutCRefArray const & setLayouts

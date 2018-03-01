@@ -2,7 +2,6 @@
 
 #include "Prerequisites.hpp"
 
-#include <Buffer/GeometryBuffers.hpp>
 #include <Pipeline/VertexLayout.hpp>
 
 namespace vkapp
@@ -41,7 +40,6 @@ namespace vkapp
 		renderer::SamplerPtr m_sampler;
 		renderer::VertexBufferPtr< common::TexturedVertexData > m_vertexBuffer;
 		renderer::VertexLayoutPtr m_vertexLayout;
-		renderer::GeometryBuffersPtr m_vao;
 		renderer::PipelineLayoutPtr m_pipelineLayout;
 		renderer::PipelinePtr m_pipeline;
 		renderer::FrameBufferPtr m_frameBuffer;
