@@ -8,7 +8,7 @@
 #define ___GlRenderer_Pipeline_HPP___
 #pragma once
 
-#include "GlRendererPrerequisites.hpp"
+#include "Buffer/GlGeometryBuffers.hpp"
 
 #include <Buffer/PushConstantsBuffer.hpp>
 #include <Pipeline/Pipeline.hpp>

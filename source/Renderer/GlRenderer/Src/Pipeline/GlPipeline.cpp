@@ -1,7 +1,6 @@
 #include "Pipeline/GlPipeline.hpp"
 
 #include "Buffer/GlBuffer.hpp"
-#include "Buffer/GlGeometryBuffers.hpp"
 #include "Command/Commands/GlBindPipelineCommand.hpp"
 #include "Core/GlDevice.hpp"
 #include "Core/GlRenderer.hpp"
