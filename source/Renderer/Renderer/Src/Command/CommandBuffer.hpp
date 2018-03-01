@@ -234,6 +234,24 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
+		*	Clear regions within currently bound framebuffer attachments.
+		*\param[in] clearAttachments
+		*	The attachments to clear and the clear values to use.
+		*\param[in] clearRects
+		*	The regions within each selected attachment to clear.
+		*\~french
+		*\brief
+		*	Vide une région des attaches du tampon d'images actuellement attaché.
+		*\param[in] clearAttachments
+		*	Les attaches à vider et les valeurs de nettoyage à utiliser.
+		*\param[in] clearRects
+		*	Les régions à nettoyer pour chaque attache sélectionnée.
+		*/
+		virtual void clearAttachments( ClearAttachmentArray const & clearAttachments
+			, ClearRectArray const & clearRects ) = 0;
+		/**
+		*\~english
+		*\brief
 		*	Defines a memory dependency between commands that were submitted before it, and those submitted after it.
 		*\param[in] after
 		*	Specifies the pipeline stages that must be ended before the barrier.

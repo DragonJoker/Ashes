@@ -28,6 +28,7 @@ See LICENSE file in root folder.
 #include "Commands/GlBindPipelineCommand.hpp"
 #include "Commands/GlBlitImageCommand.hpp"
 #include "Commands/GlBufferMemoryBarrierCommand.hpp"
+#include "Commands/GlClearAttachmentsCommand.hpp"
 #include "Commands/GlClearColourCommand.hpp"
 #include "Commands/GlClearDepthStencilCommand.hpp"
 #include "Commands/GlCopyBufferCommand.hpp"
@@ -145,6 +146,12 @@ namespace gl_renderer
 		, renderer::DepthStencilClearValue const & value )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearDepthStencilCommand >( image, value ) );
+	}
+
+	void CommandBuffer::clearAttachments( renderer::ClearAttachmentArray const & clearAttachments
+		, renderer::ClearRectArray const & clearRects )
+	{
+		m_commands.emplace_back( std::make_unique< ClearAttachmentsCommand >( m_device, clearAttachments, clearRects ) );
 	}
 
 	void CommandBuffer::bindPipeline( renderer::Pipeline const & pipeline

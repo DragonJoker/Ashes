@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -25,6 +25,7 @@ namespace renderer
 	*/
 	struct ClearValue
 	{
+		ClearValue();
 		ClearValue( RgbaColour const & colour );
 		ClearValue( DepthStencilClearValue const & depthStencil );
 

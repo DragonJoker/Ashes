@@ -107,6 +107,8 @@
 #include "Pipeline/VkVertexInputBindingDescription.hpp"
 #include "Pipeline/VkVertexInputState.hpp"
 #include "Pipeline/VkViewport.hpp"
+#include "RenderPass/VkClearAttachment.hpp"
+#include "RenderPass/VkClearRect.hpp"
 #include "RenderPass/VkClearValue.hpp"
 #include "Sync/VkBufferMemoryBarrier.hpp"
 #include "Sync/VkImageMemoryBarrier.hpp"
