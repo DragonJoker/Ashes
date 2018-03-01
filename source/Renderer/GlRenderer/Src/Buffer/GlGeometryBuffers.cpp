@@ -8,6 +8,8 @@ See LICENSE file in root folder.
 
 #include <Buffer/VertexBuffer.hpp>
 
+#include <algorithm>
+
 namespace gl_renderer
 {
 	namespace
