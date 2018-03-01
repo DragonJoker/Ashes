@@ -3,7 +3,6 @@
 #include "Prerequisites.hpp"
 
 #include <Buffer/Buffer.hpp>
-#include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/PushConstantsBuffer.hpp>
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/UniformBuffer.hpp>

@@ -18,6 +18,15 @@ namespace renderer
 	{
 	}
 
+	void CommandBuffer::bindVertexBuffer( uint32_t binding
+		, BufferBase const & buffer
+		, size_t offset )const
+	{
+		bindVertexBuffers( binding
+			, BufferCRefArray{ buffer }
+			, SizeTArray{ offset } );
+	}
+
 	void CommandBuffer::copyToImage( BufferImageCopy const & copyInfo
 		, BufferBase const & src
 		, Texture const & dst )const

@@ -3,7 +3,6 @@
 #include "RenderTarget.hpp"
 
 #include <Buffer/Buffer.hpp>
-#include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/CommandBuffer.hpp>

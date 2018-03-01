@@ -3,7 +3,6 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
-#include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/UniformBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
@@ -220,7 +219,6 @@ namespace vkapp
 			m_mainProgram.reset();
 			m_mainVertexBuffer.reset();
 			m_mainVertexBuffer.reset();
-			m_mainGeometryBuffers.reset();
 			m_mainRenderPass.reset();
 
 			m_queryPool.reset();
@@ -234,7 +232,6 @@ namespace vkapp
 			m_offscreenMatrixLayout.reset();
 			m_offscreenIndexBuffer.reset();
 			m_offscreenVertexBuffer.reset();
-			m_offscreenGeometryBuffers.reset();
 			m_offscreenRenderPass.reset();
 
 			m_frameBuffer.reset();
@@ -491,13 +488,6 @@ namespace vkapp
 			, matrices
 			, *m_offscreenMatrixBuffer
 			, renderer::PipelineStageFlag::eVertexInput );
-
-		m_offscreenGeometryBuffers = m_device->createGeometryBuffers( { *m_offscreenVertexBuffer, *m_offscreenMatrixBuffer }
-			, { 0u, 0u }
-			, { *m_offscreenVertexLayout, *m_offscreenMatrixLayout }
-			, m_offscreenIndexBuffer->getBuffer()
-			, 0u
-			, renderer::IndexType::eUInt16 );
 	}
 
 	void RenderPanel::doCreateOffscreenPipeline()
@@ -612,7 +602,10 @@ namespace vkapp
 				, 0
 				, uint32_t( dimensions.x )
 				, uint32_t( dimensions.y ) } );
-			commandBuffer.bindGeometryBuffers( *m_offscreenGeometryBuffers );
+			commandBuffer.bindVertexBuffers( 0u
+				, { m_offscreenVertexBuffer->getBuffer(), m_offscreenMatrixBuffer->getBuffer() }
+				, { 0u, 0u } );
+			commandBuffer.bindIndexBuffer( m_offscreenIndexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
 			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSet
 				, *m_offscreenPipelineLayout );
 			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() )
@@ -648,10 +641,6 @@ namespace vkapp
 			, m_mainVertexData
 			, *m_mainVertexBuffer
 			, renderer::PipelineStageFlag::eVertexInput );
-
-		m_mainGeometryBuffers = m_device->createGeometryBuffers( *m_mainVertexBuffer
-			, 0u
-			, *m_mainVertexLayout );
 	}
 
 	void RenderPanel::doCreateMainPipeline()
@@ -710,7 +699,7 @@ namespace vkapp
 					, 0
 					, uint32_t( dimensions.x )
 					, uint32_t( dimensions.y ) } );
-				commandBuffer.bindGeometryBuffers( *m_mainGeometryBuffers );
+				commandBuffer.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
 				commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
 					, *m_mainPipelineLayout );
 				commandBuffer.draw( 4u );

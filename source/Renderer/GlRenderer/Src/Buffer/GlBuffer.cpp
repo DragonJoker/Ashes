@@ -24,6 +24,7 @@ namespace gl_renderer
 
 	Buffer::~Buffer()
 	{
+		onDestroy( m_name );
 		glLogCall( gl::DeleteBuffers, 1, &m_name );
 	}
 

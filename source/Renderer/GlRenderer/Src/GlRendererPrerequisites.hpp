@@ -85,11 +85,28 @@ namespace gl_renderer
 
 	using ContextPtr = std::unique_ptr< Context >;
 	using CommandPtr = std::unique_ptr< CommandBase >;
+	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
 	using TextureViewPtr = std::unique_ptr< TextureView >;
+
+	using GeometryBuffersRef = std::reference_wrapper< GeometryBuffers >;
 
 	using RenderSubpassCRef = std::reference_wrapper< RenderSubpass const >;
 
 	using RenderSubpassCRefArray = std::vector< RenderSubpassCRef >;
+	using GeometryBuffersRefArray = std::vector< GeometryBuffersRef >;
 
 	using CommandArray = std::vector< CommandPtr >;
+
+	struct BufferObjectBinding
+	{
+		GLuint bo;
+		size_t offset;
+		Buffer const * buffer;
+	};
+	using VboBindings = std::map< uint32_t, BufferObjectBinding >;
+	using IboBinding = std::optional< BufferObjectBinding >;
+
+	using BufferDestroyFunc = std::function< void( GLuint ) >;
+	using BufferDestroySignal = renderer::Signal< BufferDestroyFunc >;
+	using BufferDestroyConnection = renderer::SignalConnection< BufferDestroySignal >;
 }

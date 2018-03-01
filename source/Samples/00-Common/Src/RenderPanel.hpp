@@ -92,7 +92,6 @@ namespace common
 		renderer::ShaderProgramPtr m_program;
 		renderer::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
 		renderer::VertexLayoutPtr m_vertexLayout;
-		renderer::GeometryBuffersPtr m_geometryBuffers;
 		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
 		renderer::DescriptorSetPoolPtr m_descriptorPool;
 		renderer::DescriptorSetPtr m_descriptorSet;

@@ -1,7 +1,6 @@
 #include "RenderPanel.hpp"
 #include "Application.hpp"
 
-#include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/CommandBuffer.hpp>
 #include <Core/BackBuffer.hpp>
@@ -115,7 +114,6 @@ namespace vkapp
 			m_vertexLayout.reset();
 			m_program.reset();
 			m_pipelineLayout.reset();
-			m_geometryBuffers.reset();
 			m_vertexBuffer.reset();
 			m_commandBuffers.clear();
 			m_frameBuffers.clear();
@@ -192,10 +190,6 @@ namespace vkapp
 			, uint32_t( offsetof( VertexData, position ) ) );
 		m_vertexLayout->createAttribute< renderer::Vec4 >( 1u
 			, uint32_t( offsetof( VertexData, colour ) ) );
-
-		m_geometryBuffers = m_device->createGeometryBuffers( *m_vertexBuffer
-			, 0u
-			, *m_vertexLayout );
 	}
 
 	void RenderPanel::doCreateStagingBuffer()
@@ -268,7 +262,7 @@ namespace vkapp
 					, 0
 					, uint32_t( dimensions.x )
 					, uint32_t( dimensions.y ) } );
-				commandBuffer.bindGeometryBuffers( *m_geometryBuffers );
+				commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
 				commandBuffer.draw( 4u );
 				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
 					, *m_queryPool

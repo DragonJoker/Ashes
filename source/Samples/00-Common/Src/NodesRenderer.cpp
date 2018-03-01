@@ -5,7 +5,6 @@
 #include "Scene.hpp"
 
 #include <Buffer/Buffer.hpp>
-#include <Buffer/GeometryBuffers.hpp>
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/CommandBuffer.hpp>
@@ -340,7 +339,8 @@ namespace common
 						, 0
 						, size[0]
 						, size[1] } );
-					commandBuffer.bindGeometryBuffers( *node.instance->geometryBuffers );
+					m_commandBuffer->bindVertexBuffer( 0u, node.instance->vbo->getBuffer(), 0u );
+					m_commandBuffer->bindIndexBuffer( node.instance->ibo->getBuffer(), 0u, renderer::IndexType::eUInt32 );
 					commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
 						, *node.pipelineLayout );
 					commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
@@ -348,7 +348,7 @@ namespace common
 					commandBuffer.drawIndexed( node.instance->ibo->getCount() * 3u );
 				}
 
-				for ( auto & node : m_billboardRenderNodes )
+				for ( BillboardMaterialNode & node : m_billboardRenderNodes )
 				{
 					commandBuffer.bindPipeline( *node.pipeline );
 					commandBuffer.setViewport( { size[0]
@@ -359,7 +359,9 @@ namespace common
 						, 0
 						, size[0]
 						, size[1] } );
-					commandBuffer.bindGeometryBuffers( *node.instance->geometryBuffers );
+					m_commandBuffer->bindVertexBuffers( 0u
+						, { node.instance->vbo->getBuffer(), node.instance->instance->getBuffer() }
+						, { 0u, 0u } );
 					commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
 						, *node.pipelineLayout );
 					commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
@@ -432,9 +434,6 @@ namespace common
 					, billboard.list
 					, *billboardNode->instance
 					, renderer::PipelineStageFlag::eVertexInput );
-				billboardNode->geometryBuffers = m_device.createGeometryBuffers( { *billboardNode->vbo, *billboardNode->instance }
-					, { 0u, 0u }
-					, { *m_billboardVertexLayout, *m_billboardInstanceLayout } );
 
 				auto & material = billboard.material;
 				BillboardMaterialNode materialNode{ billboardNode };
@@ -574,12 +573,6 @@ namespace common
 				stagingBuffer.uploadBufferData( *m_updateCommandBuffer
 					, submesh.ibo.data
 					, *submeshNode->ibo );
-				submeshNode->geometryBuffers = m_device.createGeometryBuffers( *submeshNode->vbo
-					, 0u
-					, *m_objectVertexLayout
-					, submeshNode->ibo->getBuffer()
-					, 0u
-					, renderer::IndexType::eUInt32 );
 
 				for ( auto & material : compatibleMaterials )
 				{

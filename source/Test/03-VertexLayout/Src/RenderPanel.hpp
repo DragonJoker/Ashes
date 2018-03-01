@@ -62,7 +62,6 @@ namespace vkapp
 		renderer::PipelineLayoutPtr m_pipelineLayout;
 		renderer::ShaderProgramPtr m_program;
 		renderer::PipelinePtr m_pipeline;
-		renderer::GeometryBuffersPtr m_geometryBuffers;
 		renderer::VertexBufferPtr< VertexData > m_vertexBuffer;
 		renderer::VertexLayoutPtr m_vertexLayout;
 		renderer::QueryPoolPtr m_queryPool;

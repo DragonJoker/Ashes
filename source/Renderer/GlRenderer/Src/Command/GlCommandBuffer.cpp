@@ -67,7 +67,8 @@ namespace gl_renderer
 	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags )const
 	{
 		m_commands.clear();
-		m_beginFlags = flags;
+		m_state = State{};
+		m_state.m_beginFlags = flags;
 		return true;
 	}
 
@@ -75,13 +76,14 @@ namespace gl_renderer
 		, renderer::CommandBufferInheritanceInfo const & inheritanceInfo )const
 	{
 		m_commands.clear();
-		m_beginFlags = flags;
+		m_state = State{};
+		m_state.m_beginFlags = flags;
 		return true;
 	}
 
 	bool CommandBuffer::end()const
 	{
-		m_pushConstantBuffers.clear();
+		m_state.m_pushConstantBuffers.clear();
 		return true;
 	}
 
@@ -96,32 +98,36 @@ namespace gl_renderer
 		, renderer::ClearValueArray const & clearValues
 		, renderer::SubpassContents contents )const
 	{
-		m_currentRenderPass = &renderPass;
-		m_currentFrameBuffer = &frameBuffer;
-		m_currentSubpass = 0u;
+		m_state.m_currentRenderPass = &renderPass;
+		m_state.m_currentFrameBuffer = &frameBuffer;
+		m_state.m_currentSubpass = 0u;
 		m_commands.emplace_back( std::make_unique< BeginRenderPassCommand >( renderPass
 			, frameBuffer
 			, clearValues
 			, contents
-			, m_currentSubpass++ ) );
+			, m_state.m_currentSubpass++ ) );
 	}
 
 	void CommandBuffer::nextSubpass( renderer::SubpassContents contents )const
 	{
-		m_commands.emplace_back( std::make_unique< NextSubpassCommand >( *m_currentRenderPass
-			, *m_currentFrameBuffer
-			, m_currentSubpass++ ) );
+		m_commands.emplace_back( std::make_unique< NextSubpassCommand >( *m_state.m_currentRenderPass
+			, *m_state.m_currentFrameBuffer
+			, m_state.m_currentSubpass++ ) );
+		m_state.m_boundVbos.clear();
 	}
 
 	void CommandBuffer::endRenderPass()const
 	{
 		m_commands.emplace_back( std::make_unique< EndRenderPassCommand >() );
+		m_state.m_boundVbos.clear();
 	}
 
 	void CommandBuffer::executeCommands( renderer::CommandBufferCRefArray const & commands )const
 	{
 		for ( auto & commandBuffer : commands )
 		{
+			static_cast< CommandBuffer const & >( commandBuffer.get() ).initialiseGeometryBuffers();
+
 			for ( auto & command : static_cast< CommandBuffer const & >( commandBuffer.get() ).getCommands() )
 			{
 				m_commands.emplace_back( command->clone() );
@@ -144,53 +150,82 @@ namespace gl_renderer
 	void CommandBuffer::bindPipeline( renderer::Pipeline const & pipeline
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
-		m_currentPipeline = &static_cast< Pipeline const & >( pipeline );
+		if ( m_state.m_currentPipeline )
+		{
+			auto src = m_state.m_currentPipeline->getVertexInputStateHash();
+			auto dst = static_cast< Pipeline const & >( pipeline ).getVertexInputStateHash();
+
+			if ( src != dst )
+			{
+				m_state.m_boundIbo.swap( IboBinding{} );
+				m_state.m_boundVbos.clear();
+			}
+		}
+
+		m_state.m_currentPipeline = &static_cast< Pipeline const & >( pipeline );
 		m_commands.emplace_back( std::make_unique< BindPipelineCommand >( m_device, pipeline, bindingPoint ) );
 
-		for ( auto & pcb : m_pushConstantBuffers )
+		for ( auto & pcb : m_state.m_pushConstantBuffers )
 		{
 			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( *pcb.first
 				, *pcb.second ) );
 		}
 
-		for ( auto & pcb : m_currentPipeline->getConstantsPcbs() )
+		for ( auto & pcb : m_state.m_currentPipeline->getConstantsPcbs() )
 		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_currentPipeline->getLayout()
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_state.m_currentPipeline->getLayout()
 				, pcb ) );
 		}
 
-		m_pushConstantBuffers.clear();
+		m_state.m_pushConstantBuffers.clear();
 	}
 
 	void CommandBuffer::bindPipeline( renderer::ComputePipeline const & pipeline
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
-		m_currentComputePipeline = &static_cast< ComputePipeline const & >( pipeline );
+		m_state.m_currentComputePipeline = &static_cast< ComputePipeline const & >( pipeline );
 		m_commands.emplace_back( std::make_unique< BindComputePipelineCommand >( m_device, pipeline, bindingPoint ) );
 
-		for ( auto & pcb : m_pushConstantBuffers )
+		for ( auto & pcb : m_state.m_pushConstantBuffers )
 		{
 			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( *pcb.first
 				, *pcb.second ) );
 		}
 
-		for ( auto & pcb : m_currentComputePipeline->getConstantsPcbs() )
+		for ( auto & pcb : m_state.m_currentComputePipeline->getConstantsPcbs() )
 		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_currentComputePipeline->getLayout()
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_state.m_currentComputePipeline->getLayout()
 				, pcb ) );
 		}
 
-		m_pushConstantBuffers.clear();
+		m_state.m_pushConstantBuffers.clear();
 	}
 
-	void CommandBuffer::bindGeometryBuffers( renderer::GeometryBuffers const & geometryBuffers )const
+	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding
+		, renderer::BufferCRefArray const & buffers
+		, renderer::SizeTArray offsets )const
 	{
-		m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( geometryBuffers ) );
+		assert( buffers.size() == offsets.size() );
+		uint32_t binding = firstBinding;
 
-		if ( geometryBuffers.hasIbo() )
+		for ( auto i = 0u; i < buffers.size(); ++i )
 		{
-			m_indexType = geometryBuffers.getIbo().type;
+			auto & glBuffer = static_cast< Buffer const & >( buffers[i].get() );
+			m_state.m_boundVbos[binding] = { glBuffer.getBuffer(), offsets[i], &glBuffer };
+			++binding;
 		}
+
+		m_state.m_boundVao = nullptr;
+	}
+
+	void CommandBuffer::bindIndexBuffer( renderer::BufferBase const & buffer
+		, size_t offset
+		, renderer::IndexType indexType )const
+	{
+		auto & glBuffer = static_cast< Buffer const & >( buffer );
+		m_state.m_boundIbo = BufferObjectBinding{ glBuffer.getBuffer(), offset, &glBuffer };
+		m_state.m_indexType = indexType;
+		m_state.m_boundVao = nullptr;
 	}
 
 	void CommandBuffer::memoryBarrier( renderer::PipelineStageFlags after
@@ -240,24 +275,31 @@ namespace gl_renderer
 		, uint32_t firstVertex
 		, uint32_t firstInstance )const
 	{
-		if ( !m_currentPipeline->hasVertexLayout() )
+		if ( !m_state.m_currentPipeline->hasVertexLayout() )
 		{
-			bindGeometryBuffers( m_device.getEmptyIndexedVao() );
+			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, renderer::IndexType::eUInt32 );
+			m_state.m_boundVao = &m_device.getEmptyIndexedVao();
+			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( *m_state.m_boundVao ) );
 			m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( vtxCount
 				, instCount
 				, 0u
 				, firstVertex
 				, firstInstance
-				, m_currentPipeline->getInputAssemblyState().getTopology()
-				, m_indexType ) );
+				, m_state.m_currentPipeline->getInputAssemblyState().getTopology()
+				, m_state.m_indexType ) );
 		}
 		else
 		{
+			if ( !m_state.m_boundVao )
+			{
+				doBindVao();
+			}
+
 			m_commands.emplace_back( std::make_unique< DrawCommand >( vtxCount
 				, instCount
 				, firstVertex
 				, firstInstance
-				, m_currentPipeline->getInputAssemblyState().getTopology() ) );
+				, m_state.m_currentPipeline->getInputAssemblyState().getTopology() ) );
 		}
 	}
 
@@ -267,9 +309,15 @@ namespace gl_renderer
 		, uint32_t vertexOffset
 		, uint32_t firstInstance )const
 	{
-		if ( !m_currentPipeline->hasVertexLayout() )
+		if ( !m_state.m_currentPipeline->hasVertexLayout() )
 		{
-			bindGeometryBuffers( m_device.getEmptyIndexedVao() );
+			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, renderer::IndexType::eUInt32 );
+			m_state.m_boundVao = &m_device.getEmptyIndexedVao();
+			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( *m_state.m_boundVao ) );
+		}
+		else if ( !m_state.m_boundVao )
+		{
+			doBindVao();
 		}
 
 		m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( indexCount
@@ -277,8 +325,8 @@ namespace gl_renderer
 			, firstIndex
 			, vertexOffset
 			, firstInstance
-			, m_currentPipeline->getInputAssemblyState().getTopology()
-			, m_indexType ) );
+			, m_state.m_currentPipeline->getInputAssemblyState().getTopology()
+			, m_state.m_indexType ) );
 	}
 
 	void CommandBuffer::drawIndirect( renderer::BufferBase const & buffer
@@ -286,11 +334,16 @@ namespace gl_renderer
 		, uint32_t drawCount
 		, uint32_t stride )const
 	{
+		if ( !m_state.m_boundVao )
+		{
+			doBindVao();
+		}
+
 		m_commands.emplace_back( std::make_unique< DrawIndirectCommand >( buffer
 			, offset
 			, drawCount
 			, stride
-			, m_currentPipeline->getInputAssemblyState().getTopology() ) );
+			, m_state.m_currentPipeline->getInputAssemblyState().getTopology() ) );
 	}
 
 	void CommandBuffer::drawIndexedIndirect( renderer::BufferBase const & buffer
@@ -298,12 +351,23 @@ namespace gl_renderer
 		, uint32_t drawCount
 		, uint32_t stride )const
 	{
+		if ( !m_state.m_currentPipeline->hasVertexLayout() )
+		{
+			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, renderer::IndexType::eUInt32 );
+			m_state.m_boundVao = &m_device.getEmptyIndexedVao();
+			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( *m_state.m_boundVao ) );
+		}
+		else if ( !m_state.m_boundVao )
+		{
+			doBindVao();
+		}
+
 		m_commands.emplace_back( std::make_unique< DrawIndexedIndirectCommand >( buffer
 			, offset
 			, drawCount
 			, stride
-			, m_currentPipeline->getInputAssemblyState().getTopology()
-			, m_indexType ) );
+			, m_state.m_currentPipeline->getInputAssemblyState().getTopology()
+			, m_state.m_indexType ) );
 	}
 
 	void CommandBuffer::copyToImage( renderer::BufferImageCopyArray const & copyInfo
@@ -390,14 +454,14 @@ namespace gl_renderer
 	void CommandBuffer::pushConstants( renderer::PipelineLayout const & layout
 		, renderer::PushConstantsBufferBase const & pcb )const
 	{
-		if ( m_currentPipeline || m_currentComputePipeline )
+		if ( m_state.m_currentPipeline || m_state.m_currentComputePipeline )
 		{
 			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( layout
 				, pcb ) );
 		}
 		else
 		{
-			m_pushConstantBuffers.emplace_back( &layout, &pcb );
+			m_state.m_pushConstantBuffers.emplace_back( &layout, &pcb );
 		}
 	}
 
@@ -420,5 +484,28 @@ namespace gl_renderer
 	void CommandBuffer::setLineWidth( float width )const
 	{
 		m_commands.emplace_back( std::make_unique< SetLineWidthCommand >( width ) );
+	}
+
+	void CommandBuffer::initialiseGeometryBuffers()const
+	{
+		for ( auto & vao : m_state.m_vaos )
+		{
+			vao.get().initialise();
+		}
+
+		m_state.m_vaos.clear();
+	}
+
+	void CommandBuffer::doBindVao()const
+	{
+		m_state.m_boundVao = m_state.m_currentPipeline->findGeometryBuffers( m_state.m_boundVbos, m_state.m_boundIbo );
+
+		if ( !m_state.m_boundVao )
+		{
+			m_state.m_boundVao = &m_state.m_currentPipeline->createGeometryBuffers( m_state.m_boundVbos, m_state.m_boundIbo, m_state.m_indexType ).get();
+			m_state.m_vaos.emplace_back( *m_state.m_boundVao );
+		}
+
+		m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( *m_state.m_boundVao ) );
 	}
 }
