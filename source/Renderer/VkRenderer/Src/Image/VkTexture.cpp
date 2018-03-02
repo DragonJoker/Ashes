@@ -104,7 +104,7 @@ namespace vk_renderer
 				, { format }
 				, VK_IMAGE_TILING_OPTIMAL
 				, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-				, m_device.getPhysicalDevice() );
+				, static_cast< PhysicalDevice const & >( m_device.getPhysicalDevice() ) );
 		}
 		else
 		{
@@ -133,7 +133,7 @@ namespace vk_renderer
 				, { format }
 				, VK_IMAGE_TILING_OPTIMAL
 				, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-				, m_device.getPhysicalDevice() );
+				, static_cast< PhysicalDevice const & >( m_device.getPhysicalDevice() ) );
 		}
 		else
 		{
@@ -352,7 +352,7 @@ namespace vk_renderer
 				, { m_format }
 				, convert( tiling )
 				, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-				, m_device.getPhysicalDevice() );
+				, static_cast< PhysicalDevice const & >( m_device.getPhysicalDevice() ) );
 		}
 
 		assert( m_owner );

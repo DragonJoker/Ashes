@@ -46,19 +46,6 @@ namespace vk_renderer
 		/**
 		*\~french
 		*\brief
-		*	Récupère le GPU à l'index donné.
-		*\param[in] gpuIndex
-		*	L'index du GPU physique.
-		*\~english
-		*\brief
-		*	Retrieves the GPU at given index.
-		*\param[in] gpuIndex
-		*	The physical GPU index.
-		*/
-		PhysicalDevice & getPhysicalDevice( uint32_t gpuIndex )const;
-		/**
-		*\~french
-		*\brief
 		*	Ajoute les couches de l'instance aux noms déjà présents dans la liste donnée.
 		*\param[in,out] names
 		*	La liste à compléter.
@@ -146,6 +133,5 @@ namespace vk_renderer
 		std::vector< LayerProperties > m_instanceLayersProperties;
 		std::vector< char const * > m_instanceExtensionNames;
 		std::vector< char const * > m_instanceLayerNames;
-		std::vector< PhysicalDevicePtr > m_gpus;
 	};
 }

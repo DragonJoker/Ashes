@@ -160,17 +160,17 @@ namespace vkapp
 		gli::texture2d tex2D;
 		renderer::PixelFormat format;
 
-		if ( m_device->getPhysicalDeviceInfo().textureCompressionASTC_LDR )
+		if ( m_device->getFeatures().textureCompressionASTC_LDR )
 		{
 			format = renderer::PixelFormat::eASTC_8x8_RGBA;
 			tex2D = gli::texture2d( gli::load( assetsFolder / "stonefloor01_color_astc_8x8_unorm.ktx" ) );
 		}
-		else if ( m_device->getPhysicalDeviceInfo().textureCompressionBC )
+		else if ( m_device->getFeatures().textureCompressionBC )
 		{
 			format = renderer::PixelFormat::eBC3_RGBA;
 			tex2D = gli::texture2d( gli::load( assetsFolder / "stonefloor01_color_bc3_unorm.ktx" ) );
 		}
-		else if ( m_device->getPhysicalDeviceInfo().textureCompressionETC2 )
+		else if ( m_device->getFeatures().textureCompressionETC2 )
 		{
 			format = renderer::PixelFormat::eETC2_R8G8B8;
 			tex2D = gli::texture2d( gli::load( assetsFolder / "stonefloor01_color_etc2_unorm.ktx" ) );

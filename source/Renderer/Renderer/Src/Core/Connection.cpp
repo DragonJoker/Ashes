@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -12,6 +12,7 @@ namespace renderer
 		, uint32_t deviceIndex
 		, WindowHandle && handle )
 		: m_handle{ std::move( handle ) }
+		, m_gpu{ renderer.getPhysicalDevice( deviceIndex ) }
 	{
 	}
 }

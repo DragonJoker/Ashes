@@ -424,7 +424,7 @@ namespace common
 		ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver );
 		ImGui::Begin( "RendererLib Sample", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove );
 		ImGui::TextUnformatted( getName( m_appDesc, m_device->getRenderer().getName() ).c_str() );
-		ImGui::TextUnformatted( m_device->getPhysicalDeviceInfo().name.c_str() );
+		ImGui::TextUnformatted( m_device->getProperties().deviceName.c_str() );
 
 		auto count = std::min( m_frameCount, m_framesTimes.size() );
 
