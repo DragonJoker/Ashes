@@ -1,4 +1,4 @@
-﻿#include "Core/VkRenderer.hpp"
+#include "Core/VkRenderer.hpp"
 
 #include "Core/VkConnection.hpp"
 #include "Core/VkDevice.hpp"
@@ -184,16 +184,6 @@ namespace vk_renderer
 		return std::make_unique< Connection >( *this
 			, deviceIndex
 			, std::move( handle ) );
-	}
-
-	PhysicalDevice & Renderer::getPhysicalDevice( uint32_t gpuIndex )const
-	{
-		if ( gpuIndex >= m_gpus.size() )
-		{
-			throw std::logic_error( "Invalid GPU index" );
-		}
-
-		return *m_gpus[gpuIndex];
 	}
 
 	void Renderer::completeLayerNames( std::vector< char const * > & names )const
@@ -406,7 +396,6 @@ namespace vk_renderer
 		for ( auto gpu : gpus )
 		{
 			m_gpus.push_back( std::make_unique< PhysicalDevice >( *this, gpu ) );
-			m_gpuInfos.push_back( m_gpus.back()->getInfo() );
 		}
 	}
 

@@ -29,6 +29,7 @@ See LICENSE file in root folder.
 #include "Enum/DescriptorType.hpp"
 #include "Enum/FenceCreateFlag.hpp"
 #include "Enum/Filter.hpp"
+#include "Enum/FormatFeatureFlag.hpp"
 #include "Enum/FrontFace.hpp"
 #include "Enum/ImageAspectFlag.hpp"
 #include "Enum/ImageLayout.hpp"
@@ -36,10 +37,12 @@ See LICENSE file in root folder.
 #include "Enum/ImageUsageFlag.hpp"
 #include "Enum/IndexType.hpp"
 #include "Enum/LogicOp.hpp"
+#include "Enum/MemoryHeapFlag.hpp"
 #include "Enum/MemoryMapFlag.hpp"
 #include "Enum/MemoryPropertyFlag.hpp"
 #include "Enum/MipmapMode.hpp"
 #include "Enum/MultisampleStateFlag.hpp"
+#include "Enum/PhysicalDeviceType.hpp"
 #include "Enum/PipelineBindPoint.hpp"
 #include "Enum/PipelineStageFlag.hpp"
 #include "Enum/PolygonMode.hpp"
@@ -48,6 +51,7 @@ See LICENSE file in root folder.
 #include "Enum/QueryPipelineStatisticFlag.hpp"
 #include "Enum/QueryResultFlag.hpp"
 #include "Enum/QueryType.hpp"
+#include "Enum/QueueFlag.hpp"
 #include "Enum/RasterisationStateFlag.hpp"
 #include "Enum/SampleCountFlag.hpp"
 #include "Enum/ShaderStageFlag.hpp"
@@ -97,12 +101,22 @@ namespace renderer
 	struct ClearRect;
 	struct ClearValue;
 	struct CommandBufferInheritanceInfo;
+	struct Extent3D;
+	struct FormatProperties;
 	struct GraphicsPipelineCreateInfo;
 	struct ImageCopy;
 	struct ImageBlit;
-	struct PhysicalDeviceInfo;
+	struct ImageFormatProperties;
+	struct MemoryHeap;
+	struct MemoryType;
+	struct PhysicalDeviceFeatures;
+	struct PhysicalDeviceLimits;
+	struct PhysicalDeviceMemoryProperties;
+	struct PhysicalDeviceProperties;
+	struct PhysicalDeviceSparseProperties;
 	struct PushConstant;
 	struct PushConstantRange;
+	struct QueueFamilyProperties;
 	struct RenderPassAttachment;
 	struct RenderSubpassAttachment;
 	struct RenderSubpassState;
@@ -136,6 +150,7 @@ namespace renderer
 	class InputAssemblyState;
 	class IWindowHandle;
 	class MultisampleState;
+	class PhysicalDevice;
 	class Pipeline;
 	class PipelineLayout;
 	class PushConstantsBufferBase;
@@ -206,6 +221,7 @@ namespace renderer
 	using DevicePtr = std::unique_ptr< Device >;
 	using FencePtr = std::unique_ptr< Fence >;
 	using IWindowHandlePtr = std::unique_ptr< IWindowHandle >;
+	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using PipelinePtr = std::unique_ptr< Pipeline >;
 	using PipelineLayoutPtr = std::unique_ptr< PipelineLayout >;
 	using QueryPoolPtr = std::unique_ptr< QueryPool >;

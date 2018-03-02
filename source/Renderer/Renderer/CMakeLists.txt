@@ -91,13 +91,13 @@ install(
 	COMPONENT ${PROJECT_NAME}_dev
 	CONFIGURATIONS Release RelWithDebInfo
 	EXPORT ${PROJECT_NAME}
-	ARCHIVE DESTINATION lib/Release
+	ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Release
 )
 install(
 	TARGETS ${PROJECT_NAME}
 	COMPONENT ${PROJECT_NAME}_dev
 	CONFIGURATIONS Debug
-	ARCHIVE DESTINATION lib/Debug
+	ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Debug
 )
 #For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
 target_install_headers( ${PROJECT_NAME} Src )

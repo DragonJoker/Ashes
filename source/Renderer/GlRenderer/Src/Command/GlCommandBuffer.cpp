@@ -55,6 +55,8 @@ See LICENSE file in root folder.
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
 
+#include <algorithm>
+
 namespace gl_renderer
 {
 	CommandBuffer::CommandBuffer( Device const & device
@@ -512,6 +514,20 @@ namespace gl_renderer
 		{
 			m_state.m_boundVao = &m_state.m_currentPipeline->createGeometryBuffers( m_state.m_boundVbos, m_state.m_boundIbo, m_state.m_indexType ).get();
 			m_state.m_vaos.emplace_back( *m_state.m_boundVao );
+		}
+		else if ( m_state.m_boundVao->getVao() == GL_INVALID_INDEX )
+		{
+			auto it = std::find_if( m_state.m_vaos.begin()
+				, m_state.m_vaos.end()
+				, [this]( GeometryBuffersRef const & lookup )
+				{
+					return &lookup.get() == m_state.m_boundVao;
+				} );
+
+			if ( it == m_state.m_vaos.end() )
+			{
+				m_state.m_vaos.emplace_back( *m_state.m_boundVao );
+			}
 		}
 
 		m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( *m_state.m_boundVao ) );

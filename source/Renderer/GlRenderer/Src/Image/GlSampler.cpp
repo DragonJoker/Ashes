@@ -41,7 +41,7 @@ namespace gl_renderer
 		glLogCall( gl::SamplerParameterf, m_sampler, GL_SAMPLER_PARAMETER_MIN_LOD, minLod );
 		glLogCall( gl::SamplerParameterf, m_sampler, GL_SAMPLER_PARAMETER_MAX_LOD, maxLod );
 
-		if ( device.getPhysicalDeviceInfo().samplerAnisotropy
+		if ( device.getFeatures().samplerAnisotropy
 			&& maxAnisotropy > 1.0f )
 		{
 			glLogCall( gl::SamplerParameterf, m_sampler, GL_SAMPLER_PARAMETER_MAX_ANISOTROPY, maxAnisotropy );

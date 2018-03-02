@@ -6,8 +6,8 @@ See LICENSE file in root folder.
 #define ___Renderer_HPP___
 #pragma once
 
+#include "Core/PhysicalDevice.hpp"
 #include "Core/WindowHandle.hpp"
-#include "Miscellaneous/PhysicalDeviceInfo.hpp"
 
 namespace renderer
 {
@@ -58,6 +58,19 @@ namespace renderer
 		*	Destructeur.
 		*/
 		virtual ~Renderer() = default;
+		/**
+		*\~french
+		*\brief
+		*	Récupère le GPU à l'index donné.
+		*\param[in] gpuIndex
+		*	L'index du GPU physique.
+		*\~english
+		*\brief
+		*	Retrieves the GPU at given index.
+		*\param[in] gpuIndex
+		*	The physical GPU index.
+		*/
+		PhysicalDevice & getPhysicalDevice( uint32_t gpuIndex )const;
 		/**
 		*\~french
 		*\brief
@@ -123,19 +136,7 @@ namespace renderer
 		*/
 		inline uint32_t getGpuCount()const
 		{
-			return uint32_t( m_gpuInfos.size() );
-		}
-		/**
-		*\~english
-		*\return
-		*	The number of available GPUs.
-		*\~french
-		*\return
-		*	Le nombre de GPU disponibles.
-		*/
-		inline PhysicalDeviceInfo const & getPhysicalDeviceInfo( uint32_t index )const
-		{
-			return m_gpuInfos[index];
+			return uint32_t( m_gpus.size() );
 		}
 		/**
 		*\~english
@@ -152,7 +153,7 @@ namespace renderer
 
 	protected:
 		Configuration m_configuration;
-		std::vector< PhysicalDeviceInfo > m_gpuInfos;
+		std::vector< PhysicalDevicePtr > m_gpus;
 
 	private:
 		ClipDirection m_clipDirection;

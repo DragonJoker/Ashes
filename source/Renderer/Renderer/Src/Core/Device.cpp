@@ -13,8 +13,10 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	Device::Device( Renderer const & renderer
+		, PhysicalDevice const & gpu
 		, Connection const & connection )
 		: m_renderer{ renderer }
+		, m_gpu{ gpu }
 	{
 	}
 

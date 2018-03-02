@@ -74,9 +74,11 @@ namespace gl_renderer
 	class Device;
 	class FrameBuffer;
 	class GeometryBuffers;
+	class PhysicalDevice;
 	class Pipeline;
 	class PipelineLayout;
 	class QueryPool;
+	class Renderer;
 	class RenderPass;
 	class RenderSubpass;
 	class ShaderProgram;

@@ -156,10 +156,6 @@ namespace vk_renderer
 			, float zNear
 			, float zFar )const override;
 		/**
-		*\copydoc	renderer::Device::getPhysicalDeviceInfo
-		*/
-		 renderer::PhysicalDeviceInfo const & getPhysicalDeviceInfo()const override;
-		/**
 		*\~french
 		*\brief
 		*	Récupère les propriétés mémoire requises pour le tampon donné.
@@ -193,66 +189,6 @@ namespace vk_renderer
 		*	The memory requirements.
 		*/
 		VkMemoryRequirements getImageMemoryRequirements( VkImage image )const;
-		/**
-		*\~french
-		*\return
-		*	Le pool de commandes de présentation.
-		*\~english
-		*\return
-		*	The presentation command pool.
-		*/
-		inline auto const & getPresentCommandPool()const
-		{
-			return *m_presentCommandPool;
-		}
-		/**
-		*\~french
-		*\return
-		*	Le pool de commandes de dessin.
-		*\~english
-		*\return
-		*	The graphics command pool.
-		*/
-		inline auto const & getGraphicsCommandPool()const
-		{
-			return *m_graphicsCommandPool;
-		}
-		/**
-		*\~french
-		*\return
-		*	La file de présentation.
-		*\~english
-		*\return
-		*	The presentation queue.
-		*/
-		inline auto const & getPresentQueue()const
-		{
-			return *m_presentQueue;
-		}
-		/**
-		*\~french
-		*\return
-		*	La file de dessin.
-		*\~english
-		*\return
-		*	The graphics queue.
-		*/
-		inline auto const & getGraphicsQueue()const
-		{
-			return *m_graphicsQueue;
-		}
-		/**
-		*\~french
-		*\return
-		*	Le GPU physique.
-		*\~english
-		*\return
-		*	The physical device.
-		*/
-		inline PhysicalDevice const & getPhysicalDevice()const
-		{
-			return m_gpu;
-		}
 		/**
 		*\~french
 		*\return
@@ -329,8 +265,8 @@ namespace vk_renderer
 
 	private:
 		Renderer const & m_renderer;
-		ConnectionPtr m_connection;
 		PhysicalDevice const & m_gpu;
+		ConnectionPtr m_connection;
 		VkDevice m_device{ VK_NULL_HANDLE };
 	};
 }

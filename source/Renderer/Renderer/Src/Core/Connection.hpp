@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -71,9 +71,22 @@ namespace renderer
 		{
 			return m_handle;
 		}
+		/**
+		*\~french
+		*\return
+		*	Le périphérique physique.
+		*\~english
+		*\return
+		*	The physical device.
+		*/
+		inline PhysicalDevice const & getGpu()const
+		{
+			return m_gpu;
+		}
 
 	protected:
 		WindowHandle m_handle;
+		PhysicalDevice const & m_gpu;
 	};
 }
 

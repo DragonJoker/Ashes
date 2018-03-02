@@ -16,7 +16,8 @@ namespace gl_renderer
 		: public Context
 	{
 	public:
-		MswContext( renderer::ConnectionPtr && connection );
+		MswContext( PhysicalDevice const & gpu
+			, renderer::ConnectionPtr && connection );
 		~MswContext();
 
 		void setCurrent()const override;
