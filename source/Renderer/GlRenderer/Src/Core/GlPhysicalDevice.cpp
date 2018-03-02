@@ -14,6 +14,9 @@ See LICENSE file in root folder.
 
 #include <GL/gl.h>
 
+#include <algorithm>
+#include <iterator>
+
 #ifdef max
 #	undef max
 #endif
