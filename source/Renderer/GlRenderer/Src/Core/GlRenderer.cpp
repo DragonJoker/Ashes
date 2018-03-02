@@ -237,7 +237,7 @@ namespace gl_renderer
 					XMapWindow( m_display, m_xWindow );
 					XSync( m_display, False );
 				}
-				catch ( castor::Exception & p_exc )
+				catch ( std::exception & p_exc )
 				{
 					if ( m_xWindow )
 					{
