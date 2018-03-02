@@ -9,7 +9,6 @@ See LICENSE file in root folder
 
 #include <Buffer/VertexBuffer.hpp>
 #include <Core/Device.hpp>
-#include <Miscellaneous/PhysicalDeviceInfo.hpp>
 #include <Pipeline/ColourBlendState.hpp>
 #include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/InputAssemblyState.hpp>

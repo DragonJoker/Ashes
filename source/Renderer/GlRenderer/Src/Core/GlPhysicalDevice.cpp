@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #include "Core/GlRenderer.hpp"
 #include "Core/GlDevice.hpp"
 
-#include <GL/GL.h>
+#include <GL/gl.h>
 
 #ifdef max
 #	undef max

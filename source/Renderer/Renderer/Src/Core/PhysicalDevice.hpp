@@ -7,7 +7,6 @@ See LICENSE file in root folder
 #pragma once
 
 #include "Miscellaneous/PhysicalDeviceFeatures.hpp"
-#include "Miscellaneous/PhysicalDeviceInfo.hpp"
 #include "Miscellaneous/PhysicalDeviceMemoryProperties.hpp"
 #include "Miscellaneous/PhysicalDeviceProperties.hpp"
 #include "Miscellaneous/QueueFamilyProperties.hpp"

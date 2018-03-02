@@ -8,8 +8,6 @@ See LICENSE file in root folder
 
 #include "Core/GlConnection.hpp"
 
-#include <Miscellaneous/PhysicalDeviceInfo.hpp>
-
 namespace gl_renderer
 {
 	class Context
