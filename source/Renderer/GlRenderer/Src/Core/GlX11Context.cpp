@@ -104,7 +104,7 @@ namespace gl_renderer
 			loadDebugFunctions();
 			endCurrent();
 
-			if ( m_major < 4 )
+			if ( m_gpu.getMajor() < 4 )
 			{
 				glXDestroyContext( m_display, m_glxContext );
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
