@@ -78,6 +78,11 @@ namespace gl_renderer
 		void clear( renderer::TextureView const & image
 			, renderer::DepthStencilClearValue const & value )const override;
 		/**
+		*\copydoc	renderer::clearAttachments:clear
+		*/
+		void clearAttachments( renderer::ClearAttachmentArray const & clearAttachments
+			, renderer::ClearRectArray const & clearRects )override;
+		/**
 		*\copydoc	renderer::CommandBuffer::memoryBarrier
 		*/
 		void memoryBarrier( renderer::PipelineStageFlags after

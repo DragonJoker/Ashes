@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Renderer.
 See LICENSE file in root folder.
 */
@@ -6,6 +6,12 @@ See LICENSE file in root folder.
 
 namespace renderer
 {
+	ClearValue::ClearValue()
+		: m_colour{ {} }
+		, m_isColour{ true }
+	{
+	}
+
 	ClearValue::ClearValue( RgbaColour const & colour )
 		: m_colour{ colour }
 		, m_isColour{ true }
