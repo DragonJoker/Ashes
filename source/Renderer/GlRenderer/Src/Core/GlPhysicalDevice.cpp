@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #include "Core/GlRenderer.hpp"
 #include "Core/GlDevice.hpp"
 
-if RENDERLIB_XLIB
+#if RENDERLIB_XLIB
 #	include <X11/Xlib.h>
 #	include <GL/glx.h>
 #endif
