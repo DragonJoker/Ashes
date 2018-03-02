@@ -137,6 +137,12 @@ namespace gl_renderer
 		};
 
 #elif defined( __linux__ )
+		template< typename FuncT >
+		bool getFunction( char const * const name, FuncT & function )
+		{
+			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
+			return function != nullptr;
+		}
 
 		class RenderWindow
 		{
@@ -232,10 +238,24 @@ namespace gl_renderer
 						throw std::runtime_error{ "Couldn't create X Window" };
 					}
 
-					XFree( vi );
 					XStoreName( m_display, m_xWindow, "DummyWindow" );
 					XMapWindow( m_display, m_xWindow );
 					XSync( m_display, False );
+
+					int screen = DefaultScreen( m_display );
+					int major{ 0 };
+					int minor{ 0 };
+					bool ok = glXQueryVersion( m_display, &major, &minor );
+
+					m_glxContext = glXCreateContext( m_display, vi, nullptr, GL_TRUE );
+
+					if ( !m_glxContext )
+					{
+						throw std::runtime_error{ "Could not create a rendering context." };
+					}
+
+					glXMakeCurrent( m_display, m_xWindow, m_glxContext );
+					XFree( vi );
 				}
 				catch ( std::exception & p_exc )
 				{
@@ -260,6 +280,10 @@ namespace gl_renderer
 
 			~RenderWindow()
 			{
+				glXMakeCurrent( m_display, 0, nullptr );
+				glXDestroyContext( m_display, m_glxContext );
+				XFree( m_fbConfig );
+
 				if ( m_xWindow )
 				{
 					XDestroyWindow( m_display, m_xWindow );
@@ -282,6 +306,7 @@ namespace gl_renderer
 			Window m_xWindow{ 0 };
 			GLXWindow m_glxWindow{ 0 };
 			GLXFBConfig m_fbConfig{ nullptr };
+			GLXContext m_glxContext;
 		};
 
 #endif

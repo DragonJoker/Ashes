@@ -212,41 +212,46 @@ namespace gl_renderer
 		getFunction( "glGetFloati_v", glGetFloati_v );
 		getFunction( "glGetIntegeri_v", glGetIntegeri_v );
 		getFunction( "glGetInteger64i_v", glGetInteger64i_v );
-		std::string sversion = ( char const * )glGetString( GL_VERSION );
-		std::stringstream stream( sversion );
-		float fversion;
-		stream >> fversion;
-		auto version = int( fversion * 10 );
-		m_major = version / 10;
-		m_minor = version % 10;
+		char const * const cversion = ( char const * )glGetString( GL_VERSION );
 
-		if ( version >= 33 )
+		if ( cversion )
 		{
-			m_glslVersion = version * 10;
-		}
-		else if ( version >= 32 )
-		{
-			m_glslVersion = 150;
-		}
-		else if ( version >= 31 )
-		{
-			m_glslVersion = 140;
-		}
-		else if ( version >= 30 )
-		{
-			m_glslVersion = 130;
-		}
-		else if ( version >= 21 )
-		{
-			m_glslVersion = 120;
-		}
-		else if ( version >= 20 )
-		{
-			m_glslVersion = 110;
-		}
-		else
-		{
-			m_glslVersion = 100;
+			std::string sversion = cversion;
+			std::stringstream stream( sversion );
+			float fversion;
+			stream >> fversion;
+			auto version = int( fversion * 10 );
+			m_major = version / 10;
+			m_minor = version % 10;
+
+			if ( version >= 33 )
+			{
+				m_glslVersion = version * 10;
+			}
+			else if ( version >= 32 )
+			{
+				m_glslVersion = 150;
+			}
+			else if ( version >= 31 )
+			{
+				m_glslVersion = 140;
+			}
+			else if ( version >= 30 )
+			{
+				m_glslVersion = 130;
+			}
+			else if ( version >= 21 )
+			{
+				m_glslVersion = 120;
+			}
+			else if ( version >= 20 )
+			{
+				m_glslVersion = 110;
+			}
+			else
+			{
+				m_glslVersion = 100;
+			}
 		}
 
 		auto const * res = ( char const * )glGetString( GL_EXTENSIONS );
