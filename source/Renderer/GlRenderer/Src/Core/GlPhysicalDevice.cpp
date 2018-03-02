@@ -7,6 +7,11 @@ See LICENSE file in root folder.
 #include "Core/GlRenderer.hpp"
 #include "Core/GlDevice.hpp"
 
+if RENDERLIB_XLIB
+#	include <X11/Xlib.h>
+#	include <GL/glx.h>
+#endif
+
 #include <GL/gl.h>
 
 #ifdef max
@@ -133,7 +138,6 @@ namespace gl_renderer
 #define GL_MAX_UNIFORM_BUFFER_BINDINGS 0x8A2F
 #define GL_UNIFORM_BUFFER_SIZE 0x8A2A
 #define GL_MAX_UNIFORM_LOCATIONS 0x826E
-#define GL_MAX_VARYING_COMPONENTS GL_MAX_VARYING_FLOATS
 #define GL_MAX_VARYING_FLOATS 0x8B4B
 #define GL_MAX_VERTEX_ATOMIC_COUNTERS 0x92D2
 #define GL_MAX_VERTEX_ATTRIB_BINDINGS 0x82DA
