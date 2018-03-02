@@ -93,6 +93,8 @@ namespace renderer
 
 	struct BufferCopy;
 	struct BufferImageCopy;
+	struct ClearAttachment;
+	struct ClearRect;
 	struct ClearValue;
 	struct CommandBufferInheritanceInfo;
 	struct GraphicsPipelineCreateInfo;
@@ -223,6 +225,8 @@ namespace renderer
 
 	using AttributeArray = std::vector< Attribute >;
 	using BufferImageCopyArray = std::vector< BufferImageCopy >;
+	using ClearAttachmentArray = std::vector< ClearAttachment >;
+	using ClearRectArray = std::vector< ClearRect >;
 	using ClearValueArray = std::vector< ClearValue >;
 	using ColourBlendStateAttachmentArray = std::vector< ColourBlendStateAttachment >;
 	using DescriptorSetLayoutBindingArray = std::vector< DescriptorSetLayoutBinding >;

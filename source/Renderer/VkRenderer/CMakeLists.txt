@@ -109,9 +109,7 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 			COMPONENT ${PROJECT_NAME}
 			CONFIGURATIONS Release RelWithDebInfo
 			EXPORT ${PROJECT_NAME}
-			RUNTIME DESTINATION bin
-			ARCHIVE DESTINATION lib
-			LIBRARY DESTINATION lib
+			RUNTIME DESTINATION bin/Release
 		)
 		install(
 			TARGETS ${PROJECT_NAME}
@@ -119,8 +117,6 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 			CONFIGURATIONS Debug
 			EXPORT ${PROJECT_NAME}
 			RUNTIME DESTINATION bin/Debug
-			ARCHIVE DESTINATION lib/Debug
-			LIBRARY DESTINATION lib/Debug
 		)
 	else ()
 		#We install each .so in <install_dir>/lib folder
@@ -129,7 +125,7 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 			COMPONENT ${PROJECT_NAME}
 			CONFIGURATIONS Release RelWithDebInfo
 			EXPORT ${PROJECT_NAME}
-			LIBRARY DESTINATION lib
+			LIBRARY DESTINATION lib/Release
 		)
 		install(
 			TARGETS ${PROJECT_NAME}

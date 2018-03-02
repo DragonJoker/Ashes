@@ -230,6 +230,18 @@ namespace vk_renderer
 			, &vksubresourceRange );
 	}
 
+	void CommandBuffer::clearAttachments( renderer::ClearAttachmentArray const & clearAttachments
+		, renderer::ClearRectArray const & clearRects )
+	{
+		auto vkAttaches = convert< VkClearAttachment >( clearAttachments );
+		auto vkRects = convert< VkClearRect >( clearRects );
+		m_device.vkCmdClearAttachments( m_commandBuffer
+			, uint32_t( vkAttaches.size() )
+			, vkAttaches.data()
+			, uint32_t( vkRects.size() )
+			, vkRects.data() );
+	}
+
 	void CommandBuffer::bindPipeline( renderer::Pipeline const & pipeline
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
