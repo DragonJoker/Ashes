@@ -10,6 +10,7 @@ See LICENSE file in root folder.
 #include "Command/VkCommandPool.hpp"
 #include "Command/VkQueue.hpp"
 #include "Core/VkConnection.hpp"
+#include "Core/VkPhysicalDevice.hpp"
 #include "Core/VkRenderer.hpp"
 #include "Core/VkSwapChain.hpp"
 #include "Descriptor/VkDescriptorSetBinding.hpp"
@@ -30,10 +31,10 @@ namespace vk_renderer
 {
 	Device::Device( Renderer const & renderer
 		, renderer::ConnectionPtr && connection )
-		: renderer::Device{ renderer, *connection }
+		: renderer::Device{ renderer, connection->getGpu(), *connection }
 		, m_renderer{ renderer }
 		, m_connection{ static_cast< Connection * >( connection.release() ) }
-		, m_gpu{ m_connection->getGpu() }
+		, m_gpu{ static_cast< PhysicalDevice const & >( renderer::Device::getPhysicalDevice() ) }
 	{
 		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
 		std::vector< VkDeviceQueueCreateInfo > queueCreateInfos;
@@ -363,11 +364,6 @@ namespace vk_renderer
 		result[3][2] = -zNear / ( zFar - zNear );
 
 		return result;
-	}
-
-	renderer::PhysicalDeviceInfo const & Device::getPhysicalDeviceInfo()const
-	{
-		return m_gpu.getInfo();
 	}
 
 	VkMemoryRequirements Device::getBufferMemoryRequirements( VkBuffer buffer )const

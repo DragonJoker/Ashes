@@ -27,7 +27,7 @@ namespace vk_renderer
 		m_surfaceCapabilities = m_device.getSurfaceCapabilities();
 
 		// On choisit le format de la surface.
-		doSelectFormat( m_device.getPhysicalDevice() );
+		doSelectFormat( static_cast< PhysicalDevice const & >( m_device.getPhysicalDevice() ) );
 
 		// On crée la swap chain.
 		doCreateSwapChain();
@@ -214,7 +214,7 @@ namespace vk_renderer
 	{
 		// On récupère la liste de VkPresentModeKHR supportés par la surface.
 		uint32_t presentModeCount{};
-		auto res = m_device.getRenderer().vkGetPhysicalDeviceSurfacePresentModesKHR( m_device.getPhysicalDevice()
+		auto res = m_device.getRenderer().vkGetPhysicalDeviceSurfacePresentModesKHR( static_cast< PhysicalDevice const & >( m_device.getPhysicalDevice() )
 			, m_surface
 			, &presentModeCount
 			, nullptr );
@@ -225,7 +225,7 @@ namespace vk_renderer
 		}
 
 		std::vector< VkPresentModeKHR > presentModes{ presentModeCount };
-		res = m_device.getRenderer().vkGetPhysicalDeviceSurfacePresentModesKHR( m_device.getPhysicalDevice()
+		res = m_device.getRenderer().vkGetPhysicalDeviceSurfacePresentModesKHR( static_cast< PhysicalDevice const & >( m_device.getPhysicalDevice() )
 			, m_surface
 			, &presentModeCount
 			, presentModes.data() );
@@ -426,7 +426,7 @@ namespace vk_renderer
 		m_renderingResources.clear();
 		m_surfaceCapabilities = m_device.getSurfaceCapabilities();
 		// On choisit le format de la surface.
-		doSelectFormat( m_device.getPhysicalDevice() );
+		doSelectFormat( static_cast< PhysicalDevice const & >( m_device.getPhysicalDevice() ) );
 		// On crée la swap chain.
 		doCreateSwapChain();
 		// Puis les tampons d'images.

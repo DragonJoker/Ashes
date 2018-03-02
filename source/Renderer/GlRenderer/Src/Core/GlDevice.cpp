@@ -286,13 +286,14 @@ namespace gl_renderer
 	}
 
 	Device::Device( renderer::Renderer const & renderer
+		, PhysicalDevice const & gpu
 		, renderer::ConnectionPtr && connection )
-		: renderer::Device{ renderer, *connection }
-		, m_context{ Context::create( std::move( connection ) ) }
-		, m_info{ m_context->getInfo() }
+		: renderer::Device{ renderer, gpu, *connection }
+		, m_context{ Context::create( gpu, std::move( connection ) ) }
 		, m_rsState{ 1.0f }
 	{
 		enable();
+		glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
 		initialiseDebugFunctions();
 		disable();
 

@@ -9,6 +9,7 @@ See LICENSE file in root folder.
 #include "Command/CommandPool.hpp"
 #include "Command/Queue.hpp"
 #include "Core/Connection.hpp"
+#include "Core/PhysicalDevice.hpp"
 #include "Pipeline/ColourBlendState.hpp"
 #include "Pipeline/RasterisationState.hpp"
 
@@ -46,6 +47,7 @@ namespace renderer
 		*	La connection à l'application.
 		*/
 		Device( Renderer const & renderer
+			, PhysicalDevice const & gpu
 			, Connection const & connection );
 
 	public:
@@ -711,97 +713,73 @@ namespace renderer
 		virtual void waitIdle()const = 0;
 		/**
 		*\~english
-		*\return
-		*	The parent physical device informations.
+		*name
+		*	Getters.
 		*\~french
-		*\return
-		*	Les informations du périphérique physique parent.
+		*name
+		*	Accesseurs.
 		*/
-		virtual PhysicalDeviceInfo const & getPhysicalDeviceInfo()const = 0;
-		/**
-		*\~english
-		*\return
-		*	The presentation queue.
-		*\~french
-		*\return
-		*	La file de présentation.
-		*/
+		/**@{*/
+		inline std::vector< QueueFamilyProperties > const & getQueueProperties()const
+		{
+			return m_gpu.getQueueProperties();
+		}
+
+		inline PhysicalDeviceProperties const & getProperties()const
+		{
+			return m_gpu.getProperties();
+		}
+
+		inline PhysicalDeviceMemoryProperties const & getMemoryProperties()const
+		{
+			return m_gpu.getMemoryProperties();
+		}
+
+		inline PhysicalDeviceFeatures const & getFeatures()const
+		{
+			return m_gpu.getFeatures();
+		}
+
 		inline Queue const & getPresentQueue()const
 		{
 			return *m_presentQueue;
 		}
-		/**
-		*\~english
-		*\return
-		*	The compute queue.
-		*\~french
-		*\return
-		*	La file de calcul.
-		*/
+
 		inline Queue const & getComputeQueue()const
 		{
 			return *m_computeQueue;
 		}
-		/**
-		*\~english
-		*\return
-		*	The graphics queue.
-		*\~french
-		*\return
-		*	La file de dessin.
-		*/
+
 		inline Queue const & getGraphicsQueue()const
 		{
 			return *m_graphicsQueue;
 		}
-		/**
-		*\~english
-		*\return
-		*	The command buffer pool for the presentation queue.
-		*\~french
-		*\return
-		*	Le pool de tampons de commandes pour la file de présentation.
-		*/
+
 		inline CommandPool const & getPresentCommandPool()const
 		{
 			return *m_presentCommandPool;
 		}
-		/**
-		*\~english
-		*\return
-		*	The command buffer pool for the compute queue.
-		*\~french
-		*\return
-		*	Le pool de tampons de commandes pour la file de calcul.
-		*/
+
 		inline CommandPool const & getComputeCommandPool()const
 		{
 			return *m_computeCommandPool;
 		}
-		/**
-		*\~english
-		*\return
-		*	The command buffer pool for the graphics queue.
-		*\~french
-		*\return
-		*	Le pool de tampons de commandes pour la file de dessin.
-		*/
+
 		inline CommandPool const & getGraphicsCommandPool()const
 		{
 			return *m_graphicsCommandPool;
 		}
-		/**
-		*\~english
-		*\return
-		*	The parent Renderer.
-		*\~french
-		*\return
-		*	Le Renderer parent.
-		*/
+
 		inline Renderer const & getRenderer()const
 		{
 			return m_renderer;
 		}
+
+		inline PhysicalDevice const & getPhysicalDevice()const
+		{
+			return m_gpu;
+		}
+		/**@}*/
 		/**
 		*\~english
 		*\return
@@ -841,6 +819,7 @@ namespace renderer
 
 	protected:
 		Renderer const & m_renderer;
+		PhysicalDevice const & m_gpu;
 		QueuePtr m_presentQueue;
 		QueuePtr m_computeQueue;
 		QueuePtr m_graphicsQueue;

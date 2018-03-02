@@ -1,6 +1,8 @@
+#include "Core/GlMswContext.hpp"
+
 #if defined( _WIN32 )
 
-#include "Core/GlMswContext.hpp"
+#include "Core/GlPhysicalDevice.hpp"
 #include "Miscellaneous/GlDebug.hpp"
 
 #include <Core/PlatformWindowHandle.hpp>
@@ -24,8 +26,9 @@ namespace gl_renderer
 #endif
 	}
 
-	MswContext::MswContext( renderer::ConnectionPtr && connection )
-		: Context{ std::move( connection ) }
+	MswContext::MswContext( PhysicalDevice const & gpu
+		, renderer::ConnectionPtr && connection )
+		: Context{ gpu, std::move( connection ) }
 		, m_hDC( nullptr )
 		, m_hContext( nullptr )
 		, m_hWnd( m_connection->getHandle().getInternal< renderer::IMswWindowHandle >().getHwnd() )
@@ -37,45 +40,10 @@ namespace gl_renderer
 			m_hContext = wglCreateContext( m_hDC );
 			setCurrent();
 			m_opengl = std::make_unique< OpenGLLibrary >();
-			doInitialiseBaseInfo();
 			loadDebugFunctions();
 			endCurrent();
 
 			double fversion{ 0u };
-			std::stringstream stream( m_info.apiVersion );
-			stream >> fversion;
-			auto version = int( fversion * 10 );
-			m_major = version / 10;
-			m_minor = version % 10;
-
-			if ( version >= 33 )
-			{
-				m_glslVersion = version * 10;
-			}
-			else if ( version >= 32 )
-			{
-				m_glslVersion = 150;
-			}
-			else if ( version >= 31 )
-			{
-				m_glslVersion = 140;
-			}
-			else if ( version >= 30 )
-			{
-				m_glslVersion = 130;
-			}
-			else if ( version >= 21 )
-			{
-				m_glslVersion = 120;
-			}
-			else if ( version >= 20 )
-			{
-				m_glslVersion = 110;
-			}
-			else
-			{
-				m_glslVersion = 100;
-			}
 
 			if ( !doCreateGl3Context() )
 			{
@@ -85,7 +53,6 @@ namespace gl_renderer
 
 			setCurrent();
 			wgl::SwapIntervalEXT( 0 );
-			doInitialiseInfo();
 			endCurrent();
 		}
 	}
@@ -169,8 +136,8 @@ namespace gl_renderer
 			HGLRC hContext = m_hContext;
 			std::vector< int > attribList
 			{
-				WGL_CONTEXT_MAJOR_VERSION_ARB, m_major,
-				WGL_CONTEXT_MINOR_VERSION_ARB, m_minor,
+				WGL_CONTEXT_MAJOR_VERSION_ARB, m_gpu.getMajor(),
+				WGL_CONTEXT_MINOR_VERSION_ARB, m_gpu.getMinor(),
 				WGL_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
 				WGL_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
 				0
@@ -188,7 +155,7 @@ namespace gl_renderer
 			if ( !result )
 			{
 				std::stringstream error;
-				error << "Failed to create a " << m_major << "." << m_minor << " OpenGL context (0x" << std::hex << gl::GetError() << ").";
+				error << "Failed to create a " << m_gpu.getMajor() << "." << m_gpu.getMinor() << " OpenGL context (0x" << std::hex << gl::GetError() << ").";
 				throw std::runtime_error{ error.str() };
 			}
 		}

@@ -5,6 +5,7 @@ See LICENSE file in root folder
 #pragma once
 
 #include "Core/GlContext.hpp"
+#include "Core/GlPhysicalDevice.hpp"
 
 #include <Buffer/VertexBuffer.hpp>
 #include <Core/Device.hpp>
@@ -37,6 +38,7 @@ namespace gl_renderer
 		*	La connection à l'application.
 		*/
 		Device( renderer::Renderer const & renderer
+			, PhysicalDevice const & gpu
 			, renderer::ConnectionPtr && connection );
 		~Device();
 		/**
@@ -161,13 +163,6 @@ namespace gl_renderer
 			, float zNear
 			, float zFar )const override;
 		/**
-		*\copydoc	renderer::Device::getPhysicalDeviceInfo
-		*/
-		inline renderer::PhysicalDeviceInfo const & getPhysicalDeviceInfo()const override
-		{
-			return m_info;
-		}
-		/**
 		*\brief
 		*	Echange les tampons.
 		*/
@@ -175,7 +170,7 @@ namespace gl_renderer
 
 		inline uint32_t getGlslVersion()const
 		{
-			return m_context->getGlslVersion();
+			return static_cast< PhysicalDevice const & >( m_gpu ).getGlslVersion();
 		}
 
 		inline renderer::Scissor & getCurrentScissor()const
@@ -245,7 +240,6 @@ namespace gl_renderer
 
 	private:
 		ContextPtr m_context;
-		renderer::PhysicalDeviceInfo m_info;
 		// Mimic the behavior in Vulkan, when no IBO nor VBO is bound.
 		mutable struct
 		{

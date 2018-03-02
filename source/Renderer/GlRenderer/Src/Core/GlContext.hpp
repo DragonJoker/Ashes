@@ -15,7 +15,8 @@ namespace gl_renderer
 	class Context
 	{
 	protected:
-		Context( renderer::ConnectionPtr && connection );
+		Context( PhysicalDevice const & gpu
+			, renderer::ConnectionPtr && connection );
 
 	public:
 		virtual ~Context() = default;
@@ -38,32 +39,12 @@ namespace gl_renderer
 		*\brief
 		*	Crée un contexte.
 		*/
-		static ContextPtr create( renderer::ConnectionPtr && connection );
-
-		inline renderer::PhysicalDeviceInfo const & getInfo()const
-		{
-			return m_info;
-		}
-
-		inline uint32_t getGlslVersion()const
-		{
-			return m_glslVersion;
-		}
+		static ContextPtr create( PhysicalDevice const & gpu
+			, renderer::ConnectionPtr && connection );
 
 	protected:
-		void doInitialiseBaseInfo();
-		void doInitialiseInfo();
-
-	private:
-		bool doFindExtension( std::string const & name );
-
-	protected:
+		PhysicalDevice const & m_gpu;
 		renderer::ConnectionPtr m_connection;
-		renderer::PhysicalDeviceInfo m_info;
-		renderer::StringArray m_extensions;
-		int m_major{ 0 };
-		int m_minor{ 0 };
-		uint32_t m_glslVersion{ 0u };
 	};
 }
 
