@@ -1,5 +1,5 @@
 /*
-This file belongs to Renderer.
+This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #include "Command/VkCommandBuffer.hpp"
@@ -470,20 +470,22 @@ namespace vk_renderer
 			, &vkcopyInfo );
 	}
 
-	void CommandBuffer::blitImage( renderer::ImageBlit const & blit
-		, renderer::FrameBufferAttachment const & src
-		, renderer::FrameBufferAttachment const & dst
+	void CommandBuffer::blitImage( renderer::Texture const & srcImage
+		, renderer::ImageLayout srcLayout
+		, renderer::Texture const & dstImage
+		, renderer::ImageLayout dstLayout
+		, std::vector< renderer::ImageBlit > const & regions
 		, renderer::Filter filter )const
 	{
-		auto vkblitInfo = convert( blit );
-		DEBUG_DUMP( vkblitInfo );
+		auto vkregions = convert< VkImageBlit >( regions );
+		DEBUG_DUMP( vkregions );
 		m_device.vkCmdBlitImage( m_commandBuffer
-			, static_cast< Texture const & >( static_cast< renderer::FrameBufferAttachment const & >( src ).getTexture() )
-			, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
-			, static_cast< Texture const & >( static_cast< renderer::FrameBufferAttachment const & >( dst ).getTexture() )
-			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-			, 1
-			, &vkblitInfo
+			, static_cast< Texture const & >( srcImage )
+			, convert( srcLayout )
+			, static_cast< Texture const & >( dstImage )
+			, convert( dstLayout )
+			, uint32_t( vkregions.size() )
+			, vkregions.data()
 			, convert( filter ) );
 	}
 

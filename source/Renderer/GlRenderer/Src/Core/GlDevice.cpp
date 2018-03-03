@@ -1,5 +1,5 @@
 /*
-This file belongs to Renderer.
+This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #include "Core/GlDevice.hpp"
@@ -331,12 +331,15 @@ namespace gl_renderer
 			, renderer::VertexInputState{}
 			, renderer::IndexType::eUInt32 );
 		m_dummyIndexed.geometryBuffers->initialise();
+
+		gl::GenFramebuffers( 2, m_blitFbos );
 		disable();
 	}
 
 	Device::~Device()
 	{
 		enable();
+		gl::DeleteFramebuffers( 2, m_blitFbos );
 		m_dummyIndexed.geometryBuffers.reset();
 		m_dummyIndexed.indexBuffer.reset();
 		disable();
