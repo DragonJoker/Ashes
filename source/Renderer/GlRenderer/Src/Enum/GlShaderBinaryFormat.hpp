@@ -14,7 +14,7 @@ namespace gl_renderer
 		GL_SHADER_BINARY_FORMAT_SPIR_V = 0x9551
 	};
 
-	std::string getName( GlShaderBinaryFormat value )
+	inline std::string getName( GlShaderBinaryFormat value )
 	{
 		switch ( value )
 		{
