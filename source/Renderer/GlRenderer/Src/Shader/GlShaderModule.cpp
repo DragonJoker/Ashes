@@ -97,15 +97,6 @@ namespace gl_renderer
 		}
 
 		gl::ShaderBinary( 1u, &m_shader, GL_SHADER_BINARY_FORMAT_SPIR_V, fileData.data(), GLsizei( fileData.size() ) );
-		gl::SpecializeShader( m_shader, "main", 0u, nullptr, nullptr );
-		int compiled = 0;
-		glLogCall( gl::GetShaderiv, m_shader, GL_INFO_COMPILE_STATUS, &compiled );
-
-		if ( !doCheckCompileErrors( compiled != 0, m_shader ) )
-		{
-			throw std::runtime_error{ "Shader compilation failed." };
-		}
-
 		m_isSpirV = true;
 	}
 }

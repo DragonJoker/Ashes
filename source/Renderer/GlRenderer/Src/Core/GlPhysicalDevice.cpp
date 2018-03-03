@@ -504,7 +504,8 @@ namespace gl_renderer
 		static bool isSupported = find( "GL_ARB_gl_spirv" )
 			|| !gl::ShaderBinary
 			|| !hasSPIRVShaderBinaryFormat();
-		return isSupported;
+		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...
+		return false && isSupported;
 	}
 
 	bool PhysicalDevice::find( std::string const & name )const

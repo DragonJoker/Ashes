@@ -727,8 +727,8 @@ namespace gl_renderer
 	{
 		doValidateInputs( program, vertexInputState );
 		doValidateOutputs( program, renderPass );
-		//doValidateUbos( m_program );
-		//doValidateSsbos( m_program );
-		//doValidateUniforms( m_program );
+		//doValidateUbos( program );
+		//doValidateSsbos( program );
+		//doValidateUniforms( program );
 	}
 }

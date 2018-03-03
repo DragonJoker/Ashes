@@ -36,6 +36,104 @@ namespace gl_renderer
 
 			return log;
 		}
+
+		std::string doRetrieveCompilerLog( GLuint shaderName )
+		{
+			std::string log;
+			int infologLength = 0;
+			int charsWritten = 0;
+			glLogCall( gl::GetShaderiv, shaderName, GL_INFO_LOG_LENGTH, &infologLength );
+
+			if ( infologLength > 0 )
+			{
+				std::vector< char > infoLog( infologLength + 1 );
+				glLogCall( gl::GetShaderInfoLog, shaderName, infologLength, &charsWritten, infoLog.data() );
+				log = infoLog.data();
+			}
+
+			if ( !log.empty() )
+			{
+				log = log.substr( 0, log.size() - 1 );
+			}
+
+			return log;
+		}
+
+		bool doCheckCompileErrors( bool compiled
+			, GLuint shaderName )
+		{
+			auto compilerLog = doRetrieveCompilerLog( shaderName );
+
+			if ( !compilerLog.empty() )
+			{
+				if ( !compiled )
+				{
+					std::cerr << compilerLog << std::endl;
+				}
+				else
+				{
+					std::cout << compilerLog << std::endl;
+				}
+			}
+			else if ( !compiled )
+			{
+				std::cerr << "Shader compilation failed" << std::endl;
+			}
+
+			return compiled;
+		}
+
+		void doInitialiseState( renderer::ShaderStageState const & stage )
+		{
+			auto & module = static_cast< ShaderModule const & >( stage.getModule() );
+			auto shader = module.getShader();
+
+			if ( module.isSpirV() )
+			{
+				if ( stage.hasSpecialisationInfo() )
+				{
+					auto & specialisationInfo = stage.getSpecialisationInfo();
+					auto count = GLuint( std::distance( specialisationInfo.begin(), specialisationInfo.end() ) );
+					std::vector< GLuint > indices;
+					indices.reserve( count );
+					std::vector< GLuint > values;
+					values.reserve( count );
+					auto src = reinterpret_cast< GLuint const * >( specialisationInfo.getData() );
+					auto dst = values.data();
+
+					for ( auto & constant : specialisationInfo )
+					{
+						indices.push_back( constant.constantID );
+						values.push_back( *src );
+						++src;
+					}
+
+					glLogCall( gl::SpecializeShader
+						, shader
+						, stage.getEntryPoint().c_str()
+						, count
+						, indices.data()
+						, values.data() );
+				}
+				else
+				{
+					glLogCall( gl::SpecializeShader
+						, shader
+						, stage.getEntryPoint().c_str()
+						, 0u
+						, nullptr
+						, nullptr );
+				}
+
+				int compiled = 0;
+				glLogCall( gl::GetShaderiv, shader, GL_INFO_COMPILE_STATUS, &compiled );
+
+				if ( !doCheckCompileErrors( compiled != 0, shader ) )
+				{
+					throw std::runtime_error{ "Shader compilation failed." };
+				}
+			}
+		}
 	}
 
 	ShaderProgram::ShaderProgram( std::vector< renderer::ShaderStageState > const & stages )
@@ -43,7 +141,9 @@ namespace gl_renderer
 	{
 		for ( auto & stage : stages )
 		{
-			m_shaders.push_back( static_cast< ShaderModule const & >( stage.getModule() ).getShader() );
+			auto & module = static_cast< ShaderModule const & >( stage.getModule() );
+			m_shaders.push_back( module.getShader() );
+			doInitialiseState( stage );
 			glLogCall( gl::AttachShader, m_program, m_shaders.back() );
 		}
 	}
@@ -51,12 +151,19 @@ namespace gl_renderer
 	ShaderProgram::ShaderProgram( renderer::ShaderStageState const & stage )
 		: m_program{ gl::CreateProgram() }
 	{
-		m_shaders.push_back( static_cast< ShaderModule const & >( stage.getModule() ).getShader() );
+		auto & module = static_cast< ShaderModule const & >( stage.getModule() );
+		m_shaders.push_back( module.getShader() );
+		doInitialiseState( stage );
 		glLogCall( gl::AttachShader, m_program, m_shaders.back() );
 	}
 
 	ShaderProgram::~ShaderProgram()
 	{
+		for ( auto shaderName : m_shaders )
+		{
+			glLogCall( gl::DeleteShader, shaderName );
+		}
+
 		glLogCall( gl::DeleteProgram, m_program );
 	}
 
@@ -97,11 +204,6 @@ namespace gl_renderer
 			{
 				std::cerr << "ShaderProgram::link - The linked shaders count doesn't match the active shaders count." << std::endl;
 			}
-		}
-
-		for ( auto shaderName : m_shaders )
-		{
-			glLogCall( gl::DeleteShader, shaderName );
 		}
 	}
 }
