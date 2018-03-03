@@ -39,18 +39,10 @@ namespace gl_renderer
 		*\copydoc	renderer::PhysicalDevice::initialise
 		*/
 		void initialise()override;
-		/**
-		*\~french
-		*\return
-		*	Les noms des extensions supportées par le GPU.
-		*\~english
-		*\return
-		*	The GPU's supported extensions names.
-		*/
-		inline renderer::StringArray const & getExtensionNames()const
-		{
-			return m_deviceExtensionNames;
-		}
+		bool find( std::string const & name )const;
+		bool findAny( renderer::StringArray const & names )const;
+		bool findAll( renderer::StringArray const & names )const;
+		bool hasSPIRVShaderBinaryFormat()const;
 
 		inline int getMajor()const
 		{
@@ -93,13 +85,12 @@ namespace gl_renderer
 		void doGetValues( GLenum name, float( &value )[3] )const;
 		void doGetValuesI( GLenum name, float( &value )[2] )const;
 		void doGetValuesI( GLenum name, float( &value )[3] )const;
-		bool doFind( std::string const & name )const;
-		bool doFindAny( renderer::StringArray const & names )const;
-		bool doFindAll( renderer::StringArray const & names )const;
 
 	private:
 		Renderer & m_renderer;
 		renderer::StringArray m_deviceExtensionNames;
+		renderer::StringArray m_deviceSPIRVExtensionNames;
+		std::vector< GlShaderBinaryFormat > m_shaderBinaryFormats;
 		int m_major{ 0 };
 		int m_minor{ 0 };
 		uint32_t m_glslVersion{ 0u };

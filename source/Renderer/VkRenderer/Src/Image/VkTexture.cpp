@@ -236,8 +236,7 @@ namespace vk_renderer
 				, renderer::ComponentMapping{} };
 			vkCommandBuffer.memoryBarrier( convert( renderer::PipelineStageFlag::eFragmentShader )
 				, convert( renderer::PipelineStageFlag::eTopOfPipe )
-				, srcView.makeTransferSource( renderer::ImageLayout::eUndefined
-					, 0u ) );
+				, srcView.makeTransferSource( renderer::ImageLayout::eUndefined, 0u ) );
 
 			for ( uint32_t i = 1; i < m_mipmapLevels; ++i )
 			{
@@ -252,8 +251,7 @@ namespace vk_renderer
 					, renderer::ComponentMapping{} };
 				vkCommandBuffer.memoryBarrier( convert( renderer::PipelineStageFlag::eFragmentShader )
 					, convert( renderer::PipelineStageFlag::eTopOfPipe )
-					, dstView.makeTransferDestination( renderer::ImageLayout::eUndefined
-						, 0u ) );
+					, dstView.makeTransferDestination( renderer::ImageLayout::eUndefined, 0u ) );
 
 				int32_t const mipWidth = width >> i;
 				int32_t const mipHeight = height >> i;

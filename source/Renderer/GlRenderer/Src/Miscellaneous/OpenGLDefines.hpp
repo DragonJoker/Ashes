@@ -255,7 +255,9 @@ namespace gl_renderer
 	using PFN_glSamplerParameteri = void ( GLAPIENTRY * )( GLuint sampler, GLenum pname, GLint param );
 	using PFN_glSamplerParameteriv = void ( GLAPIENTRY * )( GLuint sampler, GLenum pname, const GLint * param );
 	using PFN_glScissor = void ( GLAPIENTRY * )( GLint x, GLint y, GLsizei width, GLsizei height );
+	using PFN_glShaderBinary = void ( GLAPIENTRY * )( GLsizei count, const GLuint *shaders, GLenum binaryFormat, const void * binary, GLsizei length );
 	using PFN_glShaderSource = void ( GLAPIENTRY * )( GLuint shader, GLsizei count, const GLchar *const* string, const GLint* length );
+	using PFN_glSpecializeShader = void ( GLAPIENTRY * )( GLuint shader, const GLchar * pEntryPoint, GLuint numSpecializationConstants, const GLuint * pConstantIndex, const GLuint *pConstantValue );
 	using PFN_glStencilFuncSeparate = void ( GLAPIENTRY * )( GLenum frontfunc, GLenum backfunc, GLint ref, GLuint mask );
 	using PFN_glStencilMaskSeparate = void ( GLAPIENTRY * )( GLenum face, GLuint mask );
 	using PFN_glStencilOpSeparate = void ( GLAPIENTRY * )( GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass );

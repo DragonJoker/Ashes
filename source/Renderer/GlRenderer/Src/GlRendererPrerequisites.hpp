@@ -46,6 +46,7 @@
 #include "Enum/GlQueryType.hpp"
 #include "Enum/GlSampleCountFlag.hpp"
 #include "Enum/GlSamplerParameter.hpp"
+#include "Enum/GlShaderBinaryFormat.hpp"
 #include "Enum/GlShaderInfo.hpp"
 #include "Enum/GlShaderStageFlag.hpp"
 #include "Enum/GlStencilOp.hpp"
