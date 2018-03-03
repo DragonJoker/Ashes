@@ -39,6 +39,15 @@ namespace gl_renderer
 		*\copydoc	renderer::PhysicalDevice::initialise
 		*/
 		void initialise()override;
+		/**
+		*\copydoc	renderer::PhysicalDevice::isSPIRVSupported
+		*/
+		bool isSPIRVSupported()const override;
+		/**
+		*\copydoc	renderer::PhysicalDevice::isGLSLSupported
+		*/
+		bool isGLSLSupported()const override;
+
 		bool find( std::string const & name )const;
 		bool findAny( renderer::StringArray const & names )const;
 		bool findAll( renderer::StringArray const & names )const;

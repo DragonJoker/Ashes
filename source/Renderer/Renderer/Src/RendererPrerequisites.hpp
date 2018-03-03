@@ -164,7 +164,9 @@ namespace renderer
 	class Sampler;
 	class Semaphore;
 	class Scissor;
+	class ShaderModule;
 	class ShaderProgram;
+	class ShaderStageState;
 	class ShaderStorageBufferBase;
 	class SpecialisationInfoBase;
 	class StagingBuffer;

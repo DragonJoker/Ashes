@@ -1,4 +1,4 @@
-﻿/**
+/**
 *\file
 *	Texture.h
 *\author
@@ -8,7 +8,7 @@
 #define ___GlRenderer_ComputePipeline_HPP___
 #pragma once
 
-#include "GlRendererPrerequisites.hpp"
+#include "Shader/GlShaderProgram.hpp"
 
 #include <Buffer/PushConstantsBuffer.hpp>
 #include <Pipeline/ComputePipeline.hpp>
@@ -48,9 +48,9 @@ namespace gl_renderer
 		*\return
 		*	Le ShaderProgram.
 		*/
-		inline ShaderProgram const & getProgram()const
+		inline GLuint getProgram()const
 		{
-			return m_program;
+			return m_program.getProgram();
 		}
 		/**
 		*\return
@@ -64,7 +64,7 @@ namespace gl_renderer
 	private:
 		Device const & m_device;
 		renderer::PipelineLayout const & m_layout;
-		ShaderProgram const & m_program;
+		ShaderProgram m_program;
 		std::vector< renderer::PushConstantsBufferBase > m_constantsPcbs;
 	};
 }

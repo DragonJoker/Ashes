@@ -45,7 +45,7 @@ namespace gl_renderer
 		Device const & m_device;
 		Pipeline const & m_pipeline;
 		PipelineLayout const & m_layout;
-		ShaderProgram const & m_program;
+		GLuint m_program;
 		renderer::PipelineBindPoint m_bindingPoint;
 	};
 }

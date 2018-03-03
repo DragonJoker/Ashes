@@ -87,6 +87,24 @@ namespace renderer
 			, uint32_t & typeIndex )const;
 		/**
 		*\~english
+		*\brief
+		*	Tells if SPIR-V is supported.
+		*\~french
+		*\brief
+		*	Dit si le SPIR-V est supporté.
+		*/
+		virtual bool isSPIRVSupported()const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Tells if GLSL is supported.
+		*\~french
+		*\brief
+		*	Dit si le GLSL est supporté.
+		*/
+		virtual bool isGLSLSupported()const = 0;
+		/**
+		*\~english
 		*name
 		*	Getters.
 		*\~french

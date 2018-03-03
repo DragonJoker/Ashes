@@ -111,10 +111,9 @@ namespace vkapp
 			return result;
 		}
 
-		renderer::ShaderProgramPtr doCreateProgram( renderer::Device & device )
+		std::vector< renderer::ShaderStageState > doCreateProgram( renderer::Device & device )
 		{
 			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-			auto result = device.createShaderProgram();
 
 			if ( !wxFileExists( shadersFolder / "equirectangular.vert" )
 				|| !wxFileExists( shadersFolder / "equirectangular.frag" ) )
@@ -122,12 +121,13 @@ namespace vkapp
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			result->createModule( common::parseShaderFile( device, shadersFolder / "equirectangular.vert" )
-				, renderer::ShaderStageFlag::eVertex );
-			result->createModule( common::parseShaderFile( device, shadersFolder / "equirectangular.frag" )
-				, renderer::ShaderStageFlag::eFragment );
+			std::vector< renderer::ShaderStageState > shaderStages;
+			shaderStages.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eVertex ) );
+			shaderStages.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eFragment ) );
+			shaderStages[0].getModule().loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.vert" ) );
+			shaderStages[1].getModule().loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.frag" ) );
 
-			return result;
+			return shaderStages;
 		}
 
 		renderer::VertexBufferPtr< VertexData > doCreateVertexBuffer( renderer::Device & device
@@ -188,7 +188,6 @@ namespace vkapp
 		, m_view{ doCreateTexture( m_device, *m_commandBuffer, m_stagingBuffer, m_image, *m_texture, filePath ) }
 		, m_sampler{ doCreateSampler( m_device ) }
 		, m_matrixUbo{ doCreateMatrixUbo( m_device, *m_commandBuffer, m_stagingBuffer ) }
-		, m_program{ doCreateProgram( m_device ) }
 		, m_vertexBuffer{ doCreateVertexBuffer( m_device, *m_commandBuffer, m_stagingBuffer ) }
 		, m_vertexLayout{ doCreateVertexLayout( m_device ) }
 		, m_descriptorLayout{ doCreateDescriptorSetLayout( m_device ) }
@@ -251,7 +250,7 @@ namespace vkapp
 
 			facePipeline.pipeline = m_pipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 			{
-				*m_program,
+				doCreateProgram( m_device ),
 				*facePipeline.renderPass,
 				renderer::VertexInputState::create( *m_vertexLayout ),
 				renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },

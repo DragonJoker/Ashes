@@ -1,5 +1,5 @@
 /*
-This file belongs to Renderer.
+This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #ifndef ___Renderer_Device_HPP___
@@ -409,12 +409,16 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
-		*	Creates the shader program.
+		*	Creates a shader module.
+		*\param[in] stage
+		*	The module's shader stage.
 		*\~french
 		*\brief
-		*	Crée un programme shader.
+		*	Crée un module shader.
+		*\param[in] stage
+		*	Le niveau de shader utilisé pour le module.
 		*/
-		virtual ShaderProgramPtr createShaderProgram()const = 0;
+		virtual ShaderModulePtr createShaderModule( ShaderStageFlag stage )const = 0;
 		/**
 		*\~english
 		*\brief

@@ -74,6 +74,7 @@ namespace common
 		renderer::Device const & m_device;
 		bool m_opaqueNodes;
 		renderer::UIVec2 m_size;
+		std::string m_fragmentShaderFile;
 		std::vector< renderer::TextureView const * > m_views;
 		renderer::SamplerPtr m_sampler;
 		renderer::CommandBufferPtr m_updateCommandBuffer;
@@ -83,13 +84,11 @@ namespace common
 		renderer::DescriptorSetLayoutPtr m_objectDescriptorLayout;
 		renderer::DescriptorSetPoolPtr m_objectDescriptorPool;
 		renderer::VertexLayoutPtr m_objectVertexLayout;
-		renderer::ShaderProgramPtr m_objectProgram;
 
 		renderer::DescriptorSetLayoutPtr m_billboardDescriptorLayout;
 		renderer::DescriptorSetPoolPtr m_billboardDescriptorPool;
 		renderer::VertexLayoutPtr m_billboardVertexLayout;
 		renderer::VertexLayoutPtr m_billboardInstanceLayout;
-		renderer::ShaderProgramPtr m_billboardProgram;
 
 		renderer::RenderPassPtr m_renderPass;
 		renderer::FrameBufferPtr m_frameBuffer;

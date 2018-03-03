@@ -23,7 +23,7 @@ See LICENSE file in root folder.
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 #include "RenderPass/GlRenderSubpass.hpp"
-#include "Shader/GlShaderProgram.hpp"
+#include "Shader/GlShaderModule.hpp"
 #include "Sync/GlFence.hpp"
 #include "Sync/GlSemaphore.hpp"
 
@@ -493,9 +493,9 @@ namespace gl_renderer
 			, flags );
 	}
 
-	renderer::ShaderProgramPtr Device::createShaderProgram()const
+	renderer::ShaderModulePtr Device::createShaderModule( renderer::ShaderStageFlag stage )const
 	{
-		return std::make_unique< ShaderProgram >( *this );
+		return std::make_unique< ShaderModule >( *this, stage );
 	}
 
 	renderer::QueryPoolPtr Device::createQueryPool( renderer::QueryType type

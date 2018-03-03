@@ -38,10 +38,9 @@ namespace common
 {
 	namespace
 	{
-		renderer::ShaderProgramPtr doCreateObjectProgram( renderer::Device const & device
+		std::vector< renderer::ShaderStageState > doCreateObjectProgram( renderer::Device const & device
 			, std::string const & fragmentShaderFile )
 		{
-			renderer::ShaderProgramPtr result = device.createShaderProgram();
 			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 
 			if ( !wxFileExists( shadersFolder / "object.vert" )
@@ -50,18 +49,17 @@ namespace common
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			result->createModule( common::dumpTextFile( shadersFolder / "object.vert" )
-				, renderer::ShaderStageFlag::eVertex );
-			result->createModule( common::dumpTextFile( fragmentShaderFile )
-				, renderer::ShaderStageFlag::eFragment );
-
+			std::vector< renderer::ShaderStageState > result;
+			result.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eVertex ) );
+			result.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eFragment ) );
+			result[0].getModule().loadShader( common::dumpTextFile( shadersFolder / "object.vert" ) );
+			result[1].getModule().loadShader( common::dumpTextFile( fragmentShaderFile ) );
 			return result;
 		}
 
-		renderer::ShaderProgramPtr doCreateBillboardProgram( renderer::Device const & device
+		std::vector< renderer::ShaderStageState > doCreateBillboardProgram( renderer::Device const & device
 			, std::string const & fragmentShaderFile )
 		{
-			renderer::ShaderProgramPtr result = device.createShaderProgram();
 			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 
 			if ( !wxFileExists( shadersFolder / "billboard.vert" )
@@ -70,11 +68,11 @@ namespace common
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			result->createModule( common::dumpTextFile( shadersFolder / "billboard.vert" )
-				, renderer::ShaderStageFlag::eVertex );
-			result->createModule( common::dumpTextFile( fragmentShaderFile )
-				, renderer::ShaderStageFlag::eFragment );
-
+			std::vector< renderer::ShaderStageState > result;
+			result.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eVertex ) );
+			result.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eFragment ) );
+			result[0].getModule().loadShader( common::dumpTextFile( shadersFolder / "billboard.vert" ) );
+			result[1].getModule().loadShader( common::dumpTextFile( fragmentShaderFile ) );
 			return result;
 		}
 
@@ -217,6 +215,7 @@ namespace common
 		, bool opaqueNodes )
 		: m_device{ device }
 		, m_opaqueNodes{ opaqueNodes }
+		, m_fragmentShaderFile{ fragmentShaderFile }
 		, m_sampler{ m_device.createSampler( renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
@@ -224,8 +223,6 @@ namespace common
 			, renderer::Filter::eLinear ) }
 		, m_updateCommandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
 		, m_commandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
-		, m_objectProgram{ doCreateObjectProgram( m_device, fragmentShaderFile ) }
-		, m_billboardProgram{ doCreateBillboardProgram( m_device, fragmentShaderFile ) }
 		, m_renderPass{ doCreateRenderPass( m_device, formats, clearViews ) }
 		, m_queryPool{ m_device.createQueryPool( renderer::QueryType::eTimestamp, 2u, 0u ) }
 	{
@@ -504,7 +501,7 @@ namespace common
 
 				materialNode.pipeline = materialNode.pipelineLayout->createPipeline( 
 				{
-					*m_billboardProgram,
+					doCreateBillboardProgram( m_device, m_fragmentShaderFile ),
 					*m_renderPass,
 					renderer::VertexInputState::create( { *m_billboardVertexLayout, *m_billboardInstanceLayout } ),
 					{ renderer::PrimitiveTopology::eTriangleStrip },
@@ -654,7 +651,7 @@ namespace common
 
 					materialNode.pipeline = materialNode.pipelineLayout->createPipeline(
 					{
-						*m_objectProgram,
+						doCreateObjectProgram( m_device, m_fragmentShaderFile ),
 						*m_renderPass,
 						renderer::VertexInputState::create( *m_objectVertexLayout ),
 						{ renderer::PrimitiveTopology::eTriangleList },

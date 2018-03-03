@@ -494,6 +494,53 @@ namespace gl_renderer
 		} );
 	}
 
+	bool PhysicalDevice::isGLSLSupported()const
+	{
+		return true;
+	}
+
+	bool PhysicalDevice::isSPIRVSupported()const
+	{
+		static bool isSupported = find( "GL_ARB_gl_spirv" )
+			|| !gl::ShaderBinary
+			|| !hasSPIRVShaderBinaryFormat();
+		return isSupported;
+	}
+
+	bool PhysicalDevice::find( std::string const & name )const
+	{
+		return m_deviceExtensionNames.end() != std::find( m_deviceExtensionNames.begin()
+			, m_deviceExtensionNames.end()
+			, name );
+	}
+
+	bool PhysicalDevice::findAny( renderer::StringArray const & names )const
+	{
+		return names.end() != std::find_if( names.begin()
+			, names.end()
+			, [this]( std::string const & name )
+			{
+				return find( name );
+			} );
+	}
+
+	bool PhysicalDevice::findAll( renderer::StringArray const & names )const
+	{
+		return names.end() == std::find_if( names.begin()
+			, names.end()
+			, [this]( std::string const & name )
+			{
+				return !find( name );
+			} );
+	}
+
+	bool PhysicalDevice::hasSPIRVShaderBinaryFormat()const
+	{
+		return m_shaderBinaryFormats.end() != std::find( m_shaderBinaryFormats.begin()
+			, m_shaderBinaryFormats.end()
+			, GL_SHADER_BINARY_FORMAT_SPIR_V );
+	}
+
 	void PhysicalDevice::doGetValue( GLenum name, int32_t & value )const
 	{
 		glGetIntegerv( name, &value );
@@ -664,39 +711,5 @@ namespace gl_renderer
 		glGetFloati_v( name, 0, &value[0] );
 		glGetFloati_v( name, 1, &value[1] );
 		glGetFloati_v( name, 2, &value[2] );
-	}
-
-	bool PhysicalDevice::find( std::string const & name )const
-	{
-		return m_deviceExtensionNames.end() != std::find( m_deviceExtensionNames.begin()
-			, m_deviceExtensionNames.end()
-			, name );
-	}
-
-	bool PhysicalDevice::findAny( renderer::StringArray const & names )const
-	{
-		return names.end() != std::find_if( names.begin()
-			, names.end()
-			, [this]( std::string const & name )
-		{
-			return find( name );
-		} );
-	}
-
-	bool PhysicalDevice::findAll( renderer::StringArray const & names )const
-	{
-		return names.end() == std::find_if( names.begin()
-			, names.end()
-			, [this]( std::string const & name )
-		{
-			return !find( name );
-		} );
-	}
-
-	bool PhysicalDevice::hasSPIRVShaderBinaryFormat()const
-	{
-		return m_shaderBinaryFormats.end() != std::find( m_shaderBinaryFormats.begin()
-			, m_shaderBinaryFormats.end()
-			, GL_SHADER_BINARY_FORMAT_SPIR_V );
 	}
 }

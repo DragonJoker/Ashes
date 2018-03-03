@@ -69,6 +69,20 @@ namespace vk_renderer
 			return m_deviceLayerNames;
 		}
 		/**
+		*\copydoc	renderer::PhysicalDevice::isSPIRVSupported
+		*/
+		inline bool isSPIRVSupported()const override
+		{
+			return true;
+		}
+		/**
+		*\copydoc	renderer::PhysicalDevice::isGLSLSupported
+		*/
+		inline bool isGLSLSupported()const override
+		{
+			return VKRENDERER_GLSL_TO_SPV != 0;
+		}
+		/**
 		*\~french
 		*\brief
 		*	Conversion implicite vers VkPhysicalDevice.

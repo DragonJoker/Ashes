@@ -111,7 +111,6 @@ namespace vkapp
 		/**@{*/
 		renderer::CommandBufferPtr m_commandBuffer;
 		renderer::RenderPassPtr m_offscreenRenderPass;
-		renderer::ShaderProgramPtr m_offscreenProgram;
 		renderer::PipelineLayoutPtr m_offscreenPipelineLayout;
 		renderer::PipelinePtr m_offscreenPipeline;
 		renderer::VertexBufferPtr< TexturedVertexData > m_offscreenVertexBuffer;
@@ -135,7 +134,6 @@ namespace vkapp
 		renderer::DescriptorSetPoolPtr m_computeDescriptorPool;
 		renderer::DescriptorSetPtr m_computeDescriptorSet;
 		renderer::PipelineLayoutPtr m_computePipelineLayout;
-		renderer::ShaderProgramPtr m_computeProgram;
 		renderer::ComputePipelinePtr m_computePipeline;
 		renderer::QueryPoolPtr m_computeQueryPool;
 		/**@}*/
@@ -145,7 +143,6 @@ namespace vkapp
 		*/
 		/**@{*/
 		renderer::RenderPassPtr m_mainRenderPass;
-		renderer::ShaderProgramPtr m_mainProgram;
 		renderer::PipelineLayoutPtr m_mainPipelineLayout;
 		renderer::PipelinePtr m_mainPipeline;
 		renderer::VertexBufferPtr< TexturedVertexData > m_mainVertexBuffer;

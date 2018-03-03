@@ -69,7 +69,6 @@ namespace vkapp
 		renderer::SwapChainPtr m_swapChain;
 		renderer::RenderPassPtr m_renderPass;
 		renderer::PipelineLayoutPtr m_pipelineLayout;
-		renderer::ShaderProgramPtr m_program;
 		renderer::VertexLayoutPtr m_vertexLayout;
 		renderer::PipelinePtr m_pipeline;
 		renderer::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;

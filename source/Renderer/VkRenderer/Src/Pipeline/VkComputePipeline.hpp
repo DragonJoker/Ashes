@@ -60,9 +60,9 @@ namespace vk_renderer
 	private:
 		Device const & m_device;
 		PipelineLayout const & m_layout;
-		ShaderProgram const & m_shader;
 		std::vector< VkSpecializationMapEntry > m_specialisationEntries;
 		VkSpecializationInfo m_specialisationInfos;
+		VkPipelineShaderStageCreateInfo m_shaderStage;
 		VkPipeline m_pipeline{ VK_NULL_HANDLE };
 	};
 }
