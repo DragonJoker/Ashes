@@ -175,9 +175,11 @@ GL_LIB_FUNCTION( VertexAttribIPointer )
 #endif
 
 GL_LIB_FUNCTION_OPT( ClearTexImage )
+GL_LIB_FUNCTION_OPT( DispatchComputeIndirect )
 GL_LIB_FUNCTION_OPT( MultiDrawArraysIndirect )
 GL_LIB_FUNCTION_OPT( MultiDrawElementsIndirect )
-GL_LIB_FUNCTION_OPT( DispatchComputeIndirect )
+GL_LIB_FUNCTION_OPT( ShaderBinary )
+GL_LIB_FUNCTION_OPT( SpecializeShader )
 
 #undef GL_LIB_FUNCTION_OPT
 

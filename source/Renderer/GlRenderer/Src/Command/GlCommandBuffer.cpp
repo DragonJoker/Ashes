@@ -1,5 +1,5 @@
 /*
-This file belongs to Renderer.
+This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #include "Command/GlCommandBuffer.hpp"
@@ -416,14 +416,17 @@ namespace gl_renderer
 			, dst ) );
 	}
 
-	void CommandBuffer::blitImage( renderer::ImageBlit const & blitInfo
-		, renderer::FrameBufferAttachment const & src
-		, renderer::FrameBufferAttachment const & dst
+	void CommandBuffer::blitImage( renderer::Texture const & srcImage
+		, renderer::ImageLayout srcLayout
+		, renderer::Texture const & dstImage
+		, renderer::ImageLayout dstLayout
+		, std::vector< renderer::ImageBlit > const & regions
 		, renderer::Filter filter )const
 	{
-		m_commands.emplace_back( std::make_unique< BlitImageCommand >( blitInfo
-			, src
-			, dst
+		m_commands.emplace_back( std::make_unique< BlitImageCommand >( m_device
+			, srcImage
+			, dstImage
+			, regions
 			, filter ) );
 	}
 

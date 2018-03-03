@@ -1,5 +1,5 @@
 /*
-This file belongs to Renderer.
+This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #ifndef ___Renderer_Prerequisites_HPP___
@@ -164,7 +164,9 @@ namespace renderer
 	class Sampler;
 	class Semaphore;
 	class Scissor;
+	class ShaderModule;
 	class ShaderProgram;
+	class ShaderStageState;
 	class ShaderStorageBufferBase;
 	class SpecialisationInfoBase;
 	class StagingBuffer;
@@ -231,6 +233,7 @@ namespace renderer
 	using RenderPassPtr = std::unique_ptr< RenderPass >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
 	using SemaphorePtr = std::unique_ptr< Semaphore >;
+	using ShaderModulePtr = std::unique_ptr< ShaderModule >;
 	using ShaderProgramPtr = std::unique_ptr< ShaderProgram >;
 	using ShaderStorageBufferBasePtr = std::unique_ptr< ShaderStorageBufferBase >;
 	using SpecialisationInfoBasePtr = std::unique_ptr< SpecialisationInfoBase >;

@@ -103,6 +103,7 @@
 #include "Pipeline/VkMultisampleState.hpp"
 #include "Pipeline/VkRasterisationState.hpp"
 #include "Pipeline/VkScissor.hpp"
+#include "Pipeline/VkShaderStageState.hpp"
 #include "Pipeline/VkSpecialisationInfo.hpp"
 #include "Pipeline/VkSpecialisationMapEntry.hpp"
 #include "Pipeline/VkStencilOpState.hpp"

@@ -89,7 +89,6 @@ namespace common
 
 		renderer::SamplerPtr m_sampler;
 		renderer::RenderPassPtr m_renderPass;
-		renderer::ShaderProgramPtr m_program;
 		renderer::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
 		renderer::VertexLayoutPtr m_vertexLayout;
 		renderer::DescriptorSetLayoutPtr m_descriptorLayout;

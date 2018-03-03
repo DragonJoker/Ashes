@@ -47,7 +47,6 @@ namespace vk_renderer
 	private:
 		Device const & m_device;
 		PipelineLayout const & m_layout;
-		ShaderProgram const & m_shader;
 		std::vector< VkVertexInputAttributeDescription > m_vertexAttributes;
 		std::vector< VkVertexInputBindingDescription > m_vertexBindings;
 		VkPipelineVertexInputStateCreateInfo m_vertexInputState;
@@ -63,6 +62,7 @@ namespace vk_renderer
 		std::optional< VkPipelineTessellationStateCreateInfo > m_tessellationState;
 		std::vector< std::vector< VkSpecializationMapEntry > > m_specialisationEntries;
 		std::map< VkShaderStageFlagBits, VkSpecializationInfo > m_specialisationInfos;
+		std::vector< VkPipelineShaderStageCreateInfo > m_shaderStages;
 		bool m_lineWidth;
 		VkPipeline m_pipeline{ VK_NULL_HANDLE };
 	};

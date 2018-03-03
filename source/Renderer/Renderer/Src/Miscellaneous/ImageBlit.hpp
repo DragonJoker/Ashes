@@ -1,5 +1,5 @@
-﻿/*
-This file belongs to Renderer.
+/*
+This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #ifndef ___Renderer_ImageBlit_HPP___
@@ -41,6 +41,15 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
+		*	Select the initial x, y, and z extents in texels of the sub-regions of the source image data.
+		*\~french
+		*\brief
+		*	Selectionne les étendues \p x, \p y et \p z des sous-régions de l'image source.
+		*/
+		IVec3 srcExtent;
+		/**
+		*\~english
+		*\brief
 		*	Specifies the specific image subresources of the image used for the destination image data.
 		*\~french
 		*\brief
@@ -56,6 +65,15 @@ namespace renderer
 		*	Selectionne les décalages \p x, \p y et \p z des sous-régions de l'image destination.
 		*/
 		IVec3 dstOffset;
+		/**
+		*\~english
+		*\brief
+		*	Select the initial x, y, and z extents in texels of the sub-regions of the destination image data.
+		*\~french
+		*\brief
+		*	Selectionne les étendues \p x, \p y et \p z des sous-régions de l'image destination.
+		*/
+		IVec3 dstExtent;
 	};
 }
 

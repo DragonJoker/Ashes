@@ -226,7 +226,6 @@ namespace common
 			m_pipeline.reset();
 			m_pipelineLayout.reset();
 
-			m_program.reset();
 			m_vertexBuffer.reset();
 			m_vertexLayout.reset();
 			m_renderPass.reset();
@@ -333,7 +332,6 @@ namespace common
 	{
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
-		m_program = m_device->createShaderProgram();
 
 		if ( !wxFileExists( shadersFolder / "main.vert" )
 			|| !wxFileExists( shadersFolder / "main.frag" ) )
@@ -341,15 +339,16 @@ namespace common
 			throw std::runtime_error{ "Shader files are missing" };
 		}
 
-		m_program->createModule( common::dumpTextFile( shadersFolder / "main.vert" )
-			, renderer::ShaderStageFlag::eVertex );
-		m_program->createModule( common::dumpTextFile( shadersFolder / "main.frag" )
-			, renderer::ShaderStageFlag::eFragment );
+		std::vector< renderer::ShaderStageState > shaderStages;
+		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) );
+		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) );
+		shaderStages[0].getModule().loadShader( common::dumpTextFile( shadersFolder / "main.vert" ) );
+		shaderStages[1].getModule().loadShader( common::dumpTextFile( shadersFolder / "main.frag" ) );
 
 		m_pipelineLayout = m_device->createPipelineLayout( *m_descriptorLayout );
 		m_pipeline = m_pipelineLayout->createPipeline(
 		{
-			*m_program,
+			std::move( shaderStages ),
 			*m_renderPass,
 			renderer::VertexInputState::create( *m_vertexLayout ),
 			{ renderer::PrimitiveTopology::eTriangleStrip },

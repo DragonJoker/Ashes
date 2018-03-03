@@ -1,11 +1,12 @@
 /*
-This file belongs to Renderer.
+This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #ifndef ___Renderer_ComputePipelineCreateInfo_HPP___
 #define ___Renderer_ComputePipelineCreateInfo_HPP___
 #pragma once
 
+#include "Pipeline/ShaderStageState.hpp"
 #include "Pipeline/SpecialisationInfo.hpp"
 
 namespace renderer
@@ -20,8 +21,7 @@ namespace renderer
 	*/
 	struct ComputePipelineCreateInfo
 	{
-		std::reference_wrapper< ShaderProgram const > program;
-		std::map< ShaderStageFlag, SpecialisationInfoBasePtr > specialisationInfo;
+		ShaderStageState stage;
 	};
 }
 

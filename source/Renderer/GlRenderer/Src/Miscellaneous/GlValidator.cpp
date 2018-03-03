@@ -4,7 +4,6 @@
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "Core/GlRenderingResources.hpp"
 #include "RenderPass/GlRenderPass.hpp"
-#include "Shader/GlShaderProgram.hpp"
 
 #include <Pipeline/VertexInputAttributeDescription.hpp>
 #include <Pipeline/VertexInputState.hpp>
@@ -722,14 +721,14 @@ namespace gl_renderer
 	}
 
 	void validatePipeline( PipelineLayout const & layout
-		, ShaderProgram const & m_program
+		, GLuint program
 		, renderer::VertexInputState const & vertexInputState
 		, renderer::RenderPass const & renderPass )
 	{
-		doValidateInputs( m_program.getProgram(), vertexInputState );
-		doValidateOutputs( m_program.getProgram(), renderPass );
-		//doValidateUbos( m_program.getProgram() );
-		//doValidateSsbos( m_program.getProgram() );
-		//doValidateUniforms( m_program.getProgram() );
+		doValidateInputs( program, vertexInputState );
+		doValidateOutputs( program, renderPass );
+		//doValidateUbos( program );
+		//doValidateSsbos( program );
+		//doValidateUniforms( program );
 	}
 }

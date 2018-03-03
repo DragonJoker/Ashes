@@ -165,6 +165,12 @@ namespace gl_renderer
 #define GL_MIN_SPARSE_LEVEL 0x919B// AMD
 #define GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT 0x8A34
 
+#define GL_SHADER_BINARY_FORMATS 0x8DF8
+#define GL_NUM_SHADER_BINARY_FORMATS 0x8DF9
+#define GL_SPIR_V_BINARY 0x9552
+#define GL_SPIR_V_EXTENSIONS 0x9553
+#define GL_NUM_SPIR_V_EXTENSIONS 0x9554
+
 		using PFN_glGetInteger64v = void( GLAPIENTRY * )( GLenum pname, GLint64 * data );
 		PFN_glGetInteger64v glGetInteger64v;
 		using PFN_glGetFloati_v = void( GLAPIENTRY * )( GLenum target, GLuint index, GLfloat * data );
@@ -173,6 +179,8 @@ namespace gl_renderer
 		PFN_glGetIntegeri_v glGetIntegeri_v;
 		using PFN_glGetInteger64i_v = void( GLAPIENTRY * )( GLenum target, GLuint index, GLint64 * data );
 		PFN_glGetInteger64i_v glGetInteger64i_v;
+		using PFN_glGetStringi = const GLubyte *( GLAPIENTRY * )( GLenum name, GLuint index );
+		PFN_glGetStringi glGetStringi;
 
 #if RENDERLIB_WIN32
 		template< typename FuncT >
@@ -212,6 +220,7 @@ namespace gl_renderer
 		getFunction( "glGetFloati_v", glGetFloati_v );
 		getFunction( "glGetIntegeri_v", glGetIntegeri_v );
 		getFunction( "glGetInteger64i_v", glGetInteger64i_v );
+		getFunction( "glGetStringi", glGetStringi );
 		char const * const cversion = ( char const * )glGetString( GL_VERSION );
 
 		if ( cversion )
@@ -254,15 +263,37 @@ namespace gl_renderer
 			}
 		}
 
-		auto const * res = ( char const * )glGetString( GL_EXTENSIONS );
+		auto const * cextensions = ( char const * )glGetString( GL_EXTENSIONS );
 
-		if ( res )
+		if ( cextensions )
 		{
-			std::string extensions = res;
+			std::string extensions = cextensions;
 			std::istringstream stream{ extensions };
 			std::copy( std::istream_iterator< std::string >( stream ),
 				std::istream_iterator< std::string >(),
 				std::back_inserter( m_deviceExtensionNames ) );
+		}
+
+		int numSpirvExtensions = 0;
+		doGetValue( GL_NUM_SPIR_V_EXTENSIONS, numSpirvExtensions );
+
+		for ( auto index = 0; index < numSpirvExtensions; ++index )
+		{
+			auto const * cspirvext = ( char const * )glGetStringi( GL_SPIR_V_EXTENSIONS, index );
+
+			if ( cspirvext )
+			{
+				m_deviceSPIRVExtensionNames.emplace_back( cspirvext );
+			}
+		}
+
+		int numBinaryFormats = 0;
+		doGetValue( GL_NUM_SHADER_BINARY_FORMATS, numBinaryFormats );
+
+		if ( numBinaryFormats > 0 )
+		{
+			m_shaderBinaryFormats.resize( numBinaryFormats );
+			glGetIntegerv( GL_SHADER_BINARY_FORMATS, reinterpret_cast< int * >( m_shaderBinaryFormats.data() ) );
 		}
 
 		m_properties.apiVersion = ( m_major << 22 ) | ( m_minor << 12 );
@@ -386,19 +417,19 @@ namespace gl_renderer
 		m_properties.sparseProperties.residencyStandard2DMultisampleBlockShape = false;
 		m_properties.sparseProperties.residencyStandard3DBlockShape = false;
 
-		m_features.robustBufferAccess = doFind( "GL_KHR_robustness" );
+		m_features.robustBufferAccess = find( "GL_KHR_robustness" );
 		m_features.fullDrawIndexUint32 = false;
-		m_features.imageCubeArray = doFind( "GL_ARB_texture_cube_map_array" );
-		m_features.independentBlend = doFindAny( { "GL_ARB_draw_buffers_blend", "GL_EXT_draw_buffers2" } );
-		m_features.geometryShader = doFind( "GL_ARB_geometry_shader4" );
-		m_features.tessellationShader = doFind( "GL_ARB_tessellation_shader" );
-		m_features.sampleRateShading = doFind( "GL_ARB_sample_shading" );
-		m_features.dualSrcBlend = doFind( "GL_ARB_blend_func_extended" );
+		m_features.imageCubeArray = find( "GL_ARB_texture_cube_map_array" );
+		m_features.independentBlend = findAny( { "GL_ARB_draw_buffers_blend", "GL_EXT_draw_buffers2" } );
+		m_features.geometryShader = find( "GL_ARB_geometry_shader4" );
+		m_features.tessellationShader = find( "GL_ARB_tessellation_shader" );
+		m_features.sampleRateShading = find( "GL_ARB_sample_shading" );
+		m_features.dualSrcBlend = find( "GL_ARB_blend_func_extended" );
 		m_features.logicOp = true;
-		m_features.multiDrawIndirect = doFindAll( { "GL_ARB_multi_draw_indirect", "GL_ARB_draw_indirect" } );
-		m_features.drawIndirectFirstInstance = doFind( "GL_ARB_base_instance" );
-		m_features.depthClamp = doFind( "GL_ARB_depth_clamp" );
-		m_features.depthBiasClamp = doFind( "GL_ARB_polygon_offset_clamp" );
+		m_features.multiDrawIndirect = findAll( { "GL_ARB_multi_draw_indirect", "GL_ARB_draw_indirect" } );
+		m_features.drawIndirectFirstInstance = find( "GL_ARB_base_instance" );
+		m_features.depthClamp = find( "GL_ARB_depth_clamp" );
+		m_features.depthBiasClamp = find( "GL_ARB_polygon_offset_clamp" );
 		m_features.fillModeNonSolid = true;
 		m_features.depthBounds = true;
 		GLint range[2];
@@ -407,41 +438,41 @@ namespace gl_renderer
 		glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, range );
 		m_features.wideLines &= ( range[1] > 1 );
 		m_features.largePoints = true;
-		m_features.alphaToOne = doFindAny( { "GL_ARB_multisample", "GLX_ARB_multisample", "WGL_ARB_multisample" } );
-		m_features.multiViewport = doFind( "GL_ARB_viewport_array" );
-		m_features.samplerAnisotropy = doFindAny( { "GL_ARB_texture_filter_anisotropic", "GL_ARB_texture_filter_anisotropic" } );
-		m_features.textureCompressionETC2 = doFindAll( { "GL_ARB_ES3_compatibility", "GL_ARB_ES2_compatibility", "GL_ARB_invalidate_subdata", "GL_ARB_texture_storage" } );
-		m_features.textureCompressionASTC_LDR = doFind( "GL_KHR_texture_compression_astc_ldr" );
-		m_features.textureCompressionBC = doFindAll( { "GL_EXT_texture_compression_s3tc", "GL_EXT_texture_sRGB" } );
+		m_features.alphaToOne = findAny( { "GL_ARB_multisample", "GLX_ARB_multisample", "WGL_ARB_multisample" } );
+		m_features.multiViewport = find( "GL_ARB_viewport_array" );
+		m_features.samplerAnisotropy = findAny( { "GL_ARB_texture_filter_anisotropic", "GL_ARB_texture_filter_anisotropic" } );
+		m_features.textureCompressionETC2 = findAll( { "GL_ARB_ES3_compatibility", "GL_ARB_ES2_compatibility", "GL_ARB_invalidate_subdata", "GL_ARB_texture_storage" } );
+		m_features.textureCompressionASTC_LDR = find( "GL_KHR_texture_compression_astc_ldr" );
+		m_features.textureCompressionBC = findAll( { "GL_EXT_texture_compression_s3tc", "GL_EXT_texture_sRGB" } );
 		m_features.occlusionQueryPrecise = true;
 		m_features.pipelineStatisticsQuery = false;
-		m_features.vertexPipelineStoresAndAtomics = doFind( "GL_ARB_shader_atomic_counters" );
+		m_features.vertexPipelineStoresAndAtomics = find( "GL_ARB_shader_atomic_counters" );
 		m_features.fragmentStoresAndAtomics = m_features.vertexPipelineStoresAndAtomics;
 		m_features.shaderTessellationAndGeometryPointSize = m_features.tessellationShader && m_features.geometryShader;
-		m_features.shaderImageGatherExtended = doFindAll( { "GL_ARB_texture_gather", "GL_ARB_gpu_shader5" } );
-		m_features.shaderStorageImageExtendedFormats = doFind( "GL_ARB_shader_image_load_store" );
-		m_features.shaderStorageImageMultisample = doFind( "GL_ARB_shader_image_load_store" );
-		m_features.shaderStorageImageReadWithoutFormat = doFind( "GL_EXT_shader_image_load_formatted" );
-		m_features.shaderStorageImageWriteWithoutFormat = doFind( "GL_ARB_shader_image_load_store" );
-		m_features.shaderUniformBufferArrayDynamicIndexing = doFind( "GL_ARB_gpu_shader5" );
-		m_features.shaderSampledImageArrayDynamicIndexing = doFind( "GL_ARB_gpu_shader5" );
-		m_features.shaderStorageBufferArrayDynamicIndexing = doFind( "GL_ARB_shader_storage_buffer_object" );
-		m_features.shaderStorageImageArrayDynamicIndexing = doFind( "GL_ARB_shader_image_load_store" );
+		m_features.shaderImageGatherExtended = findAll( { "GL_ARB_texture_gather", "GL_ARB_gpu_shader5" } );
+		m_features.shaderStorageImageExtendedFormats = find( "GL_ARB_shader_image_load_store" );
+		m_features.shaderStorageImageMultisample = find( "GL_ARB_shader_image_load_store" );
+		m_features.shaderStorageImageReadWithoutFormat = find( "GL_EXT_shader_image_load_formatted" );
+		m_features.shaderStorageImageWriteWithoutFormat = find( "GL_ARB_shader_image_load_store" );
+		m_features.shaderUniformBufferArrayDynamicIndexing = find( "GL_ARB_gpu_shader5" );
+		m_features.shaderSampledImageArrayDynamicIndexing = find( "GL_ARB_gpu_shader5" );
+		m_features.shaderStorageBufferArrayDynamicIndexing = find( "GL_ARB_shader_storage_buffer_object" );
+		m_features.shaderStorageImageArrayDynamicIndexing = find( "GL_ARB_shader_image_load_store" );
 		m_features.shaderClipDistance = true;
-		m_features.shaderCullDistance = doFind( "GL_ARB_cull_distance" );
-		m_features.shaderFloat64 = doFind( "GL_ARB_gpu_shader_fp64" );
-		m_features.shaderInt64 = doFind( "GL_ARB_gpu_shader_int64" );
+		m_features.shaderCullDistance = find( "GL_ARB_cull_distance" );
+		m_features.shaderFloat64 = find( "GL_ARB_gpu_shader_fp64" );
+		m_features.shaderInt64 = find( "GL_ARB_gpu_shader_int64" );
 		m_features.shaderInt16 = false;
-		m_features.shaderResourceResidency = doFind( "GL_ARB_sparse_texture2" );
-		m_features.shaderResourceMinLod = doFind( "GL_ARB_sparse_texture_clamp" );
-		m_features.sparseBinding = doFindAll( { "GL_ARB_sparse_buffer", "GL_ARB_sparse_texture2" } );
-		m_features.sparseResidencyBuffer = doFind( "GL_ARB_sparse_buffer" );
-		m_features.sparseResidencyImage2D = doFind( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidencyImage3D = doFind( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency2Samples = doFind( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency4Samples = doFind( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency8Samples = doFind( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency16Samples = doFind( "GL_ARB_sparse_texture2" );
+		m_features.shaderResourceResidency = find( "GL_ARB_sparse_texture2" );
+		m_features.shaderResourceMinLod = find( "GL_ARB_sparse_texture_clamp" );
+		m_features.sparseBinding = findAll( { "GL_ARB_sparse_buffer", "GL_ARB_sparse_texture2" } );
+		m_features.sparseResidencyBuffer = find( "GL_ARB_sparse_buffer" );
+		m_features.sparseResidencyImage2D = find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidencyImage3D = find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidency2Samples = find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidency4Samples = find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidency8Samples = find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidency16Samples = find( "GL_ARB_sparse_texture2" );
 		m_features.sparseResidencyAliased = false;
 		m_features.variableMultisampleRate = true;
 		m_features.inheritedQueries = true;
@@ -461,6 +492,54 @@ namespace gl_renderer
 				1u,
 			}
 		} );
+	}
+
+	bool PhysicalDevice::isGLSLSupported()const
+	{
+		return true;
+	}
+
+	bool PhysicalDevice::isSPIRVSupported()const
+	{
+		static bool isSupported = find( "GL_ARB_gl_spirv" )
+			|| !gl::ShaderBinary
+			|| !hasSPIRVShaderBinaryFormat();
+		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...
+		return false && isSupported;
+	}
+
+	bool PhysicalDevice::find( std::string const & name )const
+	{
+		return m_deviceExtensionNames.end() != std::find( m_deviceExtensionNames.begin()
+			, m_deviceExtensionNames.end()
+			, name );
+	}
+
+	bool PhysicalDevice::findAny( renderer::StringArray const & names )const
+	{
+		return names.end() != std::find_if( names.begin()
+			, names.end()
+			, [this]( std::string const & name )
+			{
+				return find( name );
+			} );
+	}
+
+	bool PhysicalDevice::findAll( renderer::StringArray const & names )const
+	{
+		return names.end() == std::find_if( names.begin()
+			, names.end()
+			, [this]( std::string const & name )
+			{
+				return !find( name );
+			} );
+	}
+
+	bool PhysicalDevice::hasSPIRVShaderBinaryFormat()const
+	{
+		return m_shaderBinaryFormats.end() != std::find( m_shaderBinaryFormats.begin()
+			, m_shaderBinaryFormats.end()
+			, GL_SHADER_BINARY_FORMAT_SPIR_V );
 	}
 
 	void PhysicalDevice::doGetValue( GLenum name, int32_t & value )const
@@ -633,32 +712,5 @@ namespace gl_renderer
 		glGetFloati_v( name, 0, &value[0] );
 		glGetFloati_v( name, 1, &value[1] );
 		glGetFloati_v( name, 2, &value[2] );
-	}
-
-	bool PhysicalDevice::doFind( std::string const & name )const
-	{
-		return m_deviceExtensionNames.end() != std::find( m_deviceExtensionNames.begin()
-			, m_deviceExtensionNames.end()
-			, name );
-	}
-
-	bool PhysicalDevice::doFindAny( renderer::StringArray const & names )const
-	{
-		return names.end() != std::find_if( names.begin()
-			, names.end()
-			, [this]( std::string const & name )
-		{
-			return doFind( name );
-		} );
-	}
-
-	bool PhysicalDevice::doFindAll( renderer::StringArray const & names )const
-	{
-		return names.end() == std::find_if( names.begin()
-			, names.end()
-			, [this]( std::string const & name )
-		{
-			return !doFind( name );
-		} );
 	}
 }

@@ -293,11 +293,6 @@ namespace common
 
 		m_fence = m_device.createFence();
 
-		std::string shadersFolder = getPath( getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
-		m_program = m_device.createShaderProgram();
-		m_program->createModule( dumpTextFile( shadersFolder / "gui.vert" ), renderer::ShaderStageFlag::eVertex );
-		m_program->createModule( dumpTextFile( shadersFolder / "gui.frag" ), renderer::ShaderStageFlag::eFragment );
-
 		m_vertexLayout = renderer::makeLayout< ImDrawVert >( 0u );
 		m_vertexLayout->createAttribute( 0u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, pos ) );
 		m_vertexLayout->createAttribute( 1u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, uv ) );
@@ -366,9 +361,16 @@ namespace common
 			renderer::BlendOp::eAdd
 		} );
 
+		std::string shadersFolder = getPath( getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
+		std::vector< renderer::ShaderStageState > shaderStages;
+		shaderStages.emplace_back( m_device.createShaderModule( renderer::ShaderStageFlag::eVertex ) );
+		shaderStages.emplace_back( m_device.createShaderModule( renderer::ShaderStageFlag::eFragment ) );
+		shaderStages[0].getModule().loadShader( dumpTextFile( shadersFolder / "gui.vert" ) );
+		shaderStages[1].getModule().loadShader( dumpTextFile( shadersFolder / "gui.frag" ) );
+
 		m_pipeline = m_pipelineLayout->createPipeline(
 		{
-			*m_program,
+			std::move( shaderStages ),
 			*m_renderPass,
 			renderer::VertexInputState::create( *m_vertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
