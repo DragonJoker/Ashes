@@ -1,5 +1,5 @@
 /*
-This file belongs to Renderer.
+This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #ifndef ___Renderer_CommandBuffer_HPP___
@@ -649,30 +649,40 @@ namespace renderer
 		/**
 		*\~french
 		*\brief
-		*	Copie une image vers une autre.
-		*\param[in] blit
-		*	La configuration de la copie.
-		*\param[in] src
+		*	Copie des régions d'une image vers une autre.
+		*\param[in] regions
+		*	Les régions à blitter.
+		*\param[in] srcImage
 		*	L'image source.
-		*\param[in] dst
+		*\param[in] srcLayout
+		*	Le layout de l'image source.
+		*\param[in] dstImage
 		*	L'image destination.
+		*\param[in] dstLayout
+		*	Le layout de l'image destination.
 		*\param[in] filter
 		*	Le filtre appliqué si la copie nécessite une mise à l'échelle.
 		*\~english
 		*\brief
-		*	Blits an image to another one.
-		*\param[in] blit
-		*	The blit configuration.
-		*\param[in] src
+		*	Copy regions of an image to another one.
+		*\param[in] regions
+		*	The regions to blit.
+		*\param[in] srcImage
 		*	The source image.
-		*\param[in] dst
+		*\param[in] srcLayout
+		*	The source image layout.
+		*\param[in] dstImage
 		*	The destination image.
+		*\param[in] dstLayout
+		*	The source image layout.
 		*\param[in] filter
 		*	The filter applied if the blit requires scaling.
 		*/
-		virtual void blitImage( ImageBlit const & blit
-			, FrameBufferAttachment const & src
-			, FrameBufferAttachment const & dst
+		virtual void blitImage( Texture const & srcImage
+			, ImageLayout srcLayout
+			, Texture const & dstImage
+			, ImageLayout dstLayout
+			, std::vector< ImageBlit > const & regions
 			, Filter filter )const = 0;
 		/**
 		*\~english

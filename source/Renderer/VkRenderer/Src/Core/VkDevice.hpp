@@ -1,5 +1,5 @@
 /*
-This file belongs to Renderer.
+This file belongs to RendererLib.
 See LICENSE file in root folder
 */
 #pragma once
@@ -118,7 +118,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::Device::createShaderProgram
 		*/
-		virtual renderer::ShaderProgramPtr createShaderProgram()const override;
+		virtual renderer::ShaderModulePtr createShaderModule( renderer::ShaderStageFlag stage )const override;
 		/**
 		*\copydoc	renderer::Device::createQueryPool
 		*/

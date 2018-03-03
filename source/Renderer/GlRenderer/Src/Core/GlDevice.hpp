@@ -1,5 +1,5 @@
 /*
-This file belongs to Renderer.
+This file belongs to RendererLib.
 See LICENSE file in root folder
 */
 #pragma once
@@ -125,7 +125,7 @@ namespace gl_renderer
 		/**
 		*\copydoc		renderer::Device::createShaderProgram
 		*/
-		virtual renderer::ShaderProgramPtr createShaderProgram()const override;
+		virtual renderer::ShaderModulePtr createShaderModule( renderer::ShaderStageFlag stage )const override;
 		/**
 		*\copydoc	renderer::Device::createQueryPool
 		*/
@@ -227,6 +227,16 @@ namespace gl_renderer
 			return m_dummyIndexed.indexBuffer->getBuffer();
 		}
 
+		inline GLuint getBlitSrcFbo()const
+		{
+			return m_blitFbos[0];
+		}
+
+		inline GLuint getBlitDstFbo()const
+		{
+			return m_blitFbos[1];
+		}
+
 	private:
 		/**
 		*\copydoc	renderer::Device::enable
@@ -255,5 +265,6 @@ namespace gl_renderer
 		mutable renderer::TessellationState m_tsState;
 		mutable renderer::InputAssemblyState m_iaState;
 		mutable GLuint m_currentProgram;
+		GLuint m_blitFbos[2];
 	};
 }

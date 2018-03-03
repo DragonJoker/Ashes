@@ -10,7 +10,7 @@
 #include "Pipeline/VkVertexInputState.hpp"
 #include "RenderPass/VkRenderPass.hpp"
 #include "Shader/VkAttribute.hpp"
-#include "Shader/VkShaderProgram.hpp"
+#include "Shader/VkShaderModule.hpp"
 
 namespace vk_renderer
 {
@@ -22,7 +22,6 @@ namespace vk_renderer
 			, std::move( createInfo ) }
 		, m_device{ device }
 		, m_layout{ static_cast< PipelineLayout const & >( layout ) }
-		, m_shader{ static_cast< ShaderProgram const & >( m_createInfo.program.get() ) }
 		, m_vertexAttributes{ convert< VkVertexInputAttributeDescription >( m_createInfo.vertexInputState.vertexAttributeDescriptions ) }
 		, m_vertexBindings{ convert< VkVertexInputBindingDescription >( m_createInfo.vertexInputState.vertexBindingDescriptions ) }
 		, m_vertexInputState{ convert( m_createInfo.vertexInputState, m_vertexAttributes, m_vertexBindings ) }
@@ -54,53 +53,28 @@ namespace vk_renderer
 			m_tessellationState = convert( m_createInfo.tessellationState.value() );
 		}
 
-		if ( !m_createInfo.specialisationInfo.empty() )
-		{
-			m_specialisationEntries.resize( m_createInfo.specialisationInfo.size() );
-			uint32_t index = 0;
-
-			for ( auto & info : m_createInfo.specialisationInfo )
-			{
-				auto stage = convert( info.first );
-				m_specialisationEntries[index] = convert< VkSpecializationMapEntry >( info.second->begin(), info.second->end() );
-				m_specialisationInfos[stage] = convert( *info.second, m_specialisationEntries[index] );
-				++index;
-			}
-		}
-
 		// Les informations liées aux shaders utilisés.
-		std::vector< VkPipelineShaderStageCreateInfo > shaderStage;
+		uint32_t index = 0;
+		std::vector< VkPipelineShaderStageCreateInfo > shaderStages;
+		m_specialisationEntries.resize( m_createInfo.stages.size() );
 
-		for ( auto & module : static_cast< ShaderProgram const & >( m_createInfo.program.get() ) )
+		for ( auto & state : m_createInfo.stages )
 		{
-			auto it = m_specialisationInfos.find( module.getStage() );
+			auto & module = static_cast< ShaderModule const & >( state.getModule() );
 
-			if ( it != m_specialisationInfos.end() )
+			if ( state.hasSpecialisationInfo() )
 			{
-				shaderStage.emplace_back( VkPipelineShaderStageCreateInfo
-				{
-					VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-					nullptr,
-					0,                                                        // flags
-					module.getStage(),                                        // stage
-					VkShaderModule( module ),                                 // module
-					"main",                                                   // pName
-					&it->second,                                              // pSpecializationInfo
-				} );
+				auto & info = state.getSpecialisationInfo();
+				m_specialisationEntries[index] = convert< VkSpecializationMapEntry >( info.begin(), info.end() );
+				m_specialisationInfos[module.getStage()] = convert( info, m_specialisationEntries[index] );
+				shaderStages.push_back( convert( state, &m_specialisationInfos[module.getStage()] ) );
 			}
 			else
 			{
-				shaderStage.emplace_back( VkPipelineShaderStageCreateInfo
-				{
-					VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-					nullptr,
-					0,                                                        // flags
-					module.getStage(),                                        // stage
-					VkShaderModule( module ),                                 // module
-					"main",                                                   // pName
-					nullptr,                                                  // pSpecializationInfo
-				} );
+				shaderStages.push_back( convert( state ) );
 			}
+
+			++index;
 		}
 
 		// Le viewport.
@@ -152,8 +126,8 @@ namespace vk_renderer
 			VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 			nullptr,
 			0,                                                            // flags
-			static_cast< uint32_t >( shaderStage.size() ),                // stageCount
-			shaderStage.data(),                                           // pStages
+			static_cast< uint32_t >( shaderStages.size() ),               // stageCount
+			shaderStages.data(),                                          // pStages
 			&m_vertexInputState,                                          // pVertexInputState;
 			&m_inputAssemblyState,                                        // pInputAssemblyState
 			m_tessellationState                                           // pTessellationState

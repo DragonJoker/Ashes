@@ -166,7 +166,6 @@ namespace vkapp
 			m_mainDescriptorLayout.reset();
 			m_mainPipeline.reset();
 			m_mainPipelineLayout.reset();
-			m_mainProgram.reset();
 			m_mainVertexBuffer.reset();
 			m_mainRenderPass.reset();
 
@@ -176,7 +175,6 @@ namespace vkapp
 			m_offscreenDescriptorLayout.reset();
 			m_offscreenPipeline.reset();
 			m_offscreenPipelineLayout.reset();
-			m_offscreenProgram.reset();
 			m_offscreenIndexBuffer.reset();
 			m_offscreenVertexBuffer.reset();
 			m_offscreenRenderPass.reset();
@@ -362,7 +360,6 @@ namespace vkapp
 		m_offscreenPipelineLayout = m_device->createPipelineLayout( *m_offscreenDescriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-		m_offscreenProgram = m_device->createShaderProgram();
 
 		if ( !wxFileExists( shadersFolder / "offscreen.vert" )
 			|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
@@ -370,14 +367,15 @@ namespace vkapp
 			throw std::runtime_error{ "Shader files are missing" };
 		}
 
-		m_offscreenProgram->createModule( common::parseShaderFile( *m_device, shadersFolder / "offscreen.vert" )
-			, renderer::ShaderStageFlag::eVertex );
-		m_offscreenProgram->createModule( common::parseShaderFile( *m_device, shadersFolder / "offscreen.frag" )
-			, renderer::ShaderStageFlag::eFragment );
+		std::vector< renderer::ShaderStageState > shaderStages;
+		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) );
+		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) );
+		shaderStages[0].getModule().loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.vert" ) );
+		shaderStages[1].getModule().loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.frag" ) );
 
 		m_offscreenPipeline = m_offscreenPipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 		{
-			*m_offscreenProgram,
+			std::move( shaderStages ),
 			*m_offscreenRenderPass,
 			renderer::VertexInputState::create( *m_offscreenVertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
@@ -510,7 +508,6 @@ namespace vkapp
 		m_mainPipelineLayout = m_device->createPipelineLayout( *m_mainDescriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-		m_mainProgram = m_device->createShaderProgram();
 
 		if ( !wxFileExists( shadersFolder / "main.vert" )
 			|| !wxFileExists( shadersFolder / "main.frag" ) )
@@ -518,14 +515,15 @@ namespace vkapp
 			throw std::runtime_error{ "Shader files are missing" };
 		}
 
-		m_mainProgram->createModule( common::parseShaderFile( *m_device, shadersFolder / "main.vert" )
-			, renderer::ShaderStageFlag::eVertex );
-		m_mainProgram->createModule( common::parseShaderFile( *m_device, shadersFolder / "main.frag" )
-			, renderer::ShaderStageFlag::eFragment );
+		std::vector< renderer::ShaderStageState > shaderStages;
+		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) );
+		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) );
+		shaderStages[0].getModule().loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.vert" ) );
+		shaderStages[1].getModule().loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.frag" ) );
 
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 		{
-			*m_mainProgram,
+			std::move( shaderStages ),
 			*m_mainRenderPass,
 			renderer::VertexInputState::create( *m_mainVertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleStrip },

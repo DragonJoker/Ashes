@@ -46,6 +46,7 @@
 #include "Enum/GlQueryType.hpp"
 #include "Enum/GlSampleCountFlag.hpp"
 #include "Enum/GlSamplerParameter.hpp"
+#include "Enum/GlShaderBinaryFormat.hpp"
 #include "Enum/GlShaderInfo.hpp"
 #include "Enum/GlShaderStageFlag.hpp"
 #include "Enum/GlStencilOp.hpp"
@@ -81,6 +82,7 @@ namespace gl_renderer
 	class Renderer;
 	class RenderPass;
 	class RenderSubpass;
+	class ShaderModule;
 	class ShaderProgram;
 	class Texture;
 	class TextureView;
@@ -93,9 +95,12 @@ namespace gl_renderer
 	using GeometryBuffersRef = std::reference_wrapper< GeometryBuffers >;
 
 	using RenderSubpassCRef = std::reference_wrapper< RenderSubpass const >;
+	using ShaderModuleCRef = std::reference_wrapper< ShaderModule const >;
+
+	using GeometryBuffersRefArray = std::vector< GeometryBuffersRef >;
 
 	using RenderSubpassCRefArray = std::vector< RenderSubpassCRef >;
-	using GeometryBuffersRefArray = std::vector< GeometryBuffersRef >;
+	using ShaderModuleCRefArray = std::vector< ShaderModuleCRef >;
 
 	using CommandArray = std::vector< CommandPtr >;
 

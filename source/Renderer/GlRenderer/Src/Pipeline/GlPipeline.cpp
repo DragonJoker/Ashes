@@ -8,7 +8,7 @@
 #include "Miscellaneous/GlValidator.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlRenderPass.hpp"
-#include "Shader/GlShaderProgram.hpp"
+#include "Shader/GlShaderModule.hpp"
 
 #include <algorithm>
 
@@ -101,7 +101,7 @@ namespace gl_renderer
 			, std::move( createInfo ) }
 		, m_device{ device }
 		, m_layout{ layout }
-		, m_program{ static_cast< ShaderProgram const & >( m_createInfo.program.get() ) }
+		, m_ssState{ std::move( m_createInfo.stages ) }
 		, m_vertexInputState{ m_createInfo.vertexInputState }
 		, m_renderPass{ m_createInfo.renderPass.get() }
 		, m_iaState{ m_createInfo.inputAssemblyState }
@@ -111,6 +111,7 @@ namespace gl_renderer
 		, m_viewport{ m_createInfo.viewport }
 		, m_scissor{ m_createInfo.scissor }
 		, m_vertexInputStateHash{ doHash( m_vertexInputState ) }
+		, m_program{ m_ssState }
 	{
 		if ( m_createInfo.depthStencilState )
 		{
@@ -122,11 +123,12 @@ namespace gl_renderer
 			m_tsState = m_createInfo.tessellationState.value();
 		}
 
-		if ( !m_createInfo.specialisationInfo.empty() )
+		for ( auto & stage : m_ssState )
 		{
-			for ( auto & info : m_createInfo.specialisationInfo )
+			if ( !static_cast< ShaderModule const & >( stage.getModule() ).isSpirV()
+				&& stage.hasSpecialisationInfo() )
 			{
-				m_constantsPcbs.push_back( convert( info.first, *info.second ) );
+				m_constantsPcbs.push_back( convert( stage.getModule().getStage(), stage.getSpecialisationInfo() ) );
 			}
 		}
 
@@ -140,10 +142,14 @@ namespace gl_renderer
 		if ( m_device.getRenderer().isValidationEnabled() )
 		{
 			validatePipeline( m_layout
-				, m_program
+				, m_program.getProgram()
 				, m_vertexInputState
 				, m_renderPass );
 		}
+	}
+
+	Pipeline::~Pipeline()
+	{
 	}
 
 	GeometryBuffers * Pipeline::findGeometryBuffers( VboBindings const & vbos

@@ -1,5 +1,5 @@
 /*
-This file belongs to Renderer.
+This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #include "Core/VkDevice.hpp"
@@ -23,7 +23,7 @@ See LICENSE file in root folder.
 #include "RenderPass/VkRenderPass.hpp"
 #include "RenderPass/VkRenderSubpass.hpp"
 #include "Shader/VkAttribute.hpp"
-#include "Shader/VkShaderProgram.hpp"
+#include "Shader/VkShaderModule.hpp"
 #include "Sync/VkFence.hpp"
 #include "Sync/VkSemaphore.hpp"
 
@@ -292,9 +292,9 @@ namespace vk_renderer
 			, flags );
 	}
 
-	renderer::ShaderProgramPtr Device::createShaderProgram()const
+	renderer::ShaderModulePtr Device::createShaderModule( renderer::ShaderStageFlag stage )const
 	{
-		return std::make_unique< ShaderProgram >( *this );
+		return std::make_unique< ShaderModule >( *this, stage );
 	}
 
 	renderer::QueryPoolPtr Device::createQueryPool( renderer::QueryType type

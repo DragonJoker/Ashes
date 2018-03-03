@@ -1,5 +1,5 @@
 ﻿/*
-This file belongs to Renderer.
+This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #include "Pipeline/PipelineLayout.hpp"

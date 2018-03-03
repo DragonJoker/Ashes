@@ -35,7 +35,6 @@ namespace vkapp
 		renderer::DescriptorSetLayoutPtr m_gbufferDescriptorLayout;
 		renderer::DescriptorSetPoolPtr m_gbufferDescriptorPool;
 		renderer::DescriptorSetPtr m_gbufferDescriptorSet;
-		renderer::ShaderProgramPtr m_program;
 		renderer::RenderPassPtr m_renderPass;
 		renderer::SamplerPtr m_sampler;
 		renderer::VertexBufferPtr< common::TexturedVertexData > m_vertexBuffer;

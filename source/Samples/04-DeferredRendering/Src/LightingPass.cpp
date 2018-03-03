@@ -34,9 +34,8 @@ namespace vkapp
 {
 	namespace
 	{
-		renderer::ShaderProgramPtr doCreateProgram( renderer::Device const & device )
+		std::vector< renderer::ShaderStageState > doCreateProgram( renderer::Device const & device )
 		{
-			renderer::ShaderProgramPtr result = device.createShaderProgram();
 			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 			if ( !wxFileExists( shadersFolder / "opaque_lp.vert" )
@@ -45,11 +44,12 @@ namespace vkapp
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			result->createModule( common::dumpTextFile( shadersFolder / "opaque_lp.vert" )
-				, renderer::ShaderStageFlag::eVertex );
-			result->createModule( common::dumpTextFile( shadersFolder / "opaque_lp.frag" )
-				, renderer::ShaderStageFlag::eFragment );
-			return result;
+			std::vector< renderer::ShaderStageState > shaderStages;
+			shaderStages.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eVertex ) );
+			shaderStages.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eFragment ) );
+			shaderStages[0].getModule().loadShader( common::dumpTextFile( shadersFolder / "opaque_lp.vert" ) );
+			shaderStages[1].getModule().loadShader( common::dumpTextFile( shadersFolder / "opaque_lp.frag" ) );
+			return shaderStages;
 		}
 
 		std::vector< renderer::PixelFormat > doGetFormats( renderer::TextureView const & depthView
@@ -214,7 +214,6 @@ namespace vkapp
 		, m_uboDescriptorLayout{ doCreateUboDescriptorLayout( m_device ) }
 		, m_uboDescriptorPool{ m_uboDescriptorLayout->createPool( 1u ) }
 		, m_uboDescriptorSet{ doCreateUboDescriptorSet( *m_uboDescriptorPool, m_lightsUbo, *m_sceneUbo ) }
-		, m_program{ doCreateProgram( m_device ) }
 		, m_renderPass{ doCreateRenderPass( m_device, views[0].get(), views[1].get() ) }
 		, m_sampler{ m_device.createSampler( renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
@@ -226,7 +225,7 @@ namespace vkapp
 		, m_pipelineLayout{ m_device.createPipelineLayout( { *m_gbufferDescriptorLayout, *m_uboDescriptorLayout } ) }
 		, m_pipeline{ m_pipelineLayout->createPipeline( 
 			{
-				*m_program,
+				doCreateProgram( m_device ),
 				*m_renderPass,
 				renderer::VertexInputState::create( *m_vertexLayout ),
 				{ renderer::PrimitiveTopology::eTriangleStrip },

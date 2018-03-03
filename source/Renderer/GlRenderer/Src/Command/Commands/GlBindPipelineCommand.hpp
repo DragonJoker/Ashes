@@ -1,5 +1,5 @@
 /*
-This file belongs to Renderer.
+This file belongs to RendererLib.
 See LICENSE file in root folder
 */
 #pragma once
@@ -45,7 +45,7 @@ namespace gl_renderer
 		Device const & m_device;
 		Pipeline const & m_pipeline;
 		PipelineLayout const & m_layout;
-		ShaderProgram const & m_program;
+		GLuint m_program;
 		renderer::PipelineBindPoint m_bindingPoint;
 	};
 }

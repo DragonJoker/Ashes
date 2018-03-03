@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Buffer/GlGeometryBuffers.hpp"
+#include "Shader/GlShaderProgram.hpp"
 
 #include <Buffer/PushConstantsBuffer.hpp>
 #include <Pipeline/Pipeline.hpp>
@@ -18,6 +19,7 @@
 #include <Pipeline/MultisampleState.hpp>
 #include <Pipeline/RasterisationState.hpp>
 #include <Pipeline/Scissor.hpp>
+#include <Pipeline/ShaderStageState.hpp>
 #include <Pipeline/TessellationState.hpp>
 #include <Pipeline/Viewport.hpp>
 
@@ -46,6 +48,8 @@ namespace gl_renderer
 		GeometryBuffersRef createGeometryBuffers( VboBindings vbos
 			, IboBinding const & ibo
 			, renderer::IndexType type )const;
+		~Pipeline();
+		/**@}*/
 		/**
 		*\return
 		*	\p true si le Viewport est défini.
@@ -61,6 +65,14 @@ namespace gl_renderer
 		inline bool hasScissor()const
 		{
 			return (bool)m_scissor;
+		}
+		/**
+		*\return
+		*	Le ShaderStageState.
+		*/
+		inline std::vector< renderer::ShaderStageState > const & getShaderStageState()const
+		{
+			return m_ssState;
 		}
 		/**
 		*\return
@@ -148,9 +160,9 @@ namespace gl_renderer
 		*\return
 		*	Le ShaderProgram.
 		*/
-		inline ShaderProgram const & getProgram()const
+		inline GLuint getProgram()const
 		{
-			return m_program;
+			return m_program.getProgram();
 		}
 		/**
 		*\return
@@ -181,7 +193,7 @@ namespace gl_renderer
 	private:
 		Device const & m_device;
 		PipelineLayout const & m_layout;
-		ShaderProgram const & m_program;
+		std::vector< renderer::ShaderStageState > m_ssState;
 		renderer::VertexInputState m_vertexInputState;
 		renderer::RenderPass const & m_renderPass;
 		renderer::InputAssemblyState m_iaState;
@@ -193,6 +205,7 @@ namespace gl_renderer
 		std::optional< renderer::Viewport > m_viewport;
 		std::optional< renderer::Scissor > m_scissor;
 		std::vector< renderer::PushConstantsBufferBase > m_constantsPcbs;
+		ShaderProgram m_program;
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;
 		mutable std::unordered_map< GLuint, BufferDestroyConnection > m_connections;
 		size_t m_vertexInputStateHash;

@@ -62,7 +62,6 @@ namespace common
 		renderer::RenderPassPtr m_renderPass;
 		renderer::FrameBufferPtr m_frameBuffer;
 		renderer::VertexLayoutPtr m_vertexLayout;
-		renderer::ShaderProgramPtr m_program;
 		renderer::PipelinePtr m_pipeline;
 		renderer::CommandPoolPtr m_commandPool;
 		renderer::CommandBufferPtr m_commandBuffer;

@@ -1,5 +1,5 @@
 /*
-This file belongs to Renderer.
+This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #ifndef ___Renderer_PipelineLayout_HPP___
@@ -94,8 +94,8 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Creates a graphics pipeline using this layout.
-		*\param[in] program
-		*	The shader program.
+		*\param[in] stages
+		*	The shader stages.
 		*\param[in] vertexLayouts
 		*	The vertex layout used by the pipeline.
 		*\param[in] renderPass
@@ -111,8 +111,8 @@ namespace renderer
 		*\~french
 		*\brief
 		*	Crée un pipeline graphique utilisant ce layout.
-		*\param[in] program
-		*	Le programme shader.
+		*\param[in] stages
+		*	Les niveaux de shader.
 		*\param[in] vertexLayouts
 		*	Le layout de sommets utilisé par le pipeline.
 		*\param[in] renderPass
@@ -126,7 +126,7 @@ namespace renderer
 		*\return
 		*	Le pipeline créé.
 		*/
-		inline PipelinePtr createPipeline( ShaderProgram const & program
+		inline PipelinePtr createPipeline( std::vector< ShaderStageState > && stages
 			, VertexLayoutCRefArray const & vertexLayouts
 			, RenderPass const & renderPass
 			, InputAssemblyState const & inputAssemblyState
@@ -135,7 +135,7 @@ namespace renderer
 		{
 			return createPipeline( GraphicsPipelineCreateInfo
 			{
-				program,
+				std::move( stages ),
 				renderPass,
 				VertexInputState::create( vertexLayouts ),
 				inputAssemblyState,
@@ -148,23 +148,23 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Creates a compute pipeline using this layout.
-		*\param[in] program
-		*	The shader program.
+		*\param[in] stages
+		*	The shader stages.
 		*\return
 		*	The created pipeline.
 		*\~french
 		*\brief
 		*	Crée un pipeline de calcul utilisant ce layout.
-		*\param[in] program
-		*	Le programme shader.
+		*\param[in] stages
+		*	Les niveaux de shader.
 		*\return
 		*	Le pipeline créé.
 		*/
-		inline ComputePipelinePtr createPipeline( ShaderProgram const & program )const
+		inline ComputePipelinePtr createPipeline( ShaderStageState && stage )const
 		{
 			return createPipeline( ComputePipelineCreateInfo
 			{
-				program
+				std::move( stage )
 			} );
 		}
 	};

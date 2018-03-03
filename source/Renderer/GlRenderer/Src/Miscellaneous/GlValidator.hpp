@@ -13,7 +13,7 @@
 namespace gl_renderer
 {
 	void validatePipeline( PipelineLayout const & layout
-		, ShaderProgram const & m_program
+		, GLuint program
 		, renderer::VertexInputState const & vertexInputState
 		, renderer::RenderPass const & renderPass );
 }
