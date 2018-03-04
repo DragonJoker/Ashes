@@ -12,38 +12,26 @@ namespace vk_renderer
 {
 	TextureView::TextureView( Device const & device
 		, Texture const & image
-		, renderer::TextureType type
-		, renderer::PixelFormat format
-		, uint32_t baseMipLevel
-		, uint32_t levelCount
-		, uint32_t baseArrayLayer
-		, uint32_t layerCount
-		, renderer::ComponentMapping const & mapping )
+		, renderer::ImageViewCreateInfo const & createInfo )
 		: renderer::TextureView{ device
 			, image
-			, type
-			, format
-			, baseMipLevel
-			, levelCount
-			, baseArrayLayer
-			, layerCount
-			, mapping }
+			, createInfo }
 		, m_device{ device }
 	{
-		VkImageViewCreateInfo createInfo
+		VkImageViewCreateInfo vkcreateInfo
 		{
 			VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 			nullptr,
 			0,
 			static_cast< Texture const & >( getTexture() ),
-			convert( type ),
-			convert( getFormat() ),
-			convert( mapping ),
-			convert( getSubResourceRange() )
+			getImageViewType( createInfo.viewType ),
+			convert( createInfo.format ),
+			convert( createInfo.components ),
+			convert( createInfo.subresourceRange )
 		};
-		DEBUG_DUMP( createInfo );
+		DEBUG_DUMP( vkcreateInfo );
 		auto res = m_device.vkCreateImageView( m_device
-			, &createInfo
+			, &vkcreateInfo
 			, nullptr
 			, &m_view );
 

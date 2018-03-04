@@ -1,4 +1,4 @@
-﻿#include "Image/TextureView.hpp"
+#include "Image/TextureView.hpp"
 
 #include "Sync/ImageMemoryBarrier.hpp"
 
@@ -6,25 +6,10 @@ namespace renderer
 {
 	TextureView::TextureView( Device const & device
 		, Texture const & image
-		, TextureType type
-		, PixelFormat format
-		, uint32_t baseMipLevel
-		, uint32_t levelCount
-		, uint32_t baseArrayLayer
-		, uint32_t layerCount
-		, ComponentMapping const & mapping )
+		, ImageViewCreateInfo const & createInfo )
 		: m_device{ device }
-		, m_format{ format }
 		, m_image{ image }
-		, m_type{ type }
-		, m_subResourceRange
-		{
-			getAspectMask( m_format ),
-			baseMipLevel,
-			levelCount,
-			baseArrayLayer,
-			layerCount
-		}
+		, m_createInfo{ createInfo }
 	{
 	}
 

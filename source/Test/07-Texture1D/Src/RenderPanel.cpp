@@ -155,8 +155,18 @@ namespace vkapp
 	{
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
-		m_texture = m_device->createTexture();
-		m_texture->setImage( image.format, { image.size[0] } );
+		m_texture = m_device->createTexture(
+			{
+				renderer::TextureType::e1D,
+				image.format,
+				{ image.size[0], 1u, 1u },
+				1u,
+				1u,
+				renderer::SampleCountFlag::e1,
+				renderer::ImageTiling::eOptimal,
+				renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
+			}
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_view = m_texture->createView( m_texture->getType()
 			, image.format );
 		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge

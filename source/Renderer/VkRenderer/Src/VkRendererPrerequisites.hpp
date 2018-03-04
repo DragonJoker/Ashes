@@ -80,6 +80,7 @@
 #include "Enum/VkRasterisationStateFlag.hpp"
 #include "Enum/VkSampleCountFlag.hpp"
 #include "Enum/VkShaderStageFlag.hpp"
+#include "Enum/VkSharingMode.hpp"
 #include "Enum/VkStencilOp.hpp"
 #include "Enum/VkSubpassContents.hpp"
 #include "Enum/VkTessellationStateFlag.hpp"

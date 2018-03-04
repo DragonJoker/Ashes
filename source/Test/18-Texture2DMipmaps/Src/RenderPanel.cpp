@@ -172,10 +172,18 @@ namespace vkapp
 		stagingBuffer->unlock();
 
 		// Create the texture image
-		m_texture = m_device->createTexture();
-		m_texture->setImage( format
-			, { tex2D.extent().x, tex2D.extent().y }
-			, tex2D.levels() );
+		m_texture = m_device->createTexture(
+			{
+				renderer::TextureType::e2D,
+				format,
+				{ uint32_t( tex2D.extent().x ), uint32_t( tex2D.extent().y ), 1u },
+				uint32_t( tex2D.levels() ),
+				1u,
+				renderer::SampleCountFlag::e1,
+				renderer::ImageTiling::eOptimal,
+				renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
+			}
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 
 		// Prepare copy regions
 		std::vector< renderer::BufferImageCopy > bufferCopyRegions;
@@ -188,9 +196,9 @@ namespace vkapp
 			bufferCopyRegion.imageSubresource.mipLevel = level;
 			bufferCopyRegion.imageSubresource.baseArrayLayer = 0u;
 			bufferCopyRegion.imageSubresource.layerCount = 1u;
-			bufferCopyRegion.imageExtent[0] = static_cast< uint32_t >( tex2D[level].extent().x );
-			bufferCopyRegion.imageExtent[1] = static_cast< uint32_t >( tex2D[level].extent().y );
-			bufferCopyRegion.imageExtent[2] = 1;
+			bufferCopyRegion.imageExtent.width = static_cast< uint32_t >( tex2D[level].extent().x );
+			bufferCopyRegion.imageExtent.height = static_cast< uint32_t >( tex2D[level].extent().y );
+			bufferCopyRegion.imageExtent.depth = 1;
 			bufferCopyRegion.bufferOffset = offset;
 			bufferCopyRegion.levelSize = tex2D[level].size();
 

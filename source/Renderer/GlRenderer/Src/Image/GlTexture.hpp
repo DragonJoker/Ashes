@@ -28,7 +28,9 @@ namespace gl_renderer
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		Texture( Device const & device );
+		Texture( Device const & device
+			, renderer::ImageCreateInfo const & createInfo
+			, renderer::MemoryPropertyFlags memoryFlags );
 		/**
 		*\brief
 		*	Destructeur.
@@ -37,13 +39,7 @@ namespace gl_renderer
 		/**
 		*\copydoc	renderer::Texture::createView
 		*/
-		renderer::TextureViewPtr createView( renderer::TextureType type
-			, renderer::PixelFormat format
-			, uint32_t baseMipLevel
-			, uint32_t levelCount
-			, uint32_t baseArrayLayer
-			, uint32_t layerCount
-			, renderer::ComponentMapping const & mapping )const override;
+		renderer::TextureViewPtr createView( renderer::ImageViewCreateInfo const & createInfo )const override;
 		/**
 		*\copydoc	renderer::Texture::generateMipmaps
 		*/
@@ -62,21 +58,31 @@ namespace gl_renderer
 		/**
 		*\copydoc	renderer::Texture::doSetImage1D
 		*/
-		void doSetImage1D( renderer::ImageUsageFlags usageFlags
-			, renderer::ImageTiling tiling
-			, renderer::MemoryPropertyFlags memoryFlags )override;
+		void doSetImage1D( uint32_t width );
 		/**
 		*\copydoc	renderer::Texture::doSetImage2D
 		*/
-		void doSetImage2D( renderer::ImageUsageFlags usageFlags
-			, renderer::ImageTiling tiling
-			, renderer::MemoryPropertyFlags memoryFlags )override;
+		void doSetImage2D( uint32_t width
+			, uint32_t height );
 		/**
 		*\copydoc	renderer::Texture::doSetImage3D
 		*/
-		void doSetImage3D( renderer::ImageUsageFlags usageFlags
-			, renderer::ImageTiling tiling
-			, renderer::MemoryPropertyFlags memoryFlags )override;
+		void doSetImage3D( uint32_t width
+			, uint32_t height
+			, uint32_t depth );
+		/**
+		*\copydoc	renderer::Texture::doSetImage2D
+		*/
+		void doSetImage2DMS( uint32_t width
+			, uint32_t height
+			, renderer::SampleCountFlag samples );
+		/**
+		*\copydoc	renderer::Texture::doSetImage2D
+		*/
+		void doSetImage3DMS( uint32_t width
+			, uint32_t height
+			, uint32_t depth
+			, renderer::SampleCountFlag samples );
 
 	private:
 		Device const & m_device;

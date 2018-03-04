@@ -122,7 +122,7 @@ namespace vkapp
 			attaches.emplace_back( *( renderPass.begin() + 0u ), depthView );
 			attaches.emplace_back( *( renderPass.begin() + 1u ), colourView );
 			auto dimensions = colourView.getTexture().getDimensions();
-			return renderPass.createFrameBuffer( renderer::UIVec2{ dimensions[0], dimensions[1] }
+			return renderPass.createFrameBuffer( renderer::UIVec2{ dimensions.width, dimensions.height }
 				, std::move( attaches ) );
 		}
 
@@ -255,7 +255,7 @@ namespace vkapp
 			, renderer::PipelineStageFlag::eFragmentShader );
 
 		auto dimensions = m_depthView->getTexture().getDimensions();
-		auto size = renderer::UIVec2{ dimensions[0], dimensions[1] };
+		auto size = renderer::UIVec2{ dimensions.width, dimensions.height };
 		m_frameBuffer = doCreateFrameBuffer( *m_renderPass, *m_depthView, *m_colourView );
 		m_gbufferDescriptorSet.reset();
 		m_gbufferDescriptorSet = m_gbufferDescriptorPool->createDescriptorSet( 0u );

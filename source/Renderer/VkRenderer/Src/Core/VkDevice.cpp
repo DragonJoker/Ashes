@@ -187,9 +187,10 @@ namespace vk_renderer
 		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
 	}
 
-	renderer::TexturePtr Device::createTexture( renderer::ImageLayout initialLayout )const
+	renderer::TexturePtr Device::createTexture( renderer::ImageCreateInfo const & createInfo
+		, renderer::MemoryPropertyFlags flags )const
 	{
-		return std::make_shared< Texture >( *this, initialLayout );
+		return std::make_shared< Texture >( *this, createInfo, flags );
 	}
 
 	renderer::SamplerPtr Device::createSampler( renderer::WrapMode wrapS

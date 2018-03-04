@@ -70,10 +70,21 @@ namespace vk_renderer
 			{
 				if ( !m_depth )
 				{
-					m_depth = m_device.createTexture( renderer::ImageLayout::eUndefined );
-					m_depth->setImage( attach.format
-						, getDimensions()
-						, renderer::ImageUsageFlag::eDepthStencilAttachment );
+					m_depth = m_device.createTexture(
+						{
+							renderer::TextureType::e2D,
+							attach.format,
+							renderer::Extent3D{ getDimensions()[0], getDimensions()[1], 1u },
+							1u,
+							1u,
+							renderer::SampleCountFlag::e1,
+							renderer::ImageTiling::eOptimal,
+							renderer::ImageUsageFlag::eDepthStencilAttachment,
+							renderer::SharingMode::eExclusive,
+							{},
+							renderer::ImageLayout::eUndefined,
+						},
+						renderer::MemoryPropertyFlag::eDeviceLocal );
 					m_depthView = m_depth->createView( renderer::TextureType::e2D
 						, attach.format );
 				}

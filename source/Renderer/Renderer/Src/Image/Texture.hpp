@@ -7,6 +7,8 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "ComponentMapping.hpp"
+#include "ImageCreateInfo.hpp"
+#include "ImageViewCreateInfo.hpp"
 
 namespace renderer
 {
@@ -53,7 +55,12 @@ namespace renderer
 		*\param[in] device
 		*	The logical device.
 		*/
-		Texture( Device const & device );
+		Texture( Device const & device
+			, TextureType type
+			, PixelFormat format
+			, Extent3D dimensions
+			, uint32_t mipLevels
+			, uint32_t arrayLayers );
 
 	public:
 		Texture & operator=( Texture const & ) = delete;
@@ -70,358 +77,16 @@ namespace renderer
 		/**
 		*\~french
 		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
-		*\param[in] usageFlags
-		*	Les indicateurs d'utilisation de l'image.
-		*\param[in] tiling
-		*	Le mode de tiling de l'image.
+		*	Crée une vue sur la texture.
+		*\param[in] createInfo
+		*	Les informations de création de la vue.
 		*\~english
 		*\brief
-		*	Loads the texture image.
-		*\param[in] format
-		*	The pixel format.
-		*\param[in] size
-		*	The image dimensions.
-		*\param[in] usageFlags
-		*	The image usage flags.
-		*\param[in] tiling
-		*	The image tiling mode.
+		*	Creates a view to the texture.
+		*\param[in] createInfo
+		*	The view creation informations.
 		*/
-		void setImage( PixelFormat format
-			, uint32_t size
-			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal
-			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
-		/**
-		*\~french
-		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
-		*\param[in] usageFlags
-		*	Les indicateurs d'utilisation de l'image.
-		*\param[in] tiling
-		*	Le mode de tiling de l'image.
-		*\param[in] samples
-		*	Le nombre d'échantillons de l'image.
-		*\~english
-		*\brief
-		*	Loads the texture image.
-		*\param[in] format
-		*	The pixel format.
-		*\param[in] size
-		*	The image dimensions.
-		*\param[in] usageFlags
-		*	The image usage flags.
-		*\param[in] tiling
-		*	The image tiling mode.
-		*\param[in] samples
-		*	The image samples count.
-		*/
-		void setImage( PixelFormat format
-			, UIVec2 const & size
-			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal
-			, SampleCountFlag samples = SampleCountFlag::e1
-			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
-		/**
-		*\~french
-		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
-		*\param[in] usageFlags
-		*	Les indicateurs d'utilisation de l'image.
-		*\param[in] tiling
-		*	Le mode de tiling de l'image.
-		*\param[in] samples
-		*	Le nombre d'échantillons de l'image.
-		*\~english
-		*\brief
-		*	Loads the texture image.
-		*\param[in] format
-		*	The pixel format.
-		*\param[in] size
-		*	The image dimensions.
-		*\param[in] usageFlags
-		*	The image usage flags.
-		*\param[in] tiling
-		*	The image tiling mode.
-		*\param[in] samples
-		*	The image samples count.
-		*/
-		void setImage( PixelFormat format
-			, UIVec3 const & size
-			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal
-			, SampleCountFlag samples = SampleCountFlag::e1
-			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
-		/**
-		*\~french
-		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
-		*\param[in] layerCount
-		*	Le nombre de couches.
-		*\param[in] usageFlags
-		*	Les indicateurs d'utilisation de l'image.
-		*\param[in] tiling
-		*	Le mode de tiling de l'image.
-		*\~english
-		*\brief
-		*	Loads the texture image.
-		*\param[in] format
-		*	The pixel format.
-		*\param[in] size
-		*	The image dimensions.
-		*\param[in] layerCount
-		*	The number of layers.
-		*\param[in] usageFlags
-		*	The image usage flags.
-		*\param[in] tiling
-		*	The image tiling mode.
-		*/
-		void setImageArray( PixelFormat format
-			, uint32_t size
-			, uint32_t layerCount
-			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal
-			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
-		/**
-		*\~french
-		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
-		*\param[in] layerCount
-		*	Le nombre de couches.
-		*\param[in] usageFlags
-		*	Les indicateurs d'utilisation de l'image.
-		*\param[in] tiling
-		*	Le mode de tiling de l'image.
-		*\~english
-		*\brief
-		*	Loads the texture image.
-		*\param[in] format
-		*	The pixel format.
-		*\param[in] size
-		*	The image dimensions.
-		*\param[in] layerCount
-		*	The number of layers.
-		*\param[in] usageFlags
-		*	The image usage flags.
-		*\param[in] tiling
-		*	The image tiling mode.
-		*/
-		void setImageArray( PixelFormat format
-			, UIVec2 const & size
-			, uint32_t layerCount
-			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal
-			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
-		/**
-		*\~french
-		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
-		*\param[in] mipmapLevels
-		*	Le nombre de niveaux de mipmaps de la texture.
-		*\param[in] usageFlags
-		*	Les indicateurs d'utilisation de l'image.
-		*\param[in] tiling
-		*	Le mode de tiling de l'image.
-		*\~english
-		*\brief
-		*	Loads the texture image.
-		*\param[in] format
-		*	The pixel format.
-		*\param[in] size
-		*	The image dimensions.
-		*\param[in] mipmapLevels
-		*	The mipmap levels count for the texture.
-		*\param[in] usageFlags
-		*	The image usage flags.
-		*\param[in] tiling
-		*	The image tiling mode.
-		*/
-		void setImage( PixelFormat format
-			, uint32_t size
-			, uint32_t mipmapLevels
-			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal
-			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
-		/**
-		*\~french
-		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
-		*\param[in] mipmapLevels
-		*	Le nombre de niveaux de mipmaps de la texture.
-		*\param[in] usageFlags
-		*	Les indicateurs d'utilisation de l'image.
-		*\param[in] tiling
-		*	Le mode de tiling de l'image.
-		*\param[in] samples
-		*	Le nombre d'échantillons de l'image.
-		*\~english
-		*\brief
-		*	Loads the texture image.
-		*\param[in] format
-		*	The pixel format.
-		*\param[in] size
-		*	The image dimensions.
-		*\param[in] mipmapLevels
-		*	The mipmap levels count for the texture.
-		*\param[in] usageFlags
-		*	The image usage flags.
-		*\param[in] tiling
-		*	The image tiling mode.
-		*\param[in] samples
-		*	The image samples count.
-		*/
-		void setImage( PixelFormat format
-			, UIVec2 const & size
-			, uint32_t mipmapLevels
-			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal
-			, SampleCountFlag samples = SampleCountFlag::e1
-			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
-		/**
-		*\~french
-		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
-		*\param[in] mipmapLevels
-		*	Le nombre de niveaux de mipmaps de la texture.
-		*\param[in] usageFlags
-		*	Les indicateurs d'utilisation de l'image.
-		*\param[in] tiling
-		*	Le mode de tiling de l'image.
-		*\param[in] samples
-		*	Le nombre d'échantillons de l'image.
-		*\~english
-		*\brief
-		*	Loads the texture image.
-		*\param[in] format
-		*	The pixel format.
-		*\param[in] size
-		*	The image dimensions.
-		*\param[in] mipmapLevels
-		*	The mipmap levels count for the texture.
-		*\param[in] usageFlags
-		*	The image usage flags.
-		*\param[in] tiling
-		*	The image tiling mode.
-		*\param[in] samples
-		*	The image samples count.
-		*/
-		void setImage( PixelFormat format
-			, UIVec3 const & size
-			, uint32_t mipmapLevels
-			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal
-			, SampleCountFlag samples = SampleCountFlag::e1
-			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
-		/**
-		*\~french
-		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
-		*\param[in] layerCount
-		*	Le nombre de couches.
-		*\param[in] mipmapLevels
-		*	Le nombre de niveaux de mipmaps de la texture.
-		*\param[in] usageFlags
-		*	Les indicateurs d'utilisation de l'image.
-		*\param[in] tiling
-		*	Le mode de tiling de l'image.
-		*\~english
-		*\brief
-		*	Loads the texture image.
-		*\param[in] format
-		*	The pixel format.
-		*\param[in] size
-		*	The image dimensions.
-		*\param[in] layerCount
-		*	The number of layers.
-		*\param[in] mipmapLevels
-		*	The mipmap levels count for the texture.
-		*\param[in] usageFlags
-		*	The image usage flags.
-		*\param[in] tiling
-		*	The image tiling mode.
-		*/
-		void setImageArray( PixelFormat format
-			, uint32_t size
-			, uint32_t layerCount
-			, uint32_t mipmapLevels
-			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal
-			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
-		/**
-		*\~french
-		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] format
-		*	Le format de l'image.
-		*\param[in] size
-		*	Les dimensions de l'image.
-		*\param[in] layerCount
-		*	Le nombre de couches.
-		*\param[in] mipmapLevels
-		*	Le nombre de niveaux de mipmaps de la texture.
-		*\param[in] usageFlags
-		*	Les indicateurs d'utilisation de l'image.
-		*\param[in] tiling
-		*	Le mode de tiling de l'image.
-		*\~english
-		*\brief
-		*	Loads the texture image.
-		*\param[in] format
-		*	The pixel format.
-		*\param[in] size
-		*	The image dimensions.
-		*\param[in] layerCount
-		*	The number of layers.
-		*\param[in] mipmapLevels
-		*	The mipmap levels count for the texture.
-		*\param[in] usageFlags
-		*	The image usage flags.
-		*\param[in] tiling
-		*	The image tiling mode.
-		*/
-		void setImageArray( PixelFormat format
-			, UIVec2 const & size
-			, uint32_t layerCount
-			, uint32_t mipmapLevels
-			, ImageUsageFlags usageFlags = ImageUsageFlag::eTransferDst | ImageUsageFlag::eSampled
-			, ImageTiling tiling = ImageTiling::eOptimal
-			, MemoryPropertyFlags memoryFlags = MemoryPropertyFlag::eDeviceLocal );
+		virtual TextureViewPtr createView( ImageViewCreateInfo const & createInfo )const = 0;
 		/**
 		*\~french
 		*\brief
@@ -458,13 +123,13 @@ namespace renderer
 		*\param[in] mapping
 		*	The colours component mapping.
 		*/
-		virtual TextureViewPtr createView( TextureType type
+		TextureViewPtr createView( TextureType type
 			, PixelFormat format
 			, uint32_t baseMipLevel = 0u
 			, uint32_t levelCount = 1u
 			, uint32_t baseArrayLayer = 0u
 			, uint32_t layerCount = 1u
-			, ComponentMapping const & mapping = ComponentMapping{} )const = 0;
+			, ComponentMapping const & mapping = ComponentMapping{} )const;
 		/**
 		*\~french
 		*\brief
@@ -496,7 +161,7 @@ namespace renderer
 		*/
 		inline uint32_t getLayerCount()const noexcept
 		{
-			return m_layerCount;
+			return m_arrayLayers;
 		}
 		/**
 		*\~french
@@ -508,7 +173,7 @@ namespace renderer
 		*/
 		inline uint32_t getMipmapLevels()const noexcept
 		{
-			return m_mipmapLevels;
+			return m_mipLevels;
 		}
 		/**
 		*\~french
@@ -518,9 +183,9 @@ namespace renderer
 		*\return
 		*	The texture dimensions.
 		*/
-		inline UIVec3 const & getDimensions()const noexcept
+		inline Extent3D const & getDimensions()const noexcept
 		{
-			return m_size;
+			return m_dimensions;
 		}
 		/**
 		*\~french
@@ -532,88 +197,16 @@ namespace renderer
 		*/
 		inline TextureType getType()const
 		{
-			return m_type;
+			return m_imageType;
 		}
-
-	private:
-		/**
-		*\~french
-		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] usageFlags
-		*	Les indicateurs d'utilisation de l'image.
-		*\param[in] tiling
-		*	Le mode de tiling de l'image.
-		*\param[in] memoryFlags
-		*	Les indicateurs de mémoire de l'image.
-		*\~english
-		*\brief
-		*	Loads the texture image.
-		*\param[in] usageFlags
-		*	The image usage flags.
-		*\param[in] tiling
-		*	The image tiling mode.
-		*\param[in] memoryFlags
-		*	The image memory flags.
-		*/
-		virtual void doSetImage1D( ImageUsageFlags usageFlags
-			, ImageTiling tiling
-			, MemoryPropertyFlags memoryFlags ) = 0;
-		/**
-		*\~french
-		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] usageFlags
-		*	Les indicateurs d'utilisation de l'image.
-		*\param[in] tiling
-		*	Le mode de tiling de l'image.
-		*\param[in] memoryFlags
-		*	Les indicateurs de mémoire de l'image.
-		*\~english
-		*\brief
-		*	Loads the texture image.
-		*\param[in] usageFlags
-		*	The image usage flags.
-		*\param[in] tiling
-		*	The image tiling mode.
-		*\param[in] memoryFlags
-		*	The image memory flags.
-		*/
-		virtual void doSetImage2D( ImageUsageFlags usageFlags
-			, ImageTiling tiling
-			, MemoryPropertyFlags memoryFlags ) = 0;
-		/**
-		*\~french
-		*\brief
-		*	Charge l'image de la texture.
-		*\param[in] usageFlags
-		*	Les indicateurs d'utilisation de l'image.
-		*\param[in] tiling
-		*	Le mode de tiling de l'image.
-		*\param[in] memoryFlags
-		*	Les indicateurs de mémoire de l'image.
-		*\~english
-		*\brief
-		*	Loads the texture image.
-		*\param[in] usageFlags
-		*	The image usage flags.
-		*\param[in] tiling
-		*	The image tiling mode.
-		*\param[in] memoryFlags
-		*	The image memory flags.
-		*/
-		virtual void doSetImage3D( ImageUsageFlags usageFlags
-			, ImageTiling tiling
-			, MemoryPropertyFlags memoryFlags ) = 0;
 
 	protected:
 		Device const & m_device;
-		UIVec3 m_size;
-		TextureType m_type{ TextureType::eCount };
-		uint32_t m_layerCount{ 1u };
-		uint32_t m_mipmapLevels{ 1u };
-		PixelFormat m_format{ PixelFormat::eR8G8B8 };
-		SampleCountFlag m_samples{ SampleCountFlag::e1 };
+		TextureType m_imageType;
+		PixelFormat m_format;
+		Extent3D m_dimensions;
+		uint32_t m_mipLevels;
+		uint32_t m_arrayLayers;
 	};
 }
 

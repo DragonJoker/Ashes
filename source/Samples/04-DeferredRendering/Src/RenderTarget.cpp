@@ -171,16 +171,24 @@ namespace vkapp
 		size_t index = 0u;
 		renderer::UIVec2 size
 		{
-			getColourView().getTexture().getDimensions()[0],
-			getColourView().getTexture().getDimensions()[1],
+			getColourView().getTexture().getDimensions().width,
+			getColourView().getTexture().getDimensions().height,
 		};
 
 		for ( auto & texture : m_gbuffer )
 		{
-			texture.texture = m_device.createTexture();
-			texture.texture->setImage( formats[index]
-				, size
-				, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
+			texture.texture = m_device.createTexture(
+				{
+					renderer::TextureType::e2D,
+					formats[index],
+					getColourView().getTexture().getDimensions(),
+					1u,
+					1u,
+					renderer::SampleCountFlag::e1,
+					renderer::ImageTiling::eOptimal,
+					renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled
+				}
+				, renderer::MemoryPropertyFlag::eDeviceLocal );
 			texture.view = texture.texture->createView( renderer::TextureType::e2D
 				, texture.texture->getFormat() );
 			++index;

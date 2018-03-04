@@ -10,6 +10,7 @@ See LICENSE file in root folder.
 #include "Command/Queue.hpp"
 #include "Core/Connection.hpp"
 #include "Core/PhysicalDevice.hpp"
+#include "Image/ImageCreateInfo.hpp"
 #include "Pipeline/ColourBlendState.hpp"
 #include "Pipeline/RasterisationState.hpp"
 
@@ -209,15 +210,16 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Creates a texture.
-		*\param[in] initialLayout
-		*	The image initial layout.
+		*\param[in] createInfo
+		*	The creation informations.
 		*\~french
 		*\brief
 		*	Crée une texture.
-		*\param[in] initialLayout
-		*	Le layout initial pour l'image.
+		*\param[in] createInfo
+		*	Les informations de création.
 		*/
-		virtual TexturePtr createTexture( ImageLayout initialLayout = ImageLayout::eUndefined )const = 0;
+		virtual TexturePtr createTexture( ImageCreateInfo const & createInfo
+			, MemoryPropertyFlags flags )const = 0;
 		/**
 		*\~english
 		*\brief

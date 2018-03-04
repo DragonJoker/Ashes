@@ -36,22 +36,80 @@ namespace vkapp
 
 	namespace
 	{
-		renderer::TextureViewPtr doCreateTexture( renderer::Device & device
+		renderer::TexturePtr doCreateTexture( renderer::Device & device
 			, renderer::CommandBuffer const & commandBuffer
-			, renderer::StagingBuffer & stagingBuffer
-			, common::ImageData const & image
-			, renderer::Texture & texture
-			, std::string const & filePath )
+			, common::ImageData const & image )
 		{
-			texture.setImage( image.format, renderer::UIVec2{ image.size[0], image.size[1] } );
+			auto result = device.createTexture(
+				{
+					renderer::TextureType::e2D,
+					image.format,
+					renderer::Extent3D{ uint32_t( image.size[0] ), uint32_t( image.size[1] ), 1u },
+					1u,
+					1u,
+					renderer::SampleCountFlag::e1,
+					renderer::ImageTiling::eOptimal,
+					renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst
+				}
+				, renderer::MemoryPropertyFlag::eDeviceLocal );
 
-			auto result = texture.createView( renderer::TextureType::e2D
-				, image.format );
+			renderer::BufferBasePtr staging = device.createBuffer( uint32_t( image.data.size() )
+				, renderer::BufferTarget::eTransferSrc
+				, renderer::MemoryPropertyFlag::eHostVisible | renderer::MemoryPropertyFlag::eHostCoherent );
 
-			stagingBuffer.uploadTextureData( commandBuffer
-				, image.data.data()
-				, image.data.size()
+			if ( auto * buffer = staging->lock( 0u, uint32_t( image.data.size() ), renderer::MemoryMapFlag::eWrite ) )
+			{
+				std::memcpy( buffer, image.data.data(), image.data.size() );
+				staging->unlock();
+			}
+
+			renderer::BufferImageCopy bufferCopyRegion{};
+			bufferCopyRegion.imageSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
+			bufferCopyRegion.imageSubresource.mipLevel = 0u;
+			bufferCopyRegion.imageSubresource.baseArrayLayer = 0u;
+			bufferCopyRegion.imageSubresource.layerCount = 1u;
+			bufferCopyRegion.imageExtent.width = image.size[0];
+			bufferCopyRegion.imageExtent.height = image.size[1];
+			bufferCopyRegion.imageExtent.depth = 1;
+			bufferCopyRegion.bufferOffset = 0u;
+			bufferCopyRegion.levelSize = uint32_t( image.data.size() );
+			renderer::ImageSubresourceRange subresourceRange
+			{
+				renderer::ImageAspectFlag::eColour,
+				0u,
+				1u,
+				0u,
+				1u,
+			};
+			commandBuffer.begin();
+			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eAllCommands
+				, renderer::PipelineStageFlag::eAllCommands
+				, renderer::ImageMemoryBarrier{ 0u
+					, renderer::AccessFlag::eTransferWrite
+					, renderer::ImageLayout::eUndefined
+					, renderer::ImageLayout::eTransferDstOptimal
+					, ~( 0u )
+					, ~( 0u )
+					, *result
+					, subresourceRange } );
+			commandBuffer.copyToImage( bufferCopyRegion
+				, *staging
 				, *result );
+			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eAllCommands
+				, renderer::PipelineStageFlag::eAllCommands
+				, renderer::ImageMemoryBarrier{ renderer::AccessFlag::eTransferWrite
+					, renderer::AccessFlag::eShaderRead
+					, renderer::ImageLayout::eTransferDstOptimal
+					, renderer::ImageLayout::eShaderReadOnlyOptimal
+					, ~( 0u )
+					, ~( 0u )
+					, *result
+				, subresourceRange } );
+
+			commandBuffer.end();
+			auto fence = device.createFence();
+			device.getGraphicsQueue().submit( commandBuffer, fence.get() );
+			fence->wait( renderer::FenceTimeout );
 
 			return result;
 		}
@@ -184,8 +242,8 @@ namespace vkapp
 		, m_commandBuffer{ device.getGraphicsCommandPool().createCommandBuffer() }
 		, m_image{ common::loadImage( filePath ) }
 		, m_stagingBuffer{ device, renderer::BufferTarget::eTransferSrc, uint32_t( m_image.data.size() ) }
-		, m_texture{ device.createTexture() }
-		, m_view{ doCreateTexture( m_device, *m_commandBuffer, m_stagingBuffer, m_image, *m_texture, filePath ) }
+		, m_texture{ doCreateTexture( m_device, *m_commandBuffer, m_image ) }
+		, m_view{ m_texture->createView( renderer::TextureType::e2D, m_image.format ) }
 		, m_sampler{ doCreateSampler( m_device ) }
 		, m_matrixUbo{ doCreateMatrixUbo( m_device, *m_commandBuffer, m_stagingBuffer ) }
 		, m_vertexBuffer{ doCreateVertexBuffer( m_device, *m_commandBuffer, m_stagingBuffer ) }
@@ -194,7 +252,7 @@ namespace vkapp
 		, m_descriptorPool{ m_descriptorLayout->createPool( 6u ) }
 		, m_pipelineLayout{ m_device.createPipelineLayout( *m_descriptorLayout ) }
 	{
-		auto size = renderer::UIVec2{ texture.getDimensions()[0], texture.getDimensions()[1] };
+		auto size = renderer::UIVec2{ texture.getDimensions().width, texture.getDimensions().height };
 		uint32_t face = 0u;
 		std::vector< renderer::PixelFormat > formats{ 1u, m_target.getFormat() };
 		renderer::RenderPassAttachmentArray rpAttaches

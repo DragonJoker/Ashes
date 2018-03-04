@@ -55,6 +55,7 @@ See LICENSE file in root folder.
 #include "Enum/RasterisationStateFlag.hpp"
 #include "Enum/SampleCountFlag.hpp"
 #include "Enum/ShaderStageFlag.hpp"
+#include "Enum/SharingMode.hpp"
 #include "Enum/StencilOp.hpp"
 #include "Enum/SubpassContents.hpp"
 #include "Enum/TessellationStateFlag.hpp"
@@ -107,6 +108,7 @@ namespace renderer
 	struct ImageCopy;
 	struct ImageBlit;
 	struct ImageFormatProperties;
+	struct ImageSubresourceRange;
 	struct MemoryHeap;
 	struct MemoryType;
 	struct PhysicalDeviceFeatures;
@@ -146,7 +148,6 @@ namespace renderer
 	class Fence;
 	class FrameBuffer;
 	class ImageMemoryBarrier;
-	class ImageSubresourceRange;
 	class InputAssemblyState;
 	class IWindowHandle;
 	class MultisampleState;

@@ -318,8 +318,18 @@ namespace vkapp
 	{
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
-		m_texture = m_device->createTexture();
-		m_texture->setImage( image.format, { image.size[0], image.size[1] } );
+		m_texture = m_device->createTexture(
+			{
+				renderer::TextureType::e2D,
+				image.format,
+				{ image.size[0], image.size[1], 1u },
+				1u,
+				1u,
+				renderer::SampleCountFlag::e1,
+				renderer::ImageTiling::eOptimal,
+				renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
+			}
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_view = m_texture->createView( m_texture->getType()
 			, image.format );
 		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
@@ -443,17 +453,33 @@ namespace vkapp
 	void RenderPanel::doCreateFrameBuffer()
 	{
 		auto size = GetClientSize();
-		m_renderTargetColour = m_device->createTexture();
-		m_renderTargetColour->setImage( ColourFormat
-			, { size.GetWidth(), size.GetHeight() }
-			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eStorage );
+		m_renderTargetColour = m_device->createTexture(
+			{
+				renderer::TextureType::e2D,
+				ColourFormat,
+				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
+				1u,
+				1u,
+				renderer::SampleCountFlag::e1,
+				renderer::ImageTiling::eOptimal,
+				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eStorage
+			}
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_renderTargetColourView = m_renderTargetColour->createView( m_renderTargetColour->getType()
 			, m_renderTargetColour->getFormat() );
-
-		m_renderTargetDepth = m_device->createTexture();
-		m_renderTargetDepth->setImage( DepthFormat
-			, { size.GetWidth(), size.GetHeight() }
-			, renderer::ImageUsageFlag::eDepthStencilAttachment );
+		
+		m_renderTargetDepth = m_device->createTexture(
+			{
+				renderer::TextureType::e2D,
+				DepthFormat,
+				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
+				1u,
+				1u,
+				renderer::SampleCountFlag::e1,
+				renderer::ImageTiling::eOptimal,
+				renderer::ImageUsageFlag::eDepthStencilAttachment
+			}
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_renderTargetDepthView = m_renderTargetDepth->createView( m_renderTargetDepth->getType()
 			, m_renderTargetDepth->getFormat() );
 		renderer::FrameBufferAttachmentArray attaches;

@@ -18,13 +18,18 @@ namespace vk_renderer
 		, m_image{ std::move( texture ) }
 		, m_view{ device
 			, m_image
-			, m_image.getType()
-			, format
-			, 0u
-			, 1u
-			, 0u
-			, 1u
-			, renderer::ComponentMapping{} }
+			, { 
+				m_image.getType(),
+				format,
+				renderer::ComponentMapping{},
+				{
+					renderer::getAspectMask( format ),
+					0u,
+					1u,
+					0u,
+					1u,
+				}
+			} }
 	{
 	}
 }

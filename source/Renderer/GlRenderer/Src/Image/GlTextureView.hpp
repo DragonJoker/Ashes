@@ -68,13 +68,7 @@ namespace gl_renderer
 		*/
 		TextureView( Device const & device
 			, Texture const & image
-			, renderer::TextureType type
-			, renderer::PixelFormat format
-			, uint32_t baseMipLevel
-			, uint32_t levelCount
-			, uint32_t baseArrayLayer
-			, uint32_t layerCount
-			, renderer::ComponentMapping const & mapping );
+			, renderer::ImageViewCreateInfo const & createInfo );
 		/**
 		*\~french
 		*\brief

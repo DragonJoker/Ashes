@@ -47,7 +47,9 @@ namespace vk_renderer
 		*\param[in] initialLayout
 		*	Le layout initial de l'image.
 		*/
-		Texture( Device const & device, renderer::ImageLayout initialLayout );
+		Texture( Device const & device
+			, renderer::ImageCreateInfo const & createInfo
+			, renderer::MemoryPropertyFlags memoryFlags );
 		/**
 		*\brief
 		*	Constructeur.
@@ -132,13 +134,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::Texture::createView
 		*/
-		renderer::TextureViewPtr createView( renderer::TextureType type
-			, renderer::PixelFormat format
-			, uint32_t baseMipLevel
-			, uint32_t levelCount
-			, uint32_t baseArrayLayer
-			, uint32_t layerCount
-			, renderer::ComponentMapping const & mapping )const override;
+		renderer::TextureViewPtr createView( renderer::ImageViewCreateInfo const & createInfo )const override;
 		/**
 		*\copydoc	renderer::Texture::generateMipmaps
 		*/
@@ -155,26 +151,6 @@ namespace vk_renderer
 		{
 			return m_image;
 		}
-
-	private:
-		/**
-		*\copydoc	renderer::Texture::doSetImage1D
-		*/
-		void doSetImage1D( renderer::ImageUsageFlags usageFlags
-			, renderer::ImageTiling tiling
-			, renderer::MemoryPropertyFlags memoryFlags )override;
-		/**
-		*\copydoc	renderer::Texture::doSetImage2D
-		*/
-		void doSetImage2D( renderer::ImageUsageFlags usageFlags
-			, renderer::ImageTiling tiling
-			, renderer::MemoryPropertyFlags memoryFlags )override;
-		/**
-		*\copydoc	renderer::Texture::doSetImage3D
-		*/
-		void doSetImage3D( renderer::ImageUsageFlags usageFlags
-			, renderer::ImageTiling tiling
-			, renderer::MemoryPropertyFlags memoryFlags )override;
 
 	private:
 		Device const & m_device;

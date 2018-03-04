@@ -6,10 +6,7 @@ See LICENSE file in root folder.
 #define ___Renderer_TextureView_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
-
-#include "Image/ComponentMapping.hpp"
-#include "Image/ImageSubresourceRange.hpp"
+#include "ImageViewCreateInfo.hpp"
 
 namespace renderer
 {
@@ -32,20 +29,8 @@ namespace renderer
 		*	La connexion logique au GPU.
 		*\param[in] image
 		*	L'image sur laquelle la vue est créée.
-		*\param[in] type
-		*	Le type de texture de la vue.
-		*\param[in] format
-		*	Le format des pixels de la vue.
-		*\param[in] baseMipLevel
-		*	Le premier niveau de mipmap accessible à la vue.
-		*\param[in] levelCount
-		*	Le nombre de niveaux de mipmap (à partir de \p baseMipLevel) accessibles à la vue.
-		*\param[in] baseArrayLayer
-		*	La première couche de tableau accessible à la vue.
-		*\param[in] layerCount
-		*	Le nombre de couches de tableau (à partir de \p baseArrayLayer) accessibles à la vue.
-		*\param[in] mapping
-		*	Le mapping des composantes de couleur.
+		*\param[in] createInfo
+		*	Les informations de création de la vue.
 		*\~english
 		*\brief
 		*	Constructor.
@@ -53,30 +38,12 @@ namespace renderer
 		*	The logical connection to the GPU.
 		*\param[in] image
 		*	The image from which the view is created.
-		*\param[in] type
-		*	The view's texture type.
-		*\param[in] format
-		*	The view's pixels format.
-		*\param[in] baseMipLevel
-		*	The first mipmap level accessible to the view.
-		*\param[in] levelCount
-		*	The number of mipmap levels (starting from \p baseMipLevel) accessible to the view.
-		*\param[in] baseArrayLayer
-		*	The first array layer accessible to the view.
-		*\param[in] layerCount
-		*	The number of array layers (starting from \p baseArrayLayer) accessible to the view.
-		*\param[in] mapping
-		*	The colours component mapping.
+		*\param[in] createInfo
+		*	The view creation informations.
 		*/
 		TextureView( Device const & device
 			, Texture const & image
-			, TextureType type
-			, PixelFormat format
-			, uint32_t baseMipLevel
-			, uint32_t levelCount
-			, uint32_t baseArrayLayer
-			, uint32_t layerCount
-			, ComponentMapping const & mapping );
+			, ImageViewCreateInfo const & createInfo );
 
 	public:
 		/**
@@ -359,7 +326,7 @@ namespace renderer
 		*/
 		inline TextureType getType()const
 		{
-			return m_type;
+			return m_createInfo.viewType;
 		}
 		/**
 		*\~french
@@ -371,7 +338,7 @@ namespace renderer
 		*/
 		inline PixelFormat getFormat()const
 		{
-			return m_format;
+			return m_createInfo.format;
 		}
 		/**
 		*\~french
@@ -395,7 +362,7 @@ namespace renderer
 		*/
 		inline ImageSubresourceRange const & getSubResourceRange()const
 		{
-			return m_subResourceRange;
+			return m_createInfo.subresourceRange;
 		}
 
 	private:
@@ -440,12 +407,12 @@ namespace renderer
 			, uint32_t srcQueueFamily
 			, uint32_t dstQueueFamily )const = 0;
 
+	protected:
+		ImageViewCreateInfo m_createInfo;
+
 	private:
 		Device const & m_device;
 		Texture const & m_image;
-		TextureType m_type{ TextureType::eCount };
-		PixelFormat m_format{};
-		ImageSubresourceRange m_subResourceRange{};
 	};
 }
 

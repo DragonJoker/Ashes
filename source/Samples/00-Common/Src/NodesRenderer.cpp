@@ -165,7 +165,7 @@ namespace common
 			}
 
 			auto dimensions = views[0].get().getTexture().getDimensions();
-			return renderPass.createFrameBuffer( renderer::UIVec2{ dimensions[0], dimensions[1] }
+			return renderPass.createFrameBuffer( renderer::UIVec2{ dimensions.width, dimensions.height }
 			, std::move( attaches ) );
 		}
 
@@ -286,7 +286,7 @@ namespace common
 	{
 		assert( !views.empty() );
 		auto dimensions = views[0].get().getTexture().getDimensions();
-		auto size = renderer::UIVec2{ dimensions[0], dimensions[1] };
+		auto size = renderer::UIVec2{ dimensions.width, dimensions.height };
 
 		if ( size != m_size )
 		{

@@ -69,7 +69,8 @@ namespace gl_renderer
 		/**
 		*\copydoc		renderer::Device::createTexture
 		*/
-		renderer::TexturePtr createTexture( renderer::ImageLayout initialLayout )const override;
+		renderer::TexturePtr createTexture( renderer::ImageCreateInfo const & createInfo
+			, renderer::MemoryPropertyFlags flags )const override;
 		/**
 		*\copydoc		renderer::Device::createSampler
 		*/
