@@ -11,6 +11,7 @@ See LICENSE file in root folder.
 #include "Core/Connection.hpp"
 #include "Core/PhysicalDevice.hpp"
 #include "Image/ImageCreateInfo.hpp"
+#include "Image/SamplerCreateInfo.hpp"
 #include "Pipeline/ColourBlendState.hpp"
 #include "Pipeline/RasterisationState.hpp"
 
@@ -224,58 +225,15 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Creates a sampler.
-		*\param[in] wrapS, wrapT, wrapR
-		*	The texture wrap modes.
-		*\param[in] minFilter, magFilter
-		*	The minification and magnification filters.
-		*\param[in] mipFilter
-		*	The mipmap filter.
-		*\param[in] minLod
-		*	Minimal LOD Level.
-		*\param[in] maxLod
-		*	Maximal LOD Level.
-		*\param[in] lodBias
-		*	The texture LOD offset.
-		*\param[in] borderColour
-		*	Texture border colour.
-		*\param[in] maxAnisotropy
-		*	Maximal anisotropic filtering value.
-		*\param[in] compareOp
-		*	The comparison operator, for depth maps.
+		*\param[in] createInfo
+		*	The creation informations.
 		*\~french
 		*\brief
 		*	Crée un échantillonneur.
-		*\param[in] wrapS, wrapT, wrapR
-		*	Les modes de wrap de texture.
-		*\param[in] minFilter, magFilter
-		*	Les filtres de minification et magnification.
-		*\param[in] mipFilter
-		*	Le filtre de mipmap.
-		*\param[in] minLod
-		*	Niveau de LOD minimal.
-		*\param[in] maxLod
-		*	Niveau de LOD maximal.
-		*\param[in] lodBias
-		*	Le décalage de LOD de la texture.
-		*\param[in] borderColour
-		*	Couleur des bords de la texture.
-		*\param[in] maxAnisotropy
-		*	Valeur maximale pour le filtrage anisotropique.
-		*\param[in] compareOp
-		*	L'opérateur de comparaison, pour les textures de profondeur.
+		*\param[in] createInfo
+		*	Les informations de création.
 		*/
-		virtual SamplerPtr createSampler( WrapMode wrapS
-			, WrapMode wrapT
-			, WrapMode wrapR
-			, Filter minFilter
-			, Filter magFilter
-			, MipmapMode mipFilter = MipmapMode::eNone
-			, float minLod = -1000.0f
-			, float maxLod = 1000.0f
-			, float lodBias = 0.0f
-			, BorderColour borderColour = BorderColour::eFloatOpaqueBlack
-			, float maxAnisotropy = 1.0f
-			, CompareOp compareOp = CompareOp::eAlways )const = 0;
+		virtual SamplerPtr createSampler( SamplerCreateInfo const & createInfo )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -708,6 +666,62 @@ namespace renderer
 		*	Le layout créé.
 		*/
 		PipelineLayoutPtr createPipelineLayout( PushConstantRangeCRefArray const & pushConstantRanges )const;
+		/**
+		*\~english
+		*\brief
+		*	Creates a sampler.
+		*\param[in] wrapS, wrapT, wrapR
+		*	The texture wrap modes.
+		*\param[in] minFilter, magFilter
+		*	The minification and magnification filters.
+		*\param[in] mipFilter
+		*	The mipmap filter.
+		*\param[in] minLod
+		*	Minimal LOD Level.
+		*\param[in] maxLod
+		*	Maximal LOD Level.
+		*\param[in] lodBias
+		*	The texture LOD offset.
+		*\param[in] borderColour
+		*	Texture border colour.
+		*\param[in] maxAnisotropy
+		*	Maximal anisotropic filtering value.
+		*\param[in] compareOp
+		*	The comparison operator, for depth maps.
+		*\~french
+		*\brief
+		*	Crée un échantillonneur.
+		*\param[in] wrapS, wrapT, wrapR
+		*	Les modes de wrap de texture.
+		*\param[in] minFilter, magFilter
+		*	Les filtres de minification et magnification.
+		*\param[in] mipFilter
+		*	Le filtre de mipmap.
+		*\param[in] minLod
+		*	Niveau de LOD minimal.
+		*\param[in] maxLod
+		*	Niveau de LOD maximal.
+		*\param[in] lodBias
+		*	Le décalage de LOD de la texture.
+		*\param[in] borderColour
+		*	Couleur des bords de la texture.
+		*\param[in] maxAnisotropy
+		*	Valeur maximale pour le filtrage anisotropique.
+		*\param[in] compareOp
+		*	L'opérateur de comparaison, pour les textures de profondeur.
+		*/
+		SamplerPtr createSampler( WrapMode wrapS
+			, WrapMode wrapT
+			, WrapMode wrapR
+			, Filter minFilter
+			, Filter magFilter
+			, MipmapMode mipFilter = MipmapMode::eNone
+			, float minLod = -1000.0f
+			, float maxLod = 1000.0f
+			, float lodBias = 0.0f
+			, BorderColour borderColour = BorderColour::eFloatOpaqueBlack
+			, float maxAnisotropy = 1.0f
+			, CompareOp compareOp = CompareOp::eAlways )const;
 		/**
 		*\~english
 		*\brief

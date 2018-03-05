@@ -7,6 +7,26 @@
 namespace gl_renderer
 {
 	TextureView::TextureView( Device const & device
+		, Texture const & image )
+		: renderer::TextureView{ device
+		, image
+		, {
+			renderer::TextureType::e2D,
+			image.getFormat(),
+			renderer::ComponentMapping{},
+			{
+				renderer::ImageAspectFlag::eColour,
+				0u,
+				1u,
+				0u,
+				1u
+			}
+		} }
+		, m_device{ device }
+	{
+	}
+
+	TextureView::TextureView( Device const & device
 		, Texture const & texture
 		, renderer::ImageViewCreateInfo const & createInfo )
 		: renderer::TextureView{ device

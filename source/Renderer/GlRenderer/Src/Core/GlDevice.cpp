@@ -394,32 +394,9 @@ namespace gl_renderer
 		return std::make_shared< Texture >( *this, createInfo, flags );
 	}
 
-	renderer::SamplerPtr Device::createSampler( renderer::WrapMode wrapS
-		, renderer::WrapMode wrapT
-		, renderer::WrapMode wrapR
-		, renderer::Filter minFilter
-		, renderer::Filter magFilter
-		, renderer::MipmapMode mipFilter
-		, float minLod
-		, float maxLod
-		, float lodBias
-		, renderer::BorderColour borderColour
-		, float maxAnisotropy
-		, renderer::CompareOp compareOp )const
+	renderer::SamplerPtr Device::createSampler( renderer::SamplerCreateInfo const & createInfo )const
 	{
-		return std::make_unique< Sampler >( *this
-			, wrapS
-			, wrapT
-			, wrapR
-			, minFilter
-			, magFilter
-			, mipFilter
-			, minLod
-			, maxLod
-			, lodBias
-			, borderColour
-			, maxAnisotropy
-			, compareOp );
+		return std::make_unique< Sampler >( *this, createInfo );
 	}
 
 	renderer::BufferBasePtr Device::createBuffer( uint32_t size

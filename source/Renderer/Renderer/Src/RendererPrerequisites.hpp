@@ -211,6 +211,7 @@ namespace renderer
 	using SpecialisationInfoPtr = std::unique_ptr< SpecialisationInfo< T > >;
 
 	using AttributeBasePtr = std::unique_ptr< Attribute >;
+	using BackBufferPtr = std::unique_ptr< BackBuffer >;
 	using BufferBasePtr = std::unique_ptr< BufferBase >;
 	using BufferViewPtr = std::unique_ptr< BufferView >;
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
@@ -268,6 +269,7 @@ namespace renderer
 	using TextureViewPtr = std::shared_ptr< TextureView >;
 
 	using FrameBufferPtrArray = std::vector< FrameBufferPtr >;
+	using BackBufferPtrArray = std::vector< BackBufferPtr >;
 	using CommandBufferPtrArray = std::vector< CommandBufferPtr >;
 	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
 

@@ -45,66 +45,29 @@ namespace vk_renderer
 		*/
 		~SwapChain();
 		/**
-		*\~french
-		*\brief
-		*	R�initialise la swap chain.
-		*\~english
-		*\brief
-		*	Resets the swap chain.
+		*\copydoc	renderer::SwapChain::reset
 		*/
 		void reset( renderer::UIVec2 const & size )override;
 		/**
-		*\~french
-		*\brief
-		*	Cr�e les tampons d'image des back buffers, compatibles avec la passe de rendu donn�e.
-		*\param[in] renderPass
-		*	La passe de rendu.
-		*\return
-		*	Les tampons d'images.
-		*\~english
-		*\brief
-		*	Creates the back buffers' frame buffers, compatible with given render pass.
-		*\param[in] renderPass
-		*	The render pass.
-		*\return
-		*	The frame buffers.
+		*\copydoc	renderer::SwapChain::createFrameBuffers
 		*/
 		renderer::FrameBufferPtrArray createFrameBuffers( renderer::RenderPass const & renderPass )const override;
 		/**
-		*\~french
-		*\brief
-		*	Cr�e les tampons de commandes des back buffers.
-		*\return
-		*	Les tampons de commandes.
-		*\~english
-		*\brief
-		*	Creates the back buffers' command buffers.
-		*\return
-		*	The command buffers.
+		*\copydoc	renderer::SwapChain::createCommandBuffers
 		*/
 		renderer::CommandBufferPtrArray createCommandBuffers()const override;
 		/**
-		*\~french
-		*\return
-		*	R�cup�re les ressources de rendu actives.
-		*\~english
-		*\return
-		*	The active rendering resources.
+		*\copydoc	renderer::SwapChain::getResources
 		*/
 		renderer::RenderingResources * getResources()override;
 		/**
-		*\~french
-		*\brief
-		*	Rend l'image utilis�e � la swap chain, pour la dessiner.
-		*\param[in] resources
-		*	Les ressources de rendu.
-		*\~english
-		*\brief
-		*	Gives back the backbuffer to the swap chain, to present it.
-		*\param[in] resources
-		*	The rendering resources.
+		*\copydoc	renderer::SwapChain::present
 		*/
 		void present( renderer::RenderingResources & resources )override;
+		/**
+		*\copydoc	renderer::SwapChain::createDepthStencil
+		*/
+		void createDepthStencil( renderer::PixelFormat format )override;
 		/**
 		*\~french
 		*\return
@@ -203,9 +166,6 @@ namespace vk_renderer
 		VkSurfaceKHR m_surface{};
 		VkSurfaceCapabilitiesKHR m_surfaceCapabilities{};
 		uint32_t m_currentBuffer{};
-		BackBufferPtrArray m_backBuffers;
 		VkClearColorValue m_clearColour{};
-		mutable renderer::TexturePtr m_depth;
-		mutable renderer::TextureViewPtr m_depthView;
 	};
 }

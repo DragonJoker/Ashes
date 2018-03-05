@@ -74,18 +74,7 @@ namespace gl_renderer
 		/**
 		*\copydoc		renderer::Device::createSampler
 		*/
-		renderer::SamplerPtr createSampler( renderer::WrapMode wrapS
-			, renderer::WrapMode wrapT
-			, renderer::WrapMode wrapR
-			, renderer::Filter minFilter
-			, renderer::Filter magFilter
-			, renderer::MipmapMode mipFilter
-			, float minLod
-			, float maxLod
-			, float lodBias
-			, renderer::BorderColour borderColour
-			, float maxAnisotropy
-			, renderer::CompareOp compareOp )const override;
+		renderer::SamplerPtr createSampler( renderer::SamplerCreateInfo const & createInfo )const override;
 		/**
 		*\copydoc		renderer::Device::createBuffer
 		*/

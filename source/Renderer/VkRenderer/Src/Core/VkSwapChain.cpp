@@ -55,6 +55,27 @@ namespace vk_renderer
 		doResetSwapChain();
 	}
 
+	void SwapChain::createDepthStencil( renderer::PixelFormat format )
+	{
+		m_depthStencil = m_device.createTexture(
+			{
+				renderer::TextureType::e2D,
+				format,
+				renderer::Extent3D{ getDimensions()[0], getDimensions()[1], 1u },
+				1u,
+				1u,
+				renderer::SampleCountFlag::e1,
+				renderer::ImageTiling::eOptimal,
+				renderer::ImageUsageFlag::eDepthStencilAttachment,
+				renderer::SharingMode::eExclusive,
+				{},
+				renderer::ImageLayout::eUndefined,
+			},
+			renderer::MemoryPropertyFlag::eDeviceLocal );
+		m_depthStencilView = m_depthStencil->createView( renderer::TextureType::e2D
+			, format );
+	}
+
 	renderer::FrameBufferAttachmentArray SwapChain::doPrepareAttaches( uint32_t backBuffer
 		, renderer::RenderPassAttachmentArray const & attaches )const
 	{
@@ -68,34 +89,13 @@ namespace vk_renderer
 			}
 			else
 			{
-				if ( !m_depth )
-				{
-					m_depth = m_device.createTexture(
-						{
-							renderer::TextureType::e2D,
-							attach.format,
-							renderer::Extent3D{ getDimensions()[0], getDimensions()[1], 1u },
-							1u,
-							1u,
-							renderer::SampleCountFlag::e1,
-							renderer::ImageTiling::eOptimal,
-							renderer::ImageUsageFlag::eDepthStencilAttachment,
-							renderer::SharingMode::eExclusive,
-							{},
-							renderer::ImageLayout::eUndefined,
-						},
-						renderer::MemoryPropertyFlag::eDeviceLocal );
-					m_depthView = m_depth->createView( renderer::TextureType::e2D
-						, attach.format );
-				}
-
-				result.emplace_back( attach, *m_depthView );
+				assert( m_depthStencilView );
+				result.emplace_back( attach, *m_depthStencilView );
 			}
 		}
 
 		return result;
 	}
-
 
 	renderer::FrameBufferPtrArray SwapChain::createFrameBuffers( renderer::RenderPass const & renderPass )const
 	{
@@ -381,15 +381,16 @@ namespace vk_renderer
 
 		for ( auto image : swapChainImages )
 		{
-			m_backBuffers.emplace_back( std::make_unique< BackBuffer >( m_device
-				, *this
-				, index++
+			auto texture = std::make_unique< Texture >( m_device
 				, m_format
 				, m_dimensions
-				, Texture{ m_device
-					, m_format
-					, m_dimensions
-					, image } ) );
+				, image );
+			auto & ref = *texture;
+			m_backBuffers.emplace_back( std::make_unique< BackBuffer >( m_device
+				, std::move( texture )
+				, index++
+				, m_format
+				, ref ) );
 		}
 	}
 

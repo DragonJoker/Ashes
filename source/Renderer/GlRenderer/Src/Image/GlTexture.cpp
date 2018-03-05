@@ -90,6 +90,19 @@ namespace gl_renderer
 	}
 
 	Texture::Texture( Device const & device
+		, renderer::PixelFormat format
+		, renderer::UIVec2 const & dimensions )
+		: renderer::Texture{ device
+			, renderer::TextureType::e2D
+			, format
+			, { dimensions[0], dimensions[1], 1u }
+			, 1u
+			, 1u }
+		, m_device{ device }
+	{
+	}
+
+	Texture::Texture( Device const & device
 		, renderer::ImageCreateInfo const & createInfo
 		, renderer::MemoryPropertyFlags memoryFlags )
 		: renderer::Texture{ device
