@@ -40,7 +40,9 @@ namespace gl_renderer
 		*\param[in] bindingPoint
 		*	The binding point for the set.
 		*/
-		DescriptorSet( renderer::DescriptorSetPool const & pool, uint32_t bindingPoint );
+		DescriptorSet( renderer::DescriptorPool const & pool
+			, renderer::DescriptorSetLayout const & layout
+			, uint32_t bindingPoint );
 		/**
 		*\copydoc		renderer::DescriptorSet::createBinding
 		*/

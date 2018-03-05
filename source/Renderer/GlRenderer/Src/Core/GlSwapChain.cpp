@@ -71,11 +71,12 @@ namespace gl_renderer
 
 	void SwapChain::createDepthStencil( renderer::PixelFormat format )
 	{
-		m_depthStencil = std::make_unique< Texture >( m_device
+		auto texture = std::make_unique< Texture >( m_device
 			, format
 			, m_dimensions );
-		m_depthStencilView = m_depthStencil->createView( renderer::TextureType::e2D
-			, format );
+		m_depthStencilView = std::make_unique< TextureView >( m_device
+			, *texture );
+		m_depthStencil = std::move( texture );
 	}
 
 	void SwapChain::doResetSwapChain()

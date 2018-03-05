@@ -6,28 +6,28 @@
 #include "Descriptor/VkDescriptorSetBinding.hpp"
 #include "Descriptor/VkDescriptorSetLayout.hpp"
 #include "Descriptor/VkDescriptorSetLayoutBinding.hpp"
-#include "Descriptor/VkDescriptorSetPool.hpp"
+#include "Descriptor/VkDescriptorPool.hpp"
 #include "Image/VkSampler.hpp"
 #include "Image/VkTextureView.hpp"
 
 namespace vk_renderer
 {
 	DescriptorSet::DescriptorSet( Device const & device
-		, DescriptorSetPool const & pool
+		, DescriptorPool const & pool
+		, DescriptorSetLayout const & layout
 		, uint32_t bindingPoint )
 		: renderer::DescriptorSet{ pool, bindingPoint }
 		, m_device{ device }
 		, m_pool{ pool }
-		, m_layout{ static_cast< DescriptorSetLayout const & >( pool.getLayout() ) }
+		, m_layout{ layout }
 	{
-		auto layouts = makeVkArray< VkDescriptorSetLayout >( DescriptorSetLayoutCRefArray{ m_layout } );
 		VkDescriptorSetAllocateInfo allocateInfo
 		{
-			VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // sType
-			nullptr,                                        // pNext
-			pool,                                           // descriptorPool
-			static_cast< uint32_t >( layouts.size() ),      // descriptorSetCount
-			layouts.data()                                  // pSetLayouts
+			VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,           // sType
+			nullptr,                                                  // pNext
+			pool,                                                     // descriptorPool
+			1u,                                                       // descriptorSetCount
+			&static_cast< VkDescriptorSetLayout const & >( m_layout ) // pSetLayouts
 		};
 		DEBUG_DUMP( allocateInfo );
 		auto res = m_device.vkAllocateDescriptorSets( m_device

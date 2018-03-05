@@ -39,7 +39,7 @@ namespace renderer
 		*\param[in] bindingPoint
 		*	The binding point for the set.
 		*/
-		DescriptorSet( DescriptorSetPool const & pool, uint32_t bindingPoint );
+		DescriptorSet( DescriptorPool const & pool, uint32_t bindingPoint );
 
 	public:
 		/**
@@ -647,7 +647,7 @@ namespace renderer
 		virtual void update()const = 0;
 
 	private:
-		DescriptorSetPool const & m_pool;
+		DescriptorPool const & m_pool;
 		uint32_t m_bindingPoint;
 	};
 }

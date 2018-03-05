@@ -15,6 +15,7 @@ See LICENSE file in root folder.
 #include "Core/GlDummyIndexBuffer.hpp"
 #include "Core/GlRenderer.hpp"
 #include "Core/GlSwapChain.hpp"
+#include "Descriptor/GlDescriptorPool.hpp"
 #include "Descriptor/GlDescriptorSetLayout.hpp"
 #include "Image/GlSampler.hpp"
 #include "Image/GlTexture.hpp"
@@ -386,6 +387,13 @@ namespace gl_renderer
 	renderer::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( renderer::DescriptorSetLayoutBindingArray && bindings )const
 	{
 		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
+	}
+
+	renderer::DescriptorPoolPtr Device::createDescriptorPool( renderer::DescriptorPoolCreateFlags flags
+		, uint32_t maxSets
+		, renderer::DescriptorPoolSizeArray poolSizes )const
+	{
+		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
 	}
 
 	renderer::TexturePtr Device::createTexture( renderer::ImageCreateInfo const & createInfo

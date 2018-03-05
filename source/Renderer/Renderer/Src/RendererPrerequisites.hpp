@@ -26,6 +26,7 @@ See LICENSE file in root folder.
 #include "Enum/CompareOp.hpp"
 #include "Enum/CullModeFlag.hpp"
 #include "Enum/DepthStencilStateFlag.hpp"
+#include "Enum/DescriptorPoolCreateFlag.hpp"
 #include "Enum/DescriptorType.hpp"
 #include "Enum/FenceCreateFlag.hpp"
 #include "Enum/Filter.hpp"
@@ -102,6 +103,7 @@ namespace renderer
 	struct ClearRect;
 	struct ClearValue;
 	struct CommandBufferInheritanceInfo;
+	struct DescriptorPoolSize;
 	struct Extent3D;
 	struct FormatProperties;
 	struct GraphicsPipelineCreateInfo;
@@ -139,6 +141,7 @@ namespace renderer
 	class ComputePipeline;
 	class Connection;
 	class DepthStencilState;
+	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetBinding;
 	class DescriptorSetLayout;
@@ -218,6 +221,7 @@ namespace renderer
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
 	using ComputePipelinePtr = std::unique_ptr< ComputePipeline >;
 	using ConnectionPtr = std::unique_ptr< Connection >;
+	using DescriptorPoolPtr = std::unique_ptr< DescriptorPool >;
 	using DescriptorSetLayoutPtr = std::unique_ptr< DescriptorSetLayout >;
 	using DescriptorSetLayoutBindingPtr = std::unique_ptr< DescriptorSetLayoutBinding >;
 	using DescriptorSetPoolPtr = std::unique_ptr< DescriptorSetPool >;
@@ -250,6 +254,7 @@ namespace renderer
 	using ClearRectArray = std::vector< ClearRect >;
 	using ClearValueArray = std::vector< ClearValue >;
 	using ColourBlendStateAttachmentArray = std::vector< ColourBlendStateAttachment >;
+	using DescriptorPoolSizeArray = std::vector< DescriptorPoolSize >;
 	using DescriptorSetLayoutBindingArray = std::vector< DescriptorSetLayoutBinding >;
 	using FrameBufferAttachmentArray = std::vector< FrameBufferAttachment >;
 	using ImageLayoutArray = std::vector< ImageLayout >;

@@ -13,6 +13,7 @@ See LICENSE file in root folder.
 #include "Core/VkPhysicalDevice.hpp"
 #include "Core/VkRenderer.hpp"
 #include "Core/VkSwapChain.hpp"
+#include "Descriptor/VkDescriptorPool.hpp"
 #include "Descriptor/VkDescriptorSetBinding.hpp"
 #include "Descriptor/VkDescriptorSetLayout.hpp"
 #include "Image/VkSampler.hpp"
@@ -185,6 +186,13 @@ namespace vk_renderer
 	renderer::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( renderer::DescriptorSetLayoutBindingArray && bindings )const
 	{
 		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
+	}
+
+	renderer::DescriptorPoolPtr Device::createDescriptorPool( renderer::DescriptorPoolCreateFlags flags
+		, uint32_t maxSets
+		, renderer::DescriptorPoolSizeArray poolSizes )const
+	{
+		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
 	}
 
 	renderer::TexturePtr Device::createTexture( renderer::ImageCreateInfo const & createInfo

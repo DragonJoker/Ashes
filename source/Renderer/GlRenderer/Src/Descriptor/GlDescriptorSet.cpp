@@ -1,7 +1,7 @@
 #include "Descriptor/GlDescriptorSet.hpp"
 
 #include "Buffer/GlBuffer.hpp"
-#include "Descriptor/GlDescriptorSetPool.hpp"
+#include "Descriptor/GlDescriptorPool.hpp"
 #include "Image/GlSampler.hpp"
 #include "Image/GlTexture.hpp"
 #include "Buffer/GlUniformBuffer.hpp"
@@ -12,7 +12,9 @@
 
 namespace gl_renderer
 {
-	DescriptorSet::DescriptorSet( renderer::DescriptorSetPool const & pool, uint32_t bindingPoint )
+	DescriptorSet::DescriptorSet( renderer::DescriptorPool const & pool
+		, renderer::DescriptorSetLayout const & layout
+		, uint32_t bindingPoint )
 		: renderer::DescriptorSet{ pool, bindingPoint }
 	{
 	}

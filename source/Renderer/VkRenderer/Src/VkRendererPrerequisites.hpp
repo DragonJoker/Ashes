@@ -51,6 +51,7 @@
 #include "Enum/VkCompareOp.hpp"
 #include "Enum/VkCullModeFlag.hpp"
 #include "Enum/VkDepthStencilStateFlag.hpp"
+#include "Enum/VkDescriptorPoolCreateFlag.hpp"
 #include "Enum/VkDescriptorType.hpp"
 #include "Enum/VkFormatFeatureFlag.hpp"
 #include "Enum/VkFenceCreateFlag.hpp"
@@ -149,11 +150,11 @@ namespace vk_renderer
 	class CommandPool;
 	class ComputePipeline;
 	class Connection;
+	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetBinding;
 	class DescriptorSetLayout;
 	class DescriptorSetLayoutBinding;
-	class DescriptorSetPool;
 	class Device;
 	class Pipeline;
 	class PipelineLayout;

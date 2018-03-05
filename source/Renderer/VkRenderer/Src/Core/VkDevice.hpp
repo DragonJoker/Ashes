@@ -60,6 +60,12 @@ namespace vk_renderer
 		*/
 		renderer::DescriptorSetLayoutPtr createDescriptorSetLayout( renderer::DescriptorSetLayoutBindingArray && bindings )const override;
 		/**
+		*\copydoc	renderer::Device::createDescriptorPool
+		*/
+		renderer::DescriptorPoolPtr createDescriptorPool( renderer::DescriptorPoolCreateFlags flags
+			, uint32_t maxSets
+			, renderer::DescriptorPoolSizeArray poolSizes )const override;
+		/**
 		*\copydoc	renderer::Device::createTexture
 		*/
 		renderer::TexturePtr createTexture( renderer::ImageCreateInfo const & createInfo
