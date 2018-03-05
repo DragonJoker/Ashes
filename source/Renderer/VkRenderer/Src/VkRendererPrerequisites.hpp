@@ -53,6 +53,7 @@
 #include "Enum/VkDepthStencilStateFlag.hpp"
 #include "Enum/VkDescriptorPoolCreateFlag.hpp"
 #include "Enum/VkDescriptorType.hpp"
+#include "Enum/VkDynamicState.hpp"
 #include "Enum/VkFormatFeatureFlag.hpp"
 #include "Enum/VkFenceCreateFlag.hpp"
 #include "Enum/VkFilter.hpp"

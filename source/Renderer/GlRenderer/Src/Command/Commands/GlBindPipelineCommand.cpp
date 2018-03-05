@@ -17,9 +17,9 @@ namespace gl_renderer
 
 		if ( state != save )
 		{
-			if ( state.getTopology() != save.getTopology() )
+			if ( state.topology != save.topology )
 			{
-				if ( state.getTopology() == renderer::PrimitiveTopology::ePointList )
+				if ( state.topology == renderer::PrimitiveTopology::ePointList )
 				{
 					glLogCall( gl::Enable, GL_PROGRAM_POINT_SIZE );
 				}
@@ -29,9 +29,9 @@ namespace gl_renderer
 				}
 			}
 
-			if ( state.isPrimitiveRestartEnabled() != save.isPrimitiveRestartEnabled() )
+			if ( state.primitiveRestartEnable != save.primitiveRestartEnable )
 			{
-				if ( state.isPrimitiveRestartEnabled() )
+				if ( state.primitiveRestartEnable )
 				{
 					glLogCall( gl::Enable, GL_PRIMITIVE_RESTART );
 				}
@@ -51,16 +51,16 @@ namespace gl_renderer
 
 		if ( state != save )
 		{
-			if ( state.isLogicOpEnabled()
-				&& !save.isLogicOpEnabled()
-				&& state.getLogicOp() != save.getLogicOp() )
+			if ( state.logicOpEnable
+				&& !save.logicOpEnable
+				&& state.logicOp != save.logicOp )
 			{
-				glLogCall( gl::LogicOp, convert( state.getLogicOp() ) );
+				glLogCall( gl::LogicOp, convert( state.logicOp ) );
 			}
 
-			if ( state.getBlendConstants() != save.getBlendConstants() )
+			if ( state.blendConstants != save.blendConstants )
 			{
-				auto & blendConstants = state.getBlendConstants();
+				auto & blendConstants = state.blendConstants;
 				glLogCall( gl::BlendColor
 					, blendConstants[0]
 					, blendConstants[1]
@@ -71,21 +71,21 @@ namespace gl_renderer
 			bool blend = false;
 			GLuint buf = 0u;
 
-			for ( auto & blendState : state )
+			for ( auto & blendState : state.attachs )
 			{
-				if ( blendState.isBlendEnabled() )
+				if ( blendState.blendEnable )
 				{
 					blend = true;
 					glLogCall( gl::BlendEquationSeparatei
 						, buf
-						, convert( blendState.getColourBlendOp() )
-						, convert( blendState.getAlphaBlendOp() ) );
+						, convert( blendState.colorBlendOp )
+						, convert( blendState.alphaBlendOp ) );
 					glLogCall( gl::BlendFuncSeparatei
 						, buf
-						, convert( blendState.getSrcColourBlendFactor() )
-						, convert( blendState.getDstColourBlendFactor() )
-						, convert( blendState.getSrcAlphaBlendFactor() )
-						, convert( blendState.getDstAlphaBlendFactor() ) );
+						, convert( blendState.srcColorBlendFactor )
+						, convert( blendState.dstColorBlendFactor )
+						, convert( blendState.srcAlphaBlendFactor )
+						, convert( blendState.dstAlphaBlendFactor ) );
 				}
 
 				++buf;
@@ -109,51 +109,53 @@ namespace gl_renderer
 	}
 
 	void apply( Device const & device
-		, renderer::RasterisationState const & state )
+		, renderer::RasterisationState const & state
+		, bool dynamicLineWidth
+		, bool dynamicDepthBias )
 	{
 		auto & save = device.getCurrentRasterisationState();
 
 		if ( state != save )
 		{
-			if ( state.getCullMode() != save.getCullMode()
-				|| state.getFrontFace() != save.getFrontFace() )
+			if ( state.cullMode != save.cullMode
+				|| state.frontFace != save.frontFace )
 			{
-				if ( state.getCullMode() != renderer::CullModeFlag::eNone )
+				if ( state.cullMode != renderer::CullModeFlag::eNone )
 				{
-					if ( save.getCullMode() == renderer::CullModeFlag::eNone )
+					if ( save.cullMode == renderer::CullModeFlag::eNone )
 					{
 						glLogCall( gl::Enable, GL_CULL_FACE );
 					}
 
-					if ( state.getCullMode() != save.getCullMode() )
+					if ( state.cullMode != save.cullMode )
 					{
-						glLogCall( gl::CullFace, convert( state.getCullMode() ) );
+						glLogCall( gl::CullFace, convert( state.cullMode ) );
 					}
 
-					if ( state.getFrontFace() != save.getFrontFace() )
+					if ( state.frontFace != save.frontFace )
 					{
-						glLogCall( gl::FrontFace, convert( state.getFrontFace() ) );
+						glLogCall( gl::FrontFace, convert( state.frontFace ) );
 					}
 				}
-				else if ( save.getCullMode() != renderer::CullModeFlag::eNone )
+				else if ( save.cullMode != renderer::CullModeFlag::eNone )
 				{
 					glLogCall( gl::Disable, GL_CULL_FACE );
 				}
 			}
 
-			if ( state.getPolygonMode() != save.getPolygonMode() )
+			if ( state.polygonMode != save.polygonMode )
 			{
 				glLogCall( gl::PolygonMode
 					, GL_CULL_MODE_FRONT_AND_BACK
-					, convert( state.getPolygonMode() ) );
+					, convert( state.polygonMode ) );
 			}
 
-			if ( state.isDepthBiasEnabled() != save.isDepthBiasEnabled()
-				|| state.getPolygonMode() != save.getPolygonMode() )
+			if ( state.depthBiasEnable != save.depthBiasEnable
+				|| state.polygonMode != save.polygonMode )
 			{
-				if ( state.isDepthBiasEnabled() )
+				if ( state.depthBiasEnable )
 				{
-					switch ( state.getPolygonMode() )
+					switch ( state.polygonMode )
 					{
 					case renderer::PolygonMode::eFill:
 						glLogCall( gl::Enable, GL_POLYGON_OFFSET_FILL );
@@ -168,13 +170,16 @@ namespace gl_renderer
 						break;
 					}
 
-					glLogCall( gl::PolygonOffsetClampEXT, state.getDepthBiasConstantFactor()
-						, state.getDepthBiasSlopeFactor()
-						, state.getDepthBiasClamp() );
+					if ( !dynamicDepthBias )
+					{
+						glLogCall( gl::PolygonOffsetClampEXT, state.depthBiasConstantFactor
+							, state.depthBiasSlopeFactor
+							, state.depthBiasClamp );
+					}
 				}
 				else
 				{
-					switch ( state.getPolygonMode() )
+					switch ( state.polygonMode )
 					{
 					case renderer::PolygonMode::eFill:
 						glLogCall( gl::Disable, GL_POLYGON_OFFSET_FILL );
@@ -191,9 +196,9 @@ namespace gl_renderer
 				}
 			}
 
-			if ( state.isDepthClampEnabled() != save.isDepthClampEnabled() )
+			if ( state.depthClampEnable != save.depthClampEnable )
 			{
-				if ( state.isDepthClampEnabled() )
+				if ( state.depthClampEnable )
 				{
 					glLogCall( gl::Enable, GL_DEPTH_CLAMP );
 				}
@@ -203,9 +208,9 @@ namespace gl_renderer
 				}
 			}
 
-			if ( state.isRasteriserDiscardEnabled() != save.isRasteriserDiscardEnabled() )
+			if ( state.rasteriserDiscardEnable != save.rasteriserDiscardEnable )
 			{
-				if ( state.isRasteriserDiscardEnabled() )
+				if ( state.rasteriserDiscardEnable )
 				{
 					glLogCall( gl::Enable, GL_RASTERIZER_DISCARD );
 				}
@@ -215,10 +220,10 @@ namespace gl_renderer
 				}
 			}
 
-			if ( state.getPolygonMode() == renderer::PolygonMode::eLine
-				&& state.hasLineWidth() )
+			if ( state.polygonMode == renderer::PolygonMode::eLine
+				&& !dynamicLineWidth )
 			{
-				glLogCall( gl::LineWidth, state.getLineWidth() );
+				glLogCall( gl::LineWidth, state.lineWidth );
 			}
 
 			save = state;
@@ -232,13 +237,13 @@ namespace gl_renderer
 
 		if ( state != save )
 		{
-			if ( state.getRasterisationSamples() != renderer::SampleCountFlag::e1 )
+			if ( state.rasterisationSamples != renderer::SampleCountFlag::e1 )
 			{
 				glLogCall( gl::Enable, GL_MULTISAMPLE );
 
-				if ( state.isAlphaToCoverageEnabled() != save.isAlphaToCoverageEnabled() )
+				if ( state.alphaToCoverageEnable != save.alphaToCoverageEnable )
 				{
-					if ( state.isAlphaToCoverageEnabled() )
+					if ( state.alphaToCoverageEnable )
 					{
 						glLogCall( gl::Enable, GL_SAMPLE_ALPHA_TO_COVERAGE );
 					}
@@ -248,9 +253,9 @@ namespace gl_renderer
 					}
 				}
 
-				if ( state.isAlphaToOneEnabled() != save.isAlphaToOneEnabled() )
+				if ( state.alphaToOneEnable != save.alphaToOneEnable )
 				{
-					if ( state.isAlphaToOneEnabled() )
+					if ( state.alphaToOneEnable )
 					{
 						glLogCall( gl::Enable, GL_SAMPLE_ALPHA_TO_ONE );
 					}
@@ -276,9 +281,9 @@ namespace gl_renderer
 
 		if ( state != save )
 		{
-			if ( state.isDepthWriteEnabled() != save.isDepthWriteEnabled() )
+			if ( state.depthWriteEnable != save.depthWriteEnable )
 			{
-				if ( state.isDepthWriteEnabled() )
+				if ( state.depthWriteEnable )
 				{
 					glLogCall( gl::DepthMask, GL_TRUE );
 				}
@@ -288,12 +293,12 @@ namespace gl_renderer
 				}
 			}
 
-			if ( state.isDepthTestEnabled() != save.isDepthTestEnabled() )
+			if ( state.depthTestEnable != save.depthTestEnable )
 			{
-				if ( state.isDepthTestEnabled() )
+				if ( state.depthTestEnable )
 				{
 					glLogCall( gl::Enable, GL_DEPTH_TEST );
-					glLogCall( gl::DepthFunc, convert( state.getDepthCompareOp() ) );
+					glLogCall( gl::DepthFunc, convert( state.depthCompareOp ) );
 				}
 				else
 				{
@@ -301,41 +306,41 @@ namespace gl_renderer
 				}
 			}
 
-			if ( state.isStencilTestEnabled() != save.isStencilTestEnabled()
-				|| ( state.isStencilTestEnabled()
-					&& ( state.getBackStencilOp() != save.getBackStencilOp()
-						|| state.getFrontStencilOp() != save.getFrontStencilOp() ) ) )
+			if ( state.stencilTestEnable != save.stencilTestEnable
+				|| ( state.stencilTestEnable
+					&& ( state.back != save.back
+						|| state.front != save.front ) ) )
 			{
-				if ( state.isStencilTestEnabled() )
+				if ( state.stencilTestEnable )
 				{
 					glLogCall( gl::Enable, GL_STENCIL_TEST );
 
 					glLogCall( gl::StencilMaskSeparate
 						, GL_CULL_MODE_BACK
-						, state.getBackStencilOp().getWriteMask() );
+						, state.back.writeMask );
 					glLogCall( gl::StencilFuncSeparate
 						, GL_CULL_MODE_BACK
-						, convert( state.getBackStencilOp().getCompareOp() )
-						, state.getBackStencilOp().getReference()
-						, state.getBackStencilOp().getCompareMask() );
+						, convert( state.back.compareOp )
+						, state.back.reference
+						, state.back.compareMask );
 					glLogCall( gl::StencilOpSeparate
 						, GL_CULL_MODE_BACK
-						, convert( state.getBackStencilOp().getFailOp() )
-						, convert( state.getBackStencilOp().getDepthFailOp() )
-						, convert( state.getBackStencilOp().getPassOp() ) );
+						, convert( state.back.failOp )
+						, convert( state.back.depthFailOp )
+						, convert( state.back.passOp ) );
 					glLogCall( gl::StencilMaskSeparate
 						, GL_CULL_MODE_FRONT
-						, state.getFrontStencilOp().getWriteMask() );
+						, state.front.writeMask );
 					glLogCall( gl::StencilFuncSeparate
 						, GL_CULL_MODE_FRONT
-						, convert( state.getFrontStencilOp().getCompareOp() )
-						, state.getFrontStencilOp().getReference()
-						, state.getFrontStencilOp().getCompareMask() );
+						, convert( state.front.compareOp )
+						, state.front.reference
+						, state.front.compareMask );
 					glLogCall( gl::StencilOpSeparate
 						, GL_CULL_MODE_FRONT
-						, convert( state.getFrontStencilOp().getFailOp() )
-						, convert( state.getFrontStencilOp().getDepthFailOp() )
-						, convert( state.getFrontStencilOp().getPassOp() ) );
+						, convert( state.front.failOp )
+						, convert( state.front.depthFailOp )
+						, convert( state.front.passOp ) );
 				}
 				else
 				{
@@ -343,15 +348,15 @@ namespace gl_renderer
 				}
 			}
 
-			if ( state.isDepthBoundsTestEnabled() != save.isDepthBoundsTestEnabled()
-				|| ( state.isDepthBoundsTestEnabled()
-					&& ( state.getMinDepthBounds() != save.getMinDepthBounds()
-						|| state.getMaxDepthBounds() != save.getMaxDepthBounds() ) ) )
+			if ( state.depthBoundsTestEnable != save.depthBoundsTestEnable
+				|| ( state.depthBoundsTestEnable
+					&& ( state.minDepthBounds != save.minDepthBounds
+						|| state.maxDepthBounds != save.maxDepthBounds ) ) )
 			{
-				if ( state.isDepthBoundsTestEnabled() )
+				if ( state.depthBoundsTestEnable )
 				{
 					glLogCall( gl::Enable, GL_DEPTH_CLAMP );
-					glLogCall( gl::DepthRange, state.getMinDepthBounds(), state.getMaxDepthBounds() );
+					glLogCall( gl::DepthRange, state.minDepthBounds, state.maxDepthBounds );
 				}
 				else
 				{
@@ -370,9 +375,9 @@ namespace gl_renderer
 
 		if ( state != save )
 		{
-			if ( state.getControlPoints() )
+			if ( state.patchControlPoints )
 			{
-				glLogCall( gl::PatchParameteri, GL_PATCH_VERTICES, int( state.getControlPoints() ) );
+				glLogCall( gl::PatchParameteri, GL_PATCH_VERTICES, int( state.patchControlPoints ) );
 			}
 
 			save = state;
@@ -417,6 +422,10 @@ namespace gl_renderer
 		, m_layout{ static_cast< PipelineLayout const & > ( m_pipeline.getLayout() ) }
 		, m_program{ m_pipeline.getProgram() }
 		, m_bindingPoint{ bindingPoint }
+		, m_dynamicLineWidth{ m_pipeline.hasDynamicState( renderer::DynamicState::eLineWidth ) }
+		, m_dynamicDepthBias{ m_pipeline.hasDynamicState( renderer::DynamicState::eDepthBias ) }
+		, m_dynamicScissor{ m_pipeline.hasDynamicState( renderer::DynamicState::eScissor ) }
+		, m_dynamicViewport{ m_pipeline.hasDynamicState( renderer::DynamicState::eViewport ) }
 	{
 	}
 
@@ -425,18 +434,22 @@ namespace gl_renderer
 		glLogCommand( "BindPipelineCommand" );
 		gl_renderer::apply( m_device, m_pipeline.getInputAssemblyState() );
 		gl_renderer::apply( m_device, m_pipeline.getColourBlendState() );
-		gl_renderer::apply( m_device, m_pipeline.getRasterisationState() );
+		gl_renderer::apply( m_device, m_pipeline.getRasterisationState()
+			, m_dynamicLineWidth
+			, m_dynamicDepthBias );
 		gl_renderer::apply( m_device, m_pipeline.getDepthStencilState() );
 		gl_renderer::apply( m_device, m_pipeline.getMultisampleState() );
 		gl_renderer::apply( m_device, m_pipeline.getTessellationState() );
 
-		if ( m_pipeline.hasViewport() )
+		if ( !m_dynamicViewport )
 		{
+			assert( m_pipeline.hasViewport() );
 			gl_renderer::apply( m_device, m_pipeline.getViewport() );
 		}
 
-		if ( m_pipeline.hasScissor() )
+		if ( !m_dynamicScissor )
 		{
+			assert( m_pipeline.hasScissor() );
 			gl_renderer::apply( m_device, m_pipeline.getScissor() );
 		}
 

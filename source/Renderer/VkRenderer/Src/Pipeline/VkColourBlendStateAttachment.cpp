@@ -10,14 +10,14 @@ namespace vk_renderer
 	{
 		return VkPipelineColorBlendAttachmentState
 		{
-			state.isBlendEnabled(),
-			convert( state.getSrcColourBlendFactor() ),
-			convert( state.getDstColourBlendFactor() ),
-			convert( state.getColourBlendOp() ),
-			convert( state.getSrcAlphaBlendFactor() ),
-			convert( state.getDstAlphaBlendFactor() ),
-			convert( state.getAlphaBlendOp() ),
-			convert( state.getColourWriteMask() ),
+			state.blendEnable,
+			convert( state.srcColorBlendFactor ),
+			convert( state.dstColorBlendFactor ),
+			convert( state.colorBlendOp ),
+			convert( state.srcAlphaBlendFactor ),
+			convert( state.dstAlphaBlendFactor ),
+			convert( state.alphaBlendOp ),
+			convert( state.colorWriteMask ),
 		};
 	}
 }

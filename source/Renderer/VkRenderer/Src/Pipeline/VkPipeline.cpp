@@ -28,10 +28,10 @@ namespace vk_renderer
 		, m_renderPass{ static_cast< RenderPass const & >( m_createInfo.renderPass.get() ) }
 		, m_inputAssemblyState{ convert( m_createInfo.inputAssemblyState ) }
 		, m_rasterisationState{ convert( m_createInfo.rasterisationState ) }
-		, m_colourBlendStateAttachments{ convert< VkPipelineColorBlendAttachmentState >( m_createInfo.colourBlendState.begin(), m_createInfo.colourBlendState.end() ) }
+		, m_colourBlendStateAttachments{ convert< VkPipelineColorBlendAttachmentState >( m_createInfo.colourBlendState.attachs.begin(), m_createInfo.colourBlendState.attachs.end() ) }
 		, m_colourBlendState{ convert( m_createInfo.colourBlendState, m_colourBlendStateAttachments ) }
 		, m_multisampleState{ convert( m_createInfo.multisampleState ) }
-		, m_lineWidth{ m_createInfo.rasterisationState.hasLineWidth() }
+		, m_dynamicStates{ convert< VkDynamicState >( m_createInfo.dynamicStates ) }
 	{
 		if ( m_createInfo.depthStencilState )
 		{
@@ -60,11 +60,11 @@ namespace vk_renderer
 
 		for ( auto & state : m_createInfo.stages )
 		{
-			auto & module = static_cast< ShaderModule const & >( state.getModule() );
+			auto & module = static_cast< ShaderModule const & >( *state.module );
 
-			if ( state.hasSpecialisationInfo() )
+			if ( state.specialisationInfo )
 			{
-				auto & info = state.getSpecialisationInfo();
+				auto & info = *state.specialisationInfo;
 				m_specialisationEntries[index] = convert< VkSpecializationMapEntry >( info.begin(), info.end() );
 				m_specialisationInfos[module.getStage()] = convert( info, m_specialisationEntries[index] );
 				shaderStages.push_back( convert( state, &m_specialisationInfos[module.getStage()] ) );
@@ -94,21 +94,14 @@ namespace vk_renderer
 		};
 
 		// Les états dynamiques, le cas échéant
-		std::vector< VkDynamicState > dynamicStates;
-
 		if ( !m_viewport )
 		{
-			dynamicStates.push_back( VK_DYNAMIC_STATE_VIEWPORT );
+			assert( m_dynamicStates.end() != std::find( m_dynamicStates.begin(), m_dynamicStates.end(), VK_DYNAMIC_STATE_VIEWPORT ) );
 		}
 
 		if ( !m_scissor )
 		{
-			dynamicStates.push_back( VK_DYNAMIC_STATE_SCISSOR );
-		}
-
-		if ( !m_lineWidth )
-		{
-			dynamicStates.push_back( VK_DYNAMIC_STATE_LINE_WIDTH );
+			assert( m_dynamicStates.end() != std::find( m_dynamicStates.begin(), m_dynamicStates.end(), VK_DYNAMIC_STATE_SCISSOR ) );
 		}
 
 		VkPipelineDynamicStateCreateInfo dynamicState
@@ -116,8 +109,8 @@ namespace vk_renderer
 			VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,         // sType
 			nullptr,                                                      // pNext
 			0,                                                            // flags
-			static_cast< uint32_t >( dynamicStates.size() ),              // dynamicStateCount
-			dynamicStates.data()                                          // pDynamicStates
+			static_cast< uint32_t >( m_dynamicStates.size() ),            // dynamicStateCount
+			m_dynamicStates.data()                                        // pDynamicStates
 		};
 
 		// Enfin, on crée le pipeline !!
@@ -140,7 +133,7 @@ namespace vk_renderer
 				? &m_depthStencilState.value()
 				: nullptr,
 			&m_colourBlendState,                                          // pColorBlendState
-			dynamicStates.empty() ? nullptr : &dynamicState,              // pDynamicState
+			m_dynamicStates.empty() ? nullptr : &dynamicState,            // pDynamicState
 			m_layout,                                                     // layout
 			m_renderPass,                                                 // renderPass
 			0,                                                            // subpass

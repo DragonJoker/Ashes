@@ -18,10 +18,10 @@ namespace gl_renderer
 	{
 		m_program.link();
 
-		if ( m_createInfo.stage.hasSpecialisationInfo() )
+		if ( m_createInfo.stage.specialisationInfo )
 		{
-			m_constantsPcbs.push_back( convert( m_createInfo.stage.getModule().getStage()
-				, m_createInfo.stage.getSpecialisationInfo() ) );
+			m_constantsPcbs.push_back( convert( m_createInfo.stage.module->getStage()
+				, *m_createInfo.stage.specialisationInfo ) );
 		}
 	}
 }

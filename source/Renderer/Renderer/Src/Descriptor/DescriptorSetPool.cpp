@@ -13,13 +13,14 @@ namespace renderer
 {
 	namespace
 	{
-		DescriptorPoolSizeArray convert( DescriptorSetLayoutBindingArray const & bindings )
+		DescriptorPoolSizeArray convert( DescriptorSetLayoutBindingArray const & bindings
+			, uint32_t maxSets )
 		{
 			DescriptorPoolSizeArray result;
 
 			for ( auto & binding : bindings )
 			{
-				result.push_back( { binding.getDescriptorType(), binding.getDescriptorsCount() } );
+				result.push_back( { binding.getDescriptorType(), binding.getDescriptorsCount() * maxSets } );
 			}
 
 			return result;
@@ -34,7 +35,7 @@ namespace renderer
 		, m_maxSets{ maxSets }
 		, m_pool{ device.createDescriptorPool( automaticFree ? renderer::DescriptorPoolCreateFlag::eFreeDescriptorSet : renderer::DescriptorPoolCreateFlag( 0u )
 			, maxSets
-			, convert( layout.getBindings() ) ) }
+			, convert( layout.getBindings(), maxSets ) ) }
 	{
 	}
 

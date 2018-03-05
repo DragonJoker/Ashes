@@ -493,43 +493,48 @@ namespace vkapp
 			throw std::runtime_error{ "SPIR-V support is needed for this test." };
 		}
 
+		renderer::RasterisationState rasterisationState;
+		rasterisationState.cullMode = renderer::CullModeFlag::eNone;
+
 		std::vector< renderer::ShaderStageState > shaderStages;
 
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) );
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eFragment )
-			, renderer::makeSpecialisationInfo( { { 0u, 0u, renderer::AttributeFormat::eInt } }, int( 0 ) ) );
-		shaderStages[0].getModule().loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.vert.spv" ) );
-		shaderStages[1].getModule().loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.frag.spv" ) );
-		renderer::GraphicsPipelineCreateInfo createInfoRed
-		{
-			std::move( shaderStages ),
-			*m_offscreenRenderPass,
-			renderer::VertexInputState::create( *m_offscreenVertexLayout ),
-			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
-			renderer::RasterisationState{ 1.0f, 0, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone },
-			renderer::MultisampleState{},
-			renderer::ColourBlendState::createDefault(),
-			renderer::DepthStencilState{},
-		};
-		m_offscreenPipelines.red = m_offscreenPipelineLayout->createPipeline( std::move( createInfoRed ) );
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment )
+			, renderer::makeSpecialisationInfo( { { 0u, 0u, renderer::AttributeFormat::eInt } }, int( 0 ) ) } );
+		shaderStages[0].module->loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.vert.spv" ) );
+		shaderStages[1].module->loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.frag.spv" ) );
 
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) );
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eFragment )
-			, renderer::makeSpecialisationInfo( { { 0u, 0u, renderer::AttributeFormat::eInt } }, int( 1 ) ) );
-		shaderStages[0].getModule().loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.vert.spv" ) );
-		shaderStages[1].getModule().loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.frag.spv" ) );
-		renderer::GraphicsPipelineCreateInfo createInfoGreen
+		m_offscreenPipelines.red = m_offscreenPipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 		{
 			std::move( shaderStages ),
 			*m_offscreenRenderPass,
 			renderer::VertexInputState::create( *m_offscreenVertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
-			renderer::RasterisationState{ 1.0f, 0, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone },
+			rasterisationState,
 			renderer::MultisampleState{},
 			renderer::ColourBlendState::createDefault(),
+			{ renderer::DynamicState::eViewport, renderer::DynamicState::eScissor },
 			renderer::DepthStencilState{},
-		};
-		m_offscreenPipelines.green = m_offscreenPipelineLayout->createPipeline( std::move( createInfoGreen ) );
+		} );
+
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment )
+			, renderer::makeSpecialisationInfo( { { 0u, 0u, renderer::AttributeFormat::eInt } }, int( 1 ) ) } );
+		shaderStages[0].module->loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.vert.spv" ) );
+		shaderStages[1].module->loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.frag.spv" ) );
+
+		m_offscreenPipelines.green = m_offscreenPipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
+		{
+			std::move( shaderStages ),
+			*m_offscreenRenderPass,
+			renderer::VertexInputState::create( *m_offscreenVertexLayout ),
+			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
+			rasterisationState,
+			renderer::MultisampleState{},
+			renderer::ColourBlendState::createDefault(),
+			{ renderer::DynamicState::eViewport, renderer::DynamicState::eScissor },
+			renderer::DepthStencilState{},
+		} );
 	}
 
 	void RenderPanel::doCreateMainDescriptorSet()
@@ -679,10 +684,10 @@ namespace vkapp
 		}
 
 		std::vector< renderer::ShaderStageState > shaderStages;
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) );
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) );
-		shaderStages[0].getModule().loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.vert" ) );
-		shaderStages[1].getModule().loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.frag" ) );
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.vert" ) );
+		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.frag" ) );
 
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 		{
@@ -690,7 +695,10 @@ namespace vkapp
 			*m_mainRenderPass,
 			renderer::VertexInputState::create( *m_mainVertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleStrip },
-			renderer::RasterisationState{ 1.0f }
+			renderer::RasterisationState{},
+			renderer::MultisampleState{},
+			renderer::ColourBlendState::createDefault(),
+			{ renderer::DynamicState::eViewport, renderer::DynamicState::eScissor }
 		} );
 	}
 

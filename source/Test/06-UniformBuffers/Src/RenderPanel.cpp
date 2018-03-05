@@ -319,10 +319,10 @@ namespace vkapp
 		}
 
 		std::vector< renderer::ShaderStageState > shaderStages;
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) );
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) );
-		shaderStages[0].getModule().loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.vert" ) );
-		shaderStages[1].getModule().loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.frag" ) );
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.vert" ) );
+		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.frag" ) );
 
 		m_pipeline = m_pipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 		{
@@ -330,7 +330,10 @@ namespace vkapp
 			*m_renderPass,
 			renderer::VertexInputState::create( *m_vertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleStrip },
-			renderer::RasterisationState{ 1.0f }
+			renderer::RasterisationState{},
+			renderer::MultisampleState{},
+			renderer::ColourBlendState::createDefault(),
+			{ renderer::DynamicState::eViewport, renderer::DynamicState::eScissor }
 		} );
 	}
 

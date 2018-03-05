@@ -36,12 +36,12 @@ namespace gl_renderer
 	{
 		void doApply( renderer::ColourBlendState const & state )
 		{
-			if ( state.isLogicOpEnabled() )
+			if ( state.logicOpEnable )
 			{
-				glLogCall( gl::LogicOp, convert( state.getLogicOp() ) );
+				glLogCall( gl::LogicOp, convert( state.logicOp ) );
 			}
 
-			auto & blendConstants = state.getBlendConstants();
+			auto & blendConstants = state.blendConstants;
 			glLogCall( gl::BlendColor
 				, blendConstants[0]
 				, blendConstants[1]
@@ -51,21 +51,21 @@ namespace gl_renderer
 			bool blend = false;
 			GLuint buf = 0u;
 
-			for ( auto & blendState : state )
+			for ( auto & blendState : state.attachs )
 			{
-				if ( blendState.isBlendEnabled() )
+				if ( blendState.blendEnable )
 				{
 					blend = true;
 					glLogCall( gl::BlendEquationSeparatei
 						, buf
-						, convert( blendState.getColourBlendOp() )
-						, convert( blendState.getAlphaBlendOp() ) );
+						, convert( blendState.colorBlendOp )
+						, convert( blendState.alphaBlendOp ) );
 					glLogCall( gl::BlendFuncSeparatei
 						, buf
-						, convert( blendState.getSrcColourBlendFactor() )
-						, convert( blendState.getDstColourBlendFactor() )
-						, convert( blendState.getSrcAlphaBlendFactor() )
-						, convert( blendState.getDstAlphaBlendFactor() ) );
+						, convert( blendState.srcColorBlendFactor )
+						, convert( blendState.dstColorBlendFactor )
+						, convert( blendState.srcAlphaBlendFactor )
+						, convert( blendState.dstAlphaBlendFactor ) );
 				}
 
 				++buf;
@@ -83,11 +83,11 @@ namespace gl_renderer
 
 		void doApply( renderer::RasterisationState const & state )
 		{
-			if ( state.getCullMode() != renderer::CullModeFlag::eNone )
+			if ( state.cullMode != renderer::CullModeFlag::eNone )
 			{
 				glLogCall( gl::Enable, GL_CULL_FACE );
-				glLogCall( gl::CullFace, convert( state.getCullMode() ) );
-				glLogCall( gl::FrontFace, convert( state.getFrontFace() ) );
+				glLogCall( gl::CullFace, convert( state.cullMode ) );
+				glLogCall( gl::FrontFace, convert( state.frontFace ) );
 			}
 			else
 			{
@@ -96,11 +96,11 @@ namespace gl_renderer
 
 			glLogCall( gl::PolygonMode
 				, GL_CULL_MODE_FRONT_AND_BACK
-				, convert( state.getPolygonMode() ) );
+				, convert( state.polygonMode ) );
 
-			if ( state.isDepthBiasEnabled() )
+			if ( state.depthBiasEnable )
 			{
-				switch ( state.getPolygonMode() )
+				switch ( state.polygonMode )
 				{
 				case renderer::PolygonMode::eFill:
 					glLogCall( gl::Enable, GL_POLYGON_OFFSET_FILL );
@@ -115,13 +115,13 @@ namespace gl_renderer
 					break;
 				}
 
-				glLogCall( gl::PolygonOffsetClampEXT, state.getDepthBiasConstantFactor()
-					, state.getDepthBiasSlopeFactor()
-					, state.getDepthBiasClamp() );
+				glLogCall( gl::PolygonOffsetClampEXT, state.depthBiasConstantFactor
+					, state.depthBiasSlopeFactor
+					, state.depthBiasClamp );
 			}
 			else
 			{
-				switch ( state.getPolygonMode() )
+				switch ( state.polygonMode )
 				{
 				case renderer::PolygonMode::eFill:
 					glLogCall( gl::Disable, GL_POLYGON_OFFSET_FILL );
@@ -137,7 +137,7 @@ namespace gl_renderer
 				}
 			}
 
-			if ( state.isDepthClampEnabled() )
+			if ( state.depthClampEnable )
 			{
 				glLogCall( gl::Enable, GL_DEPTH_CLAMP );
 			}
@@ -146,7 +146,7 @@ namespace gl_renderer
 				glLogCall( gl::Disable, GL_DEPTH_CLAMP );
 			}
 
-			if ( state.isRasteriserDiscardEnabled() )
+			if ( state.rasteriserDiscardEnable )
 			{
 				glLogCall( gl::Enable, GL_RASTERIZER_DISCARD );
 			}
@@ -155,16 +155,16 @@ namespace gl_renderer
 				glLogCall( gl::Disable, GL_RASTERIZER_DISCARD );
 			}
 
-			glLogCall( gl::LineWidth, state.getLineWidth() );
+			glLogCall( gl::LineWidth, state.lineWidth );
 		}
 
 		void doApply( renderer::MultisampleState const & state )
 		{
-			if ( state.getRasterisationSamples() != renderer::SampleCountFlag::e1 )
+			if ( state.rasterisationSamples != renderer::SampleCountFlag::e1 )
 			{
 				glLogCall( gl::Enable, GL_MULTISAMPLE );
 
-				if ( state.isAlphaToCoverageEnabled() )
+				if ( state.alphaToCoverageEnable )
 				{
 					glLogCall( gl::Enable, GL_SAMPLE_ALPHA_TO_COVERAGE );
 				}
@@ -173,7 +173,7 @@ namespace gl_renderer
 					glLogCall( gl::Disable, GL_SAMPLE_ALPHA_TO_COVERAGE );
 				}
 
-				if ( state.isAlphaToOneEnabled() )
+				if ( state.alphaToOneEnable )
 				{
 					glLogCall( gl::Enable, GL_SAMPLE_ALPHA_TO_ONE );
 				}
@@ -190,7 +190,7 @@ namespace gl_renderer
 
 		void doApply( renderer::DepthStencilState const & state )
 		{
-			if ( state.isDepthWriteEnabled() )
+			if ( state.depthWriteEnable )
 			{
 				glLogCall( gl::DepthMask, GL_TRUE );
 			}
@@ -199,56 +199,56 @@ namespace gl_renderer
 				glLogCall( gl::DepthMask, GL_FALSE );
 			}
 
-			if ( state.isDepthTestEnabled() )
+			if ( state.depthTestEnable )
 			{
 				glLogCall( gl::Enable, GL_DEPTH_TEST );
-				glLogCall( gl::DepthFunc, convert( state.getDepthCompareOp() ) );
+				glLogCall( gl::DepthFunc, convert( state.depthCompareOp ) );
 			}
 			else
 			{
 				glLogCall( gl::Disable, GL_DEPTH_TEST );
 			}
 
-			if ( state.isStencilTestEnabled() )
+			if ( state.stencilTestEnable )
 			{
 				glLogCall( gl::Enable, GL_STENCIL_TEST );
 
 				glLogCall( gl::StencilMaskSeparate
 					, GL_CULL_MODE_BACK
-					, state.getBackStencilOp().getWriteMask() );
+					, state.back.writeMask );
 				glLogCall( gl::StencilFuncSeparate
 					, GL_CULL_MODE_BACK
-					, convert( state.getBackStencilOp().getCompareOp() )
-					, state.getBackStencilOp().getReference()
-					, state.getBackStencilOp().getCompareMask() );
+					, convert( state.back.compareOp )
+					, state.back.reference
+					, state.back.compareMask );
 				glLogCall( gl::StencilOpSeparate
 					, GL_CULL_MODE_BACK
-					, convert( state.getBackStencilOp().getFailOp() )
-					, convert( state.getBackStencilOp().getDepthFailOp() )
-					, convert( state.getBackStencilOp().getPassOp() ) );
+					, convert( state.back.failOp )
+					, convert( state.back.depthFailOp )
+					, convert( state.back.passOp ) );
 				glLogCall( gl::StencilMaskSeparate
 					, GL_CULL_MODE_FRONT
-					, state.getFrontStencilOp().getWriteMask() );
+					, state.front.writeMask );
 				glLogCall( gl::StencilFuncSeparate
 					, GL_CULL_MODE_FRONT
-					, convert( state.getFrontStencilOp().getCompareOp() )
-					, state.getFrontStencilOp().getReference()
-					, state.getFrontStencilOp().getCompareMask() );
+					, convert( state.front.compareOp )
+					, state.front.reference
+					, state.front.compareMask );
 				glLogCall( gl::StencilOpSeparate
 					, GL_CULL_MODE_FRONT
-					, convert( state.getFrontStencilOp().getFailOp() )
-					, convert( state.getFrontStencilOp().getDepthFailOp() )
-					, convert( state.getFrontStencilOp().getPassOp() ) );
+					, convert( state.front.failOp )
+					, convert( state.front.depthFailOp )
+					, convert( state.front.passOp ) );
 			}
 			else
 			{
 				glLogCall( gl::Disable, GL_STENCIL_TEST );
 			}
 
-			if ( state.isDepthBoundsTestEnabled() )
+			if ( state.depthBoundsTestEnable )
 			{
 				glLogCall( gl::Enable, GL_DEPTH_CLAMP );
-				glLogCall( gl::DepthRange, state.getMinDepthBounds(), state.getMaxDepthBounds() );
+				glLogCall( gl::DepthRange, state.minDepthBounds, state.maxDepthBounds );
 			}
 			else
 			{
@@ -258,15 +258,15 @@ namespace gl_renderer
 
 		void doApply( renderer::TessellationState const & state )
 		{
-			if ( state.getControlPoints() )
+			if ( state.patchControlPoints )
 			{
-				glLogCall( gl::PatchParameteri, GL_PATCH_VERTICES, int( state.getControlPoints() ) );
+				glLogCall( gl::PatchParameteri, GL_PATCH_VERTICES, int( state.patchControlPoints ) );
 			}
 		}
 
 		void doApply( renderer::InputAssemblyState const & state )
 		{
-			if ( state.getTopology() == renderer::PrimitiveTopology::ePointList )
+			if ( state.topology == renderer::PrimitiveTopology::ePointList )
 			{
 				glLogCall( gl::Enable, GL_PROGRAM_POINT_SIZE );
 			}
@@ -275,7 +275,7 @@ namespace gl_renderer
 				glLogCall( gl::Disable, GL_PROGRAM_POINT_SIZE );
 			}
 
-			if ( state.isPrimitiveRestartEnabled() )
+			if ( state.primitiveRestartEnable )
 			{
 				glLogCall( gl::Enable, GL_PRIMITIVE_RESTART );
 			}
@@ -291,7 +291,7 @@ namespace gl_renderer
 		, renderer::ConnectionPtr && connection )
 		: renderer::Device{ renderer, gpu, *connection }
 		, m_context{ Context::create( gpu, std::move( connection ) ) }
-		, m_rsState{ 1.0f }
+		, m_rsState{}
 	{
 		enable();
 		glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );

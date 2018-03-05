@@ -366,7 +366,7 @@ namespace common
 			, std::move( attaches ) );
 
 		renderer::ColourBlendState cbState;
-		cbState.addAttachment( renderer::ColourBlendStateAttachment
+		cbState.attachs.push_back( renderer::ColourBlendStateAttachment
 		{
 			true,
 			renderer::BlendFactor::eSrcAlpha,
@@ -379,10 +379,19 @@ namespace common
 
 		std::string shadersFolder = getPath( getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 		std::vector< renderer::ShaderStageState > shaderStages;
-		shaderStages.emplace_back( m_device.createShaderModule( renderer::ShaderStageFlag::eVertex ) );
-		shaderStages.emplace_back( m_device.createShaderModule( renderer::ShaderStageFlag::eFragment ) );
-		shaderStages[0].getModule().loadShader( dumpTextFile( shadersFolder / "gui.vert" ) );
-		shaderStages[1].getModule().loadShader( dumpTextFile( shadersFolder / "gui.frag" ) );
+		shaderStages.push_back( { m_device.createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device.createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+		shaderStages[0].module->loadShader( dumpTextFile( shadersFolder / "gui.vert" ) );
+		shaderStages[1].module->loadShader( dumpTextFile( shadersFolder / "gui.frag" ) );
+
+		std::vector< renderer::DynamicState > dynamicStateEnables
+		{
+			renderer::DynamicState::eViewport,
+			renderer::DynamicState::eScissor
+		};
+
+		renderer::RasterisationState rasterisationState;
+		rasterisationState.cullMode = renderer::CullModeFlag::eNone;
 
 		m_pipeline = m_pipelineLayout->createPipeline(
 		{
@@ -390,9 +399,10 @@ namespace common
 			*m_renderPass,
 			renderer::VertexInputState::create( *m_vertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
-			renderer::RasterisationState{ 1.0f, 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone },
+			rasterisationState,
 			renderer::MultisampleState{},
 			cbState,
+			dynamicStateEnables,
 			renderer::DepthStencilState{},
 		} );
 	}

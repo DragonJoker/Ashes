@@ -11,7 +11,9 @@ namespace gl_renderer
 	void apply( Device const & device
 		, renderer::ColourBlendState const & state );
 	void apply( Device const & device
-		, renderer::RasterisationState const & state );
+		, renderer::RasterisationState const & state
+		, bool dynamicLineWidth
+		, bool dynamicDepthBias );
 	void apply( Device const & device
 		, renderer::MultisampleState const & state );
 	void apply( Device const & device
@@ -47,5 +49,9 @@ namespace gl_renderer
 		PipelineLayout const & m_layout;
 		GLuint m_program;
 		renderer::PipelineBindPoint m_bindingPoint;
+		bool m_dynamicLineWidth;
+		bool m_dynamicDepthBias;
+		bool m_dynamicScissor;
+		bool m_dynamicViewport;
 	};
 }

@@ -28,6 +28,7 @@ See LICENSE file in root folder.
 #include "Enum/DepthStencilStateFlag.hpp"
 #include "Enum/DescriptorPoolCreateFlag.hpp"
 #include "Enum/DescriptorType.hpp"
+#include "Enum/DynamicState.hpp"
 #include "Enum/FenceCreateFlag.hpp"
 #include "Enum/Filter.hpp"
 #include "Enum/FormatFeatureFlag.hpp"
@@ -102,7 +103,10 @@ namespace renderer
 	struct ClearAttachment;
 	struct ClearRect;
 	struct ClearValue;
+	struct ColourBlendState;
+	struct ColourBlendStateAttachment;
 	struct CommandBufferInheritanceInfo;
+	struct DepthStencilState;
 	struct DescriptorPoolSize;
 	struct Extent3D;
 	struct FormatProperties;
@@ -111,8 +115,10 @@ namespace renderer
 	struct ImageBlit;
 	struct ImageFormatProperties;
 	struct ImageSubresourceRange;
+	struct InputAssemblyState;
 	struct MemoryHeap;
 	struct MemoryType;
+	struct MultisampleState;
 	struct PhysicalDeviceFeatures;
 	struct PhysicalDeviceLimits;
 	struct PhysicalDeviceMemoryProperties;
@@ -121,10 +127,14 @@ namespace renderer
 	struct PushConstant;
 	struct PushConstantRange;
 	struct QueueFamilyProperties;
+	struct RasterisationState;
 	struct RenderPassAttachment;
 	struct RenderSubpassAttachment;
 	struct RenderSubpassState;
+	struct ShaderStageState;
 	struct SpecialisationMapEntry;
+	struct StencilOpState;
+	struct TessellationState;
 	struct VertexInputAttributeDescription;
 	struct VertexInputBindingDescription;
 	struct VertexInputState;
@@ -134,13 +144,10 @@ namespace renderer
 	class BufferBase;
 	class BufferMemoryBarrier;
 	class BufferView;
-	class ColourBlendState;
-	class ColourBlendStateAttachment;
 	class CommandBuffer;
 	class CommandPool;
 	class ComputePipeline;
 	class Connection;
-	class DepthStencilState;
 	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetBinding;
@@ -151,16 +158,13 @@ namespace renderer
 	class Fence;
 	class FrameBuffer;
 	class ImageMemoryBarrier;
-	class InputAssemblyState;
 	class IWindowHandle;
-	class MultisampleState;
 	class PhysicalDevice;
 	class Pipeline;
 	class PipelineLayout;
 	class PushConstantsBufferBase;
 	class QueryPool;
 	class Queue;
-	class RasterisationState;
 	class Renderer;
 	class RenderingResources;
 	class RenderPass;
@@ -170,13 +174,10 @@ namespace renderer
 	class Scissor;
 	class ShaderModule;
 	class ShaderProgram;
-	class ShaderStageState;
 	class ShaderStorageBufferBase;
 	class SpecialisationInfoBase;
 	class StagingBuffer;
-	class StencilOpState;
 	class SwapChain;
-	class TessellationState;
 	class Texture;
 	class FrameBufferAttachment;
 	class TextureView;

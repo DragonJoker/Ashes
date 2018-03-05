@@ -180,10 +180,10 @@ namespace vkapp
 			}
 
 			std::vector< renderer::ShaderStageState > shaderStages;
-			shaderStages.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eVertex ) );
-			shaderStages.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eFragment ) );
-			shaderStages[0].getModule().loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.vert" ) );
-			shaderStages[1].getModule().loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.frag" ) );
+			shaderStages.push_back( { device.createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
+			shaderStages.push_back( { device.createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+			shaderStages[0].module->loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.vert" ) );
+			shaderStages[1].module->loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.frag" ) );
 
 			return shaderStages;
 		}
@@ -312,9 +312,10 @@ namespace vkapp
 				*facePipeline.renderPass,
 				renderer::VertexInputState::create( *m_vertexLayout ),
 				renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
-				renderer::RasterisationState{ 1.0f },
+				renderer::RasterisationState{},
 				renderer::MultisampleState{},
 				renderer::ColourBlendState::createDefault(),
+				{},
 				renderer::DepthStencilState{ 0u, false, false },
 				renderer::TessellationState{},
 				renderer::Viewport{ size[0], size[1], 0, 0 },

@@ -125,15 +125,17 @@ namespace gl_renderer
 
 		for ( auto & stage : m_ssState )
 		{
-			if ( !static_cast< ShaderModule const & >( stage.getModule() ).isSpirV()
-				&& stage.hasSpecialisationInfo() )
+			if ( !static_cast< ShaderModule const & >( *stage.module ).isSpirV()
+				&& stage.specialisationInfo )
 			{
-				m_constantsPcbs.push_back( convert( stage.getModule().getStage(), stage.getSpecialisationInfo() ) );
+				m_constantsPcbs.push_back( convert( stage.module->getStage(), *stage.specialisationInfo ) );
 			}
 		}
 
 		apply( m_device, m_cbState );
-		apply( m_device, m_rsState );
+		apply( m_device, m_rsState
+			, hasDynamicState( renderer::DynamicState::eLineWidth )
+			, hasDynamicState( renderer::DynamicState::eDepthBias ) );
 		apply( m_device, m_dsState );
 		apply( m_device, m_msState );
 		apply( m_device, m_tsState );

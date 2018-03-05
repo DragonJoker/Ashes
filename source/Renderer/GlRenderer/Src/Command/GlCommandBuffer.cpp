@@ -296,7 +296,7 @@ namespace gl_renderer
 				, 0u
 				, firstVertex
 				, firstInstance
-				, m_state.m_currentPipeline->getInputAssemblyState().getTopology()
+				, m_state.m_currentPipeline->getInputAssemblyState().topology
 				, m_state.m_indexType ) );
 		}
 		else
@@ -310,7 +310,7 @@ namespace gl_renderer
 				, instCount
 				, firstVertex
 				, firstInstance
-				, m_state.m_currentPipeline->getInputAssemblyState().getTopology() ) );
+				, m_state.m_currentPipeline->getInputAssemblyState().topology ) );
 		}
 	}
 
@@ -336,7 +336,7 @@ namespace gl_renderer
 			, firstIndex
 			, vertexOffset
 			, firstInstance
-			, m_state.m_currentPipeline->getInputAssemblyState().getTopology()
+			, m_state.m_currentPipeline->getInputAssemblyState().topology
 			, m_state.m_indexType ) );
 	}
 
@@ -354,7 +354,7 @@ namespace gl_renderer
 			, offset
 			, drawCount
 			, stride
-			, m_state.m_currentPipeline->getInputAssemblyState().getTopology() ) );
+			, m_state.m_currentPipeline->getInputAssemblyState().topology ) );
 	}
 
 	void CommandBuffer::drawIndexedIndirect( renderer::BufferBase const & buffer
@@ -377,7 +377,7 @@ namespace gl_renderer
 			, offset
 			, drawCount
 			, stride
-			, m_state.m_currentPipeline->getInputAssemblyState().getTopology()
+			, m_state.m_currentPipeline->getInputAssemblyState().topology
 			, m_state.m_indexType ) );
 	}
 
