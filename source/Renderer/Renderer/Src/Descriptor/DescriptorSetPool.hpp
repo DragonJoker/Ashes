@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Renderer_DescriptorSetPool_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include "Descriptor/DescriptorPool.hpp"
 
 #include <vector>
 
