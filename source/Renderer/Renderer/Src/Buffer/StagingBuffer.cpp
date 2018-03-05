@@ -24,7 +24,7 @@ namespace renderer
 	void StagingBuffer::uploadTextureData( CommandBuffer const & commandBuffer
 		, ImageSubresourceLayers const & subresourceLayers
 		, IVec3 const & offset
-		, UIVec3 const & extent
+		, Extent3D const & extent
 		, uint8_t const * const data
 		, uint32_t size
 		, TextureView const & view )const
@@ -45,10 +45,10 @@ namespace renderer
 					0u,
 					subresourceLayers,
 					offset,
-					UIVec3{
-						std::max( 1u, extent[0] ),
-						std::max( 1u, extent[1] ),
-						std::max( 1u, extent[2] )
+					Extent3D{
+						std::max( 1u, extent.width ),
+						std::max( 1u, extent.height ),
+						std::max( 1u, extent.depth )
 					}
 				}
 				, getBuffer()
@@ -86,9 +86,9 @@ namespace renderer
 		uploadTextureData( commandBuffer
 			, {
 				getAspectMask( view.getFormat() ),
-				view.getSubResourceRange().getBaseMipLevel(),
-				view.getSubResourceRange().getBaseArrayLayer(),
-				view.getSubResourceRange().getLayerCount()
+				view.getSubResourceRange().baseMipLevel,
+				view.getSubResourceRange().baseArrayLayer,
+				view.getSubResourceRange().layerCount
 			}
 			, IVec3{ 0, 0, 0 }
 			, view.getTexture().getDimensions()
@@ -100,7 +100,7 @@ namespace renderer
 	void StagingBuffer::downloadTextureData( CommandBuffer const & commandBuffer
 		, ImageSubresourceLayers const & subresourceLayers
 		, IVec3 const & offset
-		, UIVec3 const & extent
+		, Extent3D const & extent
 		, uint8_t * data
 		, uint32_t size
 		, TextureView const & view )const
@@ -120,10 +120,10 @@ namespace renderer
 					0u,
 					subresourceLayers,
 					offset,
-					UIVec3{
-						std::max( 1u, extent[0] ),
-						std::max( 1u, extent[1] ),
-						std::max( 1u, extent[2] )
+					Extent3D{
+						std::max( 1u, extent.width ),
+						std::max( 1u, extent.height ),
+						std::max( 1u, extent.depth )
 					}
 				}
 				, view.getTexture()
@@ -162,9 +162,9 @@ namespace renderer
 		downloadTextureData( commandBuffer
 			, {
 				getAspectMask( view.getFormat() ),
-				view.getSubResourceRange().getBaseMipLevel(),
-				view.getSubResourceRange().getBaseArrayLayer(),
-				view.getSubResourceRange().getLayerCount()
+				view.getSubResourceRange().baseMipLevel,
+				view.getSubResourceRange().baseArrayLayer,
+				view.getSubResourceRange().layerCount
 			}
 			, IVec3{ 0, 0, 0 }
 			, view.getTexture().getDimensions()

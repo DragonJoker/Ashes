@@ -50,10 +50,10 @@ namespace common
 			}
 
 			std::vector< renderer::ShaderStageState > result;
-			result.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eVertex ) );
-			result.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eFragment ) );
-			result[0].getModule().loadShader( common::dumpTextFile( shadersFolder / "object.vert" ) );
-			result[1].getModule().loadShader( common::dumpTextFile( fragmentShaderFile ) );
+			result.push_back( { device.createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
+			result.push_back( { device.createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+			result[0].module->loadShader( common::dumpTextFile( shadersFolder / "object.vert" ) );
+			result[1].module->loadShader( common::dumpTextFile( fragmentShaderFile ) );
 			return result;
 		}
 
@@ -69,10 +69,10 @@ namespace common
 			}
 
 			std::vector< renderer::ShaderStageState > result;
-			result.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eVertex ) );
-			result.emplace_back( device.createShaderModule( renderer::ShaderStageFlag::eFragment ) );
-			result[0].getModule().loadShader( common::dumpTextFile( shadersFolder / "billboard.vert" ) );
-			result[1].getModule().loadShader( common::dumpTextFile( fragmentShaderFile ) );
+			result.push_back( { device.createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
+			result.push_back( { device.createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+			result[0].module->loadShader( common::dumpTextFile( shadersFolder / "billboard.vert" ) );
+			result[1].module->loadShader( common::dumpTextFile( fragmentShaderFile ) );
 			return result;
 		}
 
@@ -165,7 +165,7 @@ namespace common
 			}
 
 			auto dimensions = views[0].get().getTexture().getDimensions();
-			return renderPass.createFrameBuffer( renderer::UIVec2{ dimensions[0], dimensions[1] }
+			return renderPass.createFrameBuffer( renderer::UIVec2{ dimensions.width, dimensions.height }
 			, std::move( attaches ) );
 		}
 
@@ -286,7 +286,7 @@ namespace common
 	{
 		assert( !views.empty() );
 		auto dimensions = views[0].get().getTexture().getDimensions();
-		auto size = renderer::UIVec2{ dimensions[0], dimensions[1] };
+		auto size = renderer::UIVec2{ dimensions.width, dimensions.height };
 
 		if ( size != m_size )
 		{
@@ -477,7 +477,8 @@ namespace common
 				}
 
 				materialNode.descriptorSetTextures->update();
-				renderer::RasterisationState rasterisationState{ 1.0f, 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone };
+				renderer::RasterisationState rasterisationState;
+				rasterisationState.cullMode = renderer::CullModeFlag::eNone;
 
 				// Initialise the pipeline
 				if ( materialNode.layout )
@@ -495,9 +496,15 @@ namespace common
 				{
 					if ( !renderer::isDepthOrStencilFormat( attach.format ) )
 					{
-						blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
+						blendState.attachs.push_back( renderer::ColourBlendStateAttachment{} );
 					}
 				}
+
+				std::vector< renderer::DynamicState > dynamicStateEnables
+				{
+					renderer::DynamicState::eViewport,
+					renderer::DynamicState::eScissor
+				};
 
 				materialNode.pipeline = materialNode.pipelineLayout->createPipeline( 
 				{
@@ -508,6 +515,7 @@ namespace common
 					rasterisationState,
 					renderer::MultisampleState{},
 					blendState,
+					dynamicStateEnables,
 					renderer::DepthStencilState{}
 				} );
 				m_billboardRenderNodes.emplace_back( std::move( materialNode ) );
@@ -617,16 +625,11 @@ namespace common
 					}
 
 					materialNode.descriptorSetTextures->update();
-					renderer::RasterisationState rasterisationState{ 1.0f };
+					renderer::RasterisationState rasterisationState;
 
 					if ( material.data.backFace )
 					{
-						rasterisationState = renderer::RasterisationState{ 1.0f
-							, 0u
-							, false
-							, false
-							, renderer::PolygonMode::eFill
-							, renderer::CullModeFlag::eFront };
+						rasterisationState.cullMode = renderer::CullModeFlag::eFront;
 					}
 
 					// Initialise the pipeline
@@ -645,9 +648,15 @@ namespace common
 					{
 						if ( !renderer::isDepthOrStencilFormat( attach.format ) )
 						{
-							blendState.addAttachment( renderer::ColourBlendStateAttachment{} );
+							blendState.attachs.push_back( renderer::ColourBlendStateAttachment{} );
 						}
 					}
+
+					std::vector< renderer::DynamicState > dynamicStateEnables
+					{
+						renderer::DynamicState::eViewport,
+						renderer::DynamicState::eScissor
+					};
 
 					materialNode.pipeline = materialNode.pipelineLayout->createPipeline(
 					{
@@ -658,6 +667,7 @@ namespace common
 						rasterisationState,
 						renderer::MultisampleState{},
 						blendState,
+						dynamicStateEnables,
 						renderer::DepthStencilState{}
 					} );
 					m_submeshRenderNodes.emplace_back( std::move( materialNode ) );

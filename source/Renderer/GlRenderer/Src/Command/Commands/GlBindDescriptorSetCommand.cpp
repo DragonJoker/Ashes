@@ -56,9 +56,9 @@ namespace gl_renderer
 			glLogCall( gl::BindImageTexture
 				, binding.getBinding().getBindingPoint() + binding.getIndex()
 				, static_cast< TextureView const & >( view ).getImage()
-				, range.getBaseMipLevel()
-				, range.getLayerCount()
-				, range.getBaseArrayLayer()
+				, range.baseMipLevel
+				, range.layerCount
+				, range.baseArrayLayer
 				, GL_ACCESS_TYPE_READ_WRITE
 				, getInternal( view.getFormat() ) );
 		}

@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -59,14 +59,14 @@ namespace renderer
 		void uploadTextureData( CommandBuffer const & commandBuffer
 			, ImageSubresourceLayers const & subresourceLayers
 			, IVec3 const & offset
-			, UIVec3 const & extent
+			, Extent3D const & extent
 			, uint8_t const * const data
 			, uint32_t size
 			, TextureView const & texture )const;
 		inline void uploadTextureData( CommandBuffer const & commandBuffer
 			, ImageSubresourceLayers const & subresourceLayers
 			, IVec3 const & offset
-			, UIVec3 const & extent
+			, Extent3D const & extent
 			, ByteArray const & data
 			, TextureView const & texture )const;
 		void uploadTextureData( CommandBuffer const & commandBuffer
@@ -196,14 +196,14 @@ namespace renderer
 		void downloadTextureData( CommandBuffer const & commandBuffer
 			, ImageSubresourceLayers const & subresourceLayers
 			, IVec3 const & offset
-			, UIVec3 const & extent
+			, Extent3D const & extent
 			, uint8_t * data
 			, uint32_t size
 			, TextureView const & texture )const;
 		inline void downloadTextureData( CommandBuffer const & commandBuffer
 			, ImageSubresourceLayers const & subresourceLayers
 			, IVec3 const & offset
-			, UIVec3 const & extent
+			, Extent3D const & extent
 			, ByteArray & data
 			, TextureView const & texture )const;
 		void downloadTextureData( CommandBuffer const & commandBuffer

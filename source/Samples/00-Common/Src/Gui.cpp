@@ -248,10 +248,18 @@ namespace common
 		io.Fonts->GetTexDataAsRGBA32( &fontData, &texWidth, &texHeight );
 		auto uploadSize = uint32_t( texWidth * texHeight * 4u * sizeof( char ) );
 
-		m_fontImage = m_device.createTexture();
-		m_fontImage->setImage( utils::PixelFormat::eR8G8B8A8
-			, renderer::UIVec2{ uint32_t( texWidth ), uint32_t( texHeight ) }
-		, renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst );
+		m_fontImage = m_device.createTexture(
+			{
+				renderer::TextureType::e2D,
+				utils::PixelFormat::eR8G8B8A8,
+				renderer::Extent3D{ uint32_t( texWidth ), uint32_t( texHeight ), 1u },
+				1u,
+				1u,
+				renderer::SampleCountFlag::e1,
+				renderer::ImageTiling::eOptimal,
+				renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst
+			}
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_fontView = m_fontImage->createView( m_fontImage->getType()
 			, m_fontImage->getFormat() );
 
@@ -302,11 +310,19 @@ namespace common
 	void Gui::doPreparePipeline()
 	{
 		auto dimensions = m_colourView->getTexture().getDimensions();
-		auto size = renderer::UIVec2{ dimensions[0], dimensions[1] };
-		m_target = m_device.createTexture();
-		m_target->setImage( m_colourView->getFormat()
-			, size
-			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
+		auto size = renderer::UIVec2{ dimensions.width, dimensions.height };
+		m_target = m_device.createTexture(
+			{
+				renderer::TextureType::e2D,
+				m_colourView->getFormat(),
+				dimensions,
+				1u,
+				1u,
+				renderer::SampleCountFlag::e1,
+				renderer::ImageTiling::eOptimal,
+				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst
+			}
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_targetView = m_target->createView( renderer::TextureType::e2D
 			, m_target->getFormat() );
 		
@@ -350,7 +366,7 @@ namespace common
 			, std::move( attaches ) );
 
 		renderer::ColourBlendState cbState;
-		cbState.addAttachment( renderer::ColourBlendStateAttachment
+		cbState.attachs.push_back( renderer::ColourBlendStateAttachment
 		{
 			true,
 			renderer::BlendFactor::eSrcAlpha,
@@ -363,10 +379,19 @@ namespace common
 
 		std::string shadersFolder = getPath( getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 		std::vector< renderer::ShaderStageState > shaderStages;
-		shaderStages.emplace_back( m_device.createShaderModule( renderer::ShaderStageFlag::eVertex ) );
-		shaderStages.emplace_back( m_device.createShaderModule( renderer::ShaderStageFlag::eFragment ) );
-		shaderStages[0].getModule().loadShader( dumpTextFile( shadersFolder / "gui.vert" ) );
-		shaderStages[1].getModule().loadShader( dumpTextFile( shadersFolder / "gui.frag" ) );
+		shaderStages.push_back( { m_device.createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device.createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+		shaderStages[0].module->loadShader( dumpTextFile( shadersFolder / "gui.vert" ) );
+		shaderStages[1].module->loadShader( dumpTextFile( shadersFolder / "gui.frag" ) );
+
+		std::vector< renderer::DynamicState > dynamicStateEnables
+		{
+			renderer::DynamicState::eViewport,
+			renderer::DynamicState::eScissor
+		};
+
+		renderer::RasterisationState rasterisationState;
+		rasterisationState.cullMode = renderer::CullModeFlag::eNone;
 
 		m_pipeline = m_pipelineLayout->createPipeline(
 		{
@@ -374,9 +399,10 @@ namespace common
 			*m_renderPass,
 			renderer::VertexInputState::create( *m_vertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
-			renderer::RasterisationState{ 1.0f, 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone },
+			rasterisationState,
 			renderer::MultisampleState{},
 			cbState,
+			dynamicStateEnables,
 			renderer::DepthStencilState{},
 		} );
 	}

@@ -836,6 +836,29 @@ namespace renderer
 		*/
 		virtual void setLineWidth( float width )const = 0;
 		/**
+		*\~french
+		*\brief
+		*	Définit la largeur des lignes, si celle-ci est un état dynamique du pipeline.
+		*\param[in] constantFactor
+		*	Le facteur contrôlant la valeur constante de profondeur ajoutée à chaque fragment.
+		*\param[in] clamp
+		*	Le décalage maximum (ou minimum) de profondeur d'un fragment.
+		*\param[in] slopeFactor
+		*	Le facteur appliqué à la pente d'un fragment lors du calcul de décalage de profondeur.
+		*\~english
+		*\brief
+		*	Specifies the lines width, if this is a dynamic state in the pipeline.
+		*\param[in] constantFactor
+		*	The scalar factor controlling the constant depth value added to each fragment.
+		*\param[in] clamp
+		*	The maximum (or minimum) depth bias of a fragment.
+		*\param[in] slopeFactor
+		*	The scalar factor applied to a fragment’s slope in depth bias calculations.
+		*/
+		virtual void setDepthBias( float constantFactor
+			, float clamp
+			, float slopeFactor )const = 0;
+		/**
 		*\~english
 		*\brief
 		*	Binds a vertex buffer to the command buffer.

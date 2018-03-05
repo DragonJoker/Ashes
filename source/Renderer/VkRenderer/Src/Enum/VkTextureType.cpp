@@ -2,7 +2,7 @@
 
 namespace vk_renderer
 {
-	VkImageViewType convert( renderer::TextureType const & value )noexcept
+	VkImageViewType getImageViewType( renderer::TextureType const & value )noexcept
 	{
 		switch ( value )
 		{
@@ -30,6 +30,29 @@ namespace vk_renderer
 		default:
 			assert( false && "Unsupported texture type" );
 			return VK_IMAGE_VIEW_TYPE_2D;
+		}
+	}
+
+	VkImageType getImageType( renderer::TextureType const & value )noexcept
+	{
+		switch ( value )
+		{
+		case renderer::TextureType::e1D:
+		case renderer::TextureType::e1DArray:
+			return VK_IMAGE_TYPE_1D;
+
+		case renderer::TextureType::e2D:
+		case renderer::TextureType::eCube:
+		case renderer::TextureType::e2DArray:
+		case renderer::TextureType::eCubeArray:
+			return VK_IMAGE_TYPE_2D;
+
+		case renderer::TextureType::e3D:
+			return VK_IMAGE_TYPE_3D;
+
+		default:
+			assert( false && "Unsupported texture type" );
+			return VK_IMAGE_TYPE_2D;
 		}
 	}
 }

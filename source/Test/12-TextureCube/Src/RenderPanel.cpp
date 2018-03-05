@@ -278,8 +278,18 @@ namespace vkapp
 
 	void RenderPanel::doCreateTexture()
 	{
-		m_texture = m_device->createTexture();
-		m_texture->setImageArray( renderer::PixelFormat::eR8G8B8A8, { 512, 512 }, 6 );
+		m_texture = m_device->createTexture(
+			{
+				renderer::TextureType::e2DArray,
+				renderer::PixelFormat::eR8G8B8A8,
+				{ 512u, 512u, 1u },
+				1u,
+				6u,
+				renderer::SampleCountFlag::e1,
+				renderer::ImageTiling::eOptimal,
+				renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
+			}
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_view = m_texture->createView( renderer::TextureType::eCube
 			, renderer::PixelFormat::eR8G8B8A8
 			, 0u
@@ -308,8 +318,8 @@ namespace vkapp
 			auto image = common::loadImage( shadersFolder / paths[i] );
 			m_stagingBuffer->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
 				, {
-					m_view->getSubResourceRange().getAspectMask(),
-					m_view->getSubResourceRange().getBaseMipLevel(),
+					m_view->getSubResourceRange().aspectMask,
+					m_view->getSubResourceRange().baseMipLevel,
 					uint32_t( i ),
 					1u,
 				}
@@ -400,10 +410,18 @@ namespace vkapp
 	void RenderPanel::doCreateFrameBuffer()
 	{
 		auto size = GetClientSize();
-		m_renderTargetColour = m_device->createTexture();
-		m_renderTargetColour->setImage( renderer::PixelFormat::eR8G8B8A8
-			, { size.GetWidth(), size.GetHeight() }
-			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
+		m_renderTargetColour = m_device->createTexture(
+			{
+				renderer::TextureType::e2D,
+				renderer::PixelFormat::eR8G8B8A8,
+				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
+				1u,
+				1u,
+				renderer::SampleCountFlag::e1,
+				renderer::ImageTiling::eOptimal,
+				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled
+			}
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_renderTargetColourView = m_renderTargetColour->createView( m_renderTargetColour->getType()
 			, m_renderTargetColour->getFormat() );
 		renderer::FrameBufferAttachmentArray attaches;
@@ -452,10 +470,12 @@ namespace vkapp
 		}
 
 		std::vector< renderer::ShaderStageState > shaderStages;
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) );
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) );
-		shaderStages[0].getModule().loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.vert" ) );
-		shaderStages[1].getModule().loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.frag" ) );
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.vert" ) );
+		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.frag" ) );
+		renderer::RasterisationState rasterisationState;
+		rasterisationState.cullMode = renderer::CullModeFlag::eNone;
 
 		m_offscreenPipeline = m_offscreenPipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 		{
@@ -463,7 +483,10 @@ namespace vkapp
 			*m_offscreenRenderPass,
 			renderer::VertexInputState::create( *m_offscreenVertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
-			renderer::RasterisationState{ 1.0f, 0, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone }
+			rasterisationState,
+			renderer::MultisampleState{},
+			renderer::ColourBlendState::createDefault(),
+			{ renderer::DynamicState::eViewport, renderer::DynamicState::eScissor }
 		} );
 	}
 
@@ -599,10 +622,10 @@ namespace vkapp
 		}
 
 		std::vector< renderer::ShaderStageState > shaderStages;
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) );
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) );
-		shaderStages[0].getModule().loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.vert" ) );
-		shaderStages[1].getModule().loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.frag" ) );
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.vert" ) );
+		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.frag" ) );
 
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 		{
@@ -610,7 +633,10 @@ namespace vkapp
 			*m_mainRenderPass,
 			renderer::VertexInputState::create( *m_mainVertexLayout ),
 			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleStrip },
-			renderer::RasterisationState{ 1.0f }
+			renderer::RasterisationState{},
+			renderer::MultisampleState{},
+			renderer::ColourBlendState::createDefault(),
+			{ renderer::DynamicState::eViewport, renderer::DynamicState::eScissor }
 		} );
 	}
 

@@ -7,70 +7,78 @@
 namespace gl_renderer
 {
 	TextureView::TextureView( Device const & device
+		, Texture const & image )
+		: renderer::TextureView{ device
+		, image
+		, {
+			renderer::TextureType::e2D,
+			image.getFormat(),
+			renderer::ComponentMapping{},
+			{
+				renderer::ImageAspectFlag::eColour,
+				0u,
+				1u,
+				0u,
+				1u
+			}
+		} }
+		, m_device{ device }
+	{
+	}
+
+	TextureView::TextureView( Device const & device
 		, Texture const & texture
-		, renderer::TextureType type
-		, renderer::PixelFormat format
-		, uint32_t baseMipLevel
-		, uint32_t levelCount
-		, uint32_t baseArrayLayer
-		, uint32_t layerCount
-		, renderer::ComponentMapping const & mapping )
+		, renderer::ImageViewCreateInfo const & createInfo )
 		: renderer::TextureView{ device
 			, texture
-			, type
-			, format
-			, baseMipLevel
-			, levelCount
-			, baseArrayLayer
-			, layerCount
-			, mapping }
+			, createInfo }
 		, m_device{ device }
-		, m_target{ convert( type ) }
+		, m_target{ convert( m_createInfo.viewType ) }
 	{
 		glLogCall( gl::GenTextures, 1, &m_texture );
 		glLogCall( gl::TextureView
 			, m_texture
 			, m_target
 			, texture.getImage()
-			, getInternal( format )
-			, baseMipLevel
-			, levelCount
-			, baseArrayLayer
-			, layerCount );
+			, getInternal( m_createInfo.format )
+			, m_createInfo.subresourceRange.baseMipLevel
+			, m_createInfo.subresourceRange.levelCount
+			, m_createInfo.subresourceRange.baseArrayLayer
+			, m_createInfo.subresourceRange.layerCount );
 		glLogCall( gl::BindTexture, m_target, m_texture );
 
-		if ( mapping.r != renderer::ComponentSwizzle::eIdentity )
+		if ( m_createInfo.components.r != renderer::ComponentSwizzle::eIdentity )
 		{
-			glLogCall( gl::TexParameteri, m_target, GL_SWIZZLE_R, convert( mapping.r ) );
+			glLogCall( gl::TexParameteri, m_target, GL_SWIZZLE_R, convert( m_createInfo.components.r ) );
 		}
 
-		if ( mapping.g != renderer::ComponentSwizzle::eIdentity )
+		if ( m_createInfo.components.g != renderer::ComponentSwizzle::eIdentity )
 		{
-			glLogCall( gl::TexParameteri, m_target, GL_SWIZZLE_G, convert( mapping.g ) );
+			glLogCall( gl::TexParameteri, m_target, GL_SWIZZLE_G, convert( m_createInfo.components.g ) );
 		}
 
-		if ( mapping.b != renderer::ComponentSwizzle::eIdentity )
+		if ( m_createInfo.components.b != renderer::ComponentSwizzle::eIdentity )
 		{
-			glLogCall( gl::TexParameteri, m_target, GL_SWIZZLE_B, convert( mapping.b ) );
+			glLogCall( gl::TexParameteri, m_target, GL_SWIZZLE_B, convert( m_createInfo.components.b ) );
 		}
 
-		if ( mapping.a != renderer::ComponentSwizzle::eIdentity )
+		if ( m_createInfo.components.a != renderer::ComponentSwizzle::eIdentity )
 		{
-			glLogCall( gl::TexParameteri, m_target, GL_SWIZZLE_A, convert( mapping.a ) );
+			glLogCall( gl::TexParameteri, m_target, GL_SWIZZLE_A, convert( m_createInfo.components.a ) );
 		}
 
 		int minLevel = 0;
 		gl::GetTexParameteriv( m_target, GL_TEXTURE_VIEW_MIN_LEVEL, &minLevel );
-		assert( minLevel == baseMipLevel );
+		assert( minLevel == m_createInfo.subresourceRange.baseMipLevel );
 		int numLevels = 0;
 		gl::GetTexParameteriv( m_target, GL_TEXTURE_VIEW_NUM_LEVELS, &numLevels );
-		assert( numLevels == levelCount );
+		assert( numLevels == m_createInfo.subresourceRange.levelCount );
 		int minLayer = 0;
 		gl::GetTexParameteriv( m_target, GL_TEXTURE_VIEW_MIN_LAYER, &minLayer );
-		assert( minLayer == baseArrayLayer );
+		assert( minLayer == m_createInfo.subresourceRange.baseArrayLayer );
 		int numLayers = 0;
 		gl::GetTexParameteriv( m_target, GL_TEXTURE_VIEW_NUM_LAYERS, &numLayers );
-		assert( numLayers == layerCount );
+		assert( numLayers == m_createInfo.subresourceRange.layerCount );
 		glLogCall( gl::BindTexture, m_target, 0u );
 	}
 

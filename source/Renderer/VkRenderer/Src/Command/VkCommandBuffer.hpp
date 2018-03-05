@@ -257,6 +257,12 @@ namespace vk_renderer
 		*/
 		void setLineWidth( float width )const override;
 		/**
+		*\copydoc	renderer::CommandBuffer::setDepthBias
+		*/
+		void setDepthBias( float constantFactor
+			, float clamp
+			, float slopeFactor )const override;
+		/**
 		*\~french
 		*\return
 		*	Le pipeline actuellement actif.

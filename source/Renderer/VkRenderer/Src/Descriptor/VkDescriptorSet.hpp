@@ -45,7 +45,8 @@ namespace vk_renderer
 		*	The binding point for the set.
 		*/
 		DescriptorSet( Device const & device
-			, DescriptorSetPool const & pool
+			, DescriptorPool const & pool
+			, DescriptorSetLayout const & layout
 			, uint32_t bindingPoint );
 		/**
 		*\~french
@@ -141,7 +142,7 @@ namespace vk_renderer
 
 	private:
 		Device const & m_device;
-		DescriptorSetPool const & m_pool;
+		DescriptorPool const & m_pool;
 		DescriptorSetLayout const & m_layout;
 		VkDescriptorSet m_descriptorSet{};
 		std::vector< DescriptorSetBindingPtr > m_bindings;

@@ -6,6 +6,7 @@ See LICENSE file in root folder.
 #define ___Renderer_SwapChain_HPP___
 #pragma once
 
+#include "Core/BackBuffer.hpp"
 #include "Core/RenderingResources.hpp"
 
 namespace renderer
@@ -68,6 +69,19 @@ namespace renderer
 		*	Réinitialise la swap chain.
 		*/
 		virtual void reset( UIVec2 const & size ) = 0;
+		/**
+		*\~french
+		*\brief
+		*	Creates the swap chain's depth and/or stencil image.
+		*\param[in] format
+		*	The pixel format.
+		*\~french
+		*\brief
+		*	Crée l'image de profondeur et/ou stencil de la swap chain.
+		*\param[in] format
+		*	Le format de pixels.
+		*/
+		virtual void createDepthStencil( PixelFormat format ) = 0;
 		/**
 		*\~french
 		*\brief
@@ -159,6 +173,31 @@ namespace renderer
 		{
 			return *m_renderingResources[0];
 		}
+		/**
+		*\~french
+		*\return
+		*	Retrieves the backbuffers.
+		*\~french
+		*\return
+		*	Récupère les backbuffers.
+		*/
+		inline BackBufferPtrArray const & getImages()const
+		{
+			return m_backBuffers;
+		}
+		/**
+		*\~french
+		*\return
+		*	Retrieves the backbuffers.
+		*\~french
+		*\return
+		*	Récupère les backbuffers.
+		*/
+		inline TextureView const & getDepthStencilView()const
+		{
+			assert( m_depthStencilView );
+			return *m_depthStencilView;
+		}
 
 	public:
 		using OnResetFunc = std::function< void() >;
@@ -171,7 +210,10 @@ namespace renderer
 		Device const & m_device;
 		UIVec2 m_dimensions;
 		std::vector< RenderingResourcesPtr > m_renderingResources;
+		BackBufferPtrArray m_backBuffers;
 		mutable size_t m_resourceIndex{ 0 };
+		mutable TexturePtr m_depthStencil;
+		mutable TextureViewPtr m_depthStencilView;
 	};
 }
 

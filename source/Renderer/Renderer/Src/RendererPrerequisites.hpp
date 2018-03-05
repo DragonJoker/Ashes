@@ -26,7 +26,9 @@ See LICENSE file in root folder.
 #include "Enum/CompareOp.hpp"
 #include "Enum/CullModeFlag.hpp"
 #include "Enum/DepthStencilStateFlag.hpp"
+#include "Enum/DescriptorPoolCreateFlag.hpp"
 #include "Enum/DescriptorType.hpp"
+#include "Enum/DynamicState.hpp"
 #include "Enum/FenceCreateFlag.hpp"
 #include "Enum/Filter.hpp"
 #include "Enum/FormatFeatureFlag.hpp"
@@ -55,6 +57,7 @@ See LICENSE file in root folder.
 #include "Enum/RasterisationStateFlag.hpp"
 #include "Enum/SampleCountFlag.hpp"
 #include "Enum/ShaderStageFlag.hpp"
+#include "Enum/SharingMode.hpp"
 #include "Enum/StencilOp.hpp"
 #include "Enum/SubpassContents.hpp"
 #include "Enum/TessellationStateFlag.hpp"
@@ -100,15 +103,22 @@ namespace renderer
 	struct ClearAttachment;
 	struct ClearRect;
 	struct ClearValue;
+	struct ColourBlendState;
+	struct ColourBlendStateAttachment;
 	struct CommandBufferInheritanceInfo;
+	struct DepthStencilState;
+	struct DescriptorPoolSize;
 	struct Extent3D;
 	struct FormatProperties;
 	struct GraphicsPipelineCreateInfo;
 	struct ImageCopy;
 	struct ImageBlit;
 	struct ImageFormatProperties;
+	struct ImageSubresourceRange;
+	struct InputAssemblyState;
 	struct MemoryHeap;
 	struct MemoryType;
+	struct MultisampleState;
 	struct PhysicalDeviceFeatures;
 	struct PhysicalDeviceLimits;
 	struct PhysicalDeviceMemoryProperties;
@@ -117,10 +127,14 @@ namespace renderer
 	struct PushConstant;
 	struct PushConstantRange;
 	struct QueueFamilyProperties;
+	struct RasterisationState;
 	struct RenderPassAttachment;
 	struct RenderSubpassAttachment;
 	struct RenderSubpassState;
+	struct ShaderStageState;
 	struct SpecialisationMapEntry;
+	struct StencilOpState;
+	struct TessellationState;
 	struct VertexInputAttributeDescription;
 	struct VertexInputBindingDescription;
 	struct VertexInputState;
@@ -130,13 +144,11 @@ namespace renderer
 	class BufferBase;
 	class BufferMemoryBarrier;
 	class BufferView;
-	class ColourBlendState;
-	class ColourBlendStateAttachment;
 	class CommandBuffer;
 	class CommandPool;
 	class ComputePipeline;
 	class Connection;
-	class DepthStencilState;
+	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetBinding;
 	class DescriptorSetLayout;
@@ -146,17 +158,13 @@ namespace renderer
 	class Fence;
 	class FrameBuffer;
 	class ImageMemoryBarrier;
-	class ImageSubresourceRange;
-	class InputAssemblyState;
 	class IWindowHandle;
-	class MultisampleState;
 	class PhysicalDevice;
 	class Pipeline;
 	class PipelineLayout;
 	class PushConstantsBufferBase;
 	class QueryPool;
 	class Queue;
-	class RasterisationState;
 	class Renderer;
 	class RenderingResources;
 	class RenderPass;
@@ -166,13 +174,10 @@ namespace renderer
 	class Scissor;
 	class ShaderModule;
 	class ShaderProgram;
-	class ShaderStageState;
 	class ShaderStorageBufferBase;
 	class SpecialisationInfoBase;
 	class StagingBuffer;
-	class StencilOpState;
 	class SwapChain;
-	class TessellationState;
 	class Texture;
 	class FrameBufferAttachment;
 	class TextureView;
@@ -210,12 +215,14 @@ namespace renderer
 	using SpecialisationInfoPtr = std::unique_ptr< SpecialisationInfo< T > >;
 
 	using AttributeBasePtr = std::unique_ptr< Attribute >;
+	using BackBufferPtr = std::unique_ptr< BackBuffer >;
 	using BufferBasePtr = std::unique_ptr< BufferBase >;
 	using BufferViewPtr = std::unique_ptr< BufferView >;
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
 	using ComputePipelinePtr = std::unique_ptr< ComputePipeline >;
 	using ConnectionPtr = std::unique_ptr< Connection >;
+	using DescriptorPoolPtr = std::unique_ptr< DescriptorPool >;
 	using DescriptorSetLayoutPtr = std::unique_ptr< DescriptorSetLayout >;
 	using DescriptorSetLayoutBindingPtr = std::unique_ptr< DescriptorSetLayoutBinding >;
 	using DescriptorSetPoolPtr = std::unique_ptr< DescriptorSetPool >;
@@ -248,6 +255,7 @@ namespace renderer
 	using ClearRectArray = std::vector< ClearRect >;
 	using ClearValueArray = std::vector< ClearValue >;
 	using ColourBlendStateAttachmentArray = std::vector< ColourBlendStateAttachment >;
+	using DescriptorPoolSizeArray = std::vector< DescriptorPoolSize >;
 	using DescriptorSetLayoutBindingArray = std::vector< DescriptorSetLayoutBinding >;
 	using FrameBufferAttachmentArray = std::vector< FrameBufferAttachment >;
 	using ImageLayoutArray = std::vector< ImageLayout >;
@@ -267,6 +275,7 @@ namespace renderer
 	using TextureViewPtr = std::shared_ptr< TextureView >;
 
 	using FrameBufferPtrArray = std::vector< FrameBufferPtr >;
+	using BackBufferPtrArray = std::vector< BackBufferPtr >;
 	using CommandBufferPtrArray = std::vector< CommandBufferPtr >;
 	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
 

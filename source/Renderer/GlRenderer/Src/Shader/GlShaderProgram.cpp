@@ -85,14 +85,14 @@ namespace gl_renderer
 
 		void doInitialiseState( renderer::ShaderStageState const & stage )
 		{
-			auto & module = static_cast< ShaderModule const & >( stage.getModule() );
+			auto & module = static_cast< ShaderModule const & >( *stage.module );
 			auto shader = module.getShader();
 
 			if ( module.isSpirV() )
 			{
-				if ( stage.hasSpecialisationInfo() )
+				if ( stage.specialisationInfo )
 				{
-					auto & specialisationInfo = stage.getSpecialisationInfo();
+					auto & specialisationInfo = *stage.specialisationInfo;
 					auto count = GLuint( std::distance( specialisationInfo.begin(), specialisationInfo.end() ) );
 					std::vector< GLuint > indices;
 					indices.reserve( count );
@@ -110,7 +110,7 @@ namespace gl_renderer
 
 					glLogCall( gl::SpecializeShader
 						, shader
-						, stage.getEntryPoint().c_str()
+						, stage.entryPoint.c_str()
 						, count
 						, indices.data()
 						, values.data() );
@@ -119,7 +119,7 @@ namespace gl_renderer
 				{
 					glLogCall( gl::SpecializeShader
 						, shader
-						, stage.getEntryPoint().c_str()
+						, stage.entryPoint.c_str()
 						, 0u
 						, nullptr
 						, nullptr );
@@ -141,7 +141,7 @@ namespace gl_renderer
 	{
 		for ( auto & stage : stages )
 		{
-			auto & module = static_cast< ShaderModule const & >( stage.getModule() );
+			auto & module = static_cast< ShaderModule const & >( *stage.module );
 			m_shaders.push_back( module.getShader() );
 			doInitialiseState( stage );
 			glLogCall( gl::AttachShader, m_program, m_shaders.back() );
@@ -151,7 +151,7 @@ namespace gl_renderer
 	ShaderProgram::ShaderProgram( renderer::ShaderStageState const & stage )
 		: m_program{ gl::CreateProgram() }
 	{
-		auto & module = static_cast< ShaderModule const & >( stage.getModule() );
+		auto & module = static_cast< ShaderModule const & >( *stage.module );
 		m_shaders.push_back( module.getShader() );
 		doInitialiseState( stage );
 		glLogCall( gl::AttachShader, m_program, m_shaders.back() );

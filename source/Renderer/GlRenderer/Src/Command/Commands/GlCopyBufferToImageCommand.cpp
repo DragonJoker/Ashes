@@ -78,7 +78,7 @@ namespace gl_renderer
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset[0]
-					, copyInfo.imageExtent[0]
+					, copyInfo.imageExtent.width
 					, m_internal
 					, copyInfo.levelSize
 					, BufferOffset( copyInfo.bufferOffset ) );
@@ -91,8 +91,8 @@ namespace gl_renderer
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset[0]
 					, copyInfo.imageOffset[1]
-					, copyInfo.imageExtent[0]
-					, copyInfo.imageExtent[1]
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
 					, m_internal
 					, copyInfo.levelSize
 					, BufferOffset( copyInfo.bufferOffset ) );
@@ -105,9 +105,9 @@ namespace gl_renderer
 					, copyInfo.imageOffset[0]
 					, copyInfo.imageOffset[1]
 					, copyInfo.imageOffset[2]
-					, copyInfo.imageExtent[0]
-					, copyInfo.imageExtent[1]
-					, copyInfo.imageExtent[2]
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
+					, copyInfo.imageExtent.depth
 					, m_internal
 					, copyInfo.levelSize
 					, BufferOffset( copyInfo.bufferOffset ) );
@@ -119,8 +119,8 @@ namespace gl_renderer
 					, copyInfo.imageOffset[0]
 					, copyInfo.imageOffset[1]
 					, copyInfo.imageSubresource.baseArrayLayer
-					, copyInfo.imageExtent[0]
-					, copyInfo.imageExtent[1]
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount
 					, m_internal
 					, copyInfo.levelSize
@@ -137,7 +137,7 @@ namespace gl_renderer
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset[0]
-					, copyInfo.imageExtent[0]
+					, copyInfo.imageExtent.width
 					, m_format
 					, m_type
 					, BufferOffset( copyInfo.bufferOffset ) );
@@ -150,8 +150,8 @@ namespace gl_renderer
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset[0]
 					, copyInfo.imageOffset[1]
-					, copyInfo.imageExtent[0]
-					, copyInfo.imageExtent[1]
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
 					, m_format
 					, m_type
 					, BufferOffset( copyInfo.bufferOffset ) );
@@ -164,8 +164,8 @@ namespace gl_renderer
 					, copyInfo.imageOffset[0]
 					, copyInfo.imageOffset[1]
 					, copyInfo.imageSubresource.baseArrayLayer
-					, copyInfo.imageExtent[0]
-					, copyInfo.imageExtent[1]
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount
 					, m_format
 					, m_type
@@ -179,9 +179,9 @@ namespace gl_renderer
 					, copyInfo.imageOffset[0]
 					, copyInfo.imageOffset[1]
 					, copyInfo.imageOffset[2]
-					, copyInfo.imageExtent[0]
-					, copyInfo.imageExtent[1]
-					, copyInfo.imageExtent[2]
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
+					, copyInfo.imageExtent.depth
 					, m_format
 					, m_type
 					, BufferOffset( copyInfo.bufferOffset ) );

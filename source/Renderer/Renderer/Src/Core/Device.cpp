@@ -119,4 +119,37 @@ namespace renderer
 		return createPipelineLayout( DescriptorSetLayoutCRefArray{}
 			, PushConstantRangeCRefArray{ pushConstantRanges } );
 	}
+
+	SamplerPtr Device::createSampler( WrapMode wrapS
+		, WrapMode wrapT
+		, WrapMode wrapR
+		, Filter minFilter
+		, Filter magFilter
+		, MipmapMode mipFilter
+		, float minLod
+		, float maxLod
+		, float lodBias
+		, BorderColour borderColour
+		, float maxAnisotropy
+		, CompareOp compareOp )const
+	{
+		return createSampler( 
+		{
+			minFilter,
+			magFilter,
+			mipFilter,
+			wrapR,
+			wrapT,
+			wrapS,
+			lodBias,
+			maxAnisotropy != 1.0f,
+			maxAnisotropy,
+			compareOp != CompareOp::eAlways,
+			compareOp,
+			minLod,
+			maxLod,
+			borderColour,
+			false
+		} );
+	}
 }

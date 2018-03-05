@@ -63,7 +63,7 @@ namespace vk_renderer
 		std::vector< std::vector< VkSpecializationMapEntry > > m_specialisationEntries;
 		std::map< VkShaderStageFlagBits, VkSpecializationInfo > m_specialisationInfos;
 		std::vector< VkPipelineShaderStageCreateInfo > m_shaderStages;
-		bool m_lineWidth;
+		std::vector< VkDynamicState > m_dynamicStates;
 		VkPipeline m_pipeline{ VK_NULL_HANDLE };
 	};
 }
