@@ -11,8 +11,6 @@
 
 #include <iostream>
 
-#include <DXGI1_2.h>
-
 namespace gl_renderer
 {
 	SwapChain::SwapChain( Device const & device
