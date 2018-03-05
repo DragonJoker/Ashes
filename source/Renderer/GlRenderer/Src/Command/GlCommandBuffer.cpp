@@ -48,6 +48,7 @@ See LICENSE file in root folder.
 #include "Commands/GlPushConstantsCommand.hpp"
 #include "Commands/GlResetQueryPoolCommand.hpp"
 #include "Commands/GlScissorCommand.hpp"
+#include "Commands/GlSetDepthBiasCommand.hpp"
 #include "Commands/GlSetLineWidthCommand.hpp"
 #include "Commands/GlViewportCommand.hpp"
 #include "Commands/GlWriteTimestampCommand.hpp"
@@ -295,7 +296,7 @@ namespace gl_renderer
 				, 0u
 				, firstVertex
 				, firstInstance
-				, m_state.m_currentPipeline->getInputAssemblyState().getTopology()
+				, m_state.m_currentPipeline->getInputAssemblyState().topology
 				, m_state.m_indexType ) );
 		}
 		else
@@ -309,7 +310,7 @@ namespace gl_renderer
 				, instCount
 				, firstVertex
 				, firstInstance
-				, m_state.m_currentPipeline->getInputAssemblyState().getTopology() ) );
+				, m_state.m_currentPipeline->getInputAssemblyState().topology ) );
 		}
 	}
 
@@ -335,7 +336,7 @@ namespace gl_renderer
 			, firstIndex
 			, vertexOffset
 			, firstInstance
-			, m_state.m_currentPipeline->getInputAssemblyState().getTopology()
+			, m_state.m_currentPipeline->getInputAssemblyState().topology
 			, m_state.m_indexType ) );
 	}
 
@@ -353,7 +354,7 @@ namespace gl_renderer
 			, offset
 			, drawCount
 			, stride
-			, m_state.m_currentPipeline->getInputAssemblyState().getTopology() ) );
+			, m_state.m_currentPipeline->getInputAssemblyState().topology ) );
 	}
 
 	void CommandBuffer::drawIndexedIndirect( renderer::BufferBase const & buffer
@@ -376,7 +377,7 @@ namespace gl_renderer
 			, offset
 			, drawCount
 			, stride
-			, m_state.m_currentPipeline->getInputAssemblyState().getTopology()
+			, m_state.m_currentPipeline->getInputAssemblyState().topology
 			, m_state.m_indexType ) );
 	}
 
@@ -497,6 +498,15 @@ namespace gl_renderer
 	void CommandBuffer::setLineWidth( float width )const
 	{
 		m_commands.emplace_back( std::make_unique< SetLineWidthCommand >( width ) );
+	}
+
+	void CommandBuffer::setDepthBias( float constantFactor
+		, float clamp
+		, float slopeFactor )const
+	{
+		m_commands.emplace_back( std::make_unique< SetDepthBiasCommand >( constantFactor
+			, clamp
+			, slopeFactor ) );
 	}
 
 	void CommandBuffer::initialiseGeometryBuffers()const

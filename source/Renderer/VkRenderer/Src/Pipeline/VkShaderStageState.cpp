@@ -11,16 +11,16 @@ namespace vk_renderer
 	VkPipelineShaderStageCreateInfo convert( renderer::ShaderStageState const & state
 		, VkSpecializationInfo const * specialisationInfo )
 	{
-		auto & module = static_cast< ShaderModule const & >( state.getModule() );
+		auto & module = static_cast< ShaderModule const & >( *state.module );
 		return VkPipelineShaderStageCreateInfo
 		{
 			VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
 			nullptr,
-			0,                                                        // flags
-			module.getStage(),                                        // stage
-			VkShaderModule( module ),                                 // module
-			state.getEntryPoint().c_str(),                            // pName
-			specialisationInfo,                                       // pSpecializationInfo
+			0,
+			module.getStage(),
+			VkShaderModule( module ),
+			state.entryPoint.c_str(),
+			specialisationInfo,
 		};
 	}
 }

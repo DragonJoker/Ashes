@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -8,15 +8,13 @@ See LICENSE file in root folder.
 
 namespace renderer
 {
-	DescriptorSet::DescriptorSet( DescriptorSetPool const & pool, uint32_t bindingPoint )
+	DescriptorSet::DescriptorSet( DescriptorPool const & pool, uint32_t bindingPoint )
 		: m_bindingPoint{ bindingPoint }
 		, m_pool{ pool }
 	{
-		m_pool.allocate( 1u );
 	}
 
 	DescriptorSet::~DescriptorSet()
 	{
-		m_pool.deallocate( 1u );
 	}
 }

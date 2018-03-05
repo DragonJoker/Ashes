@@ -340,10 +340,16 @@ namespace common
 		}
 
 		std::vector< renderer::ShaderStageState > shaderStages;
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) );
-		shaderStages.emplace_back( m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) );
-		shaderStages[0].getModule().loadShader( common::dumpTextFile( shadersFolder / "main.vert" ) );
-		shaderStages[1].getModule().loadShader( common::dumpTextFile( shadersFolder / "main.frag" ) );
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+		shaderStages[0].module->loadShader( common::dumpTextFile( shadersFolder / "main.vert" ) );
+		shaderStages[1].module->loadShader( common::dumpTextFile( shadersFolder / "main.frag" ) );
+
+		std::vector< renderer::DynamicState > dynamicStateEnables
+		{
+			renderer::DynamicState::eViewport,
+			renderer::DynamicState::eScissor
+		};
 
 		m_pipelineLayout = m_device->createPipelineLayout( *m_descriptorLayout );
 		m_pipeline = m_pipelineLayout->createPipeline(
@@ -352,8 +358,10 @@ namespace common
 			*m_renderPass,
 			renderer::VertexInputState::create( *m_vertexLayout ),
 			{ renderer::PrimitiveTopology::eTriangleStrip },
-			renderer::RasterisationState{ 1.0f },
+			renderer::RasterisationState{},
 			renderer::MultisampleState{},
+			renderer::ColourBlendState::createDefault(),
+			dynamicStateEnables,
 		} );
 	}
 

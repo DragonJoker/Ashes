@@ -21,41 +21,32 @@ namespace gl_renderer
 		*\brief
 		*	Constructeur.
 		*/
-		SwapChain( renderer::Device const & device
+		SwapChain( Device const & device
 			, renderer::UIVec2 const & size );
 		/**
-		*\brief
-		*	R�initialise la swap chain.
+		*\copydoc	renderer::SwapChain::reset
 		*/
 		void reset( renderer::UIVec2 const & size )override;
 		/**
-		*\brief
-		*	Cr�e les tampons d'image des back buffers, compatibles avec la passe de rendu donn�e.
-		*\param[in] renderPass
-		*	La passe de rendu.
-		*\return
-		*	Les tampons d'images.
+		*\copydoc	renderer::SwapChain::createFrameBuffers
 		*/
 		renderer::FrameBufferPtrArray createFrameBuffers( renderer::RenderPass const & renderPass )const override;
 		/**
-		*\brief
-		*	Cr�e les tampons d'image des back buffers, compatibles avec la passe de rendu donn�e.
-		*\param[in] renderPass
-		*	La passe de rendu.
-		*\return
-		*	Les tampons d'images.
+		*\copydoc	renderer::SwapChain::createCommandBuffers
 		*/
 		renderer::CommandBufferPtrArray createCommandBuffers()const override;
 		/**
-		*\return
-		*	R�cup�re les ressources de rendu actives.
+		*\copydoc	renderer::SwapChain::getResources
 		*/
 		renderer::RenderingResources * getResources()override;
 		/**
-		*\return
-		*	Pr�sente les ressources de rendu.
+		*\copydoc	renderer::SwapChain::present
 		*/
 		void present( renderer::RenderingResources & resources )override;
+		/**
+		*\copydoc	renderer::SwapChain::createDepthStencil
+		*/
+		void createDepthStencil( renderer::PixelFormat format )override;
 		/**
 		*\brief
 		*	D�finit la couleur de vidage de la swapchain.
@@ -95,8 +86,12 @@ namespace gl_renderer
 
 	private:
 		void doResetSwapChain();
+		void doCreateBackBuffers();
+		renderer::FrameBufferAttachmentArray doPrepareAttaches( uint32_t backBuffer
+			, renderer::RenderPassAttachmentArray const & attaches )const;
 
 	private:
+		Device const & m_device;
 		renderer::RgbaColour m_clearColour;
 		renderer::PixelFormat m_format;
 	};

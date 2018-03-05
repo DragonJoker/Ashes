@@ -10,6 +10,8 @@ See LICENSE file in root folder.
 #include "Command/Queue.hpp"
 #include "Core/Connection.hpp"
 #include "Core/PhysicalDevice.hpp"
+#include "Image/ImageCreateInfo.hpp"
+#include "Image/SamplerCreateInfo.hpp"
 #include "Pipeline/ColourBlendState.hpp"
 #include "Pipeline/RasterisationState.hpp"
 
@@ -208,72 +210,57 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
+		*	Creates a descriptor pool.
+		*\param[in] flags
+		*	Bitmask specifying certain supported operations on a descriptor pool.
+		*\param[in] maxSets
+		*	The maximum number of descriptor sets that can be allocated from the pool.
+		*\param[in] poolSizes
+		*	The array of DescriptorPoolSize describing the type and count of descriptors to be allocated in the pool.
+		*\return
+		*	The created pool.
+		*\~french
+		*\brief
+		*	Crée un pool de descripteurs.
+		*\param[in] flags
+		*	Masque de bits définissant les opérations supportées sur un pool de descripteurs.
+		*\param[in] maxSets
+		*	Le nombre maximum d'ensembles de descripteurs pouvant être alloués par le pool.
+		*\param[in] poolSizes
+		*	Le tableau de DescriptorPoolSize décrivant les types et nombre de descripteurs à allouer dans le pool.
+		*\return
+		*	Le pool créé.
+		*/
+		virtual DescriptorPoolPtr createDescriptorPool( DescriptorPoolCreateFlags flags
+			, uint32_t maxSets
+			, DescriptorPoolSizeArray poolSizes )const = 0;
+		/**
+		*\~english
+		*\brief
 		*	Creates a texture.
-		*\param[in] initialLayout
-		*	The image initial layout.
+		*\param[in] createInfo
+		*	The creation informations.
 		*\~french
 		*\brief
 		*	Crée une texture.
-		*\param[in] initialLayout
-		*	Le layout initial pour l'image.
+		*\param[in] createInfo
+		*	Les informations de création.
 		*/
-		virtual TexturePtr createTexture( ImageLayout initialLayout = ImageLayout::eUndefined )const = 0;
+		virtual TexturePtr createTexture( ImageCreateInfo const & createInfo
+			, MemoryPropertyFlags flags )const = 0;
 		/**
 		*\~english
 		*\brief
 		*	Creates a sampler.
-		*\param[in] wrapS, wrapT, wrapR
-		*	The texture wrap modes.
-		*\param[in] minFilter, magFilter
-		*	The minification and magnification filters.
-		*\param[in] mipFilter
-		*	The mipmap filter.
-		*\param[in] minLod
-		*	Minimal LOD Level.
-		*\param[in] maxLod
-		*	Maximal LOD Level.
-		*\param[in] lodBias
-		*	The texture LOD offset.
-		*\param[in] borderColour
-		*	Texture border colour.
-		*\param[in] maxAnisotropy
-		*	Maximal anisotropic filtering value.
-		*\param[in] compareOp
-		*	The comparison operator, for depth maps.
+		*\param[in] createInfo
+		*	The creation informations.
 		*\~french
 		*\brief
 		*	Crée un échantillonneur.
-		*\param[in] wrapS, wrapT, wrapR
-		*	Les modes de wrap de texture.
-		*\param[in] minFilter, magFilter
-		*	Les filtres de minification et magnification.
-		*\param[in] mipFilter
-		*	Le filtre de mipmap.
-		*\param[in] minLod
-		*	Niveau de LOD minimal.
-		*\param[in] maxLod
-		*	Niveau de LOD maximal.
-		*\param[in] lodBias
-		*	Le décalage de LOD de la texture.
-		*\param[in] borderColour
-		*	Couleur des bords de la texture.
-		*\param[in] maxAnisotropy
-		*	Valeur maximale pour le filtrage anisotropique.
-		*\param[in] compareOp
-		*	L'opérateur de comparaison, pour les textures de profondeur.
+		*\param[in] createInfo
+		*	Les informations de création.
 		*/
-		virtual SamplerPtr createSampler( WrapMode wrapS
-			, WrapMode wrapT
-			, WrapMode wrapR
-			, Filter minFilter
-			, Filter magFilter
-			, MipmapMode mipFilter = MipmapMode::eNone
-			, float minLod = -1000.0f
-			, float maxLod = 1000.0f
-			, float lodBias = 0.0f
-			, BorderColour borderColour = BorderColour::eFloatOpaqueBlack
-			, float maxAnisotropy = 1.0f
-			, CompareOp compareOp = CompareOp::eAlways )const = 0;
+		virtual SamplerPtr createSampler( SamplerCreateInfo const & createInfo )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -706,6 +693,62 @@ namespace renderer
 		*	Le layout créé.
 		*/
 		PipelineLayoutPtr createPipelineLayout( PushConstantRangeCRefArray const & pushConstantRanges )const;
+		/**
+		*\~english
+		*\brief
+		*	Creates a sampler.
+		*\param[in] wrapS, wrapT, wrapR
+		*	The texture wrap modes.
+		*\param[in] minFilter, magFilter
+		*	The minification and magnification filters.
+		*\param[in] mipFilter
+		*	The mipmap filter.
+		*\param[in] minLod
+		*	Minimal LOD Level.
+		*\param[in] maxLod
+		*	Maximal LOD Level.
+		*\param[in] lodBias
+		*	The texture LOD offset.
+		*\param[in] borderColour
+		*	Texture border colour.
+		*\param[in] maxAnisotropy
+		*	Maximal anisotropic filtering value.
+		*\param[in] compareOp
+		*	The comparison operator, for depth maps.
+		*\~french
+		*\brief
+		*	Crée un échantillonneur.
+		*\param[in] wrapS, wrapT, wrapR
+		*	Les modes de wrap de texture.
+		*\param[in] minFilter, magFilter
+		*	Les filtres de minification et magnification.
+		*\param[in] mipFilter
+		*	Le filtre de mipmap.
+		*\param[in] minLod
+		*	Niveau de LOD minimal.
+		*\param[in] maxLod
+		*	Niveau de LOD maximal.
+		*\param[in] lodBias
+		*	Le décalage de LOD de la texture.
+		*\param[in] borderColour
+		*	Couleur des bords de la texture.
+		*\param[in] maxAnisotropy
+		*	Valeur maximale pour le filtrage anisotropique.
+		*\param[in] compareOp
+		*	L'opérateur de comparaison, pour les textures de profondeur.
+		*/
+		SamplerPtr createSampler( WrapMode wrapS
+			, WrapMode wrapT
+			, WrapMode wrapR
+			, Filter minFilter
+			, Filter magFilter
+			, MipmapMode mipFilter = MipmapMode::eNone
+			, float minLod = -1000.0f
+			, float maxLod = 1000.0f
+			, float lodBias = 0.0f
+			, BorderColour borderColour = BorderColour::eFloatOpaqueBlack
+			, float maxAnisotropy = 1.0f
+			, CompareOp compareOp = CompareOp::eAlways )const;
 		/**
 		*\~english
 		*\brief

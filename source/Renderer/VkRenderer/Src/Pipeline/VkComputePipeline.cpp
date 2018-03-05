@@ -17,11 +17,11 @@ namespace vk_renderer
 		, m_device{ device }
 		, m_layout{ static_cast< PipelineLayout const & >( layout ) }
 	{
-		auto & module = static_cast< ShaderModule const & >( m_createInfo.stage.getModule() );
+		auto & module = static_cast< ShaderModule const & >( *m_createInfo.stage.module );
 
-		if ( m_createInfo.stage.hasSpecialisationInfo() )
+		if ( m_createInfo.stage.specialisationInfo )
 		{
-			auto & info = m_createInfo.stage.getSpecialisationInfo();
+			auto & info = *m_createInfo.stage.specialisationInfo;
 			m_specialisationEntries = convert< VkSpecializationMapEntry >( info.begin(), info.end() );
 			m_specialisationInfos = convert( info, m_specialisationEntries );
 			m_shaderStage = convert( m_createInfo.stage, &m_specialisationInfos );

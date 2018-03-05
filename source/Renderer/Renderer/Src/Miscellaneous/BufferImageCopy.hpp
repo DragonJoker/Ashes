@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "Image/ImageSubresourceLayers.hpp"
+#include "Miscellaneous/Extent3D.hpp"
 
 namespace renderer
 {
@@ -81,7 +82,7 @@ namespace renderer
 		*\brief
 		*	Les dimensions en texels de l'image à copier, en tant que \p largeur, \p hauteur, et \p profondeur.
 		*/
-		UIVec3 imageExtent;
+		Extent3D imageExtent;
 		/**
 		*\~english
 		*\brief

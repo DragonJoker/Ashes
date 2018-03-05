@@ -136,11 +136,18 @@ namespace common
 		{
 			common::TextureNodePtr textureNode = std::make_shared< common::TextureNode >();
 			textureNode->image = image;
-			textureNode->texture = m_device.createTexture();
-			textureNode->texture->setImage( image->format
-				, { image->size[0], image->size[1] }
-				, 4u
-				, renderer::ImageUsageFlag::eTransferSrc | renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled );
+			textureNode->texture = m_device.createTexture(
+				{
+					renderer::TextureType::e2D,
+					image->format,
+					renderer::Extent3D{ image->size[0], image->size[1], 1u },
+					4u,
+					1u,
+					renderer::SampleCountFlag::e1,
+					renderer::ImageTiling::eOptimal,
+					renderer::ImageUsageFlag::eTransferSrc | renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
+				}
+				, renderer::MemoryPropertyFlag::eDeviceLocal );
 			textureNode->view = textureNode->texture->createView( textureNode->texture->getType()
 				, textureNode->texture->getFormat()
 				, 0u
@@ -163,18 +170,34 @@ namespace common
 	void RenderTarget::doUpdateRenderViews()
 	{
 		m_colourView.reset();
-		m_colour = m_device.createTexture();
-		m_colour->setImage( ColourFormat
-			, m_size
-			, renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled );
+		m_colour = m_device.createTexture(
+			{
+				renderer::TextureType::e2D,
+				ColourFormat,
+				renderer::Extent3D{ m_size[0], m_size[1], 1u },
+				1u,
+				1u,
+				renderer::SampleCountFlag::e1,
+				renderer::ImageTiling::eOptimal,
+				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled
+			}
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_colourView = m_colour->createView( m_colour->getType()
 			, m_colour->getFormat() );
 
 		m_depthView.reset();
-		m_depth = m_device.createTexture();
-		m_depth->setImage( DepthFormat
-			, m_size
-			, renderer::ImageUsageFlag::eDepthStencilAttachment );
+		m_depth = m_device.createTexture(
+			{
+				renderer::TextureType::e2D,
+				DepthFormat,
+				renderer::Extent3D{ m_size[0], m_size[1], 1u },
+				1u,
+				1u,
+				renderer::SampleCountFlag::e1,
+				renderer::ImageTiling::eOptimal,
+				renderer::ImageUsageFlag::eDepthStencilAttachment
+			}
+			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_depthView = m_depth->createView( m_depth->getType()
 			, m_depth->getFormat() );
 	}

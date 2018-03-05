@@ -23,6 +23,7 @@
 #include <Pipeline/TessellationState.hpp>
 #include <Pipeline/Viewport.hpp>
 
+#include <algorithm>
 #include <unordered_map>
 
 namespace gl_renderer
@@ -188,6 +189,16 @@ namespace gl_renderer
 		inline std::vector< renderer::PushConstantsBufferBase > const & getConstantsPcbs()const
 		{
 			return m_constantsPcbs;
+		}
+		/**
+		*\return
+		*	\p true si l'état dynamique est dans la liste d'états dynamiques.
+		*/
+		inline bool hasDynamicState( renderer::DynamicState state )const
+		{
+			return m_createInfo.dynamicStates.end() != std::find( m_createInfo.dynamicStates.begin()
+				, m_createInfo.dynamicStates.end()
+				, state );
 		}
 
 	private:

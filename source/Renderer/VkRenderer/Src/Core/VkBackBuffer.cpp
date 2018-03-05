@@ -9,22 +9,25 @@ See LICENSE file in root folder.
 namespace vk_renderer
 {
 	BackBuffer::BackBuffer( Device const & device
-		, renderer::SwapChain const & swapChain
+		, renderer::TexturePtr && image
 		, uint32_t imageIndex
 		, renderer::PixelFormat format
-		, renderer::UIVec2 const & dimensions
-		, Texture && texture )
-		: renderer::BackBuffer{ device, swapChain, imageIndex }
-		, m_image{ std::move( texture ) }
-		, m_view{ device
-			, m_image
-			, m_image.getType()
-			, format
-			, 0u
-			, 1u
-			, 0u
-			, 1u
-			, renderer::ComponentMapping{} }
+		, Texture const & imageRef )
+		: renderer::BackBuffer{ device
+			, std::move( image )
+			, imageRef.createView( {
+				imageRef.getType(),
+				format,
+				renderer::ComponentMapping{},
+				{
+					renderer::getAspectMask( format ),
+					0u,
+					1u,
+					0u,
+					1u,
+				}
+			} )
+			, imageIndex }
 	{
 	}
 }

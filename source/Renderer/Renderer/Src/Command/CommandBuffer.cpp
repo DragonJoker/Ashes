@@ -152,9 +152,9 @@ namespace renderer
 			{
 				{                                                   // srcSubresource
 					getAspectMask( src.getFormat() ),
-					srcRange.getBaseMipLevel(),
-					srcRange.getBaseArrayLayer(),
-					srcRange.getLayerCount()
+					srcRange.baseMipLevel,
+					srcRange.baseArrayLayer,
+					srcRange.layerCount
 				},
 				IVec3{                                              // srcOffset
 					0,                                                  // x
@@ -163,9 +163,9 @@ namespace renderer
 				},
 				{                                                   // dstSubresource
 					getAspectMask( dst.getFormat() ),
-					dstRange.getBaseMipLevel(),
-					dstRange.getBaseArrayLayer(),
-					dstRange.getLayerCount()
+					dstRange.baseMipLevel,
+					dstRange.baseArrayLayer,
+					dstRange.layerCount
 				},
 				IVec3{                                              // dstOffset
 					0,                                                  // x
@@ -173,9 +173,9 @@ namespace renderer
 					0                                                   // z
 				},
 				UIVec3{                                             // extent
-					uint32_t( dst.getTexture().getDimensions()[0] ),
-					uint32_t( dst.getTexture().getDimensions()[1] ),
-					uint32_t( dst.getTexture().getDimensions()[2] ),
+					uint32_t( dst.getTexture().getDimensions().width ),
+					uint32_t( dst.getTexture().getDimensions().height ),
+					uint32_t( dst.getTexture().getDimensions().depth ),
 				}
 			}
 			, src

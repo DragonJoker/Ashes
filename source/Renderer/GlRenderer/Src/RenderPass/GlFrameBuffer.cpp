@@ -186,7 +186,7 @@ namespace gl_renderer
 				, GlAttachmentPoint( attachment.point + index )
 				, GL_TEXTURE_2D
 				, attachment.object
-				, attach.getView().getSubResourceRange().getBaseMipLevel() );
+				, attach.getView().getSubResourceRange().baseMipLevel );
 			doCheck( gl::CheckFramebufferStatus( GL_FRAMEBUFFER ) );
 		}
 

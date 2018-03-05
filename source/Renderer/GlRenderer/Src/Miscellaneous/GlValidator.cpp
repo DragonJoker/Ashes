@@ -637,13 +637,11 @@ namespace gl_renderer
 					}
 					else
 					{
-						std::stringstream stream;
-						stream << ValidationError
+						std::cerr << ValidationError
 							<< "Attachment [" << name
 							<< "], of type: " << getName( GlslAttributeType( values[0] ) )
 							<< ", at location: " << values[2]
 							<< " is used in the shader program, but is not listed in the render pass attachments" << std::endl;
-						throw std::logic_error{ stream.str() };
 					}
 				} );
 
