@@ -48,6 +48,7 @@ See LICENSE file in root folder.
 #include "Commands/GlPushConstantsCommand.hpp"
 #include "Commands/GlResetQueryPoolCommand.hpp"
 #include "Commands/GlScissorCommand.hpp"
+#include "Commands/GlSetDepthBiasCommand.hpp"
 #include "Commands/GlSetLineWidthCommand.hpp"
 #include "Commands/GlViewportCommand.hpp"
 #include "Commands/GlWriteTimestampCommand.hpp"
@@ -497,6 +498,15 @@ namespace gl_renderer
 	void CommandBuffer::setLineWidth( float width )const
 	{
 		m_commands.emplace_back( std::make_unique< SetLineWidthCommand >( width ) );
+	}
+
+	void CommandBuffer::setDepthBias( float constantFactor
+		, float clamp
+		, float slopeFactor )const
+	{
+		m_commands.emplace_back( std::make_unique< SetDepthBiasCommand >( constantFactor
+			, clamp
+			, slopeFactor ) );
 	}
 
 	void CommandBuffer::initialiseGeometryBuffers()const

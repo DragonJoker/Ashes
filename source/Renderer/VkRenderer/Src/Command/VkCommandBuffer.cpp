@@ -562,4 +562,14 @@ namespace vk_renderer
 	{
 		m_device.vkCmdSetLineWidth( m_commandBuffer, width );
 	}
+
+	void CommandBuffer::setDepthBias( float constantFactor
+		, float clamp
+		, float slopeFactor )const
+	{
+		m_device.vkCmdSetDepthBias( m_commandBuffer
+			, constantFactor
+			, clamp
+			, slopeFactor );
+	}
 }

@@ -237,6 +237,12 @@ namespace gl_renderer
 		*/
 		void setLineWidth( float width )const override;
 		/**
+		*\copydoc	renderer::CommandBuffer::setDepthBias
+		*/
+		void setDepthBias( float constantFactor
+			, float clamp
+			, float slopeFactor )const override;
+		/**
 		*\return
 		*	Le tableau de commandes.
 		*/
