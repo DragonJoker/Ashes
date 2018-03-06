@@ -59,7 +59,7 @@ namespace gl_renderer
 
 	private:
 		Device const & m_device;
-		GlTextureType m_target;
+		GlTextureViewType m_target;
 		GLuint m_texture{ GL_INVALID_INDEX };
 	};
 }
