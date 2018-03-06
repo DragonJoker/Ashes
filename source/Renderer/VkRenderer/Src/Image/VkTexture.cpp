@@ -30,13 +30,13 @@ namespace vk_renderer
 			};
 		}
 
-		renderer::PixelFormat doFindSupportedFormat( Device const & device
-			, const std::vector< renderer::PixelFormat > & candidates
+		renderer::Format doFindSupportedFormat( Device const & device
+			, const std::vector< renderer::Format > & candidates
 			, VkImageTiling tiling
 			, VkFormatFeatureFlags features
 			, PhysicalDevice const & physicalDevice )
 		{
-			for ( renderer::PixelFormat format : candidates )
+			for ( renderer::Format format : candidates )
 			{
 				VkFormatProperties props;
 				device.getRenderer().vkGetPhysicalDeviceFormatProperties( physicalDevice
@@ -57,10 +57,10 @@ namespace vk_renderer
 			throw std::runtime_error( "failed to find supported format!" );
 		}
 
-		renderer::PixelFormat doSelectFormat( Device const & device
-			, renderer::PixelFormat format )
+		renderer::Format doSelectFormat( Device const & device
+			, renderer::Format format )
 		{
-			renderer::PixelFormat result;
+			renderer::Format result;
 
 			if ( renderer::isDepthOrStencilFormat( format ) )
 			{
@@ -161,12 +161,12 @@ namespace vk_renderer
 	}
 
 	Texture::Texture( Device const & device
-		, renderer::PixelFormat format
+		, renderer::Format format
 		, renderer::Extent2D const & dimensions
 		, VkImage image )
 		: renderer::Texture{ device
 			, renderer::TextureType::e2D
-			, doSelectFormat( m_device, format )
+			, doSelectFormat( device, format )
 			, renderer::Extent3D{ dimensions.width, dimensions.height, 1u }
 			, 1u 
 			, 1u }
@@ -177,7 +177,7 @@ namespace vk_renderer
 	}
 
 	Texture::Texture( Device const & device
-		, renderer::PixelFormat format
+		, renderer::Format format
 		, renderer::Extent2D const & dimensions
 		, renderer::ImageUsageFlags usageFlags
 		, renderer::ImageTiling tiling
@@ -186,7 +186,7 @@ namespace vk_renderer
 			, {
 				0u,
 				renderer::TextureType::e2D,
-				doSelectFormat( m_device, format ),
+				doSelectFormat( device, format ),
 				renderer::Extent3D{ dimensions.width, dimensions.height, 1u },
 				1u,
 				1u,

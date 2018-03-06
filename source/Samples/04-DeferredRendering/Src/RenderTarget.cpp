@@ -160,13 +160,13 @@ namespace vkapp
 
 	void RenderTarget::doCreateGBuffer()
 	{
-		static renderer::PixelFormat const formats[]
+		static renderer::Format const formats[]
 		{
-			renderer::PixelFormat::eR32F,
-			utils::PixelFormat::eRGBA32F,
-			utils::PixelFormat::eRGBA32F,
-			utils::PixelFormat::eRGBA32F,
-			utils::PixelFormat::eRGBA32F,
+			renderer::Format::eR32_SFLOAT,
+			renderer::Format::eR32G32B32A32_SFLOAT,
+			renderer::Format::eR32G32B32A32_SFLOAT,
+			renderer::Format::eR32G32B32A32_SFLOAT,
+			renderer::Format::eR32G32B32A32_SFLOAT,
 		};
 		size_t index = 0u;
 		renderer::UIVec2 size

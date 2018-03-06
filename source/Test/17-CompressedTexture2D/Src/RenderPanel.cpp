@@ -157,21 +157,21 @@ namespace vkapp
 	{
 		std::string assetsFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		gli::texture2d tex2D;
-		renderer::PixelFormat format;
+		renderer::Format format;
 
 		if ( m_device->getFeatures().textureCompressionASTC_LDR )
 		{
-			format = renderer::PixelFormat::eASTC_8x8_RGBA;
+			format = renderer::Format::eASTC_8x8_UNORM_BLOCK;
 			tex2D = gli::texture2d( gli::load( assetsFolder / "stonefloor01_color_astc_8x8_unorm.ktx" ) );
 		}
 		else if ( m_device->getFeatures().textureCompressionBC )
 		{
-			format = renderer::PixelFormat::eBC3_RGBA;
+			format = renderer::Format::eBC3_UNORM_BLOCK;
 			tex2D = gli::texture2d( gli::load( assetsFolder / "stonefloor01_color_bc3_unorm.ktx" ) );
 		}
 		else if ( m_device->getFeatures().textureCompressionETC2 )
 		{
-			format = renderer::PixelFormat::eETC2_R8G8B8;
+			format = renderer::Format::eETC2_R8G8B8_UNORM_BLOCK;
 			tex2D = gli::texture2d( gli::load( assetsFolder / "stonefloor01_color_etc2_unorm.ktx" ) );
 		}
 		else
@@ -343,9 +343,11 @@ namespace vkapp
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		m_vertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_vertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_vertexLayout->createAttribute< renderer::Vec2 >( 1u
+		m_vertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData

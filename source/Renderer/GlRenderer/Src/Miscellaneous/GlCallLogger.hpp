@@ -79,11 +79,6 @@ namespace gl_renderer
 		return getName( value );
 	}
 
-	inline std::string toString( GlAttributeFormatBaseType value )
-	{
-		return getName( value );
-	}
-
 	inline std::string toString( GlBaseType value )
 	{
 		return getName( value );

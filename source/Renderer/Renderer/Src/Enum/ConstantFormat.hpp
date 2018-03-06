@@ -16,7 +16,7 @@ namespace renderer
 	*\brief
 	*	Liste des formats d'attributs supportés.
 	*/
-	enum class AttributeFormat
+	enum class ConstantFormat
 	{
 		eFloat,
 		eVec2f,
@@ -51,56 +51,56 @@ namespace renderer
 	*\return
 	*	La taille.
 	*/
-	inline uint32_t getSize( AttributeFormat value )
+	inline uint32_t getSize( ConstantFormat value )
 	{
 		switch ( value )
 		{
-		case AttributeFormat::eFloat:
+		case ConstantFormat::eFloat:
 			return uint32_t( 1u * sizeof( float ) );
 
-		case AttributeFormat::eVec2f:
+		case ConstantFormat::eVec2f:
 			return uint32_t( 2u * sizeof( float ) );
 
-		case AttributeFormat::eVec3f:
+		case ConstantFormat::eVec3f:
 			return uint32_t( 3u * sizeof( float ) );
 
-		case AttributeFormat::eVec4f:
+		case ConstantFormat::eVec4f:
 			return uint32_t( 4u * sizeof( float ) );
 
-		case AttributeFormat::eMat2f:
+		case ConstantFormat::eMat2f:
 			return uint32_t( 2u * 2u * sizeof( float ) );
 
-		case AttributeFormat::eMat3f:
+		case ConstantFormat::eMat3f:
 			return uint32_t( 3u * 3u * sizeof( float ) );
 
-		case AttributeFormat::eMat4f:
+		case ConstantFormat::eMat4f:
 			return uint32_t( 4u * 4u * sizeof( float ) );
 
-		case AttributeFormat::eColour:
+		case ConstantFormat::eColour:
 			return uint32_t( 4 * sizeof( uint8_t ) );
 
-		case AttributeFormat::eInt:
+		case ConstantFormat::eInt:
 			return uint32_t( 1u * sizeof( int32_t ) );
 
-		case AttributeFormat::eVec2i:
+		case ConstantFormat::eVec2i:
 			return uint32_t( 2u * sizeof( int32_t ) );
 
-		case AttributeFormat::eVec3i:
+		case ConstantFormat::eVec3i:
 			return uint32_t( 3u * sizeof( int32_t ) );
 
-		case AttributeFormat::eVec4i:
+		case ConstantFormat::eVec4i:
 			return uint32_t( 4u * sizeof( int32_t ) );
 
-		case AttributeFormat::eUInt:
+		case ConstantFormat::eUInt:
 			return uint32_t( 1u * sizeof( uint32_t ) );
 
-		case AttributeFormat::eVec2ui:
+		case ConstantFormat::eVec2ui:
 			return uint32_t( 2u * sizeof( uint32_t ) );
 
-		case AttributeFormat::eVec3ui:
+		case ConstantFormat::eVec3ui:
 			return uint32_t( 3u * sizeof( uint32_t ) );
 
-		case AttributeFormat::eVec4ui:
+		case ConstantFormat::eVec4ui:
 			return uint32_t( 4u * sizeof( uint32_t ) );
 
 		default:
@@ -126,61 +126,61 @@ namespace renderer
 	*\return
 	*	Le nom.
 	*/
-	inline std::string getName( AttributeFormat value )
+	inline std::string getName( ConstantFormat value )
 	{
 		switch ( value )
 		{
-		case AttributeFormat::eFloat:
+		case ConstantFormat::eFloat:
 			return "float";
 
-		case AttributeFormat::eVec2f:
+		case ConstantFormat::eVec2f:
 			return "vec2f";
 
-		case AttributeFormat::eVec3f:
+		case ConstantFormat::eVec3f:
 			return "vec3f";
 
-		case AttributeFormat::eVec4f:
+		case ConstantFormat::eVec4f:
 			return "vec4f";
 
-		case AttributeFormat::eMat2f:
+		case ConstantFormat::eMat2f:
 			return "mat2f";
 
-		case AttributeFormat::eMat3f:
+		case ConstantFormat::eMat3f:
 			return "mat3f";
 
-		case AttributeFormat::eMat4f:
+		case ConstantFormat::eMat4f:
 			return "mat4f";
 
-		case AttributeFormat::eInt:
+		case ConstantFormat::eInt:
 			return "int";
 
-		case AttributeFormat::eVec2i:
+		case ConstantFormat::eVec2i:
 			return "vec2i";
 
-		case AttributeFormat::eVec3i:
+		case ConstantFormat::eVec3i:
 			return "vec3i";
 
-		case AttributeFormat::eVec4i:
+		case ConstantFormat::eVec4i:
 			return "vec4i";
 
-		case AttributeFormat::eUInt:
+		case ConstantFormat::eUInt:
 			return "uint";
 
-		case AttributeFormat::eVec2ui:
+		case ConstantFormat::eVec2ui:
 			return "vec2ui";
 
-		case AttributeFormat::eVec3ui:
+		case ConstantFormat::eVec3ui:
 			return "vec3ui";
 
-		case AttributeFormat::eVec4ui:
+		case ConstantFormat::eVec4ui:
 			return "vec4ui";
 
-		case AttributeFormat::eColour:
+		case ConstantFormat::eColour:
 			return "colour";
 
 		default:
-			assert( false && "Unsupported AttributeFormat." );
-			throw std::runtime_error{ "Unsupported AttributeFormat" };
+			assert( false && "Unsupported ConstantFormat." );
+			throw std::runtime_error{ "Unsupported ConstantFormat" };
 		}
 
 		return 0;

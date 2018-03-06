@@ -17,11 +17,13 @@ namespace gl_renderer
 		: m_copyInfo{ copyInfo }
 		, m_src{ static_cast< Texture const & >( src ) }
 		, m_dst{ static_cast< Texture const & >( dst ) }
-		, m_srcFormat{ getFormat( m_src.getFormat() ) }
-		, m_srcType{ getType( m_src.getFormat() ) }
+		, m_srcInternal{ getInternal( m_src.getFormat() ) }
+		, m_srcFormat{ getFormat( m_srcInternal ) }
+		, m_srcType{ getType( m_srcInternal ) }
 		, m_srcTarget{ convert( m_src.getType(), m_src.getLayerCount() ) }
-		, m_dstFormat{ getFormat( m_dst.getFormat() ) }
-		, m_dstType{ getType( m_dst.getFormat() ) }
+		, m_dstInternal{ getInternal( m_dst.getFormat() ) }
+		, m_dstFormat{ getFormat( m_dstInternal ) }
+		, m_dstType{ getType( m_dstInternal ) }
 		, m_dstTarget{ convert( m_dst.getType(), m_dst.getLayerCount() ) }
 	{
 	}

@@ -156,7 +156,7 @@ namespace vkapp
 	void RenderPanel::doCreateTexture()
 	{
 		std::string assetsFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
-		renderer::PixelFormat format = renderer::PixelFormat::eR8G8B8A8;
+		renderer::Format format = renderer::Format::eR8G8B8A8_UNORM;
 		gli::texture2d tex2D( gli::load( assetsFolder / "metalplate01_rgba.ktx" ) );
 
 		// Create a host-visible staging buffer that contains the raw image data
@@ -323,9 +323,11 @@ namespace vkapp
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		m_vertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_vertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_vertexLayout->createAttribute< renderer::Vec2 >( 1u
+		m_vertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData

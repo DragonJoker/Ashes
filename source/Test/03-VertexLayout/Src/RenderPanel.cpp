@@ -181,10 +181,10 @@ namespace vkapp
 			, renderer::MemoryPropertyFlag::eHostVisible );
 		m_vertexLayout = renderer::makeLayout< VertexData >( 0u );
 		m_vertexLayout->createAttribute( 0u
-			, renderer::AttributeFormat::eVec4f
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, offsetof( VertexData, position ) );
 		m_vertexLayout->createAttribute( 1u
-			, renderer::AttributeFormat::eVec4f
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, offsetof( VertexData, colour ) );
 
 		if ( auto * buffer = m_vertexBuffer->lock( 0u

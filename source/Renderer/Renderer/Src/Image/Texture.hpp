@@ -57,7 +57,7 @@ namespace renderer
 		*/
 		Texture( Device const & device
 			, TextureType type
-			, PixelFormat format
+			, Format format
 			, Extent3D dimensions
 			, uint32_t mipLevels
 			, uint32_t arrayLayers );
@@ -124,7 +124,7 @@ namespace renderer
 		*	The colours component mapping.
 		*/
 		TextureViewPtr createView( TextureViewType type
-			, PixelFormat format
+			, Format format
 			, uint32_t baseMipLevel = 0u
 			, uint32_t levelCount = 1u
 			, uint32_t baseArrayLayer = 0u
@@ -147,7 +147,7 @@ namespace renderer
 		*\return
 		*	The texture pixel format.
 		*/
-		inline PixelFormat getFormat()const noexcept
+		inline Format getFormat()const noexcept
 		{
 			return m_format;
 		}
@@ -203,7 +203,7 @@ namespace renderer
 	protected:
 		Device const & m_device;
 		TextureType m_imageType;
-		PixelFormat m_format;
+		Format m_format;
 		Extent3D m_dimensions;
 		uint32_t m_mipLevels;
 		uint32_t m_arrayLayers;

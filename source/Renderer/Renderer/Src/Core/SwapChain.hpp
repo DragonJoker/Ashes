@@ -82,7 +82,7 @@ namespace renderer
 		*\param[in] format
 		*	Le format de pixels.
 		*/
-		virtual void createDepthStencil( PixelFormat format ) = 0;
+		virtual void createDepthStencil( Format format ) = 0;
 		/**
 		*\~french
 		*\brief
@@ -161,7 +161,7 @@ namespace renderer
 		*\return
 		*	Les format des pixels de la swap chain.
 		*/
-		virtual PixelFormat getFormat()const = 0;
+		virtual Format getFormat()const = 0;
 		/**
 		*\~french
 		*\return

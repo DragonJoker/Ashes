@@ -46,7 +46,7 @@ namespace gl_renderer
 		/**
 		*\copydoc	renderer::SwapChain::createDepthStencil
 		*/
-		void createDepthStencil( renderer::PixelFormat format )override;
+		void createDepthStencil( renderer::Format format )override;
 		/**
 		*\brief
 		*	D�finit la couleur de vidage de la swapchain.
@@ -79,7 +79,7 @@ namespace gl_renderer
 		*\return
 		*	Les format des pixels de la swap chain.
 		*/
-		inline renderer::PixelFormat getFormat()const override
+		inline renderer::Format getFormat()const override
 		{
 			return m_format;
 		}
@@ -93,6 +93,6 @@ namespace gl_renderer
 	private:
 		Device const & m_device;
 		renderer::RgbaColour m_clearColour;
-		renderer::PixelFormat m_format;
+		renderer::Format m_format;
 	};
 }

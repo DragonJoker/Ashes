@@ -37,7 +37,7 @@ namespace renderer
 		*\brief
 		*	Le format des pixels de l'attache.
 		*/
-		PixelFormat format;
+		Format format;
 		/**
 		*\~english
 		*\brief

@@ -48,7 +48,7 @@ namespace vkapp
 		}	Ids;
 
 		static int constexpr TimerTimeMs = 40;
-		static renderer::PixelFormat const DepthFormat = renderer::PixelFormat::eD32F;
+		static renderer::Format const DepthFormat = renderer::Format::eD32_SFLOAT;
 		static uint32_t constexpr ObjectCount = 100;
 	}
 
@@ -369,7 +369,7 @@ namespace vkapp
 		{
 			{
 				0u,
-				renderer::PixelFormat::eR8G8B8A8,
+				renderer::Format::eR8G8B8A8_UNORM,
 				renderer::SampleCountFlag::e1,
 				renderer::AttachmentLoadOp::eClear,
 				renderer::AttachmentStoreOp::eStore,
@@ -415,7 +415,7 @@ namespace vkapp
 			{
 				0u,
 				renderer::TextureType::e2D,
-				renderer::PixelFormat::eR8G8B8A8,
+				renderer::Format::eR8G8B8A8_UNORM,
 				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
 				1u,
 				1u,
@@ -452,9 +452,11 @@ namespace vkapp
 	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
 		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		m_offscreenVertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_offscreenVertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_offscreenVertexLayout->createAttribute< renderer::Vec2 >( 1u
+		m_offscreenVertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_offscreenVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
@@ -475,7 +477,10 @@ namespace vkapp
 			, *m_offscreenIndexBuffer );
 
 		m_offscreenMatrixLayout = renderer::makeLayout< renderer::Mat4 >( 1u, renderer::VertexInputRate::eInstance );
-		m_offscreenMatrixLayout->createAttribute< renderer::Mat4 >( 2u, 0u );
+		m_offscreenMatrixLayout->createAttribute( 2u, renderer::Format::eR32G32B32A32_SFLOAT, 0u );
+		m_offscreenMatrixLayout->createAttribute( 3u, renderer::Format::eR32G32B32A32_SFLOAT, 16u );
+		m_offscreenMatrixLayout->createAttribute( 4u, renderer::Format::eR32G32B32A32_SFLOAT, 32u );
+		m_offscreenMatrixLayout->createAttribute( 5u, renderer::Format::eR32G32B32A32_SFLOAT, 48u );
 
 		auto init = ObjectCount * -2.0f;
 		renderer::Vec3 position{ init, init, init };
@@ -657,9 +662,11 @@ namespace vkapp
 	void RenderPanel::doCreateMainVertexBuffer()
 	{
 		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		m_mainVertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_mainVertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_mainVertexLayout->createAttribute< renderer::Vec2 >( 1u
+		m_mainVertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_mainVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device

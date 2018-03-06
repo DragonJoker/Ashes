@@ -220,7 +220,7 @@ namespace vkapp
 		renderer::VertexLayoutPtr doCreateVertexLayout( renderer::Device & device )
 		{
 			auto result = renderer::makeLayout< VertexData >( 0u );
-			result->createAttribute< Vec4 >( 0u, 0u );
+			result->createAttribute( 0u, renderer::Format::eR32G32B32A32_SFLOAT, 0u );
 			return result;
 		}
 
@@ -255,7 +255,7 @@ namespace vkapp
 	{
 		auto size = renderer::Extent2D{ texture.getDimensions().width, texture.getDimensions().height };
 		uint32_t face = 0u;
-		std::vector< renderer::PixelFormat > formats{ 1u, m_target.getFormat() };
+		std::vector< renderer::Format > formats{ 1u, m_target.getFormat() };
 		renderer::RenderPassAttachmentArray rpAttaches
 		{
 			{

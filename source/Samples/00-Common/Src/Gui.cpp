@@ -40,8 +40,8 @@ namespace common
 		{
 			return
 			{
-				{ 0u, 0u, renderer::AttributeFormat::eVec2f },
-				{ 1u, 8u, renderer::AttributeFormat::eVec2f },
+				{ 0u, 0u, renderer::ConstantFormat::eVec2f },
+				{ 1u, 8u, renderer::ConstantFormat::eVec2f },
 			};
 		}
 	}
@@ -252,7 +252,7 @@ namespace common
 			{
 				0u,
 				renderer::TextureType::e2D,
-				utils::PixelFormat::eR8G8B8A8,
+				renderer::Format::eR8G8B8A8_UNORM,
 				renderer::Extent3D{ uint32_t( texWidth ), uint32_t( texHeight ), 1u },
 				1u,
 				1u,
@@ -303,9 +303,9 @@ namespace common
 		m_fence = m_device.createFence();
 
 		m_vertexLayout = renderer::makeLayout< ImDrawVert >( 0u );
-		m_vertexLayout->createAttribute( 0u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, pos ) );
-		m_vertexLayout->createAttribute( 1u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, uv ) );
-		m_vertexLayout->createAttribute( 2u, renderer::AttributeFormat::eUInt, offsetof( ImDrawVert, col ) );
+		m_vertexLayout->createAttribute( 0u, renderer::Format::eR32G32_SFLOAT, offsetof( ImDrawVert, pos ) );
+		m_vertexLayout->createAttribute( 1u, renderer::Format::eR32G32_SFLOAT, offsetof( ImDrawVert, uv ) );
+		m_vertexLayout->createAttribute( 2u, renderer::Format::eR32_UINT, offsetof( ImDrawVert, col ) );
 	}
 
 	void Gui::doPreparePipeline()

@@ -313,9 +313,11 @@ namespace common
 	void RenderPanel::doCreateVertexBuffer()
 	{
 		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		m_vertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_vertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_vertexLayout->createAttribute< renderer::Vec2 >( 1u
+		m_vertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_vertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device

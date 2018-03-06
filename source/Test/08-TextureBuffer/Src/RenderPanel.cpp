@@ -224,8 +224,8 @@ namespace vkapp
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		createVertexAttribute( m_vertexLayout, TexturedVertexData, position, 0u );
-		createVertexAttribute( m_vertexLayout, TexturedVertexData, uv, 1u );
+		m_vertexLayout->createAttribute( 0u, renderer::Format::eR32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) );
+		m_vertexLayout->createAttribute( 1u, renderer::Format::eR32_SFLOAT, offsetof( TexturedVertexData, uv ) );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData
 			, *m_vertexBuffer

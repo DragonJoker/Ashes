@@ -46,7 +46,7 @@ namespace renderer
 		*	La position de l'attribut dans le tampon.
 		*/
 		Attribute( VertexLayout const & layout
-			, AttributeFormat format
+			, Format format
 			, uint32_t location
 			, uint32_t offset );
 		/**
@@ -66,7 +66,7 @@ namespace renderer
 		*\return
 		*	Le format de l'attribut dans le tampon.
 		*/
-		inline AttributeFormat getFormat()const
+		inline Format getFormat()const
 		{
 			return m_format;
 		}
@@ -109,7 +109,7 @@ namespace renderer
 
 	private:
 		VertexLayout const & m_layout;
-		AttributeFormat m_format;
+		Format m_format;
 		uint32_t m_location;
 		uint32_t m_offset;
 	};

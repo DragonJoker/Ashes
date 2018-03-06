@@ -336,7 +336,7 @@ namespace renderer
 		*\return
 		*	The view's image's pixels format.
 		*/
-		inline PixelFormat getFormat()const
+		inline Format getFormat()const
 		{
 			return m_createInfo.format;
 		}

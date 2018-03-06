@@ -185,9 +185,11 @@ namespace vkapp
 			, renderer::PipelineStageFlag::eVertexInput );
 
 		m_vertexLayout =  renderer::makeLayout< VertexData >( 0u );
-		m_vertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_vertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( VertexData, position ) ) );
-		m_vertexLayout->createAttribute< renderer::Vec4 >( 1u
+		m_vertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( VertexData, colour ) ) );
 	}
 

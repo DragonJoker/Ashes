@@ -38,7 +38,7 @@ namespace common
 		renderer::ByteArray data;
 		//!\~english	The image pixel format.
 		//!\~french		Les format des pixels de l'image.
-		renderer::PixelFormat format;
+		renderer::Format format;
 	};
 	/**
 	*\~french

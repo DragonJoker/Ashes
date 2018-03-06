@@ -52,7 +52,7 @@ namespace vkapp
 			return shaderStages;
 		}
 
-		std::vector< renderer::PixelFormat > doGetFormats( renderer::TextureView const & depthView
+		std::vector< renderer::Format > doGetFormats( renderer::TextureView const & depthView
 			, renderer::TextureView const & colourView )
 		{
 			return
@@ -192,9 +192,11 @@ namespace vkapp
 		renderer::VertexLayoutPtr doCreateVertexLayout( renderer::Device const & device )
 		{
 			auto result = renderer::makeLayout< common::TexturedVertexData >( 0 );
-			result->createAttribute< renderer::Vec4 >( 0u
+			result->createAttribute( 0u
+				, renderer::Format::eR32G32B32A32_SFLOAT
 				, uint32_t( offsetof( common::TexturedVertexData, position ) ) );
-			result->createAttribute< renderer::Vec2 >( 1u
+			result->createAttribute( 1u
+				, renderer::Format::eR32G32_SFLOAT
 				, uint32_t( offsetof( common::TexturedVertexData, uv ) ) );
 			return result;
 		}

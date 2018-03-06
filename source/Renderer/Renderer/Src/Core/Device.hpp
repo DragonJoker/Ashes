@@ -309,7 +309,7 @@ namespace renderer
 		*	The number of elements from the buffer.
 		*/
 		virtual BufferViewPtr createBufferView( BufferBase const & buffer
-			, PixelFormat format
+			, Format format
 			, uint32_t offset
 			, uint32_t range )const = 0;
 		/**

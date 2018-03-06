@@ -36,7 +36,7 @@ namespace gl_renderer
 
 	private:
 		HGLRC doCreateDummyContext();
-		bool doSelectPixelFormat();
+		bool doSelectFormat();
 		bool doCreateGl3Context();
 
 	private:

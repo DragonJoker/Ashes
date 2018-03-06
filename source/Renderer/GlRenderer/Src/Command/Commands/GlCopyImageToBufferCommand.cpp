@@ -55,8 +55,9 @@ namespace gl_renderer
 		: m_src{ static_cast< Texture const & >( src ) }
 		, m_dst{ static_cast< Buffer const & >( dst ) }
 		, m_copyInfo{ copyInfo }
-		, m_format{ getFormat( m_src.getFormat() ) }
-		, m_type{ getType( m_src.getFormat() ) }
+		, m_internal{ getInternal( m_src.getFormat() ) }
+		, m_format{ getFormat( m_internal ) }
+		, m_type{ getType( m_internal ) }
 		, m_target{ convert( m_src.getType(), 1u ) }
 		, m_views{ createViews( m_src, m_copyInfo ) }
 	{

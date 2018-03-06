@@ -30,7 +30,7 @@ namespace renderer
 		*\brief
 		*	Le format des pixels de la vue.
 		*/
-		PixelFormat format;
+		Format format;
 		/**
 		*\~english
 		*\brief

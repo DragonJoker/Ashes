@@ -55,7 +55,7 @@ namespace vk_renderer
 		doResetSwapChain();
 	}
 
-	void SwapChain::createDepthStencil( renderer::PixelFormat format )
+	void SwapChain::createDepthStencil( renderer::Format format )
 	{
 		m_depthStencil = m_device.createTexture(
 			{

@@ -38,7 +38,7 @@ namespace renderer
 		*\brief
 		*	Le format de l'image.
 		*/
-		PixelFormat format;
+		Format format;
 		/**
 		*\~english
 		*\brief

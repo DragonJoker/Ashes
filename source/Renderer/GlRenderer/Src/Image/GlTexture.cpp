@@ -71,7 +71,7 @@ namespace gl_renderer
 	}
 
 	Texture::Texture( Device const & device
-		, renderer::PixelFormat format
+		, renderer::Format format
 		, renderer::Extent2D const & dimensions )
 		: renderer::Texture{ device
 			, renderer::TextureType::e2D

@@ -20,9 +20,9 @@ namespace gl_renderer
 		: m_copyInfo{ copyInfo }
 		, m_src{ static_cast< Buffer const & >( src ) }
 		, m_dst{ static_cast< Texture const & >( dst ) }
-		, m_format{ getFormat( m_dst.getFormat() ) }
 		, m_internal{ getInternal( m_dst.getFormat() ) }
-		, m_type{ getType( m_dst.getFormat() ) }
+		, m_format{ getFormat( m_internal ) }
+		, m_type{ getType( m_internal ) }
 		, m_copyTarget{ convert( m_dst.getType(), m_dst.getLayerCount() ) }
 	{
 	}

@@ -35,7 +35,7 @@ namespace gl_renderer
 	{
 		m_hDC = ::GetDC( m_hWnd );
 
-		if ( doSelectPixelFormat() )
+		if ( doSelectFormat() )
 		{
 			m_hContext = wglCreateContext( m_hDC );
 			setCurrent();
@@ -91,7 +91,7 @@ namespace gl_renderer
 	{
 		HGLRC result = nullptr;
 
-		if ( doSelectPixelFormat() )
+		if ( doSelectFormat() )
 		{
 			result = wglCreateContext( m_hDC );
 		}
@@ -99,7 +99,7 @@ namespace gl_renderer
 		return result;
 	}
 
-	bool MswContext::doSelectPixelFormat()
+	bool MswContext::doSelectFormat()
 	{
 		bool result = false;
 		PIXELFORMATDESCRIPTOR pfd = { 0 };

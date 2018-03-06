@@ -4,7 +4,7 @@ namespace vkapp
 {
 	NodesRenderer::NodesRenderer( renderer::Device const & device
 		, std::string const & fragmentShaderFile
-		, std::vector< renderer::PixelFormat > const & formats
+		, std::vector< renderer::Format > const & formats
 		, bool clearViews
 		, bool opaqueNodes
 		, renderer::UniformBuffer< common::SceneData > const & sceneUbo )

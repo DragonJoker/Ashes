@@ -9,12 +9,10 @@
 #include <RendererPrerequisites.hpp>
 
 #include "Miscellaneous/OpenGLFunctions.hpp"
-#include "GlPixelFormat.hpp"
 
 #include "Enum/GlAccessFlag.hpp"
 #include "Enum/GlAttachmentPoint.hpp"
 #include "Enum/GlAttachmentType.hpp"
-#include "Enum/GlAttributeFormat.hpp"
 #include "Enum/GlBaseType.hpp"
 #include "Enum/GlBlendFactor.hpp"
 #include "Enum/GlBlendOp.hpp"
@@ -25,9 +23,11 @@
 #include "Enum/GlColourComponentFlag.hpp"
 #include "Enum/GlCompareOp.hpp"
 #include "Enum/GlComponentSwizzle.hpp"
+#include "Enum/GlConstantFormat.hpp"
 #include "Enum/GlCullModeFlag.hpp"
 #include "Enum/GlFenceWaitFlag.hpp"
 #include "Enum/GlFilter.hpp"
+#include "Enum/GlFormat.hpp"
 #include "Enum/GlFrameBufferTarget.hpp"
 #include "Enum/GlFrontFace.hpp"
 #include "Enum/GlGetParameter.hpp"

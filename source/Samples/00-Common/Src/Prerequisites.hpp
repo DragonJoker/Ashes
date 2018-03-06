@@ -68,7 +68,7 @@ namespace common
 	{
 		renderer::UIVec2 size;
 		renderer::ByteArray data;
-		renderer::PixelFormat format;
+		renderer::Format format;
 		bool opacity{ false };
 	};
 
@@ -246,7 +246,7 @@ namespace common
 	renderer::ConnectionPtr makeConnection( wxWindow * window
 		, renderer::Renderer const & renderer );
 
-	std::vector< renderer::PixelFormat > getFormats( renderer::TextureViewCRefArray const & views );
+	std::vector< renderer::Format > getFormats( renderer::TextureViewCRefArray const & views );
 
 	struct Scene;
 

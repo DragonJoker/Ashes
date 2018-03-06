@@ -10,34 +10,7 @@ namespace renderer
 {
 	namespace
 	{
-		template< AttributeFormat Fmt >
-		struct FormatHelper;
-
-		template<>
-		struct FormatHelper< AttributeFormat::eMat2f >
-		{
-			static AttributeFormat constexpr SubFormat = AttributeFormat::eVec2f;
-			static uint32_t constexpr SubCount = 2u;
-			static uint32_t constexpr SubSize = 4u;
-		};
-
-		template<>
-		struct FormatHelper< AttributeFormat::eMat3f >
-		{
-			static AttributeFormat constexpr SubFormat = AttributeFormat::eVec3f;
-			static uint32_t constexpr SubCount = 3u;
-			static uint32_t constexpr SubSize = 9u;
-		};
-
-		template<>
-		struct FormatHelper< AttributeFormat::eMat4f >
-		{
-			static AttributeFormat constexpr SubFormat = AttributeFormat::eVec4f;
-			static uint32_t constexpr SubCount = 4u;
-			static uint32_t constexpr SubSize = 16u;
-		};
-
-		template< AttributeFormat Fmt >
+		template< Format Fmt >
 		inline void doFillSubAttributes( Attribute const & attribute
 			, uint32_t bindingSlot
 			, VertexInputAttributeDescriptionArray & result )
@@ -71,33 +44,13 @@ namespace renderer
 
 			for ( auto const & attribute : vertexLayout )
 			{
-				switch ( attribute.getFormat() )
+				result.vertexAttributeDescriptions.push_back(
 				{
-				case renderer::AttributeFormat::eMat4f:
-					doFillSubAttributes< renderer::AttributeFormat::eMat4f >( attribute
-						, vertexLayout.getBindingSlot()
-						, result.vertexAttributeDescriptions );
-					break;
-				case renderer::AttributeFormat::eMat3f:
-					doFillSubAttributes< renderer::AttributeFormat::eMat3f >( attribute
-						, vertexLayout.getBindingSlot()
-						, result.vertexAttributeDescriptions );
-					break;
-				case renderer::AttributeFormat::eMat2f:
-					doFillSubAttributes< renderer::AttributeFormat::eMat2f >( attribute
-						, vertexLayout.getBindingSlot()
-						, result.vertexAttributeDescriptions );
-					break;
-				default:
-					result.vertexAttributeDescriptions.push_back(
-					{
-						attribute.getLocation(),
-						vertexLayout.getBindingSlot(),
-						attribute.getFormat(),
-						attribute.getOffset(),
-					} );
-					break;
-				}
+					attribute.getLocation(),
+					vertexLayout.getBindingSlot(),
+					attribute.getFormat(),
+					attribute.getOffset(),
+				} );
 			}
 
 		}

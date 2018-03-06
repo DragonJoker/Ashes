@@ -50,12 +50,12 @@ namespace vkapp
 		}	Ids;
 
 		static int const TimerTimeMs = 20;
-		static renderer::PixelFormat const DepthFormat = renderer::PixelFormat::eD32F;
+		static renderer::Format const DepthFormat = renderer::Format::eD32_SFLOAT;
 
 		renderer::PushConstantArray doGetVariables()
 		{
 			renderer::PushConstantArray result;
-			result.push_back( { 3u, 0u, renderer::AttributeFormat::eVec4f } );
+			result.push_back( { 3u, 0u, renderer::ConstantFormat::eVec4f } );
 			return result;
 		}
 	}
@@ -370,7 +370,7 @@ namespace vkapp
 		{
 			{
 				0u,
-				renderer::PixelFormat::eR8G8B8A8,
+				renderer::Format::eR8G8B8A8_UNORM,
 				renderer::SampleCountFlag::e1,
 				renderer::AttachmentLoadOp::eClear,
 				renderer::AttachmentStoreOp::eStore,
@@ -416,7 +416,7 @@ namespace vkapp
 			{
 				0u,
 				renderer::TextureType::e2D,
-				renderer::PixelFormat::eR8G8B8A8,
+				renderer::Format::eR8G8B8A8_UNORM,
 				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
 				1u,
 				1u,
@@ -453,9 +453,11 @@ namespace vkapp
 	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
 		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		m_offscreenVertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_offscreenVertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_offscreenVertexLayout->createAttribute< renderer::Vec2 >( 1u
+		m_offscreenVertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_offscreenVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
@@ -503,7 +505,7 @@ namespace vkapp
 
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment )
-			, renderer::makeSpecialisationInfo( { { 0u, 0u, renderer::AttributeFormat::eInt } }, int( 0 ) ) } );
+			, renderer::makeSpecialisationInfo( { { 0u, 0u, renderer::ConstantFormat::eInt } }, int( 0 ) ) } );
 		shaderStages[0].module->loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.vert.spv" ) );
 		shaderStages[1].module->loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.frag.spv" ) );
 
@@ -522,7 +524,7 @@ namespace vkapp
 
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment )
-			, renderer::makeSpecialisationInfo( { { 0u, 0u, renderer::AttributeFormat::eInt } }, int( 1 ) ) } );
+			, renderer::makeSpecialisationInfo( { { 0u, 0u, renderer::ConstantFormat::eInt } }, int( 1 ) ) } );
 		shaderStages[0].module->loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.vert.spv" ) );
 		shaderStages[1].module->loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.frag.spv" ) );
 
@@ -659,9 +661,11 @@ namespace vkapp
 	void RenderPanel::doCreateMainVertexBuffer()
 	{
 		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		m_mainVertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_mainVertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_mainVertexLayout->createAttribute< renderer::Vec2 >( 1u
+		m_mainVertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_mainVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device

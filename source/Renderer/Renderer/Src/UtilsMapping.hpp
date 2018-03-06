@@ -12,7 +12,6 @@ See LICENSE file in root folder.
 #include <Utils/FlagCombination.hpp>
 #include <Utils/Mat4.hpp>
 #include <Utils/PlaneEquation.hpp>
-#include <Utils/PixelFormat.hpp>
 #include <Utils/Quaternion.hpp>
 #include <Utils/Radians.hpp>
 #include <Utils/UtilsSignal.hpp>
@@ -55,7 +54,6 @@ namespace renderer
 	using Radians = utils::Radians;
 	using Degrees = utils::Degrees;
 	using Angle = utils::Angle;
-	using PixelFormat = utils::PixelFormat;
 	using Clock = utils::Clock;
 	using Milliseconds = utils::Milliseconds;
 	using DynamicLibrary = utils::DynamicLibrary;
@@ -71,7 +69,5 @@ namespace renderer
 	using utils::checkFlag;
 	/**\}*/
 }
-
-#include "PixelFormat.hpp"
 
 #endif

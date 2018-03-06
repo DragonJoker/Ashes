@@ -32,13 +32,11 @@
 #	undef abs
 #endif
 
-#include "VkPixelFormat.hpp"
 #include "RenderPass/VkClearValue.hpp"
 
 #include "Enum/VkAccessFlag.hpp"
 #include "Enum/VkAttachmentLoadOp.hpp"
 #include "Enum/VkAttachmentStoreOp.hpp"
-#include "Enum/VkAttributeFormat.hpp"
 #include "Enum/VkBlendFactor.hpp"
 #include "Enum/VkBlendOp.hpp"
 #include "Enum/VkBorderColour.hpp"
@@ -54,6 +52,7 @@
 #include "Enum/VkDescriptorPoolCreateFlag.hpp"
 #include "Enum/VkDescriptorType.hpp"
 #include "Enum/VkDynamicState.hpp"
+#include "Enum/VkFormat.hpp"
 #include "Enum/VkFormatFeatureFlag.hpp"
 #include "Enum/VkFenceCreateFlag.hpp"
 #include "Enum/VkFilter.hpp"

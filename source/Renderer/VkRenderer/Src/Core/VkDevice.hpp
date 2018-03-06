@@ -84,7 +84,7 @@ namespace vk_renderer
 		*\copydoc	renderer::Device::createBufferView
 		*/
 		renderer::BufferViewPtr createBufferView( renderer::BufferBase const & buffer
-			, renderer::PixelFormat format
+			, renderer::Format format
 			, uint32_t offset
 			, uint32_t range )const override;
 		/**

@@ -31,19 +31,19 @@ namespace gl_renderer
 			GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
 		};
 
-		GlAttachmentPoint getAttachmentPoint( renderer::PixelFormat format )
+		GlAttachmentPoint getAttachmentPoint( renderer::Format format )
 		{
 			switch ( format )
 			{
-			case renderer::PixelFormat::eD16:
-			case renderer::PixelFormat::eD32F:
+			case renderer::Format::eD16_UNORM:
+			case renderer::Format::eD32_SFLOAT:
 				return GL_ATTACHMENT_POINT_DEPTH;
 
-			case renderer::PixelFormat::eD24S8:
-			case renderer::PixelFormat::eD32FS8:
+			case renderer::Format::eD24_UNORM_S8_UINT:
+			case renderer::Format::eD32_SFLOAT_S8_UINT:
 				return GL_ATTACHMENT_POINT_DEPTH_STENCIL;
 
-			case renderer::PixelFormat::eS8:
+			case renderer::Format::eS8_UINT:
 				return GL_ATTACHMENT_POINT_STENCIL;
 
 			default:
@@ -56,19 +56,19 @@ namespace gl_renderer
 			return getAttachmentPoint( texture.getFormat() );
 		}
 
-		GlAttachmentType getAttachmentType( renderer::PixelFormat format )
+		GlAttachmentType getAttachmentType( renderer::Format format )
 		{
 			switch ( format )
 			{
-			case renderer::PixelFormat::eD16:
-			case renderer::PixelFormat::eD32F:
+			case renderer::Format::eD16_UNORM:
+			case renderer::Format::eD32_SFLOAT:
 				return GL_ATTACHMENT_TYPE_DEPTH;
 
-			case renderer::PixelFormat::eD24S8:
-			case renderer::PixelFormat::eD32FS8:
+			case renderer::Format::eD24_UNORM_S8_UINT:
+			case renderer::Format::eD32_SFLOAT_S8_UINT:
 				return GL_ATTACHMENT_TYPE_DEPTH_STENCIL;
 
-			case renderer::PixelFormat::eS8:
+			case renderer::Format::eS8_UINT:
 				return GL_ATTACHMENT_TYPE_STENCIL;
 
 			default:

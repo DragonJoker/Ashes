@@ -29,8 +29,8 @@ namespace common
 {
 	namespace
 	{
-		static renderer::PixelFormat const DepthFormat = renderer::PixelFormat::eD24S8;
-		static renderer::PixelFormat const ColourFormat = renderer::PixelFormat::eR8G8B8A8;
+		static renderer::Format const DepthFormat = renderer::Format::eD24_UNORM_S8_UINT;
+		static renderer::Format const ColourFormat = renderer::Format::eR8G8B8A8_UNORM;
 	}
 
 	RenderTarget::RenderTarget( renderer::Device const & device

@@ -51,8 +51,8 @@ namespace vkapp
 		}	Ids;
 
 		static int const TimerTimeMs = 20;
-		static renderer::PixelFormat const ColourFormat = renderer::PixelFormat::eRGBA32F;
-		static renderer::PixelFormat const DepthFormat = renderer::PixelFormat::eD32F;
+		static renderer::Format const ColourFormat = renderer::Format::eR32G32B32A32_SFLOAT;
+		static renderer::Format const DepthFormat = renderer::Format::eD32_SFLOAT;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
@@ -117,8 +117,8 @@ namespace vkapp
 	}
 	, m_objectPcbs
 	{
-		{ renderer::ShaderStageFlag::eFragment, { { 3u, 0u, renderer::AttributeFormat::eVec4f } } },
-		{ renderer::ShaderStageFlag::eFragment, { { 3u, 0u, renderer::AttributeFormat::eVec4f } } },
+		{ renderer::ShaderStageFlag::eFragment, { { 3u, 0u, renderer::ConstantFormat::eVec4f } } },
+		{ renderer::ShaderStageFlag::eFragment, { { 3u, 0u, renderer::ConstantFormat::eVec4f } } },
 	}
 	{
 		*m_objectPcbs[0].getData() = renderer::RgbaColour{ 1.0, 0.0, 0.0, 1.0 };
@@ -495,9 +495,11 @@ namespace vkapp
 	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
 		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		m_offscreenVertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_offscreenVertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_offscreenVertexLayout->createAttribute< renderer::Vec2 >( 1u
+		m_offscreenVertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_offscreenVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
@@ -742,9 +744,11 @@ namespace vkapp
 	void RenderPanel::doCreateMainVertexBuffer()
 	{
 		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		m_mainVertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_mainVertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_mainVertexLayout->createAttribute< renderer::Vec2 >( 1u
+		m_mainVertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_mainVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device

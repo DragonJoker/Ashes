@@ -67,7 +67,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::SwapChain::createDepthStencil
 		*/
-		void createDepthStencil( renderer::PixelFormat format )override;
+		void createDepthStencil( renderer::Format format )override;
 		/**
 		*\~french
 		*\return
@@ -128,7 +128,7 @@ namespace vk_renderer
 		*\return
 		*	The swap chain's images pixels format.
 		*/
-		inline renderer::PixelFormat getFormat()const override
+		inline renderer::Format getFormat()const override
 		{
 			return m_format;
 		}
@@ -160,7 +160,7 @@ namespace vk_renderer
 
 	protected:
 		Device const & m_device;
-		renderer::PixelFormat m_format{};
+		renderer::Format m_format{};
 		VkColorSpaceKHR m_colorSpace;
 		VkSwapchainKHR m_swapChain{};
 		VkSurfaceKHR m_surface{};
