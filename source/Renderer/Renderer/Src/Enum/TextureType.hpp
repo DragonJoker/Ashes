@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -9,6 +9,10 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~english
+	*\brief
+	*	Texture types enumeration.
+	*\~french
 	*\brief
 	*	Enumération des types de texture.
 	*/
@@ -18,10 +22,6 @@ namespace renderer
 		e1D = 0,
 		e2D = 1,
 		e3D = 2,
-		eCube = 3,
-		e1DArray = 4,
-		e2DArray = 5,
-		eCubeArray = 6,
 		Utils_EnumBounds( e1D )
 	};
 	/**
@@ -52,18 +52,6 @@ namespace renderer
 
 		case TextureType::e3D:
 			return "3d";
-
-		case TextureType::eCube:
-			return "cube";
-
-		case TextureType::e1DArray:
-			return "1d_array";
-
-		case TextureType::e2DArray:
-			return "2d_array";
-
-		case TextureType::eCubeArray:
-			return "cube_array";
 
 		default:
 			assert( false && "Unsupported TextureType." );

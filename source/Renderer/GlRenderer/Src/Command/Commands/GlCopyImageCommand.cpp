@@ -19,10 +19,10 @@ namespace gl_renderer
 		, m_dst{ static_cast< Texture const & >( dst ) }
 		, m_srcFormat{ getFormat( m_src.getFormat() ) }
 		, m_srcType{ getType( m_src.getFormat() ) }
-		, m_srcTarget{ convert( m_src.getType() ) }
+		, m_srcTarget{ convert( m_src.getType(), m_src.getLayerCount() ) }
 		, m_dstFormat{ getFormat( m_dst.getFormat() ) }
 		, m_dstType{ getType( m_dst.getFormat() ) }
-		, m_dstTarget{ convert( m_dst.getType() ) }
+		, m_dstTarget{ convert( m_dst.getType(), m_dst.getLayerCount() ) }
 	{
 	}
 

@@ -206,7 +206,7 @@ namespace vkapp
 		m_texture = m_device->createTexture(
 			{
 				0u,
-				renderer::TextureType::e2DArray,
+				renderer::TextureType::e2D,
 				format,
 				{ uint32_t( tex2DArray.extent().x ), uint32_t( tex2DArray.extent().y ), 1u },
 				uint32_t( tex2DArray.levels() ),
@@ -296,7 +296,7 @@ namespace vkapp
 			, renderer::Filter::eLinear );
 
 		// Create the texture view for shader read.
-		m_view = m_texture->createView( m_texture->getType()
+		m_view = m_texture->createView( renderer::TextureViewType::e2DArray
 			, format
 			, 0u
 			, uint32_t( tex2DArray.levels() )

@@ -53,6 +53,7 @@
 #include "Enum/GlTexLevelParameter.hpp"
 #include "Enum/GlTexParameter.hpp"
 #include "Enum/GlTextureType.hpp"
+#include "Enum/GlTextureViewType.hpp"
 #include "Enum/GlTextureUnit.hpp"
 #include "Enum/GlTweak.hpp"
 #include "Enum/GlWrapMode.hpp"

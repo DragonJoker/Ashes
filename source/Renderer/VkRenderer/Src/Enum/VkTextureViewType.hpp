@@ -2,8 +2,8 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
-#ifndef ___VkRenderer_TextureType_HPP___
-#define ___VkRenderer_TextureType_HPP___
+#ifndef ___VkRenderer_TextureViewType_HPP___
+#define ___VkRenderer_TextureViewType_HPP___
 #pragma once
 
 #include <RendererPrerequisites.hpp>
@@ -18,7 +18,7 @@ namespace vk_renderer
 	*\return
 	*	Le VkImageViewType.
 	*/
-	VkImageType convert( renderer::TextureType const & value )noexcept;
+	VkImageViewType convert( renderer::TextureViewType const & value )noexcept;
 }
 
 #endif

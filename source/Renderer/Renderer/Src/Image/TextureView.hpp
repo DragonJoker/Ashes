@@ -324,7 +324,7 @@ namespace renderer
 		*\return
 		*	The texture type.
 		*/
-		inline TextureType getType()const
+		inline TextureViewType getType()const
 		{
 			return m_createInfo.viewType;
 		}

@@ -190,7 +190,7 @@ namespace vkapp
 					renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled
 				}
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
-			texture.view = texture.texture->createView( renderer::TextureType::e2D
+			texture.view = texture.texture->createView( renderer::TextureViewType::e2D
 				, texture.texture->getFormat() );
 			++index;
 		}

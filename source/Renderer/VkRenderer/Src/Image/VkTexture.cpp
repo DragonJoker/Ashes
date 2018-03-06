@@ -120,7 +120,7 @@ namespace vk_renderer
 			VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
 			nullptr,
 			convert( createInfo.flags ),                        // flags
-			getImageType( createInfo.imageType ),               // imageType
+			convert( createInfo.imageType ),                    // imageType
 			convert( createInfo.format ),                       // format
 			convert( createInfo.extent ),                       // extent
 			createInfo.mipLevels,                               // mipLevels
@@ -267,7 +267,7 @@ namespace vk_renderer
 			TextureView srcView{ m_device
 				, *this
 				, {
-					getType(),
+					renderer::TextureViewType{ getType() },
 					getFormat(),
 					renderer::ComponentMapping{},
 					{
@@ -287,7 +287,7 @@ namespace vk_renderer
 				TextureView dstView{ m_device
 					, *this
 					, {
-						getType(),
+						renderer::TextureViewType{ getType() },
 						getFormat(),
 						renderer::ComponentMapping{},
 						{

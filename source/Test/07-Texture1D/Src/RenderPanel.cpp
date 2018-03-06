@@ -168,7 +168,7 @@ namespace vkapp
 				renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_view = m_texture->createView( m_texture->getType()
+		m_view = m_texture->createView( renderer::TextureViewType::e1D
 			, image.format );
 		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge

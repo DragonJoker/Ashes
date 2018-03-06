@@ -274,7 +274,7 @@ namespace vkapp
 			, renderer::WrapMode::eRepeat
 			, renderer::Filter::eLinear
 			, renderer::Filter::eLinear );
-		m_view = m_texture->createView( m_texture->getType()
+		m_view = m_texture->createView( renderer::TextureViewType::e3D
 			, image.format );
 		auto buffer = image.data.data();
 		auto size = image.size.width * image.size.height * 4;
@@ -402,7 +402,7 @@ namespace vkapp
 				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_renderTargetColourView = m_renderTargetColour->createView( m_renderTargetColour->getType()
+		m_renderTargetColourView = m_renderTargetColour->createView( renderer::TextureViewType::e2D
 			, m_renderTargetColour->getFormat() );
 
 		m_renderTargetDepth = m_device->createTexture(
@@ -418,7 +418,7 @@ namespace vkapp
 				renderer::ImageUsageFlag::eDepthStencilAttachment
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_renderTargetDepthView = m_renderTargetDepth->createView( m_renderTargetDepth->getType()
+		m_renderTargetDepthView = m_renderTargetDepth->createView( renderer::TextureViewType::e2D
 			, m_renderTargetDepth->getFormat() );
 		renderer::FrameBufferAttachmentArray attaches;
 		attaches.emplace_back( *( m_offscreenRenderPass->begin() + 0u ), *m_renderTargetColourView );

@@ -123,7 +123,7 @@ namespace renderer
 		*\param[in] mapping
 		*	The colours component mapping.
 		*/
-		TextureViewPtr createView( TextureType type
+		TextureViewPtr createView( TextureViewType type
 			, PixelFormat format
 			, uint32_t baseMipLevel = 0u
 			, uint32_t levelCount = 1u

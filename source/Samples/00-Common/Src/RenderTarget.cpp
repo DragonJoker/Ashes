@@ -149,11 +149,11 @@ namespace common
 					renderer::ImageUsageFlag::eTransferSrc | renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
 				}
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
-			textureNode->view = textureNode->texture->createView( textureNode->texture->getType()
+			textureNode->view = textureNode->texture->createView( renderer::TextureViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat()
 				, 0u
 				, 4u );
-			auto view = textureNode->texture->createView( textureNode->texture->getType()
+			auto view = textureNode->texture->createView( renderer::TextureViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat() );
 			m_stagingBuffer->uploadTextureData( *m_updateCommandBuffer
 				, image->data
@@ -184,7 +184,7 @@ namespace common
 				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_colourView = m_colour->createView( m_colour->getType()
+		m_colourView = m_colour->createView( renderer::TextureViewType::e2D
 			, m_colour->getFormat() );
 
 		m_depthView.reset();
@@ -201,7 +201,7 @@ namespace common
 				renderer::ImageUsageFlag::eDepthStencilAttachment
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_depthView = m_depth->createView( m_depth->getType()
+		m_depthView = m_depth->createView( renderer::TextureViewType::e2D
 			, m_depth->getFormat() );
 	}
 }

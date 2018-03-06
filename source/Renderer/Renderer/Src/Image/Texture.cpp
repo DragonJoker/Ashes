@@ -48,7 +48,7 @@ namespace renderer
 	{
 	}
 
-	TextureViewPtr Texture::createView( TextureType type
+	TextureViewPtr Texture::createView( TextureViewType type
 		, PixelFormat format
 		, uint32_t baseMipLevel
 		, uint32_t levelCount

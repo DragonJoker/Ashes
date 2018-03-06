@@ -244,7 +244,7 @@ namespace vkapp
 		, m_image{ common::loadImage( filePath ) }
 		, m_stagingBuffer{ device, renderer::BufferTarget::eTransferSrc, uint32_t( m_image.data.size() ) }
 		, m_texture{ doCreateTexture( m_device, *m_commandBuffer, m_image ) }
-		, m_view{ m_texture->createView( renderer::TextureType::e2D, m_image.format ) }
+		, m_view{ m_texture->createView( renderer::TextureViewType::e2D, m_image.format ) }
 		, m_sampler{ doCreateSampler( m_device ) }
 		, m_matrixUbo{ doCreateMatrixUbo( m_device, *m_commandBuffer, m_stagingBuffer ) }
 		, m_vertexBuffer{ doCreateVertexBuffer( m_device, *m_commandBuffer, m_stagingBuffer ) }
@@ -277,7 +277,7 @@ namespace vkapp
 
 		for ( auto & facePipeline : m_faces )
 		{
-			facePipeline.view = m_target.createView( renderer::TextureType::e2D
+			facePipeline.view = m_target.createView( renderer::TextureViewType::e2D
 				, m_target.getFormat()
 				, 0u
 				, 1u

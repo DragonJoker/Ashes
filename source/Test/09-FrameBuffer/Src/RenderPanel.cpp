@@ -244,7 +244,7 @@ namespace vkapp
 				renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_view = m_texture->createView( m_texture->getType()
+		m_view = m_texture->createView( renderer::TextureViewType::e2D
 			, image.format );
 		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
@@ -340,7 +340,7 @@ namespace vkapp
 				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_renderTargetColourView = m_renderTargetColour->createView( m_renderTargetColour->getType()
+		m_renderTargetColourView = m_renderTargetColour->createView( renderer::TextureViewType::e2D
 			, renderer::PixelFormat::eR8G8B8A8 );
 
 		renderer::FrameBufferAttachmentArray attaches;

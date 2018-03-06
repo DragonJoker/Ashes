@@ -282,7 +282,7 @@ namespace vkapp
 			, renderer::Filter::eLinear );
 
 		// Create the texture view for shader read.
-		m_view = m_texture->createView( m_texture->getType()
+		m_view = m_texture->createView( renderer::TextureViewType::e2D
 			, format
 			, 0u
 			, uint32_t( tex2D.levels() ) );

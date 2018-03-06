@@ -261,7 +261,7 @@ namespace common
 				renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_fontView = m_fontImage->createView( m_fontImage->getType()
+		m_fontView = m_fontImage->createView( renderer::TextureViewType( m_fontImage->getType() )
 			, m_fontImage->getFormat() );
 
 		auto copyCmd = m_device.getGraphicsCommandPool().createCommandBuffer();
@@ -325,7 +325,7 @@ namespace common
 				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_targetView = m_target->createView( renderer::TextureType::e2D
+		m_targetView = m_target->createView( renderer::TextureViewType::e2D
 			, m_target->getFormat() );
 		
 		renderer::RenderPassAttachmentArray rpAttaches

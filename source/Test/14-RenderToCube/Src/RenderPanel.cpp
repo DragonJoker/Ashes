@@ -282,7 +282,7 @@ namespace vkapp
 		m_texture = m_device->createTexture(
 			{
 				0u,
-				renderer::TextureType::e2DArray,
+				renderer::TextureType::e2D,
 				renderer::PixelFormat::eR8G8B8A8,
 				{ 512u, 512u, 1u },
 				1u,
@@ -298,7 +298,7 @@ namespace vkapp
 			, *m_texture };
 		equiToCube.render();
 
-		m_view = m_texture->createView( renderer::TextureType::eCube
+		m_view = m_texture->createView( renderer::TextureViewType::eCube
 			, renderer::PixelFormat::eR8G8B8A8
 			, 0u
 			, 1u
@@ -404,7 +404,7 @@ namespace vkapp
 				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_renderTargetColourView = m_renderTargetColour->createView( m_renderTargetColour->getType()
+		m_renderTargetColourView = m_renderTargetColour->createView( renderer::TextureViewType::e2D
 			, m_renderTargetColour->getFormat() );
 		renderer::FrameBufferAttachmentArray attaches;
 		attaches.emplace_back( *( m_offscreenRenderPass->begin() + 0u ), *m_renderTargetColourView );

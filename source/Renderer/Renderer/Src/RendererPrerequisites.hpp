@@ -63,6 +63,7 @@ See LICENSE file in root folder.
 #include "Enum/SubpassContents.hpp"
 #include "Enum/TessellationStateFlag.hpp"
 #include "Enum/TextureType.hpp"
+#include "Enum/TextureViewType.hpp"
 #include "Enum/VertexInputRate.hpp"
 #include "Enum/WrapMode.hpp"
 

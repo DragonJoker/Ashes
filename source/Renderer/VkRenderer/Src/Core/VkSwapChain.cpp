@@ -73,7 +73,7 @@ namespace vk_renderer
 				renderer::ImageLayout::eUndefined,
 			},
 			renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_depthStencilView = m_depthStencil->createView( renderer::TextureType::e2D
+		m_depthStencilView = m_depthStencil->createView( renderer::TextureViewType::e2D
 			, format );
 	}
 
