@@ -34,7 +34,7 @@ namespace common
 	}
 
 	RenderTarget::RenderTarget( renderer::Device const & device
-		, renderer::UIVec2 const & size
+		, renderer::Extent2D const & size
 		, Scene && scene
 		, ImagePtrArray && images )
 		: m_device{ device }
@@ -64,7 +64,7 @@ namespace common
 		doCleanup();
 	}
 
-	void RenderTarget::resize( renderer::UIVec2 const & size )
+	void RenderTarget::resize( renderer::Extent2D const & size )
 	{
 		if ( size != m_size )
 		{
@@ -138,6 +138,7 @@ namespace common
 			textureNode->image = image;
 			textureNode->texture = m_device.createTexture(
 				{
+					0u,
 					renderer::TextureType::e2D,
 					image->format,
 					renderer::Extent3D{ image->size[0], image->size[1], 1u },
@@ -172,9 +173,10 @@ namespace common
 		m_colourView.reset();
 		m_colour = m_device.createTexture(
 			{
+				0,
 				renderer::TextureType::e2D,
 				ColourFormat,
-				renderer::Extent3D{ m_size[0], m_size[1], 1u },
+				renderer::Extent3D{ m_size.width, m_size.height, 1u },
 				1u,
 				1u,
 				renderer::SampleCountFlag::e1,
@@ -188,9 +190,10 @@ namespace common
 		m_depthView.reset();
 		m_depth = m_device.createTexture(
 			{
+				0,
 				renderer::TextureType::e2D,
 				DepthFormat,
-				renderer::Extent3D{ m_size[0], m_size[1], 1u },
+				renderer::Extent3D{ m_size.width, m_size.height, 1u },
 				1u,
 				1u,
 				renderer::SampleCountFlag::e1,

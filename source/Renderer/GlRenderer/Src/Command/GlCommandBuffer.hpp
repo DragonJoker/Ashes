@@ -182,8 +182,10 @@ namespace gl_renderer
 		*\copydoc	renderer::CommandBuffer::copyImage
 		*/
 		void copyImage( renderer::ImageCopy const & copyInfo
-			, renderer::TextureView const & src
-			, renderer::TextureView const & dst )const override;
+			, renderer::Texture const & src
+			, renderer::ImageLayout srcLayout
+			, renderer::Texture const & dst
+			, renderer::ImageLayout dstLayout )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer::blitImage
 		*/

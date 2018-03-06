@@ -89,9 +89,9 @@ namespace common
 				, 0u
 				, 1024u * 64u );
 			doInitialise( *m_device
-				, { size.GetWidth(), size.GetHeight() } );
+				, { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 			m_gui = std::make_unique< Gui >( *m_device
-				, renderer::UIVec2{ size.GetWidth(), size.GetHeight() } );
+				, renderer::UIVec2{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 			m_gui->updateView( m_renderTarget->getColourView() );
 			m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 				, renderer::WrapMode::eClampToEdge
@@ -247,7 +247,7 @@ namespace common
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( { size.x, size.y } );
+		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
 		m_swapChain->setClearColour( { 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
@@ -386,14 +386,14 @@ namespace common
 					, { clearValue }
 					, renderer::SubpassContents::eInline );
 				commandBuffer.bindPipeline( *m_pipeline );
-				commandBuffer.setViewport( { uint32_t( dimensions.x )
-					, uint32_t( dimensions.y )
+				commandBuffer.setViewport( { dimensions.width
+					, dimensions.height
 					, 0
 					, 0 } );
 				commandBuffer.setScissor( { 0
 					, 0
-					, uint32_t( dimensions.x )
-					, uint32_t( dimensions.y ) } );
+					, dimensions.width
+					, dimensions.height } );
 				commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
 				commandBuffer.bindDescriptorSet( *m_descriptorSet
 					, *m_pipelineLayout );
@@ -420,7 +420,7 @@ namespace common
 		io.DisplaySize = ImVec2( float( size.GetWidth() ), float( size.GetHeight() ) );
 		io.DeltaTime = std::chrono::duration_cast< std::chrono::milliseconds >( duration ).count() / 1000.0f;
 
-		io.MousePos = ImVec2( m_mouse.position[0], m_mouse.position[1] );
+		io.MousePos = ImVec2( m_mouse.position.x, m_mouse.position.y );
 		io.MouseDown[0] = m_mouse.left;
 		io.MouseDown[1] = m_mouse.right;
 
@@ -478,7 +478,7 @@ namespace common
 	{
 		m_ready = false;
 		m_device->waitIdle();
-		m_swapChain->reset( { event.GetSize().GetWidth(), event.GetSize().GetHeight() } );
+		m_swapChain->reset( { uint32_t( event.GetSize().GetWidth() ), uint32_t( event.GetSize().GetHeight() ) } );
 		m_ready = true;
 		event.Skip();
 	}
@@ -486,48 +486,48 @@ namespace common
 	void RenderPanel::onMouseLDown( wxMouseEvent & event )
 	{
 		m_mouse.left = true;
-		m_mouse.position[0] = event.GetPosition().x;
-		m_mouse.position[1] = event.GetPosition().y;
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
 	}
 
 	void RenderPanel::onMouseLUp( wxMouseEvent & event )
 	{
 		m_mouse.left = false;
-		m_mouse.position[0] = event.GetPosition().x;
-		m_mouse.position[1] = event.GetPosition().y;
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
 	}
 
 	void RenderPanel::onMouseLDClick( wxMouseEvent & event )
 	{
 		m_mouse.left = true;
-		m_mouse.position[0] = event.GetPosition().x;
-		m_mouse.position[1] = event.GetPosition().y;
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
 	}
 
 	void RenderPanel::onMouseRDown( wxMouseEvent & event )
 	{
 		m_mouse.right = true;
-		m_mouse.position[0] = event.GetPosition().x;
-		m_mouse.position[1] = event.GetPosition().y;
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
 	}
 
 	void RenderPanel::onMouseRUp( wxMouseEvent & event )
 	{
 		m_mouse.right = false;
-		m_mouse.position[0] = event.GetPosition().x;
-		m_mouse.position[1] = event.GetPosition().y;
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
 	}
 
 	void RenderPanel::onMouseRDClick( wxMouseEvent & event )
 	{
 		m_mouse.right = true;
-		m_mouse.position[0] = event.GetPosition().x;
-		m_mouse.position[1] = event.GetPosition().y;
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
 	}
 
 	void RenderPanel::onMouseMove( wxMouseEvent & event )
 	{
-		m_mouse.position[0] = event.GetPosition().x;
-		m_mouse.position[1] = event.GetPosition().y;
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
 	}
 }

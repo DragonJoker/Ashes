@@ -30,7 +30,7 @@ namespace gl_renderer
 		*/
 		Texture( Device const & device
 			, renderer::PixelFormat format
-			, renderer::UIVec2 const & dimensions );
+			, renderer::Extent2D const & dimensions );
 		/**
 		*\brief
 		*	Constructeur.

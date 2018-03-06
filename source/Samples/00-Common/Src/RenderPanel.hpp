@@ -25,7 +25,7 @@ namespace common
 	private:
 		struct MouseState
 		{
-			renderer::UIVec2 position;
+			renderer::Offset2D position;
 			bool left{ false };
 			bool right{ false };
 		};
@@ -42,7 +42,7 @@ namespace common
 
 	private:
 		virtual void doInitialise( renderer::Device const & device
-			, renderer::UIVec2 const & size ) = 0;
+			, renderer::Extent2D const & size ) = 0;
 		virtual void doUpdateOverlays( Gui const & gui ) = 0;
 
 		virtual void doUpdate()

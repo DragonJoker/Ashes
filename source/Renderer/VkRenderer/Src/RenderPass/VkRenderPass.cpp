@@ -145,7 +145,7 @@ namespace vk_renderer
 		m_device.vkDestroyRenderPass( m_device, m_renderPass, nullptr );
 	}
 
-	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::UIVec2 const & dimensions
+	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::Extent2D const & dimensions
 		, renderer::FrameBufferAttachmentArray && attaches )const
 	{
 		return std::make_unique< FrameBuffer >( m_device

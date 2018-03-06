@@ -165,7 +165,7 @@ namespace common
 			}
 
 			auto dimensions = views[0].get().getTexture().getDimensions();
-			return renderPass.createFrameBuffer( renderer::UIVec2{ dimensions.width, dimensions.height }
+			return renderPass.createFrameBuffer( renderer::Extent2D{ dimensions.width, dimensions.height }
 			, std::move( attaches ) );
 		}
 

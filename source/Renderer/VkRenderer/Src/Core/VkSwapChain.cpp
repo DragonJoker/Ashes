@@ -19,7 +19,7 @@
 namespace vk_renderer
 {
 	SwapChain::SwapChain( Device const & device
-		, renderer::UIVec2 const & size )
+		, renderer::Extent2D const & size )
 		: renderer::SwapChain{ device, size }
 		, m_device{ device }
 		, m_surface{ device.getPresentSurface() }
@@ -49,7 +49,7 @@ namespace vk_renderer
 		m_device.vkDestroySwapchainKHR( m_device, m_swapChain, nullptr );
 	}
 
-	void SwapChain::reset( renderer::UIVec2 const & size )
+	void SwapChain::reset( renderer::Extent2D const & size )
 	{
 		m_dimensions = size;
 		doResetSwapChain();
@@ -59,9 +59,10 @@ namespace vk_renderer
 	{
 		m_depthStencil = m_device.createTexture(
 			{
+				0u,
 				renderer::TextureType::e2D,
 				format,
-				renderer::Extent3D{ getDimensions()[0], getDimensions()[1], 1u },
+				renderer::Extent3D{ getDimensions().width, getDimensions().height, 1u },
 				1u,
 				1u,
 				renderer::SampleCountFlag::e1,
@@ -279,8 +280,7 @@ namespace vk_renderer
 		{
 			// Si les dimensions de la surface sont indéfinies, elles sont initialisées
 			// aux dimensions des images requises.
-			swapChainExtent.width = m_dimensions[0];
-			swapChainExtent.height = m_dimensions[1];
+			swapChainExtent = convert( m_dimensions );
 		}
 		else
 		{

@@ -34,6 +34,7 @@ See LICENSE file in root folder.
 #include "Enum/FormatFeatureFlag.hpp"
 #include "Enum/FrontFace.hpp"
 #include "Enum/ImageAspectFlag.hpp"
+#include "Enum/ImageCreateFlag.hpp"
 #include "Enum/ImageLayout.hpp"
 #include "Enum/ImageTiling.hpp"
 #include "Enum/ImageUsageFlag.hpp"
@@ -108,6 +109,7 @@ namespace renderer
 	struct CommandBufferInheritanceInfo;
 	struct DepthStencilState;
 	struct DescriptorPoolSize;
+	struct Extent2D;
 	struct Extent3D;
 	struct FormatProperties;
 	struct GraphicsPipelineCreateInfo;
@@ -119,6 +121,8 @@ namespace renderer
 	struct MemoryHeap;
 	struct MemoryType;
 	struct MultisampleState;
+	struct Offset2D;
+	struct Offset3D;
 	struct PhysicalDeviceFeatures;
 	struct PhysicalDeviceLimits;
 	struct PhysicalDeviceMemoryProperties;

@@ -7,14 +7,8 @@ namespace vk_renderer
 		return VkClearRect
 		{
 			{
-				{
-					value.offset[0],
-					value.offset[1],
-				},
-				{
-					value.extent[0],
-					value.extent[1],
-				}
+				convert( value.offset ),
+				convert( value.extent )
 			},
 			value.baseArrayLayer,
 			value.layerCount,

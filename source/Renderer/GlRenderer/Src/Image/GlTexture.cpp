@@ -91,11 +91,11 @@ namespace gl_renderer
 
 	Texture::Texture( Device const & device
 		, renderer::PixelFormat format
-		, renderer::UIVec2 const & dimensions )
+		, renderer::Extent2D const & dimensions )
 		: renderer::Texture{ device
 			, renderer::TextureType::e2D
 			, format
-			, { dimensions[0], dimensions[1], 1u }
+			, { dimensions.width, dimensions.height, 1u }
 			, 1u
 			, 1u }
 		, m_device{ device }

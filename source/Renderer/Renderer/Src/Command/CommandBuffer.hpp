@@ -644,8 +644,10 @@ namespace renderer
 		*	The destination image.
 		*/
 		virtual void copyImage( ImageCopy const & copyInfo
-			, TextureView const & src
-			, TextureView const & dst )const = 0;
+			, Texture const & src
+			, ImageLayout srcLayout
+			, Texture const & dst
+			, ImageLayout dstLayout )const = 0;
 		/**
 		*\~french
 		*\brief

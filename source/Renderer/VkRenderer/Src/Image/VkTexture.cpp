@@ -119,14 +119,10 @@ namespace vk_renderer
 		{
 			VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
 			nullptr,
-			0,                                                  // flags
+			convert( createInfo.flags ),                        // flags
 			getImageType( createInfo.imageType ),               // imageType
 			convert( createInfo.format ),                       // format
-			{                                                   // extent
-				uint32_t( createInfo.extent.width ),              // width
-				uint32_t( createInfo.extent.height ),             // height
-				uint32_t( createInfo.extent.depth ),              // depth
-			},
+			convert( createInfo.extent ),                       // extent
 			createInfo.mipLevels,                               // mipLevels
 			createInfo.arrayLayers,                             // arrayLayers
 			convert( createInfo.samples ),                      // samples
@@ -166,12 +162,12 @@ namespace vk_renderer
 
 	Texture::Texture( Device const & device
 		, renderer::PixelFormat format
-		, renderer::UIVec2 const & dimensions
+		, renderer::Extent2D const & dimensions
 		, VkImage image )
 		: renderer::Texture{ device
 			, renderer::TextureType::e2D
 			, doSelectFormat( m_device, format )
-			, renderer::Extent3D{ dimensions[0], dimensions[1], 1u }
+			, renderer::Extent3D{ dimensions.width, dimensions.height, 1u }
 			, 1u 
 			, 1u }
 		, m_device{ device }
@@ -182,15 +178,16 @@ namespace vk_renderer
 
 	Texture::Texture( Device const & device
 		, renderer::PixelFormat format
-		, renderer::UIVec2 const & dimensions
+		, renderer::Extent2D const & dimensions
 		, renderer::ImageUsageFlags usageFlags
 		, renderer::ImageTiling tiling
 		, renderer::MemoryPropertyFlags memoryFlags )
 		: Texture{ device
 			, {
+				0u,
 				renderer::TextureType::e2D,
 				doSelectFormat( m_device, format ),
-				renderer::Extent3D{ dimensions[0], dimensions[1], 1u },
+				renderer::Extent3D{ dimensions.width, dimensions.height, 1u },
 				1u,
 				1u,
 				renderer::SampleCountFlag::e1,

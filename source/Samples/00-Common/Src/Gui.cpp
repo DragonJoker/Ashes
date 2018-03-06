@@ -250,6 +250,7 @@ namespace common
 
 		m_fontImage = m_device.createTexture(
 			{
+				0u,
 				renderer::TextureType::e2D,
 				utils::PixelFormat::eR8G8B8A8,
 				renderer::Extent3D{ uint32_t( texWidth ), uint32_t( texHeight ), 1u },
@@ -310,9 +311,10 @@ namespace common
 	void Gui::doPreparePipeline()
 	{
 		auto dimensions = m_colourView->getTexture().getDimensions();
-		auto size = renderer::UIVec2{ dimensions.width, dimensions.height };
+		auto size = renderer::Extent2D{ dimensions.width, dimensions.height };
 		m_target = m_device.createTexture(
 			{
+				0u,
 				renderer::TextureType::e2D,
 				m_colourView->getFormat(),
 				dimensions,

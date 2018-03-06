@@ -172,10 +172,7 @@ namespace vk_renderer
 					0,                                                // x
 					0                                                 // y
 				},
-				{                                                 // extent
-					uint32_t( vkfbo.getDimensions()[0] ),             // width
-					uint32_t( vkfbo.getDimensions()[1] ),             // height
-				}
+				convert( vkfbo.getDimensions() ),               // extent
 			},
 			uint32_t( vkclearValues.size() ),                   // clearValueCount
 			vkclearValues.data()                                // pClearValues
@@ -456,16 +453,18 @@ namespace vk_renderer
 	}
 
 	void CommandBuffer::copyImage( renderer::ImageCopy const & copyInfo
-		, renderer::TextureView const & src
-		, renderer::TextureView const & dst )const
+		, renderer::Texture const & src
+		, renderer::ImageLayout srcLayout
+		, renderer::Texture const & dst
+		, renderer::ImageLayout dstLayout )const
 	{
 		auto vkcopyInfo = convert( copyInfo );
 		DEBUG_DUMP( vkcopyInfo );
 		m_device.vkCmdCopyImage( m_commandBuffer
-			, static_cast< Texture const & >( src.getTexture() )
-			, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
-			, static_cast< Texture const & >( dst.getTexture() )
-			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+			, static_cast< Texture const & >( src )
+			, convert( srcLayout )
+			, static_cast< Texture const & >( dst )
+			, convert( dstLayout )
 			, 1
 			, &vkcopyInfo );
 	}

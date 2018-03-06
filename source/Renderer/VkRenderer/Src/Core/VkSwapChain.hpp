@@ -34,7 +34,7 @@ namespace vk_renderer
 		*	The render surface dimensions.
 		*/
 		SwapChain( Device const & device
-			, renderer::UIVec2 const & size );
+			, renderer::Extent2D const & size );
 		/**
 		*\~french
 		*\brief
@@ -47,7 +47,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::SwapChain::reset
 		*/
-		void reset( renderer::UIVec2 const & size )override;
+		void reset( renderer::Extent2D const & size )override;
 		/**
 		*\copydoc	renderer::SwapChain::createFrameBuffers
 		*/
@@ -116,7 +116,7 @@ namespace vk_renderer
 		*\return
 		*	The swap chain dimensions.
 		*/
-		inline renderer::UIVec2 getDimensions()const override
+		inline renderer::Extent2D getDimensions()const override
 		{
 			return m_dimensions;
 		}

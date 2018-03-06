@@ -6,7 +6,8 @@ See LICENSE file in root folder.
 #define ___Renderer_Viewport_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include "Miscellaneous/Extent2D.hpp"
+#include "Miscellaneous/Offset2D.hpp"
 
 namespace renderer
 {
@@ -55,7 +56,7 @@ namespace renderer
 		*\return
 		*	The viewport position.
 		*/
-		inline IVec2 const & getOffset()const
+		inline Offset2D const & getOffset()const
 		{
 			return m_offset;
 		}
@@ -67,7 +68,7 @@ namespace renderer
 		*\return
 		*	The viewport dimensions.
 		*/
-		inline IVec2 const & getSize()const
+		inline Extent2D const & getSize()const
 		{
 			return m_size;
 		}
@@ -85,16 +86,18 @@ namespace renderer
 		}
 
 	private:
-		IVec2 m_offset;
-		IVec2 m_size;
+		Offset2D m_offset;
+		Extent2D m_size;
 		Vec2 m_depthBounds;
 		friend bool operator==( Viewport const & lhs, Viewport const & rhs );
 	};
 
 	inline bool operator==( Viewport const & lhs, Viewport const & rhs )
 	{
-		return lhs.m_offset == rhs.m_offset
-			&& lhs.m_size == rhs.m_size
+		return lhs.m_offset.x == rhs.m_offset.x
+			&& lhs.m_offset.y == rhs.m_offset.y
+			&& lhs.m_size.width == rhs.m_size.width
+			&& lhs.m_size.height == rhs.m_size.height
 			&& lhs.m_depthBounds == rhs.m_depthBounds;
 	}
 

@@ -22,11 +22,11 @@ namespace gl_renderer
 		*	Constructeur.
 		*/
 		SwapChain( Device const & device
-			, renderer::UIVec2 const & size );
+			, renderer::Extent2D const & size );
 		/**
 		*\copydoc	renderer::SwapChain::reset
 		*/
-		void reset( renderer::UIVec2 const & size )override;
+		void reset( renderer::Extent2D const & size )override;
 		/**
 		*\copydoc	renderer::SwapChain::createFrameBuffers
 		*/
@@ -71,7 +71,7 @@ namespace gl_renderer
 		*\return
 		*	Les dimensions de la swap chain.
 		*/
-		inline renderer::UIVec2 getDimensions()const override
+		inline renderer::Extent2D getDimensions()const override
 		{
 			return m_dimensions;
 		}

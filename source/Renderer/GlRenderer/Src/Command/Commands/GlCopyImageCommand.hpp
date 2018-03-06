@@ -29,15 +29,15 @@ namespace gl_renderer
 		*	L'image destination.
 		*/
 		CopyImageCommand( renderer::ImageCopy const & copyInfo
-			, renderer::TextureView const & src
-			, renderer::TextureView const & dst );
+			, renderer::Texture const & src
+			, renderer::Texture const & dst );
 
 		void apply()const override;
 		CommandPtr clone()const override;
 
 	private:
-		TextureView const & m_src;
-		TextureView const & m_dst;
+		Texture const & m_src;
+		Texture const & m_dst;
 		renderer::ImageCopy m_copyInfo;
 		GlFormat m_srcFormat;
 		GlType m_srcType;

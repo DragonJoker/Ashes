@@ -241,8 +241,8 @@ namespace vkapp
 			, 0.0f
 			, 10.0f );
 #else
-		auto width = float( size.x );
-		auto height = float( size.y );
+		auto width = float( size.width );
+		auto height = float( size.height );
 		auto ratio = width / height;
 		m_matrixUbo->getData( 0u ) = m_device->perspective( utils::toRadians( 90.0_degrees ) / ratio
 			, width / height
@@ -264,7 +264,7 @@ namespace vkapp
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( { size.x, size.y } );
+		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
 		m_swapChain->setClearColour( { 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
@@ -280,6 +280,7 @@ namespace vkapp
 	{
 		m_texture = m_device->createTexture(
 			{
+				0u,
 				renderer::TextureType::e2DArray,
 				renderer::PixelFormat::eR8G8B8A8,
 				{ 512u, 512u, 1u },
@@ -324,7 +325,7 @@ namespace vkapp
 					1u,
 				}
 				, { 0, 0, 0 }
-				, { image.size[0], image.size[1], 1u }
+				, { image.size.width, image.size.height, 1u }
 				, image.data
 				, *m_view );
 		}
@@ -412,6 +413,7 @@ namespace vkapp
 		auto size = GetClientSize();
 		m_renderTargetColour = m_device->createTexture(
 			{
+				0u,
 				renderer::TextureType::e2D,
 				renderer::PixelFormat::eR8G8B8A8,
 				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
@@ -426,7 +428,7 @@ namespace vkapp
 			, m_renderTargetColour->getFormat() );
 		renderer::FrameBufferAttachmentArray attaches;
 		attaches.emplace_back( *( m_offscreenRenderPass->begin() + 0u ), *m_renderTargetColourView );
-		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { size.GetWidth(), size.GetHeight() }
+		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
 			, std::move( attaches ) );
 	}
 
@@ -563,14 +565,14 @@ namespace vkapp
 				, *m_queryPool
 				, 0u );
 			commandBuffer.bindPipeline( *m_offscreenPipeline );
-			commandBuffer.setViewport( { uint32_t( dimensions.x )
-				, uint32_t( dimensions.y )
+			commandBuffer.setViewport( { dimensions.width
+				, dimensions.height
 				, 0
 				, 0 } );
 			commandBuffer.setScissor( { 0
 				, 0
-				, uint32_t( dimensions.x )
-				, uint32_t( dimensions.y ) } );
+				, dimensions.width
+				, dimensions.height } );
 			commandBuffer.bindVertexBuffer( 0u, m_offscreenVertexBuffer->getBuffer(), 0u );
 			commandBuffer.bindIndexBuffer( m_offscreenIndexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
 			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSet
@@ -660,14 +662,14 @@ namespace vkapp
 					, { renderer::ClearValue{ { 1.0, 0.0, 0.0, 1.0 } } }
 					, renderer::SubpassContents::eInline );
 				commandBuffer.bindPipeline( *m_mainPipeline );
-				commandBuffer.setViewport( { uint32_t( dimensions.x )
-					, uint32_t( dimensions.y )
+				commandBuffer.setViewport( { dimensions.width
+					, dimensions.height
 					, 0
 					, 0 } );
 				commandBuffer.setScissor( { 0
 					, 0
-					, uint32_t( dimensions.x )
-					, uint32_t( dimensions.y ) } );
+					, dimensions.width
+					, dimensions.height } );
 				commandBuffer.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
 				commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
 					, *m_mainPipelineLayout );
@@ -749,7 +751,7 @@ namespace vkapp
 	{
 		m_device->waitIdle();
 		wxSize size{ GetClientSize() };
-		m_swapChain->reset( { size.GetWidth(), size.GetHeight() } );
+		m_swapChain->reset( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 	}
 
 	void RenderPanel::onTimer( wxTimerEvent & event )

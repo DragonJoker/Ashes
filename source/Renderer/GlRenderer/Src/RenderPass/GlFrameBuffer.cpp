@@ -142,14 +142,14 @@ namespace gl_renderer
 	}
 
 	FrameBuffer::FrameBuffer( renderer::RenderPass const & renderPass
-		, renderer::UIVec2 const & dimensions )
+		, renderer::Extent2D const & dimensions )
 		: renderer::FrameBuffer{ renderPass, dimensions, renderer::FrameBufferAttachmentArray{} }
 		, m_frameBuffer{ 0u }
 	{
 	}
 
 	FrameBuffer::FrameBuffer( renderer::RenderPass const & renderPass
-		, renderer::UIVec2 const & dimensions
+		, renderer::Extent2D const & dimensions
 		, renderer::FrameBufferAttachmentArray && views )
 		: renderer::FrameBuffer{ renderPass, dimensions, std::move( views ) }
 	{

@@ -42,9 +42,10 @@ namespace vkapp
 		{
 			auto result = device.createTexture(
 				{
+					0u,
 					renderer::TextureType::e2D,
 					image.format,
-					renderer::Extent3D{ uint32_t( image.size[0] ), uint32_t( image.size[1] ), 1u },
+					renderer::Extent3D{ image.size.width, image.size.height, 1u },
 					1u,
 					1u,
 					renderer::SampleCountFlag::e1,
@@ -68,8 +69,8 @@ namespace vkapp
 			bufferCopyRegion.imageSubresource.mipLevel = 0u;
 			bufferCopyRegion.imageSubresource.baseArrayLayer = 0u;
 			bufferCopyRegion.imageSubresource.layerCount = 1u;
-			bufferCopyRegion.imageExtent.width = image.size[0];
-			bufferCopyRegion.imageExtent.height = image.size[1];
+			bufferCopyRegion.imageExtent.width = image.size.width;
+			bufferCopyRegion.imageExtent.height = image.size.height;
 			bufferCopyRegion.imageExtent.depth = 1;
 			bufferCopyRegion.bufferOffset = 0u;
 			bufferCopyRegion.levelSize = uint32_t( image.data.size() );
@@ -252,7 +253,7 @@ namespace vkapp
 		, m_descriptorPool{ m_descriptorLayout->createPool( 6u ) }
 		, m_pipelineLayout{ m_device.createPipelineLayout( *m_descriptorLayout ) }
 	{
-		auto size = renderer::UIVec2{ texture.getDimensions().width, texture.getDimensions().height };
+		auto size = renderer::Extent2D{ texture.getDimensions().width, texture.getDimensions().height };
 		uint32_t face = 0u;
 		std::vector< renderer::PixelFormat > formats{ 1u, m_target.getFormat() };
 		renderer::RenderPassAttachmentArray rpAttaches
@@ -318,8 +319,8 @@ namespace vkapp
 				{},
 				renderer::DepthStencilState{ 0u, false, false },
 				renderer::TessellationState{},
-				renderer::Viewport{ size[0], size[1], 0, 0 },
-				renderer::Scissor{ 0, 0, size[0], size[1] }
+				renderer::Viewport{ size.width, size.height, 0, 0 },
+				renderer::Scissor{ 0, 0, size.width, size.height }
 			} );
 
 			facePipeline.descriptorSet = m_descriptorPool->createDescriptorSet();

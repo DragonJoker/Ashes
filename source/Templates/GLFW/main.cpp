@@ -263,6 +263,6 @@ void doPrepareFrames( Application & application )
 
 void onWindowResized( GLFWwindow * window, int width, int height )
 {
-	Application * app = reinterpret_cast< Application * >( glfwGetWindowUserPointer( window ) );
-	app->swapChain->reset( renderer::UIVec2{ width, height } );
+	auto * app = reinterpret_cast< Application * >( glfwGetWindowUserPointer( window ) );
+	app->swapChain->reset( { uint32_t( width ), uint32_t( height ) } );
 }

@@ -22,7 +22,7 @@ namespace gl_renderer
 		/**
 		*\copydoc	renderer::RenderPass::createFrameBuffer
 		*/
-		renderer::FrameBufferPtr createFrameBuffer( renderer::UIVec2 const & dimensions
+		renderer::FrameBufferPtr createFrameBuffer( renderer::Extent2D const & dimensions
 			, renderer::FrameBufferAttachmentArray && textures )const override;
 
 		inline RenderSubpassCRefArray const & getSubpasses()const

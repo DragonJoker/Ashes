@@ -104,7 +104,7 @@ namespace gl_renderer
 		/**
 		*\copydoc		renderer::Device::createSwapChain
 		*/
-		renderer::SwapChainPtr createSwapChain( renderer::UIVec2 const & size )const override;
+		renderer::SwapChainPtr createSwapChain( renderer::Extent2D const & size )const override;
 		/**
 		*\copydoc		renderer::Device::createSemaphore
 		*/

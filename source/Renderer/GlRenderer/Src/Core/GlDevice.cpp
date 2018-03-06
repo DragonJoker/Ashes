@@ -441,7 +441,7 @@ namespace gl_renderer
 			, memoryFlags );
 	}
 
-	renderer::SwapChainPtr Device::createSwapChain( renderer::UIVec2 const & size )const
+	renderer::SwapChainPtr Device::createSwapChain( renderer::Extent2D const & size )const
 	{
 		renderer::SwapChainPtr result;
 

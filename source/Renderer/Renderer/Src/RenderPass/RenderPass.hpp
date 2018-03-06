@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "RenderPass/RenderPassAttachment.hpp"
+#include "Miscellaneous/Extent2D.hpp"
 
 namespace renderer
 {
@@ -91,7 +92,7 @@ namespace renderer
 		*\return
 		*	The created frame buffer.
 		*/
-		virtual FrameBufferPtr createFrameBuffer( UIVec2 const & dimensions
+		virtual FrameBufferPtr createFrameBuffer( Extent2D const & dimensions
 			, FrameBufferAttachmentArray && attaches )const = 0;
 		/**
 		*\~english

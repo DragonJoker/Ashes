@@ -127,14 +127,14 @@ namespace gl_renderer
 			glLogCall( gl::BindFramebuffer, GL_READ_FRAMEBUFFER, m_srcFbo );
 			glLogCall( gl::BindFramebuffer, GL_DRAW_FRAMEBUFFER, m_dstFbo );
 			glLogCall( gl::BlitFramebuffer
-				, region.srcOffset[0]
-				, region.srcOffset[1]
-				, region.srcExtent[0]
-				, region.srcExtent[1]
-				, region.dstOffset[0]
-				, region.dstOffset[1]
-				, region.dstExtent[0]
-				, region.dstExtent[1]
+				, region.srcOffset.x
+				, region.srcOffset.y
+				, region.srcExtent.width
+				, region.srcExtent.height
+				, region.dstOffset.x
+				, region.dstOffset.y
+				, region.dstExtent.width
+				, region.dstExtent.height
 				, m_mask
 				, m_filter );
 			glLogCall( gl::BindFramebuffer, GL_DRAW_FRAMEBUFFER, 0u );

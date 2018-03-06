@@ -77,7 +77,7 @@ namespace gl_renderer
 				glLogCall( gl::CompressedTexSubImage1D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
-					, copyInfo.imageOffset[0]
+					, copyInfo.imageOffset.x
 					, copyInfo.imageExtent.width
 					, m_internal
 					, copyInfo.levelSize
@@ -89,8 +89,8 @@ namespace gl_renderer
 				glLogCall( gl::CompressedTexSubImage2D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
-					, copyInfo.imageOffset[0]
-					, copyInfo.imageOffset[1]
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, m_internal
@@ -102,9 +102,9 @@ namespace gl_renderer
 				glLogCall( gl::CompressedTexSubImage3D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
-					, copyInfo.imageOffset[0]
-					, copyInfo.imageOffset[1]
-					, copyInfo.imageOffset[2]
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
+					, copyInfo.imageOffset.z
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageExtent.depth
@@ -116,8 +116,8 @@ namespace gl_renderer
 				glLogCall( gl::CompressedTexSubImage3D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
-					, copyInfo.imageOffset[0]
-					, copyInfo.imageOffset[1]
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
 					, copyInfo.imageSubresource.baseArrayLayer
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
@@ -136,7 +136,7 @@ namespace gl_renderer
 				glLogCall( gl::TexSubImage1D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
-					, copyInfo.imageOffset[0]
+					, copyInfo.imageOffset.x
 					, copyInfo.imageExtent.width
 					, m_format
 					, m_type
@@ -148,8 +148,8 @@ namespace gl_renderer
 				glLogCall( gl::TexSubImage2D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
-					, copyInfo.imageOffset[0]
-					, copyInfo.imageOffset[1]
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, m_format
@@ -161,8 +161,8 @@ namespace gl_renderer
 				glLogCall( gl::TexSubImage3D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
-					, copyInfo.imageOffset[0]
-					, copyInfo.imageOffset[1]
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
 					, copyInfo.imageSubresource.baseArrayLayer
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
@@ -176,9 +176,9 @@ namespace gl_renderer
 				glLogCall( gl::TexSubImage3D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
-					, copyInfo.imageOffset[0]
-					, copyInfo.imageOffset[1]
-					, copyInfo.imageOffset[2]
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
+					, copyInfo.imageOffset.z
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageExtent.depth

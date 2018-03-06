@@ -145,7 +145,7 @@ namespace vkapp
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( { size.x, size.y } );
+		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
 		m_swapChain->setClearColour( renderer::RgbaColour{ 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
@@ -174,6 +174,7 @@ namespace vkapp
 		// Create the texture image
 		m_texture = m_device->createTexture(
 			{
+				0u,
 				renderer::TextureType::e2D,
 				format,
 				{ uint32_t( tex2D.extent().x ), uint32_t( tex2D.extent().y ), 1u },
@@ -397,14 +398,14 @@ namespace vkapp
 					, *m_queryPool
 					, 0u );
 				commandBuffer.bindPipeline( *m_pipeline );
-				commandBuffer.setViewport( { uint32_t( dimensions.x )
-					, uint32_t( dimensions.y )
+				commandBuffer.setViewport( { dimensions.width
+					, dimensions.height
 					, 0
 					, 0 } );
 				commandBuffer.setScissor( { 0
 					, 0
-					, uint32_t( dimensions.x )
-					, uint32_t( dimensions.y ) } );
+					, dimensions.width
+					, dimensions.height } );
 				commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
 				commandBuffer.bindDescriptorSet( *m_descriptorSet
 					, *m_pipelineLayout );
@@ -477,7 +478,7 @@ namespace vkapp
 		m_timer->Stop();
 		m_device->waitIdle();
 		wxSize size{ GetClientSize() };
-		m_swapChain->reset( { size.GetWidth(), size.GetHeight() } );
+		m_swapChain->reset( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 		m_timer->Start( TimerTimeMs );
 		event.Skip();
 	}

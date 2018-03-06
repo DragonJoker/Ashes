@@ -8,13 +8,21 @@ namespace vk_renderer
 		{
 			convert( value.srcSubresource ),
 			{
-				{ value.srcOffset[0], value.srcOffset[1], value.srcOffset[2] },
-				{ value.srcExtent[0], value.srcExtent[1], value.srcExtent[2] },
+				convert( value.srcOffset ),
+				{
+					int32_t( value.srcExtent.width ),
+					int32_t( value.srcExtent.height ),
+					int32_t( value.srcExtent.depth )
+				},
 			},
 			convert( value.dstSubresource ),
 			{
-				{ value.dstOffset[0], value.dstOffset[1], value.dstOffset[2] },
-				{ value.dstExtent[0], value.dstExtent[1], value.dstExtent[2] },
+				convert( value.dstOffset ),
+				{
+					int32_t( value.dstExtent.width ),
+					int32_t( value.dstExtent.height ),
+					int32_t( value.dstExtent.depth )
+				},
 			},
 		};
 	}

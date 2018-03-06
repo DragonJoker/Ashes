@@ -19,7 +19,7 @@ namespace vkapp
 	}
 
 	void RenderPanel::doInitialise( renderer::Device const & device
-		, renderer::UIVec2 const & size )
+		, renderer::Extent2D const & size )
 	{
 		common::ImagePtrArray images;
 		common::Scene scene;

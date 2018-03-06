@@ -14,7 +14,7 @@
 namespace gl_renderer
 {
 	SwapChain::SwapChain( Device const & device
-		, renderer::UIVec2 const & size )
+		, renderer::Extent2D const & size )
 		: renderer::SwapChain{ device, size }
 		, m_device{ device }
 	{
@@ -23,7 +23,7 @@ namespace gl_renderer
 		doCreateBackBuffers();
 	}
 
-	void SwapChain::reset( renderer::UIVec2 const & size )
+	void SwapChain::reset( renderer::Extent2D const & size )
 	{
 		m_dimensions = size;
 		doResetSwapChain();
