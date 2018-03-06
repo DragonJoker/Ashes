@@ -10,28 +10,6 @@ namespace renderer
 {
 	namespace
 	{
-		template< Format Fmt >
-		inline void doFillSubAttributes( Attribute const & attribute
-			, uint32_t bindingSlot
-			, VertexInputAttributeDescriptionArray & result )
-		{
-			uint32_t offset = attribute.getOffset();
-			uint32_t location = attribute.getLocation();
-
-			for ( auto i = 0u; i < FormatHelper< Fmt >::SubCount; ++i )
-			{
-				result.push_back(
-				{
-					location,
-					bindingSlot,
-					FormatHelper< Fmt >::SubFormat,
-					offset,
-				} );
-				++location;
-				offset += FormatHelper< Fmt >::SubSize;
-			}
-		}
-
 		void doFill( VertexLayout const & vertexLayout
 			, VertexInputState & result )
 		{
