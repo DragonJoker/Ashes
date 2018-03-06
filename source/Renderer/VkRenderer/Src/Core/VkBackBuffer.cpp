@@ -16,7 +16,7 @@ namespace vk_renderer
 		: renderer::BackBuffer{ device
 			, std::move( image )
 			, imageRef.createView( {
-				renderer::TextureViewType{ imageRef.getType() },
+				renderer::TextureViewType( imageRef.getType() ),
 				format,
 				renderer::ComponentMapping{},
 				{
