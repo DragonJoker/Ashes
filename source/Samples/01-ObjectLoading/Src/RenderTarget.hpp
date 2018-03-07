@@ -11,13 +11,13 @@ namespace vkapp
 	{
 	public:
 		RenderTarget( renderer::Device const & device
-			, renderer::UIVec2 const & size
+			, renderer::Extent2D const & size
 			, common::Scene && scene
 			, common::ImagePtrArray && images );
 
 	private:
 		void doUpdate( std::chrono::microseconds const & duration )override;
-		virtual void doResize( renderer::UIVec2 const & size )override;
+		virtual void doResize( renderer::Extent2D const & size )override;
 		common::OpaqueRenderingPtr doCreateOpaqueRendering( renderer::Device const & device
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::TextureViewCRefArray const & views
@@ -28,7 +28,7 @@ namespace vkapp
 			, renderer::TextureViewCRefArray const & views
 			, common::Scene const & scene
 			, common::TextureNodePtrArray const & textureNodes )override;
-		void doUpdateMatrixUbo( renderer::UIVec2 const & size );
+		void doUpdateMatrixUbo( renderer::Extent2D const & size );
 
 	private:
 		renderer::UniformBufferPtr< common::SceneData > m_sceneUbo;

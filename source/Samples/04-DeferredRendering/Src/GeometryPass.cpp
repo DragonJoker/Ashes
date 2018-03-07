@@ -37,10 +37,10 @@ namespace vkapp
 {
 	namespace
 	{
-		std::vector< renderer::PixelFormat > doGetFormats( GeometryPassResult const & gbuffer
-			, renderer::PixelFormat depthFormat )
+		std::vector< renderer::Format > doGetFormats( GeometryPassResult const & gbuffer
+			, renderer::Format depthFormat )
 		{
-			std::vector< renderer::PixelFormat > result
+			std::vector< renderer::Format > result
 			{
 				depthFormat,
 			};
@@ -73,7 +73,7 @@ namespace vkapp
 	GeometryPass::GeometryPass( renderer::Device const & device
 		, std::string const & fragmentShaderFile
 		, GeometryPassResult const & gbuffer
-		, renderer::PixelFormat depthFormat
+		, renderer::Format depthFormat
 		, renderer::UniformBuffer< common::SceneData > const & sceneUbo
 		, renderer::UniformBuffer< common::ObjectData > const & objectUbo )
 		: common::NodesRenderer{ device

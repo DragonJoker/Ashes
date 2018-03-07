@@ -5,6 +5,6 @@
 namespace vkapp
 {
 	void readFile( std::string const & name
-		, renderer::UIVec3 const & size
+		, renderer::Extent3D const & size
 		, renderer::ByteArray & data );
 }

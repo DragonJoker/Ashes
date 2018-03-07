@@ -41,7 +41,7 @@ namespace gl_renderer
 	{
 	}
 
-	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::UIVec2 const & dimensions
+	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::Extent2D const & dimensions
 		, renderer::FrameBufferAttachmentArray && textures )const
 	{
 		return std::make_shared< FrameBuffer >( *this

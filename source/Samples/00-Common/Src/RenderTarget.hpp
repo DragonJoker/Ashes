@@ -3,6 +3,7 @@
 #include "Scene.hpp"
 
 #include <Core/Device.hpp>
+#include <Miscellaneous/Extent2D.hpp>
 
 namespace common
 {
@@ -10,11 +11,11 @@ namespace common
 	{
 	public:
 		RenderTarget( renderer::Device const & device
-			, renderer::UIVec2 const & size
+			, renderer::Extent2D const & size
 			, Scene && scene
 			, ImagePtrArray && images );
 		virtual ~RenderTarget();
-		void resize( renderer::UIVec2 const & size );
+		void resize( renderer::Extent2D const & size );
 		void update( std::chrono::microseconds const & duration );
 		bool draw( std::chrono::microseconds & gpu );
 
@@ -51,7 +52,7 @@ namespace common
 		void doUpdateRenderViews();
 
 		virtual void doUpdate( std::chrono::microseconds const & duration ) = 0;
-		virtual void doResize( renderer::UIVec2 const & size ) = 0;
+		virtual void doResize( renderer::Extent2D const & size ) = 0;
 
 		virtual OpaqueRenderingPtr doCreateOpaqueRendering( renderer::Device const & device
 			, renderer::StagingBuffer & stagingBuffer
@@ -68,7 +69,7 @@ namespace common
 		renderer::Device const & m_device;
 		renderer::StagingBufferPtr m_stagingBuffer;
 		renderer::CommandBufferPtr m_updateCommandBuffer;
-		renderer::UIVec2 m_size;
+		renderer::Extent2D m_size;
 
 	private:
 		ImagePtrArray m_images;

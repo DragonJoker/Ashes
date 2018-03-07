@@ -10,8 +10,8 @@ namespace vk_renderer
 			value.bufferRowLength,
 			value.bufferImageHeight,
 			convert( value.imageSubresource ),
-			{ value.imageOffset[0], value.imageOffset[1], value.imageOffset[2] },
-			{ value.imageExtent.width, value.imageExtent.height, value.imageExtent.depth },
+			convert( value.imageOffset ),
+			convert( value.imageExtent ),
 		};
 	}
 }

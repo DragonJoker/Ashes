@@ -11,7 +11,7 @@ namespace gl_renderer
 		: renderer::TextureView{ device
 		, image
 		, {
-			renderer::TextureType::e2D,
+			renderer::TextureViewType::e2D,
 			image.getFormat(),
 			renderer::ComponentMapping{},
 			{

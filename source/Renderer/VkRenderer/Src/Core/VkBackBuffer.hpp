@@ -32,7 +32,7 @@ namespace vk_renderer
 		BackBuffer( Device const & device
 			, renderer::TexturePtr && image
 			, uint32_t imageIndex
-			, renderer::PixelFormat format
+			, renderer::Format format
 			, Texture const & imageRef );
 	};
 }

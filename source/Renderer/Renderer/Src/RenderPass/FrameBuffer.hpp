@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "FrameBufferAttachment.hpp"
+#include "Miscellaneous/Extent2D.hpp"
 
 namespace renderer
 {
@@ -43,7 +44,7 @@ namespace renderer
 		*	Les textures voulues pour le tampon d'images à créer.
 		*/
 		FrameBuffer( RenderPass const & renderPass
-			, UIVec2 const & dimensions
+			, Extent2D const & dimensions
 			, FrameBufferAttachmentArray && textures );
 
 	public:
@@ -100,13 +101,13 @@ namespace renderer
 		*\return
 		*	Les dimensions du tampon d'image.
 		*/
-		inline renderer::UIVec2 const & getDimensions()const
+		inline Extent2D const & getDimensions()const
 		{
 			return m_dimensions;
 		}
 
 	protected:
-		UIVec2 m_dimensions;
+		Extent2D m_dimensions;
 		FrameBufferAttachmentArray m_attachments;
 	};
 }

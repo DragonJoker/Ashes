@@ -49,7 +49,7 @@ namespace vkapp
 		}	Ids;
 
 		static int constexpr TimerTimeMs = 20;
-		static renderer::PixelFormat constexpr DepthFormat = renderer::PixelFormat::eD32F;
+		static renderer::Format constexpr DepthFormat = renderer::Format::eD32_SFLOAT;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
@@ -215,8 +215,8 @@ namespace vkapp
 			, 0.0f
 			, 10.0f );
 #else
-		auto width = float( size.x );
-		auto height = float( size.y );
+		auto width = float( size.width );
+		auto height = float( size.height );
 		m_matrixUbo->getData( 0u ) = m_device->perspective( utils::toRadians( 90.0_degrees )
 			, width / height
 			, 0.01f
@@ -237,7 +237,7 @@ namespace vkapp
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( { size.x, size.y } );
+		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
 		m_swapChain->setClearColour( { 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
@@ -253,14 +253,15 @@ namespace vkapp
 	{
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		common::ImageData image;
-		image.size = renderer::UIVec3{ 256u, 256u, 109u };
-		image.format = renderer::PixelFormat::eR8G8B8A8;
+		image.size = renderer::Extent3D{ 256u, 256u, 109u };
+		image.format = renderer::Format::eR8G8B8A8_UNORM;
 		readFile( shadersFolder / "head256x256x109", image.size, image.data );
 		m_texture = m_device->createTexture(
 			{
+				0u,
 				renderer::TextureType::e3D,
 				image.format,
-				{ image.size[0], image.size[1], image.size[2] },
+				{ image.size.width, image.size.height, image.size.depth },
 				1u,
 				1u,
 				renderer::SampleCountFlag::e1,
@@ -273,12 +274,12 @@ namespace vkapp
 			, renderer::WrapMode::eRepeat
 			, renderer::Filter::eLinear
 			, renderer::Filter::eLinear );
-		m_view = m_texture->createView( m_texture->getType()
+		m_view = m_texture->createView( renderer::TextureViewType::e3D
 			, image.format );
 		auto buffer = image.data.data();
-		auto size = image.size[0] * image.size[1] * 4;
+		auto size = image.size.width * image.size.height * 4;
 
-		for ( size_t i = 0u; i < image.size[2]; ++i )
+		for ( uint32_t i = 0u; i < image.size.depth; ++i )
 		{
 			renderer::ByteArray layer( buffer, buffer + size );
 			m_stagingBuffer->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
@@ -288,8 +289,8 @@ namespace vkapp
 					m_view->getSubResourceRange().baseArrayLayer,
 					m_view->getSubResourceRange().layerCount,
 				}
-				, { 0, 0, i }
-				, { image.size[0], image.size[1], 1u }
+				, { 0, 0, int32_t( i ) }
+				, { image.size.width, image.size.height, 1u }
 				, layer
 				, *m_view );
 			buffer += size;
@@ -346,7 +347,7 @@ namespace vkapp
 		{
 			{
 				0u,
-				renderer::PixelFormat::eR8G8B8A8,
+				renderer::Format::eR8G8B8A8_UNORM,
 				renderer::SampleCountFlag::e1,
 				renderer::AttachmentLoadOp::eClear,
 				renderer::AttachmentStoreOp::eStore,
@@ -390,8 +391,9 @@ namespace vkapp
 		auto size = GetClientSize();
 		m_renderTargetColour = m_device->createTexture(
 			{
+				0u,
 				renderer::TextureType::e2D,
-				renderer::PixelFormat::eR8G8B8A8,
+				renderer::Format::eR8G8B8A8_UNORM,
 				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
 				1u,
 				1u,
@@ -400,11 +402,12 @@ namespace vkapp
 				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_renderTargetColourView = m_renderTargetColour->createView( m_renderTargetColour->getType()
+		m_renderTargetColourView = m_renderTargetColour->createView( renderer::TextureViewType::e2D
 			, m_renderTargetColour->getFormat() );
 
 		m_renderTargetDepth = m_device->createTexture(
 			{
+				0u,
 				renderer::TextureType::e2D,
 				DepthFormat,
 				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
@@ -415,21 +418,23 @@ namespace vkapp
 				renderer::ImageUsageFlag::eDepthStencilAttachment
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_renderTargetDepthView = m_renderTargetDepth->createView( m_renderTargetDepth->getType()
+		m_renderTargetDepthView = m_renderTargetDepth->createView( renderer::TextureViewType::e2D
 			, m_renderTargetDepth->getFormat() );
 		renderer::FrameBufferAttachmentArray attaches;
 		attaches.emplace_back( *( m_offscreenRenderPass->begin() + 0u ), *m_renderTargetColourView );
 		attaches.emplace_back( *( m_offscreenRenderPass->begin() + 1u ), *m_renderTargetDepthView );
-		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { size.GetWidth(), size.GetHeight() }
+		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
 			, std::move( attaches ) );
 	}
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
 		m_offscreenVertexLayout = renderer::makeLayout< UVWVertexData >( 0 );
-		m_offscreenVertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_offscreenVertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( UVWVertexData, position ) ) );
-		m_offscreenVertexLayout->createAttribute< renderer::Vec3 >( 1u
+		m_offscreenVertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32B32_SFLOAT
 			, uint32_t( offsetof( UVWVertexData, uvw ) ) );
 
 		m_offscreenVertexBuffer = renderer::makeVertexBuffer< UVWVertexData >( *m_device
@@ -569,14 +574,14 @@ namespace vkapp
 				, *m_queryPool
 				, 0u );
 			commandBuffer.bindPipeline( *m_offscreenPipeline );
-			commandBuffer.setViewport( { uint32_t( dimensions.x )
-				, uint32_t( dimensions.y )
+			commandBuffer.setViewport( { dimensions.width
+				, dimensions.height
 				, 0
 				, 0 } );
 			commandBuffer.setScissor( { 0
 				, 0
-				, uint32_t( dimensions.x )
-				, uint32_t( dimensions.y ) } );
+				, dimensions.width
+				, dimensions.height } );
 			commandBuffer.bindVertexBuffer( 0u, m_offscreenVertexBuffer->getBuffer(), 0u );
 			commandBuffer.bindIndexBuffer( m_offscreenIndexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
 			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSet
@@ -600,9 +605,11 @@ namespace vkapp
 	void RenderPanel::doCreateMainVertexBuffer()
 	{
 		m_mainVertexLayout = renderer::makeLayout< UVVertexData >( 0 );
-		m_mainVertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_mainVertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( UVVertexData, position ) ) );
-		m_mainVertexLayout->createAttribute< renderer::Vec2 >( 1u
+		m_mainVertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( UVVertexData, uv ) ) );
 
 		m_mainVertexBuffer = renderer::makeVertexBuffer< UVVertexData >( *m_device
@@ -666,14 +673,14 @@ namespace vkapp
 					, { renderer::ClearValue{ { 1.0, 0.0, 0.0, 1.0 } } }
 					, renderer::SubpassContents::eInline );
 				commandBuffer.bindPipeline( *m_mainPipeline );
-				commandBuffer.setViewport( { uint32_t( dimensions.x )
-					, uint32_t( dimensions.y )
+				commandBuffer.setViewport( { dimensions.width
+					, dimensions.height
 					, 0
 					, 0 } );
 				commandBuffer.setScissor( { 0
 					, 0
-					, uint32_t( dimensions.x )
-					, uint32_t( dimensions.y ) } );
+					, dimensions.width
+					, dimensions.height } );
 				commandBuffer.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
 				commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
 					, *m_mainPipelineLayout );
@@ -753,7 +760,7 @@ namespace vkapp
 	{
 		m_device->waitIdle();
 		wxSize size{ GetClientSize() };
-		m_swapChain->reset( { size.GetWidth(), size.GetHeight() } );
+		m_swapChain->reset( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 	}
 
 	void RenderPanel::onTimer( wxTimerEvent & event )

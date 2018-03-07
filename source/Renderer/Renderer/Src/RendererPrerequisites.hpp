@@ -12,13 +12,13 @@ See LICENSE file in root folder.
 #include "Enum/AccessFlag.hpp"
 #include "Enum/AttachmentLoadOp.hpp"
 #include "Enum/AttachmentStoreOp.hpp"
-#include "Enum/AttributeFormat.hpp"
 #include "Enum/BlendFactor.hpp"
 #include "Enum/BlendOp.hpp"
 #include "Enum/BorderColour.hpp"
 #include "Enum/BufferTarget.hpp"
 #include "Enum/ClipDirection.hpp"
 #include "Enum/ComponentSwizzle.hpp"
+#include "Enum/ConstantFormat.hpp"
 #include "Enum/ColourComponentFlag.hpp"
 #include "Enum/CommandBufferResetFlag.hpp"
 #include "Enum/CommandBufferUsageFlag.hpp"
@@ -34,9 +34,11 @@ See LICENSE file in root folder.
 #include "Enum/FormatFeatureFlag.hpp"
 #include "Enum/FrontFace.hpp"
 #include "Enum/ImageAspectFlag.hpp"
+#include "Enum/ImageCreateFlag.hpp"
 #include "Enum/ImageLayout.hpp"
 #include "Enum/ImageTiling.hpp"
 #include "Enum/ImageUsageFlag.hpp"
+#include "Enum/Format.hpp"
 #include "Enum/IndexType.hpp"
 #include "Enum/LogicOp.hpp"
 #include "Enum/MemoryHeapFlag.hpp"
@@ -62,6 +64,7 @@ See LICENSE file in root folder.
 #include "Enum/SubpassContents.hpp"
 #include "Enum/TessellationStateFlag.hpp"
 #include "Enum/TextureType.hpp"
+#include "Enum/TextureViewType.hpp"
 #include "Enum/VertexInputRate.hpp"
 #include "Enum/WrapMode.hpp"
 
@@ -108,6 +111,7 @@ namespace renderer
 	struct CommandBufferInheritanceInfo;
 	struct DepthStencilState;
 	struct DescriptorPoolSize;
+	struct Extent2D;
 	struct Extent3D;
 	struct FormatProperties;
 	struct GraphicsPipelineCreateInfo;
@@ -119,6 +123,8 @@ namespace renderer
 	struct MemoryHeap;
 	struct MemoryType;
 	struct MultisampleState;
+	struct Offset2D;
+	struct Offset3D;
 	struct PhysicalDeviceFeatures;
 	struct PhysicalDeviceLimits;
 	struct PhysicalDeviceMemoryProperties;

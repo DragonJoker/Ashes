@@ -24,7 +24,7 @@ namespace vkapp
 	}
 
 	void RenderPanel::doInitialise( renderer::Device const & device
-		, renderer::UIVec2 const & size )
+		, renderer::Extent2D const & size )
 	{
 		common::ImagePtrArray images;
 		common::Scene scene;
@@ -76,6 +76,6 @@ namespace vkapp
 	{
 		auto & renderTarget = static_cast< RenderTarget & >( *m_renderTarget );
 		renderTarget.enableMoveCamera( m_mouse.left );
-		renderTarget.updateMousePosition( renderer::IVec2{ m_mouse.position } );
+		renderTarget.updateMousePosition( m_mouse.position );
 	}
 }

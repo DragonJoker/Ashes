@@ -192,8 +192,8 @@ namespace vkapp
 	void RenderPanel::doUpdateProjection()
 	{
 		auto size = m_swapChain->getDimensions();
-		float halfWidth = static_cast< float >( size.x ) * 0.5f;
-		float halfHeight = static_cast< float >( size.y ) * 0.5f;
+		float halfWidth = static_cast< float >( size.width ) * 0.5f;
+		float halfHeight = static_cast< float >( size.height ) * 0.5f;
 		m_matrixUbo->getData( 0u ) = m_device->ortho( -halfWidth
 			, halfWidth
 			, -halfHeight
@@ -215,7 +215,7 @@ namespace vkapp
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( { size.x, size.y } );
+		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
 		m_swapChain->setClearColour( { 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
@@ -233,9 +233,10 @@ namespace vkapp
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		m_texture = m_device->createTexture(
 			{
+				0u,
 				renderer::TextureType::e2D,
 				image.format,
-				{ image.size[0], image.size[1], 1u },
+				{ image.size.width, image.size.height, 1u },
 				1u,
 				1u,
 				renderer::SampleCountFlag::e1,
@@ -243,7 +244,7 @@ namespace vkapp
 				renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_view = m_texture->createView( m_texture->getType()
+		m_view = m_texture->createView( renderer::TextureViewType::e2D
 			, image.format );
 		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 			, renderer::WrapMode::eClampToEdge
@@ -296,7 +297,7 @@ namespace vkapp
 		{
 			{
 				0u,
-				renderer::PixelFormat::eR8G8B8A8,
+				renderer::Format::eR8G8B8A8_UNORM,
 				renderer::SampleCountFlag::e1,
 				renderer::AttachmentLoadOp::eClear,
 				renderer::AttachmentStoreOp::eStore,
@@ -328,8 +329,9 @@ namespace vkapp
 		auto size = GetClientSize();
 		m_renderTargetColour = m_device->createTexture(
 			{
+				0u,
 				renderer::TextureType::e2D,
-				renderer::PixelFormat::eR8G8B8A8,
+				renderer::Format::eR8G8B8A8_UNORM,
 				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
 				1u,
 				1u,
@@ -338,21 +340,23 @@ namespace vkapp
 				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_renderTargetColourView = m_renderTargetColour->createView( m_renderTargetColour->getType()
-			, renderer::PixelFormat::eR8G8B8A8 );
+		m_renderTargetColourView = m_renderTargetColour->createView( renderer::TextureViewType::e2D
+			, renderer::Format::eR8G8B8A8_UNORM );
 
 		renderer::FrameBufferAttachmentArray attaches;
 		attaches.emplace_back( *m_offscreenRenderPass->begin(), *m_renderTargetColourView );
-		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { size.GetWidth(), size.GetHeight() }
+		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
 			, std::move( attaches ) );
 	}
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
 		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		m_offscreenVertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_offscreenVertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_offscreenVertexLayout->createAttribute< renderer::Vec2 >( 1u
+		m_offscreenVertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_offscreenVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
@@ -479,14 +483,14 @@ namespace vkapp
 				, *m_queryPool
 				, 0u );
 			commandBuffer.bindPipeline( *m_offscreenPipeline );
-			commandBuffer.setViewport( { uint32_t( dimensions.x )
-				, uint32_t( dimensions.y )
+			commandBuffer.setViewport( { dimensions.width
+				, dimensions.height
 				, 0
 				, 0 } );
 			commandBuffer.setScissor( { 0
 				, 0
-				, uint32_t( dimensions.x )
-				, uint32_t( dimensions.y ) } );
+				, dimensions.width
+				, dimensions.height } );
 			commandBuffer.bindVertexBuffer( 0u, m_offscreenVertexBuffer->getBuffer(), 0u );
 			commandBuffer.bindIndexBuffer( m_offscreenIndexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
 			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSet
@@ -511,9 +515,11 @@ namespace vkapp
 	void RenderPanel::doCreateMainVertexBuffer()
 	{
 		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		m_mainVertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_mainVertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_mainVertexLayout->createAttribute< renderer::Vec2 >( 1u
+		m_mainVertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_mainVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
@@ -577,14 +583,14 @@ namespace vkapp
 					, { renderer::ClearValue{ m_swapChain->getClearColour() } }
 					, renderer::SubpassContents::eInline );
 				commandBuffer.bindPipeline( *m_mainPipeline );
-				commandBuffer.setViewport( { uint32_t( dimensions.x )
-					, uint32_t( dimensions.y )
+				commandBuffer.setViewport( { dimensions.width
+					, dimensions.height
 					, 0
 					, 0 } );
 				commandBuffer.setScissor( { 0
 					, 0
-					, uint32_t( dimensions.x )
-					, uint32_t( dimensions.y ) } );
+					, dimensions.width
+					, dimensions.height } );
 				commandBuffer.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
 				commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
 					, *m_mainPipelineLayout );
@@ -646,7 +652,7 @@ namespace vkapp
 	{
 		m_device->waitIdle();
 		wxSize size{ GetClientSize() };
-		m_swapChain->reset( { size.GetWidth(), size.GetHeight() } );
+		m_swapChain->reset( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 	}
 
 	void RenderPanel::onTimer( wxTimerEvent & event )

@@ -258,7 +258,7 @@ namespace gl_renderer
 			}
 		}
 
-		bool areCompatible( renderer::PixelFormat lhs, renderer::PixelFormat rhs )
+		bool areCompatible( renderer::Format lhs, renderer::Format rhs )
 		{
 			if ( lhs == rhs )
 			{
@@ -267,51 +267,51 @@ namespace gl_renderer
 
 			switch ( lhs )
 			{
-			case renderer::PixelFormat::eR32F:
-			case renderer::PixelFormat::eR8:
-				return rhs == renderer::PixelFormat::eR32F
-					|| rhs == renderer::PixelFormat::eR8;
-			case renderer::PixelFormat::eRG32F:
-			case renderer::PixelFormat::eR8G8:
-				return rhs == renderer::PixelFormat::eRG32F
-					|| rhs == renderer::PixelFormat::eR8G8;
-			case renderer::PixelFormat::eRGB32F:
-			case renderer::PixelFormat::eR8G8B8:
-				return rhs == renderer::PixelFormat::eRGB32F
-					|| rhs == renderer::PixelFormat::eR8G8B8;
-			case renderer::PixelFormat::eRGBA16F:
-			case renderer::PixelFormat::eRGBA32F:
-			case renderer::PixelFormat::eR8G8B8A8:
-			case renderer::PixelFormat::eB8G8R8A8:
-				return rhs == renderer::PixelFormat::eRGBA16F
-					|| rhs == renderer::PixelFormat::eRGBA32F
-					|| rhs == renderer::PixelFormat::eR8G8B8A8
-					|| rhs == renderer::PixelFormat::eB8G8R8A8;
+			case renderer::Format::eR32_SFLOAT:
+			case renderer::Format::eR8_UNORM:
+				return rhs == renderer::Format::eR32_SFLOAT
+					|| rhs == renderer::Format::eR8_UNORM;
+			case renderer::Format::eR32G32_SFLOAT:
+			case renderer::Format::eR8G8_UNORM:
+				return rhs == renderer::Format::eR32G32_SFLOAT
+					|| rhs == renderer::Format::eR8G8_UNORM;
+			case renderer::Format::eR32G32B32_SFLOAT:
+			case renderer::Format::eR8G8B8_UNORM:
+				return rhs == renderer::Format::eR32G32B32_SFLOAT
+					|| rhs == renderer::Format::eR8G8B8_UNORM;
+			case renderer::Format::eR16G16B16A16_SFLOAT:
+			case renderer::Format::eR32G32B32A32_SFLOAT:
+			case renderer::Format::eR8G8B8A8_UNORM:
+			case renderer::Format::eB8G8R8A8_UNORM:
+				return rhs == renderer::Format::eR16G16B16A16_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32A32_SFLOAT
+					|| rhs == renderer::Format::eR8G8B8A8_UNORM
+					|| rhs == renderer::Format::eB8G8R8A8_UNORM;
 			default:
 				assert( false );
 				return false;
 			}
 		}
 
-		renderer::PixelFormat convertPixelFormat( GlslAttributeType type )
+		renderer::Format convertFormat( GlslAttributeType type )
 		{
 			switch ( type )
 			{
 			case GLSL_ATTRIBUTE_FLOAT:
-				return renderer::PixelFormat::eR32F;
+				return renderer::Format::eR32_SFLOAT;
 			case GLSL_ATTRIBUTE_FLOAT_VEC2:
-				return renderer::PixelFormat::eRG32F;
+				return renderer::Format::eR32G32_SFLOAT;
 			case GLSL_ATTRIBUTE_FLOAT_VEC3:
-				return renderer::PixelFormat::eRGB32F;
+				return renderer::Format::eR32G32B32_SFLOAT;
 			case GLSL_ATTRIBUTE_FLOAT_VEC4:
-				return renderer::PixelFormat::eRGBA32F;
+				return renderer::Format::eR32G32B32A32_SFLOAT;
 			default:
 				assert( false );
-				return renderer::PixelFormat::eRGBA32F;
+				return renderer::Format::eR32G32B32A32_SFLOAT;
 			}
 		}
 
-		bool areCompatible( renderer::AttributeFormat lhs, renderer::AttributeFormat rhs )
+		bool areCompatibleInputs( renderer::Format lhs, renderer::Format rhs )
 		{
 			if ( lhs == rhs )
 			{
@@ -320,100 +320,100 @@ namespace gl_renderer
 
 			switch ( lhs )
 			{
-			case renderer::AttributeFormat::eVec4f:
-				return rhs == renderer::AttributeFormat::eVec3f
-					|| rhs == renderer::AttributeFormat::eVec4f
-					|| rhs == renderer::AttributeFormat::eVec4i
-					|| rhs == renderer::AttributeFormat::eVec4ui
-					|| rhs == renderer::AttributeFormat::eColour;
-			case renderer::AttributeFormat::eVec4i:
-				return rhs == renderer::AttributeFormat::eVec3i
-					|| rhs == renderer::AttributeFormat::eVec4f
-					|| rhs == renderer::AttributeFormat::eVec4i
-					|| rhs == renderer::AttributeFormat::eVec4ui
-					|| rhs == renderer::AttributeFormat::eColour;
-			case renderer::AttributeFormat::eVec4ui:
-				return rhs == renderer::AttributeFormat::eVec3ui
-					|| rhs == renderer::AttributeFormat::eVec4f
-					|| rhs == renderer::AttributeFormat::eVec4i
-					|| rhs == renderer::AttributeFormat::eVec4ui
-					|| rhs == renderer::AttributeFormat::eColour;
-			case renderer::AttributeFormat::eColour:
-				return rhs == renderer::AttributeFormat::eVec3f
-					|| rhs == renderer::AttributeFormat::eVec4f
-					|| rhs == renderer::AttributeFormat::eVec4i
-					|| rhs == renderer::AttributeFormat::eVec4ui
-					|| rhs == renderer::AttributeFormat::eColour;
-			case renderer::AttributeFormat::eVec3f:
-				return rhs == renderer::AttributeFormat::eVec4f
-					|| rhs == renderer::AttributeFormat::eVec3f
-					|| rhs == renderer::AttributeFormat::eVec3i
-					|| rhs == renderer::AttributeFormat::eVec3ui;
-			case renderer::AttributeFormat::eVec3i:
-				return rhs == renderer::AttributeFormat::eVec4i
-					|| rhs == renderer::AttributeFormat::eVec3f
-					|| rhs == renderer::AttributeFormat::eVec3i
-					|| rhs == renderer::AttributeFormat::eVec3ui;
-			case renderer::AttributeFormat::eVec3ui:
-				return rhs == renderer::AttributeFormat::eVec4ui
-					|| rhs == renderer::AttributeFormat::eVec3f
-					|| rhs == renderer::AttributeFormat::eVec3i
-					|| rhs == renderer::AttributeFormat::eVec3ui;
-			case renderer::AttributeFormat::eVec2f:
-			case renderer::AttributeFormat::eVec2i:
-			case renderer::AttributeFormat::eVec2ui:
-				return rhs == renderer::AttributeFormat::eVec2f
-					|| rhs == renderer::AttributeFormat::eVec2i
-					|| rhs == renderer::AttributeFormat::eVec2ui;
-			case renderer::AttributeFormat::eInt:
-			case renderer::AttributeFormat::eUInt:
-			case renderer::AttributeFormat::eFloat:
-				return rhs == renderer::AttributeFormat::eInt
-					|| rhs == renderer::AttributeFormat::eUInt
-					|| rhs == renderer::AttributeFormat::eFloat;
+			case renderer::Format::eR32G32B32A32_SFLOAT:
+				return rhs == renderer::Format::eR32G32B32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32A32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32A32_SINT
+					|| rhs == renderer::Format::eR32G32B32A32_UINT
+					|| rhs == renderer::Format::eR8G8B8A8_UNORM;
+			case renderer::Format::eR32G32B32A32_SINT:
+				return rhs == renderer::Format::eR32G32B32_SINT
+					|| rhs == renderer::Format::eR32G32B32A32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32A32_SINT
+					|| rhs == renderer::Format::eR32G32B32A32_UINT
+					|| rhs == renderer::Format::eR8G8B8A8_UNORM;
+			case renderer::Format::eR32G32B32A32_UINT:
+				return rhs == renderer::Format::eR32G32B32_UINT
+					|| rhs == renderer::Format::eR32G32B32A32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32A32_SINT
+					|| rhs == renderer::Format::eR32G32B32A32_UINT
+					|| rhs == renderer::Format::eR8G8B8A8_UNORM;
+			case renderer::Format::eR8G8B8A8_UNORM:
+				return rhs == renderer::Format::eR32G32B32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32A32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32A32_SINT
+					|| rhs == renderer::Format::eR32G32B32A32_UINT
+					|| rhs == renderer::Format::eR8G8B8A8_UNORM;
+			case renderer::Format::eR32G32B32_SFLOAT:
+				return rhs == renderer::Format::eR32G32B32A32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32_SINT
+					|| rhs == renderer::Format::eR32G32B32_UINT;
+			case renderer::Format::eR32G32B32_SINT:
+				return rhs == renderer::Format::eR32G32B32A32_SINT
+					|| rhs == renderer::Format::eR32G32B32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32_SINT
+					|| rhs == renderer::Format::eR32G32B32_UINT;
+			case renderer::Format::eR32G32B32_UINT:
+				return rhs == renderer::Format::eR32G32B32A32_UINT
+					|| rhs == renderer::Format::eR32G32B32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32_SINT
+					|| rhs == renderer::Format::eR32G32B32_UINT;
+			case renderer::Format::eR32G32_SFLOAT:
+			case renderer::Format::eR32G32_SINT:
+			case renderer::Format::eR32G32_UINT:
+				return rhs == renderer::Format::eR32G32_SFLOAT
+					|| rhs == renderer::Format::eR32G32_SINT
+					|| rhs == renderer::Format::eR32G32_UINT;
+			case renderer::Format::eR32_SINT:
+			case renderer::Format::eR32_UINT:
+			case renderer::Format::eR32_SFLOAT:
+				return rhs == renderer::Format::eR32_SINT
+					|| rhs == renderer::Format::eR32_UINT
+					|| rhs == renderer::Format::eR32_SFLOAT;
 			default:
 				assert( false );
 				return false;
 			}
 		}
 
-		renderer::AttributeFormat convertAttribute( GlslAttributeType type )
+		renderer::Format convertAttribute( GlslAttributeType type )
 		{
 			switch ( type )
 			{
 			case GLSL_ATTRIBUTE_INT:
-				return renderer::AttributeFormat::eInt;
+				return renderer::Format::eR32_SINT;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT:
-				return renderer::AttributeFormat::eUInt;
+				return renderer::Format::eR32_UINT;
 			case GLSL_ATTRIBUTE_FLOAT:
-				return renderer::AttributeFormat::eFloat;
+				return renderer::Format::eR32_SFLOAT;
 			case GLSL_ATTRIBUTE_FLOAT_VEC2:
-				return renderer::AttributeFormat::eVec2f;
+				return renderer::Format::eR32G32_SFLOAT;
 			case GLSL_ATTRIBUTE_FLOAT_VEC3:
-				return renderer::AttributeFormat::eVec3f;
+				return renderer::Format::eR32G32B32_SFLOAT;
 			case GLSL_ATTRIBUTE_FLOAT_VEC4:
-				return renderer::AttributeFormat::eVec4f;
+				return renderer::Format::eR32G32B32A32_SFLOAT;
 			case GLSL_ATTRIBUTE_INT_VEC2:
-				return renderer::AttributeFormat::eVec2i;
+				return renderer::Format::eR32G32_SINT;
 			case GLSL_ATTRIBUTE_INT_VEC3:
-				return renderer::AttributeFormat::eVec3i;
+				return renderer::Format::eR32G32B32_SINT;
 			case GLSL_ATTRIBUTE_INT_VEC4:
-				return renderer::AttributeFormat::eVec4i;
-			case GLSL_ATTRIBUTE_FLOAT_MAT2:
-				return renderer::AttributeFormat::eMat2f;
-			case GLSL_ATTRIBUTE_FLOAT_MAT3:
-				return renderer::AttributeFormat::eMat3f;
-			case GLSL_ATTRIBUTE_FLOAT_MAT4:
-				return renderer::AttributeFormat::eMat4f;
+				return renderer::Format::eR32G32B32A32_SINT;
+			//case GLSL_ATTRIBUTE_FLOAT_MAT2:
+			//	return renderer::Format::eMat2f;
+			//case GLSL_ATTRIBUTE_FLOAT_MAT3:
+			//	return renderer::Format::eMat3f;
+			//case GLSL_ATTRIBUTE_FLOAT_MAT4:
+			//	return renderer::Format::eMat4f;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC2:
-				return renderer::AttributeFormat::eVec2ui;
+				return renderer::Format::eR32G32_UINT;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC3:
-				return renderer::AttributeFormat::eVec3ui;
+				return renderer::Format::eR32G32B32_UINT;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC4:
-				return renderer::AttributeFormat::eVec4ui;
+				return renderer::Format::eR32G32B32A32_UINT;
 			default:
 				assert( false );
-				return renderer::AttributeFormat::eFloat;
+				return renderer::Format::eR32_SFLOAT;
 			}
 		}
 
@@ -528,7 +528,7 @@ namespace gl_renderer
 		{
 			struct AttrSpec
 			{
-				renderer::AttributeFormat format;
+				renderer::Format format;
 				uint32_t location;
 			};
 			std::vector< AttrSpec > attributes;
@@ -546,7 +546,7 @@ namespace gl_renderer
 					, attributes.end()
 					, [&glslType, &location]( AttrSpec const & lookup )
 				{
-					return areCompatible( lookup.format, convertAttribute( glslType ) )
+					return areCompatibleInputs( lookup.format, convertAttribute( glslType ) )
 						&& lookup.location == location;
 				} );
 
@@ -628,7 +628,7 @@ namespace gl_renderer
 						, attaches.end()
 						, [&values]( renderer::RenderPassAttachment const & lookup )
 						{
-							return areCompatible( lookup.format, convertPixelFormat( GlslAttributeType( values[0] ) ) );
+							return areCompatible( lookup.format, convertFormat( GlslAttributeType( values[0] ) ) );
 						} );
 
 					if ( it != attaches.end() )

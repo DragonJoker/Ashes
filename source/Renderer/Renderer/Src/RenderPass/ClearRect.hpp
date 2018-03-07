@@ -6,7 +6,8 @@ See LICENSE file in root folder.
 #define ___Renderer_ClearRect_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include "Miscellaneous/Extent2D.hpp"
+#include "Miscellaneous/Offset2D.hpp"
 
 namespace renderer
 {
@@ -32,7 +33,7 @@ namespace renderer
 		*\brief
 		*	Le décalage du rectangle.
 		*/
-		IVec2 offset;
+		Offset2D offset;
 		/**
 		*\~english
 		*\brief
@@ -41,7 +42,7 @@ namespace renderer
 		*\brief
 		*	L'étendue du rectangle.
 		*/
-		UIVec2 extent;
+		Extent2D extent;
 		/**
 		*\~english
 		*\brief

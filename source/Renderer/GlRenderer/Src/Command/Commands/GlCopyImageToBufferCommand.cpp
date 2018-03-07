@@ -15,44 +15,24 @@ namespace gl_renderer
 {
 	namespace
 	{
-		GlTextureType convert( renderer::TextureType type
-			, uint32_t layer )
-		{
-			if ( type == renderer::TextureType::eCube )
-			{
-				return GlTextureType( GL_TEXTURE_CUBE_MAP_POSITIVE_X + layer );
-			}
-
-			return gl_renderer::convert( type );
-		}
-
-		std::vector< GlTextureType > convert( renderer::TextureType type
-			, renderer::BufferImageCopyArray copies )
-		{
-			std::vector< GlTextureType > result;
-
-			for ( auto & copy : copies )
-			{
-				result.push_back( convert( type, copy.imageSubresource.baseArrayLayer ) );
-			}
-
-			return result;
-		}
-
 		std::vector< renderer::TextureViewPtr > createViews( renderer::Texture const & texture
 			, renderer::BufferImageCopyArray copies )
 		{
 			std::vector< renderer::TextureViewPtr > result;
-			renderer::TextureType viewType = texture.getType();
+			renderer::TextureType type = texture.getType();
+			renderer::TextureViewType viewType;
 
-			if ( viewType == renderer::TextureType::eCube
-				|| viewType == renderer::TextureType::e2DArray )
+			if ( type == renderer::TextureType::e3D )
 			{
-				viewType = renderer::TextureType::e2D;
+				viewType = renderer::TextureViewType::e3D;
 			}
-			else if ( viewType == renderer::TextureType::e1DArray )
+			else if ( type == renderer::TextureType::e2D )
 			{
-				viewType = renderer::TextureType::e1D;
+				viewType = renderer::TextureViewType::e2D;
+			}
+			else if ( type == renderer::TextureType::e1D )
+			{
+				viewType = renderer::TextureViewType::e1D;
 			}
 
 			for ( auto & copy : copies )
@@ -75,9 +55,10 @@ namespace gl_renderer
 		: m_src{ static_cast< Texture const & >( src ) }
 		, m_dst{ static_cast< Buffer const & >( dst ) }
 		, m_copyInfo{ copyInfo }
-		, m_format{ getFormat( m_src.getFormat() ) }
-		, m_type{ getType( m_src.getFormat() ) }
-		, m_target{ convert( m_src.getType() ) }
+		, m_internal{ getInternal( m_src.getFormat() ) }
+		, m_format{ getFormat( m_internal ) }
+		, m_type{ getType( m_internal ) }
+		, m_target{ convert( m_src.getType(), 1u ) }
 		, m_views{ createViews( m_src, m_copyInfo ) }
 	{
 	}

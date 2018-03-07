@@ -12,8 +12,9 @@ namespace gl_renderer
 		, renderer::RgbaColour const & colour )
 		: m_image{ static_cast< TextureView const & >( image ) }
 		, m_colour{ colour }
-		, m_format{ getFormat( m_image.getFormat() ) }
-		, m_type{ getType( m_image.getFormat() ) }
+		, m_internal{ getInternal( m_image.getFormat() ) }
+		, m_format{ getFormat( m_internal ) }
+		, m_type{ getType( m_internal ) }
 	{
 	}
 

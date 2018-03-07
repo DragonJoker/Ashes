@@ -23,7 +23,7 @@ namespace renderer
 
 	void StagingBuffer::uploadTextureData( CommandBuffer const & commandBuffer
 		, ImageSubresourceLayers const & subresourceLayers
-		, IVec3 const & offset
+		, Offset3D const & offset
 		, Extent3D const & extent
 		, uint8_t const * const data
 		, uint32_t size
@@ -90,7 +90,7 @@ namespace renderer
 				view.getSubResourceRange().baseArrayLayer,
 				view.getSubResourceRange().layerCount
 			}
-			, IVec3{ 0, 0, 0 }
+			, Offset3D{ 0, 0, 0 }
 			, view.getTexture().getDimensions()
 			, data
 			, size
@@ -99,7 +99,7 @@ namespace renderer
 
 	void StagingBuffer::downloadTextureData( CommandBuffer const & commandBuffer
 		, ImageSubresourceLayers const & subresourceLayers
-		, IVec3 const & offset
+		, Offset3D const & offset
 		, Extent3D const & extent
 		, uint8_t * data
 		, uint32_t size
@@ -166,7 +166,7 @@ namespace renderer
 				view.getSubResourceRange().baseArrayLayer,
 				view.getSubResourceRange().layerCount
 			}
-			, IVec3{ 0, 0, 0 }
+			, Offset3D{ 0, 0, 0 }
 			, view.getTexture().getDimensions()
 			, data
 			, size

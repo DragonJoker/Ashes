@@ -16,7 +16,7 @@ namespace gl_renderer
 {
 	namespace
 	{
-		GlImageAspectFlags getMask( renderer::PixelFormat format )
+		GlImageAspectFlags getMask( renderer::Format format )
 		{
 			GlImageAspectFlags result = 0u;
 
@@ -39,19 +39,19 @@ namespace gl_renderer
 			return result;
 		}
 
-		GlAttachmentPoint getAttachmentPoint( renderer::PixelFormat format )
+		GlAttachmentPoint getAttachmentPoint( renderer::Format format )
 		{
 			switch ( format )
 			{
-			case renderer::PixelFormat::eD16:
-			case renderer::PixelFormat::eD32F:
+			case renderer::Format::eD16_UNORM:
+			case renderer::Format::eD32_SFLOAT:
 				return GL_ATTACHMENT_POINT_DEPTH;
 
-			case renderer::PixelFormat::eD24S8:
-			case renderer::PixelFormat::eD32FS8:
+			case renderer::Format::eD24_UNORM_S8_UINT:
+			case renderer::Format::eD32_SFLOAT_S8_UINT:
 				return GL_ATTACHMENT_POINT_DEPTH_STENCIL;
 
-			case renderer::PixelFormat::eS8:
+			case renderer::Format::eS8_UINT:
 				return GL_ATTACHMENT_POINT_STENCIL;
 
 			default:
@@ -59,19 +59,19 @@ namespace gl_renderer
 			}
 		}
 
-		GlAttachmentType getAttachmentType( renderer::PixelFormat format )
+		GlAttachmentType getAttachmentType( renderer::Format format )
 		{
 			switch ( format )
 			{
-			case renderer::PixelFormat::eD16:
-			case renderer::PixelFormat::eD32F:
+			case renderer::Format::eD16_UNORM:
+			case renderer::Format::eD32_SFLOAT:
 				return GL_ATTACHMENT_TYPE_DEPTH;
 
-			case renderer::PixelFormat::eD24S8:
-			case renderer::PixelFormat::eD32FS8:
+			case renderer::Format::eD24_UNORM_S8_UINT:
+			case renderer::Format::eD32_SFLOAT_S8_UINT:
 				return GL_ATTACHMENT_TYPE_DEPTH_STENCIL;
 
-			case renderer::PixelFormat::eS8:
+			case renderer::Format::eS8_UINT:
 				return GL_ATTACHMENT_TYPE_STENCIL;
 
 			default:
@@ -127,14 +127,14 @@ namespace gl_renderer
 			glLogCall( gl::BindFramebuffer, GL_READ_FRAMEBUFFER, m_srcFbo );
 			glLogCall( gl::BindFramebuffer, GL_DRAW_FRAMEBUFFER, m_dstFbo );
 			glLogCall( gl::BlitFramebuffer
-				, region.srcOffset[0]
-				, region.srcOffset[1]
-				, region.srcExtent[0]
-				, region.srcExtent[1]
-				, region.dstOffset[0]
-				, region.dstOffset[1]
-				, region.dstExtent[0]
-				, region.dstExtent[1]
+				, region.srcOffset.x
+				, region.srcOffset.y
+				, region.srcExtent.width
+				, region.srcExtent.height
+				, region.dstOffset.x
+				, region.dstOffset.y
+				, region.dstExtent.width
+				, region.dstExtent.height
 				, m_mask
 				, m_filter );
 			glLogCall( gl::BindFramebuffer, GL_DRAW_FRAMEBUFFER, 0u );

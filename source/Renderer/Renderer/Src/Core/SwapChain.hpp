@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 
 #include "Core/BackBuffer.hpp"
 #include "Core/RenderingResources.hpp"
+#include "Miscellaneous/Extent2D.hpp"
 
 namespace renderer
 {
@@ -35,7 +36,7 @@ namespace renderer
 		*	Constructeur.
 		*/
 		SwapChain( Device const & device
-			, UIVec2 const & size );
+			, Extent2D const & size );
 
 	public:
 		/**
@@ -68,7 +69,7 @@ namespace renderer
 		*\brief
 		*	Réinitialise la swap chain.
 		*/
-		virtual void reset( UIVec2 const & size ) = 0;
+		virtual void reset( Extent2D const & size ) = 0;
 		/**
 		*\~french
 		*\brief
@@ -81,7 +82,7 @@ namespace renderer
 		*\param[in] format
 		*	Le format de pixels.
 		*/
-		virtual void createDepthStencil( PixelFormat format ) = 0;
+		virtual void createDepthStencil( Format format ) = 0;
 		/**
 		*\~french
 		*\brief
@@ -151,7 +152,7 @@ namespace renderer
 		*\return
 		*	Les dimensions de la swap chain.
 		*/
-		virtual UIVec2 getDimensions()const = 0;
+		virtual Extent2D getDimensions()const = 0;
 		/**
 		*\~french
 		*\return
@@ -160,7 +161,7 @@ namespace renderer
 		*\return
 		*	Les format des pixels de la swap chain.
 		*/
-		virtual PixelFormat getFormat()const = 0;
+		virtual Format getFormat()const = 0;
 		/**
 		*\~french
 		*\return
@@ -208,7 +209,7 @@ namespace renderer
 
 	protected:
 		Device const & m_device;
-		UIVec2 m_dimensions;
+		Extent2D m_dimensions;
 		std::vector< RenderingResourcesPtr > m_renderingResources;
 		BackBufferPtrArray m_backBuffers;
 		mutable size_t m_resourceIndex{ 0 };

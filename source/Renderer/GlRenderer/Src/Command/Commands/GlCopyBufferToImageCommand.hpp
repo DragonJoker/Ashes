@@ -42,8 +42,8 @@ namespace gl_renderer
 		Buffer const & m_src;
 		Texture const & m_dst;
 		renderer::BufferImageCopyArray m_copyInfo;
-		GlFormat m_format;
 		GlInternal m_internal;
+		GlFormat m_format;
 		GlType m_type;
 		GlTextureType m_copyTarget;
 	};

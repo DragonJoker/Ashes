@@ -23,7 +23,7 @@ namespace common
 	public:
 		NodesRenderer( renderer::Device const & device
 			, std::string const & fragmentShaderFile
-			, std::vector< renderer::PixelFormat > const & formats
+			, std::vector< renderer::Format > const & formats
 			, bool clearViews
 			, bool opaqueNodes );
 		virtual ~NodesRenderer() = default;

@@ -25,7 +25,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::RenderPass::createFrameBuffer
 		*/
-		renderer::FrameBufferPtr createFrameBuffer( renderer::UIVec2 const & dimensions
+		renderer::FrameBufferPtr createFrameBuffer( renderer::Extent2D const & dimensions
 			, renderer::FrameBufferAttachmentArray && textures )const override;
 		std::vector< VkClearValue > const & getClearValues( renderer::ClearValueArray const & clearValues )const;
 		/**
