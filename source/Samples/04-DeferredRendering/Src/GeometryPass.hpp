@@ -13,7 +13,7 @@ namespace vkapp
 		GeometryPass( renderer::Device const & device
 			, std::string const & fragmentShaderFile
 			, GeometryPassResult const & gbuffer
-			, renderer::PixelFormat depthFormat
+			, renderer::Format depthFormat
 			, renderer::UniformBuffer< common::SceneData > const & sceneUbo
 			, renderer::UniformBuffer< common::ObjectData > const & objectUbo );
 		void update( common::RenderTarget const & target )override;

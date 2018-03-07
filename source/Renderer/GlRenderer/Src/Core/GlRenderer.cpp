@@ -50,7 +50,7 @@ namespace gl_renderer
 
 				m_hDC = ::GetDC( m_hWnd );
 
-				if ( doSelectPixelFormat() )
+				if ( doSelectFormat() )
 				{
 					m_hContext = wglCreateContext( m_hDC );
 
@@ -90,7 +90,7 @@ namespace gl_renderer
 			}
 
 		private:
-			bool doSelectPixelFormat()
+			bool doSelectFormat()
 			{
 				bool result = false;
 				PIXELFORMATDESCRIPTOR pfd = { 0 };

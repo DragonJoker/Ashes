@@ -34,7 +34,7 @@ namespace vk_renderer
 		*	The render surface dimensions.
 		*/
 		SwapChain( Device const & device
-			, renderer::UIVec2 const & size );
+			, renderer::Extent2D const & size );
 		/**
 		*\~french
 		*\brief
@@ -47,7 +47,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::SwapChain::reset
 		*/
-		void reset( renderer::UIVec2 const & size )override;
+		void reset( renderer::Extent2D const & size )override;
 		/**
 		*\copydoc	renderer::SwapChain::createFrameBuffers
 		*/
@@ -67,7 +67,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::SwapChain::createDepthStencil
 		*/
-		void createDepthStencil( renderer::PixelFormat format )override;
+		void createDepthStencil( renderer::Format format )override;
 		/**
 		*\~french
 		*\return
@@ -116,7 +116,7 @@ namespace vk_renderer
 		*\return
 		*	The swap chain dimensions.
 		*/
-		inline renderer::UIVec2 getDimensions()const override
+		inline renderer::Extent2D getDimensions()const override
 		{
 			return m_dimensions;
 		}
@@ -128,7 +128,7 @@ namespace vk_renderer
 		*\return
 		*	The swap chain's images pixels format.
 		*/
-		inline renderer::PixelFormat getFormat()const override
+		inline renderer::Format getFormat()const override
 		{
 			return m_format;
 		}
@@ -160,7 +160,7 @@ namespace vk_renderer
 
 	protected:
 		Device const & m_device;
-		renderer::PixelFormat m_format{};
+		renderer::Format m_format{};
 		VkColorSpaceKHR m_colorSpace;
 		VkSwapchainKHR m_swapChain{};
 		VkSurfaceKHR m_surface{};

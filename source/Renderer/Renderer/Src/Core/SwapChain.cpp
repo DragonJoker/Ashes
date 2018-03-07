@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	SwapChain::SwapChain( Device const & device
-		, UIVec2 const & size )
+		, Extent2D const & size )
 		: m_device{ device }
 		, m_dimensions{ size }
 	{

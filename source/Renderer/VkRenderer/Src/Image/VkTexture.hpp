@@ -57,8 +57,8 @@ namespace vk_renderer
 		*	Le périphérique logique.
 		*/
 		Texture( Device const & device
-			, renderer::PixelFormat format
-			, renderer::UIVec2 const & dimensions
+			, renderer::Format format
+			, renderer::Extent2D const & dimensions
 			, VkImage image );
 		/**
 		*\brief
@@ -67,8 +67,8 @@ namespace vk_renderer
 		*	Le périphérique logique.
 		*/
 		Texture( Device const & device
-			, renderer::PixelFormat format
-			, renderer::UIVec2 const & dimensions
+			, renderer::Format format
+			, renderer::Extent2D const & dimensions
 			, renderer::ImageUsageFlags usageFlags
 			, renderer::ImageTiling tiling
 			, renderer::MemoryPropertyFlags memoryFlags );

@@ -46,7 +46,7 @@ namespace renderer
 		*\brief
 		*	Le format de la variable, la taille de la variable est déduite de là.
 		*/
-		AttributeFormat format;
+		ConstantFormat format;
 		/**
 		*\~english
 		*\brief

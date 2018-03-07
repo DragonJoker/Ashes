@@ -12,7 +12,7 @@ namespace vkapp
 	{
 	public:
 		RenderTarget( renderer::Device const & device
-			, renderer::UIVec2 const & size
+			, renderer::Extent2D const & size
 			, common::Scene && scene
 			, common::ImagePtrArray && images );
 
@@ -21,15 +21,15 @@ namespace vkapp
 			m_moveCamera = enable;
 		}
 
-		inline void updateMousePosition( renderer::IVec2 const & position )
+		inline void updateMousePosition( renderer::Offset2D const & position )
 		{
 			m_currentMousePosition = position;
 		}
 
 	private:
-		void doUpdateProjection( renderer::UIVec2 const & size );
+		void doUpdateProjection( renderer::Extent2D const & size );
 		void doUpdate( std::chrono::microseconds const & duration )override;
-		virtual void doResize( renderer::UIVec2 const & size )override;
+		virtual void doResize( renderer::Extent2D const & size )override;
 		common::OpaqueRenderingPtr doCreateOpaqueRendering( renderer::Device const & device
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::TextureViewCRefArray const & views
@@ -43,8 +43,8 @@ namespace vkapp
 
 	private:
 		renderer::UniformBufferPtr< common::SceneData > m_sceneUbo;
-		renderer::IVec2 m_previousMousePosition;
-		renderer::IVec2 m_currentMousePosition;
+		renderer::Offset2D m_previousMousePosition;
+		renderer::Offset2D m_currentMousePosition;
 		common::Camera m_camera;
 		bool m_moveCamera{ false };
 	};

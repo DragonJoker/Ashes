@@ -35,7 +35,7 @@ namespace renderer
 
 	Texture::Texture( Device const & device
 		, TextureType type
-		, PixelFormat format
+		, Format format
 		, Extent3D dimensions
 		, uint32_t mipLevels
 		, uint32_t arrayLayers )
@@ -48,8 +48,8 @@ namespace renderer
 	{
 	}
 
-	TextureViewPtr Texture::createView( TextureType type
-		, PixelFormat format
+	TextureViewPtr Texture::createView( TextureViewType type
+		, Format format
 		, uint32_t baseMipLevel
 		, uint32_t levelCount
 		, uint32_t baseArrayLayer

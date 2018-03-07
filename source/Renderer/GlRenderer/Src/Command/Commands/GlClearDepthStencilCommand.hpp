@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder
 */
@@ -35,6 +35,7 @@ namespace gl_renderer
 	private:
 		TextureView const & m_image;
 		renderer::DepthStencilClearValue m_value;
+		GlInternal m_internal;
 		GlFormat m_format;
 		GlType m_type;
 	};

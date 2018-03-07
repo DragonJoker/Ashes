@@ -143,7 +143,7 @@ namespace vkapp
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( { size.x, size.y } );
+		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
 		m_swapChain->setClearColour( renderer::RgbaColour{ 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
@@ -156,10 +156,10 @@ namespace vkapp
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		m_textureBuffer = renderer::makeBuffer< renderer::Vec4 >( *m_device
-			, image.size[0]
+			, image.size.width
 			, renderer::BufferTarget::eUniformTexelBuffer | renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		image.data.resize( image.size[0] * 4 + 1 );
+		image.data.resize( image.size.width * 4 + 1 );
 		m_textureView = m_device->createBufferView( m_textureBuffer->getBuffer()
 			, image.format
 			, 0u
@@ -224,8 +224,8 @@ namespace vkapp
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		createVertexAttribute( m_vertexLayout, TexturedVertexData, position, 0u );
-		createVertexAttribute( m_vertexLayout, TexturedVertexData, uv, 1u );
+		m_vertexLayout->createAttribute( 0u, renderer::Format::eR32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) );
+		m_vertexLayout->createAttribute( 1u, renderer::Format::eR32_SFLOAT, offsetof( TexturedVertexData, uv ) );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData
 			, *m_vertexBuffer
@@ -297,14 +297,14 @@ namespace vkapp
 					, *m_queryPool
 					, 0u );
 				commandBuffer.bindPipeline( *m_pipeline );
-				commandBuffer.setViewport( { uint32_t( dimensions.x )
-					, uint32_t( dimensions.y )
+				commandBuffer.setViewport( { dimensions.width
+					, dimensions.height
 					, 0
 					, 0 } );
 				commandBuffer.setScissor( { 0
 					, 0
-					, uint32_t( dimensions.x )
-					, uint32_t( dimensions.y ) } );
+					, dimensions.width
+					, dimensions.height } );
 				commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
 				commandBuffer.bindDescriptorSet( *m_descriptorSet
 					, *m_pipelineLayout );
@@ -377,7 +377,7 @@ namespace vkapp
 		m_timer->Stop();
 		m_device->waitIdle();
 		wxSize size{ GetClientSize() };
-		m_swapChain->reset( { size.GetWidth(), size.GetHeight() } );
+		m_swapChain->reset( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 		m_timer->Start( TimerTimeMs );
 		event.Skip();
 	}

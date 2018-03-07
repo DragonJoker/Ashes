@@ -324,7 +324,7 @@ namespace renderer
 		*\return
 		*	The texture type.
 		*/
-		inline TextureType getType()const
+		inline TextureViewType getType()const
 		{
 			return m_createInfo.viewType;
 		}
@@ -336,7 +336,7 @@ namespace renderer
 		*\return
 		*	The view's image's pixels format.
 		*/
-		inline PixelFormat getFormat()const
+		inline Format getFormat()const
 		{
 			return m_createInfo.format;
 		}

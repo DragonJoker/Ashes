@@ -24,7 +24,7 @@ namespace vk_renderer
 			nullptr,
 			0,
 			static_cast< Texture const & >( getTexture() ),
-			getImageViewType( createInfo.viewType ),
+			convert( createInfo.viewType ),
 			convert( createInfo.format ),
 			convert( createInfo.components ),
 			convert( createInfo.subresourceRange )

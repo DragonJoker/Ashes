@@ -58,7 +58,7 @@ namespace renderer
 		*\return
 		*	Le format des pixels de l'attache.
 		*/
-		inline renderer::PixelFormat getFormat()const
+		inline renderer::Format getFormat()const
 		{
 			return m_view.getFormat();
 		}

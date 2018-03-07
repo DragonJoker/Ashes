@@ -145,7 +145,7 @@ namespace vkapp
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( { size.x, size.y } );
+		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
 		m_swapChain->setClearColour( renderer::RgbaColour{ 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
@@ -156,7 +156,7 @@ namespace vkapp
 	void RenderPanel::doCreateTexture()
 	{
 		std::string assetsFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
-		renderer::PixelFormat format = renderer::PixelFormat::eR8G8B8A8;
+		renderer::Format format = renderer::Format::eR8G8B8A8_UNORM;
 		gli::texture2d tex2D( gli::load( assetsFolder / "metalplate01_rgba.ktx" ) );
 
 		// Create a host-visible staging buffer that contains the raw image data
@@ -174,6 +174,7 @@ namespace vkapp
 		// Create the texture image
 		m_texture = m_device->createTexture(
 			{
+				0u,
 				renderer::TextureType::e2D,
 				format,
 				{ uint32_t( tex2D.extent().x ), uint32_t( tex2D.extent().y ), 1u },
@@ -261,7 +262,7 @@ namespace vkapp
 			, renderer::Filter::eLinear );
 
 		// Create the texture view for shader read.
-		m_view = m_texture->createView( m_texture->getType()
+		m_view = m_texture->createView( renderer::TextureViewType::e2D
 			, format
 			, 0u
 			, uint32_t( tex2D.levels() ) );
@@ -322,9 +323,11 @@ namespace vkapp
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
-		m_vertexLayout->createAttribute< renderer::Vec4 >( 0u
+		m_vertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_vertexLayout->createAttribute< renderer::Vec2 >( 1u
+		m_vertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData
@@ -397,14 +400,14 @@ namespace vkapp
 					, *m_queryPool
 					, 0u );
 				commandBuffer.bindPipeline( *m_pipeline );
-				commandBuffer.setViewport( { uint32_t( dimensions.x )
-					, uint32_t( dimensions.y )
+				commandBuffer.setViewport( { dimensions.width
+					, dimensions.height
 					, 0
 					, 0 } );
 				commandBuffer.setScissor( { 0
 					, 0
-					, uint32_t( dimensions.x )
-					, uint32_t( dimensions.y ) } );
+					, dimensions.width
+					, dimensions.height } );
 				commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
 				commandBuffer.bindDescriptorSet( *m_descriptorSet
 					, *m_pipelineLayout );
@@ -477,7 +480,7 @@ namespace vkapp
 		m_timer->Stop();
 		m_device->waitIdle();
 		wxSize size{ GetClientSize() };
-		m_swapChain->reset( { size.GetWidth(), size.GetHeight() } );
+		m_swapChain->reset( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 		m_timer->Start( TimerTimeMs );
 		event.Skip();
 	}

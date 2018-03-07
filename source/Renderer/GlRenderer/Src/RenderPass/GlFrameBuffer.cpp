@@ -31,19 +31,19 @@ namespace gl_renderer
 			GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
 		};
 
-		GlAttachmentPoint getAttachmentPoint( renderer::PixelFormat format )
+		GlAttachmentPoint getAttachmentPoint( renderer::Format format )
 		{
 			switch ( format )
 			{
-			case renderer::PixelFormat::eD16:
-			case renderer::PixelFormat::eD32F:
+			case renderer::Format::eD16_UNORM:
+			case renderer::Format::eD32_SFLOAT:
 				return GL_ATTACHMENT_POINT_DEPTH;
 
-			case renderer::PixelFormat::eD24S8:
-			case renderer::PixelFormat::eD32FS8:
+			case renderer::Format::eD24_UNORM_S8_UINT:
+			case renderer::Format::eD32_SFLOAT_S8_UINT:
 				return GL_ATTACHMENT_POINT_DEPTH_STENCIL;
 
-			case renderer::PixelFormat::eS8:
+			case renderer::Format::eS8_UINT:
 				return GL_ATTACHMENT_POINT_STENCIL;
 
 			default:
@@ -56,19 +56,19 @@ namespace gl_renderer
 			return getAttachmentPoint( texture.getFormat() );
 		}
 
-		GlAttachmentType getAttachmentType( renderer::PixelFormat format )
+		GlAttachmentType getAttachmentType( renderer::Format format )
 		{
 			switch ( format )
 			{
-			case renderer::PixelFormat::eD16:
-			case renderer::PixelFormat::eD32F:
+			case renderer::Format::eD16_UNORM:
+			case renderer::Format::eD32_SFLOAT:
 				return GL_ATTACHMENT_TYPE_DEPTH;
 
-			case renderer::PixelFormat::eD24S8:
-			case renderer::PixelFormat::eD32FS8:
+			case renderer::Format::eD24_UNORM_S8_UINT:
+			case renderer::Format::eD32_SFLOAT_S8_UINT:
 				return GL_ATTACHMENT_TYPE_DEPTH_STENCIL;
 
-			case renderer::PixelFormat::eS8:
+			case renderer::Format::eS8_UINT:
 				return GL_ATTACHMENT_TYPE_STENCIL;
 
 			default:
@@ -142,14 +142,14 @@ namespace gl_renderer
 	}
 
 	FrameBuffer::FrameBuffer( renderer::RenderPass const & renderPass
-		, renderer::UIVec2 const & dimensions )
+		, renderer::Extent2D const & dimensions )
 		: renderer::FrameBuffer{ renderPass, dimensions, renderer::FrameBufferAttachmentArray{} }
 		, m_frameBuffer{ 0u }
 	{
 	}
 
 	FrameBuffer::FrameBuffer( renderer::RenderPass const & renderPass
-		, renderer::UIVec2 const & dimensions
+		, renderer::Extent2D const & dimensions
 		, renderer::FrameBufferAttachmentArray && views )
 		: renderer::FrameBuffer{ renderPass, dimensions, std::move( views ) }
 	{
@@ -162,8 +162,8 @@ namespace gl_renderer
 			Attachment attachment
 			{
 				getAttachmentPoint( static_cast< TextureView const & >( attach.getView() ) ),
-				( attach.getView().getTexture().getType() == renderer::TextureType::e2D
-					&& attach.getView().getType() == renderer::TextureType::e2D )
+				( ( attach.getView().getTexture().getType() == renderer::TextureType::e2D && attach.getView().getTexture().getLayerCount() <= 1u )
+					&& attach.getView().getType() == renderer::TextureViewType::e2D )
 					? static_cast< Texture const & >( attach.getView().getTexture() ).getImage()
 					: static_cast< TextureView const & >( attach.getView() ).getImage(),
 				getAttachmentType( static_cast< TextureView const & >( attach.getView() ) ),

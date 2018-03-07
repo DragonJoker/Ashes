@@ -409,8 +409,10 @@ namespace gl_renderer
 	}
 
 	void CommandBuffer::copyImage( renderer::ImageCopy const & copyInfo
-		, renderer::TextureView const & src
-		, renderer::TextureView const & dst )const
+		, renderer::Texture const & src
+		, renderer::ImageLayout srcLayout
+		, renderer::Texture const & dst
+		, renderer::ImageLayout dstLayout )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyImageCommand >( copyInfo
 			, src

@@ -22,11 +22,11 @@ namespace gl_renderer
 		*	Constructeur.
 		*/
 		SwapChain( Device const & device
-			, renderer::UIVec2 const & size );
+			, renderer::Extent2D const & size );
 		/**
 		*\copydoc	renderer::SwapChain::reset
 		*/
-		void reset( renderer::UIVec2 const & size )override;
+		void reset( renderer::Extent2D const & size )override;
 		/**
 		*\copydoc	renderer::SwapChain::createFrameBuffers
 		*/
@@ -46,7 +46,7 @@ namespace gl_renderer
 		/**
 		*\copydoc	renderer::SwapChain::createDepthStencil
 		*/
-		void createDepthStencil( renderer::PixelFormat format )override;
+		void createDepthStencil( renderer::Format format )override;
 		/**
 		*\brief
 		*	D�finit la couleur de vidage de la swapchain.
@@ -71,7 +71,7 @@ namespace gl_renderer
 		*\return
 		*	Les dimensions de la swap chain.
 		*/
-		inline renderer::UIVec2 getDimensions()const override
+		inline renderer::Extent2D getDimensions()const override
 		{
 			return m_dimensions;
 		}
@@ -79,7 +79,7 @@ namespace gl_renderer
 		*\return
 		*	Les format des pixels de la swap chain.
 		*/
-		inline renderer::PixelFormat getFormat()const override
+		inline renderer::Format getFormat()const override
 		{
 			return m_format;
 		}
@@ -93,6 +93,6 @@ namespace gl_renderer
 	private:
 		Device const & m_device;
 		renderer::RgbaColour m_clearColour;
-		renderer::PixelFormat m_format;
+		renderer::Format m_format;
 	};
 }

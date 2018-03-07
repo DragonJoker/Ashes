@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -18,7 +18,7 @@ namespace renderer
 	}
 
 	Attribute VertexLayout::createAttribute( uint32_t location
-		, AttributeFormat format
+		, Format format
 		, uint32_t offset )
 	{
 		m_attributes.emplace_back( *this

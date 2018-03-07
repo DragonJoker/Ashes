@@ -24,6 +24,18 @@ namespace renderer
 		uint32_t height;
 		uint32_t depth;
 	};
+
+	inline bool operator==( Extent3D const & lhs, Extent3D const & rhs )
+	{
+		return lhs.width == rhs.width
+			&& lhs.height == rhs.height
+			&& lhs.depth == rhs.depth;
+	}
+
+	inline bool operator!=( Extent3D const & lhs, Extent3D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
 }
 
 #endif

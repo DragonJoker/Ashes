@@ -14,7 +14,7 @@
 namespace vkapp
 {
 	RenderTarget::RenderTarget( renderer::Device const & device
-		, renderer::UIVec2 const & size
+		, renderer::Extent2D const & size
 		, common::Scene && scene
 		, common::ImagePtrArray && images )
 		: common::RenderTarget{ device, size, std::move( scene ), std::move( images ) }
@@ -28,10 +28,10 @@ namespace vkapp
 		m_camera.update();
 	}
 
-	void RenderTarget::doUpdateProjection( renderer::UIVec2 const & size )
+	void RenderTarget::doUpdateProjection( renderer::Extent2D const & size )
 	{
-		auto width = float( size[0] );
-		auto height = float( size[1] );
+		auto width = float( size.width );
+		auto height = float( size.height );
 		m_sceneUbo->getData( 0u ).mtxProjection = m_device.perspective( utils::toRadians( 90.0_degrees )
 			, width / height
 			, 0.01f
@@ -43,10 +43,13 @@ namespace vkapp
 		if ( m_currentMousePosition != m_previousMousePosition
 			&& m_moveCamera )
 		{
-			auto delta = m_currentMousePosition - m_previousMousePosition;
+			renderer::Offset2D delta = {
+				m_currentMousePosition.x - m_previousMousePosition.x,
+				m_currentMousePosition.y - m_previousMousePosition.y,
+			};
 			auto & result = m_camera.getRotation();
-			result = utils::pitch( result, renderer::Radians{ float( delta[1] ) / m_size[1] } );
-			result = utils::yaw( result, renderer::Radians{ float( -delta[0] ) / m_size[0] } );
+			result = utils::pitch( result, renderer::Radians{ float( delta.x ) / m_size.width } );
+			result = utils::yaw( result, renderer::Radians{ float( -delta.y ) / m_size.height } );
 			m_camera.update();
 		}
 
@@ -61,7 +64,7 @@ namespace vkapp
 			, renderer::PipelineStageFlag::eVertexShader );
 	}
 
-	void RenderTarget::doResize( renderer::UIVec2 const & size )
+	void RenderTarget::doResize( renderer::Extent2D const & size )
 	{
 		doUpdateProjection( size );
 	}

@@ -5,7 +5,7 @@
 namespace vkapp
 {
 	void readFile( std::string const & name
-		, renderer::UIVec3 const & size
+		, renderer::Extent3D const & size
 		, renderer::ByteArray & data )
 	{
 		FILE * file = fopen( name.c_str(), "rb" );
@@ -16,12 +16,12 @@ namespace vkapp
 		}
 
 		// Holds the luminance buffer
-		renderer::ByteArray luminance( size[0] * size[1] * size[2] );
+		renderer::ByteArray luminance( size.width * size.height * size.depth );
 		fread( luminance.data(), 1u, luminance.size(), file );
 		fclose( file );
 
 		// Convert the data to RGBA data.
-		data.resize( size[0] * size[1] * size[2] * 4 );
+		data.resize( size.width * size.height * size.depth * 4 );
 		auto buffer = data.data();
 
 		for ( auto & c : luminance )

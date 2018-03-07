@@ -18,16 +18,7 @@ namespace vk_renderer
 	*\return
 	*	Le VkImageViewType.
 	*/
-	VkImageViewType getImageViewType( renderer::TextureType const & value )noexcept;
-	/**
-	*\brief
-	*	Convertit un renderer::TextureType en VkImageViewType.
-	*\param[in] value
-	*	Le renderer::TextureType.
-	*\return
-	*	Le VkImageViewType.
-	*/
-	VkImageType getImageType( renderer::TextureType const & value )noexcept;
+	VkImageType convert( renderer::TextureType const & value )noexcept;
 }
 
 #endif

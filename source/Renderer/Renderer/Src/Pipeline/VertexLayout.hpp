@@ -8,7 +8,6 @@ See LICENSE file in root folder.
 
 #include "Core/Device.hpp"
 #include "Shader/Attribute.hpp"
-#include "Shader/FormatGetter.hpp"
 
 #include <vector>
 
@@ -78,32 +77,8 @@ namespace renderer
 		*	La position de l'attribut, dans le tampon.
 		*/
 		Attribute createAttribute( uint32_t location
-			, AttributeFormat format
+			, Format format
 			, uint32_t offset );
-		/**
-		*\~english
-		*\brief
-		*	Creates a vertex attribute.
-		*\param[in] location
-		*	The attribute location in the shader.
-		*\param[in] offset
-		*	The attribute location in the buffer.
-		*\~french
-		*\brief
-		*	Crée un attribut de sommet.
-		*\param[in] location
-		*	La position de l'attribut dans le shader.
-		*\param[in] offset
-		*	La position de l'attribut dans le tampon.
-		*/
-		template< typename T >
-		inline Attribute createAttribute( uint32_t location
-			, uint32_t offset )
-		{
-			return createAttribute( location
-				, details::FormatGetter< T >::value
-				, offset );
-		}
 		/**
 		*\~french
 		*\return
@@ -221,10 +196,6 @@ namespace renderer
 			, uint32_t( sizeof( T ) )
 			, inputRate );
 	}
-	//!\~english	Helper macro to create a vertex layout attribute from a struct member.
-	//!\~french		Macro d'aide à la création d'un attribut de sommet à partir du membre d'une structure.
-#define createVertexAttribute( Layout, Struct, Member, Location )\
-	( Layout )->createAttribute< decltype( Struct::Member ) >( Location, offsetof( Struct, Member ) )
 }
 
 #endif

@@ -77,7 +77,7 @@ namespace common
 		}
 
 		renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
-			, std::vector< renderer::PixelFormat > const & formats
+			, std::vector< renderer::Format > const & formats
 			, bool clearViews )
 		{
 			renderer::RenderPassAttachmentArray attaches;
@@ -165,7 +165,7 @@ namespace common
 			}
 
 			auto dimensions = views[0].get().getTexture().getDimensions();
-			return renderPass.createFrameBuffer( renderer::UIVec2{ dimensions.width, dimensions.height }
+			return renderPass.createFrameBuffer( renderer::Extent2D{ dimensions.width, dimensions.height }
 			, std::move( attaches ) );
 		}
 
@@ -210,7 +210,7 @@ namespace common
 
 	NodesRenderer::NodesRenderer( renderer::Device const & device
 		, std::string const & fragmentShaderFile
-		, std::vector< renderer::PixelFormat > const & formats
+		, std::vector< renderer::Format > const & formats
 		, bool clearViews
 		, bool opaqueNodes )
 		: m_device{ device }
@@ -392,15 +392,15 @@ namespace common
 
 			// Initialise vertex layout.
 			m_billboardVertexLayout = renderer::makeLayout< Vertex >( 0u, renderer::VertexInputRate::eVertex );
-			m_billboardVertexLayout->createAttribute< decltype( Vertex::position ) >( 0u, offsetof( Vertex, position ) );
-			m_billboardVertexLayout->createAttribute< decltype( Vertex::normal ) >( 1u, offsetof( Vertex, normal ) );
-			m_billboardVertexLayout->createAttribute< decltype( Vertex::tangent ) >( 2u, offsetof( Vertex, tangent ) );
-			m_billboardVertexLayout->createAttribute< decltype( Vertex::bitangent ) >( 3u, offsetof( Vertex, bitangent ) );
-			m_billboardVertexLayout->createAttribute< decltype( Vertex::texture ) >( 4u, offsetof( Vertex, texture ) );
+			m_billboardVertexLayout->createAttribute( 0u, renderer::Format::eR32G32B32_SFLOAT, offsetof( Vertex, position ) );
+			m_billboardVertexLayout->createAttribute( 1u, renderer::Format::eR32G32B32_SFLOAT, offsetof( Vertex, normal ) );
+			m_billboardVertexLayout->createAttribute( 2u, renderer::Format::eR32G32B32_SFLOAT, offsetof( Vertex, tangent ) );
+			m_billboardVertexLayout->createAttribute( 3u, renderer::Format::eR32G32B32_SFLOAT, offsetof( Vertex, bitangent ) );
+			m_billboardVertexLayout->createAttribute( 4u, renderer::Format::eR32G32_SFLOAT, offsetof( Vertex, texture ) );
 			// Initialise instance layout.
 			m_billboardInstanceLayout = renderer::makeLayout< BillboardInstanceData >( 1u, renderer::VertexInputRate::eInstance );
-			m_billboardInstanceLayout->createAttribute< decltype( BillboardInstanceData::offset ) >( 5u, offsetof( BillboardInstanceData, offset ) );
-			m_billboardInstanceLayout->createAttribute< decltype( BillboardInstanceData::dimensions ) >( 6u, offsetof( BillboardInstanceData, dimensions ) );
+			m_billboardInstanceLayout->createAttribute( 5u, renderer::Format::eR32G32B32_SFLOAT, offsetof( BillboardInstanceData, offset ) );
+			m_billboardInstanceLayout->createAttribute( 6u, renderer::Format::eR32G32_SFLOAT, offsetof( BillboardInstanceData, dimensions ) );
 
 			if ( billboard.material.hasOpacity == !m_opaqueNodes )
 			{
@@ -539,11 +539,11 @@ namespace common
 
 		// Initialise vertex layout.
 		m_objectVertexLayout = renderer::makeLayout< Vertex >( 0u );
-		m_objectVertexLayout->createAttribute< renderer::Vec3 >( 0u, offsetof( common::Vertex, position ) );
-		m_objectVertexLayout->createAttribute< renderer::Vec3 >( 1u, offsetof( common::Vertex, normal ) );
-		m_objectVertexLayout->createAttribute< renderer::Vec3 >( 2u, offsetof( common::Vertex, tangent ) );
-		m_objectVertexLayout->createAttribute< renderer::Vec3 >( 3u, offsetof( common::Vertex, bitangent ) );
-		m_objectVertexLayout->createAttribute< renderer::Vec2 >( 4u, offsetof( common::Vertex, texture ) );
+		m_objectVertexLayout->createAttribute( 0u, renderer::Format::eR32G32B32_SFLOAT, offsetof( common::Vertex, position ) );
+		m_objectVertexLayout->createAttribute( 1u, renderer::Format::eR32G32B32_SFLOAT, offsetof( common::Vertex, normal ) );
+		m_objectVertexLayout->createAttribute( 2u, renderer::Format::eR32G32B32_SFLOAT, offsetof( common::Vertex, tangent ) );
+		m_objectVertexLayout->createAttribute( 3u, renderer::Format::eR32G32B32_SFLOAT, offsetof( common::Vertex, bitangent ) );
+		m_objectVertexLayout->createAttribute( 4u, renderer::Format::eR32G32_SFLOAT, offsetof( common::Vertex, texture ) );
 
 		for ( auto & submesh : object )
 		{

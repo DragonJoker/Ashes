@@ -11,12 +11,12 @@ namespace vk_renderer
 	BackBuffer::BackBuffer( Device const & device
 		, renderer::TexturePtr && image
 		, uint32_t imageIndex
-		, renderer::PixelFormat format
+		, renderer::Format format
 		, Texture const & imageRef )
 		: renderer::BackBuffer{ device
 			, std::move( image )
 			, imageRef.createView( {
-				imageRef.getType(),
+				renderer::TextureViewType( imageRef.getType() ),
 				format,
 				renderer::ComponentMapping{},
 				{

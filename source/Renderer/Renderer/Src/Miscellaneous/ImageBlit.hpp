@@ -7,6 +7,8 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "Image/ImageSubresourceLayers.hpp"
+#include "Miscellaneous/Extent3D.hpp"
+#include "Miscellaneous/Offset3D.hpp"
 
 namespace renderer
 {
@@ -37,7 +39,7 @@ namespace renderer
 		*\brief
 		*	Selectionne les décalages \p x, \p y et \p z des sous-régions de l'image source.
 		*/
-		IVec3 srcOffset;
+		Offset3D srcOffset;
 		/**
 		*\~english
 		*\brief
@@ -46,7 +48,7 @@ namespace renderer
 		*\brief
 		*	Selectionne les étendues \p x, \p y et \p z des sous-régions de l'image source.
 		*/
-		IVec3 srcExtent;
+		Extent3D srcExtent;
 		/**
 		*\~english
 		*\brief
@@ -64,7 +66,7 @@ namespace renderer
 		*\brief
 		*	Selectionne les décalages \p x, \p y et \p z des sous-régions de l'image destination.
 		*/
-		IVec3 dstOffset;
+		Offset3D dstOffset;
 		/**
 		*\~english
 		*\brief
@@ -73,7 +75,7 @@ namespace renderer
 		*\brief
 		*	Selectionne les étendues \p x, \p y et \p z des sous-régions de l'image destination.
 		*/
-		IVec3 dstExtent;
+		Extent3D dstExtent;
 	};
 }
 

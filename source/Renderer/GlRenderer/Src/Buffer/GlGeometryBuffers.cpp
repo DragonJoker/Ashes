@@ -30,16 +30,26 @@ namespace gl_renderer
 			return result;
 		}
 
-		bool isInteger( renderer::AttributeFormat format )
+		bool isInteger( renderer::Format format )
 		{
-			return format == renderer::AttributeFormat::eInt
-				|| format == renderer::AttributeFormat::eUInt
-				|| format == renderer::AttributeFormat::eVec2i
-				|| format == renderer::AttributeFormat::eVec2ui
-				|| format == renderer::AttributeFormat::eVec3i
-				|| format == renderer::AttributeFormat::eVec3ui
-				|| format == renderer::AttributeFormat::eVec4i
-				|| format == renderer::AttributeFormat::eVec4ui;
+			return format != renderer::Format::eR16_SFLOAT
+				&& format != renderer::Format::eR16G16_SFLOAT
+				&& format != renderer::Format::eR16G16B16_SFLOAT
+				&& format != renderer::Format::eR16G16B16A16_SFLOAT
+				&& format != renderer::Format::eR32_SFLOAT
+				&& format != renderer::Format::eR32G32_SFLOAT
+				&& format != renderer::Format::eR32G32B32_SFLOAT
+				&& format != renderer::Format::eR32G32B32A32_SFLOAT
+				&& format != renderer::Format::eR64_SFLOAT
+				&& format != renderer::Format::eR64G64_SFLOAT
+				&& format != renderer::Format::eR64G64B64_SFLOAT
+				&& format != renderer::Format::eR64G64B64A64_SFLOAT
+				&& format != renderer::Format::eB10G11R11_UFLOAT_PACK32
+				&& format != renderer::Format::eE5B9G9R9_UFLOAT_PACK32
+				&& format != renderer::Format::eD32_SFLOAT
+				&& format != renderer::Format::eD32_SFLOAT_S8_UINT
+				&& format != renderer::Format::eBC6H_UFLOAT_BLOCK
+				&& format != renderer::Format::eBC6H_SFLOAT_BLOCK;
 		}
 	}
 
@@ -85,7 +95,7 @@ namespace gl_renderer
 						glLogCall( gl::VertexAttribIPointer
 							, attribute.location
 							, getCount( attribute.format )
-							, getType( attribute.format )
+							, getType( getInternal( attribute.format ) )
 							, vbo.binding.stride
 							, BufferOffset( vbo.offset + attribute.offset ) );
 					}
@@ -94,7 +104,7 @@ namespace gl_renderer
 						glLogCall( gl::VertexAttribPointer
 							, attribute.location
 							, getCount( attribute.format )
-							, getType( attribute.format )
+							, getType( getInternal( attribute.format ) )
 							, false
 							, vbo.binding.stride
 							, BufferOffset( vbo.offset + attribute.offset ) );
@@ -117,7 +127,7 @@ namespace gl_renderer
 						glLogCall( gl::VertexAttribIPointer
 							, location
 							, getCount( format )
-							, getType( format )
+							, getType( getInternal( attribute.format ) )
 							, vbo.binding.stride
 							, BufferOffset( vbo.offset + offset ) );
 					}
@@ -126,7 +136,7 @@ namespace gl_renderer
 						glLogCall( gl::VertexAttribPointer
 							, location
 							, getCount( format )
-							, getType( format )
+							, getType( getInternal( attribute.format ) )
 							, false
 							, vbo.binding.stride
 							, BufferOffset( vbo.offset + offset ) );

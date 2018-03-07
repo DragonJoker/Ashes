@@ -60,25 +60,6 @@ namespace gl_renderer
 			case renderer::TextureType::e3D:
 				result = GL_TEXTURE_3D;
 				break;
-			case renderer::TextureType::eCube:
-				if ( layerCount > 1 )
-				{
-					result = GL_TEXTURE_CUBE_MAP_ARRAY;
-				}
-				else
-				{
-					result = GL_TEXTURE_CUBE_MAP;
-				}
-				break;
-			case renderer::TextureType::e1DArray:
-				result = GL_TEXTURE_1D_ARRAY;
-				break;
-			case renderer::TextureType::e2DArray:
-				result = GL_TEXTURE_2D_ARRAY;
-				break;
-			case renderer::TextureType::eCubeArray:
-				result = GL_TEXTURE_CUBE_MAP_ARRAY;
-				break;
 			default:
 				assert( false );
 				result = GL_TEXTURE_2D;
@@ -90,12 +71,12 @@ namespace gl_renderer
 	}
 
 	Texture::Texture( Device const & device
-		, renderer::PixelFormat format
-		, renderer::UIVec2 const & dimensions )
+		, renderer::Format format
+		, renderer::Extent2D const & dimensions )
 		: renderer::Texture{ device
 			, renderer::TextureType::e2D
 			, format
-			, { dimensions[0], dimensions[1], 1u }
+			, { dimensions.width, dimensions.height, 1u }
 			, 1u
 			, 1u }
 		, m_device{ device }
@@ -131,20 +112,11 @@ namespace gl_renderer
 				, createInfo.extent.height
 				, createInfo.extent.depth );
 			break;
-		case gl_renderer::GL_TEXTURE_CUBE_MAP:
-			doSetImage2D( createInfo.extent.width
-				, createInfo.extent.height );
-			break;
 		case gl_renderer::GL_TEXTURE_1D_ARRAY:
 			doSetImage2D( createInfo.extent.width
 				, createInfo.arrayLayers );
 			break;
 		case gl_renderer::GL_TEXTURE_2D_ARRAY:
-			doSetImage3D( createInfo.extent.width
-				, createInfo.extent.height
-				, createInfo.arrayLayers );
-			break;
-		case gl_renderer::GL_TEXTURE_CUBE_MAP_ARRAY:
 			doSetImage3D( createInfo.extent.width
 				, createInfo.extent.height
 				, createInfo.arrayLayers );

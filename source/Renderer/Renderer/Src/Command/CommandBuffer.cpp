@@ -156,7 +156,7 @@ namespace renderer
 					srcRange.baseArrayLayer,
 					srcRange.layerCount
 				},
-				IVec3{                                              // srcOffset
+				Offset3D{                                              // srcOffset
 					0,                                                  // x
 					0,                                                  // y
 					0                                                   // z
@@ -167,18 +167,16 @@ namespace renderer
 					dstRange.baseArrayLayer,
 					dstRange.layerCount
 				},
-				IVec3{                                              // dstOffset
+				Offset3D{                                              // dstOffset
 					0,                                                  // x
 					0,                                                  // y
 					0                                                   // z
 				},
-				UIVec3{                                             // extent
-					uint32_t( dst.getTexture().getDimensions().width ),
-					uint32_t( dst.getTexture().getDimensions().height ),
-					uint32_t( dst.getTexture().getDimensions().depth ),
-				}
+				dst.getTexture().getDimensions()                    // extent
 			}
-			, src
-			, dst );
+			, src.getTexture()
+			, ImageLayout::eTransferSrcOptimal
+			, dst.getTexture()
+			, ImageLayout::eTransferDstOptimal );
 	}
 }

@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -12,7 +12,7 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	FrameBuffer::FrameBuffer( RenderPass const & renderPass
-		, UIVec2 const & dimensions
+		, Extent2D const & dimensions
 		, FrameBufferAttachmentArray && attachments )
 		: m_dimensions{ dimensions }
 		, m_attachments{ std::move( attachments ) }

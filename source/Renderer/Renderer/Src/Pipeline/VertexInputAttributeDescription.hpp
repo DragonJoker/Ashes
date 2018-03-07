@@ -44,7 +44,7 @@ namespace renderer
 		*\brief
 		*	Le type et la taille des données de l'attribut.
 		*/
-		AttributeFormat format;
+		Format format;
 		/**
 		*\~english
 		*\brief

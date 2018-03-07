@@ -37,7 +37,7 @@ namespace vk_renderer
 
 	FrameBuffer::FrameBuffer( Device const & device
 		, RenderPass const & renderPass
-		, renderer::UIVec2 const & dimensions
+		, renderer::Extent2D const & dimensions
 		, renderer::FrameBufferAttachmentArray && attachments )
 		: renderer::FrameBuffer{ renderPass, dimensions, std::move( attachments ) }
 		, m_device{ device }
@@ -54,8 +54,8 @@ namespace vk_renderer
 			renderPass,                                         // renderPass
 			static_cast< uint32_t >( vkattachments.size() ),    // attachmentCount
 			vkattachments.data(),                               // pAttachments
-			uint32_t( dimensions[0] ),                          // width
-			uint32_t( dimensions[1] ),                          // height
+			dimensions.width,                                   // width
+			dimensions.height,                                  // height
 			1u                                                  // layers
 		};
 		DEBUG_DUMP( createInfo );

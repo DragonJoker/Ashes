@@ -44,7 +44,7 @@ namespace vk_renderer
 		*/
 		FrameBuffer( Device const & device
 			, RenderPass const & renderPass
-			, renderer::UIVec2 const & dimensions
+			, renderer::Extent2D const & dimensions
 			, renderer::FrameBufferAttachmentArray && attachments );
 		/**
 		*\~french
@@ -59,7 +59,7 @@ namespace vk_renderer
 		*\return
 		*	Les dimensions du tampon.
 		*/
-		inline renderer::UIVec2 const & getDimensions()const noexcept
+		inline renderer::Extent2D const & getDimensions()const noexcept
 		{
 			return m_dimensions;
 		}
@@ -80,6 +80,6 @@ namespace vk_renderer
 		Device const & m_device;
 		TextureViewCRefArray m_views;
 		VkFramebuffer m_framebuffer{};
-		renderer::UIVec2 m_dimensions;
+		renderer::Extent2D m_dimensions;
 	};
 }

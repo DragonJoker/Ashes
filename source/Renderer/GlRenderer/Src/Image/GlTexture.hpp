@@ -29,8 +29,8 @@ namespace gl_renderer
 		*	Le périphérique logique.
 		*/
 		Texture( Device const & device
-			, renderer::PixelFormat format
-			, renderer::UIVec2 const & dimensions );
+			, renderer::Format format
+			, renderer::Extent2D const & dimensions );
 		/**
 		*\brief
 		*	Constructeur.

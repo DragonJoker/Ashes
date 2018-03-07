@@ -40,8 +40,8 @@ namespace common
 		{
 			return
 			{
-				{ 0u, 0u, renderer::AttributeFormat::eVec2f },
-				{ 1u, 8u, renderer::AttributeFormat::eVec2f },
+				{ 0u, 0u, renderer::ConstantFormat::eVec2f },
+				{ 1u, 8u, renderer::ConstantFormat::eVec2f },
 			};
 		}
 	}
@@ -250,8 +250,9 @@ namespace common
 
 		m_fontImage = m_device.createTexture(
 			{
+				0u,
 				renderer::TextureType::e2D,
-				utils::PixelFormat::eR8G8B8A8,
+				renderer::Format::eR8G8B8A8_UNORM,
 				renderer::Extent3D{ uint32_t( texWidth ), uint32_t( texHeight ), 1u },
 				1u,
 				1u,
@@ -260,7 +261,7 @@ namespace common
 				renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_fontView = m_fontImage->createView( m_fontImage->getType()
+		m_fontView = m_fontImage->createView( renderer::TextureViewType( m_fontImage->getType() )
 			, m_fontImage->getFormat() );
 
 		auto copyCmd = m_device.getGraphicsCommandPool().createCommandBuffer();
@@ -302,17 +303,18 @@ namespace common
 		m_fence = m_device.createFence();
 
 		m_vertexLayout = renderer::makeLayout< ImDrawVert >( 0u );
-		m_vertexLayout->createAttribute( 0u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, pos ) );
-		m_vertexLayout->createAttribute( 1u, renderer::AttributeFormat::eVec2f, offsetof( ImDrawVert, uv ) );
-		m_vertexLayout->createAttribute( 2u, renderer::AttributeFormat::eUInt, offsetof( ImDrawVert, col ) );
+		m_vertexLayout->createAttribute( 0u, renderer::Format::eR32G32_SFLOAT, offsetof( ImDrawVert, pos ) );
+		m_vertexLayout->createAttribute( 1u, renderer::Format::eR32G32_SFLOAT, offsetof( ImDrawVert, uv ) );
+		m_vertexLayout->createAttribute( 2u, renderer::Format::eR32_UINT, offsetof( ImDrawVert, col ) );
 	}
 
 	void Gui::doPreparePipeline()
 	{
 		auto dimensions = m_colourView->getTexture().getDimensions();
-		auto size = renderer::UIVec2{ dimensions.width, dimensions.height };
+		auto size = renderer::Extent2D{ dimensions.width, dimensions.height };
 		m_target = m_device.createTexture(
 			{
+				0u,
 				renderer::TextureType::e2D,
 				m_colourView->getFormat(),
 				dimensions,
@@ -323,7 +325,7 @@ namespace common
 				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_targetView = m_target->createView( renderer::TextureType::e2D
+		m_targetView = m_target->createView( renderer::TextureViewType::e2D
 			, m_target->getFormat() );
 		
 		renderer::RenderPassAttachmentArray rpAttaches

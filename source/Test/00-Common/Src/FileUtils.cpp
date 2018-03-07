@@ -191,7 +191,7 @@ namespace common
 
 		uint8_t * data = image.GetData();
 		ImageData result;
-		result.format = renderer::PixelFormat::eR8G8B8A8;
+		result.format = renderer::Format::eR8G8B8A8_UNORM;
 		result.size = { uint32_t( image.GetSize().x ), uint32_t( image.GetSize().y ), 1u };
 		uint32_t size = image.GetSize().x * image.GetSize().y;
 		result.data.resize( size * 4 );

@@ -30,9 +30,9 @@ namespace vk_renderer
 	*\brief
 	*	Récupère les VkImageAspectFlags correspondant à un format de pixels.
 	*\param[in] format
-	*	Le renderer::PixelFormat.
+	*	Le renderer::Format.
 	*\return
 	*	Le VkImageAspectFlags.
 	*/
-	VkImageAspectFlags getImageAspectFlags( renderer::PixelFormat const & format );
+	VkImageAspectFlags getImageAspectFlags( renderer::Format const & format );
 }

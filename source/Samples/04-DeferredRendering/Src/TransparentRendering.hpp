@@ -12,7 +12,7 @@ namespace vkapp
 	public:
 		TransparentRendering( renderer::Device const & device
 			, std::string const & fragmentShaderFile
-			, std::vector< renderer::PixelFormat > const & formats
+			, std::vector< renderer::Format > const & formats
 			, renderer::UniformBuffer< common::SceneData > const & sceneUbo
 			, renderer::UniformBuffer< common::ObjectData > const & objectUbo
 			, renderer::UniformBuffer< common::LightsData > const & lightsUbo );

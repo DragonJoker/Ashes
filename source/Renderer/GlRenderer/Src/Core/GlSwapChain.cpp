@@ -14,16 +14,16 @@
 namespace gl_renderer
 {
 	SwapChain::SwapChain( Device const & device
-		, renderer::UIVec2 const & size )
+		, renderer::Extent2D const & size )
 		: renderer::SwapChain{ device, size }
 		, m_device{ device }
 	{
-		m_format = renderer::PixelFormat::eR8G8B8A8;
+		m_format = renderer::Format::eR8G8B8A8_UNORM;
 		m_renderingResources.emplace_back( std::make_unique< RenderingResources >( device ) );
 		doCreateBackBuffers();
 	}
 
-	void SwapChain::reset( renderer::UIVec2 const & size )
+	void SwapChain::reset( renderer::Extent2D const & size )
 	{
 		m_dimensions = size;
 		doResetSwapChain();
@@ -67,7 +67,7 @@ namespace gl_renderer
 		resources.setBackBuffer( ~0u );
 	}
 
-	void SwapChain::createDepthStencil( renderer::PixelFormat format )
+	void SwapChain::createDepthStencil( renderer::Format format )
 	{
 		auto texture = std::make_unique< Texture >( m_device
 			, format

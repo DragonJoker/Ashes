@@ -15,6 +15,15 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
+		*	Bitmask describing additional parameters to the image.
+		*\~french
+		*\brief
+		*	Masque de bits décrivant des paramètres additionnels pour l'image.
+		*/
+		ImageCreateFlags flags;
+		/**
+		*\~english
+		*\brief
 		*	The image type.
 		*\~french
 		*\brief
@@ -29,7 +38,7 @@ namespace renderer
 		*\brief
 		*	Le format de l'image.
 		*/
-		PixelFormat format;
+		Format format;
 		/**
 		*\~english
 		*\brief

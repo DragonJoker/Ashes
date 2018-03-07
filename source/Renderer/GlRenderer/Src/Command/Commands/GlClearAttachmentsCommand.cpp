@@ -74,19 +74,19 @@ namespace gl_renderer
 			for ( auto & rect : m_clearRects )
 			{
 				glLogCall( gl::Scissor
-					, rect.offset[0]
-					, rect.offset[1]
-					, rect.extent[0]
-					, rect.extent[1] );
+					, rect.offset.x
+					, rect.offset.x
+					, rect.extent.width
+					, rect.extent.height );
 				doClear( clearAttach );
 			}
 		}
 
 		glLogCall( gl::Scissor
-			, scissor.getOffset()[0]
-			, scissor.getOffset()[1]
-			, scissor.getSize()[0]
-			, scissor.getSize()[1] );
+			, scissor.getOffset().x
+			, scissor.getOffset().y
+			, scissor.getSize().width
+			, scissor.getSize().height );
 	}
 
 	CommandPtr ClearAttachmentsCommand::clone()const

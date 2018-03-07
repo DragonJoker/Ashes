@@ -4,7 +4,7 @@ namespace renderer
 {
 	BufferView::BufferView( Device const & device
 		, BufferBase const & buffer
-		, PixelFormat format
+		, Format format
 		, uint32_t offset
 		, uint32_t range )
 		: m_device{ device }
