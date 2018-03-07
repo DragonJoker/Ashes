@@ -267,7 +267,7 @@ namespace vk_renderer
 			TextureView srcView{ m_device
 				, *this
 				, {
-					renderer::TextureViewType{ getType() },
+					renderer::TextureViewType( getType() ),
 					getFormat(),
 					renderer::ComponentMapping{},
 					{
@@ -287,7 +287,7 @@ namespace vk_renderer
 				TextureView dstView{ m_device
 					, *this
 					, {
-						renderer::TextureViewType{ getType() },
+						renderer::TextureViewType( getType() ),
 						getFormat(),
 						renderer::ComponentMapping{},
 						{
