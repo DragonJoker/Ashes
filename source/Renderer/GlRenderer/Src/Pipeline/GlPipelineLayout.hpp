@@ -44,11 +44,11 @@ namespace gl_renderer
 		/**
 		*\copydoc		renderer::PipelineLayout::createPipeline
 		*/
-		renderer::PipelinePtr createPipeline( renderer::GraphicsPipelineCreateInfo && createInfo )const override;
+		renderer::PipelinePtr createPipeline( renderer::GraphicsPipelineCreateInfo createInfo )const override;
 		/**
 		*\copydoc	renderer::PipelineLayout::createPipeline
 		*/
-		renderer::ComputePipelinePtr createPipeline( renderer::ComputePipelineCreateInfo && createInfo )const override;
+		renderer::ComputePipelinePtr createPipeline( renderer::ComputePipelineCreateInfo createInfo )const override;
 
 	private:
 		Device const & m_device;

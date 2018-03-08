@@ -255,10 +255,8 @@ namespace renderer
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
 	using SamplerPtr = std::unique_ptr< Sampler >;
 	using SemaphorePtr = std::unique_ptr< Semaphore >;
-	using ShaderModulePtr = std::unique_ptr< ShaderModule >;
 	using ShaderProgramPtr = std::unique_ptr< ShaderProgram >;
 	using ShaderStorageBufferBasePtr = std::unique_ptr< ShaderStorageBufferBase >;
-	using SpecialisationInfoBasePtr = std::unique_ptr< SpecialisationInfoBase >;
 	using StagingBufferPtr = std::unique_ptr< StagingBuffer >;
 	using SwapChainPtr = std::unique_ptr< SwapChain >;
 	using TexturePtr = std::unique_ptr< Texture >;
@@ -266,6 +264,9 @@ namespace renderer
 	using VertexBufferBasePtr = std::unique_ptr< VertexBufferBase >;
 	using VertexLayoutPtr = std::unique_ptr< VertexLayout >;
 	using UniformBufferBasePtr = std::unique_ptr< UniformBufferBase >;
+
+	using ShaderModulePtr = std::shared_ptr< ShaderModule >;
+	using SpecialisationInfoBasePtr = std::shared_ptr< SpecialisationInfoBase >;
 
 	using AttributeArray = std::vector< Attribute >;
 	using BufferImageCopyArray = std::vector< BufferImageCopy >;
