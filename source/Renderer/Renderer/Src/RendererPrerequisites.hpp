@@ -88,6 +88,7 @@ See LICENSE file in root folder.
 namespace std
 {
 	using experimental::optional;
+	using experimental::nullopt;
 }
 #endif
 
