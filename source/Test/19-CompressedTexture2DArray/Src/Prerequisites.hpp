@@ -10,7 +10,7 @@ namespace vkapp
 		renderer::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "18-CompressedTexture2DArray" );
+	static wxString const AppName = wxT( "19-CompressedTexture2DArray" );
 
 	class RenderPanel;
 	class MainFrame;

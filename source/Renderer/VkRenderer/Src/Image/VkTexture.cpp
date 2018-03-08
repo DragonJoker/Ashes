@@ -250,7 +250,7 @@ namespace vk_renderer
 
 	renderer::TextureViewPtr Texture::createView( renderer::ImageViewCreateInfo const & createInfo )const
 	{
-		return std::make_shared< TextureView >( m_device
+		return std::make_unique< TextureView >( m_device
 			, *this
 			, createInfo );
 	}

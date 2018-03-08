@@ -242,6 +242,7 @@ namespace gl_renderer
 	using PFN_glLogicOp = void ( GLAPIENTRY * )( GLenum opcode );
 	using PFN_glMapBufferRange = void * ( GLAPIENTRY * )( GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access );
 	using PFN_glMemoryBarrier = void ( GLAPIENTRY * )( GLbitfield barriers );
+	using PFN_glMinSampleShading = void ( GLAPIENTRY * )( GLfloat value );
 	using PFN_glMultiDrawArraysIndirect = void ( GLAPIENTRY * )( GLenum mode, const void * indirect, GLsizei drawcount, GLsizei stride );
 	using PFN_glMultiDrawElementsIndirect = void ( GLAPIENTRY * )( GLenum mode, GLenum type, const void * indirect, GLsizei drawcount, GLsizei stride );
 	using PFN_glPatchParameteri = void ( GLAPIENTRY * )( GLenum pname, GLint value );

@@ -399,7 +399,7 @@ namespace gl_renderer
 	renderer::TexturePtr Device::createTexture( renderer::ImageCreateInfo const & createInfo
 		, renderer::MemoryPropertyFlags flags )const
 	{
-		return std::make_shared< Texture >( *this, createInfo, flags );
+		return std::make_unique< Texture >( *this, createInfo, flags );
 	}
 
 	renderer::SamplerPtr Device::createSampler( renderer::SamplerCreateInfo const & createInfo )const

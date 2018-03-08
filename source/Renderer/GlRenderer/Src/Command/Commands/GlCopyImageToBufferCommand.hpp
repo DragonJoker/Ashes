@@ -6,6 +6,7 @@ See LICENSE file in root folder
 
 #include "GlCommandBase.hpp"
 
+#include <Image/TextureView.hpp>
 #include <Miscellaneous/BufferImageCopy.hpp>
 
 namespace gl_renderer
@@ -31,6 +32,7 @@ namespace gl_renderer
 		CopyImageToBufferCommand( renderer::BufferImageCopyArray const & copyInfo
 			, renderer::Texture const & src
 			, renderer::BufferBase const & dst );
+		CopyImageToBufferCommand( CopyImageToBufferCommand const & rhs );
 
 		void apply()const override;
 		CommandPtr clone()const override;

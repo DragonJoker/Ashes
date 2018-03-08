@@ -6,6 +6,33 @@
 
 namespace gl_renderer
 {
+	namespace
+	{
+		GlTextureViewType convert( renderer::TextureViewType viewType
+			, renderer::SampleCountFlag samples )
+		{
+			GlTextureViewType result = gl_renderer::convert( viewType );
+
+			if ( samples > renderer::SampleCountFlag::e1 )
+			{
+				switch ( result )
+				{
+				case GL_TEXTURE_VIEW_2D:
+					result = GL_TEXTURE_VIEW_2D_MULTISAMPLE;
+					break;
+				case GL_TEXTURE_VIEW_2D_ARRAY:
+					result = GL_TEXTURE_VIEW_2D_MULTISAMPLE_ARRAY;
+					break;
+				default:
+					assert( "Unsupported TextureViewType for a multisampled texture." );
+					break;
+				}
+			}
+
+			return result;
+		}
+	}
+
 	TextureView::TextureView( Device const & device
 		, Texture const & image )
 		: renderer::TextureView{ device
@@ -33,7 +60,7 @@ namespace gl_renderer
 			, texture
 			, createInfo }
 		, m_device{ device }
-		, m_target{ convert( m_createInfo.viewType ) }
+		, m_target{ convert( m_createInfo.viewType, texture.getSamplesCount() ) }
 	{
 		glLogCall( gl::GenTextures, 1, &m_texture );
 		glLogCall( gl::TextureView

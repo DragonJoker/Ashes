@@ -6,6 +6,7 @@ See LICENSE file in root folder.
 
 #include "Core/Renderer.hpp"
 #include "Core/SwapChain.hpp"
+#include "Image/Sampler.hpp"
 #include "Pipeline/PipelineLayout.hpp"
 #include "Pipeline/VertexInputState.hpp"
 #include "RenderPass/RenderSubpass.hpp"
