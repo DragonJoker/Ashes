@@ -609,9 +609,9 @@ namespace gl_renderer
 		void doValidateOutputs( GLuint program
 			, renderer::RenderPass const & renderPass )
 		{
-			renderer::RenderPassAttachmentArray attaches;
+			renderer::AttachmentDescriptionArray attaches;
 
-			for ( auto & attach : renderPass )
+			for ( auto & attach : renderPass.getAttachments() )
 			{
 				if ( !renderer::isDepthOrStencilFormat( attach.format ) )
 				{
@@ -626,7 +626,7 @@ namespace gl_renderer
 				{
 					auto it = std::find_if( attaches.begin()
 						, attaches.end()
-						, [&values]( renderer::RenderPassAttachment const & lookup )
+						, [&values]( renderer::AttachmentDescription const & lookup )
 						{
 							return areCompatible( lookup.format, convertFormat( GlslAttributeType( values[0] ) ) );
 						} );

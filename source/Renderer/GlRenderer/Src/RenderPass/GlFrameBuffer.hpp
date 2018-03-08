@@ -62,7 +62,7 @@ namespace gl_renderer
 		*\param[in] attaches
 		*	Les attaches.
 		*/
-		void setDrawBuffers( renderer::RenderPassAttachmentArray const & attaches )const;
+		void setDrawBuffers( renderer::AttachmentDescriptionArray const & attaches )const;
 		/**
 		*\~english
 		*\brief
@@ -75,7 +75,7 @@ namespace gl_renderer
 		*\param[in] attaches
 		*	Les attaches.
 		*/
-		void setDrawBuffers( renderer::RenderSubpassAttachmentArray const & attaches )const;
+		void setDrawBuffers( renderer::AttachmentReferenceArray const & attaches )const;
 		/**
 		*\return
 		*	Le Framebuffer OpenGL.

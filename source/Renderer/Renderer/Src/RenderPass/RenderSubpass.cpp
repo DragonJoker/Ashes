@@ -9,14 +9,54 @@ See LICENSE file in root folder.
 
 namespace renderer
 {
-	RenderSubpass::RenderSubpass( Device const & device
-		, PipelineBindPoint pipelineBindPoint
+	RenderSubpass::RenderSubpass( PipelineBindPoint pipelineBindPoint
 		, RenderSubpassState const & state
-		, RenderSubpassAttachmentArray const & inputAttaches
-		, RenderSubpassAttachmentArray const & colourAttaches
-		, RenderSubpassAttachmentArray const & resolveAttaches
-		, RenderSubpassAttachment const * depthAttach
-		, UInt32Array const & preserveAttaches )
+		, AttachmentReferenceArray const & inputAttaches
+		, AttachmentReferenceArray const & colourAttaches
+		, AttachmentReferenceArray const & resolveAttaches
+		, AttachmentReference const * depthAttach
+		, UInt32Array const & reserveAttaches )
+		: m_description{
+			0u,
+			pipelineBindPoint,
+			inputAttaches,
+			colourAttaches,
+			resolveAttaches,
+			std::nullopt,
+			reserveAttaches
+		}
+		, m_neededState{ state }
+	{
+		if ( depthAttach )
+		{
+			m_description.depthStencilAttachment = *depthAttach;
+		}
+	}
+
+	RenderSubpass::RenderSubpass( PipelineBindPoint pipelineBindPoint
+		, RenderSubpassState const & state
+		, AttachmentReferenceArray const & colourAttaches )
+		: RenderSubpass( pipelineBindPoint
+			, state
+			, AttachmentReferenceArray{}
+			, colourAttaches
+			, AttachmentReferenceArray{}
+			, nullptr
+			, UInt32Array{} )
+	{
+	}
+
+	RenderSubpass::RenderSubpass( PipelineBindPoint pipelineBindPoint
+		, RenderSubpassState const & state
+		, AttachmentReferenceArray const & colourAttaches
+		, AttachmentReference const & depthAttach )
+		: RenderSubpass( pipelineBindPoint
+			, state
+			, AttachmentReferenceArray{}
+			, colourAttaches
+			, AttachmentReferenceArray{}
+			, &depthAttach
+			, UInt32Array{} )
 	{
 	}
 }

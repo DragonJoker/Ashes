@@ -14,7 +14,7 @@ namespace gl_renderer
 	public:
 		EndSubpassCommand( Device const & device
 			, renderer::FrameBuffer const & frameBuffer
-			, RenderSubpass const & subpass );
+			, renderer::SubpassDescription const & subpass );
 
 		void apply()const override;
 		CommandPtr clone()const override;
@@ -22,6 +22,6 @@ namespace gl_renderer
 	private:
 		Device const & m_device;
 		FrameBuffer const & m_frameBuffer;
-		RenderSubpass const & m_subpass;
+		renderer::SubpassDescription const & m_subpass;
 	};
 }

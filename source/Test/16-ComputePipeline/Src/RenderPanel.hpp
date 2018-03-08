@@ -76,7 +76,7 @@ namespace vkapp
 	private:
 		struct Configuration
 		{
-			renderer::IVec2 textureSize;
+			utils::IVec2 textureSize;
 			float roll;
 		};
 

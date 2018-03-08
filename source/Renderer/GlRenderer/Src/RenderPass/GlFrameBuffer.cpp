@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "Image/GlTexture.hpp"
 #include "Image/GlTextureView.hpp"
 
-#include <RenderPass/RenderSubpassAttachment.hpp>
+#include <RenderPass/AttachmentReference.hpp>
 
 #include <iostream>
 
@@ -231,7 +231,7 @@ namespace gl_renderer
 		}
 	}
 
-	void FrameBuffer::setDrawBuffers( renderer::RenderPassAttachmentArray const & attaches )const
+	void FrameBuffer::setDrawBuffers( renderer::AttachmentDescriptionArray const & attaches )const
 	{
 		renderer::UInt32Array colours;
 
@@ -255,7 +255,7 @@ namespace gl_renderer
 		glLogCall( gl::DrawBuffers, GLsizei( colours.size() ), colours.data() );
 	}
 
-	void FrameBuffer::setDrawBuffers( renderer::RenderSubpassAttachmentArray const & attaches )const
+	void FrameBuffer::setDrawBuffers( renderer::AttachmentReferenceArray const & attaches )const
 	{
 		if ( getFrameBuffer() != GL_INVALID_INDEX )
 		{

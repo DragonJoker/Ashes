@@ -103,9 +103,9 @@ namespace common
 
 		std::istringstream file( fileContent );
 		std::string line;
-		renderer::Vec3Array allvtx( nv );
-		renderer::Vec2Array alltex( nvt );
-		renderer::Vec3Array allnml( nvn );
+		utils::Vec3Array allvtx( nv );
+		utils::Vec2Array alltex( nvt );
+		utils::Vec3Array allnml( nvn );
 		auto vtxit = allvtx.begin();
 		auto texit = alltex.begin();
 		auto nmlit = allnml.begin();
@@ -138,9 +138,9 @@ namespace common
 		file.seekg( 0, std::ios::beg );
 
 		renderer::UInt16Array index( nf * 3 );
-		renderer::Vec3Array vertex( nf * 3 );
-		renderer::Vec3Array normal( nf * 3 );
-		renderer::Vec2Array texcoord( nf * 3 );
+		utils::Vec3Array vertex( nf * 3 );
+		utils::Vec3Array normal( nf * 3 );
+		utils::Vec2Array texcoord( nf * 3 );
 		auto idxit = index.begin();
 		vtxit = vertex.begin();
 		texit = texcoord.begin();

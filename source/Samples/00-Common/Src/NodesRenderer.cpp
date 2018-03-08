@@ -80,9 +80,9 @@ namespace common
 			, std::vector< renderer::Format > const & formats
 			, bool clearViews )
 		{
-			renderer::RenderPassAttachmentArray attaches;
-			renderer::RenderSubpassAttachmentArray subAttaches;
-			renderer::RenderSubpassAttachment depthSubAttach{ renderer::AttachmentUnused, renderer::ImageLayout::eUndefined };
+			renderer::AttachmentDescriptionArray attaches;
+			renderer::AttachmentReferenceArray subAttaches;
+			renderer::AttachmentReference depthSubAttach{ renderer::AttachmentUnused, renderer::ImageLayout::eUndefined };
 			renderer::ImageLayoutArray initialLayouts;
 			renderer::ImageLayoutArray finalLayouts;
 			uint32_t index{ 0u };
@@ -119,7 +119,7 @@ namespace common
 						renderer::ImageLayout::eUndefined,
 						clearViews ? renderer::ImageLayout::eColourAttachmentOptimal : renderer::ImageLayout::eShaderReadOnlyOptimal
 					} );
-					subAttaches.emplace_back( renderer::RenderSubpassAttachment{ index, renderer::ImageLayout::eColourAttachmentOptimal } );
+					subAttaches.emplace_back( renderer::AttachmentReference{ index, renderer::ImageLayout::eColourAttachmentOptimal } );
 				}
 				++index;
 			}
@@ -128,7 +128,7 @@ namespace common
 
 			if ( depthSubAttach.attachment != renderer::AttachmentUnused )
 			{
-				subpasses.emplace_back( device.createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+				subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
 					, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 						, renderer::AccessFlag::eColourAttachmentWrite }
 					, subAttaches
@@ -136,7 +136,7 @@ namespace common
 			}
 			else
 			{
-				subpasses.emplace_back( device.createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+				subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
 					, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 						, renderer::AccessFlag::eColourAttachmentWrite }
 					, subAttaches ) );
@@ -154,9 +154,9 @@ namespace common
 			, renderer::TextureViewCRefArray const & views )
 		{
 			assert( !views.empty() );
-			assert( views.size() == renderPass.getSize() );
+			assert( views.size() == renderPass.getAttachmentCount() );
 			renderer::FrameBufferAttachmentArray attaches;
-			auto it = renderPass.begin();
+			auto it = renderPass.getAttachments().begin();
 
 			for ( auto view : views )
 			{
@@ -286,7 +286,7 @@ namespace common
 	{
 		assert( !views.empty() );
 		auto dimensions = views[0].get().getTexture().getDimensions();
-		auto size = renderer::UIVec2{ dimensions.width, dimensions.height };
+		auto size = renderer::Extent2D{ dimensions.width, dimensions.height };
 
 		if ( size != m_size )
 		{
@@ -328,14 +328,14 @@ namespace common
 				for ( auto & node : m_submeshRenderNodes )
 				{
 					commandBuffer.bindPipeline( *node.pipeline );
-					commandBuffer.setViewport( { size[0]
-						, size[1]
+					commandBuffer.setViewport( { size.width
+						, size.height
 						, 0
 						, 0 } );
 					commandBuffer.setScissor( { 0
 						, 0
-						, size[0]
-						, size[1] } );
+						, size.width
+						, size.height } );
 					m_commandBuffer->bindVertexBuffer( 0u, node.instance->vbo->getBuffer(), 0u );
 					m_commandBuffer->bindIndexBuffer( node.instance->ibo->getBuffer(), 0u, renderer::IndexType::eUInt32 );
 					commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
@@ -348,14 +348,14 @@ namespace common
 				for ( BillboardMaterialNode & node : m_billboardRenderNodes )
 				{
 					commandBuffer.bindPipeline( *node.pipeline );
-					commandBuffer.setViewport( { size[0]
-						, size[1]
+					commandBuffer.setViewport( { size.width
+						, size.height
 						, 0
 						, 0 } );
 					commandBuffer.setScissor( { 0
 						, 0
-						, size[0]
-						, size[1] } );
+						, size.width
+						, size.height } );
 					m_commandBuffer->bindVertexBuffers( 0u
 						, { node.instance->vbo->getBuffer(), node.instance->instance->getBuffer() }
 						, { 0u, 0u } );
@@ -492,7 +492,7 @@ namespace common
 
 				renderer::ColourBlendState blendState;
 
-				for ( auto & attach : *m_renderPass )
+				for ( auto & attach : m_renderPass->getAttachments() )
 				{
 					if ( !renderer::isDepthOrStencilFormat( attach.format ) )
 					{
@@ -644,7 +644,7 @@ namespace common
 
 					renderer::ColourBlendState blendState;
 
-					for ( auto & attach : *m_renderPass )
+					for ( auto & attach : m_renderPass->getAttachments() )
 					{
 						if ( !renderer::isDepthOrStencilFormat( attach.format ) )
 						{

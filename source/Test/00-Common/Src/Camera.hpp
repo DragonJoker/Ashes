@@ -11,43 +11,43 @@ namespace vkapp
 
 		inline void reset()
 		{
-			m_position = renderer::Vec3{};
-			m_rotation = renderer::Quaternion{};
+			m_position = utils::Vec3{};
+			m_rotation = utils::Quaternion{};
 		}
 
-		inline void translate( renderer::Vec3 const & value )
+		inline void translate( utils::Vec3 const & value )
 		{
 			m_position += value;
 		}
 
-		inline void rotate( renderer::Quaternion const & value )
+		inline void rotate( utils::Quaternion const & value )
 		{
 			m_rotation *= value;
 		}
 
-		inline renderer::Mat4 const & getView()const
+		inline utils::Mat4 const & getView()const
 		{
 			return m_transform;
 		}
 
-		inline renderer::Vec3 const & getPosition()const
+		inline utils::Vec3 const & getPosition()const
 		{
 			return m_position;
 		}
 
-		inline renderer::Quaternion const & getRotation()const
+		inline utils::Quaternion const & getRotation()const
 		{
 			return m_rotation;
 		}
 
-		inline renderer::Quaternion & getRotation()
+		inline utils::Quaternion & getRotation()
 		{
 			return m_rotation;
 		}
 
 	private:
-		renderer::Vec3 m_position;
-		renderer::Quaternion m_rotation;
-		renderer::Mat4 m_transform;
+		utils::Vec3 m_position;
+		utils::Quaternion m_rotation;
+		utils::Mat4 m_transform;
 	};
 }
