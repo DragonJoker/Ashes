@@ -90,6 +90,13 @@ namespace std
 
 namespace renderer
 {
+	using ByteArray = std::vector< uint8_t >;
+	using UInt16Array = std::vector< uint16_t >;
+	using UInt32Array = std::vector< uint32_t >;
+	using UInt64Array = std::vector< uint64_t >;
+	using FloatArray = std::vector< float >;
+	using StringArray = std::vector< std::string >;
+
 	template< typename T >
 	class Buffer;
 	template< typename T >
