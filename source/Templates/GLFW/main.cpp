@@ -6,6 +6,7 @@
 #include <Core/PlatformWindowHandle.hpp>
 #include <Core/RenderingResources.hpp>
 #include <Core/SwapChain.hpp>
+#include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderPassAttachment.hpp>
 #include <RenderPass/RenderSubpass.hpp>

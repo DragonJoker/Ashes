@@ -6,6 +6,7 @@
 #include <Core/Connection.hpp>
 #include <Core/Device.hpp>
 #include <Core/RenderingResources.hpp>
+#include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>

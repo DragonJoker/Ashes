@@ -39,6 +39,7 @@ namespace gl_renderer
 		GL_STENCIL_BACK_VALUE_MASK = 0x8CA4,
 		GL_STENCIL_BACK_WRITEMASK = 0x8CA5,
 		GL_PRIMITIVE_RESTART = 0x8F9D,
+		GL_SAMPLE_SHADING = 0x8C36,
 	};
 	std::string getName( GlTweak value );
 }

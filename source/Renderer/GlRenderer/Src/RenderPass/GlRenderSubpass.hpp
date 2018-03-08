@@ -31,13 +31,25 @@ namespace gl_renderer
 			, renderer::RenderSubpassAttachmentArray const & resolveAttaches
 			, renderer::RenderSubpassAttachment const * depthAttach
 			, renderer::UInt32Array const & preserveAttaches );
+		void resolveAttachments( FrameBuffer const & fbo )const;
 
 		inline renderer::RenderSubpassAttachmentArray const & getAttaches()const
 		{
 			return m_attaches;
 		}
 
+		inline bool hasResolveAttaches()const
+		{
+			return !m_resolveAttaches.empty();
+		}
+
+		inline uint32_t getResolveAttachesCount()const
+		{
+			return uint32_t( m_resolveAttaches.size() );
+		}
+
 	private:
 		renderer::RenderSubpassAttachmentArray m_attaches;
+		renderer::RenderSubpassAttachmentArray m_resolveAttaches;
 	};
 }

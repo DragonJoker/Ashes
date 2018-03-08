@@ -80,6 +80,7 @@ namespace gl_renderer
 			, 1u
 			, 1u }
 		, m_device{ device }
+		, m_samples{ renderer::SampleCountFlag::e1 }
 	{
 	}
 
@@ -94,6 +95,7 @@ namespace gl_renderer
 			, createInfo.arrayLayers }
 		, m_device{ device }
 		, m_target{ convert( createInfo.imageType, createInfo.arrayLayers, createInfo.samples ) }
+		, m_samples{ createInfo.samples }
 	{
 		glLogCall( gl::GenTextures, 1, &m_texture );
 		glLogCall( gl::BindTexture, m_target, m_texture );
@@ -152,7 +154,7 @@ namespace gl_renderer
 
 	renderer::TextureViewPtr Texture::createView( renderer::ImageViewCreateInfo const & createInfo )const
 	{
-		return std::make_shared< TextureView >( m_device
+		return std::make_unique< TextureView >( m_device
 			, *this
 			, createInfo );
 	}

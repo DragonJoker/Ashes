@@ -30,7 +30,7 @@ namespace gl_renderer
 		*/
 		NextSubpassCommand( renderer::RenderPass const & renderPass
 			, renderer::FrameBuffer const & frameBuffer
-			, uint32_t index );
+			, RenderSubpass const & subpass );
 
 		void apply()const override;
 		CommandPtr clone()const override;

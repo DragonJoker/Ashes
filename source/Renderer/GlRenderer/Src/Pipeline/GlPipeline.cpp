@@ -108,6 +108,7 @@ namespace gl_renderer
 		, m_cbState{ m_createInfo.colourBlendState }
 		, m_rsState{ m_createInfo.rasterisationState }
 		, m_dsState{ 0u, false, true, renderer::CompareOp::eLess,  }
+		, m_msState{ m_createInfo.multisampleState }
 		, m_viewport{ m_createInfo.viewport }
 		, m_scissor{ m_createInfo.scissor }
 		, m_vertexInputStateHash{ doHash( m_vertexInputState ) }

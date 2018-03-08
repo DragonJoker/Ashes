@@ -264,6 +264,16 @@ namespace gl_renderer
 						glLogCall( gl::Disable, GL_SAMPLE_ALPHA_TO_ONE );
 					}
 				}
+
+				if ( state.sampleShadingEnable )
+				{
+					glLogCall( gl::Enable, GL_SAMPLE_SHADING );
+					glLogCall( gl::MinSampleShading, state.minSampleShading );
+				}
+				else
+				{
+					glLogCall( gl::Disable, GL_SAMPLE_SHADING );
+				}
 			}
 			else
 			{

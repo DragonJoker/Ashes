@@ -176,6 +176,7 @@ GL_LIB_FUNCTION( VertexAttribIPointer )
 
 GL_LIB_FUNCTION_OPT( ClearTexImage )
 GL_LIB_FUNCTION_OPT( DispatchComputeIndirect )
+GL_LIB_FUNCTION_OPT( MinSampleShading )
 GL_LIB_FUNCTION_OPT( MultiDrawArraysIndirect )
 GL_LIB_FUNCTION_OPT( MultiDrawElementsIndirect )
 GL_LIB_FUNCTION_OPT( ShaderBinary )

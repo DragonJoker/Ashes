@@ -164,8 +164,9 @@ namespace renderer
 	}
 	bool isDepthStencilFormat( Format format )noexcept
 	{
-		return format >= Format::eDepthStencil_BEGIN
-			&& format <= Format::eDepthStencil_END;
+		return format == Format::eD16_UNORM_S8_UINT
+			|| format == Format::eD24_UNORM_S8_UINT
+			|| format == Format::eD32_SFLOAT_S8_UINT;
 	}
 
 	bool isStencilFormat( Format format )noexcept
@@ -175,8 +176,9 @@ namespace renderer
 
 	bool isDepthFormat( Format format )noexcept
 	{
-		return isDepthStencilFormat( format )
-			&& !isStencilFormat( format );
+		return format == Format::eD16_UNORM
+			|| format == Format::eX8_D24_UNORM_PACK32
+			|| format == Format::eD32_SFLOAT;
 	}
 
 	bool isCompressedFormat( Format format )noexcept
