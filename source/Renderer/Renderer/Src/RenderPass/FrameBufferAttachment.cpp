@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 namespace renderer
 {
-	FrameBufferAttachment::FrameBufferAttachment( RenderPassAttachment const & attach
+	FrameBufferAttachment::FrameBufferAttachment( AttachmentDescription const & attach
 		, TextureView const & view )
 		: m_frameBuffer{ nullptr }
 		, m_view{ view }

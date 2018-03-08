@@ -93,81 +93,19 @@ namespace renderer
 		*\~french
 		*\brief
 		*	Crée une passe de rendu.
-		*\param[in] attaches
-		*	Les attaches voulues pour la passe.
-		*\param[in] subpasses
-		*	Les sous passes (au moins 1 nécessaire).
-		*\param[in] initialState
-		*	L'état voulu en début de passe.
-		*\param[in] finalState
-		*	L'état atteint en fin de passe.
+		*\param[in] createInfo
+		*	Les informations de création.
 		*\return
 		*	La passe créée.
 		*\~english
 		*\brief
 		*	Creates a render pass.
-		*\param[in] attaches
-		*	The attachments pixels formats.
-		*\param[in] subpasses
-		*	The rendersubpasses (at least one is necessary).
-		*\param[in] initialState
-		*	The state wanted at the beginning of the pass.
-		*\param[in] finalState
-		*	The state attained at the end of the pass.
+		*\param[in] createInfo
+		*	The creation informations.
 		*\return
 		*	The created pass.
 		*/
-		virtual RenderPassPtr createRenderPass( RenderPassAttachmentArray const & attaches
-			, RenderSubpassPtrArray && subpasses
-			, RenderSubpassState const & initialState
-			, RenderSubpassState const & finalState )const = 0;
-		/**
-		*\~english
-		*\brief
-		*	Creates a render subpass.
-		*\param[in] pipelineBindPoint
-		*	Specifies whether this is a compute or graphics subpass.
-		*\param[in] state
-		*	The state wanted when beginning the subpass.
-		*\param[in] inputAttaches
-		*	Lists which of the render pass’s attachments can be read in the fragment shader stage during the subpass, and what layout each attachment will be in during the subpass.
-		*\param[in] colourAttaches
-		*	Lists which of the render pass’s attachments will be used as color attachments in the subpass, and what layout each attachment will be in during the subpass.
-		*\param[in] resolveAttaches
-		*	Lists which of the render pass’s attachments are resolved to at the end of the subpass, and what layout each attachment will be in during the multisample resolve operation.
-		*\param[in] depthAttach
-		*	Specifies which attachment will be used for depth/stencil data and the layout it will be in during the subpass.
-		*\param[in] preserveAttaches
-		*	An array of render pass attachment indices describing the attachments that are not used by a subpass, but whose contents must be preserved throughout the subpass.
-		*\return
-		*	The created subpass.
-		*\~french
-		*\brief
-		*	Crée une sous-passe de rendu.
-		*\param[in] pipelineBindPoint
-		*	Définit si c'est une sous-passe de calcul ou graphique.
-		*\param[in] state
-		*	L'état voulu au démarrage de la sous-passe.
-		*\param[in] inputAttaches
-		*	Liste quelles attaches de la passe de rendu peuvent être lues depuis le fragment shader durant la sous-passe, et quel layout chaque attache aura pendant la sous-passe.
-		*\param[in] colourAttaches
-		*	Liste quelles attaches de la passe de rendu seront utilisées comme attaches couleur durant la sous-passe, et quel layout chaque attache aura pendant la sous-passe.
-		*\param[in] resolveAttaches
-		*	Liste quelles attaches de la passe de rendu sont résolues à la fin de la sous-pass, et quel layout chaque attache aura pendant l'opération de résolution de multi-échantillon.
-		*\param[in] depthAttach
-		*	Définit quelle attache sera utilisée pour les données de profondeur/stencil et le layout qu'elle aura durant la sous-passe.
-		*\param[in] preserveAttaches
-		*	Un tableau d'indices d'attaches de la passe de rendu qui ne seront pas utilisées par une sous-passe, mais dont le contenu doit être préservé au travers de la sous-passe.
-		*\return
-		*	La sous-passe créée.
-		*/
-		virtual RenderSubpassPtr createRenderSubpass( PipelineBindPoint pipelineBindPoint
-			, RenderSubpassState const & state
-			, RenderSubpassAttachmentArray const & inputAttaches
-			, RenderSubpassAttachmentArray const & colourAttaches
-			, RenderSubpassAttachmentArray const & resolveAttaches
-			, RenderSubpassAttachment const * depthAttach
-			, UInt32Array const & preserveAttaches )const = 0;
+		virtual RenderPassPtr createRenderPass( RenderPassCreateInfo createInfo )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -532,64 +470,37 @@ namespace renderer
 			, float aspect
 			, float zNear )const;
 		/**
-		*\~english
-		*\brief
-		*	Creates a render subpass.
-		*\param[in] pipelineBindPoint
-		*	Specifies whether this is a compute or graphics subpass.
-		*\param[in] state
-		*	The state wanted when beginning the subpass.
-		*\param[in] colourAttaches
-		*	Lists which of the render pass’s attachments will be used as color attachments in the subpass, and what layout each attachment will be in during the subpass.
-		*\return
-		*	The created subpass.
 		*\~french
 		*\brief
-		*	Crée une sous-passe de rendu.
-		*\param[in] pipelineBindPoint
-		*	Définit si c'est une sous-passe de calcul ou graphique.
-		*\param[in] state
-		*	L'état voulu au démarrage de la sous-passe.
-		*\param[in] colourAttaches
-		*	Liste quelles attaches de la passe de rendu seront utilisées comme attaches couleur durant la sous-passe, et quel layout chaque attache aura pendant la sous-passe.
+		*	Crée une passe de rendu.
+		*\param[in] attaches
+		*	Les attaches voulues pour la passe.
+		*\param[in] subpasses
+		*	Les sous passes (au moins 1 nécessaire).
+		*\param[in] initialState
+		*	L'état voulu en début de passe.
+		*\param[in] finalState
+		*	L'état atteint en fin de passe.
 		*\return
-		*	La sous-passe créée.
-		*/
-		RenderSubpassPtr createRenderSubpass( PipelineBindPoint pipelineBindPoint
-			, RenderSubpassState const & state
-			, RenderSubpassAttachmentArray const & colourAttaches )const;
-		/**
+		*	La passe créée.
 		*\~english
 		*\brief
-		*	Creates a render subpass.
-		*\param[in] pipelineBindPoint
-		*	Specifies whether this is a compute or graphics subpass.
-		*\param[in] state
-		*	The state wanted when beginning the subpass.
-		*\param[in] colourAttaches
-		*	Lists which of the render pass’s attachments will be used as color attachments in the subpass, and what layout each attachment will be in during the subpass.
-		*\param[in] depthAttach
-		*	Specifies which attachment will be used for depth/stencil data and the layout it will be in during the subpass.
+		*	Creates a render pass.
+		*\param[in] attaches
+		*	The attachments pixels formats.
+		*\param[in] subpasses
+		*	The rendersubpasses (at least one is necessary).
+		*\param[in] initialState
+		*	The state wanted at the beginning of the pass.
+		*\param[in] finalState
+		*	The state attained at the end of the pass.
 		*\return
-		*	The created subpass.
-		*\~french
-		*\brief
-		*	Crée une sous-passe de rendu.
-		*\param[in] pipelineBindPoint
-		*	Définit si c'est une sous-passe de calcul ou graphique.
-		*\param[in] state
-		*	L'état voulu au démarrage de la sous-passe.
-		*\param[in] colourAttaches
-		*	Liste quelles attaches de la passe de rendu seront utilisées comme attaches couleur durant la sous-passe, et quel layout chaque attache aura pendant la sous-passe.
-		*\param[in] depthAttach
-		*	Définit quelle attache sera utilisée pour les données de profondeur/stencil et le layout qu'elle aura durant la sous-passe.
-		*\return
-		*	La sous-passe créée.
+		*	The created pass.
 		*/
-		RenderSubpassPtr createRenderSubpass( PipelineBindPoint pipelineBindPoint
-			, RenderSubpassState const & state
-			, RenderSubpassAttachmentArray const & colourAttaches
-			, RenderSubpassAttachment const & depthAttach )const;
+		RenderPassPtr createRenderPass( AttachmentDescriptionArray const & attaches
+			, RenderSubpassPtrArray && subpasses
+			, RenderSubpassState const & initialState
+			, RenderSubpassState const & finalState )const;
 		/**
 		*\~english
 		*\brief

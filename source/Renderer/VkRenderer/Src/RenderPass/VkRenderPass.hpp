@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #include "VkRendererPrerequisites.hpp"
 
 #include <RenderPass/RenderPass.hpp>
-#include <RenderPass/RenderPassAttachment.hpp>
+#include <RenderPass/AttachmentDescription.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 
 namespace vk_renderer
@@ -17,10 +17,7 @@ namespace vk_renderer
 	{
 	public:
 		RenderPass( Device const & device
-			, renderer::RenderPassAttachmentArray const & attaches
-			, renderer::RenderSubpassPtrArray && subpasses
-			, renderer::RenderSubpassState const & initialState
-			, renderer::RenderSubpassState const & finalState );
+			, renderer::RenderPassCreateInfo && createInfo );
 		~RenderPass();
 		/**
 		*\copydoc	renderer::RenderPass::createFrameBuffer
@@ -42,11 +39,20 @@ namespace vk_renderer
 		}
 
 	private:
+		struct Subpass
+		{
+			std::vector< VkAttachmentReference > inputAttachments;
+			std::vector< VkAttachmentReference > colorAttachments;
+			std::vector< VkAttachmentReference > resolveAttachments;
+			VkAttachmentReference depthStencilAttachment;
+		};
+
+	private:
 		Device const & m_device;
 		VkRenderPass m_renderPass{};
-		RenderSubpassCRefArray m_subpasses;
-		renderer::RenderSubpassState m_initialState;
-		renderer::RenderSubpassState m_finalState;
+		std::vector< Subpass > m_subpassInfos;
+		std::vector< VkSubpassDescription > m_subpasses;
+		std::vector< VkSubpassDependency > m_dependencies;
 		mutable std::vector< VkClearValue > m_clearValues;
 	};
 }

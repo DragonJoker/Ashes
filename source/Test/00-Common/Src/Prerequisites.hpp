@@ -5,6 +5,7 @@
 
 #include <Utils/Factory.hpp>
 #include <Utils/Mat4.hpp>
+#include <Utils/Quaternion.hpp>
 
 #pragma warning( disable: 4996 )
 #include <wx/wx.h>

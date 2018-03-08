@@ -48,8 +48,8 @@ namespace vkapp
 				m_currentMousePosition.y - m_previousMousePosition.y,
 			};
 			auto & result = m_camera.getRotation();
-			result = utils::pitch( result, renderer::Radians{ float( delta.x ) / m_size.width } );
-			result = utils::yaw( result, renderer::Radians{ float( -delta.y ) / m_size.height } );
+			result = utils::pitch( result, utils::Radians{ float( delta.x ) / m_size.width } );
+			result = utils::yaw( result, utils::Radians{ float( -delta.y ) / m_size.height } );
 			m_camera.update();
 		}
 
@@ -57,7 +57,7 @@ namespace vkapp
 		auto & data = m_sceneUbo->getData( 0u );
 		data.mtxView = m_camera.getView();
 		auto & pos = m_camera.getPosition();
-		data.cameraPosition = renderer::Vec4{ pos[0], pos[1], pos[2], 0.0f };
+		data.cameraPosition = utils::Vec4{ pos[0], pos[1], pos[2], 0.0f };
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo

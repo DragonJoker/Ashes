@@ -47,7 +47,7 @@ namespace common
 	}
 
 	Gui::Gui( renderer::Device const & device
-		, renderer::UIVec2 const & size )
+		, renderer::Extent2D const & size )
 		: m_device{ device }
 		, m_size{ size }
 		, m_pushConstants{ renderer::ShaderStageFlag::eVertex, doCreateConstants() }
@@ -65,7 +65,7 @@ namespace common
 		style.Colors[ImGuiCol_CheckMark] = ImVec4( 1.0f, 0.0f, 0.0f, 0.8f );
 		// Dimensions
 		ImGuiIO & io = ImGui::GetIO();
-		io.DisplaySize = ImVec2( float( size[0] ), float( size[1] ) );
+		io.DisplaySize = ImVec2( float( size.width ), float( size.height ) );
 		io.FontGlobalScale = 1.0f;
 
 		doPrepareResources();
@@ -158,10 +158,10 @@ namespace common
 		}
 	}
 
-	void Gui::resize( renderer::UIVec2 const & size )
+	void Gui::resize( renderer::Extent2D const & size )
 	{
 		ImGuiIO & io = ImGui::GetIO();
-		io.DisplaySize = ImVec2( float( size[0] ), float( size[1] ) );
+		io.DisplaySize = ImVec2( float( size.width ), float( size.height ) );
 		m_size = size;
 		doUpdateCommandBuffers();
 	}
@@ -328,7 +328,7 @@ namespace common
 		m_targetView = m_target->createView( renderer::TextureViewType::e2D
 			, m_target->getFormat() );
 		
-		renderer::RenderPassAttachmentArray rpAttaches
+		renderer::AttachmentDescriptionArray rpAttaches
 		{
 			{
 				0u,
@@ -342,13 +342,13 @@ namespace common
 				renderer::ImageLayout::eShaderReadOnlyOptimal,
 			}
 		};
-		renderer::RenderSubpassAttachmentArray subAttaches
+		renderer::AttachmentReferenceArray subAttaches
 		{
 			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
 		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device.createRenderSubpass( renderer::PipelineBindPoint::eGraphics
-			, {
+		subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
+			, renderer::RenderSubpassState{
 				renderer::PipelineStageFlag::eColourAttachmentOutput,
 				renderer::AccessFlag::eColourAttachmentRead | renderer::AccessFlag::eColourAttachmentWrite
 			}
@@ -362,7 +362,7 @@ namespace common
 
 		renderer::FrameBufferAttachmentArray attaches
 		{
-			{ *m_renderPass->begin(), *m_targetView }
+			{ *m_renderPass->getAttachments().begin(), *m_targetView }
 		};
 		m_frameBuffer = m_renderPass->createFrameBuffer( size
 			, std::move( attaches ) );

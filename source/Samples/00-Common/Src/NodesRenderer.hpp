@@ -73,7 +73,7 @@ namespace common
 	protected:
 		renderer::Device const & m_device;
 		bool m_opaqueNodes;
-		renderer::UIVec2 m_size;
+		renderer::Extent2D m_size;
 		std::string m_fragmentShaderFile;
 		std::vector< renderer::TextureView const * > m_views;
 		renderer::SamplerPtr m_sampler;

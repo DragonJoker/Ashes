@@ -78,7 +78,7 @@ namespace vkapp
 	private:
 		wxTimer * m_timer{ nullptr };
 		bool m_moveCamera{ false };
-		renderer::IVec2 m_previousMousePosition;
+		utils::IVec2 m_previousMousePosition;
 		renderer::Mat4 m_projection;
 		Camera m_camera;
 		/**

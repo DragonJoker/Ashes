@@ -9,7 +9,10 @@ See LICENSE file in root folder.
 #include "Image/Sampler.hpp"
 #include "Pipeline/PipelineLayout.hpp"
 #include "Pipeline/VertexInputState.hpp"
+#include "RenderPass/RenderPass.hpp"
+#include "RenderPass/RenderPassCreateInfo.hpp"
 #include "RenderPass/RenderSubpass.hpp"
+#include "RenderPass/RenderSubpassState.hpp"
 
 namespace renderer
 {
@@ -52,31 +55,60 @@ namespace renderer
 		return result;
 	}
 
-	RenderSubpassPtr Device::createRenderSubpass( PipelineBindPoint pipelineBindPoint
-		, RenderSubpassState const & state
-		, RenderSubpassAttachmentArray const & colourAttaches )const
+	RenderPassPtr Device::createRenderPass( AttachmentDescriptionArray const & attaches
+		, RenderSubpassPtrArray && subpasses
+		, RenderSubpassState const & initialState
+		, RenderSubpassState const & finalState )const
 	{
-		return createRenderSubpass( pipelineBindPoint
-			, state
-			, RenderSubpassAttachmentArray{}
-			, colourAttaches
-			, RenderSubpassAttachmentArray{}
-			, nullptr
-			, UInt32Array{} );
-	}
+		RenderPassCreateInfo createInfo;
+		createInfo.attachments = attaches;
+		createInfo.subpasses.reserve( subpasses.size() );
+		createInfo.dependencies.reserve( 1 + subpasses.size() );
+		auto pipelineStage = initialState.pipelineStage;
+		auto access = initialState.access;
+		uint32_t subpassIndex = ExternalSubpass;
 
-	RenderSubpassPtr Device::createRenderSubpass( PipelineBindPoint pipelineBindPoint
-		, RenderSubpassState const & state
-		, RenderSubpassAttachmentArray const & colourAttaches
-		, RenderSubpassAttachment const & depthAttach )const
-	{
-		return createRenderSubpass( pipelineBindPoint
-			, state
-			, RenderSubpassAttachmentArray{}
-			, colourAttaches
-			, RenderSubpassAttachmentArray{}
-			, &depthAttach
-			, UInt32Array{} );
+		for ( auto const & subpass : subpasses )
+		{
+			auto const & state = subpass->getNeededState();
+
+			if ( pipelineStage != state.pipelineStage
+				|| access != state.access )
+			{
+				createInfo.dependencies.push_back(
+				{
+					subpassIndex,                                    // srcSubpass
+					subpassIndex + 1,                                // dstSubpass
+					pipelineStage,                                   // srcStageMask
+					state.pipelineStage,                             // dstStageMask
+					access,                                          // srcAccessMask
+					state.access,                                    // dstAccessMask
+					DependencyFlag::eByRegion                        // dependencyFlags
+				} );
+			}
+
+			pipelineStage = state.pipelineStage;
+			access = state.access;
+			++subpassIndex;
+			createInfo.subpasses.push_back( subpass->getDescription() );
+		}
+
+		if ( pipelineStage != finalState.pipelineStage
+			|| access != finalState.access )
+		{
+			createInfo.dependencies.push_back(
+			{
+				subpassIndex,                                        // srcSubpass
+				ExternalSubpass,                                     // dstSubpass
+				pipelineStage,                                       // srcStageMask
+				finalState.pipelineStage,                            // dstStageMask
+				access,                                              // srcAccessMask
+				finalState.access,                                   // dstAccessMask
+				DependencyFlag::eByRegion                            // dependencyFlags
+			} );
+		}
+
+		return createRenderPass( createInfo );
 	}
 
 	ClipDirection Device::getClipDirection()const

@@ -197,7 +197,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateRenderPass()
 	{
-		renderer::RenderPassAttachmentArray attaches
+		renderer::AttachmentDescriptionArray attaches
 		{
 			{
 				0u,
@@ -211,12 +211,12 @@ namespace vkapp
 				renderer::ImageLayout::ePresentSrc,
 			}
 		};
-		renderer::RenderSubpassAttachmentArray subAttaches
+		renderer::AttachmentReferenceArray subAttaches
 		{
 			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
 		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+		subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
 			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite }
 			, subAttaches ) );

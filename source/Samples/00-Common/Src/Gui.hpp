@@ -11,10 +11,10 @@ namespace common
 	{
 	public:
 		Gui( renderer::Device const & device
-			, renderer::UIVec2 const & size );
+			, renderer::Extent2D const & size );
 		void updateView( renderer::TextureView const & colourView );
 		void update();
-		void resize( renderer::UIVec2 const & size );
+		void resize( renderer::Extent2D const & size );
 		void submit( renderer::Queue const & queue );
 
 		bool header( char const * caption );
@@ -46,7 +46,7 @@ namespace common
 
 		renderer::Device const & m_device;
 		renderer::TextureView const * m_colourView{ nullptr };
-		renderer::UIVec2 m_size;
+		renderer::Extent2D m_size;
 		renderer::PushConstantsBuffer< PushConstBlock > m_pushConstants;
 		renderer::VertexBufferPtr< ImDrawVert > m_vertexBuffer;
 		renderer::BufferPtr< ImDrawIdx > m_indexBuffer;

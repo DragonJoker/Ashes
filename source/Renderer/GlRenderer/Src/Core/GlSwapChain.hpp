@@ -88,7 +88,7 @@ namespace gl_renderer
 		void doResetSwapChain();
 		void doCreateBackBuffers();
 		renderer::FrameBufferAttachmentArray doPrepareAttaches( uint32_t backBuffer
-			, renderer::RenderPassAttachmentArray const & attaches )const;
+			, renderer::AttachmentDescriptionArray const & attaches )const;
 
 	private:
 		Device const & m_device;

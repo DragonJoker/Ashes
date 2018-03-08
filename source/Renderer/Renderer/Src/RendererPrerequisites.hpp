@@ -25,6 +25,7 @@ See LICENSE file in root folder.
 #include "Enum/CommandPoolCreateFlag.hpp"
 #include "Enum/CompareOp.hpp"
 #include "Enum/CullModeFlag.hpp"
+#include "Enum/DependencyFlag.hpp"
 #include "Enum/DepthStencilStateFlag.hpp"
 #include "Enum/DescriptorPoolCreateFlag.hpp"
 #include "Enum/DescriptorType.hpp"
@@ -57,11 +58,13 @@ See LICENSE file in root folder.
 #include "Enum/QueryType.hpp"
 #include "Enum/QueueFlag.hpp"
 #include "Enum/RasterisationStateFlag.hpp"
+#include "Enum/RenderPassCreateFlag.hpp"
 #include "Enum/SampleCountFlag.hpp"
 #include "Enum/ShaderStageFlag.hpp"
 #include "Enum/SharingMode.hpp"
 #include "Enum/StencilOp.hpp"
 #include "Enum/SubpassContents.hpp"
+#include "Enum/SubpassDescriptionFlag.hpp"
 #include "Enum/TessellationStateFlag.hpp"
 #include "Enum/TextureType.hpp"
 #include "Enum/TextureViewType.hpp"
@@ -85,6 +88,7 @@ See LICENSE file in root folder.
 namespace std
 {
 	using experimental::optional;
+	using experimental::nullopt;
 }
 #endif
 
@@ -108,6 +112,7 @@ namespace renderer
 	template< typename T >
 	class VertexBuffer;
 
+	struct AttachmentReference;
 	struct BufferCopy;
 	struct BufferImageCopy;
 	struct ClearAttachment;
@@ -141,12 +146,14 @@ namespace renderer
 	struct PushConstantRange;
 	struct QueueFamilyProperties;
 	struct RasterisationState;
-	struct RenderPassAttachment;
-	struct RenderSubpassAttachment;
+	struct AttachmentDescription;
+	struct RenderPassCreateInfo;
 	struct RenderSubpassState;
 	struct ShaderStageState;
 	struct SpecialisationMapEntry;
 	struct StencilOpState;
+	struct SubpassDependency;
+	struct SubpassDescription;
 	struct TessellationState;
 	struct VertexInputAttributeDescription;
 	struct VertexInputBindingDescription;
@@ -268,6 +275,8 @@ namespace renderer
 	using ShaderModulePtr = std::shared_ptr< ShaderModule >;
 	using SpecialisationInfoBasePtr = std::shared_ptr< SpecialisationInfoBase >;
 
+	using AttachmentDescriptionArray = std::vector< AttachmentDescription >;
+	using AttachmentReferenceArray = std::vector< AttachmentReference >;
 	using AttributeArray = std::vector< Attribute >;
 	using BufferImageCopyArray = std::vector< BufferImageCopy >;
 	using ClearAttachmentArray = std::vector< ClearAttachment >;
@@ -280,13 +289,12 @@ namespace renderer
 	using ImageLayoutArray = std::vector< ImageLayout >;
 	using PipelineStageFlagsArray = std::vector< PipelineStageFlags >;
 	using PushConstantArray = std::vector< PushConstant >;
-	using RenderPassAttachmentArray = std::vector< RenderPassAttachment >;
 	using RenderSubpassArray = std::vector< RenderSubpass >;
-	using RenderSubpassAttachmentArray = std::vector< RenderSubpassAttachment >;
 	using SpecialisationMapEntryArray = std::vector< SpecialisationMapEntry >;
+	using SubpassDescriptionArray = std::vector< SubpassDescription >;
+	using SubpassDependencyArray = std::vector< SubpassDependency >;
 	using VertexInputAttributeDescriptionArray = std::vector< VertexInputAttributeDescription >;
 	using VertexInputBindingDescriptionArray = std::vector< VertexInputBindingDescription >;
-
 
 	using FrameBufferPtrArray = std::vector< FrameBufferPtr >;
 	using BackBufferPtrArray = std::vector< BackBufferPtr >;

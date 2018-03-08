@@ -269,7 +269,7 @@ namespace gl_renderer
 			std::vector< std::pair < renderer::PipelineLayout const *, renderer::PushConstantsBufferBase const * > > m_pushConstantBuffers;
 			ComputePipeline const * m_currentComputePipeline{ nullptr };
 			uint32_t m_currentSubpassIndex{ 0u };
-			RenderSubpass const * m_currentSubpass{ nullptr };
+			renderer::SubpassDescription const * m_currentSubpass{ nullptr };
 			RenderPass const * m_currentRenderPass{ nullptr };
 			renderer::FrameBuffer const * m_currentFrameBuffer{ nullptr };
 			VboBindings m_boundVbos;
