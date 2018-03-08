@@ -280,7 +280,7 @@ namespace vk_renderer
 
 	renderer::ShaderModulePtr Device::createShaderModule( renderer::ShaderStageFlag stage )const
 	{
-		return std::make_unique< ShaderModule >( *this, stage );
+		return std::make_shared< ShaderModule >( *this, stage );
 	}
 
 	renderer::QueryPoolPtr Device::createQueryPool( renderer::QueryType type
