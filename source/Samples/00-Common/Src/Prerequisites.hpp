@@ -4,6 +4,7 @@
 #include <Core/Renderer.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
+#include <Miscellaneous/Extent2D.hpp>
 #include <Pipeline/VertexLayout.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 
@@ -30,31 +31,31 @@ namespace common
 
 	struct NonTexturedVertex2DData
 	{
-		renderer::Vec2 position;
+		utils::Vec2 position;
 	};
 
 	struct SceneData
 	{
-		renderer::Mat4 mtxProjection;
-		renderer::Mat4 mtxView;
-		renderer::Vec4 cameraPosition;
+		utils::Mat4 mtxProjection;
+		utils::Mat4 mtxView;
+		utils::Vec4 cameraPosition;
 	};
 
 	struct ObjectData
 	{
-		renderer::Mat4 mtxModel;
+		utils::Mat4 mtxModel;
 	};
 
 	struct BillboardInstanceData
 	{
-		renderer::Vec3 offset;
-		renderer::Vec2 dimensions;
+		utils::Vec3 offset;
+		utils::Vec2 dimensions;
 	};
 
 	struct TexturedVertexData
 	{
-		renderer::Vec4 position;
-		renderer::Vec2 uv;
+		utils::Vec4 position;
+		utils::Vec2 uv;
 	};
 
 	/**
@@ -66,7 +67,7 @@ namespace common
 	/**\{*/
 	struct Image
 	{
-		renderer::UIVec2 size;
+		renderer::Extent2D size;
 		renderer::ByteArray data;
 		renderer::Format format;
 		bool opacity{ false };
@@ -108,11 +109,11 @@ namespace common
 
 	struct Vertex
 	{
-		renderer::Vec3 position;
-		renderer::Vec3 normal;
-		renderer::Vec3 tangent;
-		renderer::Vec3 bitangent;
-		renderer::Vec2 texture;
+		utils::Vec3 position;
+		utils::Vec3 normal;
+		utils::Vec3 tangent;
+		utils::Vec3 bitangent;
+		utils::Vec2 texture;
 	};
 
 	struct VertexBuffer
@@ -157,33 +158,33 @@ namespace common
 	/**\{*/
 	struct Light
 	{
-		renderer::Vec4 colour;
-		renderer::Vec4 intensities;
+		utils::Vec4 colour;
+		utils::Vec4 intensities;
 	};
 
 	struct DirectionalLight
 	{
 		Light base;
-		renderer::Vec4 direction;
+		utils::Vec4 direction;
 	};
 
 	struct PointLight
 	{
 		Light base;
-		renderer::Vec4 position;
-		renderer::Vec4 attenation;
+		utils::Vec4 position;
+		utils::Vec4 attenation;
 	};
 
 	struct SpotLight
 	{
 		PointLight base;
-		renderer::Vec4 direction;
-		renderer::Vec4 coeffs;// .x = cutoff, .y = exponent
+		utils::Vec4 direction;
+		utils::Vec4 coeffs;// .x = cutoff, .y = exponent
 	};
 
 	struct LightsData
 	{
-		renderer::IVec4 lightsCount;
+		utils::IVec4 lightsCount;
 		DirectionalLight directionalLights[MAX_LIGHTS];
 		PointLight pointLights[MAX_LIGHTS];
 		SpotLight spotLights[MAX_LIGHTS];

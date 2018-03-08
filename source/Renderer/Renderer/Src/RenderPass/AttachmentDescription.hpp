@@ -18,7 +18,7 @@ namespace renderer
 	*\brief
 	*	Une attache à une passe de rendu.
 	*/
-	struct RenderPassAttachment
+	struct AttachmentDescription
 	{
 		/**
 		*\~english

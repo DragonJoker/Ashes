@@ -378,7 +378,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenRenderPass()
 	{
-		renderer::RenderPassAttachmentArray attaches
+		renderer::AttachmentDescriptionArray attaches
 		{
 			{
 				0u,
@@ -403,16 +403,16 @@ namespace vkapp
 				renderer::ImageLayout::eDepthStencilAttachmentOptimal,
 			}
 		};
-		renderer::RenderSubpassAttachmentArray subAttaches
+		renderer::AttachmentReferenceArray subAttaches
 		{
 			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
 		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+		subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
 			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite }
 			, subAttaches
-			, { 1u, renderer::ImageLayout::eDepthStencilAttachmentOptimal } ) );
+			, renderer::AttachmentReference{ 1u, renderer::ImageLayout::eDepthStencilAttachmentOptimal } ) );
 		m_offscreenRenderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
 			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
@@ -456,8 +456,8 @@ namespace vkapp
 		m_renderTargetDepthView = m_renderTargetDepth->createView( renderer::TextureViewType::e2D
 			, m_renderTargetDepth->getFormat() );
 		renderer::FrameBufferAttachmentArray attaches;
-		attaches.emplace_back( *( m_offscreenRenderPass->begin() + 0u ), *m_renderTargetColourView );
-		attaches.emplace_back( *( m_offscreenRenderPass->begin() + 1u ), *m_renderTargetDepthView );
+		attaches.emplace_back( *( m_offscreenRenderPass->getAttachments().begin() + 0u ), *m_renderTargetColourView );
+		attaches.emplace_back( *( m_offscreenRenderPass->getAttachments().begin() + 1u ), *m_renderTargetDepthView );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
 			, std::move( attaches ) );
 	}
@@ -544,7 +544,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainRenderPass()
 	{
-		renderer::RenderPassAttachmentArray attaches
+		renderer::AttachmentDescriptionArray attaches
 		{
 			{
 				0u,
@@ -558,12 +558,12 @@ namespace vkapp
 				renderer::ImageLayout::ePresentSrc,
 			}
 		};
-		renderer::RenderSubpassAttachmentArray subAttaches
+		renderer::AttachmentReferenceArray subAttaches
 		{
 			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
 		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+		subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
 			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite }
 			, subAttaches ) );

@@ -74,7 +74,7 @@ namespace vkapp
 	private:
 		wxTimer * m_timer{ nullptr };
 		renderer::Mat4 m_rotate;
-		renderer::Clock::time_point m_time;
+		utils::Clock::time_point m_time;
 		/**
 		*\name
 		*	Global.

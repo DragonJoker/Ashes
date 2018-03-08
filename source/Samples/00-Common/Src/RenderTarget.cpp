@@ -141,7 +141,7 @@ namespace common
 					0u,
 					renderer::TextureType::e2D,
 					image->format,
-					renderer::Extent3D{ image->size[0], image->size[1], 1u },
+					renderer::Extent3D{ image->size.width, image->size.height, 1u },
 					4u,
 					1u,
 					renderer::SampleCountFlag::e1,

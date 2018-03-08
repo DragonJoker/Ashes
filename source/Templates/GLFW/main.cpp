@@ -8,9 +8,9 @@
 #include <Core/SwapChain.hpp>
 #include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
-#include <RenderPass/RenderPassAttachment.hpp>
+#include <RenderPass/AttachmentDescription.hpp>
 #include <RenderPass/RenderSubpass.hpp>
-#include <RenderPass/RenderSubpassAttachment.hpp>
+#include <RenderPass/AttachmentReference.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 
 #include <GLFW/glfw3.h>
@@ -185,7 +185,7 @@ std::vector< common::RendererPlugin > doListPlugins( common::RendererFactory & f
 renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
 	, renderer::SwapChain const & swapChain )
 {
-	renderer::RenderPassAttachmentArray attaches
+	renderer::AttachmentDescriptionArray attaches
 	{
 		// We'll have only one colour attachment for the render pass.
 		{
@@ -214,14 +214,14 @@ renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
 	// In our case, this subpass is also the only one,
 	// its only attachment is the render pass' one.
 	// We want this attachment to be transitioned to colour attachment, so we can write into it.
-	renderer::RenderSubpassAttachmentArray subAttaches
+	renderer::AttachmentReferenceArray subAttaches
 	{
-		renderer::RenderSubpassAttachment{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
+		renderer::AttachmentReference{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
 	};
 	// We now create the subpasses.
 	// The subpass state is used to setup the needed states at the beginning of the subpass.
 	renderer::RenderSubpassPtrArray subpasses;
-	subpasses.emplace_back( device.createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+	subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
 		, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 			, renderer::AccessFlag::eColourAttachmentWrite }
 		, subAttaches ) );

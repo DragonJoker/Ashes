@@ -6,7 +6,9 @@ See LICENSE file in root folder.
 #define ___Renderer_RenderSubpass_HPP___
 #pragma once
 
-#include "RenderSubpassAttachment.hpp"
+#include "AttachmentReference.hpp"
+#include "RenderSubpassState.hpp"
+#include "SubpassDescription.hpp"
 
 namespace renderer
 {
@@ -20,7 +22,7 @@ namespace renderer
 	*/
 	class RenderSubpass
 	{
-	protected:
+	public:
 		/**
 		*\~english
 		*\brief
@@ -47,7 +49,7 @@ namespace renderer
 		*\param[in] depthAttach
 		*	Specifies which attachment will be used for depth/stencil data and the layout it will be in during the subpass.
 		*	Setting the attachment index to renderer::AttachmentUnused or leaving this pointer as \p nullptr indicates that no depth/stencil attachment will be used in the subpass.
-		*\param[in] preserveAttaches
+		*\param[in] reserveAttaches
 		*	An array of render pass attachment indices describing the attachments that are not used by a subpass, but whose contents must be preserved throughout the subpass.
 		*\~french
 		*\brief
@@ -74,28 +76,81 @@ namespace renderer
 		*\param[in] depthAttach
 		*	Définit quelle attache sera utilisée pour les données de profondeur/stencil et le layout qu'elle aura durant la sous-passe.
 		*	Si ce pointeur est \p nullptr, ou si l'indice de l'attache vaut renderer::AttachmentUnused, alors aucune attache de profondeur/stencil ne sera utilisée dans la sous-passe.
-		*\param[in] preserveAttaches
+		*\param[in] reserveAttaches
 		*	Un tableau d'indices d'attaches de la passe de rendu qui ne seront pas utilisées par une sous-passe, mais dont le contenu doit être préservé au travers de la sous-passe.
 		*/
-		RenderSubpass( Device const & device
-			, PipelineBindPoint pipelineBindPoint
+		RenderSubpass( PipelineBindPoint pipelineBindPoint
 			, RenderSubpassState const & state
-			, RenderSubpassAttachmentArray const & inputAttaches
-			, RenderSubpassAttachmentArray const & colourAttaches
-			, RenderSubpassAttachmentArray const & resolveAttaches
-			, RenderSubpassAttachment const * depthAttach
-			, UInt32Array const & preserveAttaches );
-
-	public:
+			, AttachmentReferenceArray const & inputAttaches
+			, AttachmentReferenceArray const & colourAttaches
+			, AttachmentReferenceArray const & resolveAttaches
+			, AttachmentReference const * depthAttach
+			, UInt32Array const & reserveAttaches );
 		/**
 		*\~english
 		*\brief
-		*	Destructor.
+		*	Constructor.
+		*\param[in] pipelineBindPoint
+		*	Specifies whether this is a compute or graphics subpass.
+		*\param[in] state
+		*	The state wanted when beginning the subpass.
+		*\param[in] colourAttaches
+		*	Lists which of the render pass’s attachments will be used as color attachments in the subpass, and what layout each attachment will be in during the subpass.
 		*\~french
 		*\brief
-		*	Destructeur.
+		*	Constructeur.
+		*\param[in] pipelineBindPoint
+		*	Définit si c'est une sous-passe de calcul ou graphique.
+		*\param[in] state
+		*	L'état voulu au démarrage de la sous-passe.
+		*\param[in] colourAttaches
+		*	Liste quelles attaches de la passe de rendu seront utilisées comme attaches couleur durant la sous-passe, et quel layout chaque attache aura pendant la sous-passe.
 		*/
-		virtual ~RenderSubpass() = default;
+		RenderSubpass( PipelineBindPoint pipelineBindPoint
+			, RenderSubpassState const & state
+			, AttachmentReferenceArray const & colourAttaches );
+		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] pipelineBindPoint
+		*	Specifies whether this is a compute or graphics subpass.
+		*\param[in] state
+		*	The state wanted when beginning the subpass.
+		*\param[in] colourAttaches
+		*	Lists which of the render pass’s attachments will be used as color attachments in the subpass, and what layout each attachment will be in during the subpass.
+		*\param[in] depthAttach
+		*	Specifies which attachment will be used for depth/stencil data and the layout it will be in during the subpass.
+		*\~french
+		*\brief
+		*	Constructeur.
+		*\param[in] pipelineBindPoint
+		*	Définit si c'est une sous-passe de calcul ou graphique.
+		*\param[in] state
+		*	L'état voulu au démarrage de la sous-passe.
+		*\param[in] colourAttaches
+		*	Liste quelles attaches de la passe de rendu seront utilisées comme attaches couleur durant la sous-passe, et quel layout chaque attache aura pendant la sous-passe.
+		*\param[in] depthAttach
+		*	Définit quelle attache sera utilisée pour les données de profondeur/stencil et le layout qu'elle aura durant la sous-passe.
+		*/
+		RenderSubpass( PipelineBindPoint pipelineBindPoint
+			, RenderSubpassState const & state
+			, AttachmentReferenceArray const & colourAttaches
+			, AttachmentReference const & depthAttach );
+
+		inline SubpassDescription const & getDescription()const
+		{
+			return m_description;
+		}
+
+		inline RenderSubpassState const & getNeededState()const
+		{
+			return m_neededState;
+		}
+
+	private:
+		SubpassDescription m_description{};
+		RenderSubpassState m_neededState{};
 	};
 }
 

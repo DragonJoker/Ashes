@@ -91,7 +91,7 @@ namespace common
 			doInitialise( *m_device
 				, { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 			m_gui = std::make_unique< Gui >( *m_device
-				, renderer::UIVec2{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
+				, renderer::Extent2D{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 			m_gui->updateView( m_renderTarget->getColourView() );
 			m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
 				, renderer::WrapMode::eClampToEdge
@@ -160,12 +160,12 @@ namespace common
 
 	void RenderPanel::update()
 	{
-		static renderer::Clock::time_point save = renderer::Clock::now();
-		auto duration = std::chrono::duration_cast< std::chrono::microseconds >( renderer::Clock::now() - save );
+		static utils::Clock::time_point save = utils::Clock::now();
+		auto duration = std::chrono::duration_cast< std::chrono::microseconds >( utils::Clock::now() - save );
 		doUpdate();
 		m_renderTarget->update( duration );
 		doUpdateGui( duration );
-		save = renderer::Clock::now();
+		save = utils::Clock::now();
 	}
 
 	void RenderPanel::draw()
@@ -279,7 +279,7 @@ namespace common
 
 	void RenderPanel::doCreateRenderPass()
 	{
-		renderer::RenderPassAttachmentArray attaches
+		renderer::AttachmentDescriptionArray attaches
 		{
 			{
 				0u,
@@ -293,12 +293,12 @@ namespace common
 				renderer::ImageLayout::ePresentSrc,
 			}
 		};
-		renderer::RenderSubpassAttachmentArray subAttaches
+		renderer::AttachmentReferenceArray subAttaches
 		{
 			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
 		};
 		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( m_device->createRenderSubpass( renderer::PipelineBindPoint::eGraphics
+		subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
 			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
 				, renderer::AccessFlag::eColourAttachmentWrite }
 			, subAttaches ) );

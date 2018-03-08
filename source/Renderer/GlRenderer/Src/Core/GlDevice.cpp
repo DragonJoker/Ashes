@@ -23,10 +23,11 @@ See LICENSE file in root folder.
 #include "Miscellaneous/GlQueryPool.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlRenderPass.hpp"
-#include "RenderPass/GlRenderSubpass.hpp"
 #include "Shader/GlShaderModule.hpp"
 #include "Sync/GlFence.hpp"
 #include "Sync/GlSemaphore.hpp"
+
+#include <RenderPass/RenderPassCreateInfo.hpp>
 
 #include <iostream>
 
@@ -346,34 +347,9 @@ namespace gl_renderer
 		disable();
 	}
 
-	renderer::RenderPassPtr Device::createRenderPass( renderer::RenderPassAttachmentArray const & attaches
-		, renderer::RenderSubpassPtrArray && subpasses
-		, renderer::RenderSubpassState const & initialState
-		, renderer::RenderSubpassState const & finalState )const
+	renderer::RenderPassPtr Device::createRenderPass( renderer::RenderPassCreateInfo createInfo )const
 	{
-		return std::make_unique< RenderPass >( *this
-			, attaches
-			, std::move( subpasses )
-			, initialState
-			, finalState );
-	}
-
-	renderer::RenderSubpassPtr Device::createRenderSubpass( renderer::PipelineBindPoint pipelineBindPoint
-		, renderer::RenderSubpassState const & state
-		, renderer::RenderSubpassAttachmentArray const & inputAttaches
-		, renderer::RenderSubpassAttachmentArray const & colourAttaches
-		, renderer::RenderSubpassAttachmentArray const & resolveAttaches
-		, renderer::RenderSubpassAttachment const * depthAttach
-		, renderer::UInt32Array const & preserveAttaches )const
-	{
-		return std::make_unique< RenderSubpass >( *this
-			, pipelineBindPoint
-			, state
-			, inputAttaches
-			, colourAttaches
-			, resolveAttaches
-			, depthAttach
-			, preserveAttaches );
+		return std::make_unique< RenderPass >( *this, std::move( createInfo ) );
 	}
 
 	renderer::PipelineLayoutPtr Device::createPipelineLayout( renderer::DescriptorSetLayoutCRefArray const & setLayouts

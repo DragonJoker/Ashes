@@ -169,7 +169,7 @@ namespace vkapp
 			renderer::Format::eR32G32B32A32_SFLOAT,
 		};
 		size_t index = 0u;
-		renderer::UIVec2 size
+		renderer::Extent2D size
 		{
 			getColourView().getTexture().getDimensions().width,
 			getColourView().getTexture().getDimensions().height,

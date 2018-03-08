@@ -156,7 +156,7 @@ namespace vk_renderer
 			, char const * const action );
 		void doResetSwapChain();
 		renderer::FrameBufferAttachmentArray doPrepareAttaches( uint32_t backBuffer
-			, renderer::RenderPassAttachmentArray const & attaches )const;
+			, renderer::AttachmentDescriptionArray const & attaches )const;
 
 	protected:
 		Device const & m_device;
