@@ -9,7 +9,10 @@ namespace renderer
 	ComputePipeline::ComputePipeline( Device const & device
 		, PipelineLayout const & layout
 		, ComputePipelineCreateInfo && createInfo )
-		: m_createInfo{ std::move( createInfo ) }
+		: m_createInfo
+		{
+			std::move( createInfo.stage )
+		}
 		, m_layout{ layout }
 	{
 	}
