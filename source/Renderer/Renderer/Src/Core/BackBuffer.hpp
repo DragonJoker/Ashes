@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "Image/Texture.hpp"
+#include "Image/TextureView.hpp"
 
 namespace renderer
 {

@@ -31,10 +31,9 @@ namespace gl_renderer
 
 	renderer::FrameBufferPtrArray SwapChain::createFrameBuffers( renderer::RenderPass const & renderPass )const
 	{
-		return renderer::FrameBufferPtrArray
-		{
-			std::make_shared< FrameBuffer >( renderPass, m_dimensions )
-		};
+		renderer::FrameBufferPtrArray result;
+		result.emplace_back( std::make_unique< FrameBuffer >( renderPass, m_dimensions ) );
+		return result;
 	}
 
 	renderer::CommandBufferPtrArray SwapChain::createCommandBuffers()const

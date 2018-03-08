@@ -97,30 +97,32 @@ namespace gl_renderer
 		, renderer::FrameBuffer const & frameBuffer
 		, renderer::ClearValueArray const & clearValues
 		, renderer::SubpassContents contents
-		, uint32_t index )
+		, RenderSubpass const & subpass )
 		: m_renderPass{ static_cast< RenderPass const & >( renderPass ) }
-		, m_subpass{ static_cast< RenderSubpass const & >( *renderPass.getSubpasses()[index] ) }
+		, m_subpass{ subpass }
 		, m_frameBuffer{ static_cast< FrameBuffer const & >( frameBuffer ) }
 		, m_clearValues{ clearValues }
 	{
-		assert( ( m_frameBuffer.getFrameBuffer() && m_frameBuffer.getSize() == m_clearValues.size() )
-			|| !m_frameBuffer.getFrameBuffer() );
 	}
 
 	void BeginRenderPassCommand::apply()const
 	{
 		glLogCommand( "BeginRenderPassCommand" );
-		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
 
 		GLint colourIndex = 0u;
 		GLint depthStencilIndex = 0u;
 
-		if ( m_frameBuffer.getFrameBuffer() )
+		if ( m_frameBuffer.getFrameBuffer()
+			&& ( m_subpass.getAttaches().size() != 1
+				|| ( m_subpass.getAttaches().size() == 1 && m_frameBuffer.getColourAttaches()[m_subpass.getAttaches()[0].attachment].object != GL_INVALID_INDEX ) ) )
 		{
+			assert( ( m_frameBuffer.getFrameBuffer() && ( m_frameBuffer.getSize() - m_subpass.getResolveAttachesCount() ) == m_clearValues.size() )
+				|| !m_frameBuffer.getFrameBuffer() );
+			glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
 			m_frameBuffer.setDrawBuffers( m_renderPass.getAttaches() );
 			auto it = m_frameBuffer.begin();
 
-			for ( size_t i = 0; i < m_frameBuffer.getSize(); ++i )
+			for ( size_t i = 0; i < m_frameBuffer.getSize() && i < m_clearValues.size(); ++i )
 			{
 				auto & clearValue = m_clearValues[i];
 				auto & attach = *it;
@@ -137,19 +139,40 @@ namespace gl_renderer
 
 			m_frameBuffer.setDrawBuffers( m_subpass.getAttaches() );
 		}
+		else if ( m_frameBuffer.getFrameBuffer()
+			&& m_subpass.getAttaches().size() == 1
+			&& m_frameBuffer.getColourAttaches()[m_subpass.getAttaches()[0].attachment].object == GL_INVALID_INDEX )
+		{
+			glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, 0 );
+			auto & subAttach = m_subpass.getAttaches()[0];
+			auto & attach = *( m_renderPass.begin() + subAttach.attachment );
+
+			if ( attach.loadOp == renderer::AttachmentLoadOp::eClear )
+			{
+				auto & clearValue = m_clearValues[subAttach.attachment];
+				auto bitfield = doClearBack( attach
+					, clearValue
+					, colourIndex
+					, depthStencilIndex );
+				glLogCall( gl::Clear, bitfield );
+			}
+		}
 		else if ( !m_clearValues.empty() )
 		{
+			assert( ( m_frameBuffer.getFrameBuffer() && ( m_frameBuffer.getSize() - m_subpass.getResolveAttachesCount() ) == m_clearValues.size() )
+				|| !m_frameBuffer.getFrameBuffer() );
+			glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, 0 );
 			GLbitfield bitfield{ 0u };
 			auto it = m_renderPass.begin();
 
-			for ( size_t i = 0; i < m_renderPass.getSize(); ++i )
+			for ( size_t i = 0; i < m_renderPass.getSize() && i < m_clearValues.size(); ++i )
 			{
-				auto & clearValue = m_clearValues[i];
 				auto & attach = *it;
 				++it;
 
 				if ( attach.loadOp == renderer::AttachmentLoadOp::eClear )
 				{
+					auto & clearValue = m_clearValues[i];
 					bitfield |= doClearBack( attach
 						, clearValue
 						, colourIndex

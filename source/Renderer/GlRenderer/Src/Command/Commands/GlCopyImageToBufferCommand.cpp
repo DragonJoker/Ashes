@@ -37,7 +37,7 @@ namespace gl_renderer
 
 			for ( auto & copy : copies )
 			{
-				result.push_back( texture.createView( viewType
+				result.emplace_back( texture.createView( viewType
 					, texture.getFormat()
 					, copy.imageSubresource.mipLevel
 					, 1u
@@ -59,6 +59,18 @@ namespace gl_renderer
 		, m_format{ getFormat( m_internal ) }
 		, m_type{ getType( m_internal ) }
 		, m_target{ convert( m_src.getType(), 1u ) }
+		, m_views{ createViews( m_src, m_copyInfo ) }
+	{
+	}
+
+	CopyImageToBufferCommand::CopyImageToBufferCommand( CopyImageToBufferCommand const & rhs )
+		: m_src{ rhs.m_src }
+		, m_dst{ rhs.m_dst }
+		, m_copyInfo{ rhs.m_copyInfo }
+		, m_internal{ rhs.m_internal }
+		, m_format{ rhs.m_format }
+		, m_type{ rhs.m_type }
+		, m_target{ rhs.m_target }
 		, m_views{ createViews( m_src, m_copyInfo ) }
 	{
 	}

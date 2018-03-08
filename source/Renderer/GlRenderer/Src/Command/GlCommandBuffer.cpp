@@ -17,6 +17,7 @@ See LICENSE file in root folder.
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 #include "RenderPass/GlRenderPass.hpp"
+#include "RenderPass/GlRenderSubpass.hpp"
 #include "Sync/GlBufferMemoryBarrier.hpp"
 #include "Sync/GlImageMemoryBarrier.hpp"
 
@@ -43,6 +44,7 @@ See LICENSE file in root folder.
 #include "Commands/GlDrawIndirectCommand.hpp"
 #include "Commands/GlEndQueryCommand.hpp"
 #include "Commands/GlEndRenderPassCommand.hpp"
+#include "Commands/GlEndSubpassCommand.hpp"
 #include "Commands/GlImageMemoryBarrierCommand.hpp"
 #include "Commands/GlNextSubpassCommand.hpp"
 #include "Commands/GlPushConstantsCommand.hpp"
@@ -102,26 +104,34 @@ namespace gl_renderer
 		, renderer::ClearValueArray const & clearValues
 		, renderer::SubpassContents contents )const
 	{
-		m_state.m_currentRenderPass = &renderPass;
+		m_state.m_currentRenderPass = &static_cast< RenderPass const & >( renderPass );
 		m_state.m_currentFrameBuffer = &frameBuffer;
-		m_state.m_currentSubpass = 0u;
+		m_state.m_currentSubpassIndex = 0u;
+		m_state.m_currentSubpass = &static_cast< RenderSubpass const & >( m_state.m_currentRenderPass->getSubpasses()[m_state.m_currentSubpassIndex++].get() );
 		m_commands.emplace_back( std::make_unique< BeginRenderPassCommand >( renderPass
 			, frameBuffer
 			, clearValues
 			, contents
-			, m_state.m_currentSubpass++ ) );
+			, *m_state.m_currentSubpass ) );
 	}
 
 	void CommandBuffer::nextSubpass( renderer::SubpassContents contents )const
 	{
+		m_commands.emplace_back( std::make_unique< EndSubpassCommand >( m_device
+			, *m_state.m_currentFrameBuffer
+			, *m_state.m_currentSubpass ) );
+		m_state.m_currentSubpass = &static_cast< RenderSubpass const & >( m_state.m_currentRenderPass->getSubpasses()[m_state.m_currentSubpassIndex++].get() );
 		m_commands.emplace_back( std::make_unique< NextSubpassCommand >( *m_state.m_currentRenderPass
 			, *m_state.m_currentFrameBuffer
-			, m_state.m_currentSubpass++ ) );
+			, *m_state.m_currentSubpass ) );
 		m_state.m_boundVbos.clear();
 	}
 
 	void CommandBuffer::endRenderPass()const
 	{
+		m_commands.emplace_back( std::make_unique< EndSubpassCommand >( m_device
+			, *m_state.m_currentFrameBuffer
+			, *m_state.m_currentSubpass ) );
 		m_commands.emplace_back( std::make_unique< EndRenderPassCommand >() );
 		m_state.m_boundVbos.clear();
 	}

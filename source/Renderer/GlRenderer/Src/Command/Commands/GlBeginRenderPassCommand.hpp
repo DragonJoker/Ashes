@@ -32,7 +32,7 @@ namespace gl_renderer
 			, renderer::FrameBuffer const & frameBuffer
 			, renderer::ClearValueArray const & clearValues
 			, renderer::SubpassContents contents
-			, uint32_t index );
+			, RenderSubpass const & subpass );
 
 		void apply()const override;
 		CommandPtr clone()const override;

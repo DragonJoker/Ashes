@@ -44,7 +44,7 @@ namespace gl_renderer
 	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::Extent2D const & dimensions
 		, renderer::FrameBufferAttachmentArray && textures )const
 	{
-		return std::make_shared< FrameBuffer >( *this
+		return std::make_unique< FrameBuffer >( *this
 			, dimensions
 			, std::move( textures ) );
 	}

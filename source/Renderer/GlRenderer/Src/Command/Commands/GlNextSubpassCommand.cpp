@@ -15,9 +15,9 @@ namespace gl_renderer
 {
 	NextSubpassCommand::NextSubpassCommand( renderer::RenderPass const & renderPass
 		, renderer::FrameBuffer const & frameBuffer
-		, uint32_t index )
+		, RenderSubpass const & subpass )
 		: m_renderPass{ static_cast< RenderPass const & >( renderPass ) }
-		, m_subpass{ static_cast< RenderSubpass const & >( *renderPass.getSubpasses()[index] ) }
+		, m_subpass{ subpass }
 		, m_frameBuffer{ static_cast< FrameBuffer const & >( frameBuffer ) }
 	{
 	}

@@ -53,6 +53,11 @@ namespace gl_renderer
 		*\copydoc	renderer::Texture::generateMipmaps
 		*/
 		void generateMipmaps()const override;
+
+		inline bool hasImage()const noexcept
+		{
+			return m_texture != GL_INVALID_INDEX;
+		}
 		/**
 		*\return
 		*	L'image OpenGL.
@@ -61,6 +66,14 @@ namespace gl_renderer
 		{
 			assert( m_texture != GL_INVALID_INDEX );
 			return m_texture;
+		}
+		/**
+		*\return
+		*	Le nombre d'échantillons.
+		*/
+		inline renderer::SampleCountFlag getSamplesCount()const noexcept
+		{
+			return m_samples;
 		}
 
 	private:
@@ -95,6 +108,7 @@ namespace gl_renderer
 
 	private:
 		Device const & m_device;
+		renderer::SampleCountFlag m_samples;
 		GlTextureType m_target;
 		GLuint m_texture{ GL_INVALID_INDEX };
 	};

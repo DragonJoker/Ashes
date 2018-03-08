@@ -90,6 +90,13 @@ namespace std
 
 namespace renderer
 {
+	using ByteArray = std::vector< uint8_t >;
+	using UInt16Array = std::vector< uint16_t >;
+	using UInt32Array = std::vector< uint32_t >;
+	using UInt64Array = std::vector< uint64_t >;
+	using FloatArray = std::vector< float >;
+	using StringArray = std::vector< std::string >;
+
 	template< typename T >
 	class Buffer;
 	template< typename T >
@@ -235,6 +242,7 @@ namespace renderer
 	using DescriptorSetPtr = std::unique_ptr< DescriptorSet >;
 	using DevicePtr = std::unique_ptr< Device >;
 	using FencePtr = std::unique_ptr< Fence >;
+	using FrameBufferPtr = std::unique_ptr< FrameBuffer >;
 	using IWindowHandlePtr = std::unique_ptr< IWindowHandle >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using PipelinePtr = std::unique_ptr< Pipeline >;
@@ -245,12 +253,16 @@ namespace renderer
 	using RenderingResourcesPtr = std::unique_ptr< RenderingResources >;
 	using RenderPassPtr = std::unique_ptr< RenderPass >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
+	using SamplerPtr = std::unique_ptr< Sampler >;
 	using SemaphorePtr = std::unique_ptr< Semaphore >;
 	using ShaderModulePtr = std::unique_ptr< ShaderModule >;
 	using ShaderProgramPtr = std::unique_ptr< ShaderProgram >;
 	using ShaderStorageBufferBasePtr = std::unique_ptr< ShaderStorageBufferBase >;
 	using SpecialisationInfoBasePtr = std::unique_ptr< SpecialisationInfoBase >;
+	using StagingBufferPtr = std::unique_ptr< StagingBuffer >;
 	using SwapChainPtr = std::unique_ptr< SwapChain >;
+	using TexturePtr = std::unique_ptr< Texture >;
+	using TextureViewPtr = std::unique_ptr< TextureView >;
 	using VertexBufferBasePtr = std::unique_ptr< VertexBufferBase >;
 	using VertexLayoutPtr = std::unique_ptr< VertexLayout >;
 	using UniformBufferBasePtr = std::unique_ptr< UniformBufferBase >;
@@ -274,11 +286,6 @@ namespace renderer
 	using VertexInputAttributeDescriptionArray = std::vector< VertexInputAttributeDescription >;
 	using VertexInputBindingDescriptionArray = std::vector< VertexInputBindingDescription >;
 
-	using FrameBufferPtr = std::shared_ptr< FrameBuffer >;
-	using SamplerPtr = std::shared_ptr< Sampler >;
-	using StagingBufferPtr = std::shared_ptr< StagingBuffer >;
-	using TexturePtr = std::shared_ptr< Texture >;
-	using TextureViewPtr = std::shared_ptr< TextureView >;
 
 	using FrameBufferPtrArray = std::vector< FrameBufferPtr >;
 	using BackBufferPtrArray = std::vector< BackBufferPtr >;
