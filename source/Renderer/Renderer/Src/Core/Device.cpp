@@ -4,9 +4,11 @@ See LICENSE file in root folder.
 */
 #include "Core/Device.hpp"
 
+#include "Buffer/Buffer.hpp"
 #include "Core/Renderer.hpp"
 #include "Core/SwapChain.hpp"
 #include "Image/Sampler.hpp"
+#include "Miscellaneous/MemoryRequirements.hpp"
 #include "Pipeline/PipelineLayout.hpp"
 #include "Pipeline/VertexInputState.hpp"
 #include "RenderPass/RenderPass.hpp"
@@ -52,6 +54,23 @@ namespace renderer
 		result[2][2] = -float( 1 );
 		result[2][3] = -float( 1 );
 		result[3][2] = -float( 2 ) * zNear;
+		return result;
+	}
+
+	BufferBasePtr Device::createBuffer( uint32_t size
+		, BufferTargets target
+		, MemoryPropertyFlags flags )const
+	{
+		auto result = createBuffer( size, target );
+		result->bindMemory( allocateMemory( result->getMemoryRequirements(), flags ) );
+		return result;
+	}
+
+	TexturePtr Device::createTexture( ImageCreateInfo const & createInfo
+		, MemoryPropertyFlags flags )const
+	{
+		auto result = createTexture( createInfo );
+		result->bindMemory( allocateMemory( result->getMemoryRequirements(), flags ) );
 		return result;
 	}
 

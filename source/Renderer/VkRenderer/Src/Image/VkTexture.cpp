@@ -3,10 +3,11 @@
 #include "Command/VkCommandBuffer.hpp"
 #include "Command/VkQueue.hpp"
 #include "Core/VkDevice.hpp"
+#include "Core/VkPhysicalDevice.hpp"
 #include "Core/VkRenderer.hpp"
 #include "Sync/VkImageMemoryBarrier.hpp"
 #include "Image/VkImageSubresourceRange.hpp"
-#include "Miscellaneous/VkMemoryStorage.hpp"
+#include "Miscellaneous/VkDeviceMemory.hpp"
 #include "Command/VkQueue.hpp"
 #include "Image/VkTextureView.hpp"
 
@@ -103,8 +104,7 @@ namespace vk_renderer
 	}
 
 	Texture::Texture( Device const & device
-		, renderer::ImageCreateInfo const & createInfo
-		, renderer::MemoryPropertyFlags memoryFlags )
+		, renderer::ImageCreateInfo const & createInfo )
 		: renderer::Texture{ device
 			, createInfo.imageType
 			, createInfo.format
@@ -145,19 +145,6 @@ namespace vk_renderer
 		{
 			throw std::runtime_error{ "Image creation failed: " + getLastError() };
 		}
-
-		m_storage = std::make_unique< ImageStorage >( m_device
-			, m_image
-			, convert( memoryFlags ) );
-		res = m_device.vkBindImageMemory( m_device
-			, m_image
-			, *m_storage
-			, 0 );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Image storage binding failed: " + getLastError() };
-		}
 	}
 
 	Texture::Texture( Device const & device
@@ -196,8 +183,7 @@ namespace vk_renderer
 				renderer::SharingMode::eExclusive,
 				{},
 				renderer::ImageLayout::eUndefined
-			}
-			, memoryFlags }
+			} }
 	{
 	}
 
@@ -211,41 +197,9 @@ namespace vk_renderer
 		}
 	}
 
-	renderer::Texture::Mapped Texture::lock( uint32_t offset
-		, uint32_t size
-		, VkMemoryMapFlags flags )const
+	renderer::MemoryRequirements Texture::getMemoryRequirements()const
 	{
-		renderer::Texture::Mapped mapped{};
-		VkImageSubresource subResource{};
-		subResource.aspectMask = getImageAspectFlags( getFormat() );
-		VkSubresourceLayout subResourceLayout;
-		m_device.vkGetImageSubresourceLayout( m_device, m_image, &subResource, &subResourceLayout );
-
-		mapped.data = m_storage->lock( offset
-			, size
-			, flags );
-
-		if ( mapped.data )
-		{
-			mapped.arrayPitch = subResourceLayout.arrayPitch;
-			mapped.depthPitch = subResourceLayout.depthPitch;
-			mapped.rowPitch = subResourceLayout.rowPitch;
-			mapped.size = subResourceLayout.size;
-			mapped.data += subResourceLayout.offset;
-		}
-
-		return mapped;
-	}
-
-	void Texture::flush( uint32_t offset
-		, uint32_t size )const
-	{
-		m_storage->flush( offset, size );
-	}
-
-	void Texture::unlock()const
-	{
-		m_storage->unlock();
+		return m_device.getImageMemoryRequirements( m_image );
 	}
 
 	renderer::TextureViewPtr Texture::createView( renderer::ImageViewCreateInfo const & createInfo )const
@@ -306,14 +260,14 @@ namespace vk_renderer
 				int32_t const mipHeight = height >> i;
 
 				VkImageBlit imageBlit = {};
-				imageBlit.srcSubresource.aspectMask = getImageAspectFlags( getFormat() );
+				imageBlit.srcSubresource.aspectMask = convert( getAspectMask( getFormat() ) );
 				imageBlit.srcSubresource.baseArrayLayer = 0;
 				imageBlit.srcSubresource.layerCount = 1;
 				imageBlit.srcSubresource.mipLevel = 0;
 				imageBlit.srcOffsets[0] = { 0, 0, 0 };
 				imageBlit.srcOffsets[1] = { width, height, 1 };
 
-				imageBlit.dstSubresource.aspectMask = getImageAspectFlags( getFormat() );
+				imageBlit.dstSubresource.aspectMask = convert( getAspectMask( getFormat() ) );
 				imageBlit.dstSubresource.baseArrayLayer = 0;
 				imageBlit.dstSubresource.layerCount = 1;
 				imageBlit.dstSubresource.mipLevel = i;
@@ -333,6 +287,19 @@ namespace vk_renderer
 			commandBuffer->end();
 			m_device.getGraphicsQueue().submit( *commandBuffer, nullptr );
 			m_device.waitIdle();
+		}
+	}
+
+	void Texture::doBindMemory()
+	{
+		auto res = m_device.vkBindImageMemory( m_device
+			, m_image
+			, static_cast< DeviceMemory const & >( *m_storage )
+			, 0 );
+
+		if ( !checkError( res ) )
+		{
+			throw std::runtime_error{ "Image storage binding failed: " + getLastError() };
 		}
 	}
 }

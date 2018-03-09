@@ -14,55 +14,18 @@
 
 namespace gl_renderer
 {
-	/**
-	*\brief
-	*	Classe regroupant les ressources de rendu nécessaires au dessin d'une image.
-	*/
 	class Buffer
 		: public renderer::BufferBase
 	{
 	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] count
-		*	Le nombre d'éléments du tampon.
-		*\param[in] target
-		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] flags
-		*	Les indicateurs de mémoire du tampon.
-		*/
 		Buffer( renderer::Device const & device
 			, uint32_t size
-			, renderer::BufferTargets target
-			, renderer::MemoryPropertyFlags flags );
-		/**
-		*\brief
-		*	Destructeur.
-		*/
+			, renderer::BufferTargets target );
 		~Buffer();
 		/**
-		*\copydoc	renderer::BufferBase::lock
+		*\copydoc	renderer::BufferBase::getMemoryRequirements
 		*/
-		uint8_t * lock( uint32_t offset
-			, uint32_t size
-			, renderer::MemoryMapFlags flags )const override;
-		/**
-		*\copydoc	renderer::BufferBase::flush
-		*/
-		void flush( uint32_t offset
-			, uint32_t size )const override;
-		/**
-		*\copydoc	renderer::BufferBase::invalidate
-		*/
-		void invalidate( uint32_t offset
-			, uint32_t size )const override;
-		/**
-		*\copydoc	renderer::BufferBase::unlock
-		*/
-		void unlock()const override;
+		renderer::MemoryRequirements getMemoryRequirements()const override;
 		/**
 		*\copydoc	renderer::BufferBase::makeTransferDestination
 		*/
@@ -100,6 +63,9 @@ namespace gl_renderer
 		{
 			return m_target;
 		}
+
+	private:
+		void doBindMemory()override;
 
 	public:
 		mutable BufferDestroySignal onDestroy;

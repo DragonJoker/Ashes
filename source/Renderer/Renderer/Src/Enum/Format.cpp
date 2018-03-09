@@ -187,17 +187,6 @@ namespace renderer
 			&& format <= Format::eCompressed_END;
 	}
 
-	ImageAspectFlags getAspectMask( Format format )noexcept
-	{
-		return isDepthStencilFormat( format )
-			? ImageAspectFlags( ImageAspectFlag::eDepth | ImageAspectFlag::eStencil )
-			: isDepthFormat( format )
-				? ImageAspectFlags( ImageAspectFlag::eDepth )
-				: isStencilFormat( format )
-					? ImageAspectFlags( ImageAspectFlag::eStencil )
-					: ImageAspectFlags( ImageAspectFlag::eColour );
-	}
-
 	std::string getName( Format value )
 	{
 		static std::vector< std::string > const names

@@ -4,8 +4,6 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "RendererPrerequisites.hpp"
-
 namespace renderer
 {
 	/**
@@ -381,23 +379,6 @@ namespace renderer
 			|| isStencilFormat( format )
 			|| isDepthFormat( format );
 	}
-	/**
-	*\~french
-	*\brief
-	*	Récupère le masque d'aspects correspondant au renderer::Format donné.
-	*\param[in] format
-	*	Le renderer::Format.
-	*\return
-	*	Les aspects.
-	*\~english
-	*\brief
-	*	Retrieves the aspects mask matching given renderer::Format.
-	*\param[in] format
-	*	The renderer::Format.
-	*\return
-	*	The aspects.
-	*/
-	ImageAspectFlags getAspectMask( Format format )noexcept;
 	/**
 	*\~english
 	*\brief

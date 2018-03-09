@@ -6,9 +6,10 @@ See LICENSE file in root folder.
 #define ___Renderer_Texture_HPP___
 #pragma once
 
-#include "ComponentMapping.hpp"
-#include "ImageCreateInfo.hpp"
-#include "ImageViewCreateInfo.hpp"
+#include "Image/ComponentMapping.hpp"
+#include "Image/ImageCreateInfo.hpp"
+#include "Image/ImageViewCreateInfo.hpp"
+#include "Miscellaneous/DeviceMemory.hpp"
 
 namespace renderer
 {
@@ -74,6 +75,100 @@ namespace renderer
 		*	Destructeur.
 		*/
 		virtual ~Texture() = default;
+		/**
+		*\~english
+		*\brief
+		*	Binds this buffer to given device memory object.
+		*\param[in] memory
+		*	The memory object.
+		*\~french
+		*\brief
+		*	Lie ce tampon à l'objet mémoire donné.
+		*\param[in] memory
+		*	L'object mémoire de périphérique.
+		*/
+		void bindMemory( DeviceMemoryPtr memory );
+		/**
+		*\~french
+		*\brief
+		*	Mappe la mémoire du tampon en RAM.
+		*\param[in] offset
+		*	L'offset à partir duquel la mémoire du tampon est mappée.
+		*\param[in] size
+		*	La taille en octets de la mémoire à mapper.
+		*\param[in] flags
+		*	Indicateurs de configuration du mapping.
+		*\return
+		*	\p nullptr si le mapping a échoué.
+		*\~english
+		*\brief
+		*	Maps the buffer's memory in RAM.
+		*\param[in] offset
+		*	The memory mapping starting offset.
+		*\param[in] size
+		*	The memory mappping size.
+		*\param[in] flags
+		*	The memory mapping flags.
+		*\return
+		*	\p nullptr if the mapping failed.
+		*/
+		Mapped lock( uint32_t offset
+			, uint32_t size
+			, MemoryMapFlags flags )const;
+		/**
+		*\~english
+		*\brief
+		*	Invalidates the buffer content.
+		*\param[in] offset
+		*	The mapped memory starting offset.
+		*\param[in] size
+		*	The range size.
+		*\~french
+		*\brief
+		*	Invalide le contenu du tampon.
+		*\param[in] offset
+		*	L'offset de la mémoire mappée.
+		*\param[in] size
+		*	La taille en octets de la mémoire mappée.
+		*/
+		void invalidate( uint32_t offset
+			, uint32_t size )const;
+		/**
+		*\~english
+		*\brief
+		*	Updates the VRAM.
+		*\param[in] offset
+		*	The mapped memory starting offset.
+		*\param[in] size
+		*	The range size.
+		*\~french
+		*\brief
+		*	Met à jour la VRAM.
+		*\param[in] offset
+		*	L'offset de la mémoire mappée.
+		*\param[in] size
+		*	La taille en octets de la mémoire mappée.
+		*/
+		void flush( uint32_t offset
+			, uint32_t size )const;
+		/**
+		*\~english
+		*\brief
+		*	Unmaps the buffer's memory from RAM.
+		*\~french
+		*\brief
+		*	Unmappe la mémoire du tampon de la RAM.
+		*/
+		void unlock()const;
+		/**
+		*\~english
+		*\return
+		*	The memory requirements for this buffer.
+		*\~french
+		*\return
+		*	Les exigences mémoire pour ce tampon.
+		*/
+		virtual MemoryRequirements getMemoryRequirements()const = 0;
 		/**
 		*\~french
 		*\brief
@@ -200,6 +295,9 @@ namespace renderer
 			return m_imageType;
 		}
 
+	private:
+		virtual void doBindMemory() = 0;
+
 	protected:
 		Device const & m_device;
 		TextureType m_imageType;
@@ -207,6 +305,7 @@ namespace renderer
 		Extent3D m_dimensions;
 		uint32_t m_mipLevels;
 		uint32_t m_arrayLayers;
+		DeviceMemoryPtr m_storage;
 	};
 }
 

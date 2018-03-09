@@ -10,7 +10,6 @@ See LICENSE file in root folder.
 #include "Core/VkDevice.hpp"
 #include "Image/VkTexture.hpp"
 #include "Image/VkTextureView.hpp"
-#include "Miscellaneous/VkMemoryStorage.hpp"
 #include "RenderPass/VkRenderPass.hpp"
 #include "Sync/VkFence.hpp"
 #include "Sync/VkImageMemoryBarrier.hpp"

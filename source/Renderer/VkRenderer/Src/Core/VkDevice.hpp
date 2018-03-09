@@ -53,10 +53,20 @@ namespace vk_renderer
 			, uint32_t maxSets
 			, renderer::DescriptorPoolSizeArray poolSizes )const override;
 		/**
+		*\copydoc	renderer::Device::allocateMemory
+		*/
+		renderer::DeviceMemoryPtr allocateMemory( renderer::MemoryRequirements const & requirements
+			, renderer::MemoryPropertyFlags flags )const override;
+		/**
 		*\copydoc	renderer::Device::createTexture
 		*/
-		renderer::TexturePtr createTexture( renderer::ImageCreateInfo const & createInfo
-			, renderer::MemoryPropertyFlags flags )const override;
+		renderer::TexturePtr createTexture( renderer::ImageCreateInfo const & createInfo )const override;
+		/**
+		*\copydoc	renderer::Device::getImageSubresourceLayout
+		*/
+		void getImageSubresourceLayout( renderer::Texture const & image
+			, renderer::ImageSubresource const & subresource
+			, renderer::SubresourceLayout & layout )const override;
 		/**
 		*\copydoc	renderer::Device::createSampler
 		*/
@@ -65,8 +75,7 @@ namespace vk_renderer
 		*\copydoc	renderer::Device::createBuffer
 		*/
 		renderer::BufferBasePtr createBuffer( uint32_t size
-			, renderer::BufferTargets target
-			, renderer::MemoryPropertyFlags memoryFlags )const override;
+			, renderer::BufferTargets target )const override;
 		/**
 		*\copydoc	renderer::Device::createBufferView
 		*/
@@ -154,7 +163,7 @@ namespace vk_renderer
 		*return
 		*	The memory requirements.
 		*/
-		VkMemoryRequirements getBufferMemoryRequirements( VkBuffer buffer )const;
+		renderer::MemoryRequirements getBufferMemoryRequirements( VkBuffer buffer )const;
 		/**
 		*\~french
 		*\brief
@@ -171,7 +180,7 @@ namespace vk_renderer
 		*return
 		*	The memory requirements.
 		*/
-		VkMemoryRequirements getImageMemoryRequirements( VkImage image )const;
+		renderer::MemoryRequirements getImageMemoryRequirements( VkImage image )const;
 		/**
 		*\~french
 		*\return
