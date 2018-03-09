@@ -42,10 +42,10 @@ namespace renderer
 		return isDepthStencilFormat( format )
 			? ImageAspectFlag::eDepth | ImageAspectFlag::eStencil
 			: ( isDepthFormat( format )
-				? ImageAspectFlag::eDepth
+				? ImageAspectFlags{ ImageAspectFlag::eDepth }
 				: ( isStencilFormat( format )
-					? ImageAspectFlag::eStencil
-					: ImageAspectFlag::eColour ) );
+					? ImageAspectFlags{ ImageAspectFlag::eStencil }
+					: ImageAspectFlags{ ImageAspectFlag::eColour } ) );
 	}
 }
 

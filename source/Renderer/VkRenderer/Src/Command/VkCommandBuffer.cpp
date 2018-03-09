@@ -10,7 +10,6 @@ See LICENSE file in root folder.
 #include "Core/VkDevice.hpp"
 #include "Core/VkRenderingResources.hpp"
 #include "Descriptor/VkDescriptorSet.hpp"
-#include "Descriptor/VkDescriptorSetBinding.hpp"
 #include "Image/VkImageSubresourceRange.hpp"
 #include "Image/VkTexture.hpp"
 #include "Image/VkTextureView.hpp"

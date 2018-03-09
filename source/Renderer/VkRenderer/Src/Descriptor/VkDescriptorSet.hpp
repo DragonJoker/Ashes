@@ -58,72 +58,6 @@ namespace vk_renderer
 		*/
 		~DescriptorSet();
 		/**
-		*\copydoc	renderer::DescriptorSet::createBinding
-		*/
-		renderer::CombinedTextureSamplerBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::TextureView const & view
-			, renderer::Sampler const & sampler
-			, renderer::ImageLayout layout
-			, uint32_t index )override;
-		/**
-		*\copydoc	renderer::DescriptorSet::createBinding
-		*/
-		renderer::SamplerBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::Sampler const & sampler
-			, uint32_t index )override;
-		/**
-		*\copydoc	renderer::DescriptorSet::createBinding
-		*/
-		renderer::SampledTextureBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::TextureView const & view
-			, renderer::ImageLayout layout
-			, uint32_t index )override;
-		/**
-		*\copydoc	renderer::DescriptorSet::createBinding
-		*/
-		renderer::StorageTextureBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::TextureView const & view
-			, uint32_t index )override;
-		/**
-		*\copydoc	renderer::DescriptorSet::createBinding
-		*/
-		renderer::UniformBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::UniformBufferBase const & uniformBuffer
-			, uint32_t offset
-			, uint32_t range
-			, uint32_t index )override;
-		/**
-		*\copydoc	renderer::DescriptorSet::createBinding
-		*/
-		renderer::StorageBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::BufferBase const & storageBuffer
-			, uint32_t offset
-			, uint32_t range
-			, uint32_t index )override;
-		/**
-		*\copydoc	renderer::DescriptorSet::createBinding
-		*/
-		renderer::TexelBufferBinding const & createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::BufferBase const & buffer
-			, renderer::BufferView const & view
-			, uint32_t index )override;
-		/**
-		*\copydoc	renderer::DescriptorSet::createDynamicBinding
-		*/
-		renderer::DynamicUniformBufferBinding const & createDynamicBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::UniformBufferBase const & uniformBuffer
-			, uint32_t offset
-			, uint32_t range
-			, uint32_t index = 0u )override;
-		/**
-		*\copydoc	renderer::DescriptorSet::createDynamicBinding
-		*/
-		renderer::DynamicStorageBufferBinding const & createDynamicBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-			, renderer::BufferBase const & storageBuffer
-			, uint32_t offset
-			, uint32_t range
-			, uint32_t index )override;
-		/**
 		*\copydoc	renderer::DescriptorSet::update
 		*/
 		void update()const override;
@@ -145,7 +79,6 @@ namespace vk_renderer
 		DescriptorPool const & m_pool;
 		DescriptorSetLayout const & m_layout;
 		VkDescriptorSet m_descriptorSet{};
-		std::vector< DescriptorSetBindingPtr > m_bindings;
 	};
 }
 
