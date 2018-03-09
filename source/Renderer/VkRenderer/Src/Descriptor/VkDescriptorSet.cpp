@@ -3,6 +3,7 @@
 #include "Buffer/VkBuffer.hpp"
 #include "Buffer/VkBufferView.hpp"
 #include "Buffer/VkUniformBuffer.hpp"
+#include "Core/VkDevice.hpp"
 #include "Descriptor/VkDescriptorSetBinding.hpp"
 #include "Descriptor/VkDescriptorSetLayout.hpp"
 #include "Descriptor/VkDescriptorSetLayoutBinding.hpp"

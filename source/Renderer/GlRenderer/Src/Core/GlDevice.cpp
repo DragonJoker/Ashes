@@ -20,6 +20,7 @@ See LICENSE file in root folder.
 #include "Image/GlSampler.hpp"
 #include "Image/GlTexture.hpp"
 #include "Image/GlTextureView.hpp"
+#include "Miscellaneous/GlDeviceMemory.hpp"
 #include "Miscellaneous/GlQueryPool.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlRenderPass.hpp"
@@ -27,6 +28,8 @@ See LICENSE file in root folder.
 #include "Sync/GlFence.hpp"
 #include "Sync/GlSemaphore.hpp"
 
+#include <Image/ImageSubresource.hpp>
+#include <Image/SubresourceLayout.hpp>
 #include <RenderPass/RenderPassCreateInfo.hpp>
 
 #include <iostream>
@@ -372,10 +375,54 @@ namespace gl_renderer
 		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
 	}
 
-	renderer::TexturePtr Device::createTexture( renderer::ImageCreateInfo const & createInfo
+	renderer::DeviceMemoryPtr Device::allocateMemory( renderer::MemoryRequirements const & requirements
 		, renderer::MemoryPropertyFlags flags )const
 	{
-		return std::make_unique< Texture >( *this, createInfo, flags );
+		return std::make_unique< DeviceMemory >( *this
+			, requirements
+			, flags );
+	}
+
+	renderer::TexturePtr Device::createTexture( renderer::ImageCreateInfo const & createInfo )const
+	{
+		return std::make_unique< Texture >( *this, createInfo );
+	}
+
+	void Device::getImageSubresourceLayout( renderer::Texture const & image
+		, renderer::ImageSubresource const & subresource
+		, renderer::SubresourceLayout & layout )const
+	{
+		auto & gltex = static_cast< Texture const & >( image );
+		auto target = convert( gltex.getType(), gltex.getLayerCount() );
+		glLogCall( gl::BindTexture
+			, target
+			, gltex.getImage() );
+		int w = 0;
+		int h = 0;
+		int d = 0;
+		int red = 0;
+		int green = 0;
+		int blue = 0;
+		int alpha = 0;
+		int depth = 0;
+		int stencil = 0;
+		gl::GetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_WIDTH, &w );
+		gl::GetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_HEIGHT, &h );
+		gl::GetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_DEPTH, &d );
+		gl::GetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_RED_SIZE, &red );
+		gl::GetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_GREEN_SIZE, &green );
+		gl::GetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_BLUE_SIZE, &blue );
+		gl::GetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_ALPHA_SIZE, &alpha );
+		gl::GetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_DEPTH_SIZE, &depth );
+		gl::GetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_STENCIL_SIZE, &stencil );
+		layout.rowPitch = 0u;
+		layout.arrayPitch = 0u;
+		layout.depthPitch = 0u;
+		layout.size = std::max( w, 1 )  * std::max( d, 1 ) * std::max( h, 1 ) * ( red + green + blue + alpha + depth + stencil );
+		layout.offset = 0;
+		glLogCall( gl::BindTexture
+			, target
+			, 0 );
 	}
 
 	renderer::SamplerPtr Device::createSampler( renderer::SamplerCreateInfo const & createInfo )const
@@ -384,13 +431,11 @@ namespace gl_renderer
 	}
 
 	renderer::BufferBasePtr Device::createBuffer( uint32_t size
-		, renderer::BufferTargets target
-		, renderer::MemoryPropertyFlags memoryFlags )const
+		, renderer::BufferTargets target )const
 	{
 		return std::make_unique< Buffer >( *this
 			, size
-			, target
-			, memoryFlags );
+			, target );
 	}
 
 	renderer::BufferViewPtr Device::createBufferView( renderer::BufferBase const & buffer

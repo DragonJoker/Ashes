@@ -5,6 +5,8 @@ See LICENSE file in root folder.
 #include "Image/Texture.hpp"
 
 #include "Buffer/StagingBuffer.hpp"
+#include "Image/ImageSubresource.hpp"
+#include "Image/SubresourceLayout.hpp"
 #include "Image/TextureView.hpp"
 
 namespace renderer
@@ -46,6 +48,60 @@ namespace renderer
 		, m_mipLevels{ mipLevels }
 		, m_arrayLayers{ arrayLayers }
 	{
+	}
+
+	void Texture::bindMemory( DeviceMemoryPtr memory )
+	{
+		assert( !m_storage && "A resource can only be bound once to a device memory object." );
+		m_storage = std::move( memory );
+		doBindMemory();
+	}
+
+	Texture::Mapped Texture::lock( uint32_t offset
+		, uint32_t size
+		, MemoryMapFlags flags )const
+	{
+		assert( m_storage && "The resource is not bound to a device memory object." );
+		Mapped mapped{};
+		ImageSubresource subResource{};
+		subResource.aspectMask = getAspectMask( getFormat() );
+		SubresourceLayout subResourceLayout;
+		m_device.getImageSubresourceLayout( *this, subResource, subResourceLayout );
+
+		mapped.data = m_storage->lock( offset
+			, size
+			, flags );
+
+		if ( mapped.data )
+		{
+			mapped.arrayPitch = subResourceLayout.arrayPitch;
+			mapped.depthPitch = subResourceLayout.depthPitch;
+			mapped.rowPitch = subResourceLayout.rowPitch;
+			mapped.size = subResourceLayout.size;
+			mapped.data += subResourceLayout.offset;
+		}
+
+		return mapped;
+	}
+
+	void Texture::invalidate( uint32_t offset
+		, uint32_t size )const
+	{
+		assert( m_storage && "The resource is not bound to a device memory object." );
+		return m_storage->invalidate( offset, size );
+	}
+
+	void Texture::flush( uint32_t offset
+		, uint32_t size )const
+	{
+		assert( m_storage && "The resource is not bound to a device memory object." );
+		return m_storage->flush( offset, size );
+	}
+
+	void Texture::unlock()const
+	{
+		assert( m_storage && "The resource is not bound to a device memory object." );
+		return m_storage->unlock();
 	}
 
 	TextureViewPtr Texture::createView( TextureViewType type

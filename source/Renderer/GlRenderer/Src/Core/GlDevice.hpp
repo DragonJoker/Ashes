@@ -60,10 +60,20 @@ namespace gl_renderer
 			, uint32_t maxSets
 			, renderer::DescriptorPoolSizeArray poolSizes )const override;
 		/**
+		*\copydoc	renderer::Device::allocateMemory
+		*/
+		renderer::DeviceMemoryPtr allocateMemory( renderer::MemoryRequirements const & requirements
+			, renderer::MemoryPropertyFlags flags )const override;
+		/**
 		*\copydoc		renderer::Device::createTexture
 		*/
-		renderer::TexturePtr createTexture( renderer::ImageCreateInfo const & createInfo
-			, renderer::MemoryPropertyFlags flags )const override;
+		renderer::TexturePtr createTexture( renderer::ImageCreateInfo const & createInfo )const override;
+		/**
+		*\copydoc	renderer::Device::getImageSubresourceLayout
+		*/
+		void getImageSubresourceLayout( renderer::Texture const & image
+			, renderer::ImageSubresource const & subresource
+			, renderer::SubresourceLayout & layout )const override;
 		/**
 		*\copydoc		renderer::Device::createSampler
 		*/
@@ -72,8 +82,7 @@ namespace gl_renderer
 		*\copydoc		renderer::Device::createBuffer
 		*/
 		renderer::BufferBasePtr createBuffer( uint32_t size
-			, renderer::BufferTargets target
-			, renderer::MemoryPropertyFlags memoryFlags )const override;
+			, renderer::BufferTargets targets )const override;
 		/**
 		*\copydoc		renderer::Device::createBufferView
 		*/

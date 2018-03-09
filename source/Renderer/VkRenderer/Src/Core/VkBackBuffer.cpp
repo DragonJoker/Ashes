@@ -4,7 +4,6 @@ See LICENSE file in root folder.
 */
 #include "VkBackBuffer.hpp"
 #include "Core/VkDevice.hpp"
-#include "Miscellaneous/VkMemoryStorage.hpp"
 
 namespace vk_renderer
 {

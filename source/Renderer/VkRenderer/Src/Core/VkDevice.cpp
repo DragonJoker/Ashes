@@ -19,6 +19,7 @@ See LICENSE file in root folder.
 #include "Image/VkSampler.hpp"
 #include "Image/VkTexture.hpp"
 #include "Image/VkTextureView.hpp"
+#include "Miscellaneous/VkDeviceMemory.hpp"
 #include "Miscellaneous/VkQueryPool.hpp"
 #include "Pipeline/VkPipelineLayout.hpp"
 #include "RenderPass/VkRenderPass.hpp"
@@ -26,6 +27,8 @@ See LICENSE file in root folder.
 #include "Shader/VkShaderModule.hpp"
 #include "Sync/VkFence.hpp"
 #include "Sync/VkSemaphore.hpp"
+
+#include <Miscellaneous/MemoryRequirements.hpp>
 
 namespace vk_renderer
 {
@@ -169,10 +172,30 @@ namespace vk_renderer
 		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
 	}
 
-	renderer::TexturePtr Device::createTexture( renderer::ImageCreateInfo const & createInfo
+	renderer::DeviceMemoryPtr Device::allocateMemory( renderer::MemoryRequirements const & requirements
 		, renderer::MemoryPropertyFlags flags )const
 	{
-		return std::make_unique< Texture >( *this, createInfo, flags );
+		return std::make_unique< DeviceMemory >( *this
+			, requirements
+			, flags );
+	}
+
+	renderer::TexturePtr Device::createTexture( renderer::ImageCreateInfo const & createInfo )const
+	{
+		return std::make_unique< Texture >( *this, createInfo );
+	}
+
+	void Device::getImageSubresourceLayout( renderer::Texture const & image
+		, renderer::ImageSubresource const & subresource
+		, renderer::SubresourceLayout & layout )const
+	{
+		VkImageSubresource vksubresource = convert( subresource );
+		VkSubresourceLayout vklayout;
+		vkGetImageSubresourceLayout( m_device
+			, static_cast< Texture const & >( image )
+			, &vksubresource
+			, &vklayout );
+		layout = convert( vklayout );
 	}
 
 	renderer::SamplerPtr Device::createSampler( renderer::SamplerCreateInfo const & createInfo )const
@@ -181,13 +204,11 @@ namespace vk_renderer
 	}
 
 	renderer::BufferBasePtr Device::createBuffer( uint32_t size
-		, renderer::BufferTargets target
-		, renderer::MemoryPropertyFlags memoryFlags )const
+		, renderer::BufferTargets target )const
 	{
 		return std::make_unique< Buffer >( *this
 			, size
-			, target
-			, memoryFlags );
+			, target );
 	}
 
 	renderer::BufferViewPtr Device::createBufferView( renderer::BufferBase const & buffer
@@ -326,21 +347,25 @@ namespace vk_renderer
 		return result;
 	}
 
-	VkMemoryRequirements Device::getBufferMemoryRequirements( VkBuffer buffer )const
+	renderer::MemoryRequirements Device::getBufferMemoryRequirements( VkBuffer buffer )const
 	{
 		VkMemoryRequirements requirements;
 		vkGetBufferMemoryRequirements( m_device
 			, buffer
 			, &requirements );
-		return requirements;
+		renderer::MemoryRequirements result = convert( requirements );
+		result.type = renderer::ResourceType::eBuffer;
+		return result;
 	}
 
-	VkMemoryRequirements Device::getImageMemoryRequirements( VkImage image )const
+	renderer::MemoryRequirements Device::getImageMemoryRequirements( VkImage image )const
 	{
 		VkMemoryRequirements requirements;
 		vkGetImageMemoryRequirements( m_device
 			, image
 			, &requirements );
-		return requirements;
+		renderer::MemoryRequirements result = convert( requirements );
+		result.type = renderer::ResourceType::eImage;
+		return result;
 	}
 }

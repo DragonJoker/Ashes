@@ -175,6 +175,28 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
+		*	Allocates memory on the device.
+		*\param[in] requirements
+		*	The memory allocation requirements.
+		*\param[in] flags
+		*	The memory type.
+		*\return
+		*	The DeviceMemory object holding the allocated memory.
+		*\~french
+		*\brief
+		*	Alloue de la mémoire sur le périphérique.
+		*\param[in] requirements
+		*	Les exigences d'allocation mémoire.
+		*\param[in] flags
+		*	Le type de mémoire.
+		*\return
+		*	L'objet DeviceMemory contenant la mémoire allouée.
+		*/
+		virtual DeviceMemoryPtr allocateMemory( MemoryRequirements const & requirements
+			, MemoryPropertyFlags flags )const = 0;
+		/**
+		*\~english
+		*\brief
 		*	Creates a texture.
 		*\param[in] createInfo
 		*	The creation informations.
@@ -184,8 +206,30 @@ namespace renderer
 		*\param[in] createInfo
 		*	Les informations de création.
 		*/
-		virtual TexturePtr createTexture( ImageCreateInfo const & createInfo
-			, MemoryPropertyFlags flags )const = 0;
+		virtual TexturePtr createTexture( ImageCreateInfo const & createInfo )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Creates a texture.
+		*\param[in] image
+		*	The image whose layout is being queried.
+		*\param[out] subresource
+		*	Receives the image subresource.
+		*\param[out] layout
+		*	Receives the subresource layout.
+		*\~french
+		*\brief
+		*	Crée une texture.
+		*\param[in] image
+		*	L'image pour laquelle le layout est demandé.
+		*\param[out] subresource
+		*	Reçoit la sous-ressource de l'image.
+		*\param[out] layout
+		*	Reçoit le layout de la sous-ressource.
+		*/
+		virtual void getImageSubresourceLayout( Texture const & image
+			, ImageSubresource const & subresource
+			, SubresourceLayout & layout )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -207,8 +251,6 @@ namespace renderer
 		*	The buffer size.
 		*\param[in] target
 		*	The buffer usage flags.
-		*\param[in] memoryFlags
-		*	The buffer memory flags.
 		*\~french
 		*\brief
 		*	Crée un tampon GPU.
@@ -216,12 +258,9 @@ namespace renderer
 		*	La taille du tampon.
 		*\param[in] target
 		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] memoryFlags
-		*	Les indicateurs de mémoire du tampon.
 		*/
 		virtual BufferBasePtr createBuffer( uint32_t size
-			, BufferTargets target
-			, MemoryPropertyFlags memoryFlags )const = 0;
+			, BufferTargets target )const = 0;
 		/**
 		*\~french
 		*\brief
@@ -469,6 +508,43 @@ namespace renderer
 		Mat4 infinitePerspective( Angle fovy
 			, float aspect
 			, float zNear )const;
+		/**
+		*\~english
+		*\brief
+		*	Creates a GPU buffer.
+		*\param[in] size
+		*	The buffer size.
+		*\param[in] target
+		*	The buffer usage flags.
+		*\param[in] memoryFlags
+		*	The buffer memory flags.
+		*\~french
+		*\brief
+		*	Crée un tampon GPU.
+		*\param[in] size
+		*	La taille du tampon.
+		*\param[in] target
+		*	Les indicateurs d'utilisation du tampon.
+		*\param[in] memoryFlags
+		*	Les indicateurs de mémoire du tampon.
+		*/
+		BufferBasePtr createBuffer( uint32_t size
+			, BufferTargets target
+			, MemoryPropertyFlags flags )const;
+		/**
+		*\~english
+		*\brief
+		*	Creates a texture.
+		*\param[in] createInfo
+		*	The creation informations.
+		*\~french
+		*\brief
+		*	Crée une texture.
+		*\param[in] createInfo
+		*	Les informations de création.
+		*/
+		TexturePtr createTexture( ImageCreateInfo const & createInfo
+			, MemoryPropertyFlags flags )const;
 		/**
 		*\~french
 		*\brief
