@@ -8,7 +8,6 @@
 #include "Core/VkPhysicalDevice.hpp"
 #include "Core/VkRenderer.hpp"
 #include "Image/VkTexture.hpp"
-#include "Miscellaneous/VkMemoryStorage.hpp"
 #include "RenderPass/VkFrameBuffer.hpp"
 #include "RenderPass/VkRenderPass.hpp"
 #include "Sync/VkImageMemoryBarrier.hpp"
@@ -71,8 +70,9 @@ namespace vk_renderer
 				renderer::SharingMode::eExclusive,
 				{},
 				renderer::ImageLayout::eUndefined,
-			},
-			renderer::MemoryPropertyFlag::eDeviceLocal );
+			} );
+		m_depthStencil->bindMemory( m_device.allocateMemory( m_depthStencil->getMemoryRequirements()
+			, renderer::MemoryPropertyFlag::eDeviceLocal ) );
 		m_depthStencilView = m_depthStencil->createView( renderer::TextureViewType::e2D
 			, format );
 	}

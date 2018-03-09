@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -21,6 +21,32 @@ namespace renderer
 		eMetaData = 0x00000008,
 	};
 	Utils_ImplementFlag( ImageAspectFlag )
+	/**
+	*\~french
+	*\brief
+	*	Récupère le masque d'aspects correspondant au renderer::Format donné.
+	*\param[in] format
+	*	Le renderer::Format.
+	*\return
+	*	Les aspects.
+	*\~english
+	*\brief
+	*	Retrieves the aspects mask matching given renderer::Format.
+	*\param[in] format
+	*	The renderer::Format.
+	*\return
+	*	The aspects.
+	*/
+	inline ImageAspectFlags getAspectMask( Format format )noexcept
+	{
+		return isDepthStencilFormat( format )
+			? ImageAspectFlag::eDepth | ImageAspectFlag::eStencil
+			: ( isDepthFormat( format )
+				? ImageAspectFlag::eDepth
+				: ( isStencilFormat( format )
+					? ImageAspectFlag::eStencil
+					: ImageAspectFlag::eColour ) );
+	}
 }
 
 #endif

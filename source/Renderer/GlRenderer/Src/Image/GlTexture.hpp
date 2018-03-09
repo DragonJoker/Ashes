@@ -38,13 +38,16 @@ namespace gl_renderer
 		*	Le périphérique logique.
 		*/
 		Texture( Device const & device
-			, renderer::ImageCreateInfo const & createInfo
-			, renderer::MemoryPropertyFlags memoryFlags );
+			, renderer::ImageCreateInfo const & createInfo );
 		/**
 		*\brief
 		*	Destructeur.
 		*/
 		~Texture();
+		/**
+		*\copydoc	renderer::Texture::getMemoryRequirements
+		*/
+		renderer::MemoryRequirements getMemoryRequirements()const override;
 		/**
 		*\copydoc	renderer::Texture::createView
 		*/
@@ -73,42 +76,15 @@ namespace gl_renderer
 		*/
 		inline renderer::SampleCountFlag getSamplesCount()const noexcept
 		{
-			return m_samples;
+			return m_createInfo.samples;
 		}
 
 	private:
-		/**
-		*\copydoc	renderer::Texture::doSetImage1D
-		*/
-		void doSetImage1D( uint32_t width );
-		/**
-		*\copydoc	renderer::Texture::doSetImage2D
-		*/
-		void doSetImage2D( uint32_t width
-			, uint32_t height );
-		/**
-		*\copydoc	renderer::Texture::doSetImage3D
-		*/
-		void doSetImage3D( uint32_t width
-			, uint32_t height
-			, uint32_t depth );
-		/**
-		*\copydoc	renderer::Texture::doSetImage2D
-		*/
-		void doSetImage2DMS( uint32_t width
-			, uint32_t height
-			, renderer::SampleCountFlag samples );
-		/**
-		*\copydoc	renderer::Texture::doSetImage2D
-		*/
-		void doSetImage3DMS( uint32_t width
-			, uint32_t height
-			, uint32_t depth
-			, renderer::SampleCountFlag samples );
+		void doBindMemory()override;
 
 	private:
 		Device const & m_device;
-		renderer::SampleCountFlag m_samples;
+		renderer::ImageCreateInfo m_createInfo;
 		GlTextureType m_target;
 		GLuint m_texture{ GL_INVALID_INDEX };
 	};

@@ -42,14 +42,9 @@ namespace vk_renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] initialLayout
-		*	Le layout initial de l'image.
 		*/
 		Texture( Device const & device
-			, renderer::ImageCreateInfo const & createInfo
-			, renderer::MemoryPropertyFlags memoryFlags );
+			, renderer::ImageCreateInfo const & createInfo );
 		/**
 		*\brief
 		*	Constructeur.
@@ -78,59 +73,9 @@ namespace vk_renderer
 		*/
 		~Texture();
 		/**
-		*\~french
-		*\brief
-		*	Mappe la mémoire du tampon en RAM.
-		*\param[in] offset
-		*	L'offset à partir duquel la mémoire du tampon est mappée.
-		*\param[in] size
-		*	La taille en octets de la mémoire à mapper.
-		*\param[in] flags
-		*	Indicateurs de configuration du mapping.
-		*\return
-		*	\p nullptr si le mapping a échoué.
-		*\~english
-		*\brief
-		*	Maps the buffer's memory in RAM.
-		*\param[in] offset
-		*	The memory mapping starting offset.
-		*\param[in] size
-		*	The memory mappping size.
-		*\param[in] flags
-		*	The memory mapping flags.
-		*\return
-		*	\p nullptr if the mapping failed.
+		*\copydoc	renderer::Texture::createView
 		*/
-		renderer::Texture::Mapped lock( uint32_t offset
-			, uint32_t size
-			, VkMemoryMapFlags flags )const;
-		/**
-		*\~english
-		*\brief
-		*	Updates the VRAM.
-		*\param[in] offset
-		*	The mapped memory starting offset.
-		*\param[in] size
-		*	The range size.
-		*\~french
-		*\brief
-		*	Met à jour la VRAM.
-		*\param[in] offset
-		*	L'offset de la mémoire mappée.
-		*\param[in] size
-		*	La taille en octets de la mémoire mappée.
-		*/
-		void flush( uint32_t offset
-			, uint32_t size )const;
-		/**
-		*\~french
-		*\brief
-		*	Unmappe la mémoire du tampon de la RAM.
-		*\~english
-		*\brief
-		*	Unmaps the buffer's memory from the RAM.
-		*/
-		void unlock()const;
+		renderer::MemoryRequirements getMemoryRequirements()const override;
 		/**
 		*\copydoc	renderer::Texture::createView
 		*/
@@ -153,9 +98,11 @@ namespace vk_renderer
 		}
 
 	private:
+		void doBindMemory()override;
+
+	private:
 		Device const & m_device;
 		VkImage m_image{};
-		ImageStoragePtr m_storage;
 		bool m_owner{};
 	};
 }

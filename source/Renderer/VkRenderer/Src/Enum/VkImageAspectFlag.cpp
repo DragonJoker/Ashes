@@ -55,15 +55,4 @@ namespace vk_renderer
 
 		return result;
 	}
-
-	VkImageAspectFlags getImageAspectFlags( renderer::Format const & format )
-	{
-		return renderer::isDepthStencilFormat( format )
-			? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT
-			: ( renderer::isDepthFormat( format )
-				? VK_IMAGE_ASPECT_DEPTH_BIT
-				: ( renderer::isStencilFormat( format )
-					? VK_IMAGE_ASPECT_STENCIL_BIT
-					: VK_IMAGE_ASPECT_COLOR_BIT ) );
-	}
 }

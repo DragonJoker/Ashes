@@ -32,6 +32,7 @@ See LICENSE file in root folder.
 #include "Enum/DynamicState.hpp"
 #include "Enum/FenceCreateFlag.hpp"
 #include "Enum/Filter.hpp"
+#include "Enum/Format.hpp"
 #include "Enum/FormatFeatureFlag.hpp"
 #include "Enum/FrontFace.hpp"
 #include "Enum/ImageAspectFlag.hpp"
@@ -39,7 +40,6 @@ See LICENSE file in root folder.
 #include "Enum/ImageLayout.hpp"
 #include "Enum/ImageTiling.hpp"
 #include "Enum/ImageUsageFlag.hpp"
-#include "Enum/Format.hpp"
 #include "Enum/IndexType.hpp"
 #include "Enum/LogicOp.hpp"
 #include "Enum/MemoryHeapFlag.hpp"
@@ -112,6 +112,7 @@ namespace renderer
 	template< typename T >
 	class VertexBuffer;
 
+	struct AttachmentDescription;
 	struct AttachmentReference;
 	struct BufferCopy;
 	struct BufferImageCopy;
@@ -127,12 +128,15 @@ namespace renderer
 	struct Extent3D;
 	struct FormatProperties;
 	struct GraphicsPipelineCreateInfo;
-	struct ImageCopy;
 	struct ImageBlit;
+	struct ImageCopy;
+	struct ImageCreateInfo;
 	struct ImageFormatProperties;
+	struct ImageSubresource;
 	struct ImageSubresourceRange;
 	struct InputAssemblyState;
 	struct MemoryHeap;
+	struct MemoryRequirements;
 	struct MemoryType;
 	struct MultisampleState;
 	struct Offset2D;
@@ -146,7 +150,6 @@ namespace renderer
 	struct PushConstantRange;
 	struct QueueFamilyProperties;
 	struct RasterisationState;
-	struct AttachmentDescription;
 	struct RenderPassCreateInfo;
 	struct RenderSubpassState;
 	struct ShaderStageState;
@@ -154,6 +157,7 @@ namespace renderer
 	struct StencilOpState;
 	struct SubpassDependency;
 	struct SubpassDescription;
+	struct SubresourceLayout;
 	struct TessellationState;
 	struct VertexInputAttributeDescription;
 	struct VertexInputBindingDescription;
@@ -175,6 +179,7 @@ namespace renderer
 	class DescriptorSetLayoutBinding;
 	class DescriptorSetPool;
 	class Device;
+	class DeviceMemory;
 	class Fence;
 	class FrameBuffer;
 	class ImageMemoryBarrier;
@@ -274,6 +279,7 @@ namespace renderer
 
 	using ShaderModulePtr = std::shared_ptr< ShaderModule >;
 	using SpecialisationInfoBasePtr = std::shared_ptr< SpecialisationInfoBase >;
+	using DeviceMemoryPtr = std::shared_ptr< DeviceMemory >;
 
 	using AttachmentDescriptionArray = std::vector< AttachmentDescription >;
 	using AttachmentReferenceArray = std::vector< AttachmentReference >;

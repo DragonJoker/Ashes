@@ -2,52 +2,22 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder
 */
+#include "Miscellaneous/VkDeviceMemory.hpp"
+
 #include "Core/VkDevice.hpp"
 #include "Core/VkPhysicalDevice.hpp"
 
 namespace vk_renderer
 {
-	//*********************************************************************************************
-
-	namespace details
+	DeviceMemory::DeviceMemory( Device const & device
+		, renderer::MemoryRequirements const & requirements
+		, renderer::MemoryPropertyFlags flags )
+		: renderer::DeviceMemory{ device, flags }
+		, m_device{ device }
 	{
-		template< bool Image >
-		struct MemoryRequirementsGetter;
-
-		template<>
-		struct MemoryRequirementsGetter< true >
-		{
-			static VkMemoryRequirements retrieve( Device const & device
-				, VkImage const & image )
-			{
-				return device.getImageMemoryRequirements( image );
-			}
-		};
-
-		template<>
-		struct MemoryRequirementsGetter< false >
-		{
-			static VkMemoryRequirements retrieve( Device const & device
-				, VkBuffer const & buffer )
-			{
-				return device.getBufferMemoryRequirements( buffer );
-			}
-		};
-	}
-
-	//*********************************************************************************************
-
-	template< typename VkType, bool Image >
-	inline MemoryStorage< VkType, Image >::MemoryStorage( Device const & device
-		, VkType buffer
-		, VkMemoryPropertyFlags flags )
-		: m_device{ device }
-	{
-		using Getter = typename details::MemoryRequirementsGetter< Image >;
-		VkMemoryRequirements memoryRequirements{ Getter::retrieve( device, buffer ) };
 		uint32_t deducedTypeIndex{ 0xFFFFFFFF };
 
-		if ( !m_device.getPhysicalDevice().deduceMemoryType( memoryRequirements.memoryTypeBits
+		if ( !m_device.getPhysicalDevice().deduceMemoryType( requirements.memoryTypeBits
 			, flags
 			, deducedTypeIndex ) )
 		{
@@ -58,7 +28,7 @@ namespace vk_renderer
 		{
 			VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
 			nullptr,
-			memoryRequirements.size,                  // allocationSize
+			requirements.size,                        // allocationSize
 			deducedTypeIndex                          // memoryTypeIndex
 		};
 		DEBUG_DUMP( allocateInfo );
@@ -70,16 +40,14 @@ namespace vk_renderer
 		}
 	}
 
-	template< typename VkType, bool Image >
-	inline MemoryStorage< VkType, Image >::~MemoryStorage()
+	DeviceMemory::~DeviceMemory()
 	{
 		m_device.vkFreeMemory( m_device, m_memory, nullptr );
 	}
 
-	template< typename VkType, bool Image >
-	inline uint8_t * MemoryStorage< VkType, Image >::lock( uint32_t offset
+	uint8_t * DeviceMemory::lock( uint32_t offset
 		, uint32_t size
-		, VkMemoryMapFlags flags )const
+		, renderer::MemoryMapFlags flags )const
 	{
 		uint8_t * pointer{ nullptr };
 		auto res = m_device.vkMapMemory( m_device
@@ -97,8 +65,7 @@ namespace vk_renderer
 		return pointer;
 	}
 
-	template< typename VkType, bool Image >
-	inline void MemoryStorage< VkType, Image >::flush( uint32_t offset
+	void DeviceMemory::flush( uint32_t offset
 		, uint32_t size )const
 	{
 		VkMappedMemoryRange mappedRange
@@ -118,8 +85,7 @@ namespace vk_renderer
 		}
 	}
 
-	template< typename VkType, bool Image >
-	inline void MemoryStorage< VkType, Image >::invalidate( uint32_t offset
+	void DeviceMemory::invalidate( uint32_t offset
 		, uint32_t size )const
 	{
 		VkMappedMemoryRange mappedRange
@@ -139,11 +105,8 @@ namespace vk_renderer
 		}
 	}
 
-	template< typename VkType, bool Image >
-	inline void MemoryStorage< VkType, Image >::unlock()const
+	void DeviceMemory::unlock()const
 	{
 		m_device.vkUnmapMemory( m_device, m_memory );
 	}
-
-	//*********************************************************************************************
 }

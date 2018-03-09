@@ -8,7 +8,7 @@
 #define ___VkRenderer_Buffer_HPP___
 #pragma once
 
-#include "Miscellaneous/VkMemoryStorage.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 #include <Buffer/Buffer.hpp>
 
@@ -33,8 +33,6 @@ namespace vk_renderer
 		*	Le nombre d'éléments du tampon.
 		*\param[in] target
 		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] memoryFlags
-		*	Les indicateurs de mémoire du tampon.
 		*\~english
 		*\brief
 		*	Constructor.
@@ -44,13 +42,10 @@ namespace vk_renderer
 		*	The buffer data size.
 		*\param[in] target
 		*	The buffer usage flags.
-		*\param[in] memoryFlags
-		*	The buffer memory flags.
 		*/
 		Buffer( Device const & device
 			, uint32_t size
-			, renderer::BufferTargets target
-			, renderer::MemoryPropertyFlags memoryFlags );
+			, renderer::BufferTargets target );
 		/**
 		*\~french
 		*\brief
@@ -61,25 +56,9 @@ namespace vk_renderer
 		*/
 		~Buffer();
 		/**
-		*\copydoc	renderer::BufferBase::lock
+		*\copydoc	renderer::BufferBase::getMemoryRequirements
 		*/
-		uint8_t * lock( uint32_t offset
-			, uint32_t size
-			, renderer::MemoryMapFlags flags )const override;
-		/**
-		*\copydoc	renderer::BufferBase::flush
-		*/
-		void flush( uint32_t offset
-			, uint32_t size )const override;
-		/**
-		*\copydoc	renderer::BufferBase::invalidate
-		*/
-		void invalidate( uint32_t offset
-			, uint32_t size )const override;
-		/**
-		*\copydoc	renderer::BufferBase::unlock
-		*/
-		void unlock()const override;
+		renderer::MemoryRequirements getMemoryRequirements()const override;
 		/**
 		*\copydoc	renderer::BufferBase::makeTransferDestination
 		*/
@@ -114,10 +93,12 @@ namespace vk_renderer
 		}
 
 	private:
+		void doBindMemory()override;
+
+	private:
 		Device const & m_device;
 		uint32_t m_size{ 0u };
 		VkBuffer m_buffer{ VK_NULL_HANDLE };
-		BufferStoragePtr m_storage;
 		mutable VkAccessFlags m_currentAccessMask{ VK_ACCESS_MEMORY_WRITE_BIT };
 	};
 }

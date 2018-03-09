@@ -26,13 +26,4 @@ namespace vk_renderer
 	*	Le renderer::ImageAspectFlags.
 	*/
 	renderer::ImageAspectFlags convertAspectMask( VkImageAspectFlags const & flags );
-	/**
-	*\brief
-	*	Récupère les VkImageAspectFlags correspondant à un format de pixels.
-	*\param[in] format
-	*	Le renderer::Format.
-	*\return
-	*	Le VkImageAspectFlags.
-	*/
-	VkImageAspectFlags getImageAspectFlags( renderer::Format const & format );
 }
