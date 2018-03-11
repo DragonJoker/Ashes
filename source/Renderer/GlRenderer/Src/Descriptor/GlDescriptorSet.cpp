@@ -19,130 +19,55 @@ namespace gl_renderer
 	{
 	}
 
-	renderer::CombinedTextureSamplerBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::TextureView const & view
-		, renderer::Sampler const & sampler
-		, renderer::ImageLayout layout
-		, uint32_t index )
-	{
-		m_combinedTextureSamplers.emplace_back( std::make_unique< renderer::CombinedTextureSamplerBinding >( layoutBinding
-			, view
-			, sampler
-			, layout
-			, index ) );
-		return *m_combinedTextureSamplers.back();
-	}
-
-	renderer::SamplerBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::Sampler const & sampler
-		, uint32_t index )
-	{
-		m_samplers.emplace_back( std::make_unique< renderer::SamplerBinding >( layoutBinding
-			, sampler
-			, index ) );
-		return *m_samplers.back();
-	}
-
-	renderer::SampledTextureBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::TextureView const & view
-		, renderer::ImageLayout layout
-		, uint32_t index )
-	{
-		m_sampledTextures.emplace_back( std::make_unique< renderer::SampledTextureBinding >( layoutBinding
-			, view
-			, layout
-			, index ) );
-		return *m_sampledTextures.back();
-	}
-
-	renderer::StorageTextureBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::TextureView const & view
-		, uint32_t index )
-	{
-		m_storageTextures.emplace_back( std::make_unique< renderer::StorageTextureBinding >( layoutBinding
-			, view
-			, index ) );
-		return *m_storageTextures.back();
-	}
-
-	renderer::UniformBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::UniformBufferBase const & uniformBuffer
-		, uint32_t offset
-		, uint32_t range
-		, uint32_t index )
-	{
-		m_uniformBuffers.emplace_back( std::make_unique< renderer::UniformBufferBinding >( layoutBinding
-			, uniformBuffer
-			, offset
-			, range
-			, index ) );
-		return *m_uniformBuffers.back();
-	}
-
-	renderer::StorageBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::BufferBase const & storageBuffer
-		, uint32_t offset
-		, uint32_t range
-		, uint32_t index )
-	{
-		m_storageBuffers.emplace_back( std::make_unique< renderer::StorageBufferBinding >( layoutBinding
-			, storageBuffer
-			, offset
-			, range
-			, index ) );
-		return *m_storageBuffers.back();
-	}
-
-	renderer::TexelBufferBinding const & DescriptorSet::createBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::BufferBase const & buffer
-		, renderer::BufferView const & view
-		, uint32_t index )
-	{
-		m_texelBuffers.emplace_back( std::make_unique< renderer::TexelBufferBinding >( layoutBinding
-			, buffer
-			, view
-			, index ) );
-		return *m_texelBuffers.back();
-	}
-
-	renderer::DynamicUniformBufferBinding const & DescriptorSet::createDynamicBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::UniformBufferBase const & uniformBuffer
-		, uint32_t offset
-		, uint32_t range
-		, uint32_t index )
-	{
-		m_dynamicUniformBuffers.emplace_back( std::make_unique< renderer::DynamicUniformBufferBinding >( layoutBinding
-			, uniformBuffer
-			, offset
-			, range
-			, index ) );
-		m_dynamicBuffers.emplace_back( *m_dynamicUniformBuffers.back() );
-		return *m_dynamicUniformBuffers.back();
-	}
-
-	renderer::DynamicStorageBufferBinding const & DescriptorSet::createDynamicBinding( renderer::DescriptorSetLayoutBinding const & layoutBinding
-		, renderer::BufferBase const & storageBuffer
-		, uint32_t offset
-		, uint32_t range
-		, uint32_t index )
-	{
-		m_dynamicStorageBuffers.emplace_back( std::make_unique< renderer::DynamicStorageBufferBinding >( layoutBinding
-			, storageBuffer
-			, offset
-			, range
-			, index ) );
-		m_dynamicBuffers.emplace_back( *m_dynamicStorageBuffers.back() );
-		return *m_dynamicStorageBuffers.back();
-	}
-
 	void DescriptorSet::update()const
 	{
+		for ( auto & write : m_writes )
+		{
+			switch ( write.descriptorType )
+			{
+			case renderer::DescriptorType::eSampler:
+				m_samplers.push_back( write );
+				break;
+			case renderer::DescriptorType::eCombinedImageSampler:
+				m_combinedTextureSamplers.push_back( write );
+				break;
+			case renderer::DescriptorType::eSampledImage:
+				m_sampledTextures.push_back( write );
+				break;
+			case renderer::DescriptorType::eStorageImage:
+				m_storageTextures.push_back( write );
+				break;
+			case renderer::DescriptorType::eUniformTexelBuffer:
+				m_texelBuffers.push_back( write );
+				break;
+			case renderer::DescriptorType::eStorageTexelBuffer:
+				m_texelBuffers.push_back( write );
+				break;
+			case renderer::DescriptorType::eUniformBuffer:
+				m_uniformBuffers.push_back( write );
+				break;
+			case renderer::DescriptorType::eStorageBuffer:
+				m_storageBuffers.push_back( write );
+				break;
+			case renderer::DescriptorType::eUniformBufferDynamic:
+				m_dynamicUniformBuffers.push_back( write );
+				m_dynamicBuffers.push_back( write );
+				break;
+			case renderer::DescriptorType::eStorageBufferDynamic:
+				m_dynamicStorageBuffers.push_back( write );
+				m_dynamicBuffers.push_back( write );
+				break;
+			case renderer::DescriptorType::eInputAttachment:
+				break;
+			}
+		}
+
 		std::sort( m_dynamicBuffers.begin()
 			, m_dynamicBuffers.end()
-			, []( std::reference_wrapper< renderer::DescriptorSetBinding > const & lhs
-				, std::reference_wrapper< renderer::DescriptorSetBinding > const & rhs )
+			, []( renderer::WriteDescriptorSet const & lhs
+				, renderer::WriteDescriptorSet const & rhs )
 		{
-			return lhs.get().getBinding().getBindingPoint() < rhs.get().getBinding().getBindingPoint();
+			return lhs.dstBinding < rhs.dstBinding;
 		} );
 	}
 }

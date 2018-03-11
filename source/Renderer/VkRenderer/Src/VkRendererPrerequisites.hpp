@@ -94,7 +94,10 @@
 #include "Enum/VkVertexInputRate.hpp"
 #include "Enum/VkWrapMode.hpp"
 #include "Command/VkCommandBufferInheritanceInfo.hpp"
+#include "Descriptor/VkDescriptorBufferInfo.hpp"
+#include "Descriptor/VkDescriptorImageInfo.hpp"
 #include "Descriptor/VkDescriptorSetLayoutBinding.hpp"
+#include "Descriptor/VkWriteDescriptorSet.hpp"
 #include "Image/VkComponentMapping.hpp"
 #include "Image/VkImageSubresource.hpp"
 #include "Image/VkImageSubresourceLayers.hpp"
@@ -142,6 +145,8 @@
 
 #include <RendererPrerequisites.hpp>
 
+#include <list>
+
 namespace vk_renderer
 {
 #if defined( VK_API_VERSION_1_0 )
@@ -169,7 +174,6 @@ namespace vk_renderer
 	class Connection;
 	class DescriptorPool;
 	class DescriptorSet;
-	class DescriptorSetBinding;
 	class DescriptorSetLayout;
 	class DescriptorSetLayoutBinding;
 	class Device;
@@ -197,7 +201,6 @@ namespace vk_renderer
 	using BufferStoragePtr = std::unique_ptr< BufferStorage >;
 	using ConnectionPtr = std::unique_ptr< Connection >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
-	using DescriptorSetBindingPtr = std::unique_ptr< DescriptorSetBinding >;
 	using ImageStoragePtr = std::unique_ptr< ImageStorage >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using QueuePtr = std::unique_ptr< Queue >;
@@ -386,7 +389,7 @@ namespace vk_renderer
 	*\return
 	*	The Vulkan handles array.
 	*/
-	template< typename VkType, typename LibType >
+	template< typename VkType, typename LibType, typename ... Params >
 	inline std::vector< VkType > makeVkArray( std::vector< std::reference_wrapper< LibType const > > const & input )
 	{
 		std::vector< VkType > result;

@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Renderer_DescriptorSet_HPP___
 #pragma once
 
-#include "Descriptor/DescriptorSetBinding.hpp"
+#include "WriteDescriptorSet.hpp"
 
 #include <vector>
 
@@ -50,19 +50,20 @@ namespace renderer
 		*\brief
 		*	Destructor.
 		*/
-		virtual ~DescriptorSet();
+		virtual ~DescriptorSet() = default;
 		/**
 		*\~french
-		*\return
-		*	Le point d'attache du set.
+		*\brief
+		*	Définit les attaches du set de descripteurs.
+		*\param[in] bindings
+		*	Les attaches.
 		*\~english
-		*\return
-		*	The binding point for the set.
+		*\brief
+		*	Sets the descriptor set's attaches.
+		*\param[in] bindings
+		*	The bindings.
 		*/
-		inline uint32_t getBindingPoint()const
-		{
-			return m_bindingPoint;
-		}
+		void setBindings( WriteDescriptorSetArray bindings );
 		/**
 		*\~french
 		*\brief
@@ -75,8 +76,6 @@ namespace renderer
 		*	L'échantillonneur.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
 		*	Creates a combined image and sampler binding.
@@ -88,14 +87,12 @@ namespace renderer
 		*	The sampler.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
-		virtual CombinedTextureSamplerBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		void createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, TextureView const & view
 			, Sampler const & sampler
 			, ImageLayout layout = ImageLayout::eShaderReadOnlyOptimal
-			, uint32_t index = 0u ) = 0;
+			, uint32_t index = 0u );
 		/**
 		*\~french
 		*\brief
@@ -106,8 +103,6 @@ namespace renderer
 		*	L'échantillonneur.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
 		*	Creates a sampler binding.
@@ -117,12 +112,10 @@ namespace renderer
 		*	The sampler.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
-		virtual SamplerBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		void createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, Sampler const & sampler
-			, uint32_t index = 0u ) = 0;
+			, uint32_t index = 0u );
 		/**
 		*\~french
 		*\brief
@@ -135,8 +128,6 @@ namespace renderer
 		*	Le layout de l'image.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
 		*	Creates a sampled image binding.
@@ -148,13 +139,11 @@ namespace renderer
 		*	The image layout.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
-		virtual SampledTextureBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		void createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, TextureView const & view
 			, ImageLayout layout
-			, uint32_t index = 0u ) = 0;
+			, uint32_t index = 0u );
 		/**
 		*\~french
 		*\brief
@@ -165,8 +154,6 @@ namespace renderer
 		*	L'image.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
 		*	Creates a storage image binding.
@@ -176,12 +163,10 @@ namespace renderer
 		*	The image.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
-		virtual StorageTextureBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		void createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, TextureView const & view
-			, uint32_t index = 0u ) = 0;
+			, uint32_t index = 0u );
 		/**
 		*\~french
 		*\brief
@@ -196,8 +181,6 @@ namespace renderer
 		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
 		*	Creates a uniform buffer binding.
@@ -211,21 +194,19 @@ namespace renderer
 		*	The amount of data that can be read from the buffer.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
-		virtual UniformBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		void createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, UniformBufferBase const & uniformBuffer
 			, uint32_t offset
 			, uint32_t range
-			, uint32_t index = 0u ) = 0;
+			, uint32_t index = 0u );
 		/**
 		*\~french
 		*\brief
-		*	Crée une attache de type tampon de stockage.
+		*	Crée une attache de type tampon de stockage ou uniforme.
 		*\param[in] layoutBinding
 		*	L'attache de layout.
-		*\param[in] storageBuffer
+		*\param[in] buffer
 		*	Le tampon.
 		*\param[in] offset
 		*	Le décalage de l'attache dans le tampon.
@@ -233,14 +214,12 @@ namespace renderer
 		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
-		*	Creates a storage buffer binding.
+		*	Creates a storage or uniform buffer binding.
 		*\param[in] layoutBinding
 		*	The layout binding.
-		*\param[in] storageBuffer
+		*\param[in] buffer
 		*	The buffer.
 		*\param[in] offset
 		*	The attach's offset in the buffer.
@@ -248,14 +227,12 @@ namespace renderer
 		*	The amount of data that can be read from the buffer.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
-		virtual StorageBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, BufferBase const & storageBuffer
+		void createBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, BufferBase const & buffer
 			, uint32_t offset
 			, uint32_t range
-			, uint32_t index = 0u ) = 0;
+			, uint32_t index = 0u );
 		/**
 		*\~french
 		*\brief
@@ -268,8 +245,6 @@ namespace renderer
 		*	La vue sur le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
 		*	Creates a texel buffer binding.
@@ -281,13 +256,11 @@ namespace renderer
 		*	The view to the buffer.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
-		virtual TexelBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		void createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, BufferBase const & buffer
 			, BufferView const & view
-			, uint32_t index = 0u ) = 0;
+			, uint32_t index = 0u );
 		/**
 		*\~french
 		*\brief
@@ -304,8 +277,6 @@ namespace renderer
 		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
 		*	Creates a dynamic uniform buffer binding.
@@ -321,18 +292,16 @@ namespace renderer
 		*	The amount of data that can be read from the buffer.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
-		virtual DynamicUniformBufferBinding const & createDynamicBinding( DescriptorSetLayoutBinding const & layoutBinding
+		void createDynamicBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, UniformBufferBase const & uniformBuffer
 			, uint32_t offset
 			, uint32_t range
-			, uint32_t index = 0u ) = 0;
+			, uint32_t index = 0u );
 		/**
 		*\~french
 		*\brief
-		*	Crée une attache de type tampon de stockage dynamique.
+		*	Crée une attache de type tampon de stockage ou uniforme dynamique.
 		*\remarks
 		*	Permet de spécifier un offset supplémentaire au moment du binding du descripteur.
 		*\param[in] layoutBinding
@@ -345,11 +314,9 @@ namespace renderer
 		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
-		*	Creates a dynamic storage buffer binding.
+		*	Creates a dynamic storage or uniform buffer binding.
 		*\remarks
 		*	Allow specification of an additional offset at descriptor's binding time.
 		*\param[in] layoutBinding
@@ -362,14 +329,12 @@ namespace renderer
 		*	The amount of data that can be read from the buffer.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
-		virtual DynamicStorageBufferBinding const & createDynamicBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, BufferBase const & storageBuffer
+		void createDynamicBinding( DescriptorSetLayoutBinding const & layoutBinding
+			, BufferBase const & buffer
 			, uint32_t offset
 			, uint32_t range
-			, uint32_t index = 0u ) = 0;
+			, uint32_t index = 0u );
 		/**
 		*\~french
 		*\brief
@@ -384,8 +349,6 @@ namespace renderer
 		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
 		*	Creates a uniform buffer binding.
@@ -399,17 +362,15 @@ namespace renderer
 		*	The amount of data that can be read from the buffer.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
 		template< typename T >
-		inline UniformBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		inline void createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, UniformBuffer< T > const & uniformBuffer
 			, uint32_t offset = 0u
 			, uint32_t range = 1u
 			, uint32_t index = 0u )
 		{
-			return createBinding( layoutBinding
+			createBinding( layoutBinding
 				, uniformBuffer.getUbo()
 				, offset * uniformBuffer.getAlignedSize()
 				, range * sizeof( T )
@@ -429,8 +390,6 @@ namespace renderer
 		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
 		*	Creates a storage buffer binding.
@@ -444,17 +403,15 @@ namespace renderer
 		*	The amount of data that can be read from the buffer.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
 		template< typename T >
-		inline StorageBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		inline void createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, Buffer< T > const & storageBuffer
 			, uint32_t offset
 			, uint32_t range
 			, uint32_t index = 0u )
 		{
-			return createBinding( layoutBinding
+			createBinding( layoutBinding
 				, storageBuffer.getBuffer()
 				, offset
 				, range
@@ -472,8 +429,6 @@ namespace renderer
 		*	La vue sur le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
 		*	Creates a texel buffer binding.
@@ -485,16 +440,14 @@ namespace renderer
 		*	The view to the buffer.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
 		template< typename T >
-		inline TexelBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		inline void createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, UniformBuffer< T > const & buffer
 			, BufferView const & view
 			, uint32_t index = 0u )
 		{
-			return createBinding( layoutBinding
+			createBinding( layoutBinding
 				, buffer.getUbo()
 				, view
 				, index );
@@ -511,8 +464,6 @@ namespace renderer
 		*	La vue sur le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
 		*	Creates a texel buffer binding.
@@ -524,16 +475,14 @@ namespace renderer
 		*	The view to the buffer.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
 		template< typename T >
-		inline TexelBufferBinding const & createBinding( DescriptorSetLayoutBinding const & layoutBinding
+		inline void createBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, Buffer< T > const & buffer
 			, BufferView const & view
 			, uint32_t index = 0u )
 		{
-			return createBinding( layoutBinding
+			createBinding( layoutBinding
 				, buffer.getBuffer()
 				, view
 				, index );
@@ -554,8 +503,6 @@ namespace renderer
 		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
 		*	Creates a dynamic uniform buffer binding.
@@ -571,17 +518,15 @@ namespace renderer
 		*	The amount of data that can be read from the buffer.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
 		template< typename T >
-		inline DynamicUniformBufferBinding const & createDynamicBinding( DescriptorSetLayoutBinding const & layoutBinding
+		inline void createDynamicBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, UniformBuffer< T > const & uniformBuffer
 			, uint32_t offset = 0u
 			, uint32_t range = 1u
 			, uint32_t index = 0u )
 		{
-			return createDynamicBinding( layoutBinding
+			createDynamicBinding( layoutBinding
 				, uniformBuffer.getUbo()
 				, offset * uniformBuffer.getAlignedSize()
 				, range * sizeof( T )
@@ -603,8 +548,6 @@ namespace renderer
 		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
 		*\param[in] index
 		*	L'indice dans le tableau.
-		*\return
-		*	L'attache créée.
 		*\~english
 		*\brief
 		*	Creates a dynamic storage buffer binding.
@@ -620,17 +563,15 @@ namespace renderer
 		*	The amount of data that can be read from the buffer.
 		*\param[in] index
 		*	The array index.
-		*\return
-		*	The created binding.
 		*/
 		template< typename T >
-		inline DynamicStorageBufferBinding const & createDynamicBinding( DescriptorSetLayoutBinding const & layoutBinding
+		inline void createDynamicBinding( DescriptorSetLayoutBinding const & layoutBinding
 			, Buffer< T > const & storageBuffer
 			, uint32_t offset
 			, uint32_t range
 			, uint32_t index = 0u )
 		{
-			return createDynamicBinding( layoutBinding
+			createDynamicBinding( layoutBinding
 				, storageBuffer.getBuffer()
 				, offset
 				, range
@@ -645,6 +586,21 @@ namespace renderer
 		*	Updates all the bindings in the descriptor set.
 		*/
 		virtual void update()const = 0;
+		/**
+		*\~french
+		*\return
+		*	Le point d'attache du set.
+		*\~english
+		*\return
+		*	The binding point for the set.
+		*/
+		inline uint32_t getBindingPoint()const
+		{
+			return m_bindingPoint;
+		}
+
+	protected:
+		WriteDescriptorSetArray m_writes;
 
 	private:
 		DescriptorPool const & m_pool;
