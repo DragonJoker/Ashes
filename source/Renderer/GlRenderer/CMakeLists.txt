@@ -33,12 +33,21 @@ if ( OpenGL_FOUND )
 		${${PROJECT_NAME}_HDR_FILES}
 	)
 
-	add_target_precompiled_header( ${PROJECT_NAME}
-		Src/GlRendererPch.hpp
-		Src/GlRendererPch.cpp
-		${CMAKE_CXX_FLAGS}
-		${${PROJECT_NAME}_CXX_FILES}
-	)
+	if ( BUILD_RENDERERLIB )
+		add_target_precompiled_header( ${PROJECT_NAME}
+			Src/GlRendererPch.hpp
+			Src/GlRendererPch.cpp
+			${CMAKE_CXX_FLAGS}
+			${${PROJECT_NAME}_CXX_FILES}
+		)
+	else ()
+		add_target_precompiled_header( ${PROJECT_NAME}
+			GlRendererPch.hpp
+			GlRendererPch.cpp
+			${CMAKE_CXX_FLAGS}
+			${${PROJECT_NAME}_CXX_FILES}
+		)
+	endif ()
 
 	target_link_libraries( ${PROJECT_NAME}
 		${OPENGL_gl_LIBRARY}

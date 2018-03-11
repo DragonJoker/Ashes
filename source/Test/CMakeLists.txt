@@ -36,6 +36,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		${CMAKE_SOURCE_DIR}/Renderer/Renderer/Src
 		${CMAKE_SOURCE_DIR}/external/gli
 		${CMAKE_SOURCE_DIR}/external/glm
+		${CMAKE_SOURCE_DIR}/external/imgui
 		${wxWidgets_INCLUDE_DIRS}
 		${GTK2_INCLUDE_DIRS}
 	)

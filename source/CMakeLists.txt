@@ -1,6 +1,7 @@
 cmake_minimum_required( VERSION 2.8 )
 
 set( MAIN_PROJECT_NAME "RendererLib" )
+set( BUILD_RENDERERLIB 1 )
 
 # Used to look for external modules
 set( CMAKE_MODULE_PATH
@@ -87,9 +88,7 @@ endif ()
 
 include_directories(
 	${CMAKE_BINARY_DIR}/Renderer/Renderer
-	${CMAKE_SOURCE_DIR}/Core
 	${CMAKE_SOURCE_DIR}/Renderer
-	${CMAKE_SOURCE_DIR}/external/imgui
 )
 
 add_subdirectory( Renderer )

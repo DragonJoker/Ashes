@@ -56,12 +56,21 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_CONFIG_HEADER}
 )
 
-add_target_precompiled_header( ${PROJECT_NAME}
-	Src/RendererPch.hpp
-	Src/RendererPch.cpp
-	${CMAKE_CXX_FLAGS}
-	${${PROJECT_NAME}_SRC_FILES}
-)
+if ( BUILD_RENDERERLIB )
+	add_target_precompiled_header( ${PROJECT_NAME}
+		Src/RendererPch.hpp
+		Src/RendererPch.cpp
+		${CMAKE_CXX_FLAGS}
+		${${PROJECT_NAME}_SRC_FILES}
+	)
+else ()
+	add_target_precompiled_header( ${PROJECT_NAME}
+		RendererPch.hpp
+		RendererPch.cpp
+		${CMAKE_CXX_FLAGS}
+		${${PROJECT_NAME}_SRC_FILES}
+	)
+endif ()
 
 parse_subdir_files( Src/Buffer "Buffer" )
 parse_subdir_files( Src/Command "Command" )
@@ -79,22 +88,25 @@ parse_subdir_files( Src/Utils "Utils" )
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
 
-target_add_doc( ${PROJECT_NAME} "French" "*.h *.hpp" )
-target_add_doc( ${PROJECT_NAME} "English" "*.h *.hpp" )
+if ( BUILD_RENDERERLIB )
+	target_add_doc( ${PROJECT_NAME} "French" "*.h *.hpp" )
+	target_add_doc( ${PROJECT_NAME} "English" "*.h *.hpp" )
 
-#We copy each lib in <install_dir>/lib folder
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}_dev
-	CONFIGURATIONS Release RelWithDebInfo
-	EXPORT ${PROJECT_NAME}
-	ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Release
-)
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}_dev
-	CONFIGURATIONS Debug
-	ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Debug
-)
-#For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
-target_install_headers( ${PROJECT_NAME} Src )
+	#We copy each lib in <install_dir>/lib folder
+	install(
+		TARGETS ${PROJECT_NAME}
+		COMPONENT ${PROJECT_NAME}_dev
+		CONFIGURATIONS Release RelWithDebInfo
+		EXPORT ${PROJECT_NAME}
+		ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Release
+	)
+	install(
+		TARGETS ${PROJECT_NAME}
+		COMPONENT ${PROJECT_NAME}_dev
+		CONFIGURATIONS Debug
+		ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Debug
+	)
+	#For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
+	target_install_headers( ${PROJECT_NAME} Src )
+endif ()
+
