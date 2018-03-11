@@ -20,7 +20,7 @@ namespace renderer
 		: uint32_t
 	{
 	};
-	Utils_ImplementFlag( SubpassDescriptionFlag )
+	Renderer_ImplementFlag( SubpassDescriptionFlag )
 }
 
 #endif

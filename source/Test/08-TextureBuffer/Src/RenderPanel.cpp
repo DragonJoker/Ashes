@@ -144,7 +144,7 @@ namespace vkapp
 	{
 		wxSize size{ GetClientSize() };
 		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
-		m_swapChain->setClearColour( renderer::RgbaColour{ 1.0f, 0.8f, 0.4f, 0.0f } );
+		m_swapChain->setClearColour( renderer::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			doResetSwapChain();
@@ -155,7 +155,7 @@ namespace vkapp
 	{
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
-		m_textureBuffer = renderer::makeBuffer< renderer::Vec4 >( *m_device
+		m_textureBuffer = renderer::makeBuffer< utils::Vec4 >( *m_device
 			, image.size.width
 			, renderer::BufferTarget::eUniformTexelBuffer | renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );

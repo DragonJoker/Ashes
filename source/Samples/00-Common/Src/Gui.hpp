@@ -40,8 +40,8 @@ namespace common
 	private:
 		struct PushConstBlock
 		{
-			renderer::Vec2 scale;
-			renderer::Vec2 translate;
+			utils::Vec2 scale;
+			utils::Vec2 translate;
 		};
 
 		renderer::Device const & m_device;

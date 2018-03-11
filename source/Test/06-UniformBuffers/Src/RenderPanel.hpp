@@ -9,7 +9,7 @@
 #include <Image/Sampler.hpp>
 #include <Core/SwapChain.hpp>
 
-#include <Utils/UtilsSignal.hpp>
+#include <Utils/Signal.hpp>
 
 #include <wx/panel.h>
 

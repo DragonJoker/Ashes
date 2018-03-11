@@ -12,7 +12,7 @@ namespace renderer
 	{
 	}
 
-	ClearValue::ClearValue( RgbaColour const & colour )
+	ClearValue::ClearValue( ClearColorValue const & colour )
 		: m_colour{ colour }
 		, m_isColour{ true }
 	{

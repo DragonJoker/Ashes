@@ -292,7 +292,7 @@ namespace common
 		{
 			m_size = size;
 			m_views.clear();
-			static renderer::RgbaColour const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
+			static renderer::ClearColorValue const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
 			static renderer::DepthStencilClearValue const depth{ 1.0, 0 };
 			renderer::ClearValueArray clearValues;
 

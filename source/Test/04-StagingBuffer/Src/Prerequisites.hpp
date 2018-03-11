@@ -6,8 +6,8 @@ namespace vkapp
 {
 	struct VertexData
 	{
-		renderer::Vec4 position;
-		renderer::Vec4 colour;
+		utils::Vec4 position;
+		utils::Vec4 colour;
 	};
 
 	static wxString const AppName = wxT( "04-StagingBuffer" );

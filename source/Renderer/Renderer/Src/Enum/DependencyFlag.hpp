@@ -21,7 +21,7 @@ namespace renderer
 	{
 		eByRegion = 0x00000001
 	};
-	Utils_ImplementFlag( DependencyFlag )
+	Renderer_ImplementFlag( DependencyFlag )
 }
 
 #endif

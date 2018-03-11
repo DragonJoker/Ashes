@@ -20,7 +20,7 @@ namespace renderer
 		eB = 0x00000004,
 		eA = 0x00000008,
 	};
-	Utils_ImplementFlag( ColourComponentFlag )
+	Renderer_ImplementFlag( ColourComponentFlag )
 }
 
 #endif

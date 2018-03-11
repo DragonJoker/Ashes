@@ -2,7 +2,7 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder
 */
-namespace utils
+namespace renderer
 {
 	template< typename T >
 	Vec4T< T >::Vec4T( NoInit const & )noexcept
@@ -40,51 +40,6 @@ namespace utils
 		, y{ v }
 		, z{ v }
 		, w{ v }
-	{
-	}
-	
-	template< typename T >
-	constexpr Vec4T< T >::Vec4T( Vec2T< T > const & xy, T const & z, T const & w )noexcept
-		: x{ xy.x }
-		, y{ xy.y }
-		, z{ z }
-		, w{ w }
-	{
-	}
-
-	template< typename T >
-	constexpr Vec4T< T >::Vec4T(T const & x, Vec2T< T > const & yz, T const & w )noexcept
-		: x{ x }
-		, y{ yz.x }
-		, z{ yz.y }
-		, w{ w }
-	{
-	}
-
-	template< typename T >
-	constexpr Vec4T< T >::Vec4T(T const & x, T const & y, Vec2T< T > const & zw )noexcept
-		: x{ x }
-		, y{ y }
-		, z{ zw.x }
-		, w{ zw.y }
-	{
-	}
-
-	template< typename T >
-	constexpr Vec4T< T >::Vec4T( Vec3T< T > const & xyz, T const & w )noexcept
-		: x{ xyz.x }
-		, y{ xyz.y }
-		, z{ xyz.z }
-		, w{ w }
-	{
-	}
-
-	template< typename T >
-	constexpr Vec4T< T >::Vec4T( T const & x, Vec3T< T > const & yzw )noexcept
-		: x{ x }
-		, y{ yzw.x }
-		, z{ yzw.y }
-		, w{ yzw.z }
 	{
 	}
 
@@ -243,18 +198,6 @@ namespace utils
 			vec.z / norm,
 			vec.w / norm
 		};
-	}
-	
-	template< typename T >
-	Vec2T< T > toVec2( Vec4T< T > const & vec )noexcept
-	{
-		return Vec2T< T >{ vec.x, vec.y };
-	}
-
-	template< typename T >
-	Vec3T< T > toVec3( Vec4T< T > const & vec )noexcept
-	{
-		return Vec3T< T >{ vec.x, vec.y, vec.z };
 	}
 
 	template< typename T >

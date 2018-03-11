@@ -22,7 +22,7 @@ namespace renderer
 		e1D = 0,
 		e2D = 1,
 		e3D = 2,
-		Utils_EnumBounds( e1D )
+		Renderer_EnumBounds( e1D )
 	};
 	/**
 	*\~english

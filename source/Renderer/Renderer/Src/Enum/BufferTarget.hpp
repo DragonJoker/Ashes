@@ -32,7 +32,7 @@ namespace renderer
 		ePackBuffer = 0x00000400,
 		eUnpackBuffer = 0x00000800,
 	};
-	Utils_ImplementFlag( BufferTarget )
+	Renderer_ImplementFlag( BufferTarget )
 }
 
 #endif

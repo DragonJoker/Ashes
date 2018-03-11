@@ -300,30 +300,30 @@ namespace vk_renderer
 		, float zFar )const
 	{
 		renderer::Mat4 result( float( 0 ) );
-		result[0][0] = ( float( 2 ) * zNear ) / ( right - left );
-		result[1][1] = ( float( 2 ) * zNear ) / ( top - bottom );
-		result[2][0] = ( right + left ) / ( right - left );
-		result[2][1] = ( top + bottom ) / ( top - bottom );
-		result[2][3] = float( -1 );
-		result[2][2] = zFar / ( zNear - zFar );
-		result[3][2] = -( zFar * zNear ) / ( zFar - zNear );
+		result[0].x = ( float( 2 ) * zNear ) / ( right - left );
+		result[1].y = ( float( 2 ) * zNear ) / ( top - bottom );
+		result[2].x = ( right + left ) / ( right - left );
+		result[2].y = ( top + bottom ) / ( top - bottom );
+		result[2].w = float( -1 );
+		result[2].z = zFar / ( zNear - zFar );
+		result[3].z = -( zFar * zNear ) / ( zFar - zNear );
 
 		return result;
 	}
 
-	renderer::Mat4 Device::perspective( renderer::Angle fovy
+	renderer::Mat4 Device::perspective( float radiansFovY
 		, float aspect
 		, float zNear
 		, float zFar )const
 	{
-		float const tanHalfFovy = tan( float( fovy ) / float( 2 ) );
+		float const tanHalfFovy = tan( radiansFovY / float( 2 ) );
 
 		renderer::Mat4 result( float( 0 ) );
-		result[0][0] = float( 1 ) / ( aspect * tanHalfFovy );
-		result[1][1] = float( 1 ) / ( tanHalfFovy );
-		result[2][3] = -float( 1 );
-		result[2][2] = zFar / ( zNear - zFar );
-		result[3][2] = -( zFar * zNear ) / ( zFar - zNear );
+		result[0].x = float( 1 ) / ( aspect * tanHalfFovy );
+		result[1].y = float( 1 ) / ( tanHalfFovy );
+		result[2].w = -float( 1 );
+		result[2].z = zFar / ( zNear - zFar );
+		result[3].z = -( zFar * zNear ) / ( zFar - zNear );
 
 		return result;
 	}
@@ -336,12 +336,12 @@ namespace vk_renderer
 		, float zFar )const
 	{
 		renderer::Mat4 result{ 1 };
-		result[0][0] = float( 2 ) / ( right - left );
-		result[1][1] = float( 2 ) / ( top - bottom );
-		result[3][0] = -( right + left ) / ( right - left );
-		result[3][1] = -( top + bottom ) / ( top - bottom );
-		result[2][2] = -float( 1 ) / ( zFar - zNear );
-		result[3][2] = -zNear / ( zFar - zNear );
+		result[0].x = float( 2 ) / ( right - left );
+		result[1].y = float( 2 ) / ( top - bottom );
+		result[3].x = -( right + left ) / ( right - left );
+		result[3].y = -( top + bottom ) / ( top - bottom );
+		result[2].z = -float( 1 ) / ( zFar - zNear );
+		result[3].z = -zNear / ( zFar - zNear );
 
 		return result;
 	}

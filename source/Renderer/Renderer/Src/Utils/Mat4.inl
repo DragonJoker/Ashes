@@ -2,7 +2,7 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder
 */
-namespace utils
+namespace renderer
 {
 	template< typename T >
 	Mat4T< T >::Mat4T( NoInit const & n )noexcept

@@ -17,7 +17,7 @@ namespace gl_renderer
 		GL_SHADER_STAGE_TESS_EVALUATION = 0x8E87,
 		GL_SHADER_STAGE_COMPUTE = 0x91B9,
 	};
-	Utils_ImplementFlag( GlShaderStageFlag );
+	Renderer_ImplementFlag( GlShaderStageFlag );
 	std::string getName( GlShaderStageFlags value );
 	/**
 	*\brief

@@ -33,7 +33,7 @@
 #include <Shader/ShaderProgram.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
-#include <Utils/Transform.hpp>
+#include <Transform.hpp>
 
 #include <FileUtils.hpp>
 
@@ -220,36 +220,13 @@ namespace vkapp
 	void RenderPanel::doUpdateProjection()
 	{
 		auto size = m_swapChain->getDimensions();
-#if 0
-		float halfWidth = static_cast< float >( size.x ) * 0.5f;
-		float halfHeight = static_cast< float >( size.y ) * 0.5f;
-		float wRatio = 1.0f;
-		float hRatio = 1.0f;
-
-		if ( halfHeight > halfWidth )
-		{
-			hRatio = halfHeight / halfWidth;
-		}
-		else
-		{
-			wRatio = halfWidth / halfHeight;
-		}
-
-		m_matrixUbo->getData( 0u ) = m_device->ortho( -2.0f * wRatio
-			, 2.0f * wRatio
-			, -2.0f * hRatio
-			, 2.0f * hRatio
-			, 0.0f
-			, 10.0f );
-#else
 		auto width = float( size.width );
 		auto height = float( size.height );
 		auto ratio = width / height;
-		m_matrixUbo->getData( 0u ) = m_device->perspective( utils::toRadians( 90.0_degrees ) / ratio
+		m_matrixUbo->getData( 0u ) = m_device->perspective( float( utils::toRadians( 90.0_degrees ) / ratio )
 			, width / height
 			, 0.01f
 			, 100.0f );
-#endif
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_matrixUbo->getDatas()
 			, *m_matrixUbo

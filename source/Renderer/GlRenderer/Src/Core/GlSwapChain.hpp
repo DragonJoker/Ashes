@@ -53,7 +53,7 @@ namespace gl_renderer
 		*\param[in] value
 		*	La nouvelle valeur.
 		*/
-		inline void setClearColour( renderer::RgbaColour const & value )override
+		inline void setClearColour( renderer::ClearColorValue const & value )override
 		{
 			m_clearColour = value;
 		}
@@ -63,7 +63,7 @@ namespace gl_renderer
 		*\param[in] value
 		*	La nouvelle valeur.
 		*/
-		inline renderer::RgbaColour getClearColour()const override
+		inline renderer::ClearColorValue getClearColour()const override
 		{
 			return m_clearColour;
 		}
@@ -92,7 +92,7 @@ namespace gl_renderer
 
 	private:
 		Device const & m_device;
-		renderer::RgbaColour m_clearColour;
+		renderer::ClearColorValue m_clearColour;
 		renderer::Format m_format;
 	};
 }

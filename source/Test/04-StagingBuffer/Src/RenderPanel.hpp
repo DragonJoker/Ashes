@@ -7,7 +7,7 @@
 #include <Buffer/StagingBuffer.hpp>
 #include <Core/SwapChain.hpp>
 
-#include <Utils/UtilsSignal.hpp>
+#include <Utils/Signal.hpp>
 
 namespace vkapp
 {

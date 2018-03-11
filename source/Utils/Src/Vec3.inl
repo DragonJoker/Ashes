@@ -8,7 +8,7 @@ See LICENSE file in root folder
 namespace utils
 {
 	template< typename T >
-	Vec3T< T >::Vec3T( NoInit const & )noexcept
+	Vec3T< T >::Vec3T( renderer::NoInit const & )noexcept
 	{
 	}
 

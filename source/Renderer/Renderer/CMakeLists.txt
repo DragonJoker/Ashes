@@ -63,10 +63,6 @@ add_target_precompiled_header( ${PROJECT_NAME}
 	${${PROJECT_NAME}_SRC_FILES}
 )
 
-add_dependencies( ${PROJECT_NAME}
-	Utils
-)
-
 parse_subdir_files( Src/Buffer "Buffer" )
 parse_subdir_files( Src/Command "Command" )
 parse_subdir_files( Src/Core "Core" )
@@ -78,6 +74,7 @@ parse_subdir_files( Src/Pipeline "Pipeline" )
 parse_subdir_files( Src/RenderPass "RenderPass" )
 parse_subdir_files( Src/Shader "Shader" )
 parse_subdir_files( Src/Sync "Sync" )
+parse_subdir_files( Src/Utils "Utils" )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )

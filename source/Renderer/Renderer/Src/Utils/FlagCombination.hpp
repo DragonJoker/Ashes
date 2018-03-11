@@ -2,11 +2,13 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder
 */
+#ifndef ___Renderer_FlagCombination_HPP___
+#define ___Renderer_FlagCombination_HPP___
 #pragma once
 
-#include "UtilsPrerequisites.hpp"
+#include <type_traits>
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\~french
@@ -415,8 +417,8 @@ namespace utils
 
 //!@~french		Implémente les opérateurs de combinaison binaire sur un scoped enum.
 //!@~english	Implements binary combination operators on a scoped enum.
-#define Utils_ImplementFlag( FlagType )\
-	using FlagType##s = utils::FlagCombination< FlagType >;\
+#define Renderer_ImplementFlag( FlagType )\
+	using FlagType##s = renderer::FlagCombination< FlagType >;\
 	inline FlagType##s operator|( FlagType lhs, FlagType rhs )\
 	{\
 		return FlagType##s( lhs ) | rhs;\
@@ -429,3 +431,5 @@ namespace utils
 	{\
 		return FlagType##s( lhs ) | rhs;\
 	}
+
+#endif

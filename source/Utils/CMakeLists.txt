@@ -1,17 +1,22 @@
 project( Utils )
 
+include_directories(
+	${CMAKE_SOURCE_DIR}/Renderer/Renderer/Src
+	${CMAKE_BINARY_DIR}/Renderer/Renderer/Src
+)
+
 file( GLOB ${PROJECT_NAME}_SRC_FILES
-	*.c
-	*.cc
-	*.cpp
+	Src/*.c
+	Src/*.cc
+	Src/*.cpp
 )
 
 file( GLOB ${PROJECT_NAME}_HDR_FILES
-	*.h
-	*.hh
-	*.hpp
-	*.inl
-	*.inc
+	Src/*.h
+	Src/*.hh
+	Src/*.hpp
+	Src/*.inl
+	Src/*.inc
 )
 
 add_library( ${PROJECT_NAME} STATIC
@@ -38,4 +43,4 @@ install(
 )
 
 #For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
-target_install_headers( ${PROJECT_NAME} "" )
+target_install_headers( ${PROJECT_NAME} Src )

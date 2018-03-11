@@ -24,14 +24,14 @@
 #include <Shader/ShaderProgram.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
-#include <Utils/Transform.hpp>
+#include <Transform.hpp>
 
 #include <FileUtils.hpp>
 
 namespace vkapp
 {
-	using renderer::Vec3;
-	using renderer::Vec4;
+	using utils::Vec3;
+	using utils::Vec4;
 	using renderer::Mat4;
 
 	namespace
@@ -128,7 +128,7 @@ namespace vkapp
 			, renderer::CommandBuffer const & commandBuffer
 			, renderer::StagingBuffer & stagingBuffer )
 		{
-			static Mat4 const projection = device.perspective( utils::toRadians( 90.0_degrees ), 1.0f, 0.1f, 10.0f );
+			static Mat4 const projection = device.perspective( float( utils::toRadians( 90.0_degrees ) ), 1.0f, 0.1f, 10.0f );
 			static Mat4 const views[] =
 			{
 				utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +1.0f, +0.0f, +0.0f }, Vec3{ 0.0f, -1.0f, +0.0f } ),
@@ -346,7 +346,7 @@ namespace vkapp
 					, 0u ) );
 			commandBuffer.beginRenderPass( *facePipeline.renderPass
 				, *facePipeline.frameBuffer
-				, { renderer::RgbaColour{ 0, 0, 0, 0 } }
+				, { renderer::ClearColorValue{ 0, 0, 0, 0 } }
 			, renderer::SubpassContents::eInline );
 			commandBuffer.bindPipeline( *facePipeline.pipeline );
 			commandBuffer.bindDescriptorSet( *facePipeline.descriptorSet

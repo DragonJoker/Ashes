@@ -16,7 +16,7 @@ namespace renderer
 		: uint32_t
 	{
 	};
-	Utils_ImplementFlag( RasterisationStateFlag )
+	Renderer_ImplementFlag( RasterisationStateFlag )
 }
 
 #endif

@@ -19,9 +19,8 @@ namespace renderer
 	*\brief
 	*	Speifies a viewport to use when creating a pipeline or executing a command buffer.
 	*/
-	class Viewport
+	struct Viewport
 	{
-	public:
 		/**
 		*\~french
 		*\brief
@@ -48,57 +47,19 @@ namespace renderer
 			, int32_t y
 			, float minZ = 0.0f
 			, float maxZ = 1.0f );
-		/**
-		*\~french
-		*\return
-		*	La position du viewport.
-		*\~french
-		*\return
-		*	The viewport position.
-		*/
-		inline Offset2D const & getOffset()const
-		{
-			return m_offset;
-		}
-		/**
-		*\~french
-		*\return
-		*	Les dimensions du viewport.
-		*\~french
-		*\return
-		*	The viewport dimensions.
-		*/
-		inline Extent2D const & getSize()const
-		{
-			return m_size;
-		}
-		/**
-		*\~french
-		*\return
-		*	Les bornes profondeur du viewport.
-		*\~french
-		*\return
-		*	The viewport depth bounds.
-		*/
-		inline Vec2 const & getDepthBounds()const
-		{
-			return m_depthBounds;
-		}
 
-	private:
-		Offset2D m_offset;
-		Extent2D m_size;
-		Vec2 m_depthBounds;
-		friend bool operator==( Viewport const & lhs, Viewport const & rhs );
+		Offset2D offset;
+		Extent2D size;
+		float minDepth;
+		float maxDepth;
 	};
 
 	inline bool operator==( Viewport const & lhs, Viewport const & rhs )
 	{
-		return lhs.m_offset.x == rhs.m_offset.x
-			&& lhs.m_offset.y == rhs.m_offset.y
-			&& lhs.m_size.width == rhs.m_size.width
-			&& lhs.m_size.height == rhs.m_size.height
-			&& lhs.m_depthBounds == rhs.m_depthBounds;
+		return lhs.offset == rhs.offset
+			&& lhs.size == rhs.size
+			&& lhs.minDepth == rhs.minDepth
+			&& lhs.maxDepth == rhs.maxDepth;
 	}
 
 	inline bool operator!=( Viewport const & lhs, Viewport const & rhs )

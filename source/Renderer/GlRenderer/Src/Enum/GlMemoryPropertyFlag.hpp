@@ -17,7 +17,7 @@ namespace gl_renderer
 		GL_MEMORY_PROPERTY_COHERENT_BIT = 0x00000080,
 		GL_MEMORY_PROPERTY_DYNAMIC_STORAGE_BIT = 0x0100,
 	};
-	Utils_ImplementFlag( GlMemoryPropertyFlag );
+	Renderer_ImplementFlag( GlMemoryPropertyFlag );
 	std::string getName( GlMemoryPropertyFlags value );
 	/**
 	*\brief

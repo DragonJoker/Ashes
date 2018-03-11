@@ -12,7 +12,7 @@ namespace renderer
 		: uint32_t
 	{
 	};
-	Utils_ImplementFlag( RenderPassCreateFlag )
+	Renderer_ImplementFlag( RenderPassCreateFlag )
 }
 
 #endif

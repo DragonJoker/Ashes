@@ -3,9 +3,11 @@
 #include <Core/Connection.hpp>
 #include <Core/Renderer.hpp>
 
-#include <Utils/Factory.hpp>
+#include <Factory.hpp>
+#include <Quaternion.hpp>
+#include <Vec3.hpp>
+
 #include <Utils/Mat4.hpp>
-#include <Utils/Quaternion.hpp>
 
 #pragma warning( disable: 4996 )
 #include <wx/wx.h>

@@ -17,7 +17,7 @@ namespace renderer
 	{
 		eDeviceLocal = 0x00000001,
 	};
-	Utils_ImplementFlag( MemoryHeapFlag )
+	Renderer_ImplementFlag( MemoryHeapFlag )
 }
 
 #endif

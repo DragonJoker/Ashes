@@ -9,6 +9,7 @@
 #include "VkRendererPrerequisites.hpp"
 
 #include <Core/Renderer.hpp>
+#include <Utils/DynamicLibrary.hpp>
 
 namespace vk_renderer
 {

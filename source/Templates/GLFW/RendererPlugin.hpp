@@ -3,7 +3,7 @@
 #include <Core/Renderer.hpp>
 
 #include <Utils/DynamicLibrary.hpp>
-#include <Utils/Factory.hpp>
+#include <Factory.hpp>
 
 namespace common
 {

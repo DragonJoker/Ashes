@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -19,7 +19,7 @@ namespace renderer
 		eClampToEdge,
 		eClampToBorder,
 		eMirrorClampToEdge,
-		Utils_EnumBounds( eRepeat )
+		Renderer_EnumBounds( eRepeat )
 	};
 	/**
 	*\~english

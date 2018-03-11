@@ -16,7 +16,7 @@ namespace renderer
 		: uint32_t
 	{
 	};
-	Utils_ImplementFlag( MultisampleStateFlag )
+	Renderer_ImplementFlag( MultisampleStateFlag )
 }
 
 #endif

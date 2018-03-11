@@ -10,7 +10,7 @@
 #include <Image/Sampler.hpp>
 #include <Core/SwapChain.hpp>
 
-#include <Utils/UtilsSignal.hpp>
+#include <Utils/Signal.hpp>
 
 #include <wx/panel.h>
 
@@ -101,7 +101,7 @@ namespace vkapp
 		renderer::FrameBufferPtr m_frameBuffer;
 		renderer::UniformBufferPtr< renderer::Mat4 > m_matrixUbo;
 		renderer::UniformBufferPtr< renderer::Mat4 > m_objectUbo;
-		renderer::PushConstantsBuffer< renderer::RgbaColour > m_objectPcbs[2];
+		renderer::PushConstantsBuffer< utils::Vec4 > m_objectPcbs[2];
 		renderer::CommandBufferPtr m_updateCommandBuffer;
 		/**@}*/
 		/**

@@ -9,7 +9,7 @@
 #	include <dlfcn.h>
 #endif
 
-namespace utils
+namespace renderer
 {
 	DynamicLibrary::DynamicLibrary( DynamicLibrary && rhs )
 		: m_path{ std::move( rhs.m_path ) }

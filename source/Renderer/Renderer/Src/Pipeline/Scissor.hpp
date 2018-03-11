@@ -15,9 +15,8 @@ namespace renderer
 	*\brief
 	*	Description d'un ciseau à utiliser lors de la création d'un pipeline ou à l'exécution.
 	*/
-	class Scissor
+	struct Scissor
 	{
-	public:
 		/**
 		*\brief
 		*	Constructeur.
@@ -30,35 +29,15 @@ namespace renderer
 			, int32_t y
 			, uint32_t width
 			, uint32_t height );
-		/**
-		*\return
-		*	L'offset du ciseau.
-		*/
-		inline Offset2D const & getOffset()const
-		{
-			return m_offset;
-		}
-		/**
-		*\return
-		*	Les dimensions du ciseau.
-		*/
-		inline Extent2D const & getSize()const
-		{
-			return m_size;
-		}
 
-	private:
-		Offset2D m_offset;
-		Extent2D m_size;
-		friend bool operator==( Scissor const & lhs, Scissor const & rhs );
+		Offset2D offset;
+		Extent2D size;
 	};
 
 	inline bool operator==( Scissor const & lhs, Scissor const & rhs )
 	{
-		return lhs.m_offset.x == rhs.m_offset.x
-			&& lhs.m_offset.y == rhs.m_offset.y
-			&& lhs.m_size.width == rhs.m_size.width
-			&& lhs.m_size.height == rhs.m_size.height;
+		return lhs.offset == rhs.offset
+			&& lhs.size == rhs.size;
 	}
 
 	inline bool operator!=( Scissor const & lhs, Scissor const & rhs )

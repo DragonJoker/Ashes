@@ -212,7 +212,7 @@ namespace renderer
 		*	La couleur de vidage.
 		*/
 		virtual void clear( TextureView const & image
-			, RgbaColour const & colour )const = 0;
+			, ClearColorValue const & colour )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -229,8 +229,8 @@ namespace renderer
 		*\param[in] value
 		*	La valeur de vidage.
 		*/
-		virtual void clear( renderer::TextureView const & image
-			, renderer::DepthStencilClearValue const & value )const = 0;
+		virtual void clear( TextureView const & image
+			, DepthStencilClearValue const & value )const = 0;
 		/**
 		*\~english
 		*\brief

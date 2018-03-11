@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 namespace gl_renderer
 {
 	ClearColourCommand::ClearColourCommand( renderer::TextureView const & image
-		, renderer::RgbaColour const & colour )
+		, renderer::ClearColorValue const & colour )
 		: m_image{ static_cast< TextureView const & >( image ) }
 		, m_colour{ colour }
 		, m_internal{ getInternal( m_image.getFormat() ) }
@@ -29,7 +29,7 @@ namespace gl_renderer
 				, 0
 				, m_format
 				, m_type
-				, m_colour.constPtr() );
+				, m_colour.float32.data() );
 		}
 		else
 		{

@@ -30,7 +30,7 @@ namespace renderer
 		//!\~english	The image can be used to create an image view of type renderer::TextureType::eCube or renderer::TextureType::eCubeArray.
 		eCubeCompatible = 0x00000010,
 	};
-	Utils_ImplementFlag( ImageCreateFlag )
+	Renderer_ImplementFlag( ImageCreateFlag )
 }
 
 #endif
