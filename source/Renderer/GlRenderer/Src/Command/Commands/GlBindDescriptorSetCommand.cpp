@@ -19,42 +19,61 @@ namespace gl_renderer
 {
 	namespace
 	{
-		void bind( renderer::CombinedTextureSamplerBinding const & binding )
+		renderer::TextureView const & getView( renderer::WriteDescriptorSet const & write )
 		{
+			return write.imageInfo.value().imageView.value().get();
+		}
+
+		renderer::Sampler const & getSampler( renderer::WriteDescriptorSet const & write )
+		{
+			return write.imageInfo.value().sampler.value().get();
+		}
+
+		renderer::BufferBase const & getBuffer( renderer::WriteDescriptorSet const & write )
+		{
+			return write.bufferInfo.value().buffer.get();
+		}
+
+		void bindCombinedSampler( renderer::WriteDescriptorSet const & write )
+		{
+			auto & view = getView( write );
+			auto & sampler = getSampler( write );
 			glLogCall( gl::ActiveTexture
-				, GlTextureUnit( GL_TEXTURE0 + binding.getBinding().getBindingPoint() + binding.getIndex() ) );
+				, GlTextureUnit( GL_TEXTURE0 + write.dstBinding + write.dstArrayElement ) );
 			glLogCall( gl::BindTexture
-				, convert( binding.getView().getType() )
-				, static_cast< TextureView const & >( binding.getView() ).getImage() );
+				, convert( view.getType() )
+				, static_cast< TextureView const & >( view ).getImage() );
 			glLogCall( gl::BindSampler
-				, binding.getBinding().getBindingPoint() + binding.getIndex()
-				, static_cast< Sampler const & >( binding.getSampler() ).getSampler() );
+				, write.dstBinding + write.dstArrayElement
+				, static_cast< Sampler const & >( sampler ).getSampler() );
 		}
 
-		void bind( renderer::SamplerBinding const & binding )
+		void bindSampler( renderer::WriteDescriptorSet const & write )
 		{
+			auto & sampler = getSampler( write );
 			glLogCall( gl::BindSampler
-				, binding.getBinding().getBindingPoint() + binding.getIndex()
-				, static_cast< Sampler const & >( binding.getSampler() ).getSampler() );
+				, write.dstBinding + write.dstArrayElement
+				, static_cast< Sampler const & >( sampler ).getSampler() );
 		}
 
-		void bind( renderer::SampledTextureBinding const & binding )
+		void bindSampledTexture( renderer::WriteDescriptorSet const & write )
 		{
+			auto & view = getView( write );
 			glLogCall( gl::ActiveTexture
-				, GlTextureUnit( GL_TEXTURE0 + binding.getBinding().getBindingPoint() + binding.getIndex() ) );
+				, GlTextureUnit( GL_TEXTURE0 + write.dstBinding + write.dstArrayElement ) );
 			glLogCall( gl::BindTexture
-				, convert( binding.getView().getType() )
-				, static_cast< TextureView const & >( binding.getView() ).getImage() );
+				, convert( view.getType() )
+				, static_cast< TextureView const & >( view ).getImage() );
 		}
 
-		void bind( renderer::StorageTextureBinding const & binding )
+		void bindStorageTexture( renderer::WriteDescriptorSet const & write )
 		{
-			auto & view = binding.getView();
+			auto & view = getView( write );
 			auto & range = view.getSubResourceRange();
 			glLogCall( gl::ActiveTexture
-				, GlTextureUnit( GL_TEXTURE0 + binding.getBinding().getBindingPoint() + binding.getIndex() ) );
+				, GlTextureUnit( GL_TEXTURE0 + write.dstBinding + write.dstArrayElement ) );
 			glLogCall( gl::BindImageTexture
-				, binding.getBinding().getBindingPoint() + binding.getIndex()
+				, write.dstBinding + write.dstArrayElement
 				, static_cast< TextureView const & >( view ).getImage()
 				, range.baseMipLevel
 				, range.layerCount
@@ -63,70 +82,75 @@ namespace gl_renderer
 				, getInternal( view.getFormat() ) );
 		}
 
-		void bind( renderer::UniformBufferBinding const & binding )
+		void bindUniformBuffer( renderer::WriteDescriptorSet const & write )
 		{
+			auto & buffer = getBuffer( write );
 			glLogCall( gl::BindBufferRange
 				, GL_BUFFER_TARGET_UNIFORM
-				, binding.getBinding().getBindingPoint() + binding.getIndex()
-				, static_cast< Buffer const & >( binding.getUniformBuffer().getBuffer() ).getBuffer()
-				, binding.getOffset()
-				, binding.getRange() );
+				, write.dstBinding + write.dstArrayElement
+				, static_cast< Buffer const & >( buffer ).getBuffer()
+				, write.bufferInfo.value().offset
+				, write.bufferInfo.value().range );
 		}
 
-		void bind( renderer::StorageBufferBinding const & binding )
+		void bindStorageBuffer( renderer::WriteDescriptorSet const & write )
 		{
+			auto & buffer = getBuffer( write );
 			glLogCall( gl::BindBufferRange
 				, GL_BUFFER_TARGET_SHADER_STORAGE
-				, binding.getBinding().getBindingPoint() + binding.getIndex()
-				, static_cast< Buffer const & >( binding.getBuffer() ).getBuffer()
-				, binding.getOffset()
-				, binding.getRange() );
+				, write.dstBinding + write.dstArrayElement
+				, static_cast< Buffer const & >( buffer ).getBuffer()
+				, write.bufferInfo.value().offset
+				, write.bufferInfo.value().range );
 		}
 
-		void bind( renderer::TexelBufferBinding const & binding )
+		void bindTexelBuffer( renderer::WriteDescriptorSet const & write )
 		{
+			auto & buffer = getBuffer( write );
 			glLogCall( gl::ActiveTexture
-				, GlTextureUnit( GL_TEXTURE0 + binding.getBinding().getBindingPoint() + binding.getIndex() ) );
+				, GlTextureUnit( GL_TEXTURE0 + write.dstBinding + write.dstArrayElement ) );
 			glLogCall( gl::BindTexture
 				, GL_BUFFER_TARGET_TEXTURE
-				, static_cast< BufferView const & >( binding.getView() ).getImage() );
+				, static_cast< BufferView const & >( write.texelBufferView.value().get() ).getImage() );
 		}
 
-		void bind( renderer::DynamicUniformBufferBinding const & binding, uint32_t offset )
+		void bindDynamicUniformBuffer( renderer::WriteDescriptorSet const & write, uint32_t offset )
 		{
+			auto & buffer = getBuffer( write );
 			glLogCall( gl::BindBufferRange
 				, GL_BUFFER_TARGET_UNIFORM
-				, binding.getBinding().getBindingPoint() + binding.getIndex()
-				, static_cast< Buffer const & >( binding.getUniformBuffer().getBuffer() ).getBuffer()
-				, binding.getOffset() + offset
-				, binding.getRange() );
+				, write.dstBinding + write.dstArrayElement
+				, static_cast< Buffer const & >( buffer ).getBuffer()
+				, write.bufferInfo.value().offset + offset
+				, write.bufferInfo.value().range );
 		}
 
-		void bind( renderer::DynamicStorageBufferBinding const & binding, uint32_t offset )
+		void bindDynamicStorageBuffer( renderer::WriteDescriptorSet const & write, uint32_t offset )
 		{
+			auto & buffer = getBuffer( write );
 			glLogCall( gl::BindBufferRange
 				, GL_BUFFER_TARGET_SHADER_STORAGE
-				, binding.getBinding().getBindingPoint() + binding.getIndex()
-				, static_cast< Buffer const & >( binding.getBuffer() ).getBuffer()
-				, binding.getOffset() + offset
-				, binding.getRange() );
+				, write.dstBinding + write.dstArrayElement
+				, static_cast< Buffer const & >( buffer ).getBuffer()
+				, write.bufferInfo.value().offset + offset
+				, write.bufferInfo.value().range );
 		}
 
-		void bind( std::vector< std::reference_wrapper< renderer::DescriptorSetBinding > > const & bindings
+		void bindDynamicBuffers( renderer::WriteDescriptorSetArray const & writes
 			, renderer::UInt32Array const & offsets )
 		{
 			for ( auto i = 0u; i < offsets.size(); ++i )
 			{
-				auto & binding = bindings[i].get();
+				auto & write = writes[i];
 
-				switch ( binding.getBinding().getDescriptorType() )
+				switch ( write.descriptorType )
 				{
 				case renderer::DescriptorType::eUniformBufferDynamic:
-					bind( static_cast< renderer::DynamicUniformBufferBinding const & >( binding ), offsets[i] );
+					bindDynamicUniformBuffer( write, offsets[i] );
 					break;
 
 				case renderer::DescriptorType::eStorageBufferDynamic:
-					bind( static_cast< renderer::DynamicStorageBufferBinding const & >( binding ), offsets[i] );
+					bindDynamicStorageBuffer( write, offsets[i] );
 					break;
 
 				default:
@@ -154,42 +178,42 @@ namespace gl_renderer
 	void BindDescriptorSetCommand::apply()const
 	{
 		glLogCommand( "BindDescriptorSetCommand" );
-		for ( auto & descriptor : m_descriptorSet.getCombinedTextureSamplers() )
+		for ( auto & write : m_descriptorSet.getCombinedTextureSamplers() )
 		{
-			bind( *descriptor );
+			bindCombinedSampler( write );
 		}
 
-		for ( auto & descriptor : m_descriptorSet.getSamplers() )
+		for ( auto & write : m_descriptorSet.getSamplers() )
 		{
-			bind( *descriptor );
+			bindSampler( write );
 		}
 
-		for ( auto & descriptor : m_descriptorSet.getSampledTextures() )
+		for ( auto & write : m_descriptorSet.getSampledTextures() )
 		{
-			bind( *descriptor );
+			bindSampledTexture( write );
 		}
 
-		for ( auto & descriptor : m_descriptorSet.getStorageTextures() )
+		for ( auto & write : m_descriptorSet.getStorageTextures() )
 		{
-			bind( *descriptor );
+			bindStorageTexture( write );
 		}
 
-		for ( auto & descriptor : m_descriptorSet.getUniformBuffers() )
+		for ( auto & write : m_descriptorSet.getUniformBuffers() )
 		{
-			bind( *descriptor );
+			bindUniformBuffer( write );
 		}
 
-		for ( auto & descriptor : m_descriptorSet.getStorageBuffers() )
+		for ( auto & write : m_descriptorSet.getStorageBuffers() )
 		{
-			bind( *descriptor );
+			bindStorageBuffer( write );
 		}
 
-		for ( auto & descriptor : m_descriptorSet.getTexelBuffers() )
+		for ( auto & write : m_descriptorSet.getTexelBuffers() )
 		{
-			bind( *descriptor );
+			bindTexelBuffer( write );
 		}
 
-		bind( m_descriptorSet.getDynamicBuffers(), m_dynamicOffsets );
+		bindDynamicBuffers( m_descriptorSet.getDynamicBuffers(), m_dynamicOffsets );
 	}
 
 	CommandPtr BindDescriptorSetCommand::clone()const

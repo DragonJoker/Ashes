@@ -14,7 +14,6 @@ See LICENSE file in root folder.
 #include "Core/VkRenderer.hpp"
 #include "Core/VkSwapChain.hpp"
 #include "Descriptor/VkDescriptorPool.hpp"
-#include "Descriptor/VkDescriptorSetBinding.hpp"
 #include "Descriptor/VkDescriptorSetLayout.hpp"
 #include "Image/VkSampler.hpp"
 #include "Image/VkTexture.hpp"

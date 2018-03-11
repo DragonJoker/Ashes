@@ -123,6 +123,8 @@ namespace renderer
 	struct ColourBlendStateAttachment;
 	struct CommandBufferInheritanceInfo;
 	struct DepthStencilState;
+	struct DescriptorBufferInfo;
+	struct DescriptorImageInfo;
 	struct DescriptorPoolSize;
 	struct Extent2D;
 	struct Extent3D;
@@ -162,6 +164,7 @@ namespace renderer
 	struct VertexInputAttributeDescription;
 	struct VertexInputBindingDescription;
 	struct VertexInputState;
+	struct WriteDescriptorSet;
 
 	class Attribute;
 	class BackBuffer;
@@ -174,7 +177,6 @@ namespace renderer
 	class Connection;
 	class DescriptorPool;
 	class DescriptorSet;
-	class DescriptorSetBinding;
 	class DescriptorSetLayout;
 	class DescriptorSetLayoutBinding;
 	class DescriptorSetPool;
@@ -296,11 +298,13 @@ namespace renderer
 	using PipelineStageFlagsArray = std::vector< PipelineStageFlags >;
 	using PushConstantArray = std::vector< PushConstant >;
 	using RenderSubpassArray = std::vector< RenderSubpass >;
+	using ShaderStageStateArray = std::vector< ShaderStageState >;
 	using SpecialisationMapEntryArray = std::vector< SpecialisationMapEntry >;
 	using SubpassDescriptionArray = std::vector< SubpassDescription >;
 	using SubpassDependencyArray = std::vector< SubpassDependency >;
 	using VertexInputAttributeDescriptionArray = std::vector< VertexInputAttributeDescription >;
 	using VertexInputBindingDescriptionArray = std::vector< VertexInputBindingDescription >;
+	using WriteDescriptorSetArray = std::vector< WriteDescriptorSet >;
 
 	using FrameBufferPtrArray = std::vector< FrameBufferPtr >;
 	using BackBufferPtrArray = std::vector< BackBufferPtr >;
@@ -308,10 +312,12 @@ namespace renderer
 	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
 
 	using BufferCRef = std::reference_wrapper< BufferBase const >;
+	using BufferViewCRef = std::reference_wrapper< BufferView const >;
 	using CommandBufferCRef = std::reference_wrapper< CommandBuffer const >;
 	using DescriptorSetCRef = std::reference_wrapper< DescriptorSet const >;
 	using DescriptorSetLayoutCRef = std::reference_wrapper< DescriptorSetLayout const >;
 	using PushConstantRangeCRef = std::reference_wrapper< PushConstantRange const >;
+	using SamplerCRef = std::reference_wrapper< Sampler const >;
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;
 	using SwapChainCRef = std::reference_wrapper< SwapChain const >;
 	using TextureViewCRef = std::reference_wrapper< TextureView const >;
