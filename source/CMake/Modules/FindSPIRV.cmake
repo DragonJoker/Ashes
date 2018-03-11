@@ -39,26 +39,44 @@ if ( SPIRV_ROOT_DIR )
 		set( PLATFORM "x86" )
 	endif ()
 
-	find_path( SPIRV_LIBRARY_RELEASE_DIR SPIRV
+	find_path( SPIRV_LIBRARY_RELEASE_DIR SPIRV.lib libSPIRV.a
 		HINTS
 		PATH_SUFFIXES
 			lib/${PLATFORM}/Release
 			lib/${PLATFORM}
+			lib/Release
+			lib
 			/usr/local/lib
 			/usr/lib
 		PATHS
 			${SPIRV_ROOT_DIR}
 	)
 
-	find_path( SPIRV_LIBRARY_DEBUG_DIR SPIRV
+	find_path( SPIRV_LIBRARY_DEBUG_DIR SPIRVd.lib libSPIRVd.a
 		HINTS
 		PATH_SUFFIXES
 			lib/${PLATFORM}/Debug
+			lib/${PLATFORM}
+			lib/Debug
+			lib
 			/usr/local/lib
 			/usr/lib
 		PATHS
 			${SPIRV_ROOT_DIR}
 	)
+
+	if ( NOT SPIRV_LIBRARY_DEBUG_DIR )
+		find_path( SPIRV_LIBRARY_DEBUG_DIR SPIRV.lib libSPIRV.a
+			HINTS
+			PATH_SUFFIXES
+				lib/${PLATFORM}/Debug
+				lib/${PLATFORM}
+				/usr/local/lib
+				/usr/lib
+			PATHS
+				${SPIRV_ROOT_DIR}
+		)
+	endif ()
 
 	find_library( SPIRV_LIBRARY_RELEASE
 		NAMES
@@ -70,13 +88,14 @@ if ( SPIRV_ROOT_DIR )
 
 	find_library( SPIRV_LIBRARY_DEBUG
 		NAMES
+			SPIRVd
 			SPIRV
 		HINTS
 		PATHS
 			${SPIRV_LIBRARY_DEBUG_DIR}
 	)
 
-	find_library( SPIRVTOOLS_LIBRARY_RELEASE
+	find_library( SPIRV_TOOLS_LIBRARY_RELEASE
 		NAMES
 			SPIRV-Tools
 		HINTS
@@ -84,9 +103,44 @@ if ( SPIRV_ROOT_DIR )
 			${SPIRV_LIBRARY_RELEASE_DIR}
 	)
 
-	find_library( SPIRVTOOLS_LIBRARY_DEBUG
+	find_library( SPIRV_TOOLS_LIBRARY_DEBUG
 		NAMES
+			SPIRV-Toolsd
 			SPIRV-Tools
+		HINTS
+		PATHS
+			${SPIRV_LIBRARY_DEBUG_DIR}
+	)
+
+	find_library( SPIRV_TOOLS_OPT_LIBRARY_RELEASE
+		NAMES
+			SPIRV-Tools-opt
+		HINTS
+		PATHS
+			${SPIRV_LIBRARY_RELEASE_DIR}
+	)
+
+	find_library( SPIRV_TOOLS_OPT_LIBRARY_DEBUG
+		NAMES
+			SPIRV-Tools-optd
+			SPIRV-Tools-opt
+		HINTS
+		PATHS
+			${SPIRV_LIBRARY_DEBUG_DIR}
+	)
+
+	find_library( SPIRV_REMAPPER_LIBRARY_RELEASE
+		NAMES
+			SPVRemapper
+		HINTS
+		PATHS
+			${SPIRV_LIBRARY_RELEASE_DIR}
+	)
+
+	find_library( SPIRV_REMAPPER_LIBRARY_DEBUG
+		NAMES
+			SPVRemapperd
+			SPVRemapper
 		HINTS
 		PATHS
 			${SPIRV_LIBRARY_DEBUG_DIR}
@@ -106,21 +160,27 @@ if ( SPIRV_ROOT_DIR )
 				set( SPIRV_LIBRARIES
 					optimized ${SPIRV_LIBRARY_RELEASE}
 					debug ${SPIRV_LIBRARY_DEBUG}
-					optimized ${SPIRVTOOLS_LIBRARY_RELEASE}
-					debug ${SPIRVTOOLS_LIBRARY_DEBUG}
+					optimized ${SPIRV_TOOLS_LIBRARY_RELEASE}
+					debug ${SPIRV_TOOLS_LIBRARY_DEBUG}
+					optimized ${SPIRV_TOOLS_OPT_LIBRARY_RELEASE}
+					debug ${SPIRV_TOOLS_OPT_LIBRARY_DEBUG}
+					optimized ${SPIRV_REMAPPER_LIBRARY_RELEASE}
+					debug ${SPIRV_REMAPPER_LIBRARY_DEBUG}
 					CACHE STRING "SPIRV libraries" )
 				set( SPIRV_LIBRARY_DIRS ${SPIRV_LIBRARY_RELEASE_DIR} ${SPIRV_LIBRARY_DEBUG_DIR} )
 			else()
 				set( SPIRV_LIBRARIES
 					${SPIRV_LIBRARY_RELEASE}
-					${SPIRVTOOLS_LIBRARY_RELEASE}
+					${SPIRV_TOOLS_LIBRARY_RELEASE}
+					${SPIRV_TOOLS_OPT_LIBRARY_RELEASE}
 					CACHE STRING "SPIRV libraries" )
 				set( SPIRV_LIBRARY_DIRS ${SPIRV_LIBRARY_RELEASE_DIR} )
 			endif()
 		else ()
 			set( SPIRV_LIBRARIES
 				${SPIRV_LIBRARY_RELEASE}
-				${SPIRVTOOLS_LIBRARY_RELEASE}
+				${SPIRV_TOOLS_LIBRARY_RELEASE}
+				${SPIRV_TOOLS_OPT_LIBRARY_RELEASE}
 				CACHE STRING "SPIRV libraries" )
 			set( SPIRV_LIBRARY_DIRS ${SPIRV_LIBRARY_RELEASE_DIR} )
 		endif ()

@@ -21,7 +21,6 @@ find_path( glslang_ROOT_DIR include/glslang/Public/ShaderLang.h
 		/usr
 )
 
-
 if ( glslang_ROOT_DIR )
 	find_path( glslang_INCLUDE_DIR glslang/Public/ShaderLang.h
 		HINTS
@@ -39,26 +38,42 @@ if ( glslang_ROOT_DIR )
 		set( PLATFORM "x86" )
 	endif ()
 
-	find_path( glslang_LIBRARY_RELEASE_DIR glslang
+	find_path( glslang_LIBRARY_RELEASE_DIR glslang.lib libglslang.a
 		HINTS
 		PATH_SUFFIXES
 			lib/${PLATFORM}/Release
 			lib/${PLATFORM}
+			lib/Release
+			lib
 			/usr/local/lib
 			/usr/lib
 		PATHS
 			${glslang_ROOT_DIR}
 	)
 
-	find_path( glslang_LIBRARY_DEBUG_DIR glslang
+	find_path( glslang_LIBRARY_DEBUG_DIR glslangd.lib libglslangd.a
 		HINTS
 		PATH_SUFFIXES
-			lib/${PLATFORM}/Debug
+			lib/${PLATFORM}
+			lib
 			/usr/local/lib
 			/usr/lib
 		PATHS
 			${glslang_ROOT_DIR}
 	)
+
+	if ( NOT glslang_LIBRARY_DEBUG_DIR )
+		find_path( glslang_LIBRARY_DEBUG_DIR glslang.lib libglslang.a
+			HINTS
+			PATH_SUFFIXES
+				lib/${PLATFORM}/Debug
+				lib/Debug
+				/usr/local/lib
+				/usr/lib
+			PATHS
+				${glslang_ROOT_DIR}
+		)
+	endif ()
 
 	find_library( glslang_LIBRARY_RELEASE
 		NAMES
@@ -70,6 +85,7 @@ if ( glslang_ROOT_DIR )
 
 	find_library( glslang_LIBRARY_DEBUG
 		NAMES
+			glslangd
 			glslang
 		HINTS
 		PATHS
@@ -86,6 +102,7 @@ if ( glslang_ROOT_DIR )
 
 	find_library( OSDependent_LIBRARY_DEBUG
 		NAMES
+			OSDependentd
 			OSDependent
 		HINTS
 		PATHS
@@ -102,6 +119,7 @@ if ( glslang_ROOT_DIR )
 
 	find_library( OGLCompiler_LIBRARY_DEBUG
 		NAMES
+			OGLCompilerd
 			OGLCompiler
 		HINTS
 		PATHS

@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	ClearValue::ClearValue()
-		: m_colour{ {} }
+		: m_colour{}
 		, m_isColour{ true }
 	{
 	}
