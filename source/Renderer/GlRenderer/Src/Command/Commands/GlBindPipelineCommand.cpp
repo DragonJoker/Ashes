@@ -402,10 +402,14 @@ namespace gl_renderer
 		if ( state != save )
 		{
 			glLogCall( gl::Viewport
-				, state.getOffset().x
-				, state.getOffset().y
-				, state.getSize().width
-				, state.getSize().height );
+				, state.offset.x
+				, state.offset.y
+				, state.size.width
+				, state.size.height );
+			glLogCall( gl::DepthRange
+				, state.minDepth
+				, state.maxDepth );
+			save = state;
 		}
 	}
 
@@ -417,10 +421,11 @@ namespace gl_renderer
 		if ( state != save )
 		{
 			glLogCall( gl::Scissor
-				, state.getOffset().x
-				, state.getOffset().y
-				, state.getSize().width
-				, state.getSize().height );
+				, state.offset.x
+				, state.offset.y
+				, state.size.width
+				, state.size.height );
+			save = state;
 		}
 	}
 

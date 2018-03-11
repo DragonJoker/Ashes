@@ -22,8 +22,8 @@ namespace common
 	*/
 	struct TexturedVertexData
 	{
-		renderer::Vec4 position;
-		renderer::Vec2 uv;
+		utils::Vec4 position;
+		utils::Vec2 uv;
 	};
 	/**
 	*\brief

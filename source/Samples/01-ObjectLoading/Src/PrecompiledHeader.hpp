@@ -38,6 +38,6 @@
 #include <Shader/ShaderProgram.hpp>
 #include <Sync/BufferMemoryBarrier.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
+#include <Utils/Signal.hpp>
 
-#include <Utils/Transform.hpp>
-#include <Utils/UtilsSignal.hpp>
+#include <Transform.hpp>

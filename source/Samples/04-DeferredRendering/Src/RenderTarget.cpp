@@ -10,7 +10,7 @@
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/UniformBuffer.hpp>
 
-#include <Utils/Transform.hpp>
+#include <Transform.hpp>
 
 namespace vkapp
 {
@@ -127,7 +127,7 @@ namespace vkapp
 #else
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_sceneUbo->getData( 0u ).mtxProjection = m_device.perspective( utils::toRadians( 90.0_degrees )
+		m_sceneUbo->getData( 0u ).mtxProjection = m_device.perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
 			, 100.0f );
@@ -145,10 +145,10 @@ namespace vkapp
 		common::DirectionalLight directional
 		{
 			{
-				renderer::Vec4{ 1, 1, 1, 1 },
-				renderer::Vec4{ 0.75, 1.0, 0.0, 0.0 }
+				utils::Vec4{ 1, 1, 1, 1 },
+				utils::Vec4{ 0.75, 1.0, 0.0, 0.0 }
 			},
-			renderer::Vec4{ 1.0, -0.25, -1.0, 0.0 }
+			utils::Vec4{ 1.0, -0.25, -1.0, 0.0 }
 		};
 		lights.directionalLights[0] = directional;
 

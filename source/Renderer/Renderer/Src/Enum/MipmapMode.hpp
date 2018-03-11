@@ -17,7 +17,7 @@ namespace renderer
 		eNone,
 		eNearest,
 		eLinear,
-		Utils_EnumBounds( eNearest )
+		Renderer_EnumBounds( eNearest )
 	};
 	/**
 	*\~english

@@ -9,7 +9,7 @@
 #	include <dlfcn.h>
 #endif
 
-namespace utils
+namespace renderer
 {
 	DynamicLibrary::DynamicLibrary( DynamicLibrary && rhs )
 		: m_path{ std::move( rhs.m_path ) }
@@ -72,7 +72,7 @@ namespace utils
 	{
 		UINT oldMode = ::SetErrorMode( SEM_FAILCRITICALERRORS );
 		::GetLastError();
-		void * result = result = ::GetProcAddress( static_cast< HMODULE >( m_library ), name.c_str() );
+		void * result = ( void * )::GetProcAddress( static_cast< HMODULE >( m_library ), name.c_str() );
 		auto error = ::GetLastError();
 		::SetErrorMode( oldMode );
 

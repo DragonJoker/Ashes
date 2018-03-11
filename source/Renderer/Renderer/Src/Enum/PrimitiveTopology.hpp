@@ -30,7 +30,7 @@ namespace renderer
 		eTriangleListWithAdjacency,
 		eTriangleStripWithAdjacency,
 		ePatchList,
-		Utils_EnumBounds( ePointList )
+		Renderer_EnumBounds( ePointList )
 	};
 	/**
 	*\~english

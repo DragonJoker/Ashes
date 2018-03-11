@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -20,7 +20,7 @@ namespace renderer
 		eBack = 0x00000002,
 		eFrontAndBack = 0x00000003,
 	};
-	Utils_ImplementFlag( CullModeFlag )
+	Renderer_ImplementFlag( CullModeFlag )
 	/**
 	*\~english
 	*\brief

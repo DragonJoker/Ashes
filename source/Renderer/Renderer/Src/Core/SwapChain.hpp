@@ -134,7 +134,7 @@ namespace renderer
 		*\param[in] value
 		*	La nouvelle valeur.
 		*/
-		virtual void setClearColour( RgbaColour const & value ) = 0;
+		virtual void setClearColour( ClearColorValue const & value ) = 0;
 		/**
 		*\~french
 		*\return
@@ -143,7 +143,7 @@ namespace renderer
 		*\return
 		*	La couleur de vidage de la swapchain.
 		*/
-		virtual RgbaColour getClearColour()const = 0;
+		virtual ClearColorValue getClearColour()const = 0;
 		/**
 		*\~french
 		*\return

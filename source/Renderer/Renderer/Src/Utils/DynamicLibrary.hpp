@@ -1,13 +1,14 @@
 /*
-See LICENSE file in root folder
+This file belongs to RendererLib.
+See LICENSE file in root folder.
 */
-#ifndef ___Utils_DynamicLibrary_H___
-#define ___Utils_DynamicLibrary_H___
+#ifndef ___Renderer_DynamicLibrary_HPP___
+#define ___Renderer_DynamicLibrary_HPP___
 #pragma once
 
-#include "UtilsPrerequisites.hpp"
+#include "RendererPrerequisites.hpp"
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief

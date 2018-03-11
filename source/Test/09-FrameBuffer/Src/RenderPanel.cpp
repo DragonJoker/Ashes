@@ -32,7 +32,7 @@
 #include <Shader/ShaderProgram.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
-#include <Utils/Transform.hpp>
+#include <Transform.hpp>
 
 #include <FileUtils.hpp>
 

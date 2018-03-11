@@ -33,7 +33,7 @@ namespace renderer
 		eAllGraphics = 0x00008000,
 		eAllCommands = 0x00010000,
 	};
-	Utils_ImplementFlag( PipelineStageFlag )
+	Renderer_ImplementFlag( PipelineStageFlag )
 }
 
 #endif

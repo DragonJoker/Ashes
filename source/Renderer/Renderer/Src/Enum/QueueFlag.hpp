@@ -20,7 +20,7 @@ namespace renderer
 		eTransfer = 0x00000004,
 		eSparseBinding = 0x00000008,
 	};
-	Utils_ImplementFlag( QueueFlag )
+	Renderer_ImplementFlag( QueueFlag )
 }
 
 #endif

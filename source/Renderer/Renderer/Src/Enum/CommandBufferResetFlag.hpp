@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -17,7 +17,7 @@ namespace renderer
 	{
 		eReleaseResources = 0x00000001,
 	};
-	Utils_ImplementFlag( CommandBufferResetFlag )
+	Renderer_ImplementFlag( CommandBufferResetFlag )
 }
 
 #endif

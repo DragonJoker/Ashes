@@ -1,4 +1,4 @@
-/*
+﻿/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -11,6 +11,24 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~english
+	*\brief
+	*	Specifies a clear colour value.
+	*\~french
+	*\brief
+	*	Définit une couleur de vidage.
+	*/
+	union ClearColorValue
+	{
+		std::array< float, 4u > float32;
+		std::array< int32_t, 4u > int32;
+		std::array< uint32_t, 4u > uint32;
+	};
+	/**
+	*\~english
+	*\brief
+	*	Specifies a clear depth/stencil value.
+	*\~french
 	*\brief
 	*	Valeur de vidage profondeur/stencil.
 	*/
@@ -26,7 +44,7 @@ namespace renderer
 	struct ClearValue
 	{
 		ClearValue();
-		ClearValue( RgbaColour const & colour );
+		ClearValue( ClearColorValue const & colour );
 		ClearValue( DepthStencilClearValue const & depthStencil );
 
 		bool isColour()const
@@ -34,7 +52,7 @@ namespace renderer
 			return m_isColour;
 		}
 
-		RgbaColour const & colour()const
+		ClearColorValue const & colour()const
 		{
 			assert( m_isColour );
 			return m_colour;
@@ -48,7 +66,7 @@ namespace renderer
 
 	private:
 		bool m_isColour{ false };
-		RgbaColour m_colour;
+		ClearColorValue m_colour;
 		DepthStencilClearValue m_depthStencil;
 	};
 }

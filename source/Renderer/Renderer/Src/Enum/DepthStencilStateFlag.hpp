@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -16,7 +16,7 @@ namespace renderer
 		: uint32_t
 	{
 	};
-	Utils_ImplementFlag( DepthStencilStateFlag )
+	Renderer_ImplementFlag( DepthStencilStateFlag )
 }
 
 #endif

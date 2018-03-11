@@ -24,7 +24,7 @@ namespace gl_renderer
 				glLogCall( gl::ClearBufferfv
 					, GL_CLEAR_TARGET_COLOR
 					, colourIndex
-					, colour.constPtr() );
+					, colour.float32.data() );
 				++colourIndex;
 			}
 			else
@@ -59,7 +59,11 @@ namespace gl_renderer
 			if ( clearValue.isColour() )
 			{
 				auto & colour = clearValue.colour();
-				glLogCall( gl::ClearColor, colour[0], colour[1], colour[2], colour[3] );
+				glLogCall( gl::ClearColor
+					, colour.float32[0]
+					, colour.float32[1]
+					, colour.float32[2]
+					, colour.float32[3] );
 				result = GL_COLOR_BUFFER_BIT;
 				++colourIndex;
 			}

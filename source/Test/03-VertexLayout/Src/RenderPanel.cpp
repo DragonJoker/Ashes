@@ -110,7 +110,7 @@ namespace vkapp
 	{
 		wxSize size{ GetClientSize() };
 		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
-		m_swapChain->setClearColour( renderer::RgbaColour{ 1.0f, 0.8f, 0.4f, 0.0f } );
+		m_swapChain->setClearColour( renderer::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			doResetSwapChain();

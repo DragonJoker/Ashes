@@ -33,7 +33,7 @@ namespace renderer
 		eMemoryRead = 0x00008000,
 		eMemoryWrite = 0x00010000,
 	};
-	Utils_ImplementFlag( AccessFlag )
+	Renderer_ImplementFlag( AccessFlag )
 }
 
 #endif

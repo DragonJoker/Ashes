@@ -20,7 +20,7 @@ namespace gl_renderer
 				glLogCall( gl::ClearBufferfv
 					, GL_CLEAR_TARGET_COLOR
 					, clearAttach.colourAttachment
-					, colour.constPtr() );
+					, colour.float32.data() );
 			}
 			else
 			{
@@ -83,10 +83,10 @@ namespace gl_renderer
 		}
 
 		glLogCall( gl::Scissor
-			, scissor.getOffset().x
-			, scissor.getOffset().y
-			, scissor.getSize().width
-			, scissor.getSize().height );
+			, scissor.offset.x
+			, scissor.offset.y
+			, scissor.size.width
+			, scissor.size.height );
 	}
 
 	CommandPtr ClearAttachmentsCommand::clone()const

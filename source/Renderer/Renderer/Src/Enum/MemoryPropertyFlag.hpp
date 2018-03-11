@@ -26,7 +26,7 @@ namespace renderer
 		//! Non visible to host, moreover object's memory may be provided lazily, by implementation.
 		eLazilyAllocated = 0x00000010,
 	};
-	Utils_ImplementFlag( MemoryPropertyFlag )
+	Renderer_ImplementFlag( MemoryPropertyFlag )
 }
 
 #endif

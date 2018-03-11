@@ -17,7 +17,7 @@ namespace renderer
 	{
 		ePrecise = 0x00000001,
 	};
-	Utils_ImplementFlag( QueryControlFlag )
+	Renderer_ImplementFlag( QueryControlFlag )
 }
 
 #endif

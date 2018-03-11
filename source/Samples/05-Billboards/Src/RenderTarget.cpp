@@ -9,7 +9,7 @@
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/UniformBuffer.hpp>
 
-#include <Utils/Transform.hpp>
+#include <Transform.hpp>
 
 namespace vkapp
 {
@@ -32,7 +32,7 @@ namespace vkapp
 	{
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_sceneUbo->getData( 0u ).mtxProjection = m_device.perspective( utils::toRadians( 90.0_degrees )
+		m_sceneUbo->getData( 0u ).mtxProjection = m_device.perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
 			, 100.0f );

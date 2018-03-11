@@ -88,7 +88,7 @@ int main( int argc, char * argv[] )
 
 	// Retrieve the swapchain and set it up.
 	app.swapChain = device->createSwapChain( { width, height } );
-	app.swapChain->setClearColour( renderer::RgbaColour{ 1.0f, 0.8f, 0.4f, 0.0f } );
+	app.swapChain->setClearColour( renderer::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f } );
 
 	// We retrieve the render pass that we'll be using to do our stuff on the swapchain surface.
 	app.renderPass = doCreateRenderPass( *device, *app.swapChain );

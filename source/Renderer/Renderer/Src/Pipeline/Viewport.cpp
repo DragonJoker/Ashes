@@ -12,9 +12,10 @@ namespace renderer
 		, int32_t y
 		, float minZ
 		, float maxZ )
-		: m_offset{ x, y }
-		, m_size{ width, height }
-		, m_depthBounds{ minZ, maxZ }
+		: offset{ x, y }
+		, size{ width, height }
+		, minDepth{ minZ }
+		, maxDepth{ maxZ }
 	{
 	}
 }

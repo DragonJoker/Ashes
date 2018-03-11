@@ -27,7 +27,7 @@ namespace renderer
 		eTessellationControlShaderInvocations = 0x00000200,
 		eComputeShaderInvocations = 0x00000400,
 	};
-	Utils_ImplementFlag( QueryPipelineStatisticFlag )
+	Renderer_ImplementFlag( QueryPipelineStatisticFlag )
 }
 
 #endif

@@ -23,7 +23,7 @@ namespace renderer
 		eTransferSrcOptimal = 6,
 		eTransferDstOptimal = 7,
 		ePreinitialised = 8,
-		Utils_EnumBounds( eUndefined ),
+		Renderer_EnumBounds( eUndefined ),
 		ePresentSrc = 1000001002,
 	};
 }

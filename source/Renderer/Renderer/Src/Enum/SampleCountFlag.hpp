@@ -19,7 +19,7 @@ namespace renderer
 		e32 = 0x00000020,
 		e64 = 0x00000040,
 	};
-	Utils_ImplementFlag( SampleCountFlag )
+	Renderer_ImplementFlag( SampleCountFlag )
 }
 
 #endif

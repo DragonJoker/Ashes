@@ -6,7 +6,7 @@ namespace vkapp
 {
 	struct TexturedVertexData
 	{
-		renderer::Vec4 position;
+		utils::Vec4 position;
 		float uv;
 	};
 

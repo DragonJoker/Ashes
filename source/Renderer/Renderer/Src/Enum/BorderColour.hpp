@@ -21,7 +21,7 @@ namespace renderer
 		eIntOpaqueBlack = 3,
 		eFloatOpaqueWhite = 4,
 		eIntOpaqueWhite = 5,
-		Utils_EnumBounds( eFloatTransparentBlack )
+		Renderer_EnumBounds( eFloatTransparentBlack )
 	};
 	/**
 	*\~english
