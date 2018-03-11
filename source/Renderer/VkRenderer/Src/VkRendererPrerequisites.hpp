@@ -145,6 +145,8 @@
 
 #include <RendererPrerequisites.hpp>
 
+#include <list>
+
 namespace vk_renderer
 {
 #if defined( VK_API_VERSION_1_0 )
