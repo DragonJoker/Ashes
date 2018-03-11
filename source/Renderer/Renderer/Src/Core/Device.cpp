@@ -16,6 +16,8 @@ See LICENSE file in root folder.
 #include "RenderPass/RenderSubpass.hpp"
 #include "RenderPass/RenderSubpassState.hpp"
 
+#include <cmath>
+
 namespace renderer
 {
 	Device::Device( Renderer const & renderer
@@ -185,7 +187,7 @@ namespace renderer
 		, float maxAnisotropy
 		, CompareOp compareOp )const
 	{
-		return createSampler( 
+		return createSampler(
 		{
 			minFilter,
 			magFilter,
