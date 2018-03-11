@@ -68,12 +68,21 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 		${${PROJECT_NAME}_CONFIG_HEADER}
 	)
 
-	add_target_precompiled_header( ${PROJECT_NAME}
-		Src/VkRendererPch.hpp
-		Src/VkRendererPch.cpp
-		${CMAKE_CXX_FLAGS}
-		${${PROJECT_NAME}_SRC_FILES}
-	)
+	if ( BUILD_RENDERERLIB )
+		add_target_precompiled_header( ${PROJECT_NAME}
+			Src/VkRendererPch.hpp
+			Src/VkRendererPch.cpp
+			${CMAKE_CXX_FLAGS}
+			${${PROJECT_NAME}_SRC_FILES}
+		)
+	else ()
+		add_target_precompiled_header( ${PROJECT_NAME}
+			VkRendererPch.hpp
+			VkRendererPch.cpp
+			${CMAKE_CXX_FLAGS}
+			${${PROJECT_NAME}_SRC_FILES}
+		)
+	endif ()
 
 	target_link_libraries( ${PROJECT_NAME}
 		${glslang_LIBRARIES}
