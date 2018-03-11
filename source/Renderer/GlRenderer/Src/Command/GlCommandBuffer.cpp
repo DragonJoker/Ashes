@@ -149,7 +149,7 @@ namespace gl_renderer
 	}
 
 	void CommandBuffer::clear( renderer::TextureView const & image
-		, renderer::RgbaColour const & colour )const
+		, renderer::ClearColorValue const & colour )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearColourCommand >( image, colour ) );
 	}

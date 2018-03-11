@@ -9,7 +9,7 @@
 #include <Buffer/StagingBuffer.hpp>
 #include <Buffer/UniformBuffer.hpp>
 
-#include <Utils/Transform.hpp>
+#include <Transform.hpp>
 
 namespace vkapp
 {
@@ -94,35 +94,12 @@ namespace vkapp
 
 	void RenderTarget::doUpdateMatrixUbo( renderer::Extent2D const & size )
 	{
-#if 0
-		float halfWidth = static_cast< float >( size[0] ) * 0.5f;
-		float halfHeight = static_cast< float >( size[1] ) * 0.5f;
-		float wRatio = 1.0f;
-		float hRatio = 1.0f;
-
-		if ( halfHeight > halfWidth )
-		{
-			hRatio = halfHeight / halfWidth;
-		}
-		else
-		{
-			wRatio = halfWidth / halfHeight;
-		}
-
-		m_sceneUbo->getData( 0u ).mtxProjection = m_device->ortho( -2.0f * wRatio
-			, 2.0f * wRatio
-			, -2.0f * hRatio
-			, 2.0f * hRatio
-			, 0.0f
-			, 10.0f );
-#else
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_sceneUbo->getData( 0u ).mtxProjection = m_device.perspective( utils::toRadians( 90.0_degrees )
+		m_sceneUbo->getData( 0u ).mtxProjection = m_device.perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
 			, 100.0f );
-#endif
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo

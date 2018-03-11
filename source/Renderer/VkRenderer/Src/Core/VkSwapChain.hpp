@@ -92,7 +92,7 @@ namespace vk_renderer
 		*\param[in] colour
 		*	The new value.
 		*/
-		inline void setClearColour( renderer::RgbaColour const & value )override
+		inline void setClearColour( renderer::ClearColorValue const & value )override
 		{
 			m_clearColour = convert( value );
 		}
@@ -104,7 +104,7 @@ namespace vk_renderer
 		*\return
 		*	The clear colour.
 		*/
-		inline renderer::RgbaColour getClearColour()const override
+		inline renderer::ClearColorValue getClearColour()const override
 		{
 			return convert( m_clearColour );
 		}

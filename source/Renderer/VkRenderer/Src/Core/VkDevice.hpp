@@ -134,7 +134,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::Device::perspective
 		*/
-		renderer::Mat4 perspective( renderer::Angle fovy
+		renderer::Mat4 perspective( float radiansFovY
 			, float aspect
 			, float zNear
 			, float zFar )const override;

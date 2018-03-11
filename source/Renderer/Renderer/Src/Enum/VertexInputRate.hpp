@@ -21,7 +21,7 @@ namespace renderer
 	{
 		eVertex = 0,
 		eInstance = 1,
-		Utils_EnumBounds( eVertex )
+		Renderer_EnumBounds( eVertex )
 	};
 	/**
 	*\~english

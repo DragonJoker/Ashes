@@ -24,7 +24,7 @@ namespace renderer
 		eTransientAttachment = 0x00000040,
 		eInputAttachment = 0x00000080,
 	};
-	Utils_ImplementFlag( ImageUsageFlag )
+	Renderer_ImplementFlag( ImageUsageFlag )
 }
 
 #endif

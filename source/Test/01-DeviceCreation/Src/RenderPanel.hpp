@@ -4,7 +4,7 @@
 
 #include <Core/Device.hpp>
 
-#include <Utils/UtilsSignal.hpp>
+#include <Utils/Signal.hpp>
 
 #include <wx/panel.h>
 

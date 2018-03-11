@@ -19,22 +19,22 @@ namespace vk_renderer
 	VkClearValue convert( renderer::ClearValue const & value );
 	/**
 	*\brief
-	*	Convertit une renderer::RgbaColour en VkClearColorValue.
+	*	Convertit une renderer::ClearColorValue en VkClearColorValue.
 	*\param[in] value
-	*	La renderer::RgbaColour.
+	*	La renderer::ClearColorValue.
 	*\return
 	*	La VkClearColorValue.
 	*/
-	VkClearColorValue convert( renderer::RgbaColour const & colour );
+	VkClearColorValue convert( renderer::ClearColorValue const & colour );
 	/**
 	*\brief
-	*	Convertit une VkClearColorValue en renderer::RgbaColour.
+	*	Convertit une VkClearColorValue en renderer::ClearColorValue.
 	*\param[in] value
 	*	La VkClearColorValue.
 	*\return
-	*	La renderer::RgbaColour.
+	*	La renderer::ClearColorValue.
 	*/
-	renderer::RgbaColour convert( VkClearColorValue const & colour );
+	renderer::ClearColorValue convert( VkClearColorValue const & colour );
 	/**
 	*\brief
 	*	Convertit une renderer::DepthStencilClearValue en VkClearDepthStencilValue.
@@ -52,5 +52,5 @@ namespace vk_renderer
 	*\return
 	*	La renderer::DepthStencilClearValue.
 	*/
-	renderer::RgbaColour convert( VkClearColorValue const & colour );
+	renderer::ClearColorValue convert( VkClearColorValue const & colour );
 }

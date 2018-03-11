@@ -251,7 +251,7 @@ namespace vkapp
 		m_depthView = &views[0].get();
 		m_colourView = &views[1].get();
 
-		m_sceneUbo->getData( 0u ).mtxProjection = utils::inverse( sceneData.mtxProjection );
+		m_sceneUbo->getData( 0u ).mtxProjection = renderer::inverse( sceneData.mtxProjection );
 		stagingBuffer.uploadUniformData( *m_updateCommandBuffer
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo
@@ -275,7 +275,7 @@ namespace vkapp
 		m_commandBuffer->reset();
 		auto & commandBuffer = *m_commandBuffer;
 		static renderer::DepthStencilClearValue const depth{ 1.0, 0 };
-		static renderer::RgbaColour const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
+		static renderer::ClearColorValue const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
 
 		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
 		{

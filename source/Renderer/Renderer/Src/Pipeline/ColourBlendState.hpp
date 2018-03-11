@@ -18,7 +18,7 @@ namespace renderer
 	{
 		bool logicOpEnable = false;
 		LogicOp logicOp = LogicOp::eCopy;
-		Vec4 blendConstants = Vec4{ 0.0f, 0.0f, 0.0f, 0.0f };
+		std::array< float, 4u > blendConstants{ 0.0f, 0.0f, 0.0f, 0.0f };
 		ColourBlendStateAttachmentArray attachs;
 		/**
 		*\return
@@ -31,7 +31,10 @@ namespace renderer
 	{
 		auto result = lhs.logicOpEnable == rhs.logicOpEnable
 			&& lhs.logicOp == rhs.logicOp
-			&& lhs.blendConstants == rhs.blendConstants
+			&& lhs.blendConstants[0] == rhs.blendConstants[0]
+			&& lhs.blendConstants[1] == rhs.blendConstants[1]
+			&& lhs.blendConstants[2] == rhs.blendConstants[2]
+			&& lhs.blendConstants[3] == rhs.blendConstants[3]
 			&& lhs.attachs.size() == rhs.attachs.size();
 
 		for ( size_t i = 0; i < lhs.attachs.size() && result; ++i )

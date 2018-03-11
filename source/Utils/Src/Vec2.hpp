@@ -10,16 +10,6 @@ namespace utils
 {
 	/**
 	*\brief
-	*	Classe servant uniquement à construire des points et matrices sans
-	*	initialiser leurs données.
-	*/
-	struct NoInit
-	{
-	};
-	//! Instance statique de noInit pour éviter d'en construire.
-	static const NoInit noInit;
-	/**
-	*\brief
 	*	Point à 2 composantes.
 	*/
 	template< typename T >
@@ -30,7 +20,7 @@ namespace utils
 		*\brief
 		*	Constructeur sans initialisation.
 		*/
-		Vec2T( NoInit const & )noexcept;
+		Vec2T( renderer::NoInit const & )noexcept;
 		/**
 		*\brief
 		*	Constructeur par défaut.

@@ -28,7 +28,7 @@ namespace renderer
 		eFlushExplicit = 0x00000040,
 		eUnsynchronised = 0x00000080,
 	};
-	Utils_ImplementFlag( MemoryMapFlag )
+	Renderer_ImplementFlag( MemoryMapFlag )
 }
 
 #endif

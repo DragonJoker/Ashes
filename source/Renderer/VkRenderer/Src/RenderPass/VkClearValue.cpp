@@ -18,17 +18,16 @@ namespace vk_renderer
 		return result;
 	}
 
-	VkClearColorValue convert( renderer::RgbaColour const & colour )
+	VkClearColorValue convert( renderer::ClearColorValue const & colour )
 	{
-		return VkClearColorValue
-		{
-			{ colour[0], colour[1], colour[2], colour[3] }
-		};
+		VkClearColorValue result;
+		std::memcpy( &result, &colour, sizeof( colour ) );
+		return result;
 	}
 
-	renderer::RgbaColour convert( VkClearColorValue const & colour )
+	renderer::ClearColorValue  convert( VkClearColorValue const & colour )
 	{
-		return renderer::RgbaColour
+		return renderer::ClearColorValue
 		{
 			colour.float32[0],
 			colour.float32[1],

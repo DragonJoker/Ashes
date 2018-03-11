@@ -2,13 +2,15 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder
 */
+#ifndef ___Renderer_Mat4_HPP___
+#define ___Renderer_Mat4_HPP___
 #pragma once
 
-#include "Vectorisation.hpp"
+#include "Vec4.hpp"
 
 #include <array>
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief
@@ -228,3 +230,5 @@ namespace utils
 }
 
 #include "Mat4.inl"
+
+#endif

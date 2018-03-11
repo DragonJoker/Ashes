@@ -455,7 +455,7 @@ namespace renderer
 		*\param[in] zFar
 		*	La position de l'arrière plan (pour le clipping).
 		*/
-		virtual Mat4 perspective( Angle fovy
+		virtual Mat4 perspective( float radiansFovY
 			, float aspect
 			, float zNear
 			, float zFar )const = 0;
@@ -505,7 +505,7 @@ namespace renderer
 		*\param[in] zNear
 		*	La position du premier plan (pour le clipping).
 		*/
-		Mat4 infinitePerspective( Angle fovy
+		Mat4 infinitePerspective( float radiansFovY
 			, float aspect
 			, float zNear )const;
 		/**

@@ -16,7 +16,7 @@ namespace renderer
 		: uint32_t
 	{
 	};
-	Utils_ImplementFlag( TessellationStateFlag )
+	Renderer_ImplementFlag( TessellationStateFlag )
 }
 
 #endif

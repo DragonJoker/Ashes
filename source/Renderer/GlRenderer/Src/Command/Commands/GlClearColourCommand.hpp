@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #include "GlCommandBase.hpp"
 
+#include <RenderPass/ClearValue.hpp>
+
 namespace gl_renderer
 {
 	/**
@@ -25,14 +27,14 @@ namespace gl_renderer
 		*	La couleur de vidage.
 		*/
 		ClearColourCommand( renderer::TextureView const & image
-			, renderer::RgbaColour const & colour );
+			, renderer::ClearColorValue const & colour );
 
 		void apply()const override;
 		CommandPtr clone()const override;
 
 	private:
 		TextureView const & m_image;
-		renderer::RgbaColour m_colour;
+		renderer::ClearColorValue m_colour;
 		GlInternal m_internal;
 		GlFormat m_format;
 		GlType m_type;

@@ -140,7 +140,7 @@ namespace gl_renderer
 		/**
 		*\copydoc	renderer::Device::perspective
 		*/
-		renderer::Mat4 perspective( renderer::Angle fovy
+		renderer::Mat4 perspective( float radiansFovY
 			, float aspect
 			, float zNear
 			, float zFar )const override;
@@ -241,11 +241,17 @@ namespace gl_renderer
 
 	private:
 		ContextPtr m_context;
+		struct Vertex
+		{
+			float x;
+			float y;
+			float z;
+		};
 		// Mimic the behavior in Vulkan, when no IBO nor VBO is bound.
 		mutable struct
 		{
 			renderer::BufferPtr< uint32_t > indexBuffer;
-			renderer::VertexBufferPtr< renderer::Vec3 > vertexBuffer;
+			renderer::VertexBufferPtr< Vertex > vertexBuffer;
 			GeometryBuffersPtr geometryBuffers;
 		} m_dummyIndexed;
 		mutable renderer::Scissor m_scissor{ 0, 0, 0, 0 };

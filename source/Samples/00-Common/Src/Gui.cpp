@@ -413,8 +413,8 @@ namespace common
 	{
 		size_t index = 0u;
 		ImGuiIO & io = ImGui::GetIO();
-		m_pushConstants.getData()->scale = renderer::Vec2{ 2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y };
-		m_pushConstants.getData()->translate = renderer::Vec2{ -1.0f };
+		m_pushConstants.getData()->scale = utils::Vec2{ 2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y };
+		m_pushConstants.getData()->translate = utils::Vec2{ -1.0f };
 
 		if ( m_commandBuffer->begin() )
 		{
@@ -430,7 +430,7 @@ namespace common
 				, m_indexBuffer->getBuffer().makeVertexShaderInputResource() );
 			m_commandBuffer->beginRenderPass( *m_renderPass
 				, *m_frameBuffer
-				, { renderer::RgbaColour{ 1.0, 1.0, 1.0, 0.0 } }
+				, { renderer::ClearColorValue{ 1.0, 1.0, 1.0, 0.0 } }
 				, renderer::SubpassContents::eInline );
 			m_commandBuffer->bindPipeline( *m_pipeline );
 			m_commandBuffer->bindDescriptorSet( *m_descriptorSet

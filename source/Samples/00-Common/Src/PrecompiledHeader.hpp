@@ -2,6 +2,10 @@
 
 #include "Prerequisites.hpp"
 
+#include <Factory.hpp>
+#include <StringUtils.hpp>
+#include <Transform.hpp>
+
 #include <Buffer/Buffer.hpp>
 #include <Buffer/PushConstantsBuffer.hpp>
 #include <Buffer/StagingBuffer.hpp>
@@ -42,11 +46,8 @@
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Utils/DynamicLibrary.hpp>
-#include <Utils/Factory.hpp>
 #include <Utils/Mat4.hpp>
-#include <Utils/StringUtils.hpp>
-#include <Utils/Transform.hpp>
-#include <Utils/UtilsSignal.hpp>
+#include <Utils/Signal.hpp>
 
 #include <algorithm>
 #include <array>

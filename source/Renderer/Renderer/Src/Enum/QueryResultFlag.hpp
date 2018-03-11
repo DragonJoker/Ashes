@@ -20,7 +20,7 @@ namespace renderer
 		eWithAvailability = 0x00000004,
 		ePartial = 0x00000008,
 	};
-	Utils_ImplementFlag( QueryResultFlag )
+	Renderer_ImplementFlag( QueryResultFlag )
 }
 
 #endif

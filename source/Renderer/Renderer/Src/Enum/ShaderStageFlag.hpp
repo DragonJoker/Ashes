@@ -23,7 +23,7 @@ namespace renderer
 		eCompute = 0x00000020,
 		eAll = 0x0000001F,
 	};
-	Utils_ImplementFlag( ShaderStageFlag )
+	Renderer_ImplementFlag( ShaderStageFlag )
 	/**
 	*\~english
 	*\brief

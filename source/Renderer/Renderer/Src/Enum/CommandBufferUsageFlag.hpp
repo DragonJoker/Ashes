@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -19,7 +19,7 @@ namespace renderer
 		eRenderPassContinue = 0x00000002,
 		eSimultaneousUse = 0x00000004,
 	};
-	Utils_ImplementFlag( CommandBufferUsageFlag )
+	Renderer_ImplementFlag( CommandBufferUsageFlag )
 }
 
 #endif

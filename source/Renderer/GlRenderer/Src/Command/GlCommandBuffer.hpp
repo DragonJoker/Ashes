@@ -71,7 +71,7 @@ namespace gl_renderer
 		*\copydoc	renderer::CommandBuffer::clear
 		*/
 		void clear( renderer::TextureView const & image
-			, renderer::RgbaColour const & colour )const override;
+			, renderer::ClearColorValue const & colour )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer::clear
 		*/

@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Mat4.hpp"
+#include <Utils/Mat4.hpp>
 #include "Angle.hpp"
 
 namespace utils
@@ -21,7 +21,7 @@ namespace utils
 		*\brief
 		*	Constructeur sans initialisation.
 		*/
-		QuaternionT( NoInit const & )noexcept;
+		QuaternionT( renderer::NoInit const & )noexcept;
 		/**
 		*\brief
 		*	Constructeur par défaut.
@@ -301,7 +301,7 @@ namespace utils
 	*	La matrice de rotation.
 	*/
 	template< typename T >
-	Mat4T< T > toMat4( QuaternionT< T > const & q )noexcept;
+	renderer::Mat4T< T > toMat4( QuaternionT< T > const & q )noexcept;
 	/**
 	*\name Opérateurs logiques.
 	*/

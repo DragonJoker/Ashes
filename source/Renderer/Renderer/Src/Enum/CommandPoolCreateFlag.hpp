@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -18,7 +18,7 @@ namespace renderer
 		eTransient = 0x00000001,
 		eResetCommandBuffer = 0x00000002,
 	};
-	Utils_ImplementFlag( CommandPoolCreateFlag )
+	Renderer_ImplementFlag( CommandPoolCreateFlag )
 }
 
 #endif

@@ -12,6 +12,8 @@
 #include "Shader/VkAttribute.hpp"
 #include "Shader/VkShaderModule.hpp"
 
+#include <algorithm>
+
 namespace vk_renderer
 {
 	Pipeline::Pipeline( Device const & device

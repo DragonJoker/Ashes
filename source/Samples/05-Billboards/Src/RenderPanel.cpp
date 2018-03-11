@@ -33,7 +33,7 @@ namespace vkapp
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		images.emplace_back( std::make_shared< common::Image >( common::loadImage( shadersFolder / "texture.png" ) ) );
 		auto init = ObjectCount * -2.0f;
-		renderer::Vec3 position{ init, init, init };
+		utils::Vec3 position{ init, init, init };
 		scene.billboard.material.textures.emplace_back( images[0] );
 		scene.billboard.material.hasOpacity = false;
 		scene.billboard.material.data.texturesCount = 1u;
@@ -52,7 +52,7 @@ namespace vkapp
 
 				for ( auto k = 0u; k < ObjectCount; ++k )
 				{
-					scene.billboard.list.push_back( { position, renderer::Vec2{ 2.0, 2.0 } } );
+					scene.billboard.list.push_back( { position, utils::Vec2{ 2.0, 2.0 } } );
 					position[2] += 4;
 				}
 

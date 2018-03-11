@@ -201,7 +201,7 @@ namespace vk_renderer
 	}
 
 	void CommandBuffer::clear( renderer::TextureView const & image
-		, renderer::RgbaColour const & colour )const
+		, renderer::ClearColorValue const & colour )const
 	{
 		auto vkcolour = convert( colour );
 		auto vksubresourceRange = convert( image.getSubResourceRange() );

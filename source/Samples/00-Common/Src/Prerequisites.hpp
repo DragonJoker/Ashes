@@ -7,9 +7,11 @@
 #include <Miscellaneous/Extent2D.hpp>
 #include <Pipeline/VertexLayout.hpp>
 #include <RenderPass/RenderSubpass.hpp>
-
-#include <Utils/Factory.hpp>
 #include <Utils/Mat4.hpp>
+
+#include <Factory.hpp>
+#include <Vec2.hpp>
+#include <Vec3.hpp>
 
 #pragma warning( disable: 4996 )
 #include <wx/wx.h>
@@ -36,14 +38,14 @@ namespace common
 
 	struct SceneData
 	{
-		utils::Mat4 mtxProjection;
-		utils::Mat4 mtxView;
+		renderer::Mat4 mtxProjection;
+		renderer::Mat4 mtxView;
 		utils::Vec4 cameraPosition;
 	};
 
 	struct ObjectData
 	{
-		utils::Mat4 mtxModel;
+		renderer::Mat4 mtxModel;
 	};
 
 	struct BillboardInstanceData
@@ -90,9 +92,9 @@ namespace common
 
 	struct MaterialData
 	{
-		renderer::RgbaColour diffuse;
-		renderer::RgbaColour specular;
-		renderer::RgbaColour emissive;
+		utils::Vec4 diffuse;
+		utils::Vec4 specular;
+		utils::Vec4 emissive;
 		float shininess{ 0.0f };
 		float opacity{ 1.0f };
 		uint32_t texturesCount{ 0u };

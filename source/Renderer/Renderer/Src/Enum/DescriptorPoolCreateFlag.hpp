@@ -21,7 +21,7 @@ namespace renderer
 	{
 		eFreeDescriptorSet = 0x00000001,
 	};
-	Utils_ImplementFlag( DescriptorPoolCreateFlag )
+	Renderer_ImplementFlag( DescriptorPoolCreateFlag )
 }
 
 #endif

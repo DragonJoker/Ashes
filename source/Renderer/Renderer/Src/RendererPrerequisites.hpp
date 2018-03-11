@@ -6,8 +6,23 @@ See LICENSE file in root folder.
 #define ___Renderer_Prerequisites_HPP___
 #pragma once
 
+#include <array>
+#include <cassert>
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
+
+#define Renderer_EnumBounds( MinValue )\
+	eCount,\
+	eMin = MinValue,\
+	eMax = eCount - 1
+
 #include "RendererConfig.hpp"
-#include "UtilsMapping.hpp"
+#include "Utils/FlagCombination.hpp"
+#include "Utils/Mat4.hpp"
+#include "Utils/Signal.hpp"
 
 #include "Enum/AccessFlag.hpp"
 #include "Enum/AttachmentLoadOp.hpp"
@@ -106,6 +121,8 @@ namespace renderer
 	template< typename T >
 	class UniformBuffer;
 	template< typename T >
+	class Mat4T;
+	template< typename T >
 	class PushConstantsBuffer;
 	template< typename T >
 	class SpecialisationInfo;
@@ -154,6 +171,7 @@ namespace renderer
 	struct RasterisationState;
 	struct RenderPassCreateInfo;
 	struct RenderSubpassState;
+	struct Scissor;
 	struct ShaderStageState;
 	struct SpecialisationMapEntry;
 	struct StencilOpState;
@@ -164,6 +182,7 @@ namespace renderer
 	struct VertexInputAttributeDescription;
 	struct VertexInputBindingDescription;
 	struct VertexInputState;
+	struct Viewport;
 	struct WriteDescriptorSet;
 
 	class Attribute;
@@ -198,7 +217,6 @@ namespace renderer
 	class RenderSubpass;
 	class Sampler;
 	class Semaphore;
-	class Scissor;
 	class ShaderModule;
 	class ShaderProgram;
 	class ShaderStorageBufferBase;
@@ -211,7 +229,6 @@ namespace renderer
 	class UniformBufferBase;
 	class VertexBufferBase;
 	class VertexLayout;
-	class Viewport;
 	class WindowHandle;
 
 	/**
@@ -240,6 +257,8 @@ namespace renderer
 	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBuffer< T > >;
 	template< typename T >
 	using SpecialisationInfoPtr = std::unique_ptr< SpecialisationInfo< T > >;
+
+	using Mat4 = Mat4T< float >;
 
 	using AttributeBasePtr = std::unique_ptr< Attribute >;
 	using BackBufferPtr = std::unique_ptr< BackBuffer >;

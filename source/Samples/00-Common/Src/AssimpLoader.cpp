@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-#include <Utils/StringUtils.hpp>
+#include <StringUtils.hpp>
 
 #include <assimp/Importer.hpp> // C++ importer interface
 #include <assimp/scene.h> // Output data structure
@@ -80,8 +80,8 @@ namespace common
 
 		template< typename aiMeshType >
 		std::vector< Vertex > doCreateVertexBuffer( aiMeshType const & aiMesh
-			, renderer::Vec3 & min
-			, renderer::Vec3 & max )
+			, utils::Vec3 & min
+			, utils::Vec3 & max )
 		{
 			std::vector< Vertex > result{ aiMesh.mNumVertices };
 			uint32_t index{ 0u };
@@ -182,10 +182,10 @@ namespace common
 			}
 
 			material.data.opacity = opacity;
-			material.data.diffuse = renderer::RgbaColour{ diffuse.r, diffuse.g, diffuse.b, 1.0f };
-			material.data.specular = renderer::RgbaColour{ specular.r, specular.g, specular.b, 1.0f };
+			material.data.diffuse = utils::Vec4{ diffuse.r, diffuse.g, diffuse.b, 1.0f };
+			material.data.specular = utils::Vec4{ specular.r, specular.g, specular.b, 1.0f };
 			material.data.specular *= shininessStrength;
-			material.data.emissive = renderer::RgbaColour{ emissive.r, emissive.g, emissive.b, 1.0f };
+			material.data.emissive = utils::Vec4{ emissive.r, emissive.g, emissive.b, 1.0f };
 			material.hasOpacity = opacity < 1.0f;
 
 			if ( shininess > 0 )
@@ -313,14 +313,14 @@ namespace common
 
 		if ( aiScene && aiScene->HasMeshes() )
 		{
-			renderer::Vec3 min{ std::numeric_limits< float >::max() };
-			renderer::Vec3 max{ std::numeric_limits< float >::lowest() };
+			utils::Vec3 min{ std::numeric_limits< float >::max() };
+			utils::Vec3 max{ std::numeric_limits< float >::lowest() };
 			static Material const defaultMaterial
 			{
 				{
-					renderer::RgbaColour{ 1, 1, 1, 1 },
-					renderer::RgbaColour{ 1, 1, 1, 1 },
-					renderer::RgbaColour{ 0, 0, 0, 0 },
+					utils::Vec4{ 1, 1, 1, 1 },
+					utils::Vec4{ 1, 1, 1, 1 },
+					utils::Vec4{ 0, 0, 0, 0 },
 				}
 			};
 
@@ -393,7 +393,7 @@ namespace common
 			float scale = rescale / std::max( diff[0], std::max( diff[1], diff[2] ) );
 			min *= scale;
 			max *= scale;
-			renderer::Vec3 offset{ ( max - min ) / -2.0f };
+			utils::Vec3 offset{ ( max - min ) / -2.0f };
 			offset[0] = 0.0;
 			offset[2] = 0.0;
 

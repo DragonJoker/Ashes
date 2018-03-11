@@ -2,7 +2,7 @@
 
 #include "RendererPlugin.hpp"
 
-#include <Utils/Factory.hpp>
+#include <Factory.hpp>
 
 #include <wx/app.h>
 

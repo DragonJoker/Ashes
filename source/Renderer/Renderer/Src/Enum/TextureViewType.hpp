@@ -26,7 +26,7 @@ namespace renderer
 		e1DArray = 4,
 		e2DArray = 5,
 		eCubeArray = 6,
-		Utils_EnumBounds( e1D )
+		Renderer_EnumBounds( e1D )
 	};
 	/**
 	*\~english

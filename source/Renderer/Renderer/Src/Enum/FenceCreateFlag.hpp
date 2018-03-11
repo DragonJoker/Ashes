@@ -17,7 +17,7 @@ namespace renderer
 	{
 		eSignaled = 0x00000001,
 	};
-	Utils_ImplementFlag( FenceCreateFlag )
+	Renderer_ImplementFlag( FenceCreateFlag )
 }
 
 #endif

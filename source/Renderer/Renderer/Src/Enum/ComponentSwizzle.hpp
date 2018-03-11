@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -41,7 +41,7 @@ namespace renderer
 		//!\~french		La composante est définie à la composante alpha.
 		eA,
 	};
-	Utils_ImplementFlag( ComponentSwizzle )
+	Renderer_ImplementFlag( ComponentSwizzle )
 	/**
 	*\~english
 	*\brief

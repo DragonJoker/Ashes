@@ -32,7 +32,7 @@
 #include <Shader/ShaderProgram.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
-#include <Utils/Transform.hpp>
+#include <Transform.hpp>
 
 #include <FileUtils.hpp>
 
@@ -247,35 +247,12 @@ namespace vkapp
 	void RenderPanel::doUpdateProjection()
 	{
 		auto size = m_swapChain->getDimensions();
-#if 0
-		float halfWidth = static_cast< float >( size.x ) * 0.5f;
-		float halfHeight = static_cast< float >( size.y ) * 0.5f;
-		float wRatio = 1.0f;
-		float hRatio = 1.0f;
-
-		if ( halfHeight > halfWidth )
-		{
-			hRatio = halfHeight / halfWidth;
-		}
-		else
-		{
-			wRatio = halfWidth / halfHeight;
-		}
-
-		m_projection = m_device->ortho( -2.0f * wRatio
-			, 2.0f * wRatio
-			, -2.0f * hRatio
-			, 2.0f * hRatio
-			, 0.0f
-			, 1000.0f );
-#else
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_projection = m_device->perspective( utils::toRadians( 90.0_degrees )
+		m_projection = m_device->perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
 			, 1000.0f );
-#endif
 	}
 
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
@@ -483,7 +460,7 @@ namespace vkapp
 		m_offscreenMatrixLayout->createAttribute( 5u, renderer::Format::eR32G32B32A32_SFLOAT, 48u );
 
 		auto init = ObjectCount * -2.0f;
-		renderer::Vec3 position{ init, init, init };
+		utils::Vec3 position{ init, init, init };
 		std::vector< renderer::Mat4 > matrices;
 		matrices.reserve( ObjectCount * ObjectCount * ObjectCount );
 
@@ -498,10 +475,10 @@ namespace vkapp
 				for ( auto k = 0u; k < ObjectCount; ++k )
 				{
 					matrices.emplace_back(
-						renderer::Vec4{ 1, 0, 0, 0 },
-						renderer::Vec4{ 0, 1, 0, 0 },
-						renderer::Vec4{ 0, 0, 1, 0 },
-						renderer::Vec4{ position[0], position[1], position[2], 1 }
+						utils::Vec4{ 1, 0, 0, 0 },
+						utils::Vec4{ 0, 1, 0, 0 },
+						utils::Vec4{ 0, 0, 1, 0 },
+						utils::Vec4{ position[0], position[1], position[2], 1 }
 					);
 					position[2] += 4;
 				}

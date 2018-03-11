@@ -2,36 +2,38 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder
 */
+#ifndef ___Renderer_Signal_HPP___
+#define ___Renderer_Signal_HPP___
 #pragma once
 
-#include "UtilsPrerequisites.hpp"
+#include "RendererPrerequisites.hpp"
 
 #include <functional>
 #include <set>
 #include <map>
 #include <mutex>
 
-namespace utils
+namespace renderer
 {
 	/**
 	*\brief
 	*	Représente une connexion à un signal.
 	*/
 	template< typename SignalT >
-	class Connection
+	class SignalConnection
 	{
 	private:
 		using my_signal = SignalT;
 		using my_signal_ptr = my_signal *;
-		Connection( Connection< my_signal > const & ) = delete;
-		Connection & operator=( Connection< my_signal > const & ) = delete;
+		SignalConnection( SignalConnection< my_signal > const & ) = delete;
+		SignalConnection & operator=( SignalConnection< my_signal > const & ) = delete;
 
 	public:
 		/**
 		*\brief
 		*	Constructeur.
 		*/
-		Connection()
+		SignalConnection()
 			: m_connection{ 0u }
 			, m_signal{ nullptr }
 		{
@@ -42,7 +44,7 @@ namespace utils
 		*\param[in,out] rhs
 		*	L'objet à déplacer.
 		*/
-		Connection( Connection< my_signal > && rhs )
+		SignalConnection( SignalConnection< my_signal > && rhs )
 			: m_connection{ rhs.m_connection }
 			, m_signal{ rhs.m_signal }
 		{
@@ -57,9 +59,9 @@ namespace utils
 		*\param[in,out] rhs
 		*	L'objet à déplacer.
 		*/
-		Connection & operator=( Connection< my_signal > && rhs )
+		SignalConnection & operator=( SignalConnection< my_signal > && rhs )
 		{
-			Connection tmp{ std::move( rhs ) };
+			SignalConnection tmp{ std::move( rhs ) };
 			swap( *this, tmp );
 			m_signal->remConnection( tmp );
 			m_signal->addConnection( *this );
@@ -73,7 +75,7 @@ namespace utils
 		*\param[in] signal
 		*	Le signal.
 		*/
-		Connection( uint32_t connection, my_signal & signal )
+		SignalConnection( uint32_t connection, my_signal & signal )
 			: m_connection{ connection }
 			, m_signal{ &signal }
 		{
@@ -85,7 +87,7 @@ namespace utils
 		*\remarks
 		*	Déconnecte la fonction du signal.
 		*/
-		~Connection()
+		~SignalConnection()
 		{
 			disconnect();
 		}
@@ -109,7 +111,7 @@ namespace utils
 		*\brief
 		*	Echange deux connections.
 		*/
-		void swap( Connection & lhs, Connection & rhs )
+		void swap( SignalConnection & lhs, SignalConnection & rhs )
 		{
 			if ( &rhs != &lhs )
 			{
@@ -131,8 +133,8 @@ namespace utils
 	template< typename Function >
 	class Signal
 	{
-		friend class Connection< Signal< Function > >;
-		using my_connection = Connection< Signal< Function > >;
+		friend class SignalConnection< Signal< Function > >;
+		using my_connection = SignalConnection< Signal< Function > >;
 		using my_connection_ptr = my_connection *;
 
 	public:
@@ -144,7 +146,7 @@ namespace utils
 		*/
 		~Signal()
 		{
-			// Connection::disconnect appelle Signal::remConnection, qui
+			// SignalConnection::disconnect appelle Signal::remConnection, qui
 			// supprime la connection de m_connections, invalidant ainsi
 			// l'itérateur, donc on ne peut pas utiliser un for_each, ni
 			// un range for loop.
@@ -246,3 +248,5 @@ namespace utils
 		std::recursive_mutex m_mutex;
 	};
 }
+
+#endif

@@ -25,7 +25,7 @@ namespace common
 			m_rotation *= value;
 		}
 
-		inline utils::Mat4 const & getView()const
+		inline renderer::Mat4 const & getView()const
 		{
 			return m_transform;
 		}
@@ -48,6 +48,6 @@ namespace common
 	private:
 		utils::Vec3 m_position;
 		utils::Quaternion m_rotation;
-		utils::Mat4 m_transform;
+		renderer::Mat4 m_transform;
 	};
 }

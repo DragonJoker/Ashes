@@ -92,8 +92,11 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/external/imgui
 )
 
-add_subdirectory( Core )
 add_subdirectory( Renderer )
+
+if ( RENDERER_BUILD_TESTS OR RENDERER_BUILD_SAMPLES OR RENDERER_BUILD_TEMPLATES )
+	add_subdirectory( Utils )
+endif ()
 
 if ( RENDERER_BUILD_TEMPLATES )
 	add_subdirectory( Templates )

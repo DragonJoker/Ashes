@@ -30,7 +30,7 @@ namespace renderer
 		eSampledImageFilterLinear = 0x00001000,
 		eSampledImageFilterCubic = 0x00002000,
 	};
-	Utils_ImplementFlag( FormatFeatureFlag )
+	Renderer_ImplementFlag( FormatFeatureFlag )
 }
 
 #endif
