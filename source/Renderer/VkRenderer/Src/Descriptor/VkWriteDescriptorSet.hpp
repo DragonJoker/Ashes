@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #include <Descriptor/WriteDescriptorSet.hpp>
 
+#include <list>
+
 namespace vk_renderer
 {
 	class DescriptorSet;
