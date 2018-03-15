@@ -129,6 +129,8 @@ namespace renderer
 	template< typename T >
 	class VertexBuffer;
 
+	union ClearColorValue;
+
 	struct AttachmentDescription;
 	struct AttachmentReference;
 	struct BufferCopy;
