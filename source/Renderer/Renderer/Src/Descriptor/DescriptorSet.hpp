@@ -598,6 +598,32 @@ namespace renderer
 		{
 			return m_bindingPoint;
 		}
+		/**
+		*\~french
+		*\return
+		*	Le descripteur à l'indice donné.
+		*\~english
+		*\return
+		*	The descriptor at given index.
+		*/
+		inline WriteDescriptorSet const & getBinding( uint32_t index )const
+		{
+			assert( index < m_writes.size() );
+			return m_writes[index];
+		}
+		/**
+		*\~french
+		*\return
+		*	Le descripteur à l'indice donné.
+		*\~english
+		*\return
+		*	The descriptor at given index.
+		*/
+		inline WriteDescriptorSet & getBinding( uint32_t index )
+		{
+			assert( index < m_writes.size() );
+			return m_writes[index];
+		}
 
 	protected:
 		WriteDescriptorSetArray m_writes;
