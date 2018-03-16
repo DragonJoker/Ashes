@@ -24,14 +24,23 @@ if ( OpenGL_FOUND )
 		Src/*.inc
 	)
 
-	add_definitions(
-		-DGlRenderer_EXPORTS
-	)
-
-	add_library( ${PROJECT_NAME} SHARED
-		${${PROJECT_NAME}_CXX_FILES}
-		${${PROJECT_NAME}_HDR_FILES}
-	)
+	if ( RENDERER_STATIC_RENDERERS )
+		add_definitions(
+			-DGlRenderer_STATIC
+		)
+		add_library( ${PROJECT_NAME} STATIC
+			${${PROJECT_NAME}_CXX_FILES}
+			${${PROJECT_NAME}_HDR_FILES}
+		)
+	else ()
+		add_definitions(
+			-DGlRenderer_EXPORTS
+		)
+		add_library( ${PROJECT_NAME} SHARED
+			${${PROJECT_NAME}_CXX_FILES}
+			${${PROJECT_NAME}_HDR_FILES}
+		)
+	endif ()
 
 	if ( BUILD_RENDERERLIB )
 		add_target_precompiled_header( ${PROJECT_NAME}
@@ -73,38 +82,73 @@ if ( OpenGL_FOUND )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
 
-	if ( WIN32 )
-		#We install each .dll in <install_dir>/bin folder
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}
-			CONFIGURATIONS Release RelWithDebInfo
-			EXPORT ${PROJECT_NAME}
-			RUNTIME DESTINATION bin/${PROJECTS_PLATFORM}/Release
-		)
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}
-			CONFIGURATIONS Debug
-			EXPORT ${PROJECT_NAME}
-			RUNTIME DESTINATION bin/${PROJECTS_PLATFORM}/Debug
-		)
+	if ( RENDERER_STATIC_RENDERERS )
+		if ( WIN32 )
+			#We install each .lib in <install_dir>/lib folder
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}
+				CONFIGURATIONS Release RelWithDebInfo
+				EXPORT ${PROJECT_NAME}
+				ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Release
+			)
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}
+				CONFIGURATIONS Debug
+				EXPORT ${PROJECT_NAME}
+				ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Debug
+			)
+		else ()
+			#We install each .so in <install_dir>/lib folder
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}
+				CONFIGURATIONS Release RelWithDebInfo
+				EXPORT ${PROJECT_NAME}
+				LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Release
+			)
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}
+				CONFIGURATIONS Debug
+				LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Debug
+			)
+		endif()
 	else ()
-		#We install each .so in <install_dir>/lib folder
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}
-			CONFIGURATIONS Release RelWithDebInfo
-			EXPORT ${PROJECT_NAME}
-			LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Release
-		)
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}
-			CONFIGURATIONS Debug
-			LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Debug
-		)
-	endif()
+		if ( WIN32 )
+			#We install each .dll in <install_dir>/bin folder
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}
+				CONFIGURATIONS Release RelWithDebInfo
+				EXPORT ${PROJECT_NAME}
+				RUNTIME DESTINATION bin/${PROJECTS_PLATFORM}/Release
+			)
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}
+				CONFIGURATIONS Debug
+				EXPORT ${PROJECT_NAME}
+				RUNTIME DESTINATION bin/${PROJECTS_PLATFORM}/Debug
+			)
+		else ()
+			#We install each .so in <install_dir>/lib folder
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}
+				CONFIGURATIONS Release RelWithDebInfo
+				EXPORT ${PROJECT_NAME}
+				LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Release
+			)
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}
+				CONFIGURATIONS Debug
+				LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Debug
+			)
+		endif()
+	endif ()
 else ()
 	if ( NOT OpenGL_FOUND )
 		message( SEND_ERROR "OpenGL library not found." )
