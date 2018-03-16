@@ -8,7 +8,7 @@
 
 #include <Core/Renderer.hpp>
 
-#if defined( _WIN32 ) && !defined( VkRenderer_STATIC_LIB )
+#if defined( _WIN32 ) && !defined( VkRenderer_STATIC )
 #	ifdef VkRenderer_EXPORTS
 #		define VkRenderer_API __declspec( dllexport )
 #	else
