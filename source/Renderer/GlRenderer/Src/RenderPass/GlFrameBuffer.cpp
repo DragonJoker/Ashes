@@ -86,7 +86,7 @@ namespace gl_renderer
 			switch ( status )
 			{
 			case 0:
-				std::cerr << "An error has occured." << std::endl;
+				renderer::Logger::logError( "An error has occured." );
 				assert( false );
 				break;
 
@@ -94,47 +94,47 @@ namespace gl_renderer
 				break;
 
 			case GL_FRAMEBUFFER_STATUS_UNDEFINED:
-				std::cerr << "The specified framebuffer is the default read or draw framebuffer, but the default framebuffer does not exist." << std::endl;
+				renderer::Logger::logError( "The specified framebuffer is the default read or draw framebuffer, but the default framebuffer does not exist." );
 				assert( false );
 				break;
 
 			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT:
-				std::cerr << "At least one of the framebuffer attachment points are framebuffer incomplete." << std::endl;
+				renderer::Logger::logError( "At least one of the framebuffer attachment points are framebuffer incomplete." );
 				assert( false );
 				break;
 
 			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT:
-				std::cerr << "The framebuffer does not have at least one image attached to it." << std::endl;
+				renderer::Logger::logError( "The framebuffer does not have at least one image attached to it." );
 				assert( false );
 				break;
 
 			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER:
-				std::cerr << "The value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for any color attachment point(s) named by GL_DRAW_BUFFERi." << std::endl;
+				renderer::Logger::logError( "The value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for any color attachment point(s) named by GL_DRAW_BUFFERi." );
 				assert( false );
 				break;
 
 			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER:
-				std::cerr << "GL_READ_BUFFER is not GL_NONE and the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for the color attachment point named by GL_READ_BUFFER." << std::endl;
+				renderer::Logger::logError( "GL_READ_BUFFER is not GL_NONE and the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for the color attachment point named by GL_READ_BUFFER." );
 				assert( false );
 				break;
 
 			case GL_FRAMEBUFFER_STATUS_UNSUPPORTED:
-				std::cerr << "The combination of internal formats of the attached images violates an implementation-dependent set of restrictions." << std::endl;
+				renderer::Logger::logError( "The combination of internal formats of the attached images violates an implementation-dependent set of restrictions." );
 				assert( false );
 				break;
 
 			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE:
-				std::cerr << "One of the following:" << std::endl;
-				std::cerr << "  - The value of GL_RENDERBUFFER_SAMPLES is not the same for all attached renderbuffers;" << std::endl;
-				std::cerr << "  - The value of GL_TEXTURE_SAMPLES is the not same for all attached textures;" << std::endl;
-				std::cerr << "  - The attached images are a mix of renderbuffers and textures, the value of GL_RENDERBUFFER_SAMPLES does not match the value of GL_TEXTURE_SAMPLES;" << std::endl;
-				std::cerr << "  - The value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not the same for all attached textures;" << std::endl;
-				std::cerr << "  - The attached images are a mix of renderbuffers and textures, the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not GL_TRUE for all attached textures." << std::endl;
+				renderer::Logger::logError( "One of the following:" );
+				renderer::Logger::logError( "  - The value of GL_RENDERBUFFER_SAMPLES is not the same for all attached renderbuffers;" );
+				renderer::Logger::logError( "  - The value of GL_TEXTURE_SAMPLES is the not same for all attached textures;" );
+				renderer::Logger::logError( "  - The attached images are a mix of renderbuffers and textures, the value of GL_RENDERBUFFER_SAMPLES does not match the value of GL_TEXTURE_SAMPLES;" );
+				renderer::Logger::logError( "  - The value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not the same for all attached textures;" );
+				renderer::Logger::logError( "  - The attached images are a mix of renderbuffers and textures, the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not GL_TRUE for all attached textures." );
 				assert( false );
 				break;
 
 			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS:
-				std::cerr << "At least one framebuffer attachment is layered, and any populated attachment is not layered, or all populated color attachments are not from textures of the same target." << std::endl;
+				renderer::Logger::logError( "At least one framebuffer attachment is layered, and any populated attachment is not layered, or all populated color attachments are not from textures of the same target." );
 				assert( false );
 				break;
 			}
@@ -184,6 +184,7 @@ namespace gl_renderer
 					m_colourAttaches.push_back( attachment );
 				}
 
+				m_allAttaches.push_back( attachment );
 				auto target = GL_TEXTURE_2D;
 
 				if ( static_cast< Texture const & >( attach.getTexture() ).getSamplesCount() > renderer::SampleCountFlag::e1 )

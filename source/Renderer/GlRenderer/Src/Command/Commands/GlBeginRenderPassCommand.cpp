@@ -117,7 +117,7 @@ namespace gl_renderer
 
 		if ( m_frameBuffer.getFrameBuffer()
 			&& ( m_subpass.colorAttachments.size() != 1
-				|| ( m_subpass.colorAttachments.size() == 1 && m_frameBuffer.getColourAttaches()[m_subpass.colorAttachments[0].attachment].object != GL_INVALID_INDEX ) ) )
+				|| ( m_subpass.colorAttachments.size() == 1 && m_frameBuffer.getAllAttaches()[m_subpass.colorAttachments[0].attachment].object != GL_INVALID_INDEX ) ) )
 		{
 			assert( ( m_frameBuffer.getFrameBuffer() && ( m_frameBuffer.getSize() - m_subpass.resolveAttachments.size() ) == m_clearValues.size() )
 				|| !m_frameBuffer.getFrameBuffer() );
@@ -144,7 +144,7 @@ namespace gl_renderer
 		}
 		else if ( m_frameBuffer.getFrameBuffer()
 			&& m_subpass.colorAttachments.size() == 1
-			&& m_frameBuffer.getColourAttaches()[m_subpass.colorAttachments[0].attachment].object == GL_INVALID_INDEX )
+			&& m_frameBuffer.getAllAttaches()[m_subpass.colorAttachments[0].attachment].object == GL_INVALID_INDEX )
 		{
 			glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, 0 );
 			auto & subAttach = m_subpass.colorAttachments[0];
