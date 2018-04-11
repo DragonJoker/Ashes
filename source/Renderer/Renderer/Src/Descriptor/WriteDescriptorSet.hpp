@@ -18,9 +18,9 @@ namespace renderer
 		uint32_t dstArrayElement;
 		uint32_t descriptorCount;
 		DescriptorType descriptorType;
-		std::optional< DescriptorImageInfo > imageInfo;
-		std::optional< DescriptorBufferInfo > bufferInfo;
-		std::optional< BufferViewCRef > texelBufferView;
+		std::vector< DescriptorImageInfo > imageInfo;
+		std::vector< DescriptorBufferInfo > bufferInfo;
+		std::vector< BufferViewCRef > texelBufferView;
 	};
 }
 

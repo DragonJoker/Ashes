@@ -39,6 +39,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 		${wxWidgets_INCLUDE_DIRS}
 		${GTK2_INCLUDE_DIRS}
 		${ASSIMP_INCLUDE_DIR}
+		${CMAKE_SOURCE_DIR}/external/imgui
 	)
 
 	add_subdirectory( 00-Common )
