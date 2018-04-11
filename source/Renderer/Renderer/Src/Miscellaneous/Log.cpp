@@ -1,6 +1,7 @@
 #include "Log.hpp"
 
 #include <iostream>
+#include <sstream>
 #include <mutex>
 
 namespace renderer
