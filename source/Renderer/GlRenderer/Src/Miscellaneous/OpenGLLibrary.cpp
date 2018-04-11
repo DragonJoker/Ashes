@@ -65,7 +65,7 @@ namespace gl_renderer
 #define GL_LIB_FUNCTION_OPT( fun )\
 			if ( !( getFunction( "gl"#fun, gl::fun ) ) )\
 			{\
-				std::cerr << "Couldn't load function " << "gl"#fun << std::endl;\
+				renderer::Logger::logError( std::string{ "Couldn't load function " } + "gl"#fun );\
 			}
 #include "OpenGLFunctionsList.inl"
 
@@ -80,7 +80,7 @@ namespace gl_renderer
 #	define WGL_LIB_FUNCTION_OPT( fun )\
 			if ( !( getFunction( "wgl"#fun, wgl::fun ) ) )\
 			{\
-				std::cerr <<  "Couldn't load function " << "wgl"#fun << std::endl;\
+				renderer::Logger::logError( std::string{ "Couldn't load function " } + "wgl"#fun );\
 			}
 #	include "OpenGLFunctionsList.inl"
 #elif RENDERLIB_XLIB
@@ -89,7 +89,7 @@ namespace gl_renderer
 		}
 		catch ( std::exception & error )
 		{
-			std::cerr << error.what() << std::endl;
+			renderer::Logger::logError( error.what() );
 		}
 	}
 }

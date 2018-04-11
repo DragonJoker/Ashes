@@ -44,16 +44,16 @@ namespace gl_renderer
 			{
 				if ( !compiled )
 				{
-					std::cerr << compilerLog << std::endl;
+					renderer::Logger::logError( compilerLog );
 				}
 				else
 				{
-					std::cout << compilerLog << std::endl;
+					renderer::Logger::logWarning( compilerLog );
 				}
 			}
 			else if ( !compiled )
 			{
-				std::cerr << "Shader compilation failed" << std::endl;
+				renderer::Logger::logError( "Shader compilation failed" );
 			}
 
 			return compiled;

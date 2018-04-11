@@ -156,24 +156,24 @@ namespace gl_renderer
 		if ( !m_fbConfig )
 		{
 			// First try failed, we try a default FBConfig
-			std::cerr << "GlXContext::create - glXChooseFBConfig failed, using default FB config" << std::endl;
+			renderer::Logger::logWarning( "glXChooseFBConfig failed, using default FB config" );
 			int data = 0;
 			m_fbConfig = glXChooseFBConfig( m_display, screen, &data, &nbElements );
 
 			if ( !m_fbConfig )
 			{
 				// Last FBConfig try failed, we try from XVisualInfo
-				std::cerr << "GlXContext::create - Default glXChooseFBConfig failed" << std::endl;
+				renderer::Logger::logWarning( "Default glXChooseFBConfig failed" );
 				visualInfo = doCreateVisualInfoWithoutFBConfig( arrayAttribs, screen );
 			}
 			else
 			{
-				std::clog << "GlXContext::create - Default glXChooseFBConfig successful" << std::endl;
+				renderer::Logger::logDebug( "Default glXChooseFBConfig successful" );
 			}
 		}
 		else
 		{
-			std::clog << "GlXContext::create - glXChooseFBConfig successful with detailed attributes" << std::endl;
+			renderer::Logger::logDebug( "glXChooseFBConfig successful with detailed attributes" );
 		}
 
 		if ( m_fbConfig )
@@ -182,11 +182,11 @@ namespace gl_renderer
 
 			if ( !visualInfo )
 			{
-				std::clog << "GlXContext::create - glXgetVisualFromFBConfig failed" << std::endl;
+				renderer::Logger::logWarning( "glXgetVisualFromFBConfig failed" );
 			}
 			else
 			{
-				std::clog << "GlXContext::create - GlXgetVisualFromFBConfig successful" << std::endl;
+				renderer::Logger::logDebug( "GlXgetVisualFromFBConfig successful" );
 			}
 		}
 
@@ -199,7 +199,7 @@ namespace gl_renderer
 
 		if ( !result )
 		{
-			std::cerr << "GlXContext::create - glXChooseVisual failed" << std::endl;
+			renderer::Logger::logError( "glXChooseVisual failed" );
 		}
 
 		return result;
@@ -231,16 +231,20 @@ namespace gl_renderer
 
 			if ( result )
 			{
-				std::cout << "GlContext::create - " << m_gpu.getMajor() << "." << m_gpu.getMinor() << " OpenGL context created." << std::endl;
+				std::stringstream stream;
+				stream << "OpenGL " << m_gpu.getMajor() << "." << m_gpu.getMinor() << " context created.";
+				renderer::Logger::logInfo( stream.str() );
 			}
 			else
 			{
-				std::cerr << "GlContext::create - Failed to create a " << m_gpu.getMajor() << "." << m_gpu.getMinor() << " OpenGL context." << std::endl;
+				std::stringstream stream;
+				stream << "Failed to create an OpenGL " << m_gpu.getMajor() << "." << m_gpu.getMinor() << " context.";
+				renderer::Logger::logError( stream.str() );
 			}
 		}
 		else
 		{
-			std::cerr << "GlContext::create - Couldn't load glXCreateContextAttribsARB function." << std::endl;
+			renderer::Logger::logError( "Couldn't load glXCreateContextAttribsARB function." );
 		}
 
 		return result;

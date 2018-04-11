@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 #include "Image/ImageSubresource.hpp"
 #include "Image/SubresourceLayout.hpp"
 #include "Image/TextureView.hpp"
+#include "Sync/ImageMemoryBarrier.hpp"
 
 namespace renderer
 {
@@ -102,6 +103,113 @@ namespace renderer
 	{
 		assert( m_storage && "The resource is not bound to a device memory object." );
 		return m_storage->unlock();
+	}
+
+	void Texture::generateMipmaps()const
+	{
+		auto const width = int32_t( getDimensions().width );
+		auto const height = int32_t( getDimensions().height );
+		auto commandBuffer = m_device.getGraphicsCommandPool().createCommandBuffer();
+
+		if ( commandBuffer->begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
+		{
+			auto srcView = createView( {
+				renderer::TextureViewType( getType() ),
+				getFormat(),
+				renderer::ComponentMapping{},
+				{
+					renderer::getAspectMask( getFormat() ),
+					0,
+					1u,
+					0u,
+					1u
+				}
+			} );
+			commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
+				, renderer::PipelineStageFlag::eTransfer
+				, srcView->makeTransferSource( renderer::ImageLayout::eUndefined, 0u ) );
+
+			// Copy down mips from n-1 to n
+			for ( uint32_t i = 1; i < getMipmapLevels(); i++ )
+			{
+				ImageBlit imageBlit{};
+
+				// Source
+				imageBlit.srcSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
+				imageBlit.srcSubresource.layerCount = 1;
+				imageBlit.srcSubresource.mipLevel = i - 1;
+				imageBlit.srcOffset.x = 0;
+				imageBlit.srcOffset.y = 0;
+				imageBlit.srcOffset.z = 0;
+				imageBlit.srcExtent.width = int32_t( width >> ( i - 1 ) );
+				imageBlit.srcExtent.height = int32_t( height >> ( i - 1 ) );
+				imageBlit.srcExtent.depth = 1;
+
+				// Destination
+				imageBlit.dstSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
+				imageBlit.dstSubresource.layerCount = 1;
+				imageBlit.dstSubresource.mipLevel = i;
+				imageBlit.dstOffset.x = 0;
+				imageBlit.dstOffset.y = 0;
+				imageBlit.dstOffset.z = 0;
+				imageBlit.dstExtent.width = int32_t( width >> i );
+				imageBlit.dstExtent.height = int32_t( height >> i );
+				imageBlit.dstExtent.depth = 1;
+
+				renderer::ImageSubresourceRange mipSubRange
+				{
+					renderer::ImageAspectFlag::eColour,
+					i,
+					1u,
+					0u,
+					1u
+				};
+
+				// Transiton current mip level to transfer dest
+				renderer::ImageMemoryBarrier dstTransitionBarrier
+				{
+					0u,
+					renderer::AccessFlag::eTransferWrite,
+					renderer::ImageLayout::eUndefined,
+					renderer::ImageLayout::eTransferDstOptimal,
+					~( 0u ),
+					~( 0u ),
+					*this,
+					mipSubRange
+				};
+				commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
+					, renderer::PipelineStageFlag::eTransfer
+					, dstTransitionBarrier );
+
+				// Blit from previous level
+				commandBuffer->blitImage( *this
+					, renderer::ImageLayout::eTransferSrcOptimal
+					, *this
+					, renderer::ImageLayout::eTransferDstOptimal
+					, { imageBlit }
+					, renderer::Filter::eLinear );
+
+				// Transiton current mip level to transfer source for read in next iteration
+				renderer::ImageMemoryBarrier srcTransitionBarrier
+				{
+					renderer::AccessFlag::eTransferWrite,
+					renderer::AccessFlag::eTransferRead,
+					renderer::ImageLayout::eTransferDstOptimal,
+					renderer::ImageLayout::eTransferSrcOptimal,
+					~( 0u ),
+					~( 0u ),
+					*this,
+					mipSubRange
+				};
+				commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
+					, renderer::PipelineStageFlag::eTransfer
+					, srcTransitionBarrier );
+			}
+
+			commandBuffer->end();
+			m_device.getGraphicsQueue().submit( *commandBuffer, nullptr );
+			m_device.waitIdle();
+		}
 	}
 
 	TextureViewPtr Texture::createView( TextureViewType type

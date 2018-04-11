@@ -141,13 +141,6 @@ namespace gl_renderer
 			, createInfo );
 	}
 
-	void Texture::generateMipmaps()const
-	{
-		glLogCall( gl::BindTexture, m_target, m_texture );
-		glLogCall( gl::GenerateMipmap, m_target );
-		glLogCall( gl::BindTexture, m_target, 0 );
-	}
-
 	void Texture::doBindMemory()
 	{
 		static_cast< DeviceMemory & >( *m_storage ).bindToImage( *this, m_target, m_createInfo );

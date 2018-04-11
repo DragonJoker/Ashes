@@ -188,8 +188,8 @@ namespace vk_renderer
 
 		if ( !glshader.parse( &resources, 100, false, messages ) )
 		{
-			std::cerr << glshader.getInfoLog() << std::endl;
-			std::cerr << glshader.getInfoDebugLog() << std::endl;
+			renderer::Logger::logError( glshader.getInfoLog() );
+			renderer::Logger::logError( glshader.getInfoDebugLog() );
 			throw std::runtime_error{ "Shader compilation failed." };
 		}
 
@@ -198,8 +198,8 @@ namespace vk_renderer
 
 		if ( !glprogram.link( messages ) )
 		{
-			std::cerr << glprogram.getInfoLog() << std::endl;
-			std::cerr << glprogram.getInfoDebugLog() << std::endl;
+			renderer::Logger::logError( glprogram.getInfoLog() );
+			renderer::Logger::logError( glprogram.getInfoDebugLog() );
 			throw std::runtime_error{ "Shader linkage failed." };
 		}
 

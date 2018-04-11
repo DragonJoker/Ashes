@@ -153,7 +153,7 @@ namespace vk_renderer
 			return nullptr;
 		}
 
-		std::cerr << "Can't render: " << getLastError() << std::endl;
+		renderer::Logger::logError( "Can't render: " + getLastError() );
 		return nullptr;
 	}
 
@@ -422,7 +422,7 @@ namespace vk_renderer
 			break;
 
 		default:
-			std::cerr << action << " failed: " << getLastError() << std::endl;
+			renderer::Logger::logError( std::string{ action } + " failed: " + getLastError() );
 			break;
 		}
 

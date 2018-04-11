@@ -85,11 +85,20 @@ namespace vk_renderer
 
 			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
 			{
-				std::cerr << debugMessage.str() << std::endl;
+				renderer::Logger::logError( debugMessage );
+			}
+			else if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_WARNING_BIT_EXT )
+				|| renderer::checkFlag( flags, VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) )
+			{
+				renderer::Logger::logWarning( debugMessage );
+			}
+			else if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) )
+			{
+				renderer::Logger::logInfo( debugMessage );
 			}
 			else
 			{
-				std::cout << debugMessage.str() << std::endl;
+				renderer::Logger::logDebug( debugMessage );
 			}
 
 #endif
@@ -172,7 +181,7 @@ namespace vk_renderer
 		}
 		catch ( std::exception & exc )
 		{
-			std::cerr << "Could not initialise logical device:\n" << exc.what() << std::endl;
+			renderer::Logger::logError( std::string{ "Could not initialise logical device:\n" } + exc.what() );
 		}
 
 		return result;
@@ -405,7 +414,7 @@ namespace vk_renderer
 
 		if ( !result )
 		{
-			std::cerr << std::string{ "Couldn't load function " } << name << std::endl;
+			renderer::Logger::logError( std::string{ "Couldn't load function " } + name );
 		}
 
 		return result;

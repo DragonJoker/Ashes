@@ -55,7 +55,7 @@ namespace renderer
 			std::stringstream stream;
 			stream << "Couldn't load dynamic library at [" << m_path << "]: ";
 			stream << "Error code: " << std::hex << ::GetLastError();
-			std::cerr << stream.str() << std::endl;
+			renderer::Logger::logError( stream );
 			throw std::runtime_error{ stream.str() };
 		}
 	}
@@ -81,7 +81,7 @@ namespace renderer
 			std::stringstream stream;
 			stream << "Couldn't load function [" + name + "]: ";
 			stream << "Error code: " << std::hex << error;
-			std::cerr << stream.str() << std::endl;
+			renderer::Logger::logError( stream );
 		}
 
 		return result;
@@ -98,7 +98,7 @@ namespace renderer
 			std::stringstream stream;
 			stream << "Couldn't load dynamic library at [" << m_path << "]: ";
 			stream << "Error code: " << std::hex << dlerror();
-			std::cerr << stream.str() << std::endl;
+			renderer::Logger::logError( stream );
 			throw std::runtime_error{ stream.str() };
 		}
 	}
@@ -119,7 +119,7 @@ namespace renderer
 			std::stringstream stream;
 			stream << "Couldn't load function [" + name + "]: ";
 			stream << "Error code: " << std::hex << std::string( error );
-			std::cerr << stream.str() << std::endl;
+			renderer::Logger::logError( stream );
 		}
 
 		return result;

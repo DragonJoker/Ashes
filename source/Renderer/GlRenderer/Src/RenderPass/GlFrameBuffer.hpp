@@ -88,6 +88,18 @@ namespace gl_renderer
 		/**
 		*\~english
 		*\return
+		*	The attachments array.
+		*\~french
+		*\return
+		*	Le tableau des attaches.
+		*/
+		inline auto const & getAllAttaches()const
+		{
+			return m_allAttaches;
+		}
+		/**
+		*\~english
+		*\return
 		*	The colour attachments array.
 		*\~french
 		*\return
@@ -118,6 +130,7 @@ namespace gl_renderer
 			GlAttachmentType type;
 		};
 		GLuint m_frameBuffer{ GL_INVALID_INDEX };
+		std::vector< Attachment > m_allAttaches;
 		std::vector< Attachment > m_colourAttaches;
 		std::vector< Attachment > m_depthStencilAttaches;
 	};

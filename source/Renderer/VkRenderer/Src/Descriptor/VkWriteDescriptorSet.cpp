@@ -5,42 +5,20 @@
 
 namespace vk_renderer
 {
-	VkWriteDescriptorSet convert( renderer::WriteDescriptorSet const & value
-		, DescriptorSet const & descriptorSet
-		, std::list< VkDescriptorImageInfo > & imageInfos
-		, std::list< VkDescriptorBufferInfo > & bufferInfos
-		, std::list< VkBufferView > & texelBufferViews )
+	WriteDescriptorSet convert( renderer::WriteDescriptorSet const & value )
 	{
-		VkWriteDescriptorSet result
-		{
-			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-			nullptr,
-			descriptorSet,
-			value.dstBinding,
-			value.dstArrayElement,
-			value.descriptorCount,
-			convert( value.descriptorType ),
-			nullptr,
-			nullptr,
-			nullptr,
-		};
+		WriteDescriptorSet result;
+		result.dstBinding = value.dstBinding;
+		result.dstArrayElement = value.dstArrayElement;
+		result.descriptorCount = value.descriptorCount;
+		result.descriptorType = convert( value.descriptorType );
+		result.imageInfo = convert< VkDescriptorImageInfo >( value.imageInfo );
+		result.bufferInfo = convert< VkDescriptorBufferInfo >( value.bufferInfo );
 
-		if ( bool( value.imageInfo ) )
+		for ( auto & bufferView : value.texelBufferView )
 		{
-			imageInfos.push_back( convert( value.imageInfo.value() ) );
-			result.pImageInfo = &imageInfos.back();
-		}
-
-		if ( bool( value.bufferInfo ) )
-		{
-			bufferInfos.push_back( convert( value.bufferInfo.value() ) );
-			result.pBufferInfo = &bufferInfos.back();
-		}
-
-		if ( bool( value.texelBufferView ) )
-		{
-			auto & texelBufferView = static_cast< BufferView const & >( value.texelBufferView.value().get() );
-			result.pTexelBufferView = &static_cast< VkBufferView const & >( texelBufferView );
+			auto & texelBufferView = static_cast< BufferView const & >( bufferView.get() );
+			result.texelBufferView.push_back( static_cast< VkBufferView const & >( texelBufferView ) );
 		}
 
 		return result;

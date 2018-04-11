@@ -311,8 +311,8 @@ namespace vk_renderer
 		auto vkbefore = convert( before );
 		auto vktb = convert( transitionBarrier );
 		m_device.vkCmdPipelineBarrier( m_commandBuffer
-			, vkbefore
 			, vkafter
+			, vkbefore
 			, 0
 			, 0u
 			, nullptr
