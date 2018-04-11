@@ -68,16 +68,16 @@ namespace gl_renderer
 			{
 				if ( !compiled )
 				{
-					std::cerr << compilerLog << std::endl;
+					renderer::Logger::logError( compilerLog );
 				}
 				else
 				{
-					std::cout << compilerLog << std::endl;
+					renderer::Logger::logWarning( compilerLog );
 				}
 			}
 			else if ( !compiled )
 			{
-				std::cerr << "Shader compilation failed" << std::endl;
+				renderer::Logger::logError( "Shader compilation failed" );
 			}
 
 			return compiled;
@@ -182,7 +182,7 @@ namespace gl_renderer
 		{
 			if ( !linkerLog.empty() )
 			{
-				std::cout << "ShaderProgram::link - " << linkerLog << std::endl;
+				renderer::Logger::logWarning( "ShaderProgram::link - " + linkerLog );
 			}
 
 			int validated = 0;
@@ -190,19 +190,19 @@ namespace gl_renderer
 
 			if ( !validated )
 			{
-				std::cerr << "ShaderProgram::link - Not validated" << std::endl;
+				renderer::Logger::logError( "ShaderProgram::link - Not validated" );
 			}
 		}
 		else
 		{
 			if ( !linkerLog.empty() )
 			{
-				std::cerr << "ShaderProgram::link - " << linkerLog << std::endl;
+				renderer::Logger::logError( "ShaderProgram::link - " + linkerLog );
 			}
 
 			if ( attached != int( m_shaders.size() ) )
 			{
-				std::cerr << "ShaderProgram::link - The linked shaders count doesn't match the active shaders count." << std::endl;
+				renderer::Logger::logError( "ShaderProgram::link - The linked shaders count doesn't match the active shaders count." );
 			}
 		}
 	}

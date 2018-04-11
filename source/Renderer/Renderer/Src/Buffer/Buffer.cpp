@@ -11,6 +11,7 @@ namespace renderer
 		, BufferTargets target )
 		: m_device{ device }
 		, m_size{ size }
+		, m_target{ target }
 	{
 	}
 

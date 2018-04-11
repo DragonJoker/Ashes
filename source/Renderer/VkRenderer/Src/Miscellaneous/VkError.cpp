@@ -217,7 +217,7 @@ namespace vk_renderer
 				break;
 			}
 
-			std::cerr << doGetError() << "\n";
+			renderer::Logger::logError( doGetError() );
 		}
 
 		return result;

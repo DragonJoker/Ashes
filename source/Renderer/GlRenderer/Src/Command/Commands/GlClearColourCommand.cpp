@@ -33,7 +33,7 @@ namespace gl_renderer
 		}
 		else
 		{
-			std::cerr << "Unsupported command : ClearColourCommand" << std::endl;
+			renderer::Logger::logError( "Unsupported command : ClearColourCommand" );
 		}
 	}
 

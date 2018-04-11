@@ -161,6 +161,15 @@ namespace renderer
 		*/
 		void unlock()const;
 		/**
+		*\~french
+		*\brief
+		*	Génère les mipmaps de la texture.
+		*\~english
+		*\brief
+		*	Generates the texture mipmaps.
+		*/
+		void generateMipmaps()const;
+		/**
 		*\~english
 		*\return
 		*	The memory requirements for this buffer.
@@ -225,15 +234,6 @@ namespace renderer
 			, uint32_t baseArrayLayer = 0u
 			, uint32_t layerCount = 1u
 			, ComponentMapping const & mapping = ComponentMapping{} )const;
-		/**
-		*\~french
-		*\brief
-		*	Génère les mipmaps de la texture.
-		*\~english
-		*\brief
-		*	Generates the texture mipmaps.
-		*/
-		virtual void generateMipmaps()const = 0;
 		/**
 		*\~french
 		*\return

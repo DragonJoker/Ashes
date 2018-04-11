@@ -53,24 +53,36 @@ namespace vk_renderer
 
 	void DescriptorSet::update()const
 	{
-		std::list< VkDescriptorImageInfo > imageInfos;
-		std::list< VkDescriptorBufferInfo > bufferInfos;
-		std::list< VkBufferView > texelBufferViews;
-		std::vector< VkWriteDescriptorSet > writes;
+		std::vector< WriteDescriptorSet > writes;
+		std::vector< VkWriteDescriptorSet > vkwrites;
 
 		for ( auto & write : m_writes )
 		{
-			writes.push_back( convert( write
-			, *this
-			, imageInfos
-			, bufferInfos
-			, texelBufferViews ) );
+			writes.push_back( convert( write ) );
 		}
 
-		DEBUG_DUMP( writes );
+		for ( auto & write : writes )
+		{
+			VkWriteDescriptorSet result
+			{
+				VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+				nullptr,
+				*this,
+				write.dstBinding,
+				write.dstArrayElement,
+				write.descriptorCount,
+				write.descriptorType,
+				write.imageInfo.empty() ? nullptr : write.imageInfo.data(),
+				write.bufferInfo.empty() ? nullptr : write.bufferInfo.data(),
+				write.texelBufferView.empty() ? nullptr : write.texelBufferView.data(),
+			};
+			vkwrites.push_back( result );
+		}
+
+		DEBUG_DUMP( vkwrites );
 		m_device.vkUpdateDescriptorSets( m_device
-			, static_cast< uint32_t >( writes.size() )
-			, writes.data()
+			, static_cast< uint32_t >( vkwrites.size() )
+			, vkwrites.data()
 			, 0
 			, nullptr );
 	}

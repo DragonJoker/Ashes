@@ -33,9 +33,7 @@ namespace renderer
 			index,
 			1u,
 			DescriptorType::eCombinedImageSampler,
-			DescriptorImageInfo{ std::ref( sampler ), std::ref( view ), layout },
-			std::nullopt,
-			std::nullopt,
+			{ DescriptorImageInfo{ std::ref( sampler ), std::ref( view ), layout } },
 		} );
 	}
 
@@ -49,9 +47,7 @@ namespace renderer
 			index,
 			1u,
 			DescriptorType::eSampler,
-			DescriptorImageInfo{ std::ref( sampler ), std::nullopt, ImageLayout::eShaderReadOnlyOptimal },
-			std::nullopt,
-			std::nullopt,
+			{ DescriptorImageInfo{ std::ref( sampler ), std::nullopt, ImageLayout::eShaderReadOnlyOptimal } },
 		} );
 	}
 
@@ -66,9 +62,7 @@ namespace renderer
 			index,
 			1u,
 			DescriptorType::eSampledImage,
-			DescriptorImageInfo{ std::nullopt, std::ref( view ), layout },
-			std::nullopt,
-			std::nullopt,
+			{ DescriptorImageInfo{ std::nullopt, std::ref( view ), layout } },
 		} );
 	}
 
@@ -82,9 +76,7 @@ namespace renderer
 			index,
 			1u,
 			DescriptorType::eStorageImage,
-			DescriptorImageInfo{ std::nullopt, std::ref( view ), ImageLayout::eGeneral },
-			std::nullopt,
-			std::nullopt,
+			{ DescriptorImageInfo{ std::nullopt, std::ref( view ), ImageLayout::eGeneral } },
 		} );
 	}
 
@@ -100,9 +92,8 @@ namespace renderer
 			index,
 			1u,
 			DescriptorType::eUniformBuffer,
-			std::nullopt,
-			DescriptorBufferInfo{ uniformBuffer.getBuffer(), offset, range },
-			std::nullopt,
+			{},
+			{ DescriptorBufferInfo{ uniformBuffer.getBuffer(), offset, range } },
 		} );
 	}
 
@@ -113,17 +104,16 @@ namespace renderer
 		, uint32_t index )
 	{
 		auto type = checkFlag( buffer.getTargets(), renderer::BufferTarget::eStorageBuffer )
-			? DescriptorType::eStorageTexelBuffer
-			: DescriptorType::eUniformTexelBuffer;
+			? DescriptorType::eStorageBuffer
+			: DescriptorType::eUniformBuffer;
 		m_writes.push_back(
 		{
 			layoutBinding.getBindingPoint(),
 			index,
 			1u,
 			type,
-			std::nullopt,
-			DescriptorBufferInfo{ buffer, offset, range },
-			std::nullopt,
+			{},
+			{ DescriptorBufferInfo{ buffer, offset, range } },
 		} );
 	}
 
@@ -141,9 +131,9 @@ namespace renderer
 			index,
 			1u,
 			type,
-			std::nullopt,
-			DescriptorBufferInfo{ buffer, view.getOffset(), view.getRange() },
-			view,
+			{},
+			{ DescriptorBufferInfo{ buffer, view.getOffset(), view.getRange() } },
+			{ view },
 		} );
 	}
 
@@ -159,9 +149,8 @@ namespace renderer
 			index,
 			1u,
 			DescriptorType::eUniformBufferDynamic,
-			std::nullopt,
-			DescriptorBufferInfo{ uniformBuffer.getBuffer(), offset, range },
-			std::nullopt,
+			{},
+			{ DescriptorBufferInfo{ uniformBuffer.getBuffer(), offset, range } },
 		} );
 	}
 
@@ -180,9 +169,8 @@ namespace renderer
 			index,
 			1u,
 			type,
-			std::nullopt,
-			DescriptorBufferInfo{ buffer, offset, range },
-			std::nullopt,
+			{},
+			{ DescriptorBufferInfo{ buffer, offset, range } },
 		} );
 	}
 }

@@ -59,7 +59,7 @@ namespace vk_renderer
 
 		if ( !checkError( res ) )
 		{
-			std::cerr << "Storage memory mapping failed: " << getLastError() << std::endl;
+			renderer::Logger::logError( "Storage memory mapping failed: " + getLastError() );
 		}
 
 		return pointer;
@@ -81,7 +81,7 @@ namespace vk_renderer
 
 		if ( !checkError( res ) )
 		{
-			std::cerr << "Storage memory range flush failed: " << getLastError() << std::endl;
+			renderer::Logger::logError( "Storage memory range flush failed: " + getLastError() );
 		}
 	}
 
@@ -101,7 +101,7 @@ namespace vk_renderer
 
 		if ( !checkError( res ) )
 		{
-			std::cerr << "Storage memory range invalidate failed: " << getLastError() << std::endl;
+			renderer::Logger::logError( "Storage memory range invalidate failed: " + getLastError() );
 		}
 	}
 

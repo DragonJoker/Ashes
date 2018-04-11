@@ -107,6 +107,8 @@ namespace std
 }
 #endif
 
+#include "Miscellaneous/Log.hpp"
+
 namespace renderer
 {
 	using ByteArray = std::vector< uint8_t >;

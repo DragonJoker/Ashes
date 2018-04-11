@@ -81,10 +81,6 @@ namespace vk_renderer
 		*/
 		renderer::TextureViewPtr createView( renderer::ImageViewCreateInfo const & createInfo )const override;
 		/**
-		*\copydoc	renderer::Texture::generateMipmaps
-		*/
-		void generateMipmaps()const override;
-		/**
 		*\~french
 		*\brief
 		*	Opérateur de conversion implicite vers VkImage.
