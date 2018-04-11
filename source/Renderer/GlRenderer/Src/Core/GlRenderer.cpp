@@ -331,7 +331,7 @@ namespace gl_renderer
 		}
 		catch ( std::exception & exc )
 		{
-			std::cerr << "Could not initialise logical device:\n" << exc.what() << std::endl;
+			renderer::Logger::logError( std::string{ "Could not initialise logical device:\n" } + exc.what() );
 		}
 
 		return result;

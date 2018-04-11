@@ -295,7 +295,7 @@ namespace gl_renderer
 	{
 		static inline void log( ParamT const & last )
 		{
-			std::clog << toString( last );
+			renderer::Logger::logDebug( toString( last ), false );
 		}
 	};
 
@@ -305,7 +305,7 @@ namespace gl_renderer
 		static inline void log( ParamT const & param
 			, ParamsT ... params )
 		{
-			std::clog << toString( param ) << ", ";
+			renderer::Logger::logDebug( toString( param ) + ", ", false );
 			GlParamLoggerRec< ParamsT... >::log( std::forward< ParamsT >( params )... );
 		}
 	};
@@ -313,9 +313,9 @@ namespace gl_renderer
 	template< typename ... ParamsT >
 	void logParams( ParamsT ... params )
 	{
-		std::clog << "(";
+		renderer::Logger::logDebug( "(", false );
 		GlParamLoggerRec< ParamsT... >::log( std::forward< ParamsT >( params )... );
-		std::clog << ")";
+		renderer::Logger::logDebug( ")", false );
 	}
 
 	template< typename FuncT, typename ... ParamsT >
@@ -325,9 +325,9 @@ namespace gl_renderer
 			, char const * const name
 			, ParamsT ... params )
 		{
-			std::clog << name;
+			renderer::Logger::logDebug( name, false );
 			logParams( std::forward< ParamsT >( params )... );
-			std::clog << std::endl;
+			renderer::Logger::logDebug( std::string{} );
 			return function( std::forward< ParamsT >( params )... );
 		}
 	};
@@ -338,7 +338,7 @@ namespace gl_renderer
 		static inline void call( FuncT function
 			, char const * const name )
 		{
-			std::clog << name << "()" << std::endl;
+			renderer::Logger::logDebug( std::string{ name } + "()" );
 			function();
 		}
 	};
@@ -357,7 +357,7 @@ namespace gl_renderer
 #	define glLogCall( Name, ... )\
 	executeFunction( Name, #Name, __VA_ARGS__ )
 #	define glLogCommand( Name )\
-	std::cout << "Command: " << Name << std::endl
+	renderer::Logger::logDebug( std::string{ "Command: " } + Name )
 #elif defined( NDEBUG )
 #	define glLogCall( Name, ... )\
 	( Name( __VA_ARGS__ ) )

@@ -246,11 +246,11 @@ namespace vk_renderer
 		}
 		catch ( std::exception & exc )
 		{
-			std::cerr << "Could not create the swap chain:\n" << exc.what() << std::endl;
+			renderer::Logger::logError( std::string{ "Could not create the swap chain:\n" } + exc.what() );
 		}
 		catch ( ... )
 		{
-			std::cerr << "Could not create the swap chain:\nUnknown error" << std::endl;
+			renderer::Logger::logError( "Could not create the swap chain:\nUnknown error" );
 		}
 
 		return result;

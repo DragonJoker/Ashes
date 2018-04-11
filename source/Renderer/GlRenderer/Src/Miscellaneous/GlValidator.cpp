@@ -599,10 +599,10 @@ namespace gl_renderer
 
 			for ( auto & attribute : attributes )
 			{
-				std::cerr << ValidationWarning
+				renderer::Logger::logWarning( std::stringstream{} << ValidationWarning
 					<< "Vertex layout has attribute of type " << getName( attribute.format )
 					<< ", at location " << attribute.location
-					<< ", which is not used by the program" << std::endl;
+					<< ", which is not used by the program" );
 			}
 		}
 
@@ -637,19 +637,19 @@ namespace gl_renderer
 					}
 					else
 					{
-						std::cerr << ValidationError
+						renderer::Logger::logError( std::stringstream{} << ValidationError
 							<< "Attachment [" << name
 							<< "], of type: " << getName( GlslAttributeType( values[0] ) )
 							<< ", at location: " << values[2]
-							<< " is used in the shader program, but is not listed in the render pass attachments" << std::endl;
+							<< " is used in the shader program, but is not listed in the render pass attachments" );
 					}
 				} );
 
 			for ( auto & attach : attaches )
 			{
-				std::cerr << ValidationWarning
+				renderer::Logger::logWarning( std::stringstream{} << ValidationWarning
 					<< "Render pass has an attahment of type " << renderer::getName( attach.format )
-					<< ", which is not used by the program" << std::endl;
+					<< ", which is not used by the program" );
 			}
 		}
 
@@ -660,16 +660,16 @@ namespace gl_renderer
 				, GLSL_INTERFACE_UNIFORM
 				, []( std::string name, GLint point, GLuint index, GLint variables )
 				{
-					std::cout << "   Uniform block: " << name
+					renderer::Logger::logDebug( std::stringstream{} << "   Uniform block: " << name
 						<< ", at point " << point
 						<< ", and index " << index
-						<< ", active variables " << variables << std::endl;
+						<< ", active variables " << variables );
 				}
 				, []( std::string name, GlslAttributeType type, GLint location )
 				{
-					std::cout << "      variable: " << name
+					renderer::Logger::logDebug( std::stringstream{} << "      variable: " << name
 						<< ", type " << getName( type )
-						<< ", at location " << location << std::endl;
+						<< ", at location " << location );
 				} );
 		}
 
@@ -680,16 +680,16 @@ namespace gl_renderer
 				, GLSL_INTERFACE_BUFFER_VARIABLE
 				, []( std::string name, GLint point, GLuint index, GLint variables )
 				{
-					std::cout << "   ShaderStorage block: " << name
+					renderer::Logger::logDebug( std::stringstream{} << "   ShaderStorage block: " << name
 						<< ", at point " << point
 						<< ", and index " << index
-						<< ", active variables " << variables << std::endl;
+						<< ", active variables " << variables );
 				}
 				, []( std::string name, GlslAttributeType type, GLint location )
 				{
-					std::cout << "      variable: " << name
+					renderer::Logger::logDebug( std::stringstream{} << "      variable: " << name
 						<< ", type " << getName( type )
-						<< ", at location " << location << std::endl;
+						<< ", at location " << location );
 				} );
 		}
 
@@ -710,9 +710,9 @@ namespace gl_renderer
 					std::vector< char > nameData( values[2] );
 					gl::GetProgramResourceName( program, GLSL_INTERFACE_UNIFORM, unif, GLsizei( nameData.size() ), nullptr, &nameData[0] );
 					std::string name( nameData.begin(), nameData.end() - 1 );
-					std::cout << "   Uniform variable: " << name
+					renderer::Logger::logDebug( std::stringstream{} << "   Uniform variable: " << name
 						<< ", type: " << getName( GlslAttributeType( values[1] ) )
-						<< ", location: " << values[3] << std::endl;
+						<< ", location: " << values[3] );
 				}
 			}
 		}

@@ -56,7 +56,7 @@ namespace gl_renderer
 			return &resources;
 		}
 
-		std::cerr << "Can't render" << std::endl;
+		renderer::Logger::logError( "Can't render" );
 		return nullptr;
 	}
 

@@ -67,7 +67,7 @@ namespace gl_renderer
 			{
 				if ( !gl_api::getFunction( "glDebugMessageCallbackARB", glDebugMessageCallback ) )
 				{
-					std::cout << "Unable to retrieve function glDebugMessageCallback" << std::endl;
+					renderer::Logger::logWarning( "Unable to retrieve function glDebugMessageCallback" );
 				}
 			}
 		}
@@ -75,7 +75,7 @@ namespace gl_renderer
 		{
 			if ( !gl_api::getFunction( "glDebugMessageCallbackAMD", glDebugMessageCallbackAMD ) )
 			{
-				std::cout << "Unable to retrieve function glDebugMessageCallbackAMD" << std::endl;
+				renderer::Logger::logWarning( "Unable to retrieve function glDebugMessageCallbackAMD" );
 			}
 		}
 	}
@@ -133,9 +133,22 @@ namespace gl_renderer
 
 		stream << "    Message: " << message;
 
-		if ( severity != GL_DEBUG_SEVERITY_NOTIFICATION )
+		switch ( severity )
 		{
-			std::cout << stream.str() << std::endl;
+		case GL_DEBUG_SEVERITY_HIGH:
+			renderer::Logger::logError( stream.str() );
+			break;
+		case GL_DEBUG_SEVERITY_MEDIUM:
+			renderer::Logger::logWarning( stream.str() );
+			break;
+		case GL_DEBUG_SEVERITY_LOW:
+			renderer::Logger::logInfo( stream.str() );
+			break;
+		case GL_DEBUG_SEVERITY_NOTIFICATION:
+			break;
+		default:
+			renderer::Logger::logDebug( stream.str() );
+			break;
 		}
 	}
 
@@ -146,27 +159,45 @@ namespace gl_renderer
 
 		switch ( category )
 		{
-		case GL_DEBUG_CATEGORY_API_ERROR_AMD:			stream << "Category: OpenGL\n";					break;
-		case GL_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD:		stream << "Category: Windows\n";				break;
-		case GL_DEBUG_CATEGORY_DEPRECATION_AMD:			stream << "Category: Deprecated behavior\n";	break;
-		case GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD:	stream << "Category: Undefined behavior\n";		break;
-		case GL_DEBUG_CATEGORY_PERFORMANCE_AMD:			stream << "Category: Performance\n";			break;
-		case GL_DEBUG_CATEGORY_SHADER_COMPILER_AMD:		stream << "Category: Shader compiler\n";		break;
-		case GL_DEBUG_CATEGORY_APPLICATION_AMD:			stream << "Category: Application\n";			break;
-		case GL_DEBUG_CATEGORY_OTHER_AMD:				stream << "Category: Other\n";					break;
+		case GL_DEBUG_CATEGORY_API_ERROR_AMD:			stream << "    Category: OpenGL\n";					break;
+		case GL_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD:		stream << "    Category: Windows\n";				break;
+		case GL_DEBUG_CATEGORY_DEPRECATION_AMD:			stream << "    Category: Deprecated behavior\n";	break;
+		case GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD:	stream << "    Category: Undefined behavior\n";		break;
+		case GL_DEBUG_CATEGORY_PERFORMANCE_AMD:			stream << "    Category: Performance\n";			break;
+		case GL_DEBUG_CATEGORY_SHADER_COMPILER_AMD:		stream << "    Category: Shader compiler\n";		break;
+		case GL_DEBUG_CATEGORY_APPLICATION_AMD:			stream << "    Category: Application\n";			break;
+		case GL_DEBUG_CATEGORY_OTHER_AMD:				stream << "    Category: Other\n";					break;
 		}
 
 		stream << "    ID: " << id << "\n";
 
 		switch ( severity )
 		{
-		case GL_DEBUG_SEVERITY_HIGH:					stream << "Severity: High\n";					break;
-		case GL_DEBUG_SEVERITY_MEDIUM:					stream << "Severity: Medium\n";					break;
-		case GL_DEBUG_SEVERITY_LOW:						stream << "Severity: Low\n";					break;
+		case GL_DEBUG_SEVERITY_HIGH:					stream << "    Severity: High\n";					break;
+		case GL_DEBUG_SEVERITY_MEDIUM:					stream << "    Severity: Medium\n";					break;
+		case GL_DEBUG_SEVERITY_LOW:						stream << "    Severity: Low\n";					break;
+		case GL_DEBUG_SEVERITY_NOTIFICATION:			stream << "    Severity: Notification\n";			break;
 		}
 
 		stream << "    Message: " << message;
-		std::cout << stream.str() << std::endl;
+
+		switch ( severity )
+		{
+		case GL_DEBUG_SEVERITY_HIGH:
+			renderer::Logger::logError( stream.str() );
+			break;
+		case GL_DEBUG_SEVERITY_MEDIUM:
+			renderer::Logger::logWarning( stream.str() );
+			break;
+		case GL_DEBUG_SEVERITY_LOW:
+			renderer::Logger::logInfo( stream.str() );
+			break;
+		case GL_DEBUG_SEVERITY_NOTIFICATION:
+			break;
+		default:
+			renderer::Logger::logDebug( stream.str() );
+			break;
+		}
 	}
 
 	bool glCheckError( std::string const & text )
@@ -209,7 +240,7 @@ namespace gl_renderer
 				error << "  Message: " << it->second << std::endl;
 			}
 
-			std::cerr << error.str();
+			renderer::Logger::logError( error.str() );
 			errorCode = gl::GetError();
 			result = false;
 		}
