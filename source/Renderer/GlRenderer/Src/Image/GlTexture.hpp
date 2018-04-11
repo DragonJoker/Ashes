@@ -52,10 +52,6 @@ namespace gl_renderer
 		*\copydoc	renderer::Texture::createView
 		*/
 		renderer::TextureViewPtr createView( renderer::ImageViewCreateInfo const & createInfo )const override;
-		/**
-		*\copydoc	renderer::Texture::generateMipmaps
-		*/
-		void generateMipmaps()const override;
 
 		inline bool hasImage()const noexcept
 		{
