@@ -325,7 +325,7 @@ namespace gl_renderer
 
 		try
 		{
-			result = std::make_unique< Device >( *this
+			result = std::make_shared< Device >( *this
 				, static_cast< PhysicalDevice const & >( connection->getGpu() )
 				, std::move( connection ) );
 		}

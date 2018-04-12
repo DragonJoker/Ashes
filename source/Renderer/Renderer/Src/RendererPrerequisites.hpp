@@ -277,7 +277,6 @@ namespace renderer
 	using DescriptorSetLayoutBindingPtr = std::unique_ptr< DescriptorSetLayoutBinding >;
 	using DescriptorSetPoolPtr = std::unique_ptr< DescriptorSetPool >;
 	using DescriptorSetPtr = std::unique_ptr< DescriptorSet >;
-	using DevicePtr = std::unique_ptr< Device >;
 	using FencePtr = std::unique_ptr< Fence >;
 	using FrameBufferPtr = std::unique_ptr< FrameBuffer >;
 	using IWindowHandlePtr = std::unique_ptr< IWindowHandle >;
@@ -302,6 +301,7 @@ namespace renderer
 	using VertexLayoutPtr = std::unique_ptr< VertexLayout >;
 	using UniformBufferBasePtr = std::unique_ptr< UniformBufferBase >;
 
+	using DevicePtr = std::shared_ptr< Device >;
 	using ShaderModulePtr = std::shared_ptr< ShaderModule >;
 	using SpecialisationInfoBasePtr = std::shared_ptr< SpecialisationInfoBase >;
 	using DeviceMemoryPtr = std::shared_ptr< DeviceMemory >;
