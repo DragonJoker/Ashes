@@ -270,14 +270,20 @@ namespace gl_renderer
 			case renderer::Format::eR32_SFLOAT:
 			case renderer::Format::eR8_UNORM:
 				return rhs == renderer::Format::eR32_SFLOAT
+					|| rhs == renderer::Format::eR32G32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32A32_SFLOAT
 					|| rhs == renderer::Format::eR8_UNORM;
 			case renderer::Format::eR32G32_SFLOAT:
 			case renderer::Format::eR8G8_UNORM:
 				return rhs == renderer::Format::eR32G32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32A32_SFLOAT
 					|| rhs == renderer::Format::eR8G8_UNORM;
 			case renderer::Format::eR32G32B32_SFLOAT:
 			case renderer::Format::eR8G8B8_UNORM:
 				return rhs == renderer::Format::eR32G32B32_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32A32_SFLOAT
 					|| rhs == renderer::Format::eR8G8B8_UNORM;
 			case renderer::Format::eR16G16B16A16_SFLOAT:
 			case renderer::Format::eR32G32B32A32_SFLOAT:
@@ -286,7 +292,17 @@ namespace gl_renderer
 				return rhs == renderer::Format::eR16G16B16A16_SFLOAT
 					|| rhs == renderer::Format::eR32G32B32A32_SFLOAT
 					|| rhs == renderer::Format::eR8G8B8A8_UNORM
-					|| rhs == renderer::Format::eB8G8R8A8_UNORM;
+					|| rhs == renderer::Format::eB8G8R8A8_UNORM
+					|| rhs == renderer::Format::eR16G16B16_SFLOAT
+					|| rhs == renderer::Format::eR32G32B32_SFLOAT
+					|| rhs == renderer::Format::eR8G8B8_UNORM
+					|| rhs == renderer::Format::eB8G8R8_UNORM;
+			case renderer::Format::eD16_UNORM:
+			case renderer::Format::eD16_UNORM_S8_UINT:
+			case renderer::Format::eD24_UNORM_S8_UINT:
+			case renderer::Format::eD32_SFLOAT:
+			case renderer::Format::eD32_SFLOAT_S8_UINT:
+				return rhs == renderer::Format::eR32_SFLOAT;
 			default:
 				assert( false );
 				return false;
@@ -613,10 +629,7 @@ namespace gl_renderer
 
 			for ( auto & attach : renderPass.getAttachments() )
 			{
-				if ( !renderer::isDepthOrStencilFormat( attach.format ) )
-				{
-					attaches.push_back( attach );
-				}
+				attaches.push_back( attach );
 			}
 
 			getProgramInterfaceInfos( program
@@ -635,7 +648,7 @@ namespace gl_renderer
 					{
 						attaches.erase( it );
 					}
-					else
+					else if ( values[2] != -1 )
 					{
 						renderer::Logger::logError( std::stringstream{} << ValidationError
 							<< "Attachment [" << name
@@ -647,9 +660,12 @@ namespace gl_renderer
 
 			for ( auto & attach : attaches )
 			{
-				renderer::Logger::logWarning( std::stringstream{} << ValidationWarning
-					<< "Render pass has an attahment of type " << renderer::getName( attach.format )
-					<< ", which is not used by the program" );
+				if ( !renderer::isDepthOrStencilFormat( attach.format ) )
+				{
+					renderer::Logger::logWarning( std::stringstream{} << ValidationWarning
+						<< "Render pass has an attahment of type " << renderer::getName( attach.format )
+						<< ", which is not used by the program" );
+				}
 			}
 		}
 

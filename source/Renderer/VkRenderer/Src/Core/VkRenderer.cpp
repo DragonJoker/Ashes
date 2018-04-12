@@ -177,7 +177,7 @@ namespace vk_renderer
 
 		try
 		{
-			result = std::make_unique< Device >( *this, std::move( connection ) );
+			result = std::make_shared< Device >( *this, std::move( connection ) );
 		}
 		catch ( std::exception & exc )
 		{
