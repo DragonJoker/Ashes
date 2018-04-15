@@ -37,7 +37,7 @@ namespace vk_renderer
 		*\return
 		*	\p true si l'attente n'est pas sortie en timeout.
 		*/
-		bool waitRecord( uint32_t timeout )override;
+		bool waitRecord( uint64_t timeout )override;
 
 	private:
 		Device const & m_device;

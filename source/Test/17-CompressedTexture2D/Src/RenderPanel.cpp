@@ -351,8 +351,7 @@ namespace vkapp
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData
-			, *m_vertexBuffer
-			, renderer::PipelineStageFlag::eVertexInput );
+			, *m_vertexBuffer );
 	}
 
 	void RenderPanel::doCreateStagingBuffer()

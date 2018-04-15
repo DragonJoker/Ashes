@@ -181,8 +181,7 @@ namespace vkapp
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData
-			, *m_vertexBuffer
-			, renderer::PipelineStageFlag::eVertexInput );
+			, *m_vertexBuffer );
 
 		m_vertexLayout =  renderer::makeLayout< VertexData >( 0u );
 		m_vertexLayout->createAttribute( 0u

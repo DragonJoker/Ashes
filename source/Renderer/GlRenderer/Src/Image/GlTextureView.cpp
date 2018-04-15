@@ -119,25 +119,4 @@ namespace gl_renderer
 		assert( m_texture != GL_INVALID_INDEX );
 		return m_texture;
 	}
-
-	renderer::ImageMemoryBarrier TextureView::doMakeLayoutTransition( renderer::ImageLayout srcLayout
-		, renderer::ImageLayout dstLayout
-		, renderer::AccessFlags srcAccessFlags
-		, renderer::AccessFlags dstAccessMask
-		, uint32_t srcQueueFamily
-		, uint32_t dstQueueFamily )const
-	{
-		renderer::ImageMemoryBarrier transitionBarrier
-		{
-			srcAccessFlags,
-			dstAccessMask,
-			srcLayout,
-			dstLayout,
-			srcQueueFamily,
-			dstQueueFamily,
-			getTexture(),
-			getSubResourceRange()
-		};
-		return transitionBarrier;
-	}
 }

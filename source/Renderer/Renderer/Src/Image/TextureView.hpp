@@ -366,46 +366,12 @@ namespace renderer
 		}
 
 	private:
-		/**
-		*\~french
-		*\brief
-		*	Prépare une barrière mémoire de transition.
-		*\param[in] srcLayout
-		*	Le layout source.
-		*\param[in] dstLayout
-		*	Le layout destination.
-		*\param[in] srcAccessFlags
-		*	Les accès source.
-		*\param[in] dstAccessFlags
-		*	Les accès destination.
-		*\param[in] srcQueueFamily
-		*	La famille de file source, pour un transfer de famille de file.
-		*\param[in] dstQueueFamily
-		*	La famille de file destination, pour un transfer de famille de file.
-		*\return
-		*	La barrière mémoire.
-		*\~english
-		*\brief
-		*	Prepares a transition memory barrier.
-		*\param[in] srcLayout
-		*	The old layout.
-		*\param[in] srcAccessFlags
-		*	The source access mask.
-		*\param[in] dstAccessFlags
-		*	The destination access mask.
-		*\param[in] srcQueueFamily
-		*	The source queue family, for a queue family transfer.
-		*\param[in] dstQueueFamily
-		*	The destination queue family, for a queue family transfer.
-		*\return
-		*	The memory barrier.
-		*/
-		virtual ImageMemoryBarrier doMakeLayoutTransition( ImageLayout srcLayout
-			, ImageLayout dstLayout
-			, AccessFlags srcAccessFlags
-			, AccessFlags dstAccessMask
+		renderer::ImageMemoryBarrier doMakeLayoutTransition( renderer::ImageLayout srcLayout
+			, renderer::ImageLayout dstLayout
+			, renderer::AccessFlags srcAccessFlags
+			, renderer::AccessFlags dstAccessMask
 			, uint32_t srcQueueFamily
-			, uint32_t dstQueueFamily )const = 0;
+			, uint32_t dstQueueFamily )const;
 
 	protected:
 		ImageViewCreateInfo m_createInfo;

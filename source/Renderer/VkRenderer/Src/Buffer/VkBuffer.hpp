@@ -60,26 +60,6 @@ namespace vk_renderer
 		*/
 		renderer::MemoryRequirements getMemoryRequirements()const override;
 		/**
-		*\copydoc	renderer::BufferBase::makeTransferDestination
-		*/
-		renderer::BufferMemoryBarrier makeTransferDestination()const override;
-		/**
-		*\copydoc	renderer::BufferBase::makeTransferSource
-		*/
-		renderer::BufferMemoryBarrier makeTransferSource()const override;
-		/**
-		*\copydoc	renderer::BufferBase::makeVertexShaderInputResource
-		*/
-		renderer::BufferMemoryBarrier makeVertexShaderInputResource()const override;
-		/**
-		*\copydoc	renderer::BufferBase::makeUniformBufferInput
-		*/
-		renderer::BufferMemoryBarrier makeUniformBufferInput()const override;
-		/**
-		*\copydoc	renderer::BufferBase::makeMemoryTransitionBarrier
-		*/
-		renderer::BufferMemoryBarrier makeMemoryTransitionBarrier( renderer::AccessFlags dstAccess )const override;
-		/**
 		*\~french
 		*\brief
 		*	Opérateur de conversion implicite vers VkBuffer.
@@ -99,7 +79,6 @@ namespace vk_renderer
 		Device const & m_device;
 		uint32_t m_size{ 0u };
 		VkBuffer m_buffer{ VK_NULL_HANDLE };
-		mutable VkAccessFlags m_currentAccessMask{ VK_ACCESS_MEMORY_WRITE_BIT };
 	};
 }
 

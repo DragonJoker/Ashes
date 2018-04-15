@@ -470,7 +470,7 @@ namespace gl_renderer
 
 		auto & save = m_device.getCurrentProgram();
 
-		if ( m_program != save )
+		//if ( m_program != save )
 		{
 			glLogCall( gl::UseProgram, m_program );
 			save = m_program;

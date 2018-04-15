@@ -27,26 +27,6 @@ namespace gl_renderer
 		*/
 		renderer::MemoryRequirements getMemoryRequirements()const override;
 		/**
-		*\copydoc	renderer::BufferBase::makeTransferDestination
-		*/
-		renderer::BufferMemoryBarrier makeTransferDestination()const override;
-		/**
-		*\copydoc	renderer::BufferBase::makeTransferSource
-		*/
-		renderer::BufferMemoryBarrier makeTransferSource()const override;
-		/**
-		*\copydoc	renderer::BufferBase::makeVertexShaderInputResource
-		*/
-		renderer::BufferMemoryBarrier makeVertexShaderInputResource()const override;
-		/**
-		*\copydoc	renderer::BufferBase::makeUniformBufferInput
-		*/
-		renderer::BufferMemoryBarrier makeUniformBufferInput()const override;
-		/**
-		*\copydoc	renderer::BufferBase::makeMemoryTransitionBarrier
-		*/
-		renderer::BufferMemoryBarrier makeMemoryTransitionBarrier( renderer::AccessFlags dstAccess )const override;
-		/**
 		*\return
 		*	Le tampon.
 		*/

@@ -38,7 +38,7 @@ namespace vk_renderer
 			, nullptr );
 	}
 
-	renderer::WaitResult Fence::wait( uint32_t timeout )const
+	renderer::WaitResult Fence::wait( uint64_t timeout )const
 	{
 		auto res = m_device.vkWaitForFences( m_device
 			, 1

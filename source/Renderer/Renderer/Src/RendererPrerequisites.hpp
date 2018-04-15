@@ -243,7 +243,7 @@ namespace renderer
 	*\brief
 	*	Nanoseconds time to wait for a command buffer to be executed.
 	*/
-	static const uint32_t FenceTimeout = 100000000;
+	static const uint64_t FenceTimeout = ~( 0ull );
 
 	/**
 	*\name Typedefs généralistes.
@@ -372,5 +372,18 @@ namespace renderer
 	using DeviceDisabledConnection = SignalConnection< DeviceDisabledSignal >;
 	/**\}*/
 }
+
+#ifndef NDEBUG
+#	define declareDebugVariable( Type, Name, Value )\
+	mutable Type Name{ Value }
+#	define setDebugValue( Name, Value )\
+	Name = Value;
+#	define assertDebugValue( Name, Value )\
+	assert( Name == Value )
+#else
+#	define declareDebugVariable( Type, Name, Value )
+#	define setDebugValue( Name, Value )
+#	define assertDebugValue( Name, Value )
+#endif
 
 #endif

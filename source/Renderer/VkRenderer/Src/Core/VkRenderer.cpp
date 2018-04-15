@@ -35,48 +35,50 @@ namespace vk_renderer
 		{
 			// Select prefix depending on flags passed to the callback
 			// Note that multiple flags may be set for a single validation message
-			std::string prefix( "" );
+			std::stringstream stream;
+			stream << "Vulkan ";
 
 			// Error that may result in undefined behaviour
 			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
 			{
-				prefix += "ERROR:";
+				stream << "Error:\n";
 			};
 			// Warnings may hint at unexpected / non-spec API usage
 			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_WARNING_BIT_EXT ) )
 			{
-				prefix += "WARNING:";
+				stream << "Warning:\n";
 			};
 			// May indicate sub-optimal usage of the API
 			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) )
 			{
-				prefix += "PERFORMANCE:";
+				stream << "Performance:\n";
 			};
 			// Informal messages that may become handy during debugging
 			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) )
 			{
-				prefix += "INFO:";
+				stream << "Info:\n";
 			}
 			// Diagnostic info from the Vulkan loader and layers
 			// Usually not helpful in terms of API usage, but may help to debug layer and loader problems 
 			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_DEBUG_BIT_EXT ) )
 			{
-				prefix += "DEBUG:";
+				stream << "Debug:\n";
 			}
 
 			// Display message to default output (console/logcat)
-			std::stringstream debugMessage;
-			debugMessage << prefix << " [" << pLayerPrefix << "] Code " << messageCode << " : " << pMessage;
+			stream << "    Layer: " << pLayerPrefix << "\n";
+			stream << "    Code: " << messageCode << "\n";
+			stream << "    Message: " << pMessage;
 
 #if defined( __ANDROID__ )
 
 			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
 			{
-				LOGE( "%s", debugMessage.str().c_str() );
+				LOGE( "%s", stream.str().c_str() );
 			}
 			else
 			{
-				LOGD( "%s", debugMessage.str().c_str() );
+				LOGD( "%s", stream.str().c_str() );
 			}
 
 			fflush( stdout );
@@ -85,20 +87,20 @@ namespace vk_renderer
 
 			if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
 			{
-				renderer::Logger::logError( debugMessage );
+				renderer::Logger::logError( stream );
 			}
 			else if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_WARNING_BIT_EXT )
 				|| renderer::checkFlag( flags, VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) )
 			{
-				renderer::Logger::logWarning( debugMessage );
+				renderer::Logger::logWarning( stream );
 			}
 			else if ( renderer::checkFlag( flags, VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) )
 			{
-				renderer::Logger::logInfo( debugMessage );
+				renderer::Logger::logInfo( stream );
 			}
 			else
 			{
-				renderer::Logger::logDebug( debugMessage );
+				renderer::Logger::logDebug( stream );
 			}
 
 #endif

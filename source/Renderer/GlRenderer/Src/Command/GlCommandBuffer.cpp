@@ -69,6 +69,14 @@ namespace gl_renderer
 	{
 	}
 
+	void CommandBuffer::applyPostSubmitActions()const
+	{
+		for ( auto & action : m_afterSubmitActions )
+		{
+			action();
+		}
+	}
+
 	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags )const
 	{
 		m_commands.clear();
@@ -139,12 +147,17 @@ namespace gl_renderer
 	{
 		for ( auto & commandBuffer : commands )
 		{
-			static_cast< CommandBuffer const & >( commandBuffer.get() ).initialiseGeometryBuffers();
+			auto & glCommandBuffer = static_cast< CommandBuffer const & >( commandBuffer.get() );
+			glCommandBuffer.initialiseGeometryBuffers();
 
-			for ( auto & command : static_cast< CommandBuffer const & >( commandBuffer.get() ).getCommands() )
+			for ( auto & command : glCommandBuffer.getCommands() )
 			{
 				m_commands.emplace_back( command->clone() );
 			}
+
+			m_afterSubmitActions.insert( m_afterSubmitActions.end()
+				, glCommandBuffer.m_afterSubmitActions.begin()
+				, glCommandBuffer.m_afterSubmitActions.end() );
 		}
 	}
 
@@ -198,6 +211,12 @@ namespace gl_renderer
 		}
 
 		m_state.m_pushConstantBuffers.clear();
+
+		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
+			, []()
+			{
+				glLogCall( gl::UseProgram, 0u );
+			} );
 	}
 
 	void CommandBuffer::bindPipeline( renderer::ComputePipeline const & pipeline
@@ -219,6 +238,12 @@ namespace gl_renderer
 		}
 
 		m_state.m_pushConstantBuffers.clear();
+
+		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
+			, []()
+			{
+				glLogCall( gl::UseProgram, 0u );
+			} );
 	}
 
 	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding
@@ -248,22 +273,10 @@ namespace gl_renderer
 		m_state.m_boundVao = nullptr;
 	}
 
-	void CommandBuffer::memoryBarrier( renderer::PipelineStageFlags after
-		, renderer::PipelineStageFlags before
-		, renderer::BufferMemoryBarrier const & transitionBarrier )const
+	renderer::TextureView const & doGetView( renderer::WriteDescriptorSet const & write, uint32_t index )
 	{
-		m_commands.emplace_back( std::make_unique< BufferMemoryBarrierCommand >( after
-			, before
-			, transitionBarrier ) );
-	}
-
-	void CommandBuffer::memoryBarrier( renderer::PipelineStageFlags after
-		, renderer::PipelineStageFlags before
-		, renderer::ImageMemoryBarrier const & transitionBarrier )const
-	{
-		m_commands.emplace_back( std::make_unique< ImageMemoryBarrierCommand >( after
-			, before
-			, transitionBarrier ) );
+		assert( index < write.imageInfo.size() );
+		return write.imageInfo[index].imageView.value().get();
 	}
 
 	void CommandBuffer::bindDescriptorSets( renderer::DescriptorSetCRefArray const & descriptorSets
@@ -277,6 +290,50 @@ namespace gl_renderer
 				, layout
 				, dynamicOffsets
 				, bindingPoint ) );
+
+			auto & glDescriptorSet = static_cast< DescriptorSet const & >( descriptorSet.get() );
+
+			for ( auto & write : glDescriptorSet.getCombinedTextureSamplers() )
+			{
+				for ( auto i = 0u; i < write.imageInfo.size(); ++i )
+				{
+					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					auto & view = doGetView( write, i );
+					auto type = convert( view.getType() );
+					m_afterSubmitActions.insert( m_afterSubmitActions.begin()
+						, [type, i, bindingIndex]()
+						{
+							glLogCall( gl::ActiveTexture
+								, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
+							glLogCall( gl::BindTexture
+								, type
+								, 0u );
+							glLogCall( gl::BindSampler
+								, bindingIndex
+								, 0u );
+						} );
+				}
+			}
+
+			for ( auto & write : glDescriptorSet.getSampledTextures() )
+			{
+				for ( auto i = 0u; i < write.imageInfo.size(); ++i )
+				{
+					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					auto & view = doGetView( write, i );
+					auto type = convert( view.getType() );
+					m_afterSubmitActions.insert( m_afterSubmitActions.begin()
+						, [type, i, bindingIndex]()
+						{
+							glLogCall( gl::ActiveTexture
+								, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
+							glLogCall( gl::BindTexture
+								, type
+								, 0u );
+						} );
+				}
+			}
+
 		}
 	}
 
@@ -321,6 +378,12 @@ namespace gl_renderer
 				, firstInstance
 				, m_state.m_currentPipeline->getInputAssemblyState().topology ) );
 		}
+
+		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
+			, []()
+			{
+				glLogCall( gl::BindVertexArray, 0u );
+			} );
 	}
 
 	void CommandBuffer::drawIndexed( uint32_t indexCount
@@ -347,6 +410,12 @@ namespace gl_renderer
 			, firstInstance
 			, m_state.m_currentPipeline->getInputAssemblyState().topology
 			, m_state.m_indexType ) );
+
+		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
+			, []()
+		{
+			glLogCall( gl::BindVertexArray, 0u );
+			} );
 	}
 
 	void CommandBuffer::drawIndirect( renderer::BufferBase const & buffer
@@ -364,6 +433,12 @@ namespace gl_renderer
 			, drawCount
 			, stride
 			, m_state.m_currentPipeline->getInputAssemblyState().topology ) );
+
+		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
+			, []()
+			{
+				glLogCall( gl::BindVertexArray, 0u );
+			} );
 	}
 
 	void CommandBuffer::drawIndexedIndirect( renderer::BufferBase const & buffer
@@ -388,6 +463,12 @@ namespace gl_renderer
 			, stride
 			, m_state.m_currentPipeline->getInputAssemblyState().topology
 			, m_state.m_indexType ) );
+
+		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
+			, []()
+			{
+				glLogCall( gl::BindVertexArray, 0u );
+			} );
 	}
 
 	void CommandBuffer::copyToImage( renderer::BufferImageCopyArray const & copyInfo
@@ -528,6 +609,24 @@ namespace gl_renderer
 		}
 
 		m_state.m_vaos.clear();
+	}
+
+	void CommandBuffer::doMemoryBarrier( renderer::PipelineStageFlags after
+		, renderer::PipelineStageFlags before
+		, renderer::BufferMemoryBarrier const & transitionBarrier )const
+	{
+		m_commands.emplace_back( std::make_unique< BufferMemoryBarrierCommand >( after
+			, before
+			, transitionBarrier ) );
+	}
+
+	void CommandBuffer::doMemoryBarrier( renderer::PipelineStageFlags after
+		, renderer::PipelineStageFlags before
+		, renderer::ImageMemoryBarrier const & transitionBarrier )const
+	{
+		m_commands.emplace_back( std::make_unique< ImageMemoryBarrierCommand >( after
+			, before
+			, transitionBarrier ) );
 	}
 
 	void CommandBuffer::doBindVao()const

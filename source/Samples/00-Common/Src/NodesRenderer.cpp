@@ -421,16 +421,14 @@ namespace common
 					, renderer::MemoryPropertyFlag::eDeviceLocal );
 				stagingBuffer.uploadVertexData( *m_updateCommandBuffer
 					, vertexData
-					, *billboardNode->vbo
-					, renderer::PipelineStageFlag::eVertexInput );
+					, *billboardNode->vbo );
 				billboardNode->instance = renderer::makeVertexBuffer< BillboardInstanceData >( m_device
 					, uint32_t( billboard.list.size() )
 					, renderer::BufferTarget::eTransferDst
 					, renderer::MemoryPropertyFlag::eDeviceLocal );
 				stagingBuffer.uploadVertexData( *m_updateCommandBuffer
 					, billboard.list
-					, *billboardNode->instance
-					, renderer::PipelineStageFlag::eVertexInput );
+					, *billboardNode->instance );
 
 				auto & material = billboard.material;
 				BillboardMaterialNode materialNode{ billboardNode };
@@ -569,11 +567,10 @@ namespace common
 					, renderer::MemoryPropertyFlag::eDeviceLocal );
 				stagingBuffer.uploadVertexData( *m_updateCommandBuffer
 					, submesh.vbo.data
-					, *submeshNode->vbo
-					, renderer::PipelineStageFlag::eVertexInput );
+					, *submeshNode->vbo );
 				submeshNode->ibo = renderer::makeBuffer< common::Face >( m_device
 					, uint32_t( submesh.ibo.data.size() )
-					, renderer::BufferTarget::eTransferDst
+					, renderer::BufferTarget::eIndexBuffer | renderer::BufferTarget::eTransferDst
 					, renderer::MemoryPropertyFlag::eDeviceLocal );
 				stagingBuffer.uploadBufferData( *m_updateCommandBuffer
 					, submesh.ibo.data

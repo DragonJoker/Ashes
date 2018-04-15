@@ -184,8 +184,7 @@ namespace vkapp
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
 			stagingBuffer.uploadVertexData( commandBuffer
 				, vertexData
-				, *result
-				, renderer::PipelineStageFlag::eVertexInput );
+				, *result );
 			return result;
 		}
 

@@ -4,6 +4,11 @@
 
 namespace vkapp
 {
+	struct NonTexturedVertexData
+	{
+		utils::Vec3 position;
+	};
+
 	struct TexturedVertexData
 	{
 		utils::Vec4 position;

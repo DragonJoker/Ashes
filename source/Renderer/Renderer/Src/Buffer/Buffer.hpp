@@ -144,12 +144,15 @@ namespace renderer
 		/**
 		*\~english
 		*\return
-		*	The memory requirements for this buffer.
+		*	The compatible pipeline stage flags for current access.
 		*\~french
 		*\return
-		*	Les exigences mémoire pour ce tampon.
+		*	Les indicateurs de niveau de pipeline pour les accès courants.
 		*/
-		virtual MemoryRequirements getMemoryRequirements()const = 0;
+		inline PipelineStageFlags getCompatibleStageFlags()const
+		{
+			return m_compatibleStageFlags;
+		}
 		/**
 		*\~english
 		*\brief
@@ -162,7 +165,8 @@ namespace renderer
 		*\return
 		*	La barrière mémoire.
 		*/
-		virtual BufferMemoryBarrier makeTransferDestination()const = 0;
+		BufferMemoryBarrier makeTransferDestination( uint32_t srcQueueFamily = ~( 0u )
+			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
 		*\~english
 		*\brief
@@ -175,7 +179,8 @@ namespace renderer
 		*\return
 		*	La barrière mémoire.
 		*/
-		virtual BufferMemoryBarrier makeTransferSource()const = 0;
+		BufferMemoryBarrier makeTransferSource( uint32_t srcQueueFamily = ~( 0u )
+			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
 		*\~english
 		*\brief
@@ -188,7 +193,8 @@ namespace renderer
 		*\return
 		*	La barrière mémoire.
 		*/
-		virtual BufferMemoryBarrier makeVertexShaderInputResource()const = 0;
+		BufferMemoryBarrier makeVertexShaderInputResource( uint32_t srcQueueFamily = ~( 0u )
+			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
 		*\~english
 		*\brief
@@ -201,7 +207,8 @@ namespace renderer
 		*\return
 		*	La barrière mémoire.
 		*/
-		virtual BufferMemoryBarrier makeUniformBufferInput()const = 0;
+		BufferMemoryBarrier makeUniformBufferInput( uint32_t srcQueueFamily = ~( 0u )
+			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
 		*\~english
 		*\brief
@@ -218,7 +225,18 @@ namespace renderer
 		*\return
 		*	La barrière mémoire.
 		*/
-		virtual BufferMemoryBarrier makeMemoryTransitionBarrier( AccessFlags dstAccess )const = 0;
+		 BufferMemoryBarrier makeMemoryTransitionBarrier( AccessFlags dstAccessFlags
+			, uint32_t srcQueueFamily = ~( 0u )
+			, uint32_t dstQueueFamily = ~( 0u ) )const;
+		/**
+		*\~english
+		*\return
+		*	The memory requirements for this buffer.
+		*\~french
+		*\return
+		*	Les exigences mémoire pour ce tampon.
+		*/
+		virtual MemoryRequirements getMemoryRequirements()const = 0;
 		/**
 		*\~english
 		*\return
@@ -252,6 +270,8 @@ namespace renderer
 		uint32_t m_size;
 		BufferTargets m_target;
 		DeviceMemoryPtr m_storage;
+		mutable AccessFlags m_currentAccessFlags{ AccessFlag::eMemoryWrite };
+		mutable PipelineStageFlags m_compatibleStageFlags{ PipelineStageFlag::eHost };
 	};
 	/**
 	*\~english
