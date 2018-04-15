@@ -46,6 +46,7 @@ namespace gl_renderer
 			GlMemoryMapFlags m_mapFlags;
 			GLuint m_boundResource;
 			GLenum m_boundTarget;
+			declareDebugVariable( bool, m_isLocked, false );
 		};
 
 	public:

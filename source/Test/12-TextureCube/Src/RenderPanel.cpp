@@ -58,35 +58,35 @@ namespace vkapp
 		, m_offscreenVertexData
 		{
 			// Front
-			{ { -1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
-			{ { -1.0, +1.0, +1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, +1.0, 1.0 }, { 1.0, 1.0 } },
+			{ { -1.0, -1.0, +1.0 } },
+			{ { -1.0, +1.0, +1.0 } },
+			{ { +1.0, -1.0, +1.0 } },
+			{ { +1.0, +1.0, +1.0 } },
 			// Top
-			{ { -1.0, +1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
-			{ { -1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, +1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
+			{ { -1.0, +1.0, +1.0 } },
+			{ { -1.0, +1.0, -1.0 } },
+			{ { +1.0, +1.0, +1.0 } },
+			{ { +1.0, +1.0, -1.0 } },
 			// Back
-			{ { -1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
-			{ { -1.0, -1.0, -1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, -1.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, +1.0, -1.0 } },
+			{ { -1.0, -1.0, -1.0 } },
+			{ { +1.0, +1.0, -1.0 } },
+			{ { +1.0, -1.0, -1.0 } },
 			// Bottom
-			{ { -1.0, -1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
-			{ { -1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, -1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, -1.0, -1.0 } },
+			{ { -1.0, -1.0, +1.0 } },
+			{ { +1.0, -1.0, -1.0 } },
+			{ { +1.0, -1.0, +1.0 } },
 			// Right
-			{ { +1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
-			{ { +1.0, +1.0, +1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, -1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
+			{ { +1.0, -1.0, +1.0 } },
+			{ { +1.0, +1.0, +1.0 } },
+			{ { +1.0, -1.0, -1.0 } },
+			{ { +1.0, +1.0, -1.0 } },
 			// Left
-			{ { -1.0, -1.0, -1.0, 1.0 }, { 0.0, 0.0 } },
-			{ { -1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { -1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { -1.0, +1.0, +1.0, 1.0 }, { 1.0, 1.0 } },
+			{ { -1.0, -1.0, -1.0 } },
+			{ { -1.0, +1.0, -1.0 } },
+			{ { -1.0, -1.0, +1.0 } },
+			{ { -1.0, +1.0, +1.0 } },
 		}
 		, m_offscreenIndexData
 		{
@@ -257,7 +257,7 @@ namespace vkapp
 	{
 		m_texture = m_device->createTexture(
 			{
-				0u,
+				renderer::ImageCreateFlag::eCubeCompatible,
 				renderer::TextureType::e2D,
 				renderer::Format::eR8G8B8A8_UNORM,
 				{ 512u, 512u, 1u },
@@ -411,27 +411,22 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
-		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
+		m_offscreenVertexLayout = renderer::makeLayout< NonTexturedVertexData >( 0 );
 		m_offscreenVertexLayout->createAttribute( 0u
-			, renderer::Format::eR32G32B32A32_SFLOAT
+			, renderer::Format::eR32G32B32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_offscreenVertexLayout->createAttribute( 1u
-			, renderer::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
-		m_offscreenVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
+		m_offscreenVertexBuffer = renderer::makeVertexBuffer< NonTexturedVertexData >( *m_device
 			, uint32_t( m_offscreenVertexData.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_offscreenVertexData
-			, *m_offscreenVertexBuffer
-			, renderer::PipelineStageFlag::eVertexInput );
+			, *m_offscreenVertexBuffer );
 
 		m_offscreenIndexBuffer = renderer::makeBuffer< uint16_t >( *m_device
 			, uint32_t( m_offscreenIndexData.size() )
-
-			, renderer::BufferTarget::eTransferDst
+			, renderer::BufferTarget::eIndexBuffer | renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_stagingBuffer->uploadBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_offscreenIndexData
@@ -588,8 +583,7 @@ namespace vkapp
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_mainVertexData
-			, *m_mainVertexBuffer
-			, renderer::PipelineStageFlag::eVertexInput );
+			, *m_mainVertexBuffer );
 	}
 
 	void RenderPanel::doCreateMainPipeline()
@@ -699,6 +693,7 @@ namespace vkapp
 			auto & queue = m_device->getGraphicsQueue();
 			auto res = queue.submit( *m_commandBuffer
 				, nullptr );
+			queue.waitIdle();
 
 			if ( res )
 			{

@@ -4,6 +4,8 @@ See LICENSE file in root folder.
 */
 #include "Buffer/Buffer.hpp"
 
+#include "Sync/BufferMemoryBarrier.hpp"
+
 namespace renderer
 {
 	BufferBase::BufferBase( Device const & device
@@ -48,5 +50,100 @@ namespace renderer
 	{
 		assert( m_storage && "The resource is not bound to a device memory object." );
 		return m_storage->unlock();
+	}
+
+	BufferMemoryBarrier BufferBase::makeTransferDestination( uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
+	{
+		return makeMemoryTransitionBarrier( renderer::AccessFlag::eTransferWrite
+			, srcQueueFamily
+			, dstQueueFamily );
+	}
+
+	BufferMemoryBarrier BufferBase::makeTransferSource( uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
+	{
+		return makeMemoryTransitionBarrier( renderer::AccessFlag::eTransferRead
+			, srcQueueFamily
+			, dstQueueFamily );
+	}
+
+	BufferMemoryBarrier BufferBase::makeVertexShaderInputResource( uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
+	{
+		return makeMemoryTransitionBarrier( renderer::AccessFlag::eVertexAttributeRead
+			, srcQueueFamily
+			, dstQueueFamily );
+	}
+
+	BufferMemoryBarrier BufferBase::makeUniformBufferInput( uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
+	{
+		return makeMemoryTransitionBarrier( renderer::AccessFlag::eUniformRead
+			, srcQueueFamily
+			, dstQueueFamily );
+	}
+
+	BufferMemoryBarrier BufferBase::makeMemoryTransitionBarrier( AccessFlags dstAccessFlags
+		, uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
+	{
+		BufferMemoryBarrier result
+		{
+			m_currentAccessFlags,
+			dstAccessFlags,
+			srcQueueFamily,
+			dstQueueFamily,
+			*this,
+			0,
+			~( 0ull )
+		};
+		m_currentAccessFlags = dstAccessFlags;
+
+		if ( checkFlag( m_currentAccessFlags, AccessFlag::eIndirectCommandRead ) )
+		{
+			m_compatibleStageFlags = PipelineStageFlag::eDrawIndirect;
+		}
+		else if ( checkFlag( m_currentAccessFlags, AccessFlag::eIndexRead )
+			|| checkFlag( m_currentAccessFlags, AccessFlag::eVertexAttributeRead ) )
+		{
+			m_compatibleStageFlags = PipelineStageFlag::eVertexInput;
+		}
+		else if ( checkFlag( m_currentAccessFlags, AccessFlag::eInputAttachmentRead ) )
+		{
+			m_compatibleStageFlags = PipelineStageFlag::eFragmentShader;
+		}
+		else if ( checkFlag( m_currentAccessFlags, AccessFlag::eShaderRead )
+			|| checkFlag( m_currentAccessFlags, AccessFlag::eShaderWrite )
+			|| checkFlag( m_currentAccessFlags, AccessFlag::eUniformRead ) )
+		{
+			m_compatibleStageFlags = PipelineStageFlag::eVertexShader;
+		}
+		else if ( checkFlag( m_currentAccessFlags, AccessFlag::eColourAttachmentRead )
+			|| checkFlag( m_currentAccessFlags, AccessFlag::eColourAttachmentWrite ) )
+		{
+			m_compatibleStageFlags = PipelineStageFlag::eColourAttachmentOutput;
+		}
+		else if ( checkFlag( m_currentAccessFlags, AccessFlag::eDepthStencilAttachmentRead )
+			|| checkFlag( m_currentAccessFlags, AccessFlag::eDepthStencilAttachmentWrite ) )
+		{
+			m_compatibleStageFlags = PipelineStageFlag::eEarlyFragmentTests;
+		}
+		else if ( checkFlag( m_currentAccessFlags, AccessFlag::eTransferRead )
+			|| checkFlag( m_currentAccessFlags, AccessFlag::eTransferWrite ) )
+		{
+			m_compatibleStageFlags = PipelineStageFlag::eTransfer;
+		}
+		else if ( checkFlag( m_currentAccessFlags, AccessFlag::eHostRead )
+			|| checkFlag( m_currentAccessFlags, AccessFlag::eHostWrite ) )
+		{
+			m_compatibleStageFlags = PipelineStageFlag::eHost;
+		}
+		else
+		{
+			m_compatibleStageFlags = PipelineStageFlag::eBottomOfPipe;
+		}
+
+		return result;
 	}
 }

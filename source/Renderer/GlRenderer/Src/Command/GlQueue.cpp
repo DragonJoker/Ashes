@@ -25,12 +25,15 @@ namespace gl_renderer
 	{
 		for ( auto & commandBuffer : commandBuffers )
 		{
-			static_cast< CommandBuffer const & >( commandBuffer.get() ).initialiseGeometryBuffers();
+			auto & glCommandBuffer = static_cast< CommandBuffer const & >( commandBuffer.get() );
+			glCommandBuffer.initialiseGeometryBuffers();
 
-			for ( auto & command : static_cast< CommandBuffer const & >( commandBuffer.get() ).getCommands() )
+			for ( auto & command : glCommandBuffer.getCommands() )
 			{
 				command->apply();
 			}
+
+			glCommandBuffer.applyPostSubmitActions();
 		}
 
 		return true;

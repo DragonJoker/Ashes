@@ -326,8 +326,7 @@ namespace common
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData
-			, *m_vertexBuffer
-			, renderer::PipelineStageFlag::eVertexInput );
+			, *m_vertexBuffer );
 	}
 
 	void RenderPanel::doCreatePipeline()

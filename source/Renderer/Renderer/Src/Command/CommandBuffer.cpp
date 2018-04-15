@@ -9,9 +9,79 @@ See LICENSE file in root folder.
 #include "Image/ImageSubresourceRange.hpp"
 #include "Image/Texture.hpp"
 #include "Image/TextureView.hpp"
+#include "Sync/BufferMemoryBarrier.hpp"
+#include "Sync/ImageMemoryBarrier.hpp"
 
 namespace renderer
 {
+	namespace
+	{
+		bool areCompatible( PipelineStageFlags pipelineFlags
+			, AccessFlags accessFlags )
+		{
+			if ( checkFlag( pipelineFlags, PipelineStageFlag::eAllCommands )
+				|| checkFlag( pipelineFlags, PipelineStageFlag::eAllGraphics ) )
+			{
+				return true;
+			}
+
+			if ( checkFlag( accessFlags, AccessFlag::eIndirectCommandRead ) )
+			{
+				return checkFlag( pipelineFlags, PipelineStageFlag::eDrawIndirect );
+			}
+
+			if ( checkFlag( accessFlags, AccessFlag::eIndexRead )
+				|| checkFlag( accessFlags, AccessFlag::eVertexAttributeRead ) )
+			{
+				return checkFlag( pipelineFlags, PipelineStageFlag::eVertexInput );
+			}
+
+			if ( checkFlag( accessFlags, AccessFlag::eInputAttachmentRead ) )
+			{
+				return checkFlag( pipelineFlags, PipelineStageFlag::eFragmentShader );
+			}
+
+			if ( checkFlag( accessFlags, AccessFlag::eShaderRead )
+				|| checkFlag( accessFlags, AccessFlag::eShaderWrite )
+				|| checkFlag( accessFlags, AccessFlag::eUniformRead ) )
+			{
+				return checkFlag( pipelineFlags, PipelineStageFlag::eVertexShader )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eTessellationControlShader )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eTessellationEvaluationShader )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eGeometryShader )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eFragmentShader )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eComputeShader );
+			}
+
+			if ( checkFlag( accessFlags, AccessFlag::eColourAttachmentRead )
+				|| checkFlag( accessFlags, AccessFlag::eColourAttachmentWrite ) )
+			{
+				return checkFlag( pipelineFlags, PipelineStageFlag::eColourAttachmentOutput );
+			}
+
+			if ( checkFlag( accessFlags, AccessFlag::eDepthStencilAttachmentRead )
+				|| checkFlag( accessFlags, AccessFlag::eDepthStencilAttachmentWrite ) )
+			{
+				return checkFlag( pipelineFlags, PipelineStageFlag::eEarlyFragmentTests )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eLateFragmentTests );
+			}
+
+			if ( checkFlag( accessFlags, AccessFlag::eTransferRead )
+				|| checkFlag( accessFlags, AccessFlag::eTransferWrite ) )
+			{
+				return checkFlag( pipelineFlags, PipelineStageFlag::eTransfer );
+			}
+
+			if ( checkFlag( accessFlags, AccessFlag::eHostRead )
+				|| checkFlag( accessFlags, AccessFlag::eHostWrite ) )
+			{
+				return checkFlag( pipelineFlags, PipelineStageFlag::eHost );
+			}
+
+			return true;
+		}
+	}
+
 	CommandBuffer::CommandBuffer( Device const & device
 		, CommandPool const & pool
 		, bool primary )
@@ -178,5 +248,23 @@ namespace renderer
 			, ImageLayout::eTransferSrcOptimal
 			, dst.getTexture()
 			, ImageLayout::eTransferDstOptimal );
+	}
+
+	void CommandBuffer::memoryBarrier( PipelineStageFlags after
+		, PipelineStageFlags before
+		, BufferMemoryBarrier const & transitionBarrier )const
+	{
+		assert( areCompatible( after, transitionBarrier.getSrcAccessMask() ) );
+		assert( areCompatible( before, transitionBarrier.getDstAccessMask() ) );
+		doMemoryBarrier( after, before, transitionBarrier );
+	}
+
+	void CommandBuffer::memoryBarrier( PipelineStageFlags after
+		, PipelineStageFlags before
+		, ImageMemoryBarrier const & transitionBarrier )const
+	{
+		assert( areCompatible( after, transitionBarrier.getSrcAccessMask() ) );
+		assert( areCompatible( before, transitionBarrier.getDstAccessMask() ) );
+		doMemoryBarrier( after, before, transitionBarrier );
 	}
 }

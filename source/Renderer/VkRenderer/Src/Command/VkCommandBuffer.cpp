@@ -284,44 +284,6 @@ namespace vk_renderer
 			, convert( indexType ) );
 	}
 
-	void CommandBuffer::memoryBarrier( renderer::PipelineStageFlags after
-		, renderer::PipelineStageFlags before
-		, renderer::BufferMemoryBarrier const & transitionBarrier )const
-	{
-		auto vkafter = convert( after );
-		auto vkbefore = convert( before );
-		auto vktb = convert( transitionBarrier );
-		m_device.vkCmdPipelineBarrier( m_commandBuffer
-			, vkbefore
-			, vkafter
-			, 0
-			, 0u
-			, nullptr
-			, 1u
-			, &vktb
-			, 0u
-			, nullptr );
-	}
-
-	void CommandBuffer::memoryBarrier( renderer::PipelineStageFlags after
-		, renderer::PipelineStageFlags before
-		, renderer::ImageMemoryBarrier const & transitionBarrier )const
-	{
-		auto vkafter = convert( after );
-		auto vkbefore = convert( before );
-		auto vktb = convert( transitionBarrier );
-		m_device.vkCmdPipelineBarrier( m_commandBuffer
-			, vkafter
-			, vkbefore
-			, 0
-			, 0u
-			, nullptr
-			, 0u
-			, nullptr
-			, 1u
-			, &vktb );
-	}
-
 	void CommandBuffer::bindDescriptorSets( renderer::DescriptorSetCRefArray const & descriptorSets
 		, renderer::PipelineLayout const & layout
 		, renderer::UInt32Array const & dynamicOffsets
@@ -569,5 +531,45 @@ namespace vk_renderer
 			, constantFactor
 			, clamp
 			, slopeFactor );
+	}
+
+	void CommandBuffer::doMemoryBarrier( renderer::PipelineStageFlags after
+		, renderer::PipelineStageFlags before
+		, renderer::BufferMemoryBarrier const & transitionBarrier )const
+	{
+		auto vkafter = convert( after );
+		auto vkbefore = convert( before );
+		auto vktb = convert( transitionBarrier );
+		DEBUG_DUMP( vktb );
+		m_device.vkCmdPipelineBarrier( m_commandBuffer
+			, vkafter
+			, vkbefore
+			, 0
+			, 0u
+			, nullptr
+			, 1u
+			, &vktb
+			, 0u
+			, nullptr );
+	}
+
+	void CommandBuffer::doMemoryBarrier( renderer::PipelineStageFlags after
+		, renderer::PipelineStageFlags before
+		, renderer::ImageMemoryBarrier const & transitionBarrier )const
+	{
+		auto vkafter = convert( after );
+		auto vkbefore = convert( before );
+		auto vktb = convert( transitionBarrier );
+		DEBUG_DUMP( vktb );
+		m_device.vkCmdPipelineBarrier( m_commandBuffer
+			, vkafter
+			, vkbefore
+			, 0
+			, 0u
+			, nullptr
+			, 0u
+			, nullptr
+			, 1u
+			, &vktb );
 	}
 }

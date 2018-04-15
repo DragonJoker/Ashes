@@ -17,7 +17,7 @@ namespace vk_renderer
 		m_fence = std::make_unique< Fence >( m_device, renderer::FenceCreateFlag::eSignaled );
 	}
 
-	bool RenderingResources::waitRecord( uint32_t timeout )
+	bool RenderingResources::waitRecord( uint64_t timeout )
 	{
 		bool res = m_fence->wait( timeout ) == renderer::WaitResult::eSuccess;
 

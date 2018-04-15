@@ -259,6 +259,11 @@ namespace gl_renderer
 		return getName( value );
 	}
 
+	inline std::string toString( GlTextureViewType value )
+	{
+		return getName( value );
+	}
+
 	inline std::string toString( GlTextureUnit value )
 	{
 		return getName( value );
@@ -285,7 +290,7 @@ namespace gl_renderer
 	template<>
 	struct GlParamLoggerRec<>
 	{
-		static inline void log()
+		static inline void log( std::stringstream & stream )
 		{
 		}
 	};
@@ -293,41 +298,45 @@ namespace gl_renderer
 	template< typename ParamT >
 	struct GlParamLoggerRec< ParamT >
 	{
-		static inline void log( ParamT const & last )
+		static inline void log( std::stringstream & stream
+			, ParamT const & last )
 		{
-			renderer::Logger::logDebug( toString( last ), false );
+			stream << toString( last );
 		}
 	};
 
 	template< typename ParamT, typename ... ParamsT >
 	struct GlParamLoggerRec< ParamT, ParamsT... >
 	{
-		static inline void log( ParamT const & param
+		static inline void log( std::stringstream & stream
+			, ParamT const & param
 			, ParamsT ... params )
 		{
-			renderer::Logger::logDebug( toString( param ) + ", ", false );
-			GlParamLoggerRec< ParamsT... >::log( std::forward< ParamsT >( params )... );
+			stream << toString( param ) + ", ";
+			GlParamLoggerRec< ParamsT... >::log( stream, std::forward< ParamsT >( params )... );
 		}
 	};
 
 	template< typename ... ParamsT >
-	void logParams( ParamsT ... params )
+	void logParams( std::stringstream & stream
+		, ParamsT ... params )
 	{
-		renderer::Logger::logDebug( "(", false );
-		GlParamLoggerRec< ParamsT... >::log( std::forward< ParamsT >( params )... );
-		renderer::Logger::logDebug( ")", false );
+		stream << "(";
+		GlParamLoggerRec< ParamsT... >::log( stream, std::forward< ParamsT >( params )... );
+		stream << ")";
 	}
 
 	template< typename FuncT, typename ... ParamsT >
 	struct GlFuncCaller
 	{
-		static inline auto call( FuncT function
+		static inline auto call( std::stringstream & stream
+			, FuncT function
 			, char const * const name
 			, ParamsT ... params )
 		{
-			renderer::Logger::logDebug( name, false );
-			logParams( std::forward< ParamsT >( params )... );
-			renderer::Logger::logDebug( std::string{} );
+			stream << name;
+			logParams( stream, std::forward< ParamsT >( params )... );
+			renderer::Logger::logDebug( stream );
 			return function( std::forward< ParamsT >( params )... );
 		}
 	};
@@ -335,7 +344,8 @@ namespace gl_renderer
 	template< typename FuncT >
 	struct GlFuncCaller< FuncT, void >
 	{
-		static inline void call( FuncT function
+		static inline void call( std::stringstream & stream
+			, FuncT function
 			, char const * const name )
 		{
 			renderer::Logger::logDebug( std::string{ name } + "()" );
@@ -348,7 +358,9 @@ namespace gl_renderer
 		, char const * const name
 		, ParamsT ... params )
 	{
-		return GlFuncCaller< FuncT, ParamsT... >::call( function
+		std::stringstream stream;
+		return GlFuncCaller< FuncT, ParamsT... >::call( stream
+			, function
 			, name
 			, std::forward< ParamsT >( params )... );
 	}

@@ -116,74 +116,64 @@ namespace renderer
 	template< typename T >
 	inline void StagingBuffer::uploadVertexData( CommandBuffer const & commandBuffer
 		, std::vector< T > const & data
-		, VertexBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBuffer< T > const & buffer )const
 	{
 		uploadVertexData( commandBuffer
 			, reinterpret_cast< uint8_t const * const >( data.data() )
 			, uint32_t( data.size() * sizeof( T ) )
 			, 0u
-			, buffer
-			, flags );
+			, buffer );
 	}
 
 	template< typename T >
 	inline void StagingBuffer::uploadVertexData( CommandBuffer const & commandBuffer
 		, ByteArray const & data
-		, VertexBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBuffer< T > const & buffer )const
 	{
 		uploadVertexData( commandBuffer
 			, data.data()
 			, uint32_t( data.size() )
 			, 0u
-			, buffer
-			, flags );
+			, buffer );
 	}
 
 	template< typename T >
 	inline void StagingBuffer::uploadVertexData( CommandBuffer const & commandBuffer
 		, uint8_t const * const data
 		, uint32_t size
-		, VertexBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBuffer< T > const & buffer )const
 	{
 		uploadVertexData( commandBuffer
 			, data
 			, size
 			, 0u
-			, buffer
-			, flags );
+			, buffer );
 	}
 
 	template< typename T >
 	inline void StagingBuffer::uploadVertexData( CommandBuffer const & commandBuffer
 		, std::vector< T > const & data
 		, uint32_t offset
-		, VertexBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBuffer< T > const & buffer )const
 	{
 		uploadVertexData( commandBuffer
 			, reinterpret_cast< uint8_t const * const >( data.data() )
 			, uint32_t( data.size() * sizeof( T ) )
 			, uint32_t( offset * sizeof( T ) )
-			, buffer
-			, flags );
+			, buffer );
 	}
 
 	template< typename T >
 	inline void StagingBuffer::uploadVertexData( CommandBuffer const & commandBuffer
 		, ByteArray const & data
 		, uint32_t offset
-		, VertexBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBuffer< T > const & buffer )const
 	{
 		uploadVertexData( commandBuffer
 			, data.data()
 			, uint32_t( data.size() )
 			, offset
-			, buffer
-			, flags );
+			, buffer );
 	}
 
 	template< typename T >
@@ -191,30 +181,28 @@ namespace renderer
 		, uint8_t const * const data
 		, uint32_t size
 		, uint32_t offset
-		, VertexBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBuffer< T > const & buffer )const
 	{
 		doCopyToStagingBuffer( data
 			, size );
 		doCopyFromStagingBuffer( commandBuffer
 			, size
 			, offset
-			, buffer
-			, flags );
+			, buffer );
 	}
 
 	template< typename T >
 	inline void StagingBuffer::uploadUniformData( CommandBuffer const & commandBuffer
 		, std::vector< T > const & data
 		, UniformBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, PipelineStageFlags dstStageFlags )const
 	{
 		uploadUniformData( commandBuffer
 			, data.data()
 			, uint32_t( data.size() )
 			, 0u
 			, buffer
-			, flags );
+			, dstStageFlags );
 	}
 
 	template< typename T >
@@ -222,14 +210,14 @@ namespace renderer
 		, T const * const data
 		, uint32_t count
 		, UniformBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, PipelineStageFlags dstStageFlags )const
 	{
 		uploadUniformData( commandBuffer
 			, data
 			, count
 			, 0u
 			, buffer
-			, flags );
+			, dstStageFlags );
 	}
 
 	template< typename T >
@@ -237,14 +225,14 @@ namespace renderer
 		, std::vector< T > const & data
 		, uint32_t offset
 		, UniformBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, PipelineStageFlags dstStageFlags )const
 	{
 		uploadUniformData( commandBuffer
 			, data.data()
 			, uint32_t( data.size() )
 			, 0u
 			, buffer
-			, flags );
+			, dstStageFlags );
 	}
 
 	template< typename T >
@@ -253,7 +241,7 @@ namespace renderer
 		, uint32_t count
 		, uint32_t offset
 		, UniformBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, PipelineStageFlags dstStageFlags )const
 	{
 		auto elemAlignedSize = buffer.getAlignedSize();
 		doCopyUniformDataToStagingBuffer( data
@@ -263,7 +251,7 @@ namespace renderer
 			, elemAlignedSize * count
 			, elemAlignedSize * offset
 			, buffer.getUbo()
-			, flags );
+			, dstStageFlags );
 	}
 	/**@}*/
 	/**
@@ -378,74 +366,64 @@ namespace renderer
 	template< typename T >
 	inline void StagingBuffer::downloadVertexData( CommandBuffer const & commandBuffer
 		, std::vector< T > & data
-		, VertexBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBuffer< T > const & buffer )const
 	{
 		downloadVertexData( commandBuffer
 			, reinterpret_cast< uint8_t const * const >( data.data() )
 			, uint32_t( data.size() * sizeof( T ) )
 			, 0u
-			, buffer
-			, flags );
+			, buffer );
 	}
 
 	template< typename T >
 	inline void StagingBuffer::downloadVertexData( CommandBuffer const & commandBuffer
 		, ByteArray & data
-		, VertexBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBuffer< T > const & buffer )const
 	{
 		downloadVertexData( commandBuffer
 			, data.data()
 			, uint32_t( data.size() )
 			, 0u
-			, buffer
-			, flags );
+			, buffer );
 	}
 
 	template< typename T >
 	inline void StagingBuffer::downloadVertexData( CommandBuffer const & commandBuffer
 		, uint8_t * data
 		, uint32_t size
-		, VertexBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBuffer< T > const & buffer )const
 	{
 		downloadVertexData( commandBuffer
 			, data
 			, size
 			, 0u
-			, buffer
-			, flags );
+			, buffer );
 	}
 
 	template< typename T >
 	inline void StagingBuffer::downloadVertexData( CommandBuffer const & commandBuffer
 		, std::vector< T > & data
 		, uint32_t offset
-		, VertexBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBuffer< T > const & buffer )const
 	{
 		downloadVertexData( commandBuffer
 			, reinterpret_cast< uint8_t const * const >( data.data() )
 			, uint32_t( data.size() * sizeof( T ) )
 			, uint32_t( offset * sizeof( T ) )
-			, buffer
-			, flags );
+			, buffer );
 	}
 
 	template< typename T >
 	inline void StagingBuffer::downloadVertexData( CommandBuffer const & commandBuffer
 		, ByteArray & data
 		, uint32_t offset
-		, VertexBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBuffer< T > const & buffer )const
 	{
 		downloadVertexData( commandBuffer
 			, data.data()
 			, uint32_t( data.size() )
 			, offset
-			, buffer
-			, flags );
+			, buffer );
 	}
 
 	template< typename T >
@@ -453,14 +431,12 @@ namespace renderer
 		, uint8_t * data
 		, uint32_t size
 		, uint32_t offset
-		, VertexBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBuffer< T > const & buffer )const
 	{
 		doCopyToStagingBuffer( commandBuffer
 			, size
 			, offset
-			, buffer
-			, flags );
+			, buffer );
 		doCopyFromStagingBuffer( data
 			, size );
 	}
@@ -469,14 +445,14 @@ namespace renderer
 	inline void StagingBuffer::downloadUniformData( CommandBuffer const & commandBuffer
 		, std::vector< T > & data
 		, UniformBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, PipelineStageFlags dstStageFlags )const
 	{
 		downloadUniformData( commandBuffer
 			, data.data()
 			, uint32_t( data.size() )
 			, 0u
 			, buffer
-			, flags );
+			, dstStageFlags );
 	}
 
 	template< typename T >
@@ -484,14 +460,14 @@ namespace renderer
 		, T * data
 		, uint32_t count
 		, UniformBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, PipelineStageFlags dstStageFlags )const
 	{
 		downloadUniformData( commandBuffer
 			, data
 			, count
 			, 0u
 			, buffer
-			, flags );
+			, dstStageFlags );
 	}
 
 	template< typename T >
@@ -499,14 +475,14 @@ namespace renderer
 		, std::vector< T > & data
 		, uint32_t offset
 		, UniformBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, PipelineStageFlags dstStageFlags )const
 	{
 		downloadUniformData( commandBuffer
 			, data.data()
 			, uint32_t( data.size() )
 			, offset
 			, buffer
-			, flags );
+			, dstStageFlags );
 	}
 
 	template< typename T >
@@ -515,14 +491,14 @@ namespace renderer
 		, uint32_t count
 		, uint32_t offset
 		, UniformBuffer< T > const & buffer
-		, PipelineStageFlags const & flags )const
+		, PipelineStageFlags dstStageFlags )const
 	{
 		auto elemAlignedSize = buffer.getAlignedSize();
 		doCopyToStagingBuffer( commandBuffer
 			, elemAlignedSize * count
 			, elemAlignedSize * offset
 			, buffer.getUbo()
-			, flags );
+			, dstStageFlags );
 		doCopyUniformDataFromStagingBuffer( data
 			, count
 			, elemAlignedSize );

@@ -117,4 +117,24 @@ namespace renderer
 			, srcQueueFamily
 			, dstQueueFamily );
 	}
+
+	renderer::ImageMemoryBarrier TextureView::doMakeLayoutTransition( renderer::ImageLayout srcLayout
+		, renderer::ImageLayout dstLayout
+		, renderer::AccessFlags srcAccessFlags
+		, renderer::AccessFlags dstAccessMask
+		, uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
+	{
+		return renderer::ImageMemoryBarrier
+		{
+			srcAccessFlags,
+			dstAccessMask,
+			srcLayout,
+			dstLayout,
+			srcQueueFamily,
+			dstQueueFamily,
+			getTexture(),
+			getSubResourceRange()
+		};
+	}
 }

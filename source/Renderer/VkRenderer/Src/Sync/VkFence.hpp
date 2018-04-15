@@ -65,7 +65,7 @@ namespace vk_renderer
 		*\return
 		*	\p WaitResult::eSuccess or \p WaitResult::eTimeOut on success.
 		*/ 
-		renderer::WaitResult wait( uint32_t timeout )const override;
+		renderer::WaitResult wait( uint64_t timeout )const override;
 		/**
 		*\~french
 		*\brief

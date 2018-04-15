@@ -44,17 +44,6 @@ namespace vk_renderer
 		}
 
 	private:
-		/**
-		*\copydoc	renderer::TextureView::doMakeLayoutTransition
-		*/
-		renderer::ImageMemoryBarrier doMakeLayoutTransition( renderer::ImageLayout srcLayout
-			, renderer::ImageLayout dstLayout
-			, renderer::AccessFlags srcAccessFlags
-			, renderer::AccessFlags dstAccessMask
-			, uint32_t srcQueueFamily
-			, uint32_t dstQueueFamily )const override;
-
-	private:
 		Device const & m_device;
 		VkImageView m_view{};
 	};

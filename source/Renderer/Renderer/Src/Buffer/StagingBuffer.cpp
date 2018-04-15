@@ -235,8 +235,7 @@ namespace renderer
 	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 		, uint32_t size
 		, uint32_t offset
-		, VertexBufferBase const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
 		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
@@ -244,7 +243,8 @@ namespace renderer
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 				, PipelineStageFlag::eTransfer
 				, getBuffer().makeTransferSource() );
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
+			commandBuffer.memoryBarrier( srcStageFlags
 				, PipelineStageFlag::eTransfer
 				, buffer.getBuffer().makeTransferDestination() );
 			commandBuffer.copyBuffer( getBuffer()
@@ -252,7 +252,7 @@ namespace renderer
 				, size
 				, offset );
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, flags
+				, renderer::PipelineStageFlag::eVertexInput
 				, buffer.getBuffer().makeVertexShaderInputResource() );
 			bool res = commandBuffer.end();
 
@@ -279,14 +279,15 @@ namespace renderer
 		, uint32_t size
 		, uint32_t offset
 		, UniformBufferBase const & buffer
-		, PipelineStageFlags const & flags )const
+		, PipelineStageFlags dstStageFlags )const
 	{
 		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
 		{
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 				, PipelineStageFlag::eTransfer
 				, getBuffer().makeTransferSource() );
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
+			commandBuffer.memoryBarrier( srcStageFlags
 				, PipelineStageFlag::eTransfer
 				, buffer.getBuffer().makeTransferDestination() );
 			commandBuffer.copyBuffer( getBuffer()
@@ -294,7 +295,7 @@ namespace renderer
 				, size
 				, offset );
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, flags
+				, dstStageFlags
 				, buffer.getBuffer().makeUniformBufferInput() );
 			bool res = commandBuffer.end();
 
@@ -379,8 +380,7 @@ namespace renderer
 	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & commandBuffer
 		, uint32_t size
 		, uint32_t offset
-		, VertexBufferBase const & buffer
-		, PipelineStageFlags const & flags )const
+		, VertexBufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
 		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
@@ -388,7 +388,8 @@ namespace renderer
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 				, PipelineStageFlag::eTransfer
 				, buffer.getBuffer().makeTransferSource() );
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
+			commandBuffer.memoryBarrier( srcStageFlags
 				, PipelineStageFlag::eTransfer
 				, getBuffer().makeTransferDestination() );
 			commandBuffer.copyBuffer( buffer.getBuffer()
@@ -396,7 +397,7 @@ namespace renderer
 				, size
 				, offset );
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, flags
+				, renderer::PipelineStageFlag::eVertexInput
 				, buffer.getBuffer().makeVertexShaderInputResource() );
 			bool res = commandBuffer.end();
 
@@ -423,14 +424,15 @@ namespace renderer
 		, uint32_t size
 		, uint32_t offset
 		, UniformBufferBase const & buffer
-		, PipelineStageFlags const & flags )const
+		, PipelineStageFlags dstStageFlags )const
 	{
 		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
 		{
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 				, PipelineStageFlag::eTransfer
 				, buffer.getBuffer().makeTransferSource() );
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
+			commandBuffer.memoryBarrier( srcStageFlags
 				, PipelineStageFlag::eTransfer
 				, getBuffer().makeTransferDestination() );
 			commandBuffer.copyBuffer( buffer.getBuffer()
@@ -438,7 +440,7 @@ namespace renderer
 				, size
 				, offset );
 			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, flags
+				, dstStageFlags
 				, buffer.getBuffer().makeUniformBufferInput() );
 			bool res = commandBuffer.end();
 

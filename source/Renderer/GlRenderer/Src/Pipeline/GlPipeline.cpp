@@ -180,7 +180,7 @@ namespace gl_renderer
 		for ( auto & binding : vbos )
 		{
 			auto & vbo = binding.second;
-			m_connections[vbo.bo] = vbo.buffer->onDestroy.connect( [this]( GLuint name )
+			m_connections.emplace( vbo.bo, vbo.buffer->onDestroy.connect( [this]( GLuint name )
 			{
 				auto it = std::remove_if( m_geometryBuffers.begin()
 					, m_geometryBuffers.end()
@@ -208,7 +208,7 @@ namespace gl_renderer
 				{
 					m_geometryBuffers.erase( it, m_geometryBuffers.end() );
 				}
-			} );
+			} ) );
 		}
 
 		return *m_geometryBuffers.back().second;

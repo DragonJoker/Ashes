@@ -129,6 +129,8 @@ namespace gl_renderer
 				glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, m_pbo );
 				doSetupUpdateRegions( offset, size );
 				auto result = glLogCall( gl::MapBufferRange, GL_BUFFER_TARGET_PIXEL_UNPACK, offset, size, m_mapFlags );
+				assertDebugValue( m_isLocked, false );
+				setDebugValue( m_isLocked, result != nullptr );
 				return reinterpret_cast< uint8_t * >( result );
 			}
 
@@ -136,6 +138,7 @@ namespace gl_renderer
 				, uint32_t size )const override
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local texture" );
+				assertDebugValue( m_isLocked, true );
 				glLogCall( gl::FlushMappedBufferRange, GL_BUFFER_TARGET_PIXEL_UNPACK, offset, size );
 			}
 
@@ -143,12 +146,14 @@ namespace gl_renderer
 				, uint32_t size )const override
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local texture" );
+				assertDebugValue( m_isLocked, true );
 				glLogCall( gl::InvalidateBufferSubData, GL_BUFFER_TARGET_PIXEL_UNPACK, offset, size );
 			}
 
 			void unlock()const override
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local texture" );
+				assertDebugValue( m_isLocked, true );
 
 				glLogCall( gl::BindTexture, m_boundTarget, m_boundResource );
 				glLogCall( gl::UnmapBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK );
@@ -168,6 +173,7 @@ namespace gl_renderer
 				}
 
 				glLogCall( gl::BindTexture, m_boundTarget, 0u );
+				setDebugValue( m_isLocked, false );
 			}
 
 		private:
@@ -443,8 +449,10 @@ namespace gl_renderer
 				, renderer::MemoryMapFlags flags )const override
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local buffer" );
+				assertDebugValue( m_isLocked, false );
 				glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_COPY_WRITE, m_boundResource );
 				auto result = glLogCall( gl::MapBufferRange, GL_BUFFER_TARGET_COPY_WRITE, offset, size, m_mapFlags );
+				setDebugValue( m_isLocked, result != nullptr );
 				return reinterpret_cast< uint8_t * >( result );
 			}
 
@@ -452,6 +460,7 @@ namespace gl_renderer
 				, uint32_t size )const override
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local buffer" );
+				assertDebugValue( m_isLocked, true );
 				glLogCall( gl::FlushMappedBufferRange, GL_BUFFER_TARGET_COPY_WRITE, offset, size );
 			}
 
@@ -459,14 +468,17 @@ namespace gl_renderer
 				, uint32_t size )const override
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local buffer" );
+				assertDebugValue( m_isLocked, true );
 				glLogCall( gl::InvalidateBufferSubData, GL_BUFFER_TARGET_COPY_WRITE, offset, size );
 			}
 
 			void unlock()const override
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local buffer" );
+				assertDebugValue( m_isLocked, true );
 				glLogCall( gl::UnmapBuffer, GL_BUFFER_TARGET_COPY_WRITE );
 				glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_COPY_WRITE, 0u );
+				setDebugValue( m_isLocked, false );
 			}
 
 		private:
