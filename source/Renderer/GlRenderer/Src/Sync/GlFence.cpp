@@ -29,7 +29,7 @@ namespace gl_renderer
 		}
 	}
 
-	renderer::WaitResult Fence::wait( uint32_t timeout )const
+	renderer::WaitResult Fence::wait( uint64_t timeout )const
 	{
 		if ( !m_fence )
 		{

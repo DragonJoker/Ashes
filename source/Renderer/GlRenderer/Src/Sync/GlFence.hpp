@@ -41,7 +41,7 @@ namespace gl_renderer
 		*\return
 		*	\p WaitResult::eSuccess ou \p WaitResult::eTimeOut en cas de succès.
 		*/ 
-		renderer::WaitResult wait( uint32_t timeout )const override;
+		renderer::WaitResult wait( uint64_t timeout )const override;
 		/**
 		*\brief
 		*	Remet la barrière en non signalée.

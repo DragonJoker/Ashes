@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -45,7 +45,7 @@ namespace renderer
 		*\return
 		*	\p true si l'attente n'est pas sortie en timeout.
 		*/
-		virtual bool waitRecord( uint32_t timeout ) = 0;
+		virtual bool waitRecord( uint64_t timeout ) = 0;
 		/**
 		*\brief
 		*	Définit le tampon de fenêtre.

@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -56,7 +56,7 @@ namespace renderer
 		*\return
 		*	\p WaitResult::eSuccess ou \p WaitResult::eTimeOut en cas de succès.
 		*/ 
-		virtual WaitResult wait( uint32_t timeout )const = 0;
+		virtual WaitResult wait( uint64_t timeout )const = 0;
 		/**
 		*\brief
 		*	Remet la barrière en non signalée.
