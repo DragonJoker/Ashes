@@ -13,21 +13,29 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~english
 	*\brief
-	*	Classe regroupant les ressources de rendu nécessaires au dessin d'une image.
+	*	Holds the resources necessary to work on a swapchain's surface.
+	*\~french
+	*\brief
+	*	Regroupe les ressources de nécessaires pour travailler sur une surface de la swapchain.
 	*/
 	class RenderingResources
 	{
-	protected:
+	public:
 		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The parent Device.
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] device
 		*	Le Device parent.
 		*/
 		RenderingResources( Device const & device );
-
-	public:
 		/**
 		*\~english
 		*\brief
@@ -38,6 +46,14 @@ namespace renderer
 		*/
 		virtual ~RenderingResources() = default;
 		/**
+		*\~english
+		*\brief
+		*	Waits for the command buffer to be ready to record.
+		*\param[in] timeout
+		*	The waiting timeout.
+		*\return
+		*	\p true if the waiting didn't end on a timeout.
+		*\~french
 		*\brief
 		*	Attend que le tampon de commandes soit prêt à l'enregistrement.
 		*\param[in] timeout
@@ -45,42 +61,64 @@ namespace renderer
 		*\return
 		*	\p true si l'attente n'est pas sortie en timeout.
 		*/
-		virtual bool waitRecord( uint64_t timeout ) = 0;
+		bool waitRecord( uint64_t timeout );
 		/**
+		*\~english
 		*\brief
-		*	Définit le tampon de fenêtre.
+		*	Sets the back buffer index.
 		*\param[in] backBuffer
-		*	Le nouveau tampon de fenêtre.
+		*	The new value.
+		*\~french
+		*\brief
+		*	Définit l'indice du tampon de fenêtre.
+		*\param[in] backBuffer
+		*	La nouvelle valeur.
 		*/
 		inline void setBackBuffer( uint32_t backBuffer )
 		{
 			m_backBuffer = backBuffer;
 		}
 		/**
+		*\~english
 		*\return
-		*	Le tampon de fenêtre.
+		*	The back buffer index.
+		*\~french
+		*\return
+		*	L'indice du tampon de fenêtre.
 		*/
 		inline uint32_t getBackBuffer()const
 		{
 			return m_backBuffer;
 		}
 		/**
+		*\~english
 		*\return
-		*	Le sémaphore d'attente que l'image soit disponible.
+		*	The semaphore used to wait for the availability of the surface's image.
+		*\~french
+		*\return
+		*	Le sémaphore d'attente que l'image de la surface soit disponible.
 		*/
 		inline Semaphore const & getImageAvailableSemaphore()const
 		{
 			return *m_imageAvailableSemaphore;
 		}
 		/**
+		*\~english
 		*\return
-		*	Le sémaphore d'attente que le rendu soit terminé.
+		*	The semaphore used to wait for the presentation end.
+		*\~french
+		*\return
+		*	Le sémaphore d'attente que la présentation soit terminée.
 		*/
 		inline Semaphore const & getRenderingFinishedSemaphore()const
 		{
 			return *m_finishedRenderingSemaphore;
 		}
 		/**
+		*\~english
+		*\return
+		*	The command buffer.
+		*\~french
 		*\return
 		*	Le tampon de commandes.
 		*/
@@ -89,6 +127,10 @@ namespace renderer
 			return *m_commandBuffer;
 		}
 		/**
+		*\~english
+		*\return
+		*	The fence.
+		*\~french
 		*\return
 		*	La barrière.
 		*/
@@ -97,8 +139,12 @@ namespace renderer
 			return *m_fence;
 		}
 		/**
+		*\~english
 		*\return
-		*	La périphérique logique.
+		*	The parent device.
+		*\~french
+		*\return
+		*	Le périphérique parent.
 		*/
 		inline Device const & getDevice()const
 		{

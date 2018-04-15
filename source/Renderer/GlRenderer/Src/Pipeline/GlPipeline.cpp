@@ -4,7 +4,6 @@
 #include "Command/Commands/GlBindPipelineCommand.hpp"
 #include "Core/GlDevice.hpp"
 #include "Core/GlRenderer.hpp"
-#include "Core/GlRenderingResources.hpp"
 #include "Miscellaneous/GlValidator.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlRenderPass.hpp"

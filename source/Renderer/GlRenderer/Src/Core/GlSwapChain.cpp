@@ -9,6 +9,8 @@
 #include "Image/GlTexture.hpp"
 #include "Image/GlTextureView.hpp"
 
+#include <Core/RenderingResources.hpp>
+
 #include <iostream>
 
 namespace gl_renderer
@@ -19,7 +21,7 @@ namespace gl_renderer
 		, m_device{ device }
 	{
 		m_format = renderer::Format::eR8G8B8A8_UNORM;
-		m_renderingResources.emplace_back( std::make_unique< RenderingResources >( device ) );
+		m_renderingResources.emplace_back( std::make_unique< renderer::RenderingResources >( device ) );
 		doCreateBackBuffers();
 	}
 

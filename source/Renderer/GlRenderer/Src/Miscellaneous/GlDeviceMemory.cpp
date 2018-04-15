@@ -91,7 +91,7 @@ namespace gl_renderer
 					glLogCall( gl::GenBuffers, 1u, &m_pbo );
 					// Initialise Upload PBO.
 					glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, m_pbo );
-					glLogCall( gl::BufferStorage, m_pbo, m_requirements.size, nullptr, GLbitfield( convert( flags ) ) );
+					glLogCall( gl::BufferStorage, m_pbo, GLsizeiptr( m_requirements.size ), nullptr, GLbitfield( convert( flags ) ) );
 					glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, 0u );
 
 					// Prepare update regions, layer by layer.
@@ -440,7 +440,7 @@ namespace gl_renderer
 				: DeviceMemory::DeviceMemoryImpl{ requirements, flags, boundResource, boundTarget }
 			{
 				glLogCall( gl::BindBuffer, m_boundTarget, m_boundResource );
-				glLogCall( gl::BufferStorage, m_boundTarget, m_requirements.size, nullptr, GLbitfield( convert( flags ) ) );
+				glLogCall( gl::BufferStorage, m_boundTarget, GLsizeiptr( m_requirements.size ), nullptr, GLbitfield( convert( flags ) ) );
 				glLogCall( gl::BindBuffer, m_boundTarget, 0u );
 			}
 
