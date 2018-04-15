@@ -121,7 +121,7 @@ namespace renderer
 		*/
 		inline T const * constPtr()const
 		{
-			return &data[0];
+			return data[0].constPtr();
 		}
 		/**
 		*\~english
@@ -137,7 +137,7 @@ namespace renderer
 		*/
 		inline T * ptr()
 		{
-			return &data[0];
+			return data[0].ptr();
 		}
 		/**
 		*\name Opérateurs arithmétiques membres.
