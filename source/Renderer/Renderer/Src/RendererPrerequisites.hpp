@@ -123,6 +123,8 @@ namespace renderer
 	template< typename T >
 	class UniformBuffer;
 	template< typename T >
+	class Vec4T;
+	template< typename T >
 	class Mat4T;
 	template< typename T >
 	class PushConstantsBuffer;
@@ -263,6 +265,7 @@ namespace renderer
 	using SpecialisationInfoPtr = std::unique_ptr< SpecialisationInfo< T > >;
 
 	using Mat4 = Mat4T< float >;
+	using Vec4 = Vec4T< float >;
 
 	using AttributeBasePtr = std::unique_ptr< Attribute >;
 	using BackBufferPtr = std::unique_ptr< BackBuffer >;

@@ -7,7 +7,6 @@
 #pragma once
 
 #include "VkRendererPrerequisites.hpp"
-#include "Core/VkRenderingResources.hpp"
 
 #include <Core/SwapChain.hpp>
 

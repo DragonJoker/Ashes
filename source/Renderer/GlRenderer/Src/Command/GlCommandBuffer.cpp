@@ -9,7 +9,6 @@ See LICENSE file in root folder.
 #include "Buffer/GlUniformBuffer.hpp"
 #include "Command/GlCommandPool.hpp"
 #include "Core/GlDevice.hpp"
-#include "Core/GlRenderingResources.hpp"
 #include "Descriptor/GlDescriptorSet.hpp"
 #include "Image/GlTexture.hpp"
 #include "Pipeline/GlComputePipeline.hpp"

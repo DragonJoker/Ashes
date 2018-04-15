@@ -8,7 +8,6 @@ See LICENSE file in root folder.
 #include "Buffer/VkUniformBuffer.hpp"
 #include "Command/VkCommandPool.hpp"
 #include "Core/VkDevice.hpp"
-#include "Core/VkRenderingResources.hpp"
 #include "Descriptor/VkDescriptorSet.hpp"
 #include "Image/VkImageSubresourceRange.hpp"
 #include "Image/VkTexture.hpp"

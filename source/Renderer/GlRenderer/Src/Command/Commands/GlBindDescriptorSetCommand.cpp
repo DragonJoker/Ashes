@@ -111,8 +111,8 @@ namespace gl_renderer
 					, GL_BUFFER_TARGET_UNIFORM
 					, bindingIndex
 					, static_cast< Buffer const & >( buffer ).getBuffer()
-					, write.bufferInfo[i].offset
-					, write.bufferInfo[i].range );
+					, GLintptr( write.bufferInfo[i].offset )
+					, GLsizeiptr( write.bufferInfo[i].range ) );
 			}
 		}
 
@@ -126,8 +126,8 @@ namespace gl_renderer
 					, GL_BUFFER_TARGET_SHADER_STORAGE
 					, bindingIndex
 					, static_cast< Buffer const & >( buffer ).getBuffer()
-					, write.bufferInfo[i].offset
-					, write.bufferInfo[i].range );
+					, GLintptr( write.bufferInfo[i].offset )
+					, GLsizeiptr( write.bufferInfo[i].range ) );
 			}
 		}
 
@@ -155,8 +155,8 @@ namespace gl_renderer
 					, GL_BUFFER_TARGET_UNIFORM
 					, bindingIndex
 					, static_cast< Buffer const & >( buffer ).getBuffer()
-					, write.bufferInfo[i].offset + offset
-					, write.bufferInfo[i].range );
+					, GLintptr( write.bufferInfo[i].offset + offset )
+					, GLsizeiptr( write.bufferInfo[i].range ) );
 			}
 		}
 
@@ -170,8 +170,8 @@ namespace gl_renderer
 					, GL_BUFFER_TARGET_SHADER_STORAGE
 					, bindingIndex
 					, static_cast< Buffer const & >( buffer ).getBuffer()
-					, write.bufferInfo[i].offset + offset
-					, write.bufferInfo[i].range );
+					, GLintptr( write.bufferInfo[i].offset + offset )
+					, GLsizeiptr( write.bufferInfo[i].range ) );
 			}
 		}
 

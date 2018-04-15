@@ -2,7 +2,6 @@
 
 #include "Core/GlDevice.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
-#include "Core/GlRenderingResources.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 
 #include <Pipeline/VertexInputAttributeDescription.hpp>
