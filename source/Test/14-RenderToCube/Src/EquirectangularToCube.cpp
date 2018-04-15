@@ -18,6 +18,7 @@
 #include <Pipeline/VertexLayout.hpp>
 #include <Pipeline/Viewport.hpp>
 #include <RenderPass/FrameBuffer.hpp>
+#include <RenderPass/RenderPassCreateInfo.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
@@ -233,13 +234,54 @@ namespace vkapp
 			};
 			return device.createDescriptorSetLayout( std::move( bindings ) );
 		}
+
+		renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
+			, renderer::Format format )
+		{
+			renderer::RenderPassCreateInfo renderPass;
+			renderPass.flags = 0u;
+
+			renderPass.attachments.resize( 1u );
+			renderPass.attachments[0].index = 0u;
+			renderPass.attachments[0].format = format;
+			renderPass.attachments[0].loadOp = renderer::AttachmentLoadOp::eClear;
+			renderPass.attachments[0].storeOp = renderer::AttachmentStoreOp::eStore;
+			renderPass.attachments[0].stencilLoadOp = renderer::AttachmentLoadOp::eDontCare;
+			renderPass.attachments[0].stencilStoreOp = renderer::AttachmentStoreOp::eDontCare;
+			renderPass.attachments[0].samples = renderer::SampleCountFlag::e1;
+			renderPass.attachments[0].initialLayout = renderer::ImageLayout::eUndefined;
+			renderPass.attachments[0].finalLayout = renderer::ImageLayout::eShaderReadOnlyOptimal;
+
+			renderPass.subpasses.resize( 1u );
+			renderPass.subpasses[0].flags = 0u;
+			renderPass.subpasses[0].pipelineBindPoint = renderer::PipelineBindPoint::eGraphics;
+			renderPass.subpasses[0].colorAttachments.push_back( { 0u, renderer::ImageLayout::eColourAttachmentOptimal } );
+
+			renderPass.dependencies.resize( 2u );
+			renderPass.dependencies[0].srcSubpass = renderer::ExternalSubpass;
+			renderPass.dependencies[0].dstSubpass = 0u;
+			renderPass.dependencies[0].srcStageMask = renderer::PipelineStageFlag::eBottomOfPipe;
+			renderPass.dependencies[0].dstStageMask = renderer::PipelineStageFlag::eColourAttachmentOutput;
+			renderPass.dependencies[0].srcAccessMask = 0u;
+			renderPass.dependencies[0].dstAccessMask = renderer::AccessFlag::eColourAttachmentWrite;
+			renderPass.dependencies[0].dependencyFlags = renderer::DependencyFlag::eByRegion;
+
+			renderPass.dependencies[1].srcSubpass = 0u;
+			renderPass.dependencies[1].dstSubpass = renderer::ExternalSubpass;
+			renderPass.dependencies[1].srcStageMask = renderer::PipelineStageFlag::eColourAttachmentOutput;
+			renderPass.dependencies[1].dstStageMask = renderer::PipelineStageFlag::eColourAttachmentOutput;
+			renderPass.dependencies[1].srcAccessMask = renderer::AccessFlag::eColourAttachmentWrite;
+			renderPass.dependencies[1].dstAccessMask = renderer::AccessFlag::eShaderRead;
+			renderPass.dependencies[1].dependencyFlags = renderer::DependencyFlag::eByRegion;
+
+			return device.createRenderPass( renderPass );
+		}
 	}
 
 	EquirectangularToCube::EquirectangularToCube( std::string const & filePath
 		, renderer::Device & device
 		, renderer::Texture & texture )
 		: m_device{ device }
-		, m_target{ texture }
 		, m_commandBuffer{ device.getGraphicsCommandPool().createCommandBuffer() }
 		, m_image{ common::loadImage( filePath ) }
 		, m_stagingBuffer{ device, renderer::BufferTarget::eTransferSrc, uint32_t( m_image.data.size() ) }
@@ -252,37 +294,13 @@ namespace vkapp
 		, m_descriptorLayout{ doCreateDescriptorSetLayout( m_device ) }
 		, m_descriptorPool{ m_descriptorLayout->createPool( 6u ) }
 		, m_pipelineLayout{ m_device.createPipelineLayout( *m_descriptorLayout ) }
+		, m_renderPass{ doCreateRenderPass( m_device, texture.getFormat() ) }
 	{
 		auto size = renderer::Extent2D{ texture.getDimensions().width, texture.getDimensions().height };
 		uint32_t face = 0u;
-		std::vector< renderer::Format > formats{ 1u, m_target.getFormat() };
-		renderer::AttachmentDescriptionArray rpAttaches
-		{
-			{
-				0u,
-				m_target.getFormat(),
-				renderer::SampleCountFlag::e1,
-				renderer::AttachmentLoadOp::eClear,
-				renderer::AttachmentStoreOp::eStore,
-				renderer::AttachmentLoadOp::eDontCare,
-				renderer::AttachmentStoreOp::eDontCare,
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::eShaderReadOnlyOptimal,
-			}
-		};
-		renderer::AttachmentReferenceArray subAttaches
-		{
-			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
-		};
 
 		for ( auto & facePipeline : m_faces )
 		{
-			facePipeline.view = m_target.createView( renderer::TextureViewType::e2D
-				, m_target.getFormat()
-				, 0u
-				, 1u
-				, face
-				, 1u );
 			++face;
 		}
 
@@ -290,27 +308,16 @@ namespace vkapp
 
 		for ( auto & facePipeline : m_faces )
 		{
-			renderer::RenderSubpassPtrArray subpasses;
-			subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
-				, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eColourAttachmentWrite }
-				, subAttaches ) );
-			facePipeline.renderPass = m_device.createRenderPass( rpAttaches
-				, std::move( subpasses )
-				, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eColourAttachmentWrite }
-				, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eShaderRead } );
-
 			renderer::FrameBufferAttachmentArray attaches;
-			attaches.emplace_back( *facePipeline.renderPass->getAttachments().begin(), *facePipeline.view );
-			facePipeline.frameBuffer = facePipeline.renderPass->createFrameBuffer( size
+			facePipeline.view = texture.createView( renderer::TextureViewType::e2D, texture.getFormat(), 0u, 1u, face, 1u );
+			attaches.emplace_back( *m_renderPass->getAttachments().begin(), *facePipeline.view );
+			facePipeline.frameBuffer = m_renderPass->createFrameBuffer( size
 				, std::move( attaches ) );
 
 			facePipeline.pipeline = m_pipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 			{
 				doCreateProgram( m_device ),
-				*facePipeline.renderPass,
+				*m_renderPass,
 				renderer::VertexInputState::create( *m_vertexLayout ),
 				renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
 				renderer::RasterisationState{},
@@ -344,7 +351,7 @@ namespace vkapp
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
 				, facePipeline.view->makeColourAttachment( renderer::ImageLayout::eUndefined
 					, 0u ) );
-			commandBuffer.beginRenderPass( *facePipeline.renderPass
+			commandBuffer.beginRenderPass( *m_renderPass
 				, *facePipeline.frameBuffer
 				, { renderer::ClearColorValue{ 0, 0, 0, 0 } }
 			, renderer::SubpassContents::eInline );

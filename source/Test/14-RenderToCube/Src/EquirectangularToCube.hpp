@@ -34,14 +34,12 @@ namespace vkapp
 		struct FacePipeline
 		{
 			renderer::TextureViewPtr view;
-			renderer::RenderPassPtr renderPass;
 			renderer::FrameBufferPtr frameBuffer;
 			renderer::PipelinePtr pipeline;
 			renderer::DescriptorSetPtr descriptorSet;
 		};
 
 		renderer::Device & m_device;
-		renderer::Texture & m_target;
 		renderer::CommandBufferPtr m_commandBuffer;
 		common::ImageData m_image;
 		renderer::StagingBuffer m_stagingBuffer;
@@ -54,6 +52,7 @@ namespace vkapp
 		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
 		renderer::DescriptorSetPoolPtr m_descriptorPool;
 		renderer::PipelineLayoutPtr m_pipelineLayout;
+		renderer::RenderPassPtr m_renderPass;
 		std::array< FacePipeline, 6u > m_faces;
 	};
 }

@@ -58,35 +58,35 @@ namespace vkapp
 		, m_offscreenVertexData
 		{
 			// Front
-			{ { -1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
-			{ { -1.0, +1.0, +1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, +1.0, 1.0 }, { 1.0, 1.0 } },
+			{ { -1.0, -1.0, +1.0 } },
+			{ { -1.0, +1.0, +1.0 } },
+			{ { +1.0, -1.0, +1.0 } },
+			{ { +1.0, +1.0, +1.0 } },
 			// Top
-			{ { -1.0, +1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
-			{ { -1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, +1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
+			{ { -1.0, +1.0, +1.0 } },
+			{ { -1.0, +1.0, -1.0 } },
+			{ { +1.0, +1.0, +1.0 } },
+			{ { +1.0, +1.0, -1.0 } },
 			// Back
-			{ { -1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
-			{ { -1.0, -1.0, -1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, -1.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, +1.0, -1.0 } },
+			{ { -1.0, -1.0, -1.0 } },
+			{ { +1.0, +1.0, -1.0 } },
+			{ { +1.0, -1.0, -1.0 } },
 			// Bottom
-			{ { -1.0, -1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
-			{ { -1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, -1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, -1.0, -1.0 } },
+			{ { -1.0, -1.0, +1.0 } },
+			{ { +1.0, -1.0, -1.0 } },
+			{ { +1.0, -1.0, +1.0 } },
 			// Right
-			{ { +1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
-			{ { +1.0, +1.0, +1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, -1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
+			{ { +1.0, -1.0, +1.0 } },
+			{ { +1.0, +1.0, +1.0 } },
+			{ { +1.0, -1.0, -1.0 } },
+			{ { +1.0, +1.0, -1.0 } },
 			// Left
-			{ { -1.0, -1.0, -1.0, 1.0 }, { 0.0, 0.0 } },
-			{ { -1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { -1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { -1.0, +1.0, +1.0, 1.0 }, { 1.0, 1.0 } },
+			{ { -1.0, -1.0, -1.0 } },
+			{ { -1.0, +1.0, -1.0 } },
+			{ { -1.0, -1.0, +1.0 } },
+			{ { -1.0, +1.0, +1.0 } },
 		}
 		, m_offscreenIndexData
 		{
@@ -411,15 +411,12 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
-		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
+		m_offscreenVertexLayout = renderer::makeLayout< NonTexturedVertexData >( 0 );
 		m_offscreenVertexLayout->createAttribute( 0u
-			, renderer::Format::eR32G32B32A32_SFLOAT
+			, renderer::Format::eR32G32B32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_offscreenVertexLayout->createAttribute( 1u
-			, renderer::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
-		m_offscreenVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
+		m_offscreenVertexBuffer = renderer::makeVertexBuffer< NonTexturedVertexData >( *m_device
 			, uint32_t( m_offscreenVertexData.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
