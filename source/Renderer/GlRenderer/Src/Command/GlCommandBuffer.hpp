@@ -31,6 +31,7 @@ namespace gl_renderer
 		CommandBuffer( Device const & device
 			, renderer::CommandPool const & pool
 			, bool primary );
+		void applyPostSubmitActions()const;
 		/**
 		*\copydoc	renderer::CommandBuffer::begin
 		*/
@@ -82,18 +83,6 @@ namespace gl_renderer
 		*/
 		void clearAttachments( renderer::ClearAttachmentArray const & clearAttachments
 			, renderer::ClearRectArray const & clearRects )override;
-		/**
-		*\copydoc	renderer::CommandBuffer::memoryBarrier
-		*/
-		void memoryBarrier( renderer::PipelineStageFlags after
-			, renderer::PipelineStageFlags before
-			, renderer::BufferMemoryBarrier const & transitionBarrier )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer::memoryBarrier
-		*/
-		void memoryBarrier( renderer::PipelineStageFlags after
-			, renderer::PipelineStageFlags before
-			, renderer::ImageMemoryBarrier const & transitionBarrier )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer::bindPipeline
 		*/
@@ -256,6 +245,18 @@ namespace gl_renderer
 		void initialiseGeometryBuffers()const;
 
 	private:
+		/**
+		*\copydoc	renderer::CommandBuffer::doMemoryBarrier
+		*/
+		void doMemoryBarrier( renderer::PipelineStageFlags after
+			, renderer::PipelineStageFlags before
+			, renderer::BufferMemoryBarrier const & transitionBarrier )const override;
+		/**
+		*\copydoc	renderer::CommandBuffer::doMemoryBarrier
+		*/
+		void doMemoryBarrier( renderer::PipelineStageFlags after
+			, renderer::PipelineStageFlags before
+			, renderer::ImageMemoryBarrier const & transitionBarrier )const override;
 		void doBindVao()const;
 
 	private:
@@ -278,6 +279,7 @@ namespace gl_renderer
 			GeometryBuffers * m_boundVao{ nullptr };
 			GeometryBuffersRefArray m_vaos;
 		};
+		mutable std::vector< std::function< void() > > m_afterSubmitActions;
 		mutable State m_state;
 	};
 }

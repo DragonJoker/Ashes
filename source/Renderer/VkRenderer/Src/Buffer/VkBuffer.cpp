@@ -49,43 +49,6 @@ namespace vk_renderer
 		return m_device.getBufferMemoryRequirements( m_buffer );
 	}
 
-	renderer::BufferMemoryBarrier Buffer::makeTransferDestination()const
-	{
-		return makeMemoryTransitionBarrier( renderer::AccessFlag::eTransferWrite );
-	}
-
-	renderer::BufferMemoryBarrier Buffer::makeTransferSource()const
-	{
-		return makeMemoryTransitionBarrier( renderer::AccessFlag::eTransferRead );
-	}
-
-	renderer::BufferMemoryBarrier Buffer::makeVertexShaderInputResource()const
-	{
-		return makeMemoryTransitionBarrier( renderer::AccessFlag::eVertexAttributeRead );
-	}
-
-	renderer::BufferMemoryBarrier Buffer::makeUniformBufferInput()const
-	{
-		return makeMemoryTransitionBarrier( renderer::AccessFlag::eUniformRead );
-	}
-
-	renderer::BufferMemoryBarrier Buffer::makeMemoryTransitionBarrier( renderer::AccessFlags dstAccess )const
-	{
-		renderer::BufferMemoryBarrier memoryBarrier
-		{
-			m_currentAccessMask,                              // srcAccessMask
-			dstAccess,                                        // dstAccessMask
-			VK_QUEUE_FAMILY_IGNORED,                          // srcQueueFamilyIndex
-			VK_QUEUE_FAMILY_IGNORED,                          // dstQueueFamilyIndex
-			*this,                                            // buffer
-			0,                                                // offset
-			VK_WHOLE_SIZE                                     // size
-		};
-		DEBUG_DUMP( convert( memoryBarrier ) );
-		m_currentAccessMask = convert( dstAccess );
-		return memoryBarrier;
-	}
-
 	void Buffer::doBindMemory()
 	{
 		auto res = m_device.vkBindBufferMemory( m_device

@@ -103,18 +103,6 @@ namespace vk_renderer
 		void clearAttachments( renderer::ClearAttachmentArray const & clearAttachments
 			, renderer::ClearRectArray const & clearRects )override;
 		/**
-		*\copydoc	renderer::CommandBuffer:memoryBarrier
-		*/
-		void memoryBarrier( renderer::PipelineStageFlags after
-			, renderer::PipelineStageFlags before
-			, renderer::BufferMemoryBarrier const & transitionBarrier )const override;
-		/**
-		*\copydoc	renderer::CommandBuffer:memoryBarrier
-		*/
-		void memoryBarrier( renderer::PipelineStageFlags after
-			, renderer::PipelineStageFlags before
-			, renderer::ImageMemoryBarrier const & transitionBarrier )const override;
-		/**
 		*\copydoc	renderer::CommandBuffer:bindPipeline
 		*/
 		void bindPipeline( renderer::Pipeline const & pipeline
@@ -301,6 +289,20 @@ namespace vk_renderer
 		{
 			return m_commandBuffer;
 		}
+
+	private:
+		/**
+		*\copydoc	renderer::CommandBuffer:doMemoryBarrier
+		*/
+		void doMemoryBarrier( renderer::PipelineStageFlags after
+			, renderer::PipelineStageFlags before
+			, renderer::BufferMemoryBarrier const & transitionBarrier )const override;
+		/**
+		*\copydoc	renderer::CommandBuffer:doMemoryBarrier
+		*/
+		void doMemoryBarrier( renderer::PipelineStageFlags after
+			, renderer::PipelineStageFlags before
+			, renderer::ImageMemoryBarrier const & transitionBarrier )const override;
 
 	private:
 		Device const & m_device;

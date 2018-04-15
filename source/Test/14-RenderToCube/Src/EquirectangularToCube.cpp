@@ -84,8 +84,8 @@ namespace vkapp
 				1u,
 			};
 			commandBuffer.begin();
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eAllCommands
-				, renderer::PipelineStageFlag::eAllCommands
+			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
+				, renderer::PipelineStageFlag::eTransfer
 				, renderer::ImageMemoryBarrier{ 0u
 					, renderer::AccessFlag::eTransferWrite
 					, renderer::ImageLayout::eUndefined
@@ -97,8 +97,8 @@ namespace vkapp
 			commandBuffer.copyToImage( bufferCopyRegion
 				, *staging
 				, *result );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eAllCommands
-				, renderer::PipelineStageFlag::eAllCommands
+			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
+				, renderer::PipelineStageFlag::eFragmentShader
 				, renderer::ImageMemoryBarrier{ renderer::AccessFlag::eTransferWrite
 					, renderer::AccessFlag::eShaderRead
 					, renderer::ImageLayout::eTransferDstOptimal
@@ -212,8 +212,7 @@ namespace vkapp
 
 			stagingBuffer.uploadVertexData( commandBuffer
 				, vertexData
-				, *result
-				, renderer::PipelineStageFlag::eVertexShader );
+				, *result );
 
 			return result;
 		}

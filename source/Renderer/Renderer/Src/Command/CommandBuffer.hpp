@@ -269,9 +269,9 @@ namespace renderer
 		*\param[in] transitionBarrier
 		*	La description de la transition.
 		*/
-		virtual void memoryBarrier( PipelineStageFlags after
+		void memoryBarrier( PipelineStageFlags after
 			, PipelineStageFlags before
-			, BufferMemoryBarrier const & transitionBarrier )const = 0;
+			, BufferMemoryBarrier const & transitionBarrier )const;
 		/**
 		*\~english
 		*\brief
@@ -292,9 +292,9 @@ namespace renderer
 		*\param[in] transitionBarrier
 		*	La description de la transition.
 		*/
-		virtual void memoryBarrier( PipelineStageFlags after
+		void memoryBarrier( PipelineStageFlags after
 			, PipelineStageFlags before
-			, ImageMemoryBarrier const & transitionBarrier )const = 0;
+			, ImageMemoryBarrier const & transitionBarrier )const;
 		/**
 		*\~english
 		*\brief
@@ -1247,6 +1247,54 @@ namespace renderer
 		{
 			pushConstants( layout, pcb.getBuffer() );
 		}
+
+	private:
+		/**
+		*\~english
+		*\brief
+		*	Defines a memory dependency between commands that were submitted before it, and those submitted after it.
+		*\param[in] after
+		*	Specifies the pipeline stages that must be ended before the barrier.
+		*\param[in] before
+		*	Specifies the pipeline stages that can be started after the barrier.
+		*\param[in] transitionBarrier
+		*	Describes the transition.
+		*\~french
+		*\brief
+		*	Met en place une barrière de transition d'état de tampon.
+		*\param[in] after
+		*	Les étapes devant être terminées avant l'exécution de la barrière.
+		*\param[in] before
+		*	Les étapes pouvant être commencées après l'exécution de la barrière.
+		*\param[in] transitionBarrier
+		*	La description de la transition.
+		*/
+		virtual void doMemoryBarrier( PipelineStageFlags after
+			, PipelineStageFlags before
+			, BufferMemoryBarrier const & transitionBarrier )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Defines a memory dependency between commands that were submitted before it, and those submitted after it.
+		*\param[in] after
+		*	Specifies the pipeline stages that must be ended before the barrier.
+		*\param[in] before
+		*	Specifies the pipeline stages that can be started after the barrier.
+		*\param[in] transitionBarrier
+		*	Describes the transition.
+		*\~french
+		*\brief
+		*	Met en place une barrière de transition de layout d'image.
+		*\param[in] after
+		*	Les étapes devant être terminées avant l'exécution de la barrière.
+		*\param[in] before
+		*	Les étapes pouvant être commencées après l'exécution de la barrière.
+		*\param[in] transitionBarrier
+		*	La description de la transition.
+		*/
+		virtual void doMemoryBarrier( PipelineStageFlags after
+			, PipelineStageFlags before
+			, ImageMemoryBarrier const & transitionBarrier )const = 0;
 	};
 }
 
