@@ -1,7 +1,6 @@
 #include "Pipeline/VkPipeline.hpp"
 
 #include "Core/VkDevice.hpp"
-#include "Core/VkRenderingResources.hpp"
 #include "Pipeline/VkPipelineLayout.hpp"
 #include "Pipeline/VkSpecialisationInfo.hpp"
 #include "Pipeline/VkSpecialisationMapEntry.hpp"

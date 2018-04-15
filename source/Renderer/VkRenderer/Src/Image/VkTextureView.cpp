@@ -5,7 +5,6 @@
 #include "Sync/VkImageMemoryBarrier.hpp"
 #include "Image/VkComponentMapping.hpp"
 #include "Image/VkImageSubresourceRange.hpp"
-#include "Core/VkRenderingResources.hpp"
 #include "Image/VkTexture.hpp"
 
 namespace vk_renderer

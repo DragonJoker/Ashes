@@ -7,7 +7,6 @@
 #pragma once
 
 #include "GlRendererPrerequisites.hpp"
-#include "Core/GlRenderingResources.hpp"
 
 #include <Core/SwapChain.hpp>
 

@@ -13,6 +13,7 @@
 #include "Sync/VkImageMemoryBarrier.hpp"
 #include "Sync/VkSemaphore.hpp"
 
+#include <Core/RenderingResources.hpp>
 #include <RenderPass/FrameBufferAttachment.hpp>
 
 namespace vk_renderer
@@ -38,7 +39,7 @@ namespace vk_renderer
 
 		for ( auto & resource : m_renderingResources )
 		{
-			resource = std::make_unique< RenderingResources >( device );
+			resource = std::make_unique< renderer::RenderingResources >( device );
 		}
 	}
 
@@ -448,7 +449,7 @@ namespace vk_renderer
 
 		for ( auto & resource : m_renderingResources )
 		{
-			resource = std::make_unique< RenderingResources >( m_device );
+			resource = std::make_unique< renderer::RenderingResources >( m_device );
 		}
 
 		onReset();
