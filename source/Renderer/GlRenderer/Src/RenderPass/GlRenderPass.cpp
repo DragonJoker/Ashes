@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 #include "Command/GlCommandBuffer.hpp"
 #include "Image/GlTexture.hpp"
 
+#include <algorithm>
+
 namespace gl_renderer
 {
 	RenderPass::RenderPass( renderer::Device const & device
