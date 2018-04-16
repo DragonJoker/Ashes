@@ -241,7 +241,6 @@ namespace vkapp
 			renderPass.flags = 0u;
 
 			renderPass.attachments.resize( 1u );
-			renderPass.attachments[0].index = 0u;
 			renderPass.attachments[0].format = format;
 			renderPass.attachments[0].loadOp = renderer::AttachmentLoadOp::eClear;
 			renderPass.attachments[0].storeOp = renderer::AttachmentStoreOp::eStore;

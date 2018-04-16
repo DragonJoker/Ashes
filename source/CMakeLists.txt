@@ -91,6 +91,16 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/Renderer
 )
 
+if ( WIN32 )
+	set( BinLibraries
+		Dbghelp
+	)
+else ()
+	set( BinLibraries
+		dl
+	)
+endif ()
+
 add_subdirectory( Renderer )
 
 if ( RENDERER_BUILD_TESTS OR RENDERER_BUILD_SAMPLES OR RENDERER_BUILD_TEMPLATES )

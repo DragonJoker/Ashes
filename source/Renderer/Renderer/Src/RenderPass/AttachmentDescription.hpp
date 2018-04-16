@@ -23,15 +23,6 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
-		*	The attach index.
-		*\~french
-		*\brief
-		*	L'indice de l'attache.
-		*/
-		uint32_t index;
-		/**
-		*\~english
-		*\brief
 		*	The attach pixel format.
 		*\~french
 		*\brief

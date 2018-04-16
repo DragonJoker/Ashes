@@ -99,6 +99,7 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 	target_link_libraries( ${PROJECT_NAME}
 		${glslang_LIBRARIES}
 		${SPIRV_LIBRARIES}
+		${BinLibraries}
 		Renderer
 	)
 

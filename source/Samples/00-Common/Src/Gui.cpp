@@ -331,7 +331,6 @@ namespace common
 		renderer::AttachmentDescriptionArray rpAttaches
 		{
 			{
-				0u,
 				m_targetView->getFormat(),
 				renderer::SampleCountFlag::e1,
 				renderer::AttachmentLoadOp::eClear,
@@ -423,10 +422,10 @@ namespace common
 				, m_fontView->makeShaderInputResource( renderer::ImageLayout::eUndefined
 					, 0u ) );
 			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
-				, renderer::PipelineStageFlag::eFragmentShader
+				, renderer::PipelineStageFlag::eVertexInput
 				, m_vertexBuffer->getBuffer().makeVertexShaderInputResource() );
 			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
-				, renderer::PipelineStageFlag::eFragmentShader
+				, renderer::PipelineStageFlag::eVertexInput
 				, m_indexBuffer->getBuffer().makeVertexShaderInputResource() );
 			m_commandBuffer->beginRenderPass( *m_renderPass
 				, *m_frameBuffer
@@ -471,6 +470,12 @@ namespace common
 			}
 
 			m_commandBuffer->endRenderPass();
+			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eVertexInput
+				, renderer::PipelineStageFlag::eTransfer
+				, m_vertexBuffer->getBuffer().makeTransferDestination() );
+			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eVertexInput
+				, renderer::PipelineStageFlag::eTransfer
+				, m_indexBuffer->getBuffer().makeTransferDestination() );
 			m_commandBuffer->end();
 		}
 	}

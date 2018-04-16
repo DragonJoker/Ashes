@@ -122,7 +122,7 @@ namespace gl_renderer
 			assert( ( m_frameBuffer.getFrameBuffer() && ( m_frameBuffer.getSize() - m_subpass.resolveAttachments.size() ) == m_clearValues.size() )
 				|| !m_frameBuffer.getFrameBuffer() );
 			glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
-			m_frameBuffer.setDrawBuffers( m_renderPass.getAttachments() );
+			m_frameBuffer.setDrawBuffers( m_renderPass.getColourAttaches() );
 			auto it = m_frameBuffer.begin();
 
 			for ( size_t i = 0; i < m_frameBuffer.getSize() && i < m_clearValues.size(); ++i )

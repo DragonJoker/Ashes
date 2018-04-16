@@ -67,6 +67,8 @@
 
 namespace gl_renderer
 {
+	struct AttachmentDescription;
+
 	class Buffer;
 	class BufferView;
 	class CommandBase;
@@ -101,6 +103,7 @@ namespace gl_renderer
 	using ShaderModuleCRefArray = std::vector< ShaderModuleCRef >;
 
 	using CommandArray = std::vector< CommandPtr >;
+	using AttachmentDescriptionArray = std::vector< AttachmentDescription >;
 
 	struct BufferObjectBinding
 	{
