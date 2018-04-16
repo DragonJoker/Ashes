@@ -904,8 +904,8 @@ namespace renderer
 #	define reportRegisteredObjects()\
 	doReportRegisteredObjects()
 #else
-#	define registerObject( TypeName, Object )
-#	define unregisterObject( Object )
+#	define registerObject( Dev, TypeName, Object )
+#	define unregisterObject( Dev, Object )
 #	define reportRegisteredObjects()
 #endif
 	};
