@@ -1,4 +1,6 @@
-﻿#include "QueryPool.hpp"
+#include "QueryPool.hpp"
+
+#include "Core/Device.hpp"
 
 namespace renderer
 {
@@ -11,5 +13,11 @@ namespace renderer
 		, m_count{ count }
 		, m_pipelineStatistics{ pipelineStatistics }
 	{
+		registerObject( m_device, "QueryPool", this );
+	}
+	
+	QueryPool::~QueryPool()
+	{
+		unregisterObject( m_device, this );
 	}
 }

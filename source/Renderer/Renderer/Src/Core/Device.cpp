@@ -15,6 +15,7 @@ See LICENSE file in root folder.
 #include "RenderPass/RenderPassCreateInfo.hpp"
 #include "RenderPass/RenderSubpass.hpp"
 #include "RenderPass/RenderSubpassState.hpp"
+#include "Utils/CallStack.hpp"
 
 #include <cmath>
 
@@ -26,6 +27,11 @@ namespace renderer
 		: m_renderer{ renderer }
 		, m_gpu{ gpu }
 	{
+	}
+
+	Device::~Device()
+	{
+		reportRegisteredObjects();
 	}
 
 	void Device::enable()const
@@ -206,4 +212,38 @@ namespace renderer
 			false
 		} );
 	}
+
+#ifndef NDEBUG
+	void Device::doRegisterObject( char const * const type, void * object )const
+	{
+		auto hash = std::hash< void const * >{}( object );
+		std::stringstream stream;
+		stream << Debug::Backtrace{ 20, 4 };
+		m_allocated.emplace( hash
+			, ObjectAllocation{
+				std::string{ type },
+				stream.str()
+			} );
+	}
+
+	void Device::doUnregisterObject( void * object )const
+	{
+		auto hash = std::hash< void * >{}( object );
+		auto it = m_allocated.find( hash );
+		assert( it != m_allocated.end() );
+		m_allocated.erase( it );
+	}
+
+	void Device::doReportRegisteredObjects()const
+	{
+		for ( auto & alloc : m_allocated )
+		{
+			std::stringstream stream;
+			stream << "Leaked [" << alloc.second.type << "], allocation stack:\n";
+			stream << alloc.second.callstack;
+			Logger::logError( stream );
+		}
+	}
+
+#endif
 }

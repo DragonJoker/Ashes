@@ -55,7 +55,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~PipelineLayout() = default;
+		virtual ~PipelineLayout();
 		/**
 		*\~english
 		*\brief
@@ -167,6 +167,9 @@ namespace renderer
 				std::move( stage )
 			} );
 		}
+
+	private:
+		Device const & m_device;
 	};
 }
 

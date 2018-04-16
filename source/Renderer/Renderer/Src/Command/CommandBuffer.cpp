@@ -85,7 +85,14 @@ namespace renderer
 	CommandBuffer::CommandBuffer( Device const & device
 		, CommandPool const & pool
 		, bool primary )
+		: m_device{ device }
 	{
+		registerObject( m_device, "CommandBuffer", this );
+	}
+
+	CommandBuffer::~CommandBuffer()
+	{
+		unregisterObject( m_device, this );
 	}
 
 	void CommandBuffer::bindVertexBuffer( uint32_t binding

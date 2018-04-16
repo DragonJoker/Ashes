@@ -5,15 +5,23 @@ See LICENSE file in root folder.
 #include "Descriptor/DescriptorSet.hpp"
 
 #include "Buffer/UniformBuffer.hpp"
+#include "Core/Device.hpp"
 #include "Descriptor/DescriptorSetLayoutBinding.hpp"
 #include "Descriptor/DescriptorSetPool.hpp"
 
 namespace renderer
 {
 	DescriptorSet::DescriptorSet( DescriptorPool const & pool, uint32_t bindingPoint )
-		: m_bindingPoint{ bindingPoint }
+		: m_device{ pool.getDevice() }
+		, m_bindingPoint{ bindingPoint }
 		, m_pool{ pool }
 	{
+		registerObject( m_device, "DescriptorSet", this );
+	}
+
+	DescriptorSet::~DescriptorSet()
+	{
+		unregisterObject( m_device, this );
 	}
 
 	void DescriptorSet::setBindings( WriteDescriptorSetArray bindings )

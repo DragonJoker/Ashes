@@ -50,7 +50,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~RenderPass() = default;
+		virtual ~RenderPass();
 		/**
 		*\~french
 		*\brief
@@ -98,6 +98,11 @@ namespace renderer
 			return m_attachments;
 		}
 
+		inline Device const & getDevice()const
+		{
+			return m_device;
+		}
+
 		inline size_t getSubpassCount()const
 		{
 			return m_subpasses.size();
@@ -110,6 +115,7 @@ namespace renderer
 		/**@}*/
 
 	private:
+		Device const & m_device;
 		SubpassDescriptionArray m_subpasses;
 		AttachmentDescriptionArray m_attachments;
 	};

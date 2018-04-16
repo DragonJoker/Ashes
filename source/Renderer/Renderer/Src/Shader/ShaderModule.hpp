@@ -29,7 +29,8 @@ namespace renderer
 		*\param[in] stage
 		*	Le niveau de shader utilisé pour le module.
 		*/
-		ShaderModule( ShaderStageFlag stage );
+		ShaderModule( Device const & device
+			, ShaderStageFlag stage );
 
 	public:
 		/**
@@ -40,7 +41,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~ShaderModule() = default;
+		virtual ~ShaderModule();
 		/**
 		*\~english
 		*\brief
@@ -74,6 +75,7 @@ namespace renderer
 		}
 
 	private:
+		Device const & m_device;
 		ShaderStageFlag m_stage;
 	};
 }

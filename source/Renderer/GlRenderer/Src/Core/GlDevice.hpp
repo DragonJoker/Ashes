@@ -159,11 +159,6 @@ namespace gl_renderer
 		*/
 		void swapBuffers()const;
 
-		inline uint32_t getGlslVersion()const
-		{
-			return static_cast< PhysicalDevice const & >( m_gpu ).getGlslVersion();
-		}
-
 		inline renderer::Scissor & getCurrentScissor()const
 		{
 			return m_scissor;

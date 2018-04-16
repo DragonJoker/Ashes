@@ -1,4 +1,6 @@
-﻿#include "Buffer/BufferView.hpp"
+#include "Buffer/BufferView.hpp"
+
+#include "Core/Device.hpp"
 
 namespace renderer
 {
@@ -13,5 +15,11 @@ namespace renderer
 		, m_offset{ offset }
 		, m_range{ range }
 	{
+		registerObject( m_device, "BufferView", this );
+	}
+
+	BufferView::~BufferView()
+	{
+		unregisterObject( m_device, this );
 	}
 }

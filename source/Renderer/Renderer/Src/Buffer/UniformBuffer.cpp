@@ -1,8 +1,10 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #include "Buffer/UniformBuffer.hpp"
+
+#include "Core/Device.hpp"
 
 namespace renderer
 {
@@ -15,5 +17,11 @@ namespace renderer
 		, m_count{ count }
 		, m_size{ size }
 	{
+		registerObject( m_device, "UniformBuffer", this );
+	}
+
+	UniformBufferBase::~UniformBufferBase()
+	{
+		unregisterObject( m_device, this );
 	}
 }

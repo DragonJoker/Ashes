@@ -11,7 +11,7 @@ namespace vk_renderer
 		, renderer::DescriptorPoolCreateFlags flags
 		, uint32_t maxSets
 		, renderer::DescriptorPoolSizeArray poolSizes )
-		: renderer::DescriptorPool{ flags }
+		: renderer::DescriptorPool{ device, flags }
 		, m_device{ device }
 	{
 		std::vector< VkDescriptorPoolSize > vkpoolSizes;

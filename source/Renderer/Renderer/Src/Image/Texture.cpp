@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "Image/Texture.hpp"
 
 #include "Buffer/StagingBuffer.hpp"
+#include "Core/Device.hpp"
 #include "Image/ImageSubresource.hpp"
 #include "Image/SubresourceLayout.hpp"
 #include "Image/TextureView.hpp"
@@ -20,6 +21,12 @@ namespace renderer
 		, m_mipLevels{ rhs.m_mipLevels }
 		, m_arrayLayers{ rhs.m_arrayLayers }
 	{
+		registerObject( m_device, "Texture", this );
+	}
+
+	Texture::~Texture()
+	{
+		unregisterObject( m_device, this );
 	}
 
 	Texture & Texture::operator=( Texture && rhs )
@@ -31,6 +38,7 @@ namespace renderer
 			m_dimensions = rhs.m_dimensions;
 			m_mipLevels = rhs.m_mipLevels;
 			m_arrayLayers = rhs.m_arrayLayers;
+			registerObject( m_device, "Texture", this );
 		}
 
 		return *this;
@@ -49,6 +57,7 @@ namespace renderer
 		, m_mipLevels{ mipLevels }
 		, m_arrayLayers{ arrayLayers }
 	{
+		registerObject( m_device, "Texture", this );
 	}
 
 	void Texture::bindMemory( DeviceMemoryPtr memory )

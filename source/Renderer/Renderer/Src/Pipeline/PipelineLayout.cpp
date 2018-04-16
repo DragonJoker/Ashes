@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -13,6 +13,13 @@ namespace renderer
 	PipelineLayout::PipelineLayout( Device const & device
 		, DescriptorSetLayoutCRefArray const & layouts
 		, PushConstantRangeCRefArray const & pushConstantRanges )
+		: m_device{ device }
 	{
+		registerObject( m_device, "PipelineLayout", this );
+	}
+
+	PipelineLayout::~PipelineLayout()
+	{
+		unregisterObject( m_device, this );
 	}
 }

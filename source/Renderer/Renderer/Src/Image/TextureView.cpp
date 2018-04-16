@@ -1,5 +1,6 @@
 #include "Image/TextureView.hpp"
 
+#include "Core/Device.hpp"
 #include "Sync/ImageMemoryBarrier.hpp"
 
 namespace renderer
@@ -11,6 +12,12 @@ namespace renderer
 		, m_image{ image }
 		, m_createInfo{ createInfo }
 	{
+		registerObject( m_device, "TextureView", this );
+	}
+
+	TextureView::~TextureView()
+	{
+		unregisterObject( m_device, this );
 	}
 
 	ImageMemoryBarrier TextureView::makeGeneralLayout( ImageLayout srcLayout

@@ -42,15 +42,6 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
-		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
-		*/
-		virtual ~DescriptorSetPool() = default;
-		/**
-		*\~english
-		*\brief
 		*	Creates a descriptor set matching the layout defined for this pool.
 		*\param[in] bindingPoint
 		*	The binding point for the set.

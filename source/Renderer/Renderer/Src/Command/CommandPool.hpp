@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -40,7 +40,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~CommandPool() = default;
+		virtual ~CommandPool();
 		/**
 		*\brief
 		*	Crée un tampon de commandes.

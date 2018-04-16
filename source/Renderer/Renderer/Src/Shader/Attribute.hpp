@@ -51,15 +51,6 @@ namespace renderer
 			, uint32_t offset );
 		/**
 		*\~english
-		*\brief
-		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
-		*/
-		virtual ~Attribute() = default;
-		/**
-		*\~english
 		*\return
 		*	The format of the attribute in the buffer.
 		*\~french

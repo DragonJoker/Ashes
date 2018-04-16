@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -41,15 +41,6 @@ namespace renderer
 		*/
 		FrameBufferAttachment( AttachmentDescription const & attach
 			, TextureView const & view );
-		/**
-		*\~english
-		*\brief
-		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
-		*/
-		virtual ~FrameBufferAttachment() = default;
 		/**
 		*\~english
 		*\return

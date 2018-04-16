@@ -11,6 +11,7 @@ See LICENSE file in root folder.
 #	include <SPIRV/GlslangToSpv.h>
 #endif
 
+#include <clocale>
 #include <regex>
 
 namespace vk_renderer
@@ -151,7 +152,7 @@ namespace vk_renderer
 
 	ShaderModule::ShaderModule( Device const & device
 		, renderer::ShaderStageFlag stage )
-		: renderer::ShaderModule{ stage }
+		: renderer::ShaderModule{ device, stage }
 		, m_device{ device }
 		, m_stage{ convert( stage ) }
 	{
@@ -168,6 +169,13 @@ namespace vk_renderer
 	void ShaderModule::loadShader( std::string const & shader )
 	{
 #if VKRENDERER_GLSL_TO_SPV
+
+		std::string prvLoc = setlocale( LC_NUMERIC, nullptr );
+
+		if ( prvLoc != "C" )
+		{
+			setlocale( LC_NUMERIC, "C" );
+		}
 
 		TBuiltInResource resources;
 		doInitResources( m_device, resources );
@@ -206,6 +214,11 @@ namespace vk_renderer
 		renderer::UInt32Array spirv;
 		glslang::GlslangToSpv( *glprogram.getIntermediate( glstage ), spirv );
 		doLoadShader( spirv.data(), uint32_t( spirv.size() * sizeof( uint32_t ) ) );
+
+		if ( prvLoc != "C" )
+		{
+			setlocale( LC_NUMERIC, prvLoc.c_str() );
+		}
 
 #else
 
