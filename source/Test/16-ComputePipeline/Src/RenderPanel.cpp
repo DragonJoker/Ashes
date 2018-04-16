@@ -388,7 +388,6 @@ namespace vkapp
 		renderer::AttachmentDescriptionArray attaches
 		{
 			{
-				0u,
 				ColourFormat,
 				renderer::SampleCountFlag::e1,
 				renderer::AttachmentLoadOp::eClear,
@@ -399,7 +398,6 @@ namespace vkapp
 				renderer::ImageLayout::eShaderReadOnlyOptimal,
 			},
 			{
-				1u,
 				DepthFormat,
 				renderer::SampleCountFlag::e1,
 				renderer::AttachmentLoadOp::eClear,
@@ -552,7 +550,6 @@ namespace vkapp
 		renderer::AttachmentDescriptionArray attaches
 		{
 			{
-				0u,
 				m_swapChain->getFormat(),
 				renderer::SampleCountFlag::e1,
 				renderer::AttachmentLoadOp::eClear,

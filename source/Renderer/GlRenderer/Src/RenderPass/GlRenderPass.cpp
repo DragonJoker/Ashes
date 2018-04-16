@@ -16,16 +16,49 @@ namespace gl_renderer
 		: renderer::RenderPass{ device, createInfo }
 	{
 		uint32_t index = 0u;
+		std::vector< uint32_t > indices;
 
 		for ( auto & attach : getAttachments() )
 		{
 			if ( renderer::isDepthOrStencilFormat( attach.format ) )
 			{
 				m_depthAttach = attach;
+				indices.push_back( 0u );
 			}
 			else
 			{
-				m_colourAttaches.push_back( { index++, std::ref( attach ) } );
+				indices.push_back( index );
+				m_colourAttaches.push_back( { index, std::ref( attach ) } );
+				++index;
+			}
+		}
+
+		for ( auto & subpass : getSubpasses() )
+		{
+			for ( auto & reference : subpass.colorAttachments )
+			{
+				reference.attachment = indices[reference.attachment];
+			}
+
+			for ( auto & reference : subpass.inputAttachments )
+			{
+				reference.attachment = indices[reference.attachment];
+			}
+
+			for ( auto & reference : subpass.resolveAttachments )
+			{
+				reference.attachment = indices[reference.attachment];
+			}
+
+			for ( auto & reference : subpass.resolveAttachments )
+			{
+				reference.attachment = indices[reference.attachment];
+			}
+
+			if ( bool( subpass.depthStencilAttachment ) )
+			{
+				auto & reference = subpass.depthStencilAttachment.value();
+				reference.attachment = indices[reference.attachment];
 			}
 		}
 	}

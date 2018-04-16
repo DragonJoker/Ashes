@@ -261,23 +261,19 @@ namespace gl_renderer
 		{
 			renderer::UInt32Array colours;
 
-			for ( auto & attach : attaches )
+			if ( m_colourAttaches.empty() && attaches.size() == 1 )
 			{
-				auto & fboAttach = m_attachments[attach.attachment];
-				auto format = fboAttach.getFormat();
-
-				if ( !renderer::isDepthOrStencilFormat( format ) )
+				colours.push_back( GL_ATTACHMENT_POINT_BACK );
+			}
+			else
+			{
+				for ( auto & attach : attaches )
 				{
-					if ( static_cast< Texture const & >( fboAttach.getTexture() ).hasImage() )
-					{
-						colours.push_back( getAttachmentPoint( format ) + attach.attachment );
-					}
-					else if ( attaches.size() == 1 )
-					{
-						colours.push_back( GL_ATTACHMENT_POINT_BACK );
-					}
+					auto & fboAttach = m_colourAttaches[attach.attachment];
+					colours.push_back( fboAttach.point + attach.attachment );
 				}
 			}
+
 
 			glLogCall( gl::DrawBuffers, GLsizei( colours.size() ), colours.data() );
 		}

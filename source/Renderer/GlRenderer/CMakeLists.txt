@@ -60,6 +60,7 @@ if ( OpenGL_FOUND )
 
 	target_link_libraries( ${PROJECT_NAME}
 		${OPENGL_gl_LIBRARY}
+		${BinLibraries}
 		Renderer
 	)
 

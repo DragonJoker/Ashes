@@ -26,9 +26,9 @@ target_link_libraries( ${PROJECT_NAME}
 	Utils
 	Renderer
 	Test-00-Common
-	${BinaryLibraries}
 	${wxWidgets_LIBRARIES}
 	${GTK2_LIBRARIES}
+	${BinLibraries}
 )
 
 add_dependencies( ${PROJECT_NAME}
