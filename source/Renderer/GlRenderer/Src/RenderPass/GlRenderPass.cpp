@@ -15,6 +15,19 @@ namespace gl_renderer
 		, renderer::RenderPassCreateInfo && createInfo )
 		: renderer::RenderPass{ device, createInfo }
 	{
+		uint32_t index = 0u;
+
+		for ( auto & attach : getAttachments() )
+		{
+			if ( renderer::isDepthOrStencilFormat( attach.format ) )
+			{
+				m_depthAttach = attach;
+			}
+			else
+			{
+				m_colourAttaches.push_back( { index++, std::ref( attach ) } );
+			}
+		}
 	}
 
 	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::Extent2D const & dimensions
@@ -23,5 +36,24 @@ namespace gl_renderer
 		return std::make_unique< FrameBuffer >( *this
 			, dimensions
 			, std::move( textures ) );
+	}
+
+	uint32_t RenderPass::getAttachmentIndex( renderer::AttachmentDescription const & attach )const
+	{
+		uint32_t result = 0u;
+
+		if ( !renderer::isDepthOrStencilFormat( attach.format ) )
+		{
+			auto it = std::find_if( m_colourAttaches.begin()
+				, m_colourAttaches.end()
+				, [&attach]( AttachmentDescription const & lookup )
+				{
+					return &attach == &lookup.attach.get();
+				} );
+			assert( it != m_colourAttaches.end() );
+			result = it->index;
+		}
+
+		return result;
 	}
 }

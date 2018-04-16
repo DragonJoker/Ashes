@@ -29,7 +29,7 @@ namespace gl_renderer
 		*\param[in] dimensions
 		*	Les dimensions du tampon d'images.
 		*/
-		FrameBuffer( renderer::RenderPass const & renderPass
+		FrameBuffer( RenderPass const & renderPass
 			, renderer::Extent2D const & dimensions );
 		/**
 		*\brief
@@ -42,7 +42,7 @@ namespace gl_renderer
 		*\param[in] textures
 		*	Les textures voulues pour le tampon d'images à créer.
 		*/
-		FrameBuffer( renderer::RenderPass const & renderPass
+		FrameBuffer( RenderPass const & renderPass
 			, renderer::Extent2D const & dimensions
 			, renderer::FrameBufferAttachmentArray && textures );
 		/**
@@ -62,7 +62,7 @@ namespace gl_renderer
 		*\param[in] attaches
 		*	Les attaches.
 		*/
-		void setDrawBuffers( renderer::AttachmentDescriptionArray const & attaches )const;
+		void setDrawBuffers( AttachmentDescriptionArray const & attaches )const;
 		/**
 		*\~english
 		*\brief
@@ -130,6 +130,7 @@ namespace gl_renderer
 			GlAttachmentType type;
 		};
 		GLuint m_frameBuffer{ GL_INVALID_INDEX };
+		RenderPass const & m_renderPass;
 		std::vector< Attachment > m_allAttaches;
 		std::vector< Attachment > m_colourAttaches;
 		std::vector< Attachment > m_depthStencilAttaches;

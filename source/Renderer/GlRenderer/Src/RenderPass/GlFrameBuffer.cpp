@@ -141,17 +141,19 @@ namespace gl_renderer
 		}
 	}
 
-	FrameBuffer::FrameBuffer( renderer::RenderPass const & renderPass
+	FrameBuffer::FrameBuffer( RenderPass const & renderPass
 		, renderer::Extent2D const & dimensions )
 		: renderer::FrameBuffer{ renderPass, dimensions, renderer::FrameBufferAttachmentArray{} }
 		, m_frameBuffer{ 0u }
+		, m_renderPass{ renderPass }
 	{
 	}
 
-	FrameBuffer::FrameBuffer( renderer::RenderPass const & renderPass
+	FrameBuffer::FrameBuffer( RenderPass const & renderPass
 		, renderer::Extent2D const & dimensions
 		, renderer::FrameBufferAttachmentArray && views )
 		: renderer::FrameBuffer{ renderPass, dimensions, std::move( views ) }
+		, m_renderPass{ renderPass }
 	{
 		glLogCall( gl::GenFramebuffers, 1, &m_frameBuffer );
 		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer );
@@ -161,7 +163,7 @@ namespace gl_renderer
 			// If the image doesn't exist, it means it is a backbuffer image, hence ignore the attachment.
 			if ( static_cast< Texture const & >( attach.getView().getTexture() ).hasImage() )
 			{
-				auto index = attach.getAttachment().index;
+				uint32_t index = m_renderPass.getAttachmentIndex( attach.getAttachment() );
 				Attachment attachment
 				{
 					getAttachmentPoint( static_cast< TextureView const & >( attach.getView() ) ),
@@ -232,7 +234,7 @@ namespace gl_renderer
 		}
 	}
 
-	void FrameBuffer::setDrawBuffers( renderer::AttachmentDescriptionArray const & attaches )const
+	void FrameBuffer::setDrawBuffers( AttachmentDescriptionArray const & attaches )const
 	{
 		renderer::UInt32Array colours;
 
@@ -240,16 +242,13 @@ namespace gl_renderer
 		{
 			auto & fboAttach = m_attachments[attach.index];
 
-			if ( !renderer::isDepthOrStencilFormat( attach.format ) )
+			if ( static_cast< Texture const & >( fboAttach.getTexture() ).hasImage() )
 			{
-				if ( static_cast< Texture const & >( fboAttach.getTexture() ).hasImage() )
-				{
-					colours.push_back( getAttachmentPoint( attach.format ) + attach.index );
-				}
-				else if ( attaches.size() == 1 )
-				{
-					colours.push_back( GL_ATTACHMENT_POINT_BACK );
-				}
+				colours.push_back( getAttachmentPoint( attach.attach.get().format ) + attach.index );
+			}
+			else if ( attaches.size() == 1 )
+			{
+				colours.push_back( GL_ATTACHMENT_POINT_BACK );
 			}
 		}
 
