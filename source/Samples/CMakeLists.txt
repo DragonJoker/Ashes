@@ -20,10 +20,6 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 		add_definitions(
 			-D__WXGTK__
 		)
-		set( BinaryLibraries
-			${BinaryLibraries}
-			dl
-		)
 	endif()
 
 	if( IsWxDebug )

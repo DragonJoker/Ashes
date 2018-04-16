@@ -112,6 +112,12 @@ namespace renderer
 		{
 			return m_subpasses;
 		}
+
+	protected:
+		inline SubpassDescriptionArray & getSubpasses()
+		{
+			return m_subpasses;
+		}
 		/**@}*/
 
 	private:

@@ -68,7 +68,6 @@ namespace vkapp
 			return renderer::AttachmentDescriptionArray
 			{
 				{
-					0u,
 					depthView.getFormat(),
 					renderer::SampleCountFlag::e1,
 					renderer::AttachmentLoadOp::eLoad,
@@ -79,7 +78,6 @@ namespace vkapp
 					renderer::ImageLayout::eDepthStencilAttachmentOptimal,
 				},
 				{
-					1u,
 					colourView.getFormat(),
 					renderer::SampleCountFlag::e1,
 					renderer::AttachmentLoadOp::eClear,

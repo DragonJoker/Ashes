@@ -78,6 +78,7 @@ namespace gl_renderer
 
 	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags )const
 	{
+		m_afterSubmitActions.clear();
 		m_commands.clear();
 		m_state = State{};
 		m_state.m_beginFlags = flags;
@@ -87,6 +88,7 @@ namespace gl_renderer
 	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags
 		, renderer::CommandBufferInheritanceInfo const & inheritanceInfo )const
 	{
+		m_afterSubmitActions.clear();
 		m_commands.clear();
 		m_state = State{};
 		m_state.m_beginFlags = flags;
@@ -101,6 +103,7 @@ namespace gl_renderer
 
 	bool CommandBuffer::reset( renderer::CommandBufferResetFlags flags )const
 	{
+		m_afterSubmitActions.clear();
 		m_commands.clear();
 		return true;
 	}

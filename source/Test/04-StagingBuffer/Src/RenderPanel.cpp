@@ -145,7 +145,6 @@ namespace vkapp
 		renderer::AttachmentDescriptionArray attaches
 		{
 			{
-				0u,
 				m_swapChain->getFormat(),
 				renderer::SampleCountFlag::e1,
 				renderer::AttachmentLoadOp::eClear,

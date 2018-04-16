@@ -26,6 +26,7 @@
 #include <Pipeline/VertexLayout.hpp>
 #include <Pipeline/Viewport.hpp>
 #include <RenderPass/RenderPass.hpp>
+#include <RenderPass/RenderPassCreateInfo.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 #include <RenderPass/FrameBufferAttachment.hpp>
@@ -80,20 +81,16 @@ namespace common
 			, std::vector< renderer::Format > const & formats
 			, bool clearViews )
 		{
-			renderer::AttachmentDescriptionArray attaches;
-			renderer::AttachmentReferenceArray subAttaches;
-			renderer::AttachmentReference depthSubAttach{ renderer::AttachmentUnused, renderer::ImageLayout::eUndefined };
-			renderer::ImageLayoutArray initialLayouts;
-			renderer::ImageLayoutArray finalLayouts;
 			uint32_t index{ 0u };
+			renderer::RenderPassCreateInfo renderPass;
+			renderPass.subpasses.resize( 1u );
 
 			for ( auto format : formats )
 			{
 				if ( renderer::isDepthOrStencilFormat( format ) )
 				{
-					attaches.push_back(
+					renderPass.attachments.push_back(
 					{
-						index,
 						format,
 						renderer::SampleCountFlag::e1,
 						clearViews ? renderer::AttachmentLoadOp::eClear : renderer::AttachmentLoadOp::eDontCare,
@@ -103,13 +100,12 @@ namespace common
 						renderer::ImageLayout::eUndefined,
 						renderer::ImageLayout::eDepthStencilAttachmentOptimal
 					} );
-					depthSubAttach = { index, renderer::ImageLayout::eDepthStencilAttachmentOptimal };
+					renderPass.subpasses[0].depthStencilAttachment = { index, renderer::ImageLayout::eDepthStencilAttachmentOptimal };
 				}
 				else
 				{
-					attaches.push_back(
+					renderPass.attachments.push_back(
 					{
-						index,
 						format,
 						renderer::SampleCountFlag::e1,
 						clearViews ? renderer::AttachmentLoadOp::eClear : renderer::AttachmentLoadOp::eDontCare,
@@ -119,35 +115,30 @@ namespace common
 						renderer::ImageLayout::eUndefined,
 						clearViews ? renderer::ImageLayout::eColourAttachmentOptimal : renderer::ImageLayout::eShaderReadOnlyOptimal
 					} );
-					subAttaches.emplace_back( renderer::AttachmentReference{ index, renderer::ImageLayout::eColourAttachmentOptimal } );
+					renderPass.subpasses[0].colorAttachments.emplace_back( renderer::AttachmentReference{ index, renderer::ImageLayout::eColourAttachmentOptimal } );
 				}
+
 				++index;
 			}
 
-			renderer::RenderSubpassPtrArray subpasses;
+			renderPass.dependencies.resize( 2u );
+			renderPass.dependencies[0].srcSubpass = renderer::ExternalSubpass;
+			renderPass.dependencies[0].dstSubpass = 0u;
+			renderPass.dependencies[0].srcStageMask = renderer::PipelineStageFlag::eFragmentShader;
+			renderPass.dependencies[0].dstStageMask = renderer::PipelineStageFlag::eColourAttachmentOutput;
+			renderPass.dependencies[0].srcAccessMask = renderer::AccessFlag::eShaderRead;
+			renderPass.dependencies[0].dstAccessMask = renderer::AccessFlag::eColourAttachmentWrite;
+			renderPass.dependencies[0].dependencyFlags = renderer::DependencyFlag::eByRegion;
 
-			if ( depthSubAttach.attachment != renderer::AttachmentUnused )
-			{
-				subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
-					, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-						, renderer::AccessFlag::eColourAttachmentWrite }
-					, subAttaches
-					, depthSubAttach ) );
-			}
-			else
-			{
-				subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
-					, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-						, renderer::AccessFlag::eColourAttachmentWrite }
-					, subAttaches ) );
-			}
+			renderPass.dependencies[1].srcSubpass = 0u;
+			renderPass.dependencies[1].dstSubpass = renderer::ExternalSubpass;
+			renderPass.dependencies[1].srcStageMask = renderer::PipelineStageFlag::eColourAttachmentOutput;
+			renderPass.dependencies[1].dstStageMask = renderer::PipelineStageFlag::eFragmentShader;
+			renderPass.dependencies[1].srcAccessMask = renderer::AccessFlag::eColourAttachmentWrite;
+			renderPass.dependencies[1].dstAccessMask = renderer::AccessFlag::eShaderRead;
+			renderPass.dependencies[1].dependencyFlags = renderer::DependencyFlag::eByRegion;
 
-			return device.createRenderPass( attaches
-				, std::move( subpasses )
-				, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eColourAttachmentWrite }
-				, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::AccessFlag::eColourAttachmentWrite } );
+			return device.createRenderPass( renderPass );
 		}
 
 		renderer::FrameBufferPtr doCreateFrameBuffer( renderer::RenderPass const & renderPass

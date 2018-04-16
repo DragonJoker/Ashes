@@ -20,6 +20,7 @@ if( GLFW_FOUND )
 		Utils
 		Renderer
 		${GLFW_LIBRARIES}
+		${BinLibraries}
 	)
 
 	add_dependencies(

@@ -189,7 +189,6 @@ renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
 	{
 		// We'll have only one colour attachment for the render pass.
 		{
-			0u,
 			// The format is the swapchain's pixel format.
 			swapChain.getFormat(),
 			// Multisampling is disabled for this attach.
