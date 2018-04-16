@@ -49,7 +49,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~DescriptorSetLayout() = default;
+		virtual ~DescriptorSetLayout();
 		/**
 		*\~english
 		*\return

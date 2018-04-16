@@ -32,6 +32,7 @@ namespace vk_renderer
 		, m_renderer{ renderer }
 		, m_gpu{ gpu }
 	{
+		m_shaderVersion = 450u;
 		initialise();
 	}
 

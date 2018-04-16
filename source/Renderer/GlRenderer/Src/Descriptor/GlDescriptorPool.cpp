@@ -1,5 +1,6 @@
 #include "Descriptor/GlDescriptorPool.hpp"
 
+#include "Core/GlDevice.hpp"
 #include "Descriptor/GlDescriptorSet.hpp"
 
 namespace gl_renderer
@@ -8,7 +9,7 @@ namespace gl_renderer
 		, renderer::DescriptorPoolCreateFlags flags
 		, uint32_t maxSets
 		, renderer::DescriptorPoolSizeArray poolSizes )
-		: renderer::DescriptorPool{ flags }
+		: renderer::DescriptorPool{ device, flags }
 	{
 	}
 

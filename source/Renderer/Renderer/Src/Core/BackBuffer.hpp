@@ -42,7 +42,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~BackBuffer() = default;
+		virtual ~BackBuffer();
 		/**
 		*\~french
 		*\return
@@ -81,6 +81,7 @@ namespace renderer
 		}
 
 	private:
+		Device const & m_device;
 		TexturePtr m_image;
 		TextureViewPtr m_view;
 		uint32_t m_imageIndex{ 0u };

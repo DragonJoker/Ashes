@@ -13,7 +13,8 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	Queue::Queue()
+	Queue::Queue( Device const & device )
+		: renderer::Queue{ device }
 	{
 	}
 

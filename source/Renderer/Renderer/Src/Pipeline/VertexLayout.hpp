@@ -50,15 +50,6 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
-		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
-		*/
-		~VertexLayout() = default;
-		/**
-		*\~english
-		*\brief
 		*	Creates a vertex attribute.
 		*\param[in] location
 		*	The attribute location, in the shader.

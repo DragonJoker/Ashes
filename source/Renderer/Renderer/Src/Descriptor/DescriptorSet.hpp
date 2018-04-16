@@ -50,7 +50,7 @@ namespace renderer
 		*\brief
 		*	Destructor.
 		*/
-		virtual ~DescriptorSet() = default;
+		virtual ~DescriptorSet();
 		/**
 		*\~french
 		*\brief
@@ -629,6 +629,7 @@ namespace renderer
 		WriteDescriptorSetArray m_writes;
 
 	private:
+		Device const & m_device;
 		DescriptorPool const & m_pool;
 		uint32_t m_bindingPoint;
 	};

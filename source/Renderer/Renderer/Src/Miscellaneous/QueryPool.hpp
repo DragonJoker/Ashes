@@ -57,7 +57,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~QueryPool() = default;
+		virtual ~QueryPool();
 		/**
 		*\~english
 		*\brief

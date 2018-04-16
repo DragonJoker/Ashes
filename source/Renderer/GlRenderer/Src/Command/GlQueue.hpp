@@ -14,7 +14,7 @@ namespace gl_renderer
 		: public renderer::Queue
 	{
 	public:
-		Queue();
+		Queue( Device const & device );
 		/**
 		*\copydoc		renderer::Queue::submit
 		*/

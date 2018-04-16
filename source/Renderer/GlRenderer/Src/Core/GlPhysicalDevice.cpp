@@ -235,31 +235,31 @@ namespace gl_renderer
 
 			if ( version >= 33 )
 			{
-				m_glslVersion = version * 10;
+				m_shaderVersion = version * 10;
 			}
 			else if ( version >= 32 )
 			{
-				m_glslVersion = 150;
+				m_shaderVersion = 150;
 			}
 			else if ( version >= 31 )
 			{
-				m_glslVersion = 140;
+				m_shaderVersion = 140;
 			}
 			else if ( version >= 30 )
 			{
-				m_glslVersion = 130;
+				m_shaderVersion = 130;
 			}
 			else if ( version >= 21 )
 			{
-				m_glslVersion = 120;
+				m_shaderVersion = 120;
 			}
 			else if ( version >= 20 )
 			{
-				m_glslVersion = 110;
+				m_shaderVersion = 110;
 			}
 			else
 			{
-				m_glslVersion = 100;
+				m_shaderVersion = 100;
 			}
 		}
 

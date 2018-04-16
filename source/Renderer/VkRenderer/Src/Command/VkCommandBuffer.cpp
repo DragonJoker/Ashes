@@ -76,7 +76,8 @@ namespace vk_renderer
 	CommandBuffer::CommandBuffer( Device const & device
 		, CommandPool const & pool
 		, bool primary )
-		: m_device{ device }
+		: renderer::CommandBuffer{ device, pool, primary }
+		, m_device{ device }
 		, m_pool{ pool }
 	{
 		VkCommandBufferAllocateInfo cmdAllocInfo

@@ -62,7 +62,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~CommandBuffer() = default;
+		virtual ~CommandBuffer();
 		/**
 		*\~english
 		*\brief
@@ -1295,6 +1295,9 @@ namespace renderer
 		virtual void doMemoryBarrier( PipelineStageFlags after
 			, PipelineStageFlags before
 			, ImageMemoryBarrier const & transitionBarrier )const = 0;
+
+	private:
+		Device const & m_device;
 	};
 }
 

@@ -27,7 +27,8 @@ namespace renderer
 		*\brief
 		*	Constructeur.
 		*/
-		DescriptorPool( DescriptorPoolCreateFlags flags );
+		DescriptorPool( Device const & device
+			, DescriptorPoolCreateFlags flags );
 
 	public:
 		/**
@@ -38,7 +39,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~DescriptorPool() = default;
+		virtual ~DescriptorPool();
 		/**
 		*\~english
 		*\brief
@@ -62,6 +63,15 @@ namespace renderer
 		virtual DescriptorSetPtr createDescriptorSet( renderer::DescriptorSetLayout const & layout
 			, uint32_t bindingPoint = 0u )const = 0;
 		/**
+		*\~english
+		*name
+		*	Getters.
+		*\~french
+		*name
+		*	Accesseurs.
+		*/
+		/**@{*/
+		/**
 		*\~french
 		*\brief
 		*	Dit si le pool désalloue automatiquement les descripteurs à sa propre destruction.
@@ -74,7 +84,14 @@ namespace renderer
 			return m_automaticFree;
 		}
 
+		inline Device const & getDevice()const
+		{
+			return m_device;
+		}
+		/**@}*/
+
 	private:
+		Device const & m_device;
 		bool m_automaticFree;
 	};
 }

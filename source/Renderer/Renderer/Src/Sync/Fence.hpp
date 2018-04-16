@@ -47,7 +47,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~Fence() = default;
+		virtual ~Fence();
 		/**
 		*\brief
 		*	Attend que la barrière soit signalée.
@@ -62,6 +62,9 @@ namespace renderer
 		*	Remet la barrière en non signalée.
 		*/ 
 		virtual void reset()const = 0;
+
+	private:
+		Device const & m_device;
 	};
 }
 

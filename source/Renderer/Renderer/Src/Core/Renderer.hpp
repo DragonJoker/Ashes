@@ -57,7 +57,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~Renderer() = default;
+		virtual ~Renderer();
 		/**
 		*\~french
 		*\brief

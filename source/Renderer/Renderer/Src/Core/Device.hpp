@@ -15,6 +15,10 @@ See LICENSE file in root folder.
 #include "Pipeline/ColourBlendState.hpp"
 #include "Pipeline/RasterisationState.hpp"
 
+#include <string>
+#include <sstream>
+#include <unordered_map>
+
 namespace renderer
 {
 	/**
@@ -61,7 +65,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~Device() = default;
+		virtual ~Device();
 		/**
 		*\~english
 		*\return
@@ -764,6 +768,11 @@ namespace renderer
 			return m_gpu.getProperties();
 		}
 
+		inline uint32_t getShaderVersion()const
+		{
+			return m_gpu.getShaderVersion();
+		}
+
 		inline PhysicalDeviceMemoryProperties const & getMemoryProperties()const
 		{
 			return m_gpu.getMemoryProperties();
@@ -861,6 +870,44 @@ namespace renderer
 		CommandPoolPtr m_computeCommandPool;
 		CommandPoolPtr m_graphicsCommandPool;
 		float m_timestampPeriod;
+		uint32_t m_shaderVersion;
+
+#ifndef NDEBUG
+		struct ObjectAllocation
+		{
+			std::string type;
+			std::string callstack;
+		};
+
+		mutable std::unordered_map< size_t, ObjectAllocation > m_allocated;
+
+	public:
+		static inline void stRegisterObject( Device const & device, char const * const type, void * object )
+		{
+			device.doRegisterObject( type, object );
+		}
+
+		static inline void stUnregisterObject( Device const & device, void * object )
+		{
+			device.doUnregisterObject( object );
+		}
+
+	private:
+		void doRegisterObject( char const * const type, void * object )const;
+		void doUnregisterObject( void * object )const;
+		void doReportRegisteredObjects()const;
+
+#	define registerObject( Dev, TypeName, Object )\
+	renderer::Device::stRegisterObject( Dev, TypeName, Object )
+#	define unregisterObject( Dev, Object )\
+	renderer::Device::stUnregisterObject( Dev, Object )
+#	define reportRegisteredObjects()\
+	doReportRegisteredObjects()
+#else
+#	define registerObject( TypeName, Object )
+#	define unregisterObject( Object )
+#	define reportRegisteredObjects()
+#endif
 	};
 }
 

@@ -8,6 +8,8 @@ See LICENSE file in root folder.
 
 #include "RendererPrerequisites.hpp"
 
+#include "Core/Device.hpp"
+
 namespace renderer
 {
 	/**
@@ -26,10 +28,15 @@ namespace renderer
 			: m_device{ device }
 			, m_flags{ flags }
 		{
+			registerObject( m_device, "DeviceMemory", this );
 		}
 
 	public:
-		virtual ~DeviceMemory() = default;
+		virtual ~DeviceMemory()
+		{
+			unregisterObject( m_device, this );
+		}
+
 		/**
 		*\~english
 		*\brief

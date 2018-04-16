@@ -22,7 +22,6 @@ namespace renderer
 	class FrameBuffer
 	{
 	protected:
-		FrameBuffer();
 		/**
 		*\~english
 		*\brief
@@ -56,7 +55,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~FrameBuffer() = default;
+		virtual ~FrameBuffer();
 		/**
 		*\~english
 		*\return
@@ -107,6 +106,7 @@ namespace renderer
 		}
 
 	protected:
+		Device const & m_device;
 		Extent2D m_dimensions;
 		FrameBufferAttachmentArray m_attachments;
 	};

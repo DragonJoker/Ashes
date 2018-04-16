@@ -131,6 +131,11 @@ namespace renderer
 		{
 			return m_features;
 		}
+
+		inline uint32_t getShaderVersion()const
+		{
+			return m_shaderVersion;
+		}
 		/**@}*/
 
 	protected:
@@ -138,6 +143,7 @@ namespace renderer
 		PhysicalDeviceFeatures m_features{};
 		PhysicalDeviceProperties m_properties{};
 		std::vector< QueueFamilyProperties > m_queueProperties;
+		uint32_t m_shaderVersion;
 
 	private:
 		Renderer & m_renderer;

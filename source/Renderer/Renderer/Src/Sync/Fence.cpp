@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -10,6 +10,13 @@ namespace renderer
 {
 	Fence::Fence( Device const & device
 		, FenceCreateFlags flags )
+		: m_device{ device }
 	{
+		registerObject( m_device, "Fence", this );
+	}
+
+	Fence::~Fence()
+	{
+		unregisterObject( m_device, this );
 	}
 }

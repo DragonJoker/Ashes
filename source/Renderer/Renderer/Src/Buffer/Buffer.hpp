@@ -55,7 +55,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~BufferBase() = default;
+		virtual ~BufferBase();
 		/**
 		*\~english
 		*\brief
