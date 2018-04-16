@@ -4,12 +4,15 @@ See LICENSE file in root folder.
 */
 #include "Pipeline/Pipeline.hpp"
 
+#include "Core/Device.hpp"
+
 namespace renderer
 {
 	Pipeline::Pipeline( Device const & device
 		, PipelineLayout const & layout
 		, GraphicsPipelineCreateInfo && createInfo )
-		: m_createInfo
+		: m_device{ device }
+		, m_createInfo
 		{
 			std::move( createInfo.stages ),
 			createInfo.renderPass,
@@ -26,5 +29,11 @@ namespace renderer
 		}
 		, m_layout{ layout }
 	{
+		registerObject( m_device, "Pipeline", this );
+	}
+
+	Pipeline::~Pipeline()
+	{
+		unregisterObject( m_device, this );
 	}
 }

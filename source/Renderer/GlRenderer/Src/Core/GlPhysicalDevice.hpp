@@ -63,11 +63,6 @@ namespace gl_renderer
 			return m_minor;
 		}
 
-		inline uint32_t getGlslVersion()const
-		{
-			return m_glslVersion;
-		}
-
 	private:
 		void doGetValue( GLenum name, int32_t & value )const;
 		void doGetValue( GLenum name, uint32_t & value )const;
@@ -102,6 +97,5 @@ namespace gl_renderer
 		std::vector< GlShaderBinaryFormat > m_shaderBinaryFormats;
 		int m_major{ 0 };
 		int m_minor{ 0 };
-		uint32_t m_glslVersion{ 0u };
 	};
 }

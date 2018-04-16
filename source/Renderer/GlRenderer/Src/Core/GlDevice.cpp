@@ -304,9 +304,9 @@ namespace gl_renderer
 		disable();
 
 		m_timestampPeriod = 1;
-		m_presentQueue = std::make_unique< Queue >();
-		m_computeQueue = std::make_unique< Queue >();
-		m_graphicsQueue = std::make_unique< Queue >();
+		m_presentQueue = std::make_unique< Queue >( *this );
+		m_computeQueue = std::make_unique< Queue >( *this );
+		m_graphicsQueue = std::make_unique< Queue >( *this );
 		m_presentCommandPool = std::make_unique< CommandPool >( *this, 0u );
 		m_computeCommandPool = std::make_unique< CommandPool >( *this, 0u );
 		m_graphicsCommandPool = std::make_unique< CommandPool >( *this, 0u );
@@ -349,6 +349,13 @@ namespace gl_renderer
 		m_dummyIndexed.geometryBuffers.reset();
 		m_dummyIndexed.indexBuffer.reset();
 		disable();
+
+		m_graphicsCommandPool.reset();
+		m_graphicsQueue.reset();
+		m_presentCommandPool.reset();
+		m_presentQueue.reset();
+		m_computeCommandPool.reset();
+		m_computeQueue.reset();
 	}
 
 	renderer::RenderPassPtr Device::createRenderPass( renderer::RenderPassCreateInfo createInfo )const

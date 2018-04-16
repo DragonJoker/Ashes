@@ -47,7 +47,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~SwapChain() = default;
+		virtual ~SwapChain();
 		/**
 		*\~french
 		*\return

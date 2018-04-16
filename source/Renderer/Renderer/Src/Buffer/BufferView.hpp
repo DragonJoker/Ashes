@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -64,7 +64,7 @@ namespace renderer
 		*\brief
 		*	Destructor.
 		*/
-		virtual ~BufferView() = default;
+		virtual ~BufferView();
 		/**
 		*\~french
 		*\return

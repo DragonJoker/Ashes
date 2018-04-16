@@ -54,7 +54,7 @@ namespace renderer
 		*\brief
 		*	Destructor.
 		*/
-		virtual ~TextureView() = default;
+		virtual ~TextureView();
 		/**
 		*\~french
 		*\brief

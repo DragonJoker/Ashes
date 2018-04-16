@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -21,10 +21,10 @@ namespace renderer
 	class Queue
 	{
 	protected:
-		Queue();
+		Queue( Device const & device );
 
 	public:
-		virtual ~Queue() = default;
+		virtual ~Queue();
 		/**
 		*\~french
 		*\brief
@@ -172,6 +172,9 @@ namespace renderer
 				, SemaphoreCRefArray{ semaphoreToSignal }
 				, fence );
 		}
+
+	private:
+		Device const & m_device;
 	};
 }
 

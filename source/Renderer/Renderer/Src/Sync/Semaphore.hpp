@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -36,7 +36,10 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~Semaphore() = default;
+		virtual ~Semaphore();
+
+	private:
+		Device const & m_device;
 	};
 }
 

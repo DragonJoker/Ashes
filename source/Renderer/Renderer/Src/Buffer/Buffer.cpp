@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Buffer/Buffer.hpp"
 
+#include "Core/Device.hpp"
 #include "Sync/BufferMemoryBarrier.hpp"
 
 namespace renderer
@@ -15,6 +16,12 @@ namespace renderer
 		, m_size{ size }
 		, m_target{ target }
 	{
+		registerObject( m_device, "Buffer", this );
+	}
+
+	BufferBase::~BufferBase()
+	{
+		unregisterObject( m_device, this );
 	}
 
 	void BufferBase::bindMemory( DeviceMemoryPtr memory )

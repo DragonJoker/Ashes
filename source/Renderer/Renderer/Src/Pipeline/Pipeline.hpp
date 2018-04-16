@@ -54,7 +54,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~Pipeline() = default;
+		virtual ~Pipeline();
 		/**
 		*\~english
 		*\return
@@ -69,6 +69,7 @@ namespace renderer
 		}
 
 	protected:
+		Device const & m_device;
 		GraphicsPipelineCreateInfo m_createInfo;
 		PipelineLayout const & m_layout;
 	};

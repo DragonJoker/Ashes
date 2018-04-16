@@ -3,6 +3,8 @@ This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
 #include "Descriptor/DescriptorSetLayout.hpp"
+
+#include "Core/Device.hpp"
 #include "Descriptor/DescriptorSetPool.hpp"
 
 #include <algorithm>
@@ -14,6 +16,12 @@ namespace renderer
 		: m_device{ device }
 		, m_bindings{ std::move( bindings ) }
 	{
+		registerObject( m_device, "DescriptorSetLayout", this );
+	}
+
+	DescriptorSetLayout::~DescriptorSetLayout()
+	{
+		unregisterObject( m_device, this );
 	}
 
 	DescriptorSetLayoutBinding const & DescriptorSetLayout::getBinding( uint32_t bindingPoint

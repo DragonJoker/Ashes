@@ -45,7 +45,7 @@ namespace renderer
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~Sampler() = default;
+		virtual ~Sampler();
 		/**
 		*\~english
 		*\return
@@ -194,6 +194,7 @@ namespace renderer
 		}
 
 	private:
+		Device const & m_device;
 		SamplerCreateInfo m_info;
 	};
 }

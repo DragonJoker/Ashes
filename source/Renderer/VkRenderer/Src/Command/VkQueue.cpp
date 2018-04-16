@@ -56,7 +56,8 @@ namespace vk_renderer
 
 	Queue::Queue( Device const & device
 		, uint32_t familyIndex )
-		: m_device{ device }
+		: renderer::Queue{ device }
+		, m_device{ device }
 		, m_familyIndex{ familyIndex }
 	{
 		m_device.vkGetDeviceQueue( m_device, familyIndex, 0, &m_queue );

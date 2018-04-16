@@ -62,7 +62,7 @@ namespace gl_renderer
 
 	ShaderModule::ShaderModule( Device const & device
 		, renderer::ShaderStageFlag stage )
-		: renderer::ShaderModule{ stage }
+		: renderer::ShaderModule{ device, stage }
 		, m_device{ device }
 		, m_shader{ gl::CreateShader( convert( stage ) ) }
 		, m_isSpirV{ false }
