@@ -77,50 +77,41 @@ namespace gl_renderer
 		*/
 		void setDrawBuffers( renderer::AttachmentReferenceArray const & attaches )const;
 		/**
-		*\return
-		*	Le Framebuffer OpenGL.
+		*\~english
+		*name
+		*	Getters.
+		*\~french
+		*name
+		*	Accesseurs.
 		*/
+		/**@{*/
 		inline GLuint getFrameBuffer()const
 		{
 			assert( m_frameBuffer != GL_INVALID_INDEX );
 			return m_frameBuffer;
 		}
-		/**
-		*\~english
-		*\return
-		*	The attachments array.
-		*\~french
-		*\return
-		*	Le tableau des attaches.
-		*/
+
 		inline auto const & getAllAttaches()const
 		{
 			return m_allAttaches;
 		}
-		/**
-		*\~english
-		*\return
-		*	The colour attachments array.
-		*\~french
-		*\return
-		*	Le tableau des attaches couleur.
-		*/
+
 		inline auto const & getColourAttaches()const
 		{
 			return m_colourAttaches;
 		}
-		/**
-		*\~english
-		*\return
-		*	The depth and/or stencil attachments array.
-		*\~french
-		*\return
-		*	Le tableau des attaches profondeur et/ou stencil.
-		*/
-		inline auto const & getDepthStencilAttaches()const
+
+		inline bool hasDepthStencilAttach()const
 		{
-			return m_depthStencilAttaches;
+			return bool( m_depthStencilAttach );
 		}
+
+		inline auto const & getDepthStencilAttach()const
+		{
+			assert( hasDepthStencilAttach() );
+			return m_depthStencilAttach.value();
+		}
+		/**@}*/
 
 	private:
 		struct Attachment
@@ -133,6 +124,7 @@ namespace gl_renderer
 		RenderPass const & m_renderPass;
 		std::vector< Attachment > m_allAttaches;
 		std::vector< Attachment > m_colourAttaches;
-		std::vector< Attachment > m_depthStencilAttaches;
+		std::optional< Attachment > m_depthStencilAttach;
+		mutable renderer::UInt32Array m_drawBuffers;
 	};
 }
