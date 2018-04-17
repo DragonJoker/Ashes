@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #include "GlCommandBase.hpp"
 
+#include <Pipeline/Scissor.hpp>
+
 namespace gl_renderer
 {
 	/**
@@ -28,7 +30,8 @@ namespace gl_renderer
 		*\param[in] contents
 		*	Indique la manière dont les commandes de la première sous-passe sont fournies.
 		*/
-		BeginRenderPassCommand( renderer::RenderPass const & renderPass
+		BeginRenderPassCommand( Device const & device
+			, renderer::RenderPass const & renderPass
 			, renderer::FrameBuffer const & frameBuffer
 			, renderer::ClearValueArray const & clearValues
 			, renderer::SubpassContents contents
@@ -38,9 +41,11 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
+		Device const & m_device;
 		RenderPass const & m_renderPass;
 		renderer::SubpassDescription const & m_subpass;
 		FrameBuffer const & m_frameBuffer;
 		renderer::ClearValueArray m_clearValues;
+		renderer::Scissor m_scissor;
 	};
 }

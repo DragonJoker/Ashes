@@ -160,26 +160,32 @@ namespace gl_renderer
 
 		for ( auto & attach : m_attachments )
 		{
+			auto & glview = static_cast< TextureView const & >( attach.getView() );
+			auto & gltexture = static_cast< Texture const & >( glview.getTexture() );
+
 			// If the image doesn't exist, it means it is a backbuffer image, hence ignore the attachment.
-			if ( static_cast< Texture const & >( attach.getView().getTexture() ).hasImage() )
+			if ( gltexture.hasImage() )
 			{
 				uint32_t index = m_renderPass.getAttachmentIndex( attach.getAttachment() );
+				auto image = glview.getImage();
+
+				if ( glview.getSubResourceRange().baseMipLevel )
+				{
+					image = gltexture.getImage();
+				}
+
 				Attachment attachment
 				{
-					getAttachmentPoint( static_cast< TextureView const & >( attach.getView() ) ),
-					( ( ( attach.getView().getTexture().getType() == renderer::TextureType::e2D && attach.getView().getTexture().getLayerCount() <= 1u )
-						&& attach.getView().getType() == renderer::TextureViewType::e2D )
-							? static_cast< Texture const & >( attach.getView().getTexture() ).getImage()
-							: static_cast< TextureView const & >( attach.getView() ).getImage() ),
-					getAttachmentType( static_cast< TextureView const & >( attach.getView() ) ),
+					getAttachmentPoint( glview ),
+					image,
+					getAttachmentType( glview ),
 				};
 
 				if ( attachment.point == GL_ATTACHMENT_POINT_DEPTH_STENCIL
 					|| attachment.point == GL_ATTACHMENT_POINT_DEPTH
 					|| attachment.point == GL_ATTACHMENT_POINT_STENCIL )
 				{
-					index = 0u;
-					m_depthStencilAttaches.push_back( attachment );
+					m_depthStencilAttach = attachment;
 				}
 				else
 				{
@@ -189,7 +195,7 @@ namespace gl_renderer
 				m_allAttaches.push_back( attachment );
 				auto target = GL_TEXTURE_2D;
 
-				if ( static_cast< Texture const & >( attach.getTexture() ).getSamplesCount() > renderer::SampleCountFlag::e1 )
+				if ( gltexture.getSamplesCount() > renderer::SampleCountFlag::e1 )
 				{
 					target = GL_TEXTURE_2D_MULTISAMPLE;
 				}
@@ -199,7 +205,7 @@ namespace gl_renderer
 					, GlAttachmentPoint( attachment.point + index )
 					, target
 					, attachment.object
-					, attach.getView().getSubResourceRange().baseMipLevel );
+					, glview.getSubResourceRange().baseMipLevel );
 				doCheck( gl::CheckFramebufferStatus( GL_FRAMEBUFFER ) );
 			}
 			else
@@ -213,7 +219,7 @@ namespace gl_renderer
 
 				if ( renderer::isDepthOrStencilFormat( attach.getFormat() ) )
 				{
-					m_depthStencilAttaches.push_back( attachment );
+					m_depthStencilAttach = attachment;
 				}
 				else
 				{
@@ -236,7 +242,7 @@ namespace gl_renderer
 
 	void FrameBuffer::setDrawBuffers( AttachmentDescriptionArray const & attaches )const
 	{
-		renderer::UInt32Array colours;
+		m_drawBuffers.clear();
 
 		for ( auto & attach : attaches )
 		{
@@ -244,15 +250,15 @@ namespace gl_renderer
 
 			if ( static_cast< Texture const & >( fboAttach.getTexture() ).hasImage() )
 			{
-				colours.push_back( getAttachmentPoint( attach.attach.get().format ) + attach.index );
+				m_drawBuffers.push_back( getAttachmentPoint( attach.attach.get().format ) + attach.index );
 			}
 			else if ( attaches.size() == 1 )
 			{
-				colours.push_back( GL_ATTACHMENT_POINT_BACK );
+				m_drawBuffers.push_back( GL_ATTACHMENT_POINT_BACK );
 			}
 		}
 
-		glLogCall( gl::DrawBuffers, GLsizei( colours.size() ), colours.data() );
+		glLogCall( gl::DrawBuffers, GLsizei( m_drawBuffers.size() ), m_drawBuffers.data() );
 	}
 
 	void FrameBuffer::setDrawBuffers( renderer::AttachmentReferenceArray const & attaches )const
@@ -274,8 +280,11 @@ namespace gl_renderer
 				}
 			}
 
-
-			glLogCall( gl::DrawBuffers, GLsizei( colours.size() ), colours.data() );
+			if ( m_drawBuffers != colours )
+			{
+				m_drawBuffers = colours;
+				glLogCall( gl::DrawBuffers, GLsizei( m_drawBuffers.size() ), m_drawBuffers.data() );
+			}
 		}
 	}
 }
