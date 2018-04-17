@@ -117,7 +117,8 @@ namespace gl_renderer
 		m_state.m_currentFrameBuffer = &frameBuffer;
 		m_state.m_currentSubpassIndex = 0u;
 		m_state.m_currentSubpass = &m_state.m_currentRenderPass->getSubpasses()[m_state.m_currentSubpassIndex++];
-		m_commands.emplace_back( std::make_unique< BeginRenderPassCommand >( renderPass
+		m_commands.emplace_back( std::make_unique< BeginRenderPassCommand >( m_device
+			, renderPass
 			, frameBuffer
 			, clearValues
 			, contents

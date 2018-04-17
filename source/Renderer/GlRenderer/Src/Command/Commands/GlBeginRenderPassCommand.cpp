@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "GlBeginRenderPassCommand.hpp"
 
+#include "Core/GlDevice.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 
@@ -29,6 +30,7 @@ namespace gl_renderer
 			}
 			else
 			{
+				glLogCall( gl::DepthMask, GL_TRUE );
 				auto & depthStencil = clearValue.depthStencil();
 				auto stencil = GLint( depthStencil.stencil );
 
@@ -96,15 +98,18 @@ namespace gl_renderer
 		}
 	}
 
-	BeginRenderPassCommand::BeginRenderPassCommand( renderer::RenderPass const & renderPass
+	BeginRenderPassCommand::BeginRenderPassCommand( Device const & device
+		, renderer::RenderPass const & renderPass
 		, renderer::FrameBuffer const & frameBuffer
 		, renderer::ClearValueArray const & clearValues
 		, renderer::SubpassContents contents
 		, renderer::SubpassDescription const & subpass )
-		: m_renderPass{ static_cast< RenderPass const & >( renderPass ) }
+		: m_device{ device }
+		, m_renderPass{ static_cast< RenderPass const & >( renderPass ) }
 		, m_subpass{ subpass }
 		, m_frameBuffer{ static_cast< FrameBuffer const & >( frameBuffer ) }
 		, m_clearValues{ clearValues }
+		, m_scissor{ 0, 0, m_frameBuffer.getDimensions().width, m_frameBuffer.getDimensions().height }
 	{
 	}
 
@@ -114,6 +119,16 @@ namespace gl_renderer
 
 		GLint colourIndex = 0u;
 		GLint depthStencilIndex = 0u;
+		auto & save = m_device.getCurrentScissor();
+
+		if ( save != m_scissor )
+		{
+			glLogCall( gl::Scissor
+				, m_scissor.offset.x
+				, m_scissor.offset.y
+				, m_scissor.size.width
+				, m_scissor.size.height );
+		}
 
 		if ( m_frameBuffer.getFrameBuffer()
 			&& ( m_subpass.colorAttachments.size() != 1
@@ -184,6 +199,15 @@ namespace gl_renderer
 			}
 
 			glLogCall( gl::Clear, bitfield );
+		}
+
+		if ( save != m_scissor )
+		{
+			glLogCall( gl::Scissor
+				, save.offset.x
+				, save.offset.y
+				, save.size.width
+				, save.size.height );
 		}
 	}
 
