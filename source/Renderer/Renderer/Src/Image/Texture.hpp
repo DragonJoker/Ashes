@@ -164,6 +164,19 @@ namespace renderer
 		*\~french
 		*\brief
 		*	Génère les mipmaps de la texture.
+		*\param[in] commandBuffer
+		*	Un tampon de commandes en cours d'enregistrement.
+		*\~english
+		*\brief
+		*	Generates the texture mipmaps.
+		*\param[in] commandBuffer
+		*	A command buffer, in record state.
+		*/
+		void generateMipmaps( CommandBuffer & commandBuffer )const;
+		/**
+		*\~french
+		*\brief
+		*	Génère les mipmaps de la texture.
 		*\~english
 		*\brief
 		*	Generates the texture mipmaps.

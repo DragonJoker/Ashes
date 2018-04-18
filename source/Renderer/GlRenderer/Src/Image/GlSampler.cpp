@@ -10,7 +10,7 @@ namespace gl_renderer
 	{
 		glLogCall( gl::GenSamplers, 1, &m_sampler );
 		glLogCall( gl::BindSampler, 0u, m_sampler );
-		glLogCall( gl::SamplerParameteri, m_sampler, GL_SAMPLER_PARAMETER_MIN_FILTER, convert( createInfo.minFilter, createInfo.mipmapMode ) );
+		glLogCall( gl::SamplerParameteri, m_sampler, GL_SAMPLER_PARAMETER_MIN_FILTER, convert( createInfo.minFilter, createInfo.mipmapMode, createInfo.minLod, createInfo.maxLod ) );
 		glLogCall( gl::SamplerParameteri, m_sampler, GL_SAMPLER_PARAMETER_MAG_FILTER, convert( createInfo.magFilter ) );
 		glLogCall( gl::SamplerParameteri, m_sampler, GL_SAMPLER_PARAMETER_WRAP_S, convert( createInfo.addressModeU ) );
 		glLogCall( gl::SamplerParameteri, m_sampler, GL_SAMPLER_PARAMETER_WRAP_T, convert( createInfo.addressModeV ) );

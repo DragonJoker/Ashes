@@ -122,7 +122,7 @@ namespace renderer
 		*\brief
 		*	Minimal LOD Level.
 		*/
-		float minLod;
+		float minLod{ -1000.0f };
 		/**
 		*\~french
 		*\brief
@@ -131,7 +131,7 @@ namespace renderer
 		*\brief
 		*	Maximal LOD Level.
 		*/
-		float maxLod;
+		float maxLod{ 1000.0f };
 		/**
 		*\~french
 		*\brief
