@@ -46,7 +46,10 @@ namespace gl_renderer
 		}
 	}
 
-	GlFilter convert( renderer::Filter const & filter, renderer::MipmapMode mode )
+	GlFilter convert( renderer::Filter const & filter
+		, renderer::MipmapMode mode
+		, float minLod
+		, float maxLod )
 	{
 		switch ( filter )
 		{
@@ -54,6 +57,10 @@ namespace gl_renderer
 			switch ( mode )
 			{
 			case renderer::MipmapMode::eNone:
+				if ( minLod != 1000.0f && maxLod != 1000.0f )
+				{
+					return GL_FILTER_NEAREST_MIPMAP_NEAREST;
+				}
 				return GL_FILTER_NEAREST;
 
 			case renderer::MipmapMode::eNearest:
@@ -71,6 +78,10 @@ namespace gl_renderer
 			switch ( mode )
 			{
 			case renderer::MipmapMode::eNone:
+				if ( minLod != 1000.0f && maxLod != 1000.0f )
+				{
+					return GL_FILTER_LINEAR_MIPMAP_NEAREST;
+				}
 				return GL_FILTER_LINEAR;
 
 			case renderer::MipmapMode::eNearest:

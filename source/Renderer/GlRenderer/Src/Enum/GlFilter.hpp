@@ -38,5 +38,8 @@ namespace gl_renderer
 	*\return
 	*	Le GlFilter.
 	*/
-	GlFilter convert( renderer::Filter const & filter, renderer::MipmapMode mode );
+	GlFilter convert( renderer::Filter const & filter
+		, renderer::MipmapMode mode
+		, float minLod
+		, float maxLod );
 }
