@@ -39,13 +39,13 @@ namespace gl_renderer
 			, m_copyInfo.srcSubresource.mipLevel
 			, m_copyInfo.srcOffset.x
 			, m_copyInfo.srcOffset.y
-			, m_copyInfo.srcOffset.z
+			, m_copyInfo.srcSubresource.baseArrayLayer ? int32_t( m_copyInfo.srcSubresource.baseArrayLayer ) : m_copyInfo.srcOffset.z
 			, m_dst.getImage()
 			, m_dstTarget
 			, m_copyInfo.dstSubresource.mipLevel
 			, m_copyInfo.dstOffset.x
 			, m_copyInfo.dstOffset.y
-			, m_copyInfo.dstOffset.z
+			, m_copyInfo.dstSubresource.baseArrayLayer ? int32_t( m_copyInfo.dstSubresource.baseArrayLayer ) : m_copyInfo.dstOffset.z
 			, m_copyInfo.extent.width
 			, m_copyInfo.extent.height
 			, m_copyInfo.extent.depth );
