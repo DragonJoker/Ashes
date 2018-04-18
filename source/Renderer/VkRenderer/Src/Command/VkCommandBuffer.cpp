@@ -394,7 +394,7 @@ namespace vk_renderer
 		DEBUG_DUMP( vkcopyInfo );
 		m_device.vkCmdCopyImageToBuffer( m_commandBuffer
 			, static_cast< Texture const & >( src )
-			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+			, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
 			, static_cast< Buffer const & >( dst )
 			, uint32_t( vkcopyInfo.size() )
 			, vkcopyInfo.data() );
