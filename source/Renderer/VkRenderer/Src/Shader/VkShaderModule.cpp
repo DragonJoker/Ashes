@@ -11,7 +11,7 @@ See LICENSE file in root folder.
 #	include <SPIRV/GlslangToSpv.h>
 #endif
 
-#include <clocale>
+#include <locale>
 #include <regex>
 
 namespace vk_renderer
@@ -170,11 +170,11 @@ namespace vk_renderer
 	{
 #if VKRENDERER_GLSL_TO_SPV
 
-		std::string prvLoc = setlocale( LC_NUMERIC, nullptr );
+		auto prvLoc = std::locale( "" );
 
-		if ( prvLoc != "C" )
+		if ( prvLoc.name() != "C" )
 		{
-			setlocale( LC_NUMERIC, "C" );
+			std::locale::global( std::locale{ "C" } );
 		}
 
 		TBuiltInResource resources;
@@ -215,9 +215,9 @@ namespace vk_renderer
 		glslang::GlslangToSpv( *glprogram.getIntermediate( glstage ), spirv );
 		doLoadShader( spirv.data(), uint32_t( spirv.size() * sizeof( uint32_t ) ) );
 
-		if ( prvLoc != "C" )
+		if ( prvLoc.name() != "C" )
 		{
-			setlocale( LC_NUMERIC, prvLoc.c_str() );
+			std::locale::global( prvLoc );
 		}
 
 #else
