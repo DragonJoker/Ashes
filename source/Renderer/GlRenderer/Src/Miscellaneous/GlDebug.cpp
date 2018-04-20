@@ -48,6 +48,47 @@ namespace gl_api
 
 namespace gl_renderer
 {
+	namespace
+	{
+		std::string getErrorName( uint32_t code, uint32_t category )
+		{
+			static uint32_t constexpr InvalidEnum = 0x0500;
+			static uint32_t constexpr InvalidValue = 0x0501;
+			static uint32_t constexpr InvalidOperation = 0x0502;
+			static uint32_t constexpr StackOverflow = 0x0503;
+			static uint32_t constexpr StackUnderflow = 0x0504;
+			static uint32_t constexpr OutOfMemory = 0x0505;
+			static uint32_t constexpr InvalidFramebufferOperation = 0x0506;
+
+			static std::map< uint32_t, std::string > const errors
+			{
+				{ InvalidEnum, "Invalid Enum" },
+				{ InvalidValue, "Invalid Value" },
+				{ InvalidOperation, "Invalid Operation" },
+				{ StackOverflow, "Stack Overflow" },
+				{ StackUnderflow, "Stack Underflow" },
+				{ OutOfMemory, "Out of memory" },
+				{ InvalidFramebufferOperation, "Invalid frame buffer operation" },
+			};
+
+			if ( category == GL_DEBUG_CATEGORY_API_ERROR_AMD
+				|| category == GL_DEBUG_TYPE_ERROR )
+			{
+				auto it = errors.find( code );
+
+				if ( it == errors.end() )
+				{
+					return "UNKNOWN_ERROR";
+				}
+
+				return it->second;
+			}
+			else
+			{
+				return std::string{};
+			}
+		}
+	}
 	using PFNGLDEBUGPROC = void ( CALLBACK * )( uint32_t source, uint32_t type, uint32_t id, uint32_t severity, int length, const char * message, void * userParam );
 	using PFNGLDEBUGAMDPROC = void ( CALLBACK * )( uint32_t id, uint32_t category, uint32_t severity, int length, const char* message, void* userParam );
 	using PFNGLDEBUGMESSAGECALLBACK = void ( CALLBACK * )( PFNGLDEBUGPROC callback, void * userParam );
@@ -98,7 +139,9 @@ namespace gl_renderer
 
 	void CALLBACK callbackDebugLog( uint32_t source, uint32_t type, uint32_t id, uint32_t severity, int length, const char * message, void * userParam )
 	{
+		std::locale loc{ "C" };
 		std::stringstream stream;
+		stream.imbue( loc );
 		stream << "OpenGL Debug\n";
 
 		switch ( source )
@@ -121,7 +164,7 @@ namespace gl_renderer
 		case GL_DEBUG_TYPE_OTHER:				stream << "    Type: Other\n";					break;
 		}
 
-		stream << "    ID: " << id << "\n";
+		stream << "    ID: 0x" << std::hex << id << " (" << getErrorName( id, type ) << ")\n";
 
 		switch ( severity )
 		{
@@ -154,7 +197,9 @@ namespace gl_renderer
 
 	void CALLBACK callbackDebugLogAMD( uint32_t id, uint32_t category, uint32_t severity, int length, const char* message, void* userParam )
 	{
+		std::locale loc{ "C" };
 		std::stringstream stream;
+		stream.imbue( loc );
 		stream << "OpenGL Debug\n";
 
 		switch ( category )
@@ -169,7 +214,7 @@ namespace gl_renderer
 		case GL_DEBUG_CATEGORY_OTHER_AMD:				stream << "    Category: Other\n";					break;
 		}
 
-		stream << "    ID: " << id << "\n";
+		stream << "    ID: 0x" << std::hex << id << " (" << getErrorName( id, category ) << ")\n";
 
 		switch ( severity )
 		{
@@ -207,40 +252,12 @@ namespace gl_renderer
 
 		if ( errorCode )
 		{
-			static uint32_t constexpr InvalidEnum = 0x0500;
-			static uint32_t constexpr InvalidValue = 0x0501;
-			static uint32_t constexpr InvalidOperation = 0x0502;
-			static uint32_t constexpr StackOverflow = 0x0503;
-			static uint32_t constexpr StackUnderflow = 0x0504;
-			static uint32_t constexpr OutOfMemory = 0x0505;
-			static uint32_t constexpr InvalidFramebufferOperation = 0x0506;
-
-			static std::map< uint32_t, std::string > const Errors
-			{
-				{ InvalidEnum, "Invalid Enum" },
-				{ InvalidValue, "Invalid Value" },
-				{ InvalidOperation, "Invalid Operation" },
-				{ StackOverflow, "Stack Overflow" },
-				{ StackUnderflow, "Stack Underflow" },
-				{ OutOfMemory, "Out of memory" },
-				{ InvalidFramebufferOperation, "Invalid frame buffer operation" },
-			};
-
-			auto it = Errors.find( errorCode );
-			std::stringstream error;
-			error << "OpenGL Error, on function: " << text << std::endl;
-			error << "  ID: 0x" << std::hex << errorCode << std::endl;
-
-			if ( it == Errors.end() )
-			{
-				error << "  Message: Unknown error" << std::endl;
-			}
-			else
-			{
-				error << "  Message: " << it->second << std::endl;
-			}
-
-			renderer::Logger::logError( error.str() );
+			std::locale loc{ "C" };
+			std::stringstream stream;
+			stream.imbue( loc );
+			stream << "OpenGL Error, on function: " << text << std::endl;
+			stream << "  ID: 0x" << std::hex << errorCode << " (" << getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) << ")" << std::endl;
+			renderer::Logger::logError( stream.str() );
 			errorCode = gl::GetError();
 			result = false;
 		}

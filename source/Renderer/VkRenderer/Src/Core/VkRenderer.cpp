@@ -9,6 +9,9 @@
 #	include <glslang/Public/ShaderLang.h>
 #endif
 
+#include <iomanip>
+#include <locale>
+
 #if !defined( NDEBUG )
 #	define LOAD_VALIDATION_LAYERS 1
 #else
@@ -35,7 +38,9 @@ namespace vk_renderer
 		{
 			// Select prefix depending on flags passed to the callback
 			// Note that multiple flags may be set for a single validation message
+			std::locale loc{ "C" };
 			std::stringstream stream;
+			stream.imbue( loc );
 			stream << "Vulkan ";
 
 			// Error that may result in undefined behaviour
@@ -67,7 +72,7 @@ namespace vk_renderer
 
 			// Display message to default output (console/logcat)
 			stream << "    Layer: " << pLayerPrefix << "\n";
-			stream << "    Code: " << messageCode << "\n";
+			stream << "    Code: 0x" << std::hex << messageCode << "\n";
 			stream << "    Message: " << pMessage;
 
 #if defined( __ANDROID__ )
