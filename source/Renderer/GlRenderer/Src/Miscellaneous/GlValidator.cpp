@@ -268,26 +268,47 @@ namespace gl_renderer
 			{
 			case renderer::Format::eR32_SFLOAT:
 			case renderer::Format::eR8_UNORM:
+			case renderer::Format::eR8_SINT:
+			case renderer::Format::eR8_SRGB:
+			case renderer::Format::eR8_SSCALED:
 				return rhs == renderer::Format::eR32_SFLOAT
 					|| rhs == renderer::Format::eR32G32_SFLOAT
 					|| rhs == renderer::Format::eR32G32B32_SFLOAT
 					|| rhs == renderer::Format::eR32G32B32A32_SFLOAT
-					|| rhs == renderer::Format::eR8_UNORM;
+					|| rhs == renderer::Format::eR8_UNORM
+					|| rhs == renderer::Format::eR8_SINT
+					|| rhs == renderer::Format::eR8_SRGB
+					|| rhs == renderer::Format::eR8_SSCALED;
 			case renderer::Format::eR32G32_SFLOAT:
 			case renderer::Format::eR8G8_UNORM:
+			case renderer::Format::eR8G8_SINT:
+			case renderer::Format::eR8G8_SRGB:
+			case renderer::Format::eR8G8_SSCALED:
 				return rhs == renderer::Format::eR32G32_SFLOAT
 					|| rhs == renderer::Format::eR32G32B32_SFLOAT
 					|| rhs == renderer::Format::eR32G32B32A32_SFLOAT
-					|| rhs == renderer::Format::eR8G8_UNORM;
+					|| rhs == renderer::Format::eR8G8_UNORM
+					|| rhs == renderer::Format::eR8G8_SINT
+					|| rhs == renderer::Format::eR8G8_SRGB
+					|| rhs == renderer::Format::eR8G8_SSCALED;
 			case renderer::Format::eR32G32B32_SFLOAT:
 			case renderer::Format::eR8G8B8_UNORM:
+			case renderer::Format::eR8G8B8_SINT:
+			case renderer::Format::eR8G8B8_SRGB:
+			case renderer::Format::eR8G8B8_SSCALED:
 				return rhs == renderer::Format::eR32G32B32_SFLOAT
 					|| rhs == renderer::Format::eR32G32B32A32_SFLOAT
-					|| rhs == renderer::Format::eR8G8B8_UNORM;
+					|| rhs == renderer::Format::eR8G8B8_UNORM
+					|| rhs == renderer::Format::eR8G8B8_SINT
+					|| rhs == renderer::Format::eR8G8B8_SRGB
+					|| rhs == renderer::Format::eR8G8B8_SSCALED;
 			case renderer::Format::eR16G16B16A16_SFLOAT:
 			case renderer::Format::eR32G32B32A32_SFLOAT:
 			case renderer::Format::eR8G8B8A8_UNORM:
 			case renderer::Format::eB8G8R8A8_UNORM:
+			case renderer::Format::eR8G8B8A8_SINT:
+			case renderer::Format::eR8G8B8A8_SRGB:
+			case renderer::Format::eR8G8B8A8_SSCALED:
 				return rhs == renderer::Format::eR16G16B16A16_SFLOAT
 					|| rhs == renderer::Format::eR32G32B32A32_SFLOAT
 					|| rhs == renderer::Format::eR8G8B8A8_UNORM
@@ -295,7 +316,10 @@ namespace gl_renderer
 					|| rhs == renderer::Format::eR16G16B16_SFLOAT
 					|| rhs == renderer::Format::eR32G32B32_SFLOAT
 					|| rhs == renderer::Format::eR8G8B8_UNORM
-					|| rhs == renderer::Format::eB8G8R8_UNORM;
+					|| rhs == renderer::Format::eB8G8R8_UNORM
+					|| rhs == renderer::Format::eR8G8B8A8_SINT
+					|| rhs == renderer::Format::eR8G8B8A8_SRGB
+					|| rhs == renderer::Format::eR8G8B8A8_SSCALED;
 			case renderer::Format::eD16_UNORM:
 			case renderer::Format::eD16_UNORM_S8_UINT:
 			case renderer::Format::eD24_UNORM_S8_UINT:
