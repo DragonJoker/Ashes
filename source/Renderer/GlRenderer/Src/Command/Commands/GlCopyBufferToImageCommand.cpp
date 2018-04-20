@@ -14,6 +14,12 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
+	enum GlPackAlignment
+	{
+		GL_UNPACK_ALIGNMENT = 0x0CF5,
+		GL_PACK_ALIGNMENT = 0x0D05,
+	};
+
 	CopyBufferToImageCommand::CopyBufferToImageCommand( renderer::BufferImageCopyArray const & copyInfo
 		, renderer::BufferBase const & src
 		, renderer::Texture const & dst )
@@ -45,6 +51,7 @@ namespace gl_renderer
 	void CopyBufferToImageCommand::applyOne( renderer::BufferImageCopy const & copyInfo )const
 	{
 		glLogCall( gl::BindTexture, m_copyTarget, m_dst.getImage() );
+		glLogCall( gl::PixelStorei, GL_UNPACK_ALIGNMENT, 1 );
 		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, m_src.getBuffer() );
 
 		if ( renderer::isCompressedFormat( m_dst.getFormat() ) )

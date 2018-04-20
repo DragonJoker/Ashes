@@ -246,6 +246,7 @@ namespace gl_renderer
 	using PFN_glMultiDrawArraysIndirect = void ( GLAPIENTRY * )( GLenum mode, const void * indirect, GLsizei drawcount, GLsizei stride );
 	using PFN_glMultiDrawElementsIndirect = void ( GLAPIENTRY * )( GLenum mode, GLenum type, const void * indirect, GLsizei drawcount, GLsizei stride );
 	using PFN_glPatchParameteri = void ( GLAPIENTRY * )( GLenum pname, GLint value );
+	using PFN_glPixelStorei = void ( GLAPIENTRY * )( GLenum pname, GLint param );
 	using PFN_glPolygonMode = void ( GLAPIENTRY * )( GLenum face, GLenum mode );
 	using PFN_glPolygonOffsetClampEXT = void ( GLAPIENTRY * )( GLfloat factor, GLfloat units, GLfloat clamp );
 	using PFN_glQueryCounter = void ( GLAPIENTRY * )( GLuint id, GLenum target );

@@ -20,6 +20,31 @@ namespace vk_renderer
 
 	namespace
 	{
+		template< typename CleanFunc >
+		struct BlockGuard
+		{
+			template< typename InitFunc >
+			BlockGuard( InitFunc init, CleanFunc clean )
+				: m_clean{ std::move( clean ) }
+			{
+				init();
+			}
+
+			~BlockGuard()
+			{
+				m_clean();
+			}
+
+		private:
+			CleanFunc m_clean;
+		};
+
+		template< typename InitFunc, typename CleanFunc >
+		BlockGuard< CleanFunc > makeBlockGuard( InitFunc init, CleanFunc clean )
+		{
+			return BlockGuard< CleanFunc >{ std::move( init ), std::move( clean ) };
+		}
+
 		void doInitResources( Device const & device
 			, TBuiltInResource & resources )
 		{
@@ -169,13 +194,24 @@ namespace vk_renderer
 	void ShaderModule::loadShader( std::string const & shader )
 	{
 #if VKRENDERER_GLSL_TO_SPV
-
 		auto prvLoc = std::locale( "" );
 
-		if ( prvLoc.name() != "C" )
-		{
-			std::locale::global( std::locale{ "C" } );
-		}
+		auto guard = makeBlockGuard(
+			[&prvLoc]()
+			{
+				if ( prvLoc.name() != "C" )
+				{
+					std::locale::global( std::locale{ "C" } );
+				}
+			},
+			[&prvLoc]()
+			{
+				if ( prvLoc.name() != "C" )
+				{
+					std::locale::global( prvLoc );
+				}
+			}
+		);
 
 		TBuiltInResource resources;
 		doInitResources( m_device, resources );
@@ -214,11 +250,6 @@ namespace vk_renderer
 		renderer::UInt32Array spirv;
 		glslang::GlslangToSpv( *glprogram.getIntermediate( glstage ), spirv );
 		doLoadShader( spirv.data(), uint32_t( spirv.size() * sizeof( uint32_t ) ) );
-
-		if ( prvLoc.name() != "C" )
-		{
-			std::locale::global( prvLoc );
-		}
 
 #else
 
