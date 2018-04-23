@@ -9,6 +9,7 @@
 #	include <glslang/Public/ShaderLang.h>
 #endif
 
+#include <cmath>
 #include <iomanip>
 #include <locale>
 

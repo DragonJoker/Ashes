@@ -29,8 +29,6 @@ See LICENSE file in root folder.
 
 #include <Miscellaneous/MemoryRequirements.hpp>
 
-#include <cmath>
-
 namespace vk_renderer
 {
 	Device::Device( Renderer const & renderer

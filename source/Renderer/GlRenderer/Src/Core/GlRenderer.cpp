@@ -5,6 +5,7 @@
 #include "Core/GlDevice.hpp"
 #include "Core/GlPhysicalDevice.hpp"
 
+#include <cmath>
 #include <iostream>
 
 #if RENDERLIB_WIN32
