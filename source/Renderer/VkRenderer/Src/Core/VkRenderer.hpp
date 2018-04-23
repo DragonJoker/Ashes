@@ -45,6 +45,31 @@ namespace vk_renderer
 		renderer::ConnectionPtr createConnection( uint32_t deviceIndex
 			, renderer::WindowHandle && handle )const override;
 		/**
+		*\copydoc	renderer::Renderer::frustum
+		*/
+		renderer::Mat4 frustum( float left
+			, float right
+			, float bottom
+			, float top
+			, float zNear
+			, float zFar )const override;
+		/**
+		*\copydoc	renderer::Renderer::perspective
+		*/
+		renderer::Mat4 perspective( float radiansFovY
+			, float aspect
+			, float zNear
+			, float zFar )const override;
+		/**
+		*\copydoc	renderer::Renderer::ortho
+		*/
+		renderer::Mat4 ortho( float left
+			, float right
+			, float bottom
+			, float top
+			, float zNear
+			, float zFar )const override;
+		/**
 		*\~french
 		*\brief
 		*	Ajoute les couches de l'instance aux noms déjà présents dans la liste donnée.

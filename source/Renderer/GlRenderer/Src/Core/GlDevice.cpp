@@ -32,7 +32,6 @@ See LICENSE file in root folder.
 #include <Image/SubresourceLayout.hpp>
 #include <RenderPass/RenderPassCreateInfo.hpp>
 
-#include <cmath>
 #include <iostream>
 
 namespace gl_renderer
@@ -526,60 +525,6 @@ namespace gl_renderer
 	void Device::waitIdle()const
 	{
 		glLogCall( gl::Finish );
-	}
-
-	renderer::Mat4 Device::frustum( float left
-		, float right
-		, float bottom
-		, float top
-		, float zNear
-		, float zFar )const
-	{
-		renderer::Mat4 result( float( 0 ) );
-		result[0].x = ( float( 2 ) * zNear ) / ( right - left );
-		result[1].y = ( float( 2 ) * zNear ) / ( top - bottom );
-		result[2].x = ( right + left ) / ( right - left );
-		result[2].y = ( top + bottom ) / ( top - bottom );
-		result[2].w = float( -1 );
-		result[2].z = zFar / ( zNear - zFar );
-		result[3].z = -( zFar * zNear ) / ( zFar - zNear );
-
-		return result;
-	}
-
-	renderer::Mat4 Device::perspective( float radiansFovY
-		, float aspect
-		, float zNear
-		, float zFar )const
-	{
-		float const tanHalfFovy = tan( radiansFovY / float( 2 ) );
-
-		renderer::Mat4 result( float( 0 ) );
-		result[0].x = float( 1 ) / ( aspect * tanHalfFovy );
-		result[1].y = float( 1 ) / ( tanHalfFovy );
-		result[2].w = -float( 1 );
-		result[2].z = zFar / ( zNear - zFar );
-		result[3].z = -( zFar * zNear ) / ( zFar - zNear );
-
-		return result;
-	}
-
-	renderer::Mat4 Device::ortho( float left
-		, float right
-		, float bottom
-		, float top
-		, float zNear
-		, float zFar )const
-	{
-		renderer::Mat4 result{ 1 };
-		result[0].x = float( 2 ) / ( right - left );
-		result[1].y = float( 2 ) / ( top - bottom );
-		result[3].x = -( right + left ) / ( right - left );
-		result[3].y = -( top + bottom ) / ( top - bottom );
-		result[2].z = -float( 1 ) / ( zFar - zNear );
-		result[3].z = -zNear / ( zFar - zNear );
-
-		return result;
 	}
 
 	void Device::swapBuffers()const
