@@ -24,6 +24,7 @@ namespace gl_renderer
 		{
 			if ( renderer::isDepthOrStencilFormat( attach.format ) )
 			{
+				m_hasDepthAttach = true;
 				m_depthAttach = attach;
 				indices.push_back( 0u );
 			}

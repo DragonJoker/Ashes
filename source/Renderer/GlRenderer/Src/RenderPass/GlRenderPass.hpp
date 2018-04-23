@@ -35,7 +35,18 @@ namespace gl_renderer
 			return m_colourAttaches;
 		}
 
+		inline bool hasDepthAttach()const
+		{
+			return m_hasDepthAttach;
+		}
+
+		inline renderer::AttachmentDescription const & getDepthAttach()const
+		{
+			return m_depthAttach;
+		}
+
 	private:
+		bool m_hasDepthAttach{ false };
 		renderer::AttachmentDescription m_depthAttach;
 		std::vector< AttachmentDescription > m_colourAttaches;
 	};

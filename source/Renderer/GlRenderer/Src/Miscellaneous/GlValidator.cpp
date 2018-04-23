@@ -266,6 +266,7 @@ namespace gl_renderer
 
 			switch ( lhs )
 			{
+			case renderer::Format::eR16_SFLOAT:
 			case renderer::Format::eR32_SFLOAT:
 			case renderer::Format::eR8_UNORM:
 			case renderer::Format::eR8_SINT:
@@ -279,6 +280,7 @@ namespace gl_renderer
 					|| rhs == renderer::Format::eR8_SINT
 					|| rhs == renderer::Format::eR8_SRGB
 					|| rhs == renderer::Format::eR8_SSCALED;
+			case renderer::Format::eR16G16_SFLOAT:
 			case renderer::Format::eR32G32_SFLOAT:
 			case renderer::Format::eR8G8_UNORM:
 			case renderer::Format::eR8G8_SINT:
@@ -291,6 +293,7 @@ namespace gl_renderer
 					|| rhs == renderer::Format::eR8G8_SINT
 					|| rhs == renderer::Format::eR8G8_SRGB
 					|| rhs == renderer::Format::eR8G8_SSCALED;
+			case renderer::Format::eR16G16B16_SFLOAT:
 			case renderer::Format::eR32G32B32_SFLOAT:
 			case renderer::Format::eR8G8B8_UNORM:
 			case renderer::Format::eR8G8B8_SINT:
@@ -646,47 +649,79 @@ namespace gl_renderer
 		}
 
 		void doValidateOutputs( GLuint program
-			, renderer::RenderPass const & renderPass )
+			, RenderPass const & renderPass )
 		{
-			renderer::AttachmentDescriptionArray attaches;
+			std::set< renderer::AttachmentDescription const * > attaches;
 
 			for ( auto & attach : renderPass.getAttachments() )
 			{
-				attaches.push_back( attach );
+				attaches.insert( &attach );
 			}
+
+			struct GlslOutput
+			{
+				std::string name;
+				GlslAttributeType type;
+				uint32_t location;
+			};
+			std::vector< GlslOutput > outputs;
 
 			getProgramInterfaceInfos( program
 				, GLSL_INTERFACE_PROGRAM_OUTPUT
 				, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
-				, [&attaches]( std::string name, std::vector< GLint > const & values )
+				, [&outputs]( std::string name, std::vector< GLint > const & values )
+				{
+					outputs.push_back( { name, GlslAttributeType( values[0] ), uint32_t( values[2] ) } );
+				} );
+
+			for ( auto & output : outputs )
+			{
+				bool found = false;
+
+				if ( output.location != ~( 0u ) )
+				{
+					if ( renderPass.getColourAttaches().size() > output.location )
+					{
+						auto & attach = renderPass.getColourAttaches()[output.location];
+
+						if ( areCompatible( attach.attach.get().format, convertFormat( output.type ) ) )
+						{
+							found = true;
+							attaches.erase( &attach.attach.get() );
+						}
+					}
+
+					if ( !found )
+					{
+						renderer::Logger::logError( std::stringstream{} << ValidationError
+							<< "Attachment [" << output.name
+							<< "], of type: " << getName( output.type )
+							<< ", at location: " << output.location
+							<< " is used in the shader program, but is not listed in the render pass attachments" );
+					}
+				}
+				else
 				{
 					auto it = std::find_if( attaches.begin()
 						, attaches.end()
-						, [&values]( renderer::AttachmentDescription const & lookup )
+						, [&output]( renderer::AttachmentDescription const * lookup )
 						{
-							return areCompatible( lookup.format, convertFormat( GlslAttributeType( values[0] ) ) );
+							return areCompatible( lookup->format, convertFormat( output.type ) );
 						} );
 
 					if ( it != attaches.end() )
 					{
 						attaches.erase( it );
 					}
-					else if ( values[2] != -1 )
-					{
-						renderer::Logger::logError( std::stringstream{} << ValidationError
-							<< "Attachment [" << name
-							<< "], of type: " << getName( GlslAttributeType( values[0] ) )
-							<< ", at location: " << values[2]
-							<< " is used in the shader program, but is not listed in the render pass attachments" );
-					}
-				} );
+				}
+			}
 
 			for ( auto & attach : attaches )
 			{
-				if ( !renderer::isDepthOrStencilFormat( attach.format ) )
+				if ( !renderer::isDepthOrStencilFormat( attach->format ) )
 				{
 					renderer::Logger::logWarning( std::stringstream{} << ValidationWarning
-						<< "Render pass has an attahment of type " << renderer::getName( attach.format )
+						<< "Render pass has an attahment of type " << renderer::getName( attach->format )
 						<< ", which is not used by the program" );
 				}
 			}
@@ -763,7 +798,7 @@ namespace gl_renderer
 		, renderer::RenderPass const & renderPass )
 	{
 		doValidateInputs( program, vertexInputState );
-		doValidateOutputs( program, renderPass );
+		doValidateOutputs( program, static_cast< RenderPass const & >( renderPass ) );
 		//doValidateUbos( program );
 		//doValidateSsbos( program );
 		//doValidateUniforms( program );
