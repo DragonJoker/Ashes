@@ -17,8 +17,6 @@ See LICENSE file in root folder.
 #include "RenderPass/RenderSubpassState.hpp"
 #include "Utils/CallStack.hpp"
 
-#include <cmath>
-
 namespace renderer
 {
 	Device::Device( Renderer const & renderer

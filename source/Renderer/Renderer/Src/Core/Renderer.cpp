@@ -6,6 +6,8 @@ See LICENSE file in root folder.
 
 #include "Utils/CallStack.hpp"
 
+#include <cmath>
+
 namespace renderer
 {
 	Renderer::Renderer( ClipDirection clipDirection
