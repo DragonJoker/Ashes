@@ -6,6 +6,8 @@ See LICENSE file in root folder.
 
 #include "Utils/CallStack.hpp"
 
+#include <cmath>
+
 namespace renderer
 {
 	Renderer::Renderer( ClipDirection clipDirection
@@ -39,5 +41,24 @@ namespace renderer
 		}
 
 		return *m_gpus[gpuIndex];
+	}
+
+	Mat4 Renderer::infinitePerspective( float radiansFovY
+		, float aspect
+		, float zNear )const
+	{
+		float const range = tan( radiansFovY / float( 2 ) ) * zNear;
+		float const left = -range * aspect;
+		float const right = range * aspect;
+		float const bottom = -range;
+		float const top = range;
+
+		Mat4 result{ float{ 0 } };
+		result[0].x = ( float( 2 ) * zNear ) / ( right - left );
+		result[1].y = ( float( 2 ) * zNear ) / ( top - bottom );
+		result[2].z = -float( 1 );
+		result[2].w = -float( 1 );
+		result[3].z = -float( 2 ) * zNear;
+		return result;
 	}
 }
