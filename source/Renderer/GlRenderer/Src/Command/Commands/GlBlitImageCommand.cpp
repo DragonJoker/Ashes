@@ -80,6 +80,43 @@ namespace gl_renderer
 		}
 	}
 
+	BlitImageCommand::Attachment::Attachment( renderer::ImageSubresourceLayers & subresource
+		, Texture const & image
+		, uint32_t layer )
+		: object{ image.getImage() }
+		, point{ getAttachmentPoint( image.getFormat() ) }
+		, type{ getAttachmentType( image.getFormat() ) }
+	{
+		if ( image.getLayerCount() > 1u )
+		{
+			view = image.createView( 
+			{
+				renderer::TextureViewType( image.getType() ),
+				image.getFormat(),
+				renderer::ComponentMapping{},
+				{
+					subresource.aspectMask,
+					subresource.mipLevel,
+					1u,
+					layer,
+					1u
+				}
+			} );
+			object = static_cast< TextureView const & >( *view ).getImage();
+			subresource.mipLevel = 0u;
+		}
+	}
+
+	BlitImageCommand::LayerCopy::LayerCopy( renderer::ImageBlit blitRegion
+		, Texture const & srcImage
+		, Texture const & dstImage
+		, uint32_t layer )
+		: region{ blitRegion }
+		, src{ region.srcSubresource, srcImage, layer }
+		, dst{ region.dstSubresource, dstImage, layer }
+	{
+	}
+
 	BlitImageCommand::BlitImageCommand( Device const & device
 		, renderer::Texture const & srcImage
 		, renderer::Texture const & dstImage
@@ -87,14 +124,23 @@ namespace gl_renderer
 		, renderer::Filter filter )
 		: m_srcTexture{ static_cast< Texture const & >( srcImage ) }
 		, m_dstTexture{ static_cast< Texture const & >( dstImage ) }
-		, m_regions{ regions }
 		, m_srcFbo{ device.getBlitSrcFbo() }
 		, m_dstFbo{ device.getBlitDstFbo() }
 		, m_filter{ convert( filter ) }
 		, m_mask{ getMask( m_srcTexture.getFormat() ) }
-		, m_srcAttach{ getAttachmentPoint( m_srcTexture.getFormat() ), m_srcTexture.getImage(), getAttachmentType( m_srcTexture.getFormat() ) }
-		, m_dstAttach{ getAttachmentPoint( m_dstTexture.getFormat() ), m_dstTexture.getImage(), getAttachmentType( m_dstTexture.getFormat() ) }
 	{
+		assert( srcImage.getLayerCount() == dstImage.getLayerCount() );
+
+		for ( auto & region : regions )
+		{
+			for ( uint32_t layer = 0u; layer < srcImage.getLayerCount(); ++layer )
+			{
+				m_layerCopies.emplace_back( std::make_shared< BlitImageCommand::LayerCopy >( region
+					, m_srcTexture
+					, m_dstTexture
+					, layer ) );
+			}
+		}
 	}
 
 	BlitImageCommand::~BlitImageCommand()
@@ -103,38 +149,39 @@ namespace gl_renderer
 
 	void BlitImageCommand::apply()const
 	{
-		for ( auto & region : m_regions )
+		for ( auto & playerCopy : m_layerCopies )
 		{
+			auto & layerCopy = *playerCopy;
 			// Setup source FBO
 			glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_srcFbo );
 			glLogCall( gl::FramebufferTexture2D
 				, GL_FRAMEBUFFER
-				, m_srcAttach.point
+				, layerCopy.src.point
 				, GL_TEXTURE_2D
-				, m_srcAttach.object
-				, region.srcSubresource.mipLevel );
+				, layerCopy.src.object
+				, layerCopy.region.srcSubresource.mipLevel );
 
 			// Setup dst FBO
 			glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_dstFbo );
 			glLogCall( gl::FramebufferTexture2D
 				, GL_FRAMEBUFFER
-				, m_dstAttach.point
+				, layerCopy.dst.point
 				, GL_TEXTURE_2D
-				, m_dstAttach.object
-				, region.dstSubresource.mipLevel );
+				, layerCopy.dst.object
+				, layerCopy.region.dstSubresource.mipLevel );
 
 			// Perform the blit
 			glLogCall( gl::BindFramebuffer, GL_READ_FRAMEBUFFER, m_srcFbo );
 			glLogCall( gl::BindFramebuffer, GL_DRAW_FRAMEBUFFER, m_dstFbo );
 			glLogCall( gl::BlitFramebuffer
-				, region.srcOffset.x
-				, region.srcOffset.y
-				, region.srcExtent.width
-				, region.srcExtent.height
-				, region.dstOffset.x
-				, region.dstOffset.y
-				, region.dstExtent.width
-				, region.dstExtent.height
+				, layerCopy.region.srcOffset.x
+				, layerCopy.region.srcOffset.y
+				, layerCopy.region.srcExtent.width
+				, layerCopy.region.srcExtent.height
+				, layerCopy.region.dstOffset.x
+				, layerCopy.region.dstOffset.y
+				, layerCopy.region.dstExtent.width
+				, layerCopy.region.dstExtent.height
 				, m_mask
 				, m_filter );
 			glLogCall( gl::BindFramebuffer, GL_DRAW_FRAMEBUFFER, 0u );

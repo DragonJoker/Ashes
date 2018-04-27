@@ -13,11 +13,28 @@ namespace gl_renderer
 	class BlitImageCommand
 		: public CommandBase
 	{
+	public:
 		struct Attachment
 		{
+			Attachment( renderer::ImageSubresourceLayers & subresource
+				, Texture const & image
+				, uint32_t layer );
+
+			renderer::TextureViewPtr view;
 			GlAttachmentPoint point;
 			GLuint object;
 			GlAttachmentType type;
+		};
+		struct LayerCopy
+		{
+			LayerCopy( renderer::ImageBlit region
+				, Texture const & srcImage
+				, Texture const & dstImage
+				, uint32_t layer );
+
+			renderer::ImageBlit region;
+			Attachment src;
+			Attachment dst;
 		};
 
 	public:
@@ -34,11 +51,9 @@ namespace gl_renderer
 	private:
 		Texture const & m_srcTexture;
 		Texture const & m_dstTexture;
-		Attachment m_srcAttach;
-		Attachment m_dstAttach;
+		std::vector< std::shared_ptr< LayerCopy > > m_layerCopies;
 		GLuint m_srcFbo;
 		GLuint m_dstFbo;
-		std::vector< renderer::ImageBlit > m_regions;
 		GlFilter m_filter;
 		GlImageAspectFlags m_mask;
 		GLuint m_fbo;
