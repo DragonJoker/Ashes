@@ -358,7 +358,7 @@ namespace common
 			*m_renderPass,
 			renderer::VertexInputState::create( *m_vertexLayout ),
 			{ renderer::PrimitiveTopology::eTriangleStrip },
-			renderer::RasterisationState{},
+			renderer::RasterisationState{ 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone },
 			renderer::MultisampleState{},
 			renderer::ColourBlendState::createDefault(),
 			dynamicStateEnables,

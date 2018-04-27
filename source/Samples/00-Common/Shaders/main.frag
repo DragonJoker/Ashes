@@ -10,11 +10,10 @@ layout( location = 0 ) out vec4 pxl_colour;
 
 void main()
 {
-#ifdef VULKAN
 	vec2 guicoord = vtx_texcoord;
+#ifdef VULKAN
 	vec2 colcoord = vec2( vtx_texcoord.x, 1.0 - vtx_texcoord.y );
 #else
-	vec2 guicoord = vec2( vtx_texcoord.x, 1.0 - vtx_texcoord.y );
 	vec2 colcoord = vtx_texcoord;
 #endif
 

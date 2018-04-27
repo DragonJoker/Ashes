@@ -20,6 +20,6 @@ layout( location = 0 ) out vec3 vtx_texcoord;
 
 void main()
 {
-	gl_Position = ( mtxProjection * mtxModel * position ).xyww;
+	gl_Position = ( mtxProjection * mtxModel * rendererScalePosition( position ) ).xyww;
 	vtx_texcoord = position.xyz;
 }

@@ -226,7 +226,10 @@ namespace vk_renderer
 		std::regex regex{ R"(\#version \d*)" };
 		source = std::regex_replace( source.data()
 			, regex
-			, "$&\n#define VULKAN 100\n" );
+			, R"($&
+#define VULKAN 100
+#define rendererScalePosition( X ) X
+)" );
 		char const * const str = source.c_str();
 		glshader.setStrings( &str, 1 );
 

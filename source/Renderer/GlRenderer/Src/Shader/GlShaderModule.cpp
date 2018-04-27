@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 #include "Core/GlPhysicalDevice.hpp"
 
 #include <iostream>
+#include <regex>
 
 namespace gl_renderer
 {
@@ -76,8 +77,23 @@ namespace gl_renderer
 
 	void ShaderModule::loadShader( std::string const & shader )
 	{
-		auto length = int( shader.size() );
-		auto data = shader.data();
+		std::regex regex{ R"(void main)" };
+		auto source = std::regex_replace( shader.data()
+			, regex
+			, R"(vec4 rendererScalePosition(vec4 pos)
+{
+	mat4 scale;
+	scale[0] = vec4( 1.0, 0.0, 0.0, 0.0 );
+	scale[1] = vec4( 0.0, -1.0, 0.0, 0.0 );
+	scale[2] = vec4( 0.0, 0.0, 1.0, 0.0 );
+	scale[3] = vec4( 0.0, 0.0, 0.0, 1.0 );
+	return scale * pos;
+}
+
+$&)" );
+
+		auto length = int( source.size() );
+		char const * data = source.data();
 		glLogCall( gl::ShaderSource, m_shader, 1, &data, &length );
 		glLogCall( gl::CompileShader, m_shader );
 		int compiled = 0;
