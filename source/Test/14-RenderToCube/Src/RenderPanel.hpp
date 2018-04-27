@@ -19,6 +19,7 @@
 
 namespace vkapp
 {
+	class EquirectangularToCube;
 	class RenderPanel
 		: public wxPanel
 	{
@@ -91,6 +92,7 @@ namespace vkapp
 		renderer::UniformBufferPtr< renderer::Mat4 > m_matrixUbo;
 		renderer::UniformBufferPtr< renderer::Mat4 > m_objectUbo;
 		renderer::CommandBufferPtr m_updateCommandBuffer;
+		std::shared_ptr< EquirectangularToCube > m_equiToCube;
 		/**@}*/
 		/**
 		*\name

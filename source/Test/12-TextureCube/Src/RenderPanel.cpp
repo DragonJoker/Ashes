@@ -171,6 +171,7 @@ namespace vkapp
 
 	void RenderPanel::doCleanup()
 	{
+		std::cout << "Cleanup" << std::endl;
 		delete m_timer;
 
 		if ( m_device )

@@ -353,14 +353,15 @@ namespace gl_renderer
 		, float zNear
 		, float zFar )const
 	{
+		// OpenGL right handed (cf. https://www.opengl.org/sdk/docs/man2/xhtml/glFrustum.xml)
 		renderer::Mat4 result( float( 0 ) );
-		result[0].x = ( float( 2 ) * zNear ) / ( right - left );
+		result[0].x = ( float( 2 ) * zNear ) / ( right - left ),
 		result[1].y = ( float( 2 ) * zNear ) / ( top - bottom );
 		result[2].x = ( right + left ) / ( right - left );
 		result[2].y = ( top + bottom ) / ( top - bottom );
+		result[2].z = ( zNear + zFar ) / ( zNear - zFar );
 		result[2].w = float( -1 );
-		result[2].z = zFar / ( zNear - zFar );
-		result[3].z = -( zFar * zNear ) / ( zFar - zNear );
+		result[3].y = ( float( -2 ) * zFar * zNear ) / ( zFar - zNear );
 
 		return result;
 	}
@@ -370,14 +371,14 @@ namespace gl_renderer
 		, float zNear
 		, float zFar )const
 	{
-		float const tanHalfFovy = tan( radiansFovY / float( 2 ) );
-
+		// OpenGL right handed (cf. https://www.opengl.org/sdk/docs/man2/xhtml/gluPerspective.xml)
 		renderer::Mat4 result( float( 0 ) );
-		result[0].x = float( 1 ) / ( aspect * tanHalfFovy );
-		result[1].y = float( 1 ) / ( tanHalfFovy );
-		result[2].w = -float( 1 );
-		result[2].z = zFar / ( zNear - zFar );
-		result[3].z = -( zFar * zNear ) / ( zFar - zNear );
+		float const tanHalfFovy = tan( radiansFovY / float( 2 ) );
+		result[0].x = float( 1 / ( tanHalfFovy * aspect ) );
+		result[1].y = float( 1 / tanHalfFovy );
+		result[2].z = float( -( zFar + zNear ) / ( zFar - zNear ) );
+		result[2].w = float( -1 );
+		result[3].z = float( -2 * zFar * zNear / ( zFar - zNear ) );
 
 		return result;
 	}
@@ -389,13 +390,14 @@ namespace gl_renderer
 		, float zNear
 		, float zFar )const
 	{
+		// OpenGL right handed (cf. https://www.opengl.org/sdk/docs/man2/xhtml/glOrtho.xml)
 		renderer::Mat4 result{ 1 };
 		result[0].x = float( 2 ) / ( right - left );
 		result[1].y = float( 2 ) / ( top - bottom );
+		result[2].z = float( -2 ) / ( zFar - zNear );
 		result[3].x = -( right + left ) / ( right - left );
 		result[3].y = -( top + bottom ) / ( top - bottom );
-		result[2].z = -float( 1 ) / ( zFar - zNear );
-		result[3].z = -zNear / ( zFar - zNear );
+		result[3].z = -( zFar + zNear ) / ( zFar - zNear );
 
 		return result;
 	}

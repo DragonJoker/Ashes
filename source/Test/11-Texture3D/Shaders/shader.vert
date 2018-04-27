@@ -10,7 +10,7 @@ layout( location = 0 ) out vec2 vtx_texcoord;
 
 void main()
 {
-	gl_Position = position;
+	gl_Position = rendererScalePosition( position );
 #ifndef VULKAN
 	gl_Position.y = -gl_Position.y;
 #endif

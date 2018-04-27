@@ -298,7 +298,7 @@ namespace gl_renderer
 		, m_rsState{}
 	{
 		enable();
-		glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
+		//glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
 		initialiseDebugFunctions();
 		disable();
 

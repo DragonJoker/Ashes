@@ -145,24 +145,12 @@ namespace vkapp
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eHostVisible );
 
-			if ( device.getClipDirection() == renderer::ClipDirection::eTopDown )
-			{
-				result->getData( 0u ) = projection * views[0];
-				result->getData( 1u ) = projection * views[1];
-				result->getData( 2u ) = projection * views[2];
-				result->getData( 3u ) = projection * views[3];
-				result->getData( 4u ) = projection * views[4];
-				result->getData( 5u ) = projection * views[5];
-			}
-			else
-			{
-				result->getData( 0u ) = projection * views[0];
-				result->getData( 1u ) = projection * views[1];
-				result->getData( 2u ) = projection * views[3];
-				result->getData( 3u ) = projection * views[2];
-				result->getData( 4u ) = projection * views[4];
-				result->getData( 5u ) = projection * views[5];
-			}
+			result->getData( 0u ) = projection * views[0];
+			result->getData( 1u ) = projection * views[1];
+			result->getData( 2u ) = projection * views[2];
+			result->getData( 3u ) = projection * views[3];
+			result->getData( 4u ) = projection * views[4];
+			result->getData( 5u ) = projection * views[5];
 
 			stagingBuffer.uploadUniformData( commandBuffer
 				, result->getDatas()
@@ -318,7 +306,7 @@ namespace vkapp
 				*m_renderPass,
 				renderer::VertexInputState::create( *m_vertexLayout ),
 				renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
-				renderer::RasterisationState{},
+				renderer::RasterisationState{ 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone },
 				renderer::MultisampleState{},
 				renderer::ColourBlendState::createDefault(),
 				{},

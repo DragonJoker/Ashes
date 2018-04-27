@@ -177,6 +177,7 @@ namespace vkapp
 		if ( m_device )
 		{
 			m_device->waitIdle();
+			m_equiToCube.reset();
 
 			m_updateCommandBuffer.reset();
 			m_commandBuffer.reset();
@@ -270,10 +271,10 @@ namespace vkapp
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
-		EquirectangularToCube equiToCube{ shadersFolder / "BasketballCourt_4k.jpg"
+		m_equiToCube = std::make_shared< EquirectangularToCube >( shadersFolder / "BasketballCourt_4k.jpg"
 			, *m_device
-			, *m_texture };
-		equiToCube.render();
+			, *m_texture );
+		m_equiToCube->render();
 
 		m_view = m_texture->createView( renderer::TextureViewType::eCube
 			, renderer::Format::eR8G8B8A8_UNORM
@@ -662,6 +663,7 @@ namespace vkapp
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
 			, renderer::PipelineStageFlag::eVertexShader );
+		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 	}
 
 	void RenderPanel::doDraw()
