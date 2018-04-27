@@ -168,10 +168,16 @@ namespace gl_renderer
 			{
 				uint32_t index = m_renderPass.getAttachmentIndex( attach.getAttachment() );
 				auto image = glview.getImage();
+				auto mipLevel = glview.getSubResourceRange().baseMipLevel;
 
 				if ( glview.getSubResourceRange().baseMipLevel )
 				{
-					image = gltexture.getImage();
+					mipLevel = 0u;
+
+					if ( gltexture.getLayerCount() == 1u )
+					{
+						image = gltexture.getImage();
+					}
 				}
 
 				Attachment attachment
@@ -205,7 +211,7 @@ namespace gl_renderer
 					, GlAttachmentPoint( attachment.point + index )
 					, target
 					, attachment.object
-					, glview.getSubResourceRange().baseMipLevel );
+					, mipLevel );
 				doCheck( gl::CheckFramebufferStatus( GL_FRAMEBUFFER ) );
 			}
 			else
