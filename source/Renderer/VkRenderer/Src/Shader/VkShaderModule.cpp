@@ -223,13 +223,22 @@ namespace vk_renderer
 		std::string source = shader;
 
 		glslang::TShader glshader{ glstage };
-		std::regex regex{ R"(\#version \d*)" };
-		source = std::regex_replace( source.data()
-			, regex
-			, R"($&
-#define VULKAN 100
-#define rendererScalePosition( X ) X
-)" );
+
+		if ( checkFlag( m_stage, renderer::ShaderStageFlag::eVertex ) )
+		{
+			std::regex regex{ R"(\#version \d*)" };
+			source = std::regex_replace( source.data()
+				, regex
+				, "$&\n#define VULKAN 100\n#define rendererScalePosition( X ) X\n" );
+		}
+		else
+		{
+			std::regex regex{ R"(\#version \d*)" };
+			source = std::regex_replace( source.data()
+				, regex
+				, "$&\n#define VULKAN 100\n" );
+		}
+
 		char const * const str = source.c_str();
 		glshader.setStrings( &str, 1 );
 

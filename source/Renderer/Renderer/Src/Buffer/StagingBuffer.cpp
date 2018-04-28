@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Buffer/StagingBuffer.hpp"
 
+#include "Core/Device.hpp"
 #include "Image/Texture.hpp"
 #include "Image/TextureView.hpp"
 #include "Sync/BufferMemoryBarrier.hpp"
@@ -191,6 +192,7 @@ namespace renderer
 			, size );
 		getBuffer().flush( 0u, size );
 		getBuffer().unlock();
+		m_device.waitIdle();
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
@@ -336,6 +338,7 @@ namespace renderer
 			, size );
 		getBuffer().flush( 0u, size );
 		getBuffer().unlock();
+		m_device.waitIdle();
 	}
 
 	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & commandBuffer
