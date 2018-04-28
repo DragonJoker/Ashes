@@ -77,10 +77,14 @@ namespace gl_renderer
 
 	void ShaderModule::loadShader( std::string const & shader )
 	{
-		std::regex regex{ R"(void main)" };
-		auto source = std::regex_replace( shader.data()
-			, regex
-			, R"(vec4 rendererScalePosition(vec4 pos)
+		std::string source = shader;
+
+		if ( m_stage == renderer::ShaderStageFlag::eVertex )
+		{
+			std::regex regex{ R"(void[ ]*main)" };
+			source = std::regex_replace( shader.data()
+				, regex
+				, R"(vec4 rendererScalePosition(vec4 pos)
 {
 	mat4 scale;
 	scale[0] = vec4( 1.0, 0.0, 0.0, 0.0 );
@@ -91,6 +95,7 @@ namespace gl_renderer
 }
 
 $&)" );
+		}
 
 		auto length = int( source.size() );
 		char const * data = source.data();

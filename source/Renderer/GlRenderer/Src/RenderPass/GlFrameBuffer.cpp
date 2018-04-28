@@ -172,11 +172,13 @@ namespace gl_renderer
 
 				if ( glview.getSubResourceRange().baseMipLevel )
 				{
-					mipLevel = 0u;
-
 					if ( gltexture.getLayerCount() == 1u )
 					{
 						image = gltexture.getImage();
+					}
+					else
+					{
+						mipLevel = 0u;
 					}
 				}
 

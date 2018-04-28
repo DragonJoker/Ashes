@@ -74,7 +74,7 @@ namespace renderer
 			return m_stage;
 		}
 
-	private:
+	protected:
 		Device const & m_device;
 		ShaderStageFlag m_stage;
 	};
