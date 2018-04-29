@@ -201,6 +201,8 @@ namespace renderer
 
 		std::ostream & operator<<( std::ostream & stream, Backtrace const & p_backtrace )
 		{
+			static std::locale const loc{ "C" };
+			stream.imbue( loc );
 			doShowBacktrace( stream, p_backtrace.m_toCapture, p_backtrace.m_toSkip );
 			return stream;
 		}
