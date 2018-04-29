@@ -131,7 +131,7 @@ namespace renderer
 		/**
 		*\~english
 		*	Computes a perspective projection matrix.
-		*\param[in] fovy
+		*\param[in] radiansFovY
 		*	The vertical aperture angle.
 		*\param[in] aspect
 		*	The width / height ratio.
@@ -142,7 +142,7 @@ namespace renderer
 		*\~french
 		*\brief
 		*	Calcule une matrice de projection en perspective.
-		*\param[in] fovy
+		*\param[in] radiansFovY
 		*	L'angle d'ouverture verticale.
 		*\param[in] aspect
 		*	Le ratio largeur / hauteur.
@@ -184,7 +184,7 @@ namespace renderer
 		/**
 		*\~english
 		*	Computes a perspective projection matrix with no far plane clipping.
-		*\param[in] fovy
+		*\param[in] radiansFovY
 		*	The vertical aperture angle.
 		*\param[in] aspect
 		*	The width / height ratio.
@@ -194,7 +194,7 @@ namespace renderer
 		*\brief
 		*	Calcule une matrice de projection en perspective sans clipping
 		*	d'arrière plan.
-		*\param[in] fovy
+		*\param[in] radiansFovY
 		*	L'angle d'ouverture verticale.
 		*\param[in] aspect
 		*	Le ratio largeur / hauteur.

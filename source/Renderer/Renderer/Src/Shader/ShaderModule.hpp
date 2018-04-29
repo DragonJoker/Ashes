@@ -21,11 +21,15 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Constructeur.
+		*\param[in] device
+		*	The logical device.
 		*\param[in] stage
 		*	The module's shader stage.
 		*\~french
 		*\brief
 		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
 		*\param[in] stage
 		*	Le niveau de shader utilisé pour le module.
 		*/

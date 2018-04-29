@@ -213,15 +213,23 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Prepares a buffer memory barrier, to a given memory layout.
-		*\param[in] dstAccess
+		*\param[in] dstAccessFlags
 		*	The wanted access flags, after the transition.
+		*\param[in] srcQueueFamily
+		*	The source queue family, if a responsibility transfer must happen.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, if a responsibility transfer must happen.
 		*\return
 		*	The memory barrier.
 		*\~french
 		*\brief
 		*	Prépare une barrière mémoire de transition vers un layout mémoire donné.
-		*\param[in] dstAccess
+		*\param[in] dstAccessFlags
 		*	Les indicateurs d'accès voulus après la transition.
+		*\param[in] srcQueueFamily
+		*	La famille de file source, si un transfert de responsabilité doit être effectué.
+		*\param[in] dstQueueFamily
+		*	La famille de file destination, si un transfert de responsabilité doit être effectué..
 		*\return
 		*	La barrière mémoire.
 		*/

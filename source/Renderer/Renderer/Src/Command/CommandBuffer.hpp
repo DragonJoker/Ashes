@@ -362,7 +362,7 @@ namespace renderer
 		*	The buffer being bound.
 		*\param[in] offset
 		*	The starting offset in bytes within buffer used in index buffer address calculations.
-		*\param[in] type
+		*\param[in] indexType
 		*	Tells whether the indices are treated as 16 bits or 32 bits.
 		*\~french
 		*\brief
@@ -371,7 +371,7 @@ namespace renderer
 		*	Le tampon à activer.
 		*\param[in] offset
 		*	L'offset de départ en octets dans le tampon, utilisé pour le calcul des indices.
-		*\param[in] type
+		*\param[in] indexType
 		*	Dit si les indices sont traités en 16 bits ou 32 bits.
 		*/
 		virtual void bindIndexBuffer( BufferBase const & buffer
@@ -385,6 +385,8 @@ namespace renderer
 		*	The descriptor sets.
 		*\param[in] layout
 		*	The pipeline layout used to program the binding.
+		*\param[in] dynamicOffsets
+		*	The dynamic offsets for dynamic buffers.
 		*\param[in] bindingPoint
 		*	Indicates whether the descriptor wil be used by graphics or compute pipeline.
 		*\~french
@@ -394,10 +396,10 @@ namespace renderer
 		*	Les descriptor sets.
 		*\param[in] layout
 		*	Le layout de pipeline.
+		*\param[in] dynamicOffsets
+		*	Les décalages dynamiques des tampons dynamiques.
 		*\param[in] bindingPoint
 		*	Le point d'attache du set.
-		*\param[in] dynamicOffsets
-		*	Les offsets des .
 		*/
 		virtual void bindDescriptorSets( DescriptorSetCRefArray const & descriptorSet
 			, PipelineLayout const & layout
@@ -631,8 +633,12 @@ namespace renderer
 		*	Les informations de la copie.
 		*\param[in] src
 		*	L'image source.
+		*\param[in] srcLayout
+		*	Le layout d'image voulu pour l'image source.
 		*\param[in] dst
 		*	L'image destination.
+		*\param[in] dstLayout
+		*	Le layout d'image voulu pour l'image destination.
 		*\~english
 		*\brief
 		*	Copies data from an image to another one.
@@ -640,8 +646,12 @@ namespace renderer
 		*	The copy informations.
 		*\param[in] src
 		*	The source image.
+		*\param[in] srcLayout
+		*	The image layout wanted for the source image.
 		*\param[in] dst
 		*	The destination image.
+		*\param[in] dstLayout
+		*	The image layout wanted for the destination image.
 		*/
 		virtual void copyImage( ImageCopy const & copyInfo
 			, Texture const & src
@@ -866,19 +876,19 @@ namespace renderer
 		*	Binds a vertex buffer to the command buffer.
 		*\param[in] binding
 		*	The index of the vertex input binding whose state is updated by the command.
-		*\param[in] buffers
-		*	The array of buffer handles.
-		*\param[in] offsets
-		*	The array of buffer offsets.
+		*\param[in] buffer
+		*	The buffer handle.
+		*\param[in] offset
+		*	The array of buffer offset.
 		*\~french
 		*\brief
 		*	Active un tampon de sommets sur le tampon de commandes.
-		*\param[in] firstBinding
+		*\param[in] binding
 		*	L'indice de l'attache d'entrée de sommets dont l'état est mis à jour par la commande.
-		*\param[in] buffers
+		*\param[in] buffer
 		*	Le tampon de sommets.
-		*\param[in] offsets
-		*	L'offsets dans le tampon.
+		*\param[in] offset
+		*	L'offset dans le tampon.
 		*/
 		void bindVertexBuffer( uint32_t binding
 			, BufferBase const & buffer
@@ -965,6 +975,8 @@ namespace renderer
 		*	The descriptor set.
 		*\param[in] layout
 		*	The pipeline layout used to program the binding.
+		*\param[in] dynamicOffsets
+		*	The dynamic offsets for dynamic buffers.
 		*\param[in] bindingPoint
 		*	Indicates whether the descriptor wil be used by graphics or compute pipeline.
 		*\~french
@@ -974,6 +986,8 @@ namespace renderer
 		*	Le descriptor set.
 		*\param[in] layout
 		*	Le layout de pipeline.
+		*\param[in] dynamicOffsets
+		*	Les décalages dynamiques des tampons dynamiques.
 		*\param[in] bindingPoint
 		*	Le point d'attache du set.
 		*/

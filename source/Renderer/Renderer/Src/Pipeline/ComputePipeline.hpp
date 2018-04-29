@@ -20,7 +20,7 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
-		*	Constructir.
+		*	Constructor.
 		*\param[in] device
 		*	The parent logical device.
 		*\param[in] layout
@@ -34,7 +34,7 @@ namespace renderer
 		*	Le device parent.
 		*\param[in] layout
 		*	Le layout du pipeline.
-		*\param[in] program
+		*\param[in] createInfo
 		*	Les informations de creation du pipeline.
 		*/
 		ComputePipeline( Device const & device

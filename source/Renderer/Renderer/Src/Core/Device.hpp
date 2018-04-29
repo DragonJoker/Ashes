@@ -42,6 +42,8 @@ namespace renderer
 		*	Constructor.
 		*\param[in] renderer
 		*	The Renderer instance.
+		*\param[in] gpu
+		*	The physical device.
 		*\param[in] connection
 		*	The connection to the application.
 		*\~french
@@ -49,6 +51,8 @@ namespace renderer
 		*	Constructeur.
 		*\param[in] renderer
 		*	L'instance de Renderer.
+		*\param[in] gpu
+		*	Le périphérique physique.
 		*\param[in] connection
 		*	La connection à l'application.
 		*/
@@ -122,7 +126,7 @@ namespace renderer
 		/**
 		*\~english
 		*	Computes a perspective projection matrix.
-		*\param[in] fovy
+		*\param[in] radiansFovY
 		*	The vertical aperture angle.
 		*\param[in] aspect
 		*	The width / height ratio.
@@ -133,7 +137,7 @@ namespace renderer
 		*\~french
 		*\brief
 		*	Calcule une matrice de projection en perspective.
-		*\param[in] fovy
+		*\param[in] radiansFovY
 		*	L'angle d'ouverture verticale.
 		*\param[in] aspect
 		*	Le ratio largeur / hauteur.
@@ -175,7 +179,7 @@ namespace renderer
 		/**
 		*\~english
 		*	Computes a perspective projection matrix with no far plane clipping.
-		*\param[in] fovy
+		*\param[in] radiansFovY
 		*	The vertical aperture angle.
 		*\param[in] aspect
 		*	The width / height ratio.
@@ -185,7 +189,7 @@ namespace renderer
 		*\brief
 		*	Calcule une matrice de projection en perspective sans clipping
 		*	d'arrière plan.
-		*\param[in] fovy
+		*\param[in] radiansFovY
 		*	L'angle d'ouverture verticale.
 		*\param[in] aspect
 		*	Le ratio largeur / hauteur.
@@ -516,21 +520,25 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Creates a GPU buffer.
+		*\remarks
+		*	This version will also create the DeviceMemory and bind it to the buffer.
 		*\param[in] size
 		*	The buffer size.
 		*\param[in] target
 		*	The buffer usage flags.
-		*\param[in] memoryFlags
-		*	The buffer memory flags.
+		*\param[in] flags
+		*	The memory property flags for the DeviceMemory object.
 		*\~french
 		*\brief
 		*	Crée un tampon GPU.
+		*\remarks
+		*	Cette version va aussi créer le DeviceMemory et le lier au tampon.
 		*\param[in] size
 		*	La taille du tampon.
 		*\param[in] target
 		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] memoryFlags
-		*	Les indicateurs de mémoire du tampon.
+		*\param[in] flags
+		*	Les indicateurs de propriétés de mémoire pour l'objet DeviceMemory.
 		*/
 		BufferBasePtr createBuffer( uint32_t size
 			, BufferTargets target
@@ -539,13 +547,21 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Creates a texture.
+		*\remarks
+		*	This version will also create the DeviceMemory and bind it to the texture.
 		*\param[in] createInfo
 		*	The creation informations.
+		*\param[in] flags
+		*	The memory property flags for the DeviceMemory object.
 		*\~french
 		*\brief
 		*	Crée une texture.
+		*\remarks
+		*	Cette version va aussi créer le DeviceMemory et le lier à la texture.
 		*\param[in] createInfo
 		*	Les informations de création.
+		*\param[in] flags
+		*	Les indicateurs de propriétés de mémoire pour l'objet DeviceMemory.
 		*/
 		TexturePtr createTexture( ImageCreateInfo const & createInfo
 			, MemoryPropertyFlags flags )const;

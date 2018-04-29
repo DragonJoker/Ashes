@@ -19,12 +19,26 @@ namespace renderer
 	{
 	protected:
 		/**
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device connection.
+		*\param[in] image
+		*	The swapchain image.
+		*\param[in] view
+		*	The swapchain image's view.
+		*\param[in] imageIndex
+		*	The swapchain image index, from its images.
+		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] device
 		*	La connexion logique au GPU.
-		*\param[in] swapchain
-		*	La swapchain.
+		*\param[in] image
+		*	L'image de la swapchain.
+		*\param[in] view
+		*	La vue sur l'image de la swapchain.
 		*\param[in] imageIndex
 		*	L'index de l'image, parmi les images de la swap chain.
 		*/

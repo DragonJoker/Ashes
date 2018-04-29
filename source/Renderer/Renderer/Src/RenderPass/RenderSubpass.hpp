@@ -27,8 +27,6 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Constructor.
-		*\param[in] device
-		*	The logical connection to the GPU.
 		*\param[in] pipelineBindPoint
 		*	Specifies whether this is a compute or graphics subpass.
 		*\param[in] state
@@ -54,8 +52,6 @@ namespace renderer
 		*\~french
 		*\brief
 		*	Constructeur.
-		*\param[in] device
-		*	La connexion logique au GPU.
 		*\param[in] pipelineBindPoint
 		*	Définit si c'est une sous-passe de calcul ou graphique.
 		*\param[in] state

@@ -20,7 +20,7 @@ namespace renderer
 		eStencil = 0x00000004,
 		eMetaData = 0x00000008,
 	};
-	Renderer_ImplementFlag( ImageAspectFlag )
+	Renderer_ImplementFlag( ImageAspectFlag );
 	/**
 	*\~french
 	*\brief

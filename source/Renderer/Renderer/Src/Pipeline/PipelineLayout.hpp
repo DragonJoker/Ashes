@@ -148,15 +148,15 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Creates a compute pipeline using this layout.
-		*\param[in] stages
-		*	The shader stages.
+		*\param[in] stage
+		*	The shader stage.
 		*\return
 		*	The created pipeline.
 		*\~french
 		*\brief
 		*	Crée un pipeline de calcul utilisant ce layout.
-		*\param[in] stages
-		*	Les niveaux de shader.
+		*\param[in] stage
+		*	Le niveau de shader.
 		*\return
 		*	Le pipeline créé.
 		*/
