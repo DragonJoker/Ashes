@@ -74,6 +74,8 @@ namespace renderer
 		*	L'image.
 		*\param[in] sampler
 		*	L'échantillonneur.
+		*\param[in] layout
+		*	Le layout de l'image voulu.
 		*\param[in] index
 		*	L'indice dans le tableau.
 		*\~english
@@ -85,6 +87,8 @@ namespace renderer
 		*	The image.
 		*\param[in] sampler
 		*	The sampler.
+		*\param[in] layout
+		*	The wanted image layout.
 		*\param[in] index
 		*	The array index.
 		*/
@@ -306,7 +310,7 @@ namespace renderer
 		*	Permet de spécifier un offset supplémentaire au moment du binding du descripteur.
 		*\param[in] layoutBinding
 		*	L'attache de layout.
-		*\param[in] storageBuffer
+		*\param[in] buffer
 		*	Le tampon.
 		*\param[in] offset
 		*	Le décalage de l'attache dans le tampon.
@@ -321,7 +325,7 @@ namespace renderer
 		*	Allow specification of an additional offset at descriptor's binding time.
 		*\param[in] layoutBinding
 		*	The layout binding.
-		*\param[in] storageBuffer
+		*\param[in] buffer
 		*	The buffer.
 		*\param[in] offset
 		*	The attach's offset in the buffer.

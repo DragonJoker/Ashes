@@ -23,9 +23,17 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] flags
+		*	The creation flags.
 		*\~french
 		*\brief
 		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
+		*\param[in] flags
+		*	Les indicateurs de création.
 		*/
 		DescriptorPool( Device const & device
 			, DescriptorPoolCreateFlags flags );

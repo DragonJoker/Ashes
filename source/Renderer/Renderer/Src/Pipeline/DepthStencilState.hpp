@@ -11,10 +11,10 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
-	*\english
+	*\~english
 	*\brief
 	*	The depth and stencil state.
-	*\french
+	*\~french
 	*\brief
 	*	L'état de stencil et profondeur.
 	*/

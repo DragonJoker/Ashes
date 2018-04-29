@@ -118,11 +118,15 @@ namespace renderer
 		*	Constructor.
 		*\param[in] entries
 		*	The constants contained in the buffer.
+		*\param[in] value
+		*	The default value for the entries.
 		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] entries
 		*	Les constantes contenues dans le tampon.
+		*\param[in] value
+		*	La valeur par défaut pour les entrées.
 		*/
 		SpecialisationInfo( SpecialisationMapEntryArray const & entries
 			, T const & value = T{} )

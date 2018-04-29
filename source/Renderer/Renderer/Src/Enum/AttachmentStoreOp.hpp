@@ -9,10 +9,10 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
-	*\english
+	*\~english
 	*\brief
 	*	Specifies how contents of an attachment are treated at the end of a subpass.
-	*\french
+	*\~french
 	*\brief
 	*	Spécifie comment est traité le contenu d'une attache à la fin d'une sous-passe.
 	*/

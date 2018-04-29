@@ -23,17 +23,25 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Constructor.
+		*\param[in] device
+		*	The logical device.
 		*\param[in] layout
 		*	The layout from which the pool will be created.
 		*\param[in] maxSets
 		*	The maximum sets count that can be created from this pool.
+		*\param[in] automaticFree
+		*	Tells if the pool automatically frees the sets it has allocated, during its own destruction.
 		*\~french
 		*\brief
 		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
 		*\param[in] layout
 		*	Le layout à partir duquel sera créé le pool.
 		*\param[in] maxSets
 		*	Le nombre maximum de sets que le pool peut créer.
+		*\param[in] automaticFree
+		*	Dit si le pool libère automatiquement les ensembles qu'il a alloués, lors de sa propre destruction.
 		*/
 		DescriptorSetPool( Device const & device
 			, DescriptorSetLayout const & layout

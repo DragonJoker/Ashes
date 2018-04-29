@@ -50,11 +50,31 @@ namespace renderer
 		*	Constructeur.
 		*\param[in] device
 		*	Le périphérique logique.
+		*\param[in] type
+		*	Le type de texture.
+		*\param[in] format
+		*	Le format des données de la texture.
+		*\param[in] dimensions
+		*	Les dimensions de la texture.
+		*\param[in] mipLevels
+		*	Le nombre de niveaux de mipmaps.
+		*\param[in] arrayLayers
+		*	Le nombre de couches du tableau.
 		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
 		*	The logical device.
+		*\param[in] type
+		*	The texture's type.
+		*\param[in] format
+		*	The texture's data type.
+		*\param[in] dimensions
+		*	The texture's dimensions.
+		*\param[in] mipLevels
+		*	The mipmap levelx count.
+		*\param[in] arrayLayers
+		*	The array layers count.
 		*/
 		Texture( Device const & device
 			, TextureType type
