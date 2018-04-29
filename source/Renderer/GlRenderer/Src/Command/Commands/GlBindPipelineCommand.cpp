@@ -291,16 +291,13 @@ namespace gl_renderer
 
 		if ( state != save )
 		{
-			if ( state.depthWriteEnable != save.depthWriteEnable )
+			if ( state.depthWriteEnable )
 			{
-				if ( state.depthWriteEnable )
-				{
-					glLogCall( gl::DepthMask, GL_TRUE );
-				}
-				else
-				{
-					glLogCall( gl::DepthMask, GL_FALSE );
-				}
+				glLogCall( gl::DepthMask, GL_TRUE );
+			}
+			else
+			{
+				glLogCall( gl::DepthMask, GL_FALSE );
 			}
 
 			if ( state.depthTestEnable != save.depthTestEnable )
