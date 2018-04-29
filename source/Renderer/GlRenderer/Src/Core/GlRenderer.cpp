@@ -30,14 +30,14 @@ namespace gl_renderer
 			RenderWindow() try
 			{
 				MSG msg{};
-				WNDCLASS wc{};
+				WNDCLASSA wc{};
 				wc.lpfnWndProc = RenderWindow::WndProc;
 				wc.hInstance = ::GetModuleHandle( nullptr );
 				wc.hbrBackground = ( HBRUSH )( COLOR_BACKGROUND );
 				wc.lpszClassName = "DummyWindow";
 				wc.style = CS_OWNDC;
 
-				if ( !RegisterClass( &wc ) )
+				if ( !RegisterClassA( &wc ) )
 				{
 					throw std::runtime_error{ "Couldn't register window class" };
 				}

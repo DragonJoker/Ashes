@@ -10,7 +10,6 @@ location( currentBinaryDir )
 defines( "GlRenderer_EXPORTS" )
 
 includedirs{
-	path.join( sourceDir, "Core" ),
 	path.join( sourceDir, "Renderer", "Renderer", "Src" ),
 	path.join( binaryDir, "Renderer", "Renderer", "Src" ),
 	path.join( currentBinaryDir, "Src" ),
@@ -18,18 +17,19 @@ includedirs{
 }
 
 links{
-	"Utils",
 	"Renderer"
 }
 
 if ( os.istarget( "Windows" ) )
 then
 	links{
-		"opengl32"
+		"opengl32",
+		binaryLinks
 	}
 else
 	links{
-		"GL"
+		"GL",
+		binaryLinks
 	}
 end
 
