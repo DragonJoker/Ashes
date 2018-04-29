@@ -1,0 +1,5 @@
+<map id="renderer::Debug::Backtrace::Backtrace" name="renderer::Debug::Backtrace::Backtrace">
+<area shape="rect" id="node2" href="$d7/d41/a00532.html#a00c8759a145892f79c09127c08df5377" title="Cleans up debug data. " alt="" coords="244,5,411,32"/>
+<area shape="rect" id="node3" href="$d7/d41/a00532.html#ab903c08b92d4c7a71c9cc7fbf06932ff" title="Initialises debug data. " alt="" coords="243,56,412,83"/>
+<area shape="rect" id="node4" href="$d7/d41/a00532.html#a91d3355ee01322788fd841ee394428a0" title="Puts the backtrace into a stream. " alt="" coords="235,107,420,133"/>
+</map>

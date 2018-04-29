@@ -1,0 +1,7 @@
+<map id="renderer::isDepthOrStencilFormat" name="renderer::isDepthOrStencilFormat">
+<area shape="rect" id="node2" href="$df/d03/a00348.html#a7e5a6ebc539555ed296095f082eb6fc8" title="Récupère le masque d&#39;aspects correspondant au renderer::PixelFormat donné. " alt="" coords="228,5,396,32"/>
+<area shape="rect" id="node3" href="$df/d03/a00348.html#af837976c754f5ae7c5932d0d7d47cd01" title="Récupère le nom du type d&#39;élément donné. " alt="" coords="247,56,377,83"/>
+<area shape="rect" id="node4" href="$df/d03/a00348.html#aad938f3ecf00f64c5138571f241431b7" title="Dit si le renderer::PixelFormat donné est un format utilisable pour les tampons de profondeur..." alt="" coords="231,107,393,133"/>
+<area shape="rect" id="node5" href="$df/d03/a00348.html#a66967ee213b0de51f070427501f7d6df" title="Dit si le renderer::PixelFormat donné est un format utilisable pour les tampons de profondeur et sten..." alt="" coords="231,158,393,199"/>
+<area shape="rect" id="node6" href="$df/d03/a00348.html#a5019c0174d0a0738aa614fccd9997280" title="Dit si le renderer::PixelFormat donné est un format utilisable pour les tampons de stencil..." alt="" coords="228,224,396,251"/>
+</map>

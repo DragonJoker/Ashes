@@ -1,0 +1,14 @@
+<map id="renderer::GeometryBuffers" name="renderer::GeometryBuffers">
+<area shape="rect" id="node3" href="$d4/ddc/a00917.html" title="renderer::GeometryBuffers::IBO" alt="" coords="1695,11,1899,38"/>
+<area shape="rect" id="node4" href="$de/d01/a00897.html" title="GPU buffer class. " alt="" coords="1218,62,1358,89"/>
+<area shape="rect" id="node5" href="$d3/da5/a00973.html" title="The class containing the informations related to the logical device. " alt="" coords="985,130,1100,157"/>
+<area shape="rect" id="node13" href="$d1/df7/a00957.html" title="Pool de tampons de commandes. " alt="" coords="1207,163,1369,190"/>
+<area shape="rect" id="node16" href="$d1/db0/a00945.html" title="Tampon de sommets. " alt="" coords="1923,73,2101,99"/>
+<area shape="rect" id="node7" href="$da/d45/a00961.html" title="Command buffers queue. " alt="" coords="394,79,509,106"/>
+<area shape="rect" id="node8" title="STL class. " alt="" coords="181,155,261,182"/>
+<area shape="rect" id="node11" href="$dd/d24/a00981.html" title="renderer::Renderer\l::Configuration" alt="" coords="387,181,516,223"/>
+<area shape="rect" id="node9" title="STL class. " alt="" coords="5,148,132,189"/>
+<area shape="rect" id="node10" href="$d5/d6c/a00977.html" title="The class initialising the rendering instance. " alt="" coords="681,182,810,209"/>
+<area shape="rect" id="node15" href="$d9/dfb/a00913.html" title="renderer::GeometryBuffers::VBO" alt="" coords="2319,73,2529,99"/>
+<area shape="rect" id="node18" href="$d8/d02/a01149.html" title="renderer::VertexLayout" alt="" coords="1935,123,2089,150"/>
+</map>

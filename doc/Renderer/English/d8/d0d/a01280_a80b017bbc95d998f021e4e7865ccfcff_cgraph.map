@@ -1,0 +1,6 @@
+<map id="renderer::DeviceMemory::~DeviceMemory" name="renderer::DeviceMemory::~DeviceMemory">
+<area shape="rect" id="node2" href="$d8/d0d/a01280.html#a215a61c2941ce312fe2f9d7fc26db7d0" title="Updates the VRAM. " alt="" coords="216,5,379,47"/>
+<area shape="rect" id="node3" href="$d8/d0d/a01280.html#ab211cc9e481c7e677546ba810cc02f98" title="Invalidates the memory content. " alt="" coords="216,71,379,112"/>
+<area shape="rect" id="node4" href="$d8/d0d/a01280.html#a0e6b28d701548735954990c48caa3840" title="Maps a range of the memory in RAM. " alt="" coords="216,136,379,177"/>
+<area shape="rect" id="node5" href="$d8/d0d/a01280.html#a6d2c55502b8e70291756722533aa83fb" title="Unmaps the memory from RAM. " alt="" coords="216,201,379,243"/>
+</map>

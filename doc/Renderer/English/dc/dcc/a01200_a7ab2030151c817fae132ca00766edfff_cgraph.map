@@ -1,0 +1,5 @@
+<map id="renderer::DescriptorSet::createDynamicBinding" name="renderer::DescriptorSet::createDynamicBinding">
+<area shape="rect" id="node2" href="$dc/dcc/a01200.html#a47fd325d4ca59d38fd024492fc2e335f" title="Creates a dynamic uniform buffer binding. " alt="" coords="213,5,373,47"/>
+<area shape="rect" id="node3" href="$d0/d39/a01112.html#afe6c8eb375f2057fbdf5804262c854a9" title="Retrieves the aligned size for an element. " alt="" coords="216,71,371,112"/>
+<area shape="rect" id="node4" href="$d0/d39/a01112.html#a6c37de6b1732c1f8051ae73e065659ce" title="renderer::UniformBuffer\l::getUbo" alt="" coords="216,136,371,177"/>
+</map>

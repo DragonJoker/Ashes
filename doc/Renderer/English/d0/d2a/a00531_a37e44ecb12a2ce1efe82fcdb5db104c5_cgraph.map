@@ -1,0 +1,5 @@
+<map id="renderer::Renderer_ImplementFlag" name="renderer::Renderer_ImplementFlag">
+<area shape="rect" id="node2" href="$d0/d2a/a00531.html#a7ef15b78de8214a21d661fadc05213d0" title="Tells if the given renderer::Format is usable in depth buffers. " alt="" coords="185,5,348,32"/>
+<area shape="rect" id="node3" href="$d0/d2a/a00531.html#a0bcfd235f5cd6fa91dbbd59cba7a01ef" title="Tells if the given renderer::Format is usable in depth and stencil buffers. " alt="" coords="186,57,347,98"/>
+<area shape="rect" id="node4" href="$d0/d2a/a00531.html#a30a876549a0ddf615d1846aceb7a6550" title="Tells if the given renderer::Format is usable in stencil buffers. " alt="" coords="183,123,351,149"/>
+</map>

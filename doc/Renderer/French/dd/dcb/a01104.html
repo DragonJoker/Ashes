@@ -1,0 +1,2405 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.13"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Renderer: Référence de la classe renderer::StagingBuffer</title>
+<link href="../../tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../../jquery.js"></script>
+<script type="text/javascript" src="../../dynsections.js"></script>
+<link href="../../doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">Renderer
+   &#160;<span id="projectnumber">1.0.0</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Généré par Doxygen 1.8.13 -->
+<script type="text/javascript" src="../../menudata.js"></script>
+<script type="text/javascript" src="../../menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('../../',false,false,'search.php','Recherche');
+});
+</script>
+<div id="main-nav"></div>
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="../../d0/d2a/a00531.html">renderer</a></li><li class="navelem"><a class="el" href="../../dd/dcb/a01104.html">StagingBuffer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Fonctions membres publiques</a> &#124;
+<a href="#pro-attribs">Attributs protégés</a> &#124;
+<a href="../../de/d99/a01101.html">Liste de tous les membres</a>  </div>
+  <div class="headertitle">
+<div class="title">Référence de la classe renderer::StagingBuffer</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>Classe regroupant les fonctions nécessaires au transfert de données depuis/vers la VRAM.  
+ <a href="../../dd/dcb/a01104.html#details">Plus de détails...</a></p>
+<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-0-trigger" src="../../closed.png" alt="+"/> Graphe de collaboration de renderer::StagingBuffer:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="../../d4/da7/a01102.png" border="0" usemap="#renderer_1_1StagingBuffer_coll__map" alt="Collaboration graph"/></div>
+<map name="renderer_1_1StagingBuffer_coll__map" id="renderer_1_1StagingBuffer_coll__map">
+<area shape="rect" id="node2" href="../../db/d17/a01148.html" title="Classe contenant les informations liées au GPU logique. " alt="" coords="1431,227,1545,253"/>
+<area shape="rect" id="node28" href="../../d6/de6/a01132.html" title="Pool de tampons de commandes. " alt="" coords="1652,319,1815,345"/>
+<area shape="rect" id="node32" href="../../d9/d67/a01080.html" title="Classe de tampon GPU. " alt="" coords="1663,176,1803,203"/>
+<area shape="rect" id="node4" href="../../d1/dae/a01136.html" title="File de tampons de commandes. " alt="" coords="775,5,890,32"/>
+<area shape="rect" id="node5" href="../../d7/d71/a01588.html" title="renderer::Signal\&lt; Device\lEnabledFunction \&gt;" alt="" coords="1107,127,1270,169"/>
+<area shape="rect" id="node6" href="../../d9/d42/a01156.html" title="Classe contenant les informations liées au GPU physique. " alt="" coords="1106,193,1271,220"/>
+<area shape="rect" id="node8" href="../../d2/d29/a01376.html" title="Fournit des information à propos d&#39;une famille de file. " alt="" coords="377,7,591,33"/>
+<area shape="rect" id="node9" href="../../d8/dc5/a01300.html" title="Définit une étendue en 3 dimensions. " alt="" coords="17,7,148,33"/>
+<area shape="rect" id="node10" href="../../d9/d79/a01360.html" title="Définit les propriétés d&#39;un périphérique physique. " alt="" coords="750,122,915,163"/>
+<area shape="rect" id="node11" href="../../d0/d85/a01352.html" title="Rapporte les limites dépendant de l&#39;implémentation pour un périphérique physique. ..." alt="" coords="401,58,567,99"/>
+<area shape="rect" id="node12" title="STL class. " alt="" coords="444,329,524,356"/>
+<area shape="rect" id="node23" href="../../d2/dd2/a01164.html" title="renderer::Renderer\l::Configuration" alt="" coords="768,383,897,425"/>
+<area shape="rect" id="node30" href="../../d9/d97/a01152.html" title="renderer::Device::Object\lAllocation" alt="" coords="752,318,913,359"/>
+<area shape="rect" id="node13" title="STL class. " alt="" coords="19,322,146,363"/>
+<area shape="rect" id="node14" href="../../de/d1f/a01364.html" title="Spécifie les propriétés de mémoire dispersée d&#39;un périphérique physique. " alt="" coords="401,123,567,165"/>
+<area shape="rect" id="node15" href="../../d7/d57/a01348.html" title="Décrit les capacités fines pouvant être supportées par un périhpérique physique. " alt="" coords="750,187,915,229"/>
+<area shape="rect" id="node16" href="../../d2/d3f/a01356.html" title="Définit les propriétés mémoire d&#39;un périphérique physique. " alt="" coords="750,253,915,294"/>
+<area shape="rect" id="node18" href="../../dc/dd9/a01328.html" title="Spécifie un tas mémoire. " alt="" coords="5,269,160,296"/>
+<area shape="rect" id="node20" href="../../df/d93/a01336.html" title="Définit un type de mémoire. " alt="" coords="7,196,159,223"/>
+<area shape="rect" id="node21" href="../../d7/d71/a01588.html" title="renderer::Signal\&lt; Device\lDisabledFunction \&gt;" alt="" coords="1107,245,1270,286"/>
+<area shape="rect" id="node22" href="../../da/d20/a01160.html" title="Classe initialisant l&#39;instance de rendu. " alt="" coords="1124,391,1253,417"/>
+<area shape="rect" id="node25" title="STL class. " alt="" coords="415,456,553,483"/>
+</map>
+<center><span class="legend">[<a href="../../graph_legend.html">légende</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Fonctions membres publiques</h2></td></tr>
+<tr class="memitem:a82749031c9634c2e7db120f76730a8b6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a82749031c9634c2e7db120f76730a8b6">StagingBuffer</a> (<a class="el" href="../../db/d17/a01148.html">Device</a> const &amp;device, BufferTargets target, uint32_t size=10000000u)</td></tr>
+<tr class="memdesc:a82749031c9634c2e7db120f76730a8b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructeur.  <a href="#a82749031c9634c2e7db120f76730a8b6">Plus de détails...</a><br /></td></tr>
+<tr class="separator:a82749031c9634c2e7db120f76730a8b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad5d1bdbb78cbf4acfa068dba159b52e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d9/d67/a01080.html">BufferBase</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#aad5d1bdbb78cbf4acfa068dba159b52e">getBuffer</a> () const</td></tr>
+<tr class="separator:aad5d1bdbb78cbf4acfa068dba159b52e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p><a class="el" href="../../d6/d0f/a01256.html" title="L&#39;image d&#39;une texture. ">Texture</a>. </p>
+</div></td></tr>
+<tr class="memitem:a1780e4a8abd4b85b94be2e8c287383bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a1780e4a8abd4b85b94be2e8c287383bb">uploadTextureData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d67/a01232.html">ImageSubresourceLayers</a> const &amp;subresourceLayers, <a class="el" href="../../dc/d54/a01344.html">Offset3D</a> const &amp;offset, <a class="el" href="../../d8/dc5/a01300.html">Extent3D</a> const &amp;extent, uint8_t const *const data, uint32_t size, <a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;texture) const</td></tr>
+<tr class="separator:a1780e4a8abd4b85b94be2e8c287383bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe534a08d027b73c07365e638a4b7162"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#abe534a08d027b73c07365e638a4b7162">uploadTextureData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d67/a01232.html">ImageSubresourceLayers</a> const &amp;subresourceLayers, <a class="el" href="../../dc/d54/a01344.html">Offset3D</a> const &amp;offset, <a class="el" href="../../d8/dc5/a01300.html">Extent3D</a> const &amp;extent, <a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> const &amp;data, <a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;texture) const</td></tr>
+<tr class="separator:abe534a08d027b73c07365e638a4b7162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ad1b3aaed5c8d582d5dfe8b55329518"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a5ad1b3aaed5c8d582d5dfe8b55329518">uploadTextureData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, uint8_t const *const data, uint32_t size, <a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;texture) const</td></tr>
+<tr class="separator:a5ad1b3aaed5c8d582d5dfe8b55329518"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad57a2fe770f11cc461982c33738358cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#ad57a2fe770f11cc461982c33738358cb">uploadTextureData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> const &amp;data, <a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;texture) const</td></tr>
+<tr class="separator:ad57a2fe770f11cc461982c33738358cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p><a class="el" href="../../da/d93/a01084.html" title="Classe template encapsulant un tampon GPU, pour stocker des données structurées. ">Buffer</a>. </p>
+</div></td></tr>
+<tr class="memitem:ab9095ba8577942a04e809fd61a6073b6"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ab9095ba8577942a04e809fd61a6073b6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#ab9095ba8577942a04e809fd61a6073b6">uploadBufferData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, std::vector&lt; T &gt; const &amp;data, <a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:ab9095ba8577942a04e809fd61a6073b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc001f0154c0a606c7bdf1091a3c5bec"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:adc001f0154c0a606c7bdf1091a3c5bec"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#adc001f0154c0a606c7bdf1091a3c5bec">uploadBufferData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> const &amp;data, <a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:adc001f0154c0a606c7bdf1091a3c5bec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac30ae5a7c8f247ec7434a158c3757e5d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ac30ae5a7c8f247ec7434a158c3757e5d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#ac30ae5a7c8f247ec7434a158c3757e5d">uploadBufferData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, uint8_t const *const data, uint32_t size, <a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:ac30ae5a7c8f247ec7434a158c3757e5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdf11c234ba7a40c5079d455f2107e2c"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:abdf11c234ba7a40c5079d455f2107e2c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#abdf11c234ba7a40c5079d455f2107e2c">uploadBufferData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, std::vector&lt; T &gt; const &amp;data, uint32_t offset, <a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:abdf11c234ba7a40c5079d455f2107e2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb3b38a78756241ecc2d0b7e3161e590"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:afb3b38a78756241ecc2d0b7e3161e590"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#afb3b38a78756241ecc2d0b7e3161e590">uploadBufferData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> const &amp;data, uint32_t offset, <a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:afb3b38a78756241ecc2d0b7e3161e590"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d3a84bb08ebfa77793eee3ecc93c9e6"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a9d3a84bb08ebfa77793eee3ecc93c9e6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a9d3a84bb08ebfa77793eee3ecc93c9e6">uploadBufferData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, uint8_t const *const data, uint32_t size, uint32_t offset, <a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:a9d3a84bb08ebfa77793eee3ecc93c9e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p>Vertex buffer. </p>
+</div></td></tr>
+<tr class="memitem:aca2337cd5b3af6488a093901cad47bf2"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aca2337cd5b3af6488a093901cad47bf2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#aca2337cd5b3af6488a093901cad47bf2">uploadVertexData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, std::vector&lt; T &gt; const &amp;data, <a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:aca2337cd5b3af6488a093901cad47bf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9e91504327e986c4c1a9bb7fa456526"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ab9e91504327e986c4c1a9bb7fa456526"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#ab9e91504327e986c4c1a9bb7fa456526">uploadVertexData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> const &amp;data, <a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:ab9e91504327e986c4c1a9bb7fa456526"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59f8ffe381f3f4d596719f7362cf1ff6"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a59f8ffe381f3f4d596719f7362cf1ff6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a59f8ffe381f3f4d596719f7362cf1ff6">uploadVertexData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, uint8_t const *const data, uint32_t size, <a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:a59f8ffe381f3f4d596719f7362cf1ff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa56cc15240cdc7f14f50ef57e27e7e87"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:aa56cc15240cdc7f14f50ef57e27e7e87"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#aa56cc15240cdc7f14f50ef57e27e7e87">uploadVertexData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, std::vector&lt; T &gt; const &amp;data, uint32_t offset, <a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:aa56cc15240cdc7f14f50ef57e27e7e87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adeb4386e69ddb3ffd67c9b009296c466"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:adeb4386e69ddb3ffd67c9b009296c466"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#adeb4386e69ddb3ffd67c9b009296c466">uploadVertexData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> const &amp;data, uint32_t offset, <a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:adeb4386e69ddb3ffd67c9b009296c466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4256928c053a474d8680e43523a289dd"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a4256928c053a474d8680e43523a289dd"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a4256928c053a474d8680e43523a289dd">uploadVertexData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, uint8_t const *const data, uint32_t size, uint32_t offset, <a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:a4256928c053a474d8680e43523a289dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p>Uniform buffer. </p>
+</div></td></tr>
+<tr class="memitem:ac51f91482c8861429aab3544777c371e"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ac51f91482c8861429aab3544777c371e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#ac51f91482c8861429aab3544777c371e">uploadUniformData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, std::vector&lt; T &gt; const &amp;data, <a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;buffer, PipelineStageFlags dstStageFlags=<a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a>) const</td></tr>
+<tr class="separator:ac51f91482c8861429aab3544777c371e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a528b30c7dfa2860fa2bf1374bbb4cc94"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a528b30c7dfa2860fa2bf1374bbb4cc94"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a528b30c7dfa2860fa2bf1374bbb4cc94">uploadUniformData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, T const *const data, uint32_t count, <a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;buffer, PipelineStageFlags dstStageFlags=<a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a>) const</td></tr>
+<tr class="separator:a528b30c7dfa2860fa2bf1374bbb4cc94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25aeb0176fcef3dbead183af263111f5"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a25aeb0176fcef3dbead183af263111f5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a25aeb0176fcef3dbead183af263111f5">uploadUniformData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, std::vector&lt; T &gt; const &amp;data, uint32_t offset, <a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;buffer, PipelineStageFlags dstStageFlags=<a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a>) const</td></tr>
+<tr class="separator:a25aeb0176fcef3dbead183af263111f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62c00a782fab41f019c741cd089c12c9"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a62c00a782fab41f019c741cd089c12c9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a62c00a782fab41f019c741cd089c12c9">uploadUniformData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, T const *const data, uint32_t count, uint32_t offset, <a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;buffer, PipelineStageFlags dstStageFlags=<a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a>) const</td></tr>
+<tr class="separator:a62c00a782fab41f019c741cd089c12c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p><a class="el" href="../../d6/d0f/a01256.html" title="L&#39;image d&#39;une texture. ">Texture</a>. </p>
+</div></td></tr>
+<tr class="memitem:ab3b2f3d15527877de59b35446c7adb11"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#ab3b2f3d15527877de59b35446c7adb11">downloadTextureData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d67/a01232.html">ImageSubresourceLayers</a> const &amp;subresourceLayers, <a class="el" href="../../dc/d54/a01344.html">Offset3D</a> const &amp;offset, <a class="el" href="../../d8/dc5/a01300.html">Extent3D</a> const &amp;extent, uint8_t *data, uint32_t size, <a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;texture) const</td></tr>
+<tr class="separator:ab3b2f3d15527877de59b35446c7adb11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac829f5523e1b1ad3d0b1dd606b7f759f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#ac829f5523e1b1ad3d0b1dd606b7f759f">downloadTextureData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d67/a01232.html">ImageSubresourceLayers</a> const &amp;subresourceLayers, <a class="el" href="../../dc/d54/a01344.html">Offset3D</a> const &amp;offset, <a class="el" href="../../d8/dc5/a01300.html">Extent3D</a> const &amp;extent, <a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> &amp;data, <a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;texture) const</td></tr>
+<tr class="separator:ac829f5523e1b1ad3d0b1dd606b7f759f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af716422cef836d1116d8823fc65adadc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#af716422cef836d1116d8823fc65adadc">downloadTextureData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, uint8_t *data, uint32_t size, <a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;texture) const</td></tr>
+<tr class="separator:af716422cef836d1116d8823fc65adadc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9fe381dec723039483fc83462a0a3d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#ad9fe381dec723039483fc83462a0a3d0">downloadTextureData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> &amp;data, <a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;texture) const</td></tr>
+<tr class="separator:ad9fe381dec723039483fc83462a0a3d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p><a class="el" href="../../da/d93/a01084.html" title="Classe template encapsulant un tampon GPU, pour stocker des données structurées. ">Buffer</a>. </p>
+</div></td></tr>
+<tr class="memitem:a9e9e334e474fcab7171705bfc032aa8b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a9e9e334e474fcab7171705bfc032aa8b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a9e9e334e474fcab7171705bfc032aa8b">downloadBufferData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, std::vector&lt; T &gt; &amp;data, <a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:a9e9e334e474fcab7171705bfc032aa8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5979b68e9872f75dbbaf2b9da3ce048"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ac5979b68e9872f75dbbaf2b9da3ce048"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#ac5979b68e9872f75dbbaf2b9da3ce048">downloadBufferData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> &amp;data, <a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:ac5979b68e9872f75dbbaf2b9da3ce048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae831043f906fb4dce62684929558f5a1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ae831043f906fb4dce62684929558f5a1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#ae831043f906fb4dce62684929558f5a1">downloadBufferData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, uint8_t *data, uint32_t size, <a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:ae831043f906fb4dce62684929558f5a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2348b0165182184cb0bf6e2a46f46de1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a2348b0165182184cb0bf6e2a46f46de1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a2348b0165182184cb0bf6e2a46f46de1">downloadBufferData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, std::vector&lt; T &gt; &amp;data, uint32_t offset, <a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:a2348b0165182184cb0bf6e2a46f46de1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3ae8bb09b80e5b78e02fb4dcbd4a7fa"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ac3ae8bb09b80e5b78e02fb4dcbd4a7fa"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#ac3ae8bb09b80e5b78e02fb4dcbd4a7fa">downloadBufferData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> &amp;data, uint32_t offset, <a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:ac3ae8bb09b80e5b78e02fb4dcbd4a7fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a834e1ca02dcfb3329327e4ed27c0fc64"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a834e1ca02dcfb3329327e4ed27c0fc64"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a834e1ca02dcfb3329327e4ed27c0fc64">downloadBufferData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, uint8_t *data, uint32_t size, uint32_t offset, <a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:a834e1ca02dcfb3329327e4ed27c0fc64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p>Vertex buffer. </p>
+</div></td></tr>
+<tr class="memitem:a18677b34fa751f104e3ad8396bdffc28"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a18677b34fa751f104e3ad8396bdffc28"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a18677b34fa751f104e3ad8396bdffc28">downloadVertexData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, std::vector&lt; T &gt; &amp;data, <a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:a18677b34fa751f104e3ad8396bdffc28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1af70cd2400de686a43906beb707ecef"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a1af70cd2400de686a43906beb707ecef"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a1af70cd2400de686a43906beb707ecef">downloadVertexData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> &amp;data, <a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:a1af70cd2400de686a43906beb707ecef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4374056f281ef391fc0a4f7b9c70253e"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a4374056f281ef391fc0a4f7b9c70253e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a4374056f281ef391fc0a4f7b9c70253e">downloadVertexData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, uint8_t *data, uint32_t size, <a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:a4374056f281ef391fc0a4f7b9c70253e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe1b15e260ec6dce5557c0988be1d686"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:abe1b15e260ec6dce5557c0988be1d686"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#abe1b15e260ec6dce5557c0988be1d686">downloadVertexData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, std::vector&lt; T &gt; &amp;data, uint32_t offset, <a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:abe1b15e260ec6dce5557c0988be1d686"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3933c05b255b95b310184bdf13006b72"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a3933c05b255b95b310184bdf13006b72"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a3933c05b255b95b310184bdf13006b72">downloadVertexData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> &amp;data, uint32_t offset, <a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:a3933c05b255b95b310184bdf13006b72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cf0263c19bbae42d392dac307ece251"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a4cf0263c19bbae42d392dac307ece251"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a4cf0263c19bbae42d392dac307ece251">downloadVertexData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, uint8_t *data, uint32_t size, uint32_t offset, <a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;buffer) const</td></tr>
+<tr class="separator:a4cf0263c19bbae42d392dac307ece251"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr><td colspan="2"><div class="groupText"><p>Uniform buffer. </p>
+</div></td></tr>
+<tr class="memitem:ab617169d70fe50d1439302c24d9728f8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ab617169d70fe50d1439302c24d9728f8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#ab617169d70fe50d1439302c24d9728f8">downloadUniformData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, std::vector&lt; T &gt; &amp;data, <a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;buffer, PipelineStageFlags dstStageFlags=<a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a>) const</td></tr>
+<tr class="separator:ab617169d70fe50d1439302c24d9728f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7def2a811f5720ad3f42fa483af42060"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a7def2a811f5720ad3f42fa483af42060"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a7def2a811f5720ad3f42fa483af42060">downloadUniformData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, T *data, uint32_t count, <a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;buffer, PipelineStageFlags dstStageFlags=<a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a>) const</td></tr>
+<tr class="separator:a7def2a811f5720ad3f42fa483af42060"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5dbc901930b7a583e742fe9aa62a0f2"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ae5dbc901930b7a583e742fe9aa62a0f2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#ae5dbc901930b7a583e742fe9aa62a0f2">downloadUniformData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, std::vector&lt; T &gt; &amp;data, uint32_t offset, <a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;buffer, PipelineStageFlags dstStageFlags=<a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a>) const</td></tr>
+<tr class="separator:ae5dbc901930b7a583e742fe9aa62a0f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa527ad5426fc47d0e1bf73528151945"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:afa527ad5426fc47d0e1bf73528151945"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#afa527ad5426fc47d0e1bf73528151945">downloadUniformData</a> (<a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;commandBuffer, T *data, uint32_t count, uint32_t offset, <a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;buffer, PipelineStageFlags dstStageFlags=<a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a>) const</td></tr>
+<tr class="separator:afa527ad5426fc47d0e1bf73528151945"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Attributs protégés</h2></td></tr>
+<tr class="memitem:a750ceb5e729edeaeeeed9a99abb9f686"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../db/d17/a01148.html">Device</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a750ceb5e729edeaeeeed9a99abb9f686">m_device</a></td></tr>
+<tr class="separator:a750ceb5e729edeaeeeed9a99abb9f686"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cf865517a2924f0dae1549823fa3a0e"><td class="memItemLeft" align="right" valign="top">AccessFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a4cf865517a2924f0dae1549823fa3a0e">m_currentAccessMask</a> { <a class="el" href="../../d0/d2a/a00531.html#afebd79ee191823af570ed88946fa3148a4a11def95de801b315954469caa34d91">AccessFlag::eMemoryWrite</a> }</td></tr>
+<tr class="separator:a4cf865517a2924f0dae1549823fa3a0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a658616ad631b8167c5f4ccd9105c1a78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d2a/a00531.html#a9efaa99607dfd5845c14a4d1f16266dd">BufferBasePtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dcb/a01104.html#a658616ad631b8167c5f4ccd9105c1a78">m_buffer</a></td></tr>
+<tr class="separator:a658616ad631b8167c5f4ccd9105c1a78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Description détaillée</h2>
+<div class="textblock"><p>Classe regroupant les fonctions nécessaires au transfert de données depuis/vers la VRAM. </p>
+</div><h2 class="groupheader">Documentation des constructeurs et destructeur</h2>
+<a id="a82749031c9634c2e7db120f76730a8b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82749031c9634c2e7db120f76730a8b6">&#9670;&nbsp;</a></span>StagingBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">renderer::StagingBuffer::StagingBuffer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../db/d17/a01148.html">Device</a> const &amp;&#160;</td>
+          <td class="paramname"><em>device</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">BufferTargets&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em> = <code>10000000u</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructeur. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">device</td><td>Le LogicalDevice parent. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">target</td><td>Les cibles du tampon. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>La taille du tampon. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Documentation des fonctions membres</h2>
+<a id="a9e9e334e474fcab7171705bfc032aa8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e9e334e474fcab7171705bfc032aa8b">&#9670;&nbsp;</a></span>downloadBufferData() <span class="overload">[1/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadBufferData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac5979b68e9872f75dbbaf2b9da3ce048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5979b68e9872f75dbbaf2b9da3ce048">&#9670;&nbsp;</a></span>downloadBufferData() <span class="overload">[2/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadBufferData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae831043f906fb4dce62684929558f5a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae831043f906fb4dce62684929558f5a1">&#9670;&nbsp;</a></span>downloadBufferData() <span class="overload">[3/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadBufferData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2348b0165182184cb0bf6e2a46f46de1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2348b0165182184cb0bf6e2a46f46de1">&#9670;&nbsp;</a></span>downloadBufferData() <span class="overload">[4/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadBufferData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac3ae8bb09b80e5b78e02fb4dcbd4a7fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3ae8bb09b80e5b78e02fb4dcbd4a7fa">&#9670;&nbsp;</a></span>downloadBufferData() <span class="overload">[5/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadBufferData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a834e1ca02dcfb3329327e4ed27c0fc64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a834e1ca02dcfb3329327e4ed27c0fc64">&#9670;&nbsp;</a></span>downloadBufferData() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadBufferData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab3b2f3d15527877de59b35446c7adb11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3b2f3d15527877de59b35446c7adb11">&#9670;&nbsp;</a></span>downloadTextureData() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadTextureData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d67/a01232.html">ImageSubresourceLayers</a> const &amp;&#160;</td>
+          <td class="paramname"><em>subresourceLayers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d54/a01344.html">Offset3D</a> const &amp;&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d8/dc5/a01300.html">Extent3D</a> const &amp;&#160;</td>
+          <td class="paramname"><em>extent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac829f5523e1b1ad3d0b1dd606b7f759f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac829f5523e1b1ad3d0b1dd606b7f759f">&#9670;&nbsp;</a></span>downloadTextureData() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadTextureData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d67/a01232.html">ImageSubresourceLayers</a> const &amp;&#160;</td>
+          <td class="paramname"><em>subresourceLayers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d54/a01344.html">Offset3D</a> const &amp;&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d8/dc5/a01300.html">Extent3D</a> const &amp;&#160;</td>
+          <td class="paramname"><em>extent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af716422cef836d1116d8823fc65adadc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af716422cef836d1116d8823fc65adadc">&#9670;&nbsp;</a></span>downloadTextureData() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadTextureData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad9fe381dec723039483fc83462a0a3d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9fe381dec723039483fc83462a0a3d0">&#9670;&nbsp;</a></span>downloadTextureData() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadTextureData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab617169d70fe50d1439302c24d9728f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab617169d70fe50d1439302c24d9728f8">&#9670;&nbsp;</a></span>downloadUniformData() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadUniformData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PipelineStageFlags&#160;</td>
+          <td class="paramname"><em>dstStageFlags</em> = <code><a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7def2a811f5720ad3f42fa483af42060"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7def2a811f5720ad3f42fa483af42060">&#9670;&nbsp;</a></span>downloadUniformData() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadUniformData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PipelineStageFlags&#160;</td>
+          <td class="paramname"><em>dstStageFlags</em> = <code><a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae5dbc901930b7a583e742fe9aa62a0f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5dbc901930b7a583e742fe9aa62a0f2">&#9670;&nbsp;</a></span>downloadUniformData() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadUniformData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PipelineStageFlags&#160;</td>
+          <td class="paramname"><em>dstStageFlags</em> = <code><a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afa527ad5426fc47d0e1bf73528151945"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa527ad5426fc47d0e1bf73528151945">&#9670;&nbsp;</a></span>downloadUniformData() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadUniformData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PipelineStageFlags&#160;</td>
+          <td class="paramname"><em>dstStageFlags</em> = <code><a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a18677b34fa751f104e3ad8396bdffc28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18677b34fa751f104e3ad8396bdffc28">&#9670;&nbsp;</a></span>downloadVertexData() <span class="overload">[1/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadVertexData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1af70cd2400de686a43906beb707ecef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1af70cd2400de686a43906beb707ecef">&#9670;&nbsp;</a></span>downloadVertexData() <span class="overload">[2/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadVertexData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4374056f281ef391fc0a4f7b9c70253e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4374056f281ef391fc0a4f7b9c70253e">&#9670;&nbsp;</a></span>downloadVertexData() <span class="overload">[3/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadVertexData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abe1b15e260ec6dce5557c0988be1d686"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe1b15e260ec6dce5557c0988be1d686">&#9670;&nbsp;</a></span>downloadVertexData() <span class="overload">[4/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadVertexData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3933c05b255b95b310184bdf13006b72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3933c05b255b95b310184bdf13006b72">&#9670;&nbsp;</a></span>downloadVertexData() <span class="overload">[5/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadVertexData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4cf0263c19bbae42d392dac307ece251"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cf0263c19bbae42d392dac307ece251">&#9670;&nbsp;</a></span>downloadVertexData() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::downloadVertexData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aad5d1bdbb78cbf4acfa068dba159b52e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad5d1bdbb78cbf4acfa068dba159b52e">&#9670;&nbsp;</a></span>getBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d9/d67/a01080.html">BufferBase</a> const&amp; renderer::StagingBuffer::getBuffer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Renvoie</dt><dd>Le tampon GPU. </dd></dl>
+
+<p class="reference">Références <a class="el" href="../../dd/dcb/a01104.html#a658616ad631b8167c5f4ccd9105c1a78">m_buffer</a>.</p>
+
+</div>
+</div>
+<a id="ab9095ba8577942a04e809fd61a6073b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9095ba8577942a04e809fd61a6073b6">&#9670;&nbsp;</a></span>uploadBufferData() <span class="overload">[1/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadBufferData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adc001f0154c0a606c7bdf1091a3c5bec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc001f0154c0a606c7bdf1091a3c5bec">&#9670;&nbsp;</a></span>uploadBufferData() <span class="overload">[2/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadBufferData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> const &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac30ae5a7c8f247ec7434a158c3757e5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac30ae5a7c8f247ec7434a158c3757e5d">&#9670;&nbsp;</a></span>uploadBufferData() <span class="overload">[3/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadBufferData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t const *const&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abdf11c234ba7a40c5079d455f2107e2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdf11c234ba7a40c5079d455f2107e2c">&#9670;&nbsp;</a></span>uploadBufferData() <span class="overload">[4/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadBufferData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afb3b38a78756241ecc2d0b7e3161e590"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb3b38a78756241ecc2d0b7e3161e590">&#9670;&nbsp;</a></span>uploadBufferData() <span class="overload">[5/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadBufferData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> const &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9d3a84bb08ebfa77793eee3ecc93c9e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d3a84bb08ebfa77793eee3ecc93c9e6">&#9670;&nbsp;</a></span>uploadBufferData() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadBufferData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t const *const&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../da/d93/a01084.html">Buffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1780e4a8abd4b85b94be2e8c287383bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1780e4a8abd4b85b94be2e8c287383bb">&#9670;&nbsp;</a></span>uploadTextureData() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadTextureData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d67/a01232.html">ImageSubresourceLayers</a> const &amp;&#160;</td>
+          <td class="paramname"><em>subresourceLayers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d54/a01344.html">Offset3D</a> const &amp;&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d8/dc5/a01300.html">Extent3D</a> const &amp;&#160;</td>
+          <td class="paramname"><em>extent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t const *const&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abe534a08d027b73c07365e638a4b7162"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe534a08d027b73c07365e638a4b7162">&#9670;&nbsp;</a></span>uploadTextureData() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadTextureData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d67/a01232.html">ImageSubresourceLayers</a> const &amp;&#160;</td>
+          <td class="paramname"><em>subresourceLayers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d54/a01344.html">Offset3D</a> const &amp;&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d8/dc5/a01300.html">Extent3D</a> const &amp;&#160;</td>
+          <td class="paramname"><em>extent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> const &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5ad1b3aaed5c8d582d5dfe8b55329518"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ad1b3aaed5c8d582d5dfe8b55329518">&#9670;&nbsp;</a></span>uploadTextureData() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadTextureData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t const *const&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad57a2fe770f11cc461982c33738358cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad57a2fe770f11cc461982c33738358cb">&#9670;&nbsp;</a></span>uploadTextureData() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadTextureData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> const &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d3/d51/a01264.html">TextureView</a> const &amp;&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac51f91482c8861429aab3544777c371e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac51f91482c8861429aab3544777c371e">&#9670;&nbsp;</a></span>uploadUniformData() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadUniformData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PipelineStageFlags&#160;</td>
+          <td class="paramname"><em>dstStageFlags</em> = <code><a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a528b30c7dfa2860fa2bf1374bbb4cc94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a528b30c7dfa2860fa2bf1374bbb4cc94">&#9670;&nbsp;</a></span>uploadUniformData() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadUniformData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T const *const&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PipelineStageFlags&#160;</td>
+          <td class="paramname"><em>dstStageFlags</em> = <code><a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a25aeb0176fcef3dbead183af263111f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25aeb0176fcef3dbead183af263111f5">&#9670;&nbsp;</a></span>uploadUniformData() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadUniformData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PipelineStageFlags&#160;</td>
+          <td class="paramname"><em>dstStageFlags</em> = <code><a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a62c00a782fab41f019c741cd089c12c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62c00a782fab41f019c741cd089c12c9">&#9670;&nbsp;</a></span>uploadUniformData() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadUniformData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T const *const&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d39/a01112.html">UniformBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PipelineStageFlags&#160;</td>
+          <td class="paramname"><em>dstStageFlags</em> = <code><a class="el" href="../../d0/d2a/a00531.html#a778adf9f28db338568da586beb4f6eaba08adc4849a2f3d4932a134fe4229e700">PipelineStageFlag::eVertexShader</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aca2337cd5b3af6488a093901cad47bf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca2337cd5b3af6488a093901cad47bf2">&#9670;&nbsp;</a></span>uploadVertexData() <span class="overload">[1/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadVertexData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab9e91504327e986c4c1a9bb7fa456526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9e91504327e986c4c1a9bb7fa456526">&#9670;&nbsp;</a></span>uploadVertexData() <span class="overload">[2/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadVertexData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> const &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a59f8ffe381f3f4d596719f7362cf1ff6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59f8ffe381f3f4d596719f7362cf1ff6">&#9670;&nbsp;</a></span>uploadVertexData() <span class="overload">[3/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadVertexData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t const *const&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa56cc15240cdc7f14f50ef57e27e7e87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa56cc15240cdc7f14f50ef57e27e7e87">&#9670;&nbsp;</a></span>uploadVertexData() <span class="overload">[4/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadVertexData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adeb4386e69ddb3ffd67c9b009296c466"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adeb4386e69ddb3ffd67c9b009296c466">&#9670;&nbsp;</a></span>uploadVertexData() <span class="overload">[5/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadVertexData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#af19f004a6931ba7b77d26c6584534e46">ByteArray</a> const &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4256928c053a474d8680e43523a289dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4256928c053a474d8680e43523a289dd">&#9670;&nbsp;</a></span>uploadVertexData() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void renderer::StagingBuffer::uploadVertexData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d0/dc8/a01124.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t const *const&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d51/a01120.html">VertexBuffer</a>&lt; T &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Documentation des données membres</h2>
+<a id="a658616ad631b8167c5f4ccd9105c1a78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a658616ad631b8167c5f4ccd9105c1a78">&#9670;&nbsp;</a></span>m_buffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d0/d2a/a00531.html#a9efaa99607dfd5845c14a4d1f16266dd">BufferBasePtr</a> renderer::StagingBuffer::m_buffer</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">Référencé par <a class="el" href="../../dd/dcb/a01104.html#aad5d1bdbb78cbf4acfa068dba159b52e">getBuffer()</a>.</p>
+
+</div>
+</div>
+<a id="a4cf865517a2924f0dae1549823fa3a0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cf865517a2924f0dae1549823fa3a0e">&#9670;&nbsp;</a></span>m_currentAccessMask</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AccessFlags renderer::StagingBuffer::m_currentAccessMask { <a class="el" href="../../d0/d2a/a00531.html#afebd79ee191823af570ed88946fa3148a4a11def95de801b315954469caa34d91">AccessFlag::eMemoryWrite</a> }</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a750ceb5e729edeaeeeed9a99abb9f686"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a750ceb5e729edeaeeeed9a99abb9f686">&#9670;&nbsp;</a></span>m_device</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../db/d17/a01148.html">Device</a> const&amp; renderer::StagingBuffer::m_device</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>La documentation de cette classe a été générée à partir du fichier suivant :<ul>
+<li>Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/Buffer/<a class="el" href="../../da/d45/a00011.html">StagingBuffer.hpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Généré le Dimanche 29 Avril 2018 13:14:08 pour Renderer par &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="../../doxygen.png" alt="doxygen"/>
+</a> 1.8.13
+</small></address>
+</body>
+</html>

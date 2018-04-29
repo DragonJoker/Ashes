@@ -1,0 +1,8 @@
+<map id="renderer::BufferBase::getCompatibleStageFlags" name="renderer::BufferBase::getCompatibleStageFlags">
+<area shape="rect" id="node2" href="$d9/d67/a01080.html#a2f1205b6011100322b27a545e8f98ab7" title="renderer::BufferBase\l::getMemoryRequirements" alt="" coords="257,5,431,47"/>
+<area shape="rect" id="node3" href="$d9/d67/a01080.html#a4bd7643452ac7dad76dcc7eef271128c" title="Prépare une barrière mémoire de transition vers un layout mémoire donné. " alt="" coords="243,71,445,112"/>
+<area shape="rect" id="node4" href="$d9/d67/a01080.html#ab8aca36e59aff3ee8795f5a55a809e3a" title="Prépare une barrière mémoire de transition vers un layout de destination de transfert. " alt="" coords="257,136,431,177"/>
+<area shape="rect" id="node5" href="$d9/d67/a01080.html#ae51c78f9feff812cc14363fa5caf55e1" title="Prépare une barrière mémoire de transition vers un layout de source de transfert. ..." alt="" coords="269,201,419,243"/>
+<area shape="rect" id="node6" href="$d9/d67/a01080.html#af9d9053ad7493fbc675fb4ad1e5eb60f" title="Prépare une barrière mémoire de transition vers un layout de ressource d&#39;entrée (lecture seule) d&#39;un ..." alt="" coords="261,267,427,308"/>
+<area shape="rect" id="node7" href="$d9/d67/a01080.html#a4311bd01430d1b814007ab91e0043ed2" title="Prépare une barrière mémoire de transition vers un layout de ressource d&#39;entrée (lecture seule) d&#39;un ..." alt="" coords="232,332,456,373"/>
+</map>
