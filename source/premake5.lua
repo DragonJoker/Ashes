@@ -19,10 +19,17 @@ configurations{ "Debug", "Release" }
 platforms{ "x32", "x64" }
 location( binaryDir )
 language( "C++" )
-cppdialect( "C++14" )
+cppdialect( "C++17" )
 
 filter( "platforms:x86" ) architecture( "x86" )
 filter( "platforms:x64" ) architecture( "x64" )
+
+if ( os.istarget( "Windows" ) )
+then
+	binaryLinks = "DbgHelp"
+else
+	binaryLinks = "dl"
+end
 
 filter( "configurations:Debug" )
 	defines( "DEBUG" )
@@ -51,7 +58,7 @@ end
 
 include( "libs_config.lua" )
 group( "Core" )
-include( "Core/premake5.lua" )
+include( "Utils/premake5.lua" )
 group( "Renderer" )
 include( "Renderer/premake5.lua" )
 

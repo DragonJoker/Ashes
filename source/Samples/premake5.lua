@@ -15,7 +15,7 @@ for i, folder in ipairs( folders ) do
 			kind( "StaticLib" )
 			targetdir( path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", staticLibDir ) )
 			includedirs{
-				path.join( sourceDir, "Core" ),
+				path.join( sourceDir, "Utils", "Src" ),
 				path.join( sourceDir, "Renderer", "Renderer", "Src" ),
 				path.join( binaryDir, "Renderer", "Renderer", "Src" ),
 				path.join( currentBinaryDir, "Src" ),
@@ -49,7 +49,7 @@ for i, folder in ipairs( folders ) do
 			kind( "WindowedApp" )
 			targetdir( path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", executableDir ) )
 			includedirs{
-				path.join( sourceDir, "Core" ),
+				path.join( sourceDir, "Utils", "Src" ),
 				path.join( sourceDir, "Renderer", "Renderer", "Src" ),
 				path.join( binaryDir, "Renderer", "Renderer", "Src" ),
 				path.join( sourceDir, "Samples", "00-Common", "Src" ),
@@ -60,7 +60,8 @@ for i, folder in ipairs( folders ) do
 			links{
 				"Utils",
 				"Renderer",
-				"Sample-00-Common"
+				"Sample-00-Common",
+				binaryLinks
 			}
 			shadersFolder = path.join( sourceDir, "Samples", folder, "Shaders" )
 			if ( os.isdir( shadersFolder ) ) then

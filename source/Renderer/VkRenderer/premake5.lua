@@ -10,7 +10,6 @@ location( currentBinaryDir )
 defines( "VkRenderer_EXPORTS" )
 
 includedirs{
-	path.join( sourceDir, "Core" ),
 	path.join( sourceDir, "Renderer", "Renderer", "Src" ),
 	path.join( binaryDir, "Renderer", "Renderer", "Src" ),
 	path.join( currentBinaryDir, "Src" ),
@@ -35,8 +34,8 @@ then
 end
 
 links{
-	"Utils",
-	"Renderer"
+	"Renderer",
+	binaryLinks
 }
 
 local configFile = path.join( currentBinaryDir, "Src", "VkRendererConfig.hpp" )

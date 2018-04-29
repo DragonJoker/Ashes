@@ -8,13 +8,8 @@ targetdir( path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", stati
 location( currentBinaryDir )
 
 includedirs{
-	path.join( sourceDir, "Core" ),
 	path.join( currentBinaryDir, "Src" ),
 	path.join( currentSourceDir, "Src" )
-}
-
-links{
-	"Utils"
 }
 
 local configFile = path.join( currentBinaryDir, "Src", "RendererConfig.hpp" )
