@@ -29,7 +29,8 @@ namespace gl_renderer
 		*\param[in] dst
 		*	Le tampon destination.
 		*/
-		CopyImageToBufferCommand( renderer::BufferImageCopyArray const & copyInfo
+		CopyImageToBufferCommand( Device const & device
+			, renderer::BufferImageCopyArray const & copyInfo
 			, renderer::Texture const & src
 			, renderer::BufferBase const & dst );
 		CopyImageToBufferCommand( CopyImageToBufferCommand const & rhs );
@@ -39,9 +40,10 @@ namespace gl_renderer
 
 	private:
 		void applyOne( renderer::BufferImageCopy const & copyInfo
-			, renderer::TextureView const & view )const;
+			, TextureView const & view )const;
 
 	private:
+		Device const & m_device;
 		Texture const & m_src;
 		Buffer const & m_dst;
 		renderer::BufferImageCopyArray m_copyInfo;
@@ -49,6 +51,7 @@ namespace gl_renderer
 		GlFormat m_format;
 		GlType m_type;
 		GlTextureType m_target;
-		std::vector< renderer::TextureViewPtr > m_views;
+		std::vector< TextureViewPtr > m_views;
+		GLuint m_srcFbo;
 	};
 }
