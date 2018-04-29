@@ -487,7 +487,8 @@ namespace gl_renderer
 		, renderer::Texture const & src
 		, renderer::BufferBase const & dst )const
 	{
-		m_commands.emplace_back( std::make_unique< CopyImageToBufferCommand >( copyInfo
+		m_commands.emplace_back( std::make_unique< CopyImageToBufferCommand >( m_device
+			, copyInfo
 			, src
 			, dst ) );
 	}
