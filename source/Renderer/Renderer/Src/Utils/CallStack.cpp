@@ -12,6 +12,8 @@
 #	endif
 #endif
 
+#include <locale>
+
 namespace renderer
 {
 	namespace Debug
