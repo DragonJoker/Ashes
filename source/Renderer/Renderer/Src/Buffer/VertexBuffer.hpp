@@ -36,6 +36,15 @@ namespace renderer
 			, BufferTargets target
 			, MemoryPropertyFlags flags );
 		/**
+		*\~english
+		*\brief
+		*	Destructor.
+		*\~french
+		*\brief
+		*	Destructeur.
+		*/
+		virtual ~VertexBufferBase() = default;
+		/**
 		*\return
 		*	La taille du tampon.
 		*/
