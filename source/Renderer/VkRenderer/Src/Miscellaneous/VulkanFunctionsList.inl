@@ -50,9 +50,11 @@ VK_LIB_INSTANCE_FUNCTION( vkGetPhysicalDeviceSurfacePresentModesKHR )
 VK_LIB_INSTANCE_FUNCTION( vkGetPhysicalDeviceSurfaceSupportKHR )
 
 // VK_EXT_debug_report
+#if LOAD_VALIDATION_LAYERS
 VK_LIB_INSTANCE_FUNCTION( vkCreateDebugReportCallbackEXT )
 VK_LIB_INSTANCE_FUNCTION( vkDestroyDebugReportCallbackEXT )
 VK_LIB_INSTANCE_FUNCTION( vkDebugReportMessageEXT )
+#endif
 
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
 // VK_KHR_android_surface
