@@ -1,5 +1,0 @@
-<map id="renderer::CommandBuffer::bindDescriptorSet" name="renderer::CommandBuffer::bindDescriptorSet">
-<area shape="rect" id="node2" href="$d5/da3/a00953.html#aafa8c92fab1b494e90f7a720e072d141" title="Active des descriptor sets. " alt="" coords="223,5,392,47"/>
-<area shape="rect" id="node3" href="$d5/da3/a00953.html#a8a4598076d7952c5369e9982404a0035" title="Copie les données d&#39;un tampon vers un autre. " alt="" coords="223,71,392,112"/>
-<area shape="rect" id="node4" href="$d5/da3/a00953.html#a290876948a775e084d4a81f5f6540601" title="Copie les données d&#39;une image vers une autre. " alt="" coords="223,136,392,177"/>
-</map>

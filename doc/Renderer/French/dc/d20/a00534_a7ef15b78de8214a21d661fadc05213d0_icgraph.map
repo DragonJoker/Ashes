@@ -1,0 +1,4 @@
+<map id="renderer::isDepthFormat" name="renderer::isDepthFormat">
+<area shape="rect" id="node2" href="$dc/d20/a00534.html#aead50e4b4cd91c607b52f93536c07824" title="Récupère le masque d&#39;aspects correspondant au renderer::Format donné. " alt="" coords="219,5,387,32"/>
+<area shape="rect" id="node3" href="$dc/d20/a00534.html#a1b4cc2b6465ebd0a154729ae296dc346" title="Dit si le renderer::Format donné est un format utilisable pour les tampons de profondeur et/ou stenci..." alt="" coords="216,57,391,98"/>
+</map>

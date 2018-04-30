@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Renderer: renderer::ClearAttachment Struct Reference</title>
+<title>RendererLib: Member List</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -18,7 +18,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Renderer
+   <div id="projectname">RendererLib
    &#160;<span id="projectnumber">1.0.0</span>
    </div>
   </td>
@@ -38,101 +38,24 @@ $(function() {
 <div id="main-nav"></div>
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../d0/d2a/a00531.html">renderer</a></li><li class="navelem"><a class="el" href="../../d1/d38/a01480.html">ClearAttachment</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dc/d20/a00534.html">renderer</a></li><li class="navelem"><a class="el" href="../../d2/dc4/a01483.html">ClearAttachment</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="summary">
-<a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="../../d8/d67/a01477.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">renderer::ClearAttachment Struct Reference</div>  </div>
+<div class="title">renderer::ClearAttachment Member List</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Specifies clear attachment.  
- <a href="../../d1/d38/a01480.html#details">More...</a></p>
-<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="../../closed.png" alt="+"/> Collaboration diagram for renderer::ClearAttachment:</div>
-<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="../../d8/d7b/a01478.png" border="0" usemap="#renderer_1_1ClearAttachment_coll__map" alt="Collaboration graph"/></div>
-<map name="renderer_1_1ClearAttachment_coll__map" id="renderer_1_1ClearAttachment_coll__map">
-<area shape="rect" id="node2" href="../../d1/dde/a01496.html" title="Valeur de vidage, couleur ou profondeur/stencil. " alt="" coords="23,5,163,32"/>
-</map>
-<center><span class="legend">[<a href="../../graph_legend.html">legend</a>]</span></center></div>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:af4fc41b7bcf68ab1686ad0f1a122a42c"><td class="memItemLeft" align="right" valign="top">ImageAspectFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d38/a01480.html#af4fc41b7bcf68ab1686ad0f1a122a42c">aspectMask</a></td></tr>
-<tr class="memdesc:af4fc41b7bcf68ab1686ad0f1a122a42c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects the colour, depth and/or stencil aspects of the attachment to be cleared. <code>aspectMask</code> can include <a class="el" href="../../d0/d2a/a00531.html#a670783a61d1a0113699384c472b854a8a933e146a34d99e16a319642574089a34">renderer::ImageAspectFlag::eColour</a> for colour attachments, <a class="el" href="../../d0/d2a/a00531.html#a83f12d96fbffa0e985787105c30a48dea2a37044e2d0bed7cbb63527176543d73">renderer::ImageAspectFlag::eDepth</a> for depth/stencil attachments with a depth component, and <a class="el" href="../../d0/d2a/a00531.html#a83f12d96fbffa0e985787105c30a48dea4432dfcffbc353a6a91b14e435a86939">renderer::ImageAspectFlag::eStencil</a> for depth/stencil attachments with a stencil component. If the subpass’s depth/stencil attachment is <a class="el" href="../../d0/d2a/a00531.html#abca71fce2d4938eaed23229aaaac0fbb">renderer::AttachmentUnused</a>, then the clear has no effect.  <a href="#af4fc41b7bcf68ab1686ad0f1a122a42c">More...</a><br /></td></tr>
-<tr class="separator:af4fc41b7bcf68ab1686ad0f1a122a42c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c712b8f236def9f9c160d7b2bcac73a"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d38/a01480.html#a1c712b8f236def9f9c160d7b2bcac73a">colourAttachment</a></td></tr>
-<tr class="memdesc:a1c712b8f236def9f9c160d7b2bcac73a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only meaningful if <a class="el" href="../../d0/d2a/a00531.html#a670783a61d1a0113699384c472b854a8a933e146a34d99e16a319642574089a34">renderer::ImageAspectFlag::eColour</a> is set in <code>aspectMask</code>, in which case it is an index to the <code>colourAttaches</code> array in the renderer::Subpass constructor of the current subpass which selects the colour attachment to clear. If <code>colourAttachment</code> is <a class="el" href="../../d0/d2a/a00531.html#abca71fce2d4938eaed23229aaaac0fbb">renderer::AttachmentUnused</a> then the clear has no effect.  <a href="#a1c712b8f236def9f9c160d7b2bcac73a">More...</a><br /></td></tr>
-<tr class="separator:a1c712b8f236def9f9c160d7b2bcac73a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9545861684a3f08e6161be3b8af52533"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d1/dde/a01496.html">ClearValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d38/a01480.html#a9545861684a3f08e6161be3b8af52533">clearValue</a></td></tr>
-<tr class="memdesc:a9545861684a3f08e6161be3b8af52533"><td class="mdescLeft">&#160;</td><td class="mdescRight">The colour or depth/stencil value to clear the attachment to.  <a href="#a9545861684a3f08e6161be3b8af52533">More...</a><br /></td></tr>
-<tr class="separator:a9545861684a3f08e6161be3b8af52533"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Specifies clear attachment. </p>
-</div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="af4fc41b7bcf68ab1686ad0f1a122a42c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af4fc41b7bcf68ab1686ad0f1a122a42c">&#9670;&nbsp;</a></span>aspectMask</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">ImageAspectFlags renderer::ClearAttachment::aspectMask</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Selects the colour, depth and/or stencil aspects of the attachment to be cleared. <code>aspectMask</code> can include <a class="el" href="../../d0/d2a/a00531.html#a670783a61d1a0113699384c472b854a8a933e146a34d99e16a319642574089a34">renderer::ImageAspectFlag::eColour</a> for colour attachments, <a class="el" href="../../d0/d2a/a00531.html#a83f12d96fbffa0e985787105c30a48dea2a37044e2d0bed7cbb63527176543d73">renderer::ImageAspectFlag::eDepth</a> for depth/stencil attachments with a depth component, and <a class="el" href="../../d0/d2a/a00531.html#a83f12d96fbffa0e985787105c30a48dea4432dfcffbc353a6a91b14e435a86939">renderer::ImageAspectFlag::eStencil</a> for depth/stencil attachments with a stencil component. If the subpass’s depth/stencil attachment is <a class="el" href="../../d0/d2a/a00531.html#abca71fce2d4938eaed23229aaaac0fbb">renderer::AttachmentUnused</a>, then the clear has no effect. </p>
-
-</div>
-</div>
-<a id="a9545861684a3f08e6161be3b8af52533"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9545861684a3f08e6161be3b8af52533">&#9670;&nbsp;</a></span>clearValue</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="../../d1/dde/a01496.html">ClearValue</a> renderer::ClearAttachment::clearValue</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>The colour or depth/stencil value to clear the attachment to. </p>
-
-</div>
-</div>
-<a id="a1c712b8f236def9f9c160d7b2bcac73a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c712b8f236def9f9c160d7b2bcac73a">&#9670;&nbsp;</a></span>colourAttachment</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t renderer::ClearAttachment::colourAttachment</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Only meaningful if <a class="el" href="../../d0/d2a/a00531.html#a670783a61d1a0113699384c472b854a8a933e146a34d99e16a319642574089a34">renderer::ImageAspectFlag::eColour</a> is set in <code>aspectMask</code>, in which case it is an index to the <code>colourAttaches</code> array in the renderer::Subpass constructor of the current subpass which selects the colour attachment to clear. If <code>colourAttachment</code> is <a class="el" href="../../d0/d2a/a00531.html#abca71fce2d4938eaed23229aaaac0fbb">renderer::AttachmentUnused</a> then the clear has no effect. </p>
-
-</div>
-</div>
-<hr/>The documentation for this struct was generated from the following file:<ul>
-<li>Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/RenderPass/<a class="el" href="../../da/d65/a00458.html">ClearAttachment.hpp</a></li>
-</ul>
-</div><!-- contents -->
+<p>This is the complete list of members for <a class="el" href="../../d2/dc4/a01483.html">renderer::ClearAttachment</a>, including all inherited members.</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="../../d2/dc4/a01483.html#af4fc41b7bcf68ab1686ad0f1a122a42c">aspectMask</a></td><td class="entry"><a class="el" href="../../d2/dc4/a01483.html">renderer::ClearAttachment</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="../../d2/dc4/a01483.html#a9545861684a3f08e6161be3b8af52533">clearValue</a></td><td class="entry"><a class="el" href="../../d2/dc4/a01483.html">renderer::ClearAttachment</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="../../d2/dc4/a01483.html#a1c712b8f236def9f9c160d7b2bcac73a">colourAttachment</a></td><td class="entry"><a class="el" href="../../d2/dc4/a01483.html">renderer::ClearAttachment</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Apr 29 2018 13:12:01 for Renderer by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 30 2018 22:40:26 for RendererLib by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

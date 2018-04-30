@@ -1,8 +1,0 @@
-<map id="renderer::BufferBase::getCompatibleStageFlags" name="renderer::BufferBase::getCompatibleStageFlags">
-<area shape="rect" id="node2" href="$d9/d67/a01080.html#a2f1205b6011100322b27a545e8f98ab7" title="renderer::BufferBase\l::getMemoryRequirements" alt="" coords="257,5,431,47"/>
-<area shape="rect" id="node3" href="$d9/d67/a01080.html#a4bd7643452ac7dad76dcc7eef271128c" title="Prepares a buffer memory barrier, to a given memory layout. " alt="" coords="243,71,445,112"/>
-<area shape="rect" id="node4" href="$d9/d67/a01080.html#ab8aca36e59aff3ee8795f5a55a809e3a" title="Prepares a buffer memory barrier, to a transfer destination layout. " alt="" coords="257,136,431,177"/>
-<area shape="rect" id="node5" href="$d9/d67/a01080.html#ae51c78f9feff812cc14363fa5caf55e1" title="Prepares a buffer memory barrier, to a transfer source layout. " alt="" coords="269,201,419,243"/>
-<area shape="rect" id="node6" href="$d9/d67/a01080.html#af9d9053ad7493fbc675fb4ad1e5eb60f" title="Prepares a buffer memory barrier, to a uniform buffer input layout. " alt="" coords="261,267,427,308"/>
-<area shape="rect" id="node7" href="$d9/d67/a01080.html#a4311bd01430d1b814007ab91e0043ed2" title="Prepares a buffer memory barrier, to a vertex shader input layout. " alt="" coords="232,332,456,373"/>
-</map>

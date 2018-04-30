@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Renderer: Référence de la classe renderer::PipelineLayout</title>
+<title>RendererLib: Liste des membres</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -18,7 +18,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Renderer
+   <div id="projectname">RendererLib
    &#160;<span id="projectnumber">1.0.0</span>
    </div>
   </td>
@@ -38,353 +38,27 @@ $(function() {
 <div id="main-nav"></div>
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../d0/d2a/a00531.html">renderer</a></li><li class="navelem"><a class="el" href="../../df/d84/a01408.html">PipelineLayout</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dc/d20/a00534.html">renderer</a></li><li class="navelem"><a class="el" href="../../db/d99/a01411.html">PipelineLayout</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="summary">
-<a href="#pub-methods">Fonctions membres publiques</a> &#124;
-<a href="#pro-methods">Fonctions membres protégées</a> &#124;
-<a href="../../d4/d1a/a01405.html">Liste de tous les membres</a>  </div>
   <div class="headertitle">
-<div class="title">Référence de la classe renderer::PipelineLayout<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+<div class="title">renderer::PipelineLayout Liste des membres</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Layout de pipeline.  
- <a href="../../df/d84/a01408.html#details">Plus de détails...</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
-Fonctions membres publiques</h2></td></tr>
-<tr class="memitem:a9c0cd66ea454e5229914f57a1f84dcd2"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d84/a01408.html#a9c0cd66ea454e5229914f57a1f84dcd2">~PipelineLayout</a> ()</td></tr>
-<tr class="memdesc:a9c0cd66ea454e5229914f57a1f84dcd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructeur.  <a href="#a9c0cd66ea454e5229914f57a1f84dcd2">Plus de détails...</a><br /></td></tr>
-<tr class="separator:a9c0cd66ea454e5229914f57a1f84dcd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b8c2027b253b5ca41389f9e05e1c26e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d2a/a00531.html#a0e57168c3ce701c07d087d5afd4aa198">PipelinePtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d84/a01408.html#a1b8c2027b253b5ca41389f9e05e1c26e">createPipeline</a> (<a class="el" href="../../d1/d56/a01308.html">GraphicsPipelineCreateInfo</a> createInfo) const =0</td></tr>
-<tr class="memdesc:a1b8c2027b253b5ca41389f9e05e1c26e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Crée un pipeline graphique utilisant ce layout.  <a href="#a1b8c2027b253b5ca41389f9e05e1c26e">Plus de détails...</a><br /></td></tr>
-<tr class="separator:a1b8c2027b253b5ca41389f9e05e1c26e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14deec7b116619e5d17fb4d608106012"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d2a/a00531.html#abe0a7f60e4fb1dcd1951b2cff412afec">ComputePipelinePtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d84/a01408.html#a14deec7b116619e5d17fb4d608106012">createPipeline</a> (<a class="el" href="../../d5/d37/a01276.html">ComputePipelineCreateInfo</a> createInfo) const =0</td></tr>
-<tr class="memdesc:a14deec7b116619e5d17fb4d608106012"><td class="mdescLeft">&#160;</td><td class="mdescRight">Crée un pipeline de calcul utilisant ce layout.  <a href="#a14deec7b116619e5d17fb4d608106012">Plus de détails...</a><br /></td></tr>
-<tr class="separator:a14deec7b116619e5d17fb4d608106012"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4df7fb307663d80f6f36e362a819ee0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d2a/a00531.html#a0e57168c3ce701c07d087d5afd4aa198">PipelinePtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d84/a01408.html#aa4df7fb307663d80f6f36e362a819ee0">createPipeline</a> (std::vector&lt; <a class="el" href="../../d0/d05/a01420.html">ShaderStageState</a> &gt; &amp;&amp;stages, <a class="el" href="../../d0/d2a/a00531.html#a889c29462278f87fc5b80d832da3dcbb">VertexLayoutCRefArray</a> const &amp;vertexLayouts, <a class="el" href="../../d0/deb/a01508.html">RenderPass</a> const &amp;renderPass, <a class="el" href="../../d9/d45/a01396.html">InputAssemblyState</a> const &amp;inputAssemblyState, <a class="el" href="../../dc/d10/a01412.html">RasterisationState</a> const &amp;rasterisationState=<a class="el" href="../../dc/d10/a01412.html">RasterisationState</a>{}, <a class="el" href="../../dd/d6d/a01380.html">ColourBlendState</a> const &amp;colourBlendState=<a class="el" href="../../dd/d6d/a01380.html#a29f2a73b073d4c003cdf746007a1876a">ColourBlendState::createDefault</a>()) const</td></tr>
-<tr class="memdesc:aa4df7fb307663d80f6f36e362a819ee0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Crée un pipeline graphique utilisant ce layout.  <a href="#aa4df7fb307663d80f6f36e362a819ee0">Plus de détails...</a><br /></td></tr>
-<tr class="separator:aa4df7fb307663d80f6f36e362a819ee0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15c9417d0d7f844d5fc91cefb2c42637"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d2a/a00531.html#abe0a7f60e4fb1dcd1951b2cff412afec">ComputePipelinePtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d84/a01408.html#a15c9417d0d7f844d5fc91cefb2c42637">createPipeline</a> (<a class="el" href="../../d0/d05/a01420.html">ShaderStageState</a> &amp;&amp;stage) const</td></tr>
-<tr class="memdesc:a15c9417d0d7f844d5fc91cefb2c42637"><td class="mdescLeft">&#160;</td><td class="mdescRight">Crée un pipeline de calcul utilisant ce layout.  <a href="#a15c9417d0d7f844d5fc91cefb2c42637">Plus de détails...</a><br /></td></tr>
-<tr class="separator:a15c9417d0d7f844d5fc91cefb2c42637"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
-Fonctions membres protégées</h2></td></tr>
-<tr class="memitem:aa980b7fc38b64c566c41fefdfbe14844"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d84/a01408.html#aa980b7fc38b64c566c41fefdfbe14844">PipelineLayout</a> (<a class="el" href="../../db/d17/a01148.html">Device</a> const &amp;device, <a class="el" href="../../d0/d2a/a00531.html#a4186a1979dc160154b106a4ee9375bd0">DescriptorSetLayoutCRefArray</a> const &amp;setLayouts, <a class="el" href="../../d0/d2a/a00531.html#ae391b703c900286c79e9ed6a87df0947">PushConstantRangeCRefArray</a> const &amp;pushConstantRanges)</td></tr>
-<tr class="memdesc:aa980b7fc38b64c566c41fefdfbe14844"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructeur.  <a href="#aa980b7fc38b64c566c41fefdfbe14844">Plus de détails...</a><br /></td></tr>
-<tr class="separator:aa980b7fc38b64c566c41fefdfbe14844"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<a name="details" id="details"></a><h2 class="groupheader">Description détaillée</h2>
-<div class="textblock"><p>Layout de pipeline. </p>
-</div><h2 class="groupheader">Documentation des constructeurs et destructeur</h2>
-<a id="aa980b7fc38b64c566c41fefdfbe14844"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa980b7fc38b64c566c41fefdfbe14844">&#9670;&nbsp;</a></span>PipelineLayout()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">renderer::PipelineLayout::PipelineLayout </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="../../db/d17/a01148.html">Device</a> const &amp;&#160;</td>
-          <td class="paramname"><em>device</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#a4186a1979dc160154b106a4ee9375bd0">DescriptorSetLayoutCRefArray</a> const &amp;&#160;</td>
-          <td class="paramname"><em>setLayouts</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#ae391b703c900286c79e9ed6a87df0947">PushConstantRangeCRefArray</a> const &amp;&#160;</td>
-          <td class="paramname"><em>pushConstantRanges</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Constructeur. </p>
-<dl class="params"><dt>Paramètres</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">device</td><td>Le LogicalDevice parent. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">setLayouts</td><td>Les layouts des descripteurs du pipeline. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">pushConstantRanges</td><td>Les intervalles de push constants. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a9c0cd66ea454e5229914f57a1f84dcd2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9c0cd66ea454e5229914f57a1f84dcd2">&#9670;&nbsp;</a></span>~PipelineLayout()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual renderer::PipelineLayout::~PipelineLayout </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Destructeur. </p>
-
-</div>
-</div>
-<h2 class="groupheader">Documentation des fonctions membres</h2>
-<a id="a1b8c2027b253b5ca41389f9e05e1c26e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1b8c2027b253b5ca41389f9e05e1c26e">&#9670;&nbsp;</a></span>createPipeline() <span class="overload">[1/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="../../d0/d2a/a00531.html#a0e57168c3ce701c07d087d5afd4aa198">PipelinePtr</a> renderer::PipelineLayout::createPipeline </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d1/d56/a01308.html">GraphicsPipelineCreateInfo</a>&#160;</td>
-          <td class="paramname"><em>createInfo</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Crée un pipeline graphique utilisant ce layout. </p>
-<dl class="params"><dt>Paramètres</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">createInfo</td><td>Les informations de création. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Renvoie</dt><dd>Le pipeline créé. </dd></dl>
-
-<p class="reference">Référencé par <a class="el" href="../../df/d84/a01408.html#aa4df7fb307663d80f6f36e362a819ee0">createPipeline()</a>.</p>
-<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-0-trigger" src="../../closed.png" alt="+"/> Voici le graphe des appelants de cette fonction :</div>
-<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="../../df/d84/a01408_a1b8c2027b253b5ca41389f9e05e1c26e_icgraph.png" border="0" usemap="#df/d84/a01408_a1b8c2027b253b5ca41389f9e05e1c26e_icgraph" alt=""/></div>
-<map name="df/d84/a01408_a1b8c2027b253b5ca41389f9e05e1c26e_icgraph" id="df/d84/a01408_a1b8c2027b253b5ca41389f9e05e1c26e_icgraph">
-<area shape="rect" id="node2" href="../../df/d84/a01408.html#aa4df7fb307663d80f6f36e362a819ee0" title="Crée un pipeline graphique utilisant ce layout. " alt="" coords="216,5,379,47"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="a14deec7b116619e5d17fb4d608106012"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a14deec7b116619e5d17fb4d608106012">&#9670;&nbsp;</a></span>createPipeline() <span class="overload">[2/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="../../d0/d2a/a00531.html#abe0a7f60e4fb1dcd1951b2cff412afec">ComputePipelinePtr</a> renderer::PipelineLayout::createPipeline </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d5/d37/a01276.html">ComputePipelineCreateInfo</a>&#160;</td>
-          <td class="paramname"><em>createInfo</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Crée un pipeline de calcul utilisant ce layout. </p>
-<dl class="params"><dt>Paramètres</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">createInfo</td><td>Les informations de création. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Renvoie</dt><dd>Le pipeline créé. </dd></dl>
-
-</div>
-</div>
-<a id="aa4df7fb307663d80f6f36e362a819ee0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa4df7fb307663d80f6f36e362a819ee0">&#9670;&nbsp;</a></span>createPipeline() <span class="overload">[3/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="../../d0/d2a/a00531.html#a0e57168c3ce701c07d087d5afd4aa198">PipelinePtr</a> renderer::PipelineLayout::createPipeline </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="../../d0/d05/a01420.html">ShaderStageState</a> &gt; &amp;&amp;&#160;</td>
-          <td class="paramname"><em>stages</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#a889c29462278f87fc5b80d832da3dcbb">VertexLayoutCRefArray</a> const &amp;&#160;</td>
-          <td class="paramname"><em>vertexLayouts</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../d0/deb/a01508.html">RenderPass</a> const &amp;&#160;</td>
-          <td class="paramname"><em>renderPass</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../d9/d45/a01396.html">InputAssemblyState</a> const &amp;&#160;</td>
-          <td class="paramname"><em>inputAssemblyState</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../dc/d10/a01412.html">RasterisationState</a> const &amp;&#160;</td>
-          <td class="paramname"><em>rasterisationState</em> = <code><a class="el" href="../../dc/d10/a01412.html">RasterisationState</a>{}</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../dd/d6d/a01380.html">ColourBlendState</a> const &amp;&#160;</td>
-          <td class="paramname"><em>colourBlendState</em> = <code><a class="el" href="../../dd/d6d/a01380.html#a29f2a73b073d4c003cdf746007a1876a">ColourBlendState::createDefault</a>()</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Crée un pipeline graphique utilisant ce layout. </p>
-<dl class="params"><dt>Paramètres</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">stages</td><td>Les niveaux de shader. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">vertexLayouts</td><td>Le layout de sommets utilisé par le pipeline. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">renderPass</td><td>La passe de rendu. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">inputAssemblyState</td><td>L'état d'assemblage des entrées. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">rasterisationState</td><td>L'état de rastérisation. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">colourBlendState</td><td>L'état de mélange des couleurs. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Renvoie</dt><dd>Le pipeline créé. </dd></dl>
-
-<p class="reference">Références <a class="el" href="../../dd/d1c/a01452.html#a92beed2211a3c3ac92e791d13ebb9ce4">renderer::VertexInputState::create()</a>, <a class="el" href="../../dd/d6d/a01380.html#a29f2a73b073d4c003cdf746007a1876a">renderer::ColourBlendState::createDefault()</a>, et <a class="el" href="../../df/d84/a01408.html#a1b8c2027b253b5ca41389f9e05e1c26e">createPipeline()</a>.</p>
-<div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-1-trigger" src="../../closed.png" alt="+"/> Voici le graphe d'appel pour cette fonction :</div>
-<div id="dynsection-1-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-1-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="../../df/d84/a01408_aa4df7fb307663d80f6f36e362a819ee0_cgraph.png" border="0" usemap="#df/d84/a01408_aa4df7fb307663d80f6f36e362a819ee0_cgraph" alt=""/></div>
-<map name="df/d84/a01408_aa4df7fb307663d80f6f36e362a819ee0_cgraph" id="df/d84/a01408_aa4df7fb307663d80f6f36e362a819ee0_cgraph">
-<area shape="rect" id="node2" href="../../dd/d1c/a01452.html#a92beed2211a3c3ac92e791d13ebb9ce4" title="renderer::VertexInputState\l::create" alt="" coords="218,5,393,47"/>
-<area shape="rect" id="node3" href="../../dd/d6d/a01380.html#a29f2a73b073d4c003cdf746007a1876a" title="renderer::ColourBlendState\l::createDefault" alt="" coords="216,71,395,112"/>
-<area shape="rect" id="node4" href="../../df/d84/a01408.html#a1b8c2027b253b5ca41389f9e05e1c26e" title="Crée un pipeline graphique utilisant ce layout. " alt="" coords="224,136,387,177"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="a15c9417d0d7f844d5fc91cefb2c42637"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a15c9417d0d7f844d5fc91cefb2c42637">&#9670;&nbsp;</a></span>createPipeline() <span class="overload">[4/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="../../d0/d2a/a00531.html#abe0a7f60e4fb1dcd1951b2cff412afec">ComputePipelinePtr</a> renderer::PipelineLayout::createPipeline </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d0/d05/a01420.html">ShaderStageState</a> &amp;&amp;&#160;</td>
-          <td class="paramname"><em>stage</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Crée un pipeline de calcul utilisant ce layout. </p>
-<dl class="params"><dt>Paramètres</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">stage</td><td>Le niveau de shader. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Renvoie</dt><dd>Le pipeline créé. </dd></dl>
-
-<p class="reference">Références <a class="el" href="../../df/d84/a01408.html#a1b8c2027b253b5ca41389f9e05e1c26e">createPipeline()</a>.</p>
-<div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
-  <img id="dynsection-2-trigger" src="../../closed.png" alt="+"/> Voici le graphe d'appel pour cette fonction :</div>
-<div id="dynsection-2-summary" class="dynsummary" style="display:block;">
-</div>
-<div id="dynsection-2-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="../../df/d84/a01408_a15c9417d0d7f844d5fc91cefb2c42637_cgraph.png" border="0" usemap="#df/d84/a01408_a15c9417d0d7f844d5fc91cefb2c42637_cgraph" alt=""/></div>
-<map name="df/d84/a01408_a15c9417d0d7f844d5fc91cefb2c42637_cgraph" id="df/d84/a01408_a15c9417d0d7f844d5fc91cefb2c42637_cgraph">
-<area shape="rect" id="node2" href="../../df/d84/a01408.html#a1b8c2027b253b5ca41389f9e05e1c26e" title="Crée un pipeline graphique utilisant ce layout. " alt="" coords="216,5,379,47"/>
-</map>
-</div>
-
-</div>
-</div>
-<hr/>La documentation de cette classe a été générée à partir du fichier suivant :<ul>
-<li>Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/Pipeline/<a class="el" href="../../d1/d98/a00407.html">PipelineLayout.hpp</a></li>
-</ul>
-</div><!-- contents -->
+<p>Liste complète des membres de <a class="el" href="../../db/d99/a01411.html">renderer::PipelineLayout</a>, y compris les membres hérités :</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="../../db/d99/a01411.html#a1b8c2027b253b5ca41389f9e05e1c26e">createPipeline</a>(GraphicsPipelineCreateInfo createInfo) const =0</td><td class="entry"><a class="el" href="../../db/d99/a01411.html">renderer::PipelineLayout</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="../../db/d99/a01411.html#a14deec7b116619e5d17fb4d608106012">createPipeline</a>(ComputePipelineCreateInfo createInfo) const =0</td><td class="entry"><a class="el" href="../../db/d99/a01411.html">renderer::PipelineLayout</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="../../db/d99/a01411.html#aa4df7fb307663d80f6f36e362a819ee0">createPipeline</a>(std::vector&lt; ShaderStageState &gt; &amp;&amp;stages, VertexLayoutCRefArray const &amp;vertexLayouts, RenderPass const &amp;renderPass, InputAssemblyState const &amp;inputAssemblyState, RasterisationState const &amp;rasterisationState=RasterisationState{}, ColourBlendState const &amp;colourBlendState=ColourBlendState::createDefault()) const</td><td class="entry"><a class="el" href="../../db/d99/a01411.html">renderer::PipelineLayout</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="../../db/d99/a01411.html#a15c9417d0d7f844d5fc91cefb2c42637">createPipeline</a>(ShaderStageState &amp;&amp;stage) const</td><td class="entry"><a class="el" href="../../db/d99/a01411.html">renderer::PipelineLayout</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="../../db/d99/a01411.html#aa980b7fc38b64c566c41fefdfbe14844">PipelineLayout</a>(Device const &amp;device, DescriptorSetLayoutCRefArray const &amp;setLayouts, PushConstantRangeCRefArray const &amp;pushConstantRanges)</td><td class="entry"><a class="el" href="../../db/d99/a01411.html">renderer::PipelineLayout</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr><td class="entry"><a class="el" href="../../db/d99/a01411.html#a9c0cd66ea454e5229914f57a1f84dcd2">~PipelineLayout</a>()</td><td class="entry"><a class="el" href="../../db/d99/a01411.html">renderer::PipelineLayout</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Généré le Dimanche 29 Avril 2018 13:14:07 pour Renderer par &#160;<a href="http://www.doxygen.org/index.html">
+Généré le Lundi 30 Avril 2018 22:40:28 pour RendererLib par &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

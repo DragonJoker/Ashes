@@ -1,6 +1,0 @@
-<map id="renderer::Mat4T::ptr" name="renderer::Mat4T::ptr">
-<area shape="rect" id="node2" href="$df/df3/a01468.html#aef864afc80469c1c9d32aa5eacaf1cfd" title="renderer::Mat4T::operator*=" alt="" coords="191,5,372,32"/>
-<area shape="rect" id="node3" href="$df/df3/a01468.html#a59f97f9afc93cd9611a5540d65143cda" title="renderer::Mat4T::operator+=" alt="" coords="189,56,373,83"/>
-<area shape="rect" id="node4" href="$df/df3/a01468.html#a10fabaaa6354ce85bc54344950b5c101" title="renderer::Mat4T::operator&#45;=" alt="" coords="191,107,371,133"/>
-<area shape="rect" id="node5" href="$df/df3/a01468.html#a652aa758a2a1983ba9cc435a626aa884" title="renderer::Mat4T::operator/=" alt="" coords="191,157,371,184"/>
-</map>

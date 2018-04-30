@@ -1,13 +1,11 @@
-<map id="Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/Image/ImageSubresourceRange.hpp" name="Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/Image/ImageSubresourceRange.hpp">
-<area shape="rect" id="node2" href="$dd/dad/a00005.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Buffer/BufferView.hpp" alt="" coords="45,109,222,165"/>
-<area shape="rect" id="node5" href="$db/dc3/a00284.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Image/ImageViewCreateInfo.hpp" alt="" coords="249,109,484,165"/>
-<area shape="rect" id="node12" href="$d4/d1f/a00506.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Sync/ImageMemoryBarrier.hpp" alt="" coords="508,109,737,165"/>
-<area shape="rect" id="node3" href="$d2/d1f/a00083.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Descriptor/WriteDescriptorSet.hpp" alt="" coords="5,213,253,269"/>
-<area shape="rect" id="node4" href="$d0/d89/a00071.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Descriptor/DescriptorSet.hpp" alt="" coords="21,317,238,373"/>
-<area shape="rect" id="node6" href="$db/d7b/a00296.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Image/Texture.hpp" alt="" coords="278,213,455,269"/>
-<area shape="rect" id="node9" href="$df/d95/a00299.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Image/TextureView.hpp" alt="" coords="479,213,665,269"/>
-<area shape="rect" id="node7" href="$dc/d87/a00032.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Core/BackBuffer.hpp" alt="" coords="278,317,455,373"/>
-<area shape="rect" id="node8" href="$dc/dee/a00053.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Core/SwapChain.hpp" alt="" coords="278,421,455,477"/>
-<area shape="rect" id="node10" href="$d0/d29/a00470.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/RenderPass/FrameBufferAttachment.hpp" alt="" coords="479,317,766,373"/>
-<area shape="rect" id="node11" href="$d7/d5e/a00467.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/RenderPass/FrameBuffer.hpp" alt="" coords="513,421,733,477"/>
+<map id="Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/Image/ImageSubresourceLayers.hpp" name="Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/Image/ImageSubresourceLayers.hpp">
+<area shape="rect" id="node2" href="$d3/d52/a00023.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Command/CommandBufferInheritance\lInfo.hpp" alt="" coords="5,109,273,180"/>
+<area shape="rect" id="node3" href="$d5/d0f/a00308.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Miscellaneous/BufferImageCopy.hpp" alt="" coords="297,117,557,173"/>
+<area shape="rect" id="node9" href="$dc/d84/a00338.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Miscellaneous/ImageBlit.hpp" alt="" coords="582,117,798,173"/>
+<area shape="rect" id="node10" href="$d3/d93/a00341.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Miscellaneous/ImageCopy.hpp" alt="" coords="822,117,1049,173"/>
+<area shape="rect" id="node4" href="$db/db2/a00020.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Command/CommandBuffer.hpp" alt="" coords="575,228,805,284"/>
+<area shape="rect" id="node5" href="$d5/de0/a00050.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Core/RenderingResources.hpp" alt="" coords="577,332,803,388"/>
+<area shape="rect" id="node6" href="$d2/de7/a00014.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Buffer/UniformBuffer.hpp" alt="" coords="491,436,681,492"/>
+<area shape="rect" id="node8" href="$dc/dee/a00053.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Core/SwapChain.hpp" alt="" coords="705,436,883,492"/>
+<area shape="rect" id="node7" href="$da/d45/a00011.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Buffer/StagingBuffer.hpp" alt="" coords="491,540,681,596"/>
 </map>

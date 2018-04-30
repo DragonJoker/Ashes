@@ -1,10 +1,8 @@
-<map id="Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/Miscellaneous/Offset3D.hpp" name="Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/Miscellaneous/Offset3D.hpp">
-<area shape="rect" id="node2" href="$d3/d07/a00305.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Miscellaneous/BufferImageCopy.hpp" alt="" coords="5,109,265,165"/>
-<area shape="rect" id="node8" href="$df/d91/a00335.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Miscellaneous/ImageBlit.hpp" alt="" coords="290,109,506,165"/>
-<area shape="rect" id="node9" href="$dc/d84/a00338.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Miscellaneous/ImageCopy.hpp" alt="" coords="530,109,757,165"/>
-<area shape="rect" id="node3" href="$db/db2/a00020.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Command/CommandBuffer.hpp" alt="" coords="283,213,513,269"/>
-<area shape="rect" id="node4" href="$d5/de0/a00050.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Core/RenderingResources.hpp" alt="" coords="285,317,511,373"/>
-<area shape="rect" id="node5" href="$d2/de7/a00014.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Buffer/UniformBuffer.hpp" alt="" coords="199,421,389,477"/>
-<area shape="rect" id="node7" href="$dc/dee/a00053.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Core/SwapChain.hpp" alt="" coords="413,421,591,477"/>
-<area shape="rect" id="node6" href="$da/d45/a00011.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Buffer/StagingBuffer.hpp" alt="" coords="199,525,389,581"/>
+<map id="Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/Miscellaneous/Offset2D.hpp" name="Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/Miscellaneous/Offset2D.hpp">
+<area shape="rect" id="node2" href="$df/d15/a00416.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Pipeline/Scissor.hpp" alt="" coords="5,109,183,165"/>
+<area shape="rect" id="node6" href="$d3/def/a00446.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Pipeline/Viewport.hpp" alt="" coords="207,109,384,165"/>
+<area shape="rect" id="node7" href="$d2/d9d/a00464.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/RenderPass/ClearRect.hpp" alt="" coords="408,109,615,165"/>
+<area shape="rect" id="node3" href="$df/d91/a00335.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Miscellaneous/GraphicsPipeline\lCreateInfo.hpp" alt="" coords="77,213,311,284"/>
+<area shape="rect" id="node4" href="$d1/d98/a00407.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Pipeline/Pipeline.hpp" alt="" coords="105,332,283,388"/>
+<area shape="rect" id="node5" href="$d8/d91/a00410.html" title="Z:/Projets/C++/RenderLib\l/source/Renderer/Renderer\l/Src/Pipeline/PipelineLayout.hpp" alt="" coords="89,436,299,492"/>
 </map>

@@ -1,0 +1,5 @@
+<map id="renderer::CommandBuffer::bindDescriptorSets" name="renderer::CommandBuffer::bindDescriptorSets">
+<area shape="rect" id="node2" href="$d9/d5b/a01127.html#a9417d14abf547f953a6bda07472814a1" title="Binds descriptor sets to the command buffer. " alt="" coords="223,5,392,47"/>
+<area shape="rect" id="node3" href="$d9/d5b/a01127.html#a8a4598076d7952c5369e9982404a0035" title="Copies data from a buffer to another one. " alt="" coords="223,71,392,112"/>
+<area shape="rect" id="node4" href="$d9/d5b/a01127.html#a88a78500d19963ba5c14cbafed0ae6df" title="Copies data from an image to another one. " alt="" coords="223,136,392,177"/>
+</map>

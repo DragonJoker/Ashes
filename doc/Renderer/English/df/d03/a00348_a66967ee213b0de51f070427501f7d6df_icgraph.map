@@ -1,3 +1,0 @@
-<map id="renderer::isDepthStencilFormat" name="renderer::isDepthStencilFormat">
-<area shape="rect" id="node2" href="$df/d03/a00348.html#aec0a2c7c682c1e363a09532c8f5e9ce9" title="Tells if the given renderer::PixelFormat is usable in depth and/or stencil buffers. " alt="" coords="215,5,389,47"/>
-</map>

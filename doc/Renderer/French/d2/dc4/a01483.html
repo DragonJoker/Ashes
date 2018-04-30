@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.13"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>RendererLib: Référence de la structure renderer::ClearAttachment</title>
+<link href="../../tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../../jquery.js"></script>
+<script type="text/javascript" src="../../dynsections.js"></script>
+<link href="../../doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">RendererLib
+   &#160;<span id="projectnumber">1.0.0</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Généré par Doxygen 1.8.13 -->
+<script type="text/javascript" src="../../menudata.js"></script>
+<script type="text/javascript" src="../../menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('../../',false,false,'search.php','Recherche');
+});
+</script>
+<div id="main-nav"></div>
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="../../dc/d20/a00534.html">renderer</a></li><li class="navelem"><a class="el" href="../../d2/dc4/a01483.html">ClearAttachment</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Attributs publics</a> &#124;
+<a href="../../d1/d38/a01480.html">Liste de tous les membres</a>  </div>
+  <div class="headertitle">
+<div class="title">Référence de la structure renderer::ClearAttachment</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>Définit le nettoyage d'une attache.  
+ <a href="../../d2/dc4/a01483.html#details">Plus de détails...</a></p>
+<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-0-trigger" src="../../closed.png" alt="+"/> Graphe de collaboration de renderer::ClearAttachment:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="../../d1/de4/a01481.png" border="0" usemap="#renderer_1_1ClearAttachment_coll__map" alt="Collaboration graph"/></div>
+<map name="renderer_1_1ClearAttachment_coll__map" id="renderer_1_1ClearAttachment_coll__map">
+<area shape="rect" id="node2" href="../../d5/d06/a01499.html" title="Valeur de vidage, couleur ou profondeur/stencil. " alt="" coords="23,5,163,32"/>
+</map>
+<center><span class="legend">[<a href="../../graph_legend.html">légende</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Attributs publics</h2></td></tr>
+<tr class="memitem:af4fc41b7bcf68ab1686ad0f1a122a42c"><td class="memItemLeft" align="right" valign="top">ImageAspectFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/dc4/a01483.html#af4fc41b7bcf68ab1686ad0f1a122a42c">aspectMask</a></td></tr>
+<tr class="memdesc:af4fc41b7bcf68ab1686ad0f1a122a42c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sélectionne l'aspect couleur, profondeur et/ou stencil de l'attache à nettoyer. <code>aspectMask</code> peut inclure <a class="el" href="../../dc/d20/a00534.html#a670783a61d1a0113699384c472b854a8a933e146a34d99e16a319642574089a34">renderer::ImageAspectFlag::eColour</a> pour les attaches couleur, <a class="el" href="../../dc/d20/a00534.html#a83f12d96fbffa0e985787105c30a48dea2a37044e2d0bed7cbb63527176543d73">renderer::ImageAspectFlag::eDepth</a> pour les attaches profondeur, et <a class="el" href="../../dc/d20/a00534.html#a83f12d96fbffa0e985787105c30a48dea4432dfcffbc353a6a91b14e435a86939">renderer::ImageAspectFlag::eStencil</a> pour les attaches stencil. Si l'attache profondeur/stencil de la sous-passe vaut <a class="el" href="../../dc/d20/a00534.html#abca71fce2d4938eaed23229aaaac0fbb">renderer::AttachmentUnused</a>, alors le nettoyage n'a aucun effet.  <a href="#af4fc41b7bcf68ab1686ad0f1a122a42c">Plus de détails...</a><br /></td></tr>
+<tr class="separator:af4fc41b7bcf68ab1686ad0f1a122a42c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c712b8f236def9f9c160d7b2bcac73a"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/dc4/a01483.html#a1c712b8f236def9f9c160d7b2bcac73a">colourAttachment</a></td></tr>
+<tr class="memdesc:a1c712b8f236def9f9c160d7b2bcac73a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seulement utile si <a class="el" href="../../dc/d20/a00534.html#a670783a61d1a0113699384c472b854a8a933e146a34d99e16a319642574089a34">renderer::ImageAspectFlag::eColour</a> est défini dans <code>aspectMask</code>, auquel cas c'est un indice dans le tableau <code>colourAttaches</code> du constructeur de render::Subpass pour la sous-passe courante, qui sélectionne l'attache couleur à nettoyer. Si <code>colourAttachment</code> vaut <a class="el" href="../../dc/d20/a00534.html#abca71fce2d4938eaed23229aaaac0fbb">renderer::AttachmentUnused</a>, alors le nettoyage n'a aucun effet.  <a href="#a1c712b8f236def9f9c160d7b2bcac73a">Plus de détails...</a><br /></td></tr>
+<tr class="separator:a1c712b8f236def9f9c160d7b2bcac73a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9545861684a3f08e6161be3b8af52533"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d5/d06/a01499.html">ClearValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/dc4/a01483.html#a9545861684a3f08e6161be3b8af52533">clearValue</a></td></tr>
+<tr class="memdesc:a9545861684a3f08e6161be3b8af52533"><td class="mdescLeft">&#160;</td><td class="mdescRight">La couleur ou valeur profondeur/stencil avec laquelle l'attache est nettoyée.  <a href="#a9545861684a3f08e6161be3b8af52533">Plus de détails...</a><br /></td></tr>
+<tr class="separator:a9545861684a3f08e6161be3b8af52533"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Description détaillée</h2>
+<div class="textblock"><p>Définit le nettoyage d'une attache. </p>
+</div><h2 class="groupheader">Documentation des données membres</h2>
+<a id="af4fc41b7bcf68ab1686ad0f1a122a42c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4fc41b7bcf68ab1686ad0f1a122a42c">&#9670;&nbsp;</a></span>aspectMask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ImageAspectFlags renderer::ClearAttachment::aspectMask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sélectionne l'aspect couleur, profondeur et/ou stencil de l'attache à nettoyer. <code>aspectMask</code> peut inclure <a class="el" href="../../dc/d20/a00534.html#a670783a61d1a0113699384c472b854a8a933e146a34d99e16a319642574089a34">renderer::ImageAspectFlag::eColour</a> pour les attaches couleur, <a class="el" href="../../dc/d20/a00534.html#a83f12d96fbffa0e985787105c30a48dea2a37044e2d0bed7cbb63527176543d73">renderer::ImageAspectFlag::eDepth</a> pour les attaches profondeur, et <a class="el" href="../../dc/d20/a00534.html#a83f12d96fbffa0e985787105c30a48dea4432dfcffbc353a6a91b14e435a86939">renderer::ImageAspectFlag::eStencil</a> pour les attaches stencil. Si l'attache profondeur/stencil de la sous-passe vaut <a class="el" href="../../dc/d20/a00534.html#abca71fce2d4938eaed23229aaaac0fbb">renderer::AttachmentUnused</a>, alors le nettoyage n'a aucun effet. </p>
+
+</div>
+</div>
+<a id="a9545861684a3f08e6161be3b8af52533"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9545861684a3f08e6161be3b8af52533">&#9670;&nbsp;</a></span>clearValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d5/d06/a01499.html">ClearValue</a> renderer::ClearAttachment::clearValue</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>La couleur ou valeur profondeur/stencil avec laquelle l'attache est nettoyée. </p>
+
+</div>
+</div>
+<a id="a1c712b8f236def9f9c160d7b2bcac73a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c712b8f236def9f9c160d7b2bcac73a">&#9670;&nbsp;</a></span>colourAttachment</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t renderer::ClearAttachment::colourAttachment</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Seulement utile si <a class="el" href="../../dc/d20/a00534.html#a670783a61d1a0113699384c472b854a8a933e146a34d99e16a319642574089a34">renderer::ImageAspectFlag::eColour</a> est défini dans <code>aspectMask</code>, auquel cas c'est un indice dans le tableau <code>colourAttaches</code> du constructeur de render::Subpass pour la sous-passe courante, qui sélectionne l'attache couleur à nettoyer. Si <code>colourAttachment</code> vaut <a class="el" href="../../dc/d20/a00534.html#abca71fce2d4938eaed23229aaaac0fbb">renderer::AttachmentUnused</a>, alors le nettoyage n'a aucun effet. </p>
+
+</div>
+</div>
+<hr/>La documentation de cette structure a été générée à partir du fichier suivant :<ul>
+<li>Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/RenderPass/<a class="el" href="../../d5/d5f/a00461.html">ClearAttachment.hpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Généré le Lundi 30 Avril 2018 22:40:26 pour RendererLib par &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="../../doxygen.png" alt="doxygen"/>
+</a> 1.8.13
+</small></address>
+</body>
+</html>

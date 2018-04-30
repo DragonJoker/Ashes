@@ -1,0 +1,465 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.13"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>RendererLib: Référence de la classe renderer::Queue</title>
+<link href="../../tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../../jquery.js"></script>
+<script type="text/javascript" src="../../dynsections.js"></script>
+<link href="../../doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">RendererLib
+   &#160;<span id="projectnumber">1.0.0</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Généré par Doxygen 1.8.13 -->
+<script type="text/javascript" src="../../menudata.js"></script>
+<script type="text/javascript" src="../../menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('../../',false,false,'search.php','Recherche');
+});
+</script>
+<div id="main-nav"></div>
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="../../dc/d20/a00534.html">renderer</a></li><li class="navelem"><a class="el" href="../../d5/d3e/a01139.html">Queue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Fonctions membres publiques</a> &#124;
+<a href="#pro-methods">Fonctions membres protégées</a> &#124;
+<a href="../../d1/dae/a01136.html">Liste de tous les membres</a>  </div>
+  <div class="headertitle">
+<div class="title">Référence de la classe renderer::Queue<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>File de tampons de commandes.  
+ <a href="../../d5/d3e/a01139.html#details">Plus de détails...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Fonctions membres publiques</h2></td></tr>
+<tr class="memitem:a8a31276e8e8c0cf65995bfe2575eb9d0"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d3e/a01139.html#a8a31276e8e8c0cf65995bfe2575eb9d0">~Queue</a> ()</td></tr>
+<tr class="separator:a8a31276e8e8c0cf65995bfe2575eb9d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37f2fecd786f5f19037bdf9ca6415000"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d3e/a01139.html#a37f2fecd786f5f19037bdf9ca6415000">submit</a> (<a class="el" href="../../dc/d20/a00534.html#a7a9f49db4f0b7fe17710cb0ce0cb1a1a">CommandBufferCRefArray</a> const &amp;commandBuffers, <a class="el" href="../../dc/d20/a00534.html#a0d8d73ad1488259f65e7769c88322234">SemaphoreCRefArray</a> const &amp;semaphoresToWait, <a class="el" href="../../dc/d20/a00534.html#a00d1010297495f0b3905888556bb536b">PipelineStageFlagsArray</a> const &amp;semaphoresStage, <a class="el" href="../../dc/d20/a00534.html#a0d8d73ad1488259f65e7769c88322234">SemaphoreCRefArray</a> const &amp;semaphoresToSignal, <a class="el" href="../../d5/df4/a01551.html">Fence</a> const *fence) const =0</td></tr>
+<tr class="memdesc:a37f2fecd786f5f19037bdf9ca6415000"><td class="mdescLeft">&#160;</td><td class="mdescRight">Met des tampons de commandes dans la file.  <a href="#a37f2fecd786f5f19037bdf9ca6415000">Plus de détails...</a><br /></td></tr>
+<tr class="separator:a37f2fecd786f5f19037bdf9ca6415000"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e5011aea5b82b188cec1b31748dde53"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d3e/a01139.html#a4e5011aea5b82b188cec1b31748dde53">present</a> (<a class="el" href="../../dc/d20/a00534.html#a408a344270489dc02fc9d36758db4c87">SwapChainCRefArray</a> const &amp;swapChains, <a class="el" href="../../dc/d20/a00534.html#a8b9e169b09408e14eea8875eed67881a">UInt32Array</a> const &amp;imagesIndex, <a class="el" href="../../dc/d20/a00534.html#a0d8d73ad1488259f65e7769c88322234">SemaphoreCRefArray</a> const &amp;semaphoresToWait) const =0</td></tr>
+<tr class="memdesc:a4e5011aea5b82b188cec1b31748dde53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Présente la file à l'API de rendu.  <a href="#a4e5011aea5b82b188cec1b31748dde53">Plus de détails...</a><br /></td></tr>
+<tr class="separator:a4e5011aea5b82b188cec1b31748dde53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d91cdf5fb05aa4bd1fc6aa91b88ca8f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d3e/a01139.html#a4d91cdf5fb05aa4bd1fc6aa91b88ca8f">waitIdle</a> () const =0</td></tr>
+<tr class="memdesc:a4d91cdf5fb05aa4bd1fc6aa91b88ca8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attend que la file soit inactive.  <a href="#a4d91cdf5fb05aa4bd1fc6aa91b88ca8f">Plus de détails...</a><br /></td></tr>
+<tr class="separator:a4d91cdf5fb05aa4bd1fc6aa91b88ca8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a354f938233d2d0a73765c9e1fb0b1849"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d3e/a01139.html#a354f938233d2d0a73765c9e1fb0b1849">getFamilyIndex</a> () const =0</td></tr>
+<tr class="separator:a354f938233d2d0a73765c9e1fb0b1849"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af13fb2f77e12cbfd7681ac4be3016cfc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d3e/a01139.html#af13fb2f77e12cbfd7681ac4be3016cfc">submit</a> (<a class="el" href="../../d9/d5b/a01127.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../d5/df4/a01551.html">Fence</a> const *fence) const</td></tr>
+<tr class="memdesc:af13fb2f77e12cbfd7681ac4be3016cfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Met en attente des tampons de commandes.  <a href="#af13fb2f77e12cbfd7681ac4be3016cfc">Plus de détails...</a><br /></td></tr>
+<tr class="separator:af13fb2f77e12cbfd7681ac4be3016cfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad97a84a72a5e96db64c51f0bf0e5afb4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d3e/a01139.html#ad97a84a72a5e96db64c51f0bf0e5afb4">submit</a> (<a class="el" href="../../d9/d5b/a01127.html">CommandBuffer</a> const &amp;commandBuffer, <a class="el" href="../../de/d1a/a01559.html">Semaphore</a> const &amp;semaphoreToWait, PipelineStageFlags const &amp;semaphoreStage, <a class="el" href="../../de/d1a/a01559.html">Semaphore</a> const &amp;semaphoreToSignal, <a class="el" href="../../d5/df4/a01551.html">Fence</a> const *fence) const</td></tr>
+<tr class="memdesc:ad97a84a72a5e96db64c51f0bf0e5afb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Met en attente un tampon de commandes.  <a href="#ad97a84a72a5e96db64c51f0bf0e5afb4">Plus de détails...</a><br /></td></tr>
+<tr class="separator:ad97a84a72a5e96db64c51f0bf0e5afb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Fonctions membres protégées</h2></td></tr>
+<tr class="memitem:aebf5e97c87dbf93f6b80a67542b7a50d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d3e/a01139.html#aebf5e97c87dbf93f6b80a67542b7a50d">Queue</a> (<a class="el" href="../../de/df1/a01151.html">Device</a> const &amp;device)</td></tr>
+<tr class="separator:aebf5e97c87dbf93f6b80a67542b7a50d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Description détaillée</h2>
+<div class="textblock"><p>File de tampons de commandes. </p>
+</div><h2 class="groupheader">Documentation des constructeurs et destructeur</h2>
+<a id="aebf5e97c87dbf93f6b80a67542b7a50d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebf5e97c87dbf93f6b80a67542b7a50d">&#9670;&nbsp;</a></span>Queue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">renderer::Queue::Queue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../de/df1/a01151.html">Device</a> const &amp;&#160;</td>
+          <td class="paramname"><em>device</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8a31276e8e8c0cf65995bfe2575eb9d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a31276e8e8c0cf65995bfe2575eb9d0">&#9670;&nbsp;</a></span>~Queue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual renderer::Queue::~Queue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Documentation des fonctions membres</h2>
+<a id="a354f938233d2d0a73765c9e1fb0b1849"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a354f938233d2d0a73765c9e1fb0b1849">&#9670;&nbsp;</a></span>getFamilyIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual uint32_t renderer::Queue::getFamilyIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Renvoie</dt><dd>L'index de la famille de la file. </dd></dl>
+
+</div>
+</div>
+<a id="a4e5011aea5b82b188cec1b31748dde53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e5011aea5b82b188cec1b31748dde53">&#9670;&nbsp;</a></span>present()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool renderer::Queue::present </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../dc/d20/a00534.html#a408a344270489dc02fc9d36758db4c87">SwapChainCRefArray</a> const &amp;&#160;</td>
+          <td class="paramname"><em>swapChains</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d20/a00534.html#a8b9e169b09408e14eea8875eed67881a">UInt32Array</a> const &amp;&#160;</td>
+          <td class="paramname"><em>imagesIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d20/a00534.html#a0d8d73ad1488259f65e7769c88322234">SemaphoreCRefArray</a> const &amp;&#160;</td>
+          <td class="paramname"><em>semaphoresToWait</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Présente la file à l'API de rendu. </p>
+<dl class="section return"><dt>Renvoie</dt><dd><code>true</code> si tout s'est bien passé. </dd></dl>
+
+</div>
+</div>
+<a id="a37f2fecd786f5f19037bdf9ca6415000"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37f2fecd786f5f19037bdf9ca6415000">&#9670;&nbsp;</a></span>submit() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool renderer::Queue::submit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../dc/d20/a00534.html#a7a9f49db4f0b7fe17710cb0ce0cb1a1a">CommandBufferCRefArray</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d20/a00534.html#a0d8d73ad1488259f65e7769c88322234">SemaphoreCRefArray</a> const &amp;&#160;</td>
+          <td class="paramname"><em>semaphoresToWait</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d20/a00534.html#a00d1010297495f0b3905888556bb536b">PipelineStageFlagsArray</a> const &amp;&#160;</td>
+          <td class="paramname"><em>semaphoresStage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../dc/d20/a00534.html#a0d8d73ad1488259f65e7769c88322234">SemaphoreCRefArray</a> const &amp;&#160;</td>
+          <td class="paramname"><em>semaphoresToSignal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d5/df4/a01551.html">Fence</a> const *&#160;</td>
+          <td class="paramname"><em>fence</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Met des tampons de commandes dans la file. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">commandBuffers</td><td>Les tampons de commandes. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">semaphoresToWait</td><td>Les sémaphores à attendre lors de l'éxécution de la file. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">semaphoresStage</td><td>Les étapes respectives des sémaphores. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">semaphoresToSignal</td><td>Les sémaphores à signaler à la fin de l'éxécution de la file. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fence</td><td>Une barrière optionnelle. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd><code>true</code> si tout s'est bien passé. </dd></dl>
+
+<p class="reference">Référencé par <a class="el" href="../../d5/d3e/a01139.html#af13fb2f77e12cbfd7681ac4be3016cfc">submit()</a>.</p>
+<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-0-trigger" src="../../closed.png" alt="+"/> Voici le graphe des appelants de cette fonction :</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="../../d5/d3e/a01139_a37f2fecd786f5f19037bdf9ca6415000_icgraph.png" border="0" usemap="#d5/d3e/a01139_a37f2fecd786f5f19037bdf9ca6415000_icgraph" alt=""/></div>
+<map name="d5/d3e/a01139_a37f2fecd786f5f19037bdf9ca6415000_icgraph" id="d5/d3e/a01139_a37f2fecd786f5f19037bdf9ca6415000_icgraph">
+<area shape="rect" id="node2" href="../../d5/d3e/a01139.html#af13fb2f77e12cbfd7681ac4be3016cfc" title="Met en attente des tampons de commandes. " alt="" coords="216,5,379,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="af13fb2f77e12cbfd7681ac4be3016cfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af13fb2f77e12cbfd7681ac4be3016cfc">&#9670;&nbsp;</a></span>submit() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool renderer::Queue::submit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d9/d5b/a01127.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d5/df4/a01551.html">Fence</a> const *&#160;</td>
+          <td class="paramname"><em>fence</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Met en attente des tampons de commandes. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">commandBuffer</td><td>Le tampon de commandes. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fence</td><td>Une barrière optionnelle. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd><code>true</code> si tout s'est bien passé. </dd></dl>
+
+<p class="reference">Références <a class="el" href="../../d5/d3e/a01139.html#a37f2fecd786f5f19037bdf9ca6415000">submit()</a>.</p>
+<div id="dynsection-1" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-1-trigger" src="../../closed.png" alt="+"/> Voici le graphe d'appel pour cette fonction :</div>
+<div id="dynsection-1-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-1-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="../../d5/d3e/a01139_af13fb2f77e12cbfd7681ac4be3016cfc_cgraph.png" border="0" usemap="#d5/d3e/a01139_af13fb2f77e12cbfd7681ac4be3016cfc_cgraph" alt=""/></div>
+<map name="d5/d3e/a01139_af13fb2f77e12cbfd7681ac4be3016cfc_cgraph" id="d5/d3e/a01139_af13fb2f77e12cbfd7681ac4be3016cfc_cgraph">
+<area shape="rect" id="node2" href="../../d5/d3e/a01139.html#a37f2fecd786f5f19037bdf9ca6415000" title="Met des tampons de commandes dans la file. " alt="" coords="216,5,379,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ad97a84a72a5e96db64c51f0bf0e5afb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad97a84a72a5e96db64c51f0bf0e5afb4">&#9670;&nbsp;</a></span>submit() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool renderer::Queue::submit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d9/d5b/a01127.html">CommandBuffer</a> const &amp;&#160;</td>
+          <td class="paramname"><em>commandBuffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../de/d1a/a01559.html">Semaphore</a> const &amp;&#160;</td>
+          <td class="paramname"><em>semaphoreToWait</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PipelineStageFlags const &amp;&#160;</td>
+          <td class="paramname"><em>semaphoreStage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../de/d1a/a01559.html">Semaphore</a> const &amp;&#160;</td>
+          <td class="paramname"><em>semaphoreToSignal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d5/df4/a01551.html">Fence</a> const *&#160;</td>
+          <td class="paramname"><em>fence</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Met en attente un tampon de commandes. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">commandBuffer</td><td>Le tampon de commandes. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">semaphoreToWait</td><td>Le sémaphore à attendre lors de l'éxécution de la file. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">semaphoreStage</td><td>L'étape du sémaphore. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">semaphoreToSignal</td><td>Le sémaphore à signaler à la fin de l'éxécution de la file. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fence</td><td>Une barrière optionnelle. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd><code>true</code> si tout s'est bien passé. </dd></dl>
+
+<p class="reference">Références <a class="el" href="../../d5/d3e/a01139.html#a37f2fecd786f5f19037bdf9ca6415000">submit()</a>.</p>
+<div id="dynsection-2" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-2-trigger" src="../../closed.png" alt="+"/> Voici le graphe d'appel pour cette fonction :</div>
+<div id="dynsection-2-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-2-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="../../d5/d3e/a01139_ad97a84a72a5e96db64c51f0bf0e5afb4_cgraph.png" border="0" usemap="#d5/d3e/a01139_ad97a84a72a5e96db64c51f0bf0e5afb4_cgraph" alt=""/></div>
+<map name="d5/d3e/a01139_ad97a84a72a5e96db64c51f0bf0e5afb4_cgraph" id="d5/d3e/a01139_ad97a84a72a5e96db64c51f0bf0e5afb4_cgraph">
+<area shape="rect" id="node2" href="../../d5/d3e/a01139.html#a37f2fecd786f5f19037bdf9ca6415000" title="Met des tampons de commandes dans la file. " alt="" coords="216,5,379,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a4d91cdf5fb05aa4bd1fc6aa91b88ca8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d91cdf5fb05aa4bd1fc6aa91b88ca8f">&#9670;&nbsp;</a></span>waitIdle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool renderer::Queue::waitIdle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Attend que la file soit inactive. </p>
+<dl class="section return"><dt>Renvoie</dt><dd><code>true</code> si tout s'est bien passé. </dd></dl>
+
+</div>
+</div>
+<hr/>La documentation de cette classe a été générée à partir du fichier suivant :<ul>
+<li>Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/Command/<a class="el" href="../../d5/d16/a00029.html">Queue.hpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Généré le Lundi 30 Avril 2018 22:40:28 pour RendererLib par &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="../../doxygen.png" alt="doxygen"/>
+</a> 1.8.13
+</small></address>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<map id="renderer::GraphicsPipelineCreateInfo" name="renderer::GraphicsPipelineCreateInfo">
+<area shape="rect" id="node2" href="$de/dfe/a01383.html" title="Etat de mélange. " alt="" coords="884,35,1063,61"/>
+<area shape="rect" id="node5" href="$d9/d40/a01387.html" title="Specifies a pipeline colour blend attachment state. " alt="" coords="188,57,367,98"/>
+<area shape="rect" id="node6" href="$de/d70/a01415.html" title="Etat de rastérisation. " alt="" coords="881,85,1065,112"/>
+<area shape="rect" id="node8" href="$da/d06/a01403.html" title="renderer::MultisampleState" alt="" coords="884,187,1063,213"/>
+<area shape="rect" id="node9" href="$d6/d64/a01399.html" title="Specifies parameters of a pipeline input assembly state. " alt="" coords="876,237,1071,264"/>
+<area shape="rect" id="node10" href="$df/dc5/a01455.html" title="renderer::VertexInputState" alt="" coords="886,288,1061,315"/>
+<area shape="rect" id="node12" href="$d3/dbc/a01451.html" title="Structure specifying vertex input binding description. " alt="" coords="184,215,371,257"/>
+<area shape="rect" id="node14" href="$df/d75/a01447.html" title="Structure specifying vertex input attribute description. " alt="" coords="181,281,373,322"/>
+<area shape="rect" id="node16" href="$d9/ddc/a01423.html" title="Holds the data describing a shader stage within a pipeline. " alt="" coords="485,347,668,373"/>
+<area shape="rect" id="node17" title="STL class. " alt="" coords="237,347,317,373"/>
+<area shape="rect" id="node18" title="STL class. " alt="" coords="5,339,132,381"/>
+</map>

@@ -1,9 +1,0 @@
-<map id="renderer::DescriptorSetBinding" name="renderer::DescriptorSetBinding">
-<area shape="rect" id="node2" href="$d7/ded/a01009.html" title="Attache de type échantillonneur + texture. " alt="" coords="262,5,441,47"/>
-<area shape="rect" id="node3" href="$d3/ded/a01017.html" title="Attache de type texture échantillonnée. " alt="" coords="266,71,437,112"/>
-<area shape="rect" id="node4" href="$d7/d59/a01013.html" title="Attache de type échantillonneur. " alt="" coords="267,137,435,163"/>
-<area shape="rect" id="node5" href="$d0/daa/a01029.html" title="Attache de type tampon de stockage. " alt="" coords="252,187,451,214"/>
-<area shape="rect" id="node6" href="$d5/dfb/a01021.html" title="Attache de type texture de stockage. " alt="" coords="269,239,434,280"/>
-<area shape="rect" id="node7" href="$d2/d57/a01033.html" title="Attache de type tampon de texels. " alt="" coords="259,305,443,331"/>
-<area shape="rect" id="node8" href="$db/d23/a01025.html" title="Attache de type tampon de variables uniformes. " alt="" coords="253,355,450,382"/>
-</map>

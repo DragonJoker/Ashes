@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Renderer: Référence de la classe renderer::RenderPass</title>
+<title>RendererLib: Liste des membres</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -18,7 +18,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Renderer
+   <div id="projectname">RendererLib
    &#160;<span id="projectnumber">1.0.0</span>
    </div>
   </td>
@@ -38,330 +38,30 @@ $(function() {
 <div id="main-nav"></div>
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../d0/d2a/a00531.html">renderer</a></li><li class="navelem"><a class="el" href="../../d0/deb/a01508.html">RenderPass</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dc/d20/a00534.html">renderer</a></li><li class="navelem"><a class="el" href="../../da/d50/a01511.html">RenderPass</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
-  <div class="summary">
-<a href="#pub-methods">Fonctions membres publiques</a> &#124;
-<a href="#pro-methods">Fonctions membres protégées</a> &#124;
-<a href="../../dc/dce/a01505.html">Liste de tous les membres</a>  </div>
   <div class="headertitle">
-<div class="title">Référence de la classe renderer::RenderPass<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+<div class="title">renderer::RenderPass Liste des membres</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Description d'une passe de rendu (pouvant contenir plusieurs sous-passes).  
- <a href="../../d0/deb/a01508.html#details">Plus de détails...</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
-Fonctions membres publiques</h2></td></tr>
-<tr class="memitem:a04b3078981880c5362952213205d9ed5"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/deb/a01508.html#a04b3078981880c5362952213205d9ed5">~RenderPass</a> ()</td></tr>
-<tr class="memdesc:a04b3078981880c5362952213205d9ed5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructeur.  <a href="#a04b3078981880c5362952213205d9ed5">Plus de détails...</a><br /></td></tr>
-<tr class="separator:a04b3078981880c5362952213205d9ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac049aeb0f722afacc5bc6ace7d29087b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d0/d2a/a00531.html#a35b1a90680cebb38e8a2dc0871b21700">FrameBufferPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/deb/a01508.html#ac049aeb0f722afacc5bc6ace7d29087b">createFrameBuffer</a> (<a class="el" href="../../d4/d64/a01296.html">Extent2D</a> const &amp;dimensions, <a class="el" href="../../d0/d2a/a00531.html#a6a2d51581abe3324286491cf56aac01d">FrameBufferAttachmentArray</a> &amp;&amp;attaches) const =0</td></tr>
-<tr class="memdesc:ac049aeb0f722afacc5bc6ace7d29087b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Crée un tampon d'images compatible avec la passe de rendu.  <a href="#ac049aeb0f722afacc5bc6ace7d29087b">Plus de détails...</a><br /></td></tr>
-<tr class="separator:ac049aeb0f722afacc5bc6ace7d29087b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
-Fonctions membres protégées</h2></td></tr>
-<tr class="memitem:a0ada405b8d2eb023db8318311ad8b63a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/deb/a01508.html#a0ada405b8d2eb023db8318311ad8b63a">RenderPass</a> (<a class="el" href="../../db/d17/a01148.html">Device</a> const &amp;device, <a class="el" href="../../dc/d57/a01512.html">RenderPassCreateInfo</a> const &amp;createInfo)</td></tr>
-<tr class="memdesc:a0ada405b8d2eb023db8318311ad8b63a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructeur.  <a href="#a0ada405b8d2eb023db8318311ad8b63a">Plus de détails...</a><br /></td></tr>
-<tr class="separator:a0ada405b8d2eb023db8318311ad8b63a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cd7fc2a9a6a13c7971235c9a1d54d4c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d2a/a00531.html#adb750c612da1ae33abea07d4b3f7020d">SubpassDescriptionArray</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/deb/a01508.html#a3cd7fc2a9a6a13c7971235c9a1d54d4c">getSubpasses</a> ()</td></tr>
-<tr class="separator:a3cd7fc2a9a6a13c7971235c9a1d54d4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adaaf097ffeabb98392e752d4afa34fdc"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/deb/a01508.html#adaaf097ffeabb98392e752d4afa34fdc">getAttachmentCount</a> () const</td></tr>
-<tr class="separator:adaaf097ffeabb98392e752d4afa34fdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39dc5894d024500e0ce87e84cab942e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d2a/a00531.html#a75467344aa7c7bd7770d4846dce73239">AttachmentDescriptionArray</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/deb/a01508.html#a39dc5894d024500e0ce87e84cab942e4">getAttachments</a> () const</td></tr>
-<tr class="separator:a39dc5894d024500e0ce87e84cab942e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e6b03208309432b91b2b6a03e747647"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../db/d17/a01148.html">Device</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/deb/a01508.html#a3e6b03208309432b91b2b6a03e747647">getDevice</a> () const</td></tr>
-<tr class="separator:a3e6b03208309432b91b2b6a03e747647"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af46beff2ffc1a141e7d0fb4c9cdfc126"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/deb/a01508.html#af46beff2ffc1a141e7d0fb4c9cdfc126">getSubpassCount</a> () const</td></tr>
-<tr class="separator:af46beff2ffc1a141e7d0fb4c9cdfc126"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac81cdf12b37060b38e65e66b2f99142c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d2a/a00531.html#adb750c612da1ae33abea07d4b3f7020d">SubpassDescriptionArray</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/deb/a01508.html#ac81cdf12b37060b38e65e66b2f99142c">getSubpasses</a> () const</td></tr>
-<tr class="separator:ac81cdf12b37060b38e65e66b2f99142c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<a name="details" id="details"></a><h2 class="groupheader">Description détaillée</h2>
-<div class="textblock"><p>Description d'une passe de rendu (pouvant contenir plusieurs sous-passes). </p>
-</div><h2 class="groupheader">Documentation des constructeurs et destructeur</h2>
-<a id="a0ada405b8d2eb023db8318311ad8b63a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0ada405b8d2eb023db8318311ad8b63a">&#9670;&nbsp;</a></span>RenderPass()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">renderer::RenderPass::RenderPass </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="../../db/d17/a01148.html">Device</a> const &amp;&#160;</td>
-          <td class="paramname"><em>device</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../dc/d57/a01512.html">RenderPassCreateInfo</a> const &amp;&#160;</td>
-          <td class="paramname"><em>createInfo</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Constructeur. </p>
-<dl class="params"><dt>Paramètres</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">device</td><td>La connexion logique au GPU. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">createInfo</td><td>Les informations de création. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a04b3078981880c5362952213205d9ed5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a04b3078981880c5362952213205d9ed5">&#9670;&nbsp;</a></span>~RenderPass()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual renderer::RenderPass::~RenderPass </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Destructeur. </p>
-
-</div>
-</div>
-<h2 class="groupheader">Documentation des fonctions membres</h2>
-<a id="ac049aeb0f722afacc5bc6ace7d29087b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac049aeb0f722afacc5bc6ace7d29087b">&#9670;&nbsp;</a></span>createFrameBuffer()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="../../d0/d2a/a00531.html#a35b1a90680cebb38e8a2dc0871b21700">FrameBufferPtr</a> renderer::RenderPass::createFrameBuffer </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d4/d64/a01296.html">Extent2D</a> const &amp;&#160;</td>
-          <td class="paramname"><em>dimensions</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../d0/d2a/a00531.html#a6a2d51581abe3324286491cf56aac01d">FrameBufferAttachmentArray</a> &amp;&amp;&#160;</td>
-          <td class="paramname"><em>attaches</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Crée un tampon d'images compatible avec la passe de rendu. </p>
-<dl class="section remark"><dt>Remarques</dt><dd>Si la compatibilité entre les textures voulues et les formats de la passe de rendu n'est pas possible, une std::runtime_error est lancée. </dd></dl>
-<dl class="params"><dt>Paramètres</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">dimensions</td><td>Les dimensions du tampon d'images. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">attaches</td><td>Les attaches pour le tampon d'images à créer. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Renvoie</dt><dd>Le <a class="el" href="../../de/d65/a01500.html" title="Classe encapsulant le concept de Framebuffer. ">FrameBuffer</a> créé. </dd></dl>
-
-</div>
-</div>
-<a id="adaaf097ffeabb98392e752d4afa34fdc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adaaf097ffeabb98392e752d4afa34fdc">&#9670;&nbsp;</a></span>getAttachmentCount()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t renderer::RenderPass::getAttachmentCount </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>name Accesseurs. </p>
-
-</div>
-</div>
-<a id="a39dc5894d024500e0ce87e84cab942e4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a39dc5894d024500e0ce87e84cab942e4">&#9670;&nbsp;</a></span>getAttachments()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="../../d0/d2a/a00531.html#a75467344aa7c7bd7770d4846dce73239">AttachmentDescriptionArray</a> const&amp; renderer::RenderPass::getAttachments </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a3e6b03208309432b91b2b6a03e747647"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3e6b03208309432b91b2b6a03e747647">&#9670;&nbsp;</a></span>getDevice()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="../../db/d17/a01148.html">Device</a> const&amp; renderer::RenderPass::getDevice </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="af46beff2ffc1a141e7d0fb4c9cdfc126"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af46beff2ffc1a141e7d0fb4c9cdfc126">&#9670;&nbsp;</a></span>getSubpassCount()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t renderer::RenderPass::getSubpassCount </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ac81cdf12b37060b38e65e66b2f99142c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac81cdf12b37060b38e65e66b2f99142c">&#9670;&nbsp;</a></span>getSubpasses() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="../../d0/d2a/a00531.html#adb750c612da1ae33abea07d4b3f7020d">SubpassDescriptionArray</a> const&amp; renderer::RenderPass::getSubpasses </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a3cd7fc2a9a6a13c7971235c9a1d54d4c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3cd7fc2a9a6a13c7971235c9a1d54d4c">&#9670;&nbsp;</a></span>getSubpasses() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="../../d0/d2a/a00531.html#adb750c612da1ae33abea07d4b3f7020d">SubpassDescriptionArray</a>&amp; renderer::RenderPass::getSubpasses </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<hr/>La documentation de cette classe a été générée à partir du fichier suivant :<ul>
-<li>Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/RenderPass/<a class="el" href="../../dc/d8e/a00473.html">RenderPass.hpp</a></li>
-</ul>
-</div><!-- contents -->
+<p>Liste complète des membres de <a class="el" href="../../da/d50/a01511.html">renderer::RenderPass</a>, y compris les membres hérités :</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="../../da/d50/a01511.html#ac049aeb0f722afacc5bc6ace7d29087b">createFrameBuffer</a>(Extent2D const &amp;dimensions, FrameBufferAttachmentArray &amp;&amp;attaches) const =0</td><td class="entry"><a class="el" href="../../da/d50/a01511.html">renderer::RenderPass</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr><td class="entry"><a class="el" href="../../da/d50/a01511.html#adaaf097ffeabb98392e752d4afa34fdc">getAttachmentCount</a>() const</td><td class="entry"><a class="el" href="../../da/d50/a01511.html">renderer::RenderPass</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="../../da/d50/a01511.html#a39dc5894d024500e0ce87e84cab942e4">getAttachments</a>() const</td><td class="entry"><a class="el" href="../../da/d50/a01511.html">renderer::RenderPass</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="../../da/d50/a01511.html#a3e6b03208309432b91b2b6a03e747647">getDevice</a>() const</td><td class="entry"><a class="el" href="../../da/d50/a01511.html">renderer::RenderPass</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="../../da/d50/a01511.html#af46beff2ffc1a141e7d0fb4c9cdfc126">getSubpassCount</a>() const</td><td class="entry"><a class="el" href="../../da/d50/a01511.html">renderer::RenderPass</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="../../da/d50/a01511.html#ac81cdf12b37060b38e65e66b2f99142c">getSubpasses</a>() const</td><td class="entry"><a class="el" href="../../da/d50/a01511.html">renderer::RenderPass</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="../../da/d50/a01511.html#a3cd7fc2a9a6a13c7971235c9a1d54d4c">getSubpasses</a>()</td><td class="entry"><a class="el" href="../../da/d50/a01511.html">renderer::RenderPass</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">protected</span></td></tr>
+  <tr><td class="entry"><a class="el" href="../../da/d50/a01511.html#a0ada405b8d2eb023db8318311ad8b63a">RenderPass</a>(Device const &amp;device, RenderPassCreateInfo const &amp;createInfo)</td><td class="entry"><a class="el" href="../../da/d50/a01511.html">renderer::RenderPass</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="../../da/d50/a01511.html#a04b3078981880c5362952213205d9ed5">~RenderPass</a>()</td><td class="entry"><a class="el" href="../../da/d50/a01511.html">renderer::RenderPass</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Généré le Dimanche 29 Avril 2018 13:14:07 pour Renderer par &#160;<a href="http://www.doxygen.org/index.html">
+Généré le Lundi 30 Avril 2018 22:40:28 pour RendererLib par &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.13
 </small></address>

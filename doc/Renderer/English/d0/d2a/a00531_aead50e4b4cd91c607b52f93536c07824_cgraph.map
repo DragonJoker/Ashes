@@ -1,5 +1,0 @@
-<map id="renderer::getAspectMask" name="renderer::getAspectMask">
-<area shape="rect" id="node2" href="$d0/d2a/a00531.html#a7ef15b78de8214a21d661fadc05213d0" title="Tells if the given renderer::Format is usable in depth buffers. " alt="" coords="224,5,387,32"/>
-<area shape="rect" id="node3" href="$d0/d2a/a00531.html#a0bcfd235f5cd6fa91dbbd59cba7a01ef" title="Tells if the given renderer::Format is usable in depth and stencil buffers. " alt="" coords="225,57,386,98"/>
-<area shape="rect" id="node4" href="$d0/d2a/a00531.html#a30a876549a0ddf615d1846aceb7a6550" title="Tells if the given renderer::Format is usable in stencil buffers. " alt="" coords="221,123,389,149"/>
-</map>

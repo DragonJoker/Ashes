@@ -1,0 +1,5 @@
+<map id="renderer::DescriptorSet::createBinding" name="renderer::DescriptorSet::createBinding">
+<area shape="rect" id="node2" href="$da/d1f/a01203.html#aaba03cd81fd7037b7b556e35486ebe35" title="Crée une attache de type image et échantillonneur combinés. " alt="" coords="209,5,365,47"/>
+<area shape="rect" id="node3" href="$df/dd5/a01115.html#afe6c8eb375f2057fbdf5804262c854a9" title="Récupère la taille alignée pour un élément. " alt="" coords="210,71,365,112"/>
+<area shape="rect" id="node4" href="$df/dd5/a01115.html#a6c37de6b1732c1f8051ae73e065659ce" title="renderer::UniformBuffer\l::getUbo" alt="" coords="210,136,365,177"/>
+</map>

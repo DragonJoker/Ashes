@@ -1,0 +1,34 @@
+<map id="renderer::Pipeline" name="renderer::Pipeline">
+<area shape="rect" id="node2" href="$de/df1/a01151.html" title="Classe contenant les informations liées au GPU logique. " alt="" coords="1526,530,1641,557"/>
+<area shape="rect" id="node28" href="$de/de4/a01135.html" title="Pool de tampons de commandes. " alt="" coords="1797,470,1960,497"/>
+<area shape="rect" id="node4" href="$d5/d3e/a01139.html" title="File de tampons de commandes. " alt="" coords="775,413,890,439"/>
+<area shape="rect" id="node5" href="$dc/d42/a01591.html" title="renderer::Signal\&lt; Device\lEnabledFunction \&gt;" alt="" coords="1148,523,1311,564"/>
+<area shape="rect" id="node6" href="$d7/de8/a01159.html" title="Classe contenant les informations liées au GPU physique. " alt="" coords="1147,781,1312,807"/>
+<area shape="rect" id="node8" href="$d0/d9b/a01379.html" title="Fournit des information à propos d&#39;une famille de file. " alt="" coords="377,787,591,814"/>
+<area shape="rect" id="node9" href="$d6/d07/a01303.html" title="Définit une étendue en 3 dimensions. " alt="" coords="17,787,148,814"/>
+<area shape="rect" id="node10" href="$dd/d8b/a01363.html" title="Définit les propriétés d&#39;un périphérique physique. " alt="" coords="750,839,915,880"/>
+<area shape="rect" id="node11" href="$d8/d4e/a01355.html" title="Rapporte les limites dépendant de l&#39;implémentation pour un périphérique physique. ..." alt="" coords="401,839,567,880"/>
+<area shape="rect" id="node12" title="STL class. " alt="" coords="444,566,524,593"/>
+<area shape="rect" id="node23" href="$d7/dd6/a01167.html" title="renderer::Renderer\l::Configuration" alt="" coords="768,529,897,571"/>
+<area shape="rect" id="node30" href="$db/d07/a01155.html" title="renderer::Device::Object\lAllocation" alt="" coords="752,613,913,655"/>
+<area shape="rect" id="node47" href="$d9/ddc/a01423.html" title="Contient les données décrivant un niveau de shader dans un pipeline. " alt="" coords="741,362,924,389"/>
+<area shape="rect" id="node13" title="STL class. " alt="" coords="19,559,146,600"/>
+<area shape="rect" id="node14" href="$dd/d86/a01367.html" title="Spécifie les propriétés de mémoire dispersée d&#39;un périphérique physique. " alt="" coords="401,904,567,945"/>
+<area shape="rect" id="node15" href="$d1/dcd/a01351.html" title="Décrit les capacités fines pouvant être supportées par un périhpérique physique. " alt="" coords="750,904,915,945"/>
+<area shape="rect" id="node16" href="$dc/d4b/a01359.html" title="Définit les propriétés mémoire d&#39;un périphérique physique. " alt="" coords="750,708,915,749"/>
+<area shape="rect" id="node18" href="$dc/d8e/a01331.html" title="Spécifie un tas mémoire. " alt="" coords="5,729,160,755"/>
+<area shape="rect" id="node20" href="$dd/d6e/a01339.html" title="Définit un type de mémoire. " alt="" coords="7,663,159,690"/>
+<area shape="rect" id="node21" href="$dc/d42/a01591.html" title="renderer::Signal\&lt; Device\lDisabledFunction \&gt;" alt="" coords="1148,588,1311,629"/>
+<area shape="rect" id="node22" href="$d6/d27/a01163.html" title="Classe initialisant l&#39;instance de rendu. " alt="" coords="1165,471,1294,498"/>
+<area shape="rect" id="node25" title="STL class. " alt="" coords="415,431,553,458"/>
+<area shape="rect" id="node31" href="$db/d99/a01411.html" title="Layout de pipeline. " alt="" coords="1502,169,1665,195"/>
+<area shape="rect" id="node32" href="$de/d69/a01311.html" title="Contient les données utilisées pour créer un pipeline graphique. " alt="" coords="1496,220,1671,261"/>
+<area shape="rect" id="node33" href="$de/dfe/a01383.html" title="Etat de mélange. " alt="" coords="1140,303,1319,330"/>
+<area shape="rect" id="node36" href="$d9/d40/a01387.html" title="Définit une attache de mélange couleur dans le pipeline. " alt="" coords="395,241,573,283"/>
+<area shape="rect" id="node37" href="$de/d70/a01415.html" title="Etat de rastérisation. " alt="" coords="1137,101,1321,127"/>
+<area shape="rect" id="node39" href="$da/d06/a01403.html" title="Etat de multi&#45;échantillonnage. " alt="" coords="1140,202,1319,229"/>
+<area shape="rect" id="node40" href="$d6/d64/a01399.html" title="Définit les paramètres d&#39;un état d&#39;assemblage des entrées. " alt="" coords="1132,253,1327,279"/>
+<area shape="rect" id="node41" href="$df/dc5/a01455.html" title="Structure specifying parameters of a vertex input state. " alt="" coords="1142,50,1317,77"/>
+<area shape="rect" id="node43" href="$d3/dbc/a01451.html" title="Structure définissant la description d&#39;une attache d&#39;entrée de sommet. " alt="" coords="391,71,577,112"/>
+<area shape="rect" id="node45" href="$df/d75/a01447.html" title="Structure définissant la description d&#39;un attribut d&#39;entrée de sommet. " alt="" coords="388,5,580,47"/>
+</map>

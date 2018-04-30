@@ -1,0 +1,24 @@
+<map id="renderer::DescriptorSetLayout" name="renderer::DescriptorSetLayout">
+<area shape="rect" id="node3" href="$d1/d34/a01211.html" title="Attache d&#39;un layout de descripteur de ressources shader. " alt="" coords="1101,429,1296,471"/>
+<area shape="rect" id="node4" href="$de/df1/a01151.html" title="The class containing the informations related to the logical device. " alt="" coords="1480,190,1595,217"/>
+<area shape="rect" id="node30" href="$de/de4/a01135.html" title="Pool de tampons de commandes. " alt="" coords="1759,225,1921,251"/>
+<area shape="rect" id="node6" href="$d5/d3e/a01139.html" title="Command buffers queue. " alt="" coords="775,66,890,93"/>
+<area shape="rect" id="node7" href="$dc/d42/a01591.html" title="renderer::Signal\&lt; Device\lEnabledFunction \&gt;" alt="" coords="1117,124,1280,165"/>
+<area shape="rect" id="node8" href="$d7/de8/a01159.html" title="Wraps informations about physical GPU. " alt="" coords="1116,378,1281,405"/>
+<area shape="rect" id="node10" href="$d0/d9b/a01379.html" title="Provides information about a queue family. " alt="" coords="377,573,591,599"/>
+<area shape="rect" id="node11" href="$d6/d07/a01303.html" title="Specifies a three dimensional extent. " alt="" coords="17,573,148,599"/>
+<area shape="rect" id="node12" href="$dd/d8b/a01363.html" title="Specifies a physical device properties. " alt="" coords="750,333,915,375"/>
+<area shape="rect" id="node13" href="$d8/d4e/a01355.html" title="Reports implementation&#45;dependent physical device limits. " alt="" coords="401,311,567,352"/>
+<area shape="rect" id="node14" title="STL class. " alt="" coords="444,247,524,274"/>
+<area shape="rect" id="node25" href="$d7/dd6/a01167.html" title="renderer::Renderer\l::Configuration" alt="" coords="768,183,897,224"/>
+<area shape="rect" id="node32" href="$db/d07/a01155.html" title="renderer::Device::Object\lAllocation" alt="" coords="752,248,913,289"/>
+<area shape="rect" id="node15" title="STL class. " alt="" coords="19,240,146,281"/>
+<area shape="rect" id="node16" href="$dd/d86/a01367.html" title="Specifies physical device sparse memory properties. " alt="" coords="401,376,567,417"/>
+<area shape="rect" id="node17" href="$d1/dcd/a01351.html" title="Describes the fine grained features that can be supported by a physical device. " alt="" coords="750,473,915,515"/>
+<area shape="rect" id="node18" href="$dc/d4b/a01359.html" title="Specifies a physical device memory properties. " alt="" coords="750,408,915,449"/>
+<area shape="rect" id="node20" href="$dc/d8e/a01331.html" title="Specifies a memory heap. " alt="" coords="5,514,160,541"/>
+<area shape="rect" id="node22" href="$dd/d6e/a01339.html" title="Specifies a memory type. " alt="" coords="7,449,159,475"/>
+<area shape="rect" id="node23" href="$dc/d42/a01591.html" title="renderer::Signal\&lt; Device\lDisabledFunction \&gt;" alt="" coords="1117,5,1280,47"/>
+<area shape="rect" id="node24" href="$d6/d27/a01163.html" title="The class initialising the rendering instance. " alt="" coords="1134,190,1263,217"/>
+<area shape="rect" id="node27" title="STL class. " alt="" coords="415,125,553,151"/>
+</map>

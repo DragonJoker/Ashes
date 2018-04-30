@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.13"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>RendererLib: Référence de la classe renderer::DescriptorPool</title>
+<link href="../../tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../../jquery.js"></script>
+<script type="text/javascript" src="../../dynsections.js"></script>
+<link href="../../doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">RendererLib
+   &#160;<span id="projectnumber">1.0.0</span>
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Généré par Doxygen 1.8.13 -->
+<script type="text/javascript" src="../../menudata.js"></script>
+<script type="text/javascript" src="../../menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('../../',false,false,'search.php','Recherche');
+});
+</script>
+<div id="main-nav"></div>
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="../../dc/d20/a00534.html">renderer</a></li><li class="navelem"><a class="el" href="../../d8/df3/a01195.html">DescriptorPool</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Fonctions membres publiques</a> &#124;
+<a href="#pro-methods">Fonctions membres protégées</a> &#124;
+<a href="../../d2/db4/a01192.html">Liste de tous les membres</a>  </div>
+  <div class="headertitle">
+<div class="title">Référence de la classe renderer::DescriptorPool<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>Pool de descripteurs.  
+ <a href="../../d8/df3/a01195.html#details">Plus de détails...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Fonctions membres publiques</h2></td></tr>
+<tr class="memitem:a2816d37f740fa218931e691b8bd28c11"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/df3/a01195.html#a2816d37f740fa218931e691b8bd28c11">~DescriptorPool</a> ()</td></tr>
+<tr class="memdesc:a2816d37f740fa218931e691b8bd28c11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructeur.  <a href="#a2816d37f740fa218931e691b8bd28c11">Plus de détails...</a><br /></td></tr>
+<tr class="separator:a2816d37f740fa218931e691b8bd28c11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96dc61c57ed7e0032c47be8bcf65441e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../dc/d20/a00534.html#aedc615ef61b73d1dfc3b90af03ae9bd3">DescriptorSetPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/df3/a01195.html#a96dc61c57ed7e0032c47be8bcf65441e">createDescriptorSet</a> (<a class="el" href="../../d5/dad/a01207.html">renderer::DescriptorSetLayout</a> const &amp;layout, uint32_t bindingPoint=0u) const =0</td></tr>
+<tr class="memdesc:a96dc61c57ed7e0032c47be8bcf65441e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Crée un descriptor set correspondant au layout donné.  <a href="#a96dc61c57ed7e0032c47be8bcf65441e">Plus de détails...</a><br /></td></tr>
+<tr class="separator:a96dc61c57ed7e0032c47be8bcf65441e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr class="memitem:ab913f382a5af069fab31e1896387dd36"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/df3/a01195.html#ab913f382a5af069fab31e1896387dd36">hasAutomaticFree</a> () const</td></tr>
+<tr class="memdesc:ab913f382a5af069fab31e1896387dd36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dit si le pool désalloue automatiquement les descripteurs à sa propre destruction.  <a href="#ab913f382a5af069fab31e1896387dd36">Plus de détails...</a><br /></td></tr>
+<tr class="separator:ab913f382a5af069fab31e1896387dd36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4543c7430668cc838d23728ae3dcba8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../de/df1/a01151.html">Device</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/df3/a01195.html#ac4543c7430668cc838d23728ae3dcba8">getDevice</a> () const</td></tr>
+<tr class="separator:ac4543c7430668cc838d23728ae3dcba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Fonctions membres protégées</h2></td></tr>
+<tr class="memitem:aa91154187bb57a9f7395d8d86e858594"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/df3/a01195.html#aa91154187bb57a9f7395d8d86e858594">DescriptorPool</a> (<a class="el" href="../../de/df1/a01151.html">Device</a> const &amp;device, DescriptorPoolCreateFlags flags)</td></tr>
+<tr class="memdesc:aa91154187bb57a9f7395d8d86e858594"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructeur.  <a href="#aa91154187bb57a9f7395d8d86e858594">Plus de détails...</a><br /></td></tr>
+<tr class="separator:aa91154187bb57a9f7395d8d86e858594"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Description détaillée</h2>
+<div class="textblock"><p>Pool de descripteurs. </p>
+</div><h2 class="groupheader">Documentation des constructeurs et destructeur</h2>
+<a id="aa91154187bb57a9f7395d8d86e858594"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa91154187bb57a9f7395d8d86e858594">&#9670;&nbsp;</a></span>DescriptorPool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">renderer::DescriptorPool::DescriptorPool </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../de/df1/a01151.html">Device</a> const &amp;&#160;</td>
+          <td class="paramname"><em>device</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">DescriptorPoolCreateFlags&#160;</td>
+          <td class="paramname"><em>flags</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructeur. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">device</td><td>Le périphérique logique. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">flags</td><td>Les indicateurs de création. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2816d37f740fa218931e691b8bd28c11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2816d37f740fa218931e691b8bd28c11">&#9670;&nbsp;</a></span>~DescriptorPool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual renderer::DescriptorPool::~DescriptorPool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destructeur. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Documentation des fonctions membres</h2>
+<a id="a96dc61c57ed7e0032c47be8bcf65441e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96dc61c57ed7e0032c47be8bcf65441e">&#9670;&nbsp;</a></span>createDescriptorSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="../../dc/d20/a00534.html#aedc615ef61b73d1dfc3b90af03ae9bd3">DescriptorSetPtr</a> renderer::DescriptorPool::createDescriptorSet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d5/dad/a01207.html">renderer::DescriptorSetLayout</a> const &amp;&#160;</td>
+          <td class="paramname"><em>layout</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>bindingPoint</em> = <code>0u</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Crée un descriptor set correspondant au layout donné. </p>
+<dl class="params"><dt>Paramètres</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">layout</td><td>Le layout décrivant l'ensemble. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">bindingPoint</td><td>Le point d'attache du set. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Renvoie</dt><dd>Le descriptor set créé. </dd></dl>
+
+</div>
+</div>
+<a id="ac4543c7430668cc838d23728ae3dcba8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4543c7430668cc838d23728ae3dcba8">&#9670;&nbsp;</a></span>getDevice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../de/df1/a01151.html">Device</a> const&amp; renderer::DescriptorPool::getDevice </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab913f382a5af069fab31e1896387dd36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab913f382a5af069fab31e1896387dd36">&#9670;&nbsp;</a></span>hasAutomaticFree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool renderer::DescriptorPool::hasAutomaticFree </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Dit si le pool désalloue automatiquement les descripteurs à sa propre destruction. </p>
+<p>name Accesseurs. </p>
+
+</div>
+</div>
+<hr/>La documentation de cette classe a été générée à partir du fichier suivant :<ul>
+<li>Z:/Projets/C++/RenderLib/source/Renderer/Renderer/Src/Descriptor/<a class="el" href="../../de/de1/a00065.html">DescriptorPool.hpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Généré le Lundi 30 Avril 2018 22:40:26 pour RendererLib par &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="../../doxygen.png" alt="doxygen"/>
+</a> 1.8.13
+</small></address>
+</body>
+</html>

@@ -1,0 +1,4 @@
+<map id="renderer::addFlag" name="renderer::addFlag">
+<area shape="rect" id="node2" href="$dc/d20/a00534.html#a3ad5411161016c67faa3882ee42fae4a" title="Checks if the given flag is part of the given combination. " alt="" coords="176,5,313,32"/>
+<area shape="rect" id="node3" href="$dc/d20/a00534.html#a10cf7c99bd5867a239a47741b60e6ec0" title="Removes a flag from given combination. " alt="" coords="183,56,307,83"/>
+</map>

@@ -1,5 +1,0 @@
-<map id="renderer::DescriptorSet::createDynamicBinding" name="renderer::DescriptorSet::createDynamicBinding">
-<area shape="rect" id="node2" href="$dc/dcc/a01200.html#a47fd325d4ca59d38fd024492fc2e335f" title="Crée une attache de type tampon uniforme dynamique. " alt="" coords="218,5,378,47"/>
-<area shape="rect" id="node3" href="$da/d93/a01084.html#a2aae0a4581c71e524a0bade34d39a266" title="renderer::Buffer::getBuffer" alt="" coords="213,71,383,98"/>
-<area shape="rect" id="node4" href="$dc/dcc/a01200.html#a4a67b60805832023101ab385decedc34" title="Met à jour toutes les attaches du set de descripteurs. " alt="" coords="220,123,376,164"/>
-</map>

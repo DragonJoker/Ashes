@@ -1,6 +1,0 @@
-<map id="renderer::isDepthOrStencilFormat" name="renderer::isDepthOrStencilFormat">
-<area shape="rect" id="node2" href="$d0/d2a/a00531.html#a93f0bc0f1db175b3b949bb751be4c184" title="Récupère le nom du type d&#39;élément donné. " alt="" coords="247,5,377,32"/>
-<area shape="rect" id="node3" href="$d0/d2a/a00531.html#a7ef15b78de8214a21d661fadc05213d0" title="Dit si le renderer::Format donné est un format utilisable pour les tampons de profondeur. " alt="" coords="231,56,393,83"/>
-<area shape="rect" id="node4" href="$d0/d2a/a00531.html#a0bcfd235f5cd6fa91dbbd59cba7a01ef" title="Dit si le renderer::Format donné est un format utilisable pour les tampons de profondeur et stencil..." alt="" coords="231,107,393,149"/>
-<area shape="rect" id="node5" href="$d0/d2a/a00531.html#a30a876549a0ddf615d1846aceb7a6550" title="Dit si le renderer::Format donné est un format utilisable pour les tampons de stencil. " alt="" coords="228,173,396,200"/>
-</map>

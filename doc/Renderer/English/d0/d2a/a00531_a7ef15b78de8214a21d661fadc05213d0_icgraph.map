@@ -1,4 +1,0 @@
-<map id="renderer::isDepthFormat" name="renderer::isDepthFormat">
-<area shape="rect" id="node2" href="$d0/d2a/a00531.html#aead50e4b4cd91c607b52f93536c07824" title="Retrieves the aspects mask matching given renderer::Format. " alt="" coords="219,5,387,32"/>
-<area shape="rect" id="node3" href="$d0/d2a/a00531.html#a1b4cc2b6465ebd0a154729ae296dc346" title="Tells if the given renderer::Format is usable in depth and/or stencil buffers. " alt="" coords="216,57,391,98"/>
-</map>
