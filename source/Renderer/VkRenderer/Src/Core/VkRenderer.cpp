@@ -156,11 +156,13 @@ namespace vk_renderer
 	{
 		if ( m_instance != VK_NULL_HANDLE )
 		{
+#if LOAD_VALIDATION_LAYERS
 			if ( m_msgCallback != VK_NULL_HANDLE )
 			{
 				vkDestroyDebugReportCallbackEXT( m_instance, m_msgCallback, nullptr );
 				m_msgCallback = VK_NULL_HANDLE;
 			}
+#endif
 
 			m_instanceLayersProperties.clear();
 			m_instanceExtensionNames.clear();
@@ -409,6 +411,7 @@ namespace vk_renderer
 
 	void Renderer::doSetupDebugging( VkDebugReportFlagsEXT flags )
 	{
+#if LOAD_VALIDATION_LAYERS
 		if ( vkCreateDebugReportCallbackEXT )
 		{
 			VkDebugReportCallbackCreateInfoEXT dbgCreateInfo
@@ -431,6 +434,7 @@ namespace vk_renderer
 				throw std::runtime_error{ "Debug initialisation failed: " + getLastError() };
 			}
 		}
+#endif
 	}
 
 	void Renderer::doEnumerateDevices()
