@@ -417,8 +417,8 @@ namespace renderer
 		{
 			createBinding( layoutBinding
 				, storageBuffer.getBuffer()
-				, offset
-				, range
+				, offset * uint32_t( sizeof( T ) )
+				, range * uint32_t( sizeof( T ) )
 				, index );
 		}
 		/**
@@ -577,8 +577,8 @@ namespace renderer
 		{
 			createDynamicBinding( layoutBinding
 				, storageBuffer.getBuffer()
-				, offset
-				, range
+				, offset * uint32_t( sizeof( T ) )
+				, range * uint32_t( sizeof( T ) )
 				, index );
 		}
 		/**
