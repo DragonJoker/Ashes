@@ -13,12 +13,6 @@
 #include <iomanip>
 #include <locale>
 
-#if !defined( NDEBUG )
-#	define LOAD_VALIDATION_LAYERS 1
-#else
-#	define LOAD_VALIDATION_LAYERS 0
-#endif
-
 namespace vk_renderer
 {
 	namespace

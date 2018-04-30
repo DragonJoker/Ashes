@@ -22,6 +22,12 @@
 #	define VK_USE_PLATFORM_XLIB_KHR
 #endif
 
+#if !defined( NDEBUG )
+#	define LOAD_VALIDATION_LAYERS 1
+#else
+#	define LOAD_VALIDATION_LAYERS 0
+#endif
+
 #include "VkRendererConfig.hpp"
 
 #include "vulkan/vulkan.h"
