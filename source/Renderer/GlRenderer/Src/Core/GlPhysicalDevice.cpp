@@ -16,6 +16,7 @@ See LICENSE file in root folder.
 
 #include <algorithm>
 #include <iterator>
+#include <stdexcept>
 
 #ifdef max
 #	undef max
@@ -232,6 +233,11 @@ namespace gl_renderer
 			auto version = int( fversion * 10 );
 			m_major = version / 10;
 			m_minor = version % 10;
+
+			if ( version < 42 )
+			{
+				throw std::runtime_error{ "OpenGL >= 4.2 is needed for this renderer." };
+			}
 
 			if ( version >= 33 )
 			{
