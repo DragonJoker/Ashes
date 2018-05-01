@@ -299,6 +299,7 @@ namespace gl_renderer
 	{
 		enable();
 		//glLogCall( gl::ClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
+		glLogCall( gl::Enable, GL_TEXTURE_CUBE_MAP_SEAMLESS );
 		initialiseDebugFunctions();
 		disable();
 
