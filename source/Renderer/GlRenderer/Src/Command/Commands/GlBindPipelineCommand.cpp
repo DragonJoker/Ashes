@@ -305,12 +305,17 @@ namespace gl_renderer
 				if ( state.depthTestEnable )
 				{
 					glLogCall( gl::Enable, GL_DEPTH_TEST );
-					glLogCall( gl::DepthFunc, convert( state.depthCompareOp ) );
 				}
 				else
 				{
 					glLogCall( gl::Disable, GL_DEPTH_TEST );
 				}
+			}
+
+			if ( state.depthTestEnable
+				&& state.depthCompareOp != save.depthCompareOp )
+			{
+				glLogCall( gl::DepthFunc, convert( state.depthCompareOp ) );
 			}
 
 			if ( state.stencilTestEnable != save.stencilTestEnable
