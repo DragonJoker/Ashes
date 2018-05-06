@@ -14,7 +14,7 @@
 
 find_package( PackageHandleStandardArgs )
 
-find_path( SPIRV_ROOT_DIR include/SPIRV/spirv.hpp
+find_path( SPIRV_ROOT_DIR include/SPIRV/spirv.hpp include/vulkan/spirv.hpp
 	HINTS
 	PATHS
 		/usr/local
@@ -23,7 +23,7 @@ find_path( SPIRV_ROOT_DIR include/SPIRV/spirv.hpp
 
 
 if ( SPIRV_ROOT_DIR )
-	find_path( SPIRV_INCLUDE_DIR SPIRV/spirv.hpp
+	find_path( SPIRV_INCLUDE_DIR SPIRV/spirv.hpp vulkan/spirv.hpp
 		HINTS
 		PATH_SUFFIXES
 			include
@@ -35,8 +35,10 @@ if ( SPIRV_ROOT_DIR )
 
 	if (CMAKE_CL_64 OR CMAKE_GENERATOR MATCHES Win64)
 		set( PLATFORM "x64" )
+		set( SDK_PLATFORM "" )
 	else ()
 		set( PLATFORM "x86" )
+		set( SDK_PLATFORM "32" )
 	endif ()
 
 	find_path( SPIRV_LIBRARY_RELEASE_DIR SPIRV.lib libSPIRV.a
@@ -46,6 +48,7 @@ if ( SPIRV_ROOT_DIR )
 			lib/${PLATFORM}
 			lib/Release
 			lib
+			Lib${SDK_PLATFORM}
 			/usr/local/lib
 			/usr/lib
 		PATHS
@@ -59,6 +62,7 @@ if ( SPIRV_ROOT_DIR )
 			lib/${PLATFORM}
 			lib/Debug
 			lib
+			Lib${SDK_PLATFORM}
 			/usr/local/lib
 			/usr/lib
 		PATHS
