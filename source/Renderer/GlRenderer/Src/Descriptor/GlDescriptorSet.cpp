@@ -21,6 +21,17 @@ namespace gl_renderer
 
 	void DescriptorSet::update()const
 	{
+		m_combinedTextureSamplers.clear();
+		m_samplers.clear();
+		m_sampledTextures.clear();
+		m_storageTextures.clear();
+		m_uniformBuffers.clear();
+		m_storageBuffers.clear();
+		m_texelBuffers.clear();
+		m_dynamicUniformBuffers.clear();
+		m_dynamicStorageBuffers.clear();
+		m_dynamicBuffers.clear();
+
 		for ( auto & write : m_writes )
 		{
 			switch ( write.descriptorType )
