@@ -294,49 +294,48 @@ namespace gl_renderer
 				, dynamicOffsets
 				, bindingPoint ) );
 
-			auto & glDescriptorSet = static_cast< DescriptorSet const & >( descriptorSet.get() );
+			//auto & glDescriptorSet = static_cast< DescriptorSet const & >( descriptorSet.get() );
 
-			for ( auto & write : glDescriptorSet.getCombinedTextureSamplers() )
-			{
-				for ( auto i = 0u; i < write.imageInfo.size(); ++i )
-				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
-					auto & view = doGetView( write, i );
-					auto type = convert( view.getType() );
-					m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-						, [type, i, bindingIndex]()
-						{
-							glLogCall( gl::ActiveTexture
-								, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-							glLogCall( gl::BindTexture
-								, type
-								, 0u );
-							glLogCall( gl::BindSampler
-								, bindingIndex
-								, 0u );
-						} );
-				}
-			}
+			//for ( auto & write : glDescriptorSet.getCombinedTextureSamplers() )
+			//{
+			//	for ( auto i = 0u; i < write.imageInfo.size(); ++i )
+			//	{
+			//		uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+			//		auto & view = doGetView( write, i );
+			//		auto type = convert( view.getType() );
+			//		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
+			//			, [type, i, bindingIndex]()
+			//			{
+			//				glLogCall( gl::ActiveTexture
+			//					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
+			//				glLogCall( gl::BindTexture
+			//					, type
+			//					, 0u );
+			//				glLogCall( gl::BindSampler
+			//					, bindingIndex
+			//					, 0u );
+			//			} );
+			//	}
+			//}
 
-			for ( auto & write : glDescriptorSet.getSampledTextures() )
-			{
-				for ( auto i = 0u; i < write.imageInfo.size(); ++i )
-				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
-					auto & view = doGetView( write, i );
-					auto type = convert( view.getType() );
-					m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-						, [type, i, bindingIndex]()
-						{
-							glLogCall( gl::ActiveTexture
-								, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-							glLogCall( gl::BindTexture
-								, type
-								, 0u );
-						} );
-				}
-			}
-
+			//for ( auto & write : glDescriptorSet.getSampledTextures() )
+			//{
+			//	for ( auto i = 0u; i < write.imageInfo.size(); ++i )
+			//	{
+			//		uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+			//		auto & view = doGetView( write, i );
+			//		auto type = convert( view.getType() );
+			//		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
+			//			, [type, i, bindingIndex]()
+			//			{
+			//				glLogCall( gl::ActiveTexture
+			//					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
+			//				glLogCall( gl::BindTexture
+			//					, type
+			//					, 0u );
+			//			} );
+			//	}
+			//}
 		}
 	}
 
