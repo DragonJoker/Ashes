@@ -42,6 +42,6 @@ namespace gl_renderer
 			result = GL_DYNAMIC_DRAW;
 		}
 
-		return GlMemoryPropertyFlag{ result };
+		return GlMemoryPropertyFlag( result );
 	}
 }
