@@ -74,6 +74,7 @@ namespace gl_renderer
 		, renderer::Format format
 		, renderer::Extent2D const & dimensions )
 		: renderer::Texture{ device
+			, 0u
 			, renderer::TextureType::e2D
 			, format
 			, { dimensions.width, dimensions.height, 1u }
@@ -97,6 +98,7 @@ namespace gl_renderer
 	Texture::Texture( Device const & device
 		, renderer::ImageCreateInfo const & createInfo )
 		: renderer::Texture{ device
+			, createInfo.flags
 			, createInfo.imageType
 			, createInfo.format
 			, createInfo.extent

@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "Descriptor/DescriptorSetLayout.hpp"
 
 #include "Core/Device.hpp"
+#include "Core/Renderer.hpp"
 #include "Descriptor/DescriptorSetPool.hpp"
 
 #include <algorithm>
@@ -16,6 +17,20 @@ namespace renderer
 		: m_device{ device }
 		, m_bindings{ std::move( bindings ) }
 	{
+		auto it = std::find_if( m_bindings.begin()
+			, m_bindings.end()
+			, []( DescriptorSetLayoutBinding const & binding )
+			{
+				return binding.getDescriptorType() == DescriptorType::eStorageImage
+					|| binding.getDescriptorType() == DescriptorType::eStorageTexelBuffer;
+			} );
+
+		if ( it != m_bindings.end()
+			&& !device.getRenderer().getFeatures().hasImageTexture )
+		{
+			throw std::runtime_error( "Image storage feature is not supported" );
+		}
+
 		registerObject( m_device, "DescriptorSetLayout", this );
 	}
 

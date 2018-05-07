@@ -24,6 +24,7 @@ target_link_libraries( ${PROJECT_NAME}
 
 add_dependencies( ${PROJECT_NAME}
 	GlRenderer
+	Gl3Renderer
 	VkRenderer
 )
 

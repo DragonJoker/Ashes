@@ -1,6 +1,8 @@
 #include "Buffer/BufferView.hpp"
 
+#include "Buffer/Buffer.hpp"
 #include "Core/Device.hpp"
+#include "Core/Renderer.hpp"
 
 namespace renderer
 {
@@ -15,6 +17,12 @@ namespace renderer
 		, m_offset{ offset }
 		, m_range{ range }
 	{
+		if ( !device.getRenderer().getFeatures().hasTexBufferRange
+			&& ( offset != 0 || range != buffer.getSize() ) )
+		{
+			throw std::runtime_error( "Buffer range feature is not supported" );
+		}
+
 		registerObject( m_device, "BufferView", this );
 	}
 

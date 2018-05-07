@@ -8,6 +8,12 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
 if ( VKRENDERER_GLSL_TO_SPV )
 	set( VKRENDERER_GLSL_TO_SPV 1 )
+	if ( NOT glslang_ROOT_DIR )
+		set( glslang_ROOT_DIR ${CMAKE_SOURCE_DIR}/../dependencies/glslang )
+	endif ()
+	if ( NOT SPIRV_ROOT_DIR )
+		set( SPIRV_ROOT_DIR ${CMAKE_SOURCE_DIR}/../dependencies/glslang )
+	endif ()
 	find_package( glslang )
 	find_package( SPIRV )
 

@@ -18,7 +18,11 @@ namespace common
 
 		std::string name;
 
-		if ( m_library.getPath().find( "GlR" ) != std::string::npos )
+		if ( m_library.getPath().find( "Gl3R" ) != std::string::npos )
+		{
+			name = "gl3";
+		}
+		else if ( m_library.getPath().find( "GlR" ) != std::string::npos )
 		{
 			name = "gl";
 		}

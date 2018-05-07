@@ -131,6 +131,11 @@ namespace vk_renderer
 
 #endif
 
+		m_features.hasTexBufferRange = true;
+		m_features.hasImageTexture = true;
+		m_features.hasBaseInstance = true;
+		m_features.hasClearTexImage = true;
+		m_features.hasComputeShaders = true;
 		m_library.getFunction( "vkGetInstanceProcAddr", GetInstanceProcAddr );
 
 		if ( !GetInstanceProcAddr )

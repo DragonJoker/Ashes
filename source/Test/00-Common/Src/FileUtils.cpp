@@ -268,6 +268,19 @@ namespace common
 				, regex
 				, "" );
 		}
+		else if ( device.getRenderer().getName() == "gl" )
+		{
+			content = R"(#version 150
+#extension GL_ARB_explicit_attrib_location : enable
+#extension GL_ARB_explicit_uniform_location : enable
+
+)" + content;
+
+			std::regex regex{ R"(set[ ]*=[ ]*\d*, )" };
+			content = std::regex_replace( content.data()
+				, regex
+				, "" );
+		}
 
 		return content;
 	}

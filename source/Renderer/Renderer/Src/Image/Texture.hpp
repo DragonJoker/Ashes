@@ -77,6 +77,7 @@ namespace renderer
 		*	The array layers count.
 		*/
 		Texture( Device const & device
+			, ImageCreateFlags flags
 			, TextureType type
 			, Format format
 			, Extent3D dimensions
@@ -294,6 +295,18 @@ namespace renderer
 		/**
 		*\~french
 		*\return
+		*	Les indicateurs de création.
+		*\~english
+		*\return
+		*	The creation flags.
+		*/
+		inline ImageCreateFlags getFlags()const noexcept
+		{
+			return m_flags;
+		}
+		/**
+		*\~french
+		*\return
 		*	Le nombre de niveaux de mipmaps.
 		*\~english
 		*\return
@@ -333,6 +346,7 @@ namespace renderer
 
 	protected:
 		Device const & m_device;
+		ImageCreateFlags m_flags;
 		TextureType m_imageType;
 		Format m_format;
 		Extent3D m_dimensions;

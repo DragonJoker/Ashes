@@ -6,4 +6,5 @@ endif ()
 
 add_subdirectory( Renderer )
 add_subdirectory( GlRenderer )
+add_subdirectory( Gl3Renderer )
 add_subdirectory( VkRenderer )
