@@ -251,3 +251,4 @@ ModelManifest.xml
 /source/Core/FreeType
 /source/RenderLib
 /.vscode
+/dependencies/glslang

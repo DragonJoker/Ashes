@@ -318,6 +318,12 @@ namespace gl_renderer
 	{
 		RenderWindow dummyWindow;
 		m_gpus.push_back( std::make_unique< PhysicalDevice >( *this ) );
+		auto & gpu = static_cast< PhysicalDevice const & >( *m_gpus.back() );
+		m_features.hasTexBufferRange = gpu.find( "GL_ARB_texture_buffer_range" );
+		m_features.hasImageTexture = gpu.find( "GL_ARB_shader_image_load_store" );
+		m_features.hasBaseInstance = gpu.find( "GL_ARB_base_instance" );
+		m_features.hasClearTexImage = gpu.find( "GL_ARB_clear_texture" );
+		m_features.hasComputeShaders = gpu.find( "GL_ARB_compute_shader" );
 	}
 
 	renderer::DevicePtr Renderer::createDevice( renderer::ConnectionPtr && connection )const

@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 
 #include "Core/PhysicalDevice.hpp"
 #include "Core/WindowHandle.hpp"
+#include "Miscellaneous/RendererFeatures.hpp"
 
 namespace renderer
 {
@@ -252,10 +253,23 @@ namespace renderer
 		{
 			return m_name;
 		}
+		/**
+		*\~english
+		*\return
+		*	The renderer features.
+		*\~french
+		*\return
+		*	Les fontionnalités du renderer.
+		*/
+		inline RendererFeatures const & getFeatures()const
+		{
+			return m_features;
+		}
 
 	protected:
 		Configuration m_configuration;
 		std::vector< PhysicalDevicePtr > m_gpus;
+		RendererFeatures m_features;
 
 	private:
 		ClipDirection m_clipDirection;

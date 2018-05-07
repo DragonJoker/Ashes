@@ -57,7 +57,7 @@ namespace vkapp
 
 			renderer::BufferBasePtr staging = device.createBuffer( uint32_t( image.data.size() )
 				, renderer::BufferTarget::eTransferSrc
-				, renderer::MemoryPropertyFlag::eHostVisible | renderer::MemoryPropertyFlag::eHostCoherent );
+				, renderer::MemoryPropertyFlag::eHostVisible );
 
 			if ( auto * buffer = staging->lock( 0u, uint32_t( image.data.size() ), renderer::MemoryMapFlag::eWrite ) )
 			{

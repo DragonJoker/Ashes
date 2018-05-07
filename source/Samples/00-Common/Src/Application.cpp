@@ -306,7 +306,8 @@ namespace common
 	{
 		wxCmdLineParser parser( wxApp::argc, wxApp::argv );
 		parser.AddSwitch( wxT( "h" ), wxT( "help" ), _( "Displays this help" ) );
-		parser.AddSwitch( wxT( "gl" ), wxEmptyString, _( "Defines the renderer to OpenGl" ) );
+		parser.AddSwitch( wxT( "gl" ), wxEmptyString, _( "Defines the renderer to OpenGl >= 4.2" ) );
+		parser.AddSwitch( wxT( "gl3" ), wxEmptyString, _( "Defines the renderer to OpenGl >= 3.2" ) );
 		parser.AddSwitch( wxT( "vk" ), wxEmptyString, _( "Defines the renderer to Vulkan" ) );
 		bool result = parser.Parse( false ) == 0;
 
@@ -328,6 +329,10 @@ namespace common
 			else if ( parser.Found( wxT( "gl" ) ) )
 			{
 				m_rendererName = wxT( "gl" );
+			}
+			else if ( parser.Found( wxT( "gl3" ) ) )
+			{
+				m_rendererName = wxT( "gl3" );
 			}
 		}
 

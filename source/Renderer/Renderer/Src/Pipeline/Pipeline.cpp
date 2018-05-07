@@ -29,6 +29,12 @@ namespace renderer
 		}
 		, m_layout{ layout }
 	{
+		if ( bool( createInfo.tessellationState )
+			&& !device.getPhysicalDevice().getFeatures().tessellationShader )
+		{
+			throw std::runtime_error( "Tessellation shaders are not supported." );
+		}
+
 		registerObject( m_device, "Pipeline", this );
 	}
 

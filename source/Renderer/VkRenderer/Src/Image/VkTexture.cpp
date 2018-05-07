@@ -106,6 +106,7 @@ namespace vk_renderer
 	Texture::Texture( Device const & device
 		, renderer::ImageCreateInfo const & createInfo )
 		: renderer::Texture{ device
+			, createInfo.flags
 			, createInfo.imageType
 			, createInfo.format
 			, createInfo.extent
@@ -152,6 +153,7 @@ namespace vk_renderer
 		, renderer::Extent2D const & dimensions
 		, VkImage image )
 		: renderer::Texture{ device
+			, 0u
 			, renderer::TextureType::e2D
 			, doSelectFormat( device, format )
 			, renderer::Extent3D{ dimensions.width, dimensions.height, 1u }

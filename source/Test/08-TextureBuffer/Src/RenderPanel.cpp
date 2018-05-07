@@ -159,7 +159,7 @@ namespace vkapp
 			, image.size.width
 			, renderer::BufferTarget::eUniformTexelBuffer | renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		image.data.resize( image.size.width * 4 + 1 );
+		image.data.resize( image.size.width * 4 * sizeof( float ) );
 		m_textureView = m_device->createBufferView( m_textureBuffer->getBuffer()
 			, image.format
 			, 0u
