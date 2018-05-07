@@ -44,7 +44,7 @@ build:
 
 after_build:
   - cmd: cd C:\projects\RendererLib\build
-  - cmake --build . --target install
+  - cmake --build . --target install --config Release
   - cmd: cd ..
   - cmd: 7z a RendererLib-%PLATFORM_NAME%.zip .\package\RendererLib\*
 
