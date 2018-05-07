@@ -9,7 +9,6 @@ RendererLib
 
 RendererLib is a rendering library written in C++14, matching closely Vulkan interfaces.
 The final goal of this library is to expose as much of Vulkan features as possible.
-Vulkan and OpenGL renderers are actually written.
 It comes with a set of test applications, to validate the API.
 
 I've started this project because I need to upgrade my 3D engine (Castor3D), to use Vulkan, and I needed that kind of library, to replace my current renderer (OpenGL).
@@ -17,6 +16,12 @@ I needed a way to work with OpenGL like we need to work with Vulkan.
 It is still a WIP, the library is far from complete!!
 
 To build it, you can use either CMake or premake.
+
+## Renderers available
+
+- VkRenderer : A Vulkan renderer.
+- Gl3Renderer : An OpenGL 3.X renderer, based upon OpenGL 3.2.
+- GlRenderer : An OpenGL 4.X renderer, based upon OpenGL 4.2.
 
 ## Test applications
 
