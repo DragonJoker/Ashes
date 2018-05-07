@@ -15,7 +15,7 @@
 #		define Gl3Renderer_API __declspec( dllimport )
 #	endif
 #else
-#	define GlRenderer_API
+#	define Gl3Renderer_API
 #endif
 
 extern "C"
