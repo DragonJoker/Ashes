@@ -11,6 +11,7 @@ See LICENSE file in root folder.
 #include "Core/GlDevice.hpp"
 #include "Descriptor/GlDescriptorSet.hpp"
 #include "Image/GlTexture.hpp"
+#include "Image/GlTextureView.hpp"
 #include "Pipeline/GlComputePipeline.hpp"
 #include "Pipeline/GlPipeline.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
