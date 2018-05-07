@@ -47,5 +47,5 @@ after_build:
   - cmd: 7z a RendererLib-%PLATFORM_NAME%.zip .\%PLATFORM_NAME%\Release\*
 
 artifacts:
-  - path: C:\projects\RendererLib\binaries\RendererLib-%PLATFORM_NAME%.zip
+  - path: binaries\RendererLib-%PLATFORM_NAME%.zip
     name: RendererLib binaries %PLATFORM_NAME%
