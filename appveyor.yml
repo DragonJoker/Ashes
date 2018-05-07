@@ -30,9 +30,9 @@ install:
   - cmd: if "%platform%"=="x64"   set PLATFORM_NAME=x64
   - cmd: if "%platform%"=="Win32" set PCH_USAGE=OFF
   - cmd: if "%platform%"=="x64"   set PCH_USAGE=ON
-  - cmd: cd C:\projects\RendererLib
-  - cmd: cd dependencies
+  - cmd: cd C:\projects\RendererLib\dependencies
   - cmd: 7z e glslang.7z
+  - cmd: cd ..
   - cmd: md build
   - cmd: cd build
   - cmake -G "%CMAKE_GENERATOR_NAME%" ../source -DPROJECTS_USE_PRECOMPILED_HEADERS=%PCH_USAGE% -DRENDERER_BUILD_TEMPLATES=OFF -DRENDERER_BUILD_TESTS=OFF -DRENDERER_BUILD_SAMPLES=OFF
