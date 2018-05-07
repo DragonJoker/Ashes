@@ -28,7 +28,7 @@ install:
   - cmd: if "%platform%"=="x64"   set CMAKE_GENERATOR_NAME=Visual Studio 15 2017 Win64
   - cmd: if "%platform%"=="Win32" set PLATFORM_NAME=x86
   - cmd: if "%platform%"=="x64"   set PLATFORM_NAME=x64
-  - cmd: if "%platform%"=="Win32" set PCH_USAGE=OFF
+  - cmd: if "%platform%"=="Win32" set PCH_USAGE=ON
   - cmd: if "%platform%"=="x64"   set PCH_USAGE=ON
   - cmd: cd C:\projects\RendererLib\dependencies
   - cmd: 7z x glslang.7z
@@ -36,16 +36,16 @@ install:
   - cmd: cd ..
   - cmd: md build
   - cmd: cd build
-  - cmake -G "%CMAKE_GENERATOR_NAME%" ../source -DPROJECTS_USE_PRECOMPILED_HEADERS=%PCH_USAGE% -DRENDERER_BUILD_TEMPLATES=OFF -DRENDERER_BUILD_TESTS=OFF -DRENDERER_BUILD_SAMPLES=OFF
+  - cmake install -G "%CMAKE_GENERATOR_NAME%" ../source -DPROJECTS_USE_PRECOMPILED_HEADERS=%PCH_USAGE% -DRENDERER_BUILD_TEMPLATES=OFF -DRENDERER_BUILD_TESTS=OFF -DRENDERER_BUILD_SAMPLES=OFF -CMAKE_BUILD_PREFIX=C:\projects\RendererLib\package\RendererLib
 
 build:
   project: build/RendererLib.sln
   parallel: true
 
 after_build:
-  - cmd: cd C:\projects\RendererLib\binaries
-  - cmd: 7z a RendererLib-%PLATFORM_NAME%.zip .\%PLATFORM_NAME%\Release\*
+  - cmd: cd C:\projects\RendererLib
+  - cmd: 7z a RendererLib-%PLATFORM_NAME%.zip .\package\RendererLib\*
 
 artifacts:
-  - path: binaries\RendererLib-%PLATFORM_NAME%.zip
+  - path: RendererLib-%PLATFORM_NAME%.zip
     name: RendererLib binaries %PLATFORM_NAME%
