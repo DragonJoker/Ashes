@@ -32,6 +32,7 @@ install:
   - cmd: if "%platform%"=="x64"   set PCH_USAGE=ON
   - cmd: cd C:\projects\RendererLib\dependencies
   - cmd: 7z x glslang.7z
+  - cmd: 7z x glslang-lib-%PLATFORM_NAME%.7z
   - cmd: cd ..
   - cmd: md build
   - cmd: cd build
@@ -43,8 +44,8 @@ build:
 
 after_build:
   - cmd: cd C:\projects\RendererLib\binaries
-  - cmd: 7z a RendererLib-%PLATFORM_NAME%.7z .\%PLATFORM_NAME%\Release\*
+  - cmd: 7z a RendererLib-%PLATFORM_NAME%.zip .\%PLATFORM_NAME%\Release\*
 
 artifacts:
-  - path: C:\projects\RendererLib\binaries\RendererLib-%PLATFORM_NAME%.7z
+  - path: C:\projects\RendererLib\binaries\RendererLib-%PLATFORM_NAME%.zip
     name: RendererLib binaries %PLATFORM_NAME%
