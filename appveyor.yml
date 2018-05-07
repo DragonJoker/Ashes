@@ -37,14 +37,15 @@ install:
   - cmd: md build
   - cmd: cd build
   - cmake -G "%CMAKE_GENERATOR_NAME%" ../source -DPROJECTS_USE_PRECOMPILED_HEADERS=%PCH_USAGE% -DRENDERER_BUILD_TEMPLATES=OFF -DRENDERER_BUILD_TESTS=OFF -DRENDERER_BUILD_SAMPLES=OFF -DCMAKE_INSTALL_PREFIX=C:\projects\RendererLib\package\RendererLib
-  - cmake install
 
 build:
   project: build/RendererLib.sln
   parallel: true
 
 after_build:
-  - cmd: cd C:\projects\RendererLib
+  - cmd: cd C:\projects\RendererLib\build
+  - cmake install
+  - cmd: cd ..
   - cmd: 7z a RendererLib-%PLATFORM_NAME%.zip .\package\RendererLib\*
 
 artifacts:
