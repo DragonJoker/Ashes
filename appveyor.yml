@@ -36,7 +36,8 @@ install:
   - cmd: cd ..
   - cmd: md build
   - cmd: cd build
-  - cmake install -G "%CMAKE_GENERATOR_NAME%" ../source -DPROJECTS_USE_PRECOMPILED_HEADERS=%PCH_USAGE% -DRENDERER_BUILD_TEMPLATES=OFF -DRENDERER_BUILD_TESTS=OFF -DRENDERER_BUILD_SAMPLES=OFF -DCMAKE_INSTALL_PREFIX=C:\projects\RendererLib\package\RendererLib
+  - cmake -G "%CMAKE_GENERATOR_NAME%" ../source -DPROJECTS_USE_PRECOMPILED_HEADERS=%PCH_USAGE% -DRENDERER_BUILD_TEMPLATES=OFF -DRENDERER_BUILD_TESTS=OFF -DRENDERER_BUILD_SAMPLES=OFF -DCMAKE_INSTALL_PREFIX=C:\projects\RendererLib\package\RendererLib
+  - cmake install
 
 build:
   project: build/RendererLib.sln
