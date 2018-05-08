@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -231,6 +231,57 @@ namespace gl_renderer
 	std::string getName( GlInternal value );
 	std::string getName( GlFormat value );
 	std::string getName( GlType value );
+	/**
+	*\~french
+	*\brief
+	*	Dit si le renderer::Format donné est un format utilisable pour les tampons de profondeur et stencil.
+	*\param[in] format
+	*	Le renderer::Format à tester.
+	*\return
+	*	\p true s'il l'est...
+	*\~english
+	*\brief
+	*	Tells if the given renderer::Format is usable in depth and stencil buffers.
+	*\param[in] format
+	*	The renderer::Format.
+	*\return
+	*	\p true if it is usable in depth and stencil buffers.
+	*/
+	bool isDepthStencilFormat( GlInternal format )noexcept;
+	/**
+	*\~french
+	*\brief
+	*	Dit si le renderer::Format donné est un format utilisable pour les tampons de stencil.
+	*\param[in] format
+	*	Le renderer::Format à tester.
+	*\return
+	*	\p true s'il l'est...
+	*\~english
+	*\brief
+	*	Tells if the given renderer::Format is usable in stencil buffers.
+	*\param[in] format
+	*	The renderer::Format.
+	*\return
+	*	\p true if it is usable in stencil buffers.
+	*/
+	bool isStencilFormat( GlInternal format )noexcept;
+	/**
+	*\~french
+	*\brief
+	*	Dit si le renderer::Format donné est un format utilisable pour les tampons de profondeur.
+	*\param[in] format
+	*	Le renderer::Format à tester.
+	*\return
+	*	\p true s'il l'est...
+	*\~english
+	*\brief
+	*	Tells if the given renderer::Format is usable in depth buffers.
+	*\param[in] format
+	*	The renderer::Format.
+	*\return
+	*	\p true if it is usable in depth buffers.
+	*/
+	bool isDepthFormat( GlInternal format )noexcept;
 	/**
 	*\brief
 	*	Convertit un renderer::Format en GlInternal.

@@ -170,7 +170,7 @@ namespace gl_renderer
 		}
 
 		glLogCall( gl::BindTexture, m_dstTarget, 0u );
-		m_dst.generateMipmaps();
+		static_cast< renderer::Texture const & >( m_dst ).generateMipmaps();
 	}
 
 	CommandPtr CopyImageCommand::clone()const

@@ -109,6 +109,7 @@ namespace gl_renderer
 					break;
 				}
 
+				glLogCall( gl::GenerateMipmap, m_boundTarget );
 				glLogCall( gl::BindTexture, m_boundTarget, 0 );
 
 				// If the texture is visible to the host, we'll need a PBO to map it to RAM.
@@ -209,48 +210,31 @@ namespace gl_renderer
 			void doSetImage1D( uint32_t width
 				, renderer::ImageCreateInfo const & createInfo )
 			{
-				auto const internal = gl_renderer::getInternal( createInfo.format );
-				auto format = gl_renderer::getFormat( internal );
-				auto type = gl_renderer::getType( internal );
-
-				for ( auto level = 0u; level < createInfo.mipLevels; ++level )
-				{
-					glLogCall( gl::TexImage1D
-						, m_boundTarget
-						, level
-						, internal
-						, width
-						, 0
-						, format
-						, type
-						, nullptr );
-					width >>= 1;
-				}
+				glLogCall( gl::TexImage1D
+					, m_boundTarget
+					, 0u
+					, m_internal
+					, width
+					, 0
+					, m_format
+					, m_type
+					, nullptr );
 			}
 
 			void doSetImage2D( uint32_t width
 				, uint32_t height
 				, renderer::ImageCreateInfo const & createInfo )
 			{
-				auto const internal = gl_renderer::getInternal( createInfo.format );
-				auto format = gl_renderer::getFormat( internal );
-				auto type = gl_renderer::getType( internal );
-
-				for ( auto level = 0u; level < createInfo.mipLevels; ++level )
-				{
-					glLogCall( gl::TexImage2D
-						, m_boundTarget
-						, level
-						, internal
-						, width
-						, height
-						, 0
-						, format
-						, type
-						, nullptr );
-					width >>= 1;
-					height >>= 1;
-				}
+				glLogCall( gl::TexImage2D
+					, m_boundTarget
+					, 0u
+					, m_internal
+					, width
+					, height
+					, 0
+					, m_format
+					, m_type
+					, nullptr );
 			}
 
 			void doSetImageCubeFace( uint32_t width
@@ -258,25 +242,16 @@ namespace gl_renderer
 				, int face
 				, renderer::ImageCreateInfo const & createInfo )
 			{
-				auto const internal = gl_renderer::getInternal( createInfo.format );
-				auto format = gl_renderer::getFormat( internal );
-				auto type = gl_renderer::getType( internal );
-
-				for ( auto level = 0u; level < createInfo.mipLevels; ++level )
-				{
-					glLogCall( gl::TexImage2D
-						, GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + face
-						, level
-						, internal
-						, width
-						, height
-						, 0
-						, format
-						, type
-						, nullptr );
-					width >>= 1;
-					height >>= 1;
-				}
+				glLogCall( gl::TexImage2D
+					, GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + face
+					, 0u
+					, m_internal
+					, width
+					, height
+					, 0
+					, m_format
+					, m_type
+					, nullptr );
 			}
 
 			void doSetImage3D( uint32_t width
@@ -284,37 +259,27 @@ namespace gl_renderer
 				, uint32_t depth
 				, renderer::ImageCreateInfo const & createInfo )
 			{
-				auto const internal = gl_renderer::getInternal( createInfo.format );
-				auto format = gl_renderer::getFormat( internal );
-				auto type = gl_renderer::getType( internal );
-
-				for ( auto level = 0u; level < createInfo.mipLevels; ++level )
-				{
-					glLogCall( gl::TexImage3D
-						, m_boundTarget
-						, level
-						, internal
-						, width
-						, height
-						, depth
-						, 0
-						, format
-						, type
-						, nullptr );
-					width >>= 1;
-					height >>= 1;
-				}
+				glLogCall( gl::TexImage3D
+					, m_boundTarget
+					, 0u
+					, m_internal
+					, width
+					, height
+					, depth
+					, 0
+					, m_format
+					, m_type
+					, nullptr );
 			}
 
 			void doSetImage2DMS( uint32_t width
 				, uint32_t height
 				, renderer::ImageCreateInfo const & createInfo )
 			{
-				auto const internal = gl_renderer::getInternal( createInfo.format );
 				glLogCall( gl::TexImage2DMultisample
 					, m_boundTarget
 					, GLsizei( createInfo.samples )
-					, internal
+					, m_internal
 					, width
 					, height
 					, GL_TRUE );
@@ -325,11 +290,10 @@ namespace gl_renderer
 				, uint32_t depth
 				, renderer::ImageCreateInfo const & createInfo )
 			{
-				auto const internal = gl_renderer::getInternal( createInfo.format );
 				glLogCall( gl::TexImage3DMultisample
 					, m_boundTarget
 					, GLsizei( createInfo.samples )
-					, internal
+					, m_internal
 					, width
 					, height
 					, depth

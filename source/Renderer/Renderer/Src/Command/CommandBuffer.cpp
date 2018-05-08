@@ -27,18 +27,24 @@ namespace renderer
 
 			if ( checkFlag( accessFlags, AccessFlag::eIndirectCommandRead ) )
 			{
-				return checkFlag( pipelineFlags, PipelineStageFlag::eDrawIndirect );
+				return checkFlag( pipelineFlags, PipelineStageFlag::eDrawIndirect )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
 			}
 
 			if ( checkFlag( accessFlags, AccessFlag::eIndexRead )
 				|| checkFlag( accessFlags, AccessFlag::eVertexAttributeRead ) )
 			{
-				return checkFlag( pipelineFlags, PipelineStageFlag::eVertexInput );
+				return checkFlag( pipelineFlags, PipelineStageFlag::eVertexInput )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
 			}
 
 			if ( checkFlag( accessFlags, AccessFlag::eInputAttachmentRead ) )
 			{
-				return checkFlag( pipelineFlags, PipelineStageFlag::eFragmentShader );
+				return checkFlag( pipelineFlags, PipelineStageFlag::eFragmentShader )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
 			}
 
 			if ( checkFlag( accessFlags, AccessFlag::eShaderRead )
@@ -50,32 +56,43 @@ namespace renderer
 					|| checkFlag( pipelineFlags, PipelineStageFlag::eTessellationEvaluationShader )
 					|| checkFlag( pipelineFlags, PipelineStageFlag::eGeometryShader )
 					|| checkFlag( pipelineFlags, PipelineStageFlag::eFragmentShader )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eComputeShader );
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eComputeShader )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
 			}
 
 			if ( checkFlag( accessFlags, AccessFlag::eColourAttachmentRead )
 				|| checkFlag( accessFlags, AccessFlag::eColourAttachmentWrite ) )
 			{
-				return checkFlag( pipelineFlags, PipelineStageFlag::eColourAttachmentOutput );
+				return checkFlag( pipelineFlags, PipelineStageFlag::eColourAttachmentOutput )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
 			}
 
 			if ( checkFlag( accessFlags, AccessFlag::eDepthStencilAttachmentRead )
 				|| checkFlag( accessFlags, AccessFlag::eDepthStencilAttachmentWrite ) )
 			{
 				return checkFlag( pipelineFlags, PipelineStageFlag::eEarlyFragmentTests )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eLateFragmentTests );
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eLateFragmentTests )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
 			}
 
 			if ( checkFlag( accessFlags, AccessFlag::eTransferRead )
 				|| checkFlag( accessFlags, AccessFlag::eTransferWrite ) )
 			{
-				return checkFlag( pipelineFlags, PipelineStageFlag::eTransfer );
+				return checkFlag( pipelineFlags, PipelineStageFlag::eTransfer )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eHost )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
 			}
 
 			if ( checkFlag( accessFlags, AccessFlag::eHostRead )
 				|| checkFlag( accessFlags, AccessFlag::eHostWrite ) )
 			{
-				return checkFlag( pipelineFlags, PipelineStageFlag::eHost );
+				return checkFlag( pipelineFlags, PipelineStageFlag::eHost )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
 			}
 
 			return true;

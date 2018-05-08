@@ -33,16 +33,17 @@ namespace gl_renderer
 				glLogCall( gl::DepthMask, GL_TRUE );
 				auto & depthStencil = clearValue.depthStencil();
 				auto stencil = GLint( depthStencil.stencil );
+				auto format = getInternal( attach.format );
 
-				if ( renderer::isDepthStencilFormat( attach.format ) )
+				if ( isDepthStencilFormat( format ) )
 				{
 					glLogCall( gl::ClearBufferfi, GL_CLEAR_TARGET_DEPTH_STENCIL, 0u, depthStencil.depth, stencil );
 				}
-				else if ( renderer::isDepthFormat( attach.format ) )
+				else if ( isDepthFormat( format ) )
 				{
 					glLogCall( gl::ClearBufferfv, GL_CLEAR_TARGET_DEPTH, 0u, &depthStencil.depth );
 				}
-				else if ( renderer::isStencilFormat( attach.format ) )
+				else if ( isStencilFormat( format ) )
 				{
 					glLogCall( gl::ClearBufferiv, GL_CLEAR_TARGET_STENCIL, 0u, &stencil );
 				}
@@ -73,19 +74,20 @@ namespace gl_renderer
 			{
 				auto & depthStencil = clearValue.depthStencil();
 				auto stencil = GLint( depthStencil.stencil );
+				auto format = getInternal( attach.format );
 
-				if ( renderer::isDepthStencilFormat( attach.format ) )
+				if ( isDepthStencilFormat( format ) )
 				{
 					glLogCall( gl::ClearDepth, depthStencil.depth );
 					glLogCall( gl::ClearStencil, depthStencil.stencil );
 					result = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 				}
-				else if ( renderer::isDepthFormat( attach.format ) )
+				else if ( isDepthFormat( format ) )
 				{
 					glLogCall( gl::ClearDepth, depthStencil.depth );
 					result = GL_DEPTH_BUFFER_BIT;
 				}
-				else if ( renderer::isStencilFormat( attach.format ) )
+				else if ( isStencilFormat( format ) )
 				{
 					glLogCall( gl::ClearStencil, depthStencil.stencil );
 					result = GL_STENCIL_BUFFER_BIT;

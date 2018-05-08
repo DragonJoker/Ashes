@@ -51,7 +51,7 @@ namespace gl_renderer
 			, m_copyInfo.extent.depth );
 		glLogCall( gl::BindTexture, m_dstTarget, 0u );
 		glLogCall( gl::BindTexture, m_srcTarget, 0u );
-		m_dst.generateMipmaps();
+		static_cast< renderer::Texture const & >( m_dst ).generateMipmaps();
 	}
 
 	CommandPtr CopySubImageCommand::clone()const

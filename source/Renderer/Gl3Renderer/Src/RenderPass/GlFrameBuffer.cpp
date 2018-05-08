@@ -91,19 +91,19 @@ namespace gl_renderer
 		}
 	}
 
-	GlAttachmentPoint getAttachmentPoint( renderer::Format format )
+	GlAttachmentPoint getAttachmentPoint( GlInternal format )
 	{
-		if ( renderer::isDepthStencilFormat( format ) )
+		if ( isDepthStencilFormat( format ) )
 		{
 			return GL_ATTACHMENT_POINT_DEPTH_STENCIL;
 		}
 
-		if ( renderer::isStencilFormat( format ) )
+		if ( isStencilFormat( format ) )
 		{
 			return GL_ATTACHMENT_POINT_STENCIL;
 		}
 
-		if ( renderer::isDepthFormat( format ) )
+		if ( isDepthFormat( format ) )
 		{
 			return GL_ATTACHMENT_POINT_DEPTH;
 		}
@@ -111,24 +111,29 @@ namespace gl_renderer
 		return GL_ATTACHMENT_POINT_COLOR0;
 	}
 
-	GlAttachmentPoint getAttachmentPoint( TextureView const & texture )
+	GlAttachmentPoint getAttachmentPoint( renderer::Format format )
 	{
-		return getAttachmentPoint( texture.getFormat() );
+		return getAttachmentPoint( getInternal( format ) );
 	}
 
-	GlAttachmentType getAttachmentType( renderer::Format format )
+	GlAttachmentPoint getAttachmentPoint( TextureView const & texture )
 	{
-		if ( renderer::isDepthStencilFormat( format ) )
+		return getAttachmentPoint( getInternal( texture.getFormat() ) );
+	}
+
+	GlAttachmentType getAttachmentType( GlInternal format )
+	{
+		if ( isDepthStencilFormat( format ) )
 		{
 			return GL_ATTACHMENT_TYPE_DEPTH_STENCIL;
 		}
 
-		if ( renderer::isStencilFormat( format ) )
+		if ( isStencilFormat( format ) )
 		{
 			return GL_ATTACHMENT_TYPE_STENCIL;
 		}
 
-		if ( renderer::isDepthFormat( format ) )
+		if ( isDepthFormat( format ) )
 		{
 			return GL_ATTACHMENT_TYPE_DEPTH;
 		}
@@ -136,9 +141,14 @@ namespace gl_renderer
 		return GL_ATTACHMENT_TYPE_COLOR;
 	}
 
+	GlAttachmentType getAttachmentType( renderer::Format format )
+	{
+		return getAttachmentType( getInternal( format ) );
+	}
+
 	GlAttachmentType getAttachmentType( TextureView const & texture )
 	{
-		return getAttachmentType( texture.getFormat() );
+		return getAttachmentType( getInternal( texture.getFormat() ) );
 	}
 
 	FrameBuffer::FrameBuffer( RenderPass const & renderPass
@@ -233,6 +243,8 @@ namespace gl_renderer
 				{
 					m_colourAttaches.push_back( attachment );
 				}
+
+				m_allAttaches.push_back( attachment );
 			}
 		}
 
