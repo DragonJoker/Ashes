@@ -47,6 +47,7 @@ See LICENSE file in root folder.
 #include "Commands/GlEndQueryCommand.hpp"
 #include "Commands/GlEndRenderPassCommand.hpp"
 #include "Commands/GlEndSubpassCommand.hpp"
+#include "Commands/GlGenerateMipmapsCommand.hpp"
 #include "Commands/GlImageMemoryBarrierCommand.hpp"
 #include "Commands/GlNextSubpassCommand.hpp"
 #include "Commands/GlPushConstantsCommand.hpp"
@@ -64,6 +65,15 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
+	namespace
+	{
+		renderer::TextureView const & getView( renderer::WriteDescriptorSet const & write, uint32_t index )
+		{
+			assert( index < write.imageInfo.size() );
+			return write.imageInfo[index].imageView.value().get();
+		}
+	}
+
 	CommandBuffer::CommandBuffer( Device const & device
 		, renderer::CommandPool const & pool
 		, bool primary )
@@ -78,6 +88,11 @@ namespace gl_renderer
 		{
 			action();
 		}
+	}
+
+	void CommandBuffer::generateMipmaps( Texture const & texture )const
+	{
+		m_commands.emplace_back( std::make_unique< GenerateMipmapsCommand >( texture ) );
 	}
 
 	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags )const
@@ -313,6 +328,49 @@ namespace gl_renderer
 				, layout
 				, dynamicOffsets
 				, bindingPoint ) );
+
+			auto & glDescriptorSet = static_cast< DescriptorSet const & >( descriptorSet.get() );
+
+			for ( auto & write : glDescriptorSet.getCombinedTextureSamplers() )
+			{
+				for ( auto i = 0u; i < write.imageInfo.size(); ++i )
+				{
+					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					auto & view = getView( write, i );
+					auto type = convert( view.getType() );
+					m_afterSubmitActions.insert( m_afterSubmitActions.begin()
+						, [type, i, bindingIndex]()
+						{
+							glLogCall( gl::ActiveTexture
+								, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
+							glLogCall( gl::BindTexture
+								, type
+								, 0u );
+							glLogCall( gl::BindSampler
+								, bindingIndex
+								, 0u );
+						} );
+				}
+			}
+
+			for ( auto & write : glDescriptorSet.getSampledTextures() )
+			{
+				for ( auto i = 0u; i < write.imageInfo.size(); ++i )
+				{
+					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					auto & view = getView( write, i );
+					auto type = convert( view.getType() );
+					m_afterSubmitActions.insert( m_afterSubmitActions.begin()
+						, [type, i, bindingIndex]()
+						{
+							glLogCall( gl::ActiveTexture
+								, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
+							glLogCall( gl::BindTexture
+								, type
+								, 0u );
+						} );
+				}
+			}
 		}
 	}
 

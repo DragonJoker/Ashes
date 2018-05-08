@@ -23,7 +23,7 @@ namespace gl_renderer
 	{
 		glLogCommand( "ClearDepthStencilCommand" );
 
-		if ( renderer::isDepthStencilFormat( m_image.getFormat() ) )
+		if ( isDepthStencilFormat( m_internal ) )
 		{
 			glLogCall( gl::ClearTexImage_ARB
 				, m_image.getImage()
@@ -32,7 +32,7 @@ namespace gl_renderer
 				, m_type
 				, &m_value.depth );
 		}
-		else if ( renderer::isStencilFormat( m_image.getFormat() ) )
+		else if ( isStencilFormat( m_internal ) )
 		{
 			glLogCall( gl::ClearTexImage_ARB
 				, m_image.getImage()
@@ -41,7 +41,7 @@ namespace gl_renderer
 				, m_type
 				, &m_value.stencil );
 		}
-		else if ( renderer::isDepthFormat( m_image.getFormat() ) )
+		else if ( isDepthFormat( m_internal ) )
 		{
 			glLogCall( gl::ClearTexImage_ARB
 				, m_image.getImage()

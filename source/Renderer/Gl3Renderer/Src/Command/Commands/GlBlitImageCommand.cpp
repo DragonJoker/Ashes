@@ -19,19 +19,20 @@ namespace gl_renderer
 		GlImageAspectFlags getMask( renderer::Format format )
 		{
 			GlImageAspectFlags result = 0u;
+			auto internal = getInternal( format );
 
-			if ( renderer::isDepthFormat( format ) )
+			if ( isDepthFormat( internal ) )
 			{
 				result |= GL_DEPTH_BUFFER_BIT;
 			}
 
-			if ( renderer::isStencilFormat( format ) )
+			if ( isStencilFormat( internal ) )
 			{
 				result |= GL_STENCIL_BUFFER_BIT;
 			}
 
-			if ( !renderer::isDepthFormat( format )
-				&& !renderer::isStencilFormat( format ) )
+			if ( !isDepthFormat( internal )
+				&& !isStencilFormat( internal ) )
 			{
 				result |= GL_COLOR_BUFFER_BIT;
 			}
