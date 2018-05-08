@@ -79,6 +79,11 @@ namespace gl_renderer
 	{
 		std::string source = shader;
 
+		std::regex regex{ R"(\#version \d*)" };
+		source = std::regex_replace( source.data()
+			, regex
+			, "$&\n#define GLVERSION 320\n" );
+
 		if ( m_stage == renderer::ShaderStageFlag::eVertex )
 		{
 			std::regex regex{ R"(void[ ]*main)" };

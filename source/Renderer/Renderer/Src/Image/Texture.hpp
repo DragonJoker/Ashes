@@ -193,7 +193,7 @@ namespace renderer
 		*\param[in] commandBuffer
 		*	A command buffer, in record state.
 		*/
-		void generateMipmaps( CommandBuffer & commandBuffer )const;
+		virtual void generateMipmaps( CommandBuffer & commandBuffer )const;
 		/**
 		*\~french
 		*\brief

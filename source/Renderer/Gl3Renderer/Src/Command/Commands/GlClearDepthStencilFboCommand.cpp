@@ -46,15 +46,15 @@ namespace gl_renderer
 		glLogCall( gl::DepthMask, GL_TRUE );
 		auto stencil = GLint( m_value.stencil );
 
-		if ( renderer::isDepthStencilFormat( m_image.getFormat() ) )
+		if ( isDepthStencilFormat( m_internal ) )
 		{
 			glLogCall( gl::ClearBufferfi, GL_CLEAR_TARGET_DEPTH_STENCIL, 0u, m_value.depth, stencil );
 		}
-		else if ( renderer::isDepthFormat( m_image.getFormat() ) )
+		else if ( isDepthFormat( m_internal ) )
 		{
 			glLogCall( gl::ClearBufferfv, GL_CLEAR_TARGET_DEPTH, 0u, &m_value.depth );
 		}
-		else if ( renderer::isStencilFormat( m_image.getFormat() ) )
+		else if ( isStencilFormat( m_internal ) )
 		{
 			glLogCall( gl::ClearBufferiv, GL_CLEAR_TARGET_STENCIL, 0u, &stencil );
 		}

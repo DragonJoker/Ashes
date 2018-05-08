@@ -233,6 +233,8 @@ namespace gl_renderer
 				{
 					m_colourAttaches.push_back( attachment );
 				}
+
+				m_allAttaches.push_back( attachment );
 			}
 		}
 

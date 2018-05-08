@@ -32,6 +32,7 @@ namespace gl_renderer
 			, renderer::CommandPool const & pool
 			, bool primary );
 		void applyPostSubmitActions()const;
+		void generateMipmaps( Texture const & texture )const;
 		/**
 		*\copydoc	renderer::CommandBuffer::begin
 		*/

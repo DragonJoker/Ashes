@@ -10,8 +10,10 @@ See LICENSE file in root folder
 
 namespace gl_renderer
 {
+	GlAttachmentPoint getAttachmentPoint( GlInternal format );
 	GlAttachmentPoint getAttachmentPoint( renderer::Format format );
 	GlAttachmentPoint getAttachmentPoint( TextureView const & texture );
+	GlAttachmentType getAttachmentType( GlInternal format );
 	GlAttachmentType getAttachmentType( renderer::Format format );
 	GlAttachmentType getAttachmentType( TextureView const & texture );
 

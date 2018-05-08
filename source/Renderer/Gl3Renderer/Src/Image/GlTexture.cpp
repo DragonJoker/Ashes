@@ -131,6 +131,11 @@ namespace gl_renderer
 		glLogCall( gl::DeleteTextures, 1, &m_texture );
 	}
 
+	void Texture::generateMipmaps( renderer::CommandBuffer & commandBuffer )const
+	{
+		static_cast< CommandBuffer & >( commandBuffer ).generateMipmaps( *this );
+	}
+
 	renderer::MemoryRequirements Texture::getMemoryRequirements()const
 	{
 		renderer::MemoryRequirements result{};
