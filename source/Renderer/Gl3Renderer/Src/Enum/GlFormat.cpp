@@ -438,6 +438,24 @@ namespace gl_renderer
 		}
 	}
 
+	bool isDepthStencilFormat( GlInternal format )noexcept
+	{
+		return format == GL_INTERNAL_D16_UNORM
+			|| format == GL_INTERNAL_D24_UNORM_S8_UINT
+			|| format == GL_INTERNAL_D32_SFLOAT_S8_UINT;
+	}
+
+	bool isStencilFormat( GlInternal format )noexcept
+	{
+		return format == GL_INTERNAL_S8_UINT;
+	}
+
+	bool isDepthFormat( GlInternal format )noexcept
+	{
+		return format == GL_INTERNAL_D16_UNORM
+			|| format == GL_INTERNAL_D32_SFLOAT;
+	}
+
 	GlInternal getInternal( renderer::Format const & format )noexcept
 	{
 		switch ( format )
@@ -506,7 +524,7 @@ namespace gl_renderer
 		case renderer::Format::eD32_SFLOAT: return GL_INTERNAL_D32_SFLOAT;
 		case renderer::Format::eS8_UINT: return GL_INTERNAL_S8_UINT;
 		case renderer::Format::eD24_UNORM_S8_UINT: return GL_INTERNAL_D24_UNORM_S8_UINT;
-		case renderer::Format::eD32_SFLOAT_S8_UINT: return GL_INTERNAL_D32_SFLOAT_S8_UINT;
+		case renderer::Format::eD32_SFLOAT_S8_UINT: return GL_INTERNAL_D32_SFLOAT;
 		case renderer::Format::eBC1_RGB_UNORM_BLOCK: return GL_INTERNAL_BC1_RGB_UNORM_BLOCK;
 		case renderer::Format::eBC1_RGB_SRGB_BLOCK: return GL_INTERNAL_BC1_RGB_SRGB_BLOCK;
 		case renderer::Format::eBC1_RGBA_UNORM_BLOCK: return GL_INTERNAL_BC1_RGBA_UNORM_BLOCK;

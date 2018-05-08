@@ -53,15 +53,20 @@ namespace gl_renderer
 				glLogCall( gl::BindTexture
 					, target
 					, static_cast< Texture const & >( view.getTexture() ).getImage() );
-				auto & range = view.getSubResourceRange();
-				glLogCall( gl::TexParameteri
-					, target
-					, GL_SAMPLER_PARAMETER_MIN_LOD
-					, GLint( range.baseMipLevel ) );
-				glLogCall( gl::TexParameteri
-					, target
-					, GL_SAMPLER_PARAMETER_MAX_LOD
-					, GLint( range.baseMipLevel + range.levelCount ) );
+				//auto & range = view.getSubResourceRange();
+
+				//if ( range.levelCount > 1 )
+				//{
+				//	glLogCall( gl::TexParameteri
+				//		, target
+				//		, GL_SAMPLER_PARAMETER_MIN_LOD
+				//		, GLint( range.baseMipLevel ) );
+				//	glLogCall( gl::TexParameteri
+				//		, target
+				//		, GL_SAMPLER_PARAMETER_MAX_LOD
+				//		, GLint( range.baseMipLevel + range.levelCount ) );
+				//}
+
 				glLogCall( gl::BindSampler
 					, bindingIndex
 					, static_cast< Sampler const & >( sampler ).getSampler() );
@@ -92,15 +97,19 @@ namespace gl_renderer
 				glLogCall( gl::BindTexture
 					, target
 					, static_cast< Texture const & >( view.getTexture() ).getImage() );
-				auto & range = view.getSubResourceRange();
-				glLogCall( gl::TexParameteri
-					, target
-					, GL_SAMPLER_PARAMETER_MIN_LOD
-					, GLint( range.baseMipLevel ) );
-				glLogCall( gl::TexParameteri
-					, target
-					, GL_SAMPLER_PARAMETER_MAX_LOD
-					, GLint( range.baseMipLevel + range.levelCount ) );
+				//auto & range = view.getSubResourceRange();
+
+				//if ( range.levelCount > 1 )
+				//{
+				//	glLogCall( gl::TexParameteri
+				//		, target
+				//		, GL_SAMPLER_PARAMETER_MIN_LOD
+				//		, GLint( range.baseMipLevel ) );
+				//	glLogCall( gl::TexParameteri
+				//		, target
+				//		, GL_SAMPLER_PARAMETER_MAX_LOD
+				//		, GLint( range.baseMipLevel + range.levelCount ) );
+				//}
 			}
 		}
 

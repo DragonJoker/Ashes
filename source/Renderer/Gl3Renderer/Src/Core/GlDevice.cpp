@@ -365,7 +365,6 @@ namespace gl_renderer
 			, sizeof( dummyIndex ) / sizeof( dummyIndex[0] )
 			, renderer::BufferTarget::eIndexBuffer
 			, renderer::MemoryPropertyFlag::eHostVisible );
-
 		if ( auto * buffer = m_dummyIndexed.indexBuffer->lock( 0u
 			, sizeof( dummyIndex ) / sizeof( dummyIndex[0] )
 			, renderer::MemoryMapFlag::eWrite ) )
@@ -373,8 +372,8 @@ namespace gl_renderer
 			std::memcpy( buffer, dummyIndex, sizeof( dummyIndex ) );
 			m_dummyIndexed.indexBuffer->unlock();
 		}
-
 		auto & indexBuffer = static_cast< Buffer const & >( m_dummyIndexed.indexBuffer->getBuffer() );
+
 		m_dummyIndexed.geometryBuffers = std::make_unique< GeometryBuffers >( VboBindings{}
 			, BufferObjectBinding{ indexBuffer.getBuffer(), 0u, &indexBuffer }
 			, renderer::VertexInputState{}

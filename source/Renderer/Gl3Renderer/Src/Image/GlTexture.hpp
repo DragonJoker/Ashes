@@ -45,6 +45,10 @@ namespace gl_renderer
 		*/
 		~Texture();
 		/**
+		*\copydoc	renderer::Texture::generateMipmaps
+		*/
+		void generateMipmaps( renderer::CommandBuffer & commandBuffer )const override;
+		/**
 		*\copydoc	renderer::Texture::getMemoryRequirements
 		*/
 		renderer::MemoryRequirements getMemoryRequirements()const override;

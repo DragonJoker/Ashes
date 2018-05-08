@@ -110,8 +110,6 @@ namespace gl_renderer
 				break;
 
 			case GL_TEXTURE_2D_ARRAY:
-			case GL_TEXTURE_CUBE:
-			case GL_TEXTURE_CUBE_ARRAY:
 				glLogCall( gl::CompressedTexSubImage3D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
@@ -121,6 +119,32 @@ namespace gl_renderer
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount
+					, m_internal
+					, copyInfo.levelSize
+					, BufferOffset( copyInfo.bufferOffset ) );
+				break;
+
+			case GL_TEXTURE_CUBE:
+				glLogCall( gl::CompressedTexSubImage2D
+					, GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + copyInfo.imageSubresource.baseArrayLayer
+					, copyInfo.imageSubresource.mipLevel
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
+					, m_internal
+					, copyInfo.levelSize
+					, BufferOffset( copyInfo.bufferOffset ) );
+				break;
+
+			case GL_TEXTURE_CUBE_ARRAY:
+				glLogCall( gl::CompressedTexSubImage2D
+					, GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + ( copyInfo.imageSubresource.baseArrayLayer % 6u )
+					, copyInfo.imageSubresource.mipLevel
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
 					, m_internal
 					, copyInfo.levelSize
 					, BufferOffset( copyInfo.bufferOffset ) );

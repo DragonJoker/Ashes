@@ -226,17 +226,11 @@ namespace gl_renderer
 
 	private:
 		ContextPtr m_context;
-		struct Vertex
-		{
-			float x;
-			float y;
-			float z;
-		};
 		// Mimic the behavior in Vulkan, when no IBO nor VBO is bound.
 		mutable struct
 		{
 			renderer::BufferPtr< uint32_t > indexBuffer;
-			renderer::VertexBufferPtr< Vertex > vertexBuffer;
+			renderer::VertexBufferPtr< int > vertexBuffer;
 			GeometryBuffersPtr geometryBuffers;
 		} m_dummyIndexed;
 		mutable renderer::Scissor m_scissor{ 0, 0, 0, 0 };
