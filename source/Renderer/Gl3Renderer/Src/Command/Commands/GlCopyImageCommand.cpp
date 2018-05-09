@@ -37,7 +37,7 @@ namespace gl_renderer
 			auto texelSize = renderer::getSize( src.getFormat() );
 			auto dstRowSize = dimensions.width * texelSize;
 			auto srcRowSize = src.getDimensions().width * texelSize;
-			auto planeSize = src.getDimensions().height * srcRowSize * texelSize;
+			auto planeSize = src.getDimensions().height * srcRowSize;
 			auto plane = srcData.data() + planeSize * copyInfo.srcOffset.z;
 			auto buffer = dstData.data();
 
@@ -47,7 +47,7 @@ namespace gl_renderer
 
 				for ( auto height = 0u; height < copyInfo.extent.height; ++height )
 				{
-					std::memcpy( buffer, line, dstRowSize );
+					std::memcpy( buffer, line + copyInfo.srcOffset.x * texelSize, dstRowSize );
 					line += srcRowSize;
 					buffer += dstRowSize;
 				}
@@ -98,7 +98,7 @@ namespace gl_renderer
 		case GL_TEXTURE_1D:
 			glLogCall( gl::TexSubImage1D
 				, m_srcTarget
-				, m_copyInfo.srcSubresource.mipLevel
+				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
 				, m_copyInfo.extent.width
 				, m_srcFormat
@@ -109,7 +109,7 @@ namespace gl_renderer
 		case GL_TEXTURE_1D_ARRAY:
 			glLogCall( gl::TexSubImage2D
 				, m_srcTarget
-				, m_copyInfo.srcSubresource.mipLevel
+				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
 				, m_copyInfo.dstSubresource.baseArrayLayer
 				, m_copyInfo.extent.width
@@ -122,7 +122,7 @@ namespace gl_renderer
 		case GL_TEXTURE_2D:
 			glLogCall( gl::TexSubImage2D
 				, m_srcTarget
-				, m_copyInfo.srcSubresource.mipLevel
+				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
 				, m_copyInfo.dstOffset.y
 				, m_copyInfo.extent.width
@@ -133,11 +133,9 @@ namespace gl_renderer
 			break;
 
 		case GL_TEXTURE_2D_ARRAY:
-		case GL_TEXTURE_CUBE:
-		case GL_TEXTURE_CUBE_ARRAY:
 			glLogCall( gl::TexSubImage3D
 				, m_srcTarget
-				, m_copyInfo.srcSubresource.mipLevel
+				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
 				, m_copyInfo.dstOffset.y
 				, m_copyInfo.dstSubresource.baseArrayLayer
@@ -149,10 +147,38 @@ namespace gl_renderer
 				, m_dstData.data() );
 			break;
 
+		case GL_TEXTURE_CUBE:
+			glLogCall( gl::TexSubImage2D
+				, GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + m_copyInfo.dstSubresource.baseArrayLayer
+				, m_copyInfo.dstSubresource.mipLevel
+				, m_copyInfo.dstOffset.x
+				, m_copyInfo.dstOffset.y
+				, m_copyInfo.extent.width
+				, m_copyInfo.extent.height
+				, m_srcFormat
+				, m_srcType
+				, m_dstData.data() );
+			break;
+
+		case GL_TEXTURE_CUBE_ARRAY:
+			glLogCall( gl::TexSubImage3D
+				, GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + ( m_copyInfo.dstSubresource.baseArrayLayer % 6u )
+				, m_copyInfo.dstSubresource.mipLevel
+				, m_copyInfo.dstOffset.x
+				, m_copyInfo.dstOffset.y
+				, m_copyInfo.dstSubresource.baseArrayLayer / 6u
+				, m_copyInfo.extent.width
+				, m_copyInfo.extent.height
+				, m_copyInfo.dstSubresource.layerCount / 6u
+				, m_srcFormat
+				, m_srcType
+				, m_dstData.data() );
+			break;
+
 		case GL_TEXTURE_3D:
 			glLogCall( gl::TexSubImage3D
 				, m_srcTarget
-				, m_copyInfo.srcSubresource.mipLevel
+				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
 				, m_copyInfo.dstOffset.y
 				, m_copyInfo.dstOffset.z

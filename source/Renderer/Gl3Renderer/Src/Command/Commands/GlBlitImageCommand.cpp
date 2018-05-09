@@ -75,6 +75,8 @@ namespace gl_renderer
 		, m_dstFbo{ device.getBlitDstFbo() }
 		, m_filter{ convert( filter ) }
 		, m_mask{ getMask( m_srcTexture.getFormat() ) }
+		, m_srcTarget{ checkFlag( m_srcTexture.getFlags(), renderer::ImageCreateFlag::eCubeCompatible ) ? GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X : GL_TEXTURE_2D }
+		, m_dstTarget{ checkFlag( m_dstTexture.getFlags(), renderer::ImageCreateFlag::eCubeCompatible ) ? GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X : GL_TEXTURE_2D }
 	{
 		assert( srcImage.getLayerCount() == dstImage.getLayerCount() );
 
@@ -104,18 +106,20 @@ namespace gl_renderer
 			glLogCall( gl::FramebufferTexture2D
 				, GL_FRAMEBUFFER
 				, layerCopy.src.point
-				, GL_TEXTURE_2D
+				, m_srcTarget
 				, layerCopy.src.object
 				, layerCopy.region.srcSubresource.mipLevel );
+			checkCompleteness( gl::CheckFramebufferStatus( GL_FRAMEBUFFER ) );
 
 			// Setup dst FBO
 			glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_dstFbo );
 			glLogCall( gl::FramebufferTexture2D
 				, GL_FRAMEBUFFER
 				, layerCopy.dst.point
-				, GL_TEXTURE_2D
+				, m_dstTarget
 				, layerCopy.dst.object
 				, layerCopy.region.dstSubresource.mipLevel );
+			checkCompleteness( gl::CheckFramebufferStatus( GL_FRAMEBUFFER ) );
 
 			// Perform the blit
 			glLogCall( gl::BindFramebuffer, GL_READ_FRAMEBUFFER, m_srcFbo );
