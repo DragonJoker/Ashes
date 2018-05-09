@@ -18,4 +18,15 @@ namespace renderer
 		, maxDepth{ maxZ }
 	{
 	}
+
+	Viewport::Viewport( Offset2D offset
+		, Extent2D size
+		, float minZ
+		, float maxZ )
+		: offset{ std::move( offset ) }
+		, size{ std::move( size ) }
+		, minDepth{ minZ }
+		, maxDepth{ maxZ }
+	{
+	}
 }

@@ -47,6 +47,30 @@ namespace renderer
 			, int32_t y
 			, float minZ = 0.0f
 			, float maxZ = 1.0f );
+		/**
+		*\~french
+		*\brief
+		*	Constructeur.
+		*\param[in] size
+		*	Les dimensions du viewport.
+		*\param[in] offset
+		*	La position du viewport.
+		*\param[in] minZ, maxZ
+		*	Les bornes profondeur du viewport.
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] size
+		*	The viewport dimensions.
+		*\param[in] offset
+		*	The viewport position.
+		*\param[in] minZ, maxZ
+		*	The viewport depth bounds.
+		*/
+		Viewport( Offset2D offset
+			, Extent2D size
+			, float minZ = 0.0f
+			, float maxZ = 1.0f );
 
 		Offset2D offset;
 		Extent2D size;
