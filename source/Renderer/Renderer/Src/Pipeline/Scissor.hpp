@@ -29,6 +29,16 @@ namespace renderer
 			, int32_t y
 			, uint32_t width
 			, uint32_t height );
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] offset
+		*	La position du ciseau.
+		*\param[in] size
+		*	Les dimensions du ciseau.
+		*/
+		Scissor( Offset2D offset
+			, Extent2D size );
 
 		Offset2D offset;
 		Extent2D size;

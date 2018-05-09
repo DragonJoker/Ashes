@@ -14,4 +14,11 @@ namespace renderer
 		, size{ width, height }
 	{
 	}
+
+	Scissor::Scissor( Offset2D offset
+		, Extent2D size )
+		: offset{ std::move( offset ) }
+		, size{ std::move( size ) }
+	{
+	}
 }
