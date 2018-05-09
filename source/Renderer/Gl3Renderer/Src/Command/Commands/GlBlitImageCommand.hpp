@@ -56,5 +56,7 @@ namespace gl_renderer
 		GlFilter m_filter;
 		GlImageAspectFlags m_mask;
 		GLuint m_fbo;
+		GLenum m_srcTarget;
+		GLenum m_dstTarget;
 	};
 }

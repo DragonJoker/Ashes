@@ -16,6 +16,7 @@ namespace gl_renderer
 	GlAttachmentType getAttachmentType( GlInternal format );
 	GlAttachmentType getAttachmentType( renderer::Format format );
 	GlAttachmentType getAttachmentType( TextureView const & texture );
+	void checkCompleteness( GLenum status );
 
 	struct FboAttachment
 	{

@@ -30,65 +30,6 @@ namespace gl_renderer
 			GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE = 0x8D56,
 			GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
 		};
-
-		void doCheck( GLenum status )
-		{
-			switch ( status )
-			{
-			case 0:
-				renderer::Logger::logError( "An error has occured." );
-				assert( false );
-				break;
-
-			case GL_FRAMEBUFFER_STATUS_COMPLETE:
-				break;
-
-			case GL_FRAMEBUFFER_STATUS_UNDEFINED:
-				renderer::Logger::logError( "The specified framebuffer is the default read or draw framebuffer, but the default framebuffer does not exist." );
-				assert( false );
-				break;
-
-			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT:
-				renderer::Logger::logError( "At least one of the framebuffer attachment points are framebuffer incomplete." );
-				assert( false );
-				break;
-
-			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT:
-				renderer::Logger::logError( "The framebuffer does not have at least one image attached to it." );
-				assert( false );
-				break;
-
-			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER:
-				renderer::Logger::logError( "The value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for any color attachment point(s) named by GL_DRAW_BUFFERi." );
-				assert( false );
-				break;
-
-			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER:
-				renderer::Logger::logError( "GL_READ_BUFFER is not GL_NONE and the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for the color attachment point named by GL_READ_BUFFER." );
-				assert( false );
-				break;
-
-			case GL_FRAMEBUFFER_STATUS_UNSUPPORTED:
-				renderer::Logger::logError( "The combination of internal formats of the attached images violates an implementation-dependent set of restrictions." );
-				assert( false );
-				break;
-
-			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE:
-				renderer::Logger::logError( "One of the following:" );
-				renderer::Logger::logError( "  - The value of GL_RENDERBUFFER_SAMPLES is not the same for all attached renderbuffers;" );
-				renderer::Logger::logError( "  - The value of GL_TEXTURE_SAMPLES is the not same for all attached textures;" );
-				renderer::Logger::logError( "  - The attached images are a mix of renderbuffers and textures, the value of GL_RENDERBUFFER_SAMPLES does not match the value of GL_TEXTURE_SAMPLES;" );
-				renderer::Logger::logError( "  - The value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not the same for all attached textures;" );
-				renderer::Logger::logError( "  - The attached images are a mix of renderbuffers and textures, the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not GL_TRUE for all attached textures." );
-				assert( false );
-				break;
-
-			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS:
-				renderer::Logger::logError( "At least one framebuffer attachment is layered, and any populated attachment is not layered, or all populated color attachments are not from textures of the same target." );
-				assert( false );
-				break;
-			}
-		}
 	}
 
 	GlAttachmentPoint getAttachmentPoint( GlInternal format )
@@ -149,6 +90,65 @@ namespace gl_renderer
 	GlAttachmentType getAttachmentType( TextureView const & texture )
 	{
 		return getAttachmentType( getInternal( texture.getFormat() ) );
+	}
+
+	void checkCompleteness( GLenum status )
+	{
+		switch ( status )
+		{
+		case 0:
+			renderer::Logger::logError( "An error has occured." );
+			assert( false );
+			break;
+
+		case GL_FRAMEBUFFER_STATUS_COMPLETE:
+			break;
+
+		case GL_FRAMEBUFFER_STATUS_UNDEFINED:
+			renderer::Logger::logError( "The specified framebuffer is the default read or draw framebuffer, but the default framebuffer does not exist." );
+			assert( false );
+			break;
+
+		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT:
+			renderer::Logger::logError( "At least one of the framebuffer attachment points are framebuffer incomplete." );
+			assert( false );
+			break;
+
+		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT:
+			renderer::Logger::logError( "The framebuffer does not have at least one image attached to it." );
+			assert( false );
+			break;
+
+		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER:
+			renderer::Logger::logError( "The value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for any color attachment point(s) named by GL_DRAW_BUFFERi." );
+			assert( false );
+			break;
+
+		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER:
+			renderer::Logger::logError( "GL_READ_BUFFER is not GL_NONE and the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for the color attachment point named by GL_READ_BUFFER." );
+			assert( false );
+			break;
+
+		case GL_FRAMEBUFFER_STATUS_UNSUPPORTED:
+			renderer::Logger::logError( "The combination of internal formats of the attached images violates an implementation-dependent set of restrictions." );
+			assert( false );
+			break;
+
+		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE:
+			renderer::Logger::logError( "One of the following:" );
+			renderer::Logger::logError( "  - The value of GL_RENDERBUFFER_SAMPLES is not the same for all attached renderbuffers;" );
+			renderer::Logger::logError( "  - The value of GL_TEXTURE_SAMPLES is the not same for all attached textures;" );
+			renderer::Logger::logError( "  - The attached images are a mix of renderbuffers and textures, the value of GL_RENDERBUFFER_SAMPLES does not match the value of GL_TEXTURE_SAMPLES;" );
+			renderer::Logger::logError( "  - The value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not the same for all attached textures;" );
+			renderer::Logger::logError( "  - The attached images are a mix of renderbuffers and textures, the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not GL_TRUE for all attached textures." );
+			assert( false );
+			break;
+
+		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS:
+			renderer::Logger::logError( "At least one framebuffer attachment is layered, and any populated attachment is not layered, or all populated color attachments are not from textures of the same target." );
+			assert( false );
+			break;
+		}
 	}
 
 	FrameBuffer::FrameBuffer( RenderPass const & renderPass
@@ -224,7 +224,7 @@ namespace gl_renderer
 					, target
 					, attachment.object
 					, mipLevel );
-				doCheck( gl::CheckFramebufferStatus( GL_FRAMEBUFFER ) );
+				checkCompleteness( gl::CheckFramebufferStatus( GL_FRAMEBUFFER ) );
 			}
 			else
 			{
@@ -248,7 +248,7 @@ namespace gl_renderer
 			}
 		}
 
-		doCheck( gl::CheckFramebufferStatus( GL_FRAMEBUFFER ) );
+		checkCompleteness( gl::CheckFramebufferStatus( GL_FRAMEBUFFER ) );
 		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, 0 );
 	}
 
