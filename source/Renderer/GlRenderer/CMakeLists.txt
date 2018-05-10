@@ -5,8 +5,8 @@ find_package( OpenGL )
 if ( OpenGL_FOUND )
 	include_directories(
 		${CMAKE_SOURCE_DIR}
-		${CMAKE_BINARY_DIR}/Renderer/Renderer/Src
-		${CMAKE_SOURCE_DIR}/Renderer/Renderer/Src
+		${CMAKE_CURRENT_BINARY_DIR}/../Renderer/Src
+		${CMAKE_CURRENT_SOURCE_DIR}/../Renderer/Src
 		${CMAKE_CURRENT_SOURCE_DIR}/Src
 		${CMAKE_CURRENT_BINARY_DIR}/Src
 	)

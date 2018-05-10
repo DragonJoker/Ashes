@@ -180,14 +180,6 @@ namespace gl_renderer
 				auto image = gltexture.getImage();
 				auto mipLevel = glview.getSubResourceRange().baseMipLevel;
 
-				if ( glview.getSubResourceRange().baseMipLevel )
-				{
-					if ( gltexture.getLayerCount() != 1u )
-					{
-						mipLevel = 0u;
-					}
-				}
-
 				FboAttachment attachment
 				{
 					getAttachmentPoint( glview ),
