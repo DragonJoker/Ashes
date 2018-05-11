@@ -1,29 +1,31 @@
-SPIRVToolsIncludeDir = path.join( VulkanSDKDir, "include" )
+if ( os.istarget( "Windows" ) )
+then
+	SPIRVToolsRootDir = path.join( "..", "..", "dependencies", "glslang" )
+else
+	SPIRVToolsRootDir = VulkanSDKDir
+end
+
+SPIRVToolsIncludeDir = path.join( SPIRVToolsRootDir, "include" )
 SPIRVToolsEnabled = false
 
 if ( os.isdir( SPIRVToolsIncludeDir ) )
 then
+	SPIRVToolsLibDir = path.join( SPIRVToolsRootDir, "lib" )
+	includedirs{
+		SPIRVToolsIncludeDir,
+	}
+	libdirs { SPIRVToolsLibDir }
 	if ( os.istarget( "Windows" ) )
 	then
-		SPIRVToolsLibDirDebug = path.join( VulkanSDKDir, "lib", "%{cfg.architecture:gsub('x86_64', 'x64')}", "Debug" )
-		SPIRVToolsLibDirRelease = path.join( VulkanSDKDir, "lib", "%{cfg.architecture:gsub('x86_64', 'x64')}", "Release" )
-		includedirs{
-			SPIRVToolsIncludeDir,
-		}
 		filter( "configurations:Debug" )
-			libdirs { SPIRVToolsLibDirDebug }
-			links{ "SPIRV-Tools" }
+			links{ "SPIRV-Toolsd" }
+			links{ "SPIRV-Tools-optd" }
 		filter( "configurations:Release" )
-			libdirs { SPIRVToolsLibDirRelease }
 			links{ "SPIRV-Tools" }
-		SPIRVToolsEnabled = true
+			links{ "SPIRV-Tools-opt" }
 	else
-		SPIRVToolsLibDir = path.join( VulkanSDKDir, "lib" )
-		includedirs{
-			SPIRVToolsIncludeDir,
-		}
-		libdirs { SPIRVToolsLibDir }
 		links{ "SPIRV-Tools" }
-		SPIRVToolsEnabled = true
+		links{ "SPIRV-Tools-opt" }
 	end
+	SPIRVToolsEnabled = true
 end

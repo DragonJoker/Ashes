@@ -1,29 +1,28 @@
-GlslangIncludeDir = path.join( VulkanSDKDir, "include" )
+if ( os.istarget( "Windows" ) )
+then
+	GlslangRootDir = path.join( "..", "..", "dependencies", "glslang" )
+else
+	GlslangRootDir = VulkanSDKDir
+end
+
+GlslangIncludeDir = path.join( GlslangRootDir, "include" )
 GlslangEnabled = false
 
 if ( os.isdir( GlslangIncludeDir ) )
 then
+	GlslangLibDir = path.join( GlslangRootDir, "lib" )
+	includedirs{
+		GlslangIncludeDir,
+	}
+	libdirs { GlslangLibDir }
 	if ( os.istarget( "Windows" ) )
 	then
-		GlslangLibDirDebug = path.join( VulkanSDKDir, "lib", "%{cfg.architecture:gsub('x86_64', 'x64')}", "Debug" )
-		GlslangLibDirRelease = path.join( VulkanSDKDir, "lib", "%{cfg.architecture:gsub('x86_64', 'x64')}", "Release" )
-		includedirs{
-			GlslangIncludeDir,
-		}
 		filter( "configurations:Debug" )
-			libdirs { GlslangLibDirDebug }
-			links{ "glslang" }
+			links{ "glslangd" }
 		filter( "configurations:Release" )
-			libdirs { GlslangLibDirRelease }
 			links{ "glslang" }
-		GlslangEnabled = true
 	else
-		GlslangLibDir = path.join( VulkanSDKDir, "lib" )
-		includedirs{
-			GlslangIncludeDir,
-		}
-		libdirs { GlslangLibDir }
 		links{ "glslang" }
-		GlslangEnabled = true
 	end
+	GlslangEnabled = true
 end
