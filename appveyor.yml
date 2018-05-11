@@ -12,6 +12,7 @@ environment:
 
 configuration:
   - Release
+  - Debug
 
 clone_folder:
   C:\projects\RendererLib
@@ -44,7 +45,7 @@ build:
 
 after_build:
   - cmd: cd C:\projects\RendererLib\build
-  - cmake --build . --target install --config Release
+  - cmake --build . --target install --config %CONFIGURATION%
   - cmd: cd ..
   - cmd: 7z a RendererLib-%PLATFORM_NAME%.zip .\package\RendererLib\*
 
