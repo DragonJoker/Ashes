@@ -21,6 +21,9 @@ See LICENSE file in root folder.
 #ifdef max
 #	undef max
 #endif
+#ifdef min
+#	undef min
+#endif
 
 namespace gl_renderer
 {
@@ -234,39 +237,13 @@ namespace gl_renderer
 			m_major = version / 10;
 			m_minor = version % 10;
 
-			if ( version < 42 )
+			if ( version < 32 )
 			{
 				throw std::runtime_error{ "OpenGL >= 4.2 is needed for this renderer." };
 			}
 
-			if ( version >= 33 )
-			{
-				m_shaderVersion = version * 10;
-			}
-			else if ( version >= 32 )
-			{
-				m_shaderVersion = 150;
-			}
-			else if ( version >= 31 )
-			{
-				m_shaderVersion = 140;
-			}
-			else if ( version >= 30 )
-			{
-				m_shaderVersion = 130;
-			}
-			else if ( version >= 21 )
-			{
-				m_shaderVersion = 120;
-			}
-			else if ( version >= 20 )
-			{
-				m_shaderVersion = 110;
-			}
-			else
-			{
-				m_shaderVersion = 100;
-			}
+			version = std::min( version, 32 );
+			m_shaderVersion = 150;
 		}
 
 		auto const * cextensions = ( char const * )glGetString( GL_EXTENSIONS );
@@ -326,7 +303,7 @@ namespace gl_renderer
 		m_properties.limits.maxBoundDescriptorSets = renderer::NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxPerStageDescriptorSamplers );
 		doGetValue( GL_MAX_COMBINED_UNIFORM_BLOCKS, m_properties.limits.maxPerStageDescriptorUniformBuffers );
-		doGetValue( GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS, m_properties.limits.maxPerStageDescriptorStorageBuffers );
+		m_properties.limits.maxPerStageDescriptorStorageBuffers = renderer::NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxPerStageDescriptorSampledImages );
 		doGetValue( GL_MAX_COMBINED_IMAGE_UNIFORMS, m_properties.limits.maxPerStageDescriptorStorageImages );
 		m_properties.limits.maxPerStageDescriptorInputAttachments = renderer::NonAvailable< uint32_t >;
@@ -334,8 +311,8 @@ namespace gl_renderer
 		doGetValue( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxDescriptorSetSamplers );
 		doGetValue( GL_MAX_COMBINED_UNIFORM_BLOCKS, m_properties.limits.maxDescriptorSetUniformBuffers );
 		doGetValue( GL_MAX_COMBINED_UNIFORM_BLOCKS, m_properties.limits.maxDescriptorSetUniformBuffersDynamic );
-		doGetValue( GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS, m_properties.limits.maxDescriptorSetStorageBuffers );
-		doGetValue( GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS, m_properties.limits.maxDescriptorSetStorageBuffersDynamic );
+		m_properties.limits.maxDescriptorSetStorageBuffers = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxDescriptorSetStorageBuffersDynamic = renderer::NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxDescriptorSetSampledImages );
 		doGetValue( GL_MAX_COMBINED_IMAGE_UNIFORMS, m_properties.limits.maxDescriptorSetStorageImages );
 		m_properties.limits.maxDescriptorSetInputAttachments = renderer::NonAvailable< uint32_t >;
@@ -344,14 +321,14 @@ namespace gl_renderer
 		doGetValue( GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET, m_properties.limits.maxVertexInputAttributeOffset );
 		doGetValue( GL_MAX_VERTEX_ATTRIB_STRIDE, m_properties.limits.maxVertexInputBindingStride );
 		doGetValue( GL_MAX_VERTEX_OUTPUT_COMPONENTS, m_properties.limits.maxVertexOutputComponents );
-		doGetValue( GL_MAX_TESS_GEN_LEVEL, m_properties.limits.maxTessellationGenerationLevel );
-		doGetValue( GL_MAX_PATCH_VERTICES, m_properties.limits.maxTessellationPatchSize );
-		doGetValue( GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS, m_properties.limits.maxTessellationControlPerVertexInputComponents );
-		doGetValue( GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS, m_properties.limits.maxTessellationControlPerVertexOutputComponents );
-		doGetValue( GL_MAX_TESS_PATCH_COMPONENTS, m_properties.limits.maxTessellationControlPerPatchOutputComponents );
-		doGetValue( GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS, m_properties.limits.maxTessellationControlTotalOutputComponents );
-		doGetValue( GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS, m_properties.limits.maxTessellationEvaluationInputComponents );
-		doGetValue( GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS, m_properties.limits.maxTessellationEvaluationOutputComponents );
+		m_properties.limits.maxTessellationGenerationLevel = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationPatchSize = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationControlPerVertexInputComponents = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationControlPerVertexOutputComponents = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationControlPerPatchOutputComponents = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationControlTotalOutputComponents = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationEvaluationInputComponents = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationEvaluationOutputComponents = renderer::NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_GEOMETRY_SHADER_INVOCATIONS, m_properties.limits.maxGeometryShaderInvocations );
 		doGetValue( GL_MAX_GEOMETRY_INPUT_COMPONENTS, m_properties.limits.maxGeometryInputComponents );
 		doGetValue( GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, m_properties.limits.maxGeometryOutputComponents );
@@ -361,10 +338,14 @@ namespace gl_renderer
 		doGetValue( GL_MAX_DRAW_BUFFERS, m_properties.limits.maxFragmentOutputAttachments );
 		doGetValue( GL_MAX_DUAL_SOURCE_DRAW_BUFFERS, m_properties.limits.maxFragmentDualSrcAttachments );
 		doGetValue( GL_MAX_COLOR_ATTACHMENTS, m_properties.limits.maxFragmentCombinedOutputResources );
-		doGetValue( GL_MAX_COMPUTE_SHARED_MEMORY_SIZE, m_properties.limits.maxComputeSharedMemorySize );
-		doGetValuesI( GL_MAX_COMPUTE_WORK_GROUP_COUNT, m_properties.limits.maxComputeWorkGroupCount );
-		doGetValue( GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, m_properties.limits.maxComputeWorkGroupInvocations );
-		doGetValuesI( GL_MAX_COMPUTE_WORK_GROUP_SIZE, m_properties.limits.maxComputeWorkGroupSize );
+		m_properties.limits.maxComputeSharedMemorySize = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupCount[0] = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupCount[1] = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupCount[2] = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupInvocations = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupSize[0] = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupSize[1] = renderer::NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupSize[2] = renderer::NonAvailable< uint32_t >;
 		m_properties.limits.subPixelPrecisionBits = renderer::NonAvailable< uint32_t >;
 		m_properties.limits.subTexelPrecisionBits = renderer::NonAvailable< uint32_t >;
 		m_properties.limits.mipmapPrecisionBits = renderer::NonAvailable< uint32_t >;
@@ -423,17 +404,17 @@ namespace gl_renderer
 		m_properties.sparseProperties.residencyStandard2DMultisampleBlockShape = false;
 		m_properties.sparseProperties.residencyStandard3DBlockShape = false;
 
-		m_features.robustBufferAccess = find( "GL_KHR_robustness" );
+		m_features.robustBufferAccess = false;
 		m_features.fullDrawIndexUint32 = false;
 		m_features.imageCubeArray = find( "GL_ARB_texture_cube_map_array" );
 		m_features.independentBlend = findAny( { "GL_ARB_draw_buffers_blend", "GL_EXT_draw_buffers2" } );
 		m_features.geometryShader = find( "GL_ARB_geometry_shader4" );
-		m_features.tessellationShader = find( "GL_ARB_tessellation_shader" );
+		m_features.tessellationShader = false;
 		m_features.sampleRateShading = find( "GL_ARB_sample_shading" );
 		m_features.dualSrcBlend = find( "GL_ARB_blend_func_extended" );
 		m_features.logicOp = true;
 		m_features.multiDrawIndirect = findAll( { "GL_ARB_multi_draw_indirect", "GL_ARB_draw_indirect" } );
-		m_features.drawIndirectFirstInstance = find( "GL_ARB_base_instance" );
+		m_features.drawIndirectFirstInstance = findAll( { "GL_ARB_base_instance", "GL_ARB_draw_instanced" } );
 		m_features.depthClamp = find( "GL_ARB_depth_clamp" );
 		m_features.depthBiasClamp = find( "GL_ARB_polygon_offset_clamp" );
 		m_features.fillModeNonSolid = true;
@@ -456,29 +437,29 @@ namespace gl_renderer
 		m_features.fragmentStoresAndAtomics = m_features.vertexPipelineStoresAndAtomics;
 		m_features.shaderTessellationAndGeometryPointSize = m_features.tessellationShader && m_features.geometryShader;
 		m_features.shaderImageGatherExtended = findAll( { "GL_ARB_texture_gather", "GL_ARB_gpu_shader5" } );
-		m_features.shaderStorageImageExtendedFormats = find( "GL_ARB_shader_image_load_store" );
-		m_features.shaderStorageImageMultisample = find( "GL_ARB_shader_image_load_store" );
-		m_features.shaderStorageImageReadWithoutFormat = find( "GL_EXT_shader_image_load_formatted" );
-		m_features.shaderStorageImageWriteWithoutFormat = find( "GL_ARB_shader_image_load_store" );
-		m_features.shaderUniformBufferArrayDynamicIndexing = find( "GL_ARB_gpu_shader5" );
-		m_features.shaderSampledImageArrayDynamicIndexing = find( "GL_ARB_gpu_shader5" );
-		m_features.shaderStorageBufferArrayDynamicIndexing = find( "GL_ARB_shader_storage_buffer_object" );
-		m_features.shaderStorageImageArrayDynamicIndexing = find( "GL_ARB_shader_image_load_store" );
+		m_features.shaderStorageImageExtendedFormats = false;
+		m_features.shaderStorageImageMultisample = false;
+		m_features.shaderStorageImageReadWithoutFormat = false;
+		m_features.shaderStorageImageWriteWithoutFormat = false;
+		m_features.shaderUniformBufferArrayDynamicIndexing = false;
+		m_features.shaderSampledImageArrayDynamicIndexing = false;
+		m_features.shaderStorageBufferArrayDynamicIndexing = false;
+		m_features.shaderStorageImageArrayDynamicIndexing = false;
 		m_features.shaderClipDistance = true;
 		m_features.shaderCullDistance = find( "GL_ARB_cull_distance" );
 		m_features.shaderFloat64 = find( "GL_ARB_gpu_shader_fp64" );
 		m_features.shaderInt64 = find( "GL_ARB_gpu_shader_int64" );
 		m_features.shaderInt16 = false;
-		m_features.shaderResourceResidency = find( "GL_ARB_sparse_texture2" );
-		m_features.shaderResourceMinLod = find( "GL_ARB_sparse_texture_clamp" );
-		m_features.sparseBinding = findAll( { "GL_ARB_sparse_buffer", "GL_ARB_sparse_texture2" } );
-		m_features.sparseResidencyBuffer = find( "GL_ARB_sparse_buffer" );
-		m_features.sparseResidencyImage2D = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidencyImage3D = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency2Samples = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency4Samples = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency8Samples = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency16Samples = find( "GL_ARB_sparse_texture2" );
+		m_features.shaderResourceResidency = false;
+		m_features.shaderResourceMinLod = false;
+		m_features.sparseBinding = false;
+		m_features.sparseResidencyBuffer = false;
+		m_features.sparseResidencyImage2D = false;
+		m_features.sparseResidencyImage3D = false;
+		m_features.sparseResidency2Samples = false;
+		m_features.sparseResidency4Samples = false;
+		m_features.sparseResidency8Samples = false;
+		m_features.sparseResidency16Samples = false;
 		m_features.sparseResidencyAliased = false;
 		m_features.variableMultisampleRate = true;
 		m_features.inheritedQueries = true;

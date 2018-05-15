@@ -25,6 +25,7 @@ namespace renderer
 		bool hasBaseInstance;
 		bool hasClearTexImage;
 		bool hasComputeShaders;
+		bool hasStorageBuffers;
 	};
 }
 
