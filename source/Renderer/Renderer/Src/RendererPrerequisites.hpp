@@ -96,15 +96,22 @@ See LICENSE file in root folder.
 #include <sstream>
 #include <vector>
 
-#if defined( _MSC_VER )
-#	include <optional>
-#else
-#	include <experimental/optional>
+#if defined( __GNUG__ )
+#	define RENDERER_COMPILER_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#	if RENDERER_COMPILER_VERSION < 40900
+#		error "Unsupported version of GCC"
+#	elif RENDERER_COMPILER_VERSION < 70100
+#		include <experimental/optional>
 namespace std
 {
 	using experimental::optional;
 	using experimental::nullopt;
 }
+#	else
+#		include <optional>
+#	endif
+#else
+#	include <optional>
 #endif
 
 #include "Miscellaneous/Log.hpp"
