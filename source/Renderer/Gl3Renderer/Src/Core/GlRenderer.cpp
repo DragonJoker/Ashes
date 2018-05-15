@@ -314,7 +314,7 @@ namespace gl_renderer
 	}
 
 	Renderer::Renderer( Configuration const & configuration )
-		: renderer::Renderer{ renderer::ClipDirection::eBottomUp, "gl", configuration }
+		: renderer::Renderer{ renderer::ClipDirection::eBottomUp, "gl3", configuration }
 	{
 		RenderWindow dummyWindow;
 		m_gpus.push_back( std::make_unique< PhysicalDevice >( *this ) );
@@ -324,6 +324,7 @@ namespace gl_renderer
 		m_features.hasBaseInstance = false;
 		m_features.hasClearTexImage = false;
 		m_features.hasComputeShaders = false;
+		m_features.hasStorageBuffers = false;
 	}
 
 	renderer::DevicePtr Renderer::createDevice( renderer::ConnectionPtr && connection )const

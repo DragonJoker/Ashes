@@ -287,13 +287,6 @@ namespace vkapp
 
 		for ( auto & facePipeline : m_faces )
 		{
-			++face;
-		}
-
-		face = 0u;
-
-		for ( auto & facePipeline : m_faces )
-		{
 			renderer::FrameBufferAttachmentArray attaches;
 			facePipeline.view = texture.createView( renderer::TextureViewType::e2D, texture.getFormat(), 0u, 1u, face, 1u );
 			attaches.emplace_back( *m_renderPass->getAttachments().begin(), *facePipeline.view );

@@ -268,11 +268,13 @@ namespace common
 				, regex
 				, "" );
 		}
-		else if ( device.getRenderer().getName() == "gl" )
+		else if ( device.getRenderer().getName() == "gl3" )
 		{
 			content = R"(#version 150
 #extension GL_ARB_explicit_attrib_location : enable
 #extension GL_ARB_explicit_uniform_location : enable
+#extension GL_ARB_separate_shader_objects : enable
+#extension GL_ARB_shading_language_420pack : enable
 
 )" + content;
 

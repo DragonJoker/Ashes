@@ -30,6 +30,7 @@ namespace renderer
 		, m_layout{ layout }
 	{
 		if ( bool( createInfo.tessellationState )
+			&& ( createInfo.tessellationState.value().flags || createInfo.tessellationState.value().patchControlPoints )
 			&& !device.getPhysicalDevice().getFeatures().tessellationShader )
 		{
 			throw std::runtime_error( "Tessellation shaders are not supported." );
