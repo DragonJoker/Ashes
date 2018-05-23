@@ -9,6 +9,8 @@
 #		pragma warning( pop )
 #	elif RENDERLIB_ANDROID
 #	else
+#		include <execinfo.h>
+#		include <cxxabi.h>
 #	endif
 #endif
 
