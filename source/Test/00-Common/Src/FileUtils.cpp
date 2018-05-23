@@ -258,6 +258,7 @@ namespace common
 		else if ( device.getRenderer().getName() == "gl" )
 		{
 			content = R"(#version 420
+#extension GL_KHR_vulkan_glsl : enable
 #extension GL_ARB_explicit_attrib_location : enable
 #extension GL_ARB_explicit_uniform_location : enable
 
