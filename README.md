@@ -126,6 +126,21 @@ Tests loading a texture 2D array, compressed in either BC3, ASTC 8x8 or ETC2, de
 
 Takes the push constant test case and uses dynamic buffer descriptor instead of multiple descriptors.
 
+### [Specialisation Constants](source/Test/21-SpecialisationConstants/)
+<img src="./screenshots/21.png" height="72px" align="right">
+
+Tests the specialisation constants in Vulkan (matching them with uniforms in OpenGL renderers).
+
+### [SPIR-V Specialisation Constants](source/Test/22-SPIRVSpecialisationConstants/)
+<img src="./screenshots/22.png" height="72px" align="right">
+
+Tests the specialisation constants in Vulkan and OpenGL renderers (as long as they support SPIRV shaders).
+
+### [Bloom](source/Test/23-Bloom/)
+<img src="./screenshots/23.png" height="72px" align="right">
+
+Bloom implementation using downscale through mipmaps.
+
 
 ## Sample applications
 
