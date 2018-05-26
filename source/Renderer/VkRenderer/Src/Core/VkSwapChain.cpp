@@ -107,7 +107,7 @@ namespace vk_renderer
 		for ( size_t i = 0u; i < result.size(); ++i )
 		{
 			auto attaches = doPrepareAttaches( uint32_t( i ), renderPass.getAttachments() );
-			result[i] = static_cast< RenderPass const & >( renderPass ).createFrameBuffer( m_dimensions
+			result[i] = static_cast< RenderPass const & >( renderPass ).createFrameBuffer( { m_surfaceCapabilities.currentExtent.width, m_surfaceCapabilities.currentExtent.height }
 				, std::move( attaches ) );
 		}
 
