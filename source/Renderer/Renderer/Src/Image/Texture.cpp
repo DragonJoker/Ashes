@@ -136,97 +136,104 @@ namespace renderer
 		auto const width = int32_t( getDimensions().width );
 		auto const height = int32_t( getDimensions().height );
 
-		auto srcView = createView( {
-			renderer::TextureViewType( getType() ),
-			getFormat(),
-			renderer::ComponentMapping{},
-			{
-				renderer::getAspectMask( getFormat() ),
-				0,
-				1u,
-				0u,
-				1u
-			}
-		} );
-		commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
-			, renderer::PipelineStageFlag::eTransfer
-			, srcView->makeTransferSource( renderer::ImageLayout::eUndefined, 0u ) );
-
-		// Copy down mips from n-1 to n
-		for ( uint32_t i = 1; i < getMipmapLevels(); i++ )
+		for ( uint32_t layer = 0u; layer < m_arrayLayers; ++layer )
 		{
-			ImageBlit imageBlit{};
-
-			// Source
-			imageBlit.srcSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
-			imageBlit.srcSubresource.layerCount = 1;
-			imageBlit.srcSubresource.mipLevel = i - 1;
-			imageBlit.srcOffset.x = 0;
-			imageBlit.srcOffset.y = 0;
-			imageBlit.srcOffset.z = 0;
-			imageBlit.srcExtent.width = int32_t( width >> ( i - 1 ) );
-			imageBlit.srcExtent.height = int32_t( height >> ( i - 1 ) );
-			imageBlit.srcExtent.depth = 1;
-
-			// Destination
-			imageBlit.dstSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
-			imageBlit.dstSubresource.layerCount = 1;
-			imageBlit.dstSubresource.mipLevel = i;
-			imageBlit.dstOffset.x = 0;
-			imageBlit.dstOffset.y = 0;
-			imageBlit.dstOffset.z = 0;
-			imageBlit.dstExtent.width = int32_t( width >> i );
-			imageBlit.dstExtent.height = int32_t( height >> i );
-			imageBlit.dstExtent.depth = 1;
-
-			renderer::ImageSubresourceRange mipSubRange
-			{
-				renderer::ImageAspectFlag::eColour,
-				i,
-				1u,
-				0u,
-				1u
-			};
-
-			// Transiton current mip level to transfer dest
-			renderer::ImageMemoryBarrier dstTransitionBarrier
-			{
-				0u,
-				renderer::AccessFlag::eTransferWrite,
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::eTransferDstOptimal,
-				~( 0u ),
-				~( 0u ),
-				*this,
-				mipSubRange
-			};
+			auto srcView = createView(
+				{
+					renderer::TextureViewType( getType() ),
+					getFormat(),
+					renderer::ComponentMapping{},
+					renderer::ImageSubresourceRange
+					{
+						renderer::getAspectMask( getFormat() ),
+						0,
+						1u,
+						layer,
+						1u
+					}
+				} );
 			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
 				, renderer::PipelineStageFlag::eTransfer
-				, dstTransitionBarrier );
+				, srcView->makeTransferSource( renderer::ImageLayout::eUndefined, 0u ) );
 
-			// Blit from previous level
-			commandBuffer.blitImage( *this
-				, renderer::ImageLayout::eTransferSrcOptimal
-				, *this
-				, renderer::ImageLayout::eTransferDstOptimal
-				, { imageBlit }
-				, renderer::Filter::eLinear );
-
-			// Transiton current mip level to transfer source for read in next iteration
-			renderer::ImageMemoryBarrier srcTransitionBarrier
+			// Copy down mips from n-1 to n
+			for ( uint32_t level = 1; level < getMipmapLevels(); level++ )
 			{
-				renderer::AccessFlag::eTransferWrite,
-				renderer::AccessFlag::eTransferRead,
-				renderer::ImageLayout::eTransferDstOptimal,
-				renderer::ImageLayout::eTransferSrcOptimal,
-				~( 0u ),
-				~( 0u ),
-				*this,
-				mipSubRange
-			};
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
-				, renderer::PipelineStageFlag::eTransfer
-				, srcTransitionBarrier );
+				ImageBlit imageBlit{};
+
+				// Source
+				imageBlit.srcSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
+				imageBlit.srcSubresource.baseArrayLayer = layer;
+				imageBlit.srcSubresource.layerCount = 1;
+				imageBlit.srcSubresource.mipLevel = level - 1;
+				imageBlit.srcOffset.x = 0;
+				imageBlit.srcOffset.y = 0;
+				imageBlit.srcOffset.z = 0;
+				imageBlit.srcExtent.width = int32_t( width >> ( level - 1 ) );
+				imageBlit.srcExtent.height = int32_t( height >> ( level - 1 ) );
+				imageBlit.srcExtent.depth = 1;
+
+				// Destination
+				imageBlit.dstSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
+				imageBlit.dstSubresource.baseArrayLayer = layer;
+				imageBlit.dstSubresource.layerCount = 1;
+				imageBlit.dstSubresource.mipLevel = level;
+				imageBlit.dstOffset.x = 0;
+				imageBlit.dstOffset.y = 0;
+				imageBlit.dstOffset.z = 0;
+				imageBlit.dstExtent.width = int32_t( width >> level );
+				imageBlit.dstExtent.height = int32_t( height >> level );
+				imageBlit.dstExtent.depth = 1;
+
+				renderer::ImageSubresourceRange mipSubRange
+				{
+					renderer::ImageAspectFlag::eColour,
+					level,
+					1u,
+					layer,
+					1u
+				};
+
+				// Transiton current mip level to transfer dest
+				renderer::ImageMemoryBarrier dstTransitionBarrier
+				{
+					0u,
+					renderer::AccessFlag::eTransferWrite,
+					renderer::ImageLayout::eUndefined,
+					renderer::ImageLayout::eTransferDstOptimal,
+					~( 0u ),
+					~( 0u ),
+					*this,
+					mipSubRange
+				};
+				commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
+					, renderer::PipelineStageFlag::eTransfer
+					, dstTransitionBarrier );
+
+				// Blit from previous level
+				commandBuffer.blitImage( *this
+					, renderer::ImageLayout::eTransferSrcOptimal
+					, *this
+					, renderer::ImageLayout::eTransferDstOptimal
+					, { imageBlit }
+					, renderer::Filter::eLinear );
+
+				// Transiton current mip level to transfer source for read in next iteration
+				renderer::ImageMemoryBarrier srcTransitionBarrier
+				{
+					renderer::AccessFlag::eTransferWrite,
+					renderer::AccessFlag::eTransferRead,
+					renderer::ImageLayout::eTransferDstOptimal,
+					renderer::ImageLayout::eTransferSrcOptimal,
+					~( 0u ),
+					~( 0u ),
+					*this,
+					mipSubRange
+				};
+				commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
+					, renderer::PipelineStageFlag::eTransfer
+					, srcTransitionBarrier );
+			}
 		}
 	}
 
