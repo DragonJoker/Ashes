@@ -118,6 +118,7 @@
 #include "Miscellaneous/VkMemoryRequirements.hpp"
 #include "Miscellaneous/VkOffset2D.hpp"
 #include "Miscellaneous/VkOffset3D.hpp"
+#include "Miscellaneous/VkPhysicalDeviceFeatures.hpp"
 #include "Miscellaneous/VkPushConstantRange.hpp"
 #include "Pipeline/VkColourBlendState.hpp"
 #include "Pipeline/VkColourBlendStateAttachment.hpp"

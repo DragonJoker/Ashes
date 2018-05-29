@@ -37,6 +37,7 @@ namespace vk_renderer
 		, m_renderer{ renderer }
 		, m_connection{ static_cast< Connection * >( connection.release() ) }
 		, m_gpu{ static_cast< PhysicalDevice const & >( renderer::Device::getPhysicalDevice() ) }
+		, m_enabledFeatures{ convert( m_gpu.getFeatures() ) }
 	{
 		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
 		std::vector< VkDeviceQueueCreateInfo > queueCreateInfos;
@@ -89,7 +90,7 @@ namespace vk_renderer
 			m_gpu.getLayerNames().empty() ? nullptr : m_gpu.getLayerNames().data(),          // ppEnabledLayerNames
 			static_cast< uint32_t >( m_gpu.getExtensionNames().size() ),                     // enabledExtensionCount
 			m_gpu.getExtensionNames().empty() ? nullptr : m_gpu.getExtensionNames().data(),  // ppEnabledExtensionNames
-			nullptr                                                                          // pEnabledFeatures
+			&m_enabledFeatures                                                               // pEnabledFeatures
 		};
 		DEBUG_DUMP( deviceInfo );
 
