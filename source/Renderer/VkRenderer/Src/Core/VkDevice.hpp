@@ -234,6 +234,7 @@ namespace vk_renderer
 		Renderer const & m_renderer;
 		PhysicalDevice const & m_gpu;
 		ConnectionPtr m_connection;
+		VkPhysicalDeviceFeatures m_enabledFeatures;
 		VkDevice m_device{ VK_NULL_HANDLE };
 	};
 }
