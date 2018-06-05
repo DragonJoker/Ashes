@@ -125,6 +125,11 @@ namespace gl_renderer
 			assert( hasDepthStencilAttach() );
 			return m_depthStencilAttach.value();
 		}
+
+		inline bool isSRGB()const
+		{
+			return m_srgb;
+		}
 		/**@}*/
 
 	private:
@@ -134,5 +139,6 @@ namespace gl_renderer
 		std::vector< FboAttachment > m_colourAttaches;
 		std::optional< FboAttachment > m_depthStencilAttach;
 		mutable renderer::UInt32Array m_drawBuffers;
+		bool m_srgb{ false };
 	};
 }
