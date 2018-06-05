@@ -132,6 +132,15 @@ namespace gl_renderer
 				, m_scissor.size.height );
 		}
 
+		if ( m_frameBuffer.isSRGB() )
+		{
+			gl::Enable( GL_FRAMEBUFFER_SRGB );
+		}
+		else
+		{
+			gl::Disable( GL_FRAMEBUFFER_SRGB );
+		}
+
 		if ( m_frameBuffer.getFrameBuffer()
 			&& ( m_subpass.colorAttachments.size() != 1
 				|| ( m_subpass.colorAttachments.size() == 1 && m_frameBuffer.getAllAttaches()[m_subpass.colorAttachments[0].attachment].object != GL_INVALID_INDEX ) ) )

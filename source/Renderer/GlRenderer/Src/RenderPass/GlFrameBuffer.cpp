@@ -31,6 +31,16 @@ namespace gl_renderer
 			GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
 		};
 
+		bool isSRGBFormat( renderer::Format format )
+		{
+			return format == renderer::Format::eR8G8_SRGB
+				|| format == renderer::Format::eR8G8B8_SRGB
+				|| format == renderer::Format::eB8G8R8_SRGB
+				|| format == renderer::Format::eR8G8B8A8_SRGB
+				|| format == renderer::Format::eB8G8R8A8_SRGB
+				|| format == renderer::Format::eA8B8G8R8_SRGB_PACK32;
+		}
+
 		GlAttachmentPoint getAttachmentPoint( renderer::Format format )
 		{
 			if ( renderer::isDepthStencilFormat( format ) )
@@ -198,6 +208,7 @@ namespace gl_renderer
 				else
 				{
 					m_colourAttaches.push_back( attachment );
+					m_srgb |= isSRGBFormat( glview.getFormat() );
 				}
 
 				m_allAttaches.push_back( attachment );

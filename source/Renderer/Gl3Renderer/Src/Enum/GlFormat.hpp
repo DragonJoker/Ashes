@@ -195,7 +195,7 @@ namespace gl_renderer
 	enum GlFormat
 		: GLenum
 	{
-		GL_FORMAT_S = 0x1802,
+		GL_FORMAT_S = 0x1901,
 		GL_FORMAT_D = 0x1902,
 		GL_FORMAT_R = 0x1903,
 		GL_FORMAT_RGB = 0x1907,
