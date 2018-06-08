@@ -84,38 +84,21 @@ if ( OpenGL_FOUND )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
 
 	if ( RENDERER_STATIC_RENDERERS )
-		if ( WIN32 )
-			#We install each .lib in <install_dir>/lib folder
-			install(
-				TARGETS ${PROJECT_NAME}
-				COMPONENT ${PROJECT_NAME}
-				CONFIGURATIONS Release RelWithDebInfo
-				EXPORT ${PROJECT_NAME}
-				ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Release
-			)
-			install(
-				TARGETS ${PROJECT_NAME}
-				COMPONENT ${PROJECT_NAME}
-				CONFIGURATIONS Debug
-				EXPORT ${PROJECT_NAME}
-				ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Debug
-			)
-		else ()
-			#We install each .so in <install_dir>/lib folder
-			install(
-				TARGETS ${PROJECT_NAME}
-				COMPONENT ${PROJECT_NAME}
-				CONFIGURATIONS Release RelWithDebInfo
-				EXPORT ${PROJECT_NAME}
-				LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Release
-			)
-			install(
-				TARGETS ${PROJECT_NAME}
-				COMPONENT ${PROJECT_NAME}
-				CONFIGURATIONS Debug
-				LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Debug
-			)
-		endif()
+		#We install each .lib/.a in <install_dir>/lib folder
+		install(
+			TARGETS ${PROJECT_NAME}
+			COMPONENT ${PROJECT_NAME}
+			CONFIGURATIONS Release RelWithDebInfo
+			EXPORT ${PROJECT_NAME}
+			ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Release
+		)
+		install(
+			TARGETS ${PROJECT_NAME}
+			COMPONENT ${PROJECT_NAME}
+			CONFIGURATIONS Debug
+			EXPORT ${PROJECT_NAME}
+			ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Debug
+		)
 	else ()
 		if ( WIN32 )
 			#We install each .dll in <install_dir>/bin folder
