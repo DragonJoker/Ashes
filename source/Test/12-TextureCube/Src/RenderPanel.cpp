@@ -223,10 +223,10 @@ namespace vkapp
 		auto width = float( size.width );
 		auto height = float( size.height );
 		auto ratio = width / height;
-		m_matrixUbo->getData( 0u ) = m_device->perspective( float( utils::toRadians( 90.0_degrees ) / ratio )
+		m_matrixUbo->getData( 0u ) = utils::Mat4{ m_device->perspective( float( utils::toRadians( 90.0_degrees ) / ratio )
 			, width / height
 			, 0.01f
-			, 100.0f );
+			, 100.0f ) };
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_matrixUbo->getDatas()
 			, *m_matrixUbo
@@ -311,11 +311,11 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_matrixUbo = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( *m_device
+		m_matrixUbo = std::make_unique< renderer::UniformBuffer< utils::Mat4 > >( *m_device
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_objectUbo = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( *m_device
+		m_objectUbo = std::make_unique< renderer::UniformBuffer< utils::Mat4 > >( *m_device
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -664,9 +664,9 @@ namespace vkapp
 
 	void RenderPanel::doUpdate()
 	{
-		static renderer::Mat4 const originalRotate = []()
+		static utils::Mat4 const originalRotate = []()
 		{
-			renderer::Mat4 result;
+			utils::Mat4 result;
 			result = utils::rotate( result
 				, float( utils::DegreeToRadian * 45.0 )
 				, { 0, 0, 1 } );

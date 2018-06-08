@@ -7,19 +7,19 @@ See LICENSE file in root folder
 namespace utils
 {
 	template< typename T >
-	renderer::Mat4T< T > translate( renderer::Mat4T< T > const & m
+	Mat4T< T > translate( Mat4T< T > const & m
 		, Vec3T< T > const & v )
 	{
-		renderer::Mat4T< T > result{ m };
+		Mat4T< T > result{ m };
 		result[3] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3];
 		return result;
 	}
 
 	template< typename T >
-	renderer::Mat4T< T > scale( renderer::Mat4T< T > const & m
+	Mat4T< T > scale( Mat4T< T > const & m
 		, Vec3T< T > const & v )
 	{
-		renderer::Mat4T< T > result{ renderer::noInit };
+		Mat4T< T > result{ noInit };
 		result[0] = m[0] * v[0];
 		result[1] = m[1] * v[1];
 		result[2] = m[2] * v[2];
@@ -28,7 +28,7 @@ namespace utils
 	}
 
 	template< typename T >
-	renderer::Mat4T< T > rotate( renderer::Mat4T< T > const & m
+	Mat4T< T > rotate( Mat4T< T > const & m
 		, T angle
 		, Vec3T< T > const & v )
 	{
@@ -39,7 +39,7 @@ namespace utils
 		Vec3T< T > axis( normalize( v ) );
 		Vec3T< T > temp( axis * ( T( 1 ) - c ) );
 
-		renderer::Mat4T< T > rotate{ renderer::noInit };
+		Mat4T< T > rotate{ noInit };
 		rotate[0][0] = c + temp[0] * axis[0];
 		rotate[0][1] = temp[0] * axis[1] + s * axis[2];
 		rotate[0][2] = temp[0] * axis[2] - s * axis[1];
@@ -52,7 +52,7 @@ namespace utils
 		rotate[2][1] = temp[2] * axis[1] - s * axis[0];
 		rotate[2][2] = c + temp[2] * axis[2];
 
-		renderer::Mat4T< T > result( renderer::noInit );
+		Mat4T< T > result( noInit );
 		result[0] = m[0] * rotate[0][0] + m[1] * rotate[0][1] + m[2] * rotate[0][2];
 		result[1] = m[0] * rotate[1][0] + m[1] * rotate[1][1] + m[2] * rotate[1][2];
 		result[2] = m[0] * rotate[2][0] + m[1] * rotate[2][1] + m[2] * rotate[2][2];
@@ -61,7 +61,7 @@ namespace utils
 	}
 
 	template< typename T >
-	renderer::Mat4T< T > lookAt( Vec3T< T > const & eye
+	Mat4T< T > lookAt( Vec3T< T > const & eye
 		, Vec3T< T > const & center
 		, Vec3T< T > const & up )
 	{
@@ -69,7 +69,7 @@ namespace utils
 		Vec3T< T > const s{ normalize( cross( f, up ) ) };
 		Vec3T< T > const u{ cross( s, f ) };
 		
-		renderer::Mat4T< T > result{ T{ 1 } };
+		Mat4T< T > result{ T{ 1 } };
 		result[0][0] = s.x;
 		result[1][0] = s.y;
 		result[2][0] = s.z;
@@ -86,14 +86,14 @@ namespace utils
 	}
 
 	template< typename T >
-	renderer::Mat4T< T > perspective( RadiansT< T > fovy
+	Mat4T< T > perspective( RadiansT< T > fovy
 		, T aspect
 		, T zNear
 		, T zFar )
 	{
 		T const tanHalfFovy = tan( fovy / static_cast< T >( 2 ) );
 
-		renderer::Mat4T< T > result{ T{ 0 } };
+		Mat4T< T > result{ T{ 0 } };
 		result[0][0] = static_cast< T >( 1 ) / ( aspect * tanHalfFovy );
 		result[1][1] = static_cast< T >( 1 ) / ( tanHalfFovy );
 		result[2][3] = -static_cast< T >( 1 );
@@ -108,7 +108,7 @@ namespace utils
 	}
 
 	template< typename T >
-	renderer::Mat4T< T > infinitePerspective( RadiansT< T > fovy
+	Mat4T< T > infinitePerspective( RadiansT< T > fovy
 		, T aspect
 		, T zNear )
 	{
@@ -118,7 +118,7 @@ namespace utils
 		T const bottom = -range;
 		T const top = range;
 
-		renderer::Mat4T< T > result{ T{ 0 } };
+		Mat4T< T > result{ T{ 0 } };
 		result[0][0] = ( static_cast< T >( 2 ) * zNear ) / ( right - left );
 		result[1][1] = ( static_cast< T >( 2 ) * zNear ) / ( top - bottom );
 		result[2][2] = -static_cast< T >( 1 );
@@ -128,14 +128,14 @@ namespace utils
 	}
 
 	template< typename T >
-	renderer::Mat4T< T > ortho( T left
+	Mat4T< T > ortho( T left
 		, T right
 		, T bottom
 		, T top
 		, T zNear
 		, T zFar )
 	{
-		renderer::Mat4T< T > result{ 1 };
+		Mat4T< T > result{ 1 };
 		result[0][0] = static_cast< T >( 2 ) / ( right - left );
 		result[1][1] = static_cast< T >( 2 ) / ( top - bottom );
 		result[3][0] = -( right + left ) / ( right - left );
@@ -152,11 +152,11 @@ namespace utils
 
 	template< typename T, typename U >
 	Vec3T< T > project( Vec3T< T > const & obj
-		, renderer::Mat4T< T > const & model
-		, renderer::Mat4T< T > const & proj
-		, renderer::Vec4T< U > const & viewport )
+		, Mat4T< T > const & model
+		, Mat4T< T > const & proj
+		, Vec4T< U > const & viewport )
 	{
-		renderer::Vec4T< T > tmp{ obj.x, obj.y, obj.z, static_cast< T >( 1 ) };
+		Vec4T< T > tmp{ obj.x, obj.y, obj.z, static_cast< T >( 1 ) };
 		tmp = model * tmp;
 		tmp = proj * tmp;
 

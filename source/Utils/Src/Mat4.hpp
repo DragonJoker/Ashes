@@ -2,15 +2,13 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder
 */
-#ifndef ___Renderer_Mat4_HPP___
-#define ___Renderer_Mat4_HPP___
 #pragma once
 
 #include "Vec4.hpp"
 
 #include <array>
 
-namespace renderer
+namespace utils
 {
 	/**
 	*\brief
@@ -54,13 +52,20 @@ namespace renderer
 		Mat4T & operator=( Mat4T< T > const & rhs ) = default;
 		/**
 		*\brief
+		*	Constructeur.
+		*\param[in] v
+		*	Les valeurs de la matrice.
+		*/
+		explicit Mat4T( std::array< T, 16u > const & v )noexcept;
+		/**
+		*\brief
 		*	Constructeur, met la valeur donnée sur la diagonale,
 		*	les autres valeurs sont mises à 0.
 		*\param[in] v
 		*	La valeur de la diagonale.
 		*/
 		template< typename U >
-		Mat4T( U const & v )noexcept;
+		explicit Mat4T( U const & v )noexcept;
 		/**
 		*\brief
 		*	Constructeur, depuis 4 colonnes.
@@ -121,7 +126,7 @@ namespace renderer
 		*/
 		inline T const * constPtr()const
 		{
-			return data[0].constPtr();
+			return data.data();
 		}
 		/**
 		*\~english
@@ -137,7 +142,7 @@ namespace renderer
 		*/
 		inline T * ptr()
 		{
-			return data[0].ptr();
+			return data.data();
 		}
 		/**
 		*\name Opérateurs arithmétiques membres.
@@ -162,7 +167,8 @@ namespace renderer
 	private:
 		union
 		{
-			std::array< Vec4T< T >, 4 > data;
+			std::array< T, 16 > data;
+			std::array< Vec4T< T >, 4 > cols;
 			struct
 			{
 				Vec4T< T > col0;
@@ -230,5 +236,3 @@ namespace renderer
 }
 
 #include "Mat4.inl"
-
-#endif

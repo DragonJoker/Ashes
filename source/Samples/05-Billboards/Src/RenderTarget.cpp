@@ -32,10 +32,10 @@ namespace vkapp
 	{
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_sceneUbo->getData( 0u ).mtxProjection = m_device.perspective( float( utils::toRadians( 90.0_degrees ) )
+		m_sceneUbo->getData( 0u ).mtxProjection = utils::Mat4{ m_device.perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
-			, 100.0f );
+			, 100.0f ) };
 	}
 
 	void RenderTarget::doUpdate( std::chrono::microseconds const & duration )

@@ -25,7 +25,7 @@ namespace vkapp
 			m_rotation *= value;
 		}
 
-		inline renderer::Mat4 const & getView()const
+		inline utils::Mat4 const & getView()const
 		{
 			return m_transform;
 		}
@@ -48,6 +48,6 @@ namespace vkapp
 	private:
 		utils::Vec3 m_position;
 		utils::Quaternion m_rotation;
-		renderer::Mat4 m_transform;
+		utils::Mat4 m_transform;
 	};
 }

@@ -83,7 +83,7 @@ namespace vkapp
 		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
 		renderer::DescriptorSetPoolPtr m_descriptorPool;
 		renderer::DescriptorSetPtr m_descriptorSet;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_uniformBuffer;
+		renderer::UniformBufferPtr< utils::Mat4 > m_uniformBuffer;
 		renderer::QueryPoolPtr m_queryPool;
 		/**@}*/
 		/**

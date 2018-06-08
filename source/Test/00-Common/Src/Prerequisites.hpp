@@ -5,9 +5,6 @@
 
 #include <Factory.hpp>
 #include <Quaternion.hpp>
-#include <Vec3.hpp>
-
-#include <Utils/Mat4.hpp>
 
 #pragma warning( disable: 4996 )
 #include <wx/wx.h>

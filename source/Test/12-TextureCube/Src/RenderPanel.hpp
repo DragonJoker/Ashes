@@ -73,7 +73,7 @@ namespace vkapp
 
 	private:
 		wxTimer * m_timer{ nullptr };
-		renderer::Mat4 m_rotate;
+		utils::Mat4 m_rotate;
 		/**
 		*\name
 		*	Global.
@@ -88,8 +88,8 @@ namespace vkapp
 		renderer::TexturePtr m_renderTargetColour;
 		renderer::TextureViewPtr m_renderTargetColourView;
 		renderer::FrameBufferPtr m_frameBuffer;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_matrixUbo;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_objectUbo;
+		renderer::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
+		renderer::UniformBufferPtr< utils::Mat4 > m_objectUbo;
 		renderer::CommandBufferPtr m_updateCommandBuffer;
 		/**@}*/
 		/**

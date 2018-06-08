@@ -20,7 +20,7 @@ namespace utils
 	*	Le résultat de la translation.
 	*/
 	template< typename T >
-	renderer::Mat4T< T > translate( renderer::Mat4T< T > const & m, Vec3T< T > const & v );
+	Mat4T< T > translate( Mat4T< T > const & m, Vec3T< T > const & v );
 	/**
 	*\brief
 	*	Effectue sur \p m une mise à l'échelle de du vecteur \p v donné.
@@ -32,7 +32,7 @@ namespace utils
 	*	Le résultat de la mise à l'échelle.
 	*/
 	template< typename T >
-	renderer::Mat4T< T > scale( renderer::Mat4T< T > const & m, Vec3T< T > const & v );
+	Mat4T< T > scale( Mat4T< T > const & m, Vec3T< T > const & v );
 	/**
 	*\brief
 	*	Effectue sur \p m une rotation de \p angle autour de l'axe \p v donné.
@@ -46,7 +46,7 @@ namespace utils
 	*	Le résultat de la rotation.
 	*/
 	template< typename T >
-	renderer::Mat4T< T > rotate( renderer::Mat4T< T > const & m, T angle, Vec3T< T > const & v );
+	Mat4T< T > rotate( Mat4T< T > const & m, T angle, Vec3T< T > const & v );
 	/**
 	*\brief
 	*	Calcule une matrice de vue de type look at.
@@ -58,7 +58,7 @@ namespace utils
 	*	L'axe vertical de la caméra.
 	*/
 	template< typename T >
-	renderer::Mat4T< T > lookAt( Vec3T< T > const & eye
+	Mat4T< T > lookAt( Vec3T< T > const & eye
 		, Vec3T< T > const & center
 		, Vec3T< T > const & up );
 	/**
@@ -74,7 +74,7 @@ namespace utils
 	*	La position de l'arrière plan (pour le clipping).
 	*/
 	template< typename T >
-	renderer::Mat4T< T > perspective( RadiansT< T > fovy
+	Mat4T< T > perspective( RadiansT< T > fovy
 		, T aspect
 		, T zNear
 		, T zFar );
@@ -90,7 +90,7 @@ namespace utils
 	*	La position du premier plan (pour le clipping).
 	*/
 	template< typename T >
-	renderer::Mat4T< T > infinitePerspective( RadiansT< T > fovy
+	Mat4T< T > infinitePerspective( RadiansT< T > fovy
 		, T aspect
 		, T zNear );
 	/**
@@ -104,7 +104,7 @@ namespace utils
 	*	La position des premier et arrière plans.
 	*/
 	template< typename T >
-	renderer::Mat4T< T > ortho( T left
+	Mat4T< T > ortho( T left
 		, T right
 		, T bottom
 		, T top
@@ -122,9 +122,9 @@ namespace utils
 	*/
 	template< typename T, typename U >
 	Vec3T< T > project( Vec3T< T > const & obj
-		, renderer::Mat4T< T > const & model
-		, renderer::Mat4T< T > const & proj
-		, renderer::Vec4T< U > const & viewport );
+		, Mat4T< T > const & model
+		, Mat4T< T > const & proj
+		, Vec4T< U > const & viewport );
 }
 
 #include "Transform.inl"

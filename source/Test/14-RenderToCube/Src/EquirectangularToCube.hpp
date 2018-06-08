@@ -46,7 +46,7 @@ namespace vkapp
 		renderer::TexturePtr m_texture;
 		renderer::TextureViewPtr m_view;
 		renderer::SamplerPtr m_sampler;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_matrixUbo;
+		renderer::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
 		renderer::VertexBufferPtr< VertexData > m_vertexBuffer;
 		renderer::VertexLayoutPtr m_vertexLayout;
 		renderer::DescriptorSetLayoutPtr m_descriptorLayout;

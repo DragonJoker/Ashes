@@ -79,7 +79,7 @@ namespace vkapp
 		wxTimer * m_timer{ nullptr };
 		bool m_moveCamera{ false };
 		utils::IVec2 m_previousMousePosition;
-		renderer::Mat4 m_projection;
+		utils::Mat4 m_projection;
 		Camera m_camera;
 		/**
 		*\name
@@ -97,7 +97,7 @@ namespace vkapp
 		renderer::TexturePtr m_renderTargetDepth;
 		renderer::TextureViewPtr m_renderTargetDepthView;
 		renderer::FrameBufferPtr m_frameBuffer;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_matrixUbo;
+		renderer::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
 		renderer::CommandBufferPtr m_updateCommandBuffer;
 		/**@}*/
 		/**
@@ -112,7 +112,7 @@ namespace vkapp
 		renderer::VertexBufferPtr< TexturedVertexData > m_offscreenVertexBuffer;
 		renderer::BufferPtr< uint16_t > m_offscreenIndexBuffer;
 		renderer::VertexLayoutPtr m_offscreenVertexLayout;
-		renderer::VertexBufferPtr< renderer::Mat4 > m_offscreenMatrixBuffer;
+		renderer::VertexBufferPtr< utils::Mat4 > m_offscreenMatrixBuffer;
 		renderer::VertexLayoutPtr m_offscreenMatrixLayout;
 		renderer::DescriptorSetLayoutPtr m_offscreenDescriptorLayout;
 		renderer::DescriptorSetPoolPtr m_offscreenDescriptorPool;

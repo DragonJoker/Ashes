@@ -77,7 +77,7 @@ namespace vkapp
 
 	private:
 		wxTimer * m_timer{ nullptr };
-		renderer::Mat4 m_rotate;
+		utils::Mat4 m_rotate;
 		/**
 		*\name
 		*	Global.
@@ -92,8 +92,8 @@ namespace vkapp
 		renderer::TexturePtr m_renderTargetColour;
 		renderer::TextureViewPtr m_renderTargetColourView;
 		renderer::FrameBufferPtr m_frameBuffer;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_matrixUbo;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_objectUbo;
+		renderer::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
+		renderer::UniformBufferPtr< utils::Mat4 > m_objectUbo;
 		renderer::CommandBufferPtr m_updateCommandBuffer;
 		/**@}*/
 		/**
@@ -149,7 +149,7 @@ namespace vkapp
 			utils::Vec2 textureSize;
 			uint32_t coefficientsCount;
 			uint32_t dump;
-			std::array< renderer::Vec4, 15u > coefficients;
+			std::array< utils::Vec4, 15u > coefficients;
 		};
 		renderer::UniformBufferPtr< Configuration > m_blurConfiguration;
 		/**@}*/

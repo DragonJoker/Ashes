@@ -205,56 +205,57 @@ namespace vk_renderer
 			, std::move( handle ) );
 	}
 
-	renderer::Mat4 Renderer::frustum( float left
+	std::array< float, 16 > Renderer::frustum( float left
 		, float right
 		, float bottom
 		, float top
 		, float zNear
 		, float zFar )const
 	{
-		renderer::Mat4 result( float( 0 ) );
-		result[0].x = ( float( 2 ) * zNear ) / ( right - left );
-		result[1].y = ( float( 2 ) * zNear ) / ( top - bottom );
-		result[2].x = ( right + left ) / ( right - left );
-		result[2].y = ( top + bottom ) / ( top - bottom );
-		result[2].w = float( -1 );
-		result[2].z = zFar / ( zNear - zFar );
-		result[3].z = -( zFar * zNear ) / ( zFar - zNear );
+		std::array< float, 16 > result{ 0.0f };
+		result[0] = ( float( 2 ) * zNear ) / ( right - left );
+		result[5] = ( float( 2 ) * zNear ) / ( top - bottom );
+		result[8] = ( right + left ) / ( right - left );
+		result[9] = ( top + bottom ) / ( top - bottom );
+		result[11] = float( -1 );
+		result[10] = zFar / ( zNear - zFar );
+		result[14] = -( zFar * zNear ) / ( zFar - zNear );
 
 		return result;
 	}
 
-	renderer::Mat4 Renderer::perspective( float radiansFovY
+	std::array< float, 16 > Renderer::perspective( float radiansFovY
 		, float aspect
 		, float zNear
 		, float zFar )const
 	{
 		float const tanHalfFovy = tan( radiansFovY / float( 2 ) );
 
-		renderer::Mat4 result( float( 0 ) );
-		result[0].x = float( 1 ) / ( aspect * tanHalfFovy );
-		result[1].y = float( 1 ) / ( tanHalfFovy );
-		result[2].w = -float( 1 );
-		result[2].z = zFar / ( zNear - zFar );
-		result[3].z = -( zFar * zNear ) / ( zFar - zNear );
+		std::array< float, 16 > result{ 0.0f };
+		result[0] = float( 1 ) / ( aspect * tanHalfFovy );
+		result[5] = float( 1 ) / ( tanHalfFovy );
+		result[11] = -float( 1 );
+		result[10] = zFar / ( zNear - zFar );
+		result[14] = -( zFar * zNear ) / ( zFar - zNear );
 
 		return result;
 	}
 
-	renderer::Mat4 Renderer::ortho( float left
+	std::array< float, 16 > Renderer::ortho( float left
 		, float right
 		, float bottom
 		, float top
 		, float zNear
 		, float zFar )const
 	{
-		renderer::Mat4 result{ 1 };
-		result[0].x = float( 2 ) / ( right - left );
-		result[1].y = float( 2 ) / ( top - bottom );
-		result[3].x = -( right + left ) / ( right - left );
-		result[3].y = -( top + bottom ) / ( top - bottom );
-		result[2].z = -float( 1 ) / ( zFar - zNear );
-		result[3].z = -zNear / ( zFar - zNear );
+		std::array< float, 16 > result{ 0.0f };
+		result[0] = float( 2 ) / ( right - left );
+		result[5] = float( 2 ) / ( top - bottom );
+		result[12] = -( right + left ) / ( right - left );
+		result[13] = -( top + bottom ) / ( top - bottom );
+		result[10] = -float( 1 ) / ( zFar - zNear );
+		result[14] = -zNear / ( zFar - zNear );
+		result[15] = 1.0f;
 
 		return result;
 	}

@@ -2,7 +2,7 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder
 */
-namespace renderer
+namespace utils
 {
 	template< typename T >
 	Vec4T< T >::Vec4T( NoInit const & )noexcept

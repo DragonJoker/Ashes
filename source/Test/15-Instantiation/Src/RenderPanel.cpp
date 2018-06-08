@@ -249,10 +249,10 @@ namespace vkapp
 		auto size = m_swapChain->getDimensions();
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_projection = m_device->perspective( float( utils::toRadians( 90.0_degrees ) )
+		m_projection = utils::Mat4{ m_device->perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
-			, 1000.0f );
+			, 1000.0f ) };
 	}
 
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
@@ -307,7 +307,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_matrixUbo = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( *m_device
+		m_matrixUbo = std::make_unique< renderer::UniformBuffer< utils::Mat4 > >( *m_device
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -450,7 +450,7 @@ namespace vkapp
 			, m_offscreenIndexData
 			, *m_offscreenIndexBuffer );
 
-		m_offscreenMatrixLayout = renderer::makeLayout< renderer::Mat4 >( 1u, renderer::VertexInputRate::eInstance );
+		m_offscreenMatrixLayout = renderer::makeLayout< utils::Mat4 >( 1u, renderer::VertexInputRate::eInstance );
 		m_offscreenMatrixLayout->createAttribute( 2u, renderer::Format::eR32G32B32A32_SFLOAT, 0u );
 		m_offscreenMatrixLayout->createAttribute( 3u, renderer::Format::eR32G32B32A32_SFLOAT, 16u );
 		m_offscreenMatrixLayout->createAttribute( 4u, renderer::Format::eR32G32B32A32_SFLOAT, 32u );
@@ -458,7 +458,7 @@ namespace vkapp
 
 		auto init = ObjectCount * -2.0f;
 		utils::Vec3 position{ init, init, init };
-		std::vector< renderer::Mat4 > matrices;
+		std::vector< utils::Mat4 > matrices;
 		matrices.reserve( ObjectCount * ObjectCount * ObjectCount );
 
 		for ( auto i = 0u; i < ObjectCount; ++i )
@@ -486,7 +486,7 @@ namespace vkapp
 			position[0] += 4;
 		}
 
-		m_offscreenMatrixBuffer = renderer::makeVertexBuffer< renderer::Mat4 >( *m_device
+		m_offscreenMatrixBuffer = renderer::makeVertexBuffer< utils::Mat4 >( *m_device
 			, ObjectCount * ObjectCount * ObjectCount
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
