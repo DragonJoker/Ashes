@@ -236,10 +236,10 @@ namespace vkapp
 		auto size = m_swapChain->getDimensions();
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_matrixUbo->getData( 0u ) = m_device->perspective( float( utils::toRadians( 90.0_degrees ) )
+		m_matrixUbo->getData( 0u ) = utils::Mat4{ m_device->perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
-			, 100.0f );
+			, 100.0f ) };
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_matrixUbo->getDatas()
 			, *m_matrixUbo
@@ -298,11 +298,11 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_matrixUbo = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( *m_device
+		m_matrixUbo = std::make_unique< renderer::UniformBuffer< utils::Mat4 > >( *m_device
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_objectUbo = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( *m_device
+		m_objectUbo = std::make_unique< renderer::UniformBuffer< utils::Mat4 > >( *m_device
 			, 2u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
@@ -728,21 +728,21 @@ namespace vkapp
 
 	void RenderPanel::doUpdate()
 	{
-		static renderer::Mat4 const originalTranslate1 = []()
+		static utils::Mat4 const originalTranslate1 = []()
 		{
-			renderer::Mat4 result;
+			utils::Mat4 result;
 			result = utils::translate( result, { 2, 0, -5 } );
 			return result;
 		}();
-		static renderer::Mat4 const originalTranslate2 = []()
+		static utils::Mat4 const originalTranslate2 = []()
 		{
-			renderer::Mat4 result;
+			utils::Mat4 result;
 			result = utils::translate( result, { -2, 0, -5 } );
 			return result;
 		}();
-		static renderer::Mat4 const originalRotate = []()
+		static utils::Mat4 const originalRotate = []()
 		{
-			renderer::Mat4 result;
+			utils::Mat4 result;
 			result = utils::rotate( result
 				, float( utils::DegreeToRadian * 45.0 )
 				, { 0, 0, 1 } );

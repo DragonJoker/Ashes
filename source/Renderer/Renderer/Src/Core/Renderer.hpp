@@ -10,6 +10,8 @@ See LICENSE file in root folder.
 #include "Core/WindowHandle.hpp"
 #include "Miscellaneous/RendererFeatures.hpp"
 
+#include <array>
+
 namespace renderer
 {
 	/**
@@ -122,8 +124,10 @@ namespace renderer
 		*	La position des plans haut et bas.
 		*\param[in] zNear, zFar
 		*	La position des premier et arrière plans.
+		*\return
+		*	La matrice calculée, column major.
 		*/
-		virtual Mat4 frustum( float left
+		virtual std::array< float, 16 > frustum( float left
 			, float right
 			, float bottom
 			, float top
@@ -140,6 +144,8 @@ namespace renderer
 		*	The near plane position.
 		*\param[in] zFar
 		*	The far plane position.
+		*\return
+		*	The computed matrix in column major order.
 		*\~french
 		*\brief
 		*	Calcule une matrice de projection en perspective.
@@ -151,8 +157,10 @@ namespace renderer
 		*	La position du premier plan (pour le clipping).
 		*\param[in] zFar
 		*	La position de l'arrière plan (pour le clipping).
+		*\return
+		*	La matrice calculée, column major.
 		*/
-		virtual Mat4 perspective( float radiansFovY
+		virtual std::array< float, 16 > perspective( float radiansFovY
 			, float aspect
 			, float zNear
 			, float zFar )const = 0;
@@ -166,6 +174,8 @@ namespace renderer
 		*	The top and bottom planes position.
 		*\param[in] zNear, zFar
 		*	The near and far planes position.
+		*\return
+		*	The computed matrix in column major order.
 		*\~french
 		*\brief
 		*	Calcule une matrice de projection orthographique.
@@ -175,8 +185,10 @@ namespace renderer
 		*	La position des plans haut et bas.
 		*\param[in] zNear, zFar
 		*	La position des premier et arrière plans.
+		*\return
+		*	La matrice calculée, column major.
 		*/
-		virtual Mat4 ortho( float left
+		virtual std::array< float, 16 > ortho( float left
 			, float right
 			, float bottom
 			, float top
@@ -191,6 +203,8 @@ namespace renderer
 		*	The width / height ratio.
 		*\param[in] zNear
 		*	The near plane position.
+		*\return
+		*	The computed matrix in column major order.
 		*\~french
 		*\brief
 		*	Calcule une matrice de projection en perspective sans clipping
@@ -201,8 +215,10 @@ namespace renderer
 		*	Le ratio largeur / hauteur.
 		*\param[in] zNear
 		*	La position du premier plan (pour le clipping).
+		*\return
+		*	La matrice calculée, column major.
 		*/
-		Mat4 infinitePerspective( float radiansFovY
+		std::array< float, 16 > infinitePerspective( float radiansFovY
 			, float aspect
 			, float zNear )const;
 		/**

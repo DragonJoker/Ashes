@@ -2,7 +2,7 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder
 */
-namespace renderer
+namespace utils
 {
 	template< typename T >
 	Mat4T< T >::Mat4T( NoInit const & n )noexcept
@@ -16,6 +16,12 @@ namespace renderer
 	template< typename T >
 	Mat4T< T >::Mat4T()noexcept
 		: Mat4T{ T{ 1 } }
+	{
+	}
+
+	template< typename T >
+	Mat4T< T >::Mat4T( std::array< T, 16u > const & v )noexcept
+		: data{ v }
 	{
 	}
 
@@ -66,14 +72,14 @@ namespace renderer
 	Vec4T< T > & Mat4T< T >::operator[]( size_t index )noexcept
 	{
 		assert( index < 4 );
-		return data[index];
+		return cols[index];
 	}
 
 	template< typename T >
 	Vec4T< T > const & Mat4T< T >::operator[]( size_t index )const noexcept
 	{
 		assert( index < 4 );
-		return data[index];
+		return cols[index];
 	}
 
 	template< typename T >

@@ -75,7 +75,7 @@ namespace common
 		ImagePtrArray m_images;
 		Scene m_scene;
 		TextureNodePtrArray m_textureNodes;
-		renderer::Mat4 m_rotate;
+		utils::Mat4 m_rotate;
 		renderer::TexturePtr m_colour;
 		renderer::TextureViewPtr m_colourView;
 		renderer::TexturePtr m_depth;

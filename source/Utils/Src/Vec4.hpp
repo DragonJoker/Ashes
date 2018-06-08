@@ -4,20 +4,10 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include "Vec3.hpp"
 
-namespace renderer
+namespace utils
 {
-	/**
-	*\brief
-	*	Classe servant uniquement à construire des points et matrices sans
-	*	initialiser leurs données.
-	*/
-	struct NoInit
-	{
-	};
-	//! Instance statique de noInit pour éviter d'en construire.
-	static const NoInit noInit;
 	/**
 	*\brief
 	*	Point à 4 composantes.

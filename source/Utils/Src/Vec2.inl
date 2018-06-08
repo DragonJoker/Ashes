@@ -7,7 +7,7 @@ See LICENSE file in root folder
 namespace utils
 {
 	template< typename T >
-	Vec2T< T >::Vec2T( renderer::NoInit const & )noexcept
+	Vec2T< T >::Vec2T( NoInit const & )noexcept
 	{
 	}
 

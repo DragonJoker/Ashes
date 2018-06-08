@@ -20,7 +20,7 @@ namespace utils
 		*\brief
 		*	Constructeur sans initialisation.
 		*/
-		Vec3T( renderer::NoInit const & )noexcept;
+		Vec3T( NoInit const & )noexcept;
 		/**
 		*\brief
 		*	Constructeur par défaut.

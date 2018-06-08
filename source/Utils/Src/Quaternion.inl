@@ -4,12 +4,10 @@ See LICENSE file in root folder
 */
 #include <math.h>
 
-#include <Utils/Mat4.hpp>
-
 namespace utils
 {
 	template< typename T >
-	QuaternionT< T >::QuaternionT( renderer::NoInit const & )noexcept
+	QuaternionT< T >::QuaternionT( NoInit const & )noexcept
 	{
 	}
 
@@ -242,9 +240,9 @@ namespace utils
 	}
 
 	template< typename T >
-	renderer::Mat4T< T > toMat4( QuaternionT< T > const & q )noexcept
+	Mat4T< T > toMat4( QuaternionT< T > const & q )noexcept
 	{
-		renderer::Mat4T< T > result{ T{ 1 } };
+		Mat4T< T > result{ T{ 1 } };
 		T qxx{ q.x * q.x };
 		T qyy{ q.y * q.y };
 		T qzz{ q.z * q.z };

@@ -47,7 +47,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::Renderer::frustum
 		*/
-		renderer::Mat4 frustum( float left
+		std::array< float, 16 > frustum( float left
 			, float right
 			, float bottom
 			, float top
@@ -56,14 +56,14 @@ namespace vk_renderer
 		/**
 		*\copydoc	renderer::Renderer::perspective
 		*/
-		renderer::Mat4 perspective( float radiansFovY
+		std::array< float, 16 > perspective( float radiansFovY
 			, float aspect
 			, float zNear
 			, float zFar )const override;
 		/**
 		*\copydoc	renderer::Renderer::ortho
 		*/
-		renderer::Mat4 ortho( float left
+		std::array< float, 16 > ortho( float left
 			, float right
 			, float bottom
 			, float top

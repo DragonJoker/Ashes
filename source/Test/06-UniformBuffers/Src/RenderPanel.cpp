@@ -166,12 +166,12 @@ namespace vkapp
 			auto size = m_swapChain->getDimensions();
 			float halfWidth = static_cast< float >( size.width ) * 0.5f;
 			float halfHeight = static_cast< float >( size.height ) * 0.5f;
-			m_uniformBuffer->getData( 0u ) = m_device->ortho( -halfWidth
+			m_uniformBuffer->getData( 0u ) = utils::Mat4{ m_device->ortho( -halfWidth
 				, halfWidth
 				, -halfHeight
 				, halfHeight
 				, -1.0f
-				, 1.0f );
+				, 1.0f ) };
 			m_stagingBuffer->uploadUniformData( m_swapChain->getDefaultResources().getCommandBuffer()
 				, m_uniformBuffer->getDatas()
 				, *m_uniformBuffer
@@ -211,19 +211,19 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_uniformBuffer = std::make_unique< renderer::UniformBuffer< renderer::Mat4 > >( *m_device
+		m_uniformBuffer = std::make_unique< renderer::UniformBuffer< utils::Mat4 > >( *m_device
 			, 1u
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 		auto size = m_swapChain->getDimensions();
 		float halfWidth = static_cast< float >( size.width ) * 0.5f;
 		float halfHeight = static_cast< float >( size.height ) * 0.5f;
-		m_uniformBuffer->getData( 0u ) = m_device->ortho( -halfWidth
+		m_uniformBuffer->getData( 0u ) = utils::Mat4{ m_device->ortho( -halfWidth
 			, halfWidth
 			, -halfHeight
 			, halfHeight
 			, -1.0f
-			, 1.0f );
+			, 1.0f ) };
 		m_stagingBuffer->uploadUniformData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_uniformBuffer->getDatas()
 			, *m_uniformBuffer

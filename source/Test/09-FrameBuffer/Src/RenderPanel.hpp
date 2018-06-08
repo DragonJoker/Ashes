@@ -85,7 +85,7 @@ namespace vkapp
 		renderer::TexturePtr m_renderTargetColour;
 		renderer::TextureViewPtr m_renderTargetColourView;
 		renderer::FrameBufferPtr m_frameBuffer;
-		renderer::UniformBufferPtr< renderer::Mat4 > m_matrixUbo;
+		renderer::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
 		/**@}*/
 		/**
 		*\name

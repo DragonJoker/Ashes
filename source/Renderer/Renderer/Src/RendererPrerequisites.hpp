@@ -21,7 +21,6 @@ See LICENSE file in root folder.
 
 #include "RendererConfig.hpp"
 #include "Utils/FlagCombination.hpp"
-#include "Utils/Mat4.hpp"
 #include "Utils/Signal.hpp"
 
 #include "Enum/AccessFlag.hpp"
@@ -129,10 +128,6 @@ namespace renderer
 	class Buffer;
 	template< typename T >
 	class UniformBuffer;
-	template< typename T >
-	class Vec4T;
-	template< typename T >
-	class Mat4T;
 	template< typename T >
 	class PushConstantsBuffer;
 	template< typename T >
@@ -270,9 +265,6 @@ namespace renderer
 	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBuffer< T > >;
 	template< typename T >
 	using SpecialisationInfoPtr = std::unique_ptr< SpecialisationInfo< T > >;
-
-	using Mat4 = Mat4T< float >;
-	using Vec4 = Vec4T< float >;
 
 	using AttributeBasePtr = std::unique_ptr< Attribute >;
 	using BackBufferPtr = std::unique_ptr< BackBuffer >;

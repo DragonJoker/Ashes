@@ -248,7 +248,7 @@ namespace vkapp
 		m_depthView = &views[0].get();
 		m_colourView = &views[1].get();
 
-		m_sceneUbo->getData( 0u ).mtxProjection = renderer::inverse( sceneData.mtxProjection );
+		m_sceneUbo->getData( 0u ).mtxProjection = utils::inverse( sceneData.mtxProjection );
 		stagingBuffer.uploadUniformData( *m_updateCommandBuffer
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo

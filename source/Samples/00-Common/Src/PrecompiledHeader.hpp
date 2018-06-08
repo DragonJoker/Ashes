@@ -46,7 +46,6 @@
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Utils/DynamicLibrary.hpp>
-#include <Utils/Mat4.hpp>
 #include <Utils/Signal.hpp>
 
 #include <algorithm>

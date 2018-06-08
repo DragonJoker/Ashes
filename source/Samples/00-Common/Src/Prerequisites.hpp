@@ -7,11 +7,9 @@
 #include <Miscellaneous/Extent2D.hpp>
 #include <Pipeline/VertexLayout.hpp>
 #include <RenderPass/RenderSubpass.hpp>
-#include <Utils/Mat4.hpp>
 
 #include <Factory.hpp>
-#include <Vec2.hpp>
-#include <Vec3.hpp>
+#include <Mat4.hpp>
 
 #pragma warning( disable: 4996 )
 #include <wx/wx.h>
@@ -38,14 +36,14 @@ namespace common
 
 	struct SceneData
 	{
-		renderer::Mat4 mtxProjection;
-		renderer::Mat4 mtxView;
+		utils::Mat4 mtxProjection;
+		utils::Mat4 mtxView;
 		utils::Vec4 cameraPosition;
 	};
 
 	struct ObjectData
 	{
-		renderer::Mat4 mtxModel;
+		utils::Mat4 mtxModel;
 	};
 
 	struct BillboardInstanceData

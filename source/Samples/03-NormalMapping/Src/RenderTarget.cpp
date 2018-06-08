@@ -38,9 +38,9 @@ namespace vkapp
 
 	void RenderTarget::doUpdate( std::chrono::microseconds const & duration )
 	{
-		static renderer::Mat4 const originalTranslate = []()
+		static utils::Mat4 const originalTranslate = []()
 		{
-			renderer::Mat4 result;
+			utils::Mat4 result;
 			result = utils::translate( result, { 0, 0, -5 } );
 			return result;
 		}();
@@ -103,10 +103,10 @@ namespace vkapp
 	{
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_sceneUbo->getData( 0u ).mtxProjection = m_device.perspective( float( utils::toRadians( 90.0_degrees ) )
+		m_sceneUbo->getData( 0u ).mtxProjection = utils::Mat4{ m_device.perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
-			, 100.0f );
+			, 100.0f ) };
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo

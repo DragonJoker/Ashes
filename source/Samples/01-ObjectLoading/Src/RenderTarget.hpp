@@ -33,6 +33,6 @@ namespace vkapp
 	private:
 		renderer::UniformBufferPtr< common::SceneData > m_sceneUbo;
 		renderer::UniformBufferPtr< common::ObjectData > m_objectUbo;
-		renderer::Mat4 m_rotate;
+		utils::Mat4 m_rotate;
 	};
 }

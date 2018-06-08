@@ -44,7 +44,7 @@ namespace renderer
 		doDisable();
 	}
 
-	Mat4 Device::frustum( float left
+	std::array< float, 16u > Device::frustum( float left
 		, float right
 		, float bottom
 		, float top
@@ -54,7 +54,7 @@ namespace renderer
 		return m_renderer.frustum( left, right, bottom, top, zNear, zFar );
 	}
 
-	Mat4 Device::perspective( float radiansFovY
+	std::array< float, 16u > Device::perspective( float radiansFovY
 		, float aspect
 		, float zNear
 		, float zFar )const
@@ -62,7 +62,7 @@ namespace renderer
 		return m_renderer.perspective( radiansFovY, aspect, zNear, zFar );
 	}
 
-	Mat4 Device::ortho( float left
+	std::array< float, 16u > Device::ortho( float left
 		, float right
 		, float bottom
 		, float top
@@ -72,7 +72,7 @@ namespace renderer
 		return m_renderer.ortho( left, right, bottom, top, zNear, zFar );
 	}
 
-	Mat4 Device::infinitePerspective( float radiansFovY
+	std::array< float, 16u > Device::infinitePerspective( float radiansFovY
 		, float aspect
 		, float zNear )const
 	{

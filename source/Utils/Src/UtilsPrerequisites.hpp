@@ -31,6 +31,8 @@ namespace utils
 	template< typename T >
 	class Vec4T;
 	template< typename T >
+	class Mat4T;
+	template< typename T >
 	class QuaternionT;
 	template< typename Function >
 	class Signal;
@@ -40,13 +42,14 @@ namespace utils
 	/**\{*/
 	using Vec2 = Vec2T< float >;
 	using Vec3 = Vec3T< float >;
-	using Vec4 = renderer::Vec4T< float >;
+	using Vec4 = Vec4T< float >;
+	using Mat4 = Mat4T< float >;
 	using IVec2 = Vec2T< int >;
 	using IVec3 = Vec3T< int >;
-	using IVec4 = renderer::Vec4T< int >;
+	using IVec4 = Vec4T< int >;
 	using UIVec2 = Vec2T< uint32_t >;
 	using UIVec3 = Vec3T< uint32_t >;
-	using UIVec4 = renderer::Vec4T< uint32_t >;
+	using UIVec4 = Vec4T< uint32_t >;
 	using Quaternion = QuaternionT< float >;
 	using RgbaColour = Vec4;
 	using RgbColour = Vec3;

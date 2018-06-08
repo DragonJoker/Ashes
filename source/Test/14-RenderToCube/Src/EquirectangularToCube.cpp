@@ -33,7 +33,7 @@ namespace vkapp
 {
 	using utils::Vec3;
 	using utils::Vec4;
-	using renderer::Mat4;
+	using utils::Mat4;
 
 	namespace
 	{
@@ -129,7 +129,7 @@ namespace vkapp
 			, renderer::CommandBuffer const & commandBuffer
 			, renderer::StagingBuffer & stagingBuffer )
 		{
-			static Mat4 const projection = device.perspective( float( utils::toRadians( 90.0_degrees ) ), 1.0f, 0.1f, 10.0f );
+			static Mat4 const projection = utils::Mat4{ device.perspective( float( utils::toRadians( 90.0_degrees ) ), 1.0f, 0.1f, 10.0f ) };
 			static Mat4 const views[] =
 			{
 				utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +1.0f, +0.0f, +0.0f }, Vec3{ 0.0f, -1.0f, +0.0f } ),
@@ -140,7 +140,7 @@ namespace vkapp
 				utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, +0.0f, -1.0f }, Vec3{ 0.0f, -1.0f, +0.0f } )
 			};
 
-			auto result = renderer::makeUniformBuffer< renderer::Mat4 >( device
+			auto result = renderer::makeUniformBuffer< utils::Mat4 >( device
 				, 6u
 				, renderer::BufferTarget::eTransferDst
 				, renderer::MemoryPropertyFlag::eHostVisible );
