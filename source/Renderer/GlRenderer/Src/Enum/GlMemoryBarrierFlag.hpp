@@ -28,7 +28,7 @@ namespace gl_renderer
 		GL_MEMORY_BARRIER_QUERY_BUFFER = 0x00008000,
 		GL_MEMORY_BARRIER_ALL = 0x0000FFFF
 	};
-	Renderer_ImplementFlag( GlMemoryBarrierFlag );
+	Renderer_ImplementFlag( GlMemoryBarrierFlag )
 	std::string getName( GlMemoryBarrierFlags value );
 	/**
 	*\brief

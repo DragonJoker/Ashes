@@ -41,7 +41,7 @@ namespace renderer
 		//!\~french		La composante est définie à la composante alpha.
 		eA,
 	};
-	Renderer_ImplementFlag( ComponentSwizzle );
+	Renderer_ImplementFlag( ComponentSwizzle )
 	/**
 	*\~english
 	*\brief

@@ -15,7 +15,7 @@ namespace gl_renderer
 		GL_STENCIL_BUFFER_BIT = 0x00000400,
 		GL_COLOR_BUFFER_BIT = 0x00004000,
 	};
-	Renderer_ImplementFlag( GlImageAspectFlag );
+	Renderer_ImplementFlag( GlImageAspectFlag )
 	std::string getName( GlImageAspectFlags value );
 	/**
 	*\brief
