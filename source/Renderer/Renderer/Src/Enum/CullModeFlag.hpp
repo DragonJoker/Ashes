@@ -20,7 +20,7 @@ namespace renderer
 		eBack = 0x00000002,
 		eFrontAndBack = 0x00000003,
 	};
-	Renderer_ImplementFlag( CullModeFlag );
+	Renderer_ImplementFlag( CullModeFlag )
 	/**
 	*\~english
 	*\brief
