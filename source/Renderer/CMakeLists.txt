@@ -27,5 +27,6 @@ if ( RENDERER_BUILD_PLUGINS )
 
 	add_subdirectory( GlRenderer )
 	add_subdirectory( Gl3Renderer )
+	add_subdirectory( TestRenderer )
 	add_subdirectory( VkRenderer )
 endif ()

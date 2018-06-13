@@ -88,6 +88,15 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
+		*	Dumps the properties and features to a std::string.
+		*\~french
+		*\brief
+		*	Dumpe les propriétés et fonctionnalités dans un std::string.
+		*/ 
+		std::string dumpProperties()const;
+		/**
+		*\~english
+		*\brief
 		*	Tells if SPIR-V is supported.
 		*\~french
 		*\brief
