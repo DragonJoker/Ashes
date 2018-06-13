@@ -20,6 +20,8 @@ namespace test_renderer
 		m_features.hasClearTexImage = true;
 		m_features.hasComputeShaders = true;
 		m_features.hasStorageBuffers = true;
+
+		m_gpus.emplace_back( std::make_unique< PhysicalDevice >( *this ) );
 	}
 
 	Renderer::~Renderer()
