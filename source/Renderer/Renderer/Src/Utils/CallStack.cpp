@@ -14,6 +14,7 @@
 #	endif
 #endif
 
+#include <iostream>
 #include <locale>
 
 namespace renderer
@@ -69,52 +70,44 @@ namespace renderer
 		inline void doShowBacktrace( std::ostream & stream, int toCapture, int toSkip )
 		{
 			static std::mutex mutex;
+			std::unique_lock< std::mutex > lock{ mutex };
+			const int MaxFnNameLen( 255 );
 
-			if ( doGetInitialisationStatus() )
+			std::vector< void * > backTrace( toCapture - toSkip );
+			unsigned int num( ::RtlCaptureStackBackTrace( toSkip, toCapture - toSkip, backTrace.data(), nullptr ) );
+
+			stream << "CALL STACK:" << std::endl;
+
+			// symbol->Name type is char [1] so there is space for \0 already
+			auto symbol( ( SYMBOL_INFO * )malloc( sizeof( SYMBOL_INFO ) + ( MaxFnNameLen * sizeof( char ) ) ) );
+
+			if ( symbol )
 			{
-				std::unique_lock< std::mutex > lock{ mutex };
-				const int MaxFnNameLen( 255 );
-
-				std::vector< void * > backTrace( toCapture - toSkip );
-				unsigned int num( ::RtlCaptureStackBackTrace( toSkip, toCapture - toSkip, backTrace.data(), nullptr ) );
-
-				stream << "CALL STACK:" << std::endl;
-
-				// symbol->Name type is char [1] so there is space for \0 already
-				auto symbol( ( SYMBOL_INFO * )malloc( sizeof( SYMBOL_INFO ) + ( MaxFnNameLen * sizeof( char ) ) ) );
-
-				if ( symbol )
+				symbol->MaxNameLen = MaxFnNameLen;
+				symbol->SizeOfStruct = sizeof( SYMBOL_INFO );
+				for ( unsigned int i = 0; i < num; ++i )
 				{
-					symbol->MaxNameLen = MaxFnNameLen;
-					symbol->SizeOfStruct = sizeof( SYMBOL_INFO );
-					for ( unsigned int i = 0; i < num; ++i )
+					if ( ::SymFromAddr( doGetProcess(), reinterpret_cast< DWORD64 >( backTrace[i] ), nullptr, symbol ) )
 					{
-						if ( ::SymFromAddr( doGetProcess(), reinterpret_cast< DWORD64 >( backTrace[i] ), nullptr, symbol ) )
-						{
-							stream << "== " << Demangle( { symbol->Name, symbol->Name + symbol->NameLen } );
-							IMAGEHLP_LINE64 line;
-							DWORD displacement;
-							line.SizeOfStruct = sizeof( IMAGEHLP_LINE64 );
+						stream << "== " << Demangle( { symbol->Name, symbol->Name + symbol->NameLen } );
+						IMAGEHLP_LINE64 line;
+						DWORD displacement;
+						line.SizeOfStruct = sizeof( IMAGEHLP_LINE64 );
 
-							if ( ::SymGetLineFromAddr64( doGetProcess(), symbol->Address, &displacement, &line ) )
-							{
-								stream << "(" << line.FileName << ":" << line.LineNumber << ")";
-							}
-
-							stream << std::endl;
-						}
-						else
+						if ( ::SymGetLineFromAddr64( doGetProcess(), symbol->Address, &displacement, &line ) )
 						{
-							stream << "== Symbol not found." << std::endl;
+							stream << "(" << line.FileName << ":" << line.LineNumber << ")";
 						}
+
+						stream << std::endl;
 					}
-
-					free( symbol );
+					else
+					{
+						stream << "== Symbol not found." << std::endl;
+					}
 				}
-			}
-			else
-			{
-				stream << "== Unable to retrieve the call stack: " << ::GetLastError() << std::endl;
+
+				free( symbol );
 			}
 		}
 
@@ -122,6 +115,11 @@ namespace renderer
 		{
 			::SymSetOptions( SYMOPT_UNDNAME | SYMOPT_LOAD_LINES );
 			doGetInitialisationStatus() = ::SymInitialize( doGetProcess(), nullptr, TRUE ) == TRUE;
+
+			if ( !doGetInitialisationStatus() )
+			{
+				std::cerr << "Could not initialise DbgHelp: 0x" << std::hex << ::GetLastError() << std::endl;
+			}
 		}
 
 		void cleanup()
