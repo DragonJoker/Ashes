@@ -48,5 +48,6 @@ namespace vkapp
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
 		m_device->enable();
+		std::cout << m_device->getPhysicalDevice().dumpProperties() << std::endl;
 	}
 }
