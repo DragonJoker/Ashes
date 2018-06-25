@@ -13,6 +13,7 @@
 #include "Sync/VkImageMemoryBarrier.hpp"
 #include "Sync/VkSemaphore.hpp"
 
+#include <Core/Exception.hpp>
 #include <Core/RenderingResources.hpp>
 #include <RenderPass/FrameBufferAttachment.hpp>
 
@@ -143,7 +144,6 @@ namespace vk_renderer
 				, static_cast< Semaphore const & >( resources.getImageAvailableSemaphore() )
 				, VK_NULL_HANDLE
 				, &backBuffer );
-			checkError( res );
 
 			if ( doCheckNeedReset( res, true, "Swap chain image acquisition" ) )
 			{
@@ -154,7 +154,6 @@ namespace vk_renderer
 			return nullptr;
 		}
 
-		renderer::Logger::logError( "Can't render: " + getLastError() );
 		return nullptr;
 	}
 
@@ -163,7 +162,6 @@ namespace vk_renderer
 		auto res = static_cast< Queue const & >( m_device.getPresentQueue() ).presentBackBuffer( { *this }
 			, { resources.getBackBuffer() }
 			, { static_cast< Semaphore const & >( resources.getRenderingFinishedSemaphore() ) } );
-		checkError( res );
 		doCheckNeedReset( res, false, "Image presentation" );
 		resources.setBackBuffer( ~0u );
 	}
@@ -191,21 +189,13 @@ namespace vk_renderer
 			, m_surface
 			, &formatCount
 			, nullptr );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Surface formats enumeration failed: " + getLastError() };
-		}
+		checkError( res, "Surface formats enumeration" );
 
 		std::vector< VkSurfaceFormatKHR > surfFormats{ formatCount };
 		res = m_device.getRenderer().vkGetPhysicalDeviceSurfaceFormatsKHR( gpu, m_surface
 			, &formatCount
 			, surfFormats.data() );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Surface formats enumeration failed: " + getLastError() };
-		}
+		checkError( res, "Surface formats enumeration" );
 
 		// Si la liste de formats ne contient qu'une entrée VK_FORMAT_UNDEFINED,
 		// la surface n'a pas de format préféré. Sinon, au moins un format supporté
@@ -231,22 +221,14 @@ namespace vk_renderer
 			, m_surface
 			, &presentModeCount
 			, nullptr );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Surface present modes enumeration failed: " + getLastError() };
-		}
+		checkError( res, "Surface present modes enumeration" );
 
 		std::vector< VkPresentModeKHR > presentModes{ presentModeCount };
 		res = m_device.getRenderer().vkGetPhysicalDeviceSurfacePresentModesKHR( static_cast< PhysicalDevice const & >( m_device.getPhysicalDevice() )
 			, m_surface
 			, &presentModeCount
 			, presentModes.data() );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Surface present modes enumeration failed: " + getLastError() };
-		}
+		checkError( res, "Surface present modes enumeration" );
 
 		// Si le mode bo�te aux lettres est disponible, on utilise celui-là, car c'est celui avec le
 		// minimum de latence dans tearing.
@@ -336,11 +318,7 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_swapChain );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Swap chain creation failed: " + getLastError() };
-		}
+		checkError( res, "Swap chain creation" );
 
 		// On supprime la précédente swap chain au cas où il y en avait une.
 		if ( oldSwapChain != VK_NULL_HANDLE )
@@ -359,22 +337,14 @@ namespace vk_renderer
 			, m_swapChain
 			, &imageCount
 			, nullptr );
-
-		if ( !checkError( res ) || ( imageCount == 0 ) )
-		{
-			throw std::runtime_error{ "Swap chain images count retrieval failed: " + getLastError() };
-		}
+		checkError( res, "Swap chain images count retrieval" );
 
 		std::vector< VkImage > swapChainImages( imageCount );
 		res = m_device.vkGetSwapchainImagesKHR( m_device
 			, m_swapChain
 			, &imageCount
 			, &swapChainImages[0] );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Swap chain images retrieval failed: " + getLastError() };
-		}
+		checkError( res, "Swap chain images retrieval" );
 
 		// Et on crée des BackBuffers à partir de ces images.
 		m_backBuffers.reserve( imageCount );
@@ -423,7 +393,7 @@ namespace vk_renderer
 			break;
 
 		default:
-			renderer::Logger::logError( std::string{ action } + " failed: " + getLastError() );
+			checkError( errCode, action );
 			break;
 		}
 

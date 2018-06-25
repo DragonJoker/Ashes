@@ -588,53 +588,44 @@ namespace vkapp
 		auto & commandBuffer = *m_commandBuffer;
 		auto & frameBuffer = *m_frameBuffer;
 
-		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
-		{
-			auto dimensions = m_swapChain->getDimensions();
-			commandBuffer.resetQueryPool( *m_offscreenQueryPool
-				, 0u
-				, 2u );
-			commandBuffer.beginRenderPass( *m_offscreenRenderPass
-				, frameBuffer
-				, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
-				, renderer::SubpassContents::eInline );
-			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
-				, *m_offscreenQueryPool
-				, 0u );
-			commandBuffer.bindPipeline( *m_offscreenPipeline );
-			commandBuffer.setViewport( { dimensions.width
-				, dimensions.height
-				, 0
-				, 0 } );
-			commandBuffer.setScissor( { 0
-				, 0
-				, dimensions.width
-				, dimensions.height } );
-			commandBuffer.bindVertexBuffer( 0u, m_offscreenVertexBuffer->getBuffer(), 0u );
-			commandBuffer.bindIndexBuffer( m_offscreenIndexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
-			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSets[0]
-				, *m_offscreenPipelineLayout );
-			commandBuffer.pushConstants( *m_offscreenPipelineLayout
-				, m_objectPcbs[0] );
-			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
-			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSets[1]
-				, *m_offscreenPipelineLayout );
-			commandBuffer.pushConstants( *m_offscreenPipelineLayout
-				, m_objectPcbs[1] );
-			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
-			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
-				, *m_offscreenQueryPool
-				, 1u );
-			commandBuffer.endRenderPass();
-			auto res = commandBuffer.end();
-
-			if ( !res )
-			{
-				std::stringstream stream;
-				stream << "Command buffers recording failed.";
-				throw std::runtime_error{ stream.str() };
-			}
-		}
+		commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+		auto dimensions = m_swapChain->getDimensions();
+		commandBuffer.resetQueryPool( *m_offscreenQueryPool
+			, 0u
+			, 2u );
+		commandBuffer.beginRenderPass( *m_offscreenRenderPass
+			, frameBuffer
+			, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
+			, renderer::SubpassContents::eInline );
+		commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+			, *m_offscreenQueryPool
+			, 0u );
+		commandBuffer.bindPipeline( *m_offscreenPipeline );
+		commandBuffer.setViewport( { dimensions.width
+			, dimensions.height
+			, 0
+			, 0 } );
+		commandBuffer.setScissor( { 0
+			, 0
+			, dimensions.width
+			, dimensions.height } );
+		commandBuffer.bindVertexBuffer( 0u, m_offscreenVertexBuffer->getBuffer(), 0u );
+		commandBuffer.bindIndexBuffer( m_offscreenIndexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
+		commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSets[0]
+			, *m_offscreenPipelineLayout );
+		commandBuffer.pushConstants( *m_offscreenPipelineLayout
+			, m_objectPcbs[0] );
+		commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
+		commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSets[1]
+			, *m_offscreenPipelineLayout );
+		commandBuffer.pushConstants( *m_offscreenPipelineLayout
+			, m_objectPcbs[1] );
+		commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
+		commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+			, *m_offscreenQueryPool
+			, 1u );
+		commandBuffer.endRenderPass();
+		commandBuffer.end();
 	}
 
 	void RenderPanel::doCreateComputeDescriptorSet()
@@ -691,26 +682,24 @@ namespace vkapp
 		m_computeCommandBuffer = m_device->getComputeCommandPool().createCommandBuffer();
 		auto & commandBuffer = *m_computeCommandBuffer;
 
-		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
-		{
-			commandBuffer.resetQueryPool( *m_computeQueryPool
-				, 0u
-				, 2u );
-			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
-				, *m_computeQueryPool
-				, 0u );
-			commandBuffer.bindPipeline( *m_computePipeline );
-			commandBuffer.bindDescriptorSet( *m_computeDescriptorSet
-				, *m_computePipelineLayout
-				, renderer::PipelineBindPoint::eCompute );
-			commandBuffer.dispatch( size.GetWidth() / 16u
-				, size.GetHeight() / 16u
-				, 1u );
-			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
-				, *m_computeQueryPool
-				, 1u );
-			commandBuffer.end();
-		}
+		commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+		commandBuffer.resetQueryPool( *m_computeQueryPool
+			, 0u
+			, 2u );
+		commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+			, *m_computeQueryPool
+			, 0u );
+		commandBuffer.bindPipeline( *m_computePipeline );
+		commandBuffer.bindDescriptorSet( *m_computeDescriptorSet
+			, *m_computePipelineLayout
+			, renderer::PipelineBindPoint::eCompute );
+		commandBuffer.dispatch( size.GetWidth() / 16u
+			, size.GetHeight() / 16u
+			, 1u );
+		commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+			, *m_computeQueryPool
+			, 1u );
+		commandBuffer.end();
 	}
 
 	void RenderPanel::doCreateMainVertexBuffer()
@@ -775,37 +764,28 @@ namespace vkapp
 
 			wxSize size{ GetClientSize() };
 
-			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
-			{
-				auto dimensions = m_swapChain->getDimensions();
-				commandBuffer.beginRenderPass( *m_mainRenderPass
-					, frameBuffer
-					, { renderer::ClearValue{ { 1.0, 0.0, 0.0, 1.0 } } }
-				, renderer::SubpassContents::eInline );
-				commandBuffer.bindPipeline( *m_mainPipeline );
-				commandBuffer.setViewport( { dimensions.width
-					, dimensions.height
-					, 0
-					, 0 } );
-				commandBuffer.setScissor( { 0
-					, 0
-					, dimensions.width
-					, dimensions.height } );
-				commandBuffer.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
-				commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
-					, *m_mainPipelineLayout );
-				commandBuffer.draw( 4u );
-				commandBuffer.endRenderPass();
+			commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+			auto dimensions = m_swapChain->getDimensions();
+			commandBuffer.beginRenderPass( *m_mainRenderPass
+				, frameBuffer
+				, { renderer::ClearValue{ { 1.0, 0.0, 0.0, 1.0 } } }
+			, renderer::SubpassContents::eInline );
+			commandBuffer.bindPipeline( *m_mainPipeline );
+			commandBuffer.setViewport( { dimensions.width
+				, dimensions.height
+				, 0
+				, 0 } );
+			commandBuffer.setScissor( { 0
+				, 0
+				, dimensions.width
+				, dimensions.height } );
+			commandBuffer.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
+			commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
+				, *m_mainPipelineLayout );
+			commandBuffer.draw( 4u );
+			commandBuffer.endRenderPass();
 
-				auto res = commandBuffer.end();
-
-				if ( !res )
-				{
-					std::stringstream stream;
-					stream << "Command buffers recording failed.";
-					throw std::runtime_error{ stream.str() };
-				}
-			}
+			commandBuffer.end();
 		}
 	}
 
@@ -859,45 +839,39 @@ namespace vkapp
 		{
 			auto before = std::chrono::high_resolution_clock::now();
 			auto & queue = m_device->getGraphicsQueue();
-			auto res = queue.submit( *m_commandBuffer
+			queue.submit( *m_commandBuffer
 				, nullptr );
 
-			if ( res )
-			{
-				m_computeFence->wait( ~( 0u ) );
-				m_computeFence->reset();
-				res = m_device->getComputeQueue().submit( *m_computeCommandBuffer
-					, m_computeFence.get() );
-			}
+			m_computeFence->wait( ~( 0u ) );
+			m_computeFence->reset();
+			m_device->getComputeQueue().submit( *m_computeCommandBuffer
+				, m_computeFence.get() );
 
-			if ( res )
-			{
-				auto res = queue.submit( *m_commandBuffers[resources->getBackBuffer()]
-					, resources->getImageAvailableSemaphore()
-					, renderer::PipelineStageFlag::eColourAttachmentOutput
-					, resources->getRenderingFinishedSemaphore()
-					, &resources->getFence() );
-				m_swapChain->present( *resources );
-				renderer::UInt32Array values1{ 0u, 0u };
-				renderer::UInt32Array values2{ 0u, 0u };
-				m_offscreenQueryPool->getResults( 0u
-					, 2u
-					, 0u
-					, renderer::QueryResultFlag::eWait
-					, values1 );
-				m_computeQueryPool->getResults( 0u
-					, 2u
-					, 0u
-					, renderer::QueryResultFlag::eWait
-					, values1 );
+			queue.submit( *m_commandBuffers[resources->getBackBuffer()]
+				, resources->getImageAvailableSemaphore()
+				, renderer::PipelineStageFlag::eColourAttachmentOutput
+				, resources->getRenderingFinishedSemaphore()
+				, &resources->getFence() );
+			m_swapChain->present( *resources );
+			renderer::UInt32Array values1{ 0u, 0u };
+			renderer::UInt32Array values2{ 0u, 0u };
+			m_offscreenQueryPool->getResults( 0u
+				, 2u
+				, 0u
+				, renderer::QueryResultFlag::eWait
+				, values1 );
+			m_computeQueryPool->getResults( 0u
+				, 2u
+				, 0u
+				, renderer::QueryResultFlag::eWait
+				, values1 );
 
-				// Elapsed time in nanoseconds
-				auto elapsed1 = std::chrono::nanoseconds{ uint64_t( ( values1[1] - values1[0] ) / float( m_device->getTimestampPeriod() ) ) };
-				auto elapsed2 = std::chrono::nanoseconds{ uint64_t( ( values2[1] - values2[0] ) / float( m_device->getTimestampPeriod() ) ) };
-				auto after = std::chrono::high_resolution_clock::now();
-				wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed1 + elapsed2 )
-					, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
-			}
+			// Elapsed time in nanoseconds
+			auto elapsed1 = std::chrono::nanoseconds{ uint64_t( ( values1[1] - values1[0] ) / float( m_device->getTimestampPeriod() ) ) };
+			auto elapsed2 = std::chrono::nanoseconds{ uint64_t( ( values2[1] - values2[0] ) / float( m_device->getTimestampPeriod() ) ) };
+			auto after = std::chrono::high_resolution_clock::now();
+			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed1 + elapsed2 )
+				, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
 		}
 		else
 		{

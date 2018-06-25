@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "Descriptor/DescriptorSetLayout.hpp"
 
 #include "Core/Device.hpp"
+#include "Core/Exception.hpp"
 #include "Core/Renderer.hpp"
 #include "Descriptor/DescriptorSetPool.hpp"
 
@@ -28,7 +29,7 @@ namespace renderer
 		if ( it != m_bindings.end()
 			&& !device.getRenderer().getFeatures().hasImageTexture )
 		{
-			throw std::runtime_error( "Image storage feature is not supported" );
+			throw Exception{ Result::eErrorFeatureNotPresent, "Image storage" };
 		}
 
 		registerObject( m_device, "DescriptorSetLayout", this );

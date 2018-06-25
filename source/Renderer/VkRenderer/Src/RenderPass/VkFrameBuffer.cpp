@@ -62,11 +62,7 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_framebuffer );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Frame buffer creation failed: " + getLastError() };
-		}
+		checkError( res, "FrameBuffer creation" );
 	}
 
 	FrameBuffer::~FrameBuffer()

@@ -27,11 +27,7 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_commandPool );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "CommandPool creation failed: " + getLastError() };
-		}
+		checkError( res, "CommandPool creation" );
 	}
 
 	CommandPool::~CommandPool()

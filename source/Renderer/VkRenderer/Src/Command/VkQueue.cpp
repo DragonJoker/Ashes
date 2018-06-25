@@ -85,7 +85,7 @@ namespace vk_renderer
 		return m_device.vkQueuePresentKHR( m_queue, &presentInfo );
 	}
 
-	bool Queue::submit( renderer::CommandBufferCRefArray const & commandBuffers
+	void Queue::submit( renderer::CommandBufferCRefArray const & commandBuffers
 		, renderer::SemaphoreCRefArray const & semaphoresToWait
 		, renderer::PipelineStageFlagsArray const & semaphoresStage
 		, renderer::SemaphoreCRefArray const & semaphoresToSignal
@@ -123,21 +123,22 @@ namespace vk_renderer
 			, static_cast< uint32_t >( submitInfo.size() )
 			, submitInfo.data()
 			, fence ? static_cast< VkFence const & >( *static_cast< Fence const * >( fence ) ) : VK_NULL_HANDLE );
-		return checkError( res );
+		checkError( res, "Queue submit" );
 	}
 
-	bool Queue::present( renderer::SwapChainCRefArray const & swapChains
+	void Queue::present( renderer::SwapChainCRefArray const & swapChains
 		, renderer::UInt32Array const & imagesIndex
 		, renderer::SemaphoreCRefArray const & semaphoresToWait )const
 	{
-		return checkError( presentBackBuffer( convert( swapChains )
+		checkError( presentBackBuffer( convert( swapChains )
 			, imagesIndex
-			, convert( semaphoresToWait ) ) );
+			, convert( semaphoresToWait ) )
+			, "Queue present" );
 	}
 
-	bool Queue::waitIdle()const
+	void Queue::waitIdle()const
 	{
 		auto res = m_device.vkQueueWaitIdle( m_queue );
-		return checkError( res );
+		checkError( res, "Queue wait idle" );
 	}
 }

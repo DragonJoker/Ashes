@@ -24,11 +24,7 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_fence );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Fence creation failed: " + getLastError() };
-		}
+		checkError( res, "Fence creation" );
 	}
 
 	Fence::~Fence()
@@ -45,7 +41,6 @@ namespace vk_renderer
 			, &m_fence
 			, VK_TRUE
 			, timeout );
-		checkError( res );
 		return res == VK_SUCCESS
 			? renderer::WaitResult::eSuccess
 			: ( res == VK_TIMEOUT
@@ -55,8 +50,9 @@ namespace vk_renderer
 
 	void Fence::reset()const
 	{
-		m_device.vkResetFences( m_device
+		auto res = m_device.vkResetFences( m_device
 			, 1
 			, &m_fence );
+		checkError( res, "Fence reset" );
 	}
 }

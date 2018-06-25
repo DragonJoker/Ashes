@@ -39,11 +39,7 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_pool );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Descriptor pool creation failed: " + getLastError() };
-		}
+		checkError( res, "DescriptorPool creation" );
 	}
 
 	DescriptorPool::~DescriptorPool()

@@ -28,11 +28,7 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_view );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Buffer view creation failed: " + getLastError() };
-		}
+		checkError( res, "BufferView creation" );
 	}
 
 	BufferView::~BufferView()

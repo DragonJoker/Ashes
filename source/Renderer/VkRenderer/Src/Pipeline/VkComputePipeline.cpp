@@ -49,11 +49,7 @@ namespace vk_renderer
 			, &pipeline
 			, nullptr
 			, &m_pipeline );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Pipeline creation failed: " + getLastError() };
-		}
+		checkError( res, "ComputePipeline creation" );
 	}
 
 	ComputePipeline::~ComputePipeline()

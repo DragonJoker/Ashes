@@ -51,11 +51,7 @@ namespace vk_renderer
 		DEBUG_DUMP( renderPassInfo );
 
 		auto res = m_device.vkCreateRenderPass( m_device, &renderPassInfo, nullptr, &m_renderPass );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Render pass creation failed: " + getLastError() };
-		}
+		checkError( res, "RenderPass creation" );
 	}
 
 	RenderPass::~RenderPass()

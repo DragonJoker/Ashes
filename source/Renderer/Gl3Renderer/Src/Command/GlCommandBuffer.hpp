@@ -36,20 +36,20 @@ namespace gl_renderer
 		/**
 		*\copydoc	renderer::CommandBuffer::begin
 		*/
-		bool begin( renderer::CommandBufferUsageFlags flags )const override;
+		void begin( renderer::CommandBufferUsageFlags flags )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer::begin
 		*/
-		bool begin( renderer::CommandBufferUsageFlags flags
+		void begin( renderer::CommandBufferUsageFlags flags
 			, renderer::CommandBufferInheritanceInfo const & inheritanceInfo )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer::end
 		*/
-		bool end()const override;
+		void end()const override;
 		/**
 		*\copydoc	renderer::CommandBuffer::reset
 		*/
-		bool reset( renderer::CommandBufferResetFlags flags )const override;
+		void reset( renderer::CommandBufferResetFlags flags )const override;
 		/**
 		*\copydoc	renderer::CommandBuffer::beginRenderPass
 		*/

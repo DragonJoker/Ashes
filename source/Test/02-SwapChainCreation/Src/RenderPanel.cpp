@@ -139,21 +139,13 @@ namespace vkapp
 			auto & frameBuffer = *m_frameBuffers[i];
 			auto & commandBuffer = *m_commandBuffers[i];
 
-			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
-			{
-				commandBuffer.beginRenderPass( *m_renderPass
-					, frameBuffer
-					, { m_swapChain->getClearColour() }
-					, renderer::SubpassContents::eInline );
-				commandBuffer.endRenderPass();
-
-				result = commandBuffer.end();
-
-				if ( !result )
-				{
-					std::cerr << "Command buffers recording failed" << std::endl;
-				}
-			}
+			commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+			commandBuffer.beginRenderPass( *m_renderPass
+				, frameBuffer
+				, { m_swapChain->getClearColour() }
+				, renderer::SubpassContents::eInline );
+			commandBuffer.endRenderPass();
+			commandBuffer.end();
 		}
 
 		return result;
@@ -167,7 +159,7 @@ namespace vkapp
 		{
 			auto before = std::chrono::high_resolution_clock::now();
 			auto & queue = m_device->getGraphicsQueue();
-			auto res = queue.submit( *m_commandBuffers[resources->getBackBuffer()]
+			queue.submit( *m_commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()

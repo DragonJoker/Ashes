@@ -19,24 +19,21 @@ namespace test_renderer
 	{
 	}
 
-	bool Queue::submit( renderer::CommandBufferCRefArray const & commandBuffers
+	void Queue::submit( renderer::CommandBufferCRefArray const & commandBuffers
 		, renderer::SemaphoreCRefArray const & semaphoresToWait
 		, renderer::PipelineStageFlagsArray const & semaphoresStage
 		, renderer::SemaphoreCRefArray const & semaphoresToSignal
 		, renderer::Fence const * fence )const
 	{
-		return true;
 	}
 
-	bool Queue::present( renderer::SwapChainCRefArray const & swapChains
+	void Queue::present( renderer::SwapChainCRefArray const & swapChains
 		, renderer::UInt32Array const & imagesIndex
 		, renderer::SemaphoreCRefArray const & semaphoresToWait )const
 	{
-		return true;
 	}
 
-	bool Queue::waitIdle()const
+	void Queue::waitIdle()const
 	{
-		return true;
 	}
 }

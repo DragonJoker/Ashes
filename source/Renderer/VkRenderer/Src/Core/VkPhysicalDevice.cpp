@@ -44,22 +44,14 @@ namespace vk_renderer
 			, nullptr
 			, &extensionCount
 			, nullptr );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "GPU's extensions enumeration failed: " + getLastError() };
-		}
+		checkError( res, "GPU's extensions enumeration" );
 
 		std::vector< VkExtensionProperties > extensions( extensionCount );
 		res = m_renderer.vkEnumerateDeviceExtensionProperties( m_gpu
 			, nullptr
 			, &extensionCount
 			, extensions.data() );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "GPU's extensions enumeration failed: " + getLastError() };
-		}
+		checkError( res, "GPU's extensions enumeration" );
 
 		m_renderer.completeLayerNames( m_deviceLayerNames );
 		m_deviceExtensionNames.push_back( VK_KHR_SWAPCHAIN_EXTENSION_NAME );

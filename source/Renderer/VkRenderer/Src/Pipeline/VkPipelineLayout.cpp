@@ -51,11 +51,7 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_layout );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Pipeline layout creation failed: " + getLastError() };
-		}
+		checkError( res, "PipelineLayout creation" );
 	}
 
 	PipelineLayout::~PipelineLayout()

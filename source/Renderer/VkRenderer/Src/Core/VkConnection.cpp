@@ -49,11 +49,7 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Presentation surface creation failed: " + getLastError() };
-		}
+		checkError( res, "Presentation surface creation" );
 	}
 
 #elif RENDERLIB_ANDROID
@@ -72,11 +68,7 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Presentation surface creation failed: " + getLastError() };
-		}
+		checkError( res, "Presentation surface creation" );
 	}
 
 #elif RENDERLIB_XCB
@@ -95,11 +87,7 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Presentation surface creation failed: " + getLastError() };
-		}
+		checkError( res, "Presentation surface creation" );
 	}
 
 #elif RENDERLIB_MIR
@@ -118,11 +106,7 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Presentation surface creation failed: " + getLastError() };
-		}
+		checkError( res, "Presentation surface creation" );
 	}
 
 #elif RENDERLIB_WAYLAND
@@ -141,11 +125,7 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Presentation surface creation failed: " + getLastError() };
-		}
+		checkError( res, "Presentation surface creation" );
 	}
 
 #elif RENDERLIB_XLIB
@@ -164,11 +144,7 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Presentation surface creation failed: " + getLastError() };
-		}
+		checkError( res, "Presentation surface creation" );
 	}
 
 #else
@@ -184,12 +160,7 @@ namespace vk_renderer
 		auto res = m_renderer.vkGetPhysicalDeviceSurfaceCapabilitiesKHR( m_gpu
 			, m_presentSurface
 			, &caps );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Surface capabilities check failed: " + getLastError() };
-		}
-
+		checkError( res, "Surface capabilities check" );
 		return caps;
 	}
 
@@ -263,7 +234,7 @@ namespace vk_renderer
 			|| m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
 			|| m_computeQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
 		{
-			throw std::runtime_error{ "Could not find appropriate queue families" };
+			checkError( VK_ERROR_INITIALIZATION_FAILED, "Queue families retrieval" );
 		}
 	}
 }

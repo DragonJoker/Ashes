@@ -95,11 +95,7 @@ namespace vk_renderer
 		DEBUG_DUMP( deviceInfo );
 
 		auto res = renderer.vkCreateDevice( m_gpu, &deviceInfo, nullptr, &m_device );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "LogicalDevice creation failed: " + getLastError() };
-		}
+		checkError( res, "LogicalDevice creation" );
 
 #define VK_LIB_DEVICE_FUNCTION( fun ) fun = reinterpret_cast< PFN_##fun >( renderer.vkGetDeviceProcAddr( m_device, #fun ) );
 #include "Miscellaneous/VulkanFunctionsList.inl"
@@ -290,7 +286,7 @@ namespace vk_renderer
 
 	void Device::waitIdle()const
 	{
-		vkDeviceWaitIdle( m_device );
+		checkError( vkDeviceWaitIdle( m_device ), "Device wait idle" );
 	}
 
 	renderer::MemoryRequirements Device::getBufferMemoryRequirements( VkBuffer buffer )const

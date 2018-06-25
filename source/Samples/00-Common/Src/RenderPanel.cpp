@@ -172,15 +172,10 @@ namespace common
 	{
 		if ( m_ready )
 		{
-			auto result = m_renderTarget->draw( m_frameTime );
+			m_renderTarget->draw( m_frameTime );
 			++m_frameCount;
 			m_framesTimes[m_frameIndex] = m_frameTime;
 			m_frameIndex = ++m_frameIndex % FrameSamplesCount;
-
-			if ( !result )
-			{
-				throw std::runtime_error{ "Couldn't render offscreen frame." };
-			}
 
 			m_gui->submit( m_device->getGraphicsQueue() );
 
@@ -191,16 +186,11 @@ namespace common
 				throw std::runtime_error{ "Couldn't acquire next frame from swap chain." };
 			}
 
-			result = m_device->getGraphicsQueue().submit( *m_commandBuffers[resources->getBackBuffer()]
+			m_device->getGraphicsQueue().submit( *m_commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
-
-			if ( !result )
-			{
-				throw std::runtime_error{ "Couldn't render main frame." };
-			}
 
 			m_swapChain->present( *resources );
 		}
@@ -378,37 +368,27 @@ namespace common
 
 			wxSize size{ GetClientSize() };
 
-			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
-			{
-				auto dimensions = m_swapChain->getDimensions();
-				commandBuffer.beginRenderPass( *m_renderPass
-					, frameBuffer
-					, { clearValue }
-					, renderer::SubpassContents::eInline );
-				commandBuffer.bindPipeline( *m_pipeline );
-				commandBuffer.setViewport( { dimensions.width
-					, dimensions.height
-					, 0
-					, 0 } );
-				commandBuffer.setScissor( { 0
-					, 0
-					, dimensions.width
-					, dimensions.height } );
-				commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
-				commandBuffer.bindDescriptorSet( *m_descriptorSet
-					, *m_pipelineLayout );
-				commandBuffer.draw( 4u );
-				commandBuffer.endRenderPass();
-
-				auto res = commandBuffer.end();
-
-				if ( !res )
-				{
-					std::stringstream stream;
-					stream << "Command buffers recording failed.";
-					throw std::runtime_error{ stream.str() };
-				}
-			}
+			commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+			auto dimensions = m_swapChain->getDimensions();
+			commandBuffer.beginRenderPass( *m_renderPass
+				, frameBuffer
+				, { clearValue }
+				, renderer::SubpassContents::eInline );
+			commandBuffer.bindPipeline( *m_pipeline );
+			commandBuffer.setViewport( { dimensions.width
+				, dimensions.height
+				, 0
+				, 0 } );
+			commandBuffer.setScissor( { 0
+				, 0
+				, dimensions.width
+				, dimensions.height } );
+			commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
+			commandBuffer.bindDescriptorSet( *m_descriptorSet
+				, *m_pipelineLayout );
+			commandBuffer.draw( 4u );
+			commandBuffer.endRenderPass();
+			commandBuffer.end();
 		}
 	}
 

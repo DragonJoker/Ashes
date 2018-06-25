@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "Buffer/Buffer.hpp"
 
 #include "Core/Device.hpp"
+#include "Core/Exception.hpp"
 #include "Sync/BufferMemoryBarrier.hpp"
 
 namespace renderer
