@@ -415,68 +415,66 @@ namespace common
 		m_pushConstants.getData()->scale = utils::Vec2{ 2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y };
 		m_pushConstants.getData()->translate = utils::Vec2{ -1.0f };
 
-		if ( m_commandBuffer->begin() )
+		m_commandBuffer->begin();
+		m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
+			, renderer::PipelineStageFlag::eFragmentShader
+			, m_fontView->makeShaderInputResource( renderer::ImageLayout::eUndefined
+				, 0u ) );
+		m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
+			, renderer::PipelineStageFlag::eVertexInput
+			, m_vertexBuffer->getBuffer().makeVertexShaderInputResource() );
+		m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
+			, renderer::PipelineStageFlag::eVertexInput
+			, m_indexBuffer->getBuffer().makeVertexShaderInputResource() );
+		m_commandBuffer->beginRenderPass( *m_renderPass
+			, *m_frameBuffer
+			, { renderer::ClearColorValue{ 1.0, 1.0, 1.0, 0.0 } }
+			, renderer::SubpassContents::eInline );
+		m_commandBuffer->bindPipeline( *m_pipeline );
+		m_commandBuffer->bindDescriptorSet( *m_descriptorSet
+			, *m_pipelineLayout );
+		m_commandBuffer->bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
+		m_commandBuffer->bindIndexBuffer( m_indexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
+		m_commandBuffer->setViewport( { uint32_t( ImGui::GetIO().DisplaySize.x )
+			, uint32_t( ImGui::GetIO().DisplaySize.y )
+			, 0
+			, 0 } );
+		m_commandBuffer->setScissor( { 0
+			, 0 
+			, uint32_t( ImGui::GetIO().DisplaySize.x )
+			, uint32_t( ImGui::GetIO().DisplaySize.y ) } );
+		m_commandBuffer->pushConstants( *m_pipelineLayout, m_pushConstants );
+		ImDrawData * imDrawData = ImGui::GetDrawData();
+		int32_t vertexOffset = 0;
+		int32_t indexOffset = 0;
+
+		for ( int32_t j = 0; j < imDrawData->CmdListsCount; j++ )
 		{
-			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
-				, renderer::PipelineStageFlag::eFragmentShader
-				, m_fontView->makeShaderInputResource( renderer::ImageLayout::eUndefined
-					, 0u ) );
-			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
-				, renderer::PipelineStageFlag::eVertexInput
-				, m_vertexBuffer->getBuffer().makeVertexShaderInputResource() );
-			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
-				, renderer::PipelineStageFlag::eVertexInput
-				, m_indexBuffer->getBuffer().makeVertexShaderInputResource() );
-			m_commandBuffer->beginRenderPass( *m_renderPass
-				, *m_frameBuffer
-				, { renderer::ClearColorValue{ 1.0, 1.0, 1.0, 0.0 } }
-				, renderer::SubpassContents::eInline );
-			m_commandBuffer->bindPipeline( *m_pipeline );
-			m_commandBuffer->bindDescriptorSet( *m_descriptorSet
-				, *m_pipelineLayout );
-			m_commandBuffer->bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
-			m_commandBuffer->bindIndexBuffer( m_indexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
-			m_commandBuffer->setViewport( { uint32_t( ImGui::GetIO().DisplaySize.x )
-				, uint32_t( ImGui::GetIO().DisplaySize.y )
-				, 0
-				, 0 } );
-			m_commandBuffer->setScissor( { 0
-				, 0 
-				, uint32_t( ImGui::GetIO().DisplaySize.x )
-				, uint32_t( ImGui::GetIO().DisplaySize.y ) } );
-			m_commandBuffer->pushConstants( *m_pipelineLayout, m_pushConstants );
-			ImDrawData * imDrawData = ImGui::GetDrawData();
-			int32_t vertexOffset = 0;
-			int32_t indexOffset = 0;
+			ImDrawList const * cmdList = imDrawData->CmdLists[j];
 
-			for ( int32_t j = 0; j < imDrawData->CmdListsCount; j++ )
+			for ( int32_t k = 0; k < cmdList->CmdBuffer.Size; k++ )
 			{
-				ImDrawList const * cmdList = imDrawData->CmdLists[j];
-
-				for ( int32_t k = 0; k < cmdList->CmdBuffer.Size; k++ )
-				{
-					ImDrawCmd const * cmd = &cmdList->CmdBuffer[k];
-					m_commandBuffer->setScissor( {
-						std::max( int32_t( cmd->ClipRect.x ), 0 ),
-						std::max( int32_t( cmd->ClipRect.y ), 0 ),
-						uint32_t( cmd->ClipRect.z - cmd->ClipRect.x ),
-						uint32_t( cmd->ClipRect.w - cmd->ClipRect.y ),
-					} );
-					m_commandBuffer->drawIndexed( cmd->ElemCount, 1u, indexOffset, vertexOffset );
-					indexOffset += cmd->ElemCount;
-				}
-
-				vertexOffset += cmdList->VtxBuffer.Size;
+				ImDrawCmd const * cmd = &cmdList->CmdBuffer[k];
+				m_commandBuffer->setScissor( {
+					std::max( int32_t( cmd->ClipRect.x ), 0 ),
+					std::max( int32_t( cmd->ClipRect.y ), 0 ),
+					uint32_t( cmd->ClipRect.z - cmd->ClipRect.x ),
+					uint32_t( cmd->ClipRect.w - cmd->ClipRect.y ),
+				} );
+				m_commandBuffer->drawIndexed( cmd->ElemCount, 1u, indexOffset, vertexOffset );
+				indexOffset += cmd->ElemCount;
 			}
 
-			m_commandBuffer->endRenderPass();
-			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eVertexInput
-				, renderer::PipelineStageFlag::eTransfer
-				, m_vertexBuffer->getBuffer().makeTransferDestination() );
-			m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eVertexInput
-				, renderer::PipelineStageFlag::eTransfer
-				, m_indexBuffer->getBuffer().makeTransferDestination() );
-			m_commandBuffer->end();
+			vertexOffset += cmdList->VtxBuffer.Size;
 		}
+
+		m_commandBuffer->endRenderPass();
+		m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eVertexInput
+			, renderer::PipelineStageFlag::eTransfer
+			, m_vertexBuffer->getBuffer().makeTransferDestination() );
+		m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eVertexInput
+			, renderer::PipelineStageFlag::eTransfer
+			, m_indexBuffer->getBuffer().makeTransferDestination() );
+		m_commandBuffer->end();
 	}
 }

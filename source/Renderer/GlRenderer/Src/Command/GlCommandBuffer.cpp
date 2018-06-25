@@ -77,36 +77,32 @@ namespace gl_renderer
 		}
 	}
 
-	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags )const
+	void CommandBuffer::begin( renderer::CommandBufferUsageFlags flags )const
 	{
 		m_afterSubmitActions.clear();
 		m_commands.clear();
 		m_state = State{};
 		m_state.m_beginFlags = flags;
-		return true;
 	}
 
-	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags
+	void CommandBuffer::begin( renderer::CommandBufferUsageFlags flags
 		, renderer::CommandBufferInheritanceInfo const & inheritanceInfo )const
 	{
 		m_afterSubmitActions.clear();
 		m_commands.clear();
 		m_state = State{};
 		m_state.m_beginFlags = flags;
-		return true;
 	}
 
-	bool CommandBuffer::end()const
+	void CommandBuffer::end()const
 	{
 		m_state.m_pushConstantBuffers.clear();
-		return true;
 	}
 
-	bool CommandBuffer::reset( renderer::CommandBufferResetFlags flags )const
+	void CommandBuffer::reset( renderer::CommandBufferResetFlags flags )const
 	{
 		m_afterSubmitActions.clear();
 		m_commands.clear();
-		return true;
 	}
 
 	void CommandBuffer::beginRenderPass( renderer::RenderPass const & renderPass

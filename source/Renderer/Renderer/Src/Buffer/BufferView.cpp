@@ -2,6 +2,7 @@
 
 #include "Buffer/Buffer.hpp"
 #include "Core/Device.hpp"
+#include "Core/Exception.hpp"
 #include "Core/Renderer.hpp"
 
 namespace renderer
@@ -20,7 +21,7 @@ namespace renderer
 		if ( !device.getRenderer().getFeatures().hasTexBufferRange
 			&& ( offset != 0 || range != buffer.getSize() ) )
 		{
-			throw std::runtime_error( "Buffer range feature is not supported" );
+			throw Exception{ Result::eErrorFeatureNotPresent, "Buffer range" };
 		}
 
 		registerObject( m_device, "BufferView", this );

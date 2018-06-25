@@ -57,7 +57,7 @@ namespace renderer
 		*\return
 		*	\p true on ok.
 		*/ 
-		virtual bool submit( CommandBufferCRefArray const & commandBuffers
+		virtual void submit( CommandBufferCRefArray const & commandBuffers
 			, SemaphoreCRefArray const & semaphoresToWait
 			, PipelineStageFlagsArray const & semaphoresStage
 			, SemaphoreCRefArray const & semaphoresToSignal
@@ -74,7 +74,7 @@ namespace renderer
 		*\return
 		*	\p true on ok.
 		*/ 
-		virtual bool present( SwapChainCRefArray const & swapChains
+		virtual void present( SwapChainCRefArray const & swapChains
 			, UInt32Array const & imagesIndex
 			, SemaphoreCRefArray const & semaphoresToWait )const = 0;
 		/**
@@ -89,7 +89,7 @@ namespace renderer
 		*\return
 		*	\p true on ok.
 		*/
-		virtual bool waitIdle()const = 0;
+		virtual void waitIdle()const = 0;
 		/**
 		*\~french
 		*\return
@@ -119,10 +119,10 @@ namespace renderer
 		*\return
 		*	\p true on ok.
 		*/
-		inline bool submit( CommandBuffer const & commandBuffer
+		inline void submit( CommandBuffer const & commandBuffer
 			, Fence const * fence )const
 		{
-			return submit( { commandBuffer }
+			submit( { commandBuffer }
 				, SemaphoreCRefArray{}
 				, PipelineStageFlagsArray{}
 				, SemaphoreCRefArray{}
@@ -160,13 +160,13 @@ namespace renderer
 		*\return
 		*	\p true on ok.
 		*/
-		inline bool submit( CommandBuffer const & commandBuffer
+		inline void submit( CommandBuffer const & commandBuffer
 			, Semaphore const & semaphoreToWait
 			, PipelineStageFlags const & semaphoreStage
 			, Semaphore const & semaphoreToSignal
 			, Fence const * fence )const
 		{
-			return submit( { commandBuffer }
+			submit( { commandBuffer }
 				, SemaphoreCRefArray{ semaphoreToWait }
 				, PipelineStageFlagsArray{ semaphoreStage }
 				, SemaphoreCRefArray{ semaphoreToSignal }

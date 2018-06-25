@@ -65,31 +65,27 @@ namespace test_renderer
 	{
 	}
 
-	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags )const
+	void CommandBuffer::begin( renderer::CommandBufferUsageFlags flags )const
 	{
 		m_currentPipeline = nullptr;
 		m_currentComputePipeline = nullptr;
-		return true;
 	}
 
-	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags
+	void CommandBuffer::begin( renderer::CommandBufferUsageFlags flags
 		, renderer::CommandBufferInheritanceInfo const & inheritanceInfo )const
 	{
 		m_currentPipeline = nullptr;
 		m_currentComputePipeline = nullptr;
-		return true;
 	}
 
-	bool CommandBuffer::end()const
+	void CommandBuffer::end()const
 	{
 		m_currentPipeline = nullptr;
 		m_currentComputePipeline = nullptr;
-		return true;
 	}
 
-	bool CommandBuffer::reset( renderer::CommandBufferResetFlags flags )const
+	void CommandBuffer::reset( renderer::CommandBufferResetFlags flags )const
 	{
-		return true;
 	}
 
 	void CommandBuffer::beginRenderPass( renderer::RenderPass const & renderPass

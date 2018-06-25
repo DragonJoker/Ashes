@@ -113,7 +113,7 @@ int main( int argc, char * argv[] )
 		if ( resources )
 		{
 			// Submit the command buffer to the graphics queue.
-			auto res = device->getGraphicsQueue().submit( *app.commandBuffers[resources->getBackBuffer()]
+			device->getGraphicsQueue().submit( *app.commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
@@ -245,19 +245,13 @@ void doPrepareFrames( Application & application )
 		auto & frameBuffer = *application.frameBuffers[i];
 		auto & commandBuffer = *application.commandBuffers[i];
 
-		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
-		{
-			commandBuffer.beginRenderPass( *application.renderPass
-				, frameBuffer
-				, { application.swapChain->getClearColour() }
-			, renderer::SubpassContents::eInline );
-			commandBuffer.endRenderPass();
-
-			if ( !commandBuffer.end() )
-			{
-				std::cerr << "Command buffers recording failed" << std::endl;
-			}
-		}
+		commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+		commandBuffer.beginRenderPass( *application.renderPass
+			, frameBuffer
+			, { application.swapChain->getClearColour() }
+		, renderer::SubpassContents::eInline );
+		commandBuffer.endRenderPass();
+		commandBuffer.end();
 	}
 }
 

@@ -121,14 +121,11 @@ namespace renderer
 	void Texture::generateMipmaps()const
 	{
 		auto commandBuffer = m_device.getGraphicsCommandPool().createCommandBuffer();
-
-		if ( commandBuffer->begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
-		{
-			generateMipmaps( *commandBuffer );
-			commandBuffer->end();
-			m_device.getGraphicsQueue().submit( *commandBuffer, nullptr );
-			m_device.waitIdle();
-		}
+		commandBuffer->begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit );
+		generateMipmaps( *commandBuffer );
+		commandBuffer->end();
+		m_device.getGraphicsQueue().submit( *commandBuffer, nullptr );
+		m_device.waitIdle();
 	}
 
 	void Texture::generateMipmaps( CommandBuffer & commandBuffer )const

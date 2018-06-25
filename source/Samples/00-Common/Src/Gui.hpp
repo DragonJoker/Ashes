@@ -4,6 +4,7 @@
 #include "imgui.h"
 
 #include <Buffer/PushConstantsBuffer.hpp>
+#include <Image/Sampler.hpp>
 
 namespace common
 {

@@ -14,7 +14,7 @@ namespace common
 			, common::TextureNodePtrArray const & textureNodes );
 		virtual ~OpaqueRendering() = default;
 		virtual void update( RenderTarget const & target );
-		virtual bool draw( std::chrono::nanoseconds & gpu )const;
+		virtual void draw( std::chrono::nanoseconds & gpu )const;
 
 	protected:
 		NodesRendererPtr m_renderer;

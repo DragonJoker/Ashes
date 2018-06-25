@@ -10,6 +10,7 @@
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
+#include <Image/Sampler.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
 #include <Miscellaneous/QueryPool.hpp>
@@ -21,6 +22,7 @@
 #include <Pipeline/Scissor.hpp>
 #include <Pipeline/VertexLayout.hpp>
 #include <Pipeline/Viewport.hpp>
+#include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
@@ -274,63 +276,56 @@ namespace vkapp
 		static renderer::DepthStencilClearValue const depth{ 1.0, 0 };
 		static renderer::ClearColorValue const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
 
-		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
+		commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+		commandBuffer.resetQueryPool( *m_queryPool, 0u, 2u );
+		commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+			, *m_queryPool
+			, 0u );
+
+		for ( auto & texture : gbuffer )
 		{
-			commandBuffer.resetQueryPool( *m_queryPool, 0u, 2u );
-			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
-				, *m_queryPool
-				, 0u );
-
-			for ( auto & texture : gbuffer )
-			{
-				commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
-					, renderer::PipelineStageFlag::eFragmentShader
-					, texture.view->makeShaderInputResource( renderer::ImageLayout::eColourAttachmentOptimal
-						, renderer::AccessFlag::eColourAttachmentWrite ) );
-			}
-
-			commandBuffer.beginRenderPass( *m_renderPass
-				, *m_frameBuffer
-				, { depth, colour }
-				, renderer::SubpassContents::eInline );
-			commandBuffer.bindPipeline( *m_pipeline );
-			commandBuffer.setViewport( { size.width
-				, size.height
-				, 0
-				, 0 } );
-			commandBuffer.setScissor( { 0
-				, 0
-				, size.width
-				, size.height } );
-			commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
-			commandBuffer.bindDescriptorSet( *m_gbufferDescriptorSet
-				, *m_pipelineLayout );
-			commandBuffer.bindDescriptorSet( *m_uboDescriptorSet
-				, *m_pipelineLayout );
-			commandBuffer.draw( 4u );
-			commandBuffer.endRenderPass();
-			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
-				, *m_queryPool
-				, 1u );
-			commandBuffer.end();
+			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eColourAttachmentOutput
+				, renderer::PipelineStageFlag::eFragmentShader
+				, texture.view->makeShaderInputResource( renderer::ImageLayout::eColourAttachmentOptimal
+					, renderer::AccessFlag::eColourAttachmentWrite ) );
 		}
+
+		commandBuffer.beginRenderPass( *m_renderPass
+			, *m_frameBuffer
+			, { depth, colour }
+			, renderer::SubpassContents::eInline );
+		commandBuffer.bindPipeline( *m_pipeline );
+		commandBuffer.setViewport( { size.width
+			, size.height
+			, 0
+			, 0 } );
+		commandBuffer.setScissor( { 0
+			, 0
+			, size.width
+			, size.height } );
+		commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
+		commandBuffer.bindDescriptorSet( *m_gbufferDescriptorSet
+			, *m_pipelineLayout );
+		commandBuffer.bindDescriptorSet( *m_uboDescriptorSet
+			, *m_pipelineLayout );
+		commandBuffer.draw( 4u );
+		commandBuffer.endRenderPass();
+		commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+			, *m_queryPool
+			, 1u );
+		commandBuffer.end();
 	}
 
-	bool LightingPass::draw( std::chrono::nanoseconds & gpu )const
+	void LightingPass::draw( std::chrono::nanoseconds & gpu )const
 	{
-		bool result = m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
+		m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
 
-		if ( result )
-		{
-			renderer::UInt32Array values{ 0u, 0u };
-			m_queryPool->getResults( 0u
-				, 2u
-				, 0u
-				, renderer::QueryResultFlag::eWait
-				, values );
-			gpu += std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device.getTimestampPeriod() ) ) };
-		}
-
-		return result;
+		renderer::UInt32Array values{ 0u, 0u };
+		m_queryPool->getResults( 0u
+			, 2u
+			, 0u
+			, renderer::QueryResultFlag::eWait
+			, values );
+		gpu += std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device.getTimestampPeriod() ) ) };
 	}
 }

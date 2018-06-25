@@ -17,7 +17,7 @@ namespace common
 		virtual ~RenderTarget();
 		void resize( renderer::Extent2D const & size );
 		void update( std::chrono::microseconds const & duration );
-		bool draw( std::chrono::microseconds & gpu );
+		void draw( std::chrono::microseconds & gpu );
 
 		inline renderer::TextureView const & getColourView()const
 		{

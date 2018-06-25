@@ -18,7 +18,7 @@ namespace gl_renderer
 	{
 	}
 
-	bool Queue::submit( renderer::CommandBufferCRefArray const & commandBuffers
+	void Queue::submit( renderer::CommandBufferCRefArray const & commandBuffers
 		, renderer::SemaphoreCRefArray const & semaphoresToWait
 		, renderer::PipelineStageFlagsArray const & semaphoresStage
 		, renderer::SemaphoreCRefArray const & semaphoresToSignal
@@ -36,26 +36,16 @@ namespace gl_renderer
 
 			glCommandBuffer.applyPostSubmitActions();
 		}
-
-		return true;
-		//return fence
-		//	? fence->wait( ~( 0u ) ) == renderer::WaitResult::eSuccess
-		//	: true;
 	}
 
-	bool Queue::present( renderer::SwapChainCRefArray const & swapChains
+	void Queue::present( renderer::SwapChainCRefArray const & swapChains
 		, renderer::UInt32Array const & imagesIndex
 		, renderer::SemaphoreCRefArray const & semaphoresToWait )const
 	{
-		return true;
-		//return vk::checkError( m_queue.present( convert( swapChains )
-		//	, imagesIndex
-		//	, convert( semaphoresToWait ) ) );
 	}
 
-	bool Queue::waitIdle()const
+	void Queue::waitIdle()const
 	{
 		glLogCall( gl::Finish );
-		return true;
 	}
 }

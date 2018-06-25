@@ -14,6 +14,13 @@ See LICENSE file in root folder.
 #include <string>
 #include <vector>
 
+#define RENDERLIB_NOEXC 0
+
+namespace renderer
+{
+	static uint32_t constexpr RendererLib_NoExcept = RENDERLIB_NOEXC ? true : false;
+}
+
 #define Renderer_EnumBounds( MinValue )\
 	eCount,\
 	eMin = MinValue,\
@@ -73,6 +80,7 @@ See LICENSE file in root folder.
 #include "Enum/QueueFlag.hpp"
 #include "Enum/RasterisationStateFlag.hpp"
 #include "Enum/RenderPassCreateFlag.hpp"
+#include "Enum/Result.hpp"
 #include "Enum/SampleCountFlag.hpp"
 #include "Enum/ShaderStageFlag.hpp"
 #include "Enum/SharingMode.hpp"

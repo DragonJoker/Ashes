@@ -20,7 +20,7 @@ namespace vkapp
 			, renderer::UniformBuffer< common::SceneData > const & sceneUbo
 			, renderer::UniformBuffer< common::LightsData > const & lightsUbo );
 		void update( common::RenderTarget const & target )override;
-		bool draw( std::chrono::nanoseconds & gpu )const override;
+		void draw( std::chrono::nanoseconds & gpu )const override;
 
 	private:
 		renderer::UniformBuffer< common::SceneData > const & m_sceneUbo;

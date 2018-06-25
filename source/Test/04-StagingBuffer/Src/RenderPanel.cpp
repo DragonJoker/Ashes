@@ -243,43 +243,34 @@ namespace vkapp
 			auto & frameBuffer = *m_frameBuffers[i];
 			auto & commandBuffer = *m_commandBuffers[i];
 
-			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
-			{
-				commandBuffer.resetQueryPool( *m_queryPool
-					, 0u
-					, 2u );
-				commandBuffer.beginRenderPass( *m_renderPass
-					, frameBuffer
-					, { m_swapChain->getClearColour() }
-					, renderer::SubpassContents::eInline );
-				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
-					, *m_queryPool
-					, 0u );
-				commandBuffer.bindPipeline( *m_pipeline );
-				commandBuffer.setViewport( { dimensions.width
-					, dimensions.height
-					, 0
-					, 0 } );
-				commandBuffer.setScissor( { 0
-					, 0
-					, dimensions.width
-					, dimensions.height } );
-				commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
-				commandBuffer.draw( 4u );
-				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
-					, *m_queryPool
-					, 1u );
-				commandBuffer.endRenderPass();
+			commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+			commandBuffer.resetQueryPool( *m_queryPool
+				, 0u
+				, 2u );
+			commandBuffer.beginRenderPass( *m_renderPass
+				, frameBuffer
+				, { m_swapChain->getClearColour() }
+				, renderer::SubpassContents::eInline );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+				, *m_queryPool
+				, 0u );
+			commandBuffer.bindPipeline( *m_pipeline );
+			commandBuffer.setViewport( { dimensions.width
+				, dimensions.height
+				, 0
+				, 0 } );
+			commandBuffer.setScissor( { 0
+				, 0
+				, dimensions.width
+				, dimensions.height } );
+			commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
+			commandBuffer.draw( 4u );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+				, *m_queryPool
+				, 1u );
+			commandBuffer.endRenderPass();
 
-				auto res = commandBuffer.end();
-
-				if ( !res )
-				{
-					std::stringstream stream;
-					stream << "Command buffers recording failed.";
-					throw std::runtime_error{ stream.str() };
-				}
-			}
+			commandBuffer.end();
 		}
 	}
 
@@ -291,7 +282,7 @@ namespace vkapp
 		{
 			auto before = std::chrono::high_resolution_clock::now();
 			auto & queue = m_device->getGraphicsQueue();
-			auto res = queue.submit( *m_commandBuffers[resources->getBackBuffer()]
+			queue.submit( *m_commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
 				, renderer::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()

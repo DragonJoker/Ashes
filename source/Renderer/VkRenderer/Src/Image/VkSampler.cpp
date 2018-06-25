@@ -32,11 +32,7 @@ namespace vk_renderer
 		};
 		DEBUG_DUMP( vkcreateInfo );
 		auto res = m_device.vkCreateSampler( m_device, &vkcreateInfo, nullptr, &m_sampler );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Sampler creation failed: " + getLastError() };
-		}
+		checkError( res, "Sampler creation" );
 	}
 
 	Sampler::~Sampler()

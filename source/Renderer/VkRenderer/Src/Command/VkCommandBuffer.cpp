@@ -92,11 +92,7 @@ namespace vk_renderer
 		};
 		DEBUG_DUMP( cmdAllocInfo );
 		auto res = m_device.vkAllocateCommandBuffers( m_device, &cmdAllocInfo, &m_commandBuffer );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "CommandBuffer creation failed: " + getLastError() };
-		}
+		checkError( res, "CommandBuffer creation" );
 	}
 
 	CommandBuffer::~CommandBuffer()
@@ -104,7 +100,7 @@ namespace vk_renderer
 		m_device.vkFreeCommandBuffers( m_device, m_pool, 1, &m_commandBuffer );
 	}
 
-	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags )const
+	void CommandBuffer::begin( renderer::CommandBufferUsageFlags flags )const
 	{
 		VkCommandBufferBeginInfo cmdBufInfo
 		{
@@ -117,10 +113,10 @@ namespace vk_renderer
 		auto res = m_device.vkBeginCommandBuffer( m_commandBuffer, &cmdBufInfo );
 		m_currentPipeline = nullptr;
 		m_currentComputePipeline = nullptr;
-		return checkError( res );
+		checkError( res, "CommandBuffer record start" );
 	}
 
-	bool CommandBuffer::begin( renderer::CommandBufferUsageFlags flags
+	void CommandBuffer::begin( renderer::CommandBufferUsageFlags flags
 		, renderer::CommandBufferInheritanceInfo const & inheritanceInfo )const
 	{
 		m_inheritanceInfo = convert( inheritanceInfo );
@@ -135,21 +131,21 @@ namespace vk_renderer
 		auto res = m_device.vkBeginCommandBuffer( m_commandBuffer, &cmdBufInfo );
 		m_currentPipeline = nullptr;
 		m_currentComputePipeline = nullptr;
-		return checkError( res );
+		checkError( res, "CommandBuffer record start" );
 	}
 
-	bool CommandBuffer::end()const
+	void CommandBuffer::end()const
 	{
 		auto res = m_device.vkEndCommandBuffer( m_commandBuffer );
 		m_currentPipeline = nullptr;
 		m_currentComputePipeline = nullptr;
-		return checkError( res );
+		checkError( res, "CommandBuffer record end" );
 	}
 
-	bool CommandBuffer::reset( renderer::CommandBufferResetFlags flags )const
+	void CommandBuffer::reset( renderer::CommandBufferResetFlags flags )const
 	{
 		auto res = m_device.vkResetCommandBuffer( m_commandBuffer, convert( flags ) );
-		return checkError( res );
+		checkError( res, "CommandBuffer reset" );
 	}
 
 	void CommandBuffer::beginRenderPass( renderer::RenderPass const & renderPass

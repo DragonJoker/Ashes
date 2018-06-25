@@ -20,11 +20,7 @@ namespace vk_renderer
 		};
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateSemaphore( m_device, &createInfo, nullptr, &m_semaphore );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Semaphore creation failed: " + getLastError() };
-		}
+		checkError( res, "Semaphore creation" );
 	}
 
 	Semaphore::~Semaphore()

@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "Pipeline/Pipeline.hpp"
 
 #include "Core/Device.hpp"
+#include "Core/Exception.hpp"
 
 namespace renderer
 {
@@ -33,7 +34,7 @@ namespace renderer
 			&& ( createInfo.tessellationState.value().flags || createInfo.tessellationState.value().patchControlPoints )
 			&& !device.getPhysicalDevice().getFeatures().tessellationShader )
 		{
-			throw std::runtime_error( "Tessellation shaders are not supported." );
+			throw Exception{ Result::eErrorFeatureNotPresent, "Tessellation shaders" };
 		}
 
 		registerObject( m_device, "Pipeline", this );

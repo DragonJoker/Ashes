@@ -81,14 +81,13 @@ namespace common
 		doUpdate( duration );
 	}
 
-	bool RenderTarget::draw( std::chrono::microseconds & gpu )
+	void RenderTarget::draw( std::chrono::microseconds & gpu )
 	{
 		std::chrono::nanoseconds opaque;
 		std::chrono::nanoseconds transparent;
-		auto result = m_opaque->draw( opaque );
-		result &= m_transparent->draw( transparent );
+		m_opaque->draw( opaque );
+		m_transparent->draw( transparent );
 		gpu = std::chrono::duration_cast< std::chrono::microseconds >( opaque + transparent );
-		return result;
 	}
 
 	void RenderTarget::doInitialise()

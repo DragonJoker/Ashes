@@ -25,8 +25,8 @@ namespace common
 		m_renderer->update( target );
 	}
 
-	bool TransparentRendering::draw( std::chrono::nanoseconds & gpu )const
+	void TransparentRendering::draw( std::chrono::nanoseconds & gpu )const
 	{
-		return m_renderer->draw( gpu );
+		m_renderer->draw( gpu );
 	}
 }

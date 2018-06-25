@@ -4,6 +4,7 @@
 
 #include <Camera.hpp>
 #include <RenderTarget.hpp>
+#include <Miscellaneous/Offset2D.hpp>
 
 namespace vkapp
 {

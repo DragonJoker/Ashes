@@ -33,11 +33,7 @@ namespace vk_renderer
 		};
 		DEBUG_DUMP( allocateInfo );
 		auto res = m_device.vkAllocateMemory( m_device, &allocateInfo, nullptr, &m_memory );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Memory storage allocation failed: " + getLastError() };
-		}
+		checkError( res, "DeviceMemory allocation" );
 	}
 
 	DeviceMemory::~DeviceMemory()
@@ -56,12 +52,7 @@ namespace vk_renderer
 			, size
 			, 0u/*flags*/
 			, reinterpret_cast< void ** >( &pointer ) );
-
-		if ( !checkError( res ) )
-		{
-			renderer::Logger::logError( "Storage memory mapping failed: " + getLastError() );
-		}
-
+		checkError( res, "DeviceMemory mapping" );
 		return pointer;
 	}
 
@@ -78,11 +69,7 @@ namespace vk_renderer
 		};
 		DEBUG_DUMP( mappedRange );
 		auto res = m_device.vkFlushMappedMemoryRanges( m_device, 1, &mappedRange );
-
-		if ( !checkError( res ) )
-		{
-			renderer::Logger::logError( "Storage memory range flush failed: " + getLastError() );
-		}
+		checkError( res, "DeviceMemory range flush" );
 	}
 
 	void DeviceMemory::invalidate( uint32_t offset
@@ -98,11 +85,7 @@ namespace vk_renderer
 		};
 		DEBUG_DUMP( mappedRange );
 		auto res = m_device.vkInvalidateMappedMemoryRanges( m_device, 1, &mappedRange );
-
-		if ( !checkError( res ) )
-		{
-			renderer::Logger::logError( "Storage memory range invalidate failed: " + getLastError() );
-		}
+		checkError( res, "DeviceMemory mapped range invalidation" );
 	}
 
 	void DeviceMemory::unlock()const

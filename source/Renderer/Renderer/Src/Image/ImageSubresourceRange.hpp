@@ -37,7 +37,7 @@ namespace renderer
 		*\brief
 		*	Le niveau de base de mipmap.
 		*/
-		uint32_t baseMipLevel;
+		uint32_t baseMipLevel{ 0u };
 		/**
 		*\~english
 		*\brief
@@ -46,7 +46,7 @@ namespace renderer
 		*\brief
 		*	Le nombre de niveaux.
 		*/
-		uint32_t levelCount;
+		uint32_t levelCount{ 1u };
 		/**
 		*\~english
 		*\brief
@@ -55,7 +55,7 @@ namespace renderer
 		*\brief
 		*	La couche de base du tableau.
 		*/
-		uint32_t baseArrayLayer;
+		uint32_t baseArrayLayer{ 0u };
 		/**
 		*\~english
 		*\brief
@@ -64,7 +64,7 @@ namespace renderer
 		*\brief
 		*	Le nombre de couches du tableau.
 		*/
-		uint32_t layerCount;
+		uint32_t layerCount{ 1u };
 	};
 }
 

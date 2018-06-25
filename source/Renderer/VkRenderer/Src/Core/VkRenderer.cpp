@@ -292,21 +292,20 @@ namespace vk_renderer
 		{
 			uint32_t instanceLayerCount{ 0 };
 			res = vkEnumerateInstanceLayerProperties( &instanceLayerCount, nullptr );
+			checkError( res, "Instance layer properties enumeration" );
 
-			if ( checkError( res ) )
+			if ( instanceLayerCount == 0 )
 			{
-				if ( instanceLayerCount == 0 )
-				{
-					res = VK_SUCCESS;
-				}
-				else
-				{
-					vkProperties.resize( instanceLayerCount );
-					res = vkEnumerateInstanceLayerProperties( &instanceLayerCount
-						, vkProperties.data() );
-				}
+				res = VK_SUCCESS;
 			}
-		} while ( res == VK_INCOMPLETE );
+			else
+			{
+				vkProperties.resize( instanceLayerCount );
+				res = vkEnumerateInstanceLayerProperties( &instanceLayerCount
+					, vkProperties.data() );
+			}
+		}
+		while ( res == VK_INCOMPLETE );
 
 		LayerProperties layerProperties{ VkLayerProperties{} };
 		doInitLayerExtensionProperties( layerProperties );
@@ -320,10 +319,7 @@ namespace vk_renderer
 			m_instanceLayersProperties.push_back( layerProperties );
 		}
 
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Layer properties retrieval failed: " + getLastError() };
-		}
+		checkError( res, "Layer properties retrieval" );
 	}
 
 	void Renderer::doInitLayerExtensionProperties( LayerProperties & layerProps )
@@ -338,23 +334,19 @@ namespace vk_renderer
 			res = vkEnumerateInstanceExtensionProperties( name
 				, &extensionCount
 				, nullptr );
+			checkError( res, "Instance extension properties enumeration" );
 
-			if ( checkError( res ) )
+			if ( extensionCount > 0 )
 			{
-				if ( extensionCount > 0 )
-				{
-					layerProps.m_extensions.resize( extensionCount );
-					res = vkEnumerateInstanceExtensionProperties( name
-						, &extensionCount
-						, layerProps.m_extensions.data() );
-				}
+				layerProps.m_extensions.resize( extensionCount );
+				res = vkEnumerateInstanceExtensionProperties( name
+					, &extensionCount
+					, layerProps.m_extensions.data() );
 			}
-		} while ( res == VK_INCOMPLETE );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Layer extensions properties retrieval failed: " + getLastError() };
 		}
+		while ( res == VK_INCOMPLETE );
+
+		checkError( res, "Extensions properties retrieval" );
 	}
 
 	void Renderer::doInitInstance()
@@ -392,11 +384,7 @@ namespace vk_renderer
 		DEBUG_DUMP( instInfo );
 
 		auto res = vkCreateInstance( &instInfo, nullptr, &m_instance );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Instance initialisation failed: " + getLastError() };
-		}
+		checkError( res, "Instance creation" );
 
 #define VK_LIB_INSTANCE_FUNCTION( fun ) fun = reinterpret_cast< PFN_##fun >( getInstanceProcAddr( #fun ) );
 #include "Miscellaneous/VulkanFunctionsList.inl"
@@ -429,11 +417,7 @@ namespace vk_renderer
 				&dbgCreateInfo,
 				nullptr,
 				&m_msgCallback );
-
-			if ( !checkError( res ) )
-			{
-				throw std::runtime_error{ "Debug initialisation failed: " + getLastError() };
-			}
+			checkError( res, "Debug initialisation" );
 		}
 #endif
 	}
@@ -445,25 +429,16 @@ namespace vk_renderer
 		auto res = vkEnumeratePhysicalDevices( m_instance
 			, &gpuCount
 			, nullptr );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "GPU enumeration failed: " + getLastError() };
-		}
-
+		checkError( res, "GPU enumeration" );
 		std::vector< VkPhysicalDevice > gpus( gpuCount, VK_NULL_HANDLE );
 		res = vkEnumeratePhysicalDevices( m_instance
 			, &gpuCount
 			, gpus.data() );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "GPU enumeration failed: " + getLastError() };
-		}
+		checkError( res, "GPU enumeration" );
 
 		if ( !gpuCount )
 		{
-			throw std::runtime_error{ "No GPU supporting vulkan." };
+			checkError( VK_ERROR_FEATURE_NOT_PRESENT, "Vulkan supporting GPU" );
 		}
 
 		// Et on les stocke dans des PhysicalDevice.

@@ -2,6 +2,8 @@
 
 #include "Prerequisites.hpp"
 
+#include <Quaternion.hpp>
+
 namespace common
 {
 	class Camera

@@ -12,26 +12,18 @@ namespace vk_renderer
 	*\~french
 	*\brief
 	*	Vérifie que le code donné ne représente pas une erreur.
+	*\remarks
+	*	Lance une renderer::Exception si un problème est détecté.
 	*\param[in] result
 	*	Le code résultat Vulkan.
-	*\return
-	*	\p false si le code représente une erreur.
 	*\~english
 	*\brief
 	*	Checks if the given code is an error code.
+	*\remarks
+	*	Throws a renderer::Exception if a problem is detected.
 	*\param[in] result
 	*	The Vulkan result code.
-	*\return
-	*	\p false if the code is an error.
 	*/
-	bool checkError( VkResult result );
-	/**
-	*\~french
-	*\return
-	*	Le texte de la dernière erreur rencontrée.
-	*\~english
-	*\return
-	*	The last encountered error text.
-	*/
-	std::string const & getLastError();
+	void checkError( VkResult result
+		, char const * const text );
 }

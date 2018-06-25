@@ -34,7 +34,7 @@ namespace vk_renderer
 		/**
 		*\copydoc		renderer::Queue::submit
 		*/ 
-		bool submit( renderer::CommandBufferCRefArray const & commandBuffers
+		void submit( renderer::CommandBufferCRefArray const & commandBuffers
 			, renderer::SemaphoreCRefArray const & semaphoresToWait
 			, renderer::PipelineStageFlagsArray const & semaphoresStage
 			, renderer::SemaphoreCRefArray const & semaphoresToSignal
@@ -42,14 +42,14 @@ namespace vk_renderer
 		/**
 		*\copydoc		renderer::Queue::present
 		*/
-		bool present( renderer::SwapChainCRefArray const & swapChains
+		void present( renderer::SwapChainCRefArray const & swapChains
 			, renderer::UInt32Array const & imagesIndex
 			, renderer::SemaphoreCRefArray const & semaphoresToWait )const override;
 		/**
 		/**
 		*\copydoc		renderer::Queue::waitIdle
 		*/
-		bool waitIdle()const override;
+		void waitIdle()const override;
 		/**
 		/**
 		*\copydoc		renderer::Queue::getFamilyIndex

@@ -47,7 +47,7 @@ namespace renderer
 		*\brief
 		*	Les dimensions de l'image.
 		*/
-		Extent3D extent;
+		Extent3D extent{ 1u, 1u, 1u };
 		/**
 		*\~french
 		*\brief
@@ -56,7 +56,7 @@ namespace renderer
 		*\brief
 		*	The mipmap levels count for the texture.
 		*/
-		uint32_t mipLevels;
+		uint32_t mipLevels{ 1u };
 		/**
 		*\~french
 		*\brief
@@ -65,7 +65,7 @@ namespace renderer
 		*\brief
 		*	The number of layers.
 		*/
-		uint32_t arrayLayers;
+		uint32_t arrayLayers{ 1u };
 		/**
 		*\~english
 		*\brief
@@ -74,7 +74,7 @@ namespace renderer
 		*\brief
 		*	Le nombre d'échantillons de l'image.
 		*/
-		SampleCountFlag samples;
+		SampleCountFlag samples{ SampleCountFlag::e1 };
 		/**
 		*\~english
 		*\brief
@@ -83,7 +83,7 @@ namespace renderer
 		*\brief
 		*	Le mode de tiling de l'image.
 		*/
-		ImageTiling tiling;
+		ImageTiling tiling{ ImageTiling::eOptimal };
 		/**
 		*\~english
 		*\brief
@@ -101,7 +101,7 @@ namespace renderer
 		*\brief
 		*	Le mode de partage de l'image lorsqu'elle sera accédée via de multiples familles de files.
 		*/
-		SharingMode sharingMode = SharingMode::eExclusive;
+		SharingMode sharingMode{ SharingMode::eExclusive };
 		/**
 		*\~english
 		*\brief
@@ -119,7 +119,7 @@ namespace renderer
 		*\brief
 		*	Le layout initial de toutes les sous-ressoureces de l'image.
 		*/
-		ImageLayout initialLayout = ImageLayout::eUndefined;
+		ImageLayout initialLayout{ ImageLayout::eUndefined };
 	};
 }
 
