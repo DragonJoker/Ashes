@@ -10,6 +10,7 @@
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
+#include <Image/Sampler.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
 #include <Miscellaneous/QueryPool.hpp>
@@ -21,6 +22,7 @@
 #include <Pipeline/Scissor.hpp>
 #include <Pipeline/VertexLayout.hpp>
 #include <Pipeline/Viewport.hpp>
+#include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>

@@ -37,6 +37,7 @@
 
 #include <FileUtils.hpp>
 
+#include <algorithm>
 #include <chrono>
 
 namespace vkapp
@@ -674,7 +675,7 @@ namespace vkapp
 
 	void RenderPanel::doPrepareHiPass()
 	{
-		auto & dimensions = m_swapChain->getDimensions();
+		auto dimensions = m_swapChain->getDimensions();
 		std::vector< renderer::DescriptorSetLayoutBinding > bindings
 		{
 			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
@@ -809,7 +810,7 @@ namespace vkapp
 
 	void RenderPanel::doPrepareBlurXPass()
 	{
-		auto & dimensions = m_swapChain->getDimensions();
+		auto dimensions = m_swapChain->getDimensions();
 		m_blurConfiguration = renderer::makeUniformBuffer< Configuration >( *m_device
 			, uint32_t( m_passes.blurX.size() )
 			, renderer::BufferTarget::eTransferDst
@@ -977,7 +978,7 @@ namespace vkapp
 
 	void RenderPanel::doPrepareBlurYPass()
 	{
-		auto & dimensions = m_swapChain->getDimensions();
+		auto dimensions = m_swapChain->getDimensions();
 		renderer::RenderPassCreateInfo renderPass{};
 		renderPass.attachments.resize( 1u );
 		renderPass.attachments[0].format = m_passes.hi.views[0]->getFormat();
@@ -1112,7 +1113,7 @@ namespace vkapp
 			, 0.0f
 			, float( m_passes.blurY.size() ) );
 
-		auto & dimensions = m_swapChain->getDimensions();
+		auto dimensions = m_swapChain->getDimensions();
 		std::vector< renderer::DescriptorSetLayoutBinding > bindings
 		{
 			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },

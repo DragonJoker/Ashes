@@ -19,7 +19,7 @@ namespace vk_renderer
 
 		if ( !result )
 		{
-			throw renderer::Exception{ renderer::Result{ errCode }, text };
+			throw renderer::Exception{ renderer::Result( errCode ), text };
 		}
 	}
 }
