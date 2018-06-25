@@ -141,11 +141,7 @@ namespace vk_renderer
 			, &vkcreateInfo
 			, nullptr
 			, &m_image );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Image creation failed: " + getLastError() };
-		}
+		checkError( res, "Image creation" );
 	}
 
 	Texture::Texture( Device const & device
@@ -217,10 +213,6 @@ namespace vk_renderer
 			, m_image
 			, static_cast< DeviceMemory const & >( *m_storage )
 			, 0 );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Image storage binding failed: " + getLastError() };
-		}
+		checkError( res, "Image storage binding" );
 	}
 }

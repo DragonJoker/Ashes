@@ -76,10 +76,8 @@ namespace renderer
 		*	Démarre l'enregistrement du tampon de commandes.
 		*\param[in] flags
 		*	Les indicateurs de type de charge qui sera affectée au tampon.
-		*\return
-		*	\p false en cas d'erreur.
 		*/
-		virtual bool begin( CommandBufferUsageFlags flags = 0u )const = 0;
+		virtual void begin( CommandBufferUsageFlags flags = 0u )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -97,10 +95,8 @@ namespace renderer
 		*	Les indicateurs de type de charge qui sera affectée au tampon.
 		*\param[in] inheritanceInfo
 		*	Les informations d'héritage.
-		*\return
-		*	\p false en cas d'erreur.
 		*/
-		virtual bool begin( CommandBufferUsageFlags flags
+		virtual void begin( CommandBufferUsageFlags flags
 			, CommandBufferInheritanceInfo const & inheritanceInfo )const = 0;
 		/**
 		*\~english
@@ -111,10 +107,8 @@ namespace renderer
 		*\~french
 		*\brief
 		*	Termine l'enregistrement du tampon de commandes.
-		*\return
-		*	\p false en cas d'erreur.
 		*/
-		virtual bool end()const = 0;
+		virtual void end()const = 0;
 		/**
 		*\~english
 		*\brief
@@ -128,10 +122,8 @@ namespace renderer
 		*	Réinitialise le tampon de commandes et le met dans un état où il peut à nouveau enregistrer des commandes.
 		*\param[in] flags
 		*	Les indicateurs contrôlant le comportement de la réinitialisation du tampon.
-		*\return
-		*	\p false en cas d'erreur.
 		*/
-		virtual bool reset( CommandBufferResetFlags flags = 0u )const = 0;
+		virtual void reset( CommandBufferResetFlags flags = 0u )const = 0;
 		/**
 		*\~english
 		*\brief

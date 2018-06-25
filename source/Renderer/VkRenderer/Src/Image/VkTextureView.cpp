@@ -33,11 +33,7 @@ namespace vk_renderer
 			, &vkcreateInfo
 			, nullptr
 			, &m_view );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Image view creation failed: " + getLastError() };
-		}
+		checkError( res, "ImageView creation" );
 	}
 
 	TextureView::~TextureView()

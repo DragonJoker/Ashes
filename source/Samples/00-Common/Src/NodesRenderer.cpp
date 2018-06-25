@@ -224,22 +224,16 @@ namespace common
 		doUpdate( { target.getDepthView(), target.getColourView() } );
 	}
 
-	bool NodesRenderer::draw( std::chrono::nanoseconds & gpu )const
+	void NodesRenderer::draw( std::chrono::nanoseconds & gpu )const
 	{
-		bool result = m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
-
-		if ( result )
-		{
-			renderer::UInt32Array values{ 0u, 0u };
-			m_queryPool->getResults( 0u
-				, 2u
-				, 0u
-				, renderer::QueryResultFlag::eWait
-				, values );
-			gpu = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device.getTimestampPeriod() ) ) };
-		}
-
-		return result;
+		m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
+		renderer::UInt32Array values{ 0u, 0u };
+		m_queryPool->getResults( 0u
+			, 2u
+			, 0u
+			, renderer::QueryResultFlag::eWait
+			, values );
+		gpu = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device.getTimestampPeriod() ) ) };
 	}
 
 	void NodesRenderer::initialise( Scene const & scene
@@ -305,64 +299,62 @@ namespace common
 			m_commandBuffer->reset();
 			auto & commandBuffer = *m_commandBuffer;
 
-			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
+			commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+			commandBuffer.resetQueryPool( *m_queryPool, 0u, 2u );
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+				, *m_queryPool
+				, 0u );
+			commandBuffer.beginRenderPass( *m_renderPass
+				, *m_frameBuffer
+				, clearValues
+				, renderer::SubpassContents::eInline );
+
+			for ( auto & node : m_submeshRenderNodes )
 			{
-				commandBuffer.resetQueryPool( *m_queryPool, 0u, 2u );
-				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
-					, *m_queryPool
-					, 0u );
-				commandBuffer.beginRenderPass( *m_renderPass
-					, *m_frameBuffer
-					, clearValues
-					, renderer::SubpassContents::eInline );
-
-				for ( auto & node : m_submeshRenderNodes )
-				{
-					commandBuffer.bindPipeline( *node.pipeline );
-					commandBuffer.setViewport( { size.width
-						, size.height
-						, 0
-						, 0 } );
-					commandBuffer.setScissor( { 0
-						, 0
-						, size.width
-						, size.height } );
-					m_commandBuffer->bindVertexBuffer( 0u, node.instance->vbo->getBuffer(), 0u );
-					m_commandBuffer->bindIndexBuffer( node.instance->ibo->getBuffer(), 0u, renderer::IndexType::eUInt32 );
-					commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
-						, *node.pipelineLayout );
-					commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
-						, *node.pipelineLayout );
-					commandBuffer.drawIndexed( node.instance->ibo->getCount() * 3u );
-				}
-
-				for ( BillboardMaterialNode & node : m_billboardRenderNodes )
-				{
-					commandBuffer.bindPipeline( *node.pipeline );
-					commandBuffer.setViewport( { size.width
-						, size.height
-						, 0
-						, 0 } );
-					commandBuffer.setScissor( { 0
-						, 0
-						, size.width
-						, size.height } );
-					m_commandBuffer->bindVertexBuffers( 0u
-						, { node.instance->vbo->getBuffer(), node.instance->instance->getBuffer() }
-						, { 0u, 0u } );
-					commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
-						, *node.pipelineLayout );
-					commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
-						, *node.pipelineLayout );
-					commandBuffer.draw( 4u, node.instance->instance->getCount() );
-				}
-
-				commandBuffer.endRenderPass();
-				commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
-					, *m_queryPool
-					, 1u );
-				commandBuffer.end();
+				commandBuffer.bindPipeline( *node.pipeline );
+				commandBuffer.setViewport( { size.width
+					, size.height
+					, 0
+					, 0 } );
+				commandBuffer.setScissor( { 0
+					, 0
+					, size.width
+					, size.height } );
+				m_commandBuffer->bindVertexBuffer( 0u, node.instance->vbo->getBuffer(), 0u );
+				m_commandBuffer->bindIndexBuffer( node.instance->ibo->getBuffer(), 0u, renderer::IndexType::eUInt32 );
+				commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
+					, *node.pipelineLayout );
+				commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
+					, *node.pipelineLayout );
+				commandBuffer.drawIndexed( node.instance->ibo->getCount() * 3u );
 			}
+
+			for ( BillboardMaterialNode & node : m_billboardRenderNodes )
+			{
+				commandBuffer.bindPipeline( *node.pipeline );
+				commandBuffer.setViewport( { size.width
+					, size.height
+					, 0
+					, 0 } );
+				commandBuffer.setScissor( { 0
+					, 0
+					, size.width
+					, size.height } );
+				m_commandBuffer->bindVertexBuffers( 0u
+					, { node.instance->vbo->getBuffer(), node.instance->instance->getBuffer() }
+					, { 0u, 0u } );
+				commandBuffer.bindDescriptorSet( *node.descriptorSetUbos
+					, *node.pipelineLayout );
+				commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
+					, *node.pipelineLayout );
+				commandBuffer.draw( 4u, node.instance->instance->getCount() );
+			}
+
+			commandBuffer.endRenderPass();
+			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+				, *m_queryPool
+				, 1u );
+			commandBuffer.end();
 		}
 	}
 

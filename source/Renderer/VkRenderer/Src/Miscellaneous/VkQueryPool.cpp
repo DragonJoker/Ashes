@@ -21,10 +21,11 @@ namespace vk_renderer
 			convert( pipelineStatistics )
 		};
 		DEBUG_DUMP( createInfo );
-		m_device.vkCreateQueryPool( device
+		auto res = m_device.vkCreateQueryPool( device
 			, &createInfo
 			, nullptr
 			, &m_pool );
+		checkError( res, "QueryPool creation" );
 	}
 
 	QueryPool::~QueryPool()
@@ -40,7 +41,7 @@ namespace vk_renderer
 		, renderer::QueryResultFlags flags
 		, renderer::UInt32Array & data )const
 	{
-		m_device.vkGetQueryPoolResults( m_device
+		auto res = m_device.vkGetQueryPoolResults( m_device
 			, m_pool
 			, firstQuery
 			, queryCount
@@ -48,6 +49,7 @@ namespace vk_renderer
 			, data.data()
 			, stride
 			, convert( flags ) );
+		checkError( res, "QueryPool results retrieval" );
 	}
 
 	void QueryPool::getResults( uint32_t firstQuery
@@ -56,7 +58,7 @@ namespace vk_renderer
 		, renderer::QueryResultFlags flags
 		, renderer::UInt64Array & data )const
 	{
-		m_device.vkGetQueryPoolResults( m_device
+		auto res = m_device.vkGetQueryPoolResults( m_device
 			, m_pool
 			, firstQuery
 			, queryCount
@@ -64,5 +66,6 @@ namespace vk_renderer
 			, data.data()
 			, stride
 			, convert( flags ) | VK_QUERY_RESULT_64_BIT );
+		checkError( res, "QueryPool results retrieval" );
 	}
 }

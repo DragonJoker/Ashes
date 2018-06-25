@@ -296,10 +296,6 @@ namespace vk_renderer
 			, &createInfo
 			, nullptr
 			, &m_shader );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Shader module creation failed: " + getLastError() };
-		}
+		checkError( res, "ShaderModule creation" );
 	}
 }

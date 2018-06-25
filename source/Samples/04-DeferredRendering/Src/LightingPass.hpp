@@ -17,7 +17,7 @@ namespace vkapp
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::TextureViewCRefArray const & views
 			, GeometryPassResult const & geometryBuffers );
-		bool draw( std::chrono::nanoseconds & gpu )const;
+		void draw( std::chrono::nanoseconds & gpu )const;
 
 	private:
 		renderer::Device const & m_device;

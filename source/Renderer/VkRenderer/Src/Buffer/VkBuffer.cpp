@@ -32,11 +32,7 @@ namespace vk_renderer
 			, &bufferCreate
 			, nullptr
 			, &m_buffer );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Buffer creation failed: " + getLastError() };
-		}
+		checkError( res,  "Buffer creation" );
 	}
 
 	Buffer::~Buffer()
@@ -55,10 +51,6 @@ namespace vk_renderer
 			, m_buffer
 			, static_cast< DeviceMemory const & >( *m_storage )
 			, 0 );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Buffer memory binding failed: " + getLastError() };
-		}
+		checkError( res, "Buffer memory binding" );
 	}
 }

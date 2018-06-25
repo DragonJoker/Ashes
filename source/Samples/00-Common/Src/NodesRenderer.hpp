@@ -28,7 +28,7 @@ namespace common
 			, bool opaqueNodes );
 		virtual ~NodesRenderer() = default;
 		virtual void update( RenderTarget const & target );
-		bool draw( std::chrono::nanoseconds & gpu )const;
+		void draw( std::chrono::nanoseconds & gpu )const;
 		void initialise( Scene const & scene
 			, renderer::StagingBuffer & stagingBuffer
 			, renderer::TextureViewCRefArray const & views

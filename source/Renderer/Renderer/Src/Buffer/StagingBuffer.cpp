@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "Buffer/StagingBuffer.hpp"
 
 #include "Core/Device.hpp"
+#include "Core/Exception.hpp"
 #include "Image/Texture.hpp"
 #include "Image/TextureView.hpp"
 #include "Sync/BufferMemoryBarrier.hpp"
@@ -33,50 +34,36 @@ namespace renderer
 		assert( size <= getBuffer().getSize() );
 		doCopyToStagingBuffer( data, size );
 
-		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
-		{
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTopOfPipe
-				, PipelineStageFlag::eTransfer
-				, view.makeTransferDestination( ImageLayout::eUndefined
-					, 0u ) );
-			commandBuffer.copyToImage( BufferImageCopy
-				{
-					0u,
-					0u,
-					0u,
-					subresourceLayers,
-					offset,
-					Extent3D{
-						std::max( 1u, extent.width ),
-						std::max( 1u, extent.height ),
-						std::max( 1u, extent.depth )
-					}
+		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTopOfPipe
+			, PipelineStageFlag::eTransfer
+			, view.makeTransferDestination( ImageLayout::eUndefined
+				, 0u ) );
+		commandBuffer.copyToImage( BufferImageCopy
+			{
+				0u,
+				0u,
+				0u,
+				subresourceLayers,
+				offset,
+				Extent3D{
+					std::max( 1u, extent.width ),
+					std::max( 1u, extent.height ),
+					std::max( 1u, extent.depth )
 				}
-				, getBuffer()
-				, view.getTexture() );
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, PipelineStageFlag::eFragmentShader
-				, view.makeShaderInputResource( ImageLayout::eTransferDstOptimal
-					, renderer::AccessFlag::eTransferWrite ) );
-			bool res = commandBuffer.end();
-
-			if ( !res )
-			{
-				throw std::runtime_error{ "Texture data copy failed." };
 			}
+			, getBuffer()
+			, view.getTexture() );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, PipelineStageFlag::eFragmentShader
+			, view.makeShaderInputResource( ImageLayout::eTransferDstOptimal
+				, renderer::AccessFlag::eTransferWrite ) );
+		commandBuffer.end();
 
-			auto fence = m_device.createFence();
-			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, fence.get() );
-			fence->wait( FenceTimeout );
-
-			if ( !res )
-			{
-				throw std::runtime_error{ "Texture data copy failed." };
-			}
-
-			m_device.getGraphicsQueue().waitIdle();
-		}
+		auto fence = m_device.createFence();
+		m_device.getGraphicsQueue().submit( commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
 	}
 
 	void StagingBuffer::uploadTextureData( CommandBuffer const & commandBuffer
@@ -107,52 +94,38 @@ namespace renderer
 		, TextureView const & view )const
 	{
 		assert( size <= getBuffer().getSize() );
-
-		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
-		{
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTopOfPipe
-				, PipelineStageFlag::eTransfer
-				, view.makeTransferSource( ImageLayout::eUndefined
-					, 0u ) );
-			commandBuffer.copyToBuffer( BufferImageCopy
-				{
-					0u,
-					0u,
-					0u,
-					subresourceLayers,
-					offset,
-					Extent3D{
-						std::max( 1u, extent.width ),
-						std::max( 1u, extent.height ),
-						std::max( 1u, extent.depth )
-					}
+		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTopOfPipe
+			, PipelineStageFlag::eTransfer
+			, view.makeTransferSource( ImageLayout::eUndefined
+				, 0u ) );
+		commandBuffer.copyToBuffer( BufferImageCopy
+			{
+				0u,
+				0u,
+				0u,
+				subresourceLayers,
+				offset,
+				Extent3D{
+					std::max( 1u, extent.width ),
+					std::max( 1u, extent.height ),
+					std::max( 1u, extent.depth )
 				}
-				, view.getTexture()
-				, getBuffer() );
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, PipelineStageFlag::eFragmentShader
-				, view.makeShaderInputResource( ImageLayout::eTransferSrcOptimal
-					, renderer::AccessFlag::eTransferRead ) );
-			bool res = commandBuffer.end();
-
-			if ( !res )
-			{
-				throw std::runtime_error{ "Texture data copy failed." };
 			}
+			, view.getTexture()
+			, getBuffer() );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, PipelineStageFlag::eFragmentShader
+			, view.makeShaderInputResource( ImageLayout::eTransferSrcOptimal
+			, renderer::AccessFlag::eTransferRead ) );
+		commandBuffer.end();
 
-			auto fence = m_device.createFence();
-			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, fence.get() );
-			fence->wait( FenceTimeout );
+		auto fence = m_device.createFence();
+		m_device.getGraphicsQueue().submit( commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
 
-			if ( !res )
-			{
-				throw std::runtime_error{ "Texture data copy failed." };
-			}
-
-			m_device.getGraphicsQueue().waitIdle();
-			doCopyFromStagingBuffer( data, size );
-		}
+		doCopyFromStagingBuffer( data, size );
 	}
 
 	void StagingBuffer::downloadTextureData( CommandBuffer const & commandBuffer
@@ -184,7 +157,7 @@ namespace renderer
 
 		if ( !buffer )
 		{
-			throw std::runtime_error{ "Staging buffer storage memory mapping failed." };
+			throw Exception{ Result::eErrorMemoryMapFailed, "Staging buffer storage memory mapping" };
 		}
 
 		std::memcpy( buffer
@@ -201,37 +174,23 @@ namespace renderer
 		, BufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
-		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
-		{
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, PipelineStageFlag::eTransfer
-				, getBuffer().makeTransferSource() );
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, PipelineStageFlag::eTransfer
-				, buffer.makeTransferDestination() );
-			commandBuffer.copyBuffer( getBuffer()
-				, buffer
-				, size
-				, offset );
-			bool res = commandBuffer.end();
+		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, PipelineStageFlag::eTransfer
+			, getBuffer().makeTransferSource() );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, PipelineStageFlag::eTransfer
+			, buffer.makeTransferDestination() );
+		commandBuffer.copyBuffer( getBuffer()
+			, buffer
+			, size
+			, offset );
+		commandBuffer.end();
 
-			if ( !res )
-			{
-				throw std::runtime_error{ "Buffer data copy failed." };
-			}
-
-			auto fence = m_device.createFence();
-			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, fence.get() );
-			fence->wait( FenceTimeout );
-
-			if ( !res )
-			{
-				throw std::runtime_error{ "Texture data copy failed." };
-			}
-
-			m_device.getGraphicsQueue().waitIdle();
-		}
+		auto fence = m_device.createFence();
+		m_device.getGraphicsQueue().submit( commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
@@ -240,41 +199,27 @@ namespace renderer
 		, VertexBufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
-		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
-		{
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, PipelineStageFlag::eTransfer
-				, getBuffer().makeTransferSource() );
-			auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
-			commandBuffer.memoryBarrier( srcStageFlags
-				, PipelineStageFlag::eTransfer
-				, buffer.getBuffer().makeTransferDestination() );
-			commandBuffer.copyBuffer( getBuffer()
-				, buffer.getBuffer()
-				, size
-				, offset );
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, renderer::PipelineStageFlag::eVertexInput
-				, buffer.getBuffer().makeVertexShaderInputResource() );
-			bool res = commandBuffer.end();
+		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, PipelineStageFlag::eTransfer
+			, getBuffer().makeTransferSource() );
+		auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
+		commandBuffer.memoryBarrier( srcStageFlags
+			, PipelineStageFlag::eTransfer
+			, buffer.getBuffer().makeTransferDestination() );
+		commandBuffer.copyBuffer( getBuffer()
+			, buffer.getBuffer()
+			, size
+			, offset );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, renderer::PipelineStageFlag::eVertexInput
+			, buffer.getBuffer().makeVertexShaderInputResource() );
+		commandBuffer.end();
 
-			if ( !res )
-			{
-				throw std::runtime_error{ "Buffer data copy failed." };
-			}
-
-			auto fence = m_device.createFence();
-			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, fence.get() );
-			fence->wait( FenceTimeout );
-
-			if ( !res )
-			{
-				throw std::runtime_error{ "Buffer data copy failed." };
-			}
-
-			m_device.getGraphicsQueue().waitIdle();
-		}
+		auto fence = m_device.createFence();
+		m_device.getGraphicsQueue().submit( commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
@@ -283,41 +228,27 @@ namespace renderer
 		, UniformBufferBase const & buffer
 		, PipelineStageFlags dstStageFlags )const
 	{
-		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
-		{
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, PipelineStageFlag::eTransfer
-				, getBuffer().makeTransferSource() );
-			auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
-			commandBuffer.memoryBarrier( srcStageFlags
-				, PipelineStageFlag::eTransfer
-				, buffer.getBuffer().makeTransferDestination() );
-			commandBuffer.copyBuffer( getBuffer()
-				, buffer.getBuffer()
-				, size
-				, offset );
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, dstStageFlags
-				, buffer.getBuffer().makeUniformBufferInput() );
-			bool res = commandBuffer.end();
+		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, PipelineStageFlag::eTransfer
+			, getBuffer().makeTransferSource() );
+		auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
+		commandBuffer.memoryBarrier( srcStageFlags
+			, PipelineStageFlag::eTransfer
+			, buffer.getBuffer().makeTransferDestination() );
+		commandBuffer.copyBuffer( getBuffer()
+			, buffer.getBuffer()
+			, size
+			, offset );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, dstStageFlags
+			, buffer.getBuffer().makeUniformBufferInput() );
+		commandBuffer.end();
 
-			if ( !res )
-			{
-				throw std::runtime_error{ "Buffer data copy failed." };
-			}
-
-			auto fence = m_device.createFence();
-			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, fence.get() );
-			fence->wait( FenceTimeout );
-
-			if ( !res )
-			{
-				throw std::runtime_error{ "Buffer data copy failed." };
-			}
-
-			m_device.getGraphicsQueue().waitIdle();
-		}
+		auto fence = m_device.createFence();
+		m_device.getGraphicsQueue().submit( commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( uint8_t * data
@@ -330,7 +261,7 @@ namespace renderer
 
 		if ( !buffer )
 		{
-			throw std::runtime_error{ "Staging buffer storage memory mapping failed." };
+			throw Exception{ Result::eErrorMemoryMapFailed, "Staging buffer storage memory mapping failed." };
 		}
 
 		std::memcpy( data
@@ -347,37 +278,23 @@ namespace renderer
 		, BufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
-		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
-		{
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, PipelineStageFlag::eTransfer
-				, buffer.makeTransferSource() );
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, PipelineStageFlag::eTransfer
-				, getBuffer().makeTransferDestination() );
-			commandBuffer.copyBuffer( buffer
-				, getBuffer()
-				, size
-				, offset );
-			bool res = commandBuffer.end();
+		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, PipelineStageFlag::eTransfer
+			, buffer.makeTransferSource() );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, PipelineStageFlag::eTransfer
+			, getBuffer().makeTransferDestination() );
+		commandBuffer.copyBuffer( buffer
+			, getBuffer()
+			, size
+			, offset );
+		commandBuffer.end();
 
-			if ( !res )
-			{
-				throw std::runtime_error{ "Buffer data copy failed." };
-			}
-
-			auto fence = m_device.createFence();
-			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, fence.get() );
-			fence->wait( FenceTimeout );
-
-			if ( !res )
-			{
-				throw std::runtime_error{ "Texture data copy failed." };
-			}
-
-			m_device.getGraphicsQueue().waitIdle();
-		}
+		auto fence = m_device.createFence();
+		m_device.getGraphicsQueue().submit( commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
 	}
 
 	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & commandBuffer
@@ -386,41 +303,27 @@ namespace renderer
 		, VertexBufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
-		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
-		{
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, PipelineStageFlag::eTransfer
-				, buffer.getBuffer().makeTransferSource() );
-			auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
-			commandBuffer.memoryBarrier( srcStageFlags
-				, PipelineStageFlag::eTransfer
-				, getBuffer().makeTransferDestination() );
-			commandBuffer.copyBuffer( buffer.getBuffer()
-				, getBuffer()
-				, size
-				, offset );
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, renderer::PipelineStageFlag::eVertexInput
-				, buffer.getBuffer().makeVertexShaderInputResource() );
-			bool res = commandBuffer.end();
+		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, PipelineStageFlag::eTransfer
+			, buffer.getBuffer().makeTransferSource() );
+		auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
+		commandBuffer.memoryBarrier( srcStageFlags
+			, PipelineStageFlag::eTransfer
+			, getBuffer().makeTransferDestination() );
+		commandBuffer.copyBuffer( buffer.getBuffer()
+			, getBuffer()
+			, size
+			, offset );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, renderer::PipelineStageFlag::eVertexInput
+			, buffer.getBuffer().makeVertexShaderInputResource() );
+		commandBuffer.end();
 
-			if ( !res )
-			{
-				throw std::runtime_error{ "Buffer data copy failed." };
-			}
-
-			auto fence = m_device.createFence();
-			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, fence.get() );
-			fence->wait( FenceTimeout );
-
-			if ( !res )
-			{
-				throw std::runtime_error{ "Buffer data copy failed." };
-			}
-
-			m_device.getGraphicsQueue().waitIdle();
-		}
+		auto fence = m_device.createFence();
+		m_device.getGraphicsQueue().submit( commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
 	}
 
 	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & commandBuffer
@@ -429,40 +332,26 @@ namespace renderer
 		, UniformBufferBase const & buffer
 		, PipelineStageFlags dstStageFlags )const
 	{
-		if ( commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit ) )
-		{
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, PipelineStageFlag::eTransfer
-				, buffer.getBuffer().makeTransferSource() );
-			auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
-			commandBuffer.memoryBarrier( srcStageFlags
-				, PipelineStageFlag::eTransfer
-				, getBuffer().makeTransferDestination() );
-			commandBuffer.copyBuffer( buffer.getBuffer()
-				, getBuffer()
-				, size
-				, offset );
-			commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
-				, dstStageFlags
-				, buffer.getBuffer().makeUniformBufferInput() );
-			bool res = commandBuffer.end();
+		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, PipelineStageFlag::eTransfer
+			, buffer.getBuffer().makeTransferSource() );
+		auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
+		commandBuffer.memoryBarrier( srcStageFlags
+			, PipelineStageFlag::eTransfer
+			, getBuffer().makeTransferDestination() );
+		commandBuffer.copyBuffer( buffer.getBuffer()
+			, getBuffer()
+			, size
+			, offset );
+		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
+			, dstStageFlags
+			, buffer.getBuffer().makeUniformBufferInput() );
+		commandBuffer.end();
 
-			if ( !res )
-			{
-				throw std::runtime_error{ "Buffer data copy failed." };
-			}
-
-			auto fence = m_device.createFence();
-			res = m_device.getGraphicsQueue().submit( commandBuffer
-				, fence.get() );
-			fence->wait( FenceTimeout );
-
-			if ( !res )
-			{
-				throw std::runtime_error{ "Buffer data copy failed." };
-			}
-
-			m_device.getGraphicsQueue().waitIdle();
-		}
+		auto fence = m_device.createFence();
+		m_device.getGraphicsQueue().submit( commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
 	}
 }

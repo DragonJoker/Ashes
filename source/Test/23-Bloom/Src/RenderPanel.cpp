@@ -639,46 +639,37 @@ namespace vkapp
 		auto & commandBuffer = *m_commandBuffer;
 		auto & frameBuffer = *m_frameBuffer;
 
-		if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
-		{
-			auto dimensions = m_swapChain->getDimensions();
-			commandBuffer.resetQueryPool( *m_queryPool
-				, 0u
-				, 2u );
-			commandBuffer.beginRenderPass( *m_offscreenRenderPass
-				, frameBuffer
-				, { renderer::ClearValue{ m_swapChain->getClearColour() } }
-				, renderer::SubpassContents::eInline );
-			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
-				, *m_queryPool
-				, 0u );
-			commandBuffer.bindPipeline( *m_offscreenPipeline );
-			commandBuffer.setViewport( { dimensions.width
-				, dimensions.height
-				, 0
-				, 0 } );
-			commandBuffer.setScissor( { 0
-				, 0
-				, dimensions.width
-				, dimensions.height } );
-			commandBuffer.bindVertexBuffer( 0u, m_offscreenVertexBuffer->getBuffer(), 0u );
-			commandBuffer.bindIndexBuffer( m_offscreenIndexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
-			commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSet
-				, *m_offscreenPipelineLayout );
-			commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
-			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
-				, *m_queryPool
-				, 1u );
-			commandBuffer.endRenderPass();
-			auto res = commandBuffer.end();
-
-			if ( !res )
-			{
-				std::stringstream stream;
-				stream << "Command buffers recording failed.";
-				throw std::runtime_error{ stream.str() };
-			}
-		}
+		commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+		auto dimensions = m_swapChain->getDimensions();
+		commandBuffer.resetQueryPool( *m_queryPool
+			, 0u
+			, 2u );
+		commandBuffer.beginRenderPass( *m_offscreenRenderPass
+			, frameBuffer
+			, { renderer::ClearValue{ m_swapChain->getClearColour() } }
+			, renderer::SubpassContents::eInline );
+		commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+			, *m_queryPool
+			, 0u );
+		commandBuffer.bindPipeline( *m_offscreenPipeline );
+		commandBuffer.setViewport( { dimensions.width
+			, dimensions.height
+			, 0
+			, 0 } );
+		commandBuffer.setScissor( { 0
+			, 0
+			, dimensions.width
+			, dimensions.height } );
+		commandBuffer.bindVertexBuffer( 0u, m_offscreenVertexBuffer->getBuffer(), 0u );
+		commandBuffer.bindIndexBuffer( m_offscreenIndexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
+		commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSet
+			, *m_offscreenPipelineLayout );
+		commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
+		commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+			, *m_queryPool
+			, 1u );
+		commandBuffer.endRenderPass();
+		commandBuffer.end();
 	}
 
 	void RenderPanel::doPrepareHiPass()
@@ -802,20 +793,18 @@ namespace vkapp
 		m_passes.hi.commandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer( true );
 		auto & cmd = *m_passes.hi.commandBuffer;
 
-		if ( cmd.begin() )
-		{
-			cmd.beginRenderPass( *m_passes.hi.renderPass
-				, *m_passes.hi.frameBuffer
-				, { renderer::ClearColorValue{ 0.0, 0.0, 0.0, 0.0 } }
-				, renderer::SubpassContents::eInline );
-			cmd.bindPipeline( *m_passes.hi.pipeline );
-			cmd.bindDescriptorSet( *m_passes.hi.descriptorSet, *m_passes.hi.pipelineLayout );
-			cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
-			cmd.draw( m_mainVertexBuffer->getCount() );
-			cmd.endRenderPass();
-			m_passes.hi.image->generateMipmaps( cmd );
-			cmd.end();
-		}
+		cmd.begin();
+		cmd.beginRenderPass( *m_passes.hi.renderPass
+			, *m_passes.hi.frameBuffer
+			, { renderer::ClearColorValue{ 0.0, 0.0, 0.0, 0.0 } }
+			, renderer::SubpassContents::eInline );
+		cmd.bindPipeline( *m_passes.hi.pipeline );
+		cmd.bindDescriptorSet( *m_passes.hi.descriptorSet, *m_passes.hi.pipelineLayout );
+		cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
+		cmd.draw( m_mainVertexBuffer->getCount() );
+		cmd.endRenderPass();
+		m_passes.hi.image->generateMipmaps( cmd );
+		cmd.end();
 	}
 
 	void RenderPanel::doPrepareBlurXPass()
@@ -969,19 +958,17 @@ namespace vkapp
 			blur.commandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer( true );
 			auto & cmd = *blur.commandBuffer;
 
-			if ( cmd.begin() )
-			{
-				cmd.beginRenderPass( *m_passes.blurX[0].renderPass
-					, *blur.frameBuffer
-					, { renderer::ClearColorValue{ 0.0, 0.0, 0.0, 0.0 } }
-				, renderer::SubpassContents::eInline );
-				cmd.bindPipeline( *blur.pipeline );
-				cmd.bindDescriptorSet( *blur.descriptorSet, *blur.pipelineLayout );
-				cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
-				cmd.draw( m_mainVertexBuffer->getCount() );
-				cmd.endRenderPass();
-				cmd.end();
-			}
+			cmd.begin();
+			cmd.beginRenderPass( *m_passes.blurX[0].renderPass
+				, *blur.frameBuffer
+				, { renderer::ClearColorValue{ 0.0, 0.0, 0.0, 0.0 } }
+			, renderer::SubpassContents::eInline );
+			cmd.bindPipeline( *blur.pipeline );
+			cmd.bindDescriptorSet( *blur.descriptorSet, *blur.pipelineLayout );
+			cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
+			cmd.draw( m_mainVertexBuffer->getCount() );
+			cmd.endRenderPass();
+			cmd.end();
 
 			dimensions.width >>= 1;
 			dimensions.height >>= 1;
@@ -1087,19 +1074,17 @@ namespace vkapp
 			blur.commandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer( true );
 			auto & cmd = *blur.commandBuffer;
 
-			if ( cmd.begin() )
-			{
-				cmd.beginRenderPass( *m_passes.blurY[0].renderPass
-					, *blur.frameBuffer
-					, { renderer::ClearColorValue{ 0.0, 0.0, 0.0, 0.0 } }
-				, renderer::SubpassContents::eInline );
-				cmd.bindPipeline( *blur.pipeline );
-				cmd.bindDescriptorSet( *blur.descriptorSet, *blur.pipelineLayout );
-				cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
-				cmd.draw( m_mainVertexBuffer->getCount() );
-				cmd.endRenderPass();
-				cmd.end();
-			}
+			cmd.begin();
+			cmd.beginRenderPass( *m_passes.blurY[0].renderPass
+				, *blur.frameBuffer
+				, { renderer::ClearColorValue{ 0.0, 0.0, 0.0, 0.0 } }
+			, renderer::SubpassContents::eInline );
+			cmd.bindPipeline( *blur.pipeline );
+			cmd.bindDescriptorSet( *blur.descriptorSet, *blur.pipelineLayout );
+			cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
+			cmd.draw( m_mainVertexBuffer->getCount() );
+			cmd.endRenderPass();
+			cmd.end();
 
 			dimensions.width >>= 1;
 			dimensions.height >>= 1;
@@ -1248,19 +1233,17 @@ namespace vkapp
 		m_passes.combine.commandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer( true );
 		auto & cmd = *m_passes.combine.commandBuffer;
 
-		if ( cmd.begin() )
-		{
-			cmd.beginRenderPass( *m_passes.combine.renderPass
-				, *m_passes.combine.frameBuffer
-				, { renderer::ClearColorValue{ 0.0, 0.0, 0.0, 0.0 } }
-				, renderer::SubpassContents::eInline );
-			cmd.bindPipeline( *m_passes.combine.pipeline );
-			cmd.bindDescriptorSet( *m_passes.combine.descriptorSet, *m_passes.combine.pipelineLayout );
-			cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
-			cmd.draw( m_mainVertexBuffer->getCount() );
-			cmd.endRenderPass();
-			cmd.end();
-		}
+		cmd.begin();
+		cmd.beginRenderPass( *m_passes.combine.renderPass
+			, *m_passes.combine.frameBuffer
+			, { renderer::ClearColorValue{ 0.0, 0.0, 0.0, 0.0 } }
+			, renderer::SubpassContents::eInline );
+		cmd.bindPipeline( *m_passes.combine.pipeline );
+		cmd.bindDescriptorSet( *m_passes.combine.descriptorSet, *m_passes.combine.pipelineLayout );
+		cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
+		cmd.draw( m_mainVertexBuffer->getCount() );
+		cmd.endRenderPass();
+		cmd.end();
 	}
 
 	void RenderPanel::doCreateMainVertexBuffer()
@@ -1325,37 +1308,28 @@ namespace vkapp
 
 			wxSize size{ GetClientSize() };
 
-			if ( commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse ) )
-			{
-				auto dimensions = m_swapChain->getDimensions();
-				commandBuffer.beginRenderPass( *m_mainRenderPass
-					, frameBuffer
-					, { renderer::ClearValue{ { 1.0, 0.0, 0.0, 1.0 } } }
-					, renderer::SubpassContents::eInline );
-				commandBuffer.bindPipeline( *m_mainPipeline );
-				commandBuffer.setViewport( { dimensions.width
-					, dimensions.height
-					, 0
-					, 0 } );
-				commandBuffer.setScissor( { 0
-					, 0
-					, dimensions.width
-					, dimensions.height } );
-				commandBuffer.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
-				commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
-					, *m_mainPipelineLayout );
-				commandBuffer.draw( 4u );
-				commandBuffer.endRenderPass();
+			commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+			auto dimensions = m_swapChain->getDimensions();
+			commandBuffer.beginRenderPass( *m_mainRenderPass
+				, frameBuffer
+				, { renderer::ClearValue{ { 1.0, 0.0, 0.0, 1.0 } } }
+				, renderer::SubpassContents::eInline );
+			commandBuffer.bindPipeline( *m_mainPipeline );
+			commandBuffer.setViewport( { dimensions.width
+				, dimensions.height
+				, 0
+				, 0 } );
+			commandBuffer.setScissor( { 0
+				, 0
+				, dimensions.width
+				, dimensions.height } );
+			commandBuffer.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
+			commandBuffer.bindDescriptorSet( *m_mainDescriptorSet
+				, *m_mainPipelineLayout );
+			commandBuffer.draw( 4u );
+			commandBuffer.endRenderPass();
 
-				auto res = commandBuffer.end();
-
-				if ( !res )
-				{
-					std::stringstream stream;
-					stream << "Command buffers recording failed.";
-					throw std::runtime_error{ stream.str() };
-				}
-			}
+			commandBuffer.end();
 		}
 	}
 
@@ -1391,65 +1365,50 @@ namespace vkapp
 		{
 			auto before = std::chrono::high_resolution_clock::now();
 			auto & queue = m_device->getGraphicsQueue();
-			auto res = queue.submit( *m_commandBuffer
+			queue.submit( *m_commandBuffer
 				, nullptr );
 			queue.waitIdle();
 
-			if ( res )
-			{
-				res = queue.submit( *m_passes.hi.commandBuffer
-					, nullptr );
-				queue.waitIdle();
-			}
+			queue.submit( *m_passes.hi.commandBuffer
+				, nullptr );
+			queue.waitIdle();
 
 			for ( auto & blur : m_passes.blurX )
 			{
-				if ( res )
-				{
-					res = queue.submit( *blur.commandBuffer
-						, nullptr );
-					queue.waitIdle();
-				}
+				queue.submit( *blur.commandBuffer
+					, nullptr );
+				queue.waitIdle();
 			}
 
 			for ( auto & blur : m_passes.blurY )
 			{
-				if ( res )
-				{
-					res = queue.submit( *blur.commandBuffer
-						, nullptr );
-					queue.waitIdle();
-				}
-			}
-
-			if ( res )
-			{
-				res = queue.submit( *m_passes.combine.commandBuffer
+				queue.submit( *blur.commandBuffer
 					, nullptr );
 				queue.waitIdle();
 			}
 
-			if ( res )
-			{
-				auto res = queue.submit( *m_commandBuffers[resources->getBackBuffer()]
-					, resources->getImageAvailableSemaphore()
-					, renderer::PipelineStageFlag::eColourAttachmentOutput
-					, resources->getRenderingFinishedSemaphore()
-					, &resources->getFence() );
-				m_swapChain->present( *resources );
-				renderer::UInt32Array values{ 0u, 0u };
-				m_queryPool->getResults( 0u
-					, 2u
-					, 0u
-					, renderer::QueryResultFlag::eWait
-					, values );
+			queue.submit( *m_passes.combine.commandBuffer
+				, nullptr );
+			queue.waitIdle();
 
-				// Elapsed time in nanoseconds
-				auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getTimestampPeriod() ) ) };
-				auto after = std::chrono::high_resolution_clock::now();
-				wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
-					, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
-			}
+			queue.submit( *m_commandBuffers[resources->getBackBuffer()]
+				, resources->getImageAvailableSemaphore()
+				, renderer::PipelineStageFlag::eColourAttachmentOutput
+				, resources->getRenderingFinishedSemaphore()
+				, &resources->getFence() );
+			m_swapChain->present( *resources );
+			renderer::UInt32Array values{ 0u, 0u };
+			m_queryPool->getResults( 0u
+				, 2u
+				, 0u
+				, renderer::QueryResultFlag::eWait
+				, values );
+
+			// Elapsed time in nanoseconds
+			auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getTimestampPeriod() ) ) };
+			auto after = std::chrono::high_resolution_clock::now();
+			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
+				, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
 		}
 		else
 		{

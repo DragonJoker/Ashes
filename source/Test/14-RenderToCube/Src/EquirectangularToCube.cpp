@@ -346,12 +346,10 @@ namespace vkapp
 
 	void EquirectangularToCube::render()
 	{
-		if ( m_commandBuffer->begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit ) )
-		{
-			render( *m_commandBuffer );
-			m_commandBuffer->end();
-			m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
-			m_device.getGraphicsQueue().waitIdle();
-		}
+		m_commandBuffer->begin( renderer::CommandBufferUsageFlag::eOneTimeSubmit );
+		render( *m_commandBuffer );
+		m_commandBuffer->end();
+		m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
+		m_device.getGraphicsQueue().waitIdle();
 	}
 }

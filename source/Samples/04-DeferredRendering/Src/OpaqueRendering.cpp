@@ -89,10 +89,9 @@ namespace vkapp
 			, static_cast< RenderTarget const & >( target ).getGBuffer() );
 	}
 
-	bool OpaqueRendering::draw( std::chrono::nanoseconds & gpu )const
+	void OpaqueRendering::draw( std::chrono::nanoseconds & gpu )const
 	{
-		auto result = m_renderer->draw( gpu );
-		result &= m_lightingPass.draw( gpu );
-		return result;
+		m_renderer->draw( gpu );
+		m_lightingPass.draw( gpu );
 	}
 }

@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "Core/Device.hpp"
+#include "Core/Exception.hpp"
 #include "Miscellaneous/DeviceMemory.hpp"
 
 namespace renderer

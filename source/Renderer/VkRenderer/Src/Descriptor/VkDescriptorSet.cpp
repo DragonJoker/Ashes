@@ -33,11 +33,7 @@ namespace vk_renderer
 		auto res = m_device.vkAllocateDescriptorSets( m_device
 			, &allocateInfo
 			, &m_descriptorSet );
-
-		if ( !checkError( res ) )
-		{
-			throw std::runtime_error{ "Descriptor set allocation failed: " + getLastError() };
-		}
+		checkError( res, "DescriptorSet allocation" );
 	}
 
 	DescriptorSet::~DescriptorSet()
