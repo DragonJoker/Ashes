@@ -863,6 +863,75 @@ namespace renderer
 			, float clamp
 			, float slopeFactor )const = 0;
 		/**
+		*\~french
+		*\brief
+		*	Définit un évènement à l'état signalé.
+		*\param[in] event
+		*	L'évènement à signaler.
+		*\param[in] stageMask
+		*	Le masque de niveaux utilisé pour déterminer quand l'évènement est signalé.
+		*\~english
+		*\brief
+		*	Sets an event to signaled state.
+		*\param[in] event
+		*	The event to be signaled.
+		*\param[in] stageMask
+		*	The source stage mask used to determine when the event is signaled.
+		*/
+		virtual void setEvent( Event const & event
+			, PipelineStageFlags stageMask )const = 0;
+		/**
+		*\~french
+		*\brief
+		*	Définit un évènement à l'état signalé.
+		*\param[in] event
+		*	L'évènement à signaler.
+		*\param[in] stageMask
+		*	Le masque de niveaux utilisé pour déterminer quand l'évènement est signalé.
+		*\~english
+		*\brief
+		*	Sets an event to signaled state.
+		*\param[in] event
+		*	The event to be signaled.
+		*\param[in] stageMask
+		*	The source stage mask used to determine when the event is signaled.
+		*/
+		virtual void resetEvent( Event const & event
+			, PipelineStageFlags stageMask )const = 0;
+		/**
+		*\~french
+		*\brief
+		*	Attend qu'un ou plusieurs évènements soient signalés sur le périphérique.
+		*\param[in] events
+		*	Les évènements à attendre.
+		*\param[in] srcStageMask
+		*	Le masque de niveaux source.
+		*\param[in] dstStageMask
+		*	Le masque de niveaus destination.
+		*\param[in] bufferMemoryBarriers
+		*	Un tableau de barrières mémoire de tampons.
+		*\param[in] imageMemoryBarriers
+		*	Un tableau de barrières mémoire d'images.
+		*\~english
+		*\brief
+		*	Wait for one or more events to be signaled on a device.
+		*\param[in] events
+		*	The events to wait on.
+		*\param[in] srcStageMask
+		*	The source stage mask.
+		*\param[in] dstStageMask
+		*	destination stage mask.
+		*\param[in] bufferMemoryBarriers
+		*	An array of buffer memory barriers.
+		*\param[in] imageMemoryBarriers
+		*	An array of image memory barriers.
+		*/
+		virtual void waitEvents( EventCRefArray const & events
+			, PipelineStageFlags srcStageMask
+			, PipelineStageFlags dstStageMask
+			, BufferMemoryBarrierArray const & bufferMemoryBarriers
+			, ImageMemoryBarrierArray const & imageMemoryBarriers )const = 0;
+		/**
 		*\~english
 		*\brief
 		*	Binds a vertex buffer to the command buffer.

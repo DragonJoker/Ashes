@@ -280,6 +280,24 @@ namespace test_renderer
 	{
 	}
 
+	void CommandBuffer::setEvent( renderer::Event const & event
+		, renderer::PipelineStageFlags stageMask )const
+	{
+	}
+
+	void CommandBuffer::resetEvent( renderer::Event const & event
+		, renderer::PipelineStageFlags stageMask )const
+	{
+	}
+
+	void CommandBuffer::waitEvents( renderer::EventCRefArray const & events
+		, renderer::PipelineStageFlags srcStageMask
+		, renderer::PipelineStageFlags dstStageMask
+		, renderer::BufferMemoryBarrierArray const & bufferMemoryBarriers
+		, renderer::ImageMemoryBarrierArray const & imageMemoryBarriers )const
+	{
+	}
+
 	void CommandBuffer::doMemoryBarrier( renderer::PipelineStageFlags after
 		, renderer::PipelineStageFlags before
 		, renderer::BufferMemoryBarrier const & transitionBarrier )const

@@ -33,6 +33,24 @@ namespace gl_renderer
 		case gl_renderer::GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
 			return "GL_TEXTURE_2D_MULTISAMPLE_ARRAY";
 
+		case gl_renderer::GL_TEXTURE_CUBE_POSITIVE_X:
+			return "GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X";
+			
+		case gl_renderer::GL_TEXTURE_CUBE_NEGATIVE_X:
+			return "GL_TEXTURE_VIEW_CUBE_MAP_NEGATIVE_X";
+
+		case gl_renderer::GL_TEXTURE_CUBE_POSITIVE_Y:
+			return "GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_Y";
+
+		case gl_renderer::GL_TEXTURE_CUBE_NEGATIVE_Y:
+			return "GL_TEXTURE_VIEW_CUBE_MAP_NEGATIVE_Y";
+
+		case gl_renderer::GL_TEXTURE_CUBE_POSITIVE_Z:
+			return "GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_Z";
+
+		case gl_renderer::GL_TEXTURE_CUBE_NEGATIVE_Z:
+			return "GL_TEXTURE_VIEW_CUBE_MAP_NEGATIVE_Z";
+
 		default:
 			assert( false && "Unsupported GlTextureType" );
 			return "GlTextureType_UNKNOWN";

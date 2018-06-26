@@ -149,7 +149,7 @@ namespace gl_renderer
 
 		case GL_TEXTURE_CUBE:
 			glLogCall( gl::TexSubImage2D
-				, GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + m_copyInfo.dstSubresource.baseArrayLayer
+				, GL_TEXTURE_CUBE_POSITIVE_X + m_copyInfo.dstSubresource.baseArrayLayer
 				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
 				, m_copyInfo.dstOffset.y
@@ -162,7 +162,7 @@ namespace gl_renderer
 
 		case GL_TEXTURE_CUBE_ARRAY:
 			glLogCall( gl::TexSubImage3D
-				, GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + ( m_copyInfo.dstSubresource.baseArrayLayer % 6u )
+				, GL_TEXTURE_CUBE_POSITIVE_X + ( m_copyInfo.dstSubresource.baseArrayLayer % 6u )
 				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
 				, m_copyInfo.dstOffset.y

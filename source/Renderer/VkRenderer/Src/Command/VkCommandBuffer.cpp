@@ -25,6 +25,7 @@ See LICENSE file in root folder.
 #include "RenderPass/VkFrameBuffer.hpp"
 #include "RenderPass/VkRenderPass.hpp"
 #include "Sync/VkBufferMemoryBarrier.hpp"
+#include "Sync/VkEvent.hpp"
 #include "Sync/VkImageMemoryBarrier.hpp"
 
 #include <Buffer/PushConstantsBuffer.hpp>
@@ -67,6 +68,18 @@ namespace vk_renderer
 			for ( auto & copy : copies )
 			{
 				result.emplace_back( vk_renderer::convert( copy ) );
+			}
+
+			return result;
+		}
+
+		std::vector< VkEvent > convert( renderer::EventCRefArray const & events )
+		{
+			std::vector< VkEvent > result;
+
+			for ( auto & event : events )
+			{
+				result.emplace_back( static_cast< Event const & >( event.get() ) );
 			}
 
 			return result;
@@ -527,6 +540,44 @@ namespace vk_renderer
 			, constantFactor
 			, clamp
 			, slopeFactor );
+	}
+
+	void CommandBuffer::setEvent( renderer::Event const & event
+		, renderer::PipelineStageFlags stageMask )const
+	{
+		m_device.vkCmdSetEvent( m_commandBuffer
+			, static_cast< Event const & >( event )
+			, convert( stageMask ) );
+	}
+
+	void CommandBuffer::resetEvent( renderer::Event const & event
+		, renderer::PipelineStageFlags stageMask )const
+	{
+		m_device.vkCmdResetEvent( m_commandBuffer
+			, static_cast< Event const & >( event )
+			, convert( stageMask ) );
+	}
+
+	void CommandBuffer::waitEvents( renderer::EventCRefArray const & events
+		, renderer::PipelineStageFlags srcStageMask
+		, renderer::PipelineStageFlags dstStageMask
+		, renderer::BufferMemoryBarrierArray const & bufferMemoryBarriers
+		, renderer::ImageMemoryBarrierArray const & imageMemoryBarriers )const
+	{
+		auto vkevents = convert( events );
+		auto vkbufbarriers = convert< VkBufferMemoryBarrier >( bufferMemoryBarriers );
+		auto vkimgbarriers = convert< VkImageMemoryBarrier >( imageMemoryBarriers );
+		m_device.vkCmdWaitEvents( m_commandBuffer
+			, uint32_t( vkevents.size() )
+			, vkevents.data()
+			, convert( srcStageMask )
+			, convert( dstStageMask )
+			, 0u
+			, nullptr
+			, uint32_t( vkbufbarriers.size() )
+			, vkbufbarriers.data()
+			, uint32_t( vkimgbarriers.size() )
+			, vkimgbarriers.data() );
 	}
 
 	void CommandBuffer::doMemoryBarrier( renderer::PipelineStageFlags after

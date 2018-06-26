@@ -25,6 +25,7 @@ See LICENSE file in root folder.
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 #include "Shader/GlShaderModule.hpp"
+#include "Sync/GlEvent.hpp"
 #include "Sync/GlFence.hpp"
 #include "Sync/GlSemaphore.hpp"
 
@@ -540,6 +541,11 @@ namespace gl_renderer
 	renderer::FencePtr Device::createFence( renderer::FenceCreateFlags flags )const
 	{
 		return std::make_unique< Fence >( *this, flags );
+	}
+
+	renderer::EventPtr Device::createEvent()const
+	{
+		return std::make_unique< Event >( *this );
 	}
 
 	renderer::CommandPoolPtr Device::createCommandPool( uint32_t queueFamilyIndex
