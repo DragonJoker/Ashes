@@ -234,6 +234,24 @@ namespace gl_renderer
 			, float clamp
 			, float slopeFactor )const override;
 		/**
+		*\copydoc	renderer::CommandBuffer::setEvent
+		*/
+		void setEvent( renderer::Event const & event
+			, renderer::PipelineStageFlags stageMask )const override;
+		/**
+		*\copydoc	renderer::CommandBuffer::resetEvent
+		*/
+		void resetEvent( renderer::Event const & event
+			, renderer::PipelineStageFlags stageMask )const override;
+		/**
+		*\copydoc	renderer::CommandBuffer::waitEvents
+		*/
+		void waitEvents( renderer::EventCRefArray const & events
+			, renderer::PipelineStageFlags srcStageMask
+			, renderer::PipelineStageFlags dstStageMask
+			, renderer::BufferMemoryBarrierArray const & bufferMemoryBarriers
+			, renderer::ImageMemoryBarrierArray const & imageMemoryBarriers )const override;
+		/**
 		*\return
 		*	Le tableau de commandes.
 		*/

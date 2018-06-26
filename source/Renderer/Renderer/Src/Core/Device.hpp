@@ -481,6 +481,15 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
+		*	Creates an event.
+		*\~french
+		*\brief
+		*	Crée un évènement.
+		*/
+		virtual EventPtr createEvent()const = 0;
+		/**
+		*\~english
+		*\brief
 		*	Creates a command buffer pool.
 		*\param[in] queueFamilyIndex
 		*	The family index of the queue to which the pool belongs.

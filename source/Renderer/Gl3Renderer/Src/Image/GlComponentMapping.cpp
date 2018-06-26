@@ -1,11 +1,7 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
-#ifndef ___Renderer_ComponentMapping_HPP___
-#define ___Renderer_ComponentMapping_HPP___
-#pragma once
-
 #include "RendererPrerequisites.hpp"
 
 namespace renderer
@@ -26,5 +22,3 @@ namespace renderer
 		ComponentSwizzle a{ ComponentSwizzle::eIdentity };
 	};
 }
-
-#endif

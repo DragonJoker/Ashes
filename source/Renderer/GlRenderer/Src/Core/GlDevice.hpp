@@ -110,6 +110,10 @@ namespace gl_renderer
 		*/
 		renderer::FencePtr createFence( renderer::FenceCreateFlags flags = 0 )const override;
 		/**
+		*\copydoc	renderer::Device::createEvent
+		*/
+		renderer::EventPtr createEvent()const override;
+		/**
 		*\copydoc		renderer::Device::createCommandPool
 		*/
 		renderer::CommandPoolPtr createCommandPool( uint32_t queueFamilyIndex

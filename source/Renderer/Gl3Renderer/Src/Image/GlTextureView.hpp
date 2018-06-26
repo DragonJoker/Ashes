@@ -33,14 +33,14 @@ namespace gl_renderer
 			, renderer::ImageViewCreateInfo const & createInfo );
 		~TextureView();
 
-		inline GlTextureViewType getTarget()const noexcept
+		inline GlTextureType getTarget()const noexcept
 		{
 			return m_target;
 		}
 
 	private:
 		Device const & m_device;
-		GlTextureViewType m_target;
+		GlTextureType m_target;
 	};
 }
 
