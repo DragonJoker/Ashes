@@ -103,6 +103,10 @@ namespace test_renderer
 		*/
 		renderer::FencePtr createFence( renderer::FenceCreateFlags flags )const override;
 		/**
+		*\copydoc	renderer::Device::createEvent
+		*/
+		renderer::EventPtr createEvent()const override;
+		/**
 		*\copydoc	renderer::Device::createCommandPool
 		*/
 		renderer::CommandPoolPtr createCommandPool( uint32_t queueFamilyIndex

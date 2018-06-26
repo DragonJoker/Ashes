@@ -259,11 +259,6 @@ namespace gl_renderer
 		return getName( value );
 	}
 
-	inline std::string toString( GlTextureViewType value )
-	{
-		return getName( value );
-	}
-
 	inline std::string toString( GlTextureUnit value )
 	{
 		return getName( value );

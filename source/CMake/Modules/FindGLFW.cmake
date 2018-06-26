@@ -64,17 +64,18 @@ if( WIN32 )
 			${GLFW_LIBRARY_DIR}
 	)
 else()
-	find_path( GLFW_LIBRARY_DIR libglfw3.so
+	find_path( GLFW_LIBRARY_DIR libglfw.so
 		HINTS
 		PATH_SUFFIXES
 			lib
+			lib/x86_64-linux-gnu
 		PATHS
 			${GLFW_ROOT_DIR}
 	)
 
 	find_library( GLFW_LIBRARY
 		NAMES
-			libglfw3.so
+			libglfw.so
 		HINTS
 		PATHS
 			${GLFW_LIBRARY_DIR}

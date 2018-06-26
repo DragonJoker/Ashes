@@ -2,8 +2,6 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
-#pragma once
-
 #include "VkRendererPrerequisites.hpp"
 
 namespace vk_renderer

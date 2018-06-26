@@ -126,7 +126,7 @@ namespace gl_renderer
 
 			case GL_TEXTURE_CUBE:
 				glLogCall( gl::CompressedTexSubImage2D
-					, GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + copyInfo.imageSubresource.baseArrayLayer
+					, GL_TEXTURE_CUBE_POSITIVE_X + copyInfo.imageSubresource.baseArrayLayer
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
@@ -139,7 +139,7 @@ namespace gl_renderer
 
 			case GL_TEXTURE_CUBE_ARRAY:
 				glLogCall( gl::CompressedTexSubImage3D
-					, GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + ( copyInfo.imageSubresource.baseArrayLayer % 6u )
+					, GL_TEXTURE_CUBE_POSITIVE_X + ( copyInfo.imageSubresource.baseArrayLayer % 6u )
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
@@ -226,7 +226,7 @@ namespace gl_renderer
 
 			case GL_TEXTURE_CUBE:
 				glLogCall( gl::TexSubImage2D
-					, GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + copyInfo.imageSubresource.baseArrayLayer
+					, GL_TEXTURE_CUBE_POSITIVE_X + copyInfo.imageSubresource.baseArrayLayer
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
@@ -239,7 +239,7 @@ namespace gl_renderer
 
 			case GL_TEXTURE_CUBE_ARRAY:
 				glLogCall( gl::TexSubImage3D
-					, GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + ( copyInfo.imageSubresource.baseArrayLayer % 6u )
+					, GL_TEXTURE_CUBE_POSITIVE_X + ( copyInfo.imageSubresource.baseArrayLayer % 6u )
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y

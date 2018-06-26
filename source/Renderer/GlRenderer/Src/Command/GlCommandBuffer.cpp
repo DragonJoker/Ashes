@@ -47,11 +47,14 @@ See LICENSE file in root folder.
 #include "Commands/GlImageMemoryBarrierCommand.hpp"
 #include "Commands/GlNextSubpassCommand.hpp"
 #include "Commands/GlPushConstantsCommand.hpp"
+#include "Commands/GlResetEventCommand.hpp"
 #include "Commands/GlResetQueryPoolCommand.hpp"
 #include "Commands/GlScissorCommand.hpp"
 #include "Commands/GlSetDepthBiasCommand.hpp"
+#include "Commands/GlSetEventCommand.hpp"
 #include "Commands/GlSetLineWidthCommand.hpp"
 #include "Commands/GlViewportCommand.hpp"
+#include "Commands/GlWaitEventsCommand.hpp"
 #include "Commands/GlWriteTimestampCommand.hpp"
 
 #include <Buffer/StagingBuffer.hpp>
@@ -599,6 +602,33 @@ namespace gl_renderer
 		m_commands.emplace_back( std::make_unique< SetDepthBiasCommand >( constantFactor
 			, clamp
 			, slopeFactor ) );
+	}
+
+	void CommandBuffer::setEvent( renderer::Event const & event
+		, renderer::PipelineStageFlags stageMask )const
+	{
+		m_commands.emplace_back( std::make_unique< SetEventCommand >( event
+			, stageMask ) );
+	}
+
+	void CommandBuffer::resetEvent( renderer::Event const & event
+		, renderer::PipelineStageFlags stageMask )const
+	{
+		m_commands.emplace_back( std::make_unique< ResetEventCommand >( event
+			, stageMask ) );
+	}
+
+	void CommandBuffer::waitEvents( renderer::EventCRefArray const & events
+		, renderer::PipelineStageFlags srcStageMask
+		, renderer::PipelineStageFlags dstStageMask
+		, renderer::BufferMemoryBarrierArray const & bufferMemoryBarriers
+		, renderer::ImageMemoryBarrierArray const & imageMemoryBarriers )const
+	{
+		m_commands.emplace_back( std::make_unique< WaitEventsCommand >( events
+			, srcStageMask
+			, dstStageMask
+			, bufferMemoryBarriers 
+			, imageMemoryBarriers ) );
 	}
 
 	void CommandBuffer::initialiseGeometryBuffers()const

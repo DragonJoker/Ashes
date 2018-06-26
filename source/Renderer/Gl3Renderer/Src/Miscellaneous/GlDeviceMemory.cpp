@@ -243,7 +243,7 @@ namespace gl_renderer
 				, renderer::ImageCreateInfo const & createInfo )
 			{
 				glLogCall( gl::TexImage2D
-					, GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + face
+					, GL_TEXTURE_CUBE_POSITIVE_X + face
 					, 0u
 					, m_internal
 					, width

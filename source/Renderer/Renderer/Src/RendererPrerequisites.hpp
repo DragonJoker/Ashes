@@ -217,6 +217,7 @@ namespace renderer
 	class DescriptorSetPool;
 	class Device;
 	class DeviceMemory;
+	class Event;
 	class Fence;
 	class FrameBuffer;
 	class ImageMemoryBarrier;
@@ -287,6 +288,7 @@ namespace renderer
 	using DescriptorSetLayoutBindingPtr = std::unique_ptr< DescriptorSetLayoutBinding >;
 	using DescriptorSetPoolPtr = std::unique_ptr< DescriptorSetPool >;
 	using DescriptorSetPtr = std::unique_ptr< DescriptorSet >;
+	using EventPtr = std::unique_ptr< Event >;
 	using FencePtr = std::unique_ptr< Fence >;
 	using FrameBufferPtr = std::unique_ptr< FrameBuffer >;
 	using IWindowHandlePtr = std::unique_ptr< IWindowHandle >;
@@ -320,6 +322,7 @@ namespace renderer
 	using AttachmentReferenceArray = std::vector< AttachmentReference >;
 	using AttributeArray = std::vector< Attribute >;
 	using BufferImageCopyArray = std::vector< BufferImageCopy >;
+	using BufferMemoryBarrierArray = std::vector< BufferMemoryBarrier >;
 	using ClearAttachmentArray = std::vector< ClearAttachment >;
 	using ClearRectArray = std::vector< ClearRect >;
 	using ClearValueArray = std::vector< ClearValue >;
@@ -328,6 +331,7 @@ namespace renderer
 	using DescriptorSetLayoutBindingArray = std::vector< DescriptorSetLayoutBinding >;
 	using FrameBufferAttachmentArray = std::vector< FrameBufferAttachment >;
 	using ImageLayoutArray = std::vector< ImageLayout >;
+	using ImageMemoryBarrierArray = std::vector< ImageMemoryBarrier >;
 	using PipelineStageFlagsArray = std::vector< PipelineStageFlags >;
 	using PushConstantArray = std::vector< PushConstant >;
 	using RenderSubpassArray = std::vector< RenderSubpass >;
@@ -349,6 +353,7 @@ namespace renderer
 	using CommandBufferCRef = std::reference_wrapper< CommandBuffer const >;
 	using DescriptorSetCRef = std::reference_wrapper< DescriptorSet const >;
 	using DescriptorSetLayoutCRef = std::reference_wrapper< DescriptorSetLayout const >;
+	using EventCRef = std::reference_wrapper< Event const >;
 	using PushConstantRangeCRef = std::reference_wrapper< PushConstantRange const >;
 	using SamplerCRef = std::reference_wrapper< Sampler const >;
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;
@@ -361,6 +366,7 @@ namespace renderer
 	using CommandBufferCRefArray = std::vector< CommandBufferCRef >;
 	using DescriptorSetCRefArray = std::vector< DescriptorSetCRef >;
 	using DescriptorSetLayoutCRefArray = std::vector< DescriptorSetLayoutCRef >;
+	using EventCRefArray = std::vector< EventCRef >;
 	using PushConstantRangeCRefArray = std::vector< PushConstantRangeCRef >;
 	using SemaphoreCRefArray = std::vector< SemaphoreCRef >;
 	using SwapChainCRefArray = std::vector< SwapChainCRef >;

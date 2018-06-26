@@ -8,21 +8,21 @@ namespace gl_renderer
 {
 	namespace
 	{
-		GlTextureViewType convert( renderer::ImageViewCreateInfo const & createInfo
+		GlTextureType convert( renderer::ImageViewCreateInfo const & createInfo
 			, renderer::ImageCreateFlags flags
 			, renderer::SampleCountFlag samples )
 		{
-			GlTextureViewType result = gl_renderer::convert( createInfo.viewType );
+			GlTextureType result = gl_renderer::convert( createInfo.viewType );
 
 			if ( samples > renderer::SampleCountFlag::e1 )
 			{
 				switch ( result )
 				{
-				case GL_TEXTURE_VIEW_2D:
-					result = GL_TEXTURE_VIEW_2D_MULTISAMPLE;
+				case GL_TEXTURE_2D:
+					result = GL_TEXTURE_2D_MULTISAMPLE;
 					break;
-				case GL_TEXTURE_VIEW_2D_ARRAY:
-					result = GL_TEXTURE_VIEW_2D_MULTISAMPLE_ARRAY;
+				case GL_TEXTURE_2D_ARRAY:
+					result = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
 					break;
 				default:
 					assert( "Unsupported TextureViewType for a multisampled texture." );
@@ -33,7 +33,7 @@ namespace gl_renderer
 			if ( checkFlag( flags, renderer::ImageCreateFlag::eCubeCompatible ) )
 			{
 				auto layer = createInfo.subresourceRange.baseArrayLayer % 6;
-				result = GlTextureViewType( GL_TEXTURE_VIEW_CUBE_MAP_POSITIVE_X + layer );
+				result = GlTextureType( GL_TEXTURE_CUBE_POSITIVE_X + layer );
 			}
 
 			return result;

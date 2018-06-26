@@ -24,6 +24,7 @@ See LICENSE file in root folder.
 #include "RenderPass/VkRenderPass.hpp"
 #include "Shader/VkAttribute.hpp"
 #include "Shader/VkShaderModule.hpp"
+#include "Sync/VkEvent.hpp"
 #include "Sync/VkFence.hpp"
 #include "Sync/VkSemaphore.hpp"
 
@@ -259,6 +260,11 @@ namespace vk_renderer
 	renderer::FencePtr Device::createFence( renderer::FenceCreateFlags flags )const
 	{
 		return std::make_unique< Fence >( *this, flags );
+	}
+
+	renderer::EventPtr Device::createEvent()const
+	{
+		return std::make_unique< Event >( *this );
 	}
 
 	renderer::CommandPoolPtr Device::createCommandPool( uint32_t queueFamilyIndex
