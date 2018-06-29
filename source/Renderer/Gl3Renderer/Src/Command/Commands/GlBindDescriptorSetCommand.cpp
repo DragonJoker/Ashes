@@ -40,6 +40,44 @@ namespace gl_renderer
 			return write.bufferInfo[index].buffer.get();
 		}
 
+		GlTextureType convert( renderer::TextureViewType const & mode
+			, uint32_t layers )
+		{
+			switch ( mode )
+			{
+			case renderer::TextureViewType::e1D:
+				return layers > 1u
+					? GL_TEXTURE_1D_ARRAY
+					: GL_TEXTURE_1D;
+
+			case renderer::TextureViewType::e2D:
+				return layers > 1u
+					? GL_TEXTURE_2D_ARRAY
+					: GL_TEXTURE_2D;
+
+			case renderer::TextureViewType::e3D:
+				return GL_TEXTURE_3D;
+
+			case renderer::TextureViewType::eCube:
+				return layers > 6u
+					? GL_TEXTURE_CUBE_ARRAY
+					: GL_TEXTURE_CUBE;
+
+			case renderer::TextureViewType::e1DArray:
+				return GL_TEXTURE_1D_ARRAY;
+
+			case renderer::TextureViewType::e2DArray:
+				return GL_TEXTURE_2D_ARRAY;
+
+			case renderer::TextureViewType::eCubeArray:
+				return GL_TEXTURE_CUBE_ARRAY;
+
+			default:
+				assert( false && "Unsupported TextureViewType" );
+				return GL_TEXTURE_2D;
+			}
+		}
+
 		void bindCombinedSampler( renderer::WriteDescriptorSet const & write )
 		{
 			for ( auto i = 0u; i < write.imageInfo.size(); ++i )
@@ -49,7 +87,7 @@ namespace gl_renderer
 				auto & sampler = getSampler( write, i );
 				glLogCall( gl::ActiveTexture
 					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-				auto target = convert( view.getType() );
+				auto target = convert( view.getType(), view.getTexture().getLayerCount() );
 				glLogCall( gl::BindTexture
 					, target
 					, static_cast< Texture const & >( view.getTexture() ).getImage() );
@@ -93,7 +131,7 @@ namespace gl_renderer
 				auto & view = getView( write, i );
 				glLogCall( gl::ActiveTexture
 					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-				auto target = convert( view.getType() );
+				auto target = convert( view.getType(), view.getTexture().getLayerCount() );
 				glLogCall( gl::BindTexture
 					, target
 					, static_cast< Texture const & >( view.getTexture() ).getImage() );

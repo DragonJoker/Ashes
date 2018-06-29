@@ -210,23 +210,39 @@ namespace gl_renderer
 				}
 
 				m_allAttaches.push_back( attachment );
-				GLenum target = GL_TEXTURE_2D;
+				GLenum target = gltexture.getLayerCount() > 1u
+					? GL_TEXTURE_2D_ARRAY
+					: GL_TEXTURE_2D;
 
 				if ( gltexture.getSamplesCount() > renderer::SampleCountFlag::e1 )
 				{
-					target = GL_TEXTURE_2D_MULTISAMPLE;
+					target = gltexture.getLayerCount() > 1u
+						? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+						: GL_TEXTURE_2D_MULTISAMPLE;
 				}
 				else if ( checkFlag( gltexture.getFlags(), renderer::ImageCreateFlag::eCubeCompatible ) )
 				{
 					target = glview.getTarget();
 				}
 
-				glLogCall( gl::FramebufferTexture2D
-					, GL_FRAMEBUFFER
-					, GlAttachmentPoint( attachment.point + index )
-					, target
-					, attachment.object
-					, mipLevel );
+				if ( gltexture.getLayerCount() > 1u )
+				{
+					glLogCall( gl::FramebufferTextureLayer
+						, GL_FRAMEBUFFER
+						, GlAttachmentPoint( attachment.point + index )
+						, attachment.object
+						, mipLevel
+						, glview.getSubResourceRange().baseArrayLayer );
+				}
+				else
+				{
+					glLogCall( gl::FramebufferTexture2D
+						, GL_FRAMEBUFFER
+						, GlAttachmentPoint( attachment.point + index )
+						, target
+						, attachment.object
+						, mipLevel );
+				}
 				checkCompleteness( gl::CheckFramebufferStatus( GL_FRAMEBUFFER ) );
 			}
 			else
