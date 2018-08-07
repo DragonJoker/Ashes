@@ -2,12 +2,7 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder
 */
-#include "Miscellaneous/VkSurfaceCapabilities.hpp"
-
-#include "Enum/VkCompositeAlphaFlag.hpp"
-#include "Enum/VkImageUsageFlag.hpp"
-#include "Enum/VkSurfaceTransformFlag.hpp"
-#include "Miscellaneous/VkExtent2D.hpp"
+#include "VkRendererPrerequisites.hpp"
 
 namespace vk_renderer
 {

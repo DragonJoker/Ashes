@@ -161,11 +161,6 @@ static char constexpr PathSeparator = '\\';
 
 namespace
 {
-	std::string operator/( std::string const & lhs, std::string const & rhs )
-	{
-		return lhs + PathSeparator + rhs;
-	}
-
 	template< typename DirectoryFuncType, typename FileFuncType >
 	bool traverse_folder( std::string const & folderPath
 		, DirectoryFuncType directoryFunction
@@ -174,7 +169,7 @@ namespace
 		assert( !folderPath.empty() );
 		bool result = false;
 		WIN32_FIND_DATAA findData;
-		HANDLE handle = ::FindFirstFileA( ( folderPath / "*.*" ).c_str(), &findData );
+		HANDLE handle = ::FindFirstFileA( ( folderPath + PathSeparator + "*.*" ).c_str(), &findData );
 
 		if ( handle != INVALID_HANDLE_VALUE )
 		{
@@ -185,11 +180,11 @@ namespace
 			{
 				if ( ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY )
 				{
-					result = directoryFunction( folderPath / name );
+					result = directoryFunction( folderPath + PathSeparator + name );
 				}
 				else
 				{
-					fileFunction( folderPath / name );
+					fileFunction( folderPath + PathSeparator + name );
 				}
 			}
 
@@ -203,11 +198,11 @@ namespace
 					{
 						if ( ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY )
 						{
-							result = directoryFunction( folderPath / name );
+							result = directoryFunction( folderPath + PathSeparator + name );
 						}
 						else
 						{
-							fileFunction( folderPath / name );
+							fileFunction( folderPath + PathSeparator + name );
 						}
 					}
 				}
@@ -287,11 +282,11 @@ namespace
 				{
 					if ( dirent->d_type == DT_DIR )
 					{
-						result = directoryFunction( folderPath / name );
+						result = directoryFunction( folderPath + PathSeparator + name );
 					}
 					else
 					{
-						fileFunction( folderPath / name );
+						fileFunction( folderPath + PathSeparator + name );
 					}
 				}
 			}
@@ -2551,7 +2546,7 @@ static void AppGpuDumpQueueProps( renderer::QueueFamilyProperties const & props
 	}
 	if ( html_output || human_readable_output )
 	{
-		char *sep = "";  // separator character
+		std::string sep = "";  // separator character
 		if ( renderer::checkFlag( props.queueFlags, renderer::QueueFlag::eGraphics ) )
 		{
 			fprintf( out, "GRAPHICS" );
@@ -2559,17 +2554,17 @@ static void AppGpuDumpQueueProps( renderer::QueueFamilyProperties const & props
 		}
 		if ( renderer::checkFlag( props.queueFlags, renderer::QueueFlag::eCompute ) )
 		{
-			fprintf( out, "%sCOMPUTE", sep );
+			fprintf( out, "%sCOMPUTE", sep.c_str() );
 			sep = " | ";
 		}
 		if ( renderer::checkFlag( props.queueFlags, renderer::QueueFlag::eTransfer ) )
 		{
-			fprintf( out, "%sTRANSFER", sep );
+			fprintf( out, "%sTRANSFER", sep.c_str() );
 			sep = " | ";
 		}
 		if ( renderer::checkFlag( props.queueFlags, renderer::QueueFlag::eSparseBinding ) )
 		{
-			fprintf( out, "%sSPARSE", sep );
+			fprintf( out, "%sSPARSE", sep.c_str() );
 		}
 	}
 
@@ -3159,7 +3154,7 @@ int main( int argc, char **argv )
 #endif
 
 	//--WIN32--
-#ifdef RENDERLIB_WIN32
+#if RENDERLIB_WIN32
 	//if ( CheckExtensionEnabled( VK_KHR_WIN32_SURFACE_EXTENSION_NAME, inst.inst_extensions, inst.inst_extensions_count ) )
 	{
 		AppCreateWin32Window( &inst );
@@ -3195,17 +3190,19 @@ int main( int argc, char **argv )
 		AppCreateXcbWindow( &inst );
 		for ( uint32_t i = 0; i < gpu_count; ++i )
 		{
+			auto & gpu = inst.instance->getPhysicalDevice( i );
+			auto & gpuprops = gpu.getProperties();
 			AppCreateXcbSurface( &inst );
 			if ( html_output )
 			{
 				fprintf( out, "\t\t\t\t<details><summary>GPU id : <div class='val'>%u</div> (%s)</summary></details>\n", i,
-					gpus[i].props.deviceName );
+					gpuprops.deviceName.c_str() );
 				fprintf( out, "\t\t\t\t<details><summary>Surface type : <div class='type'>%s</div></summary></details>\n",
 					inst.connection->getSurfaceType().c_str() );
 			}
 			else if ( human_readable_output )
 			{
-				printf( "GPU id       : %u (%s)\n", i, gpus[i].props.deviceName );
+				printf( "GPU id       : %u (%s)\n", i, gpuprops.deviceName.c_str() );
 				printf( "Surface type : %s\n", inst.connection->getSurfaceType().c_str() );
 			}
 			format_count += AppDumpSurfaceFormats( *inst.connection, out );
@@ -3223,17 +3220,19 @@ int main( int argc, char **argv )
 		AppCreateXlibWindow( &inst );
 		for ( uint32_t i = 0; i < gpu_count; ++i )
 		{
+			auto & gpu = inst.instance->getPhysicalDevice( i );
+			auto & gpuprops = gpu.getProperties();
 			AppCreateXlibSurface( &inst );
 			if ( html_output )
 			{
 				fprintf( out, "\t\t\t\t<details><summary>GPU id : <div class='val'>%u</div> (%s)</summary></details>\n", i,
-					gpus[i].props.deviceName );
+					gpuprops.deviceName.c_str() );
 				fprintf( out, "\t\t\t\t<details><summary>Surface type : <div class='type'>%s</div></summary></details>\n",
 					inst.connection->getSurfaceType().c_str() );
 			}
 			else if ( human_readable_output )
 			{
-				printf( "GPU id       : %u (%s)\n", i, gpus[i].props.deviceName );
+				printf( "GPU id       : %u (%s)\n", i, gpuprops.deviceName.c_str() );
 				printf( "Surface type : %s\n", inst.connection->getSurfaceType().c_str() );
 			}
 			format_count += AppDumpSurfaceFormats( *inst.connection, out );

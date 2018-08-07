@@ -124,6 +124,8 @@ namespace renderer
 		*	Accesseurs.
 		*/
 		/**@{*/
+		std::vector< ExtensionProperties > const & getExtensionProperties( std::string const & layerName )const;
+
 		inline std::vector< ExtensionProperties > const & getExtensionProperties()const
 		{
 			return m_extensions;
@@ -139,24 +141,6 @@ namespace renderer
 			return m_layerExtensions[index];
 		}
 
-		inline std::vector< ExtensionProperties > const & getExtensionProperties( std::string const & layerName )const
-		{
-			auto it = std::find_if( m_layerExtensions.begin()
-				, m_layerExtensions.end()
-				, [&layerName]( renderer::LayerProperties const & lookup )
-				{
-					return lookup.layerName == layerName;
-				} );
-
-			if ( it != m_layerExtensions.end() )
-			{
-				return it->extensions;
-			}
-
-			static std::vector< ExtensionProperties > const dummy;
-			return dummy;
-		}
-		
 		inline std::vector< QueueFamilyProperties > const & getQueueProperties()const
 		{
 			return m_queueProperties;

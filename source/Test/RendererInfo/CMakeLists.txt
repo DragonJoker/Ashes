@@ -26,6 +26,12 @@ target_link_libraries( ${PROJECT_NAME}
 	${BinLibraries}
 )
 
+if ( NOT WIN32 )
+	target_link_libraries( ${PROJECT_NAME}
+		X11
+	)
+endif ()
+
 add_dependencies( ${PROJECT_NAME}
 	VkRenderer
 	GlRenderer

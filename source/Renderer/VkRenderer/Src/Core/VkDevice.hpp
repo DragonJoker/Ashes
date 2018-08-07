@@ -204,7 +204,7 @@ namespace vk_renderer
 		*\return
 		*	The presentation surface's capabilities.
 		*/
-		inline auto getSurfaceCapabilities()const
+		inline auto & getSurfaceCapabilities()const
 		{
 			return m_connection->getSurfaceCapabilities();
 		}
