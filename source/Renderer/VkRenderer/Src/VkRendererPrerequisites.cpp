@@ -5,16 +5,16 @@
 
 namespace vk_renderer
 {
-	void checkExtensionsAvailability( std::vector< VkExtensionProperties > const & available
+	void checkExtensionsAvailability( std::vector< renderer::ExtensionProperties > const & available
 		, std::vector< char const * > const & requested )
 	{
 		for ( auto const & name : requested )
 		{
 			if ( available.end() == std::find_if( available.begin()
 				, available.end()
-				, [&name]( auto const & extension )
+				, [&name]( renderer::ExtensionProperties const & extension )
 				{
-					return strcmp( extension.extensionName, name ) == 0;
+					return extension.extensionName == name;
 				} ) )
 			{
 				throw std::runtime_error{ "Extension " + std::string( name ) + " is not supported." };

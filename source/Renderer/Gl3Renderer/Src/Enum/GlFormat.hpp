@@ -282,6 +282,7 @@ namespace gl_renderer
 	*	\p true if it is usable in depth buffers.
 	*/
 	bool isDepthFormat( GlInternal format )noexcept;
+	bool isSupportedInternal( renderer::Format const & format )noexcept;
 	/**
 	*\brief
 	*	Convertit un renderer::Format en GlInternal.

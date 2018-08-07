@@ -33,6 +33,24 @@ See LICENSE file in root folder.
 
 namespace renderer
 {
+	class IWindowlessHandle
+		: public IWindowHandle
+	{
+	public:
+		explicit IWindowlessHandle()
+		{
+		}
+
+		virtual ~IWindowlessHandle()
+		{
+		}
+
+		virtual operator bool()
+		{
+			return true;
+		}
+	};
+
 
 #if RENDERLIB_WIN32
 

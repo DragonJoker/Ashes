@@ -275,6 +275,7 @@ namespace renderer
 		/**@}*/
 		eCompressed_BEGIN = eBCCompressed_BEGIN,
 		eCompressed_END = eASTCCompressed_END,
+		eRange,
 	};
 	/**
 	*\~english

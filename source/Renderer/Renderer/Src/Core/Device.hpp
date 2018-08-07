@@ -863,19 +863,12 @@ namespace renderer
 		{
 			return m_gpu;
 		}
-		/**@}*/
-		/**
-		*\~english
-		*\return
-		*	The number of nanoseconds it takes for timestamp value to be incremented by 1.
-		*\~french
-		*\return
-		*	Le nombre de nanosecondes qu'il faut pour que la valeur d'un timestamp soit incrémentée de 1.
-		*/
+
 		inline float getTimestampPeriod()const
 		{
 			return m_timestampPeriod;
 		}
+		/**@}*/
 
 	private:
 		/**

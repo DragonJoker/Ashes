@@ -13,6 +13,7 @@ See LICENSE file in root folder.
 VK_LIB_GLOBAL_FUNCTION( vkCreateInstance )
 VK_LIB_GLOBAL_FUNCTION( vkEnumerateInstanceExtensionProperties )
 VK_LIB_GLOBAL_FUNCTION( vkEnumerateInstanceLayerProperties )
+VK_LIB_GLOBAL_FUNCTION( vkEnumerateInstanceVersion )
 
 #undef VK_LIB_GLOBAL_FUNCTION
 
@@ -26,6 +27,7 @@ VK_LIB_INSTANCE_FUNCTION( vkCreateDevice )
 VK_LIB_INSTANCE_FUNCTION( vkDestroyInstance )
 VK_LIB_INSTANCE_FUNCTION( vkEnumeratePhysicalDevices )
 VK_LIB_INSTANCE_FUNCTION( vkEnumerateDeviceExtensionProperties )
+VK_LIB_INSTANCE_FUNCTION( vkEnumerateDeviceLayerProperties )
 VK_LIB_INSTANCE_FUNCTION( vkGetDeviceProcAddr )
 VK_LIB_INSTANCE_FUNCTION( vkGetPhysicalDeviceFeatures )
 VK_LIB_INSTANCE_FUNCTION( vkGetPhysicalDeviceFormatProperties )

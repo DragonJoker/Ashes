@@ -89,6 +89,18 @@ namespace renderer
 		}
 		/**
 		*\~french
+		*\brief
+		*	Conversion implicite vers le type entier de base.
+		*\~english
+		*\brief
+		*	Implicit convertion to the basic integer type.
+		*/
+		inline BaseType value()const noexcept
+		{
+			return m_value;
+		}
+		/**
+		*\~french
 		*\name Opérateurs binaires membres.
 		*\~english
 		*\name Member binary operators.

@@ -7,6 +7,8 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "Core/WindowHandle.hpp"
+#include "Miscellaneous/SurfaceCapabilities.hpp"
+#include "Miscellaneous/SurfaceFormat.hpp"
 
 namespace renderer
 {
@@ -60,33 +62,52 @@ namespace renderer
 		*/
 		virtual ~Connection() = default;
 		/**
+		*\~english
+		*name
+		*	Getters.
 		*\~french
-		*\return
-		*	The window handle.
-		*\~french
-		*\return
-		*	Le descripteur de la fenêtre.
+		*name
+		*	Accesseurs.
 		*/
+		/**@{*/
 		WindowHandle const & getHandle()const
 		{
 			return m_handle;
 		}
-		/**
-		*\~french
-		*\return
-		*	Le périphérique physique.
-		*\~english
-		*\return
-		*	The physical device.
-		*/
+
 		inline PhysicalDevice const & getGpu()const
 		{
 			return m_gpu;
 		}
 
+		inline std::string const & getSurfaceType()const
+		{
+			return m_surfaceType;
+		}
+
+		inline std::vector< SurfaceFormat > const & getSurfaceFormats()const
+		{
+			return m_surfaceFormats;
+		}
+
+		inline SurfaceCapabilities const & getSurfaceCapabilities()const
+		{
+			return m_surfaceCapabilities;
+		}
+
+		inline std::vector< PresentMode > const & getPresentModes()const
+		{
+			return m_presentModes;
+		}
+		/**@}*/
+
 	protected:
 		WindowHandle m_handle;
 		PhysicalDevice const & m_gpu;
+		std::vector< SurfaceFormat > m_surfaceFormats;
+		SurfaceCapabilities m_surfaceCapabilities;
+		std::vector< PresentMode > m_presentModes;
+		std::string m_surfaceType;
 	};
 }
 

@@ -6,6 +6,9 @@ See LICENSE file in root folder
 #define ___Renderer_PhysicalDevice_HPP___
 #pragma once
 
+#include "Miscellaneous/ExtensionProperties.hpp"
+#include "Miscellaneous/FormatProperties.hpp"
+#include "Miscellaneous/LayerProperties.hpp"
 #include "Miscellaneous/PhysicalDeviceFeatures.hpp"
 #include "Miscellaneous/PhysicalDeviceMemoryProperties.hpp"
 #include "Miscellaneous/PhysicalDeviceProperties.hpp"
@@ -121,9 +124,31 @@ namespace renderer
 		*	Accesseurs.
 		*/
 		/**@{*/
+		std::vector< ExtensionProperties > const & getExtensionProperties( std::string const & layerName )const;
+
+		inline std::vector< ExtensionProperties > const & getExtensionProperties()const
+		{
+			return m_extensions;
+		}
+		
+		inline uint32_t getLayersCount()const
+		{
+			return uint32_t( m_layerExtensions.size() );
+		}
+
+		inline LayerProperties const & getLayerProperties( uint32_t index )const
+		{
+			return m_layerExtensions[index];
+		}
+
 		inline std::vector< QueueFamilyProperties > const & getQueueProperties()const
 		{
 			return m_queueProperties;
+		}
+
+		FormatProperties const & getFormatProperties( renderer::Format fmt )const
+		{
+			return m_formatProperties[size_t( fmt )];
 		}
 
 		inline PhysicalDeviceProperties const & getProperties()const
@@ -152,6 +177,9 @@ namespace renderer
 		PhysicalDeviceFeatures m_features{};
 		PhysicalDeviceProperties m_properties{};
 		std::vector< QueueFamilyProperties > m_queueProperties;
+		std::vector< ExtensionProperties > m_extensions;
+		std::vector< renderer::LayerProperties > m_layerExtensions;
+		std::array< renderer::FormatProperties, size_t( renderer::Format::eRange ) > m_formatProperties;
 		uint32_t m_shaderVersion;
 
 	private:

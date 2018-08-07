@@ -47,11 +47,13 @@
 #include "Enum/VkBlendOp.hpp"
 #include "Enum/VkBorderColour.hpp"
 #include "Enum/VkBufferTarget.hpp"
+#include "Enum/VkColorSpace.hpp"
 #include "Enum/VkColourComponentFlag.hpp"
 #include "Enum/VkCommandBufferResetFlag.hpp"
 #include "Enum/VkCommandBufferUsageFlag.hpp"
 #include "Enum/VkCommandPoolCreateFlag.hpp"
 #include "Enum/VkComponentSwizzle.hpp"
+#include "Enum/VkCompositeAlphaFlag.hpp"
 #include "Enum/VkCompareOp.hpp"
 #include "Enum/VkCullModeFlag.hpp"
 #include "Enum/VkDependencyFlag.hpp"
@@ -80,6 +82,7 @@
 #include "Enum/VkPipelineBindPoint.hpp"
 #include "Enum/VkPipelineStageFlag.hpp"
 #include "Enum/VkPolygonMode.hpp"
+#include "Enum/VkPresentMode.hpp"
 #include "Enum/VkPrimitiveTopology.hpp"
 #include "Enum/VkQueryControlFlag.hpp"
 #include "Enum/VkQueryPipelineStatisticFlag.hpp"
@@ -94,6 +97,8 @@
 #include "Enum/VkStencilOp.hpp"
 #include "Enum/VkSubpassContents.hpp"
 #include "Enum/VkSubpassDescriptionFlag.hpp"
+#include "Enum/VkSurfaceCounterFlag.hpp"
+#include "Enum/VkSurfaceTransformFlag.hpp"
 #include "Enum/VkTessellationStateFlag.hpp"
 #include "Enum/VkTextureType.hpp"
 #include "Enum/VkTextureViewType.hpp"
@@ -111,15 +116,20 @@
 #include "Image/VkSubresourceLayout.hpp"
 #include "Miscellaneous/VkBufferCopy.hpp"
 #include "Miscellaneous/VkBufferImageCopy.hpp"
+#include "Miscellaneous/VkExtensionProperties.hpp"
 #include "Miscellaneous/VkExtent2D.hpp"
 #include "Miscellaneous/VkExtent3D.hpp"
+#include "Miscellaneous/VkFormatProperties.hpp"
 #include "Miscellaneous/VkImageBlit.hpp"
 #include "Miscellaneous/VkImageCopy.hpp"
+#include "Miscellaneous/VkLayerProperties.hpp"
 #include "Miscellaneous/VkMemoryRequirements.hpp"
 #include "Miscellaneous/VkOffset2D.hpp"
 #include "Miscellaneous/VkOffset3D.hpp"
 #include "Miscellaneous/VkPhysicalDeviceFeatures.hpp"
 #include "Miscellaneous/VkPushConstantRange.hpp"
+#include "Miscellaneous/VkSurfaceCapabilities.hpp"
+#include "Miscellaneous/VkSurfaceFormat.hpp"
 #include "Pipeline/VkColourBlendState.hpp"
 #include "Pipeline/VkColourBlendStateAttachment.hpp"
 #include "Pipeline/VkDepthStencilState.hpp"
@@ -241,23 +251,6 @@ namespace vk_renderer
 	/**
 	*\~french
 	*\brief
-	*	Contient les propriétés et extensions d'une couche de la VkInstance.
-	*\~english
-	*\brief
-	*	Holds the properties and extensions of a VkInstance layer.
-	*/
-	struct LayerProperties
-	{
-		//!\~french		Les propriétés de la couche.
-		//!\~english	The layer's properties.
-		VkLayerProperties m_properties;
-		//!\~french		Les extensions supportées par la couche.
-		//!\~english	The layer's supported extensions.
-		std::vector< VkExtensionProperties > m_extensions;
-	};
-	/**
-	*\~french
-	*\brief
 	*	Vérifie si les extensions demandées sont toutes disponibles dans la liste des extensions supportées.
 	*\remarks
 	*	Si une extension n'est pas supportée, une std::runtime_error sera lancée.
@@ -275,7 +268,7 @@ namespace vk_renderer
 	*\param[in] requested
 	*	The requested extensions list.
 	*/
-	void checkExtensionsAvailability( std::vector< VkExtensionProperties > const & supported
+	void checkExtensionsAvailability( std::vector< renderer::ExtensionProperties > const & supported
 		, std::vector< char const * > const & requested );
 	/**
 	*\~french
