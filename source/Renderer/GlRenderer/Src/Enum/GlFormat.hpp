@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
@@ -231,6 +231,7 @@ namespace gl_renderer
 	std::string getName( GlInternal value );
 	std::string getName( GlFormat value );
 	std::string getName( GlType value );
+	bool isSupportedInternal( renderer::Format const & format )noexcept;
 	/**
 	*\brief
 	*	Convertit un renderer::Format en GlInternal.

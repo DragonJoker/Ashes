@@ -39,15 +39,6 @@ namespace vk_renderer
 		/**
 		*\~french
 		*\return
-		*	Les capacités de la surface de présentation.
-		*\~english
-		*\return
-		*	The presentation surface's capabilites.
-		*/
-		VkSurfaceCapabilitiesKHR getSurfaceCapabilities()const;
-		/**
-		*\~french
-		*\return
 		*	La surface de présentation.
 		*\~english
 		*\return
@@ -107,23 +98,10 @@ namespace vk_renderer
 		}
 
 	private:
-		/**
-		*\~french
-		*\brief
-		*	Crée la surface liée à la fenêtre.
-		*\~english
-		*\brief
-		*	Creates the surface associated to the window.
-		*/
 		void doCreatePresentSurface();
-		/**
-		*\~french
-		*\brief
-		*	Récupère les informations de présentation.
-		*\~english
-		*\brief
-		*	Retrieves the presentation informations.
-		*/
+		void doRetrieveSurfaceCapabilities();
+		void doRetrieveSurfaceFormats();
+		void doRetrievePresentModes();
 		void doRetrievePresentationInfos();
 
 	private:

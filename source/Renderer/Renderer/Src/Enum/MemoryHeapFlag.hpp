@@ -9,6 +9,10 @@ See LICENSE file in root folder.
 namespace renderer
 {
 	/**
+	*\~english
+	*\brief
+	*	Memory heap types enumeration.
+	*\~french
 	*\brief
 	*	Enumération des types de pile mémoire.
 	*/

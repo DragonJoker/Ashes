@@ -164,7 +164,7 @@ namespace vk_renderer
 			}
 #endif
 
-			m_instanceLayersProperties.clear();
+			m_layers.clear();
 			m_instanceExtensionNames.clear();
 			m_instanceLayerNames.clear();
 			m_gpus.clear();
@@ -262,13 +262,13 @@ namespace vk_renderer
 
 	void Renderer::completeLayerNames( std::vector< char const * > & names )const
 	{
-		for ( auto const & props : m_instanceLayersProperties )
+		for ( auto const & props : m_layers )
 		{
 #if LOAD_VALIDATION_LAYERS
-			if ( std::string{ props.m_properties.layerName }.find( "validation" ) != std::string::npos
-				|| std::string{ props.m_properties.description }.find( "LunarG Validation" ) != std::string::npos )
+			if ( props.layerName.find( "validation" ) != std::string::npos
+				|| props.description.find( "LunarG Validation" ) != std::string::npos )
 			{
-				names.push_back( props.m_properties.layerName );
+				names.push_back( props.layerName.c_str() );
 			}
 #endif
 		}
@@ -307,41 +307,40 @@ namespace vk_renderer
 		}
 		while ( res == VK_INCOMPLETE );
 
-		LayerProperties layerProperties{ VkLayerProperties{} };
-		doInitLayerExtensionProperties( layerProperties );
-		m_instanceLayersProperties.push_back( layerProperties );
+		doInitLayerExtensionProperties( m_globalLayer );
 
 		// On récupère la liste d'extensions pour chaque couche de l'instance.
 		for ( auto prop : vkProperties )
 		{
-			LayerProperties layerProperties{ prop };
+			renderer::LayerProperties layerProperties{ convert( prop ) };
 			doInitLayerExtensionProperties( layerProperties );
-			m_instanceLayersProperties.push_back( layerProperties );
+			m_layers.push_back( layerProperties );
 		}
 
 		checkError( res, "Layer properties retrieval" );
 	}
 
-	void Renderer::doInitLayerExtensionProperties( LayerProperties & layerProps )
+	void Renderer::doInitLayerExtensionProperties( renderer::LayerProperties & layerProps )
 	{
 		VkResult res{ VK_SUCCESS };
-		char * name{ layerProps.m_properties.layerName };
 
 		// Récupération des extensions supportées par la couche.
 		do
 		{
 			uint32_t extensionCount{ 0 };
-			res = vkEnumerateInstanceExtensionProperties( name
+			res = vkEnumerateInstanceExtensionProperties( layerProps.layerName.c_str()
 				, &extensionCount
 				, nullptr );
 			checkError( res, "Instance extension properties enumeration" );
 
 			if ( extensionCount > 0 )
 			{
-				layerProps.m_extensions.resize( extensionCount );
-				res = vkEnumerateInstanceExtensionProperties( name
+				std::vector< VkExtensionProperties > extensions;
+				extensions.resize( extensionCount );
+				res = vkEnumerateInstanceExtensionProperties( layerProps.layerName.c_str()
 					, &extensionCount
-					, layerProps.m_extensions.data() );
+					, extensions.data() );
+				layerProps.extensions = convert< renderer::ExtensionProperties >( extensions );
 			}
 		}
 		while ( res == VK_INCOMPLETE );
@@ -357,7 +356,17 @@ namespace vk_renderer
 #if LOAD_VALIDATION_LAYERS
 		m_instanceExtensionNames.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
 #endif
-		checkExtensionsAvailability( m_instanceLayersProperties.front().m_extensions, m_instanceExtensionNames );
+		checkExtensionsAvailability( m_globalLayer.extensions, m_instanceExtensionNames );
+		uint32_t instanceVersion = VulkanVersion;
+
+		if ( vkEnumerateInstanceVersion )
+		{
+			vkEnumerateInstanceVersion( &instanceVersion );
+		}
+
+		m_apiVersion = VK_MAKE_VERSION( VK_VERSION_MAJOR( instanceVersion )
+			, VK_VERSION_MINOR( instanceVersion )
+			, VK_VERSION_PATCH( VK_HEADER_VERSION ) );
 
 		VkApplicationInfo appInfo
 		{

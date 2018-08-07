@@ -224,6 +224,8 @@ namespace gl_renderer
 	using PFN_glGetError = GLenum( GLAPIENTRY * )( void );
 	using PFN_glGetFloatv = void ( GLAPIENTRY * )( GLenum pname, GLfloat * data );
 	using PFN_glGetIntegerv = void ( GLAPIENTRY * )( GLenum pname, GLint * data );
+	using PFN_glGetInternalformativ = void ( GLAPIENTRY * )( GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize, GLint * params );
+	using PFN_glGetInternalformati64v = void ( GLAPIENTRY * )( GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize, GLint64 * params );
 	using PFN_glGetProgramInfoLog = void ( GLAPIENTRY * )( GLuint program, GLsizei bufSize, GLsizei* length, GLchar* infoLog );
 	using PFN_glGetProgramInterfaceiv = void ( GLAPIENTRY * )( GLuint program, GLenum programInterface, GLenum pname, GLint * params );
 	using PFN_glGetProgramiv = void ( GLAPIENTRY * )( GLuint program, GLenum pname, GLint* param );

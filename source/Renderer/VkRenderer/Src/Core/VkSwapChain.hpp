@@ -163,7 +163,6 @@ namespace vk_renderer
 		VkColorSpaceKHR m_colorSpace;
 		VkSwapchainKHR m_swapChain{};
 		VkSurfaceKHR m_surface{};
-		VkSurfaceCapabilitiesKHR m_surfaceCapabilities{};
 		uint32_t m_currentBuffer{};
 		VkClearColorValue m_clearColour{};
 	};

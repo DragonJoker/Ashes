@@ -29,6 +29,16 @@ namespace renderer
 		eBlitDst = 0x00000800,
 		eSampledImageFilterLinear = 0x00001000,
 		eSampledImageFilterCubic = 0x00002000,
+		eTransferSrc = 0x00004000,
+		eTransferDst = 0x00008000,
+		eMidPointChromaSamples = 0x00020000,
+		eSampledImageYCbCrConversionLinearFilter = 0x00040000,
+		eSampledImageYCbCrConversionSeparateReconstructionFilter = 0x00080000,
+		eSampledImageYCbCrConversionChromaReconstructionExplicit = 0x00100000,
+		eSampledImageYCbCrConversionChromaReconstructionExplicitForceable = 0x00200000,
+		eDisjoint = 0x00400000,
+		eCositedChromaSamples = 0x00800000,
+		eSampledImageFilterMinmax = 0x00010000,
 	};
 	Renderer_ImplementFlag( FormatFeatureFlag )
 }

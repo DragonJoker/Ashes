@@ -175,6 +175,111 @@ namespace gl_renderer
 #define GL_SPIR_V_EXTENSIONS 0x9553
 #define GL_NUM_SPIR_V_EXTENSIONS 0x9554
 
+#define GL_SAMPLES                                         0x80A9
+#define GL_NUM_SAMPLE_COUNTS                               0x9380
+#define GL_INTERNALFORMAT_SUPPORTED                        0x826F
+#define GL_INTERNALFORMAT_PREFERRED                        0x8270
+#define GL_INTERNALFORMAT_RED_SIZE                         0x8271
+#define GL_INTERNALFORMAT_GREEN_SIZE                       0x8272
+#define GL_INTERNALFORMAT_BLUE_SIZE                        0x8273
+#define GL_INTERNALFORMAT_ALPHA_SIZE                       0x8274
+#define GL_INTERNALFORMAT_DEPTH_SIZE                       0x8275
+#define GL_INTERNALFORMAT_STENCIL_SIZE                     0x8276
+#define GL_INTERNALFORMAT_SHARED_SIZE                      0x8277
+#define GL_INTERNALFORMAT_RED_TYPE                         0x8278
+#define GL_INTERNALFORMAT_GREEN_TYPE                       0x8279
+#define GL_INTERNALFORMAT_BLUE_TYPE                        0x827A
+#define GL_INTERNALFORMAT_ALPHA_TYPE                       0x827B
+#define GL_INTERNALFORMAT_DEPTH_TYPE                       0x827C
+#define GL_INTERNALFORMAT_STENCIL_TYPE                     0x827D
+#define GL_MAX_WIDTH                                       0x827E
+#define GL_MAX_HEIGHT                                      0x827F
+#define GL_MAX_DEPTH                                       0x8280
+#define GL_MAX_LAYERS                                      0x8281
+#define GL_MAX_COMBINED_DIMENSIONS                         0x8282
+#define GL_COLOR_COMPONENTS                                0x8283
+#define GL_DEPTH_COMPONENTS                                0x8284
+#define GL_STENCIL_COMPONENTS                              0x8285
+#define GL_COLOR_RENDERABLE                                0x8286
+#define GL_DEPTH_RENDERABLE                                0x8287
+#define GL_STENCIL_RENDERABLE                              0x8288
+#define GL_FRAMEBUFFER_RENDERABLE                          0x8289
+#define GL_FRAMEBUFFER_RENDERABLE_LAYERED                  0x828A
+#define GL_FRAMEBUFFER_BLEND                               0x828B
+#define GL_READ_PIXELS                                     0x828C
+#define GL_READ_PIXELS_FORMAT                              0x828D
+#define GL_READ_PIXELS_TYPE                                0x828E
+#define GL_TEXTURE_IMAGE_FORMAT                            0x828F
+#define GL_TEXTURE_IMAGE_TYPE                              0x8290
+#define GL_GET_TEXTURE_IMAGE_FORMAT                        0x8291
+#define GL_GET_TEXTURE_IMAGE_TYPE                          0x8292
+#define GL_MIPMAP                                          0x8293
+#define GL_MANUAL_GENERATE_MIPMAP                          0x8294
+#define GL_AUTO_GENERATE_MIPMAP                            0x8295
+#define GL_COLOR_ENCODING                                  0x8296
+#define GL_SRGB_READ                                       0x8297
+#define GL_SRGB_WRITE                                      0x8298
+#define GL_SRGB_DECODE_ARB                                 0x8299
+#define GL_FILTER                                          0x829A
+#define GL_VERTEX_TEXTURE                                  0x829B
+#define GL_TESS_CONTROL_TEXTURE                            0x829C
+#define GL_TESS_EVALUATION_TEXTURE                         0x829D
+#define GL_GEOMETRY_TEXTURE                                0x829E
+#define GL_FRAGMENT_TEXTURE                                0x829F
+#define GL_COMPUTE_TEXTURE                                 0x82A0
+#define GL_TEXTURE_SHADOW                                  0x82A1
+#define GL_TEXTURE_GATHER                                  0x82A2
+#define GL_TEXTURE_GATHER_SHADOW                           0x82A3
+#define GL_SHADER_IMAGE_LOAD                               0x82A4
+#define GL_SHADER_IMAGE_STORE                              0x82A5
+#define GL_SHADER_IMAGE_ATOMIC                             0x82A6
+#define GL_IMAGE_TEXEL_SIZE                                0x82A7
+#define GL_IMAGE_COMPATIBILITY_CLASS                       0x82A8
+#define GL_IMAGE_PIXEL_FORMAT                              0x82A9
+#define GL_IMAGE_PIXEL_TYPE                                0x82AA
+#define GL_IMAGE_FORMAT_COMPATIBILITY_TYPE                 0x90C7
+#define GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST             0x82AC
+#define GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST           0x82AD
+#define GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE            0x82AE
+#define GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE          0x82AF
+#define GL_TEXTURE_COMPRESSED                              0x86A1
+#define GL_TEXTURE_COMPRESSED_BLOCK_WIDTH                  0x82B1
+#define GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT                 0x82B2
+#define GL_TEXTURE_COMPRESSED_BLOCK_SIZE                   0x82B3
+#define GL_CLEAR_BUFFER                                    0x82B4
+#define GL_TEXTURE_VIEW                                    0x82B5
+#define GL_VIEW_COMPATIBILITY_CLASS                        0x82B6
+
+#define GL_FULL_SUPPORT                                    0x82B7
+#define GL_CAVEAT_SUPPORT                                  0x82B8
+#define GL_IMAGE_CLASS_4_X_32                              0x82B9
+#define GL_IMAGE_CLASS_2_X_32                              0x82BA
+#define GL_IMAGE_CLASS_1_X_32                              0x82BB
+#define GL_IMAGE_CLASS_4_X_16                              0x82BC
+#define GL_IMAGE_CLASS_2_X_16                              0x82BD
+#define GL_IMAGE_CLASS_1_X_16                              0x82BE
+#define GL_IMAGE_CLASS_4_X_8                               0x82BF
+#define GL_IMAGE_CLASS_2_X_8                               0x82C0
+#define GL_IMAGE_CLASS_1_X_8                               0x82C1
+#define GL_IMAGE_CLASS_11_11_10                            0x82C2
+#define GL_IMAGE_CLASS_10_10_10_2                          0x82C3
+#define GL_VIEW_CLASS_128_BITS                             0x82C4
+#define GL_VIEW_CLASS_96_BITS                              0x82C5
+#define GL_VIEW_CLASS_64_BITS                              0x82C6
+#define GL_VIEW_CLASS_48_BITS                              0x82C7
+#define GL_VIEW_CLASS_32_BITS                              0x82C8
+#define GL_VIEW_CLASS_24_BITS                              0x82C9
+#define GL_VIEW_CLASS_16_BITS                              0x82CA
+#define GL_VIEW_CLASS_8_BITS                               0x82CB
+#define GL_VIEW_CLASS_S3TC_DXT1_RGB                        0x82CC
+#define GL_VIEW_CLASS_S3TC_DXT1_RGBA                       0x82CD
+#define GL_VIEW_CLASS_S3TC_DXT3_RGBA                       0x82CE
+#define GL_VIEW_CLASS_S3TC_DXT5_RGBA                       0x82CF
+#define GL_VIEW_CLASS_RGTC1_RED                            0x82D0
+#define GL_VIEW_CLASS_RGTC2_RG                             0x82D1
+#define GL_VIEW_CLASS_BPTC_UNORM                           0x82D2
+#define GL_VIEW_CLASS_BPTC_FLOAT                           0x82D3
+
 		using PFN_glGetInteger64v = void( GLAPIENTRY * )( GLenum pname, GLint64 * data );
 		PFN_glGetInteger64v glGetInteger64v;
 		using PFN_glGetFloati_v = void( GLAPIENTRY * )( GLenum target, GLuint index, GLfloat * data );
@@ -185,6 +290,7 @@ namespace gl_renderer
 		PFN_glGetInteger64i_v glGetInteger64i_v;
 		using PFN_glGetStringi = const GLubyte *( GLAPIENTRY * )( GLenum name, GLuint index );
 		PFN_glGetStringi glGetStringi;
+		PFN_glGetInternalformativ glGetInternalformativ;
 
 #if RENDERLIB_WIN32
 		template< typename FuncT >
@@ -225,6 +331,7 @@ namespace gl_renderer
 		getFunction( "glGetIntegeri_v", glGetIntegeri_v );
 		getFunction( "glGetInteger64i_v", glGetInteger64i_v );
 		getFunction( "glGetStringi", glGetStringi );
+		getFunction( "glGetInternalformativ", glGetInternalformativ );
 		char const * const cversion = ( char const * )glGetString( GL_VERSION );
 
 		if ( cversion )
@@ -479,6 +586,60 @@ namespace gl_renderer
 				1u,
 			}
 		} );
+
+		if ( glGetInternalformativ )
+		{
+			for ( uint32_t i = 1u; i < m_formatProperties.size(); ++i )
+			{
+				auto fmt = renderer::Format( i );
+
+				if ( isSupportedInternal( fmt ) )
+				{
+					GLint value;
+					glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_INTERNALFORMAT_SUPPORTED, 1, &value );
+
+					if ( value == GL_TRUE )
+					{
+						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FRAMEBUFFER_RENDERABLE, 1, &value );
+
+						if ( value == GL_FULL_SUPPORT )
+						{
+							if ( isDepthOrStencilFormat( fmt ) )
+							{
+								m_formatProperties[i].optimalTilingFeatures |= renderer::FormatFeatureFlag::eDepthStencilAttachment;
+							}
+							else
+							{
+								m_formatProperties[i].optimalTilingFeatures |= renderer::FormatFeatureFlag::eColourAttachment;
+							}
+						}
+
+						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FRAMEBUFFER_BLEND, 1, &value );
+
+						if ( value == GL_FULL_SUPPORT )
+						{
+							m_formatProperties[i].optimalTilingFeatures |= renderer::FormatFeatureFlag::eColourAttachmentBlend;
+						}
+
+						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FRAGMENT_TEXTURE, 1, &value );
+
+						if ( value == GL_FULL_SUPPORT )
+						{
+							m_formatProperties[i].optimalTilingFeatures |= renderer::FormatFeatureFlag::eSampledImage;
+						}
+
+						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FILTER, 1, &value );
+
+						if ( value == GL_FULL_SUPPORT )
+						{
+							m_formatProperties[i].optimalTilingFeatures |= renderer::FormatFeatureFlag::eSampledImageFilterLinear;
+						}
+					}
+				}
+
+				m_formatProperties[i].linearTilingFeatures = m_formatProperties[i].optimalTilingFeatures;
+			}
+		}
 	}
 
 	bool PhysicalDevice::isGLSLSupported()const
