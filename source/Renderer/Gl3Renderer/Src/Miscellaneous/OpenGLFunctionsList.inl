@@ -178,6 +178,8 @@ GL_LIB_FUNCTION_EXT( PatchParameteri, ARB, GL_ARB_tessellation_shader )
 GL_LIB_FUNCTION_EXT( ShaderBinary, ARB, GL_ARB_ES2_compatibility )
 GL_LIB_FUNCTION_EXT( SpecializeShader, ARB, GL_ARB_gl_spirv )
 GL_LIB_FUNCTION_EXT( TexBufferRange, ARB, GL_ARB_texture_buffer_range )
+GL_LIB_FUNCTION_EXT( GetInternalformativ, ARB, GL_ARB_internalformat_query )
+GL_LIB_FUNCTION_EXT( GetInternalformati64v, ARB, GL_ARB_internalformat_query2 )
 
 #undef GL_LIB_FUNCTION_EXT
 

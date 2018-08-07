@@ -136,69 +136,39 @@ namespace renderer
 		*/
 		virtual void setClearColour( ClearColorValue const & value ) = 0;
 		/**
+		*\~english
+		*name
+		*	Getters.
 		*\~french
-		*\return
-		*	The clear colour of the swapchain.
-		*\~french
-		*\return
-		*	La couleur de vidage de la swapchain.
+		*name
+		*	Accesseurs.
 		*/
+		/**@{*/
 		virtual ClearColorValue getClearColour()const = 0;
-		/**
-		*\~french
-		*\return
-		*	The swap chain dimensions.
-		*\~french
-		*\return
-		*	Les dimensions de la swap chain.
-		*/
 		virtual Extent2D getDimensions()const = 0;
-		/**
-		*\~french
-		*\return
-		*	The swapchain pixe format.
-		*\~french
-		*\return
-		*	Les format des pixels de la swap chain.
-		*/
 		virtual Format getFormat()const = 0;
-		/**
-		*\~french
-		*\return
-		*	Retrieves the default rendering resources.
-		*\~french
-		*\return
-		*	Récupère les ressources de rendu par défaut.
-		*/
+
 		inline RenderingResources const & getDefaultResources()const
 		{
 			return *m_renderingResources[0];
 		}
-		/**
-		*\~french
-		*\return
-		*	Retrieves the backbuffers.
-		*\~french
-		*\return
-		*	Récupère les backbuffers.
-		*/
+
 		inline BackBufferPtrArray const & getImages()const
 		{
 			return m_backBuffers;
 		}
-		/**
-		*\~french
-		*\return
-		*	Retrieves the backbuffers.
-		*\~french
-		*\return
-		*	Récupère les backbuffers.
-		*/
+
+		inline PresentMode getPresentMode()const
+		{
+			return m_presentMode;
+		}
+
 		inline TextureView const & getDepthStencilView()const
 		{
 			assert( m_depthStencilView );
 			return *m_depthStencilView;
 		}
+		/**@}*/
 
 	public:
 		using OnResetFunc = std::function< void() >;
@@ -210,6 +180,7 @@ namespace renderer
 	protected:
 		Device const & m_device;
 		Extent2D m_dimensions;
+		PresentMode m_presentMode{};
 		std::vector< RenderingResourcesPtr > m_renderingResources;
 		BackBufferPtrArray m_backBuffers;
 		mutable size_t m_resourceIndex{ 0 };

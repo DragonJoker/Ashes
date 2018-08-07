@@ -13,6 +13,7 @@ namespace renderer
 		, WindowHandle && handle )
 		: m_handle{ std::move( handle ) }
 		, m_gpu{ renderer.getPhysicalDevice( deviceIndex ) }
+		, m_surfaceCapabilities{}
 	{
 	}
 }

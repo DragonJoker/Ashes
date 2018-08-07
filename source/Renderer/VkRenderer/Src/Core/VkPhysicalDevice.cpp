@@ -36,26 +36,79 @@ namespace vk_renderer
 		initialise();
 	}
 
+	std::vector< renderer::ExtensionProperties > getLayerExtensions( Renderer const & renderer
+		, VkPhysicalDevice gpu
+		, char const * layerName )
+	{
+		VkResult res;
+		uint32_t extensionsCount = 0;
+		std::vector< VkExtensionProperties > extensions;
+
+		// On récupère les extensions supportées par le GPU, pour la couche donnée.
+		do
+		{
+			res = renderer.vkEnumerateDeviceExtensionProperties( gpu
+				, layerName
+				, &extensionsCount
+				, nullptr );
+			checkError( res, "GPU's extensions enumeration" );
+
+			extensions.resize( extensionsCount );
+			res = renderer.vkEnumerateDeviceExtensionProperties( gpu
+				, layerName
+				, &extensionsCount
+				, extensions.data() );
+			checkError( res, "GPU's extensions enumeration" );
+		}
+		while ( res == VK_INCOMPLETE );
+		return convert< renderer::ExtensionProperties >( extensions );
+	}
+
 	void PhysicalDevice::initialise()
 	{
 		// On récupère les extensions supportées par le GPU.
-		uint32_t extensionCount{ 0 };
-		auto res = m_renderer.vkEnumerateDeviceExtensionProperties( m_gpu
-			, nullptr
-			, &extensionCount
-			, nullptr );
-		checkError( res, "GPU's extensions enumeration" );
+		m_extensions = getLayerExtensions( m_renderer, m_gpu, nullptr );
 
-		std::vector< VkExtensionProperties > extensions( extensionCount );
-		res = m_renderer.vkEnumerateDeviceExtensionProperties( m_gpu
-			, nullptr
-			, &extensionCount
-			, extensions.data() );
-		checkError( res, "GPU's extensions enumeration" );
+		//// On récupère les couches du GPU
+		//uint32_t layersCount = 0u;
+		//std::vector< VkLayerProperties > deviceLayerProperties;
+		//VkResult res;
 
-		m_renderer.completeLayerNames( m_deviceLayerNames );
-		m_deviceExtensionNames.push_back( VK_KHR_SWAPCHAIN_EXTENSION_NAME );
-		checkExtensionsAvailability( extensions, m_deviceExtensionNames );
+		//do
+		//{
+		//	res = m_renderer.vkEnumerateDeviceLayerProperties( m_gpu
+		//		, &layersCount
+		//		, NULL );
+		//	checkError( res, "GPU's layers enumeration" );
+		//	deviceLayerProperties.resize( layersCount );
+
+		//	res = m_renderer.vkEnumerateDeviceLayerProperties( m_gpu
+		//		, &layersCount,
+		//		deviceLayerProperties.data() );
+		//	checkError( res, "GPU's layers enumeration" );
+
+		//	m_layerExtensions = convert< renderer::LayerProperties >( deviceLayerProperties );
+		//}
+		//while ( res == VK_INCOMPLETE );
+
+		//for ( auto & layer : m_layerExtensions )
+		//{
+		//	layer.extensions = getLayerExtensions( m_renderer
+		//		, m_gpu
+		//		, layer.layerName.c_str() );
+		//}
+
+		//m_renderer.completeLayerNames( m_deviceLayerNames );
+		//m_deviceExtensionNames.push_back( VK_KHR_SWAPCHAIN_EXTENSION_NAME );
+		//checkExtensionsAvailability( m_extensions, m_deviceExtensionNames );
+
+		for ( auto layer : m_renderer.getLayers() )
+		{
+			layer.extensions = getLayerExtensions( m_renderer
+				, m_gpu
+				, layer.layerName.c_str() );
+			m_layerExtensions.push_back( layer );
+		}
 
 		// Puis les capacités du GPU.
 		VkPhysicalDeviceMemoryProperties memoryProperties;
@@ -291,6 +344,13 @@ namespace vk_renderer
 					props.minImageTransferGranularity.depth,
 				}
 			} );
+		}
+
+		for ( size_t fmt = 0; fmt < size_t( renderer::Format::eRange ); fmt++ )
+		{
+			VkFormatProperties props;
+			m_renderer.vkGetPhysicalDeviceFormatProperties( m_gpu, VkFormat( fmt ), &props );
+			m_formatProperties[fmt] = convert( props );
 		}
 	}
 }

@@ -318,6 +318,7 @@ namespace gl_renderer
 	{
 		RenderWindow dummyWindow;
 		m_gpus.push_back( std::make_unique< PhysicalDevice >( *this ) );
+		m_apiVersion = m_gpus[0]->getProperties().apiVersion;
 		auto & gpu = static_cast< PhysicalDevice const & >( *m_gpus.back() );
 		m_features.hasTexBufferRange = false;
 		m_features.hasImageTexture = false;

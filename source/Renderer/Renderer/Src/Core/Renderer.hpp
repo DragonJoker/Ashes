@@ -9,6 +9,7 @@ See LICENSE file in root folder.
 #include "Core/PhysicalDevice.hpp"
 #include "Core/WindowHandle.hpp"
 #include "Miscellaneous/RendererFeatures.hpp"
+#include "Miscellaneous/LayerProperties.hpp"
 
 #include <array>
 
@@ -223,69 +224,61 @@ namespace renderer
 			, float zNear )const;
 		/**
 		*\~english
-		*\return
-		*	The validation activation status.
+		*name
+		*	Getters.
 		*\~french
-		*\return
-		*	Le statut d'activation de la validation.
+		*name
+		*	Accesseurs.
 		*/
+		/**@{*/
 		inline bool isValidationEnabled()const
 		{
 			return m_configuration.enableValidation;
 		}
-		/**
-		*\~english
-		*\return
-		*	The clip direction for the rendering API.
-		*\~french
-		*\return
-		*	La direction de clipping pour l'API de rendu.
-		*/
+
 		inline ClipDirection getClipDirection()const
 		{
 			return m_clipDirection;
 		}
-		/**
-		*\~english
-		*\return
-		*	The number of available GPUs.
-		*\~french
-		*\return
-		*	Le nombre de GPU disponibles.
-		*/
+
 		inline uint32_t getGpuCount()const
 		{
 			return uint32_t( m_gpus.size() );
 		}
-		/**
-		*\~english
-		*\return
-		*	The internal renderer name.
-		*\~french
-		*\return
-		*	La nom interne du renderer.
-		*/
+
+		inline uint32_t getApiVersion()const
+		{
+			return m_apiVersion;
+		}
+
 		inline std::string const & getName()const
 		{
 			return m_name;
 		}
-		/**
-		*\~english
-		*\return
-		*	The renderer features.
-		*\~french
-		*\return
-		*	Les fontionnalités du renderer.
-		*/
+
 		inline RendererFeatures const & getFeatures()const
 		{
 			return m_features;
 		}
 
+		inline LayerProperties const & getGlobalLayer()const
+		{
+			return m_globalLayer;
+		}
+
+		inline std::vector< LayerProperties > const & getLayers()const
+		{
+			return m_layers;
+		}
+		/**@}*/
+
 	protected:
 		Configuration m_configuration;
 		std::vector< PhysicalDevicePtr > m_gpus;
+		LayerProperties m_globalLayer;
+		std::vector< LayerProperties > m_layers;
 		RendererFeatures m_features;
+		uint32_t m_apiVersion{ 0u };
 
 	private:
 		ClipDirection m_clipDirection;

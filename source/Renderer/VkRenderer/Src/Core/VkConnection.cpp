@@ -19,6 +19,9 @@ namespace vk_renderer
 		, m_gpu{ static_cast< PhysicalDevice const & >( renderer.getPhysicalDevice( deviceIndex ) ) }
 	{
 		doCreatePresentSurface();
+		doRetrieveSurfaceCapabilities();
+		doRetrieveSurfaceFormats();
+		doRetrievePresentModes();
 		doRetrievePresentationInfos();
 	}
 
@@ -50,6 +53,7 @@ namespace vk_renderer
 			, nullptr
 			, &m_presentSurface );
 		checkError( res, "Presentation surface creation" );
+		m_surfaceType = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
 	}
 
 #elif RENDERLIB_ANDROID
@@ -69,6 +73,7 @@ namespace vk_renderer
 			, nullptr
 			, &m_presentSurface );
 		checkError( res, "Presentation surface creation" );
+		m_surfaceType = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
 	}
 
 #elif RENDERLIB_XCB
@@ -88,6 +93,7 @@ namespace vk_renderer
 			, nullptr
 			, &m_presentSurface );
 		checkError( res, "Presentation surface creation" );
+		m_surfaceType = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
 	}
 
 #elif RENDERLIB_MIR
@@ -107,6 +113,7 @@ namespace vk_renderer
 			, nullptr
 			, &m_presentSurface );
 		checkError( res, "Presentation surface creation" );
+		m_surfaceType = VK_KHR_MIR_SURFACE_EXTENSION_NAME;
 	}
 
 #elif RENDERLIB_WAYLAND
@@ -126,6 +133,7 @@ namespace vk_renderer
 			, nullptr
 			, &m_presentSurface );
 		checkError( res, "Presentation surface creation" );
+		m_surfaceType = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
 	}
 
 #elif RENDERLIB_XLIB
@@ -145,6 +153,7 @@ namespace vk_renderer
 			, nullptr
 			, &m_presentSurface );
 		checkError( res, "Presentation surface creation" );
+		m_surfaceType = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
 	}
 
 #else
@@ -153,7 +162,7 @@ namespace vk_renderer
 
 #endif
 
-	VkSurfaceCapabilitiesKHR Connection::getSurfaceCapabilities()const
+	void Connection::doRetrieveSurfaceCapabilities()
 	{
 		// On récupère les capacités de la surface.
 		VkSurfaceCapabilitiesKHR caps;
@@ -161,7 +170,48 @@ namespace vk_renderer
 			, m_presentSurface
 			, &caps );
 		checkError( res, "Surface capabilities check" );
-		return caps;
+		m_surfaceCapabilities = convert( caps );
+	}
+
+	void Connection::doRetrievePresentModes()
+	{
+		// On récupère la liste de VkPresentModeKHR supportés par la surface.
+		uint32_t presentModeCount{};
+		auto res = m_renderer.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
+			, m_presentSurface
+			, &presentModeCount
+			, nullptr );
+		checkError( res, "Surface present modes enumeration" );
+
+		std::vector< VkPresentModeKHR > presentModes{ presentModeCount };
+		res = m_renderer.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
+			, m_presentSurface
+			, &presentModeCount
+			, presentModes.data() );
+		checkError( res, "Surface present modes enumeration" );
+		m_presentModes = convert< renderer::PresentMode >( presentModes );
+	}
+
+	void Connection::doRetrieveSurfaceFormats()
+	{
+		// On récupère la liste de VkFormat supportés par la surface.
+		uint32_t formatCount{ 0u };
+		auto res = m_renderer.vkGetPhysicalDeviceSurfaceFormatsKHR( m_gpu
+			, m_presentSurface
+			, &formatCount
+			, nullptr );
+		checkError( res, "Surface formats enumeration" );
+
+		if ( formatCount )
+		{
+			std::vector< VkSurfaceFormatKHR > surfFormats{ formatCount };
+			res = m_renderer.vkGetPhysicalDeviceSurfaceFormatsKHR( m_gpu
+				, m_presentSurface
+				, &formatCount
+				, surfFormats.data() );
+			checkError( res, "Surface formats enumeration" );
+			m_surfaceFormats = convert< renderer::SurfaceFormat >( surfFormats );
+		}
 	}
 
 	void Connection::doRetrievePresentationInfos()

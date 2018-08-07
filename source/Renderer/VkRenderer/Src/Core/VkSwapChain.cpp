@@ -25,8 +25,6 @@ namespace vk_renderer
 		, m_device{ device }
 		, m_surface{ device.getPresentSurface() }
 	{
-		m_surfaceCapabilities = m_device.getSurfaceCapabilities();
-
 		// On choisit le format de la surface.
 		doSelectFormat( static_cast< PhysicalDevice const & >( m_device.getPhysicalDevice() ) );
 
@@ -104,11 +102,12 @@ namespace vk_renderer
 	{
 		renderer::FrameBufferPtrArray result;
 		result.resize( m_backBuffers.size() );
+		auto & surfaceCaps = m_device.getSurfaceCapabilities();
 
 		for ( size_t i = 0u; i < result.size(); ++i )
 		{
 			auto attaches = doPrepareAttaches( uint32_t( i ), renderPass.getAttachments() );
-			result[i] = static_cast< RenderPass const & >( renderPass ).createFrameBuffer( { m_surfaceCapabilities.currentExtent.width, m_surfaceCapabilities.currentExtent.height }
+			result[i] = static_cast< RenderPass const & >( renderPass ).createFrameBuffer( { surfaceCaps.currentExtent.width, surfaceCaps.currentExtent.height }
 				, std::move( attaches ) );
 		}
 
@@ -168,13 +167,14 @@ namespace vk_renderer
 
 	uint32_t SwapChain::doGetImageCount()
 	{
-		uint32_t desiredNumberOfSwapChainImages{ m_surfaceCapabilities.minImageCount + 1 };
+		auto & surfaceCaps = m_device.getSurfaceCapabilities();
+		uint32_t desiredNumberOfSwapChainImages{ surfaceCaps.minImageCount + 1 };
 
-		if ( ( m_surfaceCapabilities.maxImageCount > 0 ) &&
-			( desiredNumberOfSwapChainImages > m_surfaceCapabilities.maxImageCount ) )
+		if ( ( surfaceCaps.maxImageCount > 0 ) &&
+			( desiredNumberOfSwapChainImages > surfaceCaps.maxImageCount ) )
 		{
 			// L'application doit s'initialiser avec moins d'images que voulu.
-			desiredNumberOfSwapChainImages = m_surfaceCapabilities.maxImageCount;
+			desiredNumberOfSwapChainImages = surfaceCaps.maxImageCount;
 		}
 
 		return desiredNumberOfSwapChainImages;
@@ -183,53 +183,26 @@ namespace vk_renderer
 
 	void SwapChain::doSelectFormat( VkPhysicalDevice gpu )
 	{
-		// On récupère la liste de VkFormat supportés par la surface.
-		uint32_t formatCount{ 0u };
-		auto res = m_device.getRenderer().vkGetPhysicalDeviceSurfaceFormatsKHR( gpu
-			, m_surface
-			, &formatCount
-			, nullptr );
-		checkError( res, "Surface formats enumeration" );
-
-		std::vector< VkSurfaceFormatKHR > surfFormats{ formatCount };
-		res = m_device.getRenderer().vkGetPhysicalDeviceSurfaceFormatsKHR( gpu, m_surface
-			, &formatCount
-			, surfFormats.data() );
-		checkError( res, "Surface formats enumeration" );
-
+		auto & formats = m_device.getConnection().getSurfaceFormats();
 		// Si la liste de formats ne contient qu'une entrée VK_FORMAT_UNDEFINED,
 		// la surface n'a pas de format préféré. Sinon, au moins un format supporté
 		// sera renvoyé.
-		if ( formatCount == 1u && surfFormats[0].format == VK_FORMAT_UNDEFINED )
+		if ( formats.size() == 1u && formats[0].format == renderer::Format::eUndefined )
 		{
-			m_format = convert( VK_FORMAT_R8G8B8A8_UNORM );
+			m_format = renderer::Format::eR8G8B8A8_UNORM;
 		}
 		else
 		{
-			assert( formatCount >= 1u );
-			m_format = convert( surfFormats[0].format );
+			assert( formats.size() > 1u );
+			m_format = formats[0].format;
 		}
 
-		m_colorSpace = surfFormats[0].colorSpace;
+		m_colorSpace = convert( formats[0].colorSpace );
 	}
 
 	VkPresentModeKHR SwapChain::doSelectPresentMode()
 	{
-		// On récupère la liste de VkPresentModeKHR supportés par la surface.
-		uint32_t presentModeCount{};
-		auto res = m_device.getRenderer().vkGetPhysicalDeviceSurfacePresentModesKHR( static_cast< PhysicalDevice const & >( m_device.getPhysicalDevice() )
-			, m_surface
-			, &presentModeCount
-			, nullptr );
-		checkError( res, "Surface present modes enumeration" );
-
-		std::vector< VkPresentModeKHR > presentModes{ presentModeCount };
-		res = m_device.getRenderer().vkGetPhysicalDeviceSurfacePresentModesKHR( static_cast< PhysicalDevice const & >( m_device.getPhysicalDevice() )
-			, m_surface
-			, &presentModeCount
-			, presentModes.data() );
-		checkError( res, "Surface present modes enumeration" );
-
+		auto & presentModes = m_device.getConnection().getPresentModes();
 		// Si le mode bo�te aux lettres est disponible, on utilise celui-là, car c'est celui avec le
 		// minimum de latence dans tearing.
 		// Sinon, on essaye le mode IMMEDIATE, qui est normalement disponible, et est le plus rapide
@@ -238,14 +211,14 @@ namespace vk_renderer
 
 		for ( auto mode : presentModes )
 		{
-			if ( mode == VK_PRESENT_MODE_MAILBOX_KHR )
+			if ( mode == renderer::PresentMode::eMailbox )
 			{
 				swapchainPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
 				break;
 			}
 
 			if ( ( swapchainPresentMode != VK_PRESENT_MODE_MAILBOX_KHR ) &&
-				( mode == VK_PRESENT_MODE_IMMEDIATE_KHR ) )
+				( mode == renderer::PresentMode::eImmediate ) )
 			{
 				swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
 			}
@@ -257,9 +230,10 @@ namespace vk_renderer
 	void SwapChain::doCreateSwapChain()
 	{
 		VkExtent2D swapChainExtent{};
+		auto & surfaceCaps = m_device.getSurfaceCapabilities();
 
 		// width et height valent soient tous les deux -1 ou tous les deux autre chose que -1.
-		if ( m_surfaceCapabilities.currentExtent.width == uint32_t( -1 ) )
+		if ( surfaceCaps.currentExtent.width == uint32_t( -1 ) )
 		{
 			// Si les dimensions de la surface sont indéfinies, elles sont initialisées
 			// aux dimensions des images requises.
@@ -269,7 +243,7 @@ namespace vk_renderer
 		{
 			// Si les dimensions de la surface sont définies, alors les dimensions de la swap chain
 			// doivent correspondre.
-			swapChainExtent = m_surfaceCapabilities.currentExtent;
+			swapChainExtent = convert( surfaceCaps.currentExtent );
 		}
 
 		// Parfois, les images doivent être transformées avant d'être présentées (lorsque l'orientation
@@ -281,16 +255,17 @@ namespace vk_renderer
 		// nous l'utilisons, sinon nous utiliserons la même transformation que la transformation courante.
 		VkSurfaceTransformFlagBitsKHR preTransform{};
 
-		if ( m_surfaceCapabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR )
+		if ( checkFlag( surfaceCaps.supportedTransforms, renderer::SurfaceTransformFlag::eIdentity ) )
 		{
 			preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 		}
 		else
 		{
-			preTransform = m_surfaceCapabilities.currentTransform;
+			preTransform = convert( surfaceCaps.currentTransform );
 		}
 
 		VkSwapchainKHR oldSwapChain{ VK_NULL_HANDLE };
+		m_presentMode = convert( doSelectPresentMode() );
 
 		VkSwapchainCreateInfoKHR createInfo
 		{
@@ -309,7 +284,7 @@ namespace vk_renderer
 			nullptr,                                                                  // pQueueFamilyIndices
 			preTransform,                                                             // preTransform
 			VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,                                        // compositeAlpha
-			doSelectPresentMode(),                                                    // presentMode
+			convert( m_presentMode ),                                                 // presentMode
 			true,                                                                     // clipped
 			oldSwapChain,                                                             // oldSwapchain
 		};
@@ -407,7 +382,6 @@ namespace vk_renderer
 		m_backBuffers.clear();
 		m_device.vkDestroySwapchainKHR( m_device, m_swapChain, nullptr );
 		m_renderingResources.clear();
-		m_surfaceCapabilities = m_device.getSurfaceCapabilities();
 		// On choisit le format de la surface.
 		doSelectFormat( static_cast< PhysicalDevice const & >( m_device.getPhysicalDevice() ) );
 		// On crée la swap chain.

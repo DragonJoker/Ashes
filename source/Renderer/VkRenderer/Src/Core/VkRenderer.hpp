@@ -122,7 +122,7 @@ namespace vk_renderer
 		*\param[out] layerProps
 		*	Receives the extensions properties for the layer.
 		*/
-		void doInitLayerExtensionProperties( LayerProperties & layerProps );
+		void doInitLayerExtensionProperties( renderer::LayerProperties & layerProps );
 		/**
 		*\~french
 		*\brief
@@ -156,7 +156,6 @@ namespace vk_renderer
 		renderer::DynamicLibrary m_library;
 		VkInstance m_instance{ VK_NULL_HANDLE };
 		VkDebugReportCallbackEXT m_msgCallback{ VK_NULL_HANDLE };
-		std::vector< LayerProperties > m_instanceLayersProperties;
 		std::vector< char const * > m_instanceExtensionNames;
 		std::vector< char const * > m_instanceLayerNames;
 	};

@@ -438,6 +438,136 @@ namespace gl_renderer
 		}
 	}
 
+	bool isSupportedInternal( renderer::Format const & format )noexcept
+	{
+		switch ( format )
+		{
+		case renderer::Format::eR4G4B4A4_UNORM_PACK16:
+		case renderer::Format::eR5G6B5_UNORM_PACK16:
+		case renderer::Format::eR5G5B5A1_UNORM_PACK16:
+		case renderer::Format::eR8_UNORM:
+		case renderer::Format::eR8_SNORM:
+		case renderer::Format::eR8_UINT:
+		case renderer::Format::eR8_SINT:
+		case renderer::Format::eR8_SRGB:
+		case renderer::Format::eR8G8_UNORM:
+		case renderer::Format::eR8G8_SNORM:
+		case renderer::Format::eR8G8_UINT:
+		case renderer::Format::eR8G8_SINT:
+		case renderer::Format::eR8G8_SRGB:
+		case renderer::Format::eR8G8B8_UNORM:
+		case renderer::Format::eR8G8B8_SNORM:
+		case renderer::Format::eR8G8B8_UINT:
+		case renderer::Format::eR8G8B8_SINT:
+		case renderer::Format::eR8G8B8_SRGB:
+		case renderer::Format::eR8G8B8A8_UNORM:
+		case renderer::Format::eR8G8B8A8_SNORM:
+		case renderer::Format::eR8G8B8A8_UINT:
+		case renderer::Format::eR8G8B8A8_SINT:
+		case renderer::Format::eR8G8B8A8_SRGB:
+		case renderer::Format::eB8G8R8A8_UNORM:
+		case renderer::Format::eA2R10G10B10_UNORM_PACK32:
+		case renderer::Format::eA2R10G10B10_UINT_PACK32:
+		case renderer::Format::eR16_UNORM:
+		case renderer::Format::eR16_SNORM:
+		case renderer::Format::eR16_UINT:
+		case renderer::Format::eR16_SINT:
+		case renderer::Format::eR16_SFLOAT:
+		case renderer::Format::eR16G16_UNORM:
+		case renderer::Format::eR16G16_SNORM:
+		case renderer::Format::eR16G16_UINT:
+		case renderer::Format::eR16G16_SINT:
+		case renderer::Format::eR16G16_SFLOAT:
+		case renderer::Format::eR16G16B16_UNORM:
+		case renderer::Format::eR16G16B16_SNORM:
+		case renderer::Format::eR16G16B16_UINT:
+		case renderer::Format::eR16G16B16_SINT:
+		case renderer::Format::eR16G16B16_SFLOAT:
+		case renderer::Format::eR16G16B16A16_UNORM:
+		case renderer::Format::eR16G16B16A16_SNORM:
+		case renderer::Format::eR16G16B16A16_UINT:
+		case renderer::Format::eR16G16B16A16_SINT:
+		case renderer::Format::eR16G16B16A16_SFLOAT:
+		case renderer::Format::eR32_UINT:
+		case renderer::Format::eR32_SINT:
+		case renderer::Format::eR32_SFLOAT:
+		case renderer::Format::eR32G32_UINT:
+		case renderer::Format::eR32G32_SINT:
+		case renderer::Format::eR32G32_SFLOAT:
+		case renderer::Format::eR32G32B32_UINT:
+		case renderer::Format::eR32G32B32_SINT:
+		case renderer::Format::eR32G32B32_SFLOAT:
+		case renderer::Format::eR32G32B32A32_UINT:
+		case renderer::Format::eR32G32B32A32_SINT:
+		case renderer::Format::eR32G32B32A32_SFLOAT:
+		case renderer::Format::eB10G11R11_UFLOAT_PACK32:
+		case renderer::Format::eE5B9G9R9_UFLOAT_PACK32:
+		case renderer::Format::eD16_UNORM:
+		case renderer::Format::eD32_SFLOAT:
+		case renderer::Format::eS8_UINT:
+		case renderer::Format::eD24_UNORM_S8_UINT:
+		case renderer::Format::eD32_SFLOAT_S8_UINT:
+		case renderer::Format::eBC1_RGB_UNORM_BLOCK:
+		case renderer::Format::eBC1_RGB_SRGB_BLOCK:
+		case renderer::Format::eBC1_RGBA_UNORM_BLOCK:
+		case renderer::Format::eBC1_RGBA_SRGB_BLOCK:
+		case renderer::Format::eBC2_UNORM_BLOCK:
+		case renderer::Format::eBC2_SRGB_BLOCK:
+		case renderer::Format::eBC3_UNORM_BLOCK:
+		case renderer::Format::eBC3_SRGB_BLOCK:
+		case renderer::Format::eBC4_UNORM_BLOCK:
+		case renderer::Format::eBC4_SNORM_BLOCK:
+		case renderer::Format::eBC5_UNORM_BLOCK:
+		case renderer::Format::eBC5_SNORM_BLOCK:
+		case renderer::Format::eBC6H_UFLOAT_BLOCK:
+		case renderer::Format::eBC6H_SFLOAT_BLOCK:
+		case renderer::Format::eBC7_UNORM_BLOCK:
+		case renderer::Format::eBC7_SRGB_BLOCK:
+		case renderer::Format::eETC2_R8G8B8_UNORM_BLOCK:
+		case renderer::Format::eETC2_R8G8B8_SRGB_BLOCK:
+		case renderer::Format::eETC2_R8G8B8A1_UNORM_BLOCK:
+		case renderer::Format::eETC2_R8G8B8A1_SRGB_BLOCK:
+		case renderer::Format::eETC2_R8G8B8A8_UNORM_BLOCK:
+		case renderer::Format::eETC2_R8G8B8A8_SRGB_BLOCK:
+		case renderer::Format::eEAC_R11_UNORM_BLOCK:
+		case renderer::Format::eEAC_R11_SNORM_BLOCK:
+		case renderer::Format::eEAC_R11G11_UNORM_BLOCK:
+		case renderer::Format::eEAC_R11G11_SNORM_BLOCK:
+		case renderer::Format::eASTC_4x4_UNORM_BLOCK:
+		case renderer::Format::eASTC_4x4_SRGB_BLOCK:
+		case renderer::Format::eASTC_5x4_UNORM_BLOCK:
+		case renderer::Format::eASTC_5x4_SRGB_BLOCK:
+		case renderer::Format::eASTC_5x5_UNORM_BLOCK:
+		case renderer::Format::eASTC_5x5_SRGB_BLOCK:
+		case renderer::Format::eASTC_6x5_UNORM_BLOCK:
+		case renderer::Format::eASTC_6x5_SRGB_BLOCK:
+		case renderer::Format::eASTC_6x6_UNORM_BLOCK:
+		case renderer::Format::eASTC_6x6_SRGB_BLOCK:
+		case renderer::Format::eASTC_8x5_UNORM_BLOCK:
+		case renderer::Format::eASTC_8x5_SRGB_BLOCK:
+		case renderer::Format::eASTC_8x6_UNORM_BLOCK:
+		case renderer::Format::eASTC_8x6_SRGB_BLOCK:
+		case renderer::Format::eASTC_8x8_UNORM_BLOCK:
+		case renderer::Format::eASTC_8x8_SRGB_BLOCK:
+		case renderer::Format::eASTC_10x5_UNORM_BLOCK:
+		case renderer::Format::eASTC_10x5_SRGB_BLOCK:
+		case renderer::Format::eASTC_10x6_UNORM_BLOCK:
+		case renderer::Format::eASTC_10x6_SRGB_BLOCK:
+		case renderer::Format::eASTC_10x8_UNORM_BLOCK:
+		case renderer::Format::eASTC_10x8_SRGB_BLOCK:
+		case renderer::Format::eASTC_10x10_UNORM_BLOCK:
+		case renderer::Format::eASTC_10x10_SRGB_BLOCK:
+		case renderer::Format::eASTC_12x10_UNORM_BLOCK:
+		case renderer::Format::eASTC_12x10_SRGB_BLOCK:
+		case renderer::Format::eASTC_12x12_UNORM_BLOCK:
+		case renderer::Format::eASTC_12x12_SRGB_BLOCK:
+			return true;
+
+		default:
+			return false;
+		}
+	}
+
 	GlInternal getInternal( renderer::Format const & format )noexcept
 	{
 		switch ( format )

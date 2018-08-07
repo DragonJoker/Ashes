@@ -10,4 +10,13 @@ namespace vk_renderer
 			value.height,
 		};
 	}
+
+	renderer::Extent2D convert( VkExtent2D const & value )
+	{
+		return renderer::Extent2D
+		{
+			value.width,
+			value.height,
+		};
+	}
 }

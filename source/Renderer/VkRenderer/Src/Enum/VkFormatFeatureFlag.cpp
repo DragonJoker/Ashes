@@ -76,6 +76,56 @@ namespace vk_renderer
 			result |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG;
 		}
 
+		if ( checkFlag( flags, renderer::FormatFeatureFlag::eTransferSrc ) )
+		{
+			result |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+		}
+
+		if ( checkFlag( flags, renderer::FormatFeatureFlag::eTransferDst ) )
+		{
+			result |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+		}
+
+		if ( checkFlag( flags, renderer::FormatFeatureFlag::eMidPointChromaSamples ) )
+		{
+			result |= VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT;
+		}
+
+		if ( checkFlag( flags, renderer::FormatFeatureFlag::eSampledImageYCbCrConversionLinearFilter ) )
+		{
+			result |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT;
+		}
+
+		if ( checkFlag( flags, renderer::FormatFeatureFlag::eSampledImageYCbCrConversionSeparateReconstructionFilter ) )
+		{
+			result |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT;
+		}
+
+		if ( checkFlag( flags, renderer::FormatFeatureFlag::eSampledImageYCbCrConversionChromaReconstructionExplicit ) )
+		{
+			result |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT;
+		}
+
+		if ( checkFlag( flags, renderer::FormatFeatureFlag::eSampledImageYCbCrConversionChromaReconstructionExplicitForceable ) )
+		{
+			result |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT;
+		}
+
+		if ( checkFlag( flags, renderer::FormatFeatureFlag::eDisjoint ) )
+		{
+			result |= VK_FORMAT_FEATURE_DISJOINT_BIT;
+		}
+
+		if ( checkFlag( flags, renderer::FormatFeatureFlag::eCositedChromaSamples ) )
+		{
+			result |= VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT;
+		}
+
+		if ( checkFlag( flags, renderer::FormatFeatureFlag::eSampledImageFilterMinmax ) )
+		{
+			result |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT;
+		}
+
 		return result;
 	}
 
@@ -151,6 +201,56 @@ namespace vk_renderer
 		if ( renderer::checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG ) )
 		{
 			result |= renderer::FormatFeatureFlag::eSampledImageFilterCubic;
+		}
+
+		if ( renderer::checkFlag( flags, VK_FORMAT_FEATURE_TRANSFER_SRC_BIT ) )
+		{
+			result |= renderer::FormatFeatureFlag::eTransferSrc;
+		}
+
+		if ( renderer::checkFlag( flags, VK_FORMAT_FEATURE_TRANSFER_DST_BIT ) )
+		{
+			result |= renderer::FormatFeatureFlag::eTransferDst;
+		}
+
+		if ( renderer::checkFlag( flags, VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT ) )
+		{
+			result |= renderer::FormatFeatureFlag::eMidPointChromaSamples;
+		}
+
+		if ( renderer::checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT ) )
+		{
+			result |= renderer::FormatFeatureFlag::eSampledImageYCbCrConversionLinearFilter;
+		}
+
+		if ( renderer::checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT ) )
+		{
+			result |= renderer::FormatFeatureFlag::eSampledImageYCbCrConversionSeparateReconstructionFilter;
+		}
+
+		if ( renderer::checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT ) )
+		{
+			result |= renderer::FormatFeatureFlag::eSampledImageYCbCrConversionChromaReconstructionExplicit;
+		}
+
+		if ( renderer::checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT ) )
+		{
+			result |= renderer::FormatFeatureFlag::eSampledImageYCbCrConversionChromaReconstructionExplicitForceable;
+		}
+
+		if ( renderer::checkFlag( flags, VK_FORMAT_FEATURE_DISJOINT_BIT ) )
+		{
+			result |= renderer::FormatFeatureFlag::eDisjoint;
+		}
+
+		if ( renderer::checkFlag( flags, VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT ) )
+		{
+			result |= renderer::FormatFeatureFlag::eCositedChromaSamples;
+		}
+
+		if ( renderer::checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT ) )
+		{
+			result |= renderer::FormatFeatureFlag::eSampledImageFilterMinmax;
 		}
 
 		return result;

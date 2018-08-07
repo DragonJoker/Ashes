@@ -26,6 +26,11 @@ namespace renderer
 	eMin = MinValue,\
 	eMax = eCount - 1
 
+#define Renderer_EnumBoundsEx( MinValue, MaxValue )\
+	eCount,\
+	eMin = MinValue,\
+	eMax = eCount - 1
+
 #include "RendererConfig.hpp"
 #include "Utils/FlagCombination.hpp"
 #include "Utils/Signal.hpp"
@@ -38,7 +43,9 @@ namespace renderer
 #include "Enum/BorderColour.hpp"
 #include "Enum/BufferTarget.hpp"
 #include "Enum/ClipDirection.hpp"
+#include "Enum/ColorSpace.hpp"
 #include "Enum/ComponentSwizzle.hpp"
+#include "Enum/CompositeAlphaFlag.hpp"
 #include "Enum/ConstantFormat.hpp"
 #include "Enum/ColourComponentFlag.hpp"
 #include "Enum/CommandBufferResetFlag.hpp"
@@ -72,6 +79,7 @@ namespace renderer
 #include "Enum/PipelineBindPoint.hpp"
 #include "Enum/PipelineStageFlag.hpp"
 #include "Enum/PolygonMode.hpp"
+#include "Enum/PresentMode.hpp"
 #include "Enum/PrimitiveTopology.hpp"
 #include "Enum/QueryControlFlag.hpp"
 #include "Enum/QueryPipelineStatisticFlag.hpp"
@@ -87,6 +95,8 @@ namespace renderer
 #include "Enum/StencilOp.hpp"
 #include "Enum/SubpassContents.hpp"
 #include "Enum/SubpassDescriptionFlag.hpp"
+#include "Enum/SurfaceCounterFlag.hpp"
+#include "Enum/SurfaceTransformFlag.hpp"
 #include "Enum/TessellationStateFlag.hpp"
 #include "Enum/TextureType.hpp"
 #include "Enum/TextureViewType.hpp"

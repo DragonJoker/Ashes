@@ -7,6 +7,8 @@ See LICENSE file in root folder.
 #include "Renderer.hpp"
 #include "Device.hpp"
 
+#include <algorithm>
+
 namespace renderer
 {
 	PhysicalDevice::PhysicalDevice( Renderer & renderer )
@@ -231,5 +233,23 @@ namespace renderer
 		result << "m_properties.sparseProperties.residencyStandard3DBlockShape = " << m_properties.sparseProperties.residencyStandard3DBlockShape << ";" << std::endl;
 
 		return result.str();
+	}
+
+	std::vector< ExtensionProperties > const & PhysicalDevice::getExtensionProperties( std::string const & layerName )const
+	{
+		auto it = std::find_if( m_layerExtensions.begin()
+			, m_layerExtensions.end()
+			, [&layerName]( renderer::LayerProperties const & lookup )
+			{
+				return lookup.layerName == layerName;
+			} );
+
+		if ( it != m_layerExtensions.end() )
+		{
+			return it->extensions;
+		}
+
+		static std::vector< ExtensionProperties > const dummy;
+		return dummy;
 	}
 }

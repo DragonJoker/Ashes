@@ -17,5 +17,6 @@ namespace gl_renderer
 			, deviceIndex
 			, std::move( handle ) }
 	{
+		m_surfaceType = "OpenGL surface";
 	}
 }
