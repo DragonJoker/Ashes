@@ -16,7 +16,8 @@ namespace gl_renderer
 		: public CommandBase
 	{
 	public:
-		ResetQueryPoolCommand( renderer::QueryPool const & pool
+		ResetQueryPoolCommand( Device const & device
+			, renderer::QueryPool const & pool
 			, uint32_t firstQuery
 			, uint32_t queryCount );
 		void apply()const override;

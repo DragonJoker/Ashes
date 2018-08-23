@@ -8,17 +8,19 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	GenerateMipmapsCommand::GenerateMipmapsCommand( Texture const & texture )
-		: m_texture{ texture }
+	GenerateMipmapsCommand::GenerateMipmapsCommand( Device const & device
+		, Texture const & texture )
+		: CommandBase{ device }
+		, m_texture{ texture }
 	{
 	}
 
 	void GenerateMipmapsCommand::apply()const
 	{
 		glLogCommand( "GenerateMipmapsCommand" );
-		glLogCall( gl::BindTexture, m_texture.getTarget(), m_texture.getImage() );
-		glLogCall( gl::GenerateMipmap, m_texture.getTarget() );
-		glLogCall( gl::BindTexture, m_texture.getTarget(), 0 );
+		glLogCall( m_device.getContext(), glBindTexture, m_texture.getTarget(), m_texture.getImage() );
+		glLogCall( m_device.getContext(), glGenerateMipmap, m_texture.getTarget() );
+		glLogCall( m_device.getContext(), glBindTexture, m_texture.getTarget(), 0 );
 	}
 
 	CommandPtr GenerateMipmapsCommand::clone()const

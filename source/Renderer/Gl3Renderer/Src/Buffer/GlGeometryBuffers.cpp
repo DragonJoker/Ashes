@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "Buffer/GlGeometryBuffers.hpp"
 
 #include "Buffer/GlBuffer.hpp"
+#include "Core/GlDevice.hpp"
 
 #include <Buffer/VertexBuffer.hpp>
 
@@ -53,34 +54,36 @@ namespace gl_renderer
 		}
 	}
 
-	GeometryBuffers::GeometryBuffers( VboBindings const & vbos
+	GeometryBuffers::GeometryBuffers( Device const & device
+		, VboBindings const & vbos
 		, IboBinding const & ibo
 		, renderer::VertexInputState const & vertexInputState
 		, renderer::IndexType type )
-		: m_vbos{ createVBOs( vbos, vertexInputState ) }
+		: m_device{ device }
+		, m_vbos{ createVBOs( vbos, vertexInputState ) }
 		, m_ibo{ bool( ibo ) ? std::make_unique< IBO >( ibo.value().bo, ibo.value().offset, type ) : nullptr }
 	{
 	}
 
 	GeometryBuffers::~GeometryBuffers()noexcept
 	{
-		glLogCall( gl::DeleteVertexArrays, 1, &m_vao );
+		glLogCall( m_device.getContext(), glDeleteVertexArrays, 1, &m_vao );
 	}
 
 	void GeometryBuffers::initialise()
 	{
-		glLogCall( gl::GenVertexArrays, 1, &m_vao );
+		glLogCall( m_device.getContext(), glGenVertexArrays, 1, &m_vao );
 
 		if ( m_vao == GL_INVALID_INDEX )
 		{
 			throw std::runtime_error{ "Couldn't create VAO" };
 		}
 
-		glLogCall( gl::BindVertexArray, m_vao );
+		glLogCall( m_device.getContext(), glBindVertexArray, m_vao );
 
 		for ( auto & vbo : m_vbos )
 		{
-			glLogCall( gl::BindBuffer
+			glLogCall( m_device.getContext(), glBindBuffer
 				, GL_BUFFER_TARGET_ARRAY
 				, vbo.vbo );
 
@@ -88,11 +91,11 @@ namespace gl_renderer
 			{
 				for ( auto & attribute : vbo.attributes )
 				{
-					glLogCall( gl::EnableVertexAttribArray, attribute.location );
+					glLogCall( m_device.getContext(), glEnableVertexAttribArray, attribute.location );
 
 					if ( isInteger( attribute.format ) )
 					{
-						glLogCall( gl::VertexAttribIPointer
+						glLogCall( m_device.getContext(), glVertexAttribIPointer
 							, attribute.location
 							, getCount( attribute.format )
 							, getType( getInternal( attribute.format ) )
@@ -101,7 +104,7 @@ namespace gl_renderer
 					}
 					else
 					{
-						glLogCall( gl::VertexAttribPointer
+						glLogCall( m_device.getContext(), glVertexAttribPointer
 							, attribute.location
 							, getCount( attribute.format )
 							, getType( getInternal( attribute.format ) )
@@ -120,11 +123,11 @@ namespace gl_renderer
 					uint32_t location = attribute.location;
 					uint32_t divisor = 1u;
 
-					glLogCall( gl::EnableVertexAttribArray, location );
+					glLogCall( m_device.getContext(), glEnableVertexAttribArray, location );
 
 					if ( isInteger( attribute.format ) )
 					{
-						glLogCall( gl::VertexAttribIPointer
+						glLogCall( m_device.getContext(), glVertexAttribIPointer
 							, location
 							, getCount( format )
 							, getType( getInternal( attribute.format ) )
@@ -133,7 +136,7 @@ namespace gl_renderer
 					}
 					else
 					{
-						glLogCall( gl::VertexAttribPointer
+						glLogCall( m_device.getContext(), glVertexAttribPointer
 							, location
 							, getCount( format )
 							, getType( getInternal( attribute.format ) )
@@ -142,7 +145,7 @@ namespace gl_renderer
 							, BufferOffset( vbo.offset + offset ) );
 					}
 
-					glLogCall( gl::VertexAttribDivisor
+					glLogCall( m_device.getContext(), glVertexAttribDivisor
 						, location
 						, divisor );
 				}
@@ -151,12 +154,12 @@ namespace gl_renderer
 
 		if ( m_ibo )
 		{
-			glLogCall( gl::BindBuffer
+			glLogCall( m_device.getContext(), glBindBuffer
 				, GL_BUFFER_TARGET_ELEMENT_ARRAY
 				, m_ibo->ibo );
 		}
 
-		glLogCall( gl::BindVertexArray, 0u );
+		glLogCall( m_device.getContext(), glBindVertexArray, 0u );
 	}
 
 	std::vector< GeometryBuffers::VBO > GeometryBuffers::createVBOs( VboBindings const & vbos

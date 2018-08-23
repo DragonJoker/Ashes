@@ -28,7 +28,8 @@ namespace gl_renderer
 		*\param[in] dst
 		*	Le tampon destination.
 		*/
-		CopyBufferCommand( renderer::BufferCopy const & copyInfo
+		CopyBufferCommand( Device const & device
+			, renderer::BufferCopy const & copyInfo
 			, renderer::BufferBase const & src
 			, renderer::BufferBase const & dst );
 

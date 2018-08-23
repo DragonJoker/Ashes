@@ -361,17 +361,17 @@ namespace gl_renderer
 	}
 
 #if GL_LOG_CALLS
-#	define glLogCall( Name, ... )\
-	executeFunction( Name, #Name, __VA_ARGS__ )
+#	define glLogCall( Context, Name, ... )\
+	executeFunction( Context.Name, #Name, __VA_ARGS__ )
 #	define glLogCommand( Name )\
 	renderer::Logger::logDebug( std::string{ "Command: " } + Name )
 #elif defined( NDEBUG )
-#	define glLogCall( Name, ... )\
-	( Name( __VA_ARGS__ ) )
+#	define glLogCall( Context, Name, ... )\
+	( Context.Name( __VA_ARGS__ ) )
 #	define glLogCommand( Name )
 #	else
-#	define glLogCall( Name, ... )\
-	( Name( __VA_ARGS__ ) );\
+#	define glLogCall( Context, Name, ... )\
+	( Context.Name( __VA_ARGS__ ) );\
 	glCheckError( #Name )
 #	define glLogCommand( Name )
 #endif

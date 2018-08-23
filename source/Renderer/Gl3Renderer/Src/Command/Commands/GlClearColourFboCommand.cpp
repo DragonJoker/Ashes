@@ -14,7 +14,7 @@ namespace gl_renderer
 	ClearColourFboCommand::ClearColourFboCommand( Device const & device
 		, renderer::TextureView const & image
 		, renderer::ClearColorValue const & colour )
-		: m_device{ device }
+		: CommandBase{ device }
 		, m_image{ static_cast< TextureView const & >( image ) }
 		, m_colour{ colour }
 		, m_internal{ getInternal( m_image.getFormat() ) }
@@ -34,22 +34,22 @@ namespace gl_renderer
 			target = GL_TEXTURE_2D_MULTISAMPLE;
 		}
 
-		glLogCall( gl::BindFramebuffer
+		glLogCall( m_device.getContext(), glBindFramebuffer
 			, GL_FRAMEBUFFER
 			, m_device.getBlitDstFbo() );
 		GLenum point = getAttachmentPoint( m_image );
-		glLogCall( gl::FramebufferTexture2D
+		glLogCall( m_device.getContext(), glFramebufferTexture2D
 			, GL_FRAMEBUFFER
 			, point
 			, target
 			, image.getImage()
 			, m_image.getSubResourceRange().baseMipLevel );
-		gl::DrawBuffers( 1, &point );
-		glLogCall( gl::ClearBufferfv
+		m_device.getContext().glDrawBuffers( 1, &point );
+		glLogCall( m_device.getContext(), glClearBufferfv
 			, GL_CLEAR_TARGET_COLOR
 			, 0u
 			, m_colour.float32.data() );
-		glLogCall( gl::BindFramebuffer
+		glLogCall( m_device.getContext(), glBindFramebuffer
 			, GL_FRAMEBUFFER
 			, 0u );
 	}

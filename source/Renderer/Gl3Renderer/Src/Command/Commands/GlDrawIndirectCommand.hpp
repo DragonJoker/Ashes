@@ -12,7 +12,8 @@ namespace gl_renderer
 		: public CommandBase
 	{
 	public:
-		DrawIndirectCommand( renderer::BufferBase const & buffer
+		DrawIndirectCommand( Device const & device
+			, renderer::BufferBase const & buffer
 			, uint32_t offset
 			, uint32_t drawCount
 			, uint32_t stride

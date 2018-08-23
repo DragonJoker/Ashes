@@ -24,7 +24,8 @@ namespace gl_renderer
 		*\param[in] scissor
 		*	Le scissor.
 		*/
-		SetLineWidthCommand( float width );
+		SetLineWidthCommand( Device const & device
+			, float width );
 
 		void apply()const override;
 		CommandPtr clone()const override;

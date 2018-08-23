@@ -16,7 +16,8 @@ namespace gl_renderer
 		: public CommandBase
 	{
 	public:
-		EndQueryCommand( renderer::QueryPool const & pool
+		EndQueryCommand( Device const & device
+			, renderer::QueryPool const & pool
 			, uint32_t query );
 		void apply()const override;
 		CommandPtr clone()const override;

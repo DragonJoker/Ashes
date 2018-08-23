@@ -43,7 +43,6 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		Device const & m_device;
 		uint32_t m_indexCount;
 		uint32_t m_instCount;
 		size_t m_firstIndex;

@@ -15,6 +15,7 @@ namespace gl_renderer
 {
 	Queue::Queue( Device const & device )
 		: renderer::Queue{ device }
+		, m_device{ device }
 	{
 	}
 
@@ -46,6 +47,6 @@ namespace gl_renderer
 
 	void Queue::waitIdle()const
 	{
-		glLogCall( gl::Finish );
+		glLogCall( m_device.getContext(), glFinish );
 	}
 }

@@ -12,7 +12,8 @@ namespace gl_renderer
 		: public CommandBase
 	{
 	public:
-		WaitEventsCommand( renderer::EventCRefArray const & events
+		WaitEventsCommand( Device const & device
+			, renderer::EventCRefArray const & events
 			, renderer::PipelineStageFlags srcStageMask
 			, renderer::PipelineStageFlags dstStageMask
 			, renderer::BufferMemoryBarrierArray const & bufferMemoryBarriers

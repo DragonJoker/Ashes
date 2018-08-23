@@ -34,7 +34,6 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		Device const & m_device;
 		TextureView const & m_image;
 		renderer::DepthStencilClearValue m_value;
 		GlInternal m_internal;

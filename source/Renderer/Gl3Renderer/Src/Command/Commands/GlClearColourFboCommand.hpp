@@ -34,7 +34,6 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		Device const & m_device;
 		TextureView const & m_image;
 		renderer::ClearColorValue m_colour;
 		GlInternal m_internal;
