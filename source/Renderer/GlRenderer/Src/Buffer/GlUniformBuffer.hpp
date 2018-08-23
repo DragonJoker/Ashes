@@ -34,7 +34,7 @@ namespace gl_renderer
 		*\param[in] flags
 		*	Les indicateurs de mémoire du tampon.
 		*/
-		UniformBuffer( renderer::Device const & device
+		UniformBuffer( Device const & device
 			, uint32_t count
 			, uint32_t size
 			, renderer::BufferTargets target
@@ -43,6 +43,9 @@ namespace gl_renderer
 		*\copydoc		renderer::UniformBuffer::getAlignedSize
 		*/
 		uint32_t getAlignedSize( uint32_t size )const override;
+
+	private:
+		Device const & m_device;
 	};
 }
 

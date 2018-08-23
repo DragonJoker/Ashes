@@ -6,8 +6,6 @@ See LICENSE file in root folder
 #include "Core/GlContext.hpp"
 
 #if RENDERLIB_WIN32
-#	include "Miscellaneous/OpenGLLibrary.hpp"
-
 #	include <Windows.h>
 
 namespace gl_renderer
@@ -34,13 +32,18 @@ namespace gl_renderer
 			return m_hContext;
 		}
 
+#define WGL_LIB_FUNCTION( fun ) PFN_wgl##fun wgl##fun;
+#define WGL_LIB_FUNCTION_OPT( fun ) PFN_wgl##fun wgl##fun;
+#include "Miscellaneous/OpenGLFunctionsList.inl"
+
 	private:
+		void doLoadBaseFunctions();
+		void doLoadMswFunctions();
 		HGLRC doCreateDummyContext();
 		bool doSelectFormat();
 		bool doCreateGl3Context();
 
 	private:
-		std::unique_ptr< OpenGLLibrary > m_opengl;
 		HDC m_hDC;
 		HGLRC m_hContext;
 		HWND m_hWnd;

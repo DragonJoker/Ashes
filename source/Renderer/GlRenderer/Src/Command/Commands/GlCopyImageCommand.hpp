@@ -28,7 +28,8 @@ namespace gl_renderer
 		*\param[in] dst
 		*	L'image destination.
 		*/
-		CopyImageCommand( renderer::ImageCopy const & copyInfo
+		CopyImageCommand( Device const & device
+			, renderer::ImageCopy const & copyInfo
 			, renderer::Texture const & src
 			, renderer::Texture const & dst );
 

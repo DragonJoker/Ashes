@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "RenderPass/GlFrameBuffer.hpp"
 
 #include "Command/GlQueue.hpp"
+#include "Core/GlDevice.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 #include "Image/GlTexture.hpp"
 #include "Image/GlTextureView.hpp"
@@ -151,22 +152,26 @@ namespace gl_renderer
 		}
 	}
 
-	FrameBuffer::FrameBuffer( RenderPass const & renderPass
+	FrameBuffer::FrameBuffer( Device const & device
+		, RenderPass const & renderPass
 		, renderer::Extent2D const & dimensions )
 		: renderer::FrameBuffer{ renderPass, dimensions, renderer::FrameBufferAttachmentArray{} }
+		, m_device{ device }
 		, m_frameBuffer{ 0u }
 		, m_renderPass{ renderPass }
 	{
 	}
 
-	FrameBuffer::FrameBuffer( RenderPass const & renderPass
+	FrameBuffer::FrameBuffer( Device const & device
+		, RenderPass const & renderPass
 		, renderer::Extent2D const & dimensions
 		, renderer::FrameBufferAttachmentArray && views )
 		: renderer::FrameBuffer{ renderPass, dimensions, std::move( views ) }
+		, m_device{ device }
 		, m_renderPass{ renderPass }
 	{
-		glLogCall( gl::GenFramebuffers, 1, &m_frameBuffer );
-		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer );
+		glLogCall( m_device.getContext(), glGenFramebuffers, 1, &m_frameBuffer );
+		glLogCall( m_device.getContext(), glBindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer );
 
 		for ( auto & attach : m_attachments )
 		{
@@ -219,13 +224,13 @@ namespace gl_renderer
 					target = GL_TEXTURE_2D_MULTISAMPLE;
 				}
 
-				glLogCall( gl::FramebufferTexture2D
+				glLogCall( m_device.getContext(), glFramebufferTexture2D
 					, GL_FRAMEBUFFER
 					, GlAttachmentPoint( attachment.point + index )
 					, target
 					, attachment.object
 					, mipLevel );
-				doCheck( gl::CheckFramebufferStatus( GL_FRAMEBUFFER ) );
+				doCheck( m_device.getContext().glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
 			}
 			else
 			{
@@ -249,15 +254,15 @@ namespace gl_renderer
 			}
 		}
 
-		doCheck( gl::CheckFramebufferStatus( GL_FRAMEBUFFER ) );
-		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, 0 );
+		doCheck( m_device.getContext().glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+		glLogCall( m_device.getContext(), glBindFramebuffer, GL_FRAMEBUFFER, 0 );
 	}
 
 	FrameBuffer::~FrameBuffer()
 	{
 		if ( m_frameBuffer > 0u )
 		{
-			glLogCall( gl::DeleteFramebuffers, 1, &m_frameBuffer );
+			glLogCall( m_device.getContext(), glDeleteFramebuffers, 1, &m_frameBuffer );
 		}
 	}
 
@@ -279,7 +284,7 @@ namespace gl_renderer
 			}
 		}
 
-		glLogCall( gl::DrawBuffers, GLsizei( m_drawBuffers.size() ), m_drawBuffers.data() );
+		glLogCall( m_device.getContext(), glDrawBuffers, GLsizei( m_drawBuffers.size() ), m_drawBuffers.data() );
 	}
 
 	void FrameBuffer::setDrawBuffers( renderer::AttachmentReferenceArray const & attaches )const
@@ -304,7 +309,7 @@ namespace gl_renderer
 			if ( m_drawBuffers != colours )
 			{
 				m_drawBuffers = colours;
-				glLogCall( gl::DrawBuffers, GLsizei( m_drawBuffers.size() ), m_drawBuffers.data() );
+				glLogCall( m_device.getContext(), glDrawBuffers, GLsizei( m_drawBuffers.size() ), m_drawBuffers.data() );
 			}
 		}
 	}

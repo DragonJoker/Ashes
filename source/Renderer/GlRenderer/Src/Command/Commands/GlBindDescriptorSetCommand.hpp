@@ -26,7 +26,8 @@ namespace gl_renderer
 		*\param[in] bindingPoint
 		*	Le point d'attache du set.
 		*/
-		BindDescriptorSetCommand( renderer::DescriptorSet const & descriptorSet
+		BindDescriptorSetCommand( Device const & device
+			, renderer::DescriptorSet const & descriptorSet
 			, renderer::PipelineLayout const & layout
 			, renderer::UInt32Array const & dynamicOffsets
 			, renderer::PipelineBindPoint bindingPoint );

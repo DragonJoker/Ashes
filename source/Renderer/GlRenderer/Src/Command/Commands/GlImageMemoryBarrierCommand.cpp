@@ -6,17 +6,19 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	ImageMemoryBarrierCommand::ImageMemoryBarrierCommand( renderer::PipelineStageFlags after
+	ImageMemoryBarrierCommand::ImageMemoryBarrierCommand( Device const & device
+		, renderer::PipelineStageFlags after
 		, renderer::PipelineStageFlags before
 		, renderer::ImageMemoryBarrier const & transitionBarrier )
-		: m_flags{ convert( before ) }
+		: CommandBase{ device }
+		, m_flags{ convert( before ) }
 	{
 	}
 
 	void ImageMemoryBarrierCommand::apply()const
 	{
 		//glLogCommand( "ImageMemoryBarrierCommand" );
-		//glLogCall( gl::MemoryBarrier, m_flags );
+		//glLogCall( m_device.getContext(), glMemoryBarrier, m_flags );
 	}
 
 	CommandPtr ImageMemoryBarrierCommand::clone()const

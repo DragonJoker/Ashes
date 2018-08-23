@@ -6,15 +6,19 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	SetLineWidthCommand::SetLineWidthCommand( float width )
-		: m_width{ width }
+	SetLineWidthCommand::SetLineWidthCommand( Device const & device
+		, float width )
+		: CommandBase{ device }
+		, m_width{ width }
 	{
 	}
 
 	void SetLineWidthCommand::apply()const
 	{
 		glLogCommand( "SetLineWidthCommand" );
-		glLogCall( gl::LineWidth, m_width );
+		glLogCall( m_device.getContext()
+			, glLineWidth
+			, m_width );
 	}
 
 	CommandPtr SetLineWidthCommand::clone()const

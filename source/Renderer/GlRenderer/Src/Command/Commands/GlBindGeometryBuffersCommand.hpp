@@ -20,7 +20,8 @@ namespace gl_renderer
 		*\brief
 		*	Constructeur.
 		*/
-		BindGeometryBuffersCommand( GeometryBuffers const & vao );
+		BindGeometryBuffersCommand( Device const & device
+			, GeometryBuffers const & vao );
 
 		void apply()const override;
 		CommandPtr clone()const override;

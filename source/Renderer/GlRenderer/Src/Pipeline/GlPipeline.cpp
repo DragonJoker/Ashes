@@ -111,7 +111,7 @@ namespace gl_renderer
 		, m_viewport{ m_createInfo.viewport }
 		, m_scissor{ m_createInfo.scissor }
 		, m_vertexInputStateHash{ doHash( m_vertexInputState ) }
-		, m_program{ m_ssState }
+		, m_program{ m_device, m_ssState }
 	{
 		if ( m_createInfo.depthStencilState )
 		{
@@ -143,7 +143,8 @@ namespace gl_renderer
 
 		if ( m_device.getRenderer().isValidationEnabled() )
 		{
-			validatePipeline( m_layout
+			validatePipeline( m_device
+				, m_layout
 				, m_program.getProgram()
 				, m_vertexInputState
 				, m_renderPass );
@@ -174,7 +175,7 @@ namespace gl_renderer
 		, renderer::IndexType type )const
 	{
 		size_t hash = doHash( vbos, ibo );
-		m_geometryBuffers.emplace_back( hash, std::make_unique< GeometryBuffers >( vbos, ibo, m_vertexInputState, type ) );
+		m_geometryBuffers.emplace_back( hash, std::make_unique< GeometryBuffers >( m_device, vbos, ibo, m_vertexInputState, type ) );
 
 		for ( auto & binding : vbos )
 		{

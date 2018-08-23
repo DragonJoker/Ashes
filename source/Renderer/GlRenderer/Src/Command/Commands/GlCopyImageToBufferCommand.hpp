@@ -43,7 +43,6 @@ namespace gl_renderer
 			, TextureView const & view )const;
 
 	private:
-		Device const & m_device;
 		Texture const & m_src;
 		Buffer const & m_dst;
 		renderer::BufferImageCopyArray m_copyInfo;

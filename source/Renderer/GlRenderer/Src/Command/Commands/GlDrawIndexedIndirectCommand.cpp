@@ -8,13 +8,15 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	DrawIndexedIndirectCommand::DrawIndexedIndirectCommand( renderer::BufferBase const & buffer
+	DrawIndexedIndirectCommand::DrawIndexedIndirectCommand( Device const & device
+		, renderer::BufferBase const & buffer
 		, uint32_t offset
 		, uint32_t drawCount
 		, uint32_t stride
 		, renderer::PrimitiveTopology mode
 		, renderer::IndexType type )
-		: m_buffer{ static_cast< Buffer const & >( buffer ) }
+		: CommandBase{ device }
+		, m_buffer{ static_cast< Buffer const & >( buffer ) }
 		, m_offset{ offset }
 		, m_drawCount{ drawCount }
 		, m_stride{ stride }
@@ -26,14 +28,21 @@ namespace gl_renderer
 	void DrawIndexedIndirectCommand::apply()const
 	{
 		glLogCommand( "DrawIndexedIndirectCommand" );
-		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_DRAW_INDIRECT, m_buffer.getBuffer() );
-		glLogCall( gl::MultiDrawElementsIndirect
+		glLogCall( m_device.getContext()
+			, glBindBuffer
+			, GL_BUFFER_TARGET_DRAW_INDIRECT
+			, m_buffer.getBuffer() );
+		glLogCall( m_device.getContext()
+			, glMultiDrawElementsIndirect
 			, m_mode
 			, m_type
 			, BufferOffset( m_offset )
 			, m_drawCount
 			, m_stride );
-		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_DRAW_INDIRECT, 0 );
+		glLogCall( m_device.getContext()
+			, glBindBuffer
+			, GL_BUFFER_TARGET_DRAW_INDIRECT
+			, 0 );
 	}
 
 	CommandPtr DrawIndexedIndirectCommand::clone()const

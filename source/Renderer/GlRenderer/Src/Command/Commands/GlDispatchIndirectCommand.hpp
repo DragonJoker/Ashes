@@ -12,7 +12,8 @@ namespace gl_renderer
 		: public CommandBase
 	{
 	public:
-		DispatchIndirectCommand( renderer::BufferBase const & buffer
+		DispatchIndirectCommand( Device const & device
+			, renderer::BufferBase const & buffer
 			, uint32_t offset );
 
 		void apply()const override;

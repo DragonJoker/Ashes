@@ -30,7 +30,8 @@ namespace gl_renderer
 		*\param[in] firstInstance
 		*	Index de la premi�re instance.
 		*/
-		DrawIndexedCommand( uint32_t indexCount
+		DrawIndexedCommand( Device const & device
+			, uint32_t indexCount
 			, uint32_t instCount
 			, uint32_t firstIndex
 			, uint32_t vertexOffset
