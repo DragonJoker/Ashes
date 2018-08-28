@@ -6,8 +6,6 @@
 #	include "GlX11Context.hpp"
 #endif
 
-#include <gl/GL.h>
-
 namespace gl_renderer
 {
 	Context::Context( PhysicalDevice const & gpu

@@ -244,7 +244,7 @@ namespace gl_renderer
 		};
 
 		setCurrent();
-		m_device.getContext(), glGetError();
+		::glGetError();
 
 		if ( getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs ) )
 		{
