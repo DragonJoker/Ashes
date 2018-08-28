@@ -82,24 +82,6 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
-		*	Enables the device's context (for OpenGL).
-		*\~french
-		*\brief
-		*	Active le contexte du périphérique (pour OpenGL).
-		*/
-		void enable()const;
-		/**
-		*\~french
-		*\brief
-		*	Désctive le contexte du périphérique (pour OpenGL).
-		*\~english
-		*\brief
-		*	Disables the device's context (for OpenGL).
-		*/
-		void disable()const;
-		/**
-		*\~english
-		*\brief
 		*	Computes an frustum projection matrix.
 		*\param[in] left, right
 		*	The left and right planes position.
@@ -869,30 +851,6 @@ namespace renderer
 			return m_timestampPeriod;
 		}
 		/**@}*/
-
-	private:
-		/**
-		*\~french
-		*\brief
-		*	Active le contexte du périphérique (pour OpenGL).
-		*\~english
-		*\brief
-		*	Enables the device's context (for OpenGL).
-		*/
-		virtual void doEnable()const = 0;
-		/**
-		*\~french
-		*\brief
-		*	Désactive le contexte du périphérique (pour OpenGL).
-		*\~english
-		*\brief
-		*	Disables the device's context (for OpenGL).
-		*/
-		virtual void doDisable()const = 0;
-
-	public:
-		DeviceEnabledSignal onEnabled;
-		DeviceDisabledSignal onDisabled;
 
 	protected:
 		Renderer const & m_renderer;

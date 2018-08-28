@@ -74,6 +74,7 @@ namespace gl_renderer
 	class CommandBase;
 	class ComputePipeline;
 	class Context;
+	class ContextSelector;
 	class DescriptorSet;
 	class Device;
 	class FrameBuffer;

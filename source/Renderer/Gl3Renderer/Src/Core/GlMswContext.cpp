@@ -64,8 +64,9 @@ namespace gl_renderer
 			}
 
 			setCurrent();
-			wglSwapIntervalEXT( 0 );
+			m_wglSwapIntervalEXT( 0 );
 			endCurrent();
+			m_selector.registerContext( *this );
 		}
 	}
 
@@ -75,6 +76,7 @@ namespace gl_renderer
 		{
 			if ( m_hDC )
 			{
+				m_selector.unregisterContext( *this );
 				wglDeleteContext( m_hContext );
 				::ReleaseDC( m_hWnd, m_hDC );
 			}
@@ -102,19 +104,19 @@ namespace gl_renderer
 	void MswContext::doLoadBaseFunctions()
 	{
 #define GL_LIB_BASE_FUNCTION( fun )\
-			this->gl##fun = &::gl##fun;
+			m_gl##fun = &::gl##fun;
 #define GL_LIB_FUNCTION( fun )\
-			if ( !( getFunction( "gl"#fun, this->gl##fun ) ) )\
+			if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
 			{\
 				throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
 			}
 #define GL_LIB_FUNCTION_EXT( fun, ext, name )\
-			if ( !( getFunction( "gl"#fun, this->gl##fun##_##ext ) ) )\
+			if ( !( getFunction( "gl"#fun, m_gl##fun##_##ext ) ) )\
 			{\
 				renderer::Logger::logError( std::string{ "Couldn't load function " } + "gl"#fun );\
 			}
 #define GL_LIB_FUNCTION_VSN( fun, version )\
-			if ( !( getFunction( "gl"#fun, this->gl##fun##_##version ) ) )\
+			if ( !( getFunction( "gl"#fun, m_gl##fun##_##version ) ) )\
 			{\
 				renderer::Logger::logError( std::string{ "Couldn't load function " } + "gl"#fun );\
 			}
@@ -124,12 +126,12 @@ namespace gl_renderer
 	void MswContext::doLoadMswFunctions()
 	{
 #	define WGL_LIB_FUNCTION( fun )\
-			if ( !( getFunction( "wgl"#fun, this->wgl##fun ) ) )\
+			if ( !( getFunction( "wgl"#fun, m_wgl##fun ) ) )\
 			{\
 				throw std::runtime_error{ std::string{ "Couldn't load function " } + "wgl"#fun };\
 			}
 #	define WGL_LIB_FUNCTION_EXT( fun, ext, name )\
-			if ( !( getFunction( "wgl"#fun, this->wgl##fun##_##ext ) ) )\
+			if ( !( getFunction( "wgl"#fun, m_wgl##fun##_##ext ) ) )\
 			{\
 				renderer::Logger::logError( std::string{ "Couldn't load function " } + "wgl"#fun );\
 			}
@@ -193,7 +195,7 @@ namespace gl_renderer
 			};
 
 			setCurrent();
-			glGetError();
+			::glGetError();
 			glCreateContextAttribs = ( PFNGLCREATECONTEXTATTRIBS )wglGetProcAddress( "wglCreateContextAttribsARB" );
 			hContext = glCreateContextAttribs( m_hDC, nullptr, attribList.data() );
 			endCurrent();

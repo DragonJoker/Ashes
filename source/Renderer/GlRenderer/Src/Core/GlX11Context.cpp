@@ -17,14 +17,7 @@ namespace gl_renderer
 {
 	namespace
 	{
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
-		}
-
-	    using PFN_GLXCHOOSEFBCONFIG = GLXFBConfig *(*)( Display *, int, int const *, int * );
+		using PFN_GLXCHOOSEFBCONFIG = GLXFBConfig *(*)( Display *, int, int const *, int * );
 		using PFN_GLXGETVISUALFROMFBCONFIG = XVisualInfo *(*)( Display *, GLXFBConfig );
 		PFN_GLXCHOOSEFBCONFIG glXChooseFBConfig = nullptr;
 		PFN_GLXGETVISUALFROMFBCONFIG glXGetVisualFromFBConfig = nullptr;
@@ -41,11 +34,17 @@ namespace gl_renderer
 
 #endif
 
+		template< typename FuncT >
+		bool getFunction( char const * const name, FuncT & function )
+		{
+			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
+			return function != nullptr;
+		}
+
 		template< typename Func >
 		bool getFunction( std::string const & name, Func & func )
 		{
-			func = reinterpret_cast< Func >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name.c_str() ) ) );
-			return func != nullptr;
+			return getFunction( name.c_str(), func );
 		}
 	}
 
@@ -108,6 +107,7 @@ namespace gl_renderer
 
 			setCurrent();
 			doLoadBaseFunctions();
+			doLoadGLXFunctions();
 			loadDebugFunctions();
 			endCurrent();
 
@@ -124,6 +124,10 @@ namespace gl_renderer
 			}
 
 			XFree( visualInfo );
+			setCurrent();
+			m_glXSwapIntervalEXT( m_display, m_drawable, 0 );
+			endCurrent();
+			m_selector.registerContext( *this );
 		}
 	}
 
@@ -131,6 +135,7 @@ namespace gl_renderer
 	{
 		try
 		{
+			m_selector.unregisterContext( *this );
 			glXDestroyContext( m_display, m_glxContext );
 			XFree( m_fbConfig );
 		}
@@ -157,17 +162,28 @@ namespace gl_renderer
 	void X11Context::doLoadBaseFunctions()
 	{
 #define GL_LIB_BASE_FUNCTION( fun )\
-		this->gl##fun = &::gl##fun;
+		m_gl##fun = &::gl##fun;
 #define GL_LIB_FUNCTION( fun )\
-		if ( !( getFunction( "gl"#fun, gl##fun ) ) )\
+		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
 		{\
 			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
 		}
 #define GL_LIB_FUNCTION_OPT( fun )\
-		if ( !( getFunction( "gl"#fun, gl##fun ) ) )\
+		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
 		{\
 			renderer::Logger::logError( std::string{ "Couldn't load function " } + "gl"#fun );\
 		}
+#include "Miscellaneous/OpenGLFunctionsList.inl"
+	}
+
+	void X11Context::doLoadGLXFunctions()
+	{
+#define GLX_LIB_FUNCTION( fun )\
+		if ( !( getFunction( "glX"#fun, m_glX##fun ) ) )\
+		{\
+			throw std::runtime_error{ std::string{ "Couldn't load function " } + "glX"#fun };\
+		}
+#include "Miscellaneous/OpenGLFunctionsList.inl"
 	}
 
 	XVisualInfo * X11Context::doCreateVisualInfoWithFBConfig( std::vector< int > arrayAttribs, int screen )
@@ -243,7 +259,7 @@ namespace gl_renderer
 		};
 
 		setCurrent();
-		glGetError();
+		::glGetError();
 
 		if ( getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs ) )
 		{

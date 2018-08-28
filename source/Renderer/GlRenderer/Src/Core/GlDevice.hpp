@@ -27,6 +27,8 @@ namespace gl_renderer
 	class Device
 		: public renderer::Device
 	{
+		friend class Renderer;
+
 	public:
 		/**
 		*\brief
@@ -36,7 +38,7 @@ namespace gl_renderer
 		*\param[in] connection
 		*	La connection à l'application.
 		*/
-		Device( renderer::Renderer const & renderer
+		Device( Renderer const & renderer
 			, PhysicalDevice const & gpu
 			, renderer::ConnectionPtr && connection );
 		~Device();
@@ -209,16 +211,7 @@ namespace gl_renderer
 		}
 
 	private:
-		/**
-		*\copydoc	renderer::Device::enable
-		*/
-		void doEnable()const override;
-		/**
-		*\copydoc	renderer::Device::disable
-		*/
-		void doDisable()const override;
-
-	private:
+		Renderer const & m_renderer;
 		ContextPtr m_context;
 		struct Vertex
 		{

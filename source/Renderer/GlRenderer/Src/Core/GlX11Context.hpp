@@ -28,8 +28,19 @@ namespace gl_renderer
 			return m_glxContext;
 		}
 
+#define GLX_LIB_FUNCTION( fun )\
+		PFN_glX##fun m_glX##fun = nullptr;\
+		template< typename ... Params >\
+		auto glX##fun( Params... params )const\
+		{\
+			m_selector.enableContextForCurrentThread();\
+			return m_glX##fun( params... );\
+		}
+#include "Miscellaneous/OpenGLFunctionsList.inl"
+
 	private:
 		void doLoadBaseFunctions();
+		void doLoadGLXFunctions();
 		XVisualInfo * doCreateVisualInfoWithFBConfig( std::vector< int > arrayAttribs, int screen );
 		XVisualInfo * doCreateVisualInfoWithoutFBConfig( std::vector< int > arrayAttribs, int screen );
 		bool doCreateGl3Context();

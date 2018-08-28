@@ -108,6 +108,7 @@ namespace gl_renderer
 
 			setCurrent();
 			doLoadBaseFunctions();
+			doLoadGLXFunctions();
 			loadDebugFunctions();
 			endCurrent();
 
@@ -124,6 +125,10 @@ namespace gl_renderer
 			}
 
 			XFree( visualInfo );
+			setCurrent();
+			m_glXSwapIntervalEXT( m_display, m_drawable, 0 );
+			endCurrent();
+			m_selector.registerContext( *this );
 		}
 	}
 
@@ -131,6 +136,7 @@ namespace gl_renderer
 	{
 		try
 		{
+			m_selector.unregisterContext( *this );
 			glXDestroyContext( m_display, m_glxContext );
 			XFree( m_fbConfig );
 		}
@@ -157,16 +163,26 @@ namespace gl_renderer
 	void X11Context::doLoadBaseFunctions()
 	{
 #define GL_LIB_BASE_FUNCTION( fun )\
-		this->gl##fun = &::gl##fun;
+		m_gl##fun = &::gl##fun;
 #define GL_LIB_FUNCTION( fun )\
-		if ( !( getFunction( "gl"#fun, gl##fun ) ) )\
+		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
 		{\
 			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
 		}
 #define GL_LIB_FUNCTION_OPT( fun )\
-		if ( !( getFunction( "gl"#fun, gl##fun ) ) )\
+		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
 		{\
 			renderer::Logger::logError( std::string{ "Couldn't load function " } + "gl"#fun );\
+		}
+#include "Miscellaneous/OpenGLFunctionsList.inl"
+	}
+
+	void X11Context::doLoadGLXFunctions()
+	{
+#define GLX_LIB_FUNCTION( fun )\
+		if ( !( getFunction( "glX"#fun, m_glX##fun ) ) )\
+		{\
+			throw std::runtime_error{ std::string{ "Couldn't load function " } + "glX"#fun };\
 		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 	}

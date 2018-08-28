@@ -32,18 +32,6 @@ namespace renderer
 		reportRegisteredObjects();
 	}
 
-	void Device::enable()const
-	{
-		doEnable();
-		onEnabled( *this );
-	}
-
-	void Device::disable()const
-	{
-		onDisabled( *this );
-		doDisable();
-	}
-
 	std::array< float, 16u > Device::frustum( float left
 		, float right
 		, float bottom

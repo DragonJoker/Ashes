@@ -75,7 +75,7 @@ namespace common
 	{
 		doCleanup();
 	}
-	
+
 	void RenderPanel::initialise( renderer::Renderer const & renderer )
 	{
 		wxSize size = GetClientSize();
@@ -223,7 +223,6 @@ namespace common
 			m_stagingBuffer.reset();
 
 			m_swapChain.reset();
-			m_device->disable();
 			m_device.reset();
 		}
 	}
@@ -231,7 +230,6 @@ namespace common
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
-		m_device->enable();
 	}
 
 	void RenderPanel::doCreateSwapChain()
@@ -247,7 +245,7 @@ namespace common
 			doPrepareFrames();
 		} );
 	}
-	
+
 	void RenderPanel::doCreateDescriptorSet()
 	{
 		std::vector< renderer::DescriptorSetLayoutBinding > bindings
@@ -256,6 +254,7 @@ namespace common
 			renderer::DescriptorSetLayoutBinding{ 1u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
 		};
 		m_descriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
+		m_descriptorSet.reset();
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )

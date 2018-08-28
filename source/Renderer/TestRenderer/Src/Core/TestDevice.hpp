@@ -152,20 +152,6 @@ namespace test_renderer
 		}
 
 	private:
-		/**
-		*\copydoc	renderer::Device::enable
-		*/
-		void doEnable()const override
-		{
-		}
-		/**
-		*\copydoc	renderer::Device::disable
-		*/
-		void doDisable()const override
-		{
-		}
-
-	private:
 		Renderer const & m_renderer;
 		PhysicalDevice const & m_gpu;
 		ConnectionPtr m_connection;

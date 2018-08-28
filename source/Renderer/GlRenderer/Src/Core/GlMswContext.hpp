@@ -32,8 +32,22 @@ namespace gl_renderer
 			return m_hContext;
 		}
 
-#define WGL_LIB_FUNCTION( fun ) PFN_wgl##fun wgl##fun;
-#define WGL_LIB_FUNCTION_OPT( fun ) PFN_wgl##fun wgl##fun;
+#define WGL_LIB_FUNCTION( fun )\
+		PFN_wgl##fun m_wgl##fun = nullptr;\
+		template< typename ... Params >\
+		auto wgl##fun( Params... params )const\
+		{\
+			m_selector.enableContextForCurrentThread();\
+			return m_wgl##fun( params... );\
+		}
+#define WGL_LIB_FUNCTION_OPT( fun )\
+		PFN_wgl##fun m_wgl##fun = nullptr;\
+		template< typename ... Params >\
+		auto wgl##fun( Params... params )const\
+		{\
+			m_selector.enableContextForCurrentThread();\
+			return m_wgl##fun( params... );\
+		};
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 
 	private:
