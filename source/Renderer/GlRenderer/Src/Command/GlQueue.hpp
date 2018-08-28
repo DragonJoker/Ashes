@@ -40,5 +40,8 @@ namespace gl_renderer
 		{
 			return 0u;
 		}
+
+	private:
+		Device const & m_device;
 	};
 }

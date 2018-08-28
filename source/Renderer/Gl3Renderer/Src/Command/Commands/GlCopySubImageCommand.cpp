@@ -11,10 +11,12 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	CopySubImageCommand::CopySubImageCommand( renderer::ImageCopy const & copyInfo
+	CopySubImageCommand::CopySubImageCommand( Device const & device
+		, renderer::ImageCopy const & copyInfo
 		, renderer::Texture const & src
 		, renderer::Texture const & dst )
-		: m_copyInfo{ copyInfo }
+		: CommandBase{ device }
+		, m_copyInfo{ copyInfo }
 		, m_src{ static_cast< Texture const & >( src ) }
 		, m_dst{ static_cast< Texture const & >( dst ) }
 		, m_srcInternal{ getInternal( m_src.getFormat() ) }
@@ -31,9 +33,9 @@ namespace gl_renderer
 	void CopySubImageCommand::apply()const
 	{
 		glLogCommand( "CopySubImageCommand" );
-		glLogCall( gl::BindTexture, m_srcTarget, m_src.getImage() );
-		glLogCall( gl::BindTexture, m_dstTarget, m_dst.getImage() );
-		glLogCall( gl::CopyImageSubData_ARB
+		glLogCall( m_device.getContext(), glBindTexture, m_srcTarget, m_src.getImage() );
+		glLogCall( m_device.getContext(), glBindTexture, m_dstTarget, m_dst.getImage() );
+		glLogCall( m_device.getContext(), glCopyImageSubData_ARB
 			, m_src.getImage()
 			, m_srcTarget
 			, m_copyInfo.srcSubresource.mipLevel
@@ -49,8 +51,8 @@ namespace gl_renderer
 			, m_copyInfo.extent.width
 			, m_copyInfo.extent.height
 			, m_copyInfo.extent.depth );
-		glLogCall( gl::BindTexture, m_dstTarget, 0u );
-		glLogCall( gl::BindTexture, m_srcTarget, 0u );
+		glLogCall( m_device.getContext(), glBindTexture, m_dstTarget, 0u );
+		glLogCall( m_device.getContext(), glBindTexture, m_srcTarget, 0u );
 		static_cast< renderer::Texture const & >( m_dst ).generateMipmaps();
 	}
 

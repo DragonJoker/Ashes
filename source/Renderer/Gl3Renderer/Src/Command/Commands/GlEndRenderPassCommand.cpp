@@ -8,14 +8,15 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	EndRenderPassCommand::EndRenderPassCommand()
+	EndRenderPassCommand::EndRenderPassCommand( Device const & device )
+		: CommandBase{ device }
 	{
 	}
 
 	void EndRenderPassCommand::apply()const
 	{
 		glLogCommand( "EndRenderPassCommand" );
-		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, 0u );
+		glLogCall( m_device.getContext(), glBindFramebuffer, GL_FRAMEBUFFER, 0u );
 	}
 
 	CommandPtr EndRenderPassCommand::clone()const

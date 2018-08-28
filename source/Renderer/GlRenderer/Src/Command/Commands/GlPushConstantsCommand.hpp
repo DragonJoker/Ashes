@@ -16,7 +16,8 @@ namespace gl_renderer
 		: public CommandBase
 	{
 	public:
-		PushConstantsCommand( renderer::PipelineLayout const & layout
+		PushConstantsCommand( Device const & device
+			, renderer::PipelineLayout const & layout
 			, renderer::PushConstantsBufferBase const & pcb );
 		void apply()const override;
 		CommandPtr clone()const override;

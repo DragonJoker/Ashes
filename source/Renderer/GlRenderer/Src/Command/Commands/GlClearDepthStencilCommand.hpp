@@ -26,7 +26,8 @@ namespace gl_renderer
 		*\param[in] colour
 		*	La couleur de vidage.
 		*/
-		ClearDepthStencilCommand( renderer::TextureView const & image
+		ClearDepthStencilCommand( Device const & device
+			, renderer::TextureView const & image
 			, renderer::DepthStencilClearValue const & value );
 
 		void apply()const override;

@@ -7,6 +7,8 @@ See LICENSE file in root folder.
 #include "Core/VkRenderer.hpp"
 #include "Core/VkDevice.hpp"
 
+#define VkRenderer_UsePhysicalDeviceExtensions 1
+
 namespace vk_renderer
 {
 	namespace
@@ -69,38 +71,42 @@ namespace vk_renderer
 		// On récupère les extensions supportées par le GPU.
 		m_extensions = getLayerExtensions( m_renderer, m_gpu, nullptr );
 
-		//// On récupère les couches du GPU
-		//uint32_t layersCount = 0u;
-		//std::vector< VkLayerProperties > deviceLayerProperties;
-		//VkResult res;
+#if VkRenderer_UsePhysicalDeviceExtensions
 
-		//do
-		//{
-		//	res = m_renderer.vkEnumerateDeviceLayerProperties( m_gpu
-		//		, &layersCount
-		//		, NULL );
-		//	checkError( res, "GPU's layers enumeration" );
-		//	deviceLayerProperties.resize( layersCount );
+		// On récupère les couches du GPU
+		uint32_t layersCount = 0u;
+		std::vector< VkLayerProperties > deviceLayerProperties;
+		VkResult res;
 
-		//	res = m_renderer.vkEnumerateDeviceLayerProperties( m_gpu
-		//		, &layersCount,
-		//		deviceLayerProperties.data() );
-		//	checkError( res, "GPU's layers enumeration" );
+		do
+		{
+			res = m_renderer.vkEnumerateDeviceLayerProperties( m_gpu
+				, &layersCount
+				, NULL );
+			checkError( res, "GPU's layers enumeration" );
+			deviceLayerProperties.resize( layersCount );
 
-		//	m_layerExtensions = convert< renderer::LayerProperties >( deviceLayerProperties );
-		//}
-		//while ( res == VK_INCOMPLETE );
+			res = m_renderer.vkEnumerateDeviceLayerProperties( m_gpu
+				, &layersCount,
+				deviceLayerProperties.data() );
+			checkError( res, "GPU's layers enumeration" );
 
-		//for ( auto & layer : m_layerExtensions )
-		//{
-		//	layer.extensions = getLayerExtensions( m_renderer
-		//		, m_gpu
-		//		, layer.layerName.c_str() );
-		//}
+			m_layerExtensions = convert< renderer::LayerProperties >( deviceLayerProperties );
+		}
+		while ( res == VK_INCOMPLETE );
 
-		//m_renderer.completeLayerNames( m_deviceLayerNames );
-		//m_deviceExtensionNames.push_back( VK_KHR_SWAPCHAIN_EXTENSION_NAME );
-		//checkExtensionsAvailability( m_extensions, m_deviceExtensionNames );
+		for ( auto & layer : m_layerExtensions )
+		{
+			layer.extensions = getLayerExtensions( m_renderer
+				, m_gpu
+				, layer.layerName.c_str() );
+		}
+
+		m_renderer.completeLayerNames( m_deviceLayerNames );
+		m_deviceExtensionNames.push_back( VK_KHR_SWAPCHAIN_EXTENSION_NAME );
+		checkExtensionsAvailability( m_extensions, m_deviceExtensionNames );
+
+#else
 
 		for ( auto layer : m_renderer.getLayers() )
 		{
@@ -109,6 +115,8 @@ namespace vk_renderer
 				, layer.layerName.c_str() );
 			m_layerExtensions.push_back( layer );
 		}
+
+#endif
 
 		// Puis les capacités du GPU.
 		VkPhysicalDeviceMemoryProperties memoryProperties;

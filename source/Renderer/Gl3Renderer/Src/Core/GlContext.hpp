@@ -40,6 +40,12 @@ namespace gl_renderer
 		static ContextPtr create( PhysicalDevice const & gpu
 			, renderer::ConnectionPtr && connection );
 
+#define GL_LIB_BASE_FUNCTION( fun ) PFN_gl##fun gl##fun;
+#define GL_LIB_FUNCTION( fun ) PFN_gl##fun gl##fun;
+#define GL_LIB_FUNCTION_EXT( fun, ext, name ) PFN_gl##fun gl##fun##_##ext;
+#define GL_LIB_FUNCTION_VSN( fun, version ) PFN_gl##fun gl##fun##_##version;
+#include "Miscellaneous/OpenGLFunctionsList.inl"
+
 	protected:
 		PhysicalDevice const & m_gpu;
 		renderer::ConnectionPtr m_connection;

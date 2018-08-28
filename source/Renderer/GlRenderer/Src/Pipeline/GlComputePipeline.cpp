@@ -14,7 +14,7 @@ namespace gl_renderer
 			, std::move( createInfo ) }
 		, m_device{ device }
 		, m_layout{ layout }
-		, m_program{ m_createInfo.stage }
+		, m_program{ m_device, m_createInfo.stage }
 	{
 		m_program.link();
 

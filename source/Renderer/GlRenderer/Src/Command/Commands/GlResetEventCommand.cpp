@@ -8,9 +8,11 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	ResetEventCommand::ResetEventCommand( renderer::Event const & event
+	ResetEventCommand::ResetEventCommand( Device const & device
+		, renderer::Event const & event
 		, renderer::PipelineStageFlags stageFlags )
-		: m_event{ event }
+		: CommandBase{ device }
+		, m_event{ event }
 	{
 	}
 

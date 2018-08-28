@@ -203,6 +203,11 @@ namespace gl_renderer
 			return m_blitFbos[1];
 		}
 
+		inline Context const & getContext()const
+		{
+			return *m_context;
+		}
+
 	private:
 		/**
 		*\copydoc	renderer::Device::enable

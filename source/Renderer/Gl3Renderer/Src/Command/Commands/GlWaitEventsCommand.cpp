@@ -12,12 +12,14 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	WaitEventsCommand::WaitEventsCommand( renderer::EventCRefArray const & events
+	WaitEventsCommand::WaitEventsCommand( Device const & device
+		, renderer::EventCRefArray const & events
 		, renderer::PipelineStageFlags srcStageMask
 		, renderer::PipelineStageFlags dstStageMask
 		, renderer::BufferMemoryBarrierArray const & bufferMemoryBarriers
 		, renderer::ImageMemoryBarrierArray const & imageMemoryBarriers )
-		: m_events{ events }
+		: CommandBase{ device }
+		, m_events{ events }
 	{
 	}
 

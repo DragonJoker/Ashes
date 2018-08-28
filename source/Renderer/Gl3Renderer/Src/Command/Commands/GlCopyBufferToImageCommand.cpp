@@ -20,10 +20,12 @@ namespace gl_renderer
 		GL_PACK_ALIGNMENT = 0x0D05,
 	};
 
-	CopyBufferToImageCommand::CopyBufferToImageCommand( renderer::BufferImageCopyArray const & copyInfo
+	CopyBufferToImageCommand::CopyBufferToImageCommand( Device const & device
+		, renderer::BufferImageCopyArray const & copyInfo
 		, renderer::BufferBase const & src
 		, renderer::Texture const & dst )
-		: m_copyInfo{ copyInfo }
+		: CommandBase{ device }
+		, m_copyInfo{ copyInfo }
 		, m_src{ static_cast< Buffer const & >( src ) }
 		, m_dst{ static_cast< Texture const & >( dst ) }
 		, m_internal{ getInternal( m_dst.getFormat() ) }
@@ -50,16 +52,16 @@ namespace gl_renderer
 
 	void CopyBufferToImageCommand::applyOne( renderer::BufferImageCopy const & copyInfo )const
 	{
-		glLogCall( gl::BindTexture, m_copyTarget, m_dst.getImage() );
-		glLogCall( gl::PixelStorei, GL_UNPACK_ALIGNMENT, 1 );
-		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, m_src.getBuffer() );
+		glLogCall( m_device.getContext(), glBindTexture, m_copyTarget, m_dst.getImage() );
+		glLogCall( m_device.getContext(), glPixelStorei, GL_UNPACK_ALIGNMENT, 1 );
+		glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, m_src.getBuffer() );
 
 		if ( renderer::isCompressedFormat( m_dst.getFormat() ) )
 		{
 			switch ( m_copyTarget )
 			{
 			case GL_TEXTURE_1D:
-				glLogCall( gl::CompressedTexSubImage1D
+				glLogCall( m_device.getContext(), glCompressedTexSubImage1D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -70,7 +72,7 @@ namespace gl_renderer
 				break;
 
 			case GL_TEXTURE_2D:
-				glLogCall( gl::CompressedTexSubImage2D
+				glLogCall( m_device.getContext(), glCompressedTexSubImage2D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -83,7 +85,7 @@ namespace gl_renderer
 				break;
 
 			case GL_TEXTURE_3D:
-				glLogCall( gl::CompressedTexSubImage3D
+				glLogCall( m_device.getContext(), glCompressedTexSubImage3D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -97,7 +99,7 @@ namespace gl_renderer
 					, BufferOffset( copyInfo.bufferOffset ) );
 
 			case GL_TEXTURE_1D_ARRAY:
-				glLogCall( gl::CompressedTexSubImage2D
+				glLogCall( m_device.getContext(), glCompressedTexSubImage2D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -110,7 +112,7 @@ namespace gl_renderer
 				break;
 
 			case GL_TEXTURE_2D_ARRAY:
-				glLogCall( gl::CompressedTexSubImage3D
+				glLogCall( m_device.getContext(), glCompressedTexSubImage3D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -125,7 +127,7 @@ namespace gl_renderer
 				break;
 
 			case GL_TEXTURE_CUBE:
-				glLogCall( gl::CompressedTexSubImage2D
+				glLogCall( m_device.getContext(), glCompressedTexSubImage2D
 					, GL_TEXTURE_CUBE_POSITIVE_X + copyInfo.imageSubresource.baseArrayLayer
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -138,7 +140,7 @@ namespace gl_renderer
 				break;
 
 			case GL_TEXTURE_CUBE_ARRAY:
-				glLogCall( gl::CompressedTexSubImage3D
+				glLogCall( m_device.getContext(), glCompressedTexSubImage3D
 					, GL_TEXTURE_CUBE_POSITIVE_X + ( copyInfo.imageSubresource.baseArrayLayer % 6u )
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -158,7 +160,7 @@ namespace gl_renderer
 			switch ( m_copyTarget )
 			{
 			case GL_TEXTURE_1D:
-				glLogCall( gl::TexSubImage1D
+				glLogCall( m_device.getContext(), glTexSubImage1D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -169,7 +171,7 @@ namespace gl_renderer
 				break;
 
 			case GL_TEXTURE_2D:
-				glLogCall( gl::TexSubImage2D
+				glLogCall( m_device.getContext(), glTexSubImage2D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -182,7 +184,7 @@ namespace gl_renderer
 				break;
 
 			case GL_TEXTURE_3D:
-				glLogCall( gl::TexSubImage3D
+				glLogCall( m_device.getContext(), glTexSubImage3D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -197,7 +199,7 @@ namespace gl_renderer
 				break;
 
 			case GL_TEXTURE_1D_ARRAY:
-				glLogCall( gl::TexSubImage2D
+				glLogCall( m_device.getContext(), glTexSubImage2D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -210,7 +212,7 @@ namespace gl_renderer
 				break;
 
 			case GL_TEXTURE_2D_ARRAY:
-				glLogCall( gl::TexSubImage3D
+				glLogCall( m_device.getContext(), glTexSubImage3D
 					, m_copyTarget
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -225,7 +227,7 @@ namespace gl_renderer
 				break;
 
 			case GL_TEXTURE_CUBE:
-				glLogCall( gl::TexSubImage2D
+				glLogCall( m_device.getContext(), glTexSubImage2D
 					, GL_TEXTURE_CUBE_POSITIVE_X + copyInfo.imageSubresource.baseArrayLayer
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -238,7 +240,7 @@ namespace gl_renderer
 				break;
 
 			case GL_TEXTURE_CUBE_ARRAY:
-				glLogCall( gl::TexSubImage3D
+				glLogCall( m_device.getContext(), glTexSubImage3D
 					, GL_TEXTURE_CUBE_POSITIVE_X + ( copyInfo.imageSubresource.baseArrayLayer % 6u )
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
@@ -254,7 +256,7 @@ namespace gl_renderer
 			}
 		}
 
-		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, 0u );
-		glLogCall( gl::BindTexture, m_copyTarget, 0u );
+		glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, 0u );
+		glLogCall( m_device.getContext(), glBindTexture, m_copyTarget, 0u );
 	}
 }

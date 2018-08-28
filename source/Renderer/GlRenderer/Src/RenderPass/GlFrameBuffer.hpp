@@ -29,7 +29,8 @@ namespace gl_renderer
 		*\param[in] dimensions
 		*	Les dimensions du tampon d'images.
 		*/
-		FrameBuffer( RenderPass const & renderPass
+		FrameBuffer( Device const & device
+			, RenderPass const & renderPass
 			, renderer::Extent2D const & dimensions );
 		/**
 		*\brief
@@ -42,7 +43,8 @@ namespace gl_renderer
 		*\param[in] textures
 		*	Les textures voulues pour le tampon d'images à créer.
 		*/
-		FrameBuffer( RenderPass const & renderPass
+		FrameBuffer( Device const & device
+			, RenderPass const & renderPass
 			, renderer::Extent2D const & dimensions
 			, renderer::FrameBufferAttachmentArray && textures );
 		/**
@@ -125,6 +127,7 @@ namespace gl_renderer
 			GLuint object;
 			GlAttachmentType type;
 		};
+		Device const & m_device;
 		GLuint m_frameBuffer{ GL_INVALID_INDEX };
 		RenderPass const & m_renderPass;
 		std::vector< Attachment > m_allAttaches;

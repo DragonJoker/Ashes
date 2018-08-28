@@ -20,7 +20,8 @@ namespace gl_renderer
 		*\brief
 		*	Constructeur.
 		*/
-		BufferMemoryBarrierCommand( renderer::PipelineStageFlags after
+		BufferMemoryBarrierCommand( Device const & device
+			, renderer::PipelineStageFlags after
 			, renderer::PipelineStageFlags before
 			, renderer::BufferMemoryBarrier const & transitionBarrier );
 

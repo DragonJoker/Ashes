@@ -10,7 +10,7 @@ namespace gl_renderer
 {
 	ViewportCommand::ViewportCommand( Device const & device
 		, renderer::Viewport const & viewport )
-		: m_device{ device }
+		: CommandBase{ device }
 		, m_viewport{ viewport }
 	{
 	}
@@ -22,12 +22,12 @@ namespace gl_renderer
 		if ( m_viewport != save )
 		{
 			glLogCommand( "ViewportCommand" );
-			glLogCall( gl::Viewport
+			glLogCall( m_device.getContext(), glViewport
 				, m_viewport.offset.x
 				, m_viewport.offset.y
 				, m_viewport.size.width
 				, m_viewport.size.height );
-			glLogCall( gl::DepthRange
+			glLogCall( m_device.getContext(), glDepthRange
 				, m_viewport.minDepth
 				, m_viewport.maxDepth );
 			save = m_viewport;

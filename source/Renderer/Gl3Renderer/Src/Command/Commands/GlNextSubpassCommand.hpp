@@ -28,7 +28,8 @@ namespace gl_renderer
 		*\param[in] contents
 		*	Indique la manière dont les commandes de la première sous-passe sont fournies.
 		*/
-		NextSubpassCommand( renderer::RenderPass const & renderPass
+		NextSubpassCommand( Device const & device
+			, renderer::RenderPass const & renderPass
 			, renderer::FrameBuffer const & frameBuffer
 			, renderer::SubpassDescription const & subpass );
 

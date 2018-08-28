@@ -20,7 +20,7 @@ namespace gl_renderer
 		*\brief
 		*	Constructeur.
 		*/
-		EndRenderPassCommand();
+		EndRenderPassCommand( Device const & device );
 
 		void apply()const override;
 		CommandPtr clone()const override;

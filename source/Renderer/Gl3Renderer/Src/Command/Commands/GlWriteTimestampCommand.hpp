@@ -10,13 +10,14 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Commande d'écriture de timestamp.
+	*	Commande d'ï¿½criture de timestamp.
 	*/
 	class WriteTimestampCommand
 		: public CommandBase
 	{
 	public:
-		WriteTimestampCommand( renderer::PipelineStageFlag pipelineStage
+		WriteTimestampCommand( Device const & device
+			, renderer::PipelineStageFlag pipelineStage
 			, renderer::QueryPool const & pool
 			, uint32_t query );
 		void apply()const override;

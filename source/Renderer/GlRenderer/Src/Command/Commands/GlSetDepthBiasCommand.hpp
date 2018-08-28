@@ -12,7 +12,8 @@ namespace gl_renderer
 		: public CommandBase
 	{
 	public:
-		SetDepthBiasCommand( float constantFactor
+		SetDepthBiasCommand( Device const & device
+			, float constantFactor
 			, float clamp
 			, float slopeFactor );
 

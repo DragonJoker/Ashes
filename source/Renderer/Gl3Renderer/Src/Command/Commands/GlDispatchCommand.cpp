@@ -6,10 +6,12 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	DispatchCommand::DispatchCommand( uint32_t groupCountX
+	DispatchCommand::DispatchCommand( Device const & device
+		, uint32_t groupCountX
 		, uint32_t groupCountY
 		, uint32_t groupCountZ )
-		: m_groupCountX{ groupCountX }
+		: CommandBase{ device }
+		, m_groupCountX{ groupCountX }
 		, m_groupCountY{ groupCountY }
 		, m_groupCountZ{ groupCountZ }
 	{
@@ -18,7 +20,7 @@ namespace gl_renderer
 	void DispatchCommand::apply()const
 	{
 		glLogCommand( "DispatchCommand" );
-		glLogCall( gl::DispatchCompute_ARB
+		glLogCall( m_device.getContext(), glDispatchCompute_ARB
 			, m_groupCountX
 			, m_groupCountY
 			, m_groupCountZ );

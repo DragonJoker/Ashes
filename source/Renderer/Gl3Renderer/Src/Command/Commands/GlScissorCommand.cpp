@@ -10,7 +10,7 @@ namespace gl_renderer
 {
 	ScissorCommand::ScissorCommand( Device const & device
 		, renderer::Scissor const & scissor )
-		: m_device{ device }
+		: CommandBase{ device }
 		, m_scissor{ scissor }
 	{
 	}
@@ -22,7 +22,7 @@ namespace gl_renderer
 		if ( m_scissor != save )
 		{
 			glLogCommand( "ScissorCommand" );
-			glLogCall( gl::Scissor
+			glLogCall( m_device.getContext(), glScissor
 				, m_scissor.offset.x
 				, m_scissor.offset.y
 				, m_scissor.size.width

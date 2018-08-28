@@ -18,10 +18,21 @@ namespace gl_renderer
 	ContextPtr Context::create( PhysicalDevice const & gpu
 		, renderer::ConnectionPtr && connection )
 	{
+		ContextPtr result;
+
+		try
+		{
 #if defined( _WIN32 )
-		return std::make_unique< MswContext >( gpu, std::move( connection ) );
+			result = std::make_unique< MswContext >( gpu, std::move( connection ) );
 #elif defined( __linux__ )
-		return std::make_unique< X11Context >( gpu, std::move( connection ) );
+			result = std::make_unique< X11Context >( gpu, std::move( connection ) );
 #endif
+	}
+		catch ( std::exception & error )
+		{
+			renderer::Logger::logError( error.what() );
+		}
+
+		return result;
 	}
 }

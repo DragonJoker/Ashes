@@ -10,10 +10,12 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	CopyBufferCommand::CopyBufferCommand( renderer::BufferCopy const & copyInfo
+	CopyBufferCommand::CopyBufferCommand( Device const & device
+		, renderer::BufferCopy const & copyInfo
 		, renderer::BufferBase const & src
 		, renderer::BufferBase const & dst )
-		: m_src{ static_cast< Buffer const & >( src ) }
+		: CommandBase{ device }
+		, m_src{ static_cast< Buffer const & >( src ) }
 		, m_dst{ static_cast< Buffer const & >( dst ) }
 		, m_copyInfo{ copyInfo }
 	{
@@ -24,29 +26,29 @@ namespace gl_renderer
 		glLogCommand( "CopyBufferCommand" );
 		if ( m_src.getTarget() == m_dst.getTarget() )
 		{
-			glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_COPY_READ, m_src.getBuffer() );
-			glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_COPY_WRITE, m_dst.getBuffer() );
-			glLogCall( gl::CopyBufferSubData
+			glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_COPY_READ, m_src.getBuffer() );
+			glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_COPY_WRITE, m_dst.getBuffer() );
+			glLogCall( m_device.getContext(), glCopyBufferSubData
 				, GL_BUFFER_TARGET_COPY_READ
 				, GL_BUFFER_TARGET_COPY_WRITE
 				, m_copyInfo.srcOffset
 				, m_copyInfo.dstOffset
 				, m_copyInfo.size );
-			glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_COPY_WRITE, 0u );
-			glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_COPY_READ, 0u );
+			glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_COPY_WRITE, 0u );
+			glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_COPY_READ, 0u );
 		}
 		else
 		{
-			glLogCall( gl::BindBuffer, m_src.getTarget(), m_src.getBuffer() );
-			glLogCall( gl::BindBuffer, m_dst.getTarget(), m_dst.getBuffer() );
-			glLogCall( gl::CopyBufferSubData
+			glLogCall( m_device.getContext(), glBindBuffer, m_src.getTarget(), m_src.getBuffer() );
+			glLogCall( m_device.getContext(), glBindBuffer, m_dst.getTarget(), m_dst.getBuffer() );
+			glLogCall( m_device.getContext(), glCopyBufferSubData
 				, m_src.getTarget()
 				, m_dst.getTarget()
 				, m_copyInfo.srcOffset
 				, m_copyInfo.dstOffset
 				, m_copyInfo.size );
-			glLogCall( gl::BindBuffer, m_dst.getTarget(), 0u );
-			glLogCall( gl::BindBuffer, m_src.getTarget(), 0u );
+			glLogCall( m_device.getContext(), glBindBuffer, m_dst.getTarget(), 0u );
+			glLogCall( m_device.getContext(), glBindBuffer, m_src.getTarget(), 0u );
 		}
 	}
 

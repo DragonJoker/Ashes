@@ -14,7 +14,7 @@ namespace gl_renderer
 	ClearDepthStencilFboCommand::ClearDepthStencilFboCommand( Device const & device
 		, renderer::TextureView const & image
 		, renderer::DepthStencilClearValue const & value )
-		: m_device{ device }
+		: CommandBase{ device }
 		, m_image{ static_cast< TextureView const & >( image ) }
 		, m_value{ value }
 		, m_internal{ getInternal( m_image.getFormat() ) }
@@ -34,32 +34,32 @@ namespace gl_renderer
 			target = GL_TEXTURE_2D_MULTISAMPLE;
 		}
 
-		glLogCall( gl::BindFramebuffer
+		glLogCall( m_device.getContext(), glBindFramebuffer
 			, GL_FRAMEBUFFER
 			, m_device.getBlitDstFbo() );
-		glLogCall( gl::FramebufferTexture2D
+		glLogCall( m_device.getContext(), glFramebufferTexture2D
 			, GL_FRAMEBUFFER
 			, getAttachmentPoint( m_image )
 			, target
 			, image.getImage()
 			, m_image.getSubResourceRange().baseMipLevel );
-		glLogCall( gl::DepthMask, GL_TRUE );
+		glLogCall( m_device.getContext(), glDepthMask, GL_TRUE );
 		auto stencil = GLint( m_value.stencil );
 
 		if ( isDepthStencilFormat( m_internal ) )
 		{
-			glLogCall( gl::ClearBufferfi, GL_CLEAR_TARGET_DEPTH_STENCIL, 0u, m_value.depth, stencil );
+			glLogCall( m_device.getContext(), glClearBufferfi, GL_CLEAR_TARGET_DEPTH_STENCIL, 0u, m_value.depth, stencil );
 		}
 		else if ( isDepthFormat( m_internal ) )
 		{
-			glLogCall( gl::ClearBufferfv, GL_CLEAR_TARGET_DEPTH, 0u, &m_value.depth );
+			glLogCall( m_device.getContext(), glClearBufferfv, GL_CLEAR_TARGET_DEPTH, 0u, &m_value.depth );
 		}
 		else if ( isStencilFormat( m_internal ) )
 		{
-			glLogCall( gl::ClearBufferiv, GL_CLEAR_TARGET_STENCIL, 0u, &stencil );
+			glLogCall( m_device.getContext(), glClearBufferiv, GL_CLEAR_TARGET_STENCIL, 0u, &stencil );
 		}
 
-		glLogCall( gl::BindFramebuffer
+		glLogCall( m_device.getContext(), glBindFramebuffer
 			, GL_FRAMEBUFFER
 			, 0u );
 	}

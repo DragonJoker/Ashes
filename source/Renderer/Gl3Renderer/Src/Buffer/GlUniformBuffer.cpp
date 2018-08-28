@@ -6,12 +6,12 @@ namespace gl_renderer
 {
 	namespace
 	{
-		uint32_t getOffsetAlignment()
+		uint32_t getOffsetAlignment( Device const & device )
 		{
-			static uint32_t const result = []()
+			static uint32_t const result = [&device]()
 			{
 				GLint value;
-				gl::GetIntegerv( GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &value );
+				device.getContext().glGetIntegerv( GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &value );
 				return uint32_t( value );
 			}();
 			return result;
@@ -32,7 +32,7 @@ namespace gl_renderer
 		}
 	}
 
-	UniformBuffer::UniformBuffer( renderer::Device const & device
+	UniformBuffer::UniformBuffer( Device const & device
 		, uint32_t count
 		, uint32_t size
 		, renderer::BufferTargets target
@@ -42,14 +42,15 @@ namespace gl_renderer
 			, size
 			, target
 			, flags }
+		, m_device{ device }
 	{
-		m_buffer = m_device.createBuffer( count * getAlignedSize( getElementSize() )
+		m_buffer = static_cast< renderer::Device const & >( m_device ).createBuffer( count * getAlignedSize( getElementSize() )
 			, target | renderer::BufferTarget::eUniformBuffer
 			, flags );
 	}
 
 	uint32_t UniformBuffer::getAlignedSize( uint32_t size )const
 	{
-		return doGetAlignedSize( size, getOffsetAlignment() );
+		return doGetAlignedSize( size, getOffsetAlignment( m_device ) );
 	}
 }

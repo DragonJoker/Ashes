@@ -53,7 +53,8 @@ namespace gl_renderer
 		};
 
 	public:
-		GeometryBuffers( VboBindings const & vbos
+		GeometryBuffers( Device const & device
+			, VboBindings const & vbos
 			, IboBinding const & ibo
 			, renderer::VertexInputState const & vertexInputState
 			, renderer::IndexType type );
@@ -86,8 +87,7 @@ namespace gl_renderer
 		}
 
 	private:
-
-	protected:
+		Device const & m_device;
 		std::vector< VBO > m_vbos;
 		std::unique_ptr< IBO > m_ibo;
 		GLuint m_vao{ GL_INVALID_INDEX };

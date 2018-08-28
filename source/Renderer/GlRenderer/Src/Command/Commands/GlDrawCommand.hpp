@@ -28,7 +28,8 @@ namespace gl_renderer
 		*\param[in] firstInstance
 		*	Index de la premi�re instance.
 		*/
-		DrawCommand( uint32_t vtxCount
+		DrawCommand( Device const & device
+			, uint32_t vtxCount
 			, uint32_t instCount
 			, uint32_t firstVertex
 			, uint32_t firstInstance

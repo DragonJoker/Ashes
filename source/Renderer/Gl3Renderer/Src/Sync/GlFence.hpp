@@ -26,7 +26,7 @@ namespace gl_renderer
 		*\param[in] flags
 		*	Les indicateurs de création de la barrière.
 		*/ 
-		Fence( renderer::Device const & device
+		Fence( Device const & device
 			, renderer::FenceCreateFlags flags = 0 );
 		/**
 		*\brief
@@ -49,6 +49,7 @@ namespace gl_renderer
 		void reset()const override;
 
 	private:
+		Device const & m_device;
 		mutable GLsync m_fence{ nullptr };
 	};
 }

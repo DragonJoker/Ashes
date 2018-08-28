@@ -31,7 +31,6 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		Device const & m_device;
 		renderer::Scissor m_scissor;
 	};
 }

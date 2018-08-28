@@ -12,7 +12,8 @@ namespace gl_renderer
 		: public CommandBase
 	{
 	public:
-		SetEventCommand( renderer::Event const & event
+		SetEventCommand( Device const & device
+			, renderer::Event const & event
 			, renderer::PipelineStageFlags stageFlags );
 		void apply()const override;
 		CommandPtr clone()const override;

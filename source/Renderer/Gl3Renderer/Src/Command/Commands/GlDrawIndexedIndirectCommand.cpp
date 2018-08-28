@@ -16,7 +16,7 @@ namespace gl_renderer
 		, uint32_t stride
 		, renderer::PrimitiveTopology mode
 		, renderer::IndexType type )
-		: m_device{ device }
+		: CommandBase{ device }
 		, m_buffer{ static_cast< Buffer const & >( buffer ) }
 		, m_offset{ offset }
 		, m_drawCount{ drawCount }
@@ -33,14 +33,14 @@ namespace gl_renderer
 	void DrawIndexedIndirectCommand::apply()const
 	{
 		glLogCommand( "DrawIndexedIndirectCommand" );
-		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_DRAW_INDIRECT, m_buffer.getBuffer() );
-		glLogCall( gl::MultiDrawElementsIndirect_ARB
+		glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_DRAW_INDIRECT, m_buffer.getBuffer() );
+		glLogCall( m_device.getContext(), glMultiDrawElementsIndirect_ARB
 			, m_mode
 			, m_type
 			, BufferOffset( m_offset )
 			, m_drawCount
 			, m_stride );
-		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_DRAW_INDIRECT, 0 );
+		glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_DRAW_INDIRECT, 0 );
 	}
 
 	CommandPtr DrawIndexedIndirectCommand::clone()const

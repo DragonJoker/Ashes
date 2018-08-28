@@ -236,7 +236,7 @@ namespace gl_renderer
 	using PFN_glGetQueryObjectuiv = void ( GLAPIENTRY * )( GLuint id, GLenum pname, GLuint * params );
 	using PFN_glGetShaderInfoLog = void ( GLAPIENTRY * )( GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog );
 	using PFN_glGetShaderiv = void ( GLAPIENTRY * )( GLuint shader, GLenum pname, GLint* param );
-	using PFN_glGetString = GLubyte *( GLAPIENTRY * )( GLenum name ); 
+	using PFN_glGetString = const GLubyte *( GLAPIENTRY * )( GLenum name ); 
 	using PFN_glGetTexImage = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum format, GLenum type, void *pixels );
 	using PFN_glGetTexLevelParameterfv = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum pname, GLfloat * params );
 	using PFN_glGetTexLevelParameteriv = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum pname, GLint * params );

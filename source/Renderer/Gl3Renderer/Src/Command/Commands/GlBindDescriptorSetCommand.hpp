@@ -36,7 +36,6 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		Device const & m_device;
 		DescriptorSet const & m_descriptorSet;
 		PipelineLayout const & m_layout;
 		renderer::PipelineBindPoint m_bindingPoint;

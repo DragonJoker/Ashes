@@ -8,7 +8,7 @@
 
 #include <RendererPrerequisites.hpp>
 
-#include "Miscellaneous/OpenGLFunctions.hpp"
+#include "Miscellaneous/OpenGLDefines.hpp"
 
 #include "Enum/GlAccessFlag.hpp"
 #include "Enum/GlAttachmentPoint.hpp"

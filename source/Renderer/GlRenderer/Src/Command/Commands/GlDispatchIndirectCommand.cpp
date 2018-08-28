@@ -8,9 +8,11 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	DispatchIndirectCommand::DispatchIndirectCommand( renderer::BufferBase const & buffer
+	DispatchIndirectCommand::DispatchIndirectCommand( Device const & device
+		, renderer::BufferBase const & buffer
 		, uint32_t offset )
-		: m_buffer{ static_cast< Buffer const & >( buffer ) }
+		: CommandBase{ device }
+		, m_buffer{ static_cast< Buffer const & >( buffer ) }
 		, m_offset{ offset }
 	{
 	}
@@ -18,9 +20,16 @@ namespace gl_renderer
 	void DispatchIndirectCommand::apply()const
 	{
 		glLogCommand( "DispatchIndirectCommand" );
-		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_DISPATCH_INDIRECT, m_buffer.getBuffer() );
-		glLogCall( gl::DispatchComputeIndirect, GLintptr( BufferOffset( m_offset ) ) );
-		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_DISPATCH_INDIRECT, 0 );
+		glLogCall( m_device.getContext()
+			, glBindBuffer
+			, GL_BUFFER_TARGET_DISPATCH_INDIRECT
+			, m_buffer.getBuffer() );
+		glLogCall( m_device.getContext()
+			, glDispatchComputeIndirect
+			, GLintptr( BufferOffset( m_offset ) ) );
+		glLogCall( m_device.getContext()
+			, glBindBuffer
+			, GL_BUFFER_TARGET_DISPATCH_INDIRECT, 0 );
 	}
 
 	CommandPtr DispatchIndirectCommand::clone()const

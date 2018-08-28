@@ -18,7 +18,7 @@ namespace gl_renderer
 		: public renderer::Sampler
 	{
 	public:
-		Sampler( renderer::Device const & device
+		Sampler( Device const & device
 			, renderer::SamplerCreateInfo const & createInfo );
 		/**
 		*\brief
@@ -35,7 +35,7 @@ namespace gl_renderer
 		}
 
 	private:
-		//! L'échantillonneur.
+		Device const & m_device;
 		GLuint m_sampler;
 	};
 }
