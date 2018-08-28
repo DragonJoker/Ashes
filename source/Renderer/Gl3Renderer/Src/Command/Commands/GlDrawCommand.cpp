@@ -15,7 +15,7 @@ namespace gl_renderer
 		, uint32_t firstVertex
 		, uint32_t firstInstance
 		, renderer::PrimitiveTopology mode )
-		: m_device{ device }
+		: CommandBase{ device }
 		, m_vtxCount{ vtxCount }
 		, m_instCount{ instCount }
 		, m_firstVertex{ firstVertex }
@@ -36,7 +36,7 @@ namespace gl_renderer
 
 		if ( m_device.getRenderer().getFeatures().hasBaseInstance )
 		{
-			glLogCall( gl::DrawArraysInstancedBaseInstance_ARB
+			glLogCall( m_device.getContext(), glDrawArraysInstancedBaseInstance_ARB
 				, m_mode
 				, m_firstVertex
 				, m_vtxCount
@@ -45,7 +45,7 @@ namespace gl_renderer
 		}
 		else
 		{
-			glLogCall( gl::DrawArraysInstanced
+			glLogCall( m_device.getContext(), glDrawArraysInstanced
 				, m_mode
 				, m_firstVertex
 				, m_vtxCount

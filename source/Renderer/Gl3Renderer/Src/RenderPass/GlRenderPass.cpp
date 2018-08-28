@@ -13,9 +13,10 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	RenderPass::RenderPass( renderer::Device const & device
+	RenderPass::RenderPass( Device const & device
 		, renderer::RenderPassCreateInfo && createInfo )
 		: renderer::RenderPass{ device, createInfo }
+		, m_device{ device }
 	{
 		uint32_t index = 0u;
 		std::vector< uint32_t > indices;
@@ -69,7 +70,8 @@ namespace gl_renderer
 	renderer::FrameBufferPtr RenderPass::createFrameBuffer( renderer::Extent2D const & dimensions
 		, renderer::FrameBufferAttachmentArray && textures )const
 	{
-		return std::make_unique< FrameBuffer >( *this
+		return std::make_unique< FrameBuffer >( m_device
+			, *this
 			, dimensions
 			, std::move( textures ) );
 	}

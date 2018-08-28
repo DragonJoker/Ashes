@@ -8,9 +8,11 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	ClearDepthStencilCommand::ClearDepthStencilCommand( renderer::TextureView const & image
+	ClearDepthStencilCommand::ClearDepthStencilCommand( Device const & device
+		, renderer::TextureView const & image
 		, renderer::DepthStencilClearValue const & value )
-		: m_image{ static_cast< TextureView const & >( image ) }
+		: CommandBase{ device }
+		, m_image{ static_cast< TextureView const & >( image ) }
 		, m_value{ value }
 		, m_internal{ getInternal( m_image.getFormat() ) }
 		, m_format{ getFormat( m_internal ) }
@@ -22,11 +24,11 @@ namespace gl_renderer
 	{
 		glLogCommand( "ClearDepthStencilCommand" );
 
-		if ( gl::ClearTexImage )
+		if ( m_device.getContext().glClearTexImage )
 		{
 			if ( renderer::isDepthStencilFormat( m_image.getFormat() ) )
 			{
-				glLogCall( gl::ClearTexImage
+				glLogCall( m_device.getContext(), glClearTexImage
 					, m_image.getImage()
 					, 0
 					, m_format
@@ -35,7 +37,7 @@ namespace gl_renderer
 			}
 			else if ( renderer::isStencilFormat( m_image.getFormat() ) )
 			{
-				glLogCall( gl::ClearTexImage
+				glLogCall( m_device.getContext(), glClearTexImage
 					, m_image.getImage()
 					, 0
 					, m_format
@@ -44,7 +46,7 @@ namespace gl_renderer
 			}
 			else if ( renderer::isDepthFormat( m_image.getFormat() ) )
 			{
-				glLogCall( gl::ClearTexImage
+				glLogCall( m_device.getContext(), glClearTexImage
 					, m_image.getImage()
 					, 0
 					, m_format

@@ -26,7 +26,8 @@ namespace gl_renderer
 		class DeviceMemoryImpl
 		{
 		public:
-			DeviceMemoryImpl( renderer::MemoryRequirements const & requirements
+			DeviceMemoryImpl( Device const & device
+				, renderer::MemoryRequirements const & requirements
 				, renderer::MemoryPropertyFlags flags
 				, GLuint boundResource
 				, GLuint boundTarget );
@@ -41,6 +42,7 @@ namespace gl_renderer
 			virtual void unlock()const = 0;
 
 		protected:
+			Device const & m_device;
 			renderer::MemoryRequirements m_requirements;
 			renderer::MemoryPropertyFlags m_flags;
 			GlMemoryMapFlags m_mapFlags;

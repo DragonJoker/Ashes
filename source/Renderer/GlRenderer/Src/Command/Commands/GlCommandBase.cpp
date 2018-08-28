@@ -6,6 +6,11 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
+	CommandBase::CommandBase( Device const & device )
+		: m_device{ device }
+	{
+	}
+
 	CommandBase::~CommandBase()noexcept
 	{
 	}

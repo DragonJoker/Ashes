@@ -23,14 +23,16 @@ namespace gl_renderer
 		}
 	}
 
-	DrawIndexedCommand::DrawIndexedCommand( uint32_t indexCount
+	DrawIndexedCommand::DrawIndexedCommand( Device const & device
+		, uint32_t indexCount
 		, uint32_t instCount
 		, uint32_t firstIndex
 		, uint32_t vertexOffset
 		, uint32_t firstInstance
 		, renderer::PrimitiveTopology mode
 		, renderer::IndexType type )
-		: m_indexCount{ indexCount }
+		: CommandBase{ device }
+		, m_indexCount{ indexCount }
 		, m_instCount{ instCount }
 		, m_firstIndex{ firstIndex }
 		, m_vertexOffset{ vertexOffset }
@@ -44,7 +46,8 @@ namespace gl_renderer
 	void DrawIndexedCommand::apply()const
 	{
 		glLogCommand( "DrawIndexedCommand" );
-		glLogCall( gl::DrawElementsInstancedBaseVertexBaseInstance
+		glLogCall( m_device.getContext()
+			, glDrawElementsInstancedBaseVertexBaseInstance
 			, m_mode
 			, m_indexCount
 			, m_type

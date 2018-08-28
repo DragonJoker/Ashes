@@ -13,7 +13,7 @@ namespace gl_renderer
 	BindComputePipelineCommand::BindComputePipelineCommand( Device const & device
 		, renderer::ComputePipeline const & pipeline
 		, renderer::PipelineBindPoint bindingPoint )
-		: m_device{ device }
+		: CommandBase{ device }
 		, m_pipeline{ static_cast< ComputePipeline const & > ( pipeline ) }
 		, m_layout{ static_cast< PipelineLayout const & > ( m_pipeline.getLayout() ) }
 		, m_program{ m_pipeline.getProgram() }
@@ -28,7 +28,7 @@ namespace gl_renderer
 
 		if ( m_program != save )
 		{
-			glLogCall( gl::UseProgram, m_program );
+			glLogCall( m_device.getContext(), glUseProgram, m_program );
 			save = m_program;
 		}
 	}

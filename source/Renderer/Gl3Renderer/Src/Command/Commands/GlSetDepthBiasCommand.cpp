@@ -6,10 +6,12 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	SetDepthBiasCommand::SetDepthBiasCommand( float constantFactor
+	SetDepthBiasCommand::SetDepthBiasCommand( Device const & device
+		, float constantFactor
 		, float clamp
 		, float slopeFactor )
-		: m_constantFactor{ constantFactor }
+		: CommandBase{ device }
+		, m_constantFactor{ constantFactor }
 		, m_clamp{ clamp }
 		, m_slopeFactor{ slopeFactor }
 	{
@@ -18,7 +20,7 @@ namespace gl_renderer
 	void SetDepthBiasCommand::apply()const
 	{
 		glLogCommand( "SetDepthBiasCommand" );
-		glLogCall( gl::PolygonOffsetClampEXT, m_slopeFactor, m_constantFactor, m_clamp );
+		glLogCall( m_device.getContext(), glPolygonOffsetClampEXT, m_slopeFactor, m_constantFactor, m_clamp );
 	}
 
 	CommandPtr SetDepthBiasCommand::clone()const

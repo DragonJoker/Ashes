@@ -8,11 +8,22 @@
 #include <Core/PlatformWindowHandle.hpp>
 
 #include <Windows.h>
+#include <wingdi.h>
+#undef MemoryBarrier
+
+#include <GL/gl.h>
 
 namespace gl_renderer
 {
 	namespace
 	{
+		template< typename FuncT >
+		bool getFunction( char const * const name, FuncT & function )
+		{
+			function = reinterpret_cast< FuncT >( wglGetProcAddress( name ) );
+			return function != nullptr;
+		}
+
 #if !defined( NDEBUG )
 
 		static const int GL_CONTEXT_CREATION_DEFAULT_FLAGS =  GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_DEBUG_BIT;
@@ -39,7 +50,8 @@ namespace gl_renderer
 		{
 			m_hContext = wglCreateContext( m_hDC );
 			setCurrent();
-			m_opengl = std::make_unique< OpenGLLibrary >();
+			doLoadBaseFunctions();
+			doLoadMswFunctions();
 			loadDebugFunctions();
 			endCurrent();
 
@@ -47,12 +59,12 @@ namespace gl_renderer
 
 			if ( !doCreateGl3Context() )
 			{
-				wgl::DeleteContext( m_hContext );
+				wglDeleteContext( m_hContext );
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
 
 			setCurrent();
-			wgl::SwapIntervalEXT( 0 );
+			wglSwapIntervalEXT( 0 );
 			endCurrent();
 		}
 	}
@@ -85,6 +97,43 @@ namespace gl_renderer
 	void MswContext::swapBuffers()const
 	{
 		::SwapBuffers( m_hDC );
+	}
+
+	void MswContext::doLoadBaseFunctions()
+	{
+#define GL_LIB_BASE_FUNCTION( fun )\
+			this->gl##fun = &::gl##fun;
+#define GL_LIB_FUNCTION( fun )\
+			if ( !( getFunction( "gl"#fun, this->gl##fun ) ) )\
+			{\
+				throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
+			}
+#define GL_LIB_FUNCTION_EXT( fun, ext, name )\
+			if ( !( getFunction( "gl"#fun, this->gl##fun##_##ext ) ) )\
+			{\
+				renderer::Logger::logError( std::string{ "Couldn't load function " } + "gl"#fun );\
+			}
+#define GL_LIB_FUNCTION_VSN( fun, version )\
+			if ( !( getFunction( "gl"#fun, this->gl##fun##_##version ) ) )\
+			{\
+				renderer::Logger::logError( std::string{ "Couldn't load function " } + "gl"#fun );\
+			}
+#include "Miscellaneous/OpenGLFunctionsList.inl"
+	}
+
+	void MswContext::doLoadMswFunctions()
+	{
+#	define WGL_LIB_FUNCTION( fun )\
+			if ( !( getFunction( "wgl"#fun, this->wgl##fun ) ) )\
+			{\
+				throw std::runtime_error{ std::string{ "Couldn't load function " } + "wgl"#fun };\
+			}
+#	define WGL_LIB_FUNCTION_EXT( fun, ext, name )\
+			if ( !( getFunction( "wgl"#fun, this->wgl##fun##_##ext ) ) )\
+			{\
+				renderer::Logger::logError( std::string{ "Couldn't load function " } + "wgl"#fun );\
+			}
+#include "Miscellaneous/OpenGLFunctionsList.inl"
 	}
 
 	HGLRC MswContext::doCreateDummyContext()
@@ -144,18 +193,18 @@ namespace gl_renderer
 			};
 
 			setCurrent();
-			gl::GetError();
+			glGetError();
 			glCreateContextAttribs = ( PFNGLCREATECONTEXTATTRIBS )wglGetProcAddress( "wglCreateContextAttribsARB" );
 			hContext = glCreateContextAttribs( m_hDC, nullptr, attribList.data() );
 			endCurrent();
-			wgl::DeleteContext( m_hContext );
+			wglDeleteContext( m_hContext );
 			m_hContext = hContext;
 			result = m_hContext != nullptr;
 
 			if ( !result )
 			{
 				std::stringstream error;
-				error << "Failed to create an OpenGL 3.2 context (0x" << std::hex << gl::GetError() << ").";
+				error << "Failed to create an OpenGL 3.2 context (0x" << std::hex << glGetError() << ").";
 				throw std::runtime_error{ error.str() };
 			}
 		}

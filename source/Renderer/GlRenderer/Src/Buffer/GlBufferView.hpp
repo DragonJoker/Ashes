@@ -54,7 +54,7 @@ namespace gl_renderer
 		*\param[in] range
 		*	The range from the buffer.
 		*/
-		BufferView( renderer::Device const & device
+		BufferView( Device const & device
 			, Buffer const & buffer
 			, renderer::Format format
 			, uint32_t offset
@@ -82,6 +82,7 @@ namespace gl_renderer
 		}
 
 	private:
+		Device const & m_device;
 		GLuint m_name{ GL_INVALID_INDEX };
 	};
 }

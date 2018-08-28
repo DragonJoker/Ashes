@@ -20,7 +20,8 @@ namespace gl_renderer
 		*\brief
 		*	Constructeur.
 		*/
-		GenerateMipmapsCommand( Texture const & texture );
+		GenerateMipmapsCommand( Device const & device
+			, Texture const & texture );
 
 		void apply()const override;
 		CommandPtr clone()const override;

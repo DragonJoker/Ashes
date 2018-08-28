@@ -34,7 +34,7 @@ namespace gl_renderer
 		, uint32_t firstInstance
 		, renderer::PrimitiveTopology mode
 		, renderer::IndexType type )
-		: m_device{ device }
+		: CommandBase{ device }
 		, m_indexCount{ indexCount }
 		, m_instCount{ instCount }
 		, m_firstIndex{ firstIndex }
@@ -57,7 +57,7 @@ namespace gl_renderer
 
 		if ( m_device.getRenderer().getFeatures().hasBaseInstance )
 		{
-			glLogCall( gl::DrawElementsInstancedBaseVertexBaseInstance_ARB
+			glLogCall( m_device.getContext(), glDrawElementsInstancedBaseVertexBaseInstance_ARB
 				, m_mode
 				, m_indexCount
 				, m_type
@@ -68,7 +68,7 @@ namespace gl_renderer
 		}
 		else
 		{
-			glLogCall( gl::DrawElementsInstancedBaseVertex
+			glLogCall( m_device.getContext(), glDrawElementsInstancedBaseVertex
 				, m_mode
 				, m_indexCount
 				, m_type

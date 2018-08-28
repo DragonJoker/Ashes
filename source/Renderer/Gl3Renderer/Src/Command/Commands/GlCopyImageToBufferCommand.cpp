@@ -60,7 +60,7 @@ namespace gl_renderer
 		, renderer::BufferImageCopyArray const & copyInfo
 		, renderer::Texture const & src
 		, renderer::BufferBase const & dst )
-		: m_device{ device }
+		: CommandBase{ device }
 		, m_src{ static_cast< Texture const & >( src ) }
 		, m_dst{ static_cast< Buffer const & >( dst ) }
 		, m_copyInfo{ copyInfo }
@@ -74,7 +74,7 @@ namespace gl_renderer
 	}
 
 	CopyImageToBufferCommand::CopyImageToBufferCommand( CopyImageToBufferCommand const & rhs )
-		: m_device{ rhs.m_device }
+		: CommandBase{ rhs.m_device }
 		, m_src{ rhs.m_src }
 		, m_dst{ rhs.m_dst }
 		, m_copyInfo{ rhs.m_copyInfo }
@@ -90,7 +90,7 @@ namespace gl_renderer
 	void CopyImageToBufferCommand::apply()const
 	{
 		glLogCommand( "CopyImageToBufferCommand" );
-		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_PACK, m_dst.getBuffer() );
+		glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_PIXEL_PACK, m_dst.getBuffer() );
 
 		for ( size_t i = 0; i < m_views.size(); ++i )
 		{
@@ -98,26 +98,26 @@ namespace gl_renderer
 				, *m_views[i] );
 		}
 
-		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_PIXEL_PACK, 0u );
+		glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_PIXEL_PACK, 0u );
 	}
 
 	void CopyImageToBufferCommand::applyOne( renderer::BufferImageCopy const & copyInfo
 		, TextureView const & view )const
 	{
 		// Setup source FBO
-		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, m_srcFbo );
-		glLogCall( gl::FramebufferTexture2D
+		glLogCall( m_device.getContext(), glBindFramebuffer, GL_FRAMEBUFFER, m_srcFbo );
+		glLogCall( m_device.getContext(), glFramebufferTexture2D
 			, GL_FRAMEBUFFER
 			, GL_ATTACHMENT_POINT_COLOR0
 			, GL_TEXTURE_2D
 			, static_cast< Texture const & >( view.getTexture() ).getImage()
 			, view.getSubResourceRange().baseMipLevel );
-		glLogCall( gl::ReadBuffer, GL_ATTACHMENT_POINT_COLOR0 );
-		glLogCall( gl::BindFramebuffer, GL_FRAMEBUFFER, 0u );
+		glLogCall( m_device.getContext(), glReadBuffer, GL_ATTACHMENT_POINT_COLOR0 );
+		glLogCall( m_device.getContext(), glBindFramebuffer, GL_FRAMEBUFFER, 0u );
 
 		// Read pixels
-		glLogCall( gl::BindFramebuffer, GL_READ_FRAMEBUFFER, m_srcFbo );
-		glLogCall( gl::ReadPixels
+		glLogCall( m_device.getContext(), glBindFramebuffer, GL_READ_FRAMEBUFFER, m_srcFbo );
+		glLogCall( m_device.getContext(), glReadPixels
 			, copyInfo.imageOffset.x
 			, copyInfo.imageOffset.y
 			, copyInfo.imageExtent.width
@@ -125,7 +125,7 @@ namespace gl_renderer
 			, m_format
 			, m_type
 			, nullptr );
-		glLogCall( gl::BindFramebuffer, GL_READ_FRAMEBUFFER, 0u );
+		glLogCall( m_device.getContext(), glBindFramebuffer, GL_READ_FRAMEBUFFER, 0u );
 	}
 
 	CommandPtr CopyImageToBufferCommand::clone()const

@@ -192,17 +192,6 @@ GL_LIB_FUNCTION_VSN( BlendFuncSeparatei, 40 )
 
 #undef GL_LIB_FUNCTION_VSN
 
-// Functions from Window.h or WinGDI.h
-#ifndef WGL_LIB_BASE_FUNCTION
-#	define WGL_LIB_BASE_FUNCTION( x )
-#endif
-
-WGL_LIB_BASE_FUNCTION( CreateContext )
-WGL_LIB_BASE_FUNCTION( DeleteContext )
-WGL_LIB_BASE_FUNCTION( MakeCurrent )
-
-#undef WGL_LIB_BASE_FUNCTION
-
 // Extended WGL functions
 #ifndef WGL_LIB_FUNCTION
 #	define WGL_LIB_FUNCTION( x )

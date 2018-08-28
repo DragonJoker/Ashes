@@ -20,7 +20,7 @@ namespace gl_renderer
 		: public renderer::RenderPass
 	{
 	public:
-		RenderPass( renderer::Device const & device
+		RenderPass( Device const & device
 			, renderer::RenderPassCreateInfo && createInfo );
 		/**
 		*\copydoc	renderer::RenderPass::createFrameBuffer
@@ -46,6 +46,7 @@ namespace gl_renderer
 		}
 
 	private:
+		Device const & m_device;
 		bool m_hasDepthAttach{ false };
 		renderer::AttachmentDescription m_depthAttach;
 		std::vector< AttachmentDescription > m_colourAttaches;

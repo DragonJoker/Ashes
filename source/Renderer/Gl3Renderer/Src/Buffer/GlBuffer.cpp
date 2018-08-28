@@ -8,22 +8,23 @@
 
 namespace gl_renderer
 {
-	Buffer::Buffer( renderer::Device const & device
+	Buffer::Buffer( Device const & device
 		, uint32_t size
 		, renderer::BufferTargets target )
 		: renderer::BufferBase{ device
 			, size
 			, target }
+		, m_device{ device }
 		, m_target{ convert( target ) }
 	{
-		glLogCall( gl::GenBuffers, 1, &m_name );
+		glLogCall( m_device.getContext(), glGenBuffers, 1, &m_name );
 	}
 
 	Buffer::~Buffer()
 	{
 		onDestroy( m_name );
 		m_storage.reset();
-		glLogCall( gl::DeleteBuffers, 1, &m_name );
+		glLogCall( m_device.getContext(), glDeleteBuffers, 1, &m_name );
 	}
 
 	renderer::MemoryRequirements Buffer::getMemoryRequirements()const

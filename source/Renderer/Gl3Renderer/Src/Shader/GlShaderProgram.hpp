@@ -11,8 +11,10 @@ namespace gl_renderer
 	class ShaderProgram
 	{
 	public:
-		ShaderProgram( std::vector< renderer::ShaderStageState > const & stages );
-		ShaderProgram( renderer::ShaderStageState const & stage );
+		ShaderProgram( Device const & device
+			, std::vector< renderer::ShaderStageState > const & stages );
+		ShaderProgram( Device const & device
+			, renderer::ShaderStageState const & stage );
 		~ShaderProgram();
 		void link()const;
 
@@ -22,6 +24,7 @@ namespace gl_renderer
 		}
 
 	private:
+		Device const & m_device;
 		GLuint m_program;
 		renderer::UInt32Array m_shaders;
 	};

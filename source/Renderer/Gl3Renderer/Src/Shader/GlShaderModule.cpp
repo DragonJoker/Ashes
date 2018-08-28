@@ -14,17 +14,18 @@ namespace gl_renderer
 {
 	namespace
 	{
-		std::string doRetrieveCompilerLog( GLuint shaderName )
+		std::string doRetrieveCompilerLog( Device const & device
+			, GLuint shaderName )
 		{
 			std::string log;
 			int infologLength = 0;
 			int charsWritten = 0;
-			glLogCall( gl::GetShaderiv, shaderName, GL_INFO_LOG_LENGTH, &infologLength );
+			glLogCall( device.getContext(), glGetShaderiv, shaderName, GL_INFO_LOG_LENGTH, &infologLength );
 
 			if ( infologLength > 0 )
 			{
 				std::vector< char > infoLog( infologLength + 1 );
-				glLogCall( gl::GetShaderInfoLog, shaderName, infologLength, &charsWritten, infoLog.data() );
+				glLogCall( device.getContext(), glGetShaderInfoLog, shaderName, infologLength, &charsWritten, infoLog.data() );
 				log = infoLog.data();
 			}
 
@@ -36,10 +37,12 @@ namespace gl_renderer
 			return log;
 		}
 
-		bool doCheckCompileErrors( bool compiled
+		bool doCheckCompileErrors( Device const & device
+			, bool compiled
 			, GLuint shaderName )
 		{
-			auto compilerLog = doRetrieveCompilerLog( shaderName );
+			auto compilerLog = doRetrieveCompilerLog( device
+				, shaderName );
 
 			if ( !compilerLog.empty() )
 			{
@@ -65,7 +68,7 @@ namespace gl_renderer
 		, renderer::ShaderStageFlag stage )
 		: renderer::ShaderModule{ device, stage }
 		, m_device{ device }
-		, m_shader{ gl::CreateShader( convert( stage ) ) }
+		, m_shader{ m_device.getContext().glCreateShader( convert( stage ) ) }
 		, m_isSpirV{ false }
 	{
 	}
@@ -104,12 +107,12 @@ $&)" );
 
 		auto length = int( source.size() );
 		char const * data = source.data();
-		glLogCall( gl::ShaderSource, m_shader, 1, &data, &length );
-		glLogCall( gl::CompileShader, m_shader );
+		glLogCall( m_device.getContext(), glShaderSource, m_shader, 1, &data, &length );
+		glLogCall( m_device.getContext(), glCompileShader, m_shader );
 		int compiled = 0;
-		glLogCall( gl::GetShaderiv, m_shader, GL_INFO_COMPILE_STATUS, &compiled );
+		glLogCall( m_device.getContext(), glGetShaderiv, m_shader, GL_INFO_COMPILE_STATUS, &compiled );
 
-		if ( !doCheckCompileErrors( compiled != 0, m_shader ) )
+		if ( !doCheckCompileErrors( m_device, compiled != 0, m_shader ) )
 		{
 			throw std::runtime_error{ "Shader compilation failed." };
 		}
@@ -122,7 +125,11 @@ $&)" );
 			throw std::runtime_error{ "Shader compilation from SPIR-V is not supported." };
 		}
 
-		gl::ShaderBinary_ARB( 1u, &m_shader, GL_SHADER_BINARY_FORMAT_SPIR_V, fileData.data(), GLsizei( fileData.size() ) );
+		m_device.getContext().glShaderBinary_ARB( 1u
+			, &m_shader
+			, GL_SHADER_BINARY_FORMAT_SPIR_V
+			, fileData.data()
+			, GLsizei( fileData.size() ) );
 		m_isSpirV = true;
 	}
 }

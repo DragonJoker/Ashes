@@ -12,10 +12,12 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	NextSubpassCommand::NextSubpassCommand( renderer::RenderPass const & renderPass
+	NextSubpassCommand::NextSubpassCommand( Device const & device
+		, renderer::RenderPass const & renderPass
 		, renderer::FrameBuffer const & frameBuffer
 		, renderer::SubpassDescription const & subpass )
-		: m_renderPass{ static_cast< RenderPass const & >( renderPass ) }
+		: CommandBase{ device }
+		, m_renderPass{ static_cast< RenderPass const & >( renderPass ) }
 		, m_subpass{ subpass }
 		, m_frameBuffer{ static_cast< FrameBuffer const & >( frameBuffer ) }
 	{

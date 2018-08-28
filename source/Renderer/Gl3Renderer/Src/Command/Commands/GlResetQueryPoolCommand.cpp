@@ -6,9 +6,11 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	ResetQueryPoolCommand::ResetQueryPoolCommand( renderer::QueryPool const & pool
+	ResetQueryPoolCommand::ResetQueryPoolCommand( Device const & device
+		, renderer::QueryPool const & pool
 		, uint32_t firstQuery
 		, uint32_t queryCount )
+		: CommandBase{ device }
 	{
 	}
 

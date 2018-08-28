@@ -26,7 +26,8 @@ namespace gl_renderer
 		*\param[in] colour
 		*	La couleur de vidage.
 		*/
-		ClearColourCommand( renderer::TextureView const & image
+		ClearColourCommand( Device const & device
+			, renderer::TextureView const & image
 			, renderer::ClearColorValue const & colour );
 
 		void apply()const override;

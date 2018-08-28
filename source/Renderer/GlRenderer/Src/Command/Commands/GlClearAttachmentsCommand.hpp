@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to RendererLib.
 See LICENSE file in root folder
 */
@@ -23,7 +23,6 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		Device const & m_device;
 		renderer::ClearAttachmentArray m_clearAttaches;
 		renderer::ClearRectArray m_clearRects;
 	};

@@ -82,6 +82,7 @@ namespace gl_renderer
 		}
 
 	private:
+		Device const & m_device;
 		GLuint m_name{ GL_INVALID_INDEX };
 	};
 }

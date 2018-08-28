@@ -18,7 +18,7 @@ namespace gl_renderer
 		: public renderer::BufferBase
 	{
 	public:
-		Buffer( renderer::Device const & device
+		Buffer( Device const & device
 			, uint32_t size
 			, renderer::BufferTargets target );
 		~Buffer();
@@ -51,6 +51,7 @@ namespace gl_renderer
 		mutable BufferDestroySignal onDestroy;
 
 	private:
+		Device const & m_device;
 		GLuint m_name{ GL_INVALID_INDEX };
 		GlBufferTarget m_target;
 		mutable GlBufferTarget m_copyTarget;

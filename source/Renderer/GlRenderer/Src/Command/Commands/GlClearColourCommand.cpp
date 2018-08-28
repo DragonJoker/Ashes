@@ -8,9 +8,11 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	ClearColourCommand::ClearColourCommand( renderer::TextureView const & image
+	ClearColourCommand::ClearColourCommand( Device const & device
+		, renderer::TextureView const & image
 		, renderer::ClearColorValue const & colour )
-		: m_image{ static_cast< TextureView const & >( image ) }
+		: CommandBase{ device }
+		, m_image{ static_cast< TextureView const & >( image ) }
 		, m_colour{ colour }
 		, m_internal{ getInternal( m_image.getFormat() ) }
 		, m_format{ getFormat( m_internal ) }
@@ -22,9 +24,9 @@ namespace gl_renderer
 	{
 		glLogCommand( "ClearColourCommand" );
 
-		if ( gl::ClearTexImage )
+		if ( m_device.getContext().glClearTexImage )
 		{
-			glLogCall( gl::ClearTexImage
+			glLogCall( m_device.getContext(), glClearTexImage
 				, m_image.getImage()
 				, 0
 				, m_format

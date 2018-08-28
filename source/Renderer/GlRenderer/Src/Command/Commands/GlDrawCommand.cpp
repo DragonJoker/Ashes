@@ -6,12 +6,14 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	DrawCommand::DrawCommand( uint32_t vtxCount
+	DrawCommand::DrawCommand( Device const & device
+		, uint32_t vtxCount
 		, uint32_t instCount
 		, uint32_t firstVertex
 		, uint32_t firstInstance
 		, renderer::PrimitiveTopology mode )
-		: m_vtxCount{ vtxCount }
+		: CommandBase{ device }
+		, m_vtxCount{ vtxCount }
 		, m_instCount{ instCount }
 		, m_firstVertex{ firstVertex }
 		, m_firstInstance{ firstInstance }
@@ -23,7 +25,8 @@ namespace gl_renderer
 	{
 		assert( m_instCount >= 1 );
 		glLogCommand( "DrawCommand" );
-		glLogCall( gl::DrawArraysInstancedBaseInstance
+		glLogCall( m_device.getContext()
+			, glDrawArraysInstancedBaseInstance
 			, m_mode
 			, m_firstVertex
 			, m_vtxCount

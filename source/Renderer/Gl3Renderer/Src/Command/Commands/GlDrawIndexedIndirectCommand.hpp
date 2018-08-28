@@ -24,7 +24,6 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		Device const & m_device;
 		Buffer const & m_buffer;
 		uint32_t m_offset;
 		uint32_t m_drawCount;

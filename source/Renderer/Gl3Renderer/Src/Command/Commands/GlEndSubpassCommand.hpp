@@ -20,7 +20,6 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		Device const & m_device;
 		FrameBuffer const & m_frameBuffer;
 		renderer::SubpassDescription const & m_subpass;
 	};

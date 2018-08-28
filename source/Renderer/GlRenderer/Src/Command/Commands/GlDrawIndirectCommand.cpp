@@ -8,12 +8,14 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	DrawIndirectCommand::DrawIndirectCommand( renderer::BufferBase const & buffer
+	DrawIndirectCommand::DrawIndirectCommand( Device const & device
+		, renderer::BufferBase const & buffer
 		, uint32_t offset
 		, uint32_t drawCount
 		, uint32_t stride
 		, renderer::PrimitiveTopology mode )
-		: m_buffer{ static_cast< Buffer const & >( buffer ) }
+		: CommandBase{ device }
+		, m_buffer{ static_cast< Buffer const & >( buffer ) }
 		, m_offset{ offset }
 		, m_drawCount{ drawCount }
 		, m_stride{ stride }
@@ -24,13 +26,19 @@ namespace gl_renderer
 	void DrawIndirectCommand::apply()const
 	{
 		glLogCommand( "DrawIndirectCommand" );
-		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_DRAW_INDIRECT, m_buffer.getBuffer() );
-		glLogCall( gl::MultiDrawArraysIndirect
+		glLogCall( m_device.getContext()
+			, glBindBuffer
+			, GL_BUFFER_TARGET_DRAW_INDIRECT
+			, m_buffer.getBuffer() );
+		glLogCall( m_device.getContext()
+			, glMultiDrawArraysIndirect
 			, m_mode
 			, BufferOffset( m_offset )
 			, m_drawCount
 			, m_stride );
-		glLogCall( gl::BindBuffer, GL_BUFFER_TARGET_DRAW_INDIRECT, 0 );
+		glLogCall( m_device.getContext(), glBindBuffer
+			, GL_BUFFER_TARGET_DRAW_INDIRECT
+			, 0 );
 	}
 
 	CommandPtr DrawIndirectCommand::clone()const

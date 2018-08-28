@@ -218,6 +218,11 @@ namespace gl_renderer
 			return static_cast< PhysicalDevice const & >( m_gpu ).findAll( names );
 		}
 
+		inline Context const & getContext()const
+		{
+			return *m_context;
+		}
+
 	private:
 		/**
 		*\copydoc	renderer::Device::enable

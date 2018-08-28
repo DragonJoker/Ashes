@@ -44,7 +44,6 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		Device const & m_device;
 		Pipeline const & m_pipeline;
 		PipelineLayout const & m_layout;
 		GLuint m_program;

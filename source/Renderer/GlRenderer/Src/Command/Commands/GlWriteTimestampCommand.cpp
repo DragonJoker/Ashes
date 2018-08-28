@@ -8,17 +8,19 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	WriteTimestampCommand::WriteTimestampCommand( renderer::PipelineStageFlag pipelineStage
+	WriteTimestampCommand::WriteTimestampCommand( Device const & device
+		, renderer::PipelineStageFlag pipelineStage
 		, renderer::QueryPool const & pool
 		, uint32_t query )
-		: m_query{ *( static_cast< QueryPool const & >( pool ).begin() + query ) }
+		: CommandBase{ device }
+		, m_query{ *( static_cast< QueryPool const & >( pool ).begin() + query ) }
 	{
 	}
 
 	void WriteTimestampCommand::apply()const
 	{
 		glLogCommand( "WriteTimestampCommand" );
-		glLogCall( gl::QueryCounter, m_query, GL_QUERY_TYPE_TIMESTAMP );
+		glLogCall( m_device.getContext(), glQueryCounter, m_query, GL_QUERY_TYPE_TIMESTAMP );
 	}
 
 	CommandPtr WriteTimestampCommand::clone()const

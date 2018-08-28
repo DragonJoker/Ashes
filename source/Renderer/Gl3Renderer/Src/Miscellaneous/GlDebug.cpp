@@ -248,7 +248,7 @@ namespace gl_renderer
 	bool glCheckError( std::string const & text )
 	{
 		bool result = true;
-		uint32_t errorCode = gl::GetError();
+		uint32_t errorCode = glGetError();
 
 		if ( errorCode )
 		{
@@ -258,7 +258,7 @@ namespace gl_renderer
 			stream << "OpenGL Error, on function: " << text << std::endl;
 			stream << "  ID: 0x" << std::hex << errorCode << " (" << getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) << ")" << std::endl;
 			renderer::Logger::logError( stream.str() );
-			errorCode = gl::GetError();
+			errorCode = glGetError();
 			result = false;
 		}
 

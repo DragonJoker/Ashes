@@ -131,7 +131,8 @@ namespace gl_renderer
 			, *m_state.m_currentFrameBuffer
 			, *m_state.m_currentSubpass ) );
 		m_state.m_currentSubpass = &m_state.m_currentRenderPass->getSubpasses()[m_state.m_currentSubpassIndex++];
-		m_commands.emplace_back( std::make_unique< NextSubpassCommand >( *m_state.m_currentRenderPass
+		m_commands.emplace_back( std::make_unique< NextSubpassCommand >( m_device
+			, *m_state.m_currentRenderPass
 			, *m_state.m_currentFrameBuffer
 			, *m_state.m_currentSubpass ) );
 		m_state.m_boundVbos.clear();
@@ -142,7 +143,7 @@ namespace gl_renderer
 		m_commands.emplace_back( std::make_unique< EndSubpassCommand >( m_device
 			, *m_state.m_currentFrameBuffer
 			, *m_state.m_currentSubpass ) );
-		m_commands.emplace_back( std::make_unique< EndRenderPassCommand >() );
+		m_commands.emplace_back( std::make_unique< EndRenderPassCommand >( m_device ) );
 		m_state.m_boundVbos.clear();
 	}
 
@@ -167,19 +168,25 @@ namespace gl_renderer
 	void CommandBuffer::clear( renderer::TextureView const & image
 		, renderer::ClearColorValue const & colour )const
 	{
-		m_commands.emplace_back( std::make_unique< ClearColourCommand >( image, colour ) );
+		m_commands.emplace_back( std::make_unique< ClearColourCommand >( m_device
+			, image
+			, colour ) );
 	}
 
 	void CommandBuffer::clear( renderer::TextureView const & image
 		, renderer::DepthStencilClearValue const & value )const
 	{
-		m_commands.emplace_back( std::make_unique< ClearDepthStencilCommand >( image, value ) );
+		m_commands.emplace_back( std::make_unique< ClearDepthStencilCommand >( m_device
+			, image
+			, value ) );
 	}
 
 	void CommandBuffer::clearAttachments( renderer::ClearAttachmentArray const & clearAttachments
 		, renderer::ClearRectArray const & clearRects )
 	{
-		m_commands.emplace_back( std::make_unique< ClearAttachmentsCommand >( m_device, clearAttachments, clearRects ) );
+		m_commands.emplace_back( std::make_unique< ClearAttachmentsCommand >( m_device
+			, clearAttachments
+			, clearRects ) );
 	}
 
 	void CommandBuffer::bindPipeline( renderer::Pipeline const & pipeline
@@ -199,26 +206,32 @@ namespace gl_renderer
 		}
 
 		m_state.m_currentPipeline = &static_cast< Pipeline const & >( pipeline );
-		m_commands.emplace_back( std::make_unique< BindPipelineCommand >( m_device, pipeline, bindingPoint ) );
+		m_commands.emplace_back( std::make_unique< BindPipelineCommand >( m_device
+			, pipeline
+			, bindingPoint ) );
 
 		for ( auto & pcb : m_state.m_pushConstantBuffers )
 		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( *pcb.first
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
+				, *pcb.first
 				, *pcb.second ) );
 		}
 
 		for ( auto & pcb : m_state.m_currentPipeline->getConstantsPcbs() )
 		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_state.m_currentPipeline->getLayout()
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
+				, m_state.m_currentPipeline->getLayout()
 				, pcb ) );
 		}
 
 		m_state.m_pushConstantBuffers.clear();
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, []()
+			, [this]()
 			{
-				glLogCall( gl::UseProgram, 0u );
+				glLogCall( m_device.getContext()
+					, glUseProgram
+					, 0u );
 			} );
 	}
 
@@ -226,26 +239,31 @@ namespace gl_renderer
 		, renderer::PipelineBindPoint bindingPoint )const
 	{
 		m_state.m_currentComputePipeline = &static_cast< ComputePipeline const & >( pipeline );
-		m_commands.emplace_back( std::make_unique< BindComputePipelineCommand >( m_device, pipeline, bindingPoint ) );
+		m_commands.emplace_back( std::make_unique< BindComputePipelineCommand >( m_device
+			, pipeline
+			, bindingPoint ) );
 
 		for ( auto & pcb : m_state.m_pushConstantBuffers )
 		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( *pcb.first
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
+				, *pcb.first
 				, *pcb.second ) );
 		}
 
 		for ( auto & pcb : m_state.m_currentComputePipeline->getConstantsPcbs() )
 		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_state.m_currentComputePipeline->getLayout()
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
+				, m_state.m_currentComputePipeline->getLayout()
 				, pcb ) );
 		}
 
 		m_state.m_pushConstantBuffers.clear();
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, []()
+			, [this]()
 			{
-				glLogCall( gl::UseProgram, 0u );
+				glLogCall( m_device.getContext()
+					, glUseProgram, 0u );
 			} );
 	}
 
@@ -289,7 +307,8 @@ namespace gl_renderer
 	{
 		for ( auto & descriptorSet : descriptorSets )
 		{
-			m_commands.emplace_back( std::make_unique< BindDescriptorSetCommand >( descriptorSet.get()
+			m_commands.emplace_back( std::make_unique< BindDescriptorSetCommand >( m_device
+				, descriptorSet.get()
 				, layout
 				, dynamicOffsets
 				, bindingPoint ) );
@@ -358,8 +377,10 @@ namespace gl_renderer
 		{
 			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, renderer::IndexType::eUInt32 );
 			m_state.m_boundVao = &m_device.getEmptyIndexedVao();
-			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( *m_state.m_boundVao ) );
-			m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( vtxCount
+			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( m_device
+				, *m_state.m_boundVao ) );
+			m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( m_device
+				, vtxCount
 				, instCount
 				, 0u
 				, firstVertex
@@ -374,7 +395,8 @@ namespace gl_renderer
 				doBindVao();
 			}
 
-			m_commands.emplace_back( std::make_unique< DrawCommand >( vtxCount
+			m_commands.emplace_back( std::make_unique< DrawCommand >( m_device
+				, vtxCount
 				, instCount
 				, firstVertex
 				, firstInstance
@@ -382,9 +404,10 @@ namespace gl_renderer
 		}
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, []()
+			, [this]()
 			{
-				glLogCall( gl::BindVertexArray, 0u );
+				glLogCall( m_device.getContext()
+					, glBindVertexArray, 0u );
 			} );
 	}
 
@@ -398,14 +421,16 @@ namespace gl_renderer
 		{
 			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, renderer::IndexType::eUInt32 );
 			m_state.m_boundVao = &m_device.getEmptyIndexedVao();
-			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( *m_state.m_boundVao ) );
+			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( m_device
+				, *m_state.m_boundVao ) );
 		}
 		else if ( !m_state.m_boundVao )
 		{
 			doBindVao();
 		}
 
-		m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( indexCount
+		m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( m_device
+			, indexCount
 			, instCount
 			, firstIndex
 			, vertexOffset
@@ -414,9 +439,10 @@ namespace gl_renderer
 			, m_state.m_indexType ) );
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, []()
+			, [this]()
 		{
-			glLogCall( gl::BindVertexArray, 0u );
+			glLogCall( m_device.getContext()
+				, glBindVertexArray, 0u );
 			} );
 	}
 
@@ -430,16 +456,18 @@ namespace gl_renderer
 			doBindVao();
 		}
 
-		m_commands.emplace_back( std::make_unique< DrawIndirectCommand >( buffer
+		m_commands.emplace_back( std::make_unique< DrawIndirectCommand >( m_device
+			, buffer
 			, offset
 			, drawCount
 			, stride
 			, m_state.m_currentPipeline->getInputAssemblyState().topology ) );
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, []()
+			, [this]()
 			{
-				glLogCall( gl::BindVertexArray, 0u );
+				glLogCall( m_device.getContext()
+					, glBindVertexArray, 0u );
 			} );
 	}
 
@@ -452,14 +480,16 @@ namespace gl_renderer
 		{
 			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, renderer::IndexType::eUInt32 );
 			m_state.m_boundVao = &m_device.getEmptyIndexedVao();
-			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( *m_state.m_boundVao ) );
+			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( m_device
+				, *m_state.m_boundVao ) );
 		}
 		else if ( !m_state.m_boundVao )
 		{
 			doBindVao();
 		}
 
-		m_commands.emplace_back( std::make_unique< DrawIndexedIndirectCommand >( buffer
+		m_commands.emplace_back( std::make_unique< DrawIndexedIndirectCommand >( m_device
+			, buffer
 			, offset
 			, drawCount
 			, stride
@@ -467,9 +497,10 @@ namespace gl_renderer
 			, m_state.m_indexType ) );
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, []()
+			, [this]()
 			{
-				glLogCall( gl::BindVertexArray, 0u );
+				glLogCall( m_device.getContext()
+					, glBindVertexArray, 0u );
 			} );
 	}
 
@@ -477,7 +508,8 @@ namespace gl_renderer
 		, renderer::BufferBase const & src
 		, renderer::Texture const & dst )const
 	{
-		m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( copyInfo
+		m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( m_device
+			, copyInfo
 			, src
 			, dst ) );
 	}
@@ -496,7 +528,8 @@ namespace gl_renderer
 		, renderer::BufferBase const & src
 		, renderer::BufferBase const & dst )const
 	{
-		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( copyInfo
+		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( m_device
+			, copyInfo
 			, src
 			, dst ) );
 	}
@@ -507,7 +540,8 @@ namespace gl_renderer
 		, renderer::Texture const & dst
 		, renderer::ImageLayout dstLayout )const
 	{
-		m_commands.emplace_back( std::make_unique< CopyImageCommand >( copyInfo
+		m_commands.emplace_back( std::make_unique< CopyImageCommand >( m_device
+			, copyInfo
 			, src
 			, dst ) );
 	}
@@ -530,7 +564,8 @@ namespace gl_renderer
 		, uint32_t firstQuery
 		, uint32_t queryCount )const
 	{
-		m_commands.emplace_back( std::make_unique< ResetQueryPoolCommand >( pool
+		m_commands.emplace_back( std::make_unique< ResetQueryPoolCommand >( m_device
+			, pool
 			, firstQuery
 			, queryCount ) );
 	}
@@ -539,7 +574,8 @@ namespace gl_renderer
 		, uint32_t query
 		, renderer::QueryControlFlags flags )const
 	{
-		m_commands.emplace_back( std::make_unique< BeginQueryCommand >( pool
+		m_commands.emplace_back( std::make_unique< BeginQueryCommand >( m_device
+			, pool
 			, query
 			, flags ) );
 	}
@@ -547,7 +583,8 @@ namespace gl_renderer
 	void CommandBuffer::endQuery( renderer::QueryPool const & pool
 		, uint32_t query )const
 	{
-		m_commands.emplace_back( std::make_unique< EndQueryCommand >( pool
+		m_commands.emplace_back( std::make_unique< EndQueryCommand >( m_device
+			, pool
 			, query ) );
 	}
 
@@ -555,7 +592,8 @@ namespace gl_renderer
 		, renderer::QueryPool const & pool
 		, uint32_t query )const
 	{
-		m_commands.emplace_back( std::make_unique< WriteTimestampCommand >( pipelineStage
+		m_commands.emplace_back( std::make_unique< WriteTimestampCommand >( m_device
+			, pipelineStage
 			, pool
 			, query ) );
 	}
@@ -565,7 +603,8 @@ namespace gl_renderer
 	{
 		if ( m_state.m_currentPipeline || m_state.m_currentComputePipeline )
 		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( layout
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
+				, layout
 				, pcb ) );
 		}
 		else
@@ -578,7 +617,8 @@ namespace gl_renderer
 		, uint32_t groupCountY
 		, uint32_t groupCountZ )const
 	{
-		m_commands.emplace_back( std::make_unique< DispatchCommand >( groupCountX
+		m_commands.emplace_back( std::make_unique< DispatchCommand >( m_device
+			, groupCountX
 			, groupCountY 
 			, groupCountZ ) );
 	}
@@ -586,20 +626,23 @@ namespace gl_renderer
 	void CommandBuffer::dispatchIndirect( renderer::BufferBase const & buffer
 		, uint32_t offset )const
 	{
-		m_commands.emplace_back( std::make_unique< DispatchIndirectCommand >( buffer
+		m_commands.emplace_back( std::make_unique< DispatchIndirectCommand >( m_device
+			, buffer
 			, offset ) );
 	}
 
 	void CommandBuffer::setLineWidth( float width )const
 	{
-		m_commands.emplace_back( std::make_unique< SetLineWidthCommand >( width ) );
+		m_commands.emplace_back( std::make_unique< SetLineWidthCommand >( m_device
+			, width ) );
 	}
 
 	void CommandBuffer::setDepthBias( float constantFactor
 		, float clamp
 		, float slopeFactor )const
 	{
-		m_commands.emplace_back( std::make_unique< SetDepthBiasCommand >( constantFactor
+		m_commands.emplace_back( std::make_unique< SetDepthBiasCommand >( m_device
+			, constantFactor
 			, clamp
 			, slopeFactor ) );
 	}
@@ -607,14 +650,16 @@ namespace gl_renderer
 	void CommandBuffer::setEvent( renderer::Event const & event
 		, renderer::PipelineStageFlags stageMask )const
 	{
-		m_commands.emplace_back( std::make_unique< SetEventCommand >( event
+		m_commands.emplace_back( std::make_unique< SetEventCommand >( m_device
+			, event
 			, stageMask ) );
 	}
 
 	void CommandBuffer::resetEvent( renderer::Event const & event
 		, renderer::PipelineStageFlags stageMask )const
 	{
-		m_commands.emplace_back( std::make_unique< ResetEventCommand >( event
+		m_commands.emplace_back( std::make_unique< ResetEventCommand >( m_device
+			, event
 			, stageMask ) );
 	}
 
@@ -624,7 +669,8 @@ namespace gl_renderer
 		, renderer::BufferMemoryBarrierArray const & bufferMemoryBarriers
 		, renderer::ImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
-		m_commands.emplace_back( std::make_unique< WaitEventsCommand >( events
+		m_commands.emplace_back( std::make_unique< WaitEventsCommand >( m_device
+			, events
 			, srcStageMask
 			, dstStageMask
 			, bufferMemoryBarriers 
@@ -645,7 +691,8 @@ namespace gl_renderer
 		, renderer::PipelineStageFlags before
 		, renderer::BufferMemoryBarrier const & transitionBarrier )const
 	{
-		m_commands.emplace_back( std::make_unique< BufferMemoryBarrierCommand >( after
+		m_commands.emplace_back( std::make_unique< BufferMemoryBarrierCommand >( m_device
+			, after
 			, before
 			, transitionBarrier ) );
 	}
@@ -654,7 +701,8 @@ namespace gl_renderer
 		, renderer::PipelineStageFlags before
 		, renderer::ImageMemoryBarrier const & transitionBarrier )const
 	{
-		m_commands.emplace_back( std::make_unique< ImageMemoryBarrierCommand >( after
+		m_commands.emplace_back( std::make_unique< ImageMemoryBarrierCommand >( m_device
+			, after
 			, before
 			, transitionBarrier ) );
 	}
@@ -683,6 +731,7 @@ namespace gl_renderer
 			}
 		}
 
-		m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( *m_state.m_boundVao ) );
+		m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( m_device
+			, *m_state.m_boundVao ) );
 	}
 }
