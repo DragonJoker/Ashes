@@ -73,7 +73,7 @@ namespace gl_renderer
 			bool blend = false;
 			GLuint buf = 0u;
 
-			if ( device.getContext().glBlendEquationSeparatei_40 )
+			if ( device.getContext().hasBlendEquationSeparatei_40() )
 			{
 				for ( auto & blendState : state.attachs )
 				{

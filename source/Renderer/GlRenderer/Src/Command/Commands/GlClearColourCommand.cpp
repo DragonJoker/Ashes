@@ -24,7 +24,7 @@ namespace gl_renderer
 	{
 		glLogCommand( "ClearColourCommand" );
 
-		if ( m_device.getContext().glClearTexImage )
+		if ( m_device.getContext().hasClearTexImage() )
 		{
 			glLogCall( m_device.getContext(), glClearTexImage
 				, m_image.getImage()

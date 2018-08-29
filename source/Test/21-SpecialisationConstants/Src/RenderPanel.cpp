@@ -217,7 +217,6 @@ namespace vkapp
 			m_renderTargetColour.reset();
 
 			m_swapChain.reset();
-			m_device->disable();
 			m_device.reset();
 		}
 	}
@@ -240,7 +239,6 @@ namespace vkapp
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
-		m_device->enable();
 	}
 
 	void RenderPanel::doCreateSwapChain()

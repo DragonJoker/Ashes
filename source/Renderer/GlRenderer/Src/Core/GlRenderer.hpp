@@ -6,7 +6,7 @@
 */
 #pragma once
 
-#include "GlRendererPrerequisites.hpp"
+#include "GlContextSelector.hpp"
 
 #include <Core/Renderer.hpp>
 
@@ -65,5 +65,13 @@ namespace gl_renderer
 			, float top
 			, float zNear
 			, float zFar )const override;
+
+		inline ContextSelector const & getContextSelector()const
+		{
+			return m_selector;
+		}
+
+	private:
+		ContextSelector m_selector;
 	};
 }

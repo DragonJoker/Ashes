@@ -1,5 +1,8 @@
 #include "Core/GlContext.hpp"
 
+#include "Core/GlPhysicalDevice.hpp"
+#include "Core/GlRenderer.hpp"
+
 #if RENDERLIB_WIN32
 #	include "GlMswContext.hpp"
 #elif RENDERLIB_XLIB
@@ -10,8 +13,10 @@ namespace gl_renderer
 {
 	Context::Context( PhysicalDevice const & gpu
 		, renderer::ConnectionPtr && connection )
-		: m_gpu{ gpu }
+		: m_selector{ gpu.getRenderer().getContextSelector() }
+		, m_gpu{ gpu }
 		, m_connection{ std::move( connection ) }
+		, m_threadId{ std::this_thread::get_id() }
 	{
 	}
 

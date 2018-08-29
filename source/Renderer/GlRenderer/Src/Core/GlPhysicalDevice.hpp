@@ -63,6 +63,11 @@ namespace gl_renderer
 			return m_minor;
 		}
 
+		inline Renderer const & getRenderer()const
+		{
+			return m_renderer;
+		}
+
 	private:
 		void doGetValue( GLenum name, int32_t & value )const;
 		void doGetValue( GLenum name, uint32_t & value )const;

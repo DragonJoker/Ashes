@@ -83,9 +83,6 @@ int main( int argc, char * argv[] )
 #endif
 	renderer::DevicePtr device = renderer->createDevice( renderer->createConnection( 0u, std::move( handle ) ) );
 
-	// This is the only lines related to OpenGL : context activation (\p enable), and deactivation (\p disable).
-	device->enable();
-
 	// Retrieve the swapchain and set it up.
 	app.swapChain = device->createSwapChain( { width, height } );
 	app.swapChain->setClearColour( renderer::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f } );
@@ -133,7 +130,6 @@ int main( int argc, char * argv[] )
 	app.frameBuffers.clear();
 	app.renderPass.reset();
 	app.swapChain.reset();
-	device->disable();
 	device.reset();
 
 	glfwTerminate();

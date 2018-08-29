@@ -297,18 +297,18 @@ namespace gl_renderer
 		}
 	}
 
-	Device::Device( renderer::Renderer const & renderer
+	Device::Device( Renderer const & renderer
 		, PhysicalDevice const & gpu
 		, renderer::ConnectionPtr && connection )
 		: renderer::Device{ renderer, gpu, *connection }
+		, m_renderer{ renderer }
 		, m_context{ Context::create( gpu, std::move( connection ) ) }
 		, m_rsState{}
 	{
-		enable();
+		m_renderer.getContextSelector().enableContextForCurrentThread();
 		//glLogCall( getContext(), glClipControl, GL_UPPER_LEFT, GL_ZERO_TO_ONE );
 		glLogCall( getContext(), glEnable, GL_TEXTURE_CUBE_MAP_SEAMLESS );
 		initialiseDebugFunctions();
-		disable();
 
 		m_timestampPeriod = 1;
 		m_presentQueue = std::make_unique< Queue >( *this );
@@ -318,23 +318,29 @@ namespace gl_renderer
 		m_computeCommandPool = std::make_unique< CommandPool >( *this, 0u );
 		m_graphicsCommandPool = std::make_unique< CommandPool >( *this, 0u );
 
-		enable();
 		doApply( *this, m_cbState );
 		doApply( *this, m_dsState );
 		doApply( *this, m_msState );
 		doApply( *this, m_rsState );
-		doApply( *this, m_tsState );
 		doApply( *this, m_iaState );
+
+		if ( m_gpu.getFeatures().tessellationShader )
+		{
+			doApply( *this, m_tsState );
+		}
+
+        size_t count = sizeof( dummyIndex ) / sizeof( dummyIndex[0] );
 		m_dummyIndexed.indexBuffer = renderer::makeBuffer< uint32_t >( *this
-			, sizeof( dummyIndex ) / sizeof( dummyIndex[0] )
+			, count
 			, renderer::BufferTarget::eIndexBuffer
-			, renderer::MemoryPropertyFlag::eHostVisible | renderer::MemoryPropertyFlag::eHostCoherent );
+			, renderer::MemoryPropertyFlag::eHostVisible );
 
 		if ( auto * buffer = m_dummyIndexed.indexBuffer->lock( 0u
-			, sizeof( dummyIndex ) / sizeof( dummyIndex[0] )
+			, count
 			, renderer::MemoryMapFlag::eWrite ) )
 		{
-			std::memcpy( buffer, dummyIndex, sizeof( dummyIndex ) );
+			std::copy( buffer, buffer + count, dummyIndex );
+			m_dummyIndexed.indexBuffer->flush( 0, count );
 			m_dummyIndexed.indexBuffer->unlock();
 		}
 
@@ -347,16 +353,15 @@ namespace gl_renderer
 		m_dummyIndexed.geometryBuffers->initialise();
 
 		getContext().glGenFramebuffers( 2, m_blitFbos );
-		disable();
 	}
 
 	Device::~Device()
 	{
-		enable();
+		m_renderer.getContextSelector().enableContextForCurrentThread();
 		getContext().glDeleteFramebuffers( 2, m_blitFbos );
 		m_dummyIndexed.geometryBuffers.reset();
 		m_dummyIndexed.indexBuffer.reset();
-		disable();
+		m_context.reset();
 
 		m_graphicsCommandPool.reset();
 		m_graphicsQueue.reset();
@@ -544,15 +549,5 @@ namespace gl_renderer
 	void Device::swapBuffers()const
 	{
 		m_context->swapBuffers();
-	}
-
-	void Device::doEnable()const
-	{
-		m_context->setCurrent();
-	}
-
-	void Device::doDisable()const
-	{
-		m_context->endCurrent();
 	}
 }
