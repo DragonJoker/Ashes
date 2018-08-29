@@ -62,8 +62,9 @@ namespace gl_renderer
 			}
 
 			setCurrent();
-			wglSwapIntervalEXT( 0 );
+			m_wglSwapIntervalEXT( 0 );
 			endCurrent();
+			m_selector.registerContext( *this );
 		}
 	}
 
@@ -73,6 +74,7 @@ namespace gl_renderer
 		{
 			if ( m_hDC )
 			{
+				m_selector.unregisterContext( *this );
 				wglDeleteContext( m_hContext );
 				::ReleaseDC( m_hWnd, m_hDC );
 			}
@@ -100,14 +102,14 @@ namespace gl_renderer
 	void MswContext::doLoadBaseFunctions()
 	{
 #define GL_LIB_BASE_FUNCTION( fun )\
-		this->gl##fun = &::gl##fun;
+		m_gl##fun = &::gl##fun;
 #define GL_LIB_FUNCTION( fun )\
-		if ( !( getFunction( "gl"#fun, gl##fun ) ) )\
+		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
 		{\
 			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
 		}
 #define GL_LIB_FUNCTION_OPT( fun )\
-		if ( !( getFunction( "gl"#fun, gl##fun ) ) )\
+		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
 		{\
 			renderer::Logger::logError( std::string{ "Couldn't load function " } + "gl"#fun );\
 		}
@@ -117,14 +119,14 @@ namespace gl_renderer
 	void MswContext::doLoadMswFunctions()
 	{
 #	define WGL_LIB_BASE_FUNCTION( fun )\
-			this->wgl##fun = &::wgl##fun;
+			m_wgl##fun = &::wgl##fun;
 #	define WGL_LIB_FUNCTION( fun )\
-			if ( !( getFunction( "wgl"#fun, wgl##fun ) ) )\
+			if ( !( getFunction( "wgl"#fun, m_wgl##fun ) ) )\
 			{\
 				throw std::runtime_error{ std::string{ "Couldn't load function " } + "wgl"#fun };\
 			}
 #	define WGL_LIB_FUNCTION_OPT( fun )\
-			if ( !( getFunction( "wgl"#fun, wgl##fun ) ) )\
+			if ( !( getFunction( "wgl"#fun, m_wgl##fun ) ) )\
 			{\
 				renderer::Logger::logError( std::string{ "Couldn't load function " } + "wgl"#fun );\
 			}
@@ -188,7 +190,7 @@ namespace gl_renderer
 			};
 
 			setCurrent();
-			glGetError();
+			::glGetError();
 			getFunction( "wglCreateContextAttribsARB", glCreateContextAttribs );
 			hContext = glCreateContextAttribs( m_hDC, nullptr, attribList.data() );
 			endCurrent();

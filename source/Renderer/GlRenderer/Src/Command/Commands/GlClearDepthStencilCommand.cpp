@@ -24,7 +24,7 @@ namespace gl_renderer
 	{
 		glLogCommand( "ClearDepthStencilCommand" );
 
-		if ( m_device.getContext().glClearTexImage )
+		if ( m_device.getContext().hasClearTexImage() )
 		{
 			if ( renderer::isDepthStencilFormat( m_image.getFormat() ) )
 			{

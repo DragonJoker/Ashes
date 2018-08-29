@@ -213,7 +213,6 @@ namespace vkapp
 			m_renderTargetColour.reset();
 
 			m_swapChain.reset();
-			m_device->disable();
 			m_device.reset();
 		}
 	}
@@ -237,7 +236,6 @@ namespace vkapp
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
-		m_device->enable();
 	}
 
 	void RenderPanel::doCreateSwapChain()
@@ -456,6 +454,7 @@ namespace vkapp
 			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
 		};
 		m_mainDescriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
+		m_mainDescriptorSet.reset();
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )

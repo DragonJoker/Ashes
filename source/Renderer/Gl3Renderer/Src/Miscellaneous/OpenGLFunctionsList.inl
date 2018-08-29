@@ -206,3 +206,12 @@ WGL_LIB_FUNCTION( SwapIntervalEXT )
 #endif
 
 #undef WGL_LIB_FUNCTION_EXT
+
+// Extended GLX functions
+#ifndef GLX_LIB_FUNCTION
+#	define GLX_LIB_FUNCTION( x )
+#endif
+
+GLX_LIB_FUNCTION( SwapIntervalEXT )
+
+#undef GLX_LIB_FUNCTION

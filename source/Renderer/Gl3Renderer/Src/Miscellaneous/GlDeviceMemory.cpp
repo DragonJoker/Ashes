@@ -195,7 +195,7 @@ namespace gl_renderer
 				if ( m_texture->getMipmapLevels() > 1
 					&& !renderer::isCompressedFormat( m_texture->getFormat() ) )
 				{
-					if ( m_device.getContext().glMemoryBarrier_ARB )
+					if ( m_device.getContext().hasMemoryBarrier_ARB() )
 					{
 						glLogCall( m_device.getContext(), glMemoryBarrier_ARB, GL_MEMORY_BARRIER_TEXTURE_UPDATE );
 					}

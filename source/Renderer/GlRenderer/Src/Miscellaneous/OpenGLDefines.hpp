@@ -14,6 +14,11 @@ See LICENSE file in root folder.
 #	undef MemoryBarrier
 #else
 #	define GLAPIENTRY
+#   if RENDERLIB_XLIB
+        typedef struct _XDisplay Display;
+        typedef unsigned long XID;
+        typedef XID GLXDrawable;
+#   endif
 #endif
 
 #include <cstddef>
@@ -136,6 +141,7 @@ namespace gl_renderer
 		WGL_CONTEXT_PROFILE_MASK_ARB = 0x9126,
 	};
 #elif RENDERLIB_XLIB
+	using PFN_glXSwapIntervalEXT = void( GLAPIENTRY * )( Display * dpy, GLXDrawable drawable, int interval );
 #else
 #endif
 
