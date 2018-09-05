@@ -52,10 +52,10 @@ namespace gl_renderer
 		, renderer::Connection const & connection
 		, Context const * mainContext )
 		: Context{ gpu, connection }
-		, m_display( m_connection->getHandle().getInternal< renderer::IXWindowHandle >().getDisplay() )
+		, m_display( m_connection.getHandle().getInternal< renderer::IXWindowHandle >().getDisplay() )
 		, m_glxVersion( 10 )
 		, m_glxContext( nullptr )
-		, m_drawable( m_connection->getHandle().getInternal< renderer::IXWindowHandle >().getDrawable() )
+		, m_drawable( m_connection.getHandle().getInternal< renderer::IXWindowHandle >().getDrawable() )
 		, m_fbConfig( nullptr )
 	{
 		if ( !glXChooseFBConfig )
@@ -118,7 +118,7 @@ namespace gl_renderer
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
 
-			if ( !doCreateGl3Context( mainContext ) )
+			if ( !doCreateGl3Context( static_cast< X11Context const * >( mainContext ) ) )
 			{
 				glXDestroyContext( m_display, m_glxContext );
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };

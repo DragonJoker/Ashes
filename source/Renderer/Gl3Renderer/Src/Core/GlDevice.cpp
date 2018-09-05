@@ -33,6 +33,7 @@ See LICENSE file in root folder.
 #include <Image/SubresourceLayout.hpp>
 #include <RenderPass/RenderPassCreateInfo.hpp>
 
+#include <algorithm>
 #include <iostream>
 
 namespace gl_renderer
