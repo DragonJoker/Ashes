@@ -78,18 +78,28 @@ namespace gl_renderer
 	{
 	}
 
-	void CopyImageCommand::apply()const
+	void CopyImageCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "CopyImageCommand" );
-		glLogCall( m_device.getContext(), glBindTexture, m_srcTarget, m_src.getImage() );
-		glLogCall( m_device.getContext(), glGetTexImage
+		glLogCall( context
+			, glBindTexture
+			, m_srcTarget
+			, m_src.getImage() );
+		glLogCall( context
+			, glGetTexImage
 			, m_srcTarget
 			, m_copyInfo.srcSubresource.mipLevel
 			, m_srcFormat
 			, m_srcType
 			, m_srcData.data() );
-		glLogCall( m_device.getContext(), glBindTexture, m_srcTarget, 0u );
-		glLogCall( m_device.getContext(), glBindTexture, m_dstTarget, m_dst.getImage() );
+		glLogCall( context
+			, glBindTexture
+			, m_srcTarget
+			, 0u );
+		glLogCall( context
+			, glBindTexture
+			, m_dstTarget
+			, m_dst.getImage() );
 		copyData( m_srcData
 			, m_src
 			, m_copyInfo
@@ -98,7 +108,8 @@ namespace gl_renderer
 		switch ( m_dstTarget )
 		{
 		case GL_TEXTURE_1D:
-			glLogCall( m_device.getContext(), glTexSubImage1D
+			glLogCall( context
+				, glTexSubImage1D
 				, m_srcTarget
 				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
@@ -109,7 +120,8 @@ namespace gl_renderer
 			break;
 
 		case GL_TEXTURE_1D_ARRAY:
-			glLogCall( m_device.getContext(), glTexSubImage2D
+			glLogCall( context
+				, glTexSubImage2D
 				, m_srcTarget
 				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
@@ -122,7 +134,8 @@ namespace gl_renderer
 			break;
 
 		case GL_TEXTURE_2D:
-			glLogCall( m_device.getContext(), glTexSubImage2D
+			glLogCall( context
+				, glTexSubImage2D
 				, m_srcTarget
 				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
@@ -135,7 +148,8 @@ namespace gl_renderer
 			break;
 
 		case GL_TEXTURE_2D_ARRAY:
-			glLogCall( m_device.getContext(), glTexSubImage3D
+			glLogCall( context
+				, glTexSubImage3D
 				, m_srcTarget
 				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
@@ -150,7 +164,8 @@ namespace gl_renderer
 			break;
 
 		case GL_TEXTURE_CUBE:
-			glLogCall( m_device.getContext(), glTexSubImage2D
+			glLogCall( context
+				, glTexSubImage2D
 				, GL_TEXTURE_CUBE_POSITIVE_X + m_copyInfo.dstSubresource.baseArrayLayer
 				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
@@ -163,7 +178,8 @@ namespace gl_renderer
 			break;
 
 		case GL_TEXTURE_CUBE_ARRAY:
-			glLogCall( m_device.getContext(), glTexSubImage3D
+			glLogCall( context
+				, glTexSubImage3D
 				, GL_TEXTURE_CUBE_POSITIVE_X + ( m_copyInfo.dstSubresource.baseArrayLayer % 6u )
 				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
@@ -178,7 +194,8 @@ namespace gl_renderer
 			break;
 
 		case GL_TEXTURE_3D:
-			glLogCall( m_device.getContext(), glTexSubImage3D
+			glLogCall( context
+				, glTexSubImage3D
 				, m_srcTarget
 				, m_copyInfo.dstSubresource.mipLevel
 				, m_copyInfo.dstOffset.x
@@ -197,7 +214,10 @@ namespace gl_renderer
 			break;
 		}
 
-		glLogCall( m_device.getContext(), glBindTexture, m_dstTarget, 0u );
+		glLogCall( context
+			, glBindTexture
+			, m_dstTarget
+			, 0u );
 		static_cast< renderer::Texture const & >( m_dst ).generateMipmaps();
 	}
 

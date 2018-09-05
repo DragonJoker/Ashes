@@ -20,24 +20,31 @@ namespace gl_renderer
 		: renderer::Fence{ device, flags }
 		, m_device{ device }
 	{
+		auto context = m_device.getContext();
+		m_fence = glLogCall( context
+			, glFenceSync
+			, GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE
+			, 0u );
 	}
 
 	Fence::~Fence()
 	{
-		if ( m_fence )
-		{
-			glLogCall( m_device.getContext(), glDeleteSync, m_fence );
-		}
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glDeleteSync
+			, m_fence );
 	}
 
 	renderer::WaitResult Fence::wait( uint64_t timeout )const
 	{
-		if ( !m_fence )
-		{
-			m_fence = glLogCall( m_device.getContext(), glFenceSync, GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE, 0u );
-		}
-
-		auto res = glLogCall( m_device.getContext(), glClientWaitSync, m_fence, GL_WAIT_FLAG_SYNC_FLUSH_COMMANDS_BIT, timeout );
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glFlush );
+		auto res = glLogCall( context
+			, glClientWaitSync
+			, m_fence
+			, GL_WAIT_FLAG_SYNC_FLUSH_COMMANDS_BIT
+			, timeout );
 		return ( res == GL_WAIT_RESULT_ALREADY_SIGNALED || res == GL_WAIT_RESULT_CONDITION_SATISFIED )
 			? renderer::WaitResult::eSuccess
 			: ( res == GL_WAIT_RESULT_TIMEOUT_EXPIRED
@@ -47,10 +54,13 @@ namespace gl_renderer
 
 	void Fence::reset()const
 	{
-		if ( m_fence )
-		{
-			glLogCall( m_device.getContext(), glDeleteSync, m_fence );
-			m_fence = nullptr;
-		}
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glDeleteSync
+			, m_fence );
+		m_fence = glLogCall( context
+			, glFenceSync
+			, GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE
+			, 0u );
 	}
 }

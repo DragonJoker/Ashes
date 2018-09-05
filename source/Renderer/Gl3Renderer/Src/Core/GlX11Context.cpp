@@ -17,14 +17,7 @@ namespace gl_renderer
 {
 	namespace
 	{
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
-		}
-
-	    using PFN_GLXCHOOSEFBCONFIG = GLXFBConfig *(*)( Display *, int, int const *, int * );
+		using PFN_GLXCHOOSEFBCONFIG = GLXFBConfig *(*)( Display *, int, int const *, int * );
 		using PFN_GLXGETVISUALFROMFBCONFIG = XVisualInfo *(*)( Display *, GLXFBConfig );
 		PFN_GLXCHOOSEFBCONFIG glXChooseFBConfig = nullptr;
 		PFN_GLXGETVISUALFROMFBCONFIG glXGetVisualFromFBConfig = nullptr;
@@ -41,21 +34,28 @@ namespace gl_renderer
 
 #endif
 
+		template< typename FuncT >
+		bool getFunction( char const * const name, FuncT & function )
+		{
+			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
+			return function != nullptr;
+		}
+
 		template< typename Func >
 		bool getFunction( std::string const & name, Func & func )
 		{
-			func = reinterpret_cast< Func >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name.c_str() ) ) );
-			return func != nullptr;
+			return getFunction( name.c_str(), func );
 		}
 	}
 
 	X11Context::X11Context( PhysicalDevice const & gpu
-		, renderer::ConnectionPtr && connection )
-		: Context{ gpu, std::move( connection ) }
-		, m_display( m_connection->getHandle().getInternal< renderer::IXWindowHandle >().getDisplay() )
+		, renderer::Connection const & connection
+		, Context const * mainContext )
+		: Context{ gpu, connection }
+		, m_display( m_connection.getHandle().getInternal< renderer::IXWindowHandle >().getDisplay() )
 		, m_glxVersion( 10 )
 		, m_glxContext( nullptr )
-		, m_drawable( m_connection->getHandle().getInternal< renderer::IXWindowHandle >().getDrawable() )
+		, m_drawable( m_connection.getHandle().getInternal< renderer::IXWindowHandle >().getDrawable() )
 		, m_fbConfig( nullptr )
 	{
 		if ( !glXChooseFBConfig )
@@ -103,32 +103,31 @@ namespace gl_renderer
 
 			if ( !m_glxContext )
 			{
-				throw std::runtime_error{ "Could not create a rendering context." };
+				throw std::runtime_error{ "Could not create a rendering context->" };
 			}
 
-			setCurrent();
+			enable();
 			doLoadBaseFunctions();
 			doLoadGLXFunctions();
 			loadDebugFunctions();
-			endCurrent();
+			disable();
 
-			if ( m_gpu.getMajor() < 4 )
+			if ( m_gpu.getMajor() < 3 )
 			{
 				glXDestroyContext( m_display, m_glxContext );
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
 
-			if ( !doCreateGl3Context() )
+			if ( !doCreateGl3Context( static_cast< X11Context const * >( mainContext ) ) )
 			{
 				glXDestroyContext( m_display, m_glxContext );
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
 
 			XFree( visualInfo );
-			setCurrent();
+			enable();
 			m_glXSwapIntervalEXT( m_display, m_drawable, 0 );
-			endCurrent();
-			m_selector.registerContext( *this );
+			disable();
 		}
 	}
 
@@ -136,7 +135,6 @@ namespace gl_renderer
 	{
 		try
 		{
-			m_selector.unregisterContext( *this );
 			glXDestroyContext( m_display, m_glxContext );
 			XFree( m_fbConfig );
 		}
@@ -145,13 +143,15 @@ namespace gl_renderer
 		}
 	}
 
-	void X11Context::setCurrent()const
+	void X11Context::enable()const
 	{
 		glXMakeCurrent( m_display, m_drawable, m_glxContext );
+		m_enabled = true;
 	}
 
-	void X11Context::endCurrent()const
+	void X11Context::disable()const
 	{
+		m_enabled = false;
 		glXMakeCurrent( m_display, 0, nullptr );
 	}
 
@@ -245,7 +245,7 @@ namespace gl_renderer
 		return result;
 	}
 
-	bool X11Context::doCreateGl3Context()
+	bool X11Context::doCreateGl3Context( X11Context const * mainContext )
 	{
 		using PFNGLCREATECONTEXTATTRIBS = GLXContext ( * )( Display *dpy, GLXFBConfig config, GLXContext share_context, Bool direct, const int *attrib_list );
 		PFNGLCREATECONTEXTATTRIBS glCreateContextAttribs;
@@ -259,26 +259,26 @@ namespace gl_renderer
 			0
 		};
 
-		setCurrent();
+		enable();
 		::glGetError();
 
 		if ( getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs ) )
 		{
-			auto glxContext = glCreateContextAttribs( m_display, m_fbConfig[0], nullptr, true, attribList.data() );
+			auto glxContext = glCreateContextAttribs( m_display
+				, m_fbConfig[0]
+				, ( mainContext
+					? static_cast< X11Context const * >( mainContext )->m_glxContext
+					: nullptr )
+				, true
+				, attribList.data() );
 			glXDestroyContext( m_display, m_glxContext );
 			m_glxContext = glxContext;
 			result = m_glxContext != nullptr;
 
-			if ( result )
+			if ( !result )
 			{
 				std::stringstream stream;
-				stream << "OpenGL 3.2 context created.";
-				renderer::Logger::logInfo( stream.str() );
-			}
-			else
-			{
-				std::stringstream stream;
-				stream << "Failed to create an OpenGL 3.2 context.";
+				stream << "Failed to create an OpenGL 3.2 context->";
 				renderer::Logger::logError( stream.str() );
 			}
 		}

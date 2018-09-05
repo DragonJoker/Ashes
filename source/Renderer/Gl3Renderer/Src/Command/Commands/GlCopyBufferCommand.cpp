@@ -21,34 +21,60 @@ namespace gl_renderer
 	{
 	}
 
-	void CopyBufferCommand::apply()const
+	void CopyBufferCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "CopyBufferCommand" );
 		if ( m_src.getTarget() == m_dst.getTarget() )
 		{
-			glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_COPY_READ, m_src.getBuffer() );
-			glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_COPY_WRITE, m_dst.getBuffer() );
-			glLogCall( m_device.getContext(), glCopyBufferSubData
+			glLogCall( context
+				, glBindBuffer
+				, GL_BUFFER_TARGET_COPY_READ
+				, m_src.getBuffer() );
+			glLogCall( context
+				, glBindBuffer
+				, GL_BUFFER_TARGET_COPY_WRITE
+				, m_dst.getBuffer() );
+			glLogCall( context
+				, glCopyBufferSubData
 				, GL_BUFFER_TARGET_COPY_READ
 				, GL_BUFFER_TARGET_COPY_WRITE
 				, m_copyInfo.srcOffset
 				, m_copyInfo.dstOffset
 				, m_copyInfo.size );
-			glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_COPY_WRITE, 0u );
-			glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_COPY_READ, 0u );
+			glLogCall( context
+				, glBindBuffer
+				, GL_BUFFER_TARGET_COPY_WRITE
+				, 0u );
+			glLogCall( context
+				, glBindBuffer
+				, GL_BUFFER_TARGET_COPY_READ
+				, 0u );
 		}
 		else
 		{
-			glLogCall( m_device.getContext(), glBindBuffer, m_src.getTarget(), m_src.getBuffer() );
-			glLogCall( m_device.getContext(), glBindBuffer, m_dst.getTarget(), m_dst.getBuffer() );
-			glLogCall( m_device.getContext(), glCopyBufferSubData
+			glLogCall( context
+				, glBindBuffer
+				, m_src.getTarget()
+				, m_src.getBuffer() );
+			glLogCall( context
+				, glBindBuffer
+				, m_dst.getTarget()
+				, m_dst.getBuffer() );
+			glLogCall( context
+				, glCopyBufferSubData
 				, m_src.getTarget()
 				, m_dst.getTarget()
 				, m_copyInfo.srcOffset
 				, m_copyInfo.dstOffset
 				, m_copyInfo.size );
-			glLogCall( m_device.getContext(), glBindBuffer, m_dst.getTarget(), 0u );
-			glLogCall( m_device.getContext(), glBindBuffer, m_src.getTarget(), 0u );
+			glLogCall( context
+				, glBindBuffer
+				, m_dst.getTarget()
+				, 0u );
+			glLogCall( context
+				, glBindBuffer
+				, m_src.getTarget()
+				, 0u );
 		}
 	}
 

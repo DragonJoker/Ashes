@@ -15,11 +15,12 @@ namespace gl_renderer
 	{
 	public:
 		MswContext( PhysicalDevice const & gpu
-			, renderer::ConnectionPtr && connection );
+			, renderer::Connection const & connection
+			, Context const * mainContext );
 		~MswContext();
 
-		void setCurrent()const override;
-		void endCurrent()const override;
+		void enable()const override;
+		void disable()const override;
 		void swapBuffers()const override;
 
 		inline HDC getHDC()const
@@ -35,17 +36,15 @@ namespace gl_renderer
 #define WGL_LIB_FUNCTION( fun )\
 		PFN_wgl##fun m_wgl##fun = nullptr;\
 		template< typename ... Params >\
-		auto wgl##fun( Params... params )const\
+		inline auto wgl##fun( Params... params )const\
 		{\
-			m_selector.enableContextForCurrentThread();\
 			return m_wgl##fun( params... );\
 		}
 #define WGL_LIB_FUNCTION_OPT( fun )\
 		PFN_wgl##fun m_wgl##fun = nullptr;\
 		template< typename ... Params >\
-		auto wgl##fun( Params... params )const\
+		inline auto wgl##fun( Params... params )const\
 		{\
-			m_selector.enableContextForCurrentThread();\
 			return m_wgl##fun( params... );\
 		};
 #include "Miscellaneous/OpenGLFunctionsList.inl"
@@ -55,7 +54,7 @@ namespace gl_renderer
 		void doLoadMswFunctions();
 		HGLRC doCreateDummyContext();
 		bool doSelectFormat();
-		bool doCreateGl3Context();
+		bool doCreateGl3Context( Context const * mainContext );
 
 	private:
 		HDC m_hDC;

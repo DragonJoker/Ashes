@@ -35,7 +35,7 @@ namespace gl_renderer
 			, uint32_t firstInstance
 			, renderer::PrimitiveTopology mode );
 
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

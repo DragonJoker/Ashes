@@ -70,29 +70,52 @@ namespace gl_renderer
 		, m_target{ convert( m_createInfo, texture.getFlags(), texture.getSamplesCount() ) }
 	{
 		auto target = texture.getTarget();
-		glLogCall( m_device.getContext(), glBindTexture, target, texture.getImage() );
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glBindTexture
+			, target
+			, texture.getImage() );
 
 		if ( m_createInfo.components.r != renderer::ComponentSwizzle::eIdentity )
 		{
-			glLogCall( m_device.getContext(), glTexParameteri, target, GL_SWIZZLE_R, convert( m_createInfo.components.r ) );
+			glLogCall( context
+				, glTexParameteri
+				, target
+				, GL_SWIZZLE_R
+				, convert( m_createInfo.components.r ) );
 		}
 
 		if ( m_createInfo.components.g != renderer::ComponentSwizzle::eIdentity )
 		{
-			glLogCall( m_device.getContext(), glTexParameteri, target, GL_SWIZZLE_G, convert( m_createInfo.components.g ) );
+			glLogCall( context
+				, glTexParameteri
+				, target
+				, GL_SWIZZLE_G
+				, convert( m_createInfo.components.g ) );
 		}
 
 		if ( m_createInfo.components.b != renderer::ComponentSwizzle::eIdentity )
 		{
-			glLogCall( m_device.getContext(), glTexParameteri, target, GL_SWIZZLE_B, convert( m_createInfo.components.b ) );
+			glLogCall( context
+				, glTexParameteri
+				, target
+				, GL_SWIZZLE_B
+				, convert( m_createInfo.components.b ) );
 		}
 
 		if ( m_createInfo.components.a != renderer::ComponentSwizzle::eIdentity )
 		{
-			glLogCall( m_device.getContext(), glTexParameteri, target, GL_SWIZZLE_A, convert( m_createInfo.components.a ) );
+			glLogCall( context
+				, glTexParameteri
+				, target
+				, GL_SWIZZLE_A
+				, convert( m_createInfo.components.a ) );
 		}
 
-		glLogCall( m_device.getContext(), glBindTexture, target, 0u );
+		glLogCall( context
+			, glBindTexture
+			, target
+			, 0u );
 	}
 
 	TextureView::~TextureView()

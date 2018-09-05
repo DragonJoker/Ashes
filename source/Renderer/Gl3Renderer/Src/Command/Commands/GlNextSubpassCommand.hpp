@@ -33,7 +33,7 @@ namespace gl_renderer
 			, renderer::FrameBuffer const & frameBuffer
 			, renderer::SubpassDescription const & subpass );
 
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

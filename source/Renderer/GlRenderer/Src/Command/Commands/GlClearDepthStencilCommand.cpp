@@ -20,15 +20,16 @@ namespace gl_renderer
 	{
 	}
 
-	void ClearDepthStencilCommand::apply()const
+	void ClearDepthStencilCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "ClearDepthStencilCommand" );
 
-		if ( m_device.getContext().hasClearTexImage() )
+		if ( context->hasClearTexImage() )
 		{
 			if ( renderer::isDepthStencilFormat( m_image.getFormat() ) )
 			{
-				glLogCall( m_device.getContext(), glClearTexImage
+				glLogCall( context
+					, glClearTexImage
 					, m_image.getImage()
 					, 0
 					, m_format
@@ -37,7 +38,8 @@ namespace gl_renderer
 			}
 			else if ( renderer::isStencilFormat( m_image.getFormat() ) )
 			{
-				glLogCall( m_device.getContext(), glClearTexImage
+				glLogCall( context
+					, glClearTexImage
 					, m_image.getImage()
 					, 0
 					, m_format
@@ -46,7 +48,8 @@ namespace gl_renderer
 			}
 			else if ( renderer::isDepthFormat( m_image.getFormat() ) )
 			{
-				glLogCall( m_device.getContext(), glClearTexImage
+				glLogCall( context
+					, glClearTexImage
 					, m_image.getImage()
 					, 0
 					, m_format

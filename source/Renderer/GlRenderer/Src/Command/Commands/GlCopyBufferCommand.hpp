@@ -33,7 +33,7 @@ namespace gl_renderer
 			, renderer::BufferBase const & src
 			, renderer::BufferBase const & dst );
 
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

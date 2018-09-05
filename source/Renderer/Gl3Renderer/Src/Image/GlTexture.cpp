@@ -122,13 +122,21 @@ namespace gl_renderer
 		, m_target{ convert( createInfo.imageType, createInfo.arrayLayers, createInfo.flags, createInfo.samples ) }
 		, m_createInfo{ createInfo }
 	{
-		glLogCall( m_device.getContext(), glGenTextures, 1, &m_texture );
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glGenTextures
+			, 1
+			, &m_texture );
 	}
 
 	Texture::~Texture()
 	{
 		m_storage.reset();
-		glLogCall( m_device.getContext(), glDeleteTextures, 1, &m_texture );
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glDeleteTextures
+			, 1
+			, &m_texture );
 	}
 
 	void Texture::generateMipmaps( renderer::CommandBuffer & commandBuffer )const

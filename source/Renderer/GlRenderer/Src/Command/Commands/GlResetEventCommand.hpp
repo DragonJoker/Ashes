@@ -19,7 +19,7 @@ namespace gl_renderer
 		ResetEventCommand( Device const & device
 			, renderer::Event const & event
 			, renderer::PipelineStageFlags stageFlags );
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

@@ -170,8 +170,15 @@ namespace gl_renderer
 		, m_device{ device }
 		, m_renderPass{ renderPass }
 	{
-		glLogCall( m_device.getContext(), glGenFramebuffers, 1, &m_frameBuffer );
-		glLogCall( m_device.getContext(), glBindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer );
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glGenFramebuffers
+			, 1
+			, &m_frameBuffer );
+		glLogCall( context
+			, glBindFramebuffer
+			, GL_FRAMEBUFFER
+			, m_frameBuffer );
 
 		for ( auto & attach : m_attachments )
 		{
@@ -224,13 +231,14 @@ namespace gl_renderer
 					target = GL_TEXTURE_2D_MULTISAMPLE;
 				}
 
-				glLogCall( m_device.getContext(), glFramebufferTexture2D
+				glLogCall( context
+					, glFramebufferTexture2D
 					, GL_FRAMEBUFFER
 					, GlAttachmentPoint( attachment.point + index )
 					, target
 					, attachment.object
 					, mipLevel );
-				doCheck( m_device.getContext().glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+				doCheck( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
 			}
 			else
 			{
@@ -254,19 +262,27 @@ namespace gl_renderer
 			}
 		}
 
-		doCheck( m_device.getContext().glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
-		glLogCall( m_device.getContext(), glBindFramebuffer, GL_FRAMEBUFFER, 0 );
+		doCheck( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+		glLogCall( context
+			, glBindFramebuffer
+			, GL_FRAMEBUFFER
+			, 0 );
 	}
 
 	FrameBuffer::~FrameBuffer()
 	{
 		if ( m_frameBuffer > 0u )
 		{
-			glLogCall( m_device.getContext(), glDeleteFramebuffers, 1, &m_frameBuffer );
+			auto context = m_device.getContext();
+			glLogCall( context
+				, glDeleteFramebuffers
+				, 1
+				, &m_frameBuffer );
 		}
 	}
 
-	void FrameBuffer::setDrawBuffers( AttachmentDescriptionArray const & attaches )const
+	void FrameBuffer::setDrawBuffers( ContextLock const & context
+		, AttachmentDescriptionArray const & attaches )const
 	{
 		m_drawBuffers.clear();
 
@@ -284,10 +300,14 @@ namespace gl_renderer
 			}
 		}
 
-		glLogCall( m_device.getContext(), glDrawBuffers, GLsizei( m_drawBuffers.size() ), m_drawBuffers.data() );
+		glLogCall( context
+			, glDrawBuffers
+			, GLsizei( m_drawBuffers.size() )
+			, m_drawBuffers.data() );
 	}
 
-	void FrameBuffer::setDrawBuffers( renderer::AttachmentReferenceArray const & attaches )const
+	void FrameBuffer::setDrawBuffers( ContextLock const & context
+		, renderer::AttachmentReferenceArray const & attaches )const
 	{
 		if ( getFrameBuffer() != GL_INVALID_INDEX )
 		{
@@ -309,7 +329,10 @@ namespace gl_renderer
 			if ( m_drawBuffers != colours )
 			{
 				m_drawBuffers = colours;
-				glLogCall( m_device.getContext(), glDrawBuffers, GLsizei( m_drawBuffers.size() ), m_drawBuffers.data() );
+				glLogCall( context
+					, glDrawBuffers
+					, GLsizei( m_drawBuffers.size() )
+					, m_drawBuffers.data() );
 			}
 		}
 	}

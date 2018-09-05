@@ -23,7 +23,7 @@ namespace gl_renderer
 	{
 	}
 
-	void WaitEventsCommand::apply()const
+	void WaitEventsCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "WaitEventsCommand" );
 		auto count = 0u;

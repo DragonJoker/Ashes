@@ -85,11 +85,11 @@ namespace gl_renderer
 	{
 	}
 
-	void CommandBuffer::applyPostSubmitActions()const
+	void CommandBuffer::applyPostSubmitActions( ContextLock const & context )const
 	{
 		for ( auto & action : m_afterSubmitActions )
 		{
-			action();
+			action( context );
 		}
 	}
 
@@ -264,9 +264,11 @@ namespace gl_renderer
 		m_state.m_pushConstantBuffers.clear();
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, [this]()
+			, [this]( ContextLock const & context )
 			{
-				glLogCall( m_device.getContext(), glUseProgram, 0u );
+				glLogCall( context
+					, glUseProgram
+					, 0u );
 			} );
 	}
 
@@ -298,9 +300,11 @@ namespace gl_renderer
 			m_state.m_pushConstantBuffers.clear();
 
 			m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-				, [this]()
+				, [this]( ContextLock const & context )
 				{
-					glLogCall( m_device.getContext(), glUseProgram, 0u );
+					glLogCall( context
+						, glUseProgram
+						, 0u );
 				} );
 		}
 		else
@@ -359,14 +363,17 @@ namespace gl_renderer
 					auto & view = getView( write, i );
 					auto type = convert( view.getType() );
 					m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-						, [this, type, i, bindingIndex]()
+						, [this, type, i, bindingIndex]( ContextLock const & context )
 						{
-							glLogCall( m_device.getContext(), glActiveTexture
+							glLogCall( context
+								, glActiveTexture
 								, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-							glLogCall( m_device.getContext(), glBindTexture
+							glLogCall( context
+								, glBindTexture
 								, type
 								, 0u );
-							glLogCall( m_device.getContext(), glBindSampler
+							glLogCall( context
+								, glBindSampler
 								, bindingIndex
 								, 0u );
 						} );
@@ -381,11 +388,13 @@ namespace gl_renderer
 					auto & view = getView( write, i );
 					auto type = convert( view.getType() );
 					m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-						, [this, type, i, bindingIndex]()
+						, [this, type, i, bindingIndex]( ContextLock const & context )
 						{
-							glLogCall( m_device.getContext(), glActiveTexture
+							glLogCall( context
+								, glActiveTexture
 								, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-							glLogCall( m_device.getContext(), glBindTexture
+							glLogCall( context
+								, glBindTexture
 								, type
 								, 0u );
 						} );
@@ -442,9 +451,11 @@ namespace gl_renderer
 		}
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, [this]()
+			, [this]( ContextLock const & context )
 			{
-				glLogCall( m_device.getContext(), glBindVertexArray, 0u );
+				glLogCall( context
+					, glBindVertexArray
+					, 0u );
 			} );
 	}
 
@@ -476,9 +487,11 @@ namespace gl_renderer
 			, m_state.m_indexType ) );
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, [this]()
+			, [this]( ContextLock const & context )
 			{
-				glLogCall( m_device.getContext(), glBindVertexArray, 0u );
+				glLogCall( context
+					, glBindVertexArray
+					, 0u );
 			} );
 	}
 
@@ -505,9 +518,11 @@ namespace gl_renderer
 			, m_state.m_currentPipeline->getInputAssemblyState().topology ) );
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, [this]()
+			, [this]( ContextLock const & context )
 			{
-				glLogCall( m_device.getContext(), glBindVertexArray, 0u );
+				glLogCall( context
+					, glBindVertexArray
+					, 0u );
 			} );
 	}
 
@@ -542,9 +557,11 @@ namespace gl_renderer
 			, m_state.m_indexType ) );
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, [this]()
+			, [this]( ContextLock const & context )
 			{
-				glLogCall( m_device.getContext(), glBindVertexArray, 0u );
+				glLogCall( context
+					, glBindVertexArray
+					, 0u );
 			} );
 	}
 

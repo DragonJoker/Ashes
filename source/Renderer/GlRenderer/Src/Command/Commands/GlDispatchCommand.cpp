@@ -17,10 +17,10 @@ namespace gl_renderer
 	{
 	}
 
-	void DispatchCommand::apply()const
+	void DispatchCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "DispatchCommand" );
-		glLogCall( m_device.getContext()
+		glLogCall( context
 			, glDispatchCompute
 			, m_groupCountX
 			, m_groupCountY

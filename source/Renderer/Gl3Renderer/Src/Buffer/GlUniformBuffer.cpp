@@ -11,7 +11,8 @@ namespace gl_renderer
 			static uint32_t const result = [&device]()
 			{
 				GLint value;
-				device.getContext().glGetIntegerv( GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &value );
+				auto context = device.getContext();
+				context->glGetIntegerv( GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &value );
 				return uint32_t( value );
 			}();
 			return result;

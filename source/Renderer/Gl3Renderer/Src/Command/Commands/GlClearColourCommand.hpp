@@ -30,7 +30,7 @@ namespace gl_renderer
 			, renderer::TextureView const & image
 			, renderer::ClearColorValue const & colour );
 
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

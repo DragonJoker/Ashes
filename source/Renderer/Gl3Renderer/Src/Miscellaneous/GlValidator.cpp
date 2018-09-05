@@ -460,16 +460,16 @@ namespace gl_renderer
 		}
 
 		template< typename FuncType >
-		void getProgramInterfaceInfos( Device const & device
+		void getProgramInterfaceInfos( ContextLock const & context
 			, uint32_t program
 			, GlslInterface interface
 			, std::vector< GlslProperty > const & properties
 			, FuncType function )
 		{
 			int count = 0;
-			device.getContext().glGetProgramInterfaceiv( program, interface, GLSL_DATANAME_MAX_NAME_LENGTH, &count );
+			context->glGetProgramInterfaceiv( program, interface, GLSL_DATANAME_MAX_NAME_LENGTH, &count );
 			std::vector< char > buffer( count );
-			device.getContext().glGetProgramInterfaceiv( program, interface, GLSL_DATANAME_ACTIVE_RESOURCES, &count );
+			context->glGetProgramInterfaceiv( program, interface, GLSL_DATANAME_ACTIVE_RESOURCES, &count );
 			std::vector< GLint > values;
 			values.resize( properties.size() );
 			std::vector< GLenum > props;
@@ -482,9 +482,9 @@ namespace gl_renderer
 			for ( int i = 0; i < count; ++i )
 			{
 				GLsizei length;
-				device.getContext().glGetProgramResourceName( program, interface, i, uint32_t( buffer.size() ), &length, buffer.data() );
+				context->glGetProgramResourceName( program, interface, i, uint32_t( buffer.size() ), &length, buffer.data() );
 				std::string name( buffer.data(), length );
-				device.getContext().glGetProgramResourceiv( program
+				context->glGetProgramResourceiv( program
 					, interface
 					, i
 					, GLsizei( props.size() )
@@ -497,7 +497,7 @@ namespace gl_renderer
 		}
 
 		template< typename BufFuncType, typename VarFuncType >
-		void getProgramBufferInfos( Device const & device
+		void getProgramBufferInfos( ContextLock const & context
 			, uint32_t program
 			, GlslInterface bufferInterface
 			, GlslInterface variableInterface
@@ -505,10 +505,10 @@ namespace gl_renderer
 			, VarFuncType variableFunction )
 		{
 			GLint maxNameLength = 0;
-			device.getContext().glGetProgramInterfaceiv( program, bufferInterface, GLSL_DATANAME_MAX_NAME_LENGTH, &maxNameLength );
+			context->glGetProgramInterfaceiv( program, bufferInterface, GLSL_DATANAME_MAX_NAME_LENGTH, &maxNameLength );
 			std::vector< char > buffer( maxNameLength );
 			GLint numBlocks;
-			device.getContext().glGetProgramInterfaceiv( program, bufferInterface, GLSL_DATANAME_ACTIVE_RESOURCES, &numBlocks );
+			context->glGetProgramInterfaceiv( program, bufferInterface, GLSL_DATANAME_ACTIVE_RESOURCES, &numBlocks );
 			GLenum const blockBinding[1] = { GLSL_PROPERTY_BUFFER_BINDING };
 			GLenum const activeUniformsCount[1] = { GLSL_PROPERTY_NUM_ACTIVE_VARIABLES };
 			GLenum const activeUniforms[1] = { GLSL_PROPERTY_ACTIVE_VARIABLES };
@@ -517,26 +517,26 @@ namespace gl_renderer
 			for ( int blockIx = 0; blockIx < numBlocks; ++blockIx )
 			{
 				GLsizei nameLength = 0;
-				device.getContext().glGetProgramResourceName( program, bufferInterface, blockIx, uint32_t( buffer.size() ), &nameLength, buffer.data() );
+				context->glGetProgramResourceName( program, bufferInterface, blockIx, uint32_t( buffer.size() ), &nameLength, buffer.data() );
 				std::string bufferName( buffer.data(), nameLength );
 				GLint binding = 0;
-				device.getContext().glGetProgramResourceiv( program, bufferInterface, blockIx, 1, blockBinding, 1, nullptr, &binding );
-				GLuint index = device.getContext().glGetProgramResourceIndex( program, bufferInterface, bufferName.c_str() );
+				context->glGetProgramResourceiv( program, bufferInterface, blockIx, 1, blockBinding, 1, nullptr, &binding );
+				GLuint index = context->glGetProgramResourceIndex( program, bufferInterface, bufferName.c_str() );
 				GLint numActiveUnifs = 0;
-				device.getContext().glGetProgramResourceiv( program, bufferInterface, blockIx, 1, activeUniformsCount, 1, nullptr, &numActiveUnifs );
+				context->glGetProgramResourceiv( program, bufferInterface, blockIx, 1, activeUniformsCount, 1, nullptr, &numActiveUnifs );
 				bufferFunction( bufferName, binding, index, numActiveUnifs );
 
 				if ( numActiveUnifs )
 				{
 					std::vector< GLint > blockUnifs( numActiveUnifs );
-					device.getContext().glGetProgramResourceiv( program, bufferInterface, blockIx, 1, activeUniforms, numActiveUnifs, nullptr, blockUnifs.data() );
+					context->glGetProgramResourceiv( program, bufferInterface, blockIx, 1, activeUniforms, numActiveUnifs, nullptr, blockUnifs.data() );
 
 					for ( GLint unifIx = 0; unifIx < numActiveUnifs; ++unifIx )
 					{
 						GLint values[3];
-						device.getContext().glGetProgramResourceiv( program, variableInterface, blockUnifs[unifIx], 3, uniformProperties, 3, nullptr, values );
+						context->glGetProgramResourceiv( program, variableInterface, blockUnifs[unifIx], 3, uniformProperties, 3, nullptr, values );
 						std::vector< char > nameData( values[0] );
-						device.getContext().glGetProgramResourceName( program, variableInterface, blockUnifs[unifIx], GLsizei( nameData.size() ), nullptr, &nameData[0] );
+						context->glGetProgramResourceName( program, variableInterface, blockUnifs[unifIx], GLsizei( nameData.size() ), nullptr, &nameData[0] );
 						std::string variableName( nameData.begin(), nameData.end() - 1 );
 						variableFunction( variableName, GlslAttributeType( values[1] ), values[2] );
 					}
@@ -545,21 +545,21 @@ namespace gl_renderer
 		}
 
 		template< typename FuncType >
-		void getUnnamedProgramInterfaceInfos( Device const & device
+		void getUnnamedProgramInterfaceInfos( ContextLock const & context
 			, uint32_t program
 			, GlslInterface interface
 			, GlslProperty property
 			, FuncType function )
 		{
 			int count = 0;
-			device.getContext().glGetProgramInterfaceiv( program, interface, GLSL_DATANAME_ACTIVE_RESOURCES, &count );
+			context->glGetProgramInterfaceiv( program, interface, GLSL_DATANAME_ACTIVE_RESOURCES, &count );
 			std::vector< int > values( count );
 			std::vector< int > lengths( count );
 
 			for ( int i = 0; i < count; ++i )
 			{
 				GLenum prop = property;
-				device.getContext().glGetProgramResourceiv( program, interface, i, 1, &prop, 1, &lengths[i], &values[i] );
+				context->glGetProgramResourceiv( program, interface, i, 1, &prop, 1, &lengths[i], &values[i] );
 			}
 
 			if ( count )
@@ -568,7 +568,7 @@ namespace gl_renderer
 			}
 		}
 
-		void doValidateInputs( Device const & device
+		void doValidateInputs( ContextLock const & context
 			, GLuint program
 			, renderer::VertexInputState const & vertexInputState )
 		{
@@ -612,7 +612,7 @@ namespace gl_renderer
 				}
 			};
 
-			getProgramInterfaceInfos( device
+			getProgramInterfaceInfos( context
 				, program
 				, GLSL_INTERFACE_PROGRAM_INPUT
 				, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
@@ -653,7 +653,7 @@ namespace gl_renderer
 			}
 		}
 
-		void doValidateOutputs( Device const & device
+		void doValidateOutputs( ContextLock const & context
 			, GLuint program
 			, RenderPass const & renderPass )
 		{
@@ -672,7 +672,7 @@ namespace gl_renderer
 			};
 			std::vector< GlslOutput > outputs;
 
-			getProgramInterfaceInfos( device
+			getProgramInterfaceInfos( context
 				, program
 				, GLSL_INTERFACE_PROGRAM_OUTPUT
 				, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
@@ -734,10 +734,10 @@ namespace gl_renderer
 			}
 		}
 
-		void doValidateUbos( Device const & device
+		void doValidateUbos( ContextLock const & context
 			, GLuint program )
 		{
-			getProgramBufferInfos( device
+			getProgramBufferInfos( context
 				, program
 				, GLSL_INTERFACE_UNIFORM_BLOCK
 				, GLSL_INTERFACE_UNIFORM
@@ -756,10 +756,10 @@ namespace gl_renderer
 				} );
 		}
 
-		void doValidateSsbos( Device const & device
+		void doValidateSsbos( ContextLock const & context
 			, GLuint program )
 		{
-			getProgramBufferInfos( device
+			getProgramBufferInfos( context
 				, program
 				, GLSL_INTERFACE_SHADER_STORAGE_BLOCK
 				, GLSL_INTERFACE_BUFFER_VARIABLE
@@ -778,23 +778,23 @@ namespace gl_renderer
 				} );
 		}
 
-		void doValidateUniforms( Device const & device
+		void doValidateUniforms( ContextLock const & context
 			, GLuint program )
 		{
 			GLint numUniforms = 0;
-			device.getContext().glGetProgramInterfaceiv( program, GLSL_INTERFACE_UNIFORM, GLSL_DATANAME_ACTIVE_RESOURCES, &numUniforms );
+			context->glGetProgramInterfaceiv( program, GLSL_INTERFACE_UNIFORM, GLSL_DATANAME_ACTIVE_RESOURCES, &numUniforms );
 			const GLenum properties[4] = { GLSL_PROPERTY_BLOCK_INDEX, GLSL_PROPERTY_TYPE, GLSL_PROPERTY_NAME_LENGTH, GLSL_PROPERTY_LOCATION };
 
 			for ( int unif = 0; unif < numUniforms; ++unif )
 			{
 				GLint values[4];
-				device.getContext().glGetProgramResourceiv( program, GLSL_INTERFACE_UNIFORM, unif, 4, properties, 4, nullptr, values );
+				context->glGetProgramResourceiv( program, GLSL_INTERFACE_UNIFORM, unif, 4, properties, 4, nullptr, values );
 
 				// Skip any uniforms that are in a block.
 				if ( values[0] == -1 )
 				{
 					std::vector< char > nameData( values[2] );
-					device.getContext().glGetProgramResourceName( program, GLSL_INTERFACE_UNIFORM, unif, GLsizei( nameData.size() ), nullptr, &nameData[0] );
+					context->glGetProgramResourceName( program, GLSL_INTERFACE_UNIFORM, unif, GLsizei( nameData.size() ), nullptr, &nameData[0] );
 					std::string name( nameData.begin(), nameData.end() - 1 );
 					renderer::Logger::logDebug( std::stringstream{} << "   Uniform variable: " << name
 						<< ", type: " << getName( GlslAttributeType( values[1] ) )
@@ -804,16 +804,16 @@ namespace gl_renderer
 		}
 	}
 
-	void validatePipeline( Device const & device
+	void validatePipeline( ContextLock const & context
 		, PipelineLayout const & layout
 		, GLuint program
 		, renderer::VertexInputState const & vertexInputState
 		, renderer::RenderPass const & renderPass )
 	{
-		doValidateInputs( device, program, vertexInputState );
-		doValidateOutputs( device, program, static_cast< RenderPass const & >( renderPass ) );
-		//doValidateUbos( device, program );
-		//doValidateSsbos( device, program );
-		//doValidateUniforms( device, program );
+		doValidateInputs( context, program, vertexInputState );
+		doValidateOutputs( context, program, static_cast< RenderPass const & >( renderPass ) );
+		//doValidateUbos( context, program );
+		//doValidateSsbos( context, program );
+		//doValidateUniforms( context, program );
 	}
 }

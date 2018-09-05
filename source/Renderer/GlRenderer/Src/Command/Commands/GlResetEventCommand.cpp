@@ -16,7 +16,7 @@ namespace gl_renderer
 	{
 	}
 
-	void ResetEventCommand::apply()const
+	void ResetEventCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "ResetEventCommand" );
 		m_event.reset();

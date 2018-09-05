@@ -17,7 +17,7 @@ namespace gl_renderer
 	{
 	}
 
-	void PushConstantsCommand::apply()const
+	void PushConstantsCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "PushConstantsCommand" );
 		auto buffer = m_data.data();
@@ -27,67 +27,134 @@ namespace gl_renderer
 			switch ( constant.format )
 			{
 			case renderer::ConstantFormat::eFloat:
-				glLogCall( m_device.getContext(), glUniform1fv, constant.location, constant.arraySize, reinterpret_cast< GLfloat const * >( buffer ) );
+				glLogCall( context
+					, glUniform1fv
+					, constant.location
+					, constant.arraySize
+					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eVec2f:
-				glLogCall( m_device.getContext(), glUniform2fv, constant.location, constant.arraySize, reinterpret_cast< GLfloat const * >( buffer ) );
+				glLogCall( context
+					, glUniform2fv
+					, constant.location
+					, constant.arraySize
+					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eVec3f:
-				glLogCall( m_device.getContext(), glUniform3fv, constant.location, constant.arraySize, reinterpret_cast< GLfloat const * >( buffer ) );
+				glLogCall( context
+					, glUniform3fv
+					, constant.location
+					, constant.arraySize
+					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eVec4f:
-				glLogCall( m_device.getContext(), glUniform4fv, constant.location, constant.arraySize, reinterpret_cast< GLfloat const * >( buffer ) );
+				glLogCall( context
+					, glUniform4fv
+					, constant.location
+					, constant.arraySize
+					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eMat2f:
-				glLogCall( m_device.getContext(), glUniformMatrix2fv, constant.location, constant.arraySize, GL_FALSE, reinterpret_cast< GLfloat const * >( buffer ) );
+				glLogCall( context
+					, glUniformMatrix2fv
+					, constant.location
+					, constant.arraySize
+					, GL_FALSE
+					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eMat3f:
-				glLogCall( m_device.getContext(), glUniformMatrix3fv, constant.location, constant.arraySize, GL_FALSE, reinterpret_cast< GLfloat const * >( buffer ) );
+				glLogCall( context
+					, glUniformMatrix3fv
+					, constant.location
+					, constant.arraySize
+					, GL_FALSE
+					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eMat4f:
-				glLogCall( m_device.getContext(), glUniformMatrix4fv, constant.location, constant.arraySize, GL_FALSE, reinterpret_cast< GLfloat const * >( buffer ) );
+				glLogCall( context
+					, glUniformMatrix4fv
+					, constant.location
+					, constant.arraySize
+					, GL_FALSE
+					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eInt:
-				glLogCall( m_device.getContext(), glUniform1iv, constant.location, constant.arraySize, reinterpret_cast< GLint const * >( buffer ) );
+				glLogCall( context
+					, glUniform1iv
+					, constant.location
+					, constant.arraySize
+					, reinterpret_cast< GLint const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eVec2i:
-				glLogCall( m_device.getContext(), glUniform2iv, constant.location, constant.arraySize, reinterpret_cast< GLint const * >( buffer ) );
+				glLogCall( context
+					, glUniform2iv
+					, constant.location
+					, constant.arraySize
+					, reinterpret_cast< GLint const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eVec3i:
-				glLogCall( m_device.getContext(), glUniform3iv, constant.location, constant.arraySize, reinterpret_cast< GLint const * >( buffer ) );
+				glLogCall( context
+					, glUniform3iv
+					, constant.location
+					, constant.arraySize
+					, reinterpret_cast< GLint const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eVec4i:
-				glLogCall( m_device.getContext(), glUniform4iv, constant.location, constant.arraySize, reinterpret_cast< GLint const * >( buffer ) );
+				glLogCall( context
+					, glUniform4iv
+					, constant.location
+					, constant.arraySize
+					, reinterpret_cast< GLint const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eUInt:
-				glLogCall( m_device.getContext(), glUniform1uiv, constant.location, constant.arraySize, reinterpret_cast< GLuint const * >( buffer ) );
+				glLogCall( context
+					, glUniform1uiv
+					, constant.location
+					, constant.arraySize
+					, reinterpret_cast< GLuint const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eVec2ui:
-				glLogCall( m_device.getContext(), glUniform2uiv, constant.location, constant.arraySize, reinterpret_cast< GLuint const * >( buffer ) );
+				glLogCall( context
+					, glUniform2uiv
+					, constant.location
+					, constant.arraySize
+					, reinterpret_cast< GLuint const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eVec3ui:
-				glLogCall( m_device.getContext(), glUniform3uiv, constant.location, constant.arraySize, reinterpret_cast< GLuint const * >( buffer ) );
+				glLogCall( context
+					, glUniform3uiv
+					, constant.location
+					, constant.arraySize
+					, reinterpret_cast< GLuint const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eVec4ui:
-				glLogCall( m_device.getContext(), glUniform4uiv, constant.location, constant.arraySize, reinterpret_cast< GLuint const * >( buffer ) );
+				glLogCall( context
+					, glUniform4uiv
+					, constant.location
+					, constant.arraySize
+					, reinterpret_cast< GLuint const * >( buffer ) );
 				break;
 
 			case renderer::ConstantFormat::eColour:
-				glLogCall( m_device.getContext(), glUniform4fv, constant.location, constant.arraySize, reinterpret_cast< GLfloat const * >( buffer ) );
+				glLogCall( context
+					, glUniform4fv
+					, constant.location
+					, constant.arraySize
+					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
 
 			default:

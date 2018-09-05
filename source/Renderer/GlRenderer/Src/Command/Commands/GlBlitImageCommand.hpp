@@ -45,7 +45,7 @@ namespace gl_renderer
 			, renderer::Filter filter );
 		~BlitImageCommand();
 
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

@@ -12,12 +12,20 @@ namespace gl_renderer
 		, m_device{ device }
 		, m_names( size_t( count ), GLuint( GL_INVALID_INDEX ) )
 	{
-		glLogCall( m_device.getContext(), glGenQueries, GLsizei( m_names.size() ), m_names.data() );
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glGenQueries
+			, GLsizei( m_names.size() )
+			, m_names.data() );
 	}
 
 	QueryPool::~QueryPool()
 	{
-		glLogCall( m_device.getContext(), glDeleteQueries, GLsizei( m_names.size() ), m_names.data() );
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glDeleteQueries
+			, GLsizei( m_names.size() )
+			, m_names.data() );
 	}
 
 	void QueryPool::getResults( uint32_t firstQuery
@@ -28,6 +36,7 @@ namespace gl_renderer
 	{
 		assert( firstQuery + queryCount <= m_names.size() );
 		assert( queryCount == data.size() );
+		auto context = m_device.getContext();
 		renderer::UInt64Array data64;
 		data64.resize( data.size() );
 		auto begin = m_names.begin() + firstQuery;
@@ -36,7 +45,11 @@ namespace gl_renderer
 
 		for ( auto it = begin; it != end; ++it )
 		{
-			glLogCall( m_device.getContext(), glGetQueryObjectui64v, *it, convert( flags ), buffer );
+			glLogCall( context
+				, glGetQueryObjectui64v
+				, *it
+				, convert( flags )
+				, buffer );
 			++buffer;
 		}
 
@@ -54,13 +67,18 @@ namespace gl_renderer
 	{
 		assert( firstQuery + queryCount <= m_names.size() );
 		assert( queryCount == data.size() );
+		auto context = m_device.getContext();
 		auto begin = m_names.begin() + firstQuery;
 		auto end = begin + queryCount;
 		auto * buffer = data.data();
 
 		for ( auto it = begin; it != end; ++it )
 		{
-			glLogCall( m_device.getContext(), glGetQueryObjectui64v, *it, convert( flags ), buffer );
+			glLogCall( context
+				, glGetQueryObjectui64v
+				, *it
+				, convert( flags )
+				, buffer );
 			++buffer;
 		}
 	}

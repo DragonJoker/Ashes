@@ -9,16 +9,21 @@ See LICENSE file in root folder
 namespace gl_renderer
 {
 	void apply( Device const & device
+		, ContextLock const & context
 		, renderer::ColourBlendState const & state );
 	void apply( Device const & device
+		, ContextLock const & context
 		, renderer::RasterisationState const & state
 		, bool dynamicLineWidth
 		, bool dynamicDepthBias );
 	void apply( Device const & device
+		, ContextLock const & context
 		, renderer::MultisampleState const & state );
 	void apply( Device const & device
+		, ContextLock const & context
 		, renderer::DepthStencilState const & state );
 	void apply( Device const & device
+		, ContextLock const & context
 		, renderer::TessellationState const & state );
 	/**
 	*\brief
@@ -40,7 +45,7 @@ namespace gl_renderer
 			, renderer::Pipeline const & pipeline
 			, renderer::PipelineBindPoint bindingPoint );
 
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

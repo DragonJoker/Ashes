@@ -15,10 +15,12 @@ namespace gl_renderer
 	{
 	}
 
-	void BufferMemoryBarrierCommand::apply()const
+	void BufferMemoryBarrierCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "BufferMemoryBarrierCommand" );
-		glLogCall( m_device.getContext(), glMemoryBarrier, m_flags );
+		glLogCall( context
+			, glMemoryBarrier
+			, m_flags );
 	}
 
 	CommandPtr BufferMemoryBarrierCommand::clone()const

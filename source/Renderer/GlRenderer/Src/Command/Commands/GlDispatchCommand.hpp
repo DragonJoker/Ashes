@@ -27,7 +27,7 @@ namespace gl_renderer
 			, uint32_t groupCountY
 			, uint32_t groupCountZ );
 
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

@@ -13,10 +13,12 @@ namespace gl_renderer
 	{
 	}
 
-	void SetLineWidthCommand::apply()const
+	void SetLineWidthCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "SetLineWidthCommand" );
-		glLogCall( m_device.getContext(), glLineWidth, m_width );
+		glLogCall( context
+			, glLineWidth
+			, m_width );
 	}
 
 	CommandPtr SetLineWidthCommand::clone()const

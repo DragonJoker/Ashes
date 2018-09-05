@@ -23,12 +23,12 @@ namespace gl_renderer
 	{
 	}
 
-	void NextSubpassCommand::apply()const
+	void NextSubpassCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "NextSubpassCommand" );
 		if ( m_frameBuffer.getFrameBuffer() )
 		{
-			m_frameBuffer.setDrawBuffers( m_subpass.colorAttachments );
+			m_frameBuffer.setDrawBuffers( context, m_subpass.colorAttachments );
 		}
 	}
 

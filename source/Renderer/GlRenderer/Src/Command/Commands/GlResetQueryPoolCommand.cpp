@@ -14,7 +14,7 @@ namespace gl_renderer
 	{
 	}
 
-	void ResetQueryPoolCommand::apply()const
+	void ResetQueryPoolCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "ResetQueryPoolCommand" );
 	}

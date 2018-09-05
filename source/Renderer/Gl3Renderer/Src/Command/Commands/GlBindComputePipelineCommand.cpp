@@ -21,14 +21,16 @@ namespace gl_renderer
 	{
 	}
 
-	void BindComputePipelineCommand::apply()const
+	void BindComputePipelineCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "BindComputePipelineCommand" );
 		auto & save = m_device.getCurrentProgram();
 
 		if ( m_program != save )
 		{
-			glLogCall( m_device.getContext(), glUseProgram, m_program );
+			glLogCall( context
+				, glUseProgram
+				, m_program );
 			save = m_program;
 		}
 	}

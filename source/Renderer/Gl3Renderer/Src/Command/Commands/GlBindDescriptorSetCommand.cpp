@@ -78,7 +78,7 @@ namespace gl_renderer
 			}
 		}
 
-		void bindCombinedSampler( Device const & device
+		void bindCombinedSampler( ContextLock const & context
 			, renderer::WriteDescriptorSet const & write )
 		{
 			for ( auto i = 0u; i < write.imageInfo.size(); ++i )
@@ -86,67 +86,77 @@ namespace gl_renderer
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto & view = getView( write, i );
 				auto & sampler = getSampler( write, i );
-				glLogCall( device.getContext(), glActiveTexture
+				glLogCall( context
+					, glActiveTexture
 					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
 				auto target = convert( view.getType(), view.getTexture().getLayerCount() );
-				glLogCall( device.getContext(), glBindTexture
+				glLogCall( context
+					, glBindTexture
 					, target
 					, static_cast< Texture const & >( view.getTexture() ).getImage() );
 				//auto & range = view.getSubResourceRange();
 
 				//if ( range.levelCount > 1 )
 				//{
-				//	glLogCall( device.getContext(), glTexParameteri
+				//	glLogCall( context
+				//		, glTexParameteri
 				//		, target
 				//		, GL_SAMPLER_PARAMETER_MIN_LOD
 				//		, GLint( range.baseMipLevel ) );
-				//	glLogCall( device.getContext(), glTexParameteri
+				//	glLogCall( context
+				//		, glTexParameteri
 				//		, target
 				//		, GL_SAMPLER_PARAMETER_MAX_LOD
 				//		, GLint( range.baseMipLevel + range.levelCount ) );
 				//}
 
-				glLogCall( device.getContext(), glBindSampler
+				glLogCall( context
+					, glBindSampler
 					, bindingIndex
 					, static_cast< Sampler const & >( sampler ).getSampler() );
 			}
 		}
 
-		void bindSampler( Device const & device
+		void bindSampler( ContextLock const & context
 			, renderer::WriteDescriptorSet const & write )
 		{
 			for ( auto i = 0u; i < write.imageInfo.size(); ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto & sampler = getSampler( write, i );
-				glLogCall( device.getContext(), glBindSampler
+				glLogCall( context
+					, glBindSampler
 					, bindingIndex
 					, static_cast< Sampler const & >( sampler ).getSampler() );
 			}
 		}
 
-		void bindSampledTexture( Device const & device
+		void bindSampledTexture( ContextLock const & context
 			, renderer::WriteDescriptorSet const & write )
 		{
 			for ( auto i = 0u; i < write.imageInfo.size(); ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto & view = getView( write, i );
-				glLogCall( device.getContext(), glActiveTexture
+				glLogCall( context
+					, glActiveTexture
 					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
 				auto target = convert( view.getType(), view.getTexture().getLayerCount() );
-				glLogCall( device.getContext(), glBindTexture
+				glLogCall( context
+					, glBindTexture
 					, target
 					, static_cast< Texture const & >( view.getTexture() ).getImage() );
 				//auto & range = view.getSubResourceRange();
 
 				//if ( range.levelCount > 1 )
 				//{
-				//	glLogCall( device.getContext(), glTexParameteri
+				//	glLogCall( context
+				//		, glTexParameteri
 				//		, target
 				//		, GL_SAMPLER_PARAMETER_MIN_LOD
 				//		, GLint( range.baseMipLevel ) );
-				//	glLogCall( device.getContext(), glTexParameteri
+				//	glLogCall( context
+				//		, glTexParameteri
 				//		, target
 				//		, GL_SAMPLER_PARAMETER_MAX_LOD
 				//		, GLint( range.baseMipLevel + range.levelCount ) );
@@ -154,7 +164,7 @@ namespace gl_renderer
 			}
 		}
 
-		void bindStorageTexture( Device const & device
+		void bindStorageTexture( ContextLock const & context
 			, renderer::WriteDescriptorSet const & write )
 		{
 			for ( auto i = 0u; i < write.imageInfo.size(); ++i )
@@ -162,9 +172,11 @@ namespace gl_renderer
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto & view = getView( write, i );
 				auto & range = view.getSubResourceRange();
-				glLogCall( device.getContext(), glActiveTexture
+				glLogCall( context
+					, glActiveTexture
 					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-				glLogCall( device.getContext(), glBindImageTexture_ARB
+				glLogCall( context
+					, glBindImageTexture_ARB
 					, bindingIndex
 					, static_cast< Texture const & >( view.getTexture() ).getImage()
 					, range.baseMipLevel
@@ -175,14 +187,15 @@ namespace gl_renderer
 			}
 		}
 
-		void bindUniformBuffer( Device const & device
+		void bindUniformBuffer( ContextLock const & context
 			, renderer::WriteDescriptorSet const & write )
 		{
 			for ( auto i = 0u; i < write.bufferInfo.size(); ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto & buffer = getBuffer( write, i );
-				glLogCall( device.getContext(), glBindBufferRange
+				glLogCall( context
+					, glBindBufferRange
 					, GL_BUFFER_TARGET_UNIFORM
 					, bindingIndex
 					, static_cast< Buffer const & >( buffer ).getBuffer()
@@ -191,14 +204,15 @@ namespace gl_renderer
 			}
 		}
 
-		void bindStorageBuffer( Device const & device
+		void bindStorageBuffer( ContextLock const & context
 			, renderer::WriteDescriptorSet const & write )
 		{
 			for ( auto i = 0u; i < write.bufferInfo.size(); ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto & buffer = getBuffer( write, i );
-				glLogCall( device.getContext(), glBindBufferRange
+				glLogCall( context
+					, glBindBufferRange
 					, GL_BUFFER_TARGET_SHADER_STORAGE
 					, bindingIndex
 					, static_cast< Buffer const & >( buffer ).getBuffer()
@@ -207,22 +221,24 @@ namespace gl_renderer
 			}
 		}
 
-		void bindTexelBuffer( Device const & device
+		void bindTexelBuffer( ContextLock const & context
 			, renderer::WriteDescriptorSet const & write )
 		{
 			for ( auto i = 0u; i < write.bufferInfo.size(); ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto & buffer = getBuffer( write, i );
-				glLogCall( device.getContext(), glActiveTexture
+				glLogCall( context
+					, glActiveTexture
 					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-				glLogCall( device.getContext(), glBindTexture
+				glLogCall( context
+					, glBindTexture
 					, GL_BUFFER_TARGET_TEXTURE
 					, static_cast< BufferView const & >( write.texelBufferView[i].get() ).getImage() );
 			}
 		}
 
-		void bindDynamicUniformBuffer( Device const & device
+		void bindDynamicUniformBuffer( ContextLock const & context
 			, renderer::WriteDescriptorSet const & write
 			, uint32_t offset )
 		{
@@ -230,7 +246,8 @@ namespace gl_renderer
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto & buffer = getBuffer( write, i );
-				glLogCall( device.getContext(), glBindBufferRange
+				glLogCall( context
+					, glBindBufferRange
 					, GL_BUFFER_TARGET_UNIFORM
 					, bindingIndex
 					, static_cast< Buffer const & >( buffer ).getBuffer()
@@ -239,7 +256,7 @@ namespace gl_renderer
 			}
 		}
 
-		void bindDynamicStorageBuffer( Device const & device
+		void bindDynamicStorageBuffer( ContextLock const & context
 			, renderer::WriteDescriptorSet const & write
 			, uint32_t offset )
 		{
@@ -247,7 +264,8 @@ namespace gl_renderer
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto & buffer = getBuffer( write, i );
-				glLogCall( device.getContext(), glBindBufferRange
+				glLogCall( context
+					, glBindBufferRange
 					, GL_BUFFER_TARGET_SHADER_STORAGE
 					, bindingIndex
 					, static_cast< Buffer const & >( buffer ).getBuffer()
@@ -256,7 +274,7 @@ namespace gl_renderer
 			}
 		}
 
-		void bindDynamicBuffers( Device const & device
+		void bindDynamicBuffers( ContextLock const & context
 			, renderer::WriteDescriptorSetArray const & writes
 			, renderer::UInt32Array const & offsets )
 		{
@@ -267,11 +285,11 @@ namespace gl_renderer
 				switch ( write.descriptorType )
 				{
 				case renderer::DescriptorType::eUniformBufferDynamic:
-					bindDynamicUniformBuffer( device, write, offsets[i] );
+					bindDynamicUniformBuffer( context, write, offsets[i] );
 					break;
 
 				case renderer::DescriptorType::eStorageBufferDynamic:
-					bindDynamicStorageBuffer( device, write, offsets[i] );
+					bindDynamicStorageBuffer( context, write, offsets[i] );
 					break;
 
 				default:
@@ -298,45 +316,45 @@ namespace gl_renderer
 			&& "Dynamic descriptors and dynamic offsets sizes must match." );
 	}
 
-	void BindDescriptorSetCommand::apply()const
+	void BindDescriptorSetCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "BindDescriptorSetCommand" );
 		for ( auto & write : m_descriptorSet.getCombinedTextureSamplers() )
 		{
-			bindCombinedSampler( m_device, write );
+			bindCombinedSampler( context, write );
 		}
 
 		for ( auto & write : m_descriptorSet.getSamplers() )
 		{
-			bindSampler( m_device, write );
+			bindSampler( context, write );
 		}
 
 		for ( auto & write : m_descriptorSet.getSampledTextures() )
 		{
-			bindSampledTexture( m_device, write );
+			bindSampledTexture( context, write );
 		}
 
 		for ( auto & write : m_descriptorSet.getStorageTextures() )
 		{
-			bindStorageTexture( m_device, write );
+			bindStorageTexture( context, write );
 		}
 
 		for ( auto & write : m_descriptorSet.getUniformBuffers() )
 		{
-			bindUniformBuffer( m_device, write );
+			bindUniformBuffer( context, write );
 		}
 
 		for ( auto & write : m_descriptorSet.getStorageBuffers() )
 		{
-			bindStorageBuffer( m_device, write );
+			bindStorageBuffer( context, write );
 		}
 
 		for ( auto & write : m_descriptorSet.getTexelBuffers() )
 		{
-			bindTexelBuffer( m_device, write );
+			bindTexelBuffer( context, write );
 		}
 
-		bindDynamicBuffers( m_device, m_descriptorSet.getDynamicBuffers(), m_dynamicOffsets );
+		bindDynamicBuffers( context, m_descriptorSet.getDynamicBuffers(), m_dynamicOffsets );
 	}
 
 	CommandPtr BindDescriptorSetCommand::clone()const

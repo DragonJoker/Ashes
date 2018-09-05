@@ -17,14 +17,22 @@ namespace gl_renderer
 		, m_device{ device }
 		, m_target{ convert( target ) }
 	{
-		glLogCall( m_device.getContext(), glGenBuffers, 1, &m_name );
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glGenBuffers
+			, 1
+			, &m_name );
 	}
 
 	Buffer::~Buffer()
 	{
 		onDestroy( m_name );
 		m_storage.reset();
-		glLogCall( m_device.getContext(), glDeleteBuffers, 1, &m_name );
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glDeleteBuffers
+			, 1
+			, &m_name );
 	}
 
 	renderer::MemoryRequirements Buffer::getMemoryRequirements()const

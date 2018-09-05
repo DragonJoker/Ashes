@@ -17,10 +17,13 @@ namespace gl_renderer
 	{
 	}
 
-	void WriteTimestampCommand::apply()const
+	void WriteTimestampCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "WriteTimestampCommand" );
-		glLogCall( m_device.getContext(), glQueryCounter, m_query, GL_QUERY_TYPE_TIMESTAMP );
+		glLogCall( context
+			, glQueryCounter
+			, m_query
+			, GL_QUERY_TYPE_TIMESTAMP );
 	}
 
 	CommandPtr WriteTimestampCommand::clone()const

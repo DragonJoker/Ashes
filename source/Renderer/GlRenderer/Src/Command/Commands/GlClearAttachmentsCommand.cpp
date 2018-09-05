@@ -11,14 +11,15 @@ namespace gl_renderer
 {
 	namespace
 	{
-		void doClear( Device const & device
+		void doClear( ContextLock const & context
 			, renderer::ClearAttachment const & clearAttach )
 		{
 			if ( renderer::checkFlag( clearAttach.aspectMask, renderer::ImageAspectFlag::eColour ) )
 			{
 				assert( clearAttach.clearValue.isColour() );
 				auto & colour = clearAttach.clearValue.colour();
-				glLogCall( device.getContext(), glClearBufferfv
+				glLogCall( context
+					, glClearBufferfv
 					, GL_CLEAR_TARGET_COLOR
 					, clearAttach.colourAttachment
 					, colour.float32.data() );
@@ -31,7 +32,8 @@ namespace gl_renderer
 
 				if ( renderer::checkFlag( clearAttach.aspectMask, renderer::ImageAspectFlag::eDepth | renderer::ImageAspectFlag::eStencil ) )
 				{
-					glLogCall( device.getContext(), glClearBufferfi
+					glLogCall( context
+						, glClearBufferfi
 						, GL_CLEAR_TARGET_DEPTH_STENCIL
 						, 0u
 						, depthStencil.depth
@@ -39,14 +41,16 @@ namespace gl_renderer
 				}
 				else if ( renderer::checkFlag( clearAttach.aspectMask, renderer::ImageAspectFlag::eDepth ) )
 				{
-					glLogCall( device.getContext(), glClearBufferfv
+					glLogCall( context
+						, glClearBufferfv
 						, GL_CLEAR_TARGET_DEPTH
 						, 0u
 						, &depthStencil.depth );
 				}
 				else if ( renderer::checkFlag( clearAttach.aspectMask, renderer::ImageAspectFlag::eStencil ) )
 				{
-					glLogCall( device.getContext(), glClearBufferiv
+					glLogCall( context
+						, glClearBufferiv
 						, GL_CLEAR_TARGET_STENCIL
 						, 0u
 						, &stencil );
@@ -65,7 +69,7 @@ namespace gl_renderer
 	{
 	}
 
-	void ClearAttachmentsCommand::apply()const
+	void ClearAttachmentsCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "ClearAttachmentsCommand" );
 		auto scissor = m_device.getCurrentScissor();
@@ -74,16 +78,18 @@ namespace gl_renderer
 		{
 			for ( auto & rect : m_clearRects )
 			{
-				glLogCall( m_device.getContext(), glScissor
+				glLogCall( context
+					, glScissor
 					, rect.offset.x
 					, rect.offset.x
 					, rect.extent.width
 					, rect.extent.height );
-				doClear( m_device, clearAttach );
+				doClear( context, clearAttach );
 			}
 		}
 
-		glLogCall( m_device.getContext(), glScissor
+		glLogCall( context
+			, glScissor
 			, scissor.offset.x
 			, scissor.offset.y
 			, scissor.size.width
