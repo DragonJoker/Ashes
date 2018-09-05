@@ -33,6 +33,7 @@ namespace vk_renderer
 		*	Destructeur.
 		*/
 		~Device();
+		void updateSurfaceCapabilities()const;
 		/**
 		*\copydoc	renderer::Device::createRenderPass
 		*/

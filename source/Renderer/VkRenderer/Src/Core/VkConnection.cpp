@@ -19,10 +19,7 @@ namespace vk_renderer
 		, m_gpu{ static_cast< PhysicalDevice const & >( renderer.getPhysicalDevice( deviceIndex ) ) }
 	{
 		doCreatePresentSurface();
-		doRetrieveSurfaceCapabilities();
-		doRetrieveSurfaceFormats();
-		doRetrievePresentModes();
-		doRetrievePresentationInfos();
+		updateSurfaceCapabilities();
 	}
 
 	Connection::~Connection()
@@ -33,6 +30,14 @@ namespace vk_renderer
 				, m_presentSurface
 				, nullptr );
 		}
+	}
+
+	void Connection::updateSurfaceCapabilities()
+	{
+		doRetrieveSurfaceCapabilities();
+		doRetrieveSurfaceFormats();
+		doRetrievePresentModes();
+		doRetrievePresentationInfos();
 	}
 
 #if RENDERLIB_WIN32
@@ -183,13 +188,16 @@ namespace vk_renderer
 			, nullptr );
 		checkError( res, "Surface present modes enumeration" );
 
-		std::vector< VkPresentModeKHR > presentModes{ presentModeCount };
-		res = m_renderer.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
-			, m_presentSurface
-			, &presentModeCount
-			, presentModes.data() );
-		checkError( res, "Surface present modes enumeration" );
-		m_presentModes = convert< renderer::PresentMode >( presentModes );
+		if ( presentModeCount )
+		{
+			std::vector< VkPresentModeKHR > presentModes{ presentModeCount };
+			res = m_renderer.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
+				, m_presentSurface
+				, &presentModeCount
+				, presentModes.data() );
+			checkError( res, "Surface present modes enumeration" );
+			m_presentModes = convert< renderer::PresentMode >( presentModes );
+		}
 	}
 
 	void Connection::doRetrieveSurfaceFormats()

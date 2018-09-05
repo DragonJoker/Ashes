@@ -36,6 +36,7 @@ namespace vk_renderer
 		*	Destructeur, détruit la surface KHR.
 		*/
 		~Connection();
+		void updateSurfaceCapabilities();
 		/**
 		*\~french
 		*\return
