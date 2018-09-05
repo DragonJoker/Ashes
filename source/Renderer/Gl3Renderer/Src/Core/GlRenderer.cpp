@@ -252,7 +252,7 @@ namespace gl_renderer
 
 					if ( !m_glxContext )
 					{
-						throw std::runtime_error{ "Could not create a rendering context." };
+						throw std::runtime_error{ "Could not create a rendering context->" };
 					}
 
 					glXMakeCurrent( m_display, m_xWindow, m_glxContext );

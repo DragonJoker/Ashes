@@ -12,7 +12,7 @@
 
 namespace gl_renderer
 {
-	void validatePipeline( Device const & device
+	void validatePipeline( ContextLock const & context
 		, PipelineLayout const & layout
 		, GLuint program
 		, renderer::VertexInputState const & vertexInputState

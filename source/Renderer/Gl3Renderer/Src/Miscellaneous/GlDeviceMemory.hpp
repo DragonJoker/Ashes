@@ -82,29 +82,6 @@ namespace gl_renderer
 		void unlock()const override;
 
 	private:
-		void doSetImage1D( uint32_t width
-			, renderer::ImageCreateInfo const & createInfo );
-		void doSetImage2D( uint32_t width
-			, uint32_t height
-			, renderer::ImageCreateInfo const & createInfo );
-		void doSetImageCubeFace( uint32_t width
-			, uint32_t height
-			, int face
-			, renderer::ImageCreateInfo const & createInfo );
-		void doSetImage3D( uint32_t width
-			, uint32_t height
-			, uint32_t depth
-			, renderer::ImageCreateInfo const & createInfo );
-		void doSetImage2DMS( uint32_t width
-			, uint32_t height
-			, renderer::ImageCreateInfo const & createInfo );
-		void doSetImage3DMS( uint32_t width
-			, uint32_t height
-			, uint32_t depth
-			, renderer::ImageCreateInfo const & createInfo );
-		void updateOneLayer( renderer::BufferImageCopy const & copyInfo )const;
-
-	private:
 		Device const & m_device;
 		renderer::MemoryRequirements m_requirements;
 		std::unique_ptr< DeviceMemoryImpl > m_impl;

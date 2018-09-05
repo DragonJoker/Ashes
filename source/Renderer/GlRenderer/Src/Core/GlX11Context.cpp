@@ -49,12 +49,13 @@ namespace gl_renderer
 	}
 
 	X11Context::X11Context( PhysicalDevice const & gpu
-		, renderer::ConnectionPtr && connection )
-		: Context{ gpu, std::move( connection ) }
-		, m_display( m_connection->getHandle().getInternal< renderer::IXWindowHandle >().getDisplay() )
+		, renderer::Connection const & connection
+		, Context const * mainContext )
+		: Context{ gpu, connection }
+		, m_display( m_connection.getHandle().getInternal< renderer::IXWindowHandle >().getDisplay() )
 		, m_glxVersion( 10 )
 		, m_glxContext( nullptr )
-		, m_drawable( m_connection->getHandle().getInternal< renderer::IXWindowHandle >().getDrawable() )
+		, m_drawable( m_connection.getHandle().getInternal< renderer::IXWindowHandle >().getDrawable() )
 		, m_fbConfig( nullptr )
 	{
 		if ( !glXChooseFBConfig )
@@ -105,11 +106,11 @@ namespace gl_renderer
 				throw std::runtime_error{ "Could not create a rendering context." };
 			}
 
-			setCurrent();
+			enable();
 			doLoadBaseFunctions();
 			doLoadGLXFunctions();
 			loadDebugFunctions();
-			endCurrent();
+			disable();
 
 			if ( m_gpu.getMajor() < 4 )
 			{
@@ -117,17 +118,16 @@ namespace gl_renderer
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
 
-			if ( !doCreateGl3Context() )
+			if ( !doCreateGl3Context( mainContext ) )
 			{
 				glXDestroyContext( m_display, m_glxContext );
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
 
 			XFree( visualInfo );
-			setCurrent();
+			enable();
 			m_glXSwapIntervalEXT( m_display, m_drawable, 0 );
-			endCurrent();
-			m_selector.registerContext( *this );
+			disable();
 		}
 	}
 
@@ -135,7 +135,6 @@ namespace gl_renderer
 	{
 		try
 		{
-			m_selector.unregisterContext( *this );
 			glXDestroyContext( m_display, m_glxContext );
 			XFree( m_fbConfig );
 		}
@@ -144,13 +143,15 @@ namespace gl_renderer
 		}
 	}
 
-	void X11Context::setCurrent()const
+	void X11Context::enable()const
 	{
 		glXMakeCurrent( m_display, m_drawable, m_glxContext );
+		m_enabled = true;
 	}
 
-	void X11Context::endCurrent()const
+	void X11Context::disable()const
 	{
+		m_enabled = false;
 		glXMakeCurrent( m_display, 0, nullptr );
 	}
 
@@ -244,7 +245,7 @@ namespace gl_renderer
 		return result;
 	}
 
-	bool X11Context::doCreateGl3Context()
+	bool X11Context::doCreateGl3Context( X11Context const * mainContext )
 	{
 		using PFNGLCREATECONTEXTATTRIBS = GLXContext ( * )( Display *dpy, GLXFBConfig config, GLXContext share_context, Bool direct, const int *attrib_list );
 		PFNGLCREATECONTEXTATTRIBS glCreateContextAttribs;
@@ -258,23 +259,23 @@ namespace gl_renderer
 			0
 		};
 
-		setCurrent();
+		enable();
 		::glGetError();
 
 		if ( getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs ) )
 		{
-			auto glxContext = glCreateContextAttribs( m_display, m_fbConfig[0], nullptr, true, attribList.data() );
+			auto glxContext = glCreateContextAttribs( m_display
+				, m_fbConfig[0]
+				, ( mainContext
+					? static_cast< X11Context const * >( mainContext )->m_glxContext
+					: nullptr )
+				, true
+				, attribList.data() );
 			glXDestroyContext( m_display, m_glxContext );
 			m_glxContext = glxContext;
 			result = m_glxContext != nullptr;
 
-			if ( result )
-			{
-				std::stringstream stream;
-				stream << "OpenGL " << m_gpu.getMajor() << "." << m_gpu.getMinor() << " context created.";
-				renderer::Logger::logInfo( stream.str() );
-			}
-			else
+			if ( !result )
 			{
 				std::stringstream stream;
 				stream << "Failed to create an OpenGL " << m_gpu.getMajor() << "." << m_gpu.getMinor() << " context.";

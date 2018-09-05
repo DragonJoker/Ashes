@@ -18,7 +18,7 @@ namespace gl_renderer
 			, renderer::PipelineStageFlags dstStageMask
 			, renderer::BufferMemoryBarrierArray const & bufferMemoryBarriers
 			, renderer::ImageMemoryBarrierArray const & imageMemoryBarriers );
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

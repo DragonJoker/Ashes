@@ -24,7 +24,7 @@ namespace gl_renderer
 			|| m_subpass.resolveAttachments.size() == m_subpass.colorAttachments.size() );
 	}
 
-	void EndSubpassCommand::apply()const
+	void EndSubpassCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "EndSubpassCommand" );
 
@@ -41,18 +41,18 @@ namespace gl_renderer
 
 					if ( dstattach.object != GL_INVALID_INDEX )
 					{
-						m_device.getContext().glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
+						context->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
 					}
 					else
 					{
-						m_device.getContext().glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+						context->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 					}
 
 					GLenum attach[1]{ dstattach.point };
-					m_device.getContext().glBindFramebuffer( GL_READ_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
-					m_device.getContext().glReadBuffer( srcattach.point );
-					m_device.getContext().glDrawBuffers( 1u, attach );
-					m_device.getContext().glBlitFramebuffer( 0, 0, m_frameBuffer.getDimensions().width, m_frameBuffer.getDimensions().height
+					context->glBindFramebuffer( GL_READ_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
+					context->glReadBuffer( srcattach.point );
+					context->glDrawBuffers( 1u, attach );
+					context->glBlitFramebuffer( 0, 0, m_frameBuffer.getDimensions().width, m_frameBuffer.getDimensions().height
 						, 0, 0, m_frameBuffer.getDimensions().width, m_frameBuffer.getDimensions().height
 						, GL_COLOR_BUFFER_BIT, GL_FILTER_NEAREST );
 				}

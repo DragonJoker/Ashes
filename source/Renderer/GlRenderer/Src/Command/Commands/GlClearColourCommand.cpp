@@ -20,13 +20,14 @@ namespace gl_renderer
 	{
 	}
 
-	void ClearColourCommand::apply()const
+	void ClearColourCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "ClearColourCommand" );
 
-		if ( m_device.getContext().hasClearTexImage() )
+		if ( context->hasClearTexImage() )
 		{
-			glLogCall( m_device.getContext(), glClearTexImage
+			glLogCall( context
+				, glClearTexImage
 				, m_image.getImage()
 				, 0
 				, m_format

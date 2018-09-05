@@ -15,10 +15,12 @@ namespace gl_renderer
 	{
 	}
 
-	void BindGeometryBuffersCommand::apply()const
+	void BindGeometryBuffersCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "BindGeometryBuffersCommand" );
-		glLogCall( m_device.getContext(), glBindVertexArray, m_vao.getVao() );
+		glLogCall( context
+			, glBindVertexArray
+			, m_vao.getVao() );
 	}
 
 	CommandPtr BindGeometryBuffersCommand::clone()const

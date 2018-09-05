@@ -20,7 +20,7 @@ namespace gl_renderer
 			, renderer::PipelineStageFlag pipelineStage
 			, renderer::QueryPool const & pool
 			, uint32_t query );
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

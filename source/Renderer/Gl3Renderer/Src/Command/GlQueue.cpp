@@ -25,6 +25,8 @@ namespace gl_renderer
 		, renderer::SemaphoreCRefArray const & semaphoresToSignal
 		, renderer::Fence const * fence )const
 	{
+		auto context = m_device.getContext();
+
 		for ( auto & commandBuffer : commandBuffers )
 		{
 			auto & glCommandBuffer = static_cast< CommandBuffer const & >( commandBuffer.get() );
@@ -32,10 +34,10 @@ namespace gl_renderer
 
 			for ( auto & command : glCommandBuffer.getCommands() )
 			{
-				command->apply();
+				command->apply( context );
 			}
 
-			glCommandBuffer.applyPostSubmitActions();
+			glCommandBuffer.applyPostSubmitActions( context );
 		}
 	}
 
@@ -47,6 +49,8 @@ namespace gl_renderer
 
 	void Queue::waitIdle()const
 	{
-		glLogCall( m_device.getContext(), glFinish );
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glFinish );
 	}
 }

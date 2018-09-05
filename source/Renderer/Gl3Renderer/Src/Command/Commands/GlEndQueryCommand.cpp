@@ -16,10 +16,12 @@ namespace gl_renderer
 	{
 	}
 
-	void EndQueryCommand::apply()const
+	void EndQueryCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "EndQueryCommand" );
-		glLogCall( m_device.getContext(), glEndQuery, m_target );
+		glLogCall( context
+			, glEndQuery
+			, m_target );
 	}
 
 	CommandPtr EndQueryCommand::clone()const

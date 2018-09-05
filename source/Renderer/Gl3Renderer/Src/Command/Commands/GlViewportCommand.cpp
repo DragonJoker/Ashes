@@ -15,19 +15,21 @@ namespace gl_renderer
 	{
 	}
 
-	void ViewportCommand::apply()const
+	void ViewportCommand::apply( ContextLock const & context )const
 	{
 		auto & save = m_device.getCurrentViewport();
 
 		if ( m_viewport != save )
 		{
 			glLogCommand( "ViewportCommand" );
-			glLogCall( m_device.getContext(), glViewport
+			glLogCall( context
+				, glViewport
 				, m_viewport.offset.x
 				, m_viewport.offset.y
 				, m_viewport.size.width
 				, m_viewport.size.height );
-			glLogCall( m_device.getContext(), glDepthRange
+			glLogCall( context
+				, glDepthRange
 				, m_viewport.minDepth
 				, m_viewport.maxDepth );
 			save = m_viewport;

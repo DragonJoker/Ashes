@@ -18,10 +18,13 @@ namespace gl_renderer
 	{
 	}
 
-	void BeginQueryCommand::apply()const
+	void BeginQueryCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "BeginQueryCommand" );
-		glLogCall( m_device.getContext(), glBeginQuery, m_target, m_query );
+		glLogCall( context
+			, glBeginQuery
+			, m_target
+			, m_query );
 	}
 
 	CommandPtr BeginQueryCommand::clone()const

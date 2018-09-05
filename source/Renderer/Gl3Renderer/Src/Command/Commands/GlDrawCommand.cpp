@@ -29,14 +29,15 @@ namespace gl_renderer
 		}
 	}
 
-	void DrawCommand::apply()const
+	void DrawCommand::apply( ContextLock const & context )const
 	{
 		assert( m_instCount >= 1 );
 		glLogCommand( "DrawCommand" );
 
 		if ( m_device.getRenderer().getFeatures().hasBaseInstance )
 		{
-			glLogCall( m_device.getContext(), glDrawArraysInstancedBaseInstance_ARB
+			glLogCall( context
+				, glDrawArraysInstancedBaseInstance_ARB
 				, m_mode
 				, m_firstVertex
 				, m_vtxCount
@@ -45,7 +46,8 @@ namespace gl_renderer
 		}
 		else
 		{
-			glLogCall( m_device.getContext(), glDrawArraysInstanced
+			glLogCall( context
+				, glDrawArraysInstanced
 				, m_mode
 				, m_firstVertex
 				, m_vtxCount

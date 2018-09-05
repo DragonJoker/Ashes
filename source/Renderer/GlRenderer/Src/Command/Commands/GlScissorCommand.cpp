@@ -15,14 +15,14 @@ namespace gl_renderer
 	{
 	}
 
-	void ScissorCommand::apply()const
+	void ScissorCommand::apply( ContextLock const & context )const
 	{
 		auto & save = m_device.getCurrentScissor();
 
 		if ( m_scissor != save )
 		{
 			glLogCommand( "ScissorCommand" );
-			glLogCall( m_device.getContext()
+			glLogCall( context
 				, glScissor
 				, m_scissor.offset.x
 				, m_scissor.offset.y

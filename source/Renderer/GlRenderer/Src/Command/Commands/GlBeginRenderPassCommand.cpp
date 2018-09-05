@@ -14,7 +14,7 @@ namespace gl_renderer
 {
 	namespace
 	{
-		void doClear( Device const & device
+		void doClear( ContextLock const & context
 			, renderer::AttachmentDescription const & attach
 			, renderer::ClearValue const & clearValue
 			, GLint & colourIndex
@@ -23,7 +23,8 @@ namespace gl_renderer
 			if ( clearValue.isColour() )
 			{
 				auto & colour = clearValue.colour();
-				glLogCall( device.getContext(), glClearBufferfv
+				glLogCall( context
+					, glClearBufferfv
 					, GL_CLEAR_TARGET_COLOR
 					, colourIndex
 					, colour.float32.data() );
@@ -31,28 +32,43 @@ namespace gl_renderer
 			}
 			else
 			{
-				glLogCall( device.getContext(), glDepthMask, GL_TRUE );
+				glLogCall( context
+					, glDepthMask
+					, GL_TRUE );
 				auto & depthStencil = clearValue.depthStencil();
 				auto stencil = GLint( depthStencil.stencil );
 
 				if ( renderer::isDepthStencilFormat( attach.format ) )
 				{
-					glLogCall( device.getContext(), glClearBufferfi, GL_CLEAR_TARGET_DEPTH_STENCIL, 0u, depthStencil.depth, stencil );
+					glLogCall( context
+						, glClearBufferfi
+						, GL_CLEAR_TARGET_DEPTH_STENCIL
+						, 0u
+						, depthStencil.depth
+						, stencil );
 				}
 				else if ( renderer::isDepthFormat( attach.format ) )
 				{
-					glLogCall( device.getContext(), glClearBufferfv, GL_CLEAR_TARGET_DEPTH, 0u, &depthStencil.depth );
+					glLogCall( context
+						, glClearBufferfv
+						, GL_CLEAR_TARGET_DEPTH
+						, 0u
+						, &depthStencil.depth );
 				}
 				else if ( renderer::isStencilFormat( attach.format ) )
 				{
-					glLogCall( device.getContext(), glClearBufferiv, GL_CLEAR_TARGET_STENCIL, 0u, &stencil );
+					glLogCall( context
+						, glClearBufferiv
+						, GL_CLEAR_TARGET_STENCIL
+						, 0u
+						, &stencil );
 				}
 
 				++depthStencilIndex;
 			}
 		}
 
-		GLbitfield doClearBack( Device const & device
+		GLbitfield doClearBack( ContextLock const & context
 			, renderer::AttachmentDescription const & attach
 			, renderer::ClearValue const & clearValue
 			, GLint & colourIndex
@@ -63,7 +79,8 @@ namespace gl_renderer
 			if ( clearValue.isColour() )
 			{
 				auto & colour = clearValue.colour();
-				glLogCall( device.getContext(), glClearColor
+				glLogCall( context
+					, glClearColor
 					, colour.float32[0]
 					, colour.float32[1]
 					, colour.float32[2]
@@ -78,18 +95,26 @@ namespace gl_renderer
 
 				if ( renderer::isDepthStencilFormat( attach.format ) )
 				{
-					glLogCall( device.getContext(), glClearDepth, depthStencil.depth );
-					glLogCall( device.getContext(), glClearStencil, depthStencil.stencil );
+					glLogCall( context
+						, glClearDepth
+						, depthStencil.depth );
+					glLogCall( context
+						, glClearStencil
+						, depthStencil.stencil );
 					result = GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
 				}
 				else if ( renderer::isDepthFormat( attach.format ) )
 				{
-					glLogCall( device.getContext(), glClearDepth, depthStencil.depth );
+					glLogCall( context
+						, glClearDepth
+						, depthStencil.depth );
 					result = GL_DEPTH_BUFFER_BIT;
 				}
 				else if ( renderer::isStencilFormat( attach.format ) )
 				{
-					glLogCall( device.getContext(), glClearStencil, depthStencil.stencil );
+					glLogCall( context
+						, glClearStencil
+						, depthStencil.stencil );
 					result = GL_STENCIL_BUFFER_BIT;
 				}
 
@@ -115,7 +140,7 @@ namespace gl_renderer
 	{
 	}
 
-	void BeginRenderPassCommand::apply()const
+	void BeginRenderPassCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "BeginRenderPassCommand" );
 
@@ -125,7 +150,8 @@ namespace gl_renderer
 
 		if ( save != m_scissor )
 		{
-			glLogCall( m_device.getContext(), glScissor
+			glLogCall( context
+				, glScissor
 				, m_scissor.offset.x
 				, m_scissor.offset.y
 				, m_scissor.size.width
@@ -134,11 +160,15 @@ namespace gl_renderer
 
 		if ( m_frameBuffer.isSRGB() )
 		{
-			m_device.getContext().glEnable( GL_FRAMEBUFFER_SRGB );
+			glLogCall( context
+				, glEnable
+				, GL_FRAMEBUFFER_SRGB );
 		}
 		else
 		{
-			m_device.getContext().glDisable( GL_FRAMEBUFFER_SRGB );
+			glLogCall( context
+				, glDisable
+				, GL_FRAMEBUFFER_SRGB );
 		}
 
 		if ( m_frameBuffer.getFrameBuffer()
@@ -147,8 +177,12 @@ namespace gl_renderer
 		{
 			assert( ( m_frameBuffer.getFrameBuffer() && ( m_frameBuffer.getSize() - m_subpass.resolveAttachments.size() ) == m_clearValues.size() )
 				|| !m_frameBuffer.getFrameBuffer() );
-			glLogCall( m_device.getContext(), glBindFramebuffer, GL_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
-			m_frameBuffer.setDrawBuffers( m_renderPass.getColourAttaches() );
+			glLogCall( context
+				, glBindFramebuffer
+				, GL_FRAMEBUFFER
+				, m_frameBuffer.getFrameBuffer() );
+			m_frameBuffer.setDrawBuffers( context
+				, m_renderPass.getColourAttaches() );
 			auto it = m_frameBuffer.begin();
 
 			for ( size_t i = 0; i < m_frameBuffer.getSize() && i < m_clearValues.size(); ++i )
@@ -159,7 +193,7 @@ namespace gl_renderer
 
 				if ( attach.getAttachment().loadOp == renderer::AttachmentLoadOp::eClear )
 				{
-					doClear( m_device
+					doClear( context
 						, attach.getAttachment()
 						, clearValue
 						, colourIndex 
@@ -167,32 +201,41 @@ namespace gl_renderer
 				}
 			}
 
-			m_frameBuffer.setDrawBuffers( m_subpass.colorAttachments );
+			m_frameBuffer.setDrawBuffers( context
+				, m_subpass.colorAttachments );
 		}
 		else if ( m_frameBuffer.getFrameBuffer()
 			&& m_subpass.colorAttachments.size() == 1
 			&& m_frameBuffer.getAllAttaches()[m_subpass.colorAttachments[0].attachment].object == GL_INVALID_INDEX )
 		{
-			glLogCall( m_device.getContext(), glBindFramebuffer, GL_FRAMEBUFFER, 0 );
+			glLogCall( context
+				, glBindFramebuffer
+				, GL_FRAMEBUFFER
+				, 0 );
 			auto & subAttach = m_subpass.colorAttachments[0];
 			auto & attach = *( m_renderPass.getAttachments().begin() + subAttach.attachment );
 
 			if ( attach.loadOp == renderer::AttachmentLoadOp::eClear )
 			{
 				auto & clearValue = m_clearValues[subAttach.attachment];
-				auto bitfield = doClearBack( m_device
+				auto bitfield = doClearBack( context
 					, attach
 					, clearValue
 					, colourIndex
 					, depthStencilIndex );
-				glLogCall( m_device.getContext(), glClear, bitfield );
+				glLogCall( context
+					, glClear
+					, bitfield );
 			}
 		}
 		else if ( !m_clearValues.empty() )
 		{
 			assert( ( m_frameBuffer.getFrameBuffer() && ( m_frameBuffer.getSize() - m_subpass.resolveAttachments.size() ) == m_clearValues.size() )
 				|| !m_frameBuffer.getFrameBuffer() );
-			glLogCall( m_device.getContext(), glBindFramebuffer, GL_FRAMEBUFFER, 0 );
+			glLogCall( context
+				, glBindFramebuffer
+				, GL_FRAMEBUFFER
+				, 0 );
 			GLbitfield bitfield{ 0u };
 			auto it = m_renderPass.getAttachments().begin();
 
@@ -204,7 +247,7 @@ namespace gl_renderer
 				if ( attach.loadOp == renderer::AttachmentLoadOp::eClear )
 				{
 					auto & clearValue = m_clearValues[i];
-					bitfield |= doClearBack( m_device
+					bitfield |= doClearBack( context
 						, attach
 						, clearValue
 						, colourIndex
@@ -212,12 +255,15 @@ namespace gl_renderer
 				}
 			}
 
-			glLogCall( m_device.getContext(), glClear, bitfield );
+			glLogCall( context
+				, glClear
+				, bitfield );
 		}
 
 		if ( save != m_scissor )
 		{
-			glLogCall( m_device.getContext(), glScissor
+			glLogCall( context
+				, glScissor
 				, save.offset.x
 				, save.offset.y
 				, save.size.width

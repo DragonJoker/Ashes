@@ -16,11 +16,12 @@ namespace gl_renderer
 	{
 	public:
 		X11Context( PhysicalDevice const & gpu
-			, renderer::ConnectionPtr && connection );
+			, renderer::Connection const & connection
+			, Context const * mainContext );
 		~X11Context();
 
-		void setCurrent()const override;
-		void endCurrent()const override;
+		void enable()const override;
+		void disable()const override;
 		void swapBuffers()const override;
 
 		inline GLXContext getContext()
@@ -33,7 +34,6 @@ namespace gl_renderer
 		template< typename ... Params >\
 		auto glX##fun( Params... params )const\
 		{\
-			m_selector.enableContextForCurrentThread();\
 			return m_glX##fun( params... );\
 		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
@@ -43,7 +43,7 @@ namespace gl_renderer
 		void doLoadGLXFunctions();
 		XVisualInfo * doCreateVisualInfoWithFBConfig( std::vector< int > arrayAttribs, int screen );
 		XVisualInfo * doCreateVisualInfoWithoutFBConfig( std::vector< int > arrayAttribs, int screen );
-		bool doCreateGl3Context();
+		bool doCreateGl3Context( X11Context const * mainContext );
 
 	protected:
 		GLXContext m_glxContext;

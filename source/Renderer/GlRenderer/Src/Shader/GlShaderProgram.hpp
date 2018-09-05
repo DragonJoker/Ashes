@@ -16,7 +16,7 @@ namespace gl_renderer
 		ShaderProgram( Device const & device
 			, renderer::ShaderStageState const & stage );
 		~ShaderProgram();
-		void link()const;
+		void link( ContextLock const & context )const;
 
 		inline GLuint getProgram()const
 		{

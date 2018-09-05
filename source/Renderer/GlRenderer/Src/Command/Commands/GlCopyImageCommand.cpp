@@ -30,18 +30,18 @@ namespace gl_renderer
 	{
 	}
 
-	void CopyImageCommand::apply()const
+	void CopyImageCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "CopyImageCommand" );
-		glLogCall( m_device.getContext()
+		glLogCall( context
 			, glBindTexture
 			, m_srcTarget
 			, m_src.getImage() );
-		glLogCall( m_device.getContext()
+		glLogCall( context
 			, glBindTexture
 			, m_dstTarget
 			, m_dst.getImage() );
-		glLogCall( m_device.getContext()
+		glLogCall( context
 			, glCopyImageSubData
 			, m_src.getImage()
 			, m_srcTarget
@@ -58,11 +58,11 @@ namespace gl_renderer
 			, m_copyInfo.extent.width
 			, m_copyInfo.extent.height
 			, m_copyInfo.extent.depth );
-		glLogCall( m_device.getContext()
+		glLogCall( context
 			, glBindTexture
 			, m_dstTarget
 			, 0u );
-		glLogCall( m_device.getContext()
+		glLogCall( context
 			, glBindTexture
 			, m_srcTarget
 			, 0u );
