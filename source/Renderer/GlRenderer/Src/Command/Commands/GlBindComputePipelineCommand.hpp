@@ -28,7 +28,7 @@ namespace gl_renderer
 			, renderer::ComputePipeline const & pipeline
 			, renderer::PipelineBindPoint bindingPoint );
 
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

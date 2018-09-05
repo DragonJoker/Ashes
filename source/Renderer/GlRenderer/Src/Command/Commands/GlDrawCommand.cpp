@@ -21,11 +21,11 @@ namespace gl_renderer
 	{
 	}
 
-	void DrawCommand::apply()const
+	void DrawCommand::apply( ContextLock const & context )const
 	{
 		assert( m_instCount >= 1 );
 		glLogCommand( "DrawCommand" );
-		glLogCall( m_device.getContext()
+		glLogCall( context
 			, glDrawArraysInstancedBaseInstance
 			, m_mode
 			, m_firstVertex

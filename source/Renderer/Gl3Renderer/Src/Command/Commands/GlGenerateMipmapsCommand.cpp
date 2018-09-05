@@ -15,12 +15,20 @@ namespace gl_renderer
 	{
 	}
 
-	void GenerateMipmapsCommand::apply()const
+	void GenerateMipmapsCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "GenerateMipmapsCommand" );
-		glLogCall( m_device.getContext(), glBindTexture, m_texture.getTarget(), m_texture.getImage() );
-		glLogCall( m_device.getContext(), glGenerateMipmap, m_texture.getTarget() );
-		glLogCall( m_device.getContext(), glBindTexture, m_texture.getTarget(), 0 );
+		glLogCall( context
+			, glBindTexture
+			, m_texture.getTarget()
+			, m_texture.getImage() );
+		glLogCall( context
+			, glGenerateMipmap
+			, m_texture.getTarget() );
+		glLogCall( context
+			, glBindTexture
+			, m_texture.getTarget()
+			, 0 );
 	}
 
 	CommandPtr GenerateMipmapsCommand::clone()const

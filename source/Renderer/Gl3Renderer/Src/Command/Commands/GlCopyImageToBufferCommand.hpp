@@ -35,11 +35,12 @@ namespace gl_renderer
 			, renderer::BufferBase const & dst );
 		CopyImageToBufferCommand( CopyImageToBufferCommand const & rhs );
 
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		void applyOne( renderer::BufferImageCopy const & copyInfo
+		void applyOne( ContextLock const & context
+			, renderer::BufferImageCopy const & copyInfo
 			, TextureView const & view )const;
 
 	private:

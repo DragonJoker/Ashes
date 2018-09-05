@@ -23,16 +23,23 @@ namespace gl_renderer
 	{
 	}
 
-	void DrawIndirectCommand::apply()const
+	void DrawIndirectCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "DrawIndirectCommand" );
-		glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_DRAW_INDIRECT, m_buffer.getBuffer() );
-		glLogCall( m_device.getContext(), glMultiDrawArraysIndirect_ARB
+		glLogCall( context
+			, glBindBuffer
+			, GL_BUFFER_TARGET_DRAW_INDIRECT
+			, m_buffer.getBuffer() );
+		glLogCall( context
+			, glMultiDrawArraysIndirect_ARB
 			, m_mode
 			, BufferOffset( m_offset )
 			, m_drawCount
 			, m_stride );
-		glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_DRAW_INDIRECT, 0 );
+		glLogCall( context
+			, glBindBuffer
+			, GL_BUFFER_TARGET_DRAW_INDIRECT
+			, 0 );
 	}
 
 	CommandPtr DrawIndirectCommand::clone()const

@@ -33,43 +33,54 @@ namespace gl_renderer
 				, m_type{ getType( m_internal ) }
 			{
 				m_texture = &texture;
-				glLogCall( m_device.getContext(), glBindTexture, m_boundTarget, m_boundResource );
+				auto context = m_device.getContext();
+				glLogCall( context
+					, glBindTexture
+					, m_boundTarget
+					, m_boundResource );
 
 				switch ( m_boundTarget )
 				{
 				case gl_renderer::GL_TEXTURE_1D:
-					doSetImage1D( createInfo.extent.width
+					doSetImage1D( context
+						, createInfo.extent.width
 						, createInfo );
 					break;
 				case gl_renderer::GL_TEXTURE_2D:
-					doSetImage2D( createInfo.extent.width
+					doSetImage2D( context
+						, createInfo.extent.width
 						, createInfo.extent.height
 						, createInfo );
 					break;
 				case gl_renderer::GL_TEXTURE_3D:
-					doSetImage3D( createInfo.extent.width
+					doSetImage3D( context
+						, createInfo.extent.width
 						, createInfo.extent.height
 						, createInfo.extent.depth
 						, createInfo );
 					break;
 				case gl_renderer::GL_TEXTURE_1D_ARRAY:
-					doSetImage2D( createInfo.extent.width
+					doSetImage2D( context
+						, createInfo.extent.width
 						, createInfo.extent.height
 						, createInfo );
 					break;
 				case gl_renderer::GL_TEXTURE_2D_ARRAY:
-					doSetImage3D( createInfo.extent.width
+					doSetImage3D( context
+						, createInfo.extent.width
 						, createInfo.extent.height
 						, createInfo.arrayLayers
 						, createInfo );
 					break;
 				case gl_renderer::GL_TEXTURE_2D_MULTISAMPLE:
-					doSetImage2DMS( createInfo.extent.width
+					doSetImage2DMS( context
+						, createInfo.extent.width
 						, createInfo.extent.height
 						, createInfo );
 					break;
 				case gl_renderer::GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
-					doSetImage3DMS( createInfo.extent.width
+					doSetImage3DMS( context
+						, createInfo.extent.width
 						, createInfo.extent.height
 						, createInfo.arrayLayers
 						, createInfo );
@@ -79,21 +90,42 @@ namespace gl_renderer
 				}
 
 				int levels = 0;
-				m_device.getContext().glGetTexParameteriv( m_boundTarget, GL_TEXTURE_IMMUTABLE_LEVELS, &levels );
+				context->glGetTexParameteriv( m_boundTarget
+					, GL_TEXTURE_IMMUTABLE_LEVELS
+					, &levels );
 				assert( levels == createInfo.mipLevels );
 				int format = 0;
-				m_device.getContext().glGetTexParameteriv( m_boundTarget, GL_TEXTURE_IMMUTABLE_FORMAT, &format );
+				context->glGetTexParameteriv( m_boundTarget
+					, GL_TEXTURE_IMMUTABLE_FORMAT
+					, &format );
 				assert( format != 0 );
-				glLogCall( m_device.getContext(), glBindTexture, m_boundTarget, 0 );
+				glLogCall( context
+					, glBindTexture
+					, m_boundTarget
+					, 0 );
 
 				// If the texture is visible to the host, we'll need a PBO to map it to RAM.
 				if ( checkFlag( flags, renderer::MemoryPropertyFlag::eHostVisible ) )
 				{
-					glLogCall( m_device.getContext(), glGenBuffers, 1u, &m_pbo );
+					glLogCall( context
+						, glGenBuffers
+						, 1u
+						, &m_pbo );
 					// Initialise Upload PBO.
-					glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, m_pbo );
-					glLogCall( m_device.getContext(), glBufferStorage, m_pbo, GLsizeiptr( m_requirements.size ), nullptr, GLbitfield( convert( flags ) ) );
-					glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, 0u );
+					glLogCall( context
+						, glBindBuffer
+						, GL_BUFFER_TARGET_PIXEL_UNPACK
+						, m_pbo );
+					glLogCall( context
+						, glBufferStorage
+						, m_pbo
+						, GLsizeiptr( m_requirements.size )
+						, nullptr
+						, GLbitfield( convert( flags ) ) );
+					glLogCall( context
+						, glBindBuffer
+						, GL_BUFFER_TARGET_PIXEL_UNPACK
+						, 0u );
 
 					// Prepare update regions, layer by layer.
 					uint32_t offset = 0;
@@ -118,7 +150,8 @@ namespace gl_renderer
 			{
 				if ( m_pbo != GL_INVALID_INDEX )
 				{
-					m_device.getContext().glDeleteBuffers( 1u, &m_pbo );
+					auto context = m_device.getContext();
+					context->glDeleteBuffers( 1u, &m_pbo );
 				}
 			}
 
@@ -127,9 +160,18 @@ namespace gl_renderer
 				, renderer::MemoryMapFlags flags )const override
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local texture" );
-				glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, m_pbo );
+				auto context = m_device.getContext();
+				glLogCall( context
+					, glBindBuffer
+					, GL_BUFFER_TARGET_PIXEL_UNPACK
+					, m_pbo );
 				doSetupUpdateRegions( offset, size );
-				auto result = glLogCall( m_device.getContext(), glMapBufferRange, GL_BUFFER_TARGET_PIXEL_UNPACK, offset, size, m_mapFlags );
+				auto result = glLogCall( context
+					, glMapBufferRange
+					, GL_BUFFER_TARGET_PIXEL_UNPACK
+					, offset
+					, size
+					, m_mapFlags );
 				assertDebugValue( m_isLocked, false );
 				setDebugValue( m_isLocked, result != nullptr );
 				return reinterpret_cast< uint8_t * >( result );
@@ -140,7 +182,12 @@ namespace gl_renderer
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local texture" );
 				assertDebugValue( m_isLocked, true );
-				glLogCall( m_device.getContext(), glFlushMappedBufferRange, GL_BUFFER_TARGET_PIXEL_UNPACK, offset, size );
+				auto context = m_device.getContext();
+				glLogCall( context
+					, glFlushMappedBufferRange
+					, GL_BUFFER_TARGET_PIXEL_UNPACK
+					, offset
+					, size );
 			}
 
 			void invalidate( uint32_t offset
@@ -148,7 +195,12 @@ namespace gl_renderer
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local texture" );
 				assertDebugValue( m_isLocked, true );
-				glLogCall( m_device.getContext(), glInvalidateBufferSubData, GL_BUFFER_TARGET_PIXEL_UNPACK, offset, size );
+				auto context = m_device.getContext();
+				glLogCall( context
+					, glInvalidateBufferSubData
+					, GL_BUFFER_TARGET_PIXEL_UNPACK
+					, offset
+					, size );
 			}
 
 			void unlock()const override
@@ -156,43 +208,63 @@ namespace gl_renderer
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local texture" );
 				assertDebugValue( m_isLocked, true );
 
-				glLogCall( m_device.getContext(), glBindTexture, m_boundTarget, m_boundResource );
-				glLogCall( m_device.getContext(), glUnmapBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK );
+				auto context = m_device.getContext();
+				glLogCall( context
+					, glBindTexture
+					, m_boundTarget
+					, m_boundResource );
+				glLogCall( context
+					, glUnmapBuffer
+					, GL_BUFFER_TARGET_PIXEL_UNPACK );
 
 				for( size_t i = m_beginRegion; i < m_endRegion; ++i )
 				{
-					updateRegion( m_updateRegions[i] );
+					updateRegion( context, m_updateRegions[i] );
 				}
 
-				glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_PIXEL_UNPACK, 0u );
+				glLogCall( context
+					, glBindBuffer
+					, GL_BUFFER_TARGET_PIXEL_UNPACK
+					, 0u );
 
 				if ( m_texture->getMipmapLevels() > 1
 					&& !renderer::isCompressedFormat( m_texture->getFormat() ) )
 				{
-					glLogCall( m_device.getContext(), glMemoryBarrier, GL_MEMORY_BARRIER_TEXTURE_UPDATE );
-					glLogCall( m_device.getContext(), glGenerateMipmap, m_boundTarget );
+					glLogCall( context
+						, glMemoryBarrier
+						, GL_MEMORY_BARRIER_TEXTURE_UPDATE );
+					glLogCall( context
+						, glGenerateMipmap
+						, m_boundTarget );
 				}
 
-				glLogCall( m_device.getContext(), glBindTexture, m_boundTarget, 0u );
+				glLogCall( context
+					, glBindTexture
+					, m_boundTarget
+					, 0u );
 				setDebugValue( m_isLocked, false );
 			}
 
 		private:
-			void doSetImage1D( uint32_t width
+			void doSetImage1D( ContextLock const & context
+				, uint32_t width
 				, renderer::ImageCreateInfo const & createInfo )
 			{
-				glLogCall( m_device.getContext(), glTexStorage1D
+				glLogCall( context
+					, glTexStorage1D
 					, m_boundTarget
 					, GLsizei( createInfo.mipLevels )
 					, gl_renderer::getInternal( createInfo.format )
 					, width );
 			}
 
-			void doSetImage2D( uint32_t width
+			void doSetImage2D( ContextLock const & context
+				, uint32_t width
 				, uint32_t height
 				, renderer::ImageCreateInfo const & createInfo )
 			{
-				glLogCall( m_device.getContext(), glTexStorage2D
+				glLogCall( context
+					, glTexStorage2D
 					, m_boundTarget
 					, GLsizei( createInfo.mipLevels )
 					, gl_renderer::getInternal( createInfo.format )
@@ -200,12 +272,14 @@ namespace gl_renderer
 					, height );
 			}
 
-			void doSetImage3D( uint32_t width
+			void doSetImage3D( ContextLock const & context
+				, uint32_t width
 				, uint32_t height
 				, uint32_t depth
 				, renderer::ImageCreateInfo const & createInfo )
 			{
-				glLogCall( m_device.getContext(), glTexStorage3D
+				glLogCall( context
+					, glTexStorage3D
 					, m_boundTarget
 					, GLsizei( createInfo.mipLevels )
 					, gl_renderer::getInternal( createInfo.format )
@@ -214,11 +288,13 @@ namespace gl_renderer
 					, depth );
 			}
 
-			void doSetImage2DMS( uint32_t width
+			void doSetImage2DMS( ContextLock const & context
+				, uint32_t width
 				, uint32_t height
 				, renderer::ImageCreateInfo const & createInfo )
 			{
-				glLogCall( m_device.getContext(), glTexStorage2DMultisample
+				glLogCall( context
+					, glTexStorage2DMultisample
 					, m_boundTarget
 					, GLsizei( createInfo.samples )
 					, gl_renderer::getInternal( createInfo.format )
@@ -227,12 +303,14 @@ namespace gl_renderer
 					, GL_TRUE );
 			}
 
-			void doSetImage3DMS( uint32_t width
+			void doSetImage3DMS( ContextLock const & context
+				, uint32_t width
 				, uint32_t height
 				, uint32_t depth
 				, renderer::ImageCreateInfo const & createInfo )
 			{
-				glLogCall( m_device.getContext(), glTexStorage3DMultisample
+				glLogCall( context
+					, glTexStorage3DMultisample
 					, m_boundTarget
 					, GLsizei( createInfo.samples )
 					, gl_renderer::getInternal( createInfo.format )
@@ -270,14 +348,16 @@ namespace gl_renderer
 				}
 			}
 
-			void updateRegion( renderer::BufferImageCopy const & copyInfo )const
+			void updateRegion( ContextLock const & context
+				, renderer::BufferImageCopy const & copyInfo )const
 			{
 				if ( renderer::isCompressedFormat( m_texture->getFormat() ) )
 				{
 					switch ( m_boundTarget )
 					{
 					case GL_TEXTURE_1D:
-						glLogCall( m_device.getContext(), glCompressedTexSubImage1D
+						glLogCall( context
+							, glCompressedTexSubImage1D
 							, m_boundTarget
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
@@ -288,7 +368,8 @@ namespace gl_renderer
 						break;
 
 					case GL_TEXTURE_2D:
-						glLogCall( m_device.getContext(), glCompressedTexSubImage2D
+						glLogCall( context
+							, glCompressedTexSubImage2D
 							, m_boundTarget
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
@@ -301,7 +382,8 @@ namespace gl_renderer
 						break;
 
 					case GL_TEXTURE_3D:
-						glLogCall( m_device.getContext(), glCompressedTexSubImage3D
+						glLogCall( context
+							, glCompressedTexSubImage3D
 							, m_boundTarget
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
@@ -315,7 +397,8 @@ namespace gl_renderer
 							, BufferOffset( copyInfo.bufferOffset ) );
 
 					case GL_TEXTURE_1D_ARRAY:
-						glLogCall( m_device.getContext(), glCompressedTexSubImage2D
+						glLogCall( context
+							, glCompressedTexSubImage2D
 							, m_boundTarget
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
@@ -328,7 +411,8 @@ namespace gl_renderer
 						break;
 
 					case GL_TEXTURE_2D_ARRAY:
-						glLogCall( m_device.getContext(), glCompressedTexSubImage3D
+						glLogCall( context
+							, glCompressedTexSubImage3D
 							, m_boundTarget
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
@@ -348,7 +432,8 @@ namespace gl_renderer
 					switch ( m_boundTarget )
 					{
 					case GL_TEXTURE_1D:
-						glLogCall( m_device.getContext(), glTexSubImage1D
+						glLogCall( context
+							, glTexSubImage1D
 							, m_boundTarget
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
@@ -359,7 +444,8 @@ namespace gl_renderer
 						break;
 
 					case GL_TEXTURE_2D:
-						glLogCall( m_device.getContext(), glTexSubImage2D
+						glLogCall( context
+							, glTexSubImage2D
 							, m_boundTarget
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
@@ -372,7 +458,8 @@ namespace gl_renderer
 						break;
 
 					case GL_TEXTURE_3D:
-						glLogCall( m_device.getContext(), glTexSubImage3D
+						glLogCall( context
+							, glTexSubImage3D
 							, m_boundTarget
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
@@ -387,7 +474,8 @@ namespace gl_renderer
 						break;
 
 					case GL_TEXTURE_1D_ARRAY:
-						glLogCall( m_device.getContext(), glTexSubImage2D
+						glLogCall( context
+							, glTexSubImage2D
 							, m_boundTarget
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
@@ -400,7 +488,8 @@ namespace gl_renderer
 						break;
 
 					case GL_TEXTURE_2D_ARRAY:
-						glLogCall( m_device.getContext(), glTexSubImage3D
+						glLogCall( context
+							, glTexSubImage3D
 							, m_boundTarget
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
@@ -441,9 +530,21 @@ namespace gl_renderer
 				, GLuint boundTarget )
 				: DeviceMemory::DeviceMemoryImpl{ device, requirements, flags, boundResource, boundTarget }
 			{
-				glLogCall( m_device.getContext(), glBindBuffer, m_boundTarget, m_boundResource );
-				glLogCall( m_device.getContext(), glBufferStorage, m_boundTarget, GLsizeiptr( m_requirements.size ), nullptr, GLbitfield( convert( flags ) ) );
-				glLogCall( m_device.getContext(), glBindBuffer, m_boundTarget, 0u );
+				auto context = m_device.getContext();
+				glLogCall( context
+					, glBindBuffer
+					, m_boundTarget
+					, m_boundResource );
+				glLogCall( context
+					, glBufferStorage
+					, m_boundTarget
+					, GLsizeiptr( m_requirements.size )
+					, nullptr
+					, GLbitfield( convert( flags ) ) );
+				glLogCall( context
+					, glBindBuffer
+					, m_boundTarget
+					, 0u );
 			}
 
 			uint8_t * lock( uint32_t offset
@@ -452,8 +553,17 @@ namespace gl_renderer
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, false );
-				glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_COPY_WRITE, m_boundResource );
-				auto result = glLogCall( m_device.getContext(), glMapBufferRange, GL_BUFFER_TARGET_COPY_WRITE, offset, size, m_mapFlags );
+				auto context = m_device.getContext();
+				glLogCall( context
+					, glBindBuffer
+					, GL_BUFFER_TARGET_COPY_WRITE
+					, m_boundResource );
+				auto result = glLogCall( context
+					, glMapBufferRange
+					, GL_BUFFER_TARGET_COPY_WRITE
+					, offset
+					, size
+					, m_mapFlags );
 				setDebugValue( m_isLocked, result != nullptr );
 				return reinterpret_cast< uint8_t * >( result );
 			}
@@ -463,7 +573,12 @@ namespace gl_renderer
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, true );
-				glLogCall( m_device.getContext(), glFlushMappedBufferRange, GL_BUFFER_TARGET_COPY_WRITE, offset, size );
+				auto context = m_device.getContext();
+				glLogCall( context
+					, glFlushMappedBufferRange
+					, GL_BUFFER_TARGET_COPY_WRITE
+					, offset
+					, size );
 			}
 
 			void invalidate( uint32_t offset
@@ -471,15 +586,26 @@ namespace gl_renderer
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, true );
-				glLogCall( m_device.getContext(), glInvalidateBufferSubData, GL_BUFFER_TARGET_COPY_WRITE, offset, size );
+				auto context = m_device.getContext();
+				glLogCall( context
+					, glInvalidateBufferSubData
+					, GL_BUFFER_TARGET_COPY_WRITE
+					, offset
+					, size );
 			}
 
 			void unlock()const override
 			{
 				assert( checkFlag( m_flags, renderer::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, true );
-				glLogCall( m_device.getContext(), glUnmapBuffer, GL_BUFFER_TARGET_COPY_WRITE );
-				glLogCall( m_device.getContext(), glBindBuffer, GL_BUFFER_TARGET_COPY_WRITE, 0u );
+				auto context = m_device.getContext();
+				glLogCall( context
+					, glUnmapBuffer
+					, GL_BUFFER_TARGET_COPY_WRITE );
+				glLogCall( context
+					, glBindBuffer
+					, GL_BUFFER_TARGET_COPY_WRITE
+					, 0u );
 				setDebugValue( m_isLocked, false );
 			}
 

@@ -78,7 +78,8 @@ namespace gl_renderer
 		*\param[in] attaches
 		*	Les attaches.
 		*/
-		void setDrawBuffers( AttachmentDescriptionArray const & attaches )const;
+		void setDrawBuffers( ContextLock const & context
+			, AttachmentDescriptionArray const & attaches )const;
 		/**
 		*\~english
 		*\brief
@@ -91,7 +92,8 @@ namespace gl_renderer
 		*\param[in] attaches
 		*	Les attaches.
 		*/
-		void setDrawBuffers( renderer::AttachmentReferenceArray const & attaches )const;
+		void setDrawBuffers( ContextLock const & context
+			, renderer::AttachmentReferenceArray const & attaches )const;
 		/**
 		*\~english
 		*name

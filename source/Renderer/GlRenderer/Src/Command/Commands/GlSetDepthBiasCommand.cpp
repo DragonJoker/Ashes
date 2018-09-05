@@ -17,10 +17,10 @@ namespace gl_renderer
 	{
 	}
 
-	void SetDepthBiasCommand::apply()const
+	void SetDepthBiasCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "SetDepthBiasCommand" );
-		glLogCall( m_device.getContext()
+		glLogCall( context
 			, glPolygonOffsetClampEXT
 			, m_slopeFactor
 			, m_constantFactor

@@ -97,35 +97,50 @@ namespace gl_renderer
 	{
 	}
 
-	void BlitImageCommand::apply()const
+	void BlitImageCommand::apply( ContextLock const & context )const
 	{
 		for ( auto & playerCopy : m_layerCopies )
 		{
 			auto & layerCopy = *playerCopy;
 			// Setup source FBO
-			glLogCall( m_device.getContext(), glBindFramebuffer, GL_FRAMEBUFFER, m_srcFbo );
-			glLogCall( m_device.getContext(), glFramebufferTexture2D
+			glLogCall( context
+				, glBindFramebuffer
+				, GL_FRAMEBUFFER
+				, m_srcFbo );
+			glLogCall( context
+				, glFramebufferTexture2D
 				, GL_FRAMEBUFFER
 				, layerCopy.src.point
 				, m_srcTarget
 				, layerCopy.src.object
 				, layerCopy.region.srcSubresource.mipLevel );
-			checkCompleteness( m_device.getContext().glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+			checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
 
 			// Setup dst FBO
-			glLogCall( m_device.getContext(), glBindFramebuffer, GL_FRAMEBUFFER, m_dstFbo );
-			glLogCall( m_device.getContext(), glFramebufferTexture2D
+			glLogCall( context
+				, glBindFramebuffer
+				, GL_FRAMEBUFFER
+				, m_dstFbo );
+			glLogCall( context
+				, glFramebufferTexture2D
 				, GL_FRAMEBUFFER
 				, layerCopy.dst.point
 				, m_dstTarget
 				, layerCopy.dst.object
 				, layerCopy.region.dstSubresource.mipLevel );
-			checkCompleteness( m_device.getContext().glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+			checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
 
 			// Perform the blit
-			glLogCall( m_device.getContext(), glBindFramebuffer, GL_READ_FRAMEBUFFER, m_srcFbo );
-			glLogCall( m_device.getContext(), glBindFramebuffer, GL_DRAW_FRAMEBUFFER, m_dstFbo );
-			glLogCall( m_device.getContext(), glBlitFramebuffer
+			glLogCall( context
+				, glBindFramebuffer
+				, GL_READ_FRAMEBUFFER
+				, m_srcFbo );
+			glLogCall( context
+				, glBindFramebuffer
+				, GL_DRAW_FRAMEBUFFER
+				, m_dstFbo );
+			glLogCall( context
+				, glBlitFramebuffer
 				, layerCopy.region.srcOffset.x
 				, layerCopy.region.srcOffset.y
 				, layerCopy.region.srcExtent.width
@@ -136,8 +151,14 @@ namespace gl_renderer
 				, layerCopy.region.dstExtent.height
 				, m_mask
 				, m_filter );
-			glLogCall( m_device.getContext(), glBindFramebuffer, GL_DRAW_FRAMEBUFFER, 0u );
-			glLogCall( m_device.getContext(), glBindFramebuffer, GL_READ_FRAMEBUFFER, 0u );
+			glLogCall( context
+				, glBindFramebuffer
+				, GL_DRAW_FRAMEBUFFER
+				, 0u );
+			glLogCall( context
+				, glBindFramebuffer
+				, GL_READ_FRAMEBUFFER
+				, 0u );
 		}
 	}
 

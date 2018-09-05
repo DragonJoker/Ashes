@@ -13,10 +13,13 @@ namespace gl_renderer
 	{
 	}
 
-	void EndRenderPassCommand::apply()const
+	void EndRenderPassCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "EndRenderPassCommand" );
-		glLogCall( m_device.getContext(), glBindFramebuffer, GL_FRAMEBUFFER, 0u );
+		glLogCall( context
+			, glBindFramebuffer
+			, GL_FRAMEBUFFER
+			, 0u );
 	}
 
 	CommandPtr EndRenderPassCommand::clone()const

@@ -37,7 +37,7 @@ namespace gl_renderer
 			, renderer::SubpassContents contents
 			, renderer::SubpassDescription const & subpass );
 
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

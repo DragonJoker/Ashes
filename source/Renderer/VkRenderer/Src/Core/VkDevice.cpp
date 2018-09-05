@@ -144,6 +144,11 @@ namespace vk_renderer
 		vkDestroyDevice( m_device, nullptr );
 	}
 
+	void Device::updateSurfaceCapabilities()const
+	{
+		m_connection->updateSurfaceCapabilities();
+	}
+
 	renderer::RenderPassPtr Device::createRenderPass( renderer::RenderPassCreateInfo createInfo )const
 	{
 		return std::make_unique< RenderPass >( *this, std::move( createInfo ) );

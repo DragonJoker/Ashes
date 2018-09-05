@@ -27,7 +27,7 @@ namespace gl_renderer
 		ScissorCommand( Device const & device
 			, renderer::Scissor const & scissor );
 
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

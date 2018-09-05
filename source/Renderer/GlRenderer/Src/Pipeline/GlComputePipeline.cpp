@@ -16,7 +16,7 @@ namespace gl_renderer
 		, m_layout{ layout }
 		, m_program{ m_device, m_createInfo.stage }
 	{
-		m_program.link();
+		m_program.link( m_device.getContext() );
 
 		if ( m_createInfo.stage.specialisationInfo )
 		{

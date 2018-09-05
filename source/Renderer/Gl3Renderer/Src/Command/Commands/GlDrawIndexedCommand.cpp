@@ -51,13 +51,14 @@ namespace gl_renderer
 		}
 	}
 
-	void DrawIndexedCommand::apply()const
+	void DrawIndexedCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "DrawIndexedCommand" );
 
 		if ( m_device.getRenderer().getFeatures().hasBaseInstance )
 		{
-			glLogCall( m_device.getContext(), glDrawElementsInstancedBaseVertexBaseInstance_ARB
+			glLogCall( context
+				, glDrawElementsInstancedBaseVertexBaseInstance_ARB
 				, m_mode
 				, m_indexCount
 				, m_type
@@ -68,7 +69,8 @@ namespace gl_renderer
 		}
 		else
 		{
-			glLogCall( m_device.getContext(), glDrawElementsInstancedBaseVertex
+			glLogCall( context
+				, glDrawElementsInstancedBaseVertex
 				, m_mode
 				, m_indexCount
 				, m_type

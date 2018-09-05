@@ -132,18 +132,30 @@ namespace gl_renderer
 			}
 		}
 
-		apply( m_device, m_cbState );
-		apply( m_device, m_rsState
+		auto context = device.getContext();
+		apply( m_device
+			, context
+			, m_cbState );
+		apply( m_device
+			, context
+			, m_rsState
 			, hasDynamicState( renderer::DynamicState::eLineWidth )
 			, hasDynamicState( renderer::DynamicState::eDepthBias ) );
-		apply( m_device, m_dsState );
-		apply( m_device, m_msState );
-		apply( m_device, m_tsState );
-		m_program.link();
+		apply( m_device
+			, context
+			, m_dsState );
+		apply( m_device
+			, context
+			, m_msState );
+		apply( m_device
+			, context
+			, m_tsState );
+		m_program.link( context );
 
 		if ( m_device.getRenderer().isValidationEnabled() )
 		{
 			validatePipeline( m_device
+				, context
 				, m_layout
 				, m_program.getProgram()
 				, m_vertexInputState

@@ -20,7 +20,7 @@ namespace gl_renderer
 			, renderer::QueryPool const & pool
 			, uint32_t firstQuery
 			, uint32_t queryCount );
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 	};
 }

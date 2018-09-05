@@ -62,8 +62,13 @@ namespace gl_renderer
 		, m_device{ device }
 		, m_target{ convert( m_createInfo.viewType, texture.getSamplesCount() ) }
 	{
-		glLogCall( m_device.getContext(), glGenTextures, 1, &m_texture );
-		glLogCall( m_device.getContext(), glTextureView
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glGenTextures
+			, 1
+			, &m_texture );
+		glLogCall( context
+			, glTextureView
 			, m_texture
 			, m_target
 			, texture.getImage()
@@ -72,46 +77,72 @@ namespace gl_renderer
 			, m_createInfo.subresourceRange.levelCount
 			, m_createInfo.subresourceRange.baseArrayLayer
 			, m_createInfo.subresourceRange.layerCount );
-		glLogCall( m_device.getContext(), glBindTexture, m_target, m_texture );
+		glLogCall( context
+			, glBindTexture
+			, m_target
+			, m_texture );
 
 		if ( m_createInfo.components.r != renderer::ComponentSwizzle::eIdentity )
 		{
-			glLogCall( m_device.getContext(), glTexParameteri, m_target, GL_SWIZZLE_R, convert( m_createInfo.components.r ) );
+			glLogCall( context
+				, glTexParameteri
+				, m_target
+				, GL_SWIZZLE_R
+				, convert( m_createInfo.components.r ) );
 		}
 
 		if ( m_createInfo.components.g != renderer::ComponentSwizzle::eIdentity )
 		{
-			glLogCall( m_device.getContext(), glTexParameteri, m_target, GL_SWIZZLE_G, convert( m_createInfo.components.g ) );
+			glLogCall( context
+				, glTexParameteri
+				, m_target
+				, GL_SWIZZLE_G
+				, convert( m_createInfo.components.g ) );
 		}
 
 		if ( m_createInfo.components.b != renderer::ComponentSwizzle::eIdentity )
 		{
-			glLogCall( m_device.getContext(), glTexParameteri, m_target, GL_SWIZZLE_B, convert( m_createInfo.components.b ) );
+			glLogCall( context
+				, glTexParameteri
+				, m_target
+				, GL_SWIZZLE_B
+				, convert( m_createInfo.components.b ) );
 		}
 
 		if ( m_createInfo.components.a != renderer::ComponentSwizzle::eIdentity )
 		{
-			glLogCall( m_device.getContext(), glTexParameteri, m_target, GL_SWIZZLE_A, convert( m_createInfo.components.a ) );
+			glLogCall( context
+				, glTexParameteri
+				, m_target
+				, GL_SWIZZLE_A
+				, convert( m_createInfo.components.a ) );
 		}
 
 		int minLevel = 0;
-		m_device.getContext().glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_MIN_LEVEL, &minLevel );
+		context->glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_MIN_LEVEL, &minLevel );
 		assert( minLevel == m_createInfo.subresourceRange.baseMipLevel );
 		int numLevels = 0;
-		m_device.getContext().glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_NUM_LEVELS, &numLevels );
+		context->glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_NUM_LEVELS, &numLevels );
 		assert( numLevels == m_createInfo.subresourceRange.levelCount );
 		int minLayer = 0;
-		m_device.getContext().glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_MIN_LAYER, &minLayer );
+		context->glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_MIN_LAYER, &minLayer );
 		assert( minLayer == m_createInfo.subresourceRange.baseArrayLayer );
 		int numLayers = 0;
-		m_device.getContext().glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_NUM_LAYERS, &numLayers );
+		context->glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_NUM_LAYERS, &numLayers );
 		assert( numLayers == m_createInfo.subresourceRange.layerCount );
-		glLogCall( m_device.getContext(), glBindTexture, m_target, 0u );
+		glLogCall( context
+			, glBindTexture
+			, m_target
+			, 0u );
 	}
 
 	TextureView::~TextureView()
 	{
-		glLogCall( m_device.getContext(), glDeleteTextures, 1, &m_texture );
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glDeleteTextures
+			, 1
+			, &m_texture );
 	}
 
 	GLuint TextureView::getImage()const noexcept

@@ -51,6 +51,7 @@ namespace vk_renderer
 	void SwapChain::reset( renderer::Extent2D const & size )
 	{
 		m_dimensions = size;
+		m_device.updateSurfaceCapabilities();
 		doResetSwapChain();
 	}
 

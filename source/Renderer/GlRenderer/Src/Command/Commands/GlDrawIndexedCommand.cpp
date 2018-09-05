@@ -43,10 +43,10 @@ namespace gl_renderer
 	{
 	}
 
-	void DrawIndexedCommand::apply()const
+	void DrawIndexedCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "DrawIndexedCommand" );
-		glLogCall( m_device.getContext()
+		glLogCall( context
 			, glDrawElementsInstancedBaseVertexBaseInstance
 			, m_mode
 			, m_indexCount

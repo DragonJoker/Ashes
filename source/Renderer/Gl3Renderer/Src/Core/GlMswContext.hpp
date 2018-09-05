@@ -16,11 +16,12 @@ namespace gl_renderer
 	{
 	public:
 		MswContext( PhysicalDevice const & gpu
-			, renderer::ConnectionPtr && connection );
+			, renderer::Connection const & connection
+			, Context const * mainContext );
 		~MswContext();
 
-		void setCurrent()const override;
-		void endCurrent()const override;
+		void enable()const override;
+		void disable()const override;
 		void swapBuffers()const override;
 
 		inline HDC getHDC()const
@@ -38,7 +39,6 @@ namespace gl_renderer
 		template< typename ... Params >\
 		auto wgl##fun( Params... params )const\
 		{\
-			m_selector.enableContextForCurrentThread();\
 			return m_wgl##fun( params... );\
 		}
 #define WGL_LIB_FUNCTION_EXT( fun, ext, name )\
@@ -46,7 +46,6 @@ namespace gl_renderer
 		template< typename ... Params >\
 		auto wgl##fun##_##ext( Params... params )const\
 		{\
-			m_selector.enableContextForCurrentThread();\
 			return m_wgl##fun##_##ext( params... );\
 		}\
 		bool whas##fun##_##ext()const\
@@ -60,7 +59,7 @@ namespace gl_renderer
 		void doLoadMswFunctions();
 		HGLRC doCreateDummyContext();
 		bool doSelectFormat();
-		bool doCreateGl3Context();
+		bool doCreateGl3Context( MswContext const * mainContext );
 
 	private:
 		HDC m_hDC;

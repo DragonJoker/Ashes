@@ -17,17 +17,17 @@ namespace gl_renderer
 	{
 	}
 
-	void DispatchIndirectCommand::apply()const
+	void DispatchIndirectCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "DispatchIndirectCommand" );
-		glLogCall( m_device.getContext()
+		glLogCall( context
 			, glBindBuffer
 			, GL_BUFFER_TARGET_DISPATCH_INDIRECT
 			, m_buffer.getBuffer() );
-		glLogCall( m_device.getContext()
+		glLogCall( context
 			, glDispatchComputeIndirect
 			, GLintptr( BufferOffset( m_offset ) ) );
-		glLogCall( m_device.getContext()
+		glLogCall( context
 			, glBindBuffer
 			, GL_BUFFER_TARGET_DISPATCH_INDIRECT, 0 );
 	}

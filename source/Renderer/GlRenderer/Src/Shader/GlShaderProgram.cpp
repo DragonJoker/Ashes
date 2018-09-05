@@ -15,18 +15,27 @@ namespace gl_renderer
 {
 	namespace
 	{
-		std::string doRetrieveLinkerLog( Device const & device
+		std::string doRetrieveLinkerLog( ContextLock const & context
 			, GLuint programName )
 		{
 			std::string log;
 			int infologLength = 0;
 			int charsWritten = 0;
-			glLogCall( device.getContext(), glGetProgramiv, programName, GL_INFO_LOG_LENGTH, &infologLength );
+			glLogCall( context
+				, glGetProgramiv
+				, programName
+				, GL_INFO_LOG_LENGTH
+				, &infologLength );
 
 			if ( infologLength > 0 )
 			{
 				std::vector< char > infoLog( infologLength + 1 );
-				glLogCall( device.getContext(), glGetProgramInfoLog, programName, infologLength, &charsWritten, infoLog.data() );
+				glLogCall( context
+					, glGetProgramInfoLog
+					, programName
+					, infologLength
+					, &charsWritten
+					, infoLog.data() );
 				log = infoLog.data();
 			}
 
@@ -38,18 +47,27 @@ namespace gl_renderer
 			return log;
 		}
 
-		std::string doRetrieveCompilerLog( Device const & device
+		std::string doRetrieveCompilerLog( ContextLock const & context
 			, GLuint shaderName )
 		{
 			std::string log;
 			int infologLength = 0;
 			int charsWritten = 0;
-			glLogCall( device.getContext(), glGetShaderiv, shaderName, GL_INFO_LOG_LENGTH, &infologLength );
+			glLogCall( context
+				, glGetShaderiv
+				, shaderName
+				, GL_INFO_LOG_LENGTH
+				, &infologLength );
 
 			if ( infologLength > 0 )
 			{
 				std::vector< char > infoLog( infologLength + 1 );
-				glLogCall( device.getContext(), glGetShaderInfoLog, shaderName, infologLength, &charsWritten, infoLog.data() );
+				glLogCall( context
+					, glGetShaderInfoLog
+					, shaderName
+					, infologLength
+					, &charsWritten
+					, infoLog.data() );
 				log = infoLog.data();
 			}
 
@@ -61,11 +79,11 @@ namespace gl_renderer
 			return log;
 		}
 
-		bool doCheckCompileErrors( Device const & device
+		bool doCheckCompileErrors( ContextLock const & context
 			, bool compiled
 			, GLuint shaderName )
 		{
-			auto compilerLog = doRetrieveCompilerLog( device
+			auto compilerLog = doRetrieveCompilerLog( context
 				, shaderName );
 
 			if ( !compilerLog.empty() )
@@ -87,7 +105,7 @@ namespace gl_renderer
 			return compiled;
 		}
 
-		void doInitialiseState( Device const & device
+		void doInitialiseState( ContextLock const & context
 			, renderer::ShaderStageState const & stage )
 		{
 			auto & module = static_cast< ShaderModule const & >( *stage.module );
@@ -113,7 +131,8 @@ namespace gl_renderer
 						++src;
 					}
 
-					glLogCall( device.getContext(), glSpecializeShader
+					glLogCall( context
+						, glSpecializeShader
 						, shader
 						, stage.entryPoint.c_str()
 						, count
@@ -122,7 +141,8 @@ namespace gl_renderer
 				}
 				else
 				{
-					glLogCall( device.getContext(), glSpecializeShader
+					glLogCall( context
+						, glSpecializeShader
 						, shader
 						, stage.entryPoint.c_str()
 						, 0u
@@ -131,9 +151,13 @@ namespace gl_renderer
 				}
 
 				int compiled = 0;
-				glLogCall( device.getContext(), glGetShaderiv, shader, GL_INFO_COMPILE_STATUS, &compiled );
+				glLogCall( context
+					, glGetShaderiv
+					, shader
+					, GL_INFO_COMPILE_STATUS
+					, &compiled );
 
-				if ( !doCheckCompileErrors( device, compiled != 0, shader ) )
+				if ( !doCheckCompileErrors( context, compiled != 0, shader ) )
 				{
 					throw std::runtime_error{ "Shader compilation failed." };
 				}
@@ -144,46 +168,71 @@ namespace gl_renderer
 	ShaderProgram::ShaderProgram( Device const & device
 		, std::vector< renderer::ShaderStageState > const & stages )
 		: m_device{ device }
-		, m_program{ m_device.getContext().glCreateProgram() }
 	{
+		auto context = m_device.getContext();
+		m_program = context->glCreateProgram();
+
 		for ( auto & stage : stages )
 		{
 			auto & module = static_cast< ShaderModule const & >( *stage.module );
 			m_shaders.push_back( module.getShader() );
-			doInitialiseState( m_device, stage );
-			glLogCall( m_device.getContext(), glAttachShader, m_program, m_shaders.back() );
+			doInitialiseState( context, stage );
+			glLogCall( context
+				, glAttachShader
+				, m_program
+				, m_shaders.back() );
 		}
 	}
 
 	ShaderProgram::ShaderProgram( Device const & device
 		, renderer::ShaderStageState const & stage )
 		: m_device{ device }
-		, m_program{ m_device.getContext().glCreateProgram() }
 	{
+		auto context = m_device.getContext();
+		m_program = context->glCreateProgram();
 		auto & module = static_cast< ShaderModule const & >( *stage.module );
 		m_shaders.push_back( module.getShader() );
-		doInitialiseState( m_device, stage );
-		glLogCall( m_device.getContext(), glAttachShader, m_program, m_shaders.back() );
+		doInitialiseState( context, stage );
+		glLogCall( context
+			, glAttachShader
+			, m_program
+			, m_shaders.back() );
 	}
 
 	ShaderProgram::~ShaderProgram()
 	{
+		auto context = m_device.getContext();
+
 		for ( auto shaderName : m_shaders )
 		{
-			glLogCall( m_device.getContext(), glDeleteShader, shaderName );
+			glLogCall( context
+				, glDeleteShader
+				, shaderName );
 		}
 
-		glLogCall( m_device.getContext(), glDeleteProgram, m_program );
+		glLogCall( context
+			, glDeleteProgram
+			, m_program );
 	}
 
-	void ShaderProgram::link()const
+	void ShaderProgram::link( ContextLock const & context )const
 	{
 		int attached = 0;
-		glLogCall( m_device.getContext(), glGetProgramiv, m_program, GL_INFO_ATTACHED_SHADERS, &attached );
-		glLogCall( m_device.getContext(), glLinkProgram, m_program );
+		glLogCall( context
+			, glGetProgramiv
+			, m_program
+			, GL_INFO_ATTACHED_SHADERS
+			, &attached );
+		glLogCall( context
+			, glLinkProgram
+			, m_program );
 		int linked = 0;
-		glLogCall( m_device.getContext(), glGetProgramiv, m_program, GL_INFO_LINK_STATUS, &linked );
-		auto linkerLog = doRetrieveLinkerLog( m_device, m_program );
+		glLogCall( context
+			, glGetProgramiv
+			, m_program
+			, GL_INFO_LINK_STATUS
+			, &linked );
+		auto linkerLog = doRetrieveLinkerLog( context, m_program );
 
 		if ( linked
 			&& attached == int( m_shaders.size() )
@@ -195,7 +244,11 @@ namespace gl_renderer
 			}
 
 			int validated = 0;
-			glLogCall( m_device.getContext(), glGetProgramiv, m_program, GL_INFO_VALIDATE_STATUS, &validated );
+			glLogCall( context
+				, glGetProgramiv
+				, m_program
+				, GL_INFO_VALIDATE_STATUS
+				, &validated );
 
 			if ( !validated )
 			{

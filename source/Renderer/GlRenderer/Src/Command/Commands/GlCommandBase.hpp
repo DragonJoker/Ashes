@@ -16,7 +16,7 @@ namespace gl_renderer
 		CommandBase( Device const & device );
 		virtual ~CommandBase()noexcept;
 
-		virtual void apply()const = 0;
+		virtual void apply( ContextLock const & context )const = 0;
 		virtual CommandPtr clone()const = 0;
 
 	protected:

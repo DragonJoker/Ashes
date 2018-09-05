@@ -19,7 +19,7 @@ namespace gl_renderer
 		PushConstantsCommand( Device const & device
 			, renderer::PipelineLayout const & layout
 			, renderer::PushConstantsBufferBase const & pcb );
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

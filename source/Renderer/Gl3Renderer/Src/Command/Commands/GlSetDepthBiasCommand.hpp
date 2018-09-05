@@ -17,7 +17,7 @@ namespace gl_renderer
 			, float clamp
 			, float slopeFactor );
 
-		void apply()const override;
+		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:

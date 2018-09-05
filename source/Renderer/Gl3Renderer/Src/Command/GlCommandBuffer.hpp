@@ -31,7 +31,7 @@ namespace gl_renderer
 		CommandBuffer( Device const & device
 			, renderer::CommandPool const & pool
 			, bool primary );
-		void applyPostSubmitActions()const;
+		void applyPostSubmitActions( ContextLock const & context )const;
 		void generateMipmaps( Texture const & texture )const;
 		/**
 		*\copydoc	renderer::CommandBuffer::begin
@@ -298,7 +298,7 @@ namespace gl_renderer
 			GeometryBuffers * m_boundVao{ nullptr };
 			GeometryBuffersRefArray m_vaos;
 		};
-		mutable std::vector< std::function< void() > > m_afterSubmitActions;
+		mutable std::vector< std::function< void( ContextLock const & ) > > m_afterSubmitActions;
 		mutable State m_state;
 	};
 }

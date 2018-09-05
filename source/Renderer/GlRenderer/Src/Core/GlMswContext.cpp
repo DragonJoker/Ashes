@@ -21,7 +21,6 @@ namespace gl_renderer
 			return function != nullptr;
 		}
 
-
 #if !defined( NDEBUG )
 
 		static const int GL_CONTEXT_CREATION_DEFAULT_FLAGS =  GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_DEBUG_BIT;
@@ -36,35 +35,35 @@ namespace gl_renderer
 	}
 
 	MswContext::MswContext( PhysicalDevice const & gpu
-		, renderer::ConnectionPtr && connection )
-		: Context{ gpu, std::move( connection ) }
+		, renderer::Connection const & connection
+		, Context const * mainContext )
+		: Context{ gpu, connection }
 		, m_hDC( nullptr )
 		, m_hContext( nullptr )
-		, m_hWnd( m_connection->getHandle().getInternal< renderer::IMswWindowHandle >().getHwnd() )
+		, m_hWnd( m_connection.getHandle().getInternal< renderer::IMswWindowHandle >().getHwnd() )
 	{
 		m_hDC = ::GetDC( m_hWnd );
 
 		if ( doSelectFormat() )
 		{
 			m_hContext = wglCreateContext( m_hDC );
-			setCurrent();
+			enable();
 			doLoadBaseFunctions();
 			doLoadMswFunctions();
 			loadDebugFunctions();
-			endCurrent();
+			disable();
 
 			double fversion{ 0u };
 
-			if ( !doCreateGl3Context() )
+			if ( !doCreateGl3Context( mainContext ) )
 			{
 				wglDeleteContext( m_hContext );
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
 
-			setCurrent();
+			enable();
 			m_wglSwapIntervalEXT( 0 );
-			endCurrent();
-			m_selector.registerContext( *this );
+			disable();
 		}
 	}
 
@@ -74,7 +73,6 @@ namespace gl_renderer
 		{
 			if ( m_hDC )
 			{
-				m_selector.unregisterContext( *this );
 				wglDeleteContext( m_hContext );
 				::ReleaseDC( m_hWnd, m_hDC );
 			}
@@ -84,13 +82,15 @@ namespace gl_renderer
 		}
 	}
 
-	void MswContext::setCurrent()const
+	void MswContext::enable()const
 	{
 		wglMakeCurrent( m_hDC, m_hContext );
+		m_enabled = true;
 	}
 
-	void MswContext::endCurrent()const
+	void MswContext::disable()const
 	{
+		m_enabled = false;
 		wglMakeCurrent( nullptr, nullptr );
 	}
 
@@ -119,17 +119,17 @@ namespace gl_renderer
 	void MswContext::doLoadMswFunctions()
 	{
 #	define WGL_LIB_BASE_FUNCTION( fun )\
-			m_wgl##fun = &::wgl##fun;
+		m_wgl##fun = &::wgl##fun;
 #	define WGL_LIB_FUNCTION( fun )\
-			if ( !( getFunction( "wgl"#fun, m_wgl##fun ) ) )\
-			{\
-				throw std::runtime_error{ std::string{ "Couldn't load function " } + "wgl"#fun };\
-			}
+		if ( !( getFunction( "wgl"#fun, m_wgl##fun ) ) )\
+		{\
+			throw std::runtime_error{ std::string{ "Couldn't load function " } + "wgl"#fun };\
+		}
 #	define WGL_LIB_FUNCTION_OPT( fun )\
-			if ( !( getFunction( "wgl"#fun, m_wgl##fun ) ) )\
-			{\
-				renderer::Logger::logError( std::string{ "Couldn't load function " } + "wgl"#fun );\
-			}
+		if ( !( getFunction( "wgl"#fun, m_wgl##fun ) ) )\
+		{\
+			renderer::Logger::logError( std::string{ "Couldn't load function " } + "wgl"#fun );\
+		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 	}
 
@@ -171,7 +171,7 @@ namespace gl_renderer
 		return result;
 	}
 
-	bool MswContext::doCreateGl3Context()
+	bool MswContext::doCreateGl3Context( Context const * mainContext )
 	{
 		bool result = false;
 
@@ -189,11 +189,15 @@ namespace gl_renderer
 				0
 			};
 
-			setCurrent();
+			enable();
 			::glGetError();
 			getFunction( "wglCreateContextAttribsARB", glCreateContextAttribs );
-			hContext = glCreateContextAttribs( m_hDC, nullptr, attribList.data() );
-			endCurrent();
+			hContext = glCreateContextAttribs( m_hDC
+				, ( mainContext
+					? static_cast< MswContext const * >( mainContext )->m_hContext
+					: nullptr )
+				, attribList.data() );
+			disable();
 			wglDeleteContext( m_hContext );
 			m_hContext = hContext;
 			result = m_hContext != nullptr;
@@ -201,9 +205,14 @@ namespace gl_renderer
 			if ( !result )
 			{
 				std::stringstream error;
-				error << "Failed to create a " << m_gpu.getMajor() << "." << m_gpu.getMinor() << " OpenGL context (0x" << std::hex << glGetError() << ").";
+				error << "Failed to create an OpenGL " << m_gpu.getMajor() << "." << m_gpu.getMinor() << " context (0x" << std::hex << ::glGetError() << ").";
 				throw std::runtime_error{ error.str() };
 			}
+		}
+		catch ( std::exception & exc )
+		{
+			renderer::Logger::logError( exc.what() );
+			result = false;
 		}
 		catch ( ... )
 		{

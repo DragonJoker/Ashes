@@ -17,15 +17,25 @@ namespace gl_renderer
 		std::string doRetrieveCompilerLog( Device const & device
 			, GLuint shaderName )
 		{
+			auto context = device.getContext();
 			std::string log;
 			int infologLength = 0;
 			int charsWritten = 0;
-			glLogCall( device.getContext(), glGetShaderiv, shaderName, GL_INFO_LOG_LENGTH, &infologLength );
+			glLogCall( context
+				, glGetShaderiv
+				, shaderName
+				, GL_INFO_LOG_LENGTH
+				, &infologLength );
 
 			if ( infologLength > 0 )
 			{
 				std::vector< char > infoLog( infologLength + 1 );
-				glLogCall( device.getContext(), glGetShaderInfoLog, shaderName, infologLength, &charsWritten, infoLog.data() );
+				glLogCall( context
+					, glGetShaderInfoLog
+					, shaderName
+					, infologLength
+					, &charsWritten
+					, infoLog.data() );
 				log = infoLog.data();
 			}
 
@@ -68,7 +78,7 @@ namespace gl_renderer
 		, renderer::ShaderStageFlag stage )
 		: renderer::ShaderModule{ device, stage }
 		, m_device{ device }
-		, m_shader{ m_device.getContext().glCreateShader( convert( stage ) ) }
+		, m_shader{ m_device.getContext()->glCreateShader( convert( stage ) ) }
 		, m_isSpirV{ false }
 	{
 	}
@@ -102,10 +112,22 @@ $&)" );
 
 		auto length = int( source.size() );
 		char const * data = source.data();
-		glLogCall( m_device.getContext(), glShaderSource, m_shader, 1, &data, &length );
-		glLogCall( m_device.getContext(), glCompileShader, m_shader );
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glShaderSource
+			, m_shader
+			, 1
+			, &data
+			, &length );
+		glLogCall( context
+			, glCompileShader
+			, m_shader );
 		int compiled = 0;
-		glLogCall( m_device.getContext(), glGetShaderiv, m_shader, GL_INFO_COMPILE_STATUS, &compiled );
+		glLogCall( context
+			, glGetShaderiv
+			, m_shader
+			, GL_INFO_COMPILE_STATUS
+			, &compiled );
 
 		if ( !doCheckCompileErrors( m_device, compiled != 0, m_shader ) )
 		{
@@ -120,7 +142,8 @@ $&)" );
 			throw std::runtime_error{ "Shader compilation from SPIR-V is not supported." };
 		}
 
-		m_device.getContext().glShaderBinary( 1u, &m_shader, GL_SHADER_BINARY_FORMAT_SPIR_V, fileData.data(), GLsizei( fileData.size() ) );
+		auto context = m_device.getContext();
+		context->glShaderBinary( 1u, &m_shader, GL_SHADER_BINARY_FORMAT_SPIR_V, fileData.data(), GLsizei( fileData.size() ) );
 		m_isSpirV = true;
 	}
 }
