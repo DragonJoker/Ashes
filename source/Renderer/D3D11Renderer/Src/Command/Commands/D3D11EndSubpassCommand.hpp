@@ -22,5 +22,6 @@ namespace d3d11_renderer
 	private:
 		FrameBuffer const & m_frameBuffer;
 		renderer::SubpassDescription const & m_subpass;
+		std::vector< ID3D11RenderTargetView * > m_attaches;
 	};
 }

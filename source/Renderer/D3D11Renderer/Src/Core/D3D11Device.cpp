@@ -366,34 +366,35 @@ namespace d3d11_renderer
 		{
 #if !defined( NDEBUG )
 
-			dxDebugName( m_device, MainDevice );
 			m_device->QueryInterface( __uuidof( ID3D11Debug ), reinterpret_cast< void ** >( &m_debug ) );
 
 #endif
 
+			dxDebugName( m_device, Device );
+
 			if ( S_OK == m_device->QueryInterface( __uuidof( ID3D11Device1 ), reinterpret_cast< void ** >( &m_device1 ) ) )
 			{
-				dxDebugName( m_device1, MainDevice1 );
+				dxDebugName( m_device1, Device1 );
 			}
 
 			if ( S_OK == m_device->QueryInterface( __uuidof( ID3D11Device2 ), reinterpret_cast< void ** >( &m_device2 ) ) )
 			{
-				dxDebugName( m_device2, MainDevice2 );
+				dxDebugName( m_device2, Device2 );
 			}
 
 			if ( S_OK == m_device->QueryInterface( __uuidof( ID3D11Device3 ), reinterpret_cast< void ** >( &m_device3 ) ) )
 			{
-				dxDebugName( m_device3, MainDevice3 );
+				dxDebugName( m_device3, Device3 );
 			}
 
 			if ( S_OK == m_device->QueryInterface( __uuidof( ID3D11Device4 ), reinterpret_cast< void ** >( &m_device4 ) ) )
 			{
-				dxDebugName( m_device4, MainDevice4 );
+				dxDebugName( m_device4, Device4 );
 			}
 
 			if ( S_OK == m_device->QueryInterface( __uuidof( ID3D11Device5 ), reinterpret_cast< void ** >( &m_device5 ) ) )
 			{
-				dxDebugName( m_device5, MainDevice5 );
+				dxDebugName( m_device5, Device5 );
 			}
 		}
 	}

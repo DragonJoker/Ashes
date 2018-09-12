@@ -20,6 +20,7 @@ See LICENSE file in root folder.
 
 #include "Commands/D3D11BeginQueryCommand.hpp"
 #include "Commands/D3D11BeginRenderPassCommand.hpp"
+#include "Commands/D3D11BeginSubpassCommand.hpp"
 #include "Commands/D3D11BindComputePipelineCommand.hpp"
 #include "Commands/D3D11BindDescriptorSetCommand.hpp"
 #include "Commands/D3D11BindIndexBufferCommand.hpp"
@@ -44,8 +45,8 @@ See LICENSE file in root folder.
 #include "Commands/D3D11EndRenderPassCommand.hpp"
 #include "Commands/D3D11EndSubpassCommand.hpp"
 #include "Commands/D3D11ExecuteCommandsCommand.hpp"
+#include "Commands/D3D11GenerateMipsCommand.hpp"
 #include "Commands/D3D11ImageMemoryBarrierCommand.hpp"
-#include "Commands/D3D11NextSubpassCommand.hpp"
 #include "Commands/D3D11PushConstantsCommand.hpp"
 #include "Commands/D3D11ResetEventCommand.hpp"
 #include "Commands/D3D11ResetQueryPoolCommand.hpp"
@@ -98,10 +99,16 @@ namespace d3d11_renderer
 		, m_device{ device }
 		, m_pool{ pool }
 	{
+		if ( !primary )
+		{
+			m_device.getDevice()->CreateDeferredContext( 0u, &m_deferredContext );
+		}
 	}
 
 	CommandBuffer::~CommandBuffer()
 	{
+		safeRelease( m_commandList );
+		safeRelease( m_deferredContext );
 	}
 
 	void CommandBuffer::execute( Context & context )const
@@ -140,11 +147,25 @@ namespace d3d11_renderer
 	void CommandBuffer::end()const
 	{
 		m_state.pushConstantBuffers.clear();
+
+		if ( m_deferredContext )
+		{
+			safeRelease( m_commandList );
+			Context context{ m_deferredContext };
+			execute( context );
+			m_deferredContext->FinishCommandList( FALSE, &m_commandList );
+		}
 	}
 
 	void CommandBuffer::reset( renderer::CommandBufferResetFlags flags )const
 	{
 		m_commands.clear();
+
+		if ( m_deferredContext )
+		{
+			safeRelease( m_deferredContext );
+			m_device.getDevice()->CreateDeferredContext( 0u, &m_deferredContext );
+		}
 	}
 
 	void CommandBuffer::beginRenderPass( renderer::RenderPass const & renderPass
@@ -160,8 +181,10 @@ namespace d3d11_renderer
 		m_commands.emplace_back( std::make_unique< BeginRenderPassCommand >( m_device
 			, *m_state.currentRenderPass
 			, *m_state.currentFrameBuffer
-			, clearValues
-			, contents
+			, clearValues ) );
+		m_commands.emplace_back( std::make_unique< BeginSubpassCommand >( m_device
+			, *m_state.currentRenderPass
+			, *m_state.currentFrameBuffer
 			, *m_state.currentSubpass ) );
 	}
 
@@ -171,7 +194,7 @@ namespace d3d11_renderer
 			, *m_state.currentFrameBuffer
 			, *m_state.currentSubpass ) );
 		m_state.currentSubpass = &m_state.currentRenderPass->getSubpasses()[m_state.currentSubpassIndex++];
-		m_commands.emplace_back( std::make_unique< NextSubpassCommand >( m_device
+		m_commands.emplace_back( std::make_unique< BeginSubpassCommand >( m_device
 			, *m_state.currentRenderPass
 			, *m_state.currentFrameBuffer
 			, *m_state.currentSubpass ) );
@@ -591,6 +614,12 @@ namespace d3d11_renderer
 			, dstStageMask
 			, bufferMemoryBarriers
 			, imageMemoryBarriers ) );
+	}
+
+	void CommandBuffer::generateMips( Texture const & texture )const
+	{
+		m_commands.emplace_back( std::make_unique< GenerateMipsCommand >( m_device
+			, texture ) );
 	}
 
 	void CommandBuffer::doMemoryBarrier( renderer::PipelineStageFlags after

@@ -12,7 +12,7 @@ namespace d3d11_renderer
 	*\brief
 	*	Démarre une passe de rendu en bindant son framebuffer, et en le vidant au besoin.
 	*/
-	class NextSubpassCommand
+	class BeginSubpassCommand
 		: public CommandBase
 	{
 	public:
@@ -28,7 +28,7 @@ namespace d3d11_renderer
 		*\param[in] contents
 		*	Indique la manière dont les commandes de la première sous-passe sont fournies.
 		*/
-		NextSubpassCommand( Device const & device
+		BeginSubpassCommand( Device const & device
 			, renderer::RenderPass const & renderPass
 			, renderer::FrameBuffer const & frameBuffer
 			, renderer::SubpassDescription const & subpass );
@@ -40,5 +40,7 @@ namespace d3d11_renderer
 		RenderPass const & m_renderPass;
 		renderer::SubpassDescription const & m_subpass;
 		FrameBuffer const & m_frameBuffer;
+		std::vector< ID3D11RenderTargetView * > m_attaches;
+		ID3D11DepthStencilView * m_depthAttach{ nullptr };
 	};
 }

@@ -1,0 +1,20 @@
+Texture2D sceneMap : register(t0);
+SamplerState sceneSampler : register(s0);
+Texture2D passesMap : register(t1);
+SamplerState passesSampler : register(s1);
+
+struct PixelInput
+{
+	float2 inUV : TEXCOORD;
+};
+
+float4 mainPx( in PixelInput input ) : SV_TARGET
+{
+	float2 texcoords = input.inUV;
+	float4 result = sceneMap.Sample( sceneSampler, texcoords );
+	result += passesMap.SampleLevel( passesSampler, float2( texcoords.x, 1.0 - texcoords.y ), 0.0 );
+	result += passesMap.SampleLevel( passesSampler, float2( texcoords.x, 1.0 - texcoords.y ), 1.0 );
+	result += passesMap.SampleLevel( passesSampler, float2( texcoords.x, 1.0 - texcoords.y ), 2.0 );
+	result += passesMap.SampleLevel( passesSampler, float2( texcoords.x, 1.0 - texcoords.y ), 3.0 );
+	return result;
+}

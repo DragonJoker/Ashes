@@ -43,9 +43,10 @@ namespace renderer
 			m_attributes.emplace_back( *this
 				, format
 				, startingLocation++
-				, startingOffset++
+				, startingOffset
 				, semanticName
 				, startingSemanticIndex++ );
+			startingOffset += getSize( format );
 		}
 	}
 }

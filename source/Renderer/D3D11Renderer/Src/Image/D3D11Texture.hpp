@@ -80,6 +80,10 @@ namespace d3d11_renderer
 		*\copydoc	renderer::Texture::createView
 		*/
 		renderer::TextureViewPtr createView( renderer::ImageViewCreateInfo const & createInfo )const override;
+		/**
+		*\copydoc	renderer::Texture::generateMipmaps
+		*/
+		void generateMipmaps( renderer::CommandBuffer & commandBuffer )const override;
 
 		inline ID3D11Resource * getResource()const
 		{

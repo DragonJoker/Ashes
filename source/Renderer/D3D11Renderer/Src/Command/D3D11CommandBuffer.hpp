@@ -271,10 +271,19 @@ namespace d3d11_renderer
 			, renderer::PipelineStageFlags dstStageMask
 			, renderer::BufferMemoryBarrierArray const & bufferMemoryBarriers
 			, renderer::ImageMemoryBarrierArray const & imageMemoryBarriers )const override;
+		/**
+		*\copydoc	renderer::CommandBuffer::waitEvents
+		*/
+		void generateMips( Texture const & texture )const;
 
 		inline CommandArray const & getCommands()const
 		{
 			return m_commands;
+		}
+
+		inline ID3D11CommandList * getCommandList()const
+		{
+			return m_commandList;
 		}
 
 	private:
@@ -313,5 +322,7 @@ namespace d3d11_renderer
 		};
 		mutable State m_state;
 		mutable std::vector< std::function< void( Context const & ) > > m_afterSubmitActions;
+		mutable ID3D11DeviceContext * m_deferredContext{ nullptr };
+		mutable ID3D11CommandList * m_commandList{ nullptr };
 	};
 }

@@ -153,6 +153,7 @@ namespace vkapp
 			std::array< utils::Vec4, 15u > coefficients;
 		};
 		renderer::UniformBufferPtr< Configuration > m_blurConfiguration;
+		renderer::UniformBufferPtr< int > m_blurDirection;
 		/**@}*/
 		/**
 		*\name

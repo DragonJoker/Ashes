@@ -1,7 +1,7 @@
 struct VertexInput
 {
 	float4 position : POSITION;
-	float3 uv : TEXCOORD;
+	float2 uv : TEXCOORD;
 	float4x4 transform : MATRIX;
 };
 
@@ -20,6 +20,6 @@ VertexOutput mainVx( in VertexInput input )
 {
 	VertexOutput output;
 	output.uv = input.uv;
-	output.position = mul( mtxProjection, mul( transform, rendererScalePosition( input.position ) ) ).xyww;
+	output.position = mul( mtxViewProjection, mul( input.transform, rendererScalePosition( input.position ) ) );
 	return output;
 }

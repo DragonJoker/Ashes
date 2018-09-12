@@ -136,6 +136,11 @@ namespace d3d11_renderer
 			, createInfo );
 	}
 
+	void Texture::generateMipmaps( renderer::CommandBuffer & commandBuffer )const
+	{
+		static_cast< CommandBuffer & >( commandBuffer ).generateMips( *this );
+	}
+
 	void Texture::doBindMemory()
 	{
 		switch ( getType() )
