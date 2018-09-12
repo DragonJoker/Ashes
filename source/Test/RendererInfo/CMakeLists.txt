@@ -34,7 +34,7 @@ endif ()
 
 add_dependencies( ${PROJECT_NAME}
 	VkRenderer
-	GlRenderer
+	Gl4Renderer
 	Gl3Renderer
 	D3D11Renderer
 	TestRenderer

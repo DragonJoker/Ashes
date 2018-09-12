@@ -13,7 +13,7 @@ namespace test_renderer
 		, renderer::MemoryRequirements const & requirements
 		, renderer::MemoryPropertyFlags flags )
 		: renderer::DeviceMemory{ device, flags }
-		, m_memory( requirements.size, 0 )
+		, m_memory( size_t( requirements.size ), 0 )
 	{
 	}
 

@@ -1,4 +1,4 @@
-project( GlRenderer )
+project( Gl4Renderer )
 
 find_package( OpenGL )
 
@@ -26,7 +26,7 @@ if ( OpenGL_FOUND )
 
 	if ( RENDERER_STATIC_RENDERERS )
 		add_definitions(
-			-DGlRenderer_STATIC
+			-DGl4Renderer_STATIC
 		)
 		add_library( ${PROJECT_NAME} STATIC
 			${${PROJECT_NAME}_CXX_FILES}
@@ -34,7 +34,7 @@ if ( OpenGL_FOUND )
 		)
 	else ()
 		add_definitions(
-			-DGlRenderer_EXPORTS
+			-DGl4Renderer_EXPORTS
 		)
 		add_library( ${PROJECT_NAME} SHARED
 			${${PROJECT_NAME}_CXX_FILES}
@@ -85,7 +85,7 @@ if ( OpenGL_FOUND )
 
 	set( ENABLED_RENDERERS
 		${ENABLED_RENDERERS}
-		GlRenderer
+		Gl4Renderer
 		PARENT_SCOPE
 	)
 

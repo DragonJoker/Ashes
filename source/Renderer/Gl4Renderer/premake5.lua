@@ -1,13 +1,13 @@
-project "GlRenderer"
+project "Gl4Renderer"
 
-currentSourceDir = path.join( sourceDir, "Renderer", "GlRenderer" )
-currentBinaryDir = path.join( binaryDir, "Renderer", "GlRenderer" )
+currentSourceDir = path.join( sourceDir, "Renderer", "Gl4Renderer" )
+currentBinaryDir = path.join( binaryDir, "Renderer", "Gl4Renderer" )
 
 kind( "SharedLib" )
 targetdir( path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", sharedLibDir ) )
 implibdir( path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", staticLibDir ) )
 location( currentBinaryDir )
-defines( "GlRenderer_EXPORTS" )
+defines( "Gl4Renderer_EXPORTS" )
 
 includedirs{
 	path.join( sourceDir, "Renderer", "Renderer", "Src" ),

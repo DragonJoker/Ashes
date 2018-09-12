@@ -8,11 +8,11 @@
 
 #include <Core/Renderer.hpp>
 
-#if defined( _WIN32 ) && !defined( GlRenderer_STATIC )
-#	ifdef GlRenderer_EXPORTS
-#		define GlRenderer_API __declspec( dllexport )
+#if defined( _WIN32 ) && !defined( Gl4Renderer_STATIC )
+#	ifdef Gl4Renderer_EXPORTS
+#		define Gl4Renderer_API __declspec( dllexport )
 #	else
-#		define GlRenderer_API __declspec( dllimport )
+#		define Gl4Renderer_API __declspec( dllimport )
 #	endif
 #else
 #	define GlRenderer_API
@@ -32,7 +32,7 @@ extern "C"
 	*\param[in] configuration
 	*	The creation options.
 	*/
-	GlRenderer_API renderer::Renderer * createRenderer( renderer::Renderer::Configuration const & configuration );
+	Gl4Renderer_API renderer::Renderer * createRenderer( renderer::Renderer::Configuration const & configuration );
 	/**
 	*\~french
 	*\return
@@ -41,7 +41,7 @@ extern "C"
 	*\return
 	*	The renderer short name.
 	*/
-	GlRenderer_API char const * getShortName();
+	Gl4Renderer_API char const * getShortName();
 	/**
 	*\~french
 	*\return
@@ -50,5 +50,5 @@ extern "C"
 	*\return
 	*	The renderer full name.
 	*/
-	GlRenderer_API char const * getFullName();
+	Gl4Renderer_API char const * getFullName();
 }

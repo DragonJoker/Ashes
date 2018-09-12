@@ -18,7 +18,10 @@ includedirs{
 
 links{
 	"Renderer",
-	binaryLinks
+	binaryLinks,
+	"d3d11",
+	"dxgi",
+	"d3dcompiler",
 }
 
 local configFile = path.join( currentBinaryDir, "Src", "D3D11RendererConfig.hpp" )
