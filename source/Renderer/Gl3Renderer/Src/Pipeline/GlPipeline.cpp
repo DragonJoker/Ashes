@@ -128,7 +128,10 @@ namespace gl_renderer
 			if ( !static_cast< ShaderModule const & >( *stage.module ).isSpirV()
 				&& stage.specialisationInfo )
 			{
-				m_constantsPcbs.push_back( convert( stage.module->getStage(), *stage.specialisationInfo ) );
+				m_constantsPcbs.push_back( convert( device
+					, ~( 0u )
+					, stage.module->getStage()
+					, *stage.specialisationInfo ) );
 			}
 		}
 

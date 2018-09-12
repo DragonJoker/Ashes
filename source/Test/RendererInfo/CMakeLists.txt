@@ -36,6 +36,7 @@ add_dependencies( ${PROJECT_NAME}
 	VkRenderer
 	GlRenderer
 	Gl3Renderer
+	D3D11Renderer
 	TestRenderer
 )
 

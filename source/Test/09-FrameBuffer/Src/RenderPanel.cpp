@@ -16,6 +16,7 @@
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
+#include <Image/StagingTexture.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
 #include <Miscellaneous/QueryPool.hpp>
@@ -229,6 +230,8 @@ namespace vkapp
 	{
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
+		auto stagingTexture = m_device->createStagingTexture( image.format
+			, { image.size.width, image.size.height, 1u } );
 		m_texture = m_device->createTexture(
 			{
 				0u,
@@ -249,7 +252,8 @@ namespace vkapp
 			, renderer::WrapMode::eClampToEdge
 			, renderer::Filter::eLinear
 			, renderer::Filter::eLinear );
-		m_stagingBuffer->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+		stagingTexture->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+			, image.format
 			, image.data
 			, *m_view );
 	}
@@ -351,10 +355,14 @@ namespace vkapp
 		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
 		m_offscreenVertexLayout->createAttribute( 0u
 			, renderer::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+			, uint32_t( offsetof( TexturedVertexData, position ) )
+			, "POSITION"
+			, 0u );
 		m_offscreenVertexLayout->createAttribute( 1u
 			, renderer::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+			, uint32_t( offsetof( TexturedVertexData, uv ) )
+			, "TEXCOORD"
+			, 0u );
 
 		m_offscreenVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_offscreenVertexData.size() )
@@ -379,17 +387,36 @@ namespace vkapp
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
-		if ( !wxFileExists( shadersFolder / "offscreen.vert" )
-			|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
-		{
-			throw std::runtime_error{ "Shader files are missing" };
-		}
-
 		std::vector< renderer::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.vert" ) );
-		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.frag" ) );
+
+		if ( m_device->getRenderer().isGLSLSupported()
+			|| m_device->getRenderer().isSPIRVSupported() )
+		{
+			if ( !wxFileExists( shadersFolder / "offscreen.vert" )
+				|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.vert" ) );
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.frag" ) );
+		}
+		else
+		{
+			if ( !wxFileExists( shadersFolder / "offscreen.hvert" )
+				|| !wxFileExists( shadersFolder / "offscreen.hpix" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.hvert" ) );
+			shaderStages[0].entryPoint = "mainVx";
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.hpix" ) );
+			shaderStages[1].entryPoint = "mainPx";
+		}
+
 		renderer::RasterisationState rasterisationState;
 		rasterisationState.cullMode = renderer::CullModeFlag::eNone;
 
@@ -503,10 +530,14 @@ namespace vkapp
 		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
 		m_mainVertexLayout->createAttribute( 0u
 			, renderer::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+			, uint32_t( offsetof( TexturedVertexData, position ) )
+			, "POSITION"
+			, 0u );
 		m_mainVertexLayout->createAttribute( 1u
 			, renderer::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+			, uint32_t( offsetof( TexturedVertexData, uv ) )
+			, "TEXCOORD"
+			, 0u );
 
 		m_mainVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_mainVertexData.size() )
@@ -523,17 +554,35 @@ namespace vkapp
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
-		if ( !wxFileExists( shadersFolder / "main.vert" )
-			|| !wxFileExists( shadersFolder / "main.frag" ) )
-		{
-			throw std::runtime_error{ "Shader files are missing" };
-		}
-
 		std::vector< renderer::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.vert" ) );
-		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.frag" ) );
+
+		if ( m_device->getRenderer().isGLSLSupported()
+			|| m_device->getRenderer().isSPIRVSupported() )
+		{
+			if ( !wxFileExists( shadersFolder / "main.vert" )
+				|| !wxFileExists( shadersFolder / "main.frag" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.vert" ) );
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.frag" ) );
+		}
+		else
+		{
+			if ( !wxFileExists( shadersFolder / "main.hvert" )
+				|| !wxFileExists( shadersFolder / "main.hpix" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.hvert" ) );
+			shaderStages[0].entryPoint = "mainVx";
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.hpix" ) );
+			shaderStages[1].entryPoint = "mainPx";
+		}
 
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 		{
@@ -603,7 +652,7 @@ namespace vkapp
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
 			m_swapChain->present( *resources );
-			renderer::UInt32Array values{ 0u, 0u };
+			renderer::UInt64Array values{ 0u, 0u };
 			m_queryPool->getResults( 0u
 				, 2u
 				, 0u

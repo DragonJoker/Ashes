@@ -377,7 +377,8 @@ namespace renderer
 			createBinding( layoutBinding
 				, uniformBuffer.getUbo()
 				, offset * uniformBuffer.getAlignedSize()
-				, range * sizeof( T )
+				, range * uniformBuffer.getAlignedSize()
+				//, range * sizeof( T )
 				, index );
 		}
 		/**
@@ -533,7 +534,8 @@ namespace renderer
 			createDynamicBinding( layoutBinding
 				, uniformBuffer.getUbo()
 				, offset * uniformBuffer.getAlignedSize()
-				, range * sizeof( T )
+				, range * uniformBuffer.getAlignedSize()
+				//, range * sizeof( T )
 				, index );
 		}
 		/**

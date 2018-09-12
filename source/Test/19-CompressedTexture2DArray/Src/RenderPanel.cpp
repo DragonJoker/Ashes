@@ -10,6 +10,7 @@
 #include <Core/RenderingResources.hpp>
 #include <Core/SwapChain.hpp>
 #include <Enum/SubpassContents.hpp>
+#include <Image/StagingTexture.hpp>
 #include <Image/Texture.hpp>
 #include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/InputAssemblyState.hpp>
@@ -188,18 +189,6 @@ namespace vkapp
 			throw std::runtime_error{ "No compressed texture format supported." };
 		}
 
-		// Create a host-visible staging buffer that contains the raw image data
-		renderer::BufferBasePtr stagingBuffer = m_device->createBuffer( uint32_t( tex2DArray.size() )
-			, renderer::BufferTarget::eTransferSrc
-			, renderer::MemoryPropertyFlag::eHostVisible | renderer::MemoryPropertyFlag::eHostCoherent );
-
-		// Copy texture data into staging buffer
-		uint8_t * data = stagingBuffer->lock( 0u
-			, stagingBuffer->getSize()
-			, renderer::MemoryMapFlag::eWrite );
-		memcpy( data, tex2DArray.data(), tex2DArray.size() );
-		stagingBuffer->unlock();
-
 		// Create the texture image
 		m_texture = m_device->createTexture(
 			{
@@ -215,76 +204,35 @@ namespace vkapp
 			}
 			, renderer::MemoryPropertyFlag::eDeviceLocal );
 
+		auto cmdBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
+		auto staging = m_device->createStagingTexture( format
+			, { uint32_t( tex2DArray.extent().x ), uint32_t( tex2DArray.extent().y ), 1u } );
+
 		// Prepare copy regions
 		std::vector< renderer::BufferImageCopy > bufferCopyRegions;
-		uint32_t offset{ 0u };
 
 		for ( uint32_t layer = 0; layer < tex2DArray.layers(); layer++ )
 		{
 			for ( uint32_t level = 0; level < tex2DArray.levels(); level++ )
 			{
-				renderer::BufferImageCopy bufferCopyRegion = {};
-				bufferCopyRegion.imageSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
-				bufferCopyRegion.imageSubresource.mipLevel = level;
-				bufferCopyRegion.imageSubresource.baseArrayLayer = layer;
-				bufferCopyRegion.imageSubresource.layerCount = 1u;
-				bufferCopyRegion.imageExtent.width = static_cast< uint32_t >( tex2DArray[layer][level].extent().x );
-				bufferCopyRegion.imageExtent.height = static_cast< uint32_t >( tex2DArray[layer][level].extent().y );
-				bufferCopyRegion.imageExtent.depth = 1;
-				bufferCopyRegion.bufferOffset = offset;
-				bufferCopyRegion.levelSize = tex2DArray[layer][level].size();
+				auto & texArray = tex2DArray[layer][level];
+				auto extent = renderer::Extent3D{ uint32_t( texArray.extent().x ), uint32_t( texArray.extent().y ), 1u };
 
-				bufferCopyRegions.push_back( bufferCopyRegion );
-
-				// Increase offset into staging buffer for next level / face
-				offset += uint32_t( tex2DArray[layer][level].size() );
+				if ( checkExtent( format, extent ) )
+				{
+					auto view = m_texture->createView( renderer::TextureViewType::e2D
+						, format
+						, level
+						, 1u
+						, layer );
+					staging->uploadTextureData( *cmdBuffer
+						, format
+						, reinterpret_cast< uint8_t const * >( texArray.data() )
+						, *view );
+					cmdBuffer->reset();
+				}
 			}
 		}
-
-		auto cmdBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
-		renderer::ImageSubresourceRange subresourceRange
-		{
-			renderer::ImageAspectFlag::eColour,
-			0,
-			uint32_t( tex2DArray.levels() ),
-			0,
-			uint32_t( tex2DArray.layers() ),
-		};
-		cmdBuffer->begin();
-
-		// Memory barrier to transfer destination.
-		cmdBuffer->memoryBarrier( renderer::PipelineStageFlag::eAllCommands
-			, renderer::PipelineStageFlag::eAllCommands
-			, renderer::ImageMemoryBarrier{ 0u
-			, renderer::AccessFlag::eTransferWrite
-			, renderer::ImageLayout::eUndefined
-			, renderer::ImageLayout::eTransferDstOptimal
-			, ~( 0u )
-			, ~( 0u )
-			, *m_texture
-			, subresourceRange } );
-
-	// Copy the cube map faces from the staging buffer to the optimal tiled image.
-		cmdBuffer->copyToImage( bufferCopyRegions
-			, *stagingBuffer
-			, *m_texture );
-
-		// Memory barrier to shader read.
-		cmdBuffer->memoryBarrier( renderer::PipelineStageFlag::eAllCommands
-			, renderer::PipelineStageFlag::eAllCommands
-			, renderer::ImageMemoryBarrier{ renderer::AccessFlag::eTransferWrite
-			, renderer::AccessFlag::eShaderRead
-			, renderer::ImageLayout::eTransferDstOptimal
-			, renderer::ImageLayout::eShaderReadOnlyOptimal
-			, ~( 0u )
-			, ~( 0u )
-			, *m_texture
-			, subresourceRange } );
-
-		cmdBuffer->end();
-		auto fence = m_device->createFence();
-		m_device->getGraphicsQueue().submit( *cmdBuffer, fence.get() );
-		fence->wait( renderer::FenceTimeout );
 
 		// Create the sampler.
 		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
@@ -361,10 +309,14 @@ namespace vkapp
 		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
 		m_vertexLayout->createAttribute( 0u
 			, renderer::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+			, uint32_t( offsetof( TexturedVertexData, position ) )
+			, "POSITION"
+			, 0u );
 		m_vertexLayout->createAttribute( 1u
 			, renderer::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+			, uint32_t( offsetof( TexturedVertexData, uv ) )
+			, "TEXCOORD"
+			, 0u );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData
 			, *m_vertexBuffer );
@@ -382,18 +334,35 @@ namespace vkapp
 		m_pipelineLayout = m_device->createPipelineLayout( *m_descriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-		if ( !wxFileExists( shadersFolder / "shader.vert" )
-			|| !wxFileExists( shadersFolder / "shader.frag" ) )
-		{
-			throw std::runtime_error{ "Shader files are missing" };
-		}
-
 		std::vector< renderer::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.vert" ) );
-		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.frag" ) );
+
+		if ( m_device->getRenderer().isGLSLSupported()
+			|| m_device->getRenderer().isSPIRVSupported() )
+		{
+			if ( !wxFileExists( shadersFolder / "shader.vert" )
+				|| !wxFileExists( shadersFolder / "shader.frag" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.vert" ) );
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.frag" ) );
+		}
+		else
+		{
+			if ( !wxFileExists( shadersFolder / "shader.hvert" )
+				|| !wxFileExists( shadersFolder / "shader.hpix" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.hvert" ) );
+			shaderStages[0].entryPoint = "mainVx";
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.hpix" ) );
+			shaderStages[1].entryPoint = "mainPx";
+		}
 
 		m_pipeline = m_pipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 		{
@@ -497,7 +466,7 @@ namespace vkapp
 				, &resources->getFence() );
 			m_swapChain->present( *resources );
 
-			renderer::UInt32Array values{ 0u, 0u };
+			renderer::UInt64Array values{ 0u, 0u };
 			m_queryPool->getResults( 0u
 				, 2u
 				, 0u

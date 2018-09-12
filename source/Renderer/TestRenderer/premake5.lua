@@ -16,23 +16,6 @@ includedirs{
 	path.join( currentSourceDir, "Src" )
 }
 
-include( path.join( modulesDir, "FindGlslang.lua" ) )
-include( path.join( modulesDir, "FindSPIRV.lua" ) )
-include( path.join( modulesDir, "FindSPIRVTools.lua" ) )
-include( path.join( modulesDir, "FindOGLCompiler.lua" ) )
-include( path.join( modulesDir, "FindOSDependent.lua" ) )
-
-local glslToSPIRV = 0
-
-if ( SPIRVToolsEnabled
-	and SPIRVEnabled 
-	and OSDependentEnabled
-	and OGLCompilerEnabled
-	and GlslangEnabled )
-then
-	glslToSPIRV = 1
-end
-
 links{
 	"Renderer",
 	binaryLinks

@@ -7,4 +7,14 @@ extern "C"
 	{
 		return new gl_renderer::Renderer{ configuration };
 	}
+
+	GlRenderer_API char const * getShortName()
+	{
+		return "gl4";
+	}
+
+	GlRenderer_API char const * getFullName()
+	{
+		return "OpenGL 4.X";
+	}
 }

@@ -186,7 +186,7 @@ namespace gl_renderer
 		*\return
 		*	Le tampon de push constants correspondant aux constantes de spécialisation.
 		*/
-		inline std::vector< renderer::PushConstantsBufferBase > const & getConstantsPcbs()const
+		inline std::vector< renderer::PushConstantsBufferPtr > const & getConstantsPcbs()const
 		{
 			return m_constantsPcbs;
 		}
@@ -215,7 +215,7 @@ namespace gl_renderer
 		renderer::TessellationState m_tsState;
 		std::optional< renderer::Viewport > m_viewport;
 		std::optional< renderer::Scissor > m_scissor;
-		std::vector< renderer::PushConstantsBufferBase > m_constantsPcbs;
+		std::vector< renderer::PushConstantsBufferPtr > m_constantsPcbs;
 		ShaderProgram m_program;
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;
 		mutable std::unordered_map< GLuint, BufferDestroyConnection > m_connections;

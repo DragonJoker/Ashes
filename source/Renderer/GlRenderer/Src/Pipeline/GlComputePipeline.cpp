@@ -20,7 +20,9 @@ namespace gl_renderer
 
 		if ( m_createInfo.stage.specialisationInfo )
 		{
-			m_constantsPcbs.push_back( convert( m_createInfo.stage.module->getStage()
+			m_constantsPcbs.push_back( convert( device
+				, ~( 0u )
+				, m_createInfo.stage.module->getStage()
 				, *m_createInfo.stage.specialisationInfo ) );
 		}
 	}

@@ -306,9 +306,12 @@ namespace common
 	{
 		wxCmdLineParser parser( wxApp::argc, wxApp::argv );
 		parser.AddSwitch( wxT( "h" ), wxT( "help" ), _( "Displays this help" ) );
-		parser.AddSwitch( wxT( "gl" ), wxEmptyString, _( "Defines the renderer to OpenGl >= 4.2" ) );
-		parser.AddSwitch( wxT( "gl3" ), wxEmptyString, _( "Defines the renderer to OpenGl >= 3.2" ) );
-		parser.AddSwitch( wxT( "vk" ), wxEmptyString, _( "Defines the renderer to Vulkan" ) );
+
+		for ( auto & plugin : m_plugins )
+		{
+			parser.AddSwitch( plugin.getShortName(), wxEmptyString, _( "Defines the renderer to " ) + plugin.getFullName() );
+		}
+
 		bool result = parser.Parse( false ) == 0;
 
 		// S'il y avait des erreurs ou "-h" ou "--help", on affiche l'aide et on sort
@@ -322,17 +325,15 @@ namespace common
 		{
 			m_rendererName = wxT( "vk" );
 
-			if ( parser.Found( wxT( "vk" ) ) )
+			for ( auto & plugin : m_plugins )
 			{
-				m_rendererName = wxT( "vk" );
-			}
-			else if ( parser.Found( wxT( "gl" ) ) )
-			{
-				m_rendererName = wxT( "gl" );
-			}
-			else if ( parser.Found( wxT( "gl3" ) ) )
-			{
-				m_rendererName = wxT( "gl3" );
+				if ( m_rendererName == wxT( "vk" ) )
+				{
+					if ( parser.Found( plugin.getShortName() ) )
+					{
+						m_rendererName = plugin.getShortName();
+					}
+				}
 			}
 		}
 

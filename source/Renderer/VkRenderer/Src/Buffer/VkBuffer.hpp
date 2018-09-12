@@ -77,7 +77,6 @@ namespace vk_renderer
 
 	private:
 		Device const & m_device;
-		uint32_t m_size{ 0u };
 		VkBuffer m_buffer{ VK_NULL_HANDLE };
 	};
 }

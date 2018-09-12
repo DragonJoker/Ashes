@@ -148,6 +148,18 @@ namespace renderer
 		{
 			return m_count;
 		}
+		/**
+		*\~english
+		*\return
+		*	The counters to be returned in queries.
+		*\~french
+		*\return
+		*	Les compteurs que les requêtes retournent.
+		*/
+		inline QueryPipelineStatisticFlags const & getPipelineStatistics()const
+		{
+			return m_pipelineStatistics;
+		}
 
 	protected:
 		Device const & m_device;

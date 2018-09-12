@@ -325,6 +325,12 @@ namespace gl_renderer
 		m_features.hasBaseInstance = gpu.find( "GL_ARB_base_instance" );
 		m_features.hasClearTexImage = gpu.find( "GL_ARB_clear_texture" );
 		m_features.hasComputeShaders = gpu.find( "GL_ARB_compute_shader" );
+		m_features.glslSupported = true;
+		m_features.rawConstantsSupported = true;
+		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...
+		m_features.spirvSupported = false
+			&& ( gpu.find( "GL_ARB_gl_spirv" )
+				|| gpu.hasSPIRVShaderBinaryFormat() );
 	}
 
 	renderer::DevicePtr Renderer::createDevice( renderer::ConnectionPtr && connection )const

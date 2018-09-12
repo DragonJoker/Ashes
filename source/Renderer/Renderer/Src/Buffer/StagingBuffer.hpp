@@ -53,32 +53,6 @@ namespace renderer
 		/**@{*/
 		/**
 		*\name
-		*	Texture.
-		**/
-		/**@{*/
-		void uploadTextureData( CommandBuffer const & commandBuffer
-			, ImageSubresourceLayers const & subresourceLayers
-			, Offset3D const & offset
-			, Extent3D const & extent
-			, uint8_t const * const data
-			, uint32_t size
-			, TextureView const & texture )const;
-		inline void uploadTextureData( CommandBuffer const & commandBuffer
-			, ImageSubresourceLayers const & subresourceLayers
-			, Offset3D const & offset
-			, Extent3D const & extent
-			, ByteArray const & data
-			, TextureView const & texture )const;
-		void uploadTextureData( CommandBuffer const & commandBuffer
-			, uint8_t const * const data
-			, uint32_t size
-			, TextureView const & texture )const;
-		inline void uploadTextureData( CommandBuffer const & commandBuffer
-			, ByteArray const & data
-			, TextureView const & texture )const;
-		/**@}*/
-		/**
-		*\name
 		*	Buffer.
 		**/
 		/**@{*/
@@ -182,32 +156,6 @@ namespace renderer
 		*	Download.
 		**/
 		/**@{*/
-		/**
-		*\name
-		*	Texture.
-		**/
-		/**@{*/
-		void downloadTextureData( CommandBuffer const & commandBuffer
-			, ImageSubresourceLayers const & subresourceLayers
-			, Offset3D const & offset
-			, Extent3D const & extent
-			, uint8_t * data
-			, uint32_t size
-			, TextureView const & texture )const;
-		inline void downloadTextureData( CommandBuffer const & commandBuffer
-			, ImageSubresourceLayers const & subresourceLayers
-			, Offset3D const & offset
-			, Extent3D const & extent
-			, ByteArray & data
-			, TextureView const & texture )const;
-		void downloadTextureData( CommandBuffer const & commandBuffer
-			, uint8_t * data
-			, uint32_t size
-			, TextureView const & texture )const;
-		inline void downloadTextureData( CommandBuffer const & commandBuffer
-			, ByteArray & data
-			, TextureView const & texture )const;
-		/**@}*/
 		/**
 		*\name
 		*	Buffer.

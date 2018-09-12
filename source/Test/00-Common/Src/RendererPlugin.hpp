@@ -16,6 +16,7 @@ namespace common
 	{
 	private:
 		using CreatorFunction = renderer::Renderer *( * )( renderer::Renderer::Configuration const & );
+		using NamerFunction = char const *( * )();
 
 	public:
 		RendererPlugin( RendererPlugin const & ) = delete;
@@ -27,8 +28,20 @@ namespace common
 			, RendererFactory & factory );
 		renderer::RendererPtr create( renderer::Renderer::Configuration const & configuration );
 
+		std::string const & getShortName()
+		{
+			return m_shortName;
+		}
+
+		std::string const & getFullName()
+		{
+			return m_fullName;
+		}
+
 	private:
 		renderer::DynamicLibrary m_library;
 		CreatorFunction m_creator;
+		std::string m_shortName;
+		std::string m_fullName;
 	};
 }

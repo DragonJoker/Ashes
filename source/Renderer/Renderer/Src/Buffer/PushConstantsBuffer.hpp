@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Renderer_PushConstantsBuffer_HPP___
 #pragma once
 
-#include "RendererPrerequisites.hpp"
+#include "Core/Device.hpp"
 
 namespace renderer
 {
@@ -23,10 +23,10 @@ namespace renderer
 		/**
 		*\~english
 		*\brief
-		*	The variable location in the shader.
+		*	The variable location in the shader (for GLSL).
 		*\~french
 		*\brief
-		*	La position de la variable dans le shader.
+		*	La position de la variable dans le shader (pour GLSL).
 		*/
 		uint32_t location;
 		/**
@@ -71,11 +71,15 @@ namespace renderer
 	*/
 	class PushConstantsBufferBase
 	{
-	public:
+		friend class Device;
+
+	protected:
 		/**
 		*\~french
 		*\brief
 		*	Constructeur.
+		*\param[in] location
+		*	Spécifie la position du tampon de push constants, dans le shader (pour HLSL).
 		*\param[in] stageFlags
 		*	Spécifie les niveaux de shaders qui vont utiliser les push constants dans l'intervalle mis à jour.
 		*\param[in] variables
@@ -83,13 +87,41 @@ namespace renderer
 		*\~english
 		*\brief
 		*	Constructor.
+		*\param[in] location
+		*	Specifies the location of the push constants buffer, in the shader (for HLSL).
 		*\param[in] stageFlags
 		*	Specifies the shader stages that will use the push constants in the updated range.
 		*\param[in] variables
 		*	The constants contained in the buffer.
 		*/
-		PushConstantsBufferBase( ShaderStageFlags stageFlags
+		PushConstantsBufferBase( uint32_t location
+			, ShaderStageFlags stageFlags
 			, PushConstantArray const & variables );
+
+	public:
+		/**
+		*\~french
+		*\brief
+		*	Destructeur.
+		*\~english
+		*\brief
+		*	Destructor.
+		*/
+		virtual ~PushConstantsBufferBase()
+		{
+		}
+		/**
+		*\~english
+		*\return
+		*	The location of the push constants buffer, in the shader (for HLSL).
+		*\~french
+		*\return
+		*	La position du tampon de push constants, dans le shader (pour HLSL).
+		*/
+		inline uint32_t getLocation()const
+		{
+			return m_location;
+		}
 		/**
 		*\~english
 		*\return
@@ -176,6 +208,7 @@ namespace renderer
 		}
 
 	protected:
+		uint32_t m_location;
 		ShaderStageFlags m_stageFlags;
 		PushConstantArray m_variables;
 		uint32_t m_offset;
@@ -194,25 +227,43 @@ namespace renderer
 	{
 	public:
 		/**
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] stageFlags
-		*	Specifies the shader stages that will use the push constants in the updated range.
-		*\param[in] variables
-		*	The constants contained in the buffer.
 		*\~french
 		*\brief
 		*	Constructeur.
+		*\param[in] location
+		*	Spécifie la position du tampon de push constants, dans le shader (pour HLSL).
 		*\param[in] stageFlags
 		*	Spécifie les niveaux de shaders qui vont utiliser les push constants dans l'intervalle mis à jour.
 		*\param[in] variables
 		*	Les variables contenues dans le tampon.
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] location
+		*	Specifies the location of the push constants buffer, in the shader (for HLSL).
+		*\param[in] stageFlags
+		*	Specifies the shader stages that will use the push constants in the updated range.
+		*\param[in] variables
+		*	The constants contained in the buffer.
 		*/
-		PushConstantsBuffer( ShaderStageFlags stageFlags
+		PushConstantsBuffer( Device const & device
+			, uint32_t location
+			, ShaderStageFlags stageFlags
 			, PushConstantArray const & variables )
-			: m_pcb{ stageFlags, variables }
+			: m_pcb{ device.createPushConstantsBuffer( location, stageFlags, variables ) }
 		{
+		}
+		/**
+		*\~english
+		*\return
+		*	The location of the push constants buffer, in the shader (for HLSL).
+		*\~french
+		*\return
+		*	La position du tampon de push constants, dans le shader (pour HLSL).
+		*/
+		inline uint32_t getLocation()const
+		{
+			return getBuffer().getLocation();
 		}
 		/**
 		*\~english
@@ -224,7 +275,7 @@ namespace renderer
 		*/
 		inline uint32_t getOffset()const
 		{
-			return m_pcb.getOffset();
+			return getBuffer().getOffset();
 		}
 		/**
 		*\~english
@@ -236,7 +287,7 @@ namespace renderer
 		*/
 		inline uint32_t getSize()const
 		{
-			return m_pcb.getSize();
+			return getBuffer().getSize();
 		}
 		/**
 		*\~english
@@ -248,7 +299,7 @@ namespace renderer
 		*/
 		inline ShaderStageFlags getStageFlags()const
 		{
-			return m_pcb.getStageFlags();
+			return getBuffer().getStageFlags();
 		}
 		/**
 		*\~english
@@ -260,7 +311,7 @@ namespace renderer
 		*/
 		inline T const * getData()const
 		{
-			return reinterpret_cast< T const * >( m_pcb.getData() );
+			return reinterpret_cast< T const * >( m_pcb->getData() );
 		}
 		/**
 		*\~english
@@ -272,7 +323,7 @@ namespace renderer
 		*/
 		inline T * getData()
 		{
-			return reinterpret_cast< T * >( m_pcb.getData() );
+			return reinterpret_cast< T * >( m_pcb->getData() );
 		}
 		/**
 		*\~english
@@ -284,7 +335,7 @@ namespace renderer
 		*/
 		inline PushConstantArray::const_iterator begin()const
 		{
-			return m_pcb.begin();
+			return getBuffer().begin();
 		}
 		/**
 		*\~english
@@ -296,23 +347,24 @@ namespace renderer
 		*/
 		inline PushConstantArray::const_iterator end()const
 		{
-			return m_pcb.end();
+			return getBuffer().end();
 		}
 		/**
 		*\~english
 		*\brief
-		*	A pointer to the buffer data.
+		*	The internal PCB.
 		*\~french
 		*\brief
-		*	Un pointeur sur les données du tampon.
+		*	Le PCB interne.
 		*/
 		inline PushConstantsBufferBase const & getBuffer()const
 		{
-			return m_pcb;
+			assert( m_pcb );
+			return *m_pcb;
 		}
 
 	private:
-		PushConstantsBufferBase m_pcb;
+		PushConstantsBufferPtr m_pcb;
 	};
 }
 

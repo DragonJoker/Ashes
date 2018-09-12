@@ -86,6 +86,7 @@ namespace vkapp
 		renderer::DevicePtr m_device;
 		renderer::SwapChainPtr m_swapChain;
 		renderer::StagingBufferPtr m_stagingBuffer;
+		renderer::StagingTexturePtr m_stagingTexture;
 		renderer::TexturePtr m_texture;
 		renderer::TextureViewPtr m_view;
 		renderer::SamplerPtr m_sampler;

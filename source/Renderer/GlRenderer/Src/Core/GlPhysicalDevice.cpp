@@ -661,19 +661,6 @@ namespace gl_renderer
 		}
 	}
 
-	bool PhysicalDevice::isGLSLSupported()const
-	{
-		return true;
-	}
-
-	bool PhysicalDevice::isSPIRVSupported()const
-	{
-		static bool isSupported = find( "GL_ARB_gl_spirv" )
-			|| !hasSPIRVShaderBinaryFormat();
-		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...
-		return false && isSupported;
-	}
-
 	bool PhysicalDevice::find( std::string const & name )const
 	{
 		return m_deviceExtensionNames.end() != std::find( m_deviceExtensionNames.begin()

@@ -56,7 +56,7 @@ namespace gl_renderer
 		*\return
 		*	Le tampon de push constants correspondant aux constantes de spécialisation.
 		*/
-		inline std::vector< renderer::PushConstantsBufferBase > const & getConstantsPcbs()const
+		inline std::vector< renderer::PushConstantsBufferPtr > const & getConstantsPcbs()const
 		{
 			return m_constantsPcbs;
 		}
@@ -65,7 +65,7 @@ namespace gl_renderer
 		Device const & m_device;
 		renderer::PipelineLayout const & m_layout;
 		ShaderProgram m_program;
-		std::vector< renderer::PushConstantsBufferBase > m_constantsPcbs;
+		std::vector< renderer::PushConstantsBufferPtr > m_constantsPcbs;
 	};
 }
 

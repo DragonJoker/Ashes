@@ -9,6 +9,7 @@
 #include <Descriptor/DescriptorSet.hpp>
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
+#include <Image/StagingTexture.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
 #include <Miscellaneous/PushConstantRange.hpp>
@@ -50,7 +51,7 @@ namespace common
 		, renderer::Extent2D const & size )
 		: m_device{ device }
 		, m_size{ size }
-		, m_pushConstants{ renderer::ShaderStageFlag::eVertex, doCreateConstants() }
+		, m_pushConstants{ device, 0u, renderer::ShaderStageFlag::eVertex, doCreateConstants() }
 	{
 		// Init ImGui
 		// Color scheme
@@ -265,12 +266,11 @@ namespace common
 			, m_fontImage->getFormat() );
 
 		auto copyCmd = m_device.getGraphicsCommandPool().createCommandBuffer();
-		renderer::StagingBuffer stagingBuffer{ m_device
-			, renderer::BufferTarget::eTransferSrc
-			, 10000000u };
-		stagingBuffer.uploadTextureData( *copyCmd
+		auto stagingTexture = m_device.createStagingTexture( renderer::Format::eR8G8B8A8_UNORM
+			, { uint32_t( texWidth ), uint32_t( texHeight ), 1u } );
+		stagingTexture->uploadTextureData( *copyCmd
+			, renderer::Format::eR8G8B8A8_UNORM
 			, fontData
-			, uploadSize
 			, *m_fontView );
 
 		m_sampler = m_device.createSampler( renderer::WrapMode::eClampToEdge
@@ -303,9 +303,21 @@ namespace common
 		m_fence = m_device.createFence();
 
 		m_vertexLayout = renderer::makeLayout< ImDrawVert >( 0u );
-		m_vertexLayout->createAttribute( 0u, renderer::Format::eR32G32_SFLOAT, offsetof( ImDrawVert, pos ) );
-		m_vertexLayout->createAttribute( 1u, renderer::Format::eR32G32_SFLOAT, offsetof( ImDrawVert, uv ) );
-		m_vertexLayout->createAttribute( 2u, renderer::Format::eR32_UINT, offsetof( ImDrawVert, col ) );
+		m_vertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32_SFLOAT
+			, offsetof( ImDrawVert, pos )
+			, "POSITION"
+			, 0u );
+		m_vertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32_SFLOAT
+			, offsetof( ImDrawVert, uv )
+			, "TEXCOORD"
+			, 0u );
+		m_vertexLayout->createAttribute( 2u
+			, renderer::Format::eR32_UINT
+			, offsetof( ImDrawVert, col )
+			, "COLOR"
+			, 0u );
 	}
 
 	void Gui::doPreparePipeline()

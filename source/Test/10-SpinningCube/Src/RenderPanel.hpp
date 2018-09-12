@@ -11,8 +11,6 @@
 
 #include <Utils/Signal.hpp>
 
-#include <ObjLoader.hpp>
-
 #include <wx/panel.h>
 
 #include <array>
@@ -40,18 +38,12 @@ namespace vkapp
 		void doCreateSwapChain();
 		void doCreateTexture();
 		void doCreateUniformBuffer();
+		void doCreateDescriptorSet();
+		void doCreateRenderPass();
+		void doCreateVertexBuffer();
 		void doCreateStagingBuffer();
-		void doCreateOffscreenDescriptorSet();
-		void doCreateOffscreenRenderPass();
-		void doCreateFrameBuffer();
-		void doCreateOffscreenVertexBuffer();
-		void doCreateOffscreenPipeline();
-		void doPrepareOffscreenFrame();
-		void doCreateMainDescriptorSet();
-		void doCreateMainRenderPass();
-		void doCreateMainVertexBuffer();
-		void doCreateMainPipeline();
-		void doPrepareMainFrames();
+		void doCreatePipeline();
+		void doPrepareFrames();
 		/**@}*/
 		/**
 		*\name
@@ -81,52 +73,22 @@ namespace vkapp
 		/**@{*/
 		renderer::DevicePtr m_device;
 		renderer::SwapChainPtr m_swapChain;
+		renderer::RenderPassPtr m_renderPass;
+		renderer::PipelineLayoutPtr m_pipelineLayout;
+		renderer::PipelinePtr m_pipeline;
+		renderer::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
+		renderer::BufferPtr< uint16_t > m_indexBuffer;
+		renderer::VertexLayoutPtr m_vertexLayout;
 		renderer::StagingBufferPtr m_stagingBuffer;
 		renderer::TexturePtr m_texture;
 		renderer::TextureViewPtr m_view;
 		renderer::SamplerPtr m_sampler;
-		renderer::TexturePtr m_renderTargetColour;
-		renderer::TextureViewPtr m_renderTargetColourView;
-		renderer::TexturePtr m_renderTargetDepth;
-		renderer::TextureViewPtr m_renderTargetDepthView;
-		renderer::FrameBufferPtr m_frameBuffer;
+		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
+		renderer::DescriptorSetPoolPtr m_descriptorPool;
+		renderer::DescriptorSetPtr m_descriptorSet;
 		renderer::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
 		renderer::UniformBufferPtr< utils::Mat4 > m_objectUbo;
-		renderer::CommandBufferPtr m_updateCommandBuffer;
-		/**@}*/
-		/**
-		*\name
-		*	Offscreen.
-		*/
-		/**@{*/
-		renderer::CommandBufferPtr m_commandBuffer;
-		renderer::RenderPassPtr m_offscreenRenderPass;
-		renderer::PipelineLayoutPtr m_offscreenPipelineLayout;
-		renderer::PipelinePtr m_offscreenPipeline;
-		renderer::VertexBufferPtr< TexturedVertexData > m_offscreenVertexBuffer;
-		renderer::BufferPtr< uint16_t > m_offscreenIndexBuffer;
-		renderer::VertexLayoutPtr m_offscreenVertexLayout;
-		renderer::DescriptorSetLayoutPtr m_offscreenDescriptorLayout;
-		renderer::DescriptorSetPoolPtr m_offscreenDescriptorPool;
-		renderer::DescriptorSetPtr m_offscreenDescriptorSet;
-		std::vector< TexturedVertexData > m_offscreenVertexData;
-		renderer::UInt16Array m_offscreenIndexData;
 		renderer::QueryPoolPtr m_queryPool;
-		/**@}*/
-		/**
-		*\name
-		*	Main.
-		*/
-		/**@{*/
-		renderer::RenderPassPtr m_mainRenderPass;
-		renderer::PipelineLayoutPtr m_mainPipelineLayout;
-		renderer::PipelinePtr m_mainPipeline;
-		renderer::VertexBufferPtr< TexturedVertexData > m_mainVertexBuffer;
-		renderer::VertexLayoutPtr m_mainVertexLayout;
-		renderer::DescriptorSetLayoutPtr m_mainDescriptorLayout;
-		renderer::DescriptorSetPoolPtr m_mainDescriptorPool;
-		renderer::DescriptorSetPtr m_mainDescriptorSet;
-		std::vector< TexturedVertexData > m_mainVertexData;
 		/**@}*/
 		/**
 		*\name

@@ -7,4 +7,14 @@ extern "C"
 	{
 		return new vk_renderer::Renderer{ configuration };
 	}
+
+	VkRenderer_API char const * getShortName()
+	{
+		return "vk";
+	}
+
+	VkRenderer_API char const * getFullName()
+	{
+		return "Vulkan";
+	}
 }

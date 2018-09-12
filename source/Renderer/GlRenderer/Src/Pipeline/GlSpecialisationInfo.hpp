@@ -12,7 +12,9 @@ namespace renderer
 {
 	renderer::PushConstantArray convert( renderer::ShaderStageFlag stage
 		, std::vector< renderer::SpecialisationMapEntry > const & entries );
-	renderer::PushConstantsBufferBase convert( renderer::ShaderStageFlag stage
+	renderer::PushConstantsBufferPtr convert( renderer::Device const & device
+		, uint32_t location
+		, renderer::ShaderStageFlag stage
 		, renderer::SpecialisationInfoBase const & specialisationInfo );
 }
 

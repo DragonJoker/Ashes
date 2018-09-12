@@ -33,4 +33,22 @@ extern "C"
 	*	The creation options.
 	*/
 	GlRenderer_API renderer::Renderer * createRenderer( renderer::Renderer::Configuration const & configuration );
+	/**
+	*\~french
+	*\return
+	*	Le nom court du renderer.
+	*\~english
+	*\return
+	*	The renderer short name.
+	*/
+	GlRenderer_API char const * getShortName();
+	/**
+	*\~french
+	*\return
+	*	Le nom complet du renderer.
+	*\~english
+	*\return
+	*	The renderer full name.
+	*/
+	GlRenderer_API char const * getFullName();
 }

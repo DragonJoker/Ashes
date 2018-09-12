@@ -193,10 +193,14 @@ namespace vkapp
 			auto result = renderer::makeLayout< common::TexturedVertexData >( 0 );
 			result->createAttribute( 0u
 				, renderer::Format::eR32G32B32A32_SFLOAT
-				, uint32_t( offsetof( common::TexturedVertexData, position ) ) );
+				, uint32_t( offsetof( common::TexturedVertexData, position ) )
+				, "POSITION"
+				, 0u );
 			result->createAttribute( 1u
 				, renderer::Format::eR32G32_SFLOAT
-				, uint32_t( offsetof( common::TexturedVertexData, uv ) ) );
+				, uint32_t( offsetof( common::TexturedVertexData, uv ) )
+				, "TEXCOORD"
+				, 0u );
 			return result;
 		}
 	}
@@ -320,7 +324,7 @@ namespace vkapp
 	{
 		m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
 
-		renderer::UInt32Array values{ 0u, 0u };
+		renderer::UInt64Array values{ 0u, 0u };
 		m_queryPool->getResults( 0u
 			, 2u
 			, 0u

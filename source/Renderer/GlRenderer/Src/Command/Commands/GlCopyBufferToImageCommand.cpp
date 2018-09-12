@@ -78,7 +78,7 @@ namespace gl_renderer
 					, copyInfo.imageOffset.x
 					, copyInfo.imageExtent.width
 					, m_internal
-					, copyInfo.levelSize
+					, getSize( copyInfo.imageExtent, m_dst.getFormat() )
 					, BufferOffset( copyInfo.bufferOffset ) );
 				break;
 
@@ -92,7 +92,7 @@ namespace gl_renderer
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, m_internal
-					, copyInfo.levelSize
+					, getSize( copyInfo.imageExtent, m_dst.getFormat() )
 					, BufferOffset( copyInfo.bufferOffset ) );
 				break;
 
@@ -108,7 +108,7 @@ namespace gl_renderer
 					, copyInfo.imageExtent.height
 					, copyInfo.imageExtent.depth
 					, m_internal
-					, copyInfo.levelSize
+					, getSize( copyInfo.imageExtent, m_dst.getFormat() )
 					, BufferOffset( copyInfo.bufferOffset ) );
 
 			case GL_TEXTURE_1D_ARRAY:
@@ -121,7 +121,7 @@ namespace gl_renderer
 					, copyInfo.imageExtent.width
 					, copyInfo.imageSubresource.layerCount
 					, m_internal
-					, copyInfo.levelSize
+					, getSize( copyInfo.imageExtent, m_dst.getFormat() )
 					, BufferOffset( copyInfo.bufferOffset ) );
 				break;
 
@@ -137,7 +137,7 @@ namespace gl_renderer
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount
 					, m_internal
-					, copyInfo.levelSize
+					, getSize( copyInfo.imageExtent, m_dst.getFormat() )
 					, BufferOffset( copyInfo.bufferOffset ) );
 				break;
 			}

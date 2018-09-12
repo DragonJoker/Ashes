@@ -16,6 +16,7 @@
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
+#include <Image/StagingTexture.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
 #include <Miscellaneous/QueryPool.hpp>
@@ -276,6 +277,7 @@ namespace vkapp
 			m_view.reset();
 			m_texture.reset();
 			m_stagingBuffer.reset();
+			m_stagingTexture.reset();
 
 			m_matrixUbo.reset();
 			m_objectUbo.reset();
@@ -370,6 +372,8 @@ namespace vkapp
 
 	void RenderPanel::doCreateTexture()
 	{
+		m_stagingTexture = m_device->createStagingTexture( renderer::Format::eR8G8B8A8_UNORM
+			, { 512u, 512u, 1u } );
 		m_texture = m_device->createTexture(
 			{
 				renderer::ImageCreateFlag::eCubeCompatible,
@@ -409,13 +413,14 @@ namespace vkapp
 		for ( size_t i = 0u; i < paths.size(); ++i )
 		{
 			auto image = common::loadImage( shadersFolder / paths[i] );
-			m_stagingBuffer->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+			m_stagingTexture->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
 				, {
 					m_view->getSubResourceRange().aspectMask,
 					m_view->getSubResourceRange().baseMipLevel,
 					uint32_t( i ),
 					1u,
 				}
+				, image.format
 				, { 0, 0, 0 }
 				, { image.size.width, image.size.height, 1u }
 				, image.data
@@ -528,7 +533,9 @@ namespace vkapp
 		m_offscreenVertexLayout = renderer::makeLayout< NonTexturedVertexData >( 0 );
 		m_offscreenVertexLayout->createAttribute( 0u
 			, renderer::Format::eR32G32B32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+			, uint32_t( offsetof( TexturedVertexData, position ) )
+			, "POSITION"
+			, 0u );
 
 		m_offscreenVertexBuffer = renderer::makeVertexBuffer< NonTexturedVertexData >( *m_device
 			, uint32_t( m_offscreenVertexData.size() )
@@ -1250,10 +1257,14 @@ namespace vkapp
 		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
 		m_mainVertexLayout->createAttribute( 0u
 			, renderer::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+			, uint32_t( offsetof( TexturedVertexData, position ) )
+			, "POSITION"
+			, 0u );
 		m_mainVertexLayout->createAttribute( 1u
 			, renderer::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+			, uint32_t( offsetof( TexturedVertexData, uv ) )
+			, "TEXCOORD"
+			, 0u );
 
 		m_mainVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_mainVertexData.size() )
@@ -1396,7 +1407,7 @@ namespace vkapp
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
 			m_swapChain->present( *resources );
-			renderer::UInt32Array values{ 0u, 0u };
+			renderer::UInt64Array values{ 0u, 0u };
 			m_queryPool->getResults( 0u
 				, 2u
 				, 0u
