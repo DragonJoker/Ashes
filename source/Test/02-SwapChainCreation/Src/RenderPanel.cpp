@@ -30,7 +30,7 @@ namespace vkapp
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, renderer::Renderer const & renderer )
+		, ashes::Renderer const & renderer )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 	{
@@ -77,7 +77,7 @@ namespace vkapp
 		}
 	}
 
-	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
+	void RenderPanel::doCreateDevice( ashes::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
 	}
@@ -86,7 +86,7 @@ namespace vkapp
 	{
 		wxSize size{ GetClientSize() };
 		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
-		m_swapChain->setClearColour( renderer::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f } );
+		m_swapChain->setClearColour( ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			doResetSwapChain();
@@ -95,34 +95,34 @@ namespace vkapp
 
 	void RenderPanel::doCreateRenderPass()
 	{
-		renderer::AttachmentDescriptionArray attaches
+		ashes::AttachmentDescriptionArray attaches
 		{
 			{
 				m_swapChain->getFormat(),
-				renderer::SampleCountFlag::e1,
-				renderer::AttachmentLoadOp::eClear,
-				renderer::AttachmentStoreOp::eStore,
-				renderer::AttachmentLoadOp::eDontCare,
-				renderer::AttachmentStoreOp::eDontCare,
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::ePresentSrc,
+				ashes::SampleCountFlag::e1,
+				ashes::AttachmentLoadOp::eClear,
+				ashes::AttachmentStoreOp::eStore,
+				ashes::AttachmentLoadOp::eDontCare,
+				ashes::AttachmentStoreOp::eDontCare,
+				ashes::ImageLayout::eUndefined,
+				ashes::ImageLayout::ePresentSrc,
 			}
 		};
-		renderer::AttachmentReferenceArray subAttaches
+		ashes::AttachmentReferenceArray subAttaches
 		{
-			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
+			{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
 		};
-		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite }
+		ashes::RenderSubpassPtrArray subpasses;
+		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( ashes::PipelineBindPoint::eGraphics
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::AccessFlag::eColourAttachmentWrite }
 			, subAttaches ) );
 		m_renderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
-				, renderer::AccessFlag::eMemoryRead }
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
-				, renderer::AccessFlag::eMemoryRead } );
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
+				, ashes::AccessFlag::eMemoryRead }
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
+				, ashes::AccessFlag::eMemoryRead } );
 	}
 
 	bool RenderPanel::doPrepareFrames()
@@ -137,11 +137,11 @@ namespace vkapp
 			auto & frameBuffer = *m_frameBuffers[i];
 			auto & commandBuffer = *m_commandBuffers[i];
 
-			commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+			commandBuffer.begin( ashes::CommandBufferUsageFlag::eSimultaneousUse );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, frameBuffer
 				, { m_swapChain->getClearColour() }
-				, renderer::SubpassContents::eInline );
+				, ashes::SubpassContents::eInline );
 			commandBuffer.endRenderPass();
 			commandBuffer.end();
 		}
@@ -159,7 +159,7 @@ namespace vkapp
 			auto & queue = m_device->getGraphicsQueue();
 			queue.submit( *m_commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
-				, renderer::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
 			m_swapChain->present( *resources );

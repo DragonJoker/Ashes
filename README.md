@@ -1,13 +1,13 @@
 |         Server     | Result |
 |:------------------:|--------|
-|  Travis CI (Linux) | [![Build Status](https://travis-ci.org/DragonJoker/RendererLib.svg?branch=master)](https://travis-ci.org/DragonJoker/RendererLib) |
+|  Travis CI (Linux) | [![Build Status](https://travis-ci.org/DragonJoker/Ashes.svg?branch=master)](https://travis-ci.org/DragonJoker/Ashes) |
 | AppVeyor (Windows) | [![Build Status](https://ci.appveyor.com/api/projects/status/github/DragonJoker/rendererlib?branch=master&svg=true)](https://ci.appveyor.com/project/DragonJoker/rendererlib) |
 
 
-RendererLib
-===========
+Ashes
+=====
 
-RendererLib is a rendering library written in C++14, matching closely Vulkan interfaces.
+Ashes is a rendering library written in C++14, matching closely Vulkan interfaces.
 The final goal of this library is to expose as much of Vulkan features as possible.
 It comes with a set of test applications, to validate the API.
 
@@ -21,7 +21,8 @@ To build it, you can use either CMake or premake.
 
 - VkRenderer : A Vulkan renderer.
 - Gl3Renderer : An OpenGL 3.X renderer, based upon OpenGL 3.2.
-- GlRenderer : An OpenGL 4.X renderer, based upon OpenGL 4.2.
+- Gl4Renderer : An OpenGL 4.X renderer, based upon OpenGL 4.2.
+- D3D11Renderer : A Direct3D 11 renderer.
 
 ## Test applications
 

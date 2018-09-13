@@ -251,7 +251,7 @@ namespace common
 					|| file.find( ".so" ) != std::string::npos )
 				try
 				{
-					renderer::DynamicLibrary lib{ file };
+					ashes::DynamicLibrary lib{ file };
 					m_plugins.emplace_back( std::move( lib )
 						, m_factory );
 				}

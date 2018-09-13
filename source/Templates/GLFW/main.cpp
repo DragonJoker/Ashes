@@ -15,9 +15,9 @@
 
 #include <GLFW/glfw3.h>
 
-#if RENDERLIB_WIN32
+#if ASHES_WIN32
 #	define GLFW_EXPOSE_NATIVE_WIN32
-#elif RENDERLIB_XLIB
+#elif ASHES_XLIB
 #	define GLFW_EXPOSE_NATIVE_X11
 #endif
 
@@ -25,22 +25,22 @@
 
 struct Application
 {
-	renderer::SwapChainPtr swapChain;
-	std::vector< renderer::FrameBufferPtr > frameBuffers;
-	renderer::CommandBufferPtrArray commandBuffers;
-	renderer::RenderPassPtr renderPass;
+	ashes::SwapChainPtr swapChain;
+	std::vector< ashes::FrameBufferPtr > frameBuffers;
+	ashes::CommandBufferPtrArray commandBuffers;
+	ashes::RenderPassPtr renderPass;
 };
 
 std::string processCommandLine( int argc, char ** argv );
 std::vector< common::RendererPlugin > doListPlugins( common::RendererFactory & factory );
-renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
-	, renderer::SwapChain const & swapChain );
+ashes::RenderPassPtr doCreateRenderPass( ashes::Device const & device
+	, ashes::SwapChain const & swapChain );
 void doPrepareFrames( Application & application );
 void onWindowResized( GLFWwindow * window, int width, int height );
 
 int main( int argc, char * argv[] )
 {
-	// First, we need to retrieve the RendererLib plugins
+	// First, we need to retrieve the Ashes plugins
 	common::RendererFactory factory;
 	auto plugins = doListPlugins( factory );
 
@@ -48,17 +48,17 @@ int main( int argc, char * argv[] )
 	std::string rendererName = processCommandLine( argc, argv );
 
 	// With that informations, we can now create the renderer instance.
-	renderer::Renderer::Configuration config
+	ashes::Renderer::Configuration config
 	{
 		"GLFW Template",
-		"RendererLib",
+		"Ashes",
 #if !defined( NDEBUG )
 		true,
 #else
 		false,
 #endif
 	};
-	renderer::RendererPtr renderer = factory.create( rendererName, config );
+	ashes::RendererPtr renderer = factory.create( rendererName, config );
 
 	// Now we need a window.
 	static constexpr uint32_t width = 800u;
@@ -70,22 +70,22 @@ int main( int argc, char * argv[] )
 	glfwSetWindowUserPointer( window, &app );
 	glfwSetWindowSizeCallback( window, onWindowResized );
 
-#if RENDERLIB_WIN32
+#if ASHES_WIN32
 	// We retrieve this window's native handle, and create the logical device from it.
 	auto hWnd = glfwGetWin32Window( window );
-	auto handle = renderer::WindowHandle{ std::make_unique< renderer::IMswWindowHandle >( nullptr, hWnd ) };
-#elif RENDERLIB_XLIB
+	auto handle = ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( nullptr, hWnd ) };
+#elif ASHES_XLIB
 	auto display = glfwGetX11Display();
 	auto drawable = glfwGetX11Window( window );
-	auto handle = renderer::WindowHandle{ std::make_unique< renderer::IXWindowHandle >( drawable, display ) };
+	auto handle = ashes::WindowHandle{ std::make_unique< ashes::IXWindowHandle >( drawable, display ) };
 #else
 #	error "Unimplemented."
 #endif
-	renderer::DevicePtr device = renderer->createDevice( renderer->createConnection( 0u, std::move( handle ) ) );
+	ashes::DevicePtr device = renderer->createDevice( renderer->createConnection( 0u, std::move( handle ) ) );
 
 	// Retrieve the swapchain and set it up.
 	app.swapChain = device->createSwapChain( { width, height } );
-	app.swapChain->setClearColour( renderer::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f } );
+	app.swapChain->setClearColour( ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f } );
 
 	// We retrieve the render pass that we'll be using to do our stuff on the swapchain surface.
 	app.renderPass = doCreateRenderPass( *device, *app.swapChain );
@@ -112,7 +112,7 @@ int main( int argc, char * argv[] )
 			// Submit the command buffer to the graphics queue.
 			device->getGraphicsQueue().submit( *app.commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
-				, renderer::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
 			// And we present the frame to the swap chain surface.
@@ -164,7 +164,7 @@ std::vector< common::RendererPlugin > doListPlugins( common::RendererFactory & f
 				|| file.find( ".so" ) != std::string::npos )
 				try
 			{
-				renderer::DynamicLibrary lib{ file };
+				ashes::DynamicLibrary lib{ file };
 				result.emplace_back( std::move( lib )
 					, factory );
 			}
@@ -178,55 +178,55 @@ std::vector< common::RendererPlugin > doListPlugins( common::RendererFactory & f
 	return result;
 }
 
-renderer::RenderPassPtr doCreateRenderPass( renderer::Device const & device
-	, renderer::SwapChain const & swapChain )
+ashes::RenderPassPtr doCreateRenderPass( ashes::Device const & device
+	, ashes::SwapChain const & swapChain )
 {
-	renderer::AttachmentDescriptionArray attaches
+	ashes::AttachmentDescriptionArray attaches
 	{
 		// We'll have only one colour attachment for the render pass.
 		{
 			// The format is the swapchain's pixel format.
 			swapChain.getFormat(),
 			// Multisampling is disabled for this attach.
-			renderer::SampleCountFlag::e1,
+			ashes::SampleCountFlag::e1,
 			// We want to clear the attach at the beginning of the render pass.
-			renderer::AttachmentLoadOp::eClear,
+			ashes::AttachmentLoadOp::eClear,
 			// And we want its result to be stored at the end of the render pass.
-			renderer::AttachmentStoreOp::eStore,
+			ashes::AttachmentStoreOp::eStore,
 			// We don't care about stencil attachment.
-			renderer::AttachmentLoadOp::eDontCare,
+			ashes::AttachmentLoadOp::eDontCare,
 			// We don't care about stencil attachment.
-			renderer::AttachmentStoreOp::eDontCare,
+			ashes::AttachmentStoreOp::eDontCare,
 			// The initial layout is the layout expected for the attachment at the beginning of the render pass.
 			// We expect the attach to have been presented to the surface, so it should be either a present source or undefined.
-			renderer::ImageLayout::eUndefined,
+			ashes::ImageLayout::eUndefined,
 			// The final layout is the layouts into which the attachment is transitioned at the end of the render pass.
 			// We want the attach to be presented to the surface, so we make it a present source.
-			renderer::ImageLayout::ePresentSrc,
+			ashes::ImageLayout::ePresentSrc,
 		}
 	};
 	// A render pass always has at least one subpass.
 	// In our case, this subpass is also the only one,
 	// its only attachment is the render pass' one.
 	// We want this attachment to be transitioned to colour attachment, so we can write into it.
-	renderer::AttachmentReferenceArray subAttaches
+	ashes::AttachmentReferenceArray subAttaches
 	{
-		renderer::AttachmentReference{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
+		ashes::AttachmentReference{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
 	};
 	// We now create the subpasses.
 	// The subpass state is used to setup the needed states at the beginning of the subpass.
-	renderer::RenderSubpassPtrArray subpasses;
-	subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
-		, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-			, renderer::AccessFlag::eColourAttachmentWrite }
+	ashes::RenderSubpassPtrArray subpasses;
+	subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( ashes::PipelineBindPoint::eGraphics
+		, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+			, ashes::AccessFlag::eColourAttachmentWrite }
 		, subAttaches ) );
 	// Eventually, we create the render pass, using all previously built informations.
 	return device.createRenderPass( attaches
 		, std::move( subpasses )
-		, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
-			, renderer::AccessFlag::eMemoryRead }
-		, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
-			, renderer::AccessFlag::eMemoryRead } );
+		, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
+			, ashes::AccessFlag::eMemoryRead }
+		, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
+			, ashes::AccessFlag::eMemoryRead } );
 }
 
 void doPrepareFrames( Application & application )
@@ -241,11 +241,11 @@ void doPrepareFrames( Application & application )
 		auto & frameBuffer = *application.frameBuffers[i];
 		auto & commandBuffer = *application.commandBuffers[i];
 
-		commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+		commandBuffer.begin( ashes::CommandBufferUsageFlag::eSimultaneousUse );
 		commandBuffer.beginRenderPass( *application.renderPass
 			, frameBuffer
 			, { application.swapChain->getClearColour() }
-		, renderer::SubpassContents::eInline );
+		, ashes::SubpassContents::eInline );
 		commandBuffer.endRenderPass();
 		commandBuffer.end();
 	}

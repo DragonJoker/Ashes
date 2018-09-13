@@ -20,7 +20,7 @@ namespace vkapp
 	public:
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
-			, renderer::Renderer const & renderer );
+			, ashes::Renderer const & renderer );
 		~RenderPanel();
 
 	private:
@@ -30,7 +30,7 @@ namespace vkapp
 		*/
 		/**@{*/
 		void doCleanup();
-		void doCreateDevice( renderer::Renderer const & renderer );
+		void doCreateDevice( ashes::Renderer const & renderer );
 		void doCreateSwapChain();
 		void doCreateTexture();
 		void doCreateDescriptorSet();
@@ -65,29 +65,29 @@ namespace vkapp
 		*	Global.
 		*/
 		/**@{*/
-		renderer::DevicePtr m_device;
-		renderer::SwapChainPtr m_swapChain;
-		renderer::RenderPassPtr m_renderPass;
-		renderer::PipelineLayoutPtr m_pipelineLayout;
-		renderer::VertexLayoutPtr m_vertexLayout;
-		renderer::PipelinePtr m_pipeline;
-		renderer::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
-		renderer::StagingBufferPtr m_stagingBuffer;
-		renderer::BufferPtr< utils::Vec4 > m_textureBuffer;
-		renderer::BufferViewPtr m_bufferView;
-		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
-		renderer::DescriptorSetPoolPtr m_descriptorPool;
-		renderer::DescriptorSetPtr m_descriptorSet;
-		renderer::QueryPoolPtr m_queryPool;
+		ashes::DevicePtr m_device;
+		ashes::SwapChainPtr m_swapChain;
+		ashes::RenderPassPtr m_renderPass;
+		ashes::PipelineLayoutPtr m_pipelineLayout;
+		ashes::VertexLayoutPtr m_vertexLayout;
+		ashes::PipelinePtr m_pipeline;
+		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
+		ashes::StagingBufferPtr m_stagingBuffer;
+		ashes::BufferPtr< utils::Vec4 > m_textureBuffer;
+		ashes::BufferViewPtr m_bufferView;
+		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
+		ashes::DescriptorSetPoolPtr m_descriptorPool;
+		ashes::DescriptorSetPtr m_descriptorSet;
+		ashes::QueryPoolPtr m_queryPool;
 		/**@}*/
 		/**
 		*\name
 		*	Swapchain.
 		*/
 		/**@{*/
-		std::vector< renderer::FrameBufferPtr > m_frameBuffers;
-		renderer::CommandBufferPtrArray m_commandBuffers;
-		renderer::SignalConnection< renderer::SwapChain::OnReset > m_swapChainReset;
+		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
+		ashes::CommandBufferPtrArray m_commandBuffers;
+		ashes::SignalConnection< ashes::SwapChain::OnReset > m_swapChainReset;
 		/**@}*/
 	};
 }

@@ -14,7 +14,7 @@ namespace common
 		, uint16_t & nvn
 		, uint16_t & nf
 		, uint16_t & ntf
-		, renderer::UInt16Array & faces )
+		, ashes::UInt16Array & faces )
 	{
 		std::istringstream file( fileContent );
 		std::string line;
@@ -80,14 +80,14 @@ namespace common
 
 	void loadObjFile( std::string const & fileContent
 		, std::vector< TexturedVertexData > & vboData
-		, renderer::UInt16Array & iboData )
+		, ashes::UInt16Array & iboData )
 	{
 		uint16_t nv = 0u;
 		uint16_t nvt = 0u;
 		uint16_t nvn = 0u;
 		uint16_t nf = 0u;
 		uint16_t ntf = 0u;
-		renderer::UInt16Array faces;
+		ashes::UInt16Array faces;
 
 		if ( !doPreloadFile( fileContent
 			, nv
@@ -137,7 +137,7 @@ namespace common
 		file.clear();
 		file.seekg( 0, std::ios::beg );
 
-		renderer::UInt16Array index( nf * 3 );
+		ashes::UInt16Array index( nf * 3 );
 		utils::Vec3Array vertex( nf * 3 );
 		utils::Vec3Array normal( nf * 3 );
 		utils::Vec2Array texcoord( nf * 3 );

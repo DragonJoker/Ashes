@@ -1,5 +1,5 @@
 ﻿/*
-This file belongs to RendererLib.
+This file belongs to Ashes.
 See LICENSE file in root folder
 */
 namespace utils

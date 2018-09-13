@@ -247,7 +247,7 @@ ModelManifest.xml
 .fake/
 /doc/GlLib
 /doc/html
-/source/Renderer/*.gch
+/source/Ashes/*.gch
 /source/Core/FreeType
 /source/RenderLib
 /.vscode

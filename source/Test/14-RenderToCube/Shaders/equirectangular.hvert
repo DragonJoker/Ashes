@@ -17,7 +17,7 @@ cbuffer Matrix : register(b0)
 VertexOutput mainVx( in VertexInput input )
 {
 	VertexOutput output;
-	output.position = rendererScalePosition( input.position ).xyz;
+	output.position = ashesScalePosition( input.position ).xyz;
 	output.svPosition = mul( mtxViewProjection, input.position );
 	return output;
 }

@@ -8,14 +8,14 @@ targetdir( path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", stati
 location( currentBinaryDir )
 
 includedirs{
-	path.join( sourceDir, "Renderer", "Renderer", "Src" ),
-	path.join( binaryDir, "Renderer", "Renderer", "Src" ),
+	path.join( sourceDir, "Ashes", "Ashes", "Src" ),
+	path.join( binaryDir, "Ashes", "Ashes", "Src" ),
 	path.join( currentBinaryDir, "Src" ),
 	path.join( currentSourceDir, "Src" )
 }
 
 links{
-	"Renderer"
+	"Ashes"
 }
 files{ "./Src/**.hpp",
 	"./Src/**.inl",

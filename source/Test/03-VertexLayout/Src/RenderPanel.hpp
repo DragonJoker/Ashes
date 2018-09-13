@@ -16,7 +16,7 @@ namespace vkapp
 	public:
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
-			, renderer::Renderer const & renderer );
+			, ashes::Renderer const & renderer );
 		~RenderPanel();
 
 	private:
@@ -26,7 +26,7 @@ namespace vkapp
 		*/
 		/**@{*/
 		void doCleanup();
-		void doCreateDevice( renderer::Renderer const & renderer );
+		void doCreateDevice( ashes::Renderer const & renderer );
 		void doCreateSwapChain();
 		void doCreateRenderPass();
 		void doCreateVertexBuffer();
@@ -56,23 +56,23 @@ namespace vkapp
 		*\name
 		*	Global.
 		/**@{*/
-		renderer::DevicePtr m_device;
-		renderer::SwapChainPtr m_swapChain;
-		renderer::RenderPassPtr m_renderPass;
-		renderer::PipelineLayoutPtr m_pipelineLayout;
-		renderer::PipelinePtr m_pipeline;
-		renderer::VertexBufferPtr< VertexData > m_vertexBuffer;
-		renderer::VertexLayoutPtr m_vertexLayout;
-		renderer::QueryPoolPtr m_queryPool;
+		ashes::DevicePtr m_device;
+		ashes::SwapChainPtr m_swapChain;
+		ashes::RenderPassPtr m_renderPass;
+		ashes::PipelineLayoutPtr m_pipelineLayout;
+		ashes::PipelinePtr m_pipeline;
+		ashes::VertexBufferPtr< VertexData > m_vertexBuffer;
+		ashes::VertexLayoutPtr m_vertexLayout;
+		ashes::QueryPoolPtr m_queryPool;
 		/**@}*/
 		/**
 		*\name
 		*	Swapchain.
 		*/
 		/**@{*/
-		std::vector< renderer::FrameBufferPtr > m_frameBuffers;
-		renderer::CommandBufferPtrArray m_commandBuffers;
-		renderer::SignalConnection< renderer::SwapChain::OnReset > m_swapChainReset;
+		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
+		ashes::CommandBufferPtrArray m_commandBuffers;
+		ashes::SignalConnection< ashes::SwapChain::OnReset > m_swapChainReset;
 		/**@}*/
 	};
 }

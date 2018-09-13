@@ -46,10 +46,10 @@ namespace common
 
 		try
 		{
-			renderer::Renderer::Configuration config
+			ashes::Renderer::Configuration config
 			{
 				m_name.ToStdString(),
-				"RendererLib",
+				"Ashes",
 #if !defined( NDEBUG )
 				true,
 #else

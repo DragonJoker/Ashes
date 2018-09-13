@@ -21,10 +21,10 @@
 namespace common
 {
 	static wxSize const WindowSize{ 800, 600 };
-	using RendererFactory = utils::Factory< renderer::Renderer
+	using RendererFactory = utils::Factory< ashes::Renderer
 		, std::string
-		, renderer::RendererPtr
-		, std::function< renderer::RendererPtr( renderer::Renderer::Configuration const & ) > >;
+		, ashes::RendererPtr
+		, std::function< ashes::RendererPtr( ashes::Renderer::Configuration const & ) > >;
 
 	static uint32_t constexpr MAX_TEXTURES = 6u;
 	static uint32_t constexpr MAX_LIGHTS = 10u;
@@ -67,9 +67,9 @@ namespace common
 	/**\{*/
 	struct Image
 	{
-		renderer::Extent2D size;
-		renderer::ByteArray data;
-		renderer::Format format;
+		ashes::Extent2D size;
+		ashes::ByteArray data;
+		ashes::Format format;
 		bool opacity{ false };
 	};
 
@@ -200,8 +200,8 @@ namespace common
 	struct TextureNode
 	{
 		ImagePtr image;
-		renderer::TexturePtr texture;
-		renderer::TextureViewPtr view;
+		ashes::TexturePtr texture;
+		ashes::TextureViewPtr view;
 	};
 
 	using TextureNodePtr = std::shared_ptr< TextureNode >;
@@ -212,24 +212,24 @@ namespace common
 	{
 		std::shared_ptr< NodeType > instance;
 		TextureNodePtrArray textures;
-		renderer::DescriptorSetLayoutPtr layout;
-		renderer::DescriptorSetPoolPtr pool;
-		renderer::DescriptorSetPtr descriptorSetTextures;
-		renderer::DescriptorSetPtr descriptorSetUbos;
-		renderer::PipelineLayoutPtr pipelineLayout;
-		renderer::PipelinePtr pipeline;
+		ashes::DescriptorSetLayoutPtr layout;
+		ashes::DescriptorSetPoolPtr pool;
+		ashes::DescriptorSetPtr descriptorSetTextures;
+		ashes::DescriptorSetPtr descriptorSetUbos;
+		ashes::PipelineLayoutPtr pipelineLayout;
+		ashes::PipelinePtr pipeline;
 	};
 
 	struct SubmeshNode
 	{
-		renderer::VertexBufferPtr< Vertex > vbo;
-		renderer::BufferPtr< Face > ibo;
+		ashes::VertexBufferPtr< Vertex > vbo;
+		ashes::BufferPtr< Face > ibo;
 	};
 
 	struct BillboardNode
 	{
-		renderer::VertexBufferPtr< Vertex > vbo;
-		renderer::VertexBufferPtr< BillboardInstanceData > instance;
+		ashes::VertexBufferPtr< Vertex > vbo;
+		ashes::VertexBufferPtr< BillboardInstanceData > instance;
 	};
 
 	using SubmeshNodePtr = std::shared_ptr< SubmeshNode >;
@@ -244,10 +244,10 @@ namespace common
 	using BillboardNodes = std::vector< BillboardNodePtr >;
 	/**\}*/
 
-	renderer::ConnectionPtr makeConnection( wxWindow * window
-		, renderer::Renderer const & renderer );
+	ashes::ConnectionPtr makeConnection( wxWindow * window
+		, ashes::Renderer const & renderer );
 
-	std::vector< renderer::Format > getFormats( renderer::TextureViewCRefArray const & views );
+	std::vector< ashes::Format > getFormats( ashes::TextureViewCRefArray const & views );
 
 	struct Scene;
 

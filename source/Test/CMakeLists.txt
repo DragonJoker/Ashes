@@ -28,8 +28,8 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 
 	include_directories(
 		${CMAKE_SOURCE_DIR}/Utils/Src
-		${CMAKE_BINARY_DIR}/Renderer/Renderer/Src
-		${CMAKE_SOURCE_DIR}/Renderer/Renderer/Src
+		${CMAKE_BINARY_DIR}/Ashes/Ashes/Src
+		${CMAKE_SOURCE_DIR}/Ashes/Ashes/Src
 		${CMAKE_SOURCE_DIR}/external/gli
 		${CMAKE_SOURCE_DIR}/external/glm
 		${CMAKE_SOURCE_DIR}/external/imgui
@@ -61,5 +61,5 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 	add_subdirectory( 21-SpecialisationConstants )
 	add_subdirectory( 22-SPIRVSpecialisationConstants )
 	add_subdirectory( 23-Bloom )
-	add_subdirectory( RendererInfo )
+	add_subdirectory( AshesInfo )
 endif ()

@@ -10,6 +10,6 @@ layout( location = 0 ) out vec4 vtx_colour;
 
 void main()
 {
-    gl_Position = rendererScalePosition( position );
+    gl_Position = ashesScalePosition( position );
     vtx_colour = colour;
 }

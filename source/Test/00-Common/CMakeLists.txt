@@ -19,7 +19,7 @@ add_library( ${PROJECT_NAME} STATIC
 )
 
 target_link_libraries( ${PROJECT_NAME}
-	Renderer
+	Ashes
 )
 
 add_dependencies( ${PROJECT_NAME}

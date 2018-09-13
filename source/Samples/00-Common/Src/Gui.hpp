@@ -11,12 +11,12 @@ namespace common
 	class Gui
 	{
 	public:
-		Gui( renderer::Device const & device
-			, renderer::Extent2D const & size );
-		void updateView( renderer::TextureView const & colourView );
+		Gui( ashes::Device const & device
+			, ashes::Extent2D const & size );
+		void updateView( ashes::TextureView const & colourView );
 		void update();
-		void resize( renderer::Extent2D const & size );
-		void submit( renderer::Queue const & queue );
+		void resize( ashes::Extent2D const & size );
+		void submit( ashes::Queue const & queue );
 
 		bool header( char const * caption );
 		bool checkBox( char const * caption, bool * value );
@@ -28,7 +28,7 @@ namespace common
 		bool button( char const * caption );
 		void text( char const * formatstr, ... );
 
-		inline renderer::TextureView const & getTargetView()const
+		inline ashes::TextureView const & getTargetView()const
 		{
 			return *m_targetView;
 		}
@@ -45,31 +45,31 @@ namespace common
 			utils::Vec2 translate;
 		};
 
-		renderer::Device const & m_device;
-		renderer::TextureView const * m_colourView{ nullptr };
-		renderer::Extent2D m_size;
-		renderer::PushConstantsBuffer< PushConstBlock > m_pushConstants;
-		renderer::VertexBufferPtr< ImDrawVert > m_vertexBuffer;
-		renderer::BufferPtr< ImDrawIdx > m_indexBuffer;
-		renderer::TexturePtr m_target;
-		renderer::TextureViewPtr m_targetView;
+		ashes::Device const & m_device;
+		ashes::TextureView const * m_colourView{ nullptr };
+		ashes::Extent2D m_size;
+		ashes::PushConstantsBuffer< PushConstBlock > m_pushConstants;
+		ashes::VertexBufferPtr< ImDrawVert > m_vertexBuffer;
+		ashes::BufferPtr< ImDrawIdx > m_indexBuffer;
+		ashes::TexturePtr m_target;
+		ashes::TextureViewPtr m_targetView;
 		uint32_t m_vertexCount = 0;
 		uint32_t m_indexCount = 0;
 
-		renderer::DescriptorSetLayoutPtr m_descriptorSetLayout;
-		renderer::DescriptorSetPoolPtr m_descriptorPool;
-		renderer::DescriptorSetPtr m_descriptorSet;
-		renderer::PipelineLayoutPtr m_pipelineLayout;
-		renderer::RenderPassPtr m_renderPass;
-		renderer::FrameBufferPtr m_frameBuffer;
-		renderer::VertexLayoutPtr m_vertexLayout;
-		renderer::PipelinePtr m_pipeline;
-		renderer::CommandPoolPtr m_commandPool;
-		renderer::CommandBufferPtr m_commandBuffer;
-		renderer::FencePtr m_fence;
+		ashes::DescriptorSetLayoutPtr m_descriptorSetLayout;
+		ashes::DescriptorSetPoolPtr m_descriptorPool;
+		ashes::DescriptorSetPtr m_descriptorSet;
+		ashes::PipelineLayoutPtr m_pipelineLayout;
+		ashes::RenderPassPtr m_renderPass;
+		ashes::FrameBufferPtr m_frameBuffer;
+		ashes::VertexLayoutPtr m_vertexLayout;
+		ashes::PipelinePtr m_pipeline;
+		ashes::CommandPoolPtr m_commandPool;
+		ashes::CommandBufferPtr m_commandBuffer;
+		ashes::FencePtr m_fence;
 
-		renderer::TexturePtr m_fontImage;
-		renderer::TextureViewPtr m_fontView;
-		renderer::SamplerPtr m_sampler;
+		ashes::TexturePtr m_fontImage;
+		ashes::TextureViewPtr m_fontView;
+		ashes::SamplerPtr m_sampler;
 	};
 }

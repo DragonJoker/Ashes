@@ -7,10 +7,10 @@
 
 namespace common
 {
-	using RendererFactory = utils::Factory< renderer::Renderer
+	using RendererFactory = utils::Factory< ashes::Renderer
 		, std::string
-		, renderer::RendererPtr
-		, std::function< renderer::RendererPtr( renderer::Renderer::Configuration const & ) > >;
+		, ashes::RendererPtr
+		, std::function< ashes::RendererPtr( ashes::Renderer::Configuration const & ) > >;
 	/**
 	*\brief
 	*	Gère un plugin de rendu (wrappe la fonction de création).
@@ -18,7 +18,7 @@ namespace common
 	class RendererPlugin
 	{
 	private:
-		using CreatorFunction = renderer::Renderer *( * )( renderer::Renderer::Configuration const & );
+		using CreatorFunction = ashes::Renderer *( * )( ashes::Renderer::Configuration const & );
 
 	public:
 		RendererPlugin( RendererPlugin const & ) = delete;
@@ -26,12 +26,12 @@ namespace common
 		RendererPlugin & operator=( RendererPlugin const & ) = delete;
 		RendererPlugin & operator=( RendererPlugin && ) = default;
 
-		RendererPlugin( renderer::DynamicLibrary && library
+		RendererPlugin( ashes::DynamicLibrary && library
 			, RendererFactory & factory );
-		renderer::RendererPtr create( renderer::Renderer::Configuration const & configuration );
+		ashes::RendererPtr create( ashes::Renderer::Configuration const & configuration );
 
 	private:
-		renderer::DynamicLibrary m_library;
+		ashes::DynamicLibrary m_library;
 		CreatorFunction m_creator;
 	};
 }

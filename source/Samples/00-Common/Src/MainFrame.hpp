@@ -21,7 +21,7 @@ namespace common
 		void cleanup();
 
 	private:
-		virtual RenderPanel * doCreatePanel( wxSize const & size, renderer::Renderer const & renderer ) = 0;
+		virtual RenderPanel * doCreatePanel( wxSize const & size, ashes::Renderer const & renderer ) = 0;
 
 		wxDECLARE_EVENT_TABLE();
 		void onClose( wxCloseEvent & event );
@@ -31,7 +31,7 @@ namespace common
 		wxTimer * m_timer{ nullptr };
 		wxString m_name;
 		wxString m_rendererName;
-		renderer::RendererPtr m_renderer;
+		ashes::RendererPtr m_renderer;
 		RendererFactory & m_factory;
 		RenderPanel * m_panel{ nullptr };
 	};

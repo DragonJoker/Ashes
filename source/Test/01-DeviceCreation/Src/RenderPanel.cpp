@@ -14,7 +14,7 @@ namespace vkapp
 {
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, renderer::Renderer const & renderer )
+		, ashes::Renderer const & renderer )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 	{
 		try
@@ -43,7 +43,7 @@ namespace vkapp
 		}
 	}
 
-	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
+	void RenderPanel::doCreateDevice( ashes::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
 		std::cout << m_device->getPhysicalDevice().dumpProperties() << std::endl;

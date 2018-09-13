@@ -10,7 +10,7 @@ namespace vkapp
 	{
 	}
 
-	wxPanel * MainFrame::doCreatePanel( wxSize const & size, renderer::Renderer const & renderer )
+	wxPanel * MainFrame::doCreatePanel( wxSize const & size, ashes::Renderer const & renderer )
 	{
 		return new RenderPanel( this, size, renderer );
 	}

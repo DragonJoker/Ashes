@@ -24,35 +24,35 @@ namespace vkapp
 	{
 	public:
 		EquirectangularToCube( std::string const & filePath
-			, renderer::Device & device
-			, renderer::Texture & texture );
+			, ashes::Device & device
+			, ashes::Texture & texture );
 
 		void render();
-		void render( renderer::CommandBuffer & commandBuffer );
+		void render( ashes::CommandBuffer & commandBuffer );
 
 	private:
 		struct FacePipeline
 		{
-			renderer::TextureViewPtr view;
-			renderer::FrameBufferPtr frameBuffer;
-			renderer::PipelinePtr pipeline;
-			renderer::DescriptorSetPtr descriptorSet;
+			ashes::TextureViewPtr view;
+			ashes::FrameBufferPtr frameBuffer;
+			ashes::PipelinePtr pipeline;
+			ashes::DescriptorSetPtr descriptorSet;
 		};
 
-		renderer::Device & m_device;
-		renderer::CommandBufferPtr m_commandBuffer;
+		ashes::Device & m_device;
+		ashes::CommandBufferPtr m_commandBuffer;
 		common::ImageData m_image;
-		renderer::StagingBuffer m_stagingBuffer;
-		renderer::TexturePtr m_texture;
-		renderer::TextureViewPtr m_view;
-		renderer::SamplerPtr m_sampler;
-		renderer::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
-		renderer::VertexBufferPtr< VertexData > m_vertexBuffer;
-		renderer::VertexLayoutPtr m_vertexLayout;
-		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
-		renderer::DescriptorSetPoolPtr m_descriptorPool;
-		renderer::PipelineLayoutPtr m_pipelineLayout;
-		renderer::RenderPassPtr m_renderPass;
+		ashes::StagingBuffer m_stagingBuffer;
+		ashes::TexturePtr m_texture;
+		ashes::TextureViewPtr m_view;
+		ashes::SamplerPtr m_sampler;
+		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
+		ashes::VertexBufferPtr< VertexData > m_vertexBuffer;
+		ashes::VertexLayoutPtr m_vertexLayout;
+		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
+		ashes::DescriptorSetPoolPtr m_descriptorPool;
+		ashes::PipelineLayoutPtr m_pipelineLayout;
+		ashes::RenderPassPtr m_renderPass;
 		std::array< FacePipeline, 6u > m_faces;
 	};
 }

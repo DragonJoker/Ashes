@@ -13,19 +13,19 @@ namespace vkapp
 	public:
 		OpaqueRendering( std::unique_ptr< GeometryPass > && renderer
 			, common::Scene const & scene
-			, renderer::StagingBuffer & stagingBuffer
+			, ashes::StagingBuffer & stagingBuffer
 			, GeometryPassResult const & gbuffer
-			, renderer::TextureViewCRefArray const & views
+			, ashes::TextureViewCRefArray const & views
 			, common::TextureNodePtrArray const & textureNodes
-			, renderer::UniformBuffer< common::SceneData > const & sceneUbo
-			, renderer::UniformBuffer< common::LightsData > const & lightsUbo );
+			, ashes::UniformBuffer< common::SceneData > const & sceneUbo
+			, ashes::UniformBuffer< common::LightsData > const & lightsUbo );
 		void update( common::RenderTarget const & target )override;
 		void draw( std::chrono::nanoseconds & gpu )const override;
 
 	private:
-		renderer::UniformBuffer< common::SceneData > const & m_sceneUbo;
-		renderer::UniformBuffer< common::LightsData > const & m_lightsUbo;
-		renderer::StagingBuffer & m_stagingBuffer;
+		ashes::UniformBuffer< common::SceneData > const & m_sceneUbo;
+		ashes::UniformBuffer< common::LightsData > const & m_lightsUbo;
+		ashes::StagingBuffer & m_stagingBuffer;
 		LightingPass m_lightingPass;
 	};
 }

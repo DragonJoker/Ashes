@@ -88,7 +88,7 @@ namespace common
 	*\return
 	*	The file content.
 	*/
-	renderer::ByteArray dumpBinaryFile( std::string const & file );
+	ashes::ByteArray dumpBinaryFile( std::string const & file );
 	/**
 	*\~french
 	*\brief
@@ -105,7 +105,7 @@ namespace common
 	*\return
 	*	The file content.
 	*/
-	renderer::UInt32Array dumpSpvFile( std::string const & file );
+	ashes::UInt32Array dumpSpvFile( std::string const & file );
 	/**
 	*\~french
 	*\return

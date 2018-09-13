@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 2.8 )
 
-set( MAIN_PROJECT_NAME "RendererLib" )
-set( BUILD_RENDERERLIB 1 )
+set( MAIN_PROJECT_NAME "Ashes" )
+set( BUILD_ASHES 1 )
 
 # Used to look for external modules
 set( CMAKE_MODULE_PATH
@@ -19,9 +19,9 @@ include( PCHSupport )
 include( Project )
 include( Doxygen )
 
-option( RENDERER_BUILD_TEMPLATES "Build Renderer template applications" TRUE )
-option( RENDERER_BUILD_TESTS "Build Renderer test applications" TRUE )
-option( RENDERER_BUILD_SAMPLES "Build Renderer sample applications" TRUE )
+option( ASHES_BUILD_TEMPLATES "Build Ashes template applications" TRUE )
+option( ASHES_BUILD_TESTS "Build Ashes test applications" TRUE )
+option( ASHES_BUILD_SAMPLES "Build Ashes sample applications" TRUE )
 
 # Organize projects into folders
 set_property( GLOBAL PROPERTY USE_FOLDERS ON )
@@ -87,8 +87,8 @@ if ( MSVC )
 endif ()
 
 include_directories(
-	${CMAKE_BINARY_DIR}/Renderer/Renderer
-	${CMAKE_SOURCE_DIR}/Renderer
+	${CMAKE_BINARY_DIR}/Ashes/Ashes
+	${CMAKE_SOURCE_DIR}/Ashes
 )
 
 if ( WIN32 )
@@ -101,20 +101,20 @@ else ()
 	)
 endif ()
 
-add_subdirectory( Renderer )
+add_subdirectory( Ashes )
 
-if ( RENDERER_BUILD_TESTS OR RENDERER_BUILD_SAMPLES OR RENDERER_BUILD_TEMPLATES )
+if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
 	add_subdirectory( Utils )
 endif ()
 
-if ( RENDERER_BUILD_TEMPLATES )
+if ( ASHES_BUILD_TEMPLATES )
 	add_subdirectory( Templates )
 endif ()
 
-if ( RENDERER_BUILD_TESTS )
+if ( ASHES_BUILD_TESTS )
 	add_subdirectory( Test )
 endif ()
 
-if ( RENDERER_BUILD_SAMPLES )
+if ( ASHES_BUILD_SAMPLES )
 	add_subdirectory( Samples )
 endif ()
