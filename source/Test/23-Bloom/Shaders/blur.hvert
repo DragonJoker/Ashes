@@ -1,0 +1,19 @@
+struct VertexInput
+{
+	float4 position : POSITION;
+	float2 texcoord : TEXCOORD;
+};
+
+struct VertexOutput
+{
+	float2 texcoord : TEXCOORD;
+	float4 position : SV_POSITION;
+};
+
+VertexOutput mainVx(in VertexInput input)
+{
+	VertexOutput output;
+	output.texcoord = input.texcoord;
+	output.position = rendererScalePosition( float4( input.position.xy, 0.0, 1.0 ) );
+	return output;
+}

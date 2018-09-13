@@ -179,10 +179,14 @@ namespace vkapp
 		m_vertexLayout = renderer::makeLayout< VertexData >( 0u );
 		m_vertexLayout->createAttribute( 0u
 			, renderer::Format::eR32G32B32A32_SFLOAT
-			, offsetof( VertexData, position ) );
+			, offsetof( VertexData, position )
+			, "POSITION"
+			, 0u );
 		m_vertexLayout->createAttribute( 1u
 			, renderer::Format::eR32G32B32A32_SFLOAT
-			, offsetof( VertexData, colour ) );
+			, offsetof( VertexData, colour )
+			, "COLOR"
+			, 0u );
 
 		if ( auto * buffer = m_vertexBuffer->lock( 0u
 			, uint32_t( data.size() )
@@ -211,8 +215,20 @@ namespace vkapp
 		std::vector< renderer::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.vert" ) );
-		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.frag" ) );
+
+		if ( m_device->getRenderer().isGLSLSupported()
+			|| m_device->getRenderer().isSPIRVSupported() )
+		{
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.vert" ) );
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.frag" ) );
+		}
+		else
+		{
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.hvert" ) );
+			shaderStages[0].entryPoint = "mainVx";
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.hpix" ) );
+			shaderStages[1].entryPoint = "mainPx";
+		}
 
 		m_pipeline = m_pipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 		{
@@ -284,7 +300,7 @@ namespace vkapp
 				, &resources->getFence() );
 			m_swapChain->present( *resources );
 
-			renderer::UInt32Array values{ 0u, 0u };
+			renderer::UInt64Array values{ 0u, 0u };
 			m_queryPool->getResults( 0u
 				, 2u
 				, 0u

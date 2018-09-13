@@ -9,6 +9,7 @@
 #include <Descriptor/DescriptorSet.hpp>
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
+#include <Image/StagingTexture.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
 #include <Pipeline/PipelineLayout.hpp>
@@ -135,6 +136,8 @@ namespace common
 		{
 			common::TextureNodePtr textureNode = std::make_shared< common::TextureNode >();
 			textureNode->image = image;
+			auto stagingTexture = m_device.createStagingTexture( image->format
+				, renderer::Extent3D{ image->size.width, image->size.height, 1u } );
 			textureNode->texture = m_device.createTexture(
 				{
 					0u,
@@ -154,7 +157,8 @@ namespace common
 				, 4u );
 			auto view = textureNode->texture->createView( renderer::TextureViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat() );
-			m_stagingBuffer->uploadTextureData( *m_updateCommandBuffer
+			stagingTexture->uploadTextureData( *m_updateCommandBuffer
+				, image->format
 				, image->data
 				, *view );
 			textureNode->texture->generateMipmaps();

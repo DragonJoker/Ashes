@@ -86,6 +86,7 @@ namespace vkapp
 		renderer::DevicePtr m_device;
 		renderer::SwapChainPtr m_swapChain;
 		renderer::StagingBufferPtr m_stagingBuffer;
+		renderer::StagingTexturePtr m_stagingTexture;
 		renderer::TexturePtr m_texture;
 		renderer::TextureViewPtr m_view;
 		renderer::SamplerPtr m_sampler;
@@ -152,6 +153,7 @@ namespace vkapp
 			std::array< utils::Vec4, 15u > coefficients;
 		};
 		renderer::UniformBufferPtr< Configuration > m_blurConfiguration;
+		renderer::UniformBufferPtr< int > m_blurDirection;
 		/**@}*/
 		/**
 		*\name

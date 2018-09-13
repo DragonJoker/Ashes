@@ -280,20 +280,71 @@ namespace renderer
 	/**
 	*\~english
 	*\brief
-	*	Retrieves the byte size of given pixel format.
+	*	Retrieves the byte size of given non compressed pixel format.
 	*\param[in] format
 	*	The pixel format.
 	*\return
 	*	The byte size.
 	*\~french
 	*\brief
-	*	Donne le nombre d'octets du format de pixels donné.
+	*	Donne le nombre d'octets du format de pixels non compressé donné.
 	*\param[in] format
 	*	Le format de pixel.
 	*\return
 	*	Le nombre d'octets.
 	*/
 	uint32_t getSize( Format format )noexcept;
+	/**
+	*\~english
+	*\brief
+	*	Retrieves the byte size of given BC compressed pixel format, for a 4x4 pixels block.
+	*\param[in] format
+	*	The pixel format.
+	*\return
+	*	The byte size.
+	*\~french
+	*\brief
+	*	Donne le nombre d'octets du format de pixels compressé BC donné, pour un bloc de 4x4 pixels.
+	*\param[in] format
+	*	Le format de pixel.
+	*\return
+	*	Le nombre d'octets.
+	*/
+	uint32_t getBCCompressedSize( Format format )noexcept;
+	/**
+	*\~english
+	*\brief
+	*	Retrieves the byte size of given ETC2 compressed pixel format, for a 4x4 pixels block.
+	*\param[in] format
+	*	The pixel format.
+	*\return
+	*	The byte size.
+	*\~french
+	*\brief
+	*	Donne le nombre d'octets du format de pixels compressé ETC2 donné, pour un bloc de 4x4 pixels.
+	*\param[in] format
+	*	Le format de pixel.
+	*\return
+	*	Le nombre d'octets.
+	*/
+	uint32_t getETC2CompressedSize( Format format )noexcept;
+	/**
+	*\~english
+	*\brief
+	*	Retrieves the byte size of given EAC compressed pixel format, for a 4x4 pixels block.
+	*\param[in] format
+	*	The pixel format.
+	*\return
+	*	The byte size.
+	*\~french
+	*\brief
+	*	Donne le nombre d'octets du format de pixels compressé EAC donné, pour un bloc de 4x4 pixels.
+	*\param[in] format
+	*	Le format de pixel.
+	*\return
+	*	Le nombre d'octets.
+	*/
+	uint32_t getEACCompressedSize( Format format )noexcept;
 	/**
 	*\~french
 	*\brief
@@ -345,6 +396,58 @@ namespace renderer
 	*	\p true if it is usable in depth buffers.
 	*/
 	bool isDepthFormat( Format format )noexcept;
+	/**
+	*\~english
+	*\brief
+	*	Tells if given pixel format is a BC compressed pixel format.
+	*\param[in] format
+	*	The pixel format.
+	*\~french
+	*\brief
+	*	Dit si le format de pixels donné est un format compressé BC.
+	*\param[in] format
+	*	Le format de pixel.
+	*/
+	bool isBCCompressedFormat( Format format )noexcept;
+	/**
+	*\~english
+	*\brief
+	*	Tells if given pixel format is a ETC2 compressed pixel format.
+	*\param[in] format
+	*	The pixel format.
+	*\~french
+	*\brief
+	*	Dit si le format de pixels donné est un format compressé ETC2.
+	*\param[in] format
+	*	Le format de pixel.
+	*/
+	bool isETC2CompressedFormat( Format format )noexcept;
+	/**
+	*\~english
+	*\brief
+	*	Tells if given pixel format is a EAC compressed pixel format.
+	*\param[in] format
+	*	The pixel format.
+	*\~french
+	*\brief
+	*	Dit si le format de pixels donné est un format compressé EAC.
+	*\param[in] format
+	*	Le format de pixel.
+	*/
+	bool isEACCompressedFormat( Format format )noexcept;
+	/**
+	*\~english
+	*\brief
+	*	Tells if given pixel format is a ASTC compressed pixel format.
+	*\param[in] format
+	*	The pixel format.
+	*\~french
+	*\brief
+	*	Dit si le format de pixels donné est un format compressé ASTC.
+	*\param[in] format
+	*	Le format de pixel.
+	*/
+	bool isASTCCompressedFormat( Format format )noexcept;
 	/**
 	*\~english
 	*\brief

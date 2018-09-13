@@ -43,20 +43,6 @@ namespace test_renderer
 		*\copydoc	renderer::PhysicalDevice::initialise
 		*/
 		void initialise()override;
-		/**
-		*\copydoc	renderer::PhysicalDevice::isSPIRVSupported
-		*/
-		inline bool isSPIRVSupported()const override
-		{
-			return true;
-		}
-		/**
-		*\copydoc	renderer::PhysicalDevice::isGLSLSupported
-		*/
-		inline bool isGLSLSupported()const override
-		{
-			return true;
-		}
 
 	private:
 		Renderer & m_renderer;

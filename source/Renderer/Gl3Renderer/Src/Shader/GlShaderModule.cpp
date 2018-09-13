@@ -7,6 +7,8 @@ See LICENSE file in root folder.
 #include "Core/GlDevice.hpp"
 #include "Core/GlPhysicalDevice.hpp"
 
+#include <Core/Renderer.hpp>
+
 #include <iostream>
 #include <regex>
 
@@ -141,7 +143,7 @@ $&)" );
 
 	void ShaderModule::loadShader( renderer::ByteArray const & fileData )
 	{
-		if ( !m_device.getPhysicalDevice().isSPIRVSupported() )
+		if ( !m_device.getRenderer().isSPIRVSupported() )
 		{
 			throw std::runtime_error{ "Shader compilation from SPIR-V is not supported." };
 		}

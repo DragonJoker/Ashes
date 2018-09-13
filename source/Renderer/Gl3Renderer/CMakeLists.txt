@@ -83,6 +83,12 @@ if ( OpenGL_FOUND )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
 
+	set( ENABLED_RENDERERS
+		${ENABLED_RENDERERS}
+		Gl3Renderer
+		PARENT_SCOPE
+	)
+
 	if ( RENDERER_STATIC_RENDERERS )
 		#We install each .lib/.a in <install_dir>/lib folder
 		install(

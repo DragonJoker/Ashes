@@ -74,7 +74,7 @@ namespace vkapp
 		renderer::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
 		renderer::StagingBufferPtr m_stagingBuffer;
 		renderer::BufferPtr< utils::Vec4 > m_textureBuffer;
-		renderer::BufferViewPtr m_textureView;
+		renderer::BufferViewPtr m_bufferView;
 		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
 		renderer::DescriptorSetPoolPtr m_descriptorPool;
 		renderer::DescriptorSetPtr m_descriptorSet;

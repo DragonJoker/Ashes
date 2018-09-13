@@ -24,9 +24,7 @@ if( GLFW_FOUND )
 	)
 
 	add_dependencies(
-		GlRenderer
-		Gl3Renderer
-		VkRenderer
+		${ENABLED_RENDERERS}
 	)
 
 	if ( UNIX )

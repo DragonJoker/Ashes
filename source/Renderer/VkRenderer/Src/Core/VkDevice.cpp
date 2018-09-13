@@ -16,6 +16,7 @@ See LICENSE file in root folder.
 #include "Descriptor/VkDescriptorPool.hpp"
 #include "Descriptor/VkDescriptorSetLayout.hpp"
 #include "Image/VkSampler.hpp"
+#include "Image/VkStagingTexture.hpp"
 #include "Image/VkTexture.hpp"
 #include "Image/VkTextureView.hpp"
 #include "Miscellaneous/VkDeviceMemory.hpp"
@@ -147,6 +148,12 @@ namespace vk_renderer
 	void Device::updateSurfaceCapabilities()const
 	{
 		m_connection->updateSurfaceCapabilities();
+	}
+
+	renderer::StagingTexturePtr Device::createStagingTexture( renderer::Format format
+		, renderer::Extent3D const & extent )const
+	{
+		return std::make_unique< StagingTexture >( *this, format, extent );
 	}
 
 	renderer::RenderPassPtr Device::createRenderPass( renderer::RenderPassCreateInfo createInfo )const

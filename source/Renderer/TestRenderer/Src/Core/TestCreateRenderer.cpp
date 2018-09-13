@@ -7,4 +7,14 @@ extern "C"
 	{
 		return new test_renderer::Renderer{ configuration };
 	}
+
+	TestRenderer_API char const * getShortName()
+	{
+		return "test";
+	}
+
+	TestRenderer_API char const * getFullName()
+	{
+		return "Test";
+	}
 }

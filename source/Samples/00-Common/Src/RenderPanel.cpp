@@ -303,10 +303,14 @@ namespace common
 		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
 		m_vertexLayout->createAttribute( 0u
 			, renderer::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+			, uint32_t( offsetof( TexturedVertexData, position ) )
+			, "POSITION"
+			, 0u );
 		m_vertexLayout->createAttribute( 1u
 			, renderer::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+			, uint32_t( offsetof( TexturedVertexData, uv ) )
+			, "TEXCOORD"
+			, 0u );
 
 		m_vertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_vertexData.size() )

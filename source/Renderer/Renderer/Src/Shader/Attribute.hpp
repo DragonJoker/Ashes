@@ -33,6 +33,10 @@ namespace renderer
 		*	The attribute location in the shader.
 		*\param[in] offset
 		*	The attribute location in the buffer.
+		*\param[in] semanticName
+		*	The attribute semantic name in the shader.
+		*\param[in] semanticIndex
+		*	The attribute semantic index in the shader.
 		*\~french
 		*\brief
 		*	Constructeur.
@@ -44,47 +48,17 @@ namespace renderer
 		*	La position de l'attribut dans le shader.
 		*\param[in] offset
 		*	La position de l'attribut dans le tampon.
+		*\param[in] semanticName
+		*	Le nom sémantique de l'attribut dans le shader.
+		*\param[in] semanticIndex
+		*	L'indice sémantique de l'attribut dans le shader.
 		*/
 		Attribute( VertexLayout const & layout
 			, Format format
 			, uint32_t location
-			, uint32_t offset );
-		/**
-		*\~english
-		*\return
-		*	The format of the attribute in the buffer.
-		*\~french
-		*\return
-		*	Le format de l'attribut dans le tampon.
-		*/
-		inline Format getFormat()const
-		{
-			return m_format;
-		}
-		/**
-		*\~english
-		*\return
-		*	The attribute location in the shader.
-		*\~french
-		*\return
-		*	La position de l'attribut dans le shader.
-		*/
-		inline uint32_t getLocation()const
-		{
-			return m_location;
-		}
-		/**
-		*\~english
-		*\return
-		*	The attribute location in the buffer.
-		*\~french
-		*\return
-		*	La position de l'attribut dans le tampon.
-		*/
-		inline uint32_t getOffset()const
-		{
-			return m_offset;
-		}
+			, uint32_t offset
+			, std::string const & semanticName
+			, uint32_t semanticIndex );
 		/**
 		*\~english
 		*\return
@@ -93,16 +67,52 @@ namespace renderer
 		*\return
 		*	Le layout de sommets parent.
 		*/
-		inline VertexLayout const & getLayout()const
-		{
-			return m_layout;
-		}
-
-	private:
-		VertexLayout const & m_layout;
-		Format m_format;
-		uint32_t m_location;
-		uint32_t m_offset;
+		VertexLayout const & layout;
+		/**
+		*\~english
+		*\return
+		*	The format of the attribute in the buffer.
+		*\~french
+		*\return
+		*	Le format de l'attribut dans le tampon.
+		*/
+		Format const format;
+		/**
+		*\~english
+		*\return
+		*	The attribute location in the shader.
+		*\~french
+		*\return
+		*	La position de l'attribut dans le shader.
+		*/
+		uint32_t const location;
+		/**
+		*\~english
+		*\return
+		*	The attribute location in the buffer.
+		*\~french
+		*\return
+		*	La position de l'attribut dans le tampon.
+		*/
+		uint32_t const offset;
+		/**
+		*\~english
+		*\return
+		*	The attribute semantic name in the shader.
+		*\~french
+		*\return
+		*	Le nom sémantique de l'attribut dans le shader.
+		*/
+		std::string const semanticName;
+		/**
+		*\~english
+		*\return
+		*	The attribute semantic index in the shader.
+		*\~french
+		*\return
+		*	L'indice sémantique de l'attribut dans le shader.
+		*/
+		uint32_t const semanticIndex;
 	};
 }
 

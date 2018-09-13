@@ -12,7 +12,7 @@
 namespace test_renderer
 {
 	Renderer::Renderer( Configuration const & configuration )
-		: renderer::Renderer{ renderer::ClipDirection::eTopDown, "vk", configuration }
+		: renderer::Renderer{ renderer::ClipDirection::eTopDown, "test", configuration }
 	{
 		m_features.hasTexBufferRange = true;
 		m_features.hasImageTexture = true;

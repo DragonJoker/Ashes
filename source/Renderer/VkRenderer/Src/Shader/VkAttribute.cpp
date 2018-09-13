@@ -8,10 +8,10 @@ namespace vk_renderer
 	{
 		return VkVertexInputAttributeDescription
 		{
-			value.getLocation(),
-			value.getLayout().getBindingSlot(),
-			convert( value.getFormat() ),
-			value.getOffset()
+			value.location,
+			value.layout.getBindingSlot(),
+			convert( value.format ),
+			value.offset
 		};
 	}
 }

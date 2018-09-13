@@ -1,0 +1,24 @@
+struct VertexInput
+{
+	float4 position : POSITION;
+	float2 uv : TEXCOORD;
+};
+
+struct VertexOutput
+{
+	float2 uv : TEXCOORD;
+	float4 position : SV_POSITION;
+};
+
+cbuffer Matrix : register(b1)
+{
+	float4x4 mtxProjection;
+};
+
+VertexOutput mainVx( in VertexInput input )
+{
+	VertexOutput output;
+	output.uv = input.uv;
+	output.position = mul( mtxProjection, rendererScalePosition( input.position ) );
+	return output;
+}

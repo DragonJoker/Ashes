@@ -40,9 +40,11 @@ namespace renderer
 		}
 	}
 
-	PushConstantsBufferBase::PushConstantsBufferBase( ShaderStageFlags stageFlags
+	PushConstantsBufferBase::PushConstantsBufferBase( uint32_t location
+		, ShaderStageFlags stageFlags
 		, PushConstantArray const & variables )
-		: m_stageFlags{ stageFlags }
+		: m_location{ location }
+		, m_stageFlags{ stageFlags }
 		, m_variables{ variables }
 		, m_offset{ deduceBaseOffset( m_variables ) }
 		, m_data( deduceSize( m_variables, m_offset ) )

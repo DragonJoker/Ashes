@@ -57,6 +57,10 @@ namespace renderer
 		*	The attribute format, in the shader.
 		*\param[in] offset
 		*	The attribute location, in the buffer.
+		*\param[in] semanticName
+		*	The attribute semantic name, in the shader.
+		*\param[in] semanticIndex
+		*	The attribute semantic index, in the shader.
 		*\~french
 		*\brief
 		*	Crée un attribut de sommet.
@@ -66,10 +70,54 @@ namespace renderer
 		*	Le format de l'attribut, dans le shader.
 		*\param[in] offset
 		*	La position de l'attribut, dans le tampon.
+		*\param[in] semanticName
+		*	Le nom sémantique de l'attribut, dans le shader.
+		*\param[in] semanticIndex
+		*	L'indice sémantique de l'attribut, dans le shader.
 		*/
-		Attribute createAttribute( uint32_t location
+		void createAttribute( uint32_t location
 			, Format format
-			, uint32_t offset );
+			, uint32_t offset
+			, std::string const & semanticName
+			, uint32_t semanticIndex );
+		/**
+		*\~english
+		*\brief
+		*	Creates a group of vertex attributes using the same semantic (matrices, for example).
+		*\param[in] count
+		*	The attributes count.
+		*\param[in] startingLocation
+		*	The attributes starting location, in the shader.
+		*\param[in] format
+		*	The sub-attribute attributes format.
+		*\param[in] startingOffset
+		*	The attribute location, in the buffer.
+		*\param[in] semanticName
+		*	The attributes semantic name, in the shader.
+		*\param[in] startingSemanticIndex
+		*	The attributes starting semantic index, in the shader.
+		*\~french
+		*\brief
+		*	Crée un attribut de sommet.
+		*\param[in] count
+		*	Le nombre d'attributs.
+		*\param[in] startingLocation
+		*	La position de début des attributs, dans le shader.
+		*\param[in] format
+		*	Le format de sous attribut des attributs, dans le shader.
+		*\param[in] startingOffset
+		*	La position de début des attributs, dans le tampon.
+		*\param[in] semanticName
+		*	Le nom sémantique des attributs, dans le shader.
+		*\param[in] startingSemanticIndex
+		*	L'indice sémantique de début des attributs, dans le shader.
+		*/
+		void createAttributes( uint32_t count
+			, uint32_t startingLocation
+			, Format format
+			, uint32_t startingOffset
+			, std::string const & semanticName
+			, uint32_t startingSemanticIndex );
 		/**
 		*\~french
 		*\return
@@ -154,8 +202,6 @@ namespace renderer
 		{
 			return m_attributes.end();
 		}
-
-	private:
 
 	private:
 		AttributeArray m_attributes;

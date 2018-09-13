@@ -16,6 +16,7 @@ See LICENSE file in root folder.
 #include "Descriptor/TestDescriptorPool.hpp"
 #include "Descriptor/TestDescriptorSetLayout.hpp"
 #include "Image/TestSampler.hpp"
+#include "Image/TestStagingTexture.hpp"
 #include "Image/TestTexture.hpp"
 #include "Image/TestTextureView.hpp"
 #include "Miscellaneous/TestDeviceMemory.hpp"
@@ -80,6 +81,12 @@ namespace test_renderer
 		m_presentQueue.reset();
 		m_computeCommandPool.reset();
 		m_computeQueue.reset();
+	}
+
+	renderer::StagingTexturePtr Device::createStagingTexture( renderer::Format format
+		, renderer::Extent3D const & extent )const
+	{
+		return std::make_unique< StagingTexture >( *this, format, extent );
 	}
 
 	renderer::RenderPassPtr Device::createRenderPass( renderer::RenderPassCreateInfo createInfo )const

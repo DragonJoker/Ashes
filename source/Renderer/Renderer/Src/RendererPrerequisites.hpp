@@ -178,6 +178,7 @@ namespace renderer
 	struct ImageCreateInfo;
 	struct ImageFormatProperties;
 	struct ImageSubresource;
+	struct ImageSubresourceLayers;
 	struct ImageSubresourceRange;
 	struct InputAssemblyState;
 	struct MemoryHeap;
@@ -249,6 +250,7 @@ namespace renderer
 	class ShaderStorageBufferBase;
 	class SpecialisationInfoBase;
 	class StagingBuffer;
+	class StagingTexture;
 	class SwapChain;
 	class Texture;
 	class FrameBufferAttachment;
@@ -275,13 +277,11 @@ namespace renderer
 	template< typename T >
 	using BufferPtr = std::unique_ptr< Buffer< T > >;
 	template< typename T >
-	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBuffer< T > >;
+	using PushConstantsBufferTPtr = std::unique_ptr< PushConstantsBuffer< T > >;
 	template< typename T >
 	using UniformBufferPtr = std::unique_ptr< UniformBuffer< T > >;
 	template< typename T >
 	using VertexBufferPtr = std::unique_ptr< VertexBuffer< T > >;
-	template< typename T >
-	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBuffer< T > >;
 	template< typename T >
 	using SpecialisationInfoPtr = std::unique_ptr< SpecialisationInfo< T > >;
 
@@ -305,6 +305,7 @@ namespace renderer
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using PipelinePtr = std::unique_ptr< Pipeline >;
 	using PipelineLayoutPtr = std::unique_ptr< PipelineLayout >;
+	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBufferBase >;
 	using QueryPoolPtr = std::unique_ptr< QueryPool >;
 	using QueuePtr = std::unique_ptr< Queue >;
 	using RendererPtr = std::unique_ptr< Renderer >;
@@ -316,6 +317,7 @@ namespace renderer
 	using ShaderProgramPtr = std::unique_ptr< ShaderProgram >;
 	using ShaderStorageBufferBasePtr = std::unique_ptr< ShaderStorageBufferBase >;
 	using StagingBufferPtr = std::unique_ptr< StagingBuffer >;
+	using StagingTexturePtr = std::unique_ptr< StagingTexture >;
 	using SwapChainPtr = std::unique_ptr< SwapChain >;
 	using TexturePtr = std::unique_ptr< Texture >;
 	using TextureViewPtr = std::unique_ptr< TextureView >;

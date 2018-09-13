@@ -101,7 +101,7 @@ namespace vkapp
 		renderer::FrameBufferPtr m_frameBuffer;
 		renderer::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
 		renderer::UniformBufferPtr< utils::Mat4 > m_objectUbo;
-		renderer::PushConstantsBuffer< utils::Vec4 > m_objectPcbs[2];
+		renderer::PushConstantsBufferTPtr< utils::Vec4 > m_objectPcbs[2];
 		renderer::CommandBufferPtr m_updateCommandBuffer;
 		/**@}*/
 		/**

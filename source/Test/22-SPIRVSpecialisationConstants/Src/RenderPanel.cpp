@@ -17,6 +17,7 @@
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
+#include <Image/StagingTexture.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
 #include <Miscellaneous/PushConstantRange.hpp>
@@ -120,9 +121,7 @@ namespace vkapp
 			{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
 			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
 		}
-		, m_objectPcb{ renderer::ShaderStageFlag::eFragment, doGetVariables() }
 	{
-		*m_objectPcb.getData() = utils::Vec4{ 0.5, 0.5, 1.0, 1.0 };
 		try
 		{
 			doCreateDevice( renderer );
@@ -225,6 +224,8 @@ namespace vkapp
 			m_renderTargetColourView.reset();
 			m_renderTargetColour.reset();
 
+			m_objectPcb.reset();
+
 			m_swapChain.reset();
 			m_device.reset();
 		}
@@ -248,6 +249,11 @@ namespace vkapp
 	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
+		m_objectPcb = std::make_unique< renderer::PushConstantsBuffer< utils::Vec4 > >( *m_device
+			, 3u
+			, renderer::ShaderStageFlag::eFragment
+			, doGetVariables() );
+		*m_objectPcb->getData() = utils::Vec4{ 0.5, 0.5, 1.0, 1.0 };
 	}
 
 	void RenderPanel::doCreateSwapChain()
@@ -269,6 +275,8 @@ namespace vkapp
 	{
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
+		auto stagingTexture = m_device->createStagingTexture( image.format
+			, { image.size.width, image.size.height, 1u } );
 		m_texture = m_device->createTexture(
 			{
 				0u,
@@ -289,7 +297,8 @@ namespace vkapp
 			, renderer::WrapMode::eClampToEdge
 			, renderer::Filter::eLinear
 			, renderer::Filter::eLinear );
-		m_stagingBuffer->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+		stagingTexture->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+			, image.format
 			, image.data
 			, *m_view );
 	}
@@ -428,10 +437,14 @@ namespace vkapp
 		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
 		m_offscreenVertexLayout->createAttribute( 0u
 			, renderer::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+			, uint32_t( offsetof( TexturedVertexData, position ) )
+			, "POSITION"
+			, 0u );
 		m_offscreenVertexLayout->createAttribute( 1u
 			, renderer::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+			, uint32_t( offsetof( TexturedVertexData, uv ) )
+			, "TEXCOORD"
+			, 0u );
 
 		m_offscreenVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_offscreenVertexData.size() )
@@ -452,7 +465,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenPipeline()
 	{
-		renderer::PushConstantRange range{ renderer::ShaderStageFlag::eFragment, 0u, m_objectPcb.getSize() };
+		renderer::PushConstantRange range{ renderer::ShaderStageFlag::eFragment, 0u, m_objectPcb->getSize() };
 		m_offscreenPipelineLayout = m_device->createPipelineLayout( renderer::DescriptorSetLayoutCRefArray{ { *m_offscreenDescriptorLayout } }
 			, renderer::PushConstantRangeCRefArray{ { range } } );
 		wxSize size{ GetClientSize() };
@@ -464,7 +477,7 @@ namespace vkapp
 			throw std::runtime_error{ "Shader files are missing" };
 		}
 
-		if ( !m_device->getPhysicalDevice().isSPIRVSupported() )
+		if ( !m_device->getRenderer().isSPIRVSupported() )
 		{
 			throw std::runtime_error{ "SPIR-V support is needed for this test." };
 		}
@@ -600,7 +613,7 @@ namespace vkapp
 			, *m_offscreenPipelineLayout
 			, renderer::UInt32Array{ 0u } );
 		commandBuffer.pushConstants( *m_offscreenPipelineLayout
-			, m_objectPcb );
+			, *m_objectPcb );
 		commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
 
 		// Green cube
@@ -609,7 +622,7 @@ namespace vkapp
 			, *m_offscreenPipelineLayout
 			, renderer::UInt32Array{ m_objectUbo->getAlignedSize() } );
 		commandBuffer.pushConstants( *m_offscreenPipelineLayout
-			, m_objectPcb );
+			, *m_objectPcb );
 		commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
 
 		commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
@@ -624,10 +637,14 @@ namespace vkapp
 		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
 		m_mainVertexLayout->createAttribute( 0u
 			, renderer::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+			, uint32_t( offsetof( TexturedVertexData, position ) )
+			, "POSITION"
+			, 0u );
 		m_mainVertexLayout->createAttribute( 1u
 			, renderer::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+			, uint32_t( offsetof( TexturedVertexData, uv ) )
+			, "TEXCOORD"
+			, 0u );
 
 		m_mainVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_mainVertexData.size() )
@@ -760,7 +777,7 @@ namespace vkapp
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
 			m_swapChain->present( *resources );
-			renderer::UInt32Array values{ 0u, 0u };
+			renderer::UInt64Array values{ 0u, 0u };
 			m_queryPool->getResults( 0u
 				, 2u
 				, 0u
