@@ -14,12 +14,13 @@ namespace d3d11_renderer
 		: CommandBase{ device }
 		, m_image{ static_cast< TextureView const & >( image ) }
 		, m_colour{ colour }
-		, m_format{ convert( m_image.getFormat() ) }
 	{
 	}
 
 	void ClearColourCommand::apply( Context const & context )const
 	{
+		context.context->ClearRenderTargetView( m_image.getRenderTargetView()
+			, m_colour.float32.data() );
 	}
 
 	CommandPtr ClearColourCommand::clone()const

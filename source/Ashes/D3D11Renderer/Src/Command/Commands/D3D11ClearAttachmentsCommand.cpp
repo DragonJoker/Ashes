@@ -11,7 +11,8 @@ namespace d3d11_renderer
 {
 	namespace
 	{
-		void doClear( ashes::ClearAttachment const & clearAttach )
+		void doClear( Context const & context
+			, ashes::ClearAttachment const & clearAttach )
 		{
 			if ( ashes::checkFlag( clearAttach.aspectMask, ashes::ImageAspectFlag::eColour ) )
 			{
@@ -53,7 +54,15 @@ namespace d3d11_renderer
 		{
 			for ( auto & rect : m_clearRects )
 			{
-				doClear( clearAttach );
+				D3D11_RECT scissor
+				{
+					LONG( rect.offset.x ),
+					LONG( rect.offset.y ),
+					LONG( rect.extent.width ),
+					LONG( rect.extent.height ),
+				};
+				context.context->RSSetScissorRects( 1u, &scissor );
+				doClear( context, clearAttach );
 			}
 		}
 	}

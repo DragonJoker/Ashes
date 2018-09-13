@@ -74,15 +74,5 @@ namespace d3d11_renderer
 		, ashes::BufferImageCopy const & copyInfo
 		, D3D11_BOX const & srcBox )const
 	{
-		context->CopySubresourceRegion( m_dst.getResource()
-			, D3D11CalcSubresource( copyInfo.imageSubresource.mipLevel
-				, copyInfo.imageSubresource.baseArrayLayer
-				, m_dst.getMipmapLevels() )
-			, copyInfo.imageOffset.x
-			, copyInfo.imageOffset.y
-			, copyInfo.imageOffset.z
-			, m_src.getBuffer()
-			, 0u
-			, &srcBox );
 	}
 }
