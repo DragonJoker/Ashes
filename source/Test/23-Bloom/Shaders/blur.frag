@@ -8,11 +8,10 @@ layout( std140, binding = 1 ) uniform Config
     vec4 inCoefficients[15];
 };
 
-#ifdef VULKAN
-layout (constant_id = 0) const int blurDirection = 0;
-#else
-layout (location = 0) uniform int blurDirection = 0;
-#endif
+layout( std140, binding = 2 ) uniform Direction
+{
+	int blurDirection;
+};
 
 layout (location = 0) in vec2 inUV;
 

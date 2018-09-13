@@ -2,7 +2,7 @@
 This file belongs to RendererLib.
 See LICENSE file in root folder.
 */
-#include "GlRendererPrerequisites.hpp"
+#include "Core/GlDevice.hpp"
 
 #include <Buffer/PushConstantsBuffer.hpp>
 
@@ -29,15 +29,18 @@ namespace renderer
 		return result;
 	}
 
-	renderer::PushConstantsBufferBase convert( renderer::ShaderStageFlag stage
+	renderer::PushConstantsBufferPtr convert( renderer::Device const & device
+		, uint32_t location
+		, renderer::ShaderStageFlag stage
 		, renderer::SpecialisationInfoBase const & specialisationInfo )
 	{
-		renderer::PushConstantsBufferBase result{ stage
-			, convert( stage, specialisationInfo.begin(), specialisationInfo.end() ) };
-		assert( result.getSize() == specialisationInfo.getSize() );
-		std::memcpy( result.getData()
+		auto result = device.createPushConstantsBuffer( location
+			, stage
+			, convert( stage, specialisationInfo.begin(), specialisationInfo.end() ) );
+		assert( result->getSize() == specialisationInfo.getSize() );
+		std::memcpy( result->getData()
 			, specialisationInfo.getData()
 			, specialisationInfo.getSize() );
-		return result;
+		return std::move( result );
 	}
 }

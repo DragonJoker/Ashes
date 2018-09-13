@@ -9,6 +9,7 @@
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
+#include <Image/StagingTexture.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
 #include <Pipeline/DepthStencilState.hpp>
@@ -54,65 +55,15 @@ namespace vkapp
 					renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst
 				}
 				, renderer::MemoryPropertyFlag::eDeviceLocal );
+			auto view = result->createView( renderer::TextureViewType::e2D
+				, image.format );
 
-			renderer::BufferBasePtr staging = device.createBuffer( uint32_t( image.data.size() )
-				, renderer::BufferTarget::eTransferSrc
-				, renderer::MemoryPropertyFlag::eHostVisible );
-
-			if ( auto * buffer = staging->lock( 0u, uint32_t( image.data.size() ), renderer::MemoryMapFlag::eWrite ) )
-			{
-				std::memcpy( buffer, image.data.data(), image.data.size() );
-				staging->unlock();
-			}
-
-			renderer::BufferImageCopy bufferCopyRegion{};
-			bufferCopyRegion.imageSubresource.aspectMask = renderer::ImageAspectFlag::eColour;
-			bufferCopyRegion.imageSubresource.mipLevel = 0u;
-			bufferCopyRegion.imageSubresource.baseArrayLayer = 0u;
-			bufferCopyRegion.imageSubresource.layerCount = 1u;
-			bufferCopyRegion.imageExtent.width = image.size.width;
-			bufferCopyRegion.imageExtent.height = image.size.height;
-			bufferCopyRegion.imageExtent.depth = 1;
-			bufferCopyRegion.bufferOffset = 0u;
-			bufferCopyRegion.levelSize = uint32_t( image.data.size() );
-			renderer::ImageSubresourceRange subresourceRange
-			{
-				renderer::ImageAspectFlag::eColour,
-				0u,
-				1u,
-				0u,
-				1u,
-			};
-			commandBuffer.begin();
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTopOfPipe
-				, renderer::PipelineStageFlag::eTransfer
-				, renderer::ImageMemoryBarrier{ 0u
-					, renderer::AccessFlag::eTransferWrite
-					, renderer::ImageLayout::eUndefined
-					, renderer::ImageLayout::eTransferDstOptimal
-					, ~( 0u )
-					, ~( 0u )
-					, *result
-					, subresourceRange } );
-			commandBuffer.copyToImage( bufferCopyRegion
-				, *staging
-				, *result );
-			commandBuffer.memoryBarrier( renderer::PipelineStageFlag::eTransfer
-				, renderer::PipelineStageFlag::eFragmentShader
-				, renderer::ImageMemoryBarrier{ renderer::AccessFlag::eTransferWrite
-					, renderer::AccessFlag::eShaderRead
-					, renderer::ImageLayout::eTransferDstOptimal
-					, renderer::ImageLayout::eShaderReadOnlyOptimal
-					, ~( 0u )
-					, ~( 0u )
-					, *result
-				, subresourceRange } );
-
-			commandBuffer.end();
-			auto fence = device.createFence();
-			device.getGraphicsQueue().submit( commandBuffer, fence.get() );
-			fence->wait( renderer::FenceTimeout );
-
+			auto staging = device.createStagingTexture( image.format
+				, { image.size.width, image.size.height, 1u } );
+			staging->uploadTextureData( commandBuffer
+				, image.format
+				, image.data
+				, *view );
 			return result;
 		}
 
@@ -130,15 +81,25 @@ namespace vkapp
 			, renderer::StagingBuffer & stagingBuffer )
 		{
 			static Mat4 const projection = utils::Mat4{ device.perspective( float( utils::toRadians( 90.0_degrees ) ), 1.0f, 0.1f, 10.0f ) };
-			static Mat4 const views[] =
+			static std::array< Mat4, 6u > const views = [&device]()
 			{
-				utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +1.0f, +0.0f, +0.0f }, Vec3{ 0.0f, -1.0f, +0.0f } ),
-				utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ -1.0f, +0.0f, +0.0f }, Vec3{ 0.0f, -1.0f, +0.0f } ),
-				utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, +1.0f, +0.0f }, Vec3{ 0.0f, +0.0f, +1.0f } ),
-				utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, -1.0f, +0.0f }, Vec3{ 0.0f, +0.0f, -1.0f } ),
-				utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, +0.0f, +1.0f }, Vec3{ 0.0f, -1.0f, +0.0f } ),
-				utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, +0.0f, -1.0f }, Vec3{ 0.0f, -1.0f, +0.0f } )
-			};
+				std::array< Mat4, 6u > result
+				{
+					utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +1.0f, +0.0f, +0.0f }, Vec3{ 0.0f, -1.0f, +0.0f } ),
+					utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ -1.0f, +0.0f, +0.0f }, Vec3{ 0.0f, -1.0f, +0.0f } ),
+					utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, +1.0f, +0.0f }, Vec3{ 0.0f, +0.0f, +1.0f } ),
+					utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, -1.0f, +0.0f }, Vec3{ 0.0f, +0.0f, -1.0f } ),
+					utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, +0.0f, +1.0f }, Vec3{ 0.0f, -1.0f, +0.0f } ),
+					utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, +0.0f, -1.0f }, Vec3{ 0.0f, -1.0f, +0.0f } )
+				};
+
+				if ( device.getRenderer().getName().find( "d3d" ) != std::string::npos )
+				{
+					std::swap( result[2], result[3] );
+				}
+
+				return result;
+			}();
 
 			auto result = renderer::makeUniformBuffer< utils::Mat4 >( device
 				, 6u
@@ -162,18 +123,35 @@ namespace vkapp
 		std::vector< renderer::ShaderStageState > doCreateProgram( renderer::Device & device )
 		{
 			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-			if ( !wxFileExists( shadersFolder / "equirectangular.vert" )
-				|| !wxFileExists( shadersFolder / "equirectangular.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
 			std::vector< renderer::ShaderStageState > shaderStages;
 			shaderStages.push_back( { device.createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
 			shaderStages.push_back( { device.createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
-			shaderStages[0].module->loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.vert" ) );
-			shaderStages[1].module->loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.frag" ) );
+
+			if ( device.getRenderer().isGLSLSupported()
+				|| device.getRenderer().isSPIRVSupported() )
+			{
+				if ( !wxFileExists( shadersFolder / "equirectangular.vert" )
+					|| !wxFileExists( shadersFolder / "equirectangular.frag" ) )
+				{
+					throw std::runtime_error{ "Shader files are missing" };
+				}
+
+				shaderStages[0].module->loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.vert" ) );
+				shaderStages[1].module->loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.frag" ) );
+			}
+			else
+			{
+				if ( !wxFileExists( shadersFolder / "equirectangular.hvert" )
+					|| !wxFileExists( shadersFolder / "equirectangular.hpix" ) )
+				{
+					throw std::runtime_error{ "Shader files are missing" };
+				}
+
+				shaderStages[0].module->loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.hvert" ) );
+				shaderStages[0].entryPoint = "mainVx";
+				shaderStages[1].module->loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.hpix" ) );
+				shaderStages[1].entryPoint = "mainPx";
+			}
 
 			return shaderStages;
 		}
@@ -208,7 +186,11 @@ namespace vkapp
 		renderer::VertexLayoutPtr doCreateVertexLayout( renderer::Device & device )
 		{
 			auto result = renderer::makeLayout< VertexData >( 0u );
-			result->createAttribute( 0u, renderer::Format::eR32G32B32A32_SFLOAT, 0u );
+			result->createAttribute( 0u
+				, renderer::Format::eR32G32B32A32_SFLOAT
+				, 0u
+				, "POSITION"
+				, 0u );
 			return result;
 		}
 
@@ -338,7 +320,7 @@ namespace vkapp
 			commandBuffer.bindDescriptorSet( *facePipeline.descriptorSet
 				, *m_pipelineLayout );
 			commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
-			commandBuffer.draw( 36u );
+			commandBuffer.draw( m_vertexBuffer->getCount() );
 			commandBuffer.endRenderPass();
 		}
 

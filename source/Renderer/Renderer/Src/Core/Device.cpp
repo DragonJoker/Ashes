@@ -67,6 +67,14 @@ namespace renderer
 		return m_renderer.infinitePerspective( radiansFovY, aspect, zNear );
 	}
 
+	PushConstantsBufferPtr Device::createPushConstantsBuffer( uint32_t location
+		, ShaderStageFlags stageFlags
+		, PushConstantArray const & variables )const
+	{
+		// No std::make_unique, since ctor is protected.
+		return PushConstantsBufferPtr{ new PushConstantsBufferBase{ location, stageFlags, variables } };
+	}
+
 	BufferBasePtr Device::createBuffer( uint32_t size
 		, BufferTargets target
 		, MemoryPropertyFlags flags )const

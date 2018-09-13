@@ -1,0 +1,21 @@
+struct PixelInput
+{
+	float2 uv : TEXCOORD;
+};
+
+Texture2DArray mapColour : register( t0 );
+SamplerState samColour : register( s0 );
+
+cbuffer LayerSelect: register(b1)
+{
+	float src;
+	float dst;
+	float percent;
+};
+
+float4 mainPx( in PixelInput input ) : SV_TARGET
+{
+	return lerp( mapColour.Sample( samColour, float3( input.uv, src ) )
+		, mapColour.Sample( samColour, float3( input.uv, dst ) )
+		, percent );
+}

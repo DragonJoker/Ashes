@@ -16,27 +16,24 @@ namespace common
 			throw std::runtime_error{ "Not a renderer plugin" };
 		}
 
-		std::string name;
+		NamerFunction shortNamer;
 
-		if ( m_library.getPath().find( "Gl3R" ) != std::string::npos )
+		if ( !m_library.getFunction( "getShortName", shortNamer ) )
 		{
-			name = "gl3";
-		}
-		else if ( m_library.getPath().find( "GlR" ) != std::string::npos )
-		{
-			name = "gl";
-		}
-		else if ( m_library.getPath().find( "VkR" ) != std::string::npos )
-		{
-			name = "vk";
-		}
-		else
-		{
-			throw std::runtime_error{ "Not a supported renderer plugin" };
+			throw std::runtime_error{ "Not a renderer plugin" };
 		}
 
+		NamerFunction fullNamer;
+
+		if ( !m_library.getFunction( "getFullName", fullNamer ) )
+		{
+			throw std::runtime_error{ "Not a renderer plugin" };
+		}
+
+		m_shortName = shortNamer();
+		m_fullName = fullNamer();
 		auto creator = m_creator;
-		factory.registerType( name, [creator]( renderer::Renderer::Configuration const & configuration )
+		factory.registerType( m_shortName, [creator]( renderer::Renderer::Configuration const & configuration )
 			{
 				return renderer::RendererPtr{ creator( configuration ) };
 			} );

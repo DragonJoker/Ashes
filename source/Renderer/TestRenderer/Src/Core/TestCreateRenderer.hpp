@@ -33,4 +33,22 @@ extern "C"
 	*	The creation options.
 	*/
 	TestRenderer_API renderer::Renderer * createRenderer( renderer::Renderer::Configuration const & configuration );
+	/**
+	*\~french
+	*\return
+	*	Le nom court du renderer.
+	*\~english
+	*\return
+	*	The renderer short name.
+	*/
+	TestRenderer_API char const * getShortName();
+	/**
+	*\~french
+	*\return
+	*	Le nom complet du renderer.
+	*\~english
+	*\return
+	*	The renderer full name.
+	*/
+	TestRenderer_API char const * getFullName();
 }

@@ -258,7 +258,7 @@ namespace gl_renderer
 		{
 			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
 				, m_state.m_currentPipeline->getLayout()
-				, pcb ) );
+				, *pcb ) );
 		}
 
 		m_state.m_pushConstantBuffers.clear();
@@ -294,7 +294,7 @@ namespace gl_renderer
 			{
 				m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
 					, m_state.m_currentComputePipeline->getLayout()
-					, pcb ) );
+					, *pcb ) );
 			}
 
 			m_state.m_pushConstantBuffers.clear();

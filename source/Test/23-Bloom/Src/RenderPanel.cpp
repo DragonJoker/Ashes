@@ -16,6 +16,7 @@
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
+#include <Image/StagingTexture.hpp>
 #include <Image/Texture.hpp>
 #include <Image/TextureView.hpp>
 #include <Miscellaneous/QueryPool.hpp>
@@ -262,6 +263,7 @@ namespace vkapp
 				std::swap( m_passes.hi, dummyHi );
 			}
 			m_blurConfiguration.reset();
+			m_blurDirection.reset();
 
 			for ( auto & sampler : m_blurSamplers )
 			{
@@ -276,6 +278,7 @@ namespace vkapp
 			m_view.reset();
 			m_texture.reset();
 			m_stagingBuffer.reset();
+			m_stagingTexture.reset();
 
 			m_matrixUbo.reset();
 			m_objectUbo.reset();
@@ -370,6 +373,8 @@ namespace vkapp
 
 	void RenderPanel::doCreateTexture()
 	{
+		m_stagingTexture = m_device->createStagingTexture( renderer::Format::eR8G8B8A8_UNORM
+			, { 512u, 512u, 1u } );
 		m_texture = m_device->createTexture(
 			{
 				renderer::ImageCreateFlag::eCubeCompatible,
@@ -409,13 +414,14 @@ namespace vkapp
 		for ( size_t i = 0u; i < paths.size(); ++i )
 		{
 			auto image = common::loadImage( shadersFolder / paths[i] );
-			m_stagingBuffer->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+			m_stagingTexture->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
 				, {
 					m_view->getSubResourceRange().aspectMask,
 					m_view->getSubResourceRange().baseMipLevel,
 					uint32_t( i ),
 					1u,
 				}
+				, image.format
 				, { 0, 0, 0 }
 				, { image.size.width, image.size.height, 1u }
 				, image.data
@@ -528,7 +534,9 @@ namespace vkapp
 		m_offscreenVertexLayout = renderer::makeLayout< NonTexturedVertexData >( 0 );
 		m_offscreenVertexLayout->createAttribute( 0u
 			, renderer::Format::eR32G32B32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+			, uint32_t( offsetof( TexturedVertexData, position ) )
+			, "POSITION"
+			, 0u );
 
 		m_offscreenVertexBuffer = renderer::makeVertexBuffer< NonTexturedVertexData >( *m_device
 			, uint32_t( m_offscreenVertexData.size() )
@@ -562,8 +570,33 @@ namespace vkapp
 		std::vector< renderer::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.vert" ) );
-		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.frag" ) );
+
+		if ( m_device->getRenderer().isGLSLSupported()
+			|| m_device->getRenderer().isSPIRVSupported() )
+		{
+			if ( !wxFileExists( shadersFolder / "offscreen.vert" )
+				|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.vert" ) );
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.frag" ) );
+		}
+		else
+		{
+			if ( !wxFileExists( shadersFolder / "offscreen.hvert" )
+				|| !wxFileExists( shadersFolder / "offscreen.hpix" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.hvert" ) );
+			shaderStages[0].entryPoint = "mainVx";
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.hpix" ) );
+			shaderStages[1].entryPoint = "mainPx";
+		}
+
 		renderer::RasterisationState rasterisationState;
 		rasterisationState.cullMode = renderer::CullModeFlag::eNone;
 
@@ -759,18 +792,35 @@ namespace vkapp
 			, std::move( attaches ) );
 
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-		if ( !wxFileExists( shadersFolder / "hipass.vert" )
-			|| !wxFileExists( shadersFolder / "hipass.frag" ) )
-		{
-			throw std::runtime_error{ "Shader files are missing" };
-		}
-
 		renderer::ShaderStageStateArray shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "hipass.vert" ) );
-		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "hipass.frag" ) );
+
+		if ( m_device->getRenderer().isGLSLSupported()
+			|| m_device->getRenderer().isSPIRVSupported() )
+		{
+			if ( !wxFileExists( shadersFolder / "hipass.vert" )
+				|| !wxFileExists( shadersFolder / "hipass.frag" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "hipass.vert" ) );
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "hipass.frag" ) );
+		}
+		else
+		{
+			if ( !wxFileExists( shadersFolder / "hipass.hvert" )
+				|| !wxFileExists( shadersFolder / "hipass.hpix" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "hipass.hvert" ) );
+			shaderStages[0].entryPoint = "mainVx";
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "hipass.hpix" ) );
+			shaderStages[1].entryPoint = "mainPx";
+		}
 
 		renderer::GraphicsPipelineCreateInfo pipeline
 		{
@@ -813,6 +863,13 @@ namespace vkapp
 			, uint32_t( m_passes.blurX.size() )
 			, renderer::BufferTarget::eTransferDst
 			, renderer::MemoryPropertyFlag::eHostVisible );
+		m_blurDirection = renderer::makeUniformBuffer< int >( *m_device
+			, 2u
+			, renderer::BufferTarget::eTransferDst
+			, renderer::MemoryPropertyFlag::eHostVisible );
+		m_blurDirection->getData( 0 ) = 0;
+		m_blurDirection->getData( 1 ) = 1;
+		m_blurDirection->upload( 0u, 2u );
 		auto coefficientsCount = 5u;
 		auto kernel = doCreateKernel( coefficientsCount );
 
@@ -891,6 +948,7 @@ namespace vkapp
 			{
 				renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
 				renderer::DescriptorSetLayoutBinding{ 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment },
+				renderer::DescriptorSetLayoutBinding{ 2u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment },
 			};
 			blur.descriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
 			blur.descriptorPool = blur.descriptorLayout->createPool( 1u );
@@ -901,6 +959,9 @@ namespace vkapp
 			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 1u )
 				, *m_blurConfiguration
 				, i );
+			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 2u )
+				, *m_blurDirection
+				, 0u );
 			blur.descriptorSet->update();
 			blur.semaphore = m_device->createSemaphore();
 			blur.pipelineLayout = m_device->createPipelineLayout( *blur.descriptorLayout );
@@ -923,19 +984,36 @@ namespace vkapp
 				, std::move( attaches ) );
 
 			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-			if ( !wxFileExists( shadersFolder / "blur.vert" )
-				|| !wxFileExists( shadersFolder / "blur.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
 			renderer::ShaderStageStateArray shaderStages;
 			shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
-			shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment )
-				, renderer::makeSpecialisationInfo( { { 0u, 0u, renderer::ConstantFormat::eInt } }, int( 0 ) ) } );
-			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "blur.vert" ) );
-			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "blur.frag" ) );
+			shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+
+			if ( m_device->getRenderer().isGLSLSupported()
+				|| m_device->getRenderer().isSPIRVSupported() )
+			{
+				if ( !wxFileExists( shadersFolder / "blur.vert" )
+					|| !wxFileExists( shadersFolder / "blur.frag" ) )
+				{
+					throw std::runtime_error{ "Shader files are missing" };
+				}
+
+				shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "blur.vert" ) );
+				shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "blur.frag" ) );
+			}
+			else
+			{
+				if ( !wxFileExists( shadersFolder / "blur.hvert" )
+					|| !wxFileExists( shadersFolder / "blur.hpix" ) )
+				{
+					throw std::runtime_error{ "Shader files are missing" };
+				}
+
+				shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "blur.hvert" ) );
+				shaderStages[0].entryPoint = "mainVx";
+				shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "blur.hpix" ) );
+				shaderStages[1].entryPoint = "mainPx";
+			}
+
 
 			renderer::GraphicsPipelineCreateInfo pipeline
 			{
@@ -1017,6 +1095,7 @@ namespace vkapp
 			{
 				renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
 				renderer::DescriptorSetLayoutBinding{ 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment },
+				renderer::DescriptorSetLayoutBinding{ 2u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment },
 			};
 			blur.descriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
 			blur.descriptorPool = blur.descriptorLayout->createPool( 1u );
@@ -1027,6 +1106,9 @@ namespace vkapp
 			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 1u )
 				, *m_blurConfiguration
 				, i );
+			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 2u )
+				, *m_blurDirection
+				, 1u );
 			blur.descriptorSet->update();
 			blur.semaphore = m_device->createSemaphore();
 			blur.pipelineLayout = m_device->createPipelineLayout( *blur.descriptorLayout );
@@ -1039,19 +1121,35 @@ namespace vkapp
 				, std::move( attaches ) );
 
 			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-			if ( !wxFileExists( shadersFolder / "blur.vert" )
-				|| !wxFileExists( shadersFolder / "blur.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
 			renderer::ShaderStageStateArray shaderStages;
 			shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
-			shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment )
-				, renderer::makeSpecialisationInfo( { { 0u, 0u, renderer::ConstantFormat::eInt } }, int( 1 ) ) } );
-			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "blur.vert" ) );
-			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "blur.frag" ) );
+			shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+
+			if ( m_device->getRenderer().isGLSLSupported()
+				|| m_device->getRenderer().isSPIRVSupported() )
+			{
+				if ( !wxFileExists( shadersFolder / "blur.vert" )
+					|| !wxFileExists( shadersFolder / "blur.frag" ) )
+				{
+					throw std::runtime_error{ "Shader files are missing" };
+				}
+
+				shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "blur.vert" ) );
+				shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "blur.frag" ) );
+			}
+			else
+			{
+				if ( !wxFileExists( shadersFolder / "blur.hvert" )
+					|| !wxFileExists( shadersFolder / "blur.hpix" ) )
+				{
+					throw std::runtime_error{ "Shader files are missing" };
+				}
+
+				shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "blur.hvert" ) );
+				shaderStages[0].entryPoint = "mainVx";
+				shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "blur.hpix" ) );
+				shaderStages[1].entryPoint = "mainPx";
+			}
 
 			renderer::GraphicsPipelineCreateInfo pipeline
 			{
@@ -1199,18 +1297,37 @@ namespace vkapp
 			, std::move( attaches ) );
 
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-		if ( !wxFileExists( shadersFolder / "combine.vert" )
-			|| !wxFileExists( shadersFolder / "combine.frag" ) )
-		{
-			throw std::runtime_error{ "Shader files are missing" };
-		}
-
 		renderer::ShaderStageStateArray shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
 		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "combine.vert" ) );
 		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "combine.frag" ) );
+
+		if ( m_device->getRenderer().isGLSLSupported()
+			|| m_device->getRenderer().isSPIRVSupported() )
+		{
+			if ( !wxFileExists( shadersFolder / "combine.vert" )
+				|| !wxFileExists( shadersFolder / "combine.frag" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "combine.vert" ) );
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "combine.frag" ) );
+		}
+		else
+		{
+			if ( !wxFileExists( shadersFolder / "combine.hvert" )
+				|| !wxFileExists( shadersFolder / "combine.hpix" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "combine.hvert" ) );
+			shaderStages[0].entryPoint = "mainVx";
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "combine.hpix" ) );
+			shaderStages[1].entryPoint = "mainPx";
+		}
 
 		renderer::GraphicsPipelineCreateInfo pipeline
 		{
@@ -1250,10 +1367,14 @@ namespace vkapp
 		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
 		m_mainVertexLayout->createAttribute( 0u
 			, renderer::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+			, uint32_t( offsetof( TexturedVertexData, position ) )
+			, "POSITION"
+			, 0u );
 		m_mainVertexLayout->createAttribute( 1u
 			, renderer::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+			, uint32_t( offsetof( TexturedVertexData, uv ) )
+			, "TEXCOORD"
+			, 0u );
 
 		m_mainVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_mainVertexData.size() )
@@ -1269,18 +1390,35 @@ namespace vkapp
 		m_mainPipelineLayout = m_device->createPipelineLayout( *m_mainDescriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-		if ( !wxFileExists( shadersFolder / "main.vert" )
-			|| !wxFileExists( shadersFolder / "main.frag" ) )
-		{
-			throw std::runtime_error{ "Shader files are missing" };
-		}
-
 		std::vector< renderer::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.vert" ) );
-		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.frag" ) );
+
+		if ( m_device->getRenderer().isGLSLSupported()
+			|| m_device->getRenderer().isSPIRVSupported() )
+		{
+			if ( !wxFileExists( shadersFolder / "main.vert" )
+				|| !wxFileExists( shadersFolder / "main.frag" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.vert" ) );
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.frag" ) );
+		}
+		else
+		{
+			if ( !wxFileExists( shadersFolder / "main.hvert" )
+				|| !wxFileExists( shadersFolder / "main.hpix" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.hvert" ) );
+			shaderStages[0].entryPoint = "mainVx";
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.hpix" ) );
+			shaderStages[1].entryPoint = "mainPx";
+		}
 
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 		{
@@ -1396,7 +1534,7 @@ namespace vkapp
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
 			m_swapChain->present( *resources );
-			renderer::UInt32Array values{ 0u, 0u };
+			renderer::UInt64Array values{ 0u, 0u };
 			m_queryPool->getResults( 0u
 				, 2u
 				, 0u

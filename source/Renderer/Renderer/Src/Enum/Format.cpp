@@ -1,5 +1,7 @@
 #include "RendererPrerequisites.hpp"
 
+#include "Miscellaneous/Extent3D.hpp"
+
 namespace renderer
 {
 	uint32_t getSize( Format format )noexcept
@@ -162,6 +164,93 @@ namespace renderer
 			return 0u;
 		}
 	}
+
+	uint32_t getBCCompressedSize( renderer::Format format )noexcept
+	{
+		assert( isBCCompressedFormat( format ) );
+
+		switch ( format )
+		{
+		case renderer::Format::eBC1_RGBA_SRGB_BLOCK:
+		case renderer::Format::eBC1_RGBA_UNORM_BLOCK:
+		case renderer::Format::eBC1_RGB_SRGB_BLOCK:
+		case renderer::Format::eBC1_RGB_UNORM_BLOCK:
+			return 8u;
+
+		case renderer::Format::eBC2_UNORM_BLOCK:
+		case renderer::Format::eBC2_SRGB_BLOCK:
+			return 16u;
+
+		case renderer::Format::eBC3_UNORM_BLOCK:
+		case renderer::Format::eBC3_SRGB_BLOCK:
+			return 16u;
+
+		case renderer::Format::eBC4_UNORM_BLOCK:
+		case renderer::Format::eBC4_SNORM_BLOCK:
+			return 8u;
+
+		case renderer::Format::eBC5_UNORM_BLOCK:
+		case renderer::Format::eBC5_SNORM_BLOCK:
+			return 16u;
+
+		case renderer::Format::eBC6H_UFLOAT_BLOCK:
+		case renderer::Format::eBC6H_SFLOAT_BLOCK:
+			return 16u;
+
+		case renderer::Format::eBC7_UNORM_BLOCK:
+		case renderer::Format::eBC7_SRGB_BLOCK:
+			return 16u;
+
+		default:
+			assert( false && "Unsupported pixel format" );
+			return 0u;
+		}
+	}
+
+	uint32_t getETC2CompressedSize( renderer::Format format )noexcept
+	{
+		assert( isETC2CompressedFormat( format ) );
+
+		switch ( format )
+		{
+		case renderer::Format::eETC2_R8G8B8_UNORM_BLOCK:
+		case renderer::Format::eETC2_R8G8B8_SRGB_BLOCK:
+			return 8u;
+
+		case renderer::Format::eETC2_R8G8B8A1_UNORM_BLOCK:
+		case renderer::Format::eETC2_R8G8B8A1_SRGB_BLOCK:
+			return 8u;
+
+		case renderer::Format::eETC2_R8G8B8A8_UNORM_BLOCK:
+		case renderer::Format::eETC2_R8G8B8A8_SRGB_BLOCK:
+			return 16u;
+
+		default:
+			assert( false && "Unsupported pixel format" );
+			return 0u;
+		}
+	}
+
+	uint32_t getEACCompressedSize( renderer::Format format )noexcept
+	{
+		assert( isEACCompressedFormat( format ) );
+
+		switch ( format )
+		{
+		case renderer::Format::eEAC_R11_UNORM_BLOCK:
+		case renderer::Format::eEAC_R11_SNORM_BLOCK:
+			return 8u;
+
+		case renderer::Format::eEAC_R11G11_UNORM_BLOCK:
+		case renderer::Format::eEAC_R11G11_SNORM_BLOCK:
+			return 16u;
+
+		default:
+			assert( false && "Unsupported pixel format" );
+			return 0u;
+		}
+	}
+
 	bool isDepthStencilFormat( Format format )noexcept
 	{
 		return format == Format::eD16_UNORM_S8_UINT
@@ -179,6 +268,30 @@ namespace renderer
 		return format == Format::eD16_UNORM
 			|| format == Format::eX8_D24_UNORM_PACK32
 			|| format == Format::eD32_SFLOAT;
+	}
+
+	bool isBCCompressedFormat( Format format )noexcept
+	{
+		return format >= Format::eBCCompressed_BEGIN
+			&& format <= Format::eBCCompressed_END;
+	}
+
+	bool isETC2CompressedFormat( Format format )noexcept
+	{
+		return format >= Format::eETC2Compressed_BEGIN
+			&& format <= Format::eETC2Compressed_END;
+	}
+
+	bool isEACCompressedFormat( Format format )noexcept
+	{
+		return format >= Format::eEACCompressed_BEGIN
+			&& format <= Format::eEACCompressed_END;
+	}
+
+	bool isASTCCompressedFormat( Format format )noexcept
+	{
+		return format >= Format::eASTCCompressed_BEGIN
+			&& format <= Format::eASTCCompressed_END;
 	}
 
 	bool isCompressedFormat( Format format )noexcept

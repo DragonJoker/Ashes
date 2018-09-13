@@ -1,0 +1,19 @@
+struct PixelInput
+{
+	float3 uv : TEXCOORD;
+};
+
+Texture3D mapColour : register( t0 );
+SamplerState samColour : register( s0 );
+
+float4 mainPx( in PixelInput input ) : SV_TARGET
+{
+	float4 result = mapColour.Sample( samColour, input.uv );
+
+	if ( result.a <= 0.05 )
+	{
+		discard;
+	}
+
+	return result;
+}

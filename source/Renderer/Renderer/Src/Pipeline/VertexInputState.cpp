@@ -24,10 +24,11 @@ namespace renderer
 			{
 				result.vertexAttributeDescriptions.push_back(
 				{
-					attribute.getLocation(),
+					attribute.location,
 					vertexLayout.getBindingSlot(),
-					attribute.getFormat(),
-					attribute.getOffset(),
+					attribute.format,
+					attribute.offset,
+					{ attribute.semanticName, attribute.semanticIndex }
 				} );
 			}
 

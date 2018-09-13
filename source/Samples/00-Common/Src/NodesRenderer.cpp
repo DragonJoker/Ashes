@@ -227,7 +227,7 @@ namespace common
 	void NodesRenderer::draw( std::chrono::nanoseconds & gpu )const
 	{
 		m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
-		renderer::UInt32Array values{ 0u, 0u };
+		renderer::UInt64Array values{ 0u, 0u };
 		m_queryPool->getResults( 0u
 			, 2u
 			, 0u
@@ -375,15 +375,43 @@ namespace common
 
 			// Initialise vertex layout.
 			m_billboardVertexLayout = renderer::makeLayout< Vertex >( 0u, renderer::VertexInputRate::eVertex );
-			m_billboardVertexLayout->createAttribute( 0u, renderer::Format::eR32G32B32_SFLOAT, offsetof( Vertex, position ) );
-			m_billboardVertexLayout->createAttribute( 1u, renderer::Format::eR32G32B32_SFLOAT, offsetof( Vertex, normal ) );
-			m_billboardVertexLayout->createAttribute( 2u, renderer::Format::eR32G32B32_SFLOAT, offsetof( Vertex, tangent ) );
-			m_billboardVertexLayout->createAttribute( 3u, renderer::Format::eR32G32B32_SFLOAT, offsetof( Vertex, bitangent ) );
-			m_billboardVertexLayout->createAttribute( 4u, renderer::Format::eR32G32_SFLOAT, offsetof( Vertex, texture ) );
+			m_billboardVertexLayout->createAttribute( 0u
+				, renderer::Format::eR32G32B32_SFLOAT
+				, offsetof( Vertex, position )
+				, "POSITION"
+				, 0u );
+			m_billboardVertexLayout->createAttribute( 1u
+				, renderer::Format::eR32G32B32_SFLOAT
+				, offsetof( Vertex, normal )
+				, "NORMAL"
+				, 0u );
+			m_billboardVertexLayout->createAttribute( 2u
+				, renderer::Format::eR32G32B32_SFLOAT
+				, offsetof( Vertex, tangent )
+				, "TANGENT"
+				, 0u );
+			m_billboardVertexLayout->createAttribute( 3u
+				, renderer::Format::eR32G32B32_SFLOAT
+				, offsetof( Vertex, bitangent )
+				, "TANGENT"
+				, 1u );
+			m_billboardVertexLayout->createAttribute( 4u
+				, renderer::Format::eR32G32_SFLOAT
+				, offsetof( Vertex, texture )
+				, "TEXCOORD"
+				, 0u );
 			// Initialise instance layout.
 			m_billboardInstanceLayout = renderer::makeLayout< BillboardInstanceData >( 1u, renderer::VertexInputRate::eInstance );
-			m_billboardInstanceLayout->createAttribute( 5u, renderer::Format::eR32G32B32_SFLOAT, offsetof( BillboardInstanceData, offset ) );
-			m_billboardInstanceLayout->createAttribute( 6u, renderer::Format::eR32G32_SFLOAT, offsetof( BillboardInstanceData, dimensions ) );
+			m_billboardInstanceLayout->createAttribute( 5u
+				, renderer::Format::eR32G32B32_SFLOAT
+				, offsetof( BillboardInstanceData, offset )
+				, "OFFSET"
+				, 0u );
+			m_billboardInstanceLayout->createAttribute( 6u
+				, renderer::Format::eR32G32_SFLOAT
+				, offsetof( BillboardInstanceData, dimensions )
+				, "DIMENSIONS"
+				, 0u );
 
 			if ( billboard.material.hasOpacity == !m_opaqueNodes )
 			{
@@ -520,11 +548,31 @@ namespace common
 
 		// Initialise vertex layout.
 		m_objectVertexLayout = renderer::makeLayout< Vertex >( 0u );
-		m_objectVertexLayout->createAttribute( 0u, renderer::Format::eR32G32B32_SFLOAT, offsetof( common::Vertex, position ) );
-		m_objectVertexLayout->createAttribute( 1u, renderer::Format::eR32G32B32_SFLOAT, offsetof( common::Vertex, normal ) );
-		m_objectVertexLayout->createAttribute( 2u, renderer::Format::eR32G32B32_SFLOAT, offsetof( common::Vertex, tangent ) );
-		m_objectVertexLayout->createAttribute( 3u, renderer::Format::eR32G32B32_SFLOAT, offsetof( common::Vertex, bitangent ) );
-		m_objectVertexLayout->createAttribute( 4u, renderer::Format::eR32G32_SFLOAT, offsetof( common::Vertex, texture ) );
+		m_objectVertexLayout->createAttribute( 0u
+			, renderer::Format::eR32G32B32_SFLOAT
+			, offsetof( common::Vertex, position )
+			, "POSITION"
+			, 0u );
+		m_objectVertexLayout->createAttribute( 1u
+			, renderer::Format::eR32G32B32_SFLOAT
+			, offsetof( common::Vertex, normal )
+			, "NORMAL"
+			, 0u );
+		m_objectVertexLayout->createAttribute( 2u
+			, renderer::Format::eR32G32B32_SFLOAT
+			, offsetof( common::Vertex, tangent )
+			, "TANGENT"
+			, 0u );
+		m_objectVertexLayout->createAttribute( 3u
+			, renderer::Format::eR32G32B32_SFLOAT
+			, offsetof( common::Vertex, bitangent )
+			, "TANGENT"
+			, 1u );
+		m_objectVertexLayout->createAttribute( 4u
+			, renderer::Format::eR32G32_SFLOAT
+			, offsetof( common::Vertex, texture )
+			, "TEXCOORD"
+			, 0u );
 
 		for ( auto & submesh : object )
 		{

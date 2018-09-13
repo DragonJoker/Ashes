@@ -1,0 +1,12 @@
+struct PixelInput
+{
+	float uv : TEXCOORD;
+};
+
+Texture1D mapColour : register( t0 );
+SamplerState samColour : register( s0 );
+
+float4 mainPx( in PixelInput input ) : SV_TARGET
+{
+	return mapColour.Sample( samColour, input.uv );
+}

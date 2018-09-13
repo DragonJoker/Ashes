@@ -9,32 +9,6 @@ namespace renderer
 	*	Upload.
 	**/
 	/**@{*/
-	inline void StagingBuffer::uploadTextureData( CommandBuffer const & commandBuffer
-		, ImageSubresourceLayers const & subresourceLayers
-		, Offset3D const & offset
-		, Extent3D const & extent
-		, ByteArray const & data
-		, TextureView const & texture )const
-	{
-		uploadTextureData( commandBuffer
-			, subresourceLayers
-			, offset
-			, extent
-			, data.data()
-			, uint32_t( data.size() )
-			, texture );
-	}
-
-	inline void StagingBuffer::uploadTextureData( CommandBuffer const & commandBuffer
-		, ByteArray const & data
-		, TextureView const & texture )const
-	{
-		uploadTextureData( commandBuffer
-			, data.data()
-			, uint32_t( data.size() )
-			, texture );
-	}
-
 	template< typename T >
 	inline void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
 		, std::vector< T > const & data
@@ -259,32 +233,6 @@ namespace renderer
 	*	Upload.
 	**/
 	/**@{*/
-	inline void StagingBuffer::downloadTextureData( CommandBuffer const & commandBuffer
-		, ImageSubresourceLayers const & subresourceLayers
-		, Offset3D const & offset
-		, Extent3D const & extent
-		, ByteArray & data
-		, TextureView const & texture )const
-	{
-		downloadTextureData( commandBuffer
-			, subresourceLayers
-			, offset
-			, extent
-			, data.data()
-			, uint32_t( data.size() )
-			, texture );
-	}
-
-	inline void StagingBuffer::downloadTextureData( CommandBuffer const & commandBuffer
-		, ByteArray & data
-		, TextureView const & texture )const
-	{
-		downloadTextureData( commandBuffer
-			, data.data()
-			, uint32_t( data.size() )
-			, texture );
-	}
-
 	template< typename T >
 	inline void StagingBuffer::downloadBufferData( CommandBuffer const & commandBuffer
 		, std::vector< T > & data

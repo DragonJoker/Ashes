@@ -1,32 +1,29 @@
 project( VkRenderer )
 
-option( VKRENDERER_GLSL_TO_SPV "Enable Compiling from GLSL to SPIR-V, using glslang and SPIRV libraries" TRUE )
-
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
-if ( VKRENDERER_GLSL_TO_SPV )
-	set( VKRENDERER_GLSL_TO_SPV 1 )
-	if ( NOT glslang_ROOT_DIR )
-		set( glslang_ROOT_DIR ${CMAKE_SOURCE_DIR}/../dependencies/glslang )
-	endif ()
-	if ( NOT SPIRV_ROOT_DIR )
-		set( SPIRV_ROOT_DIR ${CMAKE_SOURCE_DIR}/../dependencies/glslang )
-	endif ()
-	find_package( glslang )
-	find_package( SPIRV )
+if ( NOT glslang_ROOT_DIR )
+	set( glslang_ROOT_DIR ${CMAKE_SOURCE_DIR}/../dependencies/glslang )
+endif ()
+if ( NOT SPIRV_ROOT_DIR )
+	set( SPIRV_ROOT_DIR ${CMAKE_SOURCE_DIR}/../dependencies/glslang )
+endif ()
 
-	if ( glslang_FOUND AND SPIRV_FOUND )
-		include_directories(
-			${glslang_INCLUDE_DIR}
-			${SPIRV_INCLUDE_DIR}
-		)
-		set( BinaryLibraries
-			${BinaryLibraries}
-			PARENT_SCOPE
-		)
-	endif ()
+find_package( glslang )
+find_package( SPIRV )
+
+if ( glslang_FOUND AND SPIRV_FOUND )
+	include_directories(
+		${glslang_INCLUDE_DIR}
+		${SPIRV_INCLUDE_DIR}
+	)
+	set( BinaryLibraries
+		${BinaryLibraries}
+		PARENT_SCOPE
+	)
+	set( VKRENDERER_GLSL_TO_SPV 1 )
 else ()
 	set( VKRENDERER_GLSL_TO_SPV 0 )
 	set( SPIRV_FOUND TRUE )
@@ -128,6 +125,12 @@ if ( glslang_FOUND AND SPIRV_FOUND )
 
 	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Renderer" )
+
+	set( ENABLED_RENDERERS
+		${ENABLED_RENDERERS}
+		VkRenderer
+		PARENT_SCOPE
+	)
 
 	if ( RENDERER_STATIC_RENDERERS )
 		#We install each .lib/.a in <install_dir>/lib folder

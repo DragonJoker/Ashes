@@ -534,6 +534,7 @@ private:
 class RendererPlugin
 {
 	using CreatorFunction = renderer::Renderer *( *)( renderer::Renderer::Configuration const & );
+	using NamerFunction = char const *( *)( );
 
 public:
 	RendererPlugin( renderer::DynamicLibrary && library
@@ -546,27 +547,25 @@ public:
 			throw std::runtime_error{ "Not a renderer plugin" };
 		}
 
-		std::string name;
+		NamerFunction shortNamer;
 
-		if ( m_library.getPath().find( "Gl3R" ) != std::string::npos )
+		if ( !m_library.getFunction( "getShortName", shortNamer ) )
 		{
-			name = "gl3";
+			throw std::runtime_error{ "Not a renderer plugin" };
 		}
-		else if ( m_library.getPath().find( "GlR" ) != std::string::npos )
+
+		NamerFunction fullNamer;
+
+		if ( !m_library.getFunction( "getFullName", fullNamer ) )
 		{
-			name = "gl";
+			throw std::runtime_error{ "Not a renderer plugin" };
 		}
-		else if ( m_library.getPath().find( "VkR" ) != std::string::npos )
-		{
-			name = "vk";
-		}
-		else
-		{
-			throw std::runtime_error{ "Not a supported renderer plugin" };
-		}
+
+		m_shortName = shortNamer();
+		m_fullName = fullNamer();
 
 		auto creator = m_creator;
-		factory.registerType( name, [creator]( renderer::Renderer::Configuration const & configuration )
+		factory.registerType( m_shortName, [creator]( renderer::Renderer::Configuration const & configuration )
 			{
 				return renderer::RendererPtr{ creator( configuration ) };
 			} );
@@ -580,6 +579,8 @@ public:
 private:
 	renderer::DynamicLibrary m_library;
 	CreatorFunction m_creator;
+	std::string m_shortName;
+	std::string m_fullName;
 };
 
 std::vector< RendererPlugin > list_plugins( RendererFactory & factory )

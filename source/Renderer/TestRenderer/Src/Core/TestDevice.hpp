@@ -34,6 +34,11 @@ namespace test_renderer
 		*/
 		~Device();
 		/**
+		*\copydoc	renderer::Device::createStagingTexture
+		*/
+		renderer::StagingTexturePtr createStagingTexture( renderer::Format format
+			, renderer::Extent3D const & extent )const;
+		/**
 		*\copydoc	renderer::Device::createRenderPass
 		*/
 		renderer::RenderPassPtr createRenderPass( renderer::RenderPassCreateInfo createInfo )const override;

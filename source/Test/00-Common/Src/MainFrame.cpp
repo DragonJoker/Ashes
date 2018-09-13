@@ -98,9 +98,7 @@ namespace common
 		auto gpuMs = durationGpu.count() / 1000.0f;
 		auto gpuAvgms = averageGpuTime / 1000.0f;
 		title << " [GPU: I " << std::setw( 6 ) << std::setprecision( 4 ) << gpuMs << "ms";
-		title << " (" << std::setw( 5 ) << int( 1000.0f / gpuMs ) << "fps)";
 		title << ", A " << std::setw( 6 ) << std::setprecision( 4 ) << gpuAvgms << "ms";
-		title << " (" << std::setw( 5 ) << int( 1000.0f / gpuAvgms ) << "fps)";
 
 		SetTitle( m_name + wxT( " (" ) + m_rendererName + wxT( ")" ) + wxString( title.str() ) );
 	}

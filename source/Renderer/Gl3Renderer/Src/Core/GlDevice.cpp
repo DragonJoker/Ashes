@@ -18,6 +18,7 @@ See LICENSE file in root folder.
 #include "Descriptor/GlDescriptorPool.hpp"
 #include "Descriptor/GlDescriptorSetLayout.hpp"
 #include "Image/GlSampler.hpp"
+#include "Image/GlStagingTexture.hpp"
 #include "Image/GlTexture.hpp"
 #include "Image/GlTextureView.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
@@ -507,6 +508,12 @@ namespace gl_renderer
 		m_presentQueue.reset();
 		m_computeCommandPool.reset();
 		m_computeQueue.reset();
+	}
+
+	renderer::StagingTexturePtr Device::createStagingTexture( renderer::Format format
+		, renderer::Extent3D const & extent )const
+	{
+		return std::make_unique< StagingTexture >( *this, format, extent );
 	}
 
 	renderer::RenderPassPtr Device::createRenderPass( renderer::RenderPassCreateInfo createInfo )const

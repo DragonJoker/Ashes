@@ -10,6 +10,7 @@
 #include <Core/RenderingResources.hpp>
 #include <Core/SwapChain.hpp>
 #include <Enum/SubpassContents.hpp>
+#include <Image/StagingTexture.hpp>
 #include <Image/Texture.hpp>
 #include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/InputAssemblyState.hpp>
@@ -153,6 +154,8 @@ namespace vkapp
 	{
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
+		auto stagingTexture = m_device->createStagingTexture( image.format
+			, { image.size.width, image.size.height, 1u } );
 		m_texture = m_device->createTexture(
 			{
 				0u,
@@ -173,7 +176,8 @@ namespace vkapp
 			, renderer::WrapMode::eClampToEdge
 			, renderer::Filter::eLinear
 			, renderer::Filter::eLinear );
-		m_stagingBuffer->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+		stagingTexture->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+			, image.format
 			, image.data
 			, *m_view );
 	}
@@ -234,10 +238,14 @@ namespace vkapp
 		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
 		m_vertexLayout->createAttribute( 0u
 			, renderer::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
+			, uint32_t( offsetof( TexturedVertexData, position ) )
+			, "POSITION"
+			, 0u );
 		m_vertexLayout->createAttribute( 1u
 			, renderer::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
+			, uint32_t( offsetof( TexturedVertexData, uv ) )
+			, "TEXCOORD"
+			, 0u );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData
 			, *m_vertexBuffer );
@@ -265,8 +273,20 @@ namespace vkapp
 		std::vector< renderer::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.vert" ) );
-		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.frag" ) );
+
+		if ( m_device->getRenderer().isGLSLSupported()
+			|| m_device->getRenderer().isSPIRVSupported() )
+		{
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.vert" ) );
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.frag" ) );
+		}
+		else
+		{
+			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.hvert" ) );
+			shaderStages[0].entryPoint = "mainVx";
+			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.hpix" ) );
+			shaderStages[1].entryPoint = "mainPx";
+		}
 
 		m_pipeline = m_pipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
 		{
@@ -343,7 +363,7 @@ namespace vkapp
 				, &resources->getFence() );
 			m_swapChain->present( *resources );
 
-			renderer::UInt32Array values{ 0u, 0u };
+			renderer::UInt64Array values{ 0u, 0u };
 			m_queryPool->getResults( 0u
 				, 2u
 				, 0u
