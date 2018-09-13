@@ -124,12 +124,7 @@ namespace d3d11_renderer
 
 	void Renderer::doCreateDXGIFactory()
 	{
-		UINT flags = 0u;
-#if !defined( NDEBUG )
-		flags |= DXGI_CREATE_FACTORY_DEBUG;
-#endif
-		HRESULT hr = CreateDXGIFactory2( flags
-			, __uuidof( IDXGIFactory2 )
+		HRESULT hr = CreateDXGIFactory( __uuidof( IDXGIFactory )
 			, reinterpret_cast< void ** >( &m_factory ) );
 
 		if ( hr != S_OK )
