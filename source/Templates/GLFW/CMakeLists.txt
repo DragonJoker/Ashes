@@ -24,11 +24,7 @@ if( GLFW_FOUND )
 	)
 
 	add_dependencies(
-		Gl4Renderer
-		Gl3Renderer
-		VkRenderer
-		D3D11Renderer
-		TestRenderer
+		${ENABLED_RENDERERS}
 	)
 
 	if ( UNIX )

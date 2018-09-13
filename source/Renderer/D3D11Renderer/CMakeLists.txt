@@ -73,8 +73,8 @@ else ()
 endif ()
 
 target_link_libraries( ${PROJECT_NAME}
-	${BinLibraries}
 	Renderer
+	${BinLibraries}
 	d3d11
 	dxgi
 	d3dcompiler

@@ -43,6 +43,7 @@ namespace renderer
 		eErrorIncompatibleDisplay = -1000003001,
 		eErrorValidationFailed = -1000011001,
 		eErrorInvalidShader = -1000012000,
+		eErrorRenderer = -1000012001,
 		eBeginRange = eErrorFormatNotSupported,
 		eEndRange = eIncomplete,
 		eRangeSize = ( eIncomplete - eErrorFormatNotSupported + 1 ),

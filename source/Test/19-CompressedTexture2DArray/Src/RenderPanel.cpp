@@ -215,7 +215,7 @@ namespace vkapp
 		{
 			for ( uint32_t level = 0; level < tex2DArray.levels(); level++ )
 			{
-				auto & texArray = tex2DArray[layer][level];
+				auto texArray = tex2DArray[layer][level];
 				auto extent = renderer::Extent3D{ uint32_t( texArray.extent().x ), uint32_t( texArray.extent().y ), 1u };
 
 				if ( checkExtent( format, extent ) )

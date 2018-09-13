@@ -1,4 +1,4 @@
-#include "RenderPanel.hpp"
+	#include "RenderPanel.hpp"
 #include "Application.hpp"
 
 #include <Buffer/VertexBuffer.hpp>
@@ -179,7 +179,7 @@ namespace vkapp
 
 		for ( uint32_t level = 0; level < tex2D.levels(); level++ )
 		{
-			auto & texLevel = tex2D[level];
+			auto texLevel = tex2D[level];
 			auto extent = renderer::Extent3D{ uint32_t( texLevel.extent().x ), uint32_t( texLevel.extent().y ), 1u };
 
 			if ( checkExtent( format, extent ) )

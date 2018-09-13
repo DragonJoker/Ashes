@@ -1,5 +1,7 @@
 #include "D3D11RendererPrerequisites.hpp"
 
+#include <Core/Exception.hpp>
+
 #if defined __GNUG__
 #   ifdef DEFINE_GUID
 #       undef DEFINE_GUID
@@ -64,42 +66,47 @@ namespace d3d11_renderer
 
 	bool checkError( HRESULT hResult, char const * const text )
 	{
-		static std::map< HRESULT, std::string > Errors
+		struct Error
 		{
-			{ D3D11_ERROR_FILE_NOT_FOUND, "The file was not found." },
-			{ D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS, "There are too many unique instances of a particular type of state object." },
-			{ D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS, "There are too many unique instances of a particular type of view object." },
-			{ D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD, "The first call to ID3D11DeviceContext::Map after either ID3D11Device::CreateDeferredContext or ID3D11DeviceContext::FinishCommandList per Resource was not D3D11_MAP_WRITE_DISCARD." },
-			{ E_FAIL, "Attempted to create a device with the debug layer enabled and the layer is not installed." },
-			{ E_INVALIDARG, "An invalid parameter was passed to the returning function." },
-			{ E_OUTOFMEMORY, "Direct3D could not allocate sufficient memory to complete the call." },
-			{ E_NOTIMPL, "The method call isn't implemented with the passed parameter combination." },
-			{ S_FALSE, "Alternate success value, indicating a successful but nonstandard completion( the precise meaning depends on context )." },
-			{ DXGI_ERROR_INVALID_CALL, "The method call is invalid.For example, a method's parameter may not be a valid pointer." },
-			{ DXGI_ERROR_ACCESS_DENIED, "You tried to use a resource to which you did not have the required access privileges.This error is most typically caused when you write to a shared resource with read - only access." },
-			{ DXGI_ERROR_ACCESS_LOST, "The desktop duplication interface is invalid.The desktop duplication interface typically becomes invalid when a different type of image is displayed on the desktop." },
-			{ DXGI_ERROR_ALREADY_EXISTS, "The desired element already exists.This is returned by DXGIDeclareAdapterRemovalSupport if it is not the first time that the function is called." },
-			{ DXGI_ERROR_CANNOT_PROTECT_CONTENT, "DXGI can't provide content protection on the swap chain. This error is typically caused by an older driver, or when you use a swap chain that is incompatible with content protection." },
-			{ DXGI_ERROR_DEVICE_HUNG, "The application's device failed due to badly formed commands sent by the application. This is an design-time issue that should be investigated and fixed." },
-			{ DXGI_ERROR_DEVICE_REMOVED, "The video card has been physically removed from the system, or a driver upgrade for the video card has occurred.The application should destroy and recreate the device.For help debugging the problem, call ID3D10Device::GetDeviceRemovedReason." },
-			{ DXGI_ERROR_DEVICE_RESET, "The device failed due to a badly formed command.This is a run - time issue; The application should destroy and recreate the device." },
-			{ DXGI_ERROR_DRIVER_INTERNAL_ERROR, "The driver encountered a problem and was put into the device removed state." },
-			{ DXGI_ERROR_FRAME_STATISTICS_DISJOINT, "An event( for example, a power cycle ) interrupted the gathering of presentation statistics." },
-			{ DXGI_ERROR_GRAPHICS_VIDPN_SOURCE_IN_USE, "The application attempted to acquire exclusive ownership of an output, but failed because some other application( or device within the application ) already acquired ownership." },
-			{ DXGI_ERROR_MORE_DATA, "The buffer supplied by the application is not big enough to hold the requested data." },
-			{ DXGI_ERROR_NAME_ALREADY_EXISTS, "The supplied name of a resource in a call to IDXGIResource1::CreateSharedHandle is already associated with some other resource." },
-			{ DXGI_ERROR_NONEXCLUSIVE, "A global counter resource is in use, and the Direct3D device can't currently use the counter resource." },
-			{ DXGI_ERROR_NOT_CURRENTLY_AVAILABLE, "The resource or request is not currently available, but it might become available later." },
-			{ DXGI_ERROR_NOT_FOUND, "When calling IDXGIObject::GetPrivateData, the GUID passed in is not recognized as one previously passed to IDXGIObject::SetPrivateData or IDXGIObject::SetPrivateDataInterface.When calling IDXGIFactory::EnumAdapters or IDXGIAdapter::EnumOutputs, the enumerated ordinal is out of range." },
-			{ DXGI_ERROR_REMOTE_CLIENT_DISCONNECTED, "Reserved" },
-			{ DXGI_ERROR_REMOTE_OUTOFMEMORY, "Reserved" },
-			{ DXGI_ERROR_RESTRICT_TO_OUTPUT_STALE, "The DXGI output( monitor ) to which the swap chain content was restricted is now disconnected or changed." },
-			{ DXGI_ERROR_SDK_COMPONENT_MISSING, "The operation depends on an SDK component that is missing or mismatched." },
-			{ DXGI_ERROR_SESSION_DISCONNECTED, "The Remote Desktop Services session is currently disconnected." },
-			{ DXGI_ERROR_UNSUPPORTED, "The requested functionality is not supported by the device or the driver." },
-			{ DXGI_ERROR_WAIT_TIMEOUT, "The time - out interval elapsed before the next desktop frame was available." },
-			{ DXGI_ERROR_WAS_STILL_DRAWING, "The GPU was busy at the moment when a call was made to perform an operation, and did not execute or schedule the operation." },
-			{ S_OK, "No error occurred." },
+			std::string name;
+			renderer::Result result;
+		};
+		static std::map< HRESULT, Error > Errors
+		{
+			{ D3D11_ERROR_FILE_NOT_FOUND, { "The file was not found.", renderer::Result::eErrorRenderer } },
+			{ D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS, { "There are too many unique instances of a particular type of state object.", renderer::Result::eErrorRenderer } },
+			{ D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS, { "There are too many unique instances of a particular type of view object.", renderer::Result::eErrorRenderer } },
+			{ D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD, { "The first call to ID3D11DeviceContext::Map after either ID3D11Device::CreateDeferredContext or ID3D11DeviceContext::FinishCommandList per Resource was not D3D11_MAP_WRITE_DISCARD.", renderer::Result::eErrorRenderer } },
+			{ E_FAIL, { "Attempted to create a device with the debug layer enabled and the layer is not installed.", renderer::Result::eErrorRenderer } },
+			{ E_INVALIDARG, { "An invalid parameter was passed to the returning function.", renderer::Result::eErrorRenderer } },
+			{ E_OUTOFMEMORY, { "Direct3D could not allocate sufficient memory to complete the call.", renderer::Result::eErrorOutOfDeviceMemory } },
+			{ E_NOTIMPL, { "The method call isn't implemented with the passed parameter combination.", renderer::Result::eErrorRenderer } },
+			{ S_FALSE, { "Alternate success value, indicating a successful but nonstandard completion( the precise meaning depends on context ).", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_INVALID_CALL, { "The method call is invalid.For example, a method's parameter may not be a valid pointer.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_ACCESS_DENIED, { "You tried to use a resource to which you did not have the required access privileges.This error is most typically caused when you write to a shared resource with read - only access.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_ACCESS_LOST, { "The desktop duplication interface is invalid.The desktop duplication interface typically becomes invalid when a different type of image is displayed on the desktop.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_ALREADY_EXISTS, { "The desired element already exists.This is returned by DXGIDeclareAdapterRemovalSupport if it is not the first time that the function is called.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_CANNOT_PROTECT_CONTENT, { "DXGI can't provide content protection on the swap chain. This error is typically caused by an older driver, or when you use a swap chain that is incompatible with content protection.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_DEVICE_HUNG, { "The application's device failed due to badly formed commands sent by the application. This is an design-time issue that should be investigated and fixed.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_DEVICE_REMOVED, { "The video card has been physically removed from the system, or a driver upgrade for the video card has occurred.The application should destroy and recreate the device.For help debugging the problem, call ID3D10Device::GetDeviceRemovedReason.", renderer::Result::eErrorDeviceLost } },
+			{ DXGI_ERROR_DEVICE_RESET, { "The device failed due to a badly formed command.This is a run - time issue; The application should destroy and recreate the device.", renderer::Result::eErrorDeviceLost } },
+			{ DXGI_ERROR_DRIVER_INTERNAL_ERROR, { "The driver encountered a problem and was put into the device removed state.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_FRAME_STATISTICS_DISJOINT, { "An event( for example, a power cycle ) interrupted the gathering of presentation statistics.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_GRAPHICS_VIDPN_SOURCE_IN_USE, { "The application attempted to acquire exclusive ownership of an output, but failed because some other application( or device within the application ) already acquired ownership.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_MORE_DATA, { "The buffer supplied by the application is not big enough to hold the requested data.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_NAME_ALREADY_EXISTS, { "The supplied name of a resource in a call to IDXGIResource1::CreateSharedHandle is already associated with some other resource.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_NONEXCLUSIVE, { "A global counter resource is in use, and the Direct3D device can't currently use the counter resource.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_NOT_CURRENTLY_AVAILABLE, { "The resource or request is not currently available, but it might become available later.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_NOT_FOUND, { "When calling IDXGIObject::GetPrivateData, the GUID passed in is not recognized as one previously passed to IDXGIObject::SetPrivateData or IDXGIObject::SetPrivateDataInterface.When calling IDXGIFactory::EnumAdapters or IDXGIAdapter::EnumOutputs, the enumerated ordinal is out of range.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_REMOTE_CLIENT_DISCONNECTED, { "Reserved", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_REMOTE_OUTOFMEMORY, { "Reserved", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_RESTRICT_TO_OUTPUT_STALE, { "The DXGI output( monitor ) to which the swap chain content was restricted is now disconnected or changed.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_SDK_COMPONENT_MISSING, { "The operation depends on an SDK component that is missing or mismatched.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_SESSION_DISCONNECTED, { "The Remote Desktop Services session is currently disconnected.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_UNSUPPORTED, { "The requested functionality is not supported by the device or the driver.", renderer::Result::eErrorRenderer } },
+			{ DXGI_ERROR_WAIT_TIMEOUT, { "The time - out interval elapsed before the next desktop frame was available.", renderer::Result::eTimeout } },
+			{ DXGI_ERROR_WAS_STILL_DRAWING, { "The GPU was busy at the moment when a call was made to perform an operation, and did not execute or schedule the operation.", renderer::Result::eErrorRenderer } },
+			{ S_OK, { "No error occurred.", renderer::Result::eSuccess } },
 		};
 		bool result = hResult == S_OK;
 
@@ -110,14 +117,17 @@ namespace d3d11_renderer
 			stream << "Error calling [" << text << "]: " << std::hex << hResult;
 			LPTSTR error = 0;
 			auto it = Errors.find( hResult );
+			renderer::Result result{ renderer::Result::eErrorRenderer };
 
 			if ( it != Errors.end() )
 			{
-				stream << "\n    Direct3D: " << it->second;
+				stream << "\n    Direct3D: " << it->second.name;
+				result = it->second.result;
 			}
 
 			stream << "\n    Windows: " << getLastErrorText();
 			renderer::Logger::logError( stream.str() );
+			throw renderer::Exception{ result, stream.str() };
 		}
 
 		return result;

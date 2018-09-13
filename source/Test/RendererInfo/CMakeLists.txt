@@ -33,11 +33,7 @@ if ( NOT WIN32 )
 endif ()
 
 add_dependencies( ${PROJECT_NAME}
-	VkRenderer
-	Gl4Renderer
-	Gl3Renderer
-	D3D11Renderer
-	TestRenderer
+	${ENABLED_RENDERERS}
 )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
