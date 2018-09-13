@@ -19,6 +19,6 @@ VertexOutput mainVx( in VertexInput input )
 {
 	VertexOutput output;
 	output.uv = input.uv;
-	output.position = mul( mtxProjection, rendererScalePosition( input.position ) );
+	output.position = mul( mtxProjection, ashesScalePosition( input.position ) );
 	return output;
 }

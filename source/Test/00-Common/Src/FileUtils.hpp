@@ -88,7 +88,7 @@ namespace common
 	*\return
 	*	The file content.
 	*/
-	std::string parseShaderFile( renderer::Device const & device
+	std::string parseShaderFile( ashes::Device const & device
 		, std::string const & file );
 	/**
 	*\~french
@@ -106,7 +106,7 @@ namespace common
 	*\return
 	*	The file content.
 	*/
-	renderer::ByteArray dumpBinaryFile( std::string const & file );
+	ashes::ByteArray dumpBinaryFile( std::string const & file );
 	/**
 	*\~french
 	*\brief
@@ -123,7 +123,7 @@ namespace common
 	*\return
 	*	The file content.
 	*/
-	renderer::UInt32Array dumpSpvFile( std::string const & file );
+	ashes::UInt32Array dumpSpvFile( std::string const & file );
 	/**
 	*\~french
 	*\return

@@ -23,7 +23,7 @@ namespace vkapp
 	public:
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
-			, renderer::Renderer const & renderer );
+			, ashes::Renderer const & renderer );
 		~RenderPanel();
 
 	private:
@@ -34,7 +34,7 @@ namespace vkapp
 		/**@{*/
 		void doCleanup();
 		void doUpdateProjection();
-		void doCreateDevice( renderer::Renderer const & renderer );
+		void doCreateDevice( ashes::Renderer const & renderer );
 		void doCreateSwapChain();
 		void doCreateTexture();
 		void doCreateUniformBuffer();
@@ -71,33 +71,33 @@ namespace vkapp
 		*	Global.
 		*/
 		/**@{*/
-		renderer::DevicePtr m_device;
-		renderer::SwapChainPtr m_swapChain;
-		renderer::RenderPassPtr m_renderPass;
-		renderer::PipelineLayoutPtr m_pipelineLayout;
-		renderer::PipelinePtr m_pipeline;
-		renderer::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
-		renderer::BufferPtr< uint16_t > m_indexBuffer;
-		renderer::VertexLayoutPtr m_vertexLayout;
-		renderer::StagingBufferPtr m_stagingBuffer;
-		renderer::TexturePtr m_texture;
-		renderer::TextureViewPtr m_view;
-		renderer::SamplerPtr m_sampler;
-		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
-		renderer::DescriptorSetPoolPtr m_descriptorPool;
-		renderer::DescriptorSetPtr m_descriptorSet;
-		renderer::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
-		renderer::UniformBufferPtr< utils::Mat4 > m_objectUbo;
-		renderer::QueryPoolPtr m_queryPool;
+		ashes::DevicePtr m_device;
+		ashes::SwapChainPtr m_swapChain;
+		ashes::RenderPassPtr m_renderPass;
+		ashes::PipelineLayoutPtr m_pipelineLayout;
+		ashes::PipelinePtr m_pipeline;
+		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
+		ashes::BufferPtr< uint16_t > m_indexBuffer;
+		ashes::VertexLayoutPtr m_vertexLayout;
+		ashes::StagingBufferPtr m_stagingBuffer;
+		ashes::TexturePtr m_texture;
+		ashes::TextureViewPtr m_view;
+		ashes::SamplerPtr m_sampler;
+		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
+		ashes::DescriptorSetPoolPtr m_descriptorPool;
+		ashes::DescriptorSetPtr m_descriptorSet;
+		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
+		ashes::UniformBufferPtr< utils::Mat4 > m_objectUbo;
+		ashes::QueryPoolPtr m_queryPool;
 		/**@}*/
 		/**
 		*\name
 		*	Swapchain.
 		*/
 		/**@{*/
-		std::vector< renderer::FrameBufferPtr > m_frameBuffers;
-		std::vector< renderer::CommandBufferPtr > m_commandBuffers;
-		renderer::SignalConnection< renderer::SwapChain::OnReset > m_swapChainReset;
+		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
+		std::vector< ashes::CommandBufferPtr > m_commandBuffers;
+		ashes::SignalConnection< ashes::SwapChain::OnReset > m_swapChainReset;
 		/**@}*/
 	};
 }

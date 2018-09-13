@@ -1,0 +1,36 @@
+if ( "${ASHES_BUILD_RENDERER_PLUGINS}" STREQUAL "" )
+	set( ASHES_BUILD_RENDERER_PLUGINS TRUE )
+endif ()
+
+if ( "${ASHES_BUILD_RENDERER_PLUGINS}" STREQUAL "TRUE" )
+	option( ASHES_BUILD_PLUGINS "Build renderers plugins" ON )
+else ()
+	option( ASHES_BUILD_PLUGINS "Build renderers plugins" OFF )
+endif ()
+
+if ( MSVC )
+	add_definitions( -D_ENFORCE_MATCHING_ALLOCATORS=0 )
+endif ()
+
+add_subdirectory( Ashes )
+
+if ( ASHES_BUILD_PLUGINS )
+	if ( "${ASHES_STATIC_RENDERER_PLUGINS}" STREQUAL "" )
+		set( ASHES_STATIC_RENDERER_PLUGINS FALSE )
+	endif ()
+
+	if ( "${ASHES_STATIC_RENDERER_PLUGINS}" STREQUAL "TRUE" )
+		option( ASHES_STATIC_RENDERERS "Build renderers as static libraries" ON )
+	else ()
+		option( ASHES_STATIC_RENDERERS "Build renderers as static libraries" OFF )
+	endif ()
+
+	add_subdirectory( Gl4Renderer )
+	add_subdirectory( Gl3Renderer )
+	add_subdirectory( TestRenderer )
+	add_subdirectory( VkRenderer )
+	if ( WIN32 )
+		add_subdirectory( D3D11Renderer )
+	endif ()
+	set( ENABLED_RENDERERS ${ENABLED_RENDERERS} PARENT_SCOPE )
+endif ()

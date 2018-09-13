@@ -9,8 +9,8 @@ namespace common
 	public:
 		TransparentRendering( NodesRendererPtr && renderer
 			, Scene const & scene
-			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureViewCRefArray const & views
+			, ashes::StagingBuffer & stagingBuffer
+			, ashes::TextureViewCRefArray const & views
 			, common::TextureNodePtrArray const & textureNodes );
 		virtual ~TransparentRendering() = default;
 		virtual void update( RenderTarget const & target );
@@ -18,8 +18,8 @@ namespace common
 
 	protected:
 		void doInitialise( Object const & submeshes
-			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureViewCRefArray const & views
+			, ashes::StagingBuffer & stagingBuffer
+			, ashes::TextureViewCRefArray const & views
 			, common::TextureNodePtrArray const & textureNodes );
 
 	private:

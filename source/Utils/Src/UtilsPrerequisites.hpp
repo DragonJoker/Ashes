@@ -1,10 +1,10 @@
 /*
-This file belongs to RendererLib.
+This file belongs to Ashes.
 See LICENSE file in root folder
 */
 #pragma once
 
-#include <RendererPrerequisites.hpp>
+#include <AshesPrerequisites.hpp>
 
 #include <cassert>
 #include <chrono>

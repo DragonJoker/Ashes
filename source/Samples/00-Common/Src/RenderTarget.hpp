@@ -10,21 +10,21 @@ namespace common
 	class RenderTarget
 	{
 	public:
-		RenderTarget( renderer::Device const & device
-			, renderer::Extent2D const & size
+		RenderTarget( ashes::Device const & device
+			, ashes::Extent2D const & size
 			, Scene && scene
 			, ImagePtrArray && images );
 		virtual ~RenderTarget();
-		void resize( renderer::Extent2D const & size );
+		void resize( ashes::Extent2D const & size );
 		void update( std::chrono::microseconds const & duration );
 		void draw( std::chrono::microseconds & gpu );
 
-		inline renderer::TextureView const & getColourView()const
+		inline ashes::TextureView const & getColourView()const
 		{
 			return *m_colourView;
 		}
 
-		inline renderer::TextureView const & getDepthView()const
+		inline ashes::TextureView const & getDepthView()const
 		{
 			return *m_depthView;
 		}
@@ -52,35 +52,35 @@ namespace common
 		void doUpdateRenderViews();
 
 		virtual void doUpdate( std::chrono::microseconds const & duration ) = 0;
-		virtual void doResize( renderer::Extent2D const & size ) = 0;
+		virtual void doResize( ashes::Extent2D const & size ) = 0;
 
-		virtual OpaqueRenderingPtr doCreateOpaqueRendering( renderer::Device const & device
-			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureViewCRefArray const & views
+		virtual OpaqueRenderingPtr doCreateOpaqueRendering( ashes::Device const & device
+			, ashes::StagingBuffer & stagingBuffer
+			, ashes::TextureViewCRefArray const & views
 			, Scene const & scene
 			, TextureNodePtrArray const & textureNodes ) = 0;
-		virtual TransparentRenderingPtr doCreateTransparentRendering( renderer::Device const & device
-			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureViewCRefArray const & views
+		virtual TransparentRenderingPtr doCreateTransparentRendering( ashes::Device const & device
+			, ashes::StagingBuffer & stagingBuffer
+			, ashes::TextureViewCRefArray const & views
 			, Scene const & scene
 			, TextureNodePtrArray const & textureNodes ) = 0;
 
 	protected:
-		renderer::Device const & m_device;
-		renderer::StagingBufferPtr m_stagingBuffer;
-		renderer::CommandBufferPtr m_updateCommandBuffer;
-		renderer::Extent2D m_size;
+		ashes::Device const & m_device;
+		ashes::StagingBufferPtr m_stagingBuffer;
+		ashes::CommandBufferPtr m_updateCommandBuffer;
+		ashes::Extent2D m_size;
 
 	private:
 		ImagePtrArray m_images;
 		Scene m_scene;
 		TextureNodePtrArray m_textureNodes;
 		utils::Mat4 m_rotate;
-		renderer::TexturePtr m_colour;
-		renderer::TextureViewPtr m_colourView;
-		renderer::TexturePtr m_depth;
-		renderer::TextureViewPtr m_depthView;
-		renderer::CommandBufferPtr m_commandBuffer;
+		ashes::TexturePtr m_colour;
+		ashes::TextureViewPtr m_colourView;
+		ashes::TexturePtr m_depth;
+		ashes::TextureViewPtr m_depthView;
+		ashes::CommandBufferPtr m_commandBuffer;
 		std::shared_ptr< OpaqueRendering > m_opaque;
 		std::shared_ptr< TransparentRendering > m_transparent;
 	};

@@ -37,21 +37,21 @@ namespace common
 {
 	namespace
 	{
-		renderer::PushConstantArray doCreateConstants()
+		ashes::PushConstantArray doCreateConstants()
 		{
 			return
 			{
-				{ 0u, 0u, renderer::ConstantFormat::eVec2f },
-				{ 1u, 8u, renderer::ConstantFormat::eVec2f },
+				{ 0u, 0u, ashes::ConstantFormat::eVec2f },
+				{ 1u, 8u, ashes::ConstantFormat::eVec2f },
 			};
 		}
 	}
 
-	Gui::Gui( renderer::Device const & device
-		, renderer::Extent2D const & size )
+	Gui::Gui( ashes::Device const & device
+		, ashes::Extent2D const & size )
 		: m_device{ device }
 		, m_size{ size }
-		, m_pushConstants{ device, 0u, renderer::ShaderStageFlag::eVertex, doCreateConstants() }
+		, m_pushConstants{ device, 0u, ashes::ShaderStageFlag::eVertex, doCreateConstants() }
 	{
 		// Init ImGui
 		// Color scheme
@@ -72,7 +72,7 @@ namespace common
 		doPrepareResources();
 	}
 
-	void Gui::updateView( renderer::TextureView const & colourView )
+	void Gui::updateView( ashes::TextureView const & colourView )
 	{
 		if ( m_colourView != &colourView )
 		{
@@ -103,10 +103,10 @@ namespace common
 		{
 			m_vertexBuffer.reset();
 			m_vertexCount = vertexBufferSize;
-			m_vertexBuffer = renderer::makeVertexBuffer< ImDrawVert >( m_device
+			m_vertexBuffer = ashes::makeVertexBuffer< ImDrawVert >( m_device
 				, m_vertexCount
-				, renderer::BufferTargets{ 0u }
-				, renderer::MemoryPropertyFlag::eHostVisible );
+				, ashes::BufferTargets{ 0u }
+				, ashes::MemoryPropertyFlag::eHostVisible );
 			updateCmdBuffers = true;
 		}
 
@@ -116,16 +116,16 @@ namespace common
 		{
 			m_indexBuffer.reset();
 			m_indexCount = indexBufferSize;
-			m_indexBuffer = renderer::makeBuffer< ImDrawIdx >( m_device
+			m_indexBuffer = ashes::makeBuffer< ImDrawIdx >( m_device
 				, m_indexCount
-				, renderer::BufferTarget::eIndexBuffer
-				, renderer::MemoryPropertyFlag::eHostVisible );
+				, ashes::BufferTarget::eIndexBuffer
+				, ashes::MemoryPropertyFlag::eHostVisible );
 			updateCmdBuffers = true;
 		}
 
 		if ( auto vtx = m_vertexBuffer->lock( 0u
 			, m_vertexCount
-			, renderer::MemoryMapFlag::eInvalidateRange | renderer::MemoryMapFlag::eWrite ) )
+			, ashes::MemoryMapFlag::eInvalidateRange | ashes::MemoryMapFlag::eWrite ) )
 		{
 			for ( int n = 0; n < imDrawData->CmdListsCount; n++ )
 			{
@@ -140,7 +140,7 @@ namespace common
 
 		if ( auto idx = m_indexBuffer->lock( 0u
 			, m_indexCount
-			, renderer::MemoryMapFlag::eInvalidateRange | renderer::MemoryMapFlag::eWrite ) )
+			, ashes::MemoryMapFlag::eInvalidateRange | ashes::MemoryMapFlag::eWrite ) )
 		{
 			for ( int n = 0; n < imDrawData->CmdListsCount; n++ )
 			{
@@ -159,7 +159,7 @@ namespace common
 		}
 	}
 
-	void Gui::resize( renderer::Extent2D const & size )
+	void Gui::resize( ashes::Extent2D const & size )
 	{
 		ImGuiIO & io = ImGui::GetIO();
 		io.DisplaySize = ImVec2( float( size.width ), float( size.height ) );
@@ -167,11 +167,11 @@ namespace common
 		doUpdateCommandBuffers();
 	}
 
-	void Gui::submit( renderer::Queue const & queue )
+	void Gui::submit( ashes::Queue const & queue )
 	{
 		queue.submit( *m_commandBuffer
 			, m_fence.get() );
-		m_fence->wait( renderer::FenceTimeout );
+		m_fence->wait( ashes::FenceTimeout );
 		m_fence->reset();
 	}
 
@@ -252,41 +252,41 @@ namespace common
 		m_fontImage = m_device.createTexture(
 			{
 				0u,
-				renderer::TextureType::e2D,
-				renderer::Format::eR8G8B8A8_UNORM,
-				renderer::Extent3D{ uint32_t( texWidth ), uint32_t( texHeight ), 1u },
+				ashes::TextureType::e2D,
+				ashes::Format::eR8G8B8A8_UNORM,
+				ashes::Extent3D{ uint32_t( texWidth ), uint32_t( texHeight ), 1u },
 				1u,
 				1u,
-				renderer::SampleCountFlag::e1,
-				renderer::ImageTiling::eOptimal,
-				renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				ashes::ImageUsageFlag::eSampled | ashes::ImageUsageFlag::eTransferDst
 			}
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_fontView = m_fontImage->createView( renderer::TextureViewType( m_fontImage->getType() )
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_fontView = m_fontImage->createView( ashes::TextureViewType( m_fontImage->getType() )
 			, m_fontImage->getFormat() );
 
 		auto copyCmd = m_device.getGraphicsCommandPool().createCommandBuffer();
-		auto stagingTexture = m_device.createStagingTexture( renderer::Format::eR8G8B8A8_UNORM
+		auto stagingTexture = m_device.createStagingTexture( ashes::Format::eR8G8B8A8_UNORM
 			, { uint32_t( texWidth ), uint32_t( texHeight ), 1u } );
 		stagingTexture->uploadTextureData( *copyCmd
-			, renderer::Format::eR8G8B8A8_UNORM
+			, ashes::Format::eR8G8B8A8_UNORM
 			, fontData
 			, *m_fontView );
 
-		m_sampler = m_device.createSampler( renderer::WrapMode::eClampToEdge
-			, renderer::WrapMode::eClampToEdge
-			, renderer::WrapMode::eClampToEdge
-			, renderer::Filter::eLinear
-			, renderer::Filter::eLinear
-			, renderer::MipmapMode::eNone );
+		m_sampler = m_device.createSampler( ashes::WrapMode::eClampToEdge
+			, ashes::WrapMode::eClampToEdge
+			, ashes::WrapMode::eClampToEdge
+			, ashes::Filter::eLinear
+			, ashes::Filter::eLinear
+			, ashes::MipmapMode::eNone );
 
 		m_commandPool = m_device.createCommandPool( m_device.getGraphicsQueue().getFamilyIndex()
-			, renderer::CommandPoolCreateFlag::eResetCommandBuffer );
+			, ashes::CommandPoolCreateFlag::eResetCommandBuffer );
 		m_commandBuffer = m_commandPool->createCommandBuffer();
 
-		renderer::DescriptorSetLayoutBindingArray bindings
+		ashes::DescriptorSetLayoutBindingArray bindings
 		{
-			{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment }
+			{ 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment }
 		};
 		m_descriptorSetLayout = m_device.createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorPool = m_descriptorSetLayout->createPool( 2u );
@@ -296,25 +296,25 @@ namespace common
 			, *m_sampler );
 		m_descriptorSet->update();
 
-		renderer::PushConstantRange range{ renderer::ShaderStageFlag::eVertex, 0u, m_pushConstants.getSize() };
+		ashes::PushConstantRange range{ ashes::ShaderStageFlag::eVertex, 0u, m_pushConstants.getSize() };
 		m_pipelineLayout = m_device.createPipelineLayout( *m_descriptorSetLayout
 			, range );
 
 		m_fence = m_device.createFence();
 
-		m_vertexLayout = renderer::makeLayout< ImDrawVert >( 0u );
+		m_vertexLayout = ashes::makeLayout< ImDrawVert >( 0u );
 		m_vertexLayout->createAttribute( 0u
-			, renderer::Format::eR32G32_SFLOAT
+			, ashes::Format::eR32G32_SFLOAT
 			, offsetof( ImDrawVert, pos )
 			, "POSITION"
 			, 0u );
 		m_vertexLayout->createAttribute( 1u
-			, renderer::Format::eR32G32_SFLOAT
+			, ashes::Format::eR32G32_SFLOAT
 			, offsetof( ImDrawVert, uv )
 			, "TEXCOORD"
 			, 0u );
 		m_vertexLayout->createAttribute( 2u
-			, renderer::Format::eR32_UINT
+			, ashes::Format::eR32_UINT
 			, offsetof( ImDrawVert, col )
 			, "COLOR"
 			, 0u );
@@ -323,100 +323,100 @@ namespace common
 	void Gui::doPreparePipeline()
 	{
 		auto dimensions = m_colourView->getTexture().getDimensions();
-		auto size = renderer::Extent2D{ dimensions.width, dimensions.height };
+		auto size = ashes::Extent2D{ dimensions.width, dimensions.height };
 		m_target = m_device.createTexture(
 			{
 				0u,
-				renderer::TextureType::e2D,
+				ashes::TextureType::e2D,
 				m_colourView->getFormat(),
 				dimensions,
 				1u,
 				1u,
-				renderer::SampleCountFlag::e1,
-				renderer::ImageTiling::eOptimal,
-				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eTransferDst
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eSampled | ashes::ImageUsageFlag::eTransferDst
 			}
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_targetView = m_target->createView( renderer::TextureViewType::e2D
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_targetView = m_target->createView( ashes::TextureViewType::e2D
 			, m_target->getFormat() );
 		
-		renderer::AttachmentDescriptionArray rpAttaches
+		ashes::AttachmentDescriptionArray rpAttaches
 		{
 			{
 				m_targetView->getFormat(),
-				renderer::SampleCountFlag::e1,
-				renderer::AttachmentLoadOp::eClear,
-				renderer::AttachmentStoreOp::eStore,
-				renderer::AttachmentLoadOp::eDontCare,
-				renderer::AttachmentStoreOp::eDontCare,
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::eShaderReadOnlyOptimal,
+				ashes::SampleCountFlag::e1,
+				ashes::AttachmentLoadOp::eClear,
+				ashes::AttachmentStoreOp::eStore,
+				ashes::AttachmentLoadOp::eDontCare,
+				ashes::AttachmentStoreOp::eDontCare,
+				ashes::ImageLayout::eUndefined,
+				ashes::ImageLayout::eShaderReadOnlyOptimal,
 			}
 		};
-		renderer::AttachmentReferenceArray subAttaches
+		ashes::AttachmentReferenceArray subAttaches
 		{
-			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
+			{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
 		};
-		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
-			, renderer::RenderSubpassState{
-				renderer::PipelineStageFlag::eColourAttachmentOutput,
-				renderer::AccessFlag::eColourAttachmentRead | renderer::AccessFlag::eColourAttachmentWrite
+		ashes::RenderSubpassPtrArray subpasses;
+		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( ashes::PipelineBindPoint::eGraphics
+			, ashes::RenderSubpassState{
+				ashes::PipelineStageFlag::eColourAttachmentOutput,
+				ashes::AccessFlag::eColourAttachmentRead | ashes::AccessFlag::eColourAttachmentWrite
 			}
 			, subAttaches ) );
 		m_renderPass = m_device.createRenderPass( rpAttaches
 			, std::move( subpasses )
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite }
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eShaderRead } );
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::AccessFlag::eColourAttachmentWrite }
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::AccessFlag::eShaderRead } );
 
-		renderer::FrameBufferAttachmentArray attaches
+		ashes::FrameBufferAttachmentArray attaches
 		{
 			{ *m_renderPass->getAttachments().begin(), *m_targetView }
 		};
 		m_frameBuffer = m_renderPass->createFrameBuffer( size
 			, std::move( attaches ) );
 
-		renderer::ColourBlendState cbState;
-		cbState.attachs.push_back( renderer::ColourBlendStateAttachment
+		ashes::ColourBlendState cbState;
+		cbState.attachs.push_back( ashes::ColourBlendStateAttachment
 		{
 			true,
-			renderer::BlendFactor::eSrcAlpha,
-			renderer::BlendFactor::eInvSrcAlpha,
-			renderer::BlendOp::eAdd,
-			renderer::BlendFactor::eSrcAlpha,
-			renderer::BlendFactor::eInvSrcAlpha,
-			renderer::BlendOp::eAdd
+			ashes::BlendFactor::eSrcAlpha,
+			ashes::BlendFactor::eInvSrcAlpha,
+			ashes::BlendOp::eAdd,
+			ashes::BlendFactor::eSrcAlpha,
+			ashes::BlendFactor::eInvSrcAlpha,
+			ashes::BlendOp::eAdd
 		} );
 
 		std::string shadersFolder = getPath( getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
-		std::vector< renderer::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device.createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device.createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+		std::vector< ashes::ShaderStageState > shaderStages;
+		shaderStages.push_back( { m_device.createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device.createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
 		shaderStages[0].module->loadShader( dumpTextFile( shadersFolder / "gui.vert" ) );
 		shaderStages[1].module->loadShader( dumpTextFile( shadersFolder / "gui.frag" ) );
 
-		std::vector< renderer::DynamicState > dynamicStateEnables
+		std::vector< ashes::DynamicState > dynamicStateEnables
 		{
-			renderer::DynamicState::eViewport,
-			renderer::DynamicState::eScissor
+			ashes::DynamicState::eViewport,
+			ashes::DynamicState::eScissor
 		};
 
-		renderer::RasterisationState rasterisationState;
-		rasterisationState.cullMode = renderer::CullModeFlag::eNone;
+		ashes::RasterisationState rasterisationState;
+		rasterisationState.cullMode = ashes::CullModeFlag::eNone;
 
 		m_pipeline = m_pipelineLayout->createPipeline(
 		{
 			std::move( shaderStages ),
 			*m_renderPass,
-			renderer::VertexInputState::create( *m_vertexLayout ),
-			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
+			ashes::VertexInputState::create( *m_vertexLayout ),
+			ashes::InputAssemblyState{ ashes::PrimitiveTopology::eTriangleList },
 			rasterisationState,
-			renderer::MultisampleState{},
+			ashes::MultisampleState{},
 			cbState,
 			dynamicStateEnables,
-			renderer::DepthStencilState{},
+			ashes::DepthStencilState{},
 		} );
 	}
 
@@ -428,25 +428,25 @@ namespace common
 		m_pushConstants.getData()->translate = utils::Vec2{ -1.0f };
 
 		m_commandBuffer->begin();
-		m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
-			, renderer::PipelineStageFlag::eFragmentShader
-			, m_fontView->makeShaderInputResource( renderer::ImageLayout::eUndefined
+		m_commandBuffer->memoryBarrier( ashes::PipelineStageFlag::eTransfer
+			, ashes::PipelineStageFlag::eFragmentShader
+			, m_fontView->makeShaderInputResource( ashes::ImageLayout::eUndefined
 				, 0u ) );
-		m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
-			, renderer::PipelineStageFlag::eVertexInput
+		m_commandBuffer->memoryBarrier( ashes::PipelineStageFlag::eTransfer
+			, ashes::PipelineStageFlag::eVertexInput
 			, m_vertexBuffer->getBuffer().makeVertexShaderInputResource() );
-		m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eTransfer
-			, renderer::PipelineStageFlag::eVertexInput
+		m_commandBuffer->memoryBarrier( ashes::PipelineStageFlag::eTransfer
+			, ashes::PipelineStageFlag::eVertexInput
 			, m_indexBuffer->getBuffer().makeVertexShaderInputResource() );
 		m_commandBuffer->beginRenderPass( *m_renderPass
 			, *m_frameBuffer
-			, { renderer::ClearColorValue{ 1.0, 1.0, 1.0, 0.0 } }
-			, renderer::SubpassContents::eInline );
+			, { ashes::ClearColorValue{ 1.0, 1.0, 1.0, 0.0 } }
+			, ashes::SubpassContents::eInline );
 		m_commandBuffer->bindPipeline( *m_pipeline );
 		m_commandBuffer->bindDescriptorSet( *m_descriptorSet
 			, *m_pipelineLayout );
 		m_commandBuffer->bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
-		m_commandBuffer->bindIndexBuffer( m_indexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
+		m_commandBuffer->bindIndexBuffer( m_indexBuffer->getBuffer(), 0u, ashes::IndexType::eUInt16 );
 		m_commandBuffer->setViewport( { uint32_t( ImGui::GetIO().DisplaySize.x )
 			, uint32_t( ImGui::GetIO().DisplaySize.y )
 			, 0
@@ -481,11 +481,11 @@ namespace common
 		}
 
 		m_commandBuffer->endRenderPass();
-		m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eVertexInput
-			, renderer::PipelineStageFlag::eTransfer
+		m_commandBuffer->memoryBarrier( ashes::PipelineStageFlag::eVertexInput
+			, ashes::PipelineStageFlag::eTransfer
 			, m_vertexBuffer->getBuffer().makeTransferDestination() );
-		m_commandBuffer->memoryBarrier( renderer::PipelineStageFlag::eVertexInput
-			, renderer::PipelineStageFlag::eTransfer
+		m_commandBuffer->memoryBarrier( ashes::PipelineStageFlag::eVertexInput
+			, ashes::PipelineStageFlag::eTransfer
 			, m_indexBuffer->getBuffer().makeTransferDestination() );
 		m_commandBuffer->end();
 	}

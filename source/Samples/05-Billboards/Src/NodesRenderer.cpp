@@ -2,12 +2,12 @@
 
 namespace vkapp
 {
-	NodesRenderer::NodesRenderer( renderer::Device const & device
+	NodesRenderer::NodesRenderer( ashes::Device const & device
 		, std::string const & fragmentShaderFile
-		, std::vector< renderer::Format > const & formats
+		, std::vector< ashes::Format > const & formats
 		, bool clearViews
 		, bool opaqueNodes
-		, renderer::UniformBuffer< common::SceneData > const & sceneUbo )
+		, ashes::UniformBuffer< common::SceneData > const & sceneUbo )
 		: common::NodesRenderer{ device
 			, fragmentShaderFile
 			, formats
@@ -17,13 +17,13 @@ namespace vkapp
 	{
 	}
 
-	void NodesRenderer::doFillBillboardDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )
+	void NodesRenderer::doFillBillboardDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
 	{
-		bindings.emplace_back( 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex );
+		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
 	}
 
-	void NodesRenderer::doFillBillboardDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
-		, renderer::DescriptorSet & descriptorSet )
+	void NodesRenderer::doFillBillboardDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout
+		, ashes::DescriptorSet & descriptorSet )
 	{
 		descriptorSet.createBinding( descriptorLayout.getBinding( 1u )
 			, m_sceneUbo

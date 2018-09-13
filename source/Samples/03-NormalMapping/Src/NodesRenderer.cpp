@@ -2,14 +2,14 @@
 
 namespace vkapp
 {
-	NodesRenderer::NodesRenderer( renderer::Device const & device
+	NodesRenderer::NodesRenderer( ashes::Device const & device
 		, std::string const & fragmentShaderFile
-		, std::vector< renderer::Format > const & formats
+		, std::vector< ashes::Format > const & formats
 		, bool clearViews
 		, bool opaqueNodes
-		, renderer::UniformBuffer< common::SceneData > const & sceneUbo
-		, renderer::UniformBuffer< common::ObjectData > const & objectUbo
-		, renderer::UniformBuffer< common::LightsData > const & lightsUbo )
+		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
+		, ashes::UniformBuffer< common::ObjectData > const & objectUbo
+		, ashes::UniformBuffer< common::LightsData > const & lightsUbo )
 		: common::NodesRenderer{ device
 			, fragmentShaderFile
 			, formats
@@ -21,15 +21,15 @@ namespace vkapp
 	{
 	}
 
-	void NodesRenderer::doFillObjectDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )
+	void NodesRenderer::doFillObjectDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
 	{
-		bindings.emplace_back( 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex );
-		bindings.emplace_back( 2u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex );
-		bindings.emplace_back( 3u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment );
+		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
+		bindings.emplace_back( 2u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
+		bindings.emplace_back( 3u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eFragment );
 	}
 
-	void NodesRenderer::doFillObjectDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
-		, renderer::DescriptorSet & descriptorSet )
+	void NodesRenderer::doFillObjectDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout
+		, ashes::DescriptorSet & descriptorSet )
 	{
 		descriptorSet.createBinding( descriptorLayout.getBinding( 1u )
 			, m_sceneUbo

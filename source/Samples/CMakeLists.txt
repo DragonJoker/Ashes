@@ -30,8 +30,8 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 
 	include_directories(
 		${CMAKE_SOURCE_DIR}/Utils/Src
-		${CMAKE_BINARY_DIR}/Renderer/Renderer/Src
-		${CMAKE_SOURCE_DIR}/Renderer/Renderer/Src
+		${CMAKE_BINARY_DIR}/Ashes/Ashes/Src
+		${CMAKE_SOURCE_DIR}/Ashes/Ashes/Src
 		${wxWidgets_INCLUDE_DIRS}
 		${GTK2_INCLUDE_DIRS}
 		${ASSIMP_INCLUDE_DIR}

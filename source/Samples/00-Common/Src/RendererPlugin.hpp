@@ -15,7 +15,7 @@ namespace common
 	class RendererPlugin
 	{
 	private:
-		using CreatorFunction = renderer::Renderer *( * )( renderer::Renderer::Configuration const & );
+		using CreatorFunction = ashes::Renderer *( * )( ashes::Renderer::Configuration const & );
 		using NamerFunction = char const *( * )();
 
 	public:
@@ -24,9 +24,9 @@ namespace common
 		RendererPlugin & operator=( RendererPlugin const & ) = delete;
 		RendererPlugin & operator=( RendererPlugin && ) = default;
 
-		RendererPlugin( renderer::DynamicLibrary && library
+		RendererPlugin( ashes::DynamicLibrary && library
 			, RendererFactory & factory );
-		renderer::RendererPtr create( renderer::Renderer::Configuration const & configuration );
+		ashes::RendererPtr create( ashes::Renderer::Configuration const & configuration );
 
 		std::string const & getShortName()
 		{
@@ -39,7 +39,7 @@ namespace common
 		}
 
 	private:
-		renderer::DynamicLibrary m_library;
+		ashes::DynamicLibrary m_library;
 		CreatorFunction m_creator;
 		std::string m_shortName;
 		std::string m_fullName;

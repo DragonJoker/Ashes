@@ -1,11 +1,11 @@
 #include "FileUtils.hpp"
 
-#include <RendererPrerequisites.hpp>
+#include <AshesPrerequisites.hpp>
 
 #include <cassert>
 #include <iostream>
 
-#if RENDERLIB_WIN32
+#if ASHES_WIN32
 
 #include <cstdio>
 #include <cstring>
@@ -28,7 +28,7 @@
 
 namespace common
 {
-#if RENDERLIB_WIN32
+#if ASHES_WIN32
 
 	static char constexpr PathSeparator = '\\';
 
@@ -178,7 +178,7 @@ namespace common
 		return path.substr( 0, path.find_last_of( PathSeparator ) );
 	}
 
-#if RENDERLIB_WIN32
+#if ASHES_WIN32
 
 	std::string getExecutableDirectory()
 	{

@@ -14,23 +14,23 @@
 
 namespace vkapp
 {
-	RenderTarget::RenderTarget( renderer::Device const & device
-		, renderer::Extent2D const & size
+	RenderTarget::RenderTarget( ashes::Device const & device
+		, ashes::Extent2D const & size
 		, common::Scene && scene
 		, common::ImagePtrArray && images )
 		: common::RenderTarget{ device, size, std::move( scene ), std::move( images ) }
-		, m_sceneUbo{ renderer::makeUniformBuffer< common::SceneData >( device
+		, m_sceneUbo{ ashes::makeUniformBuffer< common::SceneData >( device
 			, 1u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_objectUbo{ renderer::makeUniformBuffer< common::ObjectData >( device
+			, ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+		, m_objectUbo{ ashes::makeUniformBuffer< common::ObjectData >( device
 			, 1u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_lightsUbo{ renderer::makeUniformBuffer< common::LightsData >( device
+			, ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+		, m_lightsUbo{ ashes::makeUniformBuffer< common::LightsData >( device
 			, 1u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
+			, ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
 	{
 		doCreateGBuffer();
 		doInitialise();
@@ -53,18 +53,18 @@ namespace vkapp
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
-			, renderer::PipelineStageFlag::eVertexShader );
+			, ashes::PipelineStageFlag::eVertexShader );
 	}
 
-	void RenderTarget::doResize( renderer::Extent2D const & size )
+	void RenderTarget::doResize( ashes::Extent2D const & size )
 	{
 		doUpdateMatrixUbo( size );
 		doCreateGBuffer();
 	}
 
-	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( renderer::Device const & device
-		, renderer::StagingBuffer & stagingBuffer
-		, renderer::TextureViewCRefArray const & views
+	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( ashes::Device const & device
+		, ashes::StagingBuffer & stagingBuffer
+		, ashes::TextureViewCRefArray const & views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
@@ -83,9 +83,9 @@ namespace vkapp
 			, *m_lightsUbo );
 	}
 
-	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( renderer::Device const & device
-		, renderer::StagingBuffer & stagingBuffer
-		, renderer::TextureViewCRefArray const & views
+	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( ashes::Device const & device
+		, ashes::StagingBuffer & stagingBuffer
+		, ashes::TextureViewCRefArray const & views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
@@ -101,7 +101,7 @@ namespace vkapp
 			, textureNodes );
 	}
 
-	void RenderTarget::doUpdateMatrixUbo( renderer::Extent2D const & size )
+	void RenderTarget::doUpdateMatrixUbo( ashes::Extent2D const & size )
 	{
 #if 0
 		float halfWidth = static_cast< float >( size[0] ) * 0.5f;
@@ -135,7 +135,7 @@ namespace vkapp
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo
-			, renderer::PipelineStageFlag::eVertexShader );
+			, ashes::PipelineStageFlag::eVertexShader );
 	}
 
 	void RenderTarget::doInitialiseLights()
@@ -155,21 +155,21 @@ namespace vkapp
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_lightsUbo->getDatas()
 			, *m_lightsUbo
-			, renderer::PipelineStageFlag::eFragmentShader );
+			, ashes::PipelineStageFlag::eFragmentShader );
 	}
 
 	void RenderTarget::doCreateGBuffer()
 	{
-		static renderer::Format const formats[]
+		static ashes::Format const formats[]
 		{
-			renderer::Format::eR32_SFLOAT,
-			renderer::Format::eR32G32B32A32_SFLOAT,
-			renderer::Format::eR32G32B32A32_SFLOAT,
-			renderer::Format::eR32G32B32A32_SFLOAT,
-			renderer::Format::eR32G32B32A32_SFLOAT,
+			ashes::Format::eR32_SFLOAT,
+			ashes::Format::eR32G32B32A32_SFLOAT,
+			ashes::Format::eR32G32B32A32_SFLOAT,
+			ashes::Format::eR32G32B32A32_SFLOAT,
+			ashes::Format::eR32G32B32A32_SFLOAT,
 		};
 		size_t index = 0u;
-		renderer::Extent2D size
+		ashes::Extent2D size
 		{
 			getColourView().getTexture().getDimensions().width,
 			getColourView().getTexture().getDimensions().height,
@@ -180,17 +180,17 @@ namespace vkapp
 			texture.texture = m_device.createTexture(
 				{
 					0,
-					renderer::TextureType::e2D,
+					ashes::TextureType::e2D,
 					formats[index],
 					getColourView().getTexture().getDimensions(),
 					1u,
 					1u,
-					renderer::SampleCountFlag::e1,
-					renderer::ImageTiling::eOptimal,
-					renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled
+					ashes::SampleCountFlag::e1,
+					ashes::ImageTiling::eOptimal,
+					ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eSampled
 				}
-				, renderer::MemoryPropertyFlag::eDeviceLocal );
-			texture.view = texture.texture->createView( renderer::TextureViewType::e2D
+				, ashes::MemoryPropertyFlag::eDeviceLocal );
+			texture.view = texture.texture->createView( ashes::TextureViewType::e2D
 				, texture.texture->getFormat() );
 			++index;
 		}

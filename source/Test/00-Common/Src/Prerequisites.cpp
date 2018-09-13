@@ -20,12 +20,12 @@
 
 namespace common
 {
-	renderer::ConnectionPtr makeConnection( wxWindow * window
-		, renderer::Renderer const & renderer )
+	ashes::ConnectionPtr makeConnection( wxWindow * window
+		, ashes::Renderer const & renderer )
 	{
 #if defined( __WXMSW__ )
 
-		auto handle = renderer::WindowHandle{ std::make_unique< renderer::IMswWindowHandle >( wxGetInstance()
+		auto handle = ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( wxGetInstance()
 			, window->GetHandle() ) };
 		return renderer.createConnection( 0u
 			, std::move( handle ) );
@@ -54,7 +54,7 @@ namespace common
 		}
 
 		return renderer.createConnection( 0u
-			, renderer::WindowHandle{ std::make_unique< renderer::IXWindowHandle >( xwindow
+			, ashes::WindowHandle{ std::make_unique< ashes::IXWindowHandle >( xwindow
 				, xdisplay ) } );
 
 #endif

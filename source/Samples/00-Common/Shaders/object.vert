@@ -32,7 +32,7 @@ layout( location = 4 ) out vec3 vtx_worldPosition;
 
 void main()
 {
-	vec4 worldPosition = mtxModel * rendererScalePosition( vec4( position, 1.0 ) );
+	vec4 worldPosition = mtxModel * ashesScalePosition( vec4( position, 1.0 ) );
 	gl_Position = mtxProjection * mtxView * worldPosition;
 	mat3 mtxNormal = mat3( transpose( inverse( mtxModel ) ) );
 

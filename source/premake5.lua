@@ -8,7 +8,7 @@ newoption {
   description = "Enables tests build"
 }
 
-workspace( "RendererLib" )
+workspace( "Ashes" )
 
 sourceDir = os.getcwd()
 rootDir = path.getdirectory( sourceDir )
@@ -59,8 +59,8 @@ end
 include( "libs_config.lua" )
 group( "Core" )
 include( "Utils/premake5.lua" )
-group( "Renderer" )
-include( "Renderer/premake5.lua" )
+group( "Ashes" )
+include( "Ashes/premake5.lua" )
 
 if _OPTIONS["build-tests"] then
 	group( "Test" )

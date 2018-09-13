@@ -25,7 +25,7 @@ namespace common
 	private:
 		struct MouseState
 		{
-			renderer::Offset2D position;
+			ashes::Offset2D position;
 			bool left{ false };
 			bool right{ false };
 		};
@@ -36,13 +36,13 @@ namespace common
 			, std::string const & appName
 			, std::string const & appDesc );
 		virtual ~RenderPanel();
-		void initialise( renderer::Renderer const & renderer );
+		void initialise( ashes::Renderer const & renderer );
 		void update();
 		void draw();
 
 	private:
-		virtual void doInitialise( renderer::Device const & device
-			, renderer::Extent2D const & size ) = 0;
+		virtual void doInitialise( ashes::Device const & device
+			, ashes::Extent2D const & size ) = 0;
 		virtual void doUpdateOverlays( Gui const & gui ) = 0;
 
 		virtual void doUpdate()
@@ -50,7 +50,7 @@ namespace common
 		}
 
 		void doCleanup();
-		void doCreateDevice( renderer::Renderer const & renderer );
+		void doCreateDevice( ashes::Renderer const & renderer );
 		void doCreateSwapChain();
 		void doCreateDescriptorSet();
 		void doCreateRenderPass();
@@ -83,22 +83,22 @@ namespace common
 		std::vector< TexturedVertexData > m_vertexData;
 		std::unique_ptr< Gui > m_gui;
 
-		renderer::DevicePtr m_device;
-		renderer::SwapChainPtr m_swapChain;
-		renderer::StagingBufferPtr m_stagingBuffer;
+		ashes::DevicePtr m_device;
+		ashes::SwapChainPtr m_swapChain;
+		ashes::StagingBufferPtr m_stagingBuffer;
 
-		renderer::SamplerPtr m_sampler;
-		renderer::RenderPassPtr m_renderPass;
-		renderer::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
-		renderer::VertexLayoutPtr m_vertexLayout;
-		renderer::DescriptorSetLayoutPtr m_descriptorLayout;
-		renderer::DescriptorSetPoolPtr m_descriptorPool;
-		renderer::DescriptorSetPtr m_descriptorSet;
-		renderer::PipelineLayoutPtr m_pipelineLayout;
-		renderer::PipelinePtr m_pipeline;
+		ashes::SamplerPtr m_sampler;
+		ashes::RenderPassPtr m_renderPass;
+		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
+		ashes::VertexLayoutPtr m_vertexLayout;
+		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
+		ashes::DescriptorSetPoolPtr m_descriptorPool;
+		ashes::DescriptorSetPtr m_descriptorSet;
+		ashes::PipelineLayoutPtr m_pipelineLayout;
+		ashes::PipelinePtr m_pipeline;
 
-		std::vector< renderer::FrameBufferPtr > m_frameBuffers;
-		std::vector< renderer::CommandBufferPtr > m_commandBuffers;
-		renderer::SignalConnection< renderer::SwapChain::OnReset > m_swapChainReset;
+		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
+		std::vector< ashes::CommandBufferPtr > m_commandBuffers;
+		ashes::SignalConnection< ashes::SwapChain::OnReset > m_swapChainReset;
 	};
 }

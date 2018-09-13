@@ -13,6 +13,6 @@ VertexOutput mainVx( in VertexInput input )
 {
 	VertexOutput output;
 	output.texcoord = ( input.position.xy + 1.0 ) / 2.0;
-	output.position = rendererScalePosition( float4( input.position.xy, 0.0, 1.0 ) );
+	output.position = ashesScalePosition( float4( input.position.xy, 0.0, 1.0 ) );
 	return output;
 }

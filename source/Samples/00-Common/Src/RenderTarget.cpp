@@ -30,12 +30,12 @@ namespace common
 {
 	namespace
 	{
-		static renderer::Format const DepthFormat = renderer::Format::eD24_UNORM_S8_UINT;
-		static renderer::Format const ColourFormat = renderer::Format::eR8G8B8A8_UNORM;
+		static ashes::Format const DepthFormat = ashes::Format::eD24_UNORM_S8_UINT;
+		static ashes::Format const ColourFormat = ashes::Format::eR8G8B8A8_UNORM;
 	}
 
-	RenderTarget::RenderTarget( renderer::Device const & device
-		, renderer::Extent2D const & size
+	RenderTarget::RenderTarget( ashes::Device const & device
+		, ashes::Extent2D const & size
 		, Scene && scene
 		, ImagePtrArray && images )
 		: m_device{ device }
@@ -65,7 +65,7 @@ namespace common
 		doCleanup();
 	}
 
-	void RenderTarget::resize( renderer::Extent2D const & size )
+	void RenderTarget::resize( ashes::Extent2D const & size )
 	{
 		if ( size != m_size )
 		{
@@ -125,7 +125,7 @@ namespace common
 	void RenderTarget::doCreateStagingBuffer()
 	{
 		m_updateCommandBuffer = m_device.getGraphicsCommandPool().createCommandBuffer();
-		m_stagingBuffer = std::make_unique< renderer::StagingBuffer >( m_device
+		m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( m_device
 			, 0u
 			, 200u * 1024u * 1024u );
 	}
@@ -137,25 +137,25 @@ namespace common
 			common::TextureNodePtr textureNode = std::make_shared< common::TextureNode >();
 			textureNode->image = image;
 			auto stagingTexture = m_device.createStagingTexture( image->format
-				, renderer::Extent3D{ image->size.width, image->size.height, 1u } );
+				, ashes::Extent3D{ image->size.width, image->size.height, 1u } );
 			textureNode->texture = m_device.createTexture(
 				{
 					0u,
-					renderer::TextureType::e2D,
+					ashes::TextureType::e2D,
 					image->format,
-					renderer::Extent3D{ image->size.width, image->size.height, 1u },
+					ashes::Extent3D{ image->size.width, image->size.height, 1u },
 					4u,
 					1u,
-					renderer::SampleCountFlag::e1,
-					renderer::ImageTiling::eOptimal,
-					renderer::ImageUsageFlag::eTransferSrc | renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
+					ashes::SampleCountFlag::e1,
+					ashes::ImageTiling::eOptimal,
+					ashes::ImageUsageFlag::eTransferSrc | ashes::ImageUsageFlag::eTransferDst | ashes::ImageUsageFlag::eSampled
 				}
-				, renderer::MemoryPropertyFlag::eDeviceLocal );
-			textureNode->view = textureNode->texture->createView( renderer::TextureViewType( textureNode->texture->getType() )
+				, ashes::MemoryPropertyFlag::eDeviceLocal );
+			textureNode->view = textureNode->texture->createView( ashes::TextureViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat()
 				, 0u
 				, 4u );
-			auto view = textureNode->texture->createView( renderer::TextureViewType( textureNode->texture->getType() )
+			auto view = textureNode->texture->createView( ashes::TextureViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat() );
 			stagingTexture->uploadTextureData( *m_updateCommandBuffer
 				, image->format
@@ -177,34 +177,34 @@ namespace common
 		m_colour = m_device.createTexture(
 			{
 				0,
-				renderer::TextureType::e2D,
+				ashes::TextureType::e2D,
 				ColourFormat,
-				renderer::Extent3D{ m_size.width, m_size.height, 1u },
+				ashes::Extent3D{ m_size.width, m_size.height, 1u },
 				1u,
 				1u,
-				renderer::SampleCountFlag::e1,
-				renderer::ImageTiling::eOptimal,
-				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eSampled
 			}
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_colourView = m_colour->createView( renderer::TextureViewType::e2D
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_colourView = m_colour->createView( ashes::TextureViewType::e2D
 			, m_colour->getFormat() );
 
 		m_depthView.reset();
 		m_depth = m_device.createTexture(
 			{
 				0,
-				renderer::TextureType::e2D,
+				ashes::TextureType::e2D,
 				DepthFormat,
-				renderer::Extent3D{ m_size.width, m_size.height, 1u },
+				ashes::Extent3D{ m_size.width, m_size.height, 1u },
 				1u,
 				1u,
-				renderer::SampleCountFlag::e1,
-				renderer::ImageTiling::eOptimal,
-				renderer::ImageUsageFlag::eDepthStencilAttachment
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				ashes::ImageUsageFlag::eDepthStencilAttachment
 			}
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_depthView = m_depth->createView( renderer::TextureViewType::e2D
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_depthView = m_depth->createView( ashes::TextureViewType::e2D
 			, m_depth->getFormat() );
 	}
 }

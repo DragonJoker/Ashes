@@ -36,10 +36,10 @@ namespace vkapp
 {
 	namespace
 	{
-		renderer::TextureViewCRefArray doGetViews( GeometryPassResult const & gbuffer
-			, renderer::TextureViewCRefArray const & views )
+		ashes::TextureViewCRefArray doGetViews( GeometryPassResult const & gbuffer
+			, ashes::TextureViewCRefArray const & views )
 		{
-			renderer::TextureViewCRefArray result
+			ashes::TextureViewCRefArray result
 			{
 				views[0].get()
 			};
@@ -55,12 +55,12 @@ namespace vkapp
 
 	OpaqueRendering::OpaqueRendering( std::unique_ptr< GeometryPass > && renderer
 		, common::Scene const & scene
-		, renderer::StagingBuffer & stagingBuffer
+		, ashes::StagingBuffer & stagingBuffer
 		, GeometryPassResult const & gbuffer
-		, renderer::TextureViewCRefArray const & views
+		, ashes::TextureViewCRefArray const & views
 		, common::TextureNodePtrArray const & textureNodes
-		, renderer::UniformBuffer< common::SceneData > const & sceneUbo
-		, renderer::UniformBuffer< common::LightsData > const & lightsUbo )
+		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
+		, ashes::UniformBuffer< common::LightsData > const & lightsUbo )
 		: common::OpaqueRendering{ std::move( renderer )
 			, scene
 			, stagingBuffer

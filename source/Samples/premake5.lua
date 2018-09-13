@@ -16,15 +16,15 @@ for i, folder in ipairs( folders ) do
 			targetdir( path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", staticLibDir ) )
 			includedirs{
 				path.join( sourceDir, "Utils", "Src" ),
-				path.join( sourceDir, "Renderer", "Renderer", "Src" ),
-				path.join( binaryDir, "Renderer", "Renderer", "Src" ),
+				path.join( sourceDir, "Ashes", "Ashes", "Src" ),
+				path.join( binaryDir, "Ashes", "Ashes", "Src" ),
 				path.join( currentBinaryDir, "Src" ),
 				path.join( currentSourceDir, "Src" ),
 				path.join( sourceDir, "external", "imgui" )
 			}
 			links{
 				"Utils",
-				"Renderer"
+				"Ashes"
 			}
 			postbuildcommands {
 				"{COPY} " .. path.join( sourceDir, "Samples", "Assets" ) .. " " .. path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", assetsDir, "Assets" )
@@ -50,8 +50,8 @@ for i, folder in ipairs( folders ) do
 			targetdir( path.join( outputDir, "%{cfg.architecture}", "%{cfg.buildcfg}", executableDir ) )
 			includedirs{
 				path.join( sourceDir, "Utils", "Src" ),
-				path.join( sourceDir, "Renderer", "Renderer", "Src" ),
-				path.join( binaryDir, "Renderer", "Renderer", "Src" ),
+				path.join( sourceDir, "Ashes", "Ashes", "Src" ),
+				path.join( binaryDir, "Ashes", "Ashes", "Src" ),
 				path.join( sourceDir, "Samples", "00-Common", "Src" ),
 				path.join( currentBinaryDir, "Src" ),
 				path.join( currentSourceDir, "Src" ),
@@ -59,7 +59,7 @@ for i, folder in ipairs( folders ) do
 			}
 			links{
 				"Utils",
-				"Renderer",
+				"Ashes",
 				"Sample-00-Common",
 				binaryLinks
 			}

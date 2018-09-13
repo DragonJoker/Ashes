@@ -35,7 +35,7 @@ add_executable( ${PROJECT_NAME} WIN32
 target_link_libraries( ${PROJECT_NAME}
 	${VkLib_LIBRARIES}
 	Utils
-	Renderer
+	Ashes
 	Sample-00-Common
 	${wxWidgets_LIBRARIES}
 	${GTK2_LIBRARIES}

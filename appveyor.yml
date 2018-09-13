@@ -15,7 +15,7 @@ configuration:
   - Debug
 
 clone_folder:
-  C:\projects\RendererLib
+  C:\projects\Ashes
 
 branches:
   only:
@@ -31,24 +31,24 @@ install:
   - cmd: if "%platform%"=="x64"   set PLATFORM_NAME=x64
   - cmd: if "%platform%"=="Win32" set PCH_USAGE=ON
   - cmd: if "%platform%"=="x64"   set PCH_USAGE=ON
-  - cmd: cd C:\projects\RendererLib\dependencies
+  - cmd: cd C:\projects\Ashes\dependencies
   - cmd: 7z x glslang.7z
   - cmd: 7z x glslang-lib-%PLATFORM_NAME%.7z
   - cmd: cd ..
   - cmd: md build
   - cmd: cd build
-  - cmake -G "%CMAKE_GENERATOR_NAME%" ../source -DPROJECTS_USE_PRECOMPILED_HEADERS=%PCH_USAGE% -DRENDERER_BUILD_TEMPLATES=OFF -DRENDERER_BUILD_TESTS=OFF -DRENDERER_BUILD_SAMPLES=OFF -DCMAKE_INSTALL_PREFIX=C:\projects\RendererLib\package\RendererLib
+  - cmake -G "%CMAKE_GENERATOR_NAME%" ../source -DPROJECTS_USE_PRECOMPILED_HEADERS=%PCH_USAGE% -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_SAMPLES=OFF -DCMAKE_INSTALL_PREFIX=C:\projects\Ashes\package\Ashes
 
 build:
-  project: build/RendererLib.sln
+  project: build/Ashes.sln
   parallel: true
 
 after_build:
-  - cmd: cd C:\projects\RendererLib\build
+  - cmd: cd C:\projects\Ashes\build
   - cmake --build . --target install --config %CONFIGURATION%
   - cmd: cd ..
-  - cmd: 7z a RendererLib-%PLATFORM_NAME%.zip .\package\RendererLib\*
+  - cmd: 7z a Ashes-%PLATFORM_NAME%.zip .\package\Ashes\*
 
 artifacts:
-  - path: RendererLib-%PLATFORM_NAME%.zip
-    name: RendererLib binaries %PLATFORM_NAME%
+  - path: Ashes-%PLATFORM_NAME%.zip
+    name: Ashes binaries %PLATFORM_NAME%
