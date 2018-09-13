@@ -71,6 +71,12 @@ namespace d3d11_renderer
 			std::string name;
 			renderer::Result result;
 		};
+#if !defined( DXGI_ERROR_INVALID_CALL )
+#	define DXGI_ERROR_INVALID_CALL D3DERR_INVALIDCALL
+#endif
+#if !defined( DXGI_ERROR_WAS_STILL_DRAWING )
+#	define DXGI_ERROR_WAS_STILL_DRAWING D3DERR_WASSTILLDRAWING
+#endif
 		static std::map< HRESULT, Error > Errors
 		{
 			{ D3D11_ERROR_FILE_NOT_FOUND, { "The file was not found.", renderer::Result::eErrorRenderer } },
@@ -85,7 +91,9 @@ namespace d3d11_renderer
 			{ DXGI_ERROR_INVALID_CALL, { "The method call is invalid.For example, a method's parameter may not be a valid pointer.", renderer::Result::eErrorRenderer } },
 			{ DXGI_ERROR_ACCESS_DENIED, { "You tried to use a resource to which you did not have the required access privileges.This error is most typically caused when you write to a shared resource with read - only access.", renderer::Result::eErrorRenderer } },
 			{ DXGI_ERROR_ACCESS_LOST, { "The desktop duplication interface is invalid.The desktop duplication interface typically becomes invalid when a different type of image is displayed on the desktop.", renderer::Result::eErrorRenderer } },
+#if defined( DXGI_ERROR_ALREADY_EXISTS )
 			{ DXGI_ERROR_ALREADY_EXISTS, { "The desired element already exists.This is returned by DXGIDeclareAdapterRemovalSupport if it is not the first time that the function is called.", renderer::Result::eErrorRenderer } },
+#endif
 			{ DXGI_ERROR_CANNOT_PROTECT_CONTENT, { "DXGI can't provide content protection on the swap chain. This error is typically caused by an older driver, or when you use a swap chain that is incompatible with content protection.", renderer::Result::eErrorRenderer } },
 			{ DXGI_ERROR_DEVICE_HUNG, { "The application's device failed due to badly formed commands sent by the application. This is an design-time issue that should be investigated and fixed.", renderer::Result::eErrorRenderer } },
 			{ DXGI_ERROR_DEVICE_REMOVED, { "The video card has been physically removed from the system, or a driver upgrade for the video card has occurred.The application should destroy and recreate the device.For help debugging the problem, call ID3D10Device::GetDeviceRemovedReason.", renderer::Result::eErrorDeviceLost } },

@@ -15,8 +15,7 @@ namespace d3d11_renderer
 	{
 	public:
 		Queue( Device const & device
-			, uint32_t familyIndex
-			, D3D11_CONTEXT_TYPE queueType );
+			, uint32_t familyIndex );
 		~Queue();
 		/**
 		*\copydoc		renderer::Queue::submit
@@ -48,8 +47,7 @@ namespace d3d11_renderer
 
 	private:
 		Device const & m_device;
-		D3D11_CONTEXT_TYPE m_queueType;
 		uint32_t m_familyIndex{ 0u };
-		HANDLE m_idleEvent;
+		ID3D11Query * m_waitIdleQuery{ nullptr };
 	};
 }

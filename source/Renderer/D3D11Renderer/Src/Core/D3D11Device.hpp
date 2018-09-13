@@ -183,25 +183,6 @@ namespace d3d11_renderer
 			return m_device2;
 		}
 
-		inline ID3D11Device3 * getDevice3()const
-		{
-			return m_device3;
-		}
-
-		inline ID3D11Device4 * getDevice4()const
-		{
-			return m_device4;
-		}
-
-#if Renderer_HasDevice5
-
-		inline ID3D11Device5 * getDevice5()const
-		{
-			return m_device5;
-		}
-
-#endif
-
 		inline renderer::BufferBase const & getEmptyIndexedVaoIdx()const
 		{
 			return m_dummyIndexed->getBuffer();
@@ -231,14 +212,9 @@ namespace d3d11_renderer
 		ID3D11Device * m_device;
 		ID3D11Device1 * m_device1;
 		ID3D11Device2 * m_device2;
-		ID3D11Device3 * m_device3;
-		ID3D11Device4 * m_device4;
-#if Renderer_HasDevice5
-		ID3D11Device5 * m_device5;
-#endif
 		ID3D11DeviceContext * m_deviceContext;
+		ID3D11Query * m_waitIdleQuery;
 		D3D_FEATURE_LEVEL m_featureLevel;
-		HANDLE m_idleEvent;
 #if !defined( NDEBUG )
 		ID3D11Debug * m_debug;
 #endif

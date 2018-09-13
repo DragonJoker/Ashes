@@ -20,18 +20,5 @@ namespace d3d11_renderer
 
 		renderer::WaitResult wait( uint64_t timeout )const override;
 		void reset()const override;
-
-#if Renderer_HasFence
-
-		inline ID3D11Fence * getFence()const
-		{
-			return m_fence;
-		}
-
-	private:
-		ID3D11DeviceContext4 * m_context{ nullptr };
-		ID3D11Fence * m_fence{ nullptr };
-
-#endif
 	};
 }

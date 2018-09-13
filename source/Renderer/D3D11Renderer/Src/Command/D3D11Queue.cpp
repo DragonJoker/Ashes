@@ -14,19 +14,19 @@ See LICENSE file in root folder.
 namespace d3d11_renderer
 {
 	Queue::Queue( Device const & device
-		, uint32_t familyIndex
-		, D3D11_CONTEXT_TYPE queueType )
+		, uint32_t familyIndex )
 		: renderer::Queue{ device }
 		, m_device{ device }
 		, m_familyIndex{ familyIndex }
-		, m_queueType{ queueType }
-		, m_idleEvent{ ::CreateEvent( nullptr, TRUE, FALSE, nullptr ) }
 	{
+		D3D11_QUERY_DESC desc{};
+		desc.Query = D3D11_QUERY_EVENT;
+		m_device.getDevice()->CreateQuery( &desc, &m_waitIdleQuery );
 	}
 	
 	Queue::~Queue()
 	{
-		::CloseHandle( m_idleEvent );
+		safeRelease( m_waitIdleQuery );
 	}
 
 	void Queue::submit( renderer::CommandBufferCRefArray const & commandBuffers
@@ -43,15 +43,6 @@ namespace d3d11_renderer
 			dxCommandBuffer.execute( context );
 			context.uavs.clear();
 		}
-
-#if Renderer_HasFence
-
-		if ( fence )
-		{
-			context.context4->Signal( static_cast< Fence const & >( *fence ).getFence(), 1u );
-		}
-
-#endif
 	}
 
 	void Queue::present( renderer::SwapChainCRefArray const & swapChains
@@ -65,10 +56,21 @@ namespace d3d11_renderer
 
 	void Queue::waitIdle()const
 	{
-		ID3D11DeviceContext3 * context;
-		m_device.getDevice3()->GetImmediateContext3( &context );
-		context->Flush1( m_queueType, m_idleEvent );
-		::WaitForSingleObject( m_idleEvent, INFINITE );
+		ID3D11DeviceContext * context;
+		m_device.getDevice()->GetImmediateContext( &context );
+		context->End( m_waitIdleQuery );
+		context->Flush();
+		BOOL data{ FALSE };
+
+		while ( ( S_FALSE == context->GetData( m_waitIdleQuery
+				, &data
+				, UINT( sizeof( data ) )
+				, 0u ) )
+			&& !data )
+		{
+			std::this_thread::sleep_for( std::chrono::microseconds{ 1ull } );
+		}
+
 		safeRelease( context );
 	}
 }

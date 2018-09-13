@@ -42,28 +42,24 @@ namespace d3d11_renderer
 		, m_renderer{ renderer }
 		, m_connection{ static_cast< Connection * >( connection.release() ) }
 		, m_gpu{ static_cast< PhysicalDevice const & >( renderer::Device::getPhysicalDevice() ) }
-		, m_idleEvent{ ::CreateEvent( nullptr, TRUE, FALSE, nullptr ) }
 	{
 		doCreateD3D11Device();
 		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
 
 		m_presentQueue = std::make_unique< Queue >( *this
-			, m_connection->getPresentQueueFamilyIndex()
-			, D3D11_CONTEXT_TYPE_ALL );
+			, m_connection->getPresentQueueFamilyIndex() );
 		m_presentCommandPool = std::make_unique< CommandPool >( *this
 			, m_presentQueue->getFamilyIndex()
 			, renderer::CommandPoolCreateFlag::eResetCommandBuffer | renderer::CommandPoolCreateFlag::eTransient );
 
 		m_graphicsQueue = std::make_unique< Queue >( *this
-			, m_connection->getPresentQueueFamilyIndex()
-			, D3D11_CONTEXT_TYPE_3D );
+			, m_connection->getPresentQueueFamilyIndex() );
 		m_graphicsCommandPool = std::make_unique< CommandPool >( *this
 			, m_graphicsQueue->getFamilyIndex()
 			, renderer::CommandPoolCreateFlag::eResetCommandBuffer | renderer::CommandPoolCreateFlag::eTransient );
 
 		m_computeQueue = std::make_unique< Queue >( *this
-			, m_connection->getComputeQueueFamilyIndex()
-			, D3D11_CONTEXT_TYPE_COMPUTE );
+			, m_connection->getComputeQueueFamilyIndex() );
 		m_computeCommandPool = std::make_unique< CommandPool >( *this
 			, m_computeQueue->getFamilyIndex()
 			, renderer::CommandPoolCreateFlag::eResetCommandBuffer | renderer::CommandPoolCreateFlag::eTransient );
@@ -96,7 +92,10 @@ namespace d3d11_renderer
 
 		m_deviceContext->ClearState();
 		m_deviceContext->Flush();
+		safeRelease( m_waitIdleQuery );
 		safeRelease( m_deviceContext );
+		safeRelease( m_device2 );
+		safeRelease( m_device1 );
 		safeRelease( m_device );
 
 #if !defined( NDEBUG )
@@ -264,11 +263,18 @@ namespace d3d11_renderer
 
 	void Device::waitIdle()const
 	{
-		ID3D11DeviceContext3 * context;
-		m_device3->GetImmediateContext3( &context );
-		context->Flush1( D3D11_CONTEXT_TYPE_ALL, m_idleEvent );
-		::WaitForSingleObject( m_idleEvent, INFINITE );
-		safeRelease( context );
+		m_deviceContext->End( m_waitIdleQuery );
+		m_deviceContext->Flush();
+		BOOL data{ FALSE };
+
+		while ( ( S_FALSE == m_deviceContext->GetData( m_waitIdleQuery
+				, &data
+				, UINT( sizeof( data ) )
+				, 0u ) )
+			&& !data )
+		{
+			std::this_thread::sleep_for( std::chrono::microseconds{ 1ull } );
+		}
 	}
 
 	void Device::doCreateD3D11Device()
@@ -382,24 +388,9 @@ namespace d3d11_renderer
 				dxDebugName( m_device2, Device2 );
 			}
 
-			if ( S_OK == m_device->QueryInterface( __uuidof( ID3D11Device3 ), reinterpret_cast< void ** >( &m_device3 ) ) )
-			{
-				dxDebugName( m_device3, Device3 );
-			}
-
-			if ( S_OK == m_device->QueryInterface( __uuidof( ID3D11Device4 ), reinterpret_cast< void ** >( &m_device4 ) ) )
-			{
-				dxDebugName( m_device4, Device4 );
-			}
-			
-#if Renderer_HasDevice5
-
-			if ( S_OK == m_device->QueryInterface( __uuidof( ID3D11Device5 ), reinterpret_cast< void ** >( &m_device5 ) ) )
-			{
-				dxDebugName( m_device5, Device5 );
-			}
-
-#endif
+			D3D11_QUERY_DESC desc{};
+			desc.Query = D3D11_QUERY_EVENT;
+			m_device->CreateQuery( &desc, &m_waitIdleQuery );
 		}
 	}
 }
