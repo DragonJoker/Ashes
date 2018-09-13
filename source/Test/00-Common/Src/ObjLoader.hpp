@@ -43,7 +43,7 @@ namespace common
 	*/
 	void loadObjFile( std::string const & fileContent
 		, std::vector< TexturedVertexData > & vboData
-		, renderer::UInt16Array & iboData );
+		, ashes::UInt16Array & iboData );
 }
 
 #endif

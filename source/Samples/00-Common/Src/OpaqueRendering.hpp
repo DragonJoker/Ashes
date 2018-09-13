@@ -9,8 +9,8 @@ namespace common
 	public:
 		OpaqueRendering( NodesRendererPtr && renderer
 			, Scene const & scene
-			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureViewCRefArray const & views
+			, ashes::StagingBuffer & stagingBuffer
+			, ashes::TextureViewCRefArray const & views
 			, common::TextureNodePtrArray const & textureNodes );
 		virtual ~OpaqueRendering() = default;
 		virtual void update( RenderTarget const & target );

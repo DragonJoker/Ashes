@@ -10,31 +10,31 @@ namespace vkapp
 		: public common::RenderTarget
 	{
 	public:
-		RenderTarget( renderer::Device const & device
-			, renderer::Extent2D const & size
+		RenderTarget( ashes::Device const & device
+			, ashes::Extent2D const & size
 			, common::Scene && scene
 			, common::ImagePtrArray && images );
 
 	private:
 		void doUpdate( std::chrono::microseconds const & duration )override;
-		virtual void doResize( renderer::Extent2D const & size )override;
-		common::OpaqueRenderingPtr doCreateOpaqueRendering( renderer::Device const & device
-			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureViewCRefArray const & views
+		virtual void doResize( ashes::Extent2D const & size )override;
+		common::OpaqueRenderingPtr doCreateOpaqueRendering( ashes::Device const & device
+			, ashes::StagingBuffer & stagingBuffer
+			, ashes::TextureViewCRefArray const & views
 			, common::Scene const & scene
 			, common::TextureNodePtrArray const & textureNodes )override;
-		common::TransparentRenderingPtr doCreateTransparentRendering( renderer::Device const & device
-			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureViewCRefArray const & views
+		common::TransparentRenderingPtr doCreateTransparentRendering( ashes::Device const & device
+			, ashes::StagingBuffer & stagingBuffer
+			, ashes::TextureViewCRefArray const & views
 			, common::Scene const & scene
 			, common::TextureNodePtrArray const & textureNodes )override;
-		void doUpdateMatrixUbo( renderer::Extent2D const & size );
+		void doUpdateMatrixUbo( ashes::Extent2D const & size );
 		void doInitialiseLights();
 
 	private:
-		renderer::UniformBufferPtr< common::SceneData > m_sceneUbo;
-		renderer::UniformBufferPtr< common::ObjectData > m_objectUbo;
-		renderer::UniformBufferPtr< common::LightsData > m_lightsUbo;
+		ashes::UniformBufferPtr< common::SceneData > m_sceneUbo;
+		ashes::UniformBufferPtr< common::ObjectData > m_objectUbo;
+		ashes::UniformBufferPtr< common::LightsData > m_lightsUbo;
 		utils::Mat4 m_rotate;
 	};
 }

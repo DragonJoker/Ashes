@@ -80,7 +80,7 @@
 #endif
 
 
-#if RENDERLIB_WIN32
+#if ASHES_WIN32
 
 #include <cstdio>
 #include <cstring>

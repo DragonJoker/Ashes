@@ -6,7 +6,7 @@
 
 namespace common
 {
-	RendererPlugin::RendererPlugin( renderer::DynamicLibrary && library
+	RendererPlugin::RendererPlugin( ashes::DynamicLibrary && library
 		, RendererFactory & factory )
 		: m_library{ std::move( library ) }
 		, m_creator{ nullptr }
@@ -33,14 +33,14 @@ namespace common
 		m_shortName = shortNamer();
 		m_fullName = fullNamer();
 		auto creator = m_creator;
-		factory.registerType( m_shortName, [creator]( renderer::Renderer::Configuration const & configuration )
+		factory.registerType( m_shortName, [creator]( ashes::Renderer::Configuration const & configuration )
 			{
-				return renderer::RendererPtr{ creator( configuration ) };
+				return ashes::RendererPtr{ creator( configuration ) };
 			} );
 	}
 
-	renderer::RendererPtr RendererPlugin::create( renderer::Renderer::Configuration const & configuration )
+	ashes::RendererPtr RendererPlugin::create( ashes::Renderer::Configuration const & configuration )
 	{
-		return renderer::RendererPtr{ m_creator( configuration ) };
+		return ashes::RendererPtr{ m_creator( configuration ) };
 	}
 }

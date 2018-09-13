@@ -10,21 +10,21 @@ namespace vkapp
 		: public common::NodesRenderer
 	{
 	public:
-		GeometryPass( renderer::Device const & device
+		GeometryPass( ashes::Device const & device
 			, std::string const & fragmentShaderFile
 			, GeometryPassResult const & gbuffer
-			, renderer::Format depthFormat
-			, renderer::UniformBuffer< common::SceneData > const & sceneUbo
-			, renderer::UniformBuffer< common::ObjectData > const & objectUbo );
+			, ashes::Format depthFormat
+			, ashes::UniformBuffer< common::SceneData > const & sceneUbo
+			, ashes::UniformBuffer< common::ObjectData > const & objectUbo );
 		void update( common::RenderTarget const & target )override;
 
 	private:
-		void doFillObjectDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )override;
-		void doFillObjectDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
-			, renderer::DescriptorSet & descriptorSet )override;
+		void doFillObjectDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )override;
+		void doFillObjectDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout
+			, ashes::DescriptorSet & descriptorSet )override;
 
 	private:
-		renderer::UniformBuffer< common::SceneData > const & m_sceneUbo;
-		renderer::UniformBuffer< common::ObjectData > const & m_objectUbo;
+		ashes::UniformBuffer< common::SceneData > const & m_sceneUbo;
+		ashes::UniformBuffer< common::ObjectData > const & m_objectUbo;
 	};
 }

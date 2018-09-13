@@ -10,5 +10,5 @@ out gl_PerVertex
 void  main()
 {
     vtx_texture = texcoord;
-    gl_Position = rendererScalePosition( vec4( position.xy, 0.0, 1.0 ) );
+    gl_Position = ashesScalePosition( vec4( position.xy, 0.0, 1.0 ) );
 }

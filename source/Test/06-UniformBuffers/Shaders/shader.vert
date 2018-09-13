@@ -15,6 +15,6 @@ layout( location = 0 ) out vec2 vtx_texcoord;
 
 void main()
 {
-	gl_Position = mtxProjection * rendererScalePosition( position );
+	gl_Position = mtxProjection * ashesScalePosition( position );
 	vtx_texcoord = texcoord;
 }

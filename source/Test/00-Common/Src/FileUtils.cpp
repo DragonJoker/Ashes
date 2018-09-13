@@ -6,7 +6,7 @@
 #include <cassert>
 #include <regex>
 
-#if RENDERLIB_WIN32
+#if ASHES_WIN32
 
 #include <cstdio>
 #include <cstring>
@@ -30,7 +30,7 @@
 
 namespace common
 {
-#if RENDERLIB_WIN32
+#if ASHES_WIN32
 
 	static char constexpr PathSeparator = '\\';
 
@@ -191,7 +191,7 @@ namespace common
 
 		uint8_t * data = image.GetData();
 		ImageData result;
-		result.format = renderer::Format::eR8G8B8A8_UNORM;
+		result.format = ashes::Format::eR8G8B8A8_UNORM;
 		result.size = { uint32_t( image.GetSize().x ), uint32_t( image.GetSize().y ), 1u };
 		uint32_t size = image.GetSize().x * image.GetSize().y;
 		result.data.resize( size * 4 );
@@ -243,7 +243,7 @@ namespace common
 		return result;
 	}
 
-	std::string parseShaderFile( renderer::Device const & device
+	std::string parseShaderFile( ashes::Device const & device
 		, std::string const & path )
 	{
 		auto content = dumpTextFile( path );
@@ -288,7 +288,7 @@ namespace common
 		return content;
 	}
 
-	renderer::ByteArray dumpBinaryFile( std::string const & path )
+	ashes::ByteArray dumpBinaryFile( std::string const & path )
 	{
 		std::ifstream file( path, std::ios::binary );
 
@@ -301,14 +301,14 @@ namespace common
 		file.seekg( 0, std::ios::end );
 		auto end = file.tellg();
 
-		renderer::ByteArray result( static_cast< size_t >( end - begin ) );
+		ashes::ByteArray result( static_cast< size_t >( end - begin ) );
 		file.seekg( 0, std::ios::beg );
 		file.read( reinterpret_cast< char * >( result.data() ), end - begin );
 
 		return result;
 	}
 
-	renderer::UInt32Array dumpSpvFile( std::string const & path )
+	ashes::UInt32Array dumpSpvFile( std::string const & path )
 	{
 		std::ifstream file( path, std::ios::binary );
 
@@ -321,7 +321,7 @@ namespace common
 		file.seekg( 0, std::ios::end );
 		auto end = file.tellg();
 
-		renderer::UInt32Array result( static_cast< size_t >( end - begin ) / sizeof( uint32_t ) );
+		ashes::UInt32Array result( static_cast< size_t >( end - begin ) / sizeof( uint32_t ) );
 		file.seekg( 0, std::ios::beg );
 		file.read( reinterpret_cast< char * >( result.data() ), end - begin );
 
@@ -333,7 +333,7 @@ namespace common
 		return path.substr( 0, path.find_last_of( PathSeparator ) );
 	}
 
-#if RENDERLIB_WIN32
+#if ASHES_WIN32
 
 	std::string getExecutableDirectory()
 	{

@@ -10,6 +10,6 @@ layout( location = 0 ) out vec2 vtx_texcoord;
 
 void main()
 {
-    gl_Position = rendererScalePosition( position );
+    gl_Position = ashesScalePosition( position );
     vtx_texcoord = texcoord;
 }

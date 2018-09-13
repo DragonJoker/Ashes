@@ -18,14 +18,14 @@ namespace vkapp
 	public:
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
-			, renderer::Renderer const & renderer );
+			, ashes::Renderer const & renderer );
 		~RenderPanel();
 
 	private:
 		void doCleanup();
-		void doCreateDevice( renderer::Renderer const & renderer );
+		void doCreateDevice( ashes::Renderer const & renderer );
 
 	private:
-		renderer::DevicePtr m_device;
+		ashes::DevicePtr m_device;
 	};
 }

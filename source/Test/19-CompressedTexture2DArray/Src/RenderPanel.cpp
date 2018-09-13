@@ -48,7 +48,7 @@ namespace vkapp
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, renderer::Renderer const & renderer )
+		, ashes::Renderer const & renderer )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 		, m_vertexData{
@@ -139,7 +139,7 @@ namespace vkapp
 		}
 	}
 
-	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
+	void RenderPanel::doCreateDevice( ashes::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
 	}
@@ -148,7 +148,7 @@ namespace vkapp
 	{
 		wxSize size{ GetClientSize() };
 		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
-		m_swapChain->setClearColour( renderer::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f } );
+		m_swapChain->setClearColour( ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			doResetSwapChain();
@@ -157,31 +157,31 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_uniformBuffer = renderer::makeUniformBuffer< LayerSelect >( *m_device
+		m_uniformBuffer = ashes::makeUniformBuffer< LayerSelect >( *m_device
 			, 1u
 			, 0u
-			, renderer::MemoryPropertyFlag::eHostVisible | renderer::MemoryPropertyFlag::eHostCoherent );
+			, ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent );
 	}
 
 	void RenderPanel::doCreateTexture()
 	{
 		std::string assetsFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		gli::texture2d_array tex2DArray;
-		renderer::Format format;
+		ashes::Format format;
 
 		if ( m_device->getFeatures().textureCompressionASTC_LDR )
 		{
-			format = renderer::Format::eASTC_8x8_UNORM_BLOCK;
+			format = ashes::Format::eASTC_8x8_UNORM_BLOCK;
 			tex2DArray = gli::texture2d_array( gli::load( assetsFolder / "terrain_texturearray_astc_8x8_unorm.ktx" ) );
 		}
 		else if ( m_device->getFeatures().textureCompressionBC )
 		{
-			format = renderer::Format::eBC3_UNORM_BLOCK;
+			format = ashes::Format::eBC3_UNORM_BLOCK;
 			tex2DArray = gli::texture2d_array( gli::load( assetsFolder / "terrain_texturearray_bc3_unorm.ktx" ) );
 		}
 		else if ( m_device->getFeatures().textureCompressionETC2 )
 		{
-			format = renderer::Format::eETC2_R8G8B8_UNORM_BLOCK;
+			format = ashes::Format::eETC2_R8G8B8_UNORM_BLOCK;
 			tex2DArray = gli::texture2d_array( gli::load( assetsFolder / "terrain_texturearray_etc2_unorm.ktx" ) );
 		}
 		else
@@ -193,34 +193,34 @@ namespace vkapp
 		m_texture = m_device->createTexture(
 			{
 				0u,
-				renderer::TextureType::e2D,
+				ashes::TextureType::e2D,
 				format,
 				{ uint32_t( tex2DArray.extent().x ), uint32_t( tex2DArray.extent().y ), 1u },
 				uint32_t( tex2DArray.levels() ),
 				uint32_t( tex2DArray.layers() ),
-				renderer::SampleCountFlag::e1,
-				renderer::ImageTiling::eOptimal,
-				renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				ashes::ImageUsageFlag::eTransferDst | ashes::ImageUsageFlag::eSampled
 			}
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
 
 		auto cmdBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
 		auto staging = m_device->createStagingTexture( format
 			, { uint32_t( tex2DArray.extent().x ), uint32_t( tex2DArray.extent().y ), 1u } );
 
 		// Prepare copy regions
-		std::vector< renderer::BufferImageCopy > bufferCopyRegions;
+		std::vector< ashes::BufferImageCopy > bufferCopyRegions;
 
 		for ( uint32_t layer = 0; layer < tex2DArray.layers(); layer++ )
 		{
 			for ( uint32_t level = 0; level < tex2DArray.levels(); level++ )
 			{
 				auto texArray = tex2DArray[layer][level];
-				auto extent = renderer::Extent3D{ uint32_t( texArray.extent().x ), uint32_t( texArray.extent().y ), 1u };
+				auto extent = ashes::Extent3D{ uint32_t( texArray.extent().x ), uint32_t( texArray.extent().y ), 1u };
 
 				if ( checkExtent( format, extent ) )
 				{
-					auto view = m_texture->createView( renderer::TextureViewType::e2D
+					auto view = m_texture->createView( ashes::TextureViewType::e2D
 						, format
 						, level
 						, 1u
@@ -235,14 +235,14 @@ namespace vkapp
 		}
 
 		// Create the sampler.
-		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
-			, renderer::WrapMode::eClampToEdge
-			, renderer::WrapMode::eClampToEdge
-			, renderer::Filter::eLinear
-			, renderer::Filter::eLinear );
+		m_sampler = m_device->createSampler( ashes::WrapMode::eClampToEdge
+			, ashes::WrapMode::eClampToEdge
+			, ashes::WrapMode::eClampToEdge
+			, ashes::Filter::eLinear
+			, ashes::Filter::eLinear );
 
 		// Create the texture view for shader read.
-		m_view = m_texture->createView( renderer::TextureViewType::e2DArray
+		m_view = m_texture->createView( ashes::TextureViewType::e2DArray
 			, format
 			, 0u
 			, uint32_t( tex2DArray.levels() )
@@ -252,10 +252,10 @@ namespace vkapp
 
 	void RenderPanel::doCreateDescriptorSet()
 	{
-		std::vector< renderer::DescriptorSetLayoutBinding > bindings
+		std::vector< ashes::DescriptorSetLayoutBinding > bindings
 		{
-			{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
-			{ 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eFragment }
+			{ 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
+			{ 1u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eFragment }
 		};
 		m_descriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
@@ -270,50 +270,50 @@ namespace vkapp
 
 	void RenderPanel::doCreateRenderPass()
 	{
-		renderer::AttachmentDescriptionArray attaches
+		ashes::AttachmentDescriptionArray attaches
 		{
 			{
 				m_swapChain->getFormat(),
-				renderer::SampleCountFlag::e1,
-				renderer::AttachmentLoadOp::eClear,
-				renderer::AttachmentStoreOp::eStore,
-				renderer::AttachmentLoadOp::eDontCare,
-				renderer::AttachmentStoreOp::eDontCare,
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::ePresentSrc,
+				ashes::SampleCountFlag::e1,
+				ashes::AttachmentLoadOp::eClear,
+				ashes::AttachmentStoreOp::eStore,
+				ashes::AttachmentLoadOp::eDontCare,
+				ashes::AttachmentStoreOp::eDontCare,
+				ashes::ImageLayout::eUndefined,
+				ashes::ImageLayout::ePresentSrc,
 			}
 		};
-		renderer::AttachmentReferenceArray subAttaches
+		ashes::AttachmentReferenceArray subAttaches
 		{
-			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
+			{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
 		};
-		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite }
+		ashes::RenderSubpassPtrArray subpasses;
+		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( ashes::PipelineBindPoint::eGraphics
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::AccessFlag::eColourAttachmentWrite }
 			, subAttaches ) );
 		m_renderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
-				, renderer::AccessFlag::eMemoryRead }
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
-				, renderer::AccessFlag::eMemoryRead } );
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
+				, ashes::AccessFlag::eMemoryRead }
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
+				, ashes::AccessFlag::eMemoryRead } );
 	}
 
 	void RenderPanel::doCreateVertexBuffer()
 	{
-		m_vertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
+		m_vertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_vertexData.size() )
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
+			, ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_vertexLayout = ashes::makeLayout< TexturedVertexData >( 0 );
 		m_vertexLayout->createAttribute( 0u
-			, renderer::Format::eR32G32B32A32_SFLOAT
+			, ashes::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) )
 			, "POSITION"
 			, 0u );
 		m_vertexLayout->createAttribute( 1u
-			, renderer::Format::eR32G32_SFLOAT
+			, ashes::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) )
 			, "TEXCOORD"
 			, 0u );
@@ -324,7 +324,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateStagingBuffer()
 	{
-		m_stagingBuffer = std::make_unique< renderer::StagingBuffer >( *m_device
+		m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( *m_device
 			, 0u
 			, 1000000u );
 	}
@@ -334,9 +334,9 @@ namespace vkapp
 		m_pipelineLayout = m_device->createPipelineLayout( *m_descriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-		std::vector< renderer::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+		std::vector< ashes::ShaderStageState > shaderStages;
+		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
 
 		if ( m_device->getRenderer().isGLSLSupported()
 			|| m_device->getRenderer().isSPIRVSupported() )
@@ -364,22 +364,22 @@ namespace vkapp
 			shaderStages[1].entryPoint = "mainPx";
 		}
 
-		m_pipeline = m_pipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
+		m_pipeline = m_pipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo
 		{
 			std::move( shaderStages ),
 			*m_renderPass,
-			renderer::VertexInputState::create( *m_vertexLayout ),
-			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleStrip },
-			renderer::RasterisationState{},
-			renderer::MultisampleState{},
-			renderer::ColourBlendState::createDefault(),
-			{ renderer::DynamicState::eScissor, renderer::DynamicState::eViewport }
+			ashes::VertexInputState::create( *m_vertexLayout ),
+			ashes::InputAssemblyState{ ashes::PrimitiveTopology::eTriangleStrip },
+			ashes::RasterisationState{},
+			ashes::MultisampleState{},
+			ashes::ColourBlendState::createDefault(),
+			{ ashes::DynamicState::eScissor, ashes::DynamicState::eViewport }
 		} );
 	}
 
 	void RenderPanel::doPrepareFrames()
 	{
-		m_queryPool = m_device->createQueryPool( renderer::QueryType::eTimestamp
+		m_queryPool = m_device->createQueryPool( ashes::QueryType::eTimestamp
 			, 2u
 			, 0u );
 		m_commandBuffers = m_swapChain->createCommandBuffers();
@@ -391,15 +391,15 @@ namespace vkapp
 			auto & frameBuffer = *m_frameBuffers[i];
 			auto & commandBuffer = *m_commandBuffers[i];
 
-			commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+			commandBuffer.begin( ashes::CommandBufferUsageFlag::eSimultaneousUse );
 			commandBuffer.resetQueryPool( *m_queryPool
 				, 0u
 				, 2u );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, frameBuffer
 				, { m_swapChain->getClearColour() }
-			, renderer::SubpassContents::eInline );
-			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+			, ashes::SubpassContents::eInline );
+			commandBuffer.writeTimestamp( ashes::PipelineStageFlag::eTopOfPipe
 				, *m_queryPool
 				, 0u );
 			commandBuffer.bindPipeline( *m_pipeline );
@@ -415,7 +415,7 @@ namespace vkapp
 			commandBuffer.bindDescriptorSet( *m_descriptorSet
 				, *m_pipelineLayout );
 			commandBuffer.draw( 4u );
-			commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+			commandBuffer.writeTimestamp( ashes::PipelineStageFlag::eBottomOfPipe
 				, *m_queryPool
 				, 1u );
 			commandBuffer.endRenderPass();
@@ -461,16 +461,16 @@ namespace vkapp
 			auto & queue = m_device->getGraphicsQueue();
 			queue.submit( *m_commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
-				, renderer::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
 			m_swapChain->present( *resources );
 
-			renderer::UInt64Array values{ 0u, 0u };
+			ashes::UInt64Array values{ 0u, 0u };
 			m_queryPool->getResults( 0u
 				, 2u
 				, 0u
-				, renderer::QueryResultFlag::eWait
+				, ashes::QueryResultFlag::eWait
 				, values );
 			// Elapsed time in nanoseconds
 			auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getTimestampPeriod() ) ) };

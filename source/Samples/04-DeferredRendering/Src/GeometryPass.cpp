@@ -37,10 +37,10 @@ namespace vkapp
 {
 	namespace
 	{
-		std::vector< renderer::Format > doGetFormats( GeometryPassResult const & gbuffer
-			, renderer::Format depthFormat )
+		std::vector< ashes::Format > doGetFormats( GeometryPassResult const & gbuffer
+			, ashes::Format depthFormat )
 		{
-			std::vector< renderer::Format > result
+			std::vector< ashes::Format > result
 			{
 				depthFormat,
 			};
@@ -53,10 +53,10 @@ namespace vkapp
 			return result;
 		}
 
-		renderer::TextureViewCRefArray doGetViews( GeometryPassResult const & gbuffer
-			, renderer::TextureView const & depthview )
+		ashes::TextureViewCRefArray doGetViews( GeometryPassResult const & gbuffer
+			, ashes::TextureView const & depthview )
 		{
-			renderer::TextureViewCRefArray result
+			ashes::TextureViewCRefArray result
 			{
 				depthview
 			};
@@ -70,12 +70,12 @@ namespace vkapp
 		}
 	}
 
-	GeometryPass::GeometryPass( renderer::Device const & device
+	GeometryPass::GeometryPass( ashes::Device const & device
 		, std::string const & fragmentShaderFile
 		, GeometryPassResult const & gbuffer
-		, renderer::Format depthFormat
-		, renderer::UniformBuffer< common::SceneData > const & sceneUbo
-		, renderer::UniformBuffer< common::ObjectData > const & objectUbo )
+		, ashes::Format depthFormat
+		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
+		, ashes::UniformBuffer< common::ObjectData > const & objectUbo )
 		: common::NodesRenderer{ device
 			, fragmentShaderFile
 			, doGetFormats( gbuffer, depthFormat )
@@ -92,14 +92,14 @@ namespace vkapp
 			, target.getDepthView() ) );
 	}
 
-	void GeometryPass::doFillObjectDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )
+	void GeometryPass::doFillObjectDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
 	{
-		bindings.emplace_back( 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex );
-		bindings.emplace_back( 2u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex );
+		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
+		bindings.emplace_back( 2u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
 	}
 
-	void GeometryPass::doFillObjectDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
-		, renderer::DescriptorSet & descriptorSet )
+	void GeometryPass::doFillObjectDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout
+		, ashes::DescriptorSet & descriptorSet )
 	{
 		descriptorSet.createBinding( descriptorLayout.getBinding( 1u )
 			, m_sceneUbo

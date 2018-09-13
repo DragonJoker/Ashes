@@ -14,6 +14,6 @@ layout( location = 0 ) out vec3 vtx_position;
 
 void main()
 {
-	vtx_position = rendererScalePosition( position ).xyz;
+	vtx_position = ashesScalePosition( position ).xyz;
 	gl_Position = mtxViewProjection * position;
 }

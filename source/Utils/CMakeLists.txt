@@ -1,8 +1,8 @@
 project( Utils )
 
 include_directories(
-	${CMAKE_SOURCE_DIR}/Renderer/Renderer/Src
-	${CMAKE_BINARY_DIR}/Renderer/Renderer/Src
+	${CMAKE_SOURCE_DIR}/Ashes/Ashes/Src
+	${CMAKE_BINARY_DIR}/Ashes/Ashes/Src
 )
 
 file( GLOB ${PROJECT_NAME}_SRC_FILES

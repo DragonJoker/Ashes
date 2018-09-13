@@ -16,6 +16,6 @@ namespace vkapp
 			, common::RendererFactory & factory );
 
 	private:
-		wxPanel * doCreatePanel( wxSize const & size, renderer::Renderer const & renderer )override;
+		wxPanel * doCreatePanel( wxSize const & size, ashes::Renderer const & renderer )override;
 	};
 }

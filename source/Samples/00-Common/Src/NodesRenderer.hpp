@@ -21,78 +21,78 @@ namespace common
 	class NodesRenderer
 	{
 	public:
-		NodesRenderer( renderer::Device const & device
+		NodesRenderer( ashes::Device const & device
 			, std::string const & fragmentShaderFile
-			, std::vector< renderer::Format > const & formats
+			, std::vector< ashes::Format > const & formats
 			, bool clearViews
 			, bool opaqueNodes );
 		virtual ~NodesRenderer() = default;
 		virtual void update( RenderTarget const & target );
 		void draw( std::chrono::nanoseconds & gpu )const;
 		void initialise( Scene const & scene
-			, renderer::StagingBuffer & stagingBuffer
-			, renderer::TextureViewCRefArray const & views
+			, ashes::StagingBuffer & stagingBuffer
+			, ashes::TextureViewCRefArray const & views
 			, TextureNodePtrArray const & textureNodes );
 
-		inline renderer::Device const & getDevice()const
+		inline ashes::Device const & getDevice()const
 		{
 			return m_device;
 		}
 
 	protected:
-		void doUpdate( renderer::TextureViewCRefArray const & views );
+		void doUpdate( ashes::TextureViewCRefArray const & views );
 
 	private:
 		void doInitialiseObject( Object const & object
-			, renderer::StagingBuffer & stagingBuffer
+			, ashes::StagingBuffer & stagingBuffer
 			, TextureNodePtrArray const & textureNodes
 			, uint32_t & matIndex );
 		void doInitialiseBillboard( Billboard const & billboard
-			, renderer::StagingBuffer & stagingBuffer
+			, ashes::StagingBuffer & stagingBuffer
 			, TextureNodePtrArray const & textureNodes
 			, uint32_t & matIndex );
 
-		virtual void doFillObjectDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )
+		virtual void doFillObjectDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
 		{
 		}
 
-		virtual void doFillObjectDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
-			, renderer::DescriptorSet & descriptorSet )
+		virtual void doFillObjectDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout
+			, ashes::DescriptorSet & descriptorSet )
 		{
 		}
 
-		virtual void doFillBillboardDescriptorLayoutBindings( renderer::DescriptorSetLayoutBindingArray & bindings )
+		virtual void doFillBillboardDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
 		{
 		}
 
-		virtual void doFillBillboardDescriptorSet( renderer::DescriptorSetLayout & descriptorLayout
-			, renderer::DescriptorSet & descriptorSet )
+		virtual void doFillBillboardDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout
+			, ashes::DescriptorSet & descriptorSet )
 		{
 		}
 
 	protected:
-		renderer::Device const & m_device;
+		ashes::Device const & m_device;
 		bool m_opaqueNodes;
-		renderer::Extent2D m_size;
+		ashes::Extent2D m_size;
 		std::string m_fragmentShaderFile;
-		std::vector< renderer::TextureView const * > m_views;
-		renderer::SamplerPtr m_sampler;
-		renderer::CommandBufferPtr m_updateCommandBuffer;
-		renderer::CommandBufferPtr m_commandBuffer;
-		renderer::UniformBufferPtr< MaterialData > m_materialsUbo;
+		std::vector< ashes::TextureView const * > m_views;
+		ashes::SamplerPtr m_sampler;
+		ashes::CommandBufferPtr m_updateCommandBuffer;
+		ashes::CommandBufferPtr m_commandBuffer;
+		ashes::UniformBufferPtr< MaterialData > m_materialsUbo;
 
-		renderer::DescriptorSetLayoutPtr m_objectDescriptorLayout;
-		renderer::DescriptorSetPoolPtr m_objectDescriptorPool;
-		renderer::VertexLayoutPtr m_objectVertexLayout;
+		ashes::DescriptorSetLayoutPtr m_objectDescriptorLayout;
+		ashes::DescriptorSetPoolPtr m_objectDescriptorPool;
+		ashes::VertexLayoutPtr m_objectVertexLayout;
 
-		renderer::DescriptorSetLayoutPtr m_billboardDescriptorLayout;
-		renderer::DescriptorSetPoolPtr m_billboardDescriptorPool;
-		renderer::VertexLayoutPtr m_billboardVertexLayout;
-		renderer::VertexLayoutPtr m_billboardInstanceLayout;
+		ashes::DescriptorSetLayoutPtr m_billboardDescriptorLayout;
+		ashes::DescriptorSetPoolPtr m_billboardDescriptorPool;
+		ashes::VertexLayoutPtr m_billboardVertexLayout;
+		ashes::VertexLayoutPtr m_billboardInstanceLayout;
 
-		renderer::RenderPassPtr m_renderPass;
-		renderer::FrameBufferPtr m_frameBuffer;
-		renderer::QueryPoolPtr m_queryPool;
+		ashes::RenderPassPtr m_renderPass;
+		ashes::FrameBufferPtr m_frameBuffer;
+		ashes::QueryPoolPtr m_queryPool;
 		SubmeshNodes m_submeshNodes;
 		ObjectNodes m_submeshRenderNodes;
 		BillboardNodes m_billboardNodes;

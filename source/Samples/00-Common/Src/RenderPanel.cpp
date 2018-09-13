@@ -76,7 +76,7 @@ namespace common
 		doCleanup();
 	}
 
-	void RenderPanel::initialise( renderer::Renderer const & renderer )
+	void RenderPanel::initialise( ashes::Renderer const & renderer )
 	{
 		wxSize size = GetClientSize();
 		try
@@ -85,19 +85,19 @@ namespace common
 			std::cout << "Logical device created." << std::endl;
 			doCreateSwapChain();
 			std::cout << "Swap chain created." << std::endl;
-			m_stagingBuffer = std::make_unique< renderer::StagingBuffer >( *m_device
+			m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( *m_device
 				, 0u
 				, 1024u * 64u );
 			doInitialise( *m_device
 				, { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 			m_gui = std::make_unique< Gui >( *m_device
-				, renderer::Extent2D{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
+				, ashes::Extent2D{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 			m_gui->updateView( m_renderTarget->getColourView() );
-			m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
-				, renderer::WrapMode::eClampToEdge
-				, renderer::WrapMode::eClampToEdge
-				, renderer::Filter::eLinear
-				, renderer::Filter::eLinear );
+			m_sampler = m_device->createSampler( ashes::WrapMode::eClampToEdge
+				, ashes::WrapMode::eClampToEdge
+				, ashes::WrapMode::eClampToEdge
+				, ashes::Filter::eLinear
+				, ashes::Filter::eLinear );
 			doCreateDescriptorSet();
 			std::cout << "Main descriptor set created." << std::endl;
 			doCreateRenderPass();
@@ -188,7 +188,7 @@ namespace common
 
 			m_device->getGraphicsQueue().submit( *m_commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
-				, renderer::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
 
@@ -227,7 +227,7 @@ namespace common
 		}
 	}
 
-	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
+	void RenderPanel::doCreateDevice( ashes::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
 	}
@@ -248,10 +248,10 @@ namespace common
 
 	void RenderPanel::doCreateDescriptorSet()
 	{
-		std::vector< renderer::DescriptorSetLayoutBinding > bindings
+		std::vector< ashes::DescriptorSetLayoutBinding > bindings
 		{
-			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
-			renderer::DescriptorSetLayoutBinding{ 1u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
+			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
+			ashes::DescriptorSetLayoutBinding{ 1u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
 		};
 		m_descriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorSet.reset();
@@ -268,54 +268,54 @@ namespace common
 
 	void RenderPanel::doCreateRenderPass()
 	{
-		renderer::AttachmentDescriptionArray attaches
+		ashes::AttachmentDescriptionArray attaches
 		{
 			{
 				m_swapChain->getFormat(),
-				renderer::SampleCountFlag::e1,
-				renderer::AttachmentLoadOp::eClear,
-				renderer::AttachmentStoreOp::eStore,
-				renderer::AttachmentLoadOp::eDontCare,
-				renderer::AttachmentStoreOp::eDontCare,
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::ePresentSrc,
+				ashes::SampleCountFlag::e1,
+				ashes::AttachmentLoadOp::eClear,
+				ashes::AttachmentStoreOp::eStore,
+				ashes::AttachmentLoadOp::eDontCare,
+				ashes::AttachmentStoreOp::eDontCare,
+				ashes::ImageLayout::eUndefined,
+				ashes::ImageLayout::ePresentSrc,
 			}
 		};
-		renderer::AttachmentReferenceArray subAttaches
+		ashes::AttachmentReferenceArray subAttaches
 		{
-			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
+			{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
 		};
-		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite }
+		ashes::RenderSubpassPtrArray subpasses;
+		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( ashes::PipelineBindPoint::eGraphics
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::AccessFlag::eColourAttachmentWrite }
 			, subAttaches ) );
 		m_renderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
-				, renderer::AccessFlag::eMemoryRead }
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
-				, renderer::AccessFlag::eMemoryRead } );
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
+				, ashes::AccessFlag::eMemoryRead }
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
+				, ashes::AccessFlag::eMemoryRead } );
 	}
 
 	void RenderPanel::doCreateVertexBuffer()
 	{
-		m_vertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
+		m_vertexLayout = ashes::makeLayout< TexturedVertexData >( 0 );
 		m_vertexLayout->createAttribute( 0u
-			, renderer::Format::eR32G32B32A32_SFLOAT
+			, ashes::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) )
 			, "POSITION"
 			, 0u );
 		m_vertexLayout->createAttribute( 1u
-			, renderer::Format::eR32G32_SFLOAT
+			, ashes::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) )
 			, "TEXCOORD"
 			, 0u );
 
-		m_vertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
+		m_vertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_vertexData.size() )
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
+			, ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_vertexData
 			, *m_vertexBuffer );
@@ -332,16 +332,16 @@ namespace common
 			throw std::runtime_error{ "Shader files are missing" };
 		}
 
-		std::vector< renderer::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+		std::vector< ashes::ShaderStageState > shaderStages;
+		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
 		shaderStages[0].module->loadShader( common::dumpTextFile( shadersFolder / "main.vert" ) );
 		shaderStages[1].module->loadShader( common::dumpTextFile( shadersFolder / "main.frag" ) );
 
-		std::vector< renderer::DynamicState > dynamicStateEnables
+		std::vector< ashes::DynamicState > dynamicStateEnables
 		{
-			renderer::DynamicState::eViewport,
-			renderer::DynamicState::eScissor
+			ashes::DynamicState::eViewport,
+			ashes::DynamicState::eScissor
 		};
 
 		m_pipelineLayout = m_device->createPipelineLayout( *m_descriptorLayout );
@@ -349,11 +349,11 @@ namespace common
 		{
 			std::move( shaderStages ),
 			*m_renderPass,
-			renderer::VertexInputState::create( *m_vertexLayout ),
-			{ renderer::PrimitiveTopology::eTriangleStrip },
-			renderer::RasterisationState{ 0u, false, false, renderer::PolygonMode::eFill, renderer::CullModeFlag::eNone },
-			renderer::MultisampleState{},
-			renderer::ColourBlendState::createDefault(),
+			ashes::VertexInputState::create( *m_vertexLayout ),
+			{ ashes::PrimitiveTopology::eTriangleStrip },
+			ashes::RasterisationState{ 0u, false, false, ashes::PolygonMode::eFill, ashes::CullModeFlag::eNone },
+			ashes::MultisampleState{},
+			ashes::ColourBlendState::createDefault(),
 			dynamicStateEnables,
 		} );
 	}
@@ -362,7 +362,7 @@ namespace common
 	{
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
 		m_commandBuffers = m_swapChain->createCommandBuffers();
-		static renderer::ClearValue const clearValue{ { 1.0, 0.0, 0.0, 1.0 } };
+		static ashes::ClearValue const clearValue{ { 1.0, 0.0, 0.0, 1.0 } };
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
 		{
@@ -371,12 +371,12 @@ namespace common
 
 			wxSize size{ GetClientSize() };
 
-			commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+			commandBuffer.begin( ashes::CommandBufferUsageFlag::eSimultaneousUse );
 			auto dimensions = m_swapChain->getDimensions();
 			commandBuffer.beginRenderPass( *m_renderPass
 				, frameBuffer
 				, { clearValue }
-				, renderer::SubpassContents::eInline );
+				, ashes::SubpassContents::eInline );
 			commandBuffer.bindPipeline( *m_pipeline );
 			commandBuffer.setViewport( { dimensions.width
 				, dimensions.height
@@ -412,7 +412,7 @@ namespace common
 		ImGui::PushStyleVar( ImGuiStyleVar_WindowRounding, 10 );
 		ImGui::SetNextWindowPos( ImVec2( 10, 10 ) );
 		ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver );
-		ImGui::Begin( "RendererLib Sample", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove );
+		ImGui::Begin( "Ashes Sample", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove );
 		ImGui::TextUnformatted( getName( m_appDesc, m_device->getRenderer().getName() ).c_str() );
 		ImGui::TextUnformatted( m_device->getProperties().deviceName.c_str() );
 
@@ -434,7 +434,7 @@ namespace common
 			ImGui::Text( "Min: %.2f ms, Max %.2f ms", ( minGpuTime.count() / 1000.0f ), ( maxGpuTime.count() / 1000.0f ) );
 		}
 
-#if RENDERLIB_ANDROID
+#if ASHES_ANDROID
 		ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, ImVec2( 0.0f, 5.0f * UIOverlay->scale ) );
 #endif
 
@@ -442,7 +442,7 @@ namespace common
 		doUpdateOverlays( *m_gui );
 		ImGui::PopItemWidth();
 
-#if RENDERLIB_ANDROID
+#if ASHES_ANDROID
 		ImGui::PopStyleVar();
 #endif
 
@@ -452,7 +452,7 @@ namespace common
 
 		m_gui->update();
 
-#if RENDERLIB_ANDROID
+#if ASHES_ANDROID
 		m_mouse.left = false;
 #endif
 	}

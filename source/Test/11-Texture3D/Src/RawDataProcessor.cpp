@@ -5,8 +5,8 @@
 namespace vkapp
 {
 	void readFile( std::string const & name
-		, renderer::Extent3D const & size
-		, renderer::ByteArray & data )
+		, ashes::Extent3D const & size
+		, ashes::ByteArray & data )
 	{
 		FILE * file = fopen( name.c_str(), "rb" );
 
@@ -16,7 +16,7 @@ namespace vkapp
 		}
 
 		// Holds the luminance buffer
-		renderer::ByteArray luminance( size.width * size.height * size.depth );
+		ashes::ByteArray luminance( size.width * size.height * size.depth );
 		fread( luminance.data(), 1u, luminance.size(), file );
 		fclose( file );
 

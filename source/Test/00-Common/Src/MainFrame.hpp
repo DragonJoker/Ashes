@@ -24,7 +24,7 @@ namespace common
 		void updateFps( std::chrono::microseconds const & duration );
 
 	private:
-		virtual wxPanel * doCreatePanel( wxSize const & size, renderer::Renderer const & renderer ) = 0;
+		virtual wxPanel * doCreatePanel( wxSize const & size, ashes::Renderer const & renderer ) = 0;
 
 		wxDECLARE_EVENT_TABLE();
 		void OnClose( wxCloseEvent & event );
@@ -33,7 +33,7 @@ namespace common
 		static size_t constexpr FrameSamplesCount = 1000;
 		wxString m_name;
 		wxString m_rendererName;
-		renderer::RendererPtr m_renderer;
+		ashes::RendererPtr m_renderer;
 		RendererFactory & m_factory;
 		wxPanel * m_panel{ nullptr };
 		std::array< std::chrono::microseconds, FrameSamplesCount > m_cpuFramesTimes;

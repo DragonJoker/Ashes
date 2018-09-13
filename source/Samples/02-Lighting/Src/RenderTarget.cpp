@@ -13,23 +13,23 @@
 
 namespace vkapp
 {
-	RenderTarget::RenderTarget( renderer::Device const & device
-		, renderer::Extent2D const & size
+	RenderTarget::RenderTarget( ashes::Device const & device
+		, ashes::Extent2D const & size
 		, common::Scene && scene
 		, common::ImagePtrArray && images )
 		: common::RenderTarget{ device, size, std::move( scene ), std::move( images ) }
-		, m_sceneUbo{ renderer::makeUniformBuffer< common::SceneData >( device
+		, m_sceneUbo{ ashes::makeUniformBuffer< common::SceneData >( device
 			, 1u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_objectUbo{ renderer::makeUniformBuffer< common::ObjectData >( device
+			, ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+		, m_objectUbo{ ashes::makeUniformBuffer< common::ObjectData >( device
 			, 1u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_lightsUbo{ renderer::makeUniformBuffer< common::LightsData >( device
+			, ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+		, m_lightsUbo{ ashes::makeUniformBuffer< common::LightsData >( device
 			, 1u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal ) }
+			, ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
 	{
 		doInitialise();
 		doUpdateMatrixUbo( size );
@@ -51,17 +51,17 @@ namespace vkapp
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
-			, renderer::PipelineStageFlag::eVertexShader );
+			, ashes::PipelineStageFlag::eVertexShader );
 	}
 
-	void RenderTarget::doResize( renderer::Extent2D const & size )
+	void RenderTarget::doResize( ashes::Extent2D const & size )
 	{
 		doUpdateMatrixUbo( size );
 	}
 
-	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( renderer::Device const & device
-		, renderer::StagingBuffer & stagingBuffer
-		, renderer::TextureViewCRefArray const & views
+	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( ashes::Device const & device
+		, ashes::StagingBuffer & stagingBuffer
+		, ashes::TextureViewCRefArray const & views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
@@ -79,9 +79,9 @@ namespace vkapp
 			, textureNodes );
 	}
 
-	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( renderer::Device const & device
-		, renderer::StagingBuffer & stagingBuffer
-		, renderer::TextureViewCRefArray const & views
+	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( ashes::Device const & device
+		, ashes::StagingBuffer & stagingBuffer
+		, ashes::TextureViewCRefArray const & views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
@@ -99,7 +99,7 @@ namespace vkapp
 			, textureNodes );
 	}
 
-	void RenderTarget::doUpdateMatrixUbo( renderer::Extent2D const & size )
+	void RenderTarget::doUpdateMatrixUbo( ashes::Extent2D const & size )
 	{
 		auto width = float( size.width );
 		auto height = float( size.height );
@@ -110,7 +110,7 @@ namespace vkapp
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo
-			, renderer::PipelineStageFlag::eVertexShader );
+			, ashes::PipelineStageFlag::eVertexShader );
 	}
 
 	void RenderTarget::doInitialiseLights()
@@ -130,6 +130,6 @@ namespace vkapp
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_lightsUbo->getDatas()
 			, *m_lightsUbo
-			, renderer::PipelineStageFlag::eFragmentShader );
+			, ashes::PipelineStageFlag::eFragmentShader );
 	}
 }

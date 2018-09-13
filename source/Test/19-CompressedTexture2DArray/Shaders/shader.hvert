@@ -14,6 +14,6 @@ VertexOutput mainVx( in VertexInput input )
 {
 	VertexOutput output;
 	output.uv = input.uv;
-	output.position = rendererScalePosition( input.position );
+	output.position = ashesScalePosition( input.position );
 	return output;
 }

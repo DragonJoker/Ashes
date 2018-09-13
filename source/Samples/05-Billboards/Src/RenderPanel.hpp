@@ -14,8 +14,8 @@ namespace vkapp
 			, wxSize const & size );
 
 	private:
-		void doInitialise( renderer::Device const & device
-			, renderer::Extent2D const & size )override;
+		void doInitialise( ashes::Device const & device
+			, ashes::Extent2D const & size )override;
 		void doUpdateOverlays( common::Gui const & overlay )override;
 		void doUpdate()override;
 

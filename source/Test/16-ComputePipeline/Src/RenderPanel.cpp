@@ -52,13 +52,13 @@ namespace vkapp
 		}	Ids;
 
 		static int const TimerTimeMs = 20;
-		static renderer::Format const ColourFormat = renderer::Format::eR32G32B32A32_SFLOAT;
-		static renderer::Format const DepthFormat = renderer::Format::eD32_SFLOAT;
+		static ashes::Format const ColourFormat = ashes::Format::eR32G32B32A32_SFLOAT;
+		static ashes::Format const DepthFormat = ashes::Format::eD32_SFLOAT;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, renderer::Renderer const & renderer )
+		, ashes::Renderer const & renderer )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 		, m_offscreenVertexData
@@ -259,20 +259,20 @@ namespace vkapp
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_matrixUbo->getDatas()
 			, *m_matrixUbo
-			, renderer::PipelineStageFlag::eVertexShader );
+			, ashes::PipelineStageFlag::eVertexShader );
 	}
 
-	void RenderPanel::doCreateDevice( renderer::Renderer const & renderer )
+	void RenderPanel::doCreateDevice( ashes::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
-		m_objectPcbs[0] = std::make_unique< renderer::PushConstantsBuffer< utils::Vec4 > >( *m_device
+		m_objectPcbs[0] = std::make_unique< ashes::PushConstantsBuffer< utils::Vec4 > >( *m_device
 			, 3u
-			, renderer::ShaderStageFlag::eFragment
-			, renderer::PushConstantArray{ { 3u, 0u, renderer::ConstantFormat::eVec4f } } );
-		m_objectPcbs[1] = std::make_unique< renderer::PushConstantsBuffer< utils::Vec4 > >( *m_device
+			, ashes::ShaderStageFlag::eFragment
+			, ashes::PushConstantArray{ { 3u, 0u, ashes::ConstantFormat::eVec4f } } );
+		m_objectPcbs[1] = std::make_unique< ashes::PushConstantsBuffer< utils::Vec4 > >( *m_device
 			, 3u
-			, renderer::ShaderStageFlag::eFragment
-			, renderer::PushConstantArray{ { 3u, 0u, renderer::ConstantFormat::eVec4f } } );
+			, ashes::ShaderStageFlag::eFragment
+			, ashes::PushConstantArray{ { 3u, 0u, ashes::ConstantFormat::eVec4f } } );
 		*m_objectPcbs[0]->getData() = utils::Vec4{ 1.0, 0.0, 0.0, 1.0 };
 		*m_objectPcbs[1]->getData() = utils::Vec4{ 0.0, 1.0, 0.0, 1.0 };
 	}
@@ -305,23 +305,23 @@ namespace vkapp
 		m_texture = m_device->createTexture(
 			{
 				0u,
-				renderer::TextureType::e2D,
+				ashes::TextureType::e2D,
 				image.format,
 				{ image.size.width, image.size.height, 1u },
 				1u,
 				1u,
-				renderer::SampleCountFlag::e1,
-				renderer::ImageTiling::eOptimal,
-				renderer::ImageUsageFlag::eTransferDst | renderer::ImageUsageFlag::eSampled
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				ashes::ImageUsageFlag::eTransferDst | ashes::ImageUsageFlag::eSampled
 			}
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_view = m_texture->createView( renderer::TextureViewType::e2D
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_view = m_texture->createView( ashes::TextureViewType::e2D
 			, image.format );
-		m_sampler = m_device->createSampler( renderer::WrapMode::eClampToEdge
-			, renderer::WrapMode::eClampToEdge
-			, renderer::WrapMode::eClampToEdge
-			, renderer::Filter::eLinear
-			, renderer::Filter::eLinear );
+		m_sampler = m_device->createSampler( ashes::WrapMode::eClampToEdge
+			, ashes::WrapMode::eClampToEdge
+			, ashes::WrapMode::eClampToEdge
+			, ashes::Filter::eLinear
+			, ashes::Filter::eLinear );
 		stagingTexture->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, image.format
 			, image.data
@@ -330,34 +330,34 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffers()
 	{
-		m_matrixUbo = std::make_unique< renderer::UniformBuffer< utils::Mat4 > >( *m_device
+		m_matrixUbo = std::make_unique< ashes::UniformBuffer< utils::Mat4 > >( *m_device
 			, 1u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_objectUbo = std::make_unique< renderer::UniformBuffer< utils::Mat4 > >( *m_device
+			, ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_objectUbo = std::make_unique< ashes::UniformBuffer< utils::Mat4 > >( *m_device
 			, 2u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_computeUbo = std::make_unique< renderer::UniformBuffer< Configuration > >( *m_device
+			, ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_computeUbo = std::make_unique< ashes::UniformBuffer< Configuration > >( *m_device
 			, 1u
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
+			, ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
 	}
 
 	void RenderPanel::doCreateStagingBuffer()
 	{
-		m_stagingBuffer = std::make_unique< renderer::StagingBuffer >( *m_device
+		m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( *m_device
 			, 0u
 			, 10000000u );
 	}
 
 	void RenderPanel::doCreateOffscreenDescriptorSet()
 	{
-		std::vector< renderer::DescriptorSetLayoutBinding > bindings
+		std::vector< ashes::DescriptorSetLayoutBinding > bindings
 		{
-			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
-			renderer::DescriptorSetLayoutBinding{ 1u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex },
-			renderer::DescriptorSetLayoutBinding{ 2u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eVertex },
+			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
+			ashes::DescriptorSetLayoutBinding{ 1u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex },
+			ashes::DescriptorSetLayoutBinding{ 2u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex },
 		};
 		m_offscreenDescriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
 		m_offscreenDescriptorPool = m_offscreenDescriptorLayout->createPool( 2u );
@@ -393,45 +393,45 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenRenderPass()
 	{
-		renderer::AttachmentDescriptionArray attaches
+		ashes::AttachmentDescriptionArray attaches
 		{
 			{
 				ColourFormat,
-				renderer::SampleCountFlag::e1,
-				renderer::AttachmentLoadOp::eClear,
-				renderer::AttachmentStoreOp::eStore,
-				renderer::AttachmentLoadOp::eDontCare,
-				renderer::AttachmentStoreOp::eDontCare,
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::eShaderReadOnlyOptimal,
+				ashes::SampleCountFlag::e1,
+				ashes::AttachmentLoadOp::eClear,
+				ashes::AttachmentStoreOp::eStore,
+				ashes::AttachmentLoadOp::eDontCare,
+				ashes::AttachmentStoreOp::eDontCare,
+				ashes::ImageLayout::eUndefined,
+				ashes::ImageLayout::eShaderReadOnlyOptimal,
 			},
 			{
 				DepthFormat,
-				renderer::SampleCountFlag::e1,
-				renderer::AttachmentLoadOp::eClear,
-				renderer::AttachmentStoreOp::eStore,
-				renderer::AttachmentLoadOp::eDontCare,
-				renderer::AttachmentStoreOp::eDontCare,
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::eDepthStencilAttachmentOptimal,
+				ashes::SampleCountFlag::e1,
+				ashes::AttachmentLoadOp::eClear,
+				ashes::AttachmentStoreOp::eStore,
+				ashes::AttachmentLoadOp::eDontCare,
+				ashes::AttachmentStoreOp::eDontCare,
+				ashes::ImageLayout::eUndefined,
+				ashes::ImageLayout::eDepthStencilAttachmentOptimal,
 			}
 		};
-		renderer::AttachmentReferenceArray subAttaches
+		ashes::AttachmentReferenceArray subAttaches
 		{
-			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
+			{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
 		};
-		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite }
+		ashes::RenderSubpassPtrArray subpasses;
+		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( ashes::PipelineBindPoint::eGraphics
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::AccessFlag::eColourAttachmentWrite }
 			, subAttaches
-			, renderer::AttachmentReference{ 1u, renderer::ImageLayout::eDepthStencilAttachmentOptimal } ) );
+			, ashes::AttachmentReference{ 1u, ashes::ImageLayout::eDepthStencilAttachmentOptimal } ) );
 		m_offscreenRenderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite }
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eShaderRead } );
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::AccessFlag::eColourAttachmentWrite }
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::AccessFlag::eShaderRead } );
 	}
 
 	void RenderPanel::doCreateFrameBuffer()
@@ -440,35 +440,35 @@ namespace vkapp
 		m_renderTargetColour = m_device->createTexture(
 			{
 				0u,
-				renderer::TextureType::e2D,
+				ashes::TextureType::e2D,
 				ColourFormat,
 				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
 				1u,
 				1u,
-				renderer::SampleCountFlag::e1,
-				renderer::ImageTiling::eOptimal,
-				renderer::ImageUsageFlag::eColourAttachment | renderer::ImageUsageFlag::eSampled | renderer::ImageUsageFlag::eStorage
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eSampled | ashes::ImageUsageFlag::eStorage
 			}
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_renderTargetColourView = m_renderTargetColour->createView( renderer::TextureViewType::e2D
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_renderTargetColourView = m_renderTargetColour->createView( ashes::TextureViewType::e2D
 			, m_renderTargetColour->getFormat() );
 		
 		m_renderTargetDepth = m_device->createTexture(
 			{
 				0u,
-				renderer::TextureType::e2D,
+				ashes::TextureType::e2D,
 				DepthFormat,
 				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
 				1u,
 				1u,
-				renderer::SampleCountFlag::e1,
-				renderer::ImageTiling::eOptimal,
-				renderer::ImageUsageFlag::eDepthStencilAttachment
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				ashes::ImageUsageFlag::eDepthStencilAttachment
 			}
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
-		m_renderTargetDepthView = m_renderTargetDepth->createView( renderer::TextureViewType::e2D
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_renderTargetDepthView = m_renderTargetDepth->createView( ashes::TextureViewType::e2D
 			, m_renderTargetDepth->getFormat() );
-		renderer::FrameBufferAttachmentArray attaches;
+		ashes::FrameBufferAttachmentArray attaches;
 		attaches.emplace_back( *( m_offscreenRenderPass->getAttachments().begin() + 0u ), *m_renderTargetColourView );
 		attaches.emplace_back( *( m_offscreenRenderPass->getAttachments().begin() + 1u ), *m_renderTargetDepthView );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
@@ -477,30 +477,30 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
-		m_offscreenVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
+		m_offscreenVertexLayout = ashes::makeLayout< TexturedVertexData >( 0 );
 		m_offscreenVertexLayout->createAttribute( 0u
-			, renderer::Format::eR32G32B32A32_SFLOAT
+			, ashes::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) )
 			, "POSITION"
 			, 0u );
 		m_offscreenVertexLayout->createAttribute( 1u
-			, renderer::Format::eR32G32_SFLOAT
+			, ashes::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) )
 			, "TEXCOORD"
 			, 0u );
 
-		m_offscreenVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
+		m_offscreenVertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_offscreenVertexData.size() )
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
+			, ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_offscreenVertexData
 			, *m_offscreenVertexBuffer );
 
-		m_offscreenIndexBuffer = renderer::makeBuffer< uint16_t >( *m_device
+		m_offscreenIndexBuffer = ashes::makeBuffer< uint16_t >( *m_device
 			, uint32_t( m_offscreenIndexData.size() )
-			, renderer::BufferTarget::eIndexBuffer | renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
+			, ashes::BufferTarget::eIndexBuffer | ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
 		m_stagingBuffer->uploadBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_offscreenIndexData
 			, *m_offscreenIndexBuffer );
@@ -508,14 +508,14 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenPipeline()
 	{
-		renderer::PushConstantRange range{ renderer::ShaderStageFlag::eFragment, 0u, m_objectPcbs[0]->getSize() };
-		m_offscreenPipelineLayout = m_device->createPipelineLayout( renderer::DescriptorSetLayoutCRefArray{ { *m_offscreenDescriptorLayout } }
-		, renderer::PushConstantRangeCRefArray{ { range } } );
+		ashes::PushConstantRange range{ ashes::ShaderStageFlag::eFragment, 0u, m_objectPcbs[0]->getSize() };
+		m_offscreenPipelineLayout = m_device->createPipelineLayout( ashes::DescriptorSetLayoutCRefArray{ { *m_offscreenDescriptorLayout } }
+		, ashes::PushConstantRangeCRefArray{ { range } } );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-		std::vector< renderer::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+		std::vector< ashes::ShaderStageState > shaderStages;
+		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
 
 		if ( m_device->getRenderer().isGLSLSupported()
 			|| m_device->getRenderer().isSPIRVSupported() )
@@ -543,28 +543,28 @@ namespace vkapp
 			shaderStages[1].entryPoint = "mainPx";
 		}
 
-		renderer::RasterisationState rasterisationState;
-		rasterisationState.cullMode = renderer::CullModeFlag::eNone;
+		ashes::RasterisationState rasterisationState;
+		rasterisationState.cullMode = ashes::CullModeFlag::eNone;
 
-		m_offscreenPipeline = m_offscreenPipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
+		m_offscreenPipeline = m_offscreenPipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo
 		{
 			std::move( shaderStages ),
 			*m_offscreenRenderPass,
-			renderer::VertexInputState::create( *m_offscreenVertexLayout ),
-			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleList },
+			ashes::VertexInputState::create( *m_offscreenVertexLayout ),
+			ashes::InputAssemblyState{ ashes::PrimitiveTopology::eTriangleList },
 			rasterisationState,
-			renderer::MultisampleState{},
-			renderer::ColourBlendState::createDefault(),
-			{ renderer::DynamicState::eViewport, renderer::DynamicState::eScissor },
-			renderer::DepthStencilState{},
+			ashes::MultisampleState{},
+			ashes::ColourBlendState::createDefault(),
+			{ ashes::DynamicState::eViewport, ashes::DynamicState::eScissor },
+			ashes::DepthStencilState{},
 		} );
 	}
 
 	void RenderPanel::doCreateMainDescriptorSet()
 	{
-		std::vector< renderer::DescriptorSetLayoutBinding > bindings
+		std::vector< ashes::DescriptorSetLayoutBinding > bindings
 		{
-			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eCombinedImageSampler, renderer::ShaderStageFlag::eFragment },
+			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
 		};
 		m_mainDescriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
@@ -577,40 +577,40 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainRenderPass()
 	{
-		renderer::AttachmentDescriptionArray attaches
+		ashes::AttachmentDescriptionArray attaches
 		{
 			{
 				m_swapChain->getFormat(),
-				renderer::SampleCountFlag::e1,
-				renderer::AttachmentLoadOp::eClear,
-				renderer::AttachmentStoreOp::eStore,
-				renderer::AttachmentLoadOp::eDontCare,
-				renderer::AttachmentStoreOp::eDontCare,
-				renderer::ImageLayout::eUndefined,
-				renderer::ImageLayout::ePresentSrc,
+				ashes::SampleCountFlag::e1,
+				ashes::AttachmentLoadOp::eClear,
+				ashes::AttachmentStoreOp::eStore,
+				ashes::AttachmentLoadOp::eDontCare,
+				ashes::AttachmentStoreOp::eDontCare,
+				ashes::ImageLayout::eUndefined,
+				ashes::ImageLayout::ePresentSrc,
 			}
 		};
-		renderer::AttachmentReferenceArray subAttaches
+		ashes::AttachmentReferenceArray subAttaches
 		{
-			{ 0u, renderer::ImageLayout::eColourAttachmentOptimal }
+			{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
 		};
-		renderer::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< renderer::RenderSubpass >( renderer::PipelineBindPoint::eGraphics
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eColourAttachmentOutput
-				, renderer::AccessFlag::eColourAttachmentWrite }
+		ashes::RenderSubpassPtrArray subpasses;
+		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( ashes::PipelineBindPoint::eGraphics
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::AccessFlag::eColourAttachmentWrite }
 			, subAttaches ) );
 		m_mainRenderPass = m_device->createRenderPass( attaches
 			, std::move( subpasses )
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
-				, renderer::AccessFlag::eMemoryRead }
-			, renderer::RenderSubpassState{ renderer::PipelineStageFlag::eBottomOfPipe
-				, renderer::AccessFlag::eMemoryRead } );
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
+				, ashes::AccessFlag::eMemoryRead }
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
+				, ashes::AccessFlag::eMemoryRead } );
 	}
 
 	void RenderPanel::doPrepareOffscreenFrame()
 	{
 		doUpdateProjection();
-		m_offscreenQueryPool = m_device->createQueryPool( renderer::QueryType::eTimestamp
+		m_offscreenQueryPool = m_device->createQueryPool( ashes::QueryType::eTimestamp
 			, 2u
 			, 0u );
 		m_commandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
@@ -618,16 +618,16 @@ namespace vkapp
 		auto & commandBuffer = *m_commandBuffer;
 		auto & frameBuffer = *m_frameBuffer;
 
-		commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+		commandBuffer.begin( ashes::CommandBufferUsageFlag::eSimultaneousUse );
 		auto dimensions = m_swapChain->getDimensions();
 		commandBuffer.resetQueryPool( *m_offscreenQueryPool
 			, 0u
 			, 2u );
 		commandBuffer.beginRenderPass( *m_offscreenRenderPass
 			, frameBuffer
-			, { renderer::ClearValue{ m_swapChain->getClearColour() }, renderer::ClearValue{ renderer::DepthStencilClearValue{ 1.0f, 0u } } }
-			, renderer::SubpassContents::eInline );
-		commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+			, { ashes::ClearValue{ m_swapChain->getClearColour() }, ashes::ClearValue{ ashes::DepthStencilClearValue{ 1.0f, 0u } } }
+			, ashes::SubpassContents::eInline );
+		commandBuffer.writeTimestamp( ashes::PipelineStageFlag::eTopOfPipe
 			, *m_offscreenQueryPool
 			, 0u );
 		commandBuffer.bindPipeline( *m_offscreenPipeline );
@@ -640,7 +640,7 @@ namespace vkapp
 			, dimensions.width
 			, dimensions.height } );
 		commandBuffer.bindVertexBuffer( 0u, m_offscreenVertexBuffer->getBuffer(), 0u );
-		commandBuffer.bindIndexBuffer( m_offscreenIndexBuffer->getBuffer(), 0u, renderer::IndexType::eUInt16 );
+		commandBuffer.bindIndexBuffer( m_offscreenIndexBuffer->getBuffer(), 0u, ashes::IndexType::eUInt16 );
 		commandBuffer.bindDescriptorSet( *m_offscreenDescriptorSets[0]
 			, *m_offscreenPipelineLayout );
 		commandBuffer.pushConstants( *m_offscreenPipelineLayout
@@ -651,7 +651,7 @@ namespace vkapp
 		commandBuffer.pushConstants( *m_offscreenPipelineLayout
 			, *m_objectPcbs[1] );
 		commandBuffer.drawIndexed( uint32_t( m_offscreenIndexData.size() ) );
-		commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+		commandBuffer.writeTimestamp( ashes::PipelineStageFlag::eBottomOfPipe
 			, *m_offscreenQueryPool
 			, 1u );
 		commandBuffer.endRenderPass();
@@ -660,10 +660,10 @@ namespace vkapp
 
 	void RenderPanel::doCreateComputeDescriptorSet()
 	{
-		std::vector< renderer::DescriptorSetLayoutBinding > bindings
+		std::vector< ashes::DescriptorSetLayoutBinding > bindings
 		{
-			renderer::DescriptorSetLayoutBinding{ 0u, renderer::DescriptorType::eUniformBuffer, renderer::ShaderStageFlag::eCompute },
-			renderer::DescriptorSetLayoutBinding{ 1u, renderer::DescriptorType::eStorageImage, renderer::ShaderStageFlag::eCompute },
+			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eCompute },
+			ashes::DescriptorSetLayoutBinding{ 1u, ashes::DescriptorType::eStorageImage, ashes::ShaderStageFlag::eCompute },
 		};
 		m_computeDescriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
 		m_computeDescriptorPool = m_computeDescriptorLayout->createPool( 1u );
@@ -680,16 +680,16 @@ namespace vkapp
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_computeUbo->getDatas()
 			, *m_computeUbo
-			, renderer::PipelineStageFlag::eComputeShader );
+			, ashes::PipelineStageFlag::eComputeShader );
 	}
 
 	void RenderPanel::doCreateComputePipeline()
 	{
 		m_computePipelineLayout = m_device->createPipelineLayout( *m_computeDescriptorLayout );
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-		renderer::ShaderStageState shaderStage
+		ashes::ShaderStageState shaderStage
 		{
-			{ m_device->createShaderModule( renderer::ShaderStageFlag::eCompute ) }
+			{ m_device->createShaderModule( ashes::ShaderStageFlag::eCompute ) }
 		};
 
 		if ( m_device->getRenderer().isGLSLSupported()
@@ -719,28 +719,28 @@ namespace vkapp
 	void RenderPanel::doPrepareCompute()
 	{
 		wxSize size{ GetClientSize() };
-		m_computeQueryPool = m_device->createQueryPool( renderer::QueryType::eTimestamp
+		m_computeQueryPool = m_device->createQueryPool( ashes::QueryType::eTimestamp
 			, 2u
 			, 0u );
-		m_computeFence = m_device->createFence( renderer::FenceCreateFlag::eSignaled );
+		m_computeFence = m_device->createFence( ashes::FenceCreateFlag::eSignaled );
 		m_computeCommandBuffer = m_device->getComputeCommandPool().createCommandBuffer();
 		auto & commandBuffer = *m_computeCommandBuffer;
 
-		commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+		commandBuffer.begin( ashes::CommandBufferUsageFlag::eSimultaneousUse );
 		commandBuffer.resetQueryPool( *m_computeQueryPool
 			, 0u
 			, 2u );
-		commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eTopOfPipe
+		commandBuffer.writeTimestamp( ashes::PipelineStageFlag::eTopOfPipe
 			, *m_computeQueryPool
 			, 0u );
 		commandBuffer.bindPipeline( *m_computePipeline );
 		commandBuffer.bindDescriptorSet( *m_computeDescriptorSet
 			, *m_computePipelineLayout
-			, renderer::PipelineBindPoint::eCompute );
+			, ashes::PipelineBindPoint::eCompute );
 		commandBuffer.dispatch( size.GetWidth() / 16u
 			, size.GetHeight() / 16u
 			, 1u );
-		commandBuffer.writeTimestamp( renderer::PipelineStageFlag::eBottomOfPipe
+		commandBuffer.writeTimestamp( ashes::PipelineStageFlag::eBottomOfPipe
 			, *m_computeQueryPool
 			, 1u );
 		commandBuffer.end();
@@ -748,22 +748,22 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainVertexBuffer()
 	{
-		m_mainVertexLayout = renderer::makeLayout< TexturedVertexData >( 0 );
+		m_mainVertexLayout = ashes::makeLayout< TexturedVertexData >( 0 );
 		m_mainVertexLayout->createAttribute( 0u
-			, renderer::Format::eR32G32B32A32_SFLOAT
+			, ashes::Format::eR32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) )
 			, "POSITION"
 			, 0u );
 		m_mainVertexLayout->createAttribute( 1u
-			, renderer::Format::eR32G32_SFLOAT
+			, ashes::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) )
 			, "TEXCOORD"
 			, 0u );
 
-		m_mainVertexBuffer = renderer::makeVertexBuffer< TexturedVertexData >( *m_device
+		m_mainVertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_mainVertexData.size() )
-			, renderer::BufferTarget::eTransferDst
-			, renderer::MemoryPropertyFlag::eDeviceLocal );
+			, ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
 		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
 			, m_mainVertexData
 			, *m_mainVertexBuffer );
@@ -774,9 +774,9 @@ namespace vkapp
 		m_mainPipelineLayout = m_device->createPipelineLayout( *m_mainDescriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-		std::vector< renderer::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device->createShaderModule( renderer::ShaderStageFlag::eFragment ) } );
+		std::vector< ashes::ShaderStageState > shaderStages;
+		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
 
 		if ( m_device->getRenderer().isGLSLSupported()
 			|| m_device->getRenderer().isSPIRVSupported() )
@@ -804,16 +804,16 @@ namespace vkapp
 			shaderStages[1].entryPoint = "mainPx";
 		}
 
-		m_mainPipeline = m_mainPipelineLayout->createPipeline( renderer::GraphicsPipelineCreateInfo
+		m_mainPipeline = m_mainPipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo
 		{
 			std::move( shaderStages ),
 			*m_mainRenderPass,
-			renderer::VertexInputState::create( *m_mainVertexLayout ),
-			renderer::InputAssemblyState{ renderer::PrimitiveTopology::eTriangleStrip },
-			renderer::RasterisationState{},
-			renderer::MultisampleState{},
-			renderer::ColourBlendState::createDefault(),
-			{ renderer::DynamicState::eViewport, renderer::DynamicState::eScissor }
+			ashes::VertexInputState::create( *m_mainVertexLayout ),
+			ashes::InputAssemblyState{ ashes::PrimitiveTopology::eTriangleStrip },
+			ashes::RasterisationState{},
+			ashes::MultisampleState{},
+			ashes::ColourBlendState::createDefault(),
+			{ ashes::DynamicState::eViewport, ashes::DynamicState::eScissor }
 		} );
 	}
 
@@ -829,12 +829,12 @@ namespace vkapp
 
 			wxSize size{ GetClientSize() };
 
-			commandBuffer.begin( renderer::CommandBufferUsageFlag::eSimultaneousUse );
+			commandBuffer.begin( ashes::CommandBufferUsageFlag::eSimultaneousUse );
 			auto dimensions = m_swapChain->getDimensions();
 			commandBuffer.beginRenderPass( *m_mainRenderPass
 				, frameBuffer
-				, { renderer::ClearValue{ { 1.0, 0.0, 0.0, 1.0 } } }
-			, renderer::SubpassContents::eInline );
+				, { ashes::ClearValue{ { 1.0, 0.0, 0.0, 1.0 } } }
+			, ashes::SubpassContents::eInline );
 			commandBuffer.bindPipeline( *m_mainPipeline );
 			commandBuffer.setViewport( { dimensions.width
 				, dimensions.height
@@ -887,12 +887,12 @@ namespace vkapp
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
-			, renderer::PipelineStageFlag::eVertexShader );
+			, ashes::PipelineStageFlag::eVertexShader );
 		m_computeUbo->getData( 0u ).roll = ( m_frame % GetClientSize().GetWidth() ) * 0.03f;
 		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
 			, m_computeUbo->getDatas()
 			, *m_computeUbo
-			, renderer::PipelineStageFlag::eComputeShader );
+			, ashes::PipelineStageFlag::eComputeShader );
 		++m_frame;
 	}
 
@@ -914,21 +914,21 @@ namespace vkapp
 
 			queue.submit( *m_commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
-				, renderer::PipelineStageFlag::eColourAttachmentOutput
+				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
 			m_swapChain->present( *resources );
-			renderer::UInt64Array values1{ 0u, 0u };
-			renderer::UInt64Array values2{ 0u, 0u };
+			ashes::UInt64Array values1{ 0u, 0u };
+			ashes::UInt64Array values2{ 0u, 0u };
 			m_offscreenQueryPool->getResults( 0u
 				, 2u
 				, 0u
-				, renderer::QueryResultFlag::eWait
+				, ashes::QueryResultFlag::eWait
 				, values1 );
 			m_computeQueryPool->getResults( 0u
 				, 2u
 				, 0u
-				, renderer::QueryResultFlag::eWait
+				, ashes::QueryResultFlag::eWait
 				, values1 );
 
 			// Elapsed time in nanoseconds
