@@ -12,6 +12,8 @@ namespace d3d11_renderer
 		, renderer::FenceCreateFlags flags )
 		: renderer::Fence{ device, flags }
 	{
+#if defined( __ID3D11Device5_INTERFACE_DEFINED__ )
+
 		ID3D11DeviceContext * context;
 		device.getDevice()->GetImmediateContext( &context );
 		auto hr = context->QueryInterface( __uuidof( ID3D11DeviceContext4 )
@@ -26,6 +28,8 @@ namespace d3d11_renderer
 		}
 
 		safeRelease( context );
+
+#endif
 	}
 
 	Fence::~Fence()
@@ -36,6 +40,8 @@ namespace d3d11_renderer
 
 	renderer::WaitResult Fence::wait( uint64_t timeout )const
 	{
+#if defined( __ID3D11Device5_INTERFACE_DEFINED__ )
+
 		auto before = std::chrono::high_resolution_clock::now();
 		std::chrono::nanoseconds wait{};
 		bool end = false;
@@ -50,10 +56,20 @@ namespace d3d11_renderer
 		return end
 			? renderer::WaitResult::eSuccess
 			: renderer::WaitResult::eTimeOut;
+
+#else
+
+		return renderer::WaitResult::eSuccess;
+
+#endif
 	}
 
 	void Fence::reset()const
 	{
+#if defined( __ID3D11Device5_INTERFACE_DEFINED__ )
+
 		m_context->Signal( m_fence, 0u );
+
+#endif
 	}
 }

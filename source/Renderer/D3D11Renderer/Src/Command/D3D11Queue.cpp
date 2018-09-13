@@ -44,10 +44,14 @@ namespace d3d11_renderer
 			context.uavs.clear();
 		}
 
+#if defined( __ID3D11Device5_INTERFACE_DEFINED__ )
+
 		if ( fence )
 		{
 			context.context4->Signal( static_cast< Fence const & >( *fence ).getFence(), 1u );
 		}
+
+#endif
 	}
 
 	void Queue::present( renderer::SwapChainCRefArray const & swapChains
