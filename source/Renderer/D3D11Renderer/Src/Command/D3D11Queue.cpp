@@ -44,7 +44,7 @@ namespace d3d11_renderer
 			context.uavs.clear();
 		}
 
-#if defined( __ID3D11Device5_INTERFACE_DEFINED__ )
+#if Renderer_HasFence
 
 		if ( fence )
 		{

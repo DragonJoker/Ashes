@@ -391,11 +391,15 @@ namespace d3d11_renderer
 			{
 				dxDebugName( m_device4, Device4 );
 			}
+			
+#if Renderer_HasDevice5
 
 			if ( S_OK == m_device->QueryInterface( __uuidof( ID3D11Device5 ), reinterpret_cast< void ** >( &m_device5 ) ) )
 			{
 				dxDebugName( m_device5, Device5 );
 			}
+
+#endif
 		}
 	}
 }

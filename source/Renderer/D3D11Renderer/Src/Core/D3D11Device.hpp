@@ -193,7 +193,7 @@ namespace d3d11_renderer
 			return m_device4;
 		}
 
-#if defined( __ID3D11Device5_INTERFACE_DEFINED__ )
+#if Renderer_HasDevice5
 
 		inline ID3D11Device5 * getDevice5()const
 		{
@@ -233,7 +233,7 @@ namespace d3d11_renderer
 		ID3D11Device2 * m_device2;
 		ID3D11Device3 * m_device3;
 		ID3D11Device4 * m_device4;
-#if defined( __ID3D11Device5_INTERFACE_DEFINED__ )
+#if Renderer_HasDevice5
 		ID3D11Device5 * m_device5;
 #endif
 		ID3D11DeviceContext * m_deviceContext;

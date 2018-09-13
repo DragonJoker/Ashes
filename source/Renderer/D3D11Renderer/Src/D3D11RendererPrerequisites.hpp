@@ -78,6 +78,24 @@ typedef uint8_t UINT8;
 #include <dxgi1_2.h>
 #include <dxgi1_3.h>
 
+#if defined( __ID3D11Device5_INTERFACE_DEFINED__ )
+#	define Renderer_HasDevice5 1
+#else
+#	define Renderer_HasDevice5 0
+#endif
+
+#if defined( __ID3D11Fence_INTERFACE_DEFINED__ )
+#	define Renderer_HasFence 1
+#else
+#	define Renderer_HasFence 0
+#endif
+
+#if defined( __ID3D11DeviceContext4_INTERFACE_DEFINED__ )
+#	define Renderer_HasDeviceContext4 1
+#else
+#	define Renderer_HasDeviceContext4 0
+#endif
+
 #include "Enum/D3D11BlendFactor.hpp"
 #include "Enum/D3D11BlendOp.hpp"
 #include "Enum/D3D11BufferTarget.hpp"
