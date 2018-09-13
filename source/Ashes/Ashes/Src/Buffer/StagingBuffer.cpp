@@ -13,6 +13,22 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+	namespace
+	{
+		inline uint32_t getAlignedSize( uint32_t size, uint32_t align )
+		{
+			uint32_t result = 0u;
+
+			while ( size > align )
+			{
+				size -= align;
+				result += align;
+			}
+
+			return result + align;
+		}
+	}
+
 	StagingBuffer::StagingBuffer( Device const & device
 		, BufferTargets target
 		, uint32_t size )
@@ -39,7 +55,9 @@ namespace ashes
 		std::memcpy( buffer
 			, data
 			, size );
-		getBuffer().flush( 0u, size );
+		getBuffer().flush( 0u
+			, std::min( getBuffer().getSize()
+				, getAlignedSize( size, m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) );
 		getBuffer().unlock();
 		m_device.waitIdle();
 	}
@@ -143,7 +161,9 @@ namespace ashes
 		std::memcpy( data
 			, buffer
 			, size );
-		getBuffer().flush( 0u, size );
+		getBuffer().flush( 0u
+			, std::min( getBuffer().getSize()
+				, getAlignedSize( size, m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) );
 		getBuffer().unlock();
 		m_device.waitIdle();
 	}
