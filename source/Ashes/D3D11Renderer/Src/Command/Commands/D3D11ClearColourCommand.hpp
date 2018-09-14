@@ -36,6 +36,5 @@ namespace d3d11_renderer
 	private:
 		TextureView const & m_image;
 		ashes::ClearColorValue m_colour;
-		DXGI_FORMAT m_format;
 	};
 }

@@ -17,7 +17,7 @@ namespace ashes
 	{
 		eReleaseResources = 0x00000001,
 	};
-	Renderer_ImplementFlag( CommandBufferResetFlag )
+	Ashes_ImplementFlag( CommandBufferResetFlag )
 }
 
 #endif

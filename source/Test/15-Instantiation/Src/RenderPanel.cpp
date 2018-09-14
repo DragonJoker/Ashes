@@ -262,7 +262,7 @@ namespace vkapp
 		ashes::AttachmentDescriptionArray attaches
 		{
 			{
-				ashes::Format::eR8G8B8A8_UNORM,
+				m_swapChain->getFormat(),
 				ashes::SampleCountFlag::e1,
 				ashes::AttachmentLoadOp::eClear,
 				ashes::AttachmentStoreOp::eStore,

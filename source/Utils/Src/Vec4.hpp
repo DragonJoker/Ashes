@@ -59,6 +59,72 @@ namespace utils
 		/**
 		*\brief
 		*	Constructeur.
+		*\param[in] x, y, z, w
+		*	Les valeurs des composantes.
+		*/
+		template< typename X
+			, typename YZW >
+		constexpr Vec4T( X const & x
+			, Vec3T< YZW > const & yzw )noexcept;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] x, y, z, w
+		*	Les valeurs des composantes.
+		*/
+		template< typename XYZ
+			, typename W >
+		constexpr Vec4T( Vec3T< XYZ > const & xyz
+			, W const & w )noexcept;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] x, y, z, w
+		*	Les valeurs des composantes.
+		*/
+		template< typename XY
+			, typename ZW >
+		constexpr Vec4T( Vec2T< XY > const & xy
+			, Vec2T< ZW > const & zw )noexcept;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] x, y, z, w
+		*	Les valeurs des composantes.
+		*/
+		template< typename XY
+			, typename Z
+			, typename W >
+		constexpr Vec4T( Vec2T< XY > const & xy
+			, Z const & z
+			, W const & w )noexcept;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] x, y, z, w
+		*	Les valeurs des composantes.
+		*/
+		template< typename X
+			, typename YZ
+			, typename W >
+		constexpr Vec4T( X const & x
+			, Vec2T< YZ > const & yz
+			, W const & w )noexcept;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] x, y, z, w
+		*	Les valeurs des composantes.
+		*/
+		template< typename X
+			, typename Y
+			, typename ZW >
+			constexpr Vec4T( X const & x
+				, X const & y
+				, Vec2T< ZW > const & zw )noexcept;
+		/**
+		*\brief
+		*	Constructeur.
 		*\param[in] v
 		*	La valeur des composantes.
 		*/

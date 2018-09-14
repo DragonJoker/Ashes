@@ -17,7 +17,7 @@ namespace ashes
 	{
 		eSignaled = 0x00000001,
 	};
-	Renderer_ImplementFlag( FenceCreateFlag )
+	Ashes_ImplementFlag( FenceCreateFlag )
 }
 
 #endif

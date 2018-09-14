@@ -27,6 +27,8 @@ namespace d3d11_renderer
 
 	void DrawIndirectCommand::apply( Context const & context )const
 	{
+		context.context->IASetPrimitiveTopology( m_mode );
+
 		for ( auto & binding : m_vbos )
 		{
 			context.context->IASetVertexBuffers( binding.startIndex
@@ -35,6 +37,9 @@ namespace d3d11_renderer
 				, binding.strides.data()
 				, binding.offsets.data() );
 		}
+
+		context.context->DrawInstancedIndirect( m_buffer.getBuffer()
+			, m_offset );
 	}
 
 	CommandPtr DrawIndirectCommand::clone()const

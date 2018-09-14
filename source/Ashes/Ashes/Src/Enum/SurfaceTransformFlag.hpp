@@ -29,7 +29,7 @@ namespace ashes
 		eHorizontalMirrorRotate270 = 0x00000080,
 		eInherit = 0x00000100,
 	};
-	Renderer_ImplementFlag( SurfaceTransformFlag )
+	Ashes_ImplementFlag( SurfaceTransformFlag )
 	/**
 	*\~english
 	*\brief

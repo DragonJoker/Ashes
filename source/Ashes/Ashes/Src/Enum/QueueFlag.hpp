@@ -20,7 +20,7 @@ namespace ashes
 		eTransfer = 0x00000004,
 		eSparseBinding = 0x00000008,
 	};
-	Renderer_ImplementFlag( QueueFlag )
+	Ashes_ImplementFlag( QueueFlag )
 }
 
 #endif

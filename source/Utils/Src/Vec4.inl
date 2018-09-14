@@ -33,7 +33,85 @@ namespace utils
 		, w{ T( w ) }
 	{
 	}
-	
+
+	template< typename T >
+	template< typename X
+		, typename YZW >
+	constexpr Vec4T< T >::Vec4T( X const & x
+		, Vec3T< YZW > const & yzw )noexcept
+		: x{ T( x ) }
+		, y{ T( yzw.x ) }
+		, z{ T( yzw.y ) }
+		, w{ T( yzw.z ) }
+	{
+	}
+
+	template< typename T >
+	template< typename XYZ
+		, typename W >
+	constexpr Vec4T< T >::Vec4T( Vec3T< XYZ > const & xyz
+		, W const & w )noexcept
+		: x{ T( xyz.x ) }
+		, y{ T( xyz.y ) }
+		, z{ T( xyz.z ) }
+		, w{ T( w ) }
+	{
+	}
+
+	template< typename T >
+	template< typename XY
+		, typename ZW >
+	constexpr Vec4T< T >::Vec4T( Vec2T< XY > const & xy
+		, Vec2T< ZW > const & zw )noexcept
+		: x{ T( xy.x ) }
+		, y{ T( xy.y ) }
+		, z{ T( zw.x ) }
+		, w{ T( zw.y ) }
+	{
+	}
+
+	template< typename T >
+	template< typename XY
+		, typename Z
+		, typename W >
+	constexpr Vec4T< T >::Vec4T( Vec2T< XY > const & xy
+		, Z const & z
+		, W const & w )noexcept
+		: x{ T( xy.x ) }
+		, y{ T( xy.y ) }
+		, z{ T( z ) }
+		, w{ T( w ) }
+	{
+	}
+
+	template< typename T >
+	template< typename X
+		, typename YZ
+		, typename W >
+	constexpr Vec4T< T >::Vec4T( X const & x
+		, Vec2T< YZ > const & yz
+		, W const & w )noexcept
+		: x{ T( x ) }
+		, y{ T( yz.x ) }
+		, z{ T( yz.y ) }
+		, w{ T( w ) }
+	{
+	}
+
+	template< typename T >
+	template< typename X
+		, typename Y
+		, typename ZW >
+	constexpr Vec4T< T >::Vec4T( X const & x
+		, X const & y
+		, Vec2T< ZW > const & zw )noexcept
+		: x{ T( x ) }
+		, y{ T( y ) }
+		, z{ T( zw.x ) }
+		, w{ T( zw.y ) }
+	{
+	}
+
 	template< typename T >
 	constexpr Vec4T< T >::Vec4T( T const & v )noexcept
 		: x{ v }

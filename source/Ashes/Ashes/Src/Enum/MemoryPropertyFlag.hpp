@@ -26,7 +26,7 @@ namespace ashes
 		//! Non visible to host, moreover object's memory may be provided lazily, by implementation.
 		eLazilyAllocated = 0x00000010,
 	};
-	Renderer_ImplementFlag( MemoryPropertyFlag )
+	Ashes_ImplementFlag( MemoryPropertyFlag )
 }
 
 #endif

@@ -53,7 +53,6 @@ namespace d3d11_renderer
 				, m_copyInfo.srcSubresource.baseArrayLayer
 				, m_dst.getMipmapLevels() )
 			, &m_srcBox );
-		//m_dst.generateMipmaps();
 	}
 
 	CommandPtr CopyImageCommand::clone()const

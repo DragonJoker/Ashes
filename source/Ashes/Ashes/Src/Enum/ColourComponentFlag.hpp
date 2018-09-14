@@ -20,7 +20,7 @@ namespace ashes
 		eB = 0x00000004,
 		eA = 0x00000008,
 	};
-	Renderer_ImplementFlag( ColourComponentFlag )
+	Ashes_ImplementFlag( ColourComponentFlag )
 }
 
 #endif

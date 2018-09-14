@@ -20,7 +20,7 @@ namespace ashes
 		eWithAvailability = 0x00000004,
 		ePartial = 0x00000008,
 	};
-	Renderer_ImplementFlag( QueryResultFlag )
+	Ashes_ImplementFlag( QueryResultFlag )
 }
 
 #endif

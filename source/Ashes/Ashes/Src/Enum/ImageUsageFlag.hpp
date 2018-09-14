@@ -24,7 +24,7 @@ namespace ashes
 		eTransientAttachment = 0x00000040,
 		eInputAttachment = 0x00000080,
 	};
-	Renderer_ImplementFlag( ImageUsageFlag )
+	Ashes_ImplementFlag( ImageUsageFlag )
 }
 
 #endif

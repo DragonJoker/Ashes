@@ -19,7 +19,7 @@ namespace ashes
 		e32 = 0x00000020,
 		e64 = 0x00000040,
 	};
-	Renderer_ImplementFlag( SampleCountFlag )
+	Ashes_ImplementFlag( SampleCountFlag )
 }
 
 #endif

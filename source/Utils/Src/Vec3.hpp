@@ -57,6 +57,26 @@ namespace utils
 		/**
 		*\brief
 		*	Constructeur.
+		*\param[in] x, y, z
+		*	Les valeurs des composantes.
+		*/
+		template< typename X
+			, typename YZ >
+		constexpr Vec3T( X const & x
+			, Vec2T< YZ > const & yz )noexcept;
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] x, y, z
+		*	Les valeurs des composantes.
+		*/
+		template< typename XY
+			, typename Z >
+		constexpr Vec3T( Vec2T< XY > const & xy
+			, Z const & z )noexcept;
+		/**
+		*\brief
+		*	Constructeur.
 		*\param[in] v
 		*	La valeur des composantes.
 		*/

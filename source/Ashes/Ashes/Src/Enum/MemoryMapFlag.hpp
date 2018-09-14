@@ -28,7 +28,7 @@ namespace ashes
 		eFlushExplicit = 0x00000040,
 		eUnsynchronised = 0x00000080,
 	};
-	Renderer_ImplementFlag( MemoryMapFlag )
+	Ashes_ImplementFlag( MemoryMapFlag )
 }
 
 #endif

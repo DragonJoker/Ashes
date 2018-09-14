@@ -40,7 +40,7 @@ namespace ashes
 		eCositedChromaSamples = 0x00800000,
 		eSampledImageFilterMinmax = 0x00010000,
 	};
-	Renderer_ImplementFlag( FormatFeatureFlag )
+	Ashes_ImplementFlag( FormatFeatureFlag )
 }
 
 #endif

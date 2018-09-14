@@ -94,8 +94,6 @@ namespace d3d11_renderer
 		m_deviceContext->Flush();
 		safeRelease( m_waitIdleQuery );
 		safeRelease( m_deviceContext );
-		safeRelease( m_device2 );
-		safeRelease( m_device1 );
 		safeRelease( m_device );
 
 #if !defined( NDEBUG )
@@ -377,16 +375,6 @@ namespace d3d11_renderer
 #endif
 
 			dxDebugName( m_device, Device );
-
-			if ( S_OK == m_device->QueryInterface( __uuidof( ID3D11Device1 ), reinterpret_cast< void ** >( &m_device1 ) ) )
-			{
-				dxDebugName( m_device1, Device1 );
-			}
-
-			if ( S_OK == m_device->QueryInterface( __uuidof( ID3D11Device2 ), reinterpret_cast< void ** >( &m_device2 ) ) )
-			{
-				dxDebugName( m_device2, Device2 );
-			}
 
 			D3D11_QUERY_DESC desc{};
 			desc.Query = D3D11_QUERY_EVENT;

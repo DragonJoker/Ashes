@@ -4,6 +4,8 @@ See LICENSE file in root folder
 */
 #include <math.h>
 
+#include <Vectorisation.hpp>
+
 namespace utils
 {
 	template< typename T >

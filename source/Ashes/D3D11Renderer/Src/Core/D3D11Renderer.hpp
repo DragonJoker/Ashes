@@ -70,7 +70,7 @@ namespace d3d11_renderer
 			, float zNear
 			, float zFar )const override;
 
-		inline IDXGIFactory2 * getDXGIFactory()const
+		inline IDXGIFactory * getDXGIFactory()const
 		{
 			return m_factory;
 		}
@@ -80,6 +80,6 @@ namespace d3d11_renderer
 		void doLoadAdapters();
 
 	private:
-		IDXGIFactory2 * m_factory;
+		IDXGIFactory * m_factory;
 	};
 }

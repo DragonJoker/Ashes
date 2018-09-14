@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Format.hpp"
+#include <Enum/Format.hpp>
 
 namespace utils
 {
@@ -22,11 +22,11 @@ namespace utils
 	*\param[in] dsts
 	*	La taille du tampon de destination.
 	*/
-	template< Format Format >
+	template< ashes::Format Format >
 	inline void convertBuffer( uint8_t const * src
 		, size_t srcs
 		, uint8_t * dst
-		, Format dstf
+		, ashes::Format dstf
 		, size_t dsts );
 }
 

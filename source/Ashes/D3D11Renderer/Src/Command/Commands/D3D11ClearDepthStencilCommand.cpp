@@ -14,12 +14,21 @@ namespace d3d11_renderer
 		: CommandBase{ device }
 		, m_image{ static_cast< TextureView const & >( image ) }
 		, m_value{ value }
-		, m_format{ convert( m_image.getFormat() ) }
+		, m_flags{ ( isDepthFormat( image.getFormat() )
+				? D3D11_CLEAR_DEPTH
+				: 0u )
+			| ( isStencilFormat( image.getFormat() )
+				? D3D11_CLEAR_STENCIL
+				: 0u ) }
 	{
 	}
 
 	void ClearDepthStencilCommand::apply( Context const & context )const
 	{
+		context.context->ClearDepthStencilView( m_image.getDepthStencilView()
+			, m_flags
+			, m_value.depth
+			, m_value.stencil );
 	}
 
 	CommandPtr ClearDepthStencilCommand::clone()const

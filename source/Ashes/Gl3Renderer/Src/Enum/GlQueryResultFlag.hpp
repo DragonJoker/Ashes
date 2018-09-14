@@ -13,7 +13,7 @@ namespace gl_renderer
 		GL_QUERY_RESULT = 0x8866,
 		GL_QUERY_RESULT_NO_WAIT = 0x9194,
 	};
-	Renderer_ImplementFlag( GlQueryResultFlag )
+	Ashes_ImplementFlag( GlQueryResultFlag )
 	std::string getName( GlQueryResultFlags value );
 	/**
 	*\brief

@@ -36,6 +36,6 @@ namespace d3d11_renderer
 	private:
 		TextureView const & m_image;
 		ashes::DepthStencilClearValue m_value;
-		DXGI_FORMAT m_format;
+		UINT m_flags;
 	};
 }
