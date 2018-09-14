@@ -16,7 +16,7 @@ namespace ashes
 		: uint32_t
 	{
 	};
-	Renderer_ImplementFlag( RasterisationStateFlag )
+	Ashes_ImplementFlag( RasterisationStateFlag )
 }
 
 #endif

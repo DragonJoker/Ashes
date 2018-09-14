@@ -21,7 +21,7 @@ namespace ashes
 	{
 		eByRegion = 0x00000001
 	};
-	Renderer_ImplementFlag( DependencyFlag )
+	Ashes_ImplementFlag( DependencyFlag )
 }
 
 #endif

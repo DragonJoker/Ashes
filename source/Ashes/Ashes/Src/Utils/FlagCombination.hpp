@@ -429,7 +429,7 @@ namespace ashes
 
 //!@~french		Implémente les opérateurs de combinaison binaire sur un scoped enum.
 //!@~english	Implements binary combination operators on a scoped enum.
-#define Renderer_ImplementFlag( FlagType )\
+#define Ashes_ImplementFlag( FlagType )\
 	using FlagType##s = ashes::FlagCombination< FlagType >;\
 	inline FlagType##s operator|( FlagType lhs, FlagType rhs )\
 	{\

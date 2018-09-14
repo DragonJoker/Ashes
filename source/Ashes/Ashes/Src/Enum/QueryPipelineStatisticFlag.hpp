@@ -27,7 +27,7 @@ namespace ashes
 		eTessellationControlShaderInvocations = 0x00000200,
 		eComputeShaderInvocations = 0x00000400,
 	};
-	Renderer_ImplementFlag( QueryPipelineStatisticFlag )
+	Ashes_ImplementFlag( QueryPipelineStatisticFlag )
 }
 
 #endif

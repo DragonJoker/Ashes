@@ -33,7 +33,7 @@ namespace ashes
 		eAllGraphics = 0x00008000,
 		eAllCommands = 0x00010000,
 	};
-	Renderer_ImplementFlag( PipelineStageFlag )
+	Ashes_ImplementFlag( PipelineStageFlag )
 }
 
 #endif

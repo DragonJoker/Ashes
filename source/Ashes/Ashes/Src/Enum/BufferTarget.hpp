@@ -32,7 +32,7 @@ namespace ashes
 		ePackBuffer = 0x00000400,
 		eUnpackBuffer = 0x00000800,
 	};
-	Renderer_ImplementFlag( BufferTarget )
+	Ashes_ImplementFlag( BufferTarget )
 }
 
 #endif

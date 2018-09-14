@@ -30,7 +30,7 @@ namespace ashes
 		//!\~english	The image can be used to create an image view of type ashes::TextureType::eCube or ashes::TextureType::eCubeArray.
 		eCubeCompatible = 0x00000010,
 	};
-	Renderer_ImplementFlag( ImageCreateFlag )
+	Ashes_ImplementFlag( ImageCreateFlag )
 }
 
 #endif

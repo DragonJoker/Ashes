@@ -57,7 +57,8 @@ namespace ashes
 			, size );
 		getBuffer().flush( 0u
 			, std::min( getBuffer().getSize()
-				, getAlignedSize( size, m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) );
+				, getAlignedSize( size
+					, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) ) );
 		getBuffer().unlock();
 		m_device.waitIdle();
 	}
@@ -163,7 +164,8 @@ namespace ashes
 			, size );
 		getBuffer().flush( 0u
 			, std::min( getBuffer().getSize()
-				, getAlignedSize( size, m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) );
+				, getAlignedSize( size
+					, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) ) );
 		getBuffer().unlock();
 		m_device.waitIdle();
 	}

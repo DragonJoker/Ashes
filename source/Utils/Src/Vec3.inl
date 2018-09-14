@@ -34,6 +34,28 @@ namespace utils
 	}
 
 	template< typename T >
+	template< typename X
+		, typename YZ >
+	constexpr Vec3T< T >::Vec3T( X const & x
+		, Vec2T< YZ > const & yz )noexcept
+		: x{ T( x ) }
+		, y{ T( yz.x ) }
+		, z{ T( yz.y ) }
+	{
+	}
+
+	template< typename T >
+	template< typename XY
+		, typename Z >
+	constexpr Vec3T< T >::Vec3T( Vec2T< XY > const & xy
+		, Z const & z )noexcept
+		: x{ T( xy.x ) }
+		, y{ T( xy.y ) }
+		, z{ T( z ) }
+	{
+	}
+
+	template< typename T >
 	constexpr Vec3T< T >::Vec3T( T const & v )noexcept
 		: x{ v }
 		, y{ v }

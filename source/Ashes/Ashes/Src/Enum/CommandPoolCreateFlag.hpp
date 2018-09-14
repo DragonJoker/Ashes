@@ -18,7 +18,7 @@ namespace ashes
 		eTransient = 0x00000001,
 		eResetCommandBuffer = 0x00000002,
 	};
-	Renderer_ImplementFlag( CommandPoolCreateFlag )
+	Ashes_ImplementFlag( CommandPoolCreateFlag )
 }
 
 #endif

@@ -21,7 +21,7 @@ namespace ashes
 	{
 		eDeviceLocal = 0x00000001,
 	};
-	Renderer_ImplementFlag( MemoryHeapFlag )
+	Ashes_ImplementFlag( MemoryHeapFlag )
 }
 
 #endif

@@ -33,7 +33,7 @@ namespace ashes
 		eMemoryRead = 0x00008000,
 		eMemoryWrite = 0x00010000,
 	};
-	Renderer_ImplementFlag( AccessFlag )
+	Ashes_ImplementFlag( AccessFlag )
 }
 
 #endif

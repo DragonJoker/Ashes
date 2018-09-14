@@ -17,7 +17,7 @@ namespace ashes
 	{
 		ePrecise = 0x00000001,
 	};
-	Renderer_ImplementFlag( QueryControlFlag )
+	Ashes_ImplementFlag( QueryControlFlag )
 }
 
 #endif

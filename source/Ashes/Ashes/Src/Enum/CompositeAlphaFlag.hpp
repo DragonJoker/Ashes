@@ -24,7 +24,7 @@ namespace ashes
 		ePostMultiplied = 0x00000004,
 		eInherit = 0x00000008,
 	};
-	Renderer_ImplementFlag( CompositeAlphaFlag )
+	Ashes_ImplementFlag( CompositeAlphaFlag )
 	/**
 	*\~english
 	*\brief

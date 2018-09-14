@@ -12,7 +12,7 @@ namespace ashes
 		: uint32_t
 	{
 	};
-	Renderer_ImplementFlag( RenderPassCreateFlag )
+	Ashes_ImplementFlag( RenderPassCreateFlag )
 }
 
 #endif
