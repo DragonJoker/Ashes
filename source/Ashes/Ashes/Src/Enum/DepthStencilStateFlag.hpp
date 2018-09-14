@@ -16,7 +16,7 @@ namespace ashes
 		: uint32_t
 	{
 	};
-	Renderer_ImplementFlag( DepthStencilStateFlag )
+	Ashes_ImplementFlag( DepthStencilStateFlag )
 }
 
 #endif

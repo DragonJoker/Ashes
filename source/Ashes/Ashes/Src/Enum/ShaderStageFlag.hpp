@@ -23,7 +23,7 @@ namespace ashes
 		eCompute = 0x00000020,
 		eAll = 0x0000001F,
 	};
-	Renderer_ImplementFlag( ShaderStageFlag )
+	Ashes_ImplementFlag( ShaderStageFlag )
 	/**
 	*\~english
 	*\brief

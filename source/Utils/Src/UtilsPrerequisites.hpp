@@ -22,7 +22,7 @@ namespace utils
 		, class Key
 		, class PtrType = std::shared_ptr< Obj >
 		, typename Creator = std::function< PtrType() >
-		, class Predicate = std::less< std::string > >
+		, class Predicate = std::less< Key > >
 	class Factory;
 	template< typename T >
 	class Vec2T;
@@ -34,8 +34,6 @@ namespace utils
 	class Mat4T;
 	template< typename T >
 	class QuaternionT;
-	template< typename Function >
-	class Signal;
 	/**
 	*\name Typedefs généralistes.
 	*/

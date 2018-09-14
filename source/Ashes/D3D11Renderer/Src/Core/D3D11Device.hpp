@@ -173,16 +173,6 @@ namespace d3d11_renderer
 			return m_device;
 		}
 
-		inline ID3D11Device1 * getDevice1()const
-		{
-			return m_device1;
-		}
-
-		inline ID3D11Device2 * getDevice2()const
-		{
-			return m_device2;
-		}
-
 		inline ashes::BufferBase const & getEmptyIndexedVaoIdx()const
 		{
 			return m_dummyIndexed->getBuffer();
@@ -210,8 +200,6 @@ namespace d3d11_renderer
 		PhysicalDevice const & m_gpu;
 		ConnectionPtr m_connection;
 		ID3D11Device * m_device;
-		ID3D11Device1 * m_device1;
-		ID3D11Device2 * m_device2;
 		ID3D11DeviceContext * m_deviceContext;
 		ID3D11Query * m_waitIdleQuery;
 		D3D_FEATURE_LEVEL m_featureLevel;

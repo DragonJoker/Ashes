@@ -19,7 +19,7 @@ namespace ashes
 		eRenderPassContinue = 0x00000002,
 		eSimultaneousUse = 0x00000004,
 	};
-	Renderer_ImplementFlag( CommandBufferUsageFlag )
+	Ashes_ImplementFlag( CommandBufferUsageFlag )
 }
 
 #endif

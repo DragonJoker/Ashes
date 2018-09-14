@@ -23,21 +23,16 @@ namespace d3d11_renderer
 			auto hr = context->QueryInterface( __uuidof( ID3D11DeviceContext1 )
 				, reinterpret_cast< void ** >( &context1 ) );
 			dxCheckError( hr, "QueryInterface<ID3D11DeviceContext1>" );
-			hr = context->QueryInterface( __uuidof( ID3D11DeviceContext2 )
-				, reinterpret_cast< void ** >( &context2 ) );
-			dxCheckError( hr, "QueryInterface<ID3D11DeviceContext2>" );
 		}
 
 		~Context()
 		{
-			safeRelease( context2 );
 			safeRelease( context1 );
 			safeRelease( context );
 		}
 
 		ID3D11DeviceContext * context;
 		ID3D11DeviceContext1 * context1;
-		ID3D11DeviceContext2 * context2;
 		WriteDescriptorSetBindingArray uavs;
 
 	private:

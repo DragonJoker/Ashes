@@ -20,7 +20,8 @@ namespace d3d11_renderer
 				, Texture const & image
 				, uint32_t layer );
 
-			ashes::TextureViewPtr view;
+			ID3D11Resource * image;
+			UINT subResourceIndex;
 		};
 		struct LayerCopy
 		{
@@ -29,7 +30,8 @@ namespace d3d11_renderer
 				, Texture const & dstImage
 				, uint32_t layer );
 
-			ashes::ImageBlit region;
+			ashes::Offset3D dstOffset;
+			D3D11_BOX srcBox;
 			Attachment src;
 			Attachment dst;
 		};

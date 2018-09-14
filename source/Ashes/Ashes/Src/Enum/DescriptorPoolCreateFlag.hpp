@@ -21,7 +21,7 @@ namespace ashes
 	{
 		eFreeDescriptorSet = 0x00000001,
 	};
-	Renderer_ImplementFlag( DescriptorPoolCreateFlag )
+	Ashes_ImplementFlag( DescriptorPoolCreateFlag )
 }
 
 #endif

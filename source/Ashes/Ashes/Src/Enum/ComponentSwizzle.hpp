@@ -41,7 +41,7 @@ namespace ashes
 		//!\~french		La composante est définie à la composante alpha.
 		eA,
 	};
-	Renderer_ImplementFlag( ComponentSwizzle )
+	Ashes_ImplementFlag( ComponentSwizzle )
 	/**
 	*\~english
 	*\brief

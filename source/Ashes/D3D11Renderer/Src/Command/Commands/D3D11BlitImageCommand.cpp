@@ -17,33 +17,27 @@ namespace d3d11_renderer
 	BlitImageCommand::Attachment::Attachment( ashes::ImageSubresourceLayers & subresource
 		, Texture const & image
 		, uint32_t layer )
+		: image{ image.getResource() }
+		, subResourceIndex{ D3D11CalcSubresource( subresource.mipLevel, layer, image.getMipmapLevels() ) }
 	{
-		if ( image.getLayerCount() > 1u )
-		{
-			view = image.createView( 
-			{
-				ashes::TextureViewType( image.getType() ),
-				image.getFormat(),
-				ashes::ComponentMapping{},
-				{
-					subresource.aspectMask,
-					subresource.mipLevel,
-					1u,
-					layer,
-					1u
-				}
-			} );
-			subresource.mipLevel = 0u;
-		}
 	}
 
 	BlitImageCommand::LayerCopy::LayerCopy( ashes::ImageBlit blitRegion
 		, Texture const & srcImage
 		, Texture const & dstImage
 		, uint32_t layer )
-		: region{ blitRegion }
-		, src{ region.srcSubresource, srcImage, layer }
-		, dst{ region.dstSubresource, dstImage, layer }
+		: dstOffset{ blitRegion.dstOffset }
+		, srcBox
+		{
+			UINT( blitRegion.srcOffset.x ),
+			UINT( blitRegion.srcOffset.y ),
+			UINT( blitRegion.srcOffset.z ),
+			blitRegion.srcOffset.x + blitRegion.srcExtent.width,
+			blitRegion.srcOffset.y + blitRegion.srcExtent.height,
+			blitRegion.srcOffset.z + blitRegion.srcExtent.depth
+		}
+		, src{ blitRegion.srcSubresource, srcImage, layer }
+		, dst{ blitRegion.dstSubresource, dstImage, layer }
 	{
 	}
 
@@ -80,6 +74,14 @@ namespace d3d11_renderer
 		for ( auto & playerCopy : m_layerCopies )
 		{
 			auto & layerCopy = *playerCopy;
+			context.context->CopySubresourceRegion( layerCopy.dst.image
+				, layerCopy.dst.subResourceIndex
+				, layerCopy.dstOffset.x
+				, layerCopy.dstOffset.y
+				, layerCopy.dstOffset.z
+				, layerCopy.src.image
+				, layerCopy.src.subResourceIndex
+				, &layerCopy.srcBox );
 		}
 	}
 

@@ -359,7 +359,7 @@ namespace vkapp
 			, std::move( subpasses )
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
 				, ashes::AccessFlag::eColourAttachmentWrite }
-			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eFragmentShader
 				, ashes::AccessFlag::eShaderRead } );
 	}
 
