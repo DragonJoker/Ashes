@@ -65,7 +65,7 @@ int main( int argc, char * argv[] )
 	static constexpr uint32_t height = 600u;
 	glfwInit();
 	glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API );
-	GLFWwindow * window = glfwCreateWindow( int( width ), int( height ), "GLFW Template", nullptr, nullptr );
+	GLFWwindow * window = glfwCreateWindow( int( width ), int( height ), ( "GLFW Template (" + renderer->getName() + ")" ).c_str(), nullptr, nullptr );
 	Application app;
 	glfwSetWindowUserPointer( window, &app );
 	glfwSetWindowSizeCallback( window, onWindowResized );

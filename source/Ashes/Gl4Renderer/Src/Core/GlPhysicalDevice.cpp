@@ -522,7 +522,7 @@ namespace gl_renderer
 		m_properties.limits.standardSampleLocations = false;
 		m_properties.limits.optimalBufferCopyOffsetAlignment = ashes::NonAvailable< uint64_t >;
 		m_properties.limits.optimalBufferCopyRowPitchAlignment = ashes::NonAvailable< uint64_t >;
-		m_properties.limits.nonCoherentAtomSize = ashes::NonAvailable< uint64_t >;
+		m_properties.limits.nonCoherentAtomSize = 64ull;
 
 		m_properties.sparseProperties.residencyAlignedMipSize = false;
 		m_properties.sparseProperties.residencyNonResidentStrict = false;

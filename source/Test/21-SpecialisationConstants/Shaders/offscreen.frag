@@ -1,10 +1,9 @@
+#version 450
+#extension GL_KHR_vulkan_glsl : enable
+
 layout( set=0, binding=0 ) uniform sampler2D mapColour;
 
-#ifdef VULKAN
 layout( constant_id = 0 ) const int COLOUR_INDEX = 0;
-#else
-layout( location = 0 ) uniform int COLOUR_INDEX;
-#endif
 
 layout( location = 0 ) in vec2 vtx_texcoord;
 

@@ -43,8 +43,11 @@ namespace ashes
 		, uint32_t size )const
 	{
 		assert( size <= getBuffer().getSize() );
+		auto mappedSize = std::min( getBuffer().getSize()
+			, getAlignedSize( size
+				, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) );
 		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0u
-			, size
+			, mappedSize
 			, MemoryMapFlag::eWrite | MemoryMapFlag::eInvalidateRange );
 
 		if ( !buffer )
@@ -55,10 +58,7 @@ namespace ashes
 		std::memcpy( buffer
 			, data
 			, size );
-		getBuffer().flush( 0u
-			, std::min( getBuffer().getSize()
-				, getAlignedSize( size
-					, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) ) );
+		getBuffer().flush( 0u, mappedSize );
 		getBuffer().unlock();
 		m_device.waitIdle();
 	}
@@ -150,8 +150,11 @@ namespace ashes
 		, uint32_t size )const
 	{
 		assert( size <= getBuffer().getSize() );
+		auto mappedSize = std::min( getBuffer().getSize()
+			, getAlignedSize( size
+				, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) );
 		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0u
-			, size
+			, mappedSize
 			, MemoryMapFlag::eRead );
 
 		if ( !buffer )
@@ -162,10 +165,7 @@ namespace ashes
 		std::memcpy( data
 			, buffer
 			, size );
-		getBuffer().flush( 0u
-			, std::min( getBuffer().getSize()
-				, getAlignedSize( size
-					, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) ) );
+		getBuffer().flush( 0u, mappedSize );
 		getBuffer().unlock();
 		m_device.waitIdle();
 	}

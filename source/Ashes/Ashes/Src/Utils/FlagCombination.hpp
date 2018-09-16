@@ -13,6 +13,97 @@ namespace ashes
 	/**
 	*\~french
 	*\brief
+	*	Classe template d'itérateur sur une combinaison binaire d'indicateurs.
+	*\remarks
+	*	Le parcours se fait uniquement vers "l'avant", en déplaçant un index servant à construire un masque.
+	*\param FlagType
+	*	Le type de scoped enum.
+	*\~english
+	*\brief
+	*	Template iterator class on a binary combination of flags.
+	*\remarks
+	*	Allows definition of flags, through binary operations (&, |),
+	*	for which operands will be of same binary size.
+	*\param FlagType
+	*	The scoped enum type.
+	*/
+	template< typename FlagType >
+	struct FlagIterator
+	{
+	public:
+		//!@~french		Le type entier de base de l'enum.
+		//!@~english	The basic integer integer.
+		using BaseType = typename std::underlying_type< FlagType >::type;
+
+	public:
+		/**
+		* Begin ctor.
+		*/
+		FlagIterator( BaseType value )
+			: m_initialValue{ value }
+		{
+			doGetNextValue();
+		}
+		/**
+		* End ctor.
+		*/
+		FlagIterator()
+			: m_initialValue{ 0u }
+			, m_index{ sizeof( BaseType ) * 8 }
+		{
+		}
+
+		FlagIterator & operator++()
+		{
+			doGetNextValue();
+			return *this;
+		}
+
+		FlagIterator operator++( int )
+		{
+			FlagIterator result{ *this };
+			++( *this );
+			return result;
+		}
+
+		FlagType operator*()const
+		{
+			return m_value;
+		}
+
+		bool operator==( FlagIterator< FlagType > const & rhs )
+		{
+			return m_index == rhs.m_index
+				&& m_initialValue == rhs.m_initialValue;
+		}
+
+		bool operator!=( FlagIterator< FlagType > const & rhs )
+		{
+			return m_index != rhs.m_index
+				|| m_initialValue != rhs.m_initialValue;
+		}
+
+	private:
+		void doGetNextValue()
+		{
+			auto v = BaseType{ 1u };
+
+			do
+			{
+				m_value = FlagType( m_initialValue & ( v << m_index ) );
+				++m_index;
+			}
+			while ( m_value == FlagType( 0 ) && m_index < sizeof( BaseType ) * 8 );
+		}
+
+	private:
+		BaseType m_initialValue;
+		size_t m_index{ 0u };
+		FlagType m_value;
+	};
+	/**
+	*\~french
+	*\brief
 	*	Classe template qui fournit une conversion implicite depuis un scoped
 	*	enum vers un type entier de base.
 	*\remarks
@@ -98,6 +189,30 @@ namespace ashes
 		inline BaseType value()const noexcept
 		{
 			return m_value;
+		}
+		/**
+		*\~french
+		*\return
+		*	L'itérateur de début.
+		*\~english
+		*\brief
+		*	The beginning iterator.
+		*/
+		inline FlagIterator< FlagType > begin()const noexcept
+		{
+			return FlagIterator< FlagType >( m_value );
+		}
+		/**
+		*\~french
+		*\return
+		*	L'itérateur de fin (0).
+		*\~english
+		*\brief
+		*	The end iterator (0).
+		*/
+		inline FlagIterator< FlagType > end()const noexcept
+		{
+			return FlagIterator< FlagType >();
 		}
 		/**
 		*\~french

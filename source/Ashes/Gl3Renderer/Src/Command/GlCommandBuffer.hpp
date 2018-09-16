@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #include "Commands/GlCommandBase.hpp"
 
+#include "Shader/GlShaderDesc.hpp"
+
 #include <Command/CommandBuffer.hpp>
 
 namespace gl_renderer
@@ -209,10 +211,13 @@ namespace gl_renderer
 			, ashes::QueryPool const & pool
 			, uint32_t query )const override;
 		/**
-		*\copydoc	ashes::CommandBuffer::pushConstants
+		*\copydoc	ashes::CommandBuffer:pushConstants
 		*/
 		void pushConstants( ashes::PipelineLayout const & layout
-			, ashes::PushConstantsBufferBase const & pcb )const override;
+			, ashes::ShaderStageFlags stageFlags
+			, uint32_t offset
+			, uint32_t size
+			, void const * data )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer::dispatch
 		*/
@@ -284,19 +289,19 @@ namespace gl_renderer
 		mutable CommandArray m_commands;
 		struct State
 		{
-			ashes::CommandBufferUsageFlags m_beginFlags{ 0u };
-			Pipeline const * m_currentPipeline{ nullptr };
-			std::vector< std::pair < ashes::PipelineLayout const *, ashes::PushConstantsBufferBase const * > > m_pushConstantBuffers;
-			ComputePipeline const * m_currentComputePipeline{ nullptr };
-			uint32_t m_currentSubpassIndex{ 0u };
-			ashes::SubpassDescription const * m_currentSubpass{ nullptr };
-			RenderPass const * m_currentRenderPass{ nullptr };
-			ashes::FrameBuffer const * m_currentFrameBuffer{ nullptr };
-			VboBindings m_boundVbos;
-			IboBinding m_boundIbo;
-			ashes::IndexType m_indexType;
-			GeometryBuffers * m_boundVao{ nullptr };
-			GeometryBuffersRefArray m_vaos;
+			ashes::CommandBufferUsageFlags beginFlags{ 0u };
+			Pipeline const * currentPipeline{ nullptr };
+			std::vector< std::pair < ashes::PipelineLayout const *, PushConstantsDesc > > pushConstantBuffers;
+			ComputePipeline const * currentComputePipeline{ nullptr };
+			uint32_t currentSubpassIndex{ 0u };
+			ashes::SubpassDescription const * currentSubpass{ nullptr };
+			RenderPass const * currentRenderPass{ nullptr };
+			ashes::FrameBuffer const * currentFrameBuffer{ nullptr };
+			VboBindings boundVbos;
+			IboBinding boundIbo;
+			ashes::IndexType indexType;
+			GeometryBuffers * boundVao{ nullptr };
+			GeometryBuffersRefArray vaos;
 		};
 		mutable std::vector< std::function< void( ContextLock const & ) > > m_afterSubmitActions;
 		mutable State m_state;

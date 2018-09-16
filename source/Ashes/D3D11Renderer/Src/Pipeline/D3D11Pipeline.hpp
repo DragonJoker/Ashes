@@ -8,7 +8,7 @@
 #define ___D3D11Renderer_Pipeline_HPP___
 #pragma once
 
-#include "D3D11RendererPrerequisites.hpp"
+#include "Shader/D3D11ShaderDesc.hpp"
 
 #include <Pipeline/Pipeline.hpp>
 
@@ -16,23 +16,15 @@
 
 namespace d3d11_renderer
 {
-	/**
-	*\brief
-	*	Un pipeline de rendu.
-	*/
 	class Pipeline
 		: public ashes::Pipeline
 	{
 	public:
-		/**
-		*name
-		*	Construction / Destruction.
-		*/
-		/**@{*/
 		Pipeline( Device const & device
 			, ashes::PipelineLayout const & layout
 			, ashes::GraphicsPipelineCreateInfo && createInfo );
 		~Pipeline();
+		PushConstantsBuffer findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
 
 		inline ashes::InputAssemblyState const & getInputAssemblyState()const
 		{
@@ -45,7 +37,7 @@ namespace d3d11_renderer
 				&& !m_createInfo.vertexInputState.vertexAttributeDescriptions.empty();
 		}
 
-		inline std::vector< ashes::PushConstantsBufferPtr > const & getConstantsPcbs()const
+		inline std::vector< PushConstantsBuffer > const & getConstantsPcbs()const
 		{
 			return m_constantsPcbs;
 		}
@@ -121,6 +113,11 @@ namespace d3d11_renderer
 			return m_createInfo.stages;
 		}
 
+		inline ProgramLayout const & getProgramLayout()const
+		{
+			return m_programLayout;
+		}
+
 		inline bool hasDynamicState( ashes::DynamicState state )const
 		{
 			return m_createInfo.dynamicStates.end() != std::find( m_createInfo.dynamicStates.begin()
@@ -132,9 +129,8 @@ namespace d3d11_renderer
 		void doCreateBlendState( Device const & device );
 		void doCreateRasterizerState( Device const & device );
 		void doCreateDepthStencilState( Device const & device );
-		ShaderModule * doCompileProgram( Device const & device );
-		void doCreateInputLayout( Device const & device
-			, ShaderModule * vtxShader );
+		void doCompileProgram( Device const & device );
+		void doCreateInputLayout( Device const & device );
 
 	private:
 		ID3D11DepthStencilState * m_dsState{ nullptr };
@@ -143,7 +139,8 @@ namespace d3d11_renderer
 		ID3D11BlendState * m_bdState{ nullptr };
 		std::optional< RECT > m_scissor;
 		std::optional< D3D11_VIEWPORT > m_viewport;
-		std::vector< ashes::PushConstantsBufferPtr > m_constantsPcbs;
+		std::vector< PushConstantsBuffer > m_constantsPcbs;
+		ProgramLayout m_programLayout;
 	};
 }
 

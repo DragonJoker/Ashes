@@ -27,7 +27,7 @@
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 #include <RenderPass/FrameBufferAttachment.hpp>
-#include <Shader/ShaderProgram.hpp>
+#include <Shader/GlslToSpv.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <FileUtils.hpp>
@@ -49,8 +49,8 @@ namespace vkapp
 			std::vector< ashes::ShaderStageState > shaderStages;
 			shaderStages.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
 			shaderStages.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-			shaderStages[0].module->loadShader( common::dumpTextFile( shadersFolder / "opaque_lp.vert" ) );
-			shaderStages[1].module->loadShader( common::dumpTextFile( shadersFolder / "opaque_lp.frag" ) );
+			shaderStages[0].module->loadShader( common::dumpShaderFile( device, ashes::ShaderStageFlag::eVertex, shadersFolder / "opaque_lp.vert" ) );
+			shaderStages[1].module->loadShader( common::dumpShaderFile( device, ashes::ShaderStageFlag::eFragment, shadersFolder / "opaque_lp.frag" ) );
 			return shaderStages;
 		}
 
@@ -193,14 +193,10 @@ namespace vkapp
 			auto result = ashes::makeLayout< common::TexturedVertexData >( 0 );
 			result->createAttribute( 0u
 				, ashes::Format::eR32G32B32A32_SFLOAT
-				, uint32_t( offsetof( common::TexturedVertexData, position ) )
-				, "POSITION"
-				, 0u );
+				, uint32_t( offsetof( common::TexturedVertexData, position ) ) );
 			result->createAttribute( 1u
 				, ashes::Format::eR32G32_SFLOAT
-				, uint32_t( offsetof( common::TexturedVertexData, uv ) )
-				, "TEXCOORD"
-				, 0u );
+				, uint32_t( offsetof( common::TexturedVertexData, uv ) ) );
 			return result;
 		}
 	}

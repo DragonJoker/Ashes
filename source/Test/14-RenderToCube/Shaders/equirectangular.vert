@@ -1,3 +1,6 @@
+#version 450
+#extension GL_KHR_vulkan_glsl : enable
+
 layout( location = 0 ) in vec4 position;
 
 out gl_PerVertex
@@ -14,6 +17,6 @@ layout( location = 0 ) out vec3 vtx_position;
 
 void main()
 {
-	vtx_position = ashesScalePosition( position ).xyz;
+	vtx_position = position.xyz;
 	gl_Position = mtxViewProjection * position;
 }

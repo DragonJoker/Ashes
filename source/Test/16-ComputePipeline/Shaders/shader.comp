@@ -1,3 +1,6 @@
+#version 450
+#extension GL_KHR_vulkan_glsl : enable
+
 #extension GL_ARB_compute_shader : enable
 
 layout( set=0, binding=0 ) uniform Roll
@@ -9,14 +12,10 @@ layout( set=0, binding=0 ) uniform Roll
 layout( set=0, binding=1, rgba32f ) uniform image2D mapDest;
 
 layout( local_size_x = 16, local_size_y = 16 ) in;
-
 void main()
 {
-#ifdef VULKAN
 	ivec2 storePos = ivec2( gl_GlobalInvocationID.xy );
-#else
-	ivec2 storePos = ivec2( gl_GlobalInvocationID.x, textureSize.y - gl_GlobalInvocationID.y );
-#endif
+	//ivec2 storePos = ivec2( gl_GlobalInvocationID.x, textureSize.y - gl_GlobalInvocationID.y );
 	float localCoef = length( vec2( ivec2( gl_LocalInvocationID.xy ) - 8 ) / 8.0 );
 	float globalCoef = sin( float( gl_WorkGroupID.x + gl_WorkGroupID.y ) * 0.1 + roll ) * 0.5;
 	vec4 value = imageLoad( mapDest, storePos );

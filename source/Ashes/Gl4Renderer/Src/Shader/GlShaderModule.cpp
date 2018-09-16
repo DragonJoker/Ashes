@@ -6,16 +6,47 @@ See LICENSE file in root folder.
 
 #include "Core/GlDevice.hpp"
 #include "Core/GlPhysicalDevice.hpp"
+#include "Core/GlRenderer.hpp"
 
 #include <Core/Renderer.hpp>
+#include <Pipeline/ShaderStageState.hpp>
 
 #include <iostream>
 #include <regex>
+
+#include "spirv_cpp.hpp"
+#include "spirv_cross_util.hpp"
+#include "spirv_glsl.hpp"
 
 namespace gl_renderer
 {
 	namespace
 	{
+		template< typename CleanFunc >
+		struct BlockGuard
+		{
+			template< typename InitFunc >
+			BlockGuard( InitFunc init, CleanFunc clean )
+				: m_clean{ std::move( clean ) }
+			{
+				init();
+			}
+
+			~BlockGuard()
+			{
+				m_clean();
+			}
+
+		private:
+			CleanFunc m_clean;
+		};
+
+		template< typename InitFunc, typename CleanFunc >
+		BlockGuard< CleanFunc > makeBlockGuard( InitFunc init, CleanFunc clean )
+		{
+			return BlockGuard< CleanFunc >{ std::move( init ), std::move( clean ) };
+		}
+
 		std::string doRetrieveCompilerLog( Device const & device
 			, GLuint shaderName )
 		{
@@ -51,7 +82,8 @@ namespace gl_renderer
 
 		bool doCheckCompileErrors( Device const & device
 			, bool compiled
-			, GLuint shaderName )
+			, GLuint shaderName
+			, std::string const & source )
 		{
 			auto compilerLog = doRetrieveCompilerLog( device
 				, shaderName );
@@ -61,18 +93,168 @@ namespace gl_renderer
 				if ( !compiled )
 				{
 					ashes::Logger::logError( compilerLog );
+					ashes::Logger::logError( source );
 				}
 				else
 				{
 					ashes::Logger::logWarning( compilerLog );
+					ashes::Logger::logWarning( source );
 				}
 			}
 			else if ( !compiled )
 			{
 				ashes::Logger::logError( "Shader compilation failed" );
+				ashes::Logger::logError( source );
 			}
 
 			return compiled;
+		}
+
+		spv::ExecutionModel getExecutionModel( ashes::ShaderStageFlag stage )
+		{
+			spv::ExecutionModel result{};
+
+			switch ( stage )
+			{
+			case ashes::ShaderStageFlag::eVertex:
+				result = spv::ExecutionModelVertex;
+				break;
+			case ashes::ShaderStageFlag::eGeometry:
+				result = spv::ExecutionModelGeometry;
+				break;
+			case ashes::ShaderStageFlag::eTessellationControl:
+				result = spv::ExecutionModelTessellationControl;
+				break;
+			case ashes::ShaderStageFlag::eTessellationEvaluation:
+				result = spv::ExecutionModelTessellationEvaluation;
+				break;
+			case ashes::ShaderStageFlag::eFragment:
+				result = spv::ExecutionModelFragment;
+				break;
+			case ashes::ShaderStageFlag::eCompute:
+				result = spv::ExecutionModelGLCompute;
+				break;
+			default:
+				assert( false && "Unsupported shader stage flag" );
+				break;
+			}
+
+			return result;
+		}
+
+		void doFillConstant( ashes::SpecialisationInfoBase const & specialisationInfo
+			, ashes::SpecialisationMapEntry const & entry
+			, spirv_cross::SPIRType const & type
+			, spirv_cross::SPIRConstant & constant )
+		{
+			auto offset = entry.offset;
+			auto size = type.width * type.vecsize;
+
+			for ( auto col = 0u; col < type.vecsize; ++col )
+			{
+				for ( auto vec = 0u; vec < type.vecsize; ++vec )
+				{
+					std::memcpy( &constant.m.c[col].r[vec]
+						, specialisationInfo.getData() + offset
+						, size );
+					offset += size;
+				}
+			}
+		}
+
+		void doProcessSpecializationConstants( ashes::ShaderStageState const & state
+			, spirv_cross::CompilerGLSL & compiler )
+		{
+			if ( state.specialisationInfo )
+			{
+				auto constants = compiler.get_specialization_constants();
+
+				for ( auto & spec : *state.specialisationInfo )
+				{
+					auto it = std::find_if( constants.begin()
+						, constants.end()
+						, [&spec]( spirv_cross::SpecializationConstant const & lookup )
+						{
+							return lookup.constant_id == spec.constantID;
+						} );
+
+					if ( it != constants.end() )
+					{
+						auto & constant = compiler.get_constant( it->id );
+						auto & type = compiler.get_type( constant.constant_type );
+						doFillConstant( *state.specialisationInfo
+							, spec
+							, type
+							, constant );
+					}
+				}
+			}
+		}
+
+		void doSetEntryPoint( ashes::ShaderStageFlag stage
+			, spirv_cross::CompilerGLSL & compiler )
+		{
+			auto model = getExecutionModel( stage );
+			std::string entryPoint;
+
+			for ( auto & e : compiler.get_entry_points_and_stages() )
+			{
+				if ( entryPoint.empty() && e.execution_model == model )
+				{
+					entryPoint = e.name;
+				}
+			}
+
+			if ( entryPoint.empty() )
+			{
+				throw std::runtime_error{ "Could not find an entry point with stage: " + getName( stage ) };
+			}
+
+			compiler.set_entry_point( entryPoint, model );
+		}
+
+		void doSetupOptions( Device const & device
+			, spirv_cross::CompilerGLSL & compiler )
+		{
+			auto options = compiler.get_common_options();
+			options.version = device.getShaderVersion();
+			options.es = false;
+			options.separate_shader_objects = true;
+			options.enable_420pack_extension = true;
+			options.vertex.fixup_clipspace = false;
+			options.vertex.flip_vert_y = true;
+			options.vertex.support_nonzero_base_instance = true;
+			compiler.set_common_options( options );
+		}
+
+		std::string compileSpvToGlsl( Device const & device
+			, ashes::UInt32Array const & shader
+			, ashes::ShaderStageFlag stage
+			, ashes::ShaderStageState const & state )
+		{
+			auto prvLoc = std::locale( "" );
+
+			auto guard = makeBlockGuard(
+				[&prvLoc]()
+				{
+					if ( prvLoc.name() != "C" )
+					{
+						std::locale::global( std::locale{ "C" } );
+					}
+				},
+				[&prvLoc]()
+				{
+					if ( prvLoc.name() != "C" )
+					{
+						std::locale::global( prvLoc );
+					}
+				} );
+
+			auto compiler = std::make_unique< spirv_cross::CompilerGLSL >( shader );
+			doProcessSpecializationConstants( state, *compiler );
+			doSetEntryPoint( stage, *compiler );
+			doSetupOptions( device, *compiler );
+			return compiler->compile();
 		}
 	}
 
@@ -81,7 +263,6 @@ namespace gl_renderer
 		: ashes::ShaderModule{ device, stage }
 		, m_device{ device }
 		, m_shader{ m_device.getContext()->glCreateShader( convert( stage ) ) }
-		, m_isSpirV{ false }
 	{
 	}
 
@@ -90,62 +271,100 @@ namespace gl_renderer
 		// Shader object is destroyed by the ShaderProgram.
 	}
 
-	void ShaderModule::loadShader( std::string const & shader )
+	void ShaderModule::compile( ashes::ShaderStageState const & state )const
 	{
-		std::string source = shader;
-
-		if ( m_stage == ashes::ShaderStageFlag::eVertex )
+		if ( static_cast< Renderer const & >( m_device.getRenderer() ).isSPIRVSupported() )
 		{
-			std::regex regex{ R"(void[ ]*main)" };
-			source = std::regex_replace( shader.data()
-				, regex
-				, R"(vec4 ashesScalePosition(vec4 pos)
-{
-	mat4 scale;
-	scale[0] = vec4( 1.0, 0.0, 0.0, 0.0 );
-	scale[1] = vec4( 0.0, -1.0, 0.0, 0.0 );
-	scale[2] = vec4( 0.0, 0.0, 1.0, 0.0 );
-	scale[3] = vec4( 0.0, 0.0, 0.0, 1.0 );
-	return scale * pos;
-}
+			auto context = m_device.getContext();
+			context->glShaderBinary( 1u
+				, &m_shader
+				, GL_SHADER_BINARY_FORMAT_SPIR_V
+				, m_spv.data()
+				, GLsizei( m_spv.size() * sizeof( uint32_t ) ) );
 
-$&)" );
+			if ( state.specialisationInfo )
+			{
+				auto & specialisationInfo = *state.specialisationInfo;
+				auto count = GLuint( std::distance( specialisationInfo.begin(), specialisationInfo.end() ) );
+				std::vector< GLuint > indices;
+				indices.reserve( count );
+				std::vector< GLuint > values;
+				values.reserve( count );
+				auto src = reinterpret_cast< GLuint const * >( specialisationInfo.getData() );
+				auto dst = values.data();
+
+				for ( auto & constant : specialisationInfo )
+				{
+					indices.push_back( constant.constantID );
+					values.push_back( *src );
+					++src;
+				}
+
+				glLogCall( context
+					, glSpecializeShader
+					, m_shader
+					, state.entryPoint.c_str()
+					, count
+					, indices.data()
+					, values.data() );
+			}
+			else
+			{
+				glLogCall( context
+					, glSpecializeShader
+					, m_shader
+					, state.entryPoint.c_str()
+					, 0u
+					, nullptr
+					, nullptr );
+			}
+
+			int compiled = 0;
+			glLogCall( context
+				, glGetShaderiv
+				, m_shader
+				, GL_INFO_COMPILE_STATUS
+				, &compiled );
+
+			if ( !doCheckCompileErrors( m_device, compiled != 0, m_shader, m_source ) )
+			{
+				throw std::runtime_error{ "Shader compilation failed." };
+			}
 		}
-
-		auto length = int( source.size() );
-		char const * data = source.data();
-		auto context = m_device.getContext();
-		glLogCall( context
-			, glShaderSource
-			, m_shader
-			, 1
-			, &data
-			, &length );
-		glLogCall( context
-			, glCompileShader
-			, m_shader );
-		int compiled = 0;
-		glLogCall( context
-			, glGetShaderiv
-			, m_shader
-			, GL_INFO_COMPILE_STATUS
-			, &compiled );
-
-		if ( !doCheckCompileErrors( m_device, compiled != 0, m_shader ) )
+		else
 		{
-			throw std::runtime_error{ "Shader compilation failed." };
+			m_source = compileSpvToGlsl( m_device
+				, m_spv
+				, m_stage
+				, state );
+			auto length = int( m_source.size() );
+			char const * data = m_source.data();
+			auto context = m_device.getContext();
+			glLogCall( context
+				, glShaderSource
+				, m_shader
+				, 1
+				, &data
+				, &length );
+			glLogCall( context
+				, glCompileShader
+				, m_shader );
+			int compiled = 0;
+			glLogCall( context
+				, glGetShaderiv
+				, m_shader
+				, GL_INFO_COMPILE_STATUS
+				, &compiled );
+
+			if ( !doCheckCompileErrors( m_device, compiled != 0, m_shader, m_source ) )
+			{
+				throw std::runtime_error{ "Shader compilation failed." };
+			}
 		}
 	}
 
-	void ShaderModule::loadShader( ashes::ByteArray const & fileData )
+	void ShaderModule::loadShader( ashes::UInt32Array const & shader )
 	{
-		if ( !m_device.getRenderer().isSPIRVSupported() )
-		{
-			throw std::runtime_error{ "Shader compilation from SPIR-V is not supported." };
-		}
-
-		auto context = m_device.getContext();
-		context->glShaderBinary( 1u, &m_shader, GL_SHADER_BINARY_FORMAT_SPIR_V, fileData.data(), GLsizei( fileData.size() ) );
-		m_isSpirV = true;
+		m_spv = shader;
 	}
 }

@@ -270,21 +270,6 @@ namespace ashes
 		{
 			return m_layers;
 		}
-
-		inline bool areRawConstantsSupported()const
-		{
-			return m_features.rawConstantsSupported;
-		}
-
-		inline bool isSPIRVSupported()const
-		{
-			return m_features.spirvSupported;
-		}
-
-		inline bool isGLSLSupported()const
-		{
-			return m_features.glslSupported;
-		}
 		/**@}*/
 
 	protected:

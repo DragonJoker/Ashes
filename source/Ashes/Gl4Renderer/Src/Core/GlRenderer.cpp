@@ -314,7 +314,7 @@ namespace gl_renderer
 	}
 
 	Renderer::Renderer( Configuration const & configuration )
-		: ashes::Renderer{ ashes::ClipDirection::eBottomUp, "gl", configuration }
+		: ashes::Renderer{ ashes::ClipDirection::eBottomUp, "gl4", configuration }
 	{
 		RenderWindow dummyWindow;
 		m_gpus.push_back( std::make_unique< PhysicalDevice >( *this ) );
@@ -325,10 +325,8 @@ namespace gl_renderer
 		m_features.hasBaseInstance = gpu.find( "GL_ARB_base_instance" );
 		m_features.hasClearTexImage = gpu.find( "GL_ARB_clear_texture" );
 		m_features.hasComputeShaders = gpu.find( "GL_ARB_compute_shader" );
-		m_features.glslSupported = true;
-		m_features.rawConstantsSupported = true;
 		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...
-		m_features.spirvSupported = false
+		m_spirvSupported = false
 			&& ( gpu.find( "GL_ARB_gl_spirv" )
 				|| gpu.hasSPIRVShaderBinaryFormat() );
 	}

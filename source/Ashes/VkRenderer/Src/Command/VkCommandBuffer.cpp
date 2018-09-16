@@ -497,14 +497,17 @@ namespace vk_renderer
 	}
 
 	void CommandBuffer::pushConstants( ashes::PipelineLayout const & layout
-		, ashes::PushConstantsBufferBase const & pcb )const
+		, ashes::ShaderStageFlags stageFlags
+		, uint32_t offset
+		, uint32_t size
+		, void const * data )const
 	{
 		m_device.vkCmdPushConstants( m_commandBuffer
 			, static_cast< PipelineLayout const & >( layout )
-			, convert( pcb.getStageFlags() )
-			, pcb.getOffset()
-			, pcb.getSize()
-			, pcb.getData() );
+			, convert( stageFlags )
+			, offset
+			, size
+			, data );
 	}
 
 	void CommandBuffer::dispatch( uint32_t groupCountX

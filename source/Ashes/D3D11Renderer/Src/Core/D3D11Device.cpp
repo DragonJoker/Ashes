@@ -6,7 +6,6 @@ See LICENSE file in root folder.
 
 #include "Buffer/D3D11Buffer.hpp"
 #include "Buffer/D3D11BufferView.hpp"
-#include "Buffer/D3D11PushConstantsBuffer.hpp"
 #include "Buffer/D3D11UniformBuffer.hpp"
 #include "Command/D3D11CommandPool.hpp"
 #include "Command/D3D11Queue.hpp"
@@ -108,16 +107,6 @@ namespace d3d11_renderer
 		, ashes::Extent3D const & extent )const
 	{
 		return std::make_unique< StagingTexture >( *this, format, extent );
-	}
-
-	ashes::PushConstantsBufferPtr Device::createPushConstantsBuffer( uint32_t location
-		, ashes::ShaderStageFlags stageFlags
-		, ashes::PushConstantArray const & variables )const
-	{
-		return std::make_unique< PushConstantsBuffer >( *this
-			, location
-			, stageFlags
-			, variables );
 	}
 
 	ashes::RenderPassPtr Device::createRenderPass( ashes::RenderPassCreateInfo createInfo )const

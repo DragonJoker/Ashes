@@ -253,7 +253,10 @@ namespace test_renderer
 	}
 
 	void CommandBuffer::pushConstants( ashes::PipelineLayout const & layout
-		, ashes::PushConstantsBufferBase const & pcb )const
+		, ashes::ShaderStageFlags stageFlags
+		, uint32_t offset
+		, uint32_t size
+		, void const * data )const
 	{
 	}
 

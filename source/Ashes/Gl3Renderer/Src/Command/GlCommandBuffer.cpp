@@ -104,7 +104,7 @@ namespace gl_renderer
 		m_afterSubmitActions.clear();
 		m_commands.clear();
 		m_state = State{};
-		m_state.m_beginFlags = flags;
+		m_state.beginFlags = flags;
 	}
 
 	void CommandBuffer::begin( ashes::CommandBufferUsageFlags flags
@@ -113,12 +113,12 @@ namespace gl_renderer
 		m_afterSubmitActions.clear();
 		m_commands.clear();
 		m_state = State{};
-		m_state.m_beginFlags = flags;
+		m_state.beginFlags = flags;
 	}
 
 	void CommandBuffer::end()const
 	{
-		m_state.m_pushConstantBuffers.clear();
+		m_state.pushConstantBuffers.clear();
 	}
 
 	void CommandBuffer::reset( ashes::CommandBufferResetFlags flags )const
@@ -132,38 +132,38 @@ namespace gl_renderer
 		, ashes::ClearValueArray const & clearValues
 		, ashes::SubpassContents contents )const
 	{
-		m_state.m_currentRenderPass = &static_cast< RenderPass const & >( renderPass );
-		m_state.m_currentFrameBuffer = &frameBuffer;
-		m_state.m_currentSubpassIndex = 0u;
-		m_state.m_currentSubpass = &m_state.m_currentRenderPass->getSubpasses()[m_state.m_currentSubpassIndex++];
+		m_state.currentRenderPass = &static_cast< RenderPass const & >( renderPass );
+		m_state.currentFrameBuffer = &frameBuffer;
+		m_state.currentSubpassIndex = 0u;
+		m_state.currentSubpass = &m_state.currentRenderPass->getSubpasses()[m_state.currentSubpassIndex++];
 		m_commands.emplace_back( std::make_unique< BeginRenderPassCommand >( m_device
 			, renderPass
 			, frameBuffer
 			, clearValues
 			, contents
-			, *m_state.m_currentSubpass ) );
+			, *m_state.currentSubpass ) );
 	}
 
 	void CommandBuffer::nextSubpass( ashes::SubpassContents contents )const
 	{
 		m_commands.emplace_back( std::make_unique< EndSubpassCommand >( m_device
-			, *m_state.m_currentFrameBuffer
-			, *m_state.m_currentSubpass ) );
-		m_state.m_currentSubpass = &m_state.m_currentRenderPass->getSubpasses()[m_state.m_currentSubpassIndex++];
+			, *m_state.currentFrameBuffer
+			, *m_state.currentSubpass ) );
+		m_state.currentSubpass = &m_state.currentRenderPass->getSubpasses()[m_state.currentSubpassIndex++];
 		m_commands.emplace_back( std::make_unique< NextSubpassCommand >( m_device
-			, *m_state.m_currentRenderPass
-			, *m_state.m_currentFrameBuffer
-			, *m_state.m_currentSubpass ) );
-		m_state.m_boundVbos.clear();
+			, *m_state.currentRenderPass
+			, *m_state.currentFrameBuffer
+			, *m_state.currentSubpass ) );
+		m_state.boundVbos.clear();
 	}
 
 	void CommandBuffer::endRenderPass()const
 	{
 		m_commands.emplace_back( std::make_unique< EndSubpassCommand >( m_device
-			, *m_state.m_currentFrameBuffer
-			, *m_state.m_currentSubpass ) );
+			, *m_state.currentFrameBuffer
+			, *m_state.currentSubpass ) );
 		m_commands.emplace_back( std::make_unique< EndRenderPassCommand >( m_device ) );
-		m_state.m_boundVbos.clear();
+		m_state.boundVbos.clear();
 	}
 
 	void CommandBuffer::executeCommands( ashes::CommandBufferCRefArray const & commands )const
@@ -229,39 +229,31 @@ namespace gl_renderer
 	void CommandBuffer::bindPipeline( ashes::Pipeline const & pipeline
 		, ashes::PipelineBindPoint bindingPoint )const
 	{
-		if ( m_state.m_currentPipeline )
+		if ( m_state.currentPipeline )
 		{
-			auto src = m_state.m_currentPipeline->getVertexInputStateHash();
+			auto src = m_state.currentPipeline->getVertexInputStateHash();
 			auto dst = static_cast< Pipeline const & >( pipeline ).getVertexInputStateHash();
 
 			if ( src != dst )
 			{
 				IboBinding empty{};
-				m_state.m_boundIbo.swap( empty );
-				m_state.m_boundVbos.clear();
+				m_state.boundIbo.swap( empty );
+				m_state.boundVbos.clear();
 			}
 		}
 
-		m_state.m_currentPipeline = &static_cast< Pipeline const & >( pipeline );
+		m_state.currentPipeline = &static_cast< Pipeline const & >( pipeline );
 		m_commands.emplace_back( std::make_unique< BindPipelineCommand >( m_device
 			, pipeline
 			, bindingPoint ) );
 
-		for ( auto & pcb : m_state.m_pushConstantBuffers )
+		for ( auto & pcb : m_state.pushConstantBuffers )
 		{
 			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, *pcb.first
-				, *pcb.second ) );
+				, pcb.second ) );
 		}
 
-		for ( auto & pcb : m_state.m_currentPipeline->getConstantsPcbs() )
-		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, m_state.m_currentPipeline->getLayout()
-				, *pcb ) );
-		}
-
-		m_state.m_pushConstantBuffers.clear();
+		m_state.pushConstantBuffers.clear();
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
 			, [this]( ContextLock const & context )
@@ -277,27 +269,19 @@ namespace gl_renderer
 	{
 		if ( m_device.getRenderer().getFeatures().hasComputeShaders )
 		{
-			m_state.m_currentComputePipeline = &static_cast< ComputePipeline const & >( m_device
+			m_state.currentComputePipeline = &static_cast< ComputePipeline const & >( m_device
 				, pipeline );
 			m_commands.emplace_back( std::make_unique< BindComputePipelineCommand >( m_device
 				, pipeline
 				, bindingPoint ) );
 
-			for ( auto & pcb : m_state.m_pushConstantBuffers )
+			for ( auto & pcb : m_state.pushConstantBuffers )
 			{
 				m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-					, *pcb.first
-					, *pcb.second ) );
+					, pcb.second ) );
 			}
 
-			for ( auto & pcb : m_state.m_currentComputePipeline->getConstantsPcbs() )
-			{
-				m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-					, m_state.m_currentComputePipeline->getLayout()
-					, *pcb ) );
-			}
-
-			m_state.m_pushConstantBuffers.clear();
+			m_state.pushConstantBuffers.clear();
 
 			m_afterSubmitActions.insert( m_afterSubmitActions.begin()
 				, [this]( ContextLock const & context )
@@ -323,11 +307,11 @@ namespace gl_renderer
 		for ( auto i = 0u; i < buffers.size(); ++i )
 		{
 			auto & glBuffer = static_cast< Buffer const & >( buffers[i].get() );
-			m_state.m_boundVbos[binding] = { glBuffer.getBuffer(), offsets[i], &glBuffer };
+			m_state.boundVbos[binding] = { glBuffer.getBuffer(), offsets[i], &glBuffer };
 			++binding;
 		}
 
-		m_state.m_boundVao = nullptr;
+		m_state.boundVao = nullptr;
 	}
 
 	void CommandBuffer::bindIndexBuffer( ashes::BufferBase const & buffer
@@ -335,9 +319,9 @@ namespace gl_renderer
 		, ashes::IndexType indexType )const
 	{
 		auto & glBuffer = static_cast< Buffer const & >( buffer );
-		m_state.m_boundIbo = BufferObjectBinding{ glBuffer.getBuffer(), offset, &glBuffer };
-		m_state.m_indexType = indexType;
-		m_state.m_boundVao = nullptr;
+		m_state.boundIbo = BufferObjectBinding{ glBuffer.getBuffer(), offset, &glBuffer };
+		m_state.indexType = indexType;
+		m_state.boundVao = nullptr;
 	}
 
 	void CommandBuffer::bindDescriptorSets( ashes::DescriptorSetCRefArray const & descriptorSets
@@ -420,24 +404,24 @@ namespace gl_renderer
 		, uint32_t firstVertex
 		, uint32_t firstInstance )const
 	{
-		if ( !m_state.m_currentPipeline->hasVertexLayout() )
+		if ( !m_state.currentPipeline->hasVertexLayout() )
 		{
 			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, ashes::IndexType::eUInt32 );
-			m_state.m_boundVao = &m_device.getEmptyIndexedVao();
+			m_state.boundVao = &m_device.getEmptyIndexedVao();
 			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( m_device
-				, *m_state.m_boundVao ) );
+				, *m_state.boundVao ) );
 			m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( m_device
 				, vtxCount
 				, instCount
 				, 0u
 				, firstVertex
 				, firstInstance
-				, m_state.m_currentPipeline->getInputAssemblyState().topology
-				, m_state.m_indexType ) );
+				, m_state.currentPipeline->getInputAssemblyState().topology
+				, m_state.indexType ) );
 		}
 		else
 		{
-			if ( !m_state.m_boundVao )
+			if ( !m_state.boundVao )
 			{
 				doBindVao();
 			}
@@ -447,7 +431,7 @@ namespace gl_renderer
 				, instCount
 				, firstVertex
 				, firstInstance
-				, m_state.m_currentPipeline->getInputAssemblyState().topology ) );
+				, m_state.currentPipeline->getInputAssemblyState().topology ) );
 		}
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
@@ -465,14 +449,14 @@ namespace gl_renderer
 		, uint32_t vertexOffset
 		, uint32_t firstInstance )const
 	{
-		if ( !m_state.m_currentPipeline->hasVertexLayout() )
+		if ( !m_state.currentPipeline->hasVertexLayout() )
 		{
 			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, ashes::IndexType::eUInt32 );
-			m_state.m_boundVao = &m_device.getEmptyIndexedVao();
+			m_state.boundVao = &m_device.getEmptyIndexedVao();
 			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( m_device
-				, *m_state.m_boundVao ) );
+				, *m_state.boundVao ) );
 		}
-		else if ( !m_state.m_boundVao )
+		else if ( !m_state.boundVao )
 		{
 			doBindVao();
 		}
@@ -483,8 +467,8 @@ namespace gl_renderer
 			, firstIndex
 			, vertexOffset
 			, firstInstance
-			, m_state.m_currentPipeline->getInputAssemblyState().topology
-			, m_state.m_indexType ) );
+			, m_state.currentPipeline->getInputAssemblyState().topology
+			, m_state.indexType ) );
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
 			, [this]( ContextLock const & context )
@@ -505,7 +489,7 @@ namespace gl_renderer
 			throw std::runtime_error( "Draw indirect is not supported" );
 		}
 
-		if ( !m_state.m_boundVao )
+		if ( !m_state.boundVao )
 		{
 			doBindVao();
 		}
@@ -515,7 +499,7 @@ namespace gl_renderer
 			, offset
 			, drawCount
 			, stride
-			, m_state.m_currentPipeline->getInputAssemblyState().topology ) );
+			, m_state.currentPipeline->getInputAssemblyState().topology ) );
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
 			, [this]( ContextLock const & context )
@@ -536,14 +520,14 @@ namespace gl_renderer
 			throw std::runtime_error( "Draw indirect is not supported" );
 		}
 
-		if ( !m_state.m_currentPipeline->hasVertexLayout() )
+		if ( !m_state.currentPipeline->hasVertexLayout() )
 		{
 			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, ashes::IndexType::eUInt32 );
-			m_state.m_boundVao = &m_device.getEmptyIndexedVao();
+			m_state.boundVao = &m_device.getEmptyIndexedVao();
 			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( m_device
-				, *m_state.m_boundVao ) );
+				, *m_state.boundVao ) );
 		}
-		else if ( !m_state.m_boundVao )
+		else if ( !m_state.boundVao )
 		{
 			doBindVao();
 		}
@@ -553,8 +537,8 @@ namespace gl_renderer
 			, offset
 			, drawCount
 			, stride
-			, m_state.m_currentPipeline->getInputAssemblyState().topology
-			, m_state.m_indexType ) );
+			, m_state.currentPipeline->getInputAssemblyState().topology
+			, m_state.indexType ) );
 
 		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
 			, [this]( ContextLock const & context )
@@ -660,17 +644,33 @@ namespace gl_renderer
 	}
 
 	void CommandBuffer::pushConstants( ashes::PipelineLayout const & layout
-		, ashes::PushConstantsBufferBase const & pcb )const
+		, ashes::ShaderStageFlags stageFlags
+		, uint32_t offset
+		, uint32_t size
+		, void const * data )const
 	{
-		if ( m_state.m_currentPipeline || m_state.m_currentComputePipeline )
+		PushConstantsDesc desc
+		{
+			stageFlags,
+			offset,
+			size,
+		{},
+		{ reinterpret_cast< uint8_t const * >( data ), reinterpret_cast< uint8_t const * >( data ) + size }
+		};
+
+		if ( m_state.currentPipeline )
 		{
 			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, layout
-				, pcb ) );
+				, m_state.currentPipeline->findPushConstantBuffer( desc ) ) );
+		}
+		else if ( m_state.currentComputePipeline )
+		{
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
+				, m_state.currentComputePipeline->findPushConstantBuffer( desc ) ) );
 		}
 		else
 		{
-			m_state.m_pushConstantBuffers.emplace_back( &layout, &pcb );
+			m_state.pushConstantBuffers.emplace_back( &layout, desc );
 		}
 	}
 
@@ -754,12 +754,12 @@ namespace gl_renderer
 
 	void CommandBuffer::initialiseGeometryBuffers()const
 	{
-		for ( auto & vao : m_state.m_vaos )
+		for ( auto & vao : m_state.vaos )
 		{
 			vao.get().initialise();
 		}
 
-		m_state.m_vaos.clear();
+		m_state.vaos.clear();
 	}
 
 	void CommandBuffer::doMemoryBarrier( ashes::PipelineStageFlags after
@@ -790,29 +790,29 @@ namespace gl_renderer
 
 	void CommandBuffer::doBindVao()const
 	{
-		m_state.m_boundVao = m_state.m_currentPipeline->findGeometryBuffers( m_state.m_boundVbos, m_state.m_boundIbo );
+		m_state.boundVao = m_state.currentPipeline->findGeometryBuffers( m_state.boundVbos, m_state.boundIbo );
 
-		if ( !m_state.m_boundVao )
+		if ( !m_state.boundVao )
 		{
-			m_state.m_boundVao = &m_state.m_currentPipeline->createGeometryBuffers( m_state.m_boundVbos, m_state.m_boundIbo, m_state.m_indexType ).get();
-			m_state.m_vaos.emplace_back( *m_state.m_boundVao );
+			m_state.boundVao = &m_state.currentPipeline->createGeometryBuffers( m_state.boundVbos, m_state.boundIbo, m_state.indexType ).get();
+			m_state.vaos.emplace_back( *m_state.boundVao );
 		}
-		else if ( m_state.m_boundVao->getVao() == GL_INVALID_INDEX )
+		else if ( m_state.boundVao->getVao() == GL_INVALID_INDEX )
 		{
-			auto it = std::find_if( m_state.m_vaos.begin()
-				, m_state.m_vaos.end()
+			auto it = std::find_if( m_state.vaos.begin()
+				, m_state.vaos.end()
 				, [this]( GeometryBuffersRef const & lookup )
 				{
-					return &lookup.get() == m_state.m_boundVao;
+					return &lookup.get() == m_state.boundVao;
 				} );
 
-			if ( it == m_state.m_vaos.end() )
+			if ( it == m_state.vaos.end() )
 			{
-				m_state.m_vaos.emplace_back( *m_state.m_boundVao );
+				m_state.vaos.emplace_back( *m_state.boundVao );
 			}
 		}
 
 		m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( m_device
-			, *m_state.m_boundVao ) );
+			, *m_state.boundVao ) );
 	}
 }

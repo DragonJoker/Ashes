@@ -29,7 +29,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/ShaderProgram.hpp>
+#include <Shader/GlslToSpv.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Transform.hpp>
@@ -286,14 +286,10 @@ namespace vkapp
 		m_vertexLayout = ashes::makeLayout< TexturedVertexData >( 0 );
 		m_vertexLayout->createAttribute( 0u
 			, ashes::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) )
-			, "POSITION"
-			, 0u );
+			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 		m_vertexLayout->createAttribute( 1u
 			, ashes::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) )
-			, "TEXCOORD"
-			, 0u );
+			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 		std::vector< TexturedVertexData > vertexData
 		{
 			// Front
@@ -372,35 +368,22 @@ namespace vkapp
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
+
+		if ( !wxFileExists( shadersFolder / "shader.vert" )
+			|| !wxFileExists( shadersFolder / "shader.frag" ) )
+		{
+			throw std::runtime_error{ "Shader files are missing" };
+		}
+
 		std::vector< ashes::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-
-		if ( m_device->getRenderer().isGLSLSupported()
-			|| m_device->getRenderer().isSPIRVSupported() )
-		{
-			if ( !wxFileExists( shadersFolder / "shader.vert" )
-				|| !wxFileExists( shadersFolder / "shader.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.vert" ) );
-			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.frag" ) );
-		}
-		else
-		{
-			if ( !wxFileExists( shadersFolder / "shader.hvert" )
-				|| !wxFileExists( shadersFolder / "shader.hpix" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.hvert" ) );
-			shaderStages[0].entryPoint = "mainVx";
-			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.hpix" ) );
-			shaderStages[1].entryPoint = "mainPx";
-		}
+		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device
+			, ashes::ShaderStageFlag::eVertex
+			, shadersFolder / "shader.vert" ) );
+		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device
+			, ashes::ShaderStageFlag::eFragment
+			, shadersFolder / "shader.frag" ) );
 
 		ashes::RasterisationState rasterisationState;
 		rasterisationState.cullMode = ashes::CullModeFlag::eNone;

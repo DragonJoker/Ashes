@@ -1,6 +1,8 @@
 #include "Pipeline/D3D11Pipeline.hpp"
 
+#include "Buffer/D3D11UniformBuffer.hpp"
 #include "Core/D3D11Device.hpp"
+#include "Pipeline/D3D11VertexInputState.hpp"
 #include "Shader/D3D11ShaderModule.hpp"
 
 #include <Buffer/PushConstantsBuffer.hpp>
@@ -20,8 +22,69 @@ namespace d3d11_renderer
 		doCreateBlendState( device );
 		doCreateRasterizerState( device );
 		doCreateDepthStencilState( device );
-		auto vtxShader = doCompileProgram( device );
-		doCreateInputLayout( device, vtxShader );
+		doCompileProgram( device );
+		doCreateInputLayout( device );
+	}
+
+	PushConstantsBuffer Pipeline::findPushConstantBuffer( PushConstantsDesc const & pushConstants )const
+	{
+		// Try to find a PCB that has the same flags, and the same size as the push constants.
+		auto it = std::find_if( m_constantsPcbs.begin()
+			, m_constantsPcbs.end()
+			, [&pushConstants]( PushConstantsBuffer const & lookup )
+			{
+				return lookup.data.stageFlags == pushConstants.stageFlags
+					&& lookup.data.size == pushConstants.offset + pushConstants.size;
+			} );
+
+		if ( it == m_constantsPcbs.end() )
+		{
+			// Try a PCB that has the same flags, but is larger than the push constants.
+			it = std::find_if( m_constantsPcbs.begin()
+				, m_constantsPcbs.end()
+				, [&pushConstants]( PushConstantsBuffer const & lookup )
+				{
+					return lookup.data.stageFlags == pushConstants.stageFlags
+						&& lookup.data.size > pushConstants.offset + pushConstants.size;
+				} );
+		}
+
+		if ( it == m_constantsPcbs.end() )
+		{
+			// Try a PCB that contains the flags of the push constants.
+			it = std::find_if( m_constantsPcbs.begin()
+				, m_constantsPcbs.end()
+				, [&pushConstants]( PushConstantsBuffer const & lookup )
+				{
+					return checkFlag( lookup.data.stageFlags, pushConstants.stageFlags )
+						&& lookup.data.size == pushConstants.offset + pushConstants.size;
+				} );
+		}
+
+		if ( it == m_constantsPcbs.end() )
+		{
+			// Try a PCB that contains the flags of the push constants, and is larger than them.
+			it = std::find_if( m_constantsPcbs.begin()
+				, m_constantsPcbs.end()
+				, [&pushConstants]( PushConstantsBuffer const & lookup )
+				{
+					return checkFlag( lookup.data.stageFlags, pushConstants.stageFlags )
+						&& lookup.data.size > pushConstants.offset + pushConstants.size;
+				} );
+		}
+
+		if ( it != m_constantsPcbs.end() )
+		{
+			return PushConstantsBuffer
+			{
+				it->ubo,
+				it->location,
+				pushConstants
+			};
+		}
+
+		static PushConstantsBuffer const dummy{};
+		return dummy;
 	}
 
 	void Pipeline::doCreateBlendState( Device const & device )
@@ -70,48 +133,51 @@ namespace d3d11_renderer
 		}
 	}
 
-	ShaderModule * Pipeline::doCompileProgram( Device const & device )
+	void Pipeline::doCompileProgram( Device const & device )
 	{
-		for ( auto & stage : m_createInfo.stages )
-		{
-			if ( stage.specialisationInfo )
-			{
-				m_constantsPcbs.push_back( convert( device
-					, ~( 0u )
-					, stage.module->getStage()
-					, *stage.specialisationInfo ) );
-			}
-		}
-
-		ShaderModule * result{ nullptr };
-
 		for ( auto & state : m_createInfo.stages )
 		{
 			auto module = std::static_pointer_cast< ShaderModule >( state.module );
-			module->compile( state );
-
-			if ( module->getStage() == ashes::ShaderStageFlag::eVertex )
-			{
-				result = module.get();
-			}
+			m_programLayout.emplace( state.module->getStage(), module->compile( state ) );
 		}
 
-		return result;
+		for ( auto & shaderLayoutIt : m_programLayout )
+		{
+			for ( auto & blockLayout : shaderLayoutIt.second.interfaceBlockLayout )
+			{
+				PushConstantsBuffer pcb
+				{
+					std::make_shared< UniformBuffer >( device
+						, 1u
+						, blockLayout.size
+						, 0u
+						, ashes::MemoryPropertyFlag::eHostVisible ),
+					blockLayout.binding,
+					{
+						shaderLayoutIt.first,
+						0u,
+						blockLayout.size
+					}
+				};
+				m_constantsPcbs.push_back( std::move( pcb ) );
+			}
+		}
 	}
 
-	void Pipeline::doCreateInputLayout( Device const & device
-		, ShaderModule * vtxShader )
+	void Pipeline::doCreateInputLayout( Device const & device )
 	{
-		if ( vtxShader )
+		auto it = m_programLayout.find( ashes::ShaderStageFlag::eVertex );
+
+		if ( it != m_programLayout.end() )
 		{
+			auto compiled = it->second.module->getCompiled();
+			auto & inputLayout = it->second.inputLayout;
 			auto d3ddevice = device.getDevice();
-			std::list< std::string > strings;
-			auto inputDesc = convert( m_createInfo.vertexInputState
-				, strings );
+			auto inputDesc = convert( m_createInfo.vertexInputState, inputLayout );
 			auto hr = d3ddevice->CreateInputLayout( inputDesc.data()
 				, UINT( inputDesc.size() )
-				, vtxShader->getCompiled()->GetBufferPointer()
-				, vtxShader->getCompiled()->GetBufferSize()
+				, compiled->GetBufferPointer()
+				, compiled->GetBufferSize()
 				, &m_iaState );
 
 			if ( !dxCheckError( hr, "CreateInputLayout" ) )

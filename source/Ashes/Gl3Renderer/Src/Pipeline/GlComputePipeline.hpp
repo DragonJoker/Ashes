@@ -36,6 +36,7 @@ namespace gl_renderer
 		ComputePipeline( Device const & device
 			, ashes::PipelineLayout const & layout
 			, ashes::ComputePipelineCreateInfo && createInfo );
+		PushConstantsDesc findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
 		/**
 		*\return
 		*	Le PipelineLayout.
@@ -52,20 +53,12 @@ namespace gl_renderer
 		{
 			return m_program.getProgram();
 		}
-		/**
-		*\return
-		*	Le tampon de push constants correspondant aux constantes de spécialisation.
-		*/
-		inline std::vector< ashes::PushConstantsBufferPtr > const & getConstantsPcbs()const
-		{
-			return m_constantsPcbs;
-		}
 
 	private:
 		Device const & m_device;
 		ashes::PipelineLayout const & m_layout;
 		ShaderProgram m_program;
-		std::vector< ashes::PushConstantsBufferPtr > m_constantsPcbs;
+		PushConstantsDesc m_constantsPcb;
 	};
 }
 

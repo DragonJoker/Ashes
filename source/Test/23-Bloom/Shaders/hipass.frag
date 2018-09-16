@@ -1,3 +1,6 @@
+#version 450
+#extension GL_KHR_vulkan_glsl : enable
+
 layout( binding = 0 ) uniform sampler2D c3d_mapDiffuse;
 layout( location = 0 ) in vec2 vtx_texture;
 layout( location = 0 ) out vec4 pxl_fragColor;

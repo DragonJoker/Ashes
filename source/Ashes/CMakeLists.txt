@@ -12,6 +12,10 @@ if ( MSVC )
 	add_definitions( -D_ENFORCE_MATCHING_ALLOCATORS=0 )
 endif ()
 
+set( ASHES_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR} )
+set( ASHES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} )
+set( SPIRV_CROSS_DIR ${ASHES_SOURCE_DIR}/../external/SPIRV-Cross )
+
 add_subdirectory( Ashes )
 
 if ( ASHES_BUILD_PLUGINS )

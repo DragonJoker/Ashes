@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Buffer/GlGeometryBuffers.hpp"
+#include "Shader/GlShaderDesc.hpp"
 #include "Shader/GlShaderProgram.hpp"
 
 #include <Buffer/PushConstantsBuffer.hpp>
@@ -50,6 +51,7 @@ namespace gl_renderer
 			, IboBinding const & ibo
 			, ashes::IndexType type )const;
 		~Pipeline();
+		PushConstantsDesc findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
 		/**@}*/
 		/**
 		*\return
@@ -184,14 +186,6 @@ namespace gl_renderer
 		}
 		/**
 		*\return
-		*	Le tampon de push constants correspondant aux constantes de spécialisation.
-		*/
-		inline std::vector< ashes::PushConstantsBufferPtr > const & getConstantsPcbs()const
-		{
-			return m_constantsPcbs;
-		}
-		/**
-		*\return
 		*	\p true si l'état dynamique est dans la liste d'états dynamiques.
 		*/
 		inline bool hasDynamicState( ashes::DynamicState state )const
@@ -215,7 +209,7 @@ namespace gl_renderer
 		ashes::TessellationState m_tsState;
 		std::optional< ashes::Viewport > m_viewport;
 		std::optional< ashes::Scissor > m_scissor;
-		std::vector< ashes::PushConstantsBufferPtr > m_constantsPcbs;
+		PushConstantsDesc m_constantsPcb;
 		ShaderProgram m_program;
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;
 		mutable std::unordered_map< GLuint, BufferDestroyConnection > m_connections;

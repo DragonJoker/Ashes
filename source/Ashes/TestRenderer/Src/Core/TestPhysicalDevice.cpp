@@ -195,7 +195,7 @@ namespace test_renderer
 		m_properties.limits.standardSampleLocations = true;
 		m_properties.limits.optimalBufferCopyOffsetAlignment = 1u;
 		m_properties.limits.optimalBufferCopyRowPitchAlignment = 1u;
-		m_properties.limits.nonCoherentAtomSize = 64u;
+		m_properties.limits.nonCoherentAtomSize = 64ull;
 
 		m_properties.sparseProperties.residencyAlignedMipSize = true;
 		m_properties.sparseProperties.residencyNonResidentStrict = true;
