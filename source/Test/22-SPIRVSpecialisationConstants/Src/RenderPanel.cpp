@@ -56,7 +56,7 @@ namespace vkapp
 		ashes::PushConstantArray doGetVariables()
 		{
 			ashes::PushConstantArray result;
-			result.push_back( { 3u, 0u, ashes::ConstantFormat::eVec4f } );
+			result.push_back( { 0u, ashes::ConstantFormat::eVec4f } );
 			return result;
 		}
 	}
@@ -250,7 +250,6 @@ namespace vkapp
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
 		m_objectPcb = std::make_unique< ashes::PushConstantsBuffer< utils::Vec4 > >( *m_device
-			, 3u
 			, ashes::ShaderStageFlag::eFragment
 			, doGetVariables() );
 		*m_objectPcb->getData() = utils::Vec4{ 0.5, 0.5, 1.0, 1.0 };
@@ -437,14 +436,10 @@ namespace vkapp
 		m_offscreenVertexLayout = ashes::makeLayout< TexturedVertexData >( 0 );
 		m_offscreenVertexLayout->createAttribute( 0u
 			, ashes::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) )
-			, "POSITION"
-			, 0u );
+			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 		m_offscreenVertexLayout->createAttribute( 1u
 			, ashes::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) )
-			, "TEXCOORD"
-			, 0u );
+			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_offscreenVertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_offscreenVertexData.size() )
@@ -477,11 +472,6 @@ namespace vkapp
 			throw std::runtime_error{ "Shader files are missing" };
 		}
 
-		if ( !m_device->getRenderer().isSPIRVSupported() )
-		{
-			throw std::runtime_error{ "SPIR-V support is needed for this test." };
-		}
-
 		ashes::RasterisationState rasterisationState;
 		rasterisationState.cullMode = ashes::CullModeFlag::eNone;
 
@@ -489,9 +479,9 @@ namespace vkapp
 
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment )
-			, ashes::makeSpecialisationInfo( { { 0u, 0u, ashes::ConstantFormat::eInt } }, int( 0 ) ) } );
-		shaderStages[0].module->loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.vert.spv" ) );
-		shaderStages[1].module->loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.frag.spv" ) );
+			, ashes::makeSpecialisationInfo( { { 0u, 0u, 4u } }, int( 0 ) ) } );
+		shaderStages[0].module->loadShader( common::dumpSpvFile( shadersFolder / "offscreen.vert.spv" ) );
+		shaderStages[1].module->loadShader( common::dumpSpvFile( shadersFolder / "offscreen.frag.spv" ) );
 
 		m_offscreenPipelines.red = m_offscreenPipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo
 		{
@@ -508,9 +498,9 @@ namespace vkapp
 
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment )
-			, ashes::makeSpecialisationInfo( { { 0u, 0u, ashes::ConstantFormat::eInt } }, int( 1 ) ) } );
-		shaderStages[0].module->loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.vert.spv" ) );
-		shaderStages[1].module->loadShader( common::dumpBinaryFile( shadersFolder / "offscreen.frag.spv" ) );
+			, ashes::makeSpecialisationInfo( { { 0u, 0u, 4u } }, int( 1 ) ) } );
+		shaderStages[0].module->loadShader( common::dumpSpvFile( shadersFolder / "offscreen.vert.spv" ) );
+		shaderStages[1].module->loadShader( common::dumpSpvFile( shadersFolder / "offscreen.frag.spv" ) );
 
 		m_offscreenPipelines.green = m_offscreenPipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo
 		{
@@ -637,14 +627,10 @@ namespace vkapp
 		m_mainVertexLayout = ashes::makeLayout< TexturedVertexData >( 0 );
 		m_mainVertexLayout->createAttribute( 0u
 			, ashes::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) )
-			, "POSITION"
-			, 0u );
+			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 		m_mainVertexLayout->createAttribute( 1u
 			, ashes::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) )
-			, "TEXCOORD"
-			, 0u );
+			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_mainVertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_mainVertexData.size() )
@@ -670,8 +656,12 @@ namespace vkapp
 		std::vector< ashes::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.vert" ) );
-		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.frag" ) );
+		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device
+			, ashes::ShaderStageFlag::eVertex
+			, shadersFolder / "main.vert" ) );
+		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device
+			, ashes::ShaderStageFlag::eFragment
+			, shadersFolder / "main.frag" ) );
 
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo
 		{

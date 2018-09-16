@@ -57,8 +57,8 @@ void computeLight( Light light
 	, vec3 normal
 	, float shininess
 	, vec3 worldPosition
-	, out vec3 diffuse
-	, out vec3 specular )
+	, inout vec3 diffuse
+	, inout vec3 specular )
 {
 	float diffuseFactor = max( dot( normal, -direction ), 0.0 );
 	diffuse += light.colour.xyz * light.intensities.x * diffuseFactor;
@@ -73,8 +73,8 @@ void computeDirectionalLight( int index
 	, vec3 normal
 	, float shininess
 	, vec3 worldPosition
-	, out vec3 diffuse
-	, out vec3 specular )
+	, inout vec3 diffuse
+	, inout vec3 specular )
 {
 	DirectionalLight light = directionalLights[index];
 	computeLight( light.base
@@ -98,12 +98,7 @@ vec3 computeWorldSpacePosition( float depth
 
 void main()
 {
-#ifdef VULKAN
-	vec2 texcoord = vtx_texcoord;
-#else
-	vec2 texcoord = vec2( vtx_texcoord.x, 1.0 - vtx_texcoord.y );
-#endif
-
+	vec2 texcoord = ashesInvertY( vtx_texcoord );
 	float depth = texture( depthMap, texcoord ).x;
 	vec3 worldPosition = computeWorldSpacePosition( depth, texcoord, mtxInvViewProj );
 	vec3 normal = texture( normalMap, texcoord ).xyz;

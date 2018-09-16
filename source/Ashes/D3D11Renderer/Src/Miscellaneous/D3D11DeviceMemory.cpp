@@ -321,10 +321,7 @@ namespace d3d11_renderer
 					: 0 )
 				| ( checkFlag( createInfo.flags, ashes::ImageCreateFlag::eCubeCompatible )
 					? D3D11_RESOURCE_MISC_TEXTURECUBE
-					: 0u )
-				| ( isStorage( m_usage )
-					? D3D11_BIND_UNORDERED_ACCESS
-					: 0 );
+					: 0u );
 
 			if ( desc.SampleDesc.Count > 1 )
 			{

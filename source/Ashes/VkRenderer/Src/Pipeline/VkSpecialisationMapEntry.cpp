@@ -12,7 +12,7 @@ namespace vk_renderer
 		{
 			state.constantID,
 			state.offset,
-			ashes::getSize( state.format ),
+			state.size,
 		};
 	}
 }

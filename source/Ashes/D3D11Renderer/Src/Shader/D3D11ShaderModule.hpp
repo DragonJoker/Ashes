@@ -90,6 +90,7 @@ namespace d3d11_renderer
 			ID3D11DomainShader * domain;
 			ID3D11PixelShader * pixel;
 		} m_shader;
+		ashes::UInt32Array m_spv;
 		std::string m_source;
 		ID3DBlob * m_compiled{ nullptr };
 	};

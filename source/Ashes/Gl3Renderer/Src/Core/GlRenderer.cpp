@@ -326,7 +326,6 @@ namespace gl_renderer
 		m_features.hasClearTexImage = false;
 		m_features.hasComputeShaders = false;
 		m_features.hasStorageBuffers = false;
-		m_features.rawConstantsSupported = true;
 		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...
 		m_spirvSupported = false
 			&& ( gpu.find( "GL_ARB_gl_spirv" )

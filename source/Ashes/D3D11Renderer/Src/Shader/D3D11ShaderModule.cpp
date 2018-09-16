@@ -79,9 +79,136 @@ namespace d3d11_renderer
 			return result;
 		}
 
-		std::string SpvToHlsl( Device const & device
+		void doFillConstant( ashes::SpecialisationInfoBase const & specialisationInfo
+			, ashes::SpecialisationMapEntry const & entry
+			, spirv_cross::SPIRType const & type
+			, spirv_cross::SPIRConstant & constant )
+		{
+			switch ( type.columns )
+			{
+			case 1u:
+				std::memcpy( &constant.m.c[0].r[0]
+					, specialisationInfo.getData() + entry.offset
+					, entry.size );
+				break;
+			case 2u:
+				switch ( type.vecsize )
+				{
+				case 1u:
+					break;
+				case 2u:
+					break;
+				case 3u:
+					break;
+				case 4u:
+					break;
+				}
+				break;
+			case 3u:
+				switch ( type.vecsize )
+				{
+				case 1u:
+					break;
+				case 2u:
+					break;
+				case 3u:
+					break;
+				case 4u:
+					break;
+				}
+				break;
+			case 4u:
+				switch ( type.vecsize )
+				{
+				case 1u:
+					break;
+				case 2u:
+					break;
+				case 3u:
+					break;
+				case 4u:
+					break;
+				}
+				break;
+			}
+		}
+
+		void doProcessSpecializationConstants( ashes::ShaderStageState const & state
+			, spirv_cross::CompilerHLSL & compiler )
+		{
+			if ( state.specialisationInfo )
+			{
+				auto constants = compiler.get_specialization_constants();
+
+				for ( auto & spec : *state.specialisationInfo )
+				{
+					auto it = std::find_if( constants.begin()
+						, constants.end()
+						, [&spec]( spirv_cross::SpecializationConstant const & lookup )
+						{
+							return lookup.constant_id == spec.constantID;
+						} );
+
+					if ( it != constants.end() )
+					{
+						auto & constant = compiler.get_constant( it->id );
+						auto & type = compiler.get_type( constant.constant_type );
+						doFillConstant( *state.specialisationInfo
+							, spec
+							, type
+							, constant );
+					}
+				}
+			}
+		}
+
+		void doSetEntryPoint( ashes::ShaderStageFlag stage
+			, spirv_cross::CompilerHLSL & compiler )
+		{
+			auto model = getExecutionModel( stage );
+			std::string entryPoint;
+
+			for ( auto & e : compiler.get_entry_points_and_stages() )
+			{
+				if ( entryPoint.empty() && e.execution_model == model )
+				{
+					entryPoint = e.name;
+				}
+			}
+
+			if ( entryPoint.empty() )
+			{
+				throw std::runtime_error{ "Could not find an entry point with stage: " + getName( stage ) };
+			}
+
+			compiler.set_entry_point( entryPoint, model );
+		}
+
+		void doSetupOptions( Device const & device
+			, spirv_cross::CompilerHLSL & compiler )
+		{
+			auto options = compiler.get_common_options();
+			options.es = false;
+			options.separate_shader_objects = true;
+			options.enable_420pack_extension = true;
+			options.vertex.fixup_clipspace = false;
+			options.vertex.flip_vert_y = true;
+			options.vertex.support_nonzero_base_instance = true;
+			compiler.set_common_options( options );
+		}
+
+		void doSetupHlslOptions( Device const & device
+			, spirv_cross::CompilerHLSL & compiler )
+		{
+			auto hlslOptions = compiler.get_hlsl_options();
+			hlslOptions.shader_model = 50;
+			compiler.set_hlsl_options( hlslOptions );
+		}
+
+		std::string compileSpvToHlsl( Device const & device
 			, ashes::UInt32Array const & shader
-			, ashes::ShaderStageFlag stage )
+			, ashes::ShaderStageFlag stage
+			, ashes::ShaderStageState const & state )
 		{
 			auto prvLoc = std::locale( "" );
 
@@ -102,39 +229,10 @@ namespace d3d11_renderer
 				} );
 
 			auto compiler = std::make_unique< spirv_cross::CompilerHLSL >( shader );
-			auto model = getExecutionModel( stage );
-			std::string entryPoint;
-
-			for ( auto & e : compiler->get_entry_points_and_stages() )
-			{
-				if ( entryPoint.empty() && e.execution_model == model )
-				{
-					entryPoint = e.name;
-				}
-			}
-
-			if ( entryPoint.empty() )
-			{
-				throw std::runtime_error{ "Could not find an entry point with stage: " + getName( stage ) };
-			}
-
-			compiler->set_entry_point( entryPoint, model );
-
-			auto options = compiler->get_common_options();
-			options.es = false;
-			options.separate_shader_objects = true;
-			options.enable_420pack_extension = true;
-			options.vertex.fixup_clipspace = false;
-			options.vertex.flip_vert_y = true;
-			options.vertex.support_nonzero_base_instance = true;
-			compiler->set_common_options( options );
-
-			auto hlslOptions = compiler->get_hlsl_options();
-			hlslOptions.shader_model = 50;
-			compiler->set_hlsl_options( hlslOptions );
-
-			auto shaderResources = compiler->get_shader_resources();
-
+			doProcessSpecializationConstants( state, *compiler );
+			doSetEntryPoint( stage, *compiler );
+			doSetupOptions( device, *compiler );
+			doSetupHlslOptions( device, *compiler );
 			return compiler->compile();
 		}
 
@@ -205,7 +303,7 @@ namespace d3d11_renderer
 
 	void ShaderModule::loadShader( ashes::UInt32Array const & shader )
 	{
-		m_source = SpvToHlsl( m_device, shader, m_stage );
+		m_spv = shader;
 	}
 
 	ShaderDesc ShaderModule::compile( ashes::ShaderStageState const & state )
@@ -220,6 +318,10 @@ namespace d3d11_renderer
 			{ ashes::ShaderStageFlag::eCompute, "cs_5_0" },
 		};
 
+		m_source = compileSpvToHlsl( m_device
+			, m_spv
+			, m_stage
+			, state );
 		std::string profile = Profiles[getStage()];
 		CComPtr< ID3DBlob > errors;
 		UINT flags = 0;

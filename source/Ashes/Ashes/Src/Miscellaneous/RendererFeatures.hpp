@@ -26,15 +26,6 @@ namespace ashes
 		bool hasClearTexImage;
 		bool hasComputeShaders;
 		bool hasStorageBuffers;
-		/**
-		*\~english
-		*\brief
-		*	Tells if raw constants (single uniforms or specialisation constants) are supported.
-		*\~french
-		*\brief
-		*	Dit si les constantes brutes (uniform simples ou constantes de spécialisation) sont supportées.
-		*/
-		bool rawConstantsSupported;
 	};
 }
 

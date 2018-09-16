@@ -270,11 +270,6 @@ namespace ashes
 		{
 			return m_layers;
 		}
-
-		inline bool areRawConstantsSupported()const
-		{
-			return m_features.rawConstantsSupported;
-		}
 		/**@}*/
 
 	protected:
