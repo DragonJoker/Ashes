@@ -93,9 +93,13 @@ namespace common
 					{
 						format,
 						ashes::SampleCountFlag::e1,
-						clearViews ? ashes::AttachmentLoadOp::eClear : ashes::AttachmentLoadOp::eDontCare,
+						( clearViews
+							? ashes::AttachmentLoadOp::eClear
+							: ashes::AttachmentLoadOp::eDontCare ),
 						ashes::AttachmentStoreOp::eStore,
-						( clearViews && ashes::isStencilFormat( format ) ) ? ashes::AttachmentLoadOp::eClear : ashes::AttachmentLoadOp::eDontCare,
+						( ( clearViews && ashes::isStencilFormat( format ) )
+							? ashes::AttachmentLoadOp::eClear
+							: ashes::AttachmentLoadOp::eDontCare ),
 						ashes::AttachmentStoreOp::eDontCare,
 						ashes::ImageLayout::eUndefined,
 						ashes::ImageLayout::eDepthStencilAttachmentOptimal
@@ -108,12 +112,16 @@ namespace common
 					{
 						format,
 						ashes::SampleCountFlag::e1,
-						clearViews ? ashes::AttachmentLoadOp::eClear : ashes::AttachmentLoadOp::eDontCare,
+						( clearViews
+							? ashes::AttachmentLoadOp::eClear
+							: ashes::AttachmentLoadOp::eDontCare ),
 						ashes::AttachmentStoreOp::eStore,
 						ashes::AttachmentLoadOp::eDontCare,
 						ashes::AttachmentStoreOp::eDontCare,
 						ashes::ImageLayout::eUndefined,
-						clearViews ? ashes::ImageLayout::eColourAttachmentOptimal : ashes::ImageLayout::eShaderReadOnlyOptimal
+						( clearViews
+							? ashes::ImageLayout::eColourAttachmentOptimal
+							: ashes::ImageLayout::eShaderReadOnlyOptimal )
 					} );
 					renderPass.subpasses[0].colorAttachments.emplace_back( ashes::AttachmentReference{ index, ashes::ImageLayout::eColourAttachmentOptimal } );
 				}
@@ -267,6 +275,7 @@ namespace common
 
 		doUpdate( views );
 	}
+
 	void NodesRenderer::doUpdate( ashes::TextureViewCRefArray const & views )
 	{
 		assert( !views.empty() );

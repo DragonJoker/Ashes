@@ -18,5 +18,5 @@ vec2 sampleSphericalMap( vec3 v )
 void main()
 {
 	vec2 uv = sampleSphericalMap( normalize( vtx_position ) );
-	pxl_colour = vec4( texture( mapColour, ashesInvertY( uv ) ).rgb, 1.0 );
+	pxl_colour = vec4( texture( mapColour, ashesTopDownToBottomUp( uv ) ).rgb, 1.0 );
 }

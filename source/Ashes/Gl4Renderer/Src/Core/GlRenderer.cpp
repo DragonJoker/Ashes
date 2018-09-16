@@ -314,7 +314,7 @@ namespace gl_renderer
 	}
 
 	Renderer::Renderer( Configuration const & configuration )
-		: ashes::Renderer{ ashes::ClipDirection::eBottomUp, "gl", configuration }
+		: ashes::Renderer{ ashes::ClipDirection::eBottomUp, "gl4", configuration }
 	{
 		RenderWindow dummyWindow;
 		m_gpus.push_back( std::make_unique< PhysicalDevice >( *this ) );

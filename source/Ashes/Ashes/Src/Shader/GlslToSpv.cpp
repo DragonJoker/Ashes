@@ -227,19 +227,19 @@ namespace ashes
 
 		std::string source = shader;
 
-		if ( source.find( "ashesInvertY" ) != std::string::npos )
+		if ( source.find( "ashesTopDownToBottomUp" ) != std::string::npos )
 		{
 			if ( device.getClipDirection() == ashes::ClipDirection::eTopDown )
 			{
 				std::regex regex{ R"(void[ ]*main)" };
-				source = std::regex_replace( shader.data()
+				source = std::regex_replace( source.data()
 					, regex
-					, R"(vec2 ashesInvertY(vec2 v)
+					, R"(vec2 ashesTopDownToBottomUp(vec2 v)
 {
 	return vec2( v.x, 1.0 - v.y );
 }
 
-vec3 ashesInvertY(vec3 v)
+vec3 ashesTopDownToBottomUp(vec3 v)
 {
 	return vec3( v.x, 1.0 - v.y, v.z );
 }
@@ -249,9 +249,39 @@ $&)" );
 			else
 			{
 				std::regex regex{ R"(void[ ]*main)" };
-				source = std::regex_replace( shader.data()
+				source = std::regex_replace( source.data()
 					, regex
-					, R"(#define ashesInvertY(X) X
+					, R"(#define ashesTopDownToBottomUp(X) X
+
+$&)" );
+			}
+		}
+
+		if ( source.find( "ashesBottomUpToTopDown" ) != std::string::npos )
+		{
+			if ( device.getClipDirection() == ashes::ClipDirection::eTopDown )
+			{
+				std::regex regex{ R"(void[ ]*main)" };
+				source = std::regex_replace( source.data()
+					, regex
+					, R"(#define ashesBottomUpToTopDown(X) X
+
+$&)" );
+			}
+			else
+			{
+				std::regex regex{ R"(void[ ]*main)" };
+				source = std::regex_replace( source.data()
+					, regex
+					, R"(vec2 ashesBottomUpToTopDown(vec2 v)
+{
+	return vec2( v.x, 1.0 - v.y );
+}
+
+vec3 ashesBottomUpToTopDown(vec3 v)
+{
+	return vec3( v.x, 1.0 - v.y, v.z );
+}
 
 $&)" );
 			}

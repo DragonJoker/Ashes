@@ -42,5 +42,6 @@ void main()
 	vtx_normal = normal;
 	vtx_tangent = tangent;
 	vtx_bitangent = bitangent;
-	vtx_texcoord = ashesInvertY( texcoord + vec2( 0.5, 0.5 ) );
+	vtx_texcoord = texcoord + vec2( 0.5, 0.5 );
+	vtx_texcoord.y = 1.0 - vtx_texcoord.y;
 }
