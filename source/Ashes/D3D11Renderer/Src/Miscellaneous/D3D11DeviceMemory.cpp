@@ -198,8 +198,11 @@ namespace d3d11_renderer
 				| ( isStorage( m_usage )
 					? D3D11_BIND_UNORDERED_ACCESS
 					: 0 ) );
-			desc.MiscFlags = ( isRenderTarget( m_usage )
+			desc.MiscFlags = ( ( isRenderTarget( m_usage ) && isSampled( m_usage ) )
 					? D3D11_RESOURCE_MISC_GENERATE_MIPS
+					: 0 )
+				| ( isStorage( m_usage )
+					? D3D11_BIND_UNORDERED_ACCESS
 					: 0 )
 				| ( checkFlag( createInfo.flags, ashes::ImageCreateFlag::eCubeCompatible )
 					? D3D11_RESOURCE_MISC_TEXTURECUBE
@@ -313,12 +316,15 @@ namespace d3d11_renderer
 				| ( isStorage( m_usage )
 					? D3D11_BIND_UNORDERED_ACCESS
 					: 0 ) );
-			desc.MiscFlags = ( ( isRenderTarget( m_usage ) && checkFlag( m_usage, ashes::ImageUsageFlag::eSampled ) )
+			desc.MiscFlags = ( ( isRenderTarget( m_usage ) && isSampled( m_usage ) )
 					? D3D11_RESOURCE_MISC_GENERATE_MIPS
 					: 0 )
 				| ( checkFlag( createInfo.flags, ashes::ImageCreateFlag::eCubeCompatible )
 					? D3D11_RESOURCE_MISC_TEXTURECUBE
-					: 0u );
+					: 0u )
+				| ( isStorage( m_usage )
+					? D3D11_BIND_UNORDERED_ACCESS
+					: 0 );
 
 			if ( desc.SampleDesc.Count > 1 )
 			{
@@ -433,9 +439,9 @@ namespace d3d11_renderer
 				| ( isRenderTarget( m_usage )
 					? D3D11_BIND_RENDER_TARGET
 					: 0 ) );
-			desc.MiscFlags = ( isRenderTarget( m_usage )
+			desc.MiscFlags = ( ( isRenderTarget( m_usage ) && isSampled( m_usage ) )
 					? D3D11_RESOURCE_MISC_GENERATE_MIPS
-					: 0u )
+					: 0 )
 				| ( checkFlag( createInfo.flags, ashes::ImageCreateFlag::eCubeCompatible )
 					? D3D11_RESOURCE_MISC_TEXTURECUBE
 					: 0u )

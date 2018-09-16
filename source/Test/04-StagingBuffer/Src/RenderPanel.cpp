@@ -22,7 +22,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/ShaderProgram.hpp>
+#include <Shader/GlslToSpv.hpp>
 #include <Sync/BufferMemoryBarrier.hpp>
 
 #include <FileUtils.hpp>
@@ -183,14 +183,10 @@ namespace vkapp
 		m_vertexLayout =  ashes::makeLayout< VertexData >( 0u );
 		m_vertexLayout->createAttribute( 0u
 			, ashes::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( VertexData, position ) )
-			, "POSITION"
-			, 0u );
+			, uint32_t( offsetof( VertexData, position ) ) );
 		m_vertexLayout->createAttribute( 1u
 			, ashes::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( VertexData, colour ) )
-			, "COLOR"
-			, 0u );
+			, uint32_t( offsetof( VertexData, colour ) ) );
 	}
 
 	void RenderPanel::doCreateStagingBuffer()
@@ -215,20 +211,12 @@ namespace vkapp
 		std::vector< ashes::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-
-		if ( m_device->getRenderer().isGLSLSupported()
-			|| m_device->getRenderer().isSPIRVSupported() )
-		{
-			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.vert" ) );
-			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.frag" ) );
-		}
-		else
-		{
-			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.hvert" ) );
-			shaderStages[0].entryPoint = "mainVx";
-			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "shader.hpix" ) );
-			shaderStages[1].entryPoint = "mainPx";
-		}
+		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device
+			, ashes::ShaderStageFlag::eVertex
+			, shadersFolder / "shader.vert" ) );
+		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device
+			, ashes::ShaderStageFlag::eFragment
+			, shadersFolder / "shader.frag" ) );
 
 		m_pipeline = m_pipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo
 		{

@@ -21,11 +21,11 @@ namespace d3d11_renderer
 		, m_subpass{ subpass }
 		, m_frameBuffer{ static_cast< FrameBuffer const & >( frameBuffer ) }
 	{
-		auto & rtViews = m_frameBuffer.getRTViews();
+		auto & allViews = m_frameBuffer.getAllViews();
 
 		for ( auto & attach : m_subpass.colorAttachments )
 		{
-			m_attaches.push_back( rtViews[attach.attachment] );
+			m_attaches.push_back( reinterpret_cast< ID3D11RenderTargetView * >( allViews[attach.attachment] ) );
 		}
 
 		if ( bool( subpass.depthStencilAttachment ) )

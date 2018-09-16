@@ -42,10 +42,5 @@ void main()
 	vtx_normal = normal;
 	vtx_tangent = tangent;
 	vtx_bitangent = bitangent;
-	vtx_texcoord = texcoord + vec2( 0.5, 0.5 );
-#ifdef VULKAN
-	vtx_texcoord.y = 1.0 - vtx_texcoord.y;
-#else
-	vtx_texcoord.y = vtx_texcoord.y;
-#endif
+	vtx_texcoord = ashesInvertY( texcoord + vec2( 0.5, 0.5 ) );
 }

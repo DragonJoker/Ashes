@@ -30,7 +30,7 @@
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 #include <RenderPass/FrameBufferAttachment.hpp>
-#include <Shader/ShaderProgram.hpp>
+#include <Shader/GlslToSpv.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <algorithm>
@@ -53,8 +53,8 @@ namespace common
 			std::vector< ashes::ShaderStageState > result;
 			result.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
 			result.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-			result[0].module->loadShader( common::dumpTextFile( shadersFolder / "object.vert" ) );
-			result[1].module->loadShader( common::dumpTextFile( fragmentShaderFile ) );
+			result[0].module->loadShader( dumpShaderFile( device, ashes::ShaderStageFlag::eVertex, shadersFolder / "object.vert" ) );
+			result[1].module->loadShader( dumpShaderFile( device, ashes::ShaderStageFlag::eFragment, fragmentShaderFile ) );
 			return result;
 		}
 
@@ -72,8 +72,8 @@ namespace common
 			std::vector< ashes::ShaderStageState > result;
 			result.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
 			result.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-			result[0].module->loadShader( common::dumpTextFile( shadersFolder / "billboard.vert" ) );
-			result[1].module->loadShader( common::dumpTextFile( fragmentShaderFile ) );
+			result[0].module->loadShader( dumpShaderFile( device, ashes::ShaderStageFlag::eVertex, shadersFolder / "billboard.vert" ) );
+			result[1].module->loadShader( dumpShaderFile( device, ashes::ShaderStageFlag::eFragment, fragmentShaderFile ) );
 			return result;
 		}
 
@@ -377,41 +377,27 @@ namespace common
 			m_billboardVertexLayout = ashes::makeLayout< Vertex >( 0u, ashes::VertexInputRate::eVertex );
 			m_billboardVertexLayout->createAttribute( 0u
 				, ashes::Format::eR32G32B32_SFLOAT
-				, offsetof( Vertex, position )
-				, "POSITION"
-				, 0u );
+				, offsetof( Vertex, position ) );
 			m_billboardVertexLayout->createAttribute( 1u
 				, ashes::Format::eR32G32B32_SFLOAT
-				, offsetof( Vertex, normal )
-				, "NORMAL"
-				, 0u );
+				, offsetof( Vertex, normal ) );
 			m_billboardVertexLayout->createAttribute( 2u
 				, ashes::Format::eR32G32B32_SFLOAT
-				, offsetof( Vertex, tangent )
-				, "TANGENT"
-				, 0u );
+				, offsetof( Vertex, tangent ) );
 			m_billboardVertexLayout->createAttribute( 3u
 				, ashes::Format::eR32G32B32_SFLOAT
-				, offsetof( Vertex, bitangent )
-				, "TANGENT"
-				, 1u );
+				, offsetof( Vertex, bitangent ) );
 			m_billboardVertexLayout->createAttribute( 4u
 				, ashes::Format::eR32G32_SFLOAT
-				, offsetof( Vertex, texture )
-				, "TEXCOORD"
-				, 0u );
+				, offsetof( Vertex, texture ) );
 			// Initialise instance layout.
 			m_billboardInstanceLayout = ashes::makeLayout< BillboardInstanceData >( 1u, ashes::VertexInputRate::eInstance );
 			m_billboardInstanceLayout->createAttribute( 5u
 				, ashes::Format::eR32G32B32_SFLOAT
-				, offsetof( BillboardInstanceData, offset )
-				, "OFFSET"
-				, 0u );
+				, offsetof( BillboardInstanceData, offset ) );
 			m_billboardInstanceLayout->createAttribute( 6u
 				, ashes::Format::eR32G32_SFLOAT
-				, offsetof( BillboardInstanceData, dimensions )
-				, "DIMENSIONS"
-				, 0u );
+				, offsetof( BillboardInstanceData, dimensions ) );
 
 			if ( billboard.material.hasOpacity == !m_opaqueNodes )
 			{
@@ -550,29 +536,19 @@ namespace common
 		m_objectVertexLayout = ashes::makeLayout< Vertex >( 0u );
 		m_objectVertexLayout->createAttribute( 0u
 			, ashes::Format::eR32G32B32_SFLOAT
-			, offsetof( common::Vertex, position )
-			, "POSITION"
-			, 0u );
+			, offsetof( common::Vertex, position ) );
 		m_objectVertexLayout->createAttribute( 1u
 			, ashes::Format::eR32G32B32_SFLOAT
-			, offsetof( common::Vertex, normal )
-			, "NORMAL"
-			, 0u );
+			, offsetof( common::Vertex, normal ) );
 		m_objectVertexLayout->createAttribute( 2u
 			, ashes::Format::eR32G32B32_SFLOAT
-			, offsetof( common::Vertex, tangent )
-			, "TANGENT"
-			, 0u );
+			, offsetof( common::Vertex, tangent ) );
 		m_objectVertexLayout->createAttribute( 3u
 			, ashes::Format::eR32G32B32_SFLOAT
-			, offsetof( common::Vertex, bitangent )
-			, "TANGENT"
-			, 1u );
+			, offsetof( common::Vertex, bitangent ) );
 		m_objectVertexLayout->createAttribute( 4u
 			, ashes::Format::eR32G32_SFLOAT
-			, offsetof( common::Vertex, texture )
-			, "TEXCOORD"
-			, 0u );
+			, offsetof( common::Vertex, texture ) );
 
 		for ( auto & submesh : object )
 		{

@@ -64,6 +64,11 @@ namespace d3d11_renderer
 			return m_dimensions;
 		}
 
+		inline std::vector< ID3D11View * > const & getAllViews()const
+		{
+			return m_allViews;
+		}
+
 		inline std::vector< ID3D11RenderTargetView * > const & getRTViews()const
 		{
 			return m_rtViews;
@@ -83,6 +88,7 @@ namespace d3d11_renderer
 		Device const & m_device;
 		TextureViewCRefArray m_views;
 		ashes::Extent2D m_dimensions;
+		std::vector< ID3D11View * > m_allViews;
 		std::vector< ID3D11RenderTargetView * > m_rtViews;
 		ID3D11DepthStencilView * m_dsView{ nullptr };
 		UINT m_dsViewFlags{ 0u };

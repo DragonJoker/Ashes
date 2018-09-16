@@ -6,16 +6,46 @@ See LICENSE file in root folder.
 
 #include "Core/GlDevice.hpp"
 #include "Core/GlPhysicalDevice.hpp"
+#include "Core/GlRenderer.hpp"
 
 #include <Core/Renderer.hpp>
 
 #include <iostream>
 #include <regex>
 
+#include "spirv_cpp.hpp"
+#include "spirv_cross_util.hpp"
+#include "spirv_glsl.hpp"
+
 namespace gl_renderer
 {
 	namespace
 	{
+		template< typename CleanFunc >
+		struct BlockGuard
+		{
+			template< typename InitFunc >
+			BlockGuard( InitFunc init, CleanFunc clean )
+				: m_clean{ std::move( clean ) }
+			{
+				init();
+			}
+
+			~BlockGuard()
+			{
+				m_clean();
+			}
+
+		private:
+			CleanFunc m_clean;
+		};
+
+		template< typename InitFunc, typename CleanFunc >
+		BlockGuard< CleanFunc > makeBlockGuard( InitFunc init, CleanFunc clean )
+		{
+			return BlockGuard< CleanFunc >{ std::move( init ), std::move( clean ) };
+		}
+
 		std::string doRetrieveCompilerLog( ContextLock const & context
 			, GLuint shaderName )
 		{
@@ -73,6 +103,93 @@ namespace gl_renderer
 
 			return compiled;
 		}
+
+		spv::ExecutionModel getExecutionModel( ashes::ShaderStageFlag stage )
+		{
+			spv::ExecutionModel result{};
+
+			switch ( stage )
+			{
+			case ashes::ShaderStageFlag::eVertex:
+				result = spv::ExecutionModelVertex;
+				break;
+			case ashes::ShaderStageFlag::eGeometry:
+				result = spv::ExecutionModelGeometry;
+				break;
+			case ashes::ShaderStageFlag::eTessellationControl:
+				result = spv::ExecutionModelTessellationControl;
+				break;
+			case ashes::ShaderStageFlag::eTessellationEvaluation:
+				result = spv::ExecutionModelTessellationEvaluation;
+				break;
+			case ashes::ShaderStageFlag::eFragment:
+				result = spv::ExecutionModelFragment;
+				break;
+			case ashes::ShaderStageFlag::eCompute:
+				result = spv::ExecutionModelGLCompute;
+				break;
+			default:
+				assert( false && "Unsupported shader stage flag" );
+				break;
+			}
+
+			return result;
+		}
+
+		std::string SpvToGlsl( Device const & device
+			, ashes::UInt32Array const & shader
+			, ashes::ShaderStageFlag stage )
+		{
+			auto prvLoc = std::locale( "" );
+
+			auto guard = makeBlockGuard(
+				[&prvLoc]()
+				{
+					if ( prvLoc.name() != "C" )
+					{
+						std::locale::global( std::locale{ "C" } );
+					}
+				},
+				[&prvLoc]()
+				{
+					if ( prvLoc.name() != "C" )
+					{
+						std::locale::global( prvLoc );
+					}
+				} );
+
+			auto compiler = std::make_unique< spirv_cross::CompilerGLSL >( shader );
+			auto model = getExecutionModel( stage );
+			std::string entryPoint;
+
+			for ( auto & e : compiler->get_entry_points_and_stages() )
+			{
+				if ( entryPoint.empty() && e.execution_model == model )
+				{
+					entryPoint = e.name;
+				}
+			}
+
+			if ( entryPoint.empty() )
+			{
+				throw std::runtime_error{ "Could not find an entry point with stage: " + getName( stage ) };
+			}
+
+			compiler->set_entry_point( entryPoint, model );
+			auto options = compiler->get_common_options();
+			options.version = device.getShaderVersion();
+			options.es = false;
+			options.separate_shader_objects = true;
+			options.enable_420pack_extension = true;
+			options.vertex.fixup_clipspace = false;
+			options.vertex.flip_vert_y = true;
+			options.vertex.support_nonzero_base_instance = true;
+			compiler->set_common_options( options );
+
+			auto shaderResources = compiler->get_shader_resources();
+
+			return compiler->compile();
+		}
 	}
 
 	ShaderModule::ShaderModule( Device const & device
@@ -89,71 +206,49 @@ namespace gl_renderer
 		// Shader object is destroyed by the ShaderProgram.
 	}
 
-	void ShaderModule::loadShader( std::string const & shader )
+	std::string SpvToGlsl( ashes::UInt32Array const & shader )
 	{
-		std::string source = shader;
-
-		std::regex regex{ R"(\#version \d*)" };
-		source = std::regex_replace( source.data()
-			, regex
-			, "$&\n#define GLVERSION 320\n" );
-
-		if ( m_stage == ashes::ShaderStageFlag::eVertex )
-		{
-			std::regex regex{ R"(void[ ]*main)" };
-			source = std::regex_replace( shader.data()
-				, regex
-				, R"(vec4 ashesScalePosition(vec4 pos)
-{
-	mat4 scale;
-	scale[0] = vec4( 1.0, 0.0, 0.0, 0.0 );
-	scale[1] = vec4( 0.0, -1.0, 0.0, 0.0 );
-	scale[2] = vec4( 0.0, 0.0, 1.0, 0.0 );
-	scale[3] = vec4( 0.0, 0.0, 0.0, 1.0 );
-	return scale * pos;
-}
-
-$&)" );
-		}
-
-		auto length = int( source.size() );
-		char const * data = source.data();
-		auto context = m_device.getContext();
-		glLogCall( context
-			, glShaderSource
-			, m_shader
-			, 1
-			, &data
-			, &length );
-		glLogCall( context
-			, glCompileShader
-			, m_shader );
-		int compiled = 0;
-		glLogCall( context
-			, glGetShaderiv
-			, m_shader
-			, GL_INFO_COMPILE_STATUS
-			, &compiled );
-
-		if ( !doCheckCompileErrors( context, compiled != 0, m_shader ) )
-		{
-			throw std::runtime_error{ "Shader compilation failed." };
-		}
+		return std::string{};
 	}
 
-	void ShaderModule::loadShader( ashes::ByteArray const & fileData )
+	void ShaderModule::loadShader( ashes::UInt32Array const & shader )
 	{
-		if ( !m_device.getRenderer().isSPIRVSupported() )
+		if ( static_cast< Renderer const & >( m_device.getRenderer() ).isSPIRVSupported() )
 		{
-			throw std::runtime_error{ "Shader compilation from SPIR-V is not supported." };
+			auto context = m_device.getContext();
+			context->glShaderBinary_ARB( 1u
+				, &m_shader
+				, GL_SHADER_BINARY_FORMAT_SPIR_V
+				, shader.data()
+				, GLsizei( shader.size() * sizeof( uint32_t ) ) );
+			m_isSpirV = true;
 		}
+		else
+		{
+			std::string source = SpvToGlsl( m_device, shader, m_stage );
+			auto length = int( source.size() );
+			char const * data = source.data();
+			auto context = m_device.getContext();
+			glLogCall( context
+				, glShaderSource
+				, m_shader
+				, 1
+				, &data
+				, &length );
+			glLogCall( context
+				, glCompileShader
+				, m_shader );
+			int compiled = 0;
+			glLogCall( context
+				, glGetShaderiv
+				, m_shader
+				, GL_INFO_COMPILE_STATUS
+				, &compiled );
 
-		auto context = m_device.getContext();
-		context->glShaderBinary_ARB( 1u
-			, &m_shader
-			, GL_SHADER_BINARY_FORMAT_SPIR_V
-			, fileData.data()
-			, GLsizei( fileData.size() ) );
-		m_isSpirV = true;
+			if ( !doCheckCompileErrors( context, compiled != 0, m_shader ) )
+			{
+				throw std::runtime_error{ "Shader compilation failed." };
+			}
+		}
 	}
 }

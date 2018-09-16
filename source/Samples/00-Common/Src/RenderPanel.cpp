@@ -28,7 +28,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/ShaderProgram.hpp>
+#include <Shader/GlslToSpv.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Transform.hpp>
@@ -303,14 +303,10 @@ namespace common
 		m_vertexLayout = ashes::makeLayout< TexturedVertexData >( 0 );
 		m_vertexLayout->createAttribute( 0u
 			, ashes::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) )
-			, "POSITION"
-			, 0u );
+			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 		m_vertexLayout->createAttribute( 1u
 			, ashes::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) )
-			, "TEXCOORD"
-			, 0u );
+			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_vertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_vertexData.size() )
@@ -335,8 +331,8 @@ namespace common
 		std::vector< ashes::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( common::dumpTextFile( shadersFolder / "main.vert" ) );
-		shaderStages[1].module->loadShader( common::dumpTextFile( shadersFolder / "main.frag" ) );
+		shaderStages[0].module->loadShader( dumpShaderFile( *m_device, ashes::ShaderStageFlag::eVertex, shadersFolder / "main.vert" ) );
+		shaderStages[1].module->loadShader( dumpShaderFile( *m_device, ashes::ShaderStageFlag::eFragment, shadersFolder / "main.frag" ) );
 
 		std::vector< ashes::DynamicState > dynamicStateEnables
 		{

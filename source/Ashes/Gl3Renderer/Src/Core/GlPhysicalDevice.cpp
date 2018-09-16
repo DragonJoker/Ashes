@@ -341,16 +341,16 @@ namespace gl_renderer
 			float fversion;
 			stream >> fversion;
 			auto version = int( fversion * 10 );
-			m_major = version / 10;
-			m_minor = version % 10;
 
-			if ( version < 32 )
+			if ( version < 33 )
 			{
-				throw std::runtime_error{ "OpenGL >= 4.2 is needed for this renderer." };
+				throw std::runtime_error{ "OpenGL >= 3.3 is needed for this renderer." };
 			}
 
-			version = std::min( version, 32 );
-			m_shaderVersion = 150;
+			version = std::min( version, 33 );
+			m_major = version / 10;
+			m_minor = version % 10;
+			m_shaderVersion = 330;
 		}
 
 		auto const * cextensions = ( char const * )glGetString( GL_EXTENSIONS );
@@ -503,7 +503,7 @@ namespace gl_renderer
 		m_properties.limits.standardSampleLocations = false;
 		m_properties.limits.optimalBufferCopyOffsetAlignment = ashes::NonAvailable< uint64_t >;
 		m_properties.limits.optimalBufferCopyRowPitchAlignment = ashes::NonAvailable< uint64_t >;
-		m_properties.limits.nonCoherentAtomSize = ashes::NonAvailable< uint64_t >;
+		m_properties.limits.nonCoherentAtomSize = 64ull;
 
 		m_properties.sparseProperties.residencyAlignedMipSize = false;
 		m_properties.sparseProperties.residencyNonResidentStrict = false;

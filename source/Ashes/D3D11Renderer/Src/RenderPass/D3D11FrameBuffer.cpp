@@ -27,6 +27,25 @@ namespace d3d11_renderer
 			return result;
 		}
 
+		std::vector< ID3D11View * > getAllViews( TextureViewCRefArray const & views )
+		{
+			std::vector< ID3D11View * > result;
+
+			for ( auto & view : views )
+			{
+				if ( isDepthOrStencilFormat( view.get().getFormat() ) )
+				{
+					result.push_back( view.get().getDepthStencilView() );
+				}
+				else
+				{
+					result.push_back( view.get().getRenderTargetView() );
+				}
+			}
+
+			return result;
+		}
+
 		std::vector< ID3D11RenderTargetView * > getRenderTargetViews( TextureViewCRefArray const & views )
 		{
 			std::vector< ID3D11RenderTargetView * > result;
@@ -98,6 +117,7 @@ namespace d3d11_renderer
 		, m_device{ device }
 		, m_views{ convert( m_attachments ) }
 		, m_dimensions{ dimensions }
+		, m_allViews{ d3d11_renderer::getAllViews( m_views ) }
 		, m_rtViews{ getRenderTargetViews( m_views ) }
 		, m_dsView{ getDepthStencilView( m_views ) }
 		, m_dsViewFlags{ getDepthStencilFlags( m_views ) }

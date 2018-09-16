@@ -28,15 +28,7 @@ namespace test_renderer
 		/**
 		*\~copydoc	ashes::ShaderModule::loadShader
 		*/
-		void loadShader( std::string const & shader )override;
-		/**
-		*\~copydoc	ashes::ShaderModule::loadShader
-		*/
-		void loadShader( ashes::ByteArray const & shader )override;
-		/**
-		*\~copydoc	ashes::ShaderModule::loadShader
-		*/
-		void loadShader( ashes::UInt32Array const & shader );
+		void loadShader( ashes::UInt32Array const & shader )override;
 
 	private:
 		Device const & m_device;

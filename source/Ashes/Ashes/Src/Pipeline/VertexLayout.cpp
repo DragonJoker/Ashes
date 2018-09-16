@@ -19,33 +19,25 @@ namespace ashes
 
 	void VertexLayout::createAttribute( uint32_t location
 		, Format format
-		, uint32_t offset
-		, std::string const & semanticName
-		, uint32_t semanticIndex )
+		, uint32_t offset )
 	{
 		m_attributes.emplace_back( *this
 			, format
 			, location
-			, offset
-			, semanticName
-			, semanticIndex );
+			, offset );
 	}
 
 	void VertexLayout::createAttributes( uint32_t count
 		, uint32_t startingLocation
 		, Format format
-		, uint32_t startingOffset
-		, std::string const & semanticName
-		, uint32_t startingSemanticIndex )
+		, uint32_t startingOffset )
 	{
 		for ( uint32_t i = 0u; i < count; ++i )
 		{
 			m_attributes.emplace_back( *this
 				, format
 				, startingLocation++
-				, startingOffset
-				, semanticName
-				, startingSemanticIndex++ );
+				, startingOffset );
 			startingOffset += getSize( format );
 		}
 	}

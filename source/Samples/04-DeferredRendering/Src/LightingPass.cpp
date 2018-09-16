@@ -27,7 +27,7 @@
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
 #include <RenderPass/FrameBufferAttachment.hpp>
-#include <Shader/ShaderProgram.hpp>
+#include <Shader/GlslToSpv.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <FileUtils.hpp>

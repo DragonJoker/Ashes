@@ -14,4 +14,9 @@ namespace d3d11_renderer
 	{
 		return checkFlag( flags, ashes::ImageUsageFlag::eStorage );
 	}
+
+	bool isSampled( ashes::ImageUsageFlags const & flags )
+	{
+		return checkFlag( flags, ashes::ImageUsageFlag::eSampled );
+	}
 }

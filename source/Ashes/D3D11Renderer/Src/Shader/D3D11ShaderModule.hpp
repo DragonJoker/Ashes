@@ -6,22 +6,14 @@ See LICENSE file in root folder.
 
 #include "D3D11RendererPrerequisites.hpp"
 
+#include "Shader/D3D11ShaderDesc.hpp"
+
 #include <Shader/ShaderModule.hpp>
 
 #include <d3d11shader.h>
 
 namespace d3d11_renderer
 {
-	struct D3D11InputElementDesc
-	{
-		std::string SemanticName;
-		UINT SemanticIndex;
-		DXGI_FORMAT Format;
-		UINT InputSlot;
-		UINT AlignedByteOffset;
-		D3D11_INPUT_CLASSIFICATION InputSlotClass;
-		UINT InstanceDataStepRate;
-	};
 	/**
 	*\~french
 	*\brief
@@ -40,17 +32,9 @@ namespace d3d11_renderer
 		/**
 		*\~copydoc	ashes::ShaderModule::loadShader
 		*/
-		void loadShader( std::string const & shader )override;
-		/**
-		*\~copydoc	ashes::ShaderModule::loadShader
-		*/
-		void loadShader( ashes::ByteArray const & shader )override;
-		/**
-		*\~copydoc	ashes::ShaderModule::loadShader
-		*/
-		void loadShader( ashes::UInt32Array const & shader );
+		void loadShader( ashes::UInt32Array const & shader )override;
 
-		void compile( ashes::ShaderStageState const & state );
+		ShaderDesc compile( ashes::ShaderStageState const & state );
 
 		inline ID3D11ComputeShader * getCSShader()const
 		{
@@ -87,14 +71,13 @@ namespace d3d11_renderer
 			return m_compiled;
 		}
 
-		inline std::vector< D3D11InputElementDesc > const & getShaderInputLayout()const
-		{
-			return m_inputLayout;
-		}
-
 	private:
 		void doRetrieveShader();
-		void doCreateInputLayout();
+		ShaderDesc doRetrieveShaderDesc();
+		InputLayout doRetrieveInputLayout( ID3D11ShaderReflection * reflection
+			, UINT inputParameters );
+		InterfaceBlockLayout doRetrieveInterfaceBlockLayout( ID3D11ShaderReflection * reflection
+			, UINT constantBuffers );
 
 	private:
 		Device const & m_device;
@@ -109,6 +92,5 @@ namespace d3d11_renderer
 		} m_shader;
 		std::string m_source;
 		ID3DBlob * m_compiled{ nullptr };
-		std::vector< D3D11InputElementDesc > m_inputLayout;
 	};
 }

@@ -3,6 +3,8 @@
 #include <Core/Device.hpp>
 #include <Core/Renderer.hpp>
 
+#include <Shader/GlslToSpv.hpp>
+
 #include <cassert>
 #include <regex>
 
@@ -243,49 +245,13 @@ namespace common
 		return result;
 	}
 
-	std::string parseShaderFile( ashes::Device const & device
+	ashes::UInt32Array parseShaderFile( ashes::Device const & device
+		, ashes::ShaderStageFlag stage
 		, std::string const & path )
 	{
-		auto content = dumpTextFile( path );
-
-		if ( device.getRenderer().getName() == "vk" )
-		{
-			content = R"(#version 450
-#extension GL_KHR_vulkan_glsl : enable
-
-)" + content;
-		}
-		else if ( device.getRenderer().getName() == "gl" )
-		{
-			content = R"(#version 420
-#extension GL_KHR_vulkan_glsl : enable
-#extension GL_ARB_explicit_attrib_location : enable
-#extension GL_ARB_explicit_uniform_location : enable
-
-)" + content;
-
-			std::regex regex{ R"(set[ ]*=[ ]*\d*, )" };
-			content = std::regex_replace( content.data()
-				, regex
-				, "" );
-		}
-		else if ( device.getRenderer().getName() == "gl3" )
-		{
-			content = R"(#version 150
-#extension GL_ARB_explicit_attrib_location : enable
-#extension GL_ARB_explicit_uniform_location : enable
-#extension GL_ARB_separate_shader_objects : enable
-#extension GL_ARB_shading_language_420pack : enable
-
-)" + content;
-
-			std::regex regex{ R"(set[ ]*=[ ]*\d*, )" };
-			content = std::regex_replace( content.data()
-				, regex
-				, "" );
-		}
-
-		return content;
+		return ashes::GlslToSpv( device
+			, stage
+			, dumpTextFile( path ) );
 	}
 
 	ashes::ByteArray dumpBinaryFile( std::string const & path )

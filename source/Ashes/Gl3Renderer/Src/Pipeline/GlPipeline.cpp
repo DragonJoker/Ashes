@@ -123,18 +123,6 @@ namespace gl_renderer
 			m_tsState = m_createInfo.tessellationState.value();
 		}
 
-		for ( auto & stage : m_ssState )
-		{
-			if ( !static_cast< ShaderModule const & >( *stage.module ).isSpirV()
-				&& stage.specialisationInfo )
-			{
-				m_constantsPcbs.push_back( convert( device
-					, ~( 0u )
-					, stage.module->getStage()
-					, *stage.specialisationInfo ) );
-			}
-		}
-
 		auto context = m_device.getContext();
 		apply( m_device, context, m_cbState );
 		apply( m_device, context, m_rsState
@@ -143,7 +131,25 @@ namespace gl_renderer
 		apply( m_device, context, m_dsState );
 		apply( m_device, context, m_msState );
 		apply( m_device, context, m_tsState );
-		m_program.link();
+		ShaderDesc shaderDesc = m_program.link();
+		m_constantsPcb.stageFlags = shaderDesc.stageFlags;
+		uint32_t offset = 0u;
+
+		for ( auto & constant : shaderDesc.constantsLayout )
+		{
+			m_constantsPcb.constants.push_back( { constant.format, constant.location, offset, constant.size } );
+			offset += constant.size;
+		}
+
+		m_constantsPcb.size = offset;
+
+		//if ( m_createInfo.stage.specialisationInfo )
+		//{
+		//	m_constantsPcbs.push_back( convert( device
+		//		, ~( 0u )
+		//		, m_createInfo.stage.module->getStage()
+		//		, *m_createInfo.stage.specialisationInfo ) );
+		//}
 
 		if ( m_device.getRenderer().isValidationEnabled() )
 		{
@@ -157,6 +163,15 @@ namespace gl_renderer
 
 	Pipeline::~Pipeline()
 	{
+	}
+
+	PushConstantsDesc Pipeline::findPushConstantBuffer( PushConstantsDesc const & pushConstants )const
+	{
+		PushConstantsDesc result{ m_constantsPcb };
+		result.offset = pushConstants.offset;
+		result.size = pushConstants.size;
+		result.data = pushConstants.data;
+		return result;
 	}
 
 	GeometryBuffers * Pipeline::findGeometryBuffers( VboBindings const & vbos

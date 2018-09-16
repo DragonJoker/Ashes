@@ -167,9 +167,35 @@ namespace ashes
 				std::move( stage )
 			} );
 		}
+		/**
+		*\~english
+		*\return
+		*	The descriptor sets layouts.
+		*\~french
+		*\return
+		*	Les layouts d'ensembles de descripteurs.
+		*/
+		inline DescriptorSetLayoutCRefArray const & getDescriptorSetsLayouts()const
+		{
+			return m_setLayouts;
+		}
+		/**
+		*\~english
+		*\return
+		*	The push constant ranges.
+		*\~french
+		*\return
+		*	Les intervalles de push constants.
+		*/
+		inline PushConstantRangeCRefArray const & getPushConstantRanges()const
+		{
+			return m_pushConstantRanges;
+		}
 
 	private:
 		Device const & m_device;
+		DescriptorSetLayoutCRefArray m_setLayouts;
+		PushConstantRangeCRefArray m_pushConstantRanges;
 	};
 }
 

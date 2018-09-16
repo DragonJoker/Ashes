@@ -23,15 +23,6 @@ namespace ashes
 		/**
 		*\~english
 		*\brief
-		*	The variable location in the shader (for GLSL).
-		*\~french
-		*\brief
-		*	La position de la variable dans le shader (pour GLSL).
-		*/
-		uint32_t location;
-		/**
-		*\~english
-		*\brief
 		*	The offset in the buffer.
 		*\~french
 		*\brief
@@ -61,25 +52,17 @@ namespace ashes
 	*\~english
 	*\brief
 	*	Wraps the push constants concept.
-	*\remarks
-	*	With OpenGL it will become a set of uniform variables, while in Vulkan it will become a push constants block.
 	*\~french
 	*\brief
 	*	Wrappe le concept de push constants.
-	*\remarks
-	*	En OpenGL il sera traité comme un ensemble de variables uniformes, alors q'en Vulkan ce sera un bloc de push constants.
 	*/
 	class PushConstantsBufferBase
 	{
-		friend class Device;
-
-	protected:
+	public:
 		/**
 		*\~french
 		*\brief
 		*	Constructeur.
-		*\param[in] location
-		*	Spécifie la position du tampon de push constants, dans le shader (pour HLSL).
 		*\param[in] stageFlags
 		*	Spécifie les niveaux de shaders qui vont utiliser les push constants dans l'intervalle mis à jour.
 		*\param[in] variables
@@ -87,18 +70,13 @@ namespace ashes
 		*\~english
 		*\brief
 		*	Constructor.
-		*\param[in] location
-		*	Specifies the location of the push constants buffer, in the shader (for HLSL).
 		*\param[in] stageFlags
 		*	Specifies the shader stages that will use the push constants in the updated range.
 		*\param[in] variables
 		*	The constants contained in the buffer.
 		*/
-		PushConstantsBufferBase( uint32_t location
-			, ShaderStageFlags stageFlags
+		PushConstantsBufferBase( ShaderStageFlags stageFlags
 			, PushConstantArray const & variables );
-
-	public:
 		/**
 		*\~french
 		*\brief
@@ -107,20 +85,8 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		virtual ~PushConstantsBufferBase()
+		~PushConstantsBufferBase()
 		{
-		}
-		/**
-		*\~english
-		*\return
-		*	The location of the push constants buffer, in the shader (for HLSL).
-		*\~french
-		*\return
-		*	La position du tampon de push constants, dans le shader (pour HLSL).
-		*/
-		inline uint32_t getLocation()const
-		{
-			return m_location;
 		}
 		/**
 		*\~english
@@ -208,7 +174,6 @@ namespace ashes
 		}
 
 	protected:
-		uint32_t m_location;
 		ShaderStageFlags m_stageFlags;
 		PushConstantArray m_variables;
 		uint32_t m_offset;
@@ -230,8 +195,6 @@ namespace ashes
 		*\~french
 		*\brief
 		*	Constructeur.
-		*\param[in] location
-		*	Spécifie la position du tampon de push constants, dans le shader (pour HLSL).
 		*\param[in] stageFlags
 		*	Spécifie les niveaux de shaders qui vont utiliser les push constants dans l'intervalle mis à jour.
 		*\param[in] variables
@@ -239,31 +202,16 @@ namespace ashes
 		*\~english
 		*\brief
 		*	Constructor.
-		*\param[in] location
-		*	Specifies the location of the push constants buffer, in the shader (for HLSL).
 		*\param[in] stageFlags
 		*	Specifies the shader stages that will use the push constants in the updated range.
 		*\param[in] variables
 		*	The constants contained in the buffer.
 		*/
 		PushConstantsBuffer( Device const & device
-			, uint32_t location
 			, ShaderStageFlags stageFlags
 			, PushConstantArray const & variables )
-			: m_pcb{ device.createPushConstantsBuffer( location, stageFlags, variables ) }
+			: m_pcb{ stageFlags, variables }
 		{
-		}
-		/**
-		*\~english
-		*\return
-		*	The location of the push constants buffer, in the shader (for HLSL).
-		*\~french
-		*\return
-		*	La position du tampon de push constants, dans le shader (pour HLSL).
-		*/
-		inline uint32_t getLocation()const
-		{
-			return getBuffer().getLocation();
 		}
 		/**
 		*\~english
@@ -311,7 +259,7 @@ namespace ashes
 		*/
 		inline T const * getData()const
 		{
-			return reinterpret_cast< T const * >( m_pcb->getData() );
+			return reinterpret_cast< T const * >( getBuffer().getData() );
 		}
 		/**
 		*\~english
@@ -323,7 +271,7 @@ namespace ashes
 		*/
 		inline T * getData()
 		{
-			return reinterpret_cast< T * >( m_pcb->getData() );
+			return reinterpret_cast< T * >( getBuffer().getData() );
 		}
 		/**
 		*\~english
@@ -359,12 +307,23 @@ namespace ashes
 		*/
 		inline PushConstantsBufferBase const & getBuffer()const
 		{
-			assert( m_pcb );
-			return *m_pcb;
+			return m_pcb;
+		}
+		/**
+		*\~english
+		*\brief
+		*	The internal PCB.
+		*\~french
+		*\brief
+		*	Le PCB interne.
+		*/
+		inline PushConstantsBufferBase & getBuffer()
+		{
+			return m_pcb;
 		}
 
 	private:
-		PushConstantsBufferPtr m_pcb;
+		PushConstantsBufferBase m_pcb;
 	};
 }
 

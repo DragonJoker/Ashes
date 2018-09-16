@@ -1,3 +1,6 @@
+#version 450
+#extension GL_KHR_vulkan_glsl : enable
+
 layout( binding=0 ) uniform samplerCube mapColour;
 
 layout( location = 0 ) in vec3 vtx_texcoord;

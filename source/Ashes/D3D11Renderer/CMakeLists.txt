@@ -16,6 +16,7 @@ configure_file(
 
 include_directories(
 	${CMAKE_SOURCE_DIR}
+		${SPIRV_CROSS_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}/../Ashes/Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../Ashes/Src
 	${CMAKE_CURRENT_SOURCE_DIR}/Src
@@ -36,6 +37,23 @@ file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 	Src/*.inc
 )
 
+set( ${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES
+	${SPIRV_CROSS_DIR}/spirv_cross.cpp
+	${SPIRV_CROSS_DIR}/spirv_cfg.cpp
+	${SPIRV_CROSS_DIR}/spirv_glsl.cpp
+	${SPIRV_CROSS_DIR}/spirv_hlsl.cpp
+)
+
+set( ${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES
+	${SPIRV_CROSS_DIR}/GLSL.std.450.h
+	${SPIRV_CROSS_DIR}/spirv_common.hpp
+	${SPIRV_CROSS_DIR}/spirv.hpp
+	${SPIRV_CROSS_DIR}/spirv_cross.hpp
+	${SPIRV_CROSS_DIR}/spirv_cfg.hpp
+	${SPIRV_CROSS_DIR}/spirv_glsl.hpp
+	${SPIRV_CROSS_DIR}/spirv_hlsl.hpp
+)
+
 if ( ASHES_STATIC_RENDERERS )
 	add_definitions(
 		-DD3D11Renderer_STATIC
@@ -44,6 +62,8 @@ if ( ASHES_STATIC_RENDERERS )
 		${${PROJECT_NAME}_SRC_FILES}
 		${${PROJECT_NAME}_HDR_FILES}
 		${${PROJECT_NAME}_CONFIG_HEADER}
+		${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
+		${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 	)
 else ()
 	add_definitions(
@@ -53,6 +73,8 @@ else ()
 		${${PROJECT_NAME}_SRC_FILES}
 		${${PROJECT_NAME}_HDR_FILES}
 		${${PROJECT_NAME}_CONFIG_HEADER}
+		${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
+		${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 	)
 endif ()
 
@@ -97,6 +119,9 @@ parse_subdir_files( Src/RenderPass "RenderPass" )
 parse_subdir_files( Src/Shader "Shader" )
 parse_subdir_files( Src/Sync "Sync" )
 parse_subdir_files( Src/vulkan "vulkan" )
+
+source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
+source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes" )

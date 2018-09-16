@@ -218,29 +218,6 @@ namespace ashes
 		/**
 		*\~french
 		*\brief
-		*	Crée un tampon de push constants.
-		*\param[in] location
-		*	Spécifie la position du tampon de push constants, dans le shader (pour HLSL).
-		*\param[in] stageFlags
-		*	Spécifie les niveaux de shaders qui vont utiliser les push constants dans l'intervalle mis à jour.
-		*\param[in] variables
-		*	Les variables contenues dans le tampon.
-		*\~english
-		*\brief
-		*	Creates a push constants buffer.
-		*\param[in] location
-		*	Specifies the location of the push constants buffer, in the shader (for HLSL).
-		*\param[in] stageFlags
-		*	Specifies the shader stages that will use the push constants in the updated range.
-		*\param[in] variables
-		*	The constants contained in the buffer.
-		*/
-		virtual PushConstantsBufferPtr createPushConstantsBuffer( uint32_t location
-			, ShaderStageFlags stageFlags
-			, PushConstantArray const & variables )const;
-		/**
-		*\~french
-		*\brief
 		*	Crée une passe de rendu.
 		*\param[in] createInfo
 		*	Les informations de création.

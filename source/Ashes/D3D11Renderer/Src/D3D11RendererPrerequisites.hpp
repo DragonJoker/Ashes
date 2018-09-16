@@ -97,7 +97,6 @@ typedef uint8_t UINT8;
 #include "Pipeline/D3D11Scissor.hpp"
 #include "Pipeline/D3D11SpecialisationInfo.hpp"
 #include "Pipeline/D3D11StencilOpState.hpp"
-#include "Pipeline/D3D11VertexInputState.hpp"
 #include "Pipeline/D3D11Viewport.hpp"
 
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
@@ -163,7 +162,18 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 #endif
 
 #if !defined( NDEBUG )
+#	define dxRenderer_DebugNames 0
+#else
+#	define dxRenderer_DebugNames 0
+#endif
+
+#if !defined( NDEBUG )
 #	define dxCheckError( hr, txt ) checkError( hr, txt )
+#else
+#	define dxCheckError( hr, txt ) SUCCEEDED( hr )
+#endif
+
+#if dxRenderer_DebugNames
 #	if defined( _MSC_VER )
 #		define dxDebugName( obj, type )\
 			if( obj )\
@@ -186,7 +196,6 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 			}
 #	endif
 #else
-#	define dxCheckError( hr, txt ) SUCCEEDED( hr )
 #	define dxDebugName( obj, txt )
 #endif
 
@@ -211,7 +220,6 @@ namespace d3d11_renderer
 	class Pipeline;
 	class PipelineLayout;
 	class PhysicalDevice;
-	class PushConstantsBuffer;
 	class QueryPool;
 	class Queue;
 	class Renderer;
@@ -237,6 +245,8 @@ namespace d3d11_renderer
 	using QueuePtr = std::unique_ptr< Queue >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
 	using TextureViewPtr = std::unique_ptr< TextureView >;
+
+	using UniformBufferPtr = std::shared_ptr< UniformBuffer >;
 
 	using BackBufferPtrArray = std::vector< BackBufferPtr >;
 	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
@@ -289,6 +299,21 @@ namespace d3d11_renderer
 
 		return result;
 	}
+
+	struct PushConstantsDesc
+	{
+		ashes::ShaderStageFlags stageFlags;
+		uint32_t offset;
+		uint32_t size;
+		std::vector< uint8_t > data;
+	};
+
+	struct PushConstantsBuffer
+	{
+		UniformBufferPtr ubo;
+		UINT location;
+		PushConstantsDesc data;
+	};
 
 	struct VbosBinding
 	{

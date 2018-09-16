@@ -4,100 +4,106 @@ See LICENSE file in root folder.
 */
 #include "D3D11PushConstantsCommand.hpp"
 
-#include "Buffer/D3D11PushConstantsBuffer.hpp"
+#include "Buffer/D3D11Buffer.hpp"
+#include "Buffer/D3D11UniformBuffer.hpp"
+#include "Shader/D3D11ShaderModule.hpp"
+
+#include <Pipeline/PipelineLayout.hpp>
+#include <Miscellaneous/PushConstantRange.hpp>
 
 namespace d3d11_renderer
 {
 	PushConstantsCommand::PushConstantsCommand( Device const & device
-		, ashes::PipelineLayout const & layout
-		, ashes::PushConstantsBufferBase const & pcb )
+		, PushConstantsBuffer const & pcb )
 		: CommandBase{ device }
-		, m_pcb{ static_cast< PushConstantsBuffer const & >( pcb ) }
-		, m_data{ pcb.getData(), pcb.getData() + pcb.getSize() }
+		, m_pcb{ pcb }
 	{
 	}
 
 	void PushConstantsCommand::apply( Context const & context )const
 	{
-		auto buffer = m_pcb.getBuffer();
-		D3D11_MAPPED_SUBRESOURCE mapped;
-		auto hr = context.context->Map( buffer
-			, 0u
-			, D3D11_MAP_WRITE_DISCARD
-			, 0u
-			, &mapped );
-
-		if ( dxCheckError( hr, "Map" ) )
+		if ( m_pcb.ubo )
 		{
-			std::memcpy( mapped.pData
-				, m_pcb.getData()
-				, m_pcb.getSize() );
+			auto buffer = static_cast< Buffer const & >( m_pcb.ubo->getBuffer() ).getBuffer();
+			D3D11_MAPPED_SUBRESOURCE mapped;
+			auto hr = context.context->Map( buffer
+				, 0u
+				, D3D11_MAP_WRITE_DISCARD
+				, 0u
+				, &mapped );
+			dxCheckError( hr, "Map" );
+			std::memcpy( reinterpret_cast< uint8_t * >( mapped.pData ) + m_pcb.data.offset
+				, m_pcb.data.data.data()
+				, m_pcb.data.size );
 			context.context->Unmap( buffer, 0u );
-		}
 
-		if ( checkFlag( m_pcb.getStageFlags(), ashes::ShaderStageFlag::eVertex ) )
-		{
-			context.context->VSSetConstantBuffers( m_pcb.getLocation(), 1u, &buffer );
-		}
+			if ( checkFlag( m_pcb.data.stageFlags, ashes::ShaderStageFlag::eVertex ) )
+			{
+				context.context->VSSetConstantBuffers( m_pcb.location, 1u, &buffer );
+			}
 
-		if ( checkFlag( m_pcb.getStageFlags(), ashes::ShaderStageFlag::eTessellationControl ) )
-		{
-			context.context->HSSetConstantBuffers( m_pcb.getLocation(), 1u, &buffer );
-		}
+			if ( checkFlag( m_pcb.data.stageFlags, ashes::ShaderStageFlag::eTessellationControl ) )
+			{
+				context.context->HSSetConstantBuffers( m_pcb.location, 1u, &buffer );
+			}
 
-		if ( checkFlag( m_pcb.getStageFlags(), ashes::ShaderStageFlag::eTessellationEvaluation ) )
-		{
-			context.context->DSSetConstantBuffers( m_pcb.getLocation(), 1u, &buffer );
-		}
+			if ( checkFlag( m_pcb.data.stageFlags, ashes::ShaderStageFlag::eTessellationEvaluation ) )
+			{
+				context.context->DSSetConstantBuffers( m_pcb.location, 1u, &buffer );
+			}
 
-		if ( checkFlag( m_pcb.getStageFlags(), ashes::ShaderStageFlag::eGeometry ) )
-		{
-			context.context->GSSetConstantBuffers( m_pcb.getLocation(), 1u, &buffer );
-		}
+			if ( checkFlag( m_pcb.data.stageFlags, ashes::ShaderStageFlag::eGeometry ) )
+			{
+				context.context->GSSetConstantBuffers( m_pcb.location, 1u, &buffer );
+			}
 
-		if ( checkFlag( m_pcb.getStageFlags(), ashes::ShaderStageFlag::eFragment ) )
-		{
-			context.context->PSSetConstantBuffers( m_pcb.getLocation(), 1u, &buffer );
-		}
+			if ( checkFlag( m_pcb.data.stageFlags, ashes::ShaderStageFlag::eFragment ) )
+			{
+				context.context->PSSetConstantBuffers( m_pcb.location, 1u, &buffer );
+			}
 
-		if ( checkFlag( m_pcb.getStageFlags(), ashes::ShaderStageFlag::eCompute ) )
-		{
-			context.context->CSSetConstantBuffers( m_pcb.getLocation(), 1u, &buffer );
+			if ( checkFlag( m_pcb.data.stageFlags, ashes::ShaderStageFlag::eCompute ) )
+			{
+				context.context->CSSetConstantBuffers( m_pcb.location, 1u, &buffer );
+			}
 		}
 	}
 
 	void PushConstantsCommand::remove( Context const & context )const
 	{
-		static ID3D11Buffer * nullBuffer{ nullptr };
-
-		if ( checkFlag( m_pcb.getStageFlags(), ashes::ShaderStageFlag::eVertex ) )
+		if ( m_pcb.ubo )
 		{
-			context.context->VSSetConstantBuffers( m_pcb.getLocation(), 1u, &nullBuffer );
-		}
+			static ID3D11Buffer * nullBuffer{ nullptr };
 
-		if ( checkFlag( m_pcb.getStageFlags(), ashes::ShaderStageFlag::eTessellationControl ) )
-		{
-			context.context->HSSetConstantBuffers( m_pcb.getLocation(), 1u, &nullBuffer );
-		}
+			if ( checkFlag( m_pcb.data.stageFlags, ashes::ShaderStageFlag::eVertex ) )
+			{
+				context.context->VSSetConstantBuffers( m_pcb.location, 1u, &nullBuffer );
+			}
 
-		if ( checkFlag( m_pcb.getStageFlags(), ashes::ShaderStageFlag::eTessellationEvaluation ) )
-		{
-			context.context->DSSetConstantBuffers( m_pcb.getLocation(), 1u, &nullBuffer );
-		}
+			if ( checkFlag( m_pcb.data.stageFlags, ashes::ShaderStageFlag::eTessellationControl ) )
+			{
+				context.context->HSSetConstantBuffers( m_pcb.location, 1u, &nullBuffer );
+			}
 
-		if ( checkFlag( m_pcb.getStageFlags(), ashes::ShaderStageFlag::eGeometry ) )
-		{
-			context.context->GSSetConstantBuffers( m_pcb.getLocation(), 1u, &nullBuffer );
-		}
+			if ( checkFlag( m_pcb.data.stageFlags, ashes::ShaderStageFlag::eTessellationEvaluation ) )
+			{
+				context.context->DSSetConstantBuffers( m_pcb.location, 1u, &nullBuffer );
+			}
 
-		if ( checkFlag( m_pcb.getStageFlags(), ashes::ShaderStageFlag::eFragment ) )
-		{
-			context.context->PSSetConstantBuffers( m_pcb.getLocation(), 1u, &nullBuffer );
-		}
+			if ( checkFlag( m_pcb.data.stageFlags, ashes::ShaderStageFlag::eGeometry ) )
+			{
+				context.context->GSSetConstantBuffers( m_pcb.location, 1u, &nullBuffer );
+			}
 
-		if ( checkFlag( m_pcb.getStageFlags(), ashes::ShaderStageFlag::eCompute ) )
-		{
-			context.context->CSSetConstantBuffers( m_pcb.getLocation(), 1u, &nullBuffer );
+			if ( checkFlag( m_pcb.data.stageFlags, ashes::ShaderStageFlag::eFragment ) )
+			{
+				context.context->PSSetConstantBuffers( m_pcb.location, 1u, &nullBuffer );
+			}
+
+			if ( checkFlag( m_pcb.data.stageFlags, ashes::ShaderStageFlag::eCompute ) )
+			{
+				context.context->CSSetConstantBuffers( m_pcb.location, 1u, &nullBuffer );
+			}
 		}
 	}
 

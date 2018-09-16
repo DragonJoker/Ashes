@@ -16,14 +16,33 @@ namespace gl_renderer
 		, m_layout{ layout }
 		, m_program{ m_device, m_createInfo.stage }
 	{
-		m_program.link();
+		ShaderDesc shaderDesc = m_program.link();
+		m_constantsPcb.stageFlags = shaderDesc.stageFlags;
+		uint32_t offset = 0u;
 
-		if ( m_createInfo.stage.specialisationInfo )
+		for ( auto & constant : shaderDesc.constantsLayout )
 		{
-			m_constantsPcbs.push_back( convert( device
-				, ~( 0u )
-				, m_createInfo.stage.module->getStage()
-				, *m_createInfo.stage.specialisationInfo ) );
+			m_constantsPcb.constants.push_back( { constant.format, constant.location, offset, constant.size } );
+			offset += constant.size;
 		}
+
+		m_constantsPcb.size = offset;
+
+		//if ( m_createInfo.stage.specialisationInfo )
+		//{
+		//	m_constantsPcbs.push_back( convert( device
+		//		, ~( 0u )
+		//		, m_createInfo.stage.module->getStage()
+		//		, *m_createInfo.stage.specialisationInfo ) );
+		//}
+	}
+
+	PushConstantsDesc ComputePipeline::findPushConstantBuffer( PushConstantsDesc const & pushConstants )const
+	{
+		PushConstantsDesc result{ m_constantsPcb };
+		result.offset = pushConstants.offset;
+		result.size = pushConstants.size;
+		result.data = pushConstants.data;
+		return result;
 	}
 }

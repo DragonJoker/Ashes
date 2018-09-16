@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #include "GlCommandBase.hpp"
 
+#include "Shader/GlShaderDesc.hpp"
+
 namespace gl_renderer
 {
 	/**
@@ -17,13 +19,11 @@ namespace gl_renderer
 	{
 	public:
 		PushConstantsCommand( Device const & device
-			, ashes::PipelineLayout const & layout
-			, ashes::PushConstantsBufferBase const & pcb );
+			, PushConstantsDesc const & pcb );
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		ashes::PushConstantsBufferBase const & m_pcb;
-		ashes::ByteArray m_data;
+		PushConstantsDesc m_pcb; 
 	};
 }

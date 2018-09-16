@@ -31,7 +31,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/ShaderProgram.hpp>
+#include <Shader/GlslToSpv.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Transform.hpp>
@@ -60,10 +60,10 @@ namespace vkapp
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 		, m_mainVertexData
 		{
-			{ { -1.0, -1.0, 0.0, 1.0 }, { 0.0, 0.0 } },
-			{ { -1.0, +1.0, 0.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
+			{ { -1.0, -1.0, 0.0, 1.0 }, { 0.0, 1.0 } },
+			{ { -1.0, +1.0, 0.0, 1.0 }, { 0.0, 0.0 } },
+			{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
+			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
 		}
 	{
 		for ( auto i = 0u; i < 100u; ++i )
@@ -409,14 +409,10 @@ namespace vkapp
 		m_offscreenVertexLayout = ashes::makeLayout< UVWVertexData >( 0 );
 		m_offscreenVertexLayout->createAttribute( 0u
 			, ashes::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( UVWVertexData, position ) )
-			, "POSITION"
-			, 0u );
+			, uint32_t( offsetof( UVWVertexData, position ) ) );
 		m_offscreenVertexLayout->createAttribute( 1u
 			, ashes::Format::eR32G32B32_SFLOAT
-			, uint32_t( offsetof( UVWVertexData, uvw ) )
-			, "TEXCOORD"
-			, 0u );
+			, uint32_t( offsetof( UVWVertexData, uvw ) ) );
 
 		m_offscreenVertexBuffer = ashes::makeVertexBuffer< UVWVertexData >( *m_device
 			, uint32_t( m_offscreenVertexData.size() )
@@ -440,35 +436,22 @@ namespace vkapp
 		m_offscreenPipelineLayout = m_device->createPipelineLayout( *m_offscreenDescriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+
+		if ( !wxFileExists( shadersFolder / "offscreen.vert" )
+			|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
+		{
+			throw std::runtime_error{ "Shader files are missing" };
+		}
+
 		std::vector< ashes::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-
-		if ( m_device->getRenderer().isGLSLSupported()
-			|| m_device->getRenderer().isSPIRVSupported() )
-		{
-			if ( !wxFileExists( shadersFolder / "offscreen.vert" )
-				|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.vert" ) );
-			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.frag" ) );
-		}
-		else
-		{
-			if ( !wxFileExists( shadersFolder / "offscreen.hvert" )
-				|| !wxFileExists( shadersFolder / "offscreen.hpix" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.hvert" ) );
-			shaderStages[0].entryPoint = "mainVx";
-			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "offscreen.hpix" ) );
-			shaderStages[1].entryPoint = "mainPx";
-		}
+		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device
+			, ashes::ShaderStageFlag::eVertex
+			, shadersFolder / "offscreen.vert" ) );
+		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device
+			, ashes::ShaderStageFlag::eFragment
+			, shadersFolder / "offscreen.frag" ) );
 
 		ashes::RasterisationState rasterisationState;
 		rasterisationState.cullMode = ashes::CullModeFlag::eNone;
@@ -594,14 +577,10 @@ namespace vkapp
 		m_mainVertexLayout = ashes::makeLayout< UVVertexData >( 0 );
 		m_mainVertexLayout->createAttribute( 0u
 			, ashes::Format::eR32G32B32A32_SFLOAT
-			, uint32_t( offsetof( UVVertexData, position ) )
-			, "POSITION"
-			, 0u );
+			, uint32_t( offsetof( UVVertexData, position ) ) );
 		m_mainVertexLayout->createAttribute( 1u
 			, ashes::Format::eR32G32_SFLOAT
-			, uint32_t( offsetof( UVVertexData, uv ) )
-			, "TEXCOORD"
-			, 0u );
+			, uint32_t( offsetof( UVVertexData, uv ) ) );
 
 		m_mainVertexBuffer = ashes::makeVertexBuffer< UVVertexData >( *m_device
 			, uint32_t( m_mainVertexData.size() )
@@ -617,35 +596,22 @@ namespace vkapp
 		m_mainPipelineLayout = m_device->createPipelineLayout( *m_mainDescriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+
+		if ( !wxFileExists( shadersFolder / "main.vert" )
+			|| !wxFileExists( shadersFolder / "main.frag" ) )
+		{
+			throw std::runtime_error{ "Shader files are missing" };
+		}
+
 		std::vector< ashes::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-
-		if ( m_device->getRenderer().isGLSLSupported()
-			|| m_device->getRenderer().isSPIRVSupported() )
-		{
-			if ( !wxFileExists( shadersFolder / "main.vert" )
-				|| !wxFileExists( shadersFolder / "main.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.vert" ) );
-			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.frag" ) );
-		}
-		else
-		{
-			if ( !wxFileExists( shadersFolder / "main.hvert" )
-				|| !wxFileExists( shadersFolder / "main.hpix" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			shaderStages[0].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.hvert" ) );
-			shaderStages[0].entryPoint = "mainVx";
-			shaderStages[1].module->loadShader( common::parseShaderFile( *m_device, shadersFolder / "main.hpix" ) );
-			shaderStages[1].entryPoint = "mainPx";
-		}
+		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device
+			, ashes::ShaderStageFlag::eVertex
+			, shadersFolder / "main.vert" ) );
+		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device
+			, ashes::ShaderStageFlag::eFragment
+			, shadersFolder / "main.frag" ) );
 
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo
 		{

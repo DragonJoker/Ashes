@@ -291,4 +291,14 @@ namespace ashes
 		assert( areCompatible( before, transitionBarrier.getDstAccessMask() ) );
 		doMemoryBarrier( after, before, transitionBarrier );
 	}
+
+	void CommandBuffer::pushConstants( PipelineLayout const & layout
+		, PushConstantsBufferBase const & pcb )const
+	{
+		pushConstants( layout
+			, pcb.getStageFlags()
+			, pcb.getOffset()
+			, pcb.getSize()
+			, reinterpret_cast< void const * >( pcb.getData() ) );
+	}
 }

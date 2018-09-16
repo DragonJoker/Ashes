@@ -27,7 +27,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/ShaderProgram.hpp>
+#include <Shader/GlslToSpv.hpp>
 #include <Sync/BufferMemoryBarrier.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
@@ -41,8 +41,8 @@ namespace common
 		{
 			return
 			{
-				{ 0u, 0u, ashes::ConstantFormat::eVec2f },
-				{ 1u, 8u, ashes::ConstantFormat::eVec2f },
+				{ 0u, ashes::ConstantFormat::eVec2f },
+				{ 8u, ashes::ConstantFormat::eVec2f },
 			};
 		}
 	}
@@ -51,7 +51,7 @@ namespace common
 		, ashes::Extent2D const & size )
 		: m_device{ device }
 		, m_size{ size }
-		, m_pushConstants{ device, 0u, ashes::ShaderStageFlag::eVertex, doCreateConstants() }
+		, m_pushConstants{ device, ashes::ShaderStageFlag::eVertex, doCreateConstants() }
 	{
 		// Init ImGui
 		// Color scheme
@@ -305,19 +305,13 @@ namespace common
 		m_vertexLayout = ashes::makeLayout< ImDrawVert >( 0u );
 		m_vertexLayout->createAttribute( 0u
 			, ashes::Format::eR32G32_SFLOAT
-			, offsetof( ImDrawVert, pos )
-			, "POSITION"
-			, 0u );
+			, offsetof( ImDrawVert, pos ) );
 		m_vertexLayout->createAttribute( 1u
 			, ashes::Format::eR32G32_SFLOAT
-			, offsetof( ImDrawVert, uv )
-			, "TEXCOORD"
-			, 0u );
+			, offsetof( ImDrawVert, uv ) );
 		m_vertexLayout->createAttribute( 2u
 			, ashes::Format::eR32_UINT
-			, offsetof( ImDrawVert, col )
-			, "COLOR"
-			, 0u );
+			, offsetof( ImDrawVert, col ) );
 	}
 
 	void Gui::doPreparePipeline()
@@ -394,8 +388,8 @@ namespace common
 		std::vector< ashes::ShaderStageState > shaderStages;
 		shaderStages.push_back( { m_device.createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
 		shaderStages.push_back( { m_device.createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( dumpTextFile( shadersFolder / "gui.vert" ) );
-		shaderStages[1].module->loadShader( dumpTextFile( shadersFolder / "gui.frag" ) );
+		shaderStages[0].module->loadShader( dumpShaderFile( m_device, ashes::ShaderStageFlag::eVertex, shadersFolder / "gui.vert" ) );
+		shaderStages[1].module->loadShader( dumpShaderFile( m_device, ashes::ShaderStageFlag::eFragment, shadersFolder / "gui.frag" ) );
 
 		std::vector< ashes::DynamicState > dynamicStateEnables
 		{

@@ -11,12 +11,7 @@ layout( location = 0 ) out vec4 pxl_colour;
 void main()
 {
 	vec2 guicoord = vtx_texcoord;
-#ifdef VULKAN
-	vec2 colcoord = vec2( vtx_texcoord.x, 1.0 - vtx_texcoord.y );
-#else
-	vec2 colcoord = vtx_texcoord;
-#endif
-
+	vec2 colcoord = ashesInvertY( vtx_texcoord );
 	vec4 gui = texture( mapGui, guicoord );
 	vec4 colour = texture( mapColour, colcoord );
 	pxl_colour.rgb = gui.rgb * gui.a + colour.rgb * (1.0 - gui.a);

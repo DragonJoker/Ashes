@@ -23,7 +23,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/ShaderProgram.hpp>
+#include <Shader/GlslToSpv.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Transform.hpp>
@@ -93,7 +93,7 @@ namespace vkapp
 					utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, +0.0f, -1.0f }, Vec3{ 0.0f, -1.0f, +0.0f } )
 				};
 
-				if ( device.getRenderer().getName().find( "d3d" ) != std::string::npos )
+				if ( device.getRenderer().getName().find( "gl" ) != std::string::npos )
 				{
 					std::swap( result[2], result[3] );
 				}
@@ -123,35 +123,22 @@ namespace vkapp
 		std::vector< ashes::ShaderStageState > doCreateProgram( ashes::Device & device )
 		{
 			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+
+			if ( !wxFileExists( shadersFolder / "equirectangular.vert" )
+				|| !wxFileExists( shadersFolder / "equirectangular.frag" ) )
+			{
+				throw std::runtime_error{ "Shader files are missing" };
+			}
+
 			std::vector< ashes::ShaderStageState > shaderStages;
 			shaderStages.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
 			shaderStages.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-
-			if ( device.getRenderer().isGLSLSupported()
-				|| device.getRenderer().isSPIRVSupported() )
-			{
-				if ( !wxFileExists( shadersFolder / "equirectangular.vert" )
-					|| !wxFileExists( shadersFolder / "equirectangular.frag" ) )
-				{
-					throw std::runtime_error{ "Shader files are missing" };
-				}
-
-				shaderStages[0].module->loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.vert" ) );
-				shaderStages[1].module->loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.frag" ) );
-			}
-			else
-			{
-				if ( !wxFileExists( shadersFolder / "equirectangular.hvert" )
-					|| !wxFileExists( shadersFolder / "equirectangular.hpix" ) )
-				{
-					throw std::runtime_error{ "Shader files are missing" };
-				}
-
-				shaderStages[0].module->loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.hvert" ) );
-				shaderStages[0].entryPoint = "mainVx";
-				shaderStages[1].module->loadShader( common::parseShaderFile( device, shadersFolder / "equirectangular.hpix" ) );
-				shaderStages[1].entryPoint = "mainPx";
-			}
+			shaderStages[0].module->loadShader( common::parseShaderFile( device
+				, ashes::ShaderStageFlag::eVertex
+				, shadersFolder / "equirectangular.vert" ) );
+			shaderStages[1].module->loadShader( common::parseShaderFile( device
+				, ashes::ShaderStageFlag::eFragment
+				, shadersFolder / "equirectangular.frag" ) );
 
 			return shaderStages;
 		}
@@ -188,8 +175,6 @@ namespace vkapp
 			auto result = ashes::makeLayout< VertexData >( 0u );
 			result->createAttribute( 0u
 				, ashes::Format::eR32G32B32A32_SFLOAT
-				, 0u
-				, "POSITION"
 				, 0u );
 			return result;
 		}

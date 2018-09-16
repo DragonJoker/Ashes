@@ -65,5 +65,13 @@ namespace gl_renderer
 			, float top
 			, float zNear
 			, float zFar )const override;
+
+		inline bool isSPIRVSupported()const
+		{
+			return m_spirvSupported;
+		}
+
+	private:
+		bool m_spirvSupported;
 	};
 }

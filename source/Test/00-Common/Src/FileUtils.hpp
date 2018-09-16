@@ -88,7 +88,8 @@ namespace common
 	*\return
 	*	The file content.
 	*/
-	std::string parseShaderFile( ashes::Device const & device
+	ashes::UInt32Array parseShaderFile( ashes::Device const & device
+		, ashes::ShaderStageFlag stage
 		, std::string const & file );
 	/**
 	*\~french

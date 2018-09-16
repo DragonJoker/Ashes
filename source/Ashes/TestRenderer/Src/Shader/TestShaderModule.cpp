@@ -22,15 +22,7 @@ namespace test_renderer
 	{
 	}
 
-	void ShaderModule::loadShader( std::string const & shader )
-	{
-	}
-
 	void ShaderModule::loadShader( ashes::UInt32Array const & shader )
-	{
-	}
-
-	void ShaderModule::loadShader( ashes::ByteArray const & shader )
 	{
 	}
 }

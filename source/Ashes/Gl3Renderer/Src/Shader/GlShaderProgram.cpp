@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "Shader/GlShaderProgram.hpp"
 
 #include "Core/GlDevice.hpp"
+#include "Miscellaneous/GlValidator.hpp"
 #include "Shader/GlShaderModule.hpp"
 
 #include <Pipeline/ShaderStageState.hpp>
@@ -175,6 +176,7 @@ namespace gl_renderer
 		for ( auto & stage : stages )
 		{
 			auto & module = static_cast< ShaderModule const & >( *stage.module );
+			m_stageFlags |= module.getStage();
 			m_shaders.push_back( module.getShader() );
 			doInitialiseState( context, stage );
 			glLogCall( context
@@ -187,6 +189,7 @@ namespace gl_renderer
 	ShaderProgram::ShaderProgram( Device const & device
 		, ashes::ShaderStageState const & stage )
 		: m_device{ device }
+		, m_stageFlags{ stage.module->getStage() }
 	{
 		auto context = m_device.getContext();
 		m_program = context->glCreateProgram();
@@ -215,7 +218,7 @@ namespace gl_renderer
 			, m_program );
 	}
 
-	void ShaderProgram::link()const
+	ShaderDesc ShaderProgram::link()const
 	{
 		auto context = m_device.getContext();
 		int attached = 0;
@@ -234,6 +237,7 @@ namespace gl_renderer
 			, GL_INFO_LINK_STATUS
 			, &linked );
 		auto linkerLog = doRetrieveLinkerLog( context, m_program );
+		ShaderDesc result;
 
 		if ( linked
 			&& attached == int( m_shaders.size() )
@@ -255,6 +259,11 @@ namespace gl_renderer
 			{
 				ashes::Logger::logError( "ShaderProgram::link - Not validated" );
 			}
+			else
+			{
+				result = getShaderDesc( context, m_program );
+				result.stageFlags = m_stageFlags;
+			}
 		}
 		else
 		{
@@ -268,5 +277,7 @@ namespace gl_renderer
 				ashes::Logger::logError( "ShaderProgram::link - The linked shaders count doesn't match the active shaders count." );
 			}
 		}
+
+		return result;
 	}
 }
