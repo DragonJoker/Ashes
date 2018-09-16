@@ -21,7 +21,7 @@ namespace ashes
 					throw std::runtime_error{ "Inconsistency detected between given and computed offsets" };
 				}
 
-				offset = constant.offset + getSize( constant.format ) * constant.arraySize;
+				offset = constant.offset + constant.size;
 			}
 
 			return offset;

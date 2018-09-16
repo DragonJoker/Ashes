@@ -230,7 +230,10 @@ namespace test_renderer
 		*\copydoc	ashes::CommandBuffer:pushConstants
 		*/
 		void pushConstants( ashes::PipelineLayout const & layout
-			, ashes::PushConstantsBufferBase const & pcb )const override;
+			, ashes::ShaderStageFlags stageFlags
+			, uint32_t offset
+			, uint32_t size
+			, void const * data )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:dispatch
 		*/

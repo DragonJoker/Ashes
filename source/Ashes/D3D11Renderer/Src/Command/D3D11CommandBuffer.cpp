@@ -132,6 +132,7 @@ namespace d3d11_renderer
 	void CommandBuffer::begin( ashes::CommandBufferUsageFlags flags )const
 	{
 		m_commands.clear();
+		m_afterSubmitActions.clear();
 		m_state = State{};
 		m_state.beginFlags = flags;
 	}
@@ -140,6 +141,7 @@ namespace d3d11_renderer
 		, ashes::CommandBufferInheritanceInfo const & inheritanceInfo )const
 	{
 		m_commands.clear();
+		m_afterSubmitActions.clear();
 		m_state = State{};
 		m_state.beginFlags = flags;
 	}
@@ -258,16 +260,7 @@ namespace d3d11_renderer
 		for ( auto & pcb : m_state.pushConstantBuffers )
 		{
 			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, *pcb.first
-				, *pcb.second ) );
-			doAddAfterSubmitAction();
-		}
-
-		for ( auto & pcb : dxpipeline.getConstantsPcbs() )
-		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, dxpipeline.getLayout()
-				, *pcb ) );
+				, m_state.currentPipeline->findPushConstantBuffer( pcb.second ) ) );
 			doAddAfterSubmitAction();
 		}
 
@@ -277,7 +270,8 @@ namespace d3d11_renderer
 	void CommandBuffer::bindPipeline( ashes::ComputePipeline const & pipeline
 		, ashes::PipelineBindPoint bindingPoint )const
 	{
-		m_state.currentComputePipeline = &static_cast< ComputePipeline const & >( pipeline );
+		auto & dxpipeline = static_cast< ComputePipeline const & >( pipeline );
+		m_state.currentComputePipeline = &dxpipeline;
 		m_commands.emplace_back( std::make_unique< BindComputePipelineCommand >( m_device
 			, pipeline
 			, bindingPoint ) );
@@ -286,16 +280,7 @@ namespace d3d11_renderer
 		for ( auto & pcb : m_state.pushConstantBuffers )
 		{
 			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, *pcb.first
-				, *pcb.second ) );
-			doAddAfterSubmitAction();
-		}
-
-		for ( auto & pcb : m_state.currentComputePipeline->getConstantsPcbs() )
-		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, m_state.currentComputePipeline->getLayout()
-				, *pcb ) );
+				, m_state.currentPipeline->findPushConstantBuffer( pcb.second ) ) );
 			doAddAfterSubmitAction();
 		}
 
@@ -544,12 +529,35 @@ namespace d3d11_renderer
 	}
 
 	void CommandBuffer::pushConstants( ashes::PipelineLayout const & layout
-		, ashes::PushConstantsBufferBase const & pcb )const
+		, ashes::ShaderStageFlags stageFlags
+		, uint32_t offset
+		, uint32_t size
+		, void const * data )const
 	{
-		m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-			, layout
-			, pcb ) );
-		doAddAfterSubmitAction();
+		PushConstantsDesc desc
+		{
+			stageFlags,
+			offset,
+			size,
+			{ reinterpret_cast< uint8_t const * >( data ), reinterpret_cast< uint8_t const * >( data ) + size }
+		};
+
+		if ( m_state.currentPipeline )
+		{
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
+				, m_state.currentPipeline->findPushConstantBuffer( desc ) ) );
+			doAddAfterSubmitAction();
+		}
+		else if ( m_state.currentComputePipeline )
+		{
+			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
+				, m_state.currentPipeline->findPushConstantBuffer( desc ) ) );
+			doAddAfterSubmitAction();
+		}
+		else
+		{
+			m_state.pushConstantBuffers.emplace_back( &layout, desc );
+		}
 	}
 
 	void CommandBuffer::dispatch( uint32_t groupCountX

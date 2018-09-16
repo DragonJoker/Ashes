@@ -231,7 +231,10 @@ namespace d3d11_renderer
 		*\copydoc	ashes::CommandBuffer:pushConstants
 		*/
 		void pushConstants( ashes::PipelineLayout const & layout
-			, ashes::PushConstantsBufferBase const & pcb )const override;
+			, ashes::ShaderStageFlags stageFlags
+			, uint32_t offset
+			, uint32_t size
+			, void const * data )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:dispatch
 		*/
@@ -311,7 +314,7 @@ namespace d3d11_renderer
 		{
 			ashes::CommandBufferUsageFlags beginFlags{ 0u };
 			Pipeline const * currentPipeline{ nullptr };
-			std::vector< std::pair < ashes::PipelineLayout const *, ashes::PushConstantsBufferBase const * > > pushConstantBuffers;
+			std::vector< std::pair < ashes::PipelineLayout const *, PushConstantsDesc > > pushConstantBuffers;
 			ComputePipeline const * currentComputePipeline{ nullptr };
 			ashes::SubpassDescription const * currentSubpass{ nullptr };
 			RenderPass const * currentRenderPass{ nullptr };

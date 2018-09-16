@@ -59,12 +59,7 @@ namespace d3d11_renderer
 			, D3D11_MAP_WRITE
 			, 0u
 			, &mapped );
-
-		if ( !dxCheckError( hr, "Map" ) )
-		{
-			throw ashes::Exception{ ashes::Result::eErrorMemoryMapFailed, "Staging buffer storage memory mapping" };
-		}
-
+		dxCheckError( hr, "Map" );
 		std::memcpy( mapped.pData
 			, data
 			, getSize( extent, format ) );
@@ -164,12 +159,7 @@ namespace d3d11_renderer
 			, D3D11_MAP_WRITE
 			, 0u
 			, &mapped );
-
-		if ( !dxCheckError( hr, "Map" ) )
-		{
-			throw ashes::Exception{ ashes::Result::eErrorMemoryMapFailed, "Staging buffer storage memory mapping" };
-		}
-
+		dxCheckError( hr, "Map" );
 		std::memcpy( data
 			, mapped.pData
 			, getSize( extent, format ) );

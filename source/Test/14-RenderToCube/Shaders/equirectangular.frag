@@ -1,3 +1,6 @@
+#version 450
+#extension GL_KHR_vulkan_glsl : enable
+
 layout( set=0, binding=1 ) uniform sampler2D mapColour;
 
 layout( location = 0 ) in vec3 vtx_position;
@@ -15,9 +18,5 @@ vec2 sampleSphericalMap( vec3 v )
 void main()
 {
 	vec2 uv = sampleSphericalMap( normalize( vtx_position ) );
-#ifdef VULKAN
-	pxl_colour = vec4( texture( mapColour, vec2( uv.x, 1.0 - uv.y ) ).rgb, 1.0 );
-#else
-	pxl_colour = vec4( texture( mapColour, vec2( uv.x, uv.y ) ).rgb, 1.0 );
-#endif
+	pxl_colour = vec4( texture( mapColour, ashesTopDownToBottomUp( uv ) ).rgb, 1.0 );
 }

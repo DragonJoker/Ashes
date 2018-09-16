@@ -27,8 +27,7 @@ namespace ashes
 					attribute.location,
 					vertexLayout.getBindingSlot(),
 					attribute.format,
-					attribute.offset,
-					{ attribute.semanticName, attribute.semanticIndex }
+					attribute.offset
 				} );
 			}
 

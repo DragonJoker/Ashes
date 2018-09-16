@@ -103,6 +103,33 @@ namespace d3d11_renderer
 	
 	//*********************************************************************************************
 
+	UINT getBindFlags( ashes::ImageCreateInfo const & createInfo )
+	{
+		return ( ( isSampled( createInfo.usage )
+				? D3D11_BIND_SHADER_RESOURCE
+				: 0 )
+			| ( isRenderable( createInfo.usage, createInfo.format, createInfo.mipLevels )
+				? ( isDepthOrStencilFormat( createInfo.format )
+					? D3D11_BIND_DEPTH_STENCIL
+					: D3D11_BIND_RENDER_TARGET )
+				: 0 )
+			| ( isStorage( createInfo.usage )
+				? D3D11_BIND_UNORDERED_ACCESS
+				: 0 ) );
+	}
+
+	UINT getMiscFlags( ashes::ImageCreateInfo const & createInfo )
+	{
+		return ( isMipmapped( createInfo.usage, createInfo.format, createInfo.mipLevels )
+				? D3D11_RESOURCE_MISC_GENERATE_MIPS
+				: 0 )
+			| ( checkFlag( createInfo.flags, ashes::ImageCreateFlag::eCubeCompatible )
+				? D3D11_RESOURCE_MISC_TEXTURECUBE
+				: 0u );
+	}
+
+	//*********************************************************************************************
+
 	class Texture1DDeviceMemory
 		: public DeviceMemory::DeviceMemoryImpl
 	{
@@ -189,21 +216,8 @@ namespace d3d11_renderer
 			desc.Usage = getUsage( m_flags, m_usage );
 			desc.CPUAccessFlags = getCpuAccessFlags( m_flags, m_usage );
 			desc.MipLevels = createInfo.mipLevels;
-			desc.BindFlags = ( ( checkFlag( m_usage, ashes::ImageUsageFlag::eSampled )
-					? D3D11_BIND_SHADER_RESOURCE
-					: 0 )
-				| ( isRenderTarget( m_usage )
-					? D3D11_BIND_RENDER_TARGET
-					: 0 )
-				| ( isStorage( m_usage )
-					? D3D11_BIND_UNORDERED_ACCESS
-					: 0 ) );
-			desc.MiscFlags = ( isRenderTarget( m_usage )
-					? D3D11_RESOURCE_MISC_GENERATE_MIPS
-					: 0 )
-				| ( checkFlag( createInfo.flags, ashes::ImageCreateFlag::eCubeCompatible )
-					? D3D11_RESOURCE_MISC_TEXTURECUBE
-					: 0u );
+			desc.BindFlags = getBindFlags( createInfo );
+			desc.MiscFlags = getMiscFlags( createInfo );
 		}
 
 	private:
@@ -302,23 +316,8 @@ namespace d3d11_renderer
 			desc.MipLevels = createInfo.mipLevels;
 			desc.SampleDesc.Count = UINT( createInfo.samples );
 			desc.SampleDesc.Quality = 0;
-			desc.BindFlags = ( ( checkFlag( m_usage, ashes::ImageUsageFlag::eSampled )
-					? D3D11_BIND_SHADER_RESOURCE
-					: 0 )
-				| ( isRenderTarget( m_usage )
-					? ( isDepthOrStencilFormat( createInfo.format )
-						? D3D11_BIND_DEPTH_STENCIL
-						: D3D11_BIND_RENDER_TARGET )
-					: 0 )
-				| ( isStorage( m_usage )
-					? D3D11_BIND_UNORDERED_ACCESS
-					: 0 ) );
-			desc.MiscFlags = ( ( isRenderTarget( m_usage ) && checkFlag( m_usage, ashes::ImageUsageFlag::eSampled ) )
-					? D3D11_RESOURCE_MISC_GENERATE_MIPS
-					: 0 )
-				| ( checkFlag( createInfo.flags, ashes::ImageCreateFlag::eCubeCompatible )
-					? D3D11_RESOURCE_MISC_TEXTURECUBE
-					: 0u );
+			desc.BindFlags = getBindFlags( createInfo );
+			desc.MiscFlags = getMiscFlags( createInfo );
 
 			if ( desc.SampleDesc.Count > 1 )
 			{
@@ -427,21 +426,8 @@ namespace d3d11_renderer
 			desc.Usage = getUsage( m_flags, m_usage );
 			desc.CPUAccessFlags = getCpuAccessFlags( m_flags, m_usage );
 			desc.MipLevels = createInfo.mipLevels;
-			desc.BindFlags = ( ( checkFlag( m_usage, ashes::ImageUsageFlag::eSampled )
-					? D3D11_BIND_SHADER_RESOURCE
-					: 0 )
-				| ( isRenderTarget( m_usage )
-					? D3D11_BIND_RENDER_TARGET
-					: 0 ) );
-			desc.MiscFlags = ( isRenderTarget( m_usage )
-					? D3D11_RESOURCE_MISC_GENERATE_MIPS
-					: 0u )
-				| ( checkFlag( createInfo.flags, ashes::ImageCreateFlag::eCubeCompatible )
-					? D3D11_RESOURCE_MISC_TEXTURECUBE
-					: 0u )
-				| ( isStorage( m_usage )
-					? D3D11_BIND_UNORDERED_ACCESS
-					: 0 );
+			desc.BindFlags = getBindFlags( createInfo );
+			desc.MiscFlags = getMiscFlags( createInfo );
 		}
 
 	private:

@@ -1,3 +1,6 @@
+#version 450
+#extension GL_KHR_vulkan_glsl : enable
+
 layout( set=0, binding=1 ) uniform Matrix
 {
 	mat4 mtxProjection;
@@ -9,7 +12,6 @@ layout( set=0, binding=2 ) uniform Object
 };
 
 layout( location=0 ) in vec4 position;
-layout( location=1 ) in vec3 texcoord;
 
 out gl_PerVertex
 {
@@ -20,6 +22,6 @@ layout( location = 0 ) out vec3 vtx_texcoord;
 
 void main()
 {
-	gl_Position = ( mtxProjection * mtxModel * ashesScalePosition( position ) ).xyww;
+	gl_Position = ( mtxProjection * mtxModel * position ).xyww;
 	vtx_texcoord = position.xyz;
 }

@@ -781,18 +781,33 @@ namespace ashes
 		*	Met à jour les valeurs de push constants.
 		*\param[in] layout
 		*	Le layout de pipeline utilisé pour programmer la mise à jour des push constants.
-		*\param[in] pcb
-		*	Le tampon de push constants.
+		*\param[in] stageFlags
+		*	Les niveaux de shader impaactés.
+		*\param[in] offset
+		*	Le début de l'intervalle (en octets).
+		*\param[in] size
+		*	La taille de l'intervalle (en octets).
+		*\param[in] data
+		*	Les données de push constants.
 		*\~english
 		*\brief
 		*	Updates the values of push constants.
 		*\param[in] layout
 		*	The pipeline layout used to program the push constants updates.
-		*\param[in] pcb
-		*	The push constants buffer.
+		*\param[in] stageFlags
+		*	The impacted shader stages.
+		*\param[in] offset
+		*	The range offset (in bytes).
+		*\param[in] size
+		*	The range size (in bytes).
+		*\param[in] data
+		*	The push constants data.
 		*/
-		virtual void pushConstants( PipelineLayout const & layout
-			, PushConstantsBufferBase const & pcb )const = 0;
+		virtual void pushConstants( ashes::PipelineLayout const & layout
+			, ashes::ShaderStageFlags stageFlags
+			, uint32_t offset
+			, uint32_t size
+			, void const * data )const = 0;
 		/**
 		*\~french
 		*\brief
@@ -1300,6 +1315,24 @@ namespace ashes
 		*/
 		void copyImage( TextureView const & src
 			, TextureView const & dst )const;
+		/**
+		*\~french
+		*\brief
+		*	Met à jour les valeurs de push constants.
+		*\param[in] layout
+		*	Le layout de pipeline utilisé pour programmer la mise à jour des push constants.
+		*\param[in] pcb
+		*	Le tampon de push constants.
+		*\~english
+		*\brief
+		*	Updates the values of push constants.
+		*\param[in] layout
+		*	The pipeline layout used to program the push constants updates.
+		*\param[in] pcb
+		*	The push constants buffer.
+		*/
+		void pushConstants( PipelineLayout const & layout
+			, PushConstantsBufferBase const & pcb )const;
 		/**
 		*\~french
 		*\brief

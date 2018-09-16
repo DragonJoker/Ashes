@@ -14,4 +14,26 @@ namespace d3d11_renderer
 	{
 		return checkFlag( flags, ashes::ImageUsageFlag::eStorage );
 	}
+
+	bool isSampled( ashes::ImageUsageFlags const & flags )
+	{
+		return checkFlag( flags, ashes::ImageUsageFlag::eSampled )
+			/*|| checkFlag( flags, ashes::ImageUsageFlag::eTransferSrc )*/;
+	}
+
+	bool isRenderable( ashes::ImageUsageFlags const & flags
+		, ashes::Format format
+		, uint32_t mipLevels )
+	{
+		return isRenderTarget( flags )
+			|| ( mipLevels > 1 && !isCompressedFormat( format ) );
+	}
+
+	bool isMipmapped( ashes::ImageUsageFlags const & flags
+		, ashes::Format format
+		, uint32_t mipLevels )
+	{
+		return isRenderable( flags, format, mipLevels )
+			&& isSampled( flags );
+	}
 }

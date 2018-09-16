@@ -49,19 +49,6 @@ namespace ashes
 		/**
 		*\~english
 		*\brief
-		*	Creates a shader module.
-		*\param[in] shader
-		*	The GLSL shader code.
-		*\~french
-		*\brief
-		*	Crée un module de shader.
-		*\param[in] shader
-		*	Le code GLSL du shader.
-		*/
-		virtual void loadShader( std::string const & shader ) = 0;
-		/**
-		*\~english
-		*\brief
 		*	Loads a SPIR-V shader.
 		*\param[in] shader
 		*	The SPIR-V shader code.
@@ -71,7 +58,7 @@ namespace ashes
 		*\param[in] shader
 		*	Le code SPIR-V du shader.
 		*/
-		virtual void loadShader( ByteArray const & shader ) = 0;
+		virtual void loadShader( UInt32Array const & shader ) = 0;
 		
 		inline ShaderStageFlag getStage()const
 		{

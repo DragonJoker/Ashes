@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "GlRendererPrerequisites.hpp"
+#include "Shader/GlShaderDesc.hpp"
 
 namespace gl_renderer
 {
@@ -16,7 +16,7 @@ namespace gl_renderer
 		ShaderProgram( Device const & device
 			, ashes::ShaderStageState const & stage );
 		~ShaderProgram();
-		void link( ContextLock const & context )const;
+		ShaderDesc link( ContextLock const & context )const;
 
 		inline GLuint getProgram()const
 		{
@@ -26,6 +26,7 @@ namespace gl_renderer
 	private:
 		Device const & m_device;
 		GLuint m_program;
+		ashes::ShaderStageFlags m_stageFlags;
 		ashes::UInt32Array m_shaders;
 	};
 }

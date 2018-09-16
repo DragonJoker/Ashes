@@ -10,7 +10,7 @@ namespace ashes
 {
 	namespace
 	{
-		uint32_t deduceBaseOffset( PushConstantArray & variables )
+		uint32_t deduceOffset( PushConstantArray & variables )
 		{
 			std::sort( variables.begin()
 				, variables.end()
@@ -40,13 +40,11 @@ namespace ashes
 		}
 	}
 
-	PushConstantsBufferBase::PushConstantsBufferBase( uint32_t location
-		, ShaderStageFlags stageFlags
+	PushConstantsBufferBase::PushConstantsBufferBase( ShaderStageFlags stageFlags
 		, PushConstantArray const & variables )
-		: m_location{ location }
-		, m_stageFlags{ stageFlags }
+		: m_stageFlags{ stageFlags }
 		, m_variables{ variables }
-		, m_offset{ deduceBaseOffset( m_variables ) }
+		, m_offset{ deduceOffset( m_variables ) }
 		, m_data( deduceSize( m_variables, m_offset ) )
 	{
 		assert( ( m_offset % 4 ) == 0 );

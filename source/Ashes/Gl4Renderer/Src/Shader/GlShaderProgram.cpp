@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "Shader/GlShaderProgram.hpp"
 
 #include "Core/GlDevice.hpp"
+#include "Miscellaneous/GlValidator.hpp"
 #include "Shader/GlShaderModule.hpp"
 
 #include <Pipeline/ShaderStageState.hpp>
@@ -104,65 +105,6 @@ namespace gl_renderer
 
 			return compiled;
 		}
-
-		void doInitialiseState( ContextLock const & context
-			, ashes::ShaderStageState const & stage )
-		{
-			auto & module = static_cast< ShaderModule const & >( *stage.module );
-			auto shader = module.getShader();
-
-			if ( module.isSpirV() )
-			{
-				if ( stage.specialisationInfo )
-				{
-					auto & specialisationInfo = *stage.specialisationInfo;
-					auto count = GLuint( std::distance( specialisationInfo.begin(), specialisationInfo.end() ) );
-					std::vector< GLuint > indices;
-					indices.reserve( count );
-					std::vector< GLuint > values;
-					values.reserve( count );
-					auto src = reinterpret_cast< GLuint const * >( specialisationInfo.getData() );
-					auto dst = values.data();
-
-					for ( auto & constant : specialisationInfo )
-					{
-						indices.push_back( constant.constantID );
-						values.push_back( *src );
-						++src;
-					}
-
-					glLogCall( context
-						, glSpecializeShader
-						, shader
-						, stage.entryPoint.c_str()
-						, count
-						, indices.data()
-						, values.data() );
-				}
-				else
-				{
-					glLogCall( context
-						, glSpecializeShader
-						, shader
-						, stage.entryPoint.c_str()
-						, 0u
-						, nullptr
-						, nullptr );
-				}
-
-				int compiled = 0;
-				glLogCall( context
-					, glGetShaderiv
-					, shader
-					, GL_INFO_COMPILE_STATUS
-					, &compiled );
-
-				if ( !doCheckCompileErrors( context, compiled != 0, shader ) )
-				{
-					throw std::runtime_error{ "Shader compilation failed." };
-				}
-			}
-		}
 	}
 
 	ShaderProgram::ShaderProgram( Device const & device
@@ -175,8 +117,9 @@ namespace gl_renderer
 		for ( auto & stage : stages )
 		{
 			auto & module = static_cast< ShaderModule const & >( *stage.module );
+			m_stageFlags |= module.getStage();
 			m_shaders.push_back( module.getShader() );
-			doInitialiseState( context, stage );
+			module.compile( stage );
 			glLogCall( context
 				, glAttachShader
 				, m_program
@@ -187,12 +130,13 @@ namespace gl_renderer
 	ShaderProgram::ShaderProgram( Device const & device
 		, ashes::ShaderStageState const & stage )
 		: m_device{ device }
+		, m_stageFlags{ stage.module->getStage() }
 	{
 		auto context = m_device.getContext();
 		m_program = context->glCreateProgram();
 		auto & module = static_cast< ShaderModule const & >( *stage.module );
 		m_shaders.push_back( module.getShader() );
-		doInitialiseState( context, stage );
+		module.compile( stage );
 		glLogCall( context
 			, glAttachShader
 			, m_program
@@ -215,7 +159,7 @@ namespace gl_renderer
 			, m_program );
 	}
 
-	void ShaderProgram::link( ContextLock const & context )const
+	ShaderDesc ShaderProgram::link( ContextLock const & context )const
 	{
 		int attached = 0;
 		glLogCall( context
@@ -233,6 +177,7 @@ namespace gl_renderer
 			, GL_INFO_LINK_STATUS
 			, &linked );
 		auto linkerLog = doRetrieveLinkerLog( context, m_program );
+		ShaderDesc result;
 
 		if ( linked
 			&& attached == int( m_shaders.size() )
@@ -254,6 +199,11 @@ namespace gl_renderer
 			{
 				ashes::Logger::logError( "ShaderProgram::link - Not validated" );
 			}
+			else
+			{
+				result = getShaderDesc( context, m_program );
+				result.stageFlags = m_stageFlags;
+			}
 		}
 		else
 		{
@@ -267,5 +217,7 @@ namespace gl_renderer
 				ashes::Logger::logError( "ShaderProgram::link - The linked shaders count doesn't match the active shaders count." );
 			}
 		}
+
+		return result;
 	}
 }

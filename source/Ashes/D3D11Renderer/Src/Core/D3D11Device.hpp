@@ -40,12 +40,6 @@ namespace d3d11_renderer
 		ashes::StagingTexturePtr createStagingTexture( ashes::Format format
 			, ashes::Extent3D const & extent )const;
 		/**
-		*\copydoc	ashes::Device::createPushConstantsBuffer
-		*/
-		ashes::PushConstantsBufferPtr createPushConstantsBuffer( uint32_t location
-			, ashes::ShaderStageFlags stageFlags
-			, ashes::PushConstantArray const & variables )const override;
-		/**
 		*\copydoc	ashes::Device::createRenderPass
 		*/
 		ashes::RenderPassPtr createRenderPass( ashes::RenderPassCreateInfo createInfo )const override;

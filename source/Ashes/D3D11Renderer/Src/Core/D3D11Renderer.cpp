@@ -20,9 +20,6 @@ namespace d3d11_renderer
 		m_features.hasClearTexImage = true;
 		m_features.hasComputeShaders = true;
 		m_features.hasStorageBuffers = true;
-		m_features.glslSupported = false;
-		m_features.rawConstantsSupported = false;
-		m_features.spirvSupported = false;
 		doCreateDXGIFactory();
 		doLoadAdapters();
 	}

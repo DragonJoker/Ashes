@@ -33,10 +33,6 @@ namespace ashes
 		*	The attribute location in the shader.
 		*\param[in] offset
 		*	The attribute location in the buffer.
-		*\param[in] semanticName
-		*	The attribute semantic name in the shader.
-		*\param[in] semanticIndex
-		*	The attribute semantic index in the shader.
 		*\~french
 		*\brief
 		*	Constructeur.
@@ -48,17 +44,11 @@ namespace ashes
 		*	La position de l'attribut dans le shader.
 		*\param[in] offset
 		*	La position de l'attribut dans le tampon.
-		*\param[in] semanticName
-		*	Le nom sémantique de l'attribut dans le shader.
-		*\param[in] semanticIndex
-		*	L'indice sémantique de l'attribut dans le shader.
 		*/
 		Attribute( VertexLayout const & layout
 			, Format format
 			, uint32_t location
-			, uint32_t offset
-			, std::string const & semanticName
-			, uint32_t semanticIndex );
+			, uint32_t offset );
 		/**
 		*\~english
 		*\return
@@ -95,24 +85,6 @@ namespace ashes
 		*	La position de l'attribut dans le tampon.
 		*/
 		uint32_t const offset;
-		/**
-		*\~english
-		*\return
-		*	The attribute semantic name in the shader.
-		*\~french
-		*\return
-		*	Le nom sémantique de l'attribut dans le shader.
-		*/
-		std::string const semanticName;
-		/**
-		*\~english
-		*\return
-		*	The attribute semantic index in the shader.
-		*\~french
-		*\return
-		*	L'indice sémantique de l'attribut dans le shader.
-		*/
-		uint32_t const semanticIndex;
 	};
 }
 

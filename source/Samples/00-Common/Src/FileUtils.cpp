@@ -240,6 +240,15 @@ namespace common
 		return result;
 	}
 
+	ashes::UInt32Array dumpShaderFile( ashes::Device const & device
+		, ashes::ShaderStageFlag stage
+		, std::string const & path )
+	{
+		return ashes::GlslToSpv( device
+			, stage
+			, dumpTextFile( path ) );
+	}
+
 	ashes::ByteArray dumpBinaryFile( std::string const & path )
 	{
 		std::ifstream file( path, std::ios::binary );

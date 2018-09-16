@@ -1,3 +1,6 @@
+#version 450
+#extension GL_KHR_vulkan_glsl : enable
+
 layout( binding = 0 ) uniform sampler2D samplerColor;
 
 layout( std140, binding = 1 ) uniform Config

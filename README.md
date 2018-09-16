@@ -1,13 +1,13 @@
 |         Server     | Result |
 |:------------------:|--------|
 |  Travis CI (Linux) | [![Build Status](https://travis-ci.org/DragonJoker/Ashes.svg?branch=master)](https://travis-ci.org/DragonJoker/Ashes) |
-| AppVeyor (Windows) | [![Build Status](https://ci.appveyor.com/api/projects/status/github/DragonJoker/rendererlib?branch=master&svg=true)](https://ci.appveyor.com/project/DragonJoker/rendererlib) |
+| AppVeyor (Windows) | [![Build status](https://ci.appveyor.com/api/projects/status/418lak7ca1u0d97c?svg=true)](https://ci.appveyor.com/project/DragonJoker/rendererlib) |
 
 
 Ashes
 =====
 
-Ashes is a rendering library written in C++14, matching closely Vulkan interfaces.
+Ashes is a rendering library written in C++17, matching closely Vulkan interfaces.
 The final goal of this library is to expose as much of Vulkan features as possible.
 It comes with a set of test applications, to validate the API.
 

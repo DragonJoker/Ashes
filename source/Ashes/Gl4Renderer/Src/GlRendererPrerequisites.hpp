@@ -89,6 +89,7 @@ namespace gl_renderer
 	class ShaderProgram;
 	class Texture;
 	class TextureView;
+	class UniformBuffer;
 
 	using ContextPtr = std::unique_ptr< Context >;
 	using CommandPtr = std::unique_ptr< CommandBase >;
@@ -112,6 +113,7 @@ namespace gl_renderer
 		uint64_t offset;
 		Buffer const * buffer;
 	};
+
 	using VboBindings = std::map< uint32_t, BufferObjectBinding >;
 	using IboBinding = std::optional< BufferObjectBinding >;
 

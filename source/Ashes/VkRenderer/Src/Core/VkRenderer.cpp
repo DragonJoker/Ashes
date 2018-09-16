@@ -5,10 +5,6 @@
 #include "Core/VkPhysicalDevice.hpp"
 #include "Core/VkSwapChain.hpp"
 
-# if VKRENDERER_GLSL_TO_SPV
-#	include <glslang/Public/ShaderLang.h>
-#endif
-
 #include <cmath>
 #include <iomanip>
 #include <locale>
@@ -125,21 +121,12 @@ namespace vk_renderer
 #	error Unsupported platform
 #endif
 	{
-# if VKRENDERER_GLSL_TO_SPV
-
-		glslang::InitializeProcess();
-
-#endif
-
 		m_features.hasTexBufferRange = true;
 		m_features.hasImageTexture = true;
 		m_features.hasBaseInstance = true;
 		m_features.hasClearTexImage = true;
 		m_features.hasComputeShaders = true;
 		m_features.hasStorageBuffers = true;
-		m_features.glslSupported = VKRENDERER_GLSL_TO_SPV != 0;
-		m_features.rawConstantsSupported = true;
-		m_features.spirvSupported = true;
 		m_library.getFunction( "vkGetInstanceProcAddr", GetInstanceProcAddr );
 
 		if ( !GetInstanceProcAddr )
@@ -174,12 +161,6 @@ namespace vk_renderer
 			vkDestroyInstance( m_instance, nullptr );
 			m_instance = VK_NULL_HANDLE;
 		}
-
-# if VKRENDERER_GLSL_TO_SPV
-
-		glslang::FinalizeProcess();
-
-#endif
 
 		DEBUG_WRITE( "VkRenderer.log" );
 	}

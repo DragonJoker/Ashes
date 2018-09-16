@@ -41,21 +41,12 @@ namespace ashes
 		/**
 		*\~english
 		*\brief
-		*	The variable format, the size of the variable is deduced from that.
+		*	The byte size of the specialization constant value within the supplied data buffer.
 		*\~french
 		*\brief
-		*	Le format de la variable, la taille de la variable est déduite de là.
+		*	La taille en octets de la constante de spécialisation dans le tampon de données.
 		*/
-		ConstantFormat format;
-		/**
-		*\~english
-		*\brief
-		*	The dimensions of the array, if the constant is an array, used in OpenGL renderer.
-		*\~french
-		*\brief
-		*	Les dimensions du tableau, si la constante est un tableau, utilisé dans le renderer OpenGL.
-		*/
-		uint32_t arraySize{ 1u };
+		uint32_t size;
 	};
 }
 

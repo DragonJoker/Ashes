@@ -1,9 +1,0 @@
-struct PixelInput
-{
-	float4 colour : COLOR;
-};
-
-float4 mainPx( in PixelInput input ) : SV_TARGET
-{
-	return input.colour;
-}

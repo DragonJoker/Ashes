@@ -1,3 +1,6 @@
+#version 450
+#extension GL_KHR_vulkan_glsl : enable
+
 layout( set=0, binding=1 ) uniform Matrix
 {
 	mat4 mtxViewProjection;
@@ -16,6 +19,6 @@ layout( location = 0 ) out vec2 vtx_texcoord;
 
 void main()
 {
-	gl_Position = mtxViewProjection * transform * ashesScalePosition( position );
+	gl_Position = mtxViewProjection * transform * position;
 	vtx_texcoord = texcoord;
 }

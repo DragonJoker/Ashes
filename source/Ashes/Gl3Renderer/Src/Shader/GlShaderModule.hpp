@@ -17,28 +17,21 @@ namespace gl_renderer
 		ShaderModule( Device const & device
 			, ashes::ShaderStageFlag stage );
 		~ShaderModule();
+		void compile( ashes::ShaderStageState const & state )const;
 		/**
 		*\~copydoc	ashes::ShaderModule::loadShader
 		*/
-		void loadShader( std::string const & shader )override;
-		/**
-		*\~copydoc	ashes::ShaderModule::loadShader
-		*/
-		void loadShader( ashes::ByteArray const & shader )override;
+		void loadShader( ashes::UInt32Array const & shader )override;
 
 		inline GLuint getShader()const
 		{
 			return m_shader;
 		}
 
-		inline bool isSpirV()const
-		{
-			return m_isSpirV;
-		}
-
 	private:
 		Device const & m_device;
 		GLuint m_shader;
-		bool m_isSpirV;
+		ashes::UInt32Array m_spv;
+		mutable std::string m_source;
 	};
 }
