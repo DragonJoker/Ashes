@@ -214,10 +214,7 @@ namespace ashes
 		*	The created staging texture.
 		*/
 		virtual StagingTexturePtr createStagingTexture( Format format
-			, Extent3D const & extent )const = 0;
-		/**
-		*\~french
-		*\brief
+			, Extent2D const & extent )const = 0;
 		*	Crée une passe de rendu.
 		*\param[in] createInfo
 		*	Les informations de création.

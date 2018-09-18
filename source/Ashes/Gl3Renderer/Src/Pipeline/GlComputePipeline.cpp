@@ -22,7 +22,7 @@ namespace gl_renderer
 
 		for ( auto & constant : shaderDesc.constantsLayout )
 		{
-			m_constantsPcb.constants.push_back( { constant.format, constant.location, offset, constant.size } );
+			m_constantsPcb.constants.push_back( { constant.format, constant.location, offset, constant.size, constant.arraySize } );
 			offset += constant.size;
 		}
 

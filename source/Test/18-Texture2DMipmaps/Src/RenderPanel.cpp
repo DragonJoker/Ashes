@@ -175,7 +175,7 @@ namespace vkapp
 
 		auto cmdBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
 		auto staging = m_device->createStagingTexture( format
-			, { uint32_t( tex2D.extent().x ), uint32_t( tex2D.extent().y ), 1u } );
+			, { uint32_t( tex2D.extent().x ), uint32_t( tex2D.extent().y ) } );
 
 		for ( uint32_t level = 0; level < tex2D.levels(); level++ )
 		{

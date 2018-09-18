@@ -302,6 +302,9 @@ namespace d3d11_renderer
 
 		// Don't set the advanced flags.
 		m_desc.Flags = 0;
+
+		m_dimensions.width = width;
+		m_dimensions.height = height;
 	}
 
 	void SwapChain::doCreateSwapChain()

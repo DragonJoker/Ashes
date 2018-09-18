@@ -14,7 +14,10 @@ namespace d3d11_renderer
 	void apply( ID3D11DeviceContext * context
 		, ID3D11InputLayout * state )
 	{
-		context->IASetInputLayout( state );
+		if ( state )
+		{
+			context->IASetInputLayout( state );
+		}
 	}
 
 	void apply( ID3D11DeviceContext * context

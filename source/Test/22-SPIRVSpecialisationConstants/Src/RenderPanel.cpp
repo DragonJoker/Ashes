@@ -249,8 +249,7 @@ namespace vkapp
 	void RenderPanel::doCreateDevice( ashes::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
-		m_objectPcb = std::make_unique< ashes::PushConstantsBuffer< utils::Vec4 > >( *m_device
-			, ashes::ShaderStageFlag::eFragment
+		m_objectPcb = std::make_unique< ashes::PushConstantsBuffer< utils::Vec4 > >( ashes::ShaderStageFlag::eFragment
 			, doGetVariables() );
 		*m_objectPcb->getData() = utils::Vec4{ 0.5, 0.5, 1.0, 1.0 };
 	}
@@ -275,7 +274,7 @@ namespace vkapp
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		auto stagingTexture = m_device->createStagingTexture( image.format
-			, { image.size.width, image.size.height, 1u } );
+			, { image.size.width, image.size.height } );
 		m_texture = m_device->createTexture(
 			{
 				0u,

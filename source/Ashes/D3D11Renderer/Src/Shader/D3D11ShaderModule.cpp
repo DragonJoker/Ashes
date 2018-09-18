@@ -22,30 +22,31 @@ namespace d3d11_renderer
 {
 	namespace
 	{
-		template< typename CleanFunc >
-		struct BlockGuard
+		static uint32_t constexpr OpCodeSPIRV = 0x07230203;
+
+		struct BlockLocale
 		{
-			template< typename InitFunc >
-			BlockGuard( InitFunc init, CleanFunc clean )
-				: m_clean{ std::move( clean ) }
+			BlockLocale()
 			{
-				init();
+				m_prvLoc = std::locale( "" );
+
+				if ( m_prvLoc.name() != "C" )
+				{
+					std::locale::global( std::locale{ "C" } );
+				}
 			}
 
-			~BlockGuard()
+			~BlockLocale()
 			{
-				m_clean();
+				if ( m_prvLoc.name() != "C" )
+				{
+					std::locale::global( m_prvLoc );
+				}
 			}
 
 		private:
-			CleanFunc m_clean;
+			std::locale m_prvLoc;
 		};
-
-		template< typename InitFunc, typename CleanFunc >
-		BlockGuard< CleanFunc > makeBlockGuard( InitFunc init, CleanFunc clean )
-		{
-			return BlockGuard< CleanFunc >{ std::move( init ), std::move( clean ) };
-		}
 
 		spv::ExecutionModel getExecutionModel( ashes::ShaderStageFlag stage )
 		{
@@ -210,30 +211,20 @@ namespace d3d11_renderer
 			, ashes::ShaderStageFlag stage
 			, ashes::ShaderStageState const & state )
 		{
-			auto prvLoc = std::locale( "" );
+			if ( shader[0] == OpCodeSPIRV )
+			{
+				BlockLocale guard;
+				auto compiler = std::make_unique< spirv_cross::CompilerHLSL >( shader );
+				doProcessSpecializationConstants( state, *compiler );
+				doSetEntryPoint( stage, *compiler );
+				doSetupOptions( device, *compiler );
+				doSetupHlslOptions( device, *compiler );
+				return compiler->compile();
+			}
 
-			auto guard = makeBlockGuard(
-				[&prvLoc]()
-				{
-					if ( prvLoc.name() != "C" )
-					{
-						std::locale::global( std::locale{ "C" } );
-					}
-				},
-				[&prvLoc]()
-				{
-					if ( prvLoc.name() != "C" )
-					{
-						std::locale::global( prvLoc );
-					}
-				} );
-
-			auto compiler = std::make_unique< spirv_cross::CompilerHLSL >( shader );
-			doProcessSpecializationConstants( state, *compiler );
-			doSetEntryPoint( stage, *compiler );
-			doSetupOptions( device, *compiler );
-			doSetupHlslOptions( device, *compiler );
-			return compiler->compile();
+			std::vector< char > hlslCode( shader.size() * sizeof( uint32_t ) );
+			std::memcpy( hlslCode.data(), shader.data(), hlslCode.size() );
+			return std::string( hlslCode.data(), hlslCode.data() + strlen( hlslCode.data() ) );
 		}
 
 		uint32_t extractLocation( InputElementDesc & desc )

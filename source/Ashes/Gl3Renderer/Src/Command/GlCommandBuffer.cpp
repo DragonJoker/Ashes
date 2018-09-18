@@ -654,8 +654,8 @@ namespace gl_renderer
 			stageFlags,
 			offset,
 			size,
-		{},
-		{ reinterpret_cast< uint8_t const * >( data ), reinterpret_cast< uint8_t const * >( data ) + size }
+			{},
+			{ reinterpret_cast< uint8_t const * >( data ), reinterpret_cast< uint8_t const * >( data ) + size }
 		};
 
 		if ( m_state.currentPipeline )

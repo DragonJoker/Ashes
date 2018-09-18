@@ -40,7 +40,7 @@ namespace ashes
 		*	Les dimensions de la texture.
 		*/
 		StagingTexture( Device const & device
-			, Extent3D const & extent );
+			, Extent2D const & extent );
 		virtual ~StagingTexture()
 		{
 		}
@@ -53,14 +53,14 @@ namespace ashes
 			, ImageSubresourceLayers const & subresourceLayers
 			, Format format
 			, Offset3D const & offset
-			, Extent3D const & extent
+			, Extent2D const & extent
 			, uint8_t const * const data
 			, TextureView const & texture )const;
 		inline void uploadTextureData( CommandBuffer const & commandBuffer
 			, ImageSubresourceLayers const & subresourceLayers
 			, Format format
 			, Offset3D const & offset
-			, Extent3D const & extent
+			, Extent2D const & extent
 			, ByteArray const & data
 			, TextureView const & texture )const;
 		void uploadTextureData( CommandBuffer const & commandBuffer
@@ -70,6 +70,15 @@ namespace ashes
 		inline void uploadTextureData( CommandBuffer const & commandBuffer
 			, Format format
 			, ByteArray const & data
+			, TextureView const & texture )const;
+		void copyTextureData( CommandBuffer const & commandBuffer
+			, Format format
+			, TextureView const & texture )const;
+		void copyTextureData( CommandBuffer const & commandBuffer
+			, ImageSubresourceLayers const & subresourceLayers
+			, Format format
+			, Offset3D const & offset
+			, Extent2D const & extent
 			, TextureView const & texture )const;
 		/**@}*/
 		/**
@@ -81,14 +90,14 @@ namespace ashes
 			, ImageSubresourceLayers const & subresourceLayers
 			, Format format
 			, Offset3D const & offset
-			, Extent3D const & extent
+			, Extent2D const & extent
 			, uint8_t * data
 			, TextureView const & texture )const;
 		inline void downloadTextureData( CommandBuffer const & commandBuffer
 			, ImageSubresourceLayers const & subresourceLayers
 			, Format format
 			, Offset3D const & offset
-			, Extent3D const & extent
+			, Extent2D const & extent
 			, ByteArray & data
 			, TextureView const & texture )const;
 		void downloadTextureData( CommandBuffer const & commandBuffer
@@ -100,6 +109,63 @@ namespace ashes
 			, ByteArray & data
 			, TextureView const & texture )const;
 		/**@}*/
+		/**
+		*\~english
+		*\brief
+		*	Maps a range of the buffer's memory in RAM.
+		*\param[in] size
+		*	The range size.
+		*\param[in] flags
+		*	The mapping flags.
+		*\return
+		*	\p nullptr if mapping failed.
+		*\~french
+		*\brief
+		*	Mappe la mémoire du tampon en RAM.
+		*\param[in] size
+		*	La taille en octets de la mémoire à mapper.
+		*\param[in] flags
+		*	Indicateurs de configuration du mapping.
+		*\return
+		*	\p nullptr si le mapping a échoué.
+		*/
+		virtual uint8_t * lock( Extent2D const & size
+			, MemoryMapFlags flags )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Invalidates the buffer content.
+		*\param[in] size
+		*	The range size.
+		*\~french
+		*\brief
+		*	Invalide le contenu du tampon.
+		*\param[in] size
+		*	La taille en octets de la mémoire mappée.
+		*/
+		virtual void invalidate( Extent2D const & size )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Updates the VRAM.
+		*\param[in] size
+		*	The range size.
+		*\~french
+		*\brief
+		*	Met à jour la VRAM.
+		*\param[in] size
+		*	La taille en octets de la mémoire mappée.
+		*/
+		virtual void flush( Extent2D const & size )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Unmaps the buffer's memory from RAM.
+		*\~french
+		*\brief
+		*	Unmappe la mémoire du tampon de la RAM.
+		*/
+		virtual void unlock()const = 0;
 
 	private:
 		/**
@@ -109,12 +175,12 @@ namespace ashes
 		/**@{*/
 		virtual void doCopyToStagingTexture( uint8_t const * const data
 			, Format format
-			, Extent3D const & extent )const = 0;
+			, Extent2D const & extent )const = 0;
 		virtual void doCopyStagingToDestination( CommandBuffer const & commandBuffer
 			, ImageSubresourceLayers const & subresourceLayers
 			, Format format
 			, Offset3D const & offset
-			, Extent3D const & extent
+			, Extent2D const & extent
 			, TextureView const & texture )const = 0;
 		/**@{*/
 		/**
@@ -126,16 +192,16 @@ namespace ashes
 			, ImageSubresourceLayers const & subresourceLayers
 			, Format format
 			, Offset3D const & offset
-			, Extent3D const & extent
+			, Extent2D const & extent
 			, TextureView const & texture )const = 0;
 		virtual void doCopyFromStagingTexture( uint8_t * data
 			, Format format
-			, Extent3D const & extent )const = 0;
+			, Extent2D const & extent )const = 0;
 		/**@}*/
 
 	protected:
 		Device const & m_device;
-		Extent3D m_extent;
+		Extent2D m_extent;
 		AccessFlags m_currentAccessMask{ AccessFlag::eMemoryWrite };
 	};
 }

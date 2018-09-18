@@ -20,17 +20,18 @@ namespace d3d11_renderer
 			{
 				result = D3D11_USAGE_DYNAMIC;
 			}
+			else if ( checkFlag( targets, ashes::BufferTarget::eStorageBuffer )
+				|| checkFlag( targets, ashes::BufferTarget::eStorageTexelBuffer ) )
+			{
+			}
+			else if ( checkFlag( targets, ashes::BufferTarget::eTransferSrc )
+				|| checkFlag( targets, ashes::BufferTarget::eTransferDst ) )
+			{
+				result = D3D11_USAGE_STAGING;
+			}
 			else
 			{
-				if ( checkFlag( targets, ashes::BufferTarget::eTransferSrc )
-					|| checkFlag( targets, ashes::BufferTarget::eTransferDst ) )
-				{
-					result = D3D11_USAGE_STAGING;
-				}
-				else
-				{
-					result = D3D11_USAGE_DYNAMIC;
-				}
+				result = D3D11_USAGE_DYNAMIC;
 			}
 		}
 
@@ -52,12 +53,12 @@ namespace d3d11_renderer
 			{
 				if ( checkFlag( targets, ashes::BufferTarget::eTransferSrc ) )
 				{
-					result |= D3D11_CPU_ACCESS_READ;
+					result |= D3D11_CPU_ACCESS_WRITE;
 				}
 
 				if ( checkFlag( targets, ashes::BufferTarget::eTransferDst ) )
 				{
-					result |= D3D11_CPU_ACCESS_WRITE;
+					result |= D3D11_CPU_ACCESS_READ;
 				}
 			}
 		}

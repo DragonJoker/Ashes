@@ -59,7 +59,7 @@ namespace vkapp
 				, image.format );
 
 			auto staging = device.createStagingTexture( image.format
-				, { image.size.width, image.size.height, 1u } );
+				, { image.size.width, image.size.height } );
 			staging->uploadTextureData( commandBuffer
 				, image.format
 				, image.data

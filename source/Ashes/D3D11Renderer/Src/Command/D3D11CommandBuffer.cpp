@@ -301,6 +301,7 @@ namespace d3d11_renderer
 			binding.offsets.push_back( UINT( offsets[i] ) );
 		}
 
+		m_state.vbos.clear();
 		m_state.vbos.push_back( binding );
 		doAddAfterSubmitAction();
 	}
@@ -653,6 +654,11 @@ namespace d3d11_renderer
 	void CommandBuffer::doFillVboStrides()const
 	{
 		auto & state = m_state.currentPipeline->getVertexInputState();
+
+		if ( state.vertexBindingDescriptions.empty() )
+		{
+			m_state.vbos.clear();
+		}
 
 		for ( auto & binding : m_state.vbos )
 		{

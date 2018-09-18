@@ -18,7 +18,7 @@ namespace ashes
 	*\brief
 	*	Transpiles a GLSL shader to SPIR-V.
 	*/
-	UInt32Array GlslToSpv( Device const & device
+	UInt32Array compileGlslToSpv( Device const & device
 		, ShaderStageFlag stage
 		, std::string const & shader );
 }

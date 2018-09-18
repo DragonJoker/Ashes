@@ -93,7 +93,7 @@ namespace vkapp
 		ashes::FrameBufferPtr m_frameBuffer;
 		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
 		ashes::UniformBufferPtr< utils::Mat4 > m_objectUbo;
-		ashes::PushConstantsBufferTPtr< utils::Vec4 > m_objectPcbs[2];
+		ashes::PushConstantsBuffer< utils::Vec4 > m_objectPcbs[2];
 		ashes::CommandBufferPtr m_updateCommandBuffer;
 		/**@}*/
 		/**

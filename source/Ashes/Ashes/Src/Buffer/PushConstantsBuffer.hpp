@@ -207,8 +207,7 @@ namespace ashes
 		*\param[in] variables
 		*	The constants contained in the buffer.
 		*/
-		PushConstantsBuffer( Device const & device
-			, ShaderStageFlags stageFlags
+		PushConstantsBuffer( ShaderStageFlags stageFlags
 			, PushConstantArray const & variables )
 			: m_pcb{ stageFlags, variables }
 		{

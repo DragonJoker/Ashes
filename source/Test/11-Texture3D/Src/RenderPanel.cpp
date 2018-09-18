@@ -232,7 +232,7 @@ namespace vkapp
 		image.size = ashes::Extent3D{ 256u, 256u, 109u };
 		image.format = ashes::Format::eR8G8B8A8_UNORM;
 		auto stagingTexture = m_device->createStagingTexture( image.format
-			, { image.size.width, image.size.height, 1u } );
+			, { image.size.width, image.size.height } );
 		readFile( shadersFolder / "head256x256x109", image.size, image.data );
 		m_texture = m_device->createTexture(
 			{
@@ -269,7 +269,7 @@ namespace vkapp
 				}
 				, image.format
 				, { 0, 0, int32_t( i ) }
-				, { image.size.width, image.size.height, 1u }
+				, { image.size.width, image.size.height }
 				, layer
 				, *m_view );
 			buffer += size;

@@ -849,12 +849,12 @@ namespace gl_renderer
 		{
 			GLint numUniforms = 0;
 			context->glGetProgramInterfaceiv( program, variableInterface, GLSL_DATANAME_ACTIVE_RESOURCES, &numUniforms );
-			const GLenum properties[4] = { GLSL_PROPERTY_BLOCK_INDEX, GLSL_PROPERTY_TYPE, GLSL_PROPERTY_NAME_LENGTH, GLSL_PROPERTY_LOCATION };
+			const GLenum properties[5] = { GLSL_PROPERTY_BLOCK_INDEX, GLSL_PROPERTY_TYPE, GLSL_PROPERTY_NAME_LENGTH, GLSL_PROPERTY_LOCATION, GLSL_PROPERTY_ARRAY_SIZE };
 
 			for ( int unif = 0; unif < numUniforms; ++unif )
 			{
-				GLint values[4];
-				context->glGetProgramResourceiv( program, variableInterface, unif, 4, properties, 4, nullptr, values );
+				GLint values[5];
+				context->glGetProgramResourceiv( program, variableInterface, unif, 5, properties, 5, nullptr, values );
 
 				// Skip any uniforms that are in a block.
 				if ( values[0] == -1 )
@@ -862,7 +862,7 @@ namespace gl_renderer
 					std::vector< char > nameData( values[2] );
 					context->glGetProgramResourceName( program, variableInterface, unif, GLsizei( nameData.size() ), nullptr, &nameData[0] );
 					std::string variableName( nameData.begin(), nameData.end() - 1 );
-					variableFunction( variableName, GlslAttributeType( values[1] ), values[3] );
+					variableFunction( variableName, GlslAttributeType( values[1] ), values[3], values[4] );
 				}
 			}
 		}
@@ -1107,11 +1107,12 @@ namespace gl_renderer
 			getVariableInfos( context
 				, program
 				, GLSL_INTERFACE_UNIFORM
-				, []( std::string name, GlslAttributeType type, GLint location )
+				, []( std::string name, GlslAttributeType type, GLint location, GLint arraySize )
 				{
 					ashes::Logger::logDebug( std::stringstream{} << "   Uniform variable: " << name
 						<< ", type: " << getName( type )
-						<< ", location: " << location );
+						<< ", location: " << location
+						<< ", arraySize: " << arraySize );
 				} );
 		}
 	}
@@ -1142,11 +1143,11 @@ namespace gl_renderer
 		getVariableInfos( context
 			, program
 			, GLSL_INTERFACE_UNIFORM
-			, [&result]( std::string name, GlslAttributeType type, GLint location )
+			, [&result]( std::string name, GlslAttributeType type, GLint location, GLint arraySize )
 			{
 				if ( !isSampler( type ) )
 				{
-					result.push_back( { name, uint32_t( location ), getFormat( type ), getSize( type ) } );
+					result.push_back( { name, uint32_t( location ), getFormat( type ), getSize( type ), uint32_t( arraySize ) } );
 				}
 			} );
 		return result;

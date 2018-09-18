@@ -96,7 +96,7 @@ namespace gl_renderer
 		*\copydoc	ashes::Device::createStagingTexture
 		*/
 		ashes::StagingTexturePtr createStagingTexture( ashes::Format format
-			, ashes::Extent3D const & extent )const;
+			, ashes::Extent2D const & extent )const;
 		/**
 		*\copydoc		ashes::Device::createRenderPass
 		*/

@@ -193,7 +193,7 @@ namespace ashes
 #endif
 	}
 
-	UInt32Array GlslToSpv( Device const & device
+	UInt32Array compileGlslToSpv( Device const & device
 		, ShaderStageFlag stage
 		, std::string const & shader )
 	{

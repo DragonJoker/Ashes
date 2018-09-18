@@ -38,21 +38,29 @@ namespace d3d11_renderer
 	void BeginRenderPassCommand::apply( Context const & context )const
 	{
 		context.context->RSSetScissorRects( 1u, &m_scissor );
-		auto & rtViews = m_frameBuffer.getRTViews();
-		auto dsView = m_frameBuffer.getDSView();
+		auto & views = m_frameBuffer.getAllViews();
+		uint32_t clearIndex = 0u;
 
-		for ( auto i = 0u; i < rtViews.size(); ++i )
+		for ( auto viewIndex = 0u; viewIndex < views.size(); ++viewIndex )
 		{
-			context.context->ClearRenderTargetView( rtViews[i]
-				, m_rtClearValues[i].colour().float32.data() );
-		}
+			auto & attach = m_renderPass.getAttachments()[viewIndex];
 
-		if ( dsView )
-		{
-			context.context->ClearDepthStencilView( dsView
-				, m_frameBuffer.getDSViewFlags()
-				, m_dsClearValue.depthStencil().depth
-				, m_dsClearValue.depthStencil().stencil );
+			if ( attach.loadOp == ashes::AttachmentLoadOp::eClear )
+			{
+				if ( getAspectMask( attach.format ) == ashes::ImageAspectFlag::eColour )
+				{
+					context.context->ClearRenderTargetView( reinterpret_cast< ID3D11RenderTargetView * >( views[viewIndex] )
+						, m_rtClearValues[clearIndex].colour().float32.data() );
+					++clearIndex;
+				}
+				else
+				{
+					context.context->ClearDepthStencilView( reinterpret_cast< ID3D11DepthStencilView * >( views[viewIndex] )
+						, m_frameBuffer.getDSViewFlags()
+						, m_dsClearValue.depthStencil().depth
+						, m_dsClearValue.depthStencil().stencil );
+				}
+			}
 		}
 	}
 

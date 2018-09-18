@@ -206,7 +206,7 @@ namespace vkapp
 
 		auto cmdBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
 		auto staging = m_device->createStagingTexture( format
-			, { uint32_t( tex2DArray.extent().x ), uint32_t( tex2DArray.extent().y ), 1u } );
+			, { uint32_t( tex2DArray.extent().x ), uint32_t( tex2DArray.extent().y ) } );
 
 		// Prepare copy regions
 		std::vector< ashes::BufferImageCopy > bufferCopyRegions;

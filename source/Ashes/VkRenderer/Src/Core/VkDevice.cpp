@@ -151,7 +151,7 @@ namespace vk_renderer
 	}
 
 	ashes::StagingTexturePtr Device::createStagingTexture( ashes::Format format
-		, ashes::Extent3D const & extent )const
+		, ashes::Extent2D const & extent )const
 	{
 		return std::make_unique< StagingTexture >( *this, format, extent );
 	}

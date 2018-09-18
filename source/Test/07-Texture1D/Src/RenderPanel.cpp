@@ -155,7 +155,7 @@ namespace vkapp
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		auto stagingTexture = m_device->createStagingTexture( image.format
-			, { image.size.width, 1u, 1u } );
+			, { image.size.width, 1u } );
 		m_texture = m_device->createTexture(
 			{
 				0u,

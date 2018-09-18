@@ -211,7 +211,7 @@ namespace d3d11_renderer
 		{
 			auto device = m_device.getDevice();
 			desc.Width = createInfo.extent.width;
-			desc.Format = convert( createInfo.format );
+			desc.Format = getTextureFormat( createInfo.format );
 			desc.ArraySize = createInfo.arrayLayers;
 			desc.Usage = getUsage( m_flags, m_usage );
 			desc.CPUAccessFlags = getCpuAccessFlags( m_flags, m_usage );
@@ -309,7 +309,7 @@ namespace d3d11_renderer
 			auto device = m_device.getDevice();
 			desc.Width = createInfo.extent.width;
 			desc.Height = createInfo.extent.height;
-			desc.Format = convert( createInfo.format );
+			desc.Format = getTextureFormat( createInfo.format );
 			desc.ArraySize = createInfo.arrayLayers;
 			desc.Usage = getUsage( m_flags, m_usage );
 			desc.CPUAccessFlags = getCpuAccessFlags( m_flags, m_usage );
@@ -422,7 +422,7 @@ namespace d3d11_renderer
 			desc.Width = createInfo.extent.width;
 			desc.Height = createInfo.extent.height;
 			desc.Depth = createInfo.extent.depth;
-			desc.Format = convert( createInfo.format );
+			desc.Format = getTextureFormat( createInfo.format );
 			desc.Usage = getUsage( m_flags, m_usage );
 			desc.CPUAccessFlags = getCpuAccessFlags( m_flags, m_usage );
 			desc.MipLevels = createInfo.mipLevels;

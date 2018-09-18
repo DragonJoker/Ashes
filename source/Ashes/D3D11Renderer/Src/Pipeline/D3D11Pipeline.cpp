@@ -174,18 +174,22 @@ namespace d3d11_renderer
 			auto & inputLayout = it->second.inputLayout;
 			auto d3ddevice = device.getDevice();
 			auto inputDesc = convert( m_createInfo.vertexInputState, inputLayout );
-			auto hr = d3ddevice->CreateInputLayout( inputDesc.data()
-				, UINT( inputDesc.size() )
-				, compiled->GetBufferPointer()
-				, compiled->GetBufferSize()
-				, &m_iaState );
 
-			if ( !dxCheckError( hr, "CreateInputLayout" ) )
+			if ( !inputDesc.empty() )
 			{
-				throw std::runtime_error( "CreateInputLayout() failed" );
-			}
+				auto hr = d3ddevice->CreateInputLayout( inputDesc.data()
+					, UINT( inputDesc.size() )
+					, compiled->GetBufferPointer()
+					, compiled->GetBufferSize()
+					, &m_iaState );
 
-			dxDebugName( m_iaState, PipelineInputLayout );
+				if ( !dxCheckError( hr, "CreateInputLayout" ) )
+				{
+					throw std::runtime_error( "CreateInputLayout() failed" );
+				}
+
+				dxDebugName( m_iaState, PipelineInputLayout );
+			}
 		}
 	}
 
