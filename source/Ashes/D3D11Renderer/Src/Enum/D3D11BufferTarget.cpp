@@ -7,8 +7,6 @@ namespace d3d11_renderer
 		return checkFlag( targets, ashes::BufferTarget::eDispatchIndirectBuffer )
 			|| checkFlag( targets, ashes::BufferTarget::eDrawIndirectBuffer )
 			|| checkFlag( targets, ashes::BufferTarget::eIndexBuffer )
-			|| checkFlag( targets, ashes::BufferTarget::eStorageBuffer )
-			|| checkFlag( targets, ashes::BufferTarget::eStorageTexelBuffer )
 			|| checkFlag( targets, ashes::BufferTarget::eUniformBuffer )
 			|| checkFlag( targets, ashes::BufferTarget::eUniformTexelBuffer )
 			|| checkFlag( targets, ashes::BufferTarget::eVertexBuffer );
@@ -31,12 +29,12 @@ namespace d3d11_renderer
 
 		if ( checkFlag( targets, ashes::BufferTarget::eStorageBuffer ) )
 		{
-			result |= D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+			result |= D3D11_BIND_UNORDERED_ACCESS;
 		}
 
 		if ( checkFlag( targets, ashes::BufferTarget::eStorageTexelBuffer ) )
 		{
-			result |= D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+			result |= D3D11_BIND_UNORDERED_ACCESS;
 		}
 
 		if ( checkFlag( targets, ashes::BufferTarget::eUniformBuffer ) )

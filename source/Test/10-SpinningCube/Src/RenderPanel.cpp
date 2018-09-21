@@ -29,7 +29,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/GlslToSpv.hpp>
+#include <GlslToSpv.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Transform.hpp>
@@ -174,7 +174,7 @@ namespace vkapp
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		auto stagingTexture = m_device->createStagingTexture( image.format
-			, { image.size.width, image.size.height, 1u } );
+			, { image.size.width, image.size.height } );
 		m_texture = m_device->createTexture(
 			{
 				0u,

@@ -27,8 +27,7 @@ namespace gl_renderer
 		};
 	}
 
-	void validatePipeline( Device const & device
-		, ContextLock const & context
+	void validatePipeline( ContextLock const & context
 		, PipelineLayout const & layout
 		, GLuint program
 		, ashes::VertexInputState const & vertexInputState

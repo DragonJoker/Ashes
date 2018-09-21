@@ -1,5 +1,7 @@
 #include "FileUtils.hpp"
 
+#include <GlslToSpv.hpp>
+
 #include <cassert>
 
 #if ASHES_WIN32
@@ -244,7 +246,7 @@ namespace common
 		, ashes::ShaderStageFlag stage
 		, std::string const & path )
 	{
-		return ashes::GlslToSpv( device
+		return utils::compileGlslToSpv( device
 			, stage
 			, dumpTextFile( path ) );
 	}

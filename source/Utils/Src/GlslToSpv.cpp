@@ -2,11 +2,11 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "Shader/GlslToSpv.hpp"
+#include "GlslToSpv.hpp"
 
-#include "Core/Device.hpp"
+#include <Core/Device.hpp>
 
-# if ASHES_GLSL_TO_SPV
+# if UTILS_GLSL_TO_SPV
 #	include <glslang/Public/ShaderLang.h>
 #	include <SPIRV/GlslangToSpv.h>
 #endif
@@ -14,38 +14,37 @@ See LICENSE file in root folder.
 #include <locale>
 #include <regex>
 
-namespace ashes
+namespace utils
 {
-#if ASHES_GLSL_TO_SPV
+#if UTILS_GLSL_TO_SPV
 
 	namespace
 	{
-		template< typename CleanFunc >
-		struct BlockGuard
+		struct BlockLocale
 		{
-			template< typename InitFunc >
-			BlockGuard( InitFunc init, CleanFunc clean )
-				: m_clean{ std::move( clean ) }
+			BlockLocale()
 			{
-				init();
+				m_prvLoc = std::locale( "" );
+
+				if ( m_prvLoc.name() != "C" )
+				{
+					std::locale::global( std::locale{ "C" } );
+				}
 			}
 
-			~BlockGuard()
+			~BlockLocale()
 			{
-				m_clean();
+				if ( m_prvLoc.name() != "C" )
+				{
+					std::locale::global( m_prvLoc );
+				}
 			}
 
 		private:
-			CleanFunc m_clean;
+			std::locale m_prvLoc;
 		};
 
-		template< typename InitFunc, typename CleanFunc >
-		BlockGuard< CleanFunc > makeBlockGuard( InitFunc init, CleanFunc clean )
-		{
-			return BlockGuard< CleanFunc >{ std::move( init ), std::move( clean ) };
-		}
-
-		void doInitResources( Device const & device
+		void doInitResources( ashes::Device const & device
 			, TBuiltInResource & resources )
 		{
 			auto & limits = device.getPhysicalDevice().getProperties().limits;
@@ -177,7 +176,7 @@ namespace ashes
 
 	void initialiseGlslang()
 	{
-#if ASHES_GLSL_TO_SPV
+#if UTILS_GLSL_TO_SPV
 
 		glslang::InitializeProcess();
 
@@ -186,38 +185,20 @@ namespace ashes
 
 	void cleanupGlslang()
 	{
-#if ASHES_GLSL_TO_SPV
+#if UTILS_GLSL_TO_SPV
 
 		glslang::FinalizeProcess();
 
 #endif
 	}
 
-	UInt32Array GlslToSpv( Device const & device
-		, ShaderStageFlag stage
+	UInt32Array compileGlslToSpv( ashes::Device const & device
+		, ashes::ShaderStageFlag stage
 		, std::string const & shader )
 	{
-#if ASHES_GLSL_TO_SPV
+#if UTILS_GLSL_TO_SPV
 
-		auto prvLoc = std::locale( "" );
-
-		auto guard = makeBlockGuard(
-			[&prvLoc]()
-			{
-				if ( prvLoc.name() != "C" )
-				{
-					std::locale::global( std::locale{ "C" } );
-				}
-			},
-			[&prvLoc]()
-			{
-				if ( prvLoc.name() != "C" )
-				{
-					std::locale::global( prvLoc );
-				}
-			}
-		);
-
+		BlockLocale guard;
 		TBuiltInResource resources;
 		doInitResources( device, resources );
 

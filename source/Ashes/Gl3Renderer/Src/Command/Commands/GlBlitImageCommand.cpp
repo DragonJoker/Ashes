@@ -154,7 +154,7 @@ namespace gl_renderer
 			glLogCall( context
 				, glBindFramebuffer
 				, GL_DRAW_FRAMEBUFFER
-				, 0u );
+				, m_device.getCurrentFramebuffer() );
 			glLogCall( context
 				, glBindFramebuffer
 				, GL_READ_FRAMEBUFFER

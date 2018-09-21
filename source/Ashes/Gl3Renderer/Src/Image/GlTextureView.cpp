@@ -69,53 +69,6 @@ namespace gl_renderer
 		, m_device{ device }
 		, m_target{ convert( m_createInfo, texture.getFlags(), texture.getSamplesCount() ) }
 	{
-		auto target = texture.getTarget();
-		auto context = m_device.getContext();
-		glLogCall( context
-			, glBindTexture
-			, target
-			, texture.getImage() );
-
-		if ( m_createInfo.components.r != ashes::ComponentSwizzle::eIdentity )
-		{
-			glLogCall( context
-				, glTexParameteri
-				, target
-				, GL_SWIZZLE_R
-				, convert( m_createInfo.components.r ) );
-		}
-
-		if ( m_createInfo.components.g != ashes::ComponentSwizzle::eIdentity )
-		{
-			glLogCall( context
-				, glTexParameteri
-				, target
-				, GL_SWIZZLE_G
-				, convert( m_createInfo.components.g ) );
-		}
-
-		if ( m_createInfo.components.b != ashes::ComponentSwizzle::eIdentity )
-		{
-			glLogCall( context
-				, glTexParameteri
-				, target
-				, GL_SWIZZLE_B
-				, convert( m_createInfo.components.b ) );
-		}
-
-		if ( m_createInfo.components.a != ashes::ComponentSwizzle::eIdentity )
-		{
-			glLogCall( context
-				, glTexParameteri
-				, target
-				, GL_SWIZZLE_A
-				, convert( m_createInfo.components.a ) );
-		}
-
-		glLogCall( context
-			, glBindTexture
-			, target
-			, 0u );
 	}
 
 	TextureView::~TextureView()

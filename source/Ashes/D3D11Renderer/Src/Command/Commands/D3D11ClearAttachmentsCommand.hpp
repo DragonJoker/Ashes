@@ -11,11 +11,19 @@ See LICENSE file in root folder
 
 namespace d3d11_renderer
 {
+	struct ClearAttachmentView
+	{
+		ashes::ClearAttachment clear;
+		ID3D11View * view;
+	};
 	class ClearAttachmentsCommand
 		: public CommandBase
 	{
 	public:
 		ClearAttachmentsCommand( Device const & device
+			, RenderPass const & renderPass
+			, ashes::SubpassDescription const & subpass
+			, FrameBuffer const & framebuffer
 			, ashes::ClearAttachmentArray const & clearAttaches
 			, ashes::ClearRectArray const & clearRects );
 
@@ -23,7 +31,7 @@ namespace d3d11_renderer
 		CommandPtr clone()const override;
 
 	private:
-		ashes::ClearAttachmentArray m_clearAttaches;
 		ashes::ClearRectArray m_clearRects;
+		std::vector< ClearAttachmentView > m_clearViews;
 	};
 }

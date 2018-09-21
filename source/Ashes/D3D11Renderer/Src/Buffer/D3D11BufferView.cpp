@@ -13,7 +13,7 @@ namespace d3d11_renderer
 		: ashes::BufferView{ device, buffer, format, offset, range }
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc{};
-		desc.Format = convert( format );
+		desc.Format = getSRVFormat( format );
 		desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 		auto elemSize = getSize( format );
 		desc.Buffer.FirstElement = offset / elemSize;

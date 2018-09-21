@@ -126,7 +126,8 @@ namespace gl_renderer
 			, GL_ATTACHMENT_POINT_COLOR0 );
 		glLogCall( context
 			, glBindFramebuffer
-			, GL_FRAMEBUFFER, 0u );
+			, GL_FRAMEBUFFER
+			, m_device.getCurrentFramebuffer() );
 
 		// Read pixels
 		glLogCall( context

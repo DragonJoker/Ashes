@@ -23,7 +23,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/GlslToSpv.hpp>
+#include <GlslToSpv.hpp>
 #include <Sync/BufferMemoryBarrier.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
@@ -198,7 +198,7 @@ namespace vkapp
 		for ( uint32_t level = 0; level < tex2D.levels(); level++ )
 		{
 			auto staging = m_device->createStagingTexture( format
-				, { uint32_t( tex2D[level].extent().x ), uint32_t( tex2D[level].extent().y ), 1u } );
+				, { uint32_t( tex2D[level].extent().x ), uint32_t( tex2D[level].extent().y ) } );
 			auto view = m_texture->createView( ashes::TextureViewType::e2D
 				, format
 				, level );

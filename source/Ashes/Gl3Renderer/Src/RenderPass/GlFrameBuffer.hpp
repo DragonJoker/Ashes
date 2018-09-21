@@ -42,25 +42,14 @@ namespace gl_renderer
 		*	n'est pas possible, une std::runtime_error est lancée.
 		*\param[in] dimensions
 		*	Les dimensions du tampon d'images.
-		*/
-		FrameBuffer( Device const & device
-			, RenderPass const & renderPass
-			, ashes::Extent2D const & dimensions );
-		/**
-		*\brief
-		*	Crée un FrameBuffer compatible avec la passe de rendu donnée.
-		*\remarks
-		*	Si la compatibilité entre les textures voulues et les formats de la passe de rendu
-		*	n'est pas possible, une std::runtime_error est lancée.
-		*\param[in] dimensions
-		*	Les dimensions du tampon d'images.
 		*\param[in] textures
 		*	Les textures voulues pour le tampon d'images à créer.
 		*/
 		FrameBuffer( Device const & device
 			, RenderPass const & renderPass
 			, ashes::Extent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray && textures );
+			, ashes::FrameBufferAttachmentArray && textures
+			, bool backBuffer = false );
 		/**
 		*\brief
 		*	Destructeur
@@ -135,6 +124,12 @@ namespace gl_renderer
 			return m_srgb;
 		}
 		/**@}*/
+
+	private:
+		void doInitialiseBackBuffer();
+		void doInitialiseFramebuffer();
+		void doInitialiseBackAttach( ashes::FrameBufferAttachment const & attach );
+		void doInitialiseFboAttach( ashes::FrameBufferAttachment const & attach );
 
 	private:
 		Device const & m_device;

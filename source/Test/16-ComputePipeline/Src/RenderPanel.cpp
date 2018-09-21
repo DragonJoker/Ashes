@@ -33,7 +33,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/GlslToSpv.hpp>
+#include <GlslToSpv.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Transform.hpp>
@@ -265,11 +265,9 @@ namespace vkapp
 	void RenderPanel::doCreateDevice( ashes::Renderer const & renderer )
 	{
 		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
-		m_objectPcbs[0] = std::make_unique< ashes::PushConstantsBuffer< utils::Vec4 > >( *m_device
-			, ashes::ShaderStageFlag::eFragment
+		m_objectPcbs[0] = std::make_unique< ashes::PushConstantsBuffer< utils::Vec4 > >( ashes::ShaderStageFlag::eFragment
 			, ashes::PushConstantArray{ { 0u, ashes::ConstantFormat::eVec4f } } );
-		m_objectPcbs[1] = std::make_unique< ashes::PushConstantsBuffer< utils::Vec4 > >( *m_device
-			, ashes::ShaderStageFlag::eFragment
+		m_objectPcbs[1] = std::make_unique< ashes::PushConstantsBuffer< utils::Vec4 > >( ashes::ShaderStageFlag::eFragment
 			, ashes::PushConstantArray{ { 0u, ashes::ConstantFormat::eVec4f } } );
 		*m_objectPcbs[0]->getData() = utils::Vec4{ 1.0, 0.0, 0.0, 1.0 };
 		*m_objectPcbs[1]->getData() = utils::Vec4{ 0.0, 1.0, 0.0, 1.0 };
@@ -299,7 +297,7 @@ namespace vkapp
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		auto stagingTexture = m_device->createStagingTexture( image.format
-			, { image.size.width, image.size.height, 1u } );
+			, { image.size.width, image.size.height } );
 		m_texture = m_device->createTexture(
 			{
 				0u,
@@ -504,7 +502,7 @@ namespace vkapp
 	{
 		ashes::PushConstantRange range{ ashes::ShaderStageFlag::eFragment, 0u, m_objectPcbs[0]->getSize() };
 		m_offscreenPipelineLayout = m_device->createPipelineLayout( ashes::DescriptorSetLayoutCRefArray{ { *m_offscreenDescriptorLayout } }
-		, ashes::PushConstantRangeCRefArray{ { range } } );
+		, ashes::PushConstantRangeArray{ { range } } );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 

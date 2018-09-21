@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 #include "Pipeline.hpp"
 #include "ComputePipeline.hpp"
 
+#include "Miscellaneous/PushConstantRange.hpp"
+
 namespace ashes
 {
 	/**
@@ -44,7 +46,7 @@ namespace ashes
 		*/
 		PipelineLayout( Device const & device
 			, DescriptorSetLayoutCRefArray const & setLayouts
-			, PushConstantRangeCRefArray const & pushConstantRanges );
+			, PushConstantRangeArray const & pushConstantRanges );
 
 	public:
 		/**
@@ -187,7 +189,7 @@ namespace ashes
 		*\return
 		*	Les intervalles de push constants.
 		*/
-		inline PushConstantRangeCRefArray const & getPushConstantRanges()const
+		inline PushConstantRangeArray const & getPushConstantRanges()const
 		{
 			return m_pushConstantRanges;
 		}
@@ -195,7 +197,7 @@ namespace ashes
 	private:
 		Device const & m_device;
 		DescriptorSetLayoutCRefArray m_setLayouts;
-		PushConstantRangeCRefArray m_pushConstantRanges;
+		PushConstantRangeArray m_pushConstantRanges;
 	};
 }
 

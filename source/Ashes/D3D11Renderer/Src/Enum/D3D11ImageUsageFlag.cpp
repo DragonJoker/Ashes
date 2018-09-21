@@ -34,6 +34,8 @@ namespace d3d11_renderer
 		, uint32_t mipLevels )
 	{
 		return isRenderable( flags, format, mipLevels )
-			&& isSampled( flags );
+			&& isSampled( flags )
+			&& mipLevels > 1
+			&& !isDepthOrStencilFormat( format );
 	}
 }

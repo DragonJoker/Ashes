@@ -27,7 +27,7 @@ namespace d3d11_renderer
 
 	void BindComputePipelineCommand::apply( Context const & context )const
 	{
-		context.context->CSSetShader( std::static_pointer_cast< ShaderModule >( m_program.module )->getCSShader()
+		context.context->CSSetShader( m_program.getCSShader()
 			, nullptr
 			, 0u );
 	}

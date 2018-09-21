@@ -27,7 +27,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/GlslToSpv.hpp>
+#include <GlslToSpv.hpp>
 #include <Sync/BufferMemoryBarrier.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
@@ -51,7 +51,7 @@ namespace common
 		, ashes::Extent2D const & size )
 		: m_device{ device }
 		, m_size{ size }
-		, m_pushConstants{ device, ashes::ShaderStageFlag::eVertex, doCreateConstants() }
+		, m_pushConstants{ ashes::ShaderStageFlag::eVertex, doCreateConstants() }
 	{
 		// Init ImGui
 		// Color scheme
@@ -267,7 +267,7 @@ namespace common
 
 		auto copyCmd = m_device.getGraphicsCommandPool().createCommandBuffer();
 		auto stagingTexture = m_device.createStagingTexture( ashes::Format::eR8G8B8A8_UNORM
-			, { uint32_t( texWidth ), uint32_t( texHeight ), 1u } );
+			, { uint32_t( texWidth ), uint32_t( texHeight ) } );
 		stagingTexture->uploadTextureData( *copyCmd
 			, ashes::Format::eR8G8B8A8_UNORM
 			, fontData

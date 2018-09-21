@@ -341,6 +341,7 @@ namespace ashes
 	using ImageMemoryBarrierArray = std::vector< ImageMemoryBarrier >;
 	using PipelineStageFlagsArray = std::vector< PipelineStageFlags >;
 	using PushConstantArray = std::vector< PushConstant >;
+	using PushConstantRangeArray = std::vector< PushConstantRange >;
 	using RenderSubpassArray = std::vector< RenderSubpass >;
 	using ShaderStageStateArray = std::vector< ShaderStageState >;
 	using SpecialisationMapEntryArray = std::vector< SpecialisationMapEntry >;
@@ -374,7 +375,6 @@ namespace ashes
 	using DescriptorSetCRefArray = std::vector< DescriptorSetCRef >;
 	using DescriptorSetLayoutCRefArray = std::vector< DescriptorSetLayoutCRef >;
 	using EventCRefArray = std::vector< EventCRef >;
-	using PushConstantRangeCRefArray = std::vector< PushConstantRangeCRef >;
 	using SemaphoreCRefArray = std::vector< SemaphoreCRef >;
 	using SwapChainCRefArray = std::vector< SwapChainCRef >;
 	using TextureViewCRefArray = std::vector< TextureViewCRef >;

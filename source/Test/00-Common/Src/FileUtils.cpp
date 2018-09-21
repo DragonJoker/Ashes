@@ -3,7 +3,7 @@
 #include <Core/Device.hpp>
 #include <Core/Renderer.hpp>
 
-#include <Shader/GlslToSpv.hpp>
+#include <GlslToSpv.hpp>
 
 #include <cassert>
 #include <regex>
@@ -249,7 +249,7 @@ namespace common
 		, ashes::ShaderStageFlag stage
 		, std::string const & path )
 	{
-		return ashes::GlslToSpv( device
+		return utils::compileGlslToSpv( device
 			, stage
 			, dumpTextFile( path ) );
 	}

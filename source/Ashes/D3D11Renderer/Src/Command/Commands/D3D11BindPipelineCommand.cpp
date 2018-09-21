@@ -14,7 +14,10 @@ namespace d3d11_renderer
 	void apply( ID3D11DeviceContext * context
 		, ID3D11InputLayout * state )
 	{
-		context->IASetInputLayout( state );
+		if ( state )
+		{
+			context->IASetInputLayout( state );
+		}
 	}
 
 	void apply( ID3D11DeviceContext * context
@@ -111,35 +114,35 @@ namespace d3d11_renderer
 		// Bind program
 		for ( auto & stage : m_pipeline.getShaderStages() )
 		{
-			switch ( stage.module->getStage() )
+			switch ( stage.getStage() )
 			{
 			case ashes::ShaderStageFlag::eVertex:
-				context.context->VSSetShader( std::static_pointer_cast< ShaderModule >( stage.module )->getVSShader()
+				context.context->VSSetShader( stage.getVSShader()
 					, nullptr
 					, 0u );
 				break;
 			case ashes::ShaderStageFlag::eGeometry:
-				context.context->GSSetShader( std::static_pointer_cast< ShaderModule >( stage.module )->getGSShader()
+				context.context->GSSetShader( stage.getGSShader()
 					, nullptr
 					, 0u );
 				break;
 			case ashes::ShaderStageFlag::eTessellationControl:
-				context.context->HSSetShader( std::static_pointer_cast< ShaderModule >( stage.module )->getHSShader()
+				context.context->HSSetShader( stage.getHSShader()
 					, nullptr
 					, 0u );
 				break;
 			case ashes::ShaderStageFlag::eTessellationEvaluation:
-				context.context->DSSetShader( std::static_pointer_cast< ShaderModule >( stage.module )->getDSShader()
+				context.context->DSSetShader( stage.getDSShader()
 					, nullptr
 					, 0u );
 				break;
 			case ashes::ShaderStageFlag::eFragment:
-				context.context->PSSetShader( std::static_pointer_cast< ShaderModule >( stage.module )->getPSShader()
+				context.context->PSSetShader( stage.getPSShader()
 					, nullptr
 					, 0u );
 				break;
 			case ashes::ShaderStageFlag::eCompute:
-				context.context->CSSetShader( std::static_pointer_cast< ShaderModule >( stage.module )->getCSShader()
+				context.context->CSSetShader( stage.getCSShader()
 					, nullptr
 					, 0u );
 				break;
@@ -168,7 +171,7 @@ namespace d3d11_renderer
 		// Bind program
 		for ( auto & stage : m_pipeline.getShaderStages() )
 		{
-			switch ( stage.module->getStage() )
+			switch ( stage.getStage() )
 			{
 			case ashes::ShaderStageFlag::eVertex:
 				context.context->VSSetShader( nullptr, nullptr, 0u );

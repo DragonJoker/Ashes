@@ -64,7 +64,7 @@ namespace d3d11_renderer
 		, m_src{ static_cast< Texture const & >( src ) }
 		, m_dst{ static_cast< Buffer const & >( dst ) }
 		, m_copyInfo{ copyInfo }
-		, m_format{ convert( m_src.getFormat() ) }
+		, m_format{ getSRVFormat( m_src.getFormat() ) }
 		, m_views{ createViews( m_device, m_src, m_copyInfo ) }
 	{
 	}
