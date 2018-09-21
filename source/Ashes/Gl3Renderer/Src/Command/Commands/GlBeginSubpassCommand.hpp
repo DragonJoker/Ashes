@@ -12,7 +12,7 @@ namespace gl_renderer
 	*\brief
 	*	Démarre une passe de rendu en bindant son framebuffer, et en le vidant au besoin.
 	*/
-	class NextSubpassCommand
+	class BeginSubpassCommand
 		: public CommandBase
 	{
 	public:
@@ -28,7 +28,7 @@ namespace gl_renderer
 		*\param[in] contents
 		*	Indique la manière dont les commandes de la première sous-passe sont fournies.
 		*/
-		NextSubpassCommand( Device const & device
+		BeginSubpassCommand( Device const & device
 			, ashes::RenderPass const & renderPass
 			, ashes::FrameBuffer const & frameBuffer
 			, ashes::SubpassDescription const & subpass );

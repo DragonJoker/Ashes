@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Shader/D3D11ShaderDesc.hpp"
+#include "Shader/D3D11ShaderModule.hpp"
 
 #include <Pipeline/ComputePipeline.hpp>
 
@@ -23,9 +24,9 @@ namespace d3d11_renderer
 			, ashes::ComputePipelineCreateInfo && createInfo );
 		PushConstantsBuffer findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
 
-		inline ashes::ShaderStageState const & getProgram()const
+		inline CompiledShaderModule const & getProgram()const
 		{
-			return m_createInfo.stage;
+			return m_compiled.front();
 		}
 
 		inline std::vector< PushConstantsBuffer > const & getConstantsPcbs()const
@@ -44,6 +45,7 @@ namespace d3d11_renderer
 	private:
 		std::vector< PushConstantsBuffer > m_constantsPcbs;
 		ProgramLayout m_programLayout;
+		std::list< CompiledShaderModule > m_compiled;
 	};
 }
 

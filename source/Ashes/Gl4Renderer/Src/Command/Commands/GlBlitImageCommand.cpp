@@ -150,6 +150,7 @@ namespace gl_renderer
 
 	void BlitImageCommand::apply( ContextLock const & context )const
 	{
+		auto fbo = m_device.getCurrentDepthStencilState();
 		for ( auto & playerCopy : m_layerCopies )
 		{
 			auto & layerCopy = *playerCopy;
@@ -203,7 +204,7 @@ namespace gl_renderer
 			glLogCall( context
 				, glBindFramebuffer
 				, GL_DRAW_FRAMEBUFFER
-				, 0u );
+				, m_device.getCurrentFramebuffer() );
 			glLogCall( context
 				, glBindFramebuffer
 				, GL_READ_FRAMEBUFFER

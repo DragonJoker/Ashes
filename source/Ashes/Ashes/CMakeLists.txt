@@ -25,26 +25,6 @@ file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 	Src/*.inc
 )
 
-if ( NOT glslang_ROOT_DIR )
-	set( glslang_ROOT_DIR ${CMAKE_SOURCE_DIR}/../dependencies/glslang )
-endif ()
-if ( NOT SPIRV_ROOT_DIR )
-	set( SPIRV_ROOT_DIR ${CMAKE_SOURCE_DIR}/../dependencies/glslang )
-endif ()
-
-find_package( glslang )
-find_package( SPIRV )
-
-if ( glslang_FOUND AND SPIRV_FOUND )
-	include_directories(
-		${glslang_INCLUDE_DIR}
-		${SPIRV_INCLUDE_DIR}
-	)
-	set( ASHES_GLSL_TO_SPV 1 )
-else ()
-	set( ASHES_GLSL_TO_SPV 0 )
-endif ()
-
 set( ASHES_WIN32 0 )
 set( ASHES_XCB 0 )
 set( ASHES_XLIB 0 )
@@ -74,11 +54,6 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 	${${PROJECT_NAME}_CONFIG_HEADER}
-)
-
-target_link_libraries( ${PROJECT_NAME}
-	${glslang_LIBRARIES}
-	${SPIRV_LIBRARIES}
 )
 
 if ( BUILD_ASHES )

@@ -97,7 +97,10 @@ namespace d3d11_renderer
 
 			if ( view )
 			{
-				result = ( isDepthFormat( view->getFormat() )
+				result = ( isDepthStencilFormat( view->getFormat() )
+						? D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH
+						: 0u )
+					| ( isDepthFormat( view->getFormat() )
 						? D3D11_CLEAR_DEPTH
 						: 0u )
 					| ( isStencilFormat( view->getFormat() )

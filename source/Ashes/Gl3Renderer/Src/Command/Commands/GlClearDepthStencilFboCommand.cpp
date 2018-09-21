@@ -79,7 +79,7 @@ namespace gl_renderer
 		glLogCall( context
 			, glBindFramebuffer
 			, GL_FRAMEBUFFER
-			, 0u );
+			, m_device.getCurrentFramebuffer() );
 	}
 
 	CommandPtr ClearDepthStencilFboCommand::clone()const

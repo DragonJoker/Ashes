@@ -18,32 +18,39 @@ namespace d3d11_renderer
 	public:
 		StagingTexture( Device const & device
 			, ashes::Format format
-			, ashes::Extent3D const & extent );
+			, ashes::Extent2D const & extent );
+
+		uint8_t * lock( ashes::Extent2D const & size
+			, ashes::MemoryMapFlags flags )const override;
+		void invalidate( ashes::Extent2D const & size )const override;
+		void flush( ashes::Extent2D const & size )const override;
+		void unlock()const override;
 
 	private:
 		void doCopyToStagingTexture( uint8_t const * const data
 			, ashes::Format format
-			, ashes::Extent3D const & extent )const override;
+			, ashes::Extent2D const & extent )const override;
 		void doCopyStagingToDestination( ashes::CommandBuffer const & commandBuffer
 			, ashes::ImageSubresourceLayers const & subresourceLayers
 			, ashes::Format format
 			, ashes::Offset3D const & offset
-			, ashes::Extent3D const & extent
+			, ashes::Extent2D const & extent
 			, ashes::TextureView const & texture )const override;
 
 		void doCopyDestinationToStaging( ashes::CommandBuffer const & commandBuffer
 			, ashes::ImageSubresourceLayers const & subresourceLayers
 			, ashes::Format format
 			, ashes::Offset3D const & offset
-			, ashes::Extent3D const & extent
+			, ashes::Extent2D const & extent
 			, ashes::TextureView const & texture )const override;
 		void doCopyFromStagingTexture( uint8_t * data
 			, ashes::Format format
-			, ashes::Extent3D const & extent )const override;
+			, ashes::Extent2D const & extent )const override;
 
 	protected:
 		Device const & m_device;
 		Texture m_texture;
+		ashes::DeviceMemoryPtr m_storage;
 	};
 }
 

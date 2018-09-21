@@ -3,6 +3,8 @@
 #include "FileUtils.hpp"
 #include "MainFrame.hpp"
 
+#include <GlslToSpv.hpp>
+
 #include <wx/cmdline.h>
 
 #include <fstream>
@@ -240,7 +242,7 @@ namespace common
 #endif
 
 		wxInitAllImageHandlers();
-		ashes::initialiseGlslang();
+		utils::initialiseGlslang();
 		bool result = false;
 		StringArray files;
 
@@ -283,7 +285,7 @@ namespace common
 
 	int App::OnExit()
 	{
-		ashes::cleanupGlslang();
+		utils::cleanupGlslang();
 		wxImage::CleanUpHandlers();
 
 #if !defined( NDEBUG )

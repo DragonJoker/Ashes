@@ -18,17 +18,18 @@ namespace gl_renderer
 	void PushConstantsCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "PushConstantsCommand" );
-		auto buffer = m_pcb.data.data();
 
 		for ( auto & constant : m_pcb.constants )
 		{
+			auto buffer = m_pcb.data.data() + constant.offset;
+
 			switch ( constant.format )
 			{
 			case ashes::ConstantFormat::eFloat:
 				glLogCall( context
 					, glUniform1fv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
 
@@ -36,7 +37,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniform2fv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
 
@@ -44,7 +45,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniform3fv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
 
@@ -52,7 +53,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniform4fv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
 
@@ -60,7 +61,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniformMatrix2fv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, GL_FALSE
 					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
@@ -69,7 +70,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniformMatrix3fv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, GL_FALSE
 					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
@@ -78,7 +79,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniformMatrix4fv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, GL_FALSE
 					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
@@ -87,7 +88,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniform1iv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, reinterpret_cast< GLint const * >( buffer ) );
 				break;
 
@@ -95,7 +96,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniform2iv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, reinterpret_cast< GLint const * >( buffer ) );
 				break;
 
@@ -103,7 +104,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniform3iv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, reinterpret_cast< GLint const * >( buffer ) );
 				break;
 
@@ -111,7 +112,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniform4iv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, reinterpret_cast< GLint const * >( buffer ) );
 				break;
 
@@ -119,7 +120,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniform1uiv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, reinterpret_cast< GLuint const * >( buffer ) );
 				break;
 
@@ -127,7 +128,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniform2uiv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, reinterpret_cast< GLuint const * >( buffer ) );
 				break;
 
@@ -135,7 +136,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniform3uiv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, reinterpret_cast< GLuint const * >( buffer ) );
 				break;
 
@@ -143,7 +144,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniform4uiv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, reinterpret_cast< GLuint const * >( buffer ) );
 				break;
 
@@ -151,7 +152,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glUniform4fv
 					, constant.location
-					, 1u
+					, constant.arraySize
 					, reinterpret_cast< GLfloat const * >( buffer ) );
 				break;
 

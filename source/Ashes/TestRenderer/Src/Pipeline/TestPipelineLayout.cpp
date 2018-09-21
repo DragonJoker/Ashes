@@ -8,7 +8,7 @@ namespace test_renderer
 {
 	PipelineLayout::PipelineLayout( Device const & device
 		, ashes::DescriptorSetLayoutCRefArray const & setLayouts
-		, ashes::PushConstantRangeCRefArray const & pushConstantRanges )
+		, ashes::PushConstantRangeArray const & pushConstantRanges )
 		: ashes::PipelineLayout{ device, setLayouts, pushConstantRanges }
 		, m_device{ device }
 	{

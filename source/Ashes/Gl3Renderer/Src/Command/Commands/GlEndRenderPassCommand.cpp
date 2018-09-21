@@ -20,6 +20,7 @@ namespace gl_renderer
 			, glBindFramebuffer
 			, GL_FRAMEBUFFER
 			, 0u );
+		m_device.setCurrentFramebuffer( 0u );
 	}
 
 	CommandPtr EndRenderPassCommand::clone()const

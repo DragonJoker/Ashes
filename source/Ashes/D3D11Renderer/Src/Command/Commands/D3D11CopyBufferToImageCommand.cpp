@@ -50,7 +50,7 @@ namespace d3d11_renderer
 		, m_copyInfo{ copyInfo }
 		, m_src{ static_cast< Buffer const & >( src ) }
 		, m_dst{ static_cast< Texture const & >( dst ) }
-		, m_format{ convert( m_dst.getFormat() ) }
+		, m_format{ getSRVFormat( m_dst.getFormat() ) }
 		, m_srcBoxes{ doGetSrcBoxes( copyInfo ) }
 	{
 	}

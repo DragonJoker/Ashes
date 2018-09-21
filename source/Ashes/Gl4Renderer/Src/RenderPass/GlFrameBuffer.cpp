@@ -92,7 +92,7 @@ namespace gl_renderer
 			return getAttachmentType( texture.getFormat() );
 		}
 
-		void doCheck( GLenum status )
+		void checkCompleteness( GLenum status )
 		{
 			switch ( status )
 			{
@@ -154,119 +154,22 @@ namespace gl_renderer
 
 	FrameBuffer::FrameBuffer( Device const & device
 		, RenderPass const & renderPass
-		, ashes::Extent2D const & dimensions )
-		: ashes::FrameBuffer{ renderPass, dimensions, ashes::FrameBufferAttachmentArray{} }
+		, ashes::Extent2D const & dimensions
+		, ashes::FrameBufferAttachmentArray && views
+		, bool backBuffer )
+		: ashes::FrameBuffer{ renderPass, dimensions, std::move( views ) }
 		, m_device{ device }
 		, m_frameBuffer{ 0u }
 		, m_renderPass{ renderPass }
 	{
-	}
-
-	FrameBuffer::FrameBuffer( Device const & device
-		, RenderPass const & renderPass
-		, ashes::Extent2D const & dimensions
-		, ashes::FrameBufferAttachmentArray && views )
-		: ashes::FrameBuffer{ renderPass, dimensions, std::move( views ) }
-		, m_device{ device }
-		, m_renderPass{ renderPass }
-	{
-		auto context = m_device.getContext();
-		glLogCall( context
-			, glGenFramebuffers
-			, 1
-			, &m_frameBuffer );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, m_frameBuffer );
-
-		for ( auto & attach : m_attachments )
+		if ( backBuffer )
 		{
-			auto & glview = static_cast< TextureView const & >( attach.getView() );
-			auto & gltexture = static_cast< Texture const & >( glview.getTexture() );
-
-			// If the image doesn't exist, it means it is a backbuffer image, hence ignore the attachment.
-			if ( gltexture.hasImage() )
-			{
-				uint32_t index = m_renderPass.getAttachmentIndex( attach.getAttachment() );
-				auto image = glview.getImage();
-				auto mipLevel = glview.getSubResourceRange().baseMipLevel;
-
-				if ( glview.getSubResourceRange().baseMipLevel )
-				{
-					if ( gltexture.getLayerCount() == 1u )
-					{
-						image = gltexture.getImage();
-					}
-					else
-					{
-						mipLevel = 0u;
-					}
-				}
-
-				Attachment attachment
-				{
-					getAttachmentPoint( glview ),
-					image,
-					getAttachmentType( glview ),
-				};
-
-				if ( attachment.point == GL_ATTACHMENT_POINT_DEPTH_STENCIL
-					|| attachment.point == GL_ATTACHMENT_POINT_DEPTH
-					|| attachment.point == GL_ATTACHMENT_POINT_STENCIL )
-				{
-					m_depthStencilAttach = attachment;
-				}
-				else
-				{
-					m_colourAttaches.push_back( attachment );
-					m_srgb |= isSRGBFormat( glview.getFormat() );
-				}
-
-				m_allAttaches.push_back( attachment );
-				auto target = GL_TEXTURE_2D;
-
-				if ( gltexture.getSamplesCount() > ashes::SampleCountFlag::e1 )
-				{
-					target = GL_TEXTURE_2D_MULTISAMPLE;
-				}
-
-				glLogCall( context
-					, glFramebufferTexture2D
-					, GL_FRAMEBUFFER
-					, GlAttachmentPoint( attachment.point + index )
-					, target
-					, attachment.object
-					, mipLevel );
-				doCheck( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
-			}
-			else
-			{
-				Attachment attachment
-				{
-					GL_ATTACHMENT_POINT_BACK,
-					GL_INVALID_INDEX,
-					getAttachmentType( attach.getView().getFormat() )
-				};
-
-				if ( ashes::isDepthOrStencilFormat( attach.getFormat() ) )
-				{
-					m_depthStencilAttach = attachment;
-				}
-				else
-				{
-					m_colourAttaches.push_back( attachment );
-				}
-
-				m_allAttaches.push_back( attachment );
-			}
+			doInitialiseBackBuffer();
 		}
-
-		doCheck( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, 0 );
+		else
+		{
+			doInitialiseFramebuffer();
+		}
 	}
 
 	FrameBuffer::~FrameBuffer()
@@ -335,5 +238,127 @@ namespace gl_renderer
 					, m_drawBuffers.data() );
 			}
 		}
+	}
+
+	void FrameBuffer::doInitialiseBackBuffer()
+	{
+		for ( auto & attach : m_attachments )
+		{
+			doInitialiseBackAttach( attach );
+		}
+	}
+
+	void FrameBuffer::doInitialiseFramebuffer()
+	{
+		auto context = m_device.getContext();
+		glLogCall( context
+			, glGenFramebuffers
+			, 1
+			, &m_frameBuffer );
+		glLogCall( context
+			, glBindFramebuffer
+			, GL_FRAMEBUFFER
+			, m_frameBuffer );
+
+		for ( auto & attach : m_attachments )
+		{
+			auto & glview = static_cast< TextureView const & >( attach.getView() );
+			auto & gltexture = static_cast< Texture const & >( glview.getTexture() );
+
+			// If the image doesn't exist, it means it is a backbuffer image, hence ignore the attachment.
+			if ( gltexture.hasImage() )
+			{
+				doInitialiseFboAttach( attach );
+			}
+			else
+			{
+				doInitialiseBackAttach( attach );
+			}
+		}
+
+		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+		glLogCall( context
+			, glBindFramebuffer
+			, GL_FRAMEBUFFER
+			, 0 );
+	}
+
+	void FrameBuffer::doInitialiseFboAttach( ashes::FrameBufferAttachment const & attach )
+	{
+		auto context = m_device.getContext();
+		auto & glview = static_cast< TextureView const & >( attach.getView() );
+		auto & gltexture = static_cast< Texture const & >( glview.getTexture() );
+		uint32_t index = m_renderPass.getAttachmentIndex( attach.getAttachment() );
+		auto image = glview.getImage();
+		auto mipLevel = glview.getSubResourceRange().baseMipLevel;
+
+		if ( glview.getSubResourceRange().baseMipLevel )
+		{
+			if ( gltexture.getLayerCount() == 1u )
+			{
+				image = gltexture.getImage();
+			}
+			else
+			{
+				mipLevel = 0u;
+			}
+		}
+
+		Attachment attachment
+		{
+			getAttachmentPoint( glview ),
+			image,
+			getAttachmentType( glview ),
+		};
+
+		if ( attachment.point == GL_ATTACHMENT_POINT_DEPTH_STENCIL
+			|| attachment.point == GL_ATTACHMENT_POINT_DEPTH
+			|| attachment.point == GL_ATTACHMENT_POINT_STENCIL )
+		{
+			m_depthStencilAttach = attachment;
+		}
+		else
+		{
+			m_colourAttaches.push_back( attachment );
+			m_srgb |= isSRGBFormat( glview.getFormat() );
+		}
+
+		m_allAttaches.push_back( attachment );
+		auto target = GL_TEXTURE_2D;
+
+		if ( gltexture.getSamplesCount() > ashes::SampleCountFlag::e1 )
+		{
+			target = GL_TEXTURE_2D_MULTISAMPLE;
+		}
+
+		glLogCall( context
+			, glFramebufferTexture2D
+			, GL_FRAMEBUFFER
+			, GlAttachmentPoint( attachment.point + index )
+			, target
+			, attachment.object
+			, mipLevel );
+		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+	}
+
+	void FrameBuffer::doInitialiseBackAttach( ashes::FrameBufferAttachment const & attach )
+	{
+		Attachment attachment
+		{
+			GL_ATTACHMENT_POINT_BACK,
+			GL_INVALID_INDEX,
+			getAttachmentType( attach.getView().getFormat() )
+		};
+
+		if ( ashes::isDepthOrStencilFormat( attach.getFormat() ) )
+		{
+			m_depthStencilAttach = attachment;
+		}
+		else
+		{
+			m_colourAttaches.push_back( attachment );
+		}
+
+		m_allAttaches.push_back( attachment );
 	}
 }

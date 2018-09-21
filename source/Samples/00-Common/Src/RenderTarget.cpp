@@ -19,7 +19,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/GlslToSpv.hpp>
+#include <GlslToSpv.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Transform.hpp>
@@ -137,7 +137,7 @@ namespace common
 			common::TextureNodePtr textureNode = std::make_shared< common::TextureNode >();
 			textureNode->image = image;
 			auto stagingTexture = m_device.createStagingTexture( image->format
-				, ashes::Extent3D{ image->size.width, image->size.height, 1u } );
+				, { image->size.width, image->size.height } );
 			textureNode->texture = m_device.createTexture(
 				{
 					0u,

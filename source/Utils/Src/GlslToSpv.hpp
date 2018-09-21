@@ -4,9 +4,9 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "AshesPrerequisites.hpp"
+#include "UtilsPrerequisites.hpp"
 
-namespace ashes
+namespace utils
 {
 	void initialiseGlslang();
 	void cleanupGlslang();
@@ -18,7 +18,7 @@ namespace ashes
 	*\brief
 	*	Transpiles a GLSL shader to SPIR-V.
 	*/
-	UInt32Array GlslToSpv( Device const & device
-		, ShaderStageFlag stage
+	UInt32Array compileGlslToSpv( ashes::Device const & device
+		, ashes::ShaderStageFlag stage
 		, std::string const & shader );
 }

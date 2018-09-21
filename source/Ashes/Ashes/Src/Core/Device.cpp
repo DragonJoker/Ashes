@@ -148,38 +148,38 @@ namespace ashes
 	PipelineLayoutPtr Device::createPipelineLayout()const
 	{
 		return createPipelineLayout( DescriptorSetLayoutCRefArray{}
-			, PushConstantRangeCRefArray{} );
+			, PushConstantRangeArray{} );
 	}
 
 	PipelineLayoutPtr Device::createPipelineLayout( DescriptorSetLayout const & layout )const
 	{
 		return createPipelineLayout( DescriptorSetLayoutCRefArray{ layout }
-			, PushConstantRangeCRefArray{} );
+			, PushConstantRangeArray{} );
 	}
 
 	PipelineLayoutPtr Device::createPipelineLayout( PushConstantRange const & pushConstantRange )const
 	{
 		return createPipelineLayout( DescriptorSetLayoutCRefArray{}
-			, PushConstantRangeCRefArray{ pushConstantRange } );
+			, PushConstantRangeArray{ 1u, pushConstantRange } );
 	}
 
 	PipelineLayoutPtr Device::createPipelineLayout( DescriptorSetLayout const & layout
 		, PushConstantRange const & pushConstantRange )const
 	{
 		return createPipelineLayout( DescriptorSetLayoutCRefArray{ layout }
-			, PushConstantRangeCRefArray{ pushConstantRange } );
+			, PushConstantRangeArray{ 1u, pushConstantRange } );
 	}
 
 	PipelineLayoutPtr Device::createPipelineLayout( DescriptorSetLayoutCRefArray const & layouts )const
 	{
 		return createPipelineLayout( layouts
-			, PushConstantRangeCRefArray{} );
+			, PushConstantRangeArray{} );
 	}
 
-	PipelineLayoutPtr Device::createPipelineLayout( PushConstantRangeCRefArray const & pushConstantRanges )const
+	PipelineLayoutPtr Device::createPipelineLayout( PushConstantRangeArray const & pushConstantRanges )const
 	{
 		return createPipelineLayout( DescriptorSetLayoutCRefArray{}
-			, PushConstantRangeCRefArray{ pushConstantRanges } );
+			, pushConstantRanges );
 	}
 
 	SamplerPtr Device::createSampler( WrapMode wrapS

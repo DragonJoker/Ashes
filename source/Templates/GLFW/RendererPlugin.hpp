@@ -3,14 +3,48 @@
 #include <Core/Renderer.hpp>
 
 #include <Utils/DynamicLibrary.hpp>
-#include <Factory.hpp>
+
+#include <iostream>
 
 namespace common
 {
-	using RendererFactory = utils::Factory< ashes::Renderer
-		, std::string
-		, ashes::RendererPtr
-		, std::function< ashes::RendererPtr( ashes::Renderer::Configuration const & ) > >;
+	class RendererFactory
+	{
+	protected:
+		using Key = std::string;
+		using Creator = std::function< ashes::RendererPtr( ashes::Renderer::Configuration const & ) >;
+		using ObjPtr = ashes::RendererPtr;
+		using ObjMap = std::map< Key, Creator >;
+
+	public:
+		void registerType( Key const & key, Creator creator )
+		{
+			m_registered[key] = creator;
+		}
+
+		template< typename ... Parameters >
+		ObjPtr create( Key const & key, Parameters && ... params )const
+		{
+			ObjPtr result;
+			auto it = m_registered.find( key );
+
+			if ( it != m_registered.end() )
+			{
+				result = it->second( std::forward< Parameters >( params )... );
+			}
+			else
+			{
+				static std::string const Error = "Unknown object type";
+				std::cerr << Error << ": [" << key << "]" << std::endl;
+				throw std::runtime_error{ Error };
+			}
+
+			return result;
+		}
+
+	private:
+		ObjMap m_registered;
+	};
 	/**
 	*\brief
 	*	Gère un plugin de rendu (wrappe la fonction de création).

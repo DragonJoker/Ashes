@@ -82,50 +82,41 @@ namespace d3d11_renderer
 		if ( m_image.isRenderTarget() )
 		{
 			D3D11_RENDER_TARGET_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getRTVFormat( getFormat() );
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE1D;
 			desc.Texture1D.MipSlice = getSubResourceRange().baseMipLevel;
 			auto hr = device->CreateRenderTargetView( m_image.getTexture1D()
 				, &desc
 				, &m_renderTargetView );
-
-			if ( dxCheckError( hr, "CreateRenderTargetView1D" ) )
-			{
-				dxDebugName( m_renderTargetView, RenderTargetView1D );
-			}
+			dxCheckError( hr, "CreateRenderTargetView1D" );
+			dxDebugName( m_renderTargetView, RenderTargetView1D );
 		}
 
 		if ( m_image.isSamplable() )
 		{
 			D3D11_SHADER_RESOURCE_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getSRVFormat( getFormat() );
 			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
 			desc.Texture1D.MipLevels = getSubResourceRange().levelCount;
 			desc.Texture1D.MostDetailedMip = getSubResourceRange().baseMipLevel;
 			auto hr = device->CreateShaderResourceView( m_image.getTexture1D()
 				, &desc
 				, &m_shaderView );
-
-			if ( dxCheckError( hr, "CreateShaderResourceView1D" ) )
-			{
-				dxDebugName( m_shaderView, ShaderResourceView1D );
-			}
+			dxCheckError( hr, "CreateShaderResourceView1D" );
+			dxDebugName( m_shaderView, ShaderResourceView1D );
 		}
 
 		if ( m_image.isStorage() )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getUAVFormat( getFormat() );
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE1D;
 			desc.Texture1D.MipSlice = getSubResourceRange().baseMipLevel;
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture1D()
 				, &desc
 				, &m_unorderedAccessView );
-
-			if ( dxCheckError( hr, "CreateUnorderedAccessView1D" ) )
-			{
-				dxDebugName( m_unorderedAccessView, UnorderedAccessView1D );
-			}
+			dxCheckError( hr, "CreateUnorderedAccessView1D" );
+			dxDebugName( m_unorderedAccessView, UnorderedAccessView1D );
 		}
 	}
 
@@ -136,7 +127,7 @@ namespace d3d11_renderer
 		if ( m_image.isRenderTarget() )
 		{
 			D3D11_RENDER_TARGET_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getRTVFormat( getFormat() );
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE1DARRAY;
 			desc.Texture1DArray.ArraySize = getSubResourceRange().layerCount;
 			desc.Texture1DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
@@ -144,17 +135,14 @@ namespace d3d11_renderer
 			auto hr = device->CreateRenderTargetView( m_image.getTexture1D()
 				, &desc
 				, &m_renderTargetView );
-
-			if ( dxCheckError( hr, "CreateRenderTargetView1DArray" ) )
-			{
-				dxDebugName( m_renderTargetView, RenderTargetView1DArray );
-			}
+			dxCheckError( hr, "CreateRenderTargetView1DArray" );
+			dxDebugName( m_renderTargetView, RenderTargetView1DArray );
 		}
 
 		if ( m_image.isSamplable() )
 		{
 			D3D11_SHADER_RESOURCE_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getSRVFormat( getFormat() );
 			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1DARRAY;
 			desc.Texture1DArray.ArraySize = getSubResourceRange().layerCount;
 			desc.Texture1DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
@@ -163,17 +151,14 @@ namespace d3d11_renderer
 			auto hr = device->CreateShaderResourceView( m_image.getTexture1D()
 				, &desc
 				, &m_shaderView );
-
-			if ( dxCheckError( hr, "CreateShaderResourceView1DArray" ) )
-			{
-				dxDebugName( m_shaderView, ShaderResourceView1DArray );
-			}
+			dxCheckError( hr, "CreateShaderResourceView1DArray" );
+			dxDebugName( m_shaderView, ShaderResourceView1DArray );
 		}
 
 		if ( m_image.isStorage() )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getUAVFormat( getFormat() );
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE1DARRAY;
 			desc.Texture1DArray.ArraySize = getSubResourceRange().layerCount;
 			desc.Texture1DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
@@ -181,11 +166,8 @@ namespace d3d11_renderer
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture1D()
 				, &desc
 				, &m_unorderedAccessView );
-
-			if ( dxCheckError( hr, "CreateUnorderedAccessView1DArray" ) )
-			{
-				dxDebugName( m_unorderedAccessView, UnorderedAccessView1DArray );
-			}
+			dxCheckError( hr, "CreateUnorderedAccessView1DArray" );
+			dxDebugName( m_unorderedAccessView, UnorderedAccessView1DArray );
 		}
 	}
 
@@ -198,66 +180,54 @@ namespace d3d11_renderer
 			if ( isDepthOrStencilFormat( m_image.getFormat() ) )
 			{
 				D3D11_DEPTH_STENCIL_VIEW_DESC desc{};
-				desc.Format = convert( getFormat() );
+				desc.Format = getRTVFormat( getFormat() );
 				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 				desc.Texture2D.MipSlice = getSubResourceRange().baseMipLevel;
 				auto hr = device->CreateDepthStencilView( m_image.getTexture2D()
 					, &desc
 					, &m_depthStencilView );
-
-				if ( dxCheckError( hr, "CreateDepthStencilView2D" ) )
-				{
-					dxDebugName( m_depthStencilView, DepthStencilView2D );
-				}
+				dxCheckError( hr, "CreateDepthStencilView2D" );
+				dxDebugName( m_depthStencilView, DepthStencilView2D );
 			}
 			else
 			{
 				D3D11_RENDER_TARGET_VIEW_DESC desc{};
-				desc.Format = convert( getFormat() );
+				desc.Format = getRTVFormat( getFormat() );
 				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 				desc.Texture2D.MipSlice = getSubResourceRange().baseMipLevel;
 				auto hr = device->CreateRenderTargetView( m_image.getTexture2D()
 					, &desc
 					, &m_renderTargetView );
-
-				if ( dxCheckError( hr, "CreateRenderTargetView2D" ) )
-				{
-					dxDebugName( m_renderTargetView, RenderTargetView2D );
-				}
+				dxCheckError( hr, "CreateRenderTargetView2D" );
+				dxDebugName( m_renderTargetView, RenderTargetView2D );
 			}
 		}
 
 		if ( m_image.isSamplable() )
 		{
 			D3D11_SHADER_RESOURCE_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getSRVFormat( getFormat() );
 			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 			desc.Texture2D.MipLevels = getSubResourceRange().levelCount;
 			desc.Texture2D.MostDetailedMip = getSubResourceRange().baseMipLevel;
 			auto hr = device->CreateShaderResourceView( m_image.getTexture2D()
 				, &desc
 				, &m_shaderView );
-
-			if ( dxCheckError( hr, "CreateShaderResourceView2D" ) )
-			{
-				dxDebugName( m_shaderView, ShaderResourceView2D );
-			}
+			dxCheckError( hr, "CreateShaderResourceView2D" );
+			dxDebugName( m_shaderView, ShaderResourceView2D );
 		}
 
 		if ( m_image.isStorage() )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getUAVFormat( getFormat() );
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 			desc.Texture2D.MipSlice = getSubResourceRange().baseMipLevel;
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture2D()
 				, &desc
 				, &m_unorderedAccessView );
-
-			if ( dxCheckError( hr, "CreateUnorderedAccessView2D" ) )
-			{
-				dxDebugName( m_unorderedAccessView, UnorderedAccessView2D );
-			}
+			dxCheckError( hr, "CreateUnorderedAccessView2D" );
+			dxDebugName( m_unorderedAccessView, UnorderedAccessView2D );
 		}
 	}
 
@@ -267,18 +237,32 @@ namespace d3d11_renderer
 
 		if ( m_image.isRenderTarget() )
 		{
-			D3D11_RENDER_TARGET_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
-			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
-			desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
-			desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
-			desc.Texture2DArray.MipSlice = getSubResourceRange().baseMipLevel;
-			auto hr = device->CreateRenderTargetView( m_image.getTexture2D()
-				, &desc
-				, &m_renderTargetView );
-
-			if ( dxCheckError( hr, "CreateRenderTargetView2DArray" ) )
+			if ( isDepthOrStencilFormat( m_image.getFormat() ) )
 			{
+				D3D11_DEPTH_STENCIL_VIEW_DESC desc{};
+				desc.Format = getRTVFormat( getFormat() );
+				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+				desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
+				desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
+				desc.Texture2DArray.MipSlice = getSubResourceRange().baseMipLevel;
+				auto hr = device->CreateDepthStencilView( m_image.getTexture2D()
+					, &desc
+					, &m_depthStencilView );
+				dxCheckError( hr, "CreateDepthStencilView2D" );
+				dxDebugName( m_depthStencilView, DepthStencilView2D );
+			}
+			else
+			{
+				D3D11_RENDER_TARGET_VIEW_DESC desc{};
+				desc.Format = getRTVFormat( getFormat() );
+				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+				desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
+				desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
+				desc.Texture2DArray.MipSlice = getSubResourceRange().baseMipLevel;
+				auto hr = device->CreateRenderTargetView( m_image.getTexture2D()
+					, &desc
+					, &m_renderTargetView );
+				dxCheckError( hr, "CreateRenderTargetView2DArray" );
 				dxDebugName( m_renderTargetView, RenderTargetView2DArray );
 			}
 		}
@@ -286,7 +270,7 @@ namespace d3d11_renderer
 		if ( m_image.isSamplable() )
 		{
 			D3D11_SHADER_RESOURCE_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getSRVFormat( getFormat() );
 			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
 			desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
 			desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
@@ -295,17 +279,14 @@ namespace d3d11_renderer
 			auto hr = device->CreateShaderResourceView( m_image.getTexture2D()
 				, &desc
 				, &m_shaderView );
-
-			if ( dxCheckError( hr, "CreateShaderResourceView2DArray" ) )
-			{
-				dxDebugName( m_shaderView, ShaderResourceView2DArray );
-			}
+			dxCheckError( hr, "CreateShaderResourceView2DArray" );
+			dxDebugName( m_shaderView, ShaderResourceView2DArray );
 		}
 
 		if ( m_image.isStorage() )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getUAVFormat( getFormat() );
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2DARRAY;
 			desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
 			desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
@@ -313,11 +294,8 @@ namespace d3d11_renderer
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture2D()
 				, &desc
 				, &m_unorderedAccessView );
-
-			if ( dxCheckError( hr, "CreateUnorderedAccessView2DArray" ) )
-			{
-				dxDebugName( m_unorderedAccessView, UnorderedAccessView2DArray );
-			}
+			dxCheckError( hr, "CreateUnorderedAccessView2DArray" );
+			dxDebugName( m_unorderedAccessView, UnorderedAccessView2DArray );
 		}
 	}
 
@@ -328,7 +306,7 @@ namespace d3d11_renderer
 		if ( m_image.isRenderTarget() )
 		{
 			D3D11_RENDER_TARGET_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getRTVFormat( getFormat() );
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE3D;
 			desc.Texture3D.MipSlice = getSubResourceRange().baseMipLevel;
 			desc.Texture3D.FirstWSlice = getSubResourceRange().baseArrayLayer;
@@ -336,34 +314,28 @@ namespace d3d11_renderer
 			auto hr = device->CreateRenderTargetView( m_image.getTexture3D()
 				, &desc
 				, &m_renderTargetView );
-
-			if ( dxCheckError( hr, "CreateRenderTargetView3D" ) )
-			{
-				dxDebugName( m_renderTargetView, RenderTargetView3D );
-			}
+			dxCheckError( hr, "CreateRenderTargetView3D" );
+			dxDebugName( m_unorderedAccessView, RenderTargetView3D );
 		}
 
 		if ( m_image.isSamplable() )
 		{
 			D3D11_SHADER_RESOURCE_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getSRVFormat( getFormat() );
 			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
 			desc.Texture3D.MipLevels = getSubResourceRange().levelCount;
 			desc.Texture3D.MostDetailedMip = getSubResourceRange().baseMipLevel;
 			auto hr = device->CreateShaderResourceView( m_image.getTexture3D()
 				, &desc
 				, &m_shaderView );
-
-			if ( dxCheckError( hr, "CreateShaderResourceView3D" ) )
-			{
-				dxDebugName( m_shaderView, ShaderResourceView3D );
-			}
+			dxCheckError( hr, "CreateShaderResourceView3D" );
+			dxDebugName( m_unorderedAccessView, UnorderedAccessView3D );
 		}
 
 		if ( m_image.isStorage() )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getUAVFormat( getFormat() );
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE3D;
 			desc.Texture3D.MipSlice = getSubResourceRange().baseMipLevel;
 			desc.Texture3D.FirstWSlice = getSubResourceRange().baseArrayLayer;
@@ -371,11 +343,8 @@ namespace d3d11_renderer
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture3D()
 				, &desc
 				, &m_unorderedAccessView );
-
-			if ( dxCheckError( hr, "CreateUnorderedAccessView3D" ) )
-			{
-				dxDebugName( m_unorderedAccessView, UnorderedAccessView3D );
-			}
+			dxCheckError( hr, "CreateUnorderedAccessView3D" );
+			dxDebugName( m_unorderedAccessView, UnorderedAccessView3D );
 		}
 	}
 
@@ -386,7 +355,7 @@ namespace d3d11_renderer
 		if ( m_image.isRenderTarget() )
 		{
 			D3D11_RENDER_TARGET_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getRTVFormat( getFormat() );
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
 			desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
 			desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
@@ -394,34 +363,28 @@ namespace d3d11_renderer
 			auto hr = device->CreateRenderTargetView( m_image.getTexture2D()
 				, &desc
 				, &m_renderTargetView );
-
-			if ( dxCheckError( hr, "CreateRenderTargetViewCube" ) )
-			{
-				dxDebugName( m_renderTargetView, RenderTargetViewCube );
-			}
+			dxCheckError( hr, "CreateRenderTargetViewCube" );
+			dxDebugName( m_unorderedAccessView, RenderTargetViewCube );
 		}
 
 		if ( m_image.isSamplable() )
 		{
 			D3D11_SHADER_RESOURCE_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getSRVFormat( getFormat() );
 			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
 			desc.TextureCube.MipLevels = getSubResourceRange().levelCount;
 			desc.TextureCube.MostDetailedMip = getSubResourceRange().baseMipLevel;
 			auto hr = device->CreateShaderResourceView( m_image.getTexture2D()
 				, &desc
 				, &m_shaderView );
-
-			if ( dxCheckError( hr, "CreateShaderResourceViewCube" ) )
-			{
-				dxDebugName( m_shaderView, ShaderResourceViewCube );
-			}
+			dxCheckError( hr, "CreateShaderResourceViewCube" );
+			dxDebugName( m_unorderedAccessView, ShaderResourceViewCube );
 		}
 
 		if ( m_image.isStorage() )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getUAVFormat( getFormat() );
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2DARRAY;
 			desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
 			desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
@@ -429,11 +392,8 @@ namespace d3d11_renderer
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture2D()
 				, &desc
 				, &m_unorderedAccessView );
-
-			if ( dxCheckError( hr, "CreateUnorderedAccessViewCube" ) )
-			{
-				dxDebugName( m_unorderedAccessView, UnorderedAccessViewCube );
-			}
+			dxCheckError( hr, "CreateUnorderedAccessViewCube" );
+			dxDebugName( m_unorderedAccessView, UnorderedAccessViewCube );
 		}
 	}
 
@@ -444,7 +404,7 @@ namespace d3d11_renderer
 		if ( m_image.isRenderTarget() )
 		{
 			D3D11_RENDER_TARGET_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getRTVFormat( getFormat() );
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
 			desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
 			desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
@@ -452,6 +412,8 @@ namespace d3d11_renderer
 			auto hr = device->CreateRenderTargetView( m_image.getTexture2D()
 				, &desc
 				, &m_renderTargetView );
+			dxCheckError( hr, "CreateRenderTargetViewCubeArray" );
+			dxDebugName( m_unorderedAccessView, RenderTargetViewCubeArray );
 
 			if ( dxCheckError( hr, "CreateRenderTargetViewCubeArray" ) )
 			{
@@ -462,7 +424,7 @@ namespace d3d11_renderer
 		if ( m_image.isSamplable() )
 		{
 			D3D11_SHADER_RESOURCE_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getSRVFormat( getFormat() );
 			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBEARRAY;
 			desc.TextureCubeArray.MipLevels = getSubResourceRange().levelCount;
 			desc.TextureCubeArray.MostDetailedMip = getSubResourceRange().baseMipLevel;
@@ -471,17 +433,14 @@ namespace d3d11_renderer
 			auto hr = device->CreateShaderResourceView( m_image.getTexture2D()
 				, &desc
 				, &m_shaderView );
-
-			if ( dxCheckError( hr, "CreateShaderResourceViewCubeArray" ) )
-			{
-				dxDebugName( m_shaderView, ShaderResourceViewCubeArray );
-			}
+			dxCheckError( hr, "CreateShaderResourceViewCubeArray" );
+			dxDebugName( m_unorderedAccessView, ShaderResourceViewCubeArray );
 		}
 
 		if ( m_image.isStorage() )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
-			desc.Format = convert( getFormat() );
+			desc.Format = getUAVFormat( getFormat() );
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2DARRAY;
 			desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
 			desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
@@ -489,11 +448,8 @@ namespace d3d11_renderer
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture2D()
 				, &desc
 				, &m_unorderedAccessView );
-
-			if ( dxCheckError( hr, "CreateUnorderedAccessViewCubeArray" ) )
-			{
-				dxDebugName( m_unorderedAccessView, UnorderedAccessViewCubeArray );
-			}
+			dxCheckError( hr, "CreateUnorderedAccessViewCubeArray" );
+			dxDebugName( m_unorderedAccessView, UnorderedAccessViewCubeArray );
 		}
 	}
 }

@@ -40,42 +40,66 @@ namespace gl_renderer
 			return write.bufferInfo[index].buffer.get();
 		}
 
-		GlTextureType convert( ashes::TextureViewType const & mode
-			, uint32_t layers )
+		GlTextureType doBindTextureView( ContextLock const & context
+			, ashes::TextureView const & view
+			, uint32_t bindingIndex )
 		{
-			switch ( mode )
+			auto target = convert( view.getType(), view.getTexture().getLayerCount() );
+			glLogCall( context
+				, glActiveTexture
+				, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
+			glLogCall( context
+				, glBindTexture
+				, target
+				, static_cast< Texture const & >( view.getTexture() ).getImage() );
+
+			if ( view.getComponentMapping().r != ashes::ComponentSwizzle::eIdentity )
 			{
-			case ashes::TextureViewType::e1D:
-				return layers > 1u
-					? GL_TEXTURE_1D_ARRAY
-					: GL_TEXTURE_1D;
-
-			case ashes::TextureViewType::e2D:
-				return layers > 1u
-					? GL_TEXTURE_2D_ARRAY
-					: GL_TEXTURE_2D;
-
-			case ashes::TextureViewType::e3D:
-				return GL_TEXTURE_3D;
-
-			case ashes::TextureViewType::eCube:
-				return layers > 6u
-					? GL_TEXTURE_CUBE_ARRAY
-					: GL_TEXTURE_CUBE;
-
-			case ashes::TextureViewType::e1DArray:
-				return GL_TEXTURE_1D_ARRAY;
-
-			case ashes::TextureViewType::e2DArray:
-				return GL_TEXTURE_2D_ARRAY;
-
-			case ashes::TextureViewType::eCubeArray:
-				return GL_TEXTURE_CUBE_ARRAY;
-
-			default:
-				assert( false && "Unsupported TextureViewType" );
-				return GL_TEXTURE_2D;
+				glLogCall( context
+					, glTexParameteri
+					, target
+					, GL_TEX_PARAMETER_SWIZZLE_R
+					, convert( view.getComponentMapping().r ) );
 			}
+
+			if ( view.getComponentMapping().g != ashes::ComponentSwizzle::eIdentity )
+			{
+				glLogCall( context
+					, glTexParameteri
+					, target
+					, GL_TEX_PARAMETER_SWIZZLE_G
+					, convert( view.getComponentMapping().g ) );
+			}
+
+			if ( view.getComponentMapping().b != ashes::ComponentSwizzle::eIdentity )
+			{
+				glLogCall( context
+					, glTexParameteri
+					, target
+					, GL_TEX_PARAMETER_SWIZZLE_B
+					, convert( view.getComponentMapping().b ) );
+			}
+
+			if ( view.getComponentMapping().a != ashes::ComponentSwizzle::eIdentity )
+			{
+				glLogCall( context
+					, glTexParameteri
+					, target
+					, GL_TEX_PARAMETER_SWIZZLE_A
+					, convert( view.getComponentMapping().a ) );
+			}
+
+			return target;
+		}
+
+		void doBindSampler( ContextLock const & context
+			, ashes::Sampler const & sampler
+			, uint32_t bindingIndex )
+		{
+			glLogCall( context
+				, glBindSampler
+				, bindingIndex
+				, static_cast< Sampler const & >( sampler ).getSampler() );
 		}
 
 		void bindCombinedSampler( ContextLock const & context
@@ -86,34 +110,13 @@ namespace gl_renderer
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto & view = getView( write, i );
 				auto & sampler = getSampler( write, i );
+				auto target = doBindTextureView( context, view, bindingIndex );
+				doBindSampler( context, sampler, bindingIndex );
 				glLogCall( context
-					, glActiveTexture
-					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-				auto target = convert( view.getType(), view.getTexture().getLayerCount() );
-				glLogCall( context
-					, glBindTexture
+					, glTexParameterf
 					, target
-					, static_cast< Texture const & >( view.getTexture() ).getImage() );
-				//auto & range = view.getSubResourceRange();
-
-				//if ( range.levelCount > 1 )
-				//{
-				//	glLogCall( context
-				//		, glTexParameteri
-				//		, target
-				//		, GL_SAMPLER_PARAMETER_MIN_LOD
-				//		, GLint( range.baseMipLevel ) );
-				//	glLogCall( context
-				//		, glTexParameteri
-				//		, target
-				//		, GL_SAMPLER_PARAMETER_MAX_LOD
-				//		, GLint( range.baseMipLevel + range.levelCount ) );
-				//}
-
-				glLogCall( context
-					, glBindSampler
-					, bindingIndex
-					, static_cast< Sampler const & >( sampler ).getSampler() );
+					, GL_TEX_PARAMETER_LOD_BIAS
+					, sampler.getLodBias() );
 			}
 		}
 
@@ -124,10 +127,7 @@ namespace gl_renderer
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto & sampler = getSampler( write, i );
-				glLogCall( context
-					, glBindSampler
-					, bindingIndex
-					, static_cast< Sampler const & >( sampler ).getSampler() );
+				doBindSampler( context, sampler, bindingIndex );
 			}
 		}
 
@@ -138,29 +138,7 @@ namespace gl_renderer
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto & view = getView( write, i );
-				glLogCall( context
-					, glActiveTexture
-					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-				auto target = convert( view.getType(), view.getTexture().getLayerCount() );
-				glLogCall( context
-					, glBindTexture
-					, target
-					, static_cast< Texture const & >( view.getTexture() ).getImage() );
-				//auto & range = view.getSubResourceRange();
-
-				//if ( range.levelCount > 1 )
-				//{
-				//	glLogCall( context
-				//		, glTexParameteri
-				//		, target
-				//		, GL_SAMPLER_PARAMETER_MIN_LOD
-				//		, GLint( range.baseMipLevel ) );
-				//	glLogCall( context
-				//		, glTexParameteri
-				//		, target
-				//		, GL_SAMPLER_PARAMETER_MAX_LOD
-				//		, GLint( range.baseMipLevel + range.levelCount ) );
-				//}
+				doBindTextureView( context, view, bindingIndex );
 			}
 		}
 

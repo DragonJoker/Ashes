@@ -28,13 +28,22 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 
 	include_directories(
 		${CMAKE_SOURCE_DIR}/Utils/Src
-		${CMAKE_BINARY_DIR}/Ashes/Ashes/Src
+		${CMAKE_BINARY_DIR}/Utils/Src
 		${CMAKE_SOURCE_DIR}/Ashes/Ashes/Src
+		${CMAKE_BINARY_DIR}/Ashes/Ashes/Src
 		${CMAKE_SOURCE_DIR}/external/gli
 		${CMAKE_SOURCE_DIR}/external/glm
 		${CMAKE_SOURCE_DIR}/external/imgui
 		${wxWidgets_INCLUDE_DIRS}
 		${GTK2_INCLUDE_DIRS}
+	)
+
+	set( BinLibraries
+		${BinLibraries}
+		${glslang_LIBRARIES}
+		${SPIRV_LIBRARIES}
+		Ashes
+		Utils
 	)
 
 	add_subdirectory( 00-Common )

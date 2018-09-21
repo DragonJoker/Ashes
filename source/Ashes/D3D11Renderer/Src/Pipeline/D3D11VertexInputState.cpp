@@ -26,7 +26,7 @@ namespace d3d11_renderer
 					{
 						inputDesc.SemanticName.c_str(),
 						inputDesc.SemanticIndex,
-						convert( attribute.format ),
+						getBufferFormat( attribute.format ),
 						attribute.binding,
 						attribute.offset,
 						convert( binding.inputRate ),

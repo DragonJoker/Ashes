@@ -13,7 +13,7 @@ namespace ashes
 		, ImageSubresourceLayers const & subresourceLayers
 		, Format format
 		, Offset3D const & offset
-		, Extent3D const & extent
+		, Extent2D const & extent
 		, ByteArray const & data
 		, TextureView const & texture )const
 	{
@@ -46,7 +46,7 @@ namespace ashes
 		, ImageSubresourceLayers const & subresourceLayers
 		, Format format
 		, Offset3D const & offset
-		, Extent3D const & extent
+		, Extent2D const & extent
 		, ByteArray & data
 		, TextureView const & texture )const
 	{

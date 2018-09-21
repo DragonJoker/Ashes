@@ -40,7 +40,7 @@ namespace d3d11_renderer
 		*/
 		PipelineLayout( Device const & device
 			, ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeCRefArray const & pushConstantRanges );
+			, ashes::PushConstantRangeArray const & pushConstantRanges );
 		/**
 		*\brief
 		*	Destructeur.

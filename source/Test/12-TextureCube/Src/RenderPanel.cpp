@@ -30,7 +30,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/GlslToSpv.hpp>
+#include <GlslToSpv.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Transform.hpp>
@@ -269,7 +269,7 @@ namespace vkapp
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
 		auto stagingTexture = m_device->createStagingTexture( ashes::Format::eR8G8B8A8_UNORM
-			, { 512u, 512u, 1u } );
+			, { 512u, 512u } );
 		m_view = m_texture->createView( ashes::TextureViewType::eCube
 			, ashes::Format::eR8G8B8A8_UNORM
 			, 0u
@@ -305,7 +305,7 @@ namespace vkapp
 				}
 				, image.format
 				, { 0, 0, 0 }
-				, { image.size.width, image.size.height, 1u }
+				, { image.size.width, image.size.height }
 				, image.data
 				, *m_view );
 		}

@@ -83,7 +83,8 @@ namespace d3d11_renderer
 	void ComputePipeline::doCompileProgram( Device const & device )
 	{
 		auto module = std::static_pointer_cast< ShaderModule >( m_createInfo.stage.module );
-		m_programLayout.emplace( module->getStage(), module->compile( m_createInfo.stage ) );
+		m_compiled.push_back( module->compile( m_createInfo.stage ) );
+		m_programLayout.emplace( module->getStage(), getProgram().getLayout() );
 
 		for ( auto & shaderLayoutIt : m_programLayout )
 		{

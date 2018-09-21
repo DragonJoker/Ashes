@@ -157,39 +157,6 @@ namespace gl_renderer
 			GLSL_ATTRIBUTE_DOUBLE_VEC2 = 0x8FFC,
 			GLSL_ATTRIBUTE_DOUBLE_VEC3 = 0x8FFD,
 			GLSL_ATTRIBUTE_DOUBLE_VEC4 = 0x8FFE,
-			GLSL_ATTRIBUTE_IMAGE_1D = 0x904C,
-			GLSL_ATTRIBUTE_IMAGE_2D = 0x904D,
-			GLSL_ATTRIBUTE_IMAGE_3D = 0x904E,
-			GLSL_ATTRIBUTE_IMAGE_2D_RECT = 0x904F,
-			GLSL_ATTRIBUTE_IMAGE_CUBE = 0x9050,
-			GLSL_ATTRIBUTE_IMAGE_BUFFER = 0x9051,
-			GLSL_ATTRIBUTE_IMAGE_1D_ARRAY = 0x9052,
-			GLSL_ATTRIBUTE_IMAGE_2D_ARRAY = 0x9053,
-			GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY = 0x9054,
-			GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE = 0x9055,
-			GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY = 0x9056,
-			GLSL_ATTRIBUTE_INT_IMAGE_1D = 0x9057,
-			GLSL_ATTRIBUTE_INT_IMAGE_2D = 0x9058,
-			GLSL_ATTRIBUTE_INT_IMAGE_3D = 0x9059,
-			GLSL_ATTRIBUTE_INT_IMAGE_2D_RECT = 0x905A,
-			GLSL_ATTRIBUTE_INT_IMAGE_CUBE = 0x905B,
-			GLSL_ATTRIBUTE_INT_IMAGE_BUFFER = 0x905C,
-			GLSL_ATTRIBUTE_INT_IMAGE_1D_ARRAY = 0x905D,
-			GLSL_ATTRIBUTE_INT_IMAGE_2D_ARRAY = 0x905E,
-			GLSL_ATTRIBUTE_INT_IMAGE_CUBE_MAP_ARRAY = 0x905F,
-			GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE = 0x9060,
-			GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE_ARRAY = 0x9061,
-			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D = 0x9062,
-			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D = 0x9063,
-			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_3D = 0x9064,
-			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_RECT = 0x9065,
-			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE = 0x9066,
-			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_BUFFER = 0x9067,
-			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D_ARRAY = 0x9068,
-			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_ARRAY = 0x9069,
-			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY = 0x906A,
-			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE = 0x906B,
-			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY = 0x906C,
 			GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE = 0x9108,
 			GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE = 0x9109,
 			GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE = 0x910A,
@@ -269,48 +236,15 @@ namespace gl_renderer
 			case GLSL_ATTRIBUTE_DOUBLE_MAT2:								return "GL_DOUBLE_MAT2";
 			case GLSL_ATTRIBUTE_DOUBLE_MAT3:								return "GL_DOUBLE_MAT3";
 			case GLSL_ATTRIBUTE_DOUBLE_MAT4:								return "GL_DOUBLE_MAT4";
-			case GLSL_ATTRIBUTE_DOUBLE_MAT2x3:								return "GL_DOUBLE_MAT2x3";
-			case GLSL_ATTRIBUTE_DOUBLE_MAT2x4:								return "GL_DOUBLE_MAT2x4";
-			case GLSL_ATTRIBUTE_DOUBLE_MAT3x2:								return "GL_DOUBLE_MAT3x2";
-			case GLSL_ATTRIBUTE_DOUBLE_MAT3x4:								return "GL_DOUBLE_MAT3x4";
-			case GLSL_ATTRIBUTE_DOUBLE_MAT4x2:								return "GL_DOUBLE_MAT4x2";
-			case GLSL_ATTRIBUTE_DOUBLE_MAT4x3:								return "GL_DOUBLE_MAT4x3";
+			case GLSL_ATTRIBUTE_DOUBLE_MAT2x3:								return "GL_DOUBLE_MAT2x3 ";
+			case GLSL_ATTRIBUTE_DOUBLE_MAT2x4:								return "GL_DOUBLE_MAT2x4 ";
+			case GLSL_ATTRIBUTE_DOUBLE_MAT3x2:								return "GL_DOUBLE_MAT3x2 ";
+			case GLSL_ATTRIBUTE_DOUBLE_MAT3x4:								return "GL_DOUBLE_MAT3x4 ";
+			case GLSL_ATTRIBUTE_DOUBLE_MAT4x2:								return "GL_DOUBLE_MAT4x2 ";
+			case GLSL_ATTRIBUTE_DOUBLE_MAT4x3:								return "GL_DOUBLE_MAT4x3 ";
 			case GLSL_ATTRIBUTE_DOUBLE_VEC2:								return "GL_DOUBLE_VEC2";
 			case GLSL_ATTRIBUTE_DOUBLE_VEC3:								return "GL_DOUBLE_VEC3";
 			case GLSL_ATTRIBUTE_DOUBLE_VEC4:								return "GL_DOUBLE_VEC4";
-			case GLSL_ATTRIBUTE_IMAGE_1D:									return "GL_IMAGE_1D";
-			case GLSL_ATTRIBUTE_IMAGE_2D:									return "GL_IMAGE_2D";
-			case GLSL_ATTRIBUTE_IMAGE_3D:									return "GL_IMAGE_3D";
-			case GLSL_ATTRIBUTE_IMAGE_2D_RECT:								return "GL_IMAGE_2D_RECT";
-			case GLSL_ATTRIBUTE_IMAGE_CUBE:									return "GL_IMAGE_CUBE";
-			case GLSL_ATTRIBUTE_IMAGE_BUFFER:								return "GL_IMAGE_BUFFER";
-			case GLSL_ATTRIBUTE_IMAGE_1D_ARRAY:								return "GL_IMAGE_1D_ARRAY";
-			case GLSL_ATTRIBUTE_IMAGE_2D_ARRAY:								return "GL_IMAGE_2D_ARRAY";
-			case GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY:						return "GL_IMAGE_CUBE_MAP_ARRAY";
-			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE:						return "GL_IMAGE_2D_MULTISAMPLE";
-			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY:					return "GL_IMAGE_2D_MULTISAMPLE_ARRAY";
-			case GLSL_ATTRIBUTE_INT_IMAGE_1D:								return "GL_INT_IMAGE_1D";
-			case GLSL_ATTRIBUTE_INT_IMAGE_2D:								return "GL_INT_IMAGE_2D";
-			case GLSL_ATTRIBUTE_INT_IMAGE_3D:								return "GL_INT_IMAGE_3D";
-			case GLSL_ATTRIBUTE_INT_IMAGE_2D_RECT:							return "GL_INT_IMAGE_2D_RECT";
-			case GLSL_ATTRIBUTE_INT_IMAGE_CUBE:								return "GL_INT_IMAGE_CUBE";
-			case GLSL_ATTRIBUTE_INT_IMAGE_BUFFER:							return "GL_INT_IMAGE_BUFFER";
-			case GLSL_ATTRIBUTE_INT_IMAGE_1D_ARRAY:							return "GL_INT_IMAGE_1D_ARRAY";
-			case GLSL_ATTRIBUTE_INT_IMAGE_2D_ARRAY:							return "GL_INT_IMAGE_2D_ARRAY";
-			case GLSL_ATTRIBUTE_INT_IMAGE_CUBE_MAP_ARRAY:					return "GL_INT_IMAGE_CUBE_MAP_ARRAY";
-			case GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE:					return "GL_INT_IMAGE_2D_MULTISAMPLE";
-			case GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE_ARRAY:				return "GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY";
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D:						return "GL_UNSIGNED_INT_IMAGE_1D";
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D:						return "GL_UNSIGNED_INT_IMAGE_2D";
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_3D:						return "GL_UNSIGNED_INT_IMAGE_3D";
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_RECT:					return "GL_UNSIGNED_INT_IMAGE_2D_RECT";
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE:					return "GL_UNSIGNED_INT_IMAGE_CUBE";
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_BUFFER:					return "GL_UNSIGNED_INT_IMAGE_BUFFER";
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D_ARRAY:				return "GL_UNSIGNED_INT_IMAGE_1D_ARRAY";
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_ARRAY:				return "GL_UNSIGNED_INT_IMAGE_2D_ARRAY";
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY:			return "GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY";
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE:			return "GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE";
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY:	return "GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY";
 			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE:						return "GL_SAMPLER_2D_MULTISAMPLE";
 			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE:					return "GL_INT_SAMPLER_2D_MULTISAMPLE";
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:		return "GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE";
@@ -518,39 +452,6 @@ namespace gl_renderer
 			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY:
 			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
-			case GLSL_ATTRIBUTE_IMAGE_1D:
-			case GLSL_ATTRIBUTE_IMAGE_2D:
-			case GLSL_ATTRIBUTE_IMAGE_3D:
-			case GLSL_ATTRIBUTE_IMAGE_2D_RECT:
-			case GLSL_ATTRIBUTE_IMAGE_CUBE:
-			case GLSL_ATTRIBUTE_IMAGE_BUFFER:
-			case GLSL_ATTRIBUTE_IMAGE_1D_ARRAY:
-			case GLSL_ATTRIBUTE_IMAGE_2D_ARRAY:
-			case GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY:
-			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE:
-			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY:
-			case GLSL_ATTRIBUTE_INT_IMAGE_1D:
-			case GLSL_ATTRIBUTE_INT_IMAGE_2D:
-			case GLSL_ATTRIBUTE_INT_IMAGE_3D:
-			case GLSL_ATTRIBUTE_INT_IMAGE_2D_RECT:
-			case GLSL_ATTRIBUTE_INT_IMAGE_CUBE:
-			case GLSL_ATTRIBUTE_INT_IMAGE_BUFFER:
-			case GLSL_ATTRIBUTE_INT_IMAGE_1D_ARRAY:
-			case GLSL_ATTRIBUTE_INT_IMAGE_2D_ARRAY:
-			case GLSL_ATTRIBUTE_INT_IMAGE_CUBE_MAP_ARRAY:
-			case GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE:
-			case GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE_ARRAY:
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D:
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D:
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_3D:
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_RECT:
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE:
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_BUFFER:
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D_ARRAY:
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_ARRAY:
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY:
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE:
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY:
 				return 0u;
 				break;
 			default:
@@ -596,40 +497,7 @@ namespace gl_renderer
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE
 				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY
 				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY
-				|| type == GLSL_ATTRIBUTE_IMAGE_1D
-				|| type == GLSL_ATTRIBUTE_IMAGE_2D
-				|| type == GLSL_ATTRIBUTE_IMAGE_3D
-				|| type == GLSL_ATTRIBUTE_IMAGE_2D_RECT
-				|| type == GLSL_ATTRIBUTE_IMAGE_CUBE
-				|| type == GLSL_ATTRIBUTE_IMAGE_BUFFER
-				|| type == GLSL_ATTRIBUTE_IMAGE_1D_ARRAY
-				|| type == GLSL_ATTRIBUTE_IMAGE_2D_ARRAY
-				|| type == GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY
-				|| type == GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE
-				|| type == GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY
-				|| type == GLSL_ATTRIBUTE_INT_IMAGE_1D
-				|| type == GLSL_ATTRIBUTE_INT_IMAGE_2D
-				|| type == GLSL_ATTRIBUTE_INT_IMAGE_3D
-				|| type == GLSL_ATTRIBUTE_INT_IMAGE_2D_RECT
-				|| type == GLSL_ATTRIBUTE_INT_IMAGE_CUBE
-				|| type == GLSL_ATTRIBUTE_INT_IMAGE_BUFFER
-				|| type == GLSL_ATTRIBUTE_INT_IMAGE_1D_ARRAY
-				|| type == GLSL_ATTRIBUTE_INT_IMAGE_2D_ARRAY
-				|| type == GLSL_ATTRIBUTE_INT_IMAGE_CUBE_MAP_ARRAY
-				|| type == GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE
-				|| type == GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE_ARRAY
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_3D
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_RECT
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_BUFFER
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D_ARRAY
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_ARRAY
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY;
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY;
 		}
 
 		ashes::Format convertFormat( GlslAttributeType type )
@@ -764,9 +632,15 @@ namespace gl_renderer
 			, FuncType function )
 		{
 			int count = 0;
-			context->glGetProgramInterfaceiv( program, interface, GLSL_DATANAME_MAX_NAME_LENGTH, &count );
+			context->glGetProgramInterfaceiv( program
+				, interface
+				, GLSL_DATANAME_MAX_NAME_LENGTH
+				, &count );
 			std::vector< char > buffer( count );
-			context->glGetProgramInterfaceiv( program, interface, GLSL_DATANAME_ACTIVE_RESOURCES, &count );
+			context->glGetProgramInterfaceiv( program
+				, interface
+				, GLSL_DATANAME_ACTIVE_RESOURCES
+				, &count );
 			std::vector< GLint > values;
 			values.resize( properties.size() );
 			std::vector< GLenum > props;
@@ -779,7 +653,12 @@ namespace gl_renderer
 			for ( int i = 0; i < count; ++i )
 			{
 				GLsizei length;
-				context->glGetProgramResourceName( program, interface, i, uint32_t( buffer.size() ), &length, buffer.data() );
+				context->glGetProgramResourceName( program
+					, interface
+					, i
+					, uint32_t( buffer.size() )
+					, &length
+					, buffer.data() );
 				std::string name( buffer.data(), length );
 				context->glGetProgramResourceiv( program
 					, interface
@@ -802,10 +681,16 @@ namespace gl_renderer
 			, VarFuncType variableFunction )
 		{
 			GLint maxNameLength = 0;
-			context->glGetProgramInterfaceiv( program, bufferInterface, GLSL_DATANAME_MAX_NAME_LENGTH, &maxNameLength );
+			context->glGetProgramInterfaceiv( program
+				, bufferInterface
+				, GLSL_DATANAME_MAX_NAME_LENGTH
+				, &maxNameLength );
 			std::vector< char > buffer( maxNameLength );
 			GLint numBlocks;
-			context->glGetProgramInterfaceiv( program, bufferInterface, GLSL_DATANAME_ACTIVE_RESOURCES, &numBlocks );
+			context->glGetProgramInterfaceiv( program
+				, bufferInterface
+				, GLSL_DATANAME_ACTIVE_RESOURCES
+				, &numBlocks );
 			GLenum const blockBinding[1] = { GLSL_PROPERTY_BUFFER_BINDING };
 			GLenum const activeUniformsCount[1] = { GLSL_PROPERTY_NUM_ACTIVE_VARIABLES };
 			GLenum const activeUniforms[1] = { GLSL_PROPERTY_ACTIVE_VARIABLES };
@@ -814,26 +699,69 @@ namespace gl_renderer
 			for ( int blockIx = 0; blockIx < numBlocks; ++blockIx )
 			{
 				GLsizei nameLength = 0;
-				context->glGetProgramResourceName( program, bufferInterface, blockIx, uint32_t( buffer.size() ), &nameLength, buffer.data() );
+				context->glGetProgramResourceName( program
+					, bufferInterface
+					, blockIx
+					, uint32_t( buffer.size() )
+					, &nameLength
+					, buffer.data() );
 				std::string bufferName( buffer.data(), nameLength );
 				GLint binding = 0;
-				context->glGetProgramResourceiv( program, bufferInterface, blockIx, 1, blockBinding, 1, nullptr, &binding );
-				GLuint index = context->glGetProgramResourceIndex( program, bufferInterface, bufferName.c_str() );
+				context->glGetProgramResourceiv( program
+					, bufferInterface
+					, blockIx
+					, 1
+					, blockBinding
+					, 1
+					, nullptr
+					, &binding );
+				GLuint index = context->glGetProgramResourceIndex( program
+					, bufferInterface
+					, bufferName.c_str() );
 				GLint numActiveUnifs = 0;
-				context->glGetProgramResourceiv( program, bufferInterface, blockIx, 1, activeUniformsCount, 1, nullptr, &numActiveUnifs );
-				bufferFunction( bufferName, binding, index, numActiveUnifs );
+				context->glGetProgramResourceiv( program
+					, bufferInterface
+					, blockIx
+					, 1
+					, activeUniformsCount
+					, 1
+					, nullptr
+					, &numActiveUnifs );
+				bufferFunction( bufferName
+					, binding
+					, index
+					, numActiveUnifs );
 
 				if ( numActiveUnifs )
 				{
 					std::vector< GLint > blockUnifs( numActiveUnifs );
-					context->glGetProgramResourceiv( program, bufferInterface, blockIx, 1, activeUniforms, numActiveUnifs, nullptr, blockUnifs.data() );
+					context->glGetProgramResourceiv( program
+						, bufferInterface
+						, blockIx
+						, 1
+						, activeUniforms
+						, numActiveUnifs
+						, nullptr
+						, blockUnifs.data() );
 
 					for ( GLint unifIx = 0; unifIx < numActiveUnifs; ++unifIx )
 					{
 						GLint values[3];
-						context->glGetProgramResourceiv( program, variableInterface, blockUnifs[unifIx], 3, uniformProperties, 3, nullptr, values );
+						context->glGetProgramResourceiv( program
+							, variableInterface
+							, blockUnifs[unifIx]
+							, 3
+							, uniformProperties
+							, 3
+							, nullptr
+							, values );
 						std::vector< char > nameData( values[0] );
-						context->glGetProgramResourceName( program, variableInterface, blockUnifs[unifIx], GLsizei( nameData.size() ), nullptr, &nameData[0] );
+						context->glGetProgramResourceName( program
+							, variableInterface
+							, blockUnifs[unifIx]
+							, GLsizei( nameData.size() )
+							, nullptr
+							, &nameData[0] );
 						std::string variableName( nameData.begin(), nameData.end() - 1 );
 						variableFunction( variableName, GlslAttributeType( values[1] ), values[2] );
 					}
@@ -847,22 +775,50 @@ namespace gl_renderer
 			, GlslInterface variableInterface
 			, VarFuncType variableFunction )
 		{
+			static GLenum constexpr properties[]
+			{
+				GLSL_PROPERTY_BLOCK_INDEX,
+				GLSL_PROPERTY_TYPE,
+				GLSL_PROPERTY_NAME_LENGTH,
+				GLSL_PROPERTY_LOCATION,
+				GLSL_PROPERTY_ARRAY_SIZE,
+				GLSL_PROPERTY_OFFSET
+			};
+			static uint32_t constexpr count = uint32_t( sizeof( properties ) / sizeof( *properties ) );
 			GLint numUniforms = 0;
-			context->glGetProgramInterfaceiv( program, variableInterface, GLSL_DATANAME_ACTIVE_RESOURCES, &numUniforms );
-			const GLenum properties[4] = { GLSL_PROPERTY_BLOCK_INDEX, GLSL_PROPERTY_TYPE, GLSL_PROPERTY_NAME_LENGTH, GLSL_PROPERTY_LOCATION };
+			context->glGetProgramInterfaceiv( program
+				, variableInterface
+				, GLSL_DATANAME_ACTIVE_RESOURCES
+				, &numUniforms );
 
 			for ( int unif = 0; unif < numUniforms; ++unif )
 			{
-				GLint values[4];
-				context->glGetProgramResourceiv( program, variableInterface, unif, 4, properties, 4, nullptr, values );
+				GLint values[count];
+				context->glGetProgramResourceiv( program
+					, variableInterface
+					, unif
+					, count
+					, properties
+					, count
+					, nullptr
+					, values );
 
 				// Skip any uniforms that are in a block.
 				if ( values[0] == -1 )
 				{
 					std::vector< char > nameData( values[2] );
-					context->glGetProgramResourceName( program, variableInterface, unif, GLsizei( nameData.size() ), nullptr, &nameData[0] );
+					context->glGetProgramResourceName( program
+						, variableInterface
+						, unif
+						, GLsizei( nameData.size() )
+						, nullptr
+						, &nameData[0] );
 					std::string variableName( nameData.begin(), nameData.end() - 1 );
-					variableFunction( variableName, GlslAttributeType( values[1] ), values[3] );
+					variableFunction( variableName
+						, GlslAttributeType( values[1] )
+						, values[3]
+						, values[4]
+						, values[5] );
 				}
 			}
 		}
@@ -875,14 +831,24 @@ namespace gl_renderer
 			, FuncType function )
 		{
 			int count = 0;
-			context->glGetProgramInterfaceiv( program, interface, GLSL_DATANAME_ACTIVE_RESOURCES, &count );
+			context->glGetProgramInterfaceiv( program
+				, interface
+				, GLSL_DATANAME_ACTIVE_RESOURCES
+				, &count );
 			std::vector< int > values( count );
 			std::vector< int > lengths( count );
 
 			for ( int i = 0; i < count; ++i )
 			{
 				GLenum prop = property;
-				context->glGetProgramResourceiv( program, interface, i, 1, &prop, 1, &lengths[i], &values[i] );
+				context->glGetProgramResourceiv( program
+					, interface
+					, i
+					, 1
+					, &prop
+					, 1
+					, &lengths[i]
+					, &values[i] );
 			}
 
 			if ( count )
@@ -931,6 +897,7 @@ namespace gl_renderer
 						<< "], of type: " << getName( glslType )
 						<< ", at location: " << location
 						<< " is used in the shader program, but is not listed in the vertex layouts" << std::endl;
+					ashes::Logger::logError( stream.str() );
 					throw std::logic_error{ stream.str() };
 				}
 			};
@@ -1064,14 +1031,19 @@ namespace gl_renderer
 				, program
 				, GLSL_INTERFACE_UNIFORM_BLOCK
 				, GLSL_INTERFACE_UNIFORM
-				, []( std::string name, GLint point, GLuint index, GLint variables )
+				, []( std::string name
+					, GLint point
+					, GLuint index
+					, GLint variables )
 				{
 					ashes::Logger::logDebug( std::stringstream{} << "   Uniform block: " << name
 						<< ", at point " << point
 						<< ", and index " << index
 						<< ", active variables " << variables );
 				}
-				, []( std::string name, GlslAttributeType type, GLint location )
+				, []( std::string name
+					, GlslAttributeType type
+					, GLint location )
 				{
 					ashes::Logger::logDebug( std::stringstream{} << "      variable: " << name
 						<< ", type " << getName( type )
@@ -1086,14 +1058,19 @@ namespace gl_renderer
 				, program
 				, GLSL_INTERFACE_SHADER_STORAGE_BLOCK
 				, GLSL_INTERFACE_BUFFER_VARIABLE
-				, []( std::string name, GLint point, GLuint index, GLint variables )
+				, []( std::string name
+					, GLint point
+					, GLuint index
+					, GLint variables )
 				{
 					ashes::Logger::logDebug( std::stringstream{} << "   ShaderStorage block: " << name
 						<< ", at point " << point
 						<< ", and index " << index
 						<< ", active variables " << variables );
 				}
-				, []( std::string name, GlslAttributeType type, GLint location )
+				, []( std::string name
+					, GlslAttributeType type
+					, GLint location )
 				{
 					ashes::Logger::logDebug( std::stringstream{} << "      variable: " << name
 						<< ", type " << getName( type )
@@ -1107,11 +1084,17 @@ namespace gl_renderer
 			getVariableInfos( context
 				, program
 				, GLSL_INTERFACE_UNIFORM
-				, []( std::string name, GlslAttributeType type, GLint location )
+				, []( std::string name
+					, GlslAttributeType type
+					, GLint location
+					, GLint arraySize
+					, GLint offset )
 				{
 					ashes::Logger::logDebug( std::stringstream{} << "   Uniform variable: " << name
 						<< ", type: " << getName( type )
-						<< ", location: " << location );
+						<< ", location: " << location
+						<< ", arraySize: " << arraySize
+						<< ", offset: " << offset );
 				} );
 		}
 	}
@@ -1124,11 +1107,16 @@ namespace gl_renderer
 			, program
 			, GLSL_INTERFACE_UNIFORM_BLOCK
 			, GLSL_INTERFACE_UNIFORM
-			, [&result]( std::string name, GLint point, GLuint index, GLint variables )
+			, [&result]( std::string name
+				, GLint point
+				, GLuint index
+				, GLint variables )
 			{
 				result.push_back( { name, uint32_t( point ), 0u } );
 			}
-			, [&result]( std::string name, GlslAttributeType type, GLint location )
+			, [&result]( std::string name
+				, GlslAttributeType type
+				, GLint location )
 			{
 				result.back().constants.push_back( { name, uint32_t( location ), getFormat( type ), getSize( type ) } );
 			} );
@@ -1142,18 +1130,28 @@ namespace gl_renderer
 		getVariableInfos( context
 			, program
 			, GLSL_INTERFACE_UNIFORM
-			, [&result]( std::string name, GlslAttributeType type, GLint location )
+			, [&result]( std::string name
+				, GlslAttributeType type
+				, GLint location
+				, GLint arraySize
+				, GLint offset )
 			{
 				if ( !isSampler( type ) )
 				{
-					result.push_back( { name, uint32_t( location ), getFormat( type ), getSize( type ) } );
+					result.push_back( { name
+						, uint32_t( location )
+						, getFormat( type )
+						, getSize( type )
+						, uint32_t( arraySize )
+						, ( offset == -1
+							? 0u
+							: uint32_t( offset ) ) } );
 				}
 			} );
 		return result;
 	}
 
-	void validatePipeline( Device const & device
-		, ContextLock const & context
+	void validatePipeline( ContextLock const & context
 		, PipelineLayout const & layout
 		, GLuint program
 		, ashes::VertexInputState const & vertexInputState

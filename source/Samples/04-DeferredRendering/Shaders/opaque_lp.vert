@@ -13,5 +13,5 @@ layout( location = 0 ) out vec2 vtx_texcoord;
 void main()
 {
 	gl_Position = position;
-	vtx_texcoord = texcoord;
+	vtx_texcoord = vec2( texcoord.x, 1.0 - texcoord.y );
 }

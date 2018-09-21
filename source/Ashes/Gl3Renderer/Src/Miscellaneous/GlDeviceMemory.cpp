@@ -128,8 +128,18 @@ namespace gl_renderer
 					break;
 				}
 
-				glLogCall( context, glGenerateMipmap, m_boundTarget );
-				glLogCall( context, glBindTexture, m_boundTarget, 0 );
+				glLogCall( context
+					, glTexParameteri
+					, m_boundTarget
+					, GL_TEX_PARAMETER_MAX_LEVEL
+					, std::max( 0, GLint( createInfo.mipLevels ) - 1 ) );
+				glLogCall( context
+					, glGenerateMipmap
+					, m_boundTarget );
+				glLogCall( context
+					, glBindTexture
+					, m_boundTarget
+					, 0 );
 
 				// If the texture is visible to the host, we'll need a PBO to map it to RAM.
 				if ( checkFlag( flags, ashes::MemoryPropertyFlag::eHostVisible ) )
@@ -604,7 +614,7 @@ namespace gl_renderer
 					, glMapBufferRange
 					, GL_BUFFER_TARGET_COPY_WRITE
 					, offset
-					, size
+					, size == ~( 0u ) ? m_requirements.size : size
 					, m_mapFlags );
 				setDebugValue( m_isLocked, result != nullptr );
 				return reinterpret_cast< uint8_t * >( result );
@@ -620,7 +630,7 @@ namespace gl_renderer
 					, glFlushMappedBufferRange
 					, GL_BUFFER_TARGET_COPY_WRITE
 					, offset
-					, size );
+					, size == ~( 0u ) ? m_requirements.size : size );
 			}
 
 			void invalidate( uint32_t offset

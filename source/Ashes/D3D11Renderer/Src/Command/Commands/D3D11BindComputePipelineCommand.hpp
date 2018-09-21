@@ -5,6 +5,7 @@ See LICENSE file in root folder
 #pragma once
 
 #include "D3D11CommandBase.hpp"
+#include "Shader/D3D11ShaderDesc.hpp"
 
 namespace d3d11_renderer
 {
@@ -35,7 +36,7 @@ namespace d3d11_renderer
 	private:
 		ComputePipeline const & m_pipeline;
 		PipelineLayout const & m_layout;
-		ashes::ShaderStageState const & m_program;
+		CompiledShaderModule const & m_program;
 		ashes::PipelineBindPoint m_bindingPoint;
 	};
 }

@@ -9,6 +9,7 @@ namespace d3d11_renderer
 	D3D11_BLEND_DESC convert( ashes::ColourBlendState const & state )
 	{
 		D3D11_BLEND_DESC result{};
+		result.IndependentBlendEnable = true;
 		uint32_t i = 0u;
 
 		for ( auto & attach : state.attachs )

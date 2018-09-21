@@ -6,51 +6,69 @@ See LICENSE file in root folder.
 
 #include "Core/D3D11Device.hpp"
 #include "Image/D3D11TextureView.hpp"
+#include "RenderPass/D3D11FrameBuffer.hpp"
+
+#include <RenderPass/RenderSubpass.hpp>
 
 namespace d3d11_renderer
 {
 	namespace
 	{
 		void doClear( Context const & context
-			, ashes::ClearAttachment const & clearAttach )
+			, ClearAttachmentView const & clearAttach )
 		{
-			if ( ashes::checkFlag( clearAttach.aspectMask, ashes::ImageAspectFlag::eColour ) )
+			if ( ashes::checkFlag( clearAttach.clear.aspectMask, ashes::ImageAspectFlag::eColour ) )
 			{
-				assert( clearAttach.clearValue.isColour() );
-				auto & colour = clearAttach.clearValue.colour();
+				assert( clearAttach.clear.clearValue.isColour() );
+				auto & colour = clearAttach.clear.clearValue.colour();
+				context.context->ClearRenderTargetView( reinterpret_cast< ID3D11RenderTargetView * >( clearAttach.view )
+					, colour.float32.data() );
 			}
 			else
 			{
-				assert( !clearAttach.clearValue.isColour() );
-				auto & depthStencil = clearAttach.clearValue.depthStencil();
-				auto stencil = depthStencil.stencil;
-
-				if ( ashes::checkFlag( clearAttach.aspectMask, ashes::ImageAspectFlag::eDepth | ashes::ImageAspectFlag::eStencil ) )
-				{
-				}
-				else if ( ashes::checkFlag( clearAttach.aspectMask, ashes::ImageAspectFlag::eDepth ) )
-				{
-				}
-				else if ( ashes::checkFlag( clearAttach.aspectMask, ashes::ImageAspectFlag::eStencil ) )
-				{
-				}
+				assert( !clearAttach.clear.clearValue.isColour() );
+				auto & depthStencil = clearAttach.clear.clearValue.depthStencil();
+				UINT flags = ( ashes::checkFlag( clearAttach.clear.aspectMask, ashes::ImageAspectFlag::eDepth )
+						? D3D11_CLEAR_DEPTH
+						: 0u )
+					| ( ashes::checkFlag( clearAttach.clear.aspectMask, ashes::ImageAspectFlag::eStencil )
+						? D3D11_CLEAR_STENCIL
+						: 0u );
+				context.context->ClearDepthStencilView( reinterpret_cast< ID3D11DepthStencilView * >( clearAttach.view )
+					, flags
+					, depthStencil.depth
+					, depthStencil.stencil );
 			}
 		}
 
 	}
 
 	ClearAttachmentsCommand::ClearAttachmentsCommand( Device const & device
+		, RenderPass const & renderPass
+		, ashes::SubpassDescription const & subpass
+		, FrameBuffer const & framebuffer
 		, ashes::ClearAttachmentArray const & clearAttaches
 		, ashes::ClearRectArray const & clearRects )
 		: CommandBase{ device }
-		, m_clearAttaches{ clearAttaches }
 		, m_clearRects{ clearRects }
 	{
+		for ( auto & attach : clearAttaches )
+		{
+			if ( checkFlag( attach.aspectMask, ashes::ImageAspectFlag::eColour ) )
+			{
+				auto ref = subpass.colorAttachments[attach.colourAttachment];
+				m_clearViews.push_back( { attach, framebuffer.getAllViews()[ref.attachment] } );
+			}
+			else if ( attach.aspectMask )
+			{
+				m_clearViews.push_back( { attach, framebuffer.getDSView() } );
+			}
+		}
 	}
 
 	void ClearAttachmentsCommand::apply( Context const & context )const
 	{
-		for ( auto & clearAttach : m_clearAttaches )
+		for ( auto & clearAttach : m_clearViews )
 		{
 			for ( auto & rect : m_clearRects )
 			{

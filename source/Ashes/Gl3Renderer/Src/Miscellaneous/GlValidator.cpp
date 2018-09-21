@@ -632,9 +632,15 @@ namespace gl_renderer
 			, FuncType function )
 		{
 			int count = 0;
-			context->glGetProgramInterfaceiv( program, interface, GLSL_DATANAME_MAX_NAME_LENGTH, &count );
+			context->glGetProgramInterfaceiv( program
+				, interface
+				, GLSL_DATANAME_MAX_NAME_LENGTH
+				, &count );
 			std::vector< char > buffer( count );
-			context->glGetProgramInterfaceiv( program, interface, GLSL_DATANAME_ACTIVE_RESOURCES, &count );
+			context->glGetProgramInterfaceiv( program
+				, interface
+				, GLSL_DATANAME_ACTIVE_RESOURCES
+				, &count );
 			std::vector< GLint > values;
 			values.resize( properties.size() );
 			std::vector< GLenum > props;
@@ -647,7 +653,12 @@ namespace gl_renderer
 			for ( int i = 0; i < count; ++i )
 			{
 				GLsizei length;
-				context->glGetProgramResourceName( program, interface, i, uint32_t( buffer.size() ), &length, buffer.data() );
+				context->glGetProgramResourceName( program
+					, interface
+					, i
+					, uint32_t( buffer.size() )
+					, &length
+					, buffer.data() );
 				std::string name( buffer.data(), length );
 				context->glGetProgramResourceiv( program
 					, interface
@@ -670,10 +681,16 @@ namespace gl_renderer
 			, VarFuncType variableFunction )
 		{
 			GLint maxNameLength = 0;
-			context->glGetProgramInterfaceiv( program, bufferInterface, GLSL_DATANAME_MAX_NAME_LENGTH, &maxNameLength );
+			context->glGetProgramInterfaceiv( program
+				, bufferInterface
+				, GLSL_DATANAME_MAX_NAME_LENGTH
+				, &maxNameLength );
 			std::vector< char > buffer( maxNameLength );
 			GLint numBlocks;
-			context->glGetProgramInterfaceiv( program, bufferInterface, GLSL_DATANAME_ACTIVE_RESOURCES, &numBlocks );
+			context->glGetProgramInterfaceiv( program
+				, bufferInterface
+				, GLSL_DATANAME_ACTIVE_RESOURCES
+				, &numBlocks );
 			GLenum const blockBinding[1] = { GLSL_PROPERTY_BUFFER_BINDING };
 			GLenum const activeUniformsCount[1] = { GLSL_PROPERTY_NUM_ACTIVE_VARIABLES };
 			GLenum const activeUniforms[1] = { GLSL_PROPERTY_ACTIVE_VARIABLES };
@@ -682,26 +699,69 @@ namespace gl_renderer
 			for ( int blockIx = 0; blockIx < numBlocks; ++blockIx )
 			{
 				GLsizei nameLength = 0;
-				context->glGetProgramResourceName( program, bufferInterface, blockIx, uint32_t( buffer.size() ), &nameLength, buffer.data() );
+				context->glGetProgramResourceName( program
+					, bufferInterface
+					, blockIx
+					, uint32_t( buffer.size() )
+					, &nameLength
+					, buffer.data() );
 				std::string bufferName( buffer.data(), nameLength );
 				GLint binding = 0;
-				context->glGetProgramResourceiv( program, bufferInterface, blockIx, 1, blockBinding, 1, nullptr, &binding );
-				GLuint index = context->glGetProgramResourceIndex( program, bufferInterface, bufferName.c_str() );
+				context->glGetProgramResourceiv( program
+					, bufferInterface
+					, blockIx
+					, 1
+					, blockBinding
+					, 1
+					, nullptr
+					, &binding );
+				GLuint index = context->glGetProgramResourceIndex( program
+					, bufferInterface
+					, bufferName.c_str() );
 				GLint numActiveUnifs = 0;
-				context->glGetProgramResourceiv( program, bufferInterface, blockIx, 1, activeUniformsCount, 1, nullptr, &numActiveUnifs );
-				bufferFunction( bufferName, binding, index, numActiveUnifs );
+				context->glGetProgramResourceiv( program
+					, bufferInterface
+					, blockIx
+					, 1
+					, activeUniformsCount
+					, 1
+					, nullptr
+					, &numActiveUnifs );
+				bufferFunction( bufferName
+					, binding
+					, index
+					, numActiveUnifs );
 
 				if ( numActiveUnifs )
 				{
 					std::vector< GLint > blockUnifs( numActiveUnifs );
-					context->glGetProgramResourceiv( program, bufferInterface, blockIx, 1, activeUniforms, numActiveUnifs, nullptr, blockUnifs.data() );
+					context->glGetProgramResourceiv( program
+						, bufferInterface
+						, blockIx
+						, 1
+						, activeUniforms
+						, numActiveUnifs
+						, nullptr
+						, blockUnifs.data() );
 
 					for ( GLint unifIx = 0; unifIx < numActiveUnifs; ++unifIx )
 					{
 						GLint values[3];
-						context->glGetProgramResourceiv( program, variableInterface, blockUnifs[unifIx], 3, uniformProperties, 3, nullptr, values );
+						context->glGetProgramResourceiv( program
+							, variableInterface
+							, blockUnifs[unifIx]
+							, 3
+							, uniformProperties
+							, 3
+							, nullptr
+							, values );
 						std::vector< char > nameData( values[0] );
-						context->glGetProgramResourceName( program, variableInterface, blockUnifs[unifIx], GLsizei( nameData.size() ), nullptr, &nameData[0] );
+						context->glGetProgramResourceName( program
+							, variableInterface
+							, blockUnifs[unifIx]
+							, GLsizei( nameData.size() )
+							, nullptr
+							, &nameData[0] );
 						std::string variableName( nameData.begin(), nameData.end() - 1 );
 						variableFunction( variableName, GlslAttributeType( values[1] ), values[2] );
 					}
@@ -715,22 +775,50 @@ namespace gl_renderer
 			, GlslInterface variableInterface
 			, VarFuncType variableFunction )
 		{
+			static GLenum constexpr properties[]
+			{
+				GLSL_PROPERTY_BLOCK_INDEX,
+				GLSL_PROPERTY_TYPE,
+				GLSL_PROPERTY_NAME_LENGTH,
+				GLSL_PROPERTY_LOCATION,
+				GLSL_PROPERTY_ARRAY_SIZE,
+				GLSL_PROPERTY_OFFSET
+			};
+			static uint32_t constexpr count = uint32_t( sizeof( properties ) / sizeof( *properties ) );
 			GLint numUniforms = 0;
-			context->glGetProgramInterfaceiv( program, variableInterface, GLSL_DATANAME_ACTIVE_RESOURCES, &numUniforms );
-			const GLenum properties[4] = { GLSL_PROPERTY_BLOCK_INDEX, GLSL_PROPERTY_TYPE, GLSL_PROPERTY_NAME_LENGTH, GLSL_PROPERTY_LOCATION };
+			context->glGetProgramInterfaceiv( program
+				, variableInterface
+				, GLSL_DATANAME_ACTIVE_RESOURCES
+				, &numUniforms );
 
 			for ( int unif = 0; unif < numUniforms; ++unif )
 			{
-				GLint values[4];
-				context->glGetProgramResourceiv( program, variableInterface, unif, 4, properties, 4, nullptr, values );
+				GLint values[count];
+				context->glGetProgramResourceiv( program
+					, variableInterface
+					, unif
+					, count
+					, properties
+					, count
+					, nullptr
+					, values );
 
 				// Skip any uniforms that are in a block.
 				if ( values[0] == -1 )
 				{
 					std::vector< char > nameData( values[2] );
-					context->glGetProgramResourceName( program, variableInterface, unif, GLsizei( nameData.size() ), nullptr, &nameData[0] );
+					context->glGetProgramResourceName( program
+						, variableInterface
+						, unif
+						, GLsizei( nameData.size() )
+						, nullptr
+						, &nameData[0] );
 					std::string variableName( nameData.begin(), nameData.end() - 1 );
-					variableFunction( variableName, GlslAttributeType( values[1] ), values[3] );
+					variableFunction( variableName
+						, GlslAttributeType( values[1] )
+						, values[3]
+						, values[4]
+						, values[5] );
 				}
 			}
 		}
@@ -743,14 +831,24 @@ namespace gl_renderer
 			, FuncType function )
 		{
 			int count = 0;
-			context->glGetProgramInterfaceiv( program, interface, GLSL_DATANAME_ACTIVE_RESOURCES, &count );
+			context->glGetProgramInterfaceiv( program
+				, interface
+				, GLSL_DATANAME_ACTIVE_RESOURCES
+				, &count );
 			std::vector< int > values( count );
 			std::vector< int > lengths( count );
 
 			for ( int i = 0; i < count; ++i )
 			{
 				GLenum prop = property;
-				context->glGetProgramResourceiv( program, interface, i, 1, &prop, 1, &lengths[i], &values[i] );
+				context->glGetProgramResourceiv( program
+					, interface
+					, i
+					, 1
+					, &prop
+					, 1
+					, &lengths[i]
+					, &values[i] );
 			}
 
 			if ( count )
@@ -933,14 +1031,19 @@ namespace gl_renderer
 				, program
 				, GLSL_INTERFACE_UNIFORM_BLOCK
 				, GLSL_INTERFACE_UNIFORM
-				, []( std::string name, GLint point, GLuint index, GLint variables )
+				, []( std::string name
+					, GLint point
+					, GLuint index
+					, GLint variables )
 				{
 					ashes::Logger::logDebug( std::stringstream{} << "   Uniform block: " << name
 						<< ", at point " << point
 						<< ", and index " << index
 						<< ", active variables " << variables );
 				}
-				, []( std::string name, GlslAttributeType type, GLint location )
+				, []( std::string name
+					, GlslAttributeType type
+					, GLint location )
 				{
 					ashes::Logger::logDebug( std::stringstream{} << "      variable: " << name
 						<< ", type " << getName( type )
@@ -955,14 +1058,19 @@ namespace gl_renderer
 				, program
 				, GLSL_INTERFACE_SHADER_STORAGE_BLOCK
 				, GLSL_INTERFACE_BUFFER_VARIABLE
-				, []( std::string name, GLint point, GLuint index, GLint variables )
+				, []( std::string name
+					, GLint point
+					, GLuint index
+					, GLint variables )
 				{
 					ashes::Logger::logDebug( std::stringstream{} << "   ShaderStorage block: " << name
 						<< ", at point " << point
 						<< ", and index " << index
 						<< ", active variables " << variables );
 				}
-				, []( std::string name, GlslAttributeType type, GLint location )
+				, []( std::string name
+					, GlslAttributeType type
+					, GLint location )
 				{
 					ashes::Logger::logDebug( std::stringstream{} << "      variable: " << name
 						<< ", type " << getName( type )
@@ -976,11 +1084,17 @@ namespace gl_renderer
 			getVariableInfos( context
 				, program
 				, GLSL_INTERFACE_UNIFORM
-				, []( std::string name, GlslAttributeType type, GLint location )
+				, []( std::string name
+					, GlslAttributeType type
+					, GLint location
+					, GLint arraySize
+					, GLint offset )
 				{
 					ashes::Logger::logDebug( std::stringstream{} << "   Uniform variable: " << name
 						<< ", type: " << getName( type )
-						<< ", location: " << location );
+						<< ", location: " << location
+						<< ", arraySize: " << arraySize
+						<< ", offset: " << offset );
 				} );
 		}
 	}
@@ -993,11 +1107,16 @@ namespace gl_renderer
 			, program
 			, GLSL_INTERFACE_UNIFORM_BLOCK
 			, GLSL_INTERFACE_UNIFORM
-			, [&result]( std::string name, GLint point, GLuint index, GLint variables )
+			, [&result]( std::string name
+				, GLint point
+				, GLuint index
+				, GLint variables )
 			{
 				result.push_back( { name, uint32_t( point ), 0u } );
 			}
-			, [&result]( std::string name, GlslAttributeType type, GLint location )
+			, [&result]( std::string name
+				, GlslAttributeType type
+				, GLint location )
 			{
 				result.back().constants.push_back( { name, uint32_t( location ), getFormat( type ), getSize( type ) } );
 			} );
@@ -1011,11 +1130,22 @@ namespace gl_renderer
 		getVariableInfos( context
 			, program
 			, GLSL_INTERFACE_UNIFORM
-			, [&result]( std::string name, GlslAttributeType type, GLint location )
+			, [&result]( std::string name
+				, GlslAttributeType type
+				, GLint location
+				, GLint arraySize
+				, GLint offset )
 			{
 				if ( !isSampler( type ) )
 				{
-					result.push_back( { name, uint32_t( location ), getFormat( type ), getSize( type ) } );
+					result.push_back( { name
+						, uint32_t( location )
+						, getFormat( type )
+						, getSize( type )
+						, uint32_t( arraySize )
+						, ( offset == -1
+							? 0u
+							: uint32_t( offset ) ) } );
 				}
 			} );
 		return result;

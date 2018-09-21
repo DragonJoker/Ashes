@@ -14,6 +14,8 @@ namespace gl_renderer
 		uint32_t location{ 0u };
 		ashes::ConstantFormat format{};
 		uint32_t size{ 0u };
+		uint32_t arraySize{ 1u };
+		uint32_t offset{ 0u };
 	};
 
 	using ConstantsLayout = std::vector< ConstantDesc >;
@@ -43,6 +45,7 @@ namespace gl_renderer
 		uint32_t location{ 0u };
 		uint32_t offset{ 0u };
 		uint32_t size{ 0u };
+		uint32_t arraySize{ 1u };
 	};
 
 	struct PushConstantsDesc

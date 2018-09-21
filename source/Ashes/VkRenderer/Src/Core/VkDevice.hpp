@@ -38,7 +38,7 @@ namespace vk_renderer
 		*\copydoc	ashes::Device::createStagingTexture
 		*/
 		ashes::StagingTexturePtr createStagingTexture( ashes::Format format
-			, ashes::Extent3D const & extent )const;
+			, ashes::Extent2D const & extent )const;
 		/**
 		*\copydoc	ashes::Device::createRenderPass
 		*/
@@ -47,7 +47,7 @@ namespace vk_renderer
 		*\copydoc	ashes::Device::createPipelineLayout
 		*/
 		ashes::PipelineLayoutPtr createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeCRefArray const & pushConstantRanges )const override;
+			, ashes::PushConstantRangeArray const & pushConstantRanges )const override;
 		/**
 		*\copydoc	ashes::Device::createDescriptorSetLayout
 		*/

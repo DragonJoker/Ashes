@@ -14,27 +14,18 @@ See LICENSE file in root folder.
 
 namespace d3d11_renderer
 {
-	/**
-	*\~french
-	*\brief
-	*	Classe encapsulant un TestShaderModule.
-	*\~english
-	*\brief
-	*	TestShaderModule wrapper.
-	*/
-	class ShaderModule
-		: public ashes::ShaderModule
+	class CompiledShaderModule
 	{
 	public:
-		ShaderModule( Device const & device
-			, ashes::ShaderStageFlag stage );
-		~ShaderModule();
-		/**
-		*\~copydoc	ashes::ShaderModule::loadShader
-		*/
-		void loadShader( ashes::UInt32Array const & shader )override;
+		CompiledShaderModule( CompiledShaderModule const & ) = delete;
+		CompiledShaderModule & operator=( CompiledShaderModule const & ) = delete;
+		CompiledShaderModule( CompiledShaderModule && rhs );
+		CompiledShaderModule & operator=( CompiledShaderModule && rhs );
 
-		ShaderDesc compile( ashes::ShaderStageState const & state );
+		CompiledShaderModule( Device const & device
+			, ashes::UInt32Array const & spv
+			, ashes::ShaderStageState const & state );
+		~CompiledShaderModule();
 
 		inline ID3D11ComputeShader * getCSShader()const
 		{
@@ -71,8 +62,18 @@ namespace d3d11_renderer
 			return m_compiled;
 		}
 
+		inline ashes::ShaderStageFlag getStage()const
+		{
+			return m_stage;
+		}
+
+		inline ShaderDesc const & getLayout()const
+		{
+			return m_layout;
+		}
+
 	private:
-		void doRetrieveShader();
+		void doRetrieveShader( Device const & device );
 		ShaderDesc doRetrieveShaderDesc();
 		InputLayout doRetrieveInputLayout( ID3D11ShaderReflection * reflection
 			, UINT inputParameters );
@@ -80,7 +81,6 @@ namespace d3d11_renderer
 			, UINT constantBuffers );
 
 	private:
-		Device const & m_device;
 		union
 		{
 			ID3D11ComputeShader * compute;
@@ -90,8 +90,35 @@ namespace d3d11_renderer
 			ID3D11DomainShader * domain;
 			ID3D11PixelShader * pixel;
 		} m_shader;
-		ashes::UInt32Array m_spv;
+		ashes::ShaderStageFlag m_stage;
 		std::string m_source;
 		ID3DBlob * m_compiled{ nullptr };
+		ShaderDesc m_layout;
+	};
+	/**
+	*\~french
+	*\brief
+	*	Classe encapsulant un TestShaderModule.
+	*\~english
+	*\brief
+	*	TestShaderModule wrapper.
+	*/
+	class ShaderModule
+		: public ashes::ShaderModule
+	{
+	public:
+		ShaderModule( Device const & device
+			, ashes::ShaderStageFlag stage );
+		~ShaderModule();
+		/**
+		*\~copydoc	ashes::ShaderModule::loadShader
+		*/
+		void loadShader( ashes::UInt32Array const & shader )override;
+
+		CompiledShaderModule compile( ashes::ShaderStageState const & state );
+
+	private:
+		Device const & m_device;
+		ashes::UInt32Array m_spv;
 	};
 }

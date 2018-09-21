@@ -243,6 +243,9 @@ namespace d3d11_renderer
 		, ashes::ClearRectArray const & clearRects )
 	{
 		m_commands.emplace_back( std::make_unique< ClearAttachmentsCommand >( m_device
+			, *m_state.currentRenderPass
+			, *m_state.currentSubpass
+			, static_cast< FrameBuffer const & >( *m_state.currentFrameBuffer )
 			, clearAttachments
 			, clearRects ) );
 	}
@@ -251,6 +254,18 @@ namespace d3d11_renderer
 		, ashes::PipelineBindPoint bindingPoint )const
 	{
 		auto & dxpipeline = static_cast< Pipeline const & >( pipeline );
+
+		if ( m_state.currentPipeline )
+		{
+			auto src = m_state.currentPipeline->getVertexInputStateHash();
+			auto dst = static_cast< Pipeline const & >( pipeline ).getVertexInputStateHash();
+
+			if ( src != dst )
+			{
+				m_state.vbos.clear();
+			}
+		}
+
 		m_state.currentPipeline = &dxpipeline;
 		m_commands.emplace_back( std::make_unique< BindPipelineCommand >( m_device
 			, pipeline
@@ -653,6 +668,11 @@ namespace d3d11_renderer
 	void CommandBuffer::doFillVboStrides()const
 	{
 		auto & state = m_state.currentPipeline->getVertexInputState();
+
+		if ( state.vertexBindingDescriptions.empty() )
+		{
+			m_state.vbos.clear();
+		}
 
 		for ( auto & binding : m_state.vbos )
 		{

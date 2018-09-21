@@ -23,7 +23,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/GlslToSpv.hpp>
+#include <GlslToSpv.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Transform.hpp>
@@ -59,7 +59,7 @@ namespace vkapp
 				, image.format );
 
 			auto staging = device.createStagingTexture( image.format
-				, { image.size.width, image.size.height, 1u } );
+				, { image.size.width, image.size.height } );
 			staging->uploadTextureData( commandBuffer
 				, image.format
 				, image.data
