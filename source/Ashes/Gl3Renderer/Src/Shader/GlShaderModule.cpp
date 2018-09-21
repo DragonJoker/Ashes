@@ -48,12 +48,6 @@ namespace gl_renderer
 			std::locale m_prvLoc;
 		};
 
-		template< typename InitFunc, typename CleanFunc >
-		BlockGuard< CleanFunc > makeBlockGuard( InitFunc init, CleanFunc clean )
-		{
-			return BlockGuard< CleanFunc >{ std::move( init ), std::move( clean ) };
-		}
-
 		std::string doRetrieveCompilerLog( ContextLock const & context
 			, GLuint shaderName )
 		{

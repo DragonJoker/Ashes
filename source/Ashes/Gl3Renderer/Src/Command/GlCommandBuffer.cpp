@@ -23,6 +23,7 @@ See LICENSE file in root folder.
 
 #include "Commands/GlBeginQueryCommand.hpp"
 #include "Commands/GlBeginRenderPassCommand.hpp"
+#include "Commands/GlBeginSubpassCommand.hpp"
 #include "Commands/GlBindComputePipelineCommand.hpp"
 #include "Commands/GlBindDescriptorSetCommand.hpp"
 #include "Commands/GlBindGeometryBuffersCommand.hpp"
@@ -49,7 +50,6 @@ See LICENSE file in root folder.
 #include "Commands/GlEndSubpassCommand.hpp"
 #include "Commands/GlGenerateMipmapsCommand.hpp"
 #include "Commands/GlImageMemoryBarrierCommand.hpp"
-#include "Commands/GlNextSubpassCommand.hpp"
 #include "Commands/GlPushConstantsCommand.hpp"
 #include "Commands/GlResetEventCommand.hpp"
 #include "Commands/GlResetQueryPoolCommand.hpp"
@@ -150,7 +150,7 @@ namespace gl_renderer
 			, *m_state.currentFrameBuffer
 			, *m_state.currentSubpass ) );
 		m_state.currentSubpass = &m_state.currentRenderPass->getSubpasses()[m_state.currentSubpassIndex++];
-		m_commands.emplace_back( std::make_unique< NextSubpassCommand >( m_device
+		m_commands.emplace_back( std::make_unique< BeginSubpassCommand >( m_device
 			, *m_state.currentRenderPass
 			, *m_state.currentFrameBuffer
 			, *m_state.currentSubpass ) );

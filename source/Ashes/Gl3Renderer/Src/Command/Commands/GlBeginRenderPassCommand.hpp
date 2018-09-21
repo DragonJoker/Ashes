@@ -7,6 +7,7 @@ See LICENSE file in root folder
 #include "GlCommandBase.hpp"
 
 #include <Pipeline/Scissor.hpp>
+#include <RenderPass/ClearValue.hpp>
 
 namespace gl_renderer
 {
@@ -42,9 +43,9 @@ namespace gl_renderer
 
 	private:
 		RenderPass const & m_renderPass;
-		ashes::SubpassDescription const & m_subpass;
 		FrameBuffer const & m_frameBuffer;
-		ashes::ClearValueArray m_clearValues;
+		ashes::ClearValueArray m_rtClearValues;
+		ashes::ClearValue m_dsClearValue;
 		ashes::Scissor m_scissor;
 	};
 }

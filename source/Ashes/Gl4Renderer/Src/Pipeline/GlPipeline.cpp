@@ -147,28 +147,19 @@ namespace gl_renderer
 
 		for ( auto & constant : shaderDesc.constantsLayout )
 		{
-			m_constantsPcb.constants.push_back( { constant.format, constant.location, offset, constant.size, constant.arraySize } );
+			m_constantsPcb.constants.push_back( { constant.format
+				, constant.location
+				, offset
+				, constant.size
+				, constant.arraySize } );
 			offset += constant.size;
 		}
 
 		m_constantsPcb.size = offset;
 
-		//for ( auto & stage : m_ssState )
-		//{
-		//	if ( !static_cast< ShaderModule const & >( *stage.module ).isSpirV()
-		//		&& stage.specialisationInfo )
-		//	{
-		//		m_constantsPcbs.push_back( convert( device
-		//			, ~( 0u )
-		//			, stage.module->getStage()
-		//			, *stage.specialisationInfo ) );
-		//	}
-		//}
-
 		if ( m_device.getRenderer().isValidationEnabled() )
 		{
-			validatePipeline( m_device
-				, context
+			validatePipeline( context
 				, m_layout
 				, m_program.getProgram()
 				, m_vertexInputState

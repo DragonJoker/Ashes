@@ -34,9 +34,12 @@ namespace gl_renderer
 	ashes::FrameBufferPtrArray SwapChain::createFrameBuffers( ashes::RenderPass const & renderPass )const
 	{
 		ashes::FrameBufferPtrArray result;
+		auto attaches = doPrepareAttaches( renderPass.getAttachments() );
 		result.emplace_back( std::make_unique< FrameBuffer >( m_device
 			, static_cast< RenderPass const & >( renderPass )
-			, m_dimensions ) );
+			, m_dimensions
+			, std::move( attaches )
+			, true ) );
 		return result;
 	}
 
@@ -99,5 +102,25 @@ namespace gl_renderer
 			, std::move( texture )
 			, std::move( view )
 			, 0u ) );
+	}
+
+	ashes::FrameBufferAttachmentArray SwapChain::doPrepareAttaches( ashes::AttachmentDescriptionArray const & attaches )const
+	{
+		ashes::FrameBufferAttachmentArray result;
+
+		for ( auto & attach : attaches )
+		{
+			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
+			{
+				result.emplace_back( attach, m_backBuffers[0u]->getView() );
+			}
+			else
+			{
+				assert( m_depthStencilView );
+				result.emplace_back( attach, *m_depthStencilView );
+			}
+		}
+
+		return result;
 	}
 }

@@ -105,7 +105,7 @@ namespace gl_renderer
 		*\copydoc		ashes::Device::createPipelineLayout
 		*/
 		ashes::PipelineLayoutPtr createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeCRefArray const & pushConstantRanges )const override;
+			, ashes::PushConstantRangeArray const & pushConstantRanges )const override;
 		/**
 		*\copydoc		ashes::Device::createDescriptorSetLayout
 		*/
@@ -198,6 +198,16 @@ namespace gl_renderer
 		inline ContextLock getContext()const
 		{
 			return { *m_context };
+		}
+
+		inline void setCurrentFramebuffer( GLuint fbo )const
+		{
+			m_fbo = fbo;
+		}
+
+		inline GLuint getCurrentFramebuffer()const
+		{
+			return m_fbo;
 		}
 
 		inline ashes::Scissor & getCurrentScissor()const
@@ -301,5 +311,6 @@ namespace gl_renderer
 		mutable ashes::InputAssemblyState m_iaState;
 		mutable GLuint m_currentProgram;
 		GLuint m_blitFbos[2];
+		mutable GLuint m_fbo{ 0u };
 	};
 }

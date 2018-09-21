@@ -15,6 +15,7 @@ namespace gl_renderer
 		ashes::ConstantFormat format{};
 		uint32_t size{ 0u };
 		uint32_t arraySize{ 1u };
+		uint32_t offset{ 0u };
 	};
 
 	using ConstantsLayout = std::vector< ConstantDesc >;

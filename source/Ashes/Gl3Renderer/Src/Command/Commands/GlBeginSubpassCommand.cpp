@@ -2,7 +2,7 @@
 This file belongs to GlRenderer.
 See LICENSE file in root folder.
 */
-#include "GlNextSubpassCommand.hpp"
+#include "GlBeginSubpassCommand.hpp"
 
 #include "RenderPass/GlFrameBuffer.hpp"
 #include "RenderPass/GlRenderPass.hpp"
@@ -12,7 +12,7 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	NextSubpassCommand::NextSubpassCommand( Device const & device
+	BeginSubpassCommand::BeginSubpassCommand( Device const & device
 		, ashes::RenderPass const & renderPass
 		, ashes::FrameBuffer const & frameBuffer
 		, ashes::SubpassDescription const & subpass )
@@ -23,7 +23,7 @@ namespace gl_renderer
 	{
 	}
 
-	void NextSubpassCommand::apply( ContextLock const & context )const
+	void BeginSubpassCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "NextSubpassCommand" );
 		if ( m_frameBuffer.getFrameBuffer() )
@@ -32,8 +32,8 @@ namespace gl_renderer
 		}
 	}
 
-	CommandPtr NextSubpassCommand::clone()const
+	CommandPtr BeginSubpassCommand::clone()const
 	{
-		return std::make_unique< NextSubpassCommand >( *this );
+		return std::make_unique< BeginSubpassCommand >( *this );
 	}
 }

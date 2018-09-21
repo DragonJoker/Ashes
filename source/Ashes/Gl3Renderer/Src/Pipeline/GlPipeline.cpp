@@ -137,19 +137,15 @@ namespace gl_renderer
 
 		for ( auto & constant : shaderDesc.constantsLayout )
 		{
-			m_constantsPcb.constants.push_back( { constant.format, constant.location, offset, constant.size, constant.arraySize } );
+			m_constantsPcb.constants.push_back( { constant.format
+				, constant.location
+				, offset
+				, constant.size
+				, constant.arraySize } );
 			offset += constant.size;
 		}
 
 		m_constantsPcb.size = offset;
-
-		//if ( m_createInfo.stage.specialisationInfo )
-		//{
-		//	m_constantsPcbs.push_back( convert( device
-		//		, ~( 0u )
-		//		, m_createInfo.stage.module->getStage()
-		//		, *m_createInfo.stage.specialisationInfo ) );
-		//}
 
 		if ( m_device.getRenderer().isValidationEnabled() )
 		{
