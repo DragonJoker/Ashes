@@ -39,6 +39,14 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 		${CMAKE_SOURCE_DIR}/external/imgui
 	)
 
+	set( BinLibraries
+		${BinLibraries}
+		${glslang_LIBRARIES}
+		${SPIRV_LIBRARIES}
+		Ashes
+		Utils
+	)
+
 	add_subdirectory( 00-Common )
 	add_subdirectory( 01-ObjectLoading )
 	add_subdirectory( 02-Lighting )

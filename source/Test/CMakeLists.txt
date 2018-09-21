@@ -38,6 +38,14 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		${GTK2_INCLUDE_DIRS}
 	)
 
+	set( BinLibraries
+		${BinLibraries}
+		${glslang_LIBRARIES}
+		${SPIRV_LIBRARIES}
+		Ashes
+		Utils
+	)
+
 	add_subdirectory( 00-Common )
 	add_subdirectory( 01-DeviceCreation )
 	add_subdirectory( 02-SwapChainCreation )

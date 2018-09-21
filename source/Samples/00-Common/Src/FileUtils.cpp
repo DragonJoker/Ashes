@@ -1,5 +1,7 @@
 #include "FileUtils.hpp"
 
+#include <GlslToSpv.hpp>
+
 #include <cassert>
 
 #if ASHES_WIN32
