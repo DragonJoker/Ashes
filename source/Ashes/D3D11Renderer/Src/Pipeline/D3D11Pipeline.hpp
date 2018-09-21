@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Shader/D3D11ShaderDesc.hpp"
+#include "Shader/D3D11ShaderModule.hpp"
 
 #include <Pipeline/Pipeline.hpp>
 
@@ -108,14 +109,19 @@ namespace d3d11_renderer
 			return *m_scissor;
 		}
 
-		inline ashes::ShaderStageStateArray const & getShaderStages()const
+		inline std::list< CompiledShaderModule > const & getShaderStages()const
 		{
-			return m_createInfo.stages;
+			return m_programModules;
 		}
 
 		inline ProgramLayout const & getProgramLayout()const
 		{
 			return m_programLayout;
+		}
+
+		inline size_t getVertexInputStateHash()const
+		{
+			return m_vertexInputStateHash;
 		}
 
 		inline bool hasDynamicState( ashes::DynamicState state )const
@@ -141,6 +147,8 @@ namespace d3d11_renderer
 		std::optional< D3D11_VIEWPORT > m_viewport;
 		std::vector< PushConstantsBuffer > m_constantsPcbs;
 		ProgramLayout m_programLayout;
+		std::list< CompiledShaderModule > m_programModules;
+		size_t m_vertexInputStateHash;
 	};
 }
 

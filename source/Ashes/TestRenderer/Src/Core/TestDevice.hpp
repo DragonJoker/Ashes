@@ -46,7 +46,7 @@ namespace test_renderer
 		*\copydoc	ashes::Device::createPipelineLayout
 		*/
 		ashes::PipelineLayoutPtr createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeCRefArray const & pushConstantRanges )const override;
+			, ashes::PushConstantRangeArray const & pushConstantRanges )const override;
 		/**
 		*\copydoc	ashes::Device::createDescriptorSetLayout
 		*/

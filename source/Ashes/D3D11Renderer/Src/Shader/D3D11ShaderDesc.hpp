@@ -38,9 +38,11 @@ namespace d3d11_renderer
 	using InputLayout = std::vector< InputElementDesc >;
 	using InterfaceBlockLayout = std::vector< ConstantBufferDesc >;
 
+	class CompiledShaderModule;
+
 	struct ShaderDesc
 	{
-		ShaderModule * module{ nullptr };
+		CompiledShaderModule * module{ nullptr };
 		InputLayout inputLayout;
 		InterfaceBlockLayout interfaceBlockLayout;
 	};

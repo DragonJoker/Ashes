@@ -39,6 +39,7 @@ namespace d3d11_renderer
 		*/
 		ashes::StagingTexturePtr createStagingTexture( ashes::Format format
 			, ashes::Extent2D const & extent )const;
+		/*
 		*\copydoc	ashes::Device::createRenderPass
 		*/
 		ashes::RenderPassPtr createRenderPass( ashes::RenderPassCreateInfo createInfo )const override;
@@ -46,7 +47,7 @@ namespace d3d11_renderer
 		*\copydoc	ashes::Device::createPipelineLayout
 		*/
 		ashes::PipelineLayoutPtr createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeCRefArray const & pushConstantRanges )const override;
+			, ashes::PushConstantRangeArray const & pushConstantRanges )const override;
 		/**
 		*\copydoc	ashes::Device::createDescriptorSetLayout
 		*/

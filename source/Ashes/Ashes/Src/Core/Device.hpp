@@ -215,6 +215,9 @@ namespace ashes
 		*/
 		virtual StagingTexturePtr createStagingTexture( Format format
 			, Extent2D const & extent )const = 0;
+		/*
+		*\~french
+		*\brief
 		*	Crée une passe de rendu.
 		*\param[in] createInfo
 		*	Les informations de création.
@@ -250,7 +253,7 @@ namespace ashes
 		*	Le layout créé.
 		*/
 		virtual PipelineLayoutPtr createPipelineLayout( DescriptorSetLayoutCRefArray const & setLayouts
-			, PushConstantRangeCRefArray const & pushConstantRanges )const = 0;
+			, PushConstantRangeArray const & pushConstantRanges )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -721,7 +724,7 @@ namespace ashes
 		*\return
 		*	Le layout créé.
 		*/
-		PipelineLayoutPtr createPipelineLayout( PushConstantRangeCRefArray const & pushConstantRanges )const;
+		PipelineLayoutPtr createPipelineLayout( PushConstantRangeArray const & pushConstantRanges )const;
 		/**
 		*\~english
 		*\brief

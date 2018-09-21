@@ -12,8 +12,9 @@ namespace ashes
 {
 	PipelineLayout::PipelineLayout( Device const & device
 		, DescriptorSetLayoutCRefArray const & layouts
-		, PushConstantRangeCRefArray const & pushConstantRanges )
+		, PushConstantRangeArray const & pushConstantRanges )
 		: m_device{ device }
+		, m_pushConstantRanges{ pushConstantRanges }
 	{
 		registerObject( m_device, "PipelineLayout", this );
 	}

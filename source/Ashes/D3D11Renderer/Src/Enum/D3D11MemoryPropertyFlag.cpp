@@ -51,13 +51,10 @@ namespace d3d11_renderer
 			}
 			else
 			{
-				if ( checkFlag( targets, ashes::BufferTarget::eTransferSrc ) )
+				if ( checkFlag( targets, ashes::BufferTarget::eTransferSrc )
+					|| checkFlag( targets, ashes::BufferTarget::eTransferDst ) )
 				{
 					result |= D3D11_CPU_ACCESS_WRITE;
-				}
-
-				if ( checkFlag( targets, ashes::BufferTarget::eTransferDst ) )
-				{
 					result |= D3D11_CPU_ACCESS_READ;
 				}
 			}

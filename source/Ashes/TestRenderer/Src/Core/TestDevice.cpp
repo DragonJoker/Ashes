@@ -95,7 +95,7 @@ namespace test_renderer
 	}
 
 	ashes::PipelineLayoutPtr Device::createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeCRefArray const & pushConstantRanges )const
+			, ashes::PushConstantRangeArray const & pushConstantRanges )const
 	{
 		return std::make_unique< PipelineLayout >( *this
 			, setLayouts

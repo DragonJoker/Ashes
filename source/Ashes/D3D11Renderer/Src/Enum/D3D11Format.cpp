@@ -101,7 +101,7 @@ namespace d3d11_renderer
 		case ashes::Format::eX8_D24_UNORM_PACK32: return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 		case ashes::Format::eD32_SFLOAT: return DXGI_FORMAT_D32_FLOAT;
 		case ashes::Format::eD24_UNORM_S8_UINT: return DXGI_FORMAT_R24G8_TYPELESS;
-		case ashes::Format::eD32_SFLOAT_S8_UINT: return DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+		case ashes::Format::eD32_SFLOAT_S8_UINT: return DXGI_FORMAT_R32G8X24_TYPELESS;
 		case ashes::Format::eBC1_RGB_UNORM_BLOCK: return DXGI_FORMAT_BC1_UNORM;
 		case ashes::Format::eBC1_RGB_SRGB_BLOCK: return DXGI_FORMAT_BC1_UNORM_SRGB;
 		case ashes::Format::eBC2_UNORM_BLOCK: return DXGI_FORMAT_BC2_UNORM;
@@ -216,11 +216,11 @@ namespace d3d11_renderer
 		case ashes::Format::eR32G32B32A32_SFLOAT: return DXGI_FORMAT_R32G32B32A32_FLOAT;
 		case ashes::Format::eB10G11R11_UFLOAT_PACK32: return DXGI_FORMAT_R11G11B10_FLOAT;
 		case ashes::Format::eE5B9G9R9_UFLOAT_PACK32: return DXGI_FORMAT_R9G9B9E5_SHAREDEXP;
-		case ashes::Format::eD16_UNORM: return DXGI_FORMAT_D16_UNORM;
+		case ashes::Format::eD16_UNORM: return DXGI_FORMAT_R16_UNORM;
 		case ashes::Format::eX8_D24_UNORM_PACK32: return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-		case ashes::Format::eD32_SFLOAT: return DXGI_FORMAT_D32_FLOAT;
+		case ashes::Format::eD32_SFLOAT: return DXGI_FORMAT_R32_FLOAT;
 		case ashes::Format::eD24_UNORM_S8_UINT: return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-		case ashes::Format::eD32_SFLOAT_S8_UINT: return DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+		case ashes::Format::eD32_SFLOAT_S8_UINT: return DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
 		case ashes::Format::eBC1_RGB_UNORM_BLOCK: return DXGI_FORMAT_BC1_UNORM;
 		case ashes::Format::eBC1_RGB_SRGB_BLOCK: return DXGI_FORMAT_BC1_UNORM_SRGB;
 		case ashes::Format::eBC2_UNORM_BLOCK: return DXGI_FORMAT_BC2_UNORM;

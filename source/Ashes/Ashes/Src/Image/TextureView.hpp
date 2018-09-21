@@ -317,53 +317,39 @@ namespace ashes
 			, uint32_t srcQueueFamily = ~( 0u )
 			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
-		*\~french
-		*\return
-		*	Le type de texture.
 		*\~english
-		*\return
-		*	The texture type.
+		*name
+		*	Getters.
+		*\~french
+		*name
+		*	Accesseurs.
 		*/
+		/**@{*/
 		inline TextureViewType getType()const
 		{
 			return m_createInfo.viewType;
 		}
-		/**
-		*\~french
-		*\return
-		*	Le format de l'image de la vue.
-		*\~english
-		*\return
-		*	The view's image's pixels format.
-		*/
+
 		inline Format getFormat()const
 		{
 			return m_createInfo.format;
 		}
-		/**
-		*\~french
-		*\return
-		*	L'image de la vue.
-		*\~english
-		*\return
-		*	The view's image.
-		*/
+
 		inline Texture const & getTexture()const
 		{
 			return m_image;
 		}
-		/**
-		*\~french
-		*\return
-		*	Les informations de la ressource liée à l'image.
-		*\~english
-		*\return
-		*	The image's resource information.
-		*/
+
+		inline ComponentMapping const & getComponentMapping()const
+		{
+			return m_createInfo.components;
+		}
+
 		inline ImageSubresourceRange const & getSubResourceRange()const
 		{
 			return m_createInfo.subresourceRange;
 		}
+		/**@}*/
 
 	private:
 		ashes::ImageMemoryBarrier doMakeLayoutTransition( ashes::ImageLayout srcLayout

@@ -10,6 +10,81 @@
 
 namespace d3d11_renderer
 {
+	namespace
+	{
+		template<typename T>
+		void doHashCombine( size_t & seed, T const & v )
+		{
+			const uint64_t kMul = 0x9ddfea08eb382d69ULL;
+
+			std::hash< T > hasher;
+			uint64_t a = ( hasher( v ) ^ seed ) * kMul;
+			a ^= ( a >> 47 );
+
+			uint64_t b = ( seed ^ a ) * kMul;
+			b ^= ( b >> 47 );
+
+			seed = static_cast< std::size_t >( b * kMul );
+		}
+
+		//size_t doHash( VboBindings const & vbos
+		//	, IboBinding const & ibo )
+		//{
+		//	size_t result{ 0u };
+
+		//	for ( auto & binding : vbos )
+		//	{
+		//		auto & vbo = binding.second;
+		//		doHashCombine( result, vbo.bo );
+		//		doHashCombine( result, vbo.offset );
+		//	}
+
+		//	if ( bool( ibo ) )
+		//	{
+		//		doHashCombine( result, ibo.value().bo );
+		//		doHashCombine( result, ibo.value().offset );
+		//	}
+
+		//	return result;
+		//}
+
+		size_t doHash( ashes::VertexInputAttributeDescription const & desc )
+		{
+			size_t result = 0u;
+			doHashCombine( result, desc.binding );
+			doHashCombine( result, desc.format );
+			doHashCombine( result, desc.location );
+			doHashCombine( result, desc.offset );
+			return result;
+		}
+
+		size_t doHash( ashes::VertexInputBindingDescription const & desc )
+		{
+			size_t result = 0u;
+			doHashCombine( result, desc.binding );
+			doHashCombine( result, desc.inputRate );
+			doHashCombine( result, desc.stride );
+			return result;
+		}
+
+		size_t doHash( ashes::VertexInputState const & state )
+		{
+			size_t result = 0u;
+
+			for ( auto & desc : state.vertexAttributeDescriptions )
+			{
+				doHashCombine( result, doHash( desc ) );
+			}
+
+			for ( auto & desc : state.vertexBindingDescriptions )
+			{
+				doHashCombine( result, doHash( desc ) );
+			}
+
+			return result;
+		}
+	}
+
 	Pipeline::Pipeline( Device const & device
 		, ashes::PipelineLayout const & layout
 		, ashes::GraphicsPipelineCreateInfo && createInfo )
@@ -18,6 +93,7 @@ namespace d3d11_renderer
 			, std::move( createInfo ) }
 		, m_scissor{ ( bool )m_createInfo.scissor ? std::optional< RECT >( makeScissor( *m_createInfo.scissor ) ) : std::nullopt }
 		, m_viewport{ ( bool )m_createInfo.viewport ? std::optional< D3D11_VIEWPORT >( makeViewport( *m_createInfo.viewport ) ) : std::nullopt }
+		, m_vertexInputStateHash{ doHash( m_createInfo.vertexInputState ) }
 	{
 		doCreateBlendState( device );
 		doCreateRasterizerState( device );
@@ -138,7 +214,8 @@ namespace d3d11_renderer
 		for ( auto & state : m_createInfo.stages )
 		{
 			auto module = std::static_pointer_cast< ShaderModule >( state.module );
-			m_programLayout.emplace( state.module->getStage(), module->compile( state ) );
+			m_programModules.push_back( module->compile( state ) );
+			m_programLayout.emplace( state.module->getStage(), m_programModules.back().getLayout() );
 		}
 
 		for ( auto & shaderLayoutIt : m_programLayout )

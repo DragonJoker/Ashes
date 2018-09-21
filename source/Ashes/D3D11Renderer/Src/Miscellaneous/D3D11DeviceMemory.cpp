@@ -32,7 +32,10 @@ namespace d3d11_renderer
 				desc.Usage = getUsage( m_flags, m_bufferTargets );
 				desc.BindFlags = convert( m_bufferTargets );
 				desc.CPUAccessFlags = getCpuAccessFlags( m_flags, m_bufferTargets );
-				desc.MiscFlags = 0;
+				desc.MiscFlags = ( ( checkFlag( m_bufferTargets, ashes::BufferTarget::eDrawIndirectBuffer )
+						|| checkFlag( m_bufferTargets, ashes::BufferTarget::eDispatchIndirectBuffer ) )
+					? D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS
+					: 0u );
 				desc.StructureByteStride = 0;
 
 				auto hr = d3ddevice->CreateBuffer( &desc, nullptr, &m_buffer );
@@ -70,7 +73,7 @@ namespace d3d11_renderer
 				result = static_cast< uint8_t * >( mappedResource.pData );
 			}
 
-			return result;
+			return result + offset;
 		}
 
 		void flush( uint32_t offset

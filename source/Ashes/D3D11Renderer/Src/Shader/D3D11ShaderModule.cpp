@@ -20,6 +20,8 @@ See LICENSE file in root folder.
 
 namespace d3d11_renderer
 {
+	//*************************************************************************
+
 	namespace
 	{
 		static uint32_t constexpr OpCodeSPIRV = 0x07230203;
@@ -85,52 +87,18 @@ namespace d3d11_renderer
 			, spirv_cross::SPIRType const & type
 			, spirv_cross::SPIRConstant & constant )
 		{
-			switch ( type.columns )
+			auto offset = entry.offset;
+			auto size = type.width * type.vecsize;
+
+			for ( auto col = 0u; col < type.vecsize; ++col )
 			{
-			case 1u:
-				std::memcpy( &constant.m.c[0].r[0]
-					, specialisationInfo.getData() + entry.offset
-					, entry.size );
-				break;
-			case 2u:
-				switch ( type.vecsize )
+				for ( auto vec = 0u; vec < type.vecsize; ++vec )
 				{
-				case 1u:
-					break;
-				case 2u:
-					break;
-				case 3u:
-					break;
-				case 4u:
-					break;
+					std::memcpy( &constant.m.c[col].r[vec]
+						, specialisationInfo.getData() + offset
+						, size );
+					offset += size;
 				}
-				break;
-			case 3u:
-				switch ( type.vecsize )
-				{
-				case 1u:
-					break;
-				case 2u:
-					break;
-				case 3u:
-					break;
-				case 4u:
-					break;
-				}
-				break;
-			case 4u:
-				switch ( type.vecsize )
-				{
-				case 1u:
-					break;
-				case 2u:
-					break;
-				case 3u:
-					break;
-				case 4u:
-					break;
-				}
-				break;
 			}
 		}
 
@@ -252,19 +220,97 @@ namespace d3d11_renderer
 		}
 	}
 
-	ShaderModule::ShaderModule( Device const & device
-		, ashes::ShaderStageFlag stage )
-		: ashes::ShaderModule{ device, stage }
-		, m_device{ device }
-		, m_shader{ nullptr }
+	//*************************************************************************
+
+	CompiledShaderModule::CompiledShaderModule( CompiledShaderModule && rhs )
+		: m_shader{ std::move( rhs.m_shader ) }
+		, m_stage{ std::move( rhs.m_stage ) }
+		, m_source{ std::move( rhs.m_source ) }
+		, m_compiled{ std::move( rhs.m_compiled ) }
+		, m_layout{ std::move( rhs.m_layout ) }
 	{
+		m_layout.module = this;
+		rhs.m_shader.compute = nullptr;
+		rhs.m_compiled = nullptr;
+		rhs.m_layout.module = nullptr;
 	}
 
-	ShaderModule::~ShaderModule()
+	CompiledShaderModule & CompiledShaderModule::operator=( CompiledShaderModule && rhs )
+	{
+		if ( this != &rhs )
+		{
+			m_shader = std::move( rhs.m_shader );
+			m_stage = std::move( rhs.m_stage );
+			m_source = std::move( rhs.m_source );
+			m_compiled = std::move( rhs.m_compiled );
+			m_layout = std::move( rhs.m_layout );
+			m_layout.module = this;
+			rhs.m_shader.compute = nullptr;
+			rhs.m_compiled = nullptr;
+			rhs.m_layout.module = nullptr;
+		}
+
+		return *this;
+	}
+
+	CompiledShaderModule::CompiledShaderModule( Device const & device
+		, ashes::UInt32Array const & spv
+		, ashes::ShaderStageState const & state )
+		: m_shader{ nullptr }
+		, m_stage{ state.module->getStage() }
+	{
+		static std::map< ashes::ShaderStageFlag, std::string > Profiles
+		{
+			{ ashes::ShaderStageFlag::eVertex, "vs_5_0" },
+		{ ashes::ShaderStageFlag::eGeometry, "gs_5_0" },
+		{ ashes::ShaderStageFlag::eTessellationControl, "hs_5_0" },
+		{ ashes::ShaderStageFlag::eTessellationEvaluation, "ds_5_0" },
+		{ ashes::ShaderStageFlag::eFragment, "ps_5_0" },
+		{ ashes::ShaderStageFlag::eCompute, "cs_5_0" },
+		};
+
+		m_source = compileSpvToHlsl( device
+			, spv
+			, m_stage
+			, state );
+		std::string profile = Profiles[m_stage];
+		CComPtr< ID3DBlob > errors;
+		UINT flags = 0;
+
+#if !defined( NDEBUG )
+		flags |= D3DCOMPILE_DEBUG | D3DCOMPILE_WARNINGS_ARE_ERRORS;
+#endif
+
+		auto hr = D3DCompile( m_source.c_str()
+			, UINT( m_source.size() )
+			, nullptr
+			, nullptr
+			, nullptr
+			, state.entryPoint.c_str()
+			, profile.c_str()
+			, flags
+			, 0
+			, &m_compiled
+			, &errors );
+
+		if ( hr == S_OK )
+		{
+			doRetrieveShader( device );
+			m_layout = doRetrieveShaderDesc();
+		}
+
+		if ( errors )
+		{
+			ashes::Logger::logError( reinterpret_cast< char * >( errors->GetBufferPointer() ) );
+			ashes::Logger::logError( m_source );
+		}
+	}
+
+	CompiledShaderModule::~CompiledShaderModule()
 	{
 		safeRelease( m_compiled );
 
-		switch ( getStage() )
+		switch ( m_stage )
 		{
 		case ashes::ShaderStageFlag::eVertex:
 			safeRelease( m_shader.vertex );
@@ -292,72 +338,15 @@ namespace d3d11_renderer
 		}
 	}
 
-	void ShaderModule::loadShader( ashes::UInt32Array const & shader )
+	void CompiledShaderModule::doRetrieveShader( Device const & device )
 	{
-		m_spv = shader;
-	}
-
-	ShaderDesc ShaderModule::compile( ashes::ShaderStageState const & state )
-	{
-		static std::map< ashes::ShaderStageFlag, std::string > Profiles
-		{
-			{ ashes::ShaderStageFlag::eVertex, "vs_5_0" },
-			{ ashes::ShaderStageFlag::eGeometry, "gs_5_0" },
-			{ ashes::ShaderStageFlag::eTessellationControl, "hs_5_0" },
-			{ ashes::ShaderStageFlag::eTessellationEvaluation, "ds_5_0" },
-			{ ashes::ShaderStageFlag::eFragment, "ps_5_0" },
-			{ ashes::ShaderStageFlag::eCompute, "cs_5_0" },
-		};
-
-		m_source = compileSpvToHlsl( m_device
-			, m_spv
-			, m_stage
-			, state );
-		std::string profile = Profiles[getStage()];
-		CComPtr< ID3DBlob > errors;
-		UINT flags = 0;
-
-#if !defined( NDEBUG )
-		flags |= D3DCOMPILE_DEBUG | D3DCOMPILE_WARNINGS_ARE_ERRORS;
-#endif
-
-		auto hr = D3DCompile( m_source.c_str()
-			, UINT( m_source.size() )
-			, nullptr
-			, nullptr
-			, nullptr
-			, state.entryPoint.c_str()
-			, profile.c_str()
-			, flags
-			, 0
-			, &m_compiled
-			, &errors );
-		ShaderDesc result;
-
-		if ( hr == S_OK )
-		{
-			doRetrieveShader();
-			result = doRetrieveShaderDesc();
-		}
-
-		if ( errors )
-		{
-			ashes::Logger::logError( reinterpret_cast< char * >( errors->GetBufferPointer() ) );
-			ashes::Logger::logError( m_source );
-		}
-
-		return result;
-	}
-
-	void ShaderModule::doRetrieveShader()
-	{
-		auto device = m_device.getDevice();
+		auto dxDevice = device.getDevice();
 		HRESULT hr;
 
-		switch ( getStage() )
+		switch ( m_stage )
 		{
 		case ashes::ShaderStageFlag::eVertex:
-			hr = device->CreateVertexShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
+			hr = dxDevice->CreateVertexShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
 				, m_compiled->GetBufferSize()
 				, nullptr
 				, &m_shader.vertex );
@@ -365,7 +354,7 @@ namespace d3d11_renderer
 			break;
 
 		case ashes::ShaderStageFlag::eGeometry:
-			hr = device->CreateGeometryShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
+			hr = dxDevice->CreateGeometryShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
 				, m_compiled->GetBufferSize()
 				, nullptr
 				, &m_shader.geometry );
@@ -373,7 +362,7 @@ namespace d3d11_renderer
 			break;
 
 		case ashes::ShaderStageFlag::eTessellationControl:
-			hr = device->CreateHullShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
+			hr = dxDevice->CreateHullShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
 				, m_compiled->GetBufferSize()
 				, nullptr
 				, &m_shader.hull );
@@ -381,7 +370,7 @@ namespace d3d11_renderer
 			break;
 
 		case ashes::ShaderStageFlag::eTessellationEvaluation:
-			hr = device->CreateDomainShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
+			hr = dxDevice->CreateDomainShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
 				, m_compiled->GetBufferSize()
 				, nullptr
 				, &m_shader.domain );
@@ -389,7 +378,7 @@ namespace d3d11_renderer
 			break;
 
 		case ashes::ShaderStageFlag::eFragment:
-			hr = device->CreatePixelShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
+			hr = dxDevice->CreatePixelShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
 				, m_compiled->GetBufferSize()
 				, nullptr
 				, &m_shader.pixel );
@@ -397,7 +386,7 @@ namespace d3d11_renderer
 			break;
 
 		case ashes::ShaderStageFlag::eCompute:
-			hr = device->CreateComputeShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
+			hr = dxDevice->CreateComputeShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
 				, m_compiled->GetBufferSize()
 				, nullptr
 				, &m_shader.compute );
@@ -412,7 +401,7 @@ namespace d3d11_renderer
 		dxCheckError( hr, "RetrieveShader" );
 	}
 
-	ShaderDesc ShaderModule::doRetrieveShaderDesc()
+	ShaderDesc CompiledShaderModule::doRetrieveShaderDesc()
 	{
 		// Reflect shader info
 		CComPtr< ID3D11ShaderReflection > shaderReflection;
@@ -431,7 +420,7 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	InputLayout ShaderModule::doRetrieveInputLayout( ID3D11ShaderReflection * reflection
+	InputLayout CompiledShaderModule::doRetrieveInputLayout( ID3D11ShaderReflection * reflection
 		, UINT inputParameters )
 	{
 		InputLayout result;
@@ -487,7 +476,7 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	InterfaceBlockLayout ShaderModule::doRetrieveInterfaceBlockLayout( ID3D11ShaderReflection * reflection
+	InterfaceBlockLayout CompiledShaderModule::doRetrieveInterfaceBlockLayout( ID3D11ShaderReflection * reflection
 		, UINT constantBuffers )
 	{
 		InterfaceBlockLayout result;
@@ -501,7 +490,7 @@ namespace d3d11_renderer
 			if ( sbDesc.Type == D3D_CT_CBUFFER )
 			{
 				// Look for cbuffers declared without registers (as they are then generated from push_constant blocks).
-				auto it = m_source.find( std::string{ "cbuffer " } + sbDesc.Name + "\n" );
+				auto it = m_source.find( std::string{ "cbuffer " } +sbDesc.Name + "\n" );
 
 				if ( it != std::string::npos )
 				{
@@ -531,4 +520,29 @@ namespace d3d11_renderer
 
 		return result;
 	}
+
+	//*************************************************************************
+
+	ShaderModule::ShaderModule( Device const & device
+		, ashes::ShaderStageFlag stage )
+		: ashes::ShaderModule{ device, stage }
+		, m_device{ device }
+	{
+	}
+
+	ShaderModule::~ShaderModule()
+	{
+	}
+
+	void ShaderModule::loadShader( ashes::UInt32Array const & shader )
+	{
+		m_spv = shader;
+	}
+
+	CompiledShaderModule ShaderModule::compile( ashes::ShaderStageState const & state )
+	{
+		return CompiledShaderModule{ m_device, m_spv, state };
+	}
+
+	//*************************************************************************
 }
