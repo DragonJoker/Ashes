@@ -17,7 +17,6 @@ if( GLFW_FOUND )
 	)
 
 	target_link_libraries( ${PROJECT_NAME}
-		Utils
 		Ashes
 		${GLFW_LIBRARIES}
 		${BinLibraries}

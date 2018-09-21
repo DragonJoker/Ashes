@@ -244,7 +244,7 @@ namespace common
 		, ashes::ShaderStageFlag stage
 		, std::string const & path )
 	{
-		return ashes::compileGlslToSpv( device
+		return utils::compileGlslToSpv( device
 			, stage
 			, dumpTextFile( path ) );
 	}

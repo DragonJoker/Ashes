@@ -33,7 +33,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <Shader/GlslToSpv.hpp>
+#include <GlslToSpv.hpp>
 #include <Sync/ImageMemoryBarrier.hpp>
 
 #include <Transform.hpp>
@@ -502,7 +502,7 @@ namespace vkapp
 	{
 		ashes::PushConstantRange range{ ashes::ShaderStageFlag::eFragment, 0u, m_objectPcbs[0]->getSize() };
 		m_offscreenPipelineLayout = m_device->createPipelineLayout( ashes::DescriptorSetLayoutCRefArray{ { *m_offscreenDescriptorLayout } }
-		, ashes::PushConstantRangeCRefArray{ { range } } );
+		, ashes::PushConstantRangeArray{ { range } } );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 

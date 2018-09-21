@@ -14,7 +14,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/FrameBuffer.hpp>
 #include <RenderPass/RenderPass.hpp>
-#include <Shader/GlslToSpv.hpp>
+#include <GlslToSpv.hpp>
 
 namespace common
 {

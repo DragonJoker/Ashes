@@ -1,0 +1,12 @@
+/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
+*/
+#ifndef ___Utils_Config_HPP___
+#define ___Utils_Config_HPP___
+#pragma once
+
+//! Support of compilation from GLSL
+#define UTILS_GLSL_TO_SPV ${UTILS_GLSL_TO_SPV}
+
+#endif

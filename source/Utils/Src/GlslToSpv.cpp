@@ -2,11 +2,11 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "Shader/HlslToSpv.hpp"
+#include "GlslToSpv.hpp"
 
-#include "Core/Device.hpp"
+#include <Core/Device.hpp>
 
-# if ASHES_HLSL_TO_SPV
+# if UTILS_GLSL_TO_SPV
 #	include <glslang/Public/ShaderLang.h>
 #	include <SPIRV/GlslangToSpv.h>
 #endif
@@ -14,38 +14,37 @@ See LICENSE file in root folder.
 #include <locale>
 #include <regex>
 
-namespace ashes
+namespace utils
 {
-#if ASHES_HLSL_TO_SPV
+#if UTILS_GLSL_TO_SPV
 
 	namespace
 	{
-		template< typename CleanFunc >
-		struct BlockGuard
+		struct BlockLocale
 		{
-			template< typename InitFunc >
-			BlockGuard( InitFunc init, CleanFunc clean )
-				: m_clean{ std::move( clean ) }
+			BlockLocale()
 			{
-				init();
+				m_prvLoc = std::locale( "" );
+
+				if ( m_prvLoc.name() != "C" )
+				{
+					std::locale::global( std::locale{ "C" } );
+				}
 			}
 
-			~BlockGuard()
+			~BlockLocale()
 			{
-				m_clean();
+				if ( m_prvLoc.name() != "C" )
+				{
+					std::locale::global( m_prvLoc );
+				}
 			}
 
 		private:
-			CleanFunc m_clean;
+			std::locale m_prvLoc;
 		};
 
-		template< typename InitFunc, typename CleanFunc >
-		BlockGuard< CleanFunc > makeBlockGuard( InitFunc init, CleanFunc clean )
-		{
-			return BlockGuard< CleanFunc >{ std::move( init ), std::move( clean ) };
-		}
-
-		void doInitResources( Device const & device
+		void doInitResources( ashes::Device const & device
 			, TBuiltInResource & resources )
 		{
 			auto & limits = device.getPhysicalDevice().getProperties().limits;
@@ -175,56 +174,101 @@ namespace ashes
 
 #endif
 
-	UInt32Array HlslToSpv( Device const & device
-		, ShaderStageFlag stage
+	void initialiseGlslang()
+	{
+#if UTILS_GLSL_TO_SPV
+
+		glslang::InitializeProcess();
+
+#endif
+	}
+
+	void cleanupGlslang()
+	{
+#if UTILS_GLSL_TO_SPV
+
+		glslang::FinalizeProcess();
+
+#endif
+	}
+
+	UInt32Array compileGlslToSpv( ashes::Device const & device
+		, ashes::ShaderStageFlag stage
 		, std::string const & shader )
 	{
-#if ASHES_HLSL_TO_SPV
-		auto prvLoc = std::locale( "" );
+#if UTILS_GLSL_TO_SPV
 
-		auto guard = makeBlockGuard(
-			[&prvLoc]()
-			{
-				if ( prvLoc.name() != "C" )
-				{
-					std::locale::global( std::locale{ "C" } );
-				}
-			},
-			[&prvLoc]()
-			{
-				if ( prvLoc.name() != "C" )
-				{
-					std::locale::global( prvLoc );
-				}
-			}
-		);
-
+		BlockLocale guard;
 		TBuiltInResource resources;
-		doInitResources( m_device, resources );
+		doInitResources( device, resources );
 
 		// Enable SPIR-V and Vulkan rules when parsing GLSL
 		auto messages = ( EShMessages )( EShMsgSpvRules | EShMsgVulkanRules );
-		auto glstage = doGetLanguage( ashes::ShaderModule::getStage() );
+		auto glstage = doGetLanguage( stage );
 
 		std::string source = shader;
 
+		if ( source.find( "ashesTopDownToBottomUp" ) != std::string::npos )
+		{
+			if ( device.getClipDirection() == ashes::ClipDirection::eTopDown )
+			{
+				std::regex regex{ R"(void[ ]*main)" };
+				source = std::regex_replace( source.data()
+					, regex
+					, R"(vec2 ashesTopDownToBottomUp(vec2 v)
+{
+	return vec2( v.x, 1.0 - v.y );
+}
+
+vec3 ashesTopDownToBottomUp(vec3 v)
+{
+	return vec3( v.x, 1.0 - v.y, v.z );
+}
+
+$&)" );
+			}
+			else
+			{
+				std::regex regex{ R"(void[ ]*main)" };
+				source = std::regex_replace( source.data()
+					, regex
+					, R"(#define ashesTopDownToBottomUp(X) X
+
+$&)" );
+			}
+		}
+
+		if ( source.find( "ashesBottomUpToTopDown" ) != std::string::npos )
+		{
+			if ( device.getClipDirection() == ashes::ClipDirection::eTopDown )
+			{
+				std::regex regex{ R"(void[ ]*main)" };
+				source = std::regex_replace( source.data()
+					, regex
+					, R"(#define ashesBottomUpToTopDown(X) X
+
+$&)" );
+			}
+			else
+			{
+				std::regex regex{ R"(void[ ]*main)" };
+				source = std::regex_replace( source.data()
+					, regex
+					, R"(vec2 ashesBottomUpToTopDown(vec2 v)
+{
+	return vec2( v.x, 1.0 - v.y );
+}
+
+vec3 ashesBottomUpToTopDown(vec3 v)
+{
+	return vec3( v.x, 1.0 - v.y, v.z );
+}
+
+$&)" );
+			}
+		}
+
 		glslang::TShader glshader{ glstage };
-
-		if ( checkFlag( m_stage, ashes::ShaderStageFlag::eVertex ) )
-		{
-			std::regex regex{ R"(\#version \d*)" };
-			source = std::regex_replace( source.data()
-				, regex
-				, "$&\n#define VULKAN 100\n#define ashesScalePosition( X ) X\n" );
-		}
-		else
-		{
-			std::regex regex{ R"(\#version \d*)" };
-			source = std::regex_replace( source.data()
-				, regex
-				, "$&\n#define VULKAN 100\n" );
-		}
-
 		char const * const str = source.c_str();
 		glshader.setStrings( &str, 1 );
 
@@ -232,6 +276,7 @@ namespace ashes
 		{
 			ashes::Logger::logError( glshader.getInfoLog() );
 			ashes::Logger::logError( glshader.getInfoDebugLog() );
+			ashes::Logger::logError( source );
 			throw std::runtime_error{ "Shader compilation failed." };
 		}
 
@@ -242,16 +287,19 @@ namespace ashes
 		{
 			ashes::Logger::logError( glprogram.getInfoLog() );
 			ashes::Logger::logError( glprogram.getInfoDebugLog() );
+			ashes::Logger::logError( source );
 			throw std::runtime_error{ "Shader linkage failed." };
 		}
 
 		ashes::UInt32Array spirv;
 		glslang::GlslangToSpv( *glprogram.getIntermediate( glstage ), spirv );
-		doLoadShader( spirv.data(), uint32_t( spirv.size() * sizeof( uint32_t ) ) );
+
+		return spirv;
 
 #else
 
-		throw std::runtime_error{ "SPIR-V compilation from HLSL is not supported." };
+		throw std::runtime_error{ "SPIR-V compilation from GLSL is not supported." };
+		return ashes::UInt32Array{};
 
 #endif
 	}
