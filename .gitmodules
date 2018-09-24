@@ -7,3 +7,6 @@
 [submodule "source/external/SPIRV-Cross"]
 	path = source/external/SPIRV-Cross
 	url = https://github.com/KhronosGroup/SPIRV-Cross.git
+[submodule "source/external/glslang"]
+	path = source/external/glslang
+	url = https://github.com/KhronosGroup/glslang.git

@@ -6,18 +6,14 @@ See LICENSE file in root folder.
 
 #include <Core/Device.hpp>
 
-# if UTILS_GLSL_TO_SPV
-#	include <glslang/Public/ShaderLang.h>
-#	include <SPIRV/GlslangToSpv.h>
-#endif
+#include <glslang/Public/ShaderLang.h>
+#include <SPIRV/GlslangToSpv.h>
 
 #include <locale>
 #include <regex>
 
 namespace utils
 {
-#if UTILS_GLSL_TO_SPV
-
 	namespace
 	{
 		struct BlockLocale
@@ -172,34 +168,22 @@ namespace utils
 		}
 	}
 
-#endif
-
 	void initialiseGlslang()
 	{
-#if UTILS_GLSL_TO_SPV
-
 		glslang::InitializeProcess();
-
-#endif
 	}
 
 	void cleanupGlslang()
 	{
-#if UTILS_GLSL_TO_SPV
-
 		glslang::FinalizeProcess();
-
-#endif
 	}
 
 	UInt32Array compileGlslToSpv( ashes::Device const & device
 		, ashes::ShaderStageFlag stage
 		, std::string const & shader )
 	{
-#if UTILS_GLSL_TO_SPV
-
 		BlockLocale guard;
-		TBuiltInResource resources;
+		TBuiltInResource resources{};
 		doInitResources( device, resources );
 
 		// Enable SPIR-V and Vulkan rules when parsing GLSL
@@ -272,7 +256,7 @@ $&)" );
 		char const * const str = source.c_str();
 		glshader.setStrings( &str, 1 );
 
-		if ( !glshader.parse( &resources, 100, false, messages ) )
+		if ( !glshader.parse( &resources, 460, ECoreProfile, false, true, messages ) )
 		{
 			ashes::Logger::logError( glshader.getInfoLog() );
 			ashes::Logger::logError( glshader.getInfoDebugLog() );
@@ -295,12 +279,5 @@ $&)" );
 		glslang::GlslangToSpv( *glprogram.getIntermediate( glstage ), spirv );
 
 		return spirv;
-
-#else
-
-		throw std::runtime_error{ "SPIR-V compilation from GLSL is not supported." };
-		return ashes::UInt32Array{};
-
-#endif
 	}
 }
