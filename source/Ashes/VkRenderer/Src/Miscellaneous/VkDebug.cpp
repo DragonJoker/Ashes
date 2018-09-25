@@ -2,10 +2,102 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "VkRendererPrerequisites.hpp"
+#include "Core/VkRenderer.hpp"
 
 namespace vk_renderer
 {
+	namespace
+	{
+		VKAPI_ATTR VkBool32 VKAPI_CALL debugReportCallback( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage
+			, void* pUserData )
+		{
+			// Select prefix depending on flags passed to the callback
+			// Note that multiple flags may be set for a single validation message
+			std::locale loc{ "C" };
+			std::stringstream stream;
+			stream.imbue( loc );
+			stream << "Vulkan ";
+
+			// Error that may result in undefined behaviour
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
+			{
+				stream << "Error:\n";
+			};
+			// Warnings may hint at unexpected / non-spec API usage
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_WARNING_BIT_EXT ) )
+			{
+				stream << "Warning:\n";
+			};
+			// May indicate sub-optimal usage of the API
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) )
+			{
+				stream << "Performance:\n";
+			};
+			// Informal messages that may become handy during debugging
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) )
+			{
+				stream << "Info:\n";
+			}
+			// Diagnostic info from the Vulkan loader and layers
+			// Usually not helpful in terms of API usage, but may help to debug layer and loader problems 
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_DEBUG_BIT_EXT ) )
+			{
+				stream << "Debug:\n";
+			}
+
+			// Display message to default output (console/logcat)
+			stream << "    Layer: " << pLayerPrefix << "\n";
+			stream << "    Code: 0x" << std::hex << messageCode << "\n";
+			stream << "    Message: " << pMessage;
+
+#if defined( __ANDROID__ )
+
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
+			{
+				LOGE( "%s", stream.str().c_str() );
+			}
+			else
+			{
+				LOGD( "%s", stream.str().c_str() );
+			}
+
+			fflush( stdout );
+
+#else
+
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
+			{
+				ashes::Logger::logError( stream );
+			}
+			else if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_WARNING_BIT_EXT )
+				|| ashes::checkFlag( flags, VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) )
+			{
+				ashes::Logger::logWarning( stream );
+			}
+			else
+			{
+				ashes::Logger::logDebug( stream );
+			}
+
+#endif
+
+			// The return value of this callback controls wether the Vulkan call that caused
+			// the validation message will be aborted or not
+			// We return VK_FALSE as we DON'T want Vulkan calls that cause a validation message 
+			// (and return a VkResult) to abort
+			// If you instead want to have calls abort, pass in VK_TRUE and the function will 
+			// return VK_ERROR_VALIDATION_FAILED_EXT 
+			return VK_FALSE;
+		}
+
+	}
+
 	std::multimap< std::string, std::string > Debug::m_dump;
 
 	template<> std::string const VkTypeNamer< VkApplicationInfo >::Name = "VkApplicationInfo";
@@ -92,4 +184,69 @@ namespace vk_renderer
 	template<> std::string const VkTypeNamer< VkWin32SurfaceCreateInfoKHR >::Name = "VkWin32SurfaceCreateInfoKHR";
 
 #endif
+	void addOptionalValidationLayer( std::string const & layerName
+		, std::string description
+		, std::vector< char const * > & names )
+	{
+#if LOAD_VALIDATION_LAYERS
+		if ( layerName.find( "validation" ) != std::string::npos
+			|| description.find( "LunarG Validation" ) != std::string::npos )
+		{
+			names.push_back( layerName.c_str() );
+		}
+#endif
+	}
+
+	void addOptionalDebugReportLayer( std::vector< char const * > & names )
+	{
+#if LOAD_VALIDATION_LAYERS
+		names.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
+#endif
+	}
+
+	void setupDebugging( VkInstance instance
+		, Renderer & renderer
+		, VkDebugReportCallbackEXT & callback )
+	{
+#if LOAD_VALIDATION_LAYERS
+		// The report flags determine what type of messages for the layers will be displayed
+		// For validating (debugging) an appplication the error and warning bits should suffice
+		VkDebugReportFlagsEXT debugReportFlags = VK_DEBUG_REPORT_WARNING_BIT_EXT
+			| VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT
+			| VK_DEBUG_REPORT_ERROR_BIT_EXT
+			| VK_DEBUG_REPORT_DEBUG_BIT_EXT;
+
+		if ( renderer.vkCreateDebugReportCallbackEXT )
+		{
+			VkDebugReportCallbackCreateInfoEXT dbgCreateInfo
+			{
+				VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT,
+				nullptr,
+				debugReportFlags,
+				( PFN_vkDebugReportCallbackEXT )debugReportCallback,
+				&renderer
+			};
+
+			VkResult res = renderer.vkCreateDebugReportCallbackEXT(
+				instance,
+				&dbgCreateInfo,
+				nullptr,
+				&callback );
+			checkError( res, "Debug initialisation" );
+		}
+#endif
+	}
+
+	void cleanupDebugging( VkInstance instance
+		, Renderer & renderer
+		, VkDebugReportCallbackEXT & callback )
+	{
+#if LOAD_VALIDATION_LAYERS
+		if ( callback != VK_NULL_HANDLE )
+		{
+			renderer.vkDestroyDebugReportCallbackEXT( instance, callback, nullptr );
+			callback = VK_NULL_HANDLE;
+		}
+#endif
+	}
 }

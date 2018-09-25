@@ -135,15 +135,6 @@ namespace vk_renderer
 		/**
 		*\~french
 		*\brief
-		*	Initialise les extensions de débogage.
-		*\~english
-		*\brief
-		*	Initialises debugging extensions.
-		*/
-		void doSetupDebugging( VkDebugReportFlagsEXT flags );
-		/**
-		*\~french
-		*\brief
 		*	Enumère les GPU physiques disponibles.
 		*\~english
 		*\brief

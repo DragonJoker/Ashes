@@ -11,105 +11,19 @@
 
 namespace vk_renderer
 {
-	namespace
-	{
-#ifdef _WIN32
-		static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
-#else
-		static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
+#if ASHES_WIN32
+	static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
+#elif ASHES_XCB
+	static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
+#elif ASHES_XLIB
+	static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
+#elif ASHES_ANDROID
+	static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
+#elif ASHES_MIR
+	static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_MIR_SURFACE_EXTENSION_NAME;
+#elif ASHES_WAYLAND
+	static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
 #endif
-		VKAPI_ATTR VkBool32 VKAPI_CALL MyDebugReportCallback( VkDebugReportFlagsEXT flags
-			, VkDebugReportObjectTypeEXT objectType
-			, uint64_t object
-			, size_t location
-			, int32_t messageCode
-			, const char * pLayerPrefix
-			, const char * pMessage
-			, void* pUserData )
-		{
-			// Select prefix depending on flags passed to the callback
-			// Note that multiple flags may be set for a single validation message
-			std::locale loc{ "C" };
-			std::stringstream stream;
-			stream.imbue( loc );
-			stream << "Vulkan ";
-
-			// Error that may result in undefined behaviour
-			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
-			{
-				stream << "Error:\n";
-			};
-			// Warnings may hint at unexpected / non-spec API usage
-			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_WARNING_BIT_EXT ) )
-			{
-				stream << "Warning:\n";
-			};
-			// May indicate sub-optimal usage of the API
-			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) )
-			{
-				stream << "Performance:\n";
-			};
-			// Informal messages that may become handy during debugging
-			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) )
-			{
-				stream << "Info:\n";
-			}
-			// Diagnostic info from the Vulkan loader and layers
-			// Usually not helpful in terms of API usage, but may help to debug layer and loader problems 
-			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_DEBUG_BIT_EXT ) )
-			{
-				stream << "Debug:\n";
-			}
-
-			// Display message to default output (console/logcat)
-			stream << "    Layer: " << pLayerPrefix << "\n";
-			stream << "    Code: 0x" << std::hex << messageCode << "\n";
-			stream << "    Message: " << pMessage;
-
-#if defined( __ANDROID__ )
-
-			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
-			{
-				LOGE( "%s", stream.str().c_str() );
-			}
-			else
-			{
-				LOGD( "%s", stream.str().c_str() );
-			}
-
-			fflush( stdout );
-
-#else
-
-			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
-			{
-				ashes::Logger::logError( stream );
-			}
-			else if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_WARNING_BIT_EXT )
-				|| ashes::checkFlag( flags, VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) )
-			{
-				ashes::Logger::logWarning( stream );
-			}
-			else if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) )
-			{
-				ashes::Logger::logInfo( stream );
-			}
-			else
-			{
-				ashes::Logger::logDebug( stream );
-			}
-
-#endif
-
-			// The return value of this callback controls wether the Vulkan call that caused
-			// the validation message will be aborted or not
-			// We return VK_FALSE as we DON'T want Vulkan calls that cause a validation message 
-			// (and return a VkResult) to abort
-			// If you instead want to have calls abort, pass in VK_TRUE and the function will 
-			// return VK_ERROR_VALIDATION_FAILED_EXT 
-			return VK_FALSE;
-		}
-	}
 
 	Renderer::Renderer( Configuration const & configuration )
 		: ashes::Renderer{ ashes::ClipDirection::eTopDown, "vk", configuration }
@@ -146,14 +60,7 @@ namespace vk_renderer
 	{
 		if ( m_instance != VK_NULL_HANDLE )
 		{
-#if LOAD_VALIDATION_LAYERS
-			if ( m_msgCallback != VK_NULL_HANDLE )
-			{
-				vkDestroyDebugReportCallbackEXT( m_instance, m_msgCallback, nullptr );
-				m_msgCallback = VK_NULL_HANDLE;
-			}
-#endif
-
+			cleanupDebugging( m_instance, *this, m_msgCallback );
 			m_layers.clear();
 			m_instanceExtensionNames.clear();
 			m_instanceLayerNames.clear();
@@ -248,13 +155,9 @@ namespace vk_renderer
 	{
 		for ( auto const & props : m_layers )
 		{
-#if LOAD_VALIDATION_LAYERS
-			if ( props.layerName.find( "validation" ) != std::string::npos
-				|| props.description.find( "LunarG Validation" ) != std::string::npos )
-			{
-				names.push_back( props.layerName.c_str() );
-			}
-#endif
+			addOptionalValidationLayer( props.layerName
+				, props.description
+				, names );
 		}
 	}
 
@@ -337,9 +240,7 @@ namespace vk_renderer
 		completeLayerNames( m_instanceLayerNames );
 		m_instanceExtensionNames.push_back( VK_KHR_SURFACE_EXTENSION_NAME );
 		m_instanceExtensionNames.push_back( VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME );
-#if LOAD_VALIDATION_LAYERS
-		m_instanceExtensionNames.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
-#endif
+		addOptionalDebugReportLayer( m_instanceExtensionNames );
 		checkExtensionsAvailability( m_globalLayer.extensions, m_instanceExtensionNames );
 		uint32_t instanceVersion = VulkanVersion;
 
@@ -382,41 +283,9 @@ namespace vk_renderer
 #define VK_LIB_INSTANCE_FUNCTION( fun ) fun = reinterpret_cast< PFN_##fun >( getInstanceProcAddr( #fun ) );
 #include "Miscellaneous/VulkanFunctionsList.inl"
 
-#if LOAD_VALIDATION_LAYERS
-		// The report flags determine what type of messages for the layers will be displayed
-		// For validating (debugging) an appplication the error and warning bits should suffice
-		VkDebugReportFlagsEXT debugReportFlags = VK_DEBUG_REPORT_INFORMATION_BIT_EXT
-			| VK_DEBUG_REPORT_WARNING_BIT_EXT
-			| VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT
-			| VK_DEBUG_REPORT_ERROR_BIT_EXT
-			| VK_DEBUG_REPORT_DEBUG_BIT_EXT;
-		// Additional flags include performance info, loader and layer debug messages, etc.
-		doSetupDebugging( debugReportFlags );
-#endif
-	}
-
-	void Renderer::doSetupDebugging( VkDebugReportFlagsEXT flags )
-	{
-#if LOAD_VALIDATION_LAYERS
-		if ( vkCreateDebugReportCallbackEXT )
-		{
-			VkDebugReportCallbackCreateInfoEXT dbgCreateInfo
-			{
-				VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT,
-				nullptr,
-				flags,
-				( PFN_vkDebugReportCallbackEXT )MyDebugReportCallback,
-				this
-			};
-
-			VkResult res = vkCreateDebugReportCallbackEXT(
-				m_instance,
-				&dbgCreateInfo,
-				nullptr,
-				&m_msgCallback );
-			checkError( res, "Debug initialisation" );
-		}
-#endif
+		setupDebugging( m_instance
+			, *this
+			, m_msgCallback );
 	}
 
 	void Renderer::doEnumerateDevices()

@@ -1,38 +1,11 @@
 project( Utils )
 
-if ( NOT glslang_ROOT_DIR )
-	set( glslang_ROOT_DIR ${CMAKE_SOURCE_DIR}/../dependencies/glslang )
-endif ()
-if ( NOT SPIRV_ROOT_DIR )
-	set( SPIRV_ROOT_DIR ${CMAKE_SOURCE_DIR}/../dependencies/glslang )
-endif ()
-
-find_package( glslang )
-find_package( SPIRV )
-
-if ( glslang_FOUND AND SPIRV_FOUND )
-	set( UTILS_GLSL_TO_SPV 1 )
-else ()
-	set( UTILS_GLSL_TO_SPV 0 )
-endif ()
-
-set( ${PROJECT_NAME}_CONFIG_HEADER
-	${CMAKE_CURRENT_BINARY_DIR}/Src/UtilsConfig.hpp
-)
-
-configure_file(
-	${CMAKE_CURRENT_SOURCE_DIR}/Src/UtilsConfig.hpp.in
-	${${PROJECT_NAME}_CONFIG_HEADER}
-	NEWLINE_STYLE LF
-)
-
 include_directories(
 	${CMAKE_SOURCE_DIR}/Ashes/Ashes/Src
 	${CMAKE_BINARY_DIR}/Ashes/Ashes/Src
 	${CMAKE_CURRENT_SOURCE_DIR}/Src
 	${CMAKE_CURRENT_BINARY_DIR}/Src
-	${glslang_INCLUDE_DIR}
-	${SPIRV_INCLUDE_DIR}
+	${CMAKE_SOURCE_DIR}/external/glslang
 )
 
 file( GLOB ${PROJECT_NAME}_SRC_FILES
@@ -52,12 +25,27 @@ file( GLOB ${PROJECT_NAME}_HDR_FILES
 add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
-	${${PROJECT_NAME}_CONFIG_HEADER}
 )
 
+if ( MSVC )
+	set( BinLibraries
+		${BinLibraries}
+		glslang
+		OGLCompiler
+		OSDependent
+		SPVRemapper
+		SPIRV
+		PARENT_SCOPE
+	)
+endif ()
+
 target_link_libraries( ${PROJECT_NAME}
-	${glslang_LIBRARIES}
-	${SPIRV_LIBRARIES}
+	Ashes
+	glslang
+	OGLCompiler
+	OSDependent
+	SPVRemapper
+	SPIRV
 )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )

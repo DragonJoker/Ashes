@@ -104,6 +104,13 @@ endif ()
 add_subdirectory( Ashes )
 
 if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
+	set( ENABLE_GLSLANG_BINARIES FALSE CACHE BOOL "Builds glslangValidator and spirv-remap" FORCE )
+	set( ENABLE_AMD_EXTENSIONS FALSE CACHE BOOL "Enables support of AMD-specific extensions" FORCE )
+	set( ENABLE_NV_EXTENSIONS FALSE CACHE BOOL "Enables support of Nvidia-specific extensions" FORCE )
+	set( ENABLE_HLSL FALSE CACHE BOOL "Enables HLSL input support" FORCE )
+	set( BUILD_TESTING OFF )
+	set( SKIP_GLSLANG_INSTALL ON )
+	add_subdirectory( external/glslang )
 	add_subdirectory( Utils )
 endif ()
 
