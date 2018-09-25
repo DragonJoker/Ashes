@@ -27,18 +27,25 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_HDR_FILES}
 )
 
-set( BinLibraries
-	${BinLibraries}
+if ( MSVC )
+	set( BinLibraries
+		${BinLibraries}
+		glslang
+		OGLCompiler
+		OSDependent
+		SPVRemapper
+		SPIRV
+		PARENT_SCOPE
+	)
+endif ()
+
+target_link_libraries( ${PROJECT_NAME}
+	Ashes
 	glslang
 	OGLCompiler
 	OSDependent
 	SPVRemapper
 	SPIRV
-	PARENT_SCOPE
-)
-
-target_link_libraries( ${PROJECT_NAME}
-	${BinLibraries}
 )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )

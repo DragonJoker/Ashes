@@ -39,10 +39,8 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 	)
 
 	set( BinLibraries
-		${BinLibraries}
-		${glslang_LIBRARIES}
-		${SPIRV_LIBRARIES}
 		Ashes
+		${BinLibraries}
 		Utils
 	)
 
