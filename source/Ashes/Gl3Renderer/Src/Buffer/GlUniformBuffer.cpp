@@ -17,20 +17,6 @@ namespace gl_renderer
 			}();
 			return result;
 		}
-
-		uint32_t doGetAlignedSize( uint32_t size, uint32_t align )
-		{
-			uint32_t result = 0u;
-			auto align32 = uint32_t( align );
-
-			while ( size > align )
-			{
-				size -= align32;
-				result += align32;
-			}
-
-			return result + align32;
-		}
 	}
 
 	UniformBuffer::UniformBuffer( Device const & device
@@ -52,6 +38,7 @@ namespace gl_renderer
 
 	uint32_t UniformBuffer::getAlignedSize( uint32_t size )const
 	{
-		return doGetAlignedSize( size, getOffsetAlignment( m_device ) );
+		return uint32_t( ashes::getAlignedSize( size
+			, getOffsetAlignment( m_device ) ) );
 	}
 }

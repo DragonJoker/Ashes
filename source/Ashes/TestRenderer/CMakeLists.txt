@@ -102,53 +102,55 @@ set( ENABLED_RENDERERS
 	PARENT_SCOPE
 )
 
-if ( ASHES_STATIC_RENDERERS )
-	#We install each .lib/.a in <install_dir>/lib folder
-	install(
-		TARGETS ${PROJECT_NAME}
-		COMPONENT ${PROJECT_NAME}
-		CONFIGURATIONS Release RelWithDebInfo
-		EXPORT ${PROJECT_NAME}
-		ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Release
-	)
-	install(
-		TARGETS ${PROJECT_NAME}
-		COMPONENT ${PROJECT_NAME}
-		CONFIGURATIONS Debug
-		EXPORT ${PROJECT_NAME}
-		ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Debug
-	)
-else ()
-	if ( WIN32 )
-		#We install each .dll in <install_dir>/bin folder
+if ( BUILD_ASHES )
+	if ( ASHES_STATIC_RENDERERS )
+		#We install each .lib/.a in <install_dir>/lib folder
 		install(
 			TARGETS ${PROJECT_NAME}
 			COMPONENT ${PROJECT_NAME}
 			CONFIGURATIONS Release RelWithDebInfo
 			EXPORT ${PROJECT_NAME}
-			RUNTIME DESTINATION bin/${PROJECTS_PLATFORM}/Release
+			ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Release
 		)
 		install(
 			TARGETS ${PROJECT_NAME}
 			COMPONENT ${PROJECT_NAME}
 			CONFIGURATIONS Debug
 			EXPORT ${PROJECT_NAME}
-			RUNTIME DESTINATION bin/${PROJECTS_PLATFORM}/Debug
+			ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Debug
 		)
 	else ()
-		#We install each .so in <install_dir>/lib folder
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}
-			CONFIGURATIONS Release RelWithDebInfo
-			EXPORT ${PROJECT_NAME}
-			LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Release
-		)
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}
-			CONFIGURATIONS Debug
-			LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Debug
-		)
-	endif()
+		if ( WIN32 )
+			#We install each .dll in <install_dir>/bin folder
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}
+				CONFIGURATIONS Release RelWithDebInfo
+				EXPORT ${PROJECT_NAME}
+				RUNTIME DESTINATION bin/${PROJECTS_PLATFORM}/Release
+			)
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}
+				CONFIGURATIONS Debug
+				EXPORT ${PROJECT_NAME}
+				RUNTIME DESTINATION bin/${PROJECTS_PLATFORM}/Debug
+			)
+		else ()
+			#We install each .so in <install_dir>/lib folder
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}
+				CONFIGURATIONS Release RelWithDebInfo
+				EXPORT ${PROJECT_NAME}
+				LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Release
+			)
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}
+				CONFIGURATIONS Debug
+				LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Debug
+			)
+		endif()
+	endif ()
 endif ()

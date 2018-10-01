@@ -15,6 +15,38 @@ namespace ashes
 	/**
 	*\~english
 	*\brief
+	*	Computes an aligned size.
+	*\param[in] size
+	*	The unaligned size.
+	*\param[in] align
+	*	The alignment value.
+	*\return
+	*	The aligned size.
+	*\~french
+	*\brief
+	*	Calcule une taille alignée.
+	*\param[in] size
+	*	La taille non alignée.
+	*\param[in] align
+	*	La valeur d'alignement.
+	*\return
+	*	La taille alignée.
+	*/
+	inline uint64_t getAlignedSize( uint64_t size, uint32_t align )
+	{
+		uint64_t result = 0u;
+
+		while ( size > align )
+		{
+			size -= align;
+			result += align;
+		}
+
+		return result + align;
+	}
+	/**
+	*\~english
+	*\brief
 	*	A device memory object.
 	*\~french
 	*\brief
@@ -61,8 +93,8 @@ namespace ashes
 		*\return
 		*	\p nullptr si le mapping a échoué.
 		*/
-		virtual uint8_t * lock( uint32_t offset
-			, uint32_t size
+		virtual uint8_t * lock( uint64_t offset
+			, uint64_t size
 			, ashes::MemoryMapFlags flags )const = 0;
 		/**
 		*\~english
@@ -80,8 +112,8 @@ namespace ashes
 		*\param[in] size
 		*	La taille en octets de la mémoire mappée.
 		*/
-		virtual void invalidate( uint32_t offset
-			, uint32_t size )const = 0;
+		virtual void invalidate( uint64_t offset
+			, uint64_t size )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -98,8 +130,8 @@ namespace ashes
 		*\param[in] size
 		*	La taille en octets de la mémoire mappée.
 		*/
-		virtual void flush( uint32_t offset
-			, uint32_t size )const = 0;
+		virtual void flush( uint64_t offset
+			, uint64_t size )const = 0;
 		/**
 		*\~english
 		*\brief
