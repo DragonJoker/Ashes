@@ -155,8 +155,8 @@ namespace gl_renderer
 				}
 			}
 
-			uint8_t * lock( uint32_t offset
-				, uint32_t size
+			uint8_t * lock( uint64_t offset
+				, uint64_t size
 				, ashes::MemoryMapFlags flags )const override
 			{
 				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local texture" );
@@ -169,16 +169,16 @@ namespace gl_renderer
 				auto result = glLogCall( context
 					, glMapBufferRange
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, offset
-					, size
+					, GLintptr( offset )
+					, GLsizei( size == ~( 0ull ) ? m_requirements.size : size )
 					, m_mapFlags );
 				assertDebugValue( m_isLocked, false );
 				setDebugValue( m_isLocked, result != nullptr );
 				return reinterpret_cast< uint8_t * >( result );
 			}
 
-			void flush( uint32_t offset
-				, uint32_t size )const override
+			void flush( uint64_t offset
+				, uint64_t size )const override
 			{
 				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local texture" );
 				assertDebugValue( m_isLocked, true );
@@ -186,12 +186,12 @@ namespace gl_renderer
 				glLogCall( context
 					, glFlushMappedBufferRange
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, offset
-					, size );
+					, GLintptr( offset )
+					, GLsizei( size == ~( 0ull ) ? m_requirements.size : size ) );
 			}
 
-			void invalidate( uint32_t offset
-				, uint32_t size )const override
+			void invalidate( uint64_t offset
+				, uint64_t size )const override
 			{
 				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local texture" );
 				assertDebugValue( m_isLocked, true );
@@ -199,8 +199,8 @@ namespace gl_renderer
 				glLogCall( context
 					, glInvalidateBufferSubData
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, offset
-					, size );
+					, GLintptr( offset )
+					, GLsizei( size == ~( 0ull ) ? m_requirements.size : size ) );
 			}
 
 			void unlock()const override
@@ -320,8 +320,8 @@ namespace gl_renderer
 					, GL_TRUE );
 			}
 
-			void doSetupUpdateRegions( uint32_t offset
-				, uint32_t size )const
+			void doSetupUpdateRegions( uint64_t offset
+				, uint64_t size )const
 			{
 				assert( !m_updateRegions.empty() && "Can't update this texture." );
 				auto layerSize = m_updateRegions[0].levelSize;
@@ -547,8 +547,8 @@ namespace gl_renderer
 					, 0u );
 			}
 
-			uint8_t * lock( uint32_t offset
-				, uint32_t size
+			uint8_t * lock( uint64_t offset
+				, uint64_t size
 				, ashes::MemoryMapFlags flags )const override
 			{
 				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local buffer" );
@@ -561,15 +561,15 @@ namespace gl_renderer
 				auto result = glLogCall( context
 					, glMapBufferRange
 					, GL_BUFFER_TARGET_COPY_WRITE
-					, offset
-					, size == ~( 0u ) ? m_requirements.size : size
+					, GLintptr( offset )
+					, GLsizei( size == ~( 0ull ) ? m_requirements.size : size )
 					, m_mapFlags );
 				setDebugValue( m_isLocked, result != nullptr );
 				return reinterpret_cast< uint8_t * >( result );
 			}
 
-			void flush( uint32_t offset
-				, uint32_t size )const override
+			void flush( uint64_t offset
+				, uint64_t size )const override
 			{
 				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, true );
@@ -577,12 +577,12 @@ namespace gl_renderer
 				glLogCall( context
 					, glFlushMappedBufferRange
 					, GL_BUFFER_TARGET_COPY_WRITE
-					, offset
-					, size == ~( 0u ) ? m_requirements.size : size );
+					, GLintptr( offset )
+					, GLsizei( size == ~( 0ull ) ? m_requirements.size : size ) );
 			}
 
-			void invalidate( uint32_t offset
-				, uint32_t size )const override
+			void invalidate( uint64_t offset
+				, uint64_t size )const override
 			{
 				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible ) && "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, true );
@@ -590,8 +590,8 @@ namespace gl_renderer
 				glLogCall( context
 					, glInvalidateBufferSubData
 					, GL_BUFFER_TARGET_COPY_WRITE
-					, offset
-					, size == ~( 0u ) ? m_requirements.size : size );
+					, GLintptr( offset )
+					, GLsizei( size == ~( 0ull ) ? m_requirements.size : size ) );
 			}
 
 			void unlock()const override
@@ -668,23 +668,23 @@ namespace gl_renderer
 		m_impl = std::make_unique< ImageMemory >( m_device, m_requirements, m_flags, texture, target, createInfo );
 	}
 
-	uint8_t * DeviceMemory::lock( uint32_t offset
-		, uint32_t size
+	uint8_t * DeviceMemory::lock( uint64_t offset
+		, uint64_t size
 		, ashes::MemoryMapFlags flags )const
 	{
 		assert( m_impl && "Memory object was not bound to a resource object" );
 		return m_impl->lock( offset, size, flags );
 	}
 
-	void DeviceMemory::flush( uint32_t offset
-		, uint32_t size )const
+	void DeviceMemory::flush( uint64_t offset
+		, uint64_t size )const
 	{
 		assert( m_impl && "Memory object was not bound to a resource object" );
 		m_impl->flush( offset, size );
 	}
 
-	void DeviceMemory::invalidate( uint32_t offset
-		, uint32_t size )const
+	void DeviceMemory::invalidate( uint64_t offset
+		, uint64_t size )const
 	{
 		assert( m_impl && "Memory object was not bound to a resource object" );
 		m_impl->invalidate( offset, size );

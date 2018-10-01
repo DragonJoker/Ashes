@@ -52,8 +52,8 @@ namespace d3d11_renderer
 			safeRelease( m_buffer );
 		}
 
-		uint8_t * lock( uint32_t offset
-			, uint32_t size
+		uint8_t * lock( uint64_t offset
+			, uint64_t size
 			, ashes::MemoryMapFlags flags )const override
 		{
 			ID3D11DeviceContext * context;
@@ -76,13 +76,13 @@ namespace d3d11_renderer
 			return result + offset;
 		}
 
-		void flush( uint32_t offset
-			, uint32_t size )const override
+		void flush( uint64_t offset
+			, uint64_t size )const override
 		{
 		}
 
-		void invalidate( uint32_t offset
-			, uint32_t size )const override
+		void invalidate( uint64_t offset
+			, uint64_t size )const override
 		{
 		}
 
@@ -161,8 +161,8 @@ namespace d3d11_renderer
 		{
 		}
 
-		uint8_t * lock( uint32_t offset
-			, uint32_t size
+		uint8_t * lock( uint64_t offset
+			, uint64_t size
 			, ashes::MemoryMapFlags flags )const override
 		{
 			ID3D11DeviceContext * context;
@@ -185,13 +185,13 @@ namespace d3d11_renderer
 			return result;
 		}
 
-		void flush( uint32_t offset
-			, uint32_t size )const override
+		void flush( uint64_t offset
+			, uint64_t size )const override
 		{
 		}
 
-		void invalidate( uint32_t offset
-			, uint32_t size )const override
+		void invalidate( uint64_t offset
+			, uint64_t size )const override
 		{
 		}
 
@@ -258,8 +258,8 @@ namespace d3d11_renderer
 		{
 		}
 
-		uint8_t * lock( uint32_t offset
-			, uint32_t size
+		uint8_t * lock( uint64_t offset
+			, uint64_t size
 			, ashes::MemoryMapFlags flags )const override
 		{
 			ID3D11DeviceContext * context;
@@ -282,13 +282,13 @@ namespace d3d11_renderer
 			return result;
 		}
 
-		void flush( uint32_t offset
-			, uint32_t size )const override
+		void flush( uint64_t offset
+			, uint64_t size )const override
 		{
 		}
 
-		void invalidate( uint32_t offset
-			, uint32_t size )const override
+		void invalidate( uint64_t offset
+			, uint64_t size )const override
 		{
 		}
 
@@ -370,8 +370,8 @@ namespace d3d11_renderer
 		{
 		}
 
-		uint8_t * lock( uint32_t offset
-			, uint32_t size
+		uint8_t * lock( uint64_t offset
+			, uint64_t size
 			, ashes::MemoryMapFlags flags )const override
 		{
 			ID3D11DeviceContext * context;
@@ -394,13 +394,13 @@ namespace d3d11_renderer
 			return result;
 		}
 
-		void flush( uint32_t offset
-			, uint32_t size )const override
+		void flush( uint64_t offset
+			, uint64_t size )const override
 		{
 		}
 
-		void invalidate( uint32_t offset
-			, uint32_t size )const override
+		void invalidate( uint64_t offset
+			, uint64_t size )const override
 		{
 		}
 
@@ -464,21 +464,21 @@ namespace d3d11_renderer
 	{
 	}
 
-	uint8_t * DeviceMemory::lock( uint32_t offset
-		, uint32_t size
+	uint8_t * DeviceMemory::lock( uint64_t offset
+		, uint64_t size
 		, ashes::MemoryMapFlags flags )const
 	{
 		return m_impl->lock( offset, size, flags );
 	}
 
-	void DeviceMemory::flush( uint32_t offset
-		, uint32_t size )const
+	void DeviceMemory::flush( uint64_t offset
+		, uint64_t size )const
 	{
 		m_impl->flush( offset, size );
 	}
 
-	void DeviceMemory::invalidate( uint32_t offset
-		, uint32_t size )const
+	void DeviceMemory::invalidate( uint64_t offset
+		, uint64_t size )const
 	{
 		m_impl->invalidate( offset, size );
 	}
