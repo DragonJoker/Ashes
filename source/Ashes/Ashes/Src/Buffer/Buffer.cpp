@@ -32,23 +32,23 @@ namespace ashes
 		doBindMemory();
 	}
 
-	uint8_t * BufferBase::lock( uint32_t offset
-		, uint32_t size
+	uint8_t * BufferBase::lock( uint64_t offset
+		, uint64_t size
 		, MemoryMapFlags flags )const
 	{
 		assert( m_storage && "The resource is not bound to a device memory object." );
 		return m_storage->lock( offset, size, flags );
 	}
 
-	void BufferBase::invalidate( uint32_t offset
-		, uint32_t size )const
+	void BufferBase::invalidate( uint64_t offset
+		, uint64_t size )const
 	{
 		assert( m_storage && "The resource is not bound to a device memory object." );
 		return m_storage->invalidate( offset, size );
 	}
 
-	void BufferBase::flush( uint32_t offset
-		, uint32_t size )const
+	void BufferBase::flush( uint64_t offset
+		, uint64_t size )const
 	{
 		assert( m_storage && "The resource is not bound to a device memory object." );
 		return m_storage->flush( offset, size );

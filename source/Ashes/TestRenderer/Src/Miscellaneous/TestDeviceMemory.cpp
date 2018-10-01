@@ -21,20 +21,20 @@ namespace test_renderer
 	{
 	}
 
-	uint8_t * DeviceMemory::lock( uint32_t offset
-		, uint32_t size
+	uint8_t * DeviceMemory::lock( uint64_t offset
+		, uint64_t size
 		, ashes::MemoryMapFlags flags )const
 	{
 		return m_memory.data() + offset;
 	}
 
-	void DeviceMemory::flush( uint32_t offset
-		, uint32_t size )const
+	void DeviceMemory::flush( uint64_t offset
+		, uint64_t size )const
 	{
 	}
 
-	void DeviceMemory::invalidate( uint32_t offset
-		, uint32_t size )const
+	void DeviceMemory::invalidate( uint64_t offset
+		, uint64_t size )const
 	{
 	}
 

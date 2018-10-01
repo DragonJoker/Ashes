@@ -58,19 +58,19 @@ namespace test_renderer
 		/**
 		*\copydoc	ashes::DeviceMemory::lock
 		*/
-		uint8_t * lock( uint32_t offset
-			, uint32_t size
+		uint8_t * lock( uint64_t offset
+			, uint64_t size
 			, ashes::MemoryMapFlags flags )const override;
 		/**
 		*\copydoc	ashes::DeviceMemory::flush
 		*/
-		void flush( uint32_t offset
-			, uint32_t size )const override;
+		void flush( uint64_t offset
+			, uint64_t size )const override;
 		/**
 		*\copydoc	ashes::DeviceMemory::invalidate
 		*/
-		void invalidate( uint32_t offset
-			, uint32_t size )const override;
+		void invalidate( uint64_t offset
+			, uint64_t size )const override;
 		/**
 		*\copydoc	ashes::DeviceMemory::unlock
 		*/

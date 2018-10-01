@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
@@ -9,7 +9,8 @@ namespace ashes
 		, uint32_t count
 		, BufferTargets target
 		, MemoryPropertyFlags flags )
-		: m_buffer{ device.createBuffer( uint32_t( count * sizeof( T ) )
+		: m_device{ device }
+		, m_buffer{ device.createBuffer( uint32_t( count * sizeof( T ) )
 			, target
 			, flags ) }
 	{

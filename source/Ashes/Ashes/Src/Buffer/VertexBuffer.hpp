@@ -108,68 +108,79 @@ namespace ashes
 			return m_buffer->getSize() / sizeof( T );
 		}
 		/**
+		*\~english
+		*\brief
+		*	Maps a range of the buffer's memory in RAM.
+		*\param[in] offset
+		*	The range elements beginning offset.
+		*\param[in] count
+		*	The range elements count.
+		*\param[in] flags
+		*	The mapping flags.
+		*\return
+		*	\p nullptr if mapping failed.
+		*\~french
 		*\brief
 		*	Mappe la mémoire du tampon en RAM.
 		*\param[in] offset
-		*	L'offset à partir duquel la mémoire du tampon est mappée.
-		*\param[in] size
-		*	La taille en octets de la mémoire à mapper.
+		*	L'offset à partir duquel les éléments du tampon sont mappés.
+		*\param[in] count
+		*	Le nombre d'éléments à mapper.
 		*\param[in] flags
 		*	Indicateurs de configuration du mapping.
 		*\return
 		*	\p nullptr si le mapping a échoué.
 		*/
-		inline T * lock( uint32_t offset
-			, uint32_t size
+		inline T * lock( uint64_t offset
+			, uint64_t count
 			, MemoryMapFlags flags )const
 		{
-			return reinterpret_cast< T * >( m_buffer->lock( uint32_t( offset * sizeof( T ) )
-				, uint32_t( size * sizeof( T ) )
-				, flags ) );
+			auto size = doComputeSize( count, offset );
+			return reinterpret_cast< T * >( m_buffer->lock( offset, size, flags ) );
 		}
 		/**
 		*\~english
 		*\brief
 		*	Updates the VRAM.
 		*\param[in] offset
-		*	The mapped memory starting offset.
-		*\param[in] size
-		*	The range size.
+		*	The mapped elements starting offset.
+		*\param[in] count
+		*	The range elements count.
 		*\~french
 		*\brief
 		*	Met à jour la VRAM.
 		*\param[in] offset
-		*	L'offset de la mémoire mappée.
-		*\param[in] size
-		*	La taille en octets de la mémoire mappée.
+		*	L'offset des éléments mappés.
+		*\param[in] count
+		*	Le nombre d'éléments mappés.
 		*/
-		inline void flush( uint32_t offset
-			, uint32_t size )const
+		inline void flush( uint64_t offset
+			, uint64_t count )const
 		{
-			m_buffer->flush( uint32_t( offset * sizeof( T ) )
-				, uint32_t( size * sizeof( T ) ) );
+			auto size = doComputeSize( count, offset );
+			m_buffer->flush( offset, size );
 		}
 		/**
 		*\~english
 		*\brief
 		*	Invalidates the buffer content.
 		*\param[in] offset
-		*	The mapped memory starting offset.
-		*\param[in] size
-		*	The range size.
+		*	The mapped elements starting offset.
+		*\param[in] count
+		*	The range elements count.
 		*\~french
 		*\brief
 		*	Invalide le contenu du tampon.
 		*\param[in] offset
-		*	L'offset de la mémoire mappée.
-		*\param[in] size
-		*	La taille en octets de la mémoire mappée.
+		*	L'offset des éléments mappés.
+		*\param[in] count
+		*	Le nombre d'éléments mappés.
 		*/
-		inline void invalidate( uint32_t offset
-			, uint32_t size )const
+		inline void invalidate( uint64_t offset
+			, uint64_t count )const
 		{
-			m_buffer->invalidate( uint32_t( offset * sizeof( T ) )
-				, uint32_t( size * sizeof( T ) ) );
+			auto size = doComputeSize( count, offset );
+			m_buffer->invalidate( offset, size );
 		}
 		/**
 		*\~english
@@ -182,6 +193,24 @@ namespace ashes
 		virtual void unlock()const
 		{
 			m_buffer->unlock();
+		}
+
+	private:
+		uint64_t doComputeSize( uint64_t count, uint64_t & offset )const
+		{
+			offset *= sizeof( T );
+			count *= sizeof( T );
+			auto const aligned = getAlignedSize( count
+				, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) );
+			auto result = count == m_buffer->getSize()
+				? ( offset == 0ull
+					? ~( 0ull )
+					: aligned )
+				: ( offset + count == m_buffer->getSize()
+					? count
+					: aligned );
+			assert( result == ~( 0ull ) || offset + result <= m_buffer->getSize() );
+			return result;
 		}
 	};
 	/**

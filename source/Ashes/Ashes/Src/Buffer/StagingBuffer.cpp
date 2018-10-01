@@ -13,22 +13,6 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	namespace
-	{
-		inline uint32_t getAlignedSize( uint32_t size, uint32_t align )
-		{
-			uint32_t result = 0u;
-
-			while ( size > align )
-			{
-				size -= align;
-				result += align;
-			}
-
-			return result + align;
-		}
-	}
-
 	StagingBuffer::StagingBuffer( Device const & device
 		, BufferTargets target
 		, uint32_t size )
@@ -43,9 +27,11 @@ namespace ashes
 		, uint32_t size )const
 	{
 		assert( size <= getBuffer().getSize() );
-		auto mappedSize = std::min( getBuffer().getSize()
-			, getAlignedSize( size
-				, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) );
+		auto mappedSize = getAlignedSize( size
+			, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) );
+		mappedSize = mappedSize > getBuffer().getSize()
+			? ~( 0ull )
+			: mappedSize;
 		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0u
 			, mappedSize
 			, MemoryMapFlag::eWrite | MemoryMapFlag::eInvalidateRange );
@@ -150,9 +136,11 @@ namespace ashes
 		, uint32_t size )const
 	{
 		assert( size <= getBuffer().getSize() );
-		auto mappedSize = std::min( getBuffer().getSize()
-			, getAlignedSize( size
-				, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) );
+		auto mappedSize = getAlignedSize( size
+			, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) );
+		mappedSize = mappedSize > getBuffer().getSize()
+			? ~( 0ull )
+			: mappedSize;
 		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0u
 			, mappedSize
 			, MemoryMapFlag::eRead );
