@@ -9,6 +9,39 @@ See LICENSE file in root folder.
 
 namespace d3d11_renderer
 {
+	namespace
+	{
+		D3D_FEATURE_LEVEL doGetSupportedFeatureLevel( IDXGIFactory * factory
+			, IDXGIAdapter * adapter )
+		{
+			std::vector< D3D_FEATURE_LEVEL > requestedFeatureLevels
+			{
+				D3D_FEATURE_LEVEL_11_1,
+				D3D_FEATURE_LEVEL_11_0,
+				D3D_FEATURE_LEVEL_10_1,
+				D3D_FEATURE_LEVEL_10_0,
+				D3D_FEATURE_LEVEL_9_3,
+				D3D_FEATURE_LEVEL_9_2,
+				D3D_FEATURE_LEVEL_9_1,
+			};
+			D3D_FEATURE_LEVEL result;
+
+			// First me check max supported feature level
+			D3D11CreateDevice( nullptr
+				, D3D_DRIVER_TYPE_HARDWARE
+				, nullptr
+				, 0u
+				, requestedFeatureLevels.data()
+				, UINT( requestedFeatureLevels.size() )
+				, D3D11_SDK_VERSION
+				, nullptr
+				, &result
+				, nullptr );
+
+			return result;
+		}
+	}
+
 	PhysicalDevice::PhysicalDevice( Renderer & renderer
 		, IDXGIAdapter * adapter
 		, IDXGIAdapter1 * adapter1
@@ -53,13 +86,15 @@ namespace d3d11_renderer
 			m_output->GetDesc( &desc );
 		}
 
+		m_featureLevel = doGetSupportedFeatureLevel( m_renderer.getDXGIFactory(), m_adapter );
+
 		m_properties.deviceType = ashes::PhysicalDeviceType::eDiscreteGpu;
 		m_features.robustBufferAccess = true;
 		m_features.fullDrawIndexUint32 = true;
 		m_features.imageCubeArray = true;
 		m_features.independentBlend = true;
-		m_features.geometryShader = true;
-		m_features.tessellationShader = true;
+		m_features.geometryShader = m_featureLevel >= D3D_FEATURE_LEVEL_10_0;
+		m_features.tessellationShader = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.sampleRateShading = true;
 		m_features.dualSrcBlend = true;
 		m_features.logicOp = true;
@@ -81,12 +116,12 @@ namespace d3d11_renderer
 		m_features.pipelineStatisticsQuery = true;
 		m_features.vertexPipelineStoresAndAtomics = true;
 		m_features.fragmentStoresAndAtomics = true;
-		m_features.shaderTessellationAndGeometryPointSize = true;
-		m_features.shaderImageGatherExtended = true;
-		m_features.shaderStorageImageExtendedFormats = true;
-		m_features.shaderStorageImageMultisample = true;
-		m_features.shaderStorageImageReadWithoutFormat = true;
-		m_features.shaderStorageImageWriteWithoutFormat = true;
+		m_features.shaderTessellationAndGeometryPointSize = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderImageGatherExtended = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageExtendedFormats = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageMultisample = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageReadWithoutFormat = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageWriteWithoutFormat = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.shaderUniformBufferArrayDynamicIndexing = true;
 		m_features.shaderSampledImageArrayDynamicIndexing = true;
 		m_features.shaderStorageBufferArrayDynamicIndexing = true;
