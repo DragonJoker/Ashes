@@ -262,11 +262,11 @@ namespace d3d11_renderer
 		static std::map< ashes::ShaderStageFlag, std::string > Profiles
 		{
 			{ ashes::ShaderStageFlag::eVertex, "vs_5_0" },
-		{ ashes::ShaderStageFlag::eGeometry, "gs_5_0" },
-		{ ashes::ShaderStageFlag::eTessellationControl, "hs_5_0" },
-		{ ashes::ShaderStageFlag::eTessellationEvaluation, "ds_5_0" },
-		{ ashes::ShaderStageFlag::eFragment, "ps_5_0" },
-		{ ashes::ShaderStageFlag::eCompute, "cs_5_0" },
+			{ ashes::ShaderStageFlag::eGeometry, "gs_5_0" },
+			{ ashes::ShaderStageFlag::eTessellationControl, "hs_5_0" },
+			{ ashes::ShaderStageFlag::eTessellationEvaluation, "ds_5_0" },
+			{ ashes::ShaderStageFlag::eFragment, "ps_5_0" },
+			{ ashes::ShaderStageFlag::eCompute, "cs_5_0" },
 		};
 
 		m_source = compileSpvToHlsl( device
@@ -278,7 +278,7 @@ namespace d3d11_renderer
 		UINT flags = 0;
 
 #if !defined( NDEBUG )
-		flags |= D3DCOMPILE_DEBUG | D3DCOMPILE_WARNINGS_ARE_ERRORS;
+		flags |= D3DCOMPILE_DEBUG;
 #endif
 
 		auto hr = D3DCompile( m_source.c_str()
@@ -297,9 +297,13 @@ namespace d3d11_renderer
 		{
 			doRetrieveShader( device );
 			m_layout = doRetrieveShaderDesc();
-		}
 
-		if ( errors )
+			if ( errors )
+			{
+				ashes::Logger::logWarning( reinterpret_cast< char * >( errors->GetBufferPointer() ) );
+			}
+		}
+		else if ( errors )
 		{
 			ashes::Logger::logError( reinterpret_cast< char * >( errors->GetBufferPointer() ) );
 			ashes::Logger::logError( m_source );

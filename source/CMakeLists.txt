@@ -111,6 +111,84 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
 	set( BUILD_TESTING OFF )
 	set( SKIP_GLSLANG_INSTALL ON )
 	add_subdirectory( external/glslang )
+
+	target_install_subdir_headers( glslang external/glslang/glslang/ Public "" )
+	target_install_subdir_headers( glslang external/glslang/glslang/ Include "" )
+	target_install_subdir_headers( glslang external/glslang/glslang/ MachineIndependent "" )
+	target_install_subdir_headers( SPIRV external/glslang/SPIRV/ "" "" )
+
+	if ( MSVC )
+		install(
+			FILES
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/glslang.lib
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/OGLCompiler.lib
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/OSDependent.lib
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/SPIRV.lib
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/SpvRemapper.lib
+			COMPONENT glslang_dev
+			CONFIGURATIONS Release
+			EXPORT glslang
+			ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Release
+		)
+		install(
+			FILES
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/glslang.lib
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/OGLCompiler.lib
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/OSDependent.lib
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/SPIRV.lib
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/SpvRemapper.lib
+			COMPONENT glslang_dev
+			CONFIGURATIONS RelWithDebInfo
+			ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/RelWithDebInfo
+		)
+		install(
+			FILES
+				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/glslangd.lib
+				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/OGLCompilerd.lib
+				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/OSDependentd.lib
+				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/SPIRVd.lib
+				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/SpvRemapperd.lib
+			COMPONENT glslang_dev
+			CONFIGURATIONS Debug
+			ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Debug
+		)
+	else ()
+		install(
+			FILES
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libglslang.a
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libOGLCompiler.a
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libOSDependent.a
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libSPIRV.a
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libSpvRemapper.a
+			COMPONENT glslang_dev
+			CONFIGURATIONS Release
+			EXPORT glslang
+			ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Release
+		)
+		install(
+			FILES
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libglslang.a
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libOGLCompiler.a
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libOSDependent.a
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libSPIRV.a
+				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libSpvRemapper.a
+			COMPONENT glslang_dev
+			CONFIGURATIONS RelWithDebInfo
+			ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/RelWithDebInfo
+		)
+		install(
+			FILES
+				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libglslangd.a
+				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libOGLCompilerd.a
+				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libOSDependentd.a
+				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libSPIRVd.a
+				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libSpvRemapperd.a
+			COMPONENT glslang_dev
+			CONFIGURATIONS Debug
+			ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Debug
+		)
+	endif ()
+
 	add_subdirectory( Utils )
 endif ()
 

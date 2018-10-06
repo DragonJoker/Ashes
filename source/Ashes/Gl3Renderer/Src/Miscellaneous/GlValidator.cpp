@@ -857,15 +857,16 @@ namespace gl_renderer
 			}
 		}
 
+		struct AttrSpec
+		{
+			ashes::Format format;
+			uint32_t location;
+		};
+
 		void doValidateInputs( ContextLock const & context
 			, GLuint program
 			, ashes::VertexInputState const & vertexInputState )
 		{
-			struct AttrSpec
-			{
-				ashes::Format format;
-				uint32_t location;
-			};
 			std::vector< AttrSpec > attributes;
 
 			for ( auto & attribute : vertexInputState.vertexAttributeDescriptions )
@@ -880,10 +881,10 @@ namespace gl_renderer
 				auto it = std::find_if( attributes.begin()
 					, attributes.end()
 					, [&glslType, &location]( AttrSpec const & lookup )
-				{
-					return areCompatibleInputs( lookup.format, convertAttribute( glslType ) )
-						&& lookup.location == location;
-				} );
+					{
+						return areCompatibleInputs( lookup.format, convertAttribute( glslType ) )
+							&& lookup.location == location;
+					} );
 
 				if ( it != attributes.end() )
 				{
@@ -1097,6 +1098,44 @@ namespace gl_renderer
 						<< ", offset: " << offset );
 				} );
 		}
+	}
+
+	InputLayout getInputLayout( ContextLock const & context
+		, GLuint program )
+	{
+		InputLayout result;
+		getProgramInterfaceInfos( context
+			, program
+			, GLSL_INTERFACE_PROGRAM_INPUT
+			, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
+			, [&result]( std::string const & name, std::vector< GLint > const & values )
+			{
+				auto type = GlslAttributeType( values[0] );
+				auto location = uint32_t( values[2] );
+
+				switch ( type )
+				{
+				case GLSL_ATTRIBUTE_FLOAT_MAT2:
+					result.push_back( { name, ashes::ConstantFormat::eVec2f, location + 0u } );
+					result.push_back( { name, ashes::ConstantFormat::eVec2f, location + 1u } );
+					break;
+				case GLSL_ATTRIBUTE_FLOAT_MAT3:
+					result.push_back( { name, ashes::ConstantFormat::eVec3f, location + 0u } );
+					result.push_back( { name, ashes::ConstantFormat::eVec3f, location + 1u } );
+					result.push_back( { name, ashes::ConstantFormat::eVec3f, location + 2u } );
+					break;
+				case GLSL_ATTRIBUTE_FLOAT_MAT4:
+					result.push_back( { name, ashes::ConstantFormat::eVec4f, location + 0u } );
+					result.push_back( { name, ashes::ConstantFormat::eVec4f, location + 1u } );
+					result.push_back( { name, ashes::ConstantFormat::eVec4f, location + 2u } );
+					result.push_back( { name, ashes::ConstantFormat::eVec4f, location + 3u } );
+					break;
+				default:
+					result.push_back( { name, getFormat( type ), location } );
+					break;
+				}
+			} );
+		return result;
 	}
 
 	InterfaceBlockLayout getInterfaceBlockLayout( ContextLock const & context

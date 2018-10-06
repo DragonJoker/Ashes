@@ -63,6 +63,8 @@ See LICENSE file in root folder.
 #include <Buffer/VertexBuffer.hpp>
 #include <RenderPass/FrameBufferAttachment.hpp>
 
+#define AshesD3D_UseCommandsList 0
+
 namespace d3d11_renderer
 {
 	namespace
@@ -99,16 +101,24 @@ namespace d3d11_renderer
 		, m_device{ device }
 		, m_pool{ pool }
 	{
+#if AshesD3D_UseCommandsList
+
 		if ( !primary )
 		{
 			m_device.getDevice()->CreateDeferredContext( 0u, &m_deferredContext );
 		}
+
+#endif
 	}
 
 	CommandBuffer::~CommandBuffer()
 	{
+#if AshesD3D_UseCommandsList
+
 		safeRelease( m_commandList );
 		safeRelease( m_deferredContext );
+
+#endif
 	}
 
 	void CommandBuffer::execute( Context & context )const
@@ -150,24 +160,23 @@ namespace d3d11_renderer
 	{
 		m_state.pushConstantBuffers.clear();
 
+#if AshesD3D_UseCommandsList
+
 		if ( m_deferredContext )
 		{
 			safeRelease( m_commandList );
 			Context context{ m_deferredContext };
+			m_deferredContext->AddRef();
 			execute( context );
-			m_deferredContext->FinishCommandList( FALSE, &m_commandList );
+			m_deferredContext->FinishCommandList( TRUE, &m_commandList );
 		}
+
+#endif
 	}
 
 	void CommandBuffer::reset( ashes::CommandBufferResetFlags flags )const
 	{
 		m_commands.clear();
-
-		if ( m_deferredContext )
-		{
-			safeRelease( m_deferredContext );
-			m_device.getDevice()->CreateDeferredContext( 0u, &m_deferredContext );
-		}
 	}
 
 	void CommandBuffer::beginRenderPass( ashes::RenderPass const & renderPass
@@ -216,11 +225,31 @@ namespace d3d11_renderer
 
 	void CommandBuffer::executeCommands( ashes::CommandBufferCRefArray const & commands )const
 	{
+#if AshesD3D_UseCommandsList
+
 		for ( auto & commandBuffer : commands )
 		{
 			m_commands.emplace_back( std::make_unique< ExecuteCommandsCommand >( m_device
 				, commandBuffer ) );
 		}
+
+#else
+
+		for ( auto & commandBuffer : commands )
+		{
+			auto & dxCommandBuffer = static_cast< CommandBuffer const & >( commandBuffer.get() );
+
+			for ( auto & command : dxCommandBuffer.getCommands() )
+			{
+				m_commands.emplace_back( command->clone() );
+			}
+
+			m_afterSubmitActions.insert( m_afterSubmitActions.end()
+				, dxCommandBuffer.m_afterSubmitActions.begin()
+				, dxCommandBuffer.m_afterSubmitActions.end() );
+		}
+
+#endif
 	}
 
 	void CommandBuffer::clear( ashes::TextureView const & image

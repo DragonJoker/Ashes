@@ -20,9 +20,9 @@ namespace d3d11_renderer
 				UINT( copyInfo.srcOffset.x ),
 				UINT( copyInfo.srcOffset.y ),
 				UINT( copyInfo.srcOffset.z ),
-				copyInfo.extent.width,
-				copyInfo.extent.height,
-				copyInfo.extent.depth,
+				UINT( copyInfo.srcOffset.x ) + copyInfo.extent.width,
+				UINT( copyInfo.srcOffset.y ) + copyInfo.extent.height,
+				UINT( copyInfo.srcOffset.z ) + copyInfo.extent.depth,
 			};
 		}
 	}

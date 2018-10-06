@@ -15,6 +15,12 @@ namespace d3d11_renderer
 		case ashes::StencilOp::eReplace:
 			return D3D11_STENCIL_OP_REPLACE;
 
+		case ashes::StencilOp::eIncrementAndWrap:
+			return D3D11_STENCIL_OP_INCR;
+
+		case ashes::StencilOp::eDecrementAndWrap:
+			return D3D11_STENCIL_OP_DECR;
+
 		case ashes::StencilOp::eIncrementAndClamp:
 			return D3D11_STENCIL_OP_INCR_SAT;
 
