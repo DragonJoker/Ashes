@@ -77,7 +77,7 @@ namespace d3d11_renderer
 
 	private:
 		void doCreateDXGIFactory();
-		void doLoadAdapters();
+		D3D_FEATURE_LEVEL doLoadAdapters();
 
 	private:
 		IDXGIFactory * m_factory;

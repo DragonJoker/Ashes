@@ -221,6 +221,11 @@ namespace d3d11_renderer
 			desc.MipLevels = createInfo.mipLevels;
 			desc.BindFlags = getBindFlags( createInfo );
 			desc.MiscFlags = getMiscFlags( createInfo );
+
+			if ( m_device.getFeatureLevel() < D3D_FEATURE_LEVEL_11_0 )
+			{
+				desc.BindFlags &= ~( D3D11_BIND_UNORDERED_ACCESS );
+			}
 		}
 
 	private:
@@ -333,6 +338,11 @@ namespace d3d11_renderer
 					desc.SampleDesc.Quality--;
 				}
 			}
+
+			if ( m_device.getFeatureLevel() < D3D_FEATURE_LEVEL_11_0 )
+			{
+				desc.BindFlags &= ~( D3D11_BIND_UNORDERED_ACCESS );
+			}
 		}
 
 	private:
@@ -431,6 +441,11 @@ namespace d3d11_renderer
 			desc.MipLevels = createInfo.mipLevels;
 			desc.BindFlags = getBindFlags( createInfo );
 			desc.MiscFlags = getMiscFlags( createInfo );
+
+			if ( m_device.getFeatureLevel() < D3D_FEATURE_LEVEL_11_0 )
+			{
+				desc.BindFlags &= ~( D3D11_BIND_UNORDERED_ACCESS );
+			}
 		}
 
 	private:

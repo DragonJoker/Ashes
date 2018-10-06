@@ -14,14 +14,14 @@ namespace d3d11_renderer
 	Renderer::Renderer( Configuration const & configuration )
 		: ashes::Renderer{ ashes::ClipDirection::eTopDown, "d3d11", configuration }
 	{
-		m_features.hasTexBufferRange = true;
-		m_features.hasImageTexture = true;
-		m_features.hasBaseInstance = true;
-		m_features.hasClearTexImage = true;
-		m_features.hasComputeShaders = true;
-		m_features.hasStorageBuffers = true;
 		doCreateDXGIFactory();
-		doLoadAdapters();
+		auto featureLevel = doLoadAdapters();
+		m_features.hasTexBufferRange = featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.hasImageTexture = featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.hasBaseInstance = featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.hasClearTexImage = true;
+		m_features.hasComputeShaders = featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.hasStorageBuffers = featureLevel >= D3D_FEATURE_LEVEL_11_0;
 	}
 
 	Renderer::~Renderer()
@@ -130,10 +130,11 @@ namespace d3d11_renderer
 		}
 	}
 
-	void Renderer::doLoadAdapters()
+	D3D_FEATURE_LEVEL Renderer::doLoadAdapters()
 	{
 		UINT index = 0;
 		IDXGIAdapter * adapter;
+		D3D_FEATURE_LEVEL maxFeatureLevel = D3D_FEATURE_LEVEL_9_1;
 
 		while ( m_factory->EnumAdapters( index, &adapter ) != DXGI_ERROR_NOT_FOUND )
 		{
@@ -148,8 +149,12 @@ namespace d3d11_renderer
 					, reinterpret_cast< void ** >( &adapter2 ) );
 			}
 
-			m_gpus.emplace_back( std::make_unique< PhysicalDevice >( *this, adapter, adapter1, adapter2 ) );
+			auto gpu = std::make_unique< PhysicalDevice >( *this, adapter, adapter1, adapter2 );
+			maxFeatureLevel = gpu->getFeatureLevel();
+			m_gpus.emplace_back( std::move( gpu ) );
 			++index;
 		}
+
+		return maxFeatureLevel;
 	}
 }

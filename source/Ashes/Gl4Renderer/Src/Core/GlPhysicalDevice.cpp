@@ -311,6 +311,34 @@ namespace gl_renderer
 			return function != nullptr;
 		}
 #endif
+
+		uint32_t doGetVendorID( std::string vendorName )
+		{
+			uint32_t result = 0u;
+			std::transform( vendorName.begin()
+				, vendorName.end()
+				, vendorName.begin()
+				, ::tolower );
+
+			if ( vendorName.find( "nvidia" ) != std::string::npos )
+			{
+				result = 0x10DE;
+			}
+			else if ( vendorName.find( "intel" ) != std::string::npos )
+			{
+				result = 0x8086;
+			}
+			else if ( vendorName.find( "amd" ) != std::string::npos )
+			{
+				result = 0x1002;
+			}
+			else if ( vendorName.find( "arm" ) != std::string::npos )
+			{
+				result = 0x13B5;
+			}
+
+			return result;
+		}
 	}
 
 	PhysicalDevice::PhysicalDevice( Renderer & renderer )
@@ -413,7 +441,7 @@ namespace gl_renderer
 		m_properties.deviceID = 0u;
 		m_properties.deviceName = ( char const * )glGetString( GL_RENDERER );
 		std::memset( m_properties.pipelineCacheUUID, 0u, sizeof( m_properties.pipelineCacheUUID ) );
-		m_properties.vendorID = uint32_t( std::hash< std::string >{}( ( char const * )glGetString( GL_VENDOR ) ) );
+		m_properties.vendorID = doGetVendorID( ( char const * )glGetString( GL_VENDOR ) );
 		m_properties.deviceType = ashes::PhysicalDeviceType::eOther;
 		m_properties.driverVersion = 0;
 

@@ -12,6 +12,8 @@
 
 namespace gl_renderer
 {
+	InputLayout getInputLayout( ContextLock const & context
+		, GLuint program );
 	InterfaceBlockLayout getInterfaceBlockLayout( ContextLock const & context
 		, GLuint program );
 	ConstantsLayout getConstantsLayout( ContextLock const & context
@@ -22,6 +24,7 @@ namespace gl_renderer
 		return
 		{
 			0u,
+			getInputLayout( context, program ),
 			getConstantsLayout( context, program ),
 			getInterfaceBlockLayout( context, program )
 		};

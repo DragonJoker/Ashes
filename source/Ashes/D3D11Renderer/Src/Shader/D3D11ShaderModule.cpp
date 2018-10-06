@@ -259,26 +259,79 @@ namespace d3d11_renderer
 		: m_shader{ nullptr }
 		, m_stage{ state.module->getStage() }
 	{
-		static std::map< ashes::ShaderStageFlag, std::string > Profiles
+		static std::map< D3D_FEATURE_LEVEL, std::map< ashes::ShaderStageFlag, std::string > > Profiles
 		{
-			{ ashes::ShaderStageFlag::eVertex, "vs_5_0" },
-		{ ashes::ShaderStageFlag::eGeometry, "gs_5_0" },
-		{ ashes::ShaderStageFlag::eTessellationControl, "hs_5_0" },
-		{ ashes::ShaderStageFlag::eTessellationEvaluation, "ds_5_0" },
-		{ ashes::ShaderStageFlag::eFragment, "ps_5_0" },
-		{ ashes::ShaderStageFlag::eCompute, "cs_5_0" },
+			{ 
+				D3D_FEATURE_LEVEL_11_1,
+				{
+					{ ashes::ShaderStageFlag::eVertex, "vs_5_0" },
+					{ ashes::ShaderStageFlag::eGeometry, "gs_5_0" },
+					{ ashes::ShaderStageFlag::eTessellationControl, "hs_5_0" },
+					{ ashes::ShaderStageFlag::eTessellationEvaluation, "ds_5_0" },
+					{ ashes::ShaderStageFlag::eFragment, "ps_5_0" },
+					{ ashes::ShaderStageFlag::eCompute, "cs_5_0" },
+				}
+			},
+			{ 
+				D3D_FEATURE_LEVEL_11_0,
+				{
+					{ ashes::ShaderStageFlag::eVertex, "vs_5_0" },
+					{ ashes::ShaderStageFlag::eGeometry, "gs_5_0" },
+					{ ashes::ShaderStageFlag::eTessellationControl, "hs_5_0" },
+					{ ashes::ShaderStageFlag::eTessellationEvaluation, "ds_5_0" },
+					{ ashes::ShaderStageFlag::eFragment, "ps_5_0" },
+					{ ashes::ShaderStageFlag::eCompute, "cs_5_0" },
+				}
+			},
+			{ 
+				D3D_FEATURE_LEVEL_10_1,
+				{
+					{ ashes::ShaderStageFlag::eVertex, "vs_4_1" },
+					{ ashes::ShaderStageFlag::eGeometry, "gs_4_1" },
+					{ ashes::ShaderStageFlag::eFragment, "ps_4_1" },
+				}
+			},
+			{ 
+				D3D_FEATURE_LEVEL_10_0,
+				{
+					{ ashes::ShaderStageFlag::eVertex, "vs_4_0" },
+					{ ashes::ShaderStageFlag::eGeometry, "gs_4_0" },
+					{ ashes::ShaderStageFlag::eFragment, "ps_4_0" },
+				}
+			},
+			{ 
+				D3D_FEATURE_LEVEL_9_3,
+				{
+					{ ashes::ShaderStageFlag::eVertex, "vs_3_0" },
+					{ ashes::ShaderStageFlag::eFragment, "ps_3_0" },
+				}
+			},
+			{ 
+				D3D_FEATURE_LEVEL_9_2,
+				{
+					{ ashes::ShaderStageFlag::eVertex, "vs_2_0" },
+					{ ashes::ShaderStageFlag::eFragment, "ps_2_0" },
+				}
+			},
+			{ 
+				D3D_FEATURE_LEVEL_9_1,
+				{
+					{ ashes::ShaderStageFlag::eVertex, "vs_1_1" },
+				}
+			}
 		};
 
 		m_source = compileSpvToHlsl( device
 			, spv
 			, m_stage
 			, state );
-		std::string profile = Profiles[m_stage];
+		std::string profile = Profiles[device.getFeatureLevel()][m_stage];
+		assert( !profile.empty() && "Unsupported shader stage for currently supported feature level" );
 		CComPtr< ID3DBlob > errors;
 		UINT flags = 0;
 
 #if !defined( NDEBUG )
-		flags |= D3DCOMPILE_DEBUG | D3DCOMPILE_WARNINGS_ARE_ERRORS;
+		flags |= D3DCOMPILE_DEBUG;
 #endif
 
 		auto hr = D3DCompile( m_source.c_str()
@@ -297,9 +350,13 @@ namespace d3d11_renderer
 		{
 			doRetrieveShader( device );
 			m_layout = doRetrieveShaderDesc();
-		}
 
-		if ( errors )
+			if ( errors )
+			{
+				ashes::Logger::logWarning( reinterpret_cast< char * >( errors->GetBufferPointer() ) );
+			}
+		}
+		else if ( errors )
 		{
 			ashes::Logger::logError( reinterpret_cast< char * >( errors->GetBufferPointer() ) );
 			ashes::Logger::logError( m_source );
