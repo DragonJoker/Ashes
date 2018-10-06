@@ -8,6 +8,15 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
+	struct InputDesc
+	{
+		std::string name;
+		ashes::ConstantFormat format{};
+		uint32_t location{ 0u };
+	};
+
+	using InputLayout = std::vector< InputDesc >;
+
 	struct ConstantDesc
 	{
 		std::string name;
@@ -33,6 +42,7 @@ namespace gl_renderer
 	struct ShaderDesc
 	{
 		ashes::ShaderStageFlags stageFlags;
+		InputLayout inputLayout;
 		ConstantsLayout constantsLayout;
 		InterfaceBlockLayout interfaceBlockLayout;
 	};

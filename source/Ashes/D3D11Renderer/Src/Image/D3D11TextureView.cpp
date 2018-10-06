@@ -106,7 +106,8 @@ namespace d3d11_renderer
 			dxDebugName( m_shaderView, ShaderResourceView1D );
 		}
 
-		if ( m_image.isStorage() )
+		if ( m_image.isStorage()
+			&& m_device.getFeatureLevel() >= D3D_FEATURE_LEVEL_11_0 )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
 			desc.Format = getUAVFormat( getFormat() );
@@ -155,7 +156,8 @@ namespace d3d11_renderer
 			dxDebugName( m_shaderView, ShaderResourceView1DArray );
 		}
 
-		if ( m_image.isStorage() )
+		if ( m_image.isStorage()
+			&& m_device.getFeatureLevel() >= D3D_FEATURE_LEVEL_11_0 )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
 			desc.Format = getUAVFormat( getFormat() );
@@ -217,7 +219,8 @@ namespace d3d11_renderer
 			dxDebugName( m_shaderView, ShaderResourceView2D );
 		}
 
-		if ( m_image.isStorage() )
+		if ( m_image.isStorage()
+			&& m_device.getFeatureLevel() >= D3D_FEATURE_LEVEL_11_0 )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
 			desc.Format = getUAVFormat( getFormat() );
@@ -283,7 +286,8 @@ namespace d3d11_renderer
 			dxDebugName( m_shaderView, ShaderResourceView2DArray );
 		}
 
-		if ( m_image.isStorage() )
+		if ( m_image.isStorage()
+			&& m_device.getFeatureLevel() >= D3D_FEATURE_LEVEL_11_0 )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
 			desc.Format = getUAVFormat( getFormat() );
@@ -332,7 +336,8 @@ namespace d3d11_renderer
 			dxDebugName( m_unorderedAccessView, UnorderedAccessView3D );
 		}
 
-		if ( m_image.isStorage() )
+		if ( m_image.isStorage()
+			&& m_device.getFeatureLevel() >= D3D_FEATURE_LEVEL_11_0 )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
 			desc.Format = getUAVFormat( getFormat() );
@@ -381,7 +386,8 @@ namespace d3d11_renderer
 			dxDebugName( m_unorderedAccessView, ShaderResourceViewCube );
 		}
 
-		if ( m_image.isStorage() )
+		if ( m_image.isStorage()
+			&& m_device.getFeatureLevel() >= D3D_FEATURE_LEVEL_11_0 )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
 			desc.Format = getUAVFormat( getFormat() );
@@ -437,7 +443,8 @@ namespace d3d11_renderer
 			dxDebugName( m_unorderedAccessView, ShaderResourceViewCubeArray );
 		}
 
-		if ( m_image.isStorage() )
+		if ( m_image.isStorage()
+			&& m_device.getFeatureLevel() >= D3D_FEATURE_LEVEL_11_0 )
 		{
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
 			desc.Format = getUAVFormat( getFormat() );

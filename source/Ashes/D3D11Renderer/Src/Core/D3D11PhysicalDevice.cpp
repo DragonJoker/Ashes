@@ -9,6 +9,39 @@ See LICENSE file in root folder.
 
 namespace d3d11_renderer
 {
+	namespace
+	{
+		D3D_FEATURE_LEVEL doGetSupportedFeatureLevel( IDXGIFactory * factory
+			, IDXGIAdapter * adapter )
+		{
+			std::vector< D3D_FEATURE_LEVEL > requestedFeatureLevels
+			{
+				D3D_FEATURE_LEVEL_11_1,
+				D3D_FEATURE_LEVEL_11_0,
+				D3D_FEATURE_LEVEL_10_1,
+				D3D_FEATURE_LEVEL_10_0,
+				D3D_FEATURE_LEVEL_9_3,
+				D3D_FEATURE_LEVEL_9_2,
+				D3D_FEATURE_LEVEL_9_1,
+			};
+			D3D_FEATURE_LEVEL result;
+
+			// First me check max supported feature level
+			D3D11CreateDevice( nullptr
+				, D3D_DRIVER_TYPE_HARDWARE
+				, nullptr
+				, 0u
+				, requestedFeatureLevels.data()
+				, UINT( requestedFeatureLevels.size() )
+				, D3D11_SDK_VERSION
+				, nullptr
+				, &result
+				, nullptr );
+
+			return result;
+		}
+	}
+
 	PhysicalDevice::PhysicalDevice( Renderer & renderer
 		, IDXGIAdapter * adapter
 		, IDXGIAdapter1 * adapter1
@@ -53,24 +86,26 @@ namespace d3d11_renderer
 			m_output->GetDesc( &desc );
 		}
 
+		m_featureLevel = doGetSupportedFeatureLevel( m_renderer.getDXGIFactory(), m_adapter );
+
 		m_properties.deviceType = ashes::PhysicalDeviceType::eDiscreteGpu;
 		m_features.robustBufferAccess = true;
 		m_features.fullDrawIndexUint32 = true;
 		m_features.imageCubeArray = true;
 		m_features.independentBlend = true;
-		m_features.geometryShader = true;
-		m_features.tessellationShader = true;
+		m_features.geometryShader = m_featureLevel >= D3D_FEATURE_LEVEL_10_0;
+		m_features.tessellationShader = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.sampleRateShading = true;
 		m_features.dualSrcBlend = true;
-		m_features.logicOp = false;
+		m_features.logicOp = true;
 		m_features.multiDrawIndirect = false;
 		m_features.drawIndirectFirstInstance = true;
 		m_features.depthClamp = true;
 		m_features.depthBiasClamp = true;
 		m_features.fillModeNonSolid = true;
 		m_features.depthBounds = true;
-		m_features.wideLines = true;
-		m_features.largePoints = true;
+		m_features.wideLines = false;
+		m_features.largePoints = false;
 		m_features.alphaToOne = true;
 		m_features.multiViewport = true;
 		m_features.samplerAnisotropy = true;
@@ -81,33 +116,33 @@ namespace d3d11_renderer
 		m_features.pipelineStatisticsQuery = true;
 		m_features.vertexPipelineStoresAndAtomics = true;
 		m_features.fragmentStoresAndAtomics = true;
-		m_features.shaderTessellationAndGeometryPointSize = true;
-		m_features.shaderImageGatherExtended = true;
-		m_features.shaderStorageImageExtendedFormats = true;
-		m_features.shaderStorageImageMultisample = true;
-		m_features.shaderStorageImageReadWithoutFormat = true;
-		m_features.shaderStorageImageWriteWithoutFormat = true;
+		m_features.shaderTessellationAndGeometryPointSize = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderImageGatherExtended = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageExtendedFormats = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageMultisample = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageReadWithoutFormat = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageWriteWithoutFormat = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.shaderUniformBufferArrayDynamicIndexing = true;
 		m_features.shaderSampledImageArrayDynamicIndexing = true;
 		m_features.shaderStorageBufferArrayDynamicIndexing = true;
 		m_features.shaderStorageImageArrayDynamicIndexing = true;
 		m_features.shaderClipDistance = true;
 		m_features.shaderCullDistance = true;
-		m_features.shaderFloat64 = true;
-		m_features.shaderInt64 = true;
-		m_features.shaderInt16 = true;
-		m_features.shaderResourceResidency = true;
+		m_features.shaderFloat64 = false;
+		m_features.shaderInt64 = false;
+		m_features.shaderInt16 = false;
+		m_features.shaderResourceResidency = false;
 		m_features.shaderResourceMinLod = true;
-		m_features.sparseBinding = true;
-		m_features.sparseResidencyBuffer = true;
-		m_features.sparseResidencyImage2D = true;
-		m_features.sparseResidencyImage3D = true;
-		m_features.sparseResidency2Samples = true;
-		m_features.sparseResidency4Samples = true;
-		m_features.sparseResidency8Samples = true;
-		m_features.sparseResidency16Samples = true;
-		m_features.sparseResidencyAliased = true;
-		m_features.variableMultisampleRate = true;
+		m_features.sparseBinding = false;
+		m_features.sparseResidencyBuffer = false;
+		m_features.sparseResidencyImage2D = false;
+		m_features.sparseResidencyImage3D = false;
+		m_features.sparseResidency2Samples = false;
+		m_features.sparseResidency4Samples = false;
+		m_features.sparseResidency8Samples = false;
+		m_features.sparseResidency16Samples = false;
+		m_features.sparseResidencyAliased = false;
+		m_features.variableMultisampleRate = false;
 		m_features.inheritedQueries = true;
 
 		m_properties.limits.maxImageDimension1D = D3D11_REQ_TEXTURE1D_U_DIMENSION;
@@ -126,7 +161,7 @@ namespace d3d11_renderer
 		m_properties.limits.maxBoundDescriptorSets = 8u;
 		m_properties.limits.maxPerStageDescriptorSamplers = D3D11_REQ_SAMPLER_OBJECT_COUNT_PER_DEVICE;
 		m_properties.limits.maxPerStageDescriptorUniformBuffers = D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT;
-		m_properties.limits.maxPerStageDescriptorStorageBuffers = 1048576u;
+		m_properties.limits.maxPerStageDescriptorStorageBuffers = D3D11_1_UAV_SLOT_COUNT;
 		m_properties.limits.maxPerStageDescriptorSampledImages = D3D11_REQ_SAMPLER_OBJECT_COUNT_PER_DEVICE;
 		m_properties.limits.maxPerStageDescriptorStorageImages = 1048576u;
 		m_properties.limits.maxPerStageDescriptorInputAttachments = 1048576u;
@@ -134,8 +169,8 @@ namespace d3d11_renderer
 		m_properties.limits.maxDescriptorSetSamplers = D3D11_REQ_SAMPLER_OBJECT_COUNT_PER_DEVICE;
 		m_properties.limits.maxDescriptorSetUniformBuffers = D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT;
 		m_properties.limits.maxDescriptorSetUniformBuffersDynamic = D3D11_COMMONSHADER_CONSTANT_BUFFER_HW_SLOT_COUNT;
-		m_properties.limits.maxDescriptorSetStorageBuffers = 1048576u;
-		m_properties.limits.maxDescriptorSetStorageBuffersDynamic = 16u;
+		m_properties.limits.maxDescriptorSetStorageBuffers = D3D11_1_UAV_SLOT_COUNT;
+		m_properties.limits.maxDescriptorSetStorageBuffersDynamic = D3D11_1_UAV_SLOT_COUNT;
 		m_properties.limits.maxDescriptorSetSampledImages = D3D11_REQ_SAMPLER_OBJECT_COUNT_PER_DEVICE;
 		m_properties.limits.maxDescriptorSetStorageImages = 1048576u;
 		m_properties.limits.maxDescriptorSetInputAttachments = 1048576u;
@@ -144,31 +179,31 @@ namespace d3d11_renderer
 		m_properties.limits.maxVertexInputAttributeOffset = 2047u;
 		m_properties.limits.maxVertexInputBindingStride = 2048u;
 		m_properties.limits.maxVertexOutputComponents = D3D11_VS_OUTPUT_REGISTER_COUNT;
-		m_properties.limits.maxTessellationGenerationLevel = 64u;
+		m_properties.limits.maxTessellationGenerationLevel = D3D11_TESSELLATOR_MAX_TESSELLATION_FACTOR;
 		m_properties.limits.maxTessellationPatchSize = D3D11_HS_OUTPUT_PATCH_CONSTANT_REGISTER_COUNT;
 		m_properties.limits.maxTessellationControlPerVertexInputComponents = D3D11_HS_CONTROL_POINT_REGISTER_COMPONENT_BIT_COUNT;
 		m_properties.limits.maxTessellationControlPerVertexOutputComponents = D3D11_HS_CONTROL_POINT_PHASE_OUTPUT_REGISTER_COUNT;
 		m_properties.limits.maxTessellationControlPerPatchOutputComponents = D3D11_HS_OUTPUT_PATCH_CONSTANT_REGISTER_COUNT;
-		m_properties.limits.maxTessellationControlTotalOutputComponents = 4216u;
+		m_properties.limits.maxTessellationControlTotalOutputComponents = D3D11_HS_OUTPUT_CONTROL_POINTS_MAX_TOTAL_SCALARS;
 		m_properties.limits.maxTessellationEvaluationInputComponents = D3D11_DS_INPUT_CONTROL_POINT_REGISTER_COUNT;
 		m_properties.limits.maxTessellationEvaluationOutputComponents = D3D11_DS_OUTPUT_REGISTER_COUNT;
-		m_properties.limits.maxGeometryShaderInvocations = 32u;
+		m_properties.limits.maxGeometryShaderInvocations = D3D11_GS_MAX_INSTANCE_COUNT;
 		m_properties.limits.maxGeometryInputComponents = D3D11_GS_INPUT_REGISTER_COUNT;
 		m_properties.limits.maxGeometryOutputComponents = D3D11_GS_OUTPUT_REGISTER_COUNT;
-		m_properties.limits.maxGeometryOutputVertices = 1024u;
-		m_properties.limits.maxGeometryTotalOutputComponents = 1024u;
+		m_properties.limits.maxGeometryOutputVertices = D3D11_GS_MAX_OUTPUT_VERTEX_COUNT_ACROSS_INSTANCES;
+		m_properties.limits.maxGeometryTotalOutputComponents = D3D11_GS_MAX_OUTPUT_VERTEX_COUNT_ACROSS_INSTANCES;
 		m_properties.limits.maxFragmentInputComponents = D3D11_PS_INPUT_REGISTER_COUNT;
-		m_properties.limits.maxFragmentOutputAttachments = 8u;
+		m_properties.limits.maxFragmentOutputAttachments = D3D11_PS_OUTPUT_REGISTER_COUNT;
 		m_properties.limits.maxFragmentDualSrcAttachments = 1u;
 		m_properties.limits.maxFragmentCombinedOutputResources = 16u;
 		m_properties.limits.maxComputeSharedMemorySize = 49152u;
-		m_properties.limits.maxComputeWorkGroupCount[0] = 2147483647u;
-		m_properties.limits.maxComputeWorkGroupCount[1] = 65535u;
-		m_properties.limits.maxComputeWorkGroupCount[2] = 65535u;
+		m_properties.limits.maxComputeWorkGroupCount[0] = D3D11_CS_DISPATCH_MAX_THREAD_GROUPS_PER_DIMENSION;
+		m_properties.limits.maxComputeWorkGroupCount[1] = D3D11_CS_DISPATCH_MAX_THREAD_GROUPS_PER_DIMENSION;
+		m_properties.limits.maxComputeWorkGroupCount[2] = D3D11_CS_DISPATCH_MAX_THREAD_GROUPS_PER_DIMENSION;
 		m_properties.limits.maxComputeWorkGroupInvocations = 1536u;
-		m_properties.limits.maxComputeWorkGroupSize[0] = 1536u;
-		m_properties.limits.maxComputeWorkGroupSize[1] = 1024u;
-		m_properties.limits.maxComputeWorkGroupSize[2] = 64u;
+		m_properties.limits.maxComputeWorkGroupSize[0] = D3D11_CS_THREAD_GROUP_MAX_X;
+		m_properties.limits.maxComputeWorkGroupSize[1] = D3D11_CS_THREAD_GROUP_MAX_Y;
+		m_properties.limits.maxComputeWorkGroupSize[2] = D3D11_CS_THREAD_GROUP_MAX_Z;
 		m_properties.limits.subPixelPrecisionBits = 8u;
 		m_properties.limits.subTexelPrecisionBits = 8u;
 		m_properties.limits.mipmapPrecisionBits = 8u;
@@ -179,8 +214,8 @@ namespace d3d11_renderer
 		m_properties.limits.maxViewports = D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE;
 		m_properties.limits.maxViewportDimensions[0] = 16384u;
 		m_properties.limits.maxViewportDimensions[1] = 16384u;
-		m_properties.limits.viewportBoundsRange[0] = -32768.0f;
-		m_properties.limits.viewportBoundsRange[1] = 32768.0f;
+		m_properties.limits.viewportBoundsRange[0] = D3D11_VIEWPORT_BOUNDS_MIN;
+		m_properties.limits.viewportBoundsRange[1] = D3D11_VIEWPORT_BOUNDS_MAX;
 		m_properties.limits.viewportSubPixelBits = 8u;
 		m_properties.limits.minMemoryMapAlignment = 64u;
 		m_properties.limits.minTexelBufferOffsetAlignment = 16u;

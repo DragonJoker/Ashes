@@ -43,7 +43,7 @@ namespace d3d11_renderer
 			return D3D11_BLEND_INV_SRC1_COLOR;
 
 		case ashes::BlendFactor::eSrc1Alpha:
-			return D3D11_BLEND_SRC_ALPHA;
+			return D3D11_BLEND_SRC1_ALPHA;
 
 		case ashes::BlendFactor::eInvSrc1Alpha:
 			return D3D11_BLEND_INV_SRC1_ALPHA;

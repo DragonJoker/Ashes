@@ -11,17 +11,24 @@ namespace d3d11_renderer
 
 		for ( auto attribute : state.vertexAttributeDescriptions )
 		{
-			auto & binding = state.vertexBindingDescriptions[attribute.binding];
-			auto it = std::find_if( inputLayout.begin()
-				, inputLayout.end()
-				, [attribute]( InputElementDesc const & desc )
+			auto bindingIt = std::find_if( state.vertexBindingDescriptions.begin()
+				, state.vertexBindingDescriptions.end()
+				, [&attribute]( ashes::VertexInputBindingDescription const & lookup )
 				{
-					return attribute.location == desc.BaseSemanticIndex;
+					return attribute.binding == lookup.binding;
+				} );
+			auto inputDescIt = std::find_if( inputLayout.begin()
+				, inputLayout.end()
+				, [attribute]( InputElementDesc const & lookup )
+				{
+					return attribute.location == lookup.BaseSemanticIndex;
 				} );
 
-			if ( it != inputLayout.end() )
+			if ( inputDescIt != inputLayout.end()
+				&& bindingIt != state.vertexBindingDescriptions.end() )
 			{
-				auto & inputDesc = *it;
+				auto & inputDesc = *inputDescIt;
+				auto & binding = *bindingIt;
 				result.push_back( D3D11_INPUT_ELEMENT_DESC
 					{
 						inputDesc.SemanticName.c_str(),

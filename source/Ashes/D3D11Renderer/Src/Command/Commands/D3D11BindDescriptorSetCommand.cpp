@@ -51,7 +51,7 @@ namespace d3d11_renderer
 
 		ID3D11UnorderedAccessView * getBufferUAV( ashes::WriteDescriptorSet const & write, uint32_t index )
 		{
-			assert( index < write.imageInfo.size() );
+			//assert( index < write.imageInfo.size() );
 			return nullptr;// static_cast< Buffer const & >( write.bufferInfo[index].buffer.get() ).getUnorderedAccessView();
 		}
 
@@ -334,7 +334,7 @@ namespace d3d11_renderer
 					, flags
 					, buffer
 					, UINT( write.bufferInfo[i].offset / 16 )
-					, UINT( write.bufferInfo[i].range / 16 ) );
+					, UINT( ashes::getAlignedSize( write.bufferInfo[i].range / 16ull, 16u ) ) );
 			}
 		}
 
@@ -388,7 +388,7 @@ namespace d3d11_renderer
 					, flags
 					, buffer
 					, UINT( ( offset + write.bufferInfo[i].offset ) / 16 )
-					, UINT( write.bufferInfo[i].range / 16 ) );
+					, UINT( ashes::getAlignedSize( write.bufferInfo[i].range / 16ull, 16u ) ) );
 			}
 		}
 
@@ -515,7 +515,7 @@ namespace d3d11_renderer
 					, flags
 					, ( ID3D11Buffer * )nullptr
 					, UINT( write.bufferInfo[i].offset / 16 )
-					, UINT( write.bufferInfo[i].range / 16 ) );
+					, UINT( ashes::getAlignedSize( write.bufferInfo[i].range / 16ull, 16u ) ) );
 			}
 		}
 
@@ -565,8 +565,8 @@ namespace d3d11_renderer
 					, bindingIndex
 					, flags
 					, ( ID3D11Buffer * )nullptr
-					, UINT( write.bufferInfo[i].offset / 16 )
-					, UINT( write.bufferInfo[i].range / 16 ) );
+					, UINT( ( offset + write.bufferInfo[i].offset ) / 16 )
+					, UINT( ashes::getAlignedSize( write.bufferInfo[i].range / 16ull, 16u ) ) );
 			}
 		}
 

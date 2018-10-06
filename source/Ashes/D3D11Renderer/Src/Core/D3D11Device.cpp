@@ -278,7 +278,6 @@ namespace d3d11_renderer
 			D3D_FEATURE_LEVEL_9_2,
 			D3D_FEATURE_LEVEL_9_1,
 		};
-		D3D_FEATURE_LEVEL supportedFeatureLevel;
 		HRESULT hr;
 		HWND hWnd = m_connection->getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd();
 		hr = factory->MakeWindowAssociation( hWnd, 0 );
@@ -301,59 +300,17 @@ namespace d3d11_renderer
 		flags = D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-		// First me check max supported feature level
+		D3D_FEATURE_LEVEL supportedFeatureLevel = m_gpu.getFeatureLevel();
 		hr = D3D11CreateDevice( nullptr
 			, D3D_DRIVER_TYPE_HARDWARE
 			, nullptr
 			, flags
-			, requestedFeatureLevels.data()
-			, UINT( requestedFeatureLevels.size() )
-			, D3D11_SDK_VERSION
-			, nullptr
 			, &supportedFeatureLevel
-			, nullptr );
-
-		if ( hr == S_FALSE )
-		{
-			hr = D3D11CreateDevice( nullptr
-				, D3D_DRIVER_TYPE_HARDWARE
-				, nullptr
-				, flags
-				, &supportedFeatureLevel
-				, 1
-				, D3D11_SDK_VERSION
-				, &m_device
-				, &m_featureLevel
-				, &m_deviceContext );
-		}
-		else
-		{
-			// First me check max supported feature level
-			hr = D3D11CreateDevice( adapter
-				, D3D_DRIVER_TYPE_HARDWARE
-				, nullptr
-				, flags
-				, requestedFeatureLevels.data()
-				, UINT( requestedFeatureLevels.size() )
-				, D3D11_SDK_VERSION
-				, nullptr
-				, &supportedFeatureLevel
-				, nullptr );
-
-			if ( hr == S_FALSE )
-			{
-				hr = D3D11CreateDevice( adapter
-					, D3D_DRIVER_TYPE_HARDWARE
-					, nullptr
-					, flags
-					, &supportedFeatureLevel
-					, 1
-					, D3D11_SDK_VERSION
-					, &m_device
-					, &m_featureLevel
-					, &m_deviceContext );
-			}
-		}
+			, 1
+			, D3D11_SDK_VERSION
+			, &m_device
+			, &m_featureLevel
+			, &m_deviceContext );
 
 		if ( m_device )
 		{

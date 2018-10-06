@@ -68,11 +68,17 @@ namespace d3d11_renderer
 			return m_output;
 		}
 
+		inline D3D_FEATURE_LEVEL getFeatureLevel()const
+		{
+			return m_featureLevel;
+		}
+
 	private:
 		Renderer & m_renderer;
 		IDXGIAdapter * m_adapter;
 		IDXGIAdapter1 * m_adapter1;
 		IDXGIAdapter2 * m_adapter2;
 		IDXGIOutput * m_output;
+		D3D_FEATURE_LEVEL m_featureLevel;
 	};
 }
