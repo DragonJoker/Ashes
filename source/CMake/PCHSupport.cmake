@@ -1,8 +1,4 @@
-if ( MSVC )
-	option( PROJECTS_USE_PRECOMPILED_HEADERS "Use precompiled headers" TRUE )
-else ()
-	option( PROJECTS_USE_PRECOMPILED_HEADERS "Use precompiled headers" FALSE )
-endif ()
+option( PROJECTS_USE_PRECOMPILED_HEADERS "Use precompiled headers" TRUE )
 
 #--------------------------------------------------------------------------------------------------
 # - Try to find precompiled headers support for GCC 3.4 and 4.x
@@ -52,7 +48,7 @@ macro( pch_get_compile_flags IN_COMPILE_FLAGS OUT_COMPILE_FLAGS )
 	# Add all include directives...
 	get_directory_property( DIRINC INCLUDE_DIRECTORIES )
 	foreach ( ITEM ${DIRINC} )
-		list( APPEND ${OUT_COMPILE_FLAGS} -I${ITEM} )
+        list( APPEND ${OUT_COMPILE_FLAGS} -I${ITEM} )
 	endforeach ( ITEM )
 
 	# Add all definitions...
@@ -107,7 +103,7 @@ macro( pch_get_compile_command OUT_COMMAND input output )
 	else ()
 		set( PCHSUPPORT_COMPILER_CXX_ARG1 "" )
 	endif ()
-	set( ${OUT_COMMAND} ${CMAKE_CXX_COMPILER} ${PCHSUPPORT_COMPILER_CXX_ARG1} ${PCH_COMPILE_FLAGS} -x c++-header -o ${output} ${input} )
+	set( ${OUT_COMMAND} ${CMAKE_CXX_COMPILER} ${PCHSUPPORT_COMPILER_CXX_ARG1} ${PCH_COMPILE_FLAGS} -x c++-header -o ${NATIVE_OUTPUT} ${NATIVE_INPUT} )
 endmacro( pch_get_compile_command )
 #--------------------------------------------------------------------------------------------------
 #
@@ -115,32 +111,28 @@ endmacro( pch_get_compile_command )
 #
 #--------------------------------------------------------------------------------------------------
 MACRO( add_target_precompiled_header TARGET_NAME PCH_HEADER PCH_SOURCE TARGET_CXX_FLAGS )
-	set( PCH_CURRENT_TARGET ${TARGET_NAME} )
-
 	if ( PROJECTS_USE_PRECOMPILED_HEADERS )
-		get_filename_component( PCH_NAME ${PCH_HEADER} NAME )
-		get_filename_component( PCH_PATH ${PCH_HEADER} PATH )
+		set( PCH_CURRENT_TARGET ${TARGET_NAME} )
+		get_filename_component( PCH_HEADER_NAME ${PCH_HEADER} NAME )
+		get_filename_component( PCH_HEADER_PATH ${PCH_HEADER} PATH )
+		get_filename_component( PCH_SOURCE_PATH ${PCH_SOURCE} PATH )
+		set( PCH_INCLUDE_NAME ${PCH_HEADER_NAME} )
+		if ( NOT "${PCH_HEADER_PATH}" STREQUAL "${PCH_SOURCE_PATH}" )
+			set( PCH_INCLUDE_NAME ${TARGET_NAME}/${PCH_INCLUDE_NAME} )
+		endif ()
 		if ( MSVC )
 			foreach ( SRC ${ARGN} )
-				set_source_files_properties( ${SRC} PROPERTIES COMPILE_FLAGS "${TARGET_CXX_FLAGS} /Yu${PCH_NAME} /FI${PCH_NAME}" )
+				set_source_files_properties( ${SRC} PROPERTIES COMPILE_FLAGS "${TARGET_CXX_FLAGS} /Yu${PCH_INCLUDE_NAME} /FI${PCH_INCLUDE_NAME}" )
 			endforeach ()
-			set_source_files_properties( ${PCH_SOURCE} PROPERTIES COMPILE_FLAGS "${TARGET_CXX_FLAGS} /Yc${PCH_NAME}" )
+			set_source_files_properties( ${PCH_SOURCE} PROPERTIES COMPILE_FLAGS "${TARGET_CXX_FLAGS} /Yc${PCH_INCLUDE_NAME}" )
 		else ()
-			get_filename_component( PCH_NAME ${PCH_HEADER} NAME )
-			get_filename_component( PCH_PATH ${PCH_HEADER} PATH )
-			set( PCH_OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/${PCH_NAME}.gch" )
-			get_filename_component( PCH_OUTDIR ${PCH_OUTPUT} PATH )
+			set( PCH_OUTPUT "${PCH_HEADER}.gch" )
+			pch_get_compile_flags( "${TARGET_CXX_FLAGS}" PCH_COMPILE_FLAGS )
+			pch_get_compile_command( PCH_COMMAND  ${PCH_HEADER} ${PCH_OUTPUT} )
+			add_custom_command( OUTPUT ${PCH_OUTPUT} COMMAND ${PCH_COMMAND} IMPLICIT_DEPENDS CXX ${PCH_HEADER} )
 
-			FILE( MAKE_DIRECTORY ${PCH_OUTDIR} )
-			
-			pch_get_compile_flags( ${TARGET_CXX_FLAGS} PCH_COMPILE_FLAGS )
-			
-			pch_get_compile_command( PCH_COMMAND  ${CMAKE_CURRENT_SOURCE_DIR}/${PCH_NAME} ${PCH_OUTPUT} )
-			
-			add_custom_command( OUTPUT ${PCH_OUTPUT} COMMAND ${PCH_COMMAND} IMPLICIT_DEPENDS CXX ${CMAKE_CURRENT_SOURCE_DIR}/${PCH_NAME} )
-			
 			foreach ( SRC ${ARGN} )
-				set_source_files_properties( ${SRC} PROPERTIES COMPILE_FLAGS "${TARGET_CXX_FLAGS} -include ${PCH_OUTDIR}/${PCH_HEADER} -Wl,--enable-large-address-aware" )
+				set_source_files_properties( ${SRC} PROPERTIES COMPILE_FLAGS "${TARGET_CXX_FLAGS} -include ${PCH_HEADER} -Wl,--enable-large-address-aware" )
 				set_source_files_properties( ${SRC} PROPERTIES OBJECT_DEPENDS ${PCH_OUTPUT} )
 			endforeach ()
 		endif ()

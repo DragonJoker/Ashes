@@ -41,9 +41,9 @@ add_dependencies( ${PROJECT_NAME}
 )
 
 add_target_precompiled_header( ${PROJECT_NAME}
-	Src/PrecompiledHeader.hpp
-	Src/PrecompiledHeader.cpp
-	${CMAKE_CXX_FLAGS}
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/PrecompiledHeader.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/PrecompiledHeader.cpp
+	"${CMAKE_CXX_FLAGS}"
 	${SOURCE_FILES}
 )
 

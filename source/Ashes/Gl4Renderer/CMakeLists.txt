@@ -62,21 +62,12 @@ if ( OpenGL_FOUND )
 		)
 	endif ()
 
-	if ( BUILD_ASHES )
-		add_target_precompiled_header( ${PROJECT_NAME}
-			Src/GlRendererPch.hpp
-			Src/GlRendererPch.cpp
-			${CMAKE_CXX_FLAGS}
-			${${PROJECT_NAME}_CXX_FILES}
-		)
-	else ()
-		add_target_precompiled_header( ${PROJECT_NAME}
-			GlRendererPch.hpp
-			GlRendererPch.cpp
-			${CMAKE_CXX_FLAGS}
-			${${PROJECT_NAME}_CXX_FILES}
-		)
-	endif ()
+	add_target_precompiled_header( ${PROJECT_NAME}
+		${CMAKE_CURRENT_SOURCE_DIR}/Src/GlRendererPch.hpp
+		${CMAKE_CURRENT_SOURCE_DIR}/Src/GlRendererPch.cpp
+		"${CMAKE_CXX_FLAGS}"
+		${${PROJECT_NAME}_CXX_FILES}
+	)
 
 	target_link_libraries( ${PROJECT_NAME}
 		${OPENGL_gl_LIBRARY}

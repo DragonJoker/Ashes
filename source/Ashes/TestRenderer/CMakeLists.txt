@@ -55,21 +55,12 @@ else ()
 	)
 endif ()
 
-if ( BUILD_ASHES )
-	add_target_precompiled_header( ${PROJECT_NAME}
-		Src/TestRendererPch.hpp
-		Src/TestRendererPch.cpp
-		${CMAKE_CXX_FLAGS}
-		${${PROJECT_NAME}_SRC_FILES}
-	)
-else ()
-	add_target_precompiled_header( ${PROJECT_NAME}
-		TestRendererPch.hpp
-		TestRendererPch.cpp
-		${CMAKE_CXX_FLAGS}
-		${${PROJECT_NAME}_SRC_FILES}
-	)
-endif ()
+add_target_precompiled_header( ${PROJECT_NAME}
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/TestRendererPch.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/TestRendererPch.cpp
+	"${CMAKE_CXX_FLAGS}"
+	${${PROJECT_NAME}_SRC_FILES}
+)
 
 target_link_libraries( ${PROJECT_NAME}
 	${BinLibraries}

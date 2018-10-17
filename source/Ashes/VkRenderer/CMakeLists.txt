@@ -56,21 +56,12 @@ else ()
 	)
 endif ()
 
-if ( BUILD_ASHES )
-	add_target_precompiled_header( ${PROJECT_NAME}
-		Src/VkRendererPch.hpp
-		Src/VkRendererPch.cpp
-		${CMAKE_CXX_FLAGS}
-		${${PROJECT_NAME}_SRC_FILES}
-	)
-else ()
-	add_target_precompiled_header( ${PROJECT_NAME}
-		VkRendererPch.hpp
-		VkRendererPch.cpp
-		${CMAKE_CXX_FLAGS}
-		${${PROJECT_NAME}_SRC_FILES}
-	)
-endif ()
+add_target_precompiled_header( ${PROJECT_NAME}
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/VkRendererPch.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/VkRendererPch.cpp
+	"${CMAKE_CXX_FLAGS}"
+	${${PROJECT_NAME}_SRC_FILES}
+)
 
 target_link_libraries( ${PROJECT_NAME}
 	${BinLibraries}
