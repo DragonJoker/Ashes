@@ -267,6 +267,18 @@ namespace gl_renderer
 			, m_spv
 			, m_stage
 			, state );
+
+		if ( m_source.find( "samplerCubeArray" ) != std::string::npos )
+		{
+			std::regex regex{ R"(#version[ ]*\d*)" };
+			m_source = std::regex_replace( m_source.data()
+				, regex
+				, R"($&
+#extension GL_ARB_texture_cube_map_array: enable
+)" );
+			
+		}
+
 		auto length = int( m_source.size() );
 		char const * data = m_source.data();
 		auto context = m_device.getContext();
