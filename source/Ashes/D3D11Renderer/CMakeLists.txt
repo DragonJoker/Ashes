@@ -16,7 +16,7 @@ configure_file(
 
 include_directories(
 	${CMAKE_SOURCE_DIR}
-		${SPIRV_CROSS_DIR}
+	${SPIRV_CROSS_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}/../Ashes/Src
 	${CMAKE_CURRENT_SOURCE_DIR}/../Ashes/Src
 	${CMAKE_CURRENT_SOURCE_DIR}/Src
@@ -78,21 +78,12 @@ else ()
 	)
 endif ()
 
-if ( BUILD_ASHES )
-	add_target_precompiled_header( ${PROJECT_NAME}
-		Src/D3D11RendererPch.hpp
-		Src/D3D11RendererPch.cpp
-		${CMAKE_CXX_FLAGS}
-		${${PROJECT_NAME}_SRC_FILES}
-	)
-else ()
-	add_target_precompiled_header( ${PROJECT_NAME}
-		D3D11RendererPch.hpp
-		D3D11RendererPch.cpp
-		${CMAKE_CXX_FLAGS}
-		${${PROJECT_NAME}_SRC_FILES}
-	)
-endif ()
+add_target_precompiled_header( ${PROJECT_NAME}
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/D3D11RendererPch.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/D3D11RendererPch.cpp
+	"${CMAKE_CXX_FLAGS}"
+	${${PROJECT_NAME}_SRC_FILES}
+)
 
 target_link_libraries( ${PROJECT_NAME}
 	Ashes

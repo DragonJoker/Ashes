@@ -56,21 +56,12 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_CONFIG_HEADER}
 )
 
-if ( BUILD_ASHES )
-	add_target_precompiled_header( ${PROJECT_NAME}
-		Src/AshesPch.hpp
-		Src/AshesPch.cpp
-		${CMAKE_CXX_FLAGS}
-		${${PROJECT_NAME}_SRC_FILES}
-	)
-else ()
-	add_target_precompiled_header( ${PROJECT_NAME}
-		AshesPch.hpp
-		AshesPch.cpp
-		${CMAKE_CXX_FLAGS}
-		${${PROJECT_NAME}_SRC_FILES}
-	)
-endif ()
+add_target_precompiled_header( ${PROJECT_NAME}
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/AshesPch.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/AshesPch.cpp
+	"${CMAKE_CXX_FLAGS}"
+	${${PROJECT_NAME}_SRC_FILES}
+)
 
 parse_subdir_files( Src/Buffer "Buffer" )
 parse_subdir_files( Src/Command "Command" )
