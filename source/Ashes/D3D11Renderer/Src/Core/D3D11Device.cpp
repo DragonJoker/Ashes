@@ -97,7 +97,7 @@ namespace d3d11_renderer
 
 #if !defined( NDEBUG )
 
-		m_debug->ReportLiveDeviceObjects( D3D11_RLDO_DETAIL | D3D11_RLDO_IGNORE_INTERNAL );
+		m_debug->ReportLiveDeviceObjects( D3D11_RLDO_DETAIL );
 		safeRelease( m_debug );
 
 #endif

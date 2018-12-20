@@ -337,7 +337,8 @@ namespace gl_renderer
 			target = glview.getTarget();
 		}
 
-		if ( gltexture.getLayerCount() > 1u )
+		if ( gltexture.getLayerCount() > 1u
+			&& !checkFlag( gltexture.getFlags(), ashes::ImageCreateFlag::eCubeCompatible ) )
 		{
 			glLogCall( context
 				, glFramebufferTextureLayer
