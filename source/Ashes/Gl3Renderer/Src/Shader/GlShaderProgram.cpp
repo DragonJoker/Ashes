@@ -217,6 +217,22 @@ namespace gl_renderer
 			{
 				ashes::Logger::logError( "ShaderProgram::link - The linked shaders count doesn't match the active shaders count." );
 			}
+
+			for ( auto & shader : m_shaders )
+			{
+				static GLsizei constexpr bufSize = 10000u;
+				std::vector< GLchar > source( bufSize );
+				GLsizei length;
+				glLogCall( context
+					, glGetShaderSource
+					, shader
+					, bufSize
+					, &length
+					, source.data() );
+				source[length] = 0u;
+				ashes::Logger::logDebug( source.data() );
+				ashes::Logger::logDebug( "" );
+			}
 		}
 
 		return result;
