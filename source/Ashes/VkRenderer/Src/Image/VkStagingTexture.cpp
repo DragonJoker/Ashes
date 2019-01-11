@@ -30,7 +30,13 @@ namespace vk_renderer
 		, ashes::Extent2D const & extent )
 		: ashes::StagingTexture{ device, extent }
 		, m_device{ device }
-		, m_buffer{ device, getSize( extent, format ), ashes::BufferTarget::eTransferDst | ashes::BufferTarget::eTransferSrc }
+		, m_buffer
+		{
+			device,
+			uint32_t( ashes::getAlignedSize( getSize( extent, format )
+				, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) ),
+			ashes::BufferTarget::eTransferDst | ashes::BufferTarget::eTransferSrc
+		}
 	{
 		m_buffer.bindMemory( device.allocateMemory( m_buffer.getMemoryRequirements()
 			, ashes::MemoryPropertyFlag::eHostVisible ) );
@@ -42,8 +48,11 @@ namespace vk_renderer
 	{
 		uint32_t size = getSize( extent, format );
 		assert( size <= m_buffer.getSize() );
+		auto mappedSize = ashes::getAlignedSize( size
+			, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) );
+		assert( size <= m_buffer.getSize() );
 		auto buffer = m_buffer.lock( 0u
-			, size
+			, mappedSize
 			, ashes::MemoryMapFlag::eWrite | ashes::MemoryMapFlag::eInvalidateRange );
 
 		if ( !buffer )
@@ -54,7 +63,7 @@ namespace vk_renderer
 		std::memcpy( buffer
 			, data
 			, size );
-		m_buffer.flush( 0u, size );
+		m_buffer.flush( 0u, mappedSize );
 		m_buffer.unlock();
 		m_device.waitIdle();
 	}
@@ -119,9 +128,11 @@ namespace vk_renderer
 		, ashes::Extent2D const & extent )const
 	{
 		uint32_t size = getSize( extent, format );
+		auto mappedSize = ashes::getAlignedSize( size
+			, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) );
 		assert( size <= m_buffer.getSize() );
 		auto buffer = m_buffer.lock( 0u
-			, size
+			, mappedSize
 			, ashes::MemoryMapFlag::eWrite | ashes::MemoryMapFlag::eInvalidateRange );
 
 		if ( !buffer )
@@ -132,7 +143,7 @@ namespace vk_renderer
 		std::memcpy( data
 			, buffer
 			, size );
-		m_buffer.flush( 0u, size );
+		m_buffer.flush( 0u, mappedSize );
 		m_buffer.unlock();
 		m_device.waitIdle();
 	}
