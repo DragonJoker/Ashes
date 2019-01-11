@@ -4,8 +4,6 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "UtilsConfig.hpp"
-
 #include <AshesPrerequisites.hpp>
 
 #include <cassert>
