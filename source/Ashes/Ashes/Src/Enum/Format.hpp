@@ -4,6 +4,8 @@ See LICENSE file in root folder
 */
 #pragma once
 
+#include <string>
+
 namespace ashes
 {
 	/**

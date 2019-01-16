@@ -18,6 +18,10 @@ namespace utils
 	using Clock = std::chrono::high_resolution_clock;
 	using Milliseconds = std::chrono::milliseconds;
 
+	/**
+	*\name Prédéclarations.
+	*/
+	/**\{*/
 	template< class Obj
 		, class Key
 		, class PtrType = std::shared_ptr< Obj >
@@ -34,6 +38,7 @@ namespace utils
 	class Mat4T;
 	template< typename T >
 	class QuaternionT;
+	/**\}*/
 	/**
 	*\name Typedefs généralistes.
 	*/
@@ -57,5 +62,17 @@ namespace utils
 	using Vec3Array = std::vector< Vec3 >;
 	using Vec2Array = std::vector< Vec2 >;
 	using StringArray = std::vector< std::string >;
+	/**\}*/
+	/**
+	*\name Fonctions d'aide.
+	*/
+	/**\{*/
+	ashes::Extent2D makeExtent2D( UIVec2 const & value );
+	ashes::Extent3D makeExtent3D( UIVec2 const & value );
+	ashes::Extent3D makeExtent3D( UIVec3 const & value );
+	ashes::Offset2D makeOffset2D( IVec2 const & value );
+	ashes::Offset3D makeOffset3D( IVec3 const & value );
+	ashes::ClearColorValue makeClearColorValue( RgbColour const & value );
+	ashes::ClearColorValue makeClearColorValue( RgbaColour const & value );
 	/**\}*/
 }

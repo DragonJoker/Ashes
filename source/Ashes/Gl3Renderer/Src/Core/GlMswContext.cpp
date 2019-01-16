@@ -164,11 +164,11 @@ namespace gl_renderer
 		pfd.cDepthBits = 24;
 		pfd.cStencilBits = 8;
 
-		int pixelFormats = ::ChoosePixelFormat( m_hDC, &pfd );
+		int pixelFormat = ::ChoosePixelFormat( m_hDC, &pfd );
 
-		if ( pixelFormats )
+		if ( pixelFormat )
 		{
-			result = ::SetPixelFormat( m_hDC, pixelFormats, &pfd ) != FALSE;
+			result = ::SetPixelFormat( m_hDC, pixelFormat, &pfd ) != FALSE;
 		}
 
 		return result;
