@@ -241,7 +241,6 @@ namespace ashes
 	class Sampler;
 	class Semaphore;
 	class ShaderModule;
-	class ShaderProgram;
 	class ShaderStorageBufferBase;
 	class SpecialisationInfoBase;
 	class StagingBuffer;
@@ -309,7 +308,6 @@ namespace ashes
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
 	using SamplerPtr = std::unique_ptr< Sampler >;
 	using SemaphorePtr = std::unique_ptr< Semaphore >;
-	using ShaderProgramPtr = std::unique_ptr< ShaderProgram >;
 	using ShaderStorageBufferBasePtr = std::unique_ptr< ShaderStorageBufferBase >;
 	using StagingBufferPtr = std::unique_ptr< StagingBuffer >;
 	using StagingTexturePtr = std::unique_ptr< StagingTexture >;
