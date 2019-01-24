@@ -22,11 +22,17 @@ namespace ashes
 	}
 
 	Logger::Logger()
-		: m_debug{ []( std::string const & msg, bool newLine ){ doLog( msg, newLine, std::clog ); } }
+		: m_trace{ []( std::string const & msg, bool newLine ){} }
+		, m_debug{ []( std::string const & msg, bool newLine ){ doLog( msg, newLine, std::clog ); } }
 		, m_info{ []( std::string const & msg, bool newLine ){ doLog( msg, newLine, std::cout ); } }
 		, m_warning{ []( std::string const & msg, bool newLine ){ doLog( msg, newLine, std::cout ); } }
 		, m_error{ []( std::string const & msg, bool newLine ){ doLog( msg, newLine, std::cerr ); } }
 	{
+	}
+
+	void Logger::logTrace( std::string const & message, bool newLine )
+	{
+		doGetInstance().m_trace( message, newLine );
 	}
 
 	void Logger::logDebug( std::string const & message, bool newLine )
@@ -47,6 +53,14 @@ namespace ashes
 	void Logger::logError( std::string const & message, bool newLine )
 	{
 		doGetInstance().m_error( message, newLine );
+	}
+
+	void Logger::logTrace( std::ostream const & message, bool newLine )
+	{
+		auto sbuf = message.rdbuf();
+		std::stringstream ss;
+		ss << sbuf;
+		doGetInstance().m_trace( ss.str(), newLine );
 	}
 
 	void Logger::logDebug( std::ostream const & message, bool newLine )
@@ -79,6 +93,11 @@ namespace ashes
 		std::stringstream ss;
 		ss << sbuf;
 		doGetInstance().m_error( ss.str(), newLine );
+	}
+
+	void Logger::setTraceCallback( LogCallback callback )
+	{
+		doGetInstance().m_trace = std::move( callback );
 	}
 
 	void Logger::setDebugCallback( LogCallback callback )

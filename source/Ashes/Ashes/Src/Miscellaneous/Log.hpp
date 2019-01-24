@@ -18,6 +18,15 @@ namespace ashes
 		/**
 		*\~english
 		*\brief
+		*	Logs a trace message.
+		*\~french
+		*\brief
+		*	Logge un message de trace.
+		*/
+		static void logTrace( std::string const & message, bool newLine = true );
+		/**
+		*\~english
+		*\brief
 		*	Logs a debug message.
 		*\~french
 		*\brief
@@ -54,6 +63,15 @@ namespace ashes
 		/**
 		*\~english
 		*\brief
+		*	Logs a trace message.
+		*\~french
+		*\brief
+		*	Logge un message de trace.
+		*/
+		static void logTrace( std::ostream const & message, bool newLine = true );
+		/**
+		*\~english
+		*\brief
 		*	Logs a debug message.
 		*\~french
 		*\brief
@@ -87,6 +105,15 @@ namespace ashes
 		*	Logge un message d'erreur.
 		*/
 		static void logError( std::ostream const & message, bool newLine = true );
+		/**
+		*\~english
+		*\brief
+		*	Sets the trace callback.
+		*\~french
+		*\brief
+		*	Définit le callback de trace.
+		*/
+		static void setTraceCallback( LogCallback callback );
 		/**
 		*\~english
 		*\brief
@@ -130,6 +157,7 @@ namespace ashes
 		static Logger & doGetInstance();
 
 	private:
+		LogCallback m_trace;
 		LogCallback m_debug;
 		LogCallback m_info;
 		LogCallback m_warning;
