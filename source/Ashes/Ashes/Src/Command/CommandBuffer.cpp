@@ -27,72 +27,55 @@ namespace ashes
 
 			if ( checkFlag( accessFlags, AccessFlag::eIndirectCommandRead ) )
 			{
-				return checkFlag( pipelineFlags, PipelineStageFlag::eDrawIndirect )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
+				return checkFlag( pipelineFlags, PipelineStageFlag::eDrawIndirect );
 			}
 
 			if ( checkFlag( accessFlags, AccessFlag::eIndexRead )
 				|| checkFlag( accessFlags, AccessFlag::eVertexAttributeRead ) )
 			{
-				return checkFlag( pipelineFlags, PipelineStageFlag::eVertexInput )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
+				return checkFlag( pipelineFlags, PipelineStageFlag::eVertexInput );
 			}
 
-			if ( checkFlag( accessFlags, AccessFlag::eInputAttachmentRead ) )
-			{
-				return checkFlag( pipelineFlags, PipelineStageFlag::eFragmentShader )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
-			}
-
-			if ( checkFlag( accessFlags, AccessFlag::eShaderRead )
-				|| checkFlag( accessFlags, AccessFlag::eShaderWrite )
-				|| checkFlag( accessFlags, AccessFlag::eUniformRead ) )
+			if ( checkFlag( accessFlags, AccessFlag::eUniformRead )
+				|| checkFlag( accessFlags, AccessFlag::eShaderRead )
+				|| checkFlag( accessFlags, AccessFlag::eShaderWrite ) )
 			{
 				return checkFlag( pipelineFlags, PipelineStageFlag::eVertexShader )
 					|| checkFlag( pipelineFlags, PipelineStageFlag::eTessellationControlShader )
 					|| checkFlag( pipelineFlags, PipelineStageFlag::eTessellationEvaluationShader )
 					|| checkFlag( pipelineFlags, PipelineStageFlag::eGeometryShader )
 					|| checkFlag( pipelineFlags, PipelineStageFlag::eFragmentShader )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eComputeShader )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eComputeShader );
+			}
+
+			if ( checkFlag( accessFlags, AccessFlag::eInputAttachmentRead ) )
+			{
+				return checkFlag( pipelineFlags, PipelineStageFlag::eFragmentShader );
 			}
 
 			if ( checkFlag( accessFlags, AccessFlag::eColourAttachmentRead )
 				|| checkFlag( accessFlags, AccessFlag::eColourAttachmentWrite ) )
 			{
-				return checkFlag( pipelineFlags, PipelineStageFlag::eColourAttachmentOutput )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
+				return checkFlag( pipelineFlags, PipelineStageFlag::eColourAttachmentOutput );
 			}
 
 			if ( checkFlag( accessFlags, AccessFlag::eDepthStencilAttachmentRead )
 				|| checkFlag( accessFlags, AccessFlag::eDepthStencilAttachmentWrite ) )
 			{
 				return checkFlag( pipelineFlags, PipelineStageFlag::eEarlyFragmentTests )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eLateFragmentTests )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
+					|| checkFlag( pipelineFlags, PipelineStageFlag::eLateFragmentTests );
 			}
 
 			if ( checkFlag( accessFlags, AccessFlag::eTransferRead )
 				|| checkFlag( accessFlags, AccessFlag::eTransferWrite ) )
 			{
-				return checkFlag( pipelineFlags, PipelineStageFlag::eTransfer )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eHost )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
+				return checkFlag( pipelineFlags, PipelineStageFlag::eTransfer );
 			}
 
 			if ( checkFlag( accessFlags, AccessFlag::eHostRead )
 				|| checkFlag( accessFlags, AccessFlag::eHostWrite ) )
 			{
-				return checkFlag( pipelineFlags, PipelineStageFlag::eHost )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eTopOfPipe )
-					|| checkFlag( pipelineFlags, PipelineStageFlag::eBottomOfPipe );
+				return checkFlag( pipelineFlags, PipelineStageFlag::eHost );
 			}
 
 			return true;
