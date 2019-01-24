@@ -231,6 +231,24 @@ namespace ashes
 					, ashes::PipelineStageFlag::eTransfer
 					, srcTransitionBarrier );
 			}
+
+			srcView = createView(
+				{
+					ashes::TextureViewType( getType() ),
+					getFormat(),
+					ashes::ComponentMapping{},
+					ashes::ImageSubresourceRange
+				{
+					ashes::getAspectMask( getFormat() ),
+					0,
+					getMipmapLevels(),
+					layer,
+					1u
+				}
+				} );
+			commandBuffer.memoryBarrier( ashes::PipelineStageFlag::eTransfer
+				, ashes::PipelineStageFlag::eFragmentShader
+				, srcView->makeShaderInputResource( ashes::ImageLayout::eUndefined, 0u ) );
 		}
 	}
 
