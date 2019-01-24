@@ -8,6 +8,87 @@ namespace vk_renderer
 {
 	namespace
 	{
+		std::string getName( VkDebugReportObjectTypeEXT value )
+		{
+			switch ( value )
+			{
+			case VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT:
+				return "Unknown";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT:
+				return "Instance";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT:
+				return "PhysicalDevice";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT:
+				return "Device";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT:
+				return "Queue";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT:
+				return "Semaphore";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT:
+				return "CommandBuffer";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT:
+				return "Fence";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT:
+				return "DeviceMemory";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
+				return "Buffer";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
+				return "Image";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT:
+				return "Event";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT:
+				return "QueryPool";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT:
+				return "BufferView";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT:
+				return "ImageView";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT:
+				return "ShaderModule";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT:
+				return "PipelineCache";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT:
+				return "PipelineLayout";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT:
+				return "RenderPass";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT:
+				return "Pipeline";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT:
+				return "DescriptorSetLayout";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT:
+				return "Sampler";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT:
+				return "DescriptorPool";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT:
+				return "DescriptorSet";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT:
+				return "Framebuffer";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT:
+				return "CommandPool";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT:
+				return "SurfaceKHR";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT:
+				return "SwapchainKHR";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT:
+				return "DebugReportCallbackEXT";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT:
+				return "DisplayKHR";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT:
+				return "DisplayModeKHR";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT:
+				return "ObjectTableNVX";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT:
+				return "IndirectCommandsLayoutNVX";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT:
+				return "ValidationCacheEXT";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT:
+				return "SamplerYcbcrConversion";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT:
+				return "DescriptorUpdateTemplate";
+			default:
+				return "Unsupported";
+			}
+		}
+
 		VKAPI_ATTR VkBool32 VKAPI_CALL debugReportCallback( VkDebugReportFlagsEXT flags
 			, VkDebugReportObjectTypeEXT objectType
 			, uint64_t object
@@ -54,7 +135,10 @@ namespace vk_renderer
 			// Display message to default output (console/logcat)
 			stream << "    Layer: " << pLayerPrefix << "\n";
 			stream << "    Code: 0x" << std::hex << messageCode << "\n";
+			stream << "    Object: (" << std::hex << object << ") " << getName( objectType ) << "\n";
 			stream << "    Message: " << pMessage;
+
+			VkBool32 result = VK_FALSE;
 
 #if defined( __ANDROID__ )
 
@@ -80,6 +164,10 @@ namespace vk_renderer
 			{
 				ashes::Logger::logWarning( stream );
 			}
+			else if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) )
+			{
+				ashes::Logger::logTrace( stream );
+			}
 			else
 			{
 				ashes::Logger::logDebug( stream );
@@ -89,11 +177,11 @@ namespace vk_renderer
 
 			// The return value of this callback controls wether the Vulkan call that caused
 			// the validation message will be aborted or not
-			// We return VK_FALSE as we DON'T want Vulkan calls that cause a validation message 
+			// Return VK_FALSE if we DON'T want Vulkan calls that cause a validation message 
 			// (and return a VkResult) to abort
-			// If you instead want to have calls abort, pass in VK_TRUE and the function will 
+			// Return VK_TRUE if you instead want to have calls abort, and the function will 
 			// return VK_ERROR_VALIDATION_FAILED_EXT 
-			return VK_FALSE;
+			return result;
 		}
 
 	}
@@ -211,7 +299,8 @@ namespace vk_renderer
 #if LOAD_VALIDATION_LAYERS
 		// The report flags determine what type of messages for the layers will be displayed
 		// For validating (debugging) an appplication the error and warning bits should suffice
-		VkDebugReportFlagsEXT debugReportFlags = VK_DEBUG_REPORT_WARNING_BIT_EXT
+		VkDebugReportFlagsEXT debugReportFlags = /*VK_DEBUG_REPORT_INFORMATION_BIT_EXT
+			| */VK_DEBUG_REPORT_WARNING_BIT_EXT
 			| VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT
 			| VK_DEBUG_REPORT_ERROR_BIT_EXT
 			| VK_DEBUG_REPORT_DEBUG_BIT_EXT;
