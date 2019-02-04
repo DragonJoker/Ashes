@@ -22,7 +22,7 @@ namespace ashes
 			inputAttaches,
 			colourAttaches,
 			resolveAttaches,
-			std::nullopt,
+			nullopt,
 			reserveAttaches
 		}
 		, m_neededState{ state }

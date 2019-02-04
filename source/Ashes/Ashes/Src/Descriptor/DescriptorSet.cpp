@@ -55,7 +55,7 @@ namespace ashes
 			index,
 			1u,
 			DescriptorType::eSampler,
-			{ DescriptorImageInfo{ std::ref( sampler ), std::nullopt, ImageLayout::eShaderReadOnlyOptimal } },
+			{ DescriptorImageInfo{ std::ref( sampler ), nullopt, ImageLayout::eShaderReadOnlyOptimal } },
 		} );
 	}
 
@@ -70,7 +70,7 @@ namespace ashes
 			index,
 			1u,
 			DescriptorType::eSampledImage,
-			{ DescriptorImageInfo{ std::nullopt, std::ref( view ), layout } },
+			{ DescriptorImageInfo{ nullopt, std::ref( view ), layout } },
 		} );
 	}
 
@@ -84,7 +84,7 @@ namespace ashes
 			index,
 			1u,
 			DescriptorType::eStorageImage,
-			{ DescriptorImageInfo{ std::nullopt, std::ref( view ), ImageLayout::eGeneral } },
+			{ DescriptorImageInfo{ nullopt, std::ref( view ), ImageLayout::eGeneral } },
 		} );
 	}
 

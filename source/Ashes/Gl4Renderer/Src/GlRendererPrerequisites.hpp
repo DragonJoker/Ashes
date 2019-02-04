@@ -115,7 +115,7 @@ namespace gl_renderer
 	};
 
 	using VboBindings = std::map< uint32_t, BufferObjectBinding >;
-	using IboBinding = std::optional< BufferObjectBinding >;
+	using IboBinding = ashes::Optional< BufferObjectBinding >;
 
 	using BufferDestroyFunc = std::function< void( GLuint ) >;
 	using BufferDestroySignal = ashes::Signal< BufferDestroyFunc >;

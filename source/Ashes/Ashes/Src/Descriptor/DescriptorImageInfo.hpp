@@ -12,8 +12,8 @@ namespace ashes
 {
 	struct DescriptorImageInfo
 	{
-		std::optional< SamplerCRef > sampler;
-		std::optional< TextureViewCRef > imageView;
+		Optional< SamplerCRef > sampler;
+		Optional< TextureViewCRef > imageView;
 		ImageLayout imageLayout;
 	};
 }

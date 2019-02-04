@@ -91,8 +91,8 @@ namespace d3d11_renderer
 		: ashes::Pipeline{ device
 			, layout
 			, std::move( createInfo ) }
-		, m_scissor{ ( bool )m_createInfo.scissor ? std::optional< RECT >( makeScissor( *m_createInfo.scissor ) ) : std::nullopt }
-		, m_viewport{ ( bool )m_createInfo.viewport ? std::optional< D3D11_VIEWPORT >( makeViewport( *m_createInfo.viewport ) ) : std::nullopt }
+		, m_scissor{ ( bool )m_createInfo.scissor ? ashes::Optional< RECT >( makeScissor( *m_createInfo.scissor ) ) : ashes::nullopt }
+		, m_viewport{ ( bool )m_createInfo.viewport ? ashes::Optional< D3D11_VIEWPORT >( makeViewport( *m_createInfo.viewport ) ) : ashes::nullopt }
 		, m_vertexInputStateHash{ doHash( m_createInfo.vertexInputState ) }
 	{
 		doCreateBlendState( device );

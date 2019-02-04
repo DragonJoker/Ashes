@@ -127,7 +127,7 @@ namespace gl_renderer
 		RenderPass const & m_renderPass;
 		std::vector< Attachment > m_allAttaches;
 		std::vector< Attachment > m_colourAttaches;
-		std::optional< Attachment > m_depthStencilAttach;
+		ashes::Optional< Attachment > m_depthStencilAttach;
 		mutable ashes::UInt32Array m_drawBuffers;
 		bool m_srgb{ false };
 	};
