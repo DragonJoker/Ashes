@@ -143,8 +143,8 @@ namespace d3d11_renderer
 		ID3D11RasterizerState * m_rsState{ nullptr };
 		ID3D11InputLayout * m_iaState{ nullptr };
 		ID3D11BlendState * m_bdState{ nullptr };
-		std::optional< RECT > m_scissor;
-		std::optional< D3D11_VIEWPORT > m_viewport;
+		ashes::Optional< RECT > m_scissor;
+		ashes::Optional< D3D11_VIEWPORT > m_viewport;
 		std::vector< PushConstantsBuffer > m_constantsPcbs;
 		ProgramLayout m_programLayout;
 		std::list< CompiledShaderModule > m_programModules;

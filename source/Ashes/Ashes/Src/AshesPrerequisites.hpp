@@ -112,18 +112,31 @@ See LICENSE file in root folder.
 #	define ASHES_COMPILER_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #	if ASHES_COMPILER_VERSION < 40900
 #		error "Unsupported version of GCC"
-#	elif ASHES_COMPILER_VERSION < 70100
+#	elif ASHES_COMPILER_VERSION < 70400
 #		include <experimental/optional>
-namespace std
+namespace ashes
 {
-	using experimental::optional;
-	using experimental::nullopt;
+	template< typename T >
+	using Optional = std::experimental::optional< T >;
+	using std::experimental::nullopt;
 }
 #	else
 #		include <optional>
+namespace ashes
+{
+	template< typename T >
+	using Optional = std::optional< T >;
+	using std::nullopt;
+}
 #	endif
 #else
 #	include <optional>
+namespace ashes
+{
+	template< typename T >
+	using Optional = std::optional< T >;
+	using std::nullopt;
+}
 #endif
 
 #include "Miscellaneous/Log.hpp"

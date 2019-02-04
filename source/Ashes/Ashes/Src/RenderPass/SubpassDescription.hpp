@@ -75,7 +75,7 @@ namespace ashes
 		*\brief
 		*	Définit quelle attache sera utilisée pour les données de profondeur/stencil.
 		*/
-		std::optional< AttachmentReference > depthStencilAttachment;
+		Optional< AttachmentReference > depthStencilAttachment;
 		/**
 		*\~english
 		*\brief

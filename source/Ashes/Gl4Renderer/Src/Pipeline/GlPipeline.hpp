@@ -207,8 +207,8 @@ namespace gl_renderer
 		ashes::DepthStencilState m_dsState;
 		ashes::MultisampleState m_msState;
 		ashes::TessellationState m_tsState;
-		std::optional< ashes::Viewport > m_viewport;
-		std::optional< ashes::Scissor > m_scissor;
+		ashes::Optional< ashes::Viewport > m_viewport;
+		ashes::Optional< ashes::Scissor > m_scissor;
 		PushConstantsDesc m_constantsPcb;
 		ShaderProgram m_program;
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;

@@ -39,10 +39,10 @@ namespace ashes
 		MultisampleState multisampleState = MultisampleState{};
 		ColourBlendState colourBlendState = ColourBlendState::createDefault();
 		std::vector< DynamicState > dynamicStates;
-		std::optional< DepthStencilState > depthStencilState;
-		std::optional< TessellationState > tessellationState;
-		std::optional< Viewport > viewport;
-		std::optional< Scissor > scissor;
+		Optional< DepthStencilState > depthStencilState;
+		Optional< TessellationState > tessellationState;
+		Optional< Viewport > viewport;
+		Optional< Scissor > scissor;
 	};
 }
 
