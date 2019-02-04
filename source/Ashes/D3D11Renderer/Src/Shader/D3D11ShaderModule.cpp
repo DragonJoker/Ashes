@@ -6,9 +6,11 @@ See LICENSE file in root folder.
 
 #include "Core/D3D11Device.hpp"
 
-#include "spirv_cpp.hpp"
-#include "spirv_cross_util.hpp"
-#include "spirv_hlsl.hpp"
+#if D3D11Renderer_USE_SPIRV_CROSS
+#	include "spirv_cpp.hpp"
+#	include "spirv_cross_util.hpp"
+#	include "spirv_hlsl.hpp"
+#endif
 
 #include <Pipeline/ShaderStageState.hpp>
 
@@ -49,6 +51,8 @@ namespace d3d11_renderer
 		private:
 			std::locale m_prvLoc;
 		};
+
+#if D3D11Renderer_USE_SPIRV_CROSS
 
 		spv::ExecutionModel getExecutionModel( ashes::ShaderStageFlag stage )
 		{
@@ -174,6 +178,8 @@ namespace d3d11_renderer
 			compiler.set_hlsl_options( hlslOptions );
 		}
 
+#endif
+
 		std::string compileSpvToHlsl( Device const & device
 			, ashes::UInt32Array const & shader
 			, ashes::ShaderStageFlag stage
@@ -181,6 +187,8 @@ namespace d3d11_renderer
 		{
 			if ( shader[0] == OpCodeSPIRV )
 			{
+#if D3D11Renderer_USE_SPIRV_CROSS
+
 				BlockLocale guard;
 				auto compiler = std::make_unique< spirv_cross::CompilerHLSL >( shader );
 				doProcessSpecializationConstants( state, *compiler );
@@ -188,6 +196,12 @@ namespace d3d11_renderer
 				doSetupOptions( device, *compiler );
 				doSetupHlslOptions( device, *compiler );
 				return compiler->compile();
+
+#else
+
+				throw std::runtime_error{ "Can't parse SPIR-V shaders, pull submodule SpirvCross" };
+
+#endif
 			}
 
 			std::vector< char > hlslCode( shader.size() * sizeof( uint32_t ) );

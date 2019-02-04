@@ -14,9 +14,11 @@ See LICENSE file in root folder.
 #include <iostream>
 #include <regex>
 
-#include "spirv_cpp.hpp"
-#include "spirv_cross_util.hpp"
-#include "spirv_glsl.hpp"
+#if Gl3Renderer_USE_SPIRV_CROSS
+#	include "spirv_cpp.hpp"
+#	include "spirv_cross_util.hpp"
+#	include "spirv_glsl.hpp"
+#endif
 
 namespace gl_renderer
 {
@@ -109,6 +111,8 @@ namespace gl_renderer
 
 			return compiled;
 		}
+
+#if Gl3Renderer_USE_SPIRV_CROSS
 
 		spv::ExecutionModel getExecutionModel( ashes::ShaderStageFlag stage )
 		{
@@ -227,6 +231,8 @@ namespace gl_renderer
 			compiler.set_common_options( options );
 		}
 
+#endif
+
 		std::string compileSpvToGlsl( Device const & device
 			, ashes::UInt32Array const & shader
 			, ashes::ShaderStageFlag stage
@@ -234,12 +240,19 @@ namespace gl_renderer
 		{
 			if ( shader[0] == OpCodeSPIRV )
 			{
+#if Gl3Renderer_USE_SPIRV_CROSS
+
 				BlockLocale guard;
 				auto compiler = std::make_unique< spirv_cross::CompilerGLSL >( shader );
 				doProcessSpecializationConstants( state, *compiler );
 				doSetEntryPoint( stage, *compiler );
 				doSetupOptions( device, *compiler );
 				return compiler->compile();
+#else
+
+				throw std::runtime_error{ "Can't parse SPIR-V shaders, pull submodule SpirvCross" };
+
+#endif
 			}
 
 			std::vector< char > glslCode( shader.size() * sizeof( uint32_t ) );

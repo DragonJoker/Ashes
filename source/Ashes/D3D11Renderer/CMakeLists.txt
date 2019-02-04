@@ -37,21 +37,30 @@ file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 	Src/*.inc
 )
 
-set( ${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES
-	${SPIRV_CROSS_DIR}/spirv_cross.cpp
-	${SPIRV_CROSS_DIR}/spirv_cfg.cpp
-	${SPIRV_CROSS_DIR}/spirv_glsl.cpp
-	${SPIRV_CROSS_DIR}/spirv_hlsl.cpp
-)
+set( ${PROJECT_NAME}_USE_SPIRV_CROSS 0 )
 
-set( ${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES
-	${SPIRV_CROSS_DIR}/GLSL.std.450.h
-	${SPIRV_CROSS_DIR}/spirv_common.hpp
-	${SPIRV_CROSS_DIR}/spirv.hpp
-	${SPIRV_CROSS_DIR}/spirv_cross.hpp
-	${SPIRV_CROSS_DIR}/spirv_cfg.hpp
-	${SPIRV_CROSS_DIR}/spirv_glsl.hpp
-	${SPIRV_CROSS_DIR}/spirv_hlsl.hpp
+if ( EXISTS ${SPIRV_CROSS_DIR}/spirv_cross.cpp )
+	set( ${PROJECT_NAME}_USE_SPIRV_CROSS 1 )
+	set( ${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES
+		${SPIRV_CROSS_DIR}/spirv_cross.cpp
+		${SPIRV_CROSS_DIR}/spirv_cfg.cpp
+		${SPIRV_CROSS_DIR}/spirv_glsl.cpp
+		${SPIRV_CROSS_DIR}/spirv_hlsl.cpp
+	)
+
+	set( ${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES
+		${SPIRV_CROSS_DIR}/GLSL.std.450.h
+		${SPIRV_CROSS_DIR}/spirv_common.hpp
+		${SPIRV_CROSS_DIR}/spirv.hpp
+		${SPIRV_CROSS_DIR}/spirv_cross.hpp
+		${SPIRV_CROSS_DIR}/spirv_cfg.hpp
+		${SPIRV_CROSS_DIR}/spirv_glsl.hpp
+		${SPIRV_CROSS_DIR}/spirv_hlsl.hpp
+	)
+endif ()
+
+add_definitions(
+	-D${PROJECT_NAME}_USE_SPIRV_CROSS=${${PROJECT_NAME}_USE_SPIRV_CROSS}
 )
 
 if ( ASHES_STATIC_RENDERERS )
