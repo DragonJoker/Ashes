@@ -25,12 +25,13 @@ namespace d3d11_renderer
 		*	Le scissor.
 		*/
 		ScissorCommand( Device const & device
-			, ashes::Scissor const & scissor );
+			, uint32_t first
+			, ashes::ScissorArray const & scissors );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		RECT m_scissor;
+		std::vector< RECT > m_scissors;
 	};
 }

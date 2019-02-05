@@ -51,8 +51,8 @@ namespace d3d11_renderer
 
 		ID3D11UnorderedAccessView * getBufferUAV( ashes::WriteDescriptorSet const & write, uint32_t index )
 		{
-			//assert( index < write.imageInfo.size() );
-			return nullptr;// static_cast< Buffer const & >( write.bufferInfo[index].buffer.get() ).getUnorderedAccessView();
+			assert( index < write.bufferInfo.size() );
+			return static_cast< Buffer const & >( write.bufferInfo[index].buffer.get() ).getUnorderedAccessView();
 		}
 
 		template< ashes::ShaderStageFlag Flag >
@@ -329,12 +329,13 @@ namespace d3d11_renderer
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto buffer = getBuffer( write, i );
+				auto range = std::min( write.bufferInfo[i].range, uint64_t( write.bufferInfo[i].buffer.get().getSize() ) );
 				tryBind( context
 					, bindingIndex
 					, flags
 					, buffer
 					, UINT( write.bufferInfo[i].offset / 16 )
-					, UINT( ashes::getAlignedSize( write.bufferInfo[i].range / 16ull, 16u ) ) );
+					, UINT( ashes::getAlignedSize( range / 16ull, 16u ) ) );
 			}
 		}
 
@@ -383,12 +384,13 @@ namespace d3d11_renderer
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto buffer = getBuffer( write, i );
+				auto range = std::min( write.bufferInfo[i].range, uint64_t( write.bufferInfo[i].buffer.get().getSize() ) );
 				tryBind( context
 					, bindingIndex
 					, flags
 					, buffer
 					, UINT( ( offset + write.bufferInfo[i].offset ) / 16 )
-					, UINT( ashes::getAlignedSize( write.bufferInfo[i].range / 16ull, 16u ) ) );
+					, UINT( ashes::getAlignedSize( range / 16ull, 16u ) ) );
 			}
 		}
 
@@ -510,12 +512,13 @@ namespace d3d11_renderer
 			for ( auto i = 0u; i < write.bufferInfo.size(); ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				auto range = std::min( write.bufferInfo[i].range, uint64_t( write.bufferInfo[i].buffer.get().getSize() ) );
 				tryBind( context
 					, bindingIndex
 					, flags
 					, ( ID3D11Buffer * )nullptr
 					, UINT( write.bufferInfo[i].offset / 16 )
-					, UINT( ashes::getAlignedSize( write.bufferInfo[i].range / 16ull, 16u ) ) );
+					, UINT( ashes::getAlignedSize( range / 16ull, 16u ) ) );
 			}
 		}
 
@@ -561,12 +564,13 @@ namespace d3d11_renderer
 			for ( auto i = 0u; i < write.bufferInfo.size(); ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				auto range = std::min( write.bufferInfo[i].range, uint64_t( write.bufferInfo[i].buffer.get().getSize() ) );
 				tryBind( context
 					, bindingIndex
 					, flags
 					, ( ID3D11Buffer * )nullptr
 					, UINT( ( offset + write.bufferInfo[i].offset ) / 16 )
-					, UINT( ashes::getAlignedSize( write.bufferInfo[i].range / 16ull, 16u ) ) );
+					, UINT( ashes::getAlignedSize( range / 16ull, 16u ) ) );
 			}
 		}
 

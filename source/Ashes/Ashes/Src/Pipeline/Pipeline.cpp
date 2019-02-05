@@ -11,27 +11,13 @@ namespace ashes
 {
 	Pipeline::Pipeline( Device const & device
 		, PipelineLayout const & layout
-		, GraphicsPipelineCreateInfo && createInfo )
+		, GraphicsPipelineCreateInfo createInfo )
 		: m_device{ device }
-		, m_createInfo
-		{
-			std::move( createInfo.stages ),
-			createInfo.renderPass,
-			createInfo.vertexInputState,
-			createInfo.inputAssemblyState,
-			createInfo.rasterisationState,
-			createInfo.multisampleState,
-			createInfo.colourBlendState,
-			createInfo.dynamicStates,
-			createInfo.depthStencilState,
-			createInfo.tessellationState,
-			createInfo.viewport,
-			createInfo.scissor
-		}
+		, m_createInfo{ std::move( createInfo ) }
 		, m_layout{ layout }
 	{
-		if ( bool( createInfo.tessellationState )
-			&& ( createInfo.tessellationState.value().flags || createInfo.tessellationState.value().patchControlPoints )
+		if ( bool( m_createInfo.tessellationState )
+			&& ( m_createInfo.tessellationState.value().flags || m_createInfo.tessellationState.value().patchControlPoints )
 			&& !device.getPhysicalDevice().getFeatures().tessellationShader )
 		{
 			throw Exception{ Result::eErrorFeatureNotPresent, "Tessellation shaders" };

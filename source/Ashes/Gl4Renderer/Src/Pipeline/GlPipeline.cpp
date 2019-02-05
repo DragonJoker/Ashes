@@ -102,14 +102,14 @@ namespace gl_renderer
 		, m_layout{ layout }
 		, m_ssState{ std::move( m_createInfo.stages ) }
 		, m_vertexInputState{ m_createInfo.vertexInputState }
-		, m_renderPass{ m_createInfo.renderPass.get() }
+		, m_renderPass{ *m_createInfo.renderPass }
 		, m_iaState{ m_createInfo.inputAssemblyState }
 		, m_cbState{ m_createInfo.colourBlendState }
 		, m_rsState{ m_createInfo.rasterisationState }
 		, m_dsState{ 0u, false, true, ashes::CompareOp::eLess,  }
 		, m_msState{ m_createInfo.multisampleState }
-		, m_viewport{ m_createInfo.viewport }
-		, m_scissor{ m_createInfo.scissor }
+		, m_viewports{ m_createInfo.viewportState.viewports }
+		, m_scissors{ m_createInfo.viewportState.scissors }
 		, m_vertexInputStateHash{ doHash( m_vertexInputState ) }
 		, m_program{ m_device, m_ssState }
 	{
@@ -130,8 +130,8 @@ namespace gl_renderer
 		apply( m_device
 			, context
 			, m_rsState
-			, hasDynamicState( ashes::DynamicState::eLineWidth )
-			, hasDynamicState( ashes::DynamicState::eDepthBias ) );
+			, hasDynamicStateEnable( ashes::DynamicStateEnable::eLineWidth )
+			, hasDynamicStateEnable( ashes::DynamicStateEnable::eDepthBias ) );
 		apply( m_device
 			, context
 			, m_dsState );

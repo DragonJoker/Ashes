@@ -55,12 +55,7 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::CommandBuffer:begin
 		*/
-		void begin( ashes::CommandBufferUsageFlags flags )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:begin
-		*/
-		void begin( ashes::CommandBufferUsageFlags flags
-			, ashes::CommandBufferInheritanceInfo const & inheritanceInfo )const override;
+		void begin( ashes::CommandBufferBeginInfo const & info )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:end
 		*/
@@ -72,9 +67,7 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::CommandBuffer:beginRenderPass
 		*/
-		void beginRenderPass( ashes::RenderPass const & renderPass
-			, ashes::FrameBuffer const & frameBuffer
-			, ashes::ClearValueArray const & clearValues
+		void beginRenderPass( ashes::RenderPassBeginInfo const & beginInfo
 			, ashes::SubpassContents contents )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:nextSubpass
@@ -135,11 +128,13 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::CommandBuffer:setViewport
 		*/
-		void setViewport( ashes::Viewport const & viewport )const override;
+		void setViewport( uint32_t firstViewport
+			, ashes::ViewportArray const & viewports )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:setScissor
 		*/
-		void setScissor( ashes::Scissor const & scissor )const override;
+		void setScissor( uint32_t firstScissor
+			, ashes::ScissorArray const & scissors )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:draw
 		*/
@@ -278,6 +273,15 @@ namespace d3d11_renderer
 		*\copydoc	ashes::CommandBuffer::waitEvents
 		*/
 		void generateMips( Texture const & texture )const;
+		/**
+		*\copydoc	ashes::CommandBuffer::pipelineBarrier
+		*/
+		void pipelineBarrier( ashes::PipelineStageFlags after
+			, ashes::PipelineStageFlags before
+			, ashes::DependencyFlags dependencyFlags
+			, ashes::MemoryBarrierArray const & memoryBarriers
+			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
+			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const;
 
 		inline CommandArray const & getCommands()const
 		{
@@ -290,19 +294,6 @@ namespace d3d11_renderer
 		}
 
 	private:
-		/**
-		*\copydoc	ashes::CommandBuffer:doMemoryBarrier
-		*/
-		void doMemoryBarrier( ashes::PipelineStageFlags after
-			, ashes::PipelineStageFlags before
-			, ashes::BufferMemoryBarrier const & transitionBarrier )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:doMemoryBarrier
-		*/
-		void doMemoryBarrier( ashes::PipelineStageFlags after
-			, ashes::PipelineStageFlags before
-			, ashes::ImageMemoryBarrier const & transitionBarrier )const override;
-
 		void doFillVboStrides()const;
 		void doAddAfterSubmitAction()const;
 
@@ -312,7 +303,7 @@ namespace d3d11_renderer
 		mutable CommandArray m_commands;
 		struct State
 		{
-			ashes::CommandBufferUsageFlags beginFlags{ 0u };
+			ashes::CommandBufferBeginInfo beginInfo;
 			Pipeline const * currentPipeline{ nullptr };
 			std::vector< std::pair < ashes::PipelineLayout const *, PushConstantsDesc > > pushConstantBuffers;
 			ComputePipeline const * currentComputePipeline{ nullptr };

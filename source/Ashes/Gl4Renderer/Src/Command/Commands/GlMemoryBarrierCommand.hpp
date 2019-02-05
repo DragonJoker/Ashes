@@ -12,7 +12,7 @@ namespace gl_renderer
 	*\brief
 	*	Classe de base d'une commande.
 	*/
-	class BufferMemoryBarrierCommand
+	class MemoryBarrierCommand
 		: public CommandBase
 	{
 	public:
@@ -20,10 +20,13 @@ namespace gl_renderer
 		*\brief
 		*	Constructeur.
 		*/
-		BufferMemoryBarrierCommand( Device const & device
+		MemoryBarrierCommand( Device const & device
 			, ashes::PipelineStageFlags after
 			, ashes::PipelineStageFlags before
-			, ashes::BufferMemoryBarrier const & transitionBarrier );
+			, ashes::DependencyFlags dependencyFlags
+			, ashes::MemoryBarrierArray const & memoryBarriers
+			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
+			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;

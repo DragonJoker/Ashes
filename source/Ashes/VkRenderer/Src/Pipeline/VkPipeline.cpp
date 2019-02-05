@@ -26,27 +26,22 @@ namespace vk_renderer
 		, m_vertexAttributes{ convert< VkVertexInputAttributeDescription >( m_createInfo.vertexInputState.vertexAttributeDescriptions ) }
 		, m_vertexBindings{ convert< VkVertexInputBindingDescription >( m_createInfo.vertexInputState.vertexBindingDescriptions ) }
 		, m_vertexInputState{ convert( m_createInfo.vertexInputState, m_vertexAttributes, m_vertexBindings ) }
-		, m_renderPass{ static_cast< RenderPass const & >( m_createInfo.renderPass.get() ) }
+		, m_renderPass{ static_cast< RenderPass const & >( *m_createInfo.renderPass ) }
 		, m_inputAssemblyState{ convert( m_createInfo.inputAssemblyState ) }
 		, m_rasterisationState{ convert( m_createInfo.rasterisationState ) }
 		, m_colourBlendStateAttachments{ convert< VkPipelineColorBlendAttachmentState >( m_createInfo.colourBlendState.attachs.begin(), m_createInfo.colourBlendState.attachs.end() ) }
 		, m_colourBlendState{ convert( m_createInfo.colourBlendState, m_colourBlendStateAttachments ) }
 		, m_multisampleState{ convert( m_createInfo.multisampleState ) }
-		, m_dynamicStates{ convert< VkDynamicState >( m_createInfo.dynamicStates ) }
+		, m_viewportState{ convert( m_createInfo.viewportState, m_viewports, m_scissors ) }
 	{
+		if ( bool( m_createInfo.dynamicState ) )
+		{
+			convert( m_createInfo.dynamicState.value(), m_dynamicStates );
+		}
+
 		if ( m_createInfo.depthStencilState )
 		{
 			m_depthStencilState = convert( m_createInfo.depthStencilState.value() );
-		}
-
-		if ( m_createInfo.scissor )
-		{
-			m_scissor = convert( m_createInfo.scissor.value() );
-		}
-
-		if ( m_createInfo.viewport )
-		{
-			m_viewport = convert( m_createInfo.viewport.value() );
 		}
 
 		if ( m_createInfo.tessellationState )
@@ -78,40 +73,24 @@ namespace vk_renderer
 			++index;
 		}
 
-		// Le viewport.
-		VkPipelineViewportStateCreateInfo viewportState
-		{
-			VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-			nullptr,
-			0,                                                                      // flags
-			1u,                                                                     // viewportCount
-			m_viewport                                                              // pViewports
-				? &m_viewport.value()
-				: nullptr,
-			1u,                                                                     // scissorCount
-			m_scissor                                                               // pScissors
-				? &m_scissor.value()
-				: nullptr,
-		};
-
 		// Les états dynamiques, le cas échéant
-		if ( !m_viewport )
+		if ( m_viewports.empty() )
 		{
 			assert( m_dynamicStates.end() != std::find( m_dynamicStates.begin(), m_dynamicStates.end(), VK_DYNAMIC_STATE_VIEWPORT ) );
 		}
 
-		if ( !m_scissor )
+		if ( m_scissors.empty() )
 		{
 			assert( m_dynamicStates.end() != std::find( m_dynamicStates.begin(), m_dynamicStates.end(), VK_DYNAMIC_STATE_SCISSOR ) );
 		}
 
-		VkPipelineDynamicStateCreateInfo dynamicState
+		VkPipelineDynamicStateEnableCreateInfo dynamicState
 		{
 			VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,         // sType
 			nullptr,                                                      // pNext
 			0,                                                            // flags
 			static_cast< uint32_t >( m_dynamicStates.size() ),            // dynamicStateCount
-			m_dynamicStates.data()                                        // pDynamicStates
+			m_dynamicStates.data()                                        // pDynamicStateEnables
 		};
 
 		// Enfin, on crée le pipeline !!
@@ -127,14 +106,14 @@ namespace vk_renderer
 			m_tessellationState                                           // pTessellationState
 				? &m_tessellationState.value()
 				: nullptr,
-			&viewportState,                                               // pViewportState
+			&m_viewportState,                                             // pViewportState
 			&m_rasterisationState,                                        // pRasterizationState
 			&m_multisampleState,                                          // pMultisampleState
 			m_depthStencilState                                           // pDepthStencilState
 				? &m_depthStencilState.value()
 				: nullptr,
 			&m_colourBlendState,                                          // pColorBlendState
-			m_dynamicStates.empty() ? nullptr : &dynamicState,            // pDynamicState
+			m_dynamicStates.empty() ? nullptr : &dynamicState,            // pDynamicStateEnable
 			m_layout,                                                     // layout
 			m_renderPass,                                                 // renderPass
 			0,                                                            // subpass

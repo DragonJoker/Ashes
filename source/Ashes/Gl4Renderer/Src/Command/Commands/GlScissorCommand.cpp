@@ -9,26 +9,28 @@ See LICENSE file in root folder.
 namespace gl_renderer
 {
 	ScissorCommand::ScissorCommand( Device const & device
-		, ashes::Scissor const & scissor )
+		, uint32_t firstScissor
+		, ashes::ScissorArray const & scissors )
 		: CommandBase{ device }
-		, m_scissor{ scissor }
+		, m_scissors{ scissors.begin() + firstScissor, scissors.end() }
 	{
 	}
 
 	void ScissorCommand::apply( ContextLock const & context )const
 	{
 		auto & save = m_device.getCurrentScissor();
+		auto & scissor = *m_scissors.begin();
 
-		if ( m_scissor != save )
+		if ( scissor != save )
 		{
 			glLogCommand( "ScissorCommand" );
 			glLogCall( context
 				, glScissor
-				, m_scissor.offset.x
-				, m_scissor.offset.y
-				, m_scissor.size.width
-				, m_scissor.size.height );
-			save = m_scissor;
+				, scissor.offset.x
+				, scissor.offset.y
+				, scissor.size.width
+				, scissor.size.height );
+			save = scissor;
 		}
 	}
 

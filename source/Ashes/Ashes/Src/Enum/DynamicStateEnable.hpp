@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_DynamicState_HPP___
-#define ___Ashes_DynamicState_HPP___
+#ifndef ___Ashes_DynamicStateEnable_HPP___
+#define ___Ashes_DynamicStateEnable_HPP___
 #pragma once
 
 namespace ashes
@@ -16,7 +16,7 @@ namespace ashes
 	*\brief
 	*	Indique quelque état dynamique est pris depuis une commande d'état dynamique.
 	*/
-	enum class DynamicState
+	enum class DynamicStateEnable
 	{
 		eViewport = 0,
 		eScissor = 1,

@@ -25,12 +25,13 @@ namespace d3d11_renderer
 		*	Le viewport.
 		*/
 		ViewportCommand( Device const & device
-			, ashes::Viewport const & viewport );
+			, uint32_t first
+			, ashes::ViewportArray const & viewports );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		D3D11_VIEWPORT m_viewport;
+		std::vector< D3D11_VIEWPORT > m_viewports;
 	};
 }

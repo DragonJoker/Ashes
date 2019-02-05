@@ -17,8 +17,6 @@ See LICENSE file in root folder.
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 #include "RenderPass/GlRenderPass.hpp"
-#include "Sync/GlBufferMemoryBarrier.hpp"
-#include "Sync/GlImageMemoryBarrier.hpp"
 
 #include "Commands/GlBeginQueryCommand.hpp"
 #include "Commands/GlBeginRenderPassCommand.hpp"
@@ -28,7 +26,6 @@ See LICENSE file in root folder.
 #include "Commands/GlBindGeometryBuffersCommand.hpp"
 #include "Commands/GlBindPipelineCommand.hpp"
 #include "Commands/GlBlitImageCommand.hpp"
-#include "Commands/GlBufferMemoryBarrierCommand.hpp"
 #include "Commands/GlClearAttachmentsCommand.hpp"
 #include "Commands/GlClearColourCommand.hpp"
 #include "Commands/GlClearDepthStencilCommand.hpp"
@@ -45,7 +42,7 @@ See LICENSE file in root folder.
 #include "Commands/GlEndQueryCommand.hpp"
 #include "Commands/GlEndRenderPassCommand.hpp"
 #include "Commands/GlEndSubpassCommand.hpp"
-#include "Commands/GlImageMemoryBarrierCommand.hpp"
+#include "Commands/GlMemoryBarrierCommand.hpp"
 #include "Commands/GlPushConstantsCommand.hpp"
 #include "Commands/GlResetEventCommand.hpp"
 #include "Commands/GlResetQueryPoolCommand.hpp"
@@ -80,21 +77,12 @@ namespace gl_renderer
 		}
 	}
 
-	void CommandBuffer::begin( ashes::CommandBufferUsageFlags flags )const
+	void CommandBuffer::begin( ashes::CommandBufferBeginInfo const & info )const
 	{
 		m_afterSubmitActions.clear();
 		m_commands.clear();
 		m_state = State{};
-		m_state.beginFlags = flags;
-	}
-
-	void CommandBuffer::begin( ashes::CommandBufferUsageFlags flags
-		, ashes::CommandBufferInheritanceInfo const & inheritanceInfo )const
-	{
-		m_afterSubmitActions.clear();
-		m_commands.clear();
-		m_state = State{};
-		m_state.beginFlags = flags;
+		m_state.beginFlags = info.flags;
 	}
 
 	void CommandBuffer::end()const
@@ -108,18 +96,16 @@ namespace gl_renderer
 		m_commands.clear();
 	}
 
-	void CommandBuffer::beginRenderPass( ashes::RenderPass const & renderPass
-		, ashes::FrameBuffer const & frameBuffer
-		, ashes::ClearValueArray const & clearValues
+	void CommandBuffer::beginRenderPass( ashes::RenderPassBeginInfo const & beginInfo
 		, ashes::SubpassContents contents )const
 	{
-		m_state.currentRenderPass = &static_cast< RenderPass const & >( renderPass );
-		m_state.currentFrameBuffer = &frameBuffer;
+		m_state.currentRenderPass = static_cast< RenderPass const * >( beginInfo.renderPass );
+		m_state.currentFrameBuffer = beginInfo.framebuffer;
 		m_state.currentSubpassIndex = 0u;
 		m_commands.emplace_back( std::make_unique< BeginRenderPassCommand >( m_device
-			, renderPass
-			, frameBuffer
-			, clearValues
+			, *beginInfo.renderPass
+			, *beginInfo.framebuffer
+			, beginInfo.clearValues
 			, contents ) );
 		m_state.currentSubpass = &m_state.currentRenderPass->getSubpasses()[m_state.currentSubpassIndex++];
 		m_commands.emplace_back( std::make_unique< BeginSubpassCommand >( m_device
@@ -351,14 +337,16 @@ namespace gl_renderer
 		}
 	}
 
-	void CommandBuffer::setViewport( ashes::Viewport const & viewport )const
+	void CommandBuffer::setViewport( uint32_t firstViewport
+		, ashes::ViewportArray const & viewports )const
 	{
-		m_commands.emplace_back( std::make_unique< ViewportCommand >( m_device, viewport ) );
+		m_commands.emplace_back( std::make_unique< ViewportCommand >( m_device, firstViewport, viewports ) );
 	}
 
-	void CommandBuffer::setScissor( ashes::Scissor const & scissor )const
+	void CommandBuffer::setScissor( uint32_t firstScissor
+		, ashes::ScissorArray const & scissors )const
 	{
-		m_commands.emplace_back( std::make_unique< ScissorCommand >( m_device, scissor ) );
+		m_commands.emplace_back( std::make_unique< ScissorCommand >( m_device, firstScissor, scissors ) );
 	}
 
 	void CommandBuffer::draw( uint32_t vtxCount
@@ -700,24 +688,20 @@ namespace gl_renderer
 		m_state.vaos.clear();
 	}
 
-	void CommandBuffer::doMemoryBarrier( ashes::PipelineStageFlags after
+	void CommandBuffer::pipelineBarrier( ashes::PipelineStageFlags after
 		, ashes::PipelineStageFlags before
-		, ashes::BufferMemoryBarrier const & transitionBarrier )const
+		, ashes::DependencyFlags dependencyFlags
+		, ashes::MemoryBarrierArray const & memoryBarriers
+		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
+		, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
-		m_commands.emplace_back( std::make_unique< BufferMemoryBarrierCommand >( m_device
+		m_commands.emplace_back( std::make_unique< MemoryBarrierCommand >( m_device
 			, after
 			, before
-			, transitionBarrier ) );
-	}
-
-	void CommandBuffer::doMemoryBarrier( ashes::PipelineStageFlags after
-		, ashes::PipelineStageFlags before
-		, ashes::ImageMemoryBarrier const & transitionBarrier )const
-	{
-		m_commands.emplace_back( std::make_unique< ImageMemoryBarrierCommand >( m_device
-			, after
-			, before
-			, transitionBarrier ) );
+			, dependencyFlags
+			, memoryBarriers
+			, bufferMemoryBarriers
+			, imageMemoryBarriers ) );
 	}
 
 	void CommandBuffer::doBindVao()const

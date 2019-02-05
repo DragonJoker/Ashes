@@ -56,14 +56,15 @@ namespace vk_renderer
 		std::vector< VkPipelineColorBlendAttachmentState > m_colourBlendStateAttachments;
 		VkPipelineColorBlendStateCreateInfo m_colourBlendState;
 		VkPipelineMultisampleStateCreateInfo m_multisampleState;
-		ashes::Optional< VkViewport > m_viewport;
-		ashes::Optional< VkRect2D > m_scissor;
+		std::vector< VkViewport > m_viewports;
+		std::vector< VkRect2D > m_scissors;
+		VkPipelineViewportStateCreateInfo m_viewportState;
 		ashes::Optional< VkPipelineDepthStencilStateCreateInfo > m_depthStencilState;
 		ashes::Optional< VkPipelineTessellationStateCreateInfo > m_tessellationState;
 		std::vector< std::vector< VkSpecializationMapEntry > > m_specialisationEntries;
 		std::map< VkShaderStageFlagBits, VkSpecializationInfo > m_specialisationInfos;
 		std::vector< VkPipelineShaderStageCreateInfo > m_shaderStages;
-		std::vector< VkDynamicState > m_dynamicStates;
+		std::vector< VkDynamicStateEnable > m_dynamicStates;
 		VkPipeline m_pipeline{ VK_NULL_HANDLE };
 	};
 }

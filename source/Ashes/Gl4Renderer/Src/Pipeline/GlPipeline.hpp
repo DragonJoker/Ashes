@@ -59,7 +59,7 @@ namespace gl_renderer
 		*/
 		inline bool hasViewport()const
 		{
-			return (bool)m_viewport;
+			return !m_viewports.empty();
 		}
 		/**
 		*\return
@@ -67,7 +67,7 @@ namespace gl_renderer
 		*/
 		inline bool hasScissor()const
 		{
-			return (bool)m_scissor;
+			return !m_scissors.empty();
 		}
 		/**
 		*\return
@@ -137,19 +137,19 @@ namespace gl_renderer
 		*\return
 		*	Le Viewport.
 		*/
-		inline ashes::Viewport const & getViewport()const
+		inline ashes::ViewportArray const & getViewports()const
 		{
-			assert( m_viewport );
-			return *m_viewport;
+			assert( !m_viewports.empty() );
+			return m_viewports;
 		}
 		/**
 		*\return
 		*	Le Scissor.
 		*/
-		inline ashes::Scissor const & getScissor()const
+		inline ashes::ScissorArray const & getScissors()const
 		{
-			assert( m_scissor );
-			return *m_scissor;
+			assert( !m_scissors.empty() );
+			return m_scissors;
 		}
 		/**
 		*\return
@@ -188,11 +188,12 @@ namespace gl_renderer
 		*\return
 		*	\p true si l'état dynamique est dans la liste d'états dynamiques.
 		*/
-		inline bool hasDynamicState( ashes::DynamicState state )const
+		inline bool hasDynamicStateEnable( ashes::DynamicStateEnable state )const
 		{
-			return m_createInfo.dynamicStates.end() != std::find( m_createInfo.dynamicStates.begin()
-				, m_createInfo.dynamicStates.end()
-				, state );
+			return bool( m_createInfo.dynamicState )
+				&& m_createInfo.dynamicState.value().dynamicStates.end() != std::find( m_createInfo.dynamicState.value().dynamicStates.begin()
+					, m_createInfo.dynamicState.value().dynamicStates.end()
+					, state );
 		}
 
 	private:
@@ -207,8 +208,8 @@ namespace gl_renderer
 		ashes::DepthStencilState m_dsState;
 		ashes::MultisampleState m_msState;
 		ashes::TessellationState m_tsState;
-		ashes::Optional< ashes::Viewport > m_viewport;
-		ashes::Optional< ashes::Scissor > m_scissor;
+		ashes::ViewportArray m_viewports;
+		ashes::ScissorArray m_scissors;
 		PushConstantsDesc m_constantsPcb;
 		ShaderProgram m_program;
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;

@@ -907,7 +907,7 @@ namespace vk_renderer
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPipelineDynamicStateCreateInfo const & value, std::string const & tabs )
+		static inline std::string subDump( VkPipelineDynamicStateEnableCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -915,7 +915,7 @@ namespace vk_renderer
 			dump << tabs << "\t" << "pNext: " << value.pNext << std::endl;
 			dump << tabs << "\t" << "flags: " << value.flags << std::endl;
 			dump << tabs << "\t" << "dynamicStateCount: " << value.dynamicStateCount << std::endl;
-			dump << tabs << "\t" << "pDynamicStates: " << std::endl << subDump( value.pDynamicStates, value.dynamicStateCount, tabs + "\t" ) << std::endl;
+			dump << tabs << "\t" << "pDynamicStateEnables: " << std::endl << subDump( value.pDynamicStateEnables, value.dynamicStateCount, tabs + "\t" ) << std::endl;
 			dump << tabs << "}" << std::endl;
 			return dump.str();
 		}
@@ -937,7 +937,7 @@ namespace vk_renderer
 			dump << tabs << "\t" << "pMultisampleState: " << std::endl << subDump( value.pMultisampleState, tabs + "\t" ) << std::endl;
 			dump << tabs << "\t" << "pDepthStencilState: " << std::endl << subDump( value.pDepthStencilState, tabs + "\t" ) << std::endl;
 			dump << tabs << "\t" << "pColorBlendState: " << std::endl << subDump( value.pColorBlendState, tabs + "\t" ) << std::endl;
-			dump << tabs << "\t" << "pDynamicState: " << std::endl << subDump( value.pDynamicState, tabs + "\t" ) << std::endl;
+			dump << tabs << "\t" << "pDynamicStateEnable: " << std::endl << subDump( value.pDynamicStateEnable, tabs + "\t" ) << std::endl;
 			dump << tabs << "\t" << "layout: " << value.layout << std::endl;
 			dump << tabs << "\t" << "renderPass: " << value.renderPass << std::endl;
 			dump << tabs << "\t" << "subpass: " << value.subpass << std::endl;

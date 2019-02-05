@@ -70,12 +70,12 @@ namespace d3d11_renderer
 
 		inline bool hasViewport()const
 		{
-			return ( bool )m_viewport;
+			return !m_viewports.empty();
 		}
 
 		inline bool hasScissor()const
 		{
-			return ( bool )m_scissor;
+			return m_scissors.empty();
 		}
 
 		inline std::array< FLOAT, 4u > getBlendFactor()const
@@ -97,16 +97,16 @@ namespace d3d11_renderer
 				: 0u;
 		}
 
-		inline D3D11_VIEWPORT const & getViewport()const
+		inline std::vector < D3D11_VIEWPORT > const & getViewports()const
 		{
-			assert( m_viewport );
-			return *m_viewport;
+			assert( !m_viewports.empty() );
+			return m_viewports;
 		}
 
-		inline RECT const & getScissor()const
+		inline std::vector< RECT > const & getScissors()const
 		{
-			assert( m_scissor );
-			return *m_scissor;
+			assert( !m_scissors.empty() );
+			return m_scissors;
 		}
 
 		inline std::list< CompiledShaderModule > const & getShaderStages()const
@@ -124,10 +124,11 @@ namespace d3d11_renderer
 			return m_vertexInputStateHash;
 		}
 
-		inline bool hasDynamicState( ashes::DynamicState state )const
+		inline bool hasDynamicStateEnable( ashes::DynamicStateEnable state )const
 		{
-			return m_createInfo.dynamicStates.end() != std::find( m_createInfo.dynamicStates.begin()
-				, m_createInfo.dynamicStates.end()
+			return bool( m_createInfo.dynamicState )
+				&& m_createInfo.dynamicState.value().dynamicStates.end() != std::find( m_createInfo.dynamicState.value().dynamicStates.begin()
+				, m_createInfo.dynamicState.value().dynamicStates.end()
 				, state );
 		}
 
@@ -143,8 +144,8 @@ namespace d3d11_renderer
 		ID3D11RasterizerState * m_rsState{ nullptr };
 		ID3D11InputLayout * m_iaState{ nullptr };
 		ID3D11BlendState * m_bdState{ nullptr };
-		ashes::Optional< RECT > m_scissor;
-		ashes::Optional< D3D11_VIEWPORT > m_viewport;
+		std::vector< RECT > m_scissors;
+		std::vector< D3D11_VIEWPORT > m_viewports;
 		std::vector< PushConstantsBuffer > m_constantsPcbs;
 		ProgramLayout m_programLayout;
 		std::list< CompiledShaderModule > m_programModules;

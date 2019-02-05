@@ -17,6 +17,19 @@ namespace d3d11_renderer
 		};
 	}
 
+	std::vector< RECT > makeScissors( ashes::ScissorArray::const_iterator const & begin
+		, ashes::ScissorArray::const_iterator const & end )
+	{
+		std::vector< RECT > result;
+
+		for ( auto it = begin; it != end; ++it )
+		{
+			result.push_back( makeScissor( *it ) );
+		}
+
+		return result;
+	}
+
 	RECT makeScissor( ashes::Extent2D const & extent )
 	{
 		return RECT

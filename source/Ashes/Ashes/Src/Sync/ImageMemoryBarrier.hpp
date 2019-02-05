@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
@@ -45,80 +45,15 @@ namespace ashes
 			, uint32_t dstQueueFamilyIndex
 			, Texture const & image
 			, ImageSubresourceRange const & subresourceRange );
-		/**
-		*\return
-		*	Les indicateurs d'accès avant la barrière.
-		*/
-		inline AccessFlags getSrcAccessMask()const
-		{
-			return m_srcAccessMask;
-		}
-		/**
-		*\return
-		*	Les indicateurs d'accès après la barrière.
-		*/
-		inline AccessFlags getDstAccessMask()const
-		{
-			return m_dstAccessMask;
-		}
-		/**
-		*\return
-		*	Le layout d'image avant la barrière.
-		*/
-		inline ImageLayout getOldLayout()const
-		{
-			return m_oldLayout;
-		}
-		/**
-		*\return
-		*	Le layout d'image après la barrière.
-		*/
-		inline ImageLayout getNewLayout()const
-		{
-			return m_newLayout;
-		}
-		/**
-		*\return
-		*	La famille de file voulue avant la barrière.
-		*/
-		inline uint32_t getSrcQueueFamilyIndex()const
-		{
-			return m_srcQueueFamilyIndex;
-		}
-		/**
-		*\return
-		*	La famille de file voulue après la barrière.
-		*/
-		inline uint32_t getDstQueueFamilyIndex()const
-		{
-			return m_dstQueueFamilyIndex;
-		}
-		/**
-		*\return
-		*	L'image.
-		*/
-		inline Texture const & getImage()const
-		{
-			return m_image;
-		}
-		/**
-		*\return
-		*	L'intervalle de sous-ressource.
-		*/
-		inline ImageSubresourceRange const & getSubresourceRange()const
-		{
-			return m_subresourceRange;
-		}
 
-	private:
-		AccessFlags m_srcAccessMask;
-		AccessFlags m_dstAccessMask;
-		ImageLayout m_oldLayout;
-		ImageLayout m_newLayout;
-		uint32_t m_srcQueueFamilyIndex;
-		uint32_t m_dstQueueFamilyIndex;
-		Texture const & m_image;
-		ImageSubresourceRange m_subresourceRange;
+		AccessFlags srcAccessMask;
+		AccessFlags dstAccessMask;
+		ImageLayout oldLayout;
+		ImageLayout newLayout;
+		uint32_t srcQueueFamilyIndex;
+		uint32_t dstQueueFamilyIndex;
+		Texture const & image;
+		ImageSubresourceRange subresourceRange;
 	};
 }
 

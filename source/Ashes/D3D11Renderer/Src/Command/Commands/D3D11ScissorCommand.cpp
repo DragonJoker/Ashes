@@ -9,15 +9,17 @@ See LICENSE file in root folder.
 namespace d3d11_renderer
 {
 	ScissorCommand::ScissorCommand( Device const & device
-		, ashes::Scissor const & scissor )
+		, uint32_t first
+		, ashes::ScissorArray const & scissors )
 		: CommandBase{ device }
-		, m_scissor{ makeScissor( scissor ) }
+		, m_scissors{ makeScissors( scissors.begin() + first, scissors.end() ) }
 	{
 	}
 
 	void ScissorCommand::apply( Context const & context )const
 	{
-		context.context->RSSetScissorRects( 1u, &m_scissor );
+		context.context->RSSetScissorRects( UINT( m_scissors.size() )
+			, m_scissors.data() );
 	}
 
 	CommandPtr ScissorCommand::clone()const

@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
@@ -42,80 +42,22 @@ namespace ashes
 			, BufferBase const & buffer
 			, uint64_t offset
 			, uint64_t size )
-			: m_srcAccessMask{ srcAccessMask }
-			, m_dstAccessMask{ dstAccessMask }
-			, m_srcQueueFamilyIndex{ srcQueueFamilyIndex }
-			, m_dstQueueFamilyIndex{ dstQueueFamilyIndex }
-			, m_buffer{ buffer }
-			, m_offset{ offset }
-			, m_size{ size }
+			: srcAccessMask{ srcAccessMask }
+			, dstAccessMask{ dstAccessMask }
+			, srcQueueFamilyIndex{ srcQueueFamilyIndex }
+			, dstQueueFamilyIndex{ dstQueueFamilyIndex }
+			, buffer{ buffer }
+			, offset{ offset }
+			, size{ size }
 		{
 		}
-		/**
-		*\return
-		*	Les indicateurs d'accès avant la barrière.
-		*/
-		inline AccessFlags getSrcAccessMask()const
-		{
-			return m_srcAccessMask;
-		}
-		/**
-		*\return
-		*	Les indicateurs d'accès après la barrière.
-		*/
-		inline AccessFlags getDstAccessMask()const
-		{
-			return m_dstAccessMask;
-		}
-		/**
-		*\return
-		*	La famille de file voulue avant la barrière.
-		*/
-		inline uint32_t getSrcQueueFamilyIndex()const
-		{
-			return m_srcQueueFamilyIndex;
-		}
-		/**
-		*\return
-		*	La famille de file voulue après la barrière.
-		*/
-		inline uint32_t getDstQueueFamilyIndex()const
-		{
-			return m_dstQueueFamilyIndex;
-		}
-		/**
-		*\return
-		*	L'image.
-		*/
-		inline BufferBase const & getBuffer()const
-		{
-			return m_buffer;
-		}
-		/**
-		*\return
-		*	L'offset dans le tampon.
-		*/
-		inline uint64_t getOffset()const
-		{
-			return m_offset;
-		}
-		/**
-		*\return
-		*	La taille du tampon.
-		*/
-		inline uint64_t getSize()const
-		{
-			return m_size;
-		}
-
-	private:
-		AccessFlags m_srcAccessMask;
-		AccessFlags m_dstAccessMask;
-		uint32_t m_srcQueueFamilyIndex;
-		uint32_t m_dstQueueFamilyIndex;
-		BufferBase const & m_buffer;
-		uint64_t m_offset;
-		uint64_t m_size;
+		AccessFlags srcAccessMask;
+		AccessFlags dstAccessMask;
+		uint32_t srcQueueFamilyIndex;
+		uint32_t dstQueueFamilyIndex;
+		BufferBase const & buffer;
+		uint64_t offset;
+		uint64_t size;
 	};
 }
 

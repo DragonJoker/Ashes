@@ -325,6 +325,7 @@ namespace gl_renderer
 		m_features.hasBaseInstance = gpu.find( "GL_ARB_base_instance" );
 		m_features.hasClearTexImage = gpu.find( "GL_ARB_clear_texture" );
 		m_features.hasComputeShaders = gpu.find( "GL_ARB_compute_shader" );
+		m_features.supportsPersistentMapping = gpu.find( "GL_ARB_buffer_storage" );
 		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...
 		m_spirvSupported = false
 			&& ( gpu.find( "GL_ARB_gl_spirv" )

@@ -65,14 +65,7 @@ namespace test_renderer
 	{
 	}
 
-	void CommandBuffer::begin( ashes::CommandBufferUsageFlags flags )const
-	{
-		m_currentPipeline = nullptr;
-		m_currentComputePipeline = nullptr;
-	}
-
-	void CommandBuffer::begin( ashes::CommandBufferUsageFlags flags
-		, ashes::CommandBufferInheritanceInfo const & inheritanceInfo )const
+	void CommandBuffer::begin( ashes::CommandBufferBeginInfo const & info )const
 	{
 		m_currentPipeline = nullptr;
 		m_currentComputePipeline = nullptr;
@@ -88,9 +81,7 @@ namespace test_renderer
 	{
 	}
 
-	void CommandBuffer::beginRenderPass( ashes::RenderPass const & renderPass
-		, ashes::FrameBuffer const & frameBuffer
-		, ashes::ClearValueArray const & clearValues
+	void CommandBuffer::beginRenderPass( ashes::RenderPassBeginInfo const & beginInfo
 		, ashes::SubpassContents contents )const
 	{
 	}
@@ -153,11 +144,13 @@ namespace test_renderer
 	{
 	}
 
-	void CommandBuffer::setViewport( ashes::Viewport const & viewport )const
+	void CommandBuffer::setViewport( uint32_t firstViewport
+		, ashes::ViewportArray const & viewports )const
 	{
 	}
 
-	void CommandBuffer::setScissor( ashes::Scissor const & scissor )const
+	void CommandBuffer::setScissor( uint32_t firstScissor
+		, ashes::ScissorArray const & scissors )const
 	{
 	}
 
@@ -301,15 +294,12 @@ namespace test_renderer
 	{
 	}
 
-	void CommandBuffer::doMemoryBarrier( ashes::PipelineStageFlags after
+	void CommandBuffer::pipelineBarrier( ashes::PipelineStageFlags after
 		, ashes::PipelineStageFlags before
-		, ashes::BufferMemoryBarrier const & transitionBarrier )const
-	{
-	}
-
-	void CommandBuffer::doMemoryBarrier( ashes::PipelineStageFlags after
-		, ashes::PipelineStageFlags before
-		, ashes::ImageMemoryBarrier const & transitionBarrier )const
+		, ashes::DependencyFlags dependencyFlags
+		, ashes::MemoryBarrierArray const & memoryBarriers
+		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
+		, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
 	}
 }

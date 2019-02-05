@@ -12,7 +12,7 @@ namespace d3d11_renderer
 	*\brief
 	*	Classe de base d'une commande.
 	*/
-	class BufferMemoryBarrierCommand
+	class MemoryBarrierCommand
 		: public CommandBase
 	{
 	public:
@@ -20,10 +20,12 @@ namespace d3d11_renderer
 		*\brief
 		*	Constructeur.
 		*/
-		BufferMemoryBarrierCommand( Device const & device
+		MemoryBarrierCommand( Device const & device
 			, ashes::PipelineStageFlags after
 			, ashes::PipelineStageFlags before
-			, ashes::BufferMemoryBarrier const & transitionBarrier );
+			, ashes::MemoryBarrierArray const & memoryBarriers
+			, ashes::BufferMemoryBarrierArray const & bufferBarriers
+			, ashes::ImageMemoryBarrierArray const & imageBarriers );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;

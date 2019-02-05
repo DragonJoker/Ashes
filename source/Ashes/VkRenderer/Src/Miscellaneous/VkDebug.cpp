@@ -237,7 +237,7 @@ namespace vk_renderer
 	template<> std::string const VkTypeNamer< VkPipelineColorBlendAttachmentState >::Name = "VkPipelineColorBlendAttachmentState";
 	template<> std::string const VkTypeNamer< VkPipelineColorBlendStateCreateInfo >::Name = "VkPipelineColorBlendStateCreateInfo";
 	template<> std::string const VkTypeNamer< VkPipelineDepthStencilStateCreateInfo >::Name = "VkPipelineDepthStencilStateCreateInfo";
-	template<> std::string const VkTypeNamer< VkPipelineDynamicStateCreateInfo >::Name = "VkPipelineDynamicStateCreateInfo";
+	template<> std::string const VkTypeNamer< VkPipelineDynamicStateEnableCreateInfo >::Name = "VkPipelineDynamicStateEnableCreateInfo";
 	template<> std::string const VkTypeNamer< VkPipelineInputAssemblyStateCreateInfo >::Name = "VkPipelineInputAssemblyStateCreateInfo";
 	template<> std::string const VkTypeNamer< VkPipelineLayoutCreateInfo >::Name = "VkPipelineLayoutCreateInfo";
 	template<> std::string const VkTypeNamer< VkPipelineMultisampleStateCreateInfo >::Name = "VkPipelineMultisampleStateCreateInfo";

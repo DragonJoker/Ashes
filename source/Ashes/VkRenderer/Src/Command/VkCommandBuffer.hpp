@@ -54,12 +54,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	ashes::CommandBuffer:begin
 		*/
-		void begin( ashes::CommandBufferUsageFlags flags )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:begin
-		*/
-		void begin( ashes::CommandBufferUsageFlags flags
-			, ashes::CommandBufferInheritanceInfo const & inheritanceInfo )const override;
+		void begin( ashes::CommandBufferBeginInfo const & info )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:end
 		*/
@@ -71,9 +66,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	ashes::CommandBuffer:beginRenderPass
 		*/
-		void beginRenderPass( ashes::RenderPass const & renderPass
-			, ashes::FrameBuffer const & frameBuffer
-			, ashes::ClearValueArray const & clearValues
+		void beginRenderPass( ashes::RenderPassBeginInfo const & beginInfo
 			, ashes::SubpassContents contents )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:nextSubpass
@@ -134,11 +127,13 @@ namespace vk_renderer
 		/**
 		*\copydoc	ashes::CommandBuffer:setViewport
 		*/
-		void setViewport( ashes::Viewport const & viewport )const override;
+		void setViewport( uint32_t firstViewport
+			, ashes::ViewportArray const & viewports )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:setScissor
 		*/
-		void setScissor( ashes::Scissor const & scissor )const override;
+		void setScissor( uint32_t firstScissor
+			, ashes::ScissorArray const & scissors )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:draw
 		*/
@@ -274,6 +269,15 @@ namespace vk_renderer
 			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
 			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const override;
 		/**
+		*\copydoc	ashes::CommandBuffer::pipelineBarrier
+		*/
+		void pipelineBarrier( ashes::PipelineStageFlags after
+			, ashes::PipelineStageFlags before
+			, ashes::DependencyFlags dependencyFlags
+			, ashes::MemoryBarrierArray const & memoryBarriers
+			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
+			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const override;
+		/**
 		*\~french
 		*\return
 		*	Le pipeline actuellement actif.
@@ -310,20 +314,6 @@ namespace vk_renderer
 		{
 			return m_commandBuffer;
 		}
-
-	private:
-		/**
-		*\copydoc	ashes::CommandBuffer:doMemoryBarrier
-		*/
-		void doMemoryBarrier( ashes::PipelineStageFlags after
-			, ashes::PipelineStageFlags before
-			, ashes::BufferMemoryBarrier const & transitionBarrier )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:doMemoryBarrier
-		*/
-		void doMemoryBarrier( ashes::PipelineStageFlags after
-			, ashes::PipelineStageFlags before
-			, ashes::ImageMemoryBarrier const & transitionBarrier )const override;
 
 	private:
 		Device const & m_device;

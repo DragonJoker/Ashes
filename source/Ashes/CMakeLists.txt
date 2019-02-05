@@ -9,7 +9,11 @@ else ()
 endif ()
 
 if ( MSVC )
-	add_definitions( -D_ENFORCE_MATCHING_ALLOCATORS=0 )
+	add_definitions(
+		-D_ENFORCE_MATCHING_ALLOCATORS=0
+		-DNOMINMAX
+		# -DWIN32_LEAN_AND_MEAN
+	)
 endif ()
 
 set( ASHES_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR} )

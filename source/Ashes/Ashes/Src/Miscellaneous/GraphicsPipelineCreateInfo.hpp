@@ -8,14 +8,14 @@ See LICENSE file in root folder.
 
 #include "Pipeline/ColourBlendState.hpp"
 #include "Pipeline/DepthStencilState.hpp"
+#include "Pipeline/DynamicState.hpp"
 #include "Pipeline/InputAssemblyState.hpp"
 #include "Pipeline/MultisampleState.hpp"
 #include "Pipeline/RasterisationState.hpp"
-#include "Pipeline/Scissor.hpp"
 #include "Pipeline/ShaderStageState.hpp"
 #include "Pipeline/TessellationState.hpp"
 #include "Pipeline/VertexInputState.hpp"
-#include "Pipeline/Viewport.hpp"
+#include "Pipeline/ViewportState.hpp"
 
 #include <map>
 
@@ -31,18 +31,85 @@ namespace ashes
 	*/
 	struct GraphicsPipelineCreateInfo
 	{
-		std::vector< ShaderStageState > stages;
-		std::reference_wrapper< RenderPass const > renderPass;
-		VertexInputState vertexInputState;
-		InputAssemblyState inputAssemblyState = InputAssemblyState{};
-		RasterisationState rasterisationState = RasterisationState{};
-		MultisampleState multisampleState = MultisampleState{};
+		GraphicsPipelineCreateInfo( ShaderStageStateArray stages = ShaderStageStateArray{}
+			, VertexInputState vertexInputState = VertexInputState{}
+			, InputAssemblyState inputAssemblyState = InputAssemblyState{}
+			, Optional< TessellationState > tessellationState = nullopt
+			, ViewportState viewportState = ViewportState{}
+			, RasterisationState rasterisationState = RasterisationState{}
+			, MultisampleState multisampleState = MultisampleState{}
+			, Optional< DepthStencilState > depthStencilState = nullopt
+			, ColourBlendState colourBlendState = ColourBlendState::createDefault()
+			, Optional< DynamicState > dynamicState = nullopt
+			, RenderPass const * renderPass = nullptr )
+			: stages{ std::move( stages ) }
+			, vertexInputState{ std::move( vertexInputState ) }
+			, inputAssemblyState{ std::move( inputAssemblyState ) }
+			, tessellationState{ std::move( tessellationState ) }
+			, viewportState{ std::move( viewportState ) }
+			, rasterisationState{ std::move( rasterisationState ) }
+			, multisampleState{ std::move( multisampleState ) }
+			, depthStencilState{ std::move( depthStencilState ) }
+			, colourBlendState{ std::move( colourBlendState ) }
+			, dynamicState{ std::move( dynamicState ) }
+			, renderPass{ std::move( renderPass ) }
+		{
+		}
+		
+		GraphicsPipelineCreateInfo( ShaderStageStateArray stages
+			, RenderPass const & renderPass
+			, VertexInputState vertexInputState
+			, InputAssemblyState inputAssemblyState = InputAssemblyState{}
+			, RasterisationState rasterisationState = RasterisationState{}
+			, MultisampleState multisampleState = MultisampleState{}
+			, ColourBlendState colourBlendState = ColourBlendState::createDefault()
+			, DynamicStateEnableArray dynamicStates = DynamicStateEnableArray{}
+			, Optional< DepthStencilState > depthStencilState = nullopt
+			, Optional< TessellationState > tessellationState = nullopt
+			, Optional< Viewport > viewport = nullopt
+			, Optional< Scissor > scissor = nullopt )
+			: stages{ std::move( stages ) }
+			, vertexInputState{ std::move( vertexInputState ) }
+			, inputAssemblyState{ std::move( inputAssemblyState ) }
+			, tessellationState{ std::move( tessellationState ) }
+			, rasterisationState{ std::move( rasterisationState ) }
+			, multisampleState{ std::move( multisampleState ) }
+			, depthStencilState{ std::move( depthStencilState ) }
+			, colourBlendState{ std::move( colourBlendState ) }
+			, renderPass{ &renderPass }
+		{
+			if ( !dynamicStates.empty() )
+			{
+				dynamicState = DynamicState{ 0u, std::move( dynamicStates ) };
+			}
+
+			if ( bool( viewport ) || bool( scissor ) )
+			{
+				viewportState = ViewportState{ 0u };
+
+				if ( bool( viewport ) )
+				{
+					viewportState.viewports.emplace_back( std::move( viewport.value() ) );
+				}
+
+				if ( bool( scissor ) )
+				{
+					viewportState.scissors.emplace_back( std::move( scissor.value() ) );
+				}
+			}
+		}
+
+		ShaderStageStateArray stages{};
+		VertexInputState vertexInputState{};
+		InputAssemblyState inputAssemblyState{};
+		Optional< TessellationState > tessellationState{ nullopt };
+		ViewportState viewportState{};
+		RasterisationState rasterisationState{};
+		MultisampleState multisampleState{};
+		Optional< DepthStencilState > depthStencilState{ nullopt };
 		ColourBlendState colourBlendState = ColourBlendState::createDefault();
-		std::vector< DynamicState > dynamicStates;
-		Optional< DepthStencilState > depthStencilState;
-		Optional< TessellationState > tessellationState;
-		Optional< Viewport > viewport;
-		Optional< Scissor > scissor;
+		Optional< DynamicState > dynamicState{ nullopt };
+		RenderPass const * renderPass;
 	};
 }
 

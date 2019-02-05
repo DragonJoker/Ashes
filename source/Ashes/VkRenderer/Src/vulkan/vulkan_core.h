@@ -1014,7 +1014,7 @@ typedef enum VkBlendOp {
     VK_BLEND_OP_MAX_ENUM = 0x7FFFFFFF
 } VkBlendOp;
 
-typedef enum VkDynamicState {
+typedef enum VkDynamicStateEnable {
     VK_DYNAMIC_STATE_VIEWPORT = 0,
     VK_DYNAMIC_STATE_SCISSOR = 1,
     VK_DYNAMIC_STATE_LINE_WIDTH = 2,
@@ -1031,7 +1031,7 @@ typedef enum VkDynamicState {
     VK_DYNAMIC_STATE_END_RANGE = VK_DYNAMIC_STATE_STENCIL_REFERENCE,
     VK_DYNAMIC_STATE_RANGE_SIZE = (VK_DYNAMIC_STATE_STENCIL_REFERENCE - VK_DYNAMIC_STATE_VIEWPORT + 1),
     VK_DYNAMIC_STATE_MAX_ENUM = 0x7FFFFFFF
-} VkDynamicState;
+} VkDynamicStateEnable;
 
 typedef enum VkFilter {
     VK_FILTER_NEAREST = 0,
@@ -1485,7 +1485,7 @@ typedef enum VkColorComponentFlagBits {
     VK_COLOR_COMPONENT_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
 } VkColorComponentFlagBits;
 typedef VkFlags VkColorComponentFlags;
-typedef VkFlags VkPipelineDynamicStateCreateFlags;
+typedef VkFlags VkPipelineDynamicStateEnableCreateFlags;
 typedef VkFlags VkPipelineLayoutCreateFlags;
 typedef VkFlags VkShaderStageFlags;
 typedef VkFlags VkSamplerCreateFlags;
@@ -2315,13 +2315,13 @@ typedef struct VkPipelineColorBlendStateCreateInfo {
     float                                         blendConstants[4];
 } VkPipelineColorBlendStateCreateInfo;
 
-typedef struct VkPipelineDynamicStateCreateInfo {
+typedef struct VkPipelineDynamicStateEnableCreateInfo {
     VkStructureType                      sType;
     const void*                          pNext;
-    VkPipelineDynamicStateCreateFlags    flags;
+    VkPipelineDynamicStateEnableCreateFlags    flags;
     uint32_t                             dynamicStateCount;
-    const VkDynamicState*                pDynamicStates;
-} VkPipelineDynamicStateCreateInfo;
+    const VkDynamicStateEnable*                pDynamicStateEnables;
+} VkPipelineDynamicStateEnableCreateInfo;
 
 typedef struct VkGraphicsPipelineCreateInfo {
     VkStructureType                                  sType;
@@ -2337,7 +2337,7 @@ typedef struct VkGraphicsPipelineCreateInfo {
     const VkPipelineMultisampleStateCreateInfo*      pMultisampleState;
     const VkPipelineDepthStencilStateCreateInfo*     pDepthStencilState;
     const VkPipelineColorBlendStateCreateInfo*       pColorBlendState;
-    const VkPipelineDynamicStateCreateInfo*          pDynamicState;
+    const VkPipelineDynamicStateEnableCreateInfo*          pDynamicStateEnable;
     VkPipelineLayout                                 layout;
     VkRenderPass                                     renderPass;
     uint32_t                                         subpass;
