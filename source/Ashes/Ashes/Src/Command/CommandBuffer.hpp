@@ -9,9 +9,12 @@ See LICENSE file in root folder.
 #include "Buffer/PushConstantsBuffer.hpp"
 #include "Miscellaneous/BufferCopy.hpp"
 #include "Miscellaneous/BufferImageCopy.hpp"
+#include "Miscellaneous/CommandBufferBeginInfo.hpp"
 #include "Miscellaneous/ImageBlit.hpp"
 #include "Miscellaneous/ImageCopy.hpp"
-#include "RenderPass/ClearValue.hpp"
+#include "Miscellaneous/RenderPassBeginInfo.hpp"
+#include "Pipeline/Scissor.hpp"
+#include "Pipeline/Viewport.hpp"
 
 namespace ashes
 {
@@ -67,6 +70,15 @@ namespace ashes
 		*\~english
 		*\brief
 		*	Starts recording the command buffer.
+		*\~french
+		*\brief
+		*	Démarre l'enregistrement du tampon de commandes.
+		*/
+		virtual void begin( CommandBufferBeginInfo const & info )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Starts recording the command buffer.
 		*\param[in] flags
 		*	The usage flags for the command buffer.
 		*\return
@@ -77,7 +89,10 @@ namespace ashes
 		*\param[in] flags
 		*	Les indicateurs de type de charge qui sera affectée au tampon.
 		*/
-		virtual void begin( CommandBufferUsageFlags flags = 0u )const = 0;
+		inline void begin( CommandBufferUsageFlags flags = 0u )const
+		{
+			begin( { flags, nullopt } );
+		}
 		/**
 		*\~english
 		*\brief
@@ -96,8 +111,11 @@ namespace ashes
 		*\param[in] inheritanceInfo
 		*	Les informations d'héritage.
 		*/
-		virtual void begin( CommandBufferUsageFlags flags
-			, CommandBufferInheritanceInfo const & inheritanceInfo )const = 0;
+		inline void begin( CommandBufferUsageFlags flags
+			, CommandBufferInheritanceInfo const & inheritanceInfo )const
+		{
+			begin( { flags, inheritanceInfo } );
+		}
 		/**
 		*\~english
 		*\brief
@@ -128,6 +146,16 @@ namespace ashes
 		*\~english
 		*\brief
 		*	Begins a new render pass.
+		*\~french
+		*\brief
+		*	Démarre une passe de rendu.
+		*/
+		virtual void beginRenderPass( RenderPassBeginInfo const & beginInfo
+			, SubpassContents contents )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Begins a new render pass.
 		*\param[in] renderPass
 		*	The render pass to begin.
 		*\param[in] frameBuffer
@@ -148,10 +176,10 @@ namespace ashes
 		*\param[in] contents
 		*	Indique la manière dont les commandes de la première sous-passe sont fournies.
 		*/
-		virtual void beginRenderPass( RenderPass const & renderPass
+		void beginRenderPass( RenderPass const & renderPass
 			, FrameBuffer const & frameBuffer
 			, ClearValueArray const & clearValues
-			, SubpassContents contents )const = 0;
+			, SubpassContents contents )const;
 		/**
 		*\~english
 		*\brief
@@ -241,6 +269,32 @@ namespace ashes
 		*/
 		virtual void clearAttachments( ClearAttachmentArray const & clearAttachments
 			, ClearRectArray const & clearRects ) = 0;
+		/**
+		*\~english
+		*\brief
+		*	Defines a memory dependency between commands that were submitted before it, and those submitted after it.
+		*\param[in] after
+		*	Specifies the pipeline stages that must be ended before the barrier.
+		*\param[in] before
+		*	Specifies the pipeline stages that can be started after the barrier.
+		*\param[in] transitionBarrier
+		*	Describes the transition.
+		*\~french
+		*\brief
+		*	Met en place une barrière de transition d'état de tampon.
+		*\param[in] after
+		*	Les étapes devant être terminées avant l'exécution de la barrière.
+		*\param[in] before
+		*	Les étapes pouvant être commencées après l'exécution de la barrière.
+		*\param[in] transitionBarrier
+		*	La description de la transition.
+		*/
+		virtual void pipelineBarrier( PipelineStageFlags after
+			, PipelineStageFlags before
+			, DependencyFlags dependencyFlags
+			, MemoryBarrierArray const & memoryBarriers
+			, BufferMemoryBarrierArray const & bufferMemoryBarriers
+			, ImageMemoryBarrierArray const & imaegMemoryBarriers )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -413,7 +467,28 @@ namespace ashes
 		*\param[in] viewport
 		*	Le viewport.
 		*/
-		virtual void setViewport( Viewport const & viewport )const = 0;
+		virtual void setViewport( uint32_t firstViewport
+			, ViewportArray const & viewports )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Defines the currently bound pipeline viewport.
+		*\remarks
+		*	This action is possible only if the viewport is dynamic, in the pipeline.
+		*\param[in] viewport
+		*	The viewport.
+		*\~french
+		*\brief
+		*	Définit le viewport du pipeline.
+		*\remarks
+		*	Cette action n'est faisable que si le viewport est configuré comme dynamique.
+		*\param[in] viewport
+		*	Le viewport.
+		*/
+		inline void setViewport( Viewport const & viewport )const
+		{
+			setViewport( 0u, ViewportArray{ viewport } );
+		}
 		/**
 		*\~english
 		*\brief
@@ -430,7 +505,28 @@ namespace ashes
 		*\param[in] scissor
 		*	Le scissor.
 		*/
-		virtual void setScissor( Scissor const & scissor )const = 0;
+		virtual void setScissor( uint32_t firstScissor
+			, ScissorArray const & scissors )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Defines the currently bound pipeline scissor.
+		*\remarks
+		*	This action is possible only if the scissor is dynamic, in the pipeline.
+		*\param[in] scissor
+		*	The scissor.
+		*\~french
+		*\brief
+		*	Définit le scissor du pipeline.
+		*\remarks
+		*	Cette action n'est faisable que si le scissor est configuré comme dynamique.
+		*\param[in] scissor
+		*	Le scissor.
+		*/
+		inline void setScissor( Scissor const & scissor )const
+		{
+			setScissor( 0u, ScissorArray{ scissor } );
+		}
 		/**
 		*\~english
 		*\brief
@@ -1355,54 +1451,6 @@ namespace ashes
 		{
 			pushConstants( layout, pcb.getBuffer() );
 		}
-
-	private:
-		/**
-		*\~english
-		*\brief
-		*	Defines a memory dependency between commands that were submitted before it, and those submitted after it.
-		*\param[in] after
-		*	Specifies the pipeline stages that must be ended before the barrier.
-		*\param[in] before
-		*	Specifies the pipeline stages that can be started after the barrier.
-		*\param[in] transitionBarrier
-		*	Describes the transition.
-		*\~french
-		*\brief
-		*	Met en place une barrière de transition d'état de tampon.
-		*\param[in] after
-		*	Les étapes devant être terminées avant l'exécution de la barrière.
-		*\param[in] before
-		*	Les étapes pouvant être commencées après l'exécution de la barrière.
-		*\param[in] transitionBarrier
-		*	La description de la transition.
-		*/
-		virtual void doMemoryBarrier( PipelineStageFlags after
-			, PipelineStageFlags before
-			, BufferMemoryBarrier const & transitionBarrier )const = 0;
-		/**
-		*\~english
-		*\brief
-		*	Defines a memory dependency between commands that were submitted before it, and those submitted after it.
-		*\param[in] after
-		*	Specifies the pipeline stages that must be ended before the barrier.
-		*\param[in] before
-		*	Specifies the pipeline stages that can be started after the barrier.
-		*\param[in] transitionBarrier
-		*	Describes the transition.
-		*\~french
-		*\brief
-		*	Met en place une barrière de transition de layout d'image.
-		*\param[in] after
-		*	Les étapes devant être terminées avant l'exécution de la barrière.
-		*\param[in] before
-		*	Les étapes pouvant être commencées après l'exécution de la barrière.
-		*\param[in] transitionBarrier
-		*	La description de la transition.
-		*/
-		virtual void doMemoryBarrier( PipelineStageFlags after
-			, PipelineStageFlags before
-			, ImageMemoryBarrier const & transitionBarrier )const = 0;
 
 	private:
 		Device const & m_device;

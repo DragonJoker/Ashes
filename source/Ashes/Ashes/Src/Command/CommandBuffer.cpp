@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 #include "Image/ImageSubresourceRange.hpp"
 #include "Image/Texture.hpp"
 #include "Image/TextureView.hpp"
+#include "RenderPass/FrameBuffer.hpp"
+#include "Sync/MemoryBarrier.hpp"
 #include "Sync/BufferMemoryBarrier.hpp"
 #include "Sync/ImageMemoryBarrier.hpp"
 
@@ -93,6 +95,27 @@ namespace ashes
 	CommandBuffer::~CommandBuffer()
 	{
 		unregisterObject( m_device, this );
+	}
+
+	void CommandBuffer::beginRenderPass( RenderPass const & renderPass
+		, FrameBuffer const & frameBuffer
+		, ClearValueArray const & clearValues
+		, SubpassContents contents )const
+	{
+		beginRenderPass(
+			{
+				&renderPass,
+				&frameBuffer,
+				{
+					{
+						0,
+						0
+					},
+					frameBuffer.getDimensions()
+				},
+				clearValues
+			},
+			contents );
 	}
 
 	void CommandBuffer::bindVertexBuffer( uint32_t binding
@@ -261,18 +284,28 @@ namespace ashes
 		, PipelineStageFlags before
 		, BufferMemoryBarrier const & transitionBarrier )const
 	{
-		assert( areCompatible( after, transitionBarrier.getSrcAccessMask() ) );
-		assert( areCompatible( before, transitionBarrier.getDstAccessMask() ) );
-		doMemoryBarrier( after, before, transitionBarrier );
+		assert( areCompatible( after, transitionBarrier.srcAccessMask ) );
+		assert( areCompatible( before, transitionBarrier.dstAccessMask ) );
+		pipelineBarrier( after
+			, before
+			, 0u
+			, {}
+			, { transitionBarrier }
+			, {} );
 	}
 
 	void CommandBuffer::memoryBarrier( PipelineStageFlags after
 		, PipelineStageFlags before
 		, ImageMemoryBarrier const & transitionBarrier )const
 	{
-		assert( areCompatible( after, transitionBarrier.getSrcAccessMask() ) );
-		assert( areCompatible( before, transitionBarrier.getDstAccessMask() ) );
-		doMemoryBarrier( after, before, transitionBarrier );
+		assert( areCompatible( after, transitionBarrier.srcAccessMask ) );
+		assert( areCompatible( before, transitionBarrier.dstAccessMask ) );
+		pipelineBarrier( after
+			, before
+			, 0u
+			, {}
+			, {}
+			, { transitionBarrier } );
 	}
 
 	void CommandBuffer::pushConstants( PipelineLayout const & layout

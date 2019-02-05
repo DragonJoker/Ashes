@@ -9,30 +9,32 @@ See LICENSE file in root folder.
 namespace gl_renderer
 {
 	ViewportCommand::ViewportCommand( Device const & device
-		, ashes::Viewport const & viewport )
+		, uint32_t firstViewport
+		, ashes::ViewportArray const & viewports )
 		: CommandBase{ device }
-		, m_viewport{ viewport }
+		, m_viewports{ viewports.begin() + firstViewport, viewports.end() }
 	{
 	}
 
 	void ViewportCommand::apply( ContextLock const & context )const
 	{
 		auto & save = m_device.getCurrentViewport();
+		auto & viewport = *m_viewports.begin();
 
-		if ( m_viewport != save )
+		if ( viewport != save )
 		{
 			glLogCommand( "ViewportCommand" );
 			glLogCall( context
 				, glViewport
-				, m_viewport.offset.x
-				, m_viewport.offset.y
-				, m_viewport.size.width
-				, m_viewport.size.height );
+				, viewport.offset.x
+				, viewport.offset.y
+				, viewport.size.width
+				, viewport.size.height );
 			glLogCall( context
 				, glDepthRange
-				, m_viewport.minDepth
-				, m_viewport.maxDepth );
-			save = m_viewport;
+				, viewport.minDepth
+				, viewport.maxDepth );
+			save = viewport;
 		}
 	}
 

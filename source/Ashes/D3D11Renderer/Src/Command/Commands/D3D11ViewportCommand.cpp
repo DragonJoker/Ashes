@@ -9,15 +9,17 @@ See LICENSE file in root folder.
 namespace d3d11_renderer
 {
 	ViewportCommand::ViewportCommand( Device const & device
-		, ashes::Viewport const & viewport )
+		, uint32_t first
+		, ashes::ViewportArray const & viewports )
 		: CommandBase{ device }
-		, m_viewport{ makeViewport( viewport ) }
+		, m_viewports{ makeViewports( viewports.begin() + first, viewports.end() ) }
 	{
 	}
 
 	void ViewportCommand::apply( Context const & context )const
 	{
-		context.context->RSSetViewports( 1u, &m_viewport );
+		context.context->RSSetViewports( UINT( m_viewports.size() )
+			, m_viewports.data() );
 	}
 
 	CommandPtr ViewportCommand::clone()const

@@ -10,14 +10,14 @@ namespace vk_renderer
 		{
 			VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
 			nullptr,
-			convert( barrier.getSrcAccessMask() ),
-			convert( barrier.getDstAccessMask() ),
-			convert( barrier.getOldLayout() ),
-			convert( barrier.getNewLayout() ),
-			barrier.getSrcQueueFamilyIndex(),
-			barrier.getDstQueueFamilyIndex(),
-			static_cast< Texture const & >( barrier.getImage() ),
-			convert( barrier.getSubresourceRange() )
+			convert( barrier.srcAccessMask ),
+			convert( barrier.dstAccessMask ),
+			convert( barrier.oldLayout ),
+			convert( barrier.newLayout ),
+			barrier.srcQueueFamilyIndex,
+			barrier.dstQueueFamilyIndex,
+			static_cast< Texture const & >( barrier.image ),
+			convert( barrier.subresourceRange )
 		};
 	}
 }

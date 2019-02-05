@@ -138,12 +138,16 @@ namespace ashes
 			return createPipeline( GraphicsPipelineCreateInfo
 			{
 				std::move( stages ),
-				renderPass,
 				VertexInputState::create( vertexLayouts ),
 				inputAssemblyState,
+				TessellationState{},
+				ViewportState{},
 				rasterisationState,
 				MultisampleState{},
+				DepthStencilState{},
 				colourBlendState,
+				DynamicState{},
+				&renderPass,
 			} );
 		}
 		/**

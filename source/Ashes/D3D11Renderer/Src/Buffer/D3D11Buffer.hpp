@@ -29,12 +29,18 @@ namespace d3d11_renderer
 			return m_buffer;
 		}
 
+		inline ID3D11UnorderedAccessView * getUnorderedAccessView()const
+		{
+			return m_unorderedAccessView;
+		}
+
 	private:
 		void doBindMemory()override;
 
 	private:
 		Device const & m_device;
 		ID3D11Buffer * m_buffer{ nullptr };
+		ID3D11UnorderedAccessView * m_unorderedAccessView{ nullptr };
 	};
 }
 

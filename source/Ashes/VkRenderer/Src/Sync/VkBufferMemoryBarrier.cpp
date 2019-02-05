@@ -14,13 +14,13 @@ namespace vk_renderer
 		{
 			VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
 			nullptr,
-			convert( barrier.getSrcAccessMask() ),
-			convert( barrier.getDstAccessMask() ),
-			barrier.getSrcQueueFamilyIndex(),
-			barrier.getDstQueueFamilyIndex(),
-			static_cast< Buffer const & >( barrier.getBuffer() ),
-			barrier.getOffset(),
-			barrier.getSize()
+			convert( barrier.srcAccessMask ),
+			convert( barrier.dstAccessMask ),
+			barrier.srcQueueFamilyIndex,
+			barrier.dstQueueFamilyIndex,
+			static_cast< Buffer const & >( barrier.buffer ),
+			barrier.offset,
+			barrier.size
 		};
 	}
 

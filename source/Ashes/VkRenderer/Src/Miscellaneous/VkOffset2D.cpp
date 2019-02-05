@@ -10,4 +10,13 @@ namespace vk_renderer
 			value.y,
 		};
 	}
+
+	ashes::Offset2D convert( VkOffset2D const & value )
+	{
+		return ashes::Offset2D
+		{
+			value.x,
+			value.y,
+		};
+	}
 }

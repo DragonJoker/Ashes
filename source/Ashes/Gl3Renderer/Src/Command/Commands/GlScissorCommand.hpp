@@ -25,12 +25,13 @@ namespace gl_renderer
 		*	Le scissor.
 		*/
 		ScissorCommand( Device const & device
-			, ashes::Scissor const & scissor );
+			, uint32_t firstScissor
+			, ashes::ScissorArray const & scissors );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		ashes::Scissor m_scissor;
+		ashes::ScissorArray m_scissors;
 	};
 }

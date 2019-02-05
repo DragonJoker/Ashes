@@ -501,9 +501,10 @@ namespace gl_renderer
 
 	void apply( Device const & device
 		, ContextLock const & context
-		, ashes::Viewport const & state )
+		, ashes::ViewportArray const & states )
 	{
 		auto & save = device.getCurrentViewport();
+		auto & state = *states.begin();
 
 		if ( state != save )
 		{
@@ -523,9 +524,10 @@ namespace gl_renderer
 
 	void apply( Device const & device
 		, ContextLock const & context
-		, ashes::Scissor const & state )
+		, ashes::ScissorArray const & states )
 	{
 		auto & save = device.getCurrentScissor();
+		auto & state = *states.begin();
 
 		if ( state != save )
 		{
@@ -547,10 +549,10 @@ namespace gl_renderer
 		, m_layout{ static_cast< PipelineLayout const & > ( m_pipeline.getLayout() ) }
 		, m_program{ m_pipeline.getProgram() }
 		, m_bindingPoint{ bindingPoint }
-		, m_dynamicLineWidth{ m_pipeline.hasDynamicState( ashes::DynamicState::eLineWidth ) }
-		, m_dynamicDepthBias{ m_pipeline.hasDynamicState( ashes::DynamicState::eDepthBias ) }
-		, m_dynamicScissor{ m_pipeline.hasDynamicState( ashes::DynamicState::eScissor ) }
-		, m_dynamicViewport{ m_pipeline.hasDynamicState( ashes::DynamicState::eViewport ) }
+		, m_dynamicLineWidth{ m_pipeline.hasDynamicStateEnable( ashes::DynamicStateEnable::eLineWidth ) }
+		, m_dynamicDepthBias{ m_pipeline.hasDynamicStateEnable( ashes::DynamicStateEnable::eDepthBias ) }
+		, m_dynamicScissor{ m_pipeline.hasDynamicStateEnable( ashes::DynamicStateEnable::eScissor ) }
+		, m_dynamicViewport{ m_pipeline.hasDynamicStateEnable( ashes::DynamicStateEnable::eViewport ) }
 	{
 	}
 
@@ -583,7 +585,7 @@ namespace gl_renderer
 			assert( m_pipeline.hasViewport() );
 			gl_renderer::apply( m_device
 				, context
-				, m_pipeline.getViewport() );
+				, m_pipeline.getViewports() );
 		}
 
 		if ( !m_dynamicScissor )
@@ -591,7 +593,7 @@ namespace gl_renderer
 			assert( m_pipeline.hasScissor() );
 			gl_renderer::apply( m_device
 				, context
-				, m_pipeline.getScissor() );
+				, m_pipeline.getScissors() );
 		}
 
 		auto & save = m_device.getCurrentProgram();

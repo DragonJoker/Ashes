@@ -113,32 +113,21 @@ namespace vk_renderer
 		m_device.vkFreeCommandBuffers( m_device, m_pool, 1, &m_commandBuffer );
 	}
 
-	void CommandBuffer::begin( ashes::CommandBufferUsageFlags flags )const
+	void CommandBuffer::begin( ashes::CommandBufferBeginInfo const & info )const
 	{
-		VkCommandBufferBeginInfo cmdBufInfo
-		{
-			VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-			nullptr,
-			convert( flags ),                            // flags
-			nullptr                                      // pInheritanceInfo
-		};
-		DEBUG_DUMP( cmdBufInfo );
-		auto res = m_device.vkBeginCommandBuffer( m_commandBuffer, &cmdBufInfo );
-		m_currentPipeline = nullptr;
-		m_currentComputePipeline = nullptr;
-		checkError( res, "CommandBuffer record start" );
-	}
+		VkCommandBufferInheritanceInfo * inheritanceInfo = nullptr;
 
-	void CommandBuffer::begin( ashes::CommandBufferUsageFlags flags
-		, ashes::CommandBufferInheritanceInfo const & inheritanceInfo )const
-	{
-		m_inheritanceInfo = convert( inheritanceInfo );
+		if ( bool( info.inheritanceInfo ) )
+		{
+			m_inheritanceInfo = convert( info.inheritanceInfo.value() );
+			inheritanceInfo = &m_inheritanceInfo;
+		}
 		VkCommandBufferBeginInfo cmdBufInfo
 		{
 			VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 			nullptr,
-			convert( flags ),                            // flags
-			&m_inheritanceInfo                           // pInheritanceInfo
+			convert( info.flags ),                       // flags
+			inheritanceInfo                              // pInheritanceInfo
 		};
 		DEBUG_DUMP( cmdBufInfo );
 		auto res = m_device.vkBeginCommandBuffer( m_commandBuffer, &cmdBufInfo );
@@ -161,33 +150,26 @@ namespace vk_renderer
 		checkError( res, "CommandBuffer reset" );
 	}
 
-	void CommandBuffer::beginRenderPass( ashes::RenderPass const & renderPass
-		, ashes::FrameBuffer const & frameBuffer
-		, ashes::ClearValueArray const & clearValues
+	void CommandBuffer::beginRenderPass( ashes::RenderPassBeginInfo const & beginInfo
 		, ashes::SubpassContents contents )const
 	{
-		auto & vkclearValues = static_cast< RenderPass const & >( renderPass ).getClearValues( clearValues );
+		auto & renderPass = static_cast< RenderPass const & >( *beginInfo.renderPass );
+		auto & framebuffer = static_cast< FrameBuffer const & >( *beginInfo.framebuffer );
+		auto & vkclearValues = renderPass.getClearValues( beginInfo.clearValues );
 		//auto vkclearValues = convert< VkClearValue >( clearValues );
-		auto & vkfbo = static_cast< FrameBuffer const & >( frameBuffer );
-		VkRenderPassBeginInfo beginInfo
+		VkRenderPassBeginInfo vkbeginInfo
 		{
 			VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 			nullptr,
-			static_cast< RenderPass const & >( renderPass ),    // renderPass
-			vkfbo,                                              // framebuffer
-			{                                                   // renderArea
-				{                                                 // offset
-					0,                                                // x
-					0                                                 // y
-				},
-				convert( vkfbo.getDimensions() ),               // extent
-			},
+			renderPass,                                         // renderPass
+			framebuffer,                                        // framebuffer
+			convert( beginInfo.renderArea ),                    // renderArea
 			uint32_t( vkclearValues.size() ),                   // clearValueCount
 			vkclearValues.data()                                // pClearValues
 		};
-		DEBUG_DUMP( beginInfo );
+		DEBUG_DUMP( vkbeginInfo );
 		m_device.vkCmdBeginRenderPass( m_commandBuffer
-			, &beginInfo
+			, &vkbeginInfo
 			, convert( contents ) );
 	}
 
@@ -309,22 +291,24 @@ namespace vk_renderer
 			, dynamicOffsets.data() );
 	}
 
-	void CommandBuffer::setViewport( ashes::Viewport const & viewport )const
+	void CommandBuffer::setViewport( uint32_t firstViewport
+		, ashes::ViewportArray const & viewports )const
 	{
-		auto vkviewport = convert( viewport );
+		auto vkviewport = convert< VkViewport >( viewports );
 		m_device.vkCmdSetViewport( m_commandBuffer
-			, 0u
-			, 1u
-			, &vkviewport );
+			, firstViewport
+			, uint32_t( vkviewport.size() )
+			, vkviewport.data() );
 	}
 
-	void CommandBuffer::setScissor( ashes::Scissor const & scissor )const
+	void CommandBuffer::setScissor( uint32_t firstScissor
+		, ashes::ScissorArray const & scissors )const
 	{
-		auto vkscissor = convert( scissor );
+		auto vkscissor = convert< VkRect2D >( scissors );
 		m_device.vkCmdSetScissor( m_commandBuffer
-			, 0u
-			, 1u
-			, &vkscissor );
+			, firstScissor
+			, uint32_t( vkscissor.size() )
+			, vkscissor.data() );
 	}
 
 	void CommandBuffer::draw( uint32_t vtxCount
@@ -583,43 +567,30 @@ namespace vk_renderer
 			, vkimgbarriers.data() );
 	}
 
-	void CommandBuffer::doMemoryBarrier( ashes::PipelineStageFlags after
+	void CommandBuffer::pipelineBarrier( ashes::PipelineStageFlags after
 		, ashes::PipelineStageFlags before
-		, ashes::BufferMemoryBarrier const & transitionBarrier )const
+		, ashes::DependencyFlags dependencyFlags
+		, ashes::MemoryBarrierArray const & memoryBarriers
+		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
+		, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
 		auto vkafter = convert( after );
 		auto vkbefore = convert( before );
-		auto vktb = convert( transitionBarrier );
-		DEBUG_DUMP( vktb );
+		auto vkmb = convert< VkMemoryBarrier >( memoryBarriers );
+		auto vkbb = convert< VkBufferMemoryBarrier >( bufferMemoryBarriers );
+		auto vkib = convert< VkImageMemoryBarrier >( imageMemoryBarriers );
+		DEBUG_DUMP( vkmb );
+		DEBUG_DUMP( vkbb );
+		DEBUG_DUMP( vkib );
 		m_device.vkCmdPipelineBarrier( m_commandBuffer
 			, vkafter
 			, vkbefore
 			, 0
-			, 0u
-			, nullptr
-			, 1u
-			, &vktb
-			, 0u
-			, nullptr );
-	}
-
-	void CommandBuffer::doMemoryBarrier( ashes::PipelineStageFlags after
-		, ashes::PipelineStageFlags before
-		, ashes::ImageMemoryBarrier const & transitionBarrier )const
-	{
-		auto vkafter = convert( after );
-		auto vkbefore = convert( before );
-		auto vktb = convert( transitionBarrier );
-		DEBUG_DUMP( vktb );
-		m_device.vkCmdPipelineBarrier( m_commandBuffer
-			, vkafter
-			, vkbefore
-			, 0
-			, 0u
-			, nullptr
-			, 0u
-			, nullptr
-			, 1u
-			, &vktb );
+			, uint32_t( vkmb.size() )
+			, vkmb.empty() ? nullptr : vkmb.data()
+			, uint32_t( vkbb.size() )
+			, vkbb.empty() ? nullptr : vkbb.data()
+			, uint32_t( vkib.size() )
+			, vkib.empty() ? nullptr : vkib.data() );
 	}
 }

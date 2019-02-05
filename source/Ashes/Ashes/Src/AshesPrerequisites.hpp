@@ -52,7 +52,8 @@ See LICENSE file in root folder.
 #include "Enum/DepthStencilStateFlag.hpp"
 #include "Enum/DescriptorPoolCreateFlag.hpp"
 #include "Enum/DescriptorType.hpp"
-#include "Enum/DynamicState.hpp"
+#include "Enum/DynamicStateEnable.hpp"
+#include "Enum/DynamicStateFlag.hpp"
 #include "Enum/FenceCreateFlag.hpp"
 #include "Enum/Filter.hpp"
 #include "Enum/Format.hpp"
@@ -96,6 +97,7 @@ See LICENSE file in root folder.
 #include "Enum/TextureType.hpp"
 #include "Enum/TextureViewType.hpp"
 #include "Enum/VertexInputRate.hpp"
+#include "Enum/ViewportStateFlag.hpp"
 #include "Enum/WrapMode.hpp"
 
 #include <cassert>
@@ -137,6 +139,9 @@ namespace ashes
 	using Optional = std::optional< T >;
 	using std::nullopt;
 }
+#	if defined( MemoryBarrier )
+#		undef MemoryBarrier
+#	endif
 #endif
 
 #include "Miscellaneous/Log.hpp"
@@ -149,6 +154,9 @@ namespace ashes
 	using UInt64Array = std::vector< uint64_t >;
 	using FloatArray = std::vector< float >;
 	using StringArray = std::vector< std::string >;
+	using DeviceSize = uint64_t;
+
+	static DeviceSize constexpr WholeSize = ~( 0ull );
 
 	template< typename T >
 	class Buffer;
@@ -241,6 +249,7 @@ namespace ashes
 	class FrameBuffer;
 	class ImageMemoryBarrier;
 	class IWindowHandle;
+	class MemoryBarrier;
 	class PhysicalDevice;
 	class Pipeline;
 	class PipelineLayout;
@@ -354,19 +363,23 @@ namespace ashes
 	using ColourBlendStateAttachmentArray = std::vector< ColourBlendStateAttachment >;
 	using DescriptorPoolSizeArray = std::vector< DescriptorPoolSize >;
 	using DescriptorSetLayoutBindingArray = std::vector< DescriptorSetLayoutBinding >;
+	using DynamicStateEnableArray = std::vector< DynamicStateEnable >;
 	using FrameBufferAttachmentArray = std::vector< FrameBufferAttachment >;
 	using ImageLayoutArray = std::vector< ImageLayout >;
 	using ImageMemoryBarrierArray = std::vector< ImageMemoryBarrier >;
+	using MemoryBarrierArray = std::vector< MemoryBarrier >;
 	using PipelineStageFlagsArray = std::vector< PipelineStageFlags >;
 	using PushConstantArray = std::vector< PushConstant >;
 	using PushConstantRangeArray = std::vector< PushConstantRange >;
 	using RenderSubpassArray = std::vector< RenderSubpass >;
+	using ScissorArray = std::vector< Scissor >;
 	using ShaderStageStateArray = std::vector< ShaderStageState >;
 	using SpecialisationMapEntryArray = std::vector< SpecialisationMapEntry >;
 	using SubpassDescriptionArray = std::vector< SubpassDescription >;
 	using SubpassDependencyArray = std::vector< SubpassDependency >;
 	using VertexInputAttributeDescriptionArray = std::vector< VertexInputAttributeDescription >;
 	using VertexInputBindingDescriptionArray = std::vector< VertexInputBindingDescription >;
+	using ViewportArray = std::vector< Viewport >;
 	using WriteDescriptorSetArray = std::vector< WriteDescriptorSet >;
 
 	using FrameBufferPtrArray = std::vector< FrameBufferPtr >;
@@ -380,7 +393,9 @@ namespace ashes
 	using DescriptorSetCRef = std::reference_wrapper< DescriptorSet const >;
 	using DescriptorSetLayoutCRef = std::reference_wrapper< DescriptorSetLayout const >;
 	using EventCRef = std::reference_wrapper< Event const >;
+	using FrameBufferCRef = std::reference_wrapper< FrameBuffer const >;
 	using PushConstantRangeCRef = std::reference_wrapper< PushConstantRange const >;
+	using RenderPassCRef = std::reference_wrapper< RenderPass const >;
 	using SamplerCRef = std::reference_wrapper< Sampler const >;
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;
 	using SwapChainCRef = std::reference_wrapper< SwapChain const >;

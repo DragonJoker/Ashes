@@ -27,7 +27,6 @@ See LICENSE file in root folder.
 #include "Commands/D3D11BindVertexBuffersCommand.hpp"
 #include "Commands/D3D11BindPipelineCommand.hpp"
 #include "Commands/D3D11BlitImageCommand.hpp"
-#include "Commands/D3D11BufferMemoryBarrierCommand.hpp"
 #include "Commands/D3D11ClearAttachmentsCommand.hpp"
 #include "Commands/D3D11ClearColourCommand.hpp"
 #include "Commands/D3D11ClearDepthStencilCommand.hpp"
@@ -46,7 +45,7 @@ See LICENSE file in root folder.
 #include "Commands/D3D11EndSubpassCommand.hpp"
 #include "Commands/D3D11ExecuteCommandsCommand.hpp"
 #include "Commands/D3D11GenerateMipsCommand.hpp"
-#include "Commands/D3D11ImageMemoryBarrierCommand.hpp"
+#include "Commands/D3D11MemoryBarrierCommand.hpp"
 #include "Commands/D3D11PushConstantsCommand.hpp"
 #include "Commands/D3D11ResetEventCommand.hpp"
 #include "Commands/D3D11ResetQueryPoolCommand.hpp"
@@ -139,21 +138,12 @@ namespace d3d11_renderer
 		}
 	}
 
-	void CommandBuffer::begin( ashes::CommandBufferUsageFlags flags )const
+	void CommandBuffer::begin( ashes::CommandBufferBeginInfo const & info )const
 	{
 		m_commands.clear();
 		m_afterSubmitActions.clear();
 		m_state = State{};
-		m_state.beginFlags = flags;
-	}
-
-	void CommandBuffer::begin( ashes::CommandBufferUsageFlags flags
-		, ashes::CommandBufferInheritanceInfo const & inheritanceInfo )const
-	{
-		m_commands.clear();
-		m_afterSubmitActions.clear();
-		m_state = State{};
-		m_state.beginFlags = flags;
+		m_state.beginInfo = info;
 	}
 
 	void CommandBuffer::end()const
@@ -179,20 +169,18 @@ namespace d3d11_renderer
 		m_commands.clear();
 	}
 
-	void CommandBuffer::beginRenderPass( ashes::RenderPass const & renderPass
-		, ashes::FrameBuffer const & frameBuffer
-		, ashes::ClearValueArray const & clearValues
+	void CommandBuffer::beginRenderPass( ashes::RenderPassBeginInfo const & beginInfo
 		, ashes::SubpassContents contents )const
 	{
-		m_state.currentRenderPass = &static_cast< RenderPass const & >( renderPass );
-		m_state.currentFrameBuffer = &frameBuffer;
+		m_state.currentRenderPass = static_cast< RenderPass const * >( beginInfo.renderPass );
+		m_state.currentFrameBuffer = beginInfo.framebuffer;
 		m_state.currentSubpassIndex = 0u;
 		m_state.currentSubpass = &m_state.currentRenderPass->getSubpasses()[m_state.currentSubpassIndex++];
 		m_state.vbos.clear();
 		m_commands.emplace_back( std::make_unique< BeginRenderPassCommand >( m_device
 			, *m_state.currentRenderPass
 			, *m_state.currentFrameBuffer
-			, clearValues ) );
+			, beginInfo.clearValues ) );
 		m_commands.emplace_back( std::make_unique< BeginSubpassCommand >( m_device
 			, *m_state.currentRenderPass
 			, *m_state.currentFrameBuffer
@@ -377,14 +365,16 @@ namespace d3d11_renderer
 		}
 	}
 
-	void CommandBuffer::setViewport( ashes::Viewport const & viewport )const
+	void CommandBuffer::setViewport( uint32_t firstViewport
+		, ashes::ViewportArray const & viewports )const
 	{
-		m_commands.emplace_back( std::make_unique< ViewportCommand >( m_device, viewport ) );
+		m_commands.emplace_back( std::make_unique< ViewportCommand >( m_device, firstViewport, viewports ) );
 	}
 
-	void CommandBuffer::setScissor( ashes::Scissor const & scissor )const
+	void CommandBuffer::setScissor( uint32_t firstScissor
+		, ashes::ScissorArray const & scissors )const
 	{
-		m_commands.emplace_back( std::make_unique< ScissorCommand >( m_device, scissor ) );
+		m_commands.emplace_back( std::make_unique< ScissorCommand >( m_device, firstScissor, scissors ) );
 	}
 
 	void CommandBuffer::draw( uint32_t vtxCount
@@ -595,7 +585,7 @@ namespace d3d11_renderer
 		else if ( m_state.currentComputePipeline )
 		{
 			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, m_state.currentPipeline->findPushConstantBuffer( desc ) ) );
+				, m_state.currentComputePipeline->findPushConstantBuffer( desc ) ) );
 			doAddAfterSubmitAction();
 		}
 		else
@@ -674,24 +664,19 @@ namespace d3d11_renderer
 			, texture ) );
 	}
 
-	void CommandBuffer::doMemoryBarrier( ashes::PipelineStageFlags after
+	void CommandBuffer::pipelineBarrier( ashes::PipelineStageFlags after
 		, ashes::PipelineStageFlags before
-		, ashes::BufferMemoryBarrier const & transitionBarrier )const
+		, ashes::DependencyFlags dependencyFlags
+		, ashes::MemoryBarrierArray const & memoryBarriers
+		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
+		, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
-		m_commands.emplace_back( std::make_unique< BufferMemoryBarrierCommand >( m_device
+		m_commands.emplace_back( std::make_unique< MemoryBarrierCommand >( m_device
 			, after
 			, before
-			, transitionBarrier ) );
-	}
-
-	void CommandBuffer::doMemoryBarrier( ashes::PipelineStageFlags after
-		, ashes::PipelineStageFlags before
-		, ashes::ImageMemoryBarrier const & transitionBarrier )const
-	{
-		m_commands.emplace_back( std::make_unique< ImageMemoryBarrierCommand >( m_device
-			, after
-			, before
-			, transitionBarrier ) );
+			, memoryBarriers
+			, bufferMemoryBarriers
+			, imageMemoryBarriers ) );
 	}
 
 	void CommandBuffer::doFillVboStrides()const

@@ -126,7 +126,7 @@ namespace gl_renderer
 					, bindingIndex
 					, static_cast< Buffer const & >( buffer ).getBuffer()
 					, GLintptr( write.bufferInfo[i].offset )
-					, GLsizeiptr( write.bufferInfo[i].range ) );
+					, GLsizeiptr( std::min( write.bufferInfo[i].range, uint64_t( buffer.getSize() ) ) ) );
 			}
 		}
 
@@ -143,7 +143,7 @@ namespace gl_renderer
 					, bindingIndex
 					, static_cast< Buffer const & >( buffer ).getBuffer()
 					, GLintptr( write.bufferInfo[i].offset )
-					, GLsizeiptr( write.bufferInfo[i].range ) );
+					, GLsizeiptr( std::min( write.bufferInfo[i].range, uint64_t( buffer.getSize() ) ) ) );
 			}
 		}
 
@@ -177,7 +177,7 @@ namespace gl_renderer
 					, bindingIndex
 					, static_cast< Buffer const & >( buffer ).getBuffer()
 					, GLintptr( write.bufferInfo[i].offset + offset )
-					, GLsizeiptr( write.bufferInfo[i].range ) );
+					, GLsizeiptr( std::min( write.bufferInfo[i].range, uint64_t( buffer.getSize() ) ) ) );
 			}
 		}
 
@@ -194,7 +194,7 @@ namespace gl_renderer
 					, bindingIndex
 					, static_cast< Buffer const & >( buffer ).getBuffer()
 					, GLintptr( write.bufferInfo[i].offset + offset )
-					, GLsizeiptr( write.bufferInfo[i].range ) );
+					, GLsizeiptr( std::min( write.bufferInfo[i].range, uint64_t( buffer.getSize() ) ) ) );
 			}
 		}
 

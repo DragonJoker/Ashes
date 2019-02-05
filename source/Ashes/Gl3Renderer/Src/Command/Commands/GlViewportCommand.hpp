@@ -25,12 +25,13 @@ namespace gl_renderer
 		*	Le viewport.
 		*/
 		ViewportCommand( Device const & device
-			, ashes::Viewport const & viewport );
+			, uint32_t firstViewport
+			, ashes::ViewportArray const & viewports );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		ashes::Viewport m_viewport;
+		ashes::ViewportArray m_viewports;
 	};
 }

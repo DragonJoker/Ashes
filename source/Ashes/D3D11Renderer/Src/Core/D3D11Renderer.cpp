@@ -22,6 +22,7 @@ namespace d3d11_renderer
 		m_features.hasClearTexImage = true;
 		m_features.hasComputeShaders = featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasStorageBuffers = featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.supportsPersistentMapping = false;
 	}
 
 	Renderer::~Renderer()

@@ -26,6 +26,7 @@ namespace ashes
 		bool hasClearTexImage;
 		bool hasComputeShaders;
 		bool hasStorageBuffers;
+		bool supportsPersistentMapping;
 	};
 }
 

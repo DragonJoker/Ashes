@@ -43,7 +43,7 @@ namespace ashes
 		*/
 		Pipeline( Device const & device
 			, PipelineLayout const & layout
-			, GraphicsPipelineCreateInfo && createInfo );
+			, GraphicsPipelineCreateInfo createInfo );
 
 	public:
 		/**

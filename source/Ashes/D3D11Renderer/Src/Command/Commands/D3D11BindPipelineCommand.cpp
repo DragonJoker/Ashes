@@ -54,15 +54,15 @@ namespace d3d11_renderer
 	}
 
 	void apply( ID3D11DeviceContext * context
-		, D3D11_VIEWPORT const & state )
+		, std::vector< D3D11_VIEWPORT > const & state )
 	{
-		context->RSSetViewports( 1u, &state );
+		context->RSSetViewports( UINT( state.size() ), state.data() );
 	}
 
 	void apply( ID3D11DeviceContext * context
-		, RECT const & state )
+		, std::vector< RECT > const & state )
 	{
-		context->RSSetScissorRects( 1u, &state );
+		context->RSSetScissorRects( UINT( state.size() ), state.data() );
 	}
 
 	BindPipelineCommand::BindPipelineCommand( Device const & device
@@ -72,10 +72,10 @@ namespace d3d11_renderer
 		, m_pipeline{ static_cast< Pipeline const & > ( pipeline ) }
 		, m_layout{ static_cast< PipelineLayout const & > ( m_pipeline.getLayout() ) }
 		, m_bindingPoint{ bindingPoint }
-		, m_dynamicLineWidth{ m_pipeline.hasDynamicState( ashes::DynamicState::eLineWidth ) }
-		, m_dynamicDepthBias{ m_pipeline.hasDynamicState( ashes::DynamicState::eDepthBias ) }
-		, m_dynamicScissor{ m_pipeline.hasDynamicState( ashes::DynamicState::eScissor ) }
-		, m_dynamicViewport{ m_pipeline.hasDynamicState( ashes::DynamicState::eViewport ) }
+		, m_dynamicLineWidth{ m_pipeline.hasDynamicStateEnable( ashes::DynamicStateEnable::eLineWidth ) }
+		, m_dynamicDepthBias{ m_pipeline.hasDynamicStateEnable( ashes::DynamicStateEnable::eDepthBias ) }
+		, m_dynamicScissor{ m_pipeline.hasDynamicStateEnable( ashes::DynamicStateEnable::eScissor ) }
+		, m_dynamicViewport{ m_pipeline.hasDynamicStateEnable( ashes::DynamicStateEnable::eViewport ) }
 	{
 	}
 
@@ -101,14 +101,14 @@ namespace d3d11_renderer
 		{
 			assert( m_pipeline.hasViewport() );
 			d3d11_renderer::apply( context.context
-				, m_pipeline.getViewport() );
+				, m_pipeline.getViewports() );
 		}
 
 		if ( !m_dynamicScissor )
 		{
 			assert( m_pipeline.hasScissor() );
 			d3d11_renderer::apply( context.context
-				, m_pipeline.getScissor() );
+				, m_pipeline.getScissors() );
 		}
 
 		// Bind program
