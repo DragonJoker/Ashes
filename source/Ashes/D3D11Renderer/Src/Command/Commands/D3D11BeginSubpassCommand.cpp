@@ -4,6 +4,8 @@ See LICENSE file in root folder.
 */
 #include "D3D11BeginSubpassCommand.hpp"
 
+#include "Buffer/D3D11Buffer.hpp"
+#include "Image/D3D11TextureView.hpp"
 #include "RenderPass/D3D11FrameBuffer.hpp"
 #include "RenderPass/D3D11RenderPass.hpp"
 
@@ -46,14 +48,20 @@ namespace d3d11_renderer
 		{
 			std::vector< ID3D11UnorderedAccessView * > uavs;
 
-			//for ( auto & write : context.uavs )
-			//{
-			//	for ( auto & uav : write.write.texelBufferView )
-			//	{
-			//		auto & view = static_cast< BufferView const & >( uav.get() );
-			//		uavs.push_back( view.getView() );
-			//	}
-			//}
+			for ( auto & write : context.uavs )
+			{
+				for ( auto & uav : write.write.bufferInfo )
+				{
+					auto & buffer = static_cast< Buffer const & >( uav.buffer.get() );
+					uavs.push_back( buffer.getUnorderedAccessView() );
+				}
+
+				for ( auto & uav : write.write.imageInfo )
+				{
+					auto & view = static_cast< TextureView const & >( uav.imageView.value().get() );
+					uavs.push_back( view.getUnorderedAccessView() );
+				}
+			}
 
 			context.context->OMSetRenderTargetsAndUnorderedAccessViews( UINT( m_attaches.size() )
 				, m_attaches.data()
