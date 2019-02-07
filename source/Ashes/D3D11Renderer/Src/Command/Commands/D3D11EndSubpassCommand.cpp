@@ -47,6 +47,11 @@ namespace d3d11_renderer
 
 			for ( auto & write : context.uavs )
 			{
+				for ( auto & uav : write.write.bufferInfo )
+				{
+					uavs.push_back( nullptr );
+				}
+
 				for ( auto & uav : write.write.texelBufferView )
 				{
 					uavs.push_back( nullptr );
