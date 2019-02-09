@@ -75,7 +75,7 @@ namespace d3d11_renderer
 
 		inline bool hasScissor()const
 		{
-			return m_scissors.empty();
+			return !m_scissors.empty();
 		}
 
 		inline std::array< FLOAT, 4u > getBlendFactor()const
