@@ -41,5 +41,7 @@ namespace d3d11_renderer
 		Texture const & m_dst;
 		ashes::ImageCopy m_copyInfo;
 		D3D11_BOX m_srcBox;
+		UINT m_srcSubresource;
+		UINT m_dstSubresource;
 	};
 }
