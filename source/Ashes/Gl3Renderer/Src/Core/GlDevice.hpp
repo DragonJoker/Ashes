@@ -186,6 +186,10 @@ namespace gl_renderer
 			, uint32_t count
 			, ashes::QueryPipelineStatisticFlags pipelineStatistics )const override;
 		/**
+		*\copydoc	ashes::Device::debugMarkerSetObjectName
+		*/
+		void debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const override;
+		/**
 		*\copydoc	ashes::Device::createQueryPool
 		*/
 		void waitIdle()const override;

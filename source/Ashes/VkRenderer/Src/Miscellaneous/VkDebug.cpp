@@ -289,6 +289,7 @@ namespace vk_renderer
 	{
 #if LOAD_VALIDATION_LAYERS
 		names.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
+		//names.push_back( VK_EXT_DEBUG_MARKER_EXTENSION_NAME );
 #endif
 	}
 

@@ -228,6 +228,10 @@ namespace test_renderer
 			, pipelineStatistics );
 	}
 
+	void Device::debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const
+	{
+	}
+
 	void Device::waitIdle()const
 	{
 	}

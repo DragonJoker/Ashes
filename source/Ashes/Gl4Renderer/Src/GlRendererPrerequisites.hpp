@@ -25,6 +25,7 @@
 #include "Enum/GlComponentSwizzle.hpp"
 #include "Enum/GlConstantFormat.hpp"
 #include "Enum/GlCullModeFlag.hpp"
+#include "Enum/GlDebugReportObjectType.hpp"
 #include "Enum/GlFenceWaitFlag.hpp"
 #include "Enum/GlFilter.hpp"
 #include "Enum/GlFormat.hpp"

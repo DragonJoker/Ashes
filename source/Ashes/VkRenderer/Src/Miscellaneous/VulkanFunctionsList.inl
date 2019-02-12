@@ -206,4 +206,9 @@ VK_LIB_DEVICE_FUNCTION( vkUnmapMemory )
 VK_LIB_DEVICE_FUNCTION( vkUpdateDescriptorSets )
 VK_LIB_DEVICE_FUNCTION( vkWaitForFences )
 
+// VK_EXT_debug_marker
+#if LOAD_VALIDATION_LAYERS
+VK_LIB_DEVICE_FUNCTION( vkDebugMarkerSetObjectNameEXT )
+#endif
+
 #undef VK_LIB_DEVICE_FUNCTION

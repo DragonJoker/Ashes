@@ -33,8 +33,44 @@ See LICENSE file in root folder.
 #include <Miscellaneous/MemoryRequirements.hpp>
 #include <RenderPass/RenderPassCreateInfo.hpp>
 
+#include <D3DCommon.h>
+
 namespace d3d11_renderer
 {
+	namespace
+	{
+		ID3D11DeviceChild * getResource( Device const & device
+			, ashes::DebugReportObjectType objectType
+			, void const * object )
+		{
+			ID3D11DeviceChild * result = nullptr;
+
+			switch ( objectType )
+			{
+			case ashes::DebugReportObjectType::eDeviceMemory:
+				break;
+			case ashes::DebugReportObjectType::eBuffer:
+				result = reinterpret_cast< Buffer const * >( object )->getBuffer();
+				break;
+			case ashes::DebugReportObjectType::eImage:
+				result = reinterpret_cast< Texture const * >( object )->getResource();
+				break;
+			case ashes::DebugReportObjectType::eQueryPool:
+				result = ( *reinterpret_cast< QueryPool const * >( object )->begin() );
+				break;
+			case ashes::DebugReportObjectType::eBufferView:
+				result = reinterpret_cast< BufferView const * >( object )->getView();
+				break;
+			case ashes::DebugReportObjectType::eSampler:
+				result = reinterpret_cast< Sampler const * >( object )->getSampler();
+				break;
+			default:
+				break;
+			}
+			return result;
+		}
+	}
+
 	Device::Device( Renderer const & renderer
 		, ashes::ConnectionPtr && connection )
 		: ashes::Device{ renderer, connection->getGpu(), *connection }
@@ -246,6 +282,20 @@ namespace d3d11_renderer
 			, type
 			, count
 			, pipelineStatistics );
+	}
+
+	void Device::debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const
+	{
+#if !defined( NDEBUG )
+		auto * resource = getResource( *this, nameInfo.objectType, nameInfo.object );
+
+		if ( resource )
+		{
+			resource->SetPrivateData( WKPDID_D3DDebugObjectName
+				, UINT( nameInfo.objectName.size() )
+				, nameInfo.objectName.c_str() );
+		}
+#endif
 	}
 
 	void Device::waitIdle()const

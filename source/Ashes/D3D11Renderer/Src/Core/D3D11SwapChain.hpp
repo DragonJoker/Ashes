@@ -132,6 +132,11 @@ namespace d3d11_renderer
 			return m_format;
 		}
 
+		inline IDXGISwapChain * getSwapChain()const
+		{
+			return m_swapChain;
+		}
+
 	private:
 		void doInitPresentParameters();
 		void doCreateSwapChain();

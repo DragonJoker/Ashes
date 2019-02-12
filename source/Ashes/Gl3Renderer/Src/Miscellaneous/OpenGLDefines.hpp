@@ -258,6 +258,8 @@ namespace gl_renderer
 	using PFN_glMinSampleShading = void ( GLAPIENTRY * )( GLfloat value );
 	using PFN_glMultiDrawArraysIndirect = void ( GLAPIENTRY * )( GLenum mode, const void * indirect, GLsizei drawcount, GLsizei stride );
 	using PFN_glMultiDrawElementsIndirect = void ( GLAPIENTRY * )( GLenum mode, GLenum type, const void * indirect, GLsizei drawcount, GLsizei stride );
+	using PFN_glObjectLabel = void ( GLAPIENTRY * )( GLenum identifier, GLuint name, GLsizei length, const char * label );
+	using PFN_glObjectPtrLabel = void ( GLAPIENTRY * )( void * ptr, GLsizei length, const char * label );
 	using PFN_glPatchParameteri = void ( GLAPIENTRY * )( GLenum pname, GLint value );
 	using PFN_glPixelStorei = void ( GLAPIENTRY * )( GLenum pname, GLint param );
 	using PFN_glPolygonMode = void ( GLAPIENTRY * )( GLenum face, GLenum mode );

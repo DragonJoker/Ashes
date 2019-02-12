@@ -24,6 +24,7 @@ See LICENSE file in root folder.
 #include "Miscellaneous/GlDeviceMemory.hpp"
 #include "Miscellaneous/GlQueryPool.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
+#include "RenderPass/GlFrameBuffer.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 #include "Shader/GlShaderModule.hpp"
 #include "Sync/GlEvent.hpp"
@@ -40,6 +41,36 @@ namespace gl_renderer
 {
 	namespace
 	{
+		GLuint getObjectName( GlDebugReportObjectType const & value
+			, void const * object )
+		{
+			GLuint result = GL_INVALID_INDEX;
+
+			switch ( value )
+			{
+			case GlDebugReportObjectType::eBuffer:
+				result = reinterpret_cast< Buffer const * >( object )->getBuffer();
+				break;
+			case GlDebugReportObjectType::eTexture:
+				result = reinterpret_cast< Texture const * >( object )->getImage();
+				break;
+			case GlDebugReportObjectType::eQuery:
+				result = *reinterpret_cast< QueryPool const * >( object )->begin();
+				break;
+			case GlDebugReportObjectType::eShaderModule:
+				result = reinterpret_cast< ShaderModule const * >( object )->getShader();
+				break;
+			case GlDebugReportObjectType::eSampler:
+				result = reinterpret_cast< Sampler const * >( object )->getSampler();
+				break;
+			case GlDebugReportObjectType::eFrameBuffer:
+				result = reinterpret_cast< FrameBuffer const * >( object )->getFrameBuffer();
+				break;
+			}
+
+			return result;
+		}
+
 		void doApply( ContextLock const & context
 			, ashes::ColourBlendState const & state )
 		{
@@ -400,7 +431,6 @@ namespace gl_renderer
 		glLogCall( context
 			, glEnable
 			, GL_TEXTURE_CUBE_MAP_SEAMLESS );
-		initialiseDebugFunctions();
 
 		m_timestampPeriod = 1;
 		m_presentQueue = std::make_unique< Queue >( *this );
@@ -642,6 +672,41 @@ namespace gl_renderer
 			, type
 			, count
 			, pipelineStatistics );
+	}
+
+	void Device::debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const
+	{
+#if !defined( NDEBUG )
+		auto context = getContext();
+
+		if ( nameInfo.objectType == ashes::DebugReportObjectType::eFence )
+		{
+			glLogCall( context
+				, glObjectPtrLabel
+				, reinterpret_cast< Fence const * >( nameInfo.object )->getSync()
+				, GLsizei( nameInfo.objectName.size() )
+				, nameInfo.objectName.c_str() );
+		}
+		else
+		{
+			auto objectType = convert( nameInfo.objectType );
+
+			if ( objectType != GlDebugReportObjectType::eUnknown )
+			{
+				auto name = getObjectName( objectType, nameInfo.object );
+
+				if ( name != GL_INVALID_INDEX )
+				{
+					glLogCall( context
+						, glObjectLabel
+						, GLenum( objectType )
+						, name
+						, GLsizei( nameInfo.objectName.size() )
+						, nameInfo.objectName.c_str() );
+				}
+			}
+		}
+#endif
 	}
 
 	void Device::waitIdle()const

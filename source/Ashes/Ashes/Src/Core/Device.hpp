@@ -12,6 +12,7 @@ See LICENSE file in root folder.
 #include "Core/PhysicalDevice.hpp"
 #include "Image/ImageCreateInfo.hpp"
 #include "Image/SamplerCreateInfo.hpp"
+#include "Miscellaneous/DebugMarkerObjectNameInfo.hpp"
 #include "Pipeline/ColourBlendState.hpp"
 #include "Pipeline/RasterisationState.hpp"
 
@@ -541,6 +542,19 @@ namespace ashes
 		virtual QueryPoolPtr createQueryPool( QueryType type
 			, uint32_t count
 			, QueryPipelineStatisticFlags pipelineStatistics )const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Gives an object a user-friendly name.
+		*\param[in] nameInfo
+		*	The parameters of the name to set on the object.
+		*\~french
+		*\brief
+		*	Donne un nom user-friendly à un objet.
+		*\param[in] nameInfo
+		*	Les paramètres du nom à définir pour l'objet.
+		*/
+		virtual void debugMarkerSetObjectName( DebugMarkerObjectNameInfo const & nameInfo )const = 0;
 		/**
 		*\~english
 		*\brief
