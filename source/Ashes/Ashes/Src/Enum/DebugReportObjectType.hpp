@@ -13,7 +13,6 @@ namespace ashes
 	*	Opérateurs de mélange.
 	*/
 	enum class DebugReportObjectType
-		: uint32_t
 	{
 		eUnknown = 0,
 		eInstance = 1,
