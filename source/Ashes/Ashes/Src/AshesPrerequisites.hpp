@@ -48,6 +48,7 @@ See LICENSE file in root folder.
 #include "Enum/CommandPoolCreateFlag.hpp"
 #include "Enum/CompareOp.hpp"
 #include "Enum/CullModeFlag.hpp"
+#include "Enum/DebugReportObjectType.hpp"
 #include "Enum/DependencyFlag.hpp"
 #include "Enum/DepthStencilStateFlag.hpp"
 #include "Enum/DescriptorPoolCreateFlag.hpp"

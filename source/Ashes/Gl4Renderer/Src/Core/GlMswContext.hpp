@@ -52,6 +52,7 @@ namespace gl_renderer
 	private:
 		void doLoadBaseFunctions();
 		void doLoadMswFunctions();
+		void doLoadDebugFunctions();
 		HGLRC doCreateDummyContext();
 		bool doSelectFormat();
 		bool doCreateGl3Context( Context const * mainContext );

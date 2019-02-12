@@ -127,6 +127,10 @@ namespace test_renderer
 			, uint32_t count
 			, ashes::QueryPipelineStatisticFlags pipelineStatistics )const override;
 		/**
+		*\copydoc	ashes::Device::debugMarkerSetObjectName
+		*/
+		void debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const override;
+		/**
 		*\brief
 		*	Attend que le périphérique soit inactif.
 		*/

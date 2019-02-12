@@ -109,7 +109,7 @@ namespace gl_renderer
 			enable();
 			doLoadBaseFunctions();
 			doLoadGLXFunctions();
-			loadDebugFunctions();
+			doLoadDebugFunctions();
 			disable();
 
 			if ( m_gpu.getMajor() < 4 )
@@ -127,6 +127,20 @@ namespace gl_renderer
 			XFree( visualInfo );
 			enable();
 			m_glXSwapIntervalEXT( m_display, m_drawable, 0 );
+
+#if !defined( NDEBUG )
+			if ( glDebugMessageCallback )
+			{
+				glDebugMessageCallback( PFNGLDEBUGPROC( &callbackDebugLog ), nullptr );
+				glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
+			}
+			else if ( glDebugMessageCallbackAMD )
+			{
+				glDebugMessageCallbackAMD( PFNGLDEBUGAMDPROC( &callbackDebugLogAMD ), nullptr );
+				glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
+			}
+#endif
+
 			disable();
 		}
 	}
@@ -185,6 +199,55 @@ namespace gl_renderer
 			throw std::runtime_error{ std::string{ "Couldn't load function " } + "glX"#fun };\
 		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
+	}
+
+	void X11Context::doLoadDebugFunctions()
+	{
+#if !defined( NDEBUG )
+		auto ext = ( char const * )::glGetString( GL_EXTENSIONS );
+		std::string extensions = ext ? ext : "";
+
+		if ( extensions.find( KHR_debug ) != std::string::npos )
+		{
+			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
+			{
+				if ( !getFunction( "glDebugMessageCallbackKHR", glDebugMessageCallback ) )
+				{
+					ashes::Logger::logWarning( "Unable to retrieve function glDebugMessageCallback" );
+				}
+			}
+		}
+		else if ( extensions.find( ARB_debug_output ) != std::string::npos )
+		{
+			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
+			{
+				if ( !getFunction( "glDebugMessageCallbackARB", glDebugMessageCallback ) )
+				{
+					ashes::Logger::logWarning( "Unable to retrieve function glDebugMessageCallback" );
+				}
+			}
+		}
+		else if ( extensions.find( AMDX_debug_output ) != std::string::npos )
+		{
+			if ( !getFunction( "glDebugMessageCallbackAMD", glDebugMessageCallbackAMD ) )
+			{
+				ashes::Logger::logWarning( "Unable to retrieve function glDebugMessageCallbackAMD" );
+			}
+		}
+
+		if ( glDebugMessageCallback )
+		{
+			if ( !getFunction( "glObjectLabel", glObjectLabel ) )
+			{
+				ashes::Logger::logWarning( "Unable to retrieve function glObjectLabel" );
+			}
+
+			if ( !getFunction( "glObjectPtrLabel", glObjectPtrLabel ) )
+			{
+				ashes::Logger::logWarning( "Unable to retrieve function glObjectPtrLabel" );
+			}
+		}
+#endif
 	}
 
 	XVisualInfo * X11Context::doCreateVisualInfoWithFBConfig( std::vector< int > arrayAttribs, int screen )

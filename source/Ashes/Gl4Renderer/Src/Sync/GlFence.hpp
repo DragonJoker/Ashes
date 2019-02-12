@@ -48,6 +48,11 @@ namespace gl_renderer
 		*/ 
 		void reset()const override;
 
+		inline GLsync getSync()const
+		{
+			return m_fence;
+		}
+
 	private:
 		Device const & m_device;
 		mutable GLsync m_fence{ nullptr };

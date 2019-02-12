@@ -41,6 +41,7 @@ namespace gl_renderer
 	private:
 		void doLoadBaseFunctions();
 		void doLoadGLXFunctions();
+		void doLoadDebugFunctions();
 		XVisualInfo * doCreateVisualInfoWithFBConfig( std::vector< int > arrayAttribs, int screen );
 		XVisualInfo * doCreateVisualInfoWithoutFBConfig( std::vector< int > arrayAttribs, int screen );
 		bool doCreateGl3Context( X11Context const * mainContext );

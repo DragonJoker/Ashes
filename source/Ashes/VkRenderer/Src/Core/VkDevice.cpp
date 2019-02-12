@@ -302,6 +302,17 @@ namespace vk_renderer
 			, pipelineStatistics );
 	}
 
+	void Device::debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const
+	{
+#if LOAD_VALIDATION_LAYERS
+		if ( vkDebugMarkerSetObjectNameEXT )
+		{
+			auto vkNameInfo = convert( nameInfo );
+			vkDebugMarkerSetObjectNameEXT( m_device, &vkNameInfo );
+		}
+#endif
+	}
+
 	void Device::waitIdle()const
 	{
 		checkError( vkDeviceWaitIdle( m_device ), "Device wait idle" );

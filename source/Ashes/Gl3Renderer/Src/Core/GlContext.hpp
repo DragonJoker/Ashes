@@ -87,10 +87,25 @@ namespace gl_renderer
 		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 
+#if !defined( NDEBUG )
+		PFN_glObjectLabel glObjectLabel = nullptr;
+		PFN_glObjectPtrLabel glObjectPtrLabel = nullptr;
+#endif
+
 	protected:
 		PhysicalDevice const & m_gpu;
 		ashes::Connection const & m_connection;
 		mutable std::atomic< bool > m_enabled{ false };
+
+#if !defined( NDEBUG )
+		using PFNGLDEBUGPROC = void ( CALLBACK * )( uint32_t source, uint32_t type, uint32_t id, uint32_t severity, int length, const char * message, void * userParam );
+		using PFNGLDEBUGAMDPROC = void ( CALLBACK * )( uint32_t id, uint32_t category, uint32_t severity, int length, const char* message, void* userParam );
+		using PFN_glDebugMessageCallback = void ( CALLBACK * )( PFNGLDEBUGPROC callback, void * userParam );
+		using PFN_glDebugMessageCallbackAMD = void ( CALLBACK * )( PFNGLDEBUGAMDPROC callback, void * userParam );
+
+		PFN_glDebugMessageCallback glDebugMessageCallback = nullptr;
+		PFN_glDebugMessageCallbackAMD glDebugMessageCallbackAMD = nullptr;
+#endif
 	};
 }
 

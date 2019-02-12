@@ -182,6 +182,8 @@ GL_LIB_FUNCTION_EXT( SpecializeShader, ARB, GL_ARB_gl_spirv )
 GL_LIB_FUNCTION_EXT( TexBufferRange, ARB, GL_ARB_texture_buffer_range )
 GL_LIB_FUNCTION_EXT( GetInternalformativ, ARB, GL_ARB_internalformat_query )
 GL_LIB_FUNCTION_EXT( GetInternalformati64v, ARB, GL_ARB_internalformat_query2 )
+GL_LIB_FUNCTION_EXT( ObjectLabel, ARB, GL_ARB_debug_output )
+GL_LIB_FUNCTION_EXT( ObjectPtrLabel, ARB, GL_ARB_debug_output )
 
 #undef GL_LIB_FUNCTION_EXT
 

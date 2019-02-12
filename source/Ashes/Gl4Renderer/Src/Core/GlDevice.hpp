@@ -192,6 +192,10 @@ namespace gl_renderer
 		*/
 		void waitIdle()const override;
 		/**
+		*\copydoc	ashes::Device::debugMarkerSetObjectName
+		*/
+		void debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const override;
+		/**
 		*\brief
 		*	Echange les tampons.
 		*/
