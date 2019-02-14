@@ -86,10 +86,41 @@ if ( BUILD_ASHES )
 	#We copy each lib in <install_dir>/lib folder
 	install(
 		TARGETS ${PROJECT_NAME}
-		COMPONENT ${PROJECT_NAME}_dev
-		CONFIGURATIONS Release RelWithDebInfo
+		COMPONENT ${PROJECT_NAME}
+		CONFIGURATIONS Release
 		EXPORT ${PROJECT_NAME}
 		ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Release
+	)
+	install(
+		TARGETS ${PROJECT_NAME}
+		COMPONENT ${PROJECT_NAME}_dev
+		CONFIGURATIONS RelWithDebInfo
+		EXPORT ${PROJECT_NAME}
+		ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/RelWithDebInfo
+	)
+	install(
+		TARGETS ${PROJECT_NAME}
+		COMPONENT ${PROJECT_NAME}_dev
+		CONFIGURATIONS Debug
+		ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Debug
+	)
+	#For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
+	target_install_headers( ${PROJECT_NAME} Src )
+else ()
+	#We copy each lib in <install_dir>/lib folder
+	install(
+		TARGETS ${PROJECT_NAME}
+		COMPONENT ${PROJECT_NAME}
+		CONFIGURATIONS Release
+		EXPORT ${PROJECT_NAME}
+		ARCHIVE DESTINATION lib
+	)
+	install(
+		TARGETS ${PROJECT_NAME}
+		COMPONENT ${PROJECT_NAME}_dev
+		CONFIGURATIONS RelWithDebInfo
+		EXPORT ${PROJECT_NAME}
+		ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/RelWithDebInfo
 	)
 	install(
 		TARGETS ${PROJECT_NAME}

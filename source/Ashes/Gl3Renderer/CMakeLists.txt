@@ -1,5 +1,12 @@
 project( Gl3Renderer )
 
+set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
+set( ${PROJECT_NAME}_VERSION_MINOR 1 )
+set( ${PROJECT_NAME}_VERSION_BUILD 0 )
+
+set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
+set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
+
 find_package( OpenGL )
 
 if ( OpenGL_FOUND )
@@ -69,6 +76,11 @@ if ( OpenGL_FOUND )
 			${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 			${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 		)
+		set_target_properties( ${PROJECT_NAME}
+			PROPERTIES
+				VERSION ${PROJECT_VERSION}
+				SOVERSION ${PROJECT_SOVERSION}
+		)
 	endif ()
 
 	add_target_precompiled_header( ${PROJECT_NAME}
@@ -119,13 +131,20 @@ if ( OpenGL_FOUND )
 			install(
 				TARGETS ${PROJECT_NAME}
 				COMPONENT ${PROJECT_NAME}
-				CONFIGURATIONS Release RelWithDebInfo
+				CONFIGURATIONS Release
 				EXPORT ${PROJECT_NAME}
 				ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Release
 			)
 			install(
 				TARGETS ${PROJECT_NAME}
-				COMPONENT ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}_dev
+				CONFIGURATIONS RelWithDebInfo
+				EXPORT ${PROJECT_NAME}
+				ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/RelWithDebInfo
+			)
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}_dev
 				CONFIGURATIONS Debug
 				EXPORT ${PROJECT_NAME}
 				ARCHIVE DESTINATION lib/${PROJECTS_PLATFORM}/Debug
@@ -136,13 +155,20 @@ if ( OpenGL_FOUND )
 				install(
 					TARGETS ${PROJECT_NAME}
 					COMPONENT ${PROJECT_NAME}
-					CONFIGURATIONS Release RelWithDebInfo
+					CONFIGURATIONS Release
 					EXPORT ${PROJECT_NAME}
 					RUNTIME DESTINATION bin/${PROJECTS_PLATFORM}/Release
 				)
 				install(
 					TARGETS ${PROJECT_NAME}
-					COMPONENT ${PROJECT_NAME}
+					COMPONENT ${PROJECT_NAME}_dev
+					CONFIGURATIONS RelWithDebInfo
+					EXPORT ${PROJECT_NAME}
+					RUNTIME DESTINATION bin/${PROJECTS_PLATFORM}/RelWithDebInfo
+				)
+				install(
+					TARGETS ${PROJECT_NAME}
+					COMPONENT ${PROJECT_NAME}_dev
 					CONFIGURATIONS Debug
 					EXPORT ${PROJECT_NAME}
 					RUNTIME DESTINATION bin/${PROJECTS_PLATFORM}/Debug
@@ -152,15 +178,94 @@ if ( OpenGL_FOUND )
 				install(
 					TARGETS ${PROJECT_NAME}
 					COMPONENT ${PROJECT_NAME}
-					CONFIGURATIONS Release RelWithDebInfo
+					CONFIGURATIONS Release
 					EXPORT ${PROJECT_NAME}
 					LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Release
 				)
 				install(
 					TARGETS ${PROJECT_NAME}
-					COMPONENT ${PROJECT_NAME}
+					COMPONENT ${PROJECT_NAME}_dev
+					CONFIGURATIONS RelWithDebInfo
+					EXPORT ${PROJECT_NAME}
+					LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/RelWithDebInfo
+				)
+				install(
+					TARGETS ${PROJECT_NAME}
+					COMPONENT ${PROJECT_NAME}_dev
 					CONFIGURATIONS Debug
 					LIBRARY DESTINATION lib/${PROJECTS_PLATFORM}/Debug
+				)
+			endif()
+		endif ()
+	else ()
+		if ( ASHES_STATIC_RENDERERS )
+			#We install each .lib/.a in <install_dir>/lib folder
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}
+				CONFIGURATIONS Release
+				EXPORT ${PROJECT_NAME}
+				ARCHIVE DESTINATION lib
+			)
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}_dev
+				CONFIGURATIONS RelWithDebInfo
+				EXPORT ${PROJECT_NAME}
+				ARCHIVE DESTINATION lib/RelWithDebInfo
+			)
+			install(
+				TARGETS ${PROJECT_NAME}
+				COMPONENT ${PROJECT_NAME}_dev
+				CONFIGURATIONS Debug
+				EXPORT ${PROJECT_NAME}
+				ARCHIVE DESTINATION lib/Debug
+			)
+		else ()
+			if ( WIN32 )
+				#We install each .dll in <install_dir>/bin folder
+				install(
+					TARGETS ${PROJECT_NAME}
+					COMPONENT ${PROJECT_NAME}
+					CONFIGURATIONS Release
+					EXPORT ${PROJECT_NAME}
+					RUNTIME DESTINATION bin
+				)
+				install(
+					TARGETS ${PROJECT_NAME}
+					COMPONENT ${PROJECT_NAME}_dev
+					CONFIGURATIONS RelWithDebInfo
+					EXPORT ${PROJECT_NAME}
+					RUNTIME DESTINATION bin/RelWithDebInfo
+				)
+				install(
+					TARGETS ${PROJECT_NAME}
+					COMPONENT ${PROJECT_NAME}_dev
+					CONFIGURATIONS Debug
+					EXPORT ${PROJECT_NAME}
+					RUNTIME DESTINATION bin/Debug
+				)
+			else ()
+				#We install each .so in <install_dir>/lib folder
+				install(
+					TARGETS ${PROJECT_NAME}
+					COMPONENT ${PROJECT_NAME}
+					CONFIGURATIONS Release
+					EXPORT ${PROJECT_NAME}
+					LIBRARY DESTINATION lib
+				)
+				install(
+					TARGETS ${PROJECT_NAME}
+					COMPONENT ${PROJECT_NAME}_dev
+					CONFIGURATIONS RelWithDebInfo
+					EXPORT ${PROJECT_NAME}
+					LIBRARY DESTINATION lib/RelWithDebInfo
+				)
+				install(
+					TARGETS ${PROJECT_NAME}
+					COMPONENT ${PROJECT_NAME}_dev
+					CONFIGURATIONS Debug
+					LIBRARY DESTINATION lib/Debug
 				)
 			endif()
 		endif ()
