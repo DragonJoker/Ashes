@@ -38,8 +38,10 @@ if ( OpenGL_FOUND )
 		set( ${PROJECT_NAME}_USE_SPIRV_CROSS 1 )
 		set( ${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES
 			${SPIRV_CROSS_DIR}/spirv_cross.cpp
+			${SPIRV_CROSS_DIR}/spirv_cross_parsed_ir.cpp
 			${SPIRV_CROSS_DIR}/spirv_cfg.cpp
 			${SPIRV_CROSS_DIR}/spirv_glsl.cpp
+			${SPIRV_CROSS_DIR}/spirv_parser.cpp
 		)
 
 		set( ${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES
@@ -47,8 +49,10 @@ if ( OpenGL_FOUND )
 			${SPIRV_CROSS_DIR}/spirv_common.hpp
 			${SPIRV_CROSS_DIR}/spirv.hpp
 			${SPIRV_CROSS_DIR}/spirv_cross.hpp
+			${SPIRV_CROSS_DIR}/spirv_cross_parsed_ir.hpp
 			${SPIRV_CROSS_DIR}/spirv_cfg.hpp
 			${SPIRV_CROSS_DIR}/spirv_glsl.hpp
+			${SPIRV_CROSS_DIR}/spirv_parser.hpp
 		)
 	endif ()
 
