@@ -14,9 +14,9 @@ macro( target_install_subdir_headers TARGET_NAME SRCDIR SUBDIR CURDIR )
 	file(
 		GLOB
 			_HEADERS
-			${SRCDIR}${CURDIR}${SUBDIR}/*.h
-			${SRCDIR}${CURDIR}${SUBDIR}/*.hpp
-			${SRCDIR}${CURDIR}${SUBDIR}/*.inl
+			${SRCDIR}/${CURDIR}${SUBDIR}/*.h
+			${SRCDIR}/${CURDIR}${SUBDIR}/*.hpp
+			${SRCDIR}/${CURDIR}${SUBDIR}/*.inl
 	)
 	install(
 		FILES ${_HEADERS}
@@ -25,21 +25,16 @@ macro( target_install_subdir_headers TARGET_NAME SRCDIR SUBDIR CURDIR )
 	)
 endmacro()
 
-macro( target_install_headers TARGET_NAME SRCDIR )
-	if ( "${SRCDIR}" STREQUAL "" )
-		set( _SRCDIR ${SRCDIR} )
-	else ()
-		set( _SRCDIR ${SRCDIR}/ )
-	endif ()
-	list_subdirs( _SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/${_SRCDIR} )
+macro( target_install_headers TARGET_NAME HDR_FOLDER )
+	list_subdirs( _SUBDIRS ${HDR_FOLDER} )
 	foreach( _SUBDIR ${_SUBDIRS} )
-		target_install_subdir_headers( ${TARGET_NAME} ${_SRCDIR} ${_SUBDIR} "" )
-		list_subdirs( _SUBSUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/${_SRCDIR}${_SUBDIR} )
+		target_install_subdir_headers( ${TARGET_NAME} ${HDR_FOLDER} ${_SUBDIR} "" )
+		list_subdirs( _SUBSUBDIRS ${HDR_FOLDER}/${_SUBDIR} )
 		foreach( _SUBSUBDIR ${_SUBSUBDIRS} )
-			target_install_subdir_headers( ${TARGET_NAME} ${_SRCDIR} ${_SUBSUBDIR} "${_SUBDIR}/" )
-			list_subdirs( _SUBSUBSUBDIRS ${CMAKE_CURRENT_SOURCE_DIR}/${_SRCDIR}${_SUBDIR}/${_SUBSUBDIR} )
+			target_install_subdir_headers( ${TARGET_NAME} ${HDR_FOLDER} ${_SUBSUBDIR} "${_SUBDIR}/" )
+			list_subdirs( _SUBSUBSUBDIRS ${HDR_FOLDER}/${_SUBDIR}/${_SUBSUBDIR} )
 			foreach( _SUBSUBSUBDIR ${_SUBSUBSUBDIRS} )
-				target_install_subdir_headers( ${TARGET_NAME} ${_SRCDIR} ${_SUBSUBSUBDIR} "${_SUBDIR}/${_SUBSUBDIR}/" )
+				target_install_subdir_headers( ${TARGET_NAME} ${HDR_FOLDER} ${_SUBSUBSUBDIR} "${_SUBDIR}/${_SUBSUBDIR}/" )
 			endforeach()
 		endforeach()
 	endforeach()
@@ -47,12 +42,9 @@ macro( target_install_headers TARGET_NAME SRCDIR )
 	file(
 		GLOB
 			TARGET_HEADERS
-			${CMAKE_CURRENT_SOURCE_DIR}/${_SRCDIR}*.h
-			${CMAKE_CURRENT_SOURCE_DIR}/${_SRCDIR}*.hpp
-			${CMAKE_CURRENT_SOURCE_DIR}/${_SRCDIR}*.inl
-			${CMAKE_CURRENT_BINARY_DIR}/${_SRCDIR}*.h
-			${CMAKE_CURRENT_BINARY_DIR}/${_SRCDIR}*.hpp
-			${CMAKE_CURRENT_BINARY_DIR}/${_SRCDIR}*.inl
+			${HDR_FOLDER}/*.h
+			${HDR_FOLDER}/*.hpp
+			${HDR_FOLDER}/*.inl
 	)
 	install(
 		FILES ${TARGET_HEADERS}
