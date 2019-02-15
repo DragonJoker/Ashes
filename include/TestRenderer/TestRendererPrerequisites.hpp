@@ -8,7 +8,7 @@
 
 #include <Ashes/AshesConfig.hpp>
 
-#include "TestRendererConfig.hpp"
+#include "TestRenderer/TestRendererConfig.hpp"
 
 #ifdef min
 #	undef min

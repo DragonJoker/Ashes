@@ -68,20 +68,15 @@ macro( source_add_forced_include _FILE ) #ARGN: _FILES
 endmacro( source_add_forced_include )
 
 # Small macro to add subdirectory files to current target source and header files
-macro( parse_subdir_files _FOLDER _GROUP )
+macro( parse_subdir_files _BASE_DIR _FOLDER _GROUP )
 	file( GLOB _FOLDER_HEADER_FILES
-		${CMAKE_CURRENT_SOURCE_DIR}/${_FOLDER}/*.h
-		${CMAKE_CURRENT_SOURCE_DIR}/${_FOLDER}/*.hpp
-		${CMAKE_CURRENT_SOURCE_DIR}/${_FOLDER}/*.inl
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/${_FOLDER}/*.h
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/${_FOLDER}/*.hpp
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/${_FOLDER}/*.inl
+		${_BASE_DIR}/include/${PROJECT_NAME}/${_FOLDER}/*.h
+		${_BASE_DIR}/include/${PROJECT_NAME}/${_FOLDER}/*.hpp
+		${_BASE_DIR}/include/${PROJECT_NAME}/${_FOLDER}/*.inl
 	)
 	file( GLOB _FOLDER_SOURCE_FILES
-		${CMAKE_CURRENT_SOURCE_DIR}/${_FOLDER}/*.c
-		${CMAKE_CURRENT_SOURCE_DIR}/${_FOLDER}/*.cpp
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/${_FOLDER}/*.c
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/${_FOLDER}/*.cpp
+		${_BASE_DIR}/source/${PROJECT_NAME}/${_FOLDER}/*.c
+		${_BASE_DIR}/source/${PROJECT_NAME}/${_FOLDER}/*.cpp
 	)
 	source_group( "Header Files\\${_GROUP}" FILES ${_FOLDER_HEADER_FILES} )
 	source_group( "Source Files\\${_GROUP}" FILES ${_FOLDER_SOURCE_FILES} )
