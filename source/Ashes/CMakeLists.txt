@@ -105,4 +105,4 @@ install(
 	ARCHIVE DESTINATION lib/Debug
 )
 #For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
-target_install_headers( ${PROJECT_NAME} ../../include/${PROJECT_NAME} )
+target_install_headers( ${PROJECT_NAME} ${ASHES_SOURCE_DIR}/include/${PROJECT_NAME} )
