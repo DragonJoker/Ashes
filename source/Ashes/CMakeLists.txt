@@ -78,10 +78,10 @@ parse_subdir_files( Utils "Utils" )
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes" )
 
-# if ( BUILD_ASHES )
-	# target_add_doc( ${PROJECT_NAME} "French" "*.h *.hpp" )
-	# target_add_doc( ${PROJECT_NAME} "English" "*.h *.hpp" )
-# endif ()
+if ( BUILD_ASHES )
+	target_add_doc( ${PROJECT_NAME} "French" "*.h *.hpp" )
+	target_add_doc( ${PROJECT_NAME} "English" "*.h *.hpp" )
+endif ()
 
 #We copy each lib in <install_dir>/lib folder
 install(
