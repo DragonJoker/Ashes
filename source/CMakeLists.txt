@@ -89,7 +89,7 @@ add_subdirectory( Ashes )
 
 if ( ASHES_BUILD_PLUGINS )
 	if ( NOT DEFINED ASHES_STATIC_RENDERER_PLUGINS )
-		option( ASHES_STATIC_RENDERER_PLUGINS "Build renderers as static libraries" ON )
+		option( ASHES_STATIC_RENDERER_PLUGINS "Build renderers as static libraries" OFF )
 	endif ()
 
 	if ( ASHES_STATIC_RENDERER_PLUGINS )
