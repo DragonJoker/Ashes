@@ -42,6 +42,7 @@ See LICENSE file in root folder.
 #include "Command/Commands/GlEndQueryCommand.hpp"
 #include "Command/Commands/GlEndRenderPassCommand.hpp"
 #include "Command/Commands/GlEndSubpassCommand.hpp"
+#include "Command/Commands/GlGenerateMipmapsCommand.hpp"
 #include "Command/Commands/GlMemoryBarrierCommand.hpp"
 #include "Command/Commands/GlPushConstantsCommand.hpp"
 #include "Command/Commands/GlResetEventCommand.hpp"
@@ -678,14 +679,10 @@ namespace gl_renderer
 			, imageMemoryBarriers ) );
 	}
 
-	void CommandBuffer::initialiseGeometryBuffers()const
+	void CommandBuffer::generateMipmaps( Texture const & texture )
 	{
-		for ( auto & vao : m_state.vaos )
-		{
-			vao.get().initialise();
-		}
-
-		m_state.vaos.clear();
+		m_commands.emplace_back( std::make_unique< GenerateMipmapsCommand >( m_device
+			, texture ) );
 	}
 
 	void CommandBuffer::pipelineBarrier( ashes::PipelineStageFlags after
@@ -702,6 +699,16 @@ namespace gl_renderer
 			, memoryBarriers
 			, bufferMemoryBarriers
 			, imageMemoryBarriers ) );
+	}
+
+	void CommandBuffer::initialiseGeometryBuffers()const
+	{
+		for ( auto & vao : m_state.vaos )
+		{
+			vao.get().initialise();
+		}
+
+		m_state.vaos.clear();
 	}
 
 	void CommandBuffer::doBindVao()const

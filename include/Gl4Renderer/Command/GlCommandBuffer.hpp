@@ -260,6 +260,8 @@ namespace gl_renderer
 			, ashes::MemoryBarrierArray const & memoryBarriers
 			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
 			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const;
+
+		void generateMipmaps( Texture const & texture );
 		/**
 		*\return
 		*	Le tableau de commandes.
