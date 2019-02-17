@@ -49,6 +49,10 @@ namespace gl_renderer
 		*/
 		ashes::MemoryRequirements getMemoryRequirements()const override;
 		/**
+		*\copydoc	ashes::Texture::getMemoryRequirements
+		*/
+		void generateMipmaps( ashes::CommandBuffer & commandBuffer )const override;
+		/**
 		*\copydoc	ashes::Texture::createView
 		*/
 		ashes::TextureViewPtr createView( ashes::ImageViewCreateInfo const & createInfo )const override;

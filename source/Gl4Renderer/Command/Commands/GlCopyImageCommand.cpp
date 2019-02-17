@@ -66,7 +66,7 @@ namespace gl_renderer
 			, glBindTexture
 			, m_srcTarget
 			, 0u );
-		m_dst.generateMipmaps();
+		static_cast< ashes::Texture const & >( m_dst ).generateMipmaps();
 	}
 
 	CommandPtr CopyImageCommand::clone()const

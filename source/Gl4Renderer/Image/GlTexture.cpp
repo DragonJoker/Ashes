@@ -144,6 +144,11 @@ namespace gl_renderer
 		return result;
 	}
 
+	void Texture::generateMipmaps( ashes::CommandBuffer & commandBuffer )const
+	{
+		static_cast< CommandBuffer & >( commandBuffer ).generateMipmaps( *this );
+	}
+
 	ashes::TextureViewPtr Texture::createView( ashes::ImageViewCreateInfo const & createInfo )const
 	{
 		return std::make_unique< TextureView >( m_device
