@@ -325,6 +325,7 @@ namespace gl_renderer
 		GLenum target = gltexture.getLayerCount() > 1u
 			? GL_TEXTURE_2D_ARRAY
 			: GL_TEXTURE_2D;
+		bool isCube = checkFlag( gltexture.getFlags(), ashes::ImageCreateFlag::eCubeCompatible );
 
 		if ( gltexture.getSamplesCount() > ashes::SampleCountFlag::e1 )
 		{
@@ -332,14 +333,15 @@ namespace gl_renderer
 				? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
 				: GL_TEXTURE_2D_MULTISAMPLE;
 		}
-		else if ( checkFlag( gltexture.getFlags(), ashes::ImageCreateFlag::eCubeCompatible ) )
+		else if ( isCube )
 		{
 			target = glview.getTarget();
 		}
 
-		if ( gltexture.getLayerCount() > 1u
-			&& !checkFlag( gltexture.getFlags(), ashes::ImageCreateFlag::eCubeCompatible ) )
+		if ( ( !isCube && gltexture.getLayerCount() > 1u )
+			|| ( isCube && gltexture.getLayerCount() > 6u ) )
 		{
+			assert( !isCube || ( ( gltexture.getLayerCount() % 6u ) == 0u ) );
 			glLogCall( context
 				, glFramebufferTextureLayer
 				, GL_FRAMEBUFFER
