@@ -366,42 +366,15 @@ namespace gl_renderer
 			float fversion;
 			stream >> fversion;
 			auto version = int( fversion * 10 );
-			m_major = version / 10;
-			m_minor = version % 10;
 
 			if ( version < 42 )
 			{
 				throw std::runtime_error{ "OpenGL >= 4.2 is needed for this renderer." };
 			}
 
-			if ( version >= 33 )
-			{
-				m_shaderVersion = version * 10;
-			}
-			else if ( version >= 32 )
-			{
-				m_shaderVersion = 150;
-			}
-			else if ( version >= 31 )
-			{
-				m_shaderVersion = 140;
-			}
-			else if ( version >= 30 )
-			{
-				m_shaderVersion = 130;
-			}
-			else if ( version >= 21 )
-			{
-				m_shaderVersion = 120;
-			}
-			else if ( version >= 20 )
-			{
-				m_shaderVersion = 110;
-			}
-			else
-			{
-				m_shaderVersion = 100;
-			}
+			m_major = version / 10;
+			m_minor = version % 10;
+			m_shaderVersion = version * 10;
 		}
 
 		auto const * cextensions = ( char const * )glGetString( GL_EXTENSIONS );
