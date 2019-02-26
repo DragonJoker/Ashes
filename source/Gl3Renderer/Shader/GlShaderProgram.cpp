@@ -198,13 +198,11 @@ namespace gl_renderer
 
 			if ( !validated )
 			{
-				ashes::Logger::logError( "ShaderProgram::link - Not validated" );
+				ashes::Logger::logWarning( "ShaderProgram::link - Not validated" );
 			}
-			else
-			{
-				result = getShaderDesc( context, m_program );
-				result.stageFlags = m_stageFlags;
-			}
+
+			result = getShaderDesc( context, m_program );
+			result.stageFlags = m_stageFlags;
 		}
 		else
 		{

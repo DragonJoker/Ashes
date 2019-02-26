@@ -27,6 +27,120 @@ namespace gl_renderer
 		static const int GL_CONTEXT_CREATION_DEFAULT_FLAGS = GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_DEBUG_BIT;
 		static const int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
 
+#define makeGlExtension( x )	static const std::string x = "GL_"#x
+
+		makeGlExtension( KHR_debug );
+		makeGlExtension( ARB_debug_output );
+		makeGlExtension( AMDX_debug_output );
+
+		void GLAPIENTRY callbackDebugLog( uint32_t source, uint32_t type, uint32_t id, uint32_t severity, int length, const char * message, void * userParam )
+		{
+			std::locale loc{ "C" };
+			std::stringstream stream;
+			stream.imbue( loc );
+			stream << "OpenGL Debug\n";
+
+			switch ( source )
+			{
+			case GL_DEBUG_SOURCE_API:				stream << "    Source: OpenGL\n";			break;
+			case GL_DEBUG_SOURCE_WINDOW_SYSTEM:		stream << "    Source: Window System\n";	break;
+			case GL_DEBUG_SOURCE_SHADER_COMPILER:	stream << "    Source: Shader compiler\n";	break;
+			case GL_DEBUG_SOURCE_THIRD_PARTY:		stream << "    Source: Third party\n";		break;
+			case GL_DEBUG_SOURCE_APPLICATION:		stream << "    Source: Application\n";		break;
+			case GL_DEBUG_SOURCE_OTHER:				stream << "    Source: Other\n";			break;
+			}
+
+			switch ( type )
+			{
+			case GL_DEBUG_TYPE_ERROR:				stream << "    Type: Error\n";					break;
+			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:	stream << "    Type: Deprecated behavior\n";	break;
+			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:	stream << "    Type: Undefined behavior\n";		break;
+			case GL_DEBUG_TYPE_PORTABILITY:			stream << "    Type: Portability\n";			break;
+			case GL_DEBUG_TYPE_PERFORMANCE:			stream << "    Type: Performance\n";			break;
+			case GL_DEBUG_TYPE_OTHER:				stream << "    Type: Other\n";					break;
+			}
+
+			stream << "    ID: 0x" << std::hex << id << " (" << getErrorName( id, type ) << ")\n";
+
+			switch ( severity )
+			{
+			case GL_DEBUG_SEVERITY_HIGH:			stream << "    Severity: High\n";			break;
+			case GL_DEBUG_SEVERITY_MEDIUM:			stream << "    Severity: Medium\n";			break;
+			case GL_DEBUG_SEVERITY_LOW:				stream << "    Severity: Low\n";			break;
+			case GL_DEBUG_SEVERITY_NOTIFICATION:	stream << "    Severity: Notification\n";	break;
+			}
+
+			stream << "    Message: " << message;
+
+			switch ( severity )
+			{
+			case GL_DEBUG_SEVERITY_HIGH:
+				ashes::Logger::logError( stream.str() );
+				break;
+			case GL_DEBUG_SEVERITY_MEDIUM:
+				ashes::Logger::logWarning( stream.str() );
+				break;
+			case GL_DEBUG_SEVERITY_LOW:
+				ashes::Logger::logInfo( stream.str() );
+				break;
+			case GL_DEBUG_SEVERITY_NOTIFICATION:
+				break;
+			default:
+				ashes::Logger::logDebug( stream.str() );
+				break;
+			}
+		}
+
+		void GLAPIENTRY callbackDebugLogAMD( uint32_t id, uint32_t category, uint32_t severity, int length, const char* message, void* userParam )
+		{
+			std::locale loc{ "C" };
+			std::stringstream stream;
+			stream.imbue( loc );
+			stream << "OpenGL Debug\n";
+
+			switch ( category )
+			{
+			case GL_DEBUG_CATEGORY_API_ERROR_AMD:			stream << "    Category: OpenGL\n";					break;
+			case GL_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD:		stream << "    Category: Window System\n";			break;
+			case GL_DEBUG_CATEGORY_DEPRECATION_AMD:			stream << "    Category: Deprecated behavior\n";	break;
+			case GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD:	stream << "    Category: Undefined behavior\n";		break;
+			case GL_DEBUG_CATEGORY_PERFORMANCE_AMD:			stream << "    Category: Performance\n";			break;
+			case GL_DEBUG_CATEGORY_SHADER_COMPILER_AMD:		stream << "    Category: Shader compiler\n";		break;
+			case GL_DEBUG_CATEGORY_APPLICATION_AMD:			stream << "    Category: Application\n";			break;
+			case GL_DEBUG_CATEGORY_OTHER_AMD:				stream << "    Category: Other\n";					break;
+			}
+
+			stream << "    ID: 0x" << std::hex << id << " (" << getErrorName( id, category ) << ")\n";
+
+			switch ( severity )
+			{
+			case GL_DEBUG_SEVERITY_HIGH:					stream << "    Severity: High\n";					break;
+			case GL_DEBUG_SEVERITY_MEDIUM:					stream << "    Severity: Medium\n";					break;
+			case GL_DEBUG_SEVERITY_LOW:						stream << "    Severity: Low\n";					break;
+			case GL_DEBUG_SEVERITY_NOTIFICATION:			stream << "    Severity: Notification\n";			break;
+			}
+
+			stream << "    Message: " << message;
+
+			switch ( severity )
+			{
+			case GL_DEBUG_SEVERITY_HIGH:
+				ashes::Logger::logError( stream.str() );
+				break;
+			case GL_DEBUG_SEVERITY_MEDIUM:
+				ashes::Logger::logWarning( stream.str() );
+				break;
+			case GL_DEBUG_SEVERITY_LOW:
+				ashes::Logger::logInfo( stream.str() );
+				break;
+			case GL_DEBUG_SEVERITY_NOTIFICATION:
+				break;
+			default:
+				ashes::Logger::logDebug( stream.str() );
+				break;
+			}
+		}
+
 #else
 
 		static const int GL_CONTEXT_CREATION_DEFAULT_FLAGS = GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT;
@@ -126,7 +240,11 @@ namespace gl_renderer
 
 			XFree( visualInfo );
 			enable();
-			m_glXSwapIntervalEXT( m_display, m_drawable, 0 );
+
+			if ( m_glXSwapIntervalEXT )
+			{
+				m_glXSwapIntervalEXT( m_display, m_drawable, 0 );
+			}
 
 #if !defined( NDEBUG )
 			if ( glDebugMessageCallback )
@@ -196,7 +314,7 @@ namespace gl_renderer
 #define GLX_LIB_FUNCTION( fun )\
 		if ( !( getFunction( "glX"#fun, m_glX##fun ) ) )\
 		{\
-			throw std::runtime_error{ std::string{ "Couldn't load function " } + "glX"#fun };\
+			std::cerr << std::string{ "Couldn't load function " } + "glX"#fun << std::endl;\
 		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 	}

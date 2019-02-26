@@ -240,7 +240,11 @@ namespace gl_renderer
 
 			XFree( visualInfo );
 			enable();
-			m_glXSwapIntervalEXT( m_display, m_drawable, 0 );
+
+			if ( m_glXSwapIntervalEXT )
+			{
+				m_glXSwapIntervalEXT( m_display, m_drawable, 0 );
+			}
 
 #if !defined( NDEBUG )
 			if ( glDebugMessageCallback )
@@ -310,7 +314,7 @@ namespace gl_renderer
 #define GLX_LIB_FUNCTION( fun )\
 		if ( !( getFunction( "glX"#fun, m_glX##fun ) ) )\
 		{\
-			throw std::runtime_error{ std::string{ "Couldn't load function " } + "glX"#fun };\
+			std::cerr << std::string{ "Couldn't load function " } + "glX"#fun << std::endl;\
 		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 	}

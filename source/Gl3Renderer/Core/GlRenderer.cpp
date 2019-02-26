@@ -297,7 +297,7 @@ namespace gl_renderer
 
 				if ( m_display )
 				{
-					XCloseDisplay( m_display );
+					//XCloseDisplay( m_display );
 				}
 			}
 

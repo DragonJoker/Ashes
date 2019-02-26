@@ -87,10 +87,10 @@ namespace gl_renderer
 		mutable std::atomic< bool > m_enabled{ false };
 
 #if !defined( NDEBUG )
-		using PFNGLDEBUGPROC = void ( CALLBACK * )( uint32_t source, uint32_t type, uint32_t id, uint32_t severity, int length, const char * message, void * userParam );
-		using PFNGLDEBUGAMDPROC = void ( CALLBACK * )( uint32_t id, uint32_t category, uint32_t severity, int length, const char* message, void* userParam );
-		using PFN_glDebugMessageCallback = void ( CALLBACK * )( PFNGLDEBUGPROC callback, void * userParam );
-		using PFN_glDebugMessageCallbackAMD = void ( CALLBACK * )( PFNGLDEBUGAMDPROC callback, void * userParam );
+		using PFNGLDEBUGPROC = void ( GLAPIENTRY * )( uint32_t source, uint32_t type, uint32_t id, uint32_t severity, int length, const char * message, void * userParam );
+		using PFNGLDEBUGAMDPROC = void ( GLAPIENTRY * )( uint32_t id, uint32_t category, uint32_t severity, int length, const char* message, void* userParam );
+		using PFN_glDebugMessageCallback = void ( GLAPIENTRY * )( PFNGLDEBUGPROC callback, void * userParam );
+		using PFN_glDebugMessageCallbackAMD = void ( GLAPIENTRY * )( PFNGLDEBUGAMDPROC callback, void * userParam );
 
 		PFN_glDebugMessageCallback glDebugMessageCallback = nullptr;
 		PFN_glDebugMessageCallbackAMD glDebugMessageCallbackAMD = nullptr;

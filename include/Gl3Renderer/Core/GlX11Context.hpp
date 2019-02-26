@@ -48,10 +48,10 @@ namespace gl_renderer
 
 	protected:
 		GLXContext m_glxContext;
-		int m_glxVersion;
-		Display * m_display;
-		GLXDrawable m_drawable;
-		GLXFBConfig * m_fbConfig;
+		int m_glxVersion{ 0 };
+		Display * m_display{ nullptr };
+		GLXDrawable m_drawable{ 0 };
+		GLXFBConfig * m_fbConfig{ nullptr };
 	};
 }
 

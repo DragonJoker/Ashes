@@ -368,17 +368,32 @@ namespace gl_renderer
 			std::stringstream stream( sversion );
 			float fversion;
 			stream >> fversion;
-			auto version = int( fversion * 10 );
+			auto version = std::min( int( fversion * 10 ), 330 );
 
-			if ( version < 33 )
+			if ( version < 30 )
 			{
-				throw std::runtime_error{ "OpenGL >= 3.3 is needed for this renderer." };
+				throw std::runtime_error{ "OpenGL >= 3.0 is needed for this renderer." };
 			}
 
-			version = 33;
-			m_major = 3;
-			m_minor = 3;
-			m_shaderVersion = 330;
+			m_major = version / 10;
+			m_minor = version % 10;
+
+			if ( version >= 33 )
+			{
+				m_shaderVersion = version * 10;
+			}
+			else if ( version >= 32 )
+			{
+				m_shaderVersion = 150;
+			}
+			else if ( version >= 31 )
+			{
+				m_shaderVersion = 140;
+			}
+			else
+			{
+				m_shaderVersion = 130;
+			}
 		}
 
 		auto const * cextensions = ( char const * )glGetString( GL_EXTENSIONS );
