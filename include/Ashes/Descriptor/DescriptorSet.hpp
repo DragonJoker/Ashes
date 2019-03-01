@@ -630,6 +630,18 @@ namespace ashes
 			assert( index < m_writes.size() );
 			return m_writes[index];
 		}
+		/**
+		*\~french
+		*\return
+		*	Dit si l'ensemble est vide.
+		*\~english
+		*\return
+		*	Tells if the set is empty.
+		*/
+		inline bool empty()const
+		{
+			return m_writes.empty();
+		}
 
 	protected:
 		WriteDescriptorSetArray m_writes;
