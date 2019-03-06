@@ -193,7 +193,7 @@ namespace gl_renderer
 					, glMapBufferRange
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
 					, GLintptr( offset )
-					, GLsizei( size == ~( 0ull ) ? m_requirements.size : size )
+					, GLsizei( size == ashes::WholeSize ? m_requirements.size : size )
 					, m_mapFlags );
 				assertDebugValue( m_isLocked, false );
 				setDebugValue( m_isLocked, result != nullptr );
@@ -210,7 +210,7 @@ namespace gl_renderer
 					, glFlushMappedBufferRange
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
 					, GLintptr( offset )
-					, GLsizei( size == ~( 0ull ) ? m_requirements.size : size ) );
+					, GLsizei( size == ashes::WholeSize ? m_requirements.size : size ) );
 			}
 
 			void invalidate( uint64_t offset
@@ -614,7 +614,7 @@ namespace gl_renderer
 					, glMapBufferRange
 					, GL_BUFFER_TARGET_COPY_WRITE
 					, GLintptr( offset )
-					, GLsizei( size == ~( 0ull ) ? m_requirements.size : size )
+					, GLsizei( size == ashes::WholeSize ? m_requirements.size : size )
 					, m_mapFlags );
 				setDebugValue( m_isLocked, result != nullptr );
 				return reinterpret_cast< uint8_t * >( result );
@@ -630,7 +630,7 @@ namespace gl_renderer
 					, glFlushMappedBufferRange
 					, GL_BUFFER_TARGET_COPY_WRITE
 					, GLintptr( offset )
-					, GLsizei( size == ~( 0ull ) ? m_requirements.size : size ) );
+					, GLsizei( size == ashes::WholeSize ? m_requirements.size : size ) );
 			}
 
 			void invalidate( uint64_t offset
