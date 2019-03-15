@@ -43,8 +43,8 @@ namespace ashes
 		*	L'index de l'image, parmi les images de la swap chain.
 		*/
 		BackBuffer( Device const & device
-			, TexturePtr && image
-			, TextureViewPtr && view
+			, TexturePtr image
+			, TextureViewPtr view
 			, uint32_t imageIndex );
 
 	public:

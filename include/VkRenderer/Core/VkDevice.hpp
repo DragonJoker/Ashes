@@ -7,6 +7,7 @@ See LICENSE file in root folder
 #include "Core/VkConnection.hpp"
 
 #include <Ashes/Core/Device.hpp>
+#include <Ashes/Miscellaneous/QueueCreateInfo.hpp>
 
 namespace vk_renderer
 {
@@ -22,12 +23,16 @@ namespace vk_renderer
 		*\brief
 		*	Constructeur.
 		*\param[in] vk_renderer
-		*	L'instance de Renderer.
+		*	L'instance.
 		*\param[in] connection
 		*	La connection à l'application.
 		*/
-		Device( Renderer const & renderer
-			, ashes::ConnectionPtr && connection );
+		Device( Instance const & instance
+			, ashes::ConnectionPtr connection
+			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
+			, ashes::StringArray enabledLayers
+			, ashes::StringArray enabledExtensions
+			, ashes::PhysicalDeviceFeatures enabledFeatures );
 		/**
 		*\brief
 		*	Destructeur.
@@ -51,7 +56,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	ashes::Device::createDescriptorSetLayout
 		*/
-		ashes::DescriptorSetLayoutPtr createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray && bindings )const override;
+		ashes::DescriptorSetLayoutPtr createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const override;
 		/**
 		*\copydoc	ashes::Device::createDescriptorPool
 		*/
@@ -99,7 +104,8 @@ namespace vk_renderer
 		/**
 		*\copydoc	ashes::Device::createSwapChain
 		*/
-		ashes::SwapChainPtr createSwapChain( ashes::Extent2D const & size )const override;
+		ashes::SwapChainPtr createSwapChain( ashes::CommandPool const & commandPool
+			, ashes::Extent2D const & size )const override;
 		/**
 		*\copydoc	ashes::Device::createSemaphore
 		*/
@@ -131,6 +137,11 @@ namespace vk_renderer
 		*\copydoc	ashes::Device::debugMarkerSetObjectName
 		*/
 		void debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const override;
+		/**
+		*\copydoc	ashes::Device::getQueue
+		*/
+		ashes::QueuePtr getQueue( uint32_t familyIndex
+			, uint32_t index )const override;
 		/**
 		*\brief
 		*	Attend que le périphérique soit inactif.
@@ -178,9 +189,9 @@ namespace vk_renderer
 		*\return
 		*	The rendering API.
 		*/
-		inline Renderer const & getRenderer()const
+		inline Instance const & getInstance()const
 		{
-			return m_renderer;
+			return m_instance;
 		}
 		/**
 		*\~french
@@ -231,10 +242,14 @@ namespace vk_renderer
 #	include "Miscellaneous/VulkanFunctionsList.inl"
 
 	private:
-		Renderer const & m_renderer;
+		void doCreateQueues();
+
+	private:
+		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
 		ConnectionPtr m_connection;
 		VkPhysicalDeviceFeatures m_enabledFeatures;
 		VkDevice m_device{ VK_NULL_HANDLE };
+		std::map< uint32_t, ashes::DeviceQueueCreateInfo > m_queues;
 	};
 }

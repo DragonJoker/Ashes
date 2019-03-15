@@ -1,4 +1,4 @@
-#include "Core/D3D11Renderer.hpp"
+#include "Core/D3D11Instance.hpp"
 
 #include "Core/D3D11Connection.hpp"
 #include "Core/D3D11Device.hpp"
@@ -11,8 +11,8 @@
 
 namespace d3d11_renderer
 {
-	Renderer::Renderer( Configuration const & configuration )
-		: ashes::Renderer{ ashes::ClipDirection::eTopDown, "d3d11", configuration }
+	Instance::Instance( Configuration const & configuration )
+		: ashes::Instance{ ashes::ClipDirection::eTopDown, "d3d11", configuration }
 	{
 		doCreateDXGIFactory();
 		auto featureLevel = doLoadAdapters();
@@ -25,18 +25,27 @@ namespace d3d11_renderer
 		m_features.supportsPersistentMapping = false;
 	}
 
-	Renderer::~Renderer()
+	Instance::~Instance()
 	{
 		safeRelease( m_factory );
 	}
 
-	ashes::DevicePtr Renderer::createDevice( ashes::ConnectionPtr && connection )const
+	ashes::DevicePtr Instance::createDevice( ashes::ConnectionPtr connection
+		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
+		, ashes::StringArray enabledLayers
+		, ashes::StringArray enabledExtensions
+		, ashes::PhysicalDeviceFeatures enabledFeatures )const
 	{
 		ashes::DevicePtr result;
 
 		try
 		{
-			result = std::make_shared< Device >( *this, std::move( connection ) );
+			result = std::make_shared< Device >( *this
+				, std::move( connection )
+				, std::move( queueCreateInfos )
+				, std::move( enabledLayers )
+				, std::move( enabledExtensions )
+				, std::move( enabledFeatures ) );
 		}
 		catch ( std::exception & exc )
 		{
@@ -46,15 +55,15 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	ashes::ConnectionPtr Renderer::createConnection( uint32_t deviceIndex
-		, ashes::WindowHandle && handle )const
+	ashes::ConnectionPtr Instance::createConnection( ashes::PhysicalDevice const & gpu
+		, ashes::WindowHandle handle )const
 	{
 		return std::make_unique< Connection >( *this
-			, deviceIndex
+			, gpu
 			, std::move( handle ) );
 	}
 
-	std::array< float, 16 > Renderer::frustum( float left
+	std::array< float, 16 > Instance::frustum( float left
 		, float right
 		, float bottom
 		, float top
@@ -73,7 +82,7 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	std::array< float, 16 > Renderer::perspective( float radiansFovY
+	std::array< float, 16 > Instance::perspective( float radiansFovY
 		, float aspect
 		, float zNear
 		, float zFar )const
@@ -101,7 +110,7 @@ namespace d3d11_renderer
 		//return result;
 	}
 
-	std::array< float, 16 > Renderer::ortho( float left
+	std::array< float, 16 > Instance::ortho( float left
 		, float right
 		, float bottom
 		, float top
@@ -120,7 +129,7 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	void Renderer::doCreateDXGIFactory()
+	void Instance::doCreateDXGIFactory()
 	{
 		HRESULT hr = CreateDXGIFactory( __uuidof( IDXGIFactory )
 			, reinterpret_cast< void ** >( &m_factory ) );
@@ -131,7 +140,7 @@ namespace d3d11_renderer
 		}
 	}
 
-	D3D_FEATURE_LEVEL Renderer::doLoadAdapters()
+	D3D_FEATURE_LEVEL Instance::doLoadAdapters()
 	{
 		UINT index = 0;
 		IDXGIAdapter * adapter;

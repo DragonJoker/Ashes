@@ -170,7 +170,8 @@ namespace vkapp
 
 		ashes::VertexBufferPtr< common::TexturedVertexData > doCreateVertexBuffer( ashes::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::CommandBuffer const & commandBuffer )
+			, ashes::CommandPool const & commandPool
+			, ashes::Queue const & transferQueue )
 		{
 			std::vector< common::TexturedVertexData > vertexData
 			{
@@ -183,7 +184,8 @@ namespace vkapp
 				, uint32_t( vertexData.size() )
 				, ashes::BufferTarget::eTransferDst
 				, ashes::MemoryPropertyFlag::eDeviceLocal );
-			stagingBuffer.uploadVertexData( commandBuffer
+			stagingBuffer.uploadVertexData( transferQueue
+				, commandPool
 				, vertexData
 				, *result );
 			return result;
@@ -203,13 +205,16 @@ namespace vkapp
 	}
 
 	LightingPass::LightingPass( ashes::Device const & device
+		, ashes::CommandPool const & commandPool
+		, ashes::Queue const & transferQueue
 		, ashes::UniformBuffer< common::LightsData > const & lightsUbo
 		, ashes::StagingBuffer & stagingBuffer
 		, ashes::TextureViewCRefArray const & views )
 		: m_device{ device }
+		, m_commandPool{ commandPool }
+		, m_transferQueue{ transferQueue }
 		, m_lightsUbo{ lightsUbo }
-		, m_updateCommandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
-		, m_commandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
+		, m_commandBuffer{ commandPool.createCommandBuffer() }
 		, m_sceneUbo{ ashes::makeUniformBuffer< common::SceneData >( device, 1u, ashes::BufferTarget::eTransferDst, ashes::MemoryPropertyFlag::eDeviceLocal ) }
 		, m_gbufferDescriptorLayout{ doCreateGBufferDescriptorLayout( m_device ) }
 		, m_gbufferDescriptorPool{ m_gbufferDescriptorLayout->createPool( 1u, false ) }
@@ -222,7 +227,7 @@ namespace vkapp
 			, ashes::WrapMode::eClampToEdge
 			, ashes::Filter::eNearest
 			, ashes::Filter::eNearest ) }
-		, m_vertexBuffer{ doCreateVertexBuffer( m_device, stagingBuffer, *m_updateCommandBuffer ) }
+		, m_vertexBuffer{ doCreateVertexBuffer( m_device, stagingBuffer, commandPool, transferQueue ) }
 		, m_vertexLayout{ doCreateVertexLayout( m_device ) }
 		, m_pipelineLayout{ m_device.createPipelineLayout( { *m_gbufferDescriptorLayout, *m_uboDescriptorLayout } ) }
 		, m_pipeline{ m_pipelineLayout->createPipeline( 
@@ -252,7 +257,8 @@ namespace vkapp
 		m_colourView = &views[1].get();
 
 		m_sceneUbo->getData( 0u ).mtxProjection = utils::inverse( sceneData.mtxProjection );
-		stagingBuffer.uploadUniformData( *m_updateCommandBuffer
+		stagingBuffer.uploadUniformData( m_transferQueue
+			, m_commandPool
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo
 			, ashes::PipelineStageFlag::eFragmentShader );
@@ -317,9 +323,10 @@ namespace vkapp
 		commandBuffer.end();
 	}
 
-	void LightingPass::draw( std::chrono::nanoseconds & gpu )const
+	void LightingPass::draw( ashes::Queue const & queue
+		, std::chrono::nanoseconds & gpu )const
 	{
-		m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
+		queue.submit( *m_commandBuffer, nullptr );
 
 		ashes::UInt64Array values{ 0u, 0u };
 		m_queryPool->getResults( 0u

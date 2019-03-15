@@ -84,7 +84,8 @@ namespace gl_renderer
 	class Pipeline;
 	class PipelineLayout;
 	class QueryPool;
-	class Renderer;
+	class Queue;
+	class Instance;
 	class RenderPass;
 	class ShaderModule;
 	class ShaderProgram;
@@ -94,6 +95,7 @@ namespace gl_renderer
 	using ContextPtr = std::unique_ptr< Context >;
 	using CommandPtr = std::unique_ptr< CommandBase >;
 	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
+	using QueuePtr = std::unique_ptr< Queue >;
 	using TextureViewPtr = std::unique_ptr< TextureView >;
 
 	using GeometryBuffersRef = std::reference_wrapper< GeometryBuffers >;

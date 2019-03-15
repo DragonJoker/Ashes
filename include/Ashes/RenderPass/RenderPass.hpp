@@ -78,7 +78,7 @@ namespace ashes
 		*	The created frame buffer.
 		*/
 		virtual FrameBufferPtr createFrameBuffer( Extent2D const & dimensions
-			, FrameBufferAttachmentArray && attaches )const = 0;
+			, FrameBufferAttachmentArray attaches )const = 0;
 		/**
 		*\~english
 		*name

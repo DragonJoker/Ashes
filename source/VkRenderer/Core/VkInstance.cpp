@@ -1,4 +1,4 @@
-#include "Core/VkRenderer.hpp"
+#include "Core/VkInstance.hpp"
 
 #include "Core/VkConnection.hpp"
 #include "Core/VkDevice.hpp"
@@ -11,22 +11,42 @@
 
 namespace vk_renderer
 {
-#if ASHES_WIN32
-	static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
-#elif ASHES_XCB
-	static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
-#elif ASHES_XLIB
-	static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
-#elif ASHES_ANDROID
-	static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
-#elif ASHES_MIR
-	static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_MIR_SURFACE_EXTENSION_NAME;
-#elif ASHES_WAYLAND
-	static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
-#endif
+	namespace
+	{
+		char const * convert( std::string const & value )
+		{
+			return value.c_str();
+		}
 
-	Renderer::Renderer( Configuration const & configuration )
-		: ashes::Renderer{ ashes::ClipDirection::eTopDown, "vk", configuration }
+		std::vector< char const * > convert( ashes::StringArray const & values )
+		{
+			std::vector< char const * > result;
+
+			for ( auto & value : values )
+			{
+				result.push_back( convert( value ) );
+			}
+
+			return result;
+		}
+
+#if ASHES_WIN32
+		static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
+#elif ASHES_XCB
+		static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
+#elif ASHES_XLIB
+		static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
+#elif ASHES_ANDROID
+		static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
+#elif ASHES_MIR
+		static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_MIR_SURFACE_EXTENSION_NAME;
+#elif ASHES_WAYLAND
+		static char const * const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
+#endif
+	}
+
+	Instance::Instance( Configuration const & configuration )
+		: ashes::Instance{ ashes::ClipDirection::eTopDown, "vk", configuration }
 #if defined( _WIN32 )
 		, m_library{ "vulkan-1.dll" }
 #elif defined( __linux__ )
@@ -57,29 +77,38 @@ namespace vk_renderer
 		doEnumerateDevices();
 	}
 
-	Renderer::~Renderer()
+	Instance::~Instance()
 	{
 		if ( m_instance != VK_NULL_HANDLE )
 		{
 			cleanupDebugging( m_instance, *this, m_msgCallback );
 			m_layers.clear();
-			m_instanceExtensionNames.clear();
-			m_instanceLayerNames.clear();
+			m_extensionNames.clear();
+			m_layerNames.clear();
 			m_gpus.clear();
 			vkDestroyInstance( m_instance, nullptr );
 			m_instance = VK_NULL_HANDLE;
 		}
 
-		DEBUG_WRITE( "VkRenderer.log" );
+		DEBUG_WRITE( "VkInstance.log" );
 	}
 
-	ashes::DevicePtr Renderer::createDevice( ashes::ConnectionPtr && connection )const
+	ashes::DevicePtr Instance::createDevice( ashes::ConnectionPtr connection
+		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
+		, ashes::StringArray enabledLayers
+		, ashes::StringArray enabledExtensions
+		, ashes::PhysicalDeviceFeatures enabledFeatures )const
 	{
 		ashes::DevicePtr result;
 
 		try
 		{
-			result = std::make_shared< Device >( *this, std::move( connection ) );
+			result = std::make_shared< Device >( *this
+				, std::move( connection )
+				, std::move( queueCreateInfos )
+				, std::move( enabledLayers )
+				, std::move( enabledExtensions )
+				, std::move( enabledFeatures ) );
 		}
 		catch ( std::exception & exc )
 		{
@@ -89,15 +118,15 @@ namespace vk_renderer
 		return result;
 	}
 
-	ashes::ConnectionPtr Renderer::createConnection( uint32_t deviceIndex
-		, ashes::WindowHandle && handle )const
+	ashes::ConnectionPtr Instance::createConnection( ashes::PhysicalDevice const & gpu
+		, ashes::WindowHandle handle )const
 	{
 		return std::make_unique< Connection >( *this
-			, deviceIndex
+			, gpu
 			, std::move( handle ) );
 	}
 
-	std::array< float, 16 > Renderer::frustum( float left
+	std::array< float, 16 > Instance::frustum( float left
 		, float right
 		, float bottom
 		, float top
@@ -116,7 +145,7 @@ namespace vk_renderer
 		return result;
 	}
 
-	std::array< float, 16 > Renderer::perspective( float radiansFovY
+	std::array< float, 16 > Instance::perspective( float radiansFovY
 		, float aspect
 		, float zNear
 		, float zFar )const
@@ -133,7 +162,7 @@ namespace vk_renderer
 		return result;
 	}
 
-	std::array< float, 16 > Renderer::ortho( float left
+	std::array< float, 16 > Instance::ortho( float left
 		, float right
 		, float bottom
 		, float top
@@ -152,7 +181,7 @@ namespace vk_renderer
 		return result;
 	}
 
-	void Renderer::completeLayerNames( std::vector< char const * > & names )const
+	void Instance::completeLayerNames( ashes::StringArray & names )const
 	{
 		for ( auto const & props : m_layers )
 		{
@@ -162,7 +191,7 @@ namespace vk_renderer
 		}
 	}
 
-	void Renderer::doInitLayersProperties()
+	void Instance::doInitLayersProperties()
 	{
 		VkResult res{ VK_SUCCESS };
 		std::vector< VkLayerProperties > vkProperties;
@@ -208,7 +237,7 @@ namespace vk_renderer
 		checkError( res, "Layer properties retrieval" );
 	}
 
-	void Renderer::doInitLayerExtensionProperties( ashes::LayerProperties & layerProps )
+	void Instance::doInitLayerExtensionProperties( ashes::LayerProperties & layerProps )
 	{
 		VkResult res{ VK_SUCCESS };
 
@@ -236,13 +265,13 @@ namespace vk_renderer
 		checkError( res, "Extensions properties retrieval" );
 	}
 
-	void Renderer::doInitInstance()
+	void Instance::doInitInstance()
 	{
-		completeLayerNames( m_instanceLayerNames );
-		m_instanceExtensionNames.push_back( VK_KHR_SURFACE_EXTENSION_NAME );
-		m_instanceExtensionNames.push_back( VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME );
-		addOptionalDebugReportLayer( m_instanceExtensionNames );
-		checkExtensionsAvailability( m_globalLayer.extensions, m_instanceExtensionNames );
+		completeLayerNames( m_layerNames );
+		m_extensionNames.push_back( VK_KHR_SURFACE_EXTENSION_NAME );
+		m_extensionNames.push_back( VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME );
+		addOptionalDebugReportLayer( m_extensionNames );
+		checkExtensionsAvailability( m_globalLayer.extensions, m_extensionNames );
 		uint32_t instanceVersion = VulkanVersion;
 
 		if ( vkEnumerateInstanceVersion )
@@ -265,16 +294,19 @@ namespace vk_renderer
 			VulkanVersion                                                   // apiVersion
 		};
 
+		auto vkLayers = convert( m_layerNames );
+		auto vkExtensions = convert( m_extensionNames );
+
 		VkInstanceCreateInfo instInfo
 		{
 			VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
 			nullptr,
-			0,                                                                             // flags
-			&appInfo,                                                                      // pApplicationInfo
-			static_cast< uint32_t >( m_instanceLayerNames.size() ),                        // enabledLayerCount
-			m_instanceLayerNames.empty() ? nullptr : m_instanceLayerNames.data(),          // ppEnabledLayerNames
-			static_cast< uint32_t >( m_instanceExtensionNames.size() ),                    // enabledExtensionCount
-			m_instanceExtensionNames.empty() ? nullptr : m_instanceExtensionNames.data(),  // ppEnabledExtensionNames
+			0,                                                     // flags
+			&appInfo,                                              // pApplicationInfo
+			static_cast< uint32_t >( vkLayers.size() ),            // enabledLayerCount
+			vkLayers.empty() ? nullptr : vkLayers.data(),          // ppEnabledLayerNames
+			static_cast< uint32_t >( vkExtensions.size() ),        // enabledExtensionCount
+			vkExtensions.empty() ? nullptr : vkExtensions.data(),  // ppEnabledExtensionNames
 		};
 		DEBUG_DUMP( instInfo );
 
@@ -289,7 +321,7 @@ namespace vk_renderer
 			, m_msgCallback );
 	}
 
-	void Renderer::doEnumerateDevices()
+	void Instance::doEnumerateDevices()
 	{
 		// On récupère les GPU physiques.
 		uint32_t gpuCount{ 0u };
@@ -317,7 +349,7 @@ namespace vk_renderer
 		}
 	}
 
-	PFN_vkVoidFunction Renderer::getInstanceProcAddr( char const * const name )
+	PFN_vkVoidFunction Instance::getInstanceProcAddr( char const * const name )
 	{
 		auto result = GetInstanceProcAddr( m_instance, name );
 

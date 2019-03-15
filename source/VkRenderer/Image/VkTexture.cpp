@@ -4,7 +4,7 @@
 #include "Command/VkQueue.hpp"
 #include "Core/VkDevice.hpp"
 #include "Core/VkPhysicalDevice.hpp"
-#include "Core/VkRenderer.hpp"
+#include "Core/VkInstance.hpp"
 #include "Sync/VkImageMemoryBarrier.hpp"
 #include "Image/VkImageSubresourceRange.hpp"
 #include "Miscellaneous/VkDeviceMemory.hpp"
@@ -40,7 +40,7 @@ namespace vk_renderer
 			for ( ashes::Format format : candidates )
 			{
 				VkFormatProperties props;
-				device.getRenderer().vkGetPhysicalDeviceFormatProperties( physicalDevice
+				device.getInstance().vkGetPhysicalDeviceFormatProperties( physicalDevice
 					, convert( format )
 					, &props );
 

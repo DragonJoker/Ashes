@@ -1,6 +1,6 @@
 /**
 *\file
-*	Renderer.h
+*	Instance.h
 *\author
 *	Sylvain Doremus
 */

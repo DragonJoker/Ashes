@@ -21,7 +21,7 @@ namespace d3d11_renderer
 	public:
 		ComputePipeline( Device const & device
 			, ashes::PipelineLayout const & layout
-			, ashes::ComputePipelineCreateInfo && createInfo );
+			, ashes::ComputePipelineCreateInfo createInfo );
 		PushConstantsBuffer findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
 
 		inline CompiledShaderModule const & getProgram()const

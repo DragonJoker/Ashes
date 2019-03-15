@@ -61,6 +61,7 @@
 #include "Enum/VkDepthStencilStateFlag.hpp"
 #include "Enum/VkDescriptorPoolCreateFlag.hpp"
 #include "Enum/VkDescriptorType.hpp"
+#include "Enum/VkDeviceQueueCreateFlag.hpp"
 #include "Enum/VkDynamicStateEnable.hpp"
 #include "Enum/VkDynamicStateFlag.hpp"
 #include "Enum/VkFormat.hpp"
@@ -132,6 +133,7 @@
 #include "Miscellaneous/VkOffset3D.hpp"
 #include "Miscellaneous/VkPhysicalDeviceFeatures.hpp"
 #include "Miscellaneous/VkPushConstantRange.hpp"
+#include "Miscellaneous/VkQueueCreateInfo.hpp"
 #include "Miscellaneous/VkRect2D.hpp"
 #include "Miscellaneous/VkSurfaceCapabilities.hpp"
 #include "Miscellaneous/VkSurfaceFormat.hpp"
@@ -207,7 +209,7 @@ namespace vk_renderer
 	class PhysicalDevice;
 	class QueryPool;
 	class Queue;
-	class Renderer;
+	class Instance;
 	class RenderPass;
 	class RenderSubpass;
 	class Sampler;
@@ -277,7 +279,7 @@ namespace vk_renderer
 	*	The requested extensions list.
 	*/
 	void checkExtensionsAvailability( std::vector< ashes::ExtensionProperties > const & supported
-		, std::vector< char const * > const & requested );
+		, ashes::StringArray const & requested );
 	/**
 	*\~french
 	*\brief
@@ -412,16 +414,16 @@ namespace vk_renderer
 	}
 	/**
 	*\brief
-	*	Convertit un tableau de RendererType en tableau de VkType.
+	*	Convertit un tableau de InstanceType en tableau de VkType.
 	*\remarks
-	*	Un prérequis à cette fonction est que la fonction VkType convert( RendererType ) existe.
+	*	Un prérequis à cette fonction est que la fonction VkType convert( InstanceType ) existe.
 	*\param[in] values
-	*	Le tableau de RendererType.
+	*	Le tableau de InstanceType.
 	*\return
 	*	Le tableau de VkType.
 	*/
-	template< typename VkType, typename RendererType >
-	std::vector< VkType > convert( std::vector< RendererType > const & values )
+	template< typename VkType, typename InstanceType >
+	std::vector< VkType > convert( std::vector< InstanceType > const & values )
 	{
 		std::vector< VkType > result;
 		result.reserve( values.size() );
@@ -435,11 +437,11 @@ namespace vk_renderer
 	}
 	/**
 	*\brief
-	*	Convertit un tableau de RendererType en tableau de VkType.
+	*	Convertit un tableau de InstanceType en tableau de VkType.
 	*\remarks
-	*	Un prérequis à cette fonction est que la fonction VkType convert( RendererType ) existe.
+	*	Un prérequis à cette fonction est que la fonction VkType convert( InstanceType ) existe.
 	*\param[in] values
-	*	Le tableau de RendererType.
+	*	Le tableau de InstanceType.
 	*\return
 	*	Le tableau de VkType.
 	*/
@@ -458,11 +460,11 @@ namespace vk_renderer
 	}
 	/**
 	*\brief
-	*	Convertit un tableau de RendererType en tableau de VkType.
+	*	Convertit un tableau de InstanceType en tableau de VkType.
 	*\remarks
-	*	Un prérequis à cette fonction est que la fonction VkType convert( RendererType ) existe.
+	*	Un prérequis à cette fonction est que la fonction VkType convert( InstanceType ) existe.
 	*\param[in] values
-	*	Le tableau de RendererType.
+	*	Le tableau de InstanceType.
 	*\return
 	*	Le tableau de VkType.
 	*/

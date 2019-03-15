@@ -1,4 +1,4 @@
-#include "Core/GlRenderer.hpp"
+#include "Core/GlInstance.hpp"
 
 #include "Core/GlConnection.hpp"
 #include "Core/GlContext.hpp"
@@ -252,7 +252,7 @@ namespace gl_renderer
 
 					if ( !m_glxContext )
 					{
-						throw std::runtime_error{ "Could not create a rendering context->" };
+						throw std::runtime_error{ "Could not create a rendering context." };
 					}
 
 					glXMakeCurrent( m_display, m_xWindow, m_glxContext );
@@ -297,7 +297,7 @@ namespace gl_renderer
 
 				if ( m_display )
 				{
-					//XCloseDisplay( m_display );
+					XCloseDisplay( m_display );
 				}
 			}
 
@@ -313,27 +313,30 @@ namespace gl_renderer
 #endif
 	}
 
-	Renderer::Renderer( Configuration const & configuration )
-		: ashes::Renderer{ ashes::ClipDirection::eBottomUp, "gl3", configuration }
+	Instance::Instance( Configuration const & configuration )
+		: ashes::Instance{ ashes::ClipDirection::eBottomUp, "gl4", configuration }
 	{
 		RenderWindow dummyWindow;
 		m_gpus.push_back( std::make_unique< PhysicalDevice >( *this ) );
 		m_apiVersion = m_gpus[0]->getProperties().apiVersion;
 		auto & gpu = static_cast< PhysicalDevice const & >( *m_gpus.back() );
-		m_features.hasTexBufferRange = false;
-		m_features.hasImageTexture = false;
-		m_features.hasBaseInstance = false;
-		m_features.hasClearTexImage = false;
-		m_features.hasComputeShaders = false;
-		m_features.hasStorageBuffers = false;
-		m_features.supportsPersistentMapping = false;
+		m_features.hasTexBufferRange = gpu.find( "GL_ARB_texture_buffer_range" );
+		m_features.hasImageTexture = gpu.find( "GL_ARB_shader_image_load_store" );
+		m_features.hasBaseInstance = gpu.find( "GL_ARB_base_instance" );
+		m_features.hasClearTexImage = gpu.find( "GL_ARB_clear_texture" );
+		m_features.hasComputeShaders = gpu.find( "GL_ARB_compute_shader" );
+		m_features.supportsPersistentMapping = gpu.find( "GL_ARB_buffer_storage" );
 		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...
 		m_spirvSupported = false
 			&& ( gpu.find( "GL_ARB_gl_spirv" )
-			|| gpu.hasSPIRVShaderBinaryFormat() );
+				|| gpu.hasSPIRVShaderBinaryFormat() );
 	}
 
-	ashes::DevicePtr Renderer::createDevice( ashes::ConnectionPtr && connection )const
+	ashes::DevicePtr Instance::createDevice( ashes::ConnectionPtr connection
+			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
+			, ashes::StringArray enabledLayers
+			, ashes::StringArray enabledExtensions
+			, ashes::PhysicalDeviceFeatures enabledFeatures )const
 	{
 		ashes::DevicePtr result;
 
@@ -341,7 +344,11 @@ namespace gl_renderer
 		{
 			result = std::make_shared< Device >( *this
 				, static_cast< PhysicalDevice const & >( connection->getGpu() )
-				, std::move( connection ) );
+				, std::move( connection )
+				, std::move( queueCreateInfos )
+				, std::move( enabledLayers )
+				, std::move( enabledExtensions )
+				, std::move( enabledFeatures ) );
 		}
 		catch ( std::exception & exc )
 		{
@@ -351,15 +358,15 @@ namespace gl_renderer
 		return result;
 	}
 
-	ashes::ConnectionPtr Renderer::createConnection( uint32_t deviceIndex
-		, ashes::WindowHandle && handle )const
+	ashes::ConnectionPtr Instance::createConnection( ashes::PhysicalDevice const & gpu
+		, ashes::WindowHandle handle )const
 	{
 		return std::make_unique< Connection >( *this
-			, deviceIndex
+			, gpu
 			, std::move( handle ) );
 	}
 
-	std::array< float, 16 > Renderer::frustum( float left
+	std::array< float, 16 > Instance::frustum( float left
 		, float right
 		, float bottom
 		, float top
@@ -379,7 +386,7 @@ namespace gl_renderer
 		return result;
 	}
 
-	std::array< float, 16 > Renderer::perspective( float radiansFovY
+	std::array< float, 16 > Instance::perspective( float radiansFovY
 		, float aspect
 		, float zNear
 		, float zFar )const
@@ -396,7 +403,7 @@ namespace gl_renderer
 		return result;
 	}
 
-	std::array< float, 16 > Renderer::ortho( float left
+	std::array< float, 16 > Instance::ortho( float left
 		, float right
 		, float bottom
 		, float top

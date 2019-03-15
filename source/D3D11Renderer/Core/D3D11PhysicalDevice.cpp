@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Core/D3D11PhysicalDevice.hpp"
 
-#include "Core/D3D11Renderer.hpp"
+#include "Core/D3D11Instance.hpp"
 #include "Core/D3D11Device.hpp"
 
 namespace d3d11_renderer
@@ -42,12 +42,12 @@ namespace d3d11_renderer
 		}
 	}
 
-	PhysicalDevice::PhysicalDevice( Renderer & renderer
+	PhysicalDevice::PhysicalDevice( Instance & instance
 		, IDXGIAdapter * adapter
 		, IDXGIAdapter1 * adapter1
 		, IDXGIAdapter2 * adapter2 )
-		: ashes::PhysicalDevice{ renderer }
-		, m_renderer{ renderer }
+		: ashes::PhysicalDevice{ instance }
+		, m_instance{ instance }
 		, m_adapter{ adapter }
 		, m_adapter1{ adapter1 }
 		, m_adapter2{ adapter2 }
@@ -86,7 +86,7 @@ namespace d3d11_renderer
 			m_output->GetDesc( &desc );
 		}
 
-		m_featureLevel = doGetSupportedFeatureLevel( m_renderer.getDXGIFactory(), m_adapter );
+		m_featureLevel = doGetSupportedFeatureLevel( m_instance.getDXGIFactory(), m_adapter );
 
 		m_properties.deviceType = ashes::PhysicalDeviceType::eDiscreteGpu;
 		m_features.robustBufferAccess = true;

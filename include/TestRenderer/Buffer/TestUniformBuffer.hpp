@@ -4,8 +4,6 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___TestRenderer_UniformBuffer_HPP___
-#define ___TestRenderer_UniformBuffer_HPP___
 #pragma once
 
 #include "TestRendererPrerequisites.hpp"
@@ -41,5 +39,3 @@ namespace test_renderer
 		uint32_t getAlignedSize( uint32_t size )const override;
 	};
 }
-
-#endif

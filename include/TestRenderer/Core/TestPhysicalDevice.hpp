@@ -38,13 +38,13 @@ namespace test_renderer
 		*\param[in] gpu
 		*	The Vulkan physical GPU.
 		*/
-		PhysicalDevice( Renderer & renderer );
+		PhysicalDevice( Instance & instance );
 		/**
 		*\copydoc	ashes::PhysicalDevice::initialise
 		*/
 		void initialise()override;
 
 	private:
-		Renderer & m_renderer;
+		Instance & m_instance;
 	};
 }

@@ -23,13 +23,16 @@ namespace common
 	{
 	public:
 		NodesRenderer( ashes::Device const & device
+			, ashes::CommandPool const & commandPool
+			, ashes::Queue const & transferQueue
 			, std::string const & fragmentShaderFile
 			, std::vector< ashes::Format > const & formats
 			, bool clearViews
 			, bool opaqueNodes );
 		virtual ~NodesRenderer() = default;
 		virtual void update( RenderTarget const & target );
-		void draw( std::chrono::nanoseconds & gpu )const;
+		void draw( ashes::Queue const & queue
+			, std::chrono::nanoseconds & gpu )const;
 		void initialise( Scene const & scene
 			, ashes::StagingBuffer & stagingBuffer
 			, ashes::TextureViewCRefArray const & views
@@ -38,6 +41,16 @@ namespace common
 		inline ashes::Device const & getDevice()const
 		{
 			return m_device;
+		}
+
+		inline ashes::CommandPool const & getCommandPool()const
+		{
+			return m_commandPool;
+		}
+
+		inline ashes::Queue const & getTransferQueue()const
+		{
+			return m_transferQueue;
 		}
 
 	protected:
@@ -73,12 +86,13 @@ namespace common
 
 	protected:
 		ashes::Device const & m_device;
+		ashes::CommandPool const & m_commandPool;
+		ashes::Queue const & m_transferQueue;
 		bool m_opaqueNodes;
 		ashes::Extent2D m_size;
 		std::string m_fragmentShaderFile;
 		std::vector< ashes::TextureView const * > m_views;
 		ashes::SamplerPtr m_sampler;
-		ashes::CommandBufferPtr m_updateCommandBuffer;
 		ashes::CommandBufferPtr m_commandBuffer;
 		ashes::UniformBufferPtr< MaterialData > m_materialsUbo;
 

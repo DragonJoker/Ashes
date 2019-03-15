@@ -15,7 +15,8 @@ namespace d3d11_renderer
 	{
 	public:
 		Queue( Device const & device
-			, uint32_t familyIndex );
+			, ashes::DeviceQueueCreateInfo createInfo
+			, uint32_t index );
 		~Queue();
 		/**
 		*\copydoc		ashes::Queue::submit
@@ -36,18 +37,9 @@ namespace d3d11_renderer
 		*\copydoc		ashes::Queue::waitIdle
 		*/
 		void waitIdle()const override;
-		/**
-		/**
-		*\copydoc		ashes::Queue::getFamilyIndex
-		*/
-		inline uint32_t getFamilyIndex()const override
-		{
-			return m_familyIndex;
-		}
 
 	private:
 		Device const & m_device;
-		uint32_t m_familyIndex{ 0u };
 		ID3D11Query * m_waitIdleQuery{ nullptr };
 	};
 }

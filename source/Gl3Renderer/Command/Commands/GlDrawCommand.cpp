@@ -1,11 +1,11 @@
 /*
-This file belongs to GlRenderer.
+This file belongs to GlInstance.
 See LICENSE file in root folder.
 */
 #include "Command/Commands/GlDrawCommand.hpp"
 
 #include "Core/GlDevice.hpp"
-#include "Core/GlRenderer.hpp"
+#include "Core/GlInstance.hpp"
 
 namespace gl_renderer
 {
@@ -23,7 +23,7 @@ namespace gl_renderer
 		, m_mode{ convert( mode ) }
 	{
 		if ( m_firstInstance > 0
-			&& !m_device.getRenderer().getFeatures().hasBaseInstance )
+			&& !m_device.getInstance().getFeatures().hasBaseInstance )
 		{
 			throw std::runtime_error( "Base instance rendering is not supported" );
 		}
@@ -34,7 +34,7 @@ namespace gl_renderer
 		assert( m_instCount >= 1 );
 		glLogCommand( "DrawCommand" );
 
-		if ( m_device.getRenderer().getFeatures().hasBaseInstance )
+		if ( m_device.getInstance().getFeatures().hasBaseInstance )
 		{
 			glLogCall( context
 				, glDrawArraysInstancedBaseInstance_ARB

@@ -30,7 +30,7 @@ namespace d3d11_renderer
 		*	L'index de l'image, parmi les images de la swap chain.
 		*/
 		BackBuffer( Device const & device
-			, ashes::TexturePtr && image
+			, ashes::TexturePtr image
 			, uint32_t imageIndex
 			, ashes::Format format
 			, Texture const & imageRef );

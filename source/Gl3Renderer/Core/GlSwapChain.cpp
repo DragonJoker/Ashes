@@ -16,12 +16,13 @@
 namespace gl_renderer
 {
 	SwapChain::SwapChain( Device const & device
+		, ashes::CommandPool const & commandPool
 		, ashes::Extent2D const & size )
 		: ashes::SwapChain{ device, size }
 		, m_device{ device }
 	{
 		m_format = ashes::Format::eR8G8B8A8_UNORM;
-		m_renderingResources.emplace_back( std::make_unique< ashes::RenderingResources >( device ) );
+		m_renderingResources.emplace_back( std::make_unique< ashes::RenderingResources >( device, commandPool ) );
 		doCreateBackBuffers();
 	}
 
@@ -43,11 +44,11 @@ namespace gl_renderer
 		return result;
 	}
 
-	ashes::CommandBufferPtrArray SwapChain::createCommandBuffers()const
+	ashes::CommandBufferPtrArray SwapChain::createCommandBuffers( ashes::CommandPool const & cmdPool )const
 	{
 		ashes::CommandBufferPtrArray result;
 		result.emplace_back( std::make_unique< CommandBuffer >( m_device
-			, m_device.getGraphicsCommandPool()
+			, cmdPool
 			, true ) );
 		return result;
 	}
@@ -67,7 +68,8 @@ namespace gl_renderer
 		return nullptr;
 	}
 
-	void SwapChain::present( ashes::RenderingResources & resources )
+	void SwapChain::present( ashes::RenderingResources & resources
+		, ashes::Queue const & queue )
 	{
 		static_cast< Device const & >( m_device ).swapBuffers();
 		resources.setBackBuffer( ~0u );

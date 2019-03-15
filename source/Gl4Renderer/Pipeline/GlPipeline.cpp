@@ -3,7 +3,7 @@
 #include "Buffer/GlBuffer.hpp"
 #include "Command/Commands/GlBindPipelineCommand.hpp"
 #include "Core/GlDevice.hpp"
-#include "Core/GlRenderer.hpp"
+#include "Core/GlInstance.hpp"
 #include "Miscellaneous/GlValidator.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlRenderPass.hpp"
@@ -94,7 +94,7 @@ namespace gl_renderer
 
 	Pipeline::Pipeline( Device const & device
 		, PipelineLayout const & layout
-		, ashes::GraphicsPipelineCreateInfo && createInfo )
+		, ashes::GraphicsPipelineCreateInfo createInfo )
 		: ashes::Pipeline{ device
 			, layout
 			, std::move( createInfo ) }
@@ -157,7 +157,7 @@ namespace gl_renderer
 
 		m_constantsPcb.size = offset;
 
-		if ( m_device.getRenderer().isValidationEnabled() )
+		if ( m_device.getInstance().isValidationEnabled() )
 		{
 			validatePipeline( context
 				, m_layout

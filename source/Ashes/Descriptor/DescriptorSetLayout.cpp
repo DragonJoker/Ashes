@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Ashes/Core/Device.hpp"
 #include "Ashes/Core/Exception.hpp"
-#include "Ashes/Core/Renderer.hpp"
+#include "Ashes/Core/Instance.hpp"
 #include "Ashes/Descriptor/DescriptorSetPool.hpp"
 
 #include <algorithm>
@@ -14,20 +14,20 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	DescriptorSetLayout::DescriptorSetLayout( Device const & device
-		, DescriptorSetLayoutBindingArray && bindings )
+		, DescriptorSetLayoutBindingArray bindings )
 		: m_device{ device }
 		, m_bindings{ std::move( bindings ) }
 	{
 		auto it = std::find_if( m_bindings.begin()
 			, m_bindings.end()
-			, []( DescriptorSetLayoutBinding const & binding )
+			, []( DescriptorSetLayoutBinding const & lookup )
 			{
-				return binding.getDescriptorType() == DescriptorType::eStorageImage
-					|| binding.getDescriptorType() == DescriptorType::eStorageTexelBuffer;
+				return lookup.getDescriptorType() == DescriptorType::eStorageImage
+					|| lookup.getDescriptorType() == DescriptorType::eStorageTexelBuffer;
 			} );
 
 		if ( it != m_bindings.end()
-			&& !device.getRenderer().getFeatures().hasImageTexture )
+			&& !device.getInstance().getFeatures().hasImageTexture )
 		{
 			throw Exception{ Result::eErrorFeatureNotPresent, "Image storage" };
 		}

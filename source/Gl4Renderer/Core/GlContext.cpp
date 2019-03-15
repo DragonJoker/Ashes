@@ -1,7 +1,6 @@
 #include "Core/GlContext.hpp"
 
 #include "Core/GlPhysicalDevice.hpp"
-#include "Core/GlRenderer.hpp"
 
 #if ASHES_WIN32
 #	include "Core/GlMswContext.hpp"

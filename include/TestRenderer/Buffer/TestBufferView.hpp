@@ -4,8 +4,6 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___TestRenderer_BufferView_HPP___
-#define ___TestRenderer_BufferView_HPP___
 #pragma once
 
 #include "TestRendererPrerequisites.hpp"
@@ -70,5 +68,3 @@ namespace test_renderer
 		~BufferView();
 	};
 }
-
-#endif

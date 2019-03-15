@@ -46,7 +46,7 @@ namespace common
 
 		try
 		{
-			ashes::Renderer::Configuration config
+			ashes::Instance::Configuration config
 			{
 				m_name.ToStdString(),
 				"Ashes",
@@ -56,11 +56,11 @@ namespace common
 				false,
 #endif
 			};
-			m_renderer = m_factory.create( m_rendererName.ToStdString(), config );
+			m_instance = m_factory.create( m_rendererName.ToStdString(), config );
 
-			std::cout << "Renderer instance created." << std::endl;
-			m_panel = doCreatePanel( WindowSize, *m_renderer );
-			m_panel->initialise( *m_renderer );
+			std::cout << "Instance instance created." << std::endl;
+			m_panel = doCreatePanel( WindowSize, *m_instance );
+			m_panel->initialise( *m_instance );
 
 			Connect( int( Ids::RenderTimer )
 				, wxEVT_TIMER
@@ -93,7 +93,7 @@ namespace common
 			m_panel->Destroy();
 		}
 
-		m_renderer.reset();
+		m_instance.reset();
 	}
 
 	wxBEGIN_EVENT_TABLE( MainFrame, wxFrame )

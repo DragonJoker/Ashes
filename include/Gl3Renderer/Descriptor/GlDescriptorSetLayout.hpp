@@ -19,7 +19,7 @@ namespace gl_renderer
 	{
 	public:
 		DescriptorSetLayout( ashes::Device const & device
-			, ashes::DescriptorSetLayoutBindingArray && bindings );
+			, ashes::DescriptorSetLayoutBindingArray bindings );
 	};
 }
 

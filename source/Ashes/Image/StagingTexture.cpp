@@ -20,6 +20,86 @@ namespace ashes
 	{
 	}
 
+	void StagingTexture::uploadTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, ImageSubresourceLayers const & subresourceLayers
+		, Format format
+		, Offset3D const & offset
+		, Extent2D const & extent
+		, uint8_t const * const data
+		, TextureView const & view )const
+	{
+		auto commandBuffer = commandPool.createCommandBuffer( true );
+		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		uploadTextureData( *commandBuffer
+			, subresourceLayers
+			, format
+			, offset
+			, extent
+			, data
+			, view );
+		auto fence = m_device.createFence();
+		queue.submit( *commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
+	}
+
+	void StagingTexture::uploadTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, Format format
+		, uint8_t const * const data
+		, TextureView const & view )const
+	{
+		auto commandBuffer = commandPool.createCommandBuffer( true );
+		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		uploadTextureData( *commandBuffer
+			, format
+			, data
+			, view );
+		auto fence = m_device.createFence();
+		queue.submit( *commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
+	}
+
+	void StagingTexture::copyTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, Format format
+		, TextureView const & view )const
+	{
+		auto commandBuffer = commandPool.createCommandBuffer( true );
+		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		copyTextureData( *commandBuffer
+			, format
+			, view );
+		auto fence = m_device.createFence();
+		queue.submit( *commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
+	}
+
+	void StagingTexture::copyTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, ImageSubresourceLayers const & subresourceLayers
+		, Format format
+		, Offset3D const & offset
+		, Extent2D const & extent
+		, TextureView const & view )const
+	{
+		auto commandBuffer = commandPool.createCommandBuffer( true );
+		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		copyTextureData( *commandBuffer
+			, subresourceLayers
+			, format
+			, offset
+			, extent
+			, view );
+		auto fence = m_device.createFence();
+		queue.submit( *commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
+	}
+
 	void StagingTexture::uploadTextureData( CommandBuffer const & commandBuffer
 		, ImageSubresourceLayers const & subresourceLayers
 		, Format format
@@ -31,7 +111,6 @@ namespace ashes
 		doCopyToStagingTexture( data
 			, format
 			, extent );
-		commandBuffer.begin( ashes::CommandBufferUsageFlag::eOneTimeSubmit );
 		commandBuffer.memoryBarrier( ashes::PipelineStageFlag::eTopOfPipe
 			, ashes::PipelineStageFlag::eTransfer
 			, view.makeTransferDestination( ashes::ImageLayout::eUndefined
@@ -46,12 +125,6 @@ namespace ashes
 			, ashes::PipelineStageFlag::eFragmentShader
 			, view.makeShaderInputResource( ashes::ImageLayout::eTransferDstOptimal
 				, ashes::AccessFlag::eTransferWrite ) );
-		commandBuffer.end();
-
-		auto fence = m_device.createFence();
-		m_device.getGraphicsQueue().submit( commandBuffer
-			, fence.get() );
-		fence->wait( ashes::FenceTimeout );
 	}
 
 	void StagingTexture::uploadTextureData( CommandBuffer const & commandBuffer
@@ -121,7 +194,8 @@ namespace ashes
 				, ashes::AccessFlag::eTransferWrite ) );
 	}
 
-	void StagingTexture::downloadTextureData( CommandBuffer const & commandBuffer
+	void StagingTexture::downloadTextureData( Queue const & queue
+		, CommandPool const & commandPool
 		, ImageSubresourceLayers const & subresourceLayers
 		, Format format
 		, Offset3D const & offset
@@ -129,25 +203,26 @@ namespace ashes
 		, uint8_t * data
 		, TextureView const & view )const
 	{
-		commandBuffer.begin( ashes::CommandBufferUsageFlag::eOneTimeSubmit );
-		commandBuffer.memoryBarrier( ashes::PipelineStageFlag::eTopOfPipe
+		auto commandBuffer = commandPool.createCommandBuffer( true );
+		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		commandBuffer->memoryBarrier( ashes::PipelineStageFlag::eTopOfPipe
 			, ashes::PipelineStageFlag::eTransfer
 			, view.makeTransferSource( ashes::ImageLayout::eUndefined
 				, 0u ) );
-		doCopyDestinationToStaging( commandBuffer
+		doCopyDestinationToStaging( *commandBuffer
 			, subresourceLayers
 			, format
 			, offset
 			, extent
 			, view );
-		commandBuffer.memoryBarrier( ashes::PipelineStageFlag::eTransfer
+		commandBuffer->memoryBarrier( ashes::PipelineStageFlag::eTransfer
 			, ashes::PipelineStageFlag::eFragmentShader
 			, view.makeShaderInputResource( ashes::ImageLayout::eTransferSrcOptimal
 				, ashes::AccessFlag::eTransferRead ) );
-		commandBuffer.end();
+		commandBuffer->end();
 
 		auto fence = m_device.createFence();
-		m_device.getGraphicsQueue().submit( commandBuffer
+		queue.submit( *commandBuffer
 			, fence.get() );
 		fence->wait( ashes::FenceTimeout );
 
@@ -156,7 +231,8 @@ namespace ashes
 			, extent );
 	}
 
-	void StagingTexture::downloadTextureData( CommandBuffer const & commandBuffer
+	void StagingTexture::downloadTextureData( Queue const & queue
+		, CommandPool const & commandPool
 		, Format format
 		, uint8_t * data
 		, TextureView const & view )const
@@ -165,7 +241,8 @@ namespace ashes
 		auto mipLevel = view.getSubResourceRange().baseMipLevel;
 		extent.width = std::max( 1u, extent.width >> mipLevel );
 		extent.height = std::max( 1u, extent.height >> mipLevel );
-		downloadTextureData( commandBuffer
+		downloadTextureData( queue
+			, commandPool
 			, {
 				getAspectMask( view.getFormat() ),
 				mipLevel,

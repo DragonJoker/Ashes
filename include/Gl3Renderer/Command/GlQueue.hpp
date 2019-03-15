@@ -14,7 +14,9 @@ namespace gl_renderer
 		: public ashes::Queue
 	{
 	public:
-		Queue( Device const & device );
+		Queue( Device const & device
+			, ashes::DeviceQueueCreateInfo createInfo
+			, uint32_t index );
 		/**
 		*\copydoc		ashes::Queue::submit
 		*/
@@ -33,13 +35,6 @@ namespace gl_renderer
 		*\copydoc		ashes::Queue::waitIdle
 		*/
 		void waitIdle()const override;
-		/**
-		*\copydoc		ashes::Queue::getFamilyIndex
-		*/
-		inline uint32_t getFamilyIndex()const override
-		{
-			return 0u;
-		}
 
 	private:
 		Device const & m_device;

@@ -1,21 +1,21 @@
 /**
 *\file
-*	GlCreateRenderer.h
+*	GlCreateInstance.h
 *\author
 *	Sylvain Doremus
 */
 #pragma once
 
-#include <Ashes/Core/Renderer.hpp>
+#include <Ashes/Core/Instance.hpp>
 
-#if defined( _WIN32 ) && !defined( Gl3Renderer_STATIC )
-#	ifdef Gl3Renderer_EXPORTS
-#		define Gl3Renderer_API __declspec( dllexport )
+#if defined( _WIN32 ) && !defined( Gl4Renderer_STATIC )
+#	ifdef Gl4Renderer_EXPORTS
+#		define Gl4Renderer_API __declspec( dllexport )
 #	else
-#		define Gl3Renderer_API __declspec( dllimport )
+#		define Gl4Renderer_API __declspec( dllimport )
 #	endif
 #else
-#	define Gl3Renderer_API
+#	define Gl4Renderer_API
 #endif
 
 extern "C"
@@ -32,7 +32,7 @@ extern "C"
 	*\param[in] configuration
 	*	The creation options.
 	*/
-	Gl3Renderer_API ashes::Renderer * createRenderer( ashes::Renderer::Configuration const & configuration );
+	Gl4Renderer_API ashes::Instance * createInstance( ashes::Instance::Configuration const & configuration );
 	/**
 	*\~french
 	*\return
@@ -41,7 +41,7 @@ extern "C"
 	*\return
 	*	The renderer short name.
 	*/
-	Gl3Renderer_API char const * getShortName();
+	Gl4Renderer_API char const * getShortName();
 	/**
 	*\~french
 	*\return
@@ -50,5 +50,5 @@ extern "C"
 	*\return
 	*	The renderer full name.
 	*/
-	Gl3Renderer_API char const * getFullName();
+	Gl4Renderer_API char const * getFullName();
 }

@@ -53,6 +53,7 @@ See LICENSE file in root folder.
 #include "Ashes/Enum/DepthStencilStateFlag.hpp"
 #include "Ashes/Enum/DescriptorPoolCreateFlag.hpp"
 #include "Ashes/Enum/DescriptorType.hpp"
+#include "Ashes/Enum/DeviceQueueCreateFlag.hpp"
 #include "Ashes/Enum/DynamicStateEnable.hpp"
 #include "Ashes/Enum/DynamicStateFlag.hpp"
 #include "Ashes/Enum/FenceCreateFlag.hpp"
@@ -186,6 +187,7 @@ namespace ashes
 	struct DescriptorBufferInfo;
 	struct DescriptorImageInfo;
 	struct DescriptorPoolSize;
+	struct DeviceQueueCreateInfo;
 	struct Extent2D;
 	struct Extent3D;
 	struct FormatProperties;
@@ -249,6 +251,7 @@ namespace ashes
 	class Fence;
 	class FrameBuffer;
 	class ImageMemoryBarrier;
+	class Instance;
 	class IWindowHandle;
 	class MemoryBarrier;
 	class PhysicalDevice;
@@ -257,7 +260,6 @@ namespace ashes
 	class PushConstantsBufferBase;
 	class QueryPool;
 	class Queue;
-	class Renderer;
 	class RenderingResources;
 	class RenderPass;
 	class RenderSubpass;
@@ -325,6 +327,7 @@ namespace ashes
 	using EventPtr = std::unique_ptr< Event >;
 	using FencePtr = std::unique_ptr< Fence >;
 	using FrameBufferPtr = std::unique_ptr< FrameBuffer >;
+	using InstancePtr = std::unique_ptr< Instance >;
 	using IWindowHandlePtr = std::unique_ptr< IWindowHandle >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using PipelinePtr = std::unique_ptr< Pipeline >;
@@ -332,7 +335,6 @@ namespace ashes
 	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBufferBase >;
 	using QueryPoolPtr = std::unique_ptr< QueryPool >;
 	using QueuePtr = std::unique_ptr< Queue >;
-	using RendererPtr = std::unique_ptr< Renderer >;
 	using RenderingResourcesPtr = std::unique_ptr< RenderingResources >;
 	using RenderPassPtr = std::unique_ptr< RenderPass >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
@@ -364,6 +366,7 @@ namespace ashes
 	using ColourBlendStateAttachmentArray = std::vector< ColourBlendStateAttachment >;
 	using DescriptorPoolSizeArray = std::vector< DescriptorPoolSize >;
 	using DescriptorSetLayoutBindingArray = std::vector< DescriptorSetLayoutBinding >;
+	using DeviceQueueCreateInfoArray = std::vector< DeviceQueueCreateInfo >;
 	using DynamicStateEnableArray = std::vector< DynamicStateEnable >;
 	using FrameBufferAttachmentArray = std::vector< FrameBufferAttachment >;
 	using ImageLayoutArray = std::vector< ImageLayout >;

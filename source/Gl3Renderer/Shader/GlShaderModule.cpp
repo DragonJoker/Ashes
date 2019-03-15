@@ -6,9 +6,9 @@ See LICENSE file in root folder.
 
 #include "Core/GlDevice.hpp"
 #include "Core/GlPhysicalDevice.hpp"
-#include "Core/GlRenderer.hpp"
+#include "Core/GlInstance.hpp"
 
-#include <Ashes/Core/Renderer.hpp>
+#include <Ashes/Core/Instance.hpp>
 #include <Ashes/Pipeline/ShaderStageState.hpp>
 
 #include <iostream>

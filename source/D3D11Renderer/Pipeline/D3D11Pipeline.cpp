@@ -27,27 +27,6 @@ namespace d3d11_renderer
 			seed = static_cast< std::size_t >( b * kMul );
 		}
 
-		//size_t doHash( VboBindings const & vbos
-		//	, IboBinding const & ibo )
-		//{
-		//	size_t result{ 0u };
-
-		//	for ( auto & binding : vbos )
-		//	{
-		//		auto & vbo = binding.second;
-		//		doHashCombine( result, vbo.bo );
-		//		doHashCombine( result, vbo.offset );
-		//	}
-
-		//	if ( bool( ibo ) )
-		//	{
-		//		doHashCombine( result, ibo.value().bo );
-		//		doHashCombine( result, ibo.value().offset );
-		//	}
-
-		//	return result;
-		//}
-
 		size_t doHash( ashes::VertexInputAttributeDescription const & desc )
 		{
 			size_t result = 0u;
@@ -87,7 +66,7 @@ namespace d3d11_renderer
 
 	Pipeline::Pipeline( Device const & device
 		, ashes::PipelineLayout const & layout
-		, ashes::GraphicsPipelineCreateInfo && createInfo )
+		, ashes::GraphicsPipelineCreateInfo createInfo )
 		: ashes::Pipeline{ device
 			, layout
 			, std::move( createInfo ) }

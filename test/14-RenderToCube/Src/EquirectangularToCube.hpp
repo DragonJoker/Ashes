@@ -25,6 +25,8 @@ namespace vkapp
 	public:
 		EquirectangularToCube( std::string const & filePath
 			, ashes::Device & device
+			, ashes::Queue const & queue
+			, ashes::CommandPool const & commandPool
 			, ashes::Texture & texture );
 
 		void render();
@@ -40,6 +42,7 @@ namespace vkapp
 		};
 
 		ashes::Device & m_device;
+		ashes::Queue const & m_queue;
 		ashes::CommandBufferPtr m_commandBuffer;
 		common::ImageData m_image;
 		ashes::StagingBuffer m_stagingBuffer;

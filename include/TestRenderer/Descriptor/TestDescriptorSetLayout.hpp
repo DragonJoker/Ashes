@@ -4,8 +4,6 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___TestRenderer_DescriptorSetLayout_HPP___
-#define ___TestRenderer_DescriptorSetLayout_HPP___
 #pragma once
 
 #include "TestRendererPrerequisites.hpp"
@@ -37,7 +35,7 @@ namespace test_renderer
 		*	The bindings.
 		*/
 		DescriptorSetLayout( Device const & device
-			, ashes::DescriptorSetLayoutBindingArray && bindings );
+			, ashes::DescriptorSetLayoutBindingArray bindings );
 		/**
 		*\~french
 		*\brief
@@ -49,5 +47,3 @@ namespace test_renderer
 		~DescriptorSetLayout();
 	};
 }
-
-#endif

@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Core/GlPhysicalDevice.hpp"
 
-#include "Core/GlRenderer.hpp"
+#include "Core/GlInstance.hpp"
 #include "Core/GlDevice.hpp"
 
 #if ASHES_XLIB
@@ -344,9 +344,9 @@ namespace gl_renderer
 		}
 	}
 
-	PhysicalDevice::PhysicalDevice( Renderer & renderer )
-		: ashes::PhysicalDevice{ renderer }
-		, m_renderer{ renderer }
+	PhysicalDevice::PhysicalDevice( Instance & instance )
+		: ashes::PhysicalDevice{ instance }
+		, m_instance{ instance }
 	{
 		initialise();
 	}

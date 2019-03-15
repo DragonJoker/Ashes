@@ -8,8 +8,12 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	Queue::Queue( Device const & device )
+	Queue::Queue( Device const & device
+		, DeviceQueueCreateInfo createInfo
+		, uint32_t index )
 		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
+		, m_index{ index }
 	{
 		registerObject( m_device, "Queue", this );
 	}

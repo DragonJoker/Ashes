@@ -1,5 +1,5 @@
 /*
-This file belongs to GlRenderer.
+This file belongs to GlInstance.
 See LICENSE file in root folder.
 */
 #include "Command/Commands/GlCopyImageCommand.hpp"
@@ -59,6 +59,9 @@ namespace gl_renderer
 			, m_copyInfo.extent.height
 			, m_copyInfo.extent.depth );
 		glLogCall( context
+			, glGenerateMipmap
+			, m_dstTarget );
+		glLogCall( context
 			, glBindTexture
 			, m_dstTarget
 			, 0u );
@@ -66,7 +69,6 @@ namespace gl_renderer
 			, glBindTexture
 			, m_srcTarget
 			, 0u );
-		static_cast< ashes::Texture const & >( m_dst ).generateMipmaps();
 	}
 
 	CommandPtr CopyImageCommand::clone()const

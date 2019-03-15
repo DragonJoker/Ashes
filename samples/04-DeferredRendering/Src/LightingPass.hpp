@@ -10,6 +10,8 @@ namespace vkapp
 	{
 	public:
 		LightingPass( ashes::Device const & device
+			, ashes::CommandPool const & commandPool
+			, ashes::Queue const & transferQueue
 			, ashes::UniformBuffer< common::LightsData > const & lightsUbo
 			, ashes::StagingBuffer & stagingBuffer
 			, ashes::TextureViewCRefArray const & views );
@@ -17,16 +19,18 @@ namespace vkapp
 			, ashes::StagingBuffer & stagingBuffer
 			, ashes::TextureViewCRefArray const & views
 			, GeometryPassResult const & geometryBuffers );
-		void draw( std::chrono::nanoseconds & gpu )const;
+		void draw( ashes::Queue const & queue
+			, std::chrono::nanoseconds & gpu )const;
 
 	private:
 		ashes::Device const & m_device;
+		ashes::CommandPool const & m_commandPool;
+		ashes::Queue const & m_transferQueue;
 		ashes::UniformBuffer< common::LightsData > const & m_lightsUbo;
 		ashes::TextureView const * m_colourView{ nullptr };
 		ashes::TextureView const * m_depthView{ nullptr };
 		GeometryPassResult const * m_geometryBuffers{ nullptr };
 
-		ashes::CommandBufferPtr m_updateCommandBuffer;
 		ashes::CommandBufferPtr m_commandBuffer;
 		ashes::UniformBufferPtr< common::SceneData > m_sceneUbo;
 		ashes::DescriptorSetLayoutPtr m_uboDescriptorLayout;

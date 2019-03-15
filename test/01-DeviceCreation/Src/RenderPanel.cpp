@@ -5,6 +5,7 @@
 
 #include <Core/Connection.hpp>
 #include <Core/Device.hpp>
+#include <Core/Exception.hpp>
 
 #include <Transform.hpp>
 
@@ -14,12 +15,14 @@ namespace vkapp
 {
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, ashes::Renderer const & renderer )
+		, ashes::Instance const & instance )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 	{
 		try
 		{
-			doCreateDevice( renderer );
+			auto surface = doCreateSurface( instance );
+			std::cout << "Surface created." << std::endl;
+			doCreateDevice( instance, std::move( surface ) );
 			std::cout << "Logical device created." << std::endl;
 		}
 		catch ( std::exception & )
@@ -43,9 +46,18 @@ namespace vkapp
 		}
 	}
 
-	void RenderPanel::doCreateDevice( ashes::Renderer const & renderer )
+	ashes::ConnectionPtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
 	{
-		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
+		auto handle = common::makeWindowHandle( *this );
+		auto & gpu = instance.getPhysicalDevice( 0u );
+		return instance.createConnection( gpu
+			, std::move( handle ) );
+	}
+
+	void RenderPanel::doCreateDevice( ashes::Instance const & instance
+		, ashes::ConnectionPtr surface )
+	{
+		m_device = instance.createDevice( std::move( surface ), ~( 0u ), ~( 0u ) );
 		std::cout << m_device->getPhysicalDevice().dumpProperties() << std::endl;
 	}
 }

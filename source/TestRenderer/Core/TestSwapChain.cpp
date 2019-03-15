@@ -6,7 +6,7 @@
 #include "Core/TestBackBuffer.hpp"
 #include "Core/TestDevice.hpp"
 #include "Core/TestPhysicalDevice.hpp"
-#include "Core/TestRenderer.hpp"
+#include "Core/TestInstance.hpp"
 #include "Image/TestTexture.hpp"
 #include "RenderPass/TestFrameBuffer.hpp"
 #include "RenderPass/TestRenderPass.hpp"
@@ -20,6 +20,7 @@
 namespace test_renderer
 {
 	SwapChain::SwapChain( Device const & device
+		, ashes::CommandPool const & commandPool
 		, ashes::Extent2D const & size )
 		: ashes::SwapChain{ device, size }
 		, m_device{ device }
@@ -31,7 +32,7 @@ namespace test_renderer
 
 		for ( auto & resource : m_renderingResources )
 		{
-			resource = std::make_unique< ashes::RenderingResources >( device );
+			resource = std::make_unique< ashes::RenderingResources >( device, commandPool );
 		}
 	}
 
@@ -68,27 +69,6 @@ namespace test_renderer
 			, format );
 	}
 
-	ashes::FrameBufferAttachmentArray SwapChain::doPrepareAttaches( uint32_t backBuffer
-		, ashes::AttachmentDescriptionArray const & attaches )const
-	{
-		ashes::FrameBufferAttachmentArray result;
-
-		for ( auto & attach : attaches )
-		{
-			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
-			{
-				result.emplace_back( attach, m_backBuffers[backBuffer]->getView() );
-			}
-			else
-			{
-				assert( m_depthStencilView );
-				result.emplace_back( attach, *m_depthStencilView );
-			}
-		}
-
-		return result;
-	}
-
 	ashes::FrameBufferPtrArray SwapChain::createFrameBuffers( ashes::RenderPass const & renderPass )const
 	{
 		ashes::FrameBufferPtrArray result;
@@ -104,7 +84,7 @@ namespace test_renderer
 		return result;
 	}
 
-	ashes::CommandBufferPtrArray SwapChain::createCommandBuffers()const
+	ashes::CommandBufferPtrArray SwapChain::createCommandBuffers( ashes::CommandPool const & commandPool )const
 	{
 		ashes::CommandBufferPtrArray result;
 		result.resize( m_backBuffers.size() );
@@ -112,7 +92,7 @@ namespace test_renderer
 		for ( auto & commandBuffer : result )
 		{
 			commandBuffer = std::make_unique< CommandBuffer >( m_device
-				, static_cast< CommandPool const & >( m_device.getGraphicsCommandPool() )
+				, static_cast< CommandPool const & >( commandPool )
 				, true );
 		}
 
@@ -134,7 +114,8 @@ namespace test_renderer
 		return nullptr;
 	}
 
-	void SwapChain::present( ashes::RenderingResources & resources )
+	void SwapChain::present( ashes::RenderingResources & resources
+		, ashes::Queue const & queue )
 	{
 		resources.setBackBuffer( ~0u );
 	}
@@ -152,5 +133,26 @@ namespace test_renderer
 			, 0u
 			, m_format
 			, ref ) );
+	}
+
+	ashes::FrameBufferAttachmentArray SwapChain::doPrepareAttaches( uint32_t backBuffer
+		, ashes::AttachmentDescriptionArray const & attaches )const
+	{
+		ashes::FrameBufferAttachmentArray result;
+
+		for ( auto & attach : attaches )
+		{
+			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
+			{
+				result.emplace_back( attach, m_backBuffers[backBuffer]->getView() );
+			}
+			else
+			{
+				assert( m_depthStencilView );
+				result.emplace_back( attach, *m_depthStencilView );
+			}
+		}
+
+		return result;
 	}
 }

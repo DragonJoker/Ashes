@@ -12,6 +12,8 @@ namespace common
 	{
 	public:
 		Gui( ashes::Device const & device
+			, ashes::Queue const & queue
+			, ashes::CommandPool const & commandPool
 			, ashes::Extent2D const & size );
 		void updateView( ashes::TextureView const & colourView );
 		void update();
@@ -34,7 +36,8 @@ namespace common
 		}
 
 	private:
-		void doPrepareResources();
+		void doPrepareResources( ashes::Queue const & queue
+			, ashes::CommandPool const & commandPool );
 		void doPreparePipeline();
 		void doUpdateCommandBuffers();
 

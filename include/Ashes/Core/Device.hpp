@@ -13,6 +13,7 @@ See LICENSE file in root folder.
 #include "Ashes/Image/ImageCreateInfo.hpp"
 #include "Ashes/Image/SamplerCreateInfo.hpp"
 #include "Ashes/Miscellaneous/DebugMarkerObjectNameInfo.hpp"
+#include "Ashes/Miscellaneous/QueueCreateInfo.hpp"
 #include "Ashes/Pipeline/ColourBlendState.hpp"
 #include "Ashes/Pipeline/RasterisationState.hpp"
 
@@ -42,7 +43,7 @@ namespace ashes
 		*\brief
 		*	Constructor.
 		*\param[in] renderer
-		*	The Renderer instance.
+		*	The Instance instance.
 		*\param[in] gpu
 		*	The physical device.
 		*\param[in] connection
@@ -51,15 +52,19 @@ namespace ashes
 		*\brief
 		*	Constructeur.
 		*\param[in] renderer
-		*	L'instance de Renderer.
+		*	L'instance.
 		*\param[in] gpu
 		*	Le périphérique physique.
 		*\param[in] connection
 		*	La connection à l'application.
 		*/
-		Device( Renderer const & renderer
+		Device( Instance const & instance
 			, PhysicalDevice const & gpu
-			, Connection const & connection );
+			, Connection const & connection
+			, DeviceQueueCreateInfoArray queueCreateInfos
+			, StringArray enabledLayers
+			, StringArray enabledExtensions
+			, PhysicalDeviceFeatures enabledFeatures );
 
 	public:
 		/**
@@ -271,7 +276,7 @@ namespace ashes
 		*\return
 		*	Le layout créé.
 		*/
-		virtual DescriptorSetLayoutPtr createDescriptorSetLayout( DescriptorSetLayoutBindingArray && bindings )const = 0;
+		virtual DescriptorSetLayoutPtr createDescriptorSetLayout( DescriptorSetLayoutBindingArray bindings )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -456,7 +461,8 @@ namespace ashes
 		*\param[in] size
 		*	Les dimensions souhaitées.
 		*/
-		virtual SwapChainPtr createSwapChain( Extent2D const & size )const = 0;
+		virtual SwapChainPtr createSwapChain( ashes::CommandPool const & commandPool
+			, Extent2D const & size )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -558,6 +564,28 @@ namespace ashes
 		/**
 		*\~english
 		*\brief
+		*	Retrieves a device queue with given queue family index.
+		*\param[in] familyIndex
+		*	The device queue family index.
+		*\param[in] index
+		*	The index within this queue family of the queue to retrieve.
+		*\return
+		*	The device queue.
+		*\~french
+		*\brief
+		*	Récupère une file avec l'indice de famille de file donné.
+		*\param[in] familyIndex
+		*	La famille de file.
+		*\param[in] index
+		*	L'indice parmi la famille de file de la file à récupérer.
+		*\return
+		*	La file.
+		*/
+		virtual QueuePtr getQueue( uint32_t familyIndex
+			, uint32_t index )const = 0;
+		/**
+		*\~english
+		*\brief
 		*	Creates a GPU buffer.
 		*\remarks
 		*	This version will also create the DeviceMemory and bind it to the buffer.
@@ -633,7 +661,7 @@ namespace ashes
 		*	The created pass.
 		*/
 		RenderPassPtr createRenderPass( AttachmentDescriptionArray const & attaches
-			, RenderSubpassPtrArray && subpasses
+			, RenderSubpassPtrArray subpasses
 			, RenderSubpassState const & initialState
 			, RenderSubpassState const & finalState )const;
 		/**
@@ -838,39 +866,9 @@ namespace ashes
 			return m_gpu.getFeatures();
 		}
 
-		inline Queue const & getPresentQueue()const
+		inline Instance const & getInstance()const
 		{
-			return *m_presentQueue;
-		}
-
-		inline Queue const & getComputeQueue()const
-		{
-			return *m_computeQueue;
-		}
-
-		inline Queue const & getGraphicsQueue()const
-		{
-			return *m_graphicsQueue;
-		}
-
-		inline CommandPool const & getPresentCommandPool()const
-		{
-			return *m_presentCommandPool;
-		}
-
-		inline CommandPool const & getComputeCommandPool()const
-		{
-			return *m_computeCommandPool;
-		}
-
-		inline CommandPool const & getGraphicsCommandPool()const
-		{
-			return *m_graphicsCommandPool;
-		}
-
-		inline Renderer const & getRenderer()const
-		{
-			return m_renderer;
+			return m_instance;
 		}
 
 		inline PhysicalDevice const & getPhysicalDevice()const
@@ -885,14 +883,12 @@ namespace ashes
 		/**@}*/
 
 	protected:
-		Renderer const & m_renderer;
+		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
-		QueuePtr m_presentQueue;
-		QueuePtr m_computeQueue;
-		QueuePtr m_graphicsQueue;
-		CommandPoolPtr m_presentCommandPool;
-		CommandPoolPtr m_computeCommandPool;
-		CommandPoolPtr m_graphicsCommandPool;
+		DeviceQueueCreateInfoArray m_queueCreateInfos;
+		StringArray m_enabledLayers;
+		StringArray m_enabledExtensions;
+		PhysicalDeviceFeatures m_enabledFeatures;
 		float m_timestampPeriod;
 		uint32_t m_shaderVersion;
 

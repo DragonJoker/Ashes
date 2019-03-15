@@ -25,7 +25,7 @@ namespace vkapp
 	public:
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
-			, ashes::Renderer const & renderer );
+			, ashes::Instance const & instance );
 		~RenderPanel();
 
 	private:
@@ -36,7 +36,11 @@ namespace vkapp
 		/**@{*/
 		void doCleanup();
 		void doUpdateProjection();
-		void doCreateDevice( ashes::Renderer const & renderer );
+		ashes::ConnectionPtr doCreateSurface( ashes::Instance const & instance );
+		void doInitialiseQueues( ashes::Instance const & instance
+			, ashes::Connection const & surface );
+		void doCreateDevice( ashes::Instance const & instance
+			, ashes::ConnectionPtr surface );
 		void doCreateSwapChain();
 		void doCreateTexture();
 		void doCreateUniformBuffer();
@@ -83,7 +87,12 @@ namespace vkapp
 		*	Global.
 		*/
 		/**@{*/
+		uint32_t m_graphicsQueueFamilyIndex;
+		uint32_t m_presentQueueFamilyIndex;
 		ashes::DevicePtr m_device;
+		ashes::QueuePtr m_graphicsQueue;
+		ashes::QueuePtr m_presentQueue;
+		ashes::CommandPoolPtr m_commandPool;
 		ashes::SwapChainPtr m_swapChain;
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::StagingTexturePtr m_stagingTexture;
@@ -95,7 +104,6 @@ namespace vkapp
 		ashes::FrameBufferPtr m_frameBuffer;
 		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
 		ashes::UniformBufferPtr< utils::Mat4 > m_objectUbo;
-		ashes::CommandBufferPtr m_updateCommandBuffer;
 		/**@}*/
 		/**
 		*\name
@@ -115,6 +123,7 @@ namespace vkapp
 		std::vector< NonTexturedVertexData > m_offscreenVertexData;
 		ashes::UInt16Array m_offscreenIndexData;
 		ashes::QueryPoolPtr m_queryPool;
+		ashes::SemaphorePtr m_semaphore;
 		/**@}*/
 		/**
 		*\name

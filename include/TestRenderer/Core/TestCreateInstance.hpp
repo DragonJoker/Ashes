@@ -1,21 +1,21 @@
 /**
 *\file
-*	VkCreateRenderer.h
+*	TestCreateInstance.h
 *\author
 *	Sylvain Doremus
 */
 #pragma once
 
-#include <Ashes/Core/Renderer.hpp>
+#include <Ashes/Core/Instance.hpp>
 
-#if defined( _WIN32 ) && !defined( VkRenderer_STATIC )
-#	ifdef VkRenderer_EXPORTS
-#		define VkRenderer_API __declspec( dllexport )
+#if defined( _WIN32 ) && !defined( TestRenderer_STATIC )
+#	ifdef TestRenderer_EXPORTS
+#		define TestRenderer_API __declspec( dllexport )
 #	else
-#		define VkRenderer_API __declspec( dllimport )
+#		define TestRenderer_API __declspec( dllimport )
 #	endif
 #else
-#	define VkRenderer_API
+#	define TestRenderer_API
 #endif
 
 extern "C"
@@ -32,7 +32,7 @@ extern "C"
 	*\param[in] configuration
 	*	The creation options.
 	*/
-	VkRenderer_API ashes::Renderer * createRenderer( ashes::Renderer::Configuration const & configuration );
+	TestRenderer_API ashes::Instance * createInstance( ashes::Instance::Configuration const & configuration );
 	/**
 	*\~french
 	*\return
@@ -41,7 +41,7 @@ extern "C"
 	*\return
 	*	The renderer short name.
 	*/
-	VkRenderer_API char const * getShortName();
+	TestRenderer_API char const * getShortName();
 	/**
 	*\~french
 	*\return
@@ -50,5 +50,5 @@ extern "C"
 	*\return
 	*	The renderer full name.
 	*/
-	VkRenderer_API char const * getFullName();
+	TestRenderer_API char const * getFullName();
 }

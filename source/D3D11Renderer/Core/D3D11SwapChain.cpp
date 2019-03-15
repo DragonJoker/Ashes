@@ -6,7 +6,7 @@
 #include "Core/D3D11BackBuffer.hpp"
 #include "Core/D3D11Device.hpp"
 #include "Core/D3D11PhysicalDevice.hpp"
-#include "Core/D3D11Renderer.hpp"
+#include "Core/D3D11Instance.hpp"
 #include "Image/D3D11Texture.hpp"
 #include "RenderPass/D3D11FrameBuffer.hpp"
 #include "RenderPass/D3D11RenderPass.hpp"
@@ -21,10 +21,12 @@
 namespace d3d11_renderer
 {
 	SwapChain::SwapChain( Device const & device
+		, ashes::CommandPool const & commandPool
 		, ashes::Extent2D const & size )
 		: ashes::SwapChain{ device, size }
 		, m_device{ device }
 		, m_format{ ashes::Format::eR8G8B8A8_UNORM }
+		, m_commandPool{ commandPool }
 	{
 		doInitPresentParameters();
 		doCreateSwapChain();
@@ -33,7 +35,7 @@ namespace d3d11_renderer
 
 		for ( auto & resource : m_renderingResources )
 		{
-			resource = std::make_unique< ashes::RenderingResources >( device );
+			resource = std::make_unique< ashes::RenderingResources >( device, commandPool );
 		}
 	}
 
@@ -72,53 +74,6 @@ namespace d3d11_renderer
 			, format );
 	}
 
-	ashes::FrameBufferAttachmentArray SwapChain::doPrepareAttaches( uint32_t backBuffer
-		, ashes::AttachmentDescriptionArray const & attaches )const
-	{
-		ashes::FrameBufferAttachmentArray result;
-
-		for ( auto & attach : attaches )
-		{
-			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
-			{
-				result.emplace_back( attach, m_backBuffers[backBuffer]->getView() );
-			}
-			else
-			{
-				assert( m_depthStencilView );
-				result.emplace_back( attach, *m_depthStencilView );
-			}
-		}
-
-		return result;
-	}
-
-	void SwapChain::doResetSwapChain()
-	{
-		m_device.waitIdle();
-		auto colour = m_clearColour;
-		m_backBuffers.clear();
-		safeRelease( m_swapChain );
-		m_renderingResources.clear();
-		doInitPresentParameters();
-		doCreateSwapChain();
-		doCreateBackBuffers();
-
-		m_renderingResources.resize( 1 );
-
-		for ( auto & resource : m_renderingResources )
-		{
-			resource = std::make_unique< ashes::RenderingResources >( m_device );
-		}
-
-		if ( m_depthStencil )
-		{
-			createDepthStencil( m_depthStencil->getFormat() );
-		}
-
-		onReset();
-	}
-
 	ashes::FrameBufferPtrArray SwapChain::createFrameBuffers( ashes::RenderPass const & renderPass )const
 	{
 		ashes::FrameBufferPtrArray result;
@@ -134,7 +89,7 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	ashes::CommandBufferPtrArray SwapChain::createCommandBuffers()const
+	ashes::CommandBufferPtrArray SwapChain::createCommandBuffers( ashes::CommandPool const & commandPool )const
 	{
 		ashes::CommandBufferPtrArray result;
 		result.resize( m_backBuffers.size() );
@@ -142,7 +97,7 @@ namespace d3d11_renderer
 		for ( auto & commandBuffer : result )
 		{
 			commandBuffer = std::make_unique< CommandBuffer >( m_device
-				, static_cast< CommandPool const & >( m_device.getGraphicsCommandPool() )
+				, static_cast< CommandPool const & >( commandPool )
 				, true );
 		}
 
@@ -164,7 +119,8 @@ namespace d3d11_renderer
 		return nullptr;
 	}
 
-	void SwapChain::present( ashes::RenderingResources & resources )
+	void SwapChain::present( ashes::RenderingResources & resources
+		, ashes::Queue const & queue )
 	{
 		resources.setBackBuffer( ~0u );
 		m_swapChain->Present( 0u, 0u );
@@ -309,7 +265,7 @@ namespace d3d11_renderer
 
 	void SwapChain::doCreateSwapChain()
 	{
-		auto factory = m_device.getRenderer().getDXGIFactory();
+		auto factory = m_device.getInstance().getDXGIFactory();
 		auto device = m_device.getDevice();
 		HRESULT hr = factory->CreateSwapChain( device
 			, &m_desc
@@ -348,5 +304,52 @@ namespace d3d11_renderer
 			, 0u
 			, m_format
 			, ref ) );
+	}
+
+	ashes::FrameBufferAttachmentArray SwapChain::doPrepareAttaches( uint32_t backBuffer
+		, ashes::AttachmentDescriptionArray const & attaches )const
+	{
+		ashes::FrameBufferAttachmentArray result;
+
+		for ( auto & attach : attaches )
+		{
+			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
+			{
+				result.emplace_back( attach, m_backBuffers[backBuffer]->getView() );
+			}
+			else
+			{
+				assert( m_depthStencilView );
+				result.emplace_back( attach, *m_depthStencilView );
+			}
+		}
+
+		return result;
+	}
+
+	void SwapChain::doResetSwapChain()
+	{
+		m_device.waitIdle();
+		auto colour = m_clearColour;
+		m_backBuffers.clear();
+		safeRelease( m_swapChain );
+		m_renderingResources.clear();
+		doInitPresentParameters();
+		doCreateSwapChain();
+		doCreateBackBuffers();
+
+		m_renderingResources.resize( 1 );
+
+		for ( auto & resource : m_renderingResources )
+		{
+			resource = std::make_unique< ashes::RenderingResources >( m_device, m_commandPool );
+		}
+
+		if ( m_depthStencil )
+		{
+			createDepthStencil( m_depthStencil->getFormat() );
+		}
+
+		onReset();
 	}
 }

@@ -79,20 +79,24 @@ namespace gl_renderer
 	class Device
 		: public ashes::Device
 	{
-		friend class Renderer;
+		friend class Instance;
 
 	public:
 		/**
 		*\brief
 		*	Constructeur.
 		*\param[in] renderer
-		*	L'instance de Renderer.
+		*	L'instance.
 		*\param[in] connection
 		*	La connection à l'application.
 		*/
-		Device( Renderer const & renderer
+		Device( Instance const & instance
 			, PhysicalDevice const & gpu
-			, ashes::ConnectionPtr && connection );
+			, ashes::ConnectionPtr connection
+			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
+			, ashes::StringArray enabledLayers
+			, ashes::StringArray enabledExtensions
+			, ashes::PhysicalDeviceFeatures enabledFeatures );
 		~Device();
 		/**
 		*\copydoc	ashes::Device::createStagingTexture
@@ -111,7 +115,7 @@ namespace gl_renderer
 		/**
 		*\copydoc		ashes::Device::createDescriptorSetLayout
 		*/
-		ashes::DescriptorSetLayoutPtr createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray && bindings )const override;
+		ashes::DescriptorSetLayoutPtr createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const override;
 		/**
 		*\copydoc	ashes::Device::createDescriptorPool
 		*/
@@ -159,7 +163,8 @@ namespace gl_renderer
 		/**
 		*\copydoc		ashes::Device::createSwapChain
 		*/
-		ashes::SwapChainPtr createSwapChain( ashes::Extent2D const & size )const override;
+		ashes::SwapChainPtr createSwapChain( ashes::CommandPool const & commandPool
+			, ashes::Extent2D const & size )const override;
 		/**
 		*\copydoc		ashes::Device::createSemaphore
 		*/
@@ -195,6 +200,11 @@ namespace gl_renderer
 		*\copydoc	ashes::Device::debugMarkerSetObjectName
 		*/
 		void debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const override;
+		/**
+		*\copydoc	ashes::Device::getQueue
+		*/
+		ashes::QueuePtr getQueue( uint32_t familyIndex
+			, uint32_t index )const override;
 		/**
 		*\brief
 		*	Echange les tampons.
@@ -282,7 +292,10 @@ namespace gl_renderer
 		}
 
 	private:
-		Renderer const & m_renderer;
+		void doCreateQueues();
+
+	private:
+		Instance const & m_instance;
 		ashes::ConnectionPtr m_connection;
 		ContextPtr m_context;
 		struct Vertex
@@ -306,6 +319,8 @@ namespace gl_renderer
 		mutable ashes::RasterisationState m_rsState;
 		mutable ashes::TessellationState m_tsState;
 		mutable ashes::InputAssemblyState m_iaState;
+		using QueueCreateCount = std::pair< ashes::DeviceQueueCreateInfo, uint32_t >;
+		std::map< uint32_t, QueueCreateCount > m_queues;
 		mutable GLuint m_currentProgram;
 		GLuint m_blitFbos[2];
 		mutable GLuint m_fbo{ 0u };

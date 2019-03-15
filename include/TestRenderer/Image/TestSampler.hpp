@@ -4,8 +4,6 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___TestRenderer_Sampler_HPP___
-#define ___TestRenderer_Sampler_HPP___
 #pragma once
 
 #include "TestRendererPrerequisites.hpp"
@@ -31,5 +29,3 @@ namespace test_renderer
 		~Sampler();
 	};
 }
-
-#endif

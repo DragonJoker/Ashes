@@ -45,7 +45,7 @@ namespace vk_renderer
 		FrameBuffer( Device const & device
 			, RenderPass const & renderPass
 			, ashes::Extent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray && attachments );
+			, ashes::FrameBufferAttachmentArray attachments );
 		/**
 		*\~french
 		*\brief

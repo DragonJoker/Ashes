@@ -118,14 +118,16 @@ namespace ashes
 		return m_storage->unlock();
 	}
 
-	void Texture::generateMipmaps()const
+	void Texture::generateMipmaps( CommandPool const & commandPool
+		, Queue const & queue )const
 	{
-		auto commandBuffer = m_device.getGraphicsCommandPool().createCommandBuffer();
+		auto commandBuffer = commandPool.createCommandBuffer();
 		commandBuffer->begin( ashes::CommandBufferUsageFlag::eOneTimeSubmit );
 		generateMipmaps( *commandBuffer );
 		commandBuffer->end();
-		m_device.getGraphicsQueue().submit( *commandBuffer, nullptr );
-		m_device.waitIdle();
+		auto fence = m_device.createFence();
+		queue.submit( *commandBuffer, fence.get() );
+		fence->wait( FenceTimeout );
 	}
 
 	void Texture::generateMipmaps( CommandBuffer & commandBuffer )const
@@ -238,13 +240,13 @@ namespace ashes
 					getFormat(),
 					ashes::ComponentMapping{},
 					ashes::ImageSubresourceRange
-				{
-					ashes::getAspectMask( getFormat() ),
-					0,
-					getMipmapLevels(),
-					layer,
-					1u
-				}
+					{
+						ashes::getAspectMask( getFormat() ),
+						0,
+						getMipmapLevels(),
+						layer,
+						1u
+					}
 				} );
 			commandBuffer.memoryBarrier( ashes::PipelineStageFlag::eTransfer
 				, ashes::PipelineStageFlag::eFragmentShader

@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "Ashes/AshesPrerequisites.hpp"
+#include "Ashes/Miscellaneous/QueueCreateInfo.hpp"
 
 namespace ashes
 {
@@ -21,7 +22,9 @@ namespace ashes
 	class Queue
 	{
 	protected:
-		Queue( Device const & device );
+		Queue( Device const & device
+			, DeviceQueueCreateInfo info
+			, uint32_t index );
 
 	public:
 		virtual ~Queue();
@@ -98,7 +101,22 @@ namespace ashes
 		*\return
 		*	The queue family index.
 		*/
-		virtual uint32_t getFamilyIndex()const = 0;
+		inline uint32_t getFamilyIndex()const
+		{
+			return m_createInfo.queueFamilyIndex;
+		}
+		/**
+		*\~french
+		*\return
+		*	L'index de la file dans sa famille de file.
+		*\~english
+		*\return
+		*	The queue index within its family.
+		*/
+		inline uint32_t getIndex()const
+		{
+			return m_index;
+		}
 		/**
 		*\~french
 		*\brief
@@ -175,6 +193,8 @@ namespace ashes
 
 	private:
 		Device const & m_device;
+		DeviceQueueCreateInfo m_createInfo;
+		uint32_t m_index;
 	};
 }
 

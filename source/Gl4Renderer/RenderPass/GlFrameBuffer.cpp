@@ -155,7 +155,7 @@ namespace gl_renderer
 	FrameBuffer::FrameBuffer( Device const & device
 		, RenderPass const & renderPass
 		, ashes::Extent2D const & dimensions
-		, ashes::FrameBufferAttachmentArray && views
+		, ashes::FrameBufferAttachmentArray views
 		, bool backBuffer )
 		: ashes::FrameBuffer{ renderPass, dimensions, std::move( views ) }
 		, m_device{ device }

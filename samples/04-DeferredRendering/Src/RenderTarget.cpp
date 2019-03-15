@@ -15,10 +15,12 @@
 namespace vkapp
 {
 	RenderTarget::RenderTarget( ashes::Device const & device
+		, ashes::CommandPool const & commandPool
+		, ashes::Queue const & transferQueue
 		, ashes::Extent2D const & size
-		, common::Scene && scene
-		, common::ImagePtrArray && images )
-		: common::RenderTarget{ device, size, std::move( scene ), std::move( images ) }
+		, common::Scene scene
+		, common::ImagePtrArray images )
+		: common::RenderTarget{ device, commandPool, transferQueue, size, std::move( scene ), std::move( images ) }
 		, m_sceneUbo{ ashes::makeUniformBuffer< common::SceneData >( device
 			, 1u
 			, ashes::BufferTarget::eTransferDst
@@ -50,7 +52,8 @@ namespace vkapp
 			, float( utils::DegreeToRadian ) * ( duration.count() / 20000.0f )
 			, { 0, 1, 0 } );
 		m_objectUbo->getData( 0 ).mtxModel = originalTranslate * m_rotate;
-		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
+		m_stagingBuffer->uploadUniformData( m_transferQueue
+			, m_commandPool
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
 			, ashes::PipelineStageFlag::eVertexShader );
@@ -69,6 +72,8 @@ namespace vkapp
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< OpaqueRendering >( std::make_unique< GeometryPass >( device
+				, m_commandPool
+				, m_transferQueue
 				, common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "opaque_gp.frag"
 				, m_gbuffer
 				, views[0].get().getFormat()
@@ -90,6 +95,8 @@ namespace vkapp
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::TransparentRendering >( std::make_unique< TransparentRendering >( device
+				, m_commandPool
+				, m_transferQueue
 				, common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "transparent.frag"
 				, common::getFormats( views )
 				, *m_sceneUbo
@@ -132,7 +139,8 @@ namespace vkapp
 			, 0.01f
 			, 100.0f ) };
 #endif
-		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
+		m_stagingBuffer->uploadUniformData( m_transferQueue
+			, m_commandPool
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo
 			, ashes::PipelineStageFlag::eVertexShader );
@@ -152,7 +160,8 @@ namespace vkapp
 		};
 		lights.directionalLights[0] = directional;
 
-		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
+		m_stagingBuffer->uploadUniformData( m_transferQueue
+			, m_commandPool
 			, m_lightsUbo->getDatas()
 			, *m_lightsUbo
 			, ashes::PipelineStageFlag::eFragmentShader );

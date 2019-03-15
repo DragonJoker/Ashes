@@ -4,15 +4,14 @@ See LICENSE file in root folder.
 */
 #include "Ashes/Core/PhysicalDevice.hpp"
 
-#include "Ashes/Core/Renderer.hpp"
 #include "Ashes/Core/Device.hpp"
 
 #include <algorithm>
 
 namespace ashes
 {
-	PhysicalDevice::PhysicalDevice( Renderer & renderer )
-		: m_renderer{ renderer }
+	PhysicalDevice::PhysicalDevice( Instance & instance )
+		: m_instance{ instance }
 	{
 	}
 

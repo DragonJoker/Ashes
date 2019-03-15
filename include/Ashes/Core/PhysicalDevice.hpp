@@ -31,15 +31,15 @@ namespace ashes
 		*\~english
 		*\brief
 		*	Constructor.
-		*\param[in] renderer
+		*\param[in] instance
 		*	The renderer instance.
 		*\~french
 		*\brief
 		*	Constructeur.
-		*\param[in] renderer
+		*\param[in] instance
 		*	L'instance de rendu.
 		*/
-		PhysicalDevice( Renderer & renderer );
+		PhysicalDevice( Instance & instance );
 		/**
 		*\~english
 		*\brief
@@ -165,7 +165,7 @@ namespace ashes
 		uint32_t m_shaderVersion;
 
 	private:
-		Renderer & m_renderer;
+		Instance & m_instance;
 	};
 }
 

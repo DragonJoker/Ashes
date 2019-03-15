@@ -9,7 +9,7 @@
 #include "Core/VkConnection.hpp"
 #include "Core/VkDevice.hpp"
 #include "Core/VkPhysicalDevice.hpp"
-#include "Core/VkRenderer.hpp"
+#include "Core/VkInstance.hpp"
 #include "Core/VkSwapChain.hpp"
 #include "Descriptor/VkDescriptorPool.hpp"
 #include "Descriptor/VkDescriptorSet.hpp"
@@ -40,7 +40,7 @@ namespace vk_renderer
 			switch ( objectType )
 			{
 			case ashes::DebugReportObjectType::eInstance:
-				return ( uint64_t )VkInstance( *reinterpret_cast< Renderer const * >( object ) );
+				return ( uint64_t )VkInstance( *reinterpret_cast< Instance const * >( object ) );
 			case ashes::DebugReportObjectType::ePhysicalDevice:
 				return ( uint64_t )VkPhysicalDevice( *reinterpret_cast< PhysicalDevice const * >( object ) );
 			case ashes::DebugReportObjectType::eDevice:

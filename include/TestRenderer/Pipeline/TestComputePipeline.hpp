@@ -4,8 +4,6 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___TestRenderer_ComputePipeline_HPP___
-#define ___TestRenderer_ComputePipeline_HPP___
 #pragma once
 
 #include "TestRendererPrerequisites.hpp"
@@ -34,7 +32,7 @@ namespace test_renderer
 		*/
 		ComputePipeline( Device const & device
 			, ashes::PipelineLayout const & layout
-			, ashes::ComputePipelineCreateInfo && createInfo );
+			, ashes::ComputePipelineCreateInfo createInfo );
 		/**
 		*\~french
 		*\brief
@@ -46,5 +44,3 @@ namespace test_renderer
 		~ComputePipeline();
 	};
 }
-
-#endif

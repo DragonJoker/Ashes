@@ -35,7 +35,8 @@ namespace ashes
 		*\param[in] device
 		*	Le Device parent.
 		*/
-		RenderingResources( Device const & device );
+		RenderingResources( Device const & device
+			, CommandPool const & commandPool );
 		/**
 		*\~english
 		*\brief

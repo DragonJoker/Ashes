@@ -37,7 +37,7 @@ namespace d3d11_renderer
 		*	The bindings.
 		*/
 		DescriptorSetLayout( Device const & device
-			, ashes::DescriptorSetLayoutBindingArray && bindings );
+			, ashes::DescriptorSetLayoutBindingArray bindings );
 		/**
 		*\~french
 		*\brief

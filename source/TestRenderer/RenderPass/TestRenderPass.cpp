@@ -18,7 +18,7 @@ See LICENSE file in root folder.
 namespace test_renderer
 {
 	RenderPass::RenderPass( Device const & device
-		, ashes::RenderPassCreateInfo && createInfo )
+		, ashes::RenderPassCreateInfo createInfo )
 		: ashes::RenderPass{ device, createInfo }
 		, m_device{ device }
 	{
@@ -43,7 +43,7 @@ namespace test_renderer
 	}
 
 	ashes::FrameBufferPtr RenderPass::createFrameBuffer( ashes::Extent2D const & dimensions
-		, ashes::FrameBufferAttachmentArray && attaches )const
+		, ashes::FrameBufferAttachmentArray attaches )const
 	{
 		return std::make_unique< FrameBuffer >( m_device
 			, *this
