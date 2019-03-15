@@ -21,12 +21,12 @@ namespace gl_renderer
 	{
 	public:
 		RenderPass( Device const & device
-			, ashes::RenderPassCreateInfo && createInfo );
+			, ashes::RenderPassCreateInfo createInfo );
 		/**
 		*\copydoc	ashes::RenderPass::createFrameBuffer
 		*/
 		ashes::FrameBufferPtr createFrameBuffer( ashes::Extent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray && textures )const override;
+			, ashes::FrameBufferAttachmentArray textures )const override;
 
 		uint32_t getAttachmentIndex( ashes::AttachmentDescription const & attach )const;
 

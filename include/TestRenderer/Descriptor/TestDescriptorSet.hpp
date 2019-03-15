@@ -4,8 +4,6 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___TestRenderer_DescriptorSet_HPP___
-#define ___TestRenderer_DescriptorSet_HPP___
 #pragma once
 
 #include "TestRendererPrerequisites.hpp"
@@ -67,5 +65,3 @@ namespace test_renderer
 		DescriptorSetLayout const & m_layout;
 	};
 }
-
-#endif

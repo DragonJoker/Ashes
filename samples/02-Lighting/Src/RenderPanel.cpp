@@ -25,6 +25,8 @@ namespace vkapp
 		common::Scene scene;
 		scene.object = common::loadObject( common::getPath( common::getExecutableDirectory() ) / "share" / "Assets" / "Nyra", "Nyra_pose.fbx", images );
 		m_renderTarget = std::make_unique< RenderTarget >( device
+			, *m_commandPool
+			, *m_graphicsQueue
 			, size
 			, std::move( scene )
 			, std::move( images ) );

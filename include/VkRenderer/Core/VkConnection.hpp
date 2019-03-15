@@ -21,21 +21,25 @@ namespace vk_renderer
 		/**
 		*\brief
 		*	Constructeur.
-		*\param[in] renderer
-		*	L'instance de Renderer.
+		*\param[in] instance
+		*	L'instance.
 		*\param[in] deviceIndex
 		*	L'indice du périphérique physique.
 		*\param[in] handle
 		*	Le descripteur de la fenêtre.
 		*/
-		Connection( Renderer const & renderer
-			, uint32_t deviceIndex
-			, ashes::WindowHandle && handle );
+		Connection( Instance const & instance
+			, ashes::PhysicalDevice const & gpu
+			, ashes::WindowHandle handle );
 		/**
 		*\brief
 		*	Destructeur, détruit la surface KHR.
 		*/
 		~Connection();
+		/**
+		*\copydoc	ashes::Connection:getSurfaceSupport
+		*/
+		bool getSurfaceSupport( uint32_t queueFamilyIndex )const override;
 		void updateSurfaceCapabilities();
 		/**
 		*\~french
@@ -103,10 +107,9 @@ namespace vk_renderer
 		void doRetrieveSurfaceCapabilities();
 		void doRetrieveSurfaceFormats();
 		void doRetrievePresentModes();
-		void doRetrievePresentationInfos();
 
 	private:
-		Renderer const & m_renderer;
+		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
 		VkSurfaceKHR m_presentSurface{ VK_NULL_HANDLE };
 		uint32_t m_graphicsQueueFamilyIndex{ std::numeric_limits< uint32_t >::max() };

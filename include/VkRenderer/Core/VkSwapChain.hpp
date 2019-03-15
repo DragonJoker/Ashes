@@ -1,6 +1,6 @@
 /**
 *\file
-*	Renderer.h
+*	Instance.h
 *\author
 *	Sylvain Doremus
 */
@@ -33,6 +33,7 @@ namespace vk_renderer
 		*	The render surface dimensions.
 		*/
 		SwapChain( Device const & device
+			, ashes::CommandPool const & commandPool
 			, ashes::Extent2D const & size );
 		/**
 		*\~french
@@ -54,7 +55,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	ashes::SwapChain::createCommandBuffers
 		*/
-		ashes::CommandBufferPtrArray createCommandBuffers()const override;
+		ashes::CommandBufferPtrArray createCommandBuffers( ashes::CommandPool const & commandPool )const override;
 		/**
 		*\copydoc	ashes::SwapChain::getResources
 		*/
@@ -62,7 +63,8 @@ namespace vk_renderer
 		/**
 		*\copydoc	ashes::SwapChain::present
 		*/
-		void present( ashes::RenderingResources & resources )override;
+		void present( ashes::RenderingResources & resources
+			, ashes::Queue const & queue )override;
 		/**
 		*\copydoc	ashes::SwapChain::createDepthStencil
 		*/
@@ -159,6 +161,7 @@ namespace vk_renderer
 
 	protected:
 		Device const & m_device;
+		ashes::CommandPool const & m_commandPool;
 		ashes::Format m_format{};
 		VkColorSpaceKHR m_colorSpace;
 		VkSwapchainKHR m_swapChain{};

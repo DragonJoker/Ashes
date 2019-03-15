@@ -1,8 +1,6 @@
 #include "Prerequisites.hpp"
 
-#include <Core/Connection.hpp>
 #include <Core/PlatformWindowHandle.hpp>
-#include <Core/Renderer.hpp>
 
 #if defined( __WXGTK__ )
 #	include <gdk/gdkx.h>
@@ -20,19 +18,16 @@
 
 namespace common
 {
-	ashes::ConnectionPtr makeConnection( wxWindow * window
-		, ashes::Renderer const & renderer )
+	ashes::WindowHandle makeWindowHandle( wxWindow const & window )
 	{
 #if defined( __WXMSW__ )
 
-		auto handle = ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( wxGetInstance()
-			, window->GetHandle() ) };
-		return renderer.createConnection( 0u
-			, std::move( handle ) );
+		return ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( wxGetInstance()
+			, window.GetHandle() ) };
 
 #else
 
-		GtkWidget * widget{ static_cast< GtkWidget * >( window->GetHandle() ) };
+		GtkWidget * widget{ static_cast< GtkWidget * >( window.GetHandle() ) };
 		Window xwindow{ None };
 		Display * xdisplay{ nullptr };
 
@@ -53,9 +48,8 @@ namespace common
 			}
 		}
 
-		return renderer.createConnection( 0u
-			, ashes::WindowHandle{ std::make_unique< ashes::IXWindowHandle >( xwindow
-				, xdisplay ) } );
+		return ashes::WindowHandle{ std::make_unique< ashes::IXWindowHandle >( xwindow
+				, xdisplay ) };
 
 #endif
 	}

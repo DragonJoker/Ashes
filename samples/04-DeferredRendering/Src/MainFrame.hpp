@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <Ashes/Core/Renderer.hpp>
+#include <Ashes/Core/Instance.hpp>
 
 #include <MainFrame.hpp>
 
@@ -16,6 +16,6 @@ namespace vkapp
 			, common::RendererFactory & factory );
 
 	private:
-		common::RenderPanel * doCreatePanel( wxSize const & size, ashes::Renderer const & renderer )override;
+		common::RenderPanel * doCreatePanel( wxSize const & size, ashes::Instance const & instance )override;
 	};
 }

@@ -15,7 +15,8 @@ namespace test_renderer
 	{
 	public:
 		Queue( Device const & device
-			, uint32_t familyIndex );
+			, ashes::DeviceQueueCreateInfo createInfo
+			, uint32_t index );
 		/**
 		*\copydoc		ashes::Queue::submit
 		*/ 
@@ -35,16 +36,5 @@ namespace test_renderer
 		*\copydoc		ashes::Queue::waitIdle
 		*/
 		void waitIdle()const override;
-		/**
-		/**
-		*\copydoc		ashes::Queue::getFamilyIndex
-		*/
-		inline uint32_t getFamilyIndex()const override
-		{
-			return m_familyIndex;
-		}
-
-	private:
-		uint32_t m_familyIndex{ 0u };
 	};
 }

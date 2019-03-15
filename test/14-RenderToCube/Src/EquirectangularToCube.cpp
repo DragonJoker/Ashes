@@ -39,7 +39,8 @@ namespace vkapp
 	namespace
 	{
 		ashes::TexturePtr doCreateTexture( ashes::Device & device
-			, ashes::CommandBuffer const & commandBuffer
+			, ashes::Queue const & queue
+			, ashes::CommandPool const & commandPool
 			, common::ImageData const & image )
 		{
 			auto result = device.createTexture(
@@ -60,7 +61,8 @@ namespace vkapp
 
 			auto staging = device.createStagingTexture( image.format
 				, { image.size.width, image.size.height } );
-			staging->uploadTextureData( commandBuffer
+			staging->uploadTextureData( queue
+				, commandPool
 				, image.format
 				, image.data
 				, *view );
@@ -77,7 +79,8 @@ namespace vkapp
 		}
 
 		ashes::UniformBufferPtr< Mat4 > doCreateMatrixUbo( ashes::Device & device
-			, ashes::CommandBuffer const & commandBuffer
+			, ashes::Queue const & queue
+			, ashes::CommandPool const & commandPool
 			, ashes::StagingBuffer & stagingBuffer )
 		{
 			static Mat4 const projection = utils::Mat4{ device.perspective( float( utils::toRadians( 90.0_degrees ) ), 1.0f, 0.1f, 10.0f ) };
@@ -93,7 +96,7 @@ namespace vkapp
 					utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, +0.0f, -1.0f }, Vec3{ 0.0f, -1.0f, +0.0f } )
 				};
 
-				if ( device.getRenderer().getName().find( "gl" ) != std::string::npos )
+				if ( device.getInstance().getName().find( "gl" ) != std::string::npos )
 				{
 					std::swap( result[2], result[3] );
 				}
@@ -113,7 +116,8 @@ namespace vkapp
 			result->getData( 4u ) = projection * views[4];
 			result->getData( 5u ) = projection * views[5];
 
-			stagingBuffer.uploadUniformData( commandBuffer
+			stagingBuffer.uploadUniformData( queue
+				, commandPool
 				, result->getDatas()
 				, *result
 				, ashes::PipelineStageFlag::eVertexShader );
@@ -144,7 +148,8 @@ namespace vkapp
 		}
 
 		ashes::VertexBufferPtr< VertexData > doCreateVertexBuffer( ashes::Device & device
-			, ashes::CommandBuffer const & commandBuffer
+			, ashes::Queue const & queue
+			, ashes::CommandPool const & commandPool
 			, ashes::StagingBuffer & stagingBuffer )
 		{
 			std::vector< VertexData > vertexData
@@ -163,7 +168,8 @@ namespace vkapp
 				, ashes::BufferTarget::eTransferDst
 				, ashes::MemoryPropertyFlag::eHostVisible );
 
-			stagingBuffer.uploadVertexData( commandBuffer
+			stagingBuffer.uploadVertexData( queue
+				, commandPool
 				, vertexData
 				, *result );
 
@@ -233,16 +239,19 @@ namespace vkapp
 
 	EquirectangularToCube::EquirectangularToCube( std::string const & filePath
 		, ashes::Device & device
+		, ashes::Queue const & queue
+		, ashes::CommandPool const & commandPool
 		, ashes::Texture & texture )
 		: m_device{ device }
-		, m_commandBuffer{ device.getGraphicsCommandPool().createCommandBuffer() }
+		, m_queue{ queue }
+		, m_commandBuffer{ commandPool.createCommandBuffer() }
 		, m_image{ common::loadImage( filePath ) }
 		, m_stagingBuffer{ device, ashes::BufferTarget::eTransferSrc, uint32_t( m_image.data.size() ) }
-		, m_texture{ doCreateTexture( m_device, *m_commandBuffer, m_image ) }
+		, m_texture{ doCreateTexture( m_device, queue, commandPool, m_image ) }
 		, m_view{ m_texture->createView( ashes::TextureViewType::e2D, m_image.format ) }
 		, m_sampler{ doCreateSampler( m_device ) }
-		, m_matrixUbo{ doCreateMatrixUbo( m_device, *m_commandBuffer, m_stagingBuffer ) }
-		, m_vertexBuffer{ doCreateVertexBuffer( m_device, *m_commandBuffer, m_stagingBuffer ) }
+		, m_matrixUbo{ doCreateMatrixUbo( m_device, queue, commandPool, m_stagingBuffer ) }
+		, m_vertexBuffer{ doCreateVertexBuffer( m_device, queue, commandPool, m_stagingBuffer ) }
 		, m_vertexLayout{ doCreateVertexLayout( m_device ) }
 		, m_descriptorLayout{ doCreateDescriptorSetLayout( m_device ) }
 		, m_descriptorPool{ m_descriptorLayout->createPool( 6u ) }
@@ -316,7 +325,7 @@ namespace vkapp
 		m_commandBuffer->begin( ashes::CommandBufferUsageFlag::eOneTimeSubmit );
 		render( *m_commandBuffer );
 		m_commandBuffer->end();
-		m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
-		m_device.getGraphicsQueue().waitIdle();
+		m_queue.submit( *m_commandBuffer, nullptr );
+		m_queue.waitIdle();
 	}
 }

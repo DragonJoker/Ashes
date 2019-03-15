@@ -37,7 +37,7 @@
 #include <Core/Device.hpp>
 #include <Core/PhysicalDevice.hpp>
 #include <Core/PlatformWindowHandle.hpp>
-#include <Core/Renderer.hpp>
+#include <Core/Instance.hpp>
 #include <Core/SwapChain.hpp>
 #include <Miscellaneous/FormatProperties.hpp>
 #include <Utils/DynamicLibrary.hpp>
@@ -114,7 +114,7 @@ static uint32_t selected_gpu = 0;
 
 struct AppInstance
 {
-	ashes::RendererPtr instance;
+	ashes::InstancePtr instance;
 	ashes::ConnectionPtr connection;
 	int width, height;
 
@@ -468,8 +468,8 @@ class RendererFactory
 {
 protected:
 	using Key = std::string;
-	using PtrType = ashes::RendererPtr;
-	using Creator = std::function<ashes::RendererPtr( const ashes::Renderer::Configuration& ) >;
+	using PtrType = ashes::InstancePtr;
+	using Creator = std::function<ashes::InstancePtr( const ashes::Instance::Configuration & ) >;
 	using ObjPtr = PtrType;
 	using ObjMap = std::map< Key, Creator >;
 
@@ -533,7 +533,7 @@ private:
 
 class RendererPlugin
 {
-	using CreatorFunction = ashes::Renderer *( *)( ashes::Renderer::Configuration const & );
+	using CreatorFunction = ashes::Instance *( *)( ashes::Instance::Configuration const & );
 	using NamerFunction = char const *( *)( );
 
 public:
@@ -542,7 +542,7 @@ public:
 		: m_library{ std::move( library ) }
 		, m_creator{ nullptr }
 	{
-		if ( !m_library.getFunction( "createRenderer", m_creator ) )
+		if ( !m_library.getFunction( "createInstance", m_creator ) )
 		{
 			throw std::runtime_error{ "Not a renderer plugin" };
 		}
@@ -565,15 +565,15 @@ public:
 		m_fullName = fullNamer();
 
 		auto creator = m_creator;
-		factory.registerType( m_shortName, [creator]( ashes::Renderer::Configuration const & configuration )
+		factory.registerType( m_shortName, [creator]( ashes::Instance::Configuration const & configuration )
 			{
-				return ashes::RendererPtr{ creator( configuration ) };
+				return ashes::InstancePtr{ creator( configuration ) };
 			} );
 	}
 
-	ashes::RendererPtr create( ashes::Renderer::Configuration const & configuration )
+	ashes::InstancePtr create( ashes::Instance::Configuration const & configuration )
 	{
-		return ashes::RendererPtr{ m_creator( configuration ) };
+		return ashes::InstancePtr{ m_creator( configuration ) };
 	}
 
 private:
@@ -788,7 +788,7 @@ bool CheckForJsonOption( const char * arg )
 	return result;
 }
 
-std::string CheckForRendererOption( const char * arg )
+std::string CheckForInstanceOption( const char * arg )
 {
 	std::string result = arg;
 	result = result.substr( result.find( '-' ) + 1 );
@@ -815,7 +815,7 @@ std::string ProcessCommandLine( int argc
 		{
 			if ( !CheckForJsonOption( argv[i] ) )
 			{
-				result = CheckForRendererOption( argv[i] );
+				result = CheckForInstanceOption( argv[i] );
 			}
 		}
 	}
@@ -891,7 +891,7 @@ static void AppCreateWin32Window( AppInstance *inst )
 
 static void AppCreateWin32Surface( AppInstance *inst )
 {
-	inst->connection = inst->instance->createConnection( 0u
+	inst->connection = inst->instance->createConnection( inst->instance->getPhysicalDevice( 0u )
 		, ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( inst->h_instance, inst->h_wnd ) } );
 }
 
@@ -2941,7 +2941,7 @@ int main( int argc, char **argv )
 	std::string rendererName = ProcessCommandLine( argc, argv, &out );
 
 	// With that informations, we can now create the renderer instance.
-	ashes::Renderer::Configuration config
+	ashes::Instance::Configuration config
 	{
 		APP_SHORT_NAME,
 		APP_SHORT_NAME,

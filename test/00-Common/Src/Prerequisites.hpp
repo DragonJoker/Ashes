@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Core/Connection.hpp>
-#include <Core/Renderer.hpp>
+#include <Core/Instance.hpp>
 
 #include <Factory.hpp>
 #include <Quaternion.hpp>
@@ -16,10 +16,10 @@
 namespace common
 {
 	static wxSize const WindowSize{ 800, 600 };
-	using RendererFactory = utils::Factory< ashes::Renderer
+	using RendererFactory = utils::Factory< ashes::Instance
 		, std::string
-		, ashes::RendererPtr
-		, std::function< ashes::RendererPtr( ashes::Renderer::Configuration const & ) > >;
+		, ashes::InstancePtr
+		, std::function< ashes::InstancePtr( ashes::Instance::Configuration const & ) > >;
 	/**
 	*\~english
 	*\brief
@@ -60,8 +60,7 @@ namespace common
 	*\param[in] gpu
 	*	The GPU chosen to bind the window and the GPU.
 	*/
-	ashes::ConnectionPtr makeConnection( wxWindow * window
-		, ashes::Renderer const & renderer );
+	ashes::WindowHandle makeWindowHandle( wxWindow const & window );
 
 	class Application;
 	class MainFrame;

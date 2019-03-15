@@ -2,7 +2,7 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "Core/VkRenderer.hpp"
+#include "Core/VkInstance.hpp"
 
 namespace vk_renderer
 {
@@ -274,18 +274,18 @@ namespace vk_renderer
 #endif
 	void addOptionalValidationLayer( std::string const & layerName
 		, std::string description
-		, std::vector< char const * > & names )
+		, ashes::StringArray & names )
 	{
 #if LOAD_VALIDATION_LAYERS
 		if ( layerName.find( "validation" ) != std::string::npos
 			|| description.find( "LunarG Validation" ) != std::string::npos )
 		{
-			names.push_back( layerName.c_str() );
+			names.push_back( layerName );
 		}
 #endif
 	}
 
-	void addOptionalDebugReportLayer( std::vector< char const * > & names )
+	void addOptionalDebugReportLayer( ashes::StringArray & names )
 	{
 #if LOAD_VALIDATION_LAYERS
 		names.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
@@ -294,7 +294,7 @@ namespace vk_renderer
 	}
 
 	void setupDebugging( VkInstance instance
-		, Renderer & renderer
+		, Instance & data
 		, VkDebugReportCallbackEXT & callback )
 	{
 #if LOAD_VALIDATION_LAYERS
@@ -306,7 +306,7 @@ namespace vk_renderer
 			| VK_DEBUG_REPORT_ERROR_BIT_EXT
 			| VK_DEBUG_REPORT_DEBUG_BIT_EXT;
 
-		if ( renderer.vkCreateDebugReportCallbackEXT )
+		if ( data.vkCreateDebugReportCallbackEXT )
 		{
 			VkDebugReportCallbackCreateInfoEXT dbgCreateInfo
 			{
@@ -314,10 +314,10 @@ namespace vk_renderer
 				nullptr,
 				debugReportFlags,
 				( PFN_vkDebugReportCallbackEXT )debugReportCallback,
-				&renderer
+				&data
 			};
 
-			VkResult res = renderer.vkCreateDebugReportCallbackEXT(
+			VkResult res = data.vkCreateDebugReportCallbackEXT(
 				instance,
 				&dbgCreateInfo,
 				nullptr,
@@ -328,13 +328,13 @@ namespace vk_renderer
 	}
 
 	void cleanupDebugging( VkInstance instance
-		, Renderer & renderer
+		, Instance & data
 		, VkDebugReportCallbackEXT & callback )
 	{
 #if LOAD_VALIDATION_LAYERS
 		if ( callback != VK_NULL_HANDLE )
 		{
-			renderer.vkDestroyDebugReportCallbackEXT( instance, callback, nullptr );
+			data.vkDestroyDebugReportCallbackEXT( instance, callback, nullptr );
 			callback = VK_NULL_HANDLE;
 		}
 #endif

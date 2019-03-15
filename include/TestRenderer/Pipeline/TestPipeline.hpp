@@ -4,8 +4,6 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___TestRenderer_Pipeline_HPP___
-#define ___TestRenderer_Pipeline_HPP___
 #pragma once
 
 #include "TestRendererPrerequisites.hpp"
@@ -29,9 +27,7 @@ namespace test_renderer
 		/**@{*/
 		Pipeline( Device const & device
 			, ashes::PipelineLayout const & layout
-			, ashes::GraphicsPipelineCreateInfo && createInfo );
+			, ashes::GraphicsPipelineCreateInfo createInfo );
 		~Pipeline();
 	};
 }
-
-#endif

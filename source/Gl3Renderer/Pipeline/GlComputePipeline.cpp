@@ -8,7 +8,7 @@ namespace gl_renderer
 {
 	ComputePipeline::ComputePipeline( Device const & device
 		, ashes::PipelineLayout const & layout
-		, ashes::ComputePipelineCreateInfo && createInfo )
+		, ashes::ComputePipelineCreateInfo createInfo )
 		: ashes::ComputePipeline{ device
 			, layout
 			, std::move( createInfo ) }

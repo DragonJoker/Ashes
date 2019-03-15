@@ -13,7 +13,7 @@ See LICENSE file in root folder.
 #include "Core/GlConnection.hpp"
 #include "Core/GlContext.hpp"
 #include "Core/GlDummyIndexBuffer.hpp"
-#include "Core/GlRenderer.hpp"
+#include "Core/GlInstance.hpp"
 #include "Core/GlSwapChain.hpp"
 #include "Descriptor/GlDescriptorPool.hpp"
 #include "Descriptor/GlDescriptorSetLayout.hpp"
@@ -460,30 +460,30 @@ namespace gl_renderer
 		}
 	}
 
-	Device::Device( Renderer const & renderer
+	Device::Device( Instance const & instance
 		, PhysicalDevice const & gpu
-		, ashes::ConnectionPtr && connection )
-		: ashes::Device{ renderer, gpu, *connection }
-		, m_renderer{ renderer }
+		, ashes::ConnectionPtr connection
+		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
+		, ashes::StringArray enabledLayers
+		, ashes::StringArray enabledExtensions
+		, ashes::PhysicalDeviceFeatures enabledFeatures )
+		: ashes::Device{ instance
+			, gpu
+			, *connection
+			, std::move( queueCreateInfos )
+			, std::move( enabledLayers )
+			, std::move( enabledExtensions )
+			, std::move( enabledFeatures ) }
+		, m_instance{ instance }
 		, m_context{ Context::create( gpu, *connection, nullptr ) }
 		, m_rsState{}
 	{
 		auto context = getContext();
-		//glLogCall( context
-		//	, glClipControl
-		//	, GL_UPPER_LEFT
-		//	, GL_ZERO_TO_ONE );
 		glLogCall( context
 			, glEnable
 			, GL_TEXTURE_CUBE_MAP_SEAMLESS );
 
 		m_timestampPeriod = 1;
-		m_presentQueue = std::make_unique< Queue >( *this );
-		m_computeQueue = std::make_unique< Queue >( *this );
-		m_graphicsQueue = std::make_unique< Queue >( *this );
-		m_presentCommandPool = std::make_unique< CommandPool >( *this, 0u );
-		m_computeCommandPool = std::make_unique< CommandPool >( *this, 0u );
-		m_graphicsCommandPool = std::make_unique< CommandPool >( *this, 0u );
 
 		doApply( context, m_cbState );
 		doApply( context, m_dsState );
@@ -520,6 +520,7 @@ namespace gl_renderer
 		m_dummyIndexed.geometryBuffers->initialise();
 
 		context->glGenFramebuffers( 2, m_blitFbos );
+		doCreateQueues();
 	}
 
 	Device::~Device()
@@ -531,13 +532,6 @@ namespace gl_renderer
 			m_dummyIndexed.indexBuffer.reset();
 		}
 		m_context.reset();
-
-		m_graphicsCommandPool.reset();
-		m_graphicsQueue.reset();
-		m_presentCommandPool.reset();
-		m_presentQueue.reset();
-		m_computeCommandPool.reset();
-		m_computeQueue.reset();
 	}
 
 	ashes::StagingTexturePtr Device::createStagingTexture( ashes::Format format
@@ -559,7 +553,7 @@ namespace gl_renderer
 			, pushConstantRanges );
 	}
 
-	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray && bindings )const
+	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const
 	{
 		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
 	}
@@ -661,13 +655,14 @@ namespace gl_renderer
 			, memoryFlags );
 	}
 
-	ashes::SwapChainPtr Device::createSwapChain( ashes::Extent2D const & size )const
+	ashes::SwapChainPtr Device::createSwapChain( ashes::CommandPool const & commandPool
+		, ashes::Extent2D const & size )const
 	{
 		ashes::SwapChainPtr result;
 
 		try
 		{
-			result = std::make_unique< SwapChain >( *this, size );
+			result = std::make_unique< SwapChain >( *this, commandPool, size );
 		}
 		catch ( std::exception & exc )
 		{
@@ -754,6 +749,24 @@ namespace gl_renderer
 #endif
 	}
 
+	ashes::QueuePtr Device::getQueue( uint32_t familyIndex
+		, uint32_t index )const
+	{
+		auto it = m_queues.find( familyIndex );
+
+		if ( it == m_queues.end() )
+		{
+			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find family index within created queues" };
+		}
+
+		if ( it->second.second <= index )
+		{
+			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find queue with wanted index within its family" };
+		}
+
+		return std::make_unique< Queue >( *this, it->second.first, index );
+	}
+
 	void Device::waitIdle()const
 	{
 		auto context = getContext();
@@ -764,5 +777,15 @@ namespace gl_renderer
 	void Device::swapBuffers()const
 	{
 		getContext()->swapBuffers();
+	}
+
+	void Device::doCreateQueues()
+	{
+		for ( auto & queueCreateInfo : m_queueCreateInfos )
+		{
+			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
+				, QueueCreateCount{ queueCreateInfo, 0u } ).first;
+			it->second.second++;
+		}
 	}
 }

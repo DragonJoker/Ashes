@@ -11,13 +11,16 @@ namespace common
 	{
 	public:
 		RenderTarget( ashes::Device const & device
+			, ashes::CommandPool const & commandPool
+			, ashes::Queue const & transferQueue
 			, ashes::Extent2D const & size
-			, Scene && scene
-			, ImagePtrArray && images );
+			, Scene scene
+			, ImagePtrArray images );
 		virtual ~RenderTarget();
 		void resize( ashes::Extent2D const & size );
 		void update( std::chrono::microseconds const & duration );
-		void draw( std::chrono::microseconds & gpu );
+		void draw( ashes::Queue const & queue
+			, std::chrono::microseconds & gpu );
 
 		inline ashes::TextureView const & getColourView()const
 		{
@@ -67,8 +70,9 @@ namespace common
 
 	protected:
 		ashes::Device const & m_device;
+		ashes::CommandPool const & m_commandPool;
+		ashes::Queue const & m_transferQueue;
 		ashes::StagingBufferPtr m_stagingBuffer;
-		ashes::CommandBufferPtr m_updateCommandBuffer;
 		ashes::Extent2D m_size;
 
 	private:

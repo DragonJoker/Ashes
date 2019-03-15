@@ -5,7 +5,7 @@ See LICENSE file in root folder.
 #include "Ashes/Core/Device.hpp"
 
 #include "Ashes/Buffer/Buffer.hpp"
-#include "Ashes/Core/Renderer.hpp"
+#include "Ashes/Core/Instance.hpp"
 #include "Ashes/Core/SwapChain.hpp"
 #include "Ashes/Image/Sampler.hpp"
 #include "Ashes/Miscellaneous/MemoryRequirements.hpp"
@@ -19,11 +19,19 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	Device::Device( Renderer const & renderer
+	Device::Device( Instance const & instance
 		, PhysicalDevice const & gpu
-		, Connection const & connection )
-		: m_renderer{ renderer }
+		, Connection const & connection
+		, DeviceQueueCreateInfoArray queueCreateInfos
+		, StringArray enabledLayers
+		, StringArray enabledExtensions
+		, PhysicalDeviceFeatures enabledFeatures )
+		: m_instance{ instance }
 		, m_gpu{ gpu }
+		, m_queueCreateInfos{ std::move( queueCreateInfos ) }
+		, m_enabledLayers{ std::move( enabledLayers ) }
+		, m_enabledExtensions{ std::move( enabledExtensions ) }
+		, m_enabledFeatures{ std::move( enabledFeatures ) }
 	{
 	}
 
@@ -39,7 +47,7 @@ namespace ashes
 		, float zNear
 		, float zFar )const
 	{
-		return m_renderer.frustum( left, right, bottom, top, zNear, zFar );
+		return m_instance.frustum( left, right, bottom, top, zNear, zFar );
 	}
 
 	std::array< float, 16u > Device::perspective( float radiansFovY
@@ -47,7 +55,7 @@ namespace ashes
 		, float zNear
 		, float zFar )const
 	{
-		return m_renderer.perspective( radiansFovY, aspect, zNear, zFar );
+		return m_instance.perspective( radiansFovY, aspect, zNear, zFar );
 	}
 
 	std::array< float, 16u > Device::ortho( float left
@@ -57,14 +65,14 @@ namespace ashes
 		, float zNear
 		, float zFar )const
 	{
-		return m_renderer.ortho( left, right, bottom, top, zNear, zFar );
+		return m_instance.ortho( left, right, bottom, top, zNear, zFar );
 	}
 
 	std::array< float, 16u > Device::infinitePerspective( float radiansFovY
 		, float aspect
 		, float zNear )const
 	{
-		return m_renderer.infinitePerspective( radiansFovY, aspect, zNear );
+		return m_instance.infinitePerspective( radiansFovY, aspect, zNear );
 	}
 
 	BufferBasePtr Device::createBuffer( uint32_t size
@@ -85,7 +93,7 @@ namespace ashes
 	}
 
 	RenderPassPtr Device::createRenderPass( AttachmentDescriptionArray const & attaches
-		, RenderSubpassPtrArray && subpasses
+		, RenderSubpassPtrArray subpasses
 		, RenderSubpassState const & initialState
 		, RenderSubpassState const & finalState )const
 	{
@@ -142,7 +150,7 @@ namespace ashes
 
 	ClipDirection Device::getClipDirection()const
 	{
-		return m_renderer.getClipDirection();
+		return m_instance.getClipDirection();
 	}
 
 	PipelineLayoutPtr Device::createPipelineLayout()const

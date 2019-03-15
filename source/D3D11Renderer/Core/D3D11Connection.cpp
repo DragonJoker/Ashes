@@ -5,22 +5,25 @@ See LICENSE file in root folder.
 #include "Core/D3D11Connection.hpp"
 
 #include "Core/D3D11PhysicalDevice.hpp"
-#include "Core/D3D11Renderer.hpp"
+#include "Core/D3D11Instance.hpp"
 
 #include <Ashes/Core/PlatformWindowHandle.hpp>
 
 namespace d3d11_renderer
 {
-	Connection::Connection( Renderer const & renderer
-		, uint32_t deviceIndex
-		, ashes::WindowHandle && handle )
-		: ashes::Connection{ renderer, deviceIndex, std::move( handle ) }
-		, m_renderer{ renderer }
-		, m_gpu{ static_cast< PhysicalDevice const & >( renderer.getPhysicalDevice( deviceIndex ) ) }
+	Connection::Connection( Instance const & instance
+		, ashes::PhysicalDevice const & gpu
+		, ashes::WindowHandle handle )
+		: ashes::Connection{ instance, gpu, std::move( handle ) }
 	{
 	}
 
 	Connection::~Connection()
 	{
+	}
+
+	bool Connection::getSurfaceSupport( uint32_t queueFamilyIndex )const
+	{
+		return true;
 	}
 }

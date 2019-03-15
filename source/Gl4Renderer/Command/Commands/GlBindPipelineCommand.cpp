@@ -1,5 +1,5 @@
 /*
-This file belongs to GlRenderer.
+This file belongs to GlInstance.
 See LICENSE file in root folder.
 */
 #include "Command/Commands/GlBindPipelineCommand.hpp"

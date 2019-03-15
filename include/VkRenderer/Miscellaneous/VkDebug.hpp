@@ -13,17 +13,17 @@ See LICENSE file in root folder
 
 namespace vk_renderer
 {
-	class Renderer;
+	class Instance;
 	
 	void addOptionalValidationLayer( std::string const & layer
 		, std::string description
-		, std::vector< char const * > & names );
-	void addOptionalDebugReportLayer( std::vector< char const * > & names );
+		, ashes::StringArray & names );
+	void addOptionalDebugReportLayer( ashes::StringArray & names );
 	void setupDebugging( VkInstance instance
-		, Renderer & data
+		, Instance & data
 		, VkDebugReportCallbackEXT & callback );
 	void cleanupDebugging( VkInstance instance
-		, Renderer & renderer
+		, Instance & data
 		, VkDebugReportCallbackEXT & callback );
 	/**
 	*\~french

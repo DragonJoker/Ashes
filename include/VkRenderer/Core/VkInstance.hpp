@@ -1,6 +1,6 @@
 /**
 *\file
-*	Renderer.h
+*	Instance.h
 *\author
 *	Sylvain Doremus
 */
@@ -8,44 +8,43 @@
 
 #include "VkRenderer/VkRendererPrerequisites.hpp"
 
-#include <Ashes/Core/Renderer.hpp>
+#include <Ashes/Core/Instance.hpp>
 #include <Utils/DynamicLibrary.hpp>
 
 namespace vk_renderer
 {
-	class Renderer
-		: public ashes::Renderer
+	class Instance
+		: public ashes::Instance
 	{
 	public:
 		/**
 		*\brief
 		*	Constructeur, initialise l'instance de Vulkan.
 		*/
-		Renderer( Configuration const & configuration );
+		Instance( Configuration const & configuration );
 		/**
 		*\brief
 		*	Destructeur.
 		*/
-		~Renderer();
+		~Instance();
 		/**
 		*\brief
 		*	Crée le périphérique logique.
 		*\param[in] connection
 		*	La connection avec la fenêtre.
 		*/
-		ashes::DevicePtr createDevice( ashes::ConnectionPtr && connection )const override;
+		ashes::DevicePtr createDevice( ashes::ConnectionPtr connection
+			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
+			, ashes::StringArray enabledLayers
+			, ashes::StringArray enabledExtensions
+			, ashes::PhysicalDeviceFeatures enabledFeatures )const override;
 		/**
-		*\brief
-		*	Crée une connection.
-		*\param[in] deviceIndex
-		*	L'indice du périphérique physique.
-		*\param[in] handle
-		*	Le descripteur de la fenêtre.
+		*\copydoc	ashes::Instance::createConnection
 		*/
-		ashes::ConnectionPtr createConnection( uint32_t deviceIndex
-			, ashes::WindowHandle && handle )const override;
+		ashes::ConnectionPtr createConnection( ashes::PhysicalDevice const & gpu
+			, ashes::WindowHandle handle )const override;
 		/**
-		*\copydoc	ashes::Renderer::frustum
+		*\copydoc	ashes::Instance::frustum
 		*/
 		std::array< float, 16 > frustum( float left
 			, float right
@@ -54,14 +53,14 @@ namespace vk_renderer
 			, float zNear
 			, float zFar )const override;
 		/**
-		*\copydoc	ashes::Renderer::perspective
+		*\copydoc	ashes::Instance::perspective
 		*/
 		std::array< float, 16 > perspective( float radiansFovY
 			, float aspect
 			, float zNear
 			, float zFar )const override;
 		/**
-		*\copydoc	ashes::Renderer::ortho
+		*\copydoc	ashes::Instance::ortho
 		*/
 		std::array< float, 16 > ortho( float left
 			, float right
@@ -81,7 +80,7 @@ namespace vk_renderer
 		*\param[in,out] names
 		*	The liste to fill.
 		*/
-		void completeLayerNames( std::vector< char const * > & names )const;
+		void completeLayerNames( ashes::StringArray & names )const;
 		/**
 		*\~french
 		*\brief
@@ -147,7 +146,5 @@ namespace vk_renderer
 		ashes::DynamicLibrary m_library;
 		VkInstance m_instance{ VK_NULL_HANDLE };
 		VkDebugReportCallbackEXT m_msgCallback{ VK_NULL_HANDLE };
-		std::vector< char const * > m_instanceExtensionNames;
-		std::vector< char const * > m_instanceLayerNames;
 	};
 }

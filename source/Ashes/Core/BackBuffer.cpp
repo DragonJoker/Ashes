@@ -11,8 +11,8 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	BackBuffer::BackBuffer( Device const & device
-		, TexturePtr && image
-		, TextureViewPtr && view
+		, TexturePtr image
+		, TextureViewPtr view
 		, uint32_t imageIndex )
 		: m_device{ device }
 		, m_image{ std::move( image ) }

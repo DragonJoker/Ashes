@@ -43,7 +43,7 @@ namespace gl_renderer
 		/**@{*/
 		Pipeline( Device const & device
 			, PipelineLayout const & layout
-			, ashes::GraphicsPipelineCreateInfo && createInfo );
+			, ashes::GraphicsPipelineCreateInfo createInfo );
 		GeometryBuffers * findGeometryBuffers( VboBindings const & vbos
 			, IboBinding const & ibo )const;
 		GeometryBuffersRef createGeometryBuffers( VboBindings vbos

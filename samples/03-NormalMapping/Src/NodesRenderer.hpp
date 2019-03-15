@@ -11,6 +11,8 @@ namespace vkapp
 	{
 	public:
 		NodesRenderer( ashes::Device const & device
+			, ashes::CommandPool const & commandPool
+			, ashes::Queue const & transferQueue
 			, std::string const & fragmentShaderFile
 			, std::vector< ashes::Format > const & formats
 			, bool clearViews

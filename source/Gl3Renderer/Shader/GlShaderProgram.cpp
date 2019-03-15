@@ -1,5 +1,5 @@
 /*
-This file belongs to Renderer.
+This file belongs to Ashes.
 See LICENSE file in root folder.
 */
 #include "Shader/GlShaderProgram.hpp"

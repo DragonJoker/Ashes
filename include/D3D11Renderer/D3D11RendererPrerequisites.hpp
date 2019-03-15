@@ -222,7 +222,7 @@ namespace d3d11_renderer
 	class PhysicalDevice;
 	class QueryPool;
 	class Queue;
-	class Renderer;
+	class Instance;
 	class RenderPass;
 	class RenderSubpass;
 	class Sampler;

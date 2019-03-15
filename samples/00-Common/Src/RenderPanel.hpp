@@ -36,7 +36,7 @@ namespace common
 			, std::string const & appName
 			, std::string const & appDesc );
 		virtual ~RenderPanel();
-		void initialise( ashes::Renderer const & renderer );
+		void initialise( ashes::Instance const & instance );
 		void update();
 		void draw();
 
@@ -50,7 +50,11 @@ namespace common
 		}
 
 		void doCleanup();
-		void doCreateDevice( ashes::Renderer const & renderer );
+		ashes::ConnectionPtr doCreateSurface( ashes::Instance const & instance );
+		void doInitialiseQueues( ashes::Instance const & instance
+			, ashes::Connection const & surface );
+		void doCreateDevice( ashes::Instance const & instance
+			, ashes::ConnectionPtr surface );
 		void doCreateSwapChain();
 		void doCreateDescriptorSet();
 		void doCreateRenderPass();
@@ -70,6 +74,9 @@ namespace common
 	protected:
 		std::unique_ptr< RenderTarget > m_renderTarget;
 		MouseState m_mouse;
+		ashes::QueuePtr m_graphicsQueue;
+		ashes::QueuePtr m_presentQueue;
+		ashes::CommandPoolPtr m_commandPool;
 
 	private:
 		static size_t constexpr FrameSamplesCount = 1000;
@@ -83,6 +90,8 @@ namespace common
 		std::vector< TexturedVertexData > m_vertexData;
 		std::unique_ptr< Gui > m_gui;
 
+		uint32_t m_graphicsQueueFamilyIndex;
+		uint32_t m_presentQueueFamilyIndex;
 		ashes::DevicePtr m_device;
 		ashes::SwapChainPtr m_swapChain;
 		ashes::StagingBufferPtr m_stagingBuffer;

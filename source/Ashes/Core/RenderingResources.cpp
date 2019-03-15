@@ -9,9 +9,10 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	RenderingResources::RenderingResources( Device const & device )
+	RenderingResources::RenderingResources( Device const & device
+		, CommandPool const & commandPool )
 		: m_device{ device }
-		, m_commandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
+		, m_commandBuffer{ commandPool.createCommandBuffer() }
 		, m_imageAvailableSemaphore{ m_device.createSemaphore() }
 		, m_finishedRenderingSemaphore{ m_device.createSemaphore() }
 		, m_fence{ m_device.createFence( FenceCreateFlag::eSignaled ) }

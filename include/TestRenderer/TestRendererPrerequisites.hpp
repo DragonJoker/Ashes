@@ -42,7 +42,7 @@ namespace test_renderer
 	class PhysicalDevice;
 	class QueryPool;
 	class Queue;
-	class Renderer;
+	class Instance;
 	class RenderPass;
 	class RenderSubpass;
 	class Sampler;

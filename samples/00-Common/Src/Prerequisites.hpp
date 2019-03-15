@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Ashes/Core/Connection.hpp>
-#include <Ashes/Core/Renderer.hpp>
+#include <Ashes/Core/Instance.hpp>
 #include <Ashes/Image/Texture.hpp>
 #include <Ashes/Image/TextureView.hpp>
 #include <Ashes/Miscellaneous/Extent2D.hpp>
@@ -21,10 +21,10 @@
 namespace common
 {
 	static wxSize const WindowSize{ 800, 600 };
-	using RendererFactory = utils::Factory< ashes::Renderer
+	using RendererFactory = utils::Factory< ashes::Instance
 		, std::string
-		, ashes::RendererPtr
-		, std::function< ashes::RendererPtr( ashes::Renderer::Configuration const & ) > >;
+		, ashes::InstancePtr
+		, std::function< ashes::InstancePtr( ashes::Instance::Configuration const & ) > >;
 
 	static uint32_t constexpr MAX_TEXTURES = 6u;
 	static uint32_t constexpr MAX_LIGHTS = 10u;
@@ -244,8 +244,7 @@ namespace common
 	using BillboardNodes = std::vector< BillboardNodePtr >;
 	/**\}*/
 
-	ashes::ConnectionPtr makeConnection( wxWindow * window
-		, ashes::Renderer const & renderer );
+	ashes::WindowHandle makeWindowHandle( wxWindow const & window );
 
 	std::vector< ashes::Format > getFormats( ashes::TextureViewCRefArray const & views );
 
@@ -259,7 +258,7 @@ namespace common
 	class RenderTarget;
 	class TransparentRendering;
 
-	using NodesRendererPtr = std::unique_ptr< NodesRenderer >;
+	using NodesInstancePtr = std::unique_ptr< NodesRenderer >;
 	using OpaqueRenderingPtr = std::unique_ptr< OpaqueRendering >;
 	using TransparentRenderingPtr = std::unique_ptr< TransparentRendering >;
 }

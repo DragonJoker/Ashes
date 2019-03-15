@@ -49,6 +49,8 @@ namespace common
 	}
 
 	Gui::Gui( ashes::Device const & device
+		, ashes::Queue const & queue
+		, ashes::CommandPool const & commandPool
 		, ashes::Extent2D const & size )
 		: m_device{ device }
 		, m_size{ size }
@@ -70,7 +72,7 @@ namespace common
 		io.DisplaySize = ImVec2( float( size.width ), float( size.height ) );
 		io.FontGlobalScale = 1.0f;
 
-		doPrepareResources();
+		doPrepareResources( queue, commandPool );
 	}
 
 	void Gui::updateView( ashes::TextureView const & colourView )
@@ -240,7 +242,8 @@ namespace common
 		va_end( args );
 	}
 
-	void Gui::doPrepareResources()
+	void Gui::doPrepareResources( ashes::Queue const & queue
+		, ashes::CommandPool const & commandPool )
 	{
 		ImGuiIO & io = ImGui::GetIO();
 
@@ -266,10 +269,11 @@ namespace common
 		m_fontView = m_fontImage->createView( ashes::TextureViewType( m_fontImage->getType() )
 			, m_fontImage->getFormat() );
 
-		auto copyCmd = m_device.getGraphicsCommandPool().createCommandBuffer();
+		auto copyCmd = commandPool.createCommandBuffer();
 		auto stagingTexture = m_device.createStagingTexture( ashes::Format::eR8G8B8A8_UNORM
 			, { uint32_t( texWidth ), uint32_t( texHeight ) } );
-		stagingTexture->uploadTextureData( *copyCmd
+		stagingTexture->uploadTextureData( queue
+			, commandPool
 			, ashes::Format::eR8G8B8A8_UNORM
 			, fontData
 			, *m_fontView );
@@ -281,7 +285,7 @@ namespace common
 			, ashes::Filter::eLinear
 			, ashes::MipmapMode::eNone );
 
-		m_commandPool = m_device.createCommandPool( m_device.getGraphicsQueue().getFamilyIndex()
+		m_commandPool = m_device.createCommandPool( queue.getFamilyIndex()
 			, ashes::CommandPoolCreateFlag::eResetCommandBuffer );
 		m_commandBuffer = m_commandPool->createCommandBuffer();
 

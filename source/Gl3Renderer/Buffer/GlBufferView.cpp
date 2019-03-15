@@ -2,7 +2,7 @@
 
 #include "Buffer/GlBuffer.hpp"
 #include "Core/GlDevice.hpp"
-#include "Core/GlRenderer.hpp"
+#include "Core/GlInstance.hpp"
 
 #include <Ashes/Miscellaneous/Log.hpp>
 
@@ -29,7 +29,7 @@ namespace gl_renderer
 			, GL_BUFFER_TARGET_TEXTURE
 			, m_name );
 
-		if ( device.getRenderer().getFeatures().hasTexBufferRange )
+		if ( device.getInstance().getFeatures().hasTexBufferRange )
 		{
 			glLogCall( context
 				, glTexBufferRange_ARB

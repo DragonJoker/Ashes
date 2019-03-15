@@ -10,7 +10,7 @@
 #include <Core/BackBuffer.hpp>
 #include <Core/Connection.hpp>
 #include <Core/Device.hpp>
-#include <Core/Renderer.hpp>
+#include <Core/Instance.hpp>
 #include <Core/SwapChain.hpp>
 #include <Descriptor/DescriptorSet.hpp>
 #include <Descriptor/DescriptorSetLayout.hpp>
@@ -51,7 +51,7 @@ namespace vkapp
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, ashes::Renderer const & renderer )
+		, ashes::Instance const & instance )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 		, m_vertexData
@@ -66,7 +66,9 @@ namespace vkapp
 	{
 		try
 		{
-			doCreateDevice( renderer );
+			auto surface = doCreateSurface( instance );
+			std::cout << "Surface created." << std::endl;
+			doCreateDevice( instance, std::move( surface ) );
 			std::cout << "Logical device created." << std::endl;
 			doCreateSwapChain();
 			std::cout << "Swap chain created." << std::endl;
@@ -134,19 +136,93 @@ namespace vkapp
 			m_vertexBuffer.reset();
 			m_renderPass.reset();
 			m_swapChain.reset();
+			m_commandPool.reset();
+			m_presentQueue.reset();
+			m_graphicsQueue.reset();
 			m_device.reset();
 		}
 	}
 
-	void RenderPanel::doCreateDevice( ashes::Renderer const & renderer )
+	ashes::ConnectionPtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
 	{
-		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
+		auto handle = common::makeWindowHandle( *this );
+		auto & gpu = instance.getPhysicalDevice( 0u );
+		return instance.createConnection( gpu
+			, std::move( handle ) );
+	}
+
+	void RenderPanel::doInitialiseQueues( ashes::Instance const & instance
+		, ashes::Connection const & surface )
+	{
+		auto & gpu = instance.getPhysicalDevice( 0u );
+		std::vector< bool > supportsPresent( static_cast< uint32_t >( gpu.getQueueProperties().size() ) );
+		uint32_t i{ 0u };
+		m_graphicsQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
+		m_presentQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
+
+		for ( auto & present : supportsPresent )
+		{
+			auto present = surface.getSurfaceSupport( i );
+
+			if ( gpu.getQueueProperties()[i].queueCount > 0 )
+			{
+				if ( gpu.getQueueProperties()[i].queueFlags & ashes::QueueFlag::eGraphics )
+				{
+					if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
+					{
+						m_graphicsQueueFamilyIndex = i;
+					}
+
+					if ( present )
+					{
+						m_graphicsQueueFamilyIndex = i;
+						m_presentQueueFamilyIndex = i;
+						break;
+					}
+				}
+			}
+
+			++i;
+		}
+
+		if ( m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
+		{
+			for ( size_t i = 0; i < gpu.getQueueProperties().size(); ++i )
+			{
+				if ( supportsPresent[i] )
+				{
+					m_presentQueueFamilyIndex = static_cast< uint32_t >( i );
+					break;
+				}
+			}
+		}
+
+		if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
+			|| m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
+		{
+			throw ashes::Exception{ ashes::Result::eErrorInitializationFailed
+				, "Queue families retrieval" };
+		}
+	}
+
+	void RenderPanel::doCreateDevice( ashes::Instance const & instance
+		, ashes::ConnectionPtr surface )
+	{
+		doInitialiseQueues( instance, *surface );
+		m_device = instance.createDevice( std::move( surface )
+			, m_graphicsQueueFamilyIndex
+			, m_presentQueueFamilyIndex );
+		m_graphicsQueue = m_device->getQueue( m_graphicsQueueFamilyIndex, 0u );
+		m_presentQueue = m_device->getQueue( m_presentQueueFamilyIndex, 0u );
+		m_commandPool = m_device->createCommandPool( m_graphicsQueueFamilyIndex
+			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
 	}
 
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
+		m_swapChain = m_device->createSwapChain( *m_commandPool
+			, { uint32_t( size.x ), uint32_t( size.y ) } );
 		m_swapChain->setClearColour( { 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
@@ -159,7 +235,8 @@ namespace vkapp
 				, halfHeight
 				, -1.0f
 				, 1.0f ) };
-			m_stagingBuffer->uploadUniformData( m_swapChain->getDefaultResources().getCommandBuffer()
+			m_stagingBuffer->uploadUniformData( *m_graphicsQueue
+				, *m_commandPool
 				, m_uniformBuffer->getDatas()
 				, *m_uniformBuffer
 				, ashes::PipelineStageFlag::eVertexShader );
@@ -193,7 +270,8 @@ namespace vkapp
 			, ashes::WrapMode::eClampToEdge
 			, ashes::Filter::eLinear
 			, ashes::Filter::eLinear );
-		stagingTexture->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+		stagingTexture->uploadTextureData( *m_graphicsQueue
+			, *m_commandPool
 			, image.format
 			, image.data
 			, *m_view );
@@ -214,7 +292,8 @@ namespace vkapp
 			, halfHeight
 			, -1.0f
 			, 1.0f ) };
-		m_stagingBuffer->uploadUniformData( m_swapChain->getDefaultResources().getCommandBuffer()
+		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
+			, *m_commandPool
 			, m_uniformBuffer->getDatas()
 			, *m_uniformBuffer
 			, ashes::PipelineStageFlag::eVertexShader );
@@ -285,7 +364,8 @@ namespace vkapp
 		m_vertexLayout->createAttribute( 1u
 			, ashes::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
-		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
+		m_stagingBuffer->uploadVertexData( *m_graphicsQueue
+			, *m_commandPool
 			, m_vertexData
 			, *m_vertexBuffer );
 	}
@@ -338,7 +418,7 @@ namespace vkapp
 			, 2u
 			, 0u );
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
-		m_commandBuffers = m_swapChain->createCommandBuffers();
+		m_commandBuffers = m_swapChain->createCommandBuffers( *m_commandPool );
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
 		{
@@ -386,13 +466,12 @@ namespace vkapp
 		if ( resources )
 		{
 			auto before = std::chrono::high_resolution_clock::now();
-			auto & queue = m_device->getGraphicsQueue();
-			queue.submit( *m_commandBuffers[resources->getBackBuffer()]
+			m_graphicsQueue->submit( *m_commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
 				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
-			m_swapChain->present( *resources );
+			m_swapChain->present( *resources, *m_presentQueue );
 			ashes::UInt64Array values{ 0u, 0u };
 			m_queryPool->getResults( 0u
 				, 2u

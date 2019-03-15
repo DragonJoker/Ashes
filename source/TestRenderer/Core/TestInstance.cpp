@@ -1,4 +1,4 @@
-#include "Core/TestRenderer.hpp"
+#include "Core/TestInstance.hpp"
 
 #include "Core/TestConnection.hpp"
 #include "Core/TestDevice.hpp"
@@ -11,8 +11,8 @@
 
 namespace test_renderer
 {
-	Renderer::Renderer( Configuration const & configuration )
-		: ashes::Renderer{ ashes::ClipDirection::eTopDown, "test", configuration }
+	Instance::Instance( Configuration const & configuration )
+		: ashes::Instance{ ashes::ClipDirection::eTopDown, "test", configuration }
 	{
 		m_features.hasTexBufferRange = true;
 		m_features.hasImageTexture = true;
@@ -25,17 +25,26 @@ namespace test_renderer
 		m_gpus.emplace_back( std::make_unique< PhysicalDevice >( *this ) );
 	}
 
-	Renderer::~Renderer()
+	Instance::~Instance()
 	{
 	}
 
-	ashes::DevicePtr Renderer::createDevice( ashes::ConnectionPtr && connection )const
+	ashes::DevicePtr Instance::createDevice( ashes::ConnectionPtr connection
+		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
+		, ashes::StringArray enabledLayers
+		, ashes::StringArray enabledExtensions
+		, ashes::PhysicalDeviceFeatures enabledFeatures )const
 	{
 		ashes::DevicePtr result;
 
 		try
 		{
-			result = std::make_shared< Device >( *this, std::move( connection ) );
+			result = std::make_shared< Device >( *this
+				, std::move( connection )
+				, std::move( queueCreateInfos )
+				, std::move( enabledLayers )
+				, std::move( enabledExtensions )
+				, std::move( enabledFeatures ) );
 		}
 		catch ( std::exception & exc )
 		{
@@ -45,15 +54,15 @@ namespace test_renderer
 		return result;
 	}
 
-	ashes::ConnectionPtr Renderer::createConnection( uint32_t deviceIndex
-		, ashes::WindowHandle && handle )const
+	ashes::ConnectionPtr Instance::createConnection( ashes::PhysicalDevice const & gpu
+		, ashes::WindowHandle handle )const
 	{
 		return std::make_unique< Connection >( *this
-			, deviceIndex
+			, gpu
 			, std::move( handle ) );
 	}
 
-	std::array< float, 16 > Renderer::frustum( float left
+	std::array< float, 16 > Instance::frustum( float left
 		, float right
 		, float bottom
 		, float top
@@ -72,7 +81,7 @@ namespace test_renderer
 		return result;
 	}
 
-	std::array< float, 16 > Renderer::perspective( float radiansFovY
+	std::array< float, 16 > Instance::perspective( float radiansFovY
 		, float aspect
 		, float zNear
 		, float zFar )const
@@ -89,7 +98,7 @@ namespace test_renderer
 		return result;
 	}
 
-	std::array< float, 16 > Renderer::ortho( float left
+	std::array< float, 16 > Instance::ortho( float left
 		, float right
 		, float bottom
 		, float top

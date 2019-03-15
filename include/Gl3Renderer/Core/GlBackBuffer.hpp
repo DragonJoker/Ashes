@@ -29,8 +29,8 @@ namespace gl_renderer
 		*	L'index de l'image, parmi les images de la swap chain.
 		*/
 		BackBuffer( ashes::Device const & device
-			, ashes::TexturePtr && image
-			, ashes::TextureViewPtr && view
+			, ashes::TexturePtr image
+			, ashes::TextureViewPtr view
 			, uint32_t imageIndex );
 	};
 }

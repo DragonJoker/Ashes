@@ -44,7 +44,7 @@ namespace ashes
 		*/
 		FrameBuffer( RenderPass const & renderPass
 			, Extent2D const & dimensions
-			, FrameBufferAttachmentArray && textures );
+			, FrameBufferAttachmentArray textures );
 
 	public:
 		/**

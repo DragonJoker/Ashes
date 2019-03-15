@@ -6,7 +6,7 @@
 #include "Core/VkBackBuffer.hpp"
 #include "Core/VkDevice.hpp"
 #include "Core/VkPhysicalDevice.hpp"
-#include "Core/VkRenderer.hpp"
+#include "Core/VkInstance.hpp"
 #include "Image/VkTexture.hpp"
 #include "RenderPass/VkFrameBuffer.hpp"
 #include "RenderPass/VkRenderPass.hpp"
@@ -20,9 +20,11 @@
 namespace vk_renderer
 {
 	SwapChain::SwapChain( Device const & device
+		, ashes::CommandPool const & commandPool
 		, ashes::Extent2D const & size )
 		: ashes::SwapChain{ device, size }
 		, m_device{ device }
+		, m_commandPool{ commandPool }
 		, m_surface{ device.getPresentSurface() }
 	{
 		// On choisit le format de la surface.
@@ -38,7 +40,7 @@ namespace vk_renderer
 
 		for ( auto & resource : m_renderingResources )
 		{
-			resource = std::make_unique< ashes::RenderingResources >( device );
+			resource = std::make_unique< ashes::RenderingResources >( device, commandPool );
 		}
 	}
 
@@ -115,7 +117,7 @@ namespace vk_renderer
 		return result;
 	}
 
-	ashes::CommandBufferPtrArray SwapChain::createCommandBuffers()const
+	ashes::CommandBufferPtrArray SwapChain::createCommandBuffers( ashes::CommandPool const & commandPool )const
 	{
 		ashes::CommandBufferPtrArray result;
 		result.resize( m_backBuffers.size() );
@@ -123,7 +125,7 @@ namespace vk_renderer
 		for ( auto & commandBuffer : result )
 		{
 			commandBuffer = std::make_unique< CommandBuffer >( m_device
-				, static_cast< CommandPool const & >( m_device.getGraphicsCommandPool() )
+				, static_cast< CommandPool const & >( commandPool )
 				, true );
 		}
 
@@ -157,9 +159,10 @@ namespace vk_renderer
 		return nullptr;
 	}
 
-	void SwapChain::present( ashes::RenderingResources & resources )
+	void SwapChain::present( ashes::RenderingResources & resources
+		, ashes::Queue const & queue )
 	{
-		auto res = static_cast< Queue const & >( m_device.getPresentQueue() ).presentBackBuffer( { *this }
+		auto res = static_cast< Queue const & >( queue ).presentBackBuffer( { *this }
 			, { resources.getBackBuffer() }
 			, { static_cast< Semaphore const & >( resources.getRenderingFinishedSemaphore() ) } );
 		doCheckNeedReset( res, false, "Image presentation" );
@@ -218,8 +221,8 @@ namespace vk_renderer
 				break;
 			}
 
-			if ( ( swapchainPresentMode != VK_PRESENT_MODE_MAILBOX_KHR ) &&
-				( mode == ashes::PresentMode::eImmediate ) )
+			if ( ( swapchainPresentMode != VK_PRESENT_MODE_MAILBOX_KHR ) 
+				&& ( mode == ashes::PresentMode::eImmediate ) )
 			{
 				swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
 			}
@@ -394,7 +397,7 @@ namespace vk_renderer
 
 		for ( auto & resource : m_renderingResources )
 		{
-			resource = std::make_unique< ashes::RenderingResources >( m_device );
+			resource = std::make_unique< ashes::RenderingResources >( m_device, m_commandPool );
 		}
 
 		onReset();

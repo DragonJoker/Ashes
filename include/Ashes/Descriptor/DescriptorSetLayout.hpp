@@ -38,7 +38,7 @@ namespace ashes
 		*	Les attaches du layout.
 		*/
 		DescriptorSetLayout( Device const & device
-			, DescriptorSetLayoutBindingArray && bindings );
+			, DescriptorSetLayoutBindingArray bindings );
 
 	public:
 		/**

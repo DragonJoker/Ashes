@@ -38,7 +38,7 @@ namespace vk_renderer
 		*\param[in] gpu
 		*	The Vulkan physical GPU.
 		*/
-		PhysicalDevice( Renderer & renderer
+		PhysicalDevice( Instance & instance
 			, VkPhysicalDevice gpu );
 		/**
 		*\copydoc	ashes::PhysicalDevice::initialise
@@ -52,9 +52,9 @@ namespace vk_renderer
 		*\return
 		*	The GPU's supported extensions names.
 		*/
-		inline auto const & getExtensionNames()const
+		inline ashes::StringArray const & getExtensionNames()const
 		{
-			return m_deviceExtensionNames;
+			return m_extensionNames;
 		}
 		/**
 		*\~french
@@ -64,9 +64,9 @@ namespace vk_renderer
 		*\return
 		*	The GPU's supported layers names.
 		*/
-		inline auto const & getLayerNames()const
+		inline ashes::StringArray const & getLayerNames()const
 		{
-			return m_deviceLayerNames;
+			return m_layerNames;
 		}
 		/**
 		*\~french
@@ -82,9 +82,9 @@ namespace vk_renderer
 		}
 
 	private:
-		Renderer & m_renderer;
+		Instance & m_instance;
 		VkPhysicalDevice m_gpu{ VK_NULL_HANDLE };
-		std::vector< char const * > m_deviceExtensionNames;
-		std::vector< char const * > m_deviceLayerNames;
+		ashes::StringArray m_extensionNames;
+		ashes::StringArray m_layerNames;
 	};
 }

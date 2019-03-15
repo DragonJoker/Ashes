@@ -23,7 +23,7 @@ namespace d3d11_renderer
 	public:
 		Pipeline( Device const & device
 			, ashes::PipelineLayout const & layout
-			, ashes::GraphicsPipelineCreateInfo && createInfo );
+			, ashes::GraphicsPipelineCreateInfo createInfo );
 		~Pipeline();
 		PushConstantsBuffer findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
 

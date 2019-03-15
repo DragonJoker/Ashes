@@ -35,10 +35,14 @@ namespace common
 	}
 
 	RenderTarget::RenderTarget( ashes::Device const & device
+		, ashes::CommandPool const & commandPool
+		, ashes::Queue const & transferQueue
 		, ashes::Extent2D const & size
-		, Scene && scene
-		, ImagePtrArray && images )
+		, Scene scene
+		, ImagePtrArray images )
 		: m_device{ device }
+		, m_commandPool{ commandPool }
+		, m_transferQueue{ transferQueue }
 		, m_scene{ std::move( scene ) }
 		, m_images{ std::move( images ) }
 		, m_size{ size }
@@ -82,12 +86,13 @@ namespace common
 		doUpdate( duration );
 	}
 
-	void RenderTarget::draw( std::chrono::microseconds & gpu )
+	void RenderTarget::draw( ashes::Queue const & queue
+		, std::chrono::microseconds & gpu )
 	{
 		std::chrono::nanoseconds opaque;
 		std::chrono::nanoseconds transparent;
-		m_opaque->draw( opaque );
-		m_transparent->draw( transparent );
+		m_opaque->draw( queue, opaque );
+		m_transparent->draw( queue, transparent );
 		gpu = std::chrono::duration_cast< std::chrono::microseconds >( opaque + transparent );
 	}
 
@@ -107,8 +112,6 @@ namespace common
 
 	void RenderTarget::doCleanup()
 	{
-		m_updateCommandBuffer.reset();
-
 		m_stagingBuffer.reset();
 
 		m_transparent.reset();
@@ -124,7 +127,6 @@ namespace common
 
 	void RenderTarget::doCreateStagingBuffer()
 	{
-		m_updateCommandBuffer = m_device.getGraphicsCommandPool().createCommandBuffer();
 		m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( m_device
 			, 0u
 			, 200u * 1024u * 1024u );
@@ -159,11 +161,13 @@ namespace common
 				, 4u );
 			auto view = textureNode->texture->createView( ashes::TextureViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat() );
-			stagingTexture->uploadTextureData( *m_updateCommandBuffer
+			stagingTexture->uploadTextureData( m_transferQueue
+				, m_commandPool
 				, image->format
 				, image->data
 				, *view );
-			textureNode->texture->generateMipmaps();
+			textureNode->texture->generateMipmaps( m_commandPool
+				, m_transferQueue );
 			m_textureNodes.emplace_back( textureNode );
 		}
 	}

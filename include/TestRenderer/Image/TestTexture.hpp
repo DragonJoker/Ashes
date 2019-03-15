@@ -4,8 +4,6 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___TestRenderer_Texture_HPP___
-#define ___TestRenderer_Texture_HPP___
 #pragma once
 
 #include "TestRendererPrerequisites.hpp"
@@ -87,5 +85,3 @@ namespace test_renderer
 		Device const & m_device;
 	};
 }
-
-#endif

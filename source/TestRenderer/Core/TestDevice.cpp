@@ -11,7 +11,7 @@ See LICENSE file in root folder.
 #include "Command/TestQueue.hpp"
 #include "Core/TestConnection.hpp"
 #include "Core/TestPhysicalDevice.hpp"
-#include "Core/TestRenderer.hpp"
+#include "Core/TestInstance.hpp"
 #include "Core/TestSwapChain.hpp"
 #include "Descriptor/TestDescriptorPool.hpp"
 #include "Descriptor/TestDescriptorSetLayout.hpp"
@@ -33,54 +33,29 @@ See LICENSE file in root folder.
 
 namespace test_renderer
 {
-	Device::Device( Renderer const & renderer
-		, ashes::ConnectionPtr && connection )
-		: ashes::Device{ renderer, connection->getGpu(), *connection }
-		, m_renderer{ renderer }
+	Device::Device( Instance const & instance
+		, ashes::ConnectionPtr connection
+		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
+		, ashes::StringArray enabledLayers
+		, ashes::StringArray enabledExtensions
+		, ashes::PhysicalDeviceFeatures enabledFeatures )
+		: ashes::Device{ instance
+			, connection->getGpu()
+			, *connection
+			, std::move( queueCreateInfos )
+			, std::move( enabledLayers )
+			, std::move( enabledExtensions )
+			, std::move( enabledFeatures ) }
+		, m_instance{ instance }
 		, m_connection{ static_cast< Connection * >( connection.release() ) }
 		, m_gpu{ static_cast< PhysicalDevice const & >( ashes::Device::getPhysicalDevice() ) }
 	{
 		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
-		m_presentQueue = std::make_unique< Queue >( *this, m_connection->getPresentQueueFamilyIndex() );
-		m_presentCommandPool = std::make_unique< CommandPool >( *this
-			, m_presentQueue->getFamilyIndex()
-			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
-
-		if ( m_connection->getGraphicsQueueFamilyIndex() != m_connection->getPresentQueueFamilyIndex() )
-		{
-			m_graphicsQueue = std::make_unique< Queue >( *this, m_connection->getPresentQueueFamilyIndex() );
-		}
-		else
-		{
-			m_graphicsQueue = std::make_unique< Queue >( *this, m_connection->getGraphicsQueueFamilyIndex() );
-		}
-
-		m_graphicsCommandPool = std::make_unique< CommandPool >( *this
-			, m_graphicsQueue->getFamilyIndex()
-			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
-
-		if ( m_connection->getGraphicsQueueFamilyIndex() != m_connection->getComputeQueueFamilyIndex() )
-		{
-			m_computeQueue = std::make_unique< Queue >( *this, m_connection->getComputeQueueFamilyIndex() );
-		}
-		else
-		{
-			m_computeQueue = std::make_unique< Queue >( *this, m_connection->getGraphicsQueueFamilyIndex() );
-		}
-
-		m_computeCommandPool = std::make_unique< CommandPool >( *this
-			, m_computeQueue->getFamilyIndex()
-			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
+		doCreateQueues();
 	}
 
 	Device::~Device()
 	{
-		m_graphicsCommandPool.reset();
-		m_graphicsQueue.reset();
-		m_presentCommandPool.reset();
-		m_presentQueue.reset();
-		m_computeCommandPool.reset();
-		m_computeQueue.reset();
 	}
 
 	ashes::StagingTexturePtr Device::createStagingTexture( ashes::Format format
@@ -102,7 +77,7 @@ namespace test_renderer
 			, pushConstantRanges );
 	}
 
-	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray && bindings )const
+	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const
 	{
 		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
 	}
@@ -170,13 +145,14 @@ namespace test_renderer
 			, memoryFlags );
 	}
 
-	ashes::SwapChainPtr Device::createSwapChain( ashes::Extent2D const & size )const
+	ashes::SwapChainPtr Device::createSwapChain( ashes::CommandPool const & commandPool
+		, ashes::Extent2D const & size )const
 	{
 		ashes::SwapChainPtr result;
 
 		try
 		{
-			result = std::make_unique< SwapChain >( *this, size );
+			result = std::make_unique< SwapChain >( *this, commandPool, size );
 		}
 		catch ( std::exception & exc )
 		{
@@ -232,7 +208,35 @@ namespace test_renderer
 	{
 	}
 
+	ashes::QueuePtr Device::getQueue( uint32_t familyIndex
+		, uint32_t index )const
+	{
+		auto it = m_queues.find( familyIndex );
+
+		if ( it == m_queues.end() )
+		{
+			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find family index within created queues" };
+		}
+
+		if ( it->second.second <= index )
+		{
+			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find queue with wanted index within its family" };
+		}
+
+		return std::make_unique< Queue >( *this, it->second.first, index );
+	}
+
 	void Device::waitIdle()const
 	{
+	}
+
+	void Device::doCreateQueues()
+	{
+		for ( auto & queueCreateInfo : m_queueCreateInfos )
+		{
+			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
+				, QueueCreateCount{ queueCreateInfo, 0u } ).first;
+			it->second.second++;
+		}
 	}
 }

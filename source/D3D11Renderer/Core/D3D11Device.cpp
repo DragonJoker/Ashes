@@ -12,7 +12,7 @@ See LICENSE file in root folder.
 #include "Core/D3D11Connection.hpp"
 #include "Core/D3D11DummyIndexBuffer.hpp"
 #include "Core/D3D11PhysicalDevice.hpp"
-#include "Core/D3D11Renderer.hpp"
+#include "Core/D3D11Instance.hpp"
 #include "Core/D3D11SwapChain.hpp"
 #include "Descriptor/D3D11DescriptorPool.hpp"
 #include "Descriptor/D3D11DescriptorSetLayout.hpp"
@@ -71,58 +71,31 @@ namespace d3d11_renderer
 		}
 	}
 
-	Device::Device( Renderer const & renderer
-		, ashes::ConnectionPtr && connection )
-		: ashes::Device{ renderer, connection->getGpu(), *connection }
-		, m_renderer{ renderer }
-		, m_connection{ static_cast< Connection * >( connection.release() ) }
+	Device::Device( Instance const & instance
+		, ashes::ConnectionPtr connection
+		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
+		, ashes::StringArray enabledLayers
+		, ashes::StringArray enabledExtensions
+		, ashes::PhysicalDeviceFeatures enabledFeatures )
+		: ashes::Device{ instance
+			, connection->getGpu()
+			, *connection
+			, std::move( queueCreateInfos )
+			, std::move( enabledLayers )
+			, std::move( enabledExtensions )
+			, std::move( enabledFeatures ) }
+		, m_instance{ instance }
+		, m_connection{ std::move( connection ) }
 		, m_gpu{ static_cast< PhysicalDevice const & >( ashes::Device::getPhysicalDevice() ) }
 	{
 		doCreateD3D11Device();
 		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
-
-		m_presentQueue = std::make_unique< Queue >( *this
-			, m_connection->getPresentQueueFamilyIndex() );
-		m_presentCommandPool = std::make_unique< CommandPool >( *this
-			, m_presentQueue->getFamilyIndex()
-			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
-
-		m_graphicsQueue = std::make_unique< Queue >( *this
-			, m_connection->getPresentQueueFamilyIndex() );
-		m_graphicsCommandPool = std::make_unique< CommandPool >( *this
-			, m_graphicsQueue->getFamilyIndex()
-			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
-
-		m_computeQueue = std::make_unique< Queue >( *this
-			, m_connection->getComputeQueueFamilyIndex() );
-		m_computeCommandPool = std::make_unique< CommandPool >( *this
-			, m_computeQueue->getFamilyIndex()
-			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
-
-		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
-		m_dummyIndexed = ashes::makeBuffer< uint32_t >( *this
-			, count
-			, ashes::BufferTarget::eIndexBuffer | ashes::BufferTarget::eTransferDst
-			, ashes::MemoryPropertyFlag::eHostVisible );
-
-		if ( auto * buffer = m_dummyIndexed->lock( 0u
-			, count
-			, ashes::MemoryMapFlag::eWrite ) )
-		{
-			std::copy( dummyIndex, dummyIndex + count, buffer );
-			m_dummyIndexed->flush( 0, count );
-			m_dummyIndexed->unlock();
-		}
+		doCreateDummyIndexBuffer();
+		doCreateQueues();
 	}
 
 	Device::~Device()
 	{
-		m_graphicsCommandPool.reset();
-		m_graphicsQueue.reset();
-		m_presentCommandPool.reset();
-		m_presentQueue.reset();
-		m_computeCommandPool.reset();
-		m_computeQueue.reset();
 		m_dummyIndexed.reset();
 
 		m_deviceContext->ClearState();
@@ -158,7 +131,7 @@ namespace d3d11_renderer
 			, pushConstantRanges );
 	}
 
-	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray && bindings )const
+	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const
 	{
 		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
 	}
@@ -226,13 +199,14 @@ namespace d3d11_renderer
 			, memoryFlags );
 	}
 
-	ashes::SwapChainPtr Device::createSwapChain( ashes::Extent2D const & size )const
+	ashes::SwapChainPtr Device::createSwapChain( ashes::CommandPool const & commandPool
+		, ashes::Extent2D const & size )const
 	{
 		ashes::SwapChainPtr result;
 
 		try
 		{
-			result = std::make_unique< SwapChain >( *this, size );
+			result = std::make_unique< SwapChain >( *this, commandPool, size );
 		}
 		catch ( std::exception & exc )
 		{
@@ -298,6 +272,24 @@ namespace d3d11_renderer
 #endif
 	}
 
+	ashes::QueuePtr Device::getQueue( uint32_t familyIndex
+		, uint32_t index )const
+	{
+		auto it = m_queues.find( familyIndex );
+
+		if ( it == m_queues.end() )
+		{
+			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find family index within created queues" };
+		}
+
+		if ( it->second.second <= index )
+		{
+			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find queue with wanted index within its family" };
+		}
+
+		return std::make_unique< Queue >( *this, it->second.first, index );
+	}
+
 	void Device::waitIdle()const
 	{
 		m_deviceContext->End( m_waitIdleQuery );
@@ -316,7 +308,7 @@ namespace d3d11_renderer
 
 	void Device::doCreateD3D11Device()
 	{
-		auto factory = m_renderer.getDXGIFactory();
+		auto factory = m_instance.getDXGIFactory();
 
 		std::vector< D3D_FEATURE_LEVEL > requestedFeatureLevels
 		{
@@ -375,6 +367,34 @@ namespace d3d11_renderer
 			D3D11_QUERY_DESC desc{};
 			desc.Query = D3D11_QUERY_EVENT;
 			m_device->CreateQuery( &desc, &m_waitIdleQuery );
+		}
+	}
+
+	void Device::doCreateDummyIndexBuffer()
+	{
+		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
+		m_dummyIndexed = ashes::makeBuffer< uint32_t >( *this
+			, count
+			, ashes::BufferTarget::eIndexBuffer | ashes::BufferTarget::eTransferDst
+			, ashes::MemoryPropertyFlag::eHostVisible );
+
+		if ( auto * buffer = m_dummyIndexed->lock( 0u
+			, count
+			, ashes::MemoryMapFlag::eWrite ) )
+		{
+			std::copy( dummyIndex, dummyIndex + count, buffer );
+			m_dummyIndexed->flush( 0, count );
+			m_dummyIndexed->unlock();
+		}
+	}
+
+	void Device::doCreateQueues()
+	{
+		for ( auto & queueCreateInfo : m_queueCreateInfos )
+		{
+			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
+				, QueueCreateCount{ queueCreateInfo, 0u } ).first;
+			it->second.second++;
 		}
 	}
 }

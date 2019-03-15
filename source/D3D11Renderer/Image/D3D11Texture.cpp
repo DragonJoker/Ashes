@@ -4,7 +4,7 @@
 #include "Command/D3D11Queue.hpp"
 #include "Core/D3D11Device.hpp"
 #include "Core/D3D11PhysicalDevice.hpp"
-#include "Core/D3D11Renderer.hpp"
+#include "Core/D3D11Instance.hpp"
 #include "Miscellaneous/D3D11DeviceMemory.hpp"
 #include "Command/D3D11Queue.hpp"
 #include "Image/D3D11TextureView.hpp"

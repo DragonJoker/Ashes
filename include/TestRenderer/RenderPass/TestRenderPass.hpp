@@ -17,13 +17,13 @@ namespace test_renderer
 	{
 	public:
 		RenderPass( Device const & device
-			, ashes::RenderPassCreateInfo && createInfo );
+			, ashes::RenderPassCreateInfo createInfo );
 		~RenderPass();
 		/**
 		*\copydoc	ashes::RenderPass::createFrameBuffer
 		*/
 		ashes::FrameBufferPtr createFrameBuffer( ashes::Extent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray && textures )const override;
+			, ashes::FrameBufferAttachmentArray textures )const override;
 
 	private:
 		struct Subpass

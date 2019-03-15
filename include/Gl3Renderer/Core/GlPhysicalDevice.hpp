@@ -34,7 +34,7 @@ namespace gl_renderer
 		*\param[in] renderer
 		*	The rendering instance.
 		*/
-		PhysicalDevice( Renderer & renderer );
+		PhysicalDevice( Instance & instance );
 		/**
 		*\copydoc	ashes::PhysicalDevice::initialise
 		*/
@@ -55,9 +55,9 @@ namespace gl_renderer
 			return m_minor;
 		}
 
-		inline Renderer const & getRenderer()const
+		inline Instance const & getInstance()const
 		{
-			return m_renderer;
+			return m_instance;
 		}
 
 	private:
@@ -88,7 +88,7 @@ namespace gl_renderer
 		void doGetValuesI( GLenum name, float( &value )[3] )const;
 
 	private:
-		Renderer & m_renderer;
+		Instance & m_instance;
 		ashes::StringArray m_deviceExtensionNames;
 		ashes::StringArray m_deviceSPIRVExtensionNames;
 		std::vector< GlShaderBinaryFormat > m_shaderBinaryFormats;

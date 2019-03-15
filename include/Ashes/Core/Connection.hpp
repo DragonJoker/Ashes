@@ -32,24 +32,24 @@ namespace ashes
 		*\brief
 		*	Constructor.
 		*\param[in] renderer
-		*	The Renderer instance.
-		*\param[in] deviceIndex
-		*	The physical device index.
+		*	The Instance instance.
+		*\param[in] gpu
+		*	The physical device.
 		*\param[in] handle
 		*	The window handle.
 		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] renderer
-		*	L'instance de Renderer.
-		*\param[in] deviceIndex
-		*	L'indice du périphérique physique.
+		*	L'instance.
+		*\param[in] gpu
+		*	Le périphérique physique.
 		*\param[in] handle
 		*	Le descripteur de la fenêtre.
 		*/
-		Connection( Renderer const & renderer
-			, uint32_t deviceIndex
-			, WindowHandle && handle );
+		Connection( Instance const & instance
+			, PhysicalDevice const & gpu
+			, WindowHandle handle );
 
 	public:
 		/**
@@ -61,6 +61,15 @@ namespace ashes
 		*	Destructeur.
 		*/
 		virtual ~Connection() = default;
+		/**
+		*\~english
+		*\brief
+		*	Checks whether a queue family of the physical device supports presentation to the surface.
+		*\~french
+		*\brief
+		*	Vérifie si une famille de file du périphérique physique supporte la présentation à la surface.
+		*/
+		virtual bool getSurfaceSupport( uint32_t queueFamilyIndex )const = 0;
 		/**
 		*\~english
 		*name

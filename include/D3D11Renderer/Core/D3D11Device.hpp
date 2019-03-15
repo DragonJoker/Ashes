@@ -4,35 +4,25 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Core/D3D11Connection.hpp"
+#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 #include <Ashes/Buffer/Buffer.hpp>
+#include <Ashes/Core/Connection.hpp>
 #include <Ashes/Core/Device.hpp>
+#include <Ashes/Miscellaneous/QueueCreateInfo.hpp>
 
 namespace d3d11_renderer
 {
-	/**
-	*\brief
-	*	Classe contenant les informations liées au GPU logique.
-	*/
 	class Device
 		: public ashes::Device
 	{
 	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] d3d11_renderer
-		*	L'instance de Renderer.
-		*\param[in] connection
-		*	La connection à l'application.
-		*/
-		Device( Renderer const & renderer
-			, ashes::ConnectionPtr && connection );
-		/**
-		*\brief
-		*	Destructeur.
-		*/
+		Device( Instance const & instance
+			, ashes::ConnectionPtr connection
+			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
+			, ashes::StringArray enabledLayers
+			, ashes::StringArray enabledExtensions
+			, ashes::PhysicalDeviceFeatures enabledFeatures );
 		~Device();
 		/**
 		*\copydoc	ashes::Device::createStagingTexture
@@ -51,7 +41,7 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::Device::createDescriptorSetLayout
 		*/
-		ashes::DescriptorSetLayoutPtr createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray && bindings )const override;
+		ashes::DescriptorSetLayoutPtr createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const override;
 		/**
 		*\copydoc	ashes::Device::createDescriptorPool
 		*/
@@ -99,7 +89,8 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::Device::createSwapChain
 		*/
-		ashes::SwapChainPtr createSwapChain( ashes::Extent2D const & size )const override;
+		ashes::SwapChainPtr createSwapChain( ashes::CommandPool const & commandPool
+			, ashes::Extent2D const & size )const override;
 		/**
 		*\copydoc	ashes::Device::createSemaphore
 		*/
@@ -132,6 +123,11 @@ namespace d3d11_renderer
 		*/
 		void debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const override;
 		/**
+		*\copydoc	ashes::Device::getQueue
+		*/
+		ashes::QueuePtr getQueue( uint32_t familyIndex
+			, uint32_t index )const override;
+		/**
 		*\brief
 		*	Attend que le périphérique soit inactif.
 		*/
@@ -144,9 +140,9 @@ namespace d3d11_renderer
 		*\return
 		*	The rendering API.
 		*/
-		inline Renderer const & getRenderer()const
+		inline Instance const & getInstance()const
 		{
-			return m_renderer;
+			return m_instance;
 		}
 		/**
 		*\~french
@@ -156,7 +152,7 @@ namespace d3d11_renderer
 		*\return
 		*	The connection to the application.
 		*/
-		inline Connection const & getConnection()const
+		inline ashes::Connection const & getConnection()const
 		{
 			return *m_connection;
 		}
@@ -192,15 +188,19 @@ namespace d3d11_renderer
 
 	private:
 		void doCreateD3D11Device();
+		void doCreateDummyIndexBuffer();
+		void doCreateQueues();
 
 	private:
-		Renderer const & m_renderer;
+		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
-		ConnectionPtr m_connection;
+		ashes::ConnectionPtr m_connection;
 		ID3D11Device * m_device;
 		ID3D11DeviceContext * m_deviceContext;
 		ID3D11Query * m_waitIdleQuery;
 		D3D_FEATURE_LEVEL m_featureLevel;
+		using QueueCreateCount = std::pair< ashes::DeviceQueueCreateInfo, uint32_t >;
+		std::map< uint32_t, QueueCreateCount > m_queues;
 #if !defined( NDEBUG )
 		ID3D11Debug * m_debug;
 #endif

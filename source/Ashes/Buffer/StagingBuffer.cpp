@@ -55,7 +55,6 @@ namespace ashes
 		, BufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
-		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
 		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 			, PipelineStageFlag::eTransfer
 			, getBuffer().makeTransferSource() );
@@ -66,12 +65,6 @@ namespace ashes
 			, buffer
 			, size
 			, offset );
-		commandBuffer.end();
-
-		auto fence = m_device.createFence();
-		m_device.getGraphicsQueue().submit( commandBuffer
-			, fence.get() );
-		fence->wait( FenceTimeout );
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
@@ -80,7 +73,6 @@ namespace ashes
 		, VertexBufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
-		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
 		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 			, PipelineStageFlag::eTransfer
 			, getBuffer().makeTransferSource() );
@@ -95,12 +87,6 @@ namespace ashes
 		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 			, ashes::PipelineStageFlag::eVertexInput
 			, buffer.getBuffer().makeVertexShaderInputResource() );
-		commandBuffer.end();
-
-		auto fence = m_device.createFence();
-		m_device.getGraphicsQueue().submit( commandBuffer
-			, fence.get() );
-		fence->wait( FenceTimeout );
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
@@ -109,7 +95,6 @@ namespace ashes
 		, UniformBufferBase const & buffer
 		, PipelineStageFlags dstStageFlags )const
 	{
-		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
 		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 			, PipelineStageFlag::eTransfer
 			, getBuffer().makeTransferSource() );
@@ -124,12 +109,6 @@ namespace ashes
 		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 			, dstStageFlags
 			, buffer.getBuffer().makeUniformBufferInput() );
-		commandBuffer.end();
-
-		auto fence = m_device.createFence();
-		m_device.getGraphicsQueue().submit( commandBuffer
-			, fence.get() );
-		fence->wait( FenceTimeout );
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( uint8_t * data
@@ -164,7 +143,6 @@ namespace ashes
 		, BufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
-		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
 		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 			, PipelineStageFlag::eTransfer
 			, buffer.makeTransferSource() );
@@ -175,12 +153,6 @@ namespace ashes
 			, getBuffer()
 			, size
 			, offset );
-		commandBuffer.end();
-
-		auto fence = m_device.createFence();
-		m_device.getGraphicsQueue().submit( commandBuffer
-			, fence.get() );
-		fence->wait( FenceTimeout );
 	}
 
 	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & commandBuffer
@@ -189,7 +161,6 @@ namespace ashes
 		, VertexBufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
-		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
 		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 			, PipelineStageFlag::eTransfer
 			, buffer.getBuffer().makeTransferSource() );
@@ -204,12 +175,6 @@ namespace ashes
 		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 			, ashes::PipelineStageFlag::eVertexInput
 			, buffer.getBuffer().makeVertexShaderInputResource() );
-		commandBuffer.end();
-
-		auto fence = m_device.createFence();
-		m_device.getGraphicsQueue().submit( commandBuffer
-			, fence.get() );
-		fence->wait( FenceTimeout );
 	}
 
 	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & commandBuffer
@@ -218,7 +183,6 @@ namespace ashes
 		, UniformBufferBase const & buffer
 		, PipelineStageFlags dstStageFlags )const
 	{
-		commandBuffer.begin( CommandBufferUsageFlag::eOneTimeSubmit );
 		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 			, PipelineStageFlag::eTransfer
 			, buffer.getBuffer().makeTransferSource() );
@@ -233,11 +197,5 @@ namespace ashes
 		commandBuffer.memoryBarrier( PipelineStageFlag::eTransfer
 			, dstStageFlags
 			, buffer.getBuffer().makeUniformBufferInput() );
-		commandBuffer.end();
-
-		auto fence = m_device.createFence();
-		m_device.getGraphicsQueue().submit( commandBuffer
-			, fence.get() );
-		fence->wait( FenceTimeout );
 	}
 }

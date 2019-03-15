@@ -10,7 +10,7 @@ namespace ashes
 {
 	ComputePipeline::ComputePipeline( Device const & device
 		, PipelineLayout const & layout
-		, ComputePipelineCreateInfo && createInfo )
+		, ComputePipelineCreateInfo createInfo )
 		: m_device{ device }
 		, m_createInfo
 		{

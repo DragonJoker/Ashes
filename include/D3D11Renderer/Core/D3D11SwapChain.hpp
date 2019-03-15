@@ -1,6 +1,6 @@
 /**
 *\file
-*	Renderer.h
+*	Instance.h
 *\author
 *	Sylvain Doremus
 */
@@ -33,6 +33,7 @@ namespace d3d11_renderer
 		*	The render surface dimensions.
 		*/
 		SwapChain( Device const & device
+			, ashes::CommandPool const & commandPool
 			, ashes::Extent2D const & size );
 		/**
 		*\~french
@@ -54,7 +55,7 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::SwapChain::createCommandBuffers
 		*/
-		ashes::CommandBufferPtrArray createCommandBuffers()const override;
+		ashes::CommandBufferPtrArray createCommandBuffers( ashes::CommandPool const & commandPool )const override;
 		/**
 		*\copydoc	ashes::SwapChain::getResources
 		*/
@@ -62,7 +63,8 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::SwapChain::present
 		*/
-		void present( ashes::RenderingResources & resources )override;
+		void present( ashes::RenderingResources & resources
+			, ashes::Queue const & queue )override;
 		/**
 		*\copydoc	ashes::SwapChain::createDepthStencil
 		*/
@@ -153,5 +155,6 @@ namespace d3d11_renderer
 		IDXGISwapChain * m_swapChain;
 		DXGI_SWAP_CHAIN_DESC m_desc;
 		DXGI_SWAP_CHAIN_DESC1 m_desc1;
+		ashes::CommandPool const & m_commandPool;
 	};
 }

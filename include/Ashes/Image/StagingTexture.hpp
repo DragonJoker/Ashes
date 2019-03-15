@@ -49,6 +49,43 @@ namespace ashes
 		*	Upload.
 		**/
 		/**@{*/
+		void uploadTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, ImageSubresourceLayers const & subresourceLayers
+			, Format format
+			, Offset3D const & offset
+			, Extent2D const & extent
+			, uint8_t const * const data
+			, TextureView const & texture )const;
+		inline void uploadTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, ImageSubresourceLayers const & subresourceLayers
+			, Format format
+			, Offset3D const & offset
+			, Extent2D const & extent
+			, ByteArray const & data
+			, TextureView const & texture )const;
+		void uploadTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, Format format
+			, uint8_t const * const data
+			, TextureView const & texture )const;
+		inline void uploadTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, Format format
+			, ByteArray const & data
+			, TextureView const & texture )const;
+		void copyTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, Format format
+			, TextureView const & texture )const;
+		void copyTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, ImageSubresourceLayers const & subresourceLayers
+			, Format format
+			, Offset3D const & offset
+			, Extent2D const & extent
+			, TextureView const & texture )const;
 		void uploadTextureData( CommandBuffer const & commandBuffer
 			, ImageSubresourceLayers const & subresourceLayers
 			, Format format
@@ -86,25 +123,29 @@ namespace ashes
 		*	Download.
 		**/
 		/**@{*/
-		void downloadTextureData( CommandBuffer const & commandBuffer
+		void downloadTextureData( Queue const & queue
+			, CommandPool const & commandPool
 			, ImageSubresourceLayers const & subresourceLayers
 			, Format format
 			, Offset3D const & offset
 			, Extent2D const & extent
 			, uint8_t * data
 			, TextureView const & texture )const;
-		inline void downloadTextureData( CommandBuffer const & commandBuffer
+		inline void downloadTextureData( Queue const & queue
+			, CommandPool const & commandPool
 			, ImageSubresourceLayers const & subresourceLayers
 			, Format format
 			, Offset3D const & offset
 			, Extent2D const & extent
 			, ByteArray & data
 			, TextureView const & texture )const;
-		void downloadTextureData( CommandBuffer const & commandBuffer
+		void downloadTextureData( Queue const & queue
+			, CommandPool const & commandPool
 			, Format format
 			, uint8_t * data
 			, TextureView const & texture )const;
-		inline void downloadTextureData( CommandBuffer const & commandBuffer
+		inline void downloadTextureData( Queue const & queue
+			, CommandPool const & commandPool
 			, Format format
 			, ByteArray & data
 			, TextureView const & texture )const;

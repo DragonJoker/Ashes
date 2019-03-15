@@ -4,7 +4,7 @@
 #include "Command/TestQueue.hpp"
 #include "Core/TestDevice.hpp"
 #include "Core/TestPhysicalDevice.hpp"
-#include "Core/TestRenderer.hpp"
+#include "Core/TestInstance.hpp"
 #include "Miscellaneous/TestDeviceMemory.hpp"
 #include "Command/TestQueue.hpp"
 #include "Image/TestTextureView.hpp"

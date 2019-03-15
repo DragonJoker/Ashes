@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 namespace d3d11_renderer
 {
 	BackBuffer::BackBuffer( Device const & device
-		, ashes::TexturePtr && image
+		, ashes::TexturePtr image
 		, uint32_t imageIndex
 		, ashes::Format format
 		, Texture const & imageRef )
