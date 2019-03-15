@@ -1,12 +1,12 @@
 /**
 *\file
-*	TestCreateRenderer.h
+*	TestCreateInstance.h
 *\author
 *	Sylvain Doremus
 */
 #pragma once
 
-#include <Ashes/Core/Renderer.hpp>
+#include <Ashes/Core/Instance.hpp>
 
 #if defined( _WIN32 ) && !defined( D3D11Renderer_STATIC )
 #	ifdef D3D11Renderer_EXPORTS
@@ -32,7 +32,7 @@ extern "C"
 	*\param[in] configuration
 	*	The creation options.
 	*/
-	D3D11Renderer_API ashes::Renderer * createRenderer( ashes::Renderer::Configuration const & configuration );
+	D3D11Renderer_API ashes::Instance * createInstance( ashes::Instance::Configuration const & configuration );
 	/**
 	*\~french
 	*\return

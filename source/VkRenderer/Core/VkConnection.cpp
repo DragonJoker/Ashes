@@ -5,18 +5,18 @@ See LICENSE file in root folder.
 #include "Core/VkConnection.hpp"
 
 #include "Core/VkPhysicalDevice.hpp"
-#include "Core/VkRenderer.hpp"
+#include "Core/VkInstance.hpp"
 
 #include <Ashes/Core/PlatformWindowHandle.hpp>
 
 namespace vk_renderer
 {
-	Connection::Connection( Renderer const & renderer
-		, uint32_t deviceIndex
-		, ashes::WindowHandle && handle )
-		: ashes::Connection{ renderer, deviceIndex, std::move( handle ) }
-		, m_renderer{ renderer }
-		, m_gpu{ static_cast< PhysicalDevice const & >( renderer.getPhysicalDevice( deviceIndex ) ) }
+	Connection::Connection( Instance const & instance
+		, ashes::PhysicalDevice const & gpu
+		, ashes::WindowHandle handle )
+		: ashes::Connection{ instance, gpu, std::move( handle ) }
+		, m_instance{ instance }
+		, m_gpu{ static_cast< PhysicalDevice const & >( gpu ) }
 	{
 		doCreatePresentSurface();
 		updateSurfaceCapabilities();
@@ -26,10 +26,21 @@ namespace vk_renderer
 	{
 		if ( m_presentSurface != VK_NULL_HANDLE )
 		{
-			m_renderer.vkDestroySurfaceKHR( m_renderer
+			m_instance.vkDestroySurfaceKHR( m_instance
 				, m_presentSurface
 				, nullptr );
 		}
+	}
+
+	bool Connection::getSurfaceSupport( uint32_t queueFamilyIndex )const
+	{
+		VkBool32 result;
+		auto res = m_instance.vkGetPhysicalDeviceSurfaceSupportKHR( m_gpu
+			, queueFamilyIndex
+			, m_presentSurface
+			, &result );
+		checkError( res, "Presentation surface support check" );
+		return result == VK_TRUE;
 	}
 
 	void Connection::updateSurfaceCapabilities()
@@ -37,7 +48,6 @@ namespace vk_renderer
 		doRetrieveSurfaceCapabilities();
 		doRetrieveSurfaceFormats();
 		doRetrievePresentModes();
-		doRetrievePresentationInfos();
 	}
 
 #if ASHES_WIN32
@@ -53,7 +63,7 @@ namespace vk_renderer
 			m_handle.getInternal< ashes::IMswWindowHandle >().getHwnd(),
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = m_renderer.vkCreateWin32SurfaceKHR( m_renderer
+		auto res = m_instance.vkCreateWin32SurfaceKHR( m_instance
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
@@ -73,7 +83,7 @@ namespace vk_renderer
 			m_handle.getInternal< ashes::IAndroidWindowHandle >().getWindow(),
 		};
 		DEBUG_DUMP( createInfo );
-		auto res = m_renderer.vkCreateAndroidSurfaceKHR( m_renderer
+		auto res = m_instance.vkCreateAndroidSurfaceKHR( m_instance
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
@@ -93,7 +103,7 @@ namespace vk_renderer
 			m_handle.getInternal< ashes::IXcbWindowHandle >().getConnection(),
 			m_handle.getInternal< ashes::IXcbWindowHandle >().getHandle(),
 		};
-		auto res = m_renderer.vkCreateXcbSurfaceKHR( m_renderer
+		auto res = m_instance.vkCreateXcbSurfaceKHR( m_instance
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
@@ -113,7 +123,7 @@ namespace vk_renderer
 			m_handle.getInternal< ashes::IMirWindowHandle >().getConnection(),
 			m_handle.getInternal< ashes::IMirWindowHandle >().getSurface(),
 		};
-		auto res = m_renderer.vkCreateMirSurfaceKHR( m_renderer
+		auto res = m_instance.vkCreateMirSurfaceKHR( m_instance
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
@@ -133,7 +143,7 @@ namespace vk_renderer
 			m_handle.getInternal< ashes::IWaylandWindowHandle >().getDisplay(),
 			m_handle.getInternal< ashes::IWaylandWindowHandle >().getSurface(),
 		};
-		auto res = m_renderer.vkCreateWaylandSurfaceKHR( m_renderer
+		auto res = m_instance.vkCreateWaylandSurfaceKHR( m_instance
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
@@ -153,7 +163,7 @@ namespace vk_renderer
 			m_handle.getInternal< ashes::IXWindowHandle >().getDisplay(),
 			m_handle.getInternal< ashes::IXWindowHandle >().getDrawable(),
 		};
-		auto res = m_renderer.vkCreateXlibSurfaceKHR( m_renderer
+		auto res = m_instance.vkCreateXlibSurfaceKHR( m_instance
 			, &createInfo
 			, nullptr
 			, &m_presentSurface );
@@ -171,7 +181,7 @@ namespace vk_renderer
 	{
 		// On récupère les capacités de la surface.
 		VkSurfaceCapabilitiesKHR caps;
-		auto res = m_renderer.vkGetPhysicalDeviceSurfaceCapabilitiesKHR( m_gpu
+		auto res = m_instance.vkGetPhysicalDeviceSurfaceCapabilitiesKHR( m_gpu
 			, m_presentSurface
 			, &caps );
 		checkError( res, "Surface capabilities check" );
@@ -182,7 +192,7 @@ namespace vk_renderer
 	{
 		// On récupère la liste de VkPresentModeKHR supportés par la surface.
 		uint32_t presentModeCount{};
-		auto res = m_renderer.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
+		auto res = m_instance.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
 			, m_presentSurface
 			, &presentModeCount
 			, nullptr );
@@ -191,7 +201,7 @@ namespace vk_renderer
 		if ( presentModeCount )
 		{
 			std::vector< VkPresentModeKHR > presentModes{ presentModeCount };
-			res = m_renderer.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
+			res = m_instance.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
 				, m_presentSurface
 				, &presentModeCount
 				, presentModes.data() );
@@ -204,7 +214,7 @@ namespace vk_renderer
 	{
 		// On récupère la liste de VkFormat supportés par la surface.
 		uint32_t formatCount{ 0u };
-		auto res = m_renderer.vkGetPhysicalDeviceSurfaceFormatsKHR( m_gpu
+		auto res = m_instance.vkGetPhysicalDeviceSurfaceFormatsKHR( m_gpu
 			, m_presentSurface
 			, &formatCount
 			, nullptr );
@@ -213,86 +223,12 @@ namespace vk_renderer
 		if ( formatCount )
 		{
 			std::vector< VkSurfaceFormatKHR > surfFormats{ formatCount };
-			res = m_renderer.vkGetPhysicalDeviceSurfaceFormatsKHR( m_gpu
+			res = m_instance.vkGetPhysicalDeviceSurfaceFormatsKHR( m_gpu
 				, m_presentSurface
 				, &formatCount
 				, surfFormats.data() );
 			checkError( res, "Surface formats enumeration" );
 			m_surfaceFormats = convert< ashes::SurfaceFormat >( surfFormats );
-		}
-	}
-
-	void Connection::doRetrievePresentationInfos()
-	{
-		// Parcours des propriétés des files, pour vérifier leur support de la pr�sentation.
-		std::vector< VkBool32 > supportsPresent( static_cast< uint32_t >( m_gpu.getQueueProperties().size() ) );
-		uint32_t i{ 0u };
-		m_graphicsQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
-		m_presentQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
-		m_computeQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
-
-		for ( auto & present : supportsPresent )
-		{
-			m_renderer.vkGetPhysicalDeviceSurfaceSupportKHR( m_gpu
-				, i
-				, m_presentSurface
-				, &present );
-
-			if ( m_gpu.getQueueProperties()[i].queueCount > 0 )
-			{
-				if ( m_gpu.getQueueProperties()[i].queueFlags & ashes::QueueFlag::eGraphics )
-				{
-					// Tout d'abord on choisit une file graphique
-					if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-					{
-						m_graphicsQueueFamilyIndex = i;
-					}
-
-					// Si elle supporte aussi les calculs, on l'utilisera aussi en tant que file de calcul.
-					if ( m_gpu.getQueueProperties()[i].queueFlags & ashes::QueueFlag::eCompute
-						&& m_computeQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-					{
-						m_computeQueueFamilyIndex = i;
-					}
-
-					// Si une file supporte les graphismes et la présentation, on la préfère.
-					if ( present )
-					{
-						m_graphicsQueueFamilyIndex = i;
-						m_presentQueueFamilyIndex = i;
-						break;
-					}
-				}
-
-				if ( m_gpu.getQueueProperties()[i].queueFlags & ashes::QueueFlag::eCompute
-					&& m_computeQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-				{
-					m_computeQueueFamilyIndex = i;
-				}
-			}
-
-			++i;
-		}
-
-		if ( m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-		{
-			// Pas de file supportant les deux, on a donc 2 files distinctes.
-			for ( size_t i = 0; i < m_gpu.getQueueProperties().size(); ++i )
-			{
-				if ( supportsPresent[i] )
-				{
-					m_presentQueueFamilyIndex = static_cast< uint32_t >( i );
-					break;
-				}
-			}
-		}
-
-		// Si on n'en a pas trouvé, on génère une erreur.
-		if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
-			|| m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
-			|| m_computeQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-		{
-			checkError( VK_ERROR_INITIALIZATION_FAILED, "Queue families retrieval" );
 		}
 	}
 }

@@ -14,7 +14,7 @@
 #include <Ashes/Core/BackBuffer.hpp>
 #include <Ashes/Core/Connection.hpp>
 #include <Ashes/Core/Device.hpp>
-#include <Ashes/Core/Renderer.hpp>
+#include <Ashes/Core/Instance.hpp>
 #include <Ashes/Core/RenderingResources.hpp>
 #include <Ashes/Core/SwapChain.hpp>
 #include <Ashes/Descriptor/DescriptorSet.hpp>

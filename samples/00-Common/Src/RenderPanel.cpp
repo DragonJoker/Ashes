@@ -10,7 +10,7 @@
 #include <Ashes/Core/BackBuffer.hpp>
 #include <Ashes/Core/Connection.hpp>
 #include <Ashes/Core/Device.hpp>
-#include <Ashes/Core/Renderer.hpp>
+#include <Ashes/Core/Instance.hpp>
 #include <Ashes/Core/SwapChain.hpp>
 #include <Ashes/Descriptor/DescriptorSet.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayout.hpp>
@@ -76,12 +76,14 @@ namespace common
 		doCleanup();
 	}
 
-	void RenderPanel::initialise( ashes::Renderer const & renderer )
+	void RenderPanel::initialise( ashes::Instance const & instance )
 	{
 		wxSize size = GetClientSize();
 		try
 		{
-			doCreateDevice( renderer );
+			auto surface = doCreateSurface( instance );
+			std::cout << "Surface created." << std::endl;
+			doCreateDevice( instance, std::move( surface ) );
 			std::cout << "Logical device created." << std::endl;
 			doCreateSwapChain();
 			std::cout << "Swap chain created." << std::endl;
@@ -91,6 +93,8 @@ namespace common
 			doInitialise( *m_device
 				, { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 			m_gui = std::make_unique< Gui >( *m_device
+				, *m_graphicsQueue
+				, *m_commandPool
 				, ashes::Extent2D{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 			m_gui->updateView( m_renderTarget->getColourView() );
 			m_sampler = m_device->createSampler( ashes::WrapMode::eClampToEdge
@@ -172,12 +176,12 @@ namespace common
 	{
 		if ( m_ready )
 		{
-			m_renderTarget->draw( m_frameTime );
+			m_renderTarget->draw( *m_graphicsQueue, m_frameTime );
 			++m_frameCount;
 			m_framesTimes[m_frameIndex] = m_frameTime;
 			m_frameIndex = ++m_frameIndex % FrameSamplesCount;
 
-			m_gui->submit( m_device->getGraphicsQueue() );
+			m_gui->submit( *m_graphicsQueue );
 
 			auto resources = m_swapChain->getResources();
 
@@ -186,13 +190,13 @@ namespace common
 				throw std::runtime_error{ "Couldn't acquire next frame from swap chain." };
 			}
 
-			m_device->getGraphicsQueue().submit( *m_commandBuffers[resources->getBackBuffer()]
+			m_graphicsQueue->submit( *m_commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
 				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
 
-			m_swapChain->present( *resources );
+			m_swapChain->present( *resources, *m_presentQueue );
 		}
 	}
 
@@ -223,19 +227,93 @@ namespace common
 			m_stagingBuffer.reset();
 
 			m_swapChain.reset();
+			m_commandPool.reset();
+			m_presentQueue.reset();
+			m_graphicsQueue.reset();
 			m_device.reset();
 		}
 	}
 
-	void RenderPanel::doCreateDevice( ashes::Renderer const & renderer )
+	ashes::ConnectionPtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
 	{
-		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
+		auto handle = common::makeWindowHandle( *this );
+		auto & gpu = instance.getPhysicalDevice( 0u );
+		return instance.createConnection( gpu
+			, std::move( handle ) );
+	}
+
+	void RenderPanel::doInitialiseQueues( ashes::Instance const & instance
+		, ashes::Connection const & surface )
+	{
+		auto & gpu = instance.getPhysicalDevice( 0u );
+		std::vector< bool > supportsPresent( static_cast< uint32_t >( gpu.getQueueProperties().size() ) );
+		uint32_t i{ 0u };
+		m_graphicsQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
+		m_presentQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
+
+		for ( auto & present : supportsPresent )
+		{
+			auto present = surface.getSurfaceSupport( i );
+
+			if ( gpu.getQueueProperties()[i].queueCount > 0 )
+			{
+				if ( gpu.getQueueProperties()[i].queueFlags & ashes::QueueFlag::eGraphics )
+				{
+					if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
+					{
+						m_graphicsQueueFamilyIndex = i;
+					}
+
+					if ( present )
+					{
+						m_graphicsQueueFamilyIndex = i;
+						m_presentQueueFamilyIndex = i;
+						break;
+					}
+				}
+			}
+
+			++i;
+		}
+
+		if ( m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
+		{
+			for ( size_t i = 0; i < gpu.getQueueProperties().size(); ++i )
+			{
+				if ( supportsPresent[i] )
+				{
+					m_presentQueueFamilyIndex = static_cast< uint32_t >( i );
+					break;
+				}
+			}
+		}
+
+		if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
+			|| m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
+		{
+			throw ashes::Exception{ ashes::Result::eErrorInitializationFailed
+				, "Queue families retrieval" };
+		}
+	}
+
+	void RenderPanel::doCreateDevice( ashes::Instance const & instance
+		, ashes::ConnectionPtr surface )
+	{
+		doInitialiseQueues( instance, *surface );
+		m_device = instance.createDevice( std::move( surface )
+			, m_graphicsQueueFamilyIndex
+			, m_presentQueueFamilyIndex );
+		m_graphicsQueue = m_device->getQueue( m_graphicsQueueFamilyIndex, 0u );
+		m_presentQueue = m_device->getQueue( m_presentQueueFamilyIndex, 0u );
+		m_commandPool = m_device->createCommandPool( m_graphicsQueueFamilyIndex
+			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
 	}
 
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
+		m_swapChain = m_device->createSwapChain( *m_commandPool
+			, { uint32_t( size.x ), uint32_t( size.y ) } );
 		m_swapChain->setClearColour( { 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
@@ -312,7 +390,8 @@ namespace common
 			, uint32_t( m_vertexData.size() )
 			, ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
+		m_stagingBuffer->uploadVertexData( *m_graphicsQueue
+			, *m_commandPool
 			, m_vertexData
 			, *m_vertexBuffer );
 	}
@@ -357,7 +436,7 @@ namespace common
 	void RenderPanel::doPrepareFrames()
 	{
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
-		m_commandBuffers = m_swapChain->createCommandBuffers();
+		m_commandBuffers = m_swapChain->createCommandBuffers( *m_commandPool );
 		static ashes::ClearValue const clearValue{ { 1.0, 0.0, 0.0, 1.0 } };
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
@@ -409,7 +488,7 @@ namespace common
 		ImGui::SetNextWindowPos( ImVec2( 10, 10 ) );
 		ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver );
 		ImGui::Begin( "Ashes Sample", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove );
-		ImGui::TextUnformatted( getName( m_appDesc, m_device->getRenderer().getName() ).c_str() );
+		ImGui::TextUnformatted( getName( m_appDesc, m_device->getInstance().getName() ).c_str() );
 		ImGui::TextUnformatted( m_device->getProperties().deviceName.c_str() );
 
 		auto count = std::min( m_frameCount, m_framesTimes.size() );

@@ -39,7 +39,7 @@ namespace ashes
 		*/
 		ComputePipeline( Device const & device
 			, PipelineLayout const & layout
-			, ComputePipelineCreateInfo && createInfo );
+			, ComputePipelineCreateInfo createInfo );
 
 	public:
 		/**

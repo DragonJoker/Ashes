@@ -13,9 +13,9 @@ See LICENSE file in root folder.
 namespace test_renderer
 {
 	Queue::Queue( Device const & device
-		, uint32_t familyIndex )
-		: ashes::Queue{ device }
-		, m_familyIndex{ familyIndex }
+		, ashes::DeviceQueueCreateInfo createInfo
+		, uint32_t index )
+		: ashes::Queue{ device, std::move( createInfo ), index }
 	{
 	}
 

@@ -29,7 +29,7 @@ namespace common
 
 		try
 		{
-			ashes::Renderer::Configuration config
+			ashes::Instance::Configuration config
 			{
 				m_name.ToStdString(),
 				"Ashes",
@@ -39,10 +39,10 @@ namespace common
 				false,
 #endif
 			};
-			m_renderer = m_factory.create( m_rendererName.ToStdString(), config );
+			m_instance = m_factory.create( m_rendererName.ToStdString(), config );
 
-			std::cout << "Renderer instance created." << std::endl;
-			m_panel = doCreatePanel( WindowSize, *m_renderer );
+			std::cout << "Instance instance created." << std::endl;
+			m_panel = doCreatePanel( WindowSize, *m_instance );
 
 			wxBoxSizer * sizer{ new wxBoxSizer{ wxVERTICAL } };
 			sizer->Add( m_panel, wxSizerFlags{ 1 }.Expand() );
@@ -66,7 +66,7 @@ namespace common
 			m_panel->Destroy();
 		}
 
-		m_renderer.reset();
+		m_instance.reset();
 	}
 
 	void MainFrame::updateFps( std::chrono::microseconds const & durationGpu

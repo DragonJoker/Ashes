@@ -4,8 +4,6 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___TestRenderer_Buffer_HPP___
-#define ___TestRenderer_Buffer_HPP___
 #pragma once
 
 #include "TestRendererPrerequisites.hpp"
@@ -64,5 +62,3 @@ namespace test_renderer
 		void doBindMemory()override;
 	};
 }
-
-#endif

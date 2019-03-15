@@ -1,6 +1,6 @@
 /**
 *\file
-*	Renderer.h
+*	Instance.h
 *\author
 *	Sylvain Doremus
 */
@@ -21,6 +21,7 @@ namespace gl_renderer
 		*	Constructeur.
 		*/
 		SwapChain( Device const & device
+			, ashes::CommandPool const & commandPool
 			, ashes::Extent2D const & size );
 		/**
 		*\copydoc	ashes::SwapChain::reset
@@ -33,7 +34,7 @@ namespace gl_renderer
 		/**
 		*\copydoc	ashes::SwapChain::createCommandBuffers
 		*/
-		ashes::CommandBufferPtrArray createCommandBuffers()const override;
+		ashes::CommandBufferPtrArray createCommandBuffers( ashes::CommandPool const & cmdPool )const override;
 		/**
 		*\copydoc	ashes::SwapChain::getResources
 		*/
@@ -41,7 +42,8 @@ namespace gl_renderer
 		/**
 		*\copydoc	ashes::SwapChain::present
 		*/
-		void present( ashes::RenderingResources & resources )override;
+		void present( ashes::RenderingResources & resources
+			, ashes::Queue const & queue )override;
 		/**
 		*\copydoc	ashes::SwapChain::createDepthStencil
 		*/

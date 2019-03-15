@@ -57,6 +57,41 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T >
+		inline void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, std::vector< T > const & data
+			, Buffer< T > const & buffer )const;
+		template< typename T >
+		inline void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, ByteArray const & data
+			, Buffer< T > const & buffer )const;
+		template< typename T >
+		inline void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, uint8_t const * const data
+			, uint32_t size
+			, Buffer< T > const & buffer )const;
+		template< typename T >
+		inline void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, std::vector< T > const & data
+			, uint32_t offset
+			, Buffer< T > const & buffer )const;
+		template< typename T >
+		inline void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, ByteArray const & data
+			, uint32_t offset
+			, Buffer< T > const & buffer )const;
+		template< typename T >
+		void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, uint8_t const * const data
+			, uint32_t size
+			, uint32_t offset
+			, Buffer< T > const & buffer )const;
+		template< typename T >
 		inline void uploadBufferData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, Buffer< T > const & buffer )const;
@@ -92,6 +127,41 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T >
+		inline void uploadVertexData( Queue const & queue
+			, CommandPool const & commandPool
+			, std::vector< T > const & data
+			, VertexBuffer< T > const & buffer )const;
+		template< typename T >
+		inline void uploadVertexData( Queue const & queue
+			, CommandPool const & commandPool
+			, ByteArray const & data
+			, VertexBuffer< T > const & buffer )const;
+		template< typename T >
+		inline void uploadVertexData( Queue const & queue
+			, CommandPool const & commandPool
+			, uint8_t const * const data
+			, uint32_t size
+			, VertexBuffer< T > const & buffer )const;
+		template< typename T >
+		inline void uploadVertexData( Queue const & queue
+			, CommandPool const & commandPool
+			, std::vector< T > const & data
+			, uint32_t offset
+			, VertexBuffer< T > const & buffer )const;
+		template< typename T >
+		inline void uploadVertexData( Queue const & queue
+			, CommandPool const & commandPool
+			, ByteArray const & data
+			, uint32_t offset
+			, VertexBuffer< T > const & buffer )const;
+		template< typename T >
+		inline void uploadVertexData( Queue const & queue
+			, CommandPool const & commandPool
+			, uint8_t const * const data
+			, uint32_t size
+			, uint32_t offset
+			, VertexBuffer< T > const & buffer )const;
+		template< typename T >
 		inline void uploadVertexData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, VertexBuffer< T > const & buffer )const;
@@ -127,6 +197,34 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T >
+		inline void uploadUniformData( Queue const & queue
+			, CommandPool const & commandPool
+			, std::vector< T > const & data
+			, UniformBuffer< T > const & buffer
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eVertexShader )const;
+		template< typename T >
+		inline void uploadUniformData( Queue const & queue
+			, CommandPool const & commandPool
+			, T const * const data
+			, uint32_t count
+			, UniformBuffer< T > const & buffer
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eVertexShader )const;
+		template< typename T >
+		inline void uploadUniformData( Queue const & queue
+			, CommandPool const & commandPool
+			, std::vector< T > const & data
+			, uint32_t offset
+			, UniformBuffer< T > const & buffer
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eVertexShader )const;
+		template< typename T >
+		inline void uploadUniformData( Queue const & queue
+			, CommandPool const & commandPool
+			, T const * const data
+			, uint32_t count
+			, uint32_t offset
+			, UniformBuffer< T > const & buffer
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eVertexShader )const;
+		template< typename T >
 		inline void uploadUniformData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, UniformBuffer< T > const & buffer
@@ -150,6 +248,7 @@ namespace ashes
 			, uint32_t offset
 			, UniformBuffer< T > const & buffer
 			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eVertexShader )const;
+		/**@}*/
 		/**@}*/
 		/**
 		*\name
@@ -162,30 +261,36 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T >
-		inline void downloadBufferData( CommandBuffer const & commandBuffer
+		inline void downloadBufferData( Queue const & queue
+			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadBufferData( CommandBuffer const & commandBuffer
+		inline void downloadBufferData( Queue const & queue
+			, CommandPool const & commandPool
 			, ByteArray & data
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadBufferData( CommandBuffer const & commandBuffer
+		inline void downloadBufferData( Queue const & queue
+			, CommandPool const & commandPool
 			, uint8_t * data
 			, uint32_t size
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadBufferData( CommandBuffer const & commandBuffer
+		inline void downloadBufferData( Queue const & queue
+			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, uint32_t offset
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadBufferData( CommandBuffer const & commandBuffer
+		inline void downloadBufferData( Queue const & queue
+			, CommandPool const & commandPool
 			, ByteArray & data
 			, uint32_t offset
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		void downloadBufferData( CommandBuffer const & commandBuffer
+		void downloadBufferData( Queue const & queue
+			, CommandPool const & commandPool
 			, uint8_t * data
 			, uint32_t size
 			, uint32_t offset
@@ -197,30 +302,36 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T >
-		inline void downloadVertexData( CommandBuffer const & commandBuffer
+		inline void downloadVertexData( Queue const & queue
+			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadVertexData( CommandBuffer const & commandBuffer
+		inline void downloadVertexData( Queue const & queue
+			, CommandPool const & commandPool
 			, ByteArray & data
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadVertexData( CommandBuffer const & commandBuffer
+		inline void downloadVertexData( Queue const & queue
+			, CommandPool const & commandPool
 			, uint8_t * data
 			, uint32_t size
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadVertexData( CommandBuffer const & commandBuffer
+		inline void downloadVertexData( Queue const & queue
+			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, uint32_t offset
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadVertexData( CommandBuffer const & commandBuffer
+		inline void downloadVertexData( Queue const & queue
+			, CommandPool const & commandPool
 			, ByteArray & data
 			, uint32_t offset
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadVertexData( CommandBuffer const & commandBuffer
+		inline void downloadVertexData( Queue const & queue
+			, CommandPool const & commandPool
 			, uint8_t * data
 			, uint32_t size
 			, uint32_t offset
@@ -232,24 +343,28 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T >
-		inline void downloadUniformData( CommandBuffer const & commandBuffer
+		inline void downloadUniformData( Queue const & queue
+			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, UniformBuffer< T > const & buffer
 			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eVertexShader )const;
 		template< typename T >
-		inline void downloadUniformData( CommandBuffer const & commandBuffer
+		inline void downloadUniformData( Queue const & queue
+			, CommandPool const & commandPool
 			, T * data
 			, uint32_t count
 			, UniformBuffer< T > const & buffer
 			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eVertexShader )const;
 		template< typename T >
-		inline void downloadUniformData( CommandBuffer const & commandBuffer
+		inline void downloadUniformData( Queue const & queue
+			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, uint32_t offset
 			, UniformBuffer< T > const & buffer
 			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eVertexShader )const;
 		template< typename T >
-		inline void downloadUniformData( CommandBuffer const & commandBuffer
+		inline void downloadUniformData( Queue const & queue
+			, CommandPool const & commandPool
 			, T * data
 			, uint32_t count
 			, uint32_t offset

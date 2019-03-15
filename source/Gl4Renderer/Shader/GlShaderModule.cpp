@@ -6,9 +6,9 @@ See LICENSE file in root folder.
 
 #include "Core/GlDevice.hpp"
 #include "Core/GlPhysicalDevice.hpp"
-#include "Core/GlRenderer.hpp"
+#include "Core/GlInstance.hpp"
 
-#include <Ashes/Core/Renderer.hpp>
+#include <Ashes/Core/Instance.hpp>
 #include <Ashes/Pipeline/ShaderStageState.hpp>
 
 #include <iostream>
@@ -278,7 +278,7 @@ namespace gl_renderer
 
 	void ShaderModule::compile( ashes::ShaderStageState const & state )const
 	{
-		if ( static_cast< Renderer const & >( m_device.getRenderer() ).isSPIRVSupported() )
+		if ( static_cast< Instance const & >( m_device.getInstance() ).isSPIRVSupported() )
 		{
 			auto context = m_device.getContext();
 			context->glShaderBinary( 1u

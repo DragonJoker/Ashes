@@ -17,9 +17,9 @@ namespace vkapp
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size )
 		: common::RenderPanel{ parent
-		, size
-		, AppName.ToStdString()
-		, AppDesc.ToStdString() }
+			, size
+			, AppName.ToStdString()
+			, AppDesc.ToStdString() }
 	{
 	}
 
@@ -63,6 +63,8 @@ namespace vkapp
 		}
 
 		m_renderTarget = std::make_unique< RenderTarget >( device
+			, *m_commandPool
+			, *m_graphicsQueue
 			, size
 			, std::move( scene )
 			, std::move( images ) );

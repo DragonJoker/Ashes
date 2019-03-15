@@ -1,8 +1,7 @@
 /*
 See LICENSE file in root folder
 */
-#ifndef ___TestRenderer_QueryPool_H___
-#define ___TestRenderer_QueryPool_H___
+#pragma once
 
 #include "TestRendererPrerequisites.hpp"
 
@@ -77,5 +76,3 @@ namespace test_renderer
 			, ashes::UInt64Array & data )const override;
 	};
 }
-
-#endif

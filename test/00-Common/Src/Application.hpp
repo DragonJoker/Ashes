@@ -23,7 +23,7 @@ namespace common
 			, std::chrono::microseconds const & durationCpu );
 		void updateFps( std::chrono::microseconds const & duration );
 
-		inline wxString const & getRendererName()const
+		inline wxString const & getInstanceName()const
 		{
 			return m_rendererName;
 		}

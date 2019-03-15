@@ -14,10 +14,12 @@
 namespace vkapp
 {
 	RenderTarget::RenderTarget( ashes::Device const & device
+		, ashes::CommandPool const & commandPool
+		, ashes::Queue const & transferQueue
 		, ashes::Extent2D const & size
-		, common::Scene && scene
-		, common::ImagePtrArray && images )
-		: common::RenderTarget{ device, size, std::move( scene ), std::move( images ) }
+		, common::Scene scene
+		, common::ImagePtrArray images )
+		: common::RenderTarget{ device, commandPool, transferQueue, size, std::move( scene ), std::move( images ) }
 		, m_sceneUbo{ ashes::makeUniformBuffer< common::SceneData >( device
 			, 1u
 			, ashes::BufferTarget::eTransferDst
@@ -58,7 +60,8 @@ namespace vkapp
 		data.mtxView = m_camera.getView();
 		auto & pos = m_camera.getPosition();
 		data.cameraPosition = utils::Vec4{ pos[0], pos[1], pos[2], 0.0f };
-		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
+		m_stagingBuffer->uploadUniformData( m_transferQueue
+			, m_commandPool
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo
 			, ashes::PipelineStageFlag::eVertexShader );
@@ -76,6 +79,8 @@ namespace vkapp
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::OpaqueRendering >( std::make_unique< NodesRenderer >( device
+				, m_commandPool
+				, m_transferQueue
 				, common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, true
@@ -94,6 +99,8 @@ namespace vkapp
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::TransparentRendering >( std::make_unique< NodesRenderer >( device
+				, m_commandPool
+				, m_transferQueue
 				, common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, false

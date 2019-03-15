@@ -2,8 +2,6 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___TestRenderer_StagingBuffer_HPP___
-#define ___TestRenderer_StagingBuffer_HPP___
 #pragma once
 
 #include "Buffer/TestBuffer.hpp"
@@ -71,5 +69,3 @@ namespace test_renderer
 		Buffer m_buffer;
 	};
 }
-
-#endif

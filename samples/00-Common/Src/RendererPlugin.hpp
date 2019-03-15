@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <Ashes/Core/Renderer.hpp>
+#include <Ashes/Core/Instance.hpp>
 
 #include <Ashes/Utils/DynamicLibrary.hpp>
 
@@ -15,7 +15,7 @@ namespace common
 	class RendererPlugin
 	{
 	private:
-		using CreatorFunction = ashes::Renderer *( * )( ashes::Renderer::Configuration const & );
+		using CreatorFunction = ashes::Instance *( * )( ashes::Instance::Configuration const & );
 		using NamerFunction = char const *( * )();
 
 	public:
@@ -24,9 +24,9 @@ namespace common
 		RendererPlugin & operator=( RendererPlugin const & ) = delete;
 		RendererPlugin & operator=( RendererPlugin && ) = default;
 
-		RendererPlugin( ashes::DynamicLibrary && library
+		RendererPlugin( ashes::DynamicLibrary library
 			, RendererFactory & factory );
-		ashes::RendererPtr create( ashes::Renderer::Configuration const & configuration );
+		ashes::InstancePtr create( ashes::Instance::Configuration const & configuration );
 
 		std::string const & getShortName()
 		{

@@ -72,12 +72,16 @@ namespace vkapp
 	}
 
 	GeometryPass::GeometryPass( ashes::Device const & device
+		, ashes::CommandPool const & commandPool
+		, ashes::Queue const & transferQueue
 		, std::string const & fragmentShaderFile
 		, GeometryPassResult const & gbuffer
 		, ashes::Format depthFormat
 		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
 		, ashes::UniformBuffer< common::ObjectData > const & objectUbo )
 		: common::NodesRenderer{ device
+			, commandPool
+			, transferQueue
 			, fragmentShaderFile
 			, doGetFormats( gbuffer, depthFormat )
 			, true

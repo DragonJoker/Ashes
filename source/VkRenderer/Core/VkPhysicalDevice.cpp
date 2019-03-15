@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Core/VkPhysicalDevice.hpp"
 
-#include "Core/VkRenderer.hpp"
+#include "Core/VkInstance.hpp"
 #include "Core/VkDevice.hpp"
 
 #define VkRenderer_UsePhysicalDeviceExtensions 1
@@ -28,17 +28,17 @@ namespace vk_renderer
 		}
 	}
 
-	PhysicalDevice::PhysicalDevice( Renderer & renderer
+	PhysicalDevice::PhysicalDevice( Instance & instance
 		, VkPhysicalDevice gpu )
-		: ashes::PhysicalDevice{ renderer }
-		, m_renderer{ renderer }
+		: ashes::PhysicalDevice{ instance }
+		, m_instance{ instance }
 		, m_gpu{ gpu }
 	{
 		m_shaderVersion = 450u;
 		initialise();
 	}
 
-	std::vector< ashes::ExtensionProperties > getLayerExtensions( Renderer const & renderer
+	std::vector< ashes::ExtensionProperties > getLayerExtensions( Instance const & instance
 		, VkPhysicalDevice gpu
 		, char const * layerName )
 	{
@@ -49,14 +49,14 @@ namespace vk_renderer
 		// On récupère les extensions supportées par le GPU, pour la couche donnée.
 		do
 		{
-			res = renderer.vkEnumerateDeviceExtensionProperties( gpu
+			res = instance.vkEnumerateDeviceExtensionProperties( gpu
 				, layerName
 				, &extensionsCount
 				, nullptr );
 			checkError( res, "GPU's extensions enumeration" );
 
 			extensions.resize( extensionsCount );
-			res = renderer.vkEnumerateDeviceExtensionProperties( gpu
+			res = instance.vkEnumerateDeviceExtensionProperties( gpu
 				, layerName
 				, &extensionsCount
 				, extensions.data() );
@@ -69,7 +69,7 @@ namespace vk_renderer
 	void PhysicalDevice::initialise()
 	{
 		// On récupère les extensions supportées par le GPU.
-		m_extensions = getLayerExtensions( m_renderer, m_gpu, nullptr );
+		m_extensions = getLayerExtensions( m_instance, m_gpu, nullptr );
 
 #if VkRenderer_UsePhysicalDeviceExtensions
 
@@ -80,13 +80,13 @@ namespace vk_renderer
 
 		do
 		{
-			res = m_renderer.vkEnumerateDeviceLayerProperties( m_gpu
+			res = m_instance.vkEnumerateDeviceLayerProperties( m_gpu
 				, &layersCount
 				, NULL );
 			checkError( res, "GPU's layers enumeration" );
 			deviceLayerProperties.resize( layersCount );
 
-			res = m_renderer.vkEnumerateDeviceLayerProperties( m_gpu
+			res = m_instance.vkEnumerateDeviceLayerProperties( m_gpu
 				, &layersCount,
 				deviceLayerProperties.data() );
 			checkError( res, "GPU's layers enumeration" );
@@ -97,20 +97,20 @@ namespace vk_renderer
 
 		for ( auto & layer : m_layerExtensions )
 		{
-			layer.extensions = getLayerExtensions( m_renderer
+			layer.extensions = getLayerExtensions( m_instance
 				, m_gpu
 				, layer.layerName.c_str() );
 		}
 
-		m_renderer.completeLayerNames( m_deviceLayerNames );
-		m_deviceExtensionNames.push_back( VK_KHR_SWAPCHAIN_EXTENSION_NAME );
-		checkExtensionsAvailability( m_extensions, m_deviceExtensionNames );
+		m_instance.completeLayerNames( m_layerNames );
+		m_extensionNames.push_back( VK_KHR_SWAPCHAIN_EXTENSION_NAME );
+		checkExtensionsAvailability( m_extensions, m_extensionNames );
 
 #else
 
-		for ( auto layer : m_renderer.getLayers() )
+		for ( auto layer : m_instance.getLayers() )
 		{
-			layer.extensions = getLayerExtensions( m_renderer
+			layer.extensions = getLayerExtensions( m_instance
 				, m_gpu
 				, layer.layerName.c_str() );
 			m_layerExtensions.push_back( layer );
@@ -122,9 +122,9 @@ namespace vk_renderer
 		VkPhysicalDeviceMemoryProperties memoryProperties;
 		VkPhysicalDeviceProperties properties;
 		VkPhysicalDeviceFeatures features;
-		m_renderer.vkGetPhysicalDeviceMemoryProperties( m_gpu, &memoryProperties );
-		m_renderer.vkGetPhysicalDeviceProperties( m_gpu, &properties );
-		m_renderer.vkGetPhysicalDeviceFeatures( m_gpu, &features );
+		m_instance.vkGetPhysicalDeviceMemoryProperties( m_gpu, &memoryProperties );
+		m_instance.vkGetPhysicalDeviceProperties( m_gpu, &properties );
+		m_instance.vkGetPhysicalDeviceFeatures( m_gpu, &features );
 
 		for ( uint32_t i = 0u; i < memoryProperties.memoryHeapCount; ++i )
 		{
@@ -331,12 +331,12 @@ namespace vk_renderer
 
 		// Et enfin les propriétés des familles de files du GPU.
 		uint32_t queueCount{ 0 };
-		m_renderer.vkGetPhysicalDeviceQueueFamilyProperties( m_gpu, &queueCount, nullptr );
+		m_instance.vkGetPhysicalDeviceQueueFamilyProperties( m_gpu, &queueCount, nullptr );
 		assert( queueCount >= 1 );
 
 		m_queueProperties.reserve( queueCount );
 		std::vector< VkQueueFamilyProperties > queueProperties( queueCount );
-		m_renderer.vkGetPhysicalDeviceQueueFamilyProperties( m_gpu, &queueCount, queueProperties.data() );
+		m_instance.vkGetPhysicalDeviceQueueFamilyProperties( m_gpu, &queueCount, queueProperties.data() );
 		assert( queueCount >= 1 );
 
 		for ( auto & props : queueProperties )
@@ -357,7 +357,7 @@ namespace vk_renderer
 		for ( size_t fmt = 0; fmt < size_t( ashes::Format::eRange ); fmt++ )
 		{
 			VkFormatProperties props;
-			m_renderer.vkGetPhysicalDeviceFormatProperties( m_gpu, VkFormat( fmt ), &props );
+			m_instance.vkGetPhysicalDeviceFormatProperties( m_gpu, VkFormat( fmt ), &props );
 			m_formatProperties[fmt] = convert( props );
 		}
 	}

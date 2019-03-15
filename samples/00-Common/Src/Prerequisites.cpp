@@ -2,7 +2,7 @@
 
 #include <Ashes/Core/Connection.hpp>
 #include <Ashes/Core/PlatformWindowHandle.hpp>
-#include <Ashes/Core/Renderer.hpp>
+#include <Ashes/Core/Instance.hpp>
 #include <Ashes/Image/TextureView.hpp>
 
 #if defined( __WXGTK__ )
@@ -21,19 +21,16 @@
 
 namespace common
 {
-	ashes::ConnectionPtr makeConnection( wxWindow * window
-		, ashes::Renderer const & renderer )
+	ashes::WindowHandle makeWindowHandle( wxWindow const & window )
 	{
 #if defined( __WXMSW__ )
 
-		auto handle = ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( wxGetInstance()
-			, window->GetHandle() ) };
-		return renderer.createConnection( 0u
-			, std::move( handle ) );
+		return ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( wxGetInstance()
+			, window.GetHandle() ) };
 
 #else
 
-		GtkWidget * widget{ static_cast< GtkWidget * >( window->GetHandle() ) };
+		GtkWidget * widget{ static_cast< GtkWidget * >( window.GetHandle() ) };
 		Window xwindow{ None };
 		Display * xdisplay{ nullptr };
 
@@ -54,9 +51,8 @@ namespace common
 			}
 		}
 
-		return renderer.createConnection( 0u
-			, ashes::WindowHandle{ std::make_unique< ashes::IXWindowHandle >( xwindow
-				, xdisplay ) } );
+		return ashes::WindowHandle{ std::make_unique< ashes::IXWindowHandle >( xwindow
+				, xdisplay ) };
 
 #endif
 	}

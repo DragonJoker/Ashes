@@ -11,7 +11,7 @@ See LICENSE file in root folder.
 #include "Command/VkQueue.hpp"
 #include "Core/VkConnection.hpp"
 #include "Core/VkPhysicalDevice.hpp"
-#include "Core/VkRenderer.hpp"
+#include "Core/VkInstance.hpp"
 #include "Core/VkSwapChain.hpp"
 #include "Descriptor/VkDescriptorPool.hpp"
 #include "Descriptor/VkDescriptorSetLayout.hpp"
@@ -33,115 +33,75 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	Device::Device( Renderer const & renderer
-		, ashes::ConnectionPtr && connection )
-		: ashes::Device{ renderer, connection->getGpu(), *connection }
-		, m_renderer{ renderer }
+	namespace
+	{
+		char const * convert( std::string const & value )
+		{
+			return value.c_str();
+		}
+
+		std::vector< char const * > convert( ashes::StringArray const & values )
+		{
+			std::vector< char const * > result;
+
+			for ( auto & value : values )
+			{
+				result.push_back( convert( value ) );
+			}
+
+			return result;
+		}
+	}
+
+	Device::Device( Instance const & instance
+		, ashes::ConnectionPtr connection
+		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
+		, ashes::StringArray enabledLayers
+		, ashes::StringArray enabledExtensions
+		, ashes::PhysicalDeviceFeatures enabledFeatures )
+		: ashes::Device{ instance
+			, connection->getGpu()
+			, *connection
+			, std::move( queueCreateInfos )
+			, std::move( enabledLayers )
+			, std::move( enabledExtensions )
+			, std::move( enabledFeatures ) }
+		, m_instance{ instance }
 		, m_connection{ static_cast< Connection * >( connection.release() ) }
 		, m_gpu{ static_cast< PhysicalDevice const & >( ashes::Device::getPhysicalDevice() ) }
-		, m_enabledFeatures{ convert( m_gpu.getFeatures() ) }
+		, m_enabledFeatures{ convert( ashes::Device::m_enabledFeatures ) }
 	{
 		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
-		std::vector< VkDeviceQueueCreateInfo > queueCreateInfos;
-		std::vector< float > queuePriorities = { 1.0f };
-
-		queueCreateInfos.push_back(
-		{
-			VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,                 // sType
-			nullptr,                                                    // pNext
-			0,                                                          // flags
-			m_connection->getGraphicsQueueFamilyIndex(),                // queueFamilyIndex
-			static_cast< uint32_t >( queuePriorities.size() ),          // queueCount
-			queuePriorities.data()                                      // pQueuePriorities
-		} );
-
-		if ( m_connection->getPresentQueueFamilyIndex() != m_connection->getGraphicsQueueFamilyIndex() )
-		{
-			queueCreateInfos.push_back(
-			{
-				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,             // sType
-				nullptr,                                                // pNext
-				0,                                                      // flags
-				m_connection->getPresentQueueFamilyIndex(),             // queueFamilyIndex
-				static_cast< uint32_t >( queuePriorities.size() ),      // queueCount
-				queuePriorities.data()                                  // pQueuePriorities
-			} );
-		}
-
-		if ( m_connection->getComputeQueueFamilyIndex() != m_connection->getGraphicsQueueFamilyIndex() )
-		{
-			queueCreateInfos.push_back(
-			{
-				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,             // sType
-				nullptr,                                                // pNext
-				0,                                                      // flags
-				m_connection->getComputeQueueFamilyIndex(),             // queueFamilyIndex
-				static_cast< uint32_t >( queuePriorities.size() ),      // queueCount
-				queuePriorities.data()                                  // pQueuePriorities
-			} );
-		}
+		auto vkQueueCreateInfos = convert< VkDeviceQueueCreateInfo >( m_queueCreateInfos );
+		auto vkEnabledLayers = convert( m_enabledLayers );
+		auto vkEnabledExtensions = convert( m_enabledExtensions );
 
 		VkDeviceCreateInfo deviceInfo
 		{
 			VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
 			nullptr,
-			0,                                                                               // flags
-			static_cast< uint32_t >( queueCreateInfos.size() ),                              // queueCreateInfoCount
-			queueCreateInfos.data(),                                                         // pQueueCreateInfos
-			static_cast< uint32_t >( m_gpu.getLayerNames().size() ),                         // enabledLayerCount
-			m_gpu.getLayerNames().empty() ? nullptr : m_gpu.getLayerNames().data(),          // ppEnabledLayerNames
-			static_cast< uint32_t >( m_gpu.getExtensionNames().size() ),                     // enabledExtensionCount
-			m_gpu.getExtensionNames().empty() ? nullptr : m_gpu.getExtensionNames().data(),  // ppEnabledExtensionNames
-			&m_enabledFeatures                                                               // pEnabledFeatures
+			0,                                                                   // flags
+			static_cast< uint32_t >( queueCreateInfos.size() ),                  // queueCreateInfoCount
+			vkQueueCreateInfos.data(),                                           // pQueueCreateInfos
+			static_cast< uint32_t >( vkEnabledLayers.size() ),                   // enabledLayerCount
+			vkEnabledLayers.empty() ? nullptr : vkEnabledLayers.data(),          // ppEnabledLayerNames
+			static_cast< uint32_t >( vkEnabledExtensions.size() ),               // enabledExtensionCount
+			vkEnabledExtensions.empty() ? nullptr : vkEnabledExtensions.data(),  // ppEnabledExtensionNames
+			&m_enabledFeatures                                                   // pEnabledFeatures
 		};
 		DEBUG_DUMP( deviceInfo );
 
-		auto res = renderer.vkCreateDevice( m_gpu, &deviceInfo, nullptr, &m_device );
+		auto res = m_instance.vkCreateDevice( m_gpu, &deviceInfo, nullptr, &m_device );
 		checkError( res, "LogicalDevice creation" );
 
-#define VK_LIB_DEVICE_FUNCTION( fun ) fun = reinterpret_cast< PFN_##fun >( renderer.vkGetDeviceProcAddr( m_device, #fun ) );
+		doCreateQueues();
+
+#define VK_LIB_DEVICE_FUNCTION( fun ) fun = reinterpret_cast< PFN_##fun >( instance.vkGetDeviceProcAddr( m_device, #fun ) );
 #include "Miscellaneous/VulkanFunctionsList.inl"
-
-		m_presentQueue = std::make_unique< Queue >( *this, m_connection->getPresentQueueFamilyIndex() );
-		m_presentCommandPool = std::make_unique< CommandPool >( *this
-			, m_presentQueue->getFamilyIndex()
-			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
-
-		if ( m_connection->getGraphicsQueueFamilyIndex() != m_connection->getPresentQueueFamilyIndex() )
-		{
-			m_graphicsQueue = std::make_unique< Queue >( *this, m_connection->getPresentQueueFamilyIndex() );
-		}
-		else
-		{
-			m_graphicsQueue = std::make_unique< Queue >( *this, m_connection->getGraphicsQueueFamilyIndex() );
-		}
-
-		m_graphicsCommandPool = std::make_unique< CommandPool >( *this
-			, m_graphicsQueue->getFamilyIndex()
-			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
-
-		if ( m_connection->getGraphicsQueueFamilyIndex() != m_connection->getComputeQueueFamilyIndex() )
-		{
-			m_computeQueue = std::make_unique< Queue >( *this, m_connection->getComputeQueueFamilyIndex() );
-		}
-		else
-		{
-			m_computeQueue = std::make_unique< Queue >( *this, m_connection->getGraphicsQueueFamilyIndex() );
-		}
-
-		m_computeCommandPool = std::make_unique< CommandPool >( *this
-			, m_computeQueue->getFamilyIndex()
-			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
 	}
 
 	Device::~Device()
 	{
-		m_graphicsCommandPool.reset();
-		m_graphicsQueue.reset();
-		m_presentCommandPool.reset();
-		m_presentQueue.reset();
-		m_computeCommandPool.reset();
-		m_computeQueue.reset();
 		vkDestroyDevice( m_device, nullptr );
 	}
 
@@ -169,7 +129,7 @@ namespace vk_renderer
 			, pushConstantRanges );
 	}
 
-	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray && bindings )const
+	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const
 	{
 		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
 	}
@@ -244,13 +204,14 @@ namespace vk_renderer
 			, memoryFlags );
 	}
 
-	ashes::SwapChainPtr Device::createSwapChain( ashes::Extent2D const & size )const
+	ashes::SwapChainPtr Device::createSwapChain( ashes::CommandPool const & commandPool
+		, ashes::Extent2D const & size )const
 	{
 		ashes::SwapChainPtr result;
 
 		try
 		{
-			result = std::make_unique< SwapChain >( *this, size );
+			result = std::make_unique< SwapChain >( *this, commandPool, size );
 		}
 		catch ( std::exception & exc )
 		{
@@ -313,6 +274,21 @@ namespace vk_renderer
 #endif
 	}
 
+	ashes::QueuePtr Device::getQueue( uint32_t familyIndex
+		, uint32_t index )const
+	{
+		auto it = m_queues.find( familyIndex );
+
+		if ( it == m_queues.end() )
+		{
+			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find family index within created queues" };
+		}
+
+		return std::make_unique< Queue >( *this
+			, it->second
+			, index );
+	}
+
 	void Device::waitIdle()const
 	{
 		checkError( vkDeviceWaitIdle( m_device ), "Device wait idle" );
@@ -338,5 +314,13 @@ namespace vk_renderer
 		ashes::MemoryRequirements result = convert( requirements );
 		result.type = ashes::ResourceType::eImage;
 		return result;
+	}
+
+	void Device::doCreateQueues()
+	{
+		for ( auto & queueCreateInfo : m_queueCreateInfos )
+		{
+			m_queues.emplace( queueCreateInfo.queueFamilyIndex, queueCreateInfo );
+		}
 	}
 }

@@ -48,7 +48,7 @@ namespace gl_renderer
 		FrameBuffer( Device const & device
 			, RenderPass const & renderPass
 			, ashes::Extent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray && textures
+			, ashes::FrameBufferAttachmentArray textures
 			, bool backBuffer = false );
 		/**
 		*\brief

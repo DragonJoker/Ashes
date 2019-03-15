@@ -14,10 +14,10 @@ See LICENSE file in root folder.
 namespace d3d11_renderer
 {
 	Queue::Queue( Device const & device
-		, uint32_t familyIndex )
-		: ashes::Queue{ device }
+		, ashes::DeviceQueueCreateInfo createInfo
+		, uint32_t index )
+		: ashes::Queue{ device, std::move( createInfo ), index }
 		, m_device{ device }
-		, m_familyIndex{ familyIndex }
 	{
 		D3D11_QUERY_DESC desc{};
 		desc.Query = D3D11_QUERY_EVENT;

@@ -38,7 +38,7 @@ namespace d3d11_renderer
 		*\param[in] gpu
 		*	The Vulkan physical GPU.
 		*/
-		PhysicalDevice( Renderer & renderer
+		PhysicalDevice( Instance & instance
 			, IDXGIAdapter * adapter
 			, IDXGIAdapter1 * adapter1
 			, IDXGIAdapter2 * adapter2 );
@@ -74,7 +74,7 @@ namespace d3d11_renderer
 		}
 
 	private:
-		Renderer & m_renderer;
+		Instance & m_instance;
 		IDXGIAdapter * m_adapter;
 		IDXGIAdapter1 * m_adapter1;
 		IDXGIAdapter2 * m_adapter2;

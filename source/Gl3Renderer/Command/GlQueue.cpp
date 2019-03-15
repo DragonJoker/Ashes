@@ -13,8 +13,10 @@ See LICENSE file in root folder.
 
 namespace gl_renderer
 {
-	Queue::Queue( Device const & device )
-		: ashes::Queue{ device }
+	Queue::Queue( Device const & device
+		, ashes::DeviceQueueCreateInfo createInfo
+		, uint32_t index )
+		: ashes::Queue{ device, std::move( createInfo ), index }
 		, m_device{ device }
 	{
 	}

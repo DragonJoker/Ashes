@@ -209,11 +209,15 @@ namespace common
 	}
 
 	NodesRenderer::NodesRenderer( ashes::Device const & device
+		, ashes::CommandPool const & commandPool
+		, ashes::Queue const & transferQueue
 		, std::string const & fragmentShaderFile
 		, std::vector< ashes::Format > const & formats
 		, bool clearViews
 		, bool opaqueNodes )
 		: m_device{ device }
+		, m_commandPool{ commandPool }
+		, m_transferQueue{ transferQueue }
 		, m_opaqueNodes{ opaqueNodes }
 		, m_fragmentShaderFile{ fragmentShaderFile }
 		, m_sampler{ m_device.createSampler( ashes::WrapMode::eClampToEdge
@@ -221,8 +225,7 @@ namespace common
 			, ashes::WrapMode::eClampToEdge
 			, ashes::Filter::eLinear
 			, ashes::Filter::eLinear ) }
-		, m_updateCommandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
-		, m_commandBuffer{ m_device.getGraphicsCommandPool().createCommandBuffer() }
+		, m_commandBuffer{ commandPool.createCommandBuffer() }
 		, m_renderPass{ doCreateRenderPass( m_device, formats, clearViews ) }
 		, m_queryPool{ m_device.createQueryPool( ashes::QueryType::eTimestamp, 2u, 0u ) }
 	{
@@ -233,9 +236,10 @@ namespace common
 		doUpdate( { target.getDepthView(), target.getColourView() } );
 	}
 
-	void NodesRenderer::draw( std::chrono::nanoseconds & gpu )const
+	void NodesRenderer::draw( ashes::Queue const & queue
+		, std::chrono::nanoseconds & gpu )const
 	{
-		m_device.getGraphicsQueue().submit( *m_commandBuffer, nullptr );
+		queue.submit( *m_commandBuffer, nullptr );
 		ashes::UInt64Array values{ 0u, 0u };
 		m_queryPool->getResults( 0u
 			, 2u
@@ -268,7 +272,8 @@ namespace common
 
 		if ( m_objectsCount || m_billboardsCount )
 		{
-			stagingBuffer.uploadUniformData( *m_updateCommandBuffer
+			stagingBuffer.uploadUniformData( m_transferQueue
+				, m_commandPool
 				, m_materialsUbo->getDatas()
 				, *m_materialsUbo
 				, ashes::PipelineStageFlag::eFragmentShader );
@@ -426,14 +431,16 @@ namespace common
 					, uint32_t( vertexData.size() )
 					, ashes::BufferTarget::eTransferDst
 					, ashes::MemoryPropertyFlag::eDeviceLocal );
-				stagingBuffer.uploadVertexData( *m_updateCommandBuffer
+				stagingBuffer.uploadVertexData( m_transferQueue
+					, m_commandPool
 					, vertexData
 					, *billboardNode->vbo );
 				billboardNode->instance = ashes::makeVertexBuffer< BillboardInstanceData >( m_device
 					, uint32_t( billboard.list.size() )
 					, ashes::BufferTarget::eTransferDst
 					, ashes::MemoryPropertyFlag::eDeviceLocal );
-				stagingBuffer.uploadVertexData( *m_updateCommandBuffer
+				stagingBuffer.uploadVertexData( m_transferQueue
+					, m_commandPool
 					, billboard.list
 					, *billboardNode->instance );
 
@@ -582,14 +589,16 @@ namespace common
 					, uint32_t( submesh.vbo.data.size() )
 					, ashes::BufferTarget::eTransferDst
 					, ashes::MemoryPropertyFlag::eDeviceLocal );
-				stagingBuffer.uploadVertexData( *m_updateCommandBuffer
+				stagingBuffer.uploadVertexData( m_transferQueue
+					, m_commandPool
 					, submesh.vbo.data
 					, *submeshNode->vbo );
 				submeshNode->ibo = ashes::makeBuffer< common::Face >( m_device
 					, uint32_t( submesh.ibo.data.size() )
 					, ashes::BufferTarget::eIndexBuffer | ashes::BufferTarget::eTransferDst
 					, ashes::MemoryPropertyFlag::eDeviceLocal );
-				stagingBuffer.uploadBufferData( *m_updateCommandBuffer
+				stagingBuffer.uploadBufferData( m_transferQueue
+					, m_commandPool
 					, submesh.ibo.data
 					, *submeshNode->ibo );
 

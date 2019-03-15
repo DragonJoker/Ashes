@@ -9,7 +9,7 @@ struct TextureOperator
 	int diffuse; // 0 or 1
 	int specular; // 0 or 1
 	int emissive; // 0 or 1
-	int normal; // 0 or 1
+	int normal; // 0 for none, 1 for normals, 2 for inverted normals
 	uint shininess; // 0 for none, 1 for R, 2 for G, 4 for B, 8 for A
 	uint opacity; // 0 for none, 1 for R, 2 for G, 4 for B, 8 for A
 	uint height; // 0 for none, 1 for R, 2 for G, 4 for B, 8 for A

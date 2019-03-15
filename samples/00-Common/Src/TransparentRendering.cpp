@@ -7,14 +7,14 @@
 
 namespace common
 {
-	TransparentRendering::TransparentRendering( NodesRendererPtr && renderer
+	TransparentRendering::TransparentRendering( NodesInstancePtr renderer
 		, Scene const & scene
 		, ashes::StagingBuffer & stagingBuffer
 		, ashes::TextureViewCRefArray const & views
 		, common::TextureNodePtrArray const & textureNodes )
-		: m_renderer{ std::move( renderer ) }
+		: m_instance{ std::move( renderer ) }
 	{
-		m_renderer->initialise( scene
+		m_instance->initialise( scene
 			, stagingBuffer
 			, views
 			, textureNodes );
@@ -22,11 +22,12 @@ namespace common
 
 	void TransparentRendering::update( RenderTarget const & target )
 	{
-		m_renderer->update( target );
+		m_instance->update( target );
 	}
 
-	void TransparentRendering::draw( std::chrono::nanoseconds & gpu )const
+	void TransparentRendering::draw( ashes::Queue const & queue
+		, std::chrono::nanoseconds & gpu )const
 	{
-		m_renderer->draw( gpu );
+		m_instance->draw( queue, gpu );
 	}
 }

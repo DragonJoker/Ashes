@@ -1,7 +1,6 @@
 #include "FileUtils.hpp"
 
 #include <Core/Device.hpp>
-#include <Core/Renderer.hpp>
 
 #include <GlslToSpv.hpp>
 
@@ -297,6 +296,11 @@ namespace common
 	std::string getPath( std::string const & path )
 	{
 		return path.substr( 0, path.find_last_of( PathSeparator ) );
+	}
+
+	std::string getFileName( std::string const & path )
+	{
+		return path.substr( path.find_last_of( PathSeparator ) + 1u );
 	}
 
 #if ASHES_WIN32

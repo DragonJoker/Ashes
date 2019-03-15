@@ -14,7 +14,7 @@ namespace ashes
 {
 	FrameBuffer::FrameBuffer( RenderPass const & renderPass
 		, Extent2D const & dimensions
-		, FrameBufferAttachmentArray && attachments )
+		, FrameBufferAttachmentArray attachments )
 		: m_device{ renderPass.getDevice() }
 		, m_dimensions{ dimensions }
 		, m_attachments{ std::move( attachments ) }

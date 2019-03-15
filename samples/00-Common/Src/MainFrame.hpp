@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <Ashes/Core/Renderer.hpp>
+#include <Ashes/Core/Instance.hpp>
 
 #include <wx/frame.h>
 
@@ -21,7 +21,7 @@ namespace common
 		void cleanup();
 
 	private:
-		virtual RenderPanel * doCreatePanel( wxSize const & size, ashes::Renderer const & renderer ) = 0;
+		virtual RenderPanel * doCreatePanel( wxSize const & size, ashes::Instance const & instance ) = 0;
 
 		wxDECLARE_EVENT_TABLE();
 		void onClose( wxCloseEvent & event );
@@ -31,7 +31,7 @@ namespace common
 		wxTimer * m_timer{ nullptr };
 		wxString m_name;
 		wxString m_rendererName;
-		ashes::RendererPtr m_renderer;
+		ashes::InstancePtr m_instance;
 		RendererFactory & m_factory;
 		RenderPanel * m_panel{ nullptr };
 	};

@@ -21,7 +21,7 @@ namespace gl_renderer
 	public:
 		ComputePipeline( Device const & device
 			, ashes::PipelineLayout const & layout
-			, ashes::ComputePipelineCreateInfo && createInfo );
+			, ashes::ComputePipelineCreateInfo createInfo );
 		PushConstantsDesc findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
 
 		inline ashes::PipelineLayout const & getLayout()const

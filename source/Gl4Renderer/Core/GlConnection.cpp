@@ -4,19 +4,22 @@ See LICENSE file in root folder.
 */
 #include "Core/GlConnection.hpp"
 
-#include "Core/GlRenderer.hpp"
-
 #include <Ashes/Core/PlatformWindowHandle.hpp>
 
 namespace gl_renderer
 {
-	Connection::Connection( ashes::Renderer const & renderer
-		, uint32_t deviceIndex
-		, ashes::WindowHandle && handle )
-		: ashes::Connection{ renderer
-			, deviceIndex
+	Connection::Connection( ashes::Instance const & instance
+		, ashes::PhysicalDevice const & gpu
+		, ashes::WindowHandle handle )
+		: ashes::Connection{ instance
+			, gpu
 			, std::move( handle ) }
 	{
 		m_surfaceType = "OpenGL surface";
+	}
+
+	bool Connection::getSurfaceSupport( uint32_t queueFamilyIndex )const
+	{
+		return true;
 	}
 }

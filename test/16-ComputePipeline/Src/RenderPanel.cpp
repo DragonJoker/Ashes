@@ -11,7 +11,7 @@
 #include <Core/BackBuffer.hpp>
 #include <Core/Connection.hpp>
 #include <Core/Device.hpp>
-#include <Core/Renderer.hpp>
+#include <Core/Instance.hpp>
 #include <Core/SwapChain.hpp>
 #include <Descriptor/DescriptorSet.hpp>
 #include <Descriptor/DescriptorSetLayout.hpp>
@@ -58,7 +58,7 @@ namespace vkapp
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, ashes::Renderer const & renderer )
+		, ashes::Instance const & instance )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 		, m_offscreenVertexData
@@ -119,7 +119,9 @@ namespace vkapp
 	{
 		try
 		{
-			doCreateDevice( renderer );
+			auto surface = doCreateSurface( instance );
+			std::cout << "Surface created." << std::endl;
+			doCreateDevice( instance, std::move( surface ) );
 			std::cout << "Logical device created." << std::endl;
 			doCreateSwapChain();
 			std::cout << "Swap chain created." << std::endl;
@@ -191,7 +193,6 @@ namespace vkapp
 		{
 			m_device->waitIdle();
 
-			m_updateCommandBuffer.reset();
 			m_commandBuffer.reset();
 			m_commandBuffers.clear();
 			m_frameBuffers.clear();
@@ -243,6 +244,11 @@ namespace vkapp
 			m_objectPcbs[1].reset();
 
 			m_swapChain.reset();
+			m_computeCommandPool.reset();
+			m_commandPool.reset();
+			m_computeQueue.reset();
+			m_presentQueue.reset();
+			m_graphicsQueue.reset();
 			m_device.reset();
 		}
 	}
@@ -256,15 +262,98 @@ namespace vkapp
 			, width / height
 			, 0.01f
 			, 100.0f ) };
-		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
+		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
+			, *m_commandPool
 			, m_matrixUbo->getDatas()
 			, *m_matrixUbo
 			, ashes::PipelineStageFlag::eVertexShader );
 	}
 
-	void RenderPanel::doCreateDevice( ashes::Renderer const & renderer )
+	ashes::ConnectionPtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
 	{
-		m_device = renderer.createDevice( common::makeConnection( this, renderer ) );
+		auto handle = common::makeWindowHandle( *this );
+		auto & gpu = instance.getPhysicalDevice( 0u );
+		return instance.createConnection( gpu
+			, std::move( handle ) );
+	}
+
+	void RenderPanel::doInitialiseQueues( ashes::Instance const & instance
+		, ashes::Connection const & surface )
+	{
+		auto & gpu = instance.getPhysicalDevice( 0u );
+		std::vector< bool > supportsPresent( static_cast< uint32_t >( gpu.getQueueProperties().size() ) );
+		uint32_t i{ 0u };
+		m_graphicsQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
+		m_presentQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
+		m_computeQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
+
+		for ( auto & present : supportsPresent )
+		{
+			auto present = surface.getSurfaceSupport( i );
+
+			if ( gpu.getQueueProperties()[i].queueCount > 0 )
+			{
+				if ( gpu.getQueueProperties()[i].queueFlags & ashes::QueueFlag::eCompute
+					&& m_computeQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
+				{
+					m_computeQueueFamilyIndex = i;
+				}
+
+				if ( gpu.getQueueProperties()[i].queueFlags & ashes::QueueFlag::eGraphics )
+				{
+					if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
+					{
+						m_graphicsQueueFamilyIndex = i;
+					}
+
+					if ( present )
+					{
+						m_graphicsQueueFamilyIndex = i;
+						m_presentQueueFamilyIndex = i;
+						break;
+					}
+				}
+			}
+
+			++i;
+		}
+
+		if ( m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
+		{
+			for ( size_t i = 0; i < gpu.getQueueProperties().size(); ++i )
+			{
+				if ( supportsPresent[i] )
+				{
+					m_presentQueueFamilyIndex = static_cast< uint32_t >( i );
+					break;
+				}
+			}
+		}
+
+		if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
+			|| m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
+			|| m_computeQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
+		{
+			throw ashes::Exception{ ashes::Result::eErrorInitializationFailed
+				, "Queue families retrieval" };
+		}
+	}
+
+	void RenderPanel::doCreateDevice( ashes::Instance const & instance
+		, ashes::ConnectionPtr surface )
+	{
+		doInitialiseQueues( instance, *surface );
+		m_device = instance.createDevice( std::move( surface )
+			, m_graphicsQueueFamilyIndex
+			, m_presentQueueFamilyIndex
+			, m_computeQueueFamilyIndex );
+		m_graphicsQueue = m_device->getQueue( m_graphicsQueueFamilyIndex, 0u );
+		m_presentQueue = m_device->getQueue( m_presentQueueFamilyIndex, 0u );
+		m_computeQueue = m_device->getQueue( m_computeQueueFamilyIndex, 0u );
+		m_commandPool = m_device->createCommandPool( m_graphicsQueueFamilyIndex
+			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
+		m_computeCommandPool = m_device->createCommandPool( m_computeQueueFamilyIndex
+			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
 		m_objectPcbs[0] = std::make_unique< ashes::PushConstantsBuffer< utils::Vec4 > >( ashes::ShaderStageFlag::eFragment
 			, ashes::PushConstantArray{ { 0u, ashes::ConstantFormat::eVec4f } } );
 		m_objectPcbs[1] = std::make_unique< ashes::PushConstantsBuffer< utils::Vec4 > >( ashes::ShaderStageFlag::eFragment
@@ -276,7 +365,8 @@ namespace vkapp
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( { uint32_t( size.x ), uint32_t( size.y ) } );
+		m_swapChain = m_device->createSwapChain( *m_commandPool
+			, { uint32_t( size.x ), uint32_t( size.y ) } );
 		m_swapChain->setClearColour( { 1.0f, 0.8f, 0.4f, 0.0f } );
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
@@ -289,7 +379,6 @@ namespace vkapp
 			doCreateMainDescriptorSet();
 			doPrepareMainFrames();
 		} );
-		m_updateCommandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
 	}
 
 	void RenderPanel::doCreateTexture()
@@ -318,7 +407,8 @@ namespace vkapp
 			, ashes::WrapMode::eClampToEdge
 			, ashes::Filter::eLinear
 			, ashes::Filter::eLinear );
-		stagingTexture->uploadTextureData( m_swapChain->getDefaultResources().getCommandBuffer()
+		stagingTexture->uploadTextureData( *m_graphicsQueue
+			, *m_commandPool
 			, image.format
 			, image.data
 			, *m_view );
@@ -485,7 +575,8 @@ namespace vkapp
 			, uint32_t( m_offscreenVertexData.size() )
 			, ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
+		m_stagingBuffer->uploadVertexData( *m_graphicsQueue
+			, *m_commandPool
 			, m_offscreenVertexData
 			, *m_offscreenVertexBuffer );
 
@@ -493,7 +584,8 @@ namespace vkapp
 			, uint32_t( m_offscreenIndexData.size() )
 			, ashes::BufferTarget::eIndexBuffer | ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_stagingBuffer->uploadBufferData( m_swapChain->getDefaultResources().getCommandBuffer()
+		m_stagingBuffer->uploadBufferData( *m_graphicsQueue
+			, *m_commandPool
 			, m_offscreenIndexData
 			, *m_offscreenIndexBuffer );
 	}
@@ -592,7 +684,7 @@ namespace vkapp
 		m_offscreenQueryPool = m_device->createQueryPool( ashes::QueryType::eTimestamp
 			, 2u
 			, 0u );
-		m_commandBuffer = m_device->getGraphicsCommandPool().createCommandBuffer();
+		m_commandBuffer = m_commandPool->createCommandBuffer();
 		wxSize size{ GetClientSize() };
 		auto & commandBuffer = *m_commandBuffer;
 		auto & frameBuffer = *m_frameBuffer;
@@ -656,7 +748,8 @@ namespace vkapp
 			, 0u );
 		m_computeDescriptorSet->update();
 		m_computeUbo->getData( 0u ).textureSize = utils::IVec2{ m_swapChain->getDimensions().width, m_swapChain->getDimensions().height };
-		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
+		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
+			, *m_commandPool
 			, m_computeUbo->getDatas()
 			, *m_computeUbo
 			, ashes::PipelineStageFlag::eComputeShader );
@@ -690,7 +783,7 @@ namespace vkapp
 			, 2u
 			, 0u );
 		m_computeFence = m_device->createFence( ashes::FenceCreateFlag::eSignaled );
-		m_computeCommandBuffer = m_device->getComputeCommandPool().createCommandBuffer();
+		m_computeCommandBuffer = m_computeCommandPool->createCommandBuffer();
 		auto & commandBuffer = *m_computeCommandBuffer;
 
 		commandBuffer.begin( ashes::CommandBufferUsageFlag::eSimultaneousUse );
@@ -727,7 +820,8 @@ namespace vkapp
 			, uint32_t( m_mainVertexData.size() )
 			, ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_stagingBuffer->uploadVertexData( m_swapChain->getDefaultResources().getCommandBuffer()
+		m_stagingBuffer->uploadVertexData( *m_graphicsQueue
+			, *m_commandPool
 			, m_mainVertexData
 			, *m_mainVertexBuffer );
 	}
@@ -770,7 +864,7 @@ namespace vkapp
 	void RenderPanel::doPrepareMainFrames()
 	{
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_mainRenderPass );
-		m_commandBuffers = m_swapChain->createCommandBuffers();
+		m_commandBuffers = m_swapChain->createCommandBuffers( *m_commandPool );
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
 		{
@@ -834,12 +928,14 @@ namespace vkapp
 			, { 0, 1, 0 } );
 		m_objectUbo->getData( 0u ) = originalTranslate1 * m_rotate[0] * originalRotate;
 		m_objectUbo->getData( 1u ) = originalTranslate2 * m_rotate[1] * originalRotate;
-		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
+		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
+			, *m_commandPool
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
 			, ashes::PipelineStageFlag::eVertexShader );
 		m_computeUbo->getData( 0u ).roll = ( m_frame % GetClientSize().GetWidth() ) * 0.03f;
-		m_stagingBuffer->uploadUniformData( *m_updateCommandBuffer
+		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
+			, *m_commandPool
 			, m_computeUbo->getDatas()
 			, *m_computeUbo
 			, ashes::PipelineStageFlag::eComputeShader );
@@ -853,21 +949,20 @@ namespace vkapp
 		if ( resources )
 		{
 			auto before = std::chrono::high_resolution_clock::now();
-			auto & queue = m_device->getGraphicsQueue();
-			queue.submit( *m_commandBuffer
+			m_graphicsQueue->submit( *m_commandBuffer
 				, nullptr );
 			
 			m_computeFence->wait( ~( 0u ) );
 			m_computeFence->reset();
-			m_device->getComputeQueue().submit( *m_computeCommandBuffer
+			m_computeQueue->submit( *m_computeCommandBuffer
 				, m_computeFence.get() );
 
-			queue.submit( *m_commandBuffers[resources->getBackBuffer()]
+			m_graphicsQueue->submit( *m_commandBuffers[resources->getBackBuffer()]
 				, resources->getImageAvailableSemaphore()
 				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
-			m_swapChain->present( *resources );
+			m_swapChain->present( *resources, *m_presentQueue );
 			ashes::UInt64Array values1{ 0u, 0u };
 			ashes::UInt64Array values2{ 0u, 0u };
 			m_offscreenQueryPool->getResults( 0u

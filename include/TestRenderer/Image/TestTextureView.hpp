@@ -4,8 +4,6 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___TestRenderer_TextureView_HPP___
-#define ___TestRenderer_TextureView_HPP___
 #pragma once
 
 #include "TestRendererPrerequisites.hpp"
@@ -32,5 +30,3 @@ namespace test_renderer
 		~TextureView();
 	};
 }
-
-#endif

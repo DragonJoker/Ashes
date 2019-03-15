@@ -202,7 +202,8 @@ namespace ashes
 		*\brief
 		*	Generates the texture mipmaps.
 		*/
-		void generateMipmaps()const;
+		void generateMipmaps( CommandPool const & commandPool
+			, Queue const & queue )const;
 		/**
 		*\~english
 		*\return

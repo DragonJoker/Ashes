@@ -15,7 +15,8 @@ namespace vk_renderer
 	{
 	public:
 		Queue( Device const & device
-			, uint32_t familyIndex );
+			, ashes::DeviceQueueCreateInfo createInfo
+			, uint32_t index );
 		/**
 		*\~french
 		*\brief
@@ -51,14 +52,6 @@ namespace vk_renderer
 		*/
 		void waitIdle()const override;
 		/**
-		/**
-		*\copydoc		ashes::Queue::getFamilyIndex
-		*/
-		inline uint32_t getFamilyIndex()const override
-		{
-			return m_familyIndex;
-		}
-		/**
 		*\~french
 		*\brief
 		*	Conversion implicite vers VkQueue.
@@ -74,6 +67,5 @@ namespace vk_renderer
 	private:
 		Device const & m_device;
 		VkQueue m_queue{ VK_NULL_HANDLE };
-		uint32_t m_familyIndex{ 0u };
 	};
 }

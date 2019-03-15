@@ -4,17 +4,19 @@ See LICENSE file in root folder.
 */
 #include "RenderPass/GlRenderPass.hpp"
 
-#include "RenderPass/GlFrameBuffer.hpp"
-#include "Core/GlDevice.hpp"
 #include "Command/GlCommandBuffer.hpp"
+#include "Core/GlDevice.hpp"
 #include "Image/GlTexture.hpp"
+#include "RenderPass/GlFrameBuffer.hpp"
+
+#include <Ashes/RenderPass/RenderPassCreateInfo.hpp>
 
 #include <algorithm>
 
 namespace gl_renderer
 {
 	RenderPass::RenderPass( Device const & device
-		, ashes::RenderPassCreateInfo && createInfo )
+		, ashes::RenderPassCreateInfo createInfo )
 		: ashes::RenderPass{ device, createInfo }
 		, m_device{ device }
 	{
@@ -68,7 +70,7 @@ namespace gl_renderer
 	}
 
 	ashes::FrameBufferPtr RenderPass::createFrameBuffer( ashes::Extent2D const & dimensions
-		, ashes::FrameBufferAttachmentArray && textures )const
+		, ashes::FrameBufferAttachmentArray textures )const
 	{
 		return std::make_unique< FrameBuffer >( m_device
 			, *this

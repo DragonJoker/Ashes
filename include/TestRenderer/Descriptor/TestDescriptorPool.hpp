@@ -4,8 +4,6 @@
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___TestRenderer_DescriptorPool_HPP___
-#define ___TestRenderer_DescriptorPool_HPP___
 #pragma once
 
 #include "TestRendererPrerequisites.hpp"
@@ -43,5 +41,3 @@ namespace test_renderer
 		Device const & m_device;
 	};
 }
-
-#endif

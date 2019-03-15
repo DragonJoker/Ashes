@@ -4,14 +4,14 @@ See LICENSE file in root folder.
 */
 #include "Core/TestPhysicalDevice.hpp"
 
-#include "Core/TestRenderer.hpp"
+#include "Core/TestInstance.hpp"
 #include "Core/TestDevice.hpp"
 
 namespace test_renderer
 {
-	PhysicalDevice::PhysicalDevice( Renderer & renderer )
-		: ashes::PhysicalDevice{ renderer }
-		, m_renderer{ renderer }
+	PhysicalDevice::PhysicalDevice( Instance & instance )
+		: ashes::PhysicalDevice{ instance }
+		, m_instance{ instance }
 	{
 		m_shaderVersion = 450u;
 		initialise();

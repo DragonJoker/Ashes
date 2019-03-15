@@ -3,7 +3,7 @@
 #include "Ashes/Buffer/Buffer.hpp"
 #include "Ashes/Core/Device.hpp"
 #include "Ashes/Core/Exception.hpp"
-#include "Ashes/Core/Renderer.hpp"
+#include "Ashes/Core/Instance.hpp"
 
 namespace ashes
 {
@@ -18,7 +18,7 @@ namespace ashes
 		, m_offset{ offset }
 		, m_range{ range }
 	{
-		if ( !device.getRenderer().getFeatures().hasTexBufferRange
+		if ( !device.getInstance().getFeatures().hasTexBufferRange
 			&& ( offset != 0 || range != buffer.getSize() ) )
 		{
 			throw Exception{ Result::eErrorFeatureNotPresent, "Buffer range" };

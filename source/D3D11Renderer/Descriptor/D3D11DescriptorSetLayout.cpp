@@ -5,7 +5,7 @@
 namespace d3d11_renderer
 {
 	DescriptorSetLayout::DescriptorSetLayout( Device const & device
-		, ashes::DescriptorSetLayoutBindingArray && bindings )
+		, ashes::DescriptorSetLayoutBindingArray bindings )
 		: ashes::DescriptorSetLayout{ device, std::move( bindings ) }
 	{
 	}

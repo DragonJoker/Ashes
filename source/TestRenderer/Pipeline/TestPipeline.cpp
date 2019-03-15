@@ -6,7 +6,7 @@ namespace test_renderer
 {
 	Pipeline::Pipeline( Device const & device
 		, ashes::PipelineLayout const & layout
-		, ashes::GraphicsPipelineCreateInfo && createInfo )
+		, ashes::GraphicsPipelineCreateInfo createInfo )
 		: ashes::Pipeline{ device
 			, layout
 			, std::move( createInfo ) }

@@ -37,7 +37,7 @@ namespace vk_renderer
 	FrameBuffer::FrameBuffer( Device const & device
 		, RenderPass const & renderPass
 		, ashes::Extent2D const & dimensions
-		, ashes::FrameBufferAttachmentArray && attachments )
+		, ashes::FrameBufferAttachmentArray attachments )
 		: ashes::FrameBuffer{ renderPass, dimensions, std::move( attachments ) }
 		, m_device{ device }
 		, m_views{ convert( m_attachments ) }

@@ -3,12 +3,16 @@
 namespace vkapp
 {
 	TransparentRendering::TransparentRendering( ashes::Device const & device
+		, ashes::CommandPool const & commandPool
+		, ashes::Queue const & transferQueue
 		, std::string const & fragmentShaderFile
 		, std::vector< ashes::Format > const & formats
 		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
 		, ashes::UniformBuffer< common::ObjectData > const & objectUbo
 		, ashes::UniformBuffer< common::LightsData > const & lightsUbo )
 		: common::NodesRenderer{ device
+			, commandPool
+			, transferQueue
 			, fragmentShaderFile
 			, formats
 			, false

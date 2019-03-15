@@ -34,7 +34,7 @@ namespace vk_renderer
 		*/
 		ComputePipeline( Device const & device
 			, ashes::PipelineLayout const & layout
-			, ashes::ComputePipelineCreateInfo && createInfo );
+			, ashes::ComputePipelineCreateInfo createInfo );
 		/**
 		*\~french
 		*\brief

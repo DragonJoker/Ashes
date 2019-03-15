@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "Buffer/GlUniformBuffer.hpp"
 #include "Command/GlCommandPool.hpp"
 #include "Core/GlDevice.hpp"
-#include "Core/GlRenderer.hpp"
+#include "Core/GlInstance.hpp"
 #include "Descriptor/GlDescriptorSet.hpp"
 #include "Image/GlTexture.hpp"
 #include "Image/GlTextureView.hpp"
@@ -173,7 +173,7 @@ namespace gl_renderer
 	void CommandBuffer::clear( ashes::TextureView const & image
 		, ashes::ClearColorValue const & colour )const
 	{
-		if ( !m_device.getRenderer().getFeatures().hasClearTexImage )
+		if ( !m_device.getInstance().getFeatures().hasClearTexImage )
 		{
 			m_commands.emplace_back( std::make_unique< ClearColourFboCommand >( m_device
 				, image
@@ -190,7 +190,7 @@ namespace gl_renderer
 	void CommandBuffer::clear( ashes::TextureView const & image
 		, ashes::DepthStencilClearValue const & value )const
 	{
-		if ( !m_device.getRenderer().getFeatures().hasClearTexImage )
+		if ( !m_device.getInstance().getFeatures().hasClearTexImage )
 		{
 			m_commands.emplace_back( std::make_unique< ClearDepthStencilFboCommand >( m_device
 				, image
@@ -253,7 +253,7 @@ namespace gl_renderer
 	void CommandBuffer::bindPipeline( ashes::ComputePipeline const & pipeline
 		, ashes::PipelineBindPoint bindingPoint )const
 	{
-		if ( m_device.getRenderer().getFeatures().hasComputeShaders )
+		if ( m_device.getInstance().getFeatures().hasComputeShaders )
 		{
 			m_state.currentComputePipeline = &static_cast< ComputePipeline const & >( m_device
 				, pipeline );
@@ -668,7 +668,7 @@ namespace gl_renderer
 		, uint32_t groupCountY
 		, uint32_t groupCountZ )const
 	{
-		if ( m_device.getRenderer().getFeatures().hasComputeShaders )
+		if ( m_device.getInstance().getFeatures().hasComputeShaders )
 		{
 			m_commands.emplace_back( std::make_unique< DispatchCommand >( m_device
 				, groupCountX
@@ -684,7 +684,7 @@ namespace gl_renderer
 	void CommandBuffer::dispatchIndirect( ashes::BufferBase const & buffer
 		, uint32_t offset )const
 	{
-		if ( m_device.getRenderer().getFeatures().hasComputeShaders )
+		if ( m_device.getInstance().getFeatures().hasComputeShaders )
 		{
 			m_commands.emplace_back( std::make_unique< DispatchIndirectCommand >( m_device
 				, buffer
@@ -759,7 +759,7 @@ namespace gl_renderer
 		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
 		, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
-		if ( m_device.getRenderer().getFeatures().hasImageTexture )
+		if ( m_device.getInstance().getFeatures().hasImageTexture )
 		{
 			m_commands.emplace_back( std::make_unique< MemoryBarrierCommand >( m_device
 				, after

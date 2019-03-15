@@ -128,7 +128,7 @@ namespace ashes
 		*\return
 		*	Le pipeline créé.
 		*/
-		inline PipelinePtr createPipeline( std::vector< ShaderStageState > && stages
+		inline PipelinePtr createPipeline( ShaderStageStateArray stages
 			, VertexLayoutCRefArray const & vertexLayouts
 			, RenderPass const & renderPass
 			, InputAssemblyState const & inputAssemblyState
@@ -166,7 +166,7 @@ namespace ashes
 		*\return
 		*	Le pipeline créé.
 		*/
-		inline ComputePipelinePtr createPipeline( ShaderStageState && stage )const
+		inline ComputePipelinePtr createPipeline( ShaderStageState stage )const
 		{
 			return createPipeline( ComputePipelineCreateInfo
 			{

@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_HPP___
-#define ___Ashes_HPP___
+#ifndef ___Ashes_Instance_HPP___
+#define ___Ashes_Instance_HPP___
 #pragma once
 
 #include "Ashes/Core/PhysicalDevice.hpp"
@@ -23,7 +23,7 @@ namespace ashes
 	*\brief
 	*	Classe initialisant l'instance de rendu.
 	*/
-	class Renderer
+	class Instance
 	{
 	public:
 		struct Configuration
@@ -48,7 +48,7 @@ namespace ashes
 		*\brief
 		*	Constructeur, initialise l'instance de rendu.
 		*/
-		Renderer( ClipDirection clipDirection
+		Instance( ClipDirection clipDirection
 			, std::string const & name
 			, Configuration const & configuration );
 
@@ -61,7 +61,7 @@ namespace ashes
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~Renderer();
+		virtual ~Instance();
 		/**
 		*\~french
 		*\brief
@@ -87,25 +87,29 @@ namespace ashes
 		*\param[in] connection
 		*	La connection avec la fenêtre.
 		*/
-		virtual DevicePtr createDevice( ConnectionPtr && connection )const = 0;
+		virtual DevicePtr createDevice( ConnectionPtr connection
+			, DeviceQueueCreateInfoArray queueCreateInfos
+			, StringArray enabledLayers
+			, StringArray enabledExtensions
+			, PhysicalDeviceFeatures enabledFeatures )const = 0;
 		/**
 		*\~french
 		*\brief
-		*	Crée une connection entre un périphérique physique et une fenêtre.
+		*	Crée une connexion entre un périphérique physique et une fenêtre.
 		*\param[in] deviceIndex
-		*	L'indice du périphérique physique.
+		*	Le périphérique physique.
 		*\param[in] handle
 		*	Le descripteur de la fenêtre.
 		*\~french
 		*\brief
 		*	Creates a connection between a physical device and a window.
 		*\param[in] deviceIndex
-		*	L'indice du périphérique physique.
+		*	The physical device.
 		*\param[in] handle
-		*	Le descripteur de la fenêtre.
+		*	The window handle.
 		*/
-		virtual ConnectionPtr createConnection( uint32_t deviceIndex
-			, WindowHandle && handle )const = 0;
+		virtual ConnectionPtr createConnection( PhysicalDevice const & gpu
+			, WindowHandle handle )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -223,6 +227,22 @@ namespace ashes
 			, float aspect
 			, float zNear )const;
 		/**
+		*\~french
+		*\brief
+		*	Creates a logical device.
+		*\param[in] connection
+		*	The connection to the window.
+		*\~french
+		*\brief
+		*	Crée un périphérique logique.
+		*\param[in] connection
+		*	La connection avec la fenêtre.
+		*/
+		DevicePtr createDevice( ConnectionPtr connection
+			, uint32_t presentQueueFamilyIndex
+			, uint32_t graphicsQueueFamilyIndex
+			, uint32_t computeQueueFamilyIndex = uint32_t( ~ 0u ) )const;
+		/**
 		*\~english
 		*name
 		*	Getters.
@@ -279,6 +299,8 @@ namespace ashes
 		std::vector< LayerProperties > m_layers;
 		RendererFeatures m_features;
 		uint32_t m_apiVersion{ 0u };
+		StringArray m_layerNames;
+		StringArray m_extensionNames;
 
 	private:
 		ClipDirection m_clipDirection;

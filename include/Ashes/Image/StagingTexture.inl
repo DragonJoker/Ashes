@@ -9,6 +9,48 @@ namespace ashes
 	*	Upload.
 	**/
 	/**@{*/
+	inline void StagingTexture::uploadTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, ImageSubresourceLayers const & subresourceLayers
+		, Format format
+		, Offset3D const & offset
+		, Extent2D const & extent
+		, ByteArray const & data
+		, TextureView const & texture )const
+	{
+		auto commandBuffer = commandPool.createCommandBuffer( true );
+		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		uploadTextureData( *commandBuffer
+			, subresourceLayers
+			, format
+			, offset
+			, extent
+			, data.data()
+			, texture );
+		auto fence = m_device.createFence();
+		queue.submit( *commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
+	}
+
+	inline void StagingTexture::uploadTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, Format format
+		, ByteArray const & data
+		, TextureView const & texture )const
+	{
+		auto commandBuffer = commandPool.createCommandBuffer( true );
+		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		uploadTextureData( *commandBuffer
+			, format
+			, data.data()
+			, texture );
+		auto fence = m_device.createFence();
+		queue.submit( *commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
+	}
+
 	inline void StagingTexture::uploadTextureData( CommandBuffer const & commandBuffer
 		, ImageSubresourceLayers const & subresourceLayers
 		, Format format
@@ -42,7 +84,8 @@ namespace ashes
 	*	Upload.
 	**/
 	/**@{*/
-	inline void StagingTexture::downloadTextureData( CommandBuffer const & commandBuffer
+	inline void StagingTexture::downloadTextureData( Queue const & queue
+		, CommandPool const & commandPool
 		, ImageSubresourceLayers const & subresourceLayers
 		, Format format
 		, Offset3D const & offset
@@ -50,7 +93,8 @@ namespace ashes
 		, ByteArray & data
 		, TextureView const & texture )const
 	{
-		downloadTextureData( commandBuffer
+		downloadTextureData( queue
+			, commandPool
 			, subresourceLayers
 			, format
 			, offset
@@ -59,12 +103,14 @@ namespace ashes
 			, texture );
 	}
 
-	inline void StagingTexture::downloadTextureData( CommandBuffer const & commandBuffer
+	inline void StagingTexture::downloadTextureData( Queue const & queue
+		, CommandPool const & commandPool
 		, Format format
 		, ByteArray & data
 		, TextureView const & texture )const
 	{
-		downloadTextureData( commandBuffer
+		downloadTextureData( queue
+			, commandPool
 			, format
 			, data.data()
 			, texture );

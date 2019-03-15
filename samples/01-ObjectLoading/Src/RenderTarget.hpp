@@ -11,9 +11,11 @@ namespace vkapp
 	{
 	public:
 		RenderTarget( ashes::Device const & device
+			, ashes::CommandPool const & commandPool
+			, ashes::Queue const & transferQueue
 			, ashes::Extent2D const & size
-			, common::Scene && scene
-			, common::ImagePtrArray && images );
+			, common::Scene scene
+			, common::ImagePtrArray images );
 
 	private:
 		void doUpdate( std::chrono::microseconds const & duration )override;

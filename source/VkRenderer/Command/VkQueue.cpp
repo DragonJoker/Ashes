@@ -55,12 +55,12 @@ namespace vk_renderer
 	}
 
 	Queue::Queue( Device const & device
-		, uint32_t familyIndex )
-		: ashes::Queue{ device }
+		, ashes::DeviceQueueCreateInfo createInfo
+		, uint32_t index )
+		: ashes::Queue{ device, std::move( createInfo ), index }
 		, m_device{ device }
-		, m_familyIndex{ familyIndex }
 	{
-		m_device.vkGetDeviceQueue( m_device, familyIndex, 0, &m_queue );
+		m_device.vkGetDeviceQueue( m_device, createInfo.queueFamilyIndex, index, &m_queue );
 	}
 
 	VkResult Queue::presentBackBuffer( SwapChainCRefArray const & swapChains

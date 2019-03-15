@@ -11,6 +11,8 @@ namespace vkapp
 	{
 	public:
 		GeometryPass( ashes::Device const & device
+			, ashes::CommandPool const & commandPool
+			, ashes::Queue const & transferQueue
 			, std::string const & fragmentShaderFile
 			, GeometryPassResult const & gbuffer
 			, ashes::Format depthFormat

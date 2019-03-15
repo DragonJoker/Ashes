@@ -103,16 +103,16 @@ namespace ashes
 		/**
 		*\~french
 		*\brief
-		*	Creates the backbuffers' framebuffers
+		*	Creates the backbuffers' command buffers.
 		*\return
-		*	The framebuffers.
+		*	The command buffers.
 		*\~french
 		*\brief
-		*	Crée les tampons d'image des back buffers.
+		*	Crée les tampons de commandes des back buffers.
 		*\return
-		*	Les tampons d'images.
+		*	Les tampons de commandes.
 		*/
-		virtual CommandBufferPtrArray createCommandBuffers()const = 0;
+		virtual CommandBufferPtrArray createCommandBuffers( ashes::CommandPool const & cmdPool )const = 0;
 		/**
 		*\~french
 		*\return
@@ -121,7 +121,8 @@ namespace ashes
 		*\return
 		*	Présente les ressources de rendu.
 		*/
-		virtual void present( RenderingResources & resources ) = 0;
+		virtual void present( RenderingResources & resources
+			, ashes::Queue const & queue ) = 0;
 		/**
 		*\~french
 		*\brief

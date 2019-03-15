@@ -19,7 +19,7 @@ namespace common
 		bool OnInit()override;
 		int OnExit()override;
 
-		inline wxString const & getRendererName()const
+		inline wxString const & getInstanceName()const
 		{
 			return m_rendererName;
 		}

@@ -6,7 +6,7 @@
 namespace vk_renderer
 {
 	void checkExtensionsAvailability( std::vector< ashes::ExtensionProperties > const & available
-		, std::vector< char const * > const & requested )
+		, ashes::StringArray const & requested )
 	{
 		for ( auto const & name : requested )
 		{
@@ -17,7 +17,7 @@ namespace vk_renderer
 					return extension.extensionName == name;
 				} ) )
 			{
-				throw std::runtime_error{ "Extension " + std::string( name ) + " is not supported." };
+				throw std::runtime_error{ "Extension " + name + " is not supported." };
 			}
 		}
 	}

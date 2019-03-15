@@ -151,6 +151,23 @@ namespace common
 	*	The parent folder.
 	*/
 	std::string getPath( std::string const & path );
+	/**
+	*\~french
+	*\brief
+	*	Récupère le nom de fichier du chemin donné.
+	*\param[in] path
+	*	Le chemin.
+	*\return
+	*	Le nom de fichier.
+	*\~english
+	*\brief
+	*	Retrieves the given path's file name.
+	*\param[in] path
+	*	The path.
+	*\return
+	*	The file name.
+	*/
+	std::string getFileName( std::string const & path );
 }
 /**
 *\~french

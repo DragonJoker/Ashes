@@ -54,7 +54,7 @@ namespace vkapp
 		}
 	}
 
-	OpaqueRendering::OpaqueRendering( std::unique_ptr< GeometryPass > && renderer
+	OpaqueRendering::OpaqueRendering( std::unique_ptr< GeometryPass > renderer
 		, common::Scene const & scene
 		, ashes::StagingBuffer & stagingBuffer
 		, GeometryPassResult const & gbuffer
@@ -70,7 +70,9 @@ namespace vkapp
 		, m_sceneUbo{ sceneUbo }
 		, m_lightsUbo{ lightsUbo }
 		, m_stagingBuffer{ stagingBuffer }
-		, m_lightingPass{ m_renderer->getDevice()
+		, m_lightingPass{ m_instance->getDevice()
+			, getCommandPool()
+			, getTransferQueue()
 			, lightsUbo
 			, stagingBuffer
 			, views }
@@ -83,16 +85,17 @@ namespace vkapp
 
 	void OpaqueRendering::update( common::RenderTarget const & target )
 	{
-		m_renderer->update( target );
+		m_instance->update( target );
 		m_lightingPass.update( m_sceneUbo.getData( 0u )
 			, m_stagingBuffer
 			, { target.getDepthView(), target.getColourView() }
 			, static_cast< RenderTarget const & >( target ).getGBuffer() );
 	}
 
-	void OpaqueRendering::draw( std::chrono::nanoseconds & gpu )const
+	void OpaqueRendering::draw( ashes::Queue const & queue
+		, std::chrono::nanoseconds & gpu )const
 	{
-		m_renderer->draw( gpu );
-		m_lightingPass.draw( gpu );
+		m_instance->draw( queue, gpu );
+		m_lightingPass.draw( queue, gpu );
 	}
 }
