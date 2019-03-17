@@ -1,6 +1,6 @@
 #include "Core/GlInstance.hpp"
 
-#include "Core/GlConnection.hpp"
+#include "Core/GlSurface.hpp"
 #include "Core/GlContext.hpp"
 #include "Core/GlDevice.hpp"
 #include "Core/GlPhysicalDevice.hpp"
@@ -333,7 +333,7 @@ namespace gl_renderer
 			|| gpu.hasSPIRVShaderBinaryFormat() );
 	}
 
-	ashes::DevicePtr Instance::createDevice( ashes::ConnectionPtr connection
+	ashes::DevicePtr Instance::createDevice( ashes::SurfacePtr surface
 		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
 		, ashes::StringArray enabledLayers
 		, ashes::StringArray enabledExtensions
@@ -343,10 +343,10 @@ namespace gl_renderer
 
 		try
 		{
-			auto & gpu = static_cast< PhysicalDevice const & >( connection->getGpu() );
+			auto & gpu = static_cast< PhysicalDevice const & >( surface->getGpu() );
 			result = std::make_shared< Device >( *this
 				, gpu
-				, std::move( connection )
+				, std::move( surface )
 				, std::move( queueCreateInfos )
 				, std::move( enabledLayers )
 				, std::move( enabledExtensions )
@@ -360,10 +360,10 @@ namespace gl_renderer
 		return result;
 	}
 
-	ashes::ConnectionPtr Instance::createConnection( ashes::PhysicalDevice const & gpu
+	ashes::SurfacePtr Instance::createSurface( ashes::PhysicalDevice const & gpu
 		, ashes::WindowHandle handle )const
 	{
-		return std::make_unique< Connection >( *this
+		return std::make_unique< Surface >( *this
 			, gpu
 			, std::move( handle ) );
 	}

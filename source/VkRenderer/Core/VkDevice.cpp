@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "Buffer/VkUniformBuffer.hpp"
 #include "Command/VkCommandPool.hpp"
 #include "Command/VkQueue.hpp"
-#include "Core/VkConnection.hpp"
+#include "Core/VkSurface.hpp"
 #include "Core/VkPhysicalDevice.hpp"
 #include "Core/VkInstance.hpp"
 #include "Core/VkSwapChain.hpp"
@@ -54,20 +54,20 @@ namespace vk_renderer
 	}
 
 	Device::Device( Instance const & instance
-		, ashes::ConnectionPtr connection
+		, ashes::SurfacePtr surface
 		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
 		, ashes::StringArray enabledLayers
 		, ashes::StringArray enabledExtensions
 		, ashes::PhysicalDeviceFeatures enabledFeatures )
 		: ashes::Device{ instance
-			, connection->getGpu()
-			, *connection
+			, surface->getGpu()
+			, *surface
 			, std::move( queueCreateInfos )
 			, std::move( enabledLayers )
 			, std::move( enabledExtensions )
 			, std::move( enabledFeatures ) }
 		, m_instance{ instance }
-		, m_connection{ static_cast< Connection * >( connection.release() ) }
+		, m_surface{ static_cast< Surface * >( surface.release() ) }
 		, m_gpu{ static_cast< PhysicalDevice const & >( ashes::Device::getPhysicalDevice() ) }
 		, m_enabledFeatures{ convert( ashes::Device::m_enabledFeatures ) }
 	{
@@ -103,11 +103,6 @@ namespace vk_renderer
 	Device::~Device()
 	{
 		vkDestroyDevice( m_device, nullptr );
-	}
-
-	void Device::updateSurfaceCapabilities()const
-	{
-		m_connection->updateSurfaceCapabilities();
 	}
 
 	ashes::StagingTexturePtr Device::createStagingTexture( ashes::Format format

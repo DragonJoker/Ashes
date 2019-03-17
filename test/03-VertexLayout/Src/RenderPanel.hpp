@@ -26,11 +26,11 @@ namespace vkapp
 		*/
 		/**@{*/
 		void doCleanup();
-		ashes::ConnectionPtr doCreateSurface( ashes::Instance const & instance );
+		ashes::SurfacePtr doCreateSurface( ashes::Instance const & instance );
 		void doInitialiseQueues( ashes::Instance const & instance
-			, ashes::Connection const & surface );
+			, ashes::Surface const & surface );
 		void doCreateDevice( ashes::Instance const & instance
-			, ashes::ConnectionPtr surface );
+			, ashes::SurfacePtr surface );
 		void doCreateSwapChain();
 		void doCreateRenderPass();
 		void doCreateVertexBuffer();

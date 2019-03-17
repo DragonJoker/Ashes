@@ -8,7 +8,7 @@
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/Queue.hpp>
 #include <Core/BackBuffer.hpp>
-#include <Core/Connection.hpp>
+#include <Core/Surface.hpp>
 #include <Core/Device.hpp>
 #include <Core/Instance.hpp>
 #include <Core/SwapChain.hpp>
@@ -143,16 +143,16 @@ namespace vkapp
 		}
 	}
 
-	ashes::ConnectionPtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
+	ashes::SurfacePtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.createConnection( gpu
+		return instance.createSurface( gpu
 			, std::move( handle ) );
 	}
 
 	void RenderPanel::doInitialiseQueues( ashes::Instance const & instance
-		, ashes::Connection const & surface )
+		, ashes::Surface const & surface )
 	{
 		auto & gpu = instance.getPhysicalDevice( 0u );
 		std::vector< bool > supportsPresent( static_cast< uint32_t >( gpu.getQueueProperties().size() ) );
@@ -162,7 +162,7 @@ namespace vkapp
 
 		for ( auto & present : supportsPresent )
 		{
-			auto present = surface.getSurfaceSupport( i );
+			auto present = surface.getSupport( i );
 
 			if ( gpu.getQueueProperties()[i].queueCount > 0 )
 			{
@@ -206,7 +206,7 @@ namespace vkapp
 	}
 
 	void RenderPanel::doCreateDevice( ashes::Instance const & instance
-		, ashes::ConnectionPtr surface )
+		, ashes::SurfacePtr surface )
 	{
 		doInitialiseQueues( instance, *surface );
 		m_device = instance.createDevice( std::move( surface )

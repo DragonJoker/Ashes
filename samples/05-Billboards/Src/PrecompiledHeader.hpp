@@ -12,7 +12,7 @@
 #include <Ashes/Command/CommandBuffer.hpp>
 #include <Ashes/Command/Queue.hpp>
 #include <Ashes/Core/BackBuffer.hpp>
-#include <Ashes/Core/Connection.hpp>
+#include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Core/Instance.hpp>
 #include <Ashes/Core/RenderingResources.hpp>

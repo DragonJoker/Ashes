@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "Buffer/D3D11UniformBuffer.hpp"
 #include "Command/D3D11CommandPool.hpp"
 #include "Command/D3D11Queue.hpp"
-#include "Core/D3D11Connection.hpp"
+#include "Core/D3D11Surface.hpp"
 #include "Core/D3D11DummyIndexBuffer.hpp"
 #include "Core/D3D11PhysicalDevice.hpp"
 #include "Core/D3D11Instance.hpp"
@@ -72,20 +72,20 @@ namespace d3d11_renderer
 	}
 
 	Device::Device( Instance const & instance
-		, ashes::ConnectionPtr connection
+		, ashes::SurfacePtr surface
 		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
 		, ashes::StringArray enabledLayers
 		, ashes::StringArray enabledExtensions
 		, ashes::PhysicalDeviceFeatures enabledFeatures )
 		: ashes::Device{ instance
-			, connection->getGpu()
-			, *connection
+			, surface->getGpu()
+			, *surface
 			, std::move( queueCreateInfos )
 			, std::move( enabledLayers )
 			, std::move( enabledExtensions )
 			, std::move( enabledFeatures ) }
 		, m_instance{ instance }
-		, m_connection{ std::move( connection ) }
+		, m_surface{ std::move( surface ) }
 		, m_gpu{ static_cast< PhysicalDevice const & >( ashes::Device::getPhysicalDevice() ) }
 	{
 		doCreateD3D11Device();
@@ -321,7 +321,7 @@ namespace d3d11_renderer
 			D3D_FEATURE_LEVEL_9_1,
 		};
 		HRESULT hr;
-		HWND hWnd = m_connection->getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd();
+		HWND hWnd = m_surface->getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd();
 		hr = factory->MakeWindowAssociation( hWnd, 0 );
 
 		if ( SUCCEEDED( hr ) )

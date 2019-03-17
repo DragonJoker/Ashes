@@ -4,7 +4,7 @@
 #include "RenderTarget.hpp"
 #include "Gui.hpp"
 
-#include <Ashes/Core/Connection.hpp>
+#include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Pipeline/Pipeline.hpp>
 #include <Ashes/Pipeline/PipelineLayout.hpp>
@@ -50,11 +50,11 @@ namespace common
 		}
 
 		void doCleanup();
-		ashes::ConnectionPtr doCreateSurface( ashes::Instance const & instance );
+		ashes::SurfacePtr doCreateSurface( ashes::Instance const & instance );
 		void doInitialiseQueues( ashes::Instance const & instance
-			, ashes::Connection const & surface );
+			, ashes::Surface const & surface );
 		void doCreateDevice( ashes::Instance const & instance
-			, ashes::ConnectionPtr surface );
+			, ashes::SurfacePtr surface );
 		void doCreateSwapChain();
 		void doCreateDescriptorSet();
 		void doCreateRenderPass();

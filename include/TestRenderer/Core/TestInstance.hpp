@@ -33,7 +33,7 @@ namespace test_renderer
 		*\param[in] connection
 		*	La connection avec la fenêtre.
 		*/
-		ashes::DevicePtr createDevice( ashes::ConnectionPtr connection
+		ashes::DevicePtr createDevice( ashes::SurfacePtr surface
 			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
 			, ashes::StringArray enabledLayers
 			, ashes::StringArray enabledExtensions
@@ -46,7 +46,7 @@ namespace test_renderer
 		*\param[in] handle
 		*	Le descripteur de la fenêtre.
 		*/
-		ashes::ConnectionPtr createConnection( ashes::PhysicalDevice const & gpu
+		ashes::SurfacePtr createSurface( ashes::PhysicalDevice const & gpu
 			, ashes::WindowHandle handle )const override;
 		/**
 		*\copydoc	ashes::Instance::frustum

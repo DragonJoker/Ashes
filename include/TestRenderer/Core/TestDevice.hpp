@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Core/TestConnection.hpp"
+#include "Core/TestSurface.hpp"
 
 #include <Ashes/Core/Device.hpp>
 
@@ -27,7 +27,7 @@ namespace test_renderer
 		*	La connection à l'application.
 		*/
 		Device( Instance const & instance
-			, ashes::ConnectionPtr connection
+			, ashes::SurfacePtr surface
 			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
 			, ashes::StringArray enabledLayers
 			, ashes::StringArray enabledExtensions
@@ -165,9 +165,9 @@ namespace test_renderer
 		*\return
 		*	The connection to the application.
 		*/
-		inline Connection const & getConnection()const
+		inline Surface const & getSurface()const
 		{
-			return *m_connection;
+			return *m_surface;
 		}
 
 	private:
@@ -176,7 +176,7 @@ namespace test_renderer
 	private:
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
-		ConnectionPtr m_connection;
+		SurfacePtr m_surface;
 		using QueueCreateCount = std::pair< ashes::DeviceQueueCreateInfo, uint32_t >;
 		std::map< uint32_t, QueueCreateCount > m_queues;
 	};

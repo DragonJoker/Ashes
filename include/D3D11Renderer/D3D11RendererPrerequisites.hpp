@@ -209,7 +209,6 @@ namespace d3d11_renderer
 	class CommandBuffer;
 	class CommandPool;
 	class ComputePipeline;
-	class Connection;
 	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetLayout;
@@ -228,6 +227,7 @@ namespace d3d11_renderer
 	class Sampler;
 	class Semaphore;
 	class ShaderModule;
+	class Surface;
 	class SwapChain;
 	class Texture;
 	class TextureView;
@@ -239,11 +239,11 @@ namespace d3d11_renderer
 
 	using BackBufferPtr = std::unique_ptr< BackBuffer >;
 	using CommandPtr = std::unique_ptr< CommandBase >;
-	using ConnectionPtr = std::unique_ptr< Connection >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using QueuePtr = std::unique_ptr< Queue >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
+	using SurfacePtr = std::unique_ptr< Surface >;
 	using TextureViewPtr = std::unique_ptr< TextureView >;
 
 	using UniformBufferPtr = std::shared_ptr< UniformBuffer >;

@@ -129,7 +129,7 @@ namespace d3d11_renderer
 	void SwapChain::doInitPresentParameters()
 	{
 		auto const format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		auto hWnd = m_device.getConnection().getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd();
+		auto hWnd = m_device.getSurface().getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd();
 		RECT rect{};
 		::GetWindowRect( hWnd, &rect );
 

@@ -239,7 +239,6 @@ namespace ashes
 	class CommandBuffer;
 	class CommandPool;
 	class ComputePipeline;
-	class Connection;
 	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetLayout;
@@ -270,6 +269,7 @@ namespace ashes
 	class SpecialisationInfoBase;
 	class StagingBuffer;
 	class StagingTexture;
+	class Surface;
 	class SwapChain;
 	class Texture;
 	class FrameBufferAttachment;
@@ -318,7 +318,6 @@ namespace ashes
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
 	using ComputePipelinePtr = std::unique_ptr< ComputePipeline >;
-	using ConnectionPtr = std::unique_ptr< Connection >;
 	using DescriptorPoolPtr = std::unique_ptr< DescriptorPool >;
 	using DescriptorSetLayoutPtr = std::unique_ptr< DescriptorSetLayout >;
 	using DescriptorSetLayoutBindingPtr = std::unique_ptr< DescriptorSetLayoutBinding >;
@@ -343,6 +342,7 @@ namespace ashes
 	using ShaderStorageBufferBasePtr = std::unique_ptr< ShaderStorageBufferBase >;
 	using StagingBufferPtr = std::unique_ptr< StagingBuffer >;
 	using StagingTexturePtr = std::unique_ptr< StagingTexture >;
+	using SurfacePtr = std::unique_ptr< Surface >;
 	using SwapChainPtr = std::unique_ptr< SwapChain >;
 	using TexturePtr = std::unique_ptr< Texture >;
 	using TextureViewPtr = std::unique_ptr< TextureView >;

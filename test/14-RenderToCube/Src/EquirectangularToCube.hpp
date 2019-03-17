@@ -3,7 +3,7 @@
 #include "Prerequisites.hpp"
 
 #include <Buffer/StagingBuffer.hpp>
-#include <Core/Connection.hpp>
+#include <Core/Surface.hpp>
 #include <Core/Device.hpp>
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>

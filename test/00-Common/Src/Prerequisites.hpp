@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Core/Connection.hpp>
+#include <Core/Surface.hpp>
 #include <Core/Instance.hpp>
 
 #include <Factory.hpp>
@@ -43,7 +43,7 @@ namespace common
 	/**
 	*\~french
 	*\brief
-	*	Crée une ashes::Connection associant une fenêtre et un GPU.
+	*	Crée une ashes::Surface associant une fenêtre et un GPU.
 	*\param[in] window
 	*	Fenêtre utilisée pour récupérer les informations dépendantes de la plateforme cible.
 	*\param[in] vulkan
@@ -52,7 +52,7 @@ namespace common
 	*	Le GPU choisi pour associer Vulkan à la fenêtre.
 	*\~english
 	*\brief
-	*	Creates a ashes::Connection binding a window to a GPU.
+	*	Creates a ashes::Surface binding a window to a GPU.
 	*\param[in] window
 	*	The window used to retrieve the platform dependant informations.
 	*\param[in] vulkan

@@ -21,7 +21,7 @@ namespace ashes
 {
 	Device::Device( Instance const & instance
 		, PhysicalDevice const & gpu
-		, Connection const & connection
+		, Surface const & surface
 		, DeviceQueueCreateInfoArray queueCreateInfos
 		, StringArray enabledLayers
 		, StringArray enabledExtensions

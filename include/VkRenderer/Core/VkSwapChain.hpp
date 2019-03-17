@@ -161,11 +161,11 @@ namespace vk_renderer
 
 	protected:
 		Device const & m_device;
+		Surface const & m_surface;
 		ashes::CommandPool const & m_commandPool;
 		ashes::Format m_format{};
 		VkColorSpaceKHR m_colorSpace;
 		VkSwapchainKHR m_swapChain{};
-		VkSurfaceKHR m_surface{};
 		uint32_t m_currentBuffer{};
 		VkClearColorValue m_clearColour{};
 	};

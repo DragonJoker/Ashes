@@ -1,6 +1,6 @@
 #include "Core/TestInstance.hpp"
 
-#include "Core/TestConnection.hpp"
+#include "Core/TestSurface.hpp"
 #include "Core/TestDevice.hpp"
 #include "Core/TestPhysicalDevice.hpp"
 #include "Core/TestSwapChain.hpp"
@@ -29,7 +29,7 @@ namespace test_renderer
 	{
 	}
 
-	ashes::DevicePtr Instance::createDevice( ashes::ConnectionPtr connection
+	ashes::DevicePtr Instance::createDevice( ashes::SurfacePtr surface
 		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
 		, ashes::StringArray enabledLayers
 		, ashes::StringArray enabledExtensions
@@ -40,7 +40,7 @@ namespace test_renderer
 		try
 		{
 			result = std::make_shared< Device >( *this
-				, std::move( connection )
+				, std::move( surface )
 				, std::move( queueCreateInfos )
 				, std::move( enabledLayers )
 				, std::move( enabledExtensions )
@@ -54,10 +54,10 @@ namespace test_renderer
 		return result;
 	}
 
-	ashes::ConnectionPtr Instance::createConnection( ashes::PhysicalDevice const & gpu
+	ashes::SurfacePtr Instance::createSurface( ashes::PhysicalDevice const & gpu
 		, ashes::WindowHandle handle )const
 	{
-		return std::make_unique< Connection >( *this
+		return std::make_unique< Surface >( *this
 			, gpu
 			, std::move( handle ) );
 	}

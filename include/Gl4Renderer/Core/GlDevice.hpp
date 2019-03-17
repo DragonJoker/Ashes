@@ -92,7 +92,7 @@ namespace gl_renderer
 		*/
 		Device( Instance const & instance
 			, PhysicalDevice const & gpu
-			, ashes::ConnectionPtr connection
+			, ashes::SurfacePtr surface
 			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
 			, ashes::StringArray enabledLayers
 			, ashes::StringArray enabledExtensions
@@ -296,7 +296,7 @@ namespace gl_renderer
 
 	private:
 		Instance const & m_instance;
-		ashes::ConnectionPtr m_connection;
+		ashes::SurfacePtr m_surface;
 		ContextPtr m_context;
 		struct Vertex
 		{

@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "Buffer/TestUniformBuffer.hpp"
 #include "Command/TestCommandPool.hpp"
 #include "Command/TestQueue.hpp"
-#include "Core/TestConnection.hpp"
+#include "Core/TestSurface.hpp"
 #include "Core/TestPhysicalDevice.hpp"
 #include "Core/TestInstance.hpp"
 #include "Core/TestSwapChain.hpp"
@@ -34,20 +34,20 @@ See LICENSE file in root folder.
 namespace test_renderer
 {
 	Device::Device( Instance const & instance
-		, ashes::ConnectionPtr connection
+		, ashes::SurfacePtr surface
 		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
 		, ashes::StringArray enabledLayers
 		, ashes::StringArray enabledExtensions
 		, ashes::PhysicalDeviceFeatures enabledFeatures )
 		: ashes::Device{ instance
-			, connection->getGpu()
-			, *connection
+			, surface->getGpu()
+			, *surface
 			, std::move( queueCreateInfos )
 			, std::move( enabledLayers )
 			, std::move( enabledExtensions )
 			, std::move( enabledFeatures ) }
 		, m_instance{ instance }
-		, m_connection{ static_cast< Connection * >( connection.release() ) }
+		, m_surface{ static_cast< Surface * >( surface.release() ) }
 		, m_gpu{ static_cast< PhysicalDevice const & >( ashes::Device::getPhysicalDevice() ) }
 	{
 		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;

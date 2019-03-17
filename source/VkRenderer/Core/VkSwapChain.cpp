@@ -24,8 +24,8 @@ namespace vk_renderer
 		, ashes::Extent2D const & size )
 		: ashes::SwapChain{ device, size }
 		, m_device{ device }
+		, m_surface{ device.getSurface() }
 		, m_commandPool{ commandPool }
-		, m_surface{ device.getPresentSurface() }
 	{
 		// On choisit le format de la surface.
 		doSelectFormat( static_cast< PhysicalDevice const & >( m_device.getPhysicalDevice() ) );
@@ -53,7 +53,6 @@ namespace vk_renderer
 	void SwapChain::reset( ashes::Extent2D const & size )
 	{
 		m_dimensions = size;
-		m_device.updateSurfaceCapabilities();
 		doResetSwapChain();
 	}
 
@@ -105,7 +104,7 @@ namespace vk_renderer
 	{
 		ashes::FrameBufferPtrArray result;
 		result.resize( m_backBuffers.size() );
-		auto & surfaceCaps = m_device.getSurfaceCapabilities();
+		auto surfaceCaps = m_surface.getCapabilities();
 
 		for ( size_t i = 0u; i < result.size(); ++i )
 		{
@@ -171,7 +170,7 @@ namespace vk_renderer
 
 	uint32_t SwapChain::doGetImageCount()
 	{
-		auto & surfaceCaps = m_device.getSurfaceCapabilities();
+		auto surfaceCaps = m_surface.getCapabilities();
 		uint32_t desiredNumberOfSwapChainImages{ surfaceCaps.minImageCount + 1 };
 
 		if ( ( surfaceCaps.maxImageCount > 0 ) &&
@@ -187,7 +186,7 @@ namespace vk_renderer
 
 	void SwapChain::doSelectFormat( VkPhysicalDevice gpu )
 	{
-		auto & formats = m_device.getConnection().getSurfaceFormats();
+		auto formats = m_surface.getFormats();
 		// Si la liste de formats ne contient qu'une entrée VK_FORMAT_UNDEFINED,
 		// la surface n'a pas de format préféré. Sinon, au moins un format supporté
 		// sera renvoyé.
@@ -206,8 +205,8 @@ namespace vk_renderer
 
 	VkPresentModeKHR SwapChain::doSelectPresentMode()
 	{
-		auto & presentModes = m_device.getConnection().getPresentModes();
-		// Si le mode bo�te aux lettres est disponible, on utilise celui-là, car c'est celui avec le
+		auto presentModes = m_surface.getPresentModes();
+		// Si le mode boîte aux lettres est disponible, on utilise celui-là, car c'est celui avec le
 		// minimum de latence dans tearing.
 		// Sinon, on essaye le mode IMMEDIATE, qui est normalement disponible, et est le plus rapide
 		// (bien qu'il y ait du tearing). Sinon on utilise le mode FIFO qui est toujours disponible.
@@ -234,7 +233,7 @@ namespace vk_renderer
 	void SwapChain::doCreateSwapChain()
 	{
 		VkExtent2D swapChainExtent{};
-		auto & surfaceCaps = m_device.getSurfaceCapabilities();
+		auto surfaceCaps = m_surface.getCapabilities();
 
 		// width et height valent soient tous les deux -1 ou tous les deux autre chose que -1.
 		if ( surfaceCaps.currentExtent.width == uint32_t( -1 ) )

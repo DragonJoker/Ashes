@@ -8,7 +8,7 @@
 #include <Ashes/Buffer/VertexBuffer.hpp>
 #include <Ashes/Command/Queue.hpp>
 #include <Ashes/Core/BackBuffer.hpp>
-#include <Ashes/Core/Connection.hpp>
+#include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Core/Instance.hpp>
 #include <Ashes/Core/SwapChain.hpp>
@@ -234,16 +234,16 @@ namespace common
 		}
 	}
 
-	ashes::ConnectionPtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
+	ashes::SurfacePtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.createConnection( gpu
+		return instance.createSurface( gpu
 			, std::move( handle ) );
 	}
 
 	void RenderPanel::doInitialiseQueues( ashes::Instance const & instance
-		, ashes::Connection const & surface )
+		, ashes::Surface const & surface )
 	{
 		auto & gpu = instance.getPhysicalDevice( 0u );
 		std::vector< bool > supportsPresent( static_cast< uint32_t >( gpu.getQueueProperties().size() ) );
@@ -253,7 +253,7 @@ namespace common
 
 		for ( auto & present : supportsPresent )
 		{
-			auto present = surface.getSurfaceSupport( i );
+			auto present = surface.getSupport( i );
 
 			if ( gpu.getQueueProperties()[i].queueCount > 0 )
 			{
@@ -297,7 +297,7 @@ namespace common
 	}
 
 	void RenderPanel::doCreateDevice( ashes::Instance const & instance
-		, ashes::ConnectionPtr surface )
+		, ashes::SurfacePtr surface )
 	{
 		doInitialiseQueues( instance, *surface );
 		m_device = instance.createDevice( std::move( surface )

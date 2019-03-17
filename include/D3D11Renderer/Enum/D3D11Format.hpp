@@ -10,6 +10,7 @@ See LICENSE file in root folder.
 
 namespace d3d11_renderer
 {
+	DXGI_FORMAT getDxgiFormat( ashes::Format const & format )noexcept;
 	DXGI_FORMAT getTextureFormat( ashes::Format const & format )noexcept;
 	DXGI_FORMAT getSRVFormat( ashes::Format const & format )noexcept;
 	DXGI_FORMAT getRTVFormat( ashes::Format const & format )noexcept;

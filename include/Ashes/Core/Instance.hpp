@@ -79,15 +79,31 @@ namespace ashes
 		*\~french
 		*\brief
 		*	Creates a logical device.
-		*\param[in] connection
-		*	The connection to the window.
+		*\param[in] surface
+		*	The presentation surface.
+		*\param[in] queueCreateInfos
+		*	The informations for the queues to create.
+		*\param[in] enabledLayers
+		*	The layers enabled for the device.
+		*\param[in] enabledExtensions
+		*	The extensions enabled for the device.
+		*\param[in] enabledFeatures
+		*	The features used by the device.
 		*\~french
 		*\brief
 		*	Crée un périphérique logique.
-		*\param[in] connection
-		*	La connection avec la fenêtre.
+		*\param[in] surface
+		*	La surface de présentation.
+		*\param[in] queueCreateInfos
+		*	Les informations des files à créer.
+		*\param[in] enabledLayers
+		*	Les layers activées pour le périphérique.
+		*\param[in] enabledExtensions
+		*	Les extensions activées pour le périphérique.
+		*\param[in] enabledFeatures
+		*	Les features activées pour le périphérique.
 		*/
-		virtual DevicePtr createDevice( ConnectionPtr connection
+		virtual DevicePtr createDevice( SurfacePtr surface
 			, DeviceQueueCreateInfoArray queueCreateInfos
 			, StringArray enabledLayers
 			, StringArray enabledExtensions
@@ -108,7 +124,7 @@ namespace ashes
 		*\param[in] handle
 		*	The window handle.
 		*/
-		virtual ConnectionPtr createConnection( PhysicalDevice const & gpu
+		virtual SurfacePtr createSurface( PhysicalDevice const & gpu
 			, WindowHandle handle )const = 0;
 		/**
 		*\~english
@@ -230,15 +246,15 @@ namespace ashes
 		*\~french
 		*\brief
 		*	Creates a logical device.
-		*\param[in] connection
-		*	The connection to the window.
+		*\param[in] surface
+		*	The presentation surface.
 		*\~french
 		*\brief
 		*	Crée un périphérique logique.
-		*\param[in] connection
-		*	La connection avec la fenêtre.
+		*\param[in] surface
+		*	La surface de présentation.
 		*/
-		DevicePtr createDevice( ConnectionPtr connection
+		DevicePtr createDevice( SurfacePtr surface
 			, uint32_t presentQueueFamilyIndex
 			, uint32_t graphicsQueueFamilyIndex
 			, uint32_t computeQueueFamilyIndex = uint32_t( ~ 0u ) )const;

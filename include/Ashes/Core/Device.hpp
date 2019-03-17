@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "Ashes/Command/CommandPool.hpp"
 #include "Ashes/Command/Queue.hpp"
-#include "Ashes/Core/Connection.hpp"
+#include "Ashes/Core/Surface.hpp"
 #include "Ashes/Core/PhysicalDevice.hpp"
 #include "Ashes/Image/ImageCreateInfo.hpp"
 #include "Ashes/Image/SamplerCreateInfo.hpp"
@@ -60,7 +60,7 @@ namespace ashes
 		*/
 		Device( Instance const & instance
 			, PhysicalDevice const & gpu
-			, Connection const & connection
+			, Surface const & surface
 			, DeviceQueueCreateInfoArray queueCreateInfos
 			, StringArray enabledLayers
 			, StringArray enabledExtensions

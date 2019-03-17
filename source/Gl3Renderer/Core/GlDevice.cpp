@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 #include "Buffer/GlUniformBuffer.hpp"
 #include "Command/GlCommandPool.hpp"
 #include "Command/GlQueue.hpp"
-#include "Core/GlConnection.hpp"
+#include "Core/GlSurface.hpp"
 #include "Core/GlContext.hpp"
 #include "Core/GlDummyIndexBuffer.hpp"
 #include "Core/GlInstance.hpp"
@@ -462,20 +462,20 @@ namespace gl_renderer
 
 	Device::Device( Instance const & instance
 		, PhysicalDevice const & gpu
-		, ashes::ConnectionPtr connection
+		, ashes::SurfacePtr surface
 		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
 		, ashes::StringArray enabledLayers
 		, ashes::StringArray enabledExtensions
 		, ashes::PhysicalDeviceFeatures enabledFeatures )
 		: ashes::Device{ instance
 			, gpu
-			, *connection
+			, *surface
 			, std::move( queueCreateInfos )
 			, std::move( enabledLayers )
 			, std::move( enabledExtensions )
 			, std::move( enabledFeatures ) }
 		, m_instance{ instance }
-		, m_context{ Context::create( gpu, *connection, nullptr ) }
+		, m_context{ Context::create( gpu, *surface, nullptr ) }
 		, m_rsState{}
 	{
 		auto context = getContext();

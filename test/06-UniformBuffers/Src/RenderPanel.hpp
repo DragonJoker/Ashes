@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <Core/Connection.hpp>
+#include <Core/Surface.hpp>
 #include <Core/Device.hpp>
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
@@ -33,11 +33,11 @@ namespace vkapp
 		*/
 		/**@{*/
 		void doCleanup();
-		ashes::ConnectionPtr doCreateSurface( ashes::Instance const & instance );
+		ashes::SurfacePtr doCreateSurface( ashes::Instance const & instance );
 		void doInitialiseQueues( ashes::Instance const & instance
-			, ashes::Connection const & surface );
+			, ashes::Surface const & surface );
 		void doCreateDevice( ashes::Instance const & instance
-			, ashes::ConnectionPtr surface );
+			, ashes::SurfacePtr surface );
 		void doCreateSwapChain();
 		void doCreateTexture();
 		void doCreateUniformBuffer();

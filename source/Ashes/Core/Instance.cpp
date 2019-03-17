@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Ashes/Core/Instance.hpp"
 
-#include "Ashes/Core/Connection.hpp"
+#include "Ashes/Core/Surface.hpp"
 #include "Ashes/Miscellaneous/QueueCreateInfo.hpp"
 #include "Ashes/Utils/CallStack.hpp"
 
@@ -64,7 +64,7 @@ namespace ashes
 		return result;
 	}
 
-	DevicePtr Instance::createDevice( ConnectionPtr connection
+	DevicePtr Instance::createDevice( SurfacePtr surface
 		, uint32_t presentQueueFamilyIndex
 		, uint32_t graphicsQueueFamilyIndex
 		, uint32_t computeQueueFamilyIndex )const
@@ -102,10 +102,11 @@ namespace ashes
 				} );
 		}
 
-		return createDevice( std::move( connection )
+		auto features = surface->getGpu().getFeatures();
+		return createDevice( std::move( surface )
 			, queueCreateInfos
 			, m_layerNames
 			, m_extensionNames
-			, connection->getGpu().getFeatures() );
+			, features );
 	}
 }

@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include "Gl3Renderer/Core/GlConnection.hpp"
+#include "Gl3Renderer/Core/GlSurface.hpp"
 
 #include <atomic>
 
@@ -16,7 +16,7 @@ namespace gl_renderer
 	{
 	protected:
 		Context( PhysicalDevice const & gpu
-			, ashes::Connection const & connection );
+			, ashes::Surface const & surface );
 
 	public:
 		virtual ~Context();
@@ -46,7 +46,7 @@ namespace gl_renderer
 		*	Crée un contexte.
 		*/
 		static ContextPtr create( PhysicalDevice const & gpu
-			, ashes::Connection const & connection
+			, ashes::Surface const & surface
 			, Context const * mainContext );
 
 #define GL_LIB_BASE_FUNCTION( fun )\
@@ -94,7 +94,7 @@ namespace gl_renderer
 
 	protected:
 		PhysicalDevice const & m_gpu;
-		ashes::Connection const & m_connection;
+		ashes::Surface const & m_surface;
 		mutable std::atomic< bool > m_enabled{ false };
 
 #if !defined( NDEBUG )

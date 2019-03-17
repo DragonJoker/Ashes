@@ -1,6 +1,6 @@
 #include "Core/D3D11Instance.hpp"
 
-#include "Core/D3D11Connection.hpp"
+#include "Core/D3D11Surface.hpp"
 #include "Core/D3D11Device.hpp"
 #include "Core/D3D11PhysicalDevice.hpp"
 #include "Core/D3D11SwapChain.hpp"
@@ -30,7 +30,7 @@ namespace d3d11_renderer
 		safeRelease( m_factory );
 	}
 
-	ashes::DevicePtr Instance::createDevice( ashes::ConnectionPtr connection
+	ashes::DevicePtr Instance::createDevice( ashes::SurfacePtr surface
 		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
 		, ashes::StringArray enabledLayers
 		, ashes::StringArray enabledExtensions
@@ -41,7 +41,7 @@ namespace d3d11_renderer
 		try
 		{
 			result = std::make_shared< Device >( *this
-				, std::move( connection )
+				, std::move( surface )
 				, std::move( queueCreateInfos )
 				, std::move( enabledLayers )
 				, std::move( enabledExtensions )
@@ -55,10 +55,10 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	ashes::ConnectionPtr Instance::createConnection( ashes::PhysicalDevice const & gpu
+	ashes::SurfacePtr Instance::createSurface( ashes::PhysicalDevice const & gpu
 		, ashes::WindowHandle handle )const
 	{
-		return std::make_unique< Connection >( *this
+		return std::make_unique< Surface >( *this
 			, gpu
 			, std::move( handle ) );
 	}

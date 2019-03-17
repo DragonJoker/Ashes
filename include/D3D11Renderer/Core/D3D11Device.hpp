@@ -7,7 +7,7 @@ See LICENSE file in root folder
 #include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 #include <Ashes/Buffer/Buffer.hpp>
-#include <Ashes/Core/Connection.hpp>
+#include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Miscellaneous/QueueCreateInfo.hpp>
 
@@ -18,7 +18,7 @@ namespace d3d11_renderer
 	{
 	public:
 		Device( Instance const & instance
-			, ashes::ConnectionPtr connection
+			, ashes::SurfacePtr surface
 			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
 			, ashes::StringArray enabledLayers
 			, ashes::StringArray enabledExtensions
@@ -152,9 +152,9 @@ namespace d3d11_renderer
 		*\return
 		*	The connection to the application.
 		*/
-		inline ashes::Connection const & getConnection()const
+		inline ashes::Surface const & getSurface()const
 		{
-			return *m_connection;
+			return *m_surface;
 		}
 
 		inline D3D_FEATURE_LEVEL getFeatureLevel()const
@@ -194,7 +194,7 @@ namespace d3d11_renderer
 	private:
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
-		ashes::ConnectionPtr m_connection;
+		ashes::SurfacePtr m_surface;
 		ID3D11Device * m_device;
 		ID3D11DeviceContext * m_deviceContext;
 		ID3D11Query * m_waitIdleQuery;

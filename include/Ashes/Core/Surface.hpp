@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_Connection_HPP___
-#define ___Ashes_Connection_HPP___
+#ifndef ___Ashes_Surface_HPP___
+#define ___Ashes_Surface_HPP___
 #pragma once
 
 #include "Ashes/Core/WindowHandle.hpp"
@@ -15,18 +15,18 @@ namespace ashes
 	/**
 	*\~english
 	*\brief
-	*	Connection between a physical device and a window.
+	*	Presentation surface.
 	*\~french
 	*\brief
-	*	Connection entre un périphérique physique et une fenêtre.
+	*	Surface de présentation.
 	*/
-	class Connection
+	class Surface
 	{
 	protected:
-		Connection( Connection const & ) = delete;
-		Connection & operator=( Connection const & ) = delete;
-		Connection( Connection && rhs ) = default;
-		Connection & operator=( Connection && rhs ) = default;
+		Surface( Surface const & ) = delete;
+		Surface & operator=( Surface const & ) = delete;
+		Surface( Surface && rhs ) = default;
+		Surface & operator=( Surface && rhs ) = default;
 		/**
 		*\~english
 		*\brief
@@ -47,7 +47,7 @@ namespace ashes
 		*\param[in] handle
 		*	Le descripteur de la fenêtre.
 		*/
-		Connection( Instance const & instance
+		Surface( Instance const & instance
 			, PhysicalDevice const & gpu
 			, WindowHandle handle );
 
@@ -60,7 +60,7 @@ namespace ashes
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~Connection() = default;
+		virtual ~Surface() = default;
 		/**
 		*\~english
 		*\brief
@@ -69,7 +69,34 @@ namespace ashes
 		*\brief
 		*	Vérifie si une famille de file du périphérique physique supporte la présentation à la surface.
 		*/
-		virtual bool getSurfaceSupport( uint32_t queueFamilyIndex )const = 0;
+		virtual bool getSupport( uint32_t queueFamilyIndex )const = 0;
+		/**
+		*\~english
+		*\return
+		*	The surface capabilities.
+		*\~french
+		*\brief
+		*	Les capacités de la surface.
+		*/
+		virtual SurfaceCapabilities getCapabilities()const = 0;
+		/**
+		*\~english
+		*\return
+		*	The surface present modes.
+		*\~french
+		*\brief
+		*	Les modes de présentation de la surface.
+		*/
+		virtual std::vector < PresentMode > getPresentModes()const = 0;
+		/**
+		*\~english
+		*\return
+		*	The surface supported formats.
+		*\~french
+		*\brief
+		*	Les formats supportés par la surface.
+		*/
+		virtual std::vector< SurfaceFormat > getFormats()const = 0;
 		/**
 		*\~english
 		*name
@@ -89,34 +116,16 @@ namespace ashes
 			return m_gpu;
 		}
 
-		inline std::string const & getSurfaceType()const
+		inline std::string const & getType()const
 		{
-			return m_surfaceType;
-		}
-
-		inline std::vector< SurfaceFormat > const & getSurfaceFormats()const
-		{
-			return m_surfaceFormats;
-		}
-
-		inline SurfaceCapabilities const & getSurfaceCapabilities()const
-		{
-			return m_surfaceCapabilities;
-		}
-
-		inline std::vector< PresentMode > const & getPresentModes()const
-		{
-			return m_presentModes;
+			return m_type;
 		}
 		/**@}*/
 
 	protected:
 		WindowHandle m_handle;
 		PhysicalDevice const & m_gpu;
-		std::vector< SurfaceFormat > m_surfaceFormats;
-		SurfaceCapabilities m_surfaceCapabilities;
-		std::vector< PresentMode > m_presentModes;
-		std::string m_surfaceType;
+		std::string m_type;
 	};
 }
 
