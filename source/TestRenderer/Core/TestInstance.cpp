@@ -30,10 +30,7 @@ namespace test_renderer
 	}
 
 	ashes::DevicePtr Instance::createDevice( ashes::SurfacePtr surface
-		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-		, ashes::StringArray enabledLayers
-		, ashes::StringArray enabledExtensions
-		, ashes::PhysicalDeviceFeatures enabledFeatures )const
+		, ashes::DeviceCreateInfo createInfos )const
 	{
 		ashes::DevicePtr result;
 
@@ -41,10 +38,7 @@ namespace test_renderer
 		{
 			result = std::make_shared< Device >( *this
 				, std::move( surface )
-				, std::move( queueCreateInfos )
-				, std::move( enabledLayers )
-				, std::move( enabledExtensions )
-				, std::move( enabledFeatures ) );
+				, std::move( createInfos ) );
 		}
 		catch ( std::exception & exc )
 		{

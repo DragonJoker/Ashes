@@ -10,6 +10,7 @@
 
 #include <Utils/Factory.hpp>
 #include <Utils/Mat4.hpp>
+#include <Utils/UtilsDevice.hpp>
 #include <Utils/UtilsSwapChain.hpp>
 
 #pragma warning( disable: 4996 )

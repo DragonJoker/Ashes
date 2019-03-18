@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 
 #include "Ashes/Core/PhysicalDevice.hpp"
 #include "Ashes/Core/WindowHandle.hpp"
+#include "Ashes/Miscellaneous/DeviceCreateInfo.hpp"
 #include "Ashes/Miscellaneous/RendererFeatures.hpp"
 #include "Ashes/Miscellaneous/LayerProperties.hpp"
 
@@ -81,33 +82,18 @@ namespace ashes
 		*	Creates a logical device.
 		*\param[in] surface
 		*	The presentation surface.
-		*\param[in] queueCreateInfos
-		*	The informations for the queues to create.
-		*\param[in] enabledLayers
-		*	The layers enabled for the device.
-		*\param[in] enabledExtensions
-		*	The extensions enabled for the device.
-		*\param[in] enabledFeatures
-		*	The features used by the device.
+		*\param[in] createInfos
+		*	The creation informations.
 		*\~french
 		*\brief
 		*	Crée un périphérique logique.
 		*\param[in] surface
 		*	La surface de présentation.
-		*\param[in] queueCreateInfos
-		*	Les informations des files à créer.
-		*\param[in] enabledLayers
-		*	Les layers activées pour le périphérique.
-		*\param[in] enabledExtensions
-		*	Les extensions activées pour le périphérique.
-		*\param[in] enabledFeatures
-		*	Les features activées pour le périphérique.
+		*\param[in] createInfos
+		*	Les informations de création.
 		*/
 		virtual DevicePtr createDevice( SurfacePtr surface
-			, DeviceQueueCreateInfoArray queueCreateInfos
-			, StringArray enabledLayers
-			, StringArray enabledExtensions
-			, PhysicalDeviceFeatures enabledFeatures )const = 0;
+			, DeviceCreateInfo createInfos )const = 0;
 		/**
 		*\~french
 		*\brief
@@ -243,22 +229,6 @@ namespace ashes
 			, float aspect
 			, float zNear )const;
 		/**
-		*\~french
-		*\brief
-		*	Creates a logical device.
-		*\param[in] surface
-		*	The presentation surface.
-		*\~french
-		*\brief
-		*	Crée un périphérique logique.
-		*\param[in] surface
-		*	La surface de présentation.
-		*/
-		DevicePtr createDevice( SurfacePtr surface
-			, uint32_t presentQueueFamilyIndex
-			, uint32_t graphicsQueueFamilyIndex
-			, uint32_t computeQueueFamilyIndex = uint32_t( ~ 0u ) )const;
-		/**
 		*\~english
 		*name
 		*	Getters.
@@ -305,6 +275,16 @@ namespace ashes
 		inline std::vector< LayerProperties > const & getLayers()const
 		{
 			return m_layers;
+		}
+
+		inline StringArray const & getLayerNames()const
+		{
+			return m_layerNames;
+		}
+
+		inline StringArray const & getExtensionNames()const
+		{
+			return m_extensionNames;
 		}
 		/**@}*/
 

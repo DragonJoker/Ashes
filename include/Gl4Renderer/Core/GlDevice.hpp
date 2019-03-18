@@ -94,10 +94,7 @@ namespace gl_renderer
 		Device( Instance const & instance
 			, PhysicalDevice const & gpu
 			, ashes::SurfacePtr surface
-			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-			, ashes::StringArray enabledLayers
-			, ashes::StringArray enabledExtensions
-			, ashes::PhysicalDeviceFeatures enabledFeatures );
+			, ashes::DeviceCreateInfo createInfos );
 		~Device();
 		/**
 		*\copydoc	ashes::Device::createStagingTexture

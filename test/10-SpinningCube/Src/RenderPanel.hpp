@@ -35,8 +35,6 @@ namespace vkapp
 		void doCleanup();
 		void doUpdateProjection();
 		ashes::SurfacePtr doCreateSurface( ashes::Instance const & instance );
-		void doInitialiseQueues( ashes::Instance const & instance
-			, ashes::Surface const & surface );
 		void doCreateDevice( ashes::Instance const & instance
 			, ashes::SurfacePtr surface );
 		void doCreateSwapChain();
@@ -75,9 +73,7 @@ namespace vkapp
 		*	Global.
 		*/
 		/**@{*/
-		uint32_t m_graphicsQueueFamilyIndex;
-		uint32_t m_presentQueueFamilyIndex;
-		ashes::DevicePtr m_device;
+		utils::DevicePtr m_device;
 		ashes::QueuePtr m_graphicsQueue;
 		ashes::QueuePtr m_presentQueue;
 		ashes::CommandPoolPtr m_commandPool;

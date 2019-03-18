@@ -51,8 +51,6 @@ namespace common
 
 		void doCleanup();
 		ashes::SurfacePtr doCreateSurface( ashes::Instance const & instance );
-		void doInitialiseQueues( ashes::Instance const & instance
-			, ashes::Surface const & surface );
 		void doCreateDevice( ashes::Instance const & instance
 			, ashes::SurfacePtr surface );
 		void doCreateSwapChain();
@@ -90,9 +88,7 @@ namespace common
 		std::vector< TexturedVertexData > m_vertexData;
 		std::unique_ptr< Gui > m_gui;
 
-		uint32_t m_graphicsQueueFamilyIndex;
-		uint32_t m_presentQueueFamilyIndex;
-		ashes::DevicePtr m_device;
+		utils::DevicePtr m_device;
 		utils::SwapChainPtr m_swapChain;
 		ashes::ClearColorValue m_clearColour;
 		ashes::StagingBufferPtr m_stagingBuffer;

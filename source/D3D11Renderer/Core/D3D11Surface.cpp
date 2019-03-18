@@ -77,7 +77,7 @@ namespace d3d11_renderer
 			return result;
 		}
 
-		std::map< ashes::Format, std::vector< DXGI_MODE_DESC > > updateSurfaceCapabilities( IDXGIOutput * adapterOutput
+		std::map< ashes::Format, std::vector< DXGI_MODE_DESC > > updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
 			, RECT const & rect
 			, ashes::SurfaceCapabilities & capabilities )
 		{
@@ -93,7 +93,6 @@ namespace d3d11_renderer
 			capabilities.supportedCompositeAlpha = ashes::CompositeAlphaFlag::eInherit;
 			capabilities.supportedUsageFlags = ashes::ImageUsageFlag::eUndefined;
 
-			auto displayModeList = getDisplayModesList( adapterOutput );
 			std::map < ashes::Format, std::vector< DXGI_MODE_DESC > > result;
 
 			// Now go through all the display modes and find the one that matches the screen width and height.
@@ -185,11 +184,10 @@ namespace d3d11_renderer
 			return result;
 		}
 
-		std::vector< ashes::SurfaceFormat > getSurfaceFormats( IDXGIOutput * adapterOutput )
+		std::vector< ashes::SurfaceFormat > getSurfaceFormats( std::vector< DXGI_MODE_DESC > const & displayModeList )
 		{
 			std::vector< ashes::SurfaceFormat > result;
 			std::set< ashes::Format > uniqueFormats;
-			auto displayModeList = getDisplayModesList( adapterOutput );
 
 			for ( auto & displayMode : displayModeList )
 			{
@@ -210,6 +208,7 @@ namespace d3d11_renderer
 		, ashes::PhysicalDevice const & gpu
 		, ashes::WindowHandle handle )
 		: ashes::Surface{ instance, gpu, std::move( handle ) }
+		, m_displayModes{ getDisplayModesList( static_cast< PhysicalDevice const & >( m_gpu ).getOutput() ) }
 	{
 		m_type = "VK_KHR_win32_surface";
 	}
@@ -238,7 +237,7 @@ namespace d3d11_renderer
 		RECT rect{};
 		::GetWindowRect( hWnd, &rect );
 		ashes::SurfaceCapabilities result;
-		m_descs = updateSurfaceCapabilities( static_cast< PhysicalDevice const & >( m_gpu ).getOutput()
+		m_descs = updateSurfaceCapabilities( m_displayModes
 			, rect
 			, result );
 		return result;
@@ -246,6 +245,6 @@ namespace d3d11_renderer
 
 	std::vector< ashes::SurfaceFormat > Surface::getFormats()const
 	{
-		return getSurfaceFormats( static_cast< PhysicalDevice const & >( m_gpu ).getOutput() );
+		return getSurfaceFormats( m_displayModes );
 	}
 }

@@ -28,16 +28,10 @@ namespace vk_renderer
 		*/
 		~Instance();
 		/**
-		*\brief
-		*	Crée le périphérique logique.
-		*\param[in] connection
-		*	La connection avec la fenêtre.
+		*\copydoc	ashes::Instance::createDevice
 		*/
 		ashes::DevicePtr createDevice( ashes::SurfacePtr surface
-			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-			, ashes::StringArray enabledLayers
-			, ashes::StringArray enabledExtensions
-			, ashes::PhysicalDeviceFeatures enabledFeatures )const override;
+			, ashes::DeviceCreateInfo createInfos )const override;
 		/**
 		*\copydoc	ashes::Instance::createSurface
 		*/

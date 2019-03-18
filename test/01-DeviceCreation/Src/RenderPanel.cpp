@@ -57,7 +57,12 @@ namespace vkapp
 	void RenderPanel::doCreateDevice( ashes::Instance const & instance
 		, ashes::SurfacePtr surface )
 	{
-		m_device = instance.createDevice( std::move( surface ), ~( 0u ), ~( 0u ) );
+		ashes::DeviceCreateInfo createInfo;
+		createInfo.enabledFeatures = surface->getGpu().getFeatures();
+		createInfo.enabledLayerNames = instance.getLayerNames();
+		createInfo.enabledExtensionNames = instance.getExtensionNames();
+		m_device = instance.createDevice( std::move( surface )
+			, std::move( createInfo ) );
 		std::cout << m_device->getPhysicalDevice().dumpProperties() << std::endl;
 	}
 }

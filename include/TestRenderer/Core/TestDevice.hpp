@@ -29,10 +29,7 @@ namespace test_renderer
 		*/
 		Device( Instance const & instance
 			, ashes::SurfacePtr surface
-			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-			, ashes::StringArray enabledLayers
-			, ashes::StringArray enabledExtensions
-			, ashes::PhysicalDeviceFeatures enabledFeatures );
+			, ashes::DeviceCreateInfo createInfos );
 		/**
 		*\brief
 		*	Destructeur.

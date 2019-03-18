@@ -5,6 +5,7 @@
 
 #include <Utils/Factory.hpp>
 #include <Utils/Quaternion.hpp>
+#include <Utils/UtilsDevice.hpp>
 #include <Utils/UtilsSwapChain.hpp>
 
 #pragma warning( disable: 4996 )

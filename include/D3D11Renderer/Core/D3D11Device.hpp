@@ -20,10 +20,7 @@ namespace d3d11_renderer
 	public:
 		Device( Instance const & instance
 			, ashes::SurfacePtr surface
-			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-			, ashes::StringArray enabledLayers
-			, ashes::StringArray enabledExtensions
-			, ashes::PhysicalDeviceFeatures enabledFeatures );
+			, ashes::DeviceCreateInfo createInfos );
 		~Device();
 		/**
 		*\copydoc	ashes::Device::createStagingTexture
@@ -164,7 +161,7 @@ namespace d3d11_renderer
 
 		inline ID3D11Device * getDevice()const
 		{
-			return m_device;
+			return m_d3dDevice;
 		}
 
 		inline ashes::BufferBase const & getEmptyIndexedVaoIdx()const
@@ -195,7 +192,7 @@ namespace d3d11_renderer
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
 		ashes::SurfacePtr m_surface;
-		ID3D11Device * m_device;
+		ID3D11Device * m_d3dDevice;
 		ID3D11DeviceContext * m_deviceContext;
 		ID3D11Query * m_waitIdleQuery;
 		D3D_FEATURE_LEVEL m_featureLevel;

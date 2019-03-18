@@ -35,17 +35,11 @@ namespace test_renderer
 {
 	Device::Device( Instance const & instance
 		, ashes::SurfacePtr surface
-		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-		, ashes::StringArray enabledLayers
-		, ashes::StringArray enabledExtensions
-		, ashes::PhysicalDeviceFeatures enabledFeatures )
+		, ashes::DeviceCreateInfo createInfos )
 		: ashes::Device{ instance
 			, surface->getGpu()
 			, *surface
-			, std::move( queueCreateInfos )
-			, std::move( enabledLayers )
-			, std::move( enabledExtensions )
-			, std::move( enabledFeatures ) }
+			, std::move( createInfos ) }
 		, m_instance{ instance }
 		, m_surface{ static_cast< Surface * >( surface.release() ) }
 		, m_gpu{ static_cast< PhysicalDevice const & >( ashes::Device::getPhysicalDevice() ) }
@@ -231,7 +225,7 @@ namespace test_renderer
 
 	void Device::doCreateQueues()
 	{
-		for ( auto & queueCreateInfo : m_queueCreateInfos )
+		for ( auto & queueCreateInfo : m_createInfos.queueCreateInfos )
 		{
 			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
 				, QueueCreateCount{ queueCreateInfo, 0u } ).first;

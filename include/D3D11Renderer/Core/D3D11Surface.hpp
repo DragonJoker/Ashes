@@ -30,6 +30,7 @@ namespace d3d11_renderer
 		}
 
 	private:
+		std::vector< DXGI_MODE_DESC > m_displayModes;
 		mutable std::map< ashes::Format, std::vector< DXGI_MODE_DESC > > m_descs;
 	};
 }

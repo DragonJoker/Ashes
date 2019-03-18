@@ -53,6 +53,7 @@ See LICENSE file in root folder.
 #include "Ashes/Enum/DepthStencilStateFlag.hpp"
 #include "Ashes/Enum/DescriptorPoolCreateFlag.hpp"
 #include "Ashes/Enum/DescriptorType.hpp"
+#include "Ashes/Enum/DeviceCreateFlag.hpp"
 #include "Ashes/Enum/DeviceQueueCreateFlag.hpp"
 #include "Ashes/Enum/DynamicStateEnable.hpp"
 #include "Ashes/Enum/DynamicStateFlag.hpp"

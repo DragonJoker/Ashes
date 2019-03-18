@@ -30,10 +30,7 @@ namespace vk_renderer
 		*/
 		Device( Instance const & instance
 			, ashes::SurfacePtr surface
-			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-			, ashes::StringArray enabledLayers
-			, ashes::StringArray enabledExtensions
-			, ashes::PhysicalDeviceFeatures enabledFeatures );
+			, ashes::DeviceCreateInfo createInfos );
 		/**
 		*\brief
 		*	Destructeur.
@@ -223,7 +220,11 @@ namespace vk_renderer
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
 		SurfacePtr m_surface;
+		std::vector< VkDeviceQueueCreateInfo > m_queueCreateInfos;
+		std::vector< char const * > m_enabledLayerNames;
+		std::vector< char const * > m_enabledExtensionNames;
 		VkPhysicalDeviceFeatures m_enabledFeatures;
+		VkDeviceCreateInfo m_vkCreateInfos;
 		VkDevice m_device{ VK_NULL_HANDLE };
 		std::map< uint32_t, ashes::DeviceQueueCreateInfo > m_queues;
 	};

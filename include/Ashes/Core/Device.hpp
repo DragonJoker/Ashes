@@ -13,6 +13,7 @@ See LICENSE file in root folder.
 #include "Ashes/Image/ImageCreateInfo.hpp"
 #include "Ashes/Image/SamplerCreateInfo.hpp"
 #include "Ashes/Miscellaneous/DebugMarkerObjectNameInfo.hpp"
+#include "Ashes/Miscellaneous/DeviceCreateInfo.hpp"
 #include "Ashes/Miscellaneous/QueueCreateInfo.hpp"
 #include "Ashes/Miscellaneous/SwapChainCreateInfo.hpp"
 #include "Ashes/Pipeline/ColourBlendState.hpp"
@@ -47,8 +48,9 @@ namespace ashes
 		*	The Instance instance.
 		*\param[in] gpu
 		*	The physical device.
-		*\param[in] connection
-		*	The connection to the application.
+		*\param[in] surface
+		*	The surface.
+		*	The creation informations.
 		*\~french
 		*\brief
 		*	Constructeur.
@@ -56,16 +58,15 @@ namespace ashes
 		*	L'instance.
 		*\param[in] gpu
 		*	Le périphérique physique.
-		*\param[in] connection
-		*	La connection à l'application.
+		*\param[in] surface
+		*	La surface.
+		*\param[in] createInfos
+		*	Les informations de création.
 		*/
 		Device( Instance const & instance
 			, PhysicalDevice const & gpu
 			, Surface const & surface
-			, DeviceQueueCreateInfoArray queueCreateInfos
-			, StringArray enabledLayers
-			, StringArray enabledExtensions
-			, PhysicalDeviceFeatures enabledFeatures );
+			, DeviceCreateInfo createInfos );
 
 	public:
 		/**
@@ -891,10 +892,7 @@ namespace ashes
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
 		Surface const & m_surface;
-		DeviceQueueCreateInfoArray m_queueCreateInfos;
-		StringArray m_enabledLayers;
-		StringArray m_enabledExtensions;
-		PhysicalDeviceFeatures m_enabledFeatures;
+		DeviceCreateInfo m_createInfos;
 		float m_timestampPeriod;
 		uint32_t m_shaderVersion;
 

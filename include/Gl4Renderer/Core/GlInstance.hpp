@@ -25,10 +25,7 @@ namespace gl_renderer
 		*\copydoc	ashes::Instance::createDevice
 		*/
 		ashes::DevicePtr createDevice( ashes::SurfacePtr surface
-			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-			, ashes::StringArray enabledLayers
-			, ashes::StringArray enabledExtensions
-			, ashes::PhysicalDeviceFeatures enabledFeatures )const override;
+			, ashes::DeviceCreateInfo createInfos )const override;
 		/**
 		*\copydoc	ashes::Instance::createSurface
 		*/

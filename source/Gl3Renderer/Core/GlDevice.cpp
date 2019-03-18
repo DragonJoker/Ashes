@@ -463,17 +463,11 @@ namespace gl_renderer
 	Device::Device( Instance const & instance
 		, PhysicalDevice const & gpu
 		, ashes::SurfacePtr surface
-		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-		, ashes::StringArray enabledLayers
-		, ashes::StringArray enabledExtensions
-		, ashes::PhysicalDeviceFeatures enabledFeatures )
+		, ashes::DeviceCreateInfo createInfos )
 		: ashes::Device{ instance
 			, gpu
 			, *surface
-			, std::move( queueCreateInfos )
-			, std::move( enabledLayers )
-			, std::move( enabledExtensions )
-			, std::move( enabledFeatures ) }
+			, std::move( createInfos ) }
 		, m_instance{ instance }
 		, m_surface{ std::move( surface ) }
 		, m_context{ Context::create( gpu, *m_surface, nullptr ) }
@@ -492,7 +486,7 @@ namespace gl_renderer
 		doApply( context, m_rsState );
 		doApply( context, m_iaState );
 
-		if ( m_gpu.getFeatures().tessellationShader )
+		if ( m_createInfos.enabledFeatures.tessellationShader )
 		{
 			doApply( context, m_tsState );
 		}
@@ -781,7 +775,7 @@ namespace gl_renderer
 
 	void Device::doCreateQueues()
 	{
-		for ( auto & queueCreateInfo : m_queueCreateInfos )
+		for ( auto & queueCreateInfo : m_createInfos.queueCreateInfos )
 		{
 			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
 				, QueueCreateCount{ queueCreateInfo, 0u } ).first;

@@ -33,67 +33,26 @@ See LICENSE file in root folder.
 
 namespace vk_renderer
 {
-	namespace
-	{
-		char const * convert( std::string const & value )
-		{
-			return value.c_str();
-		}
-
-		std::vector< char const * > convert( ashes::StringArray const & values )
-		{
-			std::vector< char const * > result;
-
-			for ( auto & value : values )
-			{
-				result.push_back( convert( value ) );
-			}
-
-			return result;
-		}
-	}
-
 	Device::Device( Instance const & instance
 		, ashes::SurfacePtr surface
-		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-		, ashes::StringArray enabledLayers
-		, ashes::StringArray enabledExtensions
-		, ashes::PhysicalDeviceFeatures enabledFeatures )
+		, ashes::DeviceCreateInfo createInfos )
 		: ashes::Device{ instance
 			, surface->getGpu()
 			, *surface
-			, std::move( queueCreateInfos )
-			, std::move( enabledLayers )
-			, std::move( enabledExtensions )
-			, std::move( enabledFeatures ) }
+			, std::move( createInfos ) }
 		, m_instance{ instance }
 		, m_surface{ static_cast< Surface * >( surface.release() ) }
 		, m_gpu{ static_cast< PhysicalDevice const & >( ashes::Device::getPhysicalDevice() ) }
-		, m_enabledFeatures{ convert( ashes::Device::m_enabledFeatures ) }
+		, m_vkCreateInfos{ convert( m_createInfos
+			, m_queueCreateInfos
+			, m_enabledLayerNames
+			, m_enabledExtensionNames
+			, m_enabledFeatures ) }
 	{
 		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
-		auto vkQueueCreateInfos = convert< VkDeviceQueueCreateInfo >( m_queueCreateInfos );
-		auto vkEnabledLayers = convert( m_enabledLayers );
-		auto vkEnabledExtensions = convert( m_enabledExtensions );
-
-		VkDeviceCreateInfo deviceInfo
-		{
-			VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-			nullptr,
-			0,                                                                   // flags
-			static_cast< uint32_t >( queueCreateInfos.size() ),                  // queueCreateInfoCount
-			vkQueueCreateInfos.data(),                                           // pQueueCreateInfos
-			static_cast< uint32_t >( vkEnabledLayers.size() ),                   // enabledLayerCount
-			vkEnabledLayers.empty() ? nullptr : vkEnabledLayers.data(),          // ppEnabledLayerNames
-			static_cast< uint32_t >( vkEnabledExtensions.size() ),               // enabledExtensionCount
-			vkEnabledExtensions.empty() ? nullptr : vkEnabledExtensions.data(),  // ppEnabledExtensionNames
-			&m_enabledFeatures                                                   // pEnabledFeatures
-		};
-		DEBUG_DUMP( deviceInfo );
-
-		auto res = m_instance.vkCreateDevice( m_gpu, &deviceInfo, nullptr, &m_device );
+		DEBUG_DUMP( m_vkCreateInfos );
+		auto res = m_instance.vkCreateDevice( m_gpu, &m_vkCreateInfos, nullptr, &m_device );
 		checkError( res, "LogicalDevice creation" );
-
 		doCreateQueues();
 
 #define VK_LIB_DEVICE_FUNCTION( fun ) fun = reinterpret_cast< PFN_##fun >( instance.vkGetDeviceProcAddr( m_device, #fun ) );
@@ -312,7 +271,7 @@ namespace vk_renderer
 
 	void Device::doCreateQueues()
 	{
-		for ( auto & queueCreateInfo : m_queueCreateInfos )
+		for ( auto & queueCreateInfo : m_createInfos.queueCreateInfos )
 		{
 			m_queues.emplace( queueCreateInfo.queueFamilyIndex, queueCreateInfo );
 		}

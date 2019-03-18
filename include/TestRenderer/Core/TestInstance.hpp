@@ -28,23 +28,12 @@ namespace test_renderer
 		*/
 		~Instance();
 		/**
-		*\brief
-		*	Crée le périphérique logique.
-		*\param[in] connection
-		*	La connection avec la fenêtre.
+		*\copydoc	ashes::Instance::createDevice
 		*/
 		ashes::DevicePtr createDevice( ashes::SurfacePtr surface
-			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-			, ashes::StringArray enabledLayers
-			, ashes::StringArray enabledExtensions
-			, ashes::PhysicalDeviceFeatures enabledFeatures )const override;
+			, ashes::DeviceCreateInfo createInfos )const override;
 		/**
-		*\brief
-		*	Crée une connection.
-		*\param[in] deviceIndex
-		*	L'indice du périphérique physique.
-		*\param[in] handle
-		*	Le descripteur de la fenêtre.
+		*\copydoc	ashes::Instance::createSurface
 		*/
 		ashes::SurfacePtr createSurface( ashes::PhysicalDevice const & gpu
 			, ashes::WindowHandle handle )const override;

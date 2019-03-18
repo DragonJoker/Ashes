@@ -73,17 +73,11 @@ namespace d3d11_renderer
 
 	Device::Device( Instance const & instance
 		, ashes::SurfacePtr surface
-		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-		, ashes::StringArray enabledLayers
-		, ashes::StringArray enabledExtensions
-		, ashes::PhysicalDeviceFeatures enabledFeatures )
+		, ashes::DeviceCreateInfo createInfos )
 		: ashes::Device{ instance
 			, surface->getGpu()
 			, *surface
-			, std::move( queueCreateInfos )
-			, std::move( enabledLayers )
-			, std::move( enabledExtensions )
-			, std::move( enabledFeatures ) }
+			, std::move( createInfos ) }
 		, m_instance{ instance }
 		, m_surface{ std::move( surface ) }
 		, m_gpu{ static_cast< PhysicalDevice const & >( ashes::Device::getPhysicalDevice() ) }
@@ -102,7 +96,7 @@ namespace d3d11_renderer
 		m_deviceContext->Flush();
 		safeRelease( m_waitIdleQuery );
 		safeRelease( m_deviceContext );
-		safeRelease( m_device );
+		safeRelease( m_d3dDevice );
 
 #if !defined( NDEBUG )
 
@@ -349,23 +343,23 @@ namespace d3d11_renderer
 			, &supportedFeatureLevel
 			, 1
 			, D3D11_SDK_VERSION
-			, &m_device
+			, &m_d3dDevice
 			, &m_featureLevel
 			, &m_deviceContext );
 
-		if ( m_device )
+		if ( m_d3dDevice )
 		{
 #if !defined( NDEBUG )
 
-			m_device->QueryInterface( __uuidof( ID3D11Debug ), reinterpret_cast< void ** >( &m_debug ) );
+			m_d3dDevice->QueryInterface( __uuidof( ID3D11Debug ), reinterpret_cast< void ** >( &m_debug ) );
 
 #endif
 
-			dxDebugName( m_device, Device );
+			dxDebugName( m_d3dDevice, Device );
 
 			D3D11_QUERY_DESC desc{};
 			desc.Query = D3D11_QUERY_EVENT;
-			m_device->CreateQuery( &desc, &m_waitIdleQuery );
+			m_d3dDevice->CreateQuery( &desc, &m_waitIdleQuery );
 		}
 	}
 
@@ -389,7 +383,7 @@ namespace d3d11_renderer
 
 	void Device::doCreateQueues()
 	{
-		for ( auto & queueCreateInfo : m_queueCreateInfos )
+		for ( auto & queueCreateInfo : m_createInfos.queueCreateInfos )
 		{
 			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
 				, QueueCreateCount{ queueCreateInfo, 0u } ).first;

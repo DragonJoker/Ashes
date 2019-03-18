@@ -211,7 +211,7 @@ namespace vkapp
 
 		if ( m_device )
 		{
-			m_device->waitIdle();
+			m_device->getDevice().waitIdle();
 			m_commandPool.reset();
 			m_presentQueue.reset();
 			m_graphicsQueue.reset();
@@ -232,82 +232,21 @@ namespace vkapp
 			, std::move( handle ) );
 	}
 
-	void RenderPanel::doInitialiseQueues( ashes::Instance const & instance
-		, ashes::Surface const & surface )
-	{
-		auto & gpu = instance.getPhysicalDevice( 0u );
-		// Parcours des propriétés des files, pour vérifier leur support de la présentation.
-		std::vector< bool > supportsPresent( static_cast< uint32_t >( gpu.getQueueProperties().size() ) );
-		uint32_t i{ 0u };
-		m_graphicsQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
-		m_presentQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
-
-		for ( auto & present : supportsPresent )
-		{
-			auto present = surface.getSupport( i );
-
-			if ( gpu.getQueueProperties()[i].queueCount > 0 )
-			{
-				if ( gpu.getQueueProperties()[i].queueFlags & ashes::QueueFlag::eGraphics )
-				{
-					// Tout d'abord on choisit une file graphique
-					if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-					{
-						m_graphicsQueueFamilyIndex = i;
-					}
-
-					// Si une file supporte les graphismes et la présentation, on la préfère.
-					if ( present )
-					{
-						m_graphicsQueueFamilyIndex = i;
-						m_presentQueueFamilyIndex = i;
-						break;
-					}
-				}
-			}
-
-			++i;
-		}
-
-		if ( m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-		{
-			// Pas de file supportant les deux, on a donc 2 files distinctes.
-			for ( size_t i = 0; i < gpu.getQueueProperties().size(); ++i )
-			{
-				if ( supportsPresent[i] )
-				{
-					m_presentQueueFamilyIndex = static_cast< uint32_t >( i );
-					break;
-				}
-			}
-		}
-
-		// Si on n'en a pas trouvé, on génère une erreur.
-		if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
-			|| m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-		{
-			throw ashes::Exception{ ashes::Result::eErrorInitializationFailed
-				, "Queue families retrieval" };
-		}
-	}
-
 	void RenderPanel::doCreateDevice( ashes::Instance const & instance
 		, ashes::SurfacePtr surface )
 	{
-		doInitialiseQueues( instance, *surface );
-		m_device = instance.createDevice( std::move( surface )
-			, m_graphicsQueueFamilyIndex
-			, m_presentQueueFamilyIndex );
-		m_graphicsQueue = m_device->getQueue( m_graphicsQueueFamilyIndex, 0u );
-		m_presentQueue = m_device->getQueue( m_presentQueueFamilyIndex, 0u );
-		m_commandPool = m_device->createCommandPool( m_graphicsQueueFamilyIndex
+		m_device = std::make_unique< utils::Device >( instance
+			, std::move( surface ) );
+		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
+		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
+		m_commandPool = m_device->getDevice().createCommandPool( m_device->getGraphicsQueueFamily()
 			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
 	}
 
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( doGetSwapChainCreateInfo( *m_device
+		m_swapChain = m_device->getDevice().createSwapChain( doGetSwapChainCreateInfo( m_device->getDevice()
 			, { uint32_t( size.x ), uint32_t( size.y ) } ) );
 		m_clearColour = ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 		doCreateRenderingResources();
@@ -337,7 +276,7 @@ namespace vkapp
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
 				, ashes::AccessFlag::eColourAttachmentWrite }
 			, subAttaches ) );
-		m_renderPass = m_device->createRenderPass( attaches
+		m_renderPass = m_device->getDevice().createRenderPass( attaches
 			, std::move( subpasses )
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
 				, ashes::AccessFlag::eMemoryRead }
@@ -374,9 +313,9 @@ namespace vkapp
 	{
 		for ( uint32_t i = 0u; i < uint32_t( m_swapChain->getImages().size() ); ++i )
 		{
-			m_renderingResources.emplace_back( std::make_unique< RenderingResources >( m_device->createSemaphore()
-				, m_device->createSemaphore()
-				, m_device->createFence( ashes::FenceCreateFlag::eSignaled )
+			m_renderingResources.emplace_back( std::make_unique< RenderingResources >( m_device->getDevice().createSemaphore()
+				, m_device->getDevice().createSemaphore()
+				, m_device->getDevice().createFence( ashes::FenceCreateFlag::eSignaled )
 				, m_commandPool->createCommandBuffer()
 				, 0u ) );
 		}
@@ -545,7 +484,7 @@ namespace vkapp
 
 	void RenderPanel::doResetSwapChain()
 	{
-		m_device->waitIdle();
+		m_device->getDevice().waitIdle();
 		doCreateSwapChain();
 		doPrepareFrames();
 	}
