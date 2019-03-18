@@ -4,11 +4,8 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-#if ASHES_WIN32
-
-#include <Ashes/Core/Surface.hpp>
+#include <Ashes/Miscellaneous/SurfaceCapabilities.hpp>
+#include <Ashes/Miscellaneous/SurfaceFormat.hpp>
 
 namespace utils
 {
@@ -18,4 +15,3 @@ namespace utils
 		, ashes::SurfaceCapabilities & capabilities );
 }
 
-#endif

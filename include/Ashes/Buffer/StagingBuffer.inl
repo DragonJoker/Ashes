@@ -2,6 +2,11 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
+#include "Ashes/Command/CommandBuffer.hpp"
+#include "Ashes/Command/CommandPool.hpp"
+#include "Ashes/Command/Queue.hpp"
+#include "Ashes/Sync/Fence.hpp"
+
 namespace ashes
 {
 	/**

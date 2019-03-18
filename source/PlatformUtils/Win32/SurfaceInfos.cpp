@@ -5,7 +5,6 @@
 #include <Ashes/Core/PlatformWindowHandle.hpp>
 
 #include <Windows.h>
-#include <gl/GL.h>
 
 namespace utils
 {

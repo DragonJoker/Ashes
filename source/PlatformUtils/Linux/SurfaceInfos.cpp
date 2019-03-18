@@ -2,6 +2,8 @@
 
 #if ASHES_XLIB
 
+#include <Ashes/Core/PlatformWindowHandle.hpp>
+
 namespace utils
 {
 	void getSurfaceInfos( ashes::WindowHandle const & handle
