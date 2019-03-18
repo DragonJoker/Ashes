@@ -28,6 +28,7 @@ namespace ashes
 		, PhysicalDeviceFeatures enabledFeatures )
 		: m_instance{ instance }
 		, m_gpu{ gpu }
+		, m_surface{ surface }
 		, m_queueCreateInfos{ std::move( queueCreateInfos ) }
 		, m_enabledLayers{ std::move( enabledLayers ) }
 		, m_enabledExtensions{ std::move( enabledExtensions ) }

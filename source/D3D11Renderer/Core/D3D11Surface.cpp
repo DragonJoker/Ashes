@@ -77,23 +77,24 @@ namespace d3d11_renderer
 			return result;
 		}
 
-		ashes::SurfaceCapabilities updateSurfaceCapabilities( IDXGIOutput * adapterOutput
-			, RECT const & rect )
+		std::map< ashes::Format, std::vector< DXGI_MODE_DESC > > updateSurfaceCapabilities( IDXGIOutput * adapterOutput
+			, RECT const & rect
+			, ashes::SurfaceCapabilities & capabilities )
 		{
-			ashes::SurfaceCapabilities result;
-			result.minImageCount = 1u;
-			result.maxImageCount = 1u;
-			result.currentExtent.width = ~( 0u );
-			result.currentExtent.height = ~( 0u );
-			result.minImageExtent = { ~( 0u ), ~( 0u ) };
-			result.maxImageExtent = { 0u, 0u };
-			result.maxImageArrayLayers = 1u;
-			result.supportedTransforms = ashes::SurfaceTransformFlag::eIdentity;
-			result.currentTransform = ashes::SurfaceTransformFlag::eIdentity;
-			result.supportedCompositeAlpha = ashes::CompositeAlphaFlag::eInherit;
-			result.supportedUsageFlags = ashes::ImageUsageFlag::eUndefined;
+			capabilities.minImageCount = 1u;
+			capabilities.maxImageCount = 1u;
+			capabilities.currentExtent.width = ~( 0u );
+			capabilities.currentExtent.height = ~( 0u );
+			capabilities.minImageExtent = { ~( 0u ), ~( 0u ) };
+			capabilities.maxImageExtent = { 0u, 0u };
+			capabilities.maxImageArrayLayers = 1u;
+			capabilities.supportedTransforms = ashes::SurfaceTransformFlag::eIdentity;
+			capabilities.currentTransform = ashes::SurfaceTransformFlag::eIdentity;
+			capabilities.supportedCompositeAlpha = ashes::CompositeAlphaFlag::eInherit;
+			capabilities.supportedUsageFlags = ashes::ImageUsageFlag::eUndefined;
 
 			auto displayModeList = getDisplayModesList( adapterOutput );
+			std::map < ashes::Format, std::vector< DXGI_MODE_DESC > > result;
 
 			// Now go through all the display modes and find the one that matches the screen width and height.
 			std::vector< DXGI_MODE_DESC > matchingDisplayModes;
@@ -103,14 +104,14 @@ namespace d3d11_renderer
 
 			for ( auto & displayMode : displayModeList )
 			{
-				result.minImageExtent.width = std::min( result.minImageExtent.width
+				capabilities.minImageExtent.width = std::min( capabilities.minImageExtent.width
 					, displayMode.Width );
-				result.minImageExtent.height = std::min( result.minImageExtent.height
+				capabilities.minImageExtent.height = std::min( capabilities.minImageExtent.height
 					, displayMode.Height );
 
-				result.maxImageExtent.width = std::max( result.minImageExtent.width
+				capabilities.maxImageExtent.width = std::max( capabilities.minImageExtent.width
 					, displayMode.Width );
-				result.maxImageExtent.height = std::max( result.minImageExtent.height
+				capabilities.maxImageExtent.height = std::max( capabilities.minImageExtent.height
 					, displayMode.Height );
 
 				supportedFormats.insert( displayMode.Format );
@@ -119,6 +120,8 @@ namespace d3d11_renderer
 					&& displayMode.Height == height )
 				{
 					matchingDisplayModes.push_back( displayMode );
+					auto it = result.emplace( convert( displayMode.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
+					it->second.emplace_back( displayMode );
 				}
 			}
 
@@ -131,6 +134,8 @@ namespace d3d11_renderer
 						&& displayMode.Height >= height )
 					{
 						matchingDisplayModes.push_back( displayMode );
+						auto it = result.emplace( convert( displayMode.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
+						it->second.emplace_back( displayMode );
 					}
 				}
 			}
@@ -158,19 +163,23 @@ namespace d3d11_renderer
 				{
 					// Choose the display mode with highest width.
 					matchingDisplayModes.push_back( maxWidth );
+					auto it = result.emplace( convert( maxWidth.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
+					it->second.emplace_back( maxWidth );
 				}
 				else
 				{
 					// Choose the display mode with highest height.
 					matchingDisplayModes.push_back( maxHeight );
+					auto it = result.emplace( convert( maxHeight.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
+					it->second.emplace_back( maxHeight );
 				}
 			}
 
 			if ( !matchingDisplayModes.empty() )
 			{
 				auto & displayMode = matchingDisplayModes.back();
-				result.currentExtent.width = displayMode.Width;
-				result.currentExtent.height = displayMode.Height;
+				capabilities.currentExtent.width = displayMode.Width;
+				capabilities.currentExtent.height = displayMode.Height;
 			}
 
 			return result;
@@ -228,8 +237,11 @@ namespace d3d11_renderer
 		auto hWnd = m_handle.getInternal< ashes::IMswWindowHandle >().getHwnd();
 		RECT rect{};
 		::GetWindowRect( hWnd, &rect );
-		return updateSurfaceCapabilities( static_cast< PhysicalDevice const & >( m_gpu ).getOutput()
-			, rect );
+		ashes::SurfaceCapabilities result;
+		m_descs = updateSurfaceCapabilities( static_cast< PhysicalDevice const & >( m_gpu ).getOutput()
+			, rect
+			, result );
+		return result;
 	}
 
 	std::vector< ashes::SurfaceFormat > Surface::getFormats()const

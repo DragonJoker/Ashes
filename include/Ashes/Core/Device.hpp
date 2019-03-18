@@ -14,6 +14,7 @@ See LICENSE file in root folder.
 #include "Ashes/Image/SamplerCreateInfo.hpp"
 #include "Ashes/Miscellaneous/DebugMarkerObjectNameInfo.hpp"
 #include "Ashes/Miscellaneous/QueueCreateInfo.hpp"
+#include "Ashes/Miscellaneous/SwapChainCreateInfo.hpp"
 #include "Ashes/Pipeline/ColourBlendState.hpp"
 #include "Ashes/Pipeline/RasterisationState.hpp"
 
@@ -453,16 +454,15 @@ namespace ashes
 		*\~english
 		*\brief
 		*	Creates a swap chain.
-		*\param[in] size
-		*	The wanted dimensions.
+		*\param[in] createInfo
+		*	The creation info.
 		*\~french
 		*\brief
 		*	Crée une swap chain.
-		*\param[in] size
-		*	Les dimensions souhaitées.
+		*\param[in] createInfo
+		*	Les informations de création.
 		*/
-		virtual SwapChainPtr createSwapChain( ashes::CommandPool const & commandPool
-			, Extent2D const & size )const = 0;
+		virtual SwapChainPtr createSwapChain( SwapChainCreateInfo createInfo )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -876,6 +876,11 @@ namespace ashes
 			return m_gpu;
 		}
 
+		inline Surface const & getSurface()const
+		{
+			return m_surface;
+		}
+
 		inline float getTimestampPeriod()const
 		{
 			return m_timestampPeriod;
@@ -885,6 +890,7 @@ namespace ashes
 	protected:
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
+		Surface const & m_surface;
 		DeviceQueueCreateInfoArray m_queueCreateInfos;
 		StringArray m_enabledLayers;
 		StringArray m_enabledExtensions;

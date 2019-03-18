@@ -95,6 +95,7 @@ See LICENSE file in root folder.
 #include "Ashes/Enum/SubpassDescriptionFlag.hpp"
 #include "Ashes/Enum/SurfaceCounterFlag.hpp"
 #include "Ashes/Enum/SurfaceTransformFlag.hpp"
+#include "Ashes/Enum/SwapChainCreateFlag.hpp"
 #include "Ashes/Enum/TessellationStateFlag.hpp"
 #include "Ashes/Enum/TextureType.hpp"
 #include "Ashes/Enum/TextureViewType.hpp"
@@ -259,7 +260,6 @@ namespace ashes
 	class PushConstantsBufferBase;
 	class QueryPool;
 	class Queue;
-	class RenderingResources;
 	class RenderPass;
 	class RenderSubpass;
 	class Sampler;
@@ -334,7 +334,6 @@ namespace ashes
 	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBufferBase >;
 	using QueryPoolPtr = std::unique_ptr< QueryPool >;
 	using QueuePtr = std::unique_ptr< Queue >;
-	using RenderingResourcesPtr = std::unique_ptr< RenderingResources >;
 	using RenderPassPtr = std::unique_ptr< RenderPass >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
 	using SamplerPtr = std::unique_ptr< Sampler >;
@@ -403,6 +402,7 @@ namespace ashes
 	using SamplerCRef = std::reference_wrapper< Sampler const >;
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;
 	using SwapChainCRef = std::reference_wrapper< SwapChain const >;
+	using SurfaceCRef = std::reference_wrapper< Surface const >;
 	using TextureViewCRef = std::reference_wrapper< TextureView const >;
 	using VertexLayoutCRef = std::reference_wrapper< VertexLayout const >;
 	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;

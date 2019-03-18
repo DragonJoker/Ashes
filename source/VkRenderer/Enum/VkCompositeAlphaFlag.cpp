@@ -29,6 +29,11 @@ namespace vk_renderer
 		return result;
 	}
 
+	VkCompositeAlphaFlagBitsKHR convert( ashes::CompositeAlphaFlag const & flag )
+	{
+		return VkCompositeAlphaFlagBitsKHR( flag );
+	}
+
 	ashes::CompositeAlphaFlags convertCompositeAlpha( VkCompositeAlphaFlagsKHR const & flags )
 	{
 		ashes::CompositeAlphaFlags result{ 0u };

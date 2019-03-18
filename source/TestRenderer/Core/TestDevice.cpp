@@ -145,14 +145,13 @@ namespace test_renderer
 			, memoryFlags );
 	}
 
-	ashes::SwapChainPtr Device::createSwapChain( ashes::CommandPool const & commandPool
-		, ashes::Extent2D const & size )const
+	ashes::SwapChainPtr Device::createSwapChain( ashes::SwapChainCreateInfo createInfo )const
 	{
 		ashes::SwapChainPtr result;
 
 		try
 		{
-			result = std::make_unique< SwapChain >( *this, commandPool, size );
+			result = std::make_unique< SwapChain >( *this, std::move( createInfo ) );
 		}
 		catch ( std::exception & exc )
 		{

@@ -7,7 +7,6 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "Ashes/Buffer/Buffer.hpp"
-#include "Ashes/Core/RenderingResources.hpp"
 
 namespace ashes
 {

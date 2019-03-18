@@ -7,8 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "Ashes/Core/BackBuffer.hpp"
-#include "Ashes/Core/RenderingResources.hpp"
-#include "Ashes/Miscellaneous/Extent2D.hpp"
+#include "Ashes/Miscellaneous/SwapChainCreateInfo.hpp"
 
 namespace ashes
 {
@@ -36,7 +35,7 @@ namespace ashes
 		*	Constructeur.
 		*/
 		SwapChain( Device const & device
-			, Extent2D const & size );
+			, SwapChainCreateInfo createInfo );
 
 	public:
 		/**
@@ -50,26 +49,32 @@ namespace ashes
 		virtual ~SwapChain();
 		/**
 		*\~french
-		*\return
-		*	Retrieve the active rendering resources..
-		*\remarks
-		*	In Vulkan, this function takes care of the backbuffer image acquisition.
-		*\~french
-		*\return
-		*	Récupère les ressources de rendu actives.
-		*\remarks
-		*	En Vulkan, cette fonction s'occupe de la récupération de l'image depuis le backbuffer.
-		*/
-		virtual RenderingResources * getResources() = 0;
-		/**
+		*\brief
+		*	Acquires an available presentable image to use, and retrieve the index of that image.
+		*\param[in] timeout
+		*	Specifies how long the function waits, in nanoseconds, if no image is available.
+		*\param[in] semaphore
+		*	\p nullptr or a semaphore to signal.
+		*\param[in] fence
+		*	\p nullptr or a fence to signal.
+		*\param[out] imageIndex
+		*	Set to the index of the next image to use.
 		*\~french
 		*\brief
-		*	Resets the swap chain.
-		*\~french
-		*\brief
-		*	Réinitialise la swap chain.
+		*	Acquiert une image présentable disponible, et récupère l'indice de cette image.
+		*\param[in] timeout
+		*	Définit combien de temps la fonction attend, en nanosecondes, si aucune image n'est disponible.
+		*\param[in] semaphore
+		*	\p nullptr ou un sémaphore à signaler.
+		*\param[in] fence
+		*	\p nullptr ou une fence à signaler.
+		*\param[out] imageIndex
+		*	Défini à la prochaine image à utiliser.
 		*/
-		virtual void reset( Extent2D const & size ) = 0;
+		virtual Result acquireNextImage( uint64_t timeout
+			, Semaphore const * semaphore
+			, Fence const * fence
+			, uint32_t & imageIndex )const = 0;
 		/**
 		*\~french
 		*\brief
@@ -86,56 +91,95 @@ namespace ashes
 		/**
 		*\~french
 		*\brief
-		*	Creates the backbuffers' framebuffers, compativle with given render pass.
-		*\param[in] renderPass
-		*	The render pass.
-		*\return
-		*	The framebuffers.
+		*	Acquires an available presentable image to use, and retrieve the index of that image.
+		*\param[in] timeout
+		*	Specifies how long the function waits, in nanoseconds, if no image is available.
+		*\param[in] semaphore
+		*	A semaphore to signal.
+		*\param[in] fence
+		*	A fence to signal.
+		*\param[out] imageIndex
+		*	Set to the index of the next image to use.
 		*\~french
 		*\brief
-		*	Crée les tampons d'image des back buffers, compatibles avec la passe de rendu donnée.
-		*\param[in] renderPass
-		*	La passe de rendu.
-		*\return
-		*	Les tampons d'images.
+		*	Acquiert une image présentable disponible, et récupère l'indice de cette image.
+		*\param[in] timeout
+		*	Définit combien de temps la fonction attend, en nanosecondes, si aucune image n'est disponible.
+		*\param[in] semaphore
+		*	Un sémaphore à signaler.
+		*\param[in] fence
+		*	Une fence à signaler.
+		*\param[out] imageIndex
+		*	Défini à la prochaine image à utiliser.
 		*/
-		virtual FrameBufferPtrArray createFrameBuffers( RenderPass const & renderPass )const = 0;
+		Result acquireNextImage( uint64_t timeout
+			, Semaphore const & semaphore
+			, Fence const & fence
+			, uint32_t & imageIndex )const;
 		/**
 		*\~french
 		*\brief
-		*	Creates the backbuffers' command buffers.
-		*\return
-		*	The command buffers.
+		*	Acquires an available presentable image to use, and retrieve the index of that image.
+		*\param[in] timeout
+		*	Specifies how long the function waits, in nanoseconds, if no image is available.
+		*\param[in] fence
+		*	A fence to signal.
+		*\param[out] imageIndex
+		*	Set to the index of the next image to use.
 		*\~french
 		*\brief
-		*	Crée les tampons de commandes des back buffers.
-		*\return
-		*	Les tampons de commandes.
+		*	Acquiert une image présentable disponible, et récupère l'indice de cette image.
+		*\param[in] timeout
+		*	Définit combien de temps la fonction attend, en nanosecondes, si aucune image n'est disponible.
+		*\param[in] fence
+		*	Une fence à signaler.
+		*\param[out] imageIndex
+		*	Défini à la prochaine image à utiliser.
 		*/
-		virtual CommandBufferPtrArray createCommandBuffers( ashes::CommandPool const & cmdPool )const = 0;
+		Result acquireNextImage( uint64_t timeout
+			, Fence const & fence
+			, uint32_t & imageIndex )const;
 		/**
 		*\~french
-		*\return
-		*	Presents the rendering resources.
+		*\brief
+		*	Acquires an available presentable image to use, and retrieve the index of that image.
+		*\param[in] timeout
+		*	Specifies how long the function waits, in nanoseconds, if no image is available.
+		*\param[in] semaphore
+		*	\p nullptr or a semaphore to signal.
+		*\param[out] imageIndex
+		*	Set to the index of the next image to use.
 		*\~french
-		*\return
-		*	Présente les ressources de rendu.
+		*\brief
+		*	Acquiert une image présentable disponible, et récupère l'indice de cette image.
+		*\param[in] timeout
+		*	Définit combien de temps la fonction attend, en nanosecondes, si aucune image n'est disponible.
+		*\param[in] semaphore
+		*	\p nullptr ou un sémaphore à signaler.
+		*\param[out] imageIndex
+		*	Défini à la prochaine image à utiliser.
 		*/
-		virtual void present( RenderingResources & resources
-			, ashes::Queue const & queue ) = 0;
+		Result acquireNextImage( uint64_t timeout
+			, Semaphore const & semaphore
+			, uint32_t & imageIndex )const;
 		/**
 		*\~french
 		*\brief
-		*	Defines the clear colour of the swapchain.
-		*\param[in] value
-		*	The new value.
+		*	Acquires an available presentable image to use, and retrieve the index of that image.
+		*\param[in] timeout
+		*	Specifies how long the function waits, in nanoseconds, if no image is available.
+		*\param[out] imageIndex
+		*	Set to the index of the next image to use.
 		*\~french
 		*\brief
-		*	Définit la couleur de vidage de la swapchain.
-		*\param[in] value
-		*	La nouvelle valeur.
+		*	Acquiert une image présentable disponible, et récupère l'indice de cette image.
+		*\param[in] timeout
+		*	Définit combien de temps la fonction attend, en nanosecondes, si aucune image n'est disponible.
+		*\param[out] imageIndex
+		*	Défini à la prochaine image à utiliser.
 		*/
-		virtual void setClearColour( ClearColorValue const & value ) = 0;
+		Result acquireNextImage( uint64_t timeout
+			, uint32_t & imageIndex )const;
 		/**
 		*\~english
 		*name
@@ -145,13 +189,14 @@ namespace ashes
 		*	Accesseurs.
 		*/
 		/**@{*/
-		virtual ClearColorValue getClearColour()const = 0;
-		virtual Extent2D getDimensions()const = 0;
-		virtual Format getFormat()const = 0;
-
-		inline RenderingResources const & getDefaultResources()const
+		inline Device const & getDevice()const
 		{
-			return *m_renderingResources[0];
+			return m_device;
+		}
+		
+		inline Extent2D getDimensions()const
+		{
+			return m_createInfo.imageExtent;
 		}
 
 		inline BackBufferPtrArray const & getImages()const
@@ -161,7 +206,7 @@ namespace ashes
 
 		inline PresentMode getPresentMode()const
 		{
-			return m_presentMode;
+			return m_createInfo.presentMode;
 		}
 
 		inline TextureView const & getDepthStencilView()const
@@ -169,22 +214,18 @@ namespace ashes
 			assert( m_depthStencilView );
 			return *m_depthStencilView;
 		}
-		/**@}*/
 
-	public:
-		using OnResetFunc = std::function< void() >;
-		using OnReset = Signal< OnResetFunc >;
-		//!\~english	The signal raised when the swapchain is reset.
-		//!\~french		Le signal levé lorsque la swap chain est recréée.
-		OnReset onReset;
+		inline Format getFormat()const
+		{
+			return m_createInfo.imageFormat;
+		}
+		/**@}*/
 
 	protected:
 		Device const & m_device;
-		Extent2D m_dimensions;
-		PresentMode m_presentMode{};
-		std::vector< RenderingResourcesPtr > m_renderingResources;
+		Surface const & m_surface;
+		SwapChainCreateInfo m_createInfo;
 		BackBufferPtrArray m_backBuffers;
-		mutable size_t m_resourceIndex{ 0 };
 		mutable TexturePtr m_depthStencil;
 		mutable TextureViewPtr m_depthStencilView;
 	};

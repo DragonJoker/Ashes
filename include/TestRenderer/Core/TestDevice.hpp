@@ -7,6 +7,7 @@ See LICENSE file in root folder
 #include "Core/TestSurface.hpp"
 
 #include <Ashes/Core/Device.hpp>
+#include <Ashes/Miscellaneous/SwapChainCreateInfo.hpp>
 
 namespace test_renderer
 {
@@ -102,8 +103,7 @@ namespace test_renderer
 		/**
 		*\copydoc	ashes::Device::createSwapChain
 		*/
-		ashes::SwapChainPtr createSwapChain( ashes::CommandPool const & commandPool
-			, ashes::Extent2D const & size )const override;
+		ashes::SwapChainPtr createSwapChain( ashes::SwapChainCreateInfo createInfo )const override;
 		/**
 		*\copydoc	ashes::Device::createSemaphore
 		*/

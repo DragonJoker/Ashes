@@ -316,9 +316,10 @@ namespace vkapp
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( *m_commandPool
-			, { uint32_t( size.x ), uint32_t( size.y ) } );
-		m_swapChain->setClearColour( { 1.0f, 0.8f, 0.4f, 0.0f } );
+		m_swapChain = std::make_unique< utils::SwapChain >( *m_device
+			, *m_commandPool
+			, ashes::Extent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
+		m_clearColour = ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			doCreateFrameBuffer();
@@ -616,7 +617,7 @@ namespace vkapp
 			, 2u );
 		commandBuffer.beginRenderPass( *m_offscreenRenderPass
 			, frameBuffer
-			, { ashes::ClearValue{ m_swapChain->getClearColour() } }
+			, { ashes::ClearValue{ m_clearColour } }
 			, ashes::SubpassContents::eInline );
 		commandBuffer.writeTimestamp( ashes::PipelineStageFlag::eTopOfPipe
 			, *m_queryPool
@@ -700,7 +701,7 @@ namespace vkapp
 	void RenderPanel::doPrepareMainFrames()
 	{
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_mainRenderPass );
-		m_commandBuffers = m_swapChain->createCommandBuffers( *m_commandPool );
+		m_commandBuffers = m_swapChain->createCommandBuffers();
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
 		{
@@ -766,7 +767,7 @@ namespace vkapp
 				, nullptr );
 			m_graphicsQueue->waitIdle();
 
-			m_graphicsQueue->submit( *m_commandBuffers[resources->getBackBuffer()]
+			m_graphicsQueue->submit( *m_commandBuffers[resources->getImageIndex()]
 				, resources->getImageAvailableSemaphore()
 				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()

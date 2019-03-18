@@ -190,12 +190,11 @@ namespace common
 				throw std::runtime_error{ "Couldn't acquire next frame from swap chain." };
 			}
 
-			m_graphicsQueue->submit( *m_commandBuffers[resources->getBackBuffer()]
+			m_graphicsQueue->submit( *m_commandBuffers[resources->getImageIndex()]
 				, resources->getImageAvailableSemaphore()
 				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
-
 			m_swapChain->present( *resources, *m_presentQueue );
 		}
 	}
@@ -312,9 +311,10 @@ namespace common
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( *m_commandPool
-			, { uint32_t( size.x ), uint32_t( size.y ) } );
-		m_swapChain->setClearColour( { 1.0f, 0.8f, 0.4f, 0.0f } );
+		m_swapChain = std::make_unique< utils::SwapChain >( *m_device
+			, *m_commandPool
+			, ashes::Extent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
+		m_clearColour = { 1.0f, 0.8f, 0.4f, 0.0f };
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			m_renderTarget->resize( m_swapChain->getDimensions() );
@@ -436,7 +436,7 @@ namespace common
 	void RenderPanel::doPrepareFrames()
 	{
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
-		m_commandBuffers = m_swapChain->createCommandBuffers( *m_commandPool );
+		m_commandBuffers = m_swapChain->createCommandBuffers();
 		static ashes::ClearValue const clearValue{ { 1.0, 0.0, 0.0, 1.0 } };
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )

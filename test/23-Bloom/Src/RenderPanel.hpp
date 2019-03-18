@@ -93,7 +93,8 @@ namespace vkapp
 		ashes::QueuePtr m_graphicsQueue;
 		ashes::QueuePtr m_presentQueue;
 		ashes::CommandPoolPtr m_commandPool;
-		ashes::SwapChainPtr m_swapChain;
+		utils::SwapChainPtr m_swapChain;
+		ashes::ClearColorValue m_clearColour;
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::StagingTexturePtr m_stagingTexture;
 		ashes::TexturePtr m_texture;
@@ -186,7 +187,7 @@ namespace vkapp
 		/**@{*/
 		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
 		std::vector< ashes::CommandBufferPtr > m_commandBuffers;
-		ashes::SignalConnection< ashes::SwapChain::OnReset > m_swapChainReset;
+		ashes::SignalConnection< utils::SwapChain::OnReset > m_swapChainReset;
 		/**@}*/
 	};
 }

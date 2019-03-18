@@ -475,7 +475,8 @@ namespace gl_renderer
 			, std::move( enabledExtensions )
 			, std::move( enabledFeatures ) }
 		, m_instance{ instance }
-		, m_context{ Context::create( gpu, *surface, nullptr ) }
+		, m_surface{ std::move( surface ) }
+		, m_context{ Context::create( gpu, *m_surface, nullptr ) }
 		, m_rsState{}
 	{
 		auto context = getContext();
@@ -655,14 +656,13 @@ namespace gl_renderer
 			, memoryFlags );
 	}
 
-	ashes::SwapChainPtr Device::createSwapChain( ashes::CommandPool const & commandPool
-		, ashes::Extent2D const & size )const
+	ashes::SwapChainPtr Device::createSwapChain( ashes::SwapChainCreateInfo createInfo )const
 	{
 		ashes::SwapChainPtr result;
 
 		try
 		{
-			result = std::make_unique< SwapChain >( *this, commandPool, size );
+			result = std::make_unique< SwapChain >( *this, std::move( createInfo ) );
 		}
 		catch ( std::exception & exc )
 		{

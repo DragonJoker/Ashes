@@ -27,10 +27,17 @@ namespace test_renderer
 	{
 	}
 
-	void Queue::present( ashes::SwapChainCRefArray const & swapChains
+	ashes::ResultArray Queue::present( ashes::SwapChainCRefArray const & swapChains
 		, ashes::UInt32Array const & imagesIndex
 		, ashes::SemaphoreCRefArray const & semaphoresToWait )const
 	{
+		ashes::ResultArray result{ swapChains.size(), ashes::Result::eSuccess };
+
+		for ( auto & swapChain : swapChains )
+		{
+		}
+
+		return result;
 	}
 
 	void Queue::waitIdle()const

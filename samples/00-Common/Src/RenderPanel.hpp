@@ -93,7 +93,8 @@ namespace common
 		uint32_t m_graphicsQueueFamilyIndex;
 		uint32_t m_presentQueueFamilyIndex;
 		ashes::DevicePtr m_device;
-		ashes::SwapChainPtr m_swapChain;
+		utils::SwapChainPtr m_swapChain;
+		ashes::ClearColorValue m_clearColour;
 		ashes::StagingBufferPtr m_stagingBuffer;
 
 		ashes::SamplerPtr m_sampler;
@@ -108,6 +109,6 @@ namespace common
 
 		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
 		std::vector< ashes::CommandBufferPtr > m_commandBuffers;
-		ashes::SignalConnection< ashes::SwapChain::OnReset > m_swapChainReset;
+		ashes::SignalConnection< utils::SwapChain::OnReset > m_swapChainReset;
 	};
 }

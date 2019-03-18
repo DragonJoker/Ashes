@@ -9,6 +9,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Buffer/VertexBuffer.hpp>
 #include <Ashes/Core/Device.hpp>
+#include <Ashes/Miscellaneous/SwapChainCreateInfo.hpp>
 #include <Ashes/Pipeline/ColourBlendState.hpp>
 #include <Ashes/Pipeline/DepthStencilState.hpp>
 #include <Ashes/Pipeline/InputAssemblyState.hpp>
@@ -163,8 +164,7 @@ namespace gl_renderer
 		/**
 		*\copydoc		ashes::Device::createSwapChain
 		*/
-		ashes::SwapChainPtr createSwapChain( ashes::CommandPool const & commandPool
-			, ashes::Extent2D const & size )const override;
+		ashes::SwapChainPtr createSwapChain( ashes::SwapChainCreateInfo createInfo )const override;
 		/**
 		*\copydoc		ashes::Device::createSemaphore
 		*/

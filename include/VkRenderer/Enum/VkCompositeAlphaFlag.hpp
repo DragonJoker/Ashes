@@ -19,6 +19,15 @@ namespace vk_renderer
 	VkCompositeAlphaFlagsKHR convert( ashes::CompositeAlphaFlags const & flags );
 	/**
 	*\brief
+	*	Convertit un ashes::CompositeAlphaFlag en VkCompositeAlphaFlagBitsKHR.
+	*\param[in] flag
+	*	Le ashes::CompositeAlphaFlag.
+	*\return
+	*	Le VkCompositeAlphaFlagBitsKHR.
+	*/
+	VkCompositeAlphaFlagBitsKHR convert( ashes::CompositeAlphaFlag const & flag );
+	/**
+	*\brief
 	*	Convertit un VkCompositeAlphaFlagsKHR en ashes::CompositeAlphaFlags.
 	*\param[in] flags
 	*	Le VkCompositeAlphaFlagsKHR.

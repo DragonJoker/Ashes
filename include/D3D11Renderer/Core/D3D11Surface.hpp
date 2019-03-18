@@ -23,5 +23,13 @@ namespace d3d11_renderer
 		std::vector < ashes::PresentMode > getPresentModes()const override;
 		ashes::SurfaceCapabilities getCapabilities()const override;
 		std::vector< ashes::SurfaceFormat > getFormats()const override;
+
+		inline std::vector< DXGI_MODE_DESC > const & getDescs( ashes::Format format )const
+		{
+			return m_descs[format];
+		}
+
+	private:
+		mutable std::map< ashes::Format, std::vector< DXGI_MODE_DESC > > m_descs;
 	};
 }

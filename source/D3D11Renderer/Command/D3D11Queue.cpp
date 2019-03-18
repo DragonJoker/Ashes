@@ -35,7 +35,7 @@ namespace d3d11_renderer
 		, ashes::SemaphoreCRefArray const & semaphoresToSignal
 		, ashes::Fence const * fence )const
 	{
-		Context context{ m_device };
+		Context context{ m_device.getFeatureLevel(), m_device };
 
 		for ( auto & commandBuffer : commandBuffers )
 		{
@@ -45,13 +45,18 @@ namespace d3d11_renderer
 		}
 	}
 
-	void Queue::present( ashes::SwapChainCRefArray const & swapChains
+	ashes::ResultArray Queue::present( ashes::SwapChainCRefArray const & swapChains
 		, ashes::UInt32Array const & imagesIndex
 		, ashes::SemaphoreCRefArray const & semaphoresToWait )const
 	{
+		ashes::ResultArray result{ swapChains.size(), ashes::Result::eSuccess };
+
 		for ( auto & swapChain : swapChains )
 		{
+			static_cast< SwapChain const & >( swapChain.get() ).getSwapChain()->Present( 0u, 0u );
 		}
+
+		return result;
 	}
 
 	void Queue::waitIdle()const

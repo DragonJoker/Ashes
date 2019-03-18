@@ -18,21 +18,6 @@ namespace vk_renderer
 			, ashes::DeviceQueueCreateInfo createInfo
 			, uint32_t index );
 		/**
-		*\~french
-		*\brief
-		*	Présente la file à Vulkan.
-		*\return
-		*	\p true si tout s'est bien passé.
-		*\~english
-		*\brief
-		*	present the queue to Vulkan.
-		*\return
-		*	\p true on ok.
-		*/
-		VkResult presentBackBuffer( SwapChainCRefArray const & swapChains
-			, ashes::UInt32Array const & imagesIndex
-			, SemaphoreCRefArray const & semaphoresToWait )const;
-		/**
 		*\copydoc		ashes::Queue::submit
 		*/ 
 		void submit( ashes::CommandBufferCRefArray const & commandBuffers
@@ -43,7 +28,7 @@ namespace vk_renderer
 		/**
 		*\copydoc		ashes::Queue::present
 		*/
-		void present( ashes::SwapChainCRefArray const & swapChains
+		ashes::ResultArray present( ashes::SwapChainCRefArray const & swapChains
 			, ashes::UInt32Array const & imagesIndex
 			, ashes::SemaphoreCRefArray const & semaphoresToWait )const override;
 		/**

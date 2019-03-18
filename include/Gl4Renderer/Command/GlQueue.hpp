@@ -28,7 +28,7 @@ namespace gl_renderer
 		/**
 		*\copydoc		ashes::Queue::present
 		*/
-		void present( ashes::SwapChainCRefArray const & swapChains
+		ashes::ResultArray present( ashes::SwapChainCRefArray const & swapChains
 			, ashes::UInt32Array const & imagesIndex
 			, ashes::SemaphoreCRefArray const & semaphoresToWait )const override;
 		/**

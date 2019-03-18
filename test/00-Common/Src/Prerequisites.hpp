@@ -3,8 +3,9 @@
 #include <Core/Surface.hpp>
 #include <Core/Instance.hpp>
 
-#include <Factory.hpp>
-#include <Quaternion.hpp>
+#include <Utils/Factory.hpp>
+#include <Utils/Quaternion.hpp>
+#include <Utils/UtilsSwapChain.hpp>
 
 #pragma warning( disable: 4996 )
 #include <wx/wx.h>
