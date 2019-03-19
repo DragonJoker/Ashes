@@ -30,7 +30,7 @@ namespace vkapp
 		common::Scene scene;
 
 		// Initialise material.
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Assets";
 		images.emplace_back( std::make_shared< common::Image >( common::loadImage( shadersFolder / "texture.png" ) ) );
 		auto init = ObjectCount * -2.0f;
 		utils::Vec3 position{ init, init, init };

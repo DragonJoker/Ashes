@@ -81,7 +81,7 @@ namespace vkapp
 		return std::make_unique< common::OpaqueRendering >( std::make_unique< NodesRenderer >( device
 				, m_commandPool
 				, m_transferQueue
-				, common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
+				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, true
 				, true
@@ -101,7 +101,7 @@ namespace vkapp
 		return std::make_unique< common::TransparentRendering >( std::make_unique< NodesRenderer >( device
 				, m_commandPool
 				, m_transferQueue
-				, common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
+				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, false
 				, false

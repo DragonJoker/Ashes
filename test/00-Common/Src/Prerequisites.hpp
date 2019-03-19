@@ -1,11 +1,14 @@
 #pragma once
 
-#include <Core/Surface.hpp>
-#include <Core/Instance.hpp>
+#include <Ashes/Core/Surface.hpp>
+#include <Ashes/Core/Instance.hpp>
 
 #include <Utils/Factory.hpp>
 #include <Utils/Quaternion.hpp>
+#include <Utils/UtilsDebug.hpp>
 #include <Utils/UtilsDevice.hpp>
+#include <Utils/UtilsInstance.hpp>
+#include <Utils/UtilsPlugin.hpp>
 #include <Utils/UtilsSwapChain.hpp>
 
 #pragma warning( disable: 4996 )
@@ -18,10 +21,6 @@
 namespace common
 {
 	static wxSize const WindowSize{ 800, 600 };
-	using RendererFactory = utils::Factory< ashes::Instance
-		, std::string
-		, ashes::InstancePtr
-		, std::function< ashes::InstancePtr( ashes::Instance::Configuration const & ) > >;
 	/**
 	*\~english
 	*\brief

@@ -9,7 +9,7 @@ namespace common
 {
 	MainFrame::MainFrame( wxString const & name
 		, wxString const & rendererName
-		, RendererFactory & factory )
+		, utils::RendererFactory & factory )
 		: wxFrame{ nullptr
 		, wxID_ANY
 		, name + wxT( " (" ) + rendererName + wxT( ")" )
@@ -39,10 +39,12 @@ namespace common
 				false,
 #endif
 			};
-			m_instance = m_factory.create( m_rendererName.ToStdString(), config );
+			m_instance = std::make_unique< utils::Instance >( m_factory
+				, m_rendererName.ToStdString()
+				, config );
 
 			std::cout << "Instance instance created." << std::endl;
-			m_panel = doCreatePanel( WindowSize, *m_instance );
+			m_panel = doCreatePanel( WindowSize, m_instance->getInstance() );
 
 			wxBoxSizer * sizer{ new wxBoxSizer{ wxVERTICAL } };
 			sizer->Add( m_panel, wxSizerFlags{ 1 }.Expand() );

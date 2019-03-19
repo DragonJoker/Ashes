@@ -19,11 +19,13 @@
 
 namespace ashes
 {
-	namespace Debug
+	namespace callstack
 	{
 #if defined( NDEBUG )
 
-		inline void doShowBacktrace( std::ostream & stream, int, int )
+		inline void doShowBacktrace( std::ostream &
+			, int
+			, int )
 		{
 		}
 
@@ -45,7 +47,7 @@ namespace ashes
 				return result;
 			}
 
-			inline std::string Demangle( std::string const & name )
+			inline std::string doDemangle( std::string const & name )
 			{
 				std::string result;
 
@@ -53,7 +55,10 @@ namespace ashes
 				{
 					char real[2048] = { 0 };
 
-					if ( ::UnDecorateSymbolName( name.c_str(), real, sizeof( real ), UNDNAME_COMPLETE ) )
+					if ( ::UnDecorateSymbolName( name.c_str()
+						, real
+						, sizeof( real )
+						, UNDNAME_COMPLETE ) )
 					{
 						result = real;
 					}
@@ -67,14 +72,19 @@ namespace ashes
 			}
 		}
 
-		inline void doShowBacktrace( std::ostream & stream, int toCapture, int toSkip )
+		inline void doShowBacktrace( std::ostream & stream
+			, int toCapture
+			, int toSkip )
 		{
 			static std::mutex mutex;
 			std::unique_lock< std::mutex > lock{ mutex };
 			const int MaxFnNameLen( 255 );
 
 			std::vector< void * > backTrace( toCapture - toSkip );
-			unsigned int num( ::RtlCaptureStackBackTrace( toSkip, toCapture - toSkip, backTrace.data(), nullptr ) );
+			unsigned int num( ::RtlCaptureStackBackTrace( toSkip
+				, toCapture - toSkip
+				, backTrace.data()
+				, nullptr ) );
 
 			stream << "CALL STACK:" << std::endl;
 
@@ -87,14 +97,20 @@ namespace ashes
 				symbol->SizeOfStruct = sizeof( SYMBOL_INFO );
 				for ( unsigned int i = 0; i < num; ++i )
 				{
-					if ( ::SymFromAddr( doGetProcess(), reinterpret_cast< DWORD64 >( backTrace[i] ), nullptr, symbol ) )
+					if ( ::SymFromAddr( doGetProcess()
+						, reinterpret_cast< DWORD64 >( backTrace[i] )
+						, nullptr
+						, symbol ) )
 					{
-						stream << "== " << Demangle( { symbol->Name, symbol->Name + symbol->NameLen } );
+						stream << "== " << doDemangle( { symbol->Name, symbol->Name + symbol->NameLen } );
 						IMAGEHLP_LINE64 line;
 						DWORD displacement;
 						line.SizeOfStruct = sizeof( IMAGEHLP_LINE64 );
 
-						if ( ::SymGetLineFromAddr64( doGetProcess(), symbol->Address, &displacement, &line ) )
+						if ( ::SymGetLineFromAddr64( doGetProcess()
+							, symbol->Address
+							, &displacement
+							, &line ) )
 						{
 							stream << "(" << line.FileName << ":" << line.LineNumber << ")";
 						}
@@ -114,7 +130,9 @@ namespace ashes
 		void initialise()
 		{
 			::SymSetOptions( SYMOPT_UNDNAME | SYMOPT_LOAD_LINES );
-			doGetInitialisationStatus() = ::SymInitialize( doGetProcess(), nullptr, TRUE ) == TRUE;
+			doGetInitialisationStatus() = ( TRUE == ::SymInitialize( doGetProcess()
+				, nullptr
+				, TRUE ) );
 
 			if ( !doGetInitialisationStatus() )
 			{
@@ -132,7 +150,9 @@ namespace ashes
 
 #	elif ASHES_ANDROID
 
-		inline void doShowBacktrace( std::ostream & stream, int, int )
+		inline void doShowBacktrace( std::ostream & stream
+			, int
+			, int )
 		{
 		}
 
@@ -146,7 +166,7 @@ namespace ashes
 
 #	else
 
-		inline std::string Demangle( std::string const & name )
+		inline std::string doDemangle( std::string const & name )
 		{
 			std::string result{ name };
 			size_t lindex = result.find( "(" );
@@ -173,7 +193,9 @@ namespace ashes
 			return result;
 		}
 
-		inline void doShowBacktrace( std::ostream & stream, int toCapture, int toSkip )
+		inline void doShowBacktrace( std::ostream & stream
+			, int toCapture
+			, int toSkip )
 		{
 			stream << "CALL STACK:" << std::endl;
 			std::vector< void * > backTrace( toCapture );
@@ -182,7 +204,7 @@ namespace ashes
 
 			for ( unsigned i = toSkip; i < num; ++i )
 			{
-				stream << "== " << Demangle( fnStrings[i] ) << std::endl;
+				stream << "== " << doDemangle( fnStrings[i] ) << std::endl;
 			}
 
 			free( fnStrings );
@@ -201,11 +223,14 @@ namespace ashes
 
 #endif
 
-		std::ostream & operator<<( std::ostream & stream, Backtrace const & p_backtrace )
+		std::ostream & operator<<( std::ostream & stream
+			, Backtrace const & trace )
 		{
 			static std::locale const loc{ "C" };
 			stream.imbue( loc );
-			doShowBacktrace( stream, p_backtrace.m_toCapture, p_backtrace.m_toSkip );
+			doShowBacktrace( stream
+				, trace.m_toCapture
+				, trace.m_toSkip );
 			return stream;
 		}
 	}

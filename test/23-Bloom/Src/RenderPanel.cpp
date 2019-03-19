@@ -421,7 +421,7 @@ namespace vkapp
 			, ashes::Filter::eLinear
 			, ashes::Filter::eLinear );
 
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Assets";
 		std::array< std::string, 6u > paths
 		{
 			"01-right.png",
@@ -582,7 +582,7 @@ namespace vkapp
 		m_semaphore = m_device->getDevice().createSemaphore();
 		m_offscreenPipelineLayout = m_device->getDevice().createPipelineLayout( *m_offscreenDescriptorLayout );
 		wxSize size{ GetClientSize() };
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "offscreen.vert" )
 			|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
@@ -794,7 +794,7 @@ namespace vkapp
 		m_passes.hi.frameBuffer = m_passes.hi.renderPass->createFrameBuffer( dimensions
 			, std::move( attaches ) );
 
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "hipass.vert" )
 			|| !wxFileExists( shadersFolder / "hipass.frag" ) )
@@ -973,7 +973,7 @@ namespace vkapp
 			blur.frameBuffer = m_passes.blurX[0].renderPass->createFrameBuffer( dimensions
 				, std::move( attaches ) );
 
-			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+			std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 			if ( !wxFileExists( shadersFolder / "blur.vert" )
 				|| !wxFileExists( shadersFolder / "blur.frag" ) )
@@ -1096,7 +1096,7 @@ namespace vkapp
 			blur.frameBuffer = m_passes.blurY[0].renderPass->createFrameBuffer( dimensions
 				, std::move( attaches ) );
 
-			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+			std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 			if ( !wxFileExists( shadersFolder / "blur.vert" )
 				|| !wxFileExists( shadersFolder / "blur.frag" ) )
@@ -1259,7 +1259,7 @@ namespace vkapp
 		m_passes.combine.frameBuffer = m_passes.combine.renderPass->createFrameBuffer( dimensions
 			, std::move( attaches ) );
 
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "combine.vert" )
 			|| !wxFileExists( shadersFolder / "combine.frag" ) )
@@ -1334,7 +1334,7 @@ namespace vkapp
 	{
 		m_mainPipelineLayout = m_device->getDevice().createPipelineLayout( *m_mainDescriptorLayout );
 		wxSize size{ GetClientSize() };
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "main.vert" )
 			|| !wxFileExists( shadersFolder / "main.frag" ) )

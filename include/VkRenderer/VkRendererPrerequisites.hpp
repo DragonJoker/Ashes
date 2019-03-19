@@ -25,7 +25,7 @@
 #if !defined( NDEBUG )
 #	define LOAD_VALIDATION_LAYERS 1
 #else
-#	define LOAD_VALIDATION_LAYERS 0
+#	define LOAD_VALIDATION_LAYERS 1
 #endif
 
 #include "VkRenderer/VkRendererConfig.hpp"
@@ -56,6 +56,7 @@
 #include "Enum/VkCompositeAlphaFlag.hpp"
 #include "Enum/VkCompareOp.hpp"
 #include "Enum/VkCullModeFlag.hpp"
+#include "Enum/VkDebugReportFlag.hpp"
 #include "Enum/VkDebugReportObjectType.hpp"
 #include "Enum/VkDependencyFlag.hpp"
 #include "Enum/VkDepthStencilStateFlag.hpp"
@@ -124,6 +125,7 @@
 #include "Miscellaneous/VkBufferCopy.hpp"
 #include "Miscellaneous/VkBufferImageCopy.hpp"
 #include "Miscellaneous/VkDebugMarkerObjectNameInfo.hpp"
+#include "Miscellaneous/VkDebugReportCallbackCreateInfo.hpp"
 #include "Miscellaneous/VkDeviceCreateInfo.hpp"
 #include "Miscellaneous/VkExtensionProperties.hpp"
 #include "Miscellaneous/VkExtent2D.hpp"

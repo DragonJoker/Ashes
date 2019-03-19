@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 
 #include "Ashes/Core/PhysicalDevice.hpp"
 #include "Ashes/Core/WindowHandle.hpp"
+#include "Ashes/Miscellaneous/DebugReportCallbackCreateInfo.hpp"
 #include "Ashes/Miscellaneous/DeviceCreateInfo.hpp"
 #include "Ashes/Miscellaneous/RendererFeatures.hpp"
 #include "Ashes/Miscellaneous/LayerProperties.hpp"
@@ -112,6 +113,19 @@ namespace ashes
 		*/
 		virtual SurfacePtr createSurface( PhysicalDevice const & gpu
 			, WindowHandle handle )const = 0;
+		/**
+		*\~french
+		*\brief
+		*	Crée un callback de rapport de debug.
+		*\param[in] createInfo
+		*	Les informations de création.
+		*\~french
+		*\brief
+		*	Creates a debug report callback.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		virtual DebugReportCallbackPtr createDebugReportCallback( DebugReportCallbackCreateInfo createInfo )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -228,6 +242,19 @@ namespace ashes
 		std::array< float, 16 > infinitePerspective( float radiansFovY
 			, float aspect
 			, float zNear )const;
+		/**
+		*\~french
+		*\brief
+		*	Ajoute les couches de l'instance aux noms déjà présents dans la liste donnée.
+		*\param[in,out] names
+		*	La liste à compléter.
+		*\~english
+		*\brief
+		*	Adds the instance layers names to the given names.
+		*\param[in,out] names
+		*	The liste to fill.
+		*/
+		void completeLayerNames( ashes::StringArray & names )const;
 		/**
 		*\~english
 		*name

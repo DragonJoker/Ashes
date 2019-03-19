@@ -14,7 +14,7 @@ namespace common
 	public:
 		MainFrame( wxString const & name
 			, wxString const & rendererName
-			, RendererFactory & factory );
+			, utils::RendererFactory & factory );
 		virtual ~MainFrame();
 
 		void initialise();
@@ -31,8 +31,8 @@ namespace common
 		wxTimer * m_timer{ nullptr };
 		wxString m_name;
 		wxString m_rendererName;
-		ashes::InstancePtr m_instance;
-		RendererFactory & m_factory;
+		utils::InstancePtr m_instance;
+		utils::RendererFactory & m_factory;
 		RenderPanel * m_panel{ nullptr };
 	};
 }

@@ -2,6 +2,7 @@
 
 #include "Core/GlSurface.hpp"
 #include "Core/GlContext.hpp"
+#include "Core/GlDebugReportCallback.hpp"
 #include "Core/GlDevice.hpp"
 #include "Core/GlPhysicalDevice.hpp"
 
@@ -23,6 +24,13 @@ namespace gl_renderer
 	namespace
 	{
 #if defined( _WIN32 )
+
+		template< typename FuncT >
+		bool getFunction( char const * const name, FuncT & function )
+		{
+			function = reinterpret_cast< FuncT >( wglGetProcAddress( name ) );
+			return function != nullptr;
+		}
 
 		class RenderWindow
 		{
@@ -320,15 +328,16 @@ namespace gl_renderer
 		m_gpus.push_back( std::make_unique< PhysicalDevice >( *this ) );
 		m_apiVersion = m_gpus[0]->getProperties().apiVersion;
 		auto & gpu = static_cast< PhysicalDevice const & >( *m_gpus.back() );
-		m_features.hasTexBufferRange = gpu.find( "GL_ARB_texture_buffer_range" );
-		m_features.hasImageTexture = gpu.find( "GL_ARB_shader_image_load_store" );
-		m_features.hasBaseInstance = gpu.find( "GL_ARB_base_instance" );
-		m_features.hasClearTexImage = gpu.find( "GL_ARB_clear_texture" );
-		m_features.hasComputeShaders = gpu.find( "GL_ARB_compute_shader" );
-		m_features.supportsPersistentMapping = gpu.find( "GL_ARB_buffer_storage" );
+		m_features.hasTexBufferRange = gpu.find( ARB_texture_buffer_range );
+		m_features.hasImageTexture = gpu.find( ARB_shader_image_load_store );
+		m_features.hasBaseInstance = gpu.find( ARB_base_instance );
+		m_features.hasClearTexImage = gpu.find( ARB_clear_texture );
+		m_features.hasComputeShaders = gpu.find( ARB_compute_shader );
+		m_features.supportsPersistentMapping = gpu.find( ARB_buffer_storage );
+
 		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...
 		m_spirvSupported = false
-			&& ( gpu.find( "GL_ARB_gl_spirv" )
+			&& ( gpu.find( ARB_gl_spirv )
 				|| gpu.hasSPIRVShaderBinaryFormat() );
 	}
 
@@ -359,6 +368,12 @@ namespace gl_renderer
 		return std::make_unique< Surface >( *this
 			, gpu
 			, std::move( handle ) );
+	}
+
+	ashes::DebugReportCallbackPtr Instance::createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const
+	{
+		return std::make_unique< DebugReportCallback >( *this
+			, std::move( createInfo ) );
 	}
 
 	std::array< float, 16 > Instance::frustum( float left
@@ -416,5 +431,17 @@ namespace gl_renderer
 		result[15] = 1.0f;
 
 		return result;
+	}
+
+	void Instance::registerDebugMessageCallback( PFNGLDEBUGPROC callback
+		, void * userParam )const
+	{
+		m_debugCallbacks.push_back( { callback, userParam } );
+	}
+
+	void Instance::registerDebugMessageCallbackAMD( PFNGLDEBUGAMDPROC callback
+		, void * userParam )const
+	{
+		m_debugAMDCallbacks.push_back( { callback, userParam } );
 	}
 }

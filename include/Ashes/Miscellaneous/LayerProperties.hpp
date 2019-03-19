@@ -24,7 +24,7 @@ namespace ashes
 		uint32_t specVersion{ 0u };
 		uint32_t implementationVersion{ 0u };
 		std::string description;
-		std::vector< ExtensionProperties > extensions;
+		ExtensionPropertiesArray extensions;
 	};
 }
 

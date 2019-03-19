@@ -19,12 +19,6 @@ namespace vk_renderer
 		, std::string description
 		, ashes::StringArray & names );
 	void addOptionalDebugReportLayer( ashes::StringArray & names );
-	void setupDebugging( VkInstance instance
-		, Instance & data
-		, VkDebugReportCallbackEXT & callback );
-	void cleanupDebugging( VkInstance instance
-		, Instance & data
-		, VkDebugReportCallbackEXT & callback );
 	/**
 	*\~french
 	*\brief

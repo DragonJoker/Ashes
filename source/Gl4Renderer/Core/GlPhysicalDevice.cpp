@@ -386,6 +386,11 @@ namespace gl_renderer
 			std::copy( std::istream_iterator< std::string >( stream ),
 				std::istream_iterator< std::string >(),
 				std::back_inserter( m_deviceExtensionNames ) );
+
+			for ( auto & name : m_deviceExtensionNames )
+			{
+				m_extensions.push_back( { name, 0u } );
+			}
 		}
 
 		int numSpirvExtensions = 0;
