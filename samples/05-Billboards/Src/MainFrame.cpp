@@ -5,7 +5,7 @@
 namespace vkapp
 {
 	MainFrame::MainFrame( wxString const & rendererName
-		, common::RendererFactory & factory )
+		, utils::RendererFactory & factory )
 		: common::MainFrame{ AppName, rendererName, factory }
 	{
 	}

@@ -223,7 +223,7 @@ namespace ashes
 	{
 		auto hash = std::hash< void const * >{}( object );
 		std::stringstream stream;
-		stream << Debug::Backtrace{ 20, 4 };
+		stream << callstack::Backtrace{ 20, 4 };
 		m_allocated.emplace( hash
 			, ObjectAllocation{
 				std::string{ type },

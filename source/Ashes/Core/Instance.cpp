@@ -12,6 +12,27 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+	void addOptionalValidationLayer( std::string const & layer
+		, std::string description
+		, ashes::StringArray & names )
+	{
+#if LOAD_VALIDATION_LAYERS
+		if ( layerName.find( "validation" ) != std::string::npos
+			|| description.find( "LunarG Validation" ) != std::string::npos )
+		{
+			names.push_back( layerName );
+		}
+#endif
+	}
+
+	void addOptionalDebugReportLayer( ashes::StringArray & names )
+	{
+#if LOAD_VALIDATION_LAYERS
+		names.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
+		//names.push_back( VK_EXT_DEBUG_MARKER_EXTENSION_NAME );
+#endif
+	}
+
 	Instance::Instance( ClipDirection clipDirection
 		, std::string const & name
 		, Configuration const & configuration )
@@ -21,7 +42,7 @@ namespace ashes
 	{
 #ifndef NDEBUG
 
-		Debug::initialise();
+		callstack::initialise();
 
 #endif
 	}
@@ -30,7 +51,7 @@ namespace ashes
 	{
 #ifndef NDEBUG
 
-		Debug::cleanup();
+		callstack::cleanup();
 
 #endif
 	}
@@ -62,5 +83,15 @@ namespace ashes
 		result[11] = -float( 1 );
 		result[14] = -float( 2 ) * zNear;
 		return result;
+	}
+
+	void Instance::completeLayerNames( ashes::StringArray & names )const
+	{
+		for ( auto const & props : m_layers )
+		{
+			addOptionalValidationLayer( props.layerName
+				, props.description
+				, names );
+		}
 	}
 }

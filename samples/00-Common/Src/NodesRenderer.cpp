@@ -43,7 +43,7 @@ namespace common
 		std::vector< ashes::ShaderStageState > doCreateObjectProgram( ashes::Device const & device
 			, std::string const & fragmentShaderFile )
 		{
-			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
+			std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 
 			if ( !wxFileExists( shadersFolder / "object.vert" )
 				|| !wxFileExists( fragmentShaderFile ) )
@@ -62,7 +62,7 @@ namespace common
 		std::vector< ashes::ShaderStageState > doCreateBillboardProgram( ashes::Device const & device
 			, std::string const & fragmentShaderFile )
 		{
-			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
+			std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 
 			if ( !wxFileExists( shadersFolder / "billboard.vert" )
 				|| !wxFileExists( fragmentShaderFile ) )

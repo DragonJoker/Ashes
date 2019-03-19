@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RendererPlugin.hpp"
+#include "Prerequisites.hpp"
 
 #include <Utils/Factory.hpp>
 
@@ -36,7 +36,7 @@ namespace common
 		std::streambuf * m_cout{ nullptr };
 		std::streambuf * m_cerr{ nullptr };
 		std::streambuf * m_clog{ nullptr };
-		std::vector< RendererPlugin > m_plugins;
-		RendererFactory m_factory;
+		std::vector< utils::Plugin > m_plugins;
+		utils::RendererFactory m_factory;
 	};
 }

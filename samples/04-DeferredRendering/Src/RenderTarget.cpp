@@ -74,7 +74,7 @@ namespace vkapp
 		return std::make_unique< OpaqueRendering >( std::make_unique< GeometryPass >( device
 				, m_commandPool
 				, m_transferQueue
-				, common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "opaque_gp.frag"
+				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "opaque_gp.frag"
 				, m_gbuffer
 				, views[0].get().getFormat()
 				, *m_sceneUbo
@@ -97,7 +97,7 @@ namespace vkapp
 		return std::make_unique< common::TransparentRendering >( std::make_unique< TransparentRendering >( device
 				, m_commandPool
 				, m_transferQueue
-				, common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "transparent.frag"
+				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "transparent.frag"
 				, common::getFormats( views )
 				, *m_sceneUbo
 				, *m_objectUbo

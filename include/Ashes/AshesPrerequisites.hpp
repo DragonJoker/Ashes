@@ -48,6 +48,7 @@ See LICENSE file in root folder.
 #include "Ashes/Enum/CommandPoolCreateFlag.hpp"
 #include "Ashes/Enum/CompareOp.hpp"
 #include "Ashes/Enum/CullModeFlag.hpp"
+#include "Ashes/Enum/DebugReportFlag.hpp"
 #include "Ashes/Enum/DebugReportObjectType.hpp"
 #include "Ashes/Enum/DependencyFlag.hpp"
 #include "Ashes/Enum/DepthStencilStateFlag.hpp"
@@ -190,6 +191,7 @@ namespace ashes
 	struct DescriptorImageInfo;
 	struct DescriptorPoolSize;
 	struct DeviceQueueCreateInfo;
+	struct ExtensionProperties;
 	struct Extent2D;
 	struct Extent3D;
 	struct FormatProperties;
@@ -202,6 +204,7 @@ namespace ashes
 	struct ImageSubresourceLayers;
 	struct ImageSubresourceRange;
 	struct InputAssemblyState;
+	struct LayerProperties;
 	struct MemoryHeap;
 	struct MemoryRequirements;
 	struct MemoryType;
@@ -241,6 +244,7 @@ namespace ashes
 	class CommandBuffer;
 	class CommandPool;
 	class ComputePipeline;
+	class DebugReportCallback;
 	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetLayout;
@@ -319,6 +323,7 @@ namespace ashes
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
 	using ComputePipelinePtr = std::unique_ptr< ComputePipeline >;
+	using DebugReportCallbackPtr = std::unique_ptr< DebugReportCallback >;
 	using DescriptorPoolPtr = std::unique_ptr< DescriptorPool >;
 	using DescriptorSetLayoutPtr = std::unique_ptr< DescriptorSetLayout >;
 	using DescriptorSetLayoutBindingPtr = std::unique_ptr< DescriptorSetLayoutBinding >;
@@ -368,9 +373,11 @@ namespace ashes
 	using DescriptorSetLayoutBindingArray = std::vector< DescriptorSetLayoutBinding >;
 	using DeviceQueueCreateInfoArray = std::vector< DeviceQueueCreateInfo >;
 	using DynamicStateEnableArray = std::vector< DynamicStateEnable >;
+	using ExtensionPropertiesArray = std::vector< ExtensionProperties >;
 	using FrameBufferAttachmentArray = std::vector< FrameBufferAttachment >;
 	using ImageLayoutArray = std::vector< ImageLayout >;
 	using ImageMemoryBarrierArray = std::vector< ImageMemoryBarrier >;
+	using LayerPropertiesArray = std::vector< LayerProperties >;
 	using MemoryBarrierArray = std::vector< MemoryBarrier >;
 	using PipelineStageFlagsArray = std::vector< PipelineStageFlags >;
 	using PushConstantArray = std::vector< PushConstant >;

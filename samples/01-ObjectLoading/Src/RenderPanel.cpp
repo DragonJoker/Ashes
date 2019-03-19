@@ -23,7 +23,7 @@ namespace vkapp
 	{
 		common::ImagePtrArray images;
 		common::Scene scene;
-		scene.object = common::loadObject( common::getPath( common::getExecutableDirectory() ) / "share" / "Assets" / "Nyra", "Nyra_pose.fbx", images );
+		scene.object = common::loadObject( utils::getPath( utils::getExecutableDirectory() ) / "share" / "Assets" / "Nyra", "Nyra_pose.fbx", images );
 		m_renderTarget = std::make_unique< RenderTarget >( device
 			, *m_commandPool
 			, *m_graphicsQueue
