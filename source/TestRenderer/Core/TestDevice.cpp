@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "Buffer/TestUniformBuffer.hpp"
 #include "Command/TestCommandPool.hpp"
 #include "Command/TestQueue.hpp"
-#include "Core/TestConnection.hpp"
+#include "Core/TestSurface.hpp"
 #include "Core/TestPhysicalDevice.hpp"
 #include "Core/TestInstance.hpp"
 #include "Core/TestSwapChain.hpp"
@@ -34,20 +34,14 @@ See LICENSE file in root folder.
 namespace test_renderer
 {
 	Device::Device( Instance const & instance
-		, ashes::ConnectionPtr connection
-		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-		, ashes::StringArray enabledLayers
-		, ashes::StringArray enabledExtensions
-		, ashes::PhysicalDeviceFeatures enabledFeatures )
+		, ashes::SurfacePtr surface
+		, ashes::DeviceCreateInfo createInfos )
 		: ashes::Device{ instance
-			, connection->getGpu()
-			, *connection
-			, std::move( queueCreateInfos )
-			, std::move( enabledLayers )
-			, std::move( enabledExtensions )
-			, std::move( enabledFeatures ) }
+			, surface->getGpu()
+			, *surface
+			, std::move( createInfos ) }
 		, m_instance{ instance }
-		, m_connection{ static_cast< Connection * >( connection.release() ) }
+		, m_surface{ static_cast< Surface * >( surface.release() ) }
 		, m_gpu{ static_cast< PhysicalDevice const & >( ashes::Device::getPhysicalDevice() ) }
 	{
 		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
@@ -145,14 +139,13 @@ namespace test_renderer
 			, memoryFlags );
 	}
 
-	ashes::SwapChainPtr Device::createSwapChain( ashes::CommandPool const & commandPool
-		, ashes::Extent2D const & size )const
+	ashes::SwapChainPtr Device::createSwapChain( ashes::SwapChainCreateInfo createInfo )const
 	{
 		ashes::SwapChainPtr result;
 
 		try
 		{
-			result = std::make_unique< SwapChain >( *this, commandPool, size );
+			result = std::make_unique< SwapChain >( *this, std::move( createInfo ) );
 		}
 		catch ( std::exception & exc )
 		{
@@ -232,7 +225,7 @@ namespace test_renderer
 
 	void Device::doCreateQueues()
 	{
-		for ( auto & queueCreateInfo : m_queueCreateInfos )
+		for ( auto & queueCreateInfo : m_createInfos.queueCreateInfos )
 		{
 			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
 				, QueueCreateCount{ queueCreateInfo, 0u } ).first;

@@ -80,6 +80,34 @@ namespace ashes
 		virtual FrameBufferPtr createFrameBuffer( Extent2D const & dimensions
 			, FrameBufferAttachmentArray attaches )const = 0;
 		/**
+		*\~french
+		*\brief
+		*	Crée un tampon d'images de swapchain, compatible avec la passe de rendu.
+		*\remarks
+		*	Si la compatibilité entre les textures voulues et les formats de la passe de rendu
+		*	n'est pas possible, une std::runtime_error est lancée.
+		*\param[in] dimensions
+		*	Les dimensions du tampon d'images.
+		*\param[in] attaches
+		*	Les attaches pour le tampon d'images à créer.
+		*\return
+		*	Le FrameBuffer créé.
+		*\~english
+		*\brief
+		*	Creates a swapchain frame buffer compatible with this render pass.
+		*\remarks
+		*	If the compatibility between wanted views and the render pass' formats
+		*	is not possible, a std::runtime_error will be thrown.
+		*\param[in] dimensions
+		*	The frame buffer's dimensions.
+		*\param[in] attaches
+		*	The attaches for the frame buffer to create.
+		*\return
+		*	The created frame buffer.
+		*/
+		virtual FrameBufferPtr createBackBuffer( Extent2D const & dimensions
+			, FrameBufferAttachmentArray attaches )const;
+		/**
 		*\~english
 		*name
 		*	Getters.

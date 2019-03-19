@@ -5,10 +5,12 @@ See LICENSE file in root folder.
 #include "Ashes/Image/Texture.hpp"
 
 #include "Ashes/Buffer/StagingBuffer.hpp"
+#include "Ashes/Command/CommandBuffer.hpp"
 #include "Ashes/Core/Device.hpp"
 #include "Ashes/Image/ImageSubresource.hpp"
 #include "Ashes/Image/SubresourceLayout.hpp"
 #include "Ashes/Image/TextureView.hpp"
+#include "Ashes/Sync/Fence.hpp"
 #include "Ashes/Sync/ImageMemoryBarrier.hpp"
 
 namespace ashes

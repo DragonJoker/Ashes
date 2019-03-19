@@ -8,12 +8,14 @@ See LICENSE file in root folder.
 
 #include "Ashes/Command/CommandPool.hpp"
 #include "Ashes/Command/Queue.hpp"
-#include "Ashes/Core/Connection.hpp"
+#include "Ashes/Core/Surface.hpp"
 #include "Ashes/Core/PhysicalDevice.hpp"
 #include "Ashes/Image/ImageCreateInfo.hpp"
 #include "Ashes/Image/SamplerCreateInfo.hpp"
 #include "Ashes/Miscellaneous/DebugMarkerObjectNameInfo.hpp"
+#include "Ashes/Miscellaneous/DeviceCreateInfo.hpp"
 #include "Ashes/Miscellaneous/QueueCreateInfo.hpp"
+#include "Ashes/Miscellaneous/SwapChainCreateInfo.hpp"
 #include "Ashes/Pipeline/ColourBlendState.hpp"
 #include "Ashes/Pipeline/RasterisationState.hpp"
 
@@ -46,8 +48,9 @@ namespace ashes
 		*	The Instance instance.
 		*\param[in] gpu
 		*	The physical device.
-		*\param[in] connection
-		*	The connection to the application.
+		*\param[in] surface
+		*	The surface.
+		*	The creation informations.
 		*\~french
 		*\brief
 		*	Constructeur.
@@ -55,16 +58,15 @@ namespace ashes
 		*	L'instance.
 		*\param[in] gpu
 		*	Le périphérique physique.
-		*\param[in] connection
-		*	La connection à l'application.
+		*\param[in] surface
+		*	La surface.
+		*\param[in] createInfos
+		*	Les informations de création.
 		*/
 		Device( Instance const & instance
 			, PhysicalDevice const & gpu
-			, Connection const & connection
-			, DeviceQueueCreateInfoArray queueCreateInfos
-			, StringArray enabledLayers
-			, StringArray enabledExtensions
-			, PhysicalDeviceFeatures enabledFeatures );
+			, Surface const & surface
+			, DeviceCreateInfo createInfos );
 
 	public:
 		/**
@@ -453,16 +455,15 @@ namespace ashes
 		*\~english
 		*\brief
 		*	Creates a swap chain.
-		*\param[in] size
-		*	The wanted dimensions.
+		*\param[in] createInfo
+		*	The creation info.
 		*\~french
 		*\brief
 		*	Crée une swap chain.
-		*\param[in] size
-		*	Les dimensions souhaitées.
+		*\param[in] createInfo
+		*	Les informations de création.
 		*/
-		virtual SwapChainPtr createSwapChain( ashes::CommandPool const & commandPool
-			, Extent2D const & size )const = 0;
+		virtual SwapChainPtr createSwapChain( SwapChainCreateInfo createInfo )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -876,6 +877,11 @@ namespace ashes
 			return m_gpu;
 		}
 
+		inline Surface const & getSurface()const
+		{
+			return m_surface;
+		}
+
 		inline float getTimestampPeriod()const
 		{
 			return m_timestampPeriod;
@@ -885,10 +891,8 @@ namespace ashes
 	protected:
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
-		DeviceQueueCreateInfoArray m_queueCreateInfos;
-		StringArray m_enabledLayers;
-		StringArray m_enabledExtensions;
-		PhysicalDeviceFeatures m_enabledFeatures;
+		Surface const & m_surface;
+		DeviceCreateInfo m_createInfos;
 		float m_timestampPeriod;
 		uint32_t m_shaderVersion;
 

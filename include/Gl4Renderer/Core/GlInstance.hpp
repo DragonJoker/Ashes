@@ -24,15 +24,12 @@ namespace gl_renderer
 		/**
 		*\copydoc	ashes::Instance::createDevice
 		*/
-		ashes::DevicePtr createDevice( ashes::ConnectionPtr connection
-			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-			, ashes::StringArray enabledLayers
-			, ashes::StringArray enabledExtensions
-			, ashes::PhysicalDeviceFeatures enabledFeatures )const override;
+		ashes::DevicePtr createDevice( ashes::SurfacePtr surface
+			, ashes::DeviceCreateInfo createInfos )const override;
 		/**
-		*\copydoc	ashes::Instance::createConnection
+		*\copydoc	ashes::Instance::createSurface
 		*/
-		ashes::ConnectionPtr createConnection( ashes::PhysicalDevice const & gpu
+		ashes::SurfacePtr createSurface( ashes::PhysicalDevice const & gpu
 			, ashes::WindowHandle handle )const override;
 		/**
 		*\copydoc	ashes::Instance::frustum

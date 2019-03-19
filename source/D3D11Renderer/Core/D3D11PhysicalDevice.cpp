@@ -67,7 +67,6 @@ namespace d3d11_renderer
 	void PhysicalDevice::initialise()
 	{
 		DXGI_ADAPTER_DESC2 adapterDesc;
-		m_properties.apiVersion = 4198470u;
 
 		if ( m_adapter2
 			&& SUCCEEDED( m_adapter2->GetDesc2( &adapterDesc ) ) )
@@ -88,7 +87,11 @@ namespace d3d11_renderer
 
 		m_featureLevel = doGetSupportedFeatureLevel( m_instance.getDXGIFactory(), m_adapter );
 
+		uint32_t major = m_featureLevel >> 12;
+		uint32_t minor = ( m_featureLevel >> 8 ) & 0x01;
+		m_properties.apiVersion = ( major << 22 ) | ( minor << 12 );
 		m_properties.deviceType = ashes::PhysicalDeviceType::eDiscreteGpu;
+
 		m_features.robustBufferAccess = true;
 		m_features.fullDrawIndexUint32 = true;
 		m_features.imageCubeArray = true;

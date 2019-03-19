@@ -163,13 +163,13 @@ namespace gl_renderer
 	}
 
 	X11Context::X11Context( PhysicalDevice const & gpu
-		, ashes::Connection const & connection
+		, ashes::Surface const & surface
 		, Context const * mainContext )
-		: Context{ gpu, connection }
-		, m_display( m_connection.getHandle().getInternal< ashes::IXWindowHandle >().getDisplay() )
+		: Context{ gpu, surface }
+		, m_display( m_surface.getHandle().getInternal< ashes::IXWindowHandle >().getDisplay() )
 		, m_glxVersion( 10 )
 		, m_glxContext( nullptr )
-		, m_drawable( m_connection.getHandle().getInternal< ashes::IXWindowHandle >().getDrawable() )
+		, m_drawable( m_surface.getHandle().getInternal< ashes::IXWindowHandle >().getDrawable() )
 		, m_fbConfig( nullptr )
 	{
 		if ( !glXChooseFBConfig )

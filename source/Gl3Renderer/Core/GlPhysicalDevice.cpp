@@ -434,7 +434,7 @@ namespace gl_renderer
 		m_properties.deviceName = ( char const * )glGetString( GL_RENDERER );
 		std::memset( m_properties.pipelineCacheUUID, 0u, sizeof( m_properties.pipelineCacheUUID ) );
 		m_properties.vendorID = doGetVendorID( ( char const * )glGetString( GL_VENDOR ) );
-		m_properties.deviceType = ashes::PhysicalDeviceType::eOther;
+		m_properties.deviceType = ashes::PhysicalDeviceType::eDiscreteGpu;
 		m_properties.driverVersion = 0;
 
 		doGetValue( GL_MAX_TEXTURE_SIZE, m_properties.limits.maxImageDimension1D );

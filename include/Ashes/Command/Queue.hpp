@@ -68,16 +68,28 @@ namespace ashes
 		/**
 		*\~french
 		*\brief
-		*	Présente la file à l'API de rendu.
+		*	Présente les swapchains données.
+		*\param[in] swapChains
+		*	Les swapchains.
+		*\param[in] imagesIndex
+		*	L'image à présenter pour chaque swapchain.
+		*\param[in] semaphoresToWait
+		*	Le sémaphores à attendre pour chaque swapchain.
 		*\return
-		*	\p true si tout s'est bien passé.
+		*	Le résultat de la présentation de chaque swapchain.
 		*\~english
 		*\brief
-		*	Presents the queue to the rendering API.
+		*	Presents the swapchains.
+		*\param[in] swapChains
+		*	The swapchains.
+		*\param[in] imagesIndex
+		*	The image to present for each swapchain.
+		*\param[in] semaphoresToWait
+		*	The semaphore to wait for each presented swapchain.
 		*\return
-		*	\p true on ok.
+		*	The result for each swapchain presentation.
 		*/ 
-		virtual void present( SwapChainCRefArray const & swapChains
+		virtual ResultArray present( SwapChainCRefArray const & swapChains
 			, UInt32Array const & imagesIndex
 			, SemaphoreCRefArray const & semaphoresToWait )const = 0;
 		/**
@@ -93,6 +105,33 @@ namespace ashes
 		*	\p true on ok.
 		*/
 		virtual void waitIdle()const = 0;
+		/**
+		*\~french
+		*\brief
+		*	Présente une swapchain.
+		*\param[in] swapChain
+		*	La swapchain.
+		*\param[in] imageIndex
+		*	L'image à présenter.
+		*\param[in] semaphoreToWait
+		*	Le sémaphore à attendre.
+		*\return
+		*	Le résultat de la présentation.
+		*\~english
+		*\brief
+		*	Presents a swapchain.
+		*\param[in] swapChain
+		*	The swapchain.
+		*\param[in] imageIndex
+		*	The image to present.
+		*\param[in] semaphoreToWait
+		*	The semaphore to wait.
+		*\return
+		*	The presentation result.
+		*/
+		Result present( SwapChain const & swapChain
+			, uint32_t imageIndex
+			, Semaphore const & semaphoreToWait )const;
 		/**
 		*\~french
 		*\return

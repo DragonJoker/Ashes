@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Ashes/Core/Instance.hpp"
 
-#include "Ashes/Core/Connection.hpp"
+#include "Ashes/Core/Surface.hpp"
 #include "Ashes/Miscellaneous/QueueCreateInfo.hpp"
 #include "Ashes/Utils/CallStack.hpp"
 
@@ -62,50 +62,5 @@ namespace ashes
 		result[11] = -float( 1 );
 		result[14] = -float( 2 ) * zNear;
 		return result;
-	}
-
-	DevicePtr Instance::createDevice( ConnectionPtr connection
-		, uint32_t presentQueueFamilyIndex
-		, uint32_t graphicsQueueFamilyIndex
-		, uint32_t computeQueueFamilyIndex )const
-	{
-		std::vector< float > queuePriorities = { 1.0f };
-		DeviceQueueCreateInfoArray queueCreateInfos;
-
-		if ( graphicsQueueFamilyIndex != uint32_t( ~( 0u ) ) )
-		{
-			queueCreateInfos.push_back(
-				{
-					DeviceQueueCreateFlag::eNone,
-					graphicsQueueFamilyIndex,
-					queuePriorities,
-				} );
-		}
-
-		if ( presentQueueFamilyIndex != graphicsQueueFamilyIndex )
-		{
-			queueCreateInfos.push_back(
-				{
-					DeviceQueueCreateFlag::eNone,
-					presentQueueFamilyIndex,
-					queuePriorities,
-				} );
-		}
-
-		if ( computeQueueFamilyIndex != graphicsQueueFamilyIndex )
-		{
-			queueCreateInfos.push_back(
-				{
-					DeviceQueueCreateFlag::eNone,
-					computeQueueFamilyIndex,
-					queuePriorities,
-				} );
-		}
-
-		return createDevice( std::move( connection )
-			, queueCreateInfos
-			, m_layerNames
-			, m_extensionNames
-			, connection->getGpu().getFeatures() );
 	}
 }

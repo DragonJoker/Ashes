@@ -12,13 +12,16 @@ namespace d3d11_renderer
 {
 	struct Context
 	{
-		Context( Device const & device )
-			: Context{ getImmediateContext( device ) }
+		Context( D3D_FEATURE_LEVEL featureLevel
+			, Device const & device )
+			: Context{ featureLevel, getImmediateContext( device ) }
 		{
 		}
 
-		Context( ID3D11DeviceContext * context )
+		Context( D3D_FEATURE_LEVEL featureLevel
+			, ID3D11DeviceContext * context )
 			: context{ context }
+			, featureLevel{ featureLevel }
 		{
 			auto hr = context->QueryInterface( __uuidof( ID3D11DeviceContext1 )
 				, reinterpret_cast< void ** >( &context1 ) );
@@ -34,6 +37,7 @@ namespace d3d11_renderer
 		ID3D11DeviceContext * context;
 		ID3D11DeviceContext1 * context1;
 		WriteDescriptorSetBindingArray uavs;
+		D3D_FEATURE_LEVEL featureLevel;
 
 	private:
 		static inline ID3D11DeviceContext * getImmediateContext( Device const & device )

@@ -6,6 +6,8 @@ See LICENSE file in root folder.
 #define ___Ashes_Result_HPP___
 #pragma once
 
+#include <vector>
+
 namespace ashes
 {
 	/**
@@ -49,6 +51,7 @@ namespace ashes
 		eRangeSize = ( eIncomplete - eErrorFormatNotSupported + 1 ),
 		eMax = 0x7FFFFFFF
 	};
+	using ResultArray = std::vector< Result >;
 	/**
 	*\~english
 	*\brief

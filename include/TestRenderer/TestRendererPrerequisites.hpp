@@ -31,7 +31,6 @@ namespace test_renderer
 	class CommandBuffer;
 	class CommandPool;
 	class ComputePipeline;
-	class Connection;
 	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetLayout;
@@ -48,6 +47,7 @@ namespace test_renderer
 	class Sampler;
 	class Semaphore;
 	class ShaderProgram;
+	class Surface;
 	class SwapChain;
 	class Texture;
 	class TextureView;
@@ -58,11 +58,11 @@ namespace test_renderer
 	using AttributeArray = std::vector< Attribute >;
 
 	using BackBufferPtr = std::unique_ptr< BackBuffer >;
-	using ConnectionPtr = std::unique_ptr< Connection >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using QueuePtr = std::unique_ptr< Queue >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
+	using SurfacePtr = std::unique_ptr< Surface >;
 	using TextureViewPtr = std::unique_ptr< TextureView >;
 
 	using BackBufferPtrArray = std::vector< BackBufferPtr >;

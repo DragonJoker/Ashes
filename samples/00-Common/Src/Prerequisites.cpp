@@ -1,6 +1,6 @@
 #include "Prerequisites.hpp"
 
-#include <Ashes/Core/Connection.hpp>
+#include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/PlatformWindowHandle.hpp>
 #include <Ashes/Core/Instance.hpp>
 #include <Ashes/Image/TextureView.hpp>

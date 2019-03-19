@@ -16,6 +16,31 @@ namespace vkapp
 	class RenderPanel
 		: public wxPanel
 	{
+	private:
+		struct RenderingResources
+		{
+			RenderingResources( ashes::SemaphorePtr imageAvailableSemaphore
+				, ashes::SemaphorePtr finishedRenderingSemaphore
+				, ashes::FencePtr fence
+				, ashes::CommandBufferPtr commandBuffer
+				, uint32_t imageIndex )
+				: imageAvailableSemaphore{ std::move( imageAvailableSemaphore ) }
+				, finishedRenderingSemaphore{ std::move( finishedRenderingSemaphore ) }
+				, fence{ std::move( fence ) }
+				, commandBuffer{ std::move( commandBuffer ) }
+				, imageIndex{ imageIndex }
+			{
+			}
+
+			ashes::SemaphorePtr imageAvailableSemaphore;
+			ashes::SemaphorePtr finishedRenderingSemaphore;
+			ashes::FencePtr fence;
+			ashes::CommandBufferPtr commandBuffer;
+			uint32_t imageIndex{ 0u };
+		};
+		using RenderingResourcesPtr = std::unique_ptr< RenderingResources >;
+		using RenderingResourcesArray = std::vector< RenderingResourcesPtr >;
+
 	public:
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
@@ -29,14 +54,16 @@ namespace vkapp
 		*/
 		/**@{*/
 		void doCleanup();
-		ashes::ConnectionPtr doCreateSurface( ashes::Instance const & instance );
-		void doInitialiseQueues( ashes::Instance const & instance
-			, ashes::Connection const & surface );
+		ashes::SurfacePtr doCreateSurface( ashes::Instance const & instance );
 		void doCreateDevice( ashes::Instance const & instance
-			, ashes::ConnectionPtr surface );
+			, ashes::SurfacePtr surface );
 		void doCreateSwapChain();
 		void doCreateRenderPass();
 		bool doPrepareFrames();
+		void doCreateRenderingResources();
+		void doCreateFrameBuffers();
+		void doCreateCommandBuffers();
+		ashes::FrameBufferAttachmentArray doPrepareAttaches( uint32_t backBuffer )const;
 		/**@}*/
 		/**
 		*\name
@@ -44,6 +71,11 @@ namespace vkapp
 		*/
 		/**@{*/
 		void doDraw();
+		RenderingResources * getResources();
+		void present( RenderingResources & resources );
+		bool doCheckNeedReset( ashes::Result errCode
+			, bool acquisition
+			, char const * const action );
 		void doResetSwapChain();
 		/**@}*/
 		/**
@@ -61,14 +93,15 @@ namespace vkapp
 		*\name
 		*	Global.
 		/**@{*/
-		uint32_t m_graphicsQueueFamilyIndex;
-		uint32_t m_presentQueueFamilyIndex;
-		ashes::DevicePtr m_device;
+		utils::DevicePtr m_device;
 		ashes::QueuePtr m_graphicsQueue;
 		ashes::QueuePtr m_presentQueue;
 		ashes::CommandPoolPtr m_commandPool;
 		ashes::SwapChainPtr m_swapChain;
+		ashes::ClearColorValue m_clearColour;
 		ashes::RenderPassPtr m_renderPass;
+		RenderingResourcesArray m_renderingResources;
+		size_t m_resourceIndex{ 0u };
 		/**@}*/
 		/**
 		*\name
@@ -77,7 +110,6 @@ namespace vkapp
 		/**@{*/
 		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
 		ashes::CommandBufferPtrArray m_commandBuffers;
-		ashes::SignalConnection< ashes::SwapChain::OnReset > m_swapChainReset;
 		/**@}*/
 	};
 }

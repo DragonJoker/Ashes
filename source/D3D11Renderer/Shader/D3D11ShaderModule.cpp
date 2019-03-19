@@ -561,7 +561,7 @@ namespace d3d11_renderer
 			if ( sbDesc.Type == D3D_CT_CBUFFER )
 			{
 				// Look for cbuffers declared without registers (as they are then generated from push_constant blocks).
-				auto it = m_source.find( std::string{ "cbuffer " } +sbDesc.Name + "\n" );
+				auto it = m_source.find( std::string{ "cbuffer " } + sbDesc.Name + "\n" );
 
 				if ( it != std::string::npos )
 				{

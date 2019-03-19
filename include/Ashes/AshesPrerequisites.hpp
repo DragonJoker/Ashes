@@ -53,6 +53,7 @@ See LICENSE file in root folder.
 #include "Ashes/Enum/DepthStencilStateFlag.hpp"
 #include "Ashes/Enum/DescriptorPoolCreateFlag.hpp"
 #include "Ashes/Enum/DescriptorType.hpp"
+#include "Ashes/Enum/DeviceCreateFlag.hpp"
 #include "Ashes/Enum/DeviceQueueCreateFlag.hpp"
 #include "Ashes/Enum/DynamicStateEnable.hpp"
 #include "Ashes/Enum/DynamicStateFlag.hpp"
@@ -95,6 +96,7 @@ See LICENSE file in root folder.
 #include "Ashes/Enum/SubpassDescriptionFlag.hpp"
 #include "Ashes/Enum/SurfaceCounterFlag.hpp"
 #include "Ashes/Enum/SurfaceTransformFlag.hpp"
+#include "Ashes/Enum/SwapChainCreateFlag.hpp"
 #include "Ashes/Enum/TessellationStateFlag.hpp"
 #include "Ashes/Enum/TextureType.hpp"
 #include "Ashes/Enum/TextureViewType.hpp"
@@ -239,7 +241,6 @@ namespace ashes
 	class CommandBuffer;
 	class CommandPool;
 	class ComputePipeline;
-	class Connection;
 	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetLayout;
@@ -260,7 +261,6 @@ namespace ashes
 	class PushConstantsBufferBase;
 	class QueryPool;
 	class Queue;
-	class RenderingResources;
 	class RenderPass;
 	class RenderSubpass;
 	class Sampler;
@@ -270,6 +270,7 @@ namespace ashes
 	class SpecialisationInfoBase;
 	class StagingBuffer;
 	class StagingTexture;
+	class Surface;
 	class SwapChain;
 	class Texture;
 	class FrameBufferAttachment;
@@ -318,7 +319,6 @@ namespace ashes
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
 	using ComputePipelinePtr = std::unique_ptr< ComputePipeline >;
-	using ConnectionPtr = std::unique_ptr< Connection >;
 	using DescriptorPoolPtr = std::unique_ptr< DescriptorPool >;
 	using DescriptorSetLayoutPtr = std::unique_ptr< DescriptorSetLayout >;
 	using DescriptorSetLayoutBindingPtr = std::unique_ptr< DescriptorSetLayoutBinding >;
@@ -335,7 +335,6 @@ namespace ashes
 	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBufferBase >;
 	using QueryPoolPtr = std::unique_ptr< QueryPool >;
 	using QueuePtr = std::unique_ptr< Queue >;
-	using RenderingResourcesPtr = std::unique_ptr< RenderingResources >;
 	using RenderPassPtr = std::unique_ptr< RenderPass >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
 	using SamplerPtr = std::unique_ptr< Sampler >;
@@ -343,6 +342,7 @@ namespace ashes
 	using ShaderStorageBufferBasePtr = std::unique_ptr< ShaderStorageBufferBase >;
 	using StagingBufferPtr = std::unique_ptr< StagingBuffer >;
 	using StagingTexturePtr = std::unique_ptr< StagingTexture >;
+	using SurfacePtr = std::unique_ptr< Surface >;
 	using SwapChainPtr = std::unique_ptr< SwapChain >;
 	using TexturePtr = std::unique_ptr< Texture >;
 	using TextureViewPtr = std::unique_ptr< TextureView >;
@@ -403,6 +403,7 @@ namespace ashes
 	using SamplerCRef = std::reference_wrapper< Sampler const >;
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;
 	using SwapChainCRef = std::reference_wrapper< SwapChain const >;
+	using SurfaceCRef = std::reference_wrapper< Surface const >;
 	using TextureViewCRef = std::reference_wrapper< TextureView const >;
 	using VertexLayoutCRef = std::reference_wrapper< VertexLayout const >;
 	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;

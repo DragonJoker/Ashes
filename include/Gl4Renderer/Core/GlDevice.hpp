@@ -9,6 +9,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Buffer/VertexBuffer.hpp>
 #include <Ashes/Core/Device.hpp>
+#include <Ashes/Miscellaneous/SwapChainCreateInfo.hpp>
 #include <Ashes/Pipeline/ColourBlendState.hpp>
 #include <Ashes/Pipeline/DepthStencilState.hpp>
 #include <Ashes/Pipeline/InputAssemblyState.hpp>
@@ -92,11 +93,8 @@ namespace gl_renderer
 		*/
 		Device( Instance const & instance
 			, PhysicalDevice const & gpu
-			, ashes::ConnectionPtr connection
-			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-			, ashes::StringArray enabledLayers
-			, ashes::StringArray enabledExtensions
-			, ashes::PhysicalDeviceFeatures enabledFeatures );
+			, ashes::SurfacePtr surface
+			, ashes::DeviceCreateInfo createInfos );
 		~Device();
 		/**
 		*\copydoc	ashes::Device::createStagingTexture
@@ -163,8 +161,7 @@ namespace gl_renderer
 		/**
 		*\copydoc		ashes::Device::createSwapChain
 		*/
-		ashes::SwapChainPtr createSwapChain( ashes::CommandPool const & commandPool
-			, ashes::Extent2D const & size )const override;
+		ashes::SwapChainPtr createSwapChain( ashes::SwapChainCreateInfo createInfo )const override;
 		/**
 		*\copydoc		ashes::Device::createSemaphore
 		*/
@@ -296,7 +293,7 @@ namespace gl_renderer
 
 	private:
 		Instance const & m_instance;
-		ashes::ConnectionPtr m_connection;
+		ashes::SurfacePtr m_surface;
 		ContextPtr m_context;
 		struct Vertex
 		{

@@ -6,7 +6,7 @@
 #include "Command/VkCommandBuffer.hpp"
 #include "Command/VkCommandPool.hpp"
 #include "Command/VkQueue.hpp"
-#include "Core/VkConnection.hpp"
+#include "Core/VkSurface.hpp"
 #include "Core/VkDevice.hpp"
 #include "Core/VkPhysicalDevice.hpp"
 #include "Core/VkInstance.hpp"

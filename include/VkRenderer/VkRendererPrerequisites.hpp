@@ -61,6 +61,7 @@
 #include "Enum/VkDepthStencilStateFlag.hpp"
 #include "Enum/VkDescriptorPoolCreateFlag.hpp"
 #include "Enum/VkDescriptorType.hpp"
+#include "Enum/VkDeviceCreateFlag.hpp"
 #include "Enum/VkDeviceQueueCreateFlag.hpp"
 #include "Enum/VkDynamicStateEnable.hpp"
 #include "Enum/VkDynamicStateFlag.hpp"
@@ -94,6 +95,7 @@
 #include "Enum/VkQueueFlag.hpp"
 #include "Enum/VkRasterisationStateFlag.hpp"
 #include "Enum/VkRenderPassCreateFlag.hpp"
+#include "Enum/VkResult.hpp"
 #include "Enum/VkSampleCountFlag.hpp"
 #include "Enum/VkShaderStageFlag.hpp"
 #include "Enum/VkSharingMode.hpp"
@@ -102,6 +104,7 @@
 #include "Enum/VkSubpassDescriptionFlag.hpp"
 #include "Enum/VkSurfaceCounterFlag.hpp"
 #include "Enum/VkSurfaceTransformFlag.hpp"
+#include "Enum/VkSwapChainCreateFlag.hpp"
 #include "Enum/VkTessellationStateFlag.hpp"
 #include "Enum/VkTextureType.hpp"
 #include "Enum/VkTextureViewType.hpp"
@@ -121,6 +124,7 @@
 #include "Miscellaneous/VkBufferCopy.hpp"
 #include "Miscellaneous/VkBufferImageCopy.hpp"
 #include "Miscellaneous/VkDebugMarkerObjectNameInfo.hpp"
+#include "Miscellaneous/VkDeviceCreateInfo.hpp"
 #include "Miscellaneous/VkExtensionProperties.hpp"
 #include "Miscellaneous/VkExtent2D.hpp"
 #include "Miscellaneous/VkExtent3D.hpp"
@@ -137,6 +141,7 @@
 #include "Miscellaneous/VkRect2D.hpp"
 #include "Miscellaneous/VkSurfaceCapabilities.hpp"
 #include "Miscellaneous/VkSurfaceFormat.hpp"
+#include "Miscellaneous/VkSwapChainCreateInfo.hpp"
 #include "Pipeline/VkColourBlendState.hpp"
 #include "Pipeline/VkColourBlendStateAttachment.hpp"
 #include "Pipeline/VkDepthStencilState.hpp"
@@ -198,7 +203,6 @@ namespace vk_renderer
 	class CommandBuffer;
 	class CommandPool;
 	class ComputePipeline;
-	class Connection;
 	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetLayout;
@@ -215,6 +219,7 @@ namespace vk_renderer
 	class Sampler;
 	class Semaphore;
 	class ShaderProgram;
+	class Surface;
 	class SwapChain;
 	class Texture;
 	class TextureView;
@@ -226,12 +231,12 @@ namespace vk_renderer
 
 	using BackBufferPtr = std::unique_ptr< BackBuffer >;
 	using BufferStoragePtr = std::unique_ptr< BufferStorage >;
-	using ConnectionPtr = std::unique_ptr< Connection >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
 	using ImageStoragePtr = std::unique_ptr< ImageStorage >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using QueuePtr = std::unique_ptr< Queue >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
+	using SurfacePtr = std::unique_ptr< Surface >;
 	using TextureViewPtr = std::unique_ptr< TextureView >;
 
 	using BackBufferPtrArray = std::vector< BackBufferPtr >;
@@ -316,6 +321,39 @@ namespace vk_renderer
 	/**
 	*\~french
 	*\brief
+	*	Crée un tableau de descripteurs Vulkan à partir d'un tableau d'objets.
+	*\remarks
+	*	On présuppose ici que les objets ont des opérateurs de conversion implicite vers les descripteurs Vulkan.
+	*\param[in] input
+	*	Le tableau d'objets.
+	*\return
+	*	Le tableau de descripteurs Vulkan.
+	*\~english
+	*\brief
+	*	Creates a Vulkan handles array from an objects array.
+	*\remarks
+	*	One prerequisite is that the object class has an implicit convertion operator to the Vulkan handle.
+	*\param[in] input
+	*	The objects array.
+	*\return
+	*	The Vulkan handles array.
+	*/
+	template< typename VkType, typename RendererType, typename LibType >
+	inline std::vector< VkType > makeVkArray( std::vector< LibType > const & input )
+	{
+		std::vector< VkType > result;
+		result.reserve( input.size() );
+
+		for ( auto const & element : input )
+		{
+			result.emplace_back( static_cast< RendererType const & >( element ) );
+		}
+
+		return result;
+	}
+	/**
+	*\~french
+	*\brief
 	*	Crée un tableau de descripteurs Vulkan à partir d'un tableau de références sur des objets.
 	*\remarks
 	*	On présuppose ici que les objets ont des opérateurs de conversion implicite vers les descripteurs Vulkan.
@@ -342,6 +380,39 @@ namespace vk_renderer
 		for ( auto const & element : input )
 		{
 			result.emplace_back( element.get() );
+		}
+
+		return result;
+	}
+	/**
+	*\~french
+	*\brief
+	*	Crée un tableau de descripteurs Vulkan à partir d'un tableau de références sur des objets.
+	*\remarks
+	*	On présuppose ici que les objets ont des opérateurs de conversion implicite vers les descripteurs Vulkan.
+	*\param[in] input
+	*	Le tableau d'objets.
+	*\return
+	*	Le tableau de descripteurs Vulkan.
+	*\~english
+	*\brief
+	*	Creates a Vulkan handles array from an objects references array.
+	*\remarks
+	*	One prerequisite is that the object class has an implicit convertion operator to the Vulkan handle.
+	*\param[in] input
+	*	The objects array.
+	*\return
+	*	The Vulkan handles array.
+	*/
+	template< typename VkType, typename RendererType, typename LibType >
+	inline std::vector< VkType > makeVkArray( std::vector< std::reference_wrapper< LibType > > const & input )
+	{
+		std::vector< VkType > result;
+		result.reserve( input.size() );
+
+		for ( auto const & element : input )
+		{
+			result.emplace_back( static_cast< RendererType const & >( element.get() ) );
 		}
 
 		return result;
@@ -399,7 +470,40 @@ namespace vk_renderer
 	*\return
 	*	The Vulkan handles array.
 	*/
-	template< typename VkType, typename LibType, typename ... Params >
+	template< typename VkType, typename RendererType, typename LibType >
+	inline std::vector< VkType > makeVkArray( std::vector< std::unique_ptr< LibType > > const & input )
+	{
+		std::vector< VkType > result;
+		result.reserve( input.size() );
+
+		for ( auto const & element : input )
+		{
+			result.emplace_back( static_cast< RendererType const & >( *element ) );
+		}
+
+		return result;
+	}
+	/**
+	*\~french
+	*\brief
+	*	Crée un tableau de descripteurs Vulkan à partir d'un tableau de références sur des objets.
+	*\remarks
+	*	On présuppose ici que les objets ont des opérateurs de conversion implicite vers les descripteurs Vulkan.
+	*\param[in] input
+	*	Le tableau d'objets.
+	*\return
+	*	Le tableau de descripteurs Vulkan.
+	*\~english
+	*\brief
+	*	Creates a Vulkan handles array from an objects references array.
+	*\remarks
+	*	One prerequisite is that the object class has an implicit convertion operator to the Vulkan handle.
+	*\param[in] input
+	*	The objects array.
+	*\return
+	*	The Vulkan handles array.
+	*/
+	template< typename VkType, typename LibType >
 	inline std::vector< VkType > makeVkArray( std::vector< std::reference_wrapper< LibType const > > const & input )
 	{
 		std::vector< VkType > result;
@@ -413,17 +517,50 @@ namespace vk_renderer
 		return result;
 	}
 	/**
+	*\~french
 	*\brief
-	*	Convertit un tableau de InstanceType en tableau de VkType.
+	*	Crée un tableau de descripteurs Vulkan à partir d'un tableau de références sur des objets.
 	*\remarks
-	*	Un prérequis à cette fonction est que la fonction VkType convert( InstanceType ) existe.
+	*	On présuppose ici que les objets ont des opérateurs de conversion implicite vers les descripteurs Vulkan.
+	*\param[in] input
+	*	Le tableau d'objets.
+	*\return
+	*	Le tableau de descripteurs Vulkan.
+	*\~english
+	*\brief
+	*	Creates a Vulkan handles array from an objects references array.
+	*\remarks
+	*	One prerequisite is that the object class has an implicit convertion operator to the Vulkan handle.
+	*\param[in] input
+	*	The objects array.
+	*\return
+	*	The Vulkan handles array.
+	*/
+	template< typename VkType, typename RendererType, typename LibType >
+	inline std::vector< VkType > makeVkArray( std::vector< std::reference_wrapper< LibType const > > const & input )
+	{
+		std::vector< VkType > result;
+		result.reserve( input.size() );
+
+		for ( auto const & element : input )
+		{
+			result.emplace_back( VkType( static_cast< RendererType const & >( element.get() ) ) );
+		}
+
+		return result;
+	}
+	/**
+	*\brief
+	*	Convertit un tableau de LibType en tableau de VkType.
+	*\remarks
+	*	Un prérequis à cette fonction est que la fonction VkType convert( LibType ) existe.
 	*\param[in] values
-	*	Le tableau de InstanceType.
+	*	Le tableau de LibType.
 	*\return
 	*	Le tableau de VkType.
 	*/
-	template< typename VkType, typename InstanceType >
-	std::vector< VkType > convert( std::vector< InstanceType > const & values )
+	template< typename VkType, typename LibType >
+	std::vector< VkType > convert( std::vector< LibType > const & values )
 	{
 		std::vector< VkType > result;
 		result.reserve( values.size() );
@@ -437,11 +574,11 @@ namespace vk_renderer
 	}
 	/**
 	*\brief
-	*	Convertit un tableau de InstanceType en tableau de VkType.
+	*	Convertit un tableau de LibType en tableau de VkType.
 	*\remarks
-	*	Un prérequis à cette fonction est que la fonction VkType convert( InstanceType ) existe.
+	*	Un prérequis à cette fonction est que la fonction VkType convert( LibType ) existe.
 	*\param[in] values
-	*	Le tableau de InstanceType.
+	*	Le tableau de LibType.
 	*\return
 	*	Le tableau de VkType.
 	*/
@@ -460,11 +597,11 @@ namespace vk_renderer
 	}
 	/**
 	*\brief
-	*	Convertit un tableau de InstanceType en tableau de VkType.
+	*	Convertit un tableau de *ItType en tableau de VkType.
 	*\remarks
-	*	Un prérequis à cette fonction est que la fonction VkType convert( InstanceType ) existe.
-	*\param[in] values
-	*	Le tableau de InstanceType.
+	*	Un prérequis à cette fonction est que la fonction VkType convert( *ItType ) existe.
+	*\param[in] begin, end
+	*	Les limites d'un tableau de *ItType.
 	*\return
 	*	Le tableau de VkType.
 	*/

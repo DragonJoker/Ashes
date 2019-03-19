@@ -30,11 +30,9 @@ namespace vkapp
 		*/
 		/**@{*/
 		void doCleanup();
-		ashes::ConnectionPtr doCreateSurface( ashes::Instance const & instance );
-		void doInitialiseQueues( ashes::Instance const & instance
-			, ashes::Connection const & surface );
+		ashes::SurfacePtr doCreateSurface( ashes::Instance const & instance );
 		void doCreateDevice( ashes::Instance const & instance
-			, ashes::ConnectionPtr surface );
+			, ashes::SurfacePtr surface );
 		void doCreateSwapChain();
 		void doCreateTexture();
 		void doCreateDescriptorSet();
@@ -69,13 +67,12 @@ namespace vkapp
 		*	Global.
 		*/
 		/**@{*/
-		uint32_t m_graphicsQueueFamilyIndex;
-		uint32_t m_presentQueueFamilyIndex;
-		ashes::DevicePtr m_device;
+		utils::DevicePtr m_device;
 		ashes::QueuePtr m_graphicsQueue;
 		ashes::QueuePtr m_presentQueue;
 		ashes::CommandPoolPtr m_commandPool;
-		ashes::SwapChainPtr m_swapChain;
+		utils::SwapChainPtr m_swapChain;
+		ashes::ClearColorValue m_clearColour;
 		ashes::RenderPassPtr m_renderPass;
 		ashes::PipelineLayoutPtr m_pipelineLayout;
 		ashes::VertexLayoutPtr m_vertexLayout;
@@ -96,7 +93,7 @@ namespace vkapp
 		/**@{*/
 		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
 		ashes::CommandBufferPtrArray m_commandBuffers;
-		ashes::SignalConnection< ashes::SwapChain::OnReset > m_swapChainReset;
+		ashes::SignalConnection< utils::SwapChain::OnReset > m_swapChainReset;
 		/**@}*/
 	};
 }

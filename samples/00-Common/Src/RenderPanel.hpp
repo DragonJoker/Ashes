@@ -4,7 +4,7 @@
 #include "RenderTarget.hpp"
 #include "Gui.hpp"
 
-#include <Ashes/Core/Connection.hpp>
+#include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Pipeline/Pipeline.hpp>
 #include <Ashes/Pipeline/PipelineLayout.hpp>
@@ -50,11 +50,9 @@ namespace common
 		}
 
 		void doCleanup();
-		ashes::ConnectionPtr doCreateSurface( ashes::Instance const & instance );
-		void doInitialiseQueues( ashes::Instance const & instance
-			, ashes::Connection const & surface );
+		ashes::SurfacePtr doCreateSurface( ashes::Instance const & instance );
 		void doCreateDevice( ashes::Instance const & instance
-			, ashes::ConnectionPtr surface );
+			, ashes::SurfacePtr surface );
 		void doCreateSwapChain();
 		void doCreateDescriptorSet();
 		void doCreateRenderPass();
@@ -90,10 +88,9 @@ namespace common
 		std::vector< TexturedVertexData > m_vertexData;
 		std::unique_ptr< Gui > m_gui;
 
-		uint32_t m_graphicsQueueFamilyIndex;
-		uint32_t m_presentQueueFamilyIndex;
-		ashes::DevicePtr m_device;
-		ashes::SwapChainPtr m_swapChain;
+		utils::DevicePtr m_device;
+		utils::SwapChainPtr m_swapChain;
+		ashes::ClearColorValue m_clearColour;
 		ashes::StagingBufferPtr m_stagingBuffer;
 
 		ashes::SamplerPtr m_sampler;
@@ -108,6 +105,6 @@ namespace common
 
 		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
 		std::vector< ashes::CommandBufferPtr > m_commandBuffers;
-		ashes::SignalConnection< ashes::SwapChain::OnReset > m_swapChainReset;
+		ashes::SignalConnection< utils::SwapChain::OnReset > m_swapChainReset;
 	};
 }

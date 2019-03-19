@@ -3,7 +3,7 @@
 #include "Prerequisites.hpp"
 
 #include <Buffer/StagingBuffer.hpp>
-#include <Core/Connection.hpp>
+#include <Core/Surface.hpp>
 #include <Core/Device.hpp>
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
@@ -24,7 +24,7 @@ namespace vkapp
 	{
 	public:
 		EquirectangularToCube( std::string const & filePath
-			, ashes::Device & device
+			, ashes::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
 			, ashes::Texture & texture );
@@ -41,7 +41,7 @@ namespace vkapp
 			ashes::DescriptorSetPtr descriptorSet;
 		};
 
-		ashes::Device & m_device;
+		ashes::Device const & m_device;
 		ashes::Queue const & m_queue;
 		ashes::CommandBufferPtr m_commandBuffer;
 		common::ImageData m_image;

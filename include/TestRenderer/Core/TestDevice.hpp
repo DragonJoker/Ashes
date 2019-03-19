@@ -4,9 +4,10 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Core/TestConnection.hpp"
+#include "Core/TestSurface.hpp"
 
 #include <Ashes/Core/Device.hpp>
+#include <Ashes/Miscellaneous/SwapChainCreateInfo.hpp>
 
 namespace test_renderer
 {
@@ -27,11 +28,8 @@ namespace test_renderer
 		*	La connection à l'application.
 		*/
 		Device( Instance const & instance
-			, ashes::ConnectionPtr connection
-			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-			, ashes::StringArray enabledLayers
-			, ashes::StringArray enabledExtensions
-			, ashes::PhysicalDeviceFeatures enabledFeatures );
+			, ashes::SurfacePtr surface
+			, ashes::DeviceCreateInfo createInfos );
 		/**
 		*\brief
 		*	Destructeur.
@@ -102,8 +100,7 @@ namespace test_renderer
 		/**
 		*\copydoc	ashes::Device::createSwapChain
 		*/
-		ashes::SwapChainPtr createSwapChain( ashes::CommandPool const & commandPool
-			, ashes::Extent2D const & size )const override;
+		ashes::SwapChainPtr createSwapChain( ashes::SwapChainCreateInfo createInfo )const override;
 		/**
 		*\copydoc	ashes::Device::createSemaphore
 		*/
@@ -165,9 +162,9 @@ namespace test_renderer
 		*\return
 		*	The connection to the application.
 		*/
-		inline Connection const & getConnection()const
+		inline Surface const & getSurface()const
 		{
-			return *m_connection;
+			return *m_surface;
 		}
 
 	private:
@@ -176,7 +173,7 @@ namespace test_renderer
 	private:
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
-		ConnectionPtr m_connection;
+		SurfacePtr m_surface;
 		using QueueCreateCount = std::pair< ashes::DeviceQueueCreateInfo, uint32_t >;
 		std::map< uint32_t, QueueCreateCount > m_queues;
 	};
