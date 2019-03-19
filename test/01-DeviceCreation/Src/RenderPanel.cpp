@@ -3,7 +3,7 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
-#include <Core/Connection.hpp>
+#include <Core/Surface.hpp>
 #include <Core/Device.hpp>
 #include <Core/Exception.hpp>
 
@@ -46,18 +46,23 @@ namespace vkapp
 		}
 	}
 
-	ashes::ConnectionPtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
+	ashes::SurfacePtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.createConnection( gpu
+		return instance.createSurface( gpu
 			, std::move( handle ) );
 	}
 
 	void RenderPanel::doCreateDevice( ashes::Instance const & instance
-		, ashes::ConnectionPtr surface )
+		, ashes::SurfacePtr surface )
 	{
-		m_device = instance.createDevice( std::move( surface ), ~( 0u ), ~( 0u ) );
+		ashes::DeviceCreateInfo createInfo;
+		createInfo.enabledFeatures = surface->getGpu().getFeatures();
+		createInfo.enabledLayerNames = instance.getLayerNames();
+		createInfo.enabledExtensionNames = instance.getExtensionNames();
+		m_device = instance.createDevice( std::move( surface )
+			, std::move( createInfo ) );
 		std::cout << m_device->getPhysicalDevice().dumpProperties() << std::endl;
 	}
 }

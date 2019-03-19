@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Ashes/Buffer/StagingBuffer.hpp"
 
+#include "Ashes/Command/CommandBuffer.hpp"
 #include "Ashes/Core/Device.hpp"
 #include "Ashes/Core/Exception.hpp"
 #include "Ashes/Image/Texture.hpp"

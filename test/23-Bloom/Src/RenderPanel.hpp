@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <Core/Connection.hpp>
+#include <Core/Surface.hpp>
 #include <Core/Device.hpp>
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
@@ -36,11 +36,9 @@ namespace vkapp
 		/**@{*/
 		void doCleanup();
 		void doUpdateProjection();
-		ashes::ConnectionPtr doCreateSurface( ashes::Instance const & instance );
-		void doInitialiseQueues( ashes::Instance const & instance
-			, ashes::Connection const & surface );
+		ashes::SurfacePtr doCreateSurface( ashes::Instance const & instance );
 		void doCreateDevice( ashes::Instance const & instance
-			, ashes::ConnectionPtr surface );
+			, ashes::SurfacePtr surface );
 		void doCreateSwapChain();
 		void doCreateTexture();
 		void doCreateUniformBuffer();
@@ -87,13 +85,12 @@ namespace vkapp
 		*	Global.
 		*/
 		/**@{*/
-		uint32_t m_graphicsQueueFamilyIndex;
-		uint32_t m_presentQueueFamilyIndex;
-		ashes::DevicePtr m_device;
+		utils::DevicePtr m_device;
 		ashes::QueuePtr m_graphicsQueue;
 		ashes::QueuePtr m_presentQueue;
 		ashes::CommandPoolPtr m_commandPool;
-		ashes::SwapChainPtr m_swapChain;
+		utils::SwapChainPtr m_swapChain;
+		ashes::ClearColorValue m_clearColour;
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::StagingTexturePtr m_stagingTexture;
 		ashes::TexturePtr m_texture;
@@ -186,7 +183,7 @@ namespace vkapp
 		/**@{*/
 		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
 		std::vector< ashes::CommandBufferPtr > m_commandBuffers;
-		ashes::SignalConnection< ashes::SwapChain::OnReset > m_swapChainReset;
+		ashes::SignalConnection< utils::SwapChain::OnReset > m_swapChainReset;
 		/**@}*/
 	};
 }

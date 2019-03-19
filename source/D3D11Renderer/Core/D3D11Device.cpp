@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "Buffer/D3D11UniformBuffer.hpp"
 #include "Command/D3D11CommandPool.hpp"
 #include "Command/D3D11Queue.hpp"
-#include "Core/D3D11Connection.hpp"
+#include "Core/D3D11Surface.hpp"
 #include "Core/D3D11DummyIndexBuffer.hpp"
 #include "Core/D3D11PhysicalDevice.hpp"
 #include "Core/D3D11Instance.hpp"
@@ -72,20 +72,14 @@ namespace d3d11_renderer
 	}
 
 	Device::Device( Instance const & instance
-		, ashes::ConnectionPtr connection
-		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-		, ashes::StringArray enabledLayers
-		, ashes::StringArray enabledExtensions
-		, ashes::PhysicalDeviceFeatures enabledFeatures )
+		, ashes::SurfacePtr surface
+		, ashes::DeviceCreateInfo createInfos )
 		: ashes::Device{ instance
-			, connection->getGpu()
-			, *connection
-			, std::move( queueCreateInfos )
-			, std::move( enabledLayers )
-			, std::move( enabledExtensions )
-			, std::move( enabledFeatures ) }
+			, surface->getGpu()
+			, *surface
+			, std::move( createInfos ) }
 		, m_instance{ instance }
-		, m_connection{ std::move( connection ) }
+		, m_surface{ std::move( surface ) }
 		, m_gpu{ static_cast< PhysicalDevice const & >( ashes::Device::getPhysicalDevice() ) }
 	{
 		doCreateD3D11Device();
@@ -102,7 +96,7 @@ namespace d3d11_renderer
 		m_deviceContext->Flush();
 		safeRelease( m_waitIdleQuery );
 		safeRelease( m_deviceContext );
-		safeRelease( m_device );
+		safeRelease( m_d3dDevice );
 
 #if !defined( NDEBUG )
 
@@ -199,14 +193,13 @@ namespace d3d11_renderer
 			, memoryFlags );
 	}
 
-	ashes::SwapChainPtr Device::createSwapChain( ashes::CommandPool const & commandPool
-		, ashes::Extent2D const & size )const
+	ashes::SwapChainPtr Device::createSwapChain( ashes::SwapChainCreateInfo createInfo )const
 	{
 		ashes::SwapChainPtr result;
 
 		try
 		{
-			result = std::make_unique< SwapChain >( *this, commandPool, size );
+			result = std::make_unique< SwapChain >( *this, std::move( createInfo ) );
 		}
 		catch ( std::exception & exc )
 		{
@@ -321,7 +314,7 @@ namespace d3d11_renderer
 			D3D_FEATURE_LEVEL_9_1,
 		};
 		HRESULT hr;
-		HWND hWnd = m_connection->getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd();
+		HWND hWnd = m_surface->getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd();
 		hr = factory->MakeWindowAssociation( hWnd, 0 );
 
 		if ( SUCCEEDED( hr ) )
@@ -350,23 +343,23 @@ namespace d3d11_renderer
 			, &supportedFeatureLevel
 			, 1
 			, D3D11_SDK_VERSION
-			, &m_device
+			, &m_d3dDevice
 			, &m_featureLevel
 			, &m_deviceContext );
 
-		if ( m_device )
+		if ( m_d3dDevice )
 		{
 #if !defined( NDEBUG )
 
-			m_device->QueryInterface( __uuidof( ID3D11Debug ), reinterpret_cast< void ** >( &m_debug ) );
+			m_d3dDevice->QueryInterface( __uuidof( ID3D11Debug ), reinterpret_cast< void ** >( &m_debug ) );
 
 #endif
 
-			dxDebugName( m_device, Device );
+			dxDebugName( m_d3dDevice, Device );
 
 			D3D11_QUERY_DESC desc{};
 			desc.Query = D3D11_QUERY_EVENT;
-			m_device->CreateQuery( &desc, &m_waitIdleQuery );
+			m_d3dDevice->CreateQuery( &desc, &m_waitIdleQuery );
 		}
 	}
 
@@ -390,7 +383,7 @@ namespace d3d11_renderer
 
 	void Device::doCreateQueues()
 	{
-		for ( auto & queueCreateInfo : m_queueCreateInfos )
+		for ( auto & queueCreateInfo : m_createInfos.queueCreateInfos )
 		{
 			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
 				, QueueCreateCount{ queueCreateInfo, 0u } ).first;

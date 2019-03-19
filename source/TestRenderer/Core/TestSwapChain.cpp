@@ -1,39 +1,21 @@
 #include "Core/TestSwapChain.hpp"
 
-#include "Command/TestCommandBuffer.hpp"
-#include "Command/TestCommandPool.hpp"
-#include "Command/TestQueue.hpp"
 #include "Core/TestBackBuffer.hpp"
 #include "Core/TestDevice.hpp"
 #include "Core/TestPhysicalDevice.hpp"
 #include "Core/TestInstance.hpp"
 #include "Image/TestTexture.hpp"
-#include "RenderPass/TestFrameBuffer.hpp"
-#include "RenderPass/TestRenderPass.hpp"
-#include "Sync/TestSemaphore.hpp"
 
-#include <Ashes/Core/RenderingResources.hpp>
 #include <Ashes/Miscellaneous/MemoryRequirements.hpp>
-#include <Ashes/RenderPass/FrameBufferAttachment.hpp>
-#include <Ashes/Sync/ImageMemoryBarrier.hpp>
 
 namespace test_renderer
 {
 	SwapChain::SwapChain( Device const & device
-		, ashes::CommandPool const & commandPool
-		, ashes::Extent2D const & size )
-		: ashes::SwapChain{ device, size }
+		, ashes::SwapChainCreateInfo createInfo )
+		: ashes::SwapChain{ device, std::move( createInfo ) }
 		, m_device{ device }
-		, m_format{ ashes::Format::eR8G8B8A8_UNORM }
 	{
-		// Puis les tampons d'images.
 		doCreateBackBuffers();
-		m_renderingResources.resize( 1 );
-
-		for ( auto & resource : m_renderingResources )
-		{
-			resource = std::make_unique< ashes::RenderingResources >( device, commandPool );
-		}
 	}
 
 	SwapChain::~SwapChain()
@@ -41,9 +23,13 @@ namespace test_renderer
 		m_backBuffers.clear();
 	}
 
-	void SwapChain::reset( ashes::Extent2D const & size )
+	ashes::Result SwapChain::acquireNextImage( uint64_t timeout
+		, ashes::Semaphore const * semaphore
+		, ashes::Fence const * fence
+		, uint32_t & imageIndex )const
 	{
-		m_dimensions = size;
+		imageIndex = 0u;
+		return ashes::Result::eSuccess;
 	}
 
 	void SwapChain::createDepthStencil( ashes::Format format )
@@ -69,90 +55,17 @@ namespace test_renderer
 			, format );
 	}
 
-	ashes::FrameBufferPtrArray SwapChain::createFrameBuffers( ashes::RenderPass const & renderPass )const
-	{
-		ashes::FrameBufferPtrArray result;
-		result.resize( m_backBuffers.size() );
-
-		for ( size_t i = 0u; i < result.size(); ++i )
-		{
-			auto attaches = doPrepareAttaches( uint32_t( i ), renderPass.getAttachments() );
-			result[i] = static_cast< RenderPass const & >( renderPass ).createFrameBuffer( { m_dimensions.width, m_dimensions.height }
-				, std::move( attaches ) );
-		}
-
-		return result;
-	}
-
-	ashes::CommandBufferPtrArray SwapChain::createCommandBuffers( ashes::CommandPool const & commandPool )const
-	{
-		ashes::CommandBufferPtrArray result;
-		result.resize( m_backBuffers.size() );
-
-		for ( auto & commandBuffer : result )
-		{
-			commandBuffer = std::make_unique< CommandBuffer >( m_device
-				, static_cast< CommandPool const & >( commandPool )
-				, true );
-		}
-
-		return result;
-	}
-
-	ashes::RenderingResources * SwapChain::getResources()
-	{
-		auto & resources = *m_renderingResources[m_resourceIndex];
-		m_resourceIndex = ( m_resourceIndex + 1 ) % m_renderingResources.size();
-
-		if ( resources.waitRecord( ashes::FenceTimeout ) )
-		{
-			resources.setBackBuffer( 0u );
-			return &resources;
-		}
-
-		ashes::Logger::logError( "Can't render" );
-		return nullptr;
-	}
-
-	void SwapChain::present( ashes::RenderingResources & resources
-		, ashes::Queue const & queue )
-	{
-		resources.setBackBuffer( ~0u );
-	}
-
 	void SwapChain::doCreateBackBuffers()
 	{
-		// Et on crée des BackBuffers à partir de ces images.
-		m_backBuffers.reserve( 1u );
+		m_backBuffers.clear();
 		auto texture = std::make_unique< Texture >( m_device
-			, m_format
-			, m_dimensions );
+			, getFormat()
+			, getDimensions() );
 		auto & ref = *texture;
 		m_backBuffers.emplace_back( std::make_unique< BackBuffer >( m_device
 			, std::move( texture )
 			, 0u
-			, m_format
+			, getFormat()
 			, ref ) );
-	}
-
-	ashes::FrameBufferAttachmentArray SwapChain::doPrepareAttaches( uint32_t backBuffer
-		, ashes::AttachmentDescriptionArray const & attaches )const
-	{
-		ashes::FrameBufferAttachmentArray result;
-
-		for ( auto & attach : attaches )
-		{
-			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
-			{
-				result.emplace_back( attach, m_backBuffers[backBuffer]->getView() );
-			}
-			else
-			{
-				assert( m_depthStencilView );
-				result.emplace_back( attach, *m_depthStencilView );
-			}
-		}
-
-		return result;
 	}
 }

@@ -8,7 +8,7 @@
 #include <Ashes/Buffer/VertexBuffer.hpp>
 #include <Ashes/Command/Queue.hpp>
 #include <Ashes/Core/BackBuffer.hpp>
-#include <Ashes/Core/Connection.hpp>
+#include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Core/Instance.hpp>
 #include <Ashes/Core/SwapChain.hpp>
@@ -87,17 +87,17 @@ namespace common
 			std::cout << "Logical device created." << std::endl;
 			doCreateSwapChain();
 			std::cout << "Swap chain created." << std::endl;
-			m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( *m_device
+			m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( m_device->getDevice()
 				, 0u
 				, 1024u * 64u );
-			doInitialise( *m_device
+			doInitialise( m_device->getDevice()
 				, { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
-			m_gui = std::make_unique< Gui >( *m_device
+			m_gui = std::make_unique< Gui >( m_device->getDevice()
 				, *m_graphicsQueue
 				, *m_commandPool
 				, ashes::Extent2D{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 			m_gui->updateView( m_renderTarget->getColourView() );
-			m_sampler = m_device->createSampler( ashes::WrapMode::eClampToEdge
+			m_sampler = m_device->getDevice().createSampler( ashes::WrapMode::eClampToEdge
 				, ashes::WrapMode::eClampToEdge
 				, ashes::WrapMode::eClampToEdge
 				, ashes::Filter::eLinear
@@ -190,12 +190,11 @@ namespace common
 				throw std::runtime_error{ "Couldn't acquire next frame from swap chain." };
 			}
 
-			m_graphicsQueue->submit( *m_commandBuffers[resources->getBackBuffer()]
+			m_graphicsQueue->submit( *m_commandBuffers[resources->getImageIndex()]
 				, resources->getImageAvailableSemaphore()
 				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );
-
 			m_swapChain->present( *resources, *m_presentQueue );
 		}
 	}
@@ -206,7 +205,7 @@ namespace common
 
 		if ( m_device )
 		{
-			m_device->waitIdle();
+			m_device->getDevice().waitIdle();
 
 			m_gui.reset();
 
@@ -234,87 +233,32 @@ namespace common
 		}
 	}
 
-	ashes::ConnectionPtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
+	ashes::SurfacePtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.createConnection( gpu
+		return instance.createSurface( gpu
 			, std::move( handle ) );
 	}
 
-	void RenderPanel::doInitialiseQueues( ashes::Instance const & instance
-		, ashes::Connection const & surface )
-	{
-		auto & gpu = instance.getPhysicalDevice( 0u );
-		std::vector< bool > supportsPresent( static_cast< uint32_t >( gpu.getQueueProperties().size() ) );
-		uint32_t i{ 0u };
-		m_graphicsQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
-		m_presentQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
-
-		for ( auto & present : supportsPresent )
-		{
-			auto present = surface.getSurfaceSupport( i );
-
-			if ( gpu.getQueueProperties()[i].queueCount > 0 )
-			{
-				if ( gpu.getQueueProperties()[i].queueFlags & ashes::QueueFlag::eGraphics )
-				{
-					if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-					{
-						m_graphicsQueueFamilyIndex = i;
-					}
-
-					if ( present )
-					{
-						m_graphicsQueueFamilyIndex = i;
-						m_presentQueueFamilyIndex = i;
-						break;
-					}
-				}
-			}
-
-			++i;
-		}
-
-		if ( m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-		{
-			for ( size_t i = 0; i < gpu.getQueueProperties().size(); ++i )
-			{
-				if ( supportsPresent[i] )
-				{
-					m_presentQueueFamilyIndex = static_cast< uint32_t >( i );
-					break;
-				}
-			}
-		}
-
-		if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
-			|| m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-		{
-			throw ashes::Exception{ ashes::Result::eErrorInitializationFailed
-				, "Queue families retrieval" };
-		}
-	}
-
 	void RenderPanel::doCreateDevice( ashes::Instance const & instance
-		, ashes::ConnectionPtr surface )
+		, ashes::SurfacePtr surface )
 	{
-		doInitialiseQueues( instance, *surface );
-		m_device = instance.createDevice( std::move( surface )
-			, m_graphicsQueueFamilyIndex
-			, m_presentQueueFamilyIndex );
-		m_graphicsQueue = m_device->getQueue( m_graphicsQueueFamilyIndex, 0u );
-		m_presentQueue = m_device->getQueue( m_presentQueueFamilyIndex, 0u );
-		m_commandPool = m_device->createCommandPool( m_graphicsQueueFamilyIndex
+		m_device = std::make_unique< utils::Device >( instance
+			, std::move( surface ) );
+		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
+		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
+		m_commandPool = m_device->getDevice().createCommandPool( m_device->getGraphicsQueueFamily()
 			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
 	}
 
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( *m_commandPool
-			, { uint32_t( size.x ), uint32_t( size.y ) } );
-		m_swapChain->setClearColour( { 1.0f, 0.8f, 0.4f, 0.0f } );
+		m_swapChain = std::make_unique< utils::SwapChain >( m_device->getDevice()
+			, *m_commandPool
+			, ashes::Extent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
+		m_clearColour = { 1.0f, 0.8f, 0.4f, 0.0f };
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			m_renderTarget->resize( m_swapChain->getDimensions() );
@@ -331,7 +275,7 @@ namespace common
 			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
 			ashes::DescriptorSetLayoutBinding{ 1u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
 		};
-		m_descriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
+		m_descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorSet.reset();
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
@@ -368,7 +312,7 @@ namespace common
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
 				, ashes::AccessFlag::eColourAttachmentWrite }
 			, subAttaches ) );
-		m_renderPass = m_device->createRenderPass( attaches
+		m_renderPass = m_device->getDevice().createRenderPass( attaches
 			, std::move( subpasses )
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
 				, ashes::AccessFlag::eMemoryRead }
@@ -386,7 +330,7 @@ namespace common
 			, ashes::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
-		m_vertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( *m_device
+		m_vertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( m_device->getDevice()
 			, uint32_t( m_vertexData.size() )
 			, ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
@@ -408,10 +352,10 @@ namespace common
 		}
 
 		std::vector< ashes::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( dumpShaderFile( *m_device, ashes::ShaderStageFlag::eVertex, shadersFolder / "main.vert" ) );
-		shaderStages[1].module->loadShader( dumpShaderFile( *m_device, ashes::ShaderStageFlag::eFragment, shadersFolder / "main.frag" ) );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
+		shaderStages[0].module->loadShader( dumpShaderFile( m_device->getDevice(), ashes::ShaderStageFlag::eVertex, shadersFolder / "main.vert" ) );
+		shaderStages[1].module->loadShader( dumpShaderFile( m_device->getDevice(), ashes::ShaderStageFlag::eFragment, shadersFolder / "main.frag" ) );
 
 		std::vector< ashes::DynamicStateEnable > dynamicStateEnables
 		{
@@ -419,7 +363,7 @@ namespace common
 			ashes::DynamicStateEnable::eScissor
 		};
 
-		m_pipelineLayout = m_device->createPipelineLayout( *m_descriptorLayout );
+		m_pipelineLayout = m_device->getDevice().createPipelineLayout( *m_descriptorLayout );
 		m_pipeline = m_pipelineLayout->createPipeline(
 		{
 			std::move( shaderStages ),
@@ -436,7 +380,7 @@ namespace common
 	void RenderPanel::doPrepareFrames()
 	{
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
-		m_commandBuffers = m_swapChain->createCommandBuffers( *m_commandPool );
+		m_commandBuffers = m_swapChain->createCommandBuffers();
 		static ashes::ClearValue const clearValue{ { 1.0, 0.0, 0.0, 1.0 } };
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
@@ -488,8 +432,8 @@ namespace common
 		ImGui::SetNextWindowPos( ImVec2( 10, 10 ) );
 		ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver );
 		ImGui::Begin( "Ashes Sample", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove );
-		ImGui::TextUnformatted( getName( m_appDesc, m_device->getInstance().getName() ).c_str() );
-		ImGui::TextUnformatted( m_device->getProperties().deviceName.c_str() );
+		ImGui::TextUnformatted( getName( m_appDesc, m_device->getDevice().getInstance().getName() ).c_str() );
+		ImGui::TextUnformatted( m_device->getDevice().getProperties().deviceName.c_str() );
 
 		auto count = std::min( m_frameCount, m_framesTimes.size() );
 
@@ -535,7 +479,7 @@ namespace common
 	void RenderPanel::onSize( wxSizeEvent & event )
 	{
 		m_ready = false;
-		m_device->waitIdle();
+		m_device->getDevice().waitIdle();
 		m_swapChain->reset( { uint32_t( event.GetSize().GetWidth() ), uint32_t( event.GetSize().GetHeight() ) } );
 		m_ready = true;
 		event.Skip();

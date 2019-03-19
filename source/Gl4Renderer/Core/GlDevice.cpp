@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 #include "Buffer/GlUniformBuffer.hpp"
 #include "Command/GlCommandPool.hpp"
 #include "Command/GlQueue.hpp"
-#include "Core/GlConnection.hpp"
+#include "Core/GlSurface.hpp"
 #include "Core/GlContext.hpp"
 #include "Core/GlDummyIndexBuffer.hpp"
 #include "Core/GlInstance.hpp"
@@ -416,21 +416,15 @@ namespace gl_renderer
 
 	Device::Device( Instance const & instance
 		, PhysicalDevice const & gpu
-		, ashes::ConnectionPtr connection
-		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-		, ashes::StringArray enabledLayers
-		, ashes::StringArray enabledExtensions
-		, ashes::PhysicalDeviceFeatures enabledFeatures )
+		, ashes::SurfacePtr surface
+		, ashes::DeviceCreateInfo createInfos )
 		: ashes::Device{ instance
 			, gpu
-			, *connection
-			, std::move( queueCreateInfos )
-			, std::move( enabledLayers )
-			, std::move( enabledExtensions )
-			, std::move( enabledFeatures ) }
+			, *surface
+			, std::move( createInfos ) }
 		, m_instance{ instance }
-		, m_connection{ std::move( connection ) }
-		, m_context{ Context::create( gpu, *m_connection, nullptr ) }
+		, m_surface{ std::move( surface ) }
+		, m_context{ Context::create( gpu, *m_surface, nullptr ) }
 		, m_rsState{}
 	{
 		auto context = getContext();
@@ -610,14 +604,13 @@ namespace gl_renderer
 			, memoryFlags );
 	}
 
-	ashes::SwapChainPtr Device::createSwapChain( ashes::CommandPool const & commandPool
-		, ashes::Extent2D const & size )const
+	ashes::SwapChainPtr Device::createSwapChain( ashes::SwapChainCreateInfo createInfo )const
 	{
 		ashes::SwapChainPtr result;
 
 		try
 		{
-			result = std::make_unique< SwapChain >( *this, commandPool, size );
+			result = std::make_unique< SwapChain >( *this, std::move( createInfo ) );
 		}
 		catch ( std::exception & exc )
 		{
@@ -736,7 +729,7 @@ namespace gl_renderer
 
 	void Device::doCreateQueues()
 	{
-		for ( auto & queueCreateInfo : m_queueCreateInfos )
+		for ( auto & queueCreateInfo : m_createInfos.queueCreateInfos )
 		{
 			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
 				, QueueCreateCount{ queueCreateInfo, 0u } ).first;

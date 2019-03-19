@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
@@ -15,6 +15,7 @@ namespace ashes
 	enum class ImageUsageFlag
 		: uint32_t
 	{
+		eUndefined = 0x00000000,
 		eTransferSrc = 0x00000001,
 		eTransferDst = 0x00000002,
 		eSampled = 0x00000004,

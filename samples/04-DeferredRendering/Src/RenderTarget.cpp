@@ -125,7 +125,7 @@ namespace vkapp
 			wRatio = halfWidth / halfHeight;
 		}
 
-		m_sceneUbo->getData( 0u ).mtxProjection = utils::Mat4{ m_device->ortho( -2.0f * wRatio
+		m_sceneUbo->getData( 0u ).mtxProjection = utils::Mat4{ m_device->getDevice().ortho( -2.0f * wRatio
 			, 2.0f * wRatio
 			, -2.0f * hRatio
 			, 2.0f * hRatio

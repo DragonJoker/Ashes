@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 
 #include "Ashes/Core/PhysicalDevice.hpp"
 #include "Ashes/Core/WindowHandle.hpp"
+#include "Ashes/Miscellaneous/DeviceCreateInfo.hpp"
 #include "Ashes/Miscellaneous/RendererFeatures.hpp"
 #include "Ashes/Miscellaneous/LayerProperties.hpp"
 
@@ -79,19 +80,20 @@ namespace ashes
 		*\~french
 		*\brief
 		*	Creates a logical device.
-		*\param[in] connection
-		*	The connection to the window.
+		*\param[in] surface
+		*	The presentation surface.
+		*\param[in] createInfos
+		*	The creation informations.
 		*\~french
 		*\brief
 		*	Crée un périphérique logique.
-		*\param[in] connection
-		*	La connection avec la fenêtre.
+		*\param[in] surface
+		*	La surface de présentation.
+		*\param[in] createInfos
+		*	Les informations de création.
 		*/
-		virtual DevicePtr createDevice( ConnectionPtr connection
-			, DeviceQueueCreateInfoArray queueCreateInfos
-			, StringArray enabledLayers
-			, StringArray enabledExtensions
-			, PhysicalDeviceFeatures enabledFeatures )const = 0;
+		virtual DevicePtr createDevice( SurfacePtr surface
+			, DeviceCreateInfo createInfos )const = 0;
 		/**
 		*\~french
 		*\brief
@@ -108,7 +110,7 @@ namespace ashes
 		*\param[in] handle
 		*	The window handle.
 		*/
-		virtual ConnectionPtr createConnection( PhysicalDevice const & gpu
+		virtual SurfacePtr createSurface( PhysicalDevice const & gpu
 			, WindowHandle handle )const = 0;
 		/**
 		*\~english
@@ -227,22 +229,6 @@ namespace ashes
 			, float aspect
 			, float zNear )const;
 		/**
-		*\~french
-		*\brief
-		*	Creates a logical device.
-		*\param[in] connection
-		*	The connection to the window.
-		*\~french
-		*\brief
-		*	Crée un périphérique logique.
-		*\param[in] connection
-		*	La connection avec la fenêtre.
-		*/
-		DevicePtr createDevice( ConnectionPtr connection
-			, uint32_t presentQueueFamilyIndex
-			, uint32_t graphicsQueueFamilyIndex
-			, uint32_t computeQueueFamilyIndex = uint32_t( ~ 0u ) )const;
-		/**
 		*\~english
 		*name
 		*	Getters.
@@ -289,6 +275,16 @@ namespace ashes
 		inline std::vector< LayerProperties > const & getLayers()const
 		{
 			return m_layers;
+		}
+
+		inline StringArray const & getLayerNames()const
+		{
+			return m_layerNames;
+		}
+
+		inline StringArray const & getExtensionNames()const
+		{
+			return m_extensionNames;
 		}
 		/**@}*/
 

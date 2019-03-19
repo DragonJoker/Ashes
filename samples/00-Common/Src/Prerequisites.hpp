@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Ashes/Core/Connection.hpp>
+#include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/Instance.hpp>
 #include <Ashes/Image/Texture.hpp>
 #include <Ashes/Image/TextureView.hpp>
@@ -10,6 +10,8 @@
 
 #include <Utils/Factory.hpp>
 #include <Utils/Mat4.hpp>
+#include <Utils/UtilsDevice.hpp>
+#include <Utils/UtilsSwapChain.hpp>
 
 #pragma warning( disable: 4996 )
 #include <wx/wx.h>

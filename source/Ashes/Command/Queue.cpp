@@ -22,4 +22,13 @@ namespace ashes
 	{
 		unregisterObject( m_device, this );
 	}
+
+	Result Queue::present( SwapChain const & swapChain
+		, uint32_t imageIndex
+		, Semaphore const & semaphoreToWait )const
+	{
+		return present( { std::ref( swapChain ) }
+			, { imageIndex }
+			, { std::ref( semaphoreToWait ) } ).front();
+	}
 }

@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Ashes/RenderPass/RenderPass.hpp"
 
+#include "Ashes/RenderPass/FrameBuffer.hpp"
 #include "Ashes/RenderPass/RenderPassCreateInfo.hpp"
 #include "Ashes/Core/Device.hpp"
 
@@ -21,5 +22,11 @@ namespace ashes
 	RenderPass::~RenderPass()
 	{
 		unregisterObject( m_device, this );
+	}
+
+	ashes::FrameBufferPtr RenderPass::createBackBuffer( ashes::Extent2D const & dimensions
+		, ashes::FrameBufferAttachmentArray textures )const
+	{
+		return createFrameBuffer( dimensions, std::move( textures ) );
 	}
 }

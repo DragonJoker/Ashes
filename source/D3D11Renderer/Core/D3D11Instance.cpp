@@ -1,6 +1,6 @@
 #include "Core/D3D11Instance.hpp"
 
-#include "Core/D3D11Connection.hpp"
+#include "Core/D3D11Surface.hpp"
 #include "Core/D3D11Device.hpp"
 #include "Core/D3D11PhysicalDevice.hpp"
 #include "Core/D3D11SwapChain.hpp"
@@ -30,22 +30,16 @@ namespace d3d11_renderer
 		safeRelease( m_factory );
 	}
 
-	ashes::DevicePtr Instance::createDevice( ashes::ConnectionPtr connection
-		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-		, ashes::StringArray enabledLayers
-		, ashes::StringArray enabledExtensions
-		, ashes::PhysicalDeviceFeatures enabledFeatures )const
+	ashes::DevicePtr Instance::createDevice( ashes::SurfacePtr surface
+		, ashes::DeviceCreateInfo createInfos )const
 	{
 		ashes::DevicePtr result;
 
 		try
 		{
 			result = std::make_shared< Device >( *this
-				, std::move( connection )
-				, std::move( queueCreateInfos )
-				, std::move( enabledLayers )
-				, std::move( enabledExtensions )
-				, std::move( enabledFeatures ) );
+				, std::move( surface )
+				, std::move( createInfos ) );
 		}
 		catch ( std::exception & exc )
 		{
@@ -55,10 +49,10 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	ashes::ConnectionPtr Instance::createConnection( ashes::PhysicalDevice const & gpu
+	ashes::SurfacePtr Instance::createSurface( ashes::PhysicalDevice const & gpu
 		, ashes::WindowHandle handle )const
 	{
-		return std::make_unique< Connection >( *this
+		return std::make_unique< Surface >( *this
 			, gpu
 			, std::move( handle ) );
 	}
@@ -165,6 +159,7 @@ namespace d3d11_renderer
 			++index;
 		}
 
+		m_apiVersion = m_gpus[0]->getProperties().apiVersion;
 		return maxFeatureLevel;
 	}
 }

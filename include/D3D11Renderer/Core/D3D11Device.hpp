@@ -7,9 +7,10 @@ See LICENSE file in root folder
 #include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 #include <Ashes/Buffer/Buffer.hpp>
-#include <Ashes/Core/Connection.hpp>
+#include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Miscellaneous/QueueCreateInfo.hpp>
+#include <Ashes/Miscellaneous/SwapChainCreateInfo.hpp>
 
 namespace d3d11_renderer
 {
@@ -18,11 +19,8 @@ namespace d3d11_renderer
 	{
 	public:
 		Device( Instance const & instance
-			, ashes::ConnectionPtr connection
-			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-			, ashes::StringArray enabledLayers
-			, ashes::StringArray enabledExtensions
-			, ashes::PhysicalDeviceFeatures enabledFeatures );
+			, ashes::SurfacePtr surface
+			, ashes::DeviceCreateInfo createInfos );
 		~Device();
 		/**
 		*\copydoc	ashes::Device::createStagingTexture
@@ -89,8 +87,7 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::Device::createSwapChain
 		*/
-		ashes::SwapChainPtr createSwapChain( ashes::CommandPool const & commandPool
-			, ashes::Extent2D const & size )const override;
+		ashes::SwapChainPtr createSwapChain( ashes::SwapChainCreateInfo createInfo )const override;
 		/**
 		*\copydoc	ashes::Device::createSemaphore
 		*/
@@ -152,9 +149,9 @@ namespace d3d11_renderer
 		*\return
 		*	The connection to the application.
 		*/
-		inline ashes::Connection const & getConnection()const
+		inline ashes::Surface const & getSurface()const
 		{
-			return *m_connection;
+			return *m_surface;
 		}
 
 		inline D3D_FEATURE_LEVEL getFeatureLevel()const
@@ -164,7 +161,7 @@ namespace d3d11_renderer
 
 		inline ID3D11Device * getDevice()const
 		{
-			return m_device;
+			return m_d3dDevice;
 		}
 
 		inline ashes::BufferBase const & getEmptyIndexedVaoIdx()const
@@ -194,8 +191,8 @@ namespace d3d11_renderer
 	private:
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
-		ashes::ConnectionPtr m_connection;
-		ID3D11Device * m_device;
+		ashes::SurfacePtr m_surface;
+		ID3D11Device * m_d3dDevice;
 		ID3D11DeviceContext * m_deviceContext;
 		ID3D11Query * m_waitIdleQuery;
 		D3D_FEATURE_LEVEL m_featureLevel;

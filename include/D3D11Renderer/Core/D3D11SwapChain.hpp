@@ -22,19 +22,18 @@ namespace d3d11_renderer
 		*	Constructeur.
 		*\param[in] device
 		*	La connexion logique au GPU.
-		*\param[in] size
-		*	Les dimensions de la surface de rendu.
+		*\param[in] createInfo
+		*	Les informations de création.
 		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
 		*	The logical connection to the GPU.
-		*\param[in] size
-		*	The render surface dimensions.
+		*\param[in] createInfo
+		*	The creation informations.
 		*/
 		SwapChain( Device const & device
-			, ashes::CommandPool const & commandPool
-			, ashes::Extent2D const & size );
+			, ashes::SwapChainCreateInfo createInfo );
 		/**
 		*\~french
 		*\brief
@@ -45,94 +44,16 @@ namespace d3d11_renderer
 		*/
 		~SwapChain();
 		/**
-		*\copydoc	ashes::SwapChain::reset
+		*\copydoc	ashes::SwapChain::acquireNextImage
 		*/
-		void reset( ashes::Extent2D const & size )override;
-		/**
-		*\copydoc	ashes::SwapChain::createFrameBuffers
-		*/
-		ashes::FrameBufferPtrArray createFrameBuffers( ashes::RenderPass const & renderPass )const override;
-		/**
-		*\copydoc	ashes::SwapChain::createCommandBuffers
-		*/
-		ashes::CommandBufferPtrArray createCommandBuffers( ashes::CommandPool const & commandPool )const override;
-		/**
-		*\copydoc	ashes::SwapChain::getResources
-		*/
-		ashes::RenderingResources * getResources()override;
-		/**
-		*\copydoc	ashes::SwapChain::present
-		*/
-		void present( ashes::RenderingResources & resources
-			, ashes::Queue const & queue )override;
+		ashes::Result acquireNextImage( uint64_t timeout
+			, ashes::Semaphore const * semaphore
+			, ashes::Fence const * fence
+			, uint32_t & imageIndex )const override;
 		/**
 		*\copydoc	ashes::SwapChain::createDepthStencil
 		*/
 		void createDepthStencil( ashes::Format format )override;
-		/**
-		*\~french
-		*\return
-		*	Les tampons d'images.
-		*\~english
-		*\return
-		*	The back buffers.
-		*/
-		inline auto const & getBackBuffers()const
-		{
-			return m_backBuffers;
-		}
-		/**
-		*\~french
-		*\brief
-		*	Dï¿½finit couleur de vidage.
-		*\param[in] colour
-		*	La nouvelle valeur.
-		*\~english
-		*\brief
-		*	Defines the clear colour.
-		*\param[in] colour
-		*	The new value.
-		*/
-		inline void setClearColour( ashes::ClearColorValue const & value )override
-		{
-			m_clearColour = value;
-		}
-		/**
-		*\~french
-		*\return
-		*	La couleur de vidage.
-		*\~english
-		*\return
-		*	The clear colour.
-		*/
-		inline ashes::ClearColorValue getClearColour()const override
-		{
-			return m_clearColour;
-		}
-		/**
-		*\~french
-		*\return
-		*	Les dimensions de la swap chain.
-		*\~french
-		*\return
-		*	The swap chain dimensions.
-		*/
-		inline ashes::Extent2D getDimensions()const override
-		{
-			return m_dimensions;
-		}
-		/**
-		*\~french
-		*\return
-		*	Le format des images de la swap chain.
-		*\~english
-		*\return
-		*	The swap chain's images pixels format.
-		*/
-		inline ashes::Format getFormat()const override
-		{
-			return m_format;
-		}
 
 		inline IDXGISwapChain * getSwapChain()const
 		{
@@ -140,21 +61,12 @@ namespace d3d11_renderer
 		}
 
 	private:
-		void doInitPresentParameters();
-		void doCreateSwapChain();
+		DXGI_SWAP_CHAIN_DESC doInitPresentParameters();
 		void doCreateBackBuffers();
-		ashes::FrameBufferAttachmentArray doPrepareAttaches( uint32_t backBuffer
-			, ashes::AttachmentDescriptionArray const & attaches )const;
-		void doResetSwapChain();
 
 	protected:
 		Device const & m_device;
-		ashes::Format m_format{};
 		uint32_t m_currentBuffer{};
-		ashes::ClearColorValue m_clearColour{};
 		IDXGISwapChain * m_swapChain;
-		DXGI_SWAP_CHAIN_DESC m_desc;
-		DXGI_SWAP_CHAIN_DESC1 m_desc1;
-		ashes::CommandPool const & m_commandPool;
 	};
 }

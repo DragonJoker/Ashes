@@ -1,6 +1,6 @@
 #include "Core/VkInstance.hpp"
 
-#include "Core/VkConnection.hpp"
+#include "Core/VkSurface.hpp"
 #include "Core/VkDevice.hpp"
 #include "Core/VkPhysicalDevice.hpp"
 #include "Core/VkSwapChain.hpp"
@@ -93,22 +93,16 @@ namespace vk_renderer
 		DEBUG_WRITE( "VkInstance.log" );
 	}
 
-	ashes::DevicePtr Instance::createDevice( ashes::ConnectionPtr connection
-		, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-		, ashes::StringArray enabledLayers
-		, ashes::StringArray enabledExtensions
-		, ashes::PhysicalDeviceFeatures enabledFeatures )const
+	ashes::DevicePtr Instance::createDevice( ashes::SurfacePtr surface
+		, ashes::DeviceCreateInfo createInfos )const
 	{
 		ashes::DevicePtr result;
 
 		try
 		{
 			result = std::make_shared< Device >( *this
-				, std::move( connection )
-				, std::move( queueCreateInfos )
-				, std::move( enabledLayers )
-				, std::move( enabledExtensions )
-				, std::move( enabledFeatures ) );
+				, std::move( surface )
+				, std::move( createInfos ) );
 		}
 		catch ( std::exception & exc )
 		{
@@ -118,10 +112,10 @@ namespace vk_renderer
 		return result;
 	}
 
-	ashes::ConnectionPtr Instance::createConnection( ashes::PhysicalDevice const & gpu
+	ashes::SurfacePtr Instance::createSurface( ashes::PhysicalDevice const & gpu
 		, ashes::WindowHandle handle )const
 	{
-		return std::make_unique< Connection >( *this
+		return std::make_unique< Surface >( *this
 			, gpu
 			, std::move( handle ) );
 	}

@@ -21,17 +21,12 @@ namespace ashes
 {
 	Device::Device( Instance const & instance
 		, PhysicalDevice const & gpu
-		, Connection const & connection
-		, DeviceQueueCreateInfoArray queueCreateInfos
-		, StringArray enabledLayers
-		, StringArray enabledExtensions
-		, PhysicalDeviceFeatures enabledFeatures )
+		, Surface const & surface
+		, DeviceCreateInfo createInfos )
 		: m_instance{ instance }
 		, m_gpu{ gpu }
-		, m_queueCreateInfos{ std::move( queueCreateInfos ) }
-		, m_enabledLayers{ std::move( enabledLayers ) }
-		, m_enabledExtensions{ std::move( enabledExtensions ) }
-		, m_enabledFeatures{ std::move( enabledFeatures ) }
+		, m_surface{ surface }
+		, m_createInfos{ std::move( createInfos ) }
 	{
 	}
 

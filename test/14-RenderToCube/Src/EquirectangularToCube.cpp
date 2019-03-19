@@ -38,7 +38,7 @@ namespace vkapp
 
 	namespace
 	{
-		ashes::TexturePtr doCreateTexture( ashes::Device & device
+		ashes::TexturePtr doCreateTexture( ashes::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
 			, common::ImageData const & image )
@@ -69,7 +69,7 @@ namespace vkapp
 			return result;
 		}
 
-		ashes::SamplerPtr doCreateSampler( ashes::Device & device )
+		ashes::SamplerPtr doCreateSampler( ashes::Device const & device )
 		{
 			return device.createSampler( ashes::WrapMode::eClampToEdge
 				, ashes::WrapMode::eClampToEdge
@@ -78,7 +78,7 @@ namespace vkapp
 				, ashes::Filter::eLinear );
 		}
 
-		ashes::UniformBufferPtr< Mat4 > doCreateMatrixUbo( ashes::Device & device
+		ashes::UniformBufferPtr< Mat4 > doCreateMatrixUbo( ashes::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
 			, ashes::StagingBuffer & stagingBuffer )
@@ -124,7 +124,7 @@ namespace vkapp
 			return result;
 		}
 
-		std::vector< ashes::ShaderStageState > doCreateProgram( ashes::Device & device )
+		std::vector< ashes::ShaderStageState > doCreateProgram( ashes::Device const & device )
 		{
 			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
@@ -147,7 +147,7 @@ namespace vkapp
 			return shaderStages;
 		}
 
-		ashes::VertexBufferPtr< VertexData > doCreateVertexBuffer( ashes::Device & device
+		ashes::VertexBufferPtr< VertexData > doCreateVertexBuffer( ashes::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
 			, ashes::StagingBuffer & stagingBuffer )
@@ -176,7 +176,7 @@ namespace vkapp
 			return result;
 		}
 
-		ashes::VertexLayoutPtr doCreateVertexLayout( ashes::Device & device )
+		ashes::VertexLayoutPtr doCreateVertexLayout( ashes::Device const & device )
 		{
 			auto result = ashes::makeLayout< VertexData >( 0u );
 			result->createAttribute( 0u
@@ -185,7 +185,7 @@ namespace vkapp
 			return result;
 		}
 
-		ashes::DescriptorSetLayoutPtr doCreateDescriptorSetLayout( ashes::Device & device )
+		ashes::DescriptorSetLayoutPtr doCreateDescriptorSetLayout( ashes::Device const & device )
 		{
 			ashes::DescriptorSetLayoutBindingArray bindings
 			{
@@ -238,7 +238,7 @@ namespace vkapp
 	}
 
 	EquirectangularToCube::EquirectangularToCube( std::string const & filePath
-		, ashes::Device & device
+		, ashes::Device const & device
 		, ashes::Queue const & queue
 		, ashes::CommandPool const & commandPool
 		, ashes::Texture & texture )

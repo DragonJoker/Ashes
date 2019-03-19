@@ -150,12 +150,12 @@ namespace gl_renderer
 	}
 
 	MswContext::MswContext( PhysicalDevice const & gpu
-		, ashes::Connection const & connection
+		, ashes::Surface const & surface
 		, Context const * mainContext )
-		: Context{ gpu, connection }
+		: Context{ gpu, surface }
 		, m_hDC( nullptr )
 		, m_hContext( nullptr )
-		, m_hWnd( m_connection.getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd() )
+		, m_hWnd( m_surface.getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd() )
 	{
 		m_hDC = ::GetDC( m_hWnd );
 

@@ -17,82 +17,39 @@ namespace gl_renderer
 	{
 	public:
 		/**
+		*\~french
 		*\brief
 		*	Constructeur.
+		*\param[in] device
+		*	La connexion logique au GPU.
+		*\param[in] createInfo
+		*	Les informations de création.
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical connection to the GPU.
+		*\param[in] createInfo
+		*	The creation informations.
 		*/
 		SwapChain( Device const & device
-			, ashes::CommandPool const & commandPool
-			, ashes::Extent2D const & size );
+			, ashes::SwapChainCreateInfo createInfo );
 		/**
-		*\copydoc	ashes::SwapChain::reset
+		*\copydoc	ashes::SwapChain::acquireNextImage
 		*/
-		void reset( ashes::Extent2D const & size )override;
-		/**
-		*\copydoc	ashes::SwapChain::createFrameBuffers
-		*/
-		ashes::FrameBufferPtrArray createFrameBuffers( ashes::RenderPass const & renderPass )const override;
-		/**
-		*\copydoc	ashes::SwapChain::createCommandBuffers
-		*/
-		ashes::CommandBufferPtrArray createCommandBuffers( ashes::CommandPool const & commandPool )const override;
-		/**
-		*\copydoc	ashes::SwapChain::getResources
-		*/
-		ashes::RenderingResources * getResources()override;
-		/**
-		*\copydoc	ashes::SwapChain::present
-		*/
-		void present( ashes::RenderingResources & resources
-			, ashes::Queue const & queue )override;
+		ashes::Result acquireNextImage( uint64_t timeout
+			, ashes::Semaphore const * semaphore
+			, ashes::Fence const * fence
+			, uint32_t & imageIndex )const override;
 		/**
 		*\copydoc	ashes::SwapChain::createDepthStencil
 		*/
 		void createDepthStencil( ashes::Format format )override;
-		/**
-		*\brief
-		*	Dï¿½finit la couleur de vidage de la swapchain.
-		*\param[in] value
-		*	La nouvelle valeur.
-		*/
-		inline void setClearColour( ashes::ClearColorValue const & value )override
-		{
-			m_clearColour = value;
-		}
-		/**
-		*\brief
-		*	Dï¿½finit la couleur de vidage de la swapchain.
-		*\param[in] value
-		*	La nouvelle valeur.
-		*/
-		inline ashes::ClearColorValue getClearColour()const override
-		{
-			return m_clearColour;
-		}
-		/**
-		*\return
-		*	Les dimensions de la swap chain.
-		*/
-		inline ashes::Extent2D getDimensions()const override
-		{
-			return m_dimensions;
-		}
-		/**
-		*\return
-		*	Les format des pixels de la swap chain.
-		*/
-		inline ashes::Format getFormat()const override
-		{
-			return m_format;
-		}
 
 	private:
-		void doResetSwapChain();
 		void doCreateBackBuffers();
-		ashes::FrameBufferAttachmentArray doPrepareAttaches( ashes::AttachmentDescriptionArray const & attaches )const;
 
 	private:
 		Device const & m_device;
-		ashes::ClearColorValue m_clearColour;
-		ashes::Format m_format;
 	};
 }

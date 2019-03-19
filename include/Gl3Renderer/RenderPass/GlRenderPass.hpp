@@ -46,6 +46,10 @@ namespace gl_renderer
 		}
 
 	private:
+		ashes::FrameBufferPtr createBackBuffer( ashes::Extent2D const & dimensions
+			, ashes::FrameBufferAttachmentArray textures )const override;
+
+	private:
 		Device const & m_device;
 		bool m_hasDepthAttach{ false };
 		ashes::AttachmentDescription m_depthAttach;

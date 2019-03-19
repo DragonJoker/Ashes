@@ -11,7 +11,7 @@
 #include <Ashes/Command/CommandPool.hpp>
 #include <Ashes/Command/Queue.hpp>
 #include <Ashes/Core/BackBuffer.hpp>
-#include <Ashes/Core/Connection.hpp>
+#include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Core/PlatformWindowHandle.hpp>
 #include <Ashes/Core/Instance.hpp>

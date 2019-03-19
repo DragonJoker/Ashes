@@ -98,6 +98,8 @@ if ( ASHES_BUILD_PLUGINS )
 		set( ASHES_STATIC_RENDERERS FALSE )
 	endif ()
 
+	add_subdirectory( PlatformUtils )
+
 	if ( ASHES_BUILD_OGL3 )
 		add_subdirectory( Gl3Renderer )
 	endif ()

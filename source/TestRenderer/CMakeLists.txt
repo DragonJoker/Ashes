@@ -21,6 +21,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${ASHES_SOURCE_DIR}/include
 	${ASHES_SOURCE_DIR}/include/Ashes
+	${ASHES_SOURCE_DIR}/include/PlatformUtils
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
 )
 
@@ -73,10 +74,12 @@ add_target_precompiled_header( ${PROJECT_NAME}
 target_link_libraries( ${PROJECT_NAME}
 	${BinLibraries}
 	Ashes
+	PlatformUtils
 )
 
 add_dependencies( ${PROJECT_NAME}
 	Ashes
+	PlatformUtils
 )
 
 parse_subdir_files( ${ASHES_SOURCE_DIR} Buffer "Buffer" )

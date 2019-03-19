@@ -4,10 +4,11 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Core/VkConnection.hpp"
+#include "Core/VkSurface.hpp"
 
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Miscellaneous/QueueCreateInfo.hpp>
+#include <Ashes/Miscellaneous/SwapChainCreateInfo.hpp>
 
 namespace vk_renderer
 {
@@ -28,17 +29,13 @@ namespace vk_renderer
 		*	La connection à l'application.
 		*/
 		Device( Instance const & instance
-			, ashes::ConnectionPtr connection
-			, ashes::DeviceQueueCreateInfoArray queueCreateInfos
-			, ashes::StringArray enabledLayers
-			, ashes::StringArray enabledExtensions
-			, ashes::PhysicalDeviceFeatures enabledFeatures );
+			, ashes::SurfacePtr surface
+			, ashes::DeviceCreateInfo createInfos );
 		/**
 		*\brief
 		*	Destructeur.
 		*/
 		~Device();
-		void updateSurfaceCapabilities()const;
 		/**
 		*\copydoc	ashes::Device::createStagingTexture
 		*/
@@ -104,8 +101,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	ashes::Device::createSwapChain
 		*/
-		ashes::SwapChainPtr createSwapChain( ashes::CommandPool const & commandPool
-			, ashes::Extent2D const & size )const override;
+		ashes::SwapChainPtr createSwapChain( ashes::SwapChainCreateInfo createInfo )const override;
 		/**
 		*\copydoc	ashes::Device::createSemaphore
 		*/
@@ -201,33 +197,9 @@ namespace vk_renderer
 		*\return
 		*	The connection to the application.
 		*/
-		inline Connection const & getConnection()const
+		inline Surface const & getSurface()const
 		{
-			return *m_connection;
-		}
-		/**
-		*\~french
-		*\return
-		*	La surface de présentation.
-		*\~english
-		*\return
-		*	The presentation surface.
-		*/
-		inline auto getPresentSurface()const
-		{
-			return m_connection->getPresentSurface();
-		}
-		/**
-		*\~french
-		*\return
-		*	Les capacités de la surface de présentation.
-		*\~english
-		*\return
-		*	The presentation surface's capabilities.
-		*/
-		inline auto & getSurfaceCapabilities()const
-		{
-			return m_connection->getSurfaceCapabilities();
+			return *m_surface;
 		}
 		/**
 		*\brief
@@ -247,8 +219,12 @@ namespace vk_renderer
 	private:
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
-		ConnectionPtr m_connection;
+		SurfacePtr m_surface;
+		std::vector< VkDeviceQueueCreateInfo > m_queueCreateInfos;
+		std::vector< char const * > m_enabledLayerNames;
+		std::vector< char const * > m_enabledExtensionNames;
 		VkPhysicalDeviceFeatures m_enabledFeatures;
+		VkDeviceCreateInfo m_vkCreateInfos;
 		VkDevice m_device{ VK_NULL_HANDLE };
 		std::map< uint32_t, ashes::DeviceQueueCreateInfo > m_queues;
 	};

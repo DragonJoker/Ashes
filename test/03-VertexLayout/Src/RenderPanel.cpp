@@ -4,10 +4,9 @@
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/CommandBuffer.hpp>
 #include <Core/BackBuffer.hpp>
-#include <Core/Connection.hpp>
+#include <Core/Surface.hpp>
 #include <Core/Device.hpp>
 #include <Core/Instance.hpp>
-#include <Core/RenderingResources.hpp>
 #include <Core/SwapChain.hpp>
 #include <Image/Texture.hpp>
 #include <Miscellaneous/QueryPool.hpp>
@@ -88,7 +87,7 @@ namespace vkapp
 
 		if ( m_device )
 		{
-			m_device->waitIdle();
+			m_device->getDevice().waitIdle();
 			m_queryPool.reset();
 			m_pipeline.reset();
 			m_pipelineLayout.reset();
@@ -104,87 +103,32 @@ namespace vkapp
 		}
 	}
 
-	ashes::ConnectionPtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
+	ashes::SurfacePtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.createConnection( gpu
+		return instance.createSurface( gpu
 			, std::move( handle ) );
 	}
 
-	void RenderPanel::doInitialiseQueues( ashes::Instance const & instance
-		, ashes::Connection const & surface )
-	{
-		auto & gpu = instance.getPhysicalDevice( 0u );
-		std::vector< bool > supportsPresent( static_cast< uint32_t >( gpu.getQueueProperties().size() ) );
-		uint32_t i{ 0u };
-		m_graphicsQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
-		m_presentQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
-
-		for ( auto & present : supportsPresent )
-		{
-			auto present = surface.getSurfaceSupport( i );
-
-			if ( gpu.getQueueProperties()[i].queueCount > 0 )
-			{
-				if ( gpu.getQueueProperties()[i].queueFlags & ashes::QueueFlag::eGraphics )
-				{
-					if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-					{
-						m_graphicsQueueFamilyIndex = i;
-					}
-
-					if ( present )
-					{
-						m_graphicsQueueFamilyIndex = i;
-						m_presentQueueFamilyIndex = i;
-						break;
-					}
-				}
-			}
-
-			++i;
-		}
-
-		if ( m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-		{
-			for ( size_t i = 0; i < gpu.getQueueProperties().size(); ++i )
-			{
-				if ( supportsPresent[i] )
-				{
-					m_presentQueueFamilyIndex = static_cast< uint32_t >( i );
-					break;
-				}
-			}
-		}
-
-		if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
-			|| m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-		{
-			throw ashes::Exception{ ashes::Result::eErrorInitializationFailed
-				, "Queue families retrieval" };
-		}
-	}
-
 	void RenderPanel::doCreateDevice( ashes::Instance const & instance
-		, ashes::ConnectionPtr surface )
+		, ashes::SurfacePtr surface )
 	{
-		doInitialiseQueues( instance, *surface );
-		m_device = instance.createDevice( std::move( surface )
-			, m_graphicsQueueFamilyIndex
-			, m_presentQueueFamilyIndex );
-		m_graphicsQueue = m_device->getQueue( m_graphicsQueueFamilyIndex, 0u );
-		m_presentQueue = m_device->getQueue( m_presentQueueFamilyIndex, 0u );
-		m_commandPool = m_device->createCommandPool( m_graphicsQueueFamilyIndex
+		m_device = std::make_unique< utils::Device >( instance
+			, std::move( surface ) );
+		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
+		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
+		m_commandPool = m_device->getDevice().createCommandPool( m_device->getGraphicsQueueFamily()
 			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
 	}
 
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( *m_commandPool
-			, { uint32_t( size.x ), uint32_t( size.y ) } );
-		m_swapChain->setClearColour( ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f } );
+		m_swapChain = std::make_unique< utils::SwapChain >( m_device->getDevice()
+			, *m_commandPool
+			, ashes::Extent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
+		m_clearColour = ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			doResetSwapChain();
@@ -215,7 +159,7 @@ namespace vkapp
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
 				, ashes::AccessFlag::eColourAttachmentWrite }
 			, subAttaches ) );
-		m_renderPass = m_device->createRenderPass( attaches
+		m_renderPass = m_device->getDevice().createRenderPass( attaches
 			, std::move( subpasses )
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
 				, ashes::AccessFlag::eMemoryRead }
@@ -248,7 +192,7 @@ namespace vkapp
 				{ 0.3f, 0.3f, 0.3f, 0.0f }
 			}
 		};
-		m_vertexBuffer = ashes::makeVertexBuffer< VertexData >( *m_device
+		m_vertexBuffer = ashes::makeVertexBuffer< VertexData >( m_device->getDevice()
 			, uint32_t( data.size() )
 			, 0u
 			, ashes::MemoryPropertyFlag::eHostVisible );
@@ -274,7 +218,7 @@ namespace vkapp
 
 	void RenderPanel::doCreatePipeline()
 	{
-		m_pipelineLayout = m_device->createPipelineLayout();
+		m_pipelineLayout = m_device->getDevice().createPipelineLayout();
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
@@ -285,12 +229,12 @@ namespace vkapp
 		}
 
 		std::vector< ashes::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
+		shaderStages[0].module->loadShader( common::parseShaderFile( m_device->getDevice()
 			, ashes::ShaderStageFlag::eVertex
 			, shadersFolder / "shader.vert" ) );
-		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device
+		shaderStages[1].module->loadShader( common::parseShaderFile( m_device->getDevice()
 			, ashes::ShaderStageFlag::eFragment
 			, shadersFolder / "shader.frag" ) );
 
@@ -310,10 +254,10 @@ namespace vkapp
 	bool RenderPanel::doPrepareFrames()
 	{
 		bool result{ true };
-		m_queryPool = m_device->createQueryPool( ashes::QueryType::eTimestamp
+		m_queryPool = m_device->getDevice().createQueryPool( ashes::QueryType::eTimestamp
 			, 2u
 			, 0u );
-		m_commandBuffers = m_swapChain->createCommandBuffers( *m_commandPool );
+		m_commandBuffers = m_swapChain->createCommandBuffers();
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
 		wxSize size{ GetClientSize() };
 
@@ -328,7 +272,7 @@ namespace vkapp
 				, 2u );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, frameBuffer
-				, { m_swapChain->getClearColour() }
+				, { m_clearColour }
 				, ashes::SubpassContents::eInline );
 			commandBuffer.writeTimestamp( ashes::PipelineStageFlag::eTopOfPipe
 				, *m_queryPool
@@ -356,7 +300,7 @@ namespace vkapp
 		if ( resources )
 		{
 			auto before = std::chrono::high_resolution_clock::now();
-			m_graphicsQueue->submit( *m_commandBuffers[resources->getBackBuffer()]
+			m_graphicsQueue->submit( *m_commandBuffers[resources->getImageIndex()]
 				, resources->getImageAvailableSemaphore()
 				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
@@ -370,7 +314,7 @@ namespace vkapp
 				, ashes::QueryResultFlag::eWait
 				, values );
 			// Elapsed time in nanoseconds
-			auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getTimestampPeriod() ) ) };
+			auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getDevice().getTimestampPeriod() ) ) };
 			auto after = std::chrono::high_resolution_clock::now();
 			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
 				, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );

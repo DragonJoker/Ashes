@@ -1,0 +1,72 @@
+project( PlatformUtils )
+
+set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
+set( ${PROJECT_NAME}_VERSION_MINOR 1 )
+set( ${PROJECT_NAME}_VERSION_BUILD 0 )
+
+include_directories(
+	${CMAKE_CURRENT_BINARY_DIR}
+	${SPIRV_CROSS_DIR}
+	${ASHES_SOURCE_DIR}/include
+	${ASHES_SOURCE_DIR}/include/Ashes
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
+)
+
+file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
+)
+
+file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
+)
+
+add_library( ${PROJECT_NAME} STATIC
+	${${PROJECT_NAME}_SRC_FILES}
+	${${PROJECT_NAME}_HDR_FILES}
+	${${PROJECT_NAME}_CONFIG_HEADER}
+	${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
+	${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
+)
+
+target_link_libraries( ${PROJECT_NAME}
+	Ashes
+)
+
+add_dependencies( ${PROJECT_NAME}
+	Ashes
+)
+
+parse_subdir_files( ${ASHES_SOURCE_DIR} Win32 "Win32" )
+parse_subdir_files( ${ASHES_SOURCE_DIR} Linux "Linux" )
+
+set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes" )
+
+#We install each .lib/.a in <install_dir>/lib folder
+install(
+	TARGETS ${PROJECT_NAME}
+	COMPONENT ${PROJECT_NAME}
+	CONFIGURATIONS Release
+	EXPORT ${PROJECT_NAME}
+	ARCHIVE DESTINATION lib
+)
+install(
+	TARGETS ${PROJECT_NAME}
+	COMPONENT ${PROJECT_NAME}_dev
+	CONFIGURATIONS RelWithDebInfo
+	EXPORT ${PROJECT_NAME}
+	ARCHIVE DESTINATION lib/RelWithDebInfo
+)
+install(
+	TARGETS ${PROJECT_NAME}
+	COMPONENT ${PROJECT_NAME}_dev
+	CONFIGURATIONS Debug
+	EXPORT ${PROJECT_NAME}
+	ARCHIVE DESTINATION lib/Debug
+)

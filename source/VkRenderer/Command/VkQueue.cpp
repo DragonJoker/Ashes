@@ -63,28 +63,6 @@ namespace vk_renderer
 		m_device.vkGetDeviceQueue( m_device, createInfo.queueFamilyIndex, index, &m_queue );
 	}
 
-	VkResult Queue::presentBackBuffer( SwapChainCRefArray const & swapChains
-		, ashes::UInt32Array const & imagesIndex
-		, SemaphoreCRefArray const & semaphoresToWait )const
-	{
-		assert( swapChains.size() == imagesIndex.size() );
-		auto vkswapchains = makeVkArray< VkSwapchainKHR >( swapChains );
-		auto vksemaphoresToWait = makeVkArray< VkSemaphore >( semaphoresToWait );
-		VkPresentInfoKHR presentInfo
-		{
-			VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-			nullptr,
-			static_cast< uint32_t >( vksemaphoresToWait.size() ),    // waitSemaphoreCount
-			vksemaphoresToWait.data(),                               // pWaitSemaphores
-			static_cast< uint32_t >( imagesIndex.size() ),           // swapchainCount
-			vkswapchains.data(),                                     // pSwapchains
-			imagesIndex.data(),                                      // pImageIndices
-			nullptr                                                  // pResults
-		};
-		DEBUG_DUMP( presentInfo );
-		return m_device.vkQueuePresentKHR( m_queue, &presentInfo );
-	}
-
 	void Queue::submit( ashes::CommandBufferCRefArray const & commandBuffers
 		, ashes::SemaphoreCRefArray const & semaphoresToWait
 		, ashes::PipelineStageFlagsArray const & semaphoresStage
@@ -126,14 +104,30 @@ namespace vk_renderer
 		checkError( res, "Queue submit" );
 	}
 
-	void Queue::present( ashes::SwapChainCRefArray const & swapChains
+	ashes::ResultArray Queue::present( ashes::SwapChainCRefArray const & swapChains
 		, ashes::UInt32Array const & imagesIndex
 		, ashes::SemaphoreCRefArray const & semaphoresToWait )const
 	{
-		checkError( presentBackBuffer( convert( swapChains )
-			, imagesIndex
-			, convert( semaphoresToWait ) )
+		assert( swapChains.size() == imagesIndex.size() );
+		auto vkswapchains = makeVkArray< VkSwapchainKHR, SwapChain >( swapChains );
+		auto vksemaphoresToWait = makeVkArray< VkSemaphore, Semaphore >( semaphoresToWait );
+		std::vector< VkResult > results;
+		results.resize( swapChains.size() );
+		VkPresentInfoKHR presentInfo
+		{
+			VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+			nullptr,
+			static_cast< uint32_t >( vksemaphoresToWait.size() ),    // waitSemaphoreCount
+			vksemaphoresToWait.data(),                               // pWaitSemaphores
+			static_cast< uint32_t >( imagesIndex.size() ),           // swapchainCount
+			vkswapchains.data(),                                     // pSwapchains
+			imagesIndex.data(),                                      // pImageIndices
+			results.data()                                           // pResults
+		};
+		DEBUG_DUMP( presentInfo );
+		checkError( m_device.vkQueuePresentKHR( m_queue, &presentInfo )
 			, "Queue present" );
+		return convert< ashes::Result >( results );
 	}
 
 	void Queue::waitIdle()const

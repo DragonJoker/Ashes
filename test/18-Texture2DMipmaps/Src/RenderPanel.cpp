@@ -4,10 +4,9 @@
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/CommandBuffer.hpp>
 #include <Core/BackBuffer.hpp>
-#include <Core/Connection.hpp>
+#include <Core/Surface.hpp>
 #include <Core/Device.hpp>
 #include <Core/Instance.hpp>
-#include <Core/RenderingResources.hpp>
 #include <Core/SwapChain.hpp>
 #include <Enum/SubpassContents.hpp>
 #include <Image/StagingTexture.hpp>
@@ -117,7 +116,7 @@ namespace vkapp
 
 		if ( m_device )
 		{
-			m_device->waitIdle();
+			m_device->getDevice().waitIdle();
 			m_queryPool.reset();
 			m_descriptorSet.reset();
 			m_descriptorPool.reset();
@@ -141,87 +140,32 @@ namespace vkapp
 		}
 	}
 
-	ashes::ConnectionPtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
+	ashes::SurfacePtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.createConnection( gpu
+		return instance.createSurface( gpu
 			, std::move( handle ) );
 	}
 
-	void RenderPanel::doInitialiseQueues( ashes::Instance const & instance
-		, ashes::Connection const & surface )
-	{
-		auto & gpu = instance.getPhysicalDevice( 0u );
-		std::vector< bool > supportsPresent( static_cast< uint32_t >( gpu.getQueueProperties().size() ) );
-		uint32_t i{ 0u };
-		m_graphicsQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
-		m_presentQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
-
-		for ( auto & present : supportsPresent )
-		{
-			auto present = surface.getSurfaceSupport( i );
-
-			if ( gpu.getQueueProperties()[i].queueCount > 0 )
-			{
-				if ( gpu.getQueueProperties()[i].queueFlags & ashes::QueueFlag::eGraphics )
-				{
-					if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-					{
-						m_graphicsQueueFamilyIndex = i;
-					}
-
-					if ( present )
-					{
-						m_graphicsQueueFamilyIndex = i;
-						m_presentQueueFamilyIndex = i;
-						break;
-					}
-				}
-			}
-
-			++i;
-		}
-
-		if ( m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-		{
-			for ( size_t i = 0; i < gpu.getQueueProperties().size(); ++i )
-			{
-				if ( supportsPresent[i] )
-				{
-					m_presentQueueFamilyIndex = static_cast< uint32_t >( i );
-					break;
-				}
-			}
-		}
-
-		if ( m_graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
-			|| m_presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
-		{
-			throw ashes::Exception{ ashes::Result::eErrorInitializationFailed
-				, "Queue families retrieval" };
-		}
-	}
-
 	void RenderPanel::doCreateDevice( ashes::Instance const & instance
-		, ashes::ConnectionPtr surface )
+		, ashes::SurfacePtr surface )
 	{
-		doInitialiseQueues( instance, *surface );
-		m_device = instance.createDevice( std::move( surface )
-			, m_graphicsQueueFamilyIndex
-			, m_presentQueueFamilyIndex );
-		m_graphicsQueue = m_device->getQueue( m_graphicsQueueFamilyIndex, 0u );
-		m_presentQueue = m_device->getQueue( m_presentQueueFamilyIndex, 0u );
-		m_commandPool = m_device->createCommandPool( m_graphicsQueueFamilyIndex
+		m_device = std::make_unique< utils::Device >( instance
+			, std::move( surface ) );
+		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
+		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
+		m_commandPool = m_device->getDevice().createCommandPool( m_device->getGraphicsQueueFamily()
 			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
 	}
 
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->createSwapChain( *m_commandPool
-			, { uint32_t( size.x ), uint32_t( size.y ) } );
-		m_swapChain->setClearColour( ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f } );
+		m_swapChain = std::make_unique< utils::SwapChain >( m_device->getDevice()
+			, *m_commandPool
+			, ashes::Extent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
+		m_clearColour = ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			doResetSwapChain();
@@ -235,7 +179,7 @@ namespace vkapp
 		gli::texture2d tex2D( gli::load( assetsFolder / "metalplate01_rgba.ktx" ) );
 
 		// Create the texture image
-		m_texture = m_device->createTexture(
+		m_texture = m_device->getDevice().createTexture(
 			{
 				0u,
 				ashes::TextureType::e2D,
@@ -249,7 +193,7 @@ namespace vkapp
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
 
-		auto staging = m_device->createStagingTexture( format
+		auto staging = m_device->getDevice().createStagingTexture( format
 			, { uint32_t( tex2D.extent().x ), uint32_t( tex2D.extent().y ) } );
 
 		for ( uint32_t level = 0; level < tex2D.levels(); level++ )
@@ -271,7 +215,7 @@ namespace vkapp
 		}
 
 		// Create the sampler.
-		m_sampler = m_device->createSampler( ashes::WrapMode::eClampToEdge
+		m_sampler = m_device->getDevice().createSampler( ashes::WrapMode::eClampToEdge
 			, ashes::WrapMode::eClampToEdge
 			, ashes::WrapMode::eClampToEdge
 			, ashes::Filter::eLinear
@@ -290,7 +234,7 @@ namespace vkapp
 		{
 			{ 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment }
 		};
-		m_descriptorLayout = m_device->createDescriptorSetLayout( std::move( bindings ) );
+		m_descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
@@ -323,7 +267,7 @@ namespace vkapp
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
 				, ashes::AccessFlag::eColourAttachmentWrite }
 			, subAttaches ) );
-		m_renderPass = m_device->createRenderPass( attaches
+		m_renderPass = m_device->getDevice().createRenderPass( attaches
 			, std::move( subpasses )
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
 				, ashes::AccessFlag::eMemoryRead }
@@ -333,7 +277,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateVertexBuffer()
 	{
-		m_vertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( *m_device
+		m_vertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( m_device->getDevice()
 			, uint32_t( m_vertexData.size() )
 			, ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
@@ -352,14 +296,14 @@ namespace vkapp
 
 	void RenderPanel::doCreateStagingBuffer()
 	{
-		m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( *m_device
+		m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( m_device->getDevice()
 			, 0u
 			, 1000000u );
 	}
 
 	void RenderPanel::doCreatePipeline()
 	{
-		m_pipelineLayout = m_device->createPipelineLayout( *m_descriptorLayout );
+		m_pipelineLayout = m_device->getDevice().createPipelineLayout( *m_descriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
@@ -370,12 +314,12 @@ namespace vkapp
 		}
 
 		std::vector< ashes::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( common::parseShaderFile( *m_device
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
+		shaderStages[0].module->loadShader( common::parseShaderFile( m_device->getDevice()
 			, ashes::ShaderStageFlag::eVertex
 			, shadersFolder / "shader.vert" ) );
-		shaderStages[1].module->loadShader( common::parseShaderFile( *m_device
+		shaderStages[1].module->loadShader( common::parseShaderFile( m_device->getDevice()
 			, ashes::ShaderStageFlag::eFragment
 			, shadersFolder / "shader.frag" ) );
 
@@ -394,10 +338,10 @@ namespace vkapp
 
 	void RenderPanel::doPrepareFrames()
 	{
-		m_queryPool = m_device->createQueryPool( ashes::QueryType::eTimestamp
+		m_queryPool = m_device->getDevice().createQueryPool( ashes::QueryType::eTimestamp
 			, 2u
 			, 0u );
-		m_commandBuffers = m_swapChain->createCommandBuffers( *m_commandPool );
+		m_commandBuffers = m_swapChain->createCommandBuffers();
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
 		auto dimensions = m_swapChain->getDimensions();
 
@@ -412,7 +356,7 @@ namespace vkapp
 				, 2u );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, frameBuffer
-				, { m_swapChain->getClearColour() }
+				, { m_clearColour }
 				, ashes::SubpassContents::eInline );
 			commandBuffer.writeTimestamp( ashes::PipelineStageFlag::eTopOfPipe
 				, *m_queryPool
@@ -446,7 +390,7 @@ namespace vkapp
 		if ( resources )
 		{
 			auto before = std::chrono::high_resolution_clock::now();
-			m_graphicsQueue->submit( *m_commandBuffers[resources->getBackBuffer()]
+			m_graphicsQueue->submit( *m_commandBuffers[resources->getImageIndex()]
 				, resources->getImageAvailableSemaphore()
 				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
@@ -460,7 +404,7 @@ namespace vkapp
 				, ashes::QueryResultFlag::eWait
 				, values );
 			// Elapsed time in nanoseconds
-			auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getTimestampPeriod() ) ) };
+			auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getDevice().getTimestampPeriod() ) ) };
 			auto after = std::chrono::high_resolution_clock::now();
 			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
 				, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
@@ -487,7 +431,7 @@ namespace vkapp
 	void RenderPanel::onSize( wxSizeEvent & event )
 	{
 		m_timer->Stop();
-		m_device->waitIdle();
+		m_device->getDevice().waitIdle();
 		wxSize size{ GetClientSize() };
 		m_swapChain->reset( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 		m_timer->Start( TimerTimeMs );

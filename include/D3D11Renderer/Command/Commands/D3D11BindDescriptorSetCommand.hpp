@@ -38,6 +38,12 @@ namespace d3d11_renderer
 		CommandPtr clone()const override;
 
 	private:
+		void apply11_0( Context const & context )const;
+		void apply11_1( Context const & context )const;
+		void remove11_0( Context const & context )const;
+		void remove11_1( Context const & context )const;
+
+	private:
 		DescriptorSet const & m_descriptorSet;
 		PipelineLayout const & m_layout;
 		ashes::PipelineBindPoint m_bindingPoint;

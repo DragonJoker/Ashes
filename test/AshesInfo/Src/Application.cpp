@@ -115,7 +115,7 @@ static uint32_t selected_gpu = 0;
 struct AppInstance
 {
 	ashes::InstancePtr instance;
-	ashes::ConnectionPtr connection;
+	ashes::SurfacePtr surface;
 	int width, height;
 
 #if ASHES_WIN32
@@ -303,6 +303,11 @@ namespace
 std::string get_parent_path( std::string const & path )
 {
 	return path.substr( 0, path.find_last_of( PathSeparator ) );
+}
+
+std::string get_filename( std::string const & path )
+{
+	return path.substr( path.find_last_of( PathSeparator ) + 1 );
 }
 
 #if ASHES_WIN32
@@ -544,21 +549,21 @@ public:
 	{
 		if ( !m_library.getFunction( "createInstance", m_creator ) )
 		{
-			throw std::runtime_error{ "Not a renderer plugin" };
+			throw std::runtime_error{ "[" + get_filename( m_library.getPath() ) + "] is not a renderer plugin" };
 		}
 
 		NamerFunction shortNamer;
 
 		if ( !m_library.getFunction( "getShortName", shortNamer ) )
 		{
-			throw std::runtime_error{ "Not a renderer plugin" };
+			throw std::runtime_error{ "[" + get_filename( m_library.getPath() ) + "] is not a renderer plugin" };
 		}
 
 		NamerFunction fullNamer;
 
 		if ( !m_library.getFunction( "getFullName", fullNamer ) )
 		{
-			throw std::runtime_error{ "Not a renderer plugin" };
+			throw std::runtime_error{ "[" + get_filename( m_library.getPath() ) + "] is not a renderer plugin" };
 		}
 
 		m_shortName = shortNamer();
@@ -891,7 +896,7 @@ static void AppCreateWin32Window( AppInstance *inst )
 
 static void AppCreateWin32Surface( AppInstance *inst )
 {
-	inst->connection = inst->instance->createConnection( inst->instance->getPhysicalDevice( 0u )
+	inst->surface = inst->instance->createSurface( inst->instance->getPhysicalDevice( 0u )
 		, ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( inst->h_instance, inst->h_wnd ) } );
 }
 
@@ -958,7 +963,7 @@ static void AppCreateXcbSurface( AppInstance *inst )
 		return;
 	}
 
-	inst->connection = inst->instance->createConnection( 0u
+	inst->surface = inst->instance->createSurface( 0u
 		, ashes::WindowHandle{ std::make_unique< ashes::IXcbWindowHandle >( inst->xcb_connection, inst->xcb_window ) } );
 }
 
@@ -1004,7 +1009,7 @@ static void AppCreateXlibWindow( AppInstance *inst )
 
 static void AppCreateXlibSurface( AppInstance *inst )
 {
-	inst->connection = inst->instance->createConnection( 0u
+	inst->surface = inst->instance->createSurface( 0u
 		, ashes::WindowHandle{ std::make_unique< ashes::IXWindowHandle >( inst->xlib_window, inst->xlib_display ) } );
 }
 
@@ -1019,15 +1024,16 @@ static void AppDestroyXlibWindow( AppInstance *inst )
 #if ASHES_XCB     || \
     ASHES_XLIB    || \
     ASHES_WIN32
-static int AppDumpSurfaceFormats( ashes::Connection const & connection
+static int AppDumpSurfaceFormats( ashes::Surface const & surface
 	, FILE *out )
 {
-	auto format_count = int( connection.getSurfaceFormats().size() );
+	auto surfaceFormats = surface.getFormats();
+	auto format_count = int( surfaceFormats.size() );
 
 	if ( html_output )
 	{
 		fprintf( out, "\t\t\t\t<details><summary>Formats: count = <div class='val'>%d</div></summary>", format_count );
-		if ( !connection.getSurfaceFormats().empty() )
+		if ( !surfaceFormats.empty() )
 		{
 			fprintf( out, "\n" );
 		}
@@ -1040,7 +1046,7 @@ static int AppDumpSurfaceFormats( ashes::Connection const & connection
 	{
 		printf( "Formats:\t\tcount = %d\n", format_count );
 	}
-	for ( auto & surfaceFormat : connection.getSurfaceFormats() )
+	for ( auto & surfaceFormat : surfaceFormats )
 	{
 		if ( html_output )
 		{
@@ -1052,7 +1058,7 @@ static int AppDumpSurfaceFormats( ashes::Connection const & connection
 			printf( "\t%s\n", VkFormatString( surfaceFormat.format ).c_str() );
 		}
 	}
-	if ( !connection.getSurfaceFormats().empty() && html_output )
+	if ( !surfaceFormats.empty() && html_output )
 	{
 		fprintf( out, "\t\t\t\t</details>\n" );
 	}
@@ -1063,10 +1069,11 @@ static int AppDumpSurfaceFormats( ashes::Connection const & connection
 	return format_count;
 }
 
-static int AppDumpSurfacePresentModes( ashes::Connection const & connection
+static int AppDumpSurfacePresentModes( ashes::Surface const & surface
 	, FILE *out )
 {
-	uint32_t present_mode_count = uint32_t( connection.getPresentModes().size() );
+	auto present_modes = surface.getPresentModes();
+	uint32_t present_mode_count = uint32_t( present_modes.size() );
 
 	if ( html_output )
 	{
@@ -1084,7 +1091,7 @@ static int AppDumpSurfacePresentModes( ashes::Connection const & connection
 	{
 		printf( "Present Modes:\t\tcount = %d\n", present_mode_count );
 	}
-	for ( auto & presentMode : connection.getPresentModes() )
+	for ( auto & presentMode : present_modes )
 	{
 		if ( html_output )
 		{
@@ -1107,10 +1114,10 @@ static int AppDumpSurfacePresentModes( ashes::Connection const & connection
 	return present_mode_count;
 }
 
-static void AppDumpSurfaceCapabilities( ashes::Connection const & connection
+static void AppDumpSurfaceCapabilities( ashes::Surface const & surface
 	, FILE *out )
 {
-	auto & surface_capabilities = connection.getSurfaceCapabilities();
+	auto & surface_capabilities = surface.getCapabilities();
 
 	if ( html_output )
 	{
@@ -3169,16 +3176,16 @@ int main( int argc, char **argv )
 				fprintf( out, "\t\t\t\t<details><summary>GPU id : <div class='val'>%u</div> (%s)</summary></details>\n", i,
 					gpuprops.deviceName.c_str() );
 				fprintf( out, "\t\t\t\t<details><summary>Surface type : <div class='type'>%s</div></summary></details>\n",
-					inst.connection->getSurfaceType().c_str() );
+					inst.surface->getType().c_str() );
 			}
 			else if ( human_readable_output )
 			{
 				printf( "GPU id       : %u (%s)\n", i, gpuprops.deviceName.c_str() );
-				printf( "Surface type : %s\n", inst.connection->getSurfaceType().c_str() );
+				printf( "Surface type : %s\n", inst.surface->getType().c_str() );
 			}
-			format_count += AppDumpSurfaceFormats( *inst.connection, out );
-			present_mode_count += AppDumpSurfacePresentModes( *inst.connection, out );
-			AppDumpSurfaceCapabilities( *inst.connection, out );
+			format_count += AppDumpSurfaceFormats( *inst.surface, out );
+			present_mode_count += AppDumpSurfacePresentModes( *inst.surface, out );
+			AppDumpSurfaceCapabilities( *inst.surface, out );
 			AppDestroySurface( &inst );
 		}
 		AppDestroyWin32Window( &inst );
@@ -3199,16 +3206,16 @@ int main( int argc, char **argv )
 				fprintf( out, "\t\t\t\t<details><summary>GPU id : <div class='val'>%u</div> (%s)</summary></details>\n", i,
 					gpuprops.deviceName.c_str() );
 				fprintf( out, "\t\t\t\t<details><summary>Surface type : <div class='type'>%s</div></summary></details>\n",
-					inst.connection->getSurfaceType().c_str() );
+					inst.surface->getType().c_str() );
 			}
 			else if ( human_readable_output )
 			{
 				printf( "GPU id       : %u (%s)\n", i, gpuprops.deviceName.c_str() );
-				printf( "Surface type : %s\n", inst.connection->getSurfaceType().c_str() );
+				printf( "Surface type : %s\n", inst.surface->getType().c_str() );
 			}
-			format_count += AppDumpSurfaceFormats( *inst.connection, out );
-			present_mode_count += AppDumpSurfacePresentModes( *inst.connection, out );
-			AppDumpSurfaceCapabilities( *inst.connection, out );
+			format_count += AppDumpSurfaceFormats( *inst.surface, out );
+			present_mode_count += AppDumpSurfacePresentModes( *inst.surface, out );
+			AppDumpSurfaceCapabilities( *inst.surface, out );
 			AppDestroySurface( &inst );
 		}
 		AppDestroyXcbWindow( &inst );
@@ -3229,16 +3236,16 @@ int main( int argc, char **argv )
 				fprintf( out, "\t\t\t\t<details><summary>GPU id : <div class='val'>%u</div> (%s)</summary></details>\n", i,
 					gpuprops.deviceName.c_str() );
 				fprintf( out, "\t\t\t\t<details><summary>Surface type : <div class='type'>%s</div></summary></details>\n",
-					inst.connection->getSurfaceType().c_str() );
+					inst.surface->getType().c_str() );
 			}
 			else if ( human_readable_output )
 			{
 				printf( "GPU id       : %u (%s)\n", i, gpuprops.deviceName.c_str() );
-				printf( "Surface type : %s\n", inst.connection->getSurfaceType().c_str() );
+				printf( "Surface type : %s\n", inst.surface->getType().c_str() );
 			}
-			format_count += AppDumpSurfaceFormats( *inst.connection, out );
-			present_mode_count += AppDumpSurfacePresentModes( *inst.connection, out );
-			AppDumpSurfaceCapabilities( *inst.connection, out );
+			format_count += AppDumpSurfaceFormats( *inst.surface, out );
+			present_mode_count += AppDumpSurfacePresentModes( *inst.surface, out );
+			AppDumpSurfaceCapabilities( *inst.surface, out );
 			AppDestroySurface( &inst );
 		}
 		AppDestroyXlibWindow( &inst );
@@ -3300,7 +3307,7 @@ int main( int argc, char **argv )
 	}
 
 	fflush( stdout );
-	inst.connection.reset();
+	inst.surface.reset();
 	inst.instance.reset();
 
 	return 0;
