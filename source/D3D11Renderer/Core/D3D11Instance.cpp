@@ -1,6 +1,7 @@
 #include "Core/D3D11Instance.hpp"
 
 #include "Core/D3D11Surface.hpp"
+#include "Core/D3D11DebugReportCallback.hpp"
 #include "Core/D3D11Device.hpp"
 #include "Core/D3D11PhysicalDevice.hpp"
 #include "Core/D3D11SwapChain.hpp"
@@ -55,6 +56,12 @@ namespace d3d11_renderer
 		return std::make_unique< Surface >( *this
 			, gpu
 			, std::move( handle ) );
+	}
+
+	ashes::DebugReportCallbackPtr Instance::createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const
+	{
+		return std::make_unique< DebugReportCallback >( *this
+			, std::move( createInfo ) );
 	}
 
 	std::array< float, 16 > Instance::frustum( float left

@@ -1,6 +1,7 @@
 #include "Core/TestInstance.hpp"
 
 #include "Core/TestSurface.hpp"
+#include "Core/TestDebugReportCallback.hpp"
 #include "Core/TestDevice.hpp"
 #include "Core/TestPhysicalDevice.hpp"
 #include "Core/TestSwapChain.hpp"
@@ -54,6 +55,12 @@ namespace test_renderer
 		return std::make_unique< Surface >( *this
 			, gpu
 			, std::move( handle ) );
+	}
+
+	ashes::DebugReportCallbackPtr Instance::createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const
+	{
+		return std::make_unique< DebugReportCallback >( *this
+			, std::move( createInfo ) );
 	}
 
 	std::array< float, 16 > Instance::frustum( float left

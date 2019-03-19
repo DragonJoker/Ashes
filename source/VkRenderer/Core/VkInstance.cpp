@@ -1,8 +1,9 @@
 #include "Core/VkInstance.hpp"
 
-#include "Core/VkSurface.hpp"
+#include "Core/VkDebugReportCallback.hpp"
 #include "Core/VkDevice.hpp"
 #include "Core/VkPhysicalDevice.hpp"
+#include "Core/VkSurface.hpp"
 #include "Core/VkSwapChain.hpp"
 
 #include <cmath>
@@ -81,7 +82,6 @@ namespace vk_renderer
 	{
 		if ( m_instance != VK_NULL_HANDLE )
 		{
-			cleanupDebugging( m_instance, *this, m_msgCallback );
 			m_layers.clear();
 			m_extensionNames.clear();
 			m_layerNames.clear();
@@ -118,6 +118,77 @@ namespace vk_renderer
 		return std::make_unique< Surface >( *this
 			, gpu
 			, std::move( handle ) );
+	}
+
+	ashes::DebugReportCallbackPtr Instance::createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const
+	{
+		return std::make_unique< DebugReportCallback >( *this
+			, std::move( createInfo ) );
+	}
+
+	ashes::LayerPropertiesArray Instance::getLayersProperties()
+	{
+		VkResult res{ VK_SUCCESS };
+		std::vector< VkLayerProperties > properties;
+		// Il est possible, bien que rare, que le nombre de couches
+		// d'instance change. Par exemple, en installant quelque chose
+		// qui ajoute de nouvelles couches que le loader utiliserait
+		// entre la requête initiale pour le compte et la récupération
+		// des VkLayerProperties. Le loader l'indique en retournant
+		// VK_INCOMPLETE et en mettant à jour le compte.
+		// Le compte va alors être mis à jour avec le nombre d'entrées
+		// chargées dans le pointeur de données, dans le cas où
+		// le nombre de couches a diminué ou est inférieur à la taille
+		// donnée.
+		do
+		{
+			uint32_t instanceLayerCount{ 0 };
+			res = vkEnumerateInstanceLayerProperties( &instanceLayerCount, nullptr );
+			checkError( res, "Instance layer properties enumeration" );
+
+			if ( instanceLayerCount == 0 )
+			{
+				res = VK_SUCCESS;
+			}
+			else
+			{
+				properties.resize( instanceLayerCount );
+				res = vkEnumerateInstanceLayerProperties( &instanceLayerCount
+					, properties.data() );
+			}
+		}
+		while ( res == VK_INCOMPLETE );
+
+		checkError( res, "Instance layers properties retrieval" );
+		return convert< ashes::LayerProperties >( properties );
+	}
+
+	void Instance::getLayerExtensionProperties( ashes::LayerProperties & layerProps )
+	{
+		VkResult res{ VK_SUCCESS };
+
+		// Récupération des extensions supportées par la couche.
+		do
+		{
+			uint32_t extensionCount{ 0 };
+			res = vkEnumerateInstanceExtensionProperties( layerProps.layerName.c_str()
+				, &extensionCount
+				, nullptr );
+			checkError( res, "Instance extension properties enumeration" );
+
+			if ( extensionCount > 0 )
+			{
+				std::vector< VkExtensionProperties > extensions;
+				extensions.resize( extensionCount );
+				res = vkEnumerateInstanceExtensionProperties( layerProps.layerName.c_str()
+					, &extensionCount
+					, extensions.data() );
+				layerProps.extensions = convert< ashes::ExtensionProperties >( extensions );
+			}
+		}
+		while ( res == VK_INCOMPLETE );
+
+		checkError( res, "Extensions properties retrieval" );
 	}
 
 	std::array< float, 16 > Instance::frustum( float left
@@ -175,16 +246,6 @@ namespace vk_renderer
 		return result;
 	}
 
-	void Instance::completeLayerNames( ashes::StringArray & names )const
-	{
-		for ( auto const & props : m_layers )
-		{
-			addOptionalValidationLayer( props.layerName
-				, props.description
-				, names );
-		}
-	}
-
 	void Instance::doInitLayersProperties()
 	{
 		VkResult res{ VK_SUCCESS };
@@ -218,45 +279,17 @@ namespace vk_renderer
 		}
 		while ( res == VK_INCOMPLETE );
 
-		doInitLayerExtensionProperties( m_globalLayer );
+		getLayerExtensionProperties( m_globalLayer );
 
 		// On récupère la liste d'extensions pour chaque couche de l'instance.
 		for ( auto prop : vkProperties )
 		{
 			ashes::LayerProperties layerProperties{ convert( prop ) };
-			doInitLayerExtensionProperties( layerProperties );
+			getLayerExtensionProperties( layerProperties );
 			m_layers.push_back( layerProperties );
 		}
 
 		checkError( res, "Layer properties retrieval" );
-	}
-
-	void Instance::doInitLayerExtensionProperties( ashes::LayerProperties & layerProps )
-	{
-		VkResult res{ VK_SUCCESS };
-
-		// Récupération des extensions supportées par la couche.
-		do
-		{
-			uint32_t extensionCount{ 0 };
-			res = vkEnumerateInstanceExtensionProperties( layerProps.layerName.c_str()
-				, &extensionCount
-				, nullptr );
-			checkError( res, "Instance extension properties enumeration" );
-
-			if ( extensionCount > 0 )
-			{
-				std::vector< VkExtensionProperties > extensions;
-				extensions.resize( extensionCount );
-				res = vkEnumerateInstanceExtensionProperties( layerProps.layerName.c_str()
-					, &extensionCount
-					, extensions.data() );
-				layerProps.extensions = convert< ashes::ExtensionProperties >( extensions );
-			}
-		}
-		while ( res == VK_INCOMPLETE );
-
-		checkError( res, "Extensions properties retrieval" );
 	}
 
 	void Instance::doInitInstance()
@@ -310,9 +343,6 @@ namespace vk_renderer
 #define VK_LIB_INSTANCE_FUNCTION( fun ) fun = reinterpret_cast< PFN_##fun >( getInstanceProcAddr( #fun ) );
 #include "Miscellaneous/VulkanFunctionsList.inl"
 
-		setupDebugging( m_instance
-			, *this
-			, m_msgCallback );
 	}
 
 	void Instance::doEnumerateDevices()

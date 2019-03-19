@@ -343,7 +343,7 @@ namespace common
 	void RenderPanel::doCreatePipeline()
 	{
 		wxSize size{ GetClientSize() };
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "main.vert" )
 			|| !wxFileExists( shadersFolder / "main.frag" ) )

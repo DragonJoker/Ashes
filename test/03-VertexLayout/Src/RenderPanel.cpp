@@ -1,5 +1,10 @@
 ﻿#include "RenderPanel.hpp"
+
 #include "Application.hpp"
+
+#include <FileUtils.hpp>
+
+#include <GlslToSpv.hpp>
 
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/CommandBuffer.hpp>
@@ -21,9 +26,6 @@
 #include <RenderPass/RenderPass.hpp>
 #include <RenderPass/RenderSubpass.hpp>
 #include <RenderPass/RenderSubpassState.hpp>
-#include <GlslToSpv.hpp>
-
-#include <FileUtils.hpp>
 
 #include <fstream>
 #include <cstring>
@@ -220,7 +222,7 @@ namespace vkapp
 	{
 		m_pipelineLayout = m_device->getDevice().createPipelineLayout();
 		wxSize size{ GetClientSize() };
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "shader.vert" )
 			|| !wxFileExists( shadersFolder / "shader.frag" ) )

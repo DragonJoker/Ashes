@@ -38,6 +38,18 @@ namespace vk_renderer
 		ashes::SurfacePtr createSurface( ashes::PhysicalDevice const & gpu
 			, ashes::WindowHandle handle )const override;
 		/**
+		*\copydoc	ashes::Instance::createDebugReportCallback
+		*/
+		ashes::DebugReportCallbackPtr createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const override;
+		/**
+		*\copydoc	ashes::Instance::getLayersProperties
+		*/
+		ashes::LayerPropertiesArray getLayersProperties();
+		/**
+		*\copydoc	ashes::Instance::getLayerExtensionProperties
+		*/
+		void getLayerExtensionProperties( ashes::LayerProperties & layerProps );
+		/**
 		*\copydoc	ashes::Instance::frustum
 		*/
 		std::array< float, 16 > frustum( float left
@@ -62,19 +74,6 @@ namespace vk_renderer
 			, float top
 			, float zNear
 			, float zFar )const override;
-		/**
-		*\~french
-		*\brief
-		*	Ajoute les couches de l'instance aux noms déjà présents dans la liste donnée.
-		*\param[in,out] names
-		*	La liste à compléter.
-		*\~english
-		*\brief
-		*	Adds the instance layers names to the given names.
-		*\param[in,out] names
-		*	The liste to fill.
-		*/
-		void completeLayerNames( ashes::StringArray & names )const;
 		/**
 		*\~french
 		*\brief
@@ -106,19 +105,6 @@ namespace vk_renderer
 		/**
 		*\~french
 		*\brief
-		*	Enumère les extensions disponibles pour la couche donnée.
-		*\param[out] layerProps
-		*	Reçoit les propriétés des extensions de la couche.
-		*\~english
-		*\brief
-		*	Lists all the extensions supported by given layer.
-		*\param[out] layerProps
-		*	Receives the extensions properties for the layer.
-		*/
-		void doInitLayerExtensionProperties( ashes::LayerProperties & layerProps );
-		/**
-		*\~french
-		*\brief
 		*	Crée l'instance Vulkan.
 		*\~english
 		*\brief
@@ -139,6 +125,5 @@ namespace vk_renderer
 	private:
 		ashes::DynamicLibrary m_library;
 		VkInstance m_instance{ VK_NULL_HANDLE };
-		VkDebugReportCallbackEXT m_msgCallback{ VK_NULL_HANDLE };
 	};
 }

@@ -172,7 +172,7 @@ namespace vkapp
 	void RenderPanel::doCreateTexture()
 	{
 		static constexpr ashes::Format format = ashes::Format::eR32G32B32A32_SFLOAT;
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		m_textureBuffer = ashes::makeBuffer< utils::Vec4 >( m_device->getDevice()
 			, image.size.width
@@ -274,7 +274,7 @@ namespace vkapp
 	{
 		m_pipelineLayout = m_device->getDevice().createPipelineLayout( *m_descriptorLayout );
 		wxSize size{ GetClientSize() };
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "shader.vert" )
 			|| !wxFileExists( shadersFolder / "shader.frag" ) )

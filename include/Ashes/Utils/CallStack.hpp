@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 namespace ashes
 {
-	namespace Debug
+	namespace callstack
 	{
 		struct Backtrace
 		{
@@ -38,12 +38,12 @@ namespace ashes
 		/**
 		 *\~english
 		 *\brief			Puts the backtrace into a stream
-		 *\param[in,out]	p_stream	The stream
+		 *\param[in,out]	stream	The stream
 		 *\~french
 		 *\brief			Transmet la pile d'appels dans un flux
-		 *\param[in,out]	p_stream	Le flux
+		 *\param[in,out]	stream	Le flux
 		 */
-		std::ostream & operator<<( std::ostream & p_stream, Backtrace const & );
+		std::ostream & operator<<( std::ostream & stream, Backtrace const & trace );
 		/*!
 		\author 	Sylvain DOREMUS
 		\date		05/10/2015
@@ -71,26 +71,27 @@ namespace ashes
 			static std::string doGetCallStack()
 			{
 				std::stringstream callStack;
-				callStack << ashes::Debug::Backtrace{};
+				callStack << Backtrace{};
 				return callStack.str();
 			}
 
 		protected:
 			std::string m_callStack;
-			friend std::ostream & operator<<( std::ostream & p_stream, Backtraced const & p_traced );
+			friend std::ostream & operator<<( std::ostream &, Backtraced const & );
 
 #endif
 		};
 
-		inline std::ostream & operator<<( std::ostream & p_stream, Backtraced const & p_traced )
+		inline std::ostream & operator<<( std::ostream & stream
+			, Backtraced const & traced )
 		{
 #if !defined( NDEBUG )
 
-			p_stream << p_traced.m_callStack;
+			stream << traced.m_callStack;
 
 #endif
 
-			return p_stream;
+			return stream;
 		}
 	}
 }

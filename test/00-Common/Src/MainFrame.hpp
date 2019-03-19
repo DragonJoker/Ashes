@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <Core/Instance.hpp>
+#include <Utils/UtilsInstance.hpp>
 
 #include <wx/frame.h>
 
@@ -14,7 +14,7 @@ namespace common
 	public:
 		MainFrame( wxString const & name
 			, wxString const & rendererName
-			, RendererFactory & factory );
+			, utils::RendererFactory & factory );
 		virtual ~MainFrame() = default;
 
 		void initialise();
@@ -33,8 +33,8 @@ namespace common
 		static size_t constexpr FrameSamplesCount = 1000;
 		wxString m_name;
 		wxString m_rendererName;
-		ashes::InstancePtr m_instance;
-		RendererFactory & m_factory;
+		utils::InstancePtr m_instance;
+		utils::RendererFactory & m_factory;
 		wxPanel * m_panel{ nullptr };
 		std::array< std::chrono::microseconds, FrameSamplesCount > m_cpuFramesTimes;
 		std::array< std::chrono::microseconds, FrameSamplesCount > m_gpuFramesTimes;

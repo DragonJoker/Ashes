@@ -302,7 +302,7 @@ namespace vkapp
 			, ashes::Filter::eLinear
 			, ashes::Filter::eLinear );
 
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Assets";
 		std::array< std::string, 6u > paths
 		{
 			"01-right.png",
@@ -462,7 +462,7 @@ namespace vkapp
 	{
 		m_offscreenPipelineLayout = m_device->getDevice().createPipelineLayout( *m_offscreenDescriptorLayout );
 		wxSize size{ GetClientSize() };
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "offscreen.vert" )
 			|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
@@ -611,7 +611,7 @@ namespace vkapp
 	{
 		m_mainPipelineLayout = m_device->getDevice().createPipelineLayout( *m_mainDescriptorLayout );
 		wxSize size{ GetClientSize() };
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "main.vert" )
 			|| !wxFileExists( shadersFolder / "main.frag" ) )

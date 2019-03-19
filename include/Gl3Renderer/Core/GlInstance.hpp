@@ -32,6 +32,10 @@ namespace gl_renderer
 		ashes::SurfacePtr createSurface( ashes::PhysicalDevice const & gpu
 			, ashes::WindowHandle handle )const override;
 		/**
+		*\copydoc	ashes::Instance::createDebugReportCallback
+		*/
+		ashes::DebugReportCallbackPtr createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const override;
+		/**
 		*\copydoc	ashes::Instance::frustum
 		*/
 		std::array< float, 16 > frustum( float left
@@ -57,12 +61,27 @@ namespace gl_renderer
 			, float zNear
 			, float zFar )const override;
 
+		void registerDebugMessageCallback( PFNGLDEBUGPROC callback, void * userParam )const;
+		void registerDebugMessageCallbackAMD( PFNGLDEBUGAMDPROC callback, void * userParam )const;
+
 		inline bool isSPIRVSupported()const
 		{
 			return m_spirvSupported;
 		}
 
+		inline std::vector< DebugReportCallbackData > const & getDebugCallbacks()const
+		{
+			return m_debugCallbacks;
+		}
+
+		inline std::vector< DebugReportAMDCallbackData > const & getDebugAMDCallbacks()const
+		{
+			return m_debugAMDCallbacks;
+		}
+
 	private:
 		bool m_spirvSupported;
+		mutable std::vector< DebugReportCallbackData > m_debugCallbacks;
+		mutable std::vector< DebugReportAMDCallbackData > m_debugAMDCallbacks;
 	};
 }

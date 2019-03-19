@@ -22,9 +22,25 @@ See LICENSE file in root folder.
 #endif
 
 #include <cstddef>
+#include <string>
 
 namespace gl_renderer
 {
+#define makeGlExtension( x )\
+	static const std::string x = "GL_"#x
+
+	makeGlExtension( KHR_debug );
+	makeGlExtension( ARB_debug_output );
+	makeGlExtension( AMDX_debug_output );
+	makeGlExtension( ARB_texture_buffer_range );
+	makeGlExtension( ARB_shader_image_load_store );
+	makeGlExtension( ARB_base_instance );
+	makeGlExtension( ARB_clear_texture );
+	makeGlExtension( ARB_compute_shader );
+	makeGlExtension( ARB_buffer_storage );
+	makeGlExtension( ARB_gl_spirv );
+#undef makeGlExtension
+
 	using GLbitfield = unsigned int;
 	using GLboolean = unsigned char;
 	using GLbyte = signed char;
@@ -144,6 +160,9 @@ namespace gl_renderer
 	using PFN_glXSwapIntervalEXT = void( GLAPIENTRY * )( Display * dpy, GLXDrawable drawable, int interval );
 #else
 #endif
+
+	using PFNGLDEBUGPROC = void ( GLAPIENTRY * )( uint32_t, uint32_t, uint32_t, uint32_t, int, const char *, void * );
+	using PFNGLDEBUGAMDPROC = void ( GLAPIENTRY * )( uint32_t, uint32_t, uint32_t, int, const char *, void * );
 
 	using PFN_glActiveTexture = void ( GLAPIENTRY * )( GLenum texture );
 	using PFN_glAttachShader = void ( GLAPIENTRY * )( GLuint program, GLuint shader );

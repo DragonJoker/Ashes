@@ -244,9 +244,9 @@ namespace common
 		wxInitAllImageHandlers();
 		utils::initialiseGlslang();
 		bool result = false;
-		StringArray files;
+		utils::StringArray files;
 
-		if ( listDirectoryFiles( getExecutableDirectory(), files, false ) )
+		if ( utils::listDirectoryFiles( utils::getExecutableDirectory(), files, false ) )
 		{
 			for ( auto file : files )
 			{

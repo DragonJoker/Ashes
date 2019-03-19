@@ -126,7 +126,7 @@ namespace vkapp
 
 		std::vector< ashes::ShaderStageState > doCreateProgram( ashes::Device const & device )
 		{
-			std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+			std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 			if ( !wxFileExists( shadersFolder / "equirectangular.vert" )
 				|| !wxFileExists( shadersFolder / "equirectangular.frag" ) )

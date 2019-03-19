@@ -248,7 +248,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateTexture()
 	{
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		auto stagingTexture = m_device->getDevice().createStagingTexture( image.format
 			, { image.size.width, image.size.height } );
@@ -404,7 +404,7 @@ namespace vkapp
 	{
 		m_offscreenPipelineLayout = m_device->getDevice().createPipelineLayout( *m_offscreenDescriptorLayout );
 		wxSize size{ GetClientSize() };
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "offscreen.vert" )
 			|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
@@ -554,7 +554,7 @@ namespace vkapp
 	{
 		m_mainPipelineLayout = m_device->getDevice().createPipelineLayout( *m_mainDescriptorLayout );
 		wxSize size{ GetClientSize() };
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "main.vert" )
 			|| !wxFileExists( shadersFolder / "main.frag" ) )

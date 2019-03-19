@@ -10,7 +10,10 @@
 
 #include <Utils/Factory.hpp>
 #include <Utils/Mat4.hpp>
+#include <Utils/UtilsDebug.hpp>
 #include <Utils/UtilsDevice.hpp>
+#include <Utils/UtilsInstance.hpp>
+#include <Utils/UtilsPlugin.hpp>
 #include <Utils/UtilsSwapChain.hpp>
 
 #pragma warning( disable: 4996 )
@@ -23,11 +26,6 @@
 namespace common
 {
 	static wxSize const WindowSize{ 800, 600 };
-	using RendererFactory = utils::Factory< ashes::Instance
-		, std::string
-		, ashes::InstancePtr
-		, std::function< ashes::InstancePtr( ashes::Instance::Configuration const & ) > >;
-
 	static uint32_t constexpr MAX_TEXTURES = 6u;
 	static uint32_t constexpr MAX_LIGHTS = 10u;
 

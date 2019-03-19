@@ -2,6 +2,7 @@
 
 #include "Core/GlSurface.hpp"
 #include "Core/GlContext.hpp"
+#include "Core/GlDebugReportCallback.hpp"
 #include "Core/GlDevice.hpp"
 #include "Core/GlPhysicalDevice.hpp"
 
@@ -23,6 +24,13 @@ namespace gl_renderer
 	namespace
 	{
 #if defined( _WIN32 )
+
+		template< typename FuncT >
+		bool getFunction( char const * const name, FuncT & function )
+		{
+			function = reinterpret_cast< FuncT >( wglGetProcAddress( name ) );
+			return function != nullptr;
+		}
 
 		class RenderWindow
 		{
@@ -327,9 +335,10 @@ namespace gl_renderer
 		m_features.hasComputeShaders = false;
 		m_features.hasStorageBuffers = false;
 		m_features.supportsPersistentMapping = false;
+
 		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...
 		m_spirvSupported = false
-			&& ( gpu.find( "GL_ARB_gl_spirv" )
+			&& ( gpu.find( ARB_gl_spirv )
 			|| gpu.hasSPIRVShaderBinaryFormat() );
 	}
 
@@ -360,6 +369,12 @@ namespace gl_renderer
 		return std::make_unique< Surface >( *this
 			, gpu
 			, std::move( handle ) );
+	}
+
+	ashes::DebugReportCallbackPtr Instance::createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const
+	{
+		return std::make_unique< DebugReportCallback >( *this
+			, std::move( createInfo ) );
 	}
 
 	std::array< float, 16 > Instance::frustum( float left
@@ -417,5 +432,17 @@ namespace gl_renderer
 		result[15] = 1.0f;
 
 		return result;
+	}
+
+	void Instance::registerDebugMessageCallback( PFNGLDEBUGPROC callback
+		, void * userParam )const
+	{
+		m_debugCallbacks.push_back( { callback, userParam } );
+	}
+
+	void Instance::registerDebugMessageCallbackAMD( PFNGLDEBUGAMDPROC callback
+		, void * userParam )const
+	{
+		m_debugAMDCallbacks.push_back( { callback, userParam } );
 	}
 }

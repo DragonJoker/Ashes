@@ -174,7 +174,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateTexture()
 	{
-		std::string assetsFolder = common::getPath( common::getExecutableDirectory() ) / "share" / "Assets";
+		std::string assetsFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Assets";
 		ashes::Format format = ashes::Format::eR8G8B8A8_UNORM;
 		gli::texture2d tex2D( gli::load( assetsFolder / "metalplate01_rgba.ktx" ) );
 
@@ -305,7 +305,7 @@ namespace vkapp
 	{
 		m_pipelineLayout = m_device->getDevice().createPipelineLayout( *m_descriptorLayout );
 		wxSize size{ GetClientSize() };
-		std::string shadersFolder = common::getPath( common::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "shader.vert" )
 			|| !wxFileExists( shadersFolder / "shader.frag" ) )

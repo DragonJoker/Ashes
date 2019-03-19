@@ -68,6 +68,18 @@
 
 namespace gl_renderer
 {
+	struct DebugReportCallbackData
+	{
+		PFNGLDEBUGPROC callback;
+		void * userParam;
+	};
+
+	struct DebugReportAMDCallbackData
+	{
+		PFNGLDEBUGAMDPROC callback;
+		void * userParam;
+	};
+
 	struct AttachmentDescription;
 
 	class Buffer;
