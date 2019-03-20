@@ -150,27 +150,27 @@ Bloom implementation using downscale through mipmaps.
 
 These applications use the library in a more complex way, closer to what would be done within an engine.
 
-### [Object Loading](Samples/01-ObjectLoading/)
+### [Object Loading](samples/01-ObjectLoading/)
 <img src="./screenshots/s01.png" height="72px" align="right">
 
 Loads an object, with textures, and displays it.
 
-### [Lighting](Samples/02-Lighting/)
+### [Lighting](samples/02-Lighting/)
 <img src="./screenshots/s02.png" height="72px" align="right">
 
 Applies lights to the previously loaded object.
 
-### [Normal Mapping](Samples/03-NormalMapping/)
+### [Normal Mapping](samples/03-NormalMapping/)
 <img src="./screenshots/s03.png" height="72px" align="right">
 
 Applies normal mapping.
 
-### [Deferred Rendering](Samples/04-DeferredRendering/)
+### [Deferred Rendering](samples/04-DeferredRendering/)
 <img src="./screenshots/s04.png" height="72px" align="right">
 
 Deferred rendering implementation for opaque objects
 
-### [Billboards](Samples/05-Billboards/)
+### [Billboards](samples/05-Billboards/)
 <img src="./screenshots/s05.png" height="72px" align="right">
 
 Billboards sample.
