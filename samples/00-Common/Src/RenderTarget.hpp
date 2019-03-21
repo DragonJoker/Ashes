@@ -10,7 +10,7 @@ namespace common
 	class RenderTarget
 	{
 	public:
-		RenderTarget( ashes::Device const & device
+		RenderTarget( utils::Device const & device
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue
 			, ashes::Extent2D const & size
@@ -57,19 +57,19 @@ namespace common
 		virtual void doUpdate( std::chrono::microseconds const & duration ) = 0;
 		virtual void doResize( ashes::Extent2D const & size ) = 0;
 
-		virtual OpaqueRenderingPtr doCreateOpaqueRendering( ashes::Device const & device
+		virtual OpaqueRenderingPtr doCreateOpaqueRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
 			, ashes::TextureViewCRefArray const & views
 			, Scene const & scene
 			, TextureNodePtrArray const & textureNodes ) = 0;
-		virtual TransparentRenderingPtr doCreateTransparentRendering( ashes::Device const & device
+		virtual TransparentRenderingPtr doCreateTransparentRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
 			, ashes::TextureViewCRefArray const & views
 			, Scene const & scene
 			, TextureNodePtrArray const & textureNodes ) = 0;
 
 	protected:
-		ashes::Device const & m_device;
+		utils::Device const & m_device;
 		ashes::CommandPool const & m_commandPool;
 		ashes::Queue const & m_transferQueue;
 		ashes::StagingBufferPtr m_stagingBuffer;

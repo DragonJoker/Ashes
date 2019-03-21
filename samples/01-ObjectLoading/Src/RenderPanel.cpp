@@ -18,7 +18,7 @@ namespace vkapp
 	{
 	}
 	
-	void RenderPanel::doInitialise( ashes::Device const & device
+	void RenderPanel::doInitialise( utils::Device const & device
 		, ashes::Extent2D const & size )
 	{
 		common::ImagePtrArray images;

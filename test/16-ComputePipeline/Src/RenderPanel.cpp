@@ -58,7 +58,7 @@ namespace vkapp
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, ashes::Instance const & instance )
+		, utils::Instance const & instance )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 		, m_offscreenVertexData
@@ -269,18 +269,18 @@ namespace vkapp
 			, ashes::PipelineStageFlag::eVertexShader );
 	}
 
-	ashes::SurfacePtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
+	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.createSurface( gpu
+		return instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
 
-	void RenderPanel::doCreateDevice( ashes::Instance const & instance
+	void RenderPanel::doCreateDevice( utils::Instance const & instance
 		, ashes::SurfacePtr surface )
 	{
-		m_device = std::make_unique< utils::Device >( instance
+		m_device = std::make_unique< utils::Device >( instance.getInstance()
 			, std::move( surface ) );
 		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
 		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
@@ -323,7 +323,7 @@ namespace vkapp
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		auto stagingTexture = m_device->getDevice().createStagingTexture( image.format
 			, { image.size.width, image.size.height } );
-		m_texture = m_device->getDevice().createTexture(
+		m_texture = m_device->createTexture(
 			{
 				0u,
 				ashes::TextureType::e2D,
@@ -352,15 +352,15 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffers()
 	{
-		m_matrixUbo = std::make_unique< ashes::UniformBuffer< utils::Mat4 > >( m_device->getDevice()
+		m_matrixUbo = utils::makeUniformBuffer< utils::Mat4 >( *m_device
 			, 1u
 			, ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_objectUbo = std::make_unique< ashes::UniformBuffer< utils::Mat4 > >( m_device->getDevice()
+		m_objectUbo = utils::makeUniformBuffer< utils::Mat4 >( *m_device
 			, 2u
 			, ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_computeUbo = std::make_unique< ashes::UniformBuffer< Configuration > >( m_device->getDevice()
+		m_computeUbo = utils::makeUniformBuffer< Configuration >( *m_device
 			, 1u
 			, ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
@@ -459,7 +459,7 @@ namespace vkapp
 	void RenderPanel::doCreateFrameBuffer()
 	{
 		auto size = GetClientSize();
-		m_renderTargetColour = m_device->getDevice().createTexture(
+		m_renderTargetColour = m_device->createTexture(
 			{
 				0u,
 				ashes::TextureType::e2D,
@@ -475,7 +475,7 @@ namespace vkapp
 		m_renderTargetColourView = m_renderTargetColour->createView( ashes::TextureViewType::e2D
 			, m_renderTargetColour->getFormat() );
 		
-		m_renderTargetDepth = m_device->getDevice().createTexture(
+		m_renderTargetDepth = m_device->createTexture(
 			{
 				0u,
 				ashes::TextureType::e2D,
@@ -507,7 +507,7 @@ namespace vkapp
 			, ashes::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
-		m_offscreenVertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( m_device->getDevice()
+		m_offscreenVertexBuffer = utils::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_offscreenVertexData.size() )
 			, ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
@@ -516,7 +516,7 @@ namespace vkapp
 			, m_offscreenVertexData
 			, *m_offscreenVertexBuffer );
 
-		m_offscreenIndexBuffer = ashes::makeBuffer< uint16_t >( m_device->getDevice()
+		m_offscreenIndexBuffer = utils::makeBuffer< uint16_t >( *m_device
 			, uint32_t( m_offscreenIndexData.size() )
 			, ashes::BufferTarget::eIndexBuffer | ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
@@ -752,7 +752,7 @@ namespace vkapp
 			, ashes::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
-		m_mainVertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( m_device->getDevice()
+		m_mainVertexBuffer = utils::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_mainVertexData.size() )
 			, ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );

@@ -11,7 +11,7 @@ namespace common
 	class Gui
 	{
 	public:
-		Gui( ashes::Device const & device
+		Gui( utils::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
 			, ashes::Extent2D const & size );
@@ -48,7 +48,7 @@ namespace common
 			utils::Vec2 translate;
 		};
 
-		ashes::Device const & m_device;
+		utils::Device const & m_device;
 		ashes::TextureView const * m_colourView{ nullptr };
 		ashes::Extent2D m_size;
 		ashes::PushConstantsBuffer< PushConstBlock > m_pushConstants;

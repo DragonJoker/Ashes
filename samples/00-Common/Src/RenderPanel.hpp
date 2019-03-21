@@ -36,12 +36,12 @@ namespace common
 			, std::string const & appName
 			, std::string const & appDesc );
 		virtual ~RenderPanel();
-		void initialise( ashes::Instance const & instance );
+		void initialise( utils::Instance const & instance );
 		void update();
 		void draw();
 
 	private:
-		virtual void doInitialise( ashes::Device const & device
+		virtual void doInitialise( utils::Device const & device
 			, ashes::Extent2D const & size ) = 0;
 		virtual void doUpdateOverlays( Gui const & gui ) = 0;
 
@@ -50,8 +50,8 @@ namespace common
 		}
 
 		void doCleanup();
-		ashes::SurfacePtr doCreateSurface( ashes::Instance const & instance );
-		void doCreateDevice( ashes::Instance const & instance
+		ashes::SurfacePtr doCreateSurface( utils::Instance const & instance );
+		void doCreateDevice( utils::Instance const & instance
 			, ashes::SurfacePtr surface );
 		void doCreateSwapChain();
 		void doCreateDescriptorSet();

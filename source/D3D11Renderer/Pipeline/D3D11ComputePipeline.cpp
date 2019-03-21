@@ -1,10 +1,11 @@
 #include "Pipeline/D3D11ComputePipeline.hpp"
 
-#include "Buffer/D3D11UniformBuffer.hpp"
 #include "Core/D3D11Device.hpp"
 #include "Shader/D3D11ShaderModule.hpp"
 
 #include <Ashes/Buffer/PushConstantsBuffer.hpp>
+#include <Ashes/Buffer/UniformBuffer.hpp>
+#include <Ashes/Miscellaneous/MemoryRequirements.hpp>
 #include <Ashes/Pipeline/SpecialisationInfo.hpp>
 
 namespace d3d11_renderer
@@ -92,18 +93,21 @@ namespace d3d11_renderer
 			{
 				PushConstantsBuffer pcb
 				{
-					std::make_shared< UniformBuffer >( device
-					, 1u
+					std::make_shared< ashes::UniformBufferBase >( device
+						, 1u
 						, blockLayout.size
-						, 0u
-						, ashes::MemoryPropertyFlag::eHostVisible ),
+						, 0u ),
 					blockLayout.binding,
-				{
-					shaderLayoutIt.first,
-					0u,
-					blockLayout.size
-				}
+					{
+						shaderLayoutIt.first,
+						0u,
+						blockLayout.size
+					}
 				};
+				auto requirements = pcb.ubo->getMemoryRequirements();
+				auto deduced = deduceMemoryType( requirements.memoryTypeBits
+					, ashes::MemoryPropertyFlag::eHostVisible );
+				pcb.ubo->bindMemory( device.allocateMemory( { requirements.size, deduced } ) );
 				m_constantsPcbs.push_back( std::move( pcb ) );
 			}
 		}

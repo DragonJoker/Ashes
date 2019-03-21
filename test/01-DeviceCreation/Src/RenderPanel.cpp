@@ -15,7 +15,7 @@ namespace vkapp
 {
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, ashes::Instance const & instance )
+		, utils::Instance const & instance )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 	{
 		try
@@ -46,22 +46,22 @@ namespace vkapp
 		}
 	}
 
-	ashes::SurfacePtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
+	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.createSurface( gpu
+		return instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
 
-	void RenderPanel::doCreateDevice( ashes::Instance const & instance
+	void RenderPanel::doCreateDevice( utils::Instance const & instance
 		, ashes::SurfacePtr surface )
 	{
 		ashes::DeviceCreateInfo createInfo;
 		createInfo.enabledFeatures = surface->getGpu().getFeatures();
 		createInfo.enabledLayerNames = instance.getLayerNames();
 		createInfo.enabledExtensionNames = instance.getExtensionNames();
-		m_device = instance.createDevice( std::move( surface )
+		m_device = instance.getInstance().createDevice( std::move( surface )
 			, std::move( createInfo ) );
 		std::cout << m_device->getPhysicalDevice().dumpProperties() << std::endl;
 	}

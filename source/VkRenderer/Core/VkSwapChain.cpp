@@ -51,8 +51,10 @@ namespace vk_renderer
 				{},
 				ashes::ImageLayout::eUndefined,
 			} );
-		m_depthStencil->bindMemory( m_device.allocateMemory( m_depthStencil->getMemoryRequirements()
-			, ashes::MemoryPropertyFlag::eDeviceLocal ) );
+		auto requirements = m_depthStencil->getMemoryRequirements();
+		auto deduced = m_device.deduceMemoryType( requirements.memoryTypeBits
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_depthStencil->bindMemory( m_device.allocateMemory( { requirements.size, deduced } ) );
 		m_depthStencilView = m_depthStencil->createView( ashes::TextureViewType::e2D
 			, format );
 	}

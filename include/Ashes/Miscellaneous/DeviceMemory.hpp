@@ -9,6 +9,7 @@ See LICENSE file in root folder.
 #include "Ashes/AshesPrerequisites.hpp"
 
 #include "Ashes/Core/Device.hpp"
+#include "Ashes/Miscellaneous/MemoryAllocateInfo.hpp"
 
 namespace ashes
 {
@@ -56,9 +57,9 @@ namespace ashes
 	{
 	protected:
 		DeviceMemory( Device const & device
-			, MemoryPropertyFlags flags )
+			, MemoryAllocateInfo allocateInfo )
 			: m_device{ device }
-			, m_flags{ flags }
+			, m_allocateInfo{ std::move( allocateInfo ) }
 		{
 			registerObject( m_device, "DeviceMemory", this );
 		}
@@ -144,7 +145,7 @@ namespace ashes
 
 	protected:
 		Device const & m_device;
-		MemoryPropertyFlags m_flags;
+		MemoryAllocateInfo m_allocateInfo;
 	};
 }
 

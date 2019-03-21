@@ -6,7 +6,6 @@ See LICENSE file in root folder.
 
 #include "Buffer/TestBuffer.hpp"
 #include "Buffer/TestBufferView.hpp"
-#include "Buffer/TestUniformBuffer.hpp"
 #include "Command/TestCommandPool.hpp"
 #include "Command/TestQueue.hpp"
 #include "Core/TestSurface.hpp"
@@ -83,12 +82,10 @@ namespace test_renderer
 		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
 	}
 
-	ashes::DeviceMemoryPtr Device::allocateMemory( ashes::MemoryRequirements const & requirements
-		, ashes::MemoryPropertyFlags flags )const
+	ashes::DeviceMemoryPtr Device::allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const
 	{
 		return std::make_unique< DeviceMemory >( *this
-			, requirements
-			, flags );
+			, std::move( allocateInfo ) );
 	}
 
 	ashes::TexturePtr Device::createTexture( ashes::ImageCreateInfo const & createInfo )const
@@ -125,18 +122,6 @@ namespace test_renderer
 			, format
 			, offset
 			, range );
-	}
-
-	ashes::UniformBufferBasePtr Device::createUniformBuffer( uint32_t count
-		, uint32_t size
-		, ashes::BufferTargets target
-		, ashes::MemoryPropertyFlags memoryFlags )const
-	{
-		return std::make_unique< UniformBuffer >( *this
-			, count
-			, size
-			, target
-			, memoryFlags );
 	}
 
 	ashes::SwapChainPtr Device::createSwapChain( ashes::SwapChainCreateInfo createInfo )const

@@ -38,7 +38,7 @@ namespace vkapp
 
 	namespace
 	{
-		ashes::TexturePtr doCreateTexture( ashes::Device const & device
+		ashes::TexturePtr doCreateTexture( utils::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
 			, common::ImageData const & image )
@@ -59,7 +59,7 @@ namespace vkapp
 			auto view = result->createView( ashes::TextureViewType::e2D
 				, image.format );
 
-			auto staging = device.createStagingTexture( image.format
+			auto staging = device->createStagingTexture( image.format
 				, { image.size.width, image.size.height } );
 			staging->uploadTextureData( queue
 				, commandPool
@@ -69,21 +69,21 @@ namespace vkapp
 			return result;
 		}
 
-		ashes::SamplerPtr doCreateSampler( ashes::Device const & device )
+		ashes::SamplerPtr doCreateSampler( utils::Device const & device )
 		{
-			return device.createSampler( ashes::WrapMode::eClampToEdge
+			return device->createSampler( ashes::WrapMode::eClampToEdge
 				, ashes::WrapMode::eClampToEdge
 				, ashes::WrapMode::eClampToEdge
 				, ashes::Filter::eLinear
 				, ashes::Filter::eLinear );
 		}
 
-		ashes::UniformBufferPtr< Mat4 > doCreateMatrixUbo( ashes::Device const & device
+		ashes::UniformBufferPtr< Mat4 > doCreateMatrixUbo( utils::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
 			, ashes::StagingBuffer & stagingBuffer )
 		{
-			static Mat4 const projection = utils::Mat4{ device.perspective( float( utils::toRadians( 90.0_degrees ) ), 1.0f, 0.1f, 10.0f ) };
+			static Mat4 const projection = utils::Mat4{ device->perspective( float( utils::toRadians( 90.0_degrees ) ), 1.0f, 0.1f, 10.0f ) };
 			static std::array< Mat4, 6u > const views = [&device]()
 			{
 				std::array< Mat4, 6u > result
@@ -96,7 +96,7 @@ namespace vkapp
 					utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, +0.0f, -1.0f }, Vec3{ 0.0f, -1.0f, +0.0f } )
 				};
 
-				if ( device.getInstance().getName().find( "gl" ) != std::string::npos )
+				if ( device->getInstance().getName().find( "gl" ) != std::string::npos )
 				{
 					std::swap( result[2], result[3] );
 				}
@@ -104,7 +104,7 @@ namespace vkapp
 				return result;
 			}();
 
-			auto result = ashes::makeUniformBuffer< utils::Mat4 >( device
+			auto result = utils::makeUniformBuffer< utils::Mat4 >( device
 				, 6u
 				, ashes::BufferTarget::eTransferDst
 				, ashes::MemoryPropertyFlag::eHostVisible );
@@ -124,7 +124,7 @@ namespace vkapp
 			return result;
 		}
 
-		std::vector< ashes::ShaderStageState > doCreateProgram( ashes::Device const & device )
+		std::vector< ashes::ShaderStageState > doCreateProgram( utils::Device const & device )
 		{
 			std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
@@ -135,19 +135,19 @@ namespace vkapp
 			}
 
 			std::vector< ashes::ShaderStageState > shaderStages;
-			shaderStages.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-			shaderStages.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-			shaderStages[0].module->loadShader( common::parseShaderFile( device
+			shaderStages.push_back( { device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
+			shaderStages.push_back( { device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
+			shaderStages[0].module->loadShader( common::parseShaderFile( device.getDevice()
 				, ashes::ShaderStageFlag::eVertex
 				, shadersFolder / "equirectangular.vert" ) );
-			shaderStages[1].module->loadShader( common::parseShaderFile( device
+			shaderStages[1].module->loadShader( common::parseShaderFile( device.getDevice()
 				, ashes::ShaderStageFlag::eFragment
 				, shadersFolder / "equirectangular.frag" ) );
 
 			return shaderStages;
 		}
 
-		ashes::VertexBufferPtr< VertexData > doCreateVertexBuffer( ashes::Device const & device
+		ashes::VertexBufferPtr< VertexData > doCreateVertexBuffer( utils::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
 			, ashes::StagingBuffer & stagingBuffer )
@@ -163,7 +163,7 @@ namespace vkapp
 					{ Vec4{ -1, -1, -1, 1 } }, { Vec4{ +1, -1, -1, 1 } }, { Vec4{ -1, -1, +1, 1 } }, { Vec4{ +1, -1, -1, 1 } }, { Vec4{ +1, -1, +1, 1 } }, { Vec4{ -1, -1, +1, 1 } },// Bottom
 				}
 			};
-			auto result = ashes::makeVertexBuffer< VertexData >( device
+			auto result = utils::makeVertexBuffer< VertexData >( device
 				, 36u
 				, ashes::BufferTarget::eTransferDst
 				, ashes::MemoryPropertyFlag::eHostVisible );
@@ -176,7 +176,7 @@ namespace vkapp
 			return result;
 		}
 
-		ashes::VertexLayoutPtr doCreateVertexLayout( ashes::Device const & device )
+		ashes::VertexLayoutPtr doCreateVertexLayout( utils::Device const & device )
 		{
 			auto result = ashes::makeLayout< VertexData >( 0u );
 			result->createAttribute( 0u
@@ -185,17 +185,17 @@ namespace vkapp
 			return result;
 		}
 
-		ashes::DescriptorSetLayoutPtr doCreateDescriptorSetLayout( ashes::Device const & device )
+		ashes::DescriptorSetLayoutPtr doCreateDescriptorSetLayout( utils::Device const & device )
 		{
 			ashes::DescriptorSetLayoutBindingArray bindings
 			{
 				{ 0u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex },
 				{ 1u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
 			};
-			return device.createDescriptorSetLayout( std::move( bindings ) );
+			return device->createDescriptorSetLayout( std::move( bindings ) );
 		}
 
-		ashes::RenderPassPtr doCreateRenderPass( ashes::Device const & device
+		ashes::RenderPassPtr doCreateRenderPass( utils::Device const & device
 			, ashes::Format format )
 		{
 			ashes::RenderPassCreateInfo renderPass;
@@ -233,12 +233,12 @@ namespace vkapp
 			renderPass.dependencies[1].dstAccessMask = ashes::AccessFlag::eShaderRead;
 			renderPass.dependencies[1].dependencyFlags = ashes::DependencyFlag::eByRegion;
 
-			return device.createRenderPass( renderPass );
+			return device->createRenderPass( renderPass );
 		}
 	}
 
 	EquirectangularToCube::EquirectangularToCube( std::string const & filePath
-		, ashes::Device const & device
+		, utils::Device const & device
 		, ashes::Queue const & queue
 		, ashes::CommandPool const & commandPool
 		, ashes::Texture & texture )
@@ -255,7 +255,7 @@ namespace vkapp
 		, m_vertexLayout{ doCreateVertexLayout( m_device ) }
 		, m_descriptorLayout{ doCreateDescriptorSetLayout( m_device ) }
 		, m_descriptorPool{ m_descriptorLayout->createPool( 6u ) }
-		, m_pipelineLayout{ m_device.createPipelineLayout( *m_descriptorLayout ) }
+		, m_pipelineLayout{ m_device->createPipelineLayout( *m_descriptorLayout ) }
 		, m_renderPass{ doCreateRenderPass( m_device, texture.getFormat() ) }
 	{
 		auto size = ashes::Extent2D{ texture.getDimensions().width, texture.getDimensions().height };

@@ -34,10 +34,12 @@
 #define strndup(p, n) strdup(p)
 #endif
 
+#include <Core/DebugReportCallback.hpp>
 #include <Core/Device.hpp>
+#include <Core/Exception.hpp>
+#include <Core/Instance.hpp>
 #include <Core/PhysicalDevice.hpp>
 #include <Core/PlatformWindowHandle.hpp>
-#include <Core/Instance.hpp>
 #include <Core/SwapChain.hpp>
 #include <Miscellaneous/FormatProperties.hpp>
 #include <Utils/DynamicLibrary.hpp>
@@ -112,11 +114,31 @@ static bool human_readable_output = true;
 static bool json_output = false;
 static uint32_t selected_gpu = 0;
 
+class RendererPlugin;
+
+struct LayerExtensionList
+{
+	ashes::LayerProperties layer_properties;
+	ashes::ExtensionPropertiesArray extension_properties;
+};
+
 struct AppInstance
 {
+	RendererPlugin const * plugin;
 	ashes::InstancePtr instance;
+	ashes::DebugReportCallbackPtr debug_report;
+	uint32_t instance_version;
+	uint32_t vulkan_major;
+	uint32_t vulkan_minor;
+	uint32_t vulkan_patch;
+	std::vector< LayerExtensionList > global_layers;
+	ashes::ExtensionPropertiesArray global_extensions;
+	ashes::StringArray inst_extensions;
+
 	ashes::SurfacePtr surface;
+	ashes::SurfaceCapabilities surface_capabilities;
 	int width, height;
+
 
 #if ASHES_WIN32
 	HINSTANCE h_instance;  // Windows Instance
@@ -132,6 +154,69 @@ struct AppInstance
 	ANativeWindow *window;
 #endif
 };
+
+struct AppGpu
+{
+	uint32_t id;
+	ashes::PhysicalDevicePtr obj;
+
+	ashes::PhysicalDeviceProperties props;
+
+	ashes::QueueFamilyPropertiesArray queue_props;
+	std::vector< ashes::DeviceQueueCreateInfo > queue_reqs;
+
+	struct AppInstance *inst;
+
+	ashes::PhysicalDeviceMemoryProperties memory_props;
+
+	ashes::PhysicalDeviceFeatures features;
+	ashes::PhysicalDeviceLimits limits;
+
+	ashes::ExtensionPropertiesArray device_extensions;
+};
+
+// return most severe flag only
+static const char *DebugReportFlagString( const ashes::DebugReportFlags flags )
+{
+	if ( checkFlag( flags, ashes::DebugReportFlag::eError ) )
+	{
+		return "ERROR";
+	}
+
+	if ( checkFlag( flags, ashes::DebugReportFlag::eWarning ) )
+	{
+		return "WARNING";
+	}
+
+	if ( checkFlag( flags, ashes::DebugReportFlag::ePerformanceWarning ) )
+	{
+		return "PERF";
+	}
+
+	if ( checkFlag( flags, ashes::DebugReportFlag::eInformation ) )
+	{
+		return "INFO";
+	}
+
+	if ( checkFlag( flags, ashes::DebugReportFlag::eDebug ) )
+	{
+		return "DEBUG";
+	}
+
+	return "UNKNOWN";
+}
+
+static bool ASHES_API DbgCallback( ashes::DebugReportFlags msgFlags, ashes::DebugReportObjectType objType,
+	uint64_t srcObject, size_t location, int32_t msgCode, const char *pLayerPrefix,
+	const char *pMsg, void *pUserData )
+{
+	fprintf( stderr, "%s: [%s] Code %d : %s\n", DebugReportFlagString( msgFlags ), pLayerPrefix, msgCode, pMsg );
+	fflush( stderr );
+
+	// True is reserved for layer developers, and MAY mean calls are not distributed down the layer chain after validation error.
+	// False SHOULD always be returned by apps:
+	return false;
+}
 
 // Ashes specifics
 #if ASHES_WIN32
@@ -469,85 +554,35 @@ bool list_folder_files( std::string const & folderPath
 
 #endif
 
-class RendererFactory
-{
-protected:
-	using Key = std::string;
-	using PtrType = ashes::InstancePtr;
-	using Creator = std::function<ashes::InstancePtr( const ashes::Instance::Configuration & ) >;
-	using ObjPtr = PtrType;
-	using ObjMap = std::map< Key, Creator >;
-
-public:
-	void registerType( Key const & key, Creator creator )
-	{
-		m_registered[key] = creator;
-	}
-
-	void unregisterType( Key const & key )
-	{
-		auto it = m_registered.find( key );
-
-		if ( it != m_registered.end() )
-		{
-			m_registered.erase( key );
-		}
-	}
-
-	bool isTypeRegistered( Key const & key )
-	{
-		return m_registered.find( key ) != m_registered.end();
-	}
-
-	std::vector< Key > listRegisteredTypes()
-	{
-		std::vector< Key > result;
-		result.reserve( m_registered.size() );
-
-		for ( auto const & it : m_registered )
-		{
-			result.push_back( it.first );
-		}
-
-		return result;
-	}
-
-	template< typename ... Parameters >
-	ObjPtr create( Key const & key, Parameters && ... params )const
-	{
-		ObjPtr result;
-		auto it = m_registered.find( key );
-
-		if ( it != m_registered.end() )
-		{
-			result = it->second( std::forward< Parameters >( params )... );
-		}
-		else
-		{
-			static std::string const Error = "Unknown object type";
-			std::cerr << Error << std::endl;
-			throw std::runtime_error{ Error };
-		}
-
-		return result;
-	}
-
-private:
-	ObjMap m_registered;
-};
-
 class RendererPlugin
 {
-	using CreatorFunction = ashes::Instance *( *)( ashes::Instance::Configuration const & );
+	using CreatorFunction = ashes::Result( *)( ashes::InstanceCreateInfo, ashes::Instance ** );
+	using VersionEnumeratorFunction = ashes::Result( *)( uint32_t * );
+	using LayerPropertiesEnumeratorFunction = ashes::Result( *)( uint32_t *, ashes::LayerProperties * );
+	using ExtensionPropertiesEnumeratorFunction = ashes::Result( *)( char const * const, uint32_t *, ashes::ExtensionProperties * );
 	using NamerFunction = char const *( *)( );
 
 public:
-	RendererPlugin( ashes::DynamicLibrary && library
-		, RendererFactory & factory )
+	RendererPlugin( ashes::DynamicLibrary library )
 		: m_library{ std::move( library ) }
 		, m_creator{ nullptr }
 	{
 		if ( !m_library.getFunction( "createInstance", m_creator ) )
+		{
+			throw std::runtime_error{ "[" + get_filename( m_library.getPath() ) + "] is not a renderer plugin" };
+		}
+
+		if ( !m_library.getFunction( "enumerateVersion", m_enumerateVersion ) )
+		{
+			throw std::runtime_error{ "[" + get_filename( m_library.getPath() ) + "] is not a renderer plugin" };
+		}
+
+		if ( !m_library.getFunction( "enumerateLayerProperties", m_enumerateLayerProperties ) )
+		{
+			throw std::runtime_error{ "[" + get_filename( m_library.getPath() ) + "] is not a renderer plugin" };
+		}
+
+		if ( !m_library.getFunction( "enumerateExtensionProperties", m_enumerateExtensionProperties ) )
 		{
 			throw std::runtime_error{ "[" + get_filename( m_library.getPath() ) + "] is not a renderer plugin" };
 		}
@@ -568,27 +603,143 @@ public:
 
 		m_shortName = shortNamer();
 		m_fullName = fullNamer();
-
-		auto creator = m_creator;
-		factory.registerType( m_shortName, [creator]( ashes::Instance::Configuration const & configuration )
-			{
-				return ashes::InstancePtr{ creator( configuration ) };
-			} );
 	}
 
-	ashes::InstancePtr create( ashes::Instance::Configuration const & configuration )
+	uint32_t enumerateVersion()const
 	{
-		return ashes::InstancePtr{ m_creator( configuration ) };
+		uint32_t result;
+		auto res = m_enumerateVersion( &result );
+
+		if ( res != ashes::Result::eSuccess )
+		{
+			throw ashes::Exception{ res, "Version retrieval" };
+		}
+
+		return result;
+	}
+
+	ashes::LayerPropertiesArray enumerateLayerProperties()const
+	{
+		uint32_t count;
+		ashes::LayerPropertiesArray result;
+		ashes::Result res;
+
+		do
+		{
+			res = m_enumerateLayerProperties( &count, nullptr );
+
+			if ( count )
+			{
+				result.resize( count );
+				res = m_enumerateLayerProperties( &count, result.data() );
+			}
+		}
+		while ( res == ashes::Result::eIncomplete );
+
+		if ( res != ashes::Result::eSuccess )
+		{
+			throw ashes::Exception{ res, "Instance layers retrieval" };
+		}
+
+		return result;
+	}
+
+	ashes::ExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const
+	{
+		uint32_t count{};
+		ashes::ExtensionPropertiesArray result;
+		ashes::Result res{};
+
+		do
+		{
+			res = m_enumerateExtensionProperties( layerName.empty() ? nullptr : layerName.c_str()
+				, &count
+				, nullptr );
+
+			if ( count )
+			{
+				result.resize( count );
+				res = m_enumerateExtensionProperties( layerName.empty() ? nullptr : layerName.c_str()
+					, &count
+					, result.data() );
+			}
+		}
+		while ( res == ashes::Result::eIncomplete );
+
+		if ( res != ashes::Result::eSuccess )
+		{
+			throw ashes::Exception{ res, "Instance layer [" + layerName + "] extensions retrieval" };
+		}
+
+		return result;
+	}
+
+	ashes::InstancePtr create( ashes::InstanceCreateInfo createInfo )const
+	{
+		ashes::Instance * result;
+		auto res = m_creator( std::move( createInfo ), &result );
+
+		if ( res != ashes::Result::eSuccess )
+		{
+			throw ashes::Exception{ res, "Instance creation" };
+		}
+
+		return ashes::InstancePtr{ result };
+	}
+
+	inline std::string const & getShortName()const
+	{
+		return m_shortName;
 	}
 
 private:
 	ashes::DynamicLibrary m_library;
 	CreatorFunction m_creator;
+	VersionEnumeratorFunction m_enumerateVersion;
+	LayerPropertiesEnumeratorFunction m_enumerateLayerProperties;
+	ExtensionPropertiesEnumeratorFunction m_enumerateExtensionProperties;
 	std::string m_shortName;
 	std::string m_fullName;
 };
 
-std::vector< RendererPlugin > list_plugins( RendererFactory & factory )
+class InstanceFactory
+{
+protected:
+	using Key = std::string;
+	using PtrType = RendererPlugin const *;
+	using ObjMap = std::map< Key, PtrType >;
+
+public:
+	void registerType( Key const & key, PtrType plugin )
+	{
+		m_registered[key] = plugin;
+	}
+
+	template< typename ... Parameters >
+	PtrType findPlugin( Key const & key )const
+	{
+		PtrType result{ nullptr };
+		auto it = m_registered.find( key );
+
+		if ( it != m_registered.end() )
+		{
+			result = it->second;
+		}
+		else
+		{
+			static std::string const Error = "Unknown object type";
+			std::cerr << Error << std::endl;
+			throw std::runtime_error{ Error };
+		}
+
+		return result;
+	}
+
+private:
+	ObjMap m_registered;
+};
+
+std::vector< RendererPlugin > list_plugins( InstanceFactory & factory )
 {
 	std::vector< std::string > files;
 	std::vector< RendererPlugin > result;
@@ -602,17 +753,25 @@ std::vector< RendererPlugin > list_plugins( RendererFactory & factory )
 				try
 			{
 				ashes::DynamicLibrary lib{ file };
-				result.emplace_back( std::move( lib )
-					, factory );
+				result.emplace_back( std::move( lib ) );
 			}
 			catch ( std::exception & exc )
 			{
 				std::cerr << exc.what() << std::endl;
 			}
 		}
+
+		for ( auto & plugin : result )
+		{
+			factory.registerType( plugin.getShortName(), &plugin );
+		}
 	}
 
 	return result;
+}
+static std::string VkResultString( ashes::Result err )
+{
+	return getName( err );
 }
 
 static std::string VkPhysicalDeviceTypeString( ashes::PhysicalDeviceType type )
@@ -633,17 +792,11 @@ static std::string VkPresentModeString( ashes::PresentMode mode )
 #endif
 
 static bool CheckExtensionEnabled( const char * extension_to_check
-	, const char ** extension_list
-	, uint32_t extension_count )
+	, ashes::StringArray const & extension_list )
 {
-	for ( uint32_t i = 0; i < extension_count; ++i )
-	{
-		if ( !strcmp( extension_to_check, extension_list[i] ) )
-		{
-			return true;
-		}
-	}
-	return false;
+	return extension_list.end() != std::find( extension_list.begin()
+		, extension_list.end()
+		, extension_to_check );
 }
 
 static void ExtractVersion( uint32_t version
@@ -656,11 +809,45 @@ static void ExtractVersion( uint32_t version
 	*patch = version & 0xfff;
 }
 
-static void AppGetPhysicalDeviceLayerExtensions( ashes::PhysicalDevice const & gpu
-	, const char *layer_name
+static void AppGetPhysicalDeviceLayerExtensions( AppGpu * gpu
+	, std::string const & layer_name
 	, std::vector< ashes::ExtensionProperties > & extension_properties )
 {
-	extension_properties = gpu.getExtensionProperties( layer_name );
+	extension_properties = gpu->obj->enumerateExtensionProperties( layer_name );
+}
+
+static void AppGetGlobalLayerExtensions( AppInstance *inst
+	, std::string const & layer_name
+	, ashes::ExtensionPropertiesArray & extension_properties )
+{
+	extension_properties = inst->plugin->enumerateExtensionProperties( layer_name );
+}
+
+/* Gets a list of layer and instance extensions */
+static void AppGetInstanceExtensions( AppInstance * inst )
+{
+	auto global_layer_properties = inst->plugin->enumerateLayerProperties();
+	inst->global_layers.resize( global_layer_properties.size() );
+
+	for ( uint32_t i = 0; i < global_layer_properties.size(); ++i )
+	{
+		ashes::LayerProperties & src_info = global_layer_properties[i];
+		auto & dst_info = inst->global_layers[i];
+		dst_info.layer_properties = src_info;
+
+		// Save away layer extension info for report
+		// Gets layer extensions, if first parameter is not NULL
+		AppGetGlobalLayerExtensions( inst
+			, src_info.layerName
+			, dst_info.extension_properties );
+	}
+
+	// Collect global extensions
+	// Gets instance extensions, if no layer was specified in the first
+	// paramteter
+	AppGetGlobalLayerExtensions( inst
+		, std::string{}
+		, inst->global_extensions );
 }
 
 // Prints opening code for html output file
@@ -669,7 +856,7 @@ void PrintHtmlHeader( FILE *out )
 	fprintf( out, "<!doctype html>\n" );
 	fprintf( out, "<html>\n" );
 	fprintf( out, "\t<head>\n" );
-	fprintf( out, "\t\t<title>Vulkan Info</title>\n" );
+	fprintf( out, "\t\t<title>vulkaninfo</title>\n" );
 	fprintf( out, "\t\t<style type='text/css'>\n" );
 	fprintf( out, "\t\thtml {\n" );
 	fprintf( out, "\t\t\tbackground-color: #0b1e48;\n" );
@@ -751,8 +938,7 @@ void PrintHtmlHeader( FILE *out )
 	fprintf( out, "\t</head>\n" );
 	fprintf( out, "\t<body>\n" );
 	fprintf( out, "\t\t<div id='header'>\n" );
-	fprintf( out, "\t\t\t<img src='C:/Git/VulkanTools/layersvt/images/lunarg.png' />\n" );
-	fprintf( out, "\t\t\t<h1>Vulkan Info</h1>\n" );
+	fprintf( out, "\t\t\t<h1>vulkaninfo</h1>\n" );
 	fprintf( out, "\t\t</div>\n" );
 	fprintf( out, "\t\t<div id='wrapper'>\n" );
 }
@@ -771,26 +957,39 @@ void PrintJsonHeader( const int vulkan_major, const int vulkan_minor, const int 
 	printf( "{\n" );
 	printf( "\t\"$schema\": \"https://schema.khronos.org/vulkan/devsim_1_0_0.json#\",\n" );
 	printf( "\t\"comments\": {\n" );
-	printf( "\t\t\"desc\": \"JSON configuration file describing GPU %u. Generated using the VulkanInfo program.\",\n", selected_gpu );
+	printf( "\t\t\"desc\": \"JSON configuration file describing GPU %u. Generated using the vulkaninfo program.\",\n", selected_gpu );
 	printf( "\t\t\"vulkanApiVersion\": \"%d.%d.%d\"\n", vulkan_major, vulkan_minor, vulkan_patch );
 	printf( "\t}" );
 }
 
 // Checks if current argument specifies json output, interprets/updates gpu selection
-bool CheckForJsonOption( const char * arg )
+bool CheckForJsonOption( const char *arg )
 {
-	bool result = strncmp( "--json", arg, 6 ) == 0 || strcmp( arg, "-j" ) == 0;
-	if ( result )
+	if ( strncmp( "--json", arg, 6 ) == 0 || strcmp( arg, "-j" ) == 0 )
 	{
 		if ( strlen( arg ) > 7 && strncmp( "--json=", arg, 7 ) == 0 )
 		{
 			selected_gpu = strtol( arg + 7, NULL, 10 );
 		}
-
 		human_readable_output = false;
 		json_output = true;
+		return true;
 	}
-	return result;
+	else
+	{
+		return false;
+	}
+}
+
+static void AppCompileInstanceExtensionsToEnable( struct AppInstance *inst )
+{
+// Get all supported Instance extensions (excl. layer-provided ones)
+	inst->inst_extensions.reserve( inst->global_extensions.size() );
+
+	for ( auto & ext : inst->global_extensions )
+	{
+		inst->inst_extensions.push_back( ext.extensionName );
+	}
 }
 
 std::string CheckForInstanceOption( const char * arg )
@@ -801,24 +1000,30 @@ std::string CheckForInstanceOption( const char * arg )
 	return result;
 }
 
+void print_usage( char *argv0 );
 std::string ProcessCommandLine( int argc
 	, char ** argv
 	, FILE ** out )
 {
 	std::string result = "vk";
 
-	for ( int i = 1; i < argc; i++ )
+	// Combinations of output: html only, html AND json, json only, human readable only
+	for ( int i = 1; i < argc; ++i )
 	{
-		if ( strcmp( argv[i], "--html" ) == 0 )
+		if ( !CheckForJsonOption( argv[i] ) )
 		{
-			*out = fopen( "vulkaninfo.html", "w" );
-			human_readable_output = false;
-			html_output = true;
-			continue;
-		}
-		else
-		{
-			if ( !CheckForJsonOption( argv[i] ) )
+			if ( strcmp( argv[i], "--html" ) == 0 )
+			{
+				human_readable_output = false;
+				html_output = true;
+				continue;
+			}
+			else if ( strcmp( argv[i], "--help" ) == 0 || strcmp( argv[i], "-h" ) == 0 )
+			{
+				print_usage( argv[0] );
+				exit( 1 );
+			}
+			else
 			{
 				result = CheckForInstanceOption( argv[i] );
 			}
@@ -826,6 +1031,204 @@ std::string ProcessCommandLine( int argc
 	}
 
 	return result;
+}
+
+static void AppCreateInstance( AppInstance * inst )
+{
+	inst->instance_version = inst->plugin->enumerateVersion();
+
+	inst->vulkan_major = ashes::getMajor( inst->instance_version );
+	inst->vulkan_minor = ashes::getMinor( inst->instance_version );
+	inst->vulkan_patch = ashes::getPatch( ashes::HEADER_VERSION );
+
+	AppGetInstanceExtensions( inst );
+
+	const ashes::DebugReportCallbackCreateInfo dbg_info
+	{
+		ashes::DebugReportFlag::eError | ashes::DebugReportFlag::eWarning,
+		DbgCallback,
+		nullptr,
+	};
+
+	const ashes::ApplicationInfo app_info
+	{
+		APP_SHORT_NAME,
+		1,
+		APP_SHORT_NAME,
+		1,
+		ashes::API_VERSION_1_0,
+	};
+
+	AppCompileInstanceExtensionsToEnable( inst );
+	const ashes::InstanceCreateInfo inst_info
+	{
+		0,
+		app_info,
+		inst->inst_extensions,
+	};
+	inst->instance = inst->plugin->create( inst_info );
+	inst->debug_report = inst->instance->createDebugReportCallback( std::move( dbg_info ) );
+
+	//AppLoadInstanceCommands( inst );
+}
+
+static void AppDestroyInstance( struct AppInstance *inst )
+{
+	inst->surface.reset();
+	inst->debug_report.reset();
+	inst->instance.reset();
+}
+
+static void AppGpuInit( AppGpu * gpu
+	, AppInstance * inst
+	, uint32_t id
+	, ashes::PhysicalDevicePtr obj )
+{
+	uint32_t i;
+
+	gpu->id = id;
+	gpu->obj = std::move( obj );
+	gpu->inst = inst;
+
+	gpu->props = gpu->obj->getProperties();
+
+#if 0
+	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		struct pNextChainBuildingBlockInfo chain_info[] = {
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT,
+			.mem_size = sizeof( VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES_KHR,
+		.mem_size = sizeof( VkPhysicalDevicePointClippingPropertiesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR,
+		.mem_size = sizeof( VkPhysicalDevicePushDescriptorPropertiesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT,
+		.mem_size = sizeof( VkPhysicalDeviceDiscardRectanglePropertiesEXT ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHR,
+		.mem_size = sizeof( VkPhysicalDeviceMultiviewPropertiesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES_KHR,
+		.mem_size = sizeof( VkPhysicalDeviceMaintenance3PropertiesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES_KHR, .mem_size = sizeof( VkPhysicalDeviceIDPropertiesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR,
+		.mem_size = sizeof( VkPhysicalDeviceDriverPropertiesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR,
+		.mem_size = sizeof( VkPhysicalDeviceFloatControlsPropertiesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT,
+		.mem_size = sizeof( VkPhysicalDevicePCIBusInfoPropertiesEXT ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT,
+		.mem_size = sizeof( VkPhysicalDeviceTransformFeedbackPropertiesEXT ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT,
+		.mem_size = sizeof( VkPhysicalDeviceFragmentDensityMapPropertiesEXT ) } };
+
+		uint32_t chain_info_len = ARRAY_SIZE( chain_info );
+
+		gpu->props2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+		buildpNextChain( ( struct VkStructureHeader * )&gpu->props2, chain_info, chain_info_len );
+
+		inst->vkGetPhysicalDeviceProperties2KHR( gpu->obj, &gpu->props2 );
+	}
+#endif
+	/* get queue count */
+	gpu->queue_props = gpu->obj->getQueueFamilyProperties();
+
+#if 0
+	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		gpu->queue_props2 = malloc( sizeof( gpu->queue_props2[0] ) * gpu->queue_count );
+
+		if ( !gpu->queue_props2 )
+		{
+			ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
+		}
+
+		for ( i = 0; i < gpu->queue_count; ++i )
+		{
+			gpu->queue_props2[i].sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2_KHR;
+			gpu->queue_props2[i].pNext = NULL;
+		}
+
+		inst->vkGetPhysicalDeviceQueueFamilyProperties2KHR( gpu->obj, &gpu->queue_count, gpu->queue_props2 );
+	}
+#endif
+
+	/* set up queue requests */
+	gpu->queue_reqs.resize( gpu->queue_props.size() );
+
+	for ( i = 0; i < gpu->queue_props.size(); ++i )
+	{
+		std::vector< float > queue_priorities;
+#if 0
+		if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+			gpu->inst->inst_extensions_count ) )
+		{
+			queue_priorities.resize( gpu->queue_props2[i].queueFamilyProperties.queueCount );
+		}
+		else
+#endif
+		{
+			queue_priorities.resize( gpu->queue_props[i].queueCount );
+		}
+
+		gpu->queue_reqs[i].flags = 0;
+		gpu->queue_reqs[i].queueFamilyIndex = i;
+		gpu->queue_reqs[i].queuePriorities = queue_priorities;
+	}
+
+	gpu->memory_props = gpu->obj->getMemoryProperties();
+	gpu->features = gpu->obj->getFeatures();
+
+#if 0
+	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		gpu->memory_props2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2_KHR;
+		gpu->memory_props2.pNext = NULL;
+
+		inst->vkGetPhysicalDeviceMemoryProperties2KHR( gpu->obj, &gpu->memory_props2 );
+
+		struct pNextChainBuildingBlockInfo chain_info[] = {
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR,
+			.mem_size = sizeof( VkPhysicalDevice8BitStorageFeaturesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES_KHR,
+		.mem_size = sizeof( VkPhysicalDevice16BitStorageFeaturesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES_KHR,
+		.mem_size = sizeof( VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR,
+		.mem_size = sizeof( VkPhysicalDeviceVariablePointerFeaturesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT,
+		.mem_size = sizeof( VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR,
+		.mem_size = sizeof( VkPhysicalDeviceMultiviewFeaturesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT16_INT8_FEATURES_KHR,
+		.mem_size = sizeof( VkPhysicalDeviceFloat16Int8FeaturesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR,
+		.mem_size = sizeof( VkPhysicalDeviceShaderAtomicInt64FeaturesKHR ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT,
+		.mem_size = sizeof( VkPhysicalDeviceTransformFeedbackFeaturesEXT ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT,
+		.mem_size = sizeof( VkPhysicalDeviceScalarBlockLayoutFeaturesEXT ) },
+		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT,
+		.mem_size = sizeof( VkPhysicalDeviceFragmentDensityMapFeaturesEXT ) } };
+
+		uint32_t chain_info_len = ARRAY_SIZE( chain_info );
+
+		gpu->features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+		buildpNextChain( ( struct VkStructureHeader * )&gpu->features2, chain_info, chain_info_len );
+
+		inst->vkGetPhysicalDeviceFeatures2KHR( gpu->obj, &gpu->features2 );
+	}
+#endif
+
+	AppGetPhysicalDeviceLayerExtensions( gpu
+		, std::string{}
+		, gpu->device_extensions );
+}
+
+static void AppGpuDestroy( AppGpu *gpu )
+{
+	gpu->obj.reset();
 }
 
 // clang-format off
@@ -894,9 +1297,10 @@ static void AppCreateWin32Window( AppInstance *inst )
 	}
 }
 
-static void AppCreateWin32Surface( AppInstance *inst )
+static void AppCreateWin32Surface( AppInstance *inst
+	, ashes::PhysicalDevice const & gpu )
 {
-	inst->surface = inst->instance->createSurface( inst->instance->getPhysicalDevice( 0u )
+	inst->surface = inst->instance->createSurface( gpu
 		, ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( inst->h_instance, inst->h_wnd ) } );
 }
 
@@ -1024,16 +1428,45 @@ static void AppDestroyXlibWindow( AppInstance *inst )
 #if ASHES_XCB     || \
     ASHES_XLIB    || \
     ASHES_WIN32
-static int AppDumpSurfaceFormats( ashes::Surface const & surface
+static int AppDumpSurfaceFormats( AppInstance * inst
+	, AppGpu const * gpu
 	, FILE *out )
 {
-	auto surfaceFormats = surface.getFormats();
-	auto format_count = int( surfaceFormats.size() );
+	// Get the list of VkFormat's that are supported
+	std::vector< ashes::SurfaceFormat > surf_formats;
+#if 0
+	VkSurfaceFormat2KHR *surf_formats2 = NULL;
+
+	const VkPhysicalDeviceSurfaceInfo2KHR surface_info2 = { .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR,
+		.surface = inst->surface };
+
+	if ( CheckExtensionEnabled( VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		err = inst->vkGetPhysicalDeviceSurfaceFormats2KHR( gpu->obj, &surface_info2, &format_count, NULL );
+		if ( err ) ERR_EXIT( err );
+		surf_formats2 = ( VkSurfaceFormat2KHR * )malloc( format_count * sizeof( VkSurfaceFormat2KHR ) );
+		if ( !surf_formats2 ) ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
+		for ( uint32_t i = 0; i < format_count; ++i )
+		{
+			surf_formats2[i].sType = VK_STRUCTURE_TYPE_SURFACE_FORMAT_2_KHR;
+			surf_formats2[i].pNext = NULL;
+		}
+		err = inst->vkGetPhysicalDeviceSurfaceFormats2KHR( gpu->obj, &surface_info2, &format_count, surf_formats2 );
+		if ( err ) ERR_EXIT( err );
+	}
+	else
+#endif
+	{
+		surf_formats = inst->surface->getFormats();
+	}
+
+	auto format_count = uint32_t( surf_formats.size() );
 
 	if ( html_output )
 	{
-		fprintf( out, "\t\t\t\t<details><summary>Formats: count = <div class='val'>%d</div></summary>", format_count );
-		if ( !surfaceFormats.empty() )
+		fprintf( out, "\t\t\t\t\t<details><summary>Formats: count = <div class='val'>%d</div></summary>", format_count );
+		if ( format_count > 0 )
 		{
 			fprintf( out, "\n" );
 		}
@@ -1046,21 +1479,42 @@ static int AppDumpSurfaceFormats( ashes::Surface const & surface
 	{
 		printf( "Formats:\t\tcount = %d\n", format_count );
 	}
-	for ( auto & surfaceFormat : surfaceFormats )
+	for ( uint32_t i = 0; i < format_count; ++i )
 	{
 		if ( html_output )
 		{
-			fprintf( out, "\t\t\t\t\t<details><summary><div class='type'>%s</div></summary></details>\n",
-				VkFormatString( surfaceFormat.format ).c_str() );
+#if 0
+			if ( CheckExtensionEnabled( VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+				gpu->inst->inst_extensions_count ) )
+			{
+				fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>%s</div></summary></details>\n",
+					VkFormatString( surf_formats2[i].surfaceFormat.format ).c_str() );
+			}
+			else
+#endif
+			{
+				fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>%s</div></summary></details>\n",
+					VkFormatString( surf_formats[i].format ).c_str() );
+			}
 		}
 		else if ( human_readable_output )
 		{
-			printf( "\t%s\n", VkFormatString( surfaceFormat.format ).c_str() );
+#if 0
+			if ( CheckExtensionEnabled( VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+				gpu->inst->inst_extensions_count ) )
+			{
+				printf( "\t%s\n", VkFormatString( surf_formats2[i].surfaceFormat.format ).c_str() );
+			}
+			else
+#endif
+			{
+				printf( "\t%s\n", VkFormatString( surf_formats[i].format ).c_str() );
+			}
 		}
 	}
-	if ( !surfaceFormats.empty() && html_output )
+	if ( format_count > 0 && html_output )
 	{
-		fprintf( out, "\t\t\t\t</details>\n" );
+		fprintf( out, "\t\t\t\t\t</details>\n" );
 	}
 
 	fflush( out );
@@ -1069,15 +1523,17 @@ static int AppDumpSurfaceFormats( ashes::Surface const & surface
 	return format_count;
 }
 
-static int AppDumpSurfacePresentModes( ashes::Surface const & surface
+static int AppDumpSurfacePresentModes( AppInstance * inst
+	, AppGpu const * gpu
 	, FILE *out )
 {
-	auto present_modes = surface.getPresentModes();
-	uint32_t present_mode_count = uint32_t( present_modes.size() );
+	// Get the list of VkPresentMode's that are supported:
+	auto surf_present_modes = inst->surface->getPresentModes();
+	uint32_t present_mode_count = uint32_t( surf_present_modes.size() );
 
 	if ( html_output )
 	{
-		fprintf( out, "\t\t\t\t<details><summary>Present Modes: count = <div class='val'>%d</div></summary>", present_mode_count );
+		fprintf( out, "\t\t\t\t\t<details><summary>Present Modes: count = <div class='val'>%d</div></summary>", present_mode_count );
 		if ( present_mode_count > 0 )
 		{
 			fprintf( out, "\n" );
@@ -1091,21 +1547,21 @@ static int AppDumpSurfacePresentModes( ashes::Surface const & surface
 	{
 		printf( "Present Modes:\t\tcount = %d\n", present_mode_count );
 	}
-	for ( auto & presentMode : present_modes )
+	for ( uint32_t i = 0; i < present_mode_count; ++i )
 	{
 		if ( html_output )
 		{
-			fprintf( out, "\t\t\t\t\t<details><summary><div class='type'>%s</div></summary></details>\n",
-				VkPresentModeString( presentMode ).c_str() );
+			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>%s</div></summary></details>\n",
+				VkPresentModeString( surf_present_modes[i] ).c_str() );
 		}
 		else if ( human_readable_output )
 		{
-			printf( "\t%s\n", VkPresentModeString( presentMode ).c_str() );
+			printf( "\t%s\n", VkPresentModeString( surf_present_modes[i] ).c_str() );
 		}
 	}
 	if ( present_mode_count > 0 && html_output )
 	{
-		fprintf( out, "\t\t\t\t</details>\n" );
+		fprintf( out, "\t\t\t\t\t</details>\n" );
 	}
 
 	fflush( out );
@@ -1114,506 +1570,660 @@ static int AppDumpSurfacePresentModes( ashes::Surface const & surface
 	return present_mode_count;
 }
 
-static void AppDumpSurfaceCapabilities( ashes::Surface const & surface
+static void AppDumpSurfaceCapabilities( AppInstance *inst
+	, AppGpu const *gpu
 	, FILE *out )
 {
-	auto & surface_capabilities = surface.getCapabilities();
-
-	if ( html_output )
-	{
-		fprintf( out, "\t\t\t\t<details><summary>VkSurfaceCapabilitiesKHR</summary>\n" );
-		fprintf( out, "\t\t\t\t\t<details><summary>minImageCount = <div class='val'>%u</div></summary></details>\n", surface_capabilities.minImageCount );
-		fprintf( out, "\t\t\t\t\t<details><summary>maxImageCount = <div class='val'>%u</div></summary></details>\n", surface_capabilities.maxImageCount );
-		fprintf( out, "\t\t\t\t\t<details><summary>currentExtent</summary>\n" );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>width = <div class='val'>%u</div></summary></details>\n", surface_capabilities.currentExtent.width );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>height = <div class='val'>%u</div></summary></details>\n", surface_capabilities.currentExtent.height );
-		fprintf( out, "\t\t\t\t\t</details>\n" );
-		fprintf( out, "\t\t\t\t\t<details><summary>minImageExtent</summary>\n" );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>width = <div class='val'>%u</div></summary></details>\n", surface_capabilities.minImageExtent.width );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>height = <div class='val'>%u</div></summary></details>\n", surface_capabilities.minImageExtent.height );
-		fprintf( out, "\t\t\t\t\t</details>\n" );
-		fprintf( out, "\t\t\t\t\t<details><summary>maxImageExtent</summary>\n" );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>width = <div class='val'>%u</div></summary></details>\n", surface_capabilities.maxImageExtent.width );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>height = <div class='val'>%u</div></summary></details>\n", surface_capabilities.maxImageExtent.height );
-		fprintf( out, "\t\t\t\t\t</details>\n" );
-		fprintf( out, "\t\t\t\t\t<details><summary>maxImageArrayLayers = <div class='val'>%u</div></summary></details>\n", surface_capabilities.maxImageArrayLayers );
-		fprintf( out, "\t\t\t\t\t<details><summary>supportedTransform</summary>\n" );
-		if ( surface_capabilities.supportedTransforms == 0 )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eIdentity ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eRotate90 ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eRotate180 ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eRotate270 ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eHorizontalMirror ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eHorizontalMirrorRotate90 ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eHorizontalMirrorRotate180 ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eHorizontalMirrorRotate270 ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eInherit ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR</div></summary></details>\n" );
-		}
-		fprintf( out, "\t\t\t\t\t</details>\n" );
-		fprintf( out, "\t\t\t\t\t<details><summary>currentTransform</summary>\n" );
-		if ( surface_capabilities.currentTransform == ashes::SurfaceTransformFlag( 0 ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eIdentity ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eRotate90 ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eRotate180 ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eRotate270 ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eHorizontalMirror ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eHorizontalMirrorRotate90 ) )
-		{
-			fprintf( out, "\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eHorizontalMirrorRotate180 ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eHorizontalMirrorRotate270 ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eInherit ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR</div></summary></details>\n" );
-		}
-		fprintf( out, "\t\t\t\t\t</details>\n" );
-		fprintf( out, "\t\t\t\t\t<details><summary>supportedCompositeAlpha</summary>\n" );
-		if ( surface_capabilities.supportedCompositeAlpha == 0 )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedCompositeAlpha, ashes::CompositeAlphaFlag::eOpaque ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedCompositeAlpha, ashes::CompositeAlphaFlag::ePreMultiplied ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedCompositeAlpha, ashes::CompositeAlphaFlag::ePostMultiplied ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedCompositeAlpha, ashes::CompositeAlphaFlag::eInherit ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR</div></summary></details>\n" );
-		}
-		fprintf( out, "\t\t\t\t\t</details>\n" );
-		fprintf( out, "\t\t\t\t\t<details><summary>supportedUsageFlags</summary>\n" );
-		if ( surface_capabilities.supportedUsageFlags == 0 )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eTransferSrc ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_TRANSFER_SRC_BIT</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eTransferDst ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_TRANSFER_DST_BIT</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eSampled ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_SAMPLED_BIT</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eStorage ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_STORAGE_BIT</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eColourAttachment ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eDepthStencilAttachment ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eTransientAttachment ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT</div></summary></details>\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eInputAttachment ) )
-		{
-			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT</div></summary></details>\n" );
-		}
-		fprintf( out, "\t\t\t\t\t</details>\n" );
-	}
-	else if ( human_readable_output )
-	{
-		printf( "\nVkSurfaceCapabilitiesKHR:\n" );
-		printf( "=========================\n" );
-		printf( "\tminImageCount       = %u\n", surface_capabilities.minImageCount );
-		printf( "\tmaxImageCount       = %u\n", surface_capabilities.maxImageCount );
-		printf( "\tcurrentExtent:\n" );
-		printf( "\t\twidth       = %u\n", surface_capabilities.currentExtent.width );
-		printf( "\t\theight      = %u\n", surface_capabilities.currentExtent.height );
-		printf( "\tminImageExtent:\n" );
-		printf( "\t\twidth       = %u\n", surface_capabilities.minImageExtent.width );
-		printf( "\t\theight      = %u\n", surface_capabilities.minImageExtent.height );
-		printf( "\tmaxImageExtent:\n" );
-		printf( "\t\twidth       = %u\n", surface_capabilities.maxImageExtent.width );
-		printf( "\t\theight      = %u\n", surface_capabilities.maxImageExtent.height );
-		printf( "\tmaxImageArrayLayers = %u\n", surface_capabilities.maxImageArrayLayers );
-		printf( "\tsupportedTransform:\n" );
-		if ( surface_capabilities.supportedTransforms == 0 )
-		{
-			printf( "\t\tNone\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eIdentity ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eRotate90 ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eRotate180 ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eRotate270 ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eHorizontalMirror ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eHorizontalMirrorRotate90 ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eHorizontalMirrorRotate180 ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eHorizontalMirrorRotate270 ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedTransforms, ashes::SurfaceTransformFlag::eInherit ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_INHERIT_BIT_KHR\n" );
-		}
-		printf( "\tcurrentTransform:\n" );
-		if ( surface_capabilities.currentTransform == ashes::SurfaceTransformFlag( 0 ) )
-		{
-			printf( "\t\tNone\n" );
-		}
-		if ( ( surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eIdentity ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR\n" );
-		}
-		if ( ( surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate90 ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR\n" );
-		}
-		if ( ( surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate180 ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR\n" );
-		}
-		if ( ( surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate270 ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR\n" );
-		}
-		if ( ( surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirror ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR\n" );
-		}
-		if ( ( surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate90 ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR\n" );
-		}
-		if ( ( surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate180 ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR\n" );
-		}
-		if ( ( surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate270 ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR\n" );
-		}
-		if ( ( surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eInherit ) )
-		{
-			printf( "\t\tVK_SURFACE_TRANSFORM_INHERIT_BIT_KHR\n" );
-		}
-		printf( "\tsupportedCompositeAlpha:\n" );
-		if ( surface_capabilities.supportedCompositeAlpha == 0 )
-		{
-			printf( "\t\tNone\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedCompositeAlpha, ashes::CompositeAlphaFlag::eOpaque ) )
-		{
-			printf( "\t\tVK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedCompositeAlpha, ashes::CompositeAlphaFlag::ePreMultiplied ) )
-		{
-			printf( "\t\tVK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedCompositeAlpha, ashes::CompositeAlphaFlag::ePostMultiplied ) )
-		{
-			printf( "\t\tVK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedCompositeAlpha, ashes::CompositeAlphaFlag::eInherit ) )
-		{
-			printf( "\t\tVK_COMPOSITE_ALPHA_INHERIT_BIT_KHR\n" );
-		}
-		printf( "\tsupportedUsageFlags:\n" );
-		if ( surface_capabilities.supportedUsageFlags == 0 )
-		{
-			printf( "\t\tNone\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eTransferSrc ) )
-		{
-			printf( "\t\tVK_IMAGE_USAGE_TRANSFER_SRC_BIT\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eTransferDst ) )
-		{
-			printf( "\t\tVK_IMAGE_USAGE_TRANSFER_DST_BIT\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eSampled ) )
-		{
-			printf( "\t\tVK_IMAGE_USAGE_SAMPLED_BIT\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eStorage ) )
-		{
-			printf( "\t\tVK_IMAGE_USAGE_STORAGE_BIT\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eColourAttachment ) )
-		{
-			printf( "\t\tVK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eDepthStencilAttachment ) )
-		{
-			printf( "\t\tVK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eTransientAttachment ) )
-		{
-			printf( "\t\tVK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT\n" );
-		}
-		if ( checkFlag( surface_capabilities.supportedUsageFlags, ashes::ImageUsageFlag::eInputAttachment ) )
-		{
-			printf( "\t\tVK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT\n" );
-		}
-	}
 #if 0
-	// Get additional surface capability information from vkGetPhysicalDeviceSurfaceCapabilities2EXT
-	if ( CheckExtensionEnabled( VK_EXT_DISPLAY_SURFACE_COUNTER_EXTENSION_NAME, gpu->inst->inst_extensions, gpu->inst->inst_extensions_count ) )
+	if ( CheckExtensionEnabled( VK_KHR_SURFACE_EXTENSION_NAME, gpu->inst->inst_extensions, gpu->inst->inst_extensions_count ) )
 	{
-		memset( &inst->surface_capabilities2_ext, 0, sizeof( VkSurfaceCapabilities2EXT ) );
-		inst->surface_capabilities2_ext.sType = VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_EXT;
-		inst->surface_capabilities2_ext.pNext = NULL;
-
-		inst->vkGetPhysicalDeviceSurfaceCapabilities2EXT( gpu->obj, inst->surface, &inst->surface_capabilities2_ext );
+#endif
+		inst->surface_capabilities = inst->surface->getCapabilities();
 
 		if ( html_output )
 		{
-			fprintf( out, "\t\t\t\t\t<details><summary>VkSurfaceCapabilities2EXT</summary>\n" );
-			fprintf( out, "\t\t\t\t\t\t<details><summary>supportedSurfaceCounters</summary>\n" );
-			if ( inst->surface_capabilities2_ext.supportedSurfaceCounters == 0 )
+			fprintf( out, "\t\t\t\t\t<details><summary>VkSurfaceCapabilitiesKHR</summary>\n" );
+			fprintf( out, "\t\t\t\t\t\t<details><summary>minImageCount = <div class='val'>%u</div></summary></details>\n",
+				inst->surface_capabilities.minImageCount );
+			fprintf( out, "\t\t\t\t\t\t<details><summary>maxImageCount = <div class='val'>%u</div></summary></details>\n",
+				inst->surface_capabilities.maxImageCount );
+			fprintf( out, "\t\t\t\t\t\t<details><summary>currentExtent</summary>\n" );
+			fprintf( out, "\t\t\t\t\t\t\t<details><summary>width = <div class='val'>%u</div></summary></details>\n",
+				inst->surface_capabilities.currentExtent.width );
+			fprintf( out, "\t\t\t\t\t\t\t<details><summary>height = <div class='val'>%u</div></summary></details>\n",
+				inst->surface_capabilities.currentExtent.height );
+			fprintf( out, "\t\t\t\t\t\t</details>\n" );
+			fprintf( out, "\t\t\t\t\t\t<details><summary>minImageExtent</summary>\n" );
+			fprintf( out, "\t\t\t\t\t\t\t<details><summary>width = <div class='val'>%u</div></summary></details>\n",
+				inst->surface_capabilities.minImageExtent.width );
+			fprintf( out, "\t\t\t\t\t\t\t<details><summary>height = <div class='val'>%u</div></summary></details>\n",
+				inst->surface_capabilities.minImageExtent.height );
+			fprintf( out, "\t\t\t\t\t\t</details>\n" );
+			fprintf( out, "\t\t\t\t\t\t<details><summary>maxImageExtent</summary>\n" );
+			fprintf( out, "\t\t\t\t\t\t\t<details><summary>width = <div class='val'>%u</div></summary></details>\n",
+				inst->surface_capabilities.maxImageExtent.width );
+			fprintf( out, "\t\t\t\t\t\t\t<details><summary>height = <div class='val'>%u</div></summary></details>\n",
+				inst->surface_capabilities.maxImageExtent.height );
+			fprintf( out, "\t\t\t\t\t\t</details>\n" );
+			fprintf( out, "\t\t\t\t\t\t<details><summary>maxImageArrayLayers = <div class='val'>%u</div></summary></details>\n",
+				inst->surface_capabilities.maxImageArrayLayers );
+			fprintf( out, "\t\t\t\t\t\t<details><summary>supportedTransform</summary>\n" );
+			if ( inst->surface_capabilities.supportedTransforms == ashes::SurfaceTransformFlag::eNone )
 			{
 				fprintf( out, "\t\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
 			}
-			if ( inst->surface_capabilities2_ext.supportedSurfaceCounters & VK_SURFACE_COUNTER_VBLANK_EXT )
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eIdentity )
 			{
-				fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_SURFACE_COUNTER_VBLANK_EXT</div></summary></details>\n" );
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eRotate90 )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eRotate180 )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eRotate270 )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirror )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirrorRotate90 )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirrorRotate180 )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirrorRotate270 )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eInherit )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR</div></summary></details>\n" );
 			}
 			fprintf( out, "\t\t\t\t\t\t</details>\n" );
-			fprintf( out, "\t\t\t\t\t</details>\n" );
+			fprintf( out, "\t\t\t\t\t\t<details><summary>currentTransform</summary>\n" );
+			if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eNone )
+			{
+				fprintf( out, "\t\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eIdentity )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR</div></summary></details>\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate90 )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR</div></summary></details>\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate180 )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR</div></summary></details>\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate270 )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR</div></summary></details>\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirror )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR</div></summary></details>\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate90 )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR</div></summary></details>\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate180 )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR</div></summary></details>\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate270 )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR</div></summary></details>\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eInherit )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR</div></summary></details>\n" );
+			}
+			fprintf( out, "\t\t\t\t\t\t</details>\n" );
+			fprintf( out, "\t\t\t\t\t\t<details><summary>supportedCompositeAlpha</summary>\n" );
+			if ( inst->surface_capabilities.supportedCompositeAlpha == ashes::CompositeAlphaFlag::eNone )
+			{
+				fprintf( out, "\t\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::eOpaque )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::ePreMultiplied )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::ePostMultiplied )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::eInherit )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR</div></summary></details>\n" );
+			}
+			fprintf( out, "\t\t\t\t\t\t</details>\n" );
+			fprintf( out, "\t\t\t\t\t\t<details><summary>supportedUsageFlags</summary>\n" );
+			if ( inst->surface_capabilities.supportedUsageFlags == ashes::ImageUsageFlag::eNone )
+			{
+				fprintf( out, "\t\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eTransferSrc )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_IMAGE_USAGE_TRANSFER_SRC_BIT</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eTransferDst )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_IMAGE_USAGE_TRANSFER_DST_BIT</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eSampled )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_SAMPLED_BIT</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eStorage )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_STORAGE_BIT</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eColourAttachment )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eDepthStencilAttachment )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eTransientAttachment )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT</div></summary></details>\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eInputAttachment )
+			{
+				fprintf( out,
+					"\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT</div></summary></details>\n" );
+			}
+			fprintf( out, "\t\t\t\t\t\t</details>\n" );
 		}
 		else if ( human_readable_output )
 		{
-			printf( "\nVkSurfaceCapabilities2EXT:\n" );
-			printf( "==========================\n\n" );
-			printf( "\tsupportedSurfaceCounters:\n" );
-			if ( inst->surface_capabilities2_ext.supportedSurfaceCounters == 0 )
+			printf( "VkSurfaceCapabilitiesKHR:\n" );
+			printf( "\tminImageCount       = %u\n", inst->surface_capabilities.minImageCount );
+			printf( "\tmaxImageCount       = %u\n", inst->surface_capabilities.maxImageCount );
+			printf( "\tcurrentExtent:\n" );
+			printf( "\t\twidth       = %u\n", inst->surface_capabilities.currentExtent.width );
+			printf( "\t\theight      = %u\n", inst->surface_capabilities.currentExtent.height );
+			printf( "\tminImageExtent:\n" );
+			printf( "\t\twidth       = %u\n", inst->surface_capabilities.minImageExtent.width );
+			printf( "\t\theight      = %u\n", inst->surface_capabilities.minImageExtent.height );
+			printf( "\tmaxImageExtent:\n" );
+			printf( "\t\twidth       = %u\n", inst->surface_capabilities.maxImageExtent.width );
+			printf( "\t\theight      = %u\n", inst->surface_capabilities.maxImageExtent.height );
+			printf( "\tmaxImageArrayLayers = %u\n", inst->surface_capabilities.maxImageArrayLayers );
+			printf( "\tsupportedTransform:\n" );
+			if ( inst->surface_capabilities.supportedTransforms == 0 )
 			{
 				printf( "\t\tNone\n" );
 			}
-			if ( inst->surface_capabilities2_ext.supportedSurfaceCounters & VK_SURFACE_COUNTER_VBLANK_EXT )
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eIdentity )
 			{
-				printf( "\t\tVK_SURFACE_COUNTER_VBLANK_EXT\n" );
+				printf( "\t\tVK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eRotate90 )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eRotate180 )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eRotate270 )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirror )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirrorRotate90 )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirrorRotate180 )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirrorRotate270 )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR\n" );
+			}
+			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eInherit )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_INHERIT_BIT_KHR\n" );
+			}
+			printf( "\tcurrentTransform:\n" );
+			if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eNone )
+			{
+				printf( "\t\tNone\n" );
+			}
+			if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eIdentity )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate90 )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate180 )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate270 )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirror )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate90 )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate180 )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate270 )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR\n" );
+			}
+			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eInherit )
+			{
+				printf( "\t\tVK_SURFACE_TRANSFORM_INHERIT_BIT_KHR\n" );
+			}
+			printf( "\tsupportedCompositeAlpha:\n" );
+			if ( inst->surface_capabilities.supportedCompositeAlpha == 0 )
+			{
+				printf( "\t\tNone\n" );
+			}
+			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::eOpaque )
+			{
+				printf( "\t\tVK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR\n" );
+			}
+			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::ePreMultiplied )
+			{
+				printf( "\t\tVK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR\n" );
+			}
+			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::ePostMultiplied )
+			{
+				printf( "\t\tVK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR\n" );
+			}
+			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::eInherit )
+			{
+				printf( "\t\tVK_COMPOSITE_ALPHA_INHERIT_BIT_KHR\n" );
+			}
+			printf( "\tsupportedUsageFlags:\n" );
+			if ( inst->surface_capabilities.supportedUsageFlags == 0 )
+			{
+				printf( "\t\tNone\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eTransferSrc )
+			{
+				printf( "\t\tVK_IMAGE_USAGE_TRANSFER_SRC_BIT\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eTransferDst )
+			{
+				printf( "\t\tVK_IMAGE_USAGE_TRANSFER_DST_BIT\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eSampled )
+			{
+				printf( "\t\tVK_IMAGE_USAGE_SAMPLED_BIT\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eStorage )
+			{
+				printf( "\t\tVK_IMAGE_USAGE_STORAGE_BIT\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eColourAttachment )
+			{
+				printf( "\t\tVK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eDepthStencilAttachment )
+			{
+				printf( "\t\tVK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eTransientAttachment )
+			{
+				printf( "\t\tVK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT\n" );
+			}
+			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eInputAttachment )
+			{
+				printf( "\t\tVK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT\n" );
 			}
 		}
-	}
-
-	// Get additional surface capability information from vkGetPhysicalDeviceSurfaceCapabilities2KHR
-	if ( CheckExtensionEnabled( VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME, gpu->inst->inst_extensions, gpu->inst->inst_extensions_count ) )
-	{
-		if ( CheckExtensionEnabled( VK_KHR_SHARED_PRESENTABLE_IMAGE_EXTENSION_NAME, gpu->inst->inst_extensions, gpu->inst->inst_extensions_count ) )
+#if 0
+		// Get additional surface capability information from vkGetPhysicalDeviceSurfaceCapabilities2EXT
+		if ( CheckExtensionEnabled( VK_EXT_DISPLAY_SURFACE_COUNTER_EXTENSION_NAME, gpu->inst->inst_extensions,
+			gpu->inst->inst_extensions_count ) )
 		{
-			inst->shared_surface_capabilities.sType = VK_STRUCTURE_TYPE_SHARED_PRESENT_SURFACE_CAPABILITIES_KHR;
-			inst->shared_surface_capabilities.pNext = NULL;
-			inst->surface_capabilities2.pNext = &inst->shared_surface_capabilities;
-		}
-		else
-		{
-			inst->surface_capabilities2.pNext = NULL;
-		}
+			memset( &inst->surface_capabilities2_ext, 0, sizeof( VkSurfaceCapabilities2EXT ) );
+			inst->surface_capabilities2_ext.sType = VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_EXT;
+			inst->surface_capabilities2_ext.pNext = NULL;
 
-		inst->surface_capabilities2.sType = VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_KHR;
+			err = inst->vkGetPhysicalDeviceSurfaceCapabilities2EXT( gpu->obj, inst->surface, &inst->surface_capabilities2_ext );
+			if ( err ) ERR_EXIT( err );
 
-		VkPhysicalDeviceSurfaceInfo2KHR surface_info;
-		surface_info.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR;
-		surface_info.pNext = NULL;
-		surface_info.surface = inst->surface;
-
-		inst->vkGetPhysicalDeviceSurfaceCapabilities2KHR( gpu->obj, &surface_info, &inst->surface_capabilities2 );
-
-		void *place = inst->surface_capabilities2.pNext;
-		while ( place )
-		{
-			struct VkStructureHeader* work = ( struct VkStructureHeader* ) place;
-			if ( work->sType == VK_STRUCTURE_TYPE_SHARED_PRESENT_SURFACE_CAPABILITIES_KHR )
+			if ( html_output )
 			{
-				VkSharedPresentSurfaceCapabilitiesKHR* shared_surface_capabilities = ( VkSharedPresentSurfaceCapabilitiesKHR* )place;
-				if ( html_output )
+				fprintf( out, "\t\t\t\t\t\t<details><summary>VkSurfaceCapabilities2EXT</summary>\n" );
+				fprintf( out, "\t\t\t\t\t\t\t<details><summary>supportedSurfaceCounters</summary>\n" );
+				if ( inst->surface_capabilities2_ext.supportedSurfaceCounters == 0 )
 				{
-					fprintf( out, "\t\t\t\t\t<details><summary>VkSharedPresentSurfaceCapabilitiesKHR</summary>\n" );
-					fprintf( out, "\t\t\t\t\t\t<details><summary>sharedPresentSupportedUsageFlags</summary>\n" );
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags == 0 )
-					{
-						fprintf( out, "\t\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT )
-					{
-						fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_TRANSFER_SRC_BIT</div></summary></details>\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT )
-					{
-						fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_TRANSFER_DST_BIT</div></summary></details>\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_SAMPLED_BIT )
-					{
-						fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_SAMPLED_BIT</div></summary></details>\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_STORAGE_BIT )
-					{
-						fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_STORAGE_BIT</div></summary></details>\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT )
-					{
-						fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT</div></summary></details>\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT )
-					{
-						fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT</div></summary></details>\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT )
-					{
-						fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT</div></summary></details>\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT )
-					{
-						fprintf( out, "\t\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT</div></summary></details>\n" );
-					}
-					fprintf( out, "\t\t\t\t\t\t</details>\n" );
-					fprintf( out, "\t\t\t\t\t</details>\n" );
+					fprintf( out, "\t\t\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
 				}
-				else if ( human_readable_output )
+				if ( inst->surface_capabilities2_ext.supportedSurfaceCounters & VK_SURFACE_COUNTER_VBLANK_EXT )
 				{
-					printf( "\nVkSharedPresentSurfaceCapabilitiesKHR:\n" );
-					printf( "========================================\n" );
-					printf( "\tsharedPresentSupportedUsageFlags:\n" );
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags == 0 )
-					{
-						printf( "\t\tNone\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT )
-					{
-						printf( "\t\tVK_IMAGE_USAGE_TRANSFER_SRC_BIT\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT )
-					{
-						printf( "\t\tVK_IMAGE_USAGE_TRANSFER_DST_BIT\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_SAMPLED_BIT )
-					{
-						printf( "\t\tVK_IMAGE_USAGE_SAMPLED_BIT\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_STORAGE_BIT )
-					{
-						printf( "\t\tVK_IMAGE_USAGE_STORAGE_BIT\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT )
-					{
-						printf( "\t\tVK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT )
-					{
-						printf( "\t\tVK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT )
-					{
-						printf( "\t\tVK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT\n" );
-					}
-					if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT )
-					{
-						printf( "\t\tVK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT\n" );
-					}
+					fprintf( out,
+						"\t\t\t\t\t\t\t\t<details><summary><div "
+						"class='type'>VK_SURFACE_COUNTER_VBLANK_EXT</div></summary></details>\n" );
+				}
+				fprintf( out, "\t\t\t\t\t\t\t</details>\n" );
+				fprintf( out, "\t\t\t\t\t\t</details>\n" );
+			}
+			else if ( human_readable_output )
+			{
+				printf( "VkSurfaceCapabilities2EXT:\n" );
+				printf( "\tsupportedSurfaceCounters:\n" );
+				if ( inst->surface_capabilities2_ext.supportedSurfaceCounters == 0 )
+				{
+					printf( "\t\tNone\n" );
+				}
+				if ( inst->surface_capabilities2_ext.supportedSurfaceCounters & VK_SURFACE_COUNTER_VBLANK_EXT )
+				{
+					printf( "\t\tVK_SURFACE_COUNTER_VBLANK_EXT\n" );
 				}
 			}
-			place = work->pNext;
 		}
+#endif
+#if 0
+		// Get additional surface capability information from vkGetPhysicalDeviceSurfaceCapabilities2KHR
+		if ( CheckExtensionEnabled( VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+			gpu->inst->inst_extensions_count ) )
+		{
+			if ( CheckExtensionEnabled( VK_KHR_SHARED_PRESENTABLE_IMAGE_EXTENSION_NAME, gpu->inst->inst_extensions,
+				gpu->inst->inst_extensions_count ) )
+			{
+				inst->shared_surface_capabilities.sType = VK_STRUCTURE_TYPE_SHARED_PRESENT_SURFACE_CAPABILITIES_KHR;
+				inst->shared_surface_capabilities.pNext = NULL;
+				inst->surface_capabilities2.pNext = &inst->shared_surface_capabilities;
+			}
+			else
+			{
+				inst->surface_capabilities2.pNext = NULL;
+			}
+
+			inst->surface_capabilities2.sType = VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_KHR;
+
+			VkPhysicalDeviceSurfaceInfo2KHR surface_info;
+			surface_info.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR;
+			surface_info.pNext = NULL;
+			surface_info.surface = inst->surface;
+
+			err = inst->vkGetPhysicalDeviceSurfaceCapabilities2KHR( gpu->obj, &surface_info, &inst->surface_capabilities2 );
+			if ( err ) ERR_EXIT( err );
+
+			void *place = inst->surface_capabilities2.pNext;
+			while ( place )
+			{
+				struct VkStructureHeader *work = ( struct VkStructureHeader * )place;
+				if ( work->sType == VK_STRUCTURE_TYPE_SHARED_PRESENT_SURFACE_CAPABILITIES_KHR )
+				{
+					VkSharedPresentSurfaceCapabilitiesKHR *shared_surface_capabilities =
+						( VkSharedPresentSurfaceCapabilitiesKHR * )place;
+					if ( html_output )
+					{
+						fprintf( out, "\t\t\t\t\t\t<details><summary>VkSharedPresentSurfaceCapabilitiesKHR</summary>\n" );
+						fprintf( out, "\t\t\t\t\t\t\t<details><summary>sharedPresentSupportedUsageFlags</summary>\n" );
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags == 0 )
+						{
+							fprintf( out, "\t\t\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT )
+						{
+							fprintf( out,
+								"\t\t\t\t\t\t\t\t<details><summary><div "
+								"class='type'>VK_IMAGE_USAGE_TRANSFER_SRC_BIT</div></summary></details>\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT )
+						{
+							fprintf( out,
+								"\t\t\t\t\t\t\t\t<details><summary><div "
+								"class='type'>VK_IMAGE_USAGE_TRANSFER_DST_BIT</div></summary></details>\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_SAMPLED_BIT )
+						{
+							fprintf( out,
+								"\t\t\t\t\t\t\t\t<details><summary><div "
+								"class='type'>VK_IMAGE_USAGE_SAMPLED_BIT</div></summary></details>\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_STORAGE_BIT )
+						{
+							fprintf( out,
+								"\t\t\t\t\t\t\t\t<details><summary><div "
+								"class='type'>VK_IMAGE_USAGE_STORAGE_BIT</div></summary></details>\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT )
+						{
+							fprintf( out,
+								"\t\t\t\t\t\t\t\t<details><summary><div "
+								"class='type'>VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT</div></summary></details>\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags &
+							VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT )
+						{
+							fprintf( out,
+								"\t\t\t\t\t\t\t\t<details><summary><div "
+								"class='type'>VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT</div></summary></details>\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags &
+							VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT )
+						{
+							fprintf( out,
+								"\t\t\t\t\t\t\t\t<details><summary><div "
+								"class='type'>VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT</div></summary></details>\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT )
+						{
+							fprintf( out,
+								"\t\t\t\t\t\t\t\t<details><summary><div "
+								"class='type'>VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT</div></summary></details>\n" );
+						}
+						fprintf( out, "\t\t\t\t\t\t\t</details>\n" );
+						fprintf( out, "\t\t\t\t\t\t</details>\n" );
+					}
+					else if ( human_readable_output )
+					{
+						printf( "VkSharedPresentSurfaceCapabilitiesKHR:\n" );
+						printf( "\tsharedPresentSupportedUsageFlags:\n" );
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags == 0 )
+						{
+							printf( "\t\tNone\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT )
+						{
+							printf( "\t\tVK_IMAGE_USAGE_TRANSFER_SRC_BIT\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT )
+						{
+							printf( "\t\tVK_IMAGE_USAGE_TRANSFER_DST_BIT\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_SAMPLED_BIT )
+						{
+							printf( "\t\tVK_IMAGE_USAGE_SAMPLED_BIT\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_STORAGE_BIT )
+						{
+							printf( "\t\tVK_IMAGE_USAGE_STORAGE_BIT\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT )
+						{
+							printf( "\t\tVK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags &
+							VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT )
+						{
+							printf( "\t\tVK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags &
+							VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT )
+						{
+							printf( "\t\tVK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT\n" );
+						}
+						if ( shared_surface_capabilities->sharedPresentSupportedUsageFlags & VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT )
+						{
+							printf( "\t\tVK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT\n" );
+						}
+					}
+				}
+				place = work->pNext;
+			}
+		}
+#endif
+		if ( html_output )
+		{
+			fprintf( out, "\t\t\t\t\t</details>\n" );
+		}
+#if 0
 	}
 #endif
-	if ( html_output )
+}
+
+struct SurfaceExtensionInfo
+{
+	const char *name;
+	void( *create_window )( struct AppInstance * );
+	void( *create_surface )( struct AppInstance *, ashes::PhysicalDevice const & );
+	void( *destroy_window )( struct AppInstance * );
+};
+
+static void AppDumpSurfaceExtension( AppInstance * inst
+	, std::vector< AppGpu > const & gpus
+	, SurfaceExtensionInfo * surface_extension
+	, int * format_count
+	, int * present_mode_count
+	, FILE * out )
+{
+	if ( !CheckExtensionEnabled( surface_extension->name, inst->inst_extensions ) )
 	{
-		fprintf( out, "\t\t\t\t</details>\n" );
+		return;
 	}
+
+	auto gpu_count = uint32_t( gpus.size() );
+	surface_extension->create_window( inst );
+	for ( uint32_t i = 0; i < gpu_count; ++i )
+	{
+		surface_extension->create_surface( inst, *gpus[i].obj );
+		if ( html_output )
+		{
+			fprintf( out, "\t\t\t\t<details><summary>GPU id : <div class='val'>%u</div> (%s)</summary>\n", i,
+				gpus[i].props.deviceName.c_str() );
+			fprintf( out, "\t\t\t\t\t<details><summary>Surface type : <div class='type'>%s</div></summary></details>\n",
+				surface_extension->name );
+		}
+		else if ( human_readable_output )
+		{
+			printf( "GPU id       : %u (%s)\n", i, gpus[i].props.deviceName.c_str() );
+			printf( "Surface type : %s\n", surface_extension->name );
+		}
+		*format_count += AppDumpSurfaceFormats( inst, &gpus[i], out );
+		*present_mode_count += AppDumpSurfacePresentModes( inst, &gpus[i], out );
+		AppDumpSurfaceCapabilities( inst, &gpus[i], out );
+		AppDestroySurface( inst );
+		if ( html_output )
+		{
+			fprintf( out, "\t\t\t\t</details>\n" );
+		}
+		else if ( human_readable_output )
+		{
+			printf( "\n" );
+		}
+	}
+	surface_extension->destroy_window( inst );
 }
 
 #endif
 
-static void AppDevDumpFormatProps( ashes::PhysicalDevice const & gpu
+static void AppDevDumpFormatProps( const AppGpu * gpu
 	, ashes::Format fmt
 	, bool * first_in_list
 	, FILE *out )
 {
-	auto & props = gpu.getFormatProperties( fmt );
+	auto & props = gpu->obj->getFormatProperties( fmt );
 	struct
 	{
 		const char *name;
@@ -1723,7 +2333,224 @@ static void AppDevDumpFormatProps( ashes::PhysicalDevice const & gpu
 	}
 }
 
-static void AppDevDump( ashes::PhysicalDevice const & gpu
+/* This structure encodes all the format ranges to be queried.
+ * It ensures that a format is not queried if the instance
+ * doesn't support it (either through the instance version or
+ * through extensions).
+ */
+static struct FormatRange
+{
+// the Vulkan standard version that supports this format range, or 0 if non-standard
+	uint32_t minimum_instance_version;
+
+	// The name of the extension that supports this format range, or NULL if the range
+	// is only part of the standard
+	std::string const extension_name;
+
+	// The first and last supported formats within this range.
+	ashes::Format first_format;
+	ashes::Format last_format;
+} supported_format_ranges[] = {
+	{
+		// Standard formats in Vulkan 1.0
+		ashes::makeVersion( 1, 0, 0 ),
+		std::string{},
+		ashes::Format::eRange_BEGIN,
+		ashes::Format::eRange_END,
+	},
+#if 0
+	{
+		// YCBCR extension, standard in Vulkan 1.1
+		ashes::makeVersion( 1, 1, 0 ),
+		ashes::KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME,
+		VK_FORMAT_G8B8G8R8_422_UNORM,
+		VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM,
+	},
+	{
+		// PVRTC extension, not standardized
+		0,
+		ashes::IMG_FORMAT_PVRTC_EXTENSION_NAME,
+		VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG,
+		VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG,
+	},
+#endif
+};
+
+// Helper function to determine whether a format range is currently supported.
+bool FormatRangeSupported( const struct FormatRange *format_range, const struct AppGpu *gpu )
+{
+// True if standard and supported by both this instance and this GPU
+	if ( format_range->minimum_instance_version > 0
+		&& gpu->inst->instance_version >= format_range->minimum_instance_version
+		&& gpu->props.apiVersion >= format_range->minimum_instance_version )
+	{
+		return true;
+	}
+
+	// True if this extension is present
+	if ( !format_range->extension_name.empty() )
+	{
+		return CheckExtensionEnabled( format_range->extension_name.c_str()
+			, gpu->inst->inst_extensions );
+	}
+
+	// Otherwise, not supported.
+	return false;
+}
+
+bool FormatPropsEq( const ashes::FormatProperties *props1
+	, const ashes::FormatProperties *props2 )
+{
+	if ( props1->bufferFeatures == props2->bufferFeatures
+		&& props1->linearTilingFeatures == props2->linearTilingFeatures
+		&& props1->optimalTilingFeatures == props2->optimalTilingFeatures )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+struct PropFormats
+{
+	ashes::FormatProperties props;
+	std::vector< ashes::Format > formats;
+};
+
+void FormatPropsShortenedDump( const AppGpu *gpu )
+{
+	std::vector< PropFormats > prop_map;
+	prop_map.push_back( { { 0 }, {} } );
+
+	for ( uint32_t ri = 0; ri < ARRAY_SIZE( supported_format_ranges ); ++ri )
+	{
+		struct FormatRange format_range = supported_format_ranges[ri];
+		if ( FormatRangeSupported( &format_range, gpu ) )
+		{
+			for ( uint32_t fmt = uint32_t( format_range.first_format );
+				fmt <= uint32_t( format_range.last_format );
+				++fmt )
+			{
+				ashes::FormatProperties props = gpu->obj->getFormatProperties( ashes::Format( fmt ) );
+
+				uint32_t formats_prop_i = 0;
+				for ( ; formats_prop_i < prop_map.size(); ++formats_prop_i )
+				{
+					if ( FormatPropsEq( &prop_map[formats_prop_i].props, &props ) )
+					{
+						break;
+					}
+				}
+
+				if ( formats_prop_i < prop_map.size() )
+				{
+					PropFormats & propFormats = prop_map[formats_prop_i];
+					propFormats.formats.push_back( ashes::Format( fmt ) );
+				}
+				else
+				{
+					assert( formats_prop_i == prop_map.size() );
+					prop_map.push_back( { props, { 1u, ashes::Format( fmt ) } } );
+				}
+			}
+		}
+	}
+
+	for ( auto & propFormats : prop_map )
+	{
+		uint32_t fi = 0u;
+		for ( auto & fmt : propFormats.formats )
+		{
+			printf( "\nFORMAT_%s", VkFormatString( fmt ).c_str() );
+
+			if ( fi < propFormats.formats.size() - 1 )
+				printf( "," );
+			else
+				printf( ":" );
+			fi;
+		}
+
+		struct
+		{
+			const char *name;
+			uint32_t flags;
+		} features[3];
+
+		features[0].name = "linearTiling   FormatFeatureFlags";
+		features[0].flags = propFormats.props.linearTilingFeatures;
+		features[1].name = "optimalTiling  FormatFeatureFlags";
+		features[1].flags = propFormats.props.optimalTilingFeatures;
+		features[2].name = "bufferFeatures FormatFeatureFlags";
+		features[2].flags = propFormats.props.bufferFeatures;
+
+		for ( uint32_t i = 0; i < ARRAY_SIZE( features ); ++i )
+		{
+			printf( "\n\t%s:", features[i].name );
+			if ( features[i].flags == 0 )
+			{
+				printf( "\n\t\tNone" );
+			}
+			else
+			{
+				printf(
+					"%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
+					( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eSampledImage ) ? "\n\t\tVK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT"
+						: "" ),  // 0x0001
+						( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eStorageImage ) ? "\n\t\tVK_FORMAT_FEATURE_STORAGE_IMAGE_BIT"
+							: "" ),  // 0x0002
+							( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eStorageImageAtomic )
+								? "\n\t\tVK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT"
+								: "" ),  // 0x0004
+								( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eUniformTexelBuffer )
+									? "\n\t\tVK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT"
+									: "" ),  // 0x0008
+									( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eStorageTexelBuffer )
+										? "\n\t\tVK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT"
+										: "" ),  // 0x0010
+										( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eStorageTexelBufferAtomic )
+											? "\n\t\tVK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT"
+											: "" ),  // 0x0020
+											( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eVertexBuffer ) ? "\n\t\tVK_FORMAT_FEATURE_VERTEX_BUFFER_BIT"
+												: "" ),  // 0x0040
+												( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eColourAttachment ) ? "\n\t\tVK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT"
+													: "" ),  // 0x0080
+													( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eColourAttachmentBlend )
+														? "\n\t\tVK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT"
+														: "" ),  // 0x0100
+														( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eDepthStencilAttachment )
+															? "\n\t\tVK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT"
+															: "" ),                                                                                            // 0x0200
+															( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eBlitSrc ) ? "\n\t\tVK_FORMAT_FEATURE_BLIT_SRC_BIT" : "" ),  // 0x0400
+					( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eBlitDst ) ? "\n\t\tVK_FORMAT_FEATURE_BLIT_DST_BIT" : "" ),  // 0x0800
+					( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eSampledImageFilterLinear )
+						? "\n\t\tVK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT"
+						: "" ),  // 0x1000
+						( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eSampledImageFilterCubic )
+							? "\n\t\tVK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG"
+							: "" ),  // 0x2000
+							( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eTransferSrc ) ? "\n\t\tVK_FORMAT_FEATURE_TRANSFER_SRC_BIT_KHR"
+								: "" ),  // 0x4000
+								( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eTransferDst ) ? "\n\t\tVK_FORMAT_FEATURE_TRANSFER_DST_BIT_KHR"
+									: "" ) );  // 0x8000
+			}
+
+			printf( "\n" );
+		}
+	}
+
+	printf( "\nUnsupported formats:" );
+	if ( prop_map[0].formats.empty() ) printf( "\nNone" );
+	for ( uint32_t fi = 0; fi < prop_map[0].formats.size(); ++fi )
+	{
+		const ashes::Format fmt = prop_map[0].formats[fi];
+
+		printf( "\nFORMAT_%s", VkFormatString( fmt ).c_str() );
+	}
+}
+
+static void AppDevDump( const AppGpu * gpu
 	, FILE *out )
 {
 	if ( html_output )
@@ -1741,11 +2568,28 @@ static void AppDevDump( ashes::PhysicalDevice const & gpu
 		printf( "\t\"ArrayOfVkFormatProperties\": [" );
 	}
 
-	bool first_in_list = true;   // Used for commas in json output
-	for ( uint32_t fmt = 0; fmt < uint32_t( ashes::Format::eRange ); ++fmt )
+	if ( human_readable_output )
 	{
-		AppDevDumpFormatProps( gpu, ashes::Format( fmt ), &first_in_list, out );
+		FormatPropsShortenedDump( gpu );
 	}
+	else
+	{
+		bool first_in_list = true;  // Used for commas in json output
+		for ( uint32_t i = 0; i < ARRAY_SIZE( supported_format_ranges ); ++i )
+		{
+			struct FormatRange format_range = supported_format_ranges[i];
+			if ( FormatRangeSupported( &format_range, gpu ) )
+			{
+				for ( uint32_t fmt = uint32_t( format_range.first_format );
+					fmt <= uint32_t( format_range.last_format );
+					++fmt )
+				{
+					AppDevDumpFormatProps( gpu, ashes::Format( fmt ), &first_in_list, out );
+				}
+			}
+		}
+	}
+
 	if ( html_output )
 	{
 		fprintf( out, "\t\t\t\t\t</details>\n" );
@@ -1945,6 +2789,326 @@ static void AppGpuDumpFeatures( ashes::PhysicalDeviceFeatures const & features, 
 		printf( "\t\t\"wideLines\": %u\n", features.wideLines );
 		printf( "\t}" );
 	}
+#if 0
+	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		void *place = gpu->features2.pNext;
+		while ( place )
+		{
+			struct VkStructureHeader *structure = ( struct VkStructureHeader * )place;
+			if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR &&
+				CheckPhysicalDeviceExtensionIncluded( VK_KHR_8BIT_STORAGE_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDevice8BitStorageFeaturesKHR *b8_store_features = ( VkPhysicalDevice8BitStorageFeaturesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDevice8BitStorageFeatures</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>storageBuffer8BitAccess           = <div "
+						"class='val'>%u</div></summary></details>\n",
+						b8_store_features->storageBuffer8BitAccess );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>uniformAndStorageBuffer8BitAccess = <div "
+						"class='val'>%u</div></summary></details>\n",
+						b8_store_features->uniformAndStorageBuffer8BitAccess );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>storagePushConstant8              = <div "
+						"class='val'>%u</div></summary></details>\n",
+						b8_store_features->storagePushConstant8 );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDevice8BitStorageFeatures:\n" );
+					printf( "=====================================\n" );
+					printf( "\tstorageBuffer8BitAccess           = %u\n", b8_store_features->storageBuffer8BitAccess );
+					printf( "\tuniformAndStorageBuffer8BitAccess = %u\n", b8_store_features->uniformAndStorageBuffer8BitAccess );
+					printf( "\tstoragePushConstant8              = %u\n", b8_store_features->storagePushConstant8 );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES_KHR &&
+				CheckPhysicalDeviceExtensionIncluded( VK_KHR_16BIT_STORAGE_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDevice16BitStorageFeaturesKHR *b16_store_features = ( VkPhysicalDevice16BitStorageFeaturesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDevice16BitStorageFeatures</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>storageBuffer16BitAccess           = <div "
+						"class='val'>%u</div></summary></details>\n",
+						b16_store_features->storageBuffer16BitAccess );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>uniformAndStorageBuffer16BitAccess = <div "
+						"class='val'>%u</div></summary></details>\n",
+						b16_store_features->uniformAndStorageBuffer16BitAccess );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>storagePushConstant16              = <div "
+						"class='val'>%u</div></summary></details>\n",
+						b16_store_features->storagePushConstant16 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>storageInputOutput16               = <div "
+						"class='val'>%u</div></summary></details>\n",
+						b16_store_features->storageInputOutput16 );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDevice16BitStorageFeatures:\n" );
+					printf( "=====================================\n" );
+					printf( "\tstorageBuffer16BitAccess           = %u\n", b16_store_features->storageBuffer16BitAccess );
+					printf( "\tuniformAndStorageBuffer16BitAccess = %u\n", b16_store_features->uniformAndStorageBuffer16BitAccess );
+					printf( "\tstoragePushConstant16              = %u\n", b16_store_features->storagePushConstant16 );
+					printf( "\tstorageInputOutput16               = %u\n", b16_store_features->storageInputOutput16 );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES_KHR &&
+				CheckPhysicalDeviceExtensionIncluded( VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR *sampler_ycbcr_features =
+					( VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceSamplerYcbcrConversionFeatures</summary>\n" );
+					fprintf(
+						out,
+						"\t\t\t\t\t\t<details><summary>samplerYcbcrConversion = <div class='val'>%u</div></summary></details>\n",
+						sampler_ycbcr_features->samplerYcbcrConversion );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceSamplerYcbcrConversionFeatures:\n" );
+					printf( "===============================================\n" );
+					printf( "\tsamplerYcbcrConversion = %u\n", sampler_ycbcr_features->samplerYcbcrConversion );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR &&
+				CheckPhysicalDeviceExtensionIncluded( VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceVariablePointerFeaturesKHR *var_pointer_features =
+					( VkPhysicalDeviceVariablePointerFeaturesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceVariablePointerFeatures</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>variablePointersStorageBuffer = <div "
+						"class='val'>%u</div></summary></details>\n",
+						var_pointer_features->variablePointersStorageBuffer );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>variablePointers              = <div "
+						"class='val'>%u</div></summary></details>\n",
+						var_pointer_features->variablePointers );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceVariablePointerFeatures:\n" );
+					printf( "========================================\n" );
+					printf( "\tvariablePointersStorageBuffer = %u\n", var_pointer_features->variablePointersStorageBuffer );
+					printf( "\tvariablePointers              = %u\n", var_pointer_features->variablePointers );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT &&
+				CheckPhysicalDeviceExtensionIncluded( VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT *blend_op_adv_features =
+					( VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceBlendOperationAdvancedFeatures</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>advancedBlendCoherentOperations = <div "
+						"class='val'>%u</div></summary></details>\n",
+						blend_op_adv_features->advancedBlendCoherentOperations );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceBlendOperationAdvancedFeatures:\n" );
+					printf( "===============================================\n" );
+					printf( "\tadvancedBlendCoherentOperations = %u\n", blend_op_adv_features->advancedBlendCoherentOperations );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR &&
+				CheckPhysicalDeviceExtensionIncluded( VK_KHR_MULTIVIEW_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceMultiviewFeaturesKHR *multiview_features = ( VkPhysicalDeviceMultiviewFeaturesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceMultiviewFeatures</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>multiview                   = <div "
+						"class='val'>%u</div></summary></details>\n",
+						multiview_features->multiview );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>multiviewGeometryShader     = <div "
+						"class='val'>%u</div></summary></details>\n",
+						multiview_features->multiviewGeometryShader );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>multiviewTessellationShader = <div "
+						"class='val'>%u</div></summary></details>\n",
+						multiview_features->multiviewTessellationShader );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceMultiviewFeatures:\n" );
+					printf( "==================================\n" );
+					printf( "\tmultiview                   = %u\n", multiview_features->multiview );
+					printf( "\tmultiviewGeometryShader     = %u\n", multiview_features->multiviewGeometryShader );
+					printf( "\tmultiviewTessellationShader = %u\n", multiview_features->multiviewTessellationShader );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT16_INT8_FEATURES_KHR &&
+				CheckPhysicalDeviceExtensionIncluded( VK_KHR_SHADER_FLOAT16_INT8_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceFloat16Int8FeaturesKHR *float_int_features = ( VkPhysicalDeviceFloat16Int8FeaturesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\n\t\t\t\t\t<details><summary>VkPhysicalDeviceFloat16Int8Features</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderFloat16 = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_int_features->shaderFloat16 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderInt8    = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_int_features->shaderInt8 );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceFloat16Int8Features:\n" );
+					printf( "====================================\n" );
+					printf( "\tshaderFloat16 = %" PRIuLEAST32 "\n", float_int_features->shaderFloat16 );
+					printf( "\tshaderInt8    = %" PRIuLEAST32 "\n", float_int_features->shaderInt8 );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR &&
+				CheckPhysicalDeviceExtensionIncluded( VK_KHR_SHADER_ATOMIC_INT64_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceShaderAtomicInt64FeaturesKHR *shader_atomic_int64_features =
+					( VkPhysicalDeviceShaderAtomicInt64FeaturesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\n\t\t\t\t\t<details><summary>VkPhysicalDeviceShaderAtomicInt64Features</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderBufferInt64Atomics = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						shader_atomic_int64_features->shaderBufferInt64Atomics );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderSharedInt64Atomics = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						shader_atomic_int64_features->shaderSharedInt64Atomics );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceShaderAtomicInt64Features:\n" );
+					printf( "==========================================\n" );
+					printf( "\tshaderBufferInt64Atomics = %" PRIuLEAST32 "\n",
+						shader_atomic_int64_features->shaderBufferInt64Atomics );
+					printf( "\tshaderSharedInt64Atomics = %" PRIuLEAST32 "\n",
+						shader_atomic_int64_features->shaderSharedInt64Atomics );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT &&
+				CheckPhysicalDeviceExtensionIncluded( VK_EXT_TRANSFORM_FEEDBACK_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceTransformFeedbackFeaturesEXT *transform_feedback_features =
+					( VkPhysicalDeviceTransformFeedbackFeaturesEXT * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\n\t\t\t\t\t<details><summary>VkPhysicalDeviceTransformFeedbackFeatures</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>transformFeedback = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						transform_feedback_features->transformFeedback );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>geometryStreams   = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						transform_feedback_features->geometryStreams );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceTransformFeedbackFeatures:\n" );
+					printf( "==========================================\n" );
+					printf( "\ttransformFeedback = %" PRIuLEAST32 "\n", transform_feedback_features->transformFeedback );
+					printf( "\tgeometryStreams   = %" PRIuLEAST32 "\n", transform_feedback_features->geometryStreams );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT &&
+				CheckPhysicalDeviceExtensionIncluded( VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceScalarBlockLayoutFeaturesEXT *scalar_block_layout_features =
+					( VkPhysicalDeviceScalarBlockLayoutFeaturesEXT * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\n\t\t\t\t\t<details><summary>VkPhysicalDeviceScalarBlockLayoutFeatures</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>scalarBlockLayout = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						scalar_block_layout_features->scalarBlockLayout );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceScalarBlockLayoutFeatures:\n" );
+					printf( "==========================================\n" );
+					printf( "\tscalarBlockLayout = %" PRIuLEAST32 "\n", scalar_block_layout_features->scalarBlockLayout );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT &&
+				CheckPhysicalDeviceExtensionIncluded( VK_EXT_FRAGMENT_DENSITY_MAP_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceFragmentDensityMapFeaturesEXT *fragment_density_map_features =
+					( VkPhysicalDeviceFragmentDensityMapFeaturesEXT * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\n\t\t\t\t\t<details><summary>VkPhysicalDeviceFragmentDensityMapFeatures</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>fragmentDensityMap                    = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						fragment_density_map_features->fragmentDensityMap );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>fragmentDensityMapDynamic             = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						fragment_density_map_features->fragmentDensityMapDynamic );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>fragmentDensityMapNonSubsampledImages = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						fragment_density_map_features->fragmentDensityMapNonSubsampledImages );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceFragmentDensityMapFeatures:\n" );
+					printf( "==========================================\n" );
+					printf( "\tfragmentDensityMap                    = %" PRIuLEAST32 "\n",
+						fragment_density_map_features->fragmentDensityMap );
+					printf( "\tfragmentDensityMapDynamic             = %" PRIuLEAST32 "\n",
+						fragment_density_map_features->fragmentDensityMapDynamic );
+					printf( "\tfragmentDensityMapNonSubsampledImages = %" PRIuLEAST32 "\n",
+						fragment_density_map_features->fragmentDensityMapNonSubsampledImages );
+				}
+			}
+			place = structure->pNext;
+		}
+	}
+#endif
 }
 
 static void AppDumpSparseProps( const ashes::PhysicalDeviceSparseProperties & sparse_props, FILE *out )
@@ -2356,9 +3520,23 @@ static void AppDumpLimits( const ashes::PhysicalDeviceLimits & limits, FILE *out
 	}
 }
 
-static void AppGpuDumpProps( ashes::PhysicalDevice const & gpu, FILE *out )
+static void AppGpuDumpProps( const AppGpu * gpu
+	, FILE *out )
 {
-	auto & props = gpu.getProperties();
+	ashes::PhysicalDeviceProperties props;
+#if 0
+	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		const VkPhysicalDeviceProperties *props2_const = &gpu->props2.properties;
+		props = *props2_const;
+	}
+	else
+#endif
+	{
+		props = gpu->obj->getProperties();
+	}
+
 	const uint32_t apiVersion = props.apiVersion;
 	uint32_t major;
 	uint32_t minor;
@@ -2392,18 +3570,11 @@ static void AppGpuDumpProps( ashes::PhysicalDevice const & gpu, FILE *out )
 		printf( ",\n" );
 		printf( "\t\"VkPhysicalDeviceProperties\": {\n" );
 		printf( "\t\t\"apiVersion\": %u,\n", apiVersion );
+		printf( "\t\t\"driverVersion\": %u,\n", props.driverVersion );
+		printf( "\t\t\"vendorID\": %u,\n", props.vendorID );
 		printf( "\t\t\"deviceID\": %u,\n", props.deviceID );
-		printf( "\t\t\"deviceName\": \"%s\",\n", props.deviceName.c_str() );
 		printf( "\t\t\"deviceType\": %u,\n", props.deviceType );
-		printf( "\t\t\"driverVersion\": %u", props.driverVersion );
-	}
-
-	AppDumpLimits( props.limits, out );
-
-	// Dump pipeline cache UUIDs to json
-	if ( json_output )
-	{
-		printf( ",\n" );
+		printf( "\t\t\"deviceName\": \"%s\",\n", props.deviceName.c_str() );
 		printf( "\t\t\"pipelineCacheUUID\": [" );
 		for ( uint32_t i = 0; i < ashes::UuidSize; ++i )
 		{
@@ -2418,22 +3589,651 @@ static void AppGpuDumpProps( ashes::PhysicalDevice const & gpu, FILE *out )
 		printf( "\t\t]" );
 	}
 
-	AppDumpSparseProps( props.sparseProperties, out );
+#if 0
+	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		AppDumpLimits( gpu->props2.properties.limits, out );
+	}
+	else
+#endif
+	{
+		AppDumpLimits( gpu->props.limits, out );
+	}
+
+#if 0
+	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		AppDumpSparseProps( &gpu->props2.properties.sparseProperties, out );
+	}
+	else
+#endif
+	{
+		AppDumpSparseProps( gpu->props.sparseProperties, out );
+	}
 
 	if ( json_output )
 	{
-		printf( ",\n" );
-		printf( "\t\t\"vendorID\": %u\n", props.vendorID );
-		printf( "\t}" );
+		printf( "\n\t}" );
 	}
+#if 0
 
+	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		void *place = gpu->props2.pNext;
+		while ( place )
+		{
+			struct VkStructureHeader *structure = ( struct VkStructureHeader * )place;
+			if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT &&
+				CheckPhysicalDeviceExtensionIncluded( VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT *blend_op_adv_props =
+					( VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceBlendOperationAdvancedProperties</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>advancedBlendMaxColorAttachments                = <div "
+						"class='val'>%u</div></summary></details>\n",
+						blend_op_adv_props->advancedBlendMaxColorAttachments );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>advancedBlendIndependentBlend                   = <div "
+						"class='val'>%u</div></summary></details>\n",
+						blend_op_adv_props->advancedBlendIndependentBlend );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>advancedBlendNonPremultipliedSrcColor           = <div "
+						"class='val'>%u</div></summary></details>\n",
+						blend_op_adv_props->advancedBlendNonPremultipliedSrcColor );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>advancedBlendNonPremultipliedDstColor           = <div "
+						"class='val'>%u</div></summary></details>\n",
+						blend_op_adv_props->advancedBlendNonPremultipliedDstColor );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>advancedBlendCorrelatedOverlap                  = <div "
+						"class='val'>%u</div></summary></details>\n",
+						blend_op_adv_props->advancedBlendCorrelatedOverlap );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>advancedBlendAllOperations                      = <div "
+						"class='val'>%u</div></summary></details>\n",
+						blend_op_adv_props->advancedBlendAllOperations );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceBlendOperationAdvancedProperties:\n" );
+					printf( "=================================================\n" );
+					printf( "\tadvancedBlendMaxColorAttachments               = %u\n",
+						blend_op_adv_props->advancedBlendMaxColorAttachments );
+					printf( "\tadvancedBlendIndependentBlend                  = %u\n",
+						blend_op_adv_props->advancedBlendIndependentBlend );
+					printf( "\tadvancedBlendNonPremultipliedSrcColor          = %u\n",
+						blend_op_adv_props->advancedBlendNonPremultipliedSrcColor );
+					printf( "\tadvancedBlendNonPremultipliedDstColor          = %u\n",
+						blend_op_adv_props->advancedBlendNonPremultipliedDstColor );
+					printf( "\tadvancedBlendCorrelatedOverlap                 = %u\n",
+						blend_op_adv_props->advancedBlendCorrelatedOverlap );
+					printf( "\tadvancedBlendAllOperations                     = %u\n",
+						blend_op_adv_props->advancedBlendAllOperations );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES_KHR &&
+				CheckPhysicalDeviceExtensionIncluded( VK_KHR_MAINTENANCE2_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDevicePointClippingPropertiesKHR *pt_clip_props = ( VkPhysicalDevicePointClippingPropertiesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDevicePointClippingProperties</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>pointClippingBehavior               = <div "
+						"class='val'>%u</div></summary></details>\n",
+						pt_clip_props->pointClippingBehavior );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDevicePointClippingProperties:\n" );
+					printf( "========================================\n" );
+					printf( "\tpointClippingBehavior               = %u\n", pt_clip_props->pointClippingBehavior );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR &&
+				CheckPhysicalDeviceExtensionIncluded( VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDevicePushDescriptorPropertiesKHR *push_desc_props =
+					( VkPhysicalDevicePushDescriptorPropertiesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDevicePushDescriptorProperties</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>maxPushDescriptors                = <div "
+						"class='val'>%u</div></summary></details>\n",
+						push_desc_props->maxPushDescriptors );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDevicePushDescriptorProperties:\n" );
+					printf( "=========================================\n" );
+					printf( "\tmaxPushDescriptors               = %u\n", push_desc_props->maxPushDescriptors );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT &&
+				CheckPhysicalDeviceExtensionIncluded( VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceDiscardRectanglePropertiesEXT *discard_rect_props =
+					( VkPhysicalDeviceDiscardRectanglePropertiesEXT * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceDiscardRectangleProperties</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>maxDiscardRectangles               = <div "
+						"class='val'>%u</div></summary></details>\n",
+						discard_rect_props->maxDiscardRectangles );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceDiscardRectangleProperties:\n" );
+					printf( "===========================================\n" );
+					printf( "\tmaxDiscardRectangles               = %u\n", discard_rect_props->maxDiscardRectangles );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHR &&
+				CheckPhysicalDeviceExtensionIncluded( VK_KHR_MULTIVIEW_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceMultiviewPropertiesKHR *multiview_props = ( VkPhysicalDeviceMultiviewPropertiesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceMultiviewProperties</summary>\n" );
+					fprintf(
+						out,
+						"\t\t\t\t\t\t<details><summary>maxMultiviewViewCount     = <div class='val'>%u</div></summary></details>\n",
+						multiview_props->maxMultiviewViewCount );
+					fprintf(
+						out,
+						"\t\t\t\t\t\t<details><summary>maxMultiviewInstanceIndex = <div class='val'>%u</div></summary></details>\n",
+						multiview_props->maxMultiviewInstanceIndex );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceMultiviewProperties:\n" );
+					printf( "====================================\n" );
+					printf( "\tmaxMultiviewViewCount     = %u\n", multiview_props->maxMultiviewViewCount );
+					printf( "\tmaxMultiviewInstanceIndex = %u\n", multiview_props->maxMultiviewInstanceIndex );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES_KHR )
+			{
+				VkPhysicalDeviceMaintenance3PropertiesKHR *maintenance3_props =
+					( VkPhysicalDeviceMaintenance3PropertiesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceMaintenance3Properties</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>maxPerSetDescriptors    = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						maintenance3_props->maxPerSetDescriptors );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>maxMemoryAllocationSize = <div class='val'>%" PRIuLEAST64
+						"</div></summary></details>\n",
+						maintenance3_props->maxMemoryAllocationSize );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceMaintenance3Properties:\n" );
+					printf( "=======================================\n" );
+					printf( "\tmaxPerSetDescriptors    = %" PRIuLEAST32 "\n", maintenance3_props->maxPerSetDescriptors );
+					printf( "\tmaxMemoryAllocationSize = %" PRIuLEAST64 "\n", maintenance3_props->maxMemoryAllocationSize );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES_KHR )
+			{
+				const VkPhysicalDeviceIDPropertiesKHR *id_props = ( VkPhysicalDeviceIDPropertiesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceIDProperties</summary>\n" );
+					// Visual Studio 2013's printf does not support the "hh"
+					// length modifier so cast the operands and use field width
+					// "2" to fake it.
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>deviceUUID      = <div "
+						"class='val'>%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x</div></summary></"
+						"details>\n",
+						( uint32_t )id_props->deviceUUID[0], ( uint32_t )id_props->deviceUUID[1], ( uint32_t )id_props->deviceUUID[2],
+						( uint32_t )id_props->deviceUUID[3], ( uint32_t )id_props->deviceUUID[4], ( uint32_t )id_props->deviceUUID[5],
+						( uint32_t )id_props->deviceUUID[6], ( uint32_t )id_props->deviceUUID[7], ( uint32_t )id_props->deviceUUID[8],
+						( uint32_t )id_props->deviceUUID[9], ( uint32_t )id_props->deviceUUID[10],
+						( uint32_t )id_props->deviceUUID[11], ( uint32_t )id_props->deviceUUID[12],
+						( uint32_t )id_props->deviceUUID[13], ( uint32_t )id_props->deviceUUID[14],
+						( uint32_t )id_props->deviceUUID[15] );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>driverUUID      = <div "
+						"class='val'>%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x</div></summary></"
+						"details>\n",
+						( uint32_t )id_props->driverUUID[0], ( uint32_t )id_props->driverUUID[1], ( uint32_t )id_props->driverUUID[2],
+						( uint32_t )id_props->driverUUID[3], ( uint32_t )id_props->driverUUID[4], ( uint32_t )id_props->driverUUID[5],
+						( uint32_t )id_props->driverUUID[6], ( uint32_t )id_props->driverUUID[7], ( uint32_t )id_props->driverUUID[8],
+						( uint32_t )id_props->driverUUID[9], ( uint32_t )id_props->driverUUID[10],
+						( uint32_t )id_props->driverUUID[11], ( uint32_t )id_props->driverUUID[12],
+						( uint32_t )id_props->driverUUID[13], ( uint32_t )id_props->driverUUID[14],
+						( uint32_t )id_props->driverUUID[15] );
+					fprintf( out, "\t\t\t\t\t\t<details><summary>deviceLUIDValid = <div class='val'>%s</div></summary></details>\n",
+						id_props->deviceLUIDValid ? "true" : "false" );
+					if ( id_props->deviceLUIDValid )
+					{
+						fprintf( out,
+							"\t\t\t\t\t\t<details><summary>deviceLUID      = <div "
+							"class='val'>%02x%02x%02x%02x-%02x%02x%02x%02x</div></summary></details>\n",
+							( uint32_t )id_props->deviceLUID[0], ( uint32_t )id_props->deviceLUID[1],
+							( uint32_t )id_props->deviceLUID[2], ( uint32_t )id_props->deviceLUID[3],
+							( uint32_t )id_props->deviceLUID[4], ( uint32_t )id_props->deviceLUID[5],
+							( uint32_t )id_props->deviceLUID[6], ( uint32_t )id_props->deviceLUID[7] );
+						fprintf(
+							out,
+							"\t\t\t\t\t\t<details><summary>deviceNodeMask  = <div class='val'>0x%08x</div></summary></details>\n",
+							id_props->deviceNodeMask );
+					}
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceIDProperties:\n" );
+					printf( "=========================================\n" );
+					printf( "\tdeviceUUID      = %02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x\n",
+						( uint32_t )id_props->deviceUUID[0], ( uint32_t )id_props->deviceUUID[1], ( uint32_t )id_props->deviceUUID[2],
+						( uint32_t )id_props->deviceUUID[3], ( uint32_t )id_props->deviceUUID[4], ( uint32_t )id_props->deviceUUID[5],
+						( uint32_t )id_props->deviceUUID[6], ( uint32_t )id_props->deviceUUID[7], ( uint32_t )id_props->deviceUUID[8],
+						( uint32_t )id_props->deviceUUID[9], ( uint32_t )id_props->deviceUUID[10],
+						( uint32_t )id_props->deviceUUID[11], ( uint32_t )id_props->deviceUUID[12],
+						( uint32_t )id_props->deviceUUID[13], ( uint32_t )id_props->deviceUUID[14],
+						( uint32_t )id_props->deviceUUID[15] );
+					printf( "\tdriverUUID      = %02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x\n",
+						( uint32_t )id_props->driverUUID[0], ( uint32_t )id_props->driverUUID[1], ( uint32_t )id_props->driverUUID[2],
+						( uint32_t )id_props->driverUUID[3], ( uint32_t )id_props->driverUUID[4], ( uint32_t )id_props->driverUUID[5],
+						( uint32_t )id_props->driverUUID[6], ( uint32_t )id_props->driverUUID[7], ( uint32_t )id_props->driverUUID[8],
+						( uint32_t )id_props->driverUUID[9], ( uint32_t )id_props->driverUUID[10],
+						( uint32_t )id_props->driverUUID[11], ( uint32_t )id_props->driverUUID[12],
+						( uint32_t )id_props->driverUUID[13], ( uint32_t )id_props->driverUUID[14],
+						( uint32_t )id_props->driverUUID[15] );
+					printf( "\tdeviceLUIDValid = %s\n", id_props->deviceLUIDValid ? "true" : "false" );
+					if ( id_props->deviceLUIDValid )
+					{
+						printf( "\tdeviceLUID      = %02x%02x%02x%02x-%02x%02x%02x%02x\n", ( uint32_t )id_props->deviceLUID[0],
+							( uint32_t )id_props->deviceLUID[1], ( uint32_t )id_props->deviceLUID[2],
+							( uint32_t )id_props->deviceLUID[3], ( uint32_t )id_props->deviceLUID[4],
+							( uint32_t )id_props->deviceLUID[5], ( uint32_t )id_props->deviceLUID[6],
+							( uint32_t )id_props->deviceLUID[7] );
+						printf( "\tdeviceNodeMask  = 0x%08x\n", id_props->deviceNodeMask );
+					}
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR &&
+				CheckPhysicalDeviceExtensionIncluded( VK_KHR_DRIVER_PROPERTIES_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceDriverPropertiesKHR *driver_props = ( VkPhysicalDeviceDriverPropertiesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\n\t\t\t\t\t<details><summary>VkPhysicalDeviceDriverProperties</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>driverID   = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						driver_props->driverID );
+					fprintf( out, "\t\t\t\t\t\t<details><summary>driverName = %s</summary></details>\n", driver_props->driverName );
+					fprintf( out, "\t\t\t\t\t\t<details><summary>driverInfo = %s</summary></details>\n", driver_props->driverInfo );
+					fprintf( out, "\t\t\t\t\t\t<details><summary>conformanceVersion:</summary></details>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t\t<details><summary>major    = <div class='val'>%" PRIuLEAST8
+						"</div></summary></details>\n",
+						driver_props->conformanceVersion.major );
+					fprintf( out,
+						"\t\t\t\t\t\t\t<details><summary>minor    = <div class='val'>%" PRIuLEAST8
+						"</div></summary></details>\n",
+						driver_props->conformanceVersion.minor );
+					fprintf( out,
+						"\t\t\t\t\t\t\t<details><summary>subminor = <div class='val'>%" PRIuLEAST8
+						"</div></summary></details>\n",
+						driver_props->conformanceVersion.subminor );
+					fprintf( out,
+						"\t\t\t\t\t\t\t<details><summary>patch    = <div class='val'>%" PRIuLEAST8
+						"</div></summary></details>\n",
+						driver_props->conformanceVersion.patch );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceDriverProperties:\n" );
+					printf( "=================================\n" );
+					printf( "\tdriverID   = %" PRIuLEAST32 "\n", driver_props->driverID );
+					printf( "\tdriverName = %s\n", driver_props->driverName );
+					printf( "\tdriverInfo = %s\n", driver_props->driverInfo );
+					printf( "\tconformanceVersion:\n" );
+					printf( "\t\tmajor    = %" PRIuLEAST8 "\n", driver_props->conformanceVersion.major );
+					printf( "\t\tminor    = %" PRIuLEAST8 "\n", driver_props->conformanceVersion.minor );
+					printf( "\t\tsubminor = %" PRIuLEAST8 "\n", driver_props->conformanceVersion.subminor );
+					printf( "\t\tpatch    = %" PRIuLEAST8 "\n", driver_props->conformanceVersion.patch );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR &&
+				CheckPhysicalDeviceExtensionIncluded( VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceFloatControlsPropertiesKHR *float_control_props =
+					( VkPhysicalDeviceFloatControlsPropertiesKHR * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\n\t\t\t\t\t<details><summary>VkPhysicalDeviceFloatControlsProperties</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>separateDenormSettings       = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->separateDenormSettings );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>separateRoundingModeSettings = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->separateRoundingModeSettings );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderSignedZeroInfNanPreserveFloat16 = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderSignedZeroInfNanPreserveFloat16 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderSignedZeroInfNanPreserveFloat32 = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderSignedZeroInfNanPreserveFloat32 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderSignedZeroInfNanPreserveFloat64 = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderSignedZeroInfNanPreserveFloat64 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderDenormPreserveFloat16           = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderDenormPreserveFloat16 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderDenormPreserveFloat32           = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderDenormPreserveFloat32 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderDenormPreserveFloat64           = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderDenormPreserveFloat64 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderDenormFlushToZeroFloat16        = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderDenormFlushToZeroFloat16 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderDenormFlushToZeroFloat32        = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderDenormFlushToZeroFloat32 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderDenormFlushToZeroFloat64        = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderDenormFlushToZeroFloat64 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderRoundingModeRTEFloat16          = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderRoundingModeRTEFloat16 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderRoundingModeRTEFloat32          = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderRoundingModeRTEFloat32 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderRoundingModeRTEFloat64          = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderRoundingModeRTEFloat64 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderRoundingModeRTZFloat16          = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderRoundingModeRTZFloat16 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderRoundingModeRTZFloat32          = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderRoundingModeRTZFloat32 );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>shaderRoundingModeRTZFloat64          = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						float_control_props->shaderRoundingModeRTZFloat64 );
+					fprintf( out, "\t\t\t\t\t</details>\n" );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceFloatControlsProperties:\n" );
+					printf( "========================================\n" );
+					printf( "\tseparateDenormSettings       = %" PRIuLEAST32 "\n", float_control_props->separateDenormSettings );
+					printf( "\tseparateRoundingModeSettings = %" PRIuLEAST32 "\n",
+						float_control_props->separateRoundingModeSettings );
+					printf( "\tshaderSignedZeroInfNanPreserveFloat16 = %" PRIuLEAST32 "\n",
+						float_control_props->shaderSignedZeroInfNanPreserveFloat16 );
+					printf( "\tshaderSignedZeroInfNanPreserveFloat32 = %" PRIuLEAST32 "\n",
+						float_control_props->shaderSignedZeroInfNanPreserveFloat32 );
+					printf( "\tshaderSignedZeroInfNanPreserveFloat64 = %" PRIuLEAST32 "\n",
+						float_control_props->shaderSignedZeroInfNanPreserveFloat64 );
+					printf( "\tshaderDenormPreserveFloat16          = %" PRIuLEAST32 "\n",
+						float_control_props->shaderDenormPreserveFloat16 );
+					printf( "\tshaderDenormPreserveFloat32           = %" PRIuLEAST32 "\n",
+						float_control_props->shaderDenormPreserveFloat32 );
+					printf( "\tshaderDenormPreserveFloat64           = %" PRIuLEAST32 "\n",
+						float_control_props->shaderDenormPreserveFloat64 );
+					printf( "\tshaderDenormFlushToZeroFloat16        = %" PRIuLEAST32 "\n",
+						float_control_props->shaderDenormFlushToZeroFloat16 );
+					printf( "\tshaderDenormFlushToZeroFloat32        = %" PRIuLEAST32 "\n",
+						float_control_props->shaderDenormFlushToZeroFloat32 );
+					printf( "\tshaderDenormFlushToZeroFloat64        = %" PRIuLEAST32 "\n",
+						float_control_props->shaderDenormFlushToZeroFloat64 );
+					printf( "\tshaderRoundingModeRTEFloat16          = %" PRIuLEAST32 "\n",
+						float_control_props->shaderRoundingModeRTEFloat16 );
+					printf( "\tshaderRoundingModeRTEFloat32          = %" PRIuLEAST32 "\n",
+						float_control_props->shaderRoundingModeRTEFloat32 );
+					printf( "\tshaderRoundingModeRTEFloat64         = %" PRIuLEAST32 "\n",
+						float_control_props->shaderRoundingModeRTEFloat64 );
+					printf( "\tshaderRoundingModeRTZFloat16          = %" PRIuLEAST32 "\n",
+						float_control_props->shaderRoundingModeRTZFloat16 );
+					printf( "\tshaderRoundingModeRTZFloat32          = %" PRIuLEAST32 "\n",
+						float_control_props->shaderRoundingModeRTZFloat32 );
+					printf( "\tshaderRoundingModeRTZFloat64          = %" PRIuLEAST32 "\n",
+						float_control_props->shaderRoundingModeRTZFloat64 );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT &&
+				CheckPhysicalDeviceExtensionIncluded( VK_EXT_PCI_BUS_INFO_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDevicePCIBusInfoPropertiesEXT *pci_bus_properties = ( VkPhysicalDevicePCIBusInfoPropertiesEXT * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\n\t\t\t\t\t<details><summary>VkPhysicalDevicePCIBusInfoProperties</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>pciDomain   = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						pci_bus_properties->pciDomain );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>pciBus      = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						pci_bus_properties->pciBus );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>pciDevice   = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						pci_bus_properties->pciDevice );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>pciFunction = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						pci_bus_properties->pciFunction );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDevicePCIBusInfoProperties\n" );
+					printf( "====================================\n" );
+					printf( "\tpciDomain   = %" PRIuLEAST32 "\n", pci_bus_properties->pciDomain );
+					printf( "\tpciBus      = %" PRIuLEAST32 "\n", pci_bus_properties->pciBus );
+					printf( "\tpciDevice   = %" PRIuLEAST32 "\n", pci_bus_properties->pciDevice );
+					printf( "\tpciFunction = %" PRIuLEAST32 "\n", pci_bus_properties->pciFunction );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT &&
+				CheckPhysicalDeviceExtensionIncluded( VK_EXT_TRANSFORM_FEEDBACK_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceTransformFeedbackPropertiesEXT *transform_feedback_properties =
+					( VkPhysicalDeviceTransformFeedbackPropertiesEXT * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\n\t\t\t\t\t<details><summary>VkPhysicalDeviceTransformFeedbackProperties</summary>\n" );
+					fprintf(
+						out,
+						"\t\t\t\t\t\t<details><summary>maxTransformFeedbackStreams                = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						transform_feedback_properties->maxTransformFeedbackStreams );
+					fprintf(
+						out,
+						"\t\t\t\t\t\t<details><summary>maxTransformFeedbackBuffers                = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						transform_feedback_properties->maxTransformFeedbackBuffers );
+					fprintf(
+						out,
+						"\t\t\t\t\t\t<details><summary>maxTransformFeedbackBufferSize             = <div class='val'>%" PRIuLEAST64
+						"</div></summary></details>\n",
+						transform_feedback_properties->maxTransformFeedbackBufferSize );
+					fprintf(
+						out,
+						"\t\t\t\t\t\t<details><summary>maxTransformFeedbackStreamDataSize         = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						transform_feedback_properties->maxTransformFeedbackStreamDataSize );
+					fprintf(
+						out,
+						"\t\t\t\t\t\t<details><summary>maxTransformFeedbackBufferDataSize         = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						transform_feedback_properties->maxTransformFeedbackBufferDataSize );
+					fprintf(
+						out,
+						"\t\t\t\t\t\t<details><summary>maxTransformFeedbackBufferDataStride       = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						transform_feedback_properties->maxTransformFeedbackBufferDataStride );
+					fprintf(
+						out,
+						"\t\t\t\t\t\t<details><summary>transformFeedbackQueries                   = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						transform_feedback_properties->transformFeedbackQueries );
+					fprintf(
+						out,
+						"\t\t\t\t\t\t<details><summary>transformFeedbackStreamsLinesTriangles     = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						transform_feedback_properties->transformFeedbackStreamsLinesTriangles );
+					fprintf(
+						out,
+						"\t\t\t\t\t\t<details><summary>transformFeedbackRasterizationStreamSelect = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						transform_feedback_properties->transformFeedbackRasterizationStreamSelect );
+					fprintf(
+						out,
+						"\t\t\t\t\t\t<details><summary>transformFeedbackDraw                      = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						transform_feedback_properties->transformFeedbackDraw );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceTransformFeedbackProperties\n" );
+					printf( "===========================================\n" );
+					printf( "\tmaxTransformFeedbackStreams                = %" PRIuLEAST32 "\n",
+						transform_feedback_properties->maxTransformFeedbackStreams );
+					printf( "\tmaxTransformFeedbackBuffers                = %" PRIuLEAST32 "\n",
+						transform_feedback_properties->maxTransformFeedbackBuffers );
+					printf( "\tmaxTransformFeedbackBufferSize             = %" PRIuLEAST64 "\n",
+						transform_feedback_properties->maxTransformFeedbackBufferSize );
+					printf( "\tmaxTransformFeedbackStreamDataSize         = %" PRIuLEAST32 "\n",
+						transform_feedback_properties->maxTransformFeedbackStreamDataSize );
+					printf( "\tmaxTransformFeedbackBufferDataSize         = %" PRIuLEAST32 "\n",
+						transform_feedback_properties->maxTransformFeedbackBufferDataSize );
+					printf( "\tmaxTransformFeedbackBufferDataStride       = %" PRIuLEAST32 "\n",
+						transform_feedback_properties->maxTransformFeedbackBufferDataStride );
+					printf( "\ttransformFeedbackQueries                   = %" PRIuLEAST32 "\n",
+						transform_feedback_properties->transformFeedbackQueries );
+					printf( "\ttransformFeedbackStreamsLinesTriangles     = %" PRIuLEAST32 "\n",
+						transform_feedback_properties->transformFeedbackStreamsLinesTriangles );
+					printf( "\ttransformFeedbackRasterizationStreamSelect = %" PRIuLEAST32 "\n",
+						transform_feedback_properties->transformFeedbackRasterizationStreamSelect );
+					printf( "\ttransformFeedbackDraw                      = %" PRIuLEAST32 "\n",
+						transform_feedback_properties->transformFeedbackDraw );
+				}
+			}
+			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT &&
+				CheckPhysicalDeviceExtensionIncluded( VK_EXT_FRAGMENT_DENSITY_MAP_EXTENSION_NAME, gpu->device_extensions,
+					gpu->device_extension_count ) )
+			{
+				VkPhysicalDeviceFragmentDensityMapPropertiesEXT *fragment_density_map_properties =
+					( VkPhysicalDeviceFragmentDensityMapPropertiesEXT * )structure;
+				if ( html_output )
+				{
+					fprintf( out, "\n\t\t\t\t\t<details><summary>VkPhysicalDeviceFragmentDensityMapProperties</summary>\n" );
+					fprintf( out, "\t\t\t\t\t\t<details><summary>minFragmentDensityTexelSize</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t\t<details><summary>width = <div class='val'>%" PRIuLEAST32 "</div></summary></details>\n",
+						fragment_density_map_properties->minFragmentDensityTexelSize.width );
+					fprintf( out,
+						"\t\t\t\t\t\t\t<details><summary>height = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						fragment_density_map_properties->minFragmentDensityTexelSize.height );
+					fprintf( out, "\t\t\t\t\t\t<details><summary>maxFragmentDensityTexelSize</summary>\n" );
+					fprintf( out,
+						"\t\t\t\t\t\t\t<details><summary>width = <div class='val'>%" PRIuLEAST32 "</div></summary></details>\n",
+						fragment_density_map_properties->maxFragmentDensityTexelSize.width );
+					fprintf( out,
+						"\t\t\t\t\t\t\t<details><summary>height = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						fragment_density_map_properties->maxFragmentDensityTexelSize.height );
+					fprintf( out,
+						"\t\t\t\t\t\t<details><summary>fragmentDensityInvocations = <div class='val'>%" PRIuLEAST32
+						"</div></summary></details>\n",
+						fragment_density_map_properties->fragmentDensityInvocations );
+				}
+				else if ( human_readable_output )
+				{
+					printf( "\nVkPhysicalDeviceFragmentDensityMapProperties\n" );
+					printf( "============================================\n" );
+					printf( "\tminFragmentDensityTexelSize\n" );
+					printf( "\t\twidth = %" PRIuLEAST32 "\n", fragment_density_map_properties->minFragmentDensityTexelSize.width );
+					printf( "\t\theight = %" PRIuLEAST32 "\n", fragment_density_map_properties->minFragmentDensityTexelSize.height );
+					printf( "\tmaxFragmentDensityTexelSize\n" );
+					printf( "\t\twidth = %" PRIuLEAST32 "\n", fragment_density_map_properties->maxFragmentDensityTexelSize.width );
+					printf( "\t\theight = %" PRIuLEAST32 "\n", fragment_density_map_properties->maxFragmentDensityTexelSize.height );
+					printf( "\tfragmentDensityInvocations = %" PRIuLEAST32 "\n",
+						fragment_density_map_properties->fragmentDensityInvocations );
+				}
+			}
+			place = structure->pNext;
+		}
+	}
+#endif
 	fflush( out );
 	fflush( stdout );
 }
 
+// Compare function for sorting extensions by name
+static int CompareExtensionName( const  ashes::ExtensionProperties & a
+	, const  ashes::ExtensionProperties & b )
+{
+	auto lhs = a.extensionName;
+	auto rhs = b.extensionName;
+	return lhs < rhs;
+}
+
+// Compare function for sorting layers by name
+static int CompareLayerName( const LayerExtensionList & a, const LayerExtensionList & b )
+{
+	auto lhs = a.layer_properties.layerName;
+	auto rhs = b.layer_properties.layerName;
+	return lhs < rhs;
+}
+
 static void AppDumpExtensions( const char *indent
 	, const char *layer_name
-	, std::vector< ashes::ExtensionProperties > const & extension_properties
+	, std::vector< ashes::ExtensionProperties > & extension_properties
 	, FILE *out )
 {
 	auto extension_count = uint32_t( extension_properties.size() );
@@ -2483,6 +4283,10 @@ static void AppDumpExtensions( const char *indent
 		printf( ",\n" );
 		printf( "\t\"ArrayOfVkExtensionProperties\": [" );
 	}
+
+	std::sort( extension_properties.begin()
+		, extension_properties.end()
+		, CompareExtensionName );
 
 	uint32_t i = 0;
 	for ( auto & ext_prop : extension_properties )
@@ -2637,10 +4441,23 @@ static char *HumanReadable( const size_t sz )
 	return strndup( buf, kBufferSize );
 }
 
-static void AppGpuDumpMemoryProps( ashes::PhysicalDevice const & gpu
+static void AppGpuDumpMemoryProps( AppGpu const * gpu
 	, FILE *out )
 {
-	auto & props = gpu.getMemoryProperties();
+	ashes:: PhysicalDeviceMemoryProperties props;
+#if 0
+	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		const VkPhysicalDeviceMemoryProperties *props2_const = &gpu->memory_props2.memoryProperties;
+		props = *props2_const;
+	}
+	else
+#endif
+	{
+		props = gpu->obj->getMemoryProperties();
+	}
+
 	auto memoryHeapCount = uint32_t( props.memoryHeaps.size() );
 	auto memoryTypeCount = uint32_t( props.memoryTypes.size() );
 
@@ -2826,31 +4643,30 @@ static void AppGpuDumpMemoryProps( ashes::PhysicalDevice const & gpu
 }
 // clang-format on
 
-static void AppGpuDump( uint32_t id
-	, ashes::PhysicalDevice const & gpu
+static void AppGpuDump( AppGpu * gpu
 	, FILE *out )
 {
 	if ( html_output )
 	{
 		fprintf( out, "\t\t\t<details><summary>Device Properties and Extensions</summary>\n" );
-		fprintf( out, "\t\t\t\t<details><summary>GPU%u</summary>\n", id );
+		fprintf( out, "\t\t\t\t<details><summary>GPU%u</summary>\n", gpu->id );
 	}
 	else if ( human_readable_output )
 	{
 		printf( "\nDevice Properties and Extensions :\n" );
 		printf( "==================================\n" );
-		printf( "GPU%u\n", id );
+		printf( "GPU%u\n", gpu->id );
 	}
 
 	AppGpuDumpProps( gpu, out );
 	if ( html_output )
 	{
-		AppDumpExtensions( "\t\t", "Device", gpu.getExtensionProperties(), out );
+		AppDumpExtensions( "\t\t", "Device", gpu->device_extensions, out );
 	}
 	else if ( human_readable_output )
 	{
 		printf( "\n" );
-		AppDumpExtensions( "", "Device", gpu.getExtensionProperties(), out );
+		AppDumpExtensions( "", "Device", gpu->device_extensions, out );
 		printf( "\n" );
 	}
 
@@ -2859,7 +4675,8 @@ static void AppGpuDump( uint32_t id
 		printf( ",\n" );
 		printf( "\t\"ArrayOfVkQueueFamilyProperties\": [" );
 	}
-	for ( uint32_t i = 0; i < gpu.getQueueProperties().size(); ++i )
+	auto queueProps = gpu->obj->getQueueFamilyProperties();
+	for ( uint32_t i = 0; i < queueProps.size(); ++i )
 	{
 		if ( json_output )
 		{
@@ -2869,7 +4686,7 @@ static void AppGpuDump( uint32_t id
 			}
 			printf( "\n" );
 		}
-		AppGpuDumpQueueProps( gpu.getQueueProperties()[i], i, out );
+		AppGpuDumpQueueProps( queueProps[i], i, out );
 		if ( human_readable_output )
 		{
 			printf( "\n" );
@@ -2877,7 +4694,7 @@ static void AppGpuDump( uint32_t id
 	}
 	if ( json_output )
 	{
-		if ( !gpu.getQueueProperties().empty() )
+		if ( !queueProps.empty() )
 		{
 			printf( "\n\t" );
 		}
@@ -2890,7 +4707,7 @@ static void AppGpuDump( uint32_t id
 		printf( "\n" );
 	}
 
-	AppGpuDumpFeatures( gpu.getFeatures(), out );
+	AppGpuDumpFeatures( gpu->obj->getFeatures(), out );
 	if ( human_readable_output )
 	{
 		printf( "\n" );
@@ -2931,7 +4748,24 @@ static void ConsoleEnlarge()
 }
 #endif
 
-int main( int argc, char **argv )
+void print_usage( char *argv0 )
+{
+	printf( "\nvulkaninfo - Summarize Vulkan information in relation to the current environment.\n\n" );
+	printf( "USAGE: %s [options]\n\n", argv0 );
+	printf( "OPTIONS:\n" );
+	printf( "-h, --help            Print this help.\n" );
+	printf( "--html                Produce an html version of vulkaninfo output, saved as\n" );
+	printf( "                      \"vulkaninfo.html\" in the directory in which the command is\n" );
+	printf( "                      run.\n" );
+	printf( "-j, --json            Produce a json version of vulkaninfo output to standard\n" );
+	printf( "                      output.\n" );
+	printf( "--json=<gpu-number>   For a multi-gpu system, a single gpu can be targetted by\n" );
+	printf( "                      specifying the gpu-number associated with the gpu of \n" );
+	printf( "                      interest. This number can be determined by running\n" );
+	printf( "                      vulkaninfo without any options specified.\n\n" );
+}
+
+int main_impl( int argc, char **argv )
 {
 	AppInstance inst;
 	FILE *out = stdout;
@@ -2940,60 +4774,67 @@ int main( int argc, char **argv )
 	if ( ConsoleIsExclusive() ) ConsoleEnlarge();
 #endif
 
-	// First, we need to retrieve the Ashes plugins
-	RendererFactory factory;
-	auto plugins = list_plugins( factory );
-
 	// Then we check in the command line if the user has wanted a specific plugin to be used.
 	std::string rendererName = ProcessCommandLine( argc, argv, &out );
 
-	// With that informations, we can now create the renderer instance.
-	ashes::Instance::Configuration config
-	{
-		APP_SHORT_NAME,
-		APP_SHORT_NAME,
-		false,
-	};
-	inst.instance = factory.create( rendererName, config );
+	// First, we need to retrieve the Ashes plugins
+	InstanceFactory factory;
+	auto plugins = list_plugins( factory );
+	inst.plugin = factory.findPlugin( rendererName );
 
-	unsigned int vulkan_major = 0;
-	unsigned int vulkan_minor = 0;
-	unsigned int vulkan_patch = 0;
-	ExtractVersion( inst.instance->getApiVersion(), &vulkan_major, &vulkan_minor, &vulkan_patch );
+	AppCreateInstance( &inst );
 
 	if ( html_output )
 	{
+		out = fopen( "vulkaninfo.html", "w" );
 		PrintHtmlHeader( out );
 		fprintf( out, "\t\t\t<details><summary>" );
 	}
 	else if ( human_readable_output )
 	{
-		printf( "===========\n" );
-		printf( "RENDER INFO\n" );
-		printf( "===========\n\n" );
+		printf( "=========\n" );
+		printf( "ASHESINFO\n" );
+		printf( "=========\n\n" );
 	}
 	if ( html_output || human_readable_output )
 	{
-		fprintf( out, "Instance Version: " );
+		fprintf( out, "Vulkan Instance Version: " );
 	}
 	if ( html_output )
 	{
-		fprintf( out, "<div class='val'>%d.%d.%d</div></summary></details>\n", vulkan_major, vulkan_minor, vulkan_patch );
+		fprintf( out, "<div class='val'>%d.%d.%d</div></summary></details>\n", inst.vulkan_major, inst.vulkan_minor,
+			inst.vulkan_patch );
 		fprintf( out, "\t\t\t<br />\n" );
 	}
 	else if ( human_readable_output )
 	{
-		printf( "%d.%d.%d\n\n", vulkan_major, vulkan_minor, vulkan_patch );
+		printf( "%d.%d.%d\n\n", inst.vulkan_major, inst.vulkan_minor, inst.vulkan_patch );
+	}
+
+	auto ashgpus = inst.instance->enumeratePhysicalDevices();
+	uint32_t gpu_count = 0u;
+	std::vector< AppGpu > gpus;
+
+	for ( auto & gpu : ashgpus )
+	{
+		AppGpu app_gpu;
+		AppGpuInit( &app_gpu, &inst, gpu_count++, std::move( gpu ) );
+		gpus.emplace_back( std::move( app_gpu ) );
+
+		if ( human_readable_output )
+		{
+			printf( "\n\n" );
+		}
 	}
 
 	// If json output, confirm the desired gpu exists
 	if ( json_output )
 	{
-		if ( selected_gpu >= inst.instance->getGpuCount() )
+		if ( selected_gpu >= gpu_count )
 		{
 			selected_gpu = 0;
 		}
-		PrintJsonHeader( vulkan_major, vulkan_minor, vulkan_patch );
+		PrintJsonHeader( inst.vulkan_major, inst.vulkan_minor, inst.vulkan_patch );
 	}
 
 	if ( human_readable_output )
@@ -3001,54 +4842,56 @@ int main( int argc, char **argv )
 		printf( "Instance Extensions:\n" );
 		printf( "====================\n" );
 	}
-	AppDumpExtensions( "", "Instance", inst.instance->getGlobalLayer().extensions, out );
+	AppDumpExtensions( "", "Instance", inst.global_extensions, out );
 
-    //---Layer-Device-Extensions---
-	auto global_layer_count = uint32_t( inst.instance->getLayers().size() );
-	uint32_t gpu_count = inst.instance->getGpuCount();
+	//---Layer-Device-Extensions---
 	if ( html_output )
 	{
-		fprintf( out, "\t\t\t<details><summary>Layers: count = <div class='val'>%d</div></summary>", global_layer_count );
-		if ( global_layer_count > 0 )
+		fprintf( out, "\t\t\t<details><summary>Layers: count = <div class='val'>%d</div></summary>", uint32_t( inst.global_layers.size() ) );
+		if ( !inst.global_layers.empty() )
 		{
 			fprintf( out, "\n" );
 		}
 	}
 	else if ( human_readable_output )
 	{
-		printf( "Layers: count = %d\n", global_layer_count );
+		printf( "Layers: count = %d\n", uint32_t( inst.global_layers.size() ) );
 		printf( "=======\n" );
 	}
-	if ( json_output && ( global_layer_count > 0 ) )
+	if ( json_output && ( !inst.global_layers.empty() ) )
 	{
 		printf( ",\n" );
 		printf( "\t\"ArrayOfVkLayerProperties\": [" );
 	}
 
-	uint32_t i = 0u;
-	for ( auto & layer_prop : inst.instance->getLayers() )
+	std::sort( inst.global_layers.begin()
+		, inst.global_layers.end()
+		, CompareLayerName );
+
+	for ( uint32_t i = 0; i < inst.global_layers.size(); ++i )
 	{
 		uint32_t layer_major, layer_minor, layer_patch;
 		char spec_version[64], layer_version[64];
+		auto const *layer_prop = &inst.global_layers[i].layer_properties;
 
-		ExtractVersion( layer_prop.specVersion, &layer_major, &layer_minor, &layer_patch );
+		ExtractVersion( layer_prop->specVersion, &layer_major, &layer_minor, &layer_patch );
 		snprintf( spec_version, sizeof( spec_version ), "%d.%d.%d", layer_major, layer_minor, layer_patch );
-		snprintf( layer_version, sizeof( layer_version ), "%d", layer_prop.implementationVersion );
+		snprintf( layer_version, sizeof( layer_version ), "%d", layer_prop->implementationVersion );
 
 		if ( html_output )
 		{
 			fprintf( out, "\t\t\t\t<details><summary>" );
-			fprintf( out, "<div class='type'>%s</div> (%s) Vulkan version <div class='val'>%s</div>, ", layer_prop.layerName.c_str(),
-				layer_prop.description.c_str(), spec_version );
+			fprintf( out, "<div class='type'>%s</div> (%s) Vulkan version <div class='val'>%s</div>, ", layer_prop->layerName.c_str(),
+				( char * )layer_prop->description.c_str(), spec_version );
 			fprintf( out, "layer version <div class='val'>%s</div></summary>\n", layer_version );
-			AppDumpExtensions( "\t\t", "Layer", layer_prop.extensions,
+			AppDumpExtensions( "\t\t", "Layer", inst.global_layers[i].extension_properties,
 				out );
 		}
 		else if ( human_readable_output )
 		{
-			printf( "%s (%s) Vulkan version %s, layer version %s\n", layer_prop.layerName.c_str(), layer_prop.description.c_str(),
+			printf( "%s (%s) Vulkan version %s, layer version %s\n", layer_prop->layerName.c_str(), ( char * )layer_prop->description.c_str(),
 				spec_version, layer_version );
-			AppDumpExtensions( "\t", "Layer", layer_prop.extensions,
+			AppDumpExtensions( "\t", "Layer", inst.global_layers[i].extension_properties,
 				out );
 		}
 		if ( json_output )
@@ -3059,10 +4902,10 @@ int main( int argc, char **argv )
 			}
 			printf( "\n" );
 			printf( "\t\t{\n" );
-			printf( "\t\t\t\"layerName\": \"%s\",\n", layer_prop.layerName.c_str() );
-			printf( "\t\t\t\"specVersion\": %u,\n", layer_prop.specVersion );
-			printf( "\t\t\t\"implementationVersion\": %u,\n", layer_prop.implementationVersion );
-			printf( "\t\t\t\"description\": \"%s\"\n", layer_prop.description.c_str() );
+			printf( "\t\t\t\"layerName\": \"%s\",\n", layer_prop->layerName.c_str() );
+			printf( "\t\t\t\"specVersion\": %u,\n", layer_prop->specVersion );
+			printf( "\t\t\t\"implementationVersion\": %u,\n", layer_prop->implementationVersion );
+			printf( "\t\t\t\"description\": \"%s\"\n", layer_prop->description.c_str() );
 			printf( "\t\t}" );
 		}
 
@@ -3074,31 +4917,25 @@ int main( int argc, char **argv )
 		{
 			printf( "\tDevices \tcount = %d\n", gpu_count );
 		}
-		++i;
 
-		auto layer_name = layer_prop.layerName;
+		char const *layer_name = inst.global_layers[i].layer_properties.layerName.c_str();
 
 		for ( uint32_t j = 0; j < gpu_count; ++j )
 		{
-			auto & gpu = inst.instance->getPhysicalDevice( j );
-			auto & gpuprops = gpu.getProperties();
-
 			if ( html_output )
 			{
 				fprintf( out, "\t\t\t\t\t\t<details><summary>" );
-				fprintf( out, "GPU id: <div class='val'>%u</div> (%s)</summary></details>\n", j, gpuprops.deviceName.c_str() );
+				fprintf( out, "GPU id: <div class='val'>%u</div> (%s)</summary></details>\n", j, gpus[j].props.deviceName.c_str() );
 			}
 			else if ( human_readable_output )
 			{
-				printf( "\t\tGPU id       : %u (%s)\n", j, gpuprops.deviceName.c_str() );
+				printf( "\t\tGPU id       : %u (%s)\n", j, gpus[j].props.deviceName.c_str() );
 			}
-			uint32_t count = 0;
-			std::vector< ashes::ExtensionProperties > props;
-			AppGetPhysicalDeviceLayerExtensions( gpu, layer_name.c_str(), props );
+			ashes::ExtensionPropertiesArray props;
+			AppGetPhysicalDeviceLayerExtensions( &gpus[j], layer_name, props );
 			if ( html_output )
 			{
 				AppDumpExtensions( "\t\t\t", "Layer-Device", props, out );
-				fprintf( out, "\t\t\t\t\t</details>\n" );
 			}
 			else if ( human_readable_output )
 			{
@@ -3108,6 +4945,7 @@ int main( int argc, char **argv )
 
 		if ( html_output )
 		{
+			fprintf( out, "\t\t\t\t\t</details>\n" );
 			fprintf( out, "\t\t\t\t</details>\n" );
 		}
 		else if ( human_readable_output )
@@ -3120,7 +4958,7 @@ int main( int argc, char **argv )
 	{
 		fprintf( out, "\t\t\t</details>\n" );
 	}
-	if ( json_output && ( global_layer_count > 0 ) )
+	if ( json_output && ( !inst.global_layers.empty() ) )
 	{
 		printf( "\n\t]" );
 	}
@@ -3156,103 +4994,78 @@ int main( int argc, char **argv )
 	const char *display_var = getenv( "DISPLAY" );
 	if ( display_var == NULL || strlen( display_var ) == 0 )
 	{
-		printf( "'DISPLAY' environment variable not set... skipping surface info\n" );
+		printf( stderr, "'DISPLAY' environment variable not set... skipping surface info\n" );
+		fflush( stderr );
 		has_display = false;
 	}
 #endif
 
-	//--WIN32--
-#if ASHES_WIN32
-	//if ( CheckExtensionEnabled( VK_KHR_WIN32_SURFACE_EXTENSION_NAME, inst.inst_extensions, inst.inst_extensions_count ) )
+#if ASHES_WAYLAND
+	struct wl_display *wayland_display = wl_display_connect( NULL );
+	bool has_wayland_display = false;
+	if ( wayland_display != NULL )
 	{
-		AppCreateWin32Window( &inst );
-		for ( uint32_t i = 0; i < gpu_count; ++i )
-		{
-			auto & gpu = inst.instance->getPhysicalDevice( i );
-			auto & gpuprops = gpu.getProperties();
-			AppCreateWin32Surface( &inst );
-			if ( html_output )
-			{
-				fprintf( out, "\t\t\t\t<details><summary>GPU id : <div class='val'>%u</div> (%s)</summary></details>\n", i,
-					gpuprops.deviceName.c_str() );
-				fprintf( out, "\t\t\t\t<details><summary>Surface type : <div class='type'>%s</div></summary></details>\n",
-					inst.surface->getType().c_str() );
-			}
-			else if ( human_readable_output )
-			{
-				printf( "GPU id       : %u (%s)\n", i, gpuprops.deviceName.c_str() );
-				printf( "Surface type : %s\n", inst.surface->getType().c_str() );
-			}
-			format_count += AppDumpSurfaceFormats( *inst.surface, out );
-			present_mode_count += AppDumpSurfacePresentModes( *inst.surface, out );
-			AppDumpSurfaceCapabilities( *inst.surface, out );
-			AppDestroySurface( &inst );
-		}
-		AppDestroyWin32Window( &inst );
-	}
-	//--XCB--
-#elif ASHES_XCB
-	if ( has_display /*&&
-		CheckExtensionEnabled( VK_KHR_XCB_SURFACE_EXTENSION_NAME, inst.inst_extensions, inst.inst_extensions_count )*/ )
-	{
-		AppCreateXcbWindow( &inst );
-		for ( uint32_t i = 0; i < gpu_count; ++i )
-		{
-			auto & gpu = inst.instance->getPhysicalDevice( i );
-			auto & gpuprops = gpu.getProperties();
-			AppCreateXcbSurface( &inst );
-			if ( html_output )
-			{
-				fprintf( out, "\t\t\t\t<details><summary>GPU id : <div class='val'>%u</div> (%s)</summary></details>\n", i,
-					gpuprops.deviceName.c_str() );
-				fprintf( out, "\t\t\t\t<details><summary>Surface type : <div class='type'>%s</div></summary></details>\n",
-					inst.surface->getType().c_str() );
-			}
-			else if ( human_readable_output )
-			{
-				printf( "GPU id       : %u (%s)\n", i, gpuprops.deviceName.c_str() );
-				printf( "Surface type : %s\n", inst.surface->getType().c_str() );
-			}
-			format_count += AppDumpSurfaceFormats( *inst.surface, out );
-			present_mode_count += AppDumpSurfacePresentModes( *inst.surface, out );
-			AppDumpSurfaceCapabilities( *inst.surface, out );
-			AppDestroySurface( &inst );
-		}
-		AppDestroyXcbWindow( &inst );
-	}
-	//--XLIB--
-#elif ASHES_XLIB
-	if ( has_display /*&&
-		CheckExtensionEnabled( VK_KHR_XLIB_SURFACE_EXTENSION_NAME, inst.inst_extensions, inst.inst_extensions_count )*/ )
-	{
-		AppCreateXlibWindow( &inst );
-		for ( uint32_t i = 0; i < gpu_count; ++i )
-		{
-			auto & gpu = inst.instance->getPhysicalDevice( i );
-			auto & gpuprops = gpu.getProperties();
-			AppCreateXlibSurface( &inst );
-			if ( html_output )
-			{
-				fprintf( out, "\t\t\t\t<details><summary>GPU id : <div class='val'>%u</div> (%s)</summary></details>\n", i,
-					gpuprops.deviceName.c_str() );
-				fprintf( out, "\t\t\t\t<details><summary>Surface type : <div class='type'>%s</div></summary></details>\n",
-					inst.surface->getType().c_str() );
-			}
-			else if ( human_readable_output )
-			{
-				printf( "GPU id       : %u (%s)\n", i, gpuprops.deviceName.c_str() );
-				printf( "Surface type : %s\n", inst.surface->getType().c_str() );
-			}
-			format_count += AppDumpSurfaceFormats( *inst.surface, out );
-			present_mode_count += AppDumpSurfacePresentModes( *inst.surface, out );
-			AppDumpSurfaceCapabilities( *inst.surface, out );
-			AppDestroySurface( &inst );
-		}
-		AppDestroyXlibWindow( &inst );
+		wl_display_disconnect( wayland_display );
+		has_wayland_display = true;
 	}
 #endif
 
-	// TODO: Android / Wayland / MIR
+//--WIN32--
+#if ASHES_WIN32
+	struct SurfaceExtensionInfo surface_ext_win32;
+	surface_ext_win32.name = ashes::KHR_WIN32_SURFACE_EXTENSION_NAME;
+	surface_ext_win32.create_window = AppCreateWin32Window;
+	surface_ext_win32.create_surface = AppCreateWin32Surface;
+	surface_ext_win32.destroy_window = AppDestroyWin32Window;
+	AppDumpSurfaceExtension( &inst, gpus, &surface_ext_win32, &format_count, &present_mode_count, out );
+#endif
+//--XCB--
+#if ASHES_XCB
+	struct SurfaceExtensionInfo surface_ext_xcb;
+	surface_ext_xcb.name = ashes::KHR_XCB_SURFACE_EXTENSION_NAME;
+	surface_ext_xcb.create_window = AppCreateXcbWindow;
+	surface_ext_xcb.create_surface = AppCreateXcbSurface;
+	surface_ext_xcb.destroy_window = AppDestroyXcbWindow;
+	if ( has_display )
+	{
+		AppDumpSurfaceExtension( &inst, gpus, &surface_ext_xcb, &format_count, &present_mode_count, out );
+	}
+#endif
+//--XLIB--
+#if ASHES_XLIB
+	struct SurfaceExtensionInfo surface_ext_xlib;
+	surface_ext_xlib.name = ashes::KHR_XLIB_SURFACE_EXTENSION_NAME;
+	surface_ext_xlib.create_window = AppCreateXlibWindow;
+	surface_ext_xlib.create_surface = AppCreateXlibSurface;
+	surface_ext_xlib.destroy_window = AppDestroyXlibWindow;
+	if ( has_display )
+	{
+		AppDumpSurfaceExtension( &inst, gpus, &surface_ext_xlib, &format_count, &present_mode_count, out );
+	}
+#endif
+//--MACOS--
+#if ASHES_MACOS
+	struct SurfaceExtensionInfo surface_ext_macos;
+	surface_ext_macos.name = ashes::MVK_MACOS_SURFACE_EXTENSION_NAME;
+	surface_ext_macos.create_window = AppCreateMacOSWindow;
+	surface_ext_macos.create_surface = AppCreateMacOSSurface;
+	surface_ext_macos.destroy_window = AppDestroyMacOSWindow;
+	AppDumpSurfaceExtension( &inst, gpus, &surface_ext_macos, &format_count, &present_mode_count, out );
+#endif
+//--WAYLAND--
+#if ASHES_WAYLAND
+	struct SurfaceExtensionInfo surface_ext_wayland;
+	surface_ext_wayland.name = ashes::KHR_WAYLAND_SURFACE_EXTENSION_NAME;
+	surface_ext_wayland.create_window = AppCreateWaylandWindow;
+	surface_ext_wayland.create_surface = AppCreateWaylandSurface;
+	surface_ext_wayland.destroy_window = AppDestroyWaylandWindow;
+	if ( has_wayland_display )
+	{
+		AppDumpSurfaceExtension( &inst, gpus, &surface_ext_wayland, &format_count, &present_mode_count, out );
+	}
+#endif
+
+	// TODO: Android
 	if ( !format_count && !present_mode_count )
 	{
 		if ( html_output )
@@ -3261,7 +5074,7 @@ int main( int argc, char **argv )
 		}
 		else if ( human_readable_output )
 		{
-			printf( "None found\n" );
+			printf( "None found\n\n" );
 		}
 	}
 
@@ -3269,24 +5082,78 @@ int main( int argc, char **argv )
 	{
 		fprintf( out, "\t\t\t</details>\n" );
 	}
-	else if ( human_readable_output )
-	{
-		printf( "\n" );
-	}
 	//---------
+#if 0
+
+	if ( CheckExtensionEnabled( VK_KHR_DEVICE_GROUP_CREATION_EXTENSION_NAME, inst.inst_extensions, inst.inst_extensions_count ) )
+	{
+		PFN_vkEnumeratePhysicalDeviceGroupsKHR vkEnumeratePhysicalDeviceGroupsKHR =
+			( PFN_vkEnumeratePhysicalDeviceGroupsKHR )vkGetInstanceProcAddr( inst.instance, "vkEnumeratePhysicalDeviceGroupsKHR" );
+
+		uint32_t group_count;
+		err = vkEnumeratePhysicalDeviceGroupsKHR( inst.instance, &group_count, NULL );
+		if ( err )
+		{
+			ERR_EXIT( err );
+		}
+
+		VkPhysicalDeviceGroupProperties *groups = malloc( sizeof( groups[0] ) * group_count );
+		if ( !groups )
+		{
+			ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
+		}
+
+		err = vkEnumeratePhysicalDeviceGroupsKHR( inst.instance, &group_count, groups );
+		if ( err )
+		{
+			ERR_EXIT( err );
+		}
+
+		if ( html_output )
+		{
+			fprintf( out, "\t\t\t<details><summary>Groups</summary>\n" );
+		}
+		else if ( human_readable_output )
+		{
+			printf( "\nGroups :\n" );
+			printf( "========\n" );
+		}
+
+		for ( uint32_t i = 0; i < group_count; ++i )
+		{
+			AppGroupDump( &groups[i], i, &inst, out );
+			if ( human_readable_output )
+			{
+				printf( "\n\n" );
+			}
+		}
+
+		if ( html_output )
+		{
+			fprintf( out, "\t\t\t</details>\n" );
+		}
+
+		free( groups );
+	}
+#endif
+
+	if ( html_output )
+	{
+		fprintf( out, "\t\t\t<details><summary>Device Properties and Extensions</summary>\n" );
+	}
 
 	for ( uint32_t i = 0; i < gpu_count; ++i )
 	{
 		if ( json_output && selected_gpu != i )
 		{
-			// Toggle json_output to allow html output without json output
+// Toggle json_output to allow html output without json output
 			json_output = false;
-			AppGpuDump( i, inst.instance->getPhysicalDevice( i ), out );
+			AppGpuDump( &gpus[i], out );
 			json_output = true;
 		}
 		else
 		{
-			AppGpuDump( i, inst.instance->getPhysicalDevice( i ), out );
+			AppGpuDump( &gpus[i], out );
 		}
 		if ( human_readable_output )
 		{
@@ -3294,6 +5161,17 @@ int main( int argc, char **argv )
 		}
 	}
 
+	if ( html_output )
+	{
+		fprintf( out, "\t\t\t</details>\n" );
+	}
+
+	for ( uint32_t i = 0; i < gpu_count; ++i )
+	{
+		AppGpuDestroy( &gpus[i] );
+	}
+
+	AppDestroyInstance( &inst );
 
 	if ( html_output )
 	{
@@ -3307,8 +5185,28 @@ int main( int argc, char **argv )
 	}
 
 	fflush( stdout );
-	inst.surface.reset();
-	inst.instance.reset();
 
 	return 0;
+}
+
+int main( int argc, char **argv )
+{
+	int result = EXIT_SUCCESS;
+
+	try
+	{
+		result = main_impl( argc, argv );
+	}
+	catch ( std::exception & exc )
+	{
+		std::cerr << exc.what() << std::endl;
+		result = EXIT_FAILURE;
+	}
+	catch ( ... )
+	{
+		std::cerr << "Unknown unhandled exception" << std::endl;
+		result = EXIT_FAILURE;
+	}
+
+	return result;
 }

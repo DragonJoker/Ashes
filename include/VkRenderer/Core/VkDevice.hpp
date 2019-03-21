@@ -7,6 +7,7 @@ See LICENSE file in root folder
 #include "Core/VkSurface.hpp"
 
 #include <Ashes/Core/Device.hpp>
+#include <Ashes/Miscellaneous/PhysicalDeviceMemoryProperties.hpp>
 #include <Ashes/Miscellaneous/QueueCreateInfo.hpp>
 #include <Ashes/Miscellaneous/SwapChainCreateInfo.hpp>
 
@@ -63,8 +64,7 @@ namespace vk_renderer
 		/**
 		*\copydoc	ashes::Device::allocateMemory
 		*/
-		ashes::DeviceMemoryPtr allocateMemory( ashes::MemoryRequirements const & requirements
-			, ashes::MemoryPropertyFlags flags )const override;
+		ashes::DeviceMemoryPtr allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const override;
 		/**
 		*\copydoc	ashes::Device::createTexture
 		*/
@@ -91,13 +91,6 @@ namespace vk_renderer
 			, ashes::Format format
 			, uint32_t offset
 			, uint32_t range )const override;
-		/**
-		*\copydoc	ashes::Device::createUniformBuffer
-		*/
-		ashes::UniformBufferBasePtr createUniformBuffer( uint32_t count
-			, uint32_t size
-			, ashes::BufferTargets target
-			, ashes::MemoryPropertyFlags memoryFlags )const override;
 		/**
 		*\copydoc	ashes::Device::createSwapChain
 		*/
@@ -177,6 +170,9 @@ namespace vk_renderer
 		*	The memory requirements.
 		*/
 		ashes::MemoryRequirements getImageMemoryRequirements( VkImage image )const;
+
+		uint32_t deduceMemoryType( uint32_t typeBits
+			, ashes::MemoryPropertyFlags requirements )const;
 		/**
 		*\~french
 		*\return
@@ -227,5 +223,6 @@ namespace vk_renderer
 		VkDeviceCreateInfo m_vkCreateInfos;
 		VkDevice m_device{ VK_NULL_HANDLE };
 		std::map< uint32_t, ashes::DeviceQueueCreateInfo > m_queues;
+		ashes::PhysicalDeviceMemoryProperties m_memoryProperties;
 	};
 }

@@ -39,7 +39,7 @@ namespace ashes
 		*\param[in] instance
 		*	L'instance de rendu.
 		*/
-		PhysicalDevice( Instance & instance );
+		PhysicalDevice( Instance const & instance );
 		/**
 		*\~english
 		*\brief
@@ -50,44 +50,68 @@ namespace ashes
 		*/
 		virtual ~PhysicalDevice() = default;
 		/**
-		*\~english
-		*\brief
-		*	Initialises the physical device properties.
 		*\~french
 		*\brief
-		*	Initialise les propriétés du périphérique physique.
+		*	Enumère les couches du périphérique.
+		*\~english
+		*\brief
+		*	Enumerates the devie layers.
 		*/
-		virtual void initialise() = 0;
+		virtual ashes::LayerPropertiesArray enumerateLayerProperties()const = 0;
+		/**
+		*\~french
+		*\brief
+		*	Enumère les extensions de la couche de périphérique donnée.
+		*\~english
+		*\brief
+		*	Enumerates the extension for the given device layer.
+		*/
+		virtual ashes::ExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const = 0;
 		/**
 		*\~english
 		*\brief
-		*	Deduces the memory type, from the given informations.
-		*\param[in] typeBits
-		*	There are 32 memory types described in VkPhysicalDeviceMemoryProperties.
-		*	This parameter is a bitwise combinartion describing the properties to look for.
-		*\param[in] requirements
-		*	The memory quirements.
-		*\param[in] typeIndex
-		*	Receives the deduced memory type index.
-		*\return
-		*	\p false if the memory type could not be deduced.
+		*	Retrieves the physical device properties.
 		*\~french
 		*\brief
-		*	Déduit le type de mémoire à allouer, en fonction des informations données.
-		*\param[in] typeBits
-		*	Il y a 32 types de mémoire décrits dans VkPhysicalDeviceMemoryProperties.
-		*	Ce paramètre est une combinaison bit à bit décrivant les propriétés dans lesquelles
-		*	il faut chercher.
-		*\param[in] requirements
-		*	Les pré-requis pour le type de mémoire.
-		*\param[in] typeIndex
-		*	Reçoit l'index du type de mémoire déduit.
-		*\return
-		*	\p true si le type a pu être déduit, \p false sinon.
-		*/ 
-		bool deduceMemoryType( uint32_t typeBits
-			, MemoryPropertyFlags requirements
-			, uint32_t & typeIndex )const;
+		*	Récupère les propriétés du périphérique physique.
+		*/
+		virtual PhysicalDeviceProperties getProperties()const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Retrieves the physical device memory properties.
+		*\~french
+		*\brief
+		*	Récupère les propriétés mémoire du périphérique physique.
+		*/
+		virtual PhysicalDeviceMemoryProperties getMemoryProperties()const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Retrieves the physical device features.
+		*\~french
+		*\brief
+		*	Récupère les fonctionnalités du périphérique physique.
+		*/
+		virtual PhysicalDeviceFeatures getFeatures()const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Retrieves the physical device queues properties.
+		*\~french
+		*\brief
+		*	Récupère les propriétés des files du périphérique physique.
+		*/
+		virtual QueueFamilyPropertiesArray getQueueFamilyProperties()const = 0;
+		/**
+		*\~english
+		*\brief
+		*	Retrieves the given format's properties.
+		*\~french
+		*\brief
+		*	Récupère les propriétés du format donné.
+		*/
+		virtual FormatProperties getFormatProperties( Format fmt )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -106,48 +130,6 @@ namespace ashes
 		*	Accesseurs.
 		*/
 		/**@{*/
-		std::vector< ExtensionProperties > const & getExtensionProperties( std::string const & layerName )const;
-
-		inline std::vector< ExtensionProperties > const & getExtensionProperties()const
-		{
-			return m_extensions;
-		}
-		
-		inline uint32_t getLayersCount()const
-		{
-			return uint32_t( m_layerExtensions.size() );
-		}
-
-		inline LayerProperties const & getLayerProperties( uint32_t index )const
-		{
-			return m_layerExtensions[index];
-		}
-
-		inline std::vector< QueueFamilyProperties > const & getQueueProperties()const
-		{
-			return m_queueProperties;
-		}
-
-		FormatProperties const & getFormatProperties( ashes::Format fmt )const
-		{
-			return m_formatProperties[size_t( fmt )];
-		}
-
-		inline PhysicalDeviceProperties const & getProperties()const
-		{
-			return m_properties;
-		}
-
-		inline PhysicalDeviceMemoryProperties const & getMemoryProperties()const
-		{
-			return m_memoryProperties;
-		}
-
-		inline PhysicalDeviceFeatures const & getFeatures()const
-		{
-			return m_features;
-		}
-
 		inline uint32_t getShaderVersion()const
 		{
 			return m_shaderVersion;
@@ -155,17 +137,10 @@ namespace ashes
 		/**@}*/
 
 	protected:
-		PhysicalDeviceMemoryProperties m_memoryProperties{};
-		PhysicalDeviceFeatures m_features{};
-		PhysicalDeviceProperties m_properties{};
-		std::vector< QueueFamilyProperties > m_queueProperties;
-		std::vector< ExtensionProperties > m_extensions;
-		std::vector< ashes::LayerProperties > m_layerExtensions;
-		std::array< ashes::FormatProperties, size_t( ashes::Format::eRange ) > m_formatProperties;
 		uint32_t m_shaderVersion;
 
 	private:
-		Instance & m_instance;
+		Instance const & m_instance;
 	};
 }
 

@@ -5,7 +5,6 @@ See LICENSE file in root folder.
 #include "Command/VkCommandBuffer.hpp"
 
 #include "Buffer/VkBuffer.hpp"
-#include "Buffer/VkUniformBuffer.hpp"
 #include "Command/VkCommandPool.hpp"
 #include "Core/VkDevice.hpp"
 #include "Descriptor/VkDescriptorSet.hpp"
@@ -30,6 +29,7 @@ See LICENSE file in root folder.
 
 #include <Ashes/Buffer/PushConstantsBuffer.hpp>
 #include <Ashes/Buffer/StagingBuffer.hpp>
+#include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Buffer/VertexBuffer.hpp>
 #include <Ashes/RenderPass/FrameBufferAttachment.hpp>
 

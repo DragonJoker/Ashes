@@ -34,26 +34,41 @@ namespace gl_renderer
 		*\param[in] renderer
 		*	The rendering instance.
 		*/
-		PhysicalDevice( Instance & instance );
+		PhysicalDevice( Instance const & instance );
 		/**
-		*\copydoc	ashes::PhysicalDevice::initialise
+		*\copydoc	ashes::Instance::enumerateLayerProperties
 		*/
-		void initialise()override;
+		ashes::LayerPropertiesArray enumerateLayerProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::enumerateExtensionProperties
+		*/
+		ashes::ExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const override;
+		/**
+		*\copydoc	ashes::Instance::getProperties
+		*/
+		ashes::PhysicalDeviceProperties getProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getMemoryProperties
+		*/
+		ashes::PhysicalDeviceMemoryProperties getMemoryProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getFeatures
+		*/
+		ashes::PhysicalDeviceFeatures getFeatures()const override;
+		/**
+		*\copydoc	ashes::Instance::getQueueFamilyProperties
+		*/
+		ashes::QueueFamilyPropertiesArray getQueueFamilyProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getFormatProperties
+		*/
+		ashes::FormatProperties getFormatProperties( ashes::Format fmt )const override;
 
 		bool find( std::string const & name )const;
 		bool findAny( ashes::StringArray const & names )const;
 		bool findAll( ashes::StringArray const & names )const;
-		bool hasSPIRVShaderBinaryFormat()const;
-
-		inline int getMajor()const
-		{
-			return m_major;
-		}
-
-		inline int getMinor()const
-		{
-			return m_minor;
-		}
+		int getMajor()const;
+		int getMinor()const;
 
 		inline Instance const & getInstance()const
 		{
@@ -61,6 +76,7 @@ namespace gl_renderer
 		}
 
 	private:
+		void doInitialise();
 		void doGetValue( GLenum name, int32_t & value )const;
 		void doGetValue( GLenum name, uint32_t & value )const;
 		void doGetValues( GLenum name, int32_t( &value )[2] )const;
@@ -88,11 +104,10 @@ namespace gl_renderer
 		void doGetValuesI( GLenum name, float( &value )[3] )const;
 
 	private:
-		Instance & m_instance;
-		ashes::StringArray m_deviceExtensionNames;
-		ashes::StringArray m_deviceSPIRVExtensionNames;
-		std::vector< GlShaderBinaryFormat > m_shaderBinaryFormats;
-		int m_major{ 0 };
-		int m_minor{ 0 };
+		Instance const & m_instance;
+		ashes::PhysicalDeviceFeatures m_features{};
+		ashes::PhysicalDeviceProperties m_properties{};
+		ashes::QueueFamilyPropertiesArray m_queueProperties{};
+		std::array< ashes::FormatProperties, size_t( ashes::Format::eRange ) > m_formatProperties;
 	};
 }

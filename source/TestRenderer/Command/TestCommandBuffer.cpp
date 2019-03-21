@@ -5,7 +5,6 @@ See LICENSE file in root folder.
 #include "Command/TestCommandBuffer.hpp"
 
 #include "Buffer/TestBuffer.hpp"
-#include "Buffer/TestUniformBuffer.hpp"
 #include "Command/TestCommandPool.hpp"
 #include "Core/TestDevice.hpp"
 #include "Descriptor/TestDescriptorSet.hpp"
@@ -20,6 +19,7 @@ See LICENSE file in root folder.
 
 #include <Ashes/Buffer/PushConstantsBuffer.hpp>
 #include <Ashes/Buffer/StagingBuffer.hpp>
+#include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Buffer/VertexBuffer.hpp>
 #include <Ashes/RenderPass/FrameBufferAttachment.hpp>
 

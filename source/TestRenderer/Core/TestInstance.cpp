@@ -12,8 +12,70 @@
 
 namespace test_renderer
 {
-	Instance::Instance( Configuration const & configuration )
-		: ashes::Instance{ ashes::ClipDirection::eTopDown, "test", configuration }
+	ashes::PhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
+		{
+			ashes::PhysicalDeviceMemoryProperties result;
+
+			// Emulate one device local heap
+			result.memoryHeaps.push_back(
+				{
+					~( 0ull ),
+					0u | ashes::MemoryHeapFlag::eDeviceLocal
+				} );
+			// and one host visible heap
+			result.memoryHeaps.push_back(
+				{
+					~( 0ull ),
+					0u
+				} );
+
+			// Emulate all combinations of device local memory types
+			result.memoryTypes.push_back(
+				{
+					0u | ashes::MemoryPropertyFlag::eDeviceLocal,
+					0u,
+				} );
+			result.memoryTypes.push_back(
+				{
+					0u | ashes::MemoryPropertyFlag::eLazilyAllocated,
+					0u,
+				} );
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eDeviceLocal | ashes::MemoryPropertyFlag::eLazilyAllocated,
+					0u,
+				} );
+
+			// and all combinations of host visible memory types
+			result.memoryTypes.push_back(
+				{
+					0u | ashes::MemoryPropertyFlag::eHostVisible,
+					1u,
+				} );
+
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent,
+					1u,
+				} );
+
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCached,
+					1u,
+				} );
+
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent | ashes::MemoryPropertyFlag::eHostCached,
+					1u,
+				} );
+
+			return result;
+		}();
+
+	Instance::Instance( ashes::InstanceCreateInfo createInfo )
+		: ashes::Instance{ ashes::ClipDirection::eTopDown, "test", std::move( createInfo ) }
 	{
 		m_features.hasTexBufferRange = true;
 		m_features.hasImageTexture = true;
@@ -22,12 +84,17 @@ namespace test_renderer
 		m_features.hasComputeShaders = true;
 		m_features.hasStorageBuffers = true;
 		m_features.supportsPersistentMapping = true;
-
-		m_gpus.emplace_back( std::make_unique< PhysicalDevice >( *this ) );
 	}
 
 	Instance::~Instance()
 	{
+	}
+
+	ashes::PhysicalDevicePtrArray Instance::enumeratePhysicalDevices()const
+	{
+		ashes::PhysicalDevicePtrArray result;
+		result.emplace_back( std::make_unique< PhysicalDevice >( *this ) );
+		return result;
 	}
 
 	ashes::DevicePtr Instance::createDevice( ashes::SurfacePtr surface

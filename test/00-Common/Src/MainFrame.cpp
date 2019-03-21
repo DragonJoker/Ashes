@@ -9,7 +9,7 @@ namespace common
 {
 	MainFrame::MainFrame( wxString const & name
 		, wxString const & rendererName
-		, utils::RendererFactory & factory )
+		, utils::InstanceFactory & factory )
 		: wxFrame{ nullptr
 		, wxID_ANY
 		, name + wxT( " (" ) + rendererName + wxT( ")" )
@@ -29,22 +29,20 @@ namespace common
 
 		try
 		{
-			ashes::Instance::Configuration config
+			ashes::ApplicationInfo config
 			{
 				m_name.ToStdString(),
+				ashes::makeVersion( 1, 0, 0 ),
 				"Ashes",
-#if !defined( NDEBUG )
-				true,
-#else
-				false,
-#endif
+				ashes::makeVersion( 1, 0, 0 ),
+				ashes::API_VERSION_1_0,
 			};
 			m_instance = std::make_unique< utils::Instance >( m_factory
 				, m_rendererName.ToStdString()
 				, config );
 
 			std::cout << "Instance instance created." << std::endl;
-			m_panel = doCreatePanel( WindowSize, m_instance->getInstance() );
+			m_panel = doCreatePanel( WindowSize, *m_instance );
 
 			wxBoxSizer * sizer{ new wxBoxSizer{ wxVERTICAL } };
 			sizer->Add( m_panel, wxSizerFlags{ 1 }.Expand() );

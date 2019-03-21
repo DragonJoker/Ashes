@@ -13,14 +13,14 @@
 
 namespace vkapp
 {
-	RenderTarget::RenderTarget( ashes::Device const & device
+	RenderTarget::RenderTarget( utils::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
 		, ashes::Extent2D const & size
 		, common::Scene scene
 		, common::ImagePtrArray images )
 		: common::RenderTarget{ device, commandPool, transferQueue, size, std::move( scene ), std::move( images ) }
-		, m_sceneUbo{ ashes::makeUniformBuffer< common::SceneData >( device
+		, m_sceneUbo{ utils::makeUniformBuffer< common::SceneData >( device
 			, 1u
 			, ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
@@ -34,7 +34,7 @@ namespace vkapp
 	{
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_sceneUbo->getData( 0u ).mtxProjection = utils::Mat4{ m_device.perspective( float( utils::toRadians( 90.0_degrees ) )
+		m_sceneUbo->getData( 0u ).mtxProjection = utils::Mat4{ m_device.getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
 			, 100.0f ) };
@@ -72,7 +72,7 @@ namespace vkapp
 		doUpdateProjection( size );
 	}
 
-	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( ashes::Device const & device
+	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( utils::Device const & device
 		, ashes::StagingBuffer & stagingBuffer
 		, ashes::TextureViewCRefArray const & views
 		, common::Scene const & scene
@@ -92,7 +92,7 @@ namespace vkapp
 			, textureNodes );
 	}
 
-	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( ashes::Device const & device
+	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( utils::Device const & device
 		, ashes::StagingBuffer & stagingBuffer
 		, ashes::TextureViewCRefArray const & views
 		, common::Scene const & scene

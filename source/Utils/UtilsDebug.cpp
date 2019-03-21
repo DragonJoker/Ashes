@@ -18,8 +18,6 @@ namespace utils
 {
 	namespace
 	{
-		static char const * const VK_EXT_DEBUG_REPORT_EXTENSION_NAME = "VK_EXT_debug_report";
-
 		bool ASHES_API debugReportCallback( ashes::DebugReportFlags flags
 			, ashes::DebugReportObjectType objectType
 			, uint64_t object

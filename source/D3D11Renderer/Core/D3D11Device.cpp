@@ -6,7 +6,6 @@ See LICENSE file in root folder.
 
 #include "Buffer/D3D11Buffer.hpp"
 #include "Buffer/D3D11BufferView.hpp"
-#include "Buffer/D3D11UniformBuffer.hpp"
 #include "Command/D3D11CommandPool.hpp"
 #include "Command/D3D11Queue.hpp"
 #include "Core/D3D11Surface.hpp"
@@ -137,12 +136,10 @@ namespace d3d11_renderer
 		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
 	}
 
-	ashes::DeviceMemoryPtr Device::allocateMemory( ashes::MemoryRequirements const & requirements
-		, ashes::MemoryPropertyFlags flags )const
+	ashes::DeviceMemoryPtr Device::allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const
 	{
 		return std::make_unique< DeviceMemory >( *this
-			, requirements
-			, flags );
+			, std::move( allocateInfo ) );
 	}
 
 	ashes::TexturePtr Device::createTexture( ashes::ImageCreateInfo const & createInfo )const
@@ -179,18 +176,6 @@ namespace d3d11_renderer
 			, format
 			, offset
 			, range );
-	}
-
-	ashes::UniformBufferBasePtr Device::createUniformBuffer( uint32_t count
-		, uint32_t size
-		, ashes::BufferTargets target
-		, ashes::MemoryPropertyFlags memoryFlags )const
-	{
-		return std::make_unique< UniformBuffer >( *this
-			, count
-			, size
-			, target
-			, memoryFlags );
 	}
 
 	ashes::SwapChainPtr Device::createSwapChain( ashes::SwapChainCreateInfo createInfo )const
@@ -368,8 +353,11 @@ namespace d3d11_renderer
 		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
 		m_dummyIndexed = ashes::makeBuffer< uint32_t >( *this
 			, count
-			, ashes::BufferTarget::eIndexBuffer | ashes::BufferTarget::eTransferDst
+			, ashes::BufferTarget::eIndexBuffer | ashes::BufferTarget::eTransferDst );
+		auto requirements = m_dummyIndexed->getBuffer().getMemoryRequirements();
+		auto deduced = deduceMemoryType( requirements.memoryTypeBits
 			, ashes::MemoryPropertyFlag::eHostVisible );
+		m_dummyIndexed->bindMemory( allocateMemory( { requirements.size, deduced } ) );
 
 		if ( auto * buffer = m_dummyIndexed->lock( 0u
 			, count

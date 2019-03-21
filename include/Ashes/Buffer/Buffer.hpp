@@ -9,6 +9,7 @@ See LICENSE file in root folder.
 #include "Ashes/Core/Device.hpp"
 #include "Ashes/Core/Exception.hpp"
 #include "Ashes/Miscellaneous/DeviceMemory.hpp"
+#include "Ashes/Miscellaneous/MemoryRequirements.hpp"
 
 namespace ashes
 {
@@ -304,8 +305,6 @@ namespace ashes
 		*	The buffer elements count.
 		*\param[in] target
 		*	The buffer usage flags.
-		*\param[in] flags
-		*	The buffer memory flags.
 		*\~french
 		*\brief
 		*	Constructeur.
@@ -315,13 +314,38 @@ namespace ashes
 		*	Le nombre d'éléments du tampon.
 		*\param[in] target
 		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] flags
-		*	Les indicateurs de mémoire du tampon.
 		*/
 		Buffer( Device const & device
 			, uint32_t count
-			, BufferTargets target
-			, MemoryPropertyFlags flags );
+			, BufferTargets target );
+		/**
+		*\~english
+		*\return
+		*	The memory requirements for this buffer.
+		*\~french
+		*\return
+		*	Les exigences mémoire pour ce tampon.
+		*/
+		inline MemoryRequirements getMemoryRequirements()const
+		{
+			return m_buffer->getMemoryRequirements();
+		}
+		/**
+		*\~english
+		*\brief
+		*	Binds this buffer to given device memory object.
+		*\param[in] memory
+		*	The memory object.
+		*\~french
+		*\brief
+		*	Lie ce tampon à l'objet mémoire donné.
+		*\param[in] memory
+		*	L'object mémoire de périphérique.
+		*/
+		void bindMemory( DeviceMemoryPtr memory )
+		{
+			m_buffer->bindMemory( std::move( memory ) );
+		}
 		/**
 		*\~english
 		*\return
@@ -487,13 +511,11 @@ namespace ashes
 	template< typename T >
 	BufferPtr< T > makeBuffer( Device const & device
 		, uint32_t count
-		, BufferTargets target
-		, MemoryPropertyFlags flags )
+		, BufferTargets target )
 	{
 		return std::make_unique< Buffer< T > >( device
 			, count
-			, target
-			, flags );
+			, target );
 	}
 }
 

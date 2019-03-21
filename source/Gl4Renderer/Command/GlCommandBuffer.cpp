@@ -6,7 +6,6 @@ See LICENSE file in root folder.
 
 #include "Buffer/GlBuffer.hpp"
 #include "Buffer/GlGeometryBuffers.hpp"
-#include "Buffer/GlUniformBuffer.hpp"
 #include "Command/GlCommandPool.hpp"
 #include "Core/GlDevice.hpp"
 #include "Descriptor/GlDescriptorSet.hpp"
@@ -56,6 +55,7 @@ See LICENSE file in root folder.
 #include "Command/Commands/GlWriteTimestampCommand.hpp"
 
 #include <Ashes/Buffer/StagingBuffer.hpp>
+#include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Buffer/VertexBuffer.hpp>
 
 #include <algorithm>

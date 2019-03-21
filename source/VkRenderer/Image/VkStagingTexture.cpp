@@ -34,12 +34,14 @@ namespace vk_renderer
 		{
 			device,
 			uint32_t( ashes::getAlignedSize( getSize( extent, format )
-				, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) ) ),
+				, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) ) ),
 			ashes::BufferTarget::eTransferDst | ashes::BufferTarget::eTransferSrc
 		}
 	{
-		m_buffer.bindMemory( device.allocateMemory( m_buffer.getMemoryRequirements()
-			, ashes::MemoryPropertyFlag::eHostVisible ) );
+		auto requirements = m_buffer.getMemoryRequirements();
+		auto deduced = m_device.deduceMemoryType( requirements.memoryTypeBits
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_buffer.bindMemory( device.allocateMemory( { requirements.size, deduced } ) );
 	}
 
 	void StagingTexture::doCopyToStagingTexture( uint8_t const * data
@@ -49,7 +51,7 @@ namespace vk_renderer
 		uint32_t size = getSize( extent, format );
 		assert( size <= m_buffer.getSize() );
 		auto mappedSize = ashes::getAlignedSize( size
-			, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) );
+			, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) );
 		assert( size <= m_buffer.getSize() );
 		auto buffer = m_buffer.lock( 0u
 			, mappedSize
@@ -129,7 +131,7 @@ namespace vk_renderer
 	{
 		uint32_t size = getSize( extent, format );
 		auto mappedSize = ashes::getAlignedSize( size
-			, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) );
+			, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) );
 		assert( size <= m_buffer.getSize() );
 		auto buffer = m_buffer.lock( 0u
 			, mappedSize

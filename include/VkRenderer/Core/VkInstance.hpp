@@ -21,12 +21,18 @@ namespace vk_renderer
 		*\brief
 		*	Constructeur, initialise l'instance de Vulkan.
 		*/
-		Instance( Configuration const & configuration );
+		Instance( std::unique_ptr< ashes::DynamicLibrary > library
+			, PFN_vkGetInstanceProcAddr getInstanceProcAddr
+			, ashes::InstanceCreateInfo createInfo );
 		/**
 		*\brief
 		*	Destructeur.
 		*/
 		~Instance();
+		/**
+		*\copydoc	ashes::Instance::enumerateLayerProperties
+		*/
+		ashes::PhysicalDevicePtrArray enumeratePhysicalDevices()const override;
 		/**
 		*\copydoc	ashes::Instance::createDevice
 		*/
@@ -41,14 +47,6 @@ namespace vk_renderer
 		*\copydoc	ashes::Instance::createDebugReportCallback
 		*/
 		ashes::DebugReportCallbackPtr createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const override;
-		/**
-		*\copydoc	ashes::Instance::getLayersProperties
-		*/
-		ashes::LayerPropertiesArray getLayersProperties();
-		/**
-		*\copydoc	ashes::Instance::getLayerExtensionProperties
-		*/
-		void getLayerExtensionProperties( ashes::LayerProperties & layerProps );
 		/**
 		*\copydoc	ashes::Instance::frustum
 		*/
@@ -82,48 +80,22 @@ namespace vk_renderer
 		*\brief
 		*	VkInstance implicit cast operator.
 		*/
-		inline operator VkInstance const &( )const
+		inline operator VkInstance const & ()const
 		{
 			return m_instance;
 		}
 
-		PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
+		PFN_vkGetInstanceProcAddr m_getInstanceProcAddr;
 #define VK_LIB_GLOBAL_FUNCTION( fun ) PFN_##fun fun;
 #define VK_LIB_INSTANCE_FUNCTION( fun ) PFN_##fun fun;
 #	include "Miscellaneous/VulkanFunctionsList.inl"
 
 	private:
-		/**
-		*\~french
-		*\brief
-		*	Enumère les couches disponibles sur le système.
-		*\~english
-		*\brief
-		*	Lists all layers available on the system.
-		*/
-		void doInitLayersProperties();
-		/**
-		*\~french
-		*\brief
-		*	Crée l'instance Vulkan.
-		*\~english
-		*\brief
-		*	Creates the Vulkan instance.
-		*/
 		void doInitInstance();
-		/**
-		*\~french
-		*\brief
-		*	Enumère les GPU physiques disponibles.
-		*\~english
-		*\brief
-		*	Lists the available physical GPUs.
-		*/
-		void doEnumerateDevices();
 		PFN_vkVoidFunction getInstanceProcAddr( char const * const name );
 
 	private:
-		ashes::DynamicLibrary m_library;
+		std::unique_ptr< ashes::DynamicLibrary > m_library;
 		VkInstance m_instance{ VK_NULL_HANDLE };
 	};
 }

@@ -19,6 +19,7 @@ namespace ashes
 	enum class SurfaceTransformFlag
 		: uint32_t
 	{
+		eNone = 0x00000001,
 		eIdentity = 0x00000001,
 		eRotate90 = 0x00000002,
 		eRotate180 = 0x00000004,

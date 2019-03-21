@@ -10,7 +10,7 @@ namespace vkapp
 		: public common::RenderTarget
 	{
 	public:
-		RenderTarget( ashes::Device const & device
+		RenderTarget( utils::Device const & device
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue
 			, ashes::Extent2D const & size
@@ -25,12 +25,12 @@ namespace vkapp
 	private:
 		void doUpdate( std::chrono::microseconds const & duration )override;
 		virtual void doResize( ashes::Extent2D const & size )override;
-		common::OpaqueRenderingPtr doCreateOpaqueRendering( ashes::Device const & device
+		common::OpaqueRenderingPtr doCreateOpaqueRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
 			, ashes::TextureViewCRefArray const & views
 			, common::Scene const & scene
 			, common::TextureNodePtrArray const & textureNodes )override;
-		common::TransparentRenderingPtr doCreateTransparentRendering( ashes::Device const & device
+		common::TransparentRenderingPtr doCreateTransparentRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
 			, ashes::TextureViewCRefArray const & views
 			, common::Scene const & scene

@@ -38,36 +38,36 @@ namespace vk_renderer
 		*\param[in] gpu
 		*	The Vulkan physical GPU.
 		*/
-		PhysicalDevice( Instance & instance
+		PhysicalDevice( Instance const & instance
 			, VkPhysicalDevice gpu );
 		/**
-		*\copydoc	ashes::PhysicalDevice::initialise
+		*\copydoc	ashes::Instance::enumerateLayerProperties
 		*/
-		void initialise()override;
+		ashes::LayerPropertiesArray enumerateLayerProperties()const override;
 		/**
-		*\~french
-		*\return
-		*	Les noms des extensions supportées par le GPU.
-		*\~english
-		*\return
-		*	The GPU's supported extensions names.
+		*\copydoc	ashes::Instance::enumerateExtensionProperties
 		*/
-		inline ashes::StringArray const & getExtensionNames()const
-		{
-			return m_extensionNames;
-		}
+		ashes::ExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const override;
 		/**
-		*\~french
-		*\return
-		*	Les noms des couches supportées par le GPU.
-		*\~english
-		*\return
-		*	The GPU's supported layers names.
+		*\copydoc	ashes::Instance::getProperties
 		*/
-		inline ashes::StringArray const & getLayerNames()const
-		{
-			return m_layerNames;
-		}
+		ashes::PhysicalDeviceProperties getProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getMemoryProperties
+		*/
+		ashes::PhysicalDeviceMemoryProperties getMemoryProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getFeatures
+		*/
+		ashes::PhysicalDeviceFeatures getFeatures()const override;
+		/**
+		*\copydoc	ashes::Instance::getQueueFamilyProperties
+		*/
+		ashes::QueueFamilyPropertiesArray getQueueFamilyProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getFormatProperties
+		*/
+		ashes::FormatProperties getFormatProperties( ashes::Format fmt )const override;
 		/**
 		*\~french
 		*\brief
@@ -82,9 +82,7 @@ namespace vk_renderer
 		}
 
 	private:
-		Instance & m_instance;
+		Instance const & m_instance;
 		VkPhysicalDevice m_gpu{ VK_NULL_HANDLE };
-		ashes::StringArray m_extensionNames;
-		ashes::StringArray m_layerNames;
 	};
 }

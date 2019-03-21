@@ -437,6 +437,7 @@ namespace ashes
 		Device const & m_device;
 		AccessFlags m_currentAccessMask{ AccessFlag::eMemoryWrite };
 		BufferBasePtr m_buffer;
+		DeviceMemoryPtr m_storage;
 	};
 }
 

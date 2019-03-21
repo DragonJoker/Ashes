@@ -255,13 +255,17 @@ namespace common
 				try
 				{
 					ashes::DynamicLibrary lib{ file };
-					m_plugins.emplace_back( std::move( lib )
-						, m_factory );
+					m_plugins.emplace_back( std::move( lib ) );
 				}
 				catch ( std::exception & exc )
 				{
 					std::clog << exc.what() << std::endl;
 				}
+			}
+
+			for ( auto & plugin : m_plugins )
+			{
+				m_factory.registerType( plugin.getShortName(), &plugin );
 			}
 		}
 

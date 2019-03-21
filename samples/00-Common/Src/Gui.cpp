@@ -48,7 +48,7 @@ namespace common
 		}
 	}
 
-	Gui::Gui( ashes::Device const & device
+	Gui::Gui( utils::Device const & device
 		, ashes::Queue const & queue
 		, ashes::CommandPool const & commandPool
 		, ashes::Extent2D const & size )
@@ -106,7 +106,7 @@ namespace common
 		{
 			m_vertexBuffer.reset();
 			m_vertexCount = vertexBufferSize;
-			m_vertexBuffer = ashes::makeVertexBuffer< ImDrawVert >( m_device
+			m_vertexBuffer = utils::makeVertexBuffer< ImDrawVert >( m_device
 				, m_vertexCount
 				, ashes::BufferTargets{ 0u }
 				, ashes::MemoryPropertyFlag::eHostVisible );
@@ -119,7 +119,7 @@ namespace common
 		{
 			m_indexBuffer.reset();
 			m_indexCount = indexBufferSize;
-			m_indexBuffer = ashes::makeBuffer< ImDrawIdx >( m_device
+			m_indexBuffer = utils::makeBuffer< ImDrawIdx >( m_device
 				, m_indexCount
 				, ashes::BufferTarget::eIndexBuffer
 				, ashes::MemoryPropertyFlag::eHostVisible );
@@ -270,7 +270,7 @@ namespace common
 			, m_fontImage->getFormat() );
 
 		auto copyCmd = commandPool.createCommandBuffer();
-		auto stagingTexture = m_device.createStagingTexture( ashes::Format::eR8G8B8A8_UNORM
+		auto stagingTexture = m_device.getDevice().createStagingTexture( ashes::Format::eR8G8B8A8_UNORM
 			, { uint32_t( texWidth ), uint32_t( texHeight ) } );
 		stagingTexture->uploadTextureData( queue
 			, commandPool
@@ -278,14 +278,14 @@ namespace common
 			, fontData
 			, *m_fontView );
 
-		m_sampler = m_device.createSampler( ashes::WrapMode::eClampToEdge
+		m_sampler = m_device.getDevice().createSampler( ashes::WrapMode::eClampToEdge
 			, ashes::WrapMode::eClampToEdge
 			, ashes::WrapMode::eClampToEdge
 			, ashes::Filter::eLinear
 			, ashes::Filter::eLinear
 			, ashes::MipmapMode::eNone );
 
-		m_commandPool = m_device.createCommandPool( queue.getFamilyIndex()
+		m_commandPool = m_device.getDevice().createCommandPool( queue.getFamilyIndex()
 			, ashes::CommandPoolCreateFlag::eResetCommandBuffer );
 		m_commandBuffer = m_commandPool->createCommandBuffer();
 
@@ -293,7 +293,7 @@ namespace common
 		{
 			{ 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment }
 		};
-		m_descriptorSetLayout = m_device.createDescriptorSetLayout( std::move( bindings ) );
+		m_descriptorSetLayout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorPool = m_descriptorSetLayout->createPool( 2u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
 		m_descriptorSet->createBinding( m_descriptorSetLayout->getBinding( 0u )
@@ -302,10 +302,10 @@ namespace common
 		m_descriptorSet->update();
 
 		ashes::PushConstantRange range{ ashes::ShaderStageFlag::eVertex, 0u, m_pushConstants.getSize() };
-		m_pipelineLayout = m_device.createPipelineLayout( *m_descriptorSetLayout
+		m_pipelineLayout = m_device.getDevice().createPipelineLayout( *m_descriptorSetLayout
 			, range );
 
-		m_fence = m_device.createFence();
+		m_fence = m_device.getDevice().createFence();
 
 		m_vertexLayout = ashes::makeLayout< ImDrawVert >( 0u );
 		m_vertexLayout->createAttribute( 0u
@@ -363,7 +363,7 @@ namespace common
 				ashes::AccessFlag::eColourAttachmentRead | ashes::AccessFlag::eColourAttachmentWrite
 			}
 			, subAttaches ) );
-		m_renderPass = m_device.createRenderPass( rpAttaches
+		m_renderPass = m_device.getDevice().createRenderPass( rpAttaches
 			, std::move( subpasses )
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
 				, ashes::AccessFlag::eColourAttachmentWrite }
@@ -391,10 +391,10 @@ namespace common
 
 		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 		std::vector< ashes::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device.createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device.createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( dumpShaderFile( m_device, ashes::ShaderStageFlag::eVertex, shadersFolder / "gui.vert" ) );
-		shaderStages[1].module->loadShader( dumpShaderFile( m_device, ashes::ShaderStageFlag::eFragment, shadersFolder / "gui.frag" ) );
+		shaderStages.push_back( { m_device.getDevice().createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
+		shaderStages.push_back( { m_device.getDevice().createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
+		shaderStages[0].module->loadShader( dumpShaderFile( m_device.getDevice(), ashes::ShaderStageFlag::eVertex, shadersFolder / "gui.vert" ) );
+		shaderStages[1].module->loadShader( dumpShaderFile( m_device.getDevice(), ashes::ShaderStageFlag::eFragment, shadersFolder / "gui.frag" ) );
 
 		std::vector< ashes::DynamicStateEnable > dynamicStateEnables
 		{

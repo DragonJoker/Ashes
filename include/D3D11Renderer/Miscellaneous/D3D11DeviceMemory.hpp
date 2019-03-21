@@ -27,8 +27,7 @@ namespace d3d11_renderer
 		{
 		public:
 			DeviceMemoryImpl( Device const & device
-				, ashes::MemoryRequirements const & requirements
-				, ashes::MemoryPropertyFlags flags );
+				, ashes::MemoryAllocateInfo allocateInfo );
 			virtual ~DeviceMemoryImpl() = default;
 			virtual uint8_t * lock( uint64_t offset
 				, uint64_t size
@@ -41,7 +40,7 @@ namespace d3d11_renderer
 
 		protected:
 			Device const & m_device;
-			ashes::MemoryRequirements m_requirements;
+			ashes::MemoryAllocateInfo m_allocateInfo;
 			ashes::MemoryPropertyFlags m_flags;
 		};
 
@@ -67,8 +66,7 @@ namespace d3d11_renderer
 		*	The wanted memory flags.
 		*/
 		DeviceMemory( Device const & device
-			, ashes::MemoryRequirements const & requirements
-			, ashes::MemoryPropertyFlags flags );
+			, ashes::MemoryAllocateInfo allocateInfo );
 		/**
 		*\~french
 		*\brief

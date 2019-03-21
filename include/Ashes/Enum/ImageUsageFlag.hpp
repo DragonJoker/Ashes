@@ -15,6 +15,7 @@ namespace ashes
 	enum class ImageUsageFlag
 		: uint32_t
 	{
+		eNone = 0x00000000,
 		eUndefined = 0x00000000,
 		eTransferSrc = 0x00000001,
 		eTransferDst = 0x00000002,

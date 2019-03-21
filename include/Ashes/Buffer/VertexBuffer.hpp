@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "Ashes/Buffer/Buffer.hpp"
+#include "Ashes/Miscellaneous/MemoryRequirements.hpp"
 
 #include <vector>
 
@@ -28,13 +29,10 @@ namespace ashes
 		*	La taille du tampon.
 		*\param[in] target
 		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] flags
-		*	Les indicateurs de mémoire du tampon.
 		*/
 		VertexBufferBase( Device const & device
 			, uint32_t size
-			, BufferTargets target
-			, MemoryPropertyFlags flags );
+			, BufferTargets target );
 		/**
 		*\~english
 		*\brief
@@ -44,6 +42,28 @@ namespace ashes
 		*	Destructeur.
 		*/
 		virtual ~VertexBufferBase() = default;
+		/**
+		*\~english
+		*\brief
+		*	Binds this buffer to given device memory object.
+		*\param[in] memory
+		*	The memory object.
+		*\~french
+		*\brief
+		*	Lie ce tampon à l'objet mémoire donné.
+		*\param[in] memory
+		*	L'object mémoire de périphérique.
+		*/
+		void bindMemory( DeviceMemoryPtr memory );
+		/**
+		*\~english
+		*\return
+		*	The memory requirements for this buffer.
+		*\~french
+		*\return
+		*	Les exigences mémoire pour ce tampon.
+		*/
+		MemoryRequirements getMemoryRequirements()const;
 		/**
 		*\return
 		*	La taille du tampon.
@@ -92,13 +112,38 @@ namespace ashes
 		*	La nombre d'éléments dans le tampon.
 		*\param[in] target
 		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] flags
-		*	Les indicateurs de mémoire du tampon.
 		*/
 		inline VertexBuffer( Device const & device
 			, uint32_t count
-			, BufferTargets target
-			, MemoryPropertyFlags flags );
+			, BufferTargets target );
+		/**
+		*\~english
+		*\brief
+		*	Binds this buffer to given device memory object.
+		*\param[in] memory
+		*	The memory object.
+		*\~french
+		*\brief
+		*	Lie ce tampon à l'objet mémoire donné.
+		*\param[in] memory
+		*	L'object mémoire de périphérique.
+		*/
+		inline void bindMemory( DeviceMemoryPtr memory )
+		{
+			m_buffer->bindMemory( std::move( memory ) );
+		}
+		/**
+		*\~english
+		*\return
+		*	The memory requirements for this buffer.
+		*\~french
+		*\return
+		*	Les exigences mémoire pour ce tampon.
+		*/
+		inline MemoryRequirements getMemoryRequirements()const
+		{
+			return m_buffer->getMemoryRequirements();
+		}
 		/**
 		*\return
 		*	Le nombre d'éléments contenus dans ce tampon.
@@ -230,13 +275,11 @@ namespace ashes
 	template< typename T >
 	inline VertexBufferPtr< T > makeVertexBuffer( Device const & device
 		, uint32_t count
-		, BufferTargets target
-		, MemoryPropertyFlags flags )
+		, BufferTargets target )
 	{
 		return std::make_unique< VertexBuffer< T > >( device
 			, count
-			, target
-			, flags );
+			, target );
 	}
 }
 

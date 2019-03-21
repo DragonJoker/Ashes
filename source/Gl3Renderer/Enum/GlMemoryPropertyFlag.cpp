@@ -31,7 +31,7 @@ namespace gl_renderer
 
 	GlMemoryPropertyFlag convert( ashes::MemoryPropertyFlags const & flags )
 	{
-		uint32_t result{ GL_STREAM_DRAW };
+		GlMemoryPropertyFlag result{ GL_STREAM_DRAW };
 
 		if ( checkFlag( flags, ashes::MemoryPropertyFlag::eDeviceLocal ) )
 		{
@@ -42,6 +42,6 @@ namespace gl_renderer
 			result = GL_DYNAMIC_DRAW;
 		}
 
-		return GlMemoryPropertyFlag( result );
+		return result;
 	}
 }

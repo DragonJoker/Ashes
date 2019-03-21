@@ -21,12 +21,16 @@ namespace test_renderer
 		*\brief
 		*	Constructeur, initialise l'instance de Vulkan.
 		*/
-		Instance( Configuration const & configuration );
+		Instance( ashes::InstanceCreateInfo createInfo );
 		/**
 		*\brief
 		*	Destructeur.
 		*/
 		~Instance();
+		/**
+		*\copydoc	ashes::Instance::enumerateLayerProperties
+		*/
+		ashes::PhysicalDevicePtrArray enumeratePhysicalDevices()const override;
 		/**
 		*\copydoc	ashes::Instance::createDevice
 		*/
@@ -66,5 +70,13 @@ namespace test_renderer
 			, float top
 			, float zNear
 			, float zFar )const override;
+
+		static inline ashes::PhysicalDeviceMemoryProperties const & getMemoryProperties()
+		{
+			return m_memoryProperties;
+		}
+
+	private:
+		static ashes::PhysicalDeviceMemoryProperties const m_memoryProperties;
 	};
 }

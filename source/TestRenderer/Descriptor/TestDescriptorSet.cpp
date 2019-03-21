@@ -2,12 +2,13 @@
 
 #include "Buffer/TestBuffer.hpp"
 #include "Buffer/TestBufferView.hpp"
-#include "Buffer/TestUniformBuffer.hpp"
 #include "Core/TestDevice.hpp"
 #include "Descriptor/TestDescriptorSetLayout.hpp"
 #include "Descriptor/TestDescriptorPool.hpp"
 #include "Image/TestSampler.hpp"
 #include "Image/TestTextureView.hpp"
+
+#include <Ashes/Buffer/UniformBuffer.hpp>
 
 namespace test_renderer
 {

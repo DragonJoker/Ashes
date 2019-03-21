@@ -14,14 +14,14 @@ namespace common
 	public:
 		MainFrame( wxString const & name
 			, wxString const & rendererName
-			, utils::RendererFactory & factory );
+			, utils::InstanceFactory & factory );
 		virtual ~MainFrame();
 
 		void initialise();
 		void cleanup();
 
 	private:
-		virtual RenderPanel * doCreatePanel( wxSize const & size, ashes::Instance const & instance ) = 0;
+		virtual RenderPanel * doCreatePanel( wxSize const & size, utils::Instance const & instance ) = 0;
 
 		wxDECLARE_EVENT_TABLE();
 		void onClose( wxCloseEvent & event );
@@ -32,7 +32,7 @@ namespace common
 		wxString m_name;
 		wxString m_rendererName;
 		utils::InstancePtr m_instance;
-		utils::RendererFactory & m_factory;
+		utils::InstanceFactory & m_factory;
 		RenderPanel * m_panel{ nullptr };
 	};
 }

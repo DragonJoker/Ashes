@@ -21,12 +21,16 @@ namespace d3d11_renderer
 		*\brief
 		*	Constructeur, initialise l'instance de Vulkan.
 		*/
-		Instance( Configuration const & configuration );
+		Instance( ashes::InstanceCreateInfo createInfo );
 		/**
 		*\brief
 		*	Destructeur.
 		*/
 		~Instance();
+		/**
+		*\copydoc	ashes::Instance::enumerateLayerProperties
+		*/
+		ashes::PhysicalDevicePtrArray enumeratePhysicalDevices()const override;
 		/**
 		*\copydoc	ashes::Instance::createDevice
 		*/
@@ -72,11 +76,19 @@ namespace d3d11_renderer
 			return m_factory;
 		}
 
+		static inline ashes::PhysicalDeviceMemoryProperties const & getMemoryProperties()
+		{
+			return m_memoryProperties;
+		}
+
 	private:
 		void doCreateDXGIFactory();
-		D3D_FEATURE_LEVEL doLoadAdapters();
+		void doLoadAdapters();
 
 	private:
 		IDXGIFactory * m_factory;
+		std::vector< AdapterInfo > m_adapters;
+		D3D_FEATURE_LEVEL m_maxFeatureLevel;
+		static ashes::PhysicalDeviceMemoryProperties const m_memoryProperties;
 	};
 }

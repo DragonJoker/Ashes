@@ -2,7 +2,7 @@
 
 namespace vkapp
 {
-	NodesRenderer::NodesRenderer( ashes::Device const & device
+	NodesRenderer::NodesRenderer( utils::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
 		, std::string const & fragmentShaderFile

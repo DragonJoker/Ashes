@@ -6,7 +6,7 @@
 */
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "Gl3Renderer/Core/GlExtensionsHandler.hpp"
 
 #include <Ashes/Core/Instance.hpp>
 
@@ -20,7 +20,11 @@ namespace gl_renderer
 		*\brief
 		*	Constructeur, initialise l'instance de Vulkan.
 		*/
-		Instance( Configuration const & configuration );
+		Instance( ashes::InstanceCreateInfo createInfo );
+		/**
+		*\copydoc	ashes::Instance::enumerateLayerProperties
+		*/
+		ashes::PhysicalDevicePtrArray enumeratePhysicalDevices()const override;
 		/**
 		*\copydoc	ashes::Instance::createDevice
 		*/
@@ -66,7 +70,12 @@ namespace gl_renderer
 
 		inline bool isSPIRVSupported()const
 		{
-			return m_spirvSupported;
+			return m_extensions.isSPIRVSupported();
+		}
+
+		inline bool isValidationEnabled()const
+		{
+			return m_validationEnabled;
 		}
 
 		inline std::vector< DebugReportCallbackData > const & getDebugCallbacks()const
@@ -79,9 +88,21 @@ namespace gl_renderer
 			return m_debugAMDCallbacks;
 		}
 
+		inline ExtensionsHandler const & getExtensions()const
+		{
+			return m_extensions;
+		}
+
+		static inline ashes::PhysicalDeviceMemoryProperties const & getMemoryProperties()
+		{
+			return m_memoryProperties;
+		}
+
 	private:
-		bool m_spirvSupported;
 		mutable std::vector< DebugReportCallbackData > m_debugCallbacks;
 		mutable std::vector< DebugReportAMDCallbackData > m_debugAMDCallbacks;
+		ExtensionsHandler m_extensions;
+		bool m_validationEnabled;
+		static ashes::PhysicalDeviceMemoryProperties const m_memoryProperties;
 	};
 }

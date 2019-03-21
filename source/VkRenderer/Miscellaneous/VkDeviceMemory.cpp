@@ -10,29 +10,13 @@ See LICENSE file in root folder
 namespace vk_renderer
 {
 	DeviceMemory::DeviceMemory( Device const & device
-		, ashes::MemoryRequirements const & requirements
-		, ashes::MemoryPropertyFlags flags )
-		: ashes::DeviceMemory{ device, flags }
+		, ashes::MemoryAllocateInfo allocateInfo )
+		: ashes::DeviceMemory{ device, std::move( allocateInfo ) }
 		, m_device{ device }
 	{
-		uint32_t deducedTypeIndex{ 0xFFFFFFFF };
-
-		if ( !m_device.getPhysicalDevice().deduceMemoryType( requirements.memoryTypeBits
-			, flags
-			, deducedTypeIndex ) )
-		{
-			throw std::runtime_error{ "Could not find an appropriate memory type for buffer storage" };
-		}
-
-		VkMemoryAllocateInfo allocateInfo
-		{
-			VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-			nullptr,
-			requirements.size,                        // allocationSize
-			deducedTypeIndex                          // memoryTypeIndex
-		};
-		DEBUG_DUMP( allocateInfo );
-		auto res = m_device.vkAllocateMemory( m_device, &allocateInfo, nullptr, &m_memory );
+		auto vkAllocateInfo = convert( m_allocateInfo );
+		DEBUG_DUMP( vkAllocateInfo );
+		auto res = m_device.vkAllocateMemory( m_device, &vkAllocateInfo, nullptr, &m_memory );
 		checkError( res, "DeviceMemory allocation" );
 	}
 

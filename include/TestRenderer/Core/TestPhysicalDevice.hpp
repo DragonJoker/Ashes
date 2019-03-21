@@ -38,13 +38,44 @@ namespace test_renderer
 		*\param[in] gpu
 		*	The Vulkan physical GPU.
 		*/
-		PhysicalDevice( Instance & instance );
+		PhysicalDevice( Instance const & instance );
 		/**
-		*\copydoc	ashes::PhysicalDevice::initialise
+		*\copydoc	ashes::Instance::enumerateLayerProperties
 		*/
-		void initialise()override;
+		ashes::LayerPropertiesArray enumerateLayerProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::enumerateExtensionProperties
+		*/
+		ashes::ExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const override;
+		/**
+		*\copydoc	ashes::Instance::getProperties
+		*/
+		ashes::PhysicalDeviceProperties getProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getMemoryProperties
+		*/
+		ashes::PhysicalDeviceMemoryProperties getMemoryProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getFeatures
+		*/
+		ashes::PhysicalDeviceFeatures getFeatures()const override;
+		/**
+		*\copydoc	ashes::Instance::getQueueFamilyProperties
+		*/
+		ashes::QueueFamilyPropertiesArray getQueueFamilyProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getFormatProperties
+		*/
+		ashes::FormatProperties getFormatProperties( ashes::Format fmt )const override;
 
 	private:
-		Instance & m_instance;
+		void doInitialise();
+
+	private:
+		Instance const & m_instance;
+		ashes::PhysicalDeviceFeatures m_features{};
+		ashes::PhysicalDeviceProperties m_properties{};
+		ashes::QueueFamilyPropertiesArray m_queueProperties{};
+		std::array< ashes::FormatProperties, size_t( ashes::Format::eRange ) > m_formatProperties;
 	};
 }

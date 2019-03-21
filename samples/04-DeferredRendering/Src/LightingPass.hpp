@@ -9,7 +9,7 @@ namespace vkapp
 	class LightingPass
 	{
 	public:
-		LightingPass( ashes::Device const & device
+		LightingPass( utils::Device const & device
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue
 			, ashes::UniformBuffer< common::LightsData > const & lightsUbo
@@ -23,7 +23,7 @@ namespace vkapp
 			, std::chrono::nanoseconds & gpu )const;
 
 	private:
-		ashes::Device const & m_device;
+		utils::Device const & m_device;
 		ashes::CommandPool const & m_commandPool;
 		ashes::Queue const & m_transferQueue;
 		ashes::UniformBuffer< common::LightsData > const & m_lightsUbo;

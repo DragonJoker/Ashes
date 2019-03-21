@@ -27,6 +27,10 @@ namespace ashes
 		, m_gpu{ gpu }
 		, m_surface{ surface }
 		, m_createInfos{ std::move( createInfos ) }
+		, m_memoryProperties{ m_gpu.getMemoryProperties() }
+		, m_properties{ m_gpu.getProperties() }
+		, m_features{ m_gpu.getFeatures() }
+		, m_queueFamilyProperties{ m_gpu.getQueueFamilyProperties() }
 	{
 	}
 
@@ -68,23 +72,6 @@ namespace ashes
 		, float zNear )const
 	{
 		return m_instance.infinitePerspective( radiansFovY, aspect, zNear );
-	}
-
-	BufferBasePtr Device::createBuffer( uint32_t size
-		, BufferTargets target
-		, MemoryPropertyFlags flags )const
-	{
-		auto result = createBuffer( size, target );
-		result->bindMemory( allocateMemory( result->getMemoryRequirements(), flags ) );
-		return result;
-	}
-
-	TexturePtr Device::createTexture( ImageCreateInfo const & createInfo
-		, MemoryPropertyFlags flags )const
-	{
-		auto result = createTexture( createInfo );
-		result->bindMemory( allocateMemory( result->getMemoryRequirements(), flags ) );
-		return result;
 	}
 
 	RenderPassPtr Device::createRenderPass( AttachmentDescriptionArray const & attaches

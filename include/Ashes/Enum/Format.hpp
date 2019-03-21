@@ -277,6 +277,8 @@ namespace ashes
 		/**@}*/
 		eCompressed_BEGIN = eBCCompressed_BEGIN,
 		eCompressed_END = eASTCCompressed_END,
+		eRange_BEGIN = eColour_BEGIN,
+		eRange_END = eASTCCompressed_END,
 		eRange,
 	};
 	/**

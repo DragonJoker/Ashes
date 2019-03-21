@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Ashes/Buffer/StagingBuffer.hpp"
 
+#include "Ashes/Buffer/Buffer.hpp"
 #include "Ashes/Command/CommandBuffer.hpp"
 #include "Ashes/Core/Device.hpp"
 #include "Ashes/Core/Exception.hpp"
@@ -14,14 +15,62 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+	namespace
+	{
+		uint32_t deduceMemoryType( uint32_t typeBits
+			, ashes::MemoryPropertyFlags requirements
+			, ashes::PhysicalDeviceMemoryProperties const & memoryProperties )
+		{
+			uint32_t result = 0xFFFFFFFFu;
+			bool found{ false };
+
+			// Recherche parmi les types de mémoire la première ayant les propriétés voulues.
+			uint32_t i{ 0 };
+
+			while ( i < memoryProperties.memoryTypes.size() && !found )
+			{
+				if ( ( typeBits & 1 ) == 1 )
+				{
+					// Le type de mémoire est disponible, a-t-il les propriétés demandées?
+					if ( ( memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
+					{
+						result = i;
+						found = true;
+					}
+				}
+
+				typeBits >>= 1;
+				++i;
+			}
+
+			if ( !found )
+			{
+				throw ashes::Exception{ ashes::Result::eErrorRenderer, "Could not deduce memory type" };
+			}
+
+			return result;
+		}
+
+		ashes::MemoryAllocateInfo getAllocateInfo( Device const & device
+			, BufferBase const & buffer )
+		{
+			auto requirements = buffer.getMemoryRequirements();
+			auto deduced = deduceMemoryType( requirements.memoryTypeBits
+				, ashes::MemoryPropertyFlag::eHostVisible
+				, device.getMemoryProperties() );
+			return { requirements.size, deduced };
+		}
+	}
+
 	StagingBuffer::StagingBuffer( Device const & device
 		, BufferTargets target
 		, uint32_t size )
 		: m_device{ device }
 		, m_buffer{ device.createBuffer( size
-			, target | BufferTarget::eTransferSrc | BufferTarget::eTransferDst
-			, MemoryPropertyFlag::eHostVisible ) }
+			, target | BufferTarget::eTransferSrc | BufferTarget::eTransferDst ) }
+		, m_storage{ device.allocateMemory( getAllocateInfo( device, *m_buffer ) ) }
 	{
+		m_buffer->bindMemory( m_storage );
 	}
 
 	void StagingBuffer::doCopyToStagingBuffer( uint8_t const * data
@@ -29,7 +78,7 @@ namespace ashes
 	{
 		assert( size <= getBuffer().getSize() );
 		auto mappedSize = getAlignedSize( size
-			, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) );
+			, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) );
 		mappedSize = mappedSize > getBuffer().getSize()
 			? ~( 0ull )
 			: mappedSize;
@@ -117,7 +166,7 @@ namespace ashes
 	{
 		assert( size <= getBuffer().getSize() );
 		auto mappedSize = getAlignedSize( size
-			, uint32_t( m_device.getPhysicalDevice().getProperties().limits.nonCoherentAtomSize ) );
+			, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) );
 		mappedSize = mappedSize > getBuffer().getSize()
 			? ~( 0ull )
 			: mappedSize;
