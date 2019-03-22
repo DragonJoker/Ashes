@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
@@ -154,7 +154,7 @@ namespace utils
 				ashes::CompositeAlphaFlag::eOpaque,
 				presentMode,
 				false,
-				std::nullopt
+				ashes::nullopt
 			};
 		}
 	}

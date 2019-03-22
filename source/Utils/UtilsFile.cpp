@@ -3,6 +3,7 @@
 #include <Ashes/Core/Device.hpp>
 
 #include <cassert>
+#include <iostream>
 #include <regex>
 
 #if ASHES_WIN32

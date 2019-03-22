@@ -25,7 +25,7 @@ namespace utils
 		{
 			// Parcours des propriétés des files, pour vérifier leur support de la présentation.
 			auto queueProps = gpu.getQueueFamilyProperties();
-			std::vector< bool > supportsPresent( static_cast< uint32_t >( queueProps.size() ) );
+			std::vector< uint32_t > supportsPresent( static_cast< uint32_t >( queueProps.size() ) );
 			uint32_t i{ 0u };
 			graphicsQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
 			presentQueueFamilyIndex = std::numeric_limits< uint32_t >::max();
@@ -33,7 +33,7 @@ namespace utils
 
 			for ( auto & present : supportsPresent )
 			{
-				auto present = surface.getSupport( i );
+				present = surface.getSupport( i );
 
 				if ( queueProps[i].queueCount > 0 )
 				{

@@ -178,6 +178,11 @@ namespace common
 		return path.substr( 0, path.find_last_of( PathSeparator ) );
 	}
 
+	std::string getFileName( std::string const & path )
+	{
+		return path.substr( path.find_last_of( PathSeparator ) + 1u );
+	}
+
 #if ASHES_WIN32
 
 	std::string getExecutableDirectory()

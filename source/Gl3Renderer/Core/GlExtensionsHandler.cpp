@@ -28,11 +28,11 @@ namespace gl_renderer
 	{
 		enum GlSpirvExtensions
 		{
-			GL_SHADER_BINARY_FORMATS = 0x8DF8,
-			GL_NUM_SHADER_BINARY_FORMATS = 0x8DF9,
-			GL_SPIR_V_BINARY = 0x9552,
-			GL_SPIR_V_EXTENSIONS = 0x9553,
-			GL_NUM_SPIR_V_EXTENSIONS = 0x9554,
+			GL_SPIRV_SHADER_BINARY_FORMATS = 0x8DF8,
+			GL_SPIRV_NUM_SHADER_BINARY_FORMATS = 0x8DF9,
+			GL_SPIRV_SPIR_V_BINARY = 0x9552,
+			GL_SPIRV_SPIR_V_EXTENSIONS = 0x9553,
+			GL_SPIRV_NUM_SPIR_V_EXTENSIONS = 0x9554,
 		};
 
 		using PFN_glGetStringi = const GLubyte *( GLAPIENTRY * )( GLenum name, GLuint index );
@@ -96,11 +96,11 @@ namespace gl_renderer
 		}
 
 		int numSpirvExtensions = 0;
-		glGetIntegerv( GL_NUM_SPIR_V_EXTENSIONS, &numSpirvExtensions );
+		glGetIntegerv( GL_SPIRV_NUM_SPIR_V_EXTENSIONS, &numSpirvExtensions );
 
 		for ( auto index = 0; index < numSpirvExtensions; ++index )
 		{
-			auto const * cspirvext = ( char const * )glGetStringi( GL_SPIR_V_EXTENSIONS, index );
+			auto const * cspirvext = ( char const * )glGetStringi( GL_SPIRV_SPIR_V_EXTENSIONS, index );
 
 			if ( cspirvext )
 			{
@@ -109,12 +109,12 @@ namespace gl_renderer
 		}
 
 		int numBinaryFormats = 0;
-		glGetIntegerv( GL_NUM_SHADER_BINARY_FORMATS, &numSpirvExtensions );
+		glGetIntegerv( GL_SPIRV_NUM_SHADER_BINARY_FORMATS, &numSpirvExtensions );
 
 		if ( numBinaryFormats > 0 )
 		{
 			m_shaderBinaryFormats.resize( numBinaryFormats );
-			glGetIntegerv( GL_SHADER_BINARY_FORMATS, reinterpret_cast< int * >( m_shaderBinaryFormats.data() ) );
+			glGetIntegerv( GL_SPIRV_SHADER_BINARY_FORMATS, reinterpret_cast< int * >( m_shaderBinaryFormats.data() ) );
 		}
 
 		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...

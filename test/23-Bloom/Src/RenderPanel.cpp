@@ -822,8 +822,8 @@ namespace vkapp
 			ashes::MultisampleState{},
 			ashes::ColourBlendState::createDefault(),
 			{},
-			std::nullopt,
-			std::nullopt,
+			ashes::nullopt,
+			ashes::nullopt,
 			ashes::Viewport{ { 0, 0 }, dimensions },
 			ashes::Scissor{ { 0, 0 }, dimensions }
 		};
@@ -1001,8 +1001,8 @@ namespace vkapp
 				ashes::MultisampleState{},
 				ashes::ColourBlendState::createDefault(),
 				{},
-				std::nullopt,
-				std::nullopt,
+				ashes::nullopt,
+				ashes::nullopt,
 				ashes::Viewport{ { 0, 0 }, dimensions },
 				ashes::Scissor{ { 0, 0 }, dimensions }
 			};
@@ -1124,8 +1124,8 @@ namespace vkapp
 				ashes::MultisampleState{},
 				ashes::ColourBlendState::createDefault(),
 				{},
-				std::nullopt,
-				std::nullopt,
+				ashes::nullopt,
+				ashes::nullopt,
 				ashes::Viewport{ { 0, 0 }, dimensions },
 				ashes::Scissor{ { 0, 0 }, dimensions }
 			};
@@ -1287,8 +1287,8 @@ namespace vkapp
 			ashes::MultisampleState{},
 			ashes::ColourBlendState::createDefault(),
 			{},
-			std::nullopt,
-			std::nullopt,
+			ashes::nullopt,
+			ashes::nullopt,
 			ashes::Viewport{ { 0, 0 }, dimensions },
 			ashes::Scissor{ { 0, 0 }, dimensions }
 		};

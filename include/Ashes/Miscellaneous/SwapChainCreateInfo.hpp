@@ -35,7 +35,7 @@ namespace ashes
 		CompositeAlphaFlag compositeAlpha;
 		PresentMode presentMode;
 		bool clipped;
-		std::optional< SwapChainCRef > oldSwapchain;
+		Optional< SwapChainCRef > oldSwapchain;
 	};
 }
 

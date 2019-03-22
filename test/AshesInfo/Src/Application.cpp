@@ -1383,14 +1383,15 @@ static void AppCreateXcbWindow( AppInstance *inst )
 	free( reply );
 }
 
-static void AppCreateXcbSurface( AppInstance *inst )
+static void AppCreateXcbSurface( AppInstance *inst
+	, ashes::PhysicalDevice const & gpu )
 {
 	if ( !inst->xcb_connection )
 	{
 		return;
 	}
 
-	inst->surface = inst->instance->createSurface( 0u
+	inst->surface = inst->instance->createSurface( gpu
 		, ashes::WindowHandle{ std::make_unique< ashes::IXcbWindowHandle >( inst->xcb_connection, inst->xcb_window ) } );
 }
 
@@ -1434,9 +1435,10 @@ static void AppCreateXlibWindow( AppInstance *inst )
 	XSync( inst->xlib_display, false );
 }
 
-static void AppCreateXlibSurface( AppInstance *inst )
+static void AppCreateXlibSurface( AppInstance *inst
+	, ashes::PhysicalDevice const & gpu )
 {
-	inst->surface = inst->instance->createSurface( 0u
+	inst->surface = inst->instance->createSurface( gpu
 		, ashes::WindowHandle{ std::make_unique< ashes::IXWindowHandle >( inst->xlib_window, inst->xlib_display ) } );
 }
 
@@ -2246,7 +2248,7 @@ static void AppDevDumpFormatProps( const AppGpu * gpu
 	, bool * first_in_list
 	, FILE *out )
 {
-	auto & props = gpu->obj->getFormatProperties( fmt );
+	auto props = gpu->obj->getFormatProperties( fmt );
 	struct
 	{
 		const char *name;
@@ -2419,7 +2421,7 @@ static void AppDevDumpFormatProps( const AppGpu * gpu
 		}
 		printf( "\n" );
 		printf( "\t\t{\n" );
-		printf( "\t\t\t\"formatID\": %d,\n", fmt );
+		printf( "\t\t\t\"formatID\": %d,\n", int( fmt ) );
 		printf( "\t\t\t\"linearTilingFeatures\": %u,\n", props.linearTilingFeatures.value() );
 		printf( "\t\t\t\"optimalTilingFeatures\": %u,\n", props.optimalTilingFeatures.value() );
 		printf( "\t\t\t\"bufferFeatures\": %u\n", props.bufferFeatures.value() );
@@ -3844,7 +3846,7 @@ static void AppGpuDumpProps( const AppGpu * gpu
 		printf( "\t\t\"driverVersion\": %u,\n", props.driverVersion );
 		printf( "\t\t\"vendorID\": %u,\n", props.vendorID );
 		printf( "\t\t\"deviceID\": %u,\n", props.deviceID );
-		printf( "\t\t\"deviceType\": %u,\n", props.deviceType );
+		printf( "\t\t\"deviceType\": %u,\n", int( props.deviceType ) );
 		printf( "\t\t\"deviceName\": \"%s\",\n", props.deviceName.c_str() );
 		printf( "\t\t\"pipelineCacheUUID\": [" );
 		for ( uint32_t i = 0; i < ashes::UuidSize; ++i )
@@ -5265,7 +5267,7 @@ int main_impl( int argc, char **argv )
 	const char *display_var = getenv( "DISPLAY" );
 	if ( display_var == NULL || strlen( display_var ) == 0 )
 	{
-		printf( stderr, "'DISPLAY' environment variable not set... skipping surface info\n" );
+		fprintf( stderr, "'DISPLAY' environment variable not set... skipping surface info\n" );
 		fflush( stderr );
 		has_display = false;
 	}

@@ -164,7 +164,7 @@ namespace vkapp
 				ashes::CompositeAlphaFlag::eOpaque,
 				presentMode,
 				true,
-				std::nullopt
+				ashes::nullopt
 			};
 		}
 	}
@@ -433,9 +433,9 @@ namespace vkapp
 	{
 		try
 		{
-			auto res = m_presentQueue->present( { std::ref( *m_swapChain ) }
-				, ashes::UInt32Array{ resources.imageIndex }
-				, { std::ref( *resources.finishedRenderingSemaphore ) } );
+			auto res = m_presentQueue->present( ashes::SwapChainCRefArray{ { std::ref( *m_swapChain ) } }
+				, ashes::UInt32Array{ { resources.imageIndex } }
+				, ashes::SemaphoreCRefArray{ { std::ref( *resources.finishedRenderingSemaphore ) } } );
 		}
 		catch ( ashes::Exception & exc )
 		{
