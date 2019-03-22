@@ -11,8 +11,8 @@ See LICENSE file in root folder.
 #include "Image/GlSampler.hpp"
 #include "Image/GlTexture.hpp"
 #include "Image/GlTextureView.hpp"
-#include "Buffer/GlUniformBuffer.hpp"
 
+#include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
 
 namespace gl_renderer

@@ -43,7 +43,7 @@ namespace utils
 		void doInitResources( ashes::Device const & device
 			, TBuiltInResource & resources )
 		{
-			auto & limits = device.getPhysicalDevice().getProperties().limits;
+			auto & limits = device.getProperties().limits;
 
 			resources.limits.doWhileLoops = true;
 			resources.limits.generalAttributeMatrixVectorIndexing = true;

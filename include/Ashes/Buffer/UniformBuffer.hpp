@@ -20,7 +20,7 @@ namespace ashes
 	*/
 	class UniformBufferBase
 	{
-	protected:
+	public:
 		/**
 		*\~english
 		*	Constructor.
@@ -32,8 +32,6 @@ namespace ashes
 		*	The size of an instance, in bytes.
 		*\param[in] target
 		*	The buffer usage flags.
-		*\param[in] flags
-		*	The memory property flags.
 		*\~french
 		*\brief
 		*	Constructeur.
@@ -45,16 +43,11 @@ namespace ashes
 		*	La taille d'une instance des données, en octets.
 		*\param[in] target
 		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] flags
-		*	Les indicateurs de mémoire du tampon.
 		*/
 		UniformBufferBase( Device const & device
 			, uint32_t count
 			, uint32_t size
-			, BufferTargets target
-			, MemoryPropertyFlags flags );
-
-	public:
+			, BufferTargets target );
 		/**
 		*\~english
 		*\brief
@@ -63,7 +56,29 @@ namespace ashes
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~UniformBufferBase();
+		~UniformBufferBase();
+		/**
+		*\~english
+		*\brief
+		*	Binds this buffer to given device memory object.
+		*\param[in] memory
+		*	The memory object.
+		*\~french
+		*\brief
+		*	Lie ce tampon à l'objet mémoire donné.
+		*\param[in] memory
+		*	L'object mémoire de périphérique.
+		*/
+		void bindMemory( DeviceMemoryPtr memory );
+		/**
+		*\~english
+		*\return
+		*	The memory requirements for this buffer.
+		*\~french
+		*\return
+		*	Les exigences mémoire pour ce tampon.
+		*/
+		MemoryRequirements getMemoryRequirements()const;
 		/**
 		*\~english
 		*\brief
@@ -80,7 +95,7 @@ namespace ashes
 		*\return
 		*	La taille alignée.
 		*/
-		virtual uint32_t getAlignedSize( uint32_t size )const = 0;
+		uint32_t getAlignedSize( uint32_t size )const;
 		/**
 		*\~english
 		*\return
@@ -149,8 +164,35 @@ namespace ashes
 		*/
 		inline UniformBuffer( Device const & device
 			, uint32_t count
-			, BufferTargets target
-			, MemoryPropertyFlags flags );
+			, BufferTargets target );
+		/**
+		*\~english
+		*\brief
+		*	Binds this buffer to given device memory object.
+		*\param[in] memory
+		*	The memory object.
+		*\~french
+		*\brief
+		*	Lie ce tampon à l'objet mémoire donné.
+		*\param[in] memory
+		*	L'object mémoire de périphérique.
+		*/
+		inline void bindMemory( DeviceMemoryPtr memory )
+		{
+			m_ubo.bindMemory( std::move( memory ) );
+		}
+		/**
+		*\~english
+		*\return
+		*	The memory requirements for this buffer.
+		*\~french
+		*\return
+		*	Les exigences mémoire pour ce tampon.
+		*/
+		inline MemoryRequirements getMemoryRequirements()const
+		{
+			return m_ubo.getMemoryRequirements();
+		}
 		/**
 		*\~english
 		*\return
@@ -213,7 +255,7 @@ namespace ashes
 		*/
 		inline uint32_t getAlignedSize()const
 		{
-			return m_ubo->getAlignedSize( uint32_t( sizeof( T ) ) );
+			return m_ubo.getAlignedSize( uint32_t( sizeof( T ) ) );
 		}
 		/**
 		*\~english
@@ -225,7 +267,7 @@ namespace ashes
 		*/
 		inline UniformBufferBase const & getUbo()const
 		{
-			return *m_ubo;
+			return m_ubo;
 		}
 		/**
 		*\~english
@@ -249,7 +291,7 @@ namespace ashes
 			assert( range + offset <= m_data.size() );
 			auto size = getAlignedSize();
 
-			if ( auto buffer = m_ubo->getBuffer().lock( offset * size
+			if ( auto buffer = m_ubo.getBuffer().lock( offset * size
 				, range * size
 				, ashes::MemoryMapFlag::eWrite | ashes::MemoryMapFlag::eInvalidateRange ) )
 			{
@@ -259,13 +301,13 @@ namespace ashes
 					buffer += size;
 				}
 
-				m_ubo->getBuffer().flush( offset * size, range * size );
-				m_ubo->getBuffer().unlock();
+				m_ubo.getBuffer().flush( offset * size, range * size );
+				m_ubo.getBuffer().unlock();
 			}
 		}
 
 	private:
-		UniformBufferBasePtr m_ubo;
+		UniformBufferBase m_ubo;
 		std::vector< T > m_data;
 	};
 	/**
@@ -299,13 +341,11 @@ namespace ashes
 	template< typename T >
 	inline UniformBufferPtr< T > makeUniformBuffer( Device const & device
 		, uint32_t count
-		, BufferTargets target
-		, MemoryPropertyFlags flags )
+		, BufferTargets target )
 	{
 		return std::make_unique< UniformBuffer< T > >( device
 			, count
-			, target
-			, flags );
+			, target );
 	}
 }
 

@@ -5,15 +5,26 @@ See LICENSE file in root folder
 #include "Miscellaneous/TestDeviceMemory.hpp"
 
 #include "Core/TestDevice.hpp"
+#include "Core/TestInstance.hpp"
 #include "Core/TestPhysicalDevice.hpp"
 
 namespace test_renderer
 {
+	//*********************************************************************************************
+
+	ashes::MemoryPropertyFlags getFlags( uint32_t memoryTypeIndex )
+	{
+		assert( memoryTypeIndex < Instance::getMemoryProperties().memoryTypes.size()
+			&& "Wrong deduced memory type" );
+		return Instance::getMemoryProperties().memoryTypes[memoryTypeIndex].propertyFlags;
+	}
+
+	//*********************************************************************************************
+
 	DeviceMemory::DeviceMemory( Device const & device
-		, ashes::MemoryRequirements const & requirements
-		, ashes::MemoryPropertyFlags flags )
-		: ashes::DeviceMemory{ device, flags }
-		, m_memory( size_t( requirements.size ), 0 )
+		, ashes::MemoryAllocateInfo allocateInfo )
+		: ashes::DeviceMemory{ device, std::move( allocateInfo ) }
+		, m_memory( size_t( m_allocateInfo.allocationSize ), 0 )
 	{
 	}
 

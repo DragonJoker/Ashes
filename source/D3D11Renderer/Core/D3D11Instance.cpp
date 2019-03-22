@@ -12,23 +12,140 @@
 
 namespace d3d11_renderer
 {
-	Instance::Instance( Configuration const & configuration )
-		: ashes::Instance{ ashes::ClipDirection::eTopDown, "d3d11", configuration }
+	namespace
+	{
+		D3D_FEATURE_LEVEL doGetSupportedFeatureLevel( IDXGIFactory * factory
+			, IDXGIAdapter * adapter )
+		{
+			static std::vector< D3D_FEATURE_LEVEL > const requestedFeatureLevels
+			{
+				D3D_FEATURE_LEVEL_11_1,
+				D3D_FEATURE_LEVEL_11_0,
+				D3D_FEATURE_LEVEL_10_1,
+				D3D_FEATURE_LEVEL_10_0,
+				D3D_FEATURE_LEVEL_9_3,
+				D3D_FEATURE_LEVEL_9_2,
+				D3D_FEATURE_LEVEL_9_1,
+			};
+			D3D_FEATURE_LEVEL result;
+			auto hr = D3D11CreateDevice( adapter
+				, D3D_DRIVER_TYPE_UNKNOWN
+				, nullptr
+				, 0u
+				, requestedFeatureLevels.data()
+				, UINT( requestedFeatureLevels.size() )
+				, D3D11_SDK_VERSION
+				, nullptr
+				, &result
+				, nullptr );
+
+			if ( !SUCCEEDED( hr ) )
+			{
+				checkError( hr, "Feature level retrieval" );
+			}
+
+			return result;
+		}
+	}
+
+	ashes::PhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
+		{
+			ashes::PhysicalDeviceMemoryProperties result;
+
+			// Emulate one device local heap
+			result.memoryHeaps.push_back(
+				{
+					~( 0ull ),
+					0u | ashes::MemoryHeapFlag::eDeviceLocal
+				} );
+			// and one host visible heap
+			result.memoryHeaps.push_back(
+				{
+					~( 0ull ),
+					0u
+				} );
+
+			// Emulate all combinations of device local memory types
+			result.memoryTypes.push_back(
+				{
+					0u | ashes::MemoryPropertyFlag::eDeviceLocal,
+					0u,
+				} );
+			result.memoryTypes.push_back(
+				{
+					0u | ashes::MemoryPropertyFlag::eLazilyAllocated,
+					0u,
+				} );
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eDeviceLocal | ashes::MemoryPropertyFlag::eLazilyAllocated,
+					0u,
+				} );
+
+			// and all combinations of host visible memory types
+			result.memoryTypes.push_back(
+				{
+					0u | ashes::MemoryPropertyFlag::eHostVisible,
+					1u,
+				} );
+
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent,
+					1u,
+				} );
+
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCached,
+					1u,
+				} );
+
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent | ashes::MemoryPropertyFlag::eHostCached,
+					1u,
+				} );
+
+			return result;
+		}();
+
+	Instance::Instance( ashes::InstanceCreateInfo createInfo )
+		: ashes::Instance{ ashes::ClipDirection::eTopDown, "d3d11", std::move( createInfo ) }
 	{
 		doCreateDXGIFactory();
-		auto featureLevel = doLoadAdapters();
-		m_features.hasTexBufferRange = featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.hasImageTexture = featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.hasBaseInstance = featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		doLoadAdapters();
+		m_features.hasTexBufferRange = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.hasImageTexture = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.hasBaseInstance = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasClearTexImage = true;
-		m_features.hasComputeShaders = featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.hasStorageBuffers = featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.hasComputeShaders = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.hasStorageBuffers = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.supportsPersistentMapping = false;
 	}
 
 	Instance::~Instance()
 	{
+		for ( auto & info : m_adapters )
+		{
+			safeRelease( info.adapter2 );
+			safeRelease( info.adapter1 );
+			safeRelease( info.adapter );
+		}
+
 		safeRelease( m_factory );
+	}
+
+	ashes::PhysicalDevicePtrArray Instance::enumeratePhysicalDevices()const
+	{
+		ashes::PhysicalDevicePtrArray result;
+
+		for ( auto adapter : m_adapters )
+		{
+			result.emplace_back( std::make_unique< PhysicalDevice >( *this, std::move( adapter ) ) );
+		}
+
+		return result;
 	}
 
 	ashes::DevicePtr Instance::createDevice( ashes::SurfacePtr surface
@@ -98,17 +215,6 @@ namespace d3d11_renderer
 		result[14] = zNear * zFar / ( zNear - zFar );
 
 		return result;
-
-		//float const tanHalfFovy = tan( radiansFovY / float( 2 ) );
-
-		//std::array< float, 16 > result{ 0.0f };
-		//result[0] = float( 1 ) / ( aspect * tanHalfFovy );
-		//result[5] = float( 1 ) / ( tanHalfFovy );
-		//result[11] = -float( 1 );
-		//result[10] = zFar / ( zNear - zFar );
-		//result[14] = -( zFar * zNear ) / ( zFar - zNear );
-
-		//return result;
 	}
 
 	std::array< float, 16 > Instance::ortho( float left
@@ -141,11 +247,11 @@ namespace d3d11_renderer
 		}
 	}
 
-	D3D_FEATURE_LEVEL Instance::doLoadAdapters()
+	void Instance::doLoadAdapters()
 	{
 		UINT index = 0;
 		IDXGIAdapter * adapter;
-		D3D_FEATURE_LEVEL maxFeatureLevel = D3D_FEATURE_LEVEL_9_1;
+		m_maxFeatureLevel = D3D_FEATURE_LEVEL_9_1;
 
 		while ( m_factory->EnumAdapters( index, &adapter ) != DXGI_ERROR_NOT_FOUND )
 		{
@@ -160,13 +266,16 @@ namespace d3d11_renderer
 					, reinterpret_cast< void ** >( &adapter2 ) );
 			}
 
-			auto gpu = std::make_unique< PhysicalDevice >( *this, adapter, adapter1, adapter2 );
-			maxFeatureLevel = gpu->getFeatureLevel();
-			m_gpus.emplace_back( std::move( gpu ) );
+			auto featureLevel = doGetSupportedFeatureLevel( m_factory, adapter );
+			m_maxFeatureLevel = std::max( featureLevel, m_maxFeatureLevel );
+			m_adapters.push_back(
+				{
+					adapter,
+					adapter1,
+					adapter2,
+					featureLevel
+				} );
 			++index;
 		}
-
-		m_apiVersion = m_gpus[0]->getProperties().apiVersion;
-		return maxFeatureLevel;
 	}
 }

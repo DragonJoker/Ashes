@@ -121,8 +121,7 @@ namespace gl_renderer
 		/**
 		*\copydoc	ashes::Device::allocateMemory
 		*/
-		ashes::DeviceMemoryPtr allocateMemory( ashes::MemoryRequirements const & requirements
-			, ashes::MemoryPropertyFlags flags )const override;
+		ashes::DeviceMemoryPtr allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const override;
 		/**
 		*\copydoc		ashes::Device::createTexture
 		*/
@@ -149,13 +148,6 @@ namespace gl_renderer
 			, ashes::Format format
 			, uint32_t offset
 			, uint32_t range )const override;
-		/**
-		*\copydoc		ashes::Device::createUniformBuffer
-		*/
-		ashes::UniformBufferBasePtr createUniformBuffer( uint32_t count
-			, uint32_t size
-			, ashes::BufferTargets target
-			, ashes::MemoryPropertyFlags memoryFlags )const override;
 		/**
 		*\copydoc		ashes::Device::createSwapChain
 		*/
@@ -286,20 +278,9 @@ namespace gl_renderer
 			return m_blitFbos[1];
 		}
 
-		bool find( std::string const & name )const
-		{
-			return static_cast< PhysicalDevice const & >( m_gpu ).find( name );
-		}
-
-		bool findAny( ashes::StringArray const & names )const
-		{
-			return static_cast< PhysicalDevice const & >( m_gpu ).findAny( names );
-		}
-
-		bool findAll( ashes::StringArray const & names )const
-		{
-			return static_cast< PhysicalDevice const & >( m_gpu ).findAll( names );
-		}
+		bool find( std::string const & name )const;
+		bool findAny( ashes::StringArray const & names )const;
+		bool findAll( ashes::StringArray const & names )const;
 
 	private:
 		void doCreateQueues();

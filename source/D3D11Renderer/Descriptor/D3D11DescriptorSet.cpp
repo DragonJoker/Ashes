@@ -2,12 +2,13 @@
 
 #include "Buffer/D3D11Buffer.hpp"
 #include "Buffer/D3D11BufferView.hpp"
-#include "Buffer/D3D11UniformBuffer.hpp"
 #include "Core/D3D11Device.hpp"
 #include "Descriptor/D3D11DescriptorSetLayout.hpp"
 #include "Descriptor/D3D11DescriptorPool.hpp"
 #include "Image/D3D11Sampler.hpp"
 #include "Image/D3D11TextureView.hpp"
+
+#include <Ashes/Buffer/UniformBuffer.hpp>
 
 namespace d3d11_renderer
 {

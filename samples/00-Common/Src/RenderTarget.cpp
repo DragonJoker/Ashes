@@ -34,7 +34,7 @@ namespace common
 		static ashes::Format const ColourFormat = ashes::Format::eR8G8B8A8_UNORM;
 	}
 
-	RenderTarget::RenderTarget( ashes::Device const & device
+	RenderTarget::RenderTarget( utils::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
 		, ashes::Extent2D const & size
@@ -127,7 +127,7 @@ namespace common
 
 	void RenderTarget::doCreateStagingBuffer()
 	{
-		m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( m_device
+		m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( m_device.getDevice()
 			, 0u
 			, 200u * 1024u * 1024u );
 	}
@@ -138,7 +138,7 @@ namespace common
 		{
 			common::TextureNodePtr textureNode = std::make_shared< common::TextureNode >();
 			textureNode->image = image;
-			auto stagingTexture = m_device.createStagingTexture( image->format
+			auto stagingTexture = m_device.getDevice().createStagingTexture( image->format
 				, { image->size.width, image->size.height } );
 			textureNode->texture = m_device.createTexture(
 				{

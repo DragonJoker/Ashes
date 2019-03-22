@@ -11,6 +11,7 @@
 
 #if ASHES_WIN32
 #	include <Windows.h>
+#	include <gl/GL.h>
 #elif ASHES_XLIB
 #	include <X11/X.h>
 #	include <X11/Xlib.h>
@@ -44,12 +45,7 @@ namespace gl_renderer
 				wc.hbrBackground = ( HBRUSH )( COLOR_BACKGROUND );
 				wc.lpszClassName = "DummyWindow";
 				wc.style = CS_OWNDC;
-
-				if ( !RegisterClassA( &wc ) )
-				{
-					throw std::runtime_error{ "Couldn't register window class" };
-				}
-
+				RegisterClassA( &wc );
 				m_hWnd = CreateWindowA( wc.lpszClassName, "DummyWindow", WS_OVERLAPPEDWINDOW, 0, 0, 640, 480, nullptr, nullptr, wc.hInstance, nullptr );
 
 				if ( !m_hWnd )
@@ -321,13 +317,73 @@ namespace gl_renderer
 #endif
 	}
 
-	Instance::Instance( Configuration const & configuration )
-		: ashes::Instance{ ashes::ClipDirection::eBottomUp, "gl3", configuration }
+	ashes::PhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
+		{
+			ashes::PhysicalDeviceMemoryProperties result;
+
+			// Emulate one device local heap
+			result.memoryHeaps.push_back(
+				{
+					~( 0ull ),
+					0u | ashes::MemoryHeapFlag::eDeviceLocal
+				} );
+			// and one host visible heap
+			result.memoryHeaps.push_back(
+				{
+					~( 0ull ),
+					0u
+				} );
+
+			// Emulate all combinations of device local memory types
+			result.memoryTypes.push_back(
+				{
+					0u | ashes::MemoryPropertyFlag::eDeviceLocal,
+					0u,
+				} );
+			result.memoryTypes.push_back(
+				{
+					0u | ashes::MemoryPropertyFlag::eLazilyAllocated,
+					0u,
+				} );
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eDeviceLocal | ashes::MemoryPropertyFlag::eLazilyAllocated,
+					0u,
+				} );
+
+			// and all combinations of host visible memory types
+			result.memoryTypes.push_back(
+				{
+					0u | ashes::MemoryPropertyFlag::eHostVisible,
+					1u,
+				} );
+
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent,
+					1u,
+				} );
+
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCached,
+					1u,
+				} );
+
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent | ashes::MemoryPropertyFlag::eHostCached,
+					1u,
+				} );
+
+			return result;
+		}();
+
+	Instance::Instance( ashes::InstanceCreateInfo createInfo )
+		: ashes::Instance{ ashes::ClipDirection::eBottomUp, "gl3", std::move( createInfo ) }
 	{
 		RenderWindow dummyWindow;
-		m_gpus.push_back( std::make_unique< PhysicalDevice >( *this ) );
-		m_apiVersion = m_gpus[0]->getProperties().apiVersion;
-		auto & gpu = static_cast< PhysicalDevice const & >( *m_gpus.back() );
+		m_extensions.initialise();
 		m_features.hasTexBufferRange = false;
 		m_features.hasImageTexture = false;
 		m_features.hasBaseInstance = false;
@@ -335,11 +391,22 @@ namespace gl_renderer
 		m_features.hasComputeShaders = false;
 		m_features.hasStorageBuffers = false;
 		m_features.supportsPersistentMapping = false;
+		auto & layers = getEnabledLayerNames();
+		auto it = std::find_if( layers.begin()
+			, layers.end()
+			, []( std::string const & lookup )
+			{
+				return lookup.find( "validation" ) != std::string::npos;
+			} );
+		m_validationEnabled = it != layers.end();
+	}
 
-		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...
-		m_spirvSupported = false
-			&& ( gpu.find( ARB_gl_spirv )
-			|| gpu.hasSPIRVShaderBinaryFormat() );
+	ashes::PhysicalDevicePtrArray Instance::enumeratePhysicalDevices()const
+	{
+		RenderWindow dummyWindow;
+		ashes::PhysicalDevicePtrArray result;
+		result.emplace_back( std::make_unique< PhysicalDevice >( *this ) );
+		return result;
 	}
 
 	ashes::DevicePtr Instance::createDevice( ashes::SurfacePtr surface

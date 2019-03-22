@@ -5,7 +5,7 @@ See LICENSE file in root folder
 #define ___Utils_Factory_H___
 #pragma once
 
-#include "Utils/UtilsPrerequisites.hpp"
+#include "Utils/UtilsPlugin.hpp"
 
 #include <type_traits>
 #include <functional>
@@ -21,16 +21,11 @@ namespace utils
 	*\brief
 	*	Implémentation du concept de fabrique.
 	*/
-	template< class Obj
-		, class Key
-		, class PtrType
-		, typename Creator
-		, class Predicate >
-	class Factory
+	class InstanceFactory
 	{
 	protected:
-		using ObjPtr = PtrType;
-		using ObjMap = std::map< Key, Creator, Predicate >;
+		using Key = std::string;
+		using PluginMap = std::map< Key, Plugin const * >;
 
 	public:
 		/**
@@ -49,9 +44,9 @@ namespace utils
 		*\param[in] creator
 		*	La fonction de création d'objet.
 		*/
-		void registerType( Key const & key, Creator creator )
+		inline void registerType( Key const & key, Plugin const * plugin )
 		{
-			m_registered[key] = creator;
+			m_registered.emplace( key, plugin );
 		}
 		/**
 		*\~english
@@ -65,7 +60,7 @@ namespace utils
 		*\param[in] key
 		*	Le type d'objet.
 		*/
-		void unregisterType( Key const & key )
+		inline void unregisterType( Key const & key )
 		{
 			auto it = m_registered.find( key );
 
@@ -90,7 +85,7 @@ namespace utils
 		*\return
 		*	\p true si enregistré.
 		*/
-		bool isTypeRegistered( Key const & key )
+		inline bool isTypeRegistered( Key const & key )
 		{
 			return m_registered.find( key ) != m_registered.end();
 		}
@@ -102,7 +97,7 @@ namespace utils
 		*\return
 		*	La liste des types enregistrés.
 		*/
-		std::vector< Key > listRegisteredTypes()
+		inline std::vector< Key > listRegisteredTypes()
 		{
 			std::vector< Key > result;
 			result.reserve( m_registered.size() );
@@ -114,35 +109,14 @@ namespace utils
 
 			return result;
 		}
-		/**
-		*\~english
-		*\brief
-		*	Creates an object from a key.
-		*\param[in] key
-		*	The object type.
-		*\param[in] params
-		*	The creation parameters.
-		*\return
-		*	The created object.
-		*\~french
-		*\brief
-		*	Crée un objet à partir d'une clef (type d'objet).
-		*\param[in] key
-		*	Le type d'objet.
-		*\param[in] params
-		*	Les paramètres de création.
-		*\return
-		*	L'objet créé.
-		*/
-		template< typename ... Parameters >
-		ObjPtr create( Key const & key, Parameters && ... params )const
+		Plugin const * findPlugin( Key const & key )const
 		{
-			ObjPtr result;
+			Plugin const * result{ nullptr };
 			auto it = m_registered.find( key );
 
 			if ( it != m_registered.end() )
 			{
-				result = it->second( std::forward< Parameters >( params )... );
+				result = it->second;
 			}
 			else
 			{
@@ -155,7 +129,7 @@ namespace utils
 		}
 
 	private:
-		ObjMap m_registered;
+		PluginMap m_registered;
 	};
 }
 

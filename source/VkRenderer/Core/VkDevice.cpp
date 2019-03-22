@@ -6,7 +6,6 @@ See LICENSE file in root folder.
 
 #include "Buffer/VkBuffer.hpp"
 #include "Buffer/VkBufferView.hpp"
-#include "Buffer/VkUniformBuffer.hpp"
 #include "Command/VkCommandPool.hpp"
 #include "Command/VkQueue.hpp"
 #include "Core/VkSurface.hpp"
@@ -48,6 +47,7 @@ namespace vk_renderer
 			, m_enabledLayerNames
 			, m_enabledExtensionNames
 			, m_enabledFeatures ) }
+		, m_memoryProperties{ m_gpu.getMemoryProperties() }
 	{
 		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
 		DEBUG_DUMP( m_vkCreateInfos );
@@ -95,12 +95,10 @@ namespace vk_renderer
 		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
 	}
 
-	ashes::DeviceMemoryPtr Device::allocateMemory( ashes::MemoryRequirements const & requirements
-		, ashes::MemoryPropertyFlags flags )const
+	ashes::DeviceMemoryPtr Device::allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const
 	{
 		return std::make_unique< DeviceMemory >( *this
-			, requirements
-			, flags );
+			, std::move( allocateInfo ) );
 	}
 
 	ashes::TexturePtr Device::createTexture( ashes::ImageCreateInfo const & createInfo )const
@@ -144,18 +142,6 @@ namespace vk_renderer
 			, format
 			, offset
 			, range );
-	}
-
-	ashes::UniformBufferBasePtr Device::createUniformBuffer( uint32_t count
-		, uint32_t size
-		, ashes::BufferTargets target
-		, ashes::MemoryPropertyFlags memoryFlags )const
-	{
-		return std::make_unique< UniformBuffer >( *this
-			, count
-			, size
-			, target
-			, memoryFlags );
 	}
 
 	ashes::SwapChainPtr Device::createSwapChain( ashes::SwapChainCreateInfo createInfo )const
@@ -266,6 +252,39 @@ namespace vk_renderer
 			, &requirements );
 		ashes::MemoryRequirements result = convert( requirements );
 		result.type = ashes::ResourceType::eImage;
+		return result;
+	}
+
+	uint32_t Device::deduceMemoryType( uint32_t typeBits
+		, ashes::MemoryPropertyFlags requirements )const
+	{
+		uint32_t result = 0xFFFFFFFFu;
+		bool found{ false };
+
+		// Recherche parmi les types de mémoire la première ayant les propriétés voulues.
+		uint32_t i{ 0 };
+
+		while ( i < m_memoryProperties.memoryTypes.size() && !found )
+		{
+			if ( ( typeBits & 1 ) == 1 )
+			{
+				// Le type de mémoire est disponible, a-t-il les propriétés demandées?
+				if ( ( m_memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
+				{
+					result = i;
+					found = true;
+				}
+			}
+
+			typeBits >>= 1;
+			++i;
+		}
+
+		if ( !found )
+		{
+			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Could not deduce memory type" };
+		}
+
 		return result;
 	}
 

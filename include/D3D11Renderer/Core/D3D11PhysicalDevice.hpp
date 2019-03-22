@@ -22,45 +22,51 @@ namespace d3d11_renderer
 		: public ashes::PhysicalDevice
 	{
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] vulkan
-		*	L'instance Vulkan.
-		*\param[in] gpu
-		*	Le GPU physique.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] vulkan
-		*	The Vulkan instance.
-		*\param[in] gpu
-		*	The Vulkan physical GPU.
-		*/
-		PhysicalDevice( Instance & instance
-			, IDXGIAdapter * adapter
-			, IDXGIAdapter1 * adapter1
-			, IDXGIAdapter2 * adapter2 );
+		PhysicalDevice( Instance const & instance
+			, AdapterInfo adapterInfo );
 		~PhysicalDevice();
 		/**
-		*\copydoc	ashes::PhysicalDevice::initialise
+		*\copydoc	ashes::Instance::enumerateLayerProperties
 		*/
-		void initialise()override;
+		ashes::LayerPropertiesArray enumerateLayerProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::enumerateExtensionProperties
+		*/
+		ashes::ExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const override;
+		/**
+		*\copydoc	ashes::Instance::getProperties
+		*/
+		ashes::PhysicalDeviceProperties getProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getMemoryProperties
+		*/
+		ashes::PhysicalDeviceMemoryProperties getMemoryProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getFeatures
+		*/
+		ashes::PhysicalDeviceFeatures getFeatures()const override;
+		/**
+		*\copydoc	ashes::Instance::getQueueFamilyProperties
+		*/
+		ashes::QueueFamilyPropertiesArray getQueueFamilyProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getFormatProperties
+		*/
+		ashes::FormatProperties getFormatProperties( ashes::Format fmt )const override;
 
 		inline IDXGIAdapter * getAdapter()const
 		{
-			return m_adapter;
+			return m_adapterInfo.adapter;
 		}
 
 		inline IDXGIAdapter1 * getAdapter1()const
 		{
-			return m_adapter1;
+			return m_adapterInfo.adapter1;
 		}
 
 		inline IDXGIAdapter2 * getAdapter2()const
 		{
-			return m_adapter2;
+			return m_adapterInfo.adapter2;
 		}
 
 		inline IDXGIOutput * getOutput()const
@@ -70,15 +76,19 @@ namespace d3d11_renderer
 
 		inline D3D_FEATURE_LEVEL getFeatureLevel()const
 		{
-			return m_featureLevel;
+			return m_adapterInfo.featureLevel;
 		}
 
 	private:
-		Instance & m_instance;
-		IDXGIAdapter * m_adapter;
-		IDXGIAdapter1 * m_adapter1;
-		IDXGIAdapter2 * m_adapter2;
+		void doInitialise();
+
+	private:
+		Instance const & m_instance;
+		AdapterInfo m_adapterInfo;
 		IDXGIOutput * m_output;
-		D3D_FEATURE_LEVEL m_featureLevel;
+		ashes::PhysicalDeviceFeatures m_features{};
+		ashes::PhysicalDeviceProperties m_properties{};
+		ashes::QueueFamilyPropertiesArray m_queueProperties{};
+		mutable std::map< ashes::Format, ashes::FormatProperties > m_formatProperties;
 	};
 }

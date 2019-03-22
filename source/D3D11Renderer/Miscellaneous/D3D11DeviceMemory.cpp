@@ -5,10 +5,20 @@ See LICENSE file in root folder
 #include "Miscellaneous/D3D11DeviceMemory.hpp"
 
 #include "Core/D3D11Device.hpp"
+#include "Core/D3D11Instance.hpp"
 #include "Core/D3D11PhysicalDevice.hpp"
 
 namespace d3d11_renderer
 {
+	//*********************************************************************************************
+
+	ashes::MemoryPropertyFlags getFlags( uint32_t memoryTypeIndex )
+	{
+		assert( memoryTypeIndex < Instance::getMemoryProperties().memoryTypes.size()
+			&& "Wrong deduced memory type" );
+		return Instance::getMemoryProperties().memoryTypes[memoryTypeIndex].propertyFlags;
+	}
+
 	//*********************************************************************************************
 
 	class BufferDeviceMemory
@@ -16,13 +26,12 @@ namespace d3d11_renderer
 	{
 	public:
 		BufferDeviceMemory( Device const & device
-			, ashes::MemoryRequirements const & requirements
-			, ashes::MemoryPropertyFlags flags
+			, ashes::MemoryAllocateInfo allocateInfo
 			, ashes::BufferTargets targets )
-			: DeviceMemory::DeviceMemoryImpl{ device, requirements, flags }
+			: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ) }
 		{
 			auto d3ddevice = m_device.getDevice();
-			UINT size = UINT( m_requirements.size );
+			UINT size = UINT( m_allocateInfo.allocationSize );
 			m_bufferTargets = targets;
 
 			if ( size > 0 )
@@ -138,10 +147,9 @@ namespace d3d11_renderer
 	{
 	public:
 		Texture1DDeviceMemory( Device const & device
-			, ashes::MemoryRequirements const & requirements
-			, ashes::MemoryPropertyFlags flags
+			, ashes::MemoryAllocateInfo allocateInfo
 			, ashes::ImageCreateInfo const & createInfo )
-			: DeviceMemory::DeviceMemoryImpl{ device, requirements, flags }
+			: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ) }
 			, m_usage{ createInfo.usage }
 		{
 			auto d3ddevice = m_device.getDevice();
@@ -240,10 +248,9 @@ namespace d3d11_renderer
 	{
 	public:
 		Texture2DDeviceMemory( Device const & device
-			, ashes::MemoryRequirements const & requirements
-			, ashes::MemoryPropertyFlags flags
+			, ashes::MemoryAllocateInfo allocateInfo
 			, ashes::ImageCreateInfo const & createInfo )
-			: DeviceMemory::DeviceMemoryImpl{ device, requirements, flags }
+			: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ) }
 			, m_usage{ createInfo.usage }
 		{
 			auto d3ddevice = m_device.getDevice();
@@ -357,10 +364,9 @@ namespace d3d11_renderer
 	{
 	public:
 		Texture3DDeviceMemory( Device const & device
-			, ashes::MemoryRequirements const & requirements
-			, ashes::MemoryPropertyFlags flags
+			, ashes::MemoryAllocateInfo allocateInfo
 			, ashes::ImageCreateInfo const & createInfo )
-			: DeviceMemory::DeviceMemoryImpl{ device, requirements, flags }
+			: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ) }
 			, m_usage{ createInfo.usage }
 		{
 			auto d3ddevice = m_device.getDevice();
@@ -456,22 +462,19 @@ namespace d3d11_renderer
 	//*********************************************************************************************
 
 	DeviceMemory::DeviceMemoryImpl::DeviceMemoryImpl( Device const & device
-		, ashes::MemoryRequirements const & requirements
-		, ashes::MemoryPropertyFlags flags )
+		, ashes::MemoryAllocateInfo allocateInfo )
 		: m_device{ device }
-		, m_requirements{ requirements }
-		, m_flags{ flags }
+		, m_allocateInfo{ std::move( allocateInfo ) }
+		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
 	{
 	}
 
 	//*********************************************************************************************
 
 	DeviceMemory::DeviceMemory( Device const & device
-		, ashes::MemoryRequirements const & requirements
-		, ashes::MemoryPropertyFlags flags )
-		: ashes::DeviceMemory{ device, flags }
+		, ashes::MemoryAllocateInfo allocateInfo )
+		: ashes::DeviceMemory{ device, std::move( allocateInfo ) }
 		, m_device{ device }
-		, m_requirements{ requirements }
 	{
 	}
 
@@ -506,8 +509,7 @@ namespace d3d11_renderer
 	ID3D11Buffer * DeviceMemory::bindToBuffer( ashes::BufferTargets targets )
 	{
 		auto impl = std::make_unique< BufferDeviceMemory >( m_device
-			, m_requirements
-			, m_flags
+			, m_allocateInfo
 			, targets );
 		ID3D11Buffer * result = impl->getBuffer();
 		m_impl = std::move( impl );
@@ -517,8 +519,7 @@ namespace d3d11_renderer
 	ID3D11Texture1D * DeviceMemory::bindToTexture1D( ashes::ImageCreateInfo const & createInfo )
 	{
 		auto impl = std::make_unique< Texture1DDeviceMemory >( m_device
-			, m_requirements
-			, m_flags
+			, m_allocateInfo
 			, createInfo );
 		ID3D11Texture1D * result = impl->getTexture();
 		m_impl = std::move( impl );
@@ -528,8 +529,7 @@ namespace d3d11_renderer
 	ID3D11Texture2D * DeviceMemory::bindToTexture2D( ashes::ImageCreateInfo const & createInfo )
 	{
 		auto impl = std::make_unique< Texture2DDeviceMemory >( m_device
-			, m_requirements
-			, m_flags
+			, m_allocateInfo
 			, createInfo );
 		ID3D11Texture2D * result = impl->getTexture();
 		m_impl = std::move( impl );
@@ -539,8 +539,7 @@ namespace d3d11_renderer
 	ID3D11Texture3D * DeviceMemory::bindToTexture3D( ashes::ImageCreateInfo const & createInfo )
 	{
 		auto impl = std::make_unique< Texture3DDeviceMemory >( m_device
-			, m_requirements
-			, m_flags
+			, m_allocateInfo
 			, createInfo );
 		ID3D11Texture3D * result = impl->getTexture();
 		m_impl = std::move( impl );

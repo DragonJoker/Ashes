@@ -201,6 +201,14 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 
 namespace d3d11_renderer
 {
+	struct AdapterInfo
+	{
+		IDXGIAdapter * adapter{ nullptr };
+		IDXGIAdapter1 * adapter1{ nullptr };
+		IDXGIAdapter2 * adapter2{ nullptr };
+		D3D_FEATURE_LEVEL featureLevel;
+	};
+
 	class Attribute;
 	class BackBuffer;
 	class Buffer;
@@ -231,7 +239,6 @@ namespace d3d11_renderer
 	class SwapChain;
 	class Texture;
 	class TextureView;
-	class UniformBuffer;
 	class VertexBufferBase;
 	class VertexLayout;
 
@@ -245,8 +252,6 @@ namespace d3d11_renderer
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
 	using SurfacePtr = std::unique_ptr< Surface >;
 	using TextureViewPtr = std::unique_ptr< TextureView >;
-
-	using UniformBufferPtr = std::shared_ptr< UniformBuffer >;
 
 	using BackBufferPtrArray = std::vector< BackBufferPtr >;
 	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
@@ -310,7 +315,7 @@ namespace d3d11_renderer
 
 	struct PushConstantsBuffer
 	{
-		UniformBufferPtr ubo;
+		std::shared_ptr< ashes::UniformBufferBase > ubo;
 		UINT location;
 		PushConstantsDesc data;
 	};
@@ -334,6 +339,8 @@ namespace d3d11_renderer
 
 	bool checkError( HRESULT hResult, char const * const text );
 	std::string toString( std::wstring const & text );
+	uint32_t deduceMemoryType( uint32_t typeBits
+		, ashes::MemoryPropertyFlags requirements );
 }
 
 #endif

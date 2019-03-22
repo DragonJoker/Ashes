@@ -9,67 +9,64 @@ See LICENSE file in root folder.
 
 namespace d3d11_renderer
 {
-	namespace
-	{
-		D3D_FEATURE_LEVEL doGetSupportedFeatureLevel( IDXGIFactory * factory
-			, IDXGIAdapter * adapter )
-		{
-			std::vector< D3D_FEATURE_LEVEL > requestedFeatureLevels
-			{
-				D3D_FEATURE_LEVEL_11_1,
-				D3D_FEATURE_LEVEL_11_0,
-				D3D_FEATURE_LEVEL_10_1,
-				D3D_FEATURE_LEVEL_10_0,
-				D3D_FEATURE_LEVEL_9_3,
-				D3D_FEATURE_LEVEL_9_2,
-				D3D_FEATURE_LEVEL_9_1,
-			};
-			D3D_FEATURE_LEVEL result;
-
-			// First me check max supported feature level
-			D3D11CreateDevice( nullptr
-				, D3D_DRIVER_TYPE_HARDWARE
-				, nullptr
-				, 0u
-				, requestedFeatureLevels.data()
-				, UINT( requestedFeatureLevels.size() )
-				, D3D11_SDK_VERSION
-				, nullptr
-				, &result
-				, nullptr );
-
-			return result;
-		}
-	}
-
-	PhysicalDevice::PhysicalDevice( Instance & instance
-		, IDXGIAdapter * adapter
-		, IDXGIAdapter1 * adapter1
-		, IDXGIAdapter2 * adapter2 )
+	PhysicalDevice::PhysicalDevice( Instance const & instance
+		, AdapterInfo adapterInfo )
 		: ashes::PhysicalDevice{ instance }
 		, m_instance{ instance }
-		, m_adapter{ adapter }
-		, m_adapter1{ adapter1 }
-		, m_adapter2{ adapter2 }
+		, m_adapterInfo{ std::move( adapterInfo ) }
 	{
 		m_shaderVersion = 450u;
-		initialise();
+		doInitialise();
 	}
 
 	PhysicalDevice::~PhysicalDevice()
 	{
 		safeRelease( m_output );
-		safeRelease( m_adapter2 );
-		safeRelease( m_adapter1 );
-		safeRelease( m_adapter );
 	}
 
-	void PhysicalDevice::initialise()
+	ashes::LayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
+	{
+		ashes::LayerPropertiesArray result;
+		return result;
+	}
+
+	ashes::ExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
+	{
+		ashes::ExtensionPropertiesArray result;
+		return result;
+	}
+
+	ashes::PhysicalDeviceProperties PhysicalDevice::getProperties()const
+	{
+		return m_properties;
+	}
+
+	ashes::PhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
+	{
+		return Instance::getMemoryProperties();
+	}
+
+	ashes::PhysicalDeviceFeatures PhysicalDevice::getFeatures()const
+	{
+		return m_features;
+	}
+
+	ashes::QueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
+	{
+		return m_queueProperties;
+	}
+
+	ashes::FormatProperties PhysicalDevice::getFormatProperties( ashes::Format fmt )const
+	{
+		return m_formatProperties[fmt];
+	}
+
+	void PhysicalDevice::doInitialise()
 	{
 		DXGI_ADAPTER_DESC2 adapterDesc;
 
-		if ( m_adapter2
-			&& SUCCEEDED( m_adapter2->GetDesc2( &adapterDesc ) ) )
+		if ( m_adapterInfo.adapter2
+			&& SUCCEEDED( m_adapterInfo.adapter2->GetDesc2( &adapterDesc ) ) )
 		{
 			m_properties.deviceName = toString( adapterDesc.Description );
 			m_properties.deviceID = adapterDesc.DeviceId;
@@ -79,16 +76,14 @@ namespace d3d11_renderer
 			auto videoCardMemory = int( adapterDesc.DedicatedVideoMemory / 1024 / 1024 );
 		}
 
-		if ( SUCCEEDED( m_adapter->EnumOutputs( 0, &m_output ) ) )
+		if ( SUCCEEDED( m_adapterInfo.adapter->EnumOutputs( 0, &m_output ) ) )
 		{
 			DXGI_OUTPUT_DESC desc{};
 			m_output->GetDesc( &desc );
 		}
 
-		m_featureLevel = doGetSupportedFeatureLevel( m_instance.getDXGIFactory(), m_adapter );
-
-		uint32_t major = m_featureLevel >> 12;
-		uint32_t minor = ( m_featureLevel >> 8 ) & 0x01;
+		uint32_t major = m_adapterInfo.featureLevel >> 12;
+		uint32_t minor = ( m_adapterInfo.featureLevel >> 8 ) & 0x01;
 		m_properties.apiVersion = ( major << 22 ) | ( minor << 12 );
 		m_properties.deviceType = ashes::PhysicalDeviceType::eDiscreteGpu;
 
@@ -96,8 +91,8 @@ namespace d3d11_renderer
 		m_features.fullDrawIndexUint32 = true;
 		m_features.imageCubeArray = true;
 		m_features.independentBlend = true;
-		m_features.geometryShader = m_featureLevel >= D3D_FEATURE_LEVEL_10_0;
-		m_features.tessellationShader = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.geometryShader = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_10_0;
+		m_features.tessellationShader = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.sampleRateShading = true;
 		m_features.dualSrcBlend = true;
 		m_features.logicOp = true;
@@ -119,12 +114,12 @@ namespace d3d11_renderer
 		m_features.pipelineStatisticsQuery = true;
 		m_features.vertexPipelineStoresAndAtomics = true;
 		m_features.fragmentStoresAndAtomics = true;
-		m_features.shaderTessellationAndGeometryPointSize = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.shaderImageGatherExtended = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.shaderStorageImageExtendedFormats = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.shaderStorageImageMultisample = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.shaderStorageImageReadWithoutFormat = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.shaderStorageImageWriteWithoutFormat = m_featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderTessellationAndGeometryPointSize = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderImageGatherExtended = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageExtendedFormats = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageMultisample = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageReadWithoutFormat = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageWriteWithoutFormat = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.shaderUniformBufferArrayDynamicIndexing = true;
 		m_features.shaderSampledImageArrayDynamicIndexing = true;
 		m_features.shaderStorageBufferArrayDynamicIndexing = true;

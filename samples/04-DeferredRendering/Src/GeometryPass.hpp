@@ -10,7 +10,7 @@ namespace vkapp
 		: public common::NodesRenderer
 	{
 	public:
-		GeometryPass( ashes::Device const & device
+		GeometryPass( utils::Device const & device
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue
 			, std::string const & fragmentShaderFile

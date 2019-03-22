@@ -11,8 +11,8 @@ See LICENSE file in root folder.
 #include "Image/D3D11Sampler.hpp"
 #include "Image/D3D11Texture.hpp"
 #include "Image/D3D11TextureView.hpp"
-#include "Buffer/D3D11UniformBuffer.hpp"
 
+#include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
 
 namespace d3d11_renderer
@@ -213,6 +213,16 @@ namespace d3d11_renderer
 			}
 		};
 
+		inline void checkOffset( uint32_t offset )
+		{
+#ifndef NDEBUG
+			if ( offset != 0u )
+			{
+				ashes::Logger::logWarning( "Binding buffer range not supported by this driver" );
+			}
+#endif
+		}
+
 		template<>
 		struct Binder< ashes::ShaderStageFlag::eCompute, false >
 		{
@@ -234,8 +244,7 @@ namespace d3d11_renderer
 
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
-				assert( offset == 0u
-					&& "Binding buffer range not supported by this driver" );
+				checkOffset( offset );
 				context->CSSetConstantBuffers( bindingIndex, 1u, &buffer );
 			}
 
@@ -266,8 +275,7 @@ namespace d3d11_renderer
 
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
-				assert( offset == 0u
-					&& "Binding buffer range not supported by this driver" );
+				checkOffset( offset );
 				context->VSSetConstantBuffers( bindingIndex, 1u, &buffer );
 			}
 		};
@@ -293,8 +301,7 @@ namespace d3d11_renderer
 
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
-				assert( offset == 0u
-					&& "Binding buffer range not supported by this driver" );
+				checkOffset( offset );
 				context->GSSetConstantBuffers( bindingIndex, 1u, &buffer );
 			}
 		};
@@ -320,8 +327,7 @@ namespace d3d11_renderer
 
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
-				assert( offset == 0u
-					&& "Binding buffer range not supported by this driver" );
+				checkOffset( offset );
 				context->HSSetConstantBuffers( bindingIndex, 1u, &buffer );
 			}
 		};
@@ -347,8 +353,7 @@ namespace d3d11_renderer
 
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
-				assert( offset == 0u
-					&& "Binding buffer range not supported by this driver" );
+				checkOffset( offset );
 				context->DSSetConstantBuffers( bindingIndex, 1u, &buffer );
 			}
 		};
@@ -374,8 +379,7 @@ namespace d3d11_renderer
 
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
-				assert( offset == 0u
-					&& "Binding buffer range not supported by this driver" );
+				checkOffset( offset );
 				context->PSSetConstantBuffers( bindingIndex, 1u, &buffer );
 			}
 		};

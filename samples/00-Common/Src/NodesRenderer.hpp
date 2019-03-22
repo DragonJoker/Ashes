@@ -2,6 +2,9 @@
 
 #include "Prerequisites.hpp"
 
+#include <Utils/GlslToSpv.hpp>
+#include <Utils/UtilsDevice.hpp>
+
 #include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Command/CommandBuffer.hpp>
 #include <Ashes/Descriptor/DescriptorSet.hpp>
@@ -15,14 +18,12 @@
 #include <Ashes/RenderPass/FrameBuffer.hpp>
 #include <Ashes/RenderPass/RenderPass.hpp>
 
-#include <Utils/GlslToSpv.hpp>
-
 namespace common
 {
 	class NodesRenderer
 	{
 	public:
-		NodesRenderer( ashes::Device const & device
+		NodesRenderer( utils::Device const & device
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue
 			, std::string const & fragmentShaderFile
@@ -38,7 +39,7 @@ namespace common
 			, ashes::TextureViewCRefArray const & views
 			, TextureNodePtrArray const & textureNodes );
 
-		inline ashes::Device const & getDevice()const
+		inline utils::Device const & getDevice()const
 		{
 			return m_device;
 		}
@@ -85,7 +86,7 @@ namespace common
 		}
 
 	protected:
-		ashes::Device const & m_device;
+		utils::Device const & m_device;
 		ashes::CommandPool const & m_commandPool;
 		ashes::Queue const & m_transferQueue;
 		bool m_opaqueNodes;

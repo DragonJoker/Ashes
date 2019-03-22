@@ -7,7 +7,6 @@ See LICENSE file in root folder.
 #include "Buffer/GlBuffer.hpp"
 #include "Buffer/GlBufferView.hpp"
 #include "Buffer/GlGeometryBuffers.hpp"
-#include "Buffer/GlUniformBuffer.hpp"
 #include "Command/GlCommandPool.hpp"
 #include "Command/GlQueue.hpp"
 #include "Core/GlSurface.hpp"
@@ -448,8 +447,11 @@ namespace gl_renderer
 		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
 		m_dummyIndexed.indexBuffer = ashes::makeBuffer< uint32_t >( *this
 			, count
-			, ashes::BufferTarget::eIndexBuffer
+			, ashes::BufferTarget::eIndexBuffer );
+		auto requirements = m_dummyIndexed.indexBuffer->getBuffer().getMemoryRequirements();
+		auto deduced = deduceMemoryType( requirements.memoryTypeBits
 			, ashes::MemoryPropertyFlag::eHostVisible );
+		m_dummyIndexed.indexBuffer->bindMemory( allocateMemory( { requirements.size, deduced } ) );
 
 		if ( auto * buffer = m_dummyIndexed.indexBuffer->lock( 0u
 			, count
@@ -514,12 +516,10 @@ namespace gl_renderer
 		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
 	}
 
-	ashes::DeviceMemoryPtr Device::allocateMemory( ashes::MemoryRequirements const & requirements
-		, ashes::MemoryPropertyFlags flags )const
+	ashes::DeviceMemoryPtr Device::allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const
 	{
 		return std::make_unique< DeviceMemory >( *this
-			, requirements
-			, flags );
+			, std::move( allocateInfo ) );
 	}
 
 	ashes::TexturePtr Device::createTexture( ashes::ImageCreateInfo const & createInfo )const
@@ -590,18 +590,6 @@ namespace gl_renderer
 			, format
 			, offset
 			, range );
-	}
-
-	ashes::UniformBufferBasePtr Device::createUniformBuffer( uint32_t count
-		, uint32_t size
-		, ashes::BufferTargets target
-		, ashes::MemoryPropertyFlags memoryFlags )const
-	{
-		return std::make_unique< UniformBuffer >( *this
-			, count
-			, size
-			, target
-			, memoryFlags );
 	}
 
 	ashes::SwapChainPtr Device::createSwapChain( ashes::SwapChainCreateInfo createInfo )const

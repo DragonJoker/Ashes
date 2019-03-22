@@ -62,8 +62,7 @@ namespace test_renderer
 		/**
 		*\copydoc	ashes::Device::allocateMemory
 		*/
-		ashes::DeviceMemoryPtr allocateMemory( ashes::MemoryRequirements const & requirements
-			, ashes::MemoryPropertyFlags flags )const override;
+		ashes::DeviceMemoryPtr allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const override;
 		/**
 		*\copydoc	ashes::Device::createTexture
 		*/
@@ -90,13 +89,6 @@ namespace test_renderer
 			, ashes::Format format
 			, uint32_t offset
 			, uint32_t range )const override;
-		/**
-		*\copydoc	ashes::Device::createUniformBuffer
-		*/
-		ashes::UniformBufferBasePtr createUniformBuffer( uint32_t count
-			, uint32_t size
-			, ashes::BufferTargets target
-			, ashes::MemoryPropertyFlags memoryFlags )const override;
 		/**
 		*\copydoc	ashes::Device::createSwapChain
 		*/

@@ -18,13 +18,13 @@ namespace vkapp
 	public:
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
-			, ashes::Instance const & instance );
+			, utils::Instance const & instance );
 		~RenderPanel();
 
 	private:
 		void doCleanup();
-		ashes::SurfacePtr doCreateSurface( ashes::Instance const & instance );
-		void doCreateDevice( ashes::Instance const & instance
+		ashes::SurfacePtr doCreateSurface( utils::Instance const & instance );
+		void doCreateDevice( utils::Instance const & instance
 			, ashes::SurfacePtr surface );
 
 	private:

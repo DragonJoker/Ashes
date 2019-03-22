@@ -5,7 +5,6 @@ See LICENSE file in root folder.
 #include "Command/D3D11CommandBuffer.hpp"
 
 #include "Buffer/D3D11Buffer.hpp"
-#include "Buffer/D3D11UniformBuffer.hpp"
 #include "Command/D3D11CommandPool.hpp"
 #include "Core/D3D11Device.hpp"
 #include "Descriptor/D3D11DescriptorSet.hpp"
@@ -59,6 +58,7 @@ See LICENSE file in root folder.
 
 #include <Ashes/Buffer/PushConstantsBuffer.hpp>
 #include <Ashes/Buffer/StagingBuffer.hpp>
+#include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Buffer/VertexBuffer.hpp>
 #include <Ashes/RenderPass/FrameBufferAttachment.hpp>
 

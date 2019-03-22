@@ -55,8 +55,6 @@ namespace gl_renderer
 			doLoadDebugFunctions();
 			disable();
 
-			double fversion{ 0u };
-
 			if ( !doCreateGl3Context( static_cast< MswContext const * >( mainContext ) ) )
 			{
 				wglDeleteContext( m_hContext );
