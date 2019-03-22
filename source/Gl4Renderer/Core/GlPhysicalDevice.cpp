@@ -376,7 +376,7 @@ namespace gl_renderer
 
 	ashes::FormatProperties PhysicalDevice::getFormatProperties( ashes::Format fmt )const
 	{
-		return m_formatProperties[size_t( fmt )];
+		return m_formatProperties[fmt];
 	}
 
 	bool PhysicalDevice::find( std::string const & name )const
@@ -613,10 +613,8 @@ namespace gl_renderer
 
 		if ( glGetInternalformativ )
 		{
-			for ( uint32_t i = 1u; i < m_formatProperties.size(); ++i )
+			for ( ashes::Format fmt = ashes::Format::eRange_BEGIN; fmt < ashes::Format::eRange_END; fmt = ashes::Format( uint32_t( fmt ) + 1 ) )
 			{
-				auto fmt = ashes::Format( i );
-
 				if ( isSupportedInternal( fmt ) )
 				{
 					GLint value;
@@ -630,11 +628,11 @@ namespace gl_renderer
 						{
 							if ( isDepthOrStencilFormat( fmt ) )
 							{
-								m_formatProperties[i].optimalTilingFeatures |= ashes::FormatFeatureFlag::eDepthStencilAttachment;
+								m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eDepthStencilAttachment;
 							}
 							else
 							{
-								m_formatProperties[i].optimalTilingFeatures |= ashes::FormatFeatureFlag::eColourAttachment;
+								m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eColourAttachment;
 							}
 						}
 
@@ -642,26 +640,26 @@ namespace gl_renderer
 
 						if ( value == GL_FULL_SUPPORT )
 						{
-							m_formatProperties[i].optimalTilingFeatures |= ashes::FormatFeatureFlag::eColourAttachmentBlend;
+							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eColourAttachmentBlend;
 						}
 
 						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FRAGMENT_TEXTURE, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
-							m_formatProperties[i].optimalTilingFeatures |= ashes::FormatFeatureFlag::eSampledImage;
+							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eSampledImage;
 						}
 
 						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FILTER, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
-							m_formatProperties[i].optimalTilingFeatures |= ashes::FormatFeatureFlag::eSampledImageFilterLinear;
+							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eSampledImageFilterLinear;
 						}
 					}
 				}
 
-				m_formatProperties[i].linearTilingFeatures = m_formatProperties[i].optimalTilingFeatures;
+				m_formatProperties[fmt].linearTilingFeatures = m_formatProperties[fmt].optimalTilingFeatures;
 			}
 		}
 	}

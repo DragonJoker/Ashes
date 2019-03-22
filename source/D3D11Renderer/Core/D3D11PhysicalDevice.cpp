@@ -58,7 +58,7 @@ namespace d3d11_renderer
 
 	ashes::FormatProperties PhysicalDevice::getFormatProperties( ashes::Format fmt )const
 	{
-		return m_formatProperties[size_t( fmt )];
+		return m_formatProperties[fmt];
 	}
 
 	void PhysicalDevice::doInitialise()

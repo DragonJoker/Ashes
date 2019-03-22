@@ -89,6 +89,6 @@ namespace d3d11_renderer
 		ashes::PhysicalDeviceFeatures m_features{};
 		ashes::PhysicalDeviceProperties m_properties{};
 		ashes::QueueFamilyPropertiesArray m_queueProperties{};
-		std::array< ashes::FormatProperties, size_t( ashes::Format::eRange ) > m_formatProperties;
+		mutable std::map< ashes::Format, ashes::FormatProperties > m_formatProperties;
 	};
 }

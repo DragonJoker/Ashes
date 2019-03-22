@@ -40,7 +40,7 @@ namespace vk_renderer
 	{
 		auto requirements = m_buffer.getMemoryRequirements();
 		auto deduced = m_device.deduceMemoryType( requirements.memoryTypeBits
-			, ashes::MemoryPropertyFlag::eDeviceLocal );
+			, ashes::MemoryPropertyFlag::eHostVisible );
 		m_buffer.bindMemory( device.allocateMemory( { requirements.size, deduced } ) );
 	}
 

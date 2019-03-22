@@ -114,6 +114,15 @@ namespace d3d11_renderer
 		case ashes::Format::eBC5_SNORM_BLOCK: return DXGI_FORMAT_BC5_SNORM;
 		case ashes::Format::eBC7_UNORM_BLOCK: return DXGI_FORMAT_BC7_UNORM;
 		case ashes::Format::eBC7_SRGB_BLOCK: return DXGI_FORMAT_BC7_UNORM_SRGB;
+		case ashes::Format::eG8_B8_R8_3PLANE_444_UNORM: return DXGI_FORMAT_AYUV;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16: return DXGI_FORMAT_Y410;
+		case ashes::Format::eG16_B16_R16_3PLANE_444_UNORM: return DXGI_FORMAT_Y416;
+		case ashes::Format::eG8_B8_R8_3PLANE_420_UNORM: return DXGI_FORMAT_NV12;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16: return DXGI_FORMAT_P010;
+		case ashes::Format::eG16_B16_R16_3PLANE_420_UNORM: return DXGI_FORMAT_P016;
+		case ashes::Format::eG8_B8_R8_3PLANE_422_UNORM: return DXGI_FORMAT_YUY2;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16: return DXGI_FORMAT_Y210;
+		case ashes::Format::eG16_B16_R16_3PLANE_422_UNORM: return DXGI_FORMAT_Y216;
 		default: return DXGI_FORMAT_UNKNOWN;
 		}
 	}
@@ -230,6 +239,15 @@ namespace d3d11_renderer
 		case ashes::Format::eBC5_SNORM_BLOCK: return DXGI_FORMAT_BC5_SNORM;
 		case ashes::Format::eBC7_UNORM_BLOCK: return DXGI_FORMAT_BC7_UNORM;
 		case ashes::Format::eBC7_SRGB_BLOCK: return DXGI_FORMAT_BC7_UNORM_SRGB;
+		case ashes::Format::eG8_B8_R8_3PLANE_444_UNORM: return DXGI_FORMAT_AYUV;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16: return DXGI_FORMAT_Y410;
+		case ashes::Format::eG16_B16_R16_3PLANE_444_UNORM: return DXGI_FORMAT_Y416;
+		case ashes::Format::eG8_B8_R8_3PLANE_420_UNORM: return DXGI_FORMAT_NV12;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16: return DXGI_FORMAT_P010;
+		case ashes::Format::eG16_B16_R16_3PLANE_420_UNORM: return DXGI_FORMAT_P016;
+		case ashes::Format::eG8_B8_R8_3PLANE_422_UNORM: return DXGI_FORMAT_YUY2;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16: return DXGI_FORMAT_Y210;
+		case ashes::Format::eG16_B16_R16_3PLANE_422_UNORM: return DXGI_FORMAT_Y216;
 
 		default:
 			assert( false && "Unsupported pixel format." );
@@ -349,6 +367,15 @@ namespace d3d11_renderer
 		case ashes::Format::eBC5_SNORM_BLOCK: return DXGI_FORMAT_BC5_SNORM;
 		case ashes::Format::eBC7_UNORM_BLOCK: return DXGI_FORMAT_BC7_UNORM;
 		case ashes::Format::eBC7_SRGB_BLOCK: return DXGI_FORMAT_BC7_UNORM_SRGB;
+		case ashes::Format::eG8_B8_R8_3PLANE_444_UNORM: return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16: return DXGI_FORMAT_R10G10B10A2_UNORM;
+		case ashes::Format::eG16_B16_R16_3PLANE_444_UNORM: return DXGI_FORMAT_R16G16B16A16_UNORM;
+		case ashes::Format::eG8_B8_R8_3PLANE_420_UNORM: return DXGI_FORMAT_R8_UNORM;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16: return DXGI_FORMAT_R16_UNORM;
+		case ashes::Format::eG16_B16_R16_3PLANE_420_UNORM: return DXGI_FORMAT_R16_UNORM;
+		case ashes::Format::eG8_B8_R8_3PLANE_422_UNORM: return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16: return DXGI_FORMAT_R16G16B16A16_UNORM;
+		case ashes::Format::eG16_B16_R16_3PLANE_422_UNORM: return DXGI_FORMAT_R16G16B16A16_UNORM;
 
 		default:
 			assert( false && "Unsupported pixel format." );
@@ -468,6 +495,15 @@ namespace d3d11_renderer
 		case ashes::Format::eBC5_SNORM_BLOCK: return DXGI_FORMAT_BC5_SNORM;
 		case ashes::Format::eBC7_UNORM_BLOCK: return DXGI_FORMAT_BC7_UNORM;
 		case ashes::Format::eBC7_SRGB_BLOCK: return DXGI_FORMAT_BC7_UNORM_SRGB;
+		case ashes::Format::eG8_B8_R8_3PLANE_444_UNORM: return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16: return DXGI_FORMAT_R10G10B10A2_UNORM;
+		case ashes::Format::eG16_B16_R16_3PLANE_444_UNORM: return DXGI_FORMAT_R16G16B16A16_UNORM;
+		case ashes::Format::eG8_B8_R8_3PLANE_420_UNORM: return DXGI_FORMAT_R8_UNORM;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16: return DXGI_FORMAT_R16_UNORM;
+		case ashes::Format::eG16_B16_R16_3PLANE_420_UNORM: return DXGI_FORMAT_R16_UNORM;
+		case ashes::Format::eG8_B8_R8_3PLANE_422_UNORM: return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16: return DXGI_FORMAT_R16G16B16A16_UNORM;
+		case ashes::Format::eG16_B16_R16_3PLANE_422_UNORM: return DXGI_FORMAT_R16G16B16A16_UNORM;
 
 		default:
 			assert( false && "Unsupported pixel format." );
@@ -587,6 +623,15 @@ namespace d3d11_renderer
 		case ashes::Format::eBC5_SNORM_BLOCK: return DXGI_FORMAT_BC5_SNORM;
 		case ashes::Format::eBC7_UNORM_BLOCK: return DXGI_FORMAT_BC7_UNORM;
 		case ashes::Format::eBC7_SRGB_BLOCK: return DXGI_FORMAT_BC7_UNORM_SRGB;
+		case ashes::Format::eG8_B8_R8_3PLANE_444_UNORM: return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16: return DXGI_FORMAT_R10G10B10A2_UNORM;
+		case ashes::Format::eG16_B16_R16_3PLANE_444_UNORM: return DXGI_FORMAT_R16G16B16A16_UNORM;
+		case ashes::Format::eG8_B8_R8_3PLANE_420_UNORM: return DXGI_FORMAT_R8_UNORM;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16: return DXGI_FORMAT_R16_UNORM;
+		case ashes::Format::eG16_B16_R16_3PLANE_420_UNORM: return DXGI_FORMAT_R16_UNORM;
+		case ashes::Format::eG8_B8_R8_3PLANE_422_UNORM: return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case ashes::Format::eG10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16: return DXGI_FORMAT_R16G16B16A16_UNORM;
+		case ashes::Format::eG16_B16_R16_3PLANE_422_UNORM: return DXGI_FORMAT_R16G16B16A16_UNORM;
 
 		default:
 			assert( false && "Unsupported pixel format." );
@@ -675,6 +720,15 @@ namespace d3d11_renderer
 		case DXGI_FORMAT_BC5_SNORM: return ashes::Format::eBC5_SNORM_BLOCK;
 		case DXGI_FORMAT_BC7_UNORM: return ashes::Format::eBC7_UNORM_BLOCK;
 		case DXGI_FORMAT_BC7_UNORM_SRGB: return ashes::Format::eBC7_SRGB_BLOCK;
+		case DXGI_FORMAT_AYUV: return ashes::Format::eG8_B8_R8_3PLANE_444_UNORM;
+		case DXGI_FORMAT_Y410: return ashes::Format::eG10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16;
+		case DXGI_FORMAT_Y416: return ashes::Format::eG16_B16_R16_3PLANE_444_UNORM;
+		case DXGI_FORMAT_NV12: return ashes::Format::eG8_B8_R8_3PLANE_420_UNORM;
+		case DXGI_FORMAT_P010: return ashes::Format::eG10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16;
+		case DXGI_FORMAT_P016: return ashes::Format::eG16_B16_R16_3PLANE_420_UNORM;
+		case DXGI_FORMAT_YUY2: return ashes::Format::eG8_B8_R8_3PLANE_422_UNORM;
+		case DXGI_FORMAT_Y210: return ashes::Format::eG10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16;
+		case DXGI_FORMAT_Y216: return ashes::Format::eG16_B16_R16_3PLANE_422_UNORM;
 		default:
 			assert( false && "Unsupported pixel format." );
 			return ashes::Format::eR8G8B8A8_UNORM;
