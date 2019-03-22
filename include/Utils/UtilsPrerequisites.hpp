@@ -17,17 +17,12 @@ namespace utils
 {
 	using Clock = std::chrono::high_resolution_clock;
 	using Milliseconds = std::chrono::milliseconds;
+	class InstanceFactory;
 
 	/**
 	*\name Prédéclarations.
 	*/
 	/**\{*/
-	template< class Obj
-		, class Key
-		, class PtrType = std::shared_ptr< Obj >
-		, typename Creator = std::function< PtrType() >
-		, class Predicate = std::less< Key > >
-	class Factory;
 	template< typename T >
 	class Vec2T;
 	template< typename T >

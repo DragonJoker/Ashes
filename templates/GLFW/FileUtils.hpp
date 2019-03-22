@@ -1,8 +1,7 @@
 /*
 See LICENSE file in root folder
 */
-#ifndef ___CASTOR_FILE_H___
-#define ___CASTOR_FILE_H___
+#pragma once
 
 #include <fstream>
 #include <vector>
@@ -63,6 +62,23 @@ namespace common
 	*	The parent folder.
 	*/
 	std::string getPath( std::string const & path );
+	/**
+	*\~french
+	*\brief
+	*	Récupère le nom de fichier du chemin donné.
+	*\param[in] path
+	*	Le chemin.
+	*\return
+	*	Le nom de fichier.
+	*\~english
+	*\brief
+	*	Retrieves the given path's file name.
+	*\param[in] path
+	*	The path.
+	*\return
+	*	The file name.
+	*/
+	std::string getFileName( std::string const & path );
 }
 /**
 *\~french
@@ -121,5 +137,3 @@ inline std::string operator/( char const * const lhs, std::string const & rhs )
 {
 	return std::string{ lhs } / rhs;
 }
-
-#endif

@@ -14,6 +14,7 @@ See LICENSE file in root folder.
 #include "Ashes/Image/SamplerCreateInfo.hpp"
 #include "Ashes/Miscellaneous/DebugMarkerObjectNameInfo.hpp"
 #include "Ashes/Miscellaneous/DeviceCreateInfo.hpp"
+#include "Ashes/Miscellaneous/MemoryAllocateInfo.hpp"
 #include "Ashes/Miscellaneous/QueueCreateInfo.hpp"
 #include "Ashes/Miscellaneous/SwapChainCreateInfo.hpp"
 #include "Ashes/Pipeline/ColourBlendState.hpp"
@@ -310,24 +311,19 @@ namespace ashes
 		*\~english
 		*\brief
 		*	Allocates memory on the device.
-		*\param[in] requirements
+		*\param[in] allocateInfo
 		*	The memory allocation requirements.
-		*\param[in] flags
-		*	The memory type.
 		*\return
 		*	The DeviceMemory object holding the allocated memory.
 		*\~french
 		*\brief
 		*	Alloue de la mémoire sur le périphérique.
-		*\param[in] requirements
+		*\param[in] allocateInfo
 		*	Les exigences d'allocation mémoire.
-		*\param[in] flags
-		*	Le type de mémoire.
 		*\return
 		*	L'objet DeviceMemory contenant la mémoire allouée.
 		*/
-		virtual DeviceMemoryPtr allocateMemory( MemoryRequirements const & requirements
-			, MemoryPropertyFlags flags )const = 0;
+		virtual DeviceMemoryPtr allocateMemory( MemoryAllocateInfo allocateInfo )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -423,34 +419,6 @@ namespace ashes
 			, Format format
 			, uint32_t offset
 			, uint32_t range )const = 0;
-		/**
-		*\~english
-		*\brief
-		*	Creates a uniform buffer.
-		*\param[in] count
-		*	The buffer elements count.
-		*\param[in] size
-		*	The size of one element in the buffer.
-		*\param[in] target
-		*	The buffer usage flags.
-		*\param[in] memoryFlags
-		*	The buffer memory flags.
-		*\~french
-		*\brief
-		*	Crée un tampon d'uniformes.
-		*\param[in] count
-		*	Le nombre d'éléments du tampon.
-		*\param[in] size
-		*	La taille d'un élément.
-		*\param[in] target
-		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] memoryFlags
-		*	Les indicateurs de mémoire du tampon.
-		*/
-		virtual UniformBufferBasePtr createUniformBuffer( uint32_t count
-			, uint32_t size
-			, BufferTargets target
-			, MemoryPropertyFlags memoryFlags )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -584,55 +552,6 @@ namespace ashes
 		*/
 		virtual QueuePtr getQueue( uint32_t familyIndex
 			, uint32_t index )const = 0;
-		/**
-		*\~english
-		*\brief
-		*	Creates a GPU buffer.
-		*\remarks
-		*	This version will also create the DeviceMemory and bind it to the buffer.
-		*\param[in] size
-		*	The buffer size.
-		*\param[in] target
-		*	The buffer usage flags.
-		*\param[in] flags
-		*	The memory property flags for the DeviceMemory object.
-		*\~french
-		*\brief
-		*	Crée un tampon GPU.
-		*\remarks
-		*	Cette version va aussi créer le DeviceMemory et le lier au tampon.
-		*\param[in] size
-		*	La taille du tampon.
-		*\param[in] target
-		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] flags
-		*	Les indicateurs de propriétés de mémoire pour l'objet DeviceMemory.
-		*/
-		BufferBasePtr createBuffer( uint32_t size
-			, BufferTargets target
-			, MemoryPropertyFlags flags )const;
-		/**
-		*\~english
-		*\brief
-		*	Creates a texture.
-		*\remarks
-		*	This version will also create the DeviceMemory and bind it to the texture.
-		*\param[in] createInfo
-		*	The creation informations.
-		*\param[in] flags
-		*	The memory property flags for the DeviceMemory object.
-		*\~french
-		*\brief
-		*	Crée une texture.
-		*\remarks
-		*	Cette version va aussi créer le DeviceMemory et le lier à la texture.
-		*\param[in] createInfo
-		*	Les informations de création.
-		*\param[in] flags
-		*	Les indicateurs de propriétés de mémoire pour l'objet DeviceMemory.
-		*/
-		TexturePtr createTexture( ImageCreateInfo const & createInfo
-			, MemoryPropertyFlags flags )const;
 		/**
 		*\~french
 		*\brief
@@ -842,29 +761,9 @@ namespace ashes
 		*	Accesseurs.
 		*/
 		/**@{*/
-		inline std::vector< QueueFamilyProperties > const & getQueueProperties()const
-		{
-			return m_gpu.getQueueProperties();
-		}
-
-		inline PhysicalDeviceProperties const & getProperties()const
-		{
-			return m_gpu.getProperties();
-		}
-
 		inline uint32_t getShaderVersion()const
 		{
 			return m_gpu.getShaderVersion();
-		}
-
-		inline PhysicalDeviceMemoryProperties const & getMemoryProperties()const
-		{
-			return m_gpu.getMemoryProperties();
-		}
-
-		inline PhysicalDeviceFeatures const & getFeatures()const
-		{
-			return m_gpu.getFeatures();
 		}
 
 		inline Instance const & getInstance()const
@@ -886,6 +785,26 @@ namespace ashes
 		{
 			return m_timestampPeriod;
 		}
+
+		inline PhysicalDeviceMemoryProperties const & getMemoryProperties()const
+		{
+			return m_memoryProperties;
+		}
+
+		inline PhysicalDeviceProperties const & getProperties()const
+		{
+			return m_properties;
+		}
+
+		inline PhysicalDeviceFeatures const & getFeatures()const
+		{
+			return m_features;
+		}
+
+		inline QueueFamilyPropertiesArray const & getQueueFamilyProperties()const
+		{
+			return m_queueFamilyProperties;
+		}
 		/**@}*/
 
 	protected:
@@ -895,6 +814,10 @@ namespace ashes
 		DeviceCreateInfo m_createInfos;
 		float m_timestampPeriod;
 		uint32_t m_shaderVersion;
+		PhysicalDeviceMemoryProperties m_memoryProperties;
+		PhysicalDeviceProperties m_properties;
+		PhysicalDeviceFeatures m_features;
+		QueueFamilyPropertiesArray m_queueFamilyProperties;
 
 #ifndef NDEBUG
 		struct ObjectAllocation

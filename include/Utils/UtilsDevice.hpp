@@ -6,6 +6,9 @@ See LICENSE file in root folder.
 
 #include "UtilsPrerequisites.hpp"
 
+#include <Ashes/Buffer/Buffer.hpp>
+#include <Ashes/Buffer/UniformBuffer.hpp>
+#include <Ashes/Buffer/VertexBuffer.hpp>
 #include <Ashes/Core/Device.hpp>
 
 namespace utils
@@ -23,8 +26,98 @@ namespace utils
 	public:
 		Device( ashes::Instance const & instance
 			, ashes::SurfacePtr surface );
+		/**
+		*\~english
+		*\brief
+		*	Creates a GPU buffer.
+		*\remarks
+		*	This version will also create the DeviceMemory and bind it to the buffer.
+		*\param[in] size
+		*	The buffer size.
+		*\param[in] target
+		*	The buffer usage flags.
+		*\param[in] flags
+		*	The memory property flags for the DeviceMemory object.
+		*\~french
+		*\brief
+		*	Crée un tampon GPU.
+		*\remarks
+		*	Cette version va aussi créer le DeviceMemory et le lier au tampon.
+		*\param[in] size
+		*	La taille du tampon.
+		*\param[in] target
+		*	Les indicateurs d'utilisation du tampon.
+		*\param[in] flags
+		*	Les indicateurs de propriétés de mémoire pour l'objet DeviceMemory.
+		*/
+		ashes::BufferBasePtr createBuffer( uint32_t size
+			, ashes::BufferTargets target
+			, ashes::MemoryPropertyFlags flags )const;
+		/**
+		*\~english
+		*\brief
+		*	Creates a uniform buffer.
+		*\param[in] count
+		*	The buffer elements count.
+		*\param[in] size
+		*	The size of one element in the buffer.
+		*\param[in] target
+		*	The buffer usage flags.
+		*\param[in] memoryFlags
+		*	The buffer memory flags.
+		*\~french
+		*\brief
+		*	Crée un tampon d'uniformes.
+		*\param[in] count
+		*	Le nombre d'éléments du tampon.
+		*\param[in] size
+		*	La taille d'un élément.
+		*\param[in] target
+		*	Les indicateurs d'utilisation du tampon.
+		*\param[in] memoryFlags
+		*	Les indicateurs de mémoire du tampon.
+		*/
+		ashes::UniformBufferBasePtr createUniformBuffer( uint32_t count
+			, uint32_t size
+			, ashes::BufferTargets target
+			, ashes::MemoryPropertyFlags memoryFlags )const;
+		/**
+		*\~english
+		*\brief
+		*	Creates a texture.
+		*\remarks
+		*	This version will also create the DeviceMemory and bind it to the texture.
+		*\param[in] createInfo
+		*	The creation informations.
+		*\param[in] flags
+		*	The memory property flags for the DeviceMemory object.
+		*\~french
+		*\brief
+		*	Crée une texture.
+		*\remarks
+		*	Cette version va aussi créer le DeviceMemory et le lier à la texture.
+		*\param[in] createInfo
+		*	Les informations de création.
+		*\param[in] flags
+		*	Les indicateurs de propriétés de mémoire pour l'objet DeviceMemory.
+		*/
+		ashes::TexturePtr createTexture( ashes::ImageCreateInfo const & createInfo
+			, ashes::MemoryPropertyFlags flags )const;
+
+		uint32_t deduceMemoryType( uint32_t typeBits
+			, ashes::MemoryPropertyFlags requirements )const;
+
+		inline ashes::Device const * operator->()const
+		{
+			return &getDevice();
+		}
 
 		inline ashes::Device const & getDevice()const
+		{
+			return *m_device;
+		}
+
+		inline operator ashes::Device const &()const
 		{
 			return *m_device;
 		}
@@ -45,13 +138,60 @@ namespace utils
 		}
 
 	private:
+		ashes::PhysicalDevice const & m_gpu;
 		uint32_t m_presentQueueFamilyIndex;
 		uint32_t m_graphicsQueueFamilyIndex;
 		uint32_t m_computeQueueFamilyIndex;
+		ashes::PhysicalDeviceMemoryProperties m_memoryProperties;
 		ashes::DeviceCreateInfo m_createInfos;
 		ashes::DevicePtr m_device;
 	};
 
 	using DevicePtr = std::unique_ptr< Device >;
+
+	template< typename T >
+	ashes::BufferPtr< T > makeBuffer( Device const & device
+		, uint32_t count
+		, ashes::BufferTargets target
+		, ashes::MemoryPropertyFlags flags )
+	{
+		auto result = ashes::makeBuffer< T >( device.getDevice()
+			, count
+			, target );
+		auto requirements = result->getMemoryRequirements();
+		auto deduced = device.deduceMemoryType( requirements.memoryTypeBits, flags );
+		result->bindMemory( device.getDevice().allocateMemory( { requirements.size, deduced } ) );
+		return result;
+	}
+
+	template< typename T >
+	ashes::VertexBufferPtr< T > makeVertexBuffer( Device const & device
+		, uint32_t count
+		, ashes::BufferTargets target
+		, ashes::MemoryPropertyFlags flags )
+	{
+		auto result = ashes::makeVertexBuffer< T >( device.getDevice()
+			, count
+			, target );
+		auto requirements = result->getMemoryRequirements();
+		auto deduced = device.deduceMemoryType( requirements.memoryTypeBits, flags );
+		result->bindMemory( device.getDevice().allocateMemory( { requirements.size, deduced } ) );
+		return result;
+	}
+
+	template< typename T >
+	ashes::UniformBufferPtr< T > makeUniformBuffer( Device const & device
+		, uint32_t count
+		, ashes::BufferTargets target
+		, ashes::MemoryPropertyFlags flags )
+	{
+		auto result = ashes::makeUniformBuffer< T >( device.getDevice()
+			, count
+			, target );
+		auto requirements = result->getMemoryRequirements();
+		auto deduced = device.deduceMemoryType( requirements.memoryTypeBits, flags );
+		result->bindMemory( device.getDevice().allocateMemory( { requirements.size, deduced } ) );
+		return result;
+	}
 }
 

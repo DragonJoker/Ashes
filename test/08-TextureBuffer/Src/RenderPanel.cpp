@@ -45,7 +45,7 @@ namespace vkapp
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, ashes::Instance const & instance )
+		, utils::Instance const & instance )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 		, m_vertexData{
@@ -137,18 +137,18 @@ namespace vkapp
 		}
 	}
 
-	ashes::SurfacePtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
+	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.createSurface( gpu
+		return instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
 
-	void RenderPanel::doCreateDevice( ashes::Instance const & instance
+	void RenderPanel::doCreateDevice( utils::Instance const & instance
 		, ashes::SurfacePtr surface )
 	{
-		m_device = std::make_unique< utils::Device >( instance
+		m_device = std::make_unique< utils::Device >( instance.getInstance()
 			, std::move( surface ) );
 		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
 		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
@@ -174,7 +174,7 @@ namespace vkapp
 		static constexpr ashes::Format format = ashes::Format::eR32G32B32A32_SFLOAT;
 		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
-		m_textureBuffer = ashes::makeBuffer< utils::Vec4 >( m_device->getDevice()
+		m_textureBuffer = utils::makeBuffer< utils::Vec4 >( *m_device
 			, image.size.width
 			, ashes::BufferTarget::eUniformTexelBuffer | ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
@@ -246,7 +246,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateVertexBuffer()
 	{
-		m_vertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( m_device->getDevice()
+		m_vertexBuffer = utils::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_vertexData.size() )
 			, ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );

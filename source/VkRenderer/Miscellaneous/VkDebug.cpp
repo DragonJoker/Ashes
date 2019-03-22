@@ -272,26 +272,6 @@ namespace vk_renderer
 	template<> std::string const VkTypeNamer< VkWin32SurfaceCreateInfoKHR >::Name = "VkWin32SurfaceCreateInfoKHR";
 
 #endif
-	void addOptionalValidationLayer( std::string const & layerName
-		, std::string description
-		, ashes::StringArray & names )
-	{
-#if LOAD_VALIDATION_LAYERS
-		if ( layerName.find( "validation" ) != std::string::npos
-			|| description.find( "LunarG Validation" ) != std::string::npos )
-		{
-			names.push_back( layerName );
-		}
-#endif
-	}
-
-	void addOptionalDebugReportLayer( ashes::StringArray & names )
-	{
-#if LOAD_VALIDATION_LAYERS
-		names.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
-		//names.push_back( VK_EXT_DEBUG_MARKER_EXTENSION_NAME );
-#endif
-	}
 
 	void setupDebugging( VkInstance instance
 		, Instance & data

@@ -38,6 +38,7 @@ namespace ashes
 			, extent
 			, data
 			, view );
+		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
@@ -56,6 +57,7 @@ namespace ashes
 			, format
 			, data
 			, view );
+		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
@@ -72,6 +74,7 @@ namespace ashes
 		copyTextureData( *commandBuffer
 			, format
 			, view );
+		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
@@ -94,6 +97,7 @@ namespace ashes
 			, offset
 			, extent
 			, view );
+		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );

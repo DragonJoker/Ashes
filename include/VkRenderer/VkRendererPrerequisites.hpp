@@ -77,6 +77,7 @@
 #include "Enum/VkImageTiling.hpp"
 #include "Enum/VkImageUsageFlag.hpp"
 #include "Enum/VkIndexType.hpp"
+#include "Enum/VkInstanceCreateFlag.hpp"
 #include "Enum/VkLogicOp.hpp"
 #include "Enum/VkMemoryHeapFlag.hpp"
 #include "Enum/VkMemoryMapFlag.hpp"
@@ -122,6 +123,7 @@
 #include "Image/VkImageSubresourceLayers.hpp"
 #include "Image/VkImageSubresourceRange.hpp"
 #include "Image/VkSubresourceLayout.hpp"
+#include "Miscellaneous/VkApplicationInfo.hpp"
 #include "Miscellaneous/VkBufferCopy.hpp"
 #include "Miscellaneous/VkBufferImageCopy.hpp"
 #include "Miscellaneous/VkDebugMarkerObjectNameInfo.hpp"
@@ -133,13 +135,18 @@
 #include "Miscellaneous/VkFormatProperties.hpp"
 #include "Miscellaneous/VkImageBlit.hpp"
 #include "Miscellaneous/VkImageCopy.hpp"
+#include "Miscellaneous/VkInstanceCreateInfo.hpp"
 #include "Miscellaneous/VkLayerProperties.hpp"
+#include "Miscellaneous/VkMemoryAllocateInfo.hpp"
 #include "Miscellaneous/VkMemoryRequirements.hpp"
 #include "Miscellaneous/VkOffset2D.hpp"
 #include "Miscellaneous/VkOffset3D.hpp"
 #include "Miscellaneous/VkPhysicalDeviceFeatures.hpp"
+#include "Miscellaneous/VkPhysicalDeviceMemoryProperties.hpp"
+#include "Miscellaneous/VkPhysicalDeviceProperties.hpp"
 #include "Miscellaneous/VkPushConstantRange.hpp"
 #include "Miscellaneous/VkQueueCreateInfo.hpp"
+#include "Miscellaneous/VkQueueFamilyProperties.hpp"
 #include "Miscellaneous/VkRect2D.hpp"
 #include "Miscellaneous/VkSurfaceCapabilities.hpp"
 #include "Miscellaneous/VkSurfaceFormat.hpp"
@@ -265,28 +272,6 @@ namespace vk_renderer
 	using TextureViewCRefArray = std::vector< TextureViewCRef >;
 	using VertexLayoutCRefArray = std::vector< VertexLayoutCRef >;
 	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
-	/**
-	*\~french
-	*\brief
-	*	Vérifie si les extensions demandées sont toutes disponibles dans la liste des extensions supportées.
-	*\remarks
-	*	Si une extension n'est pas supportée, une std::runtime_error sera lancée.
-	*\param[in] supported
-	*	La liste des extensions supportées.
-	*\param[in] requested
-	*	La liste des extensions requises.
-	*\~english
-	*\brief
-	*	Checks if the requested extensions are all available in the list of supported extensions.
-	*\remarks
-	*	If an extension is not supported, a std::runtime_error will be thrown.
-	*\param[in] supported
-	*	The supported extensions list.
-	*\param[in] requested
-	*	The requested extensions list.
-	*/
-	void checkExtensionsAvailability( std::vector< ashes::ExtensionProperties > const & supported
-		, ashes::StringArray const & requested );
 	/**
 	*\~french
 	*\brief

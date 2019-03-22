@@ -8,13 +8,21 @@ namespace ashes
 {
 	VertexBufferBase::VertexBufferBase( Device const & device
 		, uint32_t size
-		, BufferTargets target
-		, MemoryPropertyFlags flags )
+		, BufferTargets target )
 		: m_device{ device }
 		, m_size{ size }
 		, m_buffer{ m_device.createBuffer( size
-			, target | BufferTarget::eVertexBuffer
-			, flags ) }
+			, target | BufferTarget::eVertexBuffer ) }
 	{
+	}
+
+	void VertexBufferBase::bindMemory( DeviceMemoryPtr memory )
+	{
+		m_buffer->bindMemory( std::move( memory ) );
+	}
+
+	MemoryRequirements VertexBufferBase::getMemoryRequirements()const
+	{
+		return m_buffer->getMemoryRequirements();
 	}
 }

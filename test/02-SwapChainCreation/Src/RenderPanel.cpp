@@ -157,21 +157,21 @@ namespace vkapp
 				surfaceFormat.colorSpace,
 				swapChainExtent,
 				1u,
-				surfaceCaps.supportedUsageFlags,
+				ashes::ImageUsageFlag::eColourAttachment,
 				ashes::SharingMode::eExclusive,
-			{},
-			preTransform,
-			ashes::CompositeAlphaFlag::eOpaque,
-			presentMode,
-			false,
-			std::nullopt
+				{},
+				preTransform,
+				ashes::CompositeAlphaFlag::eOpaque,
+				presentMode,
+				true,
+				ashes::nullopt
 			};
 		}
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, ashes::Instance const & instance )
+		, utils::Instance const & instance )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 	{
@@ -212,11 +212,11 @@ namespace vkapp
 		if ( m_device )
 		{
 			m_device->getDevice().waitIdle();
-			m_commandPool.reset();
 			m_presentQueue.reset();
 			m_graphicsQueue.reset();
 			m_commandBuffers.clear();
 			m_renderingResources.clear();
+			m_commandPool.reset();
 			m_swapChain.reset();
 			m_frameBuffers.clear();
 			m_renderPass.reset();
@@ -224,18 +224,18 @@ namespace vkapp
 		}
 	}
 
-	ashes::SurfacePtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
+	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.createSurface( gpu
+		return instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
 
-	void RenderPanel::doCreateDevice( ashes::Instance const & instance
+	void RenderPanel::doCreateDevice( utils::Instance const & instance
 		, ashes::SurfacePtr surface )
 	{
-		m_device = std::make_unique< utils::Device >( instance
+		m_device = std::make_unique< utils::Device >( instance.getInstance()
 			, std::move( surface ) );
 		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
 		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
@@ -433,9 +433,9 @@ namespace vkapp
 	{
 		try
 		{
-			auto res = m_presentQueue->present( { std::ref( *m_swapChain ) }
-				, ashes::UInt32Array{ resources.imageIndex }
-				, { std::ref( *resources.finishedRenderingSemaphore ) } );
+			auto res = m_presentQueue->present( ashes::SwapChainCRefArray{ { std::ref( *m_swapChain ) } }
+				, ashes::UInt32Array{ { resources.imageIndex } }
+				, ashes::SemaphoreCRefArray{ { std::ref( *resources.finishedRenderingSemaphore ) } } );
 		}
 		catch ( ashes::Exception & exc )
 		{

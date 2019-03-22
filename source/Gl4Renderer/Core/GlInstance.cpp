@@ -44,13 +44,18 @@ namespace gl_renderer
 				wc.hbrBackground = ( HBRUSH )( COLOR_BACKGROUND );
 				wc.lpszClassName = "DummyWindow";
 				wc.style = CS_OWNDC;
-
-				if ( !RegisterClassA( &wc ) )
-				{
-					throw std::runtime_error{ "Couldn't register window class" };
-				}
-
-				m_hWnd = CreateWindowA( wc.lpszClassName, "DummyWindow", WS_OVERLAPPEDWINDOW, 0, 0, 640, 480, nullptr, nullptr, wc.hInstance, nullptr );
+				RegisterClassA( &wc );
+				m_hWnd = CreateWindowA( wc.lpszClassName
+					, "DummyWindow"
+					, WS_OVERLAPPEDWINDOW
+					, 0
+					, 0
+					, 640
+					, 480
+					, nullptr
+					, nullptr
+					, wc.hInstance
+					, nullptr );
 
 				if ( !m_hWnd )
 				{
@@ -321,24 +326,95 @@ namespace gl_renderer
 #endif
 	}
 
-	Instance::Instance( Configuration const & configuration )
-		: ashes::Instance{ ashes::ClipDirection::eBottomUp, "gl4", configuration }
+	ashes::PhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
+		{
+			ashes::PhysicalDeviceMemoryProperties result;
+
+			// Emulate one device local heap
+			result.memoryHeaps.push_back(
+				{
+					~( 0ull ),
+					0u | ashes::MemoryHeapFlag::eDeviceLocal
+				} );
+			// and one host visible heap
+			result.memoryHeaps.push_back(
+				{
+					~( 0ull ),
+					0u
+				} );
+
+			// Emulate all combinations of device local memory types
+			result.memoryTypes.push_back(
+				{
+					0u | ashes::MemoryPropertyFlag::eDeviceLocal,
+					0u,
+				} );
+			result.memoryTypes.push_back(
+				{
+					0u | ashes::MemoryPropertyFlag::eLazilyAllocated,
+					0u,
+				} );
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eDeviceLocal | ashes::MemoryPropertyFlag::eLazilyAllocated,
+					0u,
+				} );
+
+			// and all combinations of host visible memory types
+			result.memoryTypes.push_back(
+				{
+					0u | ashes::MemoryPropertyFlag::eHostVisible,
+					1u,
+				} );
+
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent,
+					1u,
+				} );
+
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCached,
+					1u,
+				} );
+
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent | ashes::MemoryPropertyFlag::eHostCached,
+					1u,
+				} );
+
+			return result;
+		}();
+
+	Instance::Instance( ashes::InstanceCreateInfo createInfo )
+		: ashes::Instance{ ashes::ClipDirection::eBottomUp, "gl4", std::move( createInfo ) }
 	{
 		RenderWindow dummyWindow;
-		m_gpus.push_back( std::make_unique< PhysicalDevice >( *this ) );
-		m_apiVersion = m_gpus[0]->getProperties().apiVersion;
-		auto & gpu = static_cast< PhysicalDevice const & >( *m_gpus.back() );
-		m_features.hasTexBufferRange = gpu.find( ARB_texture_buffer_range );
-		m_features.hasImageTexture = gpu.find( ARB_shader_image_load_store );
-		m_features.hasBaseInstance = gpu.find( ARB_base_instance );
-		m_features.hasClearTexImage = gpu.find( ARB_clear_texture );
-		m_features.hasComputeShaders = gpu.find( ARB_compute_shader );
-		m_features.supportsPersistentMapping = gpu.find( ARB_buffer_storage );
+		m_extensions.initialise();
+		m_features.hasTexBufferRange = m_extensions.find( ARB_texture_buffer_range );
+		m_features.hasImageTexture = m_extensions.find( ARB_shader_image_load_store );
+		m_features.hasBaseInstance = m_extensions.find( ARB_base_instance );
+		m_features.hasClearTexImage = m_extensions.find( ARB_clear_texture );
+		m_features.hasComputeShaders = m_extensions.find( ARB_compute_shader );
+		m_features.supportsPersistentMapping = m_extensions.find( ARB_buffer_storage );
+		auto & layers = getEnabledLayerNames();
+		auto it = std::find_if( layers.begin()
+			, layers.end()
+			, []( std::string const & lookup )
+			{
+				return lookup.find( "validation" ) != std::string::npos;
+			} );
+		m_validationEnabled = it != layers.end();
+	}
 
-		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...
-		m_spirvSupported = false
-			&& ( gpu.find( ARB_gl_spirv )
-				|| gpu.hasSPIRVShaderBinaryFormat() );
+	ashes::PhysicalDevicePtrArray Instance::enumeratePhysicalDevices()const
+	{
+		RenderWindow dummyWindow;
+		ashes::PhysicalDevicePtrArray result;
+		result.emplace_back( std::make_unique< PhysicalDevice >( *this ) );
+		return result;
 	}
 
 	ashes::DevicePtr Instance::createDevice( ashes::SurfacePtr surface

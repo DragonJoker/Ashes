@@ -40,6 +40,7 @@ namespace gl_renderer
 		ashes::MemoryRequirements result{};
 		result.size = getSize();
 		result.type = ashes::ResourceType::eBuffer;
+		result.memoryTypeBits = ~result.memoryTypeBits;
 		return result;
 	}
 

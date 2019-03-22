@@ -147,7 +147,7 @@ namespace gl_renderer
 
 		m_constantsPcb.size = offset;
 
-		if ( m_device.getInstance().isValidationEnabled() )
+		if ( static_cast< Instance const & >( m_device.getInstance() ).isValidationEnabled() )
 		{
 			validatePipeline( context
 				, m_layout

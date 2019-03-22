@@ -89,4 +89,7 @@ namespace test_renderer
 	using TextureViewCRefArray = std::vector< TextureViewCRef >;
 	using VertexLayoutCRefArray = std::vector< VertexLayoutCRef >;
 	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
+
+	uint32_t deduceMemoryType( uint32_t typeBits
+		, ashes::MemoryPropertyFlags requirements );
 }

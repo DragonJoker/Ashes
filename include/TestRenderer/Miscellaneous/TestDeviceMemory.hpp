@@ -44,8 +44,7 @@ namespace test_renderer
 		*	The wanted memory flags.
 		*/
 		DeviceMemory( Device const & device
-			, ashes::MemoryRequirements const & requirements
-			, ashes::MemoryPropertyFlags flags );
+			, ashes::MemoryAllocateInfo allocateInfo );
 		/**
 		*\~french
 		*\brief

@@ -2,7 +2,7 @@
 
 namespace vkapp
 {
-	TransparentRendering::TransparentRendering( ashes::Device const & device
+	TransparentRendering::TransparentRendering( utils::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
 		, std::string const & fragmentShaderFile

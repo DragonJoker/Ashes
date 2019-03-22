@@ -9,15 +9,52 @@ See LICENSE file in root folder.
 
 namespace test_renderer
 {
-	PhysicalDevice::PhysicalDevice( Instance & instance )
+	PhysicalDevice::PhysicalDevice( Instance const & instance )
 		: ashes::PhysicalDevice{ instance }
 		, m_instance{ instance }
 	{
 		m_shaderVersion = 450u;
-		initialise();
+		doInitialise();
 	}
 
-	void PhysicalDevice::initialise()
+	ashes::LayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
+	{
+		ashes::LayerPropertiesArray result;
+		return result;
+	}
+
+	ashes::ExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
+	{
+		ashes::ExtensionPropertiesArray result;
+		return result;
+	}
+
+	ashes::PhysicalDeviceProperties PhysicalDevice::getProperties()const
+	{
+		return m_properties;
+	}
+
+	ashes::PhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
+	{
+		return Instance::getMemoryProperties();
+	}
+
+	ashes::PhysicalDeviceFeatures PhysicalDevice::getFeatures()const
+	{
+		return m_features;
+	}
+
+	ashes::QueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
+	{
+		return m_queueProperties;
+	}
+
+	ashes::FormatProperties PhysicalDevice::getFormatProperties( ashes::Format fmt )const
+	{
+		return m_formatProperties[fmt];
+	}
+
+	void PhysicalDevice::doInitialise()
 	{
 		m_features.robustBufferAccess = true;
 		m_features.fullDrawIndexUint32 = true;
@@ -202,7 +239,6 @@ namespace test_renderer
 		m_properties.sparseProperties.residencyStandard2DBlockShape = true;
 		m_properties.sparseProperties.residencyStandard2DMultisampleBlockShape = true;
 		m_properties.sparseProperties.residencyStandard3DBlockShape = true;
-
 
 		// Et enfin les propriétés des familles de files du GPU.
 		m_queueProperties.reserve( 1u );

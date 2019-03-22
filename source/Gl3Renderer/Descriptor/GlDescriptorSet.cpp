@@ -4,8 +4,8 @@
 #include "Descriptor/GlDescriptorPool.hpp"
 #include "Image/GlSampler.hpp"
 #include "Image/GlTexture.hpp"
-#include "Buffer/GlUniformBuffer.hpp"
 
+#include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
 
 #include <algorithm>

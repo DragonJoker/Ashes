@@ -41,6 +41,6 @@ namespace common
 		std::streambuf * m_cerr{ nullptr };
 		std::streambuf * m_clog{ nullptr };
 		std::vector< utils::Plugin > m_plugins;
-		utils::RendererFactory m_factory;
+		utils::InstanceFactory m_factory;
 	};
 }

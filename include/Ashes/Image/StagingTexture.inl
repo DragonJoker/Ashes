@@ -30,6 +30,7 @@ namespace ashes
 			, extent
 			, data.data()
 			, texture );
+		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
@@ -48,6 +49,7 @@ namespace ashes
 			, format
 			, data.data()
 			, texture );
+		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );

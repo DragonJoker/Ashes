@@ -169,7 +169,7 @@ namespace common
 			, std::move( attaches ) );
 		}
 
-		ashes::UniformBufferPtr< common::MaterialData > doCreateMaterialsUbo( ashes::Device const & device
+		ashes::UniformBufferPtr< common::MaterialData > doCreateMaterialsUbo( utils::Device const & device
 			, Scene const & scene
 			, bool m_opaqueNodes
 			, uint32_t & objectsCount
@@ -198,7 +198,7 @@ namespace common
 
 			if ( objectsCount + billboardsCount )
 			{
-				result = std::make_unique< ashes::UniformBuffer< common::MaterialData > >( device
+				result = utils::makeUniformBuffer< common::MaterialData >( device
 					, objectsCount + billboardsCount
 					, ashes::BufferTarget::eTransferDst
 					, ashes::MemoryPropertyFlag::eDeviceLocal );
@@ -208,7 +208,7 @@ namespace common
 		}
 	}
 
-	NodesRenderer::NodesRenderer( ashes::Device const & device
+	NodesRenderer::NodesRenderer( utils::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
 		, std::string const & fragmentShaderFile
@@ -220,14 +220,14 @@ namespace common
 		, m_transferQueue{ transferQueue }
 		, m_opaqueNodes{ opaqueNodes }
 		, m_fragmentShaderFile{ fragmentShaderFile }
-		, m_sampler{ m_device.createSampler( ashes::WrapMode::eClampToEdge
+		, m_sampler{ m_device.getDevice().createSampler( ashes::WrapMode::eClampToEdge
 			, ashes::WrapMode::eClampToEdge
 			, ashes::WrapMode::eClampToEdge
 			, ashes::Filter::eLinear
 			, ashes::Filter::eLinear ) }
 		, m_commandBuffer{ commandPool.createCommandBuffer() }
-		, m_renderPass{ doCreateRenderPass( m_device, formats, clearViews ) }
-		, m_queryPool{ m_device.createQueryPool( ashes::QueryType::eTimestamp, 2u, 0u ) }
+		, m_renderPass{ doCreateRenderPass( m_device.getDevice(), formats, clearViews ) }
+		, m_queryPool{ m_device.getDevice().createQueryPool( ashes::QueryType::eTimestamp, 2u, 0u ) }
 	{
 	}
 
@@ -246,7 +246,7 @@ namespace common
 			, 0u
 			, ashes::QueryResultFlag::eWait
 			, values );
-		gpu = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device.getTimestampPeriod() ) ) };
+		gpu = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device.getDevice().getTimestampPeriod() ) ) };
 	}
 
 	void NodesRenderer::initialise( Scene const & scene
@@ -385,7 +385,7 @@ namespace common
 				ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eFragment },
 			};
 			doFillBillboardDescriptorLayoutBindings( bindings );
-			m_billboardDescriptorLayout = m_device.createDescriptorSetLayout( std::move( bindings ) );
+			m_billboardDescriptorLayout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 			m_billboardDescriptorPool = m_billboardDescriptorLayout->createPool( m_billboardsCount );
 
 			// Initialise vertex layout.
@@ -427,7 +427,7 @@ namespace common
 				BillboardNodePtr billboardNode = m_billboardNodes.back();
 
 				// Initialise geometry buffers.
-				billboardNode->vbo = ashes::makeVertexBuffer< Vertex >( m_device
+				billboardNode->vbo = utils::makeVertexBuffer< Vertex >( m_device
 					, uint32_t( vertexData.size() )
 					, ashes::BufferTarget::eTransferDst
 					, ashes::MemoryPropertyFlag::eDeviceLocal );
@@ -435,7 +435,7 @@ namespace common
 					, m_commandPool
 					, vertexData
 					, *billboardNode->vbo );
-				billboardNode->instance = ashes::makeVertexBuffer< BillboardInstanceData >( m_device
+				billboardNode->instance = utils::makeVertexBuffer< BillboardInstanceData >( m_device
 					, uint32_t( billboard.list.size() )
 					, ashes::BufferTarget::eTransferDst
 					, ashes::MemoryPropertyFlag::eDeviceLocal );
@@ -475,7 +475,7 @@ namespace common
 				// Initialise descriptor set for textures.
 				ashes::DescriptorSetLayoutBindingArray bindings;
 				bindings.emplace_back( 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment, 6u );
-				materialNode.layout = m_device.createDescriptorSetLayout( std::move( bindings ) );
+				materialNode.layout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 				materialNode.pool = materialNode.layout->createPool( 1u );
 				materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
 
@@ -495,11 +495,11 @@ namespace common
 				// Initialise the pipeline
 				if ( materialNode.layout )
 				{
-					materialNode.pipelineLayout = m_device.createPipelineLayout( { *m_billboardDescriptorLayout, *materialNode.layout } );
+					materialNode.pipelineLayout = m_device.getDevice().createPipelineLayout( { *m_billboardDescriptorLayout, *materialNode.layout } );
 				}
 				else
 				{
-					materialNode.pipelineLayout = m_device.createPipelineLayout( *m_billboardDescriptorLayout );
+					materialNode.pipelineLayout = m_device.getDevice().createPipelineLayout( *m_billboardDescriptorLayout );
 				}
 
 				ashes::ColourBlendState blendState;
@@ -520,7 +520,7 @@ namespace common
 
 				materialNode.pipeline = materialNode.pipelineLayout->createPipeline( 
 				{
-					doCreateBillboardProgram( m_device, m_fragmentShaderFile ),
+					doCreateBillboardProgram( m_device.getDevice(), m_fragmentShaderFile ),
 					*m_renderPass,
 					ashes::VertexInputState::create( { *m_billboardVertexLayout, *m_billboardInstanceLayout } ),
 					{ ashes::PrimitiveTopology::eTriangleStrip },
@@ -546,7 +546,7 @@ namespace common
 			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eFragment },
 		};
 		doFillObjectDescriptorLayoutBindings( bindings );
-		m_objectDescriptorLayout = m_device.createDescriptorSetLayout( std::move( bindings ) );
+		m_objectDescriptorLayout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_objectDescriptorPool = m_objectDescriptorLayout->createPool( m_objectsCount );
 
 		// Initialise vertex layout.
@@ -585,7 +585,7 @@ namespace common
 				common::SubmeshNodePtr submeshNode = m_submeshNodes.back();
 
 				// Initialise geometry buffers.
-				submeshNode->vbo = ashes::makeVertexBuffer< common::Vertex >( m_device
+				submeshNode->vbo = utils::makeVertexBuffer< common::Vertex >( m_device
 					, uint32_t( submesh.vbo.data.size() )
 					, ashes::BufferTarget::eTransferDst
 					, ashes::MemoryPropertyFlag::eDeviceLocal );
@@ -593,7 +593,7 @@ namespace common
 					, m_commandPool
 					, submesh.vbo.data
 					, *submeshNode->vbo );
-				submeshNode->ibo = ashes::makeBuffer< common::Face >( m_device
+				submeshNode->ibo = utils::makeBuffer< common::Face >( m_device
 					, uint32_t( submesh.ibo.data.size() )
 					, ashes::BufferTarget::eIndexBuffer | ashes::BufferTarget::eTransferDst
 					, ashes::MemoryPropertyFlag::eDeviceLocal );
@@ -634,7 +634,7 @@ namespace common
 					// Initialise descriptor set for textures.
 					ashes::DescriptorSetLayoutBindingArray bindings;
 					bindings.emplace_back( 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment, 6u );
-					materialNode.layout = m_device.createDescriptorSetLayout( std::move( bindings ) );
+					materialNode.layout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 					materialNode.pool = materialNode.layout->createPool( 1u );
 					materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
 
@@ -658,11 +658,11 @@ namespace common
 					// Initialise the pipeline
 					if ( materialNode.layout )
 					{
-						materialNode.pipelineLayout = m_device.createPipelineLayout( { *m_objectDescriptorLayout, *materialNode.layout } );
+						materialNode.pipelineLayout = m_device.getDevice().createPipelineLayout( { *m_objectDescriptorLayout, *materialNode.layout } );
 					}
 					else
 					{
-						materialNode.pipelineLayout = m_device.createPipelineLayout( *m_objectDescriptorLayout );
+						materialNode.pipelineLayout = m_device.getDevice().createPipelineLayout( *m_objectDescriptorLayout );
 					}
 
 					ashes::ColourBlendState blendState;
@@ -683,7 +683,7 @@ namespace common
 
 					materialNode.pipeline = materialNode.pipelineLayout->createPipeline(
 					{
-						doCreateObjectProgram( m_device, m_fragmentShaderFile ),
+						doCreateObjectProgram( m_device.getDevice(), m_fragmentShaderFile ),
 						*m_renderPass,
 						ashes::VertexInputState::create( *m_objectVertexLayout ),
 						{ ashes::PrimitiveTopology::eTriangleList },

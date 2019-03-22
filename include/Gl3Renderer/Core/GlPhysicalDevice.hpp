@@ -22,45 +22,47 @@ namespace gl_renderer
 		: public ashes::PhysicalDevice
 	{
 	public:
+		PhysicalDevice( Instance const & instance );
 		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] renderer
-		*	L'instance de rendu.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] renderer
-		*	The rendering instance.
+		*\copydoc	ashes::Instance::enumerateLayerProperties
 		*/
-		PhysicalDevice( Instance & instance );
+		ashes::LayerPropertiesArray enumerateLayerProperties()const override;
 		/**
-		*\copydoc	ashes::PhysicalDevice::initialise
+		*\copydoc	ashes::Instance::enumerateExtensionProperties
 		*/
-		void initialise()override;
-
-		bool find( std::string const & name )const;
-		bool findAny( ashes::StringArray const & names )const;
-		bool findAll( ashes::StringArray const & names )const;
-		bool hasSPIRVShaderBinaryFormat()const;
-
-		inline int getMajor()const
-		{
-			return m_major;
-		}
-
-		inline int getMinor()const
-		{
-			return m_minor;
-		}
+		ashes::ExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const override;
+		/**
+		*\copydoc	ashes::Instance::getProperties
+		*/
+		ashes::PhysicalDeviceProperties getProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getMemoryProperties
+		*/
+		ashes::PhysicalDeviceMemoryProperties getMemoryProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getFeatures
+		*/
+		ashes::PhysicalDeviceFeatures getFeatures()const override;
+		/**
+		*\copydoc	ashes::Instance::getQueueFamilyProperties
+		*/
+		ashes::QueueFamilyPropertiesArray getQueueFamilyProperties()const override;
+		/**
+		*\copydoc	ashes::Instance::getFormatProperties
+		*/
+		ashes::FormatProperties getFormatProperties( ashes::Format fmt )const override;
 
 		inline Instance const & getInstance()const
 		{
 			return m_instance;
 		}
 
+		bool find( std::string const & name )const;
+		bool findAny( ashes::StringArray const & names )const;
+		bool findAll( ashes::StringArray const & names )const;
+
 	private:
+		void doInitialise();
 		void doGetValue( GLenum name, int32_t & value )const;
 		void doGetValue( GLenum name, uint32_t & value )const;
 		void doGetValues( GLenum name, int32_t( &value )[2] )const;
@@ -88,11 +90,10 @@ namespace gl_renderer
 		void doGetValuesI( GLenum name, float( &value )[3] )const;
 
 	private:
-		Instance & m_instance;
-		ashes::StringArray m_deviceExtensionNames;
-		ashes::StringArray m_deviceSPIRVExtensionNames;
-		std::vector< GlShaderBinaryFormat > m_shaderBinaryFormats;
-		int m_major{ 0 };
-		int m_minor{ 0 };
+		Instance const & m_instance;
+		ashes::PhysicalDeviceFeatures m_features{};
+		ashes::PhysicalDeviceProperties m_properties{};
+		ashes::QueueFamilyPropertiesArray m_queueProperties{};
+		mutable std::map< ashes::Format, ashes::FormatProperties > m_formatProperties;
 	};
 }

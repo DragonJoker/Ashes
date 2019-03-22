@@ -69,6 +69,7 @@ namespace gl_renderer
 	protected:
 		Device const & m_device;
 		Buffer m_buffer;
+		ashes::DeviceMemoryPtr m_storage;
 	};
 }
 

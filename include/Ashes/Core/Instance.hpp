@@ -10,6 +10,7 @@ See LICENSE file in root folder.
 #include "Ashes/Core/WindowHandle.hpp"
 #include "Ashes/Miscellaneous/DebugReportCallbackCreateInfo.hpp"
 #include "Ashes/Miscellaneous/DeviceCreateInfo.hpp"
+#include "Ashes/Miscellaneous/InstanceCreateInfo.hpp"
 #include "Ashes/Miscellaneous/RendererFeatures.hpp"
 #include "Ashes/Miscellaneous/LayerProperties.hpp"
 
@@ -27,20 +28,6 @@ namespace ashes
 	*/
 	class Instance
 	{
-	public:
-		struct Configuration
-		{
-			//!\~french		Le nom de l'application.
-			//!\~english	The application name.
-			std::string appName;
-			//!\~french		Le nom du moteur utilisé par l'application.
-			//!\~english	The name of the engine used by the application.
-			std::string engineName;
-			//!\~french		Dit si la couche de validation doit être activée.
-			//!\~english	Tells if the validation layer must be enabled.
-			bool enableValidation;
-		};
-
 	protected:
 		/**
 		*\~french
@@ -52,7 +39,7 @@ namespace ashes
 		*/
 		Instance( ClipDirection clipDirection
 			, std::string const & name
-			, Configuration const & configuration );
+			, InstanceCreateInfo createInfo );
 
 	public:
 		/**
@@ -67,16 +54,12 @@ namespace ashes
 		/**
 		*\~french
 		*\brief
-		*	Récupère le GPU à l'index donné.
-		*\param[in] gpuIndex
-		*	L'index du GPU physique.
+		*	Enumère les GPU physiques disponibles.
 		*\~english
 		*\brief
-		*	Retrieves the GPU at given index.
-		*\param[in] gpuIndex
-		*	The physical GPU index.
+		*	Lists the available physical GPUs.
 		*/
-		PhysicalDevice & getPhysicalDevice( uint32_t gpuIndex )const;
+		virtual PhysicalDevicePtrArray enumeratePhysicalDevices()const = 0;
 		/**
 		*\~french
 		*\brief
@@ -243,19 +226,6 @@ namespace ashes
 			, float aspect
 			, float zNear )const;
 		/**
-		*\~french
-		*\brief
-		*	Ajoute les couches de l'instance aux noms déjà présents dans la liste donnée.
-		*\param[in,out] names
-		*	La liste à compléter.
-		*\~english
-		*\brief
-		*	Adds the instance layers names to the given names.
-		*\param[in,out] names
-		*	The liste to fill.
-		*/
-		void completeLayerNames( ashes::StringArray & names )const;
-		/**
 		*\~english
 		*name
 		*	Getters.
@@ -264,24 +234,14 @@ namespace ashes
 		*	Accesseurs.
 		*/
 		/**@{*/
-		inline bool isValidationEnabled()const
-		{
-			return m_configuration.enableValidation;
-		}
-
 		inline ClipDirection getClipDirection()const
 		{
 			return m_clipDirection;
 		}
 
-		inline uint32_t getGpuCount()const
-		{
-			return uint32_t( m_gpus.size() );
-		}
-
 		inline uint32_t getApiVersion()const
 		{
-			return m_apiVersion;
+			return m_createInfo.applicationInfo.apiVersion;
 		}
 
 		inline std::string const & getName()const
@@ -294,36 +254,20 @@ namespace ashes
 			return m_features;
 		}
 
-		inline LayerProperties const & getGlobalLayer()const
+		inline StringArray const & getEnabledLayerNames()const
 		{
-			return m_globalLayer;
+			return m_createInfo.enabledLayerNames;
 		}
 
-		inline std::vector< LayerProperties > const & getLayers()const
+		inline StringArray const & getEnabledExtensionNames()const
 		{
-			return m_layers;
-		}
-
-		inline StringArray const & getLayerNames()const
-		{
-			return m_layerNames;
-		}
-
-		inline StringArray const & getExtensionNames()const
-		{
-			return m_extensionNames;
+			return m_createInfo.enabledExtensionNames;
 		}
 		/**@}*/
 
 	protected:
-		Configuration m_configuration;
-		std::vector< PhysicalDevicePtr > m_gpus;
-		LayerProperties m_globalLayer;
-		std::vector< LayerProperties > m_layers;
+		InstanceCreateInfo m_createInfo;
 		RendererFeatures m_features;
-		uint32_t m_apiVersion{ 0u };
-		StringArray m_layerNames;
-		StringArray m_extensionNames;
 
 	private:
 		ClipDirection m_clipDirection;

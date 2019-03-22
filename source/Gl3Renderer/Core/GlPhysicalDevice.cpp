@@ -169,12 +169,6 @@ namespace gl_renderer
 #define GL_MIN_SPARSE_LEVEL 0x919B// AMD
 #define GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT 0x8A34
 
-#define GL_SHADER_BINARY_FORMATS 0x8DF8
-#define GL_NUM_SHADER_BINARY_FORMATS 0x8DF9
-#define GL_SPIR_V_BINARY 0x9552
-#define GL_SPIR_V_EXTENSIONS 0x9553
-#define GL_NUM_SPIR_V_EXTENSIONS 0x9554
-
 #define GL_SAMPLES                                         0x80A9
 #define GL_NUM_SAMPLE_COUNTS                               0x9380
 #define GL_INTERNALFORMAT_SUPPORTED                        0x826F
@@ -344,14 +338,66 @@ namespace gl_renderer
 		}
 	}
 
-	PhysicalDevice::PhysicalDevice( Instance & instance )
+	PhysicalDevice::PhysicalDevice( Instance const & instance )
 		: ashes::PhysicalDevice{ instance }
 		, m_instance{ instance }
 	{
-		initialise();
+		doInitialise();
 	}
 
-	void PhysicalDevice::initialise()
+	ashes::LayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
+	{
+		ashes::LayerPropertiesArray result;
+		return result;
+	}
+
+	ashes::ExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
+	{
+		ashes::ExtensionPropertiesArray result;
+		return result;
+	}
+
+	ashes::PhysicalDeviceProperties PhysicalDevice::getProperties()const
+	{
+		return m_properties;
+	}
+
+	ashes::PhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
+	{
+		return Instance::getMemoryProperties();
+	}
+
+	ashes::PhysicalDeviceFeatures PhysicalDevice::getFeatures()const
+	{
+		return m_features;
+	}
+
+	ashes::QueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
+	{
+		return m_queueProperties;
+	}
+
+	ashes::FormatProperties PhysicalDevice::getFormatProperties( ashes::Format fmt )const
+	{
+		return m_formatProperties[fmt];
+	}
+
+	bool PhysicalDevice::find( std::string const & name )const
+	{
+		return m_instance.getExtensions().find( name );
+	}
+
+	bool PhysicalDevice::findAny( ashes::StringArray const & names )const
+	{
+		return m_instance.getExtensions().findAny( names );
+	}
+
+	bool PhysicalDevice::findAll( ashes::StringArray const & names )const
+	{
+		return m_instance.getExtensions().findAll( names );
+	}
+
+	void PhysicalDevice::doInitialise()
 	{
 		// On récupère les extensions supportées par le GPU.
 		getFunction( "glGetInteger64v", glGetInteger64v );
@@ -360,81 +406,32 @@ namespace gl_renderer
 		getFunction( "glGetInteger64i_v", glGetInteger64i_v );
 		getFunction( "glGetStringi", glGetStringi );
 		getFunction( "glGetInternalformativ", glGetInternalformativ );
-		char const * const cversion = ( char const * )glGetString( GL_VERSION );
+		auto & extensions = m_instance.getExtensions();
+		auto version = extensions.getMajor() * 10 + extensions.getMinor();
 
-		if ( cversion )
+		if ( version < 30 )
 		{
-			std::string sversion = cversion;
-			std::stringstream stream( sversion );
-			float fversion;
-			stream >> fversion;
-			auto version = std::min( int( fversion * 10 ), 330 );
-
-			if ( version < 30 )
-			{
-				throw std::runtime_error{ "OpenGL >= 3.0 is needed for this renderer." };
-			}
-
-			m_major = version / 10;
-			m_minor = version % 10;
-
-			if ( version >= 33 )
-			{
-				m_shaderVersion = version * 10;
-			}
-			else if ( version >= 32 )
-			{
-				m_shaderVersion = 150;
-			}
-			else if ( version >= 31 )
-			{
-				m_shaderVersion = 140;
-			}
-			else
-			{
-				m_shaderVersion = 130;
-			}
+			throw std::runtime_error{ "OpenGL >= 3.0 is needed for this renderer." };
 		}
 
-		auto const * cextensions = ( char const * )glGetString( GL_EXTENSIONS );
-
-		if ( cextensions )
+		if ( version >= 33 )
 		{
-			std::string extensions = cextensions;
-			std::istringstream stream{ extensions };
-			std::copy( std::istream_iterator< std::string >( stream ),
-				std::istream_iterator< std::string >(),
-				std::back_inserter( m_deviceExtensionNames ) );
-
-			for ( auto & name : m_deviceExtensionNames )
-			{
-				m_extensions.push_back( { name, 0u } );
-			}
+			m_shaderVersion = version * 10;
+		}
+		else if ( version >= 32 )
+		{
+			m_shaderVersion = 150;
+		}
+		else if ( version >= 31 )
+		{
+			m_shaderVersion = 140;
+		}
+		else
+		{
+			m_shaderVersion = 130;
 		}
 
-		int numSpirvExtensions = 0;
-		doGetValue( GL_NUM_SPIR_V_EXTENSIONS, numSpirvExtensions );
-
-		for ( auto index = 0; index < numSpirvExtensions; ++index )
-		{
-			auto const * cspirvext = ( char const * )glGetStringi( GL_SPIR_V_EXTENSIONS, index );
-
-			if ( cspirvext )
-			{
-				m_deviceSPIRVExtensionNames.emplace_back( cspirvext );
-			}
-		}
-
-		int numBinaryFormats = 0;
-		doGetValue( GL_NUM_SHADER_BINARY_FORMATS, numBinaryFormats );
-
-		if ( numBinaryFormats > 0 )
-		{
-			m_shaderBinaryFormats.resize( numBinaryFormats );
-			glGetIntegerv( GL_SHADER_BINARY_FORMATS, reinterpret_cast< int * >( m_shaderBinaryFormats.data() ) );
-		}
-
-		m_properties.apiVersion = ( m_major << 22 ) | ( m_minor << 12 );
+		m_properties.apiVersion = ( extensions.getMajor() << 22 ) | ( extensions.getMinor() << 12 );
 		m_properties.deviceID = 0u;
 		m_properties.deviceName = ( char const * )glGetString( GL_RENDERER );
 		std::memset( m_properties.pipelineCacheUUID, 0u, sizeof( m_properties.pipelineCacheUUID ) );
@@ -619,9 +616,6 @@ namespace gl_renderer
 		m_features.variableMultisampleRate = true;
 		m_features.inheritedQueries = true;
 
-		m_memoryProperties.memoryHeaps.push_back( { 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFF } );
-		m_memoryProperties.memoryTypes.push_back( { 0xFF, 0u } );
-
 		// Et enfin les propriétés des familles de files du GPU.
 		m_queueProperties.push_back(
 		{
@@ -637,10 +631,8 @@ namespace gl_renderer
 
 		if ( glGetInternalformativ )
 		{
-			for ( uint32_t i = 1u; i < m_formatProperties.size(); ++i )
+			for ( ashes::Format fmt = ashes::Format::eRange_BEGIN; fmt < ashes::Format::eRange_END; fmt = ashes::Format( uint32_t( fmt ) + 1 ) )
 			{
-				auto fmt = ashes::Format( i );
-
 				if ( isSupportedInternal( fmt ) )
 				{
 					GLint value;
@@ -654,11 +646,11 @@ namespace gl_renderer
 						{
 							if ( isDepthOrStencilFormat( fmt ) )
 							{
-								m_formatProperties[i].optimalTilingFeatures |= ashes::FormatFeatureFlag::eDepthStencilAttachment;
+								m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eDepthStencilAttachment;
 							}
 							else
 							{
-								m_formatProperties[i].optimalTilingFeatures |= ashes::FormatFeatureFlag::eColourAttachment;
+								m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eColourAttachment;
 							}
 						}
 
@@ -666,62 +658,28 @@ namespace gl_renderer
 
 						if ( value == GL_FULL_SUPPORT )
 						{
-							m_formatProperties[i].optimalTilingFeatures |= ashes::FormatFeatureFlag::eColourAttachmentBlend;
+							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eColourAttachmentBlend;
 						}
 
 						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FRAGMENT_TEXTURE, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
-							m_formatProperties[i].optimalTilingFeatures |= ashes::FormatFeatureFlag::eSampledImage;
+							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eSampledImage;
 						}
 
 						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FILTER, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
-							m_formatProperties[i].optimalTilingFeatures |= ashes::FormatFeatureFlag::eSampledImageFilterLinear;
+							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eSampledImageFilterLinear;
 						}
 					}
 				}
 
-				m_formatProperties[i].linearTilingFeatures = m_formatProperties[i].optimalTilingFeatures;
+				m_formatProperties[fmt].linearTilingFeatures = m_formatProperties[fmt].optimalTilingFeatures;
 			}
 		}
-	}
-
-	bool PhysicalDevice::find( std::string const & name )const
-	{
-		return m_deviceExtensionNames.end() != std::find( m_deviceExtensionNames.begin()
-			, m_deviceExtensionNames.end()
-			, name );
-	}
-
-	bool PhysicalDevice::findAny( ashes::StringArray const & names )const
-	{
-		return names.end() != std::find_if( names.begin()
-			, names.end()
-			, [this]( std::string const & name )
-			{
-				return find( name );
-			} );
-	}
-
-	bool PhysicalDevice::findAll( ashes::StringArray const & names )const
-	{
-		return names.end() == std::find_if( names.begin()
-			, names.end()
-			, [this]( std::string const & name )
-			{
-				return !find( name );
-			} );
-	}
-
-	bool PhysicalDevice::hasSPIRVShaderBinaryFormat()const
-	{
-		return m_shaderBinaryFormats.end() != std::find( m_shaderBinaryFormats.begin()
-			, m_shaderBinaryFormats.end()
-			, GL_SHADER_BINARY_FORMAT_SPIR_V );
 	}
 
 	void PhysicalDevice::doGetValue( GLenum name, int32_t & value )const

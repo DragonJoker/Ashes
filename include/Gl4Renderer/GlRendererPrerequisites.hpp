@@ -135,4 +135,7 @@ namespace gl_renderer
 	using BufferDestroyFunc = std::function< void( GLuint ) >;
 	using BufferDestroySignal = ashes::Signal< BufferDestroyFunc >;
 	using BufferDestroyConnection = ashes::SignalConnection< BufferDestroySignal >;
+
+	uint32_t deduceMemoryType( uint32_t typeBits
+		, ashes::MemoryPropertyFlags requirements );
 }

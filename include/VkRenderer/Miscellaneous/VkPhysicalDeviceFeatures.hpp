@@ -19,6 +19,15 @@ namespace vk_renderer
 	*	Le VkPhysicalDeviceFeatures.
 	*/
 	VkPhysicalDeviceFeatures convert( ashes::PhysicalDeviceFeatures const & value );
+	/**
+	*\brief
+	*	Convertit un VkPhysicalDeviceFeatures en ashes::PhysicalDeviceFeatures.
+	*\param[in] mode
+	*	Le VkPhysicalDeviceFeatures.
+	*\return
+	*	Le ashes::PhysicalDeviceFeatures.
+	*/
+	ashes::PhysicalDeviceFeatures convert( VkPhysicalDeviceFeatures const & value );
 }
 
 #endif

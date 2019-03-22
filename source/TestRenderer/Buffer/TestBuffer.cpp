@@ -23,9 +23,9 @@ namespace test_renderer
 
 	ashes::MemoryRequirements Buffer::getMemoryRequirements()const
 	{
-		ashes::MemoryRequirements result;
+		ashes::MemoryRequirements result{};
 		result.alignment = 0u;
-		result.memoryTypeBits = 0xFFFFFFFF;
+		result.memoryTypeBits = ~result.memoryTypeBits;
 		result.size = getSize();
 		result.type = ashes::ResourceType::eBuffer;
 		return result;

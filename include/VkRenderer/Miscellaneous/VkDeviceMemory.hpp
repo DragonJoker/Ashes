@@ -28,23 +28,18 @@ namespace vk_renderer
 		*	Constructeur.
 		*\param[in] device
 		*	Le LogicalDevice parent.
-		*\param[in] requirements
+		*\param[in] allocateInfo
 		*	Les exigences mémoire.
-		*\param[in] flags
-		*	Les indicateurs de propriétés voulues pour la mémoire allouée.
 		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
 		*	The logical connection to the GPU.
 		*\param[in] requirements
-		*	The memory requirements.
-		*\param[in] flags
-		*	The wanted memory flags.
+		*	The memory allocateInfo.
 		*/
 		DeviceMemory( Device const & device
-			, ashes::MemoryRequirements const & requirements
-			, ashes::MemoryPropertyFlags flags );
+			, ashes::MemoryAllocateInfo allocateInfo );
 		/**
 		*\~french
 		*\brief

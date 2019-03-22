@@ -19,6 +19,7 @@ namespace ashes
 	enum class CompositeAlphaFlag
 		: uint32_t
 	{
+		eNone = 0x00000000,
 		eOpaque = 0x00000001,
 		ePreMultiplied = 0x00000002,
 		ePostMultiplied = 0x00000004,
@@ -35,9 +36,9 @@ namespace ashes
 	*	The name.
 	*\~french
 	*\brief
-	*	Récupère le nom du type d'élément donné.
+	*	Rï¿½cupï¿½re le nom du type d'ï¿½lï¿½ment donnï¿½.
 	*\param[in] value
-	*	Le type d'élément.
+	*	Le type d'ï¿½lï¿½ment.
 	*\return
 	*	Le nom.
 	*/

@@ -2,7 +2,6 @@
 
 #include "Buffer/VkBuffer.hpp"
 #include "Buffer/VkBufferView.hpp"
-#include "Buffer/VkUniformBuffer.hpp"
 #include "Command/VkCommandBuffer.hpp"
 #include "Command/VkCommandPool.hpp"
 #include "Command/VkQueue.hpp"
@@ -29,6 +28,8 @@
 #include "Sync/VkEvent.hpp"
 #include "Sync/VkFence.hpp"
 #include "Sync/VkSemaphore.hpp"
+
+#include <Ashes/Buffer/UniformBuffer.hpp>
 
 namespace vk_renderer
 {

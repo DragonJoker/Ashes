@@ -2,13 +2,14 @@
 
 #include "Buffer/VkBuffer.hpp"
 #include "Buffer/VkBufferView.hpp"
-#include "Buffer/VkUniformBuffer.hpp"
 #include "Core/VkDevice.hpp"
 #include "Descriptor/VkDescriptorSetLayout.hpp"
 #include "Descriptor/VkDescriptorSetLayoutBinding.hpp"
 #include "Descriptor/VkDescriptorPool.hpp"
 #include "Image/VkSampler.hpp"
 #include "Image/VkTextureView.hpp"
+
+#include <Ashes/Buffer/UniformBuffer.hpp>
 
 namespace vk_renderer
 {

@@ -69,6 +69,7 @@ See LICENSE file in root folder.
 #include "Ashes/Enum/ImageTiling.hpp"
 #include "Ashes/Enum/ImageUsageFlag.hpp"
 #include "Ashes/Enum/IndexType.hpp"
+#include "Ashes/Enum/InstanceCreateFlag.hpp"
 #include "Ashes/Enum/LogicOp.hpp"
 #include "Ashes/Enum/MemoryHeapFlag.hpp"
 #include "Ashes/Enum/MemoryMapFlag.hpp"
@@ -151,8 +152,66 @@ namespace ashes
 
 #include "Ashes/Miscellaneous/Log.hpp"
 
+
 namespace ashes
 {
+	static char const * const KHR_SURFACE_EXTENSION_NAME = "VK_KHR_surface";
+
+	static char const * const KHR_WIN32_SURFACE_EXTENSION_NAME = "VK_KHR_win32_surface";
+	static char const * const KHR_XCB_SURFACE_EXTENSION_NAME = "VK_KHR_xcb_surface";
+	static char const * const KHR_XLIB_SURFACE_EXTENSION_NAME = "VK_KHR_xlib_surface";
+	static char const * const KHR_ANDROID_SURFACE_EXTENSION_NAME = "VK_KHR_android_surface";
+	static char const * const KHR_MIR_SURFACE_EXTENSION_NAME = "VK_KHR_mir_surface";
+	static char const * const KHR_WAYLAND_SURFACE_EXTENSION_NAME = "VK_KHR_wayland_surface";
+
+	static char const * const EXT_DEBUG_REPORT_EXTENSION_NAME = "VK_EXT_debug_report";
+	static char const * const EXT_DEBUG_MARKER_EXTENSION_NAME = "VK_EXT_debug_marker";
+
+	static char const * const KHR_SWAPCHAIN_EXTENSION_NAME = "VK_KHR_swapchain";
+
+	static char const * const KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME = "VK_KHR_sampler_ycbcr_conversion";
+	static char const * const IMG_FORMAT_PVRTC_EXTENSION_NAME = "VK_IMG_format_pvrtc";
+
+#if ASHES_WIN32
+	static char const * const KHR_PLATFORM_SURFACE_EXTENSION_NAME = KHR_WIN32_SURFACE_EXTENSION_NAME;
+#elif ASHES_XCB
+	static char const * const KHR_PLATFORM_SURFACE_EXTENSION_NAME = KHR_XCB_SURFACE_EXTENSION_NAME;
+#elif ASHES_XLIB
+	static char const * const KHR_PLATFORM_SURFACE_EXTENSION_NAME = KHR_XLIB_SURFACE_EXTENSION_NAME;
+#elif ASHES_ANDROID
+	static char const * const KHR_PLATFORM_SURFACE_EXTENSION_NAME = KHR_ANDROID_SURFACE_EXTENSION_NAME;
+#elif ASHES_MIR
+	static char const * const KHR_PLATFORM_SURFACE_EXTENSION_NAME = KHR_MIR_SURFACE_EXTENSION_NAME;
+#elif ASHES_WAYLAND
+	static char const * const KHR_PLATFORM_SURFACE_EXTENSION_NAME = KHR_WAYLAND_SURFACE_EXTENSION_NAME;
+#endif
+
+	inline constexpr uint32_t getMajor( uint32_t version )
+	{
+		return ( ( uint32_t )( version ) >> 22 );
+	}
+
+	inline constexpr uint32_t getMinor( uint32_t version )
+	{
+		return ( ( ( uint32_t )( version ) >> 12 ) & 0x3ff );
+	}
+
+	inline constexpr uint32_t getPatch( uint32_t version )
+	{
+		return ( ( uint32_t )( version ) & 0xfff );
+	}
+
+	inline constexpr uint32_t makeVersion( uint32_t major
+		, uint32_t minor
+		, uint32_t patch )
+	{
+		return ( ( ( major ) << 22 ) | ( ( minor ) << 12 ) | ( patch ) );
+	}
+
+	static uint32_t constexpr HEADER_VERSION = 70;
+	static uint32_t constexpr API_VERSION_1_0 = makeVersion( 1, 0, 0 );
+
+
 	using ByteArray = std::vector< uint8_t >;
 	using UInt16Array = std::vector< uint16_t >;
 	using UInt32Array = std::vector< uint32_t >;
@@ -382,6 +441,7 @@ namespace ashes
 	using PipelineStageFlagsArray = std::vector< PipelineStageFlags >;
 	using PushConstantArray = std::vector< PushConstant >;
 	using PushConstantRangeArray = std::vector< PushConstantRange >;
+	using QueueFamilyPropertiesArray = std::vector< QueueFamilyProperties >;
 	using RenderSubpassArray = std::vector< RenderSubpass >;
 	using ScissorArray = std::vector< Scissor >;
 	using ShaderStageStateArray = std::vector< ShaderStageState >;
@@ -397,6 +457,7 @@ namespace ashes
 	using BackBufferPtrArray = std::vector< BackBufferPtr >;
 	using CommandBufferPtrArray = std::vector< CommandBufferPtr >;
 	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
+	using PhysicalDevicePtrArray = std::vector< PhysicalDevicePtr >;
 
 	using BufferCRef = std::reference_wrapper< BufferBase const >;
 	using BufferViewCRef = std::reference_wrapper< BufferView const >;
@@ -405,6 +466,7 @@ namespace ashes
 	using DescriptorSetLayoutCRef = std::reference_wrapper< DescriptorSetLayout const >;
 	using EventCRef = std::reference_wrapper< Event const >;
 	using FrameBufferCRef = std::reference_wrapper< FrameBuffer const >;
+	using PhysicalDeviceCRef = std::reference_wrapper< PhysicalDevice const >;
 	using PushConstantRangeCRef = std::reference_wrapper< PushConstantRange const >;
 	using RenderPassCRef = std::reference_wrapper< RenderPass const >;
 	using SamplerCRef = std::reference_wrapper< Sampler const >;

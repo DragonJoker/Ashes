@@ -45,7 +45,7 @@ namespace vkapp
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
-		, ashes::Instance const & instance )
+		, utils::Instance const & instance )
 		: wxPanel{ parent, int( Ids::This ), wxDefaultPosition, size }
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 	{
@@ -105,18 +105,18 @@ namespace vkapp
 		}
 	}
 
-	ashes::SurfacePtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
+	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.createSurface( gpu
+		return instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
 
-	void RenderPanel::doCreateDevice( ashes::Instance const & instance
+	void RenderPanel::doCreateDevice( utils::Instance const & instance
 		, ashes::SurfacePtr surface )
 	{
-		m_device = std::make_unique< utils::Device >( instance
+		m_device = std::make_unique< utils::Device >( instance.getInstance()
 			, std::move( surface ) );
 		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
 		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
@@ -194,7 +194,7 @@ namespace vkapp
 				{ 0.3f, 0.3f, 0.3f, 0.0f }
 			}
 		};
-		m_vertexBuffer = ashes::makeVertexBuffer< VertexData >( m_device->getDevice()
+		m_vertexBuffer = utils::makeVertexBuffer< VertexData >( *m_device
 			, uint32_t( data.size() )
 			, 0u
 			, ashes::MemoryPropertyFlag::eHostVisible );

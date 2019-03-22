@@ -27,8 +27,7 @@ namespace gl_renderer
 		{
 		public:
 			DeviceMemoryImpl( Device const & device
-				, ashes::MemoryRequirements const & requirements
-				, ashes::MemoryPropertyFlags flags
+				, ashes::MemoryAllocateInfo allocateInfo
 				, GLuint boundResource
 				, GLuint boundTarget );
 			virtual ~DeviceMemoryImpl() = default;
@@ -43,7 +42,7 @@ namespace gl_renderer
 
 		protected:
 			Device const & m_device;
-			ashes::MemoryRequirements m_requirements;
+			ashes::MemoryAllocateInfo m_allocateInfo;
 			ashes::MemoryPropertyFlags m_flags;
 			GlMemoryMapFlags m_mapFlags;
 			GLuint m_boundResource;
@@ -53,8 +52,7 @@ namespace gl_renderer
 
 	public:
 		DeviceMemory( Device const & device
-			, ashes::MemoryRequirements const & requirements
-			, ashes::MemoryPropertyFlags flags );
+			, ashes::MemoryAllocateInfo allocateInfo );
 		~DeviceMemory();
 		void bindToBuffer( GLuint resource, GLenum target );
 		void bindToImage( Texture const & texture
@@ -83,7 +81,6 @@ namespace gl_renderer
 
 	private:
 		Device const & m_device;
-		ashes::MemoryRequirements m_requirements;
 		std::unique_ptr< DeviceMemoryImpl > m_impl;
 	};
 }

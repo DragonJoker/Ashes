@@ -1,16 +1,12 @@
 #pragma once
 
-#include "Factory.hpp"
+#include "Utils/UtilsPrerequisites.hpp"
 
 #include <Ashes/Core/Instance.hpp>
 #include <Ashes/Utils/DynamicLibrary.hpp>
 
 namespace utils
 {
-	using RendererFactory = Factory< ashes::Instance
-		, std::string
-		, ashes::InstancePtr
-		, std::function< ashes::InstancePtr( ashes::Instance::Configuration const & ) > >;
 	/**
 	*\brief
 	*	Gère un plugin de rendu (wrappe la fonction de création).
@@ -18,7 +14,10 @@ namespace utils
 	class Plugin
 	{
 	private:
-		using CreatorFunction = ashes::Instance *( * )( ashes::Instance::Configuration const & );
+		using CreatorFunction = ashes::Result( * )( ashes::InstanceCreateInfo, ashes::Instance ** );
+		using VersionEnumeratorFunction = ashes::Result( * )( uint32_t * );
+		using LayerPropertiesEnumeratorFunction = ashes::Result( * )( uint32_t *, ashes::LayerProperties * );
+		using ExtensionPropertiesEnumeratorFunction = ashes::Result( * )( char const * const, uint32_t *, ashes::ExtensionProperties * );
 		using NamerFunction = char const *( * )();
 
 	public:
@@ -27,9 +26,11 @@ namespace utils
 		Plugin & operator=( Plugin const & ) = delete;
 		Plugin & operator=( Plugin && ) = default;
 
-		Plugin( ashes::DynamicLibrary library
-			, RendererFactory & factory );
-		ashes::InstancePtr create( ashes::Instance::Configuration const & configuration )const;
+		Plugin( ashes::DynamicLibrary library );
+		uint32_t enumerateVersion()const;
+		ashes::LayerPropertiesArray enumerateLayerProperties()const;
+		ashes::ExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const;
+		ashes::InstancePtr create( ashes::InstanceCreateInfo createInfo )const;
 
 		std::string const & getShortName()
 		{
@@ -44,6 +45,9 @@ namespace utils
 	private:
 		ashes::DynamicLibrary m_library;
 		CreatorFunction m_creator;
+		VersionEnumeratorFunction m_enumerateVersion;
+		LayerPropertiesEnumeratorFunction m_enumerateLayerProperties;
+		ExtensionPropertiesEnumeratorFunction m_enumerateExtensionProperties;
 		std::string m_shortName;
 		std::string m_fullName;
 	};

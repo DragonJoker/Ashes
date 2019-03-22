@@ -5,9 +5,9 @@ See LICENSE file in root folder.
 #include "Command/Commands/D3D11PushConstantsCommand.hpp"
 
 #include "Buffer/D3D11Buffer.hpp"
-#include "Buffer/D3D11UniformBuffer.hpp"
 #include "Shader/D3D11ShaderModule.hpp"
 
+#include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Pipeline/PipelineLayout.hpp>
 #include <Ashes/Miscellaneous/PushConstantRange.hpp>
 

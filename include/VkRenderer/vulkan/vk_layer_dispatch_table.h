@@ -41,7 +41,7 @@ typedef struct VkLayerInstanceDispatchTable_ {
     PFN_vkGetPhysicalDeviceProperties GetPhysicalDeviceProperties;
     PFN_vkGetPhysicalDeviceQueueFamilyProperties GetPhysicalDeviceQueueFamilyProperties;
     PFN_vkGetPhysicalDeviceMemoryProperties GetPhysicalDeviceMemoryProperties;
-    PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
+    PFN_vkGetInstanceProcAddr getInstanceProcAddr;
     PFN_vkCreateDevice CreateDevice;
     PFN_vkEnumerateInstanceExtensionProperties EnumerateInstanceExtensionProperties;
     PFN_vkEnumerateDeviceExtensionProperties EnumerateDeviceExtensionProperties;

@@ -14,11 +14,6 @@ See LICENSE file in root folder
 namespace vk_renderer
 {
 	class Instance;
-	
-	void addOptionalValidationLayer( std::string const & layer
-		, std::string description
-		, ashes::StringArray & names );
-	void addOptionalDebugReportLayer( ashes::StringArray & names );
 	/**
 	*\~french
 	*\brief

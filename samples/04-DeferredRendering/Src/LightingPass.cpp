@@ -168,7 +168,7 @@ namespace vkapp
 			return result;
 		}
 
-		ashes::VertexBufferPtr< common::TexturedVertexData > doCreateVertexBuffer( ashes::Device const & device
+		ashes::VertexBufferPtr< common::TexturedVertexData > doCreateVertexBuffer( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue )
@@ -180,7 +180,7 @@ namespace vkapp
 				{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
 				{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
 			};
-			auto result = ashes::makeVertexBuffer< common::TexturedVertexData >( device
+			auto result = utils::makeVertexBuffer< common::TexturedVertexData >( device
 				, uint32_t( vertexData.size() )
 				, ashes::BufferTarget::eTransferDst
 				, ashes::MemoryPropertyFlag::eDeviceLocal );
@@ -204,7 +204,7 @@ namespace vkapp
 		}
 	}
 
-	LightingPass::LightingPass( ashes::Device const & device
+	LightingPass::LightingPass( utils::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
 		, ashes::UniformBuffer< common::LightsData > const & lightsUbo
@@ -215,24 +215,24 @@ namespace vkapp
 		, m_transferQueue{ transferQueue }
 		, m_lightsUbo{ lightsUbo }
 		, m_commandBuffer{ commandPool.createCommandBuffer() }
-		, m_sceneUbo{ ashes::makeUniformBuffer< common::SceneData >( device, 1u, ashes::BufferTarget::eTransferDst, ashes::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_gbufferDescriptorLayout{ doCreateGBufferDescriptorLayout( m_device ) }
+		, m_sceneUbo{ utils::makeUniformBuffer< common::SceneData >( device, 1u, ashes::BufferTarget::eTransferDst, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+		, m_gbufferDescriptorLayout{ doCreateGBufferDescriptorLayout( m_device.getDevice() ) }
 		, m_gbufferDescriptorPool{ m_gbufferDescriptorLayout->createPool( 1u, false ) }
-		, m_uboDescriptorLayout{ doCreateUboDescriptorLayout( m_device ) }
+		, m_uboDescriptorLayout{ doCreateUboDescriptorLayout( m_device.getDevice() ) }
 		, m_uboDescriptorPool{ m_uboDescriptorLayout->createPool( 1u ) }
 		, m_uboDescriptorSet{ doCreateUboDescriptorSet( *m_uboDescriptorPool, m_lightsUbo, *m_sceneUbo ) }
-		, m_renderPass{ doCreateRenderPass( m_device, views[0].get(), views[1].get() ) }
-		, m_sampler{ m_device.createSampler( ashes::WrapMode::eClampToEdge
+		, m_renderPass{ doCreateRenderPass( m_device.getDevice(), views[0].get(), views[1].get() ) }
+		, m_sampler{ m_device.getDevice().createSampler( ashes::WrapMode::eClampToEdge
 			, ashes::WrapMode::eClampToEdge
 			, ashes::WrapMode::eClampToEdge
 			, ashes::Filter::eNearest
 			, ashes::Filter::eNearest ) }
 		, m_vertexBuffer{ doCreateVertexBuffer( m_device, stagingBuffer, commandPool, transferQueue ) }
-		, m_vertexLayout{ doCreateVertexLayout( m_device ) }
-		, m_pipelineLayout{ m_device.createPipelineLayout( { *m_gbufferDescriptorLayout, *m_uboDescriptorLayout } ) }
+		, m_vertexLayout{ doCreateVertexLayout( m_device.getDevice() ) }
+		, m_pipelineLayout{ m_device.getDevice().createPipelineLayout( { *m_gbufferDescriptorLayout, *m_uboDescriptorLayout } ) }
 		, m_pipeline{ m_pipelineLayout->createPipeline( 
 			{
-				doCreateProgram( m_device ),
+				doCreateProgram( m_device.getDevice() ),
 				*m_renderPass,
 				ashes::VertexInputState::create( *m_vertexLayout ),
 				{ ashes::PrimitiveTopology::eTriangleStrip },
@@ -243,7 +243,7 @@ namespace vkapp
 				ashes::DepthStencilState{ 0u, false, false, ashes::CompareOp::eLess }
 			} )
 		}
-		, m_queryPool{ m_device.createQueryPool( ashes::QueryType::eTimestamp, 2u, 0u ) }
+		, m_queryPool{ m_device.getDevice().createQueryPool( ashes::QueryType::eTimestamp, 2u, 0u ) }
 	{
 	}
 
@@ -334,6 +334,6 @@ namespace vkapp
 			, 0u
 			, ashes::QueryResultFlag::eWait
 			, values );
-		gpu += std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device.getTimestampPeriod() ) ) };
+		gpu += std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device.getDevice().getTimestampPeriod() ) ) };
 	}
 }

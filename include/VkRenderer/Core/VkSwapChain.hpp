@@ -23,7 +23,7 @@ namespace vk_renderer
 		*\param[in] device
 		*	La connexion logique au GPU.
 		*\param[in] createInfo
-		*	Les informations de création.
+		*	Les informations de crï¿½ation.
 		*\~english
 		*\brief
 		*	Constructor.
@@ -73,6 +73,6 @@ namespace vk_renderer
 	protected:
 		Device const & m_device;
 		VkSwapchainKHR m_swapChain{};
-		VkSwapchainCreateInfoKHR m_createInfo;
+		VkSwapchainCreateInfoKHR m_vkCreateInfo;
 	};
 }

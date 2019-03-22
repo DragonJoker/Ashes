@@ -76,7 +76,7 @@ namespace common
 		doCleanup();
 	}
 
-	void RenderPanel::initialise( ashes::Instance const & instance )
+	void RenderPanel::initialise( utils::Instance const & instance )
 	{
 		wxSize size = GetClientSize();
 		try
@@ -90,9 +90,9 @@ namespace common
 			m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( m_device->getDevice()
 				, 0u
 				, 1024u * 64u );
-			doInitialise( m_device->getDevice()
+			doInitialise( *m_device
 				, { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
-			m_gui = std::make_unique< Gui >( m_device->getDevice()
+			m_gui = std::make_unique< Gui >( *m_device
 				, *m_graphicsQueue
 				, *m_commandPool
 				, ashes::Extent2D{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
@@ -233,18 +233,18 @@ namespace common
 		}
 	}
 
-	ashes::SurfacePtr RenderPanel::doCreateSurface( ashes::Instance const & instance )
+	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.createSurface( gpu
+		return instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
 
-	void RenderPanel::doCreateDevice( ashes::Instance const & instance
+	void RenderPanel::doCreateDevice( utils::Instance const & instance
 		, ashes::SurfacePtr surface )
 	{
-		m_device = std::make_unique< utils::Device >( instance
+		m_device = std::make_unique< utils::Device >( instance.getInstance()
 			, std::move( surface ) );
 		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
 		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
@@ -330,7 +330,7 @@ namespace common
 			, ashes::Format::eR32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
-		m_vertexBuffer = ashes::makeVertexBuffer< TexturedVertexData >( m_device->getDevice()
+		m_vertexBuffer = utils::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_vertexData.size() )
 			, ashes::BufferTarget::eTransferDst
 			, ashes::MemoryPropertyFlag::eDeviceLocal );

@@ -31,6 +31,14 @@ namespace d3d11_renderer
 			result.usage = ashes::ImageUsageFlag::eTransferDst | ashes::ImageUsageFlag::eTransferSrc;
 			return result;
 		}
+
+		ashes::MemoryAllocateInfo getAllocateInfo( Texture const & texture )
+		{
+			auto requirements = texture.getMemoryRequirements();
+			auto deduced = deduceMemoryType( requirements.memoryTypeBits
+				, ashes::MemoryPropertyFlag::eHostVisible );
+			return { requirements.size, deduced };
+		}
 	}
 
 	StagingTexture::StagingTexture( Device const & device
@@ -39,8 +47,7 @@ namespace d3d11_renderer
 		: ashes::StagingTexture{ device, extent }
 		, m_device{ device }
 		, m_texture{ device, getCreateInfos( format, extent ) }
-		, m_storage{ device.allocateMemory( m_texture.getMemoryRequirements()
-			, ashes::MemoryPropertyFlag::eHostVisible ) }
+		, m_storage{ device.allocateMemory( getAllocateInfo( m_texture ) ) }
 	{
 		m_texture.bindMemory( m_storage );
 	}

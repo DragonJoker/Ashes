@@ -125,7 +125,7 @@ namespace d3d11_renderer
 
 		result.type = ashes::ResourceType::eImage;
 		result.alignment = 1u;
-		result.memoryTypeBits = 0xFFFFFFFF;
+		result.memoryTypeBits = ~result.memoryTypeBits;
 		return result;
 	}
 

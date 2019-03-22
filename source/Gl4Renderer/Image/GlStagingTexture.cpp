@@ -22,6 +22,14 @@ namespace gl_renderer
 			return std::max( 1u, extent.width )
 				* std::max( 1u, extent.height );
 		}
+
+		ashes::MemoryAllocateInfo getAllocateInfo( Buffer const & buffer )
+		{
+			auto requirements = buffer.getMemoryRequirements();
+			auto deduced = deduceMemoryType( requirements.memoryTypeBits
+				, ashes::MemoryPropertyFlag::eHostVisible );
+			return { requirements.size, deduced };
+		}
 	}
 
 	StagingTexture::StagingTexture( Device const & device
@@ -30,9 +38,9 @@ namespace gl_renderer
 		: ashes::StagingTexture{ device, extent }
 		, m_device{ device }
 		, m_buffer{ device, getSize( extent, format ), ashes::BufferTarget::eTransferDst | ashes::BufferTarget::eTransferSrc }
+		, m_storage{ device.allocateMemory( getAllocateInfo( m_buffer ) ) }
 	{
-		m_buffer.bindMemory( device.allocateMemory( m_buffer.getMemoryRequirements()
-			, ashes::MemoryPropertyFlag::eHostVisible ) );
+		m_buffer.bindMemory( m_storage );
 	}
 
 	void StagingTexture::doCopyToStagingTexture( uint8_t const * data
