@@ -157,14 +157,14 @@ namespace vkapp
 				surfaceFormat.colorSpace,
 				swapChainExtent,
 				1u,
-				surfaceCaps.supportedUsageFlags,
+				ashes::ImageUsageFlag::eColourAttachment,
 				ashes::SharingMode::eExclusive,
-			{},
-			preTransform,
-			ashes::CompositeAlphaFlag::eOpaque,
-			presentMode,
-			false,
-			std::nullopt
+				{},
+				preTransform,
+				ashes::CompositeAlphaFlag::eOpaque,
+				presentMode,
+				true,
+				std::nullopt
 			};
 		}
 	}
@@ -212,11 +212,11 @@ namespace vkapp
 		if ( m_device )
 		{
 			m_device->getDevice().waitIdle();
-			m_commandPool.reset();
 			m_presentQueue.reset();
 			m_graphicsQueue.reset();
 			m_commandBuffers.clear();
 			m_renderingResources.clear();
+			m_commandPool.reset();
 			m_swapChain.reset();
 			m_frameBuffers.clear();
 			m_renderPass.reset();

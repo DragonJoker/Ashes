@@ -167,6 +167,7 @@ namespace ashes
 	static char const * const EXT_DEBUG_REPORT_EXTENSION_NAME = "VK_EXT_debug_report";
 	static char const * const EXT_DEBUG_MARKER_EXTENSION_NAME = "VK_EXT_debug_marker";
 
+	static char const * const KHR_SWAPCHAIN_EXTENSION_NAME = "VK_KHR_swapchain";
 
 	static char const * const KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME = "VK_KHR_sampler_ycbcr_conversion";
 	static char const * const IMG_FORMAT_PVRTC_EXTENSION_NAME = "VK_IMG_format_pvrtc";

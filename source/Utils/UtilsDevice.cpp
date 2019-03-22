@@ -140,9 +140,9 @@ namespace utils
 					} );
 			}
 
-			result.enabledFeatures = surface.getGpu().getFeatures();
+			result.enabledFeatures = gpu.getFeatures();
 			result.enabledLayerNames = instance.getEnabledLayerNames();
-			result.enabledExtensionNames = instance.getEnabledExtensionNames();
+			result.enabledExtensionNames.push_back( ashes::KHR_SWAPCHAIN_EXTENSION_NAME );
 			return result;
 		}
 	}

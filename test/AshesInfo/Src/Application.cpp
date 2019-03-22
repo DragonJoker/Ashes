@@ -133,6 +133,7 @@ struct AppInstance
 	uint32_t vulkan_patch;
 	std::vector< LayerExtensionList > global_layers;
 	ashes::ExtensionPropertiesArray global_extensions;
+	ashes::StringArray inst_layers;
 	ashes::StringArray inst_extensions;
 
 	ashes::SurfacePtr surface;
@@ -1064,6 +1065,7 @@ static void AppCreateInstance( AppInstance * inst )
 	{
 		0,
 		app_info,
+		{},
 		inst->inst_extensions,
 	};
 	inst->instance = inst->plugin->create( inst_info );

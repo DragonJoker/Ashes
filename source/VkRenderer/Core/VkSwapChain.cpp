@@ -17,11 +17,11 @@ namespace vk_renderer
 		, ashes::SwapChainCreateInfo createInfo )
 		: ashes::SwapChain{ device, std::move( createInfo ) }
 		, m_device{ device }
-		, m_createInfo{ convert( ashes::SwapChain::m_createInfo ) }
+		, m_vkCreateInfo{ convert( ashes::SwapChain::m_createInfo ) }
 	{
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateSwapchainKHR( m_device
-			, &m_createInfo
+			, &m_vkCreateInfo
 			, nullptr
 			, &m_swapChain );
 		checkError( res, "Swap chain creation" );

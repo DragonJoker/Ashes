@@ -31,7 +31,6 @@ namespace vk_renderer
 #include "Miscellaneous/VulkanFunctionsList.inl"
 
 		doInitInstance();
-		enumeratePhysicalDevices();
 	}
 
 	Instance::~Instance()
@@ -65,7 +64,7 @@ namespace vk_renderer
 		checkError( res, "GPU enumeration" );
 
 		// Et on les stocke dans des PhysicalDevice.
-		ashes::PhysicalDevicePtrArray result( gpuCount );
+		ashes::PhysicalDevicePtrArray result;
 
 		for ( auto gpu : gpus )
 		{

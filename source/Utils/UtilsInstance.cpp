@@ -7,6 +7,12 @@ See LICENSE file in root folder.
 #include "Utils/UtilsDebug.hpp"
 #include "Utils/Factory.hpp"
 
+#if !defined( NDEBUG )
+#	define LOAD_VALIDATION_LAYERS 1
+#else
+#	define LOAD_VALIDATION_LAYERS 0
+#endif
+
 namespace utils
 {
 	namespace
@@ -16,10 +22,10 @@ namespace utils
 			, ashes::StringArray & names )
 		{
 #if LOAD_VALIDATION_LAYERS
-			if ( layerName.find( "validation" ) != std::string::npos
+			if ( layer.find( "validation" ) != std::string::npos
 				|| description.find( "LunarG Validation" ) != std::string::npos )
 			{
-				names.push_back( layerName );
+				names.push_back( layer );
 			}
 #endif
 		}
@@ -63,25 +69,24 @@ namespace utils
 		{
 			m_layersExtensions.emplace( layerProperties.layerName
 				, plugin->enumerateExtensionProperties( layerProperties.layerName ) );
-			m_layerNames.push_back( layerProperties.layerName );
 		}
 
 		completeLayerNames( m_layerNames );
-		m_extensionNames.push_back( ashes::KHR_SURFACE_EXTENSION_NAME );
-		m_extensionNames.push_back( ashes::KHR_PLATFORM_SURFACE_EXTENSION_NAME );
-		addOptionalDebugReportLayer( m_extensionNames );
-
-		checkExtensionsAvailability( m_globalLayerExtensions, m_extensionNames );
 
 		ashes::InstanceCreateInfo createInfo;
+		createInfo.enabledExtensionNames.push_back( ashes::KHR_SURFACE_EXTENSION_NAME );
+		createInfo.enabledExtensionNames.push_back( ashes::KHR_PLATFORM_SURFACE_EXTENSION_NAME );
+		addOptionalDebugReportLayer( createInfo.enabledExtensionNames );
+		checkExtensionsAvailability( m_globalLayerExtensions, createInfo.enabledExtensionNames );
 		createInfo.enabledLayerNames = m_layerNames;
 		createInfo.applicationInfo = std::move( applicationInfo );
-		createInfo.enabledExtensionNames = m_extensionNames;
-
 		m_instance = plugin->create( std::move( createInfo ) );
 
+#if LOAD_VALIDATION_LAYERS
 		m_debugCallback = setupDebugging( *m_instance
 			, this );
+#endif
+
 		m_gpus = m_instance->enumeratePhysicalDevices();
 
 		//uint32_t instanceVersion = enumerateVersion();

@@ -8,12 +8,6 @@ See LICENSE file in root folder.
 #include <Ashes/Core/Instance.hpp>
 #include <Ashes/Miscellaneous/DebugReportCallbackCreateInfo.hpp>
 
-#if !defined( NDEBUG )
-#	define LOAD_VALIDATION_LAYERS 1
-#else
-#	define LOAD_VALIDATION_LAYERS 1
-#endif
-
 namespace utils
 {
 	namespace
@@ -117,7 +111,6 @@ namespace utils
 	ashes::DebugReportCallbackPtr setupDebugging( ashes::Instance const & instance
 		, void * userData )
 	{
-#if LOAD_VALIDATION_LAYERS
 		// The report flags determine what type of messages for the layers will be displayed
 		// For validating (debugging) an appplication the error and warning bits should suffice
 		ashes::DebugReportFlags debugReportFlags = 0u
@@ -135,10 +128,5 @@ namespace utils
 		};
 
 		return instance.createDebugReportCallback( dbgCreateInfo );
-#else
-
-		return nullptr;
-
-#endif
 	}
 }

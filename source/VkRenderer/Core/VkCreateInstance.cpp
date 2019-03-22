@@ -3,6 +3,14 @@
 
 #include <Ashes/Core/Exception.hpp>
 
+#if defined( _WIN32 )
+static std::string const libraryName = "vulkan-1.dll";
+#elif defined( __linux__ )
+static std::string const libraryName = "libvulkan.so.1";
+#else
+#	error Unsupported platform
+#endif
+
 struct VkLibrary
 {
 	std::unique_ptr< ashes::DynamicLibrary > library;
@@ -19,13 +27,7 @@ struct VkLibrary
 			|| !enumerateInstanceExtensionProperties )
 		{
 			result = ashes::Result::eErrorInitializationFailed;
-#if defined( _WIN32 )
-			library = std::make_unique< ashes::DynamicLibrary >( "vulkan-1.dll" );
-#elif defined( __linux__ )
-			library = std::make_unique< ashes::DynamicLibrary >( "libvulkan.so.1" );
-#else
-#	error Unsupported platform
-#endif
+			library = std::make_unique< ashes::DynamicLibrary >( libraryName );
 			library->getFunction( "vkGetInstanceProcAddr", getInstanceProcAddr );
 
 			if ( getInstanceProcAddr )

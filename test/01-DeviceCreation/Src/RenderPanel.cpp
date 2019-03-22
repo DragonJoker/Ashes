@@ -61,8 +61,18 @@ namespace vkapp
 		createInfo.enabledFeatures = surface->getGpu().getFeatures();
 		createInfo.enabledLayerNames = instance.getLayerNames();
 		createInfo.enabledExtensionNames = instance.getExtensionNames();
+		createInfo.queueCreateInfos.push_back( ashes::DeviceQueueCreateInfo
+			{
+				0u,
+				0u,
+				{ 1.0f },
+			} );
 		m_device = instance.getInstance().createDevice( std::move( surface )
 			, std::move( createInfo ) );
-		std::cout << m_device->getPhysicalDevice().dumpProperties() << std::endl;
+
+		if ( m_device )
+		{
+			std::cout << m_device->getPhysicalDevice().dumpProperties() << std::endl;
+		}
 	}
 }
