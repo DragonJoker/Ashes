@@ -33,26 +33,26 @@ namespace gl_renderer
 		}
 	}
 
-	GlTextureType convert( ashes::TextureType const & value
+	GlTextureType convert( ashes::ImageType const & value
 		, uint32_t layerCount )
 	{
 		switch ( value )
 		{
-		case ashes::TextureType::e1D:
+		case ashes::ImageType::e1D:
 			if ( layerCount > 1 )
 			{
 				return GL_TEXTURE_1D_ARRAY;
 			}
 			return GL_TEXTURE_1D;
 
-		case ashes::TextureType::e2D:
+		case ashes::ImageType::e2D:
 			if ( layerCount > 1 )
 			{
 				return GL_TEXTURE_2D_ARRAY;
 			}
 			return GL_TEXTURE_2D;
 
-		case ashes::TextureType::e3D:
+		case ashes::ImageType::e3D:
 			return GL_TEXTURE_3D;
 
 		default:

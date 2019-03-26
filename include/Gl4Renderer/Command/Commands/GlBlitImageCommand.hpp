@@ -17,10 +17,10 @@ namespace gl_renderer
 		struct Attachment
 		{
 			Attachment( ashes::ImageSubresourceLayers & subresource
-				, Texture const & image
+				, Image const & image
 				, uint32_t layer );
 
-			ashes::TextureViewPtr view;
+			ashes::ImageViewPtr view;
 			GlAttachmentPoint point;
 			GLuint object;
 			GlAttachmentType type;
@@ -28,8 +28,8 @@ namespace gl_renderer
 		struct LayerCopy
 		{
 			LayerCopy( ashes::ImageBlit region
-				, Texture const & srcImage
-				, Texture const & dstImage
+				, Image const & srcImage
+				, Image const & dstImage
 				, uint32_t layer );
 
 			ashes::ImageBlit region;
@@ -39,8 +39,8 @@ namespace gl_renderer
 
 	public:
 		BlitImageCommand( Device const & device
-			, ashes::Texture const & srcImage
-			, ashes::Texture const & dstImage
+			, ashes::Image const & srcImage
+			, ashes::Image const & dstImage
 			, std::vector< ashes::ImageBlit > const & regions
 			, ashes::Filter filter );
 		~BlitImageCommand();
@@ -49,8 +49,8 @@ namespace gl_renderer
 		CommandPtr clone()const override;
 
 	private:
-		Texture const & m_srcTexture;
-		Texture const & m_dstTexture;
+		Image const & m_srcTexture;
+		Image const & m_dstTexture;
 		std::vector< std::shared_ptr< LayerCopy > > m_layerCopies;
 		GLuint m_srcFbo;
 		GLuint m_dstFbo;

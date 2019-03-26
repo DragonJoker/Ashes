@@ -56,7 +56,7 @@ namespace ashes
 			, Offset3D const & offset
 			, Extent2D const & extent
 			, uint8_t const * const data
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		inline void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, ImageSubresourceLayers const & subresourceLayers
@@ -64,59 +64,59 @@ namespace ashes
 			, Offset3D const & offset
 			, Extent2D const & extent
 			, ByteArray const & data
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, Format format
 			, uint8_t const * const data
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		inline void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, Format format
 			, ByteArray const & data
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		void copyTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, Format format
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		void copyTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, ImageSubresourceLayers const & subresourceLayers
 			, Format format
 			, Offset3D const & offset
 			, Extent2D const & extent
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		void uploadTextureData( CommandBuffer const & commandBuffer
 			, ImageSubresourceLayers const & subresourceLayers
 			, Format format
 			, Offset3D const & offset
 			, Extent2D const & extent
 			, uint8_t const * const data
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		inline void uploadTextureData( CommandBuffer const & commandBuffer
 			, ImageSubresourceLayers const & subresourceLayers
 			, Format format
 			, Offset3D const & offset
 			, Extent2D const & extent
 			, ByteArray const & data
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		void uploadTextureData( CommandBuffer const & commandBuffer
 			, Format format
 			, uint8_t const * const data
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		inline void uploadTextureData( CommandBuffer const & commandBuffer
 			, Format format
 			, ByteArray const & data
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		void copyTextureData( CommandBuffer const & commandBuffer
 			, Format format
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		void copyTextureData( CommandBuffer const & commandBuffer
 			, ImageSubresourceLayers const & subresourceLayers
 			, Format format
 			, Offset3D const & offset
 			, Extent2D const & extent
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		/**@}*/
 		/**
 		*\name
@@ -130,7 +130,7 @@ namespace ashes
 			, Offset3D const & offset
 			, Extent2D const & extent
 			, uint8_t * data
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		inline void downloadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, ImageSubresourceLayers const & subresourceLayers
@@ -138,17 +138,17 @@ namespace ashes
 			, Offset3D const & offset
 			, Extent2D const & extent
 			, ByteArray & data
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		void downloadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, Format format
 			, uint8_t * data
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		inline void downloadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, Format format
 			, ByteArray & data
-			, TextureView const & texture )const;
+			, ImageView const & texture )const;
 		/**@}*/
 		/**
 		*\~english
@@ -222,7 +222,7 @@ namespace ashes
 			, Format format
 			, Offset3D const & offset
 			, Extent2D const & extent
-			, TextureView const & texture )const = 0;
+			, ImageView const & texture )const = 0;
 		/**@{*/
 		/**
 		*\name
@@ -234,7 +234,7 @@ namespace ashes
 			, Format format
 			, Offset3D const & offset
 			, Extent2D const & extent
-			, TextureView const & texture )const = 0;
+			, ImageView const & texture )const = 0;
 		virtual void doCopyFromStagingTexture( uint8_t * data
 			, Format format
 			, Extent2D const & extent )const = 0;

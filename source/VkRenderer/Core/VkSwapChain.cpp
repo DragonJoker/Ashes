@@ -1,11 +1,10 @@
 #include "Core/VkSwapChain.hpp"
 
-#include "Core/VkBackBuffer.hpp"
 #include "Core/VkDevice.hpp"
 #include "Core/VkInstance.hpp"
 #include "Core/VkPhysicalDevice.hpp"
 #include "Core/VkSurface.hpp"
-#include "Image/VkTexture.hpp"
+#include "Image/VkImage.hpp"
 #include "Sync/VkFence.hpp"
 #include "Sync/VkSemaphore.hpp"
 
@@ -25,38 +24,41 @@ namespace vk_renderer
 			, nullptr
 			, &m_swapChain );
 		checkError( res, "Swap chain creation" );
-		doCreateBackBuffers();
 	}
 
 	SwapChain::~SwapChain()
 	{
-		m_backBuffers.clear();
 		m_device.vkDestroySwapchainKHR( m_device, m_swapChain, nullptr );
 	}
 
-	void SwapChain::createDepthStencil( ashes::Format format )
+	ashes::ImagePtrArray SwapChain::getImages()const
 	{
-		m_depthStencil = m_device.createTexture(
-			{
-				0u,
-				ashes::TextureType::e2D,
-				format,
-				ashes::Extent3D{ getDimensions().width, getDimensions().height, 1u },
-				1u,
-				1u,
-				ashes::SampleCountFlag::e1,
-				ashes::ImageTiling::eOptimal,
-				ashes::ImageUsageFlag::eDepthStencilAttachment,
-				ashes::SharingMode::eExclusive,
-				{},
-				ashes::ImageLayout::eUndefined,
-			} );
-		auto requirements = m_depthStencil->getMemoryRequirements();
-		auto deduced = m_device.deduceMemoryType( requirements.memoryTypeBits
-			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_depthStencil->bindMemory( m_device.allocateMemory( { requirements.size, deduced } ) );
-		m_depthStencilView = m_depthStencil->createView( ashes::TextureViewType::e2D
-			, format );
+		// On récupère les images de la swapchain.
+		uint32_t imageCount{ 0u };
+		auto res = m_device.vkGetSwapchainImagesKHR( m_device
+			, m_swapChain
+			, &imageCount
+			, nullptr );
+		checkError( res, "Swap chain images count retrieval" );
+
+		std::vector< VkImage > swapChainImages( imageCount );
+		res = m_device.vkGetSwapchainImagesKHR( m_device
+			, m_swapChain
+			, &imageCount
+			, &swapChainImages[0] );
+		checkError( res, "Swap chain images retrieval" );
+
+		ashes::ImagePtrArray result;
+
+		for ( auto image : swapChainImages )
+		{
+			result.emplace_back( std::make_unique< Image >( m_device
+				, getFormat()
+				, getDimensions()
+				, image ) );
+		}
+
+		return result;
 	}
 
 	ashes::Result SwapChain::acquireNextImage( uint64_t timeout
@@ -74,41 +76,5 @@ namespace vk_renderer
 				? VkFence( static_cast< Fence const & >( *fence ) )
 				: VK_NULL_HANDLE )
 			, &imageIndex ) );
-	}
-
-	void SwapChain::doCreateBackBuffers()
-	{
-		// On récupère les images de la swapchain.
-		uint32_t imageCount{ 0u };
-		auto res = m_device.vkGetSwapchainImagesKHR( m_device
-			, m_swapChain
-			, &imageCount
-			, nullptr );
-		checkError( res, "Swap chain images count retrieval" );
-
-		std::vector< VkImage > swapChainImages( imageCount );
-		res = m_device.vkGetSwapchainImagesKHR( m_device
-			, m_swapChain
-			, &imageCount
-			, &swapChainImages[0] );
-		checkError( res, "Swap chain images retrieval" );
-
-		// Et on crée des BackBuffers à partir de ces images.
-		m_backBuffers.reserve( imageCount );
-		uint32_t index{ 0u };
-
-		for ( auto image : swapChainImages )
-		{
-			auto texture = std::make_unique< Texture >( m_device
-				, getFormat()
-				, getDimensions()
-				, image );
-			auto & ref = *texture;
-			m_backBuffers.emplace_back( std::make_unique< BackBuffer >( m_device
-				, std::move( texture )
-				, index++
-				, getFormat()
-				, ref ) );
-		}
 	}
 }

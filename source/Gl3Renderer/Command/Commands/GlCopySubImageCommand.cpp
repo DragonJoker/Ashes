@@ -4,8 +4,8 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlCopySubImageCommand.hpp"
 
-#include "Image/GlTexture.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImage.hpp"
+#include "Image/GlImageView.hpp"
 
 #include <Ashes/Image/ImageSubresourceRange.hpp>
 
@@ -13,12 +13,12 @@ namespace gl_renderer
 {
 	CopySubImageCommand::CopySubImageCommand( Device const & device
 		, ashes::ImageCopy const & copyInfo
-		, ashes::Texture const & src
-		, ashes::Texture const & dst )
+		, ashes::Image const & src
+		, ashes::Image const & dst )
 		: CommandBase{ device }
 		, m_copyInfo{ copyInfo }
-		, m_src{ static_cast< Texture const & >( src ) }
-		, m_dst{ static_cast< Texture const & >( dst ) }
+		, m_src{ static_cast< Image const & >( src ) }
+		, m_dst{ static_cast< Image const & >( dst ) }
 		, m_srcInternal{ getInternal( m_src.getFormat() ) }
 		, m_srcFormat{ getFormat( m_srcInternal ) }
 		, m_srcType{ getType( m_srcInternal ) }

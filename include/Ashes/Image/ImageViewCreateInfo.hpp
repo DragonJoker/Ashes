@@ -21,7 +21,7 @@ namespace ashes
 		*\brief
 		*	Le type de texture de la vue.
 		*/
-		TextureViewType viewType;
+		ImageViewType viewType;
 		/**
 		*\~english
 		*\brief

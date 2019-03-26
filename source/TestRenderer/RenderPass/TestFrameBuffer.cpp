@@ -5,7 +5,7 @@ See LICENSE file in root folder.
 #include "RenderPass/TestFrameBuffer.hpp"
 
 #include "Core/TestDevice.hpp"
-#include "Image/TestTextureView.hpp"
+#include "Image/TestImageView.hpp"
 #include "RenderPass/TestRenderPass.hpp"
 
 #include <Ashes/RenderPass/FrameBufferAttachment.hpp>
@@ -14,14 +14,14 @@ namespace test_renderer
 {
 	namespace
 	{
-		TextureViewCRefArray convert( ashes::FrameBufferAttachmentArray const & attachs )
+		ImageViewCRefArray convert( ashes::FrameBufferAttachmentArray const & attachs )
 		{
-			TextureViewCRefArray result;
+			ImageViewCRefArray result;
 			result.reserve( attachs.size() );
 
 			for ( auto & attach : attachs )
 			{
-				result.emplace_back( static_cast< TextureView const & >( attach.getView() ) );
+				result.emplace_back( static_cast< ImageView const & >( attach.getView() ) );
 			}
 
 			return result;

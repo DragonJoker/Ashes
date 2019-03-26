@@ -6,7 +6,6 @@ See LICENSE file in root folder.
 #define ___Ashes_SwapChain_HPP___
 #pragma once
 
-#include "Ashes/Core/BackBuffer.hpp"
 #include "Ashes/Miscellaneous/SwapChainCreateInfo.hpp"
 
 namespace ashes
@@ -48,6 +47,15 @@ namespace ashes
 		*/
 		virtual ~SwapChain();
 		/**
+		*\~english
+		*\return
+		*	The images used by the swapchain.
+		*\~french
+		*\brief
+		*	Les images utilisées par la swapchain.
+		*/
+		virtual ImagePtrArray getImages()const = 0;
+		/**
 		*\~french
 		*\brief
 		*	Acquires an available presentable image to use, and retrieve the index of that image.
@@ -87,7 +95,7 @@ namespace ashes
 		*\param[in] format
 		*	Le format de pixels.
 		*/
-		virtual void createDepthStencil( Format format ) = 0;
+		virtual void createDepthStencil( Format format );
 		/**
 		*\~french
 		*\brief
@@ -199,20 +207,15 @@ namespace ashes
 			return m_createInfo.imageExtent;
 		}
 
-		inline BackBufferPtrArray const & getImages()const
-		{
-			return m_backBuffers;
-		}
-
 		inline PresentMode getPresentMode()const
 		{
 			return m_createInfo.presentMode;
 		}
 
-		inline TextureView const & getDepthStencilView()const
+		inline ImageViewPtr getDepthStencilView()const
 		{
 			assert( m_depthStencilView );
-			return *m_depthStencilView;
+			return m_depthStencilView;
 		}
 
 		inline Format getFormat()const
@@ -225,9 +228,8 @@ namespace ashes
 		Device const & m_device;
 		Surface const & m_surface;
 		SwapChainCreateInfo m_createInfo;
-		BackBufferPtrArray m_backBuffers;
-		mutable TexturePtr m_depthStencil;
-		mutable TextureViewPtr m_depthStencilView;
+		mutable ImagePtr m_depthStencil;
+		mutable ImageViewPtr m_depthStencilView;
 	};
 }
 

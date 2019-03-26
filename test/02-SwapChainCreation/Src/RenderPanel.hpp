@@ -98,6 +98,7 @@ namespace vkapp
 		ashes::QueuePtr m_presentQueue;
 		ashes::CommandPoolPtr m_commandPool;
 		ashes::SwapChainPtr m_swapChain;
+		ashes::ImagePtrArray m_swapChainImages;
 		ashes::ClearColorValue m_clearColour;
 		ashes::RenderPassPtr m_renderPass;
 		RenderingResourcesArray m_renderingResources;

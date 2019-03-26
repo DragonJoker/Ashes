@@ -5,8 +5,8 @@ See LICENSE file in root folder.
 #include "Command/Commands/GlBlitImageCommand.hpp"
 
 #include "Core/GlDevice.hpp"
-#include "Image/GlTexture.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImage.hpp"
+#include "Image/GlImageView.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 
 #include <Ashes/Image/ImageSubresourceRange.hpp>
@@ -81,9 +81,9 @@ namespace gl_renderer
 	}
 
 	BlitImageCommand::Attachment::Attachment( ashes::ImageSubresourceLayers & subresource
-		, Texture const & image
+		, Image const & image
 		, uint32_t layer )
-		: object{ image.getImage() }
+		: object{ image.getInternal() }
 		, point{ getAttachmentPoint( image.getFormat() ) }
 		, type{ getAttachmentType( image.getFormat() ) }
 	{
@@ -91,7 +91,7 @@ namespace gl_renderer
 		{
 			view = image.createView( 
 			{
-				ashes::TextureViewType( image.getType() ),
+				ashes::ImageViewType( image.getType() ),
 				image.getFormat(),
 				ashes::ComponentMapping{},
 				{
@@ -102,14 +102,14 @@ namespace gl_renderer
 					1u
 				}
 			} );
-			object = static_cast< TextureView const & >( *view ).getImage();
+			object = static_cast< ImageView const & >( *view ).getInternal();
 			subresource.mipLevel = 0u;
 		}
 	}
 
 	BlitImageCommand::LayerCopy::LayerCopy( ashes::ImageBlit blitRegion
-		, Texture const & srcImage
-		, Texture const & dstImage
+		, Image const & srcImage
+		, Image const & dstImage
 		, uint32_t layer )
 		: region{ blitRegion }
 		, src{ region.srcSubresource, srcImage, layer }
@@ -118,13 +118,13 @@ namespace gl_renderer
 	}
 
 	BlitImageCommand::BlitImageCommand( Device const & device
-		, ashes::Texture const & srcImage
-		, ashes::Texture const & dstImage
+		, ashes::Image const & srcImage
+		, ashes::Image const & dstImage
 		, std::vector< ashes::ImageBlit > const & regions
 		, ashes::Filter filter )
 		: CommandBase{ device }
-		, m_srcTexture{ static_cast< Texture const & >( srcImage ) }
-		, m_dstTexture{ static_cast< Texture const & >( dstImage ) }
+		, m_srcTexture{ static_cast< Image const & >( srcImage ) }
+		, m_dstTexture{ static_cast< Image const & >( dstImage ) }
 		, m_srcFbo{ device.getBlitSrcFbo() }
 		, m_dstFbo{ device.getBlitDstFbo() }
 		, m_filter{ convert( filter ) }

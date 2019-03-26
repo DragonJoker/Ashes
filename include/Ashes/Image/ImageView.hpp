@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_TextureView_HPP___
-#define ___Ashes_TextureView_HPP___
+#ifndef ___Ashes_ImageView_HPP___
+#define ___Ashes_ImageView_HPP___
 #pragma once
 
 #include "Ashes/Image/ImageViewCreateInfo.hpp"
@@ -18,7 +18,7 @@ namespace ashes
 	*\brief
 	*	Image view wrapper.
 	*/
-	class TextureView
+	class ImageView
 	{
 	protected:
 		/**
@@ -41,8 +41,8 @@ namespace ashes
 		*\param[in] createInfo
 		*	The view creation informations.
 		*/
-		TextureView( Device const & device
-			, Texture const & image
+		ImageView( Device const & device
+			, Image const & image
 			, ImageViewCreateInfo const & createInfo );
 
 	public:
@@ -54,7 +54,7 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		virtual ~TextureView();
+		virtual ~ImageView();
 		/**
 		*\~french
 		*\brief
@@ -325,7 +325,7 @@ namespace ashes
 		*	Accesseurs.
 		*/
 		/**@{*/
-		inline TextureViewType getType()const
+		inline ImageViewType getType()const
 		{
 			return m_createInfo.viewType;
 		}
@@ -335,7 +335,7 @@ namespace ashes
 			return m_createInfo.format;
 		}
 
-		inline Texture const & getTexture()const
+		inline Image const & getImage()const
 		{
 			return m_image;
 		}
@@ -364,7 +364,7 @@ namespace ashes
 
 	private:
 		Device const & m_device;
-		Texture const & m_image;
+		Image const & m_image;
 	};
 }
 

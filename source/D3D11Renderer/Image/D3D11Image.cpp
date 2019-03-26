@@ -1,4 +1,4 @@
-#include "Image/D3D11Texture.hpp"
+#include "Image/D3D11Image.hpp"
 
 #include "Command/D3D11CommandBuffer.hpp"
 #include "Command/D3D11Queue.hpp"
@@ -7,7 +7,7 @@
 #include "Core/D3D11Instance.hpp"
 #include "Miscellaneous/D3D11DeviceMemory.hpp"
 #include "Command/D3D11Queue.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11ImageView.hpp"
 
 #include <Ashes/Miscellaneous/Extent2D.hpp>
 #include <Ashes/Sync/ImageMemoryBarrier.hpp>
@@ -15,8 +15,8 @@
 
 namespace d3d11_renderer
 {
-	Texture::Texture( Texture && rhs )
-		: ashes::Texture{ std::move( rhs ) }
+	Image::Image( Image && rhs )
+		: ashes::Image{ std::move( rhs ) }
 		, m_device{ rhs.m_device }
 		, m_image{ rhs.m_image }
 		, m_createInfo{ std::move( rhs.m_createInfo ) }
@@ -24,17 +24,17 @@ namespace d3d11_renderer
 		rhs.m_image.tex1D = nullptr;
 	}
 
-	Texture & Texture::operator=( Texture && rhs )
+	Image & Image::operator=( Image && rhs )
 	{
-		ashes::Texture::operator=( std::move( rhs ) );
+		ashes::Image::operator=( std::move( rhs ) );
 		m_image = rhs.m_image;
 		rhs.m_image.tex1D = nullptr;
 		return *this;
 	}
 
-	Texture::Texture( Device const & device
+	Image::Image( Device const & device
 		, ashes::ImageCreateInfo const & createInfo )
-		: ashes::Texture{ device
+		: ashes::Image{ device
 			, createInfo.flags
 			, createInfo.imageType
 			, createInfo.format
@@ -47,13 +47,13 @@ namespace d3d11_renderer
 	{
 	}
 
-	Texture::Texture( Device const & device
+	Image::Image( Device const & device
 		, ashes::Format format
 		, ashes::Extent2D const & dimensions
 		, ID3D11Texture2D * image )
-		: ashes::Texture{ device
+		: ashes::Image{ device
 			, 0u
-			, ashes::TextureType::e2D
+			, ashes::ImageType::e2D
 			, format
 			, ashes::Extent3D{ dimensions.width, dimensions.height, 1u }
 			, 1u 
@@ -63,7 +63,7 @@ namespace d3d11_renderer
 		, m_createInfo
 		{
 			0u,
-			ashes::TextureType::e2D,
+			ashes::ImageType::e2D,
 			format,
 			ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
 			1u,
@@ -81,16 +81,16 @@ namespace d3d11_renderer
 		m_image.tex2D = image;
 	}
 
-	Texture::Texture( Device const & device
+	Image::Image( Device const & device
 		, ashes::Format format
 		, ashes::Extent2D const & dimensions
 		, ashes::ImageUsageFlags usageFlags
 		, ashes::ImageTiling tiling
 		, ashes::MemoryPropertyFlags memoryFlags )
-		: Texture{ device
+		: Image{ device
 			, {
 				0u,
-				ashes::TextureType::e2D,
+				ashes::ImageType::e2D,
 				format,
 				ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
 				1u,
@@ -105,12 +105,12 @@ namespace d3d11_renderer
 	{
 	}
 
-	Texture::~Texture()
+	Image::~Image()
 	{
 		safeRelease( m_image.tex1D );
 	}
 
-	ashes::MemoryRequirements Texture::getMemoryRequirements()const
+	ashes::MemoryRequirements Image::getMemoryRequirements()const
 	{
 		ashes::MemoryRequirements result{};
 
@@ -129,31 +129,31 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	ashes::TextureViewPtr Texture::createView( ashes::ImageViewCreateInfo const & createInfo )const
+	ashes::ImageViewPtr Image::createView( ashes::ImageViewCreateInfo const & createInfo )const
 	{
-		return std::make_unique< TextureView >( m_device
+		return std::make_shared< ImageView >( m_device
 			, *this
 			, createInfo );
 	}
 
-	void Texture::generateMipmaps( ashes::CommandBuffer & commandBuffer )const
+	void Image::generateMipmaps( ashes::CommandBuffer & commandBuffer )const
 	{
 		static_cast< CommandBuffer & >( commandBuffer ).generateMips( *this );
 	}
 
-	void Texture::doBindMemory()
+	void Image::doBindMemory()
 	{
 		switch ( getType() )
 		{
-		case ashes::TextureType::e1D:
+		case ashes::ImageType::e1D:
 			m_image.tex1D = static_cast< DeviceMemory & >( *m_storage ).bindToTexture1D( m_createInfo );
 			break;
 
-		case ashes::TextureType::e2D:
+		case ashes::ImageType::e2D:
 			m_image.tex2D = static_cast< DeviceMemory & >( *m_storage ).bindToTexture2D( m_createInfo );
 			break;
 
-		case ashes::TextureType::e3D:
+		case ashes::ImageType::e3D:
 			m_image.tex3D = static_cast< DeviceMemory & >( *m_storage ).bindToTexture3D( m_createInfo );
 			break;
 		}

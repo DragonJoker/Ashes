@@ -8,8 +8,8 @@ See LICENSE file in root folder.
 #include "Ashes/Command/CommandBuffer.hpp"
 #include "Ashes/Core/Device.hpp"
 #include "Ashes/Core/Exception.hpp"
-#include "Ashes/Image/Texture.hpp"
-#include "Ashes/Image/TextureView.hpp"
+#include "Ashes/Image/Image.hpp"
+#include "Ashes/Image/ImageView.hpp"
 #include "Ashes/Sync/BufferMemoryBarrier.hpp"
 #include "Ashes/Sync/ImageMemoryBarrier.hpp"
 

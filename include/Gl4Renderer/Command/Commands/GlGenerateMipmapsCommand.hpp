@@ -17,7 +17,7 @@ namespace gl_renderer
 	{
 	public:
 		GenerateMipmapsCommand( Device const & device
-			, Texture const & texture );
+			, Image const & texture );
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 

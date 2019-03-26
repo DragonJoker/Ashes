@@ -3,7 +3,7 @@
 #include "Buffer/GlBuffer.hpp"
 #include "Descriptor/GlDescriptorPool.hpp"
 #include "Image/GlSampler.hpp"
-#include "Image/GlTexture.hpp"
+#include "Image/GlImage.hpp"
 
 #include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>

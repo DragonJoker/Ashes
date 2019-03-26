@@ -5,8 +5,8 @@ See LICENSE file in root folder.
 #include "Command/Commands/D3D11CopyBufferToImageCommand.hpp"
 
 #include "Buffer/D3D11Buffer.hpp"
-#include "Image/D3D11Texture.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11Image.hpp"
+#include "Image/D3D11ImageView.hpp"
 
 #include <Ashes/Image/ImageSubresourceRange.hpp>
 
@@ -45,11 +45,11 @@ namespace d3d11_renderer
 	CopyBufferToImageCommand::CopyBufferToImageCommand( Device const & device
 		, ashes::BufferImageCopyArray const & copyInfo
 		, ashes::BufferBase const & src
-		, ashes::Texture const & dst )
+		, ashes::Image const & dst )
 		: CommandBase{ device }
 		, m_copyInfo{ copyInfo }
 		, m_src{ static_cast< Buffer const & >( src ) }
-		, m_dst{ static_cast< Texture const & >( dst ) }
+		, m_dst{ static_cast< Image const & >( dst ) }
 		, m_format{ getSRVFormat( m_dst.getFormat() ) }
 		, m_srcBoxes{ doGetSrcBoxes( copyInfo ) }
 	{

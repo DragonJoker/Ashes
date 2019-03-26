@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Ashes_FrameBufferAttachment_HPP___
 #pragma once
 
-#include "Ashes/Image/TextureView.hpp"
+#include "Ashes/Image/ImageView.hpp"
 
 namespace ashes
 {
@@ -40,7 +40,7 @@ namespace ashes
 		*	La vue sur la texture.
 		*/
 		FrameBufferAttachment( AttachmentDescription const & attach
-			, TextureView const & view );
+			, ImageViewPtr view );
 		/**
 		*\~english
 		*\return
@@ -51,7 +51,7 @@ namespace ashes
 		*/
 		inline ashes::Format getFormat()const
 		{
-			return m_view.getFormat();
+			return m_view->getFormat();
 		}
 		/**
 		*\~english
@@ -61,9 +61,9 @@ namespace ashes
 		*\return
 		*	La vue sur la texture.
 		*/
-		inline TextureView const & getView()const
+		inline ImageView const & getView()const
 		{
-			return m_view;
+			return *m_view;
 		}
 		/**
 		*\~english
@@ -73,9 +73,9 @@ namespace ashes
 		*\return
 		*	La texture.
 		*/
-		inline Texture const & getTexture()const
+		inline Image const & getImage()const
 		{
-			return m_view.getTexture();
+			return m_view->getImage();
 		}
 		/**
 		*\~english
@@ -103,7 +103,7 @@ namespace ashes
 		}
 
 	private:
-		TextureView const & m_view;
+		ImageViewPtr m_view;
 		FrameBuffer const * m_frameBuffer;
 		AttachmentDescription const & m_attach;
 	};

@@ -101,7 +101,7 @@ namespace utils
 		*\param[in] flags
 		*	Les indicateurs de propriétés de mémoire pour l'objet DeviceMemory.
 		*/
-		ashes::TexturePtr createTexture( ashes::ImageCreateInfo const & createInfo
+		ashes::ImagePtr createImage( ashes::ImageCreateInfo const & createInfo
 			, ashes::MemoryPropertyFlags flags )const;
 
 		uint32_t deduceMemoryType( uint32_t typeBits

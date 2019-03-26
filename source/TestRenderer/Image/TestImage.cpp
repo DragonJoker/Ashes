@@ -1,4 +1,4 @@
-#include "Image/TestTexture.hpp"
+#include "Image/TestImage.hpp"
 
 #include "Command/TestCommandBuffer.hpp"
 #include "Command/TestQueue.hpp"
@@ -7,7 +7,7 @@
 #include "Core/TestInstance.hpp"
 #include "Miscellaneous/TestDeviceMemory.hpp"
 #include "Command/TestQueue.hpp"
-#include "Image/TestTextureView.hpp"
+#include "Image/TestImageView.hpp"
 
 #include <Ashes/Miscellaneous/Extent2D.hpp>
 #include <Ashes/Sync/ImageMemoryBarrier.hpp>
@@ -15,21 +15,21 @@
 
 namespace test_renderer
 {
-	Texture::Texture( Texture && rhs )
-		: ashes::Texture{ std::move( rhs ) }
+	Image::Image( Image && rhs )
+		: ashes::Image{ std::move( rhs ) }
 		, m_device{ rhs.m_device }
 	{
 	}
 
-	Texture & Texture::operator=( Texture && rhs )
+	Image & Image::operator=( Image && rhs )
 	{
-		ashes::Texture::operator=( std::move( rhs ) );
+		ashes::Image::operator=( std::move( rhs ) );
 		return *this;
 	}
 
-	Texture::Texture( Device const & device
+	Image::Image( Device const & device
 		, ashes::ImageCreateInfo const & createInfo )
-		: ashes::Texture{ device
+		: ashes::Image{ device
 			, createInfo.flags
 			, createInfo.imageType
 			, createInfo.format
@@ -40,12 +40,12 @@ namespace test_renderer
 	{
 	}
 
-	Texture::Texture( Device const & device
+	Image::Image( Device const & device
 		, ashes::Format format
 		, ashes::Extent2D const & dimensions )
-		: ashes::Texture{ device
+		: ashes::Image{ device
 			, 0u
-			, ashes::TextureType::e2D
+			, ashes::ImageType::e2D
 			, format
 			, ashes::Extent3D{ dimensions.width, dimensions.height, 1u }
 			, 1u 
@@ -54,16 +54,16 @@ namespace test_renderer
 	{
 	}
 
-	Texture::Texture( Device const & device
+	Image::Image( Device const & device
 		, ashes::Format format
 		, ashes::Extent2D const & dimensions
 		, ashes::ImageUsageFlags usageFlags
 		, ashes::ImageTiling tiling
 		, ashes::MemoryPropertyFlags memoryFlags )
-		: Texture{ device
+		: Image{ device
 			, {
 				0u,
-				ashes::TextureType::e2D,
+				ashes::ImageType::e2D,
 				format,
 				ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
 				1u,
@@ -78,11 +78,11 @@ namespace test_renderer
 	{
 	}
 
-	Texture::~Texture()
+	Image::~Image()
 	{
 	}
 
-	ashes::MemoryRequirements Texture::getMemoryRequirements()const
+	ashes::MemoryRequirements Image::getMemoryRequirements()const
 	{
 		ashes::MemoryRequirements result{};
 
@@ -101,14 +101,14 @@ namespace test_renderer
 		return result;
 	}
 
-	ashes::TextureViewPtr Texture::createView( ashes::ImageViewCreateInfo const & createInfo )const
+	ashes::ImageViewPtr Image::createView( ashes::ImageViewCreateInfo const & createInfo )const
 	{
-		return std::make_unique< TextureView >( m_device
+		return std::make_shared< ImageView >( m_device
 			, *this
 			, createInfo );
 	}
 
-	void Texture::doBindMemory()
+	void Image::doBindMemory()
 	{
 	}
 }

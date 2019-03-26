@@ -138,7 +138,7 @@ namespace ashes
 		*	Couleur des bords de la texture.
 		*\~english
 		*\brief
-		*	Texture border colour.
+		*	Image border colour.
 		*/
 		BorderColour borderColor;
 		/**

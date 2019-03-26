@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Core/Exception.hpp>
 #include <Ashes/Core/Instance.hpp>
-#include <Ashes/Image/Texture.hpp>
+#include <Ashes/Image/Image.hpp>
 #include <Ashes/Miscellaneous/MemoryRequirements.hpp>
 
 namespace utils
@@ -174,10 +174,10 @@ namespace utils
 		return result;
 	}
 
-	ashes::TexturePtr Device::createTexture( ashes::ImageCreateInfo const & createInfo
+	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo
 		, ashes::MemoryPropertyFlags flags )const
 	{
-		auto result = m_device->createTexture( createInfo );
+		auto result = m_device->createImage( createInfo );
 		auto requirements = result->getMemoryRequirements();
 		uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 			, flags );

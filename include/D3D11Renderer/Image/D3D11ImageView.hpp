@@ -1,6 +1,6 @@
 /**
 *\file
-*	Texture.h
+*	Image.h
 *\author
 *	Sylvain Doremus
 */
@@ -10,7 +10,7 @@
 
 #include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/ImageView.hpp>
 
 namespace d3d11_renderer
 {
@@ -22,14 +22,14 @@ namespace d3d11_renderer
 	*\brief
 	*	Vulkan image view wrapper.
 	*/
-	class TextureView
-		: public ashes::TextureView
+	class ImageView
+		: public ashes::ImageView
 	{
 	public:
-		TextureView( Device const & device
-			, Texture const & image
+		ImageView( Device const & device
+			, Image const & image
 			, ashes::ImageViewCreateInfo const & createInfo );
-		~TextureView();
+		~ImageView();
 
 		inline ID3D11RenderTargetView * getRenderTargetView()const
 		{
@@ -62,7 +62,7 @@ namespace d3d11_renderer
 
 	private:
 		Device const & m_device;
-		Texture const & m_image;
+		Image const & m_image;
 		ID3D11RenderTargetView * m_renderTargetView{ nullptr };
 		ID3D11DepthStencilView * m_depthStencilView{ nullptr };
 		ID3D11UnorderedAccessView * m_unorderedAccessView{ nullptr };

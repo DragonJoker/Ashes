@@ -36,7 +36,7 @@ namespace common
 			, std::chrono::nanoseconds & gpu )const;
 		void initialise( Scene const & scene
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::TextureViewCRefArray const & views
+			, ashes::ImageViewPtrArray views
 			, TextureNodePtrArray const & textureNodes );
 
 		inline utils::Device const & getDevice()const
@@ -55,7 +55,7 @@ namespace common
 		}
 
 	protected:
-		void doUpdate( ashes::TextureViewCRefArray const & views );
+		void doUpdate( ashes::ImageViewPtrArray views );
 
 	private:
 		void doInitialiseObject( Object const & object
@@ -92,7 +92,6 @@ namespace common
 		bool m_opaqueNodes;
 		ashes::Extent2D m_size;
 		std::string m_fragmentShaderFile;
-		std::vector< ashes::TextureView const * > m_views;
 		ashes::SamplerPtr m_sampler;
 		ashes::CommandBufferPtr m_commandBuffer;
 		ashes::UniformBufferPtr< MaterialData > m_materialsUbo;

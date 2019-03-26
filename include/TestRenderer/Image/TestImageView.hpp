@@ -1,6 +1,6 @@
 /**
 *\file
-*	Texture.h
+*	Image.h
 *\author
 *	Sylvain Doremus
 */
@@ -8,7 +8,7 @@
 
 #include "TestRendererPrerequisites.hpp"
 
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/ImageView.hpp>
 
 namespace test_renderer
 {
@@ -20,13 +20,13 @@ namespace test_renderer
 	*\brief
 	*	Vulkan image view wrapper.
 	*/
-	class TextureView
-		: public ashes::TextureView
+	class ImageView
+		: public ashes::ImageView
 	{
 	public:
-		TextureView( Device const & device
-			, Texture const & image
+		ImageView( Device const & device
+			, Image const & image
 			, ashes::ImageViewCreateInfo const & createInfo );
-		~TextureView();
+		~ImageView();
 	};
 }

@@ -7,8 +7,8 @@ See LICENSE file in root folder.
 #include "Ashes/Buffer/VertexBuffer.hpp"
 #include "Ashes/Buffer/UniformBuffer.hpp"
 #include "Ashes/Image/ImageSubresourceRange.hpp"
-#include "Ashes/Image/Texture.hpp"
-#include "Ashes/Image/TextureView.hpp"
+#include "Ashes/Image/Image.hpp"
+#include "Ashes/Image/ImageView.hpp"
 #include "Ashes/RenderPass/FrameBuffer.hpp"
 #include "Ashes/Sync/MemoryBarrier.hpp"
 #include "Ashes/Sync/BufferMemoryBarrier.hpp"
@@ -129,7 +129,7 @@ namespace ashes
 
 	void CommandBuffer::copyToImage( BufferImageCopy const & copyInfo
 		, BufferBase const & src
-		, Texture const & dst )const
+		, Image const & dst )const
 	{
 		copyToImage( BufferImageCopyArray{ 1u, copyInfo }
 			, src
@@ -137,7 +137,7 @@ namespace ashes
 	}
 
 	void CommandBuffer::copyToBuffer( BufferImageCopy const & copyInfo
-		, Texture const & src
+		, Image const & src
 		, BufferBase const & dst )const
 	{
 		copyToBuffer( BufferImageCopyArray{ 1u, copyInfo }
@@ -243,8 +243,8 @@ namespace ashes
 		copyBuffer( copyInfo, src.getBuffer(), dst.getBuffer() );
 	}
 
-	void CommandBuffer::copyImage( TextureView const & src
-		, TextureView const & dst )const
+	void CommandBuffer::copyImage( ImageView const & src
+		, ImageView const & dst )const
 	{
 		auto const & srcRange = src.getSubResourceRange();
 		auto const & dstRange = dst.getSubResourceRange();
@@ -272,11 +272,11 @@ namespace ashes
 					0,                                                  // y
 					0                                                   // z
 				},
-				dst.getTexture().getDimensions()                    // extent
+				dst.getImage().getDimensions()                    // extent
 			}
-			, src.getTexture()
+			, src.getImage()
 			, ImageLayout::eTransferSrcOptimal
-			, dst.getTexture()
+			, dst.getImage()
 			, ImageLayout::eTransferDstOptimal );
 	}
 

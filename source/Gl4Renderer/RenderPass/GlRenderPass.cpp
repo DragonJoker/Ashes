@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Command/GlCommandBuffer.hpp"
 #include "Core/GlDevice.hpp"
-#include "Image/GlTexture.hpp"
+#include "Image/GlImage.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 
 #include <Ashes/RenderPass/RenderPassCreateInfo.hpp>

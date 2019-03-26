@@ -10,8 +10,8 @@
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
 #include <Image/StagingTexture.hpp>
-#include <Image/Texture.hpp>
-#include <Image/TextureView.hpp>
+#include <Image/Image.hpp>
+#include <Image/ImageView.hpp>
 #include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/InputAssemblyState.hpp>
 #include <Pipeline/MultisampleState.hpp>
@@ -38,15 +38,15 @@ namespace vkapp
 
 	namespace
 	{
-		ashes::TexturePtr doCreateTexture( utils::Device const & device
+		ashes::ImagePtr doCreateTexture( utils::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
 			, common::ImageData const & image )
 		{
-			auto result = device.createTexture(
+			auto result = device.createImage(
 				{
 					0u,
-					ashes::TextureType::e2D,
+					ashes::ImageType::e2D,
 					image.format,
 					ashes::Extent3D{ image.size.width, image.size.height, 1u },
 					1u,
@@ -56,7 +56,7 @@ namespace vkapp
 					ashes::ImageUsageFlag::eSampled | ashes::ImageUsageFlag::eTransferDst
 				}
 				, ashes::MemoryPropertyFlag::eDeviceLocal );
-			auto view = result->createView( ashes::TextureViewType::e2D
+			auto view = result->createView( ashes::ImageViewType::e2D
 				, image.format );
 
 			auto staging = device->createStagingTexture( image.format
@@ -241,14 +241,14 @@ namespace vkapp
 		, utils::Device const & device
 		, ashes::Queue const & queue
 		, ashes::CommandPool const & commandPool
-		, ashes::Texture & texture )
+		, ashes::Image & texture )
 		: m_device{ device }
 		, m_queue{ queue }
 		, m_commandBuffer{ commandPool.createCommandBuffer() }
 		, m_image{ common::loadImage( filePath ) }
 		, m_stagingBuffer{ device, ashes::BufferTarget::eTransferSrc, uint32_t( m_image.data.size() ) }
 		, m_texture{ doCreateTexture( m_device, queue, commandPool, m_image ) }
-		, m_view{ m_texture->createView( ashes::TextureViewType::e2D, m_image.format ) }
+		, m_view{ m_texture->createView( ashes::ImageViewType::e2D, m_image.format ) }
 		, m_sampler{ doCreateSampler( m_device ) }
 		, m_matrixUbo{ doCreateMatrixUbo( m_device, queue, commandPool, m_stagingBuffer ) }
 		, m_vertexBuffer{ doCreateVertexBuffer( m_device, queue, commandPool, m_stagingBuffer ) }
@@ -264,8 +264,8 @@ namespace vkapp
 		for ( auto & facePipeline : m_faces )
 		{
 			ashes::FrameBufferAttachmentArray attaches;
-			facePipeline.view = texture.createView( ashes::TextureViewType::e2D, texture.getFormat(), 0u, 1u, face, 1u );
-			attaches.emplace_back( *m_renderPass->getAttachments().begin(), *facePipeline.view );
+			attaches.emplace_back( *m_renderPass->getAttachments().begin()
+				, texture.createView( ashes::ImageViewType::e2D, texture.getFormat(), 0u, 1u, face, 1u ) );
 			facePipeline.frameBuffer = m_renderPass->createFrameBuffer( size
 				, std::move( attaches ) );
 
@@ -304,7 +304,7 @@ namespace vkapp
 		{
 			commandBuffer.memoryBarrier( ashes::PipelineStageFlag::eTransfer
 				, ashes::PipelineStageFlag::eColourAttachmentOutput
-				, facePipeline.view->makeColourAttachment( ashes::ImageLayout::eUndefined
+				, facePipeline.frameBuffer->begin()->getView().makeColourAttachment( ashes::ImageLayout::eUndefined
 					, 0u ) );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, *facePipeline.frameBuffer

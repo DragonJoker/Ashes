@@ -1,6 +1,6 @@
 /**
 *\file
-*	Texture.h
+*	Image.h
 *\author
 *	Sylvain Doremus
 */
@@ -10,7 +10,7 @@
 
 #include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
-#include <Ashes/Image/Texture.hpp>
+#include <Ashes/Image/Image.hpp>
 
 namespace d3d11_renderer
 {
@@ -31,19 +31,19 @@ namespace d3d11_renderer
 	*	Depending on wheter the image comes from a resource or a swap chain,
 	*	The TestImage will be destroyed or not.
 	*/
-	class Texture
-		: public ashes::Texture
+	class Image
+		: public ashes::Image
 	{
 	public:
-		Texture( Texture const & ) = delete;
-		Texture & operator=( Texture const & ) = delete;
-		Texture( Texture && rhs );
-		Texture & operator=( Texture && rhs );
+		Image( Image const & ) = delete;
+		Image & operator=( Image const & ) = delete;
+		Image( Image && rhs );
+		Image & operator=( Image && rhs );
 		/**
 		*\brief
 		*	Constructeur.
 		*/
-		Texture( Device const & device
+		Image( Device const & device
 			, ashes::ImageCreateInfo const & createInfo );
 		/**
 		*\brief
@@ -51,7 +51,7 @@ namespace d3d11_renderer
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		Texture( Device const & device
+		Image( Device const & device
 			, ashes::Format format
 			, ashes::Extent2D const & dimensions
 			, ID3D11Texture2D * image );
@@ -61,7 +61,7 @@ namespace d3d11_renderer
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		Texture( Device const & device
+		Image( Device const & device
 			, ashes::Format format
 			, ashes::Extent2D const & dimensions
 			, ashes::ImageUsageFlags usageFlags
@@ -71,17 +71,17 @@ namespace d3d11_renderer
 		*\brief
 		*	Destructeur.
 		*/
-		~Texture();
+		~Image();
 		/**
-		*\copydoc	ashes::Texture::createView
+		*\copydoc	ashes::Image::createView
 		*/
 		ashes::MemoryRequirements getMemoryRequirements()const override;
 		/**
-		*\copydoc	ashes::Texture::createView
+		*\copydoc	ashes::Image::createView
 		*/
-		ashes::TextureViewPtr createView( ashes::ImageViewCreateInfo const & createInfo )const override;
+		ashes::ImageViewPtr createView( ashes::ImageViewCreateInfo const & createInfo )const override;
 		/**
-		*\copydoc	ashes::Texture::generateMipmaps
+		*\copydoc	ashes::Image::generateMipmaps
 		*/
 		void generateMipmaps( ashes::CommandBuffer & commandBuffer )const override;
 
@@ -92,19 +92,19 @@ namespace d3d11_renderer
 
 		inline ID3D11Texture1D * getTexture1D()const
 		{
-			assert( getType() == ashes::TextureType::e1D );
+			assert( getType() == ashes::ImageType::e1D );
 			return m_image.tex1D;
 		}
 
 		inline ID3D11Texture2D * getTexture2D()const
 		{
-			assert( getType() == ashes::TextureType::e2D );
+			assert( getType() == ashes::ImageType::e2D );
 			return m_image.tex2D;
 		}
 
 		inline ID3D11Texture3D * getTexture3D()const
 		{
-			assert( getType() == ashes::TextureType::e3D );
+			assert( getType() == ashes::ImageType::e3D );
 			return m_image.tex3D;
 		}
 

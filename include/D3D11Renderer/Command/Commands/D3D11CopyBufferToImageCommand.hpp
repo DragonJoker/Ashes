@@ -31,7 +31,7 @@ namespace d3d11_renderer
 		CopyBufferToImageCommand( Device const & device
 			, ashes::BufferImageCopyArray const & copyInfo
 			, ashes::BufferBase const & src
-			, ashes::Texture const & dst );
+			, ashes::Image const & dst );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;
@@ -43,7 +43,7 @@ namespace d3d11_renderer
 
 	private:
 		Buffer const & m_src;
-		Texture const & m_dst;
+		Image const & m_dst;
 		ashes::BufferImageCopyArray m_copyInfo;
 		DXGI_FORMAT m_format;
 		std::vector< D3D11_BOX > m_srcBoxes;

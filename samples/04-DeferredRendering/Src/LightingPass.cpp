@@ -11,8 +11,8 @@
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Ashes/Descriptor/DescriptorSetPool.hpp>
 #include <Ashes/Image/Sampler.hpp>
-#include <Ashes/Image/Texture.hpp>
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/Image.hpp>
+#include <Ashes/Image/ImageView.hpp>
 #include <Ashes/Miscellaneous/QueryPool.hpp>
 #include <Ashes/Pipeline/DepthStencilState.hpp>
 #include <Ashes/Pipeline/InputAssemblyState.hpp>
@@ -55,8 +55,8 @@ namespace vkapp
 			return shaderStages;
 		}
 
-		std::vector< ashes::Format > doGetFormats( ashes::TextureView const & depthView
-			, ashes::TextureView const & colourView )
+		std::vector< ashes::Format > doGetFormats( ashes::ImageView const & depthView
+			, ashes::ImageView const & colourView )
 		{
 			return
 			{
@@ -65,8 +65,8 @@ namespace vkapp
 			};
 		}
 
-		ashes::AttachmentDescriptionArray doGetAttaches( ashes::TextureView const & depthView
-			, ashes::TextureView const & colourView )
+		ashes::AttachmentDescriptionArray doGetAttaches( ashes::ImageView const & depthView
+			, ashes::ImageView const & colourView )
 		{
 			return ashes::AttachmentDescriptionArray
 			{
@@ -88,14 +88,14 @@ namespace vkapp
 					ashes::AttachmentLoadOp::eDontCare,
 					ashes::AttachmentStoreOp::eDontCare,
 					ashes::ImageLayout::eUndefined,
-					ashes::ImageLayout::eDepthStencilAttachmentOptimal,
+					ashes::ImageLayout::eColourAttachmentOptimal,
 				}
 			};
 		}
 
 		ashes::RenderPassPtr doCreateRenderPass( ashes::Device const & device
-			, ashes::TextureView const & depthView
-			, ashes::TextureView const & colourView )
+			, ashes::ImageViewPtr depthView
+			, ashes::ImageViewPtr colourView )
 		{
 			ashes::AttachmentReferenceArray subAttaches
 			{
@@ -106,7 +106,7 @@ namespace vkapp
 				, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput, ashes::AccessFlag::eColourAttachmentWrite }
 				, subAttaches
 				, ashes::AttachmentReference{ 0u, ashes::ImageLayout::eDepthStencilAttachmentOptimal } ) );
-			return device.createRenderPass( doGetAttaches( depthView, colourView )
+			return device.createRenderPass( doGetAttaches( *depthView, *colourView )
 				, std::move( subpasses )
 				, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
 					, ashes::AccessFlag::eColourAttachmentWrite }
@@ -115,14 +115,16 @@ namespace vkapp
 		}
 
 		ashes::FrameBufferPtr doCreateFrameBuffer( ashes::RenderPass const & renderPass
-			, ashes::TextureView const & depthView
-			, ashes::TextureView const & colourView )
+			, ashes::ImageViewPtr depthView
+			, ashes::ImageViewPtr colourView )
 		{
-			auto formats = doGetFormats( depthView, colourView );
+			auto formats = doGetFormats( *depthView, *colourView );
 			ashes::FrameBufferAttachmentArray attaches;
-			attaches.emplace_back( *( renderPass.getAttachments().begin() + 0u ), depthView );
-			attaches.emplace_back( *( renderPass.getAttachments().begin() + 1u ), colourView );
-			auto dimensions = colourView.getTexture().getDimensions();
+			attaches.emplace_back( *( renderPass.getAttachments().begin() + 0u )
+				, depthView );
+			attaches.emplace_back( *( renderPass.getAttachments().begin() + 1u )
+				, colourView );
+			auto dimensions = colourView->getImage().getDimensions();
 			return renderPass.createFrameBuffer( ashes::Extent2D{ dimensions.width, dimensions.height }
 				, std::move( attaches ) );
 		}
@@ -209,7 +211,7 @@ namespace vkapp
 		, ashes::Queue const & transferQueue
 		, ashes::UniformBuffer< common::LightsData > const & lightsUbo
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::TextureViewCRefArray const & views )
+		, ashes::ImageViewPtrArray views )
 		: m_device{ device }
 		, m_commandPool{ commandPool }
 		, m_transferQueue{ transferQueue }
@@ -221,7 +223,7 @@ namespace vkapp
 		, m_uboDescriptorLayout{ doCreateUboDescriptorLayout( m_device.getDevice() ) }
 		, m_uboDescriptorPool{ m_uboDescriptorLayout->createPool( 1u ) }
 		, m_uboDescriptorSet{ doCreateUboDescriptorSet( *m_uboDescriptorPool, m_lightsUbo, *m_sceneUbo ) }
-		, m_renderPass{ doCreateRenderPass( m_device.getDevice(), views[0].get(), views[1].get() ) }
+		, m_renderPass{ doCreateRenderPass( m_device.getDevice(), views[0], views[1] ) }
 		, m_sampler{ m_device.getDevice().createSampler( ashes::WrapMode::eClampToEdge
 			, ashes::WrapMode::eClampToEdge
 			, ashes::WrapMode::eClampToEdge
@@ -249,12 +251,12 @@ namespace vkapp
 
 	void LightingPass::update( common::SceneData const & sceneData
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::TextureViewCRefArray const & views
+		, ashes::ImageViewPtrArray views
 		, GeometryPassResult const & geometryBuffers )
 	{
 		m_geometryBuffers = &geometryBuffers;
-		m_depthView = &views[0].get();
-		m_colourView = &views[1].get();
+		m_depthView = views[0];
+		m_colourView = views[1];
 
 		m_sceneUbo->getData( 0u ).mtxProjection = utils::inverse( sceneData.mtxProjection );
 		stagingBuffer.uploadUniformData( m_transferQueue
@@ -263,9 +265,9 @@ namespace vkapp
 			, *m_sceneUbo
 			, ashes::PipelineStageFlag::eFragmentShader );
 
-		auto dimensions = m_depthView->getTexture().getDimensions();
+		auto dimensions = m_depthView->getImage().getDimensions();
 		auto size = ashes::Extent2D{ dimensions.width, dimensions.height };
-		m_frameBuffer = doCreateFrameBuffer( *m_renderPass, *m_depthView, *m_colourView );
+		m_frameBuffer = doCreateFrameBuffer( *m_renderPass, m_depthView, m_colourView );
 		m_gbufferDescriptorSet.reset();
 		m_gbufferDescriptorSet = m_gbufferDescriptorPool->createDescriptorSet( 0u );
 		auto & gbuffer = *m_geometryBuffers;

@@ -5,17 +5,17 @@ See LICENSE file in root folder.
 #include "Command/Commands/GlClearColourFboCommand.hpp"
 
 #include "Core/GlDevice.hpp"
-#include "Image/GlTextureView.hpp"
-#include "Image/GlTexture.hpp"
+#include "Image/GlImageView.hpp"
+#include "Image/GlImage.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 
 namespace gl_renderer
 {
 	ClearColourFboCommand::ClearColourFboCommand( Device const & device
-		, ashes::TextureView const & image
+		, ashes::ImageView const & image
 		, ashes::ClearColorValue const & colour )
 		: CommandBase{ device }
-		, m_image{ static_cast< TextureView const & >( image ) }
+		, m_image{ static_cast< ImageView const & >( image ) }
 		, m_colour{ colour }
 		, m_internal{ getInternal( m_image.getFormat() ) }
 		, m_format{ getFormat( m_internal ) }
@@ -26,7 +26,7 @@ namespace gl_renderer
 	void ClearColourFboCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "ClearColourFboCommand" );
-		auto & image = static_cast< Texture const & >( m_image.getTexture() );
+		auto & image = static_cast< Image const & >( m_image.getImage() );
 		auto target = GL_TEXTURE_2D;
 
 		if ( image.getSamplesCount() > ashes::SampleCountFlag::e1 )

@@ -18,8 +18,8 @@ See LICENSE file in root folder.
 #include "Descriptor/GlDescriptorSetLayout.hpp"
 #include "Image/GlSampler.hpp"
 #include "Image/GlStagingTexture.hpp"
-#include "Image/GlTexture.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImage.hpp"
+#include "Image/GlImageView.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
 #include "Miscellaneous/GlQueryPool.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
@@ -48,22 +48,22 @@ namespace gl_renderer
 			switch ( value )
 			{
 			case GlDebugReportObjectType::eBuffer:
-				result = reinterpret_cast< Buffer const * >( object )->getBuffer();
+				result = reinterpret_cast< Buffer const * >( object )->getInternal();
 				break;
 			case GlDebugReportObjectType::eTexture:
-				result = reinterpret_cast< Texture const * >( object )->getImage();
+				result = reinterpret_cast< Image const * >( object )->getInternal();
 				break;
 			case GlDebugReportObjectType::eQuery:
 				result = *reinterpret_cast< QueryPool const * >( object )->begin();
 				break;
 			case GlDebugReportObjectType::eShaderModule:
-				result = reinterpret_cast< ShaderModule const * >( object )->getShader();
+				result = reinterpret_cast< ShaderModule const * >( object )->getInternal();
 				break;
 			case GlDebugReportObjectType::eSampler:
-				result = reinterpret_cast< Sampler const * >( object )->getSampler();
+				result = reinterpret_cast< Sampler const * >( object )->getInternal();
 				break;
 			case GlDebugReportObjectType::eFrameBuffer:
-				result = reinterpret_cast< FrameBuffer const * >( object )->getFrameBuffer();
+				result = reinterpret_cast< FrameBuffer const * >( object )->getInternal();
 				break;
 			}
 
@@ -465,7 +465,7 @@ namespace gl_renderer
 		auto & indexBuffer = static_cast< Buffer const & >( m_dummyIndexed.indexBuffer->getBuffer() );
 		m_dummyIndexed.geometryBuffers = std::make_unique< GeometryBuffers >( *this
 			, VboBindings{}
-			, BufferObjectBinding{ indexBuffer.getBuffer(), 0u, &indexBuffer }
+			, BufferObjectBinding{ indexBuffer.getInternal(), 0u, &indexBuffer }
 			, ashes::VertexInputState{}
 			, ashes::IndexType::eUInt32 );
 		m_dummyIndexed.geometryBuffers->initialise();
@@ -522,22 +522,22 @@ namespace gl_renderer
 			, std::move( allocateInfo ) );
 	}
 
-	ashes::TexturePtr Device::createTexture( ashes::ImageCreateInfo const & createInfo )const
+	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo )const
 	{
-		return std::make_unique< Texture >( *this, createInfo );
+		return std::make_unique< Image >( *this, createInfo );
 	}
 
-	void Device::getImageSubresourceLayout( ashes::Texture const & image
+	void Device::getImageSubresourceLayout( ashes::Image const & image
 		, ashes::ImageSubresource const & subresource
 		, ashes::SubresourceLayout & layout )const
 	{
-		auto & gltex = static_cast< Texture const & >( image );
+		auto & gltex = static_cast< Image const & >( image );
 		auto context = getContext();
 		auto target = convert( gltex.getType(), gltex.getLayerCount() );
 		glLogCall( context
 			, glBindTexture
 			, target
-			, gltex.getImage() );
+			, gltex.getInternal() );
 		int w = 0;
 		int h = 0;
 		int d = 0;
@@ -659,7 +659,7 @@ namespace gl_renderer
 		{
 			glLogCall( context
 				, glObjectPtrLabel
-				, reinterpret_cast< Fence const * >( nameInfo.object )->getSync()
+				, reinterpret_cast< Fence const * >( nameInfo.object )->getInternal()
 				, GLsizei( nameInfo.objectName.size() )
 				, nameInfo.objectName.c_str() );
 		}

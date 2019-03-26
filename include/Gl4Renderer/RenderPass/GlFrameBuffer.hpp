@@ -76,7 +76,7 @@ namespace gl_renderer
 		*	Accesseurs.
 		*/
 		/**@{*/
-		inline GLuint getFrameBuffer()const
+		inline GLuint getInternal()const
 		{
 			assert( m_frameBuffer != GL_INVALID_INDEX );
 			return m_frameBuffer;

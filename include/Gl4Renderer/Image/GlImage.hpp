@@ -1,6 +1,6 @@
 /**
 *\file
-*	Texture.h
+*	Image.h
 *\author
 *	Sylvain Doremus
 */
@@ -10,7 +10,7 @@
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Image/Texture.hpp>
+#include <Ashes/Image/Image.hpp>
 
 namespace gl_renderer
 {
@@ -18,8 +18,8 @@ namespace gl_renderer
 	*\brief
 	*	Une texture, avec son image et son échantillonneur.
 	*/
-	class Texture
-		: public ashes::Texture
+	class Image
+		: public ashes::Image
 	{
 	public:
 		/**
@@ -28,7 +28,7 @@ namespace gl_renderer
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		Texture( Device const & device
+		Image( Device const & device
 			, ashes::Format format
 			, ashes::Extent2D const & dimensions );
 		/**
@@ -37,25 +37,25 @@ namespace gl_renderer
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		Texture( Device const & device
+		Image( Device const & device
 			, ashes::ImageCreateInfo const & createInfo );
 		/**
 		*\brief
 		*	Destructeur.
 		*/
-		~Texture();
+		~Image();
 		/**
-		*\copydoc	ashes::Texture::getMemoryRequirements
+		*\copydoc	ashes::Image::getMemoryRequirements
 		*/
 		ashes::MemoryRequirements getMemoryRequirements()const override;
 		/**
-		*\copydoc	ashes::Texture::getMemoryRequirements
+		*\copydoc	ashes::Image::getMemoryRequirements
 		*/
 		void generateMipmaps( ashes::CommandBuffer & commandBuffer )const override;
 		/**
-		*\copydoc	ashes::Texture::createView
+		*\copydoc	ashes::Image::createView
 		*/
-		ashes::TextureViewPtr createView( ashes::ImageViewCreateInfo const & createInfo )const override;
+		ashes::ImageViewPtr createView( ashes::ImageViewCreateInfo const & createInfo )const override;
 
 		inline bool hasImage()const noexcept
 		{
@@ -65,9 +65,17 @@ namespace gl_renderer
 		*\return
 		*	L'image OpenGL.
 		*/
-		inline GLuint getImage()const noexcept
+		inline bool hasInternal()const noexcept
 		{
-			assert( m_texture != GL_INVALID_INDEX );
+			return m_texture != GL_INVALID_INDEX;
+		}
+		/**
+		*\return
+		*	L'image OpenGL.
+		*/
+		inline GLuint getInternal()const noexcept
+		{
+			assert( hasInternal() );
 			return m_texture;
 		}
 		/**

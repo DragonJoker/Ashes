@@ -30,7 +30,7 @@ namespace ashes
 	}
 
 	void DescriptorSet::createBinding( DescriptorSetLayoutBinding const & layoutBinding
-		, TextureView const & view
+		, ImageView const & view
 		, Sampler const & sampler
 		, ImageLayout layout
 		, uint32_t index )
@@ -60,7 +60,7 @@ namespace ashes
 	}
 
 	void DescriptorSet::createBinding( ashes::DescriptorSetLayoutBinding const & layoutBinding
-		, ashes::TextureView const & view
+		, ashes::ImageView const & view
 		, ashes::ImageLayout layout
 		, uint32_t index )
 	{
@@ -75,7 +75,7 @@ namespace ashes
 	}
 
 	void DescriptorSet::createBinding( ashes::DescriptorSetLayoutBinding const & layoutBinding
-		, ashes::TextureView const & view
+		, ashes::ImageView const & view
 		, uint32_t index )
 	{
 		m_writes.push_back(

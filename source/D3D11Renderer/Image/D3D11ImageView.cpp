@@ -1,14 +1,14 @@
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11ImageView.hpp"
 
 #include "Core/D3D11Device.hpp"
-#include "Image/D3D11Texture.hpp"
+#include "Image/D3D11Image.hpp"
 
 namespace d3d11_renderer
 {
-	TextureView::TextureView( Device const & device
-		, Texture const & image
+	ImageView::ImageView( Device const & device
+		, Image const & image
 		, ashes::ImageViewCreateInfo const & createInfo )
-		: ashes::TextureView{ device
+		: ashes::ImageView{ device
 			, image
 			, createInfo }
 		, m_device{ device }
@@ -16,7 +16,7 @@ namespace d3d11_renderer
 	{
 		switch ( createInfo.viewType )
 		{
-		case ashes::TextureViewType::e1D:
+		case ashes::ImageViewType::e1D:
 			if ( m_image.getLayerCount() > 1 )
 			{
 				doCreate1DArray();
@@ -27,11 +27,11 @@ namespace d3d11_renderer
 			}
 			break;
 
-		case ashes::TextureViewType::e1DArray:
+		case ashes::ImageViewType::e1DArray:
 			doCreate1DArray();
 			break;
 
-		case ashes::TextureViewType::e2D:
+		case ashes::ImageViewType::e2D:
 			if ( m_image.getLayerCount() > 1 )
 			{
 				doCreate2DArray();
@@ -42,15 +42,15 @@ namespace d3d11_renderer
 			}
 			break;
 
-		case ashes::TextureViewType::e2DArray:
+		case ashes::ImageViewType::e2DArray:
 			doCreate2DArray();
 			break;
 
-		case ashes::TextureViewType::e3D:
+		case ashes::ImageViewType::e3D:
 			doCreate3D();
 			break;
 
-		case ashes::TextureViewType::eCube:
+		case ashes::ImageViewType::eCube:
 			if ( m_image.getLayerCount() > 1 )
 			{
 				doCreateCubeArray();
@@ -61,13 +61,13 @@ namespace d3d11_renderer
 			}
 			break;
 
-		case ashes::TextureViewType::eCubeArray:
+		case ashes::ImageViewType::eCubeArray:
 			doCreateCubeArray();
 			break;
 		}
 	}
 
-	TextureView::~TextureView()
+	ImageView::~ImageView()
 	{
 		safeRelease( m_renderTargetView );
 		safeRelease( m_depthStencilView );
@@ -75,7 +75,7 @@ namespace d3d11_renderer
 		safeRelease( m_shaderView );
 	}
 
-	void TextureView::doCreate1D()
+	void ImageView::doCreate1D()
 	{
 		auto device = m_device.getDevice();
 
@@ -121,7 +121,7 @@ namespace d3d11_renderer
 		}
 	}
 
-	void TextureView::doCreate1DArray()
+	void ImageView::doCreate1DArray()
 	{
 		auto device = m_device.getDevice();
 
@@ -173,7 +173,7 @@ namespace d3d11_renderer
 		}
 	}
 
-	void TextureView::doCreate2D()
+	void ImageView::doCreate2D()
 	{
 		auto device = m_device.getDevice();
 
@@ -234,7 +234,7 @@ namespace d3d11_renderer
 		}
 	}
 
-	void TextureView::doCreate2DArray()
+	void ImageView::doCreate2DArray()
 	{
 		auto device = m_device.getDevice();
 
@@ -303,7 +303,7 @@ namespace d3d11_renderer
 		}
 	}
 
-	void TextureView::doCreate3D()
+	void ImageView::doCreate3D()
 	{
 		auto device = m_device.getDevice();
 
@@ -353,7 +353,7 @@ namespace d3d11_renderer
 		}
 	}
 
-	void TextureView::doCreateCube()
+	void ImageView::doCreateCube()
 	{
 		auto device = m_device.getDevice();
 
@@ -403,7 +403,7 @@ namespace d3d11_renderer
 		}
 	}
 
-	void TextureView::doCreateCubeArray()
+	void ImageView::doCreateCubeArray()
 	{
 		auto device = m_device.getDevice();
 

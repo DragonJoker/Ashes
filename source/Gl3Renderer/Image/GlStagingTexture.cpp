@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Command/GlCommandBuffer.hpp"
 #include "Core/GlDevice.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImageView.hpp"
 
 #include <Ashes/Core/Exception.hpp>
 #include <Ashes/Miscellaneous/MemoryRequirements.hpp>
@@ -71,7 +71,7 @@ namespace gl_renderer
 		, ashes::Format format
 		, ashes::Offset3D const & offset
 		, ashes::Extent2D const & extent
-		, ashes::TextureView const & texture )const
+		, ashes::ImageView const & texture )const
 	{
 		uint32_t size = getSize( extent, format );
 		assert( size <= m_buffer.getSize() );
@@ -92,7 +92,7 @@ namespace gl_renderer
 				}
 			}
 			, m_buffer
-			, texture.getTexture() );
+			, texture.getImage() );
 	}
 
 	void StagingTexture::doCopyDestinationToStaging( ashes::CommandBuffer const & commandBuffer
@@ -100,7 +100,7 @@ namespace gl_renderer
 		, ashes::Format format
 		, ashes::Offset3D const & offset
 		, ashes::Extent2D const & extent
-		, ashes::TextureView const & texture )const
+		, ashes::ImageView const & texture )const
 	{
 		uint32_t size = getSize( extent, format );
 		assert( size <= m_buffer.getSize() );
@@ -117,7 +117,7 @@ namespace gl_renderer
 					1u
 				}
 			}
-			, texture.getTexture()
+			, texture.getImage()
 			, m_buffer );
 	}
 

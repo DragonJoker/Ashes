@@ -6,8 +6,8 @@ See LICENSE file in root folder.
 
 #include "Command/D3D11CommandBuffer.hpp"
 #include "Core/D3D11Device.hpp"
-#include "Image/D3D11Texture.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11Image.hpp"
+#include "Image/D3D11ImageView.hpp"
 #include "RenderPass/D3D11FrameBuffer.hpp"
 
 #include <Ashes/RenderPass/RenderPassCreateInfo.hpp>

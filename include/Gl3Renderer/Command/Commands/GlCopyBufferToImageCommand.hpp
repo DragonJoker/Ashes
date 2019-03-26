@@ -31,7 +31,7 @@ namespace gl_renderer
 		CopyBufferToImageCommand( Device const & device
 			, ashes::BufferImageCopyArray const & copyInfo
 			, ashes::BufferBase const & src
-			, ashes::Texture const & dst );
+			, ashes::Image const & dst );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
@@ -42,7 +42,7 @@ namespace gl_renderer
 
 	private:
 		Buffer const & m_src;
-		Texture const & m_dst;
+		Image const & m_dst;
 		ashes::BufferImageCopyArray m_copyInfo;
 		GlInternal m_internal;
 		GlFormat m_format;

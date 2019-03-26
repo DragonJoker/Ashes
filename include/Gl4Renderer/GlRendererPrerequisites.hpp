@@ -101,15 +101,15 @@ namespace gl_renderer
 	class RenderPass;
 	class ShaderModule;
 	class ShaderProgram;
-	class Texture;
-	class TextureView;
+	class Image;
+	class ImageView;
 	class UniformBuffer;
 
 	using ContextPtr = std::unique_ptr< Context >;
 	using CommandPtr = std::unique_ptr< CommandBase >;
 	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
 	using QueuePtr = std::unique_ptr< Queue >;
-	using TextureViewPtr = std::unique_ptr< TextureView >;
+	using ImageViewPtr = std::unique_ptr< ImageView >;
 
 	using GeometryBuffersRef = std::reference_wrapper< GeometryBuffers >;
 

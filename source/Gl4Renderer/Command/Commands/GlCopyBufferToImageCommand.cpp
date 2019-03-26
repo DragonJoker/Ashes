@@ -5,8 +5,8 @@ See LICENSE file in root folder.
 #include "Command/Commands/GlCopyBufferToImageCommand.hpp"
 
 #include "Buffer/GlBuffer.hpp"
-#include "Image/GlTexture.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImage.hpp"
+#include "Image/GlImageView.hpp"
 
 #include <Ashes/Image/ImageSubresourceRange.hpp>
 
@@ -23,12 +23,12 @@ namespace gl_renderer
 	CopyBufferToImageCommand::CopyBufferToImageCommand( Device const & device
 		, ashes::BufferImageCopyArray const & copyInfo
 		, ashes::BufferBase const & src
-		, ashes::Texture const & dst )
+		, ashes::Image const & dst )
 		: CommandBase{ device }
 		, m_copyInfo{ copyInfo }
 		, m_src{ static_cast< Buffer const & >( src ) }
-		, m_dst{ static_cast< Texture const & >( dst ) }
-		, m_internal{ getInternal( m_dst.getFormat() ) }
+		, m_dst{ static_cast< Image const & >( dst ) }
+		, m_internal{ getInternalFormat( m_dst.getFormat() ) }
 		, m_format{ getFormat( m_internal ) }
 		, m_type{ getType( m_internal ) }
 		, m_copyTarget{ convert( m_dst.getType(), m_dst.getLayerCount() ) }
@@ -56,7 +56,7 @@ namespace gl_renderer
 		glLogCall( context
 			, glBindTexture
 			, m_copyTarget
-			, m_dst.getImage() );
+			, m_dst.getInternal() );
 		glLogCall( context
 			, glPixelStorei
 			, GL_UNPACK_ALIGNMENT
@@ -64,7 +64,7 @@ namespace gl_renderer
 		glLogCall( context
 			, glBindBuffer
 			, GL_BUFFER_TARGET_PIXEL_UNPACK
-			, m_src.getBuffer() );
+			, m_src.getInternal() );
 
 		if ( ashes::isCompressedFormat( m_dst.getFormat() ) )
 		{

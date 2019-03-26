@@ -1,11 +1,10 @@
 #include "Core/D3D11SwapChain.hpp"
 
-#include "Core/D3D11BackBuffer.hpp"
 #include "Core/D3D11Device.hpp"
 #include "Core/D3D11Instance.hpp"
 #include "Core/D3D11PhysicalDevice.hpp"
 #include "Core/D3D11Surface.hpp"
-#include "Image/D3D11Texture.hpp"
+#include "Image/D3D11Image.hpp"
 #include "RenderPass/D3D11FrameBuffer.hpp"
 #include "RenderPass/D3D11RenderPass.hpp"
 #include "Sync/D3D11Semaphore.hpp"
@@ -33,13 +32,32 @@ namespace d3d11_renderer
 		}
 
 		dxDebugName( m_swapChain, SwapChain );
-		doCreateBackBuffers();
 	}
 
 	SwapChain::~SwapChain()
 	{
-		m_backBuffers.clear();
 		safeRelease( m_swapChain );
+	}
+
+	ashes::ImagePtrArray SwapChain::getImages()const
+	{
+		ID3D11Texture2D * rtTex = nullptr;
+		auto hr = m_swapChain->GetBuffer( 0
+			, __uuidof( ID3D11Texture2D )
+			, reinterpret_cast< void ** >( &rtTex ) );
+
+		if ( !dxCheckError( hr, "SwapChain::GetBuffer" ) )
+		{
+			throw std::runtime_error( "GetBuffer() failed" );
+		}
+
+		// Et on crée des BackBuffers à partir de ces images.
+		ashes::ImagePtrArray result;
+		result.emplace_back( std::make_unique< Image >( m_device
+			, getFormat()
+			, getDimensions()
+			, rtTex ) );
+		return result;
 	}
 
 	ashes::Result SwapChain::acquireNextImage( uint64_t timeout
@@ -49,30 +67,6 @@ namespace d3d11_renderer
 	{
 		imageIndex = 0u;
 		return ashes::Result::eSuccess;
-	}
-
-	void SwapChain::createDepthStencil( ashes::Format format )
-	{
-		m_depthStencil = m_device.createTexture(
-			{
-				0u,
-				ashes::TextureType::e2D,
-				format,
-				ashes::Extent3D{ getDimensions().width, getDimensions().height, 1u },
-				1u,
-				1u,
-				ashes::SampleCountFlag::e1,
-				ashes::ImageTiling::eOptimal,
-				ashes::ImageUsageFlag::eDepthStencilAttachment,
-				ashes::SharingMode::eExclusive,
-				{},
-				ashes::ImageLayout::eUndefined,
-			} );
-		auto requirements = m_depthStencil->getMemoryRequirements();
-		auto deduced = deduceMemoryType( requirements.memoryTypeBits, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_depthStencil->bindMemory( m_device.allocateMemory( { requirements.size, deduced } ) );
-		m_depthStencilView = m_depthStencil->createView( ashes::TextureViewType::e2D
-			, format );
 	}
 
 	DXGI_SWAP_CHAIN_DESC SwapChain::doInitPresentParameters()
@@ -125,32 +119,5 @@ namespace d3d11_renderer
 		result.Flags = 0;
 
 		return result;
-	}
-
-	void SwapChain::doCreateBackBuffers()
-	{
-		ID3D11Texture2D * dsTex = nullptr;
-		ID3D11Texture2D * rtTex = nullptr;
-		auto hr = m_swapChain->GetBuffer( 0
-			, __uuidof( ID3D11Texture2D )
-			, reinterpret_cast< void ** >( &rtTex ) );
-
-		if ( !dxCheckError( hr, "SwapChain::GetBuffer" ) )
-		{
-			throw std::runtime_error( "GetBuffer() failed" );
-		}
-
-		// Et on crée des BackBuffers à partir de ces images.
-		m_backBuffers.reserve( 1u );
-		auto texture = std::make_unique< Texture >( m_device
-			, getFormat()
-			, getDimensions()
-			, rtTex );
-		auto & ref = *texture;
-		m_backBuffers.emplace_back( std::make_unique< BackBuffer >( m_device
-			, std::move( texture )
-			, 0u
-			, getFormat()
-			, ref ) );
 	}
 }

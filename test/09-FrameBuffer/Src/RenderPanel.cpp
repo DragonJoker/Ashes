@@ -7,7 +7,6 @@
 #include <Buffer/UniformBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/Queue.hpp>
-#include <Core/BackBuffer.hpp>
 #include <Core/Surface.hpp>
 #include <Core/Device.hpp>
 #include <Core/Instance.hpp>
@@ -17,8 +16,8 @@
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
 #include <Image/StagingTexture.hpp>
-#include <Image/Texture.hpp>
-#include <Image/TextureView.hpp>
+#include <Image/Image.hpp>
+#include <Image/ImageView.hpp>
 #include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/InputAssemblyState.hpp>
@@ -182,7 +181,6 @@ namespace vkapp
 			m_offscreenRenderPass.reset();
 
 			m_frameBuffer.reset();
-			m_renderTargetColourView.reset();
 			m_renderTargetColour.reset();
 
 			m_swapChain.reset();
@@ -252,10 +250,10 @@ namespace vkapp
 		auto image = common::loadImage( shadersFolder / "texture.png" );
 		auto stagingTexture = m_device->getDevice().createStagingTexture( image.format
 			, { image.size.width, image.size.height } );
-		m_texture = m_device->createTexture(
+		m_texture = m_device->createImage(
 			{
 				0u,
-				ashes::TextureType::e2D,
+				ashes::ImageType::e2D,
 				image.format,
 				{ image.size.width, image.size.height, 1u },
 				1u,
@@ -265,7 +263,7 @@ namespace vkapp
 				ashes::ImageUsageFlag::eTransferDst | ashes::ImageUsageFlag::eSampled
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_view = m_texture->createView( ashes::TextureViewType::e2D
+		m_view = m_texture->createView( ashes::ImageViewType::e2D
 			, image.format );
 		m_sampler = m_device->getDevice().createSampler( ashes::WrapMode::eClampToEdge
 			, ashes::WrapMode::eClampToEdge
@@ -342,17 +340,17 @@ namespace vkapp
 			, std::move( subpasses )
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
 				, ashes::AccessFlag::eColourAttachmentWrite }
-			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eFragmentShader
 				, ashes::AccessFlag::eShaderRead } );
 	}
 
 	void RenderPanel::doCreateFrameBuffer()
 	{
 		auto size = GetClientSize();
-		m_renderTargetColour = m_device->createTexture(
+		m_renderTargetColour = m_device->createImage(
 			{
 				0u,
-				ashes::TextureType::e2D,
+				ashes::ImageType::e2D,
 				ashes::Format::eR8G8B8A8_UNORM,
 				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
 				1u,
@@ -362,11 +360,11 @@ namespace vkapp
 				ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eSampled
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_renderTargetColourView = m_renderTargetColour->createView( ashes::TextureViewType::e2D
-			, ashes::Format::eR8G8B8A8_UNORM );
 
 		ashes::FrameBufferAttachmentArray attaches;
-		attaches.emplace_back( *m_offscreenRenderPass->getAttachments().begin(), *m_renderTargetColourView );
+		attaches.emplace_back( *m_offscreenRenderPass->getAttachments().begin()
+			, m_renderTargetColour->createView( ashes::ImageViewType::e2D
+				, ashes::Format::eR8G8B8A8_UNORM ) );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
 			, std::move( attaches ) );
 	}
@@ -448,7 +446,7 @@ namespace vkapp
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )
-			, *m_renderTargetColourView
+			, m_frameBuffer->begin()->getView()
 			, *m_sampler );
 		m_mainDescriptorSet->update();
 	}

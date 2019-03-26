@@ -67,7 +67,7 @@ namespace vkapp
 
 	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( utils::Device const & device
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::TextureViewCRefArray const & views
+		, ashes::ImageViewPtrArray views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
@@ -76,7 +76,7 @@ namespace vkapp
 				, m_transferQueue
 				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "opaque_gp.frag"
 				, m_gbuffer
-				, views[0].get().getFormat()
+				, views[0]->getFormat()
 				, *m_sceneUbo
 				, *m_objectUbo )
 			, scene
@@ -90,7 +90,7 @@ namespace vkapp
 
 	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( utils::Device const & device
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::TextureViewCRefArray const & views
+		, ashes::ImageViewPtrArray views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
@@ -180,18 +180,18 @@ namespace vkapp
 		size_t index = 0u;
 		ashes::Extent2D size
 		{
-			getColourView().getTexture().getDimensions().width,
-			getColourView().getTexture().getDimensions().height,
+			getColourView()->getImage().getDimensions().width,
+			getColourView()->getImage().getDimensions().height,
 		};
 
 		for ( auto & texture : m_gbuffer )
 		{
-			texture.texture = m_device.createTexture(
+			texture.texture = m_device.createImage(
 				{
 					0,
-					ashes::TextureType::e2D,
+					ashes::ImageType::e2D,
 					formats[index],
-					getColourView().getTexture().getDimensions(),
+					getColourView()->getImage().getDimensions(),
 					1u,
 					1u,
 					ashes::SampleCountFlag::e1,
@@ -199,7 +199,7 @@ namespace vkapp
 					ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eSampled
 				}
 				, ashes::MemoryPropertyFlag::eDeviceLocal );
-			texture.view = texture.texture->createView( ashes::TextureViewType::e2D
+			texture.view = texture.texture->createView( ashes::ImageViewType::e2D
 				, texture.texture->getFormat() );
 			++index;
 		}

@@ -3,14 +3,13 @@
 
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/CommandBuffer.hpp>
-#include <Core/BackBuffer.hpp>
 #include <Core/Surface.hpp>
 #include <Core/Device.hpp>
 #include <Core/Instance.hpp>
 #include <Core/SwapChain.hpp>
 #include <Enum/SubpassContents.hpp>
 #include <Image/StagingTexture.hpp>
-#include <Image/Texture.hpp>
+#include <Image/Image.hpp>
 #include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/InputAssemblyState.hpp>
 #include <Pipeline/MultisampleState.hpp>
@@ -81,7 +80,7 @@ namespace vkapp
 			doCreateStagingBuffer();
 			std::cout << "Staging buffer created." << std::endl;
 			doCreateTexture();
-			std::cout << "Texture created." << std::endl;
+			std::cout << "Image created." << std::endl;
 			doCreateDescriptorSet();
 			std::cout << "Descriptor set created." << std::endl;
 			doCreateRenderPass();
@@ -199,10 +198,10 @@ namespace vkapp
 		}
 
 		// Create the texture image
-		m_texture = m_device->createTexture(
+		m_texture = m_device->createImage(
 			{
 				0u,
-				ashes::TextureType::e2D,
+				ashes::ImageType::e2D,
 				format,
 				{ uint32_t( tex2D.extent().x ), uint32_t( tex2D.extent().y ), 1u },
 				uint32_t( tex2D.levels() ),
@@ -217,7 +216,7 @@ namespace vkapp
 		{
 			auto staging = m_device->getDevice().createStagingTexture( format
 				, { uint32_t( tex2D[level].extent().x ), uint32_t( tex2D[level].extent().y ) } );
-			auto view = m_texture->createView( ashes::TextureViewType::e2D
+			auto view = m_texture->createView( ashes::ImageViewType::e2D
 				, format
 				, level );
 			staging->uploadTextureData( *m_graphicsQueue
@@ -235,7 +234,7 @@ namespace vkapp
 			, ashes::Filter::eLinear );
 
 		// Create the texture view for shader read.
-		m_view = m_texture->createView( ashes::TextureViewType::e2D
+		m_view = m_texture->createView( ashes::ImageViewType::e2D
 			, format
 			, 0u
 			, uint32_t( tex2D.levels() ) );

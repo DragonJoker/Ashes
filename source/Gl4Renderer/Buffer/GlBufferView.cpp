@@ -28,8 +28,8 @@ namespace gl_renderer
 		glLogCall( context
 			, glTexBufferRange
 			, GL_BUFFER_TARGET_TEXTURE
-			, getInternal( format )
-			, buffer.getBuffer()
+			, getInternalFormat( format )
+			, buffer.getInternal()
 			, offset
 			, range );
 		glLogCall( context

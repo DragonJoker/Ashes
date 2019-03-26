@@ -231,7 +231,7 @@ namespace ashes
 		*\param[in] colour
 		*	La couleur de vidage.
 		*/
-		virtual void clear( TextureView const & image
+		virtual void clear( ImageView const & image
 			, ClearColorValue const & colour )const = 0;
 		/**
 		*\~english
@@ -249,7 +249,7 @@ namespace ashes
 		*\param[in] value
 		*	La valeur de vidage.
 		*/
-		virtual void clear( TextureView const & image
+		virtual void clear( ImageView const & image
 			, DepthStencilClearValue const & value )const = 0;
 		/**
 		*\~english
@@ -666,7 +666,7 @@ namespace ashes
 		*/
 		virtual void copyToImage( BufferImageCopyArray const & copyInfo
 			, BufferBase const & src
-			, Texture const & dst )const = 0;
+			, Image const & dst )const = 0;
 		/**
 		*\~french
 		*\brief
@@ -688,7 +688,7 @@ namespace ashes
 		*	The destination image.
 		*/
 		virtual void copyToBuffer( BufferImageCopyArray const & copyInfo
-			, Texture const & src
+			, Image const & src
 			, BufferBase const & dst )const = 0;
 		/**
 		*\~french
@@ -742,9 +742,9 @@ namespace ashes
 		*	The image layout wanted for the destination image.
 		*/
 		virtual void copyImage( ImageCopy const & copyInfo
-			, Texture const & src
+			, Image const & src
 			, ImageLayout srcLayout
-			, Texture const & dst
+			, Image const & dst
 			, ImageLayout dstLayout )const = 0;
 		/**
 		*\~french
@@ -778,9 +778,9 @@ namespace ashes
 		*\param[in] filter
 		*	The filter applied if the blit requires scaling.
 		*/
-		virtual void blitImage( Texture const & srcImage
+		virtual void blitImage( Image const & srcImage
 			, ImageLayout srcLayout
-			, Texture const & dstImage
+			, Image const & dstImage
 			, ImageLayout dstLayout
 			, std::vector< ImageBlit > const & regions
 			, Filter filter )const = 0;
@@ -1087,7 +1087,7 @@ namespace ashes
 		*/
 		void copyToImage( BufferImageCopy const & copyInfo
 			, BufferBase const & src
-			, Texture const & dst )const;
+			, Image const & dst )const;
 		/**
 		*\~french
 		*\brief
@@ -1109,7 +1109,7 @@ namespace ashes
 		*	The destination image.
 		*/
 		void copyToBuffer( BufferImageCopy const & copyInfo
-			, Texture const & src
+			, Image const & src
 			, BufferBase const & dst )const;
 		/**
 		*\~french
@@ -1409,8 +1409,8 @@ namespace ashes
 		*\param[in] dst
 		*	The destination image.
 		*/
-		void copyImage( TextureView const & src
-			, TextureView const & dst )const;
+		void copyImage( ImageView const & src
+			, ImageView const & dst )const;
 		/**
 		*\~french
 		*\brief

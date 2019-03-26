@@ -33,7 +33,7 @@ namespace ashes
 		, bool automaticFree )
 		: m_layout{ layout }
 		, m_maxSets{ maxSets }
-		, m_pool{ device.createDescriptorPool( automaticFree ? ashes::DescriptorPoolCreateFlag::eFreeDescriptorSet : ashes::DescriptorPoolCreateFlag( 0u )
+		, m_pool{ device.createDescriptorPool( automaticFree ? ashes::DescriptorPoolCreateFlag( 0u ) : ashes::DescriptorPoolCreateFlag::eFreeDescriptorSet
 			, maxSets
 			, convert( layout.getBindings(), maxSets ) ) }
 	{

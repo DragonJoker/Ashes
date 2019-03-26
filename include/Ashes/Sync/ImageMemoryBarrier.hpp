@@ -14,9 +14,8 @@ namespace ashes
 	*\brief
 	*	Encapsulation d'un vkImageMemoryBarrier.
 	*/
-	class ImageMemoryBarrier
+	struct ImageMemoryBarrier
 	{
-	public:
 		/**
 		*\brief
 		*	Constructeur.
@@ -43,7 +42,7 @@ namespace ashes
 			, ImageLayout newLayout
 			, uint32_t srcQueueFamilyIndex
 			, uint32_t dstQueueFamilyIndex
-			, Texture const & image
+			, Image const & image
 			, ImageSubresourceRange const & subresourceRange );
 
 		AccessFlags srcAccessMask;
@@ -52,7 +51,7 @@ namespace ashes
 		ImageLayout newLayout;
 		uint32_t srcQueueFamilyIndex;
 		uint32_t dstQueueFamilyIndex;
-		Texture const & image;
+		Image const & image;
 		ImageSubresourceRange subresourceRange;
 	};
 }

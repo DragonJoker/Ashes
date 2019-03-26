@@ -6,8 +6,8 @@ See LICENSE file in root folder.
 
 #include "Command/VkCommandBuffer.hpp"
 #include "Core/VkDevice.hpp"
-#include "Image/VkTexture.hpp"
-#include "Image/VkTextureView.hpp"
+#include "Image/VkImage.hpp"
+#include "Image/VkImageView.hpp"
 #include "RenderPass/VkFrameBuffer.hpp"
 
 #include <Ashes/RenderPass/RenderSubpassState.hpp>

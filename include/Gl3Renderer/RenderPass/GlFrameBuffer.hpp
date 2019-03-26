@@ -12,10 +12,10 @@ namespace gl_renderer
 {
 	GlAttachmentPoint getAttachmentPoint( GlInternal format );
 	GlAttachmentPoint getAttachmentPoint( ashes::Format format );
-	GlAttachmentPoint getAttachmentPoint( TextureView const & texture );
+	GlAttachmentPoint getAttachmentPoint( ImageView const & texture );
 	GlAttachmentType getAttachmentType( GlInternal format );
 	GlAttachmentType getAttachmentType( ashes::Format format );
-	GlAttachmentType getAttachmentType( TextureView const & texture );
+	GlAttachmentType getAttachmentType( ImageView const & texture );
 	void checkCompleteness( GLenum status );
 
 	struct FboAttachment

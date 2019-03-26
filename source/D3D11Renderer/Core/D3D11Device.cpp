@@ -17,8 +17,8 @@ See LICENSE file in root folder.
 #include "Descriptor/D3D11DescriptorSetLayout.hpp"
 #include "Image/D3D11Sampler.hpp"
 #include "Image/D3D11StagingTexture.hpp"
-#include "Image/D3D11Texture.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11Image.hpp"
+#include "Image/D3D11ImageView.hpp"
 #include "Miscellaneous/D3D11DeviceMemory.hpp"
 #include "Miscellaneous/D3D11QueryPool.hpp"
 #include "Pipeline/D3D11PipelineLayout.hpp"
@@ -52,7 +52,7 @@ namespace d3d11_renderer
 				result = reinterpret_cast< Buffer const * >( object )->getBuffer();
 				break;
 			case ashes::DebugReportObjectType::eImage:
-				result = reinterpret_cast< Texture const * >( object )->getResource();
+				result = reinterpret_cast< Image const * >( object )->getResource();
 				break;
 			case ashes::DebugReportObjectType::eQueryPool:
 				result = ( *reinterpret_cast< QueryPool const * >( object )->begin() );
@@ -142,12 +142,12 @@ namespace d3d11_renderer
 			, std::move( allocateInfo ) );
 	}
 
-	ashes::TexturePtr Device::createTexture( ashes::ImageCreateInfo const & createInfo )const
+	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo )const
 	{
-		return std::make_unique< Texture >( *this, createInfo );
+		return std::make_unique< Image >( *this, createInfo );
 	}
 
-	void Device::getImageSubresourceLayout( ashes::Texture const & image
+	void Device::getImageSubresourceLayout( ashes::Image const & image
 		, ashes::ImageSubresource const & subresource
 		, ashes::SubresourceLayout & layout )const
 	{

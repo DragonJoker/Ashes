@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_TextureViewType_HPP___
-#define ___Ashes_TextureViewType_HPP___
+#ifndef ___Ashes_ImageViewType_HPP___
+#define ___Ashes_ImageViewType_HPP___
 #pragma once
 
 namespace ashes
@@ -11,12 +11,12 @@ namespace ashes
 	/**
 	*\~english
 	*\brief
-	*	Texture view types enumeration.
+	*	Image view types enumeration.
 	*\~french
 	*\brief
 	*	Enumération des types de vue sur une texture.
 	*/
-	enum class TextureViewType
+	enum class ImageViewType
 		: uint32_t
 	{
 		e1D = 0,
@@ -44,34 +44,34 @@ namespace ashes
 	*\return
 	*	Le nom.
 	*/
-	inline std::string getName( TextureViewType value )
+	inline std::string getName( ImageViewType value )
 	{
 		switch ( value )
 		{
-		case TextureViewType::e1D:
+		case ImageViewType::e1D:
 			return "1d";
 
-		case TextureViewType::e2D:
+		case ImageViewType::e2D:
 			return "2d";
 
-		case TextureViewType::e3D:
+		case ImageViewType::e3D:
 			return "3d";
 
-		case TextureViewType::eCube:
+		case ImageViewType::eCube:
 			return "cube";
 
-		case TextureViewType::e1DArray:
+		case ImageViewType::e1DArray:
 			return "1d_array";
 
-		case TextureViewType::e2DArray:
+		case ImageViewType::e2DArray:
 			return "2d_array";
 
-		case TextureViewType::eCubeArray:
+		case ImageViewType::eCubeArray:
 			return "cube_array";
 
 		default:
-			assert( false && "Unsupported TextureViewType." );
-			throw std::runtime_error{ "Unsupported TextureViewType" };
+			assert( false && "Unsupported ImageViewType." );
+			throw std::runtime_error{ "Unsupported ImageViewType" };
 		}
 
 		return 0;

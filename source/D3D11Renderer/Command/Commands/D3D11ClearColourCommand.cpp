@@ -4,15 +4,15 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/D3D11ClearColourCommand.hpp"
 
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11ImageView.hpp"
 
 namespace d3d11_renderer
 {
 	ClearColourCommand::ClearColourCommand( Device const & device
-		, ashes::TextureView const & image
+		, ashes::ImageView const & image
 		, ashes::ClearColorValue const & colour )
 		: CommandBase{ device }
-		, m_image{ static_cast< TextureView const & >( image ) }
+		, m_image{ static_cast< ImageView const & >( image ) }
 		, m_colour{ colour }
 	{
 	}

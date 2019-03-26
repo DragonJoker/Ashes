@@ -93,11 +93,11 @@ namespace vkapp
 		ashes::ClearColorValue m_clearColour;
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::StagingTexturePtr m_stagingTexture;
-		ashes::TexturePtr m_texture;
-		ashes::TextureViewPtr m_view;
+		ashes::ImagePtr m_texture;
+		ashes::ImageViewPtr m_view;
 		ashes::SamplerPtr m_sampler;
-		ashes::TexturePtr m_renderTargetColour;
-		ashes::TextureViewPtr m_renderTargetColourView;
+		ashes::ImagePtr m_renderTargetColour;
+		ashes::ImageViewPtr m_renderTargetColourView;
 		ashes::FrameBufferPtr m_frameBuffer;
 		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
 		ashes::UniformBufferPtr< utils::Mat4 > m_objectUbo;
@@ -137,8 +137,8 @@ namespace vkapp
 			ashes::RenderPassPtr renderPass;
 			ashes::FrameBufferPtr frameBuffer;
 			ashes::PipelinePtr pipeline;
-			ashes::TexturePtr image;
-			std::vector< ashes::TextureViewPtr > views;
+			ashes::ImagePtr image;
+			ashes::ImageViewPtrArray views;
 			ashes::SemaphorePtr semaphore;
 		};
 		struct
@@ -148,7 +148,7 @@ namespace vkapp
 			std::array< Pass, 4u > blurY;
 			Pass combine;
 		} m_passes;
-		ashes::TextureViewPtr m_blurMipView;
+		ashes::ImageViewPtr m_blurMipView;
 		ashes::SamplerPtr m_mipSampler;
 		std::array< ashes::SamplerPtr, 4 > m_blurSamplers;
 		struct Configuration

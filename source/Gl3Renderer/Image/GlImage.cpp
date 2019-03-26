@@ -1,8 +1,8 @@
-#include "Image/GlTexture.hpp"
+#include "Image/GlImage.hpp"
 
 #include "Command/GlCommandBuffer.hpp"
 #include "Core/GlDevice.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImageView.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
 #include "Sync/GlImageMemoryBarrier.hpp"
 
@@ -15,7 +15,7 @@ namespace gl_renderer
 {
 	namespace
 	{
-		GlTextureType convert( ashes::TextureType type
+		GlTextureType convert( ashes::ImageType type
 			, uint32_t layerCount
 			, ashes::ImageCreateFlags flags
 			, ashes::SampleCountFlag samples )
@@ -24,7 +24,7 @@ namespace gl_renderer
 
 			switch ( type )
 			{
-			case ashes::TextureType::e1D:
+			case ashes::ImageType::e1D:
 				if ( layerCount > 1 )
 				{
 					result = GL_TEXTURE_1D_ARRAY;
@@ -34,7 +34,7 @@ namespace gl_renderer
 					result = GL_TEXTURE_1D;
 				}
 				break;
-			case ashes::TextureType::e2D:
+			case ashes::ImageType::e2D:
 				if ( layerCount > 1 )
 				{
 					if ( samples > ashes::SampleCountFlag::e1 )
@@ -71,7 +71,7 @@ namespace gl_renderer
 					}
 				}
 				break;
-			case ashes::TextureType::e3D:
+			case ashes::ImageType::e3D:
 				result = GL_TEXTURE_3D;
 				break;
 			default:
@@ -84,12 +84,12 @@ namespace gl_renderer
 		}
 	}
 
-	Texture::Texture( Device const & device
+	Image::Image( Device const & device
 		, ashes::Format format
 		, ashes::Extent2D const & dimensions )
-		: ashes::Texture{ device
+		: ashes::Image{ device
 			, 0u
-			, ashes::TextureType::e2D
+			, ashes::ImageType::e2D
 			, format
 			, { dimensions.width, dimensions.height, 1u }
 			, 1u
@@ -97,7 +97,7 @@ namespace gl_renderer
 		, m_device{ device }
 		, m_createInfo{ 
 			0u,
-			ashes::TextureType::e2D,
+			ashes::ImageType::e2D,
 			format,
 			{ dimensions.width, dimensions.height, 1u },
 			1u,
@@ -109,9 +109,9 @@ namespace gl_renderer
 	{
 	}
 
-	Texture::Texture( Device const & device
+	Image::Image( Device const & device
 		, ashes::ImageCreateInfo const & createInfo )
-		: ashes::Texture{ device
+		: ashes::Image{ device
 			, createInfo.flags
 			, createInfo.imageType
 			, createInfo.format
@@ -129,7 +129,7 @@ namespace gl_renderer
 			, &m_texture );
 	}
 
-	Texture::~Texture()
+	Image::~Image()
 	{
 		m_storage.reset();
 		auto context = m_device.getContext();
@@ -139,12 +139,12 @@ namespace gl_renderer
 			, &m_texture );
 	}
 
-	void Texture::generateMipmaps( ashes::CommandBuffer & commandBuffer )const
+	void Image::generateMipmaps( ashes::CommandBuffer & commandBuffer )const
 	{
 		static_cast< CommandBuffer & >( commandBuffer ).generateMipmaps( *this );
 	}
 
-	ashes::MemoryRequirements Texture::getMemoryRequirements()const
+	ashes::MemoryRequirements Image::getMemoryRequirements()const
 	{
 		ashes::MemoryRequirements result{};
 
@@ -163,14 +163,14 @@ namespace gl_renderer
 		return result;
 	}
 
-	ashes::TextureViewPtr Texture::createView( ashes::ImageViewCreateInfo const & createInfo )const
+	ashes::ImageViewPtr Image::createView( ashes::ImageViewCreateInfo const & createInfo )const
 	{
-		return std::make_unique< TextureView >( m_device
+		return std::make_shared< ImageView >( m_device
 			, *this
 			, createInfo );
 	}
 
-	void Texture::doBindMemory()
+	void Image::doBindMemory()
 	{
 		static_cast< DeviceMemory & >( *m_storage ).bindToImage( *this, m_target, m_createInfo );
 	}

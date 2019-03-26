@@ -1,7 +1,7 @@
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImageView.hpp"
 
 #include "Core/GlDevice.hpp"
-#include "Image/GlTexture.hpp"
+#include "Image/GlImage.hpp"
 #include "Sync/GlImageMemoryBarrier.hpp"
 
 namespace gl_renderer
@@ -25,7 +25,7 @@ namespace gl_renderer
 					result = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
 					break;
 				default:
-					assert( "Unsupported TextureViewType for a multisampled texture." );
+					assert( "Unsupported ImageViewType for a multisampled texture." );
 					break;
 				}
 			}
@@ -40,12 +40,12 @@ namespace gl_renderer
 		}
 	}
 
-	TextureView::TextureView( Device const & device
-		, Texture const & image )
-		: ashes::TextureView{ device
+	ImageView::ImageView( Device const & device
+		, Image const & image )
+		: ashes::ImageView{ device
 		, image
 		, {
-			ashes::TextureViewType::e2D,
+			ashes::ImageViewType::e2D,
 			image.getFormat(),
 			ashes::ComponentMapping{},
 			{
@@ -60,10 +60,10 @@ namespace gl_renderer
 	{
 	}
 
-	TextureView::TextureView( Device const & device
-		, Texture const & texture
+	ImageView::ImageView( Device const & device
+		, Image const & texture
 		, ashes::ImageViewCreateInfo const & createInfo )
-		: ashes::TextureView{ device
+		: ashes::ImageView{ device
 			, texture
 			, createInfo }
 		, m_device{ device }
@@ -71,7 +71,7 @@ namespace gl_renderer
 	{
 	}
 
-	TextureView::~TextureView()
+	ImageView::~ImageView()
 	{
 	}
 }

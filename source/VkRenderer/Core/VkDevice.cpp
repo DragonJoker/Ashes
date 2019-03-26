@@ -16,8 +16,8 @@ See LICENSE file in root folder.
 #include "Descriptor/VkDescriptorSetLayout.hpp"
 #include "Image/VkSampler.hpp"
 #include "Image/VkStagingTexture.hpp"
-#include "Image/VkTexture.hpp"
-#include "Image/VkTextureView.hpp"
+#include "Image/VkImage.hpp"
+#include "Image/VkImageView.hpp"
 #include "Miscellaneous/VkDeviceMemory.hpp"
 #include "Miscellaneous/VkQueryPool.hpp"
 #include "Pipeline/VkPipelineLayout.hpp"
@@ -101,19 +101,19 @@ namespace vk_renderer
 			, std::move( allocateInfo ) );
 	}
 
-	ashes::TexturePtr Device::createTexture( ashes::ImageCreateInfo const & createInfo )const
+	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo )const
 	{
-		return std::make_unique< Texture >( *this, createInfo );
+		return std::make_unique< Image >( *this, createInfo );
 	}
 
-	void Device::getImageSubresourceLayout( ashes::Texture const & image
+	void Device::getImageSubresourceLayout( ashes::Image const & image
 		, ashes::ImageSubresource const & subresource
 		, ashes::SubresourceLayout & layout )const
 	{
 		VkImageSubresource vksubresource = convert( subresource );
 		VkSubresourceLayout vklayout;
 		vkGetImageSubresourceLayout( m_device
-			, static_cast< Texture const & >( image )
+			, static_cast< Image const & >( image )
 			, &vksubresource
 			, &vklayout );
 		layout = convert( vklayout );

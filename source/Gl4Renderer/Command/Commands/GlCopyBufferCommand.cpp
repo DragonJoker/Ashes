@@ -30,11 +30,11 @@ namespace gl_renderer
 			glLogCall( context
 				, glBindBuffer
 				, GL_BUFFER_TARGET_COPY_READ
-				, m_src.getBuffer() );
+				, m_src.getInternal() );
 			glLogCall( context
 				, glBindBuffer
 				, GL_BUFFER_TARGET_COPY_WRITE
-				, m_dst.getBuffer() );
+				, m_dst.getInternal() );
 			glLogCall( context
 				, glCopyBufferSubData
 				, GL_BUFFER_TARGET_COPY_READ
@@ -54,11 +54,11 @@ namespace gl_renderer
 			glLogCall( context
 				, glBindBuffer
 				, m_src.getTarget()
-				, m_src.getBuffer() );
+				, m_src.getInternal() );
 			glLogCall( context
 				, glBindBuffer
 				, m_dst.getTarget()
-				, m_dst.getBuffer() );
+				, m_dst.getInternal() );
 			glLogCall( context
 				, glCopyBufferSubData
 				, m_src.getTarget()

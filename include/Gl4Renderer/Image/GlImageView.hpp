@@ -1,6 +1,6 @@
 /**
 *\file
-*	Texture.h
+*	Image.h
 *\author
 *	Sylvain Doremus
 */
@@ -10,7 +10,7 @@
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/ImageView.hpp>
 
 namespace gl_renderer
 {
@@ -22,14 +22,14 @@ namespace gl_renderer
 	*\brief
 	*	Vulkan image view wrapper.
 	*/
-	class TextureView
-		: public ashes::TextureView
+	class ImageView
+		: public ashes::ImageView
 	{
 	public:
-		TextureView( Device const & device
-			, Texture const & image );
-		TextureView( Device const & device
-			, Texture const & image
+		ImageView( Device const & device
+			, Image const & image );
+		ImageView( Device const & device
+			, Image const & image
 			, ashes::ImageViewCreateInfo const & createInfo );
 		/**
 		*\~french
@@ -39,12 +39,12 @@ namespace gl_renderer
 		*\brief
 		*	Destructor.
 		*/
-		~TextureView();
+		~ImageView();
 		/**
 		*\return
 		*	L'image OpenGL.
 		*/
-		GLuint getImage()const noexcept;
+		GLuint getInternal()const noexcept;
 
 	private:
 		Device const & m_device;

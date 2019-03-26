@@ -14,10 +14,10 @@ namespace vkapp
 			, ashes::Queue const & transferQueue
 			, ashes::UniformBuffer< common::LightsData > const & lightsUbo
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::TextureViewCRefArray const & views );
+			, ashes::ImageViewPtrArray views );
 		void update( common::SceneData const & sceneData
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::TextureViewCRefArray const & views
+			, ashes::ImageViewPtrArray views
 			, GeometryPassResult const & geometryBuffers );
 		void draw( ashes::Queue const & queue
 			, std::chrono::nanoseconds & gpu )const;
@@ -27,8 +27,8 @@ namespace vkapp
 		ashes::CommandPool const & m_commandPool;
 		ashes::Queue const & m_transferQueue;
 		ashes::UniformBuffer< common::LightsData > const & m_lightsUbo;
-		ashes::TextureView const * m_colourView{ nullptr };
-		ashes::TextureView const * m_depthView{ nullptr };
+		ashes::ImageViewPtr m_colourView;
+		ashes::ImageViewPtr m_depthView;
 		GeometryPassResult const * m_geometryBuffers{ nullptr };
 
 		ashes::CommandBufferPtr m_commandBuffer;

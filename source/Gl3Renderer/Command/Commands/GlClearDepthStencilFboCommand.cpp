@@ -5,17 +5,17 @@ See LICENSE file in root folder.
 #include "Command/Commands/GlClearDepthStencilFboCommand.hpp"
 
 #include "Core/GlDevice.hpp"
-#include "Image/GlTextureView.hpp"
-#include "Image/GlTexture.hpp"
+#include "Image/GlImageView.hpp"
+#include "Image/GlImage.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 
 namespace gl_renderer
 {
 	ClearDepthStencilFboCommand::ClearDepthStencilFboCommand( Device const & device
-		, ashes::TextureView const & image
+		, ashes::ImageView const & image
 		, ashes::DepthStencilClearValue const & value )
 		: CommandBase{ device }
-		, m_image{ static_cast< TextureView const & >( image ) }
+		, m_image{ static_cast< ImageView const & >( image ) }
 		, m_value{ value }
 		, m_internal{ getInternal( m_image.getFormat() ) }
 		, m_format{ getFormat( m_internal ) }
@@ -26,7 +26,7 @@ namespace gl_renderer
 	void ClearDepthStencilFboCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "ClearDepthStencilFboCommand" );
-		auto & image = static_cast< Texture const & >( m_image.getTexture() );
+		auto & image = static_cast< Image const & >( m_image.getImage() );
 		auto target = GL_TEXTURE_2D;
 
 		if ( image.getSamplesCount() > ashes::SampleCountFlag::e1 )

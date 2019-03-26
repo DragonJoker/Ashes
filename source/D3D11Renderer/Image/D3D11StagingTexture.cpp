@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Command/D3D11CommandBuffer.hpp"
 #include "Core/D3D11Device.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11ImageView.hpp"
 
 #include <Ashes/Core/Exception.hpp>
 #include <Ashes/Miscellaneous/MemoryRequirements.hpp>
@@ -26,13 +26,13 @@ namespace d3d11_renderer
 			result.extent = { extent.width, extent.height, 1u };
 			result.format = format;
 			result.flags = 0u;
-			result.imageType = ashes::TextureType::e2D;
+			result.imageType = ashes::ImageType::e2D;
 			result.mipLevels = 1u;
 			result.usage = ashes::ImageUsageFlag::eTransferDst | ashes::ImageUsageFlag::eTransferSrc;
 			return result;
 		}
 
-		ashes::MemoryAllocateInfo getAllocateInfo( Texture const & texture )
+		ashes::MemoryAllocateInfo getAllocateInfo( Image const & texture )
 		{
 			auto requirements = texture.getMemoryRequirements();
 			auto deduced = deduceMemoryType( requirements.memoryTypeBits
@@ -123,7 +123,7 @@ namespace d3d11_renderer
 		, ashes::Format format
 		, ashes::Offset3D const & offset
 		, ashes::Extent2D const & extent
-		, ashes::TextureView const & texture )const
+		, ashes::ImageView const & texture )const
 	{
 		assert( extent.width <= m_texture.getDimensions().width );
 		assert( extent.height <= m_texture.getDimensions().height );
@@ -148,7 +148,7 @@ namespace d3d11_renderer
 				}
 				, m_texture
 				, ashes::ImageLayout::eUndefined
-				, texture.getTexture()
+				, texture.getImage()
 				, ashes::ImageLayout::eUndefined );
 		}
 	}
@@ -158,7 +158,7 @@ namespace d3d11_renderer
 		, ashes::Format format
 		, ashes::Offset3D const & offset
 		, ashes::Extent2D const & extent
-		, ashes::TextureView const & texture )const
+		, ashes::ImageView const & texture )const
 	{
 		assert( extent.width <= m_texture.getDimensions().width );
 		assert( extent.height <= m_texture.getDimensions().height );
@@ -181,7 +181,7 @@ namespace d3d11_renderer
 					ashes::Offset3D{},
 					{ extent.width, extent.height, 1u }
 				}
-				, texture.getTexture()
+				, texture.getImage()
 				, ashes::ImageLayout::eUndefined
 				, m_texture
 				, ashes::ImageLayout::eUndefined );

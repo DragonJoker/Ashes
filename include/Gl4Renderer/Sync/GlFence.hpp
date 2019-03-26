@@ -48,7 +48,7 @@ namespace gl_renderer
 		*/ 
 		void reset()const override;
 
-		inline GLsync getSync()const
+		inline GLsync getInternal()const
 		{
 			return m_fence;
 		}

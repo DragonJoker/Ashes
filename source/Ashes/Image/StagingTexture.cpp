@@ -6,8 +6,8 @@ See LICENSE file in root folder.
 
 #include "Ashes/Core/Device.hpp"
 #include "Ashes/Core/Exception.hpp"
-#include "Ashes/Image/Texture.hpp"
-#include "Ashes/Image/TextureView.hpp"
+#include "Ashes/Image/Image.hpp"
+#include "Ashes/Image/ImageView.hpp"
 #include "Ashes/Miscellaneous/Offset2D.hpp"
 #include "Ashes/Sync/BufferMemoryBarrier.hpp"
 #include "Ashes/Sync/ImageMemoryBarrier.hpp"
@@ -27,7 +27,7 @@ namespace ashes
 		, Offset3D const & offset
 		, Extent2D const & extent
 		, uint8_t const * const data
-		, TextureView const & view )const
+		, ImageView const & view )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
 		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
@@ -49,7 +49,7 @@ namespace ashes
 		, CommandPool const & commandPool
 		, Format format
 		, uint8_t const * const data
-		, TextureView const & view )const
+		, ImageView const & view )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
 		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
@@ -67,7 +67,7 @@ namespace ashes
 	void StagingTexture::copyTextureData( Queue const & queue
 		, CommandPool const & commandPool
 		, Format format
-		, TextureView const & view )const
+		, ImageView const & view )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
 		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
@@ -87,7 +87,7 @@ namespace ashes
 		, Format format
 		, Offset3D const & offset
 		, Extent2D const & extent
-		, TextureView const & view )const
+		, ImageView const & view )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
 		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
@@ -110,7 +110,7 @@ namespace ashes
 		, Offset3D const & offset
 		, Extent2D const & extent
 		, uint8_t const * const data
-		, TextureView const & view )const
+		, ImageView const & view )const
 	{
 		doCopyToStagingTexture( data
 			, format
@@ -134,9 +134,9 @@ namespace ashes
 	void StagingTexture::uploadTextureData( CommandBuffer const & commandBuffer
 		, Format format
 		, uint8_t const * const data
-		, TextureView const & view )const
+		, ImageView const & view )const
 	{
-		auto extent = Extent3D{ view.getTexture().getDimensions() };
+		auto extent = Extent3D{ view.getImage().getDimensions() };
 		auto mipLevel = view.getSubResourceRange().baseMipLevel;
 		extent.width = std::max( 1u, extent.width >> mipLevel );
 		extent.height = std::max( 1u, extent.height >> mipLevel );
@@ -156,9 +156,9 @@ namespace ashes
 
 	void StagingTexture::copyTextureData( CommandBuffer const & commandBuffer
 		, Format format
-		, TextureView const & view )const
+		, ImageView const & view )const
 	{
-		auto extent = view.getTexture().getDimensions();
+		auto extent = view.getImage().getDimensions();
 		auto mipLevel = view.getSubResourceRange().baseMipLevel;
 		extent.width = std::max( 1u, extent.width >> mipLevel );
 		extent.height = std::max( 1u, extent.height >> mipLevel );
@@ -180,7 +180,7 @@ namespace ashes
 		, Format format
 		, Offset3D const & offset
 		, Extent2D const & extent
-		, TextureView const & view )const
+		, ImageView const & view )const
 	{
 		commandBuffer.memoryBarrier( ashes::PipelineStageFlag::eTopOfPipe
 			, ashes::PipelineStageFlag::eTransfer
@@ -205,7 +205,7 @@ namespace ashes
 		, Offset3D const & offset
 		, Extent2D const & extent
 		, uint8_t * data
-		, TextureView const & view )const
+		, ImageView const & view )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
 		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
@@ -239,9 +239,9 @@ namespace ashes
 		, CommandPool const & commandPool
 		, Format format
 		, uint8_t * data
-		, TextureView const & view )const
+		, ImageView const & view )const
 	{
-		auto extent = view.getTexture().getDimensions();
+		auto extent = view.getImage().getDimensions();
 		auto mipLevel = view.getSubResourceRange().baseMipLevel;
 		extent.width = std::max( 1u, extent.width >> mipLevel );
 		extent.height = std::max( 1u, extent.height >> mipLevel );

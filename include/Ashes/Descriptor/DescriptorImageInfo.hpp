@@ -13,7 +13,7 @@ namespace ashes
 	struct DescriptorImageInfo
 	{
 		Optional< SamplerCRef > sampler;
-		Optional< TextureViewCRef > imageView;
+		Optional< ImageViewCRef > imageView;
 		ImageLayout imageLayout;
 	};
 }

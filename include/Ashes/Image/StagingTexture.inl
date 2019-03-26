@@ -19,7 +19,7 @@ namespace ashes
 		, Offset3D const & offset
 		, Extent2D const & extent
 		, ByteArray const & data
-		, TextureView const & texture )const
+		, ImageView const & texture )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
 		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
@@ -41,7 +41,7 @@ namespace ashes
 		, CommandPool const & commandPool
 		, Format format
 		, ByteArray const & data
-		, TextureView const & texture )const
+		, ImageView const & texture )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
 		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
@@ -62,7 +62,7 @@ namespace ashes
 		, Offset3D const & offset
 		, Extent2D const & extent
 		, ByteArray const & data
-		, TextureView const & texture )const
+		, ImageView const & texture )const
 	{
 		uploadTextureData( commandBuffer
 			, subresourceLayers
@@ -76,7 +76,7 @@ namespace ashes
 	inline void StagingTexture::uploadTextureData( CommandBuffer const & commandBuffer
 		, Format format
 		, ByteArray const & data
-		, TextureView const & texture )const
+		, ImageView const & texture )const
 	{
 		uploadTextureData( commandBuffer
 			, format
@@ -96,7 +96,7 @@ namespace ashes
 		, Offset3D const & offset
 		, Extent2D const & extent
 		, ByteArray & data
-		, TextureView const & texture )const
+		, ImageView const & texture )const
 	{
 		downloadTextureData( queue
 			, commandPool
@@ -112,7 +112,7 @@ namespace ashes
 		, CommandPool const & commandPool
 		, Format format
 		, ByteArray & data
-		, TextureView const & texture )const
+		, ImageView const & texture )const
 	{
 		downloadTextureData( queue
 			, commandPool

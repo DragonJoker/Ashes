@@ -118,7 +118,7 @@ namespace gl_renderer
 		{
 			auto & module = static_cast< ShaderModule const & >( *stage.module );
 			m_stageFlags |= module.getStage();
-			m_shaders.push_back( module.getShader() );
+			m_shaders.push_back( module.getInternal() );
 			module.compile( stage );
 			glLogCall( context
 				, glAttachShader
@@ -135,7 +135,7 @@ namespace gl_renderer
 		auto context = m_device.getContext();
 		m_program = context->glCreateProgram();
 		auto & module = static_cast< ShaderModule const & >( *stage.module );
-		m_shaders.push_back( module.getShader() );
+		m_shaders.push_back( module.getInternal() );
 		module.compile( stage );
 		glLogCall( context
 			, glAttachShader

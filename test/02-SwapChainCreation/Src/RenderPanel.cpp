@@ -3,13 +3,14 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
-#include <Core/Surface.hpp>
-#include <Core/Device.hpp>
-#include <Core/Exception.hpp>
-#include <RenderPass/FrameBuffer.hpp>
-#include <RenderPass/RenderPass.hpp>
-#include <RenderPass/RenderSubpass.hpp>
-#include <RenderPass/RenderSubpassState.hpp>
+#include <Ashes/Core/Surface.hpp>
+#include <Ashes/Core/Device.hpp>
+#include <Ashes/Core/Exception.hpp>
+#include <Ashes/Image/Image.hpp>
+#include <Ashes/RenderPass/FrameBuffer.hpp>
+#include <Ashes/RenderPass/RenderPass.hpp>
+#include <Ashes/RenderPass/RenderSubpass.hpp>
+#include <Ashes/RenderPass/RenderSubpassState.hpp>
 
 #include <Transform.hpp>
 
@@ -217,9 +218,10 @@ namespace vkapp
 			m_commandBuffers.clear();
 			m_renderingResources.clear();
 			m_commandPool.reset();
-			m_swapChain.reset();
 			m_frameBuffers.clear();
 			m_renderPass.reset();
+			m_swapChainImages.clear();
+			m_swapChain.reset();
 			m_device.reset();
 		}
 	}
@@ -248,6 +250,7 @@ namespace vkapp
 		wxSize size{ GetClientSize() };
 		m_swapChain = m_device->getDevice().createSwapChain( doGetSwapChainCreateInfo( m_device->getDevice()
 			, { uint32_t( size.x ), uint32_t( size.y ) } ) );
+		m_swapChainImages = m_swapChain->getImages();
 		m_clearColour = ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 		doCreateRenderingResources();
 	}
@@ -311,7 +314,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateRenderingResources()
 	{
-		for ( uint32_t i = 0u; i < uint32_t( m_swapChain->getImages().size() ); ++i )
+		for ( uint32_t i = 0u; i < uint32_t( m_swapChainImages.size() ); ++i )
 		{
 			m_renderingResources.emplace_back( std::make_unique< RenderingResources >( m_device->getDevice().createSemaphore()
 				, m_device->getDevice().createSemaphore()
@@ -323,7 +326,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateFrameBuffers()
 	{
-		m_frameBuffers.resize( m_swapChain->getImages().size() );
+		m_frameBuffers.resize( m_swapChainImages.size() );
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
 		{
@@ -335,7 +338,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateCommandBuffers()
 	{
-		m_commandBuffers.resize( m_swapChain->getImages().size() );
+		m_commandBuffers.resize( m_swapChainImages.size() );
 
 		for ( auto & commandBuffer : m_commandBuffers )
 		{
@@ -349,14 +352,9 @@ namespace vkapp
 
 		for ( auto & attach : m_renderPass->getAttachments() )
 		{
-			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
-			{
-				attaches.emplace_back( attach, m_swapChain->getImages()[backBuffer]->getView() );
-			}
-			else
-			{
-				attaches.emplace_back( attach, m_swapChain->getDepthStencilView() );
-			}
+			attaches.emplace_back( attach
+				, m_swapChainImages[backBuffer]->createView( ashes::ImageViewType::e2D
+					, m_swapChain->getFormat() ) );
 		}
 
 		return attaches;
@@ -485,6 +483,11 @@ namespace vkapp
 	void RenderPanel::doResetSwapChain()
 	{
 		m_device->getDevice().waitIdle();
+		m_frameBuffers.clear();
+		m_commandBuffers.clear();
+		m_renderingResources.clear();
+		m_swapChainImages.clear();
+		m_swapChain.reset();
 		doCreateSwapChain();
 		doPrepareFrames();
 	}

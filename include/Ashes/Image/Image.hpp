@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_Texture_HPP___
-#define ___Ashes_Texture_HPP___
+#ifndef ___Ashes_Image_HPP___
+#define ___Ashes_Image_HPP___
 #pragma once
 
 #include "Ashes/Image/ComponentMapping.hpp"
@@ -21,7 +21,7 @@ namespace ashes
 	*\brief
 	*	L'image d'une texture.
 	*/
-	class Texture
+	class Image
 	{
 	public:
 		/**
@@ -42,8 +42,8 @@ namespace ashes
 		};
 
 	protected:
-		Texture( Texture const & ) = delete;
-		Texture( Texture && rhs );
+		Image( Image const & ) = delete;
+		Image( Image && rhs );
 		/**
 		*\~french
 		*\brief
@@ -76,17 +76,17 @@ namespace ashes
 		*\param[in] arrayLayers
 		*	The array layers count.
 		*/
-		Texture( Device const & device
+		Image( Device const & device
 			, ImageCreateFlags flags
-			, TextureType type
+			, ImageType type
 			, Format format
 			, Extent3D dimensions
 			, uint32_t mipLevels
 			, uint32_t arrayLayers );
 
 	public:
-		Texture & operator=( Texture const & ) = delete;
-		Texture & operator=( Texture && rhs );
+		Image & operator=( Image const & ) = delete;
+		Image & operator=( Image && rhs );
 		/**
 		*\~english
 		*\brief
@@ -95,7 +95,7 @@ namespace ashes
 		*\brief
 		*	Destructeur.
 		*/
-		virtual ~Texture();
+		virtual ~Image();
 		/**
 		*\~english
 		*\brief
@@ -225,7 +225,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	The view creation informations.
 		*/
-		virtual TextureViewPtr createView( ImageViewCreateInfo const & createInfo )const = 0;
+		virtual ImageViewPtr createView( ImageViewCreateInfo const & createInfo )const = 0;
 		/**
 		*\~french
 		*\brief
@@ -262,7 +262,7 @@ namespace ashes
 		*\param[in] mapping
 		*	The colours component mapping.
 		*/
-		TextureViewPtr createView( TextureViewType type
+		ImageViewPtr createView( ImageViewType type
 			, Format format
 			, uint32_t baseMipLevel = 0u
 			, uint32_t levelCount = 1u
@@ -337,7 +337,7 @@ namespace ashes
 		*\return
 		*	The texture type.
 		*/
-		inline TextureType getType()const
+		inline ImageType getType()const
 		{
 			return m_imageType;
 		}
@@ -348,7 +348,7 @@ namespace ashes
 	protected:
 		Device const & m_device;
 		ImageCreateFlags m_flags;
-		TextureType m_imageType;
+		ImageType m_imageType;
 		Format m_format;
 		Extent3D m_dimensions;
 		uint32_t m_mipLevels;

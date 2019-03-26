@@ -33,7 +33,7 @@ namespace ashes
 		eProtected = 0x00000002,
 		/**
 		*\~english
-		*	Specifies that the images of the swapchain can be used to create a TextureView with a different format
+		*	Specifies that the images of the swapchain can be used to create a ImageView with a different format
 		*	than what the swapchain was created with.
 		*	The list of allowed image view formats are specified by chaining an instance of the ImageFormatListCreateInfo
 		*	structure to the pNext chain of SwapChainCreateInfo.

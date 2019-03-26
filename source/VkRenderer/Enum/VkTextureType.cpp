@@ -2,17 +2,17 @@
 
 namespace vk_renderer
 {
-	VkImageType convert( ashes::TextureType const & value )noexcept
+	VkImageType convert( ashes::ImageType const & value )noexcept
 	{
 		switch ( value )
 		{
-		case ashes::TextureType::e1D:
+		case ashes::ImageType::e1D:
 			return VK_IMAGE_TYPE_1D;
 
-		case ashes::TextureType::e2D:
+		case ashes::ImageType::e2D:
 			return VK_IMAGE_TYPE_2D;
 
-		case ashes::TextureType::e3D:
+		case ashes::ImageType::e3D:
 			return VK_IMAGE_TYPE_3D;
 
 		default:

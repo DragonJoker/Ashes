@@ -12,8 +12,8 @@
 #include <Ashes/Descriptor/DescriptorSetLayout.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Ashes/Descriptor/DescriptorSetPool.hpp>
-#include <Ashes/Image/Texture.hpp>
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/Image.hpp>
+#include <Ashes/Image/ImageView.hpp>
 #include <Ashes/Pipeline/DepthStencilState.hpp>
 #include <Ashes/Pipeline/MultisampleState.hpp>
 #include <Ashes/Pipeline/Pipeline.hpp>
@@ -37,17 +37,17 @@ namespace vkapp
 {
 	namespace
 	{
-		ashes::TextureViewCRefArray doGetViews( GeometryPassResult const & gbuffer
-			, ashes::TextureViewCRefArray const & views )
+		ashes::ImageViewPtrArray doGetViews( GeometryPassResult const & gbuffer
+			, ashes::ImageViewPtrArray views )
 		{
-			ashes::TextureViewCRefArray result
+			ashes::ImageViewPtrArray result
 			{
-				views[0].get()
+				views[0]
 			};
 
 			for ( auto & texture : gbuffer )
 			{
-				result.emplace_back( *texture.view );
+				result.emplace_back( texture.view );
 			}
 
 			return result;
@@ -58,7 +58,7 @@ namespace vkapp
 		, common::Scene const & scene
 		, ashes::StagingBuffer & stagingBuffer
 		, GeometryPassResult const & gbuffer
-		, ashes::TextureViewCRefArray const & views
+		, ashes::ImageViewPtrArray views
 		, common::TextureNodePtrArray const & textureNodes
 		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
 		, ashes::UniformBuffer< common::LightsData > const & lightsUbo )

@@ -1,18 +1,18 @@
-#include "Image/VkTextureView.hpp"
+#include "Image/VkImageView.hpp"
 
 #include "Command/VkCommandBuffer.hpp"
 #include "Core/VkDevice.hpp"
 #include "Sync/VkImageMemoryBarrier.hpp"
 #include "Image/VkComponentMapping.hpp"
 #include "Image/VkImageSubresourceRange.hpp"
-#include "Image/VkTexture.hpp"
+#include "Image/VkImage.hpp"
 
 namespace vk_renderer
 {
-	TextureView::TextureView( Device const & device
-		, Texture const & image
+	ImageView::ImageView( Device const & device
+		, Image const & image
 		, ashes::ImageViewCreateInfo const & createInfo )
-		: ashes::TextureView{ device
+		: ashes::ImageView{ device
 			, image
 			, createInfo }
 		, m_device{ device }
@@ -22,7 +22,7 @@ namespace vk_renderer
 			VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 			nullptr,
 			0,
-			static_cast< Texture const & >( getTexture() ),
+			static_cast< Image const & >( getImage() ),
 			convert( createInfo.viewType ),
 			convert( createInfo.format ),
 			convert( createInfo.components ),
@@ -36,7 +36,7 @@ namespace vk_renderer
 		checkError( res, "ImageView creation" );
 	}
 
-	TextureView::~TextureView()
+	ImageView::~ImageView()
 	{
 		if ( m_view )
 		{

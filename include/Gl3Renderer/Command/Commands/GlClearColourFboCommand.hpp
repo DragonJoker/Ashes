@@ -27,14 +27,14 @@ namespace gl_renderer
 		*	La couleur de vidage.
 		*/
 		ClearColourFboCommand( Device const & device
-			, ashes::TextureView const & image
+			, ashes::ImageView const & image
 			, ashes::ClearColorValue const & colour );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		TextureView const & m_image;
+		ImageView const & m_image;
 		ashes::ClearColorValue m_colour;
 		GlInternal m_internal;
 		GlFormat m_format;

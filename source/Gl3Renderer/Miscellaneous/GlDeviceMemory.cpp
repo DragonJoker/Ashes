@@ -7,7 +7,7 @@ See LICENSE file in root folder
 #include "Command/Commands/GlCopyBufferToImageCommand.hpp"
 #include "Core/GlDevice.hpp"
 #include "Core/GlInstance.hpp"
-#include "Image/GlTexture.hpp"
+#include "Image/GlImage.hpp"
 
 #include <Ashes/Miscellaneous/MemoryRequirements.hpp>
 
@@ -32,7 +32,7 @@ namespace gl_renderer
 		public:
 			ImageMemory( Device const & device
 				, ashes::MemoryAllocateInfo allocateInfo
-				, Texture const & texture
+				, Image const & texture
 				, GLuint boundTarget
 				, ashes::ImageCreateInfo const & createInfo )
 				: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ), texture.getImage(), boundTarget }
@@ -586,7 +586,7 @@ namespace gl_renderer
 			}
 
 		private:
-			Texture const * m_texture;
+			Image const * m_texture;
 			GlInternal m_internal;
 			GlFormat m_format;
 			GlType m_type;
@@ -728,7 +728,7 @@ namespace gl_renderer
 		m_impl = std::make_unique< BufferMemory >( m_device, m_allocateInfo, resource, target );
 	}
 
-	void DeviceMemory::bindToImage( Texture const & texture
+	void DeviceMemory::bindToImage( Image const & texture
 		, GLenum target
 		, ashes::ImageCreateInfo const & createInfo )
 	{

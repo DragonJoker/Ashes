@@ -7,7 +7,6 @@
 #include <Buffer/UniformBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/Queue.hpp>
-#include <Core/BackBuffer.hpp>
 #include <Core/Surface.hpp>
 #include <Core/Device.hpp>
 #include <Core/Instance.hpp>
@@ -17,8 +16,8 @@
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
 #include <Image/StagingTexture.hpp>
-#include <Image/Texture.hpp>
-#include <Image/TextureView.hpp>
+#include <Image/Image.hpp>
+#include <Image/ImageView.hpp>
 #include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/InputAssemblyState.hpp>
@@ -396,10 +395,10 @@ namespace vkapp
 	{
 		m_stagingTexture = m_device->getDevice().createStagingTexture( ashes::Format::eR8G8B8A8_UNORM
 			, { 512u, 512u } );
-		m_texture = m_device->createTexture(
+		m_texture = m_device->createImage(
 			{
 				ashes::ImageCreateFlag::eCubeCompatible,
-				ashes::TextureType::e2D,
+				ashes::ImageType::e2D,
 				ashes::Format::eR8G8B8A8_UNORM,
 				{ 512u, 512u, 1u },
 				1u,
@@ -409,7 +408,7 @@ namespace vkapp
 				ashes::ImageUsageFlag::eTransferDst | ashes::ImageUsageFlag::eSampled
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_view = m_texture->createView( ashes::TextureViewType::eCube
+		m_view = m_texture->createView( ashes::ImageViewType::eCube
 			, ashes::Format::eR8G8B8A8_UNORM
 			, 0u
 			, 1u
@@ -523,17 +522,17 @@ namespace vkapp
 			, std::move( subpasses )
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
 				, ashes::AccessFlag::eColourAttachmentWrite }
-			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eFragmentShader
 				, ashes::AccessFlag::eShaderRead } );
 	}
 
 	void RenderPanel::doCreateFrameBuffer()
 	{
 		auto size = GetClientSize();
-		m_renderTargetColour = m_device->createTexture(
+		m_renderTargetColour = m_device->createImage(
 			{
 				0u,
-				ashes::TextureType::e2D,
+				ashes::ImageType::e2D,
 				ashes::Format::eR8G8B8A8_UNORM,
 				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
 				1u,
@@ -543,10 +542,10 @@ namespace vkapp
 				ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eSampled
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_renderTargetColourView = m_renderTargetColour->createView( ashes::TextureViewType::e2D
+		m_renderTargetColourView = m_renderTargetColour->createView( ashes::ImageViewType::e2D
 			, m_renderTargetColour->getFormat() );
 		ashes::FrameBufferAttachmentArray attaches;
-		attaches.emplace_back( *( m_offscreenRenderPass->getAttachments().begin() + 0u ), *m_renderTargetColourView );
+		attaches.emplace_back( *( m_offscreenRenderPass->getAttachments().begin() + 0u ), m_renderTargetColourView );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
 			, std::move( attaches ) );
 	}
@@ -729,7 +728,7 @@ namespace vkapp
 		image.extent = ashes::Extent3D{ dimensions.width, dimensions.height, 1u };
 		image.flags = 0u;
 		image.format = m_renderTargetColourView->getFormat();
-		image.imageType = ashes::TextureType::e2D;
+		image.imageType = ashes::ImageType::e2D;
 		image.initialLayout = ashes::ImageLayout::eUndefined;
 		image.mipLevels = uint32_t( m_passes.blurX.size() );
 		image.samples = ashes::SampleCountFlag::e1;
@@ -738,11 +737,11 @@ namespace vkapp
 			| ashes::ImageUsageFlag::eSampled
 			| ashes::ImageUsageFlag::eTransferDst
 			| ashes::ImageUsageFlag::eTransferSrc;
-		m_passes.hi.image = m_device->createTexture( image, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_passes.hi.image = m_device->createImage( image, ashes::MemoryPropertyFlag::eDeviceLocal );
 
 		ashes::ImageViewCreateInfo view{};
 		view.format = image.format;
-		view.viewType = ashes::TextureViewType::e2D;
+		view.viewType = ashes::ImageViewType::e2D;
 		view.subresourceRange.aspectMask = ashes::ImageAspectFlag::eColour;
 		view.subresourceRange.baseArrayLayer = 0u;
 		view.subresourceRange.layerCount = 1u;
@@ -789,7 +788,7 @@ namespace vkapp
 
 		ashes::FrameBufferAttachmentArray attaches
 		{
-			{ *m_passes.hi.renderPass->getAttachments().begin(), *m_passes.hi.views[0] }
+			{ *m_passes.hi.renderPass->getAttachments().begin(), m_passes.hi.views[0] }
 		};
 		m_passes.hi.frameBuffer = m_passes.hi.renderPass->createFrameBuffer( dimensions
 			, std::move( attaches ) );
@@ -887,7 +886,7 @@ namespace vkapp
 		image.extent = ashes::Extent3D{ dimensions.width, dimensions.height, 1u };
 		image.flags = 0u;
 		image.format = m_renderTargetColourView->getFormat();
-		image.imageType = ashes::TextureType::e2D;
+		image.imageType = ashes::ImageType::e2D;
 		image.initialLayout = ashes::ImageLayout::eUndefined;
 		image.mipLevels = uint32_t( m_passes.blurX.size() );
 		image.samples = ashes::SampleCountFlag::e1;
@@ -896,7 +895,7 @@ namespace vkapp
 			| ashes::ImageUsageFlag::eSampled
 			| ashes::ImageUsageFlag::eTransferDst
 			| ashes::ImageUsageFlag::eTransferSrc;
-		m_passes.blurX[0].image = m_device->createTexture( image, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_passes.blurX[0].image = m_device->createImage( image, ashes::MemoryPropertyFlag::eDeviceLocal );
 
 		ashes::RenderPassCreateInfo renderPass{};
 		renderPass.attachments.resize( 1u );
@@ -958,7 +957,7 @@ namespace vkapp
 
 			ashes::ImageViewCreateInfo view{};
 			view.format = image.format;
-			view.viewType = ashes::TextureViewType::e2D;
+			view.viewType = ashes::ImageViewType::e2D;
 			view.subresourceRange.aspectMask = ashes::ImageAspectFlag::eColour;
 			view.subresourceRange.baseArrayLayer = 0u;
 			view.subresourceRange.layerCount = 1u;
@@ -968,7 +967,7 @@ namespace vkapp
 
 			ashes::FrameBufferAttachmentArray attaches
 			{
-				{ *m_passes.blurX[0].renderPass->getAttachments().begin(), *blur.views.back() }
+				{ *m_passes.blurX[0].renderPass->getAttachments().begin(), blur.views.back() }
 			};
 			blur.frameBuffer = m_passes.blurX[0].renderPass->createFrameBuffer( dimensions
 				, std::move( attaches ) );
@@ -1091,7 +1090,7 @@ namespace vkapp
 
 			ashes::FrameBufferAttachmentArray attaches
 			{
-				{ *m_passes.blurY[0].renderPass->getAttachments().begin(), *m_passes.hi.views[i] }
+				{ *m_passes.blurY[0].renderPass->getAttachments().begin(), m_passes.hi.views[i] }
 			};
 			blur.frameBuffer = m_passes.blurY[0].renderPass->createFrameBuffer( dimensions
 				, std::move( attaches ) );
@@ -1155,7 +1154,7 @@ namespace vkapp
 	{
 		ashes::ImageViewCreateInfo view{};
 		view.format = m_renderTargetColourView->getFormat();
-		view.viewType = ashes::TextureViewType::e2D;
+		view.viewType = ashes::ImageViewType::e2D;
 		view.subresourceRange.aspectMask = ashes::ImageAspectFlag::eColour;
 		view.subresourceRange.baseArrayLayer = 0u;
 		view.subresourceRange.layerCount = 1u;
@@ -1198,7 +1197,7 @@ namespace vkapp
 		image.extent = ashes::Extent3D{ dimensions.width, dimensions.height, 1u };
 		image.flags = 0u;
 		image.format = m_renderTargetColourView->getFormat();
-		image.imageType = ashes::TextureType::e2D;
+		image.imageType = ashes::ImageType::e2D;
 		image.initialLayout = ashes::ImageLayout::eUndefined;
 		image.mipLevels = uint32_t( m_passes.blurX.size() );
 		image.samples = ashes::SampleCountFlag::e1;
@@ -1207,11 +1206,11 @@ namespace vkapp
 			| ashes::ImageUsageFlag::eSampled
 			| ashes::ImageUsageFlag::eTransferDst
 			| ashes::ImageUsageFlag::eTransferSrc;
-		m_passes.combine.image = m_device->createTexture( image, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_passes.combine.image = m_device->createImage( image, ashes::MemoryPropertyFlag::eDeviceLocal );
 
 		view = ashes::ImageViewCreateInfo{};
 		view.format = image.format;
-		view.viewType = ashes::TextureViewType::e2D;
+		view.viewType = ashes::ImageViewType::e2D;
 		view.subresourceRange.aspectMask = ashes::ImageAspectFlag::eColour;
 		view.subresourceRange.baseArrayLayer = 0u;
 		view.subresourceRange.layerCount = 1u;
@@ -1228,7 +1227,7 @@ namespace vkapp
 		renderPass.attachments[0].stencilStoreOp = ashes::AttachmentStoreOp::eDontCare;
 		renderPass.attachments[0].samples = ashes::SampleCountFlag::e1;
 		renderPass.attachments[0].initialLayout = ashes::ImageLayout::eUndefined;
-		renderPass.attachments[0].finalLayout = ashes::ImageLayout::eColourAttachmentOptimal;
+		renderPass.attachments[0].finalLayout = ashes::ImageLayout::eShaderReadOnlyOptimal;
 
 		renderPass.subpasses.resize( 1u );
 		renderPass.subpasses[0].colorAttachments = { { 0u, ashes::ImageLayout::eColourAttachmentOptimal } };
@@ -1254,7 +1253,7 @@ namespace vkapp
 
 		ashes::FrameBufferAttachmentArray attaches
 		{
-			{ *m_passes.combine.renderPass->getAttachments().begin(), *m_passes.combine.views[0] }
+			{ *m_passes.combine.renderPass->getAttachments().begin(), m_passes.combine.views[0] }
 		};
 		m_passes.combine.frameBuffer = m_passes.combine.renderPass->createFrameBuffer( dimensions
 			, std::move( attaches ) );
@@ -1434,50 +1433,28 @@ namespace vkapp
 		if ( resources )
 		{
 			auto before = std::chrono::high_resolution_clock::now();
-			auto toWait = &resources->getImageAvailableSemaphore();
 			m_graphicsQueue->submit( *m_commandBuffer
-				, *toWait
-				, ashes::PipelineStageFlag::eColourAttachmentOutput
-				, *m_semaphore
 				, nullptr );
-			toWait = m_semaphore.get();
-
 			m_graphicsQueue->submit( *m_passes.hi.commandBuffer
-				, *toWait
-				, ashes::PipelineStageFlag::eColourAttachmentOutput
-				, *m_passes.hi.semaphore
 				, nullptr );
-			toWait = m_passes.hi.semaphore.get();
 
 			for ( auto & blur : m_passes.blurX )
 			{
 				m_graphicsQueue->submit( *blur.commandBuffer
-					, *toWait
-					, ashes::PipelineStageFlag::eColourAttachmentOutput
-					, *blur.semaphore
 					, nullptr );
-				toWait = blur.semaphore.get();
 			}
 
 			for ( auto & blur : m_passes.blurY )
 			{
 				m_graphicsQueue->submit( *blur.commandBuffer
-					, *toWait
-					, ashes::PipelineStageFlag::eColourAttachmentOutput
-					, *blur.semaphore
 					, nullptr );
-				toWait = blur.semaphore.get();
 			}
 
 			m_graphicsQueue->submit( *m_passes.combine.commandBuffer
-				, *toWait
-				, ashes::PipelineStageFlag::eColourAttachmentOutput
-				, *m_passes.combine.semaphore
 				, nullptr );
-			toWait = m_passes.combine.semaphore.get();
 
 			m_graphicsQueue->submit( *m_commandBuffers[resources->getImageIndex()]
-				, *toWait
+				, resources->getImageAvailableSemaphore()
 				, ashes::PipelineStageFlag::eColourAttachmentOutput
 				, resources->getRenderingFinishedSemaphore()
 				, &resources->getFence() );

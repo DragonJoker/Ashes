@@ -1,4 +1,4 @@
-#include "Image/VkTexture.hpp"
+#include "Image/VkImage.hpp"
 
 #include "Command/VkCommandBuffer.hpp"
 #include "Command/VkQueue.hpp"
@@ -9,13 +9,13 @@
 #include "Image/VkImageSubresourceRange.hpp"
 #include "Miscellaneous/VkDeviceMemory.hpp"
 #include "Command/VkQueue.hpp"
-#include "Image/VkTextureView.hpp"
+#include "Image/VkImageView.hpp"
 
 namespace vk_renderer
 {
 	namespace
 	{
-		ashes::ImageMemoryBarrier doConvert( Texture const & texture
+		ashes::ImageMemoryBarrier doConvert( Image const & texture
 			, VkImageMemoryBarrier const & barrier )
 		{
 			return ashes::ImageMemoryBarrier
@@ -80,8 +80,8 @@ namespace vk_renderer
 		}
 	}
 
-	Texture::Texture( Texture && rhs )
-		: ashes::Texture{ std::move( rhs ) }
+	Image::Image( Image && rhs )
+		: ashes::Image{ std::move( rhs ) }
 		, m_device{ rhs.m_device }
 		, m_image{ rhs.m_image }
 		, m_owner{ rhs.m_owner }
@@ -89,9 +89,9 @@ namespace vk_renderer
 		rhs.m_image = VK_NULL_HANDLE;
 	}
 
-	Texture & Texture::operator=( Texture && rhs )
+	Image & Image::operator=( Image && rhs )
 	{
-		ashes::Texture::operator=( std::move( rhs ) );
+		ashes::Image::operator=( std::move( rhs ) );
 
 		if ( &rhs != this )
 		{
@@ -103,9 +103,9 @@ namespace vk_renderer
 		return *this;
 	}
 
-	Texture::Texture( Device const & device
+	Image::Image( Device const & device
 		, ashes::ImageCreateInfo const & createInfo )
-		: ashes::Texture{ device
+		: ashes::Image{ device
 			, createInfo.flags
 			, createInfo.imageType
 			, createInfo.format
@@ -144,13 +144,13 @@ namespace vk_renderer
 		checkError( res, "Image creation" );
 	}
 
-	Texture::Texture( Device const & device
+	Image::Image( Device const & device
 		, ashes::Format format
 		, ashes::Extent2D const & dimensions
 		, VkImage image )
-		: ashes::Texture{ device
+		: ashes::Image{ device
 			, 0u
-			, ashes::TextureType::e2D
+			, ashes::ImageType::e2D
 			, doSelectFormat( device, format )
 			, ashes::Extent3D{ dimensions.width, dimensions.height, 1u }
 			, 1u 
@@ -161,16 +161,16 @@ namespace vk_renderer
 	{
 	}
 
-	Texture::Texture( Device const & device
+	Image::Image( Device const & device
 		, ashes::Format format
 		, ashes::Extent2D const & dimensions
 		, ashes::ImageUsageFlags usageFlags
 		, ashes::ImageTiling tiling
 		, ashes::MemoryPropertyFlags memoryFlags )
-		: Texture{ device
+		: Image{ device
 			, {
 				0u,
-				ashes::TextureType::e2D,
+				ashes::ImageType::e2D,
 				doSelectFormat( device, format ),
 				ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
 				1u,
@@ -185,7 +185,7 @@ namespace vk_renderer
 	{
 	}
 
-	Texture::~Texture()
+	Image::~Image()
 	{
 		if ( m_owner )
 		{
@@ -195,19 +195,19 @@ namespace vk_renderer
 		}
 	}
 
-	ashes::MemoryRequirements Texture::getMemoryRequirements()const
+	ashes::MemoryRequirements Image::getMemoryRequirements()const
 	{
 		return m_device.getImageMemoryRequirements( m_image );
 	}
 
-	ashes::TextureViewPtr Texture::createView( ashes::ImageViewCreateInfo const & createInfo )const
+	ashes::ImageViewPtr Image::createView( ashes::ImageViewCreateInfo const & createInfo )const
 	{
-		return std::make_unique< TextureView >( m_device
+		return std::make_shared< ImageView >( m_device
 			, *this
 			, createInfo );
 	}
 
-	void Texture::doBindMemory()
+	void Image::doBindMemory()
 	{
 		auto res = m_device.vkBindImageMemory( m_device
 			, m_image

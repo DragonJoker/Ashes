@@ -1,16 +1,14 @@
 /**
 *\file
-*	Texture.h
+*	Image.h
 *\author
 *	Sylvain Doremus
 */
-#ifndef ___VkRenderer_TextureView_HPP___
-#define ___VkRenderer_TextureView_HPP___
 #pragma once
 
 #include "VkRenderer/VkRendererPrerequisites.hpp"
 
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/ImageView.hpp>
 
 namespace vk_renderer
 {
@@ -22,14 +20,14 @@ namespace vk_renderer
 	*\brief
 	*	Vulkan image view wrapper.
 	*/
-	class TextureView
-		: public ashes::TextureView
+	class ImageView
+		: public ashes::ImageView
 	{
 	public:
-		TextureView( Device const & device
-			, Texture const & image
+		ImageView( Device const & device
+			, Image const & image
 			, ashes::ImageViewCreateInfo const & createInfo );
-		~TextureView();
+		~ImageView();
 		/**
 		*\~french
 		*\brief
@@ -48,5 +46,3 @@ namespace vk_renderer
 		VkImageView m_view{};
 	};
 }
-
-#endif

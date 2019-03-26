@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_TextureType_HPP___
-#define ___Ashes_TextureType_HPP___
+#ifndef ___Ashes_ImageType_HPP___
+#define ___Ashes_ImageType_HPP___
 #pragma once
 
 namespace ashes
@@ -11,12 +11,12 @@ namespace ashes
 	/**
 	*\~english
 	*\brief
-	*	Texture types enumeration.
+	*	Image types enumeration.
 	*\~french
 	*\brief
 	*	Enumération des types de texture.
 	*/
-	enum class TextureType
+	enum class ImageType
 		: uint32_t
 	{
 		e1D = 0,
@@ -40,22 +40,22 @@ namespace ashes
 	*\return
 	*	Le nom.
 	*/
-	inline std::string getName( TextureType value )
+	inline std::string getName( ImageType value )
 	{
 		switch ( value )
 		{
-		case TextureType::e1D:
+		case ImageType::e1D:
 			return "1d";
 
-		case TextureType::e2D:
+		case ImageType::e2D:
 			return "2d";
 
-		case TextureType::e3D:
+		case ImageType::e3D:
 			return "3d";
 
 		default:
-			assert( false && "Unsupported TextureType." );
-			throw std::runtime_error{ "Unsupported TextureType" };
+			assert( false && "Unsupported ImageType." );
+			throw std::runtime_error{ "Unsupported ImageType" };
 		}
 
 		return 0;

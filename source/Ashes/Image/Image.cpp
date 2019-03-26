@@ -2,20 +2,20 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "Ashes/Image/Texture.hpp"
+#include "Ashes/Image/Image.hpp"
 
 #include "Ashes/Buffer/StagingBuffer.hpp"
 #include "Ashes/Command/CommandBuffer.hpp"
 #include "Ashes/Core/Device.hpp"
 #include "Ashes/Image/ImageSubresource.hpp"
 #include "Ashes/Image/SubresourceLayout.hpp"
-#include "Ashes/Image/TextureView.hpp"
+#include "Ashes/Image/ImageView.hpp"
 #include "Ashes/Sync/Fence.hpp"
 #include "Ashes/Sync/ImageMemoryBarrier.hpp"
 
 namespace ashes
 {
-	Texture::Texture( Texture && rhs )
+	Image::Image( Image && rhs )
 		: m_device{ rhs.m_device }
 		, m_flags{ rhs.m_flags }
 		, m_imageType{ rhs.m_imageType }
@@ -24,15 +24,15 @@ namespace ashes
 		, m_mipLevels{ rhs.m_mipLevels }
 		, m_arrayLayers{ rhs.m_arrayLayers }
 	{
-		registerObject( m_device, "Texture", this );
+		registerObject( m_device, "Image", this );
 	}
 
-	Texture::~Texture()
+	Image::~Image()
 	{
 		unregisterObject( m_device, this );
 	}
 
-	Texture & Texture::operator=( Texture && rhs )
+	Image & Image::operator=( Image && rhs )
 	{
 		if ( &rhs != this )
 		{
@@ -42,15 +42,15 @@ namespace ashes
 			m_dimensions = rhs.m_dimensions;
 			m_mipLevels = rhs.m_mipLevels;
 			m_arrayLayers = rhs.m_arrayLayers;
-			registerObject( m_device, "Texture", this );
+			registerObject( m_device, "Image", this );
 		}
 
 		return *this;
 	}
 
-	Texture::Texture( Device const & device
+	Image::Image( Device const & device
 		, ImageCreateFlags flags
-		, TextureType type
+		, ImageType type
 		, Format format
 		, Extent3D dimensions
 		, uint32_t mipLevels
@@ -63,17 +63,17 @@ namespace ashes
 		, m_mipLevels{ mipLevels }
 		, m_arrayLayers{ arrayLayers }
 	{
-		registerObject( m_device, "Texture", this );
+		registerObject( m_device, "Image", this );
 	}
 
-	void Texture::bindMemory( DeviceMemoryPtr memory )
+	void Image::bindMemory( DeviceMemoryPtr memory )
 	{
 		assert( !m_storage && "A resource can only be bound once to a device memory object." );
 		m_storage = std::move( memory );
 		doBindMemory();
 	}
 
-	Texture::Mapped Texture::lock( uint32_t offset
+	Image::Mapped Image::lock( uint32_t offset
 		, uint32_t size
 		, MemoryMapFlags flags )const
 	{
@@ -100,27 +100,27 @@ namespace ashes
 		return mapped;
 	}
 
-	void Texture::invalidate( uint32_t offset
+	void Image::invalidate( uint32_t offset
 		, uint32_t size )const
 	{
 		assert( m_storage && "The resource is not bound to a device memory object." );
 		return m_storage->invalidate( offset, size );
 	}
 
-	void Texture::flush( uint32_t offset
+	void Image::flush( uint32_t offset
 		, uint32_t size )const
 	{
 		assert( m_storage && "The resource is not bound to a device memory object." );
 		return m_storage->flush( offset, size );
 	}
 
-	void Texture::unlock()const
+	void Image::unlock()const
 	{
 		assert( m_storage && "The resource is not bound to a device memory object." );
 		return m_storage->unlock();
 	}
 
-	void Texture::generateMipmaps( CommandPool const & commandPool
+	void Image::generateMipmaps( CommandPool const & commandPool
 		, Queue const & queue )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer();
@@ -132,7 +132,7 @@ namespace ashes
 		fence->wait( FenceTimeout );
 	}
 
-	void Texture::generateMipmaps( CommandBuffer & commandBuffer )const
+	void Image::generateMipmaps( CommandBuffer & commandBuffer )const
 	{
 		auto const width = int32_t( getDimensions().width );
 		auto const height = int32_t( getDimensions().height );
@@ -141,7 +141,7 @@ namespace ashes
 		{
 			auto srcView = createView(
 				{
-					ashes::TextureViewType( getType() ),
+					ashes::ImageViewType( getType() ),
 					getFormat(),
 					ashes::ComponentMapping{},
 					ashes::ImageSubresourceRange
@@ -238,7 +238,7 @@ namespace ashes
 
 			srcView = createView(
 				{
-					ashes::TextureViewType( getType() ),
+					ashes::ImageViewType( getType() ),
 					getFormat(),
 					ashes::ComponentMapping{},
 					ashes::ImageSubresourceRange
@@ -256,7 +256,7 @@ namespace ashes
 		}
 	}
 
-	TextureViewPtr Texture::createView( TextureViewType type
+	ImageViewPtr Image::createView( ImageViewType type
 		, Format format
 		, uint32_t baseMipLevel
 		, uint32_t levelCount

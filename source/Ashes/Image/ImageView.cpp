@@ -1,26 +1,26 @@
-#include "Ashes/Image/TextureView.hpp"
+#include "Ashes/Image/ImageView.hpp"
 
 #include "Ashes/Core/Device.hpp"
 #include "Ashes/Sync/ImageMemoryBarrier.hpp"
 
 namespace ashes
 {
-	TextureView::TextureView( Device const & device
-		, Texture const & image
+	ImageView::ImageView( Device const & device
+		, Image const & image
 		, ImageViewCreateInfo const & createInfo )
 		: m_device{ device }
 		, m_image{ image }
 		, m_createInfo{ createInfo }
 	{
-		registerObject( m_device, "TextureView", this );
+		registerObject( m_device, "ImageView", this );
 	}
 
-	TextureView::~TextureView()
+	ImageView::~ImageView()
 	{
 		unregisterObject( m_device, this );
 	}
 
-	ImageMemoryBarrier TextureView::makeGeneralLayout( ImageLayout srcLayout
+	ImageMemoryBarrier ImageView::makeGeneralLayout( ImageLayout srcLayout
 		, AccessFlags srcAccessFlags
 		, AccessFlags dstAccessFlags
 		, uint32_t srcQueueFamily
@@ -34,7 +34,7 @@ namespace ashes
 			, dstQueueFamily );
 	}
 
-	ImageMemoryBarrier TextureView::makeTransferDestination( ImageLayout srcLayout
+	ImageMemoryBarrier ImageView::makeTransferDestination( ImageLayout srcLayout
 		, AccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
@@ -47,7 +47,7 @@ namespace ashes
 			, dstQueueFamily );
 	}
 
-	ImageMemoryBarrier TextureView::makeTransferSource( ImageLayout srcLayout
+	ImageMemoryBarrier ImageView::makeTransferSource( ImageLayout srcLayout
 		, AccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
@@ -60,7 +60,7 @@ namespace ashes
 			, dstQueueFamily );
 	}
 
-	ImageMemoryBarrier TextureView::makeShaderInputResource( ImageLayout srcLayout
+	ImageMemoryBarrier ImageView::makeShaderInputResource( ImageLayout srcLayout
 		, AccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
@@ -73,7 +73,7 @@ namespace ashes
 			, dstQueueFamily );
 	}
 
-	ImageMemoryBarrier TextureView::makeDepthStencilReadOnly( ImageLayout srcLayout
+	ImageMemoryBarrier ImageView::makeDepthStencilReadOnly( ImageLayout srcLayout
 		, AccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
@@ -86,7 +86,7 @@ namespace ashes
 			, dstQueueFamily );
 	}
 
-	ImageMemoryBarrier TextureView::makeColourAttachment( ImageLayout srcLayout
+	ImageMemoryBarrier ImageView::makeColourAttachment( ImageLayout srcLayout
 		, AccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
@@ -99,7 +99,7 @@ namespace ashes
 			, dstQueueFamily );
 	}
 
-	ImageMemoryBarrier TextureView::makeDepthStencilAttachment( ImageLayout srcLayout
+	ImageMemoryBarrier ImageView::makeDepthStencilAttachment( ImageLayout srcLayout
 		, AccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
@@ -112,7 +112,7 @@ namespace ashes
 			, dstQueueFamily );
 	}
 
-	ImageMemoryBarrier TextureView::makePresentSource( ImageLayout srcLayout
+	ImageMemoryBarrier ImageView::makePresentSource( ImageLayout srcLayout
 		, AccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
@@ -125,7 +125,7 @@ namespace ashes
 			, dstQueueFamily );
 	}
 
-	ashes::ImageMemoryBarrier TextureView::doMakeLayoutTransition( ashes::ImageLayout srcLayout
+	ashes::ImageMemoryBarrier ImageView::doMakeLayoutTransition( ashes::ImageLayout srcLayout
 		, ashes::ImageLayout dstLayout
 		, ashes::AccessFlags srcAccessFlags
 		, ashes::AccessFlags dstAccessMask
@@ -140,7 +140,7 @@ namespace ashes
 			dstLayout,
 			srcQueueFamily,
 			dstQueueFamily,
-			getTexture(),
+			getImage(),
 			getSubResourceRange()
 		};
 	}

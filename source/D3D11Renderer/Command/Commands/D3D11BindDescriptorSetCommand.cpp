@@ -9,8 +9,8 @@ See LICENSE file in root folder.
 #include "Descriptor/D3D11DescriptorSet.hpp"
 #include "Pipeline/D3D11PipelineLayout.hpp"
 #include "Image/D3D11Sampler.hpp"
-#include "Image/D3D11Texture.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11Image.hpp"
+#include "Image/D3D11ImageView.hpp"
 
 #include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
@@ -22,7 +22,7 @@ namespace d3d11_renderer
 		ID3D11ShaderResourceView * getView( ashes::WriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.imageInfo.size() );
-			return static_cast< TextureView const & >( write.imageInfo[index].imageView.value().get() ).getShaderView();
+			return static_cast< ImageView const & >( write.imageInfo[index].imageView.value().get() ).getShaderView();
 		}
 		
 		ID3D11ShaderResourceView * getBufferView( ashes::WriteDescriptorSet const & write, uint32_t index )
@@ -34,7 +34,7 @@ namespace d3d11_renderer
 		ID3D11UnorderedAccessView * getImageUAV( ashes::WriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.imageInfo.size() );
-			return static_cast< TextureView const & >( write.imageInfo[index].imageView.value().get() ).getUnorderedAccessView();
+			return static_cast< ImageView const & >( write.imageInfo[index].imageView.value().get() ).getUnorderedAccessView();
 		}
 
 		ID3D11SamplerState * getSampler( ashes::WriteDescriptorSet const & write, uint32_t index )

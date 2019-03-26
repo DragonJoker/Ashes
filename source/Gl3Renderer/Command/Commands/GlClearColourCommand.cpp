@@ -4,16 +4,16 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlClearColourCommand.hpp"
 
-#include "Image/GlTextureView.hpp"
-#include "Image/GlTexture.hpp"
+#include "Image/GlImageView.hpp"
+#include "Image/GlImage.hpp"
 
 namespace gl_renderer
 {
 	ClearColourCommand::ClearColourCommand( Device const & device
-		, ashes::TextureView const & image
+		, ashes::ImageView const & image
 		, ashes::ClearColorValue const & colour )
 		: CommandBase{ device }
-		, m_image{ static_cast< Texture const & >( image.getTexture() ) }
+		, m_image{ static_cast< Image const & >( image.getImage() ) }
 		, m_colour{ colour }
 		, m_internal{ getInternal( m_image.getFormat() ) }
 		, m_format{ getFormat( m_internal ) }

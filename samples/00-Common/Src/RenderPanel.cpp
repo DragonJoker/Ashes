@@ -7,7 +7,6 @@
 #include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Buffer/VertexBuffer.hpp>
 #include <Ashes/Command/Queue.hpp>
-#include <Ashes/Core/BackBuffer.hpp>
 #include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Core/Instance.hpp>
@@ -16,8 +15,8 @@
 #include <Ashes/Descriptor/DescriptorSetLayout.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Ashes/Descriptor/DescriptorSetPool.hpp>
-#include <Ashes/Image/Texture.hpp>
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/Image.hpp>
+#include <Ashes/Image/ImageView.hpp>
 #include <Ashes/Pipeline/DepthStencilState.hpp>
 #include <Ashes/Pipeline/InputAssemblyState.hpp>
 #include <Ashes/Pipeline/MultisampleState.hpp>
@@ -280,10 +279,10 @@ namespace common
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
-			, m_renderTarget->getColourView()
+			, *m_renderTarget->getColourView()
 			, *m_sampler );
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 1u )
-			, m_gui->getTargetView()
+			, *m_gui->getTargetView()
 			, *m_sampler );
 		m_descriptorSet->update();
 	}

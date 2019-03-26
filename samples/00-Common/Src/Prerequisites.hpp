@@ -2,8 +2,8 @@
 
 #include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/Instance.hpp>
-#include <Ashes/Image/Texture.hpp>
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/Image.hpp>
+#include <Ashes/Image/ImageView.hpp>
 #include <Ashes/Miscellaneous/Extent2D.hpp>
 #include <Ashes/Pipeline/VertexLayout.hpp>
 #include <Ashes/RenderPass/RenderSubpass.hpp>
@@ -200,8 +200,8 @@ namespace common
 	struct TextureNode
 	{
 		ImagePtr image;
-		ashes::TexturePtr texture;
-		ashes::TextureViewPtr view;
+		ashes::ImagePtr texture;
+		ashes::ImageViewPtr view;
 	};
 
 	using TextureNodePtr = std::shared_ptr< TextureNode >;
@@ -246,7 +246,7 @@ namespace common
 
 	ashes::WindowHandle makeWindowHandle( wxWindow const & window );
 
-	std::vector< ashes::Format > getFormats( ashes::TextureViewCRefArray const & views );
+	std::vector< ashes::Format > getFormats( ashes::ImageViewPtrArray const & views );
 
 	struct Scene;
 
