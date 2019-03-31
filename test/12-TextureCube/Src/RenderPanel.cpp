@@ -286,8 +286,6 @@ namespace vkapp
 				ashes::ImageUsageFlag::eTransferDst | ashes::ImageUsageFlag::eSampled
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		auto stagingTexture = m_device->getDevice().createStagingTexture( ashes::Format::eR8G8B8A8_UNORM
-			, { 512u, 512u } );
 		m_view = m_texture->createView( ashes::ImageViewType::eCube
 			, ashes::Format::eR8G8B8A8_UNORM
 			, 0u
@@ -314,7 +312,7 @@ namespace vkapp
 		for ( size_t i = 0u; i < paths.size(); ++i )
 		{
 			auto image = common::loadImage( shadersFolder / paths[i] );
-			stagingTexture->uploadTextureData( *m_graphicsQueue
+			m_stagingBuffer->uploadTextureData( *m_graphicsQueue
 				, *m_commandPool
 				, {
 					m_view->getSubResourceRange().aspectMask,

@@ -73,51 +73,33 @@ namespace ashes
 		doBindMemory();
 	}
 
-	Image::Mapped Image::lock( uint32_t offset
-		, uint32_t size
+	uint8_t * Image::lock( SubresourceLayout const & subResourceLayout
 		, MemoryMapFlags flags )const
 	{
 		assert( m_storage && "The resource is not bound to a device memory object." );
-		Mapped mapped{};
-		ImageSubresource subResource{};
-		subResource.aspectMask = getAspectMask( getFormat() );
-		SubresourceLayout subResourceLayout;
-		m_device.getImageSubresourceLayout( *this, subResource, subResourceLayout );
-
-		mapped.data = m_storage->lock( offset
-			, size
+		return m_storage->lock( subResourceLayout.offset
+			, subResourceLayout.size
 			, flags );
-
-		if ( mapped.data )
-		{
-			mapped.arrayPitch = subResourceLayout.arrayPitch;
-			mapped.depthPitch = subResourceLayout.depthPitch;
-			mapped.rowPitch = subResourceLayout.rowPitch;
-			mapped.size = subResourceLayout.size;
-			mapped.data += subResourceLayout.offset;
-		}
-
-		return mapped;
 	}
 
-	void Image::invalidate( uint32_t offset
-		, uint32_t size )const
+	void Image::invalidate( SubresourceLayout const & subResourceLayout )const
 	{
 		assert( m_storage && "The resource is not bound to a device memory object." );
-		return m_storage->invalidate( offset, size );
+		m_storage->invalidate( subResourceLayout.offset
+			, subResourceLayout.size );
 	}
 
-	void Image::flush( uint32_t offset
-		, uint32_t size )const
+	void Image::flush( SubresourceLayout const & subResourceLayout )const
 	{
 		assert( m_storage && "The resource is not bound to a device memory object." );
-		return m_storage->flush( offset, size );
+		m_storage->flush( subResourceLayout.offset
+			, subResourceLayout.size );
 	}
 
 	void Image::unlock()const
 	{
 		assert( m_storage && "The resource is not bound to a device memory object." );
-		return m_storage->unlock();
+		m_storage->unlock();
 	}
 
 	void Image::generateMipmaps( CommandPool const & commandPool

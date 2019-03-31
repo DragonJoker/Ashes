@@ -138,8 +138,6 @@ namespace common
 		{
 			common::TextureNodePtr textureNode = std::make_shared< common::TextureNode >();
 			textureNode->image = image;
-			auto stagingTexture = m_device.getDevice().createStagingTexture( image->format
-				, { image->size.width, image->size.height } );
 			textureNode->texture = m_device.createImage(
 				{
 					0u,
@@ -161,7 +159,8 @@ namespace common
 				, 4u );
 			auto view = textureNode->texture->createView( ashes::ImageViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat() );
-			stagingTexture->uploadTextureData( m_transferQueue
+			auto staging = ashes::StagingBuffer{ m_device, 0u, getSize( image->size, image->format ) };
+			staging.uploadTextureData( m_transferQueue
 				, m_commandPool
 				, image->format
 				, image->data

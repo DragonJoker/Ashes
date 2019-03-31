@@ -23,24 +23,6 @@ namespace ashes
 	*/
 	class Image
 	{
-	public:
-		/**
-		*\~french
-		*\brief
-		*	Contient les informations d'une image mappée en RAM.
-		*\~english
-		*\brief
-		*	Contains an image mapped in RAM informations.
-		*/
-		struct Mapped
-		{
-			uint8_t * data;
-			uint64_t size;
-			uint64_t rowPitch;
-			uint64_t arrayPitch;
-			uint64_t depthPitch;
-		};
-
 	protected:
 		Image( Image const & ) = delete;
 		Image( Image && rhs );
@@ -112,66 +94,75 @@ namespace ashes
 		/**
 		*\~french
 		*\brief
-		*	Mappe la mémoire du tampon en RAM.
+		*	Mappe la zone mémoire de l'image en RAM.
 		*\param[in] offset
-		*	L'offset à partir duquel la mémoire du tampon est mappée.
+		*	L'offset en pixels de la zone mémoire.
 		*\param[in] size
-		*	La taille en octets de la mémoire à mapper.
+		*	La taille en pixels de la zone mémoire.
+		*\param[in] subResourceLayers
+		*	Les couches et niveaux de la zone mémoire.
 		*\param[in] flags
 		*	Indicateurs de configuration du mapping.
 		*\return
 		*	\p nullptr si le mapping a échoué.
 		*\~english
 		*\brief
-		*	Maps the buffer's memory in RAM.
+		*	Maps the image's memory area in RAM.
 		*\param[in] offset
-		*	The memory mapping starting offset.
+		*	The memory area starting offset, in pixels.
 		*\param[in] size
-		*	The memory mappping size.
+		*	The memory area size, in pixels.
+		*\param[in] subResourceLayers
+		*	The memory area levels and layers.
 		*\param[in] flags
 		*	The memory mapping flags.
 		*\return
 		*	\p nullptr if the mapping failed.
 		*/
-		Mapped lock( uint32_t offset
-			, uint32_t size
+		uint8_t * lock( SubresourceLayout const & subResourceLayout
 			, MemoryMapFlags flags )const;
 		/**
 		*\~english
 		*\brief
-		*	Invalidates the buffer content.
+		*	Invalidates the image content.
 		*\param[in] offset
-		*	The mapped memory starting offset.
+		*	The memory area starting offset, in pixels.
 		*\param[in] size
-		*	The range size.
+		*	The memory area size, in pixels.
+		*\param[in] subResourceLayers
+		*	The memory area levels and layers.
 		*\~french
 		*\brief
-		*	Invalide le contenu du tampon.
+		*	Invalide le contenu de l'image.
 		*\param[in] offset
-		*	L'offset de la mémoire mappée.
+		*	L'offset en pixels de la zone mémoire.
 		*\param[in] size
-		*	La taille en octets de la mémoire mappée.
+		*	La taille en pixels de la zone mémoire.
+		*\param[in] subResourceLayers
+		*	Les couches et niveaux de la zone mémoire.
 		*/
-		void invalidate( uint32_t offset
-			, uint32_t size )const;
+		void invalidate( SubresourceLayout const & subResourceLayout )const;
 		/**
 		*\~english
 		*\brief
 		*	Updates the VRAM.
 		*\param[in] offset
-		*	The mapped memory starting offset.
+		*	The memory area starting offset, in pixels.
 		*\param[in] size
-		*	The range size.
+		*	The memory area size, in pixels.
+		*\param[in] subResourceLayers
+		*	The memory area levels and layers.
 		*\~french
 		*\brief
 		*	Met à jour la VRAM.
 		*\param[in] offset
-		*	L'offset de la mémoire mappée.
+		*	L'offset en pixels de la zone mémoire.
 		*\param[in] size
-		*	La taille en octets de la mémoire mappée.
+		*	La taille en pixels de la zone mémoire.
+		*\param[in] subResourceLayers
+		*	Les couches et niveaux de la zone mémoire.
 		*/
-		void flush( uint32_t offset
-			, uint32_t size )const;
+		void flush( SubresourceLayout const & subResourceLayout )const;
 		/**
 		*\~english
 		*\brief

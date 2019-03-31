@@ -28,15 +28,6 @@ namespace ashes
 		/**
 		*\~english
 		*\brief
-		*	The resource type.
-		*\~french
-		*\brief
-		*	Le type de ressource.
-		*/
-		ResourceType type;
-		/**
-		*\~english
-		*\brief
 		*	The size, in bytes, of the memory allocation required for the resource.
 		*\~french
 		*\brief
@@ -62,7 +53,16 @@ namespace ashes
 		*	Un masque de bits contenant un bit défini pour chaque type de mémoire supporté pour la ressource.
 		*	Le \p i-ème bit est défini ssi le \p i-ème type de mémoire dans la structure ashes::PhysicalDeviceMemoryProperties pour le périphérique physique est supporté pour la ressource.
 		*/
-		uint32_t memoryTypeBits;
+		MemoryPropertyFlags memoryTypeBits;
+		/**
+		*\~english
+		*\brief
+		*	The resource type.
+		*\~french
+		*\brief
+		*	Le type de ressource.
+		*/
+		ResourceType type;
 	};
 }
 

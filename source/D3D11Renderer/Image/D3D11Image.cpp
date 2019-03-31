@@ -113,19 +113,14 @@ namespace d3d11_renderer
 	ashes::MemoryRequirements Image::getMemoryRequirements()const
 	{
 		ashes::MemoryRequirements result{};
-
-		if ( !ashes::isCompressedFormat( getFormat() ) )
-		{
-			result.size = getDimensions().width
-				* getDimensions().height
-				* getDimensions().depth
-				* getLayerCount()
-				* ashes::getSize( getFormat() );
-		}
-
+		result.size = ashes::getSize( getDimensions(), getFormat() );
 		result.type = ashes::ResourceType::eImage;
 		result.alignment = 1u;
-		result.memoryTypeBits = ~result.memoryTypeBits;
+		result.memoryTypeBits = ashes::MemoryPropertyFlag::eDeviceLocal
+			| ( ( checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferDst )
+				&& checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferSrc ) )
+				? ashes::MemoryPropertyFlag::eHostVisible
+				: ashes::MemoryPropertyFlag::eDeviceLocal );
 		return result;
 	}
 

@@ -37,9 +37,15 @@ namespace d3d11_renderer
 		CommandPtr clone()const override;
 
 	private:
-		void applyOne( ID3D11DeviceContext * context
+		void applyOneStaging( Context const & context
 			, ashes::BufferImageCopy const & copyInfo
-			, D3D11_BOX const & srcBox )const;
+			, D3D11_BOX const & srcBox
+			, ashes::SubresourceLayout const & dstLayout )const;
+		void applyOne( Context const & context
+			, ashes::BufferImageCopy const & copyInfo
+			, D3D11_BOX const & srcBox
+			, ashes::SubresourceLayout const & dstLayout
+			, ashes::Image const & image )const;
 
 	private:
 		Buffer const & m_src;
@@ -47,5 +53,7 @@ namespace d3d11_renderer
 		ashes::BufferImageCopyArray m_copyInfo;
 		DXGI_FORMAT m_format;
 		std::vector< D3D11_BOX > m_srcBoxes;
+		std::vector< ashes::SubresourceLayout > m_dstLayouts;
+		bool m_mappable;
 	};
 }

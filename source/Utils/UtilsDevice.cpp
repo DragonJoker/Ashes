@@ -201,7 +201,7 @@ namespace utils
 		return result;
 	}
 
-	uint32_t Device::deduceMemoryType( uint32_t typeBits
+	uint32_t Device::deduceMemoryType( ashes::MemoryPropertyFlags typeBits
 		, ashes::MemoryPropertyFlags requirements )const
 	{
 		uint32_t result = 0xFFFFFFFFu;
@@ -212,7 +212,7 @@ namespace utils
 
 		while ( i < m_memoryProperties.memoryTypes.size() && !found )
 		{
-			if ( ( typeBits & 1 ) == 1 )
+			if ( ( checkFlag( typeBits, ashes::MemoryPropertyFlag( 1u ) ) ) == 1 )
 			{
 				// Le type de mémoire est disponible, a-t-il les propriétés demandées?
 				if ( ( m_memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
@@ -222,7 +222,7 @@ namespace utils
 				}
 			}
 
-			typeBits >>= 1;
+			typeBits = typeBits >> 1;
 			++i;
 		}
 

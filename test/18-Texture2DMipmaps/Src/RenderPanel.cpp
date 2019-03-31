@@ -192,9 +192,6 @@ namespace vkapp
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
 
-		auto staging = m_device->getDevice().createStagingTexture( format
-			, { uint32_t( tex2D.extent().x ), uint32_t( tex2D.extent().y ) } );
-
 		for ( uint32_t level = 0; level < tex2D.levels(); level++ )
 		{
 			auto texLevel = tex2D[level];
@@ -205,7 +202,7 @@ namespace vkapp
 				auto view = m_texture->createView( ashes::ImageViewType::e2D
 					, format
 					, level );
-				staging->uploadTextureData( *m_graphicsQueue
+				m_stagingBuffer->uploadTextureData( *m_graphicsQueue
 					, *m_commandPool
 					, format
 					, reinterpret_cast< uint8_t const * >( texLevel.data() )
@@ -297,7 +294,7 @@ namespace vkapp
 	{
 		m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( m_device->getDevice()
 			, 0u
-			, 1000000u );
+			, 10000000u );
 	}
 
 	void RenderPanel::doCreatePipeline()

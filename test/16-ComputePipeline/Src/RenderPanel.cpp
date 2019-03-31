@@ -340,7 +340,7 @@ namespace vkapp
 			, ashes::WrapMode::eClampToEdge
 			, ashes::Filter::eLinear
 			, ashes::Filter::eLinear );
-		stagingTexture->uploadTextureData( *m_graphicsQueue
+		m_stagingBuffer->uploadTextureData( *m_graphicsQueue
 			, *m_commandPool
 			, image.format
 			, image.data

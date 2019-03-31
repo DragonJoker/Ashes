@@ -223,8 +223,9 @@ namespace vkapp
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
 
-		auto staging = m_device->getDevice().createStagingTexture( format
-			, { uint32_t( tex2DArray.extent().x ), uint32_t( tex2DArray.extent().y ) } );
+		auto staging = ashes::StagingBuffer{ *m_device
+			, 0u
+			, getSize( ashes::Extent2D{ uint32_t( tex2DArray.extent().x ), uint32_t( tex2DArray.extent().y ) }, format ) };
 
 		// Prepare copy regions
 		std::vector< ashes::BufferImageCopy > bufferCopyRegions;
@@ -243,7 +244,7 @@ namespace vkapp
 						, level
 						, 1u
 						, layer );
-					staging->uploadTextureData( *m_graphicsQueue
+					staging.uploadTextureData( *m_graphicsQueue
 						, *m_commandPool
 						, format
 						, reinterpret_cast< uint8_t const * >( texArray.data() )

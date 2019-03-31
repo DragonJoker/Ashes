@@ -139,38 +139,25 @@ namespace vk_renderer
 		/**
 		*\~french
 		*\brief
-		*	Récupère les propriétés mémoire requises pour le tampon donné.
-		*\param[in] buffer
-		*	Le tampon.
+		*	Récupère l'indice de la famille de mémoire ayant les propriétés requises demandées.
+		*\param[in] typeBits
+		*	Un masque de bits contenant un bit défini pour chaque type de mémoire supporté pour la ressource.
+		*	Le \p i-ème bit est défini ssi le \p i-ème type de mémoire dans la structure ashes::PhysicalDeviceMemoryProperties pour le périphérique physique est supporté pour la ressource.
+		*\param[in] requirements
+		*	Les propriétés requises pour la famille de mémoire.
 		*return
-		*	Les propriétés mémoire.
+		*	L'indice de la famille de mémoire.
 		*\~english
 		*\brief
-		*	Retrieves the memory requirements for given buffer.
-		*\param[in] buffer
-		*	The buffer.
+		*	Retrieves the memory family index for given requirements.
+		*\param[in] typeBits
+		*	A bitmask containing one bit set for every supported memory type for the resource.
+		*	Bit \p i is set iff the memory type \p i in the ashes::PhysicalDeviceMemoryProperties structure for the physical device is supported for the resource.
+		*\param[in] requirements
+		*	The required properties for the memory family.
 		*return
-		*	The memory requirements.
+		*	The memory family index.
 		*/
-		ashes::MemoryRequirements getBufferMemoryRequirements( VkBuffer buffer )const;
-		/**
-		*\~french
-		*\brief
-		*	Récupère les propriétés mémoire requises pour le tampon donné.
-		*\param[in] image
-		*	L'image.
-		*return
-		*	Les propriétés mémoire.
-		*\~english
-		*\brief
-		*	Retrieves the memory requirements for given buffer.
-		*\param[in] image
-		*	The image.
-		*return
-		*	The memory requirements.
-		*/
-		ashes::MemoryRequirements getImageMemoryRequirements( VkImage image )const;
-
 		uint32_t deduceMemoryType( uint32_t typeBits
 			, ashes::MemoryPropertyFlags requirements )const;
 		/**

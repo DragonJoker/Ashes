@@ -167,12 +167,6 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 #	define dxRenderer_DebugNames 0
 #endif
 
-#if !defined( NDEBUG )
-#	define dxCheckError( hr, txt ) checkError( hr, txt )
-#else
-#	define dxCheckError( hr, txt ) SUCCEEDED( hr )
-#endif
-
 #if dxRenderer_DebugNames
 #	if defined( _MSC_VER )
 #		define dxDebugName( obj, type )\
@@ -334,7 +328,8 @@ namespace d3d11_renderer
 	using VbosBindingArray = std::vector< VbosBinding >;
 	using WriteDescriptorSetBindingArray = std::vector< WriteDescriptorSetBinding >;
 
-	bool checkError( HRESULT hResult, char const * const text );
+	std::string getLastErrorText();
+	bool checkError( Device const & device, HRESULT hResult, char const * const text );
 	std::string toString( std::wstring const & text );
 	uint32_t deduceMemoryType( uint32_t typeBits
 		, ashes::MemoryPropertyFlags requirements );

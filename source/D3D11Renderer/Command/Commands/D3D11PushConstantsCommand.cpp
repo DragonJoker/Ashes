@@ -31,7 +31,7 @@ namespace d3d11_renderer
 				, D3D11_MAP_WRITE_DISCARD
 				, 0u
 				, &mapped );
-			dxCheckError( hr, "Map" );
+			checkError( context.device, hr, "Map" );
 			std::memcpy( reinterpret_cast< uint8_t * >( mapped.pData ) + m_pcb.data.offset
 				, m_pcb.data.data.data()
 				, m_pcb.data.size );

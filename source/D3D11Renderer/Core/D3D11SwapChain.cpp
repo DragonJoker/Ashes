@@ -26,7 +26,7 @@ namespace d3d11_renderer
 			, &desc
 			, &m_swapChain );
 
-		if ( !dxCheckError( hr, "CreateSwapChain" ) )
+		if ( !checkError( m_device, hr, "CreateSwapChain" ) )
 		{
 			throw std::runtime_error{ "Could not create the swapchain" };
 		}
@@ -46,7 +46,7 @@ namespace d3d11_renderer
 			, __uuidof( ID3D11Texture2D )
 			, reinterpret_cast< void ** >( &rtTex ) );
 
-		if ( !dxCheckError( hr, "SwapChain::GetBuffer" ) )
+		if ( !checkError( m_device, hr, "SwapChain::GetBuffer" ) )
 		{
 			throw std::runtime_error( "GetBuffer() failed" );
 		}

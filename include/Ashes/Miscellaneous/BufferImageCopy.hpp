@@ -30,13 +30,13 @@ namespace ashes
 		*\brief
 		*	Le décalage en octets depuis le début du tampon, depuis ou vers où les données de l'image sont copiées.
 		*/
-		uint32_t bufferOffset;
+		DeviceSize bufferOffset;
 		/**
 		*\~english
 		*\brief
 		*	Specifies the data in buffer memory as a subregion of a larger two- or three-dimensional image, and control the addressing calculations of data in buffer memory.
 		*\remarks
-		*	If either \p bufferRowLength is zero, that aspect of the buffer memory is considered to be tightly packed according to the \p imageExtent.
+		*	If \p bufferRowLength is zero, that aspect of the buffer memory is considered to be tightly packed according to the \p imageExtent.
 		*\~french
 		*\brief
 		*	Spécifie les données en mémoire du tampon d'une sous-région d'une image en 2, ou 3 dimensions d'un image plus large, et contrôle le calcul d'adressage des données dans la mémoire du tampon.
@@ -49,7 +49,7 @@ namespace ashes
 		*\brief
 		*	Specifies the data in buffer memory as a subregion of a larger two- or three-dimensional image, and control the addressing calculations of data in buffer memory.
 		*\remarks
-		*	If either \p bufferImageHeight is zero, that aspect of the buffer memory is considered to be tightly packed according to the \p imageExtent.
+		*	If \p bufferImageHeight is zero, that aspect of the buffer memory is considered to be tightly packed according to the \p imageExtent.
 		*\~french
 		*\brief
 		*	Spécifie les données en mémoire du tampon d'une sous-région d'une image en 2, ou 3 dimensions d'un image plus large, et contrôle le calcul d'adressage des données dans la mémoire du tampon.

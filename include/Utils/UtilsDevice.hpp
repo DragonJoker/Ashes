@@ -104,7 +104,7 @@ namespace utils
 		ashes::ImagePtr createImage( ashes::ImageCreateInfo const & createInfo
 			, ashes::MemoryPropertyFlags flags )const;
 
-		uint32_t deduceMemoryType( uint32_t typeBits
+		uint32_t deduceMemoryType( ashes::MemoryPropertyFlags typeBits
 			, ashes::MemoryPropertyFlags requirements )const;
 
 		inline ashes::Device const * operator->()const

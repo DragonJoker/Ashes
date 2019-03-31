@@ -248,8 +248,6 @@ namespace vkapp
 		common::ImageData image;
 		image.size = ashes::Extent3D{ 256u, 256u, 109u };
 		image.format = ashes::Format::eR8G8B8A8_UNORM;
-		auto stagingTexture = m_device->getDevice().createStagingTexture( image.format
-			, { image.size.width, image.size.height } );
 		readFile( shadersFolder / "head256x256x109", image.size, image.data );
 		m_texture = m_device->createImage(
 			{
@@ -277,7 +275,7 @@ namespace vkapp
 		for ( uint32_t i = 0u; i < image.size.depth; ++i )
 		{
 			ashes::ByteArray layer( buffer, buffer + size );
-			stagingTexture->uploadTextureData( *m_graphicsQueue
+			m_stagingBuffer->uploadTextureData( *m_graphicsQueue
 				, *m_commandPool
 				, {
 					m_view->getSubResourceRange().aspectMask,

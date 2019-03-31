@@ -92,7 +92,6 @@ namespace vkapp
 		utils::SwapChainPtr m_swapChain;
 		ashes::ClearColorValue m_clearColour;
 		ashes::StagingBufferPtr m_stagingBuffer;
-		ashes::StagingTexturePtr m_stagingTexture;
 		ashes::ImagePtr m_texture;
 		ashes::ImageViewPtr m_view;
 		ashes::SamplerPtr m_sampler;

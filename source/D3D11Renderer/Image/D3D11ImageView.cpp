@@ -88,7 +88,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateRenderTargetView( m_image.getTexture1D()
 				, &desc
 				, &m_renderTargetView );
-			dxCheckError( hr, "CreateRenderTargetView1D" );
+			checkError( m_device, hr, "CreateRenderTargetView1D" );
 			dxDebugName( m_renderTargetView, RenderTargetView1D );
 		}
 
@@ -102,7 +102,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateShaderResourceView( m_image.getTexture1D()
 				, &desc
 				, &m_shaderView );
-			dxCheckError( hr, "CreateShaderResourceView1D" );
+			checkError( m_device, hr, "CreateShaderResourceView1D" );
 			dxDebugName( m_shaderView, ShaderResourceView1D );
 		}
 
@@ -116,7 +116,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture1D()
 				, &desc
 				, &m_unorderedAccessView );
-			dxCheckError( hr, "CreateUnorderedAccessView1D" );
+			checkError( m_device, hr, "CreateUnorderedAccessView1D" );
 			dxDebugName( m_unorderedAccessView, UnorderedAccessView1D );
 		}
 	}
@@ -136,7 +136,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateRenderTargetView( m_image.getTexture1D()
 				, &desc
 				, &m_renderTargetView );
-			dxCheckError( hr, "CreateRenderTargetView1DArray" );
+			checkError( m_device, hr, "CreateRenderTargetView1DArray" );
 			dxDebugName( m_renderTargetView, RenderTargetView1DArray );
 		}
 
@@ -152,7 +152,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateShaderResourceView( m_image.getTexture1D()
 				, &desc
 				, &m_shaderView );
-			dxCheckError( hr, "CreateShaderResourceView1DArray" );
+			checkError( m_device, hr, "CreateShaderResourceView1DArray" );
 			dxDebugName( m_shaderView, ShaderResourceView1DArray );
 		}
 
@@ -168,7 +168,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture1D()
 				, &desc
 				, &m_unorderedAccessView );
-			dxCheckError( hr, "CreateUnorderedAccessView1DArray" );
+			checkError( m_device, hr, "CreateUnorderedAccessView1DArray" );
 			dxDebugName( m_unorderedAccessView, UnorderedAccessView1DArray );
 		}
 	}
@@ -188,7 +188,7 @@ namespace d3d11_renderer
 				auto hr = device->CreateDepthStencilView( m_image.getTexture2D()
 					, &desc
 					, &m_depthStencilView );
-				dxCheckError( hr, "CreateDepthStencilView2D" );
+				checkError( m_device, hr, "CreateDepthStencilView2D" );
 				dxDebugName( m_depthStencilView, DepthStencilView2D );
 			}
 			else
@@ -200,7 +200,7 @@ namespace d3d11_renderer
 				auto hr = device->CreateRenderTargetView( m_image.getTexture2D()
 					, &desc
 					, &m_renderTargetView );
-				dxCheckError( hr, "CreateRenderTargetView2D" );
+				checkError( m_device, hr, "CreateRenderTargetView2D" );
 				dxDebugName( m_renderTargetView, RenderTargetView2D );
 			}
 		}
@@ -215,7 +215,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateShaderResourceView( m_image.getTexture2D()
 				, &desc
 				, &m_shaderView );
-			dxCheckError( hr, "CreateShaderResourceView2D" );
+			checkError( m_device, hr, "CreateShaderResourceView2D" );
 			dxDebugName( m_shaderView, ShaderResourceView2D );
 		}
 
@@ -229,7 +229,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture2D()
 				, &desc
 				, &m_unorderedAccessView );
-			dxCheckError( hr, "CreateUnorderedAccessView2D" );
+			checkError( m_device, hr, "CreateUnorderedAccessView2D" );
 			dxDebugName( m_unorderedAccessView, UnorderedAccessView2D );
 		}
 	}
@@ -251,7 +251,7 @@ namespace d3d11_renderer
 				auto hr = device->CreateDepthStencilView( m_image.getTexture2D()
 					, &desc
 					, &m_depthStencilView );
-				dxCheckError( hr, "CreateDepthStencilView2D" );
+				checkError( m_device, hr, "CreateDepthStencilView2D" );
 				dxDebugName( m_depthStencilView, DepthStencilView2D );
 			}
 			else
@@ -265,7 +265,7 @@ namespace d3d11_renderer
 				auto hr = device->CreateRenderTargetView( m_image.getTexture2D()
 					, &desc
 					, &m_renderTargetView );
-				dxCheckError( hr, "CreateRenderTargetView2DArray" );
+				checkError( m_device, hr, "CreateRenderTargetView2DArray" );
 				dxDebugName( m_renderTargetView, RenderTargetView2DArray );
 			}
 		}
@@ -282,7 +282,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateShaderResourceView( m_image.getTexture2D()
 				, &desc
 				, &m_shaderView );
-			dxCheckError( hr, "CreateShaderResourceView2DArray" );
+			checkError( m_device, hr, "CreateShaderResourceView2DArray" );
 			dxDebugName( m_shaderView, ShaderResourceView2DArray );
 		}
 
@@ -298,7 +298,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture2D()
 				, &desc
 				, &m_unorderedAccessView );
-			dxCheckError( hr, "CreateUnorderedAccessView2DArray" );
+			checkError( m_device, hr, "CreateUnorderedAccessView2DArray" );
 			dxDebugName( m_unorderedAccessView, UnorderedAccessView2DArray );
 		}
 	}
@@ -318,7 +318,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateRenderTargetView( m_image.getTexture3D()
 				, &desc
 				, &m_renderTargetView );
-			dxCheckError( hr, "CreateRenderTargetView3D" );
+			checkError( m_device, hr, "CreateRenderTargetView3D" );
 			dxDebugName( m_unorderedAccessView, RenderTargetView3D );
 		}
 
@@ -332,7 +332,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateShaderResourceView( m_image.getTexture3D()
 				, &desc
 				, &m_shaderView );
-			dxCheckError( hr, "CreateShaderResourceView3D" );
+			checkError( m_device, hr, "CreateShaderResourceView3D" );
 			dxDebugName( m_unorderedAccessView, UnorderedAccessView3D );
 		}
 
@@ -348,7 +348,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture3D()
 				, &desc
 				, &m_unorderedAccessView );
-			dxCheckError( hr, "CreateUnorderedAccessView3D" );
+			checkError( m_device, hr, "CreateUnorderedAccessView3D" );
 			dxDebugName( m_unorderedAccessView, UnorderedAccessView3D );
 		}
 	}
@@ -368,7 +368,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateRenderTargetView( m_image.getTexture2D()
 				, &desc
 				, &m_renderTargetView );
-			dxCheckError( hr, "CreateRenderTargetViewCube" );
+			checkError( m_device, hr, "CreateRenderTargetViewCube" );
 			dxDebugName( m_unorderedAccessView, RenderTargetViewCube );
 		}
 
@@ -382,7 +382,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateShaderResourceView( m_image.getTexture2D()
 				, &desc
 				, &m_shaderView );
-			dxCheckError( hr, "CreateShaderResourceViewCube" );
+			checkError( m_device, hr, "CreateShaderResourceViewCube" );
 			dxDebugName( m_unorderedAccessView, ShaderResourceViewCube );
 		}
 
@@ -398,7 +398,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture2D()
 				, &desc
 				, &m_unorderedAccessView );
-			dxCheckError( hr, "CreateUnorderedAccessViewCube" );
+			checkError( m_device, hr, "CreateUnorderedAccessViewCube" );
 			dxDebugName( m_unorderedAccessView, UnorderedAccessViewCube );
 		}
 	}
@@ -418,10 +418,10 @@ namespace d3d11_renderer
 			auto hr = device->CreateRenderTargetView( m_image.getTexture2D()
 				, &desc
 				, &m_renderTargetView );
-			dxCheckError( hr, "CreateRenderTargetViewCubeArray" );
+			checkError( m_device, hr, "CreateRenderTargetViewCubeArray" );
 			dxDebugName( m_unorderedAccessView, RenderTargetViewCubeArray );
 
-			if ( dxCheckError( hr, "CreateRenderTargetViewCubeArray" ) )
+			if ( checkError( m_device, hr, "CreateRenderTargetViewCubeArray" ) )
 			{
 				dxDebugName( m_renderTargetView, RenderTargetViewCubeArray );
 			}
@@ -439,7 +439,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateShaderResourceView( m_image.getTexture2D()
 				, &desc
 				, &m_shaderView );
-			dxCheckError( hr, "CreateShaderResourceViewCubeArray" );
+			checkError( m_device, hr, "CreateShaderResourceViewCubeArray" );
 			dxDebugName( m_unorderedAccessView, ShaderResourceViewCubeArray );
 		}
 
@@ -455,7 +455,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateUnorderedAccessView( m_image.getTexture2D()
 				, &desc
 				, &m_unorderedAccessView );
-			dxCheckError( hr, "CreateUnorderedAccessViewCubeArray" );
+			checkError( m_device, hr, "CreateUnorderedAccessViewCubeArray" );
 			dxDebugName( m_unorderedAccessView, UnorderedAccessViewCubeArray );
 		}
 	}

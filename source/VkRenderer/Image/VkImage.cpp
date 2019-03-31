@@ -197,7 +197,13 @@ namespace vk_renderer
 
 	ashes::MemoryRequirements Image::getMemoryRequirements()const
 	{
-		return m_device.getImageMemoryRequirements( m_image );
+		VkMemoryRequirements requirements;
+		m_device.vkGetImageMemoryRequirements( m_device
+			, m_image
+			, &requirements );
+		ashes::MemoryRequirements result = convert( requirements );
+		result.type = ashes::ResourceType::eImage;
+		return result;
 	}
 
 	ashes::ImageViewPtr Image::createView( ashes::ImageViewCreateInfo const & createInfo )const

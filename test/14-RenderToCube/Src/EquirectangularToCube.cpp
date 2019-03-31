@@ -58,10 +58,9 @@ namespace vkapp
 				, ashes::MemoryPropertyFlag::eDeviceLocal );
 			auto view = result->createView( ashes::ImageViewType::e2D
 				, image.format );
-
-			auto staging = device->createStagingTexture( image.format
-				, { image.size.width, image.size.height } );
-			staging->uploadTextureData( queue
+			
+			auto staging = ashes::StagingBuffer{ device, 0u, ashes::getSize( image.size, image.format ) };
+			staging.uploadTextureData( queue
 				, commandPool
 				, image.format
 				, image.data

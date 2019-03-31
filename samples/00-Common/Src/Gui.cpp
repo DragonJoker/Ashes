@@ -270,9 +270,8 @@ namespace common
 			, m_fontImage->getFormat() );
 
 		auto copyCmd = commandPool.createCommandBuffer();
-		auto stagingTexture = m_device.getDevice().createStagingTexture( ashes::Format::eR8G8B8A8_UNORM
-			, { uint32_t( texWidth ), uint32_t( texHeight ) } );
-		stagingTexture->uploadTextureData( queue
+		auto staging = ashes::StagingBuffer{ m_device, 0u };
+		staging.uploadTextureData( queue
 			, commandPool
 			, ashes::Format::eR8G8B8A8_UNORM
 			, fontData

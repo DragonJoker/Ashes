@@ -173,8 +173,6 @@ namespace vkapp
 	{
 		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
-		auto stagingTexture = m_device->getDevice().createStagingTexture( image.format
-			, { image.size.width, image.size.height } );
 		m_texture = m_device->createImage(
 			{
 				0u,
@@ -195,7 +193,8 @@ namespace vkapp
 			, ashes::WrapMode::eClampToEdge
 			, ashes::Filter::eLinear
 			, ashes::Filter::eLinear );
-		stagingTexture->uploadTextureData( *m_graphicsQueue
+
+		m_stagingBuffer->uploadTextureData( *m_graphicsQueue
 			, *m_commandPool
 			, image.format
 			, image.data
@@ -272,7 +271,7 @@ namespace vkapp
 	{
 		m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( m_device->getDevice()
 			, 0u
-			, 1000000u );
+			, 10000000u );
 	}
 
 	void RenderPanel::doCreatePipeline()

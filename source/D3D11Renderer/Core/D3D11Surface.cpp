@@ -48,7 +48,7 @@ namespace d3d11_renderer
 						, &numModes
 						, nullptr );
 
-					if ( !dxCheckError( hr, "GetDisplayModeList" ) )
+					if ( FAILED( hr ) )
 					{
 						throw std::runtime_error( "GetDisplayModeList(numModes) failed" );
 					}
@@ -62,7 +62,7 @@ namespace d3d11_renderer
 							, &numModes
 							, displayModeList.data() );
 
-						if ( !dxCheckError( hr, "GetDisplayModeList" ) )
+						if ( FAILED( hr ) )
 						{
 							throw std::runtime_error( "GetDisplayModeList(displayModeList) failed" );
 						}

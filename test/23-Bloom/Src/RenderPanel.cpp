@@ -278,7 +278,6 @@ namespace vkapp
 			m_view.reset();
 			m_texture.reset();
 			m_stagingBuffer.reset();
-			m_stagingTexture.reset();
 
 			m_matrixUbo.reset();
 			m_objectUbo.reset();
@@ -393,8 +392,6 @@ namespace vkapp
 
 	void RenderPanel::doCreateTexture()
 	{
-		m_stagingTexture = m_device->getDevice().createStagingTexture( ashes::Format::eR8G8B8A8_UNORM
-			, { 512u, 512u } );
 		m_texture = m_device->createImage(
 			{
 				ashes::ImageCreateFlag::eCubeCompatible,
@@ -434,7 +431,7 @@ namespace vkapp
 		for ( size_t i = 0u; i < paths.size(); ++i )
 		{
 			auto image = common::loadImage( shadersFolder / paths[i] );
-			m_stagingTexture->uploadTextureData( *m_graphicsQueue
+			m_stagingBuffer->uploadTextureData( *m_graphicsQueue
 				, *m_commandPool
 				, {
 					m_view->getSubResourceRange().aspectMask,

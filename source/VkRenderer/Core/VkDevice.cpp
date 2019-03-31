@@ -233,42 +233,20 @@ namespace vk_renderer
 		checkError( vkDeviceWaitIdle( m_device ), "Device wait idle" );
 	}
 
-	ashes::MemoryRequirements Device::getBufferMemoryRequirements( VkBuffer buffer )const
-	{
-		VkMemoryRequirements requirements;
-		vkGetBufferMemoryRequirements( m_device
-			, buffer
-			, &requirements );
-		ashes::MemoryRequirements result = convert( requirements );
-		result.type = ashes::ResourceType::eBuffer;
-		return result;
-	}
-
-	ashes::MemoryRequirements Device::getImageMemoryRequirements( VkImage image )const
-	{
-		VkMemoryRequirements requirements;
-		vkGetImageMemoryRequirements( m_device
-			, image
-			, &requirements );
-		ashes::MemoryRequirements result = convert( requirements );
-		result.type = ashes::ResourceType::eImage;
-		return result;
-	}
-
 	uint32_t Device::deduceMemoryType( uint32_t typeBits
 		, ashes::MemoryPropertyFlags requirements )const
 	{
 		uint32_t result = 0xFFFFFFFFu;
 		bool found{ false };
 
-		// Recherche parmi les types de mémoire la première ayant les propriétés voulues.
+		// Recherche parmi les types de mï¿½moire la premiï¿½re ayant les propriï¿½tï¿½s voulues.
 		uint32_t i{ 0 };
 
 		while ( i < m_memoryProperties.memoryTypes.size() && !found )
 		{
 			if ( ( typeBits & 1 ) == 1 )
 			{
-				// Le type de mémoire est disponible, a-t-il les propriétés demandées?
+				// Le type de mï¿½moire est disponible, a-t-il les propriï¿½tï¿½s demandï¿½es?
 				if ( ( m_memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
 				{
 					result = i;

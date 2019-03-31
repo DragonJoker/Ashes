@@ -97,7 +97,7 @@ namespace d3d11_renderer
 				, D3D11_MAP_WRITE
 				, 0u
 				, &mapped );
-			dxCheckError( hr, "Map" );
+			checkError( m_device, hr, "Map" );
 			auto bufferOut = reinterpret_cast< uint8_t * >( mapped.pData );
 			auto bufferIn = reinterpret_cast< uint8_t const * >( data );
 			auto sizeOut = mapped.RowPitch;
@@ -208,7 +208,7 @@ namespace d3d11_renderer
 				, D3D11_MAP_WRITE
 				, 0u
 				, &mapped );
-			dxCheckError( hr, "Map" );
+			checkError( m_device, hr, "Map" );
 			auto bufferIn = reinterpret_cast< uint8_t const * >( mapped.pData );
 			auto bufferOut = reinterpret_cast< uint8_t * >( data );
 			auto blockSize = getBlockSize( format );

@@ -472,10 +472,13 @@ namespace d3d11_renderer
 		, ashes::BufferBase const & src
 		, ashes::Image const & dst )const
 	{
-		m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( m_device
-			, copyInfo
-			, src
-			, dst ) );
+		if ( !m_device.onCopyToImageCommand( *this, copyInfo, src, dst ) )
+		{
+			m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( m_device
+				, copyInfo
+				, src
+				, dst ) );
+		}
 	}
 
 	void CommandBuffer::copyToBuffer( ashes::BufferImageCopyArray const & copyInfo
