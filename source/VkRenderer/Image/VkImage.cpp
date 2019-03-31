@@ -78,6 +78,30 @@ namespace vk_renderer
 
 			return result;
 		}
+
+		VkImageCreateInfo convert( ashes::ImageCreateInfo const & value )
+		{
+			return
+			{
+				VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+				nullptr,
+				vk_renderer::convert( value.flags ),           // flags
+				vk_renderer::convert( value.imageType ),       // imageType
+				vk_renderer::convert( value.format ),          // format
+				vk_renderer::convert( value.extent ),          // extent
+				value.mipLevels,                               // mipLevels
+				value.arrayLayers,                             // arrayLayers
+				vk_renderer::convert( value.samples ),         // samples
+				vk_renderer::convert( value.tiling ),          // tiling
+				vk_renderer::convert( value.usage ),           // usage
+				vk_renderer::convert( value.sharingMode ),     // sharingMode
+				uint32_t( value.queueFamilyIndices.size() ),   // queueFamilyIndexCount
+				value.queueFamilyIndices.empty()               // pQueueFamilyIndices
+					? nullptr
+					: value.queueFamilyIndices.data(),
+				vk_renderer::convert( value.initialLayout )    // initialLayout
+			};
+		}
 	}
 
 	Image::Image( Image && rhs )
@@ -85,6 +109,7 @@ namespace vk_renderer
 		, m_device{ rhs.m_device }
 		, m_image{ rhs.m_image }
 		, m_owner{ rhs.m_owner }
+		, m_vkCreateInfo{ rhs.m_vkCreateInfo }
 	{
 		rhs.m_image = VK_NULL_HANDLE;
 	}
@@ -97,6 +122,7 @@ namespace vk_renderer
 		{
 			m_image = rhs.m_image;
 			m_owner = rhs.m_owner;
+			m_vkCreateInfo = rhs.m_vkCreateInfo;
 			rhs.m_image = VK_NULL_HANDLE;
 		}
 
@@ -105,40 +131,15 @@ namespace vk_renderer
 
 	Image::Image( Device const & device
 		, ashes::ImageCreateInfo const & createInfo )
-		: ashes::Image{ device
-			, createInfo.flags
-			, createInfo.imageType
-			, createInfo.format
-			, createInfo.extent
-			, createInfo.mipLevels
-			, createInfo.arrayLayers }
+		: ashes::Image{ device, createInfo }
 		, m_device{ device }
 		, m_image{}
 		, m_owner{ true }
+		, m_vkCreateInfo{ convert( m_createInfo ) }
 	{
-		VkImageCreateInfo vkcreateInfo
-		{
-			VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-			nullptr,
-			convert( createInfo.flags ),                        // flags
-			convert( createInfo.imageType ),                    // imageType
-			convert( createInfo.format ),                       // format
-			convert( createInfo.extent ),                       // extent
-			createInfo.mipLevels,                               // mipLevels
-			createInfo.arrayLayers,                             // arrayLayers
-			convert( createInfo.samples ),                      // samples
-			convert( createInfo.tiling ),                       // tiling
-			convert( createInfo.usage ),                        // usage
-			convert( createInfo.sharingMode ),                  // sharingMode
-			uint32_t( createInfo.queueFamilyIndices.size() ),   // queueFamilyIndexCount
-			createInfo.queueFamilyIndices.empty()               // pQueueFamilyIndices
-				? nullptr
-				: createInfo.queueFamilyIndices.data(),
-			convert( createInfo.initialLayout )                 // initialLayout
-		};
-		DEBUG_DUMP( vkcreateInfo );
+		DEBUG_DUMP( m_vkCreateInfo );
 		auto res = m_device.vkCreateImage( m_device
-			, &vkcreateInfo
+			, &m_vkCreateInfo
 			, nullptr
 			, &m_image );
 		checkError( res, "Image creation" );
@@ -149,15 +150,24 @@ namespace vk_renderer
 		, ashes::Extent2D const & dimensions
 		, VkImage image )
 		: ashes::Image{ device
-			, 0u
-			, ashes::ImageType::e2D
-			, doSelectFormat( device, format )
-			, ashes::Extent3D{ dimensions.width, dimensions.height, 1u }
-			, 1u 
-			, 1u }
+			, {
+				0u,
+				ashes::ImageType::e2D,
+				doSelectFormat( device, format ),
+				ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
+				1u,
+				1u,
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				ashes::ImageUsageFlag::eNone,
+				ashes::SharingMode::eExclusive,
+				{},
+				ashes::ImageLayout::eUndefined
+			} }
 		, m_device{ device }
 		, m_image{ image }
 		, m_owner{ false }
+		, m_vkCreateInfo{ convert( m_createInfo ) }
 	{
 	}
 

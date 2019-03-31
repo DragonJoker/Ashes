@@ -201,8 +201,24 @@ namespace utils
 
 		for ( size_t i = 0u; i < result.size(); ++i )
 		{
-			auto attaches = doPrepareAttaches( uint32_t( i ), renderPass.getAttachments() );
-			result[i] = static_cast< ashes::RenderPass const & >( renderPass ).createBackBuffer( m_swapChain->getDimensions()
+			auto attaches = doPrepareAttaches( uint32_t( i ), renderPass.getAttachments(), nullptr );
+			result[i] = static_cast< ashes::RenderPass const & >( renderPass ).createFrameBuffer( m_swapChain->getDimensions()
+				, std::move( attaches ) );
+		}
+
+		return result;
+	}
+
+	ashes::FrameBufferPtrArray SwapChain::createFrameBuffers( ashes::RenderPass const & renderPass
+		, ashes::ImageViewPtr depthStencilView )const
+	{
+		ashes::FrameBufferPtrArray result;
+		result.resize( m_swapChainImages.size() );
+
+		for ( size_t i = 0u; i < result.size(); ++i )
+		{
+			auto attaches = doPrepareAttaches( uint32_t( i ), renderPass.getAttachments(), depthStencilView );
+			result[i] = static_cast< ashes::RenderPass const & >( renderPass ).createFrameBuffer( m_swapChain->getDimensions()
 				, std::move( attaches ) );
 		}
 
@@ -268,13 +284,9 @@ namespace utils
 		resources.setImageIndex( ~0u );
 	}
 
-	void SwapChain::createDepthStencil( ashes::Format format )
-	{
-		m_swapChain->createDepthStencil( format );
-	}
-
 	ashes::FrameBufferAttachmentArray SwapChain::doPrepareAttaches( uint32_t backBuffer
-		, ashes::AttachmentDescriptionArray const & attaches )const
+		, ashes::AttachmentDescriptionArray const & attaches
+		, ashes::ImageViewPtr depthStencilView )const
 	{
 		ashes::FrameBufferAttachmentArray result;
 
@@ -290,8 +302,10 @@ namespace utils
 			}
 			else
 			{
+				assert( depthStencilView
+					&& "Asked for a depth stencil attachment in RenderPass, but no depth stencil view provided." );
 				result.emplace_back( attach
-					, m_swapChain->getDepthStencilView() );
+					, std::move( depthStencilView ) );
 			}
 		}
 

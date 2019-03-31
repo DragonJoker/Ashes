@@ -137,6 +137,8 @@ namespace vkapp
 
 			m_commandBuffers.clear();
 			m_frameBuffers.clear();
+			m_depthStencilView.reset();
+			m_depthStencil.reset();
 			m_sampler.reset();
 			m_view.reset();
 			m_texture.reset();
@@ -313,7 +315,7 @@ namespace vkapp
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
 				, ashes::AccessFlag::eColourAttachmentWrite }
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
-				, ashes::AccessFlag::eShaderRead } );
+				, ashes::AccessFlag::eColourAttachmentWrite } );
 	}
 
 	void RenderPanel::doCreateVertexBuffer()
@@ -476,11 +478,33 @@ namespace vkapp
 		} );
 	}
 
+	void RenderPanel::doCreateDepthStencil()
+	{
+		m_depthStencil = m_device->createImage(
+			{
+				0u,
+				ashes::ImageType::e2D,
+				DepthFormat,
+				ashes::Extent3D{ m_swapChain->getDimensions().width, m_swapChain->getDimensions().height, 1u },
+				1u,
+				1u,
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				ashes::ImageUsageFlag::eDepthStencilAttachment,
+				ashes::SharingMode::eExclusive,
+			{},
+			ashes::ImageLayout::eUndefined,
+			}
+		, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_depthStencilView = m_depthStencil->createView( ashes::ImageViewType::e2D
+			, DepthFormat );
+	}
+
 	void RenderPanel::doPrepareFrames()
 	{
 		doUpdateProjection();
-		m_swapChain->createDepthStencil( DepthFormat );
-		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
+		doCreateDepthStencil();
+		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass, m_depthStencilView );
 		m_commandBuffers = m_swapChain->createCommandBuffers();
 		m_queryPool = m_device->getDevice().createQueryPool( ashes::QueryType::eTimestamp
 			, 2u

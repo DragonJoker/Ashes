@@ -67,7 +67,7 @@ namespace gl_renderer
 		, m_internal{ getInternal( m_src.getFormat() ) }
 		, m_format{ getFormat( m_internal ) }
 		, m_type{ getType( m_internal ) }
-		, m_target{ convert( m_src.getType(), 1u, m_src.getFlags() ) }
+		, m_target{ convert( m_src.getType(), 1u, m_src.getCreateFlags() ) }
 		, m_views{ createViews( m_device, m_src, m_copyInfo ) }
 		, m_srcFbo{ device.getBlitSrcFbo() }
 	{

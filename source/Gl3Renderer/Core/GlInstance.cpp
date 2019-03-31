@@ -335,6 +335,7 @@ namespace gl_renderer
 				} );
 
 			// Emulate all combinations of device local memory types
+			// and all combinations of host visible memory types
 			result.memoryTypes.push_back(
 				{
 					0u | ashes::MemoryPropertyFlag::eDeviceLocal,
@@ -342,34 +343,24 @@ namespace gl_renderer
 				} );
 			result.memoryTypes.push_back(
 				{
-					0u | ashes::MemoryPropertyFlag::eLazilyAllocated,
-					0u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					ashes::MemoryPropertyFlag::eDeviceLocal | ashes::MemoryPropertyFlag::eLazilyAllocated,
-					0u,
-				} );
-
-			// and all combinations of host visible memory types
-			result.memoryTypes.push_back(
-				{
 					0u | ashes::MemoryPropertyFlag::eHostVisible,
 					1u,
 				} );
-
 			result.memoryTypes.push_back(
 				{
 					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent,
 					1u,
 				} );
-
 			result.memoryTypes.push_back(
 				{
 					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCached,
 					1u,
 				} );
-
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eLazilyAllocated,
+					1u,
+				} );
 			result.memoryTypes.push_back(
 				{
 					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent | ashes::MemoryPropertyFlag::eHostCached,

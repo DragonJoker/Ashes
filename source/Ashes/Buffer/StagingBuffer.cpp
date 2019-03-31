@@ -129,9 +129,23 @@ namespace ashes
 				subresourceLayers.baseArrayLayer,
 			};
 			SubresourceLayout layout;
-			device.getImageSubresourceLayout( image
-				, subresource
-				, layout );
+
+			if ( image.getTiling() == ashes::ImageTiling::eLinear )
+			{
+				device.getImageSubresourceLayout( image
+					, subresource
+					, layout );
+			}
+			else
+			{
+				auto mipWidth = getSubresourceValue( image.getDimensions().width, subresource.mipLevel );
+				auto mipHeight = getSubresourceValue( image.getDimensions().height, subresource.mipLevel );
+				layout.rowPitch = texelBlockSize * mipWidth / ( texelBlockExtent.width * texelBlockExtent.height * texelBlockExtent.depth );
+				layout.arrayPitch = layout.rowPitch * mipHeight * texelBlockExtent.height / ( texelBlockExtent.width * texelBlockExtent.depth );
+				layout.depthPitch = layout.arrayPitch;
+				layout.offset = subresource.arrayLayer * layout.arrayPitch * texelBlockSize;
+				layout.size = layout.arrayPitch * image.getDimensions().depth;
+			}
 
 			ImageSubresourceLayers layers
 			{
@@ -342,20 +356,12 @@ namespace ashes
 			, range.levelCount );
 		doCopyToStagingBuffer( data
 			, layerSize );
-		commandBuffer.memoryBarrier( ashes::PipelineStageFlag::eTopOfPipe
-			, ashes::PipelineStageFlag::eTransfer
-			, view.makeTransferDestination( ashes::ImageLayout::eUndefined
-				, 0u ) );
 		doCopyFromStagingBuffer( commandBuffer
 			, extent
 			, offset
 			, view
 			, dstStageFlags
 			, subresourceLayers );
-		commandBuffer.memoryBarrier( ashes::PipelineStageFlag::eTransfer
-			, ashes::PipelineStageFlag::eFragmentShader
-			, view.makeShaderInputResource( ashes::ImageLayout::eTransferDstOptimal
-				, ashes::AccessFlag::eTransferWrite ) );
 	}
 
 	void StagingBuffer::uploadTextureData( CommandBuffer const & commandBuffer

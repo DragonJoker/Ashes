@@ -29,13 +29,7 @@ namespace test_renderer
 
 	Image::Image( Device const & device
 		, ashes::ImageCreateInfo const & createInfo )
-		: ashes::Image{ device
-			, createInfo.flags
-			, createInfo.imageType
-			, createInfo.format
-			, createInfo.extent
-			, createInfo.mipLevels
-			, createInfo.arrayLayers }
+		: ashes::Image{ device, createInfo }
 		, m_device{ device }
 	{
 	}
@@ -44,12 +38,22 @@ namespace test_renderer
 		, ashes::Format format
 		, ashes::Extent2D const & dimensions )
 		: ashes::Image{ device
-			, 0u
-			, ashes::ImageType::e2D
-			, format
-			, ashes::Extent3D{ dimensions.width, dimensions.height, 1u }
-			, 1u 
-			, 1u }
+			, {
+				0u,
+				ashes::ImageType::e2D,
+				format,
+				ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
+				1u,
+				1u,
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				( isDepthOrStencilFormat( format )
+					? ashes::ImageUsageFlag::eDepthStencilAttachment
+					: ashes::ImageUsageFlag::eColourAttachment ),
+				ashes::SharingMode::eExclusive,
+				{},
+				ashes::ImageLayout::eUndefined
+			} }
 		, m_device{ device }
 	{
 	}
@@ -85,19 +89,15 @@ namespace test_renderer
 	ashes::MemoryRequirements Image::getMemoryRequirements()const
 	{
 		ashes::MemoryRequirements result{};
-
-		if ( !ashes::isCompressedFormat( getFormat() ) )
-		{
-			result.size = getDimensions().width
-				* getDimensions().height
-				* getDimensions().depth
-				* getLayerCount()
-				* ashes::getSize( getFormat() );
-		}
-
+		result.size = ashes::getSize( getDimensions(), getFormat() );
 		result.type = ashes::ResourceType::eImage;
-		result.alignment = 1u;
-		result.memoryTypeBits = ~result.memoryTypeBits;
+		auto extent = ashes::getMinimalExtent3D( getFormat() );
+		result.alignment = ashes::getSize( extent, getFormat() );
+		result.memoryTypeBits = ashes::MemoryPropertyFlag::eDeviceLocal
+			| ( ( checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferDst )
+				&& checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferSrc ) )
+				? ashes::MemoryPropertyFlag::eHostVisible
+				: ashes::MemoryPropertyFlag::eDeviceLocal );
 		return result;
 	}
 

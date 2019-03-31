@@ -99,6 +99,7 @@ namespace vk_renderer
 	private:
 		Device const & m_device;
 		VkImage m_image{};
+		VkImageCreateInfo m_vkCreateInfo;
 		bool m_owner{};
 	};
 }

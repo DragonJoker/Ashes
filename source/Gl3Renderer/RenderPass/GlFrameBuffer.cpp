@@ -31,16 +31,16 @@ namespace gl_renderer
 			GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE = 0x8D56,
 			GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
 		};
-	}
 
-	bool isSRGBFormat( ashes::Format format )
-	{
-		return format == ashes::Format::eR8G8_SRGB
-			|| format == ashes::Format::eR8G8B8_SRGB
-			|| format == ashes::Format::eB8G8R8_SRGB
-			|| format == ashes::Format::eR8G8B8A8_SRGB
-			|| format == ashes::Format::eB8G8R8A8_SRGB
-			|| format == ashes::Format::eA8B8G8R8_SRGB_PACK32;
+		bool isSRGBFormat( ashes::Format format )
+		{
+			return format == ashes::Format::eR8G8_SRGB
+				|| format == ashes::Format::eR8G8B8_SRGB
+				|| format == ashes::Format::eB8G8R8_SRGB
+				|| format == ashes::Format::eR8G8B8A8_SRGB
+				|| format == ashes::Format::eB8G8R8A8_SRGB
+				|| format == ashes::Format::eA8B8G8R8_SRGB_PACK32;
+		}
 	}
 
 	GlAttachmentPoint getAttachmentPoint( GlInternal format )
@@ -165,21 +165,13 @@ namespace gl_renderer
 	FrameBuffer::FrameBuffer( Device const & device
 		, RenderPass const & renderPass
 		, ashes::Extent2D const & dimensions
-		, ashes::FrameBufferAttachmentArray views
-		, bool backBuffer )
+		, ashes::FrameBufferAttachmentArray views )
 		: ashes::FrameBuffer{ renderPass, dimensions, std::move( views ) }
 		, m_device{ device }
 		, m_frameBuffer{ 0u }
 		, m_renderPass{ renderPass }
 	{
-		if ( backBuffer )
-		{
-			doInitialiseBackBuffer();
-		}
-		else
-		{
-			doInitialiseFramebuffer();
-		}
+		doInitialiseFramebuffer();
 	}
 
 	FrameBuffer::~FrameBuffer()
@@ -250,14 +242,6 @@ namespace gl_renderer
 		}
 	}
 
-	void FrameBuffer::doInitialiseBackBuffer()
-	{
-		for ( auto & attach : m_attachments )
-		{
-			doInitialiseBackAttach( attach );
-		}
-	}
-
 	void FrameBuffer::doInitialiseFramebuffer()
 	{
 		auto context = m_device.getContext();
@@ -274,16 +258,8 @@ namespace gl_renderer
 		{
 			auto & glview = static_cast< ImageView const & >( attach.getView() );
 			auto & gltexture = static_cast< Image const & >( glview.getImage() );
-
-			// If the image doesn't exist, it means it is a backbuffer image, hence ignore the attachment.
-			if ( gltexture.hasImage() )
-			{
-				doInitialiseFboAttach( attach );
-			}
-			else
-			{
-				doInitialiseBackAttach( attach );
-			}
+			assert( gltexture.hasImage() );
+			doInitialiseFboAttach( attach );
 		}
 
 		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
@@ -325,7 +301,7 @@ namespace gl_renderer
 		GLenum target = gltexture.getLayerCount() > 1u
 			? GL_TEXTURE_2D_ARRAY
 			: GL_TEXTURE_2D;
-		bool isCube = checkFlag( gltexture.getFlags(), ashes::ImageCreateFlag::eCubeCompatible );
+		bool isCube = checkFlag( gltexture.getCreateFlags(), ashes::ImageCreateFlag::eCubeCompatible );
 
 		if ( gltexture.getSamplesCount() > ashes::SampleCountFlag::e1 )
 		{
@@ -362,26 +338,5 @@ namespace gl_renderer
 		}
 
 		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
-	}
-
-	void FrameBuffer::doInitialiseBackAttach( ashes::FrameBufferAttachment const & attach )
-	{
-		FboAttachment attachment
-		{
-			GL_ATTACHMENT_POINT_BACK,
-			GL_INVALID_INDEX,
-			getAttachmentType( attach.getView().getFormat() )
-		};
-
-		if ( ashes::isDepthOrStencilFormat( attach.getFormat() ) )
-		{
-			m_depthStencilAttach = attachment;
-		}
-		else
-		{
-			m_colourAttaches.push_back( attachment );
-		}
-
-		m_allAttaches.push_back( attachment );
 	}
 }
