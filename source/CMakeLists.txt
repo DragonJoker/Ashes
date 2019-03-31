@@ -86,7 +86,7 @@ endif ()
 set( SPIRV_CROSS_DIR ${ASHES_SOURCE_DIR}/external/SPIRV-Cross )
 
 add_subdirectory( Ashes )
-add_subdirectory( AshesPP )
+# add_subdirectory( AshesPP )
 
 if ( ASHES_BUILD_PLUGINS )
 	if ( NOT DEFINED ASHES_STATIC_RENDERER_PLUGINS )
