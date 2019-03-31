@@ -15,7 +15,6 @@ See LICENSE file in root folder.
 #include "Descriptor/VkDescriptorPool.hpp"
 #include "Descriptor/VkDescriptorSetLayout.hpp"
 #include "Image/VkSampler.hpp"
-#include "Image/VkStagingTexture.hpp"
 #include "Image/VkImage.hpp"
 #include "Image/VkImageView.hpp"
 #include "Miscellaneous/VkDeviceMemory.hpp"
@@ -62,12 +61,6 @@ namespace vk_renderer
 	Device::~Device()
 	{
 		vkDestroyDevice( m_device, nullptr );
-	}
-
-	ashes::StagingTexturePtr Device::createStagingTexture( ashes::Format format
-		, ashes::Extent2D const & extent )const
-	{
-		return std::make_unique< StagingTexture >( *this, format, extent );
 	}
 
 	ashes::RenderPassPtr Device::createRenderPass( ashes::RenderPassCreateInfo createInfo )const

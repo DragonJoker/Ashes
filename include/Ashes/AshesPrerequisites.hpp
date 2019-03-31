@@ -339,7 +339,6 @@ namespace ashes
 	class ShaderStorageBufferBase;
 	class SpecialisationInfoBase;
 	class StagingBuffer;
-	class StagingTexture;
 	class Surface;
 	class SwapChain;
 	class UniformBufferBase;
@@ -408,7 +407,6 @@ namespace ashes
 	using SemaphorePtr = std::unique_ptr< Semaphore >;
 	using ShaderStorageBufferBasePtr = std::unique_ptr< ShaderStorageBufferBase >;
 	using StagingBufferPtr = std::unique_ptr< StagingBuffer >;
-	using StagingTexturePtr = std::unique_ptr< StagingTexture >;
 	using SurfacePtr = std::unique_ptr< Surface >;
 	using SwapChainPtr = std::unique_ptr< SwapChain >;
 	using ImagePtr = std::unique_ptr< Image >;
