@@ -15,7 +15,6 @@
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
-#include <Image/StagingTexture.hpp>
 #include <Image/Image.hpp>
 #include <Image/ImageView.hpp>
 #include <Miscellaneous/QueryPool.hpp>
@@ -212,8 +211,6 @@ namespace vkapp
 	{
 		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
-		auto stagingTexture = m_device->getDevice().createStagingTexture( image.format
-			, { image.size.width, image.size.height } );
 		m_texture = m_device->createImage(
 			{
 				0u,

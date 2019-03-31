@@ -37,15 +37,24 @@ namespace d3d11_renderer
 		CommandPtr clone()const override;
 
 	private:
-		void applyOneStaging( Context const & context
-			, ashes::BufferImageCopy const & copyInfo
-			, D3D11_BOX const & srcBox
-			, ashes::SubresourceLayout const & dstLayout )const;
 		void applyOne( Context const & context
 			, ashes::BufferImageCopy const & copyInfo
 			, D3D11_BOX const & srcBox
+			, ashes::SubresourceLayout const & dstLayout )const;
+		void doMapCopy( ashes::BufferImageCopy const & copyInfo
+			, D3D11_BOX const & srcBox
 			, ashes::SubresourceLayout const & dstLayout
-			, ashes::Image const & image )const;
+			, ashes::BufferBase const & src
+			, ashes::Image const & dst )const;
+		void doCopyToStaging( Context const & context
+			, ashes::BufferImageCopy const & copyInfo
+			, ashes::BufferBase const & src
+			, ashes::BufferBase const & staging
+			, D3D11_BOX const & srcBox )const;
+		void doCopyFromStaging( Context const & context
+			, ashes::BufferImageCopy const & copyInfo
+			, ashes::Image const & staging
+			, ashes::Image const & dst )const;
 
 	private:
 		Buffer const & m_src;
@@ -54,6 +63,7 @@ namespace d3d11_renderer
 		DXGI_FORMAT m_format;
 		std::vector< D3D11_BOX > m_srcBoxes;
 		std::vector< ashes::SubresourceLayout > m_dstLayouts;
-		bool m_mappable;
+		bool m_srcMappable;
+		bool m_dstMappable;
 	};
 }

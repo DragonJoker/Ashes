@@ -206,24 +206,6 @@ namespace ashes
 		std::array< float, 16u > infinitePerspective( float radiansFovY
 			, float aspect
 			, float zNear )const;
-		/**
-		*\~french
-		*\brief
-		*	Crée une texture de transfert.
-		*\param[in] extent
-		*	Les dimensions de la texture.
-		*\return
-		*	La texture de transfert créée.
-		*\~english
-		*\brief
-		*	Creates a staging texture.
-		*\param[in] extent
-		*	The texture dimensions.
-		*\return
-		*	The created staging texture.
-		*/
-		virtual StagingTexturePtr createStagingTexture( Format format
-			, Extent2D const & extent )const = 0;
 		/*
 		*\~french
 		*\brief

@@ -36,11 +36,6 @@ namespace test_renderer
 		*/
 		~Device();
 		/**
-		*\copydoc	ashes::Device::createStagingTexture
-		*/
-		ashes::StagingTexturePtr createStagingTexture( ashes::Format format
-			, ashes::Extent2D const & extent )const;
-		/**
 		*\copydoc	ashes::Device::createRenderPass
 		*/
 		ashes::RenderPassPtr createRenderPass( ashes::RenderPassCreateInfo createInfo )const override;

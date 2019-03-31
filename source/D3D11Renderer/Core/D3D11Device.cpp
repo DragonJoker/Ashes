@@ -16,7 +16,6 @@ See LICENSE file in root folder.
 #include "Descriptor/D3D11DescriptorPool.hpp"
 #include "Descriptor/D3D11DescriptorSetLayout.hpp"
 #include "Image/D3D11Sampler.hpp"
-#include "Image/D3D11StagingTexture.hpp"
 #include "Image/D3D11Image.hpp"
 #include "Image/D3D11ImageView.hpp"
 #include "Miscellaneous/D3D11DeviceMemory.hpp"
@@ -152,12 +151,6 @@ namespace d3d11_renderer
 		safeRelease( m_debug );
 
 #endif
-	}
-
-	ashes::StagingTexturePtr Device::createStagingTexture( ashes::Format format
-		, ashes::Extent2D const & extent )const
-	{
-		return std::make_unique< StagingTexture >( *this, format, extent );
 	}
 
 	ashes::RenderPassPtr Device::createRenderPass( ashes::RenderPassCreateInfo createInfo )const

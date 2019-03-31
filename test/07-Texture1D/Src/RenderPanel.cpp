@@ -8,7 +8,6 @@
 #include <Core/Instance.hpp>
 #include <Core/SwapChain.hpp>
 #include <Enum/SubpassContents.hpp>
-#include <Image/StagingTexture.hpp>
 #include <Image/Image.hpp>
 #include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/InputAssemblyState.hpp>

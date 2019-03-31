@@ -14,7 +14,6 @@
 #include "Descriptor/VkDescriptorSet.hpp"
 #include "Descriptor/VkDescriptorSetLayout.hpp"
 #include "Image/VkSampler.hpp"
-#include "Image/VkStagingTexture.hpp"
 #include "Image/VkImage.hpp"
 #include "Image/VkImageView.hpp"
 #include "Miscellaneous/VkDeviceMemory.hpp"
