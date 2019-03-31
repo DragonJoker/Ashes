@@ -331,7 +331,7 @@ namespace vkapp
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
 		{
 			auto attaches = doPrepareAttaches( uint32_t( i ) );
-			m_frameBuffers[i] = m_renderPass->createBackBuffer( m_swapChain->getDimensions()
+			m_frameBuffers[i] = m_renderPass->createFrameBuffer( m_swapChain->getDimensions()
 				, std::move( attaches ) );
 		}
 	}

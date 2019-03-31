@@ -67,7 +67,7 @@ namespace gl_renderer
 			, texture
 			, createInfo }
 		, m_device{ device }
-		, m_target{ convert( m_createInfo, texture.getFlags(), texture.getSamplesCount() ) }
+		, m_target{ convert( m_createInfo, texture.getCreateFlags(), texture.getSamplesCount() ) }
 	{
 	}
 

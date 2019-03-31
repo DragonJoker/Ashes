@@ -65,6 +65,24 @@ namespace utils
 		/**
 		*\~french
 		*\brief
+		*	Creates the backbuffers' framebuffers, compativle with given render pass.
+		*\param[in] renderPass
+		*	The render pass.
+		*\return
+		*	The framebuffers.
+		*\~french
+		*\brief
+		*	Crée les tampons d'image des back buffers, compatibles avec la passe de rendu donnée.
+		*\param[in] renderPass
+		*	La passe de rendu.
+		*\return
+		*	Les tampons d'images.
+		*/
+		ashes::FrameBufferPtrArray createFrameBuffers( ashes::RenderPass const & renderPass
+			, ashes::ImageViewPtr depthStencilView )const;
+		/**
+		*\~french
+		*\brief
 		*	Creates the backbuffers' command buffers.
 		*\return
 		*	The command buffers.
@@ -98,19 +116,6 @@ namespace utils
 		*/
 		void present( RenderingResources & resources
 			, ashes::Queue const & queue );
-		/**
-		*\~french
-		*\brief
-		*	Creates the swap chain's depth and/or stencil image.
-		*\param[in] format
-		*	The pixel format.
-		*\~french
-		*\brief
-		*	Crée l'image de profondeur et/ou stencil de la swap chain.
-		*\param[in] format
-		*	Le format de pixels.
-		*/
-		void createDepthStencil( ashes::Format format );
 
 		inline ashes::Format getFormat()const
 		{
@@ -124,7 +129,8 @@ namespace utils
 
 	private:
 		ashes::FrameBufferAttachmentArray doPrepareAttaches( uint32_t backBuffer
-			, ashes::AttachmentDescriptionArray const & attaches )const;
+			, ashes::AttachmentDescriptionArray const & attaches
+			, ashes::ImageViewPtr depthStencilView )const;
 		bool doCheckNeedReset( ashes::Result errCode
 			, bool acquisition
 			, char const * const action );

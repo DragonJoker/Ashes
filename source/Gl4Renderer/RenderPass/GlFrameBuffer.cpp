@@ -91,85 +91,77 @@ namespace gl_renderer
 		{
 			return getAttachmentType( texture.getFormat() );
 		}
+	}
 
-		void checkCompleteness( GLenum status )
+	void checkCompleteness( GLenum status )
+	{
+		switch ( status )
 		{
-			switch ( status )
-			{
-			case 0:
-				ashes::Logger::logError( "An error has occured." );
-				assert( false );
-				break;
+		case 0:
+			ashes::Logger::logError( "An error has occured." );
+			assert( false );
+			break;
 
-			case GL_FRAMEBUFFER_STATUS_COMPLETE:
-				break;
+		case GL_FRAMEBUFFER_STATUS_COMPLETE:
+			break;
 
-			case GL_FRAMEBUFFER_STATUS_UNDEFINED:
-				ashes::Logger::logError( "The specified framebuffer is the default read or draw framebuffer, but the default framebuffer does not exist." );
-				assert( false );
-				break;
+		case GL_FRAMEBUFFER_STATUS_UNDEFINED:
+			ashes::Logger::logError( "The specified framebuffer is the default read or draw framebuffer, but the default framebuffer does not exist." );
+			assert( false );
+			break;
 
-			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT:
-				ashes::Logger::logError( "At least one of the framebuffer attachment points are framebuffer incomplete." );
-				assert( false );
-				break;
+		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT:
+			ashes::Logger::logError( "At least one of the framebuffer attachment points are framebuffer incomplete." );
+			assert( false );
+			break;
 
-			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT:
-				ashes::Logger::logError( "The framebuffer does not have at least one image attached to it." );
-				assert( false );
-				break;
+		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT:
+			ashes::Logger::logError( "The framebuffer does not have at least one image attached to it." );
+			assert( false );
+			break;
 
-			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER:
-				ashes::Logger::logError( "The value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for any color attachment point(s) named by GL_DRAW_BUFFERi." );
-				assert( false );
-				break;
+		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER:
+			ashes::Logger::logError( "The value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for any color attachment point(s) named by GL_DRAW_BUFFERi." );
+			assert( false );
+			break;
 
-			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER:
-				ashes::Logger::logError( "GL_READ_BUFFER is not GL_NONE and the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for the color attachment point named by GL_READ_BUFFER." );
-				assert( false );
-				break;
+		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER:
+			ashes::Logger::logError( "GL_READ_BUFFER is not GL_NONE and the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for the color attachment point named by GL_READ_BUFFER." );
+			assert( false );
+			break;
 
-			case GL_FRAMEBUFFER_STATUS_UNSUPPORTED:
-				ashes::Logger::logError( "The combination of internal formats of the attached images violates an implementation-dependent set of restrictions." );
-				assert( false );
-				break;
+		case GL_FRAMEBUFFER_STATUS_UNSUPPORTED:
+			ashes::Logger::logError( "The combination of internal formats of the attached images violates an implementation-dependent set of restrictions." );
+			assert( false );
+			break;
 
-			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE:
-				ashes::Logger::logError( "One of the following:" );
-				ashes::Logger::logError( "  - The value of GL_RENDERBUFFER_SAMPLES is not the same for all attached renderbuffers;" );
-				ashes::Logger::logError( "  - The value of GL_TEXTURE_SAMPLES is the not same for all attached textures;" );
-				ashes::Logger::logError( "  - The attached images are a mix of renderbuffers and textures, the value of GL_RENDERBUFFER_SAMPLES does not match the value of GL_TEXTURE_SAMPLES;" );
-				ashes::Logger::logError( "  - The value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not the same for all attached textures;" );
-				ashes::Logger::logError( "  - The attached images are a mix of renderbuffers and textures, the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not GL_TRUE for all attached textures." );
-				assert( false );
-				break;
+		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE:
+			ashes::Logger::logError( "One of the following:" );
+			ashes::Logger::logError( "  - The value of GL_RENDERBUFFER_SAMPLES is not the same for all attached renderbuffers;" );
+			ashes::Logger::logError( "  - The value of GL_TEXTURE_SAMPLES is the not same for all attached textures;" );
+			ashes::Logger::logError( "  - The attached images are a mix of renderbuffers and textures, the value of GL_RENDERBUFFER_SAMPLES does not match the value of GL_TEXTURE_SAMPLES;" );
+			ashes::Logger::logError( "  - The value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not the same for all attached textures;" );
+			ashes::Logger::logError( "  - The attached images are a mix of renderbuffers and textures, the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not GL_TRUE for all attached textures." );
+			assert( false );
+			break;
 
-			case GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS:
-				ashes::Logger::logError( "At least one framebuffer attachment is layered, and any populated attachment is not layered, or all populated color attachments are not from textures of the same target." );
-				assert( false );
-				break;
-			}
+		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS:
+			ashes::Logger::logError( "At least one framebuffer attachment is layered, and any populated attachment is not layered, or all populated color attachments are not from textures of the same target." );
+			assert( false );
+			break;
 		}
 	}
 
 	FrameBuffer::FrameBuffer( Device const & device
 		, RenderPass const & renderPass
 		, ashes::Extent2D const & dimensions
-		, ashes::FrameBufferAttachmentArray views
-		, bool backBuffer )
+		, ashes::FrameBufferAttachmentArray views )
 		: ashes::FrameBuffer{ renderPass, dimensions, std::move( views ) }
 		, m_device{ device }
 		, m_frameBuffer{ 0u }
 		, m_renderPass{ renderPass }
 	{
-		if ( backBuffer )
-		{
-			doInitialiseBackBuffer();
-		}
-		else
-		{
-			doInitialiseFramebuffer();
-		}
+		doInitialiseFramebuffer();
 	}
 
 	FrameBuffer::~FrameBuffer()
@@ -240,14 +232,6 @@ namespace gl_renderer
 		}
 	}
 
-	void FrameBuffer::doInitialiseBackBuffer()
-	{
-		for ( auto & attach : m_attachments )
-		{
-			doInitialiseBackAttach( attach );
-		}
-	}
-
 	void FrameBuffer::doInitialiseFramebuffer()
 	{
 		auto context = m_device.getContext();
@@ -264,16 +248,8 @@ namespace gl_renderer
 		{
 			auto & glview = static_cast< ImageView const & >( attach.getView() );
 			auto & gltexture = static_cast< Image const & >( glview.getImage() );
-
-			// If the image doesn't exist, it means it is a backbuffer image, hence ignore the attachment.
-			if ( gltexture.hasImage() )
-			{
-				doInitialiseFboAttach( attach );
-			}
-			else
-			{
-				doInitialiseBackAttach( attach );
-			}
+			assert( gltexture.hasImage() );
+			doInitialiseFboAttach( attach );
 		}
 
 		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
@@ -339,26 +315,5 @@ namespace gl_renderer
 			, attachment.object
 			, mipLevel );
 		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
-	}
-
-	void FrameBuffer::doInitialiseBackAttach( ashes::FrameBufferAttachment const & attach )
-	{
-		Attachment attachment
-		{
-			GL_ATTACHMENT_POINT_BACK,
-			GL_INVALID_INDEX,
-			getAttachmentType( attach.getView().getFormat() )
-		};
-
-		if ( ashes::isDepthOrStencilFormat( attach.getFormat() ) )
-		{
-			m_depthStencilAttach = attachment;
-		}
-		else
-		{
-			m_colourAttaches.push_back( attachment );
-		}
-
-		m_allAttaches.push_back( attachment );
 	}
 }

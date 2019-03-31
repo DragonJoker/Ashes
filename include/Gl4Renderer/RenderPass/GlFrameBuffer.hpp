@@ -10,6 +10,7 @@ See LICENSE file in root folder
 
 namespace gl_renderer
 {
+	void checkCompleteness( GLenum status );
 	/**
 	*\brief
 	*	Classe encapsulant le concept de Framebuffer.
@@ -32,8 +33,7 @@ namespace gl_renderer
 		FrameBuffer( Device const & device
 			, RenderPass const & renderPass
 			, ashes::Extent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray textures
-			, bool backBuffer = false );
+			, ashes::FrameBufferAttachmentArray textures );
 		/**
 		*\brief
 		*	Destructeur
@@ -110,9 +110,7 @@ namespace gl_renderer
 		/**@}*/
 
 	private:
-		void doInitialiseBackBuffer();
 		void doInitialiseFramebuffer();
-		void doInitialiseBackAttach( ashes::FrameBufferAttachment const & attach );
 		void doInitialiseFboAttach( ashes::FrameBufferAttachment const & attach );
 
 	private:

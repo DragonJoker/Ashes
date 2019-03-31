@@ -31,7 +31,7 @@ namespace gl_renderer
 		, m_internal{ getInternal( m_dst.getFormat() ) }
 		, m_format{ getFormat( m_internal ) }
 		, m_type{ getType( m_internal ) }
-		, m_copyTarget{ convert( m_dst.getType(), m_dst.getLayerCount(), m_dst.getFlags() ) }
+		, m_copyTarget{ convert( m_dst.getType(), m_dst.getLayerCount(), m_dst.getCreateFlags() ) }
 	{
 	}
 

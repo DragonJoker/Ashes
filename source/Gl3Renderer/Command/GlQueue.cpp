@@ -48,10 +48,12 @@ namespace gl_renderer
 		, ashes::SemaphoreCRefArray const & semaphoresToWait )const
 	{
 		ashes::ResultArray result{ swapChains.size(), ashes::Result::eSuccess };
+		auto it = imagesIndex.begin();
 
 		for ( auto & swapChain : swapChains )
 		{
-			static_cast< Device const & >( swapChain.get().getDevice() ).swapBuffers();
+			static_cast< SwapChain const & >( swapChain.get() ).present( *it );
+			++it;
 		}
 
 		return result;

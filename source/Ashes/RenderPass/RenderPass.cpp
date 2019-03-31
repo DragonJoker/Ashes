@@ -23,10 +23,4 @@ namespace ashes
 	{
 		unregisterObject( m_device, this );
 	}
-
-	ashes::FrameBufferPtr RenderPass::createBackBuffer( ashes::Extent2D const & dimensions
-		, ashes::FrameBufferAttachmentArray textures )const
-	{
-		return createFrameBuffer( dimensions, std::move( textures ) );
-	}
 }

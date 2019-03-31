@@ -96,14 +96,4 @@ namespace gl_renderer
 
 		return result;
 	}
-
-	ashes::FrameBufferPtr RenderPass::createBackBuffer( ashes::Extent2D const & dimensions
-		, ashes::FrameBufferAttachmentArray textures )const
-	{
-		return std::make_unique< FrameBuffer >( m_device
-			, *this
-			, dimensions
-			, std::move( textures )
-			, true );
-	}
 }

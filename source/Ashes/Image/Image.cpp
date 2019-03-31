@@ -17,12 +17,7 @@ namespace ashes
 {
 	Image::Image( Image && rhs )
 		: m_device{ rhs.m_device }
-		, m_flags{ rhs.m_flags }
-		, m_imageType{ rhs.m_imageType }
-		, m_format{ rhs.m_format }
-		, m_dimensions{ rhs.m_dimensions }
-		, m_mipLevels{ rhs.m_mipLevels }
-		, m_arrayLayers{ rhs.m_arrayLayers }
+		, m_createInfo{ rhs.m_createInfo }
 	{
 		registerObject( m_device, "Image", this );
 	}
@@ -36,12 +31,7 @@ namespace ashes
 	{
 		if ( &rhs != this )
 		{
-			m_flags = rhs.m_flags;
-			m_imageType = rhs.m_imageType;
-			m_format = rhs.m_format;
-			m_dimensions = rhs.m_dimensions;
-			m_mipLevels = rhs.m_mipLevels;
-			m_arrayLayers = rhs.m_arrayLayers;
+			m_createInfo = rhs.m_createInfo;
 			registerObject( m_device, "Image", this );
 		}
 
@@ -49,19 +39,9 @@ namespace ashes
 	}
 
 	Image::Image( Device const & device
-		, ImageCreateFlags flags
-		, ImageType type
-		, Format format
-		, Extent3D dimensions
-		, uint32_t mipLevels
-		, uint32_t arrayLayers )
+		, ImageCreateInfo createInfo )
 		: m_device{ device }
-		, m_flags{ flags }
-		, m_imageType{ type }
-		, m_format{ format }
-		, m_dimensions{ dimensions }
-		, m_mipLevels{ mipLevels }
-		, m_arrayLayers{ arrayLayers }
+		, m_createInfo{ createInfo }
 	{
 		registerObject( m_device, "Image", this );
 	}
@@ -119,7 +99,7 @@ namespace ashes
 		auto const width = int32_t( getDimensions().width );
 		auto const height = int32_t( getDimensions().height );
 
-		for ( uint32_t layer = 0u; layer < m_arrayLayers; ++layer )
+		for ( uint32_t layer = 0u; layer < m_createInfo.arrayLayers; ++layer )
 		{
 			auto srcView = createView(
 				{

@@ -32,39 +32,18 @@ namespace ashes
 		*	Constructeur.
 		*\param[in] device
 		*	Le périphérique logique.
-		*\param[in] type
-		*	Le type de texture.
-		*\param[in] format
-		*	Le format des données de la texture.
-		*\param[in] dimensions
-		*	Les dimensions de la texture.
-		*\param[in] mipLevels
-		*	Le nombre de niveaux de mipmaps.
-		*\param[in] arrayLayers
-		*	Le nombre de couches du tableau.
+		*\param[in] createInfo
+		*	Les informations de création de l'image.
 		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
 		*	The logical device.
-		*\param[in] type
-		*	The texture's type.
-		*\param[in] format
-		*	The texture's data type.
-		*\param[in] dimensions
-		*	The texture's dimensions.
-		*\param[in] mipLevels
-		*	The mipmap levelx count.
-		*\param[in] arrayLayers
-		*	The array layers count.
+		*\param[in] createInfo
+		*	The image creation info.
 		*/
 		Image( Device const & device
-			, ImageCreateFlags flags
-			, ImageType type
-			, Format format
-			, Extent3D dimensions
-			, uint32_t mipLevels
-			, uint32_t arrayLayers );
+			, ImageCreateInfo createInfo );
 
 	public:
 		Image & operator=( Image const & ) = delete;
@@ -261,89 +240,61 @@ namespace ashes
 			, uint32_t layerCount = 1u
 			, ComponentMapping const & mapping = ComponentMapping{} )const;
 		/**
-		*\~french
-		*\return
-		*	Le format des pixels de la texture.
 		*\~english
-		*\return
-		*	The texture pixel format.
+		*name
+		*	Getters.
+		*\~french
+		*name
+		*	Accesseurs.
 		*/
+		/**@{*/
 		inline Format getFormat()const noexcept
 		{
-			return m_format;
+			return m_createInfo.format;
 		}
-		/**
-		*\~french
-		*\return
-		*	Le nombre de couches.
-		*\~english
-		*\return
-		*	The layers count.
-		*/
+
+		inline ImageTiling getTiling()const noexcept
+		{
+			return m_createInfo.tiling;
+		}
+
+		inline ImageUsageFlags getUsage()const noexcept
+		{
+			return m_createInfo.usage;
+		}
+
 		inline uint32_t getLayerCount()const noexcept
 		{
-			return m_arrayLayers;
+			return m_createInfo.arrayLayers;
 		}
-		/**
-		*\~french
-		*\return
-		*	Les indicateurs de création.
-		*\~english
-		*\return
-		*	The creation flags.
-		*/
-		inline ImageCreateFlags getFlags()const noexcept
+
+		inline ImageCreateFlags getCreateFlags()const noexcept
 		{
-			return m_flags;
+			return m_createInfo.flags;
 		}
-		/**
-		*\~french
-		*\return
-		*	Le nombre de niveaux de mipmaps.
-		*\~english
-		*\return
-		*	The mipmap levels count.
-		*/
+
 		inline uint32_t getMipmapLevels()const noexcept
 		{
-			return m_mipLevels;
+			return m_createInfo.mipLevels;
 		}
-		/**
-		*\~french
-		*\return
-		*	Les dimensions de la texture.
-		*\~english
-		*\return
-		*	The texture dimensions.
-		*/
+
 		inline Extent3D const & getDimensions()const noexcept
 		{
-			return m_dimensions;
+			return m_createInfo.extent;
 		}
-		/**
-		*\~french
-		*\return
-		*	Le type de texture.
-		*\~english
-		*\return
-		*	The texture type.
-		*/
+
 		inline ImageType getType()const
 		{
-			return m_imageType;
+			return m_createInfo.imageType;
 		}
+		/**@}*/
 
 	private:
 		virtual void doBindMemory() = 0;
 
 	protected:
 		Device const & m_device;
-		ImageCreateFlags m_flags;
-		ImageType m_imageType;
-		Format m_format;
-		Extent3D m_dimensions;
-		uint32_t m_mipLevels;
-		uint32_t m_arrayLayers;
+		ImageCreateInfo m_createInfo;
 		DeviceMemoryPtr m_storage;
 	};
 }

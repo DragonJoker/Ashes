@@ -64,32 +64,6 @@ namespace ashes
 		unregisterObject( m_device, this );
 	}
 
-	void SwapChain::createDepthStencil( ashes::Format format )
-	{
-		m_depthStencil = m_device.createImage(
-			{
-				0u,
-				ashes::ImageType::e2D,
-				format,
-				ashes::Extent3D{ getDimensions().width, getDimensions().height, 1u },
-				1u,
-				1u,
-				ashes::SampleCountFlag::e1,
-				ashes::ImageTiling::eOptimal,
-				ashes::ImageUsageFlag::eDepthStencilAttachment,
-				ashes::SharingMode::eExclusive,
-				{},
-				ashes::ImageLayout::eUndefined,
-			} );
-		auto requirements = m_depthStencil->getMemoryRequirements();
-		auto deduced = deduceMemoryType( m_device.getMemoryProperties()
-			, requirements.memoryTypeBits
-			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_depthStencil->bindMemory( m_device.allocateMemory( { requirements.size, deduced } ) );
-		m_depthStencilView = m_depthStencil->createView( ashes::ImageViewType::e2D
-			, format );
-	}
-
 	Result SwapChain::acquireNextImage( uint64_t timeout
 		, Semaphore const & semaphore
 		, Fence const & fence

@@ -128,7 +128,6 @@ namespace d3d11_renderer
 
 	private:
 		Device const & m_device;
-		ashes::ImageCreateInfo m_createInfo;
 		union
 		{
 			ID3D11Texture1D * tex1D;
