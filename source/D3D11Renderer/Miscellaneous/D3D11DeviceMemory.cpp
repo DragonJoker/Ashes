@@ -49,7 +49,7 @@ namespace d3d11_renderer
 
 				auto hr = d3ddevice->CreateBuffer( &desc, nullptr, &m_buffer );
 
-				if ( dxCheckError( hr, "CreateBuffer" ) )
+				if ( checkError( m_device, hr, "CreateBuffer" ) )
 				{
 					dxDebugName( m_buffer, Buffer );
 				}
@@ -77,7 +77,7 @@ namespace d3d11_renderer
 			safeRelease( context );
 			uint8_t * result{ nullptr };
 
-			if ( dxCheckError( hr, "ID3D11Buffer::Lock" ) )
+			if ( checkError( m_device, hr, "ID3D11Buffer::Lock" ) )
 			{
 				result = static_cast< uint8_t * >( mappedResource.pData );
 			}
@@ -159,7 +159,7 @@ namespace d3d11_renderer
 				, nullptr
 				, &m_texture );
 
-			if ( dxCheckError( hr, "CreateTexture1D" ) )
+			if ( checkError( m_device, hr, "CreateTexture1D" ) )
 			{
 				dxDebugName( m_texture, Texture1D );
 			}
@@ -185,7 +185,7 @@ namespace d3d11_renderer
 			safeRelease( context );
 			uint8_t * result{ nullptr };
 
-			if ( dxCheckError( hr, "LockTexture1D" ) )
+			if ( checkError( m_device, hr, "LockTexture1D" ) )
 			{
 				result = static_cast< uint8_t * >( mappedResource.pData );
 			}
@@ -211,7 +211,7 @@ namespace d3d11_renderer
 			safeRelease( context );
 		}
 
-		inline ID3D11Texture1D * getTexture()const
+		inline ID3D11Texture1D * getImage()const
 		{
 			return m_texture;
 		}
@@ -260,7 +260,7 @@ namespace d3d11_renderer
 				, nullptr
 				, &m_texture );
 
-			if ( dxCheckError( hr, "CreateTexture2D" ) )
+			if ( checkError( m_device, hr, "CreateTexture2D" ) )
 			{
 				dxDebugName( m_texture, Texture2D );
 			}
@@ -286,7 +286,7 @@ namespace d3d11_renderer
 			safeRelease( context );
 			uint8_t * result{ nullptr };
 
-			if ( dxCheckError( hr, "LockTexture2D" ) )
+			if ( checkError( m_device, hr, "LockTexture2D" ) )
 			{
 				result = static_cast< uint8_t * >( mappedResource.pData );
 			}
@@ -312,7 +312,7 @@ namespace d3d11_renderer
 			safeRelease( context );
 		}
 
-		inline ID3D11Texture2D * getTexture()const
+		inline ID3D11Texture2D * getImage()const
 		{
 			return m_texture;
 		}
@@ -376,7 +376,7 @@ namespace d3d11_renderer
 				, nullptr
 				, &m_texture );
 
-			if ( dxCheckError( hr, "CreateTexture3D" ) )
+			if ( checkError( m_device, hr, "CreateTexture3D" ) )
 			{
 				dxDebugName( m_texture, Texture3D );
 			}
@@ -402,7 +402,7 @@ namespace d3d11_renderer
 			safeRelease( context );
 			uint8_t * result{ nullptr };
 
-			if ( dxCheckError( hr, "LockTexture3D" ) )
+			if ( checkError( m_device, hr, "LockTexture3D" ) )
 			{
 				result = static_cast< uint8_t * >( mappedResource.pData );
 			}
@@ -428,7 +428,7 @@ namespace d3d11_renderer
 			safeRelease( context );
 		}
 
-		inline ID3D11Texture3D * getTexture()const
+		inline ID3D11Texture3D * getImage()const
 		{
 			return m_texture;
 		}
@@ -521,7 +521,7 @@ namespace d3d11_renderer
 		auto impl = std::make_unique< Texture1DDeviceMemory >( m_device
 			, m_allocateInfo
 			, createInfo );
-		ID3D11Texture1D * result = impl->getTexture();
+		ID3D11Texture1D * result = impl->getImage();
 		m_impl = std::move( impl );
 		return result;
 	}
@@ -531,7 +531,7 @@ namespace d3d11_renderer
 		auto impl = std::make_unique< Texture2DDeviceMemory >( m_device
 			, m_allocateInfo
 			, createInfo );
-		ID3D11Texture2D * result = impl->getTexture();
+		ID3D11Texture2D * result = impl->getImage();
 		m_impl = std::move( impl );
 		return result;
 	}
@@ -541,7 +541,7 @@ namespace d3d11_renderer
 		auto impl = std::make_unique< Texture3DDeviceMemory >( m_device
 			, m_allocateInfo
 			, createInfo );
-		ID3D11Texture3D * result = impl->getTexture();
+		ID3D11Texture3D * result = impl->getImage();
 		m_impl = std::move( impl );
 		return result;
 	}

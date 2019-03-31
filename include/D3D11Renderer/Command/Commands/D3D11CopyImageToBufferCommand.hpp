@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/ImageView.hpp>
 #include <Ashes/Miscellaneous/BufferImageCopy.hpp>
 
 namespace d3d11_renderer
@@ -31,7 +31,7 @@ namespace d3d11_renderer
 		*/
 		CopyImageToBufferCommand( Device const & device
 			, ashes::BufferImageCopyArray const & copyInfo
-			, ashes::Texture const & src
+			, ashes::Image const & src
 			, ashes::BufferBase const & dst );
 		CopyImageToBufferCommand( CopyImageToBufferCommand const & rhs );
 
@@ -40,13 +40,13 @@ namespace d3d11_renderer
 
 	private:
 		void applyOne( ashes::BufferImageCopy const & copyInfo
-			, TextureView const & view )const;
+			, ImageView const & view )const;
 
 	private:
-		Texture const & m_src;
+		Image const & m_src;
 		Buffer const & m_dst;
 		ashes::BufferImageCopyArray m_copyInfo;
 		DXGI_FORMAT m_format;
-		std::vector< TextureViewPtr > m_views;
+		std::vector< ImageViewPtr > m_views;
 	};
 }

@@ -4,8 +4,8 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/D3D11CopyImageCommand.hpp"
 
-#include "Image/D3D11Texture.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11Image.hpp"
+#include "Image/D3D11ImageView.hpp"
 
 #include <Ashes/Image/ImageSubresourceRange.hpp>
 
@@ -29,12 +29,12 @@ namespace d3d11_renderer
 
 	CopyImageCommand::CopyImageCommand( Device const & device
 		, ashes::ImageCopy const & copyInfo
-		, ashes::Texture const & src
-		, ashes::Texture const & dst )
+		, ashes::Image const & src
+		, ashes::Image const & dst )
 		: CommandBase{ device }
 		, m_copyInfo{ copyInfo }
-		, m_src{ static_cast< Texture const & >( src ) }
-		, m_dst{ static_cast< Texture const & >( dst ) }
+		, m_src{ static_cast< Image const & >( src ) }
+		, m_dst{ static_cast< Image const & >( dst ) }
 		, m_srcBox{ doGetSrcBox( m_copyInfo ) }
 		, m_srcSubresource{ D3D11CalcSubresource( m_copyInfo.srcSubresource.mipLevel
 			, m_copyInfo.srcSubresource.baseArrayLayer

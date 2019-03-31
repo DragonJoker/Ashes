@@ -73,7 +73,7 @@ namespace d3d11_renderer
 
 	private:
 		void doRetrieveShader( Device const & device );
-		ShaderDesc doRetrieveShaderDesc();
+		ShaderDesc doRetrieveShaderDesc( Device const & device );
 		InputLayout doRetrieveInputLayout( ID3D11ShaderReflection * reflection
 			, UINT inputParameters );
 		InterfaceBlockLayout doRetrieveInterfaceBlockLayout( ID3D11ShaderReflection * reflection

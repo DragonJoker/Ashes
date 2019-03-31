@@ -148,7 +148,7 @@ namespace d3d11_renderer
 		desc.MipLODBias = createInfo.mipLodBias;
 		auto hr = d3ddevice->CreateSamplerState( &desc, &m_sampler );
 
-		if ( dxCheckError( hr, "CreateSamplerState" ) )
+		if ( checkError( device, hr, "CreateSamplerState" ) )
 		{
 			dxDebugName( m_sampler, SamplerState );
 		}

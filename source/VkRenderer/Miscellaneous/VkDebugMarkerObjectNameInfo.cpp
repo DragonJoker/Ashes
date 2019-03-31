@@ -15,8 +15,8 @@
 #include "Descriptor/VkDescriptorSetLayout.hpp"
 #include "Image/VkSampler.hpp"
 #include "Image/VkStagingTexture.hpp"
-#include "Image/VkTexture.hpp"
-#include "Image/VkTextureView.hpp"
+#include "Image/VkImage.hpp"
+#include "Image/VkImageView.hpp"
 #include "Miscellaneous/VkDeviceMemory.hpp"
 #include "Miscellaneous/VkQueryPool.hpp"
 #include "Pipeline/VkPipeline.hpp"
@@ -59,7 +59,7 @@ namespace vk_renderer
 			case ashes::DebugReportObjectType::eBuffer:
 				return ( uint64_t )VkBuffer( *reinterpret_cast< Buffer const * >( object ) );
 			case ashes::DebugReportObjectType::eImage:
-				return ( uint64_t )VkImage( *reinterpret_cast< Texture const * >( object ) );
+				return ( uint64_t )VkImage( *reinterpret_cast< Image const * >( object ) );
 			case ashes::DebugReportObjectType::eEvent:
 				return ( uint64_t )VkEvent( *reinterpret_cast< Event const * >( object ) );
 			case ashes::DebugReportObjectType::eQueryPool:
@@ -67,7 +67,7 @@ namespace vk_renderer
 			case ashes::DebugReportObjectType::eBufferView:
 				return ( uint64_t )VkBufferView( *reinterpret_cast< BufferView const * >( object ) );
 			case ashes::DebugReportObjectType::eImageView:
-				return ( uint64_t )VkImageView( *reinterpret_cast< TextureView const * >( object ) );
+				return ( uint64_t )VkImageView( *reinterpret_cast< ImageView const * >( object ) );
 			case ashes::DebugReportObjectType::eShaderModule:
 				return ( uint64_t )VkShaderModule( *reinterpret_cast< ShaderModule const * >( object ) );
 			case ashes::DebugReportObjectType::ePipelineLayout:

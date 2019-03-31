@@ -10,7 +10,6 @@
 #include <Ashes/Command/CommandBuffer.hpp>
 #include <Ashes/Command/CommandPool.hpp>
 #include <Ashes/Command/Queue.hpp>
-#include <Ashes/Core/BackBuffer.hpp>
 #include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Core/PlatformWindowHandle.hpp>
@@ -21,8 +20,8 @@
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Ashes/Descriptor/DescriptorSetPool.hpp>
 #include <Ashes/Image/Sampler.hpp>
-#include <Ashes/Image/Texture.hpp>
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/Image.hpp>
+#include <Ashes/Image/ImageView.hpp>
 #include <Ashes/Miscellaneous/Extent2D.hpp>
 #include <Ashes/Miscellaneous/QueryPool.hpp>
 #include <Ashes/Pipeline/DepthStencilState.hpp>

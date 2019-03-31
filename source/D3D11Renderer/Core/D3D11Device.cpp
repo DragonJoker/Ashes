@@ -17,8 +17,8 @@ See LICENSE file in root folder.
 #include "Descriptor/D3D11DescriptorSetLayout.hpp"
 #include "Image/D3D11Sampler.hpp"
 #include "Image/D3D11StagingTexture.hpp"
-#include "Image/D3D11Texture.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11Image.hpp"
+#include "Image/D3D11ImageView.hpp"
 #include "Miscellaneous/D3D11DeviceMemory.hpp"
 #include "Miscellaneous/D3D11QueryPool.hpp"
 #include "Pipeline/D3D11PipelineLayout.hpp"
@@ -29,6 +29,8 @@ See LICENSE file in root folder.
 #include "Sync/D3D11Semaphore.hpp"
 
 #include <Ashes/Core/PlatformWindowHandle.hpp>
+#include <Ashes/Image/ImageSubresource.hpp>
+#include <Ashes/Image/SubresourceLayout.hpp>
 #include <Ashes/Miscellaneous/MemoryRequirements.hpp>
 #include <Ashes/RenderPass/RenderPassCreateInfo.hpp>
 
@@ -52,7 +54,7 @@ namespace d3d11_renderer
 				result = reinterpret_cast< Buffer const * >( object )->getBuffer();
 				break;
 			case ashes::DebugReportObjectType::eImage:
-				result = reinterpret_cast< Texture const * >( object )->getResource();
+				result = reinterpret_cast< Image const * >( object )->getResource();
 				break;
 			case ashes::DebugReportObjectType::eQueryPool:
 				result = ( *reinterpret_cast< QueryPool const * >( object )->begin() );
@@ -67,6 +69,53 @@ namespace d3d11_renderer
 				break;
 			}
 			return result;
+		}
+
+		template< typename T, typename U >
+		T getAligned( T value, U align )
+		{
+			return T( ( value + align - 1 ) & ~( align - 1 ) );
+		};
+
+		template< typename T >
+		T getSubresourceValue( T value, uint32_t mipLevel )
+		{
+			return T( value >> mipLevel );
+		};
+
+		ashes::Extent3D getTexelBlockExtent( ashes::Format format )
+		{
+			ashes::Extent3D texelBlockExtent{ 1u, 1u, 1u };
+
+			if ( ashes::isCompressedFormat( format ) )
+			{
+				auto extent = ashes::getMinimalExtent2D( format );
+				texelBlockExtent.width = extent.width;
+				texelBlockExtent.height = extent.height;
+			}
+			else
+			{
+				texelBlockExtent.width = 1u;
+			}
+
+			return texelBlockExtent;
+		}
+
+		uint32_t getTexelBlockByteSize( ashes::Extent3D const & texelBlockExtent
+			, ashes::Format format )
+		{
+			uint32_t texelBlockSize;
+
+			if ( !isDepthStencilFormat( format ) )
+			{
+				texelBlockSize = getSize( texelBlockExtent, format );
+			}
+			else
+			{
+				texelBlockSize = texelBlockExtent.width;
+			}
+
+			return texelBlockSize;
 		}
 	}
 
@@ -142,15 +191,24 @@ namespace d3d11_renderer
 			, std::move( allocateInfo ) );
 	}
 
-	ashes::TexturePtr Device::createTexture( ashes::ImageCreateInfo const & createInfo )const
+	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo )const
 	{
-		return std::make_unique< Texture >( *this, createInfo );
+		return std::make_unique< Image >( *this, createInfo );
 	}
 
-	void Device::getImageSubresourceLayout( ashes::Texture const & image
+	void Device::getImageSubresourceLayout( ashes::Image const & image
 		, ashes::ImageSubresource const & subresource
 		, ashes::SubresourceLayout & layout )const
 	{
+		auto extent = getTexelBlockExtent( image.getFormat() );
+		auto byteSize = getTexelBlockByteSize( extent, image.getFormat() );
+		auto mipWidth = getSubresourceValue( image.getDimensions().width, subresource.mipLevel );
+		auto mipHeight = getSubresourceValue( image.getDimensions().height, subresource.mipLevel );
+		layout.rowPitch = byteSize * mipWidth / ( extent.width * extent.height * extent.depth );
+		layout.arrayPitch = layout.rowPitch * mipHeight * extent.height / ( extent.width * extent.depth );
+		layout.depthPitch = layout.arrayPitch;
+		layout.offset = subresource.arrayLayer * layout.arrayPitch * byteSize;
+		layout.size = layout.arrayPitch * image.getDimensions().depth;
 	}
 
 	ashes::SamplerPtr Device::createSampler( ashes::SamplerCreateInfo const & createInfo )const
@@ -282,6 +340,20 @@ namespace d3d11_renderer
 		{
 			std::this_thread::sleep_for( std::chrono::microseconds{ 1ull } );
 		}
+	}
+
+	bool Device::onCopyToImageCommand( ashes::CommandBuffer const & cmd
+		, ashes::BufferImageCopyArray const & copyInfo
+		, ashes::BufferBase const & src
+		, ashes::Image const & dst )const
+	{
+		return m_instance.onCopyToImageCommand( cmd, copyInfo, src, dst );
+	}
+
+	bool Device::onCheckHResultCommand( HRESULT hresult
+		, std::string message )const
+	{
+		return m_instance.onCheckHResultCommand( hresult, std::move( message ) );
 	}
 
 	void Device::doCreateD3D11Device()

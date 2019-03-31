@@ -4,16 +4,16 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/D3D11GenerateMipsCommand.hpp"
 
-#include "Image/D3D11Texture.hpp"
+#include "Image/D3D11Image.hpp"
 
 namespace d3d11_renderer
 {
 	namespace
 	{
-		ashes::ImageViewCreateInfo getCreateInfos( Texture const & texture )
+		ashes::ImageViewCreateInfo getCreateInfos( Image const & texture )
 		{
 			ashes::ImageViewCreateInfo result;
-			result.viewType = ashes::TextureViewType( texture.getType() );
+			result.viewType = ashes::ImageViewType( texture.getType() );
 			result.format = texture.getFormat();
 			result.subresourceRange.aspectMask = getAspectMask( texture.getFormat() );
 			result.subresourceRange.baseArrayLayer = 0u;
@@ -25,7 +25,7 @@ namespace d3d11_renderer
 	}
 
 	GenerateMipsCommand::GenerateMipsCommand( Device const & device
-		, Texture const & texture )
+		, Image const & texture )
 		: CommandBase{ device }
 		, m_texture{ texture }
 		, m_view{ device, texture, getCreateInfos( texture ) }

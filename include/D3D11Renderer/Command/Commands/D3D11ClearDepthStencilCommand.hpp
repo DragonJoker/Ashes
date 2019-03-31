@@ -27,14 +27,14 @@ namespace d3d11_renderer
 		*	La couleur de vidage.
 		*/
 		ClearDepthStencilCommand( Device const & device
-			, ashes::TextureView const & image
+			, ashes::ImageView const & image
 			, ashes::DepthStencilClearValue const & value );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		TextureView const & m_image;
+		ImageView const & m_image;
 		ashes::DepthStencilClearValue m_value;
 		UINT m_flags;
 	};

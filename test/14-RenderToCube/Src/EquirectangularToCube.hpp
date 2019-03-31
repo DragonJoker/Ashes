@@ -27,7 +27,7 @@ namespace vkapp
 			, utils::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
-			, ashes::Texture & texture );
+			, ashes::Image & texture );
 
 		void render();
 		void render( ashes::CommandBuffer & commandBuffer );
@@ -35,7 +35,6 @@ namespace vkapp
 	private:
 		struct FacePipeline
 		{
-			ashes::TextureViewPtr view;
 			ashes::FrameBufferPtr frameBuffer;
 			ashes::PipelinePtr pipeline;
 			ashes::DescriptorSetPtr descriptorSet;
@@ -46,8 +45,8 @@ namespace vkapp
 		ashes::CommandBufferPtr m_commandBuffer;
 		common::ImageData m_image;
 		ashes::StagingBuffer m_stagingBuffer;
-		ashes::TexturePtr m_texture;
-		ashes::TextureViewPtr m_view;
+		ashes::ImagePtr m_texture;
+		ashes::ImageViewPtr m_view;
 		ashes::SamplerPtr m_sampler;
 		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
 		ashes::VertexBufferPtr< VertexData > m_vertexBuffer;

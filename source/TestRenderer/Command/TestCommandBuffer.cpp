@@ -8,8 +8,8 @@ See LICENSE file in root folder.
 #include "Command/TestCommandPool.hpp"
 #include "Core/TestDevice.hpp"
 #include "Descriptor/TestDescriptorSet.hpp"
-#include "Image/TestTexture.hpp"
-#include "Image/TestTextureView.hpp"
+#include "Image/TestImage.hpp"
+#include "Image/TestImageView.hpp"
 #include "Miscellaneous/TestQueryPool.hpp"
 #include "Pipeline/TestComputePipeline.hpp"
 #include "Pipeline/TestPipeline.hpp"
@@ -98,12 +98,12 @@ namespace test_renderer
 	{
 	}
 
-	void CommandBuffer::clear( ashes::TextureView const & image
+	void CommandBuffer::clear( ashes::ImageView const & image
 		, ashes::ClearColorValue const & colour )const
 	{
 	}
 
-	void CommandBuffer::clear( ashes::TextureView const & image
+	void CommandBuffer::clear( ashes::ImageView const & image
 		, ashes::DepthStencilClearValue const & value )const
 	{
 	}
@@ -189,12 +189,12 @@ namespace test_renderer
 
 	void CommandBuffer::copyToImage( ashes::BufferImageCopyArray const & copyInfo
 		, ashes::BufferBase const & src
-		, ashes::Texture const & dst )const
+		, ashes::Image const & dst )const
 	{
 	}
 
 	void CommandBuffer::copyToBuffer( ashes::BufferImageCopyArray const & copyInfo
-		, ashes::Texture const & src
+		, ashes::Image const & src
 		, ashes::BufferBase const & dst )const
 	{
 	}
@@ -206,16 +206,16 @@ namespace test_renderer
 	}
 
 	void CommandBuffer::copyImage( ashes::ImageCopy const & copyInfo
-		, ashes::Texture const & src
+		, ashes::Image const & src
 		, ashes::ImageLayout srcLayout
-		, ashes::Texture const & dst
+		, ashes::Image const & dst
 		, ashes::ImageLayout dstLayout )const
 	{
 	}
 
-	void CommandBuffer::blitImage( ashes::Texture const & srcImage
+	void CommandBuffer::blitImage( ashes::Image const & srcImage
 		, ashes::ImageLayout srcLayout
-		, ashes::Texture const & dstImage
+		, ashes::Image const & dstImage
 		, ashes::ImageLayout dstLayout
 		, std::vector< ashes::ImageBlit > const & regions
 		, ashes::Filter filter )const

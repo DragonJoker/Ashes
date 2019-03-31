@@ -1,6 +1,6 @@
 /**
 *\file
-*	Texture.h
+*	Image.h
 *\author
 *	Sylvain Doremus
 */

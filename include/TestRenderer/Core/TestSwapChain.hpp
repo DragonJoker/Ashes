@@ -23,7 +23,7 @@ namespace test_renderer
 		*\param[in] device
 		*	La connexion logique au GPU.
 		*\param[in] createInfo
-		*	Les informations de création.
+		*	Les informations de crï¿½ation.
 		*\~english
 		*\brief
 		*	Constructor.
@@ -44,19 +44,16 @@ namespace test_renderer
 		*/
 		~SwapChain();
 		/**
+		*\copydoc	ashes::SwapChain::getImages
+		*/
+		ashes::ImagePtrArray getImages()const override;
+		/**
 		*\copydoc	ashes::SwapChain::acquireNextImage
 		*/
 		ashes::Result acquireNextImage( uint64_t timeout
 			, ashes::Semaphore const * semaphore
 			, ashes::Fence const * fence
 			, uint32_t & imageIndex )const override;
-		/**
-		*\copydoc	ashes::SwapChain::createDepthStencil
-		*/
-		void createDepthStencil( ashes::Format format )override;
-
-	private:
-		void doCreateBackBuffers();
 
 	protected:
 		Device const & m_device;

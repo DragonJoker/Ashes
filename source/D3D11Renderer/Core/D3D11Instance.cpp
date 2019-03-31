@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <iomanip>
+#include <iostream>
 #include <locale>
 
 namespace d3d11_renderer
@@ -41,7 +42,7 @@ namespace d3d11_renderer
 
 			if ( !SUCCEEDED( hr ) )
 			{
-				checkError( hr, "Feature level retrieval" );
+				throw ashes::Exception{ ashes::Result::eErrorIncompatibleDriver, "Feature level retrieval" };
 			}
 
 			return result;
@@ -66,6 +67,7 @@ namespace d3d11_renderer
 				} );
 
 			// Emulate all combinations of device local memory types
+			// and all combinations of host visible memory types
 			result.memoryTypes.push_back(
 				{
 					0u | ashes::MemoryPropertyFlag::eDeviceLocal,
@@ -73,34 +75,24 @@ namespace d3d11_renderer
 				} );
 			result.memoryTypes.push_back(
 				{
-					0u | ashes::MemoryPropertyFlag::eLazilyAllocated,
-					0u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					ashes::MemoryPropertyFlag::eDeviceLocal | ashes::MemoryPropertyFlag::eLazilyAllocated,
-					0u,
-				} );
-
-			// and all combinations of host visible memory types
-			result.memoryTypes.push_back(
-				{
 					0u | ashes::MemoryPropertyFlag::eHostVisible,
 					1u,
 				} );
-
 			result.memoryTypes.push_back(
 				{
 					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent,
 					1u,
 				} );
-
 			result.memoryTypes.push_back(
 				{
 					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCached,
 					1u,
 				} );
-
+			result.memoryTypes.push_back(
+				{
+					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eLazilyAllocated,
+					1u,
+				} );
 			result.memoryTypes.push_back(
 				{
 					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent | ashes::MemoryPropertyFlag::eHostCached,
@@ -234,6 +226,61 @@ namespace d3d11_renderer
 		result[15] = 1.0f;
 
 		return result;
+	}
+
+	void Instance::registerLayer( Layer * layer )const
+	{
+		m_layers.push_back( layer );
+	}
+
+	void Instance::unregisterLayer( Layer * layer )const
+	{
+		auto it = std::find( m_layers.begin(), m_layers.end(), layer );
+
+		if ( it != m_layers.end() )
+		{
+			m_layers.erase( it );
+		}
+	}
+
+	bool Instance::onCopyToImageCommand( ashes::CommandBuffer const & cmd
+		, ashes::BufferImageCopyArray const & copyInfo
+		, ashes::BufferBase const & src
+		, ashes::Image const & dst )const
+	{
+		try
+		{
+			for ( auto & layer : m_layers )
+			{
+				layer->onCopyToImageCommand( cmd, copyInfo, src, dst );
+			}
+		}
+		catch ( LayerException & exc )
+		{
+			std::cerr << exc.what() << std::endl;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool Instance::onCheckHResultCommand( HRESULT hresult
+		, std::string message )const
+	{
+		try
+		{
+			for ( auto & layer : m_layers )
+			{
+				layer->onCheckHResultCommand( hresult, message );
+			}
+		}
+		catch ( LayerException & exc )
+		{
+			std::cerr << exc.what() << std::endl;
+			return true;
+		}
+
+		return false;
 	}
 
 	void Instance::doCreateDXGIFactory()

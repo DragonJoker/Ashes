@@ -2,7 +2,7 @@
 
 #include "Buffer/VkBuffer.hpp"
 #include "Image/VkSampler.hpp"
-#include "Image/VkTextureView.hpp"
+#include "Image/VkImageView.hpp"
 
 namespace vk_renderer
 {
@@ -13,7 +13,7 @@ namespace vk_renderer
 
 		if ( bool( value.imageView ) )
 		{
-			result.imageView = static_cast< TextureView const & >( value.imageView.value().get() );
+			result.imageView = static_cast< ImageView const & >( value.imageView.value().get() );
 		}
 
 		if ( bool( value.sampler ) )

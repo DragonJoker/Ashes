@@ -6,7 +6,7 @@
 #include <Descriptor/DescriptorSetPool.hpp>
 #include <Descriptor/DescriptorSet.hpp>
 #include <RenderPass/FrameBuffer.hpp>
-#include <Image/Texture.hpp>
+#include <Image/Image.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <Image/Sampler.hpp>
 #include <Buffer/StagingBuffer.hpp>
@@ -89,8 +89,8 @@ namespace vkapp
 		ashes::PipelinePtr m_pipeline;
 		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
 		ashes::StagingBufferPtr m_stagingBuffer;
-		ashes::TexturePtr m_texture;
-		ashes::TextureViewPtr m_view;
+		ashes::ImagePtr m_texture;
+		ashes::ImageViewPtr m_view;
 		ashes::SamplerPtr m_sampler;
 		ashes::UniformBufferPtr< LayerSelect > m_uniformBuffer;
 		ashes::DescriptorSetLayoutPtr m_descriptorLayout;

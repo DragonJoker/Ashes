@@ -23,7 +23,7 @@ namespace d3d11_renderer
 			, &desc
 			, &m_view );
 
-		if ( dxCheckError( hr, "CreateShaderResourceView" ) )
+		if ( checkError( device, hr, "CreateShaderResourceView" ) )
 		{
 			dxDebugName( m_view, ShaderResourceView );
 		}

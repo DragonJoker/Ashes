@@ -47,6 +47,7 @@ namespace ashes
 	protected:
 		Instance const & m_instance;
 		DebugReportCallbackCreateInfo m_createInfo;
+
 	};
 }
 

@@ -9,6 +9,7 @@
 #include <Ashes/Core/PlatformWindowHandle.hpp>
 #include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/SwapChain.hpp>
+#include <Ashes/Image/Image.hpp>
 #include <Ashes/RenderPass/ClearValue.hpp>
 #include <Ashes/RenderPass/FrameBuffer.hpp>
 #include <Ashes/RenderPass/RenderPass.hpp>
@@ -75,6 +76,7 @@ struct Application
 	ashes::DevicePtr device;
 	ashes::Extent2D dimensions;
 	ashes::SwapChainPtr swapChain;
+	ashes::ImagePtrArray swapChainImages;
 	std::vector< ashes::FrameBufferPtr > frameBuffers;
 	ashes::CommandPoolPtr commandPool;
 	ashes::CommandBufferPtrArray commandBuffers;
@@ -599,7 +601,7 @@ void doCreateRenderingResources( Application & application )
 {
 	application.renderingResources.clear();
 
-	for ( uint32_t i = 0u; i < uint32_t( application.swapChain->getImages().size() ); ++i )
+	for ( uint32_t i = 0u; i < uint32_t( application.swapChainImages.size() ); ++i )
 	{
 		application.renderingResources.emplace_back( std::make_unique< RenderingResources >( application.device->createSemaphore()
 			, application.device->createSemaphore()
@@ -612,6 +614,7 @@ void doCreateRenderingResources( Application & application )
 void createSwapChain( Application & application )
 {
 	application.swapChain = application.device->createSwapChain( doGetSwapChainCreateInfo( *application.device, application.dimensions ) );
+	application.swapChainImages = application.swapChain->getImages();
 	application.clearColour = ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 	doCreateRenderingResources( application );
 }
@@ -670,26 +673,31 @@ ashes::RenderPassPtr createRenderPass( ashes::Device const & device
 ashes::FrameBufferAttachmentArray doPrepareAttaches( Application const & application
 	, uint32_t backBuffer )
 {
-	ashes::FrameBufferAttachmentArray attaches;
+	ashes::FrameBufferAttachmentArray result;
 
 	for ( auto & attach : application.renderPass->getAttachments() )
 	{
+		auto & image = *application.swapChainImages[backBuffer];
+
 		if ( !ashes::isDepthOrStencilFormat( attach.format ) )
 		{
-			attaches.emplace_back( attach, application.swapChain->getImages()[backBuffer]->getView() );
+			result.emplace_back( attach
+				, image.createView( ashes::ImageViewType::e2D
+					, application.swapChain->getFormat() ) );
 		}
 		else
 		{
-			attaches.emplace_back( attach, application.swapChain->getDepthStencilView() );
+			result.emplace_back( attach
+				, application.swapChain->getDepthStencilView() );
 		}
 	}
 
-	return attaches;
+	return result;
 }
 
 void doCreateFrameBuffers( Application & application )
 {
-	application.frameBuffers.resize( application.swapChain->getImages().size() );
+	application.frameBuffers.resize( application.swapChainImages.size() );
 
 	for ( size_t i = 0u; i < application.frameBuffers.size(); ++i )
 	{
@@ -701,7 +709,7 @@ void doCreateFrameBuffers( Application & application )
 
 void doCreateCommandBuffers( Application & application )
 {
-	application.commandBuffers.resize( application.swapChain->getImages().size() );
+	application.commandBuffers.resize( application.swapChainImages.size() );
 
 	for ( auto & commandBuffer : application.commandBuffers )
 	{

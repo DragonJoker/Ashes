@@ -55,7 +55,7 @@ namespace d3d11_renderer
 			auto hr = device->CreateUnorderedAccessView( m_buffer
 				, &desc
 				, &m_unorderedAccessView );
-			dxCheckError( hr, "CreateUnorderedAccessViewBuffer" );
+			checkError( m_device, hr, "CreateUnorderedAccessViewBuffer" );
 			dxDebugName( m_unorderedAccessView, UnorderedAccessViewBuffer );
 		}
 	}

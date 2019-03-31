@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
+#include "D3D11Renderer/Core/D3D11Layer.hpp"
 
 #include <Ashes/Buffer/Buffer.hpp>
 #include <Ashes/Core/Surface.hpp>
@@ -51,13 +51,13 @@ namespace d3d11_renderer
 		*/
 		ashes::DeviceMemoryPtr allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const override;
 		/**
-		*\copydoc	ashes::Device::createTexture
+		*\copydoc	ashes::Device::createImage
 		*/
-		ashes::TexturePtr createTexture( ashes::ImageCreateInfo const & createInfo )const override;
+		ashes::ImagePtr createImage( ashes::ImageCreateInfo const & createInfo )const override;
 		/**
 		*\copydoc	ashes::Device::getImageSubresourceLayout
 		*/
-		void getImageSubresourceLayout( ashes::Texture const & image
+		void getImageSubresourceLayout( ashes::Image const & image
 			, ashes::ImageSubresource const & subresource
 			, ashes::SubresourceLayout & layout )const override;
 		/**
@@ -121,6 +121,22 @@ namespace d3d11_renderer
 		*	Attend que le périphérique soit inactif.
 		*/
 		void waitIdle()const override;
+		/**
+		*\~english
+		*name
+		*	Layers delegation.
+		*\~french
+		*name
+		*	Délégation aux layers.
+		*/
+		/**@{*/
+		bool onCopyToImageCommand( ashes::CommandBuffer const & cmd
+			, ashes::BufferImageCopyArray const & copyInfo
+			, ashes::BufferBase const & src
+			, ashes::Image const & dst )const;
+		bool onCheckHResultCommand( HRESULT hresult
+			, std::string message )const;
+		/**@}*/
 		/**
 		*\~french
 		*\return

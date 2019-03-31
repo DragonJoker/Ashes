@@ -9,8 +9,8 @@ See LICENSE file in root folder.
 #include "Command/GlCommandPool.hpp"
 #include "Core/GlDevice.hpp"
 #include "Descriptor/GlDescriptorSet.hpp"
-#include "Image/GlTexture.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImage.hpp"
+#include "Image/GlImageView.hpp"
 #include "Pipeline/GlComputePipeline.hpp"
 #include "Pipeline/GlPipeline.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
@@ -155,7 +155,7 @@ namespace gl_renderer
 		}
 	}
 
-	void CommandBuffer::clear( ashes::TextureView const & image
+	void CommandBuffer::clear( ashes::ImageView const & image
 		, ashes::ClearColorValue const & colour )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearColourCommand >( m_device
@@ -163,7 +163,7 @@ namespace gl_renderer
 			, colour ) );
 	}
 
-	void CommandBuffer::clear( ashes::TextureView const & image
+	void CommandBuffer::clear( ashes::ImageView const & image
 		, ashes::DepthStencilClearValue const & value )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearDepthStencilCommand >( m_device
@@ -252,7 +252,7 @@ namespace gl_renderer
 		for ( auto i = 0u; i < buffers.size(); ++i )
 		{
 			auto & glBuffer = static_cast< Buffer const & >( buffers[i].get() );
-			m_state.boundVbos[binding] = { glBuffer.getBuffer(), offsets[i], &glBuffer };
+			m_state.boundVbos[binding] = { glBuffer.getInternal(), offsets[i], &glBuffer };
 			++binding;
 		}
 
@@ -264,12 +264,12 @@ namespace gl_renderer
 		, ashes::IndexType indexType )const
 	{
 		auto & glBuffer = static_cast< Buffer const & >( buffer );
-		m_state.boundIbo = BufferObjectBinding{ glBuffer.getBuffer(), offset, &glBuffer };
+		m_state.boundIbo = BufferObjectBinding{ glBuffer.getInternal(), offset, &glBuffer };
 		m_state.indexType = indexType;
 		m_state.boundVao = nullptr;
 	}
 
-	ashes::TextureView const & doGetView( ashes::WriteDescriptorSet const & write, uint32_t index )
+	ashes::ImageView const & doGetView( ashes::WriteDescriptorSet const & write, uint32_t index )
 	{
 		assert( index < write.imageInfo.size() );
 		return write.imageInfo[index].imageView.value().get();
@@ -492,7 +492,7 @@ namespace gl_renderer
 
 	void CommandBuffer::copyToImage( ashes::BufferImageCopyArray const & copyInfo
 		, ashes::BufferBase const & src
-		, ashes::Texture const & dst )const
+		, ashes::Image const & dst )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( m_device
 			, copyInfo
@@ -501,7 +501,7 @@ namespace gl_renderer
 	}
 
 	void CommandBuffer::copyToBuffer( ashes::BufferImageCopyArray const & copyInfo
-		, ashes::Texture const & src
+		, ashes::Image const & src
 		, ashes::BufferBase const & dst )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyImageToBufferCommand >( m_device
@@ -521,9 +521,9 @@ namespace gl_renderer
 	}
 
 	void CommandBuffer::copyImage( ashes::ImageCopy const & copyInfo
-		, ashes::Texture const & src
+		, ashes::Image const & src
 		, ashes::ImageLayout srcLayout
-		, ashes::Texture const & dst
+		, ashes::Image const & dst
 		, ashes::ImageLayout dstLayout )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyImageCommand >( m_device
@@ -532,9 +532,9 @@ namespace gl_renderer
 			, dst ) );
 	}
 
-	void CommandBuffer::blitImage( ashes::Texture const & srcImage
+	void CommandBuffer::blitImage( ashes::Image const & srcImage
 		, ashes::ImageLayout srcLayout
-		, ashes::Texture const & dstImage
+		, ashes::Image const & dstImage
 		, ashes::ImageLayout dstLayout
 		, std::vector< ashes::ImageBlit > const & regions
 		, ashes::Filter filter )const
@@ -679,7 +679,7 @@ namespace gl_renderer
 			, imageMemoryBarriers ) );
 	}
 
-	void CommandBuffer::generateMipmaps( Texture const & texture )
+	void CommandBuffer::generateMipmaps( Image const & texture )
 	{
 		m_commands.emplace_back( std::make_unique< GenerateMipmapsCommand >( m_device
 			, texture ) );

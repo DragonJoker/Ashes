@@ -14,9 +14,8 @@ namespace ashes
 	*\brief
 	*	Encapsulation d'un VkMemoryBarrier.
 	*/
-	class MemoryBarrier
+	struct MemoryBarrier
 	{
-	public:
 		/**
 		*\brief
 		*	Constructeur.
@@ -27,30 +26,13 @@ namespace ashes
 		*/
 		MemoryBarrier( AccessFlags srcAccessMask
 			, AccessFlags dstAccessMask )
-			: m_srcAccessMask{ srcAccessMask }
-			, m_dstAccessMask{ dstAccessMask }
+			: srcAccessMask{ srcAccessMask }
+			, dstAccessMask{ dstAccessMask }
 		{
-		}
-		/**
-		*\return
-		*	Les indicateurs d'accès avant la barrière.
-		*/
-		inline AccessFlags getSrcAccessMask()const
-		{
-			return m_srcAccessMask;
-		}
-		/**
-		*\return
-		*	Les indicateurs d'accès après la barrière.
-		*/
-		inline AccessFlags getDstAccessMask()const
-		{
-			return m_dstAccessMask;
 		}
 
-	private:
-		AccessFlags m_srcAccessMask;
-		AccessFlags m_dstAccessMask;
+		AccessFlags srcAccessMask;
+		AccessFlags dstAccessMask;
 	};
 }
 

@@ -14,9 +14,8 @@ namespace ashes
 	*\brief
 	*	Encapsulation d'un VkBufferMemoryBarrier.
 	*/
-	class BufferMemoryBarrier
+	struct BufferMemoryBarrier
 	{
-	public:
 		/**
 		*\brief
 		*	Constructeur.
@@ -51,6 +50,7 @@ namespace ashes
 			, size{ size }
 		{
 		}
+
 		AccessFlags srcAccessMask;
 		AccessFlags dstAccessMask;
 		uint32_t srcQueueFamilyIndex;

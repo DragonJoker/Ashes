@@ -14,8 +14,6 @@ See LICENSE file in root folder.
 #include <string>
 #include <vector>
 
-#define RENDERLIB_NOEXC 0
-
 #define Ashes_EnumBounds( MinValue )\
 	eCount,\
 	eMin = MinValue,\
@@ -27,6 +25,13 @@ See LICENSE file in root folder.
 	eMax = eCount - 1
 
 #include "Ashes/AshesConfig.hpp"
+
+#if ASHES_WIN32
+#	define ASHES_API __stdcall
+#else
+#	define ASHES_API
+#endif
+
 #include "Ashes/Utils/FlagCombination.hpp"
 #include "Ashes/Utils/Signal.hpp"
 
@@ -100,8 +105,8 @@ See LICENSE file in root folder.
 #include "Ashes/Enum/SurfaceTransformFlag.hpp"
 #include "Ashes/Enum/SwapChainCreateFlag.hpp"
 #include "Ashes/Enum/TessellationStateFlag.hpp"
-#include "Ashes/Enum/TextureType.hpp"
-#include "Ashes/Enum/TextureViewType.hpp"
+#include "Ashes/Enum/ImageType.hpp"
+#include "Ashes/Enum/ImageViewType.hpp"
 #include "Ashes/Enum/VertexInputRate.hpp"
 #include "Ashes/Enum/ViewportStateFlag.hpp"
 #include "Ashes/Enum/WrapMode.hpp"
@@ -239,6 +244,7 @@ namespace ashes
 	struct AttachmentReference;
 	struct BufferCopy;
 	struct BufferImageCopy;
+	struct BufferMemoryBarrier;
 	struct ClearAttachment;
 	struct ClearRect;
 	struct ClearValue;
@@ -259,11 +265,13 @@ namespace ashes
 	struct ImageCopy;
 	struct ImageCreateInfo;
 	struct ImageFormatProperties;
+	struct ImageMemoryBarrier;
 	struct ImageSubresource;
 	struct ImageSubresourceLayers;
 	struct ImageSubresourceRange;
 	struct InputAssemblyState;
 	struct LayerProperties;
+	struct MemoryBarrier;
 	struct MemoryHeap;
 	struct MemoryRequirements;
 	struct MemoryType;
@@ -296,9 +304,7 @@ namespace ashes
 	struct WriteDescriptorSet;
 
 	class Attribute;
-	class BackBuffer;
 	class BufferBase;
-	class BufferMemoryBarrier;
 	class BufferView;
 	class CommandBuffer;
 	class CommandPool;
@@ -314,10 +320,11 @@ namespace ashes
 	class Event;
 	class Fence;
 	class FrameBuffer;
-	class ImageMemoryBarrier;
+	class FrameBufferAttachment;
+	class Image;
+	class ImageView;
 	class Instance;
 	class IWindowHandle;
-	class MemoryBarrier;
 	class PhysicalDevice;
 	class Pipeline;
 	class PipelineLayout;
@@ -335,9 +342,6 @@ namespace ashes
 	class StagingTexture;
 	class Surface;
 	class SwapChain;
-	class Texture;
-	class FrameBufferAttachment;
-	class TextureView;
 	class UniformBufferBase;
 	class VertexBufferBase;
 	class VertexLayout;
@@ -376,7 +380,6 @@ namespace ashes
 	using SpecialisationInfoPtr = std::unique_ptr< SpecialisationInfo< T > >;
 
 	using AttributeBasePtr = std::unique_ptr< Attribute >;
-	using BackBufferPtr = std::unique_ptr< BackBuffer >;
 	using BufferBasePtr = std::unique_ptr< BufferBase >;
 	using BufferViewPtr = std::unique_ptr< BufferView >;
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
@@ -408,16 +411,16 @@ namespace ashes
 	using StagingTexturePtr = std::unique_ptr< StagingTexture >;
 	using SurfacePtr = std::unique_ptr< Surface >;
 	using SwapChainPtr = std::unique_ptr< SwapChain >;
-	using TexturePtr = std::unique_ptr< Texture >;
-	using TextureViewPtr = std::unique_ptr< TextureView >;
+	using ImagePtr = std::unique_ptr< Image >;
 	using VertexBufferBasePtr = std::unique_ptr< VertexBufferBase >;
 	using VertexLayoutPtr = std::unique_ptr< VertexLayout >;
 	using UniformBufferBasePtr = std::unique_ptr< UniformBufferBase >;
 
 	using DevicePtr = std::shared_ptr< Device >;
+	using DeviceMemoryPtr = std::shared_ptr< DeviceMemory >;
+	using ImageViewPtr = std::shared_ptr< ImageView >;
 	using ShaderModulePtr = std::shared_ptr< ShaderModule >;
 	using SpecialisationInfoBasePtr = std::shared_ptr< SpecialisationInfoBase >;
-	using DeviceMemoryPtr = std::shared_ptr< DeviceMemory >;
 
 	using AttachmentDescriptionArray = std::vector< AttachmentDescription >;
 	using AttachmentReferenceArray = std::vector< AttachmentReference >;
@@ -454,8 +457,9 @@ namespace ashes
 	using WriteDescriptorSetArray = std::vector< WriteDescriptorSet >;
 
 	using FrameBufferPtrArray = std::vector< FrameBufferPtr >;
-	using BackBufferPtrArray = std::vector< BackBufferPtr >;
 	using CommandBufferPtrArray = std::vector< CommandBufferPtr >;
+	using ImagePtrArray = std::vector< ImagePtr >;
+	using ImageViewPtrArray = std::vector< ImageViewPtr >;
 	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
 	using PhysicalDevicePtrArray = std::vector< PhysicalDevicePtr >;
 
@@ -473,7 +477,7 @@ namespace ashes
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;
 	using SwapChainCRef = std::reference_wrapper< SwapChain const >;
 	using SurfaceCRef = std::reference_wrapper< Surface const >;
-	using TextureViewCRef = std::reference_wrapper< TextureView const >;
+	using ImageViewCRef = std::reference_wrapper< ImageView const >;
 	using VertexLayoutCRef = std::reference_wrapper< VertexLayout const >;
 	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;
 
@@ -484,7 +488,7 @@ namespace ashes
 	using EventCRefArray = std::vector< EventCRef >;
 	using SemaphoreCRefArray = std::vector< SemaphoreCRef >;
 	using SwapChainCRefArray = std::vector< SwapChainCRef >;
-	using TextureViewCRefArray = std::vector< TextureViewCRef >;
+	using ImageViewCRefArray = std::vector< ImageViewCRef >;
 	using VertexLayoutCRefArray = std::vector< VertexLayoutCRef >;
 	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
 	/**\}*/

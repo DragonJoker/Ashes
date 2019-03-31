@@ -5,7 +5,7 @@ See LICENSE file in root folder.
 #include "Command/Commands/GlClearAttachmentsCommand.hpp"
 
 #include "Core/GlDevice.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImageView.hpp"
 
 namespace gl_renderer
 {

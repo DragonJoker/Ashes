@@ -123,13 +123,13 @@ namespace gl_renderer
 		*/
 		ashes::DeviceMemoryPtr allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const override;
 		/**
-		*\copydoc		ashes::Device::createTexture
+		*\copydoc		ashes::Device::createImage
 		*/
-		ashes::TexturePtr createTexture( ashes::ImageCreateInfo const & createInfo )const override;
+		ashes::ImagePtr createImage( ashes::ImageCreateInfo const & createInfo )const override;
 		/**
 		*\copydoc	ashes::Device::getImageSubresourceLayout
 		*/
-		void getImageSubresourceLayout( ashes::Texture const & image
+		void getImageSubresourceLayout( ashes::Image const & image
 			, ashes::ImageSubresource const & subresource
 			, ashes::SubresourceLayout & layout )const override;
 		/**

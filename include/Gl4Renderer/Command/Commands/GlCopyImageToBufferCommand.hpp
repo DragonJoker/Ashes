@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/ImageView.hpp>
 #include <Ashes/Miscellaneous/BufferImageCopy.hpp>
 
 namespace gl_renderer
@@ -31,7 +31,7 @@ namespace gl_renderer
 		*/
 		CopyImageToBufferCommand( Device const & device
 			, ashes::BufferImageCopyArray const & copyInfo
-			, ashes::Texture const & src
+			, ashes::Image const & src
 			, ashes::BufferBase const & dst );
 		CopyImageToBufferCommand( CopyImageToBufferCommand const & rhs );
 
@@ -41,17 +41,17 @@ namespace gl_renderer
 	private:
 		void applyOne( ContextLock const & context
 			, ashes::BufferImageCopy const & copyInfo
-			, TextureView const & view )const;
+			, ImageView const & view )const;
 
 	private:
-		Texture const & m_src;
+		Image const & m_src;
 		Buffer const & m_dst;
 		ashes::BufferImageCopyArray m_copyInfo;
 		GlInternal m_internal;
 		GlFormat m_format;
 		GlType m_type;
 		GlTextureType m_target;
-		std::vector< TextureViewPtr > m_views;
+		std::vector< ImageViewPtr > m_views;
 		GLuint m_srcFbo;
 	};
 }

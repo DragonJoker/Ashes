@@ -8,8 +8,8 @@ See LICENSE file in root folder.
 #include "Command/D3D11CommandPool.hpp"
 #include "Core/D3D11Device.hpp"
 #include "Descriptor/D3D11DescriptorSet.hpp"
-#include "Image/D3D11Texture.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11Image.hpp"
+#include "Image/D3D11ImageView.hpp"
 #include "Miscellaneous/D3D11QueryPool.hpp"
 #include "Pipeline/D3D11ComputePipeline.hpp"
 #include "Pipeline/D3D11Pipeline.hpp"
@@ -240,7 +240,7 @@ namespace d3d11_renderer
 #endif
 	}
 
-	void CommandBuffer::clear( ashes::TextureView const & image
+	void CommandBuffer::clear( ashes::ImageView const & image
 		, ashes::ClearColorValue const & colour )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearColourCommand >( m_device
@@ -248,7 +248,7 @@ namespace d3d11_renderer
 			, colour ) );
 	}
 
-	void CommandBuffer::clear( ashes::TextureView const & image
+	void CommandBuffer::clear( ashes::ImageView const & image
 		, ashes::DepthStencilClearValue const & value )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearDepthStencilCommand >( m_device
@@ -470,16 +470,19 @@ namespace d3d11_renderer
 
 	void CommandBuffer::copyToImage( ashes::BufferImageCopyArray const & copyInfo
 		, ashes::BufferBase const & src
-		, ashes::Texture const & dst )const
+		, ashes::Image const & dst )const
 	{
-		m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( m_device
-			, copyInfo
-			, src
-			, dst ) );
+		if ( !m_device.onCopyToImageCommand( *this, copyInfo, src, dst ) )
+		{
+			m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( m_device
+				, copyInfo
+				, src
+				, dst ) );
+		}
 	}
 
 	void CommandBuffer::copyToBuffer( ashes::BufferImageCopyArray const & copyInfo
-		, ashes::Texture const & src
+		, ashes::Image const & src
 		, ashes::BufferBase const & dst )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyImageToBufferCommand >( m_device
@@ -499,9 +502,9 @@ namespace d3d11_renderer
 	}
 
 	void CommandBuffer::copyImage( ashes::ImageCopy const & copyInfo
-		, ashes::Texture const & src
+		, ashes::Image const & src
 		, ashes::ImageLayout srcLayout
-		, ashes::Texture const & dst
+		, ashes::Image const & dst
 		, ashes::ImageLayout dstLayout )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyImageCommand >( m_device
@@ -510,9 +513,9 @@ namespace d3d11_renderer
 			, dst ) );
 	}
 
-	void CommandBuffer::blitImage( ashes::Texture const & srcImage
+	void CommandBuffer::blitImage( ashes::Image const & srcImage
 		, ashes::ImageLayout srcLayout
-		, ashes::Texture const & dstImage
+		, ashes::Image const & dstImage
 		, ashes::ImageLayout dstLayout
 		, std::vector< ashes::ImageBlit > const & regions
 		, ashes::Filter filter )const
@@ -658,7 +661,7 @@ namespace d3d11_renderer
 			, imageMemoryBarriers ) );
 	}
 
-	void CommandBuffer::generateMips( Texture const & texture )const
+	void CommandBuffer::generateMips( Image const & texture )const
 	{
 		m_commands.emplace_back( std::make_unique< GenerateMipsCommand >( m_device
 			, texture ) );

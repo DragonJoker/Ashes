@@ -618,11 +618,11 @@ namespace gl_renderer
 				if ( isSupportedInternal( fmt ) )
 				{
 					GLint value;
-					glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_INTERNALFORMAT_SUPPORTED, 1, &value );
+					glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_INTERNALFORMAT_SUPPORTED, 1, &value );
 
 					if ( value == GL_TRUE )
 					{
-						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FRAMEBUFFER_RENDERABLE, 1, &value );
+						glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_FRAMEBUFFER_RENDERABLE, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
@@ -636,21 +636,21 @@ namespace gl_renderer
 							}
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FRAMEBUFFER_BLEND, 1, &value );
+						glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_FRAMEBUFFER_BLEND, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eColourAttachmentBlend;
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FRAGMENT_TEXTURE, 1, &value );
+						glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_FRAGMENT_TEXTURE, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eSampledImage;
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FILTER, 1, &value );
+						glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_FILTER, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{

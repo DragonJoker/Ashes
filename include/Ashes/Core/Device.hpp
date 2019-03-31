@@ -336,7 +336,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	Les informations de création.
 		*/
-		virtual TexturePtr createTexture( ImageCreateInfo const & createInfo )const = 0;
+		virtual ImagePtr createImage( ImageCreateInfo const & createInfo )const = 0;
 		/**
 		*\~english
 		*\brief
@@ -357,7 +357,7 @@ namespace ashes
 		*\param[out] layout
 		*	Reçoit le layout de la sous-ressource.
 		*/
-		virtual void getImageSubresourceLayout( Texture const & image
+		virtual void getImageSubresourceLayout( Image const & image
 			, ImageSubresource const & subresource
 			, SubresourceLayout & layout )const = 0;
 		/**
@@ -704,7 +704,7 @@ namespace ashes
 		*\param[in] lodBias
 		*	The texture LOD offset.
 		*\param[in] borderColour
-		*	Texture border colour.
+		*	Image border colour.
 		*\param[in] maxAnisotropy
 		*	Maximal anisotropic filtering value.
 		*\param[in] compareOp

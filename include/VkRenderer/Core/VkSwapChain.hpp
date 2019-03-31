@@ -44,16 +44,16 @@ namespace vk_renderer
 		*/
 		~SwapChain();
 		/**
+		*\copydoc	ashes::SwapChain::getImages
+		*/
+		ashes::ImagePtrArray getImages()const override;
+		/**
 		*\copydoc	ashes::SwapChain::acquireNextImage
 		*/
 		ashes::Result acquireNextImage( uint64_t timeout
 			, ashes::Semaphore const * semaphore
 			, ashes::Fence const * fence
 			, uint32_t & imageIndex )const override;
-		/**
-		*\copydoc	ashes::SwapChain::createDepthStencil
-		*/
-		void createDepthStencil( ashes::Format format )override;
 		/**
 		*\~french
 		*\brief
@@ -66,9 +66,6 @@ namespace vk_renderer
 		{
 			return m_swapChain;
 		}
-
-	private:
-		void doCreateBackBuffers();
 
 	protected:
 		Device const & m_device;

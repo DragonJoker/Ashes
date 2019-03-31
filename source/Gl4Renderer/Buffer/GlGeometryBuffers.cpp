@@ -112,7 +112,7 @@ namespace gl_renderer
 							, glVertexAttribIPointer
 							, attribute.location
 							, getCount( attribute.format )
-							, getType( getInternal( attribute.format ) )
+							, getType( getInternalFormat( attribute.format ) )
 							, vbo.binding.stride
 							, BufferOffset( vbo.offset + attribute.offset ) );
 					}
@@ -122,7 +122,7 @@ namespace gl_renderer
 							, glVertexAttribPointer
 							, attribute.location
 							, getCount( attribute.format )
-							, getType( getInternal( attribute.format ) )
+							, getType( getInternalFormat( attribute.format ) )
 							, false
 							, vbo.binding.stride
 							, BufferOffset( vbo.offset + attribute.offset ) );
@@ -148,7 +148,7 @@ namespace gl_renderer
 							, glVertexAttribIPointer
 							, location
 							, getCount( format )
-							, getType( getInternal( attribute.format ) )
+							, getType( getInternalFormat( attribute.format ) )
 							, vbo.binding.stride
 							, BufferOffset( vbo.offset + offset ) );
 					}
@@ -158,7 +158,7 @@ namespace gl_renderer
 							, glVertexAttribPointer
 							, location
 							, getCount( format )
-							, getType( getInternal( attribute.format ) )
+							, getType( getInternalFormat( attribute.format ) )
 							, false
 							, vbo.binding.stride
 							, BufferOffset( vbo.offset + offset ) );

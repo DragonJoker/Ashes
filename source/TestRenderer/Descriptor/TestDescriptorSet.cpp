@@ -6,7 +6,7 @@
 #include "Descriptor/TestDescriptorSetLayout.hpp"
 #include "Descriptor/TestDescriptorPool.hpp"
 #include "Image/TestSampler.hpp"
-#include "Image/TestTextureView.hpp"
+#include "Image/TestImageView.hpp"
 
 #include <Ashes/Buffer/UniformBuffer.hpp>
 

@@ -12,8 +12,8 @@ namespace vk_renderer
 		{
 			VK_STRUCTURE_TYPE_MEMORY_BARRIER,
 			nullptr,
-			convert( barrier.getSrcAccessMask() ),
-			convert( barrier.getDstAccessMask() ),
+			convert( barrier.srcAccessMask ),
+			convert( barrier.dstAccessMask ),
 		};
 	}
 

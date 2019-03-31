@@ -50,8 +50,8 @@ namespace vkapp
 				m_currentMousePosition.y - m_previousMousePosition.y,
 			};
 			auto & result = m_camera.getRotation();
-			result = utils::pitch( result, utils::Radians{ float( delta.x ) / m_size.width } );
-			result = utils::yaw( result, utils::Radians{ float( -delta.y ) / m_size.height } );
+			result = utils::pitch( result, utils::Radians{ float( -delta.y ) / m_size.width } );
+			result = utils::yaw( result, utils::Radians{ float( delta.x ) / m_size.height } );
 			m_camera.update();
 		}
 
@@ -74,7 +74,7 @@ namespace vkapp
 
 	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( utils::Device const & device
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::TextureViewCRefArray const & views
+		, ashes::ImageViewPtrArray views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
@@ -94,7 +94,7 @@ namespace vkapp
 
 	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( utils::Device const & device
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::TextureViewCRefArray const & views
+		, ashes::ImageViewPtrArray views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{

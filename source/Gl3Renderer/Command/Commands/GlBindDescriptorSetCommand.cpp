@@ -9,8 +9,8 @@ See LICENSE file in root folder.
 #include "Descriptor/GlDescriptorSet.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "Image/GlSampler.hpp"
-#include "Image/GlTexture.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImage.hpp"
+#include "Image/GlImageView.hpp"
 
 #include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
@@ -22,7 +22,7 @@ namespace gl_renderer
 		static constexpr GLenum GL_TEXTURE_FILTER_CONTROL = 0x8500;
 		static constexpr GLenum GL_TEXTURE_LOD_BIAS = 0x8501;
 
-		ashes::TextureView const & getView( ashes::WriteDescriptorSet const & write, uint32_t index )
+		ashes::ImageView const & getView( ashes::WriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.imageInfo.size() );
 			return write.imageInfo[index].imageView.value().get();
@@ -41,17 +41,17 @@ namespace gl_renderer
 		}
 
 		GlTextureType doBindTextureView( ContextLock const & context
-			, ashes::TextureView const & view
+			, ashes::ImageView const & view
 			, uint32_t bindingIndex )
 		{
-			auto target = convert( view.getType(), view.getTexture().getLayerCount() );
+			auto target = convert( view.getType(), view.getImage().getLayerCount() );
 			glLogCall( context
 				, glActiveTexture
 				, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
 			glLogCall( context
 				, glBindTexture
 				, target
-				, static_cast< Texture const & >( view.getTexture() ).getImage() );
+				, static_cast< Image const & >( view.getImage() ).getImage() );
 
 			if ( view.getComponentMapping().r != ashes::ComponentSwizzle::eIdentity )
 			{
@@ -156,7 +156,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glBindImageTexture_ARB
 					, bindingIndex
-					, static_cast< Texture const & >( view.getTexture() ).getImage()
+					, static_cast< Image const & >( view.getImage() ).getImage()
 					, range.baseMipLevel
 					, range.layerCount
 					, range.baseArrayLayer

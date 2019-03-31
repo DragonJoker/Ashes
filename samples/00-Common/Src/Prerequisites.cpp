@@ -3,7 +3,7 @@
 #include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/PlatformWindowHandle.hpp>
 #include <Ashes/Core/Instance.hpp>
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/ImageView.hpp>
 
 #if defined( __WXGTK__ )
 #	include <gdk/gdkx.h>
@@ -88,13 +88,13 @@ namespace common
 		};
 	}
 
-	std::vector< ashes::Format > getFormats( ashes::TextureViewCRefArray const & views )
+	std::vector< ashes::Format > getFormats( ashes::ImageViewPtrArray const & views )
 	{
 		std::vector< ashes::Format > result;
 
 		for ( auto view : views )
 		{
-			result.push_back( view.get().getFormat() );
+			result.push_back( view->getFormat() );
 		}
 
 		return result;

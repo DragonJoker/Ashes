@@ -1,6 +1,6 @@
 #include "VkRendererPrerequisites.hpp"
 
-#include "Image/VkTexture.hpp"
+#include "Image/VkImage.hpp"
 
 namespace vk_renderer
 {
@@ -16,7 +16,7 @@ namespace vk_renderer
 			convert( barrier.newLayout ),
 			barrier.srcQueueFamilyIndex,
 			barrier.dstQueueFamilyIndex,
-			static_cast< Texture const & >( barrier.image ),
+			static_cast< Image const & >( barrier.image ),
 			convert( barrier.subresourceRange )
 		};
 	}

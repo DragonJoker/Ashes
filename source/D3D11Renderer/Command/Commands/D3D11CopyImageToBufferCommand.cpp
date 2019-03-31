@@ -6,8 +6,8 @@ See LICENSE file in root folder.
 
 #include "Buffer/D3D11Buffer.hpp"
 #include "Core/D3D11Device.hpp"
-#include "Image/D3D11Texture.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11Image.hpp"
+#include "Image/D3D11ImageView.hpp"
 
 #include <Ashes/Image/ImageSubresourceRange.hpp>
 #include <Ashes/Miscellaneous/BufferImageCopy.hpp>
@@ -16,25 +16,25 @@ namespace d3d11_renderer
 {
 	namespace
 	{
-		std::vector< TextureViewPtr > createViews( Device const & device
-			, ashes::Texture const & texture
+		std::vector< ImageViewPtr > createViews( Device const & device
+			, ashes::Image const & texture
 			, ashes::BufferImageCopyArray const & copies )
 		{
-			std::vector< TextureViewPtr > result;
-			ashes::TextureType type = texture.getType();
-			ashes::TextureViewType viewType;
+			std::vector< ImageViewPtr > result;
+			ashes::ImageType type = texture.getType();
+			ashes::ImageViewType viewType;
 
-			if ( type == ashes::TextureType::e3D )
+			if ( type == ashes::ImageType::e3D )
 			{
-				viewType = ashes::TextureViewType::e3D;
+				viewType = ashes::ImageViewType::e3D;
 			}
-			else if ( type == ashes::TextureType::e2D )
+			else if ( type == ashes::ImageType::e2D )
 			{
-				viewType = ashes::TextureViewType::e2D;
+				viewType = ashes::ImageViewType::e2D;
 			}
-			else if ( type == ashes::TextureType::e1D )
+			else if ( type == ashes::ImageType::e1D )
 			{
-				viewType = ashes::TextureViewType::e1D;
+				viewType = ashes::ImageViewType::e1D;
 			}
 
 			for ( auto & copy : copies )
@@ -47,8 +47,8 @@ namespace d3d11_renderer
 				createInfo.subresourceRange.layerCount = copy.imageSubresource.layerCount;
 				createInfo.subresourceRange.baseMipLevel = copy.imageSubresource.mipLevel;
 				createInfo.subresourceRange.levelCount = 1u;
-				result.emplace_back( std::make_unique< TextureView >( device
-					, static_cast< Texture const & >( texture )
+				result.emplace_back( std::make_unique< ImageView >( device
+					, static_cast< Image const & >( texture )
 					, createInfo ) );
 			}
 
@@ -58,10 +58,10 @@ namespace d3d11_renderer
 
 	CopyImageToBufferCommand::CopyImageToBufferCommand( Device const & device
 		, ashes::BufferImageCopyArray const & copyInfo
-		, ashes::Texture const & src
+		, ashes::Image const & src
 		, ashes::BufferBase const & dst )
 		: CommandBase{ device }
-		, m_src{ static_cast< Texture const & >( src ) }
+		, m_src{ static_cast< Image const & >( src ) }
 		, m_dst{ static_cast< Buffer const & >( dst ) }
 		, m_copyInfo{ copyInfo }
 		, m_format{ getSRVFormat( m_src.getFormat() ) }
@@ -89,7 +89,7 @@ namespace d3d11_renderer
 	}
 
 	void CopyImageToBufferCommand::applyOne( ashes::BufferImageCopy const & copyInfo
-		, TextureView const & view )const
+		, ImageView const & view )const
 	{
 	}
 

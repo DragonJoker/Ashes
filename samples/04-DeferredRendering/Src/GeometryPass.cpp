@@ -12,8 +12,8 @@
 #include <Ashes/Descriptor/DescriptorSetLayout.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Ashes/Descriptor/DescriptorSetPool.hpp>
-#include <Ashes/Image/Texture.hpp>
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/Image.hpp>
+#include <Ashes/Image/ImageView.hpp>
 #include <Ashes/Pipeline/DepthStencilState.hpp>
 #include <Ashes/Pipeline/InputAssemblyState.hpp>
 #include <Ashes/Pipeline/MultisampleState.hpp>
@@ -54,17 +54,26 @@ namespace vkapp
 			return result;
 		}
 
-		ashes::TextureViewCRefArray doGetViews( GeometryPassResult const & gbuffer
-			, ashes::TextureView const & depthview )
+		ashes::ImageViewPtr doCloneView( ashes::ImageView const & view )
 		{
-			ashes::TextureViewCRefArray result
-			{
-				depthview
-			};
+			return view.getImage().createView(
+				{
+					view.getType(),
+					view.getFormat(),
+					view.getComponentMapping(),
+					view.getSubResourceRange(),
+				} );
+		}
+
+		ashes::ImageViewPtrArray doGetViews( GeometryPassResult const & gbuffer
+			, ashes::ImageViewPtr depthview )
+		{
+			ashes::ImageViewPtrArray result;
+			result.emplace_back( depthview );
 
 			for ( auto & texture : gbuffer )
 			{
-				result.emplace_back( *texture.view );
+				result.emplace_back( texture.view );
 			}
 
 			return result;

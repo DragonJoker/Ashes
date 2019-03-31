@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___D3D11Renderer_StagingBuffer_HPP___
 #pragma once
 
-#include "D3D11Renderer/Image/D3D11Texture.hpp"
+#include "D3D11Renderer/Image/D3D11Image.hpp"
 
 #include <Ashes/Image/StagingTexture.hpp>
 
@@ -35,21 +35,21 @@ namespace d3d11_renderer
 			, ashes::Format format
 			, ashes::Offset3D const & offset
 			, ashes::Extent2D const & extent
-			, ashes::TextureView const & texture )const override;
+			, ashes::ImageView const & texture )const override;
 
 		void doCopyDestinationToStaging( ashes::CommandBuffer const & commandBuffer
 			, ashes::ImageSubresourceLayers const & subresourceLayers
 			, ashes::Format format
 			, ashes::Offset3D const & offset
 			, ashes::Extent2D const & extent
-			, ashes::TextureView const & texture )const override;
+			, ashes::ImageView const & texture )const override;
 		void doCopyFromStagingTexture( uint8_t * data
 			, ashes::Format format
 			, ashes::Extent2D const & extent )const override;
 
 	protected:
 		Device const & m_device;
-		Texture m_texture;
+		Image m_texture;
 		ashes::DeviceMemoryPtr m_storage;
 	};
 }

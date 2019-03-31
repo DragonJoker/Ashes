@@ -5,7 +5,7 @@ See LICENSE file in root folder.
 #include "Ashes/Sync/ImageMemoryBarrier.hpp"
 
 #include "Ashes/Image/ImageSubresourceRange.hpp"
-#include "Ashes/Image/Texture.hpp"
+#include "Ashes/Image/Image.hpp"
 
 namespace ashes
 {
@@ -15,7 +15,7 @@ namespace ashes
 		, ImageLayout newLayout
 		, uint32_t srcQueueFamilyIndex
 		, uint32_t dstQueueFamilyIndex
-		, Texture const & image
+		, Image const & image
 		, ImageSubresourceRange const & subresourceRange )
 		: srcAccessMask{ srcAccessMask }
 		, dstAccessMask{ dstAccessMask }

@@ -5,8 +5,8 @@ See LICENSE file in root folder.
 #include "Command/Commands/D3D11BlitImageCommand.hpp"
 
 #include "Core/D3D11Device.hpp"
-#include "Image/D3D11Texture.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11Image.hpp"
+#include "Image/D3D11ImageView.hpp"
 #include "RenderPass/D3D11FrameBuffer.hpp"
 
 #include <Ashes/Image/ImageSubresourceRange.hpp>
@@ -15,7 +15,7 @@ See LICENSE file in root folder.
 namespace d3d11_renderer
 {
 	BlitImageCommand::Attachment::Attachment( ashes::ImageSubresourceLayers & subresource
-		, Texture const & image
+		, Image const & image
 		, uint32_t layer )
 		: image{ image.getResource() }
 		, subResourceIndex{ D3D11CalcSubresource( subresource.mipLevel, layer, image.getMipmapLevels() ) }
@@ -23,8 +23,8 @@ namespace d3d11_renderer
 	}
 
 	BlitImageCommand::LayerCopy::LayerCopy( ashes::ImageBlit blitRegion
-		, Texture const & srcImage
-		, Texture const & dstImage
+		, Image const & srcImage
+		, Image const & dstImage
 		, uint32_t layer )
 		: dstOffset{ blitRegion.dstOffset }
 		, srcBox
@@ -42,13 +42,13 @@ namespace d3d11_renderer
 	}
 
 	BlitImageCommand::BlitImageCommand( Device const & device
-		, ashes::Texture const & srcImage
-		, ashes::Texture const & dstImage
+		, ashes::Image const & srcImage
+		, ashes::Image const & dstImage
 		, std::vector< ashes::ImageBlit > const & regions
 		, ashes::Filter filter )
 		: CommandBase{ device }
-		, m_srcTexture{ static_cast< Texture const & >( srcImage ) }
-		, m_dstTexture{ static_cast< Texture const & >( dstImage ) }
+		, m_srcTexture{ static_cast< Image const & >( srcImage ) }
+		, m_dstTexture{ static_cast< Image const & >( dstImage ) }
 		, m_filter{ convert( filter ) }
 	{
 		assert( srcImage.getLayerCount() == dstImage.getLayerCount() );

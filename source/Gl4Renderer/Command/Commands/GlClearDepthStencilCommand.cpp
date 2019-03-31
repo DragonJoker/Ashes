@@ -4,17 +4,17 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlClearDepthStencilCommand.hpp"
 
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImageView.hpp"
 
 namespace gl_renderer
 {
 	ClearDepthStencilCommand::ClearDepthStencilCommand( Device const & device
-		, ashes::TextureView const & image
+		, ashes::ImageView const & image
 		, ashes::DepthStencilClearValue const & value )
 		: CommandBase{ device }
-		, m_image{ static_cast< TextureView const & >( image ) }
+		, m_image{ static_cast< ImageView const & >( image ) }
 		, m_value{ value }
-		, m_internal{ getInternal( m_image.getFormat() ) }
+		, m_internal{ getInternalFormat( m_image.getFormat() ) }
 		, m_format{ getFormat( m_internal ) }
 		, m_type{ getType( m_internal ) }
 	{
@@ -30,7 +30,7 @@ namespace gl_renderer
 			{
 				glLogCall( context
 					, glClearTexImage
-					, m_image.getImage()
+					, m_image.getInternal()
 					, 0
 					, m_format
 					, m_type
@@ -40,7 +40,7 @@ namespace gl_renderer
 			{
 				glLogCall( context
 					, glClearTexImage
-					, m_image.getImage()
+					, m_image.getInternal()
 					, 0
 					, m_format
 					, m_type
@@ -50,7 +50,7 @@ namespace gl_renderer
 			{
 				glLogCall( context
 					, glClearTexImage
-					, m_image.getImage()
+					, m_image.getInternal()
 					, 0
 					, m_format
 					, m_type

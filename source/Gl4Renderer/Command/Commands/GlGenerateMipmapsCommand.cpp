@@ -4,14 +4,14 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlGenerateMipmapsCommand.hpp"
 
-#include "Image/GlTexture.hpp"
+#include "Image/GlImage.hpp"
 
 namespace gl_renderer
 {
 	GenerateMipmapsCommand::GenerateMipmapsCommand( Device const & device
-		, Texture const & texture )
+		, Image const & texture )
 		: CommandBase{ device }
-		, m_texture{ texture.getImage() }
+		, m_texture{ texture.getInternal() }
 		, m_target{ convert( texture.getType(), texture.getLayerCount() ) }
 	{
 	}

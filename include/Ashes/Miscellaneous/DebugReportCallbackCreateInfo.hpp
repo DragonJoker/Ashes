@@ -8,12 +8,6 @@ See LICENSE file in root folder.
 
 #include "Ashes/AshesPrerequisites.hpp"
 
-#if ASHES_WIN32
-#	define ASHES_API __stdcall
-#else
-#	define ASHES_API
-#endif
-
 namespace ashes
 {
 	using PFN_debugReportCallback = bool ( ASHES_API * )(

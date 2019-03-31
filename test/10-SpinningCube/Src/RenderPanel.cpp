@@ -7,7 +7,6 @@
 #include <Buffer/UniformBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/Queue.hpp>
-#include <Core/BackBuffer.hpp>
 #include <Core/Surface.hpp>
 #include <Core/Device.hpp>
 #include <Core/Instance.hpp>
@@ -17,7 +16,7 @@
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
 #include <Image/StagingTexture.hpp>
-#include <Image/Texture.hpp>
+#include <Image/Image.hpp>
 #include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/DepthStencilState.hpp>
 #include <Pipeline/InputAssemblyState.hpp>
@@ -195,12 +194,10 @@ namespace vkapp
 	{
 		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Assets";
 		auto image = common::loadImage( shadersFolder / "texture.png" );
-		auto stagingTexture = m_device->getDevice().createStagingTexture( image.format
-			, { image.size.width, image.size.height } );
-		m_texture = m_device->createTexture(
+		m_texture = m_device->createImage(
 			{
 				0u,
-				ashes::TextureType::e2D,
+				ashes::ImageType::e2D,
 				image.format,
 				{ image.size.width, image.size.height, 1u },
 				1u,
@@ -210,14 +207,14 @@ namespace vkapp
 				ashes::ImageUsageFlag::eTransferDst | ashes::ImageUsageFlag::eSampled
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_view = m_texture->createView( ashes::TextureViewType::e2D
+		m_view = m_texture->createView( ashes::ImageViewType::e2D
 			, image.format );
 		m_sampler = m_device->getDevice().createSampler( ashes::WrapMode::eClampToEdge
 			, ashes::WrapMode::eClampToEdge
 			, ashes::WrapMode::eClampToEdge
 			, ashes::Filter::eLinear
 			, ashes::Filter::eLinear );
-		stagingTexture->uploadTextureData( *m_graphicsQueue
+		m_stagingBuffer->uploadTextureData( *m_graphicsQueue
 			, *m_commandPool
 			, image.format
 			, image.data

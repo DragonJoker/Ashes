@@ -12,13 +12,13 @@ namespace vk_renderer
 {
 	/**
 	*\brief
-	*	Convertit un ashes::TextureType en VkImageViewType.
+	*	Convertit un ashes::ImageType en VkImageViewType.
 	*\param[in] value
-	*	Le ashes::TextureType.
+	*	Le ashes::ImageType.
 	*\return
 	*	Le VkImageViewType.
 	*/
-	VkImageViewType convert( ashes::TextureViewType const & value )noexcept;
+	VkImageViewType convert( ashes::ImageViewType const & value )noexcept;
 }
 
 #endif

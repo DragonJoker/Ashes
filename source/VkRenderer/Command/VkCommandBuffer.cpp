@@ -9,8 +9,8 @@ See LICENSE file in root folder.
 #include "Core/VkDevice.hpp"
 #include "Descriptor/VkDescriptorSet.hpp"
 #include "Image/VkImageSubresourceRange.hpp"
-#include "Image/VkTexture.hpp"
-#include "Image/VkTextureView.hpp"
+#include "Image/VkImage.hpp"
+#include "Image/VkImageView.hpp"
 #include "Miscellaneous/VkBufferCopy.hpp"
 #include "Miscellaneous/VkBufferImageCopy.hpp"
 #include "Miscellaneous/VkImageCopy.hpp"
@@ -191,26 +191,26 @@ namespace vk_renderer
 			, vkCommands.data() );
 	}
 
-	void CommandBuffer::clear( ashes::TextureView const & image
+	void CommandBuffer::clear( ashes::ImageView const & image
 		, ashes::ClearColorValue const & colour )const
 	{
 		auto vkcolour = convert( colour );
 		auto vksubresourceRange = convert( image.getSubResourceRange() );
 		m_device.vkCmdClearColorImage( m_commandBuffer
-			, static_cast< Texture const & >( image.getTexture() )
+			, static_cast< Image const & >( image.getImage() )
 			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 			, &vkcolour
 			, 1
 			, &vksubresourceRange );
 	}
 
-	void CommandBuffer::clear( ashes::TextureView const & image
+	void CommandBuffer::clear( ashes::ImageView const & image
 		, ashes::DepthStencilClearValue const & value )const
 	{
 		auto vkclear = convert( value );
 		auto vksubresourceRange = convert( image.getSubResourceRange() );
 		m_device.vkCmdClearDepthStencilImage( m_commandBuffer
-			, static_cast< Texture const & >( image.getTexture() )
+			, static_cast< Image const & >( image.getImage() )
 			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 			, &vkclear
 			, 1
@@ -367,26 +367,26 @@ namespace vk_renderer
 
 	void CommandBuffer::copyToImage( ashes::BufferImageCopyArray const & copyInfo
 		, ashes::BufferBase const & src
-		, ashes::Texture const & dst )const
+		, ashes::Image const & dst )const
 	{
 		auto vkcopyInfo = convert( copyInfo );
 		DEBUG_DUMP( vkcopyInfo );
 		m_device.vkCmdCopyBufferToImage( m_commandBuffer
 			, static_cast< Buffer const & >( src )
-			, static_cast< Texture const & >( dst )
+			, static_cast< Image const & >( dst )
 			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 			, uint32_t( vkcopyInfo.size() )
 			, vkcopyInfo.data() );
 	}
 
 	void CommandBuffer::copyToBuffer( ashes::BufferImageCopyArray const & copyInfo
-		, ashes::Texture const & src
+		, ashes::Image const & src
 		, ashes::BufferBase const & dst )const
 	{
 		auto vkcopyInfo = convert( copyInfo );
 		DEBUG_DUMP( vkcopyInfo );
 		m_device.vkCmdCopyImageToBuffer( m_commandBuffer
-			, static_cast< Texture const & >( src )
+			, static_cast< Image const & >( src )
 			, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
 			, static_cast< Buffer const & >( dst )
 			, uint32_t( vkcopyInfo.size() )
@@ -407,25 +407,25 @@ namespace vk_renderer
 	}
 
 	void CommandBuffer::copyImage( ashes::ImageCopy const & copyInfo
-		, ashes::Texture const & src
+		, ashes::Image const & src
 		, ashes::ImageLayout srcLayout
-		, ashes::Texture const & dst
+		, ashes::Image const & dst
 		, ashes::ImageLayout dstLayout )const
 	{
 		auto vkcopyInfo = convert( copyInfo );
 		DEBUG_DUMP( vkcopyInfo );
 		m_device.vkCmdCopyImage( m_commandBuffer
-			, static_cast< Texture const & >( src )
+			, static_cast< Image const & >( src )
 			, convert( srcLayout )
-			, static_cast< Texture const & >( dst )
+			, static_cast< Image const & >( dst )
 			, convert( dstLayout )
 			, 1
 			, &vkcopyInfo );
 	}
 
-	void CommandBuffer::blitImage( ashes::Texture const & srcImage
+	void CommandBuffer::blitImage( ashes::Image const & srcImage
 		, ashes::ImageLayout srcLayout
-		, ashes::Texture const & dstImage
+		, ashes::Image const & dstImage
 		, ashes::ImageLayout dstLayout
 		, std::vector< ashes::ImageBlit > const & regions
 		, ashes::Filter filter )const
@@ -433,9 +433,9 @@ namespace vk_renderer
 		auto vkregions = convert< VkImageBlit >( regions );
 		DEBUG_DUMP( vkregions );
 		m_device.vkCmdBlitImage( m_commandBuffer
-			, static_cast< Texture const & >( srcImage )
+			, static_cast< Image const & >( srcImage )
 			, convert( srcLayout )
-			, static_cast< Texture const & >( dstImage )
+			, static_cast< Image const & >( dstImage )
 			, convert( dstLayout )
 			, uint32_t( vkregions.size() )
 			, vkregions.data()

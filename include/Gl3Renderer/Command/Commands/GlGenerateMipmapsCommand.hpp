@@ -21,12 +21,12 @@ namespace gl_renderer
 		*	Constructeur.
 		*/
 		GenerateMipmapsCommand( Device const & device
-			, Texture const & texture );
+			, Image const & texture );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		Texture const & m_texture;
+		Image const & m_texture;
 	};
 }

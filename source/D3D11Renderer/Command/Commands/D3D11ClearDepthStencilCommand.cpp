@@ -4,15 +4,15 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/D3D11ClearDepthStencilCommand.hpp"
 
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11ImageView.hpp"
 
 namespace d3d11_renderer
 {
 	ClearDepthStencilCommand::ClearDepthStencilCommand( Device const & device
-		, ashes::TextureView const & image
+		, ashes::ImageView const & image
 		, ashes::DepthStencilClearValue const & value )
 		: CommandBase{ device }
-		, m_image{ static_cast< TextureView const & >( image ) }
+		, m_image{ static_cast< ImageView const & >( image ) }
 		, m_value{ value }
 		, m_flags{ ( isDepthFormat( image.getFormat() )
 				? D3D11_CLEAR_DEPTH

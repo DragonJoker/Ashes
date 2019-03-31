@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Core/Exception.hpp>
 #include <Ashes/Core/SwapChain.hpp>
+#include <Ashes/Image/Image.hpp>
 #include <Ashes/Miscellaneous/SwapChainCreateInfo.hpp>
 #include <Ashes/RenderPass/FrameBuffer.hpp>
 #include <Ashes/RenderPass/FrameBufferAttachment.hpp>
@@ -157,6 +158,17 @@ namespace utils
 				ashes::nullopt
 			};
 		}
+
+		ashes::ImageViewPtr doCloneView( ashes::ImageView const & view )
+		{
+			return view.getImage().createView(
+				{
+					view.getType(),
+					view.getFormat(),
+					view.getComponentMapping(),
+					view.getSubResourceRange(),
+				} );
+		}
 	}
 
 	SwapChain::SwapChain( ashes::Device const & device
@@ -166,8 +178,9 @@ namespace utils
 		, m_commandPool{ commandPool }
 		, m_dimensions{ size }
 		, m_swapChain{ device.createSwapChain( doGetSwapChainCreateInfo( device, size ) ) }
+		, m_swapChainImages{ m_swapChain->getImages() }
 	{
-		for ( uint32_t i = 0u; i < uint32_t( m_swapChain->getImages().size() ); ++i )
+		for ( uint32_t i = 0u; i < uint32_t( m_swapChainImages.size() ); ++i )
 		{
 			m_renderingResources.emplace_back( std::make_unique< RenderingResources >( m_device
 				, *m_swapChain
@@ -184,7 +197,7 @@ namespace utils
 	ashes::FrameBufferPtrArray SwapChain::createFrameBuffers( ashes::RenderPass const & renderPass )const
 	{
 		ashes::FrameBufferPtrArray result;
-		result.resize( m_swapChain->getImages().size() );
+		result.resize( m_swapChainImages.size() );
 
 		for ( size_t i = 0u; i < result.size(); ++i )
 		{
@@ -199,7 +212,7 @@ namespace utils
 	ashes::CommandBufferPtrArray SwapChain::createCommandBuffers()const
 	{
 		ashes::CommandBufferPtrArray result;
-		result.resize( m_swapChain->getImages().size() );
+		result.resize( m_swapChainImages.size() );
 
 		for ( auto & commandBuffer : result )
 		{
@@ -267,13 +280,18 @@ namespace utils
 
 		for ( auto & attach : attaches )
 		{
+			auto & image = *m_swapChainImages[backBuffer];
+
 			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
 			{
-				result.emplace_back( attach, m_swapChain->getImages()[backBuffer]->getView() );
+				result.emplace_back( attach
+					, image.createView( ashes::ImageViewType::e2D
+						, m_swapChain->getFormat() ) );
 			}
 			else
 			{
-				result.emplace_back( attach, m_swapChain->getDepthStencilView() );
+				result.emplace_back( attach
+					, m_swapChain->getDepthStencilView() );
 			}
 		}
 
@@ -318,9 +336,13 @@ namespace utils
 	void SwapChain::doResetSwapChain()
 	{
 		m_device.waitIdle();
+		m_swapChainImages.clear();
+		m_renderingResources.clear();
+		m_swapChain.reset();
 		m_swapChain = m_device.createSwapChain( doGetSwapChainCreateInfo( m_device, m_dimensions ) );
+		m_swapChainImages = m_swapChain->getImages();
 
-		for ( uint32_t i = 0u; i < uint32_t( m_swapChain->getImages().size() ); ++i )
+		for ( uint32_t i = 0u; i < uint32_t( m_swapChainImages.size() ); ++i )
 		{
 			m_renderingResources.emplace_back( std::make_unique< RenderingResources >( m_device
 				, *m_swapChain

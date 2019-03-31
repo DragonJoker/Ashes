@@ -86,7 +86,7 @@ namespace d3d11_renderer
 
 	private:
 		Device const & m_device;
-		TextureViewCRefArray m_views;
+		ImageViewCRefArray m_views;
 		ashes::Extent2D m_dimensions;
 		std::vector< ID3D11View * > m_allViews;
 		std::vector< ID3D11RenderTargetView * > m_rtViews;

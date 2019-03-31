@@ -11,7 +11,6 @@
 #include <Ashes/Buffer/VertexBuffer.hpp>
 #include <Ashes/Command/CommandBuffer.hpp>
 #include <Ashes/Command/Queue.hpp>
-#include <Ashes/Core/BackBuffer.hpp>
 #include <Ashes/Core/Surface.hpp>
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Core/Instance.hpp>
@@ -21,8 +20,8 @@
 #include <Ashes/Descriptor/DescriptorSetPool.hpp>
 #include <Ashes/Enum/SubpassContents.hpp>
 #include <Ashes/Image/Sampler.hpp>
-#include <Ashes/Image/Texture.hpp>
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/Image.hpp>
+#include <Ashes/Image/ImageView.hpp>
 #include <Ashes/Pipeline/DepthStencilState.hpp>
 #include <Ashes/Pipeline/MultisampleState.hpp>
 #include <Ashes/Pipeline/Pipeline.hpp>

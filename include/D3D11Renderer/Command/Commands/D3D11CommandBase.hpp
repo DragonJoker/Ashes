@@ -14,18 +14,20 @@ namespace d3d11_renderer
 	{
 		Context( D3D_FEATURE_LEVEL featureLevel
 			, Device const & device )
-			: Context{ featureLevel, getImmediateContext( device ) }
+			: Context{ featureLevel, device, getImmediateContext( device ) }
 		{
 		}
 
 		Context( D3D_FEATURE_LEVEL featureLevel
+			, Device const & device
 			, ID3D11DeviceContext * context )
-			: context{ context }
+			: device{ device }
+			, context{ context }
 			, featureLevel{ featureLevel }
 		{
 			auto hr = context->QueryInterface( __uuidof( ID3D11DeviceContext1 )
 				, reinterpret_cast< void ** >( &context1 ) );
-			dxCheckError( hr, "QueryInterface<ID3D11DeviceContext1>" );
+			checkError( device, hr, "QueryInterface<ID3D11DeviceContext1>" );
 		}
 
 		~Context()
@@ -34,6 +36,7 @@ namespace d3d11_renderer
 			safeRelease( context );
 		}
 
+		Device const & device;
 		ID3D11DeviceContext * context;
 		ID3D11DeviceContext1 * context1;
 		WriteDescriptorSetBindingArray uavs;

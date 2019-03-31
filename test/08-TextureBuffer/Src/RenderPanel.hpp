@@ -6,7 +6,7 @@
 #include <Descriptor/DescriptorSetPool.hpp>
 #include <Descriptor/DescriptorSet.hpp>
 #include <RenderPass/FrameBuffer.hpp>
-#include <Image/Texture.hpp>
+#include <Image/Image.hpp>
 #include <RenderPass/RenderPass.hpp>
 #include <Image/Sampler.hpp>
 #include <Buffer/StagingBuffer.hpp>

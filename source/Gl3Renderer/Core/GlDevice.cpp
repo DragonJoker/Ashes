@@ -18,8 +18,8 @@ See LICENSE file in root folder.
 #include "Descriptor/GlDescriptorSetLayout.hpp"
 #include "Image/GlSampler.hpp"
 #include "Image/GlStagingTexture.hpp"
-#include "Image/GlTexture.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImage.hpp"
+#include "Image/GlImageView.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
 #include "Miscellaneous/GlQueryPool.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
@@ -52,7 +52,7 @@ namespace gl_renderer
 				result = reinterpret_cast< Buffer const * >( object )->getBuffer();
 				break;
 			case GlDebugReportObjectType::eTexture:
-				result = reinterpret_cast< Texture const * >( object )->getImage();
+				result = reinterpret_cast< Image const * >( object )->getImage();
 				break;
 			case GlDebugReportObjectType::eQuery:
 				result = *reinterpret_cast< QueryPool const * >( object )->begin();
@@ -457,6 +457,53 @@ namespace gl_renderer
 					, GL_PRIMITIVE_RESTART );
 			}
 		}
+
+		template< typename T, typename U >
+		T getAligned( T value, U align )
+		{
+			return T( ( value + align - 1 ) & ~( align - 1 ) );
+		};
+
+		template< typename T >
+		T getSubresourceValue( T value, uint32_t mipLevel )
+		{
+			return T( value >> mipLevel );
+		};
+
+		ashes::Extent3D getTexelBlockExtent( ashes::Format format )
+		{
+			ashes::Extent3D texelBlockExtent{ 1u, 1u, 1u };
+
+			if ( ashes::isCompressedFormat( format ) )
+			{
+				auto extent = ashes::getMinimalExtent2D( format );
+				texelBlockExtent.width = extent.width;
+				texelBlockExtent.height = extent.height;
+			}
+			else
+			{
+				texelBlockExtent.width = 1u;
+			}
+
+			return texelBlockExtent;
+		}
+
+		uint32_t getTexelBlockByteSize( ashes::Extent3D const & texelBlockExtent
+			, ashes::Format format )
+		{
+			uint32_t texelBlockSize;
+
+			if ( !isDepthStencilFormat( format ) )
+			{
+				texelBlockSize = getSize( texelBlockExtent, format );
+			}
+			else
+			{
+				texelBlockSize = texelBlockExtent.width;
+			}
+
+			return texelBlockSize;
+		}
 	}
 
 	Device::Device( Instance const & instance
@@ -568,16 +615,16 @@ namespace gl_renderer
 			, std::move( allocateInfo ) );
 	}
 
-	ashes::TexturePtr Device::createTexture( ashes::ImageCreateInfo const & createInfo )const
+	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo )const
 	{
-		return std::make_unique< Texture >( *this, createInfo );
+		return std::make_unique< Image >( *this, createInfo );
 	}
 
-	void Device::getImageSubresourceLayout( ashes::Texture const & image
+	void Device::getImageSubresourceLayout( ashes::Image const & image
 		, ashes::ImageSubresource const & subresource
 		, ashes::SubresourceLayout & layout )const
 	{
-		auto & gltex = static_cast< Texture const & >( image );
+		auto & gltex = static_cast< Image const & >( image );
 		auto context = getContext();
 		auto target = convert( gltex.getType(), gltex.getLayerCount(), gltex.getFlags() );
 		glLogCall( context
@@ -587,30 +634,20 @@ namespace gl_renderer
 		int w = 0;
 		int h = 0;
 		int d = 0;
-		int red = 0;
-		int green = 0;
-		int blue = 0;
-		int alpha = 0;
-		int depth = 0;
-		int stencil = 0;
 		context->glGetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_WIDTH, &w );
 		context->glGetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_HEIGHT, &h );
 		context->glGetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_DEPTH, &d );
-		context->glGetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_RED_SIZE, &red );
-		context->glGetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_GREEN_SIZE, &green );
-		context->glGetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_BLUE_SIZE, &blue );
-		context->glGetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_ALPHA_SIZE, &alpha );
-		context->glGetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_DEPTH_SIZE, &depth );
-		context->glGetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_STENCIL_SIZE, &stencil );
-		layout.rowPitch = 0u;
-		layout.arrayPitch = 0u;
-		layout.depthPitch = 0u;
-		layout.size = std::max( w, 1 )  * std::max( d, 1 ) * std::max( h, 1 ) * ( red + green + blue + alpha + depth + stencil );
-		layout.offset = 0;
 		glLogCall( context
 			, glBindTexture
 			, target
 			, 0 );
+		auto extent = getTexelBlockExtent( image.getFormat() );
+		auto byteSize = getTexelBlockByteSize( extent, image.getFormat() );
+		layout.rowPitch = getAligned( std::max( w, 1 ), extent.width );
+		layout.arrayPitch = layout.rowPitch * getAligned( std::max( h, 1 ), extent.width );
+		layout.depthPitch = layout.arrayPitch;
+		layout.offset = subresource.arrayLayer * layout.arrayPitch;
+		layout.size = layout.arrayPitch * std::max( d, 1 );
 	}
 
 	ashes::SamplerPtr Device::createSampler( ashes::SamplerCreateInfo const & createInfo )const

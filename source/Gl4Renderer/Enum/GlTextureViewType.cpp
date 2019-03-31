@@ -57,33 +57,33 @@ namespace gl_renderer
 		}
 	}
 
-	GlTextureViewType convert( ashes::TextureViewType const & value )
+	GlTextureViewType convert( ashes::ImageViewType const & value )
 	{
 		switch ( value )
 		{
-		case ashes::TextureViewType::e1D:
+		case ashes::ImageViewType::e1D:
 			return GL_TEXTURE_VIEW_1D;
 
-		case ashes::TextureViewType::e2D:
+		case ashes::ImageViewType::e2D:
 			return GL_TEXTURE_VIEW_2D;
 
-		case ashes::TextureViewType::e3D:
+		case ashes::ImageViewType::e3D:
 			return GL_TEXTURE_VIEW_3D;
 
-		case ashes::TextureViewType::eCube:
+		case ashes::ImageViewType::eCube:
 			return GL_TEXTURE_VIEW_CUBE_MAP;
 
-		case ashes::TextureViewType::e1DArray:
+		case ashes::ImageViewType::e1DArray:
 			return GL_TEXTURE_VIEW_1D_ARRAY;
 
-		case ashes::TextureViewType::e2DArray:
+		case ashes::ImageViewType::e2DArray:
 			return GL_TEXTURE_VIEW_2D_ARRAY;
 
-		case ashes::TextureViewType::eCubeArray:
+		case ashes::ImageViewType::eCubeArray:
 			return GL_TEXTURE_VIEW_CUBE_MAP_ARRAY;
 
 		default:
-			assert( false && "Unsupported TextureViewType" );
+			assert( false && "Unsupported ImageViewType" );
 			return GL_TEXTURE_VIEW_2D;
 		}
 	}

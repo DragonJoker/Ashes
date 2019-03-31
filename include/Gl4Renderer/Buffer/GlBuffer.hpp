@@ -30,7 +30,7 @@ namespace gl_renderer
 		*\return
 		*	Le tampon.
 		*/
-		inline GLuint getBuffer()const
+		inline GLuint getInternal()const
 		{
 			assert( m_name != GL_INVALID_INDEX );
 			return m_name;

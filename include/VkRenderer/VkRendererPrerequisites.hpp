@@ -206,7 +206,6 @@ namespace vk_renderer
 	static const std::string ShortName = "VkLib";
 
 	class Attribute;
-	class BackBuffer;
 	class Buffer;
 	class BufferView;
 	class CommandBuffer;
@@ -230,15 +229,14 @@ namespace vk_renderer
 	class ShaderProgram;
 	class Surface;
 	class SwapChain;
-	class Texture;
-	class TextureView;
+	class Image;
+	class ImageView;
 	class UniformBuffer;
 	class VertexBufferBase;
 	class VertexLayout;
 
 	using AttributeArray = std::vector< Attribute >;
 
-	using BackBufferPtr = std::unique_ptr< BackBuffer >;
 	using BufferStoragePtr = std::unique_ptr< BufferStorage >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
 	using ImageStoragePtr = std::unique_ptr< ImageStorage >;
@@ -246,9 +244,8 @@ namespace vk_renderer
 	using QueuePtr = std::unique_ptr< Queue >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
 	using SurfacePtr = std::unique_ptr< Surface >;
-	using TextureViewPtr = std::unique_ptr< TextureView >;
+	using ImageViewPtr = std::unique_ptr< ImageView >;
 
-	using BackBufferPtrArray = std::vector< BackBufferPtr >;
 	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
 
 	using CommandBufferCRef = std::reference_wrapper< CommandBuffer const >;
@@ -257,8 +254,8 @@ namespace vk_renderer
 	using RenderSubpassCRef = std::reference_wrapper< RenderSubpass const >;
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;
 	using SwapChainCRef = std::reference_wrapper< SwapChain const >;
-	using TextureCRef = std::reference_wrapper< Texture const >;
-	using TextureViewCRef = std::reference_wrapper< TextureView const >;
+	using TextureCRef = std::reference_wrapper< Image const >;
+	using ImageViewCRef = std::reference_wrapper< ImageView const >;
 	using VertexLayoutCRef = std::reference_wrapper< VertexLayout const >;
 	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;
 
@@ -269,7 +266,7 @@ namespace vk_renderer
 	using SemaphoreCRefArray = std::vector< SemaphoreCRef >;
 	using SwapChainCRefArray = std::vector< SwapChainCRef >;
 	using TextureCRefArray = std::vector< TextureCRef >;
-	using TextureViewCRefArray = std::vector< TextureViewCRef >;
+	using ImageViewCRefArray = std::vector< ImageViewCRef >;
 	using VertexLayoutCRefArray = std::vector< VertexLayoutCRef >;
 	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
 	/**

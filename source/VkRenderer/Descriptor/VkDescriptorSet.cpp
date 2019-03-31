@@ -7,7 +7,7 @@
 #include "Descriptor/VkDescriptorSetLayoutBinding.hpp"
 #include "Descriptor/VkDescriptorPool.hpp"
 #include "Image/VkSampler.hpp"
-#include "Image/VkTextureView.hpp"
+#include "Image/VkImageView.hpp"
 
 #include <Ashes/Buffer/UniformBuffer.hpp>
 

@@ -10,8 +10,8 @@
 #include <Ashes/Descriptor/DescriptorSetLayout.hpp>
 #include <Ashes/Descriptor/DescriptorSetPool.hpp>
 #include <Ashes/Image/StagingTexture.hpp>
-#include <Ashes/Image/Texture.hpp>
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/Image.hpp>
+#include <Ashes/Image/ImageView.hpp>
 #include <Ashes/Miscellaneous/PushConstantRange.hpp>
 #include <Ashes/Pipeline/DepthStencilState.hpp>
 #include <Ashes/Pipeline/InputAssemblyState.hpp>
@@ -75,12 +75,12 @@ namespace common
 		doPrepareResources( queue, commandPool );
 	}
 
-	void Gui::updateView( ashes::TextureView const & colourView )
+	void Gui::updateView( ashes::ImageViewPtr colourView )
 	{
-		if ( m_colourView != &colourView )
+		if ( m_colourView != colourView )
 		{
 			bool first = m_colourView == nullptr;
-			m_colourView = &colourView;
+			m_colourView = colourView;
 			doPreparePipeline();
 
 			if ( !first )
@@ -253,10 +253,10 @@ namespace common
 		io.Fonts->GetTexDataAsRGBA32( &fontData, &texWidth, &texHeight );
 		auto uploadSize = uint32_t( texWidth * texHeight * 4u * sizeof( char ) );
 
-		m_fontImage = m_device.createTexture(
+		m_fontImage = m_device.createImage(
 			{
 				0u,
-				ashes::TextureType::e2D,
+				ashes::ImageType::e2D,
 				ashes::Format::eR8G8B8A8_UNORM,
 				ashes::Extent3D{ uint32_t( texWidth ), uint32_t( texHeight ), 1u },
 				1u,
@@ -266,13 +266,12 @@ namespace common
 				ashes::ImageUsageFlag::eSampled | ashes::ImageUsageFlag::eTransferDst
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_fontView = m_fontImage->createView( ashes::TextureViewType( m_fontImage->getType() )
+		m_fontView = m_fontImage->createView( ashes::ImageViewType( m_fontImage->getType() )
 			, m_fontImage->getFormat() );
 
 		auto copyCmd = commandPool.createCommandBuffer();
-		auto stagingTexture = m_device.getDevice().createStagingTexture( ashes::Format::eR8G8B8A8_UNORM
-			, { uint32_t( texWidth ), uint32_t( texHeight ) } );
-		stagingTexture->uploadTextureData( queue
+		auto staging = ashes::StagingBuffer{ m_device, 0u };
+		staging.uploadTextureData( queue
 			, commandPool
 			, ashes::Format::eR8G8B8A8_UNORM
 			, fontData
@@ -321,12 +320,12 @@ namespace common
 
 	void Gui::doPreparePipeline()
 	{
-		auto dimensions = m_colourView->getTexture().getDimensions();
+		auto dimensions = m_colourView->getImage().getDimensions();
 		auto size = ashes::Extent2D{ dimensions.width, dimensions.height };
-		m_target = m_device.createTexture(
+		m_target = m_device.createImage(
 			{
 				0u,
-				ashes::TextureType::e2D,
+				ashes::ImageType::e2D,
 				m_colourView->getFormat(),
 				dimensions,
 				1u,
@@ -336,7 +335,7 @@ namespace common
 				ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eSampled | ashes::ImageUsageFlag::eTransferDst
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_targetView = m_target->createView( ashes::TextureViewType::e2D
+		m_targetView = m_target->createView( ashes::ImageViewType::e2D
 			, m_target->getFormat() );
 		
 		ashes::AttachmentDescriptionArray rpAttaches
@@ -367,12 +366,12 @@ namespace common
 			, std::move( subpasses )
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
 				, ashes::AccessFlag::eColourAttachmentWrite }
-			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
+			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eFragmentShader
 				, ashes::AccessFlag::eShaderRead } );
 
 		ashes::FrameBufferAttachmentArray attaches
 		{
-			{ *m_renderPass->getAttachments().begin(), *m_targetView }
+			{ *m_renderPass->getAttachments().begin(), m_targetView }
 		};
 		m_frameBuffer = m_renderPass->createFrameBuffer( size
 			, std::move( attaches ) );

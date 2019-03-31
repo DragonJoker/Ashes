@@ -5,7 +5,7 @@ See LICENSE file in root folder.
 #include "Command/Commands/D3D11BeginSubpassCommand.hpp"
 
 #include "Buffer/D3D11Buffer.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11ImageView.hpp"
 #include "RenderPass/D3D11FrameBuffer.hpp"
 #include "RenderPass/D3D11RenderPass.hpp"
 
@@ -58,7 +58,7 @@ namespace d3d11_renderer
 
 				for ( auto & uav : write.write.imageInfo )
 				{
-					auto & view = static_cast< TextureView const & >( uav.imageView.value().get() );
+					auto & view = static_cast< ImageView const & >( uav.imageView.value().get() );
 					uavs.push_back( view.getUnorderedAccessView() );
 				}
 			}

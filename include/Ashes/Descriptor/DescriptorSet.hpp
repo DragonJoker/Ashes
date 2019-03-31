@@ -93,7 +93,7 @@ namespace ashes
 		*	The array index.
 		*/
 		void createBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, TextureView const & view
+			, ImageView const & view
 			, Sampler const & sampler
 			, ImageLayout layout = ImageLayout::eShaderReadOnlyOptimal
 			, uint32_t index = 0u );
@@ -145,7 +145,7 @@ namespace ashes
 		*	The array index.
 		*/
 		void createBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, TextureView const & view
+			, ImageView const & view
 			, ImageLayout layout
 			, uint32_t index = 0u );
 		/**
@@ -169,7 +169,7 @@ namespace ashes
 		*	The array index.
 		*/
 		void createBinding( DescriptorSetLayoutBinding const & layoutBinding
-			, TextureView const & view
+			, ImageView const & view
 			, uint32_t index = 0u );
 		/**
 		*\~french

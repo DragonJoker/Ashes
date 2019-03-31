@@ -7,6 +7,8 @@ See LICENSE file in root folder.
 #include "Ashes/Command/CommandBuffer.hpp"
 #include "Ashes/Core/Device.hpp"
 #include "Ashes/Core/Exception.hpp"
+#include "Ashes/Image/Image.hpp"
+#include "Ashes/Miscellaneous/MemoryRequirements.hpp"
 #include "Ashes/RenderPass/AttachmentDescription.hpp"
 #include "Ashes/RenderPass/FrameBuffer.hpp"
 #include "Ashes/RenderPass/FrameBufferAttachment.hpp"
@@ -14,6 +16,40 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+	namespace
+	{
+		uint32_t deduceMemoryType( ashes::PhysicalDeviceMemoryProperties const & memoryProperties
+			, uint32_t typeBits
+			, ashes::MemoryPropertyFlags requirements )
+		{
+			uint32_t result = 0xFFFFFFFFu;
+			bool found{ false };
+			uint32_t i{ 0 };
+
+			while ( i < memoryProperties.memoryTypes.size() && !found )
+			{
+				if ( ( typeBits & 1 ) == 1 )
+				{
+					if ( ( memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
+					{
+						result = i;
+						found = true;
+					}
+				}
+
+				typeBits >>= 1;
+				++i;
+			}
+
+			if ( !found )
+			{
+				throw ashes::Exception{ ashes::Result::eErrorRenderer, "Could not deduce memory type" };
+			}
+
+			return result;
+		}
+	}
+
 	SwapChain::SwapChain( Device const & device
 		, SwapChainCreateInfo createInfo )
 		: m_device{ device }
@@ -26,6 +62,32 @@ namespace ashes
 	SwapChain::~SwapChain()
 	{
 		unregisterObject( m_device, this );
+	}
+
+	void SwapChain::createDepthStencil( ashes::Format format )
+	{
+		m_depthStencil = m_device.createImage(
+			{
+				0u,
+				ashes::ImageType::e2D,
+				format,
+				ashes::Extent3D{ getDimensions().width, getDimensions().height, 1u },
+				1u,
+				1u,
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				ashes::ImageUsageFlag::eDepthStencilAttachment,
+				ashes::SharingMode::eExclusive,
+				{},
+				ashes::ImageLayout::eUndefined,
+			} );
+		auto requirements = m_depthStencil->getMemoryRequirements();
+		auto deduced = deduceMemoryType( m_device.getMemoryProperties()
+			, requirements.memoryTypeBits
+			, ashes::MemoryPropertyFlag::eDeviceLocal );
+		m_depthStencil->bindMemory( m_device.allocateMemory( { requirements.size, deduced } ) );
+		m_depthStencilView = m_depthStencil->createView( ashes::ImageViewType::e2D
+			, format );
 	}
 
 	Result SwapChain::acquireNextImage( uint64_t timeout

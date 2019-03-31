@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Command/VkCommandBuffer.hpp"
 #include "Core/VkDevice.hpp"
-#include "Image/VkTextureView.hpp"
+#include "Image/VkImageView.hpp"
 
 #include <Ashes/Core/Exception.hpp>
 #include <Ashes/Miscellaneous/MemoryRequirements.hpp>
@@ -75,7 +75,7 @@ namespace vk_renderer
 		, ashes::Format format
 		, ashes::Offset3D const & offset
 		, ashes::Extent2D const & extent
-		, ashes::TextureView const & texture )const
+		, ashes::ImageView const & texture )const
 	{
 		uint32_t size = getSize( extent, format );
 		assert( size <= m_buffer.getSize() );
@@ -96,7 +96,7 @@ namespace vk_renderer
 				}
 			}
 			, m_buffer
-			, texture.getTexture() );
+			, texture.getImage() );
 	}
 
 	void StagingTexture::doCopyDestinationToStaging( ashes::CommandBuffer const & commandBuffer
@@ -104,7 +104,7 @@ namespace vk_renderer
 		, ashes::Format format
 		, ashes::Offset3D const & offset
 		, ashes::Extent2D const & extent
-		, ashes::TextureView const & texture )const
+		, ashes::ImageView const & texture )const
 	{
 		uint32_t size = getSize( extent, format );
 		assert( size <= m_buffer.getSize() );
@@ -121,7 +121,7 @@ namespace vk_renderer
 					1u
 				}
 			}
-			, texture.getTexture()
+			, texture.getImage()
 			, m_buffer );
 	}
 

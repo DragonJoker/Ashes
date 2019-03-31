@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include <Ashes/Core/Device.hpp>
 #include <Ashes/Core/Exception.hpp>
 #include <Ashes/Core/Instance.hpp>
-#include <Ashes/Image/Texture.hpp>
+#include <Ashes/Image/Image.hpp>
 #include <Ashes/Miscellaneous/MemoryRequirements.hpp>
 
 namespace utils
@@ -174,10 +174,10 @@ namespace utils
 		return result;
 	}
 
-	ashes::TexturePtr Device::createTexture( ashes::ImageCreateInfo const & createInfo
+	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo
 		, ashes::MemoryPropertyFlags flags )const
 	{
-		auto result = m_device->createTexture( createInfo );
+		auto result = m_device->createImage( createInfo );
 		auto requirements = result->getMemoryRequirements();
 		uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 			, flags );
@@ -201,7 +201,7 @@ namespace utils
 		return result;
 	}
 
-	uint32_t Device::deduceMemoryType( uint32_t typeBits
+	uint32_t Device::deduceMemoryType( ashes::MemoryPropertyFlags typeBits
 		, ashes::MemoryPropertyFlags requirements )const
 	{
 		uint32_t result = 0xFFFFFFFFu;
@@ -212,7 +212,7 @@ namespace utils
 
 		while ( i < m_memoryProperties.memoryTypes.size() && !found )
 		{
-			if ( ( typeBits & 1 ) == 1 )
+			if ( ( checkFlag( typeBits, ashes::MemoryPropertyFlag( 1u ) ) ) == 1 )
 			{
 				// Le type de mémoire est disponible, a-t-il les propriétés demandées?
 				if ( ( m_memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
@@ -222,7 +222,7 @@ namespace utils
 				}
 			}
 
-			typeBits >>= 1;
+			typeBits = typeBits >> 1;
 			++i;
 		}
 

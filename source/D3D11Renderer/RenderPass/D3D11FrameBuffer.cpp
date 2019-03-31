@@ -5,7 +5,7 @@ See LICENSE file in root folder.
 #include "RenderPass/D3D11FrameBuffer.hpp"
 
 #include "Core/D3D11Device.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11ImageView.hpp"
 #include "RenderPass/D3D11RenderPass.hpp"
 
 #include <Ashes/RenderPass/FrameBufferAttachment.hpp>
@@ -14,20 +14,20 @@ namespace d3d11_renderer
 {
 	namespace
 	{
-		TextureViewCRefArray convert( ashes::FrameBufferAttachmentArray const & attachs )
+		ImageViewCRefArray convert( ashes::FrameBufferAttachmentArray const & attachs )
 		{
-			TextureViewCRefArray result;
+			ImageViewCRefArray result;
 			result.reserve( attachs.size() );
 
 			for ( auto & attach : attachs )
 			{
-				result.emplace_back( static_cast< TextureView const & >( attach.getView() ) );
+				result.emplace_back( static_cast< ImageView const & >( attach.getView() ) );
 			}
 
 			return result;
 		}
 
-		std::vector< ID3D11View * > getAllViews( TextureViewCRefArray const & views )
+		std::vector< ID3D11View * > getAllViews( ImageViewCRefArray const & views )
 		{
 			std::vector< ID3D11View * > result;
 
@@ -46,7 +46,7 @@ namespace d3d11_renderer
 			return result;
 		}
 
-		std::vector< ID3D11RenderTargetView * > getRenderTargetViews( TextureViewCRefArray const & views )
+		std::vector< ID3D11RenderTargetView * > getRenderTargetViews( ImageViewCRefArray const & views )
 		{
 			std::vector< ID3D11RenderTargetView * > result;
 
@@ -61,9 +61,9 @@ namespace d3d11_renderer
 			return result;
 		}
 
-		TextureView const * doGetDepthStencilView( TextureViewCRefArray const & views )
+		ImageView const * doGetDepthStencilView( ImageViewCRefArray const & views )
 		{
-			TextureView const * result{ nullptr };
+			ImageView const * result{ nullptr };
 
 			for ( auto & view : views )
 			{
@@ -77,7 +77,7 @@ namespace d3d11_renderer
 			return result;
 		}
 
-		ID3D11DepthStencilView * getDepthStencilView( TextureViewCRefArray const & views )
+		ID3D11DepthStencilView * getDepthStencilView( ImageViewCRefArray const & views )
 		{
 			ID3D11DepthStencilView * result{ nullptr };
 			auto view = doGetDepthStencilView( views );
@@ -90,7 +90,7 @@ namespace d3d11_renderer
 			return result;
 		}
 
-		UINT getDepthStencilFlags( TextureViewCRefArray const & views )
+		UINT getDepthStencilFlags( ImageViewCRefArray const & views )
 		{
 			UINT result{ 0u };
 			auto view = doGetDepthStencilView( views );

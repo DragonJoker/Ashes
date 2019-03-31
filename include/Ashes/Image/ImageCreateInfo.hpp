@@ -29,7 +29,7 @@ namespace ashes
 		*\brief
 		*	Le type d'image.
 		*/
-		TextureType imageType;
+		ImageType imageType;
 		/**
 		*\~english
 		*\brief

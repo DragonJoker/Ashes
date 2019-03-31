@@ -363,7 +363,7 @@ namespace d3d11_renderer
 		if ( hr == S_OK )
 		{
 			doRetrieveShader( device );
-			m_layout = doRetrieveShaderDesc();
+			m_layout = doRetrieveShaderDesc( device );
 
 			if ( errors )
 			{
@@ -469,10 +469,10 @@ namespace d3d11_renderer
 			break;
 		}
 
-		dxCheckError( hr, "RetrieveShader" );
+		checkError( device, hr, "RetrieveShader" );
 	}
 
-	ShaderDesc CompiledShaderModule::doRetrieveShaderDesc()
+	ShaderDesc CompiledShaderModule::doRetrieveShaderDesc( Device const & device )
 	{
 		// Reflect shader info
 		CComPtr< ID3D11ShaderReflection > shaderReflection;
@@ -480,7 +480,7 @@ namespace d3d11_renderer
 			, m_compiled->GetBufferSize()
 			, __uuidof( ID3D11ShaderReflection )
 			, reinterpret_cast< void ** >( &shaderReflection ) );
-		dxCheckError( hr, "D3DReflect" );
+		checkError( device, hr, "D3DReflect" );
 
 		// Get shader info
 		D3D11_SHADER_DESC shaderDesc{};

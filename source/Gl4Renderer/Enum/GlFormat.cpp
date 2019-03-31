@@ -568,7 +568,7 @@ namespace gl_renderer
 		}
 	}
 
-	GlInternal getInternal( ashes::Format const & format )noexcept
+	GlInternal getInternalFormat( ashes::Format const & format )noexcept
 	{
 		switch ( format )
 		{

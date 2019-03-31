@@ -42,7 +42,13 @@ namespace vk_renderer
 
 	ashes::MemoryRequirements Buffer::getMemoryRequirements()const
 	{
-		return m_device.getBufferMemoryRequirements( m_buffer );
+		VkMemoryRequirements requirements;
+		m_device.vkGetBufferMemoryRequirements( m_device
+			, m_buffer
+			, &requirements );
+		ashes::MemoryRequirements result = convert( requirements );
+		result.type = ashes::ResourceType::eBuffer;
+		return result;
 	}
 
 	void Buffer::doBindMemory()

@@ -6,8 +6,8 @@ See LICENSE file in root folder.
 
 #include "Command/TestCommandBuffer.hpp"
 #include "Core/TestDevice.hpp"
-#include "Image/TestTexture.hpp"
-#include "Image/TestTextureView.hpp"
+#include "Image/TestImage.hpp"
+#include "Image/TestImageView.hpp"
 #include "RenderPass/TestFrameBuffer.hpp"
 
 #include <Ashes/RenderPass/RenderPassCreateInfo.hpp>

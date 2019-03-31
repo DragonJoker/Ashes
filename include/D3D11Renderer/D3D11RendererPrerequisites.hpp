@@ -167,12 +167,6 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 #	define dxRenderer_DebugNames 0
 #endif
 
-#if !defined( NDEBUG )
-#	define dxCheckError( hr, txt ) checkError( hr, txt )
-#else
-#	define dxCheckError( hr, txt ) SUCCEEDED( hr )
-#endif
-
 #if dxRenderer_DebugNames
 #	if defined( _MSC_VER )
 #		define dxDebugName( obj, type )\
@@ -210,7 +204,6 @@ namespace d3d11_renderer
 	};
 
 	class Attribute;
-	class BackBuffer;
 	class Buffer;
 	class BufferView;
 	class CommandBase;
@@ -237,23 +230,21 @@ namespace d3d11_renderer
 	class ShaderModule;
 	class Surface;
 	class SwapChain;
-	class Texture;
-	class TextureView;
+	class Image;
+	class ImageView;
 	class VertexBufferBase;
 	class VertexLayout;
 
 	using AttributeArray = std::vector< Attribute >;
 
-	using BackBufferPtr = std::unique_ptr< BackBuffer >;
 	using CommandPtr = std::unique_ptr< CommandBase >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using QueuePtr = std::unique_ptr< Queue >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
 	using SurfacePtr = std::unique_ptr< Surface >;
-	using TextureViewPtr = std::unique_ptr< TextureView >;
+	using ImageViewPtr = std::unique_ptr< ImageView >;
 
-	using BackBufferPtrArray = std::vector< BackBufferPtr >;
 	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
 
 	using BufferCRef = std::reference_wrapper< Buffer const >;
@@ -263,8 +254,8 @@ namespace d3d11_renderer
 	using RenderSubpassCRef = std::reference_wrapper< RenderSubpass const >;
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;
 	using SwapChainCRef = std::reference_wrapper< SwapChain const >;
-	using TextureCRef = std::reference_wrapper< Texture const >;
-	using TextureViewCRef = std::reference_wrapper< TextureView const >;
+	using TextureCRef = std::reference_wrapper< Image const >;
+	using ImageViewCRef = std::reference_wrapper< ImageView const >;
 	using VertexLayoutCRef = std::reference_wrapper< VertexLayout const >;
 	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;
 
@@ -276,7 +267,7 @@ namespace d3d11_renderer
 	using SemaphoreCRefArray = std::vector< SemaphoreCRef >;
 	using SwapChainCRefArray = std::vector< SwapChainCRef >;
 	using TextureCRefArray = std::vector< TextureCRef >;
-	using TextureViewCRefArray = std::vector< TextureViewCRef >;
+	using ImageViewCRefArray = std::vector< ImageViewCRef >;
 	using VertexLayoutCRefArray = std::vector< VertexLayoutCRef >;
 	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
 
@@ -337,7 +328,8 @@ namespace d3d11_renderer
 	using VbosBindingArray = std::vector< VbosBinding >;
 	using WriteDescriptorSetBindingArray = std::vector< WriteDescriptorSetBinding >;
 
-	bool checkError( HRESULT hResult, char const * const text );
+	std::string getLastErrorText();
+	bool checkError( Device const & device, HRESULT hResult, char const * const text );
 	std::string toString( std::wstring const & text );
 	uint32_t deduceMemoryType( uint32_t typeBits
 		, ashes::MemoryPropertyFlags requirements );

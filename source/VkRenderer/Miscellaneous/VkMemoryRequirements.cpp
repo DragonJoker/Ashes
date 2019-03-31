@@ -16,10 +16,10 @@ namespace vk_renderer
 	{
 		return ashes::MemoryRequirements
 		{
-			ashes::ResourceType( 0u ),
 			value.size,
 			value.alignment,
 			value.memoryTypeBits,
+			ashes::ResourceType( 0u ),
 		};
 	}
 }
