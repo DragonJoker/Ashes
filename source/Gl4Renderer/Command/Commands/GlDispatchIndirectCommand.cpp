@@ -23,7 +23,7 @@ namespace gl_renderer
 		glLogCall( context
 			, glBindBuffer
 			, GL_BUFFER_TARGET_DISPATCH_INDIRECT
-			, m_buffer.getBuffer() );
+			, m_buffer.getInternal() );
 		glLogCall( context
 			, glDispatchComputeIndirect
 			, GLintptr( BufferOffset( m_offset ) ) );

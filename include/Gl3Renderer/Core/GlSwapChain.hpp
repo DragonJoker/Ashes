@@ -23,7 +23,7 @@ namespace gl_renderer
 		*\param[in] device
 		*	La connexion logique au GPU.
 		*\param[in] createInfo
-		*	Les informations de création.
+		*	Les informations de crï¿½ation.
 		*\~english
 		*\brief
 		*	Constructor.
@@ -35,6 +35,10 @@ namespace gl_renderer
 		SwapChain( Device const & device
 			, ashes::SwapChainCreateInfo createInfo );
 		/**
+		*\copydoc	ashes::SwapChain::getImages
+		*/
+		ashes::ImagePtrArray getImages()const override;
+		/**
 		*\copydoc	ashes::SwapChain::acquireNextImage
 		*/
 		ashes::Result acquireNextImage( uint64_t timeout
@@ -45,9 +49,6 @@ namespace gl_renderer
 		*\copydoc	ashes::SwapChain::createDepthStencil
 		*/
 		void createDepthStencil( ashes::Format format )override;
-
-	private:
-		void doCreateBackBuffers();
 
 	private:
 		Device const & m_device;

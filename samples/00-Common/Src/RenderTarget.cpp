@@ -10,8 +10,8 @@
 #include <Ashes/Descriptor/DescriptorSetLayout.hpp>
 #include <Ashes/Descriptor/DescriptorSetPool.hpp>
 #include <Ashes/Image/StagingTexture.hpp>
-#include <Ashes/Image/Texture.hpp>
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/Image.hpp>
+#include <Ashes/Image/ImageView.hpp>
 #include <Ashes/Pipeline/PipelineLayout.hpp>
 #include <Ashes/Pipeline/Pipeline.hpp>
 #include <Ashes/Pipeline/VertexLayout.hpp>
@@ -100,12 +100,12 @@ namespace common
 	{
 		m_opaque = doCreateOpaqueRendering( m_device
 			, *m_stagingBuffer
-			, { *m_depthView, *m_colourView }
+			, { m_depthView, m_colourView }
 			, m_scene
 			, m_textureNodes );
 		m_transparent = doCreateTransparentRendering( m_device
 			, *m_stagingBuffer
-			, { *m_depthView, *m_colourView }
+			, { m_depthView, m_colourView }
 			, m_scene
 			, m_textureNodes );
 	}
@@ -138,12 +138,10 @@ namespace common
 		{
 			common::TextureNodePtr textureNode = std::make_shared< common::TextureNode >();
 			textureNode->image = image;
-			auto stagingTexture = m_device.getDevice().createStagingTexture( image->format
-				, { image->size.width, image->size.height } );
-			textureNode->texture = m_device.createTexture(
+			textureNode->texture = m_device.createImage(
 				{
 					0u,
-					ashes::TextureType::e2D,
+					ashes::ImageType::e2D,
 					image->format,
 					ashes::Extent3D{ image->size.width, image->size.height, 1u },
 					4u,
@@ -155,13 +153,14 @@ namespace common
 						| ashes::ImageUsageFlag::eSampled )
 				}
 				, ashes::MemoryPropertyFlag::eDeviceLocal );
-			textureNode->view = textureNode->texture->createView( ashes::TextureViewType( textureNode->texture->getType() )
+			textureNode->view = textureNode->texture->createView( ashes::ImageViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat()
 				, 0u
 				, 4u );
-			auto view = textureNode->texture->createView( ashes::TextureViewType( textureNode->texture->getType() )
+			auto view = textureNode->texture->createView( ashes::ImageViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat() );
-			stagingTexture->uploadTextureData( m_transferQueue
+			auto staging = ashes::StagingBuffer{ m_device, 0u, getSize( image->size, image->format ) };
+			staging.uploadTextureData( m_transferQueue
 				, m_commandPool
 				, image->format
 				, image->data
@@ -180,10 +179,10 @@ namespace common
 	void RenderTarget::doUpdateRenderViews()
 	{
 		m_colourView.reset();
-		m_colour = m_device.createTexture(
+		m_colour = m_device.createImage(
 			{
 				0,
-				ashes::TextureType::e2D,
+				ashes::ImageType::e2D,
 				ColourFormat,
 				ashes::Extent3D{ m_size.width, m_size.height, 1u },
 				1u,
@@ -194,14 +193,14 @@ namespace common
 					| ashes::ImageUsageFlag::eSampled )
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_colourView = m_colour->createView( ashes::TextureViewType::e2D
+		m_colourView = m_colour->createView( ashes::ImageViewType::e2D
 			, m_colour->getFormat() );
 
 		m_depthView.reset();
-		m_depth = m_device.createTexture(
+		m_depth = m_device.createImage(
 			{
 				0,
-				ashes::TextureType::e2D,
+				ashes::ImageType::e2D,
 				DepthFormat,
 				ashes::Extent3D{ m_size.width, m_size.height, 1u },
 				1u,
@@ -211,7 +210,7 @@ namespace common
 				ashes::ImageUsageFlag::eDepthStencilAttachment
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_depthView = m_depth->createView( ashes::TextureViewType::e2D
+		m_depthView = m_depth->createView( ashes::ImageViewType::e2D
 			, m_depth->getFormat() );
 	}
 }

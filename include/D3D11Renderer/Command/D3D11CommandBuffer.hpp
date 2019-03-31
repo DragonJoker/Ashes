@@ -84,12 +84,12 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::CommandBuffer:clear
 		*/
-		void clear( ashes::TextureView const & image
+		void clear( ashes::ImageView const & image
 			, ashes::ClearColorValue const & colour )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:clear
 		*/
-		void clear( ashes::TextureView const & image
+		void clear( ashes::ImageView const & image
 			, ashes::DepthStencilClearValue const & colour )const override;
 		/**
 		*\copydoc	ashes::clearAttachments:clear
@@ -169,12 +169,12 @@ namespace d3d11_renderer
 		*/
 		void copyToImage( ashes::BufferImageCopyArray const & copyInfo
 			, ashes::BufferBase const & src
-			, ashes::Texture const & dst )const override;
+			, ashes::Image const & dst )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer::copyToBuffer
 		*/
 		void copyToBuffer( ashes::BufferImageCopyArray const & copyInfo
-			, ashes::Texture const & src
+			, ashes::Image const & src
 			, ashes::BufferBase const & dst )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:copyBuffer
@@ -186,16 +186,16 @@ namespace d3d11_renderer
 		*\copydoc	ashes::CommandBuffer:copyImage
 		*/
 		void copyImage( ashes::ImageCopy const & copyInfo
-			, ashes::Texture const & src
+			, ashes::Image const & src
 			, ashes::ImageLayout srcLayout
-			, ashes::Texture const & dst
+			, ashes::Image const & dst
 			, ashes::ImageLayout dstLayout )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:blitImage
 		*/
-		void blitImage( ashes::Texture const & srcImage
+		void blitImage( ashes::Image const & srcImage
 			, ashes::ImageLayout srcLayout
-			, ashes::Texture const & dstImage
+			, ashes::Image const & dstImage
 			, ashes::ImageLayout dstLayout
 			, std::vector< ashes::ImageBlit > const & regions
 			, ashes::Filter filter )const override;
@@ -272,7 +272,7 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::CommandBuffer::waitEvents
 		*/
-		void generateMips( Texture const & texture )const;
+		void generateMips( Image const & texture )const;
 		/**
 		*\copydoc	ashes::CommandBuffer::pipelineBarrier
 		*/

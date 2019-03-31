@@ -30,7 +30,7 @@ namespace gl_renderer
 
 		if ( !m_subpass.resolveAttachments.empty() )
 		{
-			if ( m_frameBuffer.getFrameBuffer() )
+			if ( m_frameBuffer.getInternal() )
 			{
 				uint32_t index = 0u;
 
@@ -41,7 +41,7 @@ namespace gl_renderer
 
 					if ( dstattach.object != GL_INVALID_INDEX )
 					{
-						context->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
+						context->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_frameBuffer.getInternal() );
 					}
 					else
 					{
@@ -49,7 +49,7 @@ namespace gl_renderer
 					}
 
 					GLenum attach[1]{ dstattach.point };
-					context->glBindFramebuffer( GL_READ_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
+					context->glBindFramebuffer( GL_READ_FRAMEBUFFER, m_frameBuffer.getInternal() );
 					context->glReadBuffer( srcattach.point );
 					context->glDrawBuffers( 1u, attach );
 					context->glBlitFramebuffer( 0, 0, m_frameBuffer.getDimensions().width, m_frameBuffer.getDimensions().height

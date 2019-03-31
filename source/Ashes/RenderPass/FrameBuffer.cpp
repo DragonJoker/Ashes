@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 
 #include "Ashes/Command/Queue.hpp"
 #include "Ashes/Core/Device.hpp"
-#include "Ashes/Image/Texture.hpp"
+#include "Ashes/Image/Image.hpp"
 #include "Ashes/RenderPass/RenderPass.hpp"
 
 namespace ashes

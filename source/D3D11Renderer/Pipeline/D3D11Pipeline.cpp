@@ -149,7 +149,7 @@ namespace d3d11_renderer
 		auto blendDesc = convert( m_createInfo.colourBlendState );
 		HRESULT hr = d3ddevice->CreateBlendState( &blendDesc, &m_bdState );
 
-		if ( !dxCheckError( hr, "CreateBlendState" ) )
+		if ( !checkError( device, hr, "CreateBlendState" ) )
 		{
 			throw std::runtime_error( "CreateBlendState() failed" );
 		}
@@ -164,7 +164,7 @@ namespace d3d11_renderer
 			, m_createInfo.multisampleState );
 		auto hr = d3ddevice->CreateRasterizerState( &rasterizerDesc, &m_rsState );
 
-		if ( !dxCheckError( hr, "CreateRasterizerState" ) )
+		if ( !checkError( device, hr, "CreateRasterizerState" ) )
 		{
 			throw std::runtime_error( "CreateRasterizerState() failed" );
 		}
@@ -180,7 +180,7 @@ namespace d3d11_renderer
 			auto depthStencilDesc = convert( m_createInfo.depthStencilState.value() );
 			auto hr = d3ddevice->CreateDepthStencilState( &depthStencilDesc, &m_dsState );
 
-			if ( !dxCheckError( hr, "CreateDepthStencilState" ) )
+			if ( !checkError( device, hr, "CreateDepthStencilState" ) )
 			{
 				throw std::runtime_error( "CreateDepthStencilState() failed" );
 			}
@@ -243,7 +243,7 @@ namespace d3d11_renderer
 					, compiled->GetBufferSize()
 					, &m_iaState );
 
-				if ( !dxCheckError( hr, "CreateInputLayout" ) )
+				if ( !checkError( device, hr, "CreateInputLayout" ) )
 				{
 					throw std::runtime_error( "CreateInputLayout() failed" );
 				}

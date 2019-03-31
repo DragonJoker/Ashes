@@ -68,7 +68,7 @@ namespace d3d11_renderer
 		{
 			auto hr = device.getDevice()->CreateQuery( &desc, &query );
 
-			if ( dxCheckError( hr, "CreateQuery" ) )
+			if ( checkError( m_device, hr, "CreateQuery" ) )
 			{
 				dxDebugName( query, Query );
 			}
@@ -148,7 +148,7 @@ namespace d3d11_renderer
 			}
 			while ( hr == S_FALSE || !checkFlag( flags, ashes::QueryResultFlag::eWait ) );
 
-			if ( dxCheckError( hr, "GetData" ) )
+			if ( checkError( m_device, hr, "GetData" ) )
 			{
 				datas[i - firstQuery] = getUint32( i );
 			}
@@ -181,7 +181,7 @@ namespace d3d11_renderer
 			}
 			while ( hr == S_FALSE || !checkFlag( flags, ashes::QueryResultFlag::eWait ) );
 
-			if ( dxCheckError( hr, "GetData" ) )
+			if ( checkError( m_device, hr, "GetData" ) )
 			{
 				datas[i - firstQuery] = getUint64( i );
 			}

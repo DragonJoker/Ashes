@@ -6,7 +6,7 @@
 */
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
+#include "D3D11Renderer/Core/D3D11Layer.hpp"
 
 #include <Ashes/Core/Instance.hpp>
 #include <Utils/DynamicLibrary.hpp>
@@ -70,6 +70,24 @@ namespace d3d11_renderer
 			, float top
 			, float zNear
 			, float zFar )const override;
+		/**
+		*\~english
+		*name
+		*	Layers delegation.
+		*\~french
+		*name
+		*	D�l�gation aux layers.
+		*/
+		/**@{*/
+		void registerLayer( Layer * layer )const;
+		void unregisterLayer( Layer * layer )const;
+		bool onCopyToImageCommand( ashes::CommandBuffer const & cmd
+			, ashes::BufferImageCopyArray const & copyInfo
+			, ashes::BufferBase const & src
+			, ashes::Image const & dst )const;
+		bool onCheckHResultCommand( HRESULT hresult
+			, std::string message )const;
+		/**@}*/
 
 		inline IDXGIFactory * getDXGIFactory()const
 		{
@@ -89,6 +107,7 @@ namespace d3d11_renderer
 		IDXGIFactory * m_factory;
 		std::vector< AdapterInfo > m_adapters;
 		D3D_FEATURE_LEVEL m_maxFeatureLevel;
+		mutable std::vector< Layer * > m_layers;
 		static ashes::PhysicalDeviceMemoryProperties const m_memoryProperties;
 	};
 }

@@ -16,8 +16,8 @@ See LICENSE file in root folder.
 #include "Descriptor/VkDescriptorSetLayout.hpp"
 #include "Image/VkSampler.hpp"
 #include "Image/VkStagingTexture.hpp"
-#include "Image/VkTexture.hpp"
-#include "Image/VkTextureView.hpp"
+#include "Image/VkImage.hpp"
+#include "Image/VkImageView.hpp"
 #include "Miscellaneous/VkDeviceMemory.hpp"
 #include "Miscellaneous/VkQueryPool.hpp"
 #include "Pipeline/VkPipelineLayout.hpp"
@@ -101,19 +101,19 @@ namespace vk_renderer
 			, std::move( allocateInfo ) );
 	}
 
-	ashes::TexturePtr Device::createTexture( ashes::ImageCreateInfo const & createInfo )const
+	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo )const
 	{
-		return std::make_unique< Texture >( *this, createInfo );
+		return std::make_unique< Image >( *this, createInfo );
 	}
 
-	void Device::getImageSubresourceLayout( ashes::Texture const & image
+	void Device::getImageSubresourceLayout( ashes::Image const & image
 		, ashes::ImageSubresource const & subresource
 		, ashes::SubresourceLayout & layout )const
 	{
 		VkImageSubresource vksubresource = convert( subresource );
 		VkSubresourceLayout vklayout;
 		vkGetImageSubresourceLayout( m_device
-			, static_cast< Texture const & >( image )
+			, static_cast< Image const & >( image )
 			, &vksubresource
 			, &vklayout );
 		layout = convert( vklayout );
@@ -233,42 +233,20 @@ namespace vk_renderer
 		checkError( vkDeviceWaitIdle( m_device ), "Device wait idle" );
 	}
 
-	ashes::MemoryRequirements Device::getBufferMemoryRequirements( VkBuffer buffer )const
-	{
-		VkMemoryRequirements requirements;
-		vkGetBufferMemoryRequirements( m_device
-			, buffer
-			, &requirements );
-		ashes::MemoryRequirements result = convert( requirements );
-		result.type = ashes::ResourceType::eBuffer;
-		return result;
-	}
-
-	ashes::MemoryRequirements Device::getImageMemoryRequirements( VkImage image )const
-	{
-		VkMemoryRequirements requirements;
-		vkGetImageMemoryRequirements( m_device
-			, image
-			, &requirements );
-		ashes::MemoryRequirements result = convert( requirements );
-		result.type = ashes::ResourceType::eImage;
-		return result;
-	}
-
 	uint32_t Device::deduceMemoryType( uint32_t typeBits
 		, ashes::MemoryPropertyFlags requirements )const
 	{
 		uint32_t result = 0xFFFFFFFFu;
 		bool found{ false };
 
-		// Recherche parmi les types de mémoire la première ayant les propriétés voulues.
+		// Recherche parmi les types de mï¿½moire la premiï¿½re ayant les propriï¿½tï¿½s voulues.
 		uint32_t i{ 0 };
 
 		while ( i < m_memoryProperties.memoryTypes.size() && !found )
 		{
 			if ( ( typeBits & 1 ) == 1 )
 			{
-				// Le type de mémoire est disponible, a-t-il les propriétés demandées?
+				// Le type de mï¿½moire est disponible, a-t-il les propriï¿½tï¿½s demandï¿½es?
 				if ( ( m_memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
 				{
 					result = i;

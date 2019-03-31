@@ -29,7 +29,7 @@ namespace gl_renderer
 		*\return
 		*	L'échantillonneur OpenGL.
 		*/
-		inline GLuint getSampler()const noexcept
+		inline GLuint getInternal()const noexcept
 		{
 			return m_sampler;
 		}

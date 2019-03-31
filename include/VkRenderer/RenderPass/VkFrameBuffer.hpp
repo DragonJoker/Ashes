@@ -78,7 +78,7 @@ namespace vk_renderer
 
 	private:
 		Device const & m_device;
-		TextureViewCRefArray m_views;
+		ImageViewCRefArray m_views;
 		VkFramebuffer m_framebuffer{};
 		ashes::Extent2D m_dimensions;
 	};

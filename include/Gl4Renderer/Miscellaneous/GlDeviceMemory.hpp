@@ -55,7 +55,7 @@ namespace gl_renderer
 			, ashes::MemoryAllocateInfo allocateInfo );
 		~DeviceMemory();
 		void bindToBuffer( GLuint resource, GLenum target );
-		void bindToImage( Texture const & texture
+		void bindToImage( Image const & texture
 			, GLenum target
 			, ashes::ImageCreateInfo const & createInfo );
 		/**

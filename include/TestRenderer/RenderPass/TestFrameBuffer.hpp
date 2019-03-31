@@ -66,7 +66,7 @@ namespace test_renderer
 
 	private:
 		Device const & m_device;
-		TextureViewCRefArray m_views;
+		ImageViewCRefArray m_views;
 		ashes::Extent2D m_dimensions;
 	};
 }

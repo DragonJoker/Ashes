@@ -1,9 +1,8 @@
 #include "Core/GlSwapChain.hpp"
 
-#include "Core/GlBackBuffer.hpp"
 #include "Core/GlDevice.hpp"
-#include "Image/GlTexture.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImage.hpp"
+#include "Image/GlImageView.hpp"
 
 namespace gl_renderer
 {
@@ -12,7 +11,6 @@ namespace gl_renderer
 		: ashes::SwapChain{ device, std::move( createInfo ) }
 		, m_device{ device }
 	{
-		doCreateBackBuffers();
 	}
 
 	ashes::Result SwapChain::acquireNextImage( uint64_t timeout
@@ -24,27 +22,22 @@ namespace gl_renderer
 		return ashes::Result::eSuccess;
 	}
 
-	void SwapChain::createDepthStencil( ashes::Format format )
+	ashes::ImagePtrArray SwapChain::getImages()const
 	{
-		auto texture = std::make_unique< Texture >( m_device
-			, format
-			, getDimensions() );
-		m_depthStencilView = std::make_unique< TextureView >( m_device
-			, *texture );
-		m_depthStencil = std::move( texture );
+		ashes::ImagePtrArray result;
+		result.emplace_back( std::make_unique< Image >( m_device
+			, getFormat()
+			, getDimensions() ) );
+		return result;
 	}
 
-	void SwapChain::doCreateBackBuffers()
+	void SwapChain::createDepthStencil( ashes::Format format )
 	{
-		m_backBuffers.clear();
-		auto texture = std::make_unique< Texture >( m_device
-			, getFormat()
+		auto texture = std::make_unique< Image >( m_device
+			, format
 			, getDimensions() );
-		auto view = std::make_unique< TextureView >( m_device
+		m_depthStencilView = std::make_unique< ImageView >( m_device
 			, *texture );
-		m_backBuffers.emplace_back( std::make_unique< BackBuffer >( m_device
-			, std::move( texture )
-			, std::move( view )
-			, 0u ) );
+		m_depthStencil = std::move( texture );
 	}
 }

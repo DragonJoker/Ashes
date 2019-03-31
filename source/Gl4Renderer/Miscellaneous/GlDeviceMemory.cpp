@@ -7,7 +7,7 @@ See LICENSE file in root folder
 #include "Command/Commands/GlCopyBufferToImageCommand.hpp"
 #include "Core/GlDevice.hpp"
 #include "Core/GlInstance.hpp"
-#include "Image/GlTexture.hpp"
+#include "Image/GlImage.hpp"
 
 #include <Ashes/Miscellaneous/MemoryRequirements.hpp>
 
@@ -32,12 +32,12 @@ namespace gl_renderer
 		public:
 			ImageMemory( Device const & device
 				, ashes::MemoryAllocateInfo allocateInfo
-				, Texture const & texture
+				, Image const & texture
 				, GLuint boundTarget
 				, ashes::ImageCreateInfo const & createInfo )
-				: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ), texture.getImage(), boundTarget }
+				: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ), texture.getInternal(), boundTarget }
 				, m_texture{ &texture }
-				, m_internal{ getInternal( m_texture->getFormat() ) }
+				, m_internal{ getInternalFormat( m_texture->getFormat() ) }
 				, m_format{ getFormat( m_internal ) }
 				, m_type{ getType( m_internal ) }
 			{
@@ -267,7 +267,7 @@ namespace gl_renderer
 					, glTexStorage1D
 					, m_boundTarget
 					, GLsizei( createInfo.mipLevels )
-					, gl_renderer::getInternal( createInfo.format )
+					, getInternalFormat( createInfo.format )
 					, width );
 			}
 
@@ -280,7 +280,7 @@ namespace gl_renderer
 					, glTexStorage2D
 					, m_boundTarget
 					, GLsizei( createInfo.mipLevels )
-					, gl_renderer::getInternal( createInfo.format )
+					, getInternalFormat( createInfo.format )
 					, width
 					, height );
 			}
@@ -295,7 +295,7 @@ namespace gl_renderer
 					, glTexStorage3D
 					, m_boundTarget
 					, GLsizei( createInfo.mipLevels )
-					, gl_renderer::getInternal( createInfo.format )
+					, getInternalFormat( createInfo.format )
 					, width
 					, height
 					, depth );
@@ -310,7 +310,7 @@ namespace gl_renderer
 					, glTexStorage2DMultisample
 					, m_boundTarget
 					, GLsizei( createInfo.samples )
-					, gl_renderer::getInternal( createInfo.format )
+					, getInternalFormat( createInfo.format )
 					, width
 					, height
 					, GL_TRUE );
@@ -326,7 +326,7 @@ namespace gl_renderer
 					, glTexStorage3DMultisample
 					, m_boundTarget
 					, GLsizei( createInfo.samples )
-					, gl_renderer::getInternal( createInfo.format )
+					, getInternalFormat( createInfo.format )
 					, width
 					, height
 					, depth
@@ -520,7 +520,7 @@ namespace gl_renderer
 			}
 
 		private:
-			Texture const * m_texture;
+			Image const * m_texture;
 			GlInternal m_internal;
 			GlFormat m_format;
 			GlType m_type;
@@ -676,7 +676,7 @@ namespace gl_renderer
 			, target );
 	}
 
-	void DeviceMemory::bindToImage( Texture const & texture
+	void DeviceMemory::bindToImage( Image const & texture
 		, GLenum target
 		, ashes::ImageCreateInfo const & createInfo )
 	{

@@ -31,7 +31,7 @@ namespace gl_renderer
 		glLogCall( context
 			, glBindBuffer
 			, GL_BUFFER_TARGET_DRAW_INDIRECT
-			, m_buffer.getBuffer() );
+			, m_buffer.getInternal() );
 		glLogCall( context
 			, glMultiDrawElementsIndirect
 			, m_mode

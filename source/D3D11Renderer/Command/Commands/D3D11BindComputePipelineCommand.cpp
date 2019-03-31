@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #include "Buffer/D3D11Buffer.hpp"
 #include "Buffer/D3D11BufferView.hpp"
 #include "Core/D3D11Device.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11ImageView.hpp"
 #include "Pipeline/D3D11ComputePipeline.hpp"
 #include "Pipeline/D3D11PipelineLayout.hpp"
 #include "Shader/D3D11ShaderModule.hpp"

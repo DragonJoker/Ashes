@@ -54,14 +54,14 @@ namespace gl_renderer
 			, ashes::Format format
 			, ashes::Offset3D const & offset
 			, ashes::Extent2D const & extent
-			, ashes::TextureView const & texture )const override;
+			, ashes::ImageView const & texture )const override;
 
 		void doCopyDestinationToStaging( ashes::CommandBuffer const & commandBuffer
 			, ashes::ImageSubresourceLayers const & subresourceLayers
 			, ashes::Format format
 			, ashes::Offset3D const & offset
 			, ashes::Extent2D const & extent
-			, ashes::TextureView const & texture )const override;
+			, ashes::ImageView const & texture )const override;
 		void doCopyFromStagingTexture( uint8_t * data
 			, ashes::Format format
 			, ashes::Extent2D const & extent )const override;

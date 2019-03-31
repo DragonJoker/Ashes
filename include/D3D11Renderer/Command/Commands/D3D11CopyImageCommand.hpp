@@ -30,15 +30,15 @@ namespace d3d11_renderer
 		*/
 		CopyImageCommand( Device const & device
 			, ashes::ImageCopy const & copyInfo
-			, ashes::Texture const & src
-			, ashes::Texture const & dst );
+			, ashes::Image const & src
+			, ashes::Image const & dst );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		Texture const & m_src;
-		Texture const & m_dst;
+		Image const & m_src;
+		Image const & m_dst;
 		ashes::ImageCopy m_copyInfo;
 		D3D11_BOX m_srcBox;
 		UINT m_srcSubresource;

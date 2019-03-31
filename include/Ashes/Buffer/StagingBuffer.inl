@@ -512,6 +512,91 @@ namespace ashes
 			, dstStageFlags );
 	}
 	/**@}*/
+	/**
+	*\name
+	*	Texture.
+	**/
+	/**@{*/
+	inline void StagingBuffer::uploadTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, ImageSubresourceLayers const & subresourceLayers
+		, Format format
+		, Offset3D const & offset
+		, Extent2D const & extent
+		, ByteArray const & data
+		, ImageView const & texture
+		, PipelineStageFlags dstStageFlags )const
+	{
+		auto commandBuffer = commandPool.createCommandBuffer( true );
+		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		uploadTextureData( *commandBuffer
+			, subresourceLayers
+			, format
+			, offset
+			, extent
+			, data.data()
+			, texture
+			, dstStageFlags );
+		commandBuffer->end();
+		auto fence = m_device.createFence();
+		queue.submit( *commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
+	}
+
+	inline void StagingBuffer::uploadTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, Format format
+		, ByteArray const & data
+		, ImageView const & texture
+		, PipelineStageFlags dstStageFlags )const
+	{
+		auto commandBuffer = commandPool.createCommandBuffer( true );
+		commandBuffer->begin( CommandBufferUsageFlag::eOneTimeSubmit );
+		uploadTextureData( *commandBuffer
+			, format
+			, data.data()
+			, texture
+			, dstStageFlags );
+		commandBuffer->end();
+		auto fence = m_device.createFence();
+		queue.submit( *commandBuffer
+			, fence.get() );
+		fence->wait( FenceTimeout );
+	}
+
+	inline void StagingBuffer::uploadTextureData( CommandBuffer const & commandBuffer
+		, ImageSubresourceLayers const & subresourceLayers
+		, Format format
+		, Offset3D const & offset
+		, Extent2D const & extent
+		, ByteArray const & data
+		, ImageView const & texture
+		, PipelineStageFlags dstStageFlags )const
+	{
+		uploadTextureData( commandBuffer
+			, subresourceLayers
+			, format
+			, offset
+			, extent
+			, data.data()
+			, texture
+			, dstStageFlags );
+	}
+
+	inline void StagingBuffer::uploadTextureData( CommandBuffer const & commandBuffer
+		, Format format
+		, ByteArray const & data
+		, ImageView const & texture
+		, PipelineStageFlags dstStageFlags )const
+	{
+		uploadTextureData( commandBuffer
+			, format
+			, data.data()
+			, texture
+			, dstStageFlags );
+	}
+	/**@}*/
 	/**@}*/
 	/**
 	*\name
@@ -807,6 +892,47 @@ namespace ashes
 		doCopyUniformDataFromStagingBuffer( data
 			, count
 			, elemAlignedSize );
+	}
+	/**@}*/
+	/**
+	*\name
+	*	Texture.
+	**/
+	/**@{*/
+	inline void StagingBuffer::downloadTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, ImageSubresourceLayers const & subresourceLayers
+		, Format format
+		, Offset3D const & offset
+		, Extent2D const & extent
+		, ByteArray & data
+		, ImageView const & texture
+		, PipelineStageFlags dstStageFlags )const
+	{
+		downloadTextureData( queue
+			, commandPool
+			, subresourceLayers
+			, format
+			, offset
+			, extent
+			, data.data()
+			, texture
+			, dstStageFlags );
+	}
+
+	inline void StagingBuffer::downloadTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, Format format
+		, ByteArray & data
+		, ImageView const & texture
+		, PipelineStageFlags dstStageFlags )const
+	{
+		downloadTextureData( queue
+			, commandPool
+			, format
+			, data.data()
+			, texture
+			, dstStageFlags );
 	}
 	/**@}*/
 	/**@}*/

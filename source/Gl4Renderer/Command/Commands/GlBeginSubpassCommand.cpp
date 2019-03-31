@@ -26,7 +26,7 @@ namespace gl_renderer
 	{
 		glLogCommand( "NextSubpassCommand" );
 
-		if ( m_frameBuffer.getFrameBuffer() )
+		if ( m_frameBuffer.getInternal() )
 		{
 			m_frameBuffer.setDrawBuffers( context
 				, m_subpass.colorAttachments );

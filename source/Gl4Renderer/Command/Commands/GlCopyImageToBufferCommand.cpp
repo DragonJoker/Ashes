@@ -6,8 +6,8 @@ See LICENSE file in root folder.
 
 #include "Buffer/GlBuffer.hpp"
 #include "Core/GlDevice.hpp"
-#include "Image/GlTexture.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImage.hpp"
+#include "Image/GlImageView.hpp"
 
 #include <Ashes/Image/ImageSubresourceRange.hpp>
 #include <Ashes/Miscellaneous/BufferImageCopy.hpp>
@@ -16,25 +16,25 @@ namespace gl_renderer
 {
 	namespace
 	{
-		std::vector< TextureViewPtr > createViews( Device const & device
-			, ashes::Texture const & texture
+		std::vector< ImageViewPtr > createViews( Device const & device
+			, ashes::Image const & texture
 			, ashes::BufferImageCopyArray const & copies )
 		{
-			std::vector< TextureViewPtr > result;
-			ashes::TextureType type = texture.getType();
-			ashes::TextureViewType viewType;
+			std::vector< ImageViewPtr > result;
+			ashes::ImageType type = texture.getType();
+			ashes::ImageViewType viewType;
 
-			if ( type == ashes::TextureType::e3D )
+			if ( type == ashes::ImageType::e3D )
 			{
-				viewType = ashes::TextureViewType::e3D;
+				viewType = ashes::ImageViewType::e3D;
 			}
-			else if ( type == ashes::TextureType::e2D )
+			else if ( type == ashes::ImageType::e2D )
 			{
-				viewType = ashes::TextureViewType::e2D;
+				viewType = ashes::ImageViewType::e2D;
 			}
-			else if ( type == ashes::TextureType::e1D )
+			else if ( type == ashes::ImageType::e1D )
 			{
-				viewType = ashes::TextureViewType::e1D;
+				viewType = ashes::ImageViewType::e1D;
 			}
 
 			for ( auto & copy : copies )
@@ -47,8 +47,8 @@ namespace gl_renderer
 				createInfo.subresourceRange.layerCount = copy.imageSubresource.layerCount;
 				createInfo.subresourceRange.baseMipLevel = copy.imageSubresource.mipLevel;
 				createInfo.subresourceRange.levelCount = 1u;
-				result.emplace_back( std::make_unique< TextureView >( device
-					, static_cast< Texture const & >( texture )
+				result.emplace_back( std::make_unique< ImageView >( device
+					, static_cast< Image const & >( texture )
 					, createInfo ) );
 			}
 
@@ -58,13 +58,13 @@ namespace gl_renderer
 
 	CopyImageToBufferCommand::CopyImageToBufferCommand( Device const & device
 		, ashes::BufferImageCopyArray const & copyInfo
-		, ashes::Texture const & src
+		, ashes::Image const & src
 		, ashes::BufferBase const & dst )
 		: CommandBase{ device }
-		, m_src{ static_cast< Texture const & >( src ) }
+		, m_src{ static_cast< Image const & >( src ) }
 		, m_dst{ static_cast< Buffer const & >( dst ) }
 		, m_copyInfo{ copyInfo }
-		, m_internal{ getInternal( m_src.getFormat() ) }
+		, m_internal{ getInternalFormat( m_src.getFormat() ) }
 		, m_format{ getFormat( m_internal ) }
 		, m_type{ getType( m_internal ) }
 		, m_target{ convert( m_src.getType(), 1u ) }
@@ -93,7 +93,7 @@ namespace gl_renderer
 		glLogCall( context
 			, glBindBuffer
 			, GL_BUFFER_TARGET_PIXEL_PACK
-			, m_dst.getBuffer() );
+			, m_dst.getInternal() );
 
 		for ( size_t i = 0; i < m_views.size(); ++i )
 		{
@@ -110,7 +110,7 @@ namespace gl_renderer
 
 	void CopyImageToBufferCommand::applyOne( ContextLock const & context
 		, ashes::BufferImageCopy const & copyInfo
-		, TextureView const & view )const
+		, ImageView const & view )const
 	{
 		// Setup source FBO
 		glLogCall( context
@@ -122,7 +122,7 @@ namespace gl_renderer
 			, GL_FRAMEBUFFER
 			, GL_ATTACHMENT_POINT_COLOR0
 			, GL_TEXTURE_2D
-			, view.getImage()
+			, view.getInternal()
 			, 0u );
 		glLogCall( context
 			, glReadBuffer

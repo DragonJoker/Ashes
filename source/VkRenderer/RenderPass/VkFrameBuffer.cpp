@@ -8,8 +8,8 @@ See LICENSE file in root folder.
 #include "Command/VkCommandPool.hpp"
 #include "Command/VkQueue.hpp"
 #include "Core/VkDevice.hpp"
-#include "Image/VkTexture.hpp"
-#include "Image/VkTextureView.hpp"
+#include "Image/VkImage.hpp"
+#include "Image/VkImageView.hpp"
 #include "RenderPass/VkRenderPass.hpp"
 #include "Sync/VkFence.hpp"
 #include "Sync/VkImageMemoryBarrier.hpp"
@@ -20,14 +20,14 @@ namespace vk_renderer
 {
 	namespace
 	{
-		TextureViewCRefArray convert( ashes::FrameBufferAttachmentArray const & attachs )
+		ImageViewCRefArray convert( ashes::FrameBufferAttachmentArray const & attachs )
 		{
-			TextureViewCRefArray result;
+			ImageViewCRefArray result;
 			result.reserve( attachs.size() );
 
 			for ( auto & attach : attachs )
 			{
-				result.emplace_back( static_cast< TextureView const & >( attach.getView() ) );
+				result.emplace_back( static_cast< ImageView const & >( attach.getView() ) );
 			}
 
 			return result;

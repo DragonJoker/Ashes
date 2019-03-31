@@ -38,7 +38,7 @@ namespace gl_renderer
 	*\return
 	*	Le GlTextureType.
 	*/
-	GlTextureViewType convert( ashes::TextureViewType const & mode );
+	GlTextureViewType convert( ashes::ImageViewType const & mode );
 }
 
 #endif

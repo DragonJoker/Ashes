@@ -9,8 +9,8 @@ See LICENSE file in root folder.
 #include "Descriptor/GlDescriptorSet.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "Image/GlSampler.hpp"
-#include "Image/GlTexture.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImage.hpp"
+#include "Image/GlImageView.hpp"
 
 #include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
@@ -19,7 +19,7 @@ namespace gl_renderer
 {
 	namespace
 	{
-		ashes::TextureView const & getView( ashes::WriteDescriptorSet const & write, uint32_t index )
+		ashes::ImageView const & getView( ashes::WriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.imageInfo.size() );
 			return write.imageInfo[index].imageView.value().get();
@@ -51,11 +51,11 @@ namespace gl_renderer
 				glLogCall( context
 					, glBindTexture
 					, convert( view.getType() )
-					, static_cast< TextureView const & >( view ).getImage() );
+					, static_cast< ImageView const & >( view ).getInternal() );
 				glLogCall( context
 					, glBindSampler
 					, bindingIndex
-					, static_cast< Sampler const & >( sampler ).getSampler() );
+					, static_cast< Sampler const & >( sampler ).getInternal() );
 			}
 		}
 
@@ -69,7 +69,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glBindSampler
 					, bindingIndex
-					, static_cast< Sampler const & >( sampler ).getSampler() );
+					, static_cast< Sampler const & >( sampler ).getInternal() );
 			}
 		}
 
@@ -86,7 +86,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glBindTexture
 					, convert( view.getType() )
-					, static_cast< TextureView const & >( view ).getImage() );
+					, static_cast< ImageView const & >( view ).getInternal() );
 			}
 		}
 
@@ -104,12 +104,12 @@ namespace gl_renderer
 				glLogCall( context
 					, glBindImageTexture
 					, bindingIndex
-					, static_cast< TextureView const & >( view ).getImage()
+					, static_cast< ImageView const & >( view ).getInternal()
 					, range.baseMipLevel
 					, range.layerCount
 					, range.baseArrayLayer
 					, GL_ACCESS_TYPE_READ_WRITE
-					, getInternal( view.getFormat() ) );
+					, getInternalFormat( view.getFormat() ) );
 			}
 		}
 
@@ -124,7 +124,7 @@ namespace gl_renderer
 					, glBindBufferRange
 					, GL_BUFFER_TARGET_UNIFORM
 					, bindingIndex
-					, static_cast< Buffer const & >( buffer ).getBuffer()
+					, static_cast< Buffer const & >( buffer ).getInternal()
 					, GLintptr( write.bufferInfo[i].offset )
 					, GLsizeiptr( std::min( write.bufferInfo[i].range, uint64_t( buffer.getSize() ) ) ) );
 			}
@@ -141,7 +141,7 @@ namespace gl_renderer
 					, glBindBufferRange
 					, GL_BUFFER_TARGET_SHADER_STORAGE
 					, bindingIndex
-					, static_cast< Buffer const & >( buffer ).getBuffer()
+					, static_cast< Buffer const & >( buffer ).getInternal()
 					, GLintptr( write.bufferInfo[i].offset )
 					, GLsizeiptr( std::min( write.bufferInfo[i].range, uint64_t( buffer.getSize() ) ) ) );
 			}
@@ -175,7 +175,7 @@ namespace gl_renderer
 					, glBindBufferRange
 					, GL_BUFFER_TARGET_UNIFORM
 					, bindingIndex
-					, static_cast< Buffer const & >( buffer ).getBuffer()
+					, static_cast< Buffer const & >( buffer ).getInternal()
 					, GLintptr( write.bufferInfo[i].offset + offset )
 					, GLsizeiptr( std::min( write.bufferInfo[i].range, uint64_t( buffer.getSize() ) ) ) );
 			}
@@ -192,7 +192,7 @@ namespace gl_renderer
 					, glBindBufferRange
 					, GL_BUFFER_TARGET_SHADER_STORAGE
 					, bindingIndex
-					, static_cast< Buffer const & >( buffer ).getBuffer()
+					, static_cast< Buffer const & >( buffer ).getInternal()
 					, GLintptr( write.bufferInfo[i].offset + offset )
 					, GLsizeiptr( std::min( write.bufferInfo[i].range, uint64_t( buffer.getSize() ) ) ) );
 			}

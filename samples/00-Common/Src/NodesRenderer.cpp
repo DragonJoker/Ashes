@@ -14,8 +14,8 @@
 #include <Ashes/Descriptor/DescriptorSetLayout.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Ashes/Descriptor/DescriptorSetPool.hpp>
-#include <Ashes/Image/Texture.hpp>
-#include <Ashes/Image/TextureView.hpp>
+#include <Ashes/Image/Image.hpp>
+#include <Ashes/Image/ImageView.hpp>
 #include <Ashes/Miscellaneous/QueryPool.hpp>
 #include <Ashes/Pipeline/DepthStencilState.hpp>
 #include <Ashes/Pipeline/InputAssemblyState.hpp>
@@ -151,20 +151,20 @@ namespace common
 		}
 
 		ashes::FrameBufferPtr doCreateFrameBuffer( ashes::RenderPass const & renderPass
-			, ashes::TextureViewCRefArray const & views )
+			, ashes::ImageViewPtrArray views )
 		{
 			assert( !views.empty() );
 			assert( views.size() == renderPass.getAttachmentCount() );
 			ashes::FrameBufferAttachmentArray attaches;
 			auto it = renderPass.getAttachments().begin();
+			auto dimensions = views[0]->getImage().getDimensions();
 
-			for ( auto view : views )
+			for ( auto & view : views )
 			{
-				attaches.emplace_back( *it, view.get() );
+				attaches.emplace_back( *it, std::move( view ) );
 				++it;
 			}
 
-			auto dimensions = views[0].get().getTexture().getDimensions();
 			return renderPass.createFrameBuffer( ashes::Extent2D{ dimensions.width, dimensions.height }
 			, std::move( attaches ) );
 		}
@@ -202,6 +202,24 @@ namespace common
 					, objectsCount + billboardsCount
 					, ashes::BufferTarget::eTransferDst
 					, ashes::MemoryPropertyFlag::eDeviceLocal );
+			}
+
+			return result;
+		}
+
+		ashes::ImageViewPtrArray doCloneViews( ashes::ImageViewCRefArray const & views )
+		{
+			ashes::ImageViewPtrArray result;
+
+			for ( auto & view : views )
+			{
+				result.emplace_back( view.get().getImage().createView(
+					{
+						view.get().getType(),
+						view.get().getFormat(),
+						view.get().getComponentMapping(),
+						view.get().getSubResourceRange(),
+					} ) );
 			}
 
 			return result;
@@ -251,7 +269,7 @@ namespace common
 
 	void NodesRenderer::initialise( Scene const & scene
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::TextureViewCRefArray const & views
+		, ashes::ImageViewPtrArray views
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		m_materialsUbo = doCreateMaterialsUbo( m_device
@@ -279,28 +297,25 @@ namespace common
 				, ashes::PipelineStageFlag::eFragmentShader );
 		}
 
-		doUpdate( views );
+		doUpdate( std::move( views ) );
 	}
 
-	void NodesRenderer::doUpdate( ashes::TextureViewCRefArray const & views )
+	void NodesRenderer::doUpdate( ashes::ImageViewPtrArray views )
 	{
 		assert( !views.empty() );
-		auto dimensions = views[0].get().getTexture().getDimensions();
+		auto dimensions = views[0]->getImage().getDimensions();
 		auto size = ashes::Extent2D{ dimensions.width, dimensions.height };
 
 		if ( size != m_size )
 		{
 			m_size = size;
-			m_views.clear();
 			static ashes::ClearColorValue const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
 			static ashes::DepthStencilClearValue const depth{ 1.0, 0 };
 			ashes::ClearValueArray clearValues;
 
 			for ( auto & view : views )
 			{
-				m_views.push_back( &view.get() );
-
-				if ( !ashes::isDepthOrStencilFormat( view.get().getFormat() ) )
+				if ( !ashes::isDepthOrStencilFormat( view->getFormat() ) )
 				{
 					clearValues.emplace_back( colour );
 				}
@@ -310,7 +325,7 @@ namespace common
 				}
 			}
 
-			m_frameBuffer = doCreateFrameBuffer( *m_renderPass, views );
+			m_frameBuffer = doCreateFrameBuffer( *m_renderPass, std::move( views ) );
 			m_commandBuffer->reset();
 			auto & commandBuffer = *m_commandBuffer;
 

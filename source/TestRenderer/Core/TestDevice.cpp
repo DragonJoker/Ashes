@@ -16,8 +16,8 @@ See LICENSE file in root folder.
 #include "Descriptor/TestDescriptorSetLayout.hpp"
 #include "Image/TestSampler.hpp"
 #include "Image/TestStagingTexture.hpp"
-#include "Image/TestTexture.hpp"
-#include "Image/TestTextureView.hpp"
+#include "Image/TestImage.hpp"
+#include "Image/TestImageView.hpp"
 #include "Miscellaneous/TestDeviceMemory.hpp"
 #include "Miscellaneous/TestQueryPool.hpp"
 #include "Pipeline/TestPipelineLayout.hpp"
@@ -88,12 +88,12 @@ namespace test_renderer
 			, std::move( allocateInfo ) );
 	}
 
-	ashes::TexturePtr Device::createTexture( ashes::ImageCreateInfo const & createInfo )const
+	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo )const
 	{
-		return std::make_unique< Texture >( *this, createInfo );
+		return std::make_unique< Image >( *this, createInfo );
 	}
 
-	void Device::getImageSubresourceLayout( ashes::Texture const & image
+	void Device::getImageSubresourceLayout( ashes::Image const & image
 		, ashes::ImageSubresource const & subresource
 		, ashes::SubresourceLayout & layout )const
 	{

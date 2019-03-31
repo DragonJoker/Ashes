@@ -23,7 +23,7 @@ namespace gl_renderer
 		*/
 		void loadShader( ashes::UInt32Array const & shader )override;
 
-		inline GLuint getShader()const
+		inline GLuint getInternal()const
 		{
 			return m_shader;
 		}

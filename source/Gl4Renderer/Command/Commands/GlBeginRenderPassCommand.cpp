@@ -176,11 +176,11 @@ namespace gl_renderer
 		glLogCall( context
 			, glBindFramebuffer
 			, GL_FRAMEBUFFER
-			, m_frameBuffer.getFrameBuffer() );
+			, m_frameBuffer.getInternal() );
 		auto clearColour = &doClearColour;
 		auto clearDepthStencil = &doClearDepthStencil;
 
-		if ( m_frameBuffer.getFrameBuffer() )
+		if ( m_frameBuffer.getInternal() )
 		{
 			m_frameBuffer.setDrawBuffers( context
 				, m_renderPass.getColourAttaches() );
@@ -218,7 +218,7 @@ namespace gl_renderer
 			}
 		}
 
-		if ( !m_frameBuffer.getFrameBuffer() )
+		if ( !m_frameBuffer.getInternal() )
 		{
 			glLogCall( context
 				, glClear
@@ -235,7 +235,7 @@ namespace gl_renderer
 				, save.size.height );
 		}
 
-		m_device.setCurrentFramebuffer( m_frameBuffer.getFrameBuffer() );
+		m_device.setCurrentFramebuffer( m_frameBuffer.getInternal() );
 	}
 
 	CommandPtr BeginRenderPassCommand::clone()const

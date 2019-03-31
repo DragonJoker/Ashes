@@ -7,8 +7,8 @@ See LICENSE file in root folder.
 #include "Command/GlQueue.hpp"
 #include "Core/GlDevice.hpp"
 #include "RenderPass/GlRenderPass.hpp"
-#include "Image/GlTexture.hpp"
-#include "Image/GlTextureView.hpp"
+#include "Image/GlImage.hpp"
+#include "Image/GlImageView.hpp"
 
 #include <Ashes/RenderPass/AttachmentReference.hpp>
 
@@ -68,7 +68,7 @@ namespace gl_renderer
 		return getAttachmentPoint( getInternal( format ) );
 	}
 
-	GlAttachmentPoint getAttachmentPoint( TextureView const & texture )
+	GlAttachmentPoint getAttachmentPoint( ImageView const & texture )
 	{
 		return getAttachmentPoint( getInternal( texture.getFormat() ) );
 	}
@@ -98,7 +98,7 @@ namespace gl_renderer
 		return getAttachmentType( getInternal( format ) );
 	}
 
-	GlAttachmentType getAttachmentType( TextureView const & texture )
+	GlAttachmentType getAttachmentType( ImageView const & texture )
 	{
 		return getAttachmentType( getInternal( texture.getFormat() ) );
 	}
@@ -203,7 +203,7 @@ namespace gl_renderer
 		{
 			auto & fboAttach = m_attachments[attach.index];
 
-			if ( static_cast< Texture const & >( fboAttach.getTexture() ).hasImage() )
+			if ( static_cast< Image const & >( fboAttach.getImage() ).hasImage() )
 			{
 				m_drawBuffers.push_back( getAttachmentPoint( attach.attach.get().format ) + attach.index );
 			}
@@ -272,8 +272,8 @@ namespace gl_renderer
 
 		for ( auto & attach : m_attachments )
 		{
-			auto & glview = static_cast< TextureView const & >( attach.getView() );
-			auto & gltexture = static_cast< Texture const & >( glview.getTexture() );
+			auto & glview = static_cast< ImageView const & >( attach.getView() );
+			auto & gltexture = static_cast< Image const & >( glview.getImage() );
 
 			// If the image doesn't exist, it means it is a backbuffer image, hence ignore the attachment.
 			if ( gltexture.hasImage() )
@@ -296,8 +296,8 @@ namespace gl_renderer
 	void FrameBuffer::doInitialiseFboAttach( ashes::FrameBufferAttachment const & attach )
 	{
 		auto context = m_device.getContext();
-		auto & glview = static_cast< TextureView const & >( attach.getView() );
-		auto & gltexture = static_cast< Texture const & >( glview.getTexture() );
+		auto & glview = static_cast< ImageView const & >( attach.getView() );
+		auto & gltexture = static_cast< Image const & >( glview.getImage() );
 		uint32_t index = m_renderPass.getAttachmentIndex( attach.getAttachment() );
 		auto image = gltexture.getImage();
 		auto mipLevel = glview.getSubResourceRange().baseMipLevel;

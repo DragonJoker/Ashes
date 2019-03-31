@@ -7,9 +7,9 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	FrameBufferAttachment::FrameBufferAttachment( AttachmentDescription const & attach
-		, TextureView const & view )
+		, ImageViewPtr view )
 		: m_frameBuffer{ nullptr }
-		, m_view{ view }
+		, m_view{ std::move( view ) }
 		, m_attach{ attach }
 	{
 	}

@@ -6,7 +6,7 @@
 #include "Descriptor/D3D11DescriptorSetLayout.hpp"
 #include "Descriptor/D3D11DescriptorPool.hpp"
 #include "Image/D3D11Sampler.hpp"
-#include "Image/D3D11TextureView.hpp"
+#include "Image/D3D11ImageView.hpp"
 
 #include <Ashes/Buffer/UniformBuffer.hpp>
 

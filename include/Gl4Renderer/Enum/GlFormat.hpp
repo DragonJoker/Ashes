@@ -240,7 +240,7 @@ namespace gl_renderer
 	*\return
 	*	Le GlInternal.
 	*/
-	GlInternal getInternal( ashes::Format const & format )noexcept;
+	GlInternal getInternalFormat( ashes::Format const & format )noexcept;
 	/**
 	*\brief
 	*	Convertit un ashes::Format en GlFormat.

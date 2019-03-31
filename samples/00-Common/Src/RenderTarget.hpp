@@ -22,14 +22,14 @@ namespace common
 		void draw( ashes::Queue const & queue
 			, std::chrono::microseconds & gpu );
 
-		inline ashes::TextureView const & getColourView()const
+		inline ashes::ImageViewPtr getColourView()const
 		{
-			return *m_colourView;
+			return m_colourView;
 		}
 
-		inline ashes::TextureView const & getDepthView()const
+		inline ashes::ImageViewPtr getDepthView()const
 		{
-			return *m_depthView;
+			return m_depthView;
 		}
 
 	protected:
@@ -59,12 +59,12 @@ namespace common
 
 		virtual OpaqueRenderingPtr doCreateOpaqueRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::TextureViewCRefArray const & views
+			, ashes::ImageViewPtrArray views
 			, Scene const & scene
 			, TextureNodePtrArray const & textureNodes ) = 0;
 		virtual TransparentRenderingPtr doCreateTransparentRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::TextureViewCRefArray const & views
+			, ashes::ImageViewPtrArray views
 			, Scene const & scene
 			, TextureNodePtrArray const & textureNodes ) = 0;
 
@@ -80,10 +80,10 @@ namespace common
 		Scene m_scene;
 		TextureNodePtrArray m_textureNodes;
 		utils::Mat4 m_rotate;
-		ashes::TexturePtr m_colour;
-		ashes::TextureViewPtr m_colourView;
-		ashes::TexturePtr m_depth;
-		ashes::TextureViewPtr m_depthView;
+		ashes::ImagePtr m_colour;
+		ashes::ImageViewPtr m_colourView;
+		ashes::ImagePtr m_depth;
+		ashes::ImageViewPtr m_depthView;
 		ashes::CommandBufferPtr m_commandBuffer;
 		std::shared_ptr< OpaqueRendering > m_opaque;
 		std::shared_ptr< TransparentRendering > m_transparent;

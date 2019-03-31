@@ -3,13 +3,12 @@
 
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/CommandBuffer.hpp>
-#include <Core/BackBuffer.hpp>
 #include <Core/Surface.hpp>
 #include <Core/Device.hpp>
 #include <Core/Instance.hpp>
 #include <Core/SwapChain.hpp>
 #include <Enum/SubpassContents.hpp>
-#include <Image/Texture.hpp>
+#include <Image/Image.hpp>
 #include <Miscellaneous/QueryPool.hpp>
 #include <Pipeline/InputAssemblyState.hpp>
 #include <Pipeline/MultisampleState.hpp>

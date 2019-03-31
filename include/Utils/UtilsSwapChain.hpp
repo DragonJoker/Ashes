@@ -142,6 +142,7 @@ namespace utils
 		ashes::CommandPool const & m_commandPool;
 		ashes::Extent2D m_dimensions;
 		ashes::SwapChainPtr m_swapChain;
+		ashes::ImagePtrArray m_swapChainImages;
 		RenderingResourcesArray m_renderingResources;
 		mutable size_t m_resourceIndex{ 0u };
 	};

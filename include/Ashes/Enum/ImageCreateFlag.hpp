@@ -27,7 +27,7 @@ namespace ashes
 		eSparseAliased = 0x00000004,
 		//!\~english	The image can be used to create an image view with a different format from the image.
 		eMutableFormat = 0x00000008,
-		//!\~english	The image can be used to create an image view of type ashes::TextureType::eCube or ashes::TextureType::eCubeArray.
+		//!\~english	The image can be used to create an image view of type ashes::ImageType::eCube or ashes::ImageType::eCubeArray.
 		eCubeCompatible = 0x00000010,
 	};
 	Ashes_ImplementFlag( ImageCreateFlag )

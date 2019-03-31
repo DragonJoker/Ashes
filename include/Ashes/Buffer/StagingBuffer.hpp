@@ -249,6 +249,68 @@ namespace ashes
 			, UniformBuffer< T > const & buffer
 			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eVertexShader )const;
 		/**@}*/
+		/**
+		*\name
+		*	Texture.
+		**/
+		/**@{*/
+		void uploadTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, ImageSubresourceLayers const & subresourceLayers
+			, Format format
+			, Offset3D const & offset
+			, Extent2D const & extent
+			, uint8_t const * const data
+			, ImageView const & texture
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eFragmentShader )const;
+		inline void uploadTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, ImageSubresourceLayers const & subresourceLayers
+			, Format format
+			, Offset3D const & offset
+			, Extent2D const & extent
+			, ByteArray const & data
+			, ImageView const & texture
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eFragmentShader )const;
+		void uploadTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, Format format
+			, uint8_t const * const data
+			, ImageView const & texture
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eFragmentShader )const;
+		inline void uploadTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, Format format
+			, ByteArray const & data
+			, ImageView const & texture
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eFragmentShader )const;
+		void uploadTextureData( CommandBuffer const & commandBuffer
+			, ImageSubresourceLayers const & subresourceLayers
+			, Format format
+			, Offset3D const & offset
+			, Extent2D const & extent
+			, uint8_t const * const data
+			, ImageView const & texture
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eFragmentShader )const;
+		inline void uploadTextureData( CommandBuffer const & commandBuffer
+			, ImageSubresourceLayers const & subresourceLayers
+			, Format format
+			, Offset3D const & offset
+			, Extent2D const & extent
+			, ByteArray const & data
+			, ImageView const & texture
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eFragmentShader )const;
+		void uploadTextureData( CommandBuffer const & commandBuffer
+			, Format format
+			, uint8_t const * const data
+			, ImageView const & texture
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eFragmentShader )const;
+		inline void uploadTextureData( CommandBuffer const & commandBuffer
+			, Format format
+			, ByteArray const & data
+			, ImageView const & texture
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eFragmentShader )const;
+		/**@}*/
 		/**@}*/
 		/**
 		*\name
@@ -371,6 +433,41 @@ namespace ashes
 			, UniformBuffer< T > const & buffer
 			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eVertexShader )const;
 		/**@}*/
+		/**
+		*\name
+		*	Texture.
+		**/
+		/**@{*/
+		void downloadTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, ImageSubresourceLayers const & subresourceLayers
+			, Format format
+			, Offset3D const & offset
+			, Extent2D const & extent
+			, uint8_t * data
+			, ImageView const & texture
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eFragmentShader )const;
+		inline void downloadTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, ImageSubresourceLayers const & subresourceLayers
+			, Format format
+			, Offset3D const & offset
+			, Extent2D const & extent
+			, ByteArray & data
+			, ImageView const & texture
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eFragmentShader )const;
+		void downloadTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, Format format
+			, uint8_t * data
+			, ImageView const & texture
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eFragmentShader )const;
+		inline void downloadTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, Format format
+			, ByteArray & data
+			, ImageView const & texture
+			, PipelineStageFlags dstStageFlags = PipelineStageFlag::eFragmentShader )const;
 		/**@}*/
 		/**
 		*\return
@@ -406,6 +503,12 @@ namespace ashes
 			, uint32_t offset
 			, UniformBufferBase const & buffer
 			, PipelineStageFlags dstStageFlags )const;
+		void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
+			, Extent2D const & size
+			, Offset3D const & offset
+			, ImageView const & view
+			, PipelineStageFlags dstStageFlags
+			, ImageSubresourceLayers const & subresourceLayers )const;
 		/**@{*/
 		/**
 		*\name
@@ -431,6 +534,12 @@ namespace ashes
 			, uint32_t offset
 			, UniformBufferBase const & buffer
 			, PipelineStageFlags dstStageFlags )const;
+		void doCopyToStagingBuffer( CommandBuffer const & commandBuffer
+			, Extent2D const & size
+			, Offset3D const & offset
+			, ImageView const & view
+			, PipelineStageFlags dstStageFlags
+			, ImageSubresourceLayers const & subresourceLayers )const;
 		/**@}*/
 
 	protected:

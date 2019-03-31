@@ -15,7 +15,7 @@ namespace common
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
 			, ashes::Extent2D const & size );
-		void updateView( ashes::TextureView const & colourView );
+		void updateView( ashes::ImageViewPtr colourView );
 		void update();
 		void resize( ashes::Extent2D const & size );
 		void submit( ashes::Queue const & queue );
@@ -30,9 +30,9 @@ namespace common
 		bool button( char const * caption );
 		void text( char const * formatstr, ... );
 
-		inline ashes::TextureView const & getTargetView()const
+		inline ashes::ImageViewPtr getTargetView()const
 		{
-			return *m_targetView;
+			return m_targetView;
 		}
 
 	private:
@@ -49,13 +49,13 @@ namespace common
 		};
 
 		utils::Device const & m_device;
-		ashes::TextureView const * m_colourView{ nullptr };
+		ashes::ImageViewPtr m_colourView;
 		ashes::Extent2D m_size;
 		ashes::PushConstantsBuffer< PushConstBlock > m_pushConstants;
 		ashes::VertexBufferPtr< ImDrawVert > m_vertexBuffer;
 		ashes::BufferPtr< ImDrawIdx > m_indexBuffer;
-		ashes::TexturePtr m_target;
-		ashes::TextureViewPtr m_targetView;
+		ashes::ImagePtr m_target;
+		ashes::ImageViewPtr m_targetView;
 		uint32_t m_vertexCount = 0;
 		uint32_t m_indexCount = 0;
 
@@ -71,8 +71,8 @@ namespace common
 		ashes::CommandBufferPtr m_commandBuffer;
 		ashes::FencePtr m_fence;
 
-		ashes::TexturePtr m_fontImage;
-		ashes::TextureViewPtr m_fontView;
+		ashes::ImagePtr m_fontImage;
+		ashes::ImageViewPtr m_fontView;
 		ashes::SamplerPtr m_sampler;
 	};
 }
