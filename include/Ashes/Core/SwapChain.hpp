@@ -86,19 +86,6 @@ namespace ashes
 		/**
 		*\~french
 		*\brief
-		*	Creates the swap chain's depth and/or stencil image.
-		*\param[in] format
-		*	The pixel format.
-		*\~french
-		*\brief
-		*	Crée l'image de profondeur et/ou stencil de la swap chain.
-		*\param[in] format
-		*	Le format de pixels.
-		*/
-		virtual void createDepthStencil( Format format );
-		/**
-		*\~french
-		*\brief
 		*	Acquires an available presentable image to use, and retrieve the index of that image.
 		*\param[in] timeout
 		*	Specifies how long the function waits, in nanoseconds, if no image is available.
@@ -212,12 +199,6 @@ namespace ashes
 			return m_createInfo.presentMode;
 		}
 
-		inline ImageViewPtr getDepthStencilView()const
-		{
-			assert( m_depthStencilView );
-			return m_depthStencilView;
-		}
-
 		inline Format getFormat()const
 		{
 			return m_createInfo.imageFormat;
@@ -228,8 +209,6 @@ namespace ashes
 		Device const & m_device;
 		Surface const & m_surface;
 		SwapChainCreateInfo m_createInfo;
-		mutable ImagePtr m_depthStencil;
-		mutable ImageViewPtr m_depthStencilView;
 	};
 }
 

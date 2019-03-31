@@ -301,7 +301,7 @@ namespace gl_renderer
 		GLenum target = gltexture.getLayerCount() > 1u
 			? GL_TEXTURE_2D_ARRAY
 			: GL_TEXTURE_2D;
-		bool isCube = checkFlag( gltexture.getFlags(), ashes::ImageCreateFlag::eCubeCompatible );
+		bool isCube = checkFlag( gltexture.getCreateFlags(), ashes::ImageCreateFlag::eCubeCompatible );
 
 		if ( gltexture.getSamplesCount() > ashes::SampleCountFlag::e1 )
 		{

@@ -46,10 +46,6 @@ namespace gl_renderer
 			, ashes::Semaphore const * semaphore
 			, ashes::Fence const * fence
 			, uint32_t & imageIndex )const override;
-		/**
-		*\copydoc	ashes::SwapChain::createDepthStencil
-		*/
-		void createDepthStencil( ashes::Format format )override;
 
 		void present( uint32_t imageIndex )const;
 

@@ -678,18 +678,9 @@ ashes::FrameBufferAttachmentArray doPrepareAttaches( Application const & applica
 	for ( auto & attach : application.renderPass->getAttachments() )
 	{
 		auto & image = *application.swapChainImages[backBuffer];
-
-		if ( !ashes::isDepthOrStencilFormat( attach.format ) )
-		{
-			result.emplace_back( attach
-				, image.createView( ashes::ImageViewType::e2D
-					, application.swapChain->getFormat() ) );
-		}
-		else
-		{
-			result.emplace_back( attach
-				, application.swapChain->getDepthStencilView() );
-		}
+		result.emplace_back( attach
+			, image.createView( ashes::ImageViewType::e2D
+				, application.swapChain->getFormat() ) );
 	}
 
 	return result;

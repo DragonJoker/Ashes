@@ -94,16 +94,6 @@ namespace gl_renderer
 		return ashes::Result::eSuccess;
 	}
 
-	void SwapChain::createDepthStencil( ashes::Format format )
-	{
-		auto texture = std::make_unique< Image >( m_device
-			, format
-			, getDimensions() );
-		m_depthStencilView = std::make_unique< ImageView >( m_device
-			, *texture );
-		m_depthStencil = std::move( texture );
-	}
-
 	void SwapChain::present( uint32_t imageIndex )const
 	{
 		auto context = m_device.getContext();

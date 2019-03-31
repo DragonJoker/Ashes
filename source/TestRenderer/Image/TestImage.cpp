@@ -18,7 +18,6 @@ namespace test_renderer
 	Image::Image( Image && rhs )
 		: ashes::Image{ std::move( rhs ) }
 		, m_device{ rhs.m_device }
-		, m_createInfo{ rhs.m_createInfo }
 	{
 	}
 
@@ -30,15 +29,8 @@ namespace test_renderer
 
 	Image::Image( Device const & device
 		, ashes::ImageCreateInfo const & createInfo )
-		: ashes::Image{ device
-			, createInfo.flags
-			, createInfo.imageType
-			, createInfo.format
-			, createInfo.extent
-			, createInfo.mipLevels
-			, createInfo.arrayLayers }
+		: ashes::Image{ device, createInfo }
 		, m_device{ device }
-		, m_createInfo{ createInfo }
 	{
 	}
 
@@ -46,30 +38,23 @@ namespace test_renderer
 		, ashes::Format format
 		, ashes::Extent2D const & dimensions )
 		: ashes::Image{ device
-			, 0u
-			, ashes::ImageType::e2D
-			, format
-			, ashes::Extent3D{ dimensions.width, dimensions.height, 1u }
-			, 1u 
-			, 1u }
+			, {
+				0u,
+				ashes::ImageType::e2D,
+				format,
+				ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
+				1u,
+				1u,
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				( isDepthOrStencilFormat( format )
+					? ashes::ImageUsageFlag::eDepthStencilAttachment
+					: ashes::ImageUsageFlag::eColourAttachment ),
+				ashes::SharingMode::eExclusive,
+				{},
+				ashes::ImageLayout::eUndefined
+			} }
 		, m_device{ device }
-		, m_createInfo
-		{
-			0u,
-			ashes::ImageType::e2D,
-			format,
-			ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
-			1u,
-			1u,
-			ashes::SampleCountFlag::e1,
-			ashes::ImageTiling::eOptimal,
-			( isDepthOrStencilFormat( format )
-				? ashes::ImageUsageFlag::eDepthStencilAttachment
-				: ashes::ImageUsageFlag::eColourAttachment ),
-			ashes::SharingMode::eExclusive,
-			{},
-			ashes::ImageLayout::eUndefined
-		}
 	{
 	}
 

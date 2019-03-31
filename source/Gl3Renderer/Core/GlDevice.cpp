@@ -619,7 +619,7 @@ namespace gl_renderer
 	{
 		auto & gltex = static_cast< Image const & >( image );
 		auto context = getContext();
-		auto target = convert( gltex.getType(), gltex.getLayerCount(), gltex.getFlags() );
+		auto target = convert( gltex.getType(), gltex.getLayerCount(), gltex.getCreateFlags() );
 		glLogCall( context
 			, glBindTexture
 			, target

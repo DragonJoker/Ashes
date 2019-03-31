@@ -108,16 +108,9 @@ namespace gl_renderer
 
 	Image::Image( Device const & device
 		, Image const & image )
-		: ashes::Image{ device
-			, image.m_createInfo.flags
-			, image.m_createInfo.imageType
-			, image.m_createInfo.format
-			, image.m_createInfo.extent
-			, image.m_createInfo.mipLevels
-			, image.m_createInfo.arrayLayers }
+		: ashes::Image{ device, image.m_createInfo }
 		, m_device{ device }
 		, m_target{ image.m_target }
-		, m_createInfo{ image.m_createInfo }
 		, m_texture{ image.m_texture }
 		, m_ownTexture{ false }
 	{
@@ -125,16 +118,9 @@ namespace gl_renderer
 
 	Image::Image( Device const & device
 		, ashes::ImageCreateInfo const & createInfo )
-		: ashes::Image{ device
-			, createInfo.flags
-			, createInfo.imageType
-			, createInfo.format
-			, createInfo.extent
-			, createInfo.mipLevels
-			, createInfo.arrayLayers }
+		: ashes::Image{ device, createInfo }
 		, m_device{ device }
 		, m_target{ convert( createInfo.imageType, createInfo.arrayLayers, createInfo.flags, createInfo.samples ) }
-		, m_createInfo{ createInfo }
 		, m_ownTexture{ true }
 	{
 		auto context = m_device.getContext();

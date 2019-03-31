@@ -45,6 +45,7 @@ namespace vkapp
 		void doCreateVertexBuffer();
 		void doCreateStagingBuffer();
 		void doCreatePipeline();
+		void doCreateDepthStencil();
 		void doPrepareFrames();
 		/**@}*/
 		/**
@@ -101,6 +102,8 @@ namespace vkapp
 		*	Swapchain.
 		*/
 		/**@{*/
+		ashes::ImagePtr m_depthStencil;
+		ashes::ImageViewPtr m_depthStencilView;
 		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
 		std::vector< ashes::CommandBufferPtr > m_commandBuffers;
 		ashes::SignalConnection< utils::SwapChain::OnReset > m_swapChainReset;
