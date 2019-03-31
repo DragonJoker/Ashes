@@ -9,7 +9,6 @@
 #include <Ashes/Descriptor/DescriptorSet.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayout.hpp>
 #include <Ashes/Descriptor/DescriptorSetPool.hpp>
-#include <Ashes/Image/StagingTexture.hpp>
 #include <Ashes/Image/Image.hpp>
 #include <Ashes/Image/ImageView.hpp>
 #include <Ashes/Miscellaneous/PushConstantRange.hpp>

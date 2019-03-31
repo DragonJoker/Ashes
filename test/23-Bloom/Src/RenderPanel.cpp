@@ -15,7 +15,6 @@
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
-#include <Image/StagingTexture.hpp>
 #include <Image/Image.hpp>
 #include <Image/ImageView.hpp>
 #include <Miscellaneous/QueryPool.hpp>

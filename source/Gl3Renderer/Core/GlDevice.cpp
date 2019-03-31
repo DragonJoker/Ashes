@@ -17,7 +17,6 @@ See LICENSE file in root folder.
 #include "Descriptor/GlDescriptorPool.hpp"
 #include "Descriptor/GlDescriptorSetLayout.hpp"
 #include "Image/GlSampler.hpp"
-#include "Image/GlStagingTexture.hpp"
 #include "Image/GlImage.hpp"
 #include "Image/GlImageView.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
@@ -576,12 +575,6 @@ namespace gl_renderer
 			m_dummyIndexed.indexBuffer.reset();
 		}
 		m_context.reset();
-	}
-
-	ashes::StagingTexturePtr Device::createStagingTexture( ashes::Format format
-		, ashes::Extent2D const & extent )const
-	{
-		return std::make_unique< StagingTexture >( *this, format, extent );
 	}
 
 	ashes::RenderPassPtr Device::createRenderPass( ashes::RenderPassCreateInfo createInfo )const

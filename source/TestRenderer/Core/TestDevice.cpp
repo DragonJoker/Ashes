@@ -15,7 +15,6 @@ See LICENSE file in root folder.
 #include "Descriptor/TestDescriptorPool.hpp"
 #include "Descriptor/TestDescriptorSetLayout.hpp"
 #include "Image/TestSampler.hpp"
-#include "Image/TestStagingTexture.hpp"
 #include "Image/TestImage.hpp"
 #include "Image/TestImageView.hpp"
 #include "Miscellaneous/TestDeviceMemory.hpp"
@@ -49,12 +48,6 @@ namespace test_renderer
 
 	Device::~Device()
 	{
-	}
-
-	ashes::StagingTexturePtr Device::createStagingTexture( ashes::Format format
-		, ashes::Extent2D const & extent )const
-	{
-		return std::make_unique< StagingTexture >( *this, format, extent );
 	}
 
 	ashes::RenderPassPtr Device::createRenderPass( ashes::RenderPassCreateInfo createInfo )const

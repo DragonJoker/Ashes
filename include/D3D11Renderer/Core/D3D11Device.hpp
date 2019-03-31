@@ -22,11 +22,6 @@ namespace d3d11_renderer
 			, ashes::SurfacePtr surface
 			, ashes::DeviceCreateInfo createInfos );
 		~Device();
-		/**
-		*\copydoc	ashes::Device::createStagingTexture
-		*/
-		ashes::StagingTexturePtr createStagingTexture( ashes::Format format
-			, ashes::Extent2D const & extent )const;
 		/*
 		*\copydoc	ashes::Device::createRenderPass
 		*/
