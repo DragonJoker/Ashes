@@ -38,6 +38,14 @@ namespace gl_renderer
 		*	Le périphérique logique.
 		*/
 		Image( Device const & device
+			, Image const & image );
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] device
+		*	Le périphérique logique.
+		*/
+		Image( Device const & device
 			, ashes::ImageCreateInfo const & createInfo );
 		/**
 		*\brief
@@ -95,6 +103,7 @@ namespace gl_renderer
 		ashes::ImageCreateInfo m_createInfo;
 		GlTextureType m_target;
 		GLuint m_texture{ GL_INVALID_INDEX };
+		bool m_ownTexture{ true };
 	};
 }
 

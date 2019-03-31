@@ -34,6 +34,7 @@ namespace gl_renderer
 		*/
 		SwapChain( Device const & device
 			, ashes::SwapChainCreateInfo createInfo );
+		~SwapChain();
 		/**
 		*\copydoc	ashes::SwapChain::getImages
 		*/
@@ -50,7 +51,12 @@ namespace gl_renderer
 		*/
 		void createDepthStencil( ashes::Format format )override;
 
+		void present( uint32_t imageIndex )const;
+
 	private:
 		Device const & m_device;
+		std::unique_ptr< Image > m_image;
+		std::unique_ptr< ImageView > m_view;
+		GLuint m_fbo;
 	};
 }

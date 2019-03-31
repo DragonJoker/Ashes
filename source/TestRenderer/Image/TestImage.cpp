@@ -18,6 +18,7 @@ namespace test_renderer
 	Image::Image( Image && rhs )
 		: ashes::Image{ std::move( rhs ) }
 		, m_device{ rhs.m_device }
+		, m_createInfo{ rhs.m_createInfo }
 	{
 	}
 
@@ -37,6 +38,7 @@ namespace test_renderer
 			, createInfo.mipLevels
 			, createInfo.arrayLayers }
 		, m_device{ device }
+		, m_createInfo{ createInfo }
 	{
 	}
 
@@ -51,6 +53,23 @@ namespace test_renderer
 			, 1u 
 			, 1u }
 		, m_device{ device }
+		, m_createInfo
+		{
+			0u,
+			ashes::ImageType::e2D,
+			format,
+			ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
+			1u,
+			1u,
+			ashes::SampleCountFlag::e1,
+			ashes::ImageTiling::eOptimal,
+			( isDepthOrStencilFormat( format )
+				? ashes::ImageUsageFlag::eDepthStencilAttachment
+				: ashes::ImageUsageFlag::eColourAttachment ),
+			ashes::SharingMode::eExclusive,
+			{},
+			ashes::ImageLayout::eUndefined
+		}
 	{
 	}
 
@@ -85,19 +104,15 @@ namespace test_renderer
 	ashes::MemoryRequirements Image::getMemoryRequirements()const
 	{
 		ashes::MemoryRequirements result{};
-
-		if ( !ashes::isCompressedFormat( getFormat() ) )
-		{
-			result.size = getDimensions().width
-				* getDimensions().height
-				* getDimensions().depth
-				* getLayerCount()
-				* ashes::getSize( getFormat() );
-		}
-
+		result.size = ashes::getSize( getDimensions(), getFormat() );
 		result.type = ashes::ResourceType::eImage;
-		result.alignment = 1u;
-		result.memoryTypeBits = ~result.memoryTypeBits;
+		auto extent = ashes::getMinimalExtent3D( getFormat() );
+		result.alignment = ashes::getSize( extent, getFormat() );
+		result.memoryTypeBits = ashes::MemoryPropertyFlag::eDeviceLocal
+			| ( ( checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferDst )
+				&& checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferSrc ) )
+				? ashes::MemoryPropertyFlag::eHostVisible
+				: ashes::MemoryPropertyFlag::eDeviceLocal );
 		return result;
 	}
 

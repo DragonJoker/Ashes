@@ -25,12 +25,24 @@ namespace gl_renderer
 		/**
 		*\brief
 		*	Constructeur.
+		*\remarks
+		*	Used for swapchain own image.
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
 		Image( Device const & device
 			, ashes::Format format
 			, ashes::Extent2D const & dimensions );
+		/**
+		*\brief
+		*	Constructeur.
+		*\remarks
+		*	Used for swapchain images creation.
+		*\param[in] device
+		*	Le périphérique logique.
+		*/
+		Image( Device const & device
+			, Image const & image );
 		/**
 		*\brief
 		*	Constructeur.
@@ -95,6 +107,7 @@ namespace gl_renderer
 		ashes::ImageCreateInfo m_createInfo;
 		GlTextureType m_target;
 		GLuint m_texture{ GL_INVALID_INDEX };
+		bool m_ownTexture{ true };
 	};
 }
 

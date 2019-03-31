@@ -202,7 +202,7 @@ namespace utils
 		for ( size_t i = 0u; i < result.size(); ++i )
 		{
 			auto attaches = doPrepareAttaches( uint32_t( i ), renderPass.getAttachments() );
-			result[i] = static_cast< ashes::RenderPass const & >( renderPass ).createBackBuffer( m_swapChain->getDimensions()
+			result[i] = static_cast< ashes::RenderPass const & >( renderPass ).createFrameBuffer( m_swapChain->getDimensions()
 				, std::move( attaches ) );
 		}
 

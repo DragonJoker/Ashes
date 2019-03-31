@@ -73,25 +73,39 @@ namespace gl_renderer
 	Image::Image( Device const & device
 		, ashes::Format format
 		, ashes::Extent2D const & dimensions )
-		: ashes::Image{ device
-			, 0u
-			, ashes::ImageType::e2D
-			, format
-			, { dimensions.width, dimensions.height, 1u }
-			, 1u
-			, 1u }
-		, m_device{ device }
-		, m_createInfo{ 
-			0u,
-			ashes::ImageType::e2D,
-			format,
-			{ dimensions.width, dimensions.height, 1u },
-			1u,
-			1u,
-			ashes::SampleCountFlag::e1,
-			ashes::ImageTiling::eOptimal,
-			0u
+		: Image
+		{
+			device,
+			ashes::ImageCreateInfo
+			{
+				0u,
+				ashes::ImageType::e2D,
+				format,
+				ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
+				1u,
+				1u,
+				ashes::SampleCountFlag::e1,
+				ashes::ImageTiling::eOptimal,
+				ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eTransferDst | ashes::ImageUsageFlag::eTransferSrc
+			}
 		}
+	{
+	}
+
+	Image::Image( Device const & device
+		, Image const & image )
+		: ashes::Image{ device
+			, image.m_createInfo.flags
+			, image.m_createInfo.imageType
+			, image.m_createInfo.format
+			, image.m_createInfo.extent
+			, image.m_createInfo.mipLevels
+			, image.m_createInfo.arrayLayers }
+		, m_device{ device }
+		, m_target{ image.m_target }
+		, m_createInfo{ image.m_createInfo }
+		, m_texture{ image.m_texture }
+		, m_ownTexture{ false }
 	{
 	}
 
@@ -107,6 +121,7 @@ namespace gl_renderer
 		, m_device{ device }
 		, m_target{ convert( createInfo.imageType, createInfo.arrayLayers, createInfo.samples ) }
 		, m_createInfo{ createInfo }
+		, m_ownTexture{ true }
 	{
 		auto context = m_device.getContext();
 		glLogCall( context
@@ -118,29 +133,29 @@ namespace gl_renderer
 	Image::~Image()
 	{
 		m_storage.reset();
-		auto context = m_device.getContext();
-		glLogCall( context
-			, glDeleteTextures
-			, 1
-			, &m_texture );
+
+		if ( m_ownTexture )
+		{
+			auto context = m_device.getContext();
+			glLogCall( context
+				, glDeleteTextures
+				, 1
+				, &m_texture );
+		}
 	}
 
 	ashes::MemoryRequirements Image::getMemoryRequirements()const
 	{
 		ashes::MemoryRequirements result{};
-
-		if ( !ashes::isCompressedFormat( getFormat() ) )
-		{
-			result.size = getDimensions().width
-				* getDimensions().height
-				* getDimensions().depth
-				* getLayerCount()
-				* ashes::getSize( getFormat() );
-		}
-
+		result.size = ashes::getSize( getDimensions(), getFormat() );
 		result.type = ashes::ResourceType::eImage;
-		result.alignment = 1u;
-		result.memoryTypeBits = ~result.memoryTypeBits;
+		auto extent = ashes::getMinimalExtent3D( getFormat() );
+		result.alignment = ashes::getSize( extent, getFormat() );
+		result.memoryTypeBits = ashes::MemoryPropertyFlag::eDeviceLocal
+			| ( ( checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferDst )
+				&& checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferSrc ) )
+				? ashes::MemoryPropertyFlag::eHostVisible
+				: ashes::MemoryPropertyFlag::eDeviceLocal );
 		return result;
 	}
 

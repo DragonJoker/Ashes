@@ -702,7 +702,7 @@ void doCreateFrameBuffers( Application & application )
 	for ( size_t i = 0u; i < application.frameBuffers.size(); ++i )
 	{
 		auto attaches = doPrepareAttaches( application, uint32_t( i ) );
-		application.frameBuffers[i] = application.renderPass->createBackBuffer( application.swapChain->getDimensions()
+		application.frameBuffers[i] = application.renderPass->createFrameBuffer( application.swapChain->getDimensions()
 			, std::move( attaches ) );
 	}
 }

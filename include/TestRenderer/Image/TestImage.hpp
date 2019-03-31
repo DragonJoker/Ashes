@@ -83,5 +83,6 @@ namespace test_renderer
 
 	private:
 		Device const & m_device;
+		ashes::ImageCreateInfo m_createInfo;
 	};
 }
