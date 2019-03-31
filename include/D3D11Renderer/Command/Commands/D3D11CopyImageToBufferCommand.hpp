@@ -33,20 +33,38 @@ namespace d3d11_renderer
 			, ashes::BufferImageCopyArray const & copyInfo
 			, ashes::Image const & src
 			, ashes::BufferBase const & dst );
-		CopyImageToBufferCommand( CopyImageToBufferCommand const & rhs );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		void applyOne( ashes::BufferImageCopy const & copyInfo
-			, ImageView const & view )const;
+		void applyOne( Context const & context
+			, ashes::BufferImageCopy const & copyInfo
+			, ashes::SubresourceLayout const & srcLayout
+			, D3D11_BOX const & dstBox )const;
+		void doMapCopy( ashes::BufferImageCopy const & copyInfo
+			, ashes::SubresourceLayout const & srcLayout
+			, D3D11_BOX const & dstBox
+			, ashes::Image const & src
+			, ashes::BufferBase const & dst )const;
+		void doCopyToStaging( Context const & context
+			, ashes::BufferImageCopy const & copyInfo
+			, ashes::Image const & src
+			, ashes::Image const & staging )const;
+		void doCopyFromStaging( Context const & context
+			, ashes::BufferImageCopy const & copyInfo
+			, ashes::BufferBase const & staging
+			, ashes::BufferBase const & dst
+			, D3D11_BOX const & dstBox )const;
 
 	private:
 		Image const & m_src;
 		Buffer const & m_dst;
 		ashes::BufferImageCopyArray m_copyInfo;
 		DXGI_FORMAT m_format;
-		std::vector< ImageViewPtr > m_views;
+		std::vector< ashes::SubresourceLayout > m_srcLayouts;
+		std::vector< D3D11_BOX > m_dstBoxes;
+		bool m_srcMappable;
+		bool m_dstMappable;
 	};
 }

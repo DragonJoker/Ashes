@@ -17,8 +17,8 @@ namespace d3d11_renderer
 		: CommandBase{ device }
 		, m_src{ static_cast< Buffer const & >( src ) }
 		, m_dst{ static_cast< Buffer const & >( dst ) }
-		, m_dstOffset{ copyInfo.dstOffset }
-		, m_srcBox{ copyInfo.srcOffset, 0u, 0u, copyInfo.srcOffset + copyInfo.size, 1u, 1u }
+		, m_dstOffset{ UINT( copyInfo.dstOffset ) }
+		, m_srcBox{ UINT( copyInfo.srcOffset ), 0u, 0u, UINT( copyInfo.srcOffset + copyInfo.size ), 1u, 1u }
 	{
 	}
 

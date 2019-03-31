@@ -28,7 +28,7 @@ namespace ashes
 		*\brief
 		*	Le décalage de départ en octets, depuis le début de \p srcBuffer.
 		*/
-		uint32_t srcOffset;
+		DeviceSize srcOffset;
 		/**
 		*\~english
 		*\brief
@@ -37,7 +37,7 @@ namespace ashes
 		*\brief
 		*	Le décalage de départ en octets, depuis le début de \p dstBuffer.
 		*/
-		uint32_t dstOffset;
+		DeviceSize dstOffset;
 		/**
 		*\~english
 		*\brief
@@ -46,7 +46,7 @@ namespace ashes
 		*\brief
 		*	Le nombre d'octets à copier.
 		*/
-		uint32_t size;
+		DeviceSize size;
 	};
 }
 

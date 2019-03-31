@@ -3,6 +3,8 @@ This file belongs to GlInstance.
 See LICENSE file in root folder.
 */
 #include "Command/Commands/D3D11CopyBufferToImageCommand.hpp"
+
+#include "Command/Commands/D3D11CopyBufferCommand.hpp"
 #include "Command/Commands/D3D11CopyImageCommand.hpp"
 
 #include "Buffer/D3D11Buffer.hpp"
@@ -17,70 +19,6 @@ namespace d3d11_renderer
 {
 	namespace
 	{
-		struct TexelCoordinates
-		{
-			ashes::Offset3D offset;
-			uint32_t layer;
-		};
-		
-		struct CompressedTexelBlockCoordinates
-		{
-			CompressedTexelBlockCoordinates( ashes::Offset3D const & offset
-				, uint32_t const & layer
-				, ashes::Extent2D const & texelBlockSize )
-				: texel{ {
-						int32_t( offset.x * texelBlockSize.width ),
-						int32_t( offset.x * texelBlockSize.height ),
-						offset.z,
-					}, layer }
-				, offset{
-						int32_t( texel.offset.x / texelBlockSize.width ),
-						int32_t( texel.offset.y / texelBlockSize.height ),
-						texel.offset.z,
-					}
-				, layer{ texel.layer }
-			{
-			}
-			
-			CompressedTexelBlockCoordinates( TexelCoordinates const & coordinates
-				, ashes::Extent2D const & texelBlockSize )
-				: texel{ coordinates }
-				, offset{
-						int32_t( texel.offset.x / texelBlockSize.width ),
-						int32_t( texel.offset.y / texelBlockSize.height ),
-						texel.offset.z,
-					}
-				, layer{ texel.layer }
-			{
-			}
-
-			TexelCoordinates texel;
-			ashes::Offset3D offset;
-			uint32_t layer;
-		};
-
-		uint64_t getSubresourceAddress( TexelCoordinates const & coordinates
-			, ashes::SubresourceLayout const & layout
-			, uint32_t elementSize
-			, uint32_t offset )
-		{
-			return coordinates.layer * layout.arrayPitch
-				+ coordinates.offset.z * layout.depthPitch
-				+ coordinates.offset.y * layout.rowPitch
-				+ coordinates.offset.x * elementSize + offset;
-		}
-
-		uint64_t getSubresourceAddress( CompressedTexelBlockCoordinates const & coordinates
-			, ashes::SubresourceLayout const & layout
-			, uint32_t compressedTexelBlockByteSize
-			, uint32_t offset )
-		{
-			return coordinates.layer * layout.arrayPitch
-				+ coordinates.offset.z * layout.depthPitch
-				+ coordinates.offset.y * layout.rowPitch
-				+ coordinates.offset.x * compressedTexelBlockByteSize + offset;
-		}
-
 		uint32_t getBufferRowPitch( ashes::BufferImageCopy const & copyInfo )
 		{
 			return ( copyInfo.bufferRowLength
@@ -194,8 +132,8 @@ namespace d3d11_renderer
 		}
 
 		void doCopyMapped( ashes::Format format
-			, uint8_t const * srcBuffer
 			, ashes::BufferImageCopy const & copyInfo
+			, uint8_t const * srcBuffer
 			, D3D11_BOX const & srcBox
 			, uint8_t * dstBuffer
 			, ashes::SubresourceLayout const & dstLayout )
@@ -244,19 +182,32 @@ namespace d3d11_renderer
 				dstBuffer += imageLayerPitch;
 			}
 		}
-	}
 
-	ashes::ImagePtr getStagingTexture( Device const & device
-		, ashes::Image const & image
-		, ashes::Extent3D dimensions )
-	{
-		ashes::ImagePtr result = std::make_unique< Image >( device
-			, ashes::ImageCreateInfo
-			{
-				0u,
-				image.getType(),
-				image.getFormat(),
-				ashes::Extent3D
+		ashes::BufferBasePtr getStagingBuffer( Device const & device
+			, ashes::BufferBase const & buffer
+			, uint32_t size )
+		{
+			ashes::BufferBasePtr result = std::make_unique< Buffer >( device
+				, size
+				, ashes::BufferTarget::eTransferSrc | ashes::BufferTarget::eTransferDst );
+			auto requirements = result->getMemoryRequirements();
+			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
+				, ashes::MemoryPropertyFlag::eHostVisible );
+			result->bindMemory( device.allocateMemory( { requirements.size, deduced } ) );
+			return result;
+		}
+
+		ashes::ImagePtr getStagingTexture( Device const & device
+			, ashes::Image const & image
+			, ashes::Extent3D dimensions )
+		{
+			ashes::ImagePtr result = std::make_unique< Image >( device
+				, ashes::ImageCreateInfo
+				{
+					0u,
+					image.getType(),
+					image.getFormat(),
+					ashes::Extent3D
 				{
 					dimensions.width,
 					dimensions.height,
@@ -270,12 +221,13 @@ namespace d3d11_renderer
 				ashes::SharingMode::eExclusive,
 				{},
 				ashes::ImageLayout::eUndefined,
-			} );
-		auto requirements = result->getMemoryRequirements();
-		uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
-			, ashes::MemoryPropertyFlag::eHostVisible );
-		result->bindMemory( device.allocateMemory( { requirements.size, deduced } ) );
-		return result;
+				} );
+			auto requirements = result->getMemoryRequirements();
+			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
+				, ashes::MemoryPropertyFlag::eHostVisible );
+			result->bindMemory( device.allocateMemory( { requirements.size, deduced } ) );
+			return result;
+		}
 	}
 
 	CopyBufferToImageCommand::CopyBufferToImageCommand( Device const & device
@@ -289,35 +241,19 @@ namespace d3d11_renderer
 		, m_format{ getSRVFormat( m_dst.getFormat() ) }
 		, m_srcBoxes{ doGetSrcBoxes( m_dst, copyInfo ) }
 		, m_dstLayouts{ doGetDstLayouts( device, m_dst, copyInfo ) }
-		, m_mappable{ m_dst.getMemoryRequirements().memoryTypeBits == ashes::MemoryPropertyFlag::eHostVisible }
+		, m_srcMappable{ m_src.getMemoryRequirements().memoryTypeBits == ashes::MemoryPropertyFlag::eHostVisible }
+		, m_dstMappable{ m_dst.getMemoryRequirements().memoryTypeBits == ashes::MemoryPropertyFlag::eHostVisible }
 	{
 	}
 
 	void CopyBufferToImageCommand::apply( Context const & context )const
 	{
-		if ( m_mappable )
+		for ( auto i = 0u; i < m_copyInfo.size(); ++i )
 		{
-			for ( auto i = 0u; i < m_copyInfo.size(); ++i )
-			{
-				applyOne( context
-					, m_copyInfo[i]
-					, m_srcBoxes[i]
-					, m_dstLayouts[i]
-					, m_dst );
-			}
-		}
-		else
-		{
-			if ( !m_copyInfo.empty() )
-			{
-				for ( auto i = 0u; i < m_copyInfo.size(); ++i )
-				{
-					applyOneStaging( context
-						, m_copyInfo[i]
-						, m_srcBoxes[i]
-						, m_dstLayouts[i] );
-				}
-			}
+			applyOne( context
+				, m_copyInfo[i]
+				, m_srcBoxes[i]
+				, m_dstLayouts[i] );
 		}
 	}
 
@@ -326,19 +262,104 @@ namespace d3d11_renderer
 		return std::make_unique< CopyBufferToImageCommand >( *this );
 	}
 
-	void CopyBufferToImageCommand::applyOneStaging( Context const & context
+	void CopyBufferToImageCommand::applyOne( Context const & context
 		, ashes::BufferImageCopy const & copyInfo
 		, D3D11_BOX const & srcBox
 		, ashes::SubresourceLayout const & dstLayout )const
 	{
-		auto staging = getStagingTexture( m_device
-			, m_dst
-			, copyInfo.imageExtent );
-		applyOne( context
-			, copyInfo
+		ashes::BufferBasePtr stagingSrc;
+		ashes::ImagePtr stagingDst;
+		ashes::BufferBase const * src = &m_src;
+		ashes::Image const * dst = &m_dst;
+
+		if ( !m_srcMappable )
+		{
+			stagingSrc = getStagingBuffer( m_device
+				, m_src
+				, srcBox.right - srcBox.left );
+			doCopyToStaging( context
+				, copyInfo
+				, *src
+				, *stagingSrc
+				, srcBox );
+			src = stagingSrc.get();
+		}
+
+		if ( !m_dstMappable )
+		{
+			stagingDst = getStagingTexture( m_device
+				, m_dst
+				, copyInfo.imageExtent );
+			dst = stagingDst.get();
+		}
+
+		doMapCopy( copyInfo
 			, srcBox
 			, dstLayout
-			, *staging );
+			, *src
+			, *dst );
+
+		if ( !m_dstMappable )
+		{
+			doCopyFromStaging( context
+				, copyInfo
+				, *stagingDst
+				, m_dst );
+		}
+	}
+
+	void CopyBufferToImageCommand::doMapCopy( ashes::BufferImageCopy const & copyInfo
+		, D3D11_BOX const & srcBox
+		, ashes::SubresourceLayout const & dstLayout
+		, ashes::BufferBase const & src
+		, ashes::Image const & dst )const
+	{
+		if ( auto srcBuffer = src.lock( srcBox.left
+			, srcBox.right - srcBox.left
+			, ashes::MemoryMapFlag::eRead ) )
+		{
+			if ( auto dstBuffer = dst.lock( dstLayout
+				, ashes::MemoryMapFlag::eWrite ) )
+			{
+				doCopyMapped( dst.getFormat()
+					, copyInfo
+					, srcBuffer
+					, srcBox
+					, dstBuffer
+					, dstLayout );
+				dst.flush( dstLayout );
+				dst.unlock();
+			}
+
+			src.flush( srcBox.left
+				, srcBox.right - srcBox.left );
+			src.unlock();
+		}
+	}
+
+	void CopyBufferToImageCommand::doCopyToStaging( Context const & context
+		, ashes::BufferImageCopy const & copyInfo
+		, ashes::BufferBase const & src
+		, ashes::BufferBase const & staging
+		, D3D11_BOX const & srcBox )const
+	{
+		CopyBufferCommand command{ m_device
+			, ashes::BufferCopy
+			{
+				copyInfo.bufferOffset,
+				0u,
+				srcBox.right - srcBox.left
+			}
+			, src
+			, staging };
+		command.apply( context );
+	}
+
+	void CopyBufferToImageCommand::doCopyFromStaging( Context const & context
+		, ashes::BufferImageCopy const & copyInfo
+		, ashes::Image const & staging
+		, ashes::Image const & dst )const
+	{
 		ashes::ImageSubresourceLayers stagingSurbresouce{ copyInfo.imageSubresource };
 		stagingSurbresouce.mipLevel = 0u;
 		stagingSurbresouce.baseArrayLayer = 0u;
@@ -349,47 +370,10 @@ namespace d3d11_renderer
 				ashes::Offset3D{},
 				copyInfo.imageSubresource,
 				copyInfo.imageOffset,
-				ashes::Extent3D
-				{
-					copyInfo.imageExtent.width,
-					copyInfo.imageExtent.height,
-					copyInfo.imageExtent.depth,
-				},
+				copyInfo.imageExtent,
 			}
-			, *staging
-			, m_dst };
+			, staging
+			, dst };
 		command.apply( context );
-	}
-
-	void CopyBufferToImageCommand::applyOne( Context const & context
-		, ashes::BufferImageCopy const & copyInfo
-		, D3D11_BOX const & srcBox
-		, ashes::SubresourceLayout const & dstLayout
-		, ashes::Image const & image )const
-	{
-		auto bufferSize = srcBox.right - srcBox.left;
-		auto imageSize = dstLayout.size;
-
-		if ( auto srcBuffer = m_src.lock( srcBox.left
-			, bufferSize
-			, ashes::MemoryMapFlag::eRead ) )
-		{
-			if ( auto dstBuffer = image.lock( dstLayout
-				, ashes::MemoryMapFlag::eWrite ) )
-			{
-				doCopyMapped( image.getFormat()
-					, srcBuffer
-					, copyInfo
-					, srcBox
-					, dstBuffer
-					, dstLayout );
-				image.flush( dstLayout );
-				image.unlock();
-			}
-
-			m_src.flush( srcBox.left
-				, bufferSize );
-			m_src.unlock();
-		}
 	}
 }
