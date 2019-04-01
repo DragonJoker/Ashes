@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl4Renderer/GlRendererPrerequisites.hpp"
+#include "Gl4Renderer/Core/GlContext.hpp"
 
 #include <Ashes/Core/Surface.hpp>
 
@@ -14,8 +14,8 @@ namespace gl_renderer
 		: public ashes::Surface
 	{
 	public:
-		Surface( ashes::Instance const & instance
-			, ashes::PhysicalDevice const & gpu
+		Surface( Instance const & instance
+			, PhysicalDevice const & gpu
 			, ashes::WindowHandle handle );
 
 		bool getSupport( uint32_t queueFamilyIndex )const override;
@@ -35,9 +35,15 @@ namespace gl_renderer
 			return m_surfaceFormats;
 		}
 
+		inline ContextLock getContext()const
+		{
+			return { *m_context };
+		}
+
 	private:
 		std::vector< ashes::SurfaceFormat > m_surfaceFormats;
 		ashes::SurfaceCapabilities m_surfaceCapabilities;
 		std::vector< ashes::PresentMode > m_presentModes;
+		ContextPtr m_context;
 	};
 }

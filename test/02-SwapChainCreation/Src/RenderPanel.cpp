@@ -28,9 +28,8 @@ namespace vkapp
 
 		static int const TimerTimeMs = 40;
 
-		uint32_t doGetImageCount( ashes::Device const & device )
+		uint32_t doGetImageCount( ashes::Surface const & surface )
 		{
-			auto & surface = device.getSurface();
 			auto surfaceCaps = surface.getCapabilities();
 			uint32_t desiredNumberOfSwapChainImages{ surfaceCaps.minImageCount + 1 };
 
@@ -44,9 +43,8 @@ namespace vkapp
 			return desiredNumberOfSwapChainImages;
 		}
 
-		ashes::SurfaceFormat doSelectFormat( ashes::Device const & device )
+		ashes::SurfaceFormat doSelectFormat( ashes::Surface const & surface )
 		{
-			auto & surface = device.getSurface();
 			ashes::SurfaceFormat result;
 			auto formats = surface.getFormats();
 			// Si la liste de formats ne contient qu'une entr�e VK_FORMAT_UNDEFINED,
@@ -80,9 +78,8 @@ namespace vkapp
 			return result;
 		}
 
-		ashes::PresentMode doSelectPresentMode( ashes::Device const & device )
+		ashes::PresentMode doSelectPresentMode( ashes::Surface const & surface )
 		{
-			auto & surface = device.getSurface();
 			auto presentModes = surface.getPresentModes();
 			// Si le mode boîte aux lettres est disponible, on utilise celui-là, car c'est celui avec le
 			// minimum de latence dans tearing.
@@ -109,10 +106,10 @@ namespace vkapp
 		}
 
 		ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Device const & device
+			, ashes::Surface const & surface
 			, ashes::Extent2D const & size )
 		{
 			ashes::Extent2D swapChainExtent{};
-			auto & surface = device.getSurface();
 			auto surfaceCaps = surface.getCapabilities();
 
 			// width et height valent soient tous les deux -1 ou tous les deux autre chose que -1.
@@ -147,13 +144,13 @@ namespace vkapp
 				preTransform = surfaceCaps.currentTransform;
 			}
 
-			auto presentMode = doSelectPresentMode( device );
-			auto surfaceFormat = doSelectFormat( device );
+			auto presentMode = doSelectPresentMode( surface );
+			auto surfaceFormat = doSelectFormat( surface );
 			return ashes::SwapChainCreateInfo
 			{
 				ashes::SwapChainCreateFlag::eNone,
 				std::ref( surface ),
-				doGetImageCount( device ),
+				doGetImageCount( surface ),
 				surfaceFormat.format,
 				surfaceFormat.colorSpace,
 				swapChainExtent,
@@ -178,9 +175,9 @@ namespace vkapp
 	{
 		try
 		{
-			auto surface = doCreateSurface( instance );
+			doCreateSurface( instance );
 			std::cout << "Surface created." << std::endl;
-			doCreateDevice( instance, std::move( surface ) );
+			doCreateDevice( instance );
 			std::cout << "Logical device created." << std::endl;
 			doCreateSwapChain();
 			std::cout << "Swap chain created." << std::endl;
@@ -226,19 +223,18 @@ namespace vkapp
 		}
 	}
 
-	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
+	void RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.getInstance().createSurface( gpu
+		m_surface = instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
 
-	void RenderPanel::doCreateDevice( utils::Instance const & instance
-		, ashes::SurfacePtr surface )
+	void RenderPanel::doCreateDevice( utils::Instance const & instance )
 	{
 		m_device = std::make_unique< utils::Device >( instance.getInstance()
-			, std::move( surface ) );
+			, *m_surface );
 		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
 		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
 		m_commandPool = m_device->getDevice().createCommandPool( m_device->getGraphicsQueueFamily()
@@ -249,6 +245,7 @@ namespace vkapp
 	{
 		wxSize size{ GetClientSize() };
 		m_swapChain = m_device->getDevice().createSwapChain( doGetSwapChainCreateInfo( m_device->getDevice()
+			, *m_surface
 			, { uint32_t( size.x ), uint32_t( size.y ) } ) );
 		m_swapChainImages = m_swapChain->getImages();
 		m_clearColour = ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };

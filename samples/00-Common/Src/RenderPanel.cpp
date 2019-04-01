@@ -82,9 +82,9 @@ namespace common
 		{
 			auto surface = doCreateSurface( instance );
 			std::cout << "Surface created." << std::endl;
-			doCreateDevice( instance, std::move( surface ) );
+			doCreateDevice( instance, *surface );
 			std::cout << "Logical device created." << std::endl;
-			doCreateSwapChain();
+			doCreateSwapChain( std::move( surface ) );
 			std::cout << "Swap chain created." << std::endl;
 			m_stagingBuffer = std::make_unique< ashes::StagingBuffer >( m_device->getDevice()
 				, 0u
@@ -241,21 +241,22 @@ namespace common
 	}
 
 	void RenderPanel::doCreateDevice( utils::Instance const & instance
-		, ashes::SurfacePtr surface )
+		, ashes::Surface const & surface )
 	{
 		m_device = std::make_unique< utils::Device >( instance.getInstance()
-			, std::move( surface ) );
+			, surface );
 		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
 		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
 		m_commandPool = m_device->getDevice().createCommandPool( m_device->getGraphicsQueueFamily()
 			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
 	}
 
-	void RenderPanel::doCreateSwapChain()
+	void RenderPanel::doCreateSwapChain( ashes::SurfacePtr surface )
 	{
 		wxSize size{ GetClientSize() };
 		m_swapChain = std::make_unique< utils::SwapChain >( m_device->getDevice()
 			, *m_commandPool
+			, std::move( surface )
 			, ashes::Extent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
 		m_clearColour = { 1.0f, 0.8f, 0.4f, 0.0f };
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()

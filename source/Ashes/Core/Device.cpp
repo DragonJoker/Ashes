@@ -21,11 +21,9 @@ namespace ashes
 {
 	Device::Device( Instance const & instance
 		, PhysicalDevice const & gpu
-		, Surface const & surface
 		, DeviceCreateInfo createInfos )
 		: m_instance{ instance }
 		, m_gpu{ gpu }
-		, m_surface{ surface }
 		, m_createInfos{ std::move( createInfos ) }
 		, m_memoryProperties{ m_gpu.getMemoryProperties() }
 		, m_properties{ m_gpu.getProperties() }

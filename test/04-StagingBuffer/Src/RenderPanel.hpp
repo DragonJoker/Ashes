@@ -29,8 +29,8 @@ namespace vkapp
 		void doCleanup();
 		ashes::SurfacePtr doCreateSurface( utils::Instance const & instance );
 		void doCreateDevice( utils::Instance const & instance
-			, ashes::SurfacePtr surface );
-		void doCreateSwapChain();
+			, ashes::Surface const & surface );
+		void doCreateSwapChain( ashes::SurfacePtr surface );
 		void doCreateRenderPass();
 		void doCreateVertexBuffer();
 		void doCreateStagingBuffer();

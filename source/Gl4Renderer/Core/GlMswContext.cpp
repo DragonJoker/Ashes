@@ -35,13 +35,13 @@ namespace gl_renderer
 #endif
 	}
 
-	MswContext::MswContext( PhysicalDevice const & gpu
-		, ashes::Surface const & surface
+	MswContext::MswContext( Instance const & instance
+		, ashes::WindowHandle const & handle
 		, Context const * mainContext )
-		: Context{ gpu, surface }
+		: Context{ instance }
 		, m_hDC( nullptr )
 		, m_hContext( nullptr )
-		, m_hWnd( m_surface.getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd() )
+		, m_hWnd( handle.getInternal< ashes::IMswWindowHandle >().getHwnd() )
 	{
 		m_hDC = ::GetDC( m_hWnd );
 
@@ -141,7 +141,7 @@ namespace gl_renderer
 
 	void MswContext::doLoadDebugFunctions()
 	{
-		if ( m_gpu.find( KHR_debug ) )
+		if ( m_instance.getExtensions().find( KHR_debug ) )
 		{
 			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
 			{
@@ -151,7 +151,7 @@ namespace gl_renderer
 				}
 			}
 		}
-		else if ( m_gpu.find( ARB_debug_output ) )
+		else if ( m_instance.getExtensions().find( ARB_debug_output ) )
 		{
 			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
 			{
@@ -161,7 +161,7 @@ namespace gl_renderer
 				}
 			}
 		}
-		else if ( m_gpu.find( AMDX_debug_output ) )
+		else if ( m_instance.getExtensions().find( AMDX_debug_output ) )
 		{
 			if ( !getFunction( "glDebugMessageCallbackAMD", glDebugMessageCallbackAMD ) )
 			{
@@ -181,7 +181,7 @@ namespace gl_renderer
 				ashes::Logger::logWarning( "Unable to retrieve function glObjectPtrLabel" );
 			}
 
-			for ( auto & callback : m_gpu.getInstance().getDebugCallbacks() )
+			for ( auto & callback : m_instance.getDebugCallbacks() )
 			{
 				glDebugMessageCallback( callback.callback, callback.userParam );
 				::glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
@@ -189,7 +189,7 @@ namespace gl_renderer
 		}
 		else if ( glDebugMessageCallbackAMD )
 		{
-			for ( auto & callback : m_gpu.getInstance().getDebugAMDCallbacks() )
+			for ( auto & callback : m_instance.getDebugAMDCallbacks() )
 			{
 				glDebugMessageCallbackAMD( callback.callback, callback.userParam );
 				::glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
@@ -246,8 +246,8 @@ namespace gl_renderer
 			HGLRC hContext = m_hContext;
 			std::vector< int > attribList
 			{
-				WGL_CONTEXT_MAJOR_VERSION_ARB, m_gpu.getMajor(),
-				WGL_CONTEXT_MINOR_VERSION_ARB, m_gpu.getMinor(),
+				WGL_CONTEXT_MAJOR_VERSION_ARB, m_instance.getExtensions().getMajor(),
+				WGL_CONTEXT_MINOR_VERSION_ARB, m_instance.getExtensions().getMinor(),
 				WGL_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
 				WGL_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
 				0
@@ -269,7 +269,7 @@ namespace gl_renderer
 			if ( !result )
 			{
 				std::stringstream error;
-				error << "Failed to create an OpenGL " << m_gpu.getMajor() << "." << m_gpu.getMinor() << " context (0x" << std::hex << ::glGetError() << ").";
+				error << "Failed to create an OpenGL " << m_instance.getExtensions().getMajor() << "." << m_instance.getExtensions().getMinor() << " context (0x" << std::hex << ::glGetError() << ").";
 				throw std::runtime_error{ error.str() };
 			}
 		}

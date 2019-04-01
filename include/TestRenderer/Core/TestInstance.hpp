@@ -34,7 +34,7 @@ namespace test_renderer
 		/**
 		*\copydoc	ashes::Instance::createDevice
 		*/
-		ashes::DevicePtr createDevice( ashes::SurfacePtr surface
+		ashes::DevicePtr createDevice( ashes::PhysicalDevice const & physicalDevice
 			, ashes::DeviceCreateInfo createInfos )const override;
 		/**
 		*\copydoc	ashes::Instance::createSurface

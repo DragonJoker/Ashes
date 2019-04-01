@@ -73,6 +73,7 @@ struct Application
 	uint32_t presentQueueFamilyIndex;
 	uint32_t graphicsQueueFamilyIndex;
 	uint32_t computeQueueFamilyIndex;
+	ashes::SurfacePtr surface;
 	ashes::DevicePtr device;
 	ashes::Extent2D dimensions;
 	ashes::SwapChainPtr swapChain;
@@ -207,16 +208,16 @@ int main( int argc, char * argv[] )
 #else
 #	error "Unimplemented."
 #endif
-	ashes::SurfacePtr surface = instance->createSurface( *gpus[0], std::move( handle ) );
+	app.surface = instance->createSurface( *gpus[0], std::move( handle ) );
 
 	// We now create the logical device, using this surface
 	ashes::DeviceCreateInfo deviceInfo = getDeviceCreateInfo( *instance
-		, *surface
+		, *app.surface
 		, *gpus[0]
 		, app.presentQueueFamilyIndex
 		, app.graphicsQueueFamilyIndex
 		, app.computeQueueFamilyIndex );
-	app.device = instance->createDevice( std::move( surface ), std::move( deviceInfo ) );
+	app.device = instance->createDevice( *gpus[0], std::move( deviceInfo ) );
 	app.graphicsQueue = app.device->getQueue( app.graphicsQueueFamilyIndex, 0u );
 	app.presentQueue = app.device->getQueue( app.presentQueueFamilyIndex, 0u );
 	app.commandPool = app.device->createCommandPool( app.graphicsQueueFamilyIndex
@@ -456,9 +457,10 @@ ashes::DeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
 	result.enabledExtensionNames.push_back( ashes::KHR_SWAPCHAIN_EXTENSION_NAME );
 	return result;
 }
-uint32_t doGetImageCount( ashes::Device const & device )
+
+uint32_t doGetImageCount( ashes::Device const & device
+	, ashes::Surface const & surface )
 {
-	auto & surface = device.getSurface();
 	auto surfaceCaps = surface.getCapabilities();
 	uint32_t desiredNumberOfSwapChainImages{ surfaceCaps.minImageCount + 1 };
 
@@ -472,9 +474,9 @@ uint32_t doGetImageCount( ashes::Device const & device )
 	return desiredNumberOfSwapChainImages;
 }
 
-ashes::SurfaceFormat doSelectFormat( ashes::Device const & device )
+ashes::SurfaceFormat doSelectFormat( ashes::Device const & device
+	, ashes::Surface const & surface )
 {
-	auto & surface = device.getSurface();
 	ashes::SurfaceFormat result;
 	auto formats = surface.getFormats();
 	// Si la liste de formats ne contient qu'une entr�e VK_FORMAT_UNDEFINED,
@@ -508,9 +510,9 @@ ashes::SurfaceFormat doSelectFormat( ashes::Device const & device )
 	return result;
 }
 
-ashes::PresentMode doSelectPresentMode( ashes::Device const & device )
+ashes::PresentMode doSelectPresentMode( ashes::Device const & device
+	, ashes::Surface const & surface )
 {
-	auto & surface = device.getSurface();
 	auto presentModes = surface.getPresentModes();
 	// Si le mode boîte aux lettres est disponible, on utilise celui-là, car c'est celui avec le
 	// minimum de latence dans tearing.
@@ -537,10 +539,10 @@ ashes::PresentMode doSelectPresentMode( ashes::Device const & device )
 }
 
 ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Device const & device
+	, ashes::Surface const & surface
 	, ashes::Extent2D const & size )
 {
 	ashes::Extent2D swapChainExtent{};
-	auto & surface = device.getSurface();
 	auto surfaceCaps = surface.getCapabilities();
 
 	// width et height valent soient tous les deux -1 ou tous les deux autre chose que -1.
@@ -575,13 +577,13 @@ ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Device const & devic
 		preTransform = surfaceCaps.currentTransform;
 	}
 
-	auto presentMode = doSelectPresentMode( device );
-	auto surfaceFormat = doSelectFormat( device );
+	auto presentMode = doSelectPresentMode( device, surface );
+	auto surfaceFormat = doSelectFormat( device, surface );
 	return ashes::SwapChainCreateInfo
 	{
 		ashes::SwapChainCreateFlag::eNone,
 		std::ref( surface ),
-		doGetImageCount( device ),
+		doGetImageCount( device, surface ),
 		surfaceFormat.format,
 		surfaceFormat.colorSpace,
 		swapChainExtent,
@@ -613,7 +615,7 @@ void doCreateRenderingResources( Application & application )
 
 void createSwapChain( Application & application )
 {
-	application.swapChain = application.device->createSwapChain( doGetSwapChainCreateInfo( *application.device, application.dimensions ) );
+	application.swapChain = application.device->createSwapChain( doGetSwapChainCreateInfo( *application.device, *application.surface, application.dimensions ) );
 	application.swapChainImages = application.swapChain->getImages();
 	application.clearColour = ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 	doCreateRenderingResources( application );

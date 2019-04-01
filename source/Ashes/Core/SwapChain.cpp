@@ -53,7 +53,7 @@ namespace ashes
 	SwapChain::SwapChain( Device const & device
 		, SwapChainCreateInfo createInfo )
 		: m_device{ device }
-		, m_surface{ device.getSurface() }
+		, m_surface{ createInfo.surface.get() }
 		, m_createInfo{ std::move( createInfo ) }
 	{
 		registerObject( m_device, "SwapChain", this );
