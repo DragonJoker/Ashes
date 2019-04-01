@@ -49,10 +49,12 @@ set_target_properties( ${PROJECT_NAME}
 
 target_link_libraries( ${PROJECT_NAME}
 	${BinLibraries}
+	AshesCommon
 	AshesC
 )
 
 add_dependencies( ${PROJECT_NAME}
+	AshesCommon
 	AshesC
 )
 

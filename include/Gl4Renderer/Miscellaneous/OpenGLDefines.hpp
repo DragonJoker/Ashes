@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 #if ASHES_WIN32
 #	define GLAPIENTRY __stdcall

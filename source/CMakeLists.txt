@@ -85,7 +85,7 @@ endif ()
 
 set( SPIRV_CROSS_DIR ${ASHES_SOURCE_DIR}/external/SPIRV-Cross )
 
-add_subdirectory( Ashes )
+add_subdirectory( AshesCommon )
 add_subdirectory( AshesC )
 add_subdirectory( AshesPP )
 
@@ -100,7 +100,7 @@ if ( ASHES_BUILD_PLUGINS )
 		set( ASHES_STATIC_RENDERERS FALSE )
 	endif ()
 
-	add_subdirectory( PlatformUtils )
+	add_subdirectory( AshesRenderer )
 
 	if ( ASHES_BUILD_OGL3 )
 		add_subdirectory( Gl3Renderer )

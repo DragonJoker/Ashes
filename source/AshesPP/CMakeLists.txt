@@ -32,6 +32,7 @@ add_library( ${PROJECT_NAME} STATIC
 )
 
 add_dependencies( ${PROJECT_NAME}
+	AshesCommon
 	AshesC
 )
 

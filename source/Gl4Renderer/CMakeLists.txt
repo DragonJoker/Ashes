@@ -14,7 +14,7 @@ if ( OpenGL_FOUND )
 		${CMAKE_CURRENT_BINARY_DIR}
 		${SPIRV_CROSS_DIR}
 		${ASHES_SOURCE_DIR}/include
-		${ASHES_SOURCE_DIR}/include/Ashes
+		${ASHES_SOURCE_DIR}/include/AshesC
 		${ASHES_SOURCE_DIR}/include/PlatformUtils
 		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
 	)
@@ -61,32 +61,20 @@ if ( OpenGL_FOUND )
 		-D${PROJECT_NAME}_USE_SPIRV_CROSS=${${PROJECT_NAME}_USE_SPIRV_CROSS}
 	)
 
-	if ( ASHES_STATIC_RENDERERS )
-		add_definitions(
-			-D${PROJECT_NAME}_STATIC
-		)
-		add_library( ${PROJECT_NAME} STATIC
-			${${PROJECT_NAME}_SRC_FILES}
-			${${PROJECT_NAME}_HDR_FILES}
-			${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
-			${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
-		)
-	else ()
-		add_definitions(
-			-D${PROJECT_NAME}_EXPORTS
-		)
-		add_library( ${PROJECT_NAME} SHARED
-			${${PROJECT_NAME}_SRC_FILES}
-			${${PROJECT_NAME}_HDR_FILES}
-			${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
-			${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
-		)
-		set_target_properties( ${PROJECT_NAME}
-			PROPERTIES
-				VERSION ${PROJECT_VERSION}
-				SOVERSION ${PROJECT_SOVERSION}
-		)
-	endif ()
+	add_definitions(
+		-D${PROJECT_NAME}_EXPORTS
+	)
+	add_library( ${PROJECT_NAME} SHARED
+		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
+		${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
+	)
+	set_target_properties( ${PROJECT_NAME}
+		PROPERTIES
+			VERSION ${PROJECT_VERSION}
+			SOVERSION ${PROJECT_SOVERSION}
+	)
 
 	add_target_precompiled_header( ${PROJECT_NAME}
 		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/GlRendererPch.hpp
@@ -98,13 +86,15 @@ if ( OpenGL_FOUND )
 	target_link_libraries( ${PROJECT_NAME}
 		${OPENGL_gl_LIBRARY}
 		${BinLibraries}
-		Ashes
-		PlatformUtils
+		AshesCommon
+		AshesRenderer
+		AshesC
 	)
 
 	add_dependencies( ${PROJECT_NAME}
-		Ashes
-		PlatformUtils
+		AshesCommon
+		AshesRenderer
+		AshesC
 	)
 
 	parse_subdir_files( ${ASHES_SOURCE_DIR} Buffer "Buffer" )
@@ -132,77 +122,52 @@ if ( OpenGL_FOUND )
 		PARENT_SCOPE
 	)
 
-	if ( ASHES_STATIC_RENDERERS )
-		#We install each .lib/.a in <install_dir>/lib folder
+	if ( WIN32 )
+		#We install each .dll in <install_dir>/bin folder
 		install(
 			TARGETS ${PROJECT_NAME}
 			COMPONENT ${PROJECT_NAME}
 			CONFIGURATIONS Release
 			EXPORT ${PROJECT_NAME}
-			ARCHIVE DESTINATION lib
+			RUNTIME DESTINATION bin
 		)
 		install(
 			TARGETS ${PROJECT_NAME}
 			COMPONENT ${PROJECT_NAME}_dev
 			CONFIGURATIONS RelWithDebInfo
 			EXPORT ${PROJECT_NAME}
-			ARCHIVE DESTINATION lib/RelWithDebInfo
+			RUNTIME DESTINATION bin/RelWithDebInfo
 		)
 		install(
 			TARGETS ${PROJECT_NAME}
 			COMPONENT ${PROJECT_NAME}_dev
 			CONFIGURATIONS Debug
 			EXPORT ${PROJECT_NAME}
-			ARCHIVE DESTINATION lib/Debug
+			RUNTIME DESTINATION bin/Debug
 		)
 	else ()
-		if ( WIN32 )
-			#We install each .dll in <install_dir>/bin folder
-			install(
-				TARGETS ${PROJECT_NAME}
-				COMPONENT ${PROJECT_NAME}
-				CONFIGURATIONS Release
-				EXPORT ${PROJECT_NAME}
-				RUNTIME DESTINATION bin
-			)
-			install(
-				TARGETS ${PROJECT_NAME}
-				COMPONENT ${PROJECT_NAME}_dev
-				CONFIGURATIONS RelWithDebInfo
-				EXPORT ${PROJECT_NAME}
-				RUNTIME DESTINATION bin/RelWithDebInfo
-			)
-			install(
-				TARGETS ${PROJECT_NAME}
-				COMPONENT ${PROJECT_NAME}_dev
-				CONFIGURATIONS Debug
-				EXPORT ${PROJECT_NAME}
-				RUNTIME DESTINATION bin/Debug
-			)
-		else ()
-			#We install each .so in <install_dir>/lib folder
-			install(
-				TARGETS ${PROJECT_NAME}
-				COMPONENT ${PROJECT_NAME}
-				CONFIGURATIONS Release
-				EXPORT ${PROJECT_NAME}
-				LIBRARY DESTINATION lib
-			)
-			install(
-				TARGETS ${PROJECT_NAME}
-				COMPONENT ${PROJECT_NAME}_dev
-				CONFIGURATIONS RelWithDebInfo
-				EXPORT ${PROJECT_NAME}
-				LIBRARY DESTINATION lib/RelWithDebInfo
-			)
-			install(
-				TARGETS ${PROJECT_NAME}
-				COMPONENT ${PROJECT_NAME}_dev
-				CONFIGURATIONS Debug
-				LIBRARY DESTINATION lib/Debug
-			)
-		endif()
-	endif ()
+		#We install each .so in <install_dir>/lib folder
+		install(
+			TARGETS ${PROJECT_NAME}
+			COMPONENT ${PROJECT_NAME}
+			CONFIGURATIONS Release
+			EXPORT ${PROJECT_NAME}
+			LIBRARY DESTINATION lib
+		)
+		install(
+			TARGETS ${PROJECT_NAME}
+			COMPONENT ${PROJECT_NAME}_dev
+			CONFIGURATIONS RelWithDebInfo
+			EXPORT ${PROJECT_NAME}
+			LIBRARY DESTINATION lib/RelWithDebInfo
+		)
+		install(
+			TARGETS ${PROJECT_NAME}
+			COMPONENT ${PROJECT_NAME}_dev
+			CONFIGURATIONS Debug
+			LIBRARY DESTINATION lib/Debug
+		)
+	endif()
 else ()
 	if ( NOT OpenGL_FOUND )
 		message( SEND_ERROR "OpenGL library not found." )

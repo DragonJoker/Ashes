@@ -1,6 +1,6 @@
 #include <ashes.h>
 
-#include "DynamicLibrary.hpp"
+#include <AshesCommon/DynamicLibrary.hpp>
 
 #if defined( _WIN32 )
 static char const * const libraryName = "vulkan-1.dll";

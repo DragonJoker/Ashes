@@ -6,10 +6,7 @@
 */
 #pragma once
 
-#define VK_NO_PROTOTYPES 1
-#include "vulkan/vulkan.h"
-
-#include <Ashes/AshesPrerequisites.hpp>
+#include <AshesC/ashes.h>
 
 #include "Gl4Renderer/Miscellaneous/OpenGLDefines.hpp"
 

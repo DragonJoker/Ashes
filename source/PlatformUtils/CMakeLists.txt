@@ -8,7 +8,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${SPIRV_CROSS_DIR}
 	${ASHES_SOURCE_DIR}/include
-	${ASHES_SOURCE_DIR}/include/Ashes
+	${ASHES_SOURCE_DIR}/include/AshesC
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
 )
 
@@ -35,11 +35,13 @@ add_library( ${PROJECT_NAME} STATIC
 )
 
 target_link_libraries( ${PROJECT_NAME}
-	Ashes
+	Common
+	AshesC
 )
 
 add_dependencies( ${PROJECT_NAME}
-	Ashes
+	Common
+	AshesC
 )
 
 parse_subdir_files( ${ASHES_SOURCE_DIR} Win32 "Win32" )

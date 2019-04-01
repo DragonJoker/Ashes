@@ -7,7 +7,8 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "AshesPP/Core/Instance.hpp"
-#include "AshesPP/Utils/DynamicLibrary.hpp"
+
+#include <AshesCommon/DynamicLibrary.hpp>
 
 namespace ashespp
 {
@@ -79,7 +80,7 @@ namespace ashespp
 		/**@}*/
 
 	private:
-		DynamicLibrary m_library;
+		ashes::DynamicLibrary m_library;
 		AshPluginDescription m_plugin;
 	};
 }
