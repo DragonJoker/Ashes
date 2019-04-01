@@ -1,9 +1,8 @@
 project( GLFW-Template )
 
 find_package( GLFW )
-find_package( Vulkan )
 
-if( GLFW_FOUND AND Vulkan_FOUND )
+if( GLFW_FOUND )
 	include_directories(
 		${GLFW_INCLUDE_DIR}
 		${Vulkan_INCLUDE_DIRS}

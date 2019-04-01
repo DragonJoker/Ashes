@@ -4,114 +4,110 @@ set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
-find_package( Vulkan )
+set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
+set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
-if ( Vulkan_FOUND )
-	set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
-	set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
+include_directories(
+	${CMAKE_CURRENT_BINARY_DIR}
+	${ASHES_SOURCE_DIR}/include
+	${ASHES_SOURCE_DIR}/include/AshesC
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
+	${Vulkan_INCLUDE_DIRS}
+)
 
-	include_directories(
-		${CMAKE_CURRENT_BINARY_DIR}
-		${ASHES_SOURCE_DIR}/include
-		${ASHES_SOURCE_DIR}/include/AshesC
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
-		${Vulkan_INCLUDE_DIRS}
+file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
+)
+
+file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
+)
+
+add_definitions(
+	-D${PROJECT_NAME}_EXPORTS
+)
+add_library( ${PROJECT_NAME} SHARED
+	${${PROJECT_NAME}_SRC_FILES}
+)
+
+set_target_properties( ${PROJECT_NAME}
+	PROPERTIES
+		VERSION ${PROJECT_VERSION}
+		SOVERSION ${PROJECT_SOVERSION}
+)
+
+target_link_libraries( ${PROJECT_NAME}
+	${BinLibraries}
+	AshesC
+)
+
+add_dependencies( ${PROJECT_NAME}
+	AshesC
+)
+
+set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes" )
+
+set( ENABLED_RENDERERS
+	${ENABLED_RENDERERS}
+	${PROJECT_NAME}
+	PARENT_SCOPE
+)
+
+if ( WIN32 )
+	#We install each .dll in <install_dir>/bin folder
+	install(
+		TARGETS ${PROJECT_NAME}
+		COMPONENT ${PROJECT_NAME}
+		CONFIGURATIONS Release
+		EXPORT ${PROJECT_NAME}
+		RUNTIME DESTINATION bin
 	)
-
-	file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
+	install(
+		TARGETS ${PROJECT_NAME}
+		COMPONENT ${PROJECT_NAME}_dev
+		CONFIGURATIONS RelWithDebInfo
+		EXPORT ${PROJECT_NAME}
+		RUNTIME DESTINATION bin/RelWithDebInfo
 	)
-
-	file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
+	install(
+		TARGETS ${PROJECT_NAME}
+		COMPONENT ${PROJECT_NAME}_dev
+		CONFIGURATIONS Debug
+		EXPORT ${PROJECT_NAME}
+		RUNTIME DESTINATION bin/Debug
 	)
-
-	add_definitions(
-		-D${PROJECT_NAME}_EXPORTS
+else ()
+	#We install each .so in <install_dir>/lib folder
+	install(
+		TARGETS ${PROJECT_NAME}
+		COMPONENT ${PROJECT_NAME}
+		CONFIGURATIONS Release
+		EXPORT ${PROJECT_NAME}
+		LIBRARY DESTINATION lib
 	)
-	add_library( ${PROJECT_NAME} SHARED
-		${${PROJECT_NAME}_SRC_FILES}
+	install(
+		TARGETS ${PROJECT_NAME}
+		COMPONENT ${PROJECT_NAME}_dev
+		CONFIGURATIONS RelWithDebInfo
+		EXPORT ${PROJECT_NAME}
+		LIBRARY DESTINATION lib/RelWithDebInfo
 	)
-
-	set_target_properties( ${PROJECT_NAME}
-		PROPERTIES
-			VERSION ${PROJECT_VERSION}
-			SOVERSION ${PROJECT_SOVERSION}
+	install(
+		TARGETS ${PROJECT_NAME}
+		COMPONENT ${PROJECT_NAME}_dev
+		CONFIGURATIONS Debug
+		LIBRARY DESTINATION lib/Debug
 	)
-
-	target_link_libraries( ${PROJECT_NAME}
-		${BinLibraries}
-		AshesC
-	)
-
-	add_dependencies( ${PROJECT_NAME}
-		AshesC
-	)
-
-	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes" )
-
-	set( ENABLED_RENDERERS
-		${ENABLED_RENDERERS}
-		${PROJECT_NAME}
-		PARENT_SCOPE
-	)
-
-	if ( WIN32 )
-		#We install each .dll in <install_dir>/bin folder
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}
-			CONFIGURATIONS Release
-			EXPORT ${PROJECT_NAME}
-			RUNTIME DESTINATION bin
-		)
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}_dev
-			CONFIGURATIONS RelWithDebInfo
-			EXPORT ${PROJECT_NAME}
-			RUNTIME DESTINATION bin/RelWithDebInfo
-		)
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}_dev
-			CONFIGURATIONS Debug
-			EXPORT ${PROJECT_NAME}
-			RUNTIME DESTINATION bin/Debug
-		)
-	else ()
-		#We install each .so in <install_dir>/lib folder
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}
-			CONFIGURATIONS Release
-			EXPORT ${PROJECT_NAME}
-			LIBRARY DESTINATION lib
-		)
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}_dev
-			CONFIGURATIONS RelWithDebInfo
-			EXPORT ${PROJECT_NAME}
-			LIBRARY DESTINATION lib/RelWithDebInfo
-		)
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}_dev
-			CONFIGURATIONS Debug
-			LIBRARY DESTINATION lib/Debug
-		)
-	endif ()
 endif ()
