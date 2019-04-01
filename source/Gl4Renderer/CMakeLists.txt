@@ -119,6 +119,7 @@ if ( OpenGL_FOUND )
 	parse_subdir_files( ${ASHES_SOURCE_DIR} RenderPass "RenderPass" )
 	parse_subdir_files( ${ASHES_SOURCE_DIR} Shader "Shader" )
 	parse_subdir_files( ${ASHES_SOURCE_DIR} Sync "Sync" )
+	parse_subdir_files( ${ASHES_SOURCE_DIR} vulkan "vulkan" )
 
 	source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
 	source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )

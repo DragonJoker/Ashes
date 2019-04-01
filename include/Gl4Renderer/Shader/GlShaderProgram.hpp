@@ -12,7 +12,7 @@ namespace gl_renderer
 	{
 	public:
 		ShaderProgram( Device const & device
-			, std::vector< ashes::ShaderStageState > const & stages );
+			, std::vector< VkPipelineShaderStageCreateInfo > const & stages );
 		ShaderProgram( Device const & device
 			, ashes::ShaderStageState const & stage );
 		~ShaderProgram();

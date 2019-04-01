@@ -57,29 +57,29 @@ namespace gl_renderer
 		}
 	}
 
-	GlTextureViewType convert( ashes::ImageViewType const & value )
+	GlTextureViewType convertViewType( VkImageViewType const & value )
 	{
 		switch ( value )
 		{
-		case ashes::ImageViewType::e1D:
+		case VK_IMAGE_VIEW_TYPE_1D:
 			return GL_TEXTURE_VIEW_1D;
 
-		case ashes::ImageViewType::e2D:
+		case VK_IMAGE_VIEW_TYPE_2D:
 			return GL_TEXTURE_VIEW_2D;
 
-		case ashes::ImageViewType::e3D:
+		case VK_IMAGE_VIEW_TYPE_3D:
 			return GL_TEXTURE_VIEW_3D;
 
-		case ashes::ImageViewType::eCube:
+		case VK_IMAGE_VIEW_TYPE_CUBE:
 			return GL_TEXTURE_VIEW_CUBE_MAP;
 
-		case ashes::ImageViewType::e1DArray:
+		case VK_IMAGE_VIEW_TYPE_1D_ARRAY:
 			return GL_TEXTURE_VIEW_1D_ARRAY;
 
-		case ashes::ImageViewType::e2DArray:
+		case VK_IMAGE_VIEW_TYPE_2D_ARRAY:
 			return GL_TEXTURE_VIEW_2D_ARRAY;
 
-		case ashes::ImageViewType::eCubeArray:
+		case VK_IMAGE_VIEW_TYPE_CUBE_ARRAY:
 			return GL_TEXTURE_VIEW_CUBE_MAP_ARRAY;
 
 		default:

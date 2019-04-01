@@ -26,7 +26,6 @@ namespace gl_renderer
 	*	Classe contenant les informations liées au GPU logique.
 	*/
 	class Device
-		: public ashes::Device
 	{
 		friend class Instance;
 
@@ -42,101 +41,101 @@ namespace gl_renderer
 		Device( Instance const & instance
 			, PhysicalDevice const & gpu
 			, Context & context
-			, ashes::DeviceCreateInfo createInfos );
+			, VkDeviceCreateInfo createInfos );
 		~Device();
 		/**
 		*\copydoc		ashes::Device::createRenderPass
 		*/
-		ashes::RenderPassPtr createRenderPass( ashes::RenderPassCreateInfo createInfo )const override;
+		ashes::RenderPassPtr createRenderPass( VkRenderPassCreateInfo createInfo )const;
 		/**
 		*\copydoc		ashes::Device::createPipelineLayout
 		*/
 		ashes::PipelineLayoutPtr createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeArray const & pushConstantRanges )const override;
+			, ashes::PushConstantRangeArray const & pushConstantRanges )const;
 		/**
 		*\copydoc		ashes::Device::createDescriptorSetLayout
 		*/
-		ashes::DescriptorSetLayoutPtr createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const override;
+		ashes::DescriptorSetLayoutPtr createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const;
 		/**
 		*\copydoc	ashes::Device::createDescriptorPool
 		*/
-		ashes::DescriptorPoolPtr createDescriptorPool( ashes::DescriptorPoolCreateFlags flags
+		ashes::DescriptorPoolPtr createDescriptorPool( VkDescriptorPoolCreateFlags flags
 			, uint32_t maxSets
-			, ashes::DescriptorPoolSizeArray poolSizes )const override;
+			, ashes::DescriptorPoolSizeArray poolSizes )const;
 		/**
 		*\copydoc	ashes::Device::allocateMemory
 		*/
-		ashes::DeviceMemoryPtr allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const override;
+		ashes::DeviceMemoryPtr allocateMemory( VkMemoryAllocateInfo allocateInfo )const;
 		/**
 		*\copydoc		ashes::Device::createImage
 		*/
-		ashes::ImagePtr createImage( ashes::ImageCreateInfo const & createInfo )const override;
+		ashes::ImagePtr createImage( VkImageCreateInfo const & createInfo )const;
 		/**
 		*\copydoc	ashes::Device::getImageSubresourceLayout
 		*/
-		void getImageSubresourceLayout( ashes::Image const & image
-			, ashes::ImageSubresource const & subresource
-			, ashes::SubresourceLayout & layout )const override;
+		void getImageSubresourceLayout( Image const & image
+			, VkImageSubresource const & subresource
+			, VkSubresourceLayout & layout )const;
 		/**
 		*\copydoc		ashes::Device::createSampler
 		*/
-		ashes::SamplerPtr createSampler( ashes::SamplerCreateInfo const & createInfo )const override;
+		ashes::SamplerPtr createSampler( VkSamplerCreateInfo const & createInfo )const;
 		/**
 		*\copydoc		ashes::Device::createBuffer
 		*/
 		ashes::BufferBasePtr createBuffer( uint32_t size
-			, ashes::BufferTargets targets )const override;
+			, VkBufferUsageFlags targets )const;
 		/**
 		*\copydoc		ashes::Device::createBufferView
 		*/
 		ashes::BufferViewPtr createBufferView( ashes::BufferBase const & buffer
-			, ashes::Format format
+			, VkFormat format
 			, uint32_t offset
-			, uint32_t range )const override;
+			, uint32_t range )const;
 		/**
 		*\copydoc		ashes::Device::createSwapChain
 		*/
-		ashes::SwapChainPtr createSwapChain( ashes::SwapChainCreateInfo createInfo )const override;
+		ashes::SwapChainPtr createSwapChain( VkSwapchainCreateInfoKHR createInfo )const;
 		/**
 		*\copydoc		ashes::Device::createSemaphore
 		*/
-		ashes::SemaphorePtr createSemaphore()const override;
+		ashes::SemaphorePtr createSemaphore()const;
 		/**
 		*\copydoc	ashes::Device::createFence
 		*/
-		ashes::FencePtr createFence( ashes::FenceCreateFlags flags = 0 )const override;
+		ashes::FencePtr createFence( VkFenceCreateFlags flags = 0 )const;
 		/**
 		*\copydoc	ashes::Device::createEvent
 		*/
-		ashes::EventPtr createEvent()const override;
+		ashes::EventPtr createEvent()const;
 		/**
 		*\copydoc		ashes::Device::createCommandPool
 		*/
 		ashes::CommandPoolPtr createCommandPool( uint32_t queueFamilyIndex
-			, ashes::CommandPoolCreateFlags const & flags )const override;
+			, VkCommandPoolCreateFlags const & flags )const;
 		/**
 		*\copydoc		ashes::Device::createShaderProgram
 		*/
-		virtual ashes::ShaderModulePtr createShaderModule( ashes::ShaderStageFlag stage )const override;
+		virtual ashes::ShaderModulePtr createShaderModule( VkShaderStageFlagBits stage )const;
 		/**
 		*\copydoc	ashes::Device::createQueryPool
 		*/
 		ashes::QueryPoolPtr createQueryPool( ashes::QueryType type
 			, uint32_t count
-			, ashes::QueryPipelineStatisticFlags pipelineStatistics )const override;
+			, VkQueryPipelineStatisticFlags pipelineStatistics )const;
 		/**
 		*\copydoc	ashes::Device::createQueryPool
 		*/
-		void waitIdle()const override;
+		void waitIdle()const;
 		/**
 		*\copydoc	ashes::Device::debugMarkerSetObjectName
 		*/
-		void debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const override;
+		void debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const;
 		/**
 		*\copydoc	ashes::Device::getQueue
 		*/
-		ashes::QueuePtr getQueue( uint32_t familyIndex
-			, uint32_t index )const override;
+		QueuePtr getQueue( uint32_t familyIndex
+			, uint32_t index )const;
 		/**
 		*\brief
 		*	Echange les tampons.
@@ -161,42 +160,42 @@ namespace gl_renderer
 			return m_fbo;
 		}
 
-		inline ashes::Scissor & getCurrentScissor()const
+		inline VkRect2D & getCurrentScissor()const
 		{
 			return m_scissor;
 		}
 
-		inline ashes::Viewport & getCurrentViewport()const
+		inline VkViewport & getCurrentViewport()const
 		{
 			return m_viewport;
 		}
 
-		inline ashes::ColourBlendState & getCurrentBlendState()const
+		inline VkPipelineColorBlendStateCreateInfo & getCurrentBlendState()const
 		{
 			return m_cbState;
 		}
 
-		inline ashes::DepthStencilState & getCurrentDepthStencilState()const
+		inline VkPipelineDepthStencilStateCreateInfo & getCurrentDepthStencilState()const
 		{
 			return m_dsState;
 		}
 
-		inline ashes::MultisampleState & getCurrentMultisampleState()const
+		inline VkPipelineMultisampleStateCreateInfo & getCurrentMultisampleState()const
 		{
 			return m_msState;
 		}
 
-		inline ashes::RasterisationState & getCurrentRasterisationState()const
+		inline VkPipelineRasterizationStateCreateInfo & getCurrentRasterisationState()const
 		{
 			return m_rsState;
 		}
 
-		inline ashes::TessellationState & getCurrentTessellationState()const
+		inline VkPipelineTessellationStateCreateInfo & getCurrentTessellationState()const
 		{
 			return m_tsState;
 		}
 
-		inline ashes::InputAssemblyState & getCurrentInputAssemblyState()const
+		inline VkPipelineInputAssemblyStateCreateInfo & getCurrentInputAssemblyState()const
 		{
 			return m_iaState;
 		}
@@ -226,6 +225,11 @@ namespace gl_renderer
 			return m_blitFbos[1];
 		}
 
+		inline Instance const & getInstance()const
+		{
+			return m_instance;
+		}
+
 	private:
 		void doInitialiseContext( ContextLock const & context )const;
 		void doCreateQueues();
@@ -247,14 +251,14 @@ namespace gl_renderer
 			ashes::VertexBufferPtr< Vertex > vertexBuffer;
 			GeometryBuffersPtr geometryBuffers;
 		} m_dummyIndexed;
-		mutable ashes::Scissor m_scissor{ 0, 0, 0, 0 };
-		mutable ashes::Viewport m_viewport{ 0, 0, 0, 0 };
-		mutable ashes::ColourBlendState m_cbState;
-		mutable ashes::DepthStencilState m_dsState;
-		mutable ashes::MultisampleState m_msState;
-		mutable ashes::RasterisationState m_rsState;
-		mutable ashes::TessellationState m_tsState;
-		mutable ashes::InputAssemblyState m_iaState;
+		mutable VkRect2D m_scissor{ 0, 0, 0, 0 };
+		mutable VkViewport m_viewport{ 0, 0, 0, 0 };
+		mutable VkPipelineColorBlendStateCreateInfo m_cbState;
+		mutable VkPipelineDepthStencilStateCreateInfo m_dsState;
+		mutable VkPipelineMultisampleStateCreateInfo m_msState;
+		mutable VkPipelineRasterizationStateCreateInfo m_rsState;
+		mutable VkPipelineTessellationStateCreateInfo m_tsState;
+		mutable VkPipelineInputAssemblyStateCreateInfo m_iaState;
 		using QueueCreateCount = std::pair< ashes::DeviceQueueCreateInfo, uint32_t >;
 		std::map< uint32_t, QueueCreateCount > m_queues;
 		mutable GLuint m_currentProgram;

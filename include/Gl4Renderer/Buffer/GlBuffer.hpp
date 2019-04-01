@@ -15,17 +15,19 @@
 namespace gl_renderer
 {
 	class Buffer
-		: public ashes::BufferBase
 	{
 	public:
 		Buffer( Device const & device
-			, uint32_t size
-			, ashes::BufferTargets target );
+			, VkBufferCreateInfo createInfo );
 		~Buffer();
 		/**
 		*\copydoc	ashes::BufferBase::getMemoryRequirements
 		*/
-		ashes::MemoryRequirements getMemoryRequirements()const override;
+		VkMemoryRequirements getMemoryRequirements()const;
+		/**
+		*\copydoc	ashes::Image::bindMemory
+		*/
+		void bindMemory( DeviceMemoryPtr memory )const;
 		/**
 		*\return
 		*	Le tampon.
@@ -44,16 +46,15 @@ namespace gl_renderer
 			return m_target;
 		}
 
-	private:
-		void doBindMemory()override;
-
 	public:
 		mutable BufferDestroySignal onDestroy;
 
 	private:
 		Device const & m_device;
+		VkBufferCreateInfo m_createInfo;
 		GLuint m_name{ GL_INVALID_INDEX };
 		GlBufferTarget m_target;
+		mutable DeviceMemoryPtr m_storage;
 		mutable GlBufferTarget m_copyTarget;
 	};
 }

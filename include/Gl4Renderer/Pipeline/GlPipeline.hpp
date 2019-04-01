@@ -34,7 +34,6 @@ namespace gl_renderer
 	*	Un pipeline de rendu.
 	*/
 	class Pipeline
-		: public ashes::Pipeline
 	{
 	public:
 		/**
@@ -44,7 +43,8 @@ namespace gl_renderer
 		/**@{*/
 		Pipeline( Device const & device
 			, PipelineLayout const & layout
-			, ashes::GraphicsPipelineCreateInfo createInfo );
+			, RenderPass const & renderPass
+			, VkGraphicsPipelineCreateInfo createInfo );
 		GeometryBuffers * findGeometryBuffers( VboBindings const & vbos
 			, IboBinding const & ibo )const;
 		GeometryBuffersRef createGeometryBuffers( VboBindings vbos
@@ -59,7 +59,7 @@ namespace gl_renderer
 		*/
 		inline bool hasViewport()const
 		{
-			return !m_viewports.empty();
+			return m_viewportState.viewportCount > 0;
 		}
 		/**
 		*\return
@@ -67,13 +67,13 @@ namespace gl_renderer
 		*/
 		inline bool hasScissor()const
 		{
-			return !m_scissors.empty();
+			return m_viewportState.scissorCount > 0;
 		}
 		/**
 		*\return
 		*	Le ShaderStageState.
 		*/
-		inline std::vector< ashes::ShaderStageState > const & getShaderStageState()const
+		inline auto const & getShaderStageState()const
 		{
 			return m_ssState;
 		}
@@ -81,7 +81,7 @@ namespace gl_renderer
 		*\return
 		*	Le InputAssemblyState.
 		*/
-		inline ashes::InputAssemblyState const & getInputAssemblyState()const
+		inline auto const & getInputAssemblyState()const
 		{
 			return m_iaState;
 		}
@@ -89,7 +89,7 @@ namespace gl_renderer
 		*\return
 		*	Le ColourBlendState.
 		*/
-		inline ashes::ColourBlendState const & getColourBlendState()const
+		inline auto const & getColourBlendState()const
 		{
 			return m_cbState;
 		}
@@ -97,7 +97,7 @@ namespace gl_renderer
 		*\return
 		*	Le RasterisationState.
 		*/
-		inline ashes::RasterisationState const & getRasterisationState()const
+		inline auto const & getRasterisationState()const
 		{
 			return m_rsState;
 		}
@@ -105,7 +105,7 @@ namespace gl_renderer
 		*\return
 		*	Le DepthStencilState.
 		*/
-		inline ashes::DepthStencilState const & getDepthStencilState()const
+		inline auto const & getDepthStencilState()const
 		{
 			return m_dsState;
 		}
@@ -113,7 +113,7 @@ namespace gl_renderer
 		*\return
 		*	Le MultisampleState.
 		*/
-		inline ashes::MultisampleState const & getMultisampleState()const
+		inline auto const & getMultisampleState()const
 		{
 			return m_msState;
 		}
@@ -121,7 +121,7 @@ namespace gl_renderer
 		*\return
 		*	Le TessellationState.
 		*/
-		inline ashes::TessellationState const & getTessellationState()const
+		inline auto const & getTessellationState()const
 		{
 			return m_tsState;
 		}
@@ -129,7 +129,7 @@ namespace gl_renderer
 		*\return
 		*	Le VertexInputState.
 		*/
-		inline ashes::VertexInputState const & getVertexInputState()const
+		inline auto const & getVertexInputState()const
 		{
 			return m_vertexInputState;
 		}
@@ -137,19 +137,25 @@ namespace gl_renderer
 		*\return
 		*	Le Viewport.
 		*/
-		inline ashes::ViewportArray const & getViewports()const
+		inline auto const & getViewportState()const
 		{
-			assert( !m_viewports.empty() );
-			return m_viewports;
+			return m_viewportState;
 		}
 		/**
 		*\return
-		*	Le Scissor.
+		*	Les Viewports.
 		*/
-		inline ashes::ScissorArray const & getScissors()const
+		inline ViewportArray getViewports()const
 		{
-			assert( !m_scissors.empty() );
-			return m_scissors;
+			return { m_viewportState.pViewports, m_viewportState.pViewports + m_viewportState.viewportCount };
+		}
+		/**
+		*\return
+		*	Les Scissors.
+		*/
+		inline ScissorArray getScissors()const
+		{
+			return { m_viewportState.pScissors, m_viewportState.pScissors + m_viewportState.scissorCount };
 		}
 		/**
 		*\return
@@ -173,8 +179,8 @@ namespace gl_renderer
 		*/
 		inline bool hasVertexLayout()const
 		{
-			return !m_vertexInputState.vertexBindingDescriptions.empty()
-				&& !m_vertexInputState.vertexAttributeDescriptions.empty();
+			return m_vertexInputState.vertexAttributeDescriptionCount > 0
+				&& m_vertexInputState.vertexBindingDescriptionCount > 0;
 		}
 		/**
 		*\return
@@ -188,28 +194,34 @@ namespace gl_renderer
 		*\return
 		*	\p true si l'état dynamique est dans la liste d'états dynamiques.
 		*/
-		inline bool hasDynamicStateEnable( ashes::DynamicStateEnable state )const
+		inline bool hasDynamicStateEnable( VkDynamicStateEnable state )const
 		{
-			return bool( m_createInfo.dynamicState )
-				&& m_createInfo.dynamicState.value().dynamicStates.end() != std::find( m_createInfo.dynamicState.value().dynamicStates.begin()
-					, m_createInfo.dynamicState.value().dynamicStates.end()
+			if ( m_createInfo.pDynamicStateEnable )
+			{
+				auto end = m_createInfo.pDynamicStateEnable->pDynamicStateEnables + m_createInfo.pDynamicStateEnable->dynamicStateCount;
+				return end != std::find( m_createInfo.pDynamicStateEnable->pDynamicStateEnables
+					, end
 					, state );
+			}
+
+			return false;
 		}
 
 	private:
 		Device const & m_device;
 		PipelineLayout const & m_layout;
-		std::vector< ashes::ShaderStageState > m_ssState;
-		ashes::VertexInputState m_vertexInputState;
-		ashes::RenderPass const & m_renderPass;
-		ashes::InputAssemblyState m_iaState;
-		ashes::ColourBlendState m_cbState;
-		ashes::RasterisationState m_rsState;
-		ashes::DepthStencilState m_dsState;
-		ashes::MultisampleState m_msState;
-		ashes::TessellationState m_tsState;
-		ashes::ViewportArray m_viewports;
-		ashes::ScissorArray m_scissors;
+		RenderPass const & m_renderPass;
+		VkGraphicsPipelineCreateInfo m_createInfo;
+		std::vector< VkPipelineShaderStageCreateInfo > m_ssState;
+		VkPipelineVertexInputStateCreateInfo m_vertexInputState;
+		VkPipelineInputAssemblyStateCreateInfo m_iaState;
+		VkPipelineTessellationStateCreateInfo m_tsState;
+		VkPipelineViewportStateCreateInfo m_viewportState;
+		VkPipelineRasterizationStateCreateInfo m_rsState;
+		VkPipelineMultisampleStateCreateInfo m_msState;
+		VkPipelineDepthStencilStateCreateInfo m_dsState;
+		VkPipelineColorBlendStateCreateInfo m_cbState;
+		VkPipelineDynamicStateEnableCreateInfo m_dnState;
 		PushConstantsDesc m_constantsPcb;
 		ShaderProgram m_program;
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;

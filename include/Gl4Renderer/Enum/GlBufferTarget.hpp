@@ -27,11 +27,11 @@ namespace gl_renderer
 
 	/**
 	*\brief
-	*	Convertit un ashes::BufferTargets en GlBufferTarget.
+	*	Convertit un VkBufferUsageFlags en GlBufferTarget.
 	*\param[in] targets
-	*	Le ashes::BufferTargets.
+	*	Le VkBufferUsageFlags.
 	*\return
 	*	Le GlBufferTarget.
 	*/
-	GlBufferTarget convert( ashes::BufferTargets const & targets );
+	GlBufferTarget getTargetFromUsageFlags( VkBufferUsageFlags targets );
 }

@@ -19,11 +19,11 @@ namespace gl_renderer
 	std::string getName( GlImageAspectFlags value );
 	/**
 	*\brief
-	*	Convertit un ashes::ImageAspectFlags en GlImageAspectFlags.
+	*	Convertit un VkImageAspectFlags en GlImageAspectFlags.
 	*\param[in] flags
-	*	Le ashes::ImageAspectFlags.
+	*	Le VkImageAspectFlags.
 	*\return
 	*	Le GlImageAspectFlags.
 	*/
-	GlImageAspectFlags convert( ashes::ImageAspectFlags const & flags );
+	GlImageAspectFlags convert( VkImageAspectFlags const & flags );
 }

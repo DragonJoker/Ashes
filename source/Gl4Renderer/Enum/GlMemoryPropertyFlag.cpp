@@ -43,14 +43,14 @@ namespace gl_renderer
 	{
 		GlMemoryPropertyFlags result{ 0 };
 
-		if ( checkFlag( flags, ashes::MemoryPropertyFlag::eHostCoherent ) )
+		if ( checkFlag( flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
 		{
 			result = GL_MEMORY_PROPERTY_COHERENT_BIT
 				| GL_MEMORY_PROPERTY_PERSISTENT_BIT
 				| GL_MEMORY_PROPERTY_READ_BIT
 				| GL_MEMORY_PROPERTY_WRITE_BIT;
 		}
-		else if ( checkFlag( flags, ashes::MemoryPropertyFlag::eHostVisible ) )
+		else if ( checkFlag( flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 		{
 			result = GL_MEMORY_PROPERTY_READ_BIT
 				| GL_MEMORY_PROPERTY_WRITE_BIT

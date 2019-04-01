@@ -108,7 +108,7 @@ namespace gl_renderer
 	}
 
 	ShaderProgram::ShaderProgram( Device const & device
-		, std::vector< ashes::ShaderStageState > const & stages )
+		, std::vector< VkPipelineShaderStageCreateInfo > const & stages )
 		: m_device{ device }
 	{
 		auto context = m_device.getContext();
@@ -116,7 +116,7 @@ namespace gl_renderer
 
 		for ( auto & stage : stages )
 		{
-			auto & module = static_cast< ShaderModule const & >( *stage.module );
+			auto & module = *stage.module->internal;
 			m_stageFlags |= module.getStage();
 			m_shaders.push_back( module.getInternal() );
 			module.compile( stage );

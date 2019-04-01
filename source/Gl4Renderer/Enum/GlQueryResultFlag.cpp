@@ -21,9 +21,9 @@ namespace gl_renderer
 		}
 	}
 
-	GLuint convert( ashes::QueryResultFlags const & flags )
+	GlQueryResultFlags convertQueryResultFlags( VkQueryResultFlags const & flags )
 	{
-		GLuint result{ 0 };
+		GlQueryResultFlags result{ 0 };
 
 		if ( checkFlag( flags, ashes::QueryResultFlag::eWait ) )
 		{

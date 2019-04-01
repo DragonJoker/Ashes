@@ -25,7 +25,7 @@ namespace gl_renderer
 		*	Le layout à partir duquel sera créé le pool.
 		*/
 		DescriptorPool( Device const & device
-			, ashes::DescriptorPoolCreateFlags flags
+			, VkDescriptorPoolCreateFlags flags
 			, uint32_t maxSets
 			, ashes::DescriptorPoolSizeArray poolSizes );
 		/**

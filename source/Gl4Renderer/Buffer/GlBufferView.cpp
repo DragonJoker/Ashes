@@ -7,11 +7,9 @@ namespace gl_renderer
 {
 	BufferView::BufferView( Device const & device
 		, Buffer const & buffer
-		, ashes::Format format
-		, uint32_t offset
-		, uint32_t range )
-		: ashes::BufferView{ device, buffer, format, offset, range }
-		, m_device{ device }
+		, VkBufferViewCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ createInfo }
 	{
 		auto context = m_device.getContext();
 		glLogCall( context
@@ -28,10 +26,10 @@ namespace gl_renderer
 		glLogCall( context
 			, glTexBufferRange
 			, GL_BUFFER_TARGET_TEXTURE
-			, getInternalFormat( format )
+			, getInternalFormat( m_createInfo.format )
 			, buffer.getInternal()
-			, offset
-			, range );
+			, m_createInfo.offset
+			, m_createInfo.range );
 		glLogCall( context
 			, glBindTexture
 			, GL_BUFFER_TARGET_TEXTURE

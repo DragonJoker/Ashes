@@ -30,7 +30,7 @@ namespace gl_renderer
 		*/
 		CommandPool( ashes::Device const & device
 			, uint32_t queueFamilyIndex
-			, ashes::CommandPoolCreateFlags flags = 0 );
+			, VkCommandPoolCreateFlags flags = 0 );
 		/**
 		*\brief
 		*	Crée un tampon de commandes.

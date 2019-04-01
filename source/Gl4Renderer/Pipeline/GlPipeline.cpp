@@ -55,7 +55,7 @@ namespace gl_renderer
 			return result;
 		}
 
-		size_t doHash( ashes::VertexInputAttributeDescription const & desc )
+		size_t doHash( VkVertexInputAttributeDescription const & desc )
 		{
 			size_t result = 0u;
 			doHashCombine( result, desc.binding );
@@ -65,7 +65,7 @@ namespace gl_renderer
 			return result;
 		}
 
-		size_t doHash( ashes::VertexInputBindingDescription const & desc )
+		size_t doHash( VkVertexInputBindingDescription const & desc )
 		{
 			size_t result = 0u;
 			doHashCombine( result, desc.binding );
@@ -74,18 +74,21 @@ namespace gl_renderer
 			return result;
 		}
 
-		size_t doHash( ashes::VertexInputState const & state )
+		size_t doHash( VkPipelineVertexInputStateCreateInfo const & state )
 		{
 			size_t result = 0u;
+			auto const endAttribs = state.pVertexAttributeDescriptions + state.vertexAttributeDescriptionCount;
 
-			for ( auto & desc : state.vertexAttributeDescriptions )
+			for ( auto it = state.pVertexAttributeDescriptions; it != endAttribs; ++it )
 			{
-				doHashCombine( result, doHash( desc ) );
+				doHashCombine( result, doHash( *it ) );
 			}
 
-			for ( auto & desc : state.vertexBindingDescriptions )
+			auto const endBindings = state.pVertexBindingDescriptions + state.vertexBindingDescriptionCount;
+
+			for ( auto it = state.pVertexBindingDescriptions; it != endBindings; ++it )
 			{
-				doHashCombine( result, doHash( desc ) );
+				doHashCombine( result, doHash( *it ) );
 			}
 
 			return result;
@@ -94,33 +97,31 @@ namespace gl_renderer
 
 	Pipeline::Pipeline( Device const & device
 		, PipelineLayout const & layout
-		, ashes::GraphicsPipelineCreateInfo createInfo )
-		: ashes::Pipeline{ device
-			, layout
-			, std::move( createInfo ) }
-		, m_device{ device }
+		, RenderPass const & renderPass
+		, VkGraphicsPipelineCreateInfo createInfo )
+		: m_device{ device }
 		, m_layout{ layout }
-		, m_ssState{ std::move( m_createInfo.stages ) }
-		, m_vertexInputState{ m_createInfo.vertexInputState }
-		, m_renderPass{ *m_createInfo.renderPass }
-		, m_iaState{ m_createInfo.inputAssemblyState }
-		, m_cbState{ m_createInfo.colourBlendState }
-		, m_rsState{ m_createInfo.rasterisationState }
-		, m_dsState{ 0u, false, true, ashes::CompareOp::eLess,  }
-		, m_msState{ m_createInfo.multisampleState }
-		, m_viewports{ m_createInfo.viewportState.viewports }
-		, m_scissors{ m_createInfo.viewportState.scissors }
+		, m_renderPass{ renderPass }
+		, m_createInfo{ createInfo }
+		, m_ssState{ m_createInfo.pStages, m_createInfo.pStages + m_createInfo.stageCount ) }
+		, m_vertexInputState{ *m_createInfo.pVertexInputState }
+		, m_iaState{ *m_createInfo.pInputAssemblyState }
+		, m_cbState{ *m_createInfo.pColorBlendState }
+		, m_rsState{ *m_createInfo.pRasterizationState }
+		, m_dsState{ VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO, nullptr, 0u, false, true, VK_COMPARE_OP_LESS,  }
+		, m_msState{ *m_createInfo.pMultisampleState }
+		, m_viewportState{ *m_createInfo.pViewportState }
 		, m_vertexInputStateHash{ doHash( m_vertexInputState ) }
 		, m_program{ m_device, m_ssState }
 	{
-		if ( m_createInfo.depthStencilState )
+		if ( m_createInfo.pDepthStencilState )
 		{
-			m_dsState = m_createInfo.depthStencilState.value();
+			m_dsState = *m_createInfo.pDepthStencilState;
 		}
 
-		if ( m_createInfo.tessellationState )
+		if ( m_createInfo.pTessellationState )
 		{
-			m_tsState = m_createInfo.tessellationState.value();
+			m_tsState = *m_createInfo.pTessellationState;
 		}
 
 		auto context = device.getContext();
@@ -130,8 +131,8 @@ namespace gl_renderer
 		apply( m_device
 			, context
 			, m_rsState
-			, hasDynamicStateEnable( ashes::DynamicStateEnable::eLineWidth )
-			, hasDynamicStateEnable( ashes::DynamicStateEnable::eDepthBias ) );
+			, hasDynamicStateEnable( VK_DYNAMIC_STATE_LINE_WIDTH )
+			, hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BIAS ) );
 		apply( m_device
 			, context
 			, m_dsState );

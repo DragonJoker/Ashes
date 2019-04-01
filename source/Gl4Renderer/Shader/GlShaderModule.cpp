@@ -115,28 +115,28 @@ namespace gl_renderer
 
 #if Gl4Renderer_USE_SPIRV_CROSS
 
-		spv::ExecutionModel getExecutionModel( ashes::ShaderStageFlag stage )
+		spv::ExecutionModel getExecutionModel( VkShaderStageFlagBits stage )
 		{
 			spv::ExecutionModel result{};
 
 			switch ( stage )
 			{
-			case ashes::ShaderStageFlag::eVertex:
+			case VK_SHADER_STAGE_VERTEX_BIT:
 				result = spv::ExecutionModelVertex;
 				break;
-			case ashes::ShaderStageFlag::eGeometry:
+			case VK_SHADER_STAGE_GEOMETRY_BIT:
 				result = spv::ExecutionModelGeometry;
 				break;
-			case ashes::ShaderStageFlag::eTessellationControl:
+			case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT:
 				result = spv::ExecutionModelTessellationControl;
 				break;
-			case ashes::ShaderStageFlag::eTessellationEvaluation:
+			case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT:
 				result = spv::ExecutionModelTessellationEvaluation;
 				break;
-			case ashes::ShaderStageFlag::eFragment:
+			case VK_SHADER_STAGE_FRAGMENT_BIT:
 				result = spv::ExecutionModelFragment;
 				break;
-			case ashes::ShaderStageFlag::eCompute:
+			case VK_SHADER_STAGE_COMPUTE_BIT:
 				result = spv::ExecutionModelGLCompute;
 				break;
 			default:
@@ -196,7 +196,7 @@ namespace gl_renderer
 			}
 		}
 
-		void doSetEntryPoint( ashes::ShaderStageFlag stage
+		void doSetEntryPoint( VkShaderStageFlagBits stage
 			, spirv_cross::CompilerGLSL & compiler )
 		{
 			auto model = getExecutionModel( stage );
@@ -212,7 +212,7 @@ namespace gl_renderer
 
 			if ( entryPoint.empty() )
 			{
-				throw std::runtime_error{ "Could not find an entry point with stage: " + getName( stage ) };
+				throw std::runtime_error{ "Could not find an entry point with stage: " + getShaderStageFlagName( stage ) };
 			}
 
 			compiler.set_entry_point( entryPoint, model );
@@ -222,7 +222,7 @@ namespace gl_renderer
 			, spirv_cross::CompilerGLSL & compiler )
 		{
 			auto options = compiler.get_common_options();
-			options.version = device.getShaderVersion();
+			options.version = device.getInstance().getExtensions().getShaderVersion();
 			options.es = false;
 			options.separate_shader_objects = true;
 			options.enable_420pack_extension = true;
@@ -236,7 +236,7 @@ namespace gl_renderer
 
 		std::string compileSpvToGlsl( Device const & device
 			, ashes::UInt32Array const & shader
-			, ashes::ShaderStageFlag stage
+			, VkShaderStageFlagBits stage
 			, ashes::ShaderStageState const & state )
 		{
 			if ( shader[0] == OpCodeSPIRV )
@@ -264,10 +264,10 @@ namespace gl_renderer
 	}
 
 	ShaderModule::ShaderModule( Device const & device
-		, ashes::ShaderStageFlag stage )
-		: ashes::ShaderModule{ device, stage }
+		, VkShaderModuleCreateInfo createInfo )
+		: createInfo{ createInfo }
 		, m_device{ device }
-		, m_shader{ m_device.getContext()->glCreateShader( convert( stage ) ) }
+		, m_spv{ createInfo.pCode, createInfo.pCode + createInfo.codeSize }
 	{
 	}
 
@@ -276,13 +276,16 @@ namespace gl_renderer
 		// Shader object is destroyed by the ShaderProgram.
 	}
 
-	void ShaderModule::compile( ashes::ShaderStageState const & state )const
+	void ShaderModule::compile( VkShaderStageFlagBits stage
+		, ashes::ShaderStageState const & state )const
 	{
+		m_internal = m_device.getContext()->glCreateShader( convert( stage ) );
+
 		if ( static_cast< Instance const & >( m_device.getInstance() ).isSPIRVSupported() )
 		{
 			auto context = m_device.getContext();
 			context->glShaderBinary( 1u
-				, &m_shader
+				, &m_internal
 				, GL_SHADER_BINARY_FORMAT_SPIR_V
 				, m_spv.data()
 				, GLsizei( m_spv.size() * sizeof( uint32_t ) ) );
@@ -307,7 +310,7 @@ namespace gl_renderer
 
 				glLogCall( context
 					, glSpecializeShader
-					, m_shader
+					, m_internal
 					, state.entryPoint.c_str()
 					, count
 					, indices.data()
@@ -317,7 +320,7 @@ namespace gl_renderer
 			{
 				glLogCall( context
 					, glSpecializeShader
-					, m_shader
+					, m_internal
 					, state.entryPoint.c_str()
 					, 0u
 					, nullptr
@@ -327,11 +330,11 @@ namespace gl_renderer
 			int compiled = 0;
 			glLogCall( context
 				, glGetShaderiv
-				, m_shader
+				, m_internal
 				, GL_INFO_COMPILE_STATUS
 				, &compiled );
 
-			if ( !doCheckCompileErrors( m_device, compiled != 0, m_shader, m_source ) )
+			if ( !doCheckCompileErrors( m_device, compiled != 0, m_internal, m_source ) )
 			{
 				throw std::runtime_error{ "Shader compilation failed." };
 			}
@@ -340,36 +343,31 @@ namespace gl_renderer
 		{
 			m_source = compileSpvToGlsl( m_device
 				, m_spv
-				, m_stage
+				, stage
 				, state );
 			auto length = int( m_source.size() );
 			char const * data = m_source.data();
 			auto context = m_device.getContext();
 			glLogCall( context
 				, glShaderSource
-				, m_shader
+				, m_internal
 				, 1
 				, &data
 				, &length );
 			glLogCall( context
 				, glCompileShader
-				, m_shader );
+				, m_internal );
 			int compiled = 0;
 			glLogCall( context
 				, glGetShaderiv
-				, m_shader
+				, m_internal
 				, GL_INFO_COMPILE_STATUS
 				, &compiled );
 
-			if ( !doCheckCompileErrors( m_device, compiled != 0, m_shader, m_source ) )
+			if ( !doCheckCompileErrors( m_device, compiled != 0, m_internal, m_source ) )
 			{
 				throw std::runtime_error{ "Shader compilation failed." };
 			}
 		}
-	}
-
-	void ShaderModule::loadShader( ashes::UInt32Array const & shader )
-	{
-		m_spv = shader;
 	}
 }

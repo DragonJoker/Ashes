@@ -9,13 +9,10 @@
 namespace gl_renderer
 {
 	Buffer::Buffer( Device const & device
-		, uint32_t size
-		, ashes::BufferTargets target )
-		: ashes::BufferBase{ device
-			, size
-			, target }
-		, m_device{ device }
-		, m_target{ convert( target ) }
+		, VkBufferCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ createInfo }
+		, m_target{ getTargetFromUsageFlags( m_createInfo.usage ) }
 	{
 		auto context = m_device.getContext();
 		glLogCall( context
@@ -35,17 +32,19 @@ namespace gl_renderer
 			, &m_name );
 	}
 
-	ashes::MemoryRequirements Buffer::getMemoryRequirements()const
+	VkMemoryRequirements Buffer::getMemoryRequirements()const
 	{
-		ashes::MemoryRequirements result{};
-		result.size = getSize();
-		result.type = ashes::ResourceType::eBuffer;
+		VkMemoryRequirements result{};
+		result.size = m_createInfo.size;
+		result.alignment = 1u;
 		result.memoryTypeBits = ~result.memoryTypeBits;
 		return result;
 	}
 
-	void Buffer::doBindMemory()
+	void Buffer::bindMemory( DeviceMemoryPtr memory )const
 	{
+		assert( !m_storage && "A resource can only be bound once to a device memory object." );
+		m_storage = std::move( memory );
 		static_cast< DeviceMemory & >( *m_storage ).bindToBuffer( m_name, m_target );
 	}
 }

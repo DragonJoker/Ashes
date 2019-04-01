@@ -6,6 +6,9 @@
 */
 #pragma once
 
+#define VK_NO_PROTOTYPES 1
+#include "vulkan/vulkan.h"
+
 #include <Ashes/AshesPrerequisites.hpp>
 
 #include "Gl4Renderer/Miscellaneous/OpenGLDefines.hpp"
@@ -66,6 +69,16 @@
 
 #define BufferOffset( n ) ( ( uint8_t * )nullptr + ( n ) )
 
+#if defined( _WIN32 ) && !defined( Gl3Renderer_STATIC )
+#	ifdef Gl4Renderer_EXPORTS
+#		define Gl4Renderer_API __declspec( dllexport )
+#	else
+#		define Gl4Renderer_API __declspec( dllimport )
+#	endif
+#else
+#	define Gl4Renderer_API
+#endif
+
 namespace gl_renderer
 {
 	struct DebugReportCallbackData
@@ -85,31 +98,42 @@ namespace gl_renderer
 	class Buffer;
 	class BufferView;
 	class CommandBase;
+	class CommandBuffer;
 	class ComputePipeline;
 	class Context;
 	class ContextLock;
+	class DebugReportCallback;
 	class DescriptorSet;
 	class Device;
+	class DeviceMemory;
 	class FrameBuffer;
 	class GeometryBuffers;
+	class Image;
+	class ImageView;
+	class Instance;
 	class PhysicalDevice;
 	class Pipeline;
 	class PipelineLayout;
 	class QueryPool;
 	class Queue;
-	class Instance;
 	class RenderPass;
 	class ShaderModule;
 	class ShaderProgram;
-	class Image;
-	class ImageView;
+	class Surface;
 	class UniformBuffer;
+	class WindowHandle;
 
 	using ContextPtr = std::unique_ptr< Context >;
 	using CommandPtr = std::unique_ptr< CommandBase >;
+	using DebugReportCallbackPtr = std::unique_ptr< DebugReportCallback >;
+	using DevicePtr = std::unique_ptr< Device >;
 	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
-	using QueuePtr = std::unique_ptr< Queue >;
 	using ImageViewPtr = std::unique_ptr< ImageView >;
+	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
+	using QueuePtr = std::unique_ptr< Queue >;
+	using SurfacePtr = std::unique_ptr< Surface >;
+
+	using DeviceMemoryPtr = std::shared_ptr< DeviceMemory >;
 
 	using GeometryBuffersRef = std::reference_wrapper< GeometryBuffers >;
 
@@ -119,8 +143,12 @@ namespace gl_renderer
 
 	using ShaderModuleCRefArray = std::vector< ShaderModuleCRef >;
 
+	using PhysicalDevicePtrArray = std::vector< PhysicalDevicePtr >;
+
 	using CommandArray = std::vector< CommandPtr >;
 	using AttachmentDescriptionArray = std::vector< AttachmentDescription >;
+	using ViewportArray = std::vector< VkViewport >;
+	using ScissorArray = std::vector< VkRect2D >;
 
 	struct BufferObjectBinding
 	{
@@ -138,4 +166,28 @@ namespace gl_renderer
 
 	uint32_t deduceMemoryType( uint32_t typeBits
 		, ashes::MemoryPropertyFlags requirements );
+
+	inline uint32_t checkFlag( uint32_t a, uint32_t b )
+	{
+		return ( a & b ) == b;
+	}
 }
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+	typedef struct AshRendererFeatures
+	{
+		bool hasTexBufferRange;
+		bool hasImageTexture;
+		bool hasBaseInstance;
+		bool hasClearTexImage;
+		bool hasComputeShaders;
+		bool hasStorageBuffers;
+		bool supportsPersistentMapping;
+	} AshRendererFeatures;
+
+#ifdef __cplusplus
+}
+#endif

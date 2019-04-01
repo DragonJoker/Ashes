@@ -8,16 +8,6 @@
 
 #include <Ashes/Core/Instance.hpp>
 
-#if defined( _WIN32 ) && !defined( Gl4Renderer_STATIC )
-#	ifdef Gl4Renderer_EXPORTS
-#		define Gl4Renderer_API __declspec( dllexport )
-#	else
-#		define Gl4Renderer_API __declspec( dllimport )
-#	endif
-#else
-#	define Gl4Renderer_API
-#endif
-
 extern "C"
 {
 	/**

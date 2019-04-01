@@ -11,7 +11,7 @@ namespace gl_renderer
 {
 	CommandPool::CommandPool( ashes::Device const & device
 		, uint32_t queueFamilyIndex
-		, ashes::CommandPoolCreateFlags flags )
+		, VkCommandPoolCreateFlags flags )
 		: ashes::CommandPool{ device, queueFamilyIndex, flags }
 	{
 	}

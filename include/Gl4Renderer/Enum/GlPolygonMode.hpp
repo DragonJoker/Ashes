@@ -18,11 +18,11 @@ namespace gl_renderer
 	std::string getName( GlPolygonMode value );
 	/**
 	*\brief
-	*	Convertit un ashes::PolygonMode en GlPolygonMode.
+	*	Convertit un VkPolygonMode en GlPolygonMode.
 	*\param[in] value
-	*	Le ashes::PolygonMode.
+	*	Le VkPolygonMode.
 	*\return
 	*	Le GlPolygonMode.
 	*/
-	GlPolygonMode convert( ashes::PolygonMode const & value );
+	GlPolygonMode convert( VkPolygonMode const & value );
 }

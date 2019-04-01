@@ -33,26 +33,26 @@ namespace gl_renderer
 		}
 	}
 
-	GlTextureType convert( ashes::ImageType const & value
+	GlTextureType convert( VkImageType const & value
 		, uint32_t layerCount )
 	{
 		switch ( value )
 		{
-		case ashes::ImageType::e1D:
+		case VK_IMAGE_TYPE_1D:
 			if ( layerCount > 1 )
 			{
 				return GL_TEXTURE_1D_ARRAY;
 			}
 			return GL_TEXTURE_1D;
 
-		case ashes::ImageType::e2D:
+		case VK_IMAGE_TYPE_2D:
 			if ( layerCount > 1 )
 			{
 				return GL_TEXTURE_2D_ARRAY;
 			}
 			return GL_TEXTURE_2D;
 
-		case ashes::ImageType::e3D:
+		case VK_IMAGE_TYPE_3D:
 			return GL_TEXTURE_3D;
 
 		default:

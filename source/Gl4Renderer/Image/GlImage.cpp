@@ -15,15 +15,15 @@ namespace gl_renderer
 {
 	namespace
 	{
-		GlTextureType convert( ashes::ImageType type
+		GlTextureType convert( VkImageType type
 			, uint32_t layerCount
-			, ashes::SampleCountFlag samples )
+			, VkSampleCountFlagBits samples )
 		{
 			GlTextureType result;
 
 			switch ( type )
 			{
-			case ashes::ImageType::e1D:
+			case VK_IMAGE_TYPE_1D:
 				if ( layerCount > 1 )
 				{
 					result = GL_TEXTURE_1D_ARRAY;
@@ -33,10 +33,10 @@ namespace gl_renderer
 					result = GL_TEXTURE_1D;
 				}
 				break;
-			case ashes::ImageType::e2D:
+			case VK_IMAGE_TYPE_2D:
 				if ( layerCount > 1 )
 				{
-					if ( samples > ashes::SampleCountFlag::e1 )
+					if ( samples > VK_SAMPLE_COUNT_1_BIT )
 					{
 						result = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
 					}
@@ -47,7 +47,7 @@ namespace gl_renderer
 				}
 				else
 				{
-					if ( samples != ashes::SampleCountFlag::e1 )
+					if ( samples != VK_SAMPLE_COUNT_1_BIT )
 					{
 						result = GL_TEXTURE_2D_MULTISAMPLE;
 					}
@@ -57,7 +57,7 @@ namespace gl_renderer
 					}
 				}
 				break;
-			case ashes::ImageType::e3D:
+			case VK_IMAGE_TYPE_3D:
 				result = GL_TEXTURE_3D;
 				break;
 			default:
@@ -71,22 +71,24 @@ namespace gl_renderer
 	}
 
 	Image::Image( Device const & device
-		, ashes::Format format
-		, ashes::Extent2D const & dimensions )
+		, VkFormat format
+		, VkExtent2D const & dimensions )
 		: Image
 		{
 			device,
-			ashes::ImageCreateInfo
+			VkImageCreateInfo
 			{
+				VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+				nullptr,
 				0u,
-				ashes::ImageType::e2D,
+				VK_IMAGE_TYPE_2D,
 				format,
-				ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
+				VkExtent3D{ dimensions.width, dimensions.height, 1u },
 				1u,
 				1u,
-				ashes::SampleCountFlag::e1,
-				ashes::ImageTiling::eOptimal,
-				ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eTransferDst | ashes::ImageUsageFlag::eTransferSrc
+				VK_SAMPLE_COUNT_1_BIT,
+				VK_IMAGE_TILING_OPTIMAL,
+				VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT
 			}
 		}
 	{
@@ -94,20 +96,20 @@ namespace gl_renderer
 
 	Image::Image( Device const & device
 		, Image const & image )
-		: ashes::Image{ device, image.m_createInfo }
-		, m_device{ device }
+		: m_device{ device }
 		, m_target{ image.m_target }
 		, m_texture{ image.m_texture }
 		, m_ownTexture{ false }
+		, createInfo{ image.createInfo }
 	{
 	}
 
 	Image::Image( Device const & device
-		, ashes::ImageCreateInfo const & createInfo )
-		: ashes::Image{ device, createInfo }
-		, m_device{ device }
+		, VkImageCreateInfo const & createInfo )
+		: m_device{ device }
 		, m_target{ convert( createInfo.imageType, createInfo.arrayLayers, createInfo.samples ) }
 		, m_ownTexture{ true }
+		, createInfo{ createInfo }
 	{
 		auto context = m_device.getContext();
 		glLogCall( context
@@ -130,35 +132,36 @@ namespace gl_renderer
 		}
 	}
 
-	ashes::MemoryRequirements Image::getMemoryRequirements()const
+	VkMemoryRequirements Image::getMemoryRequirements()const
 	{
-		ashes::MemoryRequirements result{};
-		result.size = ashes::getSize( getDimensions(), getFormat() );
-		result.type = ashes::ResourceType::eImage;
-		auto extent = ashes::getMinimalExtent3D( getFormat() );
-		result.alignment = ashes::getSize( extent, getFormat() );
-		result.memoryTypeBits = ashes::MemoryPropertyFlag::eDeviceLocal
-			| ( ( checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferDst )
-				&& checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferSrc ) )
-				? ashes::MemoryPropertyFlag::eHostVisible
-				: ashes::MemoryPropertyFlag::eDeviceLocal );
+		VkMemoryRequirements result{};
+		result.size = getSize( createInfo.extent, createInfo.format );
+		auto extent = getMinimalExtent3D( createInfo.format );
+		result.alignment = getSize( extent, createInfo.format );
+		result.memoryTypeBits = VK_MEMORY_HEAP_DEVICE_LOCAL_BIT
+			| ( ( checkFlag( createInfo.usage, ashes::ImageUsageFlag::eTransferDst )
+				&& checkFlag( createInfo.usage, ashes::ImageUsageFlag::eTransferSrc ) )
+				? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+				: VK_MEMORY_HEAP_DEVICE_LOCAL_BIT );
 		return result;
 	}
 
-	void Image::generateMipmaps( ashes::CommandBuffer & commandBuffer )const
+	void Image::bindMemory( DeviceMemoryPtr memory )const
+	{
+		assert( !m_storage && "A resource can only be bound once to a device memory object." );
+		m_storage = std::move( memory );
+		static_cast< DeviceMemory & >( *m_storage ).bindToImage( *this, m_target, createInfo );
+	}
+
+	void Image::generateMipmaps( CommandBuffer & commandBuffer )const
 	{
 		static_cast< CommandBuffer & >( commandBuffer ).generateMipmaps( *this );
 	}
 
-	ashes::ImageViewPtr Image::createView( ashes::ImageViewCreateInfo const & createInfo )const
+	ImageViewPtr Image::createView( VkImageViewCreateInfo const & createInfo )const
 	{
-		return std::make_shared< ImageView >( m_device
+		return std::make_unique< ImageView >( m_device
 			, *this
 			, createInfo );
-	}
-
-	void Image::doBindMemory()
-	{
-		static_cast< DeviceMemory & >( *m_storage ).bindToImage( *this, m_target, m_createInfo );
 	}
 }

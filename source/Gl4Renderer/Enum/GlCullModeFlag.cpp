@@ -28,15 +28,15 @@ namespace gl_renderer
 	{
 		GlCullMode result{ GL_CULL_MODE_NONE };
 
-		if ( checkFlag( flags, ashes::CullModeFlag::eFrontAndBack ) )
+		if ( checkFlag( flags, VkCullModeFlagBits::eFrontAndBack ) )
 		{
 			result = GL_CULL_MODE_FRONT_AND_BACK;
 		}
-		else if ( checkFlag( flags, ashes::CullModeFlag::eFront ) )
+		else if ( checkFlag( flags, VkCullModeFlagBits::eFront ) )
 		{
 			result = GL_CULL_MODE_FRONT;
 		}
-		else if ( checkFlag( flags, ashes::CullModeFlag::eBack ) )
+		else if ( checkFlag( flags, VkCullModeFlagBits::eBack ) )
 		{
 			result = GL_CULL_MODE_BACK;
 		}

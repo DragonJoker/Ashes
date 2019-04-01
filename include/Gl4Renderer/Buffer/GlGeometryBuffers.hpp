@@ -56,14 +56,14 @@ namespace gl_renderer
 		GeometryBuffers( Device const & device
 			, VboBindings const & vbos
 			, IboBinding const & ibo
-			, ashes::VertexInputState const & vertexInputState
+			, VkPipelineVertexInputStateCreateInfo const & vertexInputState
 			, ashes::IndexType type );
 		~GeometryBuffers()noexcept;
 
 		void initialise();
 
 		static std::vector< VBO > createVBOs( VboBindings const & vbos
-			, ashes::VertexInputState const & vertexInputState );
+			, VkPipelineVertexInputStateCreateInfo const & vertexInputState );
 
 		inline GLuint getVao()const
 		{

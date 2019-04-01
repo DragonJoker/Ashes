@@ -24,13 +24,13 @@ namespace gl_renderer
 	std::string getName( GlTextureType value );
 	/**
 	*\brief
-	*	Convertit un ashes::ImageType en GlTextureType.
+	*	Convertit un VkImageType en GlTextureType.
 	*\param[in] mode
-	*	Le ashes::ImageType.
+	*	Le VkImageType.
 	*\return
 	*	Le GlTextureType.
 	*/
-	GlTextureType convert( ashes::ImageType const & mode
+	GlTextureType convert( VkImageType const & mode
 		, uint32_t layerCount );
 }
 

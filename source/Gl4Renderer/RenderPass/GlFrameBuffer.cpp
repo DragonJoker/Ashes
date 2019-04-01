@@ -32,17 +32,17 @@ namespace gl_renderer
 			GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
 		};
 
-		bool isSRGBFormat( ashes::Format format )
+		bool isSRGBFormat( VkFormat format )
 		{
-			return format == ashes::Format::eR8G8_SRGB
-				|| format == ashes::Format::eR8G8B8_SRGB
-				|| format == ashes::Format::eB8G8R8_SRGB
-				|| format == ashes::Format::eR8G8B8A8_SRGB
-				|| format == ashes::Format::eB8G8R8A8_SRGB
-				|| format == ashes::Format::eA8B8G8R8_SRGB_PACK32;
+			return format == VK_FORMAT_R8G8_SRGB
+				|| format == VK_FORMAT_R8G8B8_SRGB
+				|| format == VK_FORMAT_B8G8R8_SRGB
+				|| format == VK_FORMAT_R8G8B8A8_SRGB
+				|| format == VK_FORMAT_B8G8R8A8_SRGB
+				|| format == VK_FORMAT_A8B8G8R8_SRGB_PACK32;
 		}
 
-		GlAttachmentPoint getAttachmentPoint( ashes::Format format )
+		GlAttachmentPoint getAttachmentPoint( VkFormat format )
 		{
 			if ( ashes::isDepthStencilFormat( format ) )
 			{
@@ -67,7 +67,7 @@ namespace gl_renderer
 			return getAttachmentPoint( texture.getFormat() );
 		}
 
-		GlAttachmentType getAttachmentType( ashes::Format format )
+		GlAttachmentType getAttachmentType( VkFormat format )
 		{
 			if ( ashes::isDepthStencilFormat( format ) )
 			{
@@ -154,7 +154,7 @@ namespace gl_renderer
 
 	FrameBuffer::FrameBuffer( Device const & device
 		, RenderPass const & renderPass
-		, ashes::Extent2D const & dimensions
+		, VkExtent2D const & dimensions
 		, ashes::FrameBufferAttachmentArray views )
 		: ashes::FrameBuffer{ renderPass, dimensions, std::move( views ) }
 		, m_device{ device }
@@ -302,7 +302,7 @@ namespace gl_renderer
 		m_allAttaches.push_back( attachment );
 		auto target = GL_TEXTURE_2D;
 
-		if ( gltexture.getSamplesCount() > ashes::SampleCountFlag::e1 )
+		if ( gltexture.getSamplesCount() > VK_SAMPLE_COUNT_1 )
 		{
 			target = GL_TEXTURE_2D_MULTISAMPLE;
 		}

@@ -2,29 +2,29 @@
 
 namespace gl_renderer
 {
-	GLsizei convert( ashes::SampleCountFlag const & flags )
+	GLsizei convert( VkSampleCountFlagBits const & flags )
 	{
 		switch ( flags )
 		{
-		case ashes::SampleCountFlag::e1:
+		case VK_SAMPLE_COUNT_1:
 			return 1;
 
-		case ashes::SampleCountFlag::e2:
+		case VK_SAMPLE_COUNT_2:
 			return 2;
 
-		case ashes::SampleCountFlag::e4:
+		case VK_SAMPLE_COUNT_4:
 			return 4;
 
-		case ashes::SampleCountFlag::e8:
+		case VK_SAMPLE_COUNT_8:
 			return 8;
 
-		case ashes::SampleCountFlag::e16:
+		case VK_SAMPLE_COUNT_16:
 			return 16;
 
-		case ashes::SampleCountFlag::e32:
+		case VK_SAMPLE_COUNT_32:
 			return 32;
 
-		case ashes::SampleCountFlag::e64:
+		case VK_SAMPLE_COUNT_64:
 			return 64;
 
 		default:

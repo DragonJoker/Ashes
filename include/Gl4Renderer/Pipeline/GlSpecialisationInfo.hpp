@@ -10,11 +10,11 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	ashes::PushConstantArray convert( ashes::ShaderStageFlag stage
+	ashes::PushConstantArray convert( VkShaderStageFlagBits stage
 		, std::vector< ashes::SpecialisationMapEntry > const & entries );
 	ashes::PushConstantsBufferPtr convert( ashes::Device const & device
 		, uint32_t location
-		, ashes::ShaderStageFlag stage
+		, VkShaderStageFlagBits stage
 		, ashes::SpecialisationInfoBase const & specialisationInfo );
 }
 

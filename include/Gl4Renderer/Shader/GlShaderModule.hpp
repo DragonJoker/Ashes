@@ -11,26 +11,24 @@ See LICENSE file in root folder.
 namespace gl_renderer
 {
 	class ShaderModule
-		: public ashes::ShaderModule
 	{
 	public:
 		ShaderModule( Device const & device
-			, ashes::ShaderStageFlag stage );
+			, VkShaderModuleCreateInfo createInfo );
 		~ShaderModule();
-		void compile( ashes::ShaderStageState const & state )const;
-		/**
-		*\~copydoc	ashes::ShaderModule::loadShader
-		*/
-		void loadShader( ashes::UInt32Array const & shader )override;
+		void compile( VkShaderStageFlagBits stage
+			, ashes::ShaderStageState const & state )const;
 
 		inline GLuint getInternal()const
 		{
-			return m_shader;
+			return m_internal;
 		}
+
+		VkShaderModuleCreateInfo createInfo;
 
 	private:
 		Device const & m_device;
-		GLuint m_shader;
+		mutable GLuint m_internal;
 		ashes::UInt32Array m_spv;
 		mutable std::string m_source;
 	};

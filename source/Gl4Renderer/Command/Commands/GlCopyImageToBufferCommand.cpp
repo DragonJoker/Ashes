@@ -21,25 +21,25 @@ namespace gl_renderer
 			, ashes::BufferImageCopyArray const & copies )
 		{
 			std::vector< ImageViewPtr > result;
-			ashes::ImageType type = texture.getType();
+			VkImageType type = texture.getType();
 			ashes::ImageViewType viewType;
 
-			if ( type == ashes::ImageType::e3D )
+			if ( type == VK_IMAGE_TYPE_3D )
 			{
-				viewType = ashes::ImageViewType::e3D;
+				viewType = VK_IMAGE_VIEW_TYPE_3D;
 			}
-			else if ( type == ashes::ImageType::e2D )
+			else if ( type == VK_IMAGE_TYPE_2D )
 			{
-				viewType = ashes::ImageViewType::e2D;
+				viewType = VK_IMAGE_VIEW_TYPE_2D;
 			}
-			else if ( type == ashes::ImageType::e1D )
+			else if ( type == VK_IMAGE_TYPE_1D )
 			{
-				viewType = ashes::ImageViewType::e1D;
+				viewType = VK_IMAGE_VIEW_TYPE_1D;
 			}
 
 			for ( auto & copy : copies )
 			{
-				ashes::ImageViewCreateInfo createInfo{};
+				VkImageViewCreateInfo createInfo{};
 				createInfo.viewType = viewType;
 				createInfo.format = texture.getFormat();
 				createInfo.subresourceRange.aspectMask = ashes::getAspectMask( createInfo.format );

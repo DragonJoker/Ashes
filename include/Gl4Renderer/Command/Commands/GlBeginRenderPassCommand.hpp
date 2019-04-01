@@ -16,7 +16,7 @@ namespace gl_renderer
 	{
 	public:
 		BeginRenderPassCommand( Device const & device
-			, ashes::RenderPass const & renderPass
+			, RenderPass const & renderPass
 			, ashes::FrameBuffer const & frameBuffer
 			, ashes::ClearValueArray const & clearValues
 			, ashes::SubpassContents contents );
@@ -29,6 +29,6 @@ namespace gl_renderer
 		FrameBuffer const & m_frameBuffer;
 		ashes::ClearValueArray m_rtClearValues;
 		ashes::ClearValue m_dsClearValue;
-		ashes::Scissor m_scissor;
+		VkRect2D m_scissor;
 	};
 }

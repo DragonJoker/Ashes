@@ -16,8 +16,8 @@ See LICENSE file in root folder.
 namespace gl_renderer
 {
 	RenderPass::RenderPass( Device const & device
-		, ashes::RenderPassCreateInfo createInfo )
-		: ashes::RenderPass{ device, createInfo }
+		, VkRenderPassCreateInfo createInfo )
+		: RenderPass{ device, createInfo }
 		, m_device{ device }
 	{
 		uint32_t index = 0u;
@@ -69,7 +69,7 @@ namespace gl_renderer
 		}
 	}
 
-	ashes::FrameBufferPtr RenderPass::createFrameBuffer( ashes::Extent2D const & dimensions
+	ashes::FrameBufferPtr RenderPass::createFrameBuffer( VkExtent2D const & dimensions
 		, ashes::FrameBufferAttachmentArray textures )const
 	{
 		return std::make_unique< FrameBuffer >( m_device

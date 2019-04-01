@@ -45,55 +45,60 @@ namespace gl_renderer
 		}
 	}
 
-	GlBufferTarget convert( ashes::BufferTargets const & targets )
+	uint32_t checkFlag( uint32_t a, uint32_t b )
+	{
+		return ( a & b ) == b;
+	}
+
+	GlBufferTarget getTargetFromUsageFlags( VkBufferUsageFlags targets )
 	{
 		GlBufferTarget result{ GlBufferTarget( 0 ) };
 
-		if ( checkFlag( targets, ashes::BufferTarget::eUniformTexelBuffer ) )
+		if ( checkFlag( targets, VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT ) )
 		{
 			result = GL_BUFFER_TARGET_TEXTURE;
 		}
-		else if ( checkFlag( targets, ashes::BufferTarget::eStorageTexelBuffer ) )
+		else if ( checkFlag( targets, VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT ) )
 		{
 			result = GL_BUFFER_TARGET_TEXTURE;
 		}
-		else if ( checkFlag( targets, ashes::BufferTarget::eUniformBuffer ) )
+		else if ( checkFlag( targets, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ) )
 		{
 			result = GL_BUFFER_TARGET_UNIFORM;
 		}
-		else if ( checkFlag( targets, ashes::BufferTarget::eStorageBuffer ) )
+		else if ( checkFlag( targets, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT ) )
 		{
 			result = GL_BUFFER_TARGET_SHADER_STORAGE;
 		}
-		else if ( checkFlag( targets, ashes::BufferTarget::eIndexBuffer ) )
+		else if ( checkFlag( targets, VK_BUFFER_USAGE_INDEX_BUFFER_BIT ) )
 		{
 			result = GL_BUFFER_TARGET_ELEMENT_ARRAY;
 		}
-		else if ( checkFlag( targets, ashes::BufferTarget::eVertexBuffer ) )
+		else if ( checkFlag( targets, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT ) )
 		{
 			result = GL_BUFFER_TARGET_ARRAY;
 		}
-		else if ( checkFlag( targets, ashes::BufferTarget::eDispatchIndirectBuffer ) )
+		else if ( checkFlag( targets, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT ) )
 		{
 			result = GL_BUFFER_TARGET_DISPATCH_INDIRECT;
 		}
-		else if ( checkFlag( targets, ashes::BufferTarget::eDrawIndirectBuffer ) )
+		else if ( checkFlag( targets, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT ) )
 		{
 			result = GL_BUFFER_TARGET_DRAW_INDIRECT;
 		}
-		else if ( checkFlag( targets, ashes::BufferTarget::ePackBuffer ) )
+		else if ( checkFlag( targets, VK_BUFFER_USAGE_TRANSFER_SRC_BIT ) )
 		{
 			result = GL_BUFFER_TARGET_PIXEL_PACK;
 		}
-		else if ( checkFlag( targets, ashes::BufferTarget::eUnpackBuffer ) )
+		else if ( checkFlag( targets, VK_BUFFER_USAGE_TRANSFER_DST_BIT ) )
 		{
 			result = GL_BUFFER_TARGET_PIXEL_UNPACK;
 		}
-		else if ( checkFlag( targets, ashes::BufferTarget::eTransferSrc ) )
+		else if ( checkFlag( targets, VK_BUFFER_USAGE_TRANSFER_SRC_BIT ) )
 		{
 			result = GL_BUFFER_TARGET_COPY_READ;
 		}
-		else if ( checkFlag( targets, ashes::BufferTarget::eTransferDst ) )
+		else if ( checkFlag( targets, VK_BUFFER_USAGE_TRANSFER_DST_BIT ) )
 		{
 			result = GL_BUFFER_TARGET_COPY_WRITE;
 		}

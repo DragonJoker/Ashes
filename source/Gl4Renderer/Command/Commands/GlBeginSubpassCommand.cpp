@@ -12,7 +12,7 @@ See LICENSE file in root folder.
 namespace gl_renderer
 {
 	BeginSubpassCommand::BeginSubpassCommand( Device const & device
-		, ashes::RenderPass const & renderPass
+		, RenderPass const & renderPass
 		, ashes::FrameBuffer const & frameBuffer
 		, ashes::SubpassDescription const & subpass )
 		: CommandBase{ device }

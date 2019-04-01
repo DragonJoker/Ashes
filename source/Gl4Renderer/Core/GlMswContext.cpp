@@ -13,6 +13,8 @@
 
 namespace gl_renderer
 {
+	char const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME[VK_MAX_EXTENSION_NAME_SIZE] = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
+
 	namespace
 	{
 		template< typename FuncT >

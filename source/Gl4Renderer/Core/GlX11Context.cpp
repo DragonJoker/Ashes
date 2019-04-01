@@ -16,6 +16,8 @@
 
 namespace gl_renderer
 {
+	char const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME[VK_MAX_EXTENSION_NAME_SIZE] = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
+
 	namespace
 	{
 		using PFN_GLXCHOOSEFBCONFIG = GLXFBConfig *(*)( Display *, int, int const *, int * );

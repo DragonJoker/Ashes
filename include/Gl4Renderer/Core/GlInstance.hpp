@@ -15,33 +15,32 @@ namespace gl_renderer
 	class RenderWindow;
 
 	class Instance
-		: public ashes::Instance
 	{
 	public:
 		/**
 		*\brief
 		*	Constructeur, initialise l'instance de Vulkan.
 		*/
-		Instance( ashes::InstanceCreateInfo createInfo );
+		Instance( VkInstanceCreateInfo createInfo );
 		~Instance();
 		/**
 		*\copydoc	ashes::Instance::enumerateLayerProperties
 		*/
-		ashes::PhysicalDevicePtrArray enumeratePhysicalDevices()const override;
+		PhysicalDevicePtrArray enumeratePhysicalDevices()const;
 		/**
 		*\copydoc	ashes::Instance::createDevice
 		*/
 		ashes::DevicePtr createDevice( ashes::PhysicalDevice const & physicalDevice
-			, ashes::DeviceCreateInfo createInfos )const override;
+			, VkDeviceCreateInfo createInfos )const;
 		/**
 		*\copydoc	ashes::Instance::createSurface
 		*/
-		ashes::SurfacePtr createSurface( ashes::PhysicalDevice const & gpu
-			, ashes::WindowHandle handle )const override;
+		SurfacePtr createSurface( PhysicalDevice const & gpu
+			, WindowHandle handle )const;
 		/**
 		*\copydoc	ashes::Instance::createDebugReportCallback
 		*/
-		ashes::DebugReportCallbackPtr createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const override;
+		DebugReportCallbackPtr createDebugReportCallback( VkDebugReportCallbackCreateInfoEXT createInfo )const;
 		/**
 		*\copydoc	ashes::Instance::frustum
 		*/
@@ -50,14 +49,14 @@ namespace gl_renderer
 			, float bottom
 			, float top
 			, float zNear
-			, float zFar )const override;
+			, float zFar )const;
 		/**
 		*\copydoc	ashes::Instance::perspective
 		*/
 		std::array< float, 16 > perspective( float radiansFovY
 			, float aspect
 			, float zNear
-			, float zFar )const override;
+			, float zFar )const;
 		/**
 		*\copydoc	ashes::Instance::ortho
 		*/
@@ -66,7 +65,13 @@ namespace gl_renderer
 			, float bottom
 			, float top
 			, float zNear
-			, float zFar )const override;
+			, float zFar )const;
+		/**
+		*\copydoc	ashes::Instance::infinitePerspective
+		*/
+		std::array< float, 16 > infinitePerspective( float radiansFovY
+			, float aspect
+			, float zNear )const;
 
 		void registerDebugMessageCallback( PFNGLDEBUGPROC callback, void * userParam )const;
 		void registerDebugMessageCallbackAMD( PFNGLDEBUGAMDPROC callback, void * userParam )const;
@@ -101,18 +106,20 @@ namespace gl_renderer
 			return *m_context;
 		}
 
-		static inline ashes::PhysicalDeviceMemoryProperties const & getMemoryProperties()
+		static inline VkPhysicalDeviceMemoryProperties const & getMemoryProperties()
 		{
 			return m_memoryProperties;
 		}
 
 	private:
+		AshRendererFeatures m_features;
+		VkInstanceCreateInfo m_createInfo;
 		mutable std::vector< DebugReportCallbackData > m_debugCallbacks;
 		mutable std::vector< DebugReportAMDCallbackData > m_debugAMDCallbacks;
 		ExtensionsHandler m_extensions;
 		bool m_validationEnabled;
 		RenderWindow * m_dummyWindow;
 		ContextPtr m_context;
-		static ashes::PhysicalDeviceMemoryProperties const m_memoryProperties;
+		static VkPhysicalDeviceMemoryProperties const m_memoryProperties;
 	};
 }

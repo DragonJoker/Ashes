@@ -10,37 +10,37 @@ namespace gl_renderer
 	namespace
 	{
 		std::unique_ptr< Image > createImage( Device const & device
-			, ashes::Format format
-			, ashes::Extent2D dimensions )
+			, VkFormat format
+			, VkExtent2D dimensions )
 		{
 			auto result = std::make_unique< Image >( device
 				, format
 				, std::move( dimensions ) );
 			auto requirements = result->getMemoryRequirements();
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
-				, ashes::MemoryPropertyFlag::eDeviceLocal );
+				, VK_MEMORY_HEAP_DEVICE_LOCAL_BIT );
 			result->bindMemory( device.allocateMemory( { requirements.size, deduced } ) );
 			return result;
 		}
 
 		std::unique_ptr< ImageView > createImageView( Device const & device
 			, Image const & image
-			, ashes::Format format )
+			, VkFormat format )
 		{
 			return std::make_unique< ImageView >( device
 				, image
-				, ashes::ImageViewCreateInfo
+				, VkImageViewCreateInfo
 				{
-					ashes::ImageViewType::e2D,
+					VK_IMAGE_VIEW_TYPE_2D,
 					format,
-					ashes::ComponentMapping{},
-					ashes::ImageSubresourceRange{ ashes::ImageAspectFlag::eColour },
+					VkComponentMapping{},
+					ashes::ImageSubresourceRange{ VkImageAspectFlagBits::eColour },
 				} );
 		}
 	}
 
 	SwapChain::SwapChain( Device const & device
-		, ashes::SwapChainCreateInfo createInfo )
+		, VkSwapchainCreateInfoKHR createInfo )
 		: ashes::SwapChain{ device, std::move( createInfo ) }
 		, m_device{ device }
 	{

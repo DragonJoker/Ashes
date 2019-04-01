@@ -5,7 +5,7 @@
 namespace gl_renderer
 {
 	Sampler::Sampler( Device const & device
-		, ashes::SamplerCreateInfo const & createInfo )
+		, VkSamplerCreateInfo const & createInfo )
 		: ashes::Sampler{ device, createInfo }
 		, m_device{ device }
 	{

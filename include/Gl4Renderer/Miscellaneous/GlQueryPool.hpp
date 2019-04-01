@@ -19,7 +19,6 @@ namespace gl_renderer
 	*	Implémentation d'un pool de requêtes GPU.
 	*/
 	class QueryPool
-		: public ashes::QueryPool
 	{
 	public:
 		/**
@@ -47,9 +46,7 @@ namespace gl_renderer
 		*	Définit les compteurs que les requêtes retournent.
 		*/
 		QueryPool( Device const & device
-			, ashes::QueryType type
-			, uint32_t count
-			, ashes::QueryPipelineStatisticFlags pipelineStatistics );
+			, VkQueryPoolCreateInfo createInfo );
 		/**
 		*\~english
 		*\brief
@@ -65,16 +62,16 @@ namespace gl_renderer
 		void getResults( uint32_t firstQuery
 			, uint32_t queryCount
 			, uint32_t stride
-			, ashes::QueryResultFlags flags
-			, ashes::UInt32Array & data )const override;
+			, VkQueryResultFlags flags
+			, ashes::UInt32Array & data )const;
 		/**
 		*\copydoc	ashes::QueryPool:getResults
 		*/
 		void getResults( uint32_t firstQuery
 			, uint32_t queryCount
 			, uint32_t stride
-			, ashes::QueryResultFlags flags
-			, ashes::UInt64Array & data )const override;
+			, VkQueryResultFlags flags
+			, ashes::UInt64Array & data )const;
 		/**
 		*\return
 		*	Le début du tableau de requêtes.

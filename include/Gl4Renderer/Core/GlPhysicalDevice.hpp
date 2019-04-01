@@ -19,7 +19,6 @@ namespace gl_renderer
 	*	Wraps informations about physical GPU.
 	*/
 	class PhysicalDevice
-		: public ashes::PhysicalDevice
 	{
 	public:
 		/**
@@ -38,31 +37,31 @@ namespace gl_renderer
 		/**
 		*\copydoc	ashes::Instance::enumerateLayerProperties
 		*/
-		ashes::LayerPropertiesArray enumerateLayerProperties()const override;
+		std::vector< VkLayerProperties > enumerateLayerProperties()const;
 		/**
 		*\copydoc	ashes::Instance::enumerateExtensionProperties
 		*/
-		ashes::ExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const override;
+		std::vector< VkExtensionProperties > enumerateExtensionProperties( std::string const & layerName )const;
 		/**
 		*\copydoc	ashes::Instance::getProperties
 		*/
-		ashes::PhysicalDeviceProperties getProperties()const override;
+		VkPhysicalDeviceProperties getProperties()const;
 		/**
 		*\copydoc	ashes::Instance::getMemoryProperties
 		*/
-		ashes::PhysicalDeviceMemoryProperties getMemoryProperties()const override;
+		VkPhysicalDeviceMemoryProperties getMemoryProperties()const;
 		/**
 		*\copydoc	ashes::Instance::getFeatures
 		*/
-		ashes::PhysicalDeviceFeatures getFeatures()const override;
+		VkPhysicalDeviceFeatures getFeatures()const;
 		/**
 		*\copydoc	ashes::Instance::getQueueFamilyProperties
 		*/
-		ashes::QueueFamilyPropertiesArray getQueueFamilyProperties()const override;
+		std::vector< VkQueueFamilyProperties > getQueueFamilyProperties()const;
 		/**
 		*\copydoc	ashes::Instance::getFormatProperties
 		*/
-		ashes::FormatProperties getFormatProperties( ashes::Format fmt )const override;
+		VkFormatProperties getFormatProperties( VkFormat fmt )const;
 
 		bool find( std::string const & name )const;
 		bool findAny( ashes::StringArray const & names )const;
@@ -105,9 +104,9 @@ namespace gl_renderer
 
 	private:
 		Instance const & m_instance;
-		ashes::PhysicalDeviceFeatures m_features{};
-		ashes::PhysicalDeviceProperties m_properties{};
-		ashes::QueueFamilyPropertiesArray m_queueProperties{};
-		mutable std::map< ashes::Format, ashes::FormatProperties > m_formatProperties;
+		VkPhysicalDeviceFeatures m_features{};
+		VkPhysicalDeviceProperties m_properties{};
+		std::vector< VkQueueFamilyProperties > m_queueProperties{};
+		mutable std::map< VkFormat, VkFormatProperties > m_formatProperties;
 	};
 }

@@ -70,7 +70,7 @@ namespace gl_renderer
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::ColourBlendState const & state )
+			, VkPipelineColorBlendStateCreateInfo const & state )
 		{
 			if ( state.logicOpEnable )
 			{
@@ -127,9 +127,9 @@ namespace gl_renderer
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::RasterisationState const & state )
+			, VkPipelineRasterizationStateCreateInfo const & state )
 		{
-			if ( state.cullMode != ashes::CullModeFlag::eNone )
+			if ( state.cullMode != VK_CULL_MODE_NONE )
 			{
 				glLogCall( context
 					, glEnable
@@ -157,19 +157,19 @@ namespace gl_renderer
 			{
 				switch ( state.polygonMode )
 				{
-				case ashes::PolygonMode::eFill:
+				case VK_POLYGON_MODE_FILL:
 					glLogCall( context
 						, glEnable
 						, GL_POLYGON_OFFSET_FILL );
 					break;
 
-				case ashes::PolygonMode::eLine:
+				case VK_POLYGON_MODE_LINE:
 					glLogCall( context
 						, glEnable
 						, GL_POLYGON_OFFSET_LINE );
 					break;
 
-				case ashes::PolygonMode::ePoint:
+				case VK_POLYGON_MODE_POINT:
 					glLogCall( context
 						, glEnable
 						, GL_POLYGON_OFFSET_POINT );
@@ -186,19 +186,19 @@ namespace gl_renderer
 			{
 				switch ( state.polygonMode )
 				{
-				case ashes::PolygonMode::eFill:
+				case VK_POLYGON_MODE_FILL:
 					glLogCall( context
 						, glDisable
 						, GL_POLYGON_OFFSET_FILL );
 					break;
 
-				case ashes::PolygonMode::eLine:
+				case VK_POLYGON_MODE_LINE:
 					glLogCall( context
 						, glDisable
 						, GL_POLYGON_OFFSET_LINE );
 					break;
 
-				case ashes::PolygonMode::ePoint:
+				case VK_POLYGON_MODE_POINT:
 					glLogCall( context
 						, glDisable
 						, GL_POLYGON_OFFSET_POINT );
@@ -238,9 +238,9 @@ namespace gl_renderer
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::MultisampleState const & state )
+			, VkPipelineMultisampleStateCreateInfo const & state )
 		{
-			if ( state.rasterisationSamples != ashes::SampleCountFlag::e1 )
+			if ( state.rasterisationSamples != VK_SAMPLE_COUNT_1 )
 			{
 				glLogCall( context
 					, glEnable
@@ -275,7 +275,7 @@ namespace gl_renderer
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::DepthStencilState const & state )
+			, VkPipelineDepthStencilStateCreateInfo const & state )
 		{
 			if ( state.depthWriteEnable )
 			{
@@ -370,7 +370,7 @@ namespace gl_renderer
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::TessellationState const & state )
+			, VkPipelineTessellationStateCreateInfo const & state )
 		{
 			if ( state.patchControlPoints )
 			{
@@ -382,7 +382,7 @@ namespace gl_renderer
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::InputAssemblyState const & state )
+			, VkPipelineInputAssemblyStateCreateInfo const & state )
 		{
 			if ( state.topology == ashes::PrimitiveTopology::ePointList )
 			{
@@ -423,9 +423,9 @@ namespace gl_renderer
 			return T( value >> mipLevel );
 		};
 
-		ashes::Extent3D getTexelBlockExtent( ashes::Format format )
+		VkExtent3D getTexelBlockExtent( VkFormat format )
 		{
-			ashes::Extent3D texelBlockExtent{ 1u, 1u, 1u };
+			VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
 
 			if ( ashes::isCompressedFormat( format ) )
 			{
@@ -441,8 +441,8 @@ namespace gl_renderer
 			return texelBlockExtent;
 		}
 
-		uint32_t getTexelBlockByteSize( ashes::Extent3D const & texelBlockExtent
-			, ashes::Format format )
+		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
+			, VkFormat format )
 		{
 			uint32_t texelBlockSize;
 
@@ -478,10 +478,10 @@ namespace gl_renderer
 		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
 		m_dummyIndexed.indexBuffer = ashes::makeBuffer< uint32_t >( *this
 			, count
-			, ashes::BufferTarget::eIndexBuffer );
+			, VkBufferUsageFlagBits::eIndexBuffer );
 		auto requirements = m_dummyIndexed.indexBuffer->getBuffer().getMemoryRequirements();
 		auto deduced = deduceMemoryType( requirements.memoryTypeBits
-			, ashes::MemoryPropertyFlag::eHostVisible );
+			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 		m_dummyIndexed.indexBuffer->bindMemory( allocateMemory( { requirements.size, deduced } ) );
 
 		if ( auto * buffer = m_dummyIndexed.indexBuffer->lock( 0u
@@ -497,7 +497,7 @@ namespace gl_renderer
 		m_dummyIndexed.geometryBuffers = std::make_unique< GeometryBuffers >( *this
 			, VboBindings{}
 			, BufferObjectBinding{ indexBuffer.getInternal(), 0u, &indexBuffer }
-			, ashes::VertexInputState{}
+			, VkPipelineVertexInputStateCreateInfo{}
 		, ashes::IndexType::eUInt32 );
 		m_dummyIndexed.geometryBuffers->initialise();
 
@@ -515,7 +515,7 @@ namespace gl_renderer
 		}
 	}
 
-	ashes::RenderPassPtr Device::createRenderPass( ashes::RenderPassCreateInfo createInfo )const
+	ashes::RenderPassPtr Device::createRenderPass( VkRenderPassCreateInfo createInfo )const
 	{
 		return std::make_unique< RenderPass >( *this, std::move( createInfo ) );
 	}
@@ -533,27 +533,27 @@ namespace gl_renderer
 		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
 	}
 
-	ashes::DescriptorPoolPtr Device::createDescriptorPool( ashes::DescriptorPoolCreateFlags flags
+	ashes::DescriptorPoolPtr Device::createDescriptorPool( VkDescriptorPoolCreateFlags flags
 		, uint32_t maxSets
 		, ashes::DescriptorPoolSizeArray poolSizes )const
 	{
 		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
 	}
 
-	ashes::DeviceMemoryPtr Device::allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const
+	ashes::DeviceMemoryPtr Device::allocateMemory( VkMemoryAllocateInfo allocateInfo )const
 	{
 		return std::make_unique< DeviceMemory >( *this
 			, std::move( allocateInfo ) );
 	}
 
-	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo )const
+	ashes::ImagePtr Device::createImage( VkImageCreateInfo const & createInfo )const
 	{
 		return std::make_unique< Image >( *this, createInfo );
 	}
 
 	void Device::getImageSubresourceLayout( ashes::Image const & image
-		, ashes::ImageSubresource const & subresource
-		, ashes::SubresourceLayout & layout )const
+		, VkImageSubresource const & subresource
+		, VkSubresourceLayout & layout )const
 	{
 		auto & gltex = static_cast< Image const & >( image );
 		auto context = getContext();
@@ -581,13 +581,13 @@ namespace gl_renderer
 		layout.size = layout.arrayPitch * std::max( d, 1 );
 	}
 
-	ashes::SamplerPtr Device::createSampler( ashes::SamplerCreateInfo const & createInfo )const
+	ashes::SamplerPtr Device::createSampler( VkSamplerCreateInfo const & createInfo )const
 	{
 		return std::make_unique< Sampler >( *this, createInfo );
 	}
 
 	ashes::BufferBasePtr Device::createBuffer( uint32_t size
-		, ashes::BufferTargets target )const
+		, VkBufferUsageFlags target )const
 	{
 		return std::make_unique< Buffer >( *this
 			, size
@@ -595,7 +595,7 @@ namespace gl_renderer
 	}
 
 	ashes::BufferViewPtr Device::createBufferView( ashes::BufferBase const & buffer
-		, ashes::Format format
+		, VkFormat format
 		, uint32_t offset
 		, uint32_t range )const
 	{
@@ -606,7 +606,7 @@ namespace gl_renderer
 			, range );
 	}
 
-	ashes::SwapChainPtr Device::createSwapChain( ashes::SwapChainCreateInfo createInfo )const
+	ashes::SwapChainPtr Device::createSwapChain( VkSwapchainCreateInfoKHR createInfo )const
 	{
 		ashes::SwapChainPtr result;
 
@@ -631,7 +631,7 @@ namespace gl_renderer
 		return std::make_unique< Semaphore >( *this );
 	}
 
-	ashes::FencePtr Device::createFence( ashes::FenceCreateFlags flags )const
+	ashes::FencePtr Device::createFence( VkFenceCreateFlags flags )const
 	{
 		return std::make_unique< Fence >( *this, flags );
 	}
@@ -642,21 +642,21 @@ namespace gl_renderer
 	}
 
 	ashes::CommandPoolPtr Device::createCommandPool( uint32_t queueFamilyIndex
-		, ashes::CommandPoolCreateFlags const & flags )const
+		, VkCommandPoolCreateFlags const & flags )const
 	{
 		return std::make_unique< CommandPool >( *this
 			, queueFamilyIndex
 			, flags );
 	}
 
-	ashes::ShaderModulePtr Device::createShaderModule( ashes::ShaderStageFlag stage )const
+	ashes::ShaderModulePtr Device::createShaderModule( VkShaderStageFlagBits stage )const
 	{
 		return std::make_shared< ShaderModule >( *this, stage );
 	}
 
 	ashes::QueryPoolPtr Device::createQueryPool( ashes::QueryType type
 		, uint32_t count
-		, ashes::QueryPipelineStatisticFlags pipelineStatistics )const
+		, VkQueryPipelineStatisticFlags pipelineStatistics )const
 	{
 		return std::make_unique< QueryPool >( *this
 			, type
@@ -664,7 +664,7 @@ namespace gl_renderer
 			, pipelineStatistics );
 	}
 
-	void Device::debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const
+	void Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
 #if !defined( NDEBUG )
 		auto context = getContext();

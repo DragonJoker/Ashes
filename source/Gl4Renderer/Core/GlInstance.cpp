@@ -346,61 +346,26 @@ namespace gl_renderer
 
 #endif
 
-	ashes::PhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
-		{
-			ashes::PhysicalDeviceMemoryProperties result;
+	VkPhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
+	{
+		VkPhysicalDeviceMemoryProperties result;
+		result.memoryHeapCount = 2u;
+		// Emulate one device local heap
+		result.memoryHeaps[0] = { ~( 0ull ), VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
+		// and one host visible heap
+		result.memoryHeaps[1] = { ~( 0ull ), 0u };
 
-			// Emulate one device local heap
-			result.memoryHeaps.push_back(
-				{
-					~( 0ull ),
-					0u | ashes::MemoryHeapFlag::eDeviceLocal
-				} );
-			// and one host visible heap
-			result.memoryHeaps.push_back(
-				{
-					~( 0ull ),
-					0u
-				} );
+		result.memoryTypeCount = 2u;
+		// Emulate all combinations of device local memory types
+		// and all combinations of host visible memory types
+		result.memoryTypes[0] = { VK_MEMORY_HEAP_DEVICE_LOCAL_BIT, 0u };
+		result.memoryTypes[1] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT, 1u };
 
-			// Emulate all combinations of device local memory types
-			// and all combinations of host visible memory types
-			result.memoryTypes.push_back(
-				{
-					0u | ashes::MemoryPropertyFlag::eDeviceLocal,
-					0u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					0u | ashes::MemoryPropertyFlag::eHostVisible,
-					1u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent,
-					1u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCached,
-					1u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eLazilyAllocated,
-					1u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent | ashes::MemoryPropertyFlag::eHostCached,
-					1u,
-				} );
+		return result;
+	}();
 
-			return result;
-		}();
-
-	Instance::Instance( ashes::InstanceCreateInfo createInfo )
-		: ashes::Instance{ ashes::ClipDirection::eBottomUp, "gl4", std::move( createInfo ) }
+	Instance::Instance( VkInstanceCreateInfo createInfo )
+		: m_createInfo{ std::move( createInfo ) }
 		, m_dummyWindow{ new RenderWindow }
 	{
 		m_extensions.initialise();
@@ -410,14 +375,14 @@ namespace gl_renderer
 		m_features.hasClearTexImage = m_extensions.find( ARB_clear_texture );
 		m_features.hasComputeShaders = m_extensions.find( ARB_compute_shader );
 		m_features.supportsPersistentMapping = m_extensions.find( ARB_buffer_storage );
-		auto & layers = getEnabledLayerNames();
-		auto it = std::find_if( layers.begin()
-			, layers.end()
-			, []( std::string const & lookup )
+		auto end = m_createInfo.ppEnabledLayerNames + m_createInfo.enabledLayerCount;
+		auto it = std::find_if( m_createInfo.ppEnabledLayerNames
+			, end
+			, []( const char * const lookup )
 			{
-				return lookup.find( "validation" ) != std::string::npos;
+				return lookup == std::string{ "validation" };
 			} );
-		m_validationEnabled = it != layers.end();
+		m_validationEnabled = it != end;
 		m_context = Context::create( *this, m_dummyWindow->getHandle(), nullptr );
 	}
 
@@ -427,7 +392,7 @@ namespace gl_renderer
 		delete m_dummyWindow;
 	}
 
-	ashes::PhysicalDevicePtrArray Instance::enumeratePhysicalDevices()const
+	PhysicalDevicePtrArray Instance::enumeratePhysicalDevices()const
 	{
 		RenderWindow dummyWindow;
 		ashes::PhysicalDevicePtrArray result;
@@ -523,6 +488,25 @@ namespace gl_renderer
 		result[14] = -( zFar + zNear ) / ( zFar - zNear );
 		result[15] = 1.0f;
 
+		return result;
+	}
+
+	std::array< float, 16 > Instance::infinitePerspective( float radiansFovY
+		, float aspect
+		, float zNear )const
+	{
+		float const range = tan( radiansFovY / float( 2 ) ) * zNear;
+		float const left = -range * aspect;
+		float const right = range * aspect;
+		float const bottom = -range;
+		float const top = range;
+
+		std::array< float, 16 > result{ 0.0f };
+		result[0] = ( float( 2 ) * zNear ) / ( right - left );
+		result[5] = ( float( 2 ) * zNear ) / ( top - bottom );
+		result[10] = -float( 1 );
+		result[11] = -float( 1 );
+		result[14] = -float( 2 ) * zNear;
 		return result;
 	}
 

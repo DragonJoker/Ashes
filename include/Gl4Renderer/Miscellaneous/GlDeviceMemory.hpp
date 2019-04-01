@@ -27,7 +27,7 @@ namespace gl_renderer
 		{
 		public:
 			DeviceMemoryImpl( Device const & device
-				, ashes::MemoryAllocateInfo allocateInfo
+				, VkMemoryAllocateInfo allocateInfo
 				, GLuint boundResource
 				, GLuint boundTarget );
 			virtual ~DeviceMemoryImpl() = default;
@@ -42,7 +42,7 @@ namespace gl_renderer
 
 		protected:
 			Device const & m_device;
-			ashes::MemoryAllocateInfo m_allocateInfo;
+			VkMemoryAllocateInfo m_allocateInfo;
 			ashes::MemoryPropertyFlags m_flags;
 			GlMemoryMapFlags m_mapFlags;
 			GLuint m_boundResource;
@@ -52,12 +52,12 @@ namespace gl_renderer
 
 	public:
 		DeviceMemory( Device const & device
-			, ashes::MemoryAllocateInfo allocateInfo );
+			, VkMemoryAllocateInfo allocateInfo );
 		~DeviceMemory();
 		void bindToBuffer( GLuint resource, GLenum target );
 		void bindToImage( Image const & texture
 			, GLenum target
-			, ashes::ImageCreateInfo const & createInfo );
+			, VkImageCreateInfo const & createInfo );
 		/**
 		*\copydoc	ashes::DeviceMemory::lock
 		*/
@@ -81,21 +81,21 @@ namespace gl_renderer
 
 	private:
 		void doSetImage1D( uint32_t width
-			, ashes::ImageCreateInfo const & createInfo );
+			, VkImageCreateInfo const & createInfo );
 		void doSetImage2D( uint32_t width
 			, uint32_t height
-			, ashes::ImageCreateInfo const & createInfo );
+			, VkImageCreateInfo const & createInfo );
 		void doSetImage3D( uint32_t width
 			, uint32_t height
 			, uint32_t depth
-			, ashes::ImageCreateInfo const & createInfo );
+			, VkImageCreateInfo const & createInfo );
 		void doSetImage2DMS( uint32_t width
 			, uint32_t height
-			, ashes::ImageCreateInfo const & createInfo );
+			, VkImageCreateInfo const & createInfo );
 		void doSetImage3DMS( uint32_t width
 			, uint32_t height
 			, uint32_t depth
-			, ashes::ImageCreateInfo const & createInfo );
+			, VkImageCreateInfo const & createInfo );
 		void updateOneLayer( ashes::BufferImageCopy const & copyInfo )const;
 
 	private:

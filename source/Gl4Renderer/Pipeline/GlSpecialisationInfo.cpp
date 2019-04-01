@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	ashes::PushConstantArray convert( ashes::ShaderStageFlag stage
+	ashes::PushConstantArray convert( VkShaderStageFlagBits stage
 		, ashes::SpecialisationMapEntryArray::const_iterator const & begin
 		, ashes::SpecialisationMapEntryArray::const_iterator const & end )
 	{
@@ -31,7 +31,7 @@ namespace ashes
 
 	ashes::PushConstantsBufferPtr convert( ashes::Device const & device
 		, uint32_t location
-		, ashes::ShaderStageFlag stage
+		, VkShaderStageFlagBits stage
 		, ashes::SpecialisationInfoBase const & specialisationInfo )
 	{
 		return ashes::PushConstantsBufferPtr{};

@@ -6,7 +6,7 @@
 namespace gl_renderer
 {
 	DescriptorPool::DescriptorPool( Device const & device
-		, ashes::DescriptorPoolCreateFlags flags
+		, VkDescriptorPoolCreateFlags flags
 		, uint32_t maxSets
 		, ashes::DescriptorPoolSizeArray poolSizes )
 		: ashes::DescriptorPool{ device, flags }

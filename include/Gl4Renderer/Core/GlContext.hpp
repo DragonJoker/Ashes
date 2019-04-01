@@ -9,6 +9,8 @@ See LICENSE file in root folder
 
 namespace gl_renderer
 {
+	extern char const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME[VK_MAX_EXTENSION_NAME_SIZE];
+
 	class Context
 	{
 	protected:

@@ -15,7 +15,6 @@ namespace gl_renderer
 	*	Classe permettant la synchronisation des opérations sur une file.
 	*/
 	class Fence
-		: public ashes::Fence
 	{
 	public:
 		/**
@@ -27,7 +26,7 @@ namespace gl_renderer
 		*	Les indicateurs de création de la barrière.
 		*/ 
 		Fence( Device const & device
-			, ashes::FenceCreateFlags flags = 0 );
+			, VkFenceCreateFlags flags = 0 );
 		/**
 		*\brief
 		*	Destructeur
@@ -41,12 +40,12 @@ namespace gl_renderer
 		*\return
 		*	\p WaitResult::eSuccess ou \p WaitResult::eTimeOut en cas de succès.
 		*/ 
-		ashes::WaitResult wait( uint64_t timeout )const override;
+		VkResult wait( uint64_t timeout )const;
 		/**
 		*\brief
 		*	Remet la barrière en non signalée.
 		*/ 
-		void reset()const override;
+		void reset()const;
 
 		inline GLsync getInternal()const
 		{

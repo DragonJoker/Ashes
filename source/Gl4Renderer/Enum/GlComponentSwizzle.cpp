@@ -52,29 +52,29 @@ namespace gl_renderer
 		}
 	}
 
-	GlComponentSwizzle convert( ashes::ComponentSwizzle const & value )
+	GlComponentSwizzle convertComponentSwizzle( VkComponentSwizzle const & value )
 	{
 		switch ( value )
 		{
-		case ashes::ComponentSwizzle::eIdentity:
+		case VK_COMPONENT_SWIZZLE_IDENTITY:
 			return GL_COMPONENT_SWIZZLE_IDENTITTY;
 
-		case ashes::ComponentSwizzle::eZero:
+		case VK_COMPONENT_SWIZZLE_ZERO:
 			return GL_COMPONENT_SWIZZLE_ZERO;
 
-		case ashes::ComponentSwizzle::eOne:
+		case VK_COMPONENT_SWIZZLE_ONE:
 			return GL_COMPONENT_SWIZZLE_ONE;
 
-		case ashes::ComponentSwizzle::eR:
+		case VK_COMPONENT_SWIZZLE_R:
 			return GL_COMPONENT_SWIZZLE_RED;
 
-		case ashes::ComponentSwizzle::eG:
+		case VK_COMPONENT_SWIZZLE_G:
 			return GL_COMPONENT_SWIZZLE_GREEN;
 
-		case ashes::ComponentSwizzle::eB:
+		case VK_COMPONENT_SWIZZLE_B:
 			return GL_COMPONENT_SWIZZLE_BLUE;
 
-		case ashes::ComponentSwizzle::eA:
+		case VK_COMPONENT_SWIZZLE_A:
 			return GL_COMPONENT_SWIZZLE_ALPHA;
 
 		default:

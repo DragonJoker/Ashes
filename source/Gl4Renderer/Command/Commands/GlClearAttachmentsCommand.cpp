@@ -14,7 +14,7 @@ namespace gl_renderer
 		void doClear( ContextLock const & context
 			, ashes::ClearAttachment const & clearAttach )
 		{
-			if ( ashes::checkFlag( clearAttach.aspectMask, ashes::ImageAspectFlag::eColour ) )
+			if ( ashes::checkFlag( clearAttach.aspectMask, VkImageAspectFlagBits::eColour ) )
 			{
 				assert( clearAttach.clearValue.isColour() );
 				auto & colour = clearAttach.clearValue.colour();
@@ -30,7 +30,7 @@ namespace gl_renderer
 				auto & depthStencil = clearAttach.clearValue.depthStencil();
 				auto stencil = GLint( depthStencil.stencil );
 
-				if ( ashes::checkFlag( clearAttach.aspectMask, ashes::ImageAspectFlag::eDepth | ashes::ImageAspectFlag::eStencil ) )
+				if ( ashes::checkFlag( clearAttach.aspectMask, VkImageAspectFlagBits::eDepth | VkImageAspectFlagBits::eStencil ) )
 				{
 					glLogCall( context
 						, glClearBufferfi
@@ -39,7 +39,7 @@ namespace gl_renderer
 						, depthStencil.depth
 						, stencil );
 				}
-				else if ( ashes::checkFlag( clearAttach.aspectMask, ashes::ImageAspectFlag::eDepth ) )
+				else if ( ashes::checkFlag( clearAttach.aspectMask, VkImageAspectFlagBits::eDepth ) )
 				{
 					glLogCall( context
 						, glClearBufferfv
@@ -47,7 +47,7 @@ namespace gl_renderer
 						, 0u
 						, &depthStencil.depth );
 				}
-				else if ( ashes::checkFlag( clearAttach.aspectMask, ashes::ImageAspectFlag::eStencil ) )
+				else if ( ashes::checkFlag( clearAttach.aspectMask, VkImageAspectFlagBits::eStencil ) )
 				{
 					glLogCall( context
 						, glClearBufferiv

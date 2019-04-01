@@ -33,12 +33,18 @@ namespace gl_renderer
 			return m_minor;
 		}
 
+		inline int getShaderVersion()const
+		{
+			return m_shaderVersion;
+		}
+
 	private:
 		ashes::StringArray m_deviceExtensionNames;
 		ashes::StringArray m_deviceSPIRVExtensionNames;
 		std::vector< GlShaderBinaryFormat > m_shaderBinaryFormats;
 		int m_major{ 0 };
 		int m_minor{ 0 };
+		int m_shaderVersion{ 0 };
 		bool m_spirvSupported;
 	};
 }

@@ -10,21 +10,21 @@ namespace gl_renderer
 {
 	void apply( Device const & device
 		, ContextLock const & context
-		, ashes::ColourBlendState const & state );
+		, VkPipelineColorBlendStateCreateInfo const & state );
 	void apply( Device const & device
 		, ContextLock const & context
-		, ashes::RasterisationState const & state
+		, VkPipelineRasterizationStateCreateInfo const & state
 		, bool dynamicLineWidth
 		, bool dynamicDepthBias );
 	void apply( Device const & device
 		, ContextLock const & context
-		, ashes::MultisampleState const & state );
+		, VkPipelineMultisampleStateCreateInfo const & state );
 	void apply( Device const & device
 		, ContextLock const & context
-		, ashes::DepthStencilState const & state );
+		, VkPipelineDepthStencilStateCreateInfo const & state );
 	void apply( Device const & device
 		, ContextLock const & context
-		, ashes::TessellationState const & state );
+		, VkPipelineTessellationStateCreateInfo const & state );
 	/**
 	*\brief
 	*	Commande d'activation d'un pipeline: shaders, tests, �tats, ...
@@ -42,8 +42,8 @@ namespace gl_renderer
 		*	Le point d'attache du pipeline.
 		*/
 		BindPipelineCommand( Device const & device
-			, ashes::Pipeline const & pipeline
-			, ashes::PipelineBindPoint bindingPoint );
+			, Pipeline const & pipeline
+			, VkPipelineBindPoint bindingPoint );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
@@ -52,7 +52,7 @@ namespace gl_renderer
 		Pipeline const & m_pipeline;
 		PipelineLayout const & m_layout;
 		GLuint m_program;
-		ashes::PipelineBindPoint m_bindingPoint;
+		VkPipelineBindPoint m_bindingPoint;
 		bool m_dynamicLineWidth;
 		bool m_dynamicDepthBias;
 		bool m_dynamicScissor;

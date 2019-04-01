@@ -16,7 +16,7 @@ namespace gl_renderer
 {
 	namespace
 	{
-		GlImageAspectFlags getMask( ashes::Format format )
+		GlImageAspectFlags getMask( VkFormat format )
 		{
 			GlImageAspectFlags result = 0u;
 
@@ -39,19 +39,19 @@ namespace gl_renderer
 			return result;
 		}
 
-		GlAttachmentPoint getAttachmentPoint( ashes::Format format )
+		GlAttachmentPoint getAttachmentPoint( VkFormat format )
 		{
 			switch ( format )
 			{
-			case ashes::Format::eD16_UNORM:
-			case ashes::Format::eD32_SFLOAT:
+			case VK_FORMAT_D16_UNORM:
+			case VK_FORMAT_D32_SFLOAT:
 				return GL_ATTACHMENT_POINT_DEPTH;
 
-			case ashes::Format::eD24_UNORM_S8_UINT:
-			case ashes::Format::eD32_SFLOAT_S8_UINT:
+			case VK_FORMAT_D24_UNORM_S8_UINT:
+			case VK_FORMAT_D32_SFLOAT_S8_UINT:
 				return GL_ATTACHMENT_POINT_DEPTH_STENCIL;
 
-			case ashes::Format::eS8_UINT:
+			case VK_FORMAT_S8_UINT:
 				return GL_ATTACHMENT_POINT_STENCIL;
 
 			default:
@@ -59,19 +59,19 @@ namespace gl_renderer
 			}
 		}
 
-		GlAttachmentType getAttachmentType( ashes::Format format )
+		GlAttachmentType getAttachmentType( VkFormat format )
 		{
 			switch ( format )
 			{
-			case ashes::Format::eD16_UNORM:
-			case ashes::Format::eD32_SFLOAT:
+			case VK_FORMAT_D16_UNORM:
+			case VK_FORMAT_D32_SFLOAT:
 				return GL_ATTACHMENT_TYPE_DEPTH;
 
-			case ashes::Format::eD24_UNORM_S8_UINT:
-			case ashes::Format::eD32_SFLOAT_S8_UINT:
+			case VK_FORMAT_D24_UNORM_S8_UINT:
+			case VK_FORMAT_D32_SFLOAT_S8_UINT:
 				return GL_ATTACHMENT_TYPE_DEPTH_STENCIL;
 
-			case ashes::Format::eS8_UINT:
+			case VK_FORMAT_S8_UINT:
 				return GL_ATTACHMENT_TYPE_STENCIL;
 
 			default:
@@ -93,7 +93,7 @@ namespace gl_renderer
 			{
 				ashes::ImageViewType( image.getType() ),
 				image.getFormat(),
-				ashes::ComponentMapping{},
+				VkComponentMapping{},
 				{
 					subresource.aspectMask,
 					subresource.mipLevel,

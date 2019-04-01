@@ -3,10 +3,11 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl4Renderer/Core/GlContext.hpp"
+#if _WIN32
+#	include "Gl4Renderer/Core/GlContext.hpp"
 
-#if ASHES_WIN32
 #	include <Windows.h>
+#	include "vulkan/vulkan_win32.h"
 
 namespace gl_renderer
 {

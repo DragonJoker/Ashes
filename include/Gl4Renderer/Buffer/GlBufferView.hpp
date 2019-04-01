@@ -23,7 +23,6 @@ namespace gl_renderer
 	*	A texture view to a buffer.
 	*/
 	class BufferView
-		: public ashes::BufferView
 	{
 	public:
 		/**
@@ -56,9 +55,7 @@ namespace gl_renderer
 		*/
 		BufferView( Device const & device
 			, Buffer const & buffer
-			, ashes::Format format
-			, uint32_t offset
-			, uint32_t range );
+			, VkBufferViewCreateInfo createInfo );
 		/**
 		*\~french
 		*\brief
@@ -83,6 +80,7 @@ namespace gl_renderer
 
 	private:
 		Device const & m_device;
+		VkBufferViewCreateInfo m_createInfo;
 		GLuint m_name{ GL_INVALID_INDEX };
 	};
 }

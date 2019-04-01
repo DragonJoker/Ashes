@@ -53,5 +53,5 @@ namespace gl_renderer
 	*\return
 	*	Le GlComponentSwizzle.
 	*/
-	GlComponentSwizzle convert( ashes::ComponentSwizzle const & value );
+	GlComponentSwizzle convertComponentSwizzle( VkComponentSwizzle const & value );
 }

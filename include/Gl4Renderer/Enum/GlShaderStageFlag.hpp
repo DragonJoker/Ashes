@@ -18,7 +18,8 @@ namespace gl_renderer
 		GL_SHADER_STAGE_COMPUTE = 0x91B9,
 	};
 	Ashes_ImplementFlag( GlShaderStageFlag )
-	std::string getName( GlShaderStageFlags value );
+	std::string getShaderStageFlagName( GlShaderStageFlags value );
+	std::string getShaderStageFlagName( VkShaderStageFlags value );
 	/**
 	*\brief
 	*	Convertit un ashes::ShaderStageFlags en VkShaderStageFlags.
@@ -27,14 +28,14 @@ namespace gl_renderer
 	*\return
 	*	Le VkShaderStageFlags.
 	*/
-	GlShaderStageFlags convert( ashes::ShaderStageFlags const & flags );
+	GlShaderStageFlags convertShaderStageFlags( VkShaderStageFlags const & flags );
 	/**
 	*\brief
-	*	Convertit un ashes::ShaderStageFlag en VkShaderStageFlagBits.
+	*	Convertit un VkShaderStageFlagBits en VkShaderStageFlagBits.
 	*\param[in] flags
-	*	Le ashes::ShaderStageFlag.
+	*	Le VkShaderStageFlagBits.
 	*\return
 	*	Le VkShaderStageFlagBits.
 	*/
-	GlShaderStageFlag convert( ashes::ShaderStageFlag const & flag );
+	GlShaderStageFlag convertShaderStageFlag( VkShaderStageFlagBits const & flag );
 }

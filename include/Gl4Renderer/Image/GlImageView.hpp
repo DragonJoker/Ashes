@@ -23,14 +23,13 @@ namespace gl_renderer
 	*	Vulkan image view wrapper.
 	*/
 	class ImageView
-		: public ashes::ImageView
 	{
 	public:
 		ImageView( Device const & device
 			, Image const & image );
 		ImageView( Device const & device
 			, Image const & image
-			, ashes::ImageViewCreateInfo const & createInfo );
+			, VkImageViewCreateInfo const & createInfo );
 		/**
 		*\~french
 		*\brief
@@ -45,6 +44,8 @@ namespace gl_renderer
 		*	L'image OpenGL.
 		*/
 		GLuint getInternal()const noexcept;
+
+		VkImageViewCreateInfo const createInfo;
 
 	private:
 		Device const & m_device;

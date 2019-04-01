@@ -8,12 +8,12 @@ namespace gl_renderer
 {
 	namespace
 	{
-		GlTextureViewType convert( ashes::ImageViewType viewType
-			, ashes::SampleCountFlag samples )
+		GlTextureViewType convert( VkImageViewType viewType
+			, VkSampleCountFlagBits samples )
 		{
-			GlTextureViewType result = gl_renderer::convert( viewType );
+			GlTextureViewType result = convertViewType( viewType );
 
-			if ( samples > ashes::SampleCountFlag::e1 )
+			if ( samples > VK_SAMPLE_COUNT_1_BIT )
 			{
 				switch ( result )
 				{
@@ -35,32 +35,33 @@ namespace gl_renderer
 
 	ImageView::ImageView( Device const & device
 		, Image const & image )
-		: ashes::ImageView{ device
-		, image
-		, {
-			ashes::ImageViewType::e2D,
-			image.getFormat(),
-			ashes::ComponentMapping{},
+		: m_device{ device }
+		, createInfo{
+			VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+			nullptr,
+			0u,
+			VK_NULL_HANDLE,
+			VK_IMAGE_VIEW_TYPE_2D,
+			image.createInfo.format,
+			VkComponentMapping{},
 			{
-				ashes::ImageAspectFlag::eColour,
+				VK_IMAGE_ASPECT_COLOR_BIT,
 				0u,
 				1u,
 				0u,
 				1u
 			}
-		} }
-		, m_device{ device }
+		}
+		, m_target{ convert( createInfo.viewType, image.createInfo.samples ) }
 	{
 	}
 
 	ImageView::ImageView( Device const & device
 		, Image const & texture
-		, ashes::ImageViewCreateInfo const & createInfo )
-		: ashes::ImageView{ device
-			, texture
-			, createInfo }
-		, m_device{ device }
-		, m_target{ convert( m_createInfo.viewType, texture.getSamplesCount() ) }
+		, VkImageViewCreateInfo const & createInfo )
+		: m_device{ device }
+		, createInfo{ createInfo }
+		, m_target{ convert( createInfo.viewType, texture.createInfo.samples ) }
 	{
 		// Non initialised textures come from back buffers, ignore them
 		if ( texture.hasInternal() )
@@ -75,64 +76,64 @@ namespace gl_renderer
 				, m_texture
 				, m_target
 				, texture.getInternal()
-				, getInternalFormat( m_createInfo.format )
-				, m_createInfo.subresourceRange.baseMipLevel
-				, m_createInfo.subresourceRange.levelCount
-				, m_createInfo.subresourceRange.baseArrayLayer
-				, m_createInfo.subresourceRange.layerCount );
+				, getInternalFormat( createInfo.format )
+				, createInfo.subresourceRange.baseMipLevel
+				, createInfo.subresourceRange.levelCount
+				, createInfo.subresourceRange.baseArrayLayer
+				, createInfo.subresourceRange.layerCount );
 			glLogCall( context
 				, glBindTexture
 				, m_target
 				, m_texture );
 
-			if ( m_createInfo.components.r != ashes::ComponentSwizzle::eIdentity )
+			if ( createInfo.components.r != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
 				glLogCall( context
 					, glTexParameteri
 					, m_target
 					, GL_SWIZZLE_R
-					, convert( m_createInfo.components.r ) );
+					, convertComponentSwizzle( createInfo.components.r ) );
 			}
 
-			if ( m_createInfo.components.g != ashes::ComponentSwizzle::eIdentity )
+			if ( createInfo.components.g != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
 				glLogCall( context
 					, glTexParameteri
 					, m_target
 					, GL_SWIZZLE_G
-					, convert( m_createInfo.components.g ) );
+					, convertComponentSwizzle( createInfo.components.g ) );
 			}
 
-			if ( m_createInfo.components.b != ashes::ComponentSwizzle::eIdentity )
+			if ( createInfo.components.b != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
 				glLogCall( context
 					, glTexParameteri
 					, m_target
 					, GL_SWIZZLE_B
-					, convert( m_createInfo.components.b ) );
+					, convertComponentSwizzle( createInfo.components.b ) );
 			}
 
-			if ( m_createInfo.components.a != ashes::ComponentSwizzle::eIdentity )
+			if ( createInfo.components.a != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
 				glLogCall( context
 					, glTexParameteri
 					, m_target
 					, GL_SWIZZLE_A
-					, convert( m_createInfo.components.a ) );
+					, convertComponentSwizzle( createInfo.components.a ) );
 			}
 
 			int minLevel = 0;
 			context->glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_MIN_LEVEL, &minLevel );
-			assert( minLevel == m_createInfo.subresourceRange.baseMipLevel );
+			assert( minLevel == createInfo.subresourceRange.baseMipLevel );
 			int numLevels = 0;
 			context->glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_NUM_LEVELS, &numLevels );
-			assert( numLevels == m_createInfo.subresourceRange.levelCount );
+			assert( numLevels == createInfo.subresourceRange.levelCount );
 			int minLayer = 0;
 			context->glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_MIN_LAYER, &minLayer );
-			assert( minLayer == m_createInfo.subresourceRange.baseArrayLayer );
+			assert( minLayer == createInfo.subresourceRange.baseArrayLayer );
 			int numLayers = 0;
 			context->glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_NUM_LAYERS, &numLayers );
-			assert( numLayers == m_createInfo.subresourceRange.layerCount );
+			assert( numLayers == createInfo.subresourceRange.layerCount );
 			glLogCall( context
 				, glBindTexture
 				, m_target

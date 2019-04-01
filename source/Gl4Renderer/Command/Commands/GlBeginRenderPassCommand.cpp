@@ -122,7 +122,7 @@ namespace gl_renderer
 	}
 
 	BeginRenderPassCommand::BeginRenderPassCommand( Device const & device
-		, ashes::RenderPass const & renderPass
+		, RenderPass const & renderPass
 		, ashes::FrameBuffer const & frameBuffer
 		, ashes::ClearValueArray const & clearValues
 		, ashes::SubpassContents contents )
@@ -202,7 +202,7 @@ namespace gl_renderer
 
 			if ( attachDesc.loadOp == ashes::AttachmentLoadOp::eClear )
 			{
-				if ( getAspectMask( attachDesc.format ) == ashes::ImageAspectFlag::eColour )
+				if ( getAspectMask( attachDesc.format ) == VkImageAspectFlagBits::eColour )
 				{
 					mask |= clearColour( context
 						, m_rtClearValues[clearIndex]

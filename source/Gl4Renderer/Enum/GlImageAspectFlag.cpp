@@ -27,26 +27,26 @@ namespace gl_renderer
 		return result;
 	}
 
-	GlImageAspectFlags convert( ashes::ImageAspectFlags const & flags )
+	GlImageAspectFlags convert( VkImageAspectFlags const & flags )
 	{
 		GLenum result{ 0 };
 
-		if ( checkFlag( flags, ashes::ImageAspectFlag::eColour ) )
+		if ( checkFlag( flags, VkImageAspectFlagBits::eColour ) )
 		{
 			result |= GL_COLOR_BUFFER_BIT;
 		}
 
-		if ( checkFlag( flags, ashes::ImageAspectFlag::eDepth ) )
+		if ( checkFlag( flags, VkImageAspectFlagBits::eDepth ) )
 		{
 			result |= GL_DEPTH_BUFFER_BIT;
 		}
 
-		if ( checkFlag( flags, ashes::ImageAspectFlag::eStencil ) )
+		if ( checkFlag( flags, VkImageAspectFlagBits::eStencil ) )
 		{
 			result |= GL_STENCIL_BUFFER_BIT;
 		}
 
-		if ( checkFlag( flags, ashes::ImageAspectFlag::eMetaData ) )
+		if ( checkFlag( flags, VkImageAspectFlagBits::eMetaData ) )
 		{
 		}
 

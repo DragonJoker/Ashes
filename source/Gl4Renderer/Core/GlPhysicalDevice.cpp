@@ -336,45 +336,42 @@ namespace gl_renderer
 	}
 
 	PhysicalDevice::PhysicalDevice( Instance const & instance )
-		: ashes::PhysicalDevice{ instance }
-		, m_instance{ instance }
+		: m_instance{ instance }
 	{
 		doInitialise();
 	}
 
-	ashes::LayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
+	std::vector< VkLayerProperties > PhysicalDevice::enumerateLayerProperties()const
 	{
-		ashes::LayerPropertiesArray result;
-		return result;
+		return {};
 	}
 
-	ashes::ExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
+	std::vector < VkExtensionProperties > PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
 	{
-		ashes::ExtensionPropertiesArray result;
-		return result;
+		return {};
 	}
 
-	ashes::PhysicalDeviceProperties PhysicalDevice::getProperties()const
+	VkPhysicalDeviceProperties PhysicalDevice::getProperties()const
 	{
 		return m_properties;
 	}
 
-	ashes::PhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
+	VkPhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
 	{
 		return Instance::getMemoryProperties();
 	}
 
-	ashes::PhysicalDeviceFeatures PhysicalDevice::getFeatures()const
+	VkPhysicalDeviceFeatures PhysicalDevice::getFeatures()const
 	{
 		return m_features;
 	}
 
-	ashes::QueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
+	std::vector < VkQueueFamilyProperties > PhysicalDevice::getQueueFamilyProperties()const
 	{
 		return m_queueProperties;
 	}
 
-	ashes::FormatProperties PhysicalDevice::getFormatProperties( ashes::Format fmt )const
+	VkFormatProperties PhysicalDevice::getFormatProperties( VkFormat fmt )const
 	{
 		return m_formatProperties[fmt];
 	}
@@ -414,15 +411,13 @@ namespace gl_renderer
 		getFunction( "glGetStringi", glGetStringi );
 		getFunction( "glGetInternalformativ", glGetInternalformativ );
 		auto & extensions = m_instance.getExtensions();
-		auto version = extensions.getMajor() * 10 + extensions.getMinor();
-		m_shaderVersion = version * 10;
 
 		m_properties.apiVersion = ( extensions.getMajor() << 22 ) | ( extensions.getMinor() << 12 );
 		m_properties.deviceID = 0u;
-		m_properties.deviceName = ( char const * )glGetString( GL_RENDERER );
+		strncpy( m_properties.deviceName, ( char const * )glGetString( GL_RENDERER ), VK_MAX_PHYSICAL_DEVICE_NAME_SIZE );
 		std::memset( m_properties.pipelineCacheUUID, 0u, sizeof( m_properties.pipelineCacheUUID ) );
 		m_properties.vendorID = doGetVendorID( ( char const * )glGetString( GL_VENDOR ) );
-		m_properties.deviceType = ashes::PhysicalDeviceType::eOther;
+		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 		m_properties.driverVersion = 0;
 
 		doGetValue( GL_MAX_TEXTURE_SIZE, m_properties.limits.maxImageDimension1D );
@@ -613,7 +608,7 @@ namespace gl_renderer
 
 		if ( glGetInternalformativ )
 		{
-			for ( ashes::Format fmt = ashes::Format::eRange_BEGIN; fmt < ashes::Format::eRange_END; fmt = ashes::Format( uint32_t( fmt ) + 1 ) )
+			for ( VkFormat fmt = VK_FORMAT_BEGIN_RANGE; fmt < VK_FORMAT_END_RANGE; fmt = VkFormat( fmt + 1 ) )
 			{
 				if ( isSupportedInternal( fmt ) )
 				{
@@ -628,11 +623,11 @@ namespace gl_renderer
 						{
 							if ( isDepthOrStencilFormat( fmt ) )
 							{
-								m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eDepthStencilAttachment;
+								m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
 							}
 							else
 							{
-								m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eColourAttachment;
+								m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
 							}
 						}
 
@@ -640,21 +635,21 @@ namespace gl_renderer
 
 						if ( value == GL_FULL_SUPPORT )
 						{
-							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eColourAttachmentBlend;
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT;
 						}
 
 						glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_FRAGMENT_TEXTURE, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
-							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eSampledImage;
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
 						}
 
 						glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_FILTER, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
-							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eSampledImageFilterLinear;
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
 						}
 					}
 				}

@@ -19,7 +19,7 @@ namespace gl_renderer
 	{
 	public:
 		Sampler( Device const & device
-			, ashes::SamplerCreateInfo const & createInfo );
+			, VkSamplerCreateInfo const & createInfo );
 		/**
 		*\brief
 		*	Destructeur.

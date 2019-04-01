@@ -16,9 +16,8 @@ namespace gl_renderer
 	};
 
 	Fence::Fence( Device const & device
-		, ashes::FenceCreateFlags flags )
-		: ashes::Fence{ device, flags }
-		, m_device{ device }
+		, VkFenceCreateFlags flags )
+		: m_device{ device }
 	{
 		auto context = m_device.getContext();
 		m_fence = glLogCall( context
@@ -35,7 +34,7 @@ namespace gl_renderer
 			, m_fence );
 	}
 
-	ashes::WaitResult Fence::wait( uint64_t timeout )const
+	VkResult Fence::wait( uint64_t timeout )const
 	{
 		auto context = m_device.getContext();
 		glLogCall( context

@@ -19,7 +19,6 @@ namespace gl_renderer
 	*	Une texture, avec son image et son échantillonneur.
 	*/
 	class Image
-		: public ashes::Image
 	{
 	public:
 		/**
@@ -31,8 +30,8 @@ namespace gl_renderer
 		*	Le périphérique logique.
 		*/
 		Image( Device const & device
-			, ashes::Format format
-			, ashes::Extent2D const & dimensions );
+			, VkFormat format
+			, VkExtent2D const & dimensions );
 		/**
 		*\brief
 		*	Constructeur.
@@ -50,7 +49,7 @@ namespace gl_renderer
 		*	Le périphérique logique.
 		*/
 		Image( Device const & device
-			, ashes::ImageCreateInfo const & createInfo );
+			, VkImageCreateInfo const & createInfo );
 		/**
 		*\brief
 		*	Destructeur.
@@ -59,15 +58,19 @@ namespace gl_renderer
 		/**
 		*\copydoc	ashes::Image::getMemoryRequirements
 		*/
-		ashes::MemoryRequirements getMemoryRequirements()const override;
+		VkMemoryRequirements getMemoryRequirements()const;
+		/**
+		*\copydoc	ashes::Image::bindMemory
+		*/
+		void bindMemory( DeviceMemoryPtr memory )const;
 		/**
 		*\copydoc	ashes::Image::getMemoryRequirements
 		*/
-		void generateMipmaps( ashes::CommandBuffer & commandBuffer )const override;
+		void generateMipmaps( CommandBuffer & commandBuffer )const;
 		/**
 		*\copydoc	ashes::Image::createView
 		*/
-		ashes::ImageViewPtr createView( ashes::ImageViewCreateInfo const & createInfo )const override;
+		ImageViewPtr createView( VkImageViewCreateInfo const & createInfo )const;
 
 		inline bool hasImage()const noexcept
 		{
@@ -90,23 +93,15 @@ namespace gl_renderer
 			assert( hasInternal() );
 			return m_texture;
 		}
-		/**
-		*\return
-		*	Le nombre d'échantillons.
-		*/
-		inline ashes::SampleCountFlag getSamplesCount()const noexcept
-		{
-			return m_createInfo.samples;
-		}
 
-	private:
-		void doBindMemory()override;
+		VkImageCreateInfo const createInfo;
 
 	private:
 		Device const & m_device;
 		GlTextureType m_target;
 		GLuint m_texture{ GL_INVALID_INDEX };
 		bool m_ownTexture{ true };
+		mutable DeviceMemoryPtr m_storage;
 	};
 }
 

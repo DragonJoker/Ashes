@@ -33,7 +33,7 @@ namespace gl_renderer
 		*	The creation informations.
 		*/
 		SwapChain( Device const & device
-			, ashes::SwapChainCreateInfo createInfo );
+			, VkSwapchainCreateInfoKHR createInfo );
 		~SwapChain();
 		/**
 		*\copydoc	ashes::SwapChain::getImages

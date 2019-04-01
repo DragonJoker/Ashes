@@ -31,10 +31,10 @@ namespace gl_renderer
 		{
 		public:
 			ImageMemory( Device const & device
-				, ashes::MemoryAllocateInfo allocateInfo
+				, VkMemoryAllocateInfo allocateInfo
 				, Image const & texture
 				, GLuint boundTarget
-				, ashes::ImageCreateInfo const & createInfo )
+				, VkImageCreateInfo const & createInfo )
 				: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ), texture.getInternal(), boundTarget }
 				, m_texture{ &texture }
 				, m_internal{ getInternalFormat( m_texture->getFormat() ) }
@@ -114,7 +114,7 @@ namespace gl_renderer
 					, 0 );
 
 				// If the texture is visible to the host, we'll need a PBO to map it to RAM.
-				if ( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible ) )
+				if ( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 				{
 					glLogCall( context
 						, glGenBuffers
@@ -168,7 +168,7 @@ namespace gl_renderer
 				, uint64_t size
 				, ashes::MemoryMapFlags flags )const override
 			{
-				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible )
+				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
 				auto context = m_device.getContext();
 				glLogCall( context
@@ -190,7 +190,7 @@ namespace gl_renderer
 			void flush( uint64_t offset
 				, uint64_t size )const override
 			{
-				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible )
+				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
 				assertDebugValue( m_isLocked, true );
 				auto context = m_device.getContext();
@@ -204,7 +204,7 @@ namespace gl_renderer
 			void invalidate( uint64_t offset
 				, uint64_t size )const override
 			{
-				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible )
+				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
 				assertDebugValue( m_isLocked, true );
 				auto context = m_device.getContext();
@@ -217,7 +217,7 @@ namespace gl_renderer
 
 			void unlock()const override
 			{
-				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible )
+				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
 				assertDebugValue( m_isLocked, true );
 
@@ -261,7 +261,7 @@ namespace gl_renderer
 		private:
 			void doSetImage1D( ContextLock const & context
 				, uint32_t width
-				, ashes::ImageCreateInfo const & createInfo )
+				, VkImageCreateInfo const & createInfo )
 			{
 				glLogCall( context
 					, glTexStorage1D
@@ -274,7 +274,7 @@ namespace gl_renderer
 			void doSetImage2D( ContextLock const & context
 				, uint32_t width
 				, uint32_t height
-				, ashes::ImageCreateInfo const & createInfo )
+				, VkImageCreateInfo const & createInfo )
 			{
 				glLogCall( context
 					, glTexStorage2D
@@ -289,7 +289,7 @@ namespace gl_renderer
 				, uint32_t width
 				, uint32_t height
 				, uint32_t depth
-				, ashes::ImageCreateInfo const & createInfo )
+				, VkImageCreateInfo const & createInfo )
 			{
 				glLogCall( context
 					, glTexStorage3D
@@ -304,7 +304,7 @@ namespace gl_renderer
 			void doSetImage2DMS( ContextLock const & context
 				, uint32_t width
 				, uint32_t height
-				, ashes::ImageCreateInfo const & createInfo )
+				, VkImageCreateInfo const & createInfo )
 			{
 				glLogCall( context
 					, glTexStorage2DMultisample
@@ -320,7 +320,7 @@ namespace gl_renderer
 				, uint32_t width
 				, uint32_t height
 				, uint32_t depth
-				, ashes::ImageCreateInfo const & createInfo )
+				, VkImageCreateInfo const & createInfo )
 			{
 				glLogCall( context
 					, glTexStorage3DMultisample
@@ -537,7 +537,7 @@ namespace gl_renderer
 		{
 		public:
 			BufferMemory( Device const & device
-				, ashes::MemoryAllocateInfo allocateInfo
+				, VkMemoryAllocateInfo allocateInfo
 				, GLuint boundResource
 				, GLuint boundTarget )
 				: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ), boundResource, boundTarget }
@@ -563,7 +563,7 @@ namespace gl_renderer
 				, uint64_t size
 				, ashes::MemoryMapFlags flags )const override
 			{
-				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible )
+				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, false );
 				auto context = m_device.getContext();
@@ -584,7 +584,7 @@ namespace gl_renderer
 			void flush( uint64_t offset
 				, uint64_t size )const override
 			{
-				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible )
+				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, true );
 				auto context = m_device.getContext();
@@ -598,7 +598,7 @@ namespace gl_renderer
 			void invalidate( uint64_t offset
 				, uint64_t size )const override
 			{
-				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible )
+				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, true );
 				auto context = m_device.getContext();
@@ -611,7 +611,7 @@ namespace gl_renderer
 
 			void unlock()const override
 			{
-				assert( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible )
+				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, true );
 				auto context = m_device.getContext();
@@ -633,7 +633,7 @@ namespace gl_renderer
 	//************************************************************************************************
 
 	DeviceMemory::DeviceMemoryImpl::DeviceMemoryImpl( Device const & device
-		, ashes::MemoryAllocateInfo allocateInfo
+		, VkMemoryAllocateInfo allocateInfo
 		, GLuint boundResource
 		, GLuint boundTarget )
 		: m_device{ device }
@@ -643,12 +643,12 @@ namespace gl_renderer
 		, m_boundTarget{ boundTarget }
 		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
 	{
-		if ( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostVisible ) )
+		if ( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 		{
 			m_mapFlags |= GL_MEMORY_MAP_READ_BIT | GL_MEMORY_MAP_WRITE_BIT | GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
 		}
 
-		if ( checkFlag( m_flags, ashes::MemoryPropertyFlag::eHostCoherent ) )
+		if ( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
 		{
 			m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
 		}
@@ -657,7 +657,7 @@ namespace gl_renderer
 	//************************************************************************************************
 
 	DeviceMemory::DeviceMemory( Device const & device
-		, ashes::MemoryAllocateInfo allocateInfo )
+		, VkMemoryAllocateInfo allocateInfo )
 		: ashes::DeviceMemory{ device, std::move( allocateInfo ) }
 		, m_device{ device }
 	{
@@ -678,7 +678,7 @@ namespace gl_renderer
 
 	void DeviceMemory::bindToImage( Image const & texture
 		, GLenum target
-		, ashes::ImageCreateInfo const & createInfo )
+		, VkImageCreateInfo const & createInfo )
 	{
 		assert( !m_impl && "Memory object was already bound to a resource object" );
 		m_impl = std::make_unique< ImageMemory >( m_device

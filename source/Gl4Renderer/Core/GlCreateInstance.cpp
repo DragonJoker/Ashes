@@ -1,6 +1,9 @@
 #include "Core/GlCreateInstance.hpp"
 #include "Core/GlInstance.hpp"
 
+#include "Core/GlMswContext.hpp"
+#include "Core/GlX11Context.hpp"
+
 #include <Ashes/Core/Exception.hpp>
 
 extern "C"
@@ -47,9 +50,9 @@ extern "C"
 	{
 		static ashes::ExtensionPropertiesArray const extensions
 		{
-			{ ashes::KHR_SURFACE_EXTENSION_NAME, ashes::makeVersion( 1, 0, 0 ) },
-			{ ashes::KHR_PLATFORM_SURFACE_EXTENSION_NAME, ashes::makeVersion( 1, 0, 0 ) },
-			{ ashes::EXT_DEBUG_REPORT_EXTENSION_NAME, ashes::makeVersion( 1, 0, 0 ) },
+			{ VK_KHR_SURFACE_EXTENSION_NAME, ashes::makeVersion( 1, 0, 0 ) },
+			{ VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME, ashes::makeVersion( 1, 0, 0 ) },
+			{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, ashes::makeVersion( 1, 0, 0 ) },
 		};
 
 		*count = uint32_t( extensions.size() );

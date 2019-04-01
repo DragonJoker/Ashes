@@ -29,7 +29,7 @@ namespace gl_renderer
 		*	Indique la manière dont les commandes de la première sous-passe sont fournies.
 		*/
 		BeginSubpassCommand( Device const & device
-			, ashes::RenderPass const & renderPass
+			, RenderPass const & renderPass
 			, ashes::FrameBuffer const & frameBuffer
 			, ashes::SubpassDescription const & subpass );
 

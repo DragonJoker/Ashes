@@ -10,11 +10,11 @@ namespace gl_renderer
 {
 	/**
 	*\brief
-	*	Convertit un ashes::SampleCountFlag en VkSampleCountFlagBits.
+	*	Convertit un VkSampleCountFlagBits en VkSampleCountFlagBits.
 	*\param[in] flags
-	*	Le ashes::SampleCountFlag.
+	*	Le VkSampleCountFlagBits.
 	*\return
 	*	Le VkSampleCountFlagBits.
 	*/
-	GLsizei convert( ashes::SampleCountFlag const & flags );
+	GLsizei convert( VkSampleCountFlagBits const & flags );
 }

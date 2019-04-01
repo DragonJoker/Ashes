@@ -31,33 +31,33 @@ namespace gl_renderer
 			return result;
 		}
 
-		bool isInteger( ashes::Format format )
+		bool isInteger( VkFormat format )
 		{
-			return format != ashes::Format::eR16_SFLOAT
-				&& format != ashes::Format::eR16G16_SFLOAT
-				&& format != ashes::Format::eR16G16B16_SFLOAT
-				&& format != ashes::Format::eR16G16B16A16_SFLOAT
-				&& format != ashes::Format::eR32_SFLOAT
-				&& format != ashes::Format::eR32G32_SFLOAT
-				&& format != ashes::Format::eR32G32B32_SFLOAT
-				&& format != ashes::Format::eR32G32B32A32_SFLOAT
-				&& format != ashes::Format::eR64_SFLOAT
-				&& format != ashes::Format::eR64G64_SFLOAT
-				&& format != ashes::Format::eR64G64B64_SFLOAT
-				&& format != ashes::Format::eR64G64B64A64_SFLOAT
-				&& format != ashes::Format::eB10G11R11_UFLOAT_PACK32
-				&& format != ashes::Format::eE5B9G9R9_UFLOAT_PACK32
-				&& format != ashes::Format::eD32_SFLOAT
-				&& format != ashes::Format::eD32_SFLOAT_S8_UINT
-				&& format != ashes::Format::eBC6H_UFLOAT_BLOCK
-				&& format != ashes::Format::eBC6H_SFLOAT_BLOCK;
+			return format != VK_FORMAT_R16_SFLOAT
+				&& format != VK_FORMAT_R16G16_SFLOAT
+				&& format != VK_FORMAT_R16G16B16_SFLOAT
+				&& format != VK_FORMAT_R16G16B16A16_SFLOAT
+				&& format != VK_FORMAT_R32_SFLOAT
+				&& format != VK_FORMAT_R32G32_SFLOAT
+				&& format != VK_FORMAT_R32G32B32_SFLOAT
+				&& format != VK_FORMAT_R32G32B32A32_SFLOAT
+				&& format != VK_FORMAT_R64_SFLOAT
+				&& format != VK_FORMAT_R64G64_SFLOAT
+				&& format != VK_FORMAT_R64G64B64_SFLOAT
+				&& format != VK_FORMAT_R64G64B64A64_SFLOAT
+				&& format != VK_FORMAT_B10G11R11_UFLOAT_PACK32
+				&& format != VK_FORMAT_E5B9G9R9_UFLOAT_PACK32
+				&& format != VK_FORMAT_D32_SFLOAT
+				&& format != VK_FORMAT_D32_SFLOAT_S8_UINT
+				&& format != VK_FORMAT_BC6H_UFLOAT_BLOCK
+				&& format != VK_FORMAT_BC6H_SFLOAT_BLOCK;
 		}
 	}
 
 	GeometryBuffers::GeometryBuffers( Device const & device
 		, VboBindings const & vbos
 		, IboBinding const & ibo
-		, ashes::VertexInputState const & vertexInputState
+		, VkPipelineVertexInputStateCreateInfo const & vertexInputState
 		, ashes::IndexType type )
 		: m_device{ device }
 		, m_vbos{ createVBOs( vbos, vertexInputState ) }
@@ -186,7 +186,7 @@ namespace gl_renderer
 	}
 
 	std::vector< GeometryBuffers::VBO > GeometryBuffers::createVBOs( VboBindings const & vbos
-		, ashes::VertexInputState const & vertexInputState )
+		, VkPipelineVertexInputStateCreateInfo const & vertexInputState )
 	{
 		std::vector< GeometryBuffers::VBO > result;
 		assert( vbos.size() == vertexInputState.vertexBindingDescriptions.size() );

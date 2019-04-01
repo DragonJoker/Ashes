@@ -7,7 +7,7 @@ namespace gl_renderer
 	QueryPool::QueryPool( Device const & device
 		, ashes::QueryType type
 		, uint32_t count
-		, ashes::QueryPipelineStatisticFlags pipelineStatistics )
+		, VkQueryPipelineStatisticFlags pipelineStatistics )
 		: ashes::QueryPool{ device, type, count, pipelineStatistics }
 		, m_device{ device }
 		, m_names( size_t( count ), GLuint( GL_INVALID_INDEX ) )
@@ -31,7 +31,7 @@ namespace gl_renderer
 	void QueryPool::getResults( uint32_t firstQuery
 		, uint32_t queryCount
 		, uint32_t stride
-		, ashes::QueryResultFlags flags
+		, VkQueryResultFlags flags
 		, ashes::UInt32Array & data )const
 	{
 		assert( firstQuery + queryCount <= m_names.size() );
@@ -62,7 +62,7 @@ namespace gl_renderer
 	void QueryPool::getResults( uint32_t firstQuery
 		, uint32_t queryCount
 		, uint32_t stride
-		, ashes::QueryResultFlags flags
+		, VkQueryResultFlags flags
 		, ashes::UInt64Array & data )const
 	{
 		assert( firstQuery + queryCount <= m_names.size() );

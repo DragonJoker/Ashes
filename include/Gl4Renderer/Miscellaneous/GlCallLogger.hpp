@@ -231,7 +231,7 @@ namespace gl_renderer
 
 	inline std::string toString( GlShaderStageFlags value )
 	{
-		return getName( value );
+		return getShaderStageFlagName( value );
 	}
 
 	inline std::string toString( GlStencilOp value )

@@ -17,11 +17,11 @@ namespace gl_renderer
 	std::string getName( GlQueryResultFlags value );
 	/**
 	*\brief
-	*	Convertit un ashes::QueryResultFlags en GLuint.
+	*	Convertit un VkQueryResultFlags en GLuint.
 	*\param[in] flags
-	*	Le ashes::QueryResultFlags.
+	*	Le VkQueryResultFlags.
 	*\return
 	*	Le GLuint.
 	*/
-	GLuint convert( ashes::QueryResultFlags const & flags );
+	GlQueryResultFlags convertQueryResultFlags( VkQueryResultFlags const & flags );
 }

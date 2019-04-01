@@ -82,6 +82,7 @@ namespace gl_renderer
 
 			m_major = version / 10;
 			m_minor = version % 10;
+			m_shaderVersion = version * 10;
 		}
 
 		auto const * cextensions = ( char const * )glGetString( GL_EXTENSIONS );

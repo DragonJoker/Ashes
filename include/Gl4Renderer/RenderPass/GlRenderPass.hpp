@@ -13,22 +13,26 @@ namespace gl_renderer
 	struct AttachmentDescription
 	{
 		uint32_t index;
-		std::reference_wrapper< ashes::AttachmentDescription const > attach;
+		std::reference_wrapper< VkAttachmentDescription const > attach;
 	};
 
 	class RenderPass
-		: public ashes::RenderPass
 	{
 	public:
 		RenderPass( Device const & device
-			, ashes::RenderPassCreateInfo createInfo );
+			, VkRenderPassCreateInfo createInfo );
 		/**
-		*\copydoc	ashes::RenderPass::createFrameBuffer
+		*\copydoc	RenderPass::createFrameBuffer
 		*/
-		ashes::FrameBufferPtr createFrameBuffer( ashes::Extent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray textures )const override;
+		ashes::FrameBufferPtr createFrameBuffer( VkExtent2D const & dimensions
+			, ashes::FrameBufferAttachmentArray textures )const;
 
-		uint32_t getAttachmentIndex( ashes::AttachmentDescription const & attach )const;
+		uint32_t getAttachmentIndex( VkAttachmentDescription const & attach )const;
+
+		inline AttachmentDescriptionArray const & getAttachments()const
+		{
+			return m_attachments;
+		}
 
 		inline std::vector< AttachmentDescription > const & getColourAttaches()const
 		{
@@ -40,7 +44,7 @@ namespace gl_renderer
 			return m_hasDepthAttach;
 		}
 
-		inline ashes::AttachmentDescription const & getDepthAttach()const
+		inline VkAttachmentDescription const & getDepthAttach()const
 		{
 			return m_depthAttach;
 		}
@@ -48,7 +52,8 @@ namespace gl_renderer
 	private:
 		Device const & m_device;
 		bool m_hasDepthAttach{ false };
-		ashes::AttachmentDescription m_depthAttach;
+		VkAttachmentDescription m_depthAttach;
 		std::vector< AttachmentDescription > m_colourAttaches;
+		AttachmentDescriptionArray m_attachments;
 	};
 }

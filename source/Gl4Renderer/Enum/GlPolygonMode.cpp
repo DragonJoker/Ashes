@@ -21,17 +21,17 @@ namespace gl_renderer
 		}
 	}
 
-	GlPolygonMode convert( ashes::PolygonMode const & value )
+	GlPolygonMode convert( VkPolygonMode const & value )
 	{
 		switch ( value )
 		{
-		case ashes::PolygonMode::eFill:
+		case VK_POLYGON_MODE_FILL:
 			return GL_POLYGON_MODE_FILL;
 
-		case ashes::PolygonMode::eLine:
+		case VK_POLYGON_MODE_LINE:
 			return GL_POLYGON_MODE_LINE;
 
-		case ashes::PolygonMode::ePoint:
+		case VK_POLYGON_MODE_POINT:
 			return GL_POLYGON_MODE_POINT;
 
 		default:
