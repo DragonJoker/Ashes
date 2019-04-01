@@ -140,7 +140,7 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	ashes::DevicePtr Instance::createDevice( ashes::SurfacePtr surface
+	ashes::DevicePtr Instance::createDevice( ashes::PhysicalDevice const & physicalDevice
 		, ashes::DeviceCreateInfo createInfos )const
 	{
 		ashes::DevicePtr result;
@@ -148,7 +148,7 @@ namespace d3d11_renderer
 		try
 		{
 			result = std::make_shared< Device >( *this
-				, std::move( surface )
+				, static_cast< PhysicalDevice const & >( physicalDevice )
 				, std::move( createInfos ) );
 		}
 		catch ( std::exception & exc )

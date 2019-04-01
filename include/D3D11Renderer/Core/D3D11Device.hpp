@@ -19,7 +19,7 @@ namespace d3d11_renderer
 	{
 	public:
 		Device( Instance const & instance
-			, ashes::SurfacePtr surface
+			, PhysicalDevice const & physicalDevice
 			, ashes::DeviceCreateInfo createInfos );
 		~Device();
 		/*
@@ -152,11 +152,6 @@ namespace d3d11_renderer
 		*\return
 		*	The connection to the application.
 		*/
-		inline ashes::Surface const & getSurface()const
-		{
-			return *m_surface;
-		}
-
 		inline D3D_FEATURE_LEVEL getFeatureLevel()const
 		{
 			return m_featureLevel;
@@ -174,7 +169,7 @@ namespace d3d11_renderer
 
 		inline PhysicalDevice const & getGpu()const
 		{
-			return m_gpu;
+			return m_physicalDevice;
 		}
 
 #if !defined( NDEBUG )
@@ -193,8 +188,7 @@ namespace d3d11_renderer
 
 	private:
 		Instance const & m_instance;
-		PhysicalDevice const & m_gpu;
-		ashes::SurfacePtr m_surface;
+		PhysicalDevice const & m_physicalDevice;
 		ID3D11Device * m_d3dDevice;
 		ID3D11DeviceContext * m_deviceContext;
 		ID3D11Query * m_waitIdleQuery;

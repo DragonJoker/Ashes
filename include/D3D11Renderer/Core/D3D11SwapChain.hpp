@@ -67,5 +67,6 @@ namespace d3d11_renderer
 		Device const & m_device;
 		uint32_t m_currentBuffer{};
 		IDXGISwapChain * m_swapChain;
+		Surface const & m_surface;
 	};
 }

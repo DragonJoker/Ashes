@@ -25,7 +25,7 @@ namespace utils
 	{
 	public:
 		Device( ashes::Instance const & instance
-			, ashes::SurfacePtr surface );
+			, ashes::Surface const & surface );
 		/**
 		*\~english
 		*\brief

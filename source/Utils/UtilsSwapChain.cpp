@@ -18,9 +18,8 @@ namespace utils
 {
 	namespace
 	{
-		uint32_t doGetImageCount( ashes::Device const & device )
+		uint32_t doGetImageCount( ashes::Surface const & surface )
 		{
-			auto & surface = device.getSurface();
 			auto surfaceCaps = surface.getCapabilities();
 			uint32_t desiredNumberOfSwapChainImages{ surfaceCaps.minImageCount + 1 };
 
@@ -34,9 +33,8 @@ namespace utils
 			return desiredNumberOfSwapChainImages;
 		}
 
-		ashes::SurfaceFormat doSelectFormat( ashes::Device const & device )
+		ashes::SurfaceFormat doSelectFormat( ashes::Surface const & surface )
 		{
-			auto & surface = device.getSurface();
 			ashes::SurfaceFormat result;
 			auto formats = surface.getFormats();
 			// Si la liste de formats ne contient qu'une entr�e VK_FORMAT_UNDEFINED,
@@ -70,9 +68,8 @@ namespace utils
 			return result;
 		}
 
-		ashes::PresentMode doSelectPresentMode( ashes::Device const & device )
+		ashes::PresentMode doSelectPresentMode( ashes::Surface const & surface )
 		{
-			auto & surface = device.getSurface();
 			auto presentModes = surface.getPresentModes();
 			// Si le mode boîte aux lettres est disponible, on utilise celui-là, car c'est celui avec le
 			// minimum de latence dans tearing.
@@ -98,11 +95,10 @@ namespace utils
 			return result;
 		}
 
-		ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Device const & device
+		ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Surface const & surface
 			, ashes::Extent2D const & size )
 		{
 			ashes::Extent2D swapChainExtent{};
-			auto & surface = device.getSurface();
 			auto surfaceCaps = surface.getCapabilities();
 
 			// width et height valent soient tous les deux -1 ou tous les deux autre chose que -1.
@@ -137,13 +133,13 @@ namespace utils
 				preTransform = surfaceCaps.currentTransform;
 			}
 
-			auto presentMode = doSelectPresentMode( device );
-			auto surfaceFormat = doSelectFormat( device );
+			auto presentMode = doSelectPresentMode( surface );
+			auto surfaceFormat = doSelectFormat( surface );
 			return ashes::SwapChainCreateInfo
 			{
 				ashes::SwapChainCreateFlag::eNone,
 				std::ref( surface ),
-				doGetImageCount( device ),
+				doGetImageCount( surface ),
 				surfaceFormat.format,
 				surfaceFormat.colorSpace,
 				swapChainExtent,
@@ -173,11 +169,13 @@ namespace utils
 
 	SwapChain::SwapChain( ashes::Device const & device
 		, ashes::CommandPool const & commandPool
+		, ashes::SurfacePtr surface
 		, ashes::Extent2D const & size )
 		: m_device{ device }
 		, m_commandPool{ commandPool }
+		, m_surface{ std::move( surface ) }
 		, m_dimensions{ size }
-		, m_swapChain{ device.createSwapChain( doGetSwapChainCreateInfo( device, size ) ) }
+		, m_swapChain{ device.createSwapChain( doGetSwapChainCreateInfo( *m_surface, size ) ) }
 		, m_swapChainImages{ m_swapChain->getImages() }
 	{
 		for ( uint32_t i = 0u; i < uint32_t( m_swapChainImages.size() ); ++i )
@@ -353,7 +351,7 @@ namespace utils
 		m_swapChainImages.clear();
 		m_renderingResources.clear();
 		m_swapChain.reset();
-		m_swapChain = m_device.createSwapChain( doGetSwapChainCreateInfo( m_device, m_dimensions ) );
+		m_swapChain = m_device.createSwapChain( doGetSwapChainCreateInfo( *m_surface, m_dimensions ) );
 		m_swapChainImages = m_swapChain->getImages();
 
 		for ( uint32_t i = 0u; i < uint32_t( m_swapChainImages.size() ); ++i )

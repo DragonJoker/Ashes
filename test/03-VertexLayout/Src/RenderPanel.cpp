@@ -52,9 +52,9 @@ namespace vkapp
 		{
 			auto surface = doCreateSurface( instance );
 			std::cout << "Surface created." << std::endl;
-			doCreateDevice( instance, std::move( surface ) );
+			doCreateDevice( instance, *surface );
 			std::cout << "Logical device created." << std::endl;
-			doCreateSwapChain();
+			doCreateSwapChain( std::move( surface ) );
 			std::cout << "Swapchain created." << std::endl;
 			doCreateRenderPass();
 			std::cout << "Render pass created." << std::endl;
@@ -113,7 +113,7 @@ namespace vkapp
 	}
 
 	void RenderPanel::doCreateDevice( utils::Instance const & instance
-		, ashes::SurfacePtr surface )
+		, ashes::Surface const & surface )
 	{
 		m_device = std::make_unique< utils::Device >( instance.getInstance()
 			, std::move( surface ) );
@@ -123,11 +123,12 @@ namespace vkapp
 			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
 	}
 
-	void RenderPanel::doCreateSwapChain()
+	void RenderPanel::doCreateSwapChain( ashes::SurfacePtr surface )
 	{
 		wxSize size{ GetClientSize() };
 		m_swapChain = std::make_unique< utils::SwapChain >( m_device->getDevice()
 			, *m_commandPool
+			, std::move( surface )
 			, ashes::Extent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
 		m_clearColour = ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()

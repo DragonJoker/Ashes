@@ -35,6 +35,7 @@ namespace utils
 		*/
 		SwapChain( ashes::Device const & device
 			, ashes::CommandPool const & commandPool
+			, ashes::SurfacePtr surface
 			, ashes::Extent2D const & size );
 		/**
 		*\~french
@@ -146,6 +147,7 @@ namespace utils
 	private:
 		ashes::Device const & m_device;
 		ashes::CommandPool const & m_commandPool;
+		ashes::SurfacePtr m_surface;
 		ashes::Extent2D m_dimensions;
 		ashes::SwapChainPtr m_swapChain;
 		ashes::ImagePtrArray m_swapChainImages;

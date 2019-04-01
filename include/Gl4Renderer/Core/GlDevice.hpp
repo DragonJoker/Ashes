@@ -21,58 +21,6 @@ See LICENSE file in root folder
 
 namespace gl_renderer
 {
-	class ContextLock
-	{
-	public:
-		ContextLock( ContextLock const & ) = delete;
-		ContextLock & operator=( ContextLock const & ) = delete;
-
-		inline ContextLock( Context const & context )
-			: m_context{ &context }
-			, m_disable{ !context.isEnabled() }
-		{
-			if ( m_disable )
-			{
-				m_context->enable();
-			}
-		}
-
-		ContextLock( ContextLock && rhs )
-			: m_context{ rhs.m_context }
-			, m_disable{ rhs.m_disable }
-		{
-			rhs.m_context = nullptr;
-		}
-
-		ContextLock & operator=( ContextLock && rhs )
-		{
-			if ( &rhs != this )
-			{
-				m_context = rhs.m_context;
-				m_disable = rhs.m_disable;
-				rhs.m_context = nullptr;
-			}
-
-			return *this;
-		}
-
-		inline ~ContextLock()
-		{
-			if ( m_context && m_disable )
-			{
-				m_context->disable();
-			}
-		}
-
-		Context const * operator->()const
-		{
-			return m_context;
-		}
-
-	private:
-		Context const * m_context;
-		bool m_disable;
-	};
 	/**
 	*\brief
 	*	Classe contenant les informations liées au GPU logique.
@@ -93,7 +41,7 @@ namespace gl_renderer
 		*/
 		Device( Instance const & instance
 			, PhysicalDevice const & gpu
-			, ashes::SurfacePtr surface
+			, Context & context
 			, ashes::DeviceCreateInfo createInfos );
 		~Device();
 		/**
@@ -195,9 +143,12 @@ namespace gl_renderer
 		*/
 		void swapBuffers()const;
 
+		void registerContext( ashes::WindowHandle const & handle )const;
+		void unregisterContext( ashes::WindowHandle const & handle )const;
+
 		inline ContextLock getContext()const
 		{
-			return { *m_context };
+			return { *m_currentContext };
 		}
 
 		inline void setCurrentFramebuffer( GLuint fbo )const
@@ -276,12 +227,13 @@ namespace gl_renderer
 		}
 
 	private:
+		void doInitialiseContext( ContextLock const & context )const;
 		void doCreateQueues();
 
 	private:
 		Instance const & m_instance;
-		ashes::SurfacePtr m_surface;
-		ContextPtr m_context;
+		mutable ContextPtr m_ownContext;
+		mutable Context * m_currentContext;
 		struct Vertex
 		{
 			float x;
@@ -306,7 +258,7 @@ namespace gl_renderer
 		using QueueCreateCount = std::pair< ashes::DeviceQueueCreateInfo, uint32_t >;
 		std::map< uint32_t, QueueCreateCount > m_queues;
 		mutable GLuint m_currentProgram;
-		GLuint m_blitFbos[2];
+		mutable GLuint m_blitFbos[2];
 		mutable GLuint m_fbo{ 0u };
 	};
 }

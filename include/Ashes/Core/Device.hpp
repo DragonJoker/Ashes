@@ -49,8 +49,6 @@ namespace ashes
 		*	The Instance instance.
 		*\param[in] gpu
 		*	The physical device.
-		*\param[in] surface
-		*	The surface.
 		*	The creation informations.
 		*\~french
 		*\brief
@@ -59,14 +57,11 @@ namespace ashes
 		*	L'instance.
 		*\param[in] gpu
 		*	Le périphérique physique.
-		*\param[in] surface
-		*	La surface.
 		*\param[in] createInfos
 		*	Les informations de création.
 		*/
 		Device( Instance const & instance
 			, PhysicalDevice const & gpu
-			, Surface const & surface
 			, DeviceCreateInfo createInfos );
 
 	public:
@@ -758,11 +753,6 @@ namespace ashes
 			return m_gpu;
 		}
 
-		inline Surface const & getSurface()const
-		{
-			return m_surface;
-		}
-
 		inline float getTimestampPeriod()const
 		{
 			return m_timestampPeriod;
@@ -792,7 +782,6 @@ namespace ashes
 	protected:
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
-		Surface const & m_surface;
 		DeviceCreateInfo m_createInfos;
 		float m_timestampPeriod;
 		uint32_t m_shaderVersion;

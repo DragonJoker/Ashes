@@ -25,9 +25,10 @@ namespace vkapp
 		void doCleanup();
 		ashes::SurfacePtr doCreateSurface( utils::Instance const & instance );
 		void doCreateDevice( utils::Instance const & instance
-			, ashes::SurfacePtr surface );
+			, ashes::Surface const & surface );
 
 	private:
+		ashes::SurfacePtr m_surface;
 		ashes::DevicePtr m_device;
 	};
 }

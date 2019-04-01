@@ -1,12 +1,9 @@
 /*
 See LICENSE file in root folder
 */
-#ifndef ___GL_CONTEXT_H___
-#define ___GL_CONTEXT_H___
+#pragma once
 
 #include "Gl3Renderer/GlRendererPrerequisites.hpp"
-
-#include "Gl3Renderer/Core/GlSurface.hpp"
 
 #include <atomic>
 
@@ -15,8 +12,7 @@ namespace gl_renderer
 	class Context
 	{
 	protected:
-		Context( PhysicalDevice const & gpu
-			, ashes::Surface const & surface );
+		Context( Instance const & instance );
 
 	public:
 		virtual ~Context();
@@ -45,8 +41,8 @@ namespace gl_renderer
 		*\brief
 		*	Crée un contexte.
 		*/
-		static ContextPtr create( PhysicalDevice const & gpu
-			, ashes::Surface const & surface
+		static ContextPtr create( Instance const & instance
+			, ashes::WindowHandle const & handle
 			, Context const * mainContext );
 
 #define GL_LIB_BASE_FUNCTION( fun )\
@@ -91,8 +87,7 @@ namespace gl_renderer
 		PFN_glObjectPtrLabel glObjectPtrLabel = nullptr;
 
 	protected:
-		PhysicalDevice const & m_gpu;
-		ashes::Surface const & m_surface;
+		Instance const & m_instance;
 		mutable std::atomic< bool > m_enabled{ false };
 
 		using PFN_glDebugMessageCallback = void ( GLAPIENTRY * )( PFNGLDEBUGPROC callback, void * userParam );
@@ -101,6 +96,57 @@ namespace gl_renderer
 		PFN_glDebugMessageCallback glDebugMessageCallback = nullptr;
 		PFN_glDebugMessageCallbackAMD glDebugMessageCallbackAMD = nullptr;
 	};
-}
 
-#endif
+	class ContextLock
+	{
+	public:
+		ContextLock( ContextLock const & ) = delete;
+		ContextLock & operator=( ContextLock const & ) = delete;
+
+		inline ContextLock( Context const & context )
+			: m_context{ &context }
+			, m_disable{ !context.isEnabled() }
+		{
+			if ( m_disable )
+			{
+				m_context->enable();
+			}
+		}
+
+		ContextLock( ContextLock && rhs )
+			: m_context{ rhs.m_context }
+			, m_disable{ rhs.m_disable }
+		{
+			rhs.m_context = nullptr;
+		}
+
+		ContextLock & operator=( ContextLock && rhs )
+		{
+			if ( &rhs != this )
+			{
+				m_context = rhs.m_context;
+				m_disable = rhs.m_disable;
+				rhs.m_context = nullptr;
+			}
+
+			return *this;
+		}
+
+		inline ~ContextLock()
+		{
+			if ( m_context && m_disable )
+			{
+				m_context->disable();
+			}
+		}
+
+		Context const * operator->()const
+		{
+			return m_context;
+		}
+
+	private:
+		Context const * m_context;
+		bool m_disable;
+	};
+}

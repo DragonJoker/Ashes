@@ -12,6 +12,8 @@
 
 namespace gl_renderer
 {
+	class RenderWindow;
+
 	class Instance
 		: public ashes::Instance
 	{
@@ -21,6 +23,7 @@ namespace gl_renderer
 		*	Constructeur, initialise l'instance de Vulkan.
 		*/
 		Instance( ashes::InstanceCreateInfo createInfo );
+		~Instance();
 		/**
 		*\copydoc	ashes::Instance::enumerateLayerProperties
 		*/
@@ -28,7 +31,7 @@ namespace gl_renderer
 		/**
 		*\copydoc	ashes::Instance::createDevice
 		*/
-		ashes::DevicePtr createDevice( ashes::SurfacePtr surface
+		ashes::DevicePtr createDevice( ashes::PhysicalDevice const & physicalDevice
 			, ashes::DeviceCreateInfo createInfos )const override;
 		/**
 		*\copydoc	ashes::Instance::createSurface
@@ -93,6 +96,11 @@ namespace gl_renderer
 			return m_extensions;
 		}
 
+		inline Context & getContext()const
+		{
+			return *m_context;
+		}
+
 		static inline ashes::PhysicalDeviceMemoryProperties const & getMemoryProperties()
 		{
 			return m_memoryProperties;
@@ -103,6 +111,8 @@ namespace gl_renderer
 		mutable std::vector< DebugReportAMDCallbackData > m_debugAMDCallbacks;
 		ExtensionsHandler m_extensions;
 		bool m_validationEnabled;
+		RenderWindow * m_dummyWindow;
+		ContextPtr m_context;
 		static ashes::PhysicalDeviceMemoryProperties const m_memoryProperties;
 	};
 }

@@ -92,6 +92,7 @@ namespace gl_renderer
 	class Device;
 	class FrameBuffer;
 	class GeometryBuffers;
+	class Instance;
 	class PhysicalDevice;
 	class Pipeline;
 	class PipelineLayout;

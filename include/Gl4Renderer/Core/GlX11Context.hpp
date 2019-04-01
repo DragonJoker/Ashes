@@ -15,8 +15,8 @@ namespace gl_renderer
 		: public Context
 	{
 	public:
-		X11Context( PhysicalDevice const & gpu
-			, ashes::Surface const & surface
+		X11Context( Instance const & instance
+			, ashes::WindowHandle const & handle
 			, Context const * mainContext );
 		~X11Context();
 

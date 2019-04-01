@@ -18,6 +18,7 @@ namespace d3d11_renderer
 		, ashes::SwapChainCreateInfo createInfo )
 		: ashes::SwapChain{ device, std::move( createInfo ) }
 		, m_device{ device }
+		, m_surface{ static_cast< Surface const & >( m_createInfo.surface.get() ) }
 	{
 		auto desc = doInitPresentParameters();
 		auto factory = m_device.getInstance().getDXGIFactory();
@@ -72,9 +73,9 @@ namespace d3d11_renderer
 	DXGI_SWAP_CHAIN_DESC SwapChain::doInitPresentParameters()
 	{
 		auto caps = m_surface.getCapabilities();
-		auto & descs = static_cast< Surface const & >( m_surface ).getDescs( m_createInfo.imageFormat );
+		auto & descs = m_surface.getDescs( m_createInfo.imageFormat );
 		assert( !descs.empty() );
-		auto hWnd = m_device.getSurface().getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd();
+		auto hWnd = m_surface.getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd();
 
 		auto & displayMode = descs.back();
 

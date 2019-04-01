@@ -32,15 +32,13 @@ See LICENSE file in root folder.
 namespace vk_renderer
 {
 	Device::Device( Instance const & instance
-		, ashes::SurfacePtr surface
+		, PhysicalDevice const & physicalDevice
 		, ashes::DeviceCreateInfo createInfos )
 		: ashes::Device{ instance
-			, surface->getGpu()
-			, *surface
+			, physicalDevice
 			, std::move( createInfos ) }
 		, m_instance{ instance }
-		, m_surface{ static_cast< Surface * >( surface.release() ) }
-		, m_gpu{ static_cast< PhysicalDevice const & >( ashes::Device::getPhysicalDevice() ) }
+		, m_gpu{ physicalDevice }
 		, m_vkCreateInfos{ convert( m_createInfos
 			, m_queueCreateInfos
 			, m_enabledLayerNames
