@@ -3,12 +3,13 @@ See LICENSE file in root folder
 */
 #pragma once
 
+#include "AshesPP/AshesPPPrerequisites.hpp"
+
 #include <fstream>
 #include <vector>
 
-namespace common
+namespace ashespp
 {
-	using StringArray = std::vector< std::string >;
 	/**
 	*\~english
 	*\brief

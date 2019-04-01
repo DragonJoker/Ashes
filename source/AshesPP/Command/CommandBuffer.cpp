@@ -1,0 +1,757 @@
+/*
+This file belongs to Ashes.
+See LICENSE file in root folder.
+*/
+#include "AshesPP/Command/CommandBuffer.hpp"
+
+#include "AshesPP/Buffer/VertexBuffer.hpp"
+#include "AshesPP/Buffer/UniformBuffer.hpp"
+#include "AshesPP/Descriptor/DescriptorSet.hpp"
+#include "AshesPP/Image/Image.hpp"
+#include "AshesPP/Image/ImageView.hpp"
+#include "AshesPP/Miscellaneous/QueryPool.hpp"
+#include "AshesPP/Pipeline/ComputePipeline.hpp"
+#include "AshesPP/Pipeline/GraphicsPipeline.hpp"
+#include "AshesPP/Pipeline/PipelineLayout.hpp"
+#include "AshesPP/RenderPass/FrameBuffer.hpp"
+#include "AshesPP/RenderPass/RenderPass.hpp"
+#include "AshesPP/Sync/Event.hpp"
+
+namespace ashespp
+{
+	namespace
+	{
+		bool areCompatible( VkPipelineStageFlags pipelineFlags
+			, VkAccessFlags accessFlags )
+		{
+			if ( ( pipelineFlags & VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT )
+				|| ( pipelineFlags & VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT ) )
+			{
+				return true;
+			}
+
+			if ( ( accessFlags & VkAccessFlagBits::VK_ACCESS_INDIRECT_COMMAND_READ_BIT ) )
+			{
+				return ( pipelineFlags & VkPipelineStageFlagBits::VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT );
+			}
+
+			if ( ( accessFlags & VkAccessFlagBits::VK_ACCESS_INDEX_READ_BIT )
+				|| ( accessFlags & VkAccessFlagBits::VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT ) )
+			{
+				return ( pipelineFlags & VkPipelineStageFlagBits::VK_PIPELINE_STAGE_VERTEX_INPUT_BIT );
+			}
+
+			if ( ( accessFlags & VkAccessFlagBits::VK_ACCESS_UNIFORM_READ_BIT )
+				|| ( accessFlags & VkAccessFlagBits::VK_ACCESS_SHADER_READ_BIT )
+				|| ( accessFlags & VkAccessFlagBits::VK_ACCESS_SHADER_WRITE_BIT ) )
+			{
+				return ( pipelineFlags & VkPipelineStageFlagBits::VK_PIPELINE_STAGE_VERTEX_SHADER_BIT)
+					|| ( pipelineFlags & VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT )
+					|| ( pipelineFlags & VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT )
+					|| ( pipelineFlags & VkPipelineStageFlagBits::VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT )
+					|| ( pipelineFlags & VkPipelineStageFlagBits::VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )
+					|| ( pipelineFlags & VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT );
+			}
+
+			if ( ( accessFlags, VkAccessFlagBits::VK_ACCESS_INPUT_ATTACHMENT_READ_BIT ) )
+			{
+				return ( pipelineFlags, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
+			}
+
+			if ( ( accessFlags, VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_READ_BIT )
+				|| ( accessFlags & VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT ) )
+			{
+				return ( pipelineFlags, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
+			}
+
+			if ( ( accessFlags, VkAccessFlagBits::VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT )
+				|| ( accessFlags, VkAccessFlagBits::VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT ) )
+			{
+				return ( pipelineFlags, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT )
+					|| ( pipelineFlags, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT );
+			}
+
+			if ( ( accessFlags, VkAccessFlagBits::VK_ACCESS_TRANSFER_READ_BIT )
+				|| ( accessFlags, VkAccessFlagBits::VK_ACCESS_TRANSFER_WRITE_BIT ) )
+			{
+				return ( pipelineFlags, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT );
+			}
+
+			if ( ( accessFlags, VkAccessFlagBits::VK_ACCESS_HOST_READ_BIT )
+				|| ( accessFlags, VkAccessFlagBits::VK_ACCESS_HOST_WRITE_BIT ) )
+			{
+				return ( pipelineFlags, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_HOST_BIT );
+			}
+
+			return true;
+		}
+	}
+
+	CommandBuffer::CommandBuffer( Device const & device
+		, CommandPool const & pool
+		, bool primary )
+		: m_device{ device }
+		, m_pool{ pool }
+	{
+		VkCommandBufferAllocateInfo cmdAllocInfo
+		{
+			VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+			nullptr,
+			m_pool,                                   // commandPool
+			primary                                   // level
+			? VK_COMMAND_BUFFER_LEVEL_PRIMARY
+			: VK_COMMAND_BUFFER_LEVEL_SECONDARY,
+			1                                         // commandBufferCount
+		};
+		DEBUG_DUMP( cmdAllocInfo );
+		auto res = m_device.vkAllocateCommandBuffers( m_device
+			, &cmdAllocInfo
+			, &m_internal );
+		checkError( res, "CommandBuffer creation" );
+		registerObject( m_device, "CommandBuffer", this );
+	}
+
+	CommandBuffer::~CommandBuffer()
+	{
+		unregisterObject( m_device, this );
+		m_device.vkFreeCommandBuffers( m_device, m_pool, 1, &m_internal );
+	}
+
+	void CommandBuffer::begin( VkCommandBufferBeginInfo const & info )const
+	{
+		DEBUG_DUMP( info );
+		auto res = m_device.vkBeginCommandBuffer( m_internal, &info );
+		checkError( res, "CommandBuffer record start" );
+	}
+
+	void CommandBuffer::end()const
+	{
+		auto res = m_device.vkEndCommandBuffer( m_internal );
+		checkError( res, "CommandBuffer record end" );
+	}
+
+	void CommandBuffer::reset( VkCommandBufferResetFlags flags )const
+	{
+		auto res = m_device.vkResetCommandBuffer( m_internal, flags );
+		checkError( res, "CommandBuffer reset" );
+	}
+
+	void CommandBuffer::beginRenderPass( VkRenderPassBeginInfo const & beginInfo
+		, VkSubpassContents contents )const
+	{
+		DEBUG_DUMP( beginInfo );
+		m_device.vkCmdBeginRenderPass( m_internal
+			, &beginInfo
+			, contents );
+	}
+
+	void CommandBuffer::nextSubpass( VkSubpassContents contents )const
+	{
+		m_device.vkCmdNextSubpass( m_internal, contents );
+	}
+
+	void CommandBuffer::endRenderPass()const
+	{
+		m_device.vkCmdEndRenderPass( m_internal );
+	}
+
+	void CommandBuffer::executeCommands( CommandBufferCRefArray const & commands )const
+	{
+		auto vkCommands = makeVkArray< VkCommandBuffer >( commands );
+		m_device.vkCmdExecuteCommands( m_internal
+			, uint32_t( vkCommands.size() )
+			, vkCommands.data() );
+	}
+
+	void CommandBuffer::clear( ImageView const & view
+		, VkClearColorValue const & colour )const
+	{
+		m_device.vkCmdClearColorImage( m_internal
+			, view.getImage()
+			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+			, &colour
+			, 1
+			, &view.getSubResourceRange() );
+	}
+
+	void CommandBuffer::clear( ImageView const & view
+		, VkClearDepthStencilValue const & value )const
+	{
+		m_device.vkCmdClearDepthStencilImage( m_internal
+			, view.getImage()
+			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+			, &value
+			, 1
+			, &view.getSubResourceRange() );
+	}
+
+	void CommandBuffer::clearAttachments( ClearAttachmentArray const & clearAttachments
+		, ClearRectArray const & clearRects )
+	{
+		m_device.vkCmdClearAttachments( m_internal
+			, uint32_t( clearAttachments.size() )
+			, clearAttachments.data()
+			, uint32_t( clearRects.size() )
+			, clearRects.data() );
+	}
+
+	void CommandBuffer::bindPipeline( GraphicsPipeline const & pipeline
+		, VkPipelineBindPoint bindingPoint )const
+	{
+		m_device.vkCmdBindPipeline( m_internal
+			, bindingPoint
+			, pipeline );
+	}
+
+	void CommandBuffer::bindPipeline( ComputePipeline const & pipeline
+		, VkPipelineBindPoint bindingPoint )const
+	{
+		m_device.vkCmdBindPipeline( m_internal
+			, bindingPoint
+			, pipeline );
+	}
+
+	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding
+		, BufferCRefArray const & buffers
+		, UInt64Array offsets )const
+	{
+		m_device.vkCmdBindVertexBuffers( m_internal
+			, firstBinding
+			, uint32_t( buffers.size() )
+			, makeVkArray< VkBuffer >( buffers ).data()
+			, offsets.data() );
+	}
+
+	void CommandBuffer::bindIndexBuffer( BufferBase const & buffer
+		, uint64_t offset
+		, VkIndexType indexType )const
+	{
+		m_device.vkCmdBindIndexBuffer( m_internal
+			, buffer
+			, offset
+			, indexType );
+	}
+
+	void CommandBuffer::bindDescriptorSets( DescriptorSetCRefArray const & descriptorSets
+		, PipelineLayout const & layout
+		, UInt32Array const & dynamicOffsets
+		, VkPipelineBindPoint bindingPoint )const
+	{
+		auto vkDescriptors = makeVkArray< VkDescriptorSet >( descriptorSets );
+		m_device.vkCmdBindDescriptorSets( m_internal
+			, bindingPoint
+			, layout
+			, descriptorSets.begin()->get().getBindingPoint()
+			, uint32_t( descriptorSets.size() )
+			, vkDescriptors.data()
+			, uint32_t( dynamicOffsets.size() )
+			, dynamicOffsets.data() );
+	}
+
+	void CommandBuffer::setViewport( uint32_t firstViewport
+		, ViewportArray const & viewports )const
+	{
+		m_device.vkCmdSetViewport( m_internal
+			, firstViewport
+			, uint32_t( viewports.size() )
+			, viewports.data() );
+	}
+
+	void CommandBuffer::setScissor( uint32_t firstScissor
+		, ScissorArray const & scissors )const
+	{
+		m_device.vkCmdSetScissor( m_internal
+			, firstScissor
+			, uint32_t( scissors.size() )
+			, scissors.data() );
+	}
+
+	void CommandBuffer::draw( uint32_t vtxCount
+		, uint32_t instCount
+		, uint32_t firstVertex
+		, uint32_t firstInstance )const
+	{
+		m_device.vkCmdDraw( m_internal
+			, vtxCount
+			, instCount
+			, firstVertex
+			, firstInstance );
+	}
+
+	void CommandBuffer::drawIndexed( uint32_t indexCount
+		, uint32_t instCount
+		, uint32_t firstIndex
+		, uint32_t vertexOffset
+		, uint32_t firstInstance )const
+	{
+		m_device.vkCmdDrawIndexed( m_internal
+			, indexCount
+			, instCount
+			, firstIndex
+			, vertexOffset
+			, firstInstance );
+	}
+
+	void CommandBuffer::drawIndirect( BufferBase const & buffer
+		, uint32_t offset
+		, uint32_t drawCount
+		, uint32_t stride )const
+	{
+		m_device.vkCmdDrawIndirect( m_internal
+			, buffer
+			, offset
+			, drawCount
+			, stride );
+	}
+
+	void CommandBuffer::drawIndexedIndirect( BufferBase const & buffer
+		, uint32_t offset
+		, uint32_t drawCount
+		, uint32_t stride )const
+	{
+		m_device.vkCmdDrawIndexedIndirect( m_internal
+			, buffer
+			, offset
+			, drawCount
+			, stride );
+	}
+
+	void CommandBuffer::copyToImage( BufferImageCopyArray const & copyInfo
+		, BufferBase const & src
+		, Image const & dst )const
+	{
+		DEBUG_DUMP( copyInfo );
+		m_device.vkCmdCopyBufferToImage( m_internal
+			, src
+			, dst
+			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+			, uint32_t( copyInfo.size() )
+			, copyInfo.data() );
+	}
+
+	void CommandBuffer::copyToBuffer( BufferImageCopyArray const & copyInfo
+		, Image const & src
+		, BufferBase const & dst )const
+	{
+		DEBUG_DUMP( copyInfo );
+		m_device.vkCmdCopyImageToBuffer( m_internal
+			, src
+			, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+			, dst
+			, uint32_t( copyInfo.size() )
+			, copyInfo.data() );
+	}
+
+	void CommandBuffer::copyBuffer( VkBufferCopy const & copyInfo
+		, BufferBase const & src
+		, BufferBase const & dst )const
+	{
+		DEBUG_DUMP( copyInfo );
+		m_device.vkCmdCopyBuffer( m_internal
+			, src
+			, dst
+			, 1
+			, &copyInfo );
+	}
+
+	void CommandBuffer::copyImage( VkImageCopy const & copyInfo
+		, Image const & src
+		, VkImageLayout srcLayout
+		, Image const & dst
+		, VkImageLayout dstLayout )const
+	{
+		DEBUG_DUMP( copyInfo );
+		m_device.vkCmdCopyImage( m_internal
+			, src
+			, srcLayout
+			, dst
+			, dstLayout
+			, 1
+			, &copyInfo );
+	}
+
+	void CommandBuffer::blitImage( Image const & srcImage
+		, VkImageLayout srcLayout
+		, Image const & dstImage
+		, VkImageLayout dstLayout
+		, std::vector< VkImageBlit > const & regions
+		, VkFilter filter )const
+	{
+		DEBUG_DUMP( vkregions );
+		m_device.vkCmdBlitImage( m_internal
+			, srcImage
+			, srcLayout
+			, dstImage
+			, dstLayout
+			, uint32_t( regions.size() )
+			, regions.data()
+			, filter );
+	}
+
+	void CommandBuffer::resetQueryPool( QueryPool const & pool
+		, uint32_t firstQuery
+		, uint32_t queryCount )const
+	{
+		m_device.vkCmdResetQueryPool( m_internal
+			, pool
+			, firstQuery
+			, queryCount );
+	}
+
+	void CommandBuffer::beginQuery( QueryPool const & pool
+		, uint32_t query
+		, VkQueryControlFlags flags )const
+	{
+		m_device.vkCmdBeginQuery( m_internal
+			, static_cast< QueryPool const & >( pool )
+			, query
+			, flags );
+	}
+
+	void CommandBuffer::endQuery( QueryPool const & pool
+		, uint32_t query )const
+	{
+		m_device.vkCmdEndQuery( m_internal
+			, static_cast< QueryPool const & >( pool )
+			, query );
+	}
+
+	void CommandBuffer::writeTimestamp( VkPipelineStageFlagBits pipelineStage
+		, QueryPool const & pool
+		, uint32_t query )const
+	{
+		m_device.vkCmdWriteTimestamp( m_internal
+			, pipelineStage
+			, static_cast< QueryPool const & >( pool )
+			, query );
+	}
+
+	void CommandBuffer::pushConstants( PipelineLayout const & layout
+		, VkShaderStageFlags stageFlags
+		, uint32_t offset
+		, uint32_t size
+		, void const * data )const
+	{
+		m_device.vkCmdPushConstants( m_internal
+			, static_cast< PipelineLayout const & >( layout )
+			, stageFlags
+			, offset
+			, size
+			, data );
+	}
+
+	void CommandBuffer::dispatch( uint32_t groupCountX
+		, uint32_t groupCountY
+		, uint32_t groupCountZ )const
+	{
+		m_device.vkCmdDispatch( m_internal
+			, groupCountX
+			, groupCountY
+			, groupCountZ );
+	}
+
+	void CommandBuffer::dispatchIndirect( BufferBase const & buffer
+		, uint32_t offset )const
+	{
+		m_device.vkCmdDispatchIndirect( m_internal
+			, buffer
+			, offset );
+	}
+
+	void CommandBuffer::setLineWidth( float width )const
+	{
+		m_device.vkCmdSetLineWidth( m_internal, width );
+	}
+
+	void CommandBuffer::setDepthBias( float constantFactor
+		, float clamp
+		, float slopeFactor )const
+	{
+		m_device.vkCmdSetDepthBias( m_internal
+			, constantFactor
+			, clamp
+			, slopeFactor );
+	}
+
+	void CommandBuffer::setEvent( Event const & event
+		, VkPipelineStageFlags stageMask )const
+	{
+		m_device.vkCmdSetEvent( m_internal
+			, event
+			, stageMask );
+	}
+
+	void CommandBuffer::resetEvent( Event const & event
+		, VkPipelineStageFlags stageMask )const
+	{
+		m_device.vkCmdResetEvent( m_internal
+			, static_cast< Event const & >( event )
+			, stageMask );
+	}
+
+	void CommandBuffer::waitEvents( EventCRefArray const & events
+		, VkPipelineStageFlags srcStageMask
+		, VkPipelineStageFlags dstStageMask
+		, BufferMemoryBarrierArray const & bufferMemoryBarriers
+		, ImageMemoryBarrierArray const & imageMemoryBarriers )const
+	{
+		auto vkevents = makeVkArray< VkEvent >( events );
+		m_device.vkCmdWaitEvents( m_internal
+			, uint32_t( vkevents.size() )
+			, vkevents.data()
+			, srcStageMask
+			, dstStageMask
+			, 0u
+			, nullptr
+			, uint32_t( bufferMemoryBarriers.size() )
+			, bufferMemoryBarriers.data()
+			, uint32_t( imageMemoryBarriers.size() )
+			, imageMemoryBarriers.data() );
+	}
+
+	void CommandBuffer::pipelineBarrier( VkPipelineStageFlags after
+		, VkPipelineStageFlags before
+		, VkDependencyFlags dependencyFlags
+		, MemoryBarrierArray const & memoryBarriers
+		, BufferMemoryBarrierArray const & bufferMemoryBarriers
+		, ImageMemoryBarrierArray const & imageMemoryBarriers )const
+	{
+		DEBUG_DUMP( memoryBarriers );
+		DEBUG_DUMP( bufferMemoryBarriers );
+		DEBUG_DUMP( imageMemoryBarriers );
+		m_device.vkCmdPipelineBarrier( m_internal
+			, after
+			, before
+			, 0
+			, uint32_t( memoryBarriers.size() )
+			, memoryBarriers.empty() ? nullptr : memoryBarriers.data()
+			, uint32_t( bufferMemoryBarriers.size() )
+			, bufferMemoryBarriers.empty() ? nullptr : bufferMemoryBarriers.data()
+			, uint32_t( imageMemoryBarriers.size() )
+			, imageMemoryBarriers.empty() ? nullptr : imageMemoryBarriers.data() );
+	}
+
+	void CommandBuffer::beginRenderPass( RenderPass const & renderPass
+		, FrameBuffer const & frameBuffer
+		, ClearValueArray const & clearValues
+		, VkSubpassContents contents )const
+	{
+		beginRenderPass( VkRenderPassBeginInfo
+			{
+				VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+				nullptr,
+				renderPass,
+				frameBuffer,
+				{
+					{
+						0,
+						0
+					},
+					frameBuffer.getDimensions()
+				},
+				uint32_t( clearValues.size() ),
+				clearValues.data()
+			},
+			contents );
+	}
+
+	void CommandBuffer::bindVertexBuffer( uint32_t binding
+		, BufferBase const & buffer
+		, uint64_t offset )const
+	{
+		bindVertexBuffers( binding
+			, BufferCRefArray{ buffer }
+			, UInt64Array{ offset } );
+	}
+
+	void CommandBuffer::copyToImage( VkBufferImageCopy const & copyInfo
+		, BufferBase const & src
+		, Image const & dst )const
+	{
+		copyToImage( BufferImageCopyArray{ 1u, copyInfo }
+			, src
+			, dst );
+	}
+
+	void CommandBuffer::copyToBuffer( VkBufferImageCopy const & copyInfo
+		, Image const & src
+		, BufferBase const & dst )const
+	{
+		copyToBuffer( BufferImageCopyArray{ 1u, copyInfo }
+			, src
+			, dst );
+	}
+
+	void CommandBuffer::copyBuffer( BufferBase const & src
+		, BufferBase const & dst
+		, uint32_t size
+		, uint32_t offset )const
+	{
+		VkBufferCopy copyInfo
+		{
+			offset,
+			0,
+			size
+		};
+		copyBuffer( copyInfo, src, dst );
+	}
+
+	void CommandBuffer::copyBuffer( BufferBase const & src
+		, VertexBufferBase const & dst
+		, uint32_t size
+		, uint32_t offset )const
+	{
+		VkBufferCopy copyInfo
+		{
+			offset,
+			0,
+			size
+		};
+		copyBuffer( copyInfo, src, dst.getBuffer() );
+	}
+
+	void CommandBuffer::copyBuffer( VertexBufferBase const & src
+		, BufferBase const & dst
+		, uint32_t size
+		, uint32_t offset )const
+	{
+		VkBufferCopy copyInfo
+		{
+			offset,
+			0,
+			size
+		};
+		copyBuffer( copyInfo, src.getBuffer(), dst );
+	}
+
+	void CommandBuffer::copyBuffer( VertexBufferBase const & src
+		, VertexBufferBase const & dst
+		, uint32_t size
+		, uint32_t offset )const
+	{
+		VkBufferCopy copyInfo
+		{
+			offset,
+			0,
+			size
+		};
+		copyBuffer( copyInfo, src.getBuffer(), dst.getBuffer() );
+	}
+
+	void CommandBuffer::copyBuffer( BufferBase const & src
+		, UniformBufferBase const & dst
+		, uint32_t size
+		, uint32_t offset )const
+	{
+		VkBufferCopy copyInfo
+		{
+			offset,
+			0,
+			size
+		};
+		copyBuffer( copyInfo, src, dst.getBuffer() );
+	}
+
+	void CommandBuffer::copyBuffer( UniformBufferBase const & src
+		, BufferBase const & dst
+		, uint32_t size
+		, uint32_t offset )const
+	{
+		VkBufferCopy copyInfo
+		{
+			offset,
+			0,
+			size
+		};
+		copyBuffer( copyInfo, src.getBuffer(), dst );
+	}
+
+	void CommandBuffer::copyBuffer( UniformBufferBase const & src
+		, UniformBufferBase const & dst
+		, uint32_t size
+		, uint32_t offset )const
+	{
+		VkBufferCopy copyInfo
+		{
+			offset,
+			0,
+			size
+		};
+		copyBuffer( copyInfo, src.getBuffer(), dst.getBuffer() );
+	}
+
+	void CommandBuffer::copyImage( ImageView const & src
+		, ImageView const & dst )const
+	{
+		auto const & srcRange = src.getSubResourceRange();
+		auto const & dstRange = dst.getSubResourceRange();
+		copyImage( VkImageCopy
+			{
+				{                                                   // srcSubresource
+					getAspectMask( src.getFormat() ),
+					srcRange.baseMipLevel,
+					srcRange.baseArrayLayer,
+					srcRange.layerCount
+				},
+				VkOffset3D{                                              // srcOffset
+					0,                                                  // x
+					0,                                                  // y
+					0                                                   // z
+				},
+				{                                                   // dstSubresource
+					getAspectMask( dst.getFormat() ),
+					dstRange.baseMipLevel,
+					dstRange.baseArrayLayer,
+					dstRange.layerCount
+				},
+				VkOffset3D{                                              // dstOffset
+					0,                                                  // x
+					0,                                                  // y
+					0                                                   // z
+				},
+				dst.getImage().getDimensions()                    // extent
+			}
+			, src.getImage()
+			, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+			, dst.getImage()
+			, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
+	}
+
+	void CommandBuffer::memoryBarrier( VkPipelineStageFlags after
+		, VkPipelineStageFlags before
+		, VkBufferMemoryBarrier const & transitionBarrier )const
+	{
+		assert( areCompatible( after, transitionBarrier.srcAccessMask ) );
+		assert( areCompatible( before, transitionBarrier.dstAccessMask ) );
+		pipelineBarrier( after
+			, before
+			, 0u
+			, {}
+			, { transitionBarrier }
+			, {} );
+	}
+
+	void CommandBuffer::memoryBarrier( VkPipelineStageFlags after
+		, VkPipelineStageFlags before
+		, VkImageMemoryBarrier const & transitionBarrier )const
+	{
+		assert( areCompatible( after, transitionBarrier.srcAccessMask ) );
+		assert( areCompatible( before, transitionBarrier.dstAccessMask ) );
+		pipelineBarrier( after
+			, before
+			, 0u
+			, {}
+			, {}
+			, { transitionBarrier } );
+	}
+
+	void CommandBuffer::pushConstants( PipelineLayout const & layout
+		, PushConstantsBufferBase const & pcb )const
+	{
+		pushConstants( layout
+			, pcb.getStageFlags()
+			, pcb.getOffset()
+			, pcb.getSize()
+			, reinterpret_cast< void const * >( pcb.getData() ) );
+	}
+}

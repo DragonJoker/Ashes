@@ -1,10 +1,12 @@
 project( GLFW-Template )
 
 find_package( GLFW )
+find_package( Vulkan )
 
-if( GLFW_FOUND )
+if( GLFW_FOUND AND Vulkan_FOUND )
 	include_directories(
 		${GLFW_INCLUDE_DIR}
+		${Vulkan_INCLUDE_DIRS}
 	)
 
 	file( GLOB SOURCE_FILES
@@ -17,12 +19,12 @@ if( GLFW_FOUND )
 	)
 
 	target_link_libraries( ${PROJECT_NAME}
-		Ashes
+		AshesPP
 		${GLFW_LIBRARIES}
 		${BinLibraries}
 	)
 
-	add_dependencies(
+	add_dependencies( ${PROJECT_NAME}
 		${ENABLED_RENDERERS}
 	)
 

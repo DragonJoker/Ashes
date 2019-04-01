@@ -1,6 +1,4 @@
-#include "FileUtils.hpp"
-
-#include <Ashes/AshesPrerequisites.hpp>
+#include "AshesPP/Utils/FileUtils.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -26,7 +24,7 @@
 
 #endif
 
-namespace common
+namespace ashespp
 {
 #if ASHES_WIN32
 
@@ -346,5 +344,5 @@ namespace common
 
 std::string operator/( std::string const & lhs, std::string const & rhs )
 {
-	return lhs + common::PathSeparator + rhs;
+	return lhs + ashespp::PathSeparator + rhs;
 }
