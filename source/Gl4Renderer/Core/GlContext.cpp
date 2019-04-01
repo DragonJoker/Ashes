@@ -1,7 +1,5 @@
 #include "Core/GlContext.hpp"
 
-#include "Core/GlPhysicalDevice.hpp"
-
 #if ASHES_WIN32
 #	include "Core/GlMswContext.hpp"
 #elif ASHES_XLIB
@@ -10,10 +8,8 @@
 
 namespace gl_renderer
 {
-	Context::Context( PhysicalDevice const & gpu
-		, ashes::Surface const & surface )
-		: m_gpu{ gpu }
-		, m_surface{ surface }
+	Context::Context( Instance const & instance )
+		: m_instance{ instance }
 	{
 	}
 
@@ -21,8 +17,8 @@ namespace gl_renderer
 	{
 	}
 
-	ContextPtr Context::create( PhysicalDevice const & gpu
-		, ashes::Surface const & surface
+	ContextPtr Context::create( Instance const & instance
+		, ashes::WindowHandle const & handle
 		, Context const * mainContext )
 	{
 		ContextPtr result;
@@ -30,9 +26,9 @@ namespace gl_renderer
 		try
 		{
 #if defined( _WIN32 )
-			result = std::make_unique< MswContext >( gpu, surface, mainContext );
+			result = std::make_unique< MswContext >( instance, handle, mainContext );
 #elif defined( __linux__ )
-			result = std::make_unique< X11Context >( gpu, surface, mainContext );
+			result = std::make_unique< X11Context >( instance, handle, mainContext );
 #endif
 		}
 		catch ( std::exception & error )

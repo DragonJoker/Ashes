@@ -54,9 +54,8 @@ namespace vkapp
 		*/
 		/**@{*/
 		void doCleanup();
-		ashes::SurfacePtr doCreateSurface( utils::Instance const & instance );
-		void doCreateDevice( utils::Instance const & instance
-			, ashes::SurfacePtr surface );
+		void doCreateSurface( utils::Instance const & instance );
+		void doCreateDevice( utils::Instance const & instance );
 		void doCreateSwapChain();
 		void doCreateRenderPass();
 		bool doPrepareFrames();
@@ -97,6 +96,7 @@ namespace vkapp
 		ashes::QueuePtr m_graphicsQueue;
 		ashes::QueuePtr m_presentQueue;
 		ashes::CommandPoolPtr m_commandPool;
+		ashes::SurfacePtr m_surface;
 		ashes::SwapChainPtr m_swapChain;
 		ashes::ImagePtrArray m_swapChainImages;
 		ashes::ClearColorValue m_clearColour;

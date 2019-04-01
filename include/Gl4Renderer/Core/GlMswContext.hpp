@@ -14,8 +14,8 @@ namespace gl_renderer
 		: public Context
 	{
 	public:
-		MswContext( PhysicalDevice const & gpu
-			, ashes::Surface const & surface
+		MswContext( Instance const & instance
+			, ashes::WindowHandle const & handle
 			, Context const * mainContext );
 		~MswContext();
 

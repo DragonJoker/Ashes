@@ -30,7 +30,7 @@ namespace vk_renderer
 		*	La connection à l'application.
 		*/
 		Device( Instance const & instance
-			, ashes::SurfacePtr surface
+			, PhysicalDevice const & physicalDevice
 			, ashes::DeviceCreateInfo createInfos );
 		/**
 		*\brief
@@ -168,18 +168,6 @@ namespace vk_renderer
 			return m_instance;
 		}
 		/**
-		*\~french
-		*\return
-		*	La connection à l'application.
-		*\~english
-		*\return
-		*	The connection to the application.
-		*/
-		inline Surface const & getSurface()const
-		{
-			return *m_surface;
-		}
-		/**
 		*\brief
 		*	Le VkDevice.
 		*/
@@ -197,7 +185,6 @@ namespace vk_renderer
 	private:
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
-		SurfacePtr m_surface;
 		std::vector< VkDeviceQueueCreateInfo > m_queueCreateInfos;
 		std::vector< char const * > m_enabledLayerNames;
 		std::vector< char const * > m_enabledExtensionNames;

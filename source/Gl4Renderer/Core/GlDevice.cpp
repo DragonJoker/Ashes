@@ -461,34 +461,19 @@ namespace gl_renderer
 
 	Device::Device( Instance const & instance
 		, PhysicalDevice const & gpu
-		, ashes::SurfacePtr surface
+		, Context & context
 		, ashes::DeviceCreateInfo createInfos )
 		: ashes::Device{ instance
 			, gpu
-			, *surface
 			, std::move( createInfos ) }
 		, m_instance{ instance }
-		, m_surface{ std::move( surface ) }
-		, m_context{ Context::create( gpu, *m_surface, nullptr ) }
 		, m_rsState{}
+		, m_currentContext{ &context }
 	{
-		auto context = getContext();
-		glLogCall( context
-			, glEnable
-			, GL_TEXTURE_CUBE_MAP_SEAMLESS );
-
 		m_timestampPeriod = 1;
-
-		doApply( context, m_cbState );
-		doApply( context, m_dsState );
-		doApply( context, m_msState );
-		doApply( context, m_rsState );
-		doApply( context, m_iaState );
-
-		if ( m_gpu.getFeatures().tessellationShader )
-		{
-			doApply( context, m_tsState );
-		}
+		doCreateQueues();
+		auto lock = getContext();
+		doInitialiseContext( lock );
 
 		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
 		m_dummyIndexed.indexBuffer = ashes::makeBuffer< uint32_t >( *this
@@ -513,22 +498,21 @@ namespace gl_renderer
 			, VboBindings{}
 			, BufferObjectBinding{ indexBuffer.getInternal(), 0u, &indexBuffer }
 			, ashes::VertexInputState{}
-			, ashes::IndexType::eUInt32 );
+		, ashes::IndexType::eUInt32 );
 		m_dummyIndexed.geometryBuffers->initialise();
 
-		context->glGenFramebuffers( 2, m_blitFbos );
-		doCreateQueues();
+		lock->glGenFramebuffers( 2, m_blitFbos );
 	}
 
 	Device::~Device()
 	{
+		if ( m_ownContext )
 		{
 			auto context = getContext();
 			context->glDeleteFramebuffers( 2, m_blitFbos );
 			m_dummyIndexed.geometryBuffers.reset();
 			m_dummyIndexed.indexBuffer.reset();
 		}
-		m_context.reset();
 	}
 
 	ashes::RenderPassPtr Device::createRenderPass( ashes::RenderPassCreateInfo createInfo )const
@@ -740,9 +724,44 @@ namespace gl_renderer
 			, glFinish );
 	}
 
+	void Device::registerContext( ashes::WindowHandle const & handle )const
+	{
+		auto context = Context::create( m_instance, handle, nullptr );
+		ContextLock lock{ *context };
+		doInitialiseContext( lock );
+
+		if ( !m_ownContext )
+		{
+			m_ownContext = std::move( context );
+			m_currentContext = m_ownContext.get();
+		}
+	}
+
+	void Device::unregisterContext( ashes::WindowHandle const & handle )const
+	{
+	}
+
 	void Device::swapBuffers()const
 	{
 		getContext()->swapBuffers();
+	}
+
+	void Device::doInitialiseContext( ContextLock const & context )const
+	{
+		glLogCall( context
+			, glEnable
+			, GL_TEXTURE_CUBE_MAP_SEAMLESS );
+
+		doApply( context, m_cbState );
+		doApply( context, m_dsState );
+		doApply( context, m_msState );
+		doApply( context, m_rsState );
+		doApply( context, m_iaState );
+
+		if ( m_gpu.getFeatures().tessellationShader )
+		{
+			doApply( context, m_tsState );
+		}
 	}
 
 	void Device::doCreateQueues()

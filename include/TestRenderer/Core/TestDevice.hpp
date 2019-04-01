@@ -28,7 +28,7 @@ namespace test_renderer
 		*	La connection à l'application.
 		*/
 		Device( Instance const & instance
-			, ashes::SurfacePtr surface
+			, PhysicalDevice const & physicalDevice
 			, ashes::DeviceCreateInfo createInfos );
 		/**
 		*\brief
@@ -141,18 +141,6 @@ namespace test_renderer
 		{
 			return m_instance;
 		}
-		/**
-		*\~french
-		*\return
-		*	La connection à l'application.
-		*\~english
-		*\return
-		*	The connection to the application.
-		*/
-		inline Surface const & getSurface()const
-		{
-			return *m_surface;
-		}
 
 	private:
 		void doCreateQueues();
@@ -160,7 +148,6 @@ namespace test_renderer
 	private:
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
-		SurfacePtr m_surface;
 		using QueueCreateCount = std::pair< ashes::DeviceQueueCreateInfo, uint32_t >;
 		std::map< uint32_t, QueueCreateCount > m_queues;
 	};

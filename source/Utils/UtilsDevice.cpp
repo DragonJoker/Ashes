@@ -148,15 +148,15 @@ namespace utils
 	}
 
 	Device::Device( ashes::Instance const & instance
-		, ashes::SurfacePtr surface )
-		: m_gpu{ surface->getGpu() }
+		, ashes::Surface const & surface )
+		: m_gpu{ surface.getGpu() }
 		, m_createInfos{ doGetDeviceCreateInfo( instance
-			, *surface
+			, surface
 			, m_gpu
 			, m_presentQueueFamilyIndex
 			, m_graphicsQueueFamilyIndex
 			, m_computeQueueFamilyIndex ) }
-		, m_device{ instance.createDevice( std::move( surface )
+		, m_device{ instance.createDevice( surface.getGpu()
 			, std::move( m_createInfos ) ) }
 		, m_memoryProperties{ m_gpu.getMemoryProperties() }
 	{

@@ -49,14 +49,14 @@ namespace gl_renderer
 		}
 	}
 
-	X11Context::X11Context( PhysicalDevice const & gpu
-		, ashes::Surface const & surface
+	X11Context::X11Context( Instance const & instance
+		, ashes::WindowHandle const & handle
 		, Context const * mainContext )
-		: Context{ gpu, surface }
-		, m_display( m_surface.getHandle().getInternal< ashes::IXWindowHandle >().getDisplay() )
+		: Context{ instance }
+		, m_display( handle.getInternal< ashes::IXWindowHandle >().getDisplay() )
 		, m_glxVersion( 10 )
 		, m_glxContext( nullptr )
-		, m_drawable( m_surface.getHandle().getInternal< ashes::IXWindowHandle >().getDrawable() )
+		, m_drawable( handle.getInternal< ashes::IXWindowHandle >().getDrawable() )
 		, m_fbConfig( nullptr )
 	{
 		if ( !glXChooseFBConfig )
@@ -189,7 +189,7 @@ namespace gl_renderer
 
 	void X11Context::doLoadDebugFunctions()
 	{
-		if ( m_gpu.find( KHR_debug ) )
+		if ( m_instance.getExtensions().find( KHR_debug ) )
 		{
 			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
 			{
@@ -199,7 +199,7 @@ namespace gl_renderer
 				}
 			}
 		}
-		else if ( m_gpu.find( ARB_debug_output ) )
+		else if ( m_instance.getExtensions().find( ARB_debug_output ) )
 		{
 			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
 			{
@@ -209,7 +209,7 @@ namespace gl_renderer
 				}
 			}
 		}
-		else if ( m_gpu.find( AMDX_debug_output ) )
+		else if ( m_instance.getExtensions().find( AMDX_debug_output ) )
 		{
 			if ( !getFunction( "glDebugMessageCallbackAMD", glDebugMessageCallbackAMD ) )
 			{
@@ -229,7 +229,7 @@ namespace gl_renderer
 				ashes::Logger::logWarning( "Unable to retrieve function glObjectPtrLabel" );
 			}
 
-			for ( auto & callback : m_gpu.getInstance().getDebugCallbacks() )
+			for ( auto & callback : m_instance.getDebugCallbacks() )
 			{
 				glDebugMessageCallback( callback.callback, callback.userParam );
 				::glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
@@ -237,7 +237,7 @@ namespace gl_renderer
 		}
 		else if ( glDebugMessageCallbackAMD )
 		{
-			for ( auto & callback : m_gpu.getInstance().getDebugAMDCallbacks() )
+			for ( auto & callback : m_instance.getDebugAMDCallbacks() )
 			{
 				glDebugMessageCallbackAMD( callback.callback, callback.userParam );
 				::glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );

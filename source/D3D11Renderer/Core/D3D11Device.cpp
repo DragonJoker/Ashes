@@ -119,15 +119,13 @@ namespace d3d11_renderer
 	}
 
 	Device::Device( Instance const & instance
-		, ashes::SurfacePtr surface
+		, PhysicalDevice const & physicalDevice
 		, ashes::DeviceCreateInfo createInfos )
 		: ashes::Device{ instance
-			, surface->getGpu()
-			, *surface
+			, physicalDevice
 			, std::move( createInfos ) }
 		, m_instance{ instance }
-		, m_surface{ std::move( surface ) }
-		, m_gpu{ static_cast< PhysicalDevice const & >( ashes::Device::getPhysicalDevice() ) }
+		, m_physicalDevice{ physicalDevice }
 	{
 		doCreateD3D11Device();
 		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
@@ -364,28 +362,28 @@ namespace d3d11_renderer
 			D3D_FEATURE_LEVEL_9_1,
 		};
 		HRESULT hr;
-		HWND hWnd = m_surface->getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd();
-		hr = factory->MakeWindowAssociation( hWnd, 0 );
+		//HWND hWnd = m_surface->getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd();
+		//hr = factory->MakeWindowAssociation( hWnd, 0 );
 
-		if ( SUCCEEDED( hr ) )
-		{
-			HWND hWnd2;
-			hr = factory->GetWindowAssociation( &hWnd2 );
+		//if ( SUCCEEDED( hr ) )
+		//{
+		//	HWND hWnd2;
+		//	hr = factory->GetWindowAssociation( &hWnd2 );
 
-			if ( hWnd2 )
-			{
-				hWnd = hWnd2;
-			}
-		}
+		//	if ( hWnd2 )
+		//	{
+		//		hWnd = hWnd2;
+		//	}
+		//}
 
 		UINT flags = 0;
-		auto adapter = m_gpu.getAdapter();
+		auto adapter = m_physicalDevice.getAdapter();
 
 #if !defined( NDEBUG )
 		flags = D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-		D3D_FEATURE_LEVEL supportedFeatureLevel = m_gpu.getFeatureLevel();
+		D3D_FEATURE_LEVEL supportedFeatureLevel = m_physicalDevice.getFeatureLevel();
 		hr = D3D11CreateDevice( nullptr
 			, D3D_DRIVER_TYPE_HARDWARE
 			, nullptr

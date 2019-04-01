@@ -64,19 +64,19 @@ namespace ashes
 		*\~french
 		*\brief
 		*	Creates a logical device.
-		*\param[in] surface
-		*	The presentation surface.
+		*\param[in] physicalDevice
+		*	The physical device.
 		*\param[in] createInfos
 		*	The creation informations.
 		*\~french
 		*\brief
 		*	Crée un périphérique logique.
-		*\param[in] surface
-		*	La surface de présentation.
+		*\param[in] physicalDevice
+		*	Le périphérique physique.
 		*\param[in] createInfos
 		*	Les informations de création.
 		*/
-		virtual DevicePtr createDevice( SurfacePtr surface
+		virtual DevicePtr createDevice( ashes::PhysicalDevice const & physicalDevice
 			, DeviceCreateInfo createInfos )const = 0;
 		/**
 		*\~french

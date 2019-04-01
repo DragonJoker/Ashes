@@ -43,9 +43,10 @@ namespace gl_renderer
 		, ashes::SwapChainCreateInfo createInfo )
 		: ashes::SwapChain{ device, std::move( createInfo ) }
 		, m_device{ device }
-		, m_image{ createImage( device, getFormat(), getDimensions() ) }
-		, m_view{ createImageView( device, *m_image, getFormat() ) }
 	{
+		m_device.registerContext( m_createInfo.surface.get().getHandle() );
+		m_image = createImage( device, getFormat(), getDimensions() );
+		m_view = createImageView( device, *m_image, getFormat() );
 		auto context = m_device.getContext();
 		glLogCall( context
 			, glGenFramebuffers
@@ -76,6 +77,7 @@ namespace gl_renderer
 			, glDeleteFramebuffers
 			, 1
 			, &m_fbo );
+		m_device.unregisterContext( m_createInfo.surface.get().getHandle() );
 	}
 
 	ashes::ImagePtrArray SwapChain::getImages()const

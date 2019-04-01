@@ -119,9 +119,9 @@ namespace vkapp
 		{
 			auto surface = doCreateSurface( instance );
 			std::cout << "Surface created." << std::endl;
-			doCreateDevice( instance, std::move( surface ) );
+			doCreateDevice( instance, *surface );
 			std::cout << "Logical device created." << std::endl;
-			doCreateSwapChain();
+			doCreateSwapChain( std::move( surface ) );
 			std::cout << "Swap chain created." << std::endl;
 			doCreateStagingBuffer();
 			std::cout << "Staging buffer created." << std::endl;
@@ -274,10 +274,10 @@ namespace vkapp
 	}
 
 	void RenderPanel::doCreateDevice( utils::Instance const & instance
-		, ashes::SurfacePtr surface )
+		, ashes::Surface const & surface )
 	{
 		m_device = std::make_unique< utils::Device >( instance.getInstance()
-			, std::move( surface ) );
+			, surface );
 		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
 		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
 		m_computeQueue = m_device->getDevice().getQueue( m_device->getComputeQueueFamily(), 0u );
@@ -293,11 +293,12 @@ namespace vkapp
 		*m_objectPcbs[1]->getData() = utils::Vec4{ 0.0, 1.0, 0.0, 1.0 };
 	}
 
-	void RenderPanel::doCreateSwapChain()
+	void RenderPanel::doCreateSwapChain( ashes::SurfacePtr surface )
 	{
 		wxSize size{ GetClientSize() };
 		m_swapChain = std::make_unique< utils::SwapChain >( m_device->getDevice()
 			, *m_commandPool
+			, std::move( surface )
 			, ashes::Extent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
 		m_clearColour = ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
