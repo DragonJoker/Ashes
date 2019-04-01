@@ -4,127 +4,70 @@ set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
-set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
-set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
+find_package( Vulkan )
 
-set( ${PROJECT_NAME}_CONFIG_HEADER
-	${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.hpp
-)
+if ( Vulkan_FOUND )
+	set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
+	set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
-configure_file(
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}Config.hpp.in
-	${${PROJECT_NAME}_CONFIG_HEADER}
-	NEWLINE_STYLE LF
-)
-
-include_directories(
-	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_SOURCE_DIR}/include
-	${ASHES_SOURCE_DIR}/include/Ashes
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
-)
-
-file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
-)
-
-file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
-)
-
-if ( ASHES_STATIC_RENDERERS )
-	add_definitions(
-		-D${PROJECT_NAME}_STATIC
+	include_directories(
+		${CMAKE_CURRENT_BINARY_DIR}
+		${ASHES_SOURCE_DIR}/include
+		${ASHES_SOURCE_DIR}/include/AshesC
+		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
+		${Vulkan_INCLUDE_DIRS}
 	)
-	add_library( ${PROJECT_NAME} STATIC
-		${${PROJECT_NAME}_SRC_FILES}
-		${${PROJECT_NAME}_HDR_FILES}
-		${${PROJECT_NAME}_CONFIG_HEADER}
+
+	file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
 	)
-else ()
+
+	file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
+		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
+		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
+		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
+		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
+		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
+	)
+
 	add_definitions(
 		-D${PROJECT_NAME}_EXPORTS
 	)
 	add_library( ${PROJECT_NAME} SHARED
 		${${PROJECT_NAME}_SRC_FILES}
-		${${PROJECT_NAME}_HDR_FILES}
-		${${PROJECT_NAME}_CONFIG_HEADER}
 	)
+
 	set_target_properties( ${PROJECT_NAME}
 		PROPERTIES
 			VERSION ${PROJECT_VERSION}
 			SOVERSION ${PROJECT_SOVERSION}
 	)
-endif ()
 
-add_target_precompiled_header( ${PROJECT_NAME}
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}Pch.hpp
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/${PROJECT_NAME}Pch.cpp
-	"${CMAKE_CXX_FLAGS}"
-	${${PROJECT_NAME}_SRC_FILES}
-)
-
-target_link_libraries( ${PROJECT_NAME}
-	${BinLibraries}
-	Ashes
-)
-
-add_dependencies( ${PROJECT_NAME}
-	Ashes
-)
-
-parse_subdir_files( ${ASHES_SOURCE_DIR} Buffer "Buffer" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Command "Command" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Core "Core" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Descriptor "Descriptor" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Enum "Enum" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Image "Image" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Miscellaneous "Miscellaneous" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Pipeline "Pipeline" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} RenderPass "RenderPass" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Shader "Shader" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Sync "Sync" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} vulkan "vulkan" )
-
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes" )
-
-set( ENABLED_RENDERERS
-	${ENABLED_RENDERERS}
-	${PROJECT_NAME}
-	PARENT_SCOPE
-)
-
-if ( ASHES_STATIC_RENDERERS )
-	#We install each .lib/.a in <install_dir>/lib folder
-	install(
-		TARGETS ${PROJECT_NAME}
-		COMPONENT ${PROJECT_NAME}
-		CONFIGURATIONS Release
-		EXPORT ${PROJECT_NAME}
-		ARCHIVE DESTINATION lib
+	target_link_libraries( ${PROJECT_NAME}
+		${BinLibraries}
+		AshesC
 	)
-	install(
-		TARGETS ${PROJECT_NAME}
-		COMPONENT ${PROJECT_NAME}_dev
-		CONFIGURATIONS RelWithDebInfo
-		EXPORT ${PROJECT_NAME}
-		ARCHIVE DESTINATION lib/RelWithDebInfo
+
+	add_dependencies( ${PROJECT_NAME}
+		AshesC
 	)
-	install(
-		TARGETS ${PROJECT_NAME}
-		COMPONENT ${PROJECT_NAME}_dev
-		CONFIGURATIONS Debug
-		EXPORT ${PROJECT_NAME}
-		ARCHIVE DESTINATION lib/Debug
+
+	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes" )
+
+	set( ENABLED_RENDERERS
+		${ENABLED_RENDERERS}
+		${PROJECT_NAME}
+		PARENT_SCOPE
 	)
-else ()
+
 	if ( WIN32 )
 		#We install each .dll in <install_dir>/bin folder
 		install(
@@ -170,5 +113,5 @@ else ()
 			CONFIGURATIONS Debug
 			LIBRARY DESTINATION lib/Debug
 		)
-	endif()
+	endif ()
 endif ()
