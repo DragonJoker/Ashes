@@ -1,0 +1,21 @@
+﻿/*
+This file belongs to Renderer.
+See LICENSE file in root folder.
+*/
+#ifndef ___Ashes_Config_HPP___
+#define ___Ashes_Config_HPP___
+#pragma once
+
+//! The platform.
+#define ASHES_WIN32 ${ASHES_WIN32}
+#define ASHES_XCB ${ASHES_XCB}
+#define ASHES_XLIB ${ASHES_XLIB}
+#define ASHES_ANDROID ${ASHES_ANDROID}
+#define ASHES_MIR ${ASHES_MIR}
+#define ASHES_WAYLAND ${ASHES_WAYLAND}
+#define ASHES_IOS ${ASHES_IOS}
+#define ASHES_MACOS ${ASHES_MACOS}
+#define ASHES_VI ${ASHES_VI}
+#define ASHES_XLIB_XRANDR ${ASHES_XLIB_XRANDR}
+
+#endif
