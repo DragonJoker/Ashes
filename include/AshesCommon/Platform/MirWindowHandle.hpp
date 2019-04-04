@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 #include <mir_toolkit/mir_connection.h>
 #include <mir_toolkit/mir_surface.h>
 
-#include "WindowHandle.hpp"
+#include "AshesCommon/WindowHandle.hpp"
 #include <vulkan/vulkan_mir.h>
 
 namespace ashes

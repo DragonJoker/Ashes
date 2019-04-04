@@ -189,4 +189,42 @@ namespace ashes
 	using VkVertexInputBindingDescriptionArray = std::vector< VkVertexInputBindingDescription >;
 	using VkViewportArray = std::vector< VkViewport >;
 	using VkWriteDescriptorSetArray = std::vector< VkWriteDescriptorSet >;
+
+#if defined( VK_USE_PLATFORM_ANDROID_KHR )
+
+	using VkSurfaceCreateInfoKHR = VkAndroidSurfaceCreateInfoKHR;
+
+#elif defined( VK_USE_PLATFORM_FUCHSIA )
+
+	using VkSurfaceCreateInfoKHR = VkImagePipeSurfaceCreateInfoFUCHSIA;
+
+#elif defined( VK_USE_PLATFORM_IOS_MVK )
+
+	using VkSurfaceCreateInfoKHR = VkIOSSurfaceCreateInfoMVK;
+
+#elif defined( VK_USE_PLATFORM_MACOS_MVK )
+
+	using VkSurfaceCreateInfoKHR = VkMacOSSurfaceCreateInfoMVK;
+
+#elif defined( VK_USE_PLATFORM_VI_NN )
+
+	using VkSurfaceCreateInfoKHR = VkViSurfaceCreateInfoNN;
+
+#elif defined( VK_USE_PLATFORM_XCB_KHR )
+
+	using VkSurfaceCreateInfoKHR = VkXcbSurfaceCreateInfoKHR;
+
+#elif defined( VK_USE_PLATFORM_XLIB_KHR )
+
+	using VkSurfaceCreateInfoKHR = VkXlibSurfaceCreateInfoKHR;
+
+#elif defined( VK_USE_PLATFORM_WAYLAND_KHR )
+
+	using VkSurfaceCreateInfoKHR = VkWaylandSurfaceCreateInfoKHR;
+
+#elif defined( VK_USE_PLATFORM_WIN32_KHR )
+
+	using VkSurfaceCreateInfoKHR = VkWin32SurfaceCreateInfoKHR;
+
+#endif
 }

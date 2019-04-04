@@ -17,6 +17,7 @@ See LICENSE file in root folder.
 #include <GL/gl.h>
 
 #include <algorithm>
+#include <cstring>
 #include <iterator>
 #include <stdexcept>
 

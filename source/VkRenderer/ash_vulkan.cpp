@@ -2,6 +2,8 @@
 
 #include <AshesCommon/DynamicLibrary.hpp>
 
+#include <memory>
+
 #if defined( _WIN32 )
 static char const * const libraryName = "vulkan-1.dll";
 #elif defined( __linux__ )

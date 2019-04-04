@@ -1,12 +1,12 @@
 #include "Core/GlX11Context.hpp"
 
 #if ASHES_XLIB
-#include "Core/GlPhysicalDevice.hpp"
-#include "Core/GlInstance.hpp"
 
+#include "Core/GlInstance.hpp"
+#include "Core/GlPhysicalDevice.hpp"
 #include "Miscellaneous/GlDebug.hpp"
 
-#include <Ashes/Core/PlatformWindowHandle.hpp>
+#include "ashesgl4_api.hpp"
 
 #include <unistd.h>
 #include <iostream>
@@ -144,7 +144,7 @@ namespace ashes::gl4
 	X11Context::X11Context( VkInstance instance
 		, VkSurfaceKHR surface
 		, Context const * mainContext )
-		: MswContext
+		: X11Context
 		{
 			instance,
 			get( surface )->getContext()->m_createInfo,

@@ -6,8 +6,6 @@
 #include "Core/GlDevice.hpp"
 #include "Core/GlPhysicalDevice.hpp"
 
-#include <AshesCommon/PlatformWindowHandle.hpp>
-
 #include <algorithm>
 #include <array>
 #include <cmath>

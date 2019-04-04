@@ -4,8 +4,6 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <iostream>
-
 #include "Gl4Renderer/Enum/GlAccessFlag.hpp"
 #include "Gl4Renderer/Enum/GlAttachmentPoint.hpp"
 #include "Gl4Renderer/Enum/GlAttachmentType.hpp"
@@ -54,6 +52,9 @@ See LICENSE file in root folder
 #include "Gl4Renderer/Enum/GlTextureViewType.hpp"
 #include "Gl4Renderer/Enum/GlTweak.hpp"
 #include "Gl4Renderer/Enum/GlWrapMode.hpp"
+
+#include <iostream>
+#include <sstream>
 
 #define GL_LOG_CALLS 0
 
@@ -385,7 +386,7 @@ namespace ashes::gl4
 		{
 			stream << name;
 			logParams( stream, std::forward< ParamsT >( params )... );
-			Logger::logDebug( stream );
+			std::clog << stream.str() << std::endl;
 			return function( std::forward< ParamsT >( params )... );
 		}
 	};
@@ -397,7 +398,7 @@ namespace ashes::gl4
 			, FuncT function
 			, char const * const name )
 		{
-			Logger::logDebug( std::string{ name } + "()" );
+			std::clog << std::string{ name } << "()" << std::endl;
 			function();
 		}
 	};

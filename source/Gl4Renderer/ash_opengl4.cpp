@@ -6,11 +6,13 @@
 
 #include <AshesRenderer/Util/Exception.hpp>
 
+#include <cstring>
 #include <iostream>
 
 namespace ashes::gl4
 {
 #pragma region Vulkan 1.0
+#ifdef VK_VERSION_1_0
 
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
 		VkInstance instance,
@@ -1626,8 +1628,10 @@ namespace ashes::gl4
 		get( commandBuffer )->executeCommands( { pCommandBuffers, pCommandBuffers + commandBufferCount } );
 	}
 
+#endif
 #pragma endregion
 #pragma region Vulkan 1.1
+#ifdef VK_VERSION_1_1
 
 	VkResult VKAPI_PTR vkEnumerateInstanceVersion( uint32_t * version )
 	{
@@ -1893,8 +1897,10 @@ namespace ashes::gl4
 		std::cerr << "vkGetDescriptorSetLayoutSupport Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_surface
+#ifdef VK_KHR_surface
 
 	void VKAPI_CALL vkDestroySurfaceKHR(
 		VkInstance instance,
@@ -1969,8 +1975,10 @@ namespace ashes::gl4
 		return VK_SUCCESS;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_swapchain
+#ifdef VK_KHR_swapchain
 
 	VkResult VKAPI_CALL vkCreateSwapchainKHR(
 		VkDevice device,
@@ -2074,8 +2082,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_display
+#ifdef VK_KHR_display
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayPropertiesKHR(
 		VkPhysicalDevice physicalDevice,
@@ -2153,8 +2163,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_get_physical_device_properties2
+#ifdef VK_KHR_get_physical_device_properties2
 
 	void VKAPI_CALL vkGetPhysicalDeviceFeatures2KHR(
 		VkPhysicalDevice physicalDevice,
@@ -2218,8 +2230,10 @@ namespace ashes::gl4
 		std::cerr << "vkGetPhysicalDeviceSparseImageFormatProperties2KHR Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_device_group
+#ifdef VK_KHR_device_group
 
 	void VKAPI_CALL vkGetDeviceGroupPeerMemoryFeaturesKHR(
 		VkDevice device,
@@ -2253,8 +2267,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdDispatchBaseKHR Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_maintenance1
+#ifdef VK_KHR_maintenance1
 
 	void VKAPI_CALL vkTrimCommandPoolKHR(
 		VkDevice device,
@@ -2265,8 +2281,10 @@ namespace ashes::gl4
 		std::cerr << "vkTrimCommandPoolKHR Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_device_group_creation
+#ifdef VK_KHR_device_group_creation
 
 	VkResult VKAPI_CALL vkEnumeratePhysicalDeviceGroupsKHR(
 		VkInstance instance,
@@ -2278,8 +2296,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_external_memory_capabilities
+#ifdef VK_KHR_external_memory_capabilities
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalBufferPropertiesKHR(
 		VkPhysicalDevice physicalDevice,
@@ -2290,8 +2310,10 @@ namespace ashes::gl4
 		std::cerr << "vkGetPhysicalDeviceExternalBufferPropertiesKHR Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_external_memory_fd
+#ifdef VK_KHR_external_memory_fd
 
 	VkResult VKAPI_CALL vkGetMemoryFdKHR(
 		VkDevice device,
@@ -2314,8 +2336,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_external_semaphore_capabilities
+#ifdef VK_KHR_external_semaphore_capabilities
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalSemaphorePropertiesKHR(
 		VkPhysicalDevice physicalDevice,
@@ -2326,8 +2350,10 @@ namespace ashes::gl4
 		std::cerr << "vkGetPhysicalDeviceExternalSemaphorePropertiesKHR Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_external_semaphore_fd
+#ifdef VK_KHR_external_semaphore_fd
 
 	VkResult VKAPI_CALL vkImportSemaphoreFdKHR(
 		VkDevice device,
@@ -2348,8 +2374,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_push_descriptor
+#ifdef VK_KHR_push_descriptor
 
 	void VKAPI_CALL vkCmdPushDescriptorSetKHR(
 		VkCommandBuffer commandBuffer,
@@ -2374,8 +2402,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdPushDescriptorSetWithTemplateKHR Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_descriptor_update_template
+#ifdef VK_KHR_descriptor_update_template
 
 	VkResult VKAPI_CALL vkCreateDescriptorUpdateTemplateKHR(
 		VkDevice device,
@@ -2407,8 +2437,10 @@ namespace ashes::gl4
 		std::cerr << "vkUpdateDescriptorSetWithTemplateKHR Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_create_renderpass2
+#ifdef VK_KHR_create_renderpass2
 
 	VkResult VKAPI_CALL vkCreateRenderPass2KHR(
 		VkDevice device,
@@ -2447,8 +2479,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdEndRenderPass2KHR Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_shared_presentable_image
+#ifdef VK_KHR_shared_presentable_image
 
 	VkResult VKAPI_CALL vkGetSwapchainStatusKHR(
 		VkDevice device,
@@ -2459,8 +2493,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_external_fence_capabilities
+#ifdef VK_KHR_external_fence_capabilities
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalFencePropertiesKHR(
 		VkPhysicalDevice physicalDevice,
@@ -2471,8 +2507,10 @@ namespace ashes::gl4
 		std::cerr << "vkGetPhysicalDeviceExternalFencePropertiesKHR Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_external_fence_fd
+#ifdef VK_KHR_external_fence_fd
 
 	VkResult VKAPI_CALL vkImportFenceFdKHR(
 		VkDevice device,
@@ -2493,8 +2531,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_get_surface_capabilities2
+#ifdef VK_KHR_get_surface_capabilities2
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceCapabilities2KHR(
 		VkPhysicalDevice physicalDevice,
@@ -2517,8 +2557,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_get_display_properties2
+#ifdef VK_KHR_get_display_properties2
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayProperties2KHR(
 		VkPhysicalDevice physicalDevice,
@@ -2561,8 +2603,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_get_memory_requirements2
+#ifdef VK_KHR_get_memory_requirements2
 
 	void VKAPI_CALL vkGetImageMemoryRequirements2KHR(
 		VkDevice device,
@@ -2592,8 +2636,10 @@ namespace ashes::gl4
 		std::cerr << "vkGetImageSparseMemoryRequirements2KHR Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_sampler_ycbcr_conversion
+#ifdef VK_KHR_sampler_ycbcr_conversion
 
 	VkResult VKAPI_CALL vkCreateSamplerYcbcrConversionKHR(
 		VkDevice device,
@@ -2615,8 +2661,10 @@ namespace ashes::gl4
 		std::cerr << "vkDestroySamplerYcbcrConversionKHR Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_bind_memory2
+#ifdef VK_KHR_bind_memory2
 
 	VkResult VKAPI_CALL vkBindBufferMemory2KHR(
 		VkDevice device,
@@ -2638,8 +2686,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_maintenance3
+#ifdef VK_KHR_maintenance3
 
 	void VKAPI_CALL vkGetDescriptorSetLayoutSupportKHR(
 		VkDevice device,
@@ -2650,8 +2700,10 @@ namespace ashes::gl4
 		std::cerr << "vkGetDescriptorSetLayoutSupportKHR Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_draw_indirect_count
+#ifdef VK_KHR_draw_indirect_count
 
 	void VKAPI_CALL vkCmdDrawIndirectCountKHR(
 		VkCommandBuffer commandBuffer,
@@ -2679,8 +2731,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdDrawIndexedIndirectCountKHR Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_debug_report
+#ifdef VK_EXT_debug_report
 
 	VkResult VKAPI_CALL vkCreateDebugReportCallbackEXT(
 		VkInstance instance,
@@ -2722,8 +2776,10 @@ namespace ashes::gl4
 			, pMessage );
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_debug_marker
+#ifdef VK_EXT_debug_marker
 
 	VkResult VKAPI_CALL vkDebugMarkerSetObjectTagEXT(
 		VkDevice device,
@@ -2766,8 +2822,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdDebugMarkerInsertEXT Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_transform_feedback
+#ifdef VK_EXT_transform_feedback
 
 	void VKAPI_CALL vkCmdBindTransformFeedbackBuffersEXT(
 		VkCommandBuffer commandBuffer,
@@ -2837,8 +2895,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdDrawIndirectByteCountEXT Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_AMD_draw_indirect_count
+#ifdef VK_AMD_draw_indirect_count
 
 	void VKAPI_CALL vkCmdDrawIndirectCountAMD(
 		VkCommandBuffer commandBuffer,
@@ -2866,8 +2926,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdDrawIndexedIndirectCountAMD Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_AMD_shader_info
+#ifdef VK_AMD_shader_info
 
 	VkResult VKAPI_CALL vkGetShaderInfoAMD(
 		VkDevice device,
@@ -2882,8 +2944,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_NV_external_memory_capabilities
+#ifdef VK_NV_external_memory_capabilities
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceExternalImageFormatPropertiesNV(
 		VkPhysicalDevice physicalDevice,
@@ -2900,8 +2964,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_conditional_rendering
+#ifdef VK_EXT_conditional_rendering
 
 	void VKAPI_CALL vkCmdBeginConditionalRenderingEXT(
 		VkCommandBuffer commandBuffer,
@@ -2918,8 +2984,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdEndConditionalRenderingEXT Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_NVX_device_generated_commands
+#ifdef VK_NVX_device_generated_commands
 
 	void VKAPI_CALL vkCmdProcessCommandsNVX(
 		VkCommandBuffer commandBuffer,
@@ -3010,8 +3078,10 @@ namespace ashes::gl4
 		std::cerr << "vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_NV_clip_space_w_scaling
+#ifdef VK_NV_clip_space_w_scaling
 
 	void VKAPI_CALL vkCmdSetViewportWScalingNV(
 		VkCommandBuffer commandBuffer,
@@ -3023,8 +3093,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdSetViewportWScalingNV Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_direct_mode_display
+#ifdef VK_EXT_direct_mode_display
 
 	VkResult VKAPI_CALL vkReleaseDisplayEXT(
 		VkPhysicalDevice physicalDevice,
@@ -3035,8 +3107,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_display_surface_counter
+#ifdef VK_EXT_display_surface_counter
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceCapabilities2EXT(
 		VkPhysicalDevice physicalDevice,
@@ -3048,8 +3122,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_display_control
+#ifdef VK_EXT_display_control
 
 	VkResult VKAPI_CALL vkDisplayPowerControlEXT(
 		VkDevice device,
@@ -3095,8 +3171,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_GOOGLE_display_timing
+#ifdef VK_GOOGLE_display_timing
 
 	VkResult VKAPI_CALL vkGetRefreshCycleDurationGOOGLE(
 		VkDevice device,
@@ -3119,8 +3197,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_discard_rectangles
+#ifdef VK_EXT_discard_rectangles
 
 	void VKAPI_CALL vkCmdSetDiscardRectangleEXT(
 		VkCommandBuffer commandBuffer,
@@ -3132,8 +3212,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdSetDiscardRectangleEXT Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_hdr_metadata
+#ifdef VK_EXT_hdr_metadata
 
 	void VKAPI_CALL vkSetHdrMetadataEXT(
 		VkDevice device,
@@ -3145,8 +3227,10 @@ namespace ashes::gl4
 		std::cerr << "vkSetHdrMetadataEXT Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_debug_utils
+#ifdef VK_EXT_debug_utils
 
 	VkResult VKAPI_CALL vkSetDebugUtilsObjectNameEXT(
 		VkDevice device,
@@ -3242,8 +3326,10 @@ namespace ashes::gl4
 		std::cerr << "vkSubmitDebugUtilsMessageEXT Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_sample_locations
+#ifdef VK_EXT_sample_locations
 
 	void VKAPI_CALL vkCmdSetSampleLocationsEXT(
 		VkCommandBuffer commandBuffer,
@@ -3262,8 +3348,10 @@ namespace ashes::gl4
 		std::cerr << "vkGetPhysicalDeviceMultisamplePropertiesEXT Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_image_drm_format_modifier
+#ifdef VK_EXT_image_drm_format_modifier
 
 	VkResult VKAPI_CALL vkGetImageDrmFormatModifierPropertiesEXT(
 		VkDevice device,
@@ -3275,8 +3363,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_validation_cache
+#ifdef VK_EXT_validation_cache
 
 	VkResult VKAPI_CALL vkCreateValidationCacheEXT(
 		VkDevice device,
@@ -3320,8 +3410,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_NV_shading_rate_image
+#ifdef VK_NV_shading_rate_image
 
 	void VKAPI_CALL vkCmdBindShadingRateImageNV(
 		VkCommandBuffer commandBuffer,
@@ -3352,8 +3444,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdSetCoarseSampleOrderNV Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_NV_ray_tracing
+#ifdef VK_NV_ray_tracing
 
 	VkResult VKAPI_CALL vkCreateAccelerationStructureNV(
 		VkDevice device,
@@ -3499,8 +3593,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_external_memory_host
+#ifdef VK_EXT_external_memory_host
 
 	VkResult VKAPI_CALL vkGetMemoryHostPointerPropertiesEXT(
 		VkDevice device,
@@ -3513,8 +3609,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_AMD_buffer_marker
+#ifdef VK_AMD_buffer_marker
 
 	void VKAPI_CALL vkCmdWriteBufferMarkerAMD(
 		VkCommandBuffer commandBuffer,
@@ -3527,8 +3625,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdWriteBufferMarkerAMD Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_calibrated_timestamps
+#ifdef VK_EXT_calibrated_timestamps
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceCalibrateableTimeDomainsEXT(
 		VkPhysicalDevice physicalDevice,
@@ -3552,8 +3652,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_NV_mesh_shader
+#ifdef VK_NV_mesh_shader
 
 	void VKAPI_CALL vkCmdDrawMeshTasksNV(
 		VkCommandBuffer commandBuffer,
@@ -3588,8 +3690,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdDrawMeshTasksIndirectCountNV Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_NV_scissor_exclusive
+#ifdef VK_NV_scissor_exclusive
 
 	void VKAPI_CALL vkCmdSetExclusiveScissorNV(
 		VkCommandBuffer commandBuffer,
@@ -3601,8 +3705,10 @@ namespace ashes::gl4
 		std::cerr << "vkCmdSetExclusiveScissorNV Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_NV_device_diagnostic_checkpoints
+#ifdef VK_NV_device_diagnostic_checkpoints
 
 	void VKAPI_CALL vkCmdSetCheckpointNV(
 		VkCommandBuffer commandBuffer,
@@ -3621,8 +3727,10 @@ namespace ashes::gl4
 		std::cerr << "vkGetQueueCheckpointDataNV Unsupported" << std::endl;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_EXT_buffer_device_address
+#ifdef VK_EXT_buffer_device_address
 
 	VkDeviceAddress VKAPI_CALL vkGetBufferDeviceAddressEXT(
 		VkDevice device,
@@ -3633,8 +3741,10 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_NV_cooperative_matrix
+#ifdef VK_NV_cooperative_matrix
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceCooperativeMatrixPropertiesNV(
 		VkPhysicalDevice physicalDevice,
@@ -3646,9 +3756,11 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#endif
 #pragma endregion
 #pragma region VK_KHR_android_surface
-#ifdef VK_USE_PLATFORM_ANDROID_KHR
+#ifdef VK_KHR_android_surface
+#	ifdef VK_USE_PLATFORM_ANDROID_KHR
 
 	VkResult VKAPI_CALL vkCreateAndroidSurfaceKHR(
 		VkInstance instance,
@@ -3663,10 +3775,12 @@ namespace ashes::gl4
 			, *pCreateInfo );
 	}
 
+#	endif
 #endif
 #pragma endregion
 #pragma region VK_FUCHSIA_imagepipe_surface
-#ifdef VK_USE_PLATFORM_FUCHSIA
+#ifdef VK_FUCHSIA_imagepipe_surface
+#	ifdef VK_USE_PLATFORM_FUCHSIA
 
 	VkResult VKAPI_CALL vkCreateImagePipeSurfaceFUCHSIA(
 		VkInstance instance,
@@ -3681,10 +3795,12 @@ namespace ashes::gl4
 			, *pCreateInfo );
 	}
 
+#	endif
 #endif
 #pragma endregion
 #pragma region VK_MVK_ios_surface
-#ifdef VK_USE_PLATFORM_IOS_MVK
+#ifdef VK_MVK_ios_surface
+#	ifdef VK_USE_PLATFORM_IOS_MVK
 
 	VkResult VKAPI_CALL vkCreateIOSSurfaceMVK(
 		VkInstance instance,
@@ -3699,10 +3815,12 @@ namespace ashes::gl4
 			, *pCreateInfo );
 	}
 
+#	endif
 #endif
 #pragma endregion
 #pragma region VK_MVK_macos_surface
-#ifdef VK_USE_PLATFORM_MACOS_MVK
+#ifdef VK_MVK_macos_surface
+#	ifdef VK_USE_PLATFORM_MACOS_MVK
 
 	VkResult VKAPI_CALL vkCreateMacOSSurfaceMVK(
 		VkInstance instance,
@@ -3717,10 +3835,12 @@ namespace ashes::gl4
 			, *pCreateInfo );
 	}
 
+#	endif
 #endif
 #pragma endregion
 #pragma region VK_NN_vi_surface
-#ifdef VK_USE_PLATFORM_VI_NN
+#ifdef VK_NN_vi_surface
+#	ifdef VK_USE_PLATFORM_VI_NN
 
 	VkResult VKAPI_CALL vkCreateViSurfaceNN(
 		VkInstance instance,
@@ -3735,10 +3855,12 @@ namespace ashes::gl4
 			, *pCreateInfo );
 	}
 
+#	endif
 #endif
 #pragma endregion
 #pragma region VK_KHR_xcb_surface
-#ifdef VK_USE_PLATFORM_XCB_KHR
+#ifdef VK_KHR_xcb_surface
+#	ifdef VK_USE_PLATFORM_XCB_KHR
 
 	VkResult VKAPI_CALL vkCreateXcbSurfaceKHR(
 		VkInstance instance,
@@ -3762,10 +3884,12 @@ namespace ashes::gl4
 		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
 	}
 
+#	endif
 #endif
 #pragma endregion
 #pragma region VK_KHR_xlib_surface
-#ifdef VK_USE_PLATFORM_XLIB_KHR
+#ifdef VK_KHR_xlib_surface
+#	ifdef VK_USE_PLATFORM_XLIB_KHR
 
 	VkResult VKAPI_CALL vkCreateXlibSurfaceKHR(
 		VkInstance instance,
@@ -3789,10 +3913,12 @@ namespace ashes::gl4
 		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
 	}
 
+#	endif
 #endif
 #pragma endregion
 #pragma region VK_KHR_wayland_surface
-#ifdef VK_USE_PLATFORM_WAYLAND_KHR
+#ifdef VK_KHR_wayland_surface
+#	ifdef VK_USE_PLATFORM_WAYLAND_KHR
 
 	VkResult VKAPI_CALL vkCreateWaylandSurfaceKHR(
 		VkInstance instance,
@@ -3815,10 +3941,12 @@ namespace ashes::gl4
 		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
 	}
 
+#	endif
 #endif
 #pragma endregion
 #pragma region VK_KHR_win32_surface
-#ifdef VK_USE_PLATFORM_WIN32_KHR
+#ifdef VK_KHR_win32_surface
+#	ifdef VK_USE_PLATFORM_WIN32_KHR
 
 	VkResult VKAPI_CALL vkCreateWin32SurfaceKHR(
 		VkInstance instance,
@@ -3840,9 +3968,12 @@ namespace ashes::gl4
 		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
 	}
 
+#	endif
+#endif
 #pragma endregion
 #pragma region VK_EXT_acquire_xlib_display
-#ifdef VK_USE_PLATFORM_XLIB_XRANDR_EXT
+#ifdef VK_EXT_acquire_xlib_display
+#	ifdef VK_USE_PLATFORM_XLIB_XRANDR_EXT
 
 	VkResult VKAPI_CALL vkAcquireXlibDisplayEXT(
 		VkPhysicalDevice physicalDevice,
@@ -3865,10 +3996,9 @@ namespace ashes::gl4
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+#	endif
 #endif
 #pragma endregion
-
-#endif
 }
 
 namespace ashes::gl4

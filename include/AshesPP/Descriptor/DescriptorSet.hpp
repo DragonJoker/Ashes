@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/AshesPPPrerequisites.hpp"
 
-#include <vector>
+#include <list>
 
 namespace ashes
 {

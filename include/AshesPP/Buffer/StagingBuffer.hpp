@@ -201,21 +201,21 @@ namespace ashes
 			, CommandPool const & commandPool
 			, std::vector< T > const & data
 			, UniformBuffer< T > const & buffer
-			, VkPipelineStageFlags dstStageFlags = VkPipelineStageFlagBits::eVertexShader )const;
+			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, T const * const data
 			, uint32_t count
 			, UniformBuffer< T > const & buffer
-			, VkPipelineStageFlags dstStageFlags = VkPipelineStageFlagBits::eVertexShader )const;
+			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > const & data
 			, uint32_t offset
 			, UniformBuffer< T > const & buffer
-			, VkPipelineStageFlags dstStageFlags = VkPipelineStageFlagBits::eVertexShader )const;
+			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( Queue const & queue
 			, CommandPool const & commandPool
@@ -223,31 +223,31 @@ namespace ashes
 			, uint32_t count
 			, uint32_t offset
 			, UniformBuffer< T > const & buffer
-			, VkPipelineStageFlags dstStageFlags = VkPipelineStageFlagBits::eVertexShader )const;
+			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, UniformBuffer< T > const & buffer
-			, VkPipelineStageFlags dstStageFlags = VkPipelineStageFlagBits::eVertexShader )const;
+			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( CommandBuffer const & commandBuffer
 			, T const * const data
 			, uint32_t count
 			, UniformBuffer< T > const & buffer
-			, VkPipelineStageFlags dstStageFlags = VkPipelineStageFlagBits::eVertexShader )const;
+			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, uint32_t offset
 			, UniformBuffer< T > const & buffer
-			, VkPipelineStageFlags dstStageFlags = VkPipelineStageFlagBits::eVertexShader )const;
+			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( CommandBuffer const & commandBuffer
 			, T const * const data
 			, uint32_t count
 			, uint32_t offset
 			, UniformBuffer< T > const & buffer
-			, VkPipelineStageFlags dstStageFlags = VkPipelineStageFlagBits::eVertexShader )const;
+			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		/**@}*/
 		/**@}*/
 		/**
@@ -347,21 +347,21 @@ namespace ashes
 			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, UniformBuffer< T > const & buffer
-			, VkPipelineStageFlags dstStageFlags = VkPipelineStageFlagBits::eVertexShader )const;
+			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void downloadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, T * data
 			, uint32_t count
 			, UniformBuffer< T > const & buffer
-			, VkPipelineStageFlags dstStageFlags = VkPipelineStageFlagBits::eVertexShader )const;
+			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void downloadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, uint32_t offset
 			, UniformBuffer< T > const & buffer
-			, VkPipelineStageFlags dstStageFlags = VkPipelineStageFlagBits::eVertexShader )const;
+			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void downloadUniformData( Queue const & queue
 			, CommandPool const & commandPool
@@ -369,7 +369,7 @@ namespace ashes
 			, uint32_t count
 			, uint32_t offset
 			, UniformBuffer< T > const & buffer
-			, VkPipelineStageFlags dstStageFlags = VkPipelineStageFlagBits::eVertexShader )const;
+			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		/**@}*/
 		/**@}*/
 		/**
@@ -435,7 +435,7 @@ namespace ashes
 
 	protected:
 		Device const & m_device;
-		VkAccessFlags m_currentAccessMask{ VkAccessFlagBits::VK_ACCESS_MEMORY_WRITE_BIT };
+		VkAccessFlags m_currentAccessMask{ VK_ACCESS_MEMORY_WRITE_BIT };
 		BufferBasePtr m_buffer;
 		DeviceMemoryPtr m_storage;
 	};

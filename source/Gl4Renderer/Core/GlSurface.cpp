@@ -11,6 +11,16 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
+	SurfaceKHR::SurfaceKHR( VkInstance instance
+		, VkSurfaceCreateInfoKHR createInfo )
+		: m_context{ Context::create( instance
+			, createInfo
+			, &get( instance )->getContext() ) }
+	{
+		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
+		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+	}
+
 	void SurfaceKHR::getSurfaceInfos( VkSurfaceFormatArrayKHR & formats
 		, VkSurfaceCapabilitiesKHR & capabilities )
 	{

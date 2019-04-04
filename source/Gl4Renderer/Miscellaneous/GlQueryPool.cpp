@@ -16,7 +16,7 @@ namespace ashes::gl4
 		, m_pipelineStatistics{ createInfo.pipelineStatistics }
 		, m_names( size_t( m_queryCount ), GLuint( GL_INVALID_INDEX ) )
 	{
-		auto & context = get( m_device )->getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glGenQueries
 			, GLsizei( m_names.size() )

@@ -148,7 +148,7 @@ namespace ashes
 		auto itLhs = lhs.begin();
 		auto itRhs = rhs.begin();
 
-		while ( result && itLhs != lsh.end() )
+		while ( result && itLhs != lhs.end() )
 		{
 			result = ( *itLhs == *itRhs );
 		}

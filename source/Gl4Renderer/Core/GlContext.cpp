@@ -26,7 +26,7 @@ namespace ashes::gl4
 #if defined( VK_USE_PLATFORM_ANDROID_KHR )
 
 	ContextPtr Context::create( VkInstance instance
-		, VkAndroidSurfaceCreateInfoKHR createInfo
+		, VkSurfaceCreateInfoKHR createInfo
 		, Context const * mainContext )
 	{
 		std::cerr << "Not implemented" << std::endl;
@@ -44,7 +44,7 @@ namespace ashes::gl4
 #elif defined( VK_USE_PLATFORM_FUCHSIA )
 
 	ContextPtr Context::create( VkInstance instance
-		, VkImagePipeSurfaceCreateInfoFUCHSIA createInfo
+		, VkSurfaceCreateInfoKHR createInfo
 		, Context const * mainContext )
 	{
 		std::cerr << "Not implemented" << std::endl;
@@ -62,7 +62,7 @@ namespace ashes::gl4
 #elif defined( VK_USE_PLATFORM_IOS_MVK )
 
 	ContextPtr Context::create( VkInstance instance
-		, VkIOSSurfaceCreateInfoMVK createInfo
+		, VkSurfaceCreateInfoKHR createInfo
 		, Context const * mainContext )
 	{
 		std::cerr << "Not implemented" << std::endl;
@@ -80,7 +80,7 @@ namespace ashes::gl4
 #elif defined( VK_USE_PLATFORM_MACOS_MVK )
 
 	ContextPtr Context::create( VkInstance instance
-		, VkMacOSSurfaceCreateInfoMVK createInfo
+		, VkSurfaceCreateInfoKHR createInfo
 		, Context const * mainContext )
 	{
 		std::cerr << "Not implemented" << std::endl;
@@ -98,7 +98,7 @@ namespace ashes::gl4
 #elif defined( VK_USE_PLATFORM_VI_NN )
 
 	ContextPtr Context::create( VkInstance instance
-		, VkViSurfaceCreateInfoNN createInfo
+		, VkSurfaceCreateInfoKHR createInfo
 		, Context const * mainContext )
 	{
 		std::cerr << "Not implemented" << std::endl;
@@ -116,7 +116,7 @@ namespace ashes::gl4
 #elif defined( VK_USE_PLATFORM_XCB_KHR )
 
 	ContextPtr Context::create( VkInstance instance
-		, VkXcbSurfaceCreateInfoKHR createInfo
+		, VkSurfaceCreateInfoKHR createInfo
 		, Context const * mainContext )
 	{
 		std::cerr << "Not implemented" << std::endl;
@@ -134,7 +134,7 @@ namespace ashes::gl4
 #elif defined( VK_USE_PLATFORM_XLIB_KHR )
 
 	ContextPtr Context::create( VkInstance instance
-		, VkXlibSurfaceCreateInfoKHR createInfo
+		, VkSurfaceCreateInfoKHR createInfo
 		, Context const * mainContext )
 	{
 		ContextPtr result;
@@ -176,7 +176,7 @@ namespace ashes::gl4
 #elif defined( VK_USE_PLATFORM_WAYLAND_KHR )
 
 	ContextPtr Context::create( VkInstance instance
-		, VkWaylandSurfaceCreateInfoKHR createInfo
+		, VkSurfaceCreateInfoKHR createInfo
 		, Context const * mainContext )
 	{
 		std::cerr << "Not implemented" << std::endl;
@@ -194,7 +194,7 @@ namespace ashes::gl4
 #elif defined( VK_USE_PLATFORM_WIN32_KHR )
 
 	ContextPtr Context::create( VkInstance instance
-		, VkWin32SurfaceCreateInfoKHR createInfo
+		, VkSurfaceCreateInfoKHR createInfo
 		, Context const * mainContext )
 	{
 		ContextPtr result;

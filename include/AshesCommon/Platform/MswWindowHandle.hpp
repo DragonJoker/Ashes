@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 
 #include <Windows.h>
 
-#include "WindowHandle.hpp"
+#include "AshesCommon/WindowHandle.hpp"
 #include <vulkan/vulkan_win32.h>
 
 namespace ashes

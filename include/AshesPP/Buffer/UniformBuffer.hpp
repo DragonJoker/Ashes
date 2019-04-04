@@ -293,7 +293,7 @@ namespace ashes
 
 			if ( auto buffer = m_ubo.getBuffer().lock( offset * size
 				, range * size
-				, MemoryMapFlag::eWrite | MemoryMapFlag::eInvalidateRange ) )
+				, 0u ) )
 			{
 				for ( auto i = 0u; i < range; ++i )
 				{

@@ -13,16 +13,8 @@ namespace ashes::gl4
 	class SurfaceKHR
 	{
 	public:
-		template< typename CreateInfoT >
-		inline SurfaceKHR( VkInstance instance
-			, CreateInfoT createInfo )
-			: m_context{ Context::create( instance
-				, createInfo
-				, &get( instance )->getContext() ) }
-		{
-			m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
-			getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
-		}
+		SurfaceKHR( VkInstance instance
+			, VkSurfaceCreateInfoKHR createInfo );
 
 		VkSurfaceCapabilitiesKHR getCapabilities()const
 		{

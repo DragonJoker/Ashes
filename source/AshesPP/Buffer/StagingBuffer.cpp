@@ -110,11 +110,11 @@ namespace ashes
 		, BufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, getBuffer().makeTransferSource() );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, buffer.makeTransferDestination() );
 		commandBuffer.copyBuffer( getBuffer()
 			, buffer
@@ -128,19 +128,19 @@ namespace ashes
 		, VertexBufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, getBuffer().makeTransferSource() );
 		auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
 		commandBuffer.memoryBarrier( srcStageFlags
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, buffer.getBuffer().makeTransferDestination() );
 		commandBuffer.copyBuffer( getBuffer()
 			, buffer.getBuffer()
 			, size
 			, offset );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
 			, buffer.getBuffer().makeVertexShaderInputResource() );
 	}
 
@@ -150,18 +150,18 @@ namespace ashes
 		, UniformBufferBase const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, getBuffer().makeTransferSource() );
 		auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
 		commandBuffer.memoryBarrier( srcStageFlags
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, buffer.getBuffer().makeTransferDestination() );
 		commandBuffer.copyBuffer( getBuffer()
 			, buffer.getBuffer()
 			, size
 			, offset );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, dstStageFlags
 			, buffer.getBuffer().makeUniformBufferInput() );
 	}
@@ -198,11 +198,11 @@ namespace ashes
 		, BufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, buffer.makeTransferSource() );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, getBuffer().makeTransferDestination() );
 		commandBuffer.copyBuffer( buffer
 			, getBuffer()
@@ -216,19 +216,19 @@ namespace ashes
 		, VertexBufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, buffer.getBuffer().makeTransferSource() );
 		auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
 		commandBuffer.memoryBarrier( srcStageFlags
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, getBuffer().makeTransferDestination() );
 		commandBuffer.copyBuffer( buffer.getBuffer()
 			, getBuffer()
 			, size
 			, offset );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
 			, buffer.getBuffer().makeVertexShaderInputResource() );
 	}
 
@@ -238,18 +238,18 @@ namespace ashes
 		, UniformBufferBase const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, buffer.getBuffer().makeTransferSource() );
 		auto srcStageFlags = buffer.getBuffer().getCompatibleStageFlags();
 		commandBuffer.memoryBarrier( srcStageFlags
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, getBuffer().makeTransferDestination() );
 		commandBuffer.copyBuffer( buffer.getBuffer()
 			, getBuffer()
 			, size
 			, offset );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, dstStageFlags
 			, buffer.getBuffer().makeUniformBufferInput() );
 	}

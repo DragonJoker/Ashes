@@ -1,6 +1,6 @@
 #include "Core/GlMswContext.hpp"
 
-#if defined( _WIN32 )
+#if ASHES_WIN32
 
 #include "Core/GlInstance.hpp"
 #include "Core/GlPhysicalDevice.hpp"
