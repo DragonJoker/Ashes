@@ -2,8 +2,9 @@
 
 #if defined( _WIN32 )
 
-#include <sstream>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 
 #include <Windows.h>
 
@@ -76,7 +77,7 @@ namespace ashes
 		{
 			std::stringstream stream;
 			stream << "Couldn't load function [" + name + "]: ";
-			stream << "Error code: " << std::hex << error;
+			stream << "Error code: 0x" << std::hex << std::setw( 8u ) << std::setfill( '0' ) << error;
 			std::cerr << stream.str() << std::endl;
 		}
 

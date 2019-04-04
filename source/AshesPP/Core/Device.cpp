@@ -45,7 +45,7 @@ namespace ashes
 		checkError( res, "LogicalDevice creation" );
 
 #define VK_LIB_DEVICE_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( m_instance.vkGetDeviceProcAddr( m_internal, "vk"#fun ) );
-#include <AshesRenderer/Util/VulkanFunctionsList.inl>
+#include <AshesCommon/VulkanFunctionsList.inl>
 	}
 
 	Device::~Device()

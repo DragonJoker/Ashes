@@ -135,8 +135,9 @@ namespace ashes::gl4
 		: m_createInfo{ std::move( createInfo ) }
 		, m_instance{ instance }
 	{
-		get( m_instance )->registerDebugMessageCallback( get( this ), PFNGLDEBUGPROC( &callbackDebugLog ), this );
-		get( m_instance )->registerDebugMessageCallbackAMD( get( this ), PFNGLDEBUGAMDPROC( &callbackDebugLogAMD ), this );
+		auto glinstance = get( m_instance );
+		glinstance->registerDebugMessageCallback( get( this ), PFNGLDEBUGPROC( &callbackDebugLog ), this );
+		glinstance->registerDebugMessageCallbackAMD( get( this ), PFNGLDEBUGAMDPROC( &callbackDebugLogAMD ), this );
 	}
 
 	DebugReportCallbackEXT::~DebugReportCallbackEXT()

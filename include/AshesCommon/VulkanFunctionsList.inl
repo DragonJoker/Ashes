@@ -14,6 +14,10 @@ See LICENSE file in root folder.
 #	define VK_LIB_GLOBAL_FUNCTION( x )
 #endif
 
+#ifndef VK_LIB_GLOBAL_FUNCTION_EXT
+#	define VK_LIB_GLOBAL_FUNCTION_EXT( x ) VK_LIB_GLOBAL_FUNCTION( x )
+#endif
+
 #ifdef VK_VERSION_1_0
 	VK_LIB_GLOBAL_FUNCTION( CreateInstance )
 	VK_LIB_GLOBAL_FUNCTION( EnumerateInstanceExtensionProperties )
@@ -25,24 +29,30 @@ See LICENSE file in root folder.
 #endif
 
 #undef VK_LIB_GLOBAL_FUNCTION
+#undef VK_LIB_GLOBAL_FUNCTION_EXT
 
 #ifndef VK_LIB_INSTANCE_FUNCTION
 #	define VK_LIB_INSTANCE_FUNCTION( x )
 #endif
 
-// V 1_0
-VK_LIB_INSTANCE_FUNCTION( CreateDevice )
-VK_LIB_INSTANCE_FUNCTION( DestroyInstance )
-VK_LIB_INSTANCE_FUNCTION( EnumeratePhysicalDevices )
-VK_LIB_INSTANCE_FUNCTION( EnumerateDeviceExtensionProperties )
-VK_LIB_INSTANCE_FUNCTION( EnumerateDeviceLayerProperties )
-VK_LIB_INSTANCE_FUNCTION( GetDeviceProcAddr )
-VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceFeatures )
-VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceFormatProperties )
-VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceImageFormatProperties )
-VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceMemoryProperties )
-VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceProperties )
-VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceQueueFamilyProperties )
+#ifndef VK_LIB_INSTANCE_FUNCTION_EXT
+#	define VK_LIB_INSTANCE_FUNCTION_EXT( x ) VK_LIB_INSTANCE_FUNCTION( x )
+#endif
+
+#ifdef VK_VERSION_1_0
+	VK_LIB_INSTANCE_FUNCTION( CreateDevice )
+	VK_LIB_INSTANCE_FUNCTION( DestroyInstance )
+	VK_LIB_INSTANCE_FUNCTION( EnumeratePhysicalDevices )
+	VK_LIB_INSTANCE_FUNCTION( EnumerateDeviceExtensionProperties )
+	VK_LIB_INSTANCE_FUNCTION( EnumerateDeviceLayerProperties )
+	VK_LIB_INSTANCE_FUNCTION( GetDeviceProcAddr )
+	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceFeatures )
+	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceFormatProperties )
+	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceImageFormatProperties )
+	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceMemoryProperties )
+	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceProperties )
+	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceQueueFamilyProperties )
+#endif
 
 #ifdef VK_VERSION_1_1
 	VK_LIB_INSTANCE_FUNCTION( EnumeratePhysicalDeviceGroups )
@@ -80,37 +90,6 @@ VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceQueueFamilyProperties )
 	VK_LIB_INSTANCE_FUNCTION( CreateDisplayPlaneSurfaceKHR )
 #endif
 
-#ifdef VK_KHR_display_swapchain
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceFeatures2KHR )
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceProperties2KHR )
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceFormatProperties2KHR )
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceImageFormatProperties2KHR )
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceQueueFamilyProperties2KHR )
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceMemoryProperties2KHR )
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceSparseImageFormatProperties2KHR )
-#endif
-
-#ifdef VK_KHR_device_group_creation
-	VK_LIB_INSTANCE_FUNCTION( EnumeratePhysicalDeviceGroupsKHR )
-#endif
-
-#ifdef VK_KHR_external_memory_capabilities
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceExternalBufferPropertiesKHR )
-#endif
-
-#ifdef VK_KHR_external_semaphore_capabilities
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceExternalSemaphorePropertiesKHR )
-#endif
-
-#ifdef VK_KHR_external_fence_capabilities
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceExternalFencePropertiesKHR )
-#endif
-
-#ifdef VK_KHR_get_surface_capabilities2
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceSurfaceCapabilities2KHR )
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceSurfaceFormats2KHR )
-#endif
-
 #ifdef VK_KHR_get_display_properties2
 	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceDisplayProperties2KHR )
 	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceDisplayPlaneProperties2KHR )
@@ -118,44 +97,75 @@ VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceQueueFamilyProperties )
 	VK_LIB_INSTANCE_FUNCTION( GetDisplayPlaneCapabilities2KHR )
 #endif
 
+#ifdef VK_KHR_display_swapchain
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceFeatures2KHR )
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceProperties2KHR )
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceFormatProperties2KHR )
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceImageFormatProperties2KHR )
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceQueueFamilyProperties2KHR )
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceMemoryProperties2KHR )
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceSparseImageFormatProperties2KHR )
+#endif
+
+#ifdef VK_KHR_device_group_creation
+	VK_LIB_INSTANCE_FUNCTION_EXT( EnumeratePhysicalDeviceGroupsKHR )
+#endif
+
+#ifdef VK_KHR_external_memory_capabilities
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceExternalBufferPropertiesKHR )
+#endif
+
+#ifdef VK_KHR_external_semaphore_capabilities
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceExternalSemaphorePropertiesKHR )
+#endif
+
+#ifdef VK_KHR_external_fence_capabilities
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceExternalFencePropertiesKHR )
+#endif
+
+#ifdef VK_KHR_get_surface_capabilities2
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceSurfaceCapabilities2KHR )
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceSurfaceFormats2KHR )
+#endif
+
 #ifdef VK_EXT_debug_report
-	VK_LIB_INSTANCE_FUNCTION( CreateDebugReportCallbackEXT )
-	VK_LIB_INSTANCE_FUNCTION( DestroyDebugReportCallbackEXT )
-	VK_LIB_INSTANCE_FUNCTION( DebugReportMessageEXT )
+	VK_LIB_INSTANCE_FUNCTION_EXT( CreateDebugReportCallbackEXT )
+	VK_LIB_INSTANCE_FUNCTION_EXT( DestroyDebugReportCallbackEXT )
+	VK_LIB_INSTANCE_FUNCTION_EXT( DebugReportMessageEXT )
 #endif
 
 #ifdef VK_NV_external_memory_capabilities
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceExternalImageFormatPropertiesNV )
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceExternalImageFormatPropertiesNV )
 #endif
 
 #ifdef VK_EXT_direct_mode_display
-	VK_LIB_INSTANCE_FUNCTION( ReleaseDisplayEXT )
+	VK_LIB_INSTANCE_FUNCTION_EXT( ReleaseDisplayEXT )
 #endif
 
 #ifdef VK_NVX_device_generated_commands
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceGeneratedCommandsPropertiesNVX )
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceGeneratedCommandsPropertiesNVX )
 #endif
 
 #ifdef VK_EXT_display_surface_counter
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceSurfaceCapabilities2EXT )
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceSurfaceCapabilities2EXT )
 #endif
 
 #ifdef VK_EXT_debug_utils
-	VK_LIB_INSTANCE_FUNCTION( CreateDebugUtilsMessengerEXT )
-	VK_LIB_INSTANCE_FUNCTION( DestroyDebugUtilsMessengerEXT )
-	VK_LIB_INSTANCE_FUNCTION( SubmitDebugUtilsMessageEXT )
+	VK_LIB_INSTANCE_FUNCTION_EXT( CreateDebugUtilsMessengerEXT )
+	VK_LIB_INSTANCE_FUNCTION_EXT( DestroyDebugUtilsMessengerEXT )
+	VK_LIB_INSTANCE_FUNCTION_EXT( SubmitDebugUtilsMessageEXT )
 #endif
 
 #ifdef VK_EXT_sample_locations
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceMultisamplePropertiesEXT )
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceMultisamplePropertiesEXT )
 #endif
 
 #ifdef VK_EXT_calibrated_timestamps
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceCalibrateableTimeDomainsEXT )
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceCalibrateableTimeDomainsEXT )
 #endif
 
 #ifdef VK_NV_cooperative_matrix
-	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceCooperativeMatrixPropertiesNV )
+	VK_LIB_INSTANCE_FUNCTION_EXT( GetPhysicalDeviceCooperativeMatrixPropertiesNV )
 #endif
 
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
@@ -200,9 +210,14 @@ VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceQueueFamilyProperties )
 #endif
 
 #undef VK_LIB_INSTANCE_FUNCTION
+#undef VK_LIB_INSTANCE_FUNCTION_EXT
 
 #ifndef VK_LIB_DEVICE_FUNCTION
 #	define VK_LIB_DEVICE_FUNCTION( x )
+#endif
+
+#ifndef VK_LIB_DEVICE_FUNCTION_EXT
+#	define VK_LIB_DEVICE_FUNCTION_EXT( x ) VK_LIB_DEVICE_FUNCTION( x )
 #endif
 
 #ifdef VK_VERSION_1_0
@@ -293,9 +308,12 @@ VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceQueueFamilyProperties )
 	VK_LIB_DEVICE_FUNCTION( GetDeviceQueue )
 	VK_LIB_DEVICE_FUNCTION( GetEventStatus )
 	VK_LIB_DEVICE_FUNCTION( GetImageMemoryRequirements )
+	VK_LIB_DEVICE_FUNCTION( GetImageSparseMemoryRequirements )
+	VK_LIB_DEVICE_FUNCTION( GetPhysicalDeviceSparseImageFormatProperties )
 	VK_LIB_DEVICE_FUNCTION( GetImageSubresourceLayout )
 	VK_LIB_DEVICE_FUNCTION( GetQueryPoolResults )
 	VK_LIB_DEVICE_FUNCTION( InvalidateMappedMemoryRanges )
+	VK_LIB_DEVICE_FUNCTION( GetDeviceMemoryCommitment )
 	VK_LIB_DEVICE_FUNCTION( MapMemory )
 	VK_LIB_DEVICE_FUNCTION( QueueSubmit )
 	VK_LIB_DEVICE_FUNCTION( QueueWaitIdle )
@@ -306,6 +324,24 @@ VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceQueueFamilyProperties )
 	VK_LIB_DEVICE_FUNCTION( UnmapMemory )
 	VK_LIB_DEVICE_FUNCTION( UpdateDescriptorSets )
 	VK_LIB_DEVICE_FUNCTION( WaitForFences )
+	VK_LIB_DEVICE_FUNCTION( CreatePipelineCache )
+	VK_LIB_DEVICE_FUNCTION( DestroyPipelineCache )
+	VK_LIB_DEVICE_FUNCTION( GetPipelineCacheData )
+	VK_LIB_DEVICE_FUNCTION( MergePipelineCaches )
+	VK_LIB_DEVICE_FUNCTION( ResetDescriptorPool )
+	VK_LIB_DEVICE_FUNCTION( GetRenderAreaGranularity )
+	VK_LIB_DEVICE_FUNCTION( CmdSetBlendConstants )
+	VK_LIB_DEVICE_FUNCTION( CmdSetDepthBounds )
+	VK_LIB_DEVICE_FUNCTION( CmdSetStencilCompareMask )
+	VK_LIB_DEVICE_FUNCTION( CmdSetStencilWriteMask )
+	VK_LIB_DEVICE_FUNCTION( CmdSetStencilReference )
+	VK_LIB_DEVICE_FUNCTION( CmdUpdateBuffer )
+	VK_LIB_DEVICE_FUNCTION( CmdFillBuffer )
+	VK_LIB_DEVICE_FUNCTION( CmdResolveImage )
+	VK_LIB_DEVICE_FUNCTION( QueueBindSparse )
+	VK_LIB_DEVICE_FUNCTION( GetFenceStatus )
+	VK_LIB_DEVICE_FUNCTION( ResetCommandPool )
+	VK_LIB_DEVICE_FUNCTION( CmdCopyQueryPoolResults )
 #endif
 
 #ifdef VK_VERSION_1_1
@@ -339,219 +375,220 @@ VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceQueueFamilyProperties )
 #endif
 
 #ifdef VK_KHR_device_group
-	VK_LIB_DEVICE_FUNCTION( GetDeviceGroupPeerMemoryFeaturesKHR )
-	VK_LIB_DEVICE_FUNCTION( CmdSetDeviceMaskKHR )
-	VK_LIB_DEVICE_FUNCTION( CmdDispatchBaseKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetDeviceGroupPeerMemoryFeaturesKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdSetDeviceMaskKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdDispatchBaseKHR )
 #endif
 
 #ifdef VK_KHR_shader_draw_parameters
-	VK_LIB_DEVICE_FUNCTION( TrimCommandPoolKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( TrimCommandPoolKHR )
 #endif
 
 #ifdef VK_KHR_external_memory_fd
-	VK_LIB_DEVICE_FUNCTION( GetMemoryFdKHR )
-	VK_LIB_DEVICE_FUNCTION( GetMemoryFdPropertiesKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetMemoryFdKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetMemoryFdPropertiesKHR )
 #endif
 
 #ifdef VK_KHR_external_semaphore_fd
-	VK_LIB_DEVICE_FUNCTION( ImportSemaphoreFdKHR )
-	VK_LIB_DEVICE_FUNCTION( GetSemaphoreFdKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( ImportSemaphoreFdKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetSemaphoreFdKHR )
 #endif
 
 #ifdef VK_KHR_push_descriptor
-	VK_LIB_DEVICE_FUNCTION( CmdPushDescriptorSetKHR )
-	VK_LIB_DEVICE_FUNCTION( CmdPushDescriptorSetWithTemplateKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdPushDescriptorSetKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdPushDescriptorSetWithTemplateKHR )
 #endif
 
 #ifdef VK_KHR_descriptor_update_template
-	VK_LIB_DEVICE_FUNCTION( CreateDescriptorUpdateTemplateKHR )
-	VK_LIB_DEVICE_FUNCTION( DestroyDescriptorUpdateTemplateKHR )
-	VK_LIB_DEVICE_FUNCTION( UpdateDescriptorSetWithTemplateKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( CreateDescriptorUpdateTemplateKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( DestroyDescriptorUpdateTemplateKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( UpdateDescriptorSetWithTemplateKHR )
 #endif
 
 #ifdef VK_KHR_create_renderpass2
-	VK_LIB_DEVICE_FUNCTION( CreateRenderPass2KHR )
-	VK_LIB_DEVICE_FUNCTION( CmdBeginRenderPass2KHR )
-	VK_LIB_DEVICE_FUNCTION( CmdNextSubpass2KHR )
-	VK_LIB_DEVICE_FUNCTION( CmdEndRenderPass2KHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( CreateRenderPass2KHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdBeginRenderPass2KHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdNextSubpass2KHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdEndRenderPass2KHR )
 #endif
 
 #ifdef VK_KHR_shared_presentable_image
-	VK_LIB_DEVICE_FUNCTION( GetSwapchainStatusKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetSwapchainStatusKHR )
 #endif
 
 #ifdef VK_KHR_external_fence_fd
-	VK_LIB_DEVICE_FUNCTION( ImportFenceFdKHR )
-	VK_LIB_DEVICE_FUNCTION( GetFenceFdKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( ImportFenceFdKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetFenceFdKHR )
 #endif
 
 #ifdef VK_KHR_get_memory_requirements2
-	VK_LIB_DEVICE_FUNCTION( GetImageMemoryRequirements2KHR )
-	VK_LIB_DEVICE_FUNCTION( GetBufferMemoryRequirements2KHR )
-	VK_LIB_DEVICE_FUNCTION( GetImageSparseMemoryRequirements2KHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetImageMemoryRequirements2KHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetBufferMemoryRequirements2KHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetImageSparseMemoryRequirements2KHR )
 #endif
 
 #ifdef VK_KHR_sampler_ycbcr_conversion
-	VK_LIB_DEVICE_FUNCTION( CreateSamplerYcbcrConversionKHR )
-	VK_LIB_DEVICE_FUNCTION( DestroySamplerYcbcrConversionKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( CreateSamplerYcbcrConversionKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( DestroySamplerYcbcrConversionKHR )
 #endif
 
 #ifdef VK_KHR_bind_memory2
-	VK_LIB_DEVICE_FUNCTION( BindBufferMemory2KHR )
-	VK_LIB_DEVICE_FUNCTION( BindImageMemory2KHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( BindBufferMemory2KHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( BindImageMemory2KHR )
 #endif
 
 #ifdef VK_KHR_maintenance3
-	VK_LIB_DEVICE_FUNCTION( GetDescriptorSetLayoutSupportKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetDescriptorSetLayoutSupportKHR )
 #endif
 
 #ifdef VK_KHR_draw_indirect_count
-	VK_LIB_DEVICE_FUNCTION( CmdDrawIndirectCountKHR )
-	VK_LIB_DEVICE_FUNCTION( CmdDrawIndexedIndirectCountKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdDrawIndirectCountKHR )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdDrawIndexedIndirectCountKHR )
 #endif
 
 #ifdef VK_EXT_debug_marker
-	VK_LIB_DEVICE_FUNCTION( DebugMarkerSetObjectTagEXT )
-	VK_LIB_DEVICE_FUNCTION( DebugMarkerSetObjectNameEXT )
-	VK_LIB_DEVICE_FUNCTION( CmdDebugMarkerBeginEXT )
-	VK_LIB_DEVICE_FUNCTION( CmdDebugMarkerEndEXT )
-	VK_LIB_DEVICE_FUNCTION( CmdDebugMarkerInsertEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( DebugMarkerSetObjectTagEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( DebugMarkerSetObjectNameEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdDebugMarkerBeginEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdDebugMarkerEndEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdDebugMarkerInsertEXT )
 #endif
 
 #ifdef VK_EXT_transform_feedback
-	VK_LIB_DEVICE_FUNCTION( CmdBindTransformFeedbackBuffersEXT )
-	VK_LIB_DEVICE_FUNCTION( CmdBeginTransformFeedbackEXT )
-	VK_LIB_DEVICE_FUNCTION( CmdEndTransformFeedbackEXT )
-	VK_LIB_DEVICE_FUNCTION( CmdBeginQueryIndexedEXT )
-	VK_LIB_DEVICE_FUNCTION( CmdEndQueryIndexedEXT )
-	VK_LIB_DEVICE_FUNCTION( CmdDrawIndirectByteCountEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdBindTransformFeedbackBuffersEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdBeginTransformFeedbackEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdEndTransformFeedbackEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdBeginQueryIndexedEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdEndQueryIndexedEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdDrawIndirectByteCountEXT )
 #endif
 
 #ifdef VK_AMD_draw_indirect_count
-	VK_LIB_DEVICE_FUNCTION( CmdDrawIndirectCountAMD )
-	VK_LIB_DEVICE_FUNCTION( CmdDrawIndexedIndirectCountAMD )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdDrawIndirectCountAMD )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdDrawIndexedIndirectCountAMD )
 #endif
 
 #ifdef VK_AMD_shader_info
-	VK_LIB_DEVICE_FUNCTION( GetShaderInfoAMD )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetShaderInfoAMD )
 #endif
 
 #ifdef VK_EXT_conditional_rendering
-	VK_LIB_DEVICE_FUNCTION( CmdBeginConditionalRenderingEXT )
-	VK_LIB_DEVICE_FUNCTION( CmdEndConditionalRenderingEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdBeginConditionalRenderingEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdEndConditionalRenderingEXT )
 #endif
 
 #ifdef VK_NVX_device_generated_commands
-	VK_LIB_DEVICE_FUNCTION( CmdProcessCommandsNVX )
-	VK_LIB_DEVICE_FUNCTION( CmdReserveSpaceForCommandsNVX )
-	VK_LIB_DEVICE_FUNCTION( CreateIndirectCommandsLayoutNVX )
-	VK_LIB_DEVICE_FUNCTION( DestroyIndirectCommandsLayoutNVX )
-	VK_LIB_DEVICE_FUNCTION( CreateObjectTableNVX )
-	VK_LIB_DEVICE_FUNCTION( DestroyObjectTableNVX )
-	VK_LIB_DEVICE_FUNCTION( RegisterObjectsNVX )
-	VK_LIB_DEVICE_FUNCTION( UnregisterObjectsNVX )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdProcessCommandsNVX )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdReserveSpaceForCommandsNVX )
+	VK_LIB_DEVICE_FUNCTION_EXT( CreateIndirectCommandsLayoutNVX )
+	VK_LIB_DEVICE_FUNCTION_EXT( DestroyIndirectCommandsLayoutNVX )
+	VK_LIB_DEVICE_FUNCTION_EXT( CreateObjectTableNVX )
+	VK_LIB_DEVICE_FUNCTION_EXT( DestroyObjectTableNVX )
+	VK_LIB_DEVICE_FUNCTION_EXT( RegisterObjectsNVX )
+	VK_LIB_DEVICE_FUNCTION_EXT( UnregisterObjectsNVX )
 #endif
 
 #ifdef VK_NV_clip_space_w_scaling
-	VK_LIB_DEVICE_FUNCTION( CmdSetViewportWScalingNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdSetViewportWScalingNV )
 #endif
 
 #ifdef VK_EXT_display_control
-	VK_LIB_DEVICE_FUNCTION( DisplayPowerControlEXT )
-	VK_LIB_DEVICE_FUNCTION( RegisterDeviceEventEXT )
-	VK_LIB_DEVICE_FUNCTION( RegisterDisplayEventEXT )
-	VK_LIB_DEVICE_FUNCTION( GetSwapchainCounterEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( DisplayPowerControlEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( RegisterDeviceEventEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( RegisterDisplayEventEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetSwapchainCounterEXT )
 #endif
 
 #ifdef VK_GOOGLE_display_timing
-	VK_LIB_DEVICE_FUNCTION( GetRefreshCycleDurationGOOGLE )
-	VK_LIB_DEVICE_FUNCTION( GetPastPresentationTimingGOOGLE )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetRefreshCycleDurationGOOGLE )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetPastPresentationTimingGOOGLE )
 #endif
 
 #ifdef VK_EXT_discard_rectangles
-	VK_LIB_DEVICE_FUNCTION( CmdSetDiscardRectangleEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdSetDiscardRectangleEXT )
 #endif
 
 #ifdef VK_EXT_hdr_metadata
-	VK_LIB_DEVICE_FUNCTION( SetHdrMetadataEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( SetHdrMetadataEXT )
 #endif
 
 #ifdef VK_EXT_debug_utils
-	VK_LIB_DEVICE_FUNCTION( SetDebugUtilsObjectNameEXT )
-	VK_LIB_DEVICE_FUNCTION( SetDebugUtilsObjectTagEXT )
-	VK_LIB_DEVICE_FUNCTION( QueueBeginDebugUtilsLabelEXT )
-	VK_LIB_DEVICE_FUNCTION( QueueEndDebugUtilsLabelEXT )
-	VK_LIB_DEVICE_FUNCTION( QueueInsertDebugUtilsLabelEXT )
-	VK_LIB_DEVICE_FUNCTION( CmdBeginDebugUtilsLabelEXT )
-	VK_LIB_DEVICE_FUNCTION( CmdEndDebugUtilsLabelEXT )
-	VK_LIB_DEVICE_FUNCTION( CmdInsertDebugUtilsLabelEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( SetDebugUtilsObjectNameEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( SetDebugUtilsObjectTagEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( QueueBeginDebugUtilsLabelEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( QueueEndDebugUtilsLabelEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( QueueInsertDebugUtilsLabelEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdBeginDebugUtilsLabelEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdEndDebugUtilsLabelEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdInsertDebugUtilsLabelEXT )
 #endif
 
 #ifdef VK_EXT_sample_locations
-	VK_LIB_DEVICE_FUNCTION( CmdSetSampleLocationsEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdSetSampleLocationsEXT )
 #endif
 
 #ifdef VK_EXT_image_drm_format_modifier
-	VK_LIB_DEVICE_FUNCTION( GetImageDrmFormatModifierPropertiesEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetImageDrmFormatModifierPropertiesEXT )
 #endif
 
 #ifdef VK_EXT_validation_cache
-	VK_LIB_DEVICE_FUNCTION( CreateValidationCacheEXT )
-	VK_LIB_DEVICE_FUNCTION( DestroyValidationCacheEXT )
-	VK_LIB_DEVICE_FUNCTION( MergeValidationCachesEXT )
-	VK_LIB_DEVICE_FUNCTION( GetValidationCacheDataEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( CreateValidationCacheEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( DestroyValidationCacheEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( MergeValidationCachesEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetValidationCacheDataEXT )
 #endif
 
 #ifdef VK_NV_shading_rate_image
-	VK_LIB_DEVICE_FUNCTION( CmdBindShadingRateImageNV )
-	VK_LIB_DEVICE_FUNCTION( CmdSetViewportShadingRatePaletteNV )
-	VK_LIB_DEVICE_FUNCTION( CmdSetCoarseSampleOrderNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdBindShadingRateImageNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdSetViewportShadingRatePaletteNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdSetCoarseSampleOrderNV )
 #endif
 
 #ifdef VK_NV_ray_tracing
-	VK_LIB_DEVICE_FUNCTION( CreateAccelerationStructureNV )
-	VK_LIB_DEVICE_FUNCTION( DestroyAccelerationStructureNV )
-	VK_LIB_DEVICE_FUNCTION( GetAccelerationStructureMemoryRequirementsNV )
-	VK_LIB_DEVICE_FUNCTION( BindAccelerationStructureMemoryNV )
-	VK_LIB_DEVICE_FUNCTION( CmdBuildAccelerationStructureNV )
-	VK_LIB_DEVICE_FUNCTION( CmdCopyAccelerationStructureNV )
-	VK_LIB_DEVICE_FUNCTION( CmdTraceRaysNV )
-	VK_LIB_DEVICE_FUNCTION( CreateRayTracingPipelinesNV )
-	VK_LIB_DEVICE_FUNCTION( GetRayTracingShaderGroupHandlesNV )
-	VK_LIB_DEVICE_FUNCTION( GetAccelerationStructureHandleNV )
-	VK_LIB_DEVICE_FUNCTION( CmdWriteAccelerationStructuresPropertiesNV )
-	VK_LIB_DEVICE_FUNCTION( CompileDeferredNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CreateAccelerationStructureNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( DestroyAccelerationStructureNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetAccelerationStructureMemoryRequirementsNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( BindAccelerationStructureMemoryNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdBuildAccelerationStructureNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdCopyAccelerationStructureNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdTraceRaysNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CreateRayTracingPipelinesNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetRayTracingShaderGroupHandlesNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetAccelerationStructureHandleNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdWriteAccelerationStructuresPropertiesNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CompileDeferredNV )
 #endif
 
 #ifdef VK_EXT_external_memory_host
-	VK_LIB_DEVICE_FUNCTION( GetMemoryHostPointerPropertiesEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetMemoryHostPointerPropertiesEXT )
 #endif
 
 #ifdef VK_AMD_buffer_marker
-	VK_LIB_DEVICE_FUNCTION( CmdWriteBufferMarkerAMD )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdWriteBufferMarkerAMD )
 #endif
 
 #ifdef VK_EXT_calibrated_timestamps
-	VK_LIB_DEVICE_FUNCTION( GetCalibratedTimestampsEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetCalibratedTimestampsEXT )
 #endif
 
 #ifdef VK_NV_mesh_shader
-	VK_LIB_DEVICE_FUNCTION( CmdDrawMeshTasksNV )
-	VK_LIB_DEVICE_FUNCTION( CmdDrawMeshTasksIndirectNV )
-	VK_LIB_DEVICE_FUNCTION( CmdDrawMeshTasksIndirectCountNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdDrawMeshTasksNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdDrawMeshTasksIndirectNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdDrawMeshTasksIndirectCountNV )
 #endif
 
 #ifdef VK_NV_scissor_exclusive
-	VK_LIB_DEVICE_FUNCTION( CmdSetExclusiveScissorNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdSetExclusiveScissorNV )
 #endif
 
 #ifdef VK_NV_device_diagnostic_checkpoints
-	VK_LIB_DEVICE_FUNCTION( CmdSetCheckpointNV )
-	VK_LIB_DEVICE_FUNCTION( GetQueueCheckpointDataNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( CmdSetCheckpointNV )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetQueueCheckpointDataNV )
 #endif
 
 #ifdef VK_EXT_buffer_device_address
-	VK_LIB_DEVICE_FUNCTION( GetBufferDeviceAddressEXT )
+	VK_LIB_DEVICE_FUNCTION_EXT( GetBufferDeviceAddressEXT )
 #endif
 
 #undef VK_LIB_DEVICE_FUNCTION
+#undef VK_LIB_DEVICE_FUNCTION_EXT

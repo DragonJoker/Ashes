@@ -33,10 +33,6 @@ namespace ashes::gl4
 			, *pCreateInfo );
 	}
 
-	PFN_vkVoidFunction VKAPI_CALL vkGetDeviceProcAddr(
-		VkDevice device,
-		const char* pName );
-
 	void VKAPI_CALL vkDestroyInstance(
 		VkInstance instance,
 		const VkAllocationCallbacks* pAllocator )
@@ -929,7 +925,8 @@ namespace ashes::gl4
 			if ( result == VK_SUCCESS )
 			{
 				result = allocate( *itSet
-					, nullptr );
+					, nullptr
+					, *itLayout );
 			}
 		}
 
@@ -952,20 +949,16 @@ namespace ashes::gl4
 		uint32_t descriptorCopyCount,
 		const VkCopyDescriptorSet* pDescriptorCopies )
 	{
-		for ( auto it = pDescriptorWrites;
-			it != pDescriptorWrites + descriptorWriteCount;
-			++it )
+		for ( auto & write : makeArrayView( pDescriptorWrites, descriptorWriteCount ) )
 		{
-			get( it->dstSet )->update( *it );
-			get( it->dstSet )->update();
+			get( write.dstSet )->update( write );
+			get( write.dstSet )->update();
 		}
 
-		for ( auto it = pDescriptorCopies;
-			it != pDescriptorCopies + descriptorWriteCount;
-			++it )
+		for ( auto & copy : makeArrayView( pDescriptorCopies, descriptorCopyCount ) )
 		{
-			get( it->dstSet )->update( *it );
-			get( it->dstSet )->update();
+			get( copy.dstSet )->update( copy );
+			get( copy.dstSet )->update();
 		}
 	}
 
@@ -4030,23 +4023,19 @@ namespace ashes::gl4
 					true, // hasStorageBuffers
 					true, // supportsPersistentMapping
 				};
+#define VK_LIB_GLOBAL_FUNCTION( x )\
+				description.x = vk##x;
+#define VK_LIB_INSTANCE_FUNCTION( x )\
+				description.x = vk##x;
+#define VK_LIB_DEVICE_FUNCTION( x )\
+				description.x = vk##x;
+#include <AshesCommon/VulkanFunctionsList.inl>
 				result = VK_SUCCESS;
 			}
 
 			return result;
 		}
 	};
-
-#define VK_LIB_GLOBAL_FUNCTION( x )\
-	static std::string const x = "vk"#x;
-
-#define VK_LIB_INSTANCE_FUNCTION( x )\
-	static std::string const x = "vk"#x;
-
-#define VK_LIB_DEVICE_FUNCTION( x )\
-	static std::string const x = "vk"#x;
-
-#include <AshesRenderer/Util/VulkanFunctionsList.inl>
 }
 
 thread_local ashes::gl4::GlLibrary g_library;
@@ -4068,7 +4057,7 @@ namespace ashes::gl4
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #define VK_LIB_INSTANCE_FUNCTION( x )\
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#include <AshesRenderer/Util/VulkanFunctionsList.inl>
+#include <AshesCommon/VulkanFunctionsList.inl>
 			};
 
 			auto it = functions.find( pName );
@@ -4094,8 +4083,8 @@ namespace ashes::gl4
 			static std::map< std::string, PFN_vkVoidFunction > functions
 			{
 #define VK_LIB_DEVICE_FUNCTION( x )\
-				{ "vk"#x,PFN_vkVoidFunction( vk##x ) },
-#include <AshesRenderer/Util/VulkanFunctionsList.inl>
+				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#include <AshesCommon/VulkanFunctionsList.inl>
 			};
 
 			auto it = functions.find( pName );

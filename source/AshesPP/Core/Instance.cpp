@@ -32,7 +32,7 @@ namespace ashes
 		m_features.supportsPersistentMapping = true;
 
 #define VK_LIB_GLOBAL_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( m_renderer.getInstanceProcAddr( nullptr, "vk"#fun ) );
-#include <AshesRenderer/Util/VulkanFunctionsList.inl>
+#include <AshesCommon/VulkanFunctionsList.inl>
 
 		doInitInstance();
 	}
@@ -203,7 +203,7 @@ namespace ashes
 		checkError( res, "Instance creation" );
 
 #define VK_LIB_INSTANCE_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
-#include <AshesRenderer/Util/VulkanFunctionsList.inl>
+#include <AshesCommon/VulkanFunctionsList.inl>
 	}
 
 	PFN_vkVoidFunction Instance::getInstanceProcAddr( char const * const name )

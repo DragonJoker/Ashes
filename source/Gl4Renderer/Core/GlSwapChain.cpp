@@ -77,6 +77,9 @@ namespace ashes::gl4
 		, m_clipped{ createInfo.clipped }
 	{
 		get( m_device )->registerContext( m_surface );
+		m_imageExtent.height = std::max( 1u, m_imageExtent.height );
+		m_imageExtent.width = std::max( 1u, m_imageExtent.width );
+
 		m_image = createImage( device, m_imageFormat, m_imageExtent );
 		m_view = createImageView( device, m_image, m_imageFormat );
 		auto context = get( m_device )->getContext();

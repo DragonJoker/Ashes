@@ -39,6 +39,7 @@ add_definitions(
 )
 add_library( ${PROJECT_NAME} SHARED
 	${${PROJECT_NAME}_SRC_FILES}
+	${${PROJECT_NAME}_HDR_FILES}
 )
 
 set_target_properties( ${PROJECT_NAME}
@@ -51,6 +52,7 @@ target_link_libraries( ${PROJECT_NAME}
 	${BinLibraries}
 	AshesCommon
 	ashes
+	${Vulkan_LIBRARY}
 )
 
 add_dependencies( ${PROJECT_NAME}

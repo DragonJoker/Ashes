@@ -27,9 +27,6 @@ See LICENSE file in root folder.
 extern "C"
 {
 #endif
-	Ashes_API PFN_vkVoidFunction vkGetInstanceProcAddr( VkInstance instance
-		, const char * name );
-
 	typedef struct AshPluginFeatures
 	{
 		VkBool32 hasTexBufferRange;
@@ -47,6 +44,13 @@ extern "C"
 		char description[64];
 		PFN_vkGetInstanceProcAddr getInstanceProcAddr;
 		AshPluginFeatures features;
+#define VK_LIB_GLOBAL_FUNCTION( x )\
+		PFN_vk##x x;
+#define VK_LIB_INSTANCE_FUNCTION( x )\
+		PFN_vk##x x;
+#define VK_LIB_DEVICE_FUNCTION( x )\
+		PFN_vk##x x;
+#include <AshesCommon/VulkanFunctionsList.inl>
 	} AshPluginDescription;
 
 	typedef void( VKAPI_PTR * PFN_ashGetPluginsDescriptions )( uint32_t *, AshPluginDescription * );

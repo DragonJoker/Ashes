@@ -1,4 +1,5 @@
-#include <ashes.h>
+#define ASHES_VK_PROTOTYPES
+#include <ashes/ashes.h>
 
 #include <AshesCommon/DynamicLibrary.hpp>
 
@@ -35,14 +36,21 @@ struct VkLibrary
 				: VK_ERROR_INITIALIZATION_FAILED;
 			description.features =
 			{
-				true,
-				true,
-				true,
-				true,
-				true,
-				true,
-				true,
+				true, // hasTexBufferRange
+				true, // hasImageTexture
+				true, // hasBaseInstance
+				true, // hasClearTexImage
+				true, // hasComputeShaders
+				true, // hasStorageBuffers
+				true, // supportsPersistentMapping
 			};
+#define VK_LIB_GLOBAL_FUNCTION( x )\
+			library->getFunction( "vk"#x, description.x );
+#define VK_LIB_INSTANCE_FUNCTION( x )\
+			library->getFunction( "vk"#x, description.x );
+#define VK_LIB_DEVICE_FUNCTION( x )\
+			library->getFunction( "vk"#x, description.x );
+#include <AshesCommon/VulkanFunctionsList.inl>
 		}
 
 		return result;

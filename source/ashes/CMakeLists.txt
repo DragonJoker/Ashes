@@ -79,7 +79,6 @@ if ( BUILD_ASHES )
 	target_add_doc( ${PROJECT_NAME} "English" "*.h *.hpp" )
 endif ()
 
-#We copy each lib in <install_dir>/lib folder
 install(
 	TARGETS ${PROJECT_NAME}
 	COMPONENT ${PROJECT_NAME}
@@ -103,5 +102,4 @@ install(
 	LIBRARY DESTINATION lib/Debug
 	RUNTIME DESTINATION bin/Debug
 )
-#For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
 target_install_headers( ${PROJECT_NAME} ${ASHES_SOURCE_DIR}/include/${PROJECT_NAME} )
