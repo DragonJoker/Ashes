@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Buffer/VertexBuffer.hpp"
 #include "AshesPP/Buffer/UniformBuffer.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\~english

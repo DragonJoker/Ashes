@@ -1,15 +1,15 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlClipOrigin value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_LOWER_LEFT:
+		case GL_LOWER_LEFT:
 			return "GL_LOWER_LEFT";
 
-		case gl_renderer::GL_UPPER_LEFT:
+		case GL_UPPER_LEFT:
 			return "GL_UPPER_LEFT";
 
 		default:
@@ -22,10 +22,10 @@ namespace gl_renderer
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_NEGATIVE_ONE_TO_ONE:
+		case GL_NEGATIVE_ONE_TO_ONE:
 			return "GL_NEGATIVE_ONE_TO_ONE";
 
-		case gl_renderer::GL_ZERO_TO_ONE:
+		case GL_ZERO_TO_ONE:
 			return "GL_ZERO_TO_ONE";
 
 		default:

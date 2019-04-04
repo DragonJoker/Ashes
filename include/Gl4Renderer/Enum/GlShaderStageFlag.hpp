@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/ShaderStageFlag.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlShaderStageFlag
 	{
@@ -22,9 +20,9 @@ namespace gl_renderer
 	std::string getShaderStageFlagName( VkShaderStageFlags value );
 	/**
 	*\brief
-	*	Convertit un ashes::ShaderStageFlags en VkShaderStageFlags.
+	*	Convertit un ShaderStageFlags en VkShaderStageFlags.
 	*\param[in] flags
-	*	Le ashes::ShaderStageFlags.
+	*	Le ShaderStageFlags.
 	*\return
 	*	Le VkShaderStageFlags.
 	*/

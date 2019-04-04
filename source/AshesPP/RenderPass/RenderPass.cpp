@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Image/ImageView.hpp"
 #include "AshesPP/RenderPass/FrameBuffer.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	RenderPass::RenderPass( Device const & device
 		, VkRenderPassCreateInfo const & createInfo )

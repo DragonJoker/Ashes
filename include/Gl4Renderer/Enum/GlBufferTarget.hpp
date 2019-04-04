@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/BufferTarget.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlBufferTarget
 		: GLenum

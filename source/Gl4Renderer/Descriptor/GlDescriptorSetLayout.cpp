@@ -1,10 +1,9 @@
 #include "Descriptor/GlDescriptorSetLayout.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	DescriptorSetLayout::DescriptorSetLayout( ashes::Device const & device
-		, ashes::DescriptorSetLayoutBindingArray bindings )
-		: ashes::DescriptorSetLayout{ device, std::move( bindings ) }
+	DescriptorSetLayout::DescriptorSetLayout( VkDevice device
+		, VkDescriptorSetLayoutCreateInfo createInfo )
 	{
 	}
 }

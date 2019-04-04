@@ -18,4 +18,84 @@ See LICENSE file in root folder.
 #define ASHES_VI ${ASHES_VI}
 #define ASHES_XLIB_XRANDR ${ASHES_XLIB_XRANDR}
 
+#ifndef VK_USE_PLATFORM_ANDROID_KHR
+#	if ASHES_ANDROID
+#		define VK_USE_PLATFORM_ANDROID_KHR 1
+#	endif
+#else
+#	define ASHES_ANDROID VK_USE_PLATFORM_ANDROID_KHR
+#endif
+
+#ifndef VK_USE_PLATFORM_IOS_MVK
+#	if ASHES_IOS
+#		define VK_USE_PLATFORM_IOS_MVK 1
+#	endif
+#else
+#	define ASHES_IOS VK_USE_PLATFORM_IOS_MVK
+#endif
+
+#ifndef VK_USE_PLATFORM_MACOS_MVK
+#	if ASHES_MACOS
+#		define VK_USE_PLATFORM_MACOS_MVK 1
+#	endif
+#else
+#	define ASHES_MACOS VK_USE_PLATFORM_MACOS_MVK
+#endif
+
+#ifndef VK_USE_PLATFORM_MIR_KHR
+#	if ASHES_MIR
+#		define VK_USE_PLATFORM_MIR_KHR 1
+#	endif
+#else
+#	define ASHES_MIR VK_USE_PLATFORM_MIR_KHR
+#endif
+
+#ifndef VK_USE_PLATFORM_VI_NN
+#	if ASHES_VI
+#		define VK_USE_PLATFORM_VI_NN 1
+#	endif
+#else
+#	define ASHES_VI VK_USE_PLATFORM_VI_NN
+#endif
+
+#ifndef VK_USE_PLATFORM_WAYLAND_KHR
+#	if ASHES_WAYLAND
+#		define VK_USE_PLATFORM_WAYLAND_KHR 1
+#	endif
+#else
+#	define ASHES_WAYLAND VK_USE_PLATFORM_WAYLAND_KHR
+#endif
+
+#ifndef VK_USE_PLATFORM_WIN32_KHR
+#	if ASHES_WIN32
+#		define VK_USE_PLATFORM_WIN32_KHR 1
+#	endif
+#else
+#	define ASHES_WIN32 VK_USE_PLATFORM_WIN32_KHR
+#endif
+
+#ifndef VK_USE_PLATFORM_XCB_KHR
+#	if ASHES_XCB
+#		define VK_USE_PLATFORM_XCB_KHR 1
+#	endif
+#else
+#	define ASHES_XCB VK_USE_PLATFORM_XCB_KHR
+#endif
+
+#ifndef VK_USE_PLATFORM_XLIB_KHR
+#	if ASHES_XLIB
+#		define VK_USE_PLATFORM_XLIB_KHR 1
+#	endif
+#else
+#	define ASHES_XLIB VK_USE_PLATFORM_XLIB_KHR
+#endif
+
+#ifndef VK_USE_PLATFORM_XLIB_XRANDR_EXT
+#	if ASHES_XLIB_XRANDR
+#		define VK_USE_PLATFORM_XLIB_XRANDR_EXT 1
+#	endif
+#else
+#	define ASHES_XLIB_XRANDR VK_USE_PLATFORM_XLIB_XRANDR_EXT
+#endif
+
 #endif

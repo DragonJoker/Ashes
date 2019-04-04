@@ -6,22 +6,23 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class WaitEventsCommand
 		: public CommandBase
 	{
 	public:
-		WaitEventsCommand( Device const & device
-			, ashes::EventCRefArray const & events
-			, ashes::PipelineStageFlags srcStageMask
-			, ashes::PipelineStageFlags dstStageMask
-			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers );
+		WaitEventsCommand( VkDevice device
+			, VkEventArray const & events
+			, VkPipelineStageFlags srcStageMask
+			, VkPipelineStageFlags dstStageMask
+			, VkMemoryBarrierArray memoryBarriers
+			, VkBufferMemoryBarrierArray bufferMemoryBarriers
+			, VkImageMemoryBarrierArray imageMemoryBarriers );
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		ashes::EventCRefArray const & m_events;
+		VkEventArray const & m_events;
 	};
 }

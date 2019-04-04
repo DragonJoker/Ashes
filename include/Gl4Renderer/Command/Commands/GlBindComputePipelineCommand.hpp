@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -24,17 +24,17 @@ namespace gl_renderer
 		*\param[in] bindingPoint
 		*	Le point d'attache du pipeline.
 		*/
-		BindComputePipelineCommand( Device const & device
-			, ashes::ComputePipeline const & pipeline
-			, ashes::PipelineBindPoint bindingPoint );
+		BindComputePipelineCommand( VkDevice device
+			, VkPipeline pipeline
+			, VkPipelineBindPoint bindingPoint );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		ComputePipeline const & m_pipeline;
-		PipelineLayout const & m_layout;
+		VkPipeline m_pipeline;
+		VkPipelineLayout m_layout;
 		GLuint m_program;
-		ashes::PipelineBindPoint m_bindingPoint;
+		VkPipelineBindPoint m_bindingPoint;
 	};
 }

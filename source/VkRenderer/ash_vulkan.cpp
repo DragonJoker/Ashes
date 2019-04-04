@@ -16,7 +16,7 @@ struct VkLibrary
 	AshPluginDescription description
 	{
 		"vk",
-		"Vulkan",
+		"Vulkan renderer for Ashes.",
 	};
 
 	VkResult init()
@@ -31,6 +31,16 @@ struct VkLibrary
 			result = description.getInstanceProcAddr
 				? VK_SUCCESS
 				: VK_ERROR_INITIALIZATION_FAILED;
+			description.features =
+			{
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+				true,
+			};
 		}
 
 		return result;

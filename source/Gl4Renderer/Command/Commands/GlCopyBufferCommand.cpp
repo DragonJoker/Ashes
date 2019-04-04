@@ -6,18 +6,18 @@ See LICENSE file in root folder.
 
 #include "Buffer/GlBuffer.hpp"
 
-#include <Ashes/Miscellaneous/BufferCopy.hpp>
+#include "ashesgl4_api.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	CopyBufferCommand::CopyBufferCommand( Device const & device
-		, ashes::BufferCopy const & copyInfo
-		, ashes::BufferBase const & src
-		, ashes::BufferBase const & dst )
+	CopyBufferCommand::CopyBufferCommand( VkDevice device
+		, VkBufferCopy copyInfo
+		, VkBuffer src
+		, VkBuffer dst )
 		: CommandBase{ device }
-		, m_src{ static_cast< Buffer const & >( src ) }
-		, m_dst{ static_cast< Buffer const & >( dst ) }
-		, m_copyInfo{ copyInfo }
+		, m_src{ static_cast< VkBuffer >( src ) }
+		, m_dst{ static_cast< VkBuffer >( dst ) }
+		, m_copyInfo{ std::move( copyInfo ) }
 	{
 	}
 
@@ -25,16 +25,16 @@ namespace gl_renderer
 	{
 		glLogCommand( "CopyBufferCommand" );
 
-		if ( m_src.getTarget() == m_dst.getTarget() )
+		if ( get( m_src )->getTarget() == get( m_dst )->getTarget() )
 		{
 			glLogCall( context
 				, glBindBuffer
 				, GL_BUFFER_TARGET_COPY_READ
-				, m_src.getInternal() );
+				, get( m_src )->getInternal() );
 			glLogCall( context
 				, glBindBuffer
 				, GL_BUFFER_TARGET_COPY_WRITE
-				, m_dst.getInternal() );
+				, get( m_dst )->getInternal() );
 			glLogCall( context
 				, glCopyBufferSubData
 				, GL_BUFFER_TARGET_COPY_READ
@@ -53,26 +53,26 @@ namespace gl_renderer
 		{
 			glLogCall( context
 				, glBindBuffer
-				, m_src.getTarget()
-				, m_src.getInternal() );
+				, get( m_src )->getTarget()
+				, get( m_src )->getInternal() );
 			glLogCall( context
 				, glBindBuffer
-				, m_dst.getTarget()
-				, m_dst.getInternal() );
+				, get( m_dst )->getTarget()
+				, get( m_dst )->getInternal() );
 			glLogCall( context
 				, glCopyBufferSubData
-				, m_src.getTarget()
-				, m_dst.getTarget()
+				, get( m_src )->getTarget()
+				, get( m_dst )->getTarget()
 				, m_copyInfo.srcOffset
 				, m_copyInfo.dstOffset
 				, m_copyInfo.size );
 			glLogCall( context
 				, glBindBuffer
-				, m_dst.getTarget()
+				, get( m_dst )->getTarget()
 				, 0u );
 			glLogCall( context
 				, glBindBuffer
-				, m_src.getTarget()
+				, get( m_src )->getTarget()
 				, 0u );
 		}
 	}

@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -20,7 +20,7 @@ namespace gl_renderer
 		*\brief
 		*	Constructeur.
 		*/
-		BindGeometryBuffersCommand( Device const & device
+		BindGeometryBuffersCommand( VkDevice device
 			, GeometryBuffers const & vao );
 
 		void apply( ContextLock const & context )const override;

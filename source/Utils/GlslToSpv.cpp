@@ -4,11 +4,10 @@ See LICENSE file in root folder.
 */
 #include "Utils/GlslToSpv.hpp"
 
-#include <Ashes/Core/Device.hpp>
-
 #include <glslang/Public/ShaderLang.h>
 #include <SPIRV/GlslangToSpv.h>
 
+#include <iostream>
 #include <locale>
 #include <regex>
 
@@ -40,10 +39,10 @@ namespace utils
 			std::locale m_prvLoc;
 		};
 
-		void doInitResources( ashes::Device const & device
+		void doInitResources( VkPhysicalDeviceProperties const & props
 			, TBuiltInResource & resources )
 		{
-			auto & limits = device.getProperties().limits;
+			auto & limits = props.limits;
 
 			resources.limits.doWhileLoops = true;
 			resources.limits.generalAttributeMatrixVectorIndexing = true;
@@ -139,26 +138,26 @@ namespace utils
 			resources.minProgramTexelOffset = -8;
 		}
 
-		EShLanguage doGetLanguage( ashes::ShaderStageFlag stage )
+		EShLanguage doGetLanguage( VkShaderStageFlagBits stage )
 		{
 			switch ( stage )
 			{
-			case ashes::ShaderStageFlag::eVertex:
+			case VK_SHADER_STAGE_VERTEX_BIT:
 				return EShLangVertex;
 
-			case ashes::ShaderStageFlag::eTessellationControl:
+			case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT:
 				return EShLangTessControl;
 
-			case ashes::ShaderStageFlag::eTessellationEvaluation:
+			case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT:
 				return EShLangTessEvaluation;
 
-			case ashes::ShaderStageFlag::eGeometry:
+			case VK_SHADER_STAGE_GEOMETRY_BIT:
 				return EShLangGeometry;
 
-			case ashes::ShaderStageFlag::eFragment:
+			case VK_SHADER_STAGE_FRAGMENT_BIT:
 				return EShLangFragment;
 
-			case ashes::ShaderStageFlag::eCompute:
+			case VK_SHADER_STAGE_COMPUTE_BIT:
 				return EShLangCompute;
 
 			default:
@@ -178,13 +177,13 @@ namespace utils
 		glslang::FinalizeProcess();
 	}
 
-	UInt32Array compileGlslToSpv( ashes::Device const & device
-		, ashes::ShaderStageFlag stage
+	ashes::UInt32Array compileGlslToSpv( VkPhysicalDeviceProperties const & props
+		, VkShaderStageFlagBits stage
 		, std::string const & shader )
 	{
 		BlockLocale guard;
 		TBuiltInResource resources{};
-		doInitResources( device, resources );
+		doInitResources( props, resources );
 
 		// Enable SPIR-V and Vulkan rules when parsing GLSL
 		auto messages = ( EShMessages )( EShMsgSpvRules | EShMsgVulkanRules );
@@ -192,75 +191,15 @@ namespace utils
 
 		std::string source = shader;
 
-		if ( source.find( "ashesTopDownToBottomUp" ) != std::string::npos )
-		{
-			if ( device.getClipDirection() == ashes::ClipDirection::eTopDown )
-			{
-				std::regex regex{ R"(void[ ]*main)" };
-				source = std::regex_replace( source.data()
-					, regex
-					, R"(vec2 ashesTopDownToBottomUp(vec2 v)
-{
-	return vec2( v.x, 1.0 - v.y );
-}
-
-vec3 ashesTopDownToBottomUp(vec3 v)
-{
-	return vec3( v.x, 1.0 - v.y, v.z );
-}
-
-$&)" );
-			}
-			else
-			{
-				std::regex regex{ R"(void[ ]*main)" };
-				source = std::regex_replace( source.data()
-					, regex
-					, R"(#define ashesTopDownToBottomUp(X) X
-
-$&)" );
-			}
-		}
-
-		if ( source.find( "ashesBottomUpToTopDown" ) != std::string::npos )
-		{
-			if ( device.getClipDirection() == ashes::ClipDirection::eTopDown )
-			{
-				std::regex regex{ R"(void[ ]*main)" };
-				source = std::regex_replace( source.data()
-					, regex
-					, R"(#define ashesBottomUpToTopDown(X) X
-
-$&)" );
-			}
-			else
-			{
-				std::regex regex{ R"(void[ ]*main)" };
-				source = std::regex_replace( source.data()
-					, regex
-					, R"(vec2 ashesBottomUpToTopDown(vec2 v)
-{
-	return vec2( v.x, 1.0 - v.y );
-}
-
-vec3 ashesBottomUpToTopDown(vec3 v)
-{
-	return vec3( v.x, 1.0 - v.y, v.z );
-}
-
-$&)" );
-			}
-		}
-
 		glslang::TShader glshader{ glstage };
 		char const * const str = source.c_str();
 		glshader.setStrings( &str, 1 );
 
 		if ( !glshader.parse( &resources, 460, ECoreProfile, false, true, messages ) )
 		{
-			ashes::Logger::logError( glshader.getInfoLog() );
-			ashes::Logger::logError( glshader.getInfoDebugLog() );
-			ashes::Logger::logError( source );
+			std::cerr << glshader.getInfoLog() << std::endl;
+			std::cerr << glshader.getInfoDebugLog() << std::endl;
+			std::cerr << source << std::endl;
 			throw std::runtime_error{ "Shader compilation failed." };
 		}
 
@@ -269,9 +208,9 @@ $&)" );
 
 		if ( !glprogram.link( messages ) )
 		{
-			ashes::Logger::logError( glprogram.getInfoLog() );
-			ashes::Logger::logError( glprogram.getInfoDebugLog() );
-			ashes::Logger::logError( source );
+			std::cerr << glprogram.getInfoLog() << std::endl;
+			std::cerr << glprogram.getInfoDebugLog() << std::endl;
+			std::cerr << source << std::endl;
 			throw std::runtime_error{ "Shader linkage failed." };
 		}
 

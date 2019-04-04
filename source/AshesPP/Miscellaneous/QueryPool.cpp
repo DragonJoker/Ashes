@@ -2,7 +2,7 @@
 
 #include "AshesPP/Core/Device.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	QueryPool::QueryPool( Device const & device
 		, VkQueryType type

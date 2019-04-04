@@ -2,7 +2,7 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-namespace ashespp
+namespace ashes
 {
 	template< typename T >
 	inline VertexBuffer< T >::VertexBuffer( Device const & device

@@ -6,33 +6,37 @@ See LICENSE file in root folder.
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Command/Queue.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class Queue
 	{
 	public:
-		Queue( Device const & device
-			, ashes::DeviceQueueCreateInfo createInfo
+		Queue( VkDevice device
+			, VkDeviceQueueCreateInfo createInfo
 			, uint32_t index );
 		/**
-		*\copydoc		ashes::Queue::submit
+		*\copydoc		Queue::submit
 		*/
-		void submit( std::vector< VkSubmitInfo > values
+		VkResult submit( VkSubmitInfoArray const & values
 			, VkFence fence )const;
 		/**
-		*\copydoc		ashes::Queue::present
+		*\copydoc		Queue::present
 		*/
-		ashes::ResultArray present( ashes::SwapChainCRefArray const & swapChains
-			, ashes::UInt32Array const & imagesIndex
-			, ashes::SemaphoreCRefArray const & semaphoresToWait )const;
+		VkResult present( VkPresentInfoKHR const & presentInfo )const;
 		/**
-		*\copydoc		ashes::Queue::waitIdle
+		*\copydoc		Queue::waitIdle
 		*/
-		void waitIdle()const;
+		VkResult waitIdle()const;
 
 	private:
-		Device const & m_device;
+		void submit( VkSubmitInfo const & value
+			, VkFence fence )const;
+
+	private:
+		VkDevice m_device;
+		VkDeviceQueueCreateFlags m_flags;
+		uint32_t m_queueFamilyIndex;
+		float m_queuePriority;
+		uint32_t m_index;
 	};
 }

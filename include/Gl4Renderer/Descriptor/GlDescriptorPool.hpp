@@ -10,29 +10,27 @@
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Descriptor/DescriptorPool.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class DescriptorPool
-		: public ashes::DescriptorPool
 	{
 	public:
 		/**
 		*\brief
 		*	Constructeur.
 		*\param[in] layout
-		*	Le layout à partir duquel sera créé le pool.
+		*	Le layout à partir duquel sera créé le get( pool )->
 		*/
-		DescriptorPool( Device const & device
-			, VkDescriptorPoolCreateFlags flags
-			, uint32_t maxSets
-			, ashes::DescriptorPoolSizeArray poolSizes );
-		/**
-		*\copydoc	ashes::DescriptorSetPool::createDescriptorSet
-		*/
-		ashes::DescriptorSetPtr createDescriptorSet( ashes::DescriptorSetLayout const & layout
-			, uint32_t bindingPoint )const override;
+		DescriptorPool( VkDevice device
+			, VkDescriptorPoolCreateInfo createInfo );
+
+		VkResult reset( VkDescriptorPoolResetFlags flags );
+		VkResult free( VkDescriptorSetArray sets );
+
+	private:
+		VkDescriptorPoolCreateFlags m_flags;
+		uint32_t m_maxSets;
+		VkDescriptorPoolSizeArray m_poolSizes;
 	};
 }
 

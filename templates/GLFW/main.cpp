@@ -2,8 +2,6 @@
 #include <AshesPP/Command/CommandPool.hpp>
 #include <AshesPP/Command/Queue.hpp>
 #include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Core/Exception.hpp>
-#include <AshesPP/Core/PlatformWindowHandle.hpp>
 #include <AshesPP/Core/Renderer.hpp>
 #include <AshesPP/Core/Surface.hpp>
 #include <AshesPP/Core/SwapChain.hpp>
@@ -13,6 +11,10 @@
 #include <AshesPP/RenderPass/RenderPass.hpp>
 #include <AshesPP/Sync/Fence.hpp>
 #include <AshesPP/Sync/Semaphore.hpp>
+
+#include <AshesCommon/PlatformWindowHandle.hpp>
+
+#include <AshesRenderer/Util/Exception.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -34,16 +36,16 @@
 struct LayerExtensionList
 {
 	VkLayerProperties layerProperties;
-	ashespp::ExtensionPropertiesArray extensionProperties;
+	ashes::ExtensionPropertiesArray extensionProperties;
 };
 using LayerExtensionListArray = std::vector< LayerExtensionList >;
 
 struct RenderingResources
 {
-	RenderingResources( ashespp::SemaphorePtr imageAvailableSemaphore
-		, ashespp::SemaphorePtr finishedRenderingSemaphore
-		, ashespp::FencePtr fence
-		, ashespp::CommandBufferPtr commandBuffer
+	RenderingResources( ashes::SemaphorePtr imageAvailableSemaphore
+		, ashes::SemaphorePtr finishedRenderingSemaphore
+		, ashes::FencePtr fence
+		, ashes::CommandBufferPtr commandBuffer
 		, uint32_t imageIndex )
 		: imageAvailableSemaphore{ std::move( imageAvailableSemaphore ) }
 		, finishedRenderingSemaphore{ std::move( finishedRenderingSemaphore ) }
@@ -53,10 +55,10 @@ struct RenderingResources
 	{
 	}
 
-	ashespp::SemaphorePtr imageAvailableSemaphore;
-	ashespp::SemaphorePtr finishedRenderingSemaphore;
-	ashespp::FencePtr fence;
-	ashespp::CommandBufferPtr commandBuffer;
+	ashes::SemaphorePtr imageAvailableSemaphore;
+	ashes::SemaphorePtr finishedRenderingSemaphore;
+	ashes::FencePtr fence;
+	ashes::CommandBufferPtr commandBuffer;
 	uint32_t imageIndex{ 0u };
 };
 using RenderingResourcesPtr = std::unique_ptr< RenderingResources >;
@@ -67,17 +69,17 @@ struct Application
 	uint32_t presentQueueFamilyIndex;
 	uint32_t graphicsQueueFamilyIndex;
 	uint32_t computeQueueFamilyIndex;
-	ashespp::DevicePtr device;
+	ashes::DevicePtr device;
 	VkExtent2D dimensions;
-	ashespp::SwapChainPtr swapChain;
-	ashespp::ImagePtrArray swapChainImages;
-	std::vector< ashespp::FrameBufferPtr > frameBuffers;
-	ashespp::CommandPoolPtr commandPool;
-	ashespp::CommandBufferPtrArray commandBuffers;
-	ashespp::RenderPassPtr renderPass;
+	ashes::SwapChainPtr swapChain;
+	ashes::ImagePtrArray swapChainImages;
+	std::vector< ashes::FrameBufferPtr > frameBuffers;
+	ashes::CommandPoolPtr commandPool;
+	ashes::CommandBufferPtrArray commandBuffers;
+	ashes::RenderPassPtr renderPass;
 	VkClearColorValue clearColour;
-	ashespp::QueuePtr graphicsQueue;
-	ashespp::QueuePtr presentQueue;
+	ashes::QueuePtr graphicsQueue;
+	ashes::QueuePtr presentQueue;
 	RenderingResourcesArray renderingResources;
 	uint32_t resourceIndex{ 0u };
 };
@@ -86,24 +88,24 @@ std::string processCommandLine( int argc, char ** argv );
 std::vector< VkLayerProperties > enumerateLayerProperties( PFN_vkEnumerateInstanceLayerProperties enumLayerProperties );
 std::vector< VkExtensionProperties > enumerateExtensionProperties( PFN_vkEnumerateInstanceExtensionProperties enumInstanceExtensionProperties
 	, std::string const & layerName );
-VkDeviceCreateInfo getDeviceCreateInfo( ashespp::Instance const & instance
-	, ashespp::Surface const & surface
-	, ashespp::PhysicalDevice const & gpu
+VkDeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
+	, ashes::Surface const & surface
+	, ashes::PhysicalDevice const & gpu
 	, uint32_t & presentQueueFamilyIndex
 	, uint32_t & graphicsQueueFamilyIndex
 	, uint32_t & computeQueueFamilyIndex
-	, ashespp::DeviceQueueCreateInfoArray & queueCreateInfos
+	, ashes::DeviceQueueCreateInfoArray & queueCreateInfos
 	, std::vector< float > & queuePriorities
 	, VkPhysicalDeviceFeatures & features
-	, ashespp::CharPtrArray & enabledLayers
-	, ashespp::CharPtrArray & enabledExtensions );
+	, ashes::CharPtrArray & enabledLayers
+	, ashes::CharPtrArray & enabledExtensions );
 void createSwapChain( Application & application );
-ashespp::RenderPassPtr createRenderPass( ashespp::Device const & device
-	, ashespp::SwapChain const & swapChain
-	, ashespp::AttachmentDescriptionArray & attaches
-	, ashespp::AttachmentReferenceArray & subAttaches
-	, ashespp::SubpassDescriptionArray & subpasses
-	, ashespp::SubpassDependencyArray & dependencies );
+ashes::RenderPassPtr createRenderPass( ashes::Device const & device
+	, ashes::SwapChain const & swapChain
+	, ashes::AttachmentDescriptionArray & attaches
+	, ashes::AttachmentReferenceArray & subAttaches
+	, ashes::SubpassDescriptionArray & subpasses
+	, ashes::SubpassDependencyArray & dependencies );
 void prepareFrames( Application & application );
 RenderingResources * getResources( Application & application );
 bool checkNeedReset( Application & application
@@ -123,7 +125,7 @@ static VkBool32 VKAPI_PTR DbgCallback( VkDebugReportFlagsEXT msgFlags
 int main( int argc, char * argv[] )
 {
 	// First, we need to retrieve the Ashes plugins
-	ashespp::Renderer renderer;
+	ashes::Renderer renderer;
 
 	// Then we check in the command line if the user has wanted a specific plugin to be used.
 	std::string rendererName = processCommandLine( argc, argv );
@@ -135,7 +137,7 @@ int main( int argc, char * argv[] )
 		"vkEnumerateInstanceExtensionProperties" );
 
 	auto globalLayerProperties = enumerateLayerProperties( enumLayerProperties );
-	ashespp::ExtensionPropertiesArray globalExtensions;
+	ashes::ExtensionPropertiesArray globalExtensions;
 	LayerExtensionListArray globalLayers( globalLayerProperties.size() );
 
 	for ( uint32_t i = 0; i < globalLayerProperties.size(); ++i )
@@ -158,14 +160,14 @@ int main( int argc, char * argv[] )
 		VK_STRUCTURE_TYPE_APPLICATION_INFO,
 		nullptr,
 		"Ashes GLFW Template Application",
-		ashespp::makeVersion( 1, 0, 0 ),
+		ashes::makeVersion( 1, 0, 0 ),
 		"GLFWTemplate",
-		ashespp::makeVersion( 1, 0, 0 ),
+		ashes::makeVersion( 1, 0, 0 ),
 		VK_API_VERSION_1_0,
 	};
 
 	// Get all supported Instance extensions (excl. layer-provided ones)
-	ashespp::CharPtrArray instanceExtensions;
+	ashes::CharPtrArray instanceExtensions;
 
 	for ( auto & ext : globalExtensions )
 	{
@@ -185,7 +187,7 @@ int main( int argc, char * argv[] )
 	};
 
 	// With that informations, we can now create the renderer instance.
-	ashespp::InstancePtr instance = std::make_unique< ashespp::Instance >( renderer
+	ashes::InstancePtr instance = std::make_unique< ashes::Instance >( renderer
 		, std::move( instInfo ) );
 
 	VkDebugReportCallbackCreateInfoEXT dbg_info
@@ -198,7 +200,7 @@ int main( int argc, char * argv[] )
 	};
 	VkDebugReportCallbackEXT debugReport = instance->createDebugReportCallback( dbg_info );
 
-	ashespp::PhysicalDevicePtrArray gpus = instance->enumeratePhysicalDevices();
+	ashes::PhysicalDevicePtrArray gpus = instance->enumeratePhysicalDevices();
 
 	// Now we need a window.
 	static constexpr uint32_t width = 800u;
@@ -207,7 +209,7 @@ int main( int argc, char * argv[] )
 	glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API );
 	GLFWwindow * window = glfwCreateWindow( int( width )
 		, int( height )
-		, "GLFW Template" //( "GLFW Template (" + renderer.getName() + ")" ).c_str()
+		, ( "GLFW Template (" + std::string( renderer.getPluginDescription().name ) + ")" ).c_str()
 		, nullptr
 		, nullptr );
 	Application app;
@@ -217,22 +219,22 @@ int main( int argc, char * argv[] )
 	// We retrieve this window's native handle, and create the surface from it.
 #if ASHES_WIN32
 	auto hWnd = glfwGetWin32Window( window );
-	auto handle = ashespp::WindowHandle{ std::make_unique< ashespp::IMswWindowHandle >( nullptr, hWnd ) };
+	auto handle = ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( nullptr, hWnd ) };
 #elif ASHES_XLIB
 	auto display = glfwGetX11Display();
 	auto drawable = glfwGetX11Window( window );
-	auto handle = ashespp::WindowHandle{ std::make_unique< ashespp::IXWindowHandle >( drawable, display ) };
+	auto handle = ashes::WindowHandle{ std::make_unique< ashes::IXWindowHandle >( drawable, display ) };
 #else
 #	error "Unimplemented."
 #endif
-	ashespp::SurfacePtr surface = instance->createSurface( *gpus[0], std::move( handle ) );
+	ashes::SurfacePtr surface = instance->createSurface( *gpus[0], std::move( handle ) );
 
 	// We now create the logical device, using this surface
-	ashespp::DeviceQueueCreateInfoArray queueCreateInfos;
+	ashes::DeviceQueueCreateInfoArray queueCreateInfos;
 	std::vector< float > queuePriorities;
 	VkPhysicalDeviceFeatures features;
-	ashespp::CharPtrArray enabledLayers;
-	ashespp::CharPtrArray enabledExtensions;
+	ashes::CharPtrArray enabledLayers;
+	ashes::CharPtrArray enabledExtensions;
 	VkDeviceCreateInfo deviceInfo = getDeviceCreateInfo( *instance
 		, *surface
 		, *gpus[0]
@@ -257,10 +259,10 @@ int main( int argc, char * argv[] )
 	createSwapChain( app );
 
 	// We retrieve the render pass that we'll be using to do our stuff on the swapchain surface.
-	ashespp::AttachmentDescriptionArray attaches;
-	ashespp::AttachmentReferenceArray subAttaches;
-	ashespp::SubpassDescriptionArray subpasses;
-	ashespp::SubpassDependencyArray dependencies;
+	ashes::AttachmentDescriptionArray attaches;
+	ashes::AttachmentReferenceArray subAttaches;
+	ashes::SubpassDescriptionArray subpasses;
+	ashes::SubpassDependencyArray dependencies;
 	app.renderPass = createRenderPass( *app.device
 		, *app.swapChain
 		, attaches
@@ -295,7 +297,7 @@ int main( int argc, char * argv[] )
 					, { resources->imageIndex }
 				, { *resources->finishedRenderingSemaphore } );
 			}
-			catch ( ashespp::Exception & exc )
+			catch ( ashes::Exception & exc )
 			{
 				// Swapchain reset management.
 				checkNeedReset( app
@@ -364,7 +366,7 @@ std::vector< VkLayerProperties > enumerateLayerProperties( PFN_vkEnumerateInstan
 
 	if ( res != VK_SUCCESS )
 	{
-		throw ashespp::Exception{ res, "Instance layers retrieval" };
+		throw ashes::Exception{ res, "Instance layers retrieval" };
 	}
 
 	return result;
@@ -395,14 +397,14 @@ std::vector< VkExtensionProperties > enumerateExtensionProperties( PFN_vkEnumera
 
 	if ( res != VK_SUCCESS )
 	{
-		throw ashespp::Exception{ res, "Instance layer extensions retrieval" };
+		throw ashes::Exception{ res, "Instance layer extensions retrieval" };
 	}
 
 	return result;
 }
-void doInitialiseQueueFamilies( ashespp::Instance const & instance
-	, ashespp::Surface const & surface
-	, ashespp::PhysicalDevice const & gpu
+void doInitialiseQueueFamilies( ashes::Instance const & instance
+	, ashes::Surface const & surface
+	, ashes::PhysicalDevice const & gpu
 	, uint32_t & presentQueueFamilyIndex
 	, uint32_t & graphicsQueueFamilyIndex
 	, uint32_t & computeQueueFamilyIndex )
@@ -473,22 +475,22 @@ void doInitialiseQueueFamilies( ashespp::Instance const & instance
 		|| presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
 		|| computeQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
 	{
-		throw ashespp::Exception{ VkResult::VK_ERROR_INITIALIZATION_FAILED
+		throw ashes::Exception{ VkResult::VK_ERROR_INITIALIZATION_FAILED
 			, "Queue families retrieval" };
 	}
 }
 
-VkDeviceCreateInfo getDeviceCreateInfo( ashespp::Instance const & instance
-	, ashespp::Surface const & surface
-	, ashespp::PhysicalDevice const & gpu
+VkDeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
+	, ashes::Surface const & surface
+	, ashes::PhysicalDevice const & gpu
 	, uint32_t & presentQueueFamilyIndex
 	, uint32_t & graphicsQueueFamilyIndex
 	, uint32_t & computeQueueFamilyIndex
-	, ashespp::DeviceQueueCreateInfoArray & queueCreateInfos
+	, ashes::DeviceQueueCreateInfoArray & queueCreateInfos
 	, std::vector< float > & queuePriorities
 	, VkPhysicalDeviceFeatures & features
-	, ashespp::CharPtrArray & enabledLayers
-	, ashespp::CharPtrArray & enabledExtensions )
+	, ashes::CharPtrArray & enabledLayers
+	, ashes::CharPtrArray & enabledExtensions )
 {
 	doInitialiseQueueFamilies( instance
 		, surface
@@ -554,7 +556,7 @@ VkDeviceCreateInfo getDeviceCreateInfo( ashespp::Instance const & instance
 		&features,
 	};
 }
-uint32_t doGetImageCount( ashespp::Device const & device )
+uint32_t doGetImageCount( ashes::Device const & device )
 {
 	auto & surface = device.getSurface();
 	auto surfaceCaps = surface.getCapabilities();
@@ -570,7 +572,7 @@ uint32_t doGetImageCount( ashespp::Device const & device )
 	return desiredNumberOfSwapChainImages;
 }
 
-VkSurfaceFormatKHR doSelectFormat( ashespp::Device const & device )
+VkSurfaceFormatKHR doSelectFormat( ashes::Device const & device )
 {
 	auto & surface = device.getSurface();
 	VkSurfaceFormatKHR result;
@@ -585,7 +587,7 @@ VkSurfaceFormatKHR doSelectFormat( ashespp::Device const & device )
 	}
 	else
 	{
-		assert( formats.size() > 1u );
+		assert( !formats.empty() );
 		auto it = std::find_if( formats.begin()
 			, formats.end()
 			, []( VkSurfaceFormatKHR const & lookup )
@@ -606,7 +608,7 @@ VkSurfaceFormatKHR doSelectFormat( ashespp::Device const & device )
 	return result;
 }
 
-VkPresentModeKHR doSelectPresentMode( ashespp::Device const & device )
+VkPresentModeKHR doSelectPresentMode( ashes::Device const & device )
 {
 	auto & surface = device.getSurface();
 	auto presentModes = surface.getPresentModes();
@@ -634,7 +636,7 @@ VkPresentModeKHR doSelectPresentMode( ashespp::Device const & device )
 	return result;
 }
 
-VkSwapchainCreateInfoKHR doGetSwapChainCreateInfo( ashespp::Device const & device
+VkSwapchainCreateInfoKHR doGetSwapChainCreateInfo( ashes::Device const & device
 	, VkExtent2D const & size )
 {
 	VkExtent2D swapChainExtent{};
@@ -720,12 +722,12 @@ void createSwapChain( Application & application )
 	doCreateRenderingResources( application );
 }
 
-ashespp::RenderPassPtr createRenderPass( ashespp::Device const & device
-	, ashespp::SwapChain const & swapChain
-	, ashespp::AttachmentDescriptionArray & attaches
-	, ashespp::AttachmentReferenceArray & subAttaches
-	, ashespp::SubpassDescriptionArray & subpasses
-	, ashespp::SubpassDependencyArray & dependencies )
+ashes::RenderPassPtr createRenderPass( ashes::Device const & device
+	, ashes::SwapChain const & swapChain
+	, ashes::AttachmentDescriptionArray & attaches
+	, ashes::AttachmentReferenceArray & subAttaches
+	, ashes::SubpassDescriptionArray & subpasses
+	, ashes::SubpassDependencyArray & dependencies )
 {
 	attaches.push_back(
 		// We'll have only one colour attachment for the render pass.
@@ -799,10 +801,10 @@ ashespp::RenderPassPtr createRenderPass( ashespp::Device const & device
 	return device.createRenderPass( std::move( createInfo ) );
 }
 
-ashespp::ImageViewPtrArray doPrepareAttaches( Application const & application
+ashes::ImageViewPtrArray doPrepareAttaches( Application const & application
 	, uint32_t backBuffer )
 {
-	ashespp::ImageViewPtrArray attaches;
+	ashes::ImageViewPtrArray attaches;
 
 	for ( auto & attach : application.renderPass->getAttachments() )
 	{
@@ -851,7 +853,7 @@ void prepareFrames( Application & application )
 		commandBuffer.begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 		commandBuffer.beginRenderPass( *application.renderPass
 			, frameBuffer
-			, ashespp::ClearValueArray{ { application.clearColour } }
+			, ashes::ClearValueArray{ { application.clearColour } }
 			, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE );
 		commandBuffer.endRenderPass();
 		commandBuffer.end();
@@ -862,7 +864,7 @@ RenderingResources * getResources( Application & application )
 {
 	auto & resources = *application.renderingResources[application.resourceIndex];
 	application.resourceIndex = ( application.resourceIndex + 1 ) % application.renderingResources.size();
-	bool res = resources.fence->wait( ashespp::FenceTimeout ) == ashespp::WaitResult::eSuccess;
+	bool res = resources.fence->wait( ashes::FenceTimeout ) == ashes::WaitResult::eSuccess;
 
 	if ( res )
 	{
@@ -884,7 +886,7 @@ RenderingResources * getResources( Application & application )
 		return nullptr;
 	}
 
-	ashespp::Logger::logError( "Couldn't retrieve rendering resources" );
+	ashes::Logger::logError( "Couldn't retrieve rendering resources" );
 	return nullptr;
 }
 
@@ -924,7 +926,7 @@ bool checkNeedReset( Application & application
 		break;
 
 	default:
-		throw ashespp::Exception{ errCode, action };
+		throw ashes::Exception{ errCode, action };
 		break;
 	}
 

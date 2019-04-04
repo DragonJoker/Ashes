@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/BlendOp.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlBlendOp
 		: GLenum
@@ -20,11 +18,11 @@ namespace gl_renderer
 	std::string getName( GlBlendOp value );
 	/**
 	*\brief
-	*	Convertit un ashes::BlendOp en GlBlendOp.
+	*	Convertit un VkBlendOp en GlBlendOp.
 	*\param[in] value
-	*	Le ashes::BlendOp.
+	*	Le VkBlendOp.
 	*\return
 	*	Le GlBlendOp.
 	*/
-	GlBlendOp convert( ashes::BlendOp const & value );
+	GlBlendOp convert( VkBlendOp const & value );
 }

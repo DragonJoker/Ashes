@@ -1,4 +1,4 @@
-project( AshesC )
+project( ashes )
 
 set( ${PROJECT_NAME}_DESCRIPTION "${PROJECT_NAME} library" )
 set( ${PROJECT_NAME}_VERSION_MAJOR 1 )

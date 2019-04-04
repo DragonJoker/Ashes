@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/StencilOp.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlStencilOp
 	{
@@ -22,11 +20,11 @@ namespace gl_renderer
 	std::string getName( GlStencilOp value );
 	/**
 	*\brief
-	*	Convertit un ashes::StencilOp en GlStencilOp.
+	*	Convertit un VkStencilOp en GlStencilOp.
 	*\param[in] value
-	*	Le ashes::StencilOp.
+	*	Le VkStencilOp.
 	*\return
 	*	Le GlStencilOp.
 	*/
-	GlStencilOp convert( ashes::StencilOp const & value );
+	GlStencilOp convert( VkStencilOp const & value );
 }

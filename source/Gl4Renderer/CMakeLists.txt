@@ -14,9 +14,8 @@ if ( OpenGL_FOUND )
 		${CMAKE_CURRENT_BINARY_DIR}
 		${SPIRV_CROSS_DIR}
 		${ASHES_SOURCE_DIR}/include
-		${ASHES_SOURCE_DIR}/include/AshesC
-		${ASHES_SOURCE_DIR}/include/PlatformUtils
 		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}
 	)
 
 	file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
@@ -31,6 +30,11 @@ if ( OpenGL_FOUND )
 		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
 		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
 		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
 	)
 
 	set( ${PROJECT_NAME}_USE_SPIRV_CROSS 0 )
@@ -87,14 +91,14 @@ if ( OpenGL_FOUND )
 		${OPENGL_gl_LIBRARY}
 		${BinLibraries}
 		AshesCommon
+		ashes
 		AshesRenderer
-		AshesC
 	)
 
 	add_dependencies( ${PROJECT_NAME}
 		AshesCommon
+		ashes
 		AshesRenderer
-		AshesC
 	)
 
 	parse_subdir_files( ${ASHES_SOURCE_DIR} Buffer "Buffer" )

@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 #include <cmath>
 
-namespace ashespp
+namespace ashes
 {
 	Instance::Instance( Renderer const & renderer
 		, VkInstanceCreateInfo createInfo )
@@ -31,8 +31,8 @@ namespace ashespp
 		m_features.hasStorageBuffers = true;
 		m_features.supportsPersistentMapping = true;
 
-#define VK_LIB_GLOBAL_FUNCTION( fun ) fun = reinterpret_cast< PFN_##fun >( m_renderer.getInstanceProcAddr( nullptr, #fun ) );
-#include "AshesPP/Miscellaneous/VulkanFunctionsList.inl"
+#define VK_LIB_GLOBAL_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( m_renderer.getInstanceProcAddr( nullptr, "vk"#fun ) );
+#include <AshesRenderer/Util/VulkanFunctionsList.inl>
 
 		doInitInstance();
 	}
@@ -202,8 +202,8 @@ namespace ashespp
 		auto res = vkCreateInstance( &m_createInfo, nullptr, &m_instance );
 		checkError( res, "Instance creation" );
 
-#define VK_LIB_INSTANCE_FUNCTION( fun ) fun = reinterpret_cast< PFN_##fun >( getInstanceProcAddr( #fun ) );
-#include "AshesPP/Miscellaneous/VulkanFunctionsList.inl"
+#define VK_LIB_INSTANCE_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
+#include <AshesRenderer/Util/VulkanFunctionsList.inl>
 	}
 
 	PFN_vkVoidFunction Instance::getInstanceProcAddr( char const * const name )

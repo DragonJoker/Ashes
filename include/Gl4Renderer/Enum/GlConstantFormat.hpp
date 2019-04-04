@@ -4,9 +4,9 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
+#include <AshesRenderer/Util/ConstantFormat.hpp>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlConstantFormatBaseType
 		: GLenum
@@ -20,20 +20,20 @@ namespace gl_renderer
 
 	/**
 	*\brief
-	*	Convertit un ashes::ConstantFormat en GlConstantFormat.
+	*	Convertit un ConstantFormat en GlConstantFormat.
 	*\param[in] flags
-	*	Le ashes::ConstantFormat.
+	*	Le ConstantFormat.
 	*\return
 	*	Le GlConstantFormat.
 	*/
-	GlConstantFormatBaseType getType( ashes::ConstantFormat format );
+	GlConstantFormatBaseType getType( ConstantFormat format );
 	/**
 	*\brief
-	*	R�cup�re le nombre d'�l�ments du format donn�.
+	*	R�cup�re le nombre d'éléments du format donné.
 	*\param[in] flags
-	*	Le ashes::ConstantFormat.
+	*	Le ConstantFormat.
 	*\return
 	*	Le compte.
 	*/
-	uint32_t getCount( ashes::ConstantFormat format );
+	uint32_t getCount( ConstantFormat format );
 }

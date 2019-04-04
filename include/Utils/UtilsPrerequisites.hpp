@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
+#include <AshesRenderer/AshesRendererPrerequisites.hpp>
 
 #include <cassert>
 #include <chrono>
@@ -62,12 +62,12 @@ namespace utils
 	*\name Fonctions d'aide.
 	*/
 	/**\{*/
-	ashes::Extent2D makeExtent2D( UIVec2 const & value );
-	ashes::Extent3D makeExtent3D( UIVec2 const & value );
-	ashes::Extent3D makeExtent3D( UIVec3 const & value );
-	ashes::Offset2D makeOffset2D( IVec2 const & value );
-	ashes::Offset3D makeOffset3D( IVec3 const & value );
-	ashes::ClearColorValue makeClearColorValue( RgbColour const & value );
-	ashes::ClearColorValue makeClearColorValue( RgbaColour const & value );
+	VkExtent2D makeExtent2D( UIVec2 const & value );
+	VkExtent3D makeExtent3D( UIVec2 const & value );
+	VkExtent3D makeExtent3D( UIVec3 const & value );
+	VkOffset2D makeOffset2D( IVec2 const & value );
+	VkOffset3D makeOffset3D( IVec3 const & value );
+	VkClearColorValue makeClearColorValue( RgbColour const & value );
+	VkClearColorValue makeClearColorValue( RgbaColour const & value );
 	/**\}*/
 }

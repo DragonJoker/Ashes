@@ -3,19 +3,23 @@
 #include "Core/GlDevice.hpp"
 #include "Descriptor/GlDescriptorSet.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	DescriptorPool::DescriptorPool( Device const & device
-		, VkDescriptorPoolCreateFlags flags
-		, uint32_t maxSets
-		, ashes::DescriptorPoolSizeArray poolSizes )
-		: ashes::DescriptorPool{ device, flags }
+	DescriptorPool::DescriptorPool( VkDevice device
+		, VkDescriptorPoolCreateInfo createInfo )
+		: m_flags{ createInfo.flags }
+		, m_maxSets{ createInfo.maxSets }
+		, m_poolSizes{ makeVector( createInfo.pPoolSizes, createInfo.poolSizeCount ) }
 	{
 	}
 
-	ashes::DescriptorSetPtr DescriptorPool::createDescriptorSet( ashes::DescriptorSetLayout const & layout
-		, uint32_t bindingPoint )const
+	VkResult DescriptorPool::reset( VkDescriptorPoolResetFlags flags )
 	{
-		return std::make_unique< DescriptorSet >( *this, layout, bindingPoint );
+		return VK_SUCCESS;
+	}
+
+	VkResult DescriptorPool::free( VkDescriptorSetArray sets )
+	{
+		return VK_SUCCESS;
 	}
 }

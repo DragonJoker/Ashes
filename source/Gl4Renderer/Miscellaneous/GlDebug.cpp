@@ -6,7 +6,7 @@
 
 #include <GL/gl.h>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getErrorName( uint32_t code, uint32_t category )
 	{
@@ -54,12 +54,8 @@ namespace gl_renderer
 
 		if ( errorCode )
 		{
-			std::locale loc{ "C" };
-			std::stringstream stream;
-			stream.imbue( loc );
-			stream << "OpenGL Error, on function: " << text << std::endl;
-			stream << "  ID: 0x" << std::hex << errorCode << " (" << getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) << ")" << std::endl;
-			ashes::Logger::logError( stream.str() );
+			std::cerr << "OpenGL Error, on function: " << text << std::endl;
+			std::cerr << "  ID: 0x" << std::hex << errorCode << " (" << getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) << ")" << std::endl;
 			errorCode = glGetError();
 			result = false;
 		}

@@ -6,13 +6,15 @@ See LICENSE file in root folder.
 
 #include "Miscellaneous/GlQueryPool.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
-	EndQueryCommand::EndQueryCommand( Device const & device
-		, ashes::QueryPool const & pool
+	EndQueryCommand::EndQueryCommand( VkDevice device
+		, VkQueryPool pool
 		, uint32_t query )
 		: CommandBase{ device }
-		, m_target{ convert( pool.getType() ) }
+		, m_target{ convert( get( pool )->getType() ) }
 	{
 	}
 

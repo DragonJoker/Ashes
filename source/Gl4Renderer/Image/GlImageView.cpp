@@ -2,9 +2,12 @@
 
 #include "Core/GlDevice.hpp"
 #include "Image/GlImage.hpp"
+#include "Miscellaneous/GlCallLogger.hpp"
 #include "Sync/GlImageMemoryBarrier.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
 	namespace
 	{
@@ -24,7 +27,7 @@ namespace gl_renderer
 					result = GL_TEXTURE_VIEW_2D_MULTISAMPLE_ARRAY;
 					break;
 				default:
-					assert( "Unsupported ImageViewType for a multisampled texture." );
+					assert( "Unsupported ImageViewType for a multisampled image" );
 					break;
 				}
 			}
@@ -33,40 +36,34 @@ namespace gl_renderer
 		}
 	}
 
-	ImageView::ImageView( Device const & device
-		, Image const & image )
+	ImageView::ImageView( VkDevice device
+		, VkImage image )
 		: m_device{ device }
-		, createInfo{
-			VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-			nullptr,
-			0u,
-			VK_NULL_HANDLE,
-			VK_IMAGE_VIEW_TYPE_2D,
-			image.createInfo.format,
-			VkComponentMapping{},
-			{
-				VK_IMAGE_ASPECT_COLOR_BIT,
-				0u,
-				1u,
-				0u,
-				1u
-			}
-		}
-		, m_target{ convert( createInfo.viewType, image.createInfo.samples ) }
+		, m_flags{ 0u }
+		, m_image{ image }
+		, m_viewType{ VK_IMAGE_VIEW_TYPE_2D }
+		, m_format{ get( image )->getFormat() }
+		, m_components{}
+		, m_subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u }
+		, m_target{ convert( getType(), get( image )->getSamples() ) }
 	{
 	}
 
-	ImageView::ImageView( Device const & device
-		, Image const & texture
-		, VkImageViewCreateInfo const & createInfo )
+	ImageView::ImageView( VkDevice device
+		, VkImageViewCreateInfo createInfo )
 		: m_device{ device }
-		, createInfo{ createInfo }
-		, m_target{ convert( createInfo.viewType, texture.createInfo.samples ) }
+		, m_flags{ createInfo.flags }
+		, m_image{ createInfo.image }
+		, m_viewType{ createInfo.viewType }
+		, m_format{ createInfo.format }
+		, m_components{ createInfo.components }
+		, m_subresourceRange{ createInfo.subresourceRange }
+		, m_target{ convert( getType(), get( createInfo.image )->getSamples() ) }
 	{
 		// Non initialised textures come from back buffers, ignore them
-		if ( texture.hasInternal() )
+		if ( get( createInfo.image )->hasInternal() )
 		{
-			auto context = m_device.getContext();
+			auto context = get( m_device )->getContext();
 			glLogCall( context
 				, glGenTextures
 				, 1
@@ -75,65 +72,65 @@ namespace gl_renderer
 				, glTextureView
 				, m_texture
 				, m_target
-				, texture.getInternal()
-				, getInternalFormat( createInfo.format )
-				, createInfo.subresourceRange.baseMipLevel
-				, createInfo.subresourceRange.levelCount
-				, createInfo.subresourceRange.baseArrayLayer
-				, createInfo.subresourceRange.layerCount );
+				, get( createInfo.image )->getInternal()
+				, getInternalFormat( getFormat() )
+				, getSubresourceRange().baseMipLevel
+				, getSubresourceRange().levelCount
+				, getSubresourceRange().baseArrayLayer
+				, getSubresourceRange().layerCount );
 			glLogCall( context
 				, glBindTexture
 				, m_target
 				, m_texture );
 
-			if ( createInfo.components.r != VK_COMPONENT_SWIZZLE_IDENTITY )
+			if ( getComponents().r != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
 				glLogCall( context
 					, glTexParameteri
 					, m_target
 					, GL_SWIZZLE_R
-					, convertComponentSwizzle( createInfo.components.r ) );
+					, convertComponentSwizzle( getComponents().r ) );
 			}
 
-			if ( createInfo.components.g != VK_COMPONENT_SWIZZLE_IDENTITY )
+			if ( getComponents().g != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
 				glLogCall( context
 					, glTexParameteri
 					, m_target
 					, GL_SWIZZLE_G
-					, convertComponentSwizzle( createInfo.components.g ) );
+					, convertComponentSwizzle( getComponents().g ) );
 			}
 
-			if ( createInfo.components.b != VK_COMPONENT_SWIZZLE_IDENTITY )
+			if ( getComponents().b != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
 				glLogCall( context
 					, glTexParameteri
 					, m_target
 					, GL_SWIZZLE_B
-					, convertComponentSwizzle( createInfo.components.b ) );
+					, convertComponentSwizzle( getComponents().b ) );
 			}
 
-			if ( createInfo.components.a != VK_COMPONENT_SWIZZLE_IDENTITY )
+			if ( getComponents().a != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
 				glLogCall( context
 					, glTexParameteri
 					, m_target
 					, GL_SWIZZLE_A
-					, convertComponentSwizzle( createInfo.components.a ) );
+					, convertComponentSwizzle( getComponents().a ) );
 			}
 
 			int minLevel = 0;
 			context->glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_MIN_LEVEL, &minLevel );
-			assert( minLevel == createInfo.subresourceRange.baseMipLevel );
+			assert( minLevel == getSubresourceRange().baseMipLevel );
 			int numLevels = 0;
 			context->glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_NUM_LEVELS, &numLevels );
-			assert( numLevels == createInfo.subresourceRange.levelCount );
+			assert( numLevels == getSubresourceRange().levelCount );
 			int minLayer = 0;
 			context->glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_MIN_LAYER, &minLayer );
-			assert( minLayer == createInfo.subresourceRange.baseArrayLayer );
+			assert( minLayer == getSubresourceRange().baseArrayLayer );
 			int numLayers = 0;
 			context->glGetTexParameteriv( m_target, GL_TEXTURE_VIEW_NUM_LAYERS, &numLayers );
-			assert( numLayers == createInfo.subresourceRange.layerCount );
+			assert( numLayers == getSubresourceRange().layerCount );
 			glLogCall( context
 				, glBindTexture
 				, m_target
@@ -143,7 +140,7 @@ namespace gl_renderer
 
 	ImageView::~ImageView()
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteTextures
 			, 1

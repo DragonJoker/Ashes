@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -16,13 +16,13 @@ namespace gl_renderer
 		: public CommandBase
 	{
 	public:
-		ResetEventCommand( Device const & device
-			, ashes::Event const & event
-			, ashes::PipelineStageFlags stageFlags );
+		ResetEventCommand( VkDevice device
+			, VkEvent event
+			, VkPipelineStageFlags stageFlags );
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		ashes::Event const & m_event;
+		VkEvent m_event;
 	};
 }

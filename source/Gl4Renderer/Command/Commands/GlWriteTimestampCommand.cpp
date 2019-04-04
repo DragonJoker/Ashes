@@ -6,14 +6,16 @@ See LICENSE file in root folder.
 
 #include "Miscellaneous/GlQueryPool.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
-	WriteTimestampCommand::WriteTimestampCommand( Device const & device
-		, ashes::PipelineStageFlag pipelineStage
-		, ashes::QueryPool const & pool
+	WriteTimestampCommand::WriteTimestampCommand( VkDevice device
+		, VkPipelineStageFlagBits pipelineStage
+		, VkQueryPool pool
 		, uint32_t query )
 		: CommandBase{ device }
-		, m_query{ *( static_cast< QueryPool const & >( pool ).begin() + query ) }
+		, m_query{ *( get( pool )->begin() + query ) }
 	{
 	}
 

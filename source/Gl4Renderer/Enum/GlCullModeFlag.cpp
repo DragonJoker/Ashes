@@ -1,21 +1,21 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlCullMode value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_CULL_MODE_NONE:
+		case GL_CULL_MODE_NONE:
 			return "GL_NONE";
 
-		case gl_renderer::GL_CULL_MODE_FRONT:
+		case GL_CULL_MODE_FRONT:
 			return "GL_FRONT";
 
-		case gl_renderer::GL_CULL_MODE_BACK:
+		case GL_CULL_MODE_BACK:
 			return "GL_BACK";
 
-		case gl_renderer::GL_CULL_MODE_FRONT_AND_BACK:
+		case GL_CULL_MODE_FRONT_AND_BACK:
 			return "GL_FRONT_AND_BACK";
 
 		default:
@@ -24,19 +24,19 @@ namespace gl_renderer
 		}
 	}
 
-	GlCullMode convert( ashes::CullModeFlags const & flags )
+	GlCullMode convertCullModeFlags( VkCullModeFlags flags )
 	{
 		GlCullMode result{ GL_CULL_MODE_NONE };
 
-		if ( checkFlag( flags, VkCullModeFlagBits::eFrontAndBack ) )
+		if ( checkFlag( flags, VK_CULL_MODE_FRONT_AND_BACK ) )
 		{
 			result = GL_CULL_MODE_FRONT_AND_BACK;
 		}
-		else if ( checkFlag( flags, VkCullModeFlagBits::eFront ) )
+		else if ( checkFlag( flags, VK_CULL_MODE_FRONT_BIT ) )
 		{
 			result = GL_CULL_MODE_FRONT;
 		}
-		else if ( checkFlag( flags, VkCullModeFlagBits::eBack ) )
+		else if ( checkFlag( flags, VK_CULL_MODE_BACK_BIT ) )
 		{
 			result = GL_CULL_MODE_BACK;
 		}

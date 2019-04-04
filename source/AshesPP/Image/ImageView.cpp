@@ -3,7 +3,7 @@
 #include "AshesPP/Core/Device.hpp"
 #include "AshesPP/Image/Image.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	ImageView::ImageView( Device const & device
 		, Image const & image
@@ -12,20 +12,9 @@ namespace ashespp
 		, m_image{ image }
 		, m_createInfo{ createInfo }
 	{
-		VkImageViewCreateInfo vkcreateInfo
-		{
-			VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-			nullptr,
-			0,
-			getImage(),
-			createInfo.viewType,
-			createInfo.format,
-			createInfo.components,
-			createInfo.subresourceRange
-		};
-		DEBUG_DUMP( vkcreateInfo );
+		DEBUG_DUMP( m_createInfo );
 		auto res = m_device.vkCreateImageView( m_device
-			, &vkcreateInfo
+			, &m_createInfo
 			, nullptr
 			, &m_internal );
 		checkError( res, "ImageView creation" );

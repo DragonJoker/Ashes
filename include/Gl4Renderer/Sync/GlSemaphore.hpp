@@ -6,9 +6,7 @@ See LICENSE file in root folder.
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Sync/Semaphore.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -17,7 +15,6 @@ namespace gl_renderer
 	*	Un sémaphore est un élément de synchronisation servant pour les files.
 	*/
 	class Semaphore
-		: public ashes::Semaphore
 	{
 	public:
 		/**
@@ -26,7 +23,7 @@ namespace gl_renderer
 		*\param[in] device
 		*	Le LogicalDevice parent.
 		*/
-		explicit Semaphore( ashes::Device const & device );
+		explicit Semaphore( VkDevice device );
 		/**
 		*\brief
 		*	Conversion implicite vers VkSemaphore.

@@ -1,33 +1,33 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlImageLayout value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_LAYOUT_UNDEFINED_EXT:
+		case GL_LAYOUT_UNDEFINED_EXT:
 			return "GL_LAYOUT_UNDEFINED_EXT";
 
-		case gl_renderer::GL_LAYOUT_GENERAL_EXT:
+		case GL_LAYOUT_GENERAL_EXT:
 			return "GL_LAYOUT_GENERAL_EXT";
 
-		case gl_renderer::GL_LAYOUT_COLOR_ATTACHMENT_EXT:
+		case GL_LAYOUT_COLOR_ATTACHMENT_EXT:
 			return "GL_LAYOUT_COLOR_ATTACHMENT_EXT";
 
-		case gl_renderer::GL_LAYOUT_DEPTH_STENCIL_ATTACHMENT_EXT:
+		case GL_LAYOUT_DEPTH_STENCIL_ATTACHMENT_EXT:
 			return "GL_LAYOUT_DEPTH_STENCIL_ATTACHMENT_EXT";
 
-		case gl_renderer::GL_LAYOUT_DEPTH_STENCIL_READ_ONLY_EXT:
+		case GL_LAYOUT_DEPTH_STENCIL_READ_ONLY_EXT:
 			return "GL_LAYOUT_DEPTH_STENCIL_READ_ONLY_EXT";
 
-		case gl_renderer::GL_LAYOUT_SHADER_READ_ONLY_EXT:
+		case GL_LAYOUT_SHADER_READ_ONLY_EXT:
 			return "GL_LAYOUT_SHADER_READ_ONLY_EXT";
 
-		case gl_renderer::GL_LAYOUT_TRANSFER_SRC_EXT:
+		case GL_LAYOUT_TRANSFER_SRC_EXT:
 			return "GL_LAYOUT_TRANSFER_SRC_EXT";
 
-		case gl_renderer::GL_LAYOUT_TRANSFER_DST_EXT:
+		case GL_LAYOUT_TRANSFER_DST_EXT:
 			return "GL_LAYOUT_TRANSFER_DST_EXT";
 
 		default:
@@ -36,34 +36,34 @@ namespace gl_renderer
 		}
 	}
 
-	GlImageLayout convert( ashes::ImageLayout const & layout )
+	GlImageLayout convert( VkImageLayout layout )
 	{
 		switch ( layout )
 		{
-		case ashes::ImageLayout::eUndefined:
-		case ashes::ImageLayout::ePreinitialised:
-		case ashes::ImageLayout::ePresentSrc:
+		case VK_IMAGE_LAYOUT_UNDEFINED:
+		case VK_IMAGE_LAYOUT_PREINITIALIZED:
+		case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
 			return GL_LAYOUT_UNDEFINED_EXT;
 
-		case ashes::ImageLayout::eGeneral:
+		case VK_IMAGE_LAYOUT_GENERAL:
 			return GL_LAYOUT_GENERAL_EXT;
 
-		case ashes::ImageLayout::eColourAttachmentOptimal:
+		case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
 			return GL_LAYOUT_COLOR_ATTACHMENT_EXT;
 
-		case ashes::ImageLayout::eDepthStencilAttachmentOptimal:
+		case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
 			return GL_LAYOUT_DEPTH_STENCIL_ATTACHMENT_EXT;
 
-		case ashes::ImageLayout::eDepthStencilReadOnlyOptimal:
+		case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:
 			return GL_LAYOUT_DEPTH_STENCIL_READ_ONLY_EXT;
 
-		case ashes::ImageLayout::eShaderReadOnlyOptimal:
+		case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
 			return GL_LAYOUT_SHADER_READ_ONLY_EXT;
 
-		case ashes::ImageLayout::eTransferSrcOptimal:
+		case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
 			return GL_LAYOUT_TRANSFER_SRC_EXT;
 
-		case ashes::ImageLayout::eTransferDstOptimal:
+		case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
 			return GL_LAYOUT_TRANSFER_DST_EXT;
 
 		default:
@@ -72,37 +72,37 @@ namespace gl_renderer
 		}
 	}
 
-	ashes::ImageLayout convertImageLayout( GlImageLayout layout )
+	VkImageLayout convertImageLayout( GlImageLayout layout )
 	{
 		switch ( layout )
 		{
 		case GL_LAYOUT_UNDEFINED_EXT:
-			return ashes::ImageLayout::eUndefined;
+			return VK_IMAGE_LAYOUT_UNDEFINED;
 
 		case GL_LAYOUT_GENERAL_EXT:
-			return ashes::ImageLayout::eGeneral;
+			return VK_IMAGE_LAYOUT_PREINITIALIZED;
 
 		case GL_LAYOUT_COLOR_ATTACHMENT_EXT:
-			return ashes::ImageLayout::eColourAttachmentOptimal;
+			return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		case GL_LAYOUT_DEPTH_STENCIL_ATTACHMENT_EXT:
-			return ashes::ImageLayout::eDepthStencilAttachmentOptimal;
+			return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 		case GL_LAYOUT_DEPTH_STENCIL_READ_ONLY_EXT:
-			return ashes::ImageLayout::eDepthStencilReadOnlyOptimal;
+			return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
 
 		case GL_LAYOUT_SHADER_READ_ONLY_EXT:
-			return ashes::ImageLayout::eShaderReadOnlyOptimal;
+			return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		case GL_LAYOUT_TRANSFER_SRC_EXT:
-			return ashes::ImageLayout::eTransferSrcOptimal;
+			return VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
 
 		case GL_LAYOUT_TRANSFER_DST_EXT:
-			return ashes::ImageLayout::eTransferDstOptimal;
+			return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 
 		default:
 			assert( false && "Unsupported image layout" );
-			return ashes::ImageLayout::eUndefined;
+			return VK_IMAGE_LAYOUT_UNDEFINED;
 		}
 	}
 }

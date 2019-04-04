@@ -5,9 +5,9 @@ See LICENSE file in root folder.
 #include "AshesPP/Core/Surface.hpp"
 
 #include "AshesPP/Core/Instance.hpp"
-#include "AshesPP/Core/PlatformWindowHandle.hpp"
+#include "AshesCommon/PlatformWindowHandle.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	Surface::Surface( Instance const & instance
 		, PhysicalDevice const & gpu

@@ -1,6 +1,6 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlAccessType value )
 	{
@@ -21,15 +21,15 @@ namespace gl_renderer
 		}
 	}
 
-	GLenum convert( ashes::AccessFlags const & flags )
+	GLenum convertAccessFlags( VkAccessFlags const & flags )
 	{
 		GLenum result{ 0 };
 		return result;
 	}
 
-	ashes::AccessFlags convertAccessFlags( GLenum flags )
+	VkAccessFlags convertAccessFlags( GLenum flags )
 	{
-		ashes::AccessFlags result;
+		VkAccessFlags result{ 0u };
 		return result;
 	}
 }

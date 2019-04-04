@@ -6,9 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Sync/Fence.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -25,7 +23,7 @@ namespace gl_renderer
 		*\param[in] flags
 		*	Les indicateurs de création de la barrière.
 		*/ 
-		Fence( Device const & device
+		Fence( VkDevice device
 			, VkFenceCreateFlags flags = 0 );
 		/**
 		*\brief
@@ -53,7 +51,7 @@ namespace gl_renderer
 		}
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		mutable GLsync m_fence{ nullptr };
 	};
 }

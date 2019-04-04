@@ -11,7 +11,7 @@ See LICENSE file in root folder
 #include <string>
 #include <vector>
 
-namespace ashespp
+namespace ashes
 {
 	class Instance;
 	/**

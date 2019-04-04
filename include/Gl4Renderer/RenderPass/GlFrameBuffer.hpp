@@ -5,10 +5,10 @@ See LICENSE file in root folder
 #pragma once
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
+#include "Gl4Renderer/Enum/GlAttachmentPoint.hpp"
+#include "Gl4Renderer/Enum/GlAttachmentType.hpp"
 
-#include <Ashes/RenderPass/FrameBuffer.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	void checkCompleteness( GLenum status );
 	/**
@@ -17,8 +17,7 @@ namespace gl_renderer
 	*\remarks
 	*	Contient les tampon de profondeur et de couleur.
 	*/
-	class FrameBuffer
-		: public ashes::FrameBuffer
+	class Framebuffer
 	{
 	public:
 		/**
@@ -30,15 +29,13 @@ namespace gl_renderer
 		*\param[in] dimensions
 		*	Les dimensions du tampon d'images.
 		*/
-		FrameBuffer( Device const & device
-			, RenderPass const & renderPass
-			, VkExtent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray textures );
+		Framebuffer( VkDevice device
+			, VkFramebufferCreateInfo createInfo );
 		/**
 		*\brief
 		*	Destructeur
 		*/
-		~FrameBuffer();
+		~Framebuffer();
 		/**
 		*\~english
 		*\brief
@@ -66,7 +63,7 @@ namespace gl_renderer
 		*	Les attaches.
 		*/
 		void setDrawBuffers( ContextLock const & context
-			, ashes::AttachmentReferenceArray const & attaches )const;
+			, VkAttachmentReferenceArray const & attaches )const;
 		/**
 		*\~english
 		*name
@@ -78,8 +75,8 @@ namespace gl_renderer
 		/**@{*/
 		inline GLuint getInternal()const
 		{
-			assert( m_frameBuffer != GL_INVALID_INDEX );
-			return m_frameBuffer;
+			assert( m_internal != GL_INVALID_INDEX );
+			return m_internal;
 		}
 
 		inline auto const & getAllAttaches()const
@@ -107,11 +104,21 @@ namespace gl_renderer
 		{
 			return m_srgb;
 		}
+
+		inline uint32_t getWidth()const
+		{
+			return m_width;
+		}
+
+		inline uint32_t getHeight()const
+		{
+			return m_height;
+		}
 		/**@}*/
 
 	private:
-		void doInitialiseFramebuffer();
-		void doInitialiseFboAttach( ashes::FrameBufferAttachment const & attach );
+		void doInitialiseAttach( VkImageView view
+			, uint32_t index );
 
 	private:
 		struct Attachment
@@ -120,13 +127,18 @@ namespace gl_renderer
 			GLuint object;
 			GlAttachmentType type;
 		};
-		Device const & m_device;
-		GLuint m_frameBuffer{ GL_INVALID_INDEX };
-		RenderPass const & m_renderPass;
+		VkDevice m_device;
+		VkFramebufferCreateFlags m_flags;
+		VkRenderPass m_renderPass;
+		VkImageViewArray m_attachments;
+		uint32_t m_width;
+		uint32_t m_height;
+		uint32_t m_layers;
+		GLuint m_internal{ GL_INVALID_INDEX };
 		std::vector< Attachment > m_allAttaches;
 		std::vector< Attachment > m_colourAttaches;
-		ashes::Optional< Attachment > m_depthStencilAttach;
-		mutable ashes::UInt32Array m_drawBuffers;
+		Optional< Attachment > m_depthStencilAttach;
+		mutable UInt32Array m_drawBuffers;
 		bool m_srgb{ false };
 	};
 }

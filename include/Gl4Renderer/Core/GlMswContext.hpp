@@ -9,14 +9,17 @@ See LICENSE file in root folder
 #	include <Windows.h>
 #	include "vulkan/vulkan_win32.h"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class MswContext
 		: public Context
 	{
 	public:
-		MswContext( Instance const & instance
-			, ashes::WindowHandle const & handle
+		MswContext( VkInstance instance
+			, VkWin32SurfaceCreateInfoKHR createInfo
+			, Context const * mainContext );
+		MswContext( VkInstance instance
+			, VkSurfaceKHR surface
 			, Context const * mainContext );
 		~MswContext();
 
@@ -61,7 +64,6 @@ namespace gl_renderer
 	private:
 		HDC m_hDC;
 		HGLRC m_hContext;
-		HWND m_hWnd;
 	};
 }
 

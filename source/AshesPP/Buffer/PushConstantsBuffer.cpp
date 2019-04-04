@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include <algorithm>
 
-namespace ashespp
+namespace ashes
 {
 	namespace
 	{

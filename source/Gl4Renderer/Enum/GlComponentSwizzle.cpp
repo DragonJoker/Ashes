@@ -1,6 +1,6 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlSwizzle value )
 	{

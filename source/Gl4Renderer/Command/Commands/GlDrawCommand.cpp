@@ -4,14 +4,14 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlDrawCommand.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	DrawCommand::DrawCommand( Device const & device
+	DrawCommand::DrawCommand( VkDevice device
 		, uint32_t vtxCount
 		, uint32_t instCount
 		, uint32_t firstVertex
 		, uint32_t firstInstance
-		, ashes::PrimitiveTopology mode )
+		, VkPrimitiveTopology mode )
 		: CommandBase{ device }
 		, m_vtxCount{ vtxCount }
 		, m_instCount{ instCount }

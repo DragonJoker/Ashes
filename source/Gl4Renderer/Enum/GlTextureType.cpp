@@ -1,30 +1,30 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlTextureType value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_TEXTURE_1D:
+		case GL_TEXTURE_1D:
 			return "GL_TEXTURE_1D";
 
-		case gl_renderer::GL_TEXTURE_2D:
+		case GL_TEXTURE_2D:
 			return "GL_TEXTURE_2D";
 
-		case gl_renderer::GL_TEXTURE_3D:
+		case GL_TEXTURE_3D:
 			return "GL_TEXTURE_3D";
 
-		case gl_renderer::GL_TEXTURE_1D_ARRAY:
+		case GL_TEXTURE_1D_ARRAY:
 			return "GL_TEXTURE_1D_ARRAY";
 
-		case gl_renderer::GL_TEXTURE_2D_ARRAY:
+		case GL_TEXTURE_2D_ARRAY:
 			return "GL_TEXTURE_2D_ARRAY";
 
-		case gl_renderer::GL_TEXTURE_2D_MULTISAMPLE:
+		case GL_TEXTURE_2D_MULTISAMPLE:
 			return "GL_TEXTURE_2D_MULTISAMPLE";
 
-		case gl_renderer::GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
+		case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
 			return "GL_TEXTURE_2D_MULTISAMPLE_ARRAY";
 
 		default:

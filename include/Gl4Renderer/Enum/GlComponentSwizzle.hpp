@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/ComponentSwizzle.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\~english
@@ -47,9 +45,9 @@ namespace gl_renderer
 	std::string getName( GlComponentSwizzle value );
 	/**
 	*\brief
-	*	Convertit un ashes::CompareOp en GlComponentSwizzle.
+	*	Convertit un VkCompareOp en GlComponentSwizzle.
 	*\param[in] value
-	*	Le ashes::CompareOp.
+	*	Le VkCompareOp.
 	*\return
 	*	Le GlComponentSwizzle.
 	*/

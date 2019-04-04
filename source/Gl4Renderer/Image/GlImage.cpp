@@ -3,15 +3,18 @@
 #include "Command/GlCommandBuffer.hpp"
 #include "Core/GlDevice.hpp"
 #include "Image/GlImageView.hpp"
+#include "Miscellaneous/GlCallLogger.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
 #include "Sync/GlImageMemoryBarrier.hpp"
+
+#include "ashesgl4_api.hpp"
 
 #ifdef max
 #	undef max
 #	undef min
 #endif
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	namespace
 	{
@@ -70,7 +73,7 @@ namespace gl_renderer
 		}
 	}
 
-	Image::Image( Device const & device
+	Image::Image( VkDevice device
 		, VkFormat format
 		, VkExtent2D const & dimensions )
 		: Image
@@ -94,74 +97,73 @@ namespace gl_renderer
 	{
 	}
 
-	Image::Image( Device const & device
-		, Image const & image )
-		: m_device{ device }
-		, m_target{ image.m_target }
-		, m_texture{ image.m_texture }
+	Image::Image( VkDevice device
+		, VkImage image )
+		: m_flags{ get( image )->m_flags }
+		, m_imageType{ get( image )->m_imageType }
+		, m_format{ get( image )->m_format }
+		, m_extent{ get( image )->m_extent }
+		, m_mipLevels{ get( image )->m_mipLevels }
+		, m_arrayLayers{ get( image )->m_arrayLayers }
+		, m_samples{ get( image )->m_samples }
+		, m_tiling{ get( image )->m_tiling }
+		, m_usage{ get( image )->m_usage }
+		, m_sharingMode{ get( image )->m_sharingMode }
+		, m_queueFamilyIndices{ get( image )->m_queueFamilyIndices }
+		, m_device{ device }
+		, m_target{ get( image )->m_target }
+		, m_internal{ get( image )->m_internal }
 		, m_ownTexture{ false }
-		, createInfo{ image.createInfo }
 	{
 	}
 
-	Image::Image( Device const & device
-		, VkImageCreateInfo const & createInfo )
-		: m_device{ device }
-		, m_target{ convert( createInfo.imageType, createInfo.arrayLayers, createInfo.samples ) }
+	Image::Image( VkDevice device
+		, VkImageCreateInfo createInfo )
+		: m_flags{ createInfo.flags }
+		, m_imageType{ createInfo.imageType }
+		, m_format{ createInfo.format }
+		, m_extent{ createInfo.extent }
+		, m_mipLevels{ createInfo.mipLevels }
+		, m_arrayLayers{ createInfo.arrayLayers }
+		, m_samples{ createInfo.samples }
+		, m_tiling{ createInfo.tiling }
+		, m_usage{ createInfo.usage }
+		, m_sharingMode{ createInfo.sharingMode }
+		, m_queueFamilyIndices{ createInfo.pQueueFamilyIndices, createInfo.pQueueFamilyIndices + createInfo.queueFamilyIndexCount }
+		, m_device{ device }
+		, m_target{ convert( getType(), getArrayLayers(), getSamples() ) }
 		, m_ownTexture{ true }
-		, createInfo{ createInfo }
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glGenTextures
 			, 1
-			, &m_texture );
+			, &m_internal );
 	}
 
 	Image::~Image()
 	{
-		m_storage.reset();
-
 		if ( m_ownTexture )
 		{
-			auto context = m_device.getContext();
+			auto context = get( m_device )->getContext();
 			glLogCall( context
 				, glDeleteTextures
 				, 1
-				, &m_texture );
+				, &m_internal );
 		}
 	}
 
 	VkMemoryRequirements Image::getMemoryRequirements()const
 	{
 		VkMemoryRequirements result{};
-		result.size = getSize( createInfo.extent, createInfo.format );
-		auto extent = getMinimalExtent3D( createInfo.format );
-		result.alignment = getSize( extent, createInfo.format );
+		result.size = getSize( getDimensions(), getFormat() );
+		auto extent = getMinimalExtent3D( getFormat() );
+		result.alignment = getSize( extent, getFormat() );
 		result.memoryTypeBits = VK_MEMORY_HEAP_DEVICE_LOCAL_BIT
-			| ( ( checkFlag( createInfo.usage, ashes::ImageUsageFlag::eTransferDst )
-				&& checkFlag( createInfo.usage, ashes::ImageUsageFlag::eTransferSrc ) )
+			| ( ( checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_DST_BIT )
+				&& checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
 				? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
-				: VK_MEMORY_HEAP_DEVICE_LOCAL_BIT );
+				: 0u );
 		return result;
-	}
-
-	void Image::bindMemory( DeviceMemoryPtr memory )const
-	{
-		assert( !m_storage && "A resource can only be bound once to a device memory object." );
-		m_storage = std::move( memory );
-		static_cast< DeviceMemory & >( *m_storage ).bindToImage( *this, m_target, createInfo );
-	}
-
-	void Image::generateMipmaps( CommandBuffer & commandBuffer )const
-	{
-		static_cast< CommandBuffer & >( commandBuffer ).generateMipmaps( *this );
-	}
-
-	ImageViewPtr Image::createView( VkImageViewCreateInfo const & createInfo )const
-	{
-		return std::make_unique< ImageView >( m_device
-			, *this
-			, createInfo );
 	}
 }

@@ -4,9 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/Enum/IndexType.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlIndexType
 		: GLenum
@@ -17,11 +15,11 @@ namespace gl_renderer
 	std::string getName( GlIndexType value );
 	/**
 	*\brief
-	*	Convertit un ashes::IndexType en GlIndexType.
+	*	Convertit un VkIndexType en GlIndexType.
 	*\param[in] type
-	*	Le ashes::IndexType.
+	*	Le VkIndexType.
 	*\return
 	*	Le GlIndexType.
 	*/
-	GlIndexType convert( ashes::IndexType const & type );
+	GlIndexType convert( VkIndexType const & type );
 }

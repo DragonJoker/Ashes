@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlGetParameter
 	{

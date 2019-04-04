@@ -19,6 +19,7 @@ See LICENSE file in root folder.
 #include "Image/GlSampler.hpp"
 #include "Image/GlImage.hpp"
 #include "Image/GlImageView.hpp"
+#include "Miscellaneous/GlCallLogger.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
 #include "Miscellaneous/GlQueryPool.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
@@ -29,18 +30,23 @@ See LICENSE file in root folder.
 #include "Sync/GlFence.hpp"
 #include "Sync/GlSemaphore.hpp"
 
-#include <Ashes/Image/ImageSubresource.hpp>
-#include <Ashes/Image/SubresourceLayout.hpp>
-#include <Ashes/RenderPass/RenderPassCreateInfo.hpp>
+#include "ashesgl4_api.hpp"
+
+#include <AshesRenderer/Helper/ColourBlendState.hpp>
+#include <AshesRenderer/Helper/DepthStencilState.hpp>
+#include <AshesRenderer/Helper/InputAssemblyState.hpp>
+#include <AshesRenderer/Helper/MultisampleState.hpp>
+#include <AshesRenderer/Helper/RasterisationState.hpp>
+#include <AshesRenderer/Helper/TessellationState.hpp>
 
 #include <iostream>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	namespace
 	{
 		GLuint getObjectName( GlDebugReportObjectType const & value
-			, void const * object )
+			, uint64_t object )
 		{
 			GLuint result = GL_INVALID_INDEX;
 
@@ -62,7 +68,7 @@ namespace gl_renderer
 				result = reinterpret_cast< Sampler const * >( object )->getInternal();
 				break;
 			case GlDebugReportObjectType::eFrameBuffer:
-				result = reinterpret_cast< FrameBuffer const * >( object )->getInternal();
+				result = reinterpret_cast< Framebuffer const * >( object )->getInternal();
 				break;
 			}
 
@@ -90,8 +96,12 @@ namespace gl_renderer
 			bool blend = false;
 			GLuint buf = 0u;
 
-			for ( auto & blendState : state.attachs )
+			for ( auto it = state.pAttachments;
+				it != state.pAttachments + state.attachmentCount;
+				++it )
 			{
+				auto & blendState = *it;
+
 				if ( blendState.blendEnable )
 				{
 					blend = true;
@@ -136,7 +146,7 @@ namespace gl_renderer
 					, GL_CULL_FACE );
 				glLogCall( context
 					, glCullFace
-					, convert( state.cullMode ) );
+					, convertCullModeFlags( state.cullMode ) );
 				glLogCall( context
 					, glFrontFace
 					, convert( state.frontFace ) );
@@ -219,7 +229,7 @@ namespace gl_renderer
 					, GL_DEPTH_CLAMP );
 			}
 
-			if ( state.rasteriserDiscardEnable )
+			if ( state.rasterizerDiscardEnable )
 			{
 				glLogCall( context
 					, glEnable
@@ -240,7 +250,7 @@ namespace gl_renderer
 		void doApply( ContextLock const & context
 			, VkPipelineMultisampleStateCreateInfo const & state )
 		{
-			if ( state.rasterisationSamples != VK_SAMPLE_COUNT_1 )
+			if ( state.rasterizationSamples != VK_SAMPLE_COUNT_1_BIT )
 			{
 				glLogCall( context
 					, glEnable
@@ -384,7 +394,7 @@ namespace gl_renderer
 		void doApply( ContextLock const & context
 			, VkPipelineInputAssemblyStateCreateInfo const & state )
 		{
-			if ( state.topology == ashes::PrimitiveTopology::ePointList )
+			if ( state.topology == VK_PRIMITIVE_TOPOLOGY_POINT_LIST )
 			{
 				glLogCall( context
 					, glEnable
@@ -427,9 +437,9 @@ namespace gl_renderer
 		{
 			VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
 
-			if ( ashes::isCompressedFormat( format ) )
+			if ( isCompressedFormat( format ) )
 			{
-				auto extent = ashes::getMinimalExtent2D( format );
+				auto extent = getMinimalExtent2D( format );
 				texelBlockExtent.width = extent.width;
 				texelBlockExtent.height = extent.height;
 			}
@@ -459,46 +469,68 @@ namespace gl_renderer
 		}
 	}
 
-	Device::Device( Instance const & instance
-		, PhysicalDevice const & gpu
+	Device::Device( VkInstance instance
+		, VkPhysicalDevice gpu
 		, Context & context
-		, ashes::DeviceCreateInfo createInfos )
-		: ashes::Device{ instance
-			, gpu
-			, std::move( createInfos ) }
-		, m_instance{ instance }
-		, m_rsState{}
+		, VkDeviceCreateInfo createInfos )
+		: m_instance{ instance }
+		, m_physicalDevice{ gpu }
+		, m_createInfos{ std::move( createInfos ) }
 		, m_currentContext{ &context }
+		, m_cbStateAttachments{ 1u, getColourBlendStateAttachment() }
+		, m_cbState{ getColourBlendState( m_cbStateAttachments ) }
+		, m_dsState{ getDepthStencilState() }
+		, m_msState{ getMultisampleState() }
+		, m_rsState{ getRasterisationState() }
+		, m_tsState{ getTessellationState() }
+		, m_iaState{ getInputAssemblyState() }
 	{
-		m_timestampPeriod = 1;
+		//m_timestampPeriod = 1;
 		doCreateQueues();
 		auto lock = getContext();
 		doInitialiseContext( lock );
 
 		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
-		m_dummyIndexed.indexBuffer = ashes::makeBuffer< uint32_t >( *this
-			, count
-			, VkBufferUsageFlagBits::eIndexBuffer );
-		auto requirements = m_dummyIndexed.indexBuffer->getBuffer().getMemoryRequirements();
+		allocate( m_dummyIndexed.indexBuffer
+			, nullptr
+			, get( this )
+			, VkBufferCreateInfo
+			{
+				VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+				nullptr,
+				0u,
+				count * sizeof( uint32_t ),
+				VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+				VK_SHARING_MODE_EXCLUSIVE,
+				0u,
+				nullptr,
+			} );
+		auto indexBuffer = get( m_dummyIndexed.indexBuffer );
+		auto requirements = indexBuffer->getMemoryRequirements();
 		auto deduced = deduceMemoryType( requirements.memoryTypeBits
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-		m_dummyIndexed.indexBuffer->bindMemory( allocateMemory( { requirements.size, deduced } ) );
+		VkDeviceMemory vkMemory;
+		allocate( vkMemory
+			, nullptr
+			, get( this )
+			, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
+		get( vkMemory )->bindToBuffer( m_dummyIndexed.indexBuffer, 0u );
+		auto memory = get( vkMemory );
+		uint8_t * buffer{ nullptr };
+		memory->lock( 0u, count, 0u, reinterpret_cast< void ** >( &buffer ) );
 
-		if ( auto * buffer = m_dummyIndexed.indexBuffer->lock( 0u
-			, count
-			, ashes::MemoryMapFlag::eWrite ) )
+		if ( buffer )
 		{
 			std::copy( dummyIndex, dummyIndex + count, buffer );
-			m_dummyIndexed.indexBuffer->flush( 0, count );
-			m_dummyIndexed.indexBuffer->unlock();
+			memory->flush( 0, count );
+			memory->unlock();
 		}
 
-		auto & indexBuffer = static_cast< Buffer const & >( m_dummyIndexed.indexBuffer->getBuffer() );
-		m_dummyIndexed.geometryBuffers = std::make_unique< GeometryBuffers >( *this
+		m_dummyIndexed.geometryBuffers = std::make_unique< GeometryBuffers >( get( this )
 			, VboBindings{}
-			, BufferObjectBinding{ indexBuffer.getInternal(), 0u, &indexBuffer }
+			, BufferObjectBinding{ indexBuffer->getInternal(), 0u, m_dummyIndexed.indexBuffer }
 			, VkPipelineVertexInputStateCreateInfo{}
-		, ashes::IndexType::eUInt32 );
+			, VK_INDEX_TYPE_UINT32 );
 		m_dummyIndexed.geometryBuffers->initialise();
 
 		lock->glGenFramebuffers( 2, m_blitFbos );
@@ -511,57 +543,20 @@ namespace gl_renderer
 			auto context = getContext();
 			context->glDeleteFramebuffers( 2, m_blitFbos );
 			m_dummyIndexed.geometryBuffers.reset();
-			m_dummyIndexed.indexBuffer.reset();
+			deallocate( m_dummyIndexed.indexBuffer, nullptr );
 		}
 	}
 
-	ashes::RenderPassPtr Device::createRenderPass( VkRenderPassCreateInfo createInfo )const
-	{
-		return std::make_unique< RenderPass >( *this, std::move( createInfo ) );
-	}
-
-	ashes::PipelineLayoutPtr Device::createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-		, ashes::PushConstantRangeArray const & pushConstantRanges )const
-	{
-		return std::make_unique< PipelineLayout >( *this
-			, setLayouts
-			, pushConstantRanges );
-	}
-
-	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const
-	{
-		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
-	}
-
-	ashes::DescriptorPoolPtr Device::createDescriptorPool( VkDescriptorPoolCreateFlags flags
-		, uint32_t maxSets
-		, ashes::DescriptorPoolSizeArray poolSizes )const
-	{
-		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
-	}
-
-	ashes::DeviceMemoryPtr Device::allocateMemory( VkMemoryAllocateInfo allocateInfo )const
-	{
-		return std::make_unique< DeviceMemory >( *this
-			, std::move( allocateInfo ) );
-	}
-
-	ashes::ImagePtr Device::createImage( VkImageCreateInfo const & createInfo )const
-	{
-		return std::make_unique< Image >( *this, createInfo );
-	}
-
-	void Device::getImageSubresourceLayout( ashes::Image const & image
+	void Device::getImageSubresourceLayout( VkImage image
 		, VkImageSubresource const & subresource
 		, VkSubresourceLayout & layout )const
 	{
-		auto & gltex = static_cast< Image const & >( image );
 		auto context = getContext();
-		auto target = convert( gltex.getType(), gltex.getLayerCount() );
+		auto target = convert( get( image )->getType(), get( image )->getArrayLayers() );
 		glLogCall( context
 			, glBindTexture
 			, target
-			, gltex.getInternal() );
+			, get( image )->getInternal() );
 		int w = 0;
 		int h = 0;
 		int d = 0;
@@ -572,8 +567,8 @@ namespace gl_renderer
 			, glBindTexture
 			, target
 			, 0 );
-		auto extent = getTexelBlockExtent( image.getFormat() );
-		auto byteSize = getTexelBlockByteSize( extent, image.getFormat() );
+		auto extent = getTexelBlockExtent( get( image )->getFormat() );
+		auto byteSize = getTexelBlockByteSize( extent, get( image )->getFormat() );
 		layout.rowPitch = getAligned( std::max( w, 1 ), extent.width );
 		layout.arrayPitch = layout.rowPitch * getAligned( std::max( h, 1 ), extent.width );
 		layout.depthPitch = layout.arrayPitch;
@@ -581,101 +576,18 @@ namespace gl_renderer
 		layout.size = layout.arrayPitch * std::max( d, 1 );
 	}
 
-	ashes::SamplerPtr Device::createSampler( VkSamplerCreateInfo const & createInfo )const
-	{
-		return std::make_unique< Sampler >( *this, createInfo );
-	}
-
-	ashes::BufferBasePtr Device::createBuffer( uint32_t size
-		, VkBufferUsageFlags target )const
-	{
-		return std::make_unique< Buffer >( *this
-			, size
-			, target );
-	}
-
-	ashes::BufferViewPtr Device::createBufferView( ashes::BufferBase const & buffer
-		, VkFormat format
-		, uint32_t offset
-		, uint32_t range )const
-	{
-		return std::make_unique< BufferView >( *this
-			, static_cast< Buffer const & >( buffer )
-			, format
-			, offset
-			, range );
-	}
-
-	ashes::SwapChainPtr Device::createSwapChain( VkSwapchainCreateInfoKHR createInfo )const
-	{
-		ashes::SwapChainPtr result;
-
-		try
-		{
-			result = std::make_unique< SwapChain >( *this, std::move( createInfo ) );
-		}
-		catch ( std::exception & exc )
-		{
-			ashes::Logger::logError( std::string{ "Could not create the swap chain:\n" } + exc.what() );
-		}
-		catch ( ... )
-		{
-			ashes::Logger::logError( "Could not create the swap chain:\nUnknown error" );
-		}
-
-		return result;
-	}
-
-	ashes::SemaphorePtr Device::createSemaphore()const
-	{
-		return std::make_unique< Semaphore >( *this );
-	}
-
-	ashes::FencePtr Device::createFence( VkFenceCreateFlags flags )const
-	{
-		return std::make_unique< Fence >( *this, flags );
-	}
-
-	ashes::EventPtr Device::createEvent()const
-	{
-		return std::make_unique< Event >( *this );
-	}
-
-	ashes::CommandPoolPtr Device::createCommandPool( uint32_t queueFamilyIndex
-		, VkCommandPoolCreateFlags const & flags )const
-	{
-		return std::make_unique< CommandPool >( *this
-			, queueFamilyIndex
-			, flags );
-	}
-
-	ashes::ShaderModulePtr Device::createShaderModule( VkShaderStageFlagBits stage )const
-	{
-		return std::make_shared< ShaderModule >( *this, stage );
-	}
-
-	ashes::QueryPoolPtr Device::createQueryPool( ashes::QueryType type
-		, uint32_t count
-		, VkQueryPipelineStatisticFlags pipelineStatistics )const
-	{
-		return std::make_unique< QueryPool >( *this
-			, type
-			, count
-			, pipelineStatistics );
-	}
-
 	void Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
 #if !defined( NDEBUG )
 		auto context = getContext();
 
-		if ( nameInfo.objectType == ashes::DebugReportObjectType::eFence )
+		if ( nameInfo.objectType == VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT )
 		{
 			glLogCall( context
 				, glObjectPtrLabel
-				, reinterpret_cast< Fence const * >( nameInfo.object )->getInternal()
-				, GLsizei( nameInfo.objectName.size() )
-				, nameInfo.objectName.c_str() );
+				, get( VkFence( nameInfo.object ) )->getInternal()
+				, GLsizei( strlen( nameInfo.pObjectName ) )
+				, nameInfo.pObjectName );
 		}
 		else
 		{
@@ -691,42 +603,51 @@ namespace gl_renderer
 						, glObjectLabel
 						, GLenum( objectType )
 						, name
-						, GLsizei( nameInfo.objectName.size() )
-						, nameInfo.objectName.c_str() );
+						, GLsizei( strlen( nameInfo.pObjectName ) )
+						, nameInfo.pObjectName );
 				}
 			}
 		}
 #endif
 	}
 
-	ashes::QueuePtr Device::getQueue( uint32_t familyIndex
+	VkQueue Device::getQueue( uint32_t familyIndex
 		, uint32_t index )const
 	{
 		auto it = m_queues.find( familyIndex );
 
 		if ( it == m_queues.end() )
 		{
-			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find family index within created queues" };
+			throw Exception{ VK_ERROR_INCOMPATIBLE_DRIVER
+				, "Couldn't find family index within created queues" };
 		}
 
 		if ( it->second.second <= index )
 		{
-			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find queue with wanted index within its family" };
+			throw Exception{ VK_ERROR_INCOMPATIBLE_DRIVER
+				, "Couldn't find queue with wanted index within its family" };
 		}
 
-		return std::make_unique< Queue >( *this, it->second.first, index );
+		VkQueue result;
+		allocate( result
+			, nullptr
+			, get( this )
+			, it->second.first
+			, index );
+		return result;
 	}
 
-	void Device::waitIdle()const
+	VkResult Device::waitIdle()const
 	{
 		auto context = getContext();
 		glLogCall( context
 			, glFinish );
+		return VK_SUCCESS;
 	}
 
-	void Device::registerContext( ashes::WindowHandle const & handle )const
+	void Device::registerContext( VkSurfaceKHR surface )const
 	{
-		auto context = Context::create( m_instance, handle, nullptr );
+		auto context = Context::create( m_instance, surface, nullptr );
 		ContextLock lock{ *context };
 		doInitialiseContext( lock );
 
@@ -737,7 +658,7 @@ namespace gl_renderer
 		}
 	}
 
-	void Device::unregisterContext( ashes::WindowHandle const & handle )const
+	void Device::unregisterContext( VkSurfaceKHR surface )const
 	{
 	}
 
@@ -758,7 +679,7 @@ namespace gl_renderer
 		doApply( context, m_rsState );
 		doApply( context, m_iaState );
 
-		if ( m_gpu.getFeatures().tessellationShader )
+		if ( get( m_physicalDevice )->getFeatures().tessellationShader )
 		{
 			doApply( context, m_tsState );
 		}
@@ -766,10 +687,13 @@ namespace gl_renderer
 
 	void Device::doCreateQueues()
 	{
-		for ( auto & queueCreateInfo : m_createInfos.queueCreateInfos )
+		for ( auto itQueue = m_createInfos.pQueueCreateInfos;
+			itQueue != m_createInfos.pQueueCreateInfos + m_createInfos.queueCreateInfoCount;
+			++itQueue )
 		{
+			auto & queueCreateInfo = *itQueue;
 			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
-				, QueueCreateCount{ queueCreateInfo, 0u } ).first;
+				, VkQueueCreateCount{ queueCreateInfo, 0u } ).first;
 			it->second.second++;
 		}
 	}

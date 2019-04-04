@@ -9,10 +9,9 @@
 #pragma once
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
+#include "Gl4Renderer/Enum/GlTextureViewType.hpp"
 
-#include <Ashes/Image/ImageView.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\~french
@@ -25,11 +24,10 @@ namespace gl_renderer
 	class ImageView
 	{
 	public:
-		ImageView( Device const & device
-			, Image const & image );
-		ImageView( Device const & device
-			, Image const & image
-			, VkImageViewCreateInfo const & createInfo );
+		ImageView( VkDevice device
+			, VkImage image );
+		ImageView( VkDevice device
+			, VkImageViewCreateInfo createInfo );
 		/**
 		*\~french
 		*\brief
@@ -45,10 +43,39 @@ namespace gl_renderer
 		*/
 		GLuint getInternal()const noexcept;
 
-		VkImageViewCreateInfo const createInfo;
+		inline VkImageViewType getType()const noexcept
+		{
+			return m_viewType;
+		}
+
+		inline VkFormat getFormat()const noexcept
+		{
+			return m_format;
+		}
+
+		inline VkComponentMapping const & getComponents()const noexcept
+		{
+			return m_components;
+		}
+
+		inline VkImageSubresourceRange const & getSubresourceRange()const noexcept
+		{
+			return m_subresourceRange;
+		}
+
+		inline VkImage getImage()const noexcept
+		{
+			return m_image;
+		}
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
+		VkImageViewCreateFlags m_flags;
+		VkImage m_image;
+		VkImageViewType m_viewType;
+		VkFormat m_format;
+		VkComponentMapping m_components;
+		VkImageSubresourceRange m_subresourceRange;
 		GlTextureViewType m_target;
 		GLuint m_texture{ GL_INVALID_INDEX };
 	};

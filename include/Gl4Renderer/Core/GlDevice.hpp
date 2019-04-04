@@ -7,19 +7,7 @@ See LICENSE file in root folder
 #include "Gl4Renderer/Core/GlContext.hpp"
 #include "Gl4Renderer/Core/GlPhysicalDevice.hpp"
 
-#include <Ashes/Buffer/VertexBuffer.hpp>
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Miscellaneous/SwapChainCreateInfo.hpp>
-#include <Ashes/Pipeline/ColourBlendState.hpp>
-#include <Ashes/Pipeline/DepthStencilState.hpp>
-#include <Ashes/Pipeline/InputAssemblyState.hpp>
-#include <Ashes/Pipeline/MultisampleState.hpp>
-#include <Ashes/Pipeline/RasterisationState.hpp>
-#include <Ashes/Pipeline/Scissor.hpp>
-#include <Ashes/Pipeline/TessellationState.hpp>
-#include <Ashes/Pipeline/Viewport.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -38,103 +26,29 @@ namespace gl_renderer
 		*\param[in] connection
 		*	La connection à l'application.
 		*/
-		Device( Instance const & instance
-			, PhysicalDevice const & gpu
+		Device( VkInstance instance
+			, VkPhysicalDevice gpu
 			, Context & context
 			, VkDeviceCreateInfo createInfos );
 		~Device();
 		/**
-		*\copydoc		ashes::Device::createRenderPass
+		*\copydoc	Device::getImageSubresourceLayout
 		*/
-		ashes::RenderPassPtr createRenderPass( VkRenderPassCreateInfo createInfo )const;
-		/**
-		*\copydoc		ashes::Device::createPipelineLayout
-		*/
-		ashes::PipelineLayoutPtr createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeArray const & pushConstantRanges )const;
-		/**
-		*\copydoc		ashes::Device::createDescriptorSetLayout
-		*/
-		ashes::DescriptorSetLayoutPtr createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const;
-		/**
-		*\copydoc	ashes::Device::createDescriptorPool
-		*/
-		ashes::DescriptorPoolPtr createDescriptorPool( VkDescriptorPoolCreateFlags flags
-			, uint32_t maxSets
-			, ashes::DescriptorPoolSizeArray poolSizes )const;
-		/**
-		*\copydoc	ashes::Device::allocateMemory
-		*/
-		ashes::DeviceMemoryPtr allocateMemory( VkMemoryAllocateInfo allocateInfo )const;
-		/**
-		*\copydoc		ashes::Device::createImage
-		*/
-		ashes::ImagePtr createImage( VkImageCreateInfo const & createInfo )const;
-		/**
-		*\copydoc	ashes::Device::getImageSubresourceLayout
-		*/
-		void getImageSubresourceLayout( Image const & image
+		void getImageSubresourceLayout( VkImage image
 			, VkImageSubresource const & subresource
 			, VkSubresourceLayout & layout )const;
 		/**
-		*\copydoc		ashes::Device::createSampler
+		*\copydoc	Device::createQueryPool
 		*/
-		ashes::SamplerPtr createSampler( VkSamplerCreateInfo const & createInfo )const;
+		VkResult waitIdle()const;
 		/**
-		*\copydoc		ashes::Device::createBuffer
-		*/
-		ashes::BufferBasePtr createBuffer( uint32_t size
-			, VkBufferUsageFlags targets )const;
-		/**
-		*\copydoc		ashes::Device::createBufferView
-		*/
-		ashes::BufferViewPtr createBufferView( ashes::BufferBase const & buffer
-			, VkFormat format
-			, uint32_t offset
-			, uint32_t range )const;
-		/**
-		*\copydoc		ashes::Device::createSwapChain
-		*/
-		ashes::SwapChainPtr createSwapChain( VkSwapchainCreateInfoKHR createInfo )const;
-		/**
-		*\copydoc		ashes::Device::createSemaphore
-		*/
-		ashes::SemaphorePtr createSemaphore()const;
-		/**
-		*\copydoc	ashes::Device::createFence
-		*/
-		ashes::FencePtr createFence( VkFenceCreateFlags flags = 0 )const;
-		/**
-		*\copydoc	ashes::Device::createEvent
-		*/
-		ashes::EventPtr createEvent()const;
-		/**
-		*\copydoc		ashes::Device::createCommandPool
-		*/
-		ashes::CommandPoolPtr createCommandPool( uint32_t queueFamilyIndex
-			, VkCommandPoolCreateFlags const & flags )const;
-		/**
-		*\copydoc		ashes::Device::createShaderProgram
-		*/
-		virtual ashes::ShaderModulePtr createShaderModule( VkShaderStageFlagBits stage )const;
-		/**
-		*\copydoc	ashes::Device::createQueryPool
-		*/
-		ashes::QueryPoolPtr createQueryPool( ashes::QueryType type
-			, uint32_t count
-			, VkQueryPipelineStatisticFlags pipelineStatistics )const;
-		/**
-		*\copydoc	ashes::Device::createQueryPool
-		*/
-		void waitIdle()const;
-		/**
-		*\copydoc	ashes::Device::debugMarkerSetObjectName
+		*\copydoc	Device::debugMarkerSetObjectName
 		*/
 		void debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const;
 		/**
-		*\copydoc	ashes::Device::getQueue
+		*\copydoc	Device::getQueue
 		*/
-		QueuePtr getQueue( uint32_t familyIndex
+		VkQueue getQueue( uint32_t familyIndex
 			, uint32_t index )const;
 		/**
 		*\brief
@@ -142,8 +56,8 @@ namespace gl_renderer
 		*/
 		void swapBuffers()const;
 
-		void registerContext( ashes::WindowHandle const & handle )const;
-		void unregisterContext( ashes::WindowHandle const & handle )const;
+		void registerContext( VkSurfaceKHR surface )const;
+		void unregisterContext( VkSurfaceKHR surface )const;
 
 		inline ContextLock getContext()const
 		{
@@ -153,6 +67,11 @@ namespace gl_renderer
 		inline void setCurrentFramebuffer( GLuint fbo )const
 		{
 			m_fbo = fbo;
+		}
+
+		inline VkPhysicalDeviceFeatures const & getEnabledFeatures()const
+		{
+			return *m_createInfos.pEnabledFeatures;
 		}
 
 		inline GLuint getCurrentFramebuffer()const
@@ -210,9 +129,9 @@ namespace gl_renderer
 			return *m_dummyIndexed.geometryBuffers;
 		}
 
-		inline ashes::BufferBase const & getEmptyIndexedVaoIdx()const
+		inline VkBuffer getEmptyIndexedVaoIdx()const
 		{
-			return m_dummyIndexed.indexBuffer->getBuffer();
+			return m_dummyIndexed.indexBuffer;
 		}
 
 		inline GLuint getBlitSrcFbo()const
@@ -225,7 +144,7 @@ namespace gl_renderer
 			return m_blitFbos[1];
 		}
 
-		inline Instance const & getInstance()const
+		inline VkInstance getInstance()const
 		{
 			return m_instance;
 		}
@@ -235,7 +154,10 @@ namespace gl_renderer
 		void doCreateQueues();
 
 	private:
-		Instance const & m_instance;
+		VkInstance m_instance;
+		VkPhysicalDevice m_physicalDevice;
+		VkDeviceCreateInfo m_createInfos;
+		VkQueueCreateCountMap m_queues;
 		mutable ContextPtr m_ownContext;
 		mutable Context * m_currentContext;
 		struct Vertex
@@ -247,20 +169,19 @@ namespace gl_renderer
 		// Mimic the behavior in Vulkan, when no IBO nor VBO is bound.
 		mutable struct
 		{
-			ashes::BufferPtr< uint32_t > indexBuffer;
-			ashes::VertexBufferPtr< Vertex > vertexBuffer;
+			VkBuffer indexBuffer;
+			VkBuffer vertexBuffer;
 			GeometryBuffersPtr geometryBuffers;
 		} m_dummyIndexed;
 		mutable VkRect2D m_scissor{ 0, 0, 0, 0 };
 		mutable VkViewport m_viewport{ 0, 0, 0, 0 };
+		mutable VkPipelineColorBlendAttachmentStateArray m_cbStateAttachments;
 		mutable VkPipelineColorBlendStateCreateInfo m_cbState;
 		mutable VkPipelineDepthStencilStateCreateInfo m_dsState;
 		mutable VkPipelineMultisampleStateCreateInfo m_msState;
 		mutable VkPipelineRasterizationStateCreateInfo m_rsState;
 		mutable VkPipelineTessellationStateCreateInfo m_tsState;
 		mutable VkPipelineInputAssemblyStateCreateInfo m_iaState;
-		using QueueCreateCount = std::pair< ashes::DeviceQueueCreateInfo, uint32_t >;
-		std::map< uint32_t, QueueCreateCount > m_queues;
 		mutable GLuint m_currentProgram;
 		mutable GLuint m_blitFbos[2];
 		mutable GLuint m_fbo{ 0u };

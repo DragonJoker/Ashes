@@ -1,27 +1,27 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlFilter value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_FILTER_NEAREST:
+		case GL_FILTER_NEAREST:
 			return "GL_NEAREST";
 
-		case gl_renderer::GL_FILTER_LINEAR:
+		case GL_FILTER_LINEAR:
 			return "GL_LINEAR";
 
-		case gl_renderer::GL_FILTER_NEAREST_MIPMAP_NEAREST:
+		case GL_FILTER_NEAREST_MIPMAP_NEAREST:
 			return "GL_NEAREST_MIPMAP_NEAREST";
 
-		case gl_renderer::GL_FILTER_LINEAR_MIPMAP_NEAREST:
+		case GL_FILTER_LINEAR_MIPMAP_NEAREST:
 			return "GL_LINEAR_MIPMAP_NEAREST";
 
-		case gl_renderer::GL_FILTER_NEAREST_MIPMAP_LINEAR:
+		case GL_FILTER_NEAREST_MIPMAP_LINEAR:
 			return "GL_NEAREST_MIPMAP_LINEAR";
 
-		case gl_renderer::GL_FILTER_LINEAR_MIPMAP_LINEAR:
+		case GL_FILTER_LINEAR_MIPMAP_LINEAR:
 			return "GL_LINEAR_MIPMAP_LINEAR";
 
 		default:
@@ -30,14 +30,14 @@ namespace gl_renderer
 		}
 	}
 
-	GlFilter convert( ashes::Filter const & filter )
+	GlFilter convert( VkFilter const & filter )
 	{
 		switch ( filter )
 		{
-		case ashes::Filter::eNearest:
+		case VK_FILTER_NEAREST:
 			return GL_FILTER_NEAREST;
 
-		case ashes::Filter::eLinear:
+		case VK_FILTER_LINEAR:
 			return GL_FILTER_LINEAR;
 
 		default:
@@ -46,23 +46,20 @@ namespace gl_renderer
 		}
 	}
 
-	GlFilter convert( ashes::Filter const & filter
-		, ashes::MipmapMode mode
+	GlFilter convert( VkFilter const & filter
+		, VkSamplerMipmapMode mode
 		, float minLod
 		, float maxLod )
 	{
 		switch ( filter )
 		{
-		case ashes::Filter::eNearest:
+		case VK_FILTER_NEAREST:
 			switch ( mode )
 			{
-			case ashes::MipmapMode::eNone:
-				return GL_FILTER_NEAREST;
-
-			case ashes::MipmapMode::eNearest:
+			case VK_SAMPLER_MIPMAP_MODE_NEAREST:
 				return GL_FILTER_NEAREST_MIPMAP_NEAREST;
 
-			case ashes::MipmapMode::eLinear:
+			case VK_SAMPLER_MIPMAP_MODE_LINEAR:
 				return GL_FILTER_NEAREST_MIPMAP_LINEAR;
 
 			default:
@@ -70,16 +67,13 @@ namespace gl_renderer
 				return GL_FILTER_NEAREST;
 			}
 
-		case ashes::Filter::eLinear:
+		case VK_FILTER_LINEAR:
 			switch ( mode )
 			{
-			case ashes::MipmapMode::eNone:
-				return GL_FILTER_LINEAR;
-
-			case ashes::MipmapMode::eNearest:
+			case VK_SAMPLER_MIPMAP_MODE_NEAREST:
 				return GL_FILTER_LINEAR_MIPMAP_NEAREST;
 
-			case ashes::MipmapMode::eLinear:
+			case VK_SAMPLER_MIPMAP_MODE_LINEAR:
 				return GL_FILTER_LINEAR_MIPMAP_LINEAR;
 
 			default:

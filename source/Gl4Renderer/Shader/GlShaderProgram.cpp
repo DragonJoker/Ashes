@@ -8,11 +8,11 @@ See LICENSE file in root folder.
 #include "Miscellaneous/GlValidator.hpp"
 #include "Shader/GlShaderModule.hpp"
 
-#include <Ashes/Pipeline/ShaderStageState.hpp>
+#include "ashesgl4_api.hpp"
 
 #include <iostream>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	namespace
 	{
@@ -91,35 +91,32 @@ namespace gl_renderer
 			{
 				if ( !compiled )
 				{
-					ashes::Logger::logError( compilerLog );
+					std::cerr << "Shader compilation failed" << std::endl;
 				}
-				else
-				{
-					ashes::Logger::logWarning( compilerLog );
-				}
+
+				std::cerr << compilerLog << std::endl;
 			}
 			else if ( !compiled )
 			{
-				ashes::Logger::logError( "Shader compilation failed" );
+				std::cerr << "Shader compilation failed" << std::endl;
 			}
 
 			return compiled;
 		}
 	}
 
-	ShaderProgram::ShaderProgram( Device const & device
-		, std::vector< VkPipelineShaderStageCreateInfo > const & stages )
+	ShaderProgram::ShaderProgram( VkDevice device
+		, VkPipelineShaderStageCreateInfoArray const & stages )
 		: m_device{ device }
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		m_program = context->glCreateProgram();
 
 		for ( auto & stage : stages )
 		{
-			auto & module = *stage.module->internal;
-			m_stageFlags |= module.getStage();
-			m_shaders.push_back( module.getInternal() );
-			module.compile( stage );
+			m_stageFlags |= stage.stage;
+			m_shaders.push_back( get( stage.module )->getInternal() );
+			get( stage.module )->compile( stage );
 			glLogCall( context
 				, glAttachShader
 				, m_program
@@ -127,25 +124,15 @@ namespace gl_renderer
 		}
 	}
 
-	ShaderProgram::ShaderProgram( Device const & device
-		, ashes::ShaderStageState const & stage )
-		: m_device{ device }
-		, m_stageFlags{ stage.module->getStage() }
+	ShaderProgram::ShaderProgram( VkDevice device
+		, VkPipelineShaderStageCreateInfo const & stage )
+		: ShaderProgram{ device, { 1u, stage } }
 	{
-		auto context = m_device.getContext();
-		m_program = context->glCreateProgram();
-		auto & module = static_cast< ShaderModule const & >( *stage.module );
-		m_shaders.push_back( module.getInternal() );
-		module.compile( stage );
-		glLogCall( context
-			, glAttachShader
-			, m_program
-			, m_shaders.back() );
 	}
 
 	ShaderProgram::~ShaderProgram()
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 
 		for ( auto shaderName : m_shaders )
 		{
@@ -183,11 +170,6 @@ namespace gl_renderer
 			&& attached == int( m_shaders.size() )
 			&& linkerLog.find( "ERROR" ) == std::string::npos )
 		{
-			if ( !linkerLog.empty() )
-			{
-				ashes::Logger::logWarning( "ShaderProgram::link - " + linkerLog );
-			}
-
 			int validated = 0;
 			glLogCall( context
 				, glGetProgramiv
@@ -195,9 +177,20 @@ namespace gl_renderer
 				, GL_INFO_VALIDATE_STATUS
 				, &validated );
 
-			if ( !validated )
+			if ( !linkerLog.empty()
+				|| !validated )
 			{
-				ashes::Logger::logWarning( "ShaderProgram::link - Not validated" );
+				std::cerr << "ShaderProgram::link" << std::endl;
+
+				if ( !validated )
+				{
+					std::cerr << "  Not validated" << std::endl;
+				}
+
+				if ( !linkerLog.empty() )
+				{
+					std::cerr << linkerLog << std::endl;
+				}
 			}
 
 			result = getShaderDesc( context, m_program );
@@ -205,14 +198,21 @@ namespace gl_renderer
 		}
 		else
 		{
-			if ( !linkerLog.empty() )
+			std::cerr << "ShaderProgram::link" << std::endl;
+
+			if ( !linked )
 			{
-				ashes::Logger::logError( "ShaderProgram::link - " + linkerLog );
+				std::cerr << "  Not linked" << std::endl;
 			}
 
 			if ( attached != int( m_shaders.size() ) )
 			{
-				ashes::Logger::logError( "ShaderProgram::link - The linked shaders count doesn't match the active shaders count." );
+				std::cerr << "  The linked shaders count doesn't match the active shaders count." << std::endl;
+			}
+
+			if ( !linkerLog.empty() )
+			{
+				std::cerr << linkerLog << std::endl;
 			}
 		}
 

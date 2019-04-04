@@ -10,9 +10,7 @@
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Buffer/BufferView.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\~french
@@ -53,8 +51,7 @@ namespace gl_renderer
 		*\param[in] range
 		*	The range from the buffer.
 		*/
-		BufferView( Device const & device
-			, Buffer const & buffer
+		BufferView( VkDevice device
 			, VkBufferViewCreateInfo createInfo );
 		/**
 		*\~french
@@ -68,7 +65,7 @@ namespace gl_renderer
 		/**
 		*\~french
 		*\return
-		*	Le nom de la texture.
+		*	Le nom de la texture
 		*\~english
 		*\return
 		*	The texture name.
@@ -79,8 +76,12 @@ namespace gl_renderer
 		}
 
 	private:
-		Device const & m_device;
-		VkBufferViewCreateInfo m_createInfo;
+		VkDevice m_device;
+		VkBufferViewCreateFlags m_flags;
+		VkBuffer m_buffer;
+		VkFormat m_format;
+		VkDeviceSize m_offset;
+		VkDeviceSize m_range;
 		GLuint m_name{ GL_INVALID_INDEX };
 	};
 }

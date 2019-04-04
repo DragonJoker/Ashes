@@ -7,30 +7,30 @@ See LICENSE file in root folder.
 #include "Core/GlDevice.hpp"
 #include "Image/GlImageView.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
 	namespace
 	{
 		void doClear( ContextLock const & context
-			, ashes::ClearAttachment const & clearAttach )
+			, VkClearAttachment const & clearAttach )
 		{
-			if ( ashes::checkFlag( clearAttach.aspectMask, VkImageAspectFlagBits::eColour ) )
+			if ( checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
 			{
-				assert( clearAttach.clearValue.isColour() );
-				auto & colour = clearAttach.clearValue.colour();
+				auto & colour = clearAttach.clearValue.color;
 				glLogCall( context
 					, glClearBufferfv
 					, GL_CLEAR_TARGET_COLOR
-					, clearAttach.colourAttachment
-					, colour.float32.data() );
+					, clearAttach.colorAttachment
+					, colour.float32 );
 			}
 			else
 			{
-				assert( !clearAttach.clearValue.isColour() );
-				auto & depthStencil = clearAttach.clearValue.depthStencil();
+				auto & depthStencil = clearAttach.clearValue.depthStencil;
 				auto stencil = GLint( depthStencil.stencil );
 
-				if ( ashes::checkFlag( clearAttach.aspectMask, VkImageAspectFlagBits::eDepth | VkImageAspectFlagBits::eStencil ) )
+				if ( checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT ) )
 				{
 					glLogCall( context
 						, glClearBufferfi
@@ -39,7 +39,7 @@ namespace gl_renderer
 						, depthStencil.depth
 						, stencil );
 				}
-				else if ( ashes::checkFlag( clearAttach.aspectMask, VkImageAspectFlagBits::eDepth ) )
+				else if ( checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT ) )
 				{
 					glLogCall( context
 						, glClearBufferfv
@@ -47,7 +47,7 @@ namespace gl_renderer
 						, 0u
 						, &depthStencil.depth );
 				}
-				else if ( ashes::checkFlag( clearAttach.aspectMask, VkImageAspectFlagBits::eStencil ) )
+				else if ( checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT ) )
 				{
 					glLogCall( context
 						, glClearBufferiv
@@ -60,9 +60,9 @@ namespace gl_renderer
 
 	}
 
-	ClearAttachmentsCommand::ClearAttachmentsCommand( Device const & device
-		, ashes::ClearAttachmentArray const & clearAttaches
-		, ashes::ClearRectArray const & clearRects )
+	ClearAttachmentsCommand::ClearAttachmentsCommand( VkDevice device
+		, VkClearAttachmentArray clearAttaches
+		, VkClearRectArray clearRects )
 		: CommandBase{ device }
 		, m_clearAttaches{ clearAttaches }
 		, m_clearRects{ clearRects }
@@ -72,7 +72,7 @@ namespace gl_renderer
 	void ClearAttachmentsCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "ClearAttachmentsCommand" );
-		auto scissor = m_device.getCurrentScissor();
+		auto scissor = get( m_device )->getCurrentScissor();
 
 		for ( auto & clearAttach : m_clearAttaches )
 		{
@@ -80,10 +80,10 @@ namespace gl_renderer
 			{
 				glLogCall( context
 					, glScissor
-					, rect.offset.x
-					, rect.offset.x
-					, rect.extent.width
-					, rect.extent.height );
+					, rect.rect.offset.x
+					, rect.rect.offset.x
+					, rect.rect.extent.width
+					, rect.rect.extent.height );
 				doClear( context, clearAttach );
 			}
 		}
@@ -92,8 +92,8 @@ namespace gl_renderer
 			, glScissor
 			, scissor.offset.x
 			, scissor.offset.y
-			, scissor.size.width
-			, scissor.size.height );
+			, scissor.extent.width
+			, scissor.extent.height );
 	}
 
 	CommandPtr ClearAttachmentsCommand::clone()const

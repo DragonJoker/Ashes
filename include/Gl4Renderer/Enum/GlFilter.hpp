@@ -4,9 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/Enum/Filter.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlFilter
 		: GLenum
@@ -21,25 +19,25 @@ namespace gl_renderer
 	std::string getName( GlFilter value );
 	/**
 	*\brief
-	*	Convertit un ashes::Filter en GlFilter.
+	*	Convertit un VkFilter en GlFilter.
 	*\param[in] filter
-	*	Le ashes::Filter.
+	*	Le VkFilter.
 	*\return
 	*	Le GlFilter.
 	*/
-	GlFilter convert( ashes::Filter const & filter );
+	GlFilter convert( VkFilter const & filter );
 	/**
 	*\brief
-	*	Convertit un ashes::Filter en GlFilter, en tenant compte d'un mode de mipmapping.
+	*	Convertit un VkFilter en GlFilter, en tenant compte d'un mode de mipmapping.
 	*\param[in] filter
-	*	Le ashes::Filter.
+	*	Le VkFilter.
 	*\param[in] mode
 	*	Le mode de mipmapping.
 	*\return
 	*	Le GlFilter.
 	*/
-	GlFilter convert( ashes::Filter const & filter
-		, ashes::MipmapMode mode
+	GlFilter convert( VkFilter const & filter
+		, VkSamplerMipmapMode mode
 		, float minLod
 		, float maxLod );
 }

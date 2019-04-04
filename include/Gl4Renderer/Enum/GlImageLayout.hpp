@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/ImageLayout.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlImageLayout
 		: GLenum
@@ -23,20 +21,20 @@ namespace gl_renderer
 	std::string getName( GlImageLayout value );
 	/**
 	*\brief
-	*	Convertit un ashes::ImageLayout en VkImageLayout.
+	*	Convertit un VkImageLayout en VkImageLayout.
 	*\param[in] layout
-	*	Le ashes::ImageLayout.
+	*	Le VkImageLayout.
 	*\return
 	*	Le VkImageLayout.
 	*/
-	GlImageLayout convert( ashes::ImageLayout const & layout );
+	GlImageLayout convert( VkImageLayout layout );
 	/**
 	*\brief
-	*	Convertit un VkImageLayout en ashes::ImageLayout.
+	*	Convertit un VkImageLayout en VkImageLayout.
 	*\param[in] layout
 	*	Le VkImageLayout.
 	*\return
-	*	Le ashes::ImageLayout.
+	*	Le VkImageLayout.
 	*/
-	ashes::ImageLayout convertImageLayout( GlImageLayout layout );
+	VkImageLayout convertImageLayout( GlImageLayout layout );
 }

@@ -6,9 +6,7 @@ See LICENSE file in root folder.
 #define ___GlRenderer_TextureUnit_HPP___
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlTextureUnit
 		: GLenum

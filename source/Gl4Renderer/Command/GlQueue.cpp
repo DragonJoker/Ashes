@@ -4,6 +4,8 @@ See LICENSE file in root folder.
 */
 #include "Command/GlQueue.hpp"
 
+#include "Miscellaneous/GlCallLogger.hpp"
+
 #include "Command/GlCommandBuffer.hpp"
 #include "Command/Commands/GlCommandBase.hpp"
 #include "Core/GlDevice.hpp"
@@ -11,27 +13,63 @@ See LICENSE file in root folder.
 #include "Sync/GlSemaphore.hpp"
 #include "Core/GlSwapChain.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
-	Queue::Queue( Device const & device
-		, ashes::DeviceQueueCreateInfo createInfo
+	Queue::Queue( VkDevice device
+		, VkDeviceQueueCreateInfo createInfo
 		, uint32_t index )
-		: ashes::Queue{ device, std::move( createInfo ), index }
-		, m_device{ device }
+		: m_device{ device }
+		, m_flags{ createInfo.flags }
+		, m_queueFamilyIndex{ createInfo.queueFamilyIndex }
+		, m_queuePriority{ createInfo.pQueuePriorities[index] }
+		, m_index{ index }
 	{
 	}
 
-	void Queue::submit( ashes::CommandBufferCRefArray const & commandBuffers
-		, ashes::SemaphoreCRefArray const & semaphoresToWait
-		, ashes::PipelineStageFlagsArray const & semaphoresStage
-		, ashes::SemaphoreCRefArray const & semaphoresToSignal
-		, ashes::Fence const * fence )const
+	VkResult Queue::submit( VkSubmitInfoArray const & values
+		, VkFence fence )const
 	{
-		auto context = m_device.getContext();
-
-		for ( auto & commandBuffer : commandBuffers )
+		for ( auto & value : values )
 		{
-			auto & glCommandBuffer = static_cast< CommandBuffer const & >( commandBuffer.get() );
+			submit( value, fence );
+		}
+
+		return VK_SUCCESS;
+	}
+
+	VkResult Queue::present( VkPresentInfoKHR const & presentInfo )const
+	{
+		auto itIndex = presentInfo.pImageIndices;
+		auto itResult = presentInfo.pResults;
+
+		for ( auto itSwapchain = presentInfo.pSwapchains;
+			itSwapchain != presentInfo.pSwapchains + presentInfo.swapchainCount;
+			++itIndex, ++itResult, ++itSwapchain )
+		{
+			*itResult = get( *itSwapchain )->present( *itIndex );
+		}
+		return VK_SUCCESS;
+	}
+
+	VkResult Queue::waitIdle()const
+	{
+		auto context = ( ( Device * )m_device )->getContext();
+		glLogCall( context
+			, glFinish );
+		return VK_SUCCESS;
+	}
+
+	void Queue::submit( VkSubmitInfo const & value
+		, VkFence fence )const
+	{
+		auto context = ( ( Device * )m_device )->getContext();
+
+		for ( auto it = value.pCommandBuffers; it != value.pCommandBuffers + value.commandBufferCount; ++it )
+		{
+			auto & commandBuffer = *it;
+			auto & glCommandBuffer = *( ( CommandBuffer * )commandBuffer );
 			glCommandBuffer.initialiseGeometryBuffers();
 
 			for ( auto & command : glCommandBuffer.getCommands() )
@@ -41,28 +79,5 @@ namespace gl_renderer
 
 			glCommandBuffer.applyPostSubmitActions( context );
 		}
-	}
-
-	ashes::ResultArray Queue::present( ashes::SwapChainCRefArray const & swapChains
-		, ashes::UInt32Array const & imagesIndex
-		, ashes::SemaphoreCRefArray const & semaphoresToWait )const
-	{
-		ashes::ResultArray result{ swapChains.size(), ashes::Result::eSuccess };
-		auto it = imagesIndex.begin();
-
-		for ( auto & swapChain : swapChains )
-		{
-			static_cast< SwapChain const & >( swapChain.get() ).present( *it );
-			++it;
-		}
-
-		return result;
-	}
-
-	void Queue::waitIdle()const
-	{
-		auto context = m_device.getContext();
-		glLogCall( context
-			, glFinish );
 	}
 }

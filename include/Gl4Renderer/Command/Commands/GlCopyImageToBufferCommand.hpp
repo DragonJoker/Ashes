@@ -6,10 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/Image/ImageView.hpp>
-#include <Ashes/Miscellaneous/BufferImageCopy.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -29,29 +26,24 @@ namespace gl_renderer
 		*\param[in] dst
 		*	Le tampon destination.
 		*/
-		CopyImageToBufferCommand( Device const & device
-			, ashes::BufferImageCopyArray const & copyInfo
-			, ashes::Image const & src
-			, ashes::BufferBase const & dst );
+		CopyImageToBufferCommand( VkDevice device
+			, VkBufferImageCopy copyInfo
+			, VkImage src
+			, VkBuffer dst );
 		CopyImageToBufferCommand( CopyImageToBufferCommand const & rhs );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		void applyOne( ContextLock const & context
-			, ashes::BufferImageCopy const & copyInfo
-			, ImageView const & view )const;
-
-	private:
-		Image const & m_src;
-		Buffer const & m_dst;
-		ashes::BufferImageCopyArray m_copyInfo;
+		VkImage m_src;
+		VkBuffer m_dst;
+		VkBufferImageCopy m_copyInfo;
 		GlInternal m_internal;
 		GlFormat m_format;
 		GlType m_type;
 		GlTextureType m_target;
-		std::vector< ImageViewPtr > m_views;
+		VkImageView m_view;
 		GLuint m_srcFbo;
 	};
 }

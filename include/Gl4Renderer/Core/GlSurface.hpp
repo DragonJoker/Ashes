@@ -6,31 +6,35 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Core/GlContext.hpp"
 
-#include <Ashes/Core/Surface.hpp>
+#include <AshesCommon/WindowHandle.hpp>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	class Surface
-		: public ashes::Surface
+	class SurfaceKHR
 	{
 	public:
-		Surface( Instance const & instance
-			, PhysicalDevice const & gpu
-			, ashes::WindowHandle handle );
+		template< typename CreateInfoT >
+		inline SurfaceKHR( VkInstance instance
+			, CreateInfoT createInfo )
+			: m_context{ Context::create( instance
+				, createInfo
+				, &get( instance )->getContext() ) }
+		{
+			m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
+			getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+		}
 
-		bool getSupport( uint32_t queueFamilyIndex )const override;
-
-		ashes::SurfaceCapabilities getCapabilities()const override
+		VkSurfaceCapabilitiesKHR getCapabilities()const
 		{
 			return m_surfaceCapabilities;
 		}
 
-		std::vector < ashes::PresentMode > getPresentModes()const override
+		VkPresentModeArrayKHR getPresentModes()const
 		{
 			return m_presentModes;
 		}
 
-		std::vector< ashes::SurfaceFormat > getFormats()const override
+		VkSurfaceFormatArrayKHR getFormats()const
 		{
 			return m_surfaceFormats;
 		}
@@ -41,9 +45,14 @@ namespace gl_renderer
 		}
 
 	private:
-		std::vector< ashes::SurfaceFormat > m_surfaceFormats;
-		ashes::SurfaceCapabilities m_surfaceCapabilities;
-		std::vector< ashes::PresentMode > m_presentModes;
+		static void getSurfaceInfos( VkSurfaceFormatArrayKHR & formats
+			, VkSurfaceCapabilitiesKHR & capabilities );
+
+	private:
+		VkSurfaceFormatArrayKHR m_surfaceFormats;
+		VkSurfaceCapabilitiesKHR m_surfaceCapabilities;
+		VkPresentModeArrayKHR m_presentModes;
 		ContextPtr m_context;
+		std::string m_type;
 	};
 }

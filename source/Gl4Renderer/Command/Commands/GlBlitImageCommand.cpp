@@ -7,12 +7,12 @@ See LICENSE file in root folder.
 #include "Core/GlDevice.hpp"
 #include "Image/GlImage.hpp"
 #include "Image/GlImageView.hpp"
+#include "Miscellaneous/GlCallLogger.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 
-#include <Ashes/Image/ImageSubresourceRange.hpp>
-#include <Ashes/RenderPass/FrameBufferAttachment.hpp>
+#include "ashesgl4_api.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	namespace
 	{
@@ -20,18 +20,18 @@ namespace gl_renderer
 		{
 			GlImageAspectFlags result = 0u;
 
-			if ( ashes::isDepthFormat( format ) )
+			if ( isDepthFormat( format ) )
 			{
 				result |= GL_DEPTH_BUFFER_BIT;
 			}
 
-			if ( ashes::isStencilFormat( format ) )
+			if ( isStencilFormat( format ) )
 			{
 				result |= GL_STENCIL_BUFFER_BIT;
 			}
 
-			if ( !ashes::isDepthFormat( format )
-				&& !ashes::isStencilFormat( format ) )
+			if ( !isDepthFormat( format )
+				&& !isStencilFormat( format ) )
 			{
 				result |= GL_COLOR_BUFFER_BIT;
 			}
@@ -80,67 +80,75 @@ namespace gl_renderer
 		}
 	}
 
-	BlitImageCommand::Attachment::Attachment( ashes::ImageSubresourceLayers & subresource
-		, Image const & image
+	BlitImageCommand::Attachment::Attachment( VkDevice device
+		, VkImageSubresourceLayers & subresource
+		, VkImage image
 		, uint32_t layer )
-		: object{ image.getInternal() }
-		, point{ getAttachmentPoint( image.getFormat() ) }
-		, type{ getAttachmentType( image.getFormat() ) }
+		: object{ get( image )->getInternal() }
+		, point{ getAttachmentPoint( get( image )->getFormat() ) }
+		, type{ getAttachmentType( get( image )->getFormat() ) }
 	{
-		if ( image.getLayerCount() > 1u )
+		if ( get( image )->getArrayLayers() > 1u )
 		{
-			view = image.createView( 
-			{
-				ashes::ImageViewType( image.getType() ),
-				image.getFormat(),
-				VkComponentMapping{},
+			VkImageView view;
+			allocate( view
+				, nullptr
+				, device
+				, VkImageViewCreateInfo
 				{
-					subresource.aspectMask,
-					subresource.mipLevel,
-					1u,
-					layer,
-					1u
-				}
-			} );
-			object = static_cast< ImageView const & >( *view ).getInternal();
+					VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+					nullptr,
+					0u,
+					image,
+					VkImageViewType( get( image )->getType() ),
+					get( image )->getFormat(),
+					VkComponentMapping{},
+					{
+						subresource.aspectMask,
+						subresource.mipLevel,
+						1u,
+						layer,
+						1u
+					},
+				} );
+			object = get( view )->getInternal();
 			subresource.mipLevel = 0u;
 		}
 	}
 
-	BlitImageCommand::LayerCopy::LayerCopy( ashes::ImageBlit blitRegion
-		, Image const & srcImage
-		, Image const & dstImage
+	BlitImageCommand::LayerCopy::LayerCopy( VkDevice device
+		, VkImageBlit blitRegion
+		, VkImage srcImage
+		, VkImage dstImage
 		, uint32_t layer )
 		: region{ blitRegion }
-		, src{ region.srcSubresource, srcImage, layer }
-		, dst{ region.dstSubresource, dstImage, layer }
+		, src{ device, region.srcSubresource, srcImage, layer }
+		, dst{ device, region.dstSubresource, dstImage, layer }
 	{
 	}
 
-	BlitImageCommand::BlitImageCommand( Device const & device
-		, ashes::Image const & srcImage
-		, ashes::Image const & dstImage
-		, std::vector< ashes::ImageBlit > const & regions
-		, ashes::Filter filter )
+	BlitImageCommand::BlitImageCommand( VkDevice device
+		, VkImage srcImage
+		, VkImage dstImage
+		, VkImageBlit region
+		, VkFilter filter )
 		: CommandBase{ device }
-		, m_srcTexture{ static_cast< Image const & >( srcImage ) }
-		, m_dstTexture{ static_cast< Image const & >( dstImage ) }
-		, m_srcFbo{ device.getBlitSrcFbo() }
-		, m_dstFbo{ device.getBlitDstFbo() }
+		, m_srcTexture{ srcImage }
+		, m_dstTexture{ dstImage }
+		, m_srcFbo{ get( device )->getBlitSrcFbo() }
+		, m_dstFbo{ get( device )->getBlitDstFbo() }
 		, m_filter{ convert( filter ) }
-		, m_mask{ getMask( m_srcTexture.getFormat() ) }
+		, m_mask{ getMask( get( m_srcTexture )->getFormat() ) }
 	{
-		assert( srcImage.getLayerCount() == dstImage.getLayerCount() );
+		assert( get( m_srcTexture )->getArrayLayers() == get( m_dstTexture )->getArrayLayers() );
 
-		for ( auto & region : regions )
+		for ( uint32_t layer = 0u; layer < get( m_srcTexture )->getArrayLayers(); ++layer )
 		{
-			for ( uint32_t layer = 0u; layer < srcImage.getLayerCount(); ++layer )
-			{
-				m_layerCopies.emplace_back( std::make_shared< BlitImageCommand::LayerCopy >( region
-					, m_srcTexture
-					, m_dstTexture
-					, layer ) );
-			}
+			m_layerCopies.emplace_back( std::make_shared< BlitImageCommand::LayerCopy >( device
+				, region
+				, m_srcTexture
+				, m_dstTexture
+				, layer ) );
 		}
 	}
 
@@ -150,7 +158,7 @@ namespace gl_renderer
 
 	void BlitImageCommand::apply( ContextLock const & context )const
 	{
-		auto fbo = m_device.getCurrentDepthStencilState();
+		auto fbo = get( m_device )->getCurrentDepthStencilState();
 		for ( auto & playerCopy : m_layerCopies )
 		{
 			auto & layerCopy = *playerCopy;
@@ -191,20 +199,20 @@ namespace gl_renderer
 				, m_dstFbo );
 			glLogCall( context
 				, glBlitFramebuffer
-				, layerCopy.region.srcOffset.x
-				, layerCopy.region.srcOffset.y
-				, layerCopy.region.srcExtent.width
-				, layerCopy.region.srcExtent.height
-				, layerCopy.region.dstOffset.x
-				, layerCopy.region.dstOffset.y
-				, layerCopy.region.dstExtent.width
-				, layerCopy.region.dstExtent.height
+				, layerCopy.region.srcOffsets[0].x
+				, layerCopy.region.srcOffsets[0].y
+				, layerCopy.region.srcOffsets[1].x
+				, layerCopy.region.srcOffsets[1].y
+				, layerCopy.region.dstOffsets[0].x
+				, layerCopy.region.dstOffsets[0].y
+				, layerCopy.region.dstOffsets[1].x
+				, layerCopy.region.dstOffsets[1].y
 				, m_mask
 				, m_filter );
 			glLogCall( context
 				, glBindFramebuffer
 				, GL_DRAW_FRAMEBUFFER
-				, m_device.getCurrentFramebuffer() );
+				, get( m_device )->getCurrentFramebuffer() );
 			glLogCall( context
 				, glBindFramebuffer
 				, GL_READ_FRAMEBUFFER

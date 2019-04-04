@@ -6,9 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Core/PhysicalDevice.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\~french
@@ -33,43 +31,47 @@ namespace gl_renderer
 		*\param[in] renderer
 		*	The rendering instance.
 		*/
-		PhysicalDevice( Instance const & instance );
+		PhysicalDevice( VkInstance instance );
+		inline VkBool32 getPresentationSupport( uint32_t queueFamilyIndex )const
+		{
+			return true;
+		}
 		/**
-		*\copydoc	ashes::Instance::enumerateLayerProperties
+		*\copydoc	Instance::enumerateLayerProperties
 		*/
 		std::vector< VkLayerProperties > enumerateLayerProperties()const;
 		/**
-		*\copydoc	ashes::Instance::enumerateExtensionProperties
+		*\copydoc	Instance::enumerateExtensionProperties
 		*/
 		std::vector< VkExtensionProperties > enumerateExtensionProperties( std::string const & layerName )const;
 		/**
-		*\copydoc	ashes::Instance::getProperties
+		*\copydoc	Instance::getProperties
 		*/
 		VkPhysicalDeviceProperties getProperties()const;
 		/**
-		*\copydoc	ashes::Instance::getMemoryProperties
+		*\copydoc	Instance::getMemoryProperties
 		*/
 		VkPhysicalDeviceMemoryProperties getMemoryProperties()const;
 		/**
-		*\copydoc	ashes::Instance::getFeatures
+		*\copydoc	Instance::getFeatures
 		*/
 		VkPhysicalDeviceFeatures getFeatures()const;
 		/**
-		*\copydoc	ashes::Instance::getQueueFamilyProperties
+		*\copydoc	Instance::getQueueFamilyProperties
 		*/
 		std::vector< VkQueueFamilyProperties > getQueueFamilyProperties()const;
 		/**
-		*\copydoc	ashes::Instance::getFormatProperties
+		*\copydoc	Instance::getFormatProperties
 		*/
 		VkFormatProperties getFormatProperties( VkFormat fmt )const;
 
 		bool find( std::string const & name )const;
-		bool findAny( ashes::StringArray const & names )const;
-		bool findAll( ashes::StringArray const & names )const;
+		bool findAny( StringArray const & names )const;
+		bool findAll( StringArray const & names )const;
 		int getMajor()const;
 		int getMinor()const;
 
-		inline Instance const & getInstance()const
+		inline VkInstance getInstance()const
 		{
 			return m_instance;
 		}
@@ -103,7 +105,7 @@ namespace gl_renderer
 		void doGetValuesI( GLenum name, float( &value )[3] )const;
 
 	private:
-		Instance const & m_instance;
+		VkInstance m_instance;
 		VkPhysicalDeviceFeatures m_features{};
 		VkPhysicalDeviceProperties m_properties{};
 		std::vector< VkQueueFamilyProperties > m_queueProperties{};

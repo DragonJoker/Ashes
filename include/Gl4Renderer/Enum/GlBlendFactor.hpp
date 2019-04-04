@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/BlendFactor.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlBlendFactor
 		: GLenum
@@ -34,11 +32,11 @@ namespace gl_renderer
 	std::string getName( GlBlendFactor value );
 	/**
 	*\brief
-	*	Convertit un ashes::BlendFactor en GlBlendFactor.
+	*	Convertit un VkBlendFactor en GlBlendFactor.
 	*\param[in] value
-	*	Le ashes::BlendFactor.
+	*	Le VkBlendFactor.
 	*\return
 	*	Le GlBlendFactor.
 	*/
-	GlBlendFactor convert( ashes::BlendFactor const & value );
+	GlBlendFactor convert( VkBlendFactor const & value );
 }

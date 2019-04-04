@@ -6,21 +6,21 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class DispatchIndirectCommand
 		: public CommandBase
 	{
 	public:
-		DispatchIndirectCommand( Device const & device
-			, ashes::BufferBase const & buffer
-			, uint32_t offset );
+		DispatchIndirectCommand( VkDevice device
+			, VkBuffer buffer
+			, VkDeviceSize offset );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		Buffer const & m_buffer;
-		uint32_t m_offset;
+		VkBuffer m_buffer;
+		VkDeviceSize m_offset;
 	};
 }

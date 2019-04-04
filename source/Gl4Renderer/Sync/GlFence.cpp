@@ -6,7 +6,9 @@ See LICENSE file in root folder.
 
 #include "Core/GlDevice.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
 	enum GlFenceWaitResult
 	{
@@ -15,11 +17,11 @@ namespace gl_renderer
 		GL_WAIT_RESULT_TIMEOUT_EXPIRED = 0x911B,
 	};
 
-	Fence::Fence( Device const & device
+	Fence::Fence( VkDevice device
 		, VkFenceCreateFlags flags )
 		: m_device{ device }
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		m_fence = glLogCall( context
 			, glFenceSync
 			, GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE
@@ -28,7 +30,7 @@ namespace gl_renderer
 
 	Fence::~Fence()
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteSync
 			, m_fence );
@@ -36,7 +38,7 @@ namespace gl_renderer
 
 	VkResult Fence::wait( uint64_t timeout )const
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glFlush );
 		auto res = glLogCall( context
@@ -45,15 +47,15 @@ namespace gl_renderer
 			, GL_WAIT_FLAG_SYNC_FLUSH_COMMANDS_BIT
 			, timeout );
 		return ( res == GL_WAIT_RESULT_ALREADY_SIGNALED || res == GL_WAIT_RESULT_CONDITION_SATISFIED )
-			? ashes::WaitResult::eSuccess
+			? VK_SUCCESS
 			: ( res == GL_WAIT_RESULT_TIMEOUT_EXPIRED
-				? ashes::WaitResult::eTimeOut
-				: ashes::WaitResult::eError );
+				? VK_TIMEOUT
+				: VK_NOT_READY );
 	}
 
 	void Fence::reset()const
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteSync
 			, m_fence );

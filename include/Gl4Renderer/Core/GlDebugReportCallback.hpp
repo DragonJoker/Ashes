@@ -6,9 +6,7 @@ See LICENSE file in root folder.
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Ashes/Core/DebugReportCallback.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\~english
@@ -18,8 +16,7 @@ namespace gl_renderer
 	*\brief
 	*	Classe de callback de rapport de debug.
 	*/
-	class DebugReportCallback
-		: public ashes::DebugReportCallback
+	class DebugReportCallbackEXT
 	{
 	public:
 		/**
@@ -30,8 +27,8 @@ namespace gl_renderer
 		*\brief
 		*	Constructeur.
 		*/
-		DebugReportCallback( Instance const & instance
-			, ashes::DebugReportCallbackCreateInfo createInfo );
+		DebugReportCallbackEXT( VkInstance instance
+			, VkDebugReportCallbackCreateInfoEXT createInfo );
 		/**
 		*\~french
 		*\brief
@@ -40,8 +37,15 @@ namespace gl_renderer
 		*\brief
 		*	Destructeur.
 		*/
-		~DebugReportCallback();
+		~DebugReportCallbackEXT();
 
+		void report( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage );
 		void report( GlDebugSource source
 			, GlDebugType type
 			, uint32_t id
@@ -55,6 +59,7 @@ namespace gl_renderer
 			, const char * const message );
 
 	private:
-		Instance const & m_instance;
+		VkInstance m_instance;
+		VkDebugReportCallbackCreateInfoEXT m_createInfo;
 	};
 }

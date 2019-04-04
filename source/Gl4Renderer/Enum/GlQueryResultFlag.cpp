@@ -1,6 +1,6 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlQueryResultFlag value )
 	{
@@ -9,10 +9,10 @@ namespace gl_renderer
 		case 0u:
 			return "0";
 
-		case gl_renderer::GL_QUERY_RESULT:
+		case GL_QUERY_RESULT:
 			return "GL_QUERY_RESULT";
 
-		case gl_renderer::GL_QUERY_RESULT_NO_WAIT:
+		case GL_QUERY_RESULT_NO_WAIT:
 			return "GL_QUERY_RESULT_NO_WAIT";
 
 		default:
@@ -25,12 +25,12 @@ namespace gl_renderer
 	{
 		GlQueryResultFlags result{ 0 };
 
-		if ( checkFlag( flags, ashes::QueryResultFlag::eWait ) )
+		if ( checkFlag( flags, VK_QUERY_RESULT_WAIT_BIT ) )
 		{
 			return GL_QUERY_RESULT;
 		}
 
-		if ( checkFlag( flags, ashes::QueryResultFlag::eWithAvailability ) )
+		if ( checkFlag( flags, VK_QUERY_RESULT_WITH_AVAILABILITY_BIT ) )
 		{
 			return GL_QUERY_RESULT_NO_WAIT;
 		}

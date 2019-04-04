@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/MemoryMapFlag.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlMemoryMapFlag
 		: GLuint
@@ -24,11 +22,11 @@ namespace gl_renderer
 	std::string getName( GlMemoryMapFlags value );
 	/**
 	*\brief
-	*	Convertit un ashes::MemoryMapFlags en GlMemoryMapFlags.
+	*	Convertit un VkMemoryMapFlags en GlMemoryMapFlags.
 	*\param[in] format
-	*	Le ashes::MemoryMapFlags.
+	*	Le VkMemoryMapFlags.
 	*\return
 	*	Le GlMemoryMapFlags.
 	*/
-	GlMemoryMapFlags convert( ashes::MemoryMapFlags const & flags );
+	GlMemoryMapFlags convertMemoryMapFlags( VkMemoryPropertyFlags flags );
 }

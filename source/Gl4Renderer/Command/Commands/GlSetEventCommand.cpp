@@ -6,11 +6,13 @@ See LICENSE file in root folder.
 
 #include "Sync/GlEvent.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
-	SetEventCommand::SetEventCommand( Device const & device
-		, ashes::Event const & event
-		, ashes::PipelineStageFlags stageFlags )
+	SetEventCommand::SetEventCommand( VkDevice device
+		, VkEvent event
+		, VkPipelineStageFlags stageFlags )
 		: CommandBase{ device }
 		, m_event{ event }
 	{
@@ -19,7 +21,7 @@ namespace gl_renderer
 	void SetEventCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "SetEventCommand" );
-		m_event.reset();
+		get( m_event )->reset();
 	}
 
 	CommandPtr SetEventCommand::clone()const

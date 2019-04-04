@@ -6,31 +6,11 @@ See LICENSE file in root folder.
 #define ___Ashes_C_H___
 #pragma once
 
-#include "AshesC/ash_platform.h"
+#include "ashes/ash_platform.h"
 
-#if ASHES_ANDROID
-#	define VK_USE_PLATFORM_ANDROID_KHR 1
-#elif ASHES_IOS
-#	define VK_USE_PLATFORM_IOS_MVK 1
-#elif ASHES_MACOS
-#	define VK_USE_PLATFORM_MACOS_MVK 1
-#elif ASHES_MIR
-#	define VK_USE_PLATFORM_MIR_KHR 1
-#elif ASHES_VI
-#	define VK_USE_PLATFORM_VI_NN 1
-#elif ASHES_WAYLAND
-#	define VK_USE_PLATFORM_WAYLAND_KHR 1
-#elif ASHES_WIN32
-#	define VK_USE_PLATFORM_WIN32_KHR 1
-#elif ASHES_XCB
-#	define VK_USE_PLATFORM_XCB_KHR 1
-#elif ASHES_XLIB
-#	define VK_USE_PLATFORM_XLIB_KHR 1
-#elif ASHES_XLIB_XRANDR
-#	define VK_USE_PLATFORM_XLIB_XRANDR_EXT 1
+#ifndef ASHES_VK_PROTOTYPES
+#	define VK_NO_PROTOTYPES
 #endif
-
-#define VK_NO_PROTOTYPES
 #include <vulkan/vulkan.h>
 
 #if ASHES_WIN32
@@ -50,11 +30,23 @@ extern "C"
 	Ashes_API PFN_vkVoidFunction vkGetInstanceProcAddr( VkInstance instance
 		, const char * name );
 
+	typedef struct AshPluginFeatures
+	{
+		VkBool32 hasTexBufferRange;
+		VkBool32 hasImageTexture;
+		VkBool32 hasBaseInstance;
+		VkBool32 hasClearTexImage;
+		VkBool32 hasComputeShaders;
+		VkBool32 hasStorageBuffers;
+		VkBool32 supportsPersistentMapping;
+	} AshPluginFeatures;
+
 	typedef struct AshPluginDescription
 	{
 		char name[16];
 		char description[64];
 		PFN_vkGetInstanceProcAddr getInstanceProcAddr;
+		AshPluginFeatures features;
 	} AshPluginDescription;
 
 	typedef void( VKAPI_PTR * PFN_ashGetPluginsDescriptions )( uint32_t *, AshPluginDescription * );

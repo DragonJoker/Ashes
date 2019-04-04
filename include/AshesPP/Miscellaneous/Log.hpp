@@ -7,7 +7,7 @@ See LICENSE file in root folder
 #include <functional>
 #include <string>
 
-namespace ashespp
+namespace ashes
 {
 	class Logger
 	{

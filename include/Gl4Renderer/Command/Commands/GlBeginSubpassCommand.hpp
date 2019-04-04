@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -28,17 +28,17 @@ namespace gl_renderer
 		*\param[in] contents
 		*	Indique la manière dont les commandes de la première sous-passe sont fournies.
 		*/
-		BeginSubpassCommand( Device const & device
-			, RenderPass const & renderPass
-			, ashes::FrameBuffer const & frameBuffer
-			, ashes::SubpassDescription const & subpass );
+		BeginSubpassCommand( VkDevice device
+			, VkRenderPass renderPass
+			, VkFramebuffer frameBuffer
+			, VkSubpassDescription subpass );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		RenderPass const & m_renderPass;
-		ashes::SubpassDescription const & m_subpass;
-		FrameBuffer const & m_frameBuffer;
+		VkRenderPass m_renderPass;
+		VkSubpassDescription m_subpass;
+		VkFramebuffer m_frameBuffer;
 	};
 }

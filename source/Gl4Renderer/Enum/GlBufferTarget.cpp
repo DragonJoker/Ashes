@@ -1,53 +1,48 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlBufferTarget value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_BUFFER_TARGET_ARRAY:
+		case GL_BUFFER_TARGET_ARRAY:
 			return "GL_ARRAY_BUFFER";
 
-		case gl_renderer::GL_BUFFER_TARGET_ELEMENT_ARRAY:
+		case GL_BUFFER_TARGET_ELEMENT_ARRAY:
 			return "GL_ELEMENT_ARRAY_BUFFER";
 
-		case gl_renderer::GL_BUFFER_TARGET_PIXEL_PACK:
+		case GL_BUFFER_TARGET_PIXEL_PACK:
 			return "GL_PIXEL_PACK_BUFFER";
 
-		case gl_renderer::GL_BUFFER_TARGET_PIXEL_UNPACK:
+		case GL_BUFFER_TARGET_PIXEL_UNPACK:
 			return "GL_PIXEL_UNPACK_BUFFER";
 
-		case gl_renderer::GL_BUFFER_TARGET_UNIFORM:
+		case GL_BUFFER_TARGET_UNIFORM:
 			return "GL_UNIFORM_BUFFER";
 
-		case gl_renderer::GL_BUFFER_TARGET_TEXTURE:
+		case GL_BUFFER_TARGET_TEXTURE:
 			return "GL_TEXTURE_BUFFER";
 
-		case gl_renderer::GL_BUFFER_TARGET_COPY_READ:
+		case GL_BUFFER_TARGET_COPY_READ:
 			return "GL_COPY_READ_BUFFER";
 
-		case gl_renderer::GL_BUFFER_TARGET_COPY_WRITE:
+		case GL_BUFFER_TARGET_COPY_WRITE:
 			return "GL_COPY_WRITE_BUFFER";
 
-		case gl_renderer::GL_BUFFER_TARGET_DRAW_INDIRECT:
+		case GL_BUFFER_TARGET_DRAW_INDIRECT:
 			return "GL_DRAW_INDIRECT_BUFFER";
 
-		case gl_renderer::GL_BUFFER_TARGET_SHADER_STORAGE:
+		case GL_BUFFER_TARGET_SHADER_STORAGE:
 			return "GL_SHADER_STORAGE_BUFFER";
 
-		case gl_renderer::GL_BUFFER_TARGET_DISPATCH_INDIRECT:
+		case GL_BUFFER_TARGET_DISPATCH_INDIRECT:
 			return "GL_DISPATCH_INDIRECT_BUFFER";
 
 		default:
 			assert( false && "Unsupported GlBufferTarget" );
 			return "GlBufferTarget_UNKNOWN";
 		}
-	}
-
-	uint32_t checkFlag( uint32_t a, uint32_t b )
-	{
-		return ( a & b ) == b;
 	}
 
 	GlBufferTarget getTargetFromUsageFlags( VkBufferUsageFlags targets )

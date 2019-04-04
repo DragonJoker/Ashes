@@ -14,6 +14,7 @@ See LICENSE file in root folder.
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
+#include <sstream>
 
 #ifdef max
 #	undef max
@@ -22,7 +23,7 @@ See LICENSE file in root folder.
 #	undef min
 #endif
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	namespace
 	{
@@ -131,7 +132,7 @@ namespace gl_renderer
 			, name );
 	}
 
-	bool ExtensionsHandler::findAny( ashes::StringArray const & names )const
+	bool ExtensionsHandler::findAny( StringArray const & names )const
 	{
 		return names.end() != std::find_if( names.begin()
 			, names.end()
@@ -141,7 +142,7 @@ namespace gl_renderer
 			} );
 	}
 
-	bool ExtensionsHandler::findAll( ashes::StringArray const & names )const
+	bool ExtensionsHandler::findAll( StringArray const & names )const
 	{
 		return names.end() == std::find_if( names.begin()
 			, names.end()

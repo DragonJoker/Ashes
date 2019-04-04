@@ -4,9 +4,9 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlSetLineWidthCommand.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	SetLineWidthCommand::SetLineWidthCommand( Device const & device
+	SetLineWidthCommand::SetLineWidthCommand( VkDevice device
 		, float width )
 		: CommandBase{ device }
 		, m_width{ width }

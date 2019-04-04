@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/CompareOp.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlCompareOp
 		: GLenum
@@ -23,11 +21,11 @@ namespace gl_renderer
 	std::string getName( GlCompareOp value );
 	/**
 	*\brief
-	*	Convertit un ashes::CompareOp en GlCompareOp.
+	*	Convertit un VkCompareOp en GlCompareOp.
 	*\param[in] value
-	*	Le ashes::CompareOp.
+	*	Le VkCompareOp.
 	*\return
 	*	Le GlCompareOp.
 	*/
-	GlCompareOp convert( ashes::CompareOp const & value );
+	GlCompareOp convert( VkCompareOp const & value );
 }

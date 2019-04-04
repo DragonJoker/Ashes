@@ -4,13 +4,13 @@ See LICENSE file in root folder.
 */
 #include "AshesPP/AshesPPPrerequisites.hpp"
 
-#include <Ashes/Core/Exception.hpp>
+#include <AshesRenderer/Util/Exception.hpp>
 
 #include <map>
 #include <atomic>
 #include <thread>
 
-namespace ashespp
+namespace ashes
 {
 	void checkError( VkResult errCode
 		, char const * const text )
@@ -19,7 +19,7 @@ namespace ashespp
 
 		if ( !result )
 		{
-			throw ashes::Exception{ ashes::Result( errCode ), text };
+			throw Exception{ errCode, text };
 		}
 	}
 }

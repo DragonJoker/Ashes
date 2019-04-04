@@ -13,7 +13,7 @@ See LICENSE file in root folder
 #include <map>
 #include <mutex>
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\brief

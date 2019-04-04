@@ -4,9 +4,9 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	CommandBase::CommandBase( Device const & device )
+	CommandBase::CommandBase( VkDevice device )
 		: m_device{ device }
 	{
 	}

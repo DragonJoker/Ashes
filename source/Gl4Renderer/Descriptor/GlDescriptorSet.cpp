@@ -5,18 +5,19 @@
 #include "Image/GlSampler.hpp"
 #include "Image/GlImage.hpp"
 
-#include <Ashes/Buffer/UniformBuffer.hpp>
-#include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
-
 #include <algorithm>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	DescriptorSet::DescriptorSet( ashes::DescriptorPool const & pool
-		, ashes::DescriptorSetLayout const & layout
-		, uint32_t bindingPoint )
-		: ashes::DescriptorSet{ pool, bindingPoint }
+	void DescriptorSet::update( VkWriteDescriptorSet const & write )const
 	{
+		m_writes[write.dstBinding] = write;
+	}
+
+	void DescriptorSet::update( VkCopyDescriptorSet const & copy )const
+	{
+		m_writes[copy.dstBinding].dstBinding = copy.srcBinding;
+		m_writes[copy.dstBinding].dstArrayElement = copy.srcArrayElement;
 	}
 
 	void DescriptorSet::update()const
@@ -36,47 +37,47 @@ namespace gl_renderer
 		{
 			switch ( write.descriptorType )
 			{
-			case ashes::DescriptorType::eSampler:
+			case VK_DESCRIPTOR_TYPE_SAMPLER:
 				m_samplers.push_back( write );
 				break;
-			case ashes::DescriptorType::eCombinedImageSampler:
+			case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
 				m_combinedTextureSamplers.push_back( write );
 				break;
-			case ashes::DescriptorType::eSampledImage:
+			case VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
 				m_sampledTextures.push_back( write );
 				break;
-			case ashes::DescriptorType::eStorageImage:
+			case VK_DESCRIPTOR_TYPE_STORAGE_IMAGE:
 				m_storageTextures.push_back( write );
 				break;
-			case ashes::DescriptorType::eUniformTexelBuffer:
+			case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
 				m_texelBuffers.push_back( write );
 				break;
-			case ashes::DescriptorType::eStorageTexelBuffer:
+			case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
 				m_texelBuffers.push_back( write );
 				break;
-			case ashes::DescriptorType::eUniformBuffer:
+			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
 				m_uniformBuffers.push_back( write );
 				break;
-			case ashes::DescriptorType::eStorageBuffer:
+			case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:
 				m_storageBuffers.push_back( write );
 				break;
-			case ashes::DescriptorType::eUniformBufferDynamic:
+			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
 				m_dynamicUniformBuffers.push_back( write );
 				m_dynamicBuffers.push_back( write );
 				break;
-			case ashes::DescriptorType::eStorageBufferDynamic:
+			case VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
 				m_dynamicStorageBuffers.push_back( write );
 				m_dynamicBuffers.push_back( write );
 				break;
-			case ashes::DescriptorType::eInputAttachment:
+			case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
 				break;
 			}
 		}
 
 		std::sort( m_dynamicBuffers.begin()
 			, m_dynamicBuffers.end()
-			, []( ashes::WriteDescriptorSet const & lhs
-				, ashes::WriteDescriptorSet const & rhs )
+			, []( VkWriteDescriptorSet const & lhs
+				, VkWriteDescriptorSet const & rhs )
 		{
 			return lhs.dstBinding < rhs.dstBinding;
 		} );

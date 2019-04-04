@@ -4,9 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/Enum/PrimitiveTopology.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlPrimitiveTopology
 		: GLenum
@@ -27,11 +25,11 @@ namespace gl_renderer
 	std::string getName( GlPrimitiveTopology value );
 	/**
 	*\brief
-	*	Convertit un ashes::PrimitiveTopology en GlPrimitiveTopolgy.
+	*	Convertit un VkPrimitiveTopology en GlPrimitiveTopolgy.
 	*\param[in] format
-	*	Le ashes::PrimitiveTopology.
+	*	Le VkPrimitiveTopology.
 	*\return
 	*	Le GlPrimitiveTopolgy.
 	*/
-	GlPrimitiveTopology convert( ashes::PrimitiveTopology const & topology );
+	GlPrimitiveTopology convert( VkPrimitiveTopology const & topology );
 }

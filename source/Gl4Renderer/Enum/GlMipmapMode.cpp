@@ -1,15 +1,15 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	GLenum convert( ashes::MipmapMode const & mode )
+	GLenum convert( VkSamplerMipmapMode const & mode )
 	{
 		switch ( mode )
 		{
-		case ashes::MipmapMode::eNearest:
+		case VK_SAMPLER_MIPMAP_MODE_NEAREST:
 			return GL_FILTER_NEAREST_MIPMAP_NEAREST;
 
-		case ashes::MipmapMode::eLinear:
+		case VK_SAMPLER_MIPMAP_MODE_LINEAR:
 			return GL_FILTER_LINEAR_MIPMAP_LINEAR;
 
 		default:

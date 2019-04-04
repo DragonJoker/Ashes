@@ -15,7 +15,7 @@ See LICENSE file in root folder.
 #include <sstream>
 #include <unordered_map>
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\~english
@@ -804,8 +804,8 @@ namespace ashespp
 			return m_internal;
 		}
 
-#define VK_LIB_DEVICE_FUNCTION( fun ) PFN_##fun fun;
-#	include "AshesPP/Miscellaneous/VulkanFunctionsList.inl"
+#define VK_LIB_DEVICE_FUNCTION( fun ) PFN_vk##fun vk##fun;
+#	include <AshesRenderer/Util/VulkanFunctionsList.inl>
 
 	protected:
 		Instance const & m_instance;

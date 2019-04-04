@@ -5,19 +5,17 @@ See LICENSE file in root folder
 #pragma once
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
+#include "Gl4Renderer/Command/GlCommandPool.hpp"
 
 #include "Gl4Renderer/Shader/GlShaderDesc.hpp"
 
-#include <Ashes/Command/CommandBuffer.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
 	*	Emulation d'un command buffer, à la manière de Vulkan.
 	*/
 	class CommandBuffer
-		: public ashes::CommandBuffer
 	{
 	public:
 		/**
@@ -30,238 +28,240 @@ namespace gl_renderer
 		*\param[in] primary
 		*	Dit si le tampon est un tampon de commandes primaire (\p true) ou secondaire (\p false).
 		*/
-		CommandBuffer( Device const & device
-			, ashes::CommandPool const & pool
-			, bool primary );
+		CommandBuffer( VkDevice device
+			, VkCommandBufferLevel level );
 		void applyPostSubmitActions( ContextLock const & context )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::begin
+		*\copydoc	CommandBuffer::begin
 		*/
-		void begin( ashes::CommandBufferBeginInfo const & info )const override;
+		VkResult begin( VkCommandBufferBeginInfo info )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::end
+		*\copydoc	CommandBuffer::end
 		*/
-		void end()const override;
+		VkResult end()const;
 		/**
-		*\copydoc	ashes::CommandBuffer::reset
+		*\copydoc	CommandBuffer::reset
 		*/
-		void reset( ashes::CommandBufferResetFlags flags )const override;
+		VkResult reset( VkCommandBufferResetFlags flags )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::beginRenderPass
+		*\copydoc	CommandBuffer::beginRenderPass
 		*/
-		void beginRenderPass( ashes::RenderPassBeginInfo const & beginInfo
-			, ashes::SubpassContents contents )const override;
+		void beginRenderPass( VkRenderPassBeginInfo beginInfo
+			, VkSubpassContents contents )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::nextSubpass
+		*\copydoc	CommandBuffer::nextSubpass
 		*/
-		void nextSubpass( ashes::SubpassContents contents )const override;
+		void nextSubpass( VkSubpassContents contents )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::endRenderPass
+		*\copydoc	CommandBuffer::endRenderPass
 		*/
-		void endRenderPass()const override;
+		void endRenderPass()const;
 		/**
-		*\copydoc	ashes::CommandBuffer::executeCommands
+		*\copydoc	CommandBuffer::executeCommands
 		*/
-		void executeCommands( ashes::CommandBufferCRefArray const & commands )const override;
+		void executeCommands( VkCommandBufferArray commands )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::clear
+		*\copydoc	CommandBuffer::clear
 		*/
-		void clear( ashes::ImageView const & image
-			, ashes::ClearColorValue const & colour )const override;
+		void clearColorImage( VkImage image
+			, VkImageLayout imageLayout
+			, VkClearColorValue colour
+			, VkImageSubresourceRangeArray ranges )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::clear
+		*\copydoc	CommandBuffer::clear
 		*/
-		void clear( ashes::ImageView const & image
-			, ashes::DepthStencilClearValue const & value )const override;
+		void clearDepthStencilImage( VkImage image
+			, VkImageLayout imageLayout
+			, VkClearDepthStencilValue value
+			, VkImageSubresourceRangeArray ranges )const;
 		/**
-		*\copydoc	ashes::clearAttachments:clear
+		*\copydoc	clearAttachments:clear
 		*/
-		void clearAttachments( ashes::ClearAttachmentArray const & clearAttachments
-			, ashes::ClearRectArray const & clearRects )override;
+		void clearAttachments( VkClearAttachmentArray clearAttachments
+			, VkClearRectArray clearRects );
 		/**
-		*\copydoc	ashes::CommandBuffer::bindPipeline
+		*\copydoc	CommandBuffer::bindPipeline
 		*/
-		void bindPipeline( ashes::Pipeline const & pipeline
-			, ashes::PipelineBindPoint bindingPoint )const override;
+		void bindPipeline( VkPipeline pipeline
+			, VkPipelineBindPoint bindingPoint )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::bindPipeline
-		*/
-		void bindPipeline( ashes::ComputePipeline const & pipeline
-			, ashes::PipelineBindPoint bindingPoint )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:bindVertexBuffers
+		*\copydoc	CommandBuffer:bindVertexBuffers
 		*/
 		void bindVertexBuffers( uint32_t firstBinding
-			, ashes::BufferCRefArray const & buffers
-			, ashes::UInt64Array offsets )const override;
+			, VkBufferArray buffers
+			, VkDeviceSizeArray offsets )const;
 		/**
-		*\copydoc	ashes::CommandBuffer:bindIndexBuffer
+		*\copydoc	CommandBuffer:bindIndexBuffer
 		*/
-		void bindIndexBuffer( ashes::BufferBase const & buffer
-			, uint64_t offset
-			, ashes::IndexType indexType )const override;
+		void bindIndexBuffer( VkBuffer buffer
+			, VkDeviceSize offset
+			, VkIndexType indexType )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::bindDescriptorSet
+		*\copydoc	CommandBuffer::bindDescriptorSet
 		*/
-		void bindDescriptorSets( ashes::DescriptorSetCRefArray const & descriptorSets
-			, ashes::PipelineLayout const & layout
-			, ashes::UInt32Array const & dynamicOffsets
-			, ashes::PipelineBindPoint bindingPoint )const override;
+		void bindDescriptorSets( VkPipelineBindPoint bindingPoint
+			, VkPipelineLayout layout
+			, uint32_t firstSet
+			, VkDescriptorSetArray descriptorSets
+			, UInt32Array dynamicOffsets )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::setViewport
+		*\copydoc	CommandBuffer::setViewport
 		*/
 		void setViewport( uint32_t firstViewport
-			, ashes::ViewportArray const & viewports )const override;
+			, VkViewportArray viewports )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::setScissor
+		*\copydoc	CommandBuffer::setScissor
 		*/
 		void setScissor( uint32_t firstScissor
-			, ashes::ScissorArray const & scissors )const override;
+			, VkScissorArray scissors )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::draw
+		*\copydoc	CommandBuffer::draw
 		*/
 		void draw( uint32_t vtxCount
 			, uint32_t instCount
 			, uint32_t firstVertex
-			, uint32_t firstInstance )const override;
+			, uint32_t firstInstance )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::drawIndexed
+		*\copydoc	CommandBuffer::drawIndexed
 		*/
 		void drawIndexed( uint32_t indexCount
 			, uint32_t instCount
 			, uint32_t firstIndex
 			, uint32_t vertexOffset
-			, uint32_t firstInstance )const override;
+			, uint32_t firstInstance )const;
 		/**
-		*\copydoc	ashes::CommandBuffer:drawIndirect
+		*\copydoc	CommandBuffer:drawIndirect
 		*/
-		void drawIndirect( ashes::BufferBase const & buffer
-			, uint32_t offset
+		void drawIndirect( VkBuffer buffer
+			, VkDeviceSize offset
 			, uint32_t drawCount
-			, uint32_t stride )const override;
+			, uint32_t stride )const;
 		/**
-		*\copydoc	ashes::CommandBuffer:drawIndexedIndirect
+		*\copydoc	CommandBuffer:drawIndexedIndirect
 		*/
-		void drawIndexedIndirect( ashes::BufferBase const & buffer
-			, uint32_t offset
+		void drawIndexedIndirect( VkBuffer buffer
+			, VkDeviceSize offset
 			, uint32_t drawCount
-			, uint32_t stride )const override;
+			, uint32_t stride )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::copyToImage
+		*\copydoc	CommandBuffer::copyToImage
 		*/
-		void copyToImage( ashes::BufferImageCopyArray const & copyInfo
-			, ashes::BufferBase const & src
-			, ashes::Image const & dst )const override;
+		void copyToImage( VkBuffer src
+			, VkImage dst
+			, VkImageLayout dstLayout
+			, VkBufferImageCopyArray copyInfos )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::copyToBuffer
+		*\copydoc	CommandBuffer::copyToBuffer
 		*/
-		void copyToBuffer( ashes::BufferImageCopyArray const & copyInfo
-			, ashes::Image const & src
-			, ashes::BufferBase const & dst )const override;
+		void copyToBuffer( VkImage src
+			, VkImageLayout srcLayout
+			, VkBuffer dst
+			, VkBufferImageCopyArray copyInfos )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::copyBuffer
+		*\copydoc	CommandBuffer::copyBuffer
 		*/
-		void copyBuffer( ashes::BufferCopy const & copyInfo
-			, ashes::BufferBase const & src
-			, ashes::BufferBase const & dst )const override;
+		void copyBuffer( VkBuffer src
+			, VkBuffer dst
+			, VkBufferCopyArray copyInfos )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::copyImage
+		*\copydoc	CommandBuffer::copyImage
 		*/
-		void copyImage( ashes::ImageCopy const & copyInfo
-			, ashes::Image const & src
-			, ashes::ImageLayout srcLayout
-			, ashes::Image const & dst
-			, ashes::ImageLayout dstLayout )const override;
+		void copyImage( VkImage src
+			, VkImageLayout srcLayout
+			, VkImage dst
+			, VkImageLayout dstLayout
+			, VkImageCopyArray copyInfos )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::blitImage
+		*\copydoc	CommandBuffer::blitImage
 		*/
-		void blitImage( ashes::Image const & srcImage
-			, ashes::ImageLayout srcLayout
-			, ashes::Image const & dstImage
-			, ashes::ImageLayout dstLayout
-			, std::vector< ashes::ImageBlit > const & regions
-			, ashes::Filter filter )const override;
+		void blitImage( VkImage srcImage
+			, VkImageLayout srcLayout
+			, VkImage dstImage
+			, VkImageLayout dstLayout
+			, VkImageBlitArray regions
+			, VkFilter filter )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::resetQueryPool
+		*\copydoc	CommandBuffer::resetQueryPool
 		*/
-		void resetQueryPool( ashes::QueryPool const & pool
+		void resetQueryPool( VkQueryPool pool
 			, uint32_t firstQuery
-			, uint32_t queryCount )const override;
+			, uint32_t queryCount )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::beginQuery
+		*\copydoc	CommandBuffer::beginQuery
 		*/
-		void beginQuery( ashes::QueryPool const & pool
+		void beginQuery( VkQueryPool pool
 			, uint32_t query
-			, ashes::QueryControlFlags flags )const override;
+			, VkQueryControlFlags flags )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::endQuery
+		*\copydoc	CommandBuffer::endQuery
 		*/
-		void endQuery( ashes::QueryPool const & pool
-			, uint32_t query )const override;
+		void endQuery( VkQueryPool pool
+			, uint32_t query )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::writeTimestamp
+		*\copydoc	CommandBuffer::writeTimestamp
 		*/
-		void writeTimestamp( ashes::PipelineStageFlag pipelineStage
-			, ashes::QueryPool const & pool
-			, uint32_t query )const override;
+		void writeTimestamp( VkPipelineStageFlagBits pipelineStage
+			, VkQueryPool pool
+			, uint32_t query )const;
 		/**
-		*\copydoc	ashes::CommandBuffer:pushConstants
+		*\copydoc	CommandBuffer:pushConstants
 		*/
-		void pushConstants( ashes::PipelineLayout const & layout
-			, ashes::ShaderStageFlags stageFlags
+		void pushConstants( VkPipelineLayout layout
+			, VkShaderStageFlags stageFlags
 			, uint32_t offset
 			, uint32_t size
-			, void const * data )const override;
+			, void const * data )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::dispatch
+		*\copydoc	CommandBuffer::dispatch
 		*/
 		void dispatch( uint32_t groupCountX
 			, uint32_t groupCountY
-			, uint32_t groupCountZ )const override;
+			, uint32_t groupCountZ )const;
 		/**
-		*\copydoc	ashes::CommandBuffer:dispatchIndirect
+		*\copydoc	CommandBuffer:dispatchIndirect
 		*/
-		void dispatchIndirect( ashes::BufferBase const & buffer
-			, uint32_t offset )const override;
+		void dispatchIndirect( VkBuffer buffer
+			, VkDeviceSize offset )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::setLineWidth
+		*\copydoc	CommandBuffer::setLineWidth
 		*/
-		void setLineWidth( float width )const override;
+		void setLineWidth( float width )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::setDepthBias
+		*\copydoc	CommandBuffer::setDepthBias
 		*/
 		void setDepthBias( float constantFactor
 			, float clamp
-			, float slopeFactor )const override;
+			, float slopeFactor )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::setEvent
+		*\copydoc	CommandBuffer::setEvent
 		*/
-		void setEvent( ashes::Event const & event
-			, ashes::PipelineStageFlags stageMask )const override;
+		void setEvent( VkEvent event
+			, VkPipelineStageFlags stageMask )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::resetEvent
+		*\copydoc	CommandBuffer::resetEvent
 		*/
-		void resetEvent( ashes::Event const & event
-			, ashes::PipelineStageFlags stageMask )const override;
+		void resetEvent( VkEvent event
+			, VkPipelineStageFlags stageMask )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::waitEvents
+		*\copydoc	CommandBuffer::waitEvents
 		*/
-		void waitEvents( ashes::EventCRefArray const & events
-			, ashes::PipelineStageFlags srcStageMask
-			, ashes::PipelineStageFlags dstStageMask
-			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const override;
+		void waitEvents( VkEventArray events
+			, VkPipelineStageFlags srcStageMask
+			, VkPipelineStageFlags dstStageMask
+			, VkMemoryBarrierArray memoryBarriers
+			, VkBufferMemoryBarrierArray bufferMemoryBarriers
+			, VkImageMemoryBarrierArray imageMemoryBarriers )const;
 		/**
-		*\copydoc	ashes::CommandBuffer::pipelineBarrier
+		*\copydoc	CommandBuffer::pipelineBarrier
 		*/
-		void pipelineBarrier( ashes::PipelineStageFlags after
-			, ashes::PipelineStageFlags before
-			, ashes::DependencyFlags dependencyFlags
-			, ashes::MemoryBarrierArray const & memoryBarriers
-			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const;
+		void pipelineBarrier( VkPipelineStageFlags after
+			, VkPipelineStageFlags before
+			, VkDependencyFlags dependencyFlags
+			, VkMemoryBarrierArray memoryBarriers
+			, VkBufferMemoryBarrierArray bufferMemoryBarriers
+			, VkImageMemoryBarrierArray imageMemoryBarriers )const;
 
-		void generateMipmaps( Image const & texture );
+		void generateMipmaps( VkImage texture );
 		/**
 		*\return
 		*	Le tableau de commandes.
@@ -277,22 +277,22 @@ namespace gl_renderer
 		void doBindVao()const;
 
 	private:
-	private:
-		Device const & m_device;
+		VkDevice m_device;
+		VkCommandBufferLevel m_level;
 		mutable CommandArray m_commands;
 		struct State
 		{
-			ashes::CommandBufferUsageFlags beginFlags{ 0u };
-			Pipeline const * currentPipeline{ nullptr };
-			std::vector< std::pair < ashes::PipelineLayout const *, PushConstantsDesc > > pushConstantBuffers;
-			ComputePipeline const * currentComputePipeline{ nullptr };
+			VkCommandBufferUsageFlags beginFlags{ 0u };
+			VkPipeline currentPipeline{ nullptr };
+			std::vector< std::pair < VkPipelineLayout, PushConstantsDesc > > pushConstantBuffers;
+			VkPipeline currentComputePipeline{ nullptr };
 			uint32_t currentSubpassIndex{ 0u };
-			ashes::SubpassDescription const * currentSubpass{ nullptr };
-			RenderPass const * currentRenderPass{ nullptr };
-			ashes::FrameBuffer const * currentFrameBuffer{ nullptr };
+			VkSubpassDescription const * currentSubpass{ nullptr };
+			VkRenderPass currentRenderPass{ nullptr };
+			VkFramebuffer currentFrameBuffer{ nullptr };
 			VboBindings boundVbos;
 			IboBinding boundIbo;
-			ashes::IndexType indexType;
+			VkIndexType indexType;
 			GeometryBuffers * boundVao{ nullptr };
 			GeometryBuffersRefArray vaos;
 		};

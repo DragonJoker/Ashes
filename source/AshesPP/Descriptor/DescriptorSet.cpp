@@ -13,7 +13,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Image/ImageView.hpp"
 #include "AshesPP/Image/Sampler.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	DescriptorSet::DescriptorSet( Device const & device
 		, DescriptorPool const & pool

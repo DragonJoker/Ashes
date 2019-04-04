@@ -6,12 +6,15 @@
 #include "Core/GlPhysicalDevice.hpp"
 #include "Miscellaneous/GlDebug.hpp"
 
-#include <Ashes/Core/PlatformWindowHandle.hpp>
+#include "ashesgl4_api.hpp"
 
 #include <Windows.h>
 #include <gl/GL.h>
 
-namespace gl_renderer
+#include <iostream>
+#include <sstream>
+
+namespace ashes::gl4
 {
 	char const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME[VK_MAX_EXTENSION_NAME_SIZE] = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
 
@@ -37,15 +40,14 @@ namespace gl_renderer
 #endif
 	}
 
-	MswContext::MswContext( Instance const & instance
-		, ashes::WindowHandle const & handle
+	MswContext::MswContext( VkInstance instance
+		, VkWin32SurfaceCreateInfoKHR createInfo
 		, Context const * mainContext )
 		: Context{ instance }
-		, m_hDC( nullptr )
-		, m_hContext( nullptr )
-		, m_hWnd( handle.getInternal< ashes::IMswWindowHandle >().getHwnd() )
+		, m_hDC{ ::GetDC( createInfo.hwnd ) }
+		, m_hContext{ nullptr }
 	{
-		m_hDC = ::GetDC( m_hWnd );
+		m_createInfo = std::move( createInfo );
 
 		if ( doSelectFormat() )
 		{
@@ -75,6 +77,18 @@ namespace gl_renderer
 		}
 	}
 
+	MswContext::MswContext( VkInstance instance
+		, VkSurfaceKHR surface
+		, Context const * mainContext )
+		: MswContext
+		{
+			instance,
+			get( surface )->getContext()->m_createInfo,
+			mainContext
+		}
+	{
+	}
+
 	MswContext::~MswContext()
 	{
 		try
@@ -82,7 +96,7 @@ namespace gl_renderer
 			if ( m_hDC )
 			{
 				wglDeleteContext( m_hContext );
-				::ReleaseDC( m_hWnd, m_hDC );
+				::ReleaseDC( m_createInfo.hwnd, m_hDC );
 			}
 		}
 		catch ( ... )
@@ -119,7 +133,7 @@ namespace gl_renderer
 #define GL_LIB_FUNCTION_OPT( fun )\
 		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
 		{\
-			ashes::Logger::logError( std::string{ "Couldn't load function " } + "gl"#fun );\
+			std::cerr << "Couldn't load function " << "gl"#fun << std::endl;\
 		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 	}
@@ -136,38 +150,40 @@ namespace gl_renderer
 #	define WGL_LIB_FUNCTION_OPT( fun )\
 		if ( !( getFunction( "wgl"#fun, m_wgl##fun ) ) )\
 		{\
-			ashes::Logger::logError( std::string{ "Couldn't load function " } + "wgl"#fun );\
+			std::cerr << "Couldn't load function " << "gl"#fun << std::endl;\
 		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 	}
 
 	void MswContext::doLoadDebugFunctions()
 	{
-		if ( m_instance.getExtensions().find( KHR_debug ) )
+		auto & extensions = get( m_instance )->getExtensions();
+
+		if ( extensions.find( KHR_debug ) )
 		{
 			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
 			{
 				if ( !getFunction( "glDebugMessageCallbackKHR", glDebugMessageCallback ) )
 				{
-					ashes::Logger::logWarning( "Unable to retrieve function glDebugMessageCallback" );
+					std::cerr << "Unable to retrieve function glDebugMessageCallback" << std::endl;
 				}
 			}
 		}
-		else if ( m_instance.getExtensions().find( ARB_debug_output ) )
+		else if ( extensions.find( ARB_debug_output ) )
 		{
 			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
 			{
 				if ( !getFunction( "glDebugMessageCallbackARB", glDebugMessageCallback ) )
 				{
-					ashes::Logger::logWarning( "Unable to retrieve function glDebugMessageCallback" );
+					std::cerr << "Unable to retrieve function glDebugMessageCallback" << std::endl;
 				}
 			}
 		}
-		else if ( m_instance.getExtensions().find( AMDX_debug_output ) )
+		else if ( extensions.find( AMDX_debug_output ) )
 		{
 			if ( !getFunction( "glDebugMessageCallbackAMD", glDebugMessageCallbackAMD ) )
 			{
-				ashes::Logger::logWarning( "Unable to retrieve function glDebugMessageCallbackAMD" );
+				std::cerr << "Unable to retrieve function glDebugMessageCallbackAMD" << std::endl;
 			}
 		}
 
@@ -175,15 +191,15 @@ namespace gl_renderer
 		{
 			if ( !getFunction( "glObjectLabel", glObjectLabel ) )
 			{
-				ashes::Logger::logWarning( "Unable to retrieve function glObjectLabel" );
+				std::cerr << "Unable to retrieve function glObjectLabel" << std::endl;
 			}
 
 			if ( !getFunction( "glObjectPtrLabel", glObjectPtrLabel ) )
 			{
-				ashes::Logger::logWarning( "Unable to retrieve function glObjectPtrLabel" );
+				std::cerr << "Unable to retrieve function glObjectPtrLabel" << std::endl;
 			}
 
-			for ( auto & callback : m_instance.getDebugCallbacks() )
+			for ( auto & callback : get( m_instance )->getDebugCallbacks() )
 			{
 				glDebugMessageCallback( callback.callback, callback.userParam );
 				::glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
@@ -191,7 +207,7 @@ namespace gl_renderer
 		}
 		else if ( glDebugMessageCallbackAMD )
 		{
-			for ( auto & callback : m_instance.getDebugAMDCallbacks() )
+			for ( auto & callback : get( m_instance )->getDebugAMDCallbacks() )
 			{
 				glDebugMessageCallbackAMD( callback.callback, callback.userParam );
 				::glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
@@ -240,6 +256,7 @@ namespace gl_renderer
 	bool MswContext::doCreateGl3Context( Context const * mainContext )
 	{
 		bool result = false;
+		auto & extensions = get( m_instance )->getExtensions();
 
 		try
 		{
@@ -248,8 +265,8 @@ namespace gl_renderer
 			HGLRC hContext = m_hContext;
 			std::vector< int > attribList
 			{
-				WGL_CONTEXT_MAJOR_VERSION_ARB, m_instance.getExtensions().getMajor(),
-				WGL_CONTEXT_MINOR_VERSION_ARB, m_instance.getExtensions().getMinor(),
+				WGL_CONTEXT_MAJOR_VERSION_ARB, extensions.getMajor(),
+				WGL_CONTEXT_MINOR_VERSION_ARB, extensions.getMinor(),
 				WGL_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
 				WGL_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
 				0
@@ -271,13 +288,13 @@ namespace gl_renderer
 			if ( !result )
 			{
 				std::stringstream error;
-				error << "Failed to create an OpenGL " << m_instance.getExtensions().getMajor() << "." << m_instance.getExtensions().getMinor() << " context (0x" << std::hex << ::glGetError() << ").";
+				error << "Failed to create an OpenGL " << extensions.getMajor() << "." << extensions.getMinor() << " context (0x" << std::hex << ::glGetError() << ").";
 				throw std::runtime_error{ error.str() };
 			}
 		}
 		catch ( std::exception & exc )
 		{
-			ashes::Logger::logError( exc.what() );
+			std::cerr << exc.what() << std::endl;
 			result = false;
 		}
 		catch ( ... )

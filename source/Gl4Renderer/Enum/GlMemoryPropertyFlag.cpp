@@ -1,37 +1,37 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlMemoryPropertyFlags value )
 	{
 		std::string result;
 		std::string sep;
 
-		if ( checkFlag( value, gl_renderer::GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_READ_BIT ) )
+		if ( checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_READ_BIT ) )
 		{
 			result += sep + "GL_MAP_READ_BIT";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, gl_renderer::GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_WRITE_BIT ) )
+		if ( checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_WRITE_BIT ) )
 		{
 			result += sep + "GL_MAP_WRITE_BIT";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, gl_renderer::GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_DYNAMIC_STORAGE_BIT ) )
+		if ( checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_DYNAMIC_STORAGE_BIT ) )
 		{
 			result += sep + "GL_DYNAMIC_STORAGE_BIT";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, gl_renderer::GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_COHERENT_BIT ) )
+		if ( checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_COHERENT_BIT ) )
 		{
 			result += sep + "GL_MAP_COHERENT_BIT";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, gl_renderer::GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_PERSISTENT_BIT ) )
+		if ( checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_PERSISTENT_BIT ) )
 		{
 			result += sep + "GL_MAP_INVALIDATE_RANGE_BIT";
 		}
@@ -39,7 +39,7 @@ namespace gl_renderer
 		return result;
 	}
 
-	GlMemoryPropertyFlags convert( ashes::MemoryPropertyFlags const & flags )
+	GlMemoryPropertyFlags convertMemoryPropertyFlags( VkMemoryPropertyFlags const & flags )
 	{
 		GlMemoryPropertyFlags result{ 0 };
 

@@ -4,17 +4,15 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/Enum/MipmapMode.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
-	*	Convertit un ashes::MipmapMode en GlFilter.
+	*	Convertit un VkSamplerMipmapMode en GlFilter.
 	*\param[in] mode
-	*	Le ashes::MipmapMode.
+	*	Le VkSamplerMipmapMode.
 	*\return
 	*	Le GlFilter.
 	*/
-	GLenum convert( ashes::MipmapMode const & mode );
+	GLenum convert( VkSamplerMipmapMode const & mode );
 }

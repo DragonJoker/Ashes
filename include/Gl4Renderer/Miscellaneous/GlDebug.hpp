@@ -15,7 +15,7 @@ See LICENSE file in root folder
 #	endif
 #endif
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getErrorName( uint32_t code, uint32_t category );
 	bool glCheckError( std::string const & text );

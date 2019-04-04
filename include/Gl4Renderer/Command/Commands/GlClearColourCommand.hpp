@@ -6,9 +6,9 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/RenderPass/ClearValue.hpp>
+#include "Gl4Renderer/Enum/GlFormat.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -26,16 +26,19 @@ namespace gl_renderer
 		*\param[in] colour
 		*	La couleur de vidage.
 		*/
-		ClearColourCommand( Device const & device
-			, ashes::ImageView const & image
-			, ashes::ClearColorValue const & colour );
+		ClearColourCommand( VkDevice device
+			, VkImage image
+			, VkImageLayout imageLayout
+			, VkClearColorValue value
+			, VkImageSubresourceRangeArray ranges );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		ImageView const & m_image;
-		ashes::ClearColorValue m_colour;
+		VkImage m_image;
+		VkClearColorValue m_colour;
+		VkImageSubresourceRangeArray m_ranges;
 		GlInternal m_internal;
 		GlFormat m_format;
 		GlType m_type;

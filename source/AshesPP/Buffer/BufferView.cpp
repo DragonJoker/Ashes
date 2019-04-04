@@ -2,10 +2,11 @@
 
 #include "AshesPP/Buffer/Buffer.hpp"
 #include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Core/Exception.hpp"
 #include "AshesPP/Core/Instance.hpp"
 
-namespace ashespp
+#include <AshesRenderer/Util/Exception.hpp>
+
+namespace ashes
 {
 	BufferView::BufferView( Device const & device
 		, BufferBase const & buffer

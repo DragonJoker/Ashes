@@ -24,7 +24,7 @@ See LICENSE file in root folder.
 
 #include <cstddef>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 #define makeGlExtension( x )\
 	static const std::string x = "GL_"#x

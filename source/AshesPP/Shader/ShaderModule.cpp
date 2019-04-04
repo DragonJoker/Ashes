@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/Core/Device.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	ShaderModule::ShaderModule( Device const & device
 		, VkShaderStageFlagBits stage )

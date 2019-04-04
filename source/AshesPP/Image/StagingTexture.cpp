@@ -5,11 +5,12 @@ See LICENSE file in root folder.
 #include "AshesPP/Image/StagingTexture.hpp"
 
 #include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Core/Exception.hpp"
 #include "AshesPP/Image/Image.hpp"
 #include "AshesPP/Image/ImageView.hpp"
 
-namespace ashespp
+#include <AshesRenderer/Util/Exception.hpp>
+
+namespace ashes
 {
 	StagingTexture::StagingTexture( Device const & device
 		, VkFormat format

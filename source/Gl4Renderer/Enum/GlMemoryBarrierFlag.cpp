@@ -1,6 +1,6 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlMemoryBarrierFlags value )
 	{
@@ -99,88 +99,88 @@ namespace gl_renderer
 		return result;
 	}
 
-	GlMemoryBarrierFlags convert( ashes::PipelineStageFlags const & flags )
+	GlMemoryBarrierFlags getMemoryBarrierFlags( VkPipelineStageFlags const & flags )
 	{
 		GlMemoryBarrierFlags result{ 0 };
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eTopOfPipe ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) )
 		{
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eDrawIndirect ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT ) )
 		{
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eVertexInput ) )
-		{
-			result |= GL_MEMORY_BARRIER_VERTEX_ATTRIB_ARRAY;
-			result |= GL_MEMORY_BARRIER_ELEMENT_ARRAY;
-			result |= GL_MEMORY_BARRIER_UNIFORM;
-		}
-
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eVertexShader ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT ) )
 		{
 			result |= GL_MEMORY_BARRIER_VERTEX_ATTRIB_ARRAY;
 			result |= GL_MEMORY_BARRIER_ELEMENT_ARRAY;
 			result |= GL_MEMORY_BARRIER_UNIFORM;
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eTessellationControlShader ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT ) )
+		{
+			result |= GL_MEMORY_BARRIER_VERTEX_ATTRIB_ARRAY;
+			result |= GL_MEMORY_BARRIER_ELEMENT_ARRAY;
+			result |= GL_MEMORY_BARRIER_UNIFORM;
+		}
+
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT ) )
 		{
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eTessellationEvaluationShader ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT ) )
 		{
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eGeometryShader ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT ) )
 		{
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eFragmentShader ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT ) )
 		{
 			result |= GL_MEMORY_BARRIER_TEXTURE_FETCH;
 			result |= GL_MEMORY_BARRIER_UNIFORM;
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eEarlyFragmentTests ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT ) )
 		{
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eLateFragmentTests ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT ) )
 		{
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eColourAttachmentOutput ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT ) )
 		{
 			result |= GL_MEMORY_BARRIER_FRAMEBUFFER;
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eComputeShader ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT ) )
 		{
 			result |= GL_MEMORY_BARRIER_UNIFORM;
 			result |= GL_MEMORY_BARRIER_SHADER_STORAGE;
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eTransfer ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_TRANSFER_BIT ) )
 		{
 			result |= GL_MEMORY_BARRIER_TEXTURE_UPDATE;
 			result |= GL_MEMORY_BARRIER_BUFFER_UPDATE;
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eBottomOfPipe ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT ) )
 		{
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eHost ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_HOST_BIT ) )
 		{
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eAllGraphics ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT ) )
 		{
 		}
 
-		if ( checkFlag( flags, ashes::PipelineStageFlag::eAllCommands ) )
+		if ( checkFlag( flags, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT ) )
 		{
 			result |= GL_MEMORY_BARRIER_COMMAND;
 		}

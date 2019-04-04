@@ -6,10 +6,9 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Miscellaneous/DeviceMemory.hpp>
-#include <Ashes/Miscellaneous/MemoryRequirements.hpp>
+#include "Gl4Renderer/Enum/GlMemoryMapFlag.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\~french
@@ -20,86 +19,71 @@ namespace gl_renderer
 	*	Class wrapping a storage allocated to a data buffer.
 	*/
 	class DeviceMemory
-		: public ashes::DeviceMemory
 	{
 	public:
 		class DeviceMemoryImpl
 		{
 		public:
-			DeviceMemoryImpl( Device const & device
+			DeviceMemoryImpl( VkDevice device
 				, VkMemoryAllocateInfo allocateInfo
 				, GLuint boundResource
-				, GLuint boundTarget );
+				, GLuint boundTarget
+				, VkDeviceSize memoryOffset );
 			virtual ~DeviceMemoryImpl() = default;
-			virtual uint8_t * lock( uint64_t offset
-				, uint64_t size
-				, ashes::MemoryMapFlags flags )const = 0;
-			virtual void flush( uint64_t offset
-				, uint64_t size )const = 0;
-			virtual void invalidate( uint64_t offset
-				, uint64_t size )const = 0;
+			virtual VkResult lock( VkDeviceSize offset
+				, VkDeviceSize size
+				, VkMemoryMapFlags flags
+				, void ** data )const = 0;
+			virtual VkResult flush( VkDeviceSize offset
+				, VkDeviceSize size )const = 0;
+			virtual VkResult invalidate( VkDeviceSize offset
+				, VkDeviceSize size )const = 0;
 			virtual void unlock()const = 0;
 
 		protected:
-			Device const & m_device;
+			VkDevice m_device;
 			VkMemoryAllocateInfo m_allocateInfo;
-			ashes::MemoryPropertyFlags m_flags;
+			VkMemoryPropertyFlags m_flags;
 			GlMemoryMapFlags m_mapFlags;
 			GLuint m_boundResource;
 			GLenum m_boundTarget;
+			VkDeviceSize m_memoryOffset;
 			declareDebugVariable( bool, m_isLocked, false );
 		};
 
 	public:
-		DeviceMemory( Device const & device
+		DeviceMemory( VkDevice device
 			, VkMemoryAllocateInfo allocateInfo );
 		~DeviceMemory();
-		void bindToBuffer( GLuint resource, GLenum target );
-		void bindToImage( Image const & texture
-			, GLenum target
-			, VkImageCreateInfo const & createInfo );
+		VkResult bindToBuffer( VkBuffer buffer
+			, VkDeviceSize memoryOffset );
+		VkResult bindToImage( VkImage texture
+			, VkDeviceSize memoryOffset );
 		/**
-		*\copydoc	ashes::DeviceMemory::lock
+		*\copydoc	DeviceMemory::lock
 		*/
-		uint8_t * lock( uint64_t offset
-			, uint64_t size
-			, ashes::MemoryMapFlags flags )const override;
+		VkResult lock( VkDeviceSize offset
+			, VkDeviceSize size
+			, VkMemoryMapFlags flags
+			, void ** data )const;
 		/**
-		*\copydoc	ashes::DeviceMemory::flush
+		*\copydoc	DeviceMemory::flush
 		*/
-		void flush( uint64_t offset
-			, uint64_t size )const override;
+		VkResult flush( VkDeviceSize offset
+			, VkDeviceSize size )const;
 		/**
-		*\copydoc	ashes::DeviceMemory::invalidate
+		*\copydoc	DeviceMemory::invalidate
 		*/
-		void invalidate( uint64_t offset
-			, uint64_t size )const override;
+		VkResult invalidate( VkDeviceSize offset
+			, VkDeviceSize size )const;
 		/**
-		*\copydoc	ashes::DeviceMemory::unlock
+		*\copydoc	DeviceMemory::unlock
 		*/
-		void unlock()const override;
+		void unlock()const;
 
 	private:
-		void doSetImage1D( uint32_t width
-			, VkImageCreateInfo const & createInfo );
-		void doSetImage2D( uint32_t width
-			, uint32_t height
-			, VkImageCreateInfo const & createInfo );
-		void doSetImage3D( uint32_t width
-			, uint32_t height
-			, uint32_t depth
-			, VkImageCreateInfo const & createInfo );
-		void doSetImage2DMS( uint32_t width
-			, uint32_t height
-			, VkImageCreateInfo const & createInfo );
-		void doSetImage3DMS( uint32_t width
-			, uint32_t height
-			, uint32_t depth
-			, VkImageCreateInfo const & createInfo );
-		void updateOneLayer( ashes::BufferImageCopy const & copyInfo )const;
-
-	private:
-		Device const & m_device;
+		VkDevice m_device;
+		VkMemoryAllocateInfo m_allocateInfo;
 		std::unique_ptr< DeviceMemoryImpl > m_impl;
 	};
 }

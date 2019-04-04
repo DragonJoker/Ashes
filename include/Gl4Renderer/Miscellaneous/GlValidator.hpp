@@ -10,7 +10,7 @@
 
 #include "Gl4Renderer/Shader/GlShaderDesc.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	InterfaceBlockLayout getInterfaceBlockLayout( ContextLock const & context
 		, GLuint program );
@@ -28,10 +28,10 @@ namespace gl_renderer
 	}
 
 	void validatePipeline( ContextLock const & context
-		, PipelineLayout const & layout
+		, VkPipelineLayout layout
 		, GLuint program
 		, VkPipelineVertexInputStateCreateInfo const & vertexInputState
-		, RenderPass const & renderPass );
+		, VkRenderPass renderPass );
 }
 
 #endif

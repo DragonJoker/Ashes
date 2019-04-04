@@ -18,7 +18,7 @@
 #include <locale>
 #include <mutex>
 
-namespace ashespp
+namespace ashes
 {
 	namespace callstack
 	{

@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\~french

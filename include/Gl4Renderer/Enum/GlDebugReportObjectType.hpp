@@ -4,9 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/Enum/DebugReportObjectType.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum class GlDebugReportObjectType
 		: GLenum
@@ -21,11 +19,11 @@ namespace gl_renderer
 	};
 	/**
 	*\brief
-	*	Convertit un ashes::DebugReportObjectType en GlDebugReportObjectType.
+	*	Convertit un VkDebugReportObjectTypeEXT en GlDebugReportObjectType.
 	*\param[in] value
-	*	Le ashes::DebugReportObjectType.
+	*	Le VkDebugReportObjectTypeEXT.
 	*\return
 	*	Le GlDebugReportObjectType.
 	*/
-	GlDebugReportObjectType convert( ashes::DebugReportObjectType const & value );
+	GlDebugReportObjectType convert( VkDebugReportObjectTypeEXT const & value );
 }

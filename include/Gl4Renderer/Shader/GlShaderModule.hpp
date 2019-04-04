@@ -6,30 +6,26 @@ See LICENSE file in root folder.
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Shader/ShaderModule.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class ShaderModule
 	{
 	public:
-		ShaderModule( Device const & device
+		ShaderModule( VkDevice device
 			, VkShaderModuleCreateInfo createInfo );
 		~ShaderModule();
-		void compile( VkShaderStageFlagBits stage
-			, ashes::ShaderStageState const & state )const;
+		void compile( VkPipelineShaderStageCreateInfo const & state )const;
 
 		inline GLuint getInternal()const
 		{
 			return m_internal;
 		}
 
-		VkShaderModuleCreateInfo createInfo;
-
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		mutable GLuint m_internal;
-		ashes::UInt32Array m_spv;
+		VkShaderModuleCreateFlags m_flags;
+		UInt32Array m_code;
 		mutable std::string m_source;
 	};
 }

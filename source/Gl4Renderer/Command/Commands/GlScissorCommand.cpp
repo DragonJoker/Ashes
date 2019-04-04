@@ -6,11 +6,13 @@ See LICENSE file in root folder.
 
 #include "Core/GlDevice.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
-	ScissorCommand::ScissorCommand( Device const & device
+	ScissorCommand::ScissorCommand( VkDevice device
 		, uint32_t firstScissor
-		, ashes::ScissorArray const & scissors )
+		, VkScissorArray scissors )
 		: CommandBase{ device }
 		, m_scissors{ scissors.begin() + firstScissor, scissors.end() }
 	{
@@ -18,7 +20,7 @@ namespace gl_renderer
 
 	void ScissorCommand::apply( ContextLock const & context )const
 	{
-		auto & save = m_device.getCurrentScissor();
+		auto & save = get( m_device )->getCurrentScissor();
 		auto & scissor = *m_scissors.begin();
 
 		if ( scissor != save )
@@ -28,8 +30,8 @@ namespace gl_renderer
 				, glScissor
 				, scissor.offset.x
 				, scissor.offset.y
-				, scissor.size.width
-				, scissor.size.height );
+				, scissor.extent.width
+				, scissor.extent.height );
 			save = scissor;
 		}
 	}

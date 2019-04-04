@@ -8,9 +8,6 @@ See LICENSE file in root folder.
 #include "Core/GlPhysicalDevice.hpp"
 #include "Core/GlInstance.hpp"
 
-#include <Ashes/Core/Instance.hpp>
-#include <Ashes/Pipeline/ShaderStageState.hpp>
-
 #include <iostream>
 #include <regex>
 
@@ -20,7 +17,9 @@ See LICENSE file in root folder.
 #	include "spirv_glsl.hpp"
 #endif
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
 	namespace
 	{
@@ -50,10 +49,10 @@ namespace gl_renderer
 			std::locale m_prvLoc;
 		};
 
-		std::string doRetrieveCompilerLog( Device const & device
+		std::string doRetrieveCompilerLog( VkDevice device
 			, GLuint shaderName )
 		{
-			auto context = device.getContext();
+			auto context = get( device )->getContext();
 			std::string log;
 			int infologLength = 0;
 			int charsWritten = 0;
@@ -83,7 +82,7 @@ namespace gl_renderer
 			return log;
 		}
 
-		bool doCheckCompileErrors( Device const & device
+		bool doCheckCompileErrors( VkDevice device
 			, bool compiled
 			, GLuint shaderName
 			, std::string const & source )
@@ -95,19 +94,19 @@ namespace gl_renderer
 			{
 				if ( !compiled )
 				{
-					ashes::Logger::logError( compilerLog );
-					ashes::Logger::logError( source );
+					std::cerr << compilerLog << std::endl;
+					std::cerr << source << std::endl;
 				}
 				else
 				{
-					ashes::Logger::logWarning( compilerLog );
-					ashes::Logger::logWarning( source );
+					std::cout << compilerLog << std::endl;
+					std::cout << source << std::endl;
 				}
 			}
 			else if ( !compiled )
 			{
-				ashes::Logger::logError( "Shader compilation failed" );
-				ashes::Logger::logError( source );
+				std::cerr << "Shader compilation failed" << std::endl;
+				std::cerr << source << std::endl;
 			}
 
 			return compiled;
@@ -147,8 +146,8 @@ namespace gl_renderer
 			return result;
 		}
 
-		void doFillConstant( ashes::SpecialisationInfoBase const & specialisationInfo
-			, ashes::SpecialisationMapEntry const & entry
+		void doFillConstant( VkSpecializationInfo const & specialisationInfo
+			, VkSpecializationMapEntry const & entry
 			, spirv_cross::SPIRType const & type
 			, spirv_cross::SPIRConstant & constant )
 		{
@@ -160,35 +159,37 @@ namespace gl_renderer
 				for ( auto vec = 0u; vec < type.vecsize; ++vec )
 				{
 					std::memcpy( &constant.m.c[col].r[vec]
-						, specialisationInfo.getData() + offset
+						, reinterpret_cast< uint8_t const * >( specialisationInfo.pData ) + offset
 						, size );
 					offset += size;
 				}
 			}
 		}
 
-		void doProcessSpecializationConstants( ashes::ShaderStageState const & state
+		void doProcessSpecializationConstants( VkPipelineShaderStageCreateInfo const & state
 			, spirv_cross::CompilerGLSL & compiler )
 		{
-			if ( state.specialisationInfo )
+			if ( state.pSpecializationInfo )
 			{
 				auto constants = compiler.get_specialization_constants();
 
-				for ( auto & spec : *state.specialisationInfo )
+				for ( auto itEntry = state.pSpecializationInfo->pMapEntries;
+					itEntry != state.pSpecializationInfo->pMapEntries + state.pSpecializationInfo->mapEntryCount;
+					++itEntry )
 				{
 					auto it = std::find_if( constants.begin()
 						, constants.end()
-						, [&spec]( spirv_cross::SpecializationConstant const & lookup )
+						, [itEntry]( spirv_cross::SpecializationConstant const & lookup )
 						{
-							return lookup.constant_id == spec.constantID;
+							return lookup.constant_id == itEntry->constantID;
 						} );
 
 					if ( it != constants.end() )
 					{
 						auto & constant = compiler.get_constant( it->id );
 						auto & type = compiler.get_type( constant.constant_type );
-						doFillConstant( *state.specialisationInfo
-							, spec
+						doFillConstant( *state.pSpecializationInfo
+							, *itEntry
 							, type
 							, constant );
 					}
@@ -218,11 +219,11 @@ namespace gl_renderer
 			compiler.set_entry_point( entryPoint, model );
 		}
 
-		void doSetupOptions( Device const & device
+		void doSetupOptions( VkDevice device
 			, spirv_cross::CompilerGLSL & compiler )
 		{
 			auto options = compiler.get_common_options();
-			options.version = device.getInstance().getExtensions().getShaderVersion();
+			options.version = get( get( device )->getInstance() )->getExtensions().getShaderVersion();
 			options.es = false;
 			options.separate_shader_objects = true;
 			options.enable_420pack_extension = true;
@@ -234,10 +235,10 @@ namespace gl_renderer
 
 #endif
 
-		std::string compileSpvToGlsl( Device const & device
-			, ashes::UInt32Array const & shader
+		std::string compileSpvToGlsl( VkDevice device
+			, UInt32Array const & shader
 			, VkShaderStageFlagBits stage
-			, ashes::ShaderStageState const & state )
+			, VkPipelineShaderStageCreateInfo const & state )
 		{
 			if ( shader[0] == OpCodeSPIRV )
 			{
@@ -263,11 +264,11 @@ namespace gl_renderer
 		}
 	}
 
-	ShaderModule::ShaderModule( Device const & device
+	ShaderModule::ShaderModule( VkDevice device
 		, VkShaderModuleCreateInfo createInfo )
-		: createInfo{ createInfo }
-		, m_device{ device }
-		, m_spv{ createInfo.pCode, createInfo.pCode + createInfo.codeSize }
+		: m_device{ device }
+		, m_flags{ createInfo.flags }
+		, m_code{ makeVector( createInfo.pCode, createInfo.codeSize ) }
 	{
 	}
 
@@ -276,34 +277,35 @@ namespace gl_renderer
 		// Shader object is destroyed by the ShaderProgram.
 	}
 
-	void ShaderModule::compile( VkShaderStageFlagBits stage
-		, ashes::ShaderStageState const & state )const
+	void ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state )const
 	{
-		m_internal = m_device.getContext()->glCreateShader( convert( stage ) );
+		m_internal = get( m_device )->getContext()->glCreateShader( convertShaderStageFlag( state.stage ) );
 
-		if ( static_cast< Instance const & >( m_device.getInstance() ).isSPIRVSupported() )
+		if ( get( get( m_device )->getInstance() )->isSPIRVSupported() )
 		{
-			auto context = m_device.getContext();
+			auto context = get( m_device )->getContext();
 			context->glShaderBinary( 1u
 				, &m_internal
 				, GL_SHADER_BINARY_FORMAT_SPIR_V
-				, m_spv.data()
-				, GLsizei( m_spv.size() * sizeof( uint32_t ) ) );
+				, m_code.data()
+				, GLsizei( m_code.size() * sizeof( uint32_t ) ) );
 
-			if ( state.specialisationInfo )
+			if ( state.pSpecializationInfo )
 			{
-				auto & specialisationInfo = *state.specialisationInfo;
-				auto count = GLuint( std::distance( specialisationInfo.begin(), specialisationInfo.end() ) );
+				auto & specialisationInfo = *state.pSpecializationInfo;
+				auto count = GLuint( specialisationInfo.mapEntryCount );
 				std::vector< GLuint > indices;
 				indices.reserve( count );
 				std::vector< GLuint > values;
 				values.reserve( count );
-				auto src = reinterpret_cast< GLuint const * >( specialisationInfo.getData() );
+				auto src = reinterpret_cast< GLuint const * >( specialisationInfo.pData );
 				auto dst = values.data();
 
-				for ( auto & constant : specialisationInfo )
+				for ( auto itEntry = state.pSpecializationInfo->pMapEntries;
+					itEntry != state.pSpecializationInfo->pMapEntries + state.pSpecializationInfo->mapEntryCount;
+					++itEntry )
 				{
-					indices.push_back( constant.constantID );
+					indices.push_back( itEntry->constantID );
 					values.push_back( *src );
 					++src;
 				}
@@ -311,7 +313,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glSpecializeShader
 					, m_internal
-					, state.entryPoint.c_str()
+					, state.pName
 					, count
 					, indices.data()
 					, values.data() );
@@ -321,7 +323,7 @@ namespace gl_renderer
 				glLogCall( context
 					, glSpecializeShader
 					, m_internal
-					, state.entryPoint.c_str()
+					, state.pName
 					, 0u
 					, nullptr
 					, nullptr );
@@ -342,12 +344,12 @@ namespace gl_renderer
 		else
 		{
 			m_source = compileSpvToGlsl( m_device
-				, m_spv
-				, stage
+				, m_code
+				, state.stage
 				, state );
 			auto length = int( m_source.size() );
 			char const * data = m_source.data();
-			auto context = m_device.getContext();
+			auto context = get( m_device )->getContext();
 			glLogCall( context
 				, glShaderSource
 				, m_internal

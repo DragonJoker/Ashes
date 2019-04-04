@@ -4,7 +4,7 @@
 #include <sstream>
 #include <mutex>
 
-namespace ashespp
+namespace ashes
 {
 	namespace
 	{

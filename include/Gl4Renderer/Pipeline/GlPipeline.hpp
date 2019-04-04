@@ -12,22 +12,10 @@
 #include "Gl4Renderer/Shader/GlShaderDesc.hpp"
 #include "Gl4Renderer/Shader/GlShaderProgram.hpp"
 
-#include <Ashes/Buffer/PushConstantsBuffer.hpp>
-#include <Ashes/Pipeline/Pipeline.hpp>
-#include <Ashes/Pipeline/ColourBlendState.hpp>
-#include <Ashes/Pipeline/DepthStencilState.hpp>
-#include <Ashes/Pipeline/InputAssemblyState.hpp>
-#include <Ashes/Pipeline/MultisampleState.hpp>
-#include <Ashes/Pipeline/RasterisationState.hpp>
-#include <Ashes/Pipeline/Scissor.hpp>
-#include <Ashes/Pipeline/ShaderStageState.hpp>
-#include <Ashes/Pipeline/TessellationState.hpp>
-#include <Ashes/Pipeline/Viewport.hpp>
-
 #include <algorithm>
 #include <unordered_map>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -41,15 +29,15 @@ namespace gl_renderer
 		*	Construction / Destruction.
 		*/
 		/**@{*/
-		Pipeline( Device const & device
-			, PipelineLayout const & layout
-			, RenderPass const & renderPass
+		Pipeline( VkDevice device
 			, VkGraphicsPipelineCreateInfo createInfo );
+		Pipeline( VkDevice device
+			, VkComputePipelineCreateInfo createInfo );
 		GeometryBuffers * findGeometryBuffers( VboBindings const & vbos
 			, IboBinding const & ibo )const;
 		GeometryBuffersRef createGeometryBuffers( VboBindings vbos
 			, IboBinding const & ibo
-			, ashes::IndexType type )const;
+			, VkIndexType type )const;
 		~Pipeline();
 		PushConstantsDesc findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
 		/**@}*/
@@ -59,7 +47,8 @@ namespace gl_renderer
 		*/
 		inline bool hasViewport()const
 		{
-			return m_viewportState.viewportCount > 0;
+			return bool( m_viewportState )
+				&& m_viewportState.value().viewportCount > 0;
 		}
 		/**
 		*\return
@@ -67,15 +56,8 @@ namespace gl_renderer
 		*/
 		inline bool hasScissor()const
 		{
-			return m_viewportState.scissorCount > 0;
-		}
-		/**
-		*\return
-		*	Le ShaderStageState.
-		*/
-		inline auto const & getShaderStageState()const
-		{
-			return m_ssState;
+			return bool( m_viewportState )
+				&& m_viewportState.value().scissorCount > 0;
 		}
 		/**
 		*\return
@@ -83,7 +65,8 @@ namespace gl_renderer
 		*/
 		inline auto const & getInputAssemblyState()const
 		{
-			return m_iaState;
+			assert( bool( m_inputAssemblyState ) );
+			return m_inputAssemblyState.value();
 		}
 		/**
 		*\return
@@ -91,7 +74,8 @@ namespace gl_renderer
 		*/
 		inline auto const & getColourBlendState()const
 		{
-			return m_cbState;
+			assert( bool( m_colorBlendState ) );
+			return m_colorBlendState.value();
 		}
 		/**
 		*\return
@@ -99,7 +83,8 @@ namespace gl_renderer
 		*/
 		inline auto const & getRasterisationState()const
 		{
-			return m_rsState;
+			assert( bool( m_rasterizationState ) );
+			return m_rasterizationState.value();
 		}
 		/**
 		*\return
@@ -107,7 +92,8 @@ namespace gl_renderer
 		*/
 		inline auto const & getDepthStencilState()const
 		{
-			return m_dsState;
+			assert( bool( m_depthStencilState ) );
+			return m_depthStencilState.value();
 		}
 		/**
 		*\return
@@ -115,7 +101,8 @@ namespace gl_renderer
 		*/
 		inline auto const & getMultisampleState()const
 		{
-			return m_msState;
+			assert( bool( m_multisampleState ) );
+			return m_multisampleState.value();
 		}
 		/**
 		*\return
@@ -123,7 +110,8 @@ namespace gl_renderer
 		*/
 		inline auto const & getTessellationState()const
 		{
-			return m_tsState;
+			assert( bool( m_tessellationState ) );
+			return m_tessellationState.value();
 		}
 		/**
 		*\return
@@ -131,7 +119,8 @@ namespace gl_renderer
 		*/
 		inline auto const & getVertexInputState()const
 		{
-			return m_vertexInputState;
+			assert( bool( m_viewportState ) );
+			return m_vertexInputState.value();
 		}
 		/**
 		*\return
@@ -139,29 +128,32 @@ namespace gl_renderer
 		*/
 		inline auto const & getViewportState()const
 		{
-			return m_viewportState;
+			assert( bool( m_viewportState ) );
+			return m_viewportState.value();
 		}
 		/**
 		*\return
 		*	Les Viewports.
 		*/
-		inline ViewportArray getViewports()const
+		inline VkViewportArray const & getViewports()const
 		{
-			return { m_viewportState.pViewports, m_viewportState.pViewports + m_viewportState.viewportCount };
+			assert( bool( m_viewportState ) );
+			return m_viewports;
 		}
 		/**
 		*\return
 		*	Les Scissors.
 		*/
-		inline ScissorArray getScissors()const
+		inline VkScissorArray const & getScissors()const
 		{
-			return { m_viewportState.pScissors, m_viewportState.pScissors + m_viewportState.scissorCount };
+			assert( bool( m_viewportState ) );
+			return m_scissors;
 		}
 		/**
 		*\return
 		*	Le PipelineLayout.
 		*/
-		inline PipelineLayout const & getLayout()const
+		inline VkPipelineLayout getLayout()const
 		{
 			return m_layout;
 		}
@@ -179,8 +171,7 @@ namespace gl_renderer
 		*/
 		inline bool hasVertexLayout()const
 		{
-			return m_vertexInputState.vertexAttributeDescriptionCount > 0
-				&& m_vertexInputState.vertexBindingDescriptionCount > 0;
+			return bool( m_vertexInputState );
 		}
 		/**
 		*\return
@@ -194,13 +185,14 @@ namespace gl_renderer
 		*\return
 		*	\p true si l'état dynamique est dans la liste d'états dynamiques.
 		*/
-		inline bool hasDynamicStateEnable( VkDynamicStateEnable state )const
+		inline bool hasDynamicStateEnable( VkDynamicState state )const
 		{
-			if ( m_createInfo.pDynamicStateEnable )
+			if ( bool( m_dynamicState ) )
 			{
-				auto end = m_createInfo.pDynamicStateEnable->pDynamicStateEnables + m_createInfo.pDynamicStateEnable->dynamicStateCount;
-				return end != std::find( m_createInfo.pDynamicStateEnable->pDynamicStateEnables
-					, end
+				auto view = makeArrayView( m_dynamicState.value().pDynamicStates
+					, m_dynamicState.value().dynamicStateCount );
+				return view.end() != std::find( view.begin()
+					, view.end()
 					, state );
 			}
 
@@ -208,20 +200,30 @@ namespace gl_renderer
 		}
 
 	private:
-		Device const & m_device;
-		PipelineLayout const & m_layout;
-		RenderPass const & m_renderPass;
-		VkGraphicsPipelineCreateInfo m_createInfo;
-		std::vector< VkPipelineShaderStageCreateInfo > m_ssState;
-		VkPipelineVertexInputStateCreateInfo m_vertexInputState;
-		VkPipelineInputAssemblyStateCreateInfo m_iaState;
-		VkPipelineTessellationStateCreateInfo m_tsState;
-		VkPipelineViewportStateCreateInfo m_viewportState;
-		VkPipelineRasterizationStateCreateInfo m_rsState;
-		VkPipelineMultisampleStateCreateInfo m_msState;
-		VkPipelineDepthStencilStateCreateInfo m_dsState;
-		VkPipelineColorBlendStateCreateInfo m_cbState;
-		VkPipelineDynamicStateEnableCreateInfo m_dnState;
+		VkDevice m_device;
+		VkPipelineCreateFlags m_flags;
+		VkPipelineShaderStageCreateInfoArray m_stages;
+		VkVertexInputBindingDescriptionArray m_vertexBindingDescriptions;
+		VkVertexInputAttributeDescriptionArray m_vertexAttributeDescriptions;
+		Optional< VkPipelineVertexInputStateCreateInfo > m_vertexInputState;
+		Optional< VkPipelineInputAssemblyStateCreateInfo > m_inputAssemblyState;
+		Optional< VkPipelineTessellationStateCreateInfo > m_tessellationState;
+		VkViewportArray m_viewports;
+		VkScissorArray m_scissors;
+		Optional< VkPipelineViewportStateCreateInfo > m_viewportState;
+		Optional< VkPipelineRasterizationStateCreateInfo > m_rasterizationState;
+		Optional< VkSampleMask > m_sampleMask;
+		Optional< VkPipelineMultisampleStateCreateInfo > m_multisampleState;
+		Optional< VkPipelineDepthStencilStateCreateInfo > m_depthStencilState;
+		VkPipelineColorBlendAttachmentStateArray m_colorBlendAttachments;
+		Optional< VkPipelineColorBlendStateCreateInfo > m_colorBlendState;
+		VkDynamicStateArray m_dynamicStates;
+		Optional< VkPipelineDynamicStateCreateInfo > m_dynamicState;
+		VkPipelineLayout m_layout;
+		VkRenderPass m_renderPass;
+		uint32_t m_subpass;
+		VkPipeline m_basePipelineHandle;
+		int32_t m_basePipelineIndex;
 		PushConstantsDesc m_constantsPcb;
 		ShaderProgram m_program;
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;

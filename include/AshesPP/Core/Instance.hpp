@@ -8,10 +8,11 @@ See LICENSE file in root folder.
 
 #include "AshesPP/Core/Renderer.hpp"
 #include "AshesPP/Core/PhysicalDevice.hpp"
-#include "AshesPP/Core/WindowHandle.hpp"
 #include "AshesPP/Miscellaneous/RendererFeatures.hpp"
 
-namespace ashespp
+#include <AshesCommon/WindowHandle.hpp>
+
+namespace ashes
 {
 	/**
 	*\~english
@@ -87,7 +88,7 @@ namespace ashespp
 		*	The window handle.
 		*/
 		SurfacePtr createSurface( PhysicalDevice const & gpu
-			, WindowHandle handle )const;
+			, ashes::WindowHandle handle )const;
 		/**
 		*\~french
 		*\brief
@@ -230,9 +231,9 @@ namespace ashespp
 			return m_instance;
 		}
 
-#define VK_LIB_GLOBAL_FUNCTION( fun ) PFN_##fun fun;
-#define VK_LIB_INSTANCE_FUNCTION( fun ) PFN_##fun fun;
-#	include "AshesPP/Miscellaneous/VulkanFunctionsList.inl"
+#define VK_LIB_GLOBAL_FUNCTION( fun ) PFN_vk##fun vk##fun;
+#define VK_LIB_INSTANCE_FUNCTION( fun ) PFN_vk##fun vk##fun;
+#	include <AshesRenderer/Util/VulkanFunctionsList.inl>
 		/**
 		*\~english
 		*name

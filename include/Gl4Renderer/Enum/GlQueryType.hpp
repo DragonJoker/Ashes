@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/QueryType.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlQueryType
 		: GLenum
@@ -18,11 +16,11 @@ namespace gl_renderer
 	std::string getName( GlQueryType value );
 	/**
 	*\brief
-	*	Convertit un ashes::QueryType en GlQueryType.
+	*	Convertit un QueryType en GlQueryType.
 	*\param[in] value
-	*	Le ashes::QueryType.
+	*	Le QueryType.
 	*\return
 	*	Le GlQueryType.
 	*/
-	GlQueryType convert( ashes::QueryType const & value );
+	GlQueryType convert( VkQueryType const & value );
 }

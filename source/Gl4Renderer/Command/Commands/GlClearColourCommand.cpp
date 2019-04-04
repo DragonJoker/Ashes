@@ -4,17 +4,22 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlClearColourCommand.hpp"
 
-#include "Image/GlImageView.hpp"
+#include "Image/GlImage.hpp"
+#include "Miscellaneous/GlCallLogger.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
-	ClearColourCommand::ClearColourCommand( Device const & device
-		, ashes::ImageView const & image
-		, ashes::ClearColorValue const & colour )
+	ClearColourCommand::ClearColourCommand( VkDevice device
+		, VkImage image
+		, VkImageLayout imageLayout
+		, VkClearColorValue value
+		, VkImageSubresourceRangeArray ranges )
 		: CommandBase{ device }
-		, m_image{ static_cast< ImageView const & >( image ) }
-		, m_colour{ colour }
-		, m_internal{ getInternalFormat( m_image.getFormat() ) }
+		, m_image{ image }
+		, m_colour{ value }
+		, m_internal{ getInternalFormat( get( m_image )->getFormat() ) }
 		, m_format{ getFormat( m_internal ) }
 		, m_type{ getType( m_internal ) }
 	{
@@ -26,17 +31,25 @@ namespace gl_renderer
 
 		if ( context->hasClearTexImage() )
 		{
-			glLogCall( context
-				, glClearTexImage
-				, m_image.getInternal()
-				, 0
-				, m_format
-				, m_type
-				, m_colour.float32.data() );
+			for ( auto & range : m_ranges )
+			{
+				for ( uint32_t level = range.baseMipLevel;
+					level < range.baseMipLevel + range.levelCount;
+					++level )
+				{
+					glLogCall( context
+						, glClearTexImage
+						, get( m_image )->getInternal()
+						, level
+						, m_format
+						, m_type
+						, m_colour.float32 );
+				}
+			}
 		}
 		else
 		{
-			ashes::Logger::logError( "Unsupported command : ClearColourCommand" );
+			std::cerr << "Unsupported command : ClearColourCommand" << std::endl;
 		}
 	}
 

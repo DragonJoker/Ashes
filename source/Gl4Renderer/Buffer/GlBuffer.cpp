@@ -3,18 +3,21 @@
 #include "Core/GlDevice.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
 
-#include <Ashes/Miscellaneous/MemoryRequirements.hpp>
-#include <Ashes/Sync/BufferMemoryBarrier.hpp>
+#include "ashesgl4_api.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	Buffer::Buffer( Device const & device
+	Buffer::Buffer( VkDevice device
 		, VkBufferCreateInfo createInfo )
 		: m_device{ device }
-		, m_createInfo{ createInfo }
-		, m_target{ getTargetFromUsageFlags( m_createInfo.usage ) }
+		, m_flags{ createInfo.flags }
+		, m_size{ createInfo.size }
+		, m_usage{ createInfo.usage }
+		, m_sharingMode{ createInfo.sharingMode }
+		, m_queueFamilyIndices{ makeVector( createInfo.pQueueFamilyIndices, createInfo.queueFamilyIndexCount ) }
+		, m_target{ getTargetFromUsageFlags( m_usage ) }
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glGenBuffers
 			, 1
@@ -24,8 +27,7 @@ namespace gl_renderer
 	Buffer::~Buffer()
 	{
 		onDestroy( m_name );
-		m_storage.reset();
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteBuffers
 			, 1
@@ -35,16 +37,9 @@ namespace gl_renderer
 	VkMemoryRequirements Buffer::getMemoryRequirements()const
 	{
 		VkMemoryRequirements result{};
-		result.size = m_createInfo.size;
+		result.size = m_size;
 		result.alignment = 1u;
-		result.memoryTypeBits = ~result.memoryTypeBits;
+		result.memoryTypeBits = ~( 0u );
 		return result;
-	}
-
-	void Buffer::bindMemory( DeviceMemoryPtr memory )const
-	{
-		assert( !m_storage && "A resource can only be bound once to a device memory object." );
-		m_storage = std::move( memory );
-		static_cast< DeviceMemory & >( *m_storage ).bindToBuffer( m_name, m_target );
 	}
 }

@@ -6,9 +6,7 @@ See LICENSE file in root folder.
 #define ___GlRenderer_TextureViewType_HPP___
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlTextureViewType
 		: GLenum
@@ -32,9 +30,9 @@ namespace gl_renderer
 	std::string getName( GlTextureViewType value );
 	/**
 	*\brief
-	*	Convertit un ashes::WrapMode en GlTextureType.
+	*	Convertit un VkSamplerAddressMode en GlTextureType.
 	*\param[in] mode
-	*	Le ashes::WrapMode.
+	*	Le VkSamplerAddressMode.
 	*\return
 	*	Le GlTextureType.
 	*/

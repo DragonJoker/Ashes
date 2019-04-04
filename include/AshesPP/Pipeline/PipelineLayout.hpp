@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Pipeline/GraphicsPipeline.hpp"
 #include "AshesPP/Pipeline/ComputePipeline.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\~english

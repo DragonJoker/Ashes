@@ -6,9 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/Pipeline/Scissor.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -24,14 +22,14 @@ namespace gl_renderer
 		*\param[in] scissor
 		*	Le scissor.
 		*/
-		ScissorCommand( Device const & device
+		ScissorCommand( VkDevice device
 			, uint32_t firstScissor
-			, ashes::ScissorArray const & scissors );
+			, VkScissorArray scissors );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		ashes::ScissorArray m_scissors;
+		VkScissorArray m_scissors;
 	};
 }

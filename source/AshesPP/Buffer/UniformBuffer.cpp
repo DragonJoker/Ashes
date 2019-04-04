@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/Core/Device.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	UniformBufferBase::UniformBufferBase( Device const & device
 		, VkDeviceSize count
@@ -36,7 +36,7 @@ namespace ashespp
 
 	VkDeviceSize UniformBufferBase::getAlignedSize( VkDeviceSize size )const
 	{
-		return ashespp::getAlignedSize( size
+		return ashes::getAlignedSize( size
 			, m_device.getProperties().limits.minUniformBufferOffsetAlignment );
 	}
 }

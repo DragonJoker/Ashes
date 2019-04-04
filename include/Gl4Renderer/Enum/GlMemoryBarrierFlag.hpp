@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/PipelineStageFlag.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlMemoryBarrierFlag
 		: GLbitfield
@@ -32,11 +30,11 @@ namespace gl_renderer
 	std::string getName( GlMemoryBarrierFlags value );
 	/**
 	*\brief
-	*	Convertit un ashes::PipelineStageFlags en GlMemoryBarrierFlags.
+	*	Convertit un VkPipelineStageFlags en GlMemoryBarrierFlags.
 	*\param[in] flags
-	*	Le ashes::PipelineStageFlags.
+	*	Le VkPipelineStageFlags.
 	*\return
 	*	Le GlMemoryBarrierFlags.
 	*/
-	GlMemoryBarrierFlags convert( ashes::PipelineStageFlags const & flags );
+	GlMemoryBarrierFlags getMemoryBarrierFlags( VkPipelineStageFlags const & flags );
 }

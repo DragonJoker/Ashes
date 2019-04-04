@@ -7,11 +7,12 @@ See LICENSE file in root folder.
 #include "AshesPP/Buffer/Buffer.hpp"
 #include "AshesPP/Command/CommandBuffer.hpp"
 #include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Core/Exception.hpp"
 #include "AshesPP/Image/Image.hpp"
 #include "AshesPP/Image/ImageView.hpp"
 
-namespace ashespp
+#include <AshesRenderer/Util/Exception.hpp>
+
+namespace ashes
 {
 	namespace
 	{

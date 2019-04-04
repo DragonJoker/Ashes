@@ -6,9 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Miscellaneous/QueryPool.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\~english
@@ -30,7 +28,7 @@ namespace gl_renderer
 		*\param[in] type
 		*	The query type.
 		*\param[in] count
-		*	The number of queries managed by the pool.
+		*	The number of queries managed by the get( pool )->
 		*\param[in] pipelineStatistics
 		*	Specifies the counters to be returned in queries.
 		*\~french
@@ -41,11 +39,11 @@ namespace gl_renderer
 		*\param[in] type
 		*	Le type de requête.
 		*\param[in] count
-		*	Le nombre de requêtes gérées par le pool.
+		*	Le nombre de requêtes gérées par le get( pool )->
 		*\param[in] pipelineStatistics
 		*	Définit les compteurs que les requêtes retournent.
 		*/
-		QueryPool( Device const & device
+		QueryPool( VkDevice device
 			, VkQueryPoolCreateInfo createInfo );
 		/**
 		*\~english
@@ -57,40 +55,43 @@ namespace gl_renderer
 		*/
 		~QueryPool();
 		/**
-		*\copydoc	ashes::QueryPool:getResults
+		*\copydoc	QueryPool:getResults
 		*/
-		void getResults( uint32_t firstQuery
+		VkResult getResults( uint32_t firstQuery
 			, uint32_t queryCount
-			, uint32_t stride
+			, VkDeviceSize stride
 			, VkQueryResultFlags flags
-			, ashes::UInt32Array & data )const;
+			, UInt32Array & data )const;
 		/**
-		*\copydoc	ashes::QueryPool:getResults
+		*\copydoc	QueryPool:getResults
 		*/
-		void getResults( uint32_t firstQuery
+		VkResult getResults( uint32_t firstQuery
 			, uint32_t queryCount
-			, uint32_t stride
+			, VkDeviceSize stride
 			, VkQueryResultFlags flags
-			, ashes::UInt64Array & data )const;
-		/**
-		*\return
-		*	Le début du tableau de requêtes.
-		*/
+			, UInt64Array & data )const;
+
 		inline auto begin()const
 		{
 			return m_names.begin();
 		}
-		/**
-		*\return
-		*	La fin du tableau de requêtes.
-		*/
+
 		inline auto end()const
 		{
 			return m_names.end();
 		}
 
+		inline auto getType()const
+		{
+			return m_queryType;
+		}
+
 	protected:
-		Device const & m_device;
+		VkDevice m_device;
+		VkQueryPoolCreateFlags m_flags;
+		VkQueryType m_queryType;
+		uint32_t m_queryCount;
+		VkQueryPipelineStatisticFlags m_pipelineStatistics;
 		std::vector< GLuint > m_names;
 	};
 }

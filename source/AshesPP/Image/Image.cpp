@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Image/ImageView.hpp"
 #include "AshesPP/Sync/Fence.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	Image::Image( Image && rhs )
 		: m_device{ rhs.m_device }

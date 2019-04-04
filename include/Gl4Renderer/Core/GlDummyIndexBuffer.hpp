@@ -1,6 +1,6 @@
 #include <cstdint>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	uint32_t const dummyIndex[]
 	{

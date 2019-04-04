@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -16,8 +16,8 @@ namespace gl_renderer
 		: public CommandBase
 	{
 	public:
-		ResetQueryPoolCommand( Device const & device
-			, ashes::QueryPool const & pool
+		ResetQueryPoolCommand( VkDevice device
+			, VkQueryPool pool
 			, uint32_t firstQuery
 			, uint32_t queryCount );
 		void apply( ContextLock const & context )const override;

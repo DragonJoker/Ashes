@@ -4,16 +4,16 @@
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 
-#include <Ashes/Pipeline/VertexInputAttributeDescription.hpp>
-#include <Ashes/Pipeline/VertexInputState.hpp>
+#include "ashesgl4_api.hpp"
 
 #include <algorithm>
+#include <sstream>
 
 #if defined( interface )
 #	undef interface
 #endif
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	namespace
 	{
@@ -359,28 +359,28 @@ namespace gl_renderer
 			}
 		}
 
-		ashes::ConstantFormat getFormat( GlslAttributeType type )noexcept
+		ConstantFormat getFormat( GlslAttributeType type )noexcept
 		{
 			switch ( type )
 			{
-			case GLSL_ATTRIBUTE_INT:										return ashes::ConstantFormat::eInt;
-			case GLSL_ATTRIBUTE_UNSIGNED_INT:								return ashes::ConstantFormat::eUInt;
-			case GLSL_ATTRIBUTE_FLOAT:										return ashes::ConstantFormat::eFloat;
-			case GLSL_ATTRIBUTE_FLOAT_VEC2:									return ashes::ConstantFormat::eVec2f;
-			case GLSL_ATTRIBUTE_FLOAT_VEC3:									return ashes::ConstantFormat::eVec3f;
-			case GLSL_ATTRIBUTE_FLOAT_VEC4:									return ashes::ConstantFormat::eVec4f;
-			case GLSL_ATTRIBUTE_INT_VEC2:									return ashes::ConstantFormat::eVec2i;
-			case GLSL_ATTRIBUTE_INT_VEC3:									return ashes::ConstantFormat::eVec3i;
-			case GLSL_ATTRIBUTE_INT_VEC4:									return ashes::ConstantFormat::eVec4i;
-			case GLSL_ATTRIBUTE_FLOAT_MAT2:									return ashes::ConstantFormat::eMat2f;
-			case GLSL_ATTRIBUTE_FLOAT_MAT3:									return ashes::ConstantFormat::eMat3f;
-			case GLSL_ATTRIBUTE_FLOAT_MAT4:									return ashes::ConstantFormat::eMat4f;
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC2:							return ashes::ConstantFormat::eVec2ui;
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC3:							return ashes::ConstantFormat::eVec3ui;
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC4:							return ashes::ConstantFormat::eVec4ui;
+			case GLSL_ATTRIBUTE_INT:										return ConstantFormat::eInt;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT:								return ConstantFormat::eUInt;
+			case GLSL_ATTRIBUTE_FLOAT:										return ConstantFormat::eFloat;
+			case GLSL_ATTRIBUTE_FLOAT_VEC2:									return ConstantFormat::eVec2f;
+			case GLSL_ATTRIBUTE_FLOAT_VEC3:									return ConstantFormat::eVec3f;
+			case GLSL_ATTRIBUTE_FLOAT_VEC4:									return ConstantFormat::eVec4f;
+			case GLSL_ATTRIBUTE_INT_VEC2:									return ConstantFormat::eVec2i;
+			case GLSL_ATTRIBUTE_INT_VEC3:									return ConstantFormat::eVec3i;
+			case GLSL_ATTRIBUTE_INT_VEC4:									return ConstantFormat::eVec4i;
+			case GLSL_ATTRIBUTE_FLOAT_MAT2:									return ConstantFormat::eMat2f;
+			case GLSL_ATTRIBUTE_FLOAT_MAT3:									return ConstantFormat::eMat3f;
+			case GLSL_ATTRIBUTE_FLOAT_MAT4:									return ConstantFormat::eMat4f;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC2:							return ConstantFormat::eVec2ui;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC3:							return ConstantFormat::eVec3ui;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC4:							return ConstantFormat::eVec4ui;
 			default:
 				assert( false && "Unsupported GLSL attribute type" );
-				return ashes::ConstantFormat::eVec4f;
+				return ConstantFormat::eVec4f;
 			}
 		}
 
@@ -939,7 +939,7 @@ namespace gl_renderer
 						<< "], of type: " << getName( glslType )
 						<< ", at location: " << location
 						<< " is used in the shader program, but is not listed in the vertex layouts" << std::endl;
-					ashes::Logger::logError( stream.str() );
+					std::cerr << stream.str();
 					throw std::logic_error{ stream.str() };
 				}
 			};
@@ -978,22 +978,22 @@ namespace gl_renderer
 
 			for ( auto & attribute : attributes )
 			{
-				ashes::Logger::logWarning( std::stringstream{} << ValidationWarning
-					<< "Vertex layout has attribute of type " << getFormatName( attribute.format )
+				std::cerr << ValidationWarning
+					<< "Vertex layout has attribute of type " << ashes::getName( attribute.format )
 					<< ", at location " << attribute.location
-					<< ", which is not used by the program" );
+					<< ", which is not used by the program";
 			}
 		}
 
 		void doValidateOutputs( ContextLock const & context
 			, GLuint program
-			, RenderPass const & renderPass )
+			, VkRenderPass renderPass )
 		{
 			std::set< VkAttachmentDescription const * > attaches;
 
-			for ( auto & attach : renderPass.getAttachments() )
+			for ( auto & attach : get( renderPass )->getAttachments() )
 			{
-				attaches.insert( &attach.attach.get() );
+				attaches.insert( &attach );
 			}
 
 			struct GlslOutput
@@ -1019,9 +1019,9 @@ namespace gl_renderer
 
 				if ( output.location != ~( 0u ) )
 				{
-					if ( renderPass.getColourAttaches().size() > output.location )
+					if ( get( renderPass )->getColourAttaches().size() > output.location )
 					{
-						auto & attach = renderPass.getColourAttaches()[output.location];
+						auto & attach = get( renderPass )->getColourAttaches()[output.location];
 
 						if ( areCompatible( attach.attach.get().format, convertFormat( output.type ) ) )
 						{
@@ -1032,11 +1032,11 @@ namespace gl_renderer
 
 					if ( !found )
 					{
-						ashes::Logger::logError( std::stringstream{} << ValidationError
+						std::cerr << ValidationError
 							<< "Attachment [" << output.name
 							<< "], of type: " << getName( output.type )
 							<< ", at location: " << output.location
-							<< " is used in the shader program, but is not listed in the render pass attachments" );
+							<< " is used in the shader program, but is not listed in the render pass attachments";
 					}
 				}
 				else
@@ -1059,9 +1059,9 @@ namespace gl_renderer
 			{
 				if ( !isDepthOrStencilFormat( attach->format ) )
 				{
-					ashes::Logger::logWarning( std::stringstream{} << ValidationWarning
-						<< "Render pass has an attahment of type " << getFormatName( attach->format )
-						<< ", which is not used by the program" );
+					std::cerr << ValidationWarning
+						<< "Render pass has an attahment of type " << ashes::getName( attach->format )
+						<< ", which is not used by the program";
 				}
 			}
 		}
@@ -1078,18 +1078,18 @@ namespace gl_renderer
 					, GLuint index
 					, GLint variables )
 				{
-					ashes::Logger::logDebug( std::stringstream{} << "   Uniform block: " << name
+					std::clog << "   Uniform block: " << name
 						<< ", at point " << point
 						<< ", and index " << index
-						<< ", active variables " << variables );
+						<< ", active variables " << variables;
 				}
 				, []( std::string name
 					, GlslAttributeType type
 					, GLint location )
 				{
-					ashes::Logger::logDebug( std::stringstream{} << "      variable: " << name
+					std::clog << "      variable: " << name
 						<< ", type " << getName( type )
-						<< ", at location " << location );
+						<< ", at location " << location;
 				} );
 		}
 
@@ -1105,18 +1105,18 @@ namespace gl_renderer
 					, GLuint index
 					, GLint variables )
 				{
-					ashes::Logger::logDebug( std::stringstream{} << "   ShaderStorage block: " << name
+					std::clog << "   ShaderStorage block: " << name
 						<< ", at point " << point
 						<< ", and index " << index
-						<< ", active variables " << variables );
+						<< ", active variables " << variables;
 				}
 				, []( std::string name
 					, GlslAttributeType type
 					, GLint location )
 				{
-					ashes::Logger::logDebug( std::stringstream{} << "      variable: " << name
+					std::clog << "      variable: " << name
 						<< ", type " << getName( type )
-						<< ", at location " << location );
+						<< ", at location " << location;
 				} );
 		}
 
@@ -1132,11 +1132,11 @@ namespace gl_renderer
 					, GLint arraySize
 					, GLint offset )
 				{
-					ashes::Logger::logDebug( std::stringstream{} << "   Uniform variable: " << name
+					std::clog << "   Uniform variable: " << name
 						<< ", type: " << getName( type )
 						<< ", location: " << location
 						<< ", arraySize: " << arraySize
-						<< ", offset: " << offset );
+						<< ", offset: " << offset;
 				} );
 		}
 	}
@@ -1195,10 +1195,10 @@ namespace gl_renderer
 	}
 
 	void validatePipeline( ContextLock const & context
-		, PipelineLayout const & layout
+		, VkPipelineLayout layout
 		, GLuint program
 		, VkPipelineVertexInputStateCreateInfo const & vertexInputState
-		, RenderPass const & renderPass )
+		, VkRenderPass renderPass )
 	{
 		doValidateInputs( context, program, vertexInputState );
 		doValidateOutputs( context, program, renderPass );

@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -28,12 +28,12 @@ namespace gl_renderer
 		*\param[in] firstInstance
 		*	Index de la premi�re instance.
 		*/
-		DrawCommand( Device const & device
+		DrawCommand( VkDevice device
 			, uint32_t vtxCount
 			, uint32_t instCount
 			, uint32_t firstVertex
 			, uint32_t firstInstance
-			, ashes::PrimitiveTopology mode );
+			, VkPrimitiveTopology mode );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;

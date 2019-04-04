@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Core/Device.hpp"
 #include "AshesPP/Descriptor/DescriptorSet.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	DescriptorPool::DescriptorPool( Device const & device
 		, VkDescriptorPoolCreateFlags flags

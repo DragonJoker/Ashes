@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <type_traits>
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\~french

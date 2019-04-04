@@ -1,29 +1,29 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	GlDebugReportObjectType convert( ashes::DebugReportObjectType const & value )
+	GlDebugReportObjectType convert( VkDebugReportObjectTypeEXT const & value )
 	{
 		GlDebugReportObjectType result = GlDebugReportObjectType::eUnknown;
 
 		switch ( value )
 		{
-		case ashes::DebugReportObjectType::eBuffer:
+		case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
 			result = GlDebugReportObjectType::eBuffer;
 			break;
-		case ashes::DebugReportObjectType::eImage:
+		case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
 			result = GlDebugReportObjectType::eTexture;
 			break;
-		case ashes::DebugReportObjectType::eQueryPool:
+		case VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT:
 			result = GlDebugReportObjectType::eQuery;
 			break;
-		case ashes::DebugReportObjectType::eShaderModule:
+		case VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT:
 			result = GlDebugReportObjectType::eShaderModule;
 			break;
-		case ashes::DebugReportObjectType::eSampler:
+		case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT:
 			result = GlDebugReportObjectType::eSampler;
 			break;
-		case ashes::DebugReportObjectType::eFramebuffer:
+		case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT:
 			result = GlDebugReportObjectType::eFrameBuffer;
 			break;
 		}

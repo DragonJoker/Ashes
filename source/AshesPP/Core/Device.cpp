@@ -22,7 +22,9 @@ See LICENSE file in root folder.
 #include "AshesPP/Sync/Semaphore.hpp"
 #include "AshesPP/Utils/CallStack.hpp"
 
-namespace ashespp
+#include <AshesRenderer/Util/Exception.hpp>
+
+namespace ashes
 {
 	Device::Device( Instance const & instance
 		, PhysicalDevice const & gpu
@@ -42,8 +44,8 @@ namespace ashespp
 		auto res = m_instance.vkCreateDevice( m_gpu, &m_createInfos, nullptr, &m_internal );
 		checkError( res, "LogicalDevice creation" );
 
-#define VK_LIB_DEVICE_FUNCTION( fun ) fun = reinterpret_cast< PFN_##fun >( m_instance.vkGetDeviceProcAddr( m_internal, #fun ) );
-#include "AshesPP/Miscellaneous/VulkanFunctionsList.inl"
+#define VK_LIB_DEVICE_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( m_instance.vkGetDeviceProcAddr( m_internal, "vk"#fun ) );
+#include <AshesRenderer/Util/VulkanFunctionsList.inl>
 	}
 
 	Device::~Device()
@@ -290,7 +292,7 @@ namespace ashespp
 
 		if ( !found )
 		{
-			throw Exception{ VkResult::VK_ERROR_VALIDATION_FAILED_EXT, "Could not deduce memory type" };
+			throw ashes::Exception{ VkResult::VK_ERROR_VALIDATION_FAILED_EXT, "Could not deduce memory type" };
 		}
 
 		return result;

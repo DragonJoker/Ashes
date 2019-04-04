@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -16,8 +16,8 @@ namespace gl_renderer
 		: public CommandBase
 	{
 	public:
-		GenerateMipmapsCommand( Device const & device
-			, Image const & texture );
+		GenerateMipmapsCommand( VkDevice device
+			, VkImage texture );
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 

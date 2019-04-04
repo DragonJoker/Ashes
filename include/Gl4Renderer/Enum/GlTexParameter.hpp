@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/AccessFlag.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlTexParameter
 	{

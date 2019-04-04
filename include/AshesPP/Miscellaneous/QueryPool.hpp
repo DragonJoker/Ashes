@@ -4,9 +4,9 @@ See LICENSE file in root folder
 #ifndef ___Ashes_QueryPool_H___
 #define ___Ashes_QueryPool_H___
 
-#include <AshesC/ashes.h>
+#include <ashes/ashes.h>
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\~english

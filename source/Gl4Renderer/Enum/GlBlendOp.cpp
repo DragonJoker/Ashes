@@ -1,24 +1,24 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlBlendOp value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_BLEND_OP_ADD:
+		case GL_BLEND_OP_ADD:
 			return "GL_ADD";
 
-		case gl_renderer::GL_BLEND_OP_MIN:
+		case GL_BLEND_OP_MIN:
 			return "GL_MIN";
 
-		case gl_renderer::GL_BLEND_OP_MAX:
+		case GL_BLEND_OP_MAX:
 			return "GL_MAX";
 
-		case gl_renderer::GL_BLEND_OP_SUBTRACT:
+		case GL_BLEND_OP_SUBTRACT:
 			return "GL_SUBTRACT";
 
-		case gl_renderer::GL_BLEND_OP_REVERSE_SUBTRACT:
+		case GL_BLEND_OP_REVERSE_SUBTRACT:
 			return "GL_REVERSE_SUBTRACT";
 
 		default:
@@ -27,23 +27,23 @@ namespace gl_renderer
 		}
 	}
 
-	GlBlendOp convert( ashes::BlendOp const & value )
+	GlBlendOp convert( VkBlendOp const & value )
 	{
 		switch ( value )
 		{
-		case ashes::BlendOp::eAdd:
+		case VK_BLEND_OP_ADD:
 			return GL_BLEND_OP_ADD;
 
-		case ashes::BlendOp::eSubtract:
+		case VK_BLEND_OP_SUBTRACT:
 			return GL_BLEND_OP_SUBTRACT;
 
-		case ashes::BlendOp::eReverseSubtract:
+		case VK_BLEND_OP_REVERSE_SUBTRACT:
 			return GL_BLEND_OP_REVERSE_SUBTRACT;
 
-		case ashes::BlendOp::eMin:
+		case VK_BLEND_OP_MIN:
 			return GL_BLEND_OP_MIN;
 
-		case ashes::BlendOp::eMax:
+		case VK_BLEND_OP_MAX:
 			return GL_BLEND_OP_MAX;
 
 		default:

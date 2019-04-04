@@ -6,9 +6,9 @@ See LICENSE file in root folder.
 
 #include "Buffer/GlGeometryBuffers.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	BindGeometryBuffersCommand::BindGeometryBuffersCommand( Device const & device
+	BindGeometryBuffersCommand::BindGeometryBuffersCommand( VkDevice device
 		, GeometryBuffers const & vao )
 		: CommandBase{ device }
 		, m_vao{ static_cast< GeometryBuffers const & >( vao ) }

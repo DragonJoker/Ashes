@@ -10,14 +10,17 @@ See LICENSE file in root folder.
 #include <chrono>
 #include <thread>
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
-	WaitEventsCommand::WaitEventsCommand( Device const & device
-		, ashes::EventCRefArray const & events
-		, ashes::PipelineStageFlags srcStageMask
-		, ashes::PipelineStageFlags dstStageMask
-		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )
+	WaitEventsCommand::WaitEventsCommand( VkDevice device
+		, VkEventArray const & events
+		, VkPipelineStageFlags srcStageMask
+		, VkPipelineStageFlags dstStageMask
+		, VkMemoryBarrierArray memoryBarriers
+		, VkBufferMemoryBarrierArray bufferMemoryBarriers
+		, VkImageMemoryBarrierArray imageMemoryBarriers )
 		: CommandBase{ device }
 		, m_events{ events }
 	{
@@ -32,10 +35,10 @@ namespace gl_renderer
 		{
 			count = uint32_t( std::count_if( m_events.begin()
 				, m_events.end()
-				, []( ashes::EventCRef const & event )
+				, []( VkEvent event )
 				{
-					return event.get().getStatus() != ashes::EventStatus::eSet
-						&& event.get().getStatus() != ashes::EventStatus::eError;
+					return get( event )->getStatus() != VK_EVENT_SET
+						&& get( event )->getStatus() != VK_EVENT_RESET;
 				} ) );
 			std::this_thread::sleep_for( std::chrono::nanoseconds{ 10 } );
 		}

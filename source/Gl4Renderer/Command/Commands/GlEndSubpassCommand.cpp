@@ -7,41 +7,40 @@ See LICENSE file in root folder.
 #include "Command/GlCommandBuffer.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 
-#include <Ashes/RenderPass/ClearValue.hpp>
-#include <Ashes/RenderPass/AttachmentDescription.hpp>
-#include <Ashes/RenderPass/SubpassDescription.hpp>
+#include "ashesgl4_api.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	EndSubpassCommand::EndSubpassCommand( Device const & device
-		, ashes::FrameBuffer const & frameBuffer
-		, ashes::SubpassDescription const & subpass )
+	EndSubpassCommand::EndSubpassCommand( VkDevice device
+		, VkFramebuffer frameBuffer
+		, VkSubpassDescription const & subpass )
 		: CommandBase{ device }
-		, m_frameBuffer{ static_cast< FrameBuffer const & >( frameBuffer ) }
+		, m_frameBuffer{ frameBuffer }
 		, m_subpass{ subpass }
 	{
-		assert( m_subpass.resolveAttachments.empty()
-			|| m_subpass.resolveAttachments.size() == m_subpass.colorAttachments.size() );
 	}
 
 	void EndSubpassCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "EndSubpassCommand" );
 
-		if ( !m_subpass.resolveAttachments.empty() )
+		if ( m_subpass.pResolveAttachments )
 		{
-			if ( m_frameBuffer.getInternal() )
+			if ( get( m_frameBuffer )->getInternal() )
 			{
 				uint32_t index = 0u;
 
-				for ( auto & resolveAttach : m_subpass.resolveAttachments )
+				for ( auto it = m_subpass.pResolveAttachments;
+					it != m_subpass.pResolveAttachments + m_subpass.colorAttachmentCount;
+					++it )
 				{
-					auto & srcattach = m_frameBuffer.getColourAttaches()[index++];
-					auto & dstattach = m_frameBuffer.getColourAttaches()[resolveAttach.attachment];
+					auto & resolveAttach = *it;
+					auto & srcattach = get( m_frameBuffer )->getColourAttaches()[index++];
+					auto & dstattach = get( m_frameBuffer )->getColourAttaches()[resolveAttach.attachment];
 
 					if ( dstattach.object != GL_INVALID_INDEX )
 					{
-						context->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_frameBuffer.getInternal() );
+						context->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, get( m_frameBuffer )->getInternal() );
 					}
 					else
 					{
@@ -49,11 +48,11 @@ namespace gl_renderer
 					}
 
 					GLenum attach[1]{ dstattach.point };
-					context->glBindFramebuffer( GL_READ_FRAMEBUFFER, m_frameBuffer.getInternal() );
+					context->glBindFramebuffer( GL_READ_FRAMEBUFFER, get( m_frameBuffer )->getInternal() );
 					context->glReadBuffer( srcattach.point );
 					context->glDrawBuffers( 1u, attach );
-					context->glBlitFramebuffer( 0, 0, m_frameBuffer.getDimensions().width, m_frameBuffer.getDimensions().height
-						, 0, 0, m_frameBuffer.getDimensions().width, m_frameBuffer.getDimensions().height
+					context->glBlitFramebuffer( 0, 0, get( m_frameBuffer )->getWidth(), get( m_frameBuffer )->getHeight()
+						, 0, 0, get( m_frameBuffer )->getWidth(), get( m_frameBuffer )->getHeight()
 						, GL_COLOR_BUFFER_BIT, GL_FILTER_NEAREST );
 				}
 			}

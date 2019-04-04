@@ -18,7 +18,7 @@ namespace utils
 	*\brief
 	*	Transpiles a GLSL shader to SPIR-V.
 	*/
-	UInt32Array compileGlslToSpv( ashes::Device const & device
-		, ashes::ShaderStageFlag stage
+	ashes::UInt32Array compileGlslToSpv( VkPhysicalDeviceProperties const & props
+		, VkShaderStageFlagBits stage
 		, std::string const & shader );
 }

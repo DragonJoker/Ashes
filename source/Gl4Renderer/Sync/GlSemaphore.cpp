@@ -6,10 +6,9 @@ See LICENSE file in root folder.
 
 #include "Core/GlDevice.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	Semaphore::Semaphore( ashes::Device const & device )
-		: ashes::Semaphore{ device }
+	Semaphore::Semaphore( VkDevice device )
 	{
 	}
 }

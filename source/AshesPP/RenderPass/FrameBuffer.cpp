@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Image/ImageView.hpp"
 #include "AshesPP/RenderPass/RenderPass.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	FrameBuffer::FrameBuffer( RenderPass const & renderPass
 		, VkExtent2D const & dimensions

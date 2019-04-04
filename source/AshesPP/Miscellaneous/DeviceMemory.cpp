@@ -7,7 +7,7 @@ See LICENSE file in root folder
 #include "AshesPP/Core/Device.hpp"
 #include "AshesPP/Core/PhysicalDevice.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	DeviceMemory::DeviceMemory( Device const & device
 		, VkMemoryAllocateInfo allocateInfo )

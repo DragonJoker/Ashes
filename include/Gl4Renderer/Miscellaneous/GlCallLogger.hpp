@@ -6,9 +6,58 @@ See LICENSE file in root folder
 
 #include <iostream>
 
+#include "Gl4Renderer/Enum/GlAccessFlag.hpp"
+#include "Gl4Renderer/Enum/GlAttachmentPoint.hpp"
+#include "Gl4Renderer/Enum/GlAttachmentType.hpp"
+#include "Gl4Renderer/Enum/GlBaseType.hpp"
+#include "Gl4Renderer/Enum/GlBlendFactor.hpp"
+#include "Gl4Renderer/Enum/GlBlendOp.hpp"
+#include "Gl4Renderer/Enum/GlBorderColour.hpp"
+#include "Gl4Renderer/Enum/GlBufferTarget.hpp"
+#include "Gl4Renderer/Enum/GlClearTarget.hpp"
+#include "Gl4Renderer/Enum/GlClipInfo.hpp"
+#include "Gl4Renderer/Enum/GlColourComponentFlag.hpp"
+#include "Gl4Renderer/Enum/GlCompareOp.hpp"
+#include "Gl4Renderer/Enum/GlComponentSwizzle.hpp"
+#include "Gl4Renderer/Enum/GlConstantFormat.hpp"
+#include "Gl4Renderer/Enum/GlCullModeFlag.hpp"
+#include "Gl4Renderer/Enum/GlDebugReportObjectType.hpp"
+#include "Gl4Renderer/Enum/GlFenceWaitFlag.hpp"
+#include "Gl4Renderer/Enum/GlFilter.hpp"
+#include "Gl4Renderer/Enum/GlFormat.hpp"
+#include "Gl4Renderer/Enum/GlFrameBufferTarget.hpp"
+#include "Gl4Renderer/Enum/GlFrontFace.hpp"
+#include "Gl4Renderer/Enum/GlGetParameter.hpp"
+#include "Gl4Renderer/Enum/GlImageAspectFlag.hpp"
+#include "Gl4Renderer/Enum/GlImageLayout.hpp"
+#include "Gl4Renderer/Enum/GlImageTiling.hpp"
+#include "Gl4Renderer/Enum/GlIndexType.hpp"
+#include "Gl4Renderer/Enum/GlLogicOp.hpp"
+#include "Gl4Renderer/Enum/GlMemoryBarrierFlag.hpp"
+#include "Gl4Renderer/Enum/GlMemoryMapFlag.hpp"
+#include "Gl4Renderer/Enum/GlMemoryPropertyFlag.hpp"
+#include "Gl4Renderer/Enum/GlMipmapMode.hpp"
+#include "Gl4Renderer/Enum/GlPolygonMode.hpp"
+#include "Gl4Renderer/Enum/GlPrimitiveTopology.hpp"
+#include "Gl4Renderer/Enum/GlQueryResultFlag.hpp"
+#include "Gl4Renderer/Enum/GlQueryType.hpp"
+#include "Gl4Renderer/Enum/GlSampleCountFlag.hpp"
+#include "Gl4Renderer/Enum/GlSamplerParameter.hpp"
+#include "Gl4Renderer/Enum/GlShaderBinaryFormat.hpp"
+#include "Gl4Renderer/Enum/GlShaderInfo.hpp"
+#include "Gl4Renderer/Enum/GlShaderStageFlag.hpp"
+#include "Gl4Renderer/Enum/GlStencilOp.hpp"
+#include "Gl4Renderer/Enum/GlTexLevelParameter.hpp"
+#include "Gl4Renderer/Enum/GlTexParameter.hpp"
+#include "Gl4Renderer/Enum/GlTextureType.hpp"
+#include "Gl4Renderer/Enum/GlTextureUnit.hpp"
+#include "Gl4Renderer/Enum/GlTextureViewType.hpp"
+#include "Gl4Renderer/Enum/GlTweak.hpp"
+#include "Gl4Renderer/Enum/GlWrapMode.hpp"
+
 #define GL_LOG_CALLS 0
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	template< typename T >
 	struct Stringifier
@@ -336,7 +385,7 @@ namespace gl_renderer
 		{
 			stream << name;
 			logParams( stream, std::forward< ParamsT >( params )... );
-			ashes::Logger::logDebug( stream );
+			Logger::logDebug( stream );
 			return function( std::forward< ParamsT >( params )... );
 		}
 	};
@@ -348,7 +397,7 @@ namespace gl_renderer
 			, FuncT function
 			, char const * const name )
 		{
-			ashes::Logger::logDebug( std::string{ name } + "()" );
+			Logger::logDebug( std::string{ name } + "()" );
 			function();
 		}
 	};
@@ -369,7 +418,7 @@ namespace gl_renderer
 #	define glLogCall( Context, Name, ... )\
 	executeFunction( Context->Name, #Name, __VA_ARGS__ )
 #	define glLogCommand( Name )\
-	ashes::Logger::logDebug( std::string{ "Command: " } + Name )
+	Logger::logDebug( std::string{ "Command: " } + Name )
 #elif defined( NDEBUG )
 #	define glLogCall( Context, Name, ... )\
 	( Context->Name( __VA_ARGS__ ) )

@@ -2,7 +2,7 @@
 
 #include "AshesPP/Miscellaneous/Extent2D.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	uint32_t getSize( VkFormat format )noexcept
 	{

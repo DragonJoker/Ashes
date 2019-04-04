@@ -5,9 +5,10 @@ See LICENSE file in root folder.
 #include "AshesPP/Buffer/Buffer.hpp"
 
 #include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Core/Exception.hpp"
 
-namespace ashespp
+#include <AshesRenderer/Util/Exception.hpp>
+
+namespace ashes
 {
 	BufferBase::BufferBase( Device const & device
 		, VkDeviceSize size

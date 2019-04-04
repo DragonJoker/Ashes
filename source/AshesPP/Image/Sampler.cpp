@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/Core/Device.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	Sampler::Sampler( Device const & device
 		, VkSamplerCreateInfo const & createInfo )

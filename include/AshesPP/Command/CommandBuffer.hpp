@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/Buffer/PushConstantsBuffer.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\~english

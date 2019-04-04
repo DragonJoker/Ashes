@@ -6,21 +6,21 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class EndSubpassCommand
 		: public CommandBase
 	{
 	public:
-		EndSubpassCommand( Device const & device
-			, ashes::FrameBuffer const & frameBuffer
-			, ashes::SubpassDescription const & subpass );
+		EndSubpassCommand( VkDevice device
+			, VkFramebuffer frameBuffer
+			, VkSubpassDescription const & subpass );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		FrameBuffer const & m_frameBuffer;
-		ashes::SubpassDescription const & m_subpass;
+		VkFramebuffer m_frameBuffer;
+		VkSubpassDescription const & m_subpass;
 	};
 }

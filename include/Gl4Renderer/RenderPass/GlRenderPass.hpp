@@ -6,35 +6,27 @@ See LICENSE file in root folder.
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/RenderPass/RenderPass.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
-	struct AttachmentDescription
-	{
-		uint32_t index;
-		std::reference_wrapper< VkAttachmentDescription const > attach;
-	};
-
 	class RenderPass
 	{
 	public:
-		RenderPass( Device const & device
+		RenderPass( VkDevice device
 			, VkRenderPassCreateInfo createInfo );
-		/**
-		*\copydoc	RenderPass::createFrameBuffer
-		*/
-		ashes::FrameBufferPtr createFrameBuffer( VkExtent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray textures )const;
 
 		uint32_t getAttachmentIndex( VkAttachmentDescription const & attach )const;
 
-		inline AttachmentDescriptionArray const & getAttachments()const
+		inline VkAttachmentDescriptionArray const & getAttachments()const
 		{
 			return m_attachments;
 		}
 
-		inline std::vector< AttachmentDescription > const & getColourAttaches()const
+		inline VkSubpassDescriptionArray const & getSubpasses()const
+		{
+			return m_subpasses;
+		}
+
+		inline AttachmentDescriptionArray const & getColourAttaches()const
 		{
 			return m_colourAttaches;
 		}
@@ -49,11 +41,20 @@ namespace gl_renderer
 			return m_depthAttach;
 		}
 
+		inline VkExtent2D getRenderAreaGranularity()const
+		{
+			return VkExtent2D{ 1u, 1u };
+		}
+
 	private:
-		Device const & m_device;
+		VkDevice m_device;
+		VkRenderPassCreateFlags m_flags;
+		uint32_t m_attachmentCount;
+		VkAttachmentDescriptionArray m_attachments;
+		VkSubpassDescriptionArray m_subpasses;
+		VkSubpassDependencyArray m_dependencies;
 		bool m_hasDepthAttach{ false };
 		VkAttachmentDescription m_depthAttach;
-		std::vector< AttachmentDescription > m_colourAttaches;
-		AttachmentDescriptionArray m_attachments;
+		AttachmentDescriptionArray m_colourAttaches;
 	};
 }

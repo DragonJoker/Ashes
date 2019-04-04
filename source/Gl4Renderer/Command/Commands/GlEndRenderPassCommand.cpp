@@ -6,9 +6,11 @@ See LICENSE file in root folder.
 
 #include "RenderPass/GlFrameBuffer.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
-	EndRenderPassCommand::EndRenderPassCommand( Device const & device )
+	EndRenderPassCommand::EndRenderPassCommand( VkDevice device )
 		: CommandBase{ device }
 	{
 	}
@@ -20,7 +22,7 @@ namespace gl_renderer
 			, glBindFramebuffer
 			, GL_FRAMEBUFFER
 			, 0u );
-		m_device.setCurrentFramebuffer( 0u );
+		get( m_device )->setCurrentFramebuffer( 0u );
 	}
 
 	CommandPtr EndRenderPassCommand::clone()const

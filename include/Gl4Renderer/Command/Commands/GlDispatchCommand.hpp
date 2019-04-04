@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -22,7 +22,7 @@ namespace gl_renderer
 		*\param[in] groupCountX, groupCountY, groupCountZ
 		*	Le nombre de groupes de travail locaux à distribuer dans les dimensions Xy, Y, et Z.
 		*/
-		DispatchCommand( Device const & device
+		DispatchCommand( VkDevice device
 			, uint32_t groupCountX
 			, uint32_t groupCountY
 			, uint32_t groupCountZ );

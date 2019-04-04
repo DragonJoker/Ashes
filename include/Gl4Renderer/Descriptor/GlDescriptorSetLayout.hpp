@@ -10,16 +10,13 @@
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Descriptor/DescriptorSetLayout.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class DescriptorSetLayout
-		: public ashes::DescriptorSetLayout
 	{
 	public:
-		DescriptorSetLayout( ashes::Device const & device
-			, ashes::DescriptorSetLayoutBindingArray bindings );
+		DescriptorSetLayout( VkDevice device
+			, VkDescriptorSetLayoutCreateInfo createInfo );
 	};
 }
 

@@ -6,16 +6,13 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Pipeline/PipelineLayout.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
 	*	Layout de pipeline.
 	*/
 	class PipelineLayout
-		: public ashes::PipelineLayout
 	{
 	public:
 		/**
@@ -38,19 +35,10 @@ namespace gl_renderer
 		*\param[in] pushConstantRanges
 		*	Les intervalles de push constants.
 		*/
-		PipelineLayout( Device const & device
-			, ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeArray const & pushConstantRanges );
-		/**
-		*\copydoc		ashes::PipelineLayout::createPipeline
-		*/
-		ashes::PipelinePtr createPipeline( ashes::GraphicsPipelineCreateInfo createInfo )const override;
-		/**
-		*\copydoc	ashes::PipelineLayout::createPipeline
-		*/
-		ashes::ComputePipelinePtr createPipeline( ashes::ComputePipelineCreateInfo createInfo )const override;
+		PipelineLayout( VkDevice device
+			, VkPipelineLayoutCreateInfo createInfo );
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 	};
 }

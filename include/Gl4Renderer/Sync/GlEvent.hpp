@@ -6,30 +6,27 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Sync/Event.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class Event
-		: public ashes::Event
 	{
 	public:
-		Event( Device const & device );
+		Event( VkDevice device );
 		~Event();
 		/**
-		*\copydoc	ashes::Event::getStatus
+		*\copydoc	Event::getStatus
 		*/
-		ashes::EventStatus getStatus()const override;
+		VkResult getStatus()const;
 		/**
-		*\copydoc	ashes::Event::getStatus
+		*\copydoc	Event::getStatus
 		*/
-		void set()const override;
+		VkResult set()const;
 		/**
-		*\copydoc	ashes::Event::getStatus
+		*\copydoc	Event::getStatus
 		*/
-		void reset()const override;
+		VkResult reset()const;
 
 	private:
-		mutable ashes::EventStatus m_status{ ashes::EventStatus::eReset };
+		mutable VkResult m_status{ VK_EVENT_RESET };
 	};
 }

@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/FrontFace.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlFrontFace
 		: GLenum
@@ -17,11 +15,11 @@ namespace gl_renderer
 	std::string getName( GlFrontFace value );
 	/**
 	*\brief
-	*	Convertit un ashes::FrontFace en GlFrontFace.
+	*	Convertit un VkFrontFace en GlFrontFace.
 	*\param[in] value
-	*	Le ashes::FrontFace.
+	*	Le VkFrontFace.
 	*\return
 	*	Le GlFrontFace.
 	*/
-	GlFrontFace convert( ashes::FrontFace const & value );
+	GlFrontFace convert( VkFrontFace value );
 }

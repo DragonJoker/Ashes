@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -26,19 +26,19 @@ namespace gl_renderer
 		*\param[in] bindingPoint
 		*	Le point d'attache du set.
 		*/
-		BindDescriptorSetCommand( Device const & device
-			, ashes::DescriptorSet const & descriptorSet
-			, ashes::PipelineLayout const & layout
-			, ashes::UInt32Array const & dynamicOffsets
-			, ashes::PipelineBindPoint bindingPoint );
+		BindDescriptorSetCommand( VkDevice device
+			, VkDescriptorSet descriptorSet
+			, VkPipelineLayout layout
+			, UInt32Array const & dynamicOffsets
+			, VkPipelineBindPoint bindingPoint );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		DescriptorSet const & m_descriptorSet;
-		PipelineLayout const & m_layout;
-		ashes::PipelineBindPoint m_bindingPoint;
-		ashes::UInt32Array m_dynamicOffsets;
+		VkDescriptorSet m_descriptorSet;
+		VkPipelineLayout m_layout;
+		VkPipelineBindPoint m_bindingPoint;
+		UInt32Array m_dynamicOffsets;
 	};
 }

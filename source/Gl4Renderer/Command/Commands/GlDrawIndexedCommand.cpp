@@ -4,17 +4,19 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlDrawIndexedCommand.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
 	namespace
 	{
-		uint32_t getSize( ashes::IndexType type )
+		uint32_t getSize( VkIndexType type )
 		{
 			switch ( type )
 			{
-			case ashes::IndexType::eUInt16:
+			case VK_INDEX_TYPE_UINT16:
 				return 2u;
-			case ashes::IndexType::eUInt32:
+			case VK_INDEX_TYPE_UINT32:
 				return 4u;
 			default:
 				assert( false && "Unsupported index type" );
@@ -23,14 +25,14 @@ namespace gl_renderer
 		}
 	}
 
-	DrawIndexedCommand::DrawIndexedCommand( Device const & device
+	DrawIndexedCommand::DrawIndexedCommand( VkDevice device
 		, uint32_t indexCount
 		, uint32_t instCount
 		, uint32_t firstIndex
 		, uint32_t vertexOffset
 		, uint32_t firstInstance
-		, ashes::PrimitiveTopology mode
-		, ashes::IndexType type )
+		, VkPrimitiveTopology mode
+		, VkIndexType type )
 		: CommandBase{ device }
 		, m_indexCount{ indexCount }
 		, m_instCount{ instCount }

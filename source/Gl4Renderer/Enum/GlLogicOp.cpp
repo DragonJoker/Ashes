@@ -1,57 +1,57 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlLogicOp value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_LOGIC_OP_CLEAR:
+		case GL_LOGIC_OP_CLEAR:
 			return "GL_CLEAR";
 
-		case gl_renderer::GL_LOGIC_OP_AND:
+		case GL_LOGIC_OP_AND:
 			return "GL_AND";
 
-		case gl_renderer::GL_LOGIC_OP_AND_REVERSE:
+		case GL_LOGIC_OP_AND_REVERSE:
 			return "GL_AND_REVERSE";
 
-		case gl_renderer::GL_LOGIC_OP_COPY:
+		case GL_LOGIC_OP_COPY:
 			return "GL_COPY";
 
-		case gl_renderer::GL_LOGIC_OP_AND_INVERTED:
+		case GL_LOGIC_OP_AND_INVERTED:
 			return "GL_AND_INVERTED";
 
-		case gl_renderer::GL_LOGIC_OP_NOOP:
+		case GL_LOGIC_OP_NOOP:
 			return "GL_NOOP";
 
-		case gl_renderer::GL_LOGIC_OP_XOR:
+		case GL_LOGIC_OP_XOR:
 			return "GL_XOR";
 
-		case gl_renderer::GL_LOGIC_OP_OR:
+		case GL_LOGIC_OP_OR:
 			return "GL_OR";
 
-		case gl_renderer::GL_LOGIC_OP_NOR:
+		case GL_LOGIC_OP_NOR:
 			return "GL_NOR";
 
-		case gl_renderer::GL_LOGIC_OP_EQUIV:
+		case GL_LOGIC_OP_EQUIV:
 			return "GL_EQUIV";
 
-		case gl_renderer::GL_LOGIC_OP_INVERT:
+		case GL_LOGIC_OP_INVERT:
 			return "GL_INVERT";
 
-		case gl_renderer::GL_LOGIC_OP_OR_REVERSE:
+		case GL_LOGIC_OP_OR_REVERSE:
 			return "GL_OR_REVERSE";
 
-		case gl_renderer::GL_LOGIC_OP_COPY_INVERTED:
+		case GL_LOGIC_OP_COPY_INVERTED:
 			return "GL_COPY_INVERTED";
 
-		case gl_renderer::GL_LOGIC_OP_OR_INVERTED:
+		case GL_LOGIC_OP_OR_INVERTED:
 			return "GL_OR_INVERTED";
 
-		case gl_renderer::GL_LOGIC_OP_NAND:
+		case GL_LOGIC_OP_NAND:
 			return "GL_NAND";
 
-		case gl_renderer::GL_LOGIC_OP_SET:
+		case GL_LOGIC_OP_SET:
 			return "GL_SET";
 
 		default:
@@ -60,56 +60,56 @@ namespace gl_renderer
 		}
 	}
 
-	GlLogicOp convert( ashes::LogicOp const & value )
+	GlLogicOp convert( VkLogicOp const & value )
 	{
 		switch ( value )
 		{
-		case ashes::LogicOp::eClear:
+		case VK_LOGIC_OP_CLEAR:
 			return GL_LOGIC_OP_CLEAR;
 
-		case ashes::LogicOp::eAnd:
+		case VK_LOGIC_OP_AND:
 			return GL_LOGIC_OP_AND;
 
-		case ashes::LogicOp::eAndReverse:
+		case VK_LOGIC_OP_AND_REVERSE:
 			return GL_LOGIC_OP_AND_REVERSE;
 
-		case ashes::LogicOp::eCopy:
+		case VK_LOGIC_OP_COPY:
 			return GL_LOGIC_OP_COPY;
 
-		case ashes::LogicOp::eAndInverted:
+		case VK_LOGIC_OP_AND_INVERTED:
 			return GL_LOGIC_OP_AND_INVERTED;
 
-		case ashes::LogicOp::eNoOp:
+		case VK_LOGIC_OP_NO_OP:
 			return GL_LOGIC_OP_NOOP;
 
-		case ashes::LogicOp::eXor:
+		case VK_LOGIC_OP_XOR:
 			return GL_LOGIC_OP_XOR;
 
-		case ashes::LogicOp::eOr:
+		case VK_LOGIC_OP_OR:
 			return GL_LOGIC_OP_OR;
 
-		case ashes::LogicOp::eNor:
+		case VK_LOGIC_OP_NOR:
 			return GL_LOGIC_OP_NOR;
 
-		case ashes::LogicOp::eEquivalent:
+		case VK_LOGIC_OP_EQUIVALENT:
 			return GL_LOGIC_OP_EQUIV;
 
-		case ashes::LogicOp::eInvert:
+		case VK_LOGIC_OP_INVERT:
 			return GL_LOGIC_OP_INVERT;
 
-		case ashes::LogicOp::eOrReverse:
+		case VK_LOGIC_OP_OR_REVERSE:
 			return GL_LOGIC_OP_OR_REVERSE;
 
-		case ashes::LogicOp::eCopyInverted:
+		case VK_LOGIC_OP_COPY_INVERTED:
 			return GL_LOGIC_OP_COPY_INVERTED;
 
-		case ashes::LogicOp::eOrInverted:
+		case VK_LOGIC_OP_OR_INVERTED:
 			return GL_LOGIC_OP_OR_INVERTED;
 
-		case ashes::LogicOp::eNand:
+		case VK_LOGIC_OP_NAND:
 			return GL_LOGIC_OP_NAND;
 
-		case ashes::LogicOp::eSet:
+		case VkLogicOp::VK_LOGIC_OP_SET:
 			return GL_LOGIC_OP_SET;
 
 		default:

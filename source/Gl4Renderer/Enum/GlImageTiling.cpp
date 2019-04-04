@@ -1,15 +1,15 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlImageTiling value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_OPTIMAL_TILING_EXT:
+		case GL_OPTIMAL_TILING_EXT:
 			return "GL_OPTIMAL_TILING_EXT";
 
-		case gl_renderer::GL_LINEAR_TILING_EXT:
+		case GL_LINEAR_TILING_EXT:
 			return "GL_LINEAR_TILING_EXT";
 
 		default:
@@ -18,14 +18,14 @@ namespace gl_renderer
 		}
 	}
 
-	GlImageTiling convert( ashes::ImageTiling const & value )
+	GlImageTiling convert( VkImageTiling const & value )
 	{
 		switch ( value )
 		{
-		case ashes::ImageTiling::eOptimal:
+		case VK_IMAGE_TILING_OPTIMAL:
 			return GL_OPTIMAL_TILING_EXT;
 
-		case ashes::ImageTiling::eLinear:
+		case VK_IMAGE_TILING_LINEAR:
 			return GL_LINEAR_TILING_EXT;
 
 		default:

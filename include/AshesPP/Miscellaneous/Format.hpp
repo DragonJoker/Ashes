@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <string>
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\~english

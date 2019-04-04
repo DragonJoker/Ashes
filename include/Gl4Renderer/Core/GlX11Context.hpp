@@ -9,14 +9,17 @@ See LICENSE file in root folder
 #	include <X11/Xlib.h>
 #	include <GL/glx.h>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class X11Context
 		: public Context
 	{
 	public:
-		X11Context( Instance const & instance
-			, ashes::WindowHandle const & handle
+		X11Context( VkInstance instance
+			, VkXlibSurfaceCreateInfoKHR createInfo
+			, Context const * mainContext );
+		X11Context( VkInstance instance
+			, VkSurfaceKHR surface
 			, Context const * mainContext );
 		~X11Context();
 
@@ -49,8 +52,6 @@ namespace gl_renderer
 	protected:
 		GLXContext m_glxContext;
 		int m_glxVersion;
-		Display * m_display;
-		GLXDrawable m_drawable;
 		GLXFBConfig * m_fbConfig;
 	};
 }

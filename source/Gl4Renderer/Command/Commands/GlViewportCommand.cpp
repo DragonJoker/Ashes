@@ -6,11 +6,13 @@ See LICENSE file in root folder.
 
 #include "Core/GlDevice.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
-	ViewportCommand::ViewportCommand( Device const & device
+	ViewportCommand::ViewportCommand( VkDevice device
 		, uint32_t firstViewport
-		, ashes::ViewportArray const & viewports )
+		, VkViewportArray viewports )
 		: CommandBase{ device }
 		, m_viewports{ viewports.begin() + firstViewport, viewports.end() }
 	{
@@ -18,7 +20,7 @@ namespace gl_renderer
 
 	void ViewportCommand::apply( ContextLock const & context )const
 	{
-		auto & save = m_device.getCurrentViewport();
+		auto & save = get( m_device )->getCurrentViewport();
 		auto & viewport = *m_viewports.begin();
 
 		if ( viewport != save )
@@ -26,10 +28,10 @@ namespace gl_renderer
 			glLogCommand( "ViewportCommand" );
 			glLogCall( context
 				, glViewport
-				, viewport.offset.x
-				, viewport.offset.y
-				, viewport.size.width
-				, viewport.size.height );
+				, GLint( viewport.x )
+				, GLint( viewport.y )
+				, GLsizei( viewport.width )
+				, GLsizei( viewport.height ) );
 			glLogCall( context
 				, glDepthRange
 				, viewport.minDepth

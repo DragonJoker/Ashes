@@ -6,9 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/Miscellaneous/ImageCopy.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -28,18 +26,18 @@ namespace gl_renderer
 		*\param[in] dst
 		*	L'image destination.
 		*/
-		CopyImageCommand( Device const & device
-			, ashes::ImageCopy const & copyInfo
-			, ashes::Image const & src
-			, ashes::Image const & dst );
+		CopyImageCommand( VkDevice device
+			, VkImageCopy copyInfo
+			, VkImage src
+			, VkImage dst );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		Image const & m_src;
-		Image const & m_dst;
-		ashes::ImageCopy m_copyInfo;
+		VkImage m_src;
+		VkImage m_dst;
+		VkImageCopy m_copyInfo;
 		GlInternal m_srcInternal;
 		GlFormat m_srcFormat;
 		GlType m_srcType;

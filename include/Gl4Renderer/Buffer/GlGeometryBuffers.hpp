@@ -8,11 +8,7 @@ See LICENSE file in root folder.
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Pipeline/VertexInputAttributeDescription.hpp>
-#include <Ashes/Pipeline/VertexInputBindingDescription.hpp>
-#include <Ashes/Pipeline/VertexInputState.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class GeometryBuffers
 	{
@@ -21,8 +17,8 @@ namespace gl_renderer
 		{
 			VBO( GLuint vbo
 				, uint64_t offset
-				, ashes::VertexInputBindingDescription binding
-				, ashes::VertexInputAttributeDescriptionArray attributes )
+				, VkVertexInputBindingDescription binding
+				, VkVertexInputAttributeDescriptionArray attributes )
 				: vbo{ vbo }
 				, offset{ offset }
 				, binding{ binding }
@@ -32,15 +28,15 @@ namespace gl_renderer
 
 			GLuint vbo;
 			uint64_t offset;
-			ashes::VertexInputBindingDescription binding;
-			ashes::VertexInputAttributeDescriptionArray attributes;
+			VkVertexInputBindingDescription binding;
+			VkVertexInputAttributeDescriptionArray attributes;
 		};
 
 		struct IBO
 		{
 			IBO( GLuint ibo
 				, uint64_t offset
-				, ashes::IndexType type )
+				, VkIndexType type )
 				: ibo{ ibo }
 				, offset{ offset }
 				, type{ type }
@@ -49,15 +45,15 @@ namespace gl_renderer
 
 			GLuint ibo;
 			uint64_t offset;
-			ashes::IndexType type;
+			VkIndexType type;
 		};
 
 	public:
-		GeometryBuffers( Device const & device
+		GeometryBuffers( VkDevice device
 			, VboBindings const & vbos
 			, IboBinding const & ibo
 			, VkPipelineVertexInputStateCreateInfo const & vertexInputState
-			, ashes::IndexType type );
+			, VkIndexType type );
 		~GeometryBuffers()noexcept;
 
 		void initialise();
@@ -87,7 +83,7 @@ namespace gl_renderer
 		}
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		std::vector< VBO > m_vbos;
 		std::unique_ptr< IBO > m_ibo;
 		GLuint m_vao{ GL_INVALID_INDEX };

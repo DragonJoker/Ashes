@@ -14,7 +14,9 @@ See LICENSE file in root folder.
 #	include <GL/glx.h>
 #endif
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
 	namespace
 	{
@@ -24,9 +26,9 @@ namespace gl_renderer
 			, uint32_t severity
 			, int length
 			, const char * message
-			, DebugReportCallback * userParam )
+			, VkDebugReportCallbackEXT userParam )
 		{
-			userParam->report( GlDebugSource( source )
+			get( userParam )->report( GlDebugSource( source )
 				, GlDebugType( type )
 				, id
 				, GlDebugSeverity( severity )
@@ -40,9 +42,9 @@ namespace gl_renderer
 			, uint32_t severity
 			, int length
 			, const char * message
-			, DebugReportCallback * userParam )
+			, VkDebugReportCallbackEXT userParam )
 		{
-			userParam->report( id
+			get( userParam )->report( id
 				, GlDebugCategory( category )
 				, GlDebugSeverity( severity )
 				, length
@@ -95,53 +97,71 @@ namespace gl_renderer
 			}
 		}
 
-		ashes::DebugReportFlags convert( GlDebugType type )
+		VkDebugReportFlagsEXT convert( GlDebugType type )
 		{
 			switch ( type )
 			{
 			case GL_DEBUG_TYPE_ERROR:
-				return ashes::DebugReportFlag::eError;
+				return VK_DEBUG_REPORT_ERROR_BIT_EXT;
 			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
 			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
 			case GL_DEBUG_TYPE_PORTABILITY:
-				return ashes::DebugReportFlag::eWarning;
+				return VK_DEBUG_REPORT_WARNING_BIT_EXT;
 			case GL_DEBUG_TYPE_PERFORMANCE:
-				return ashes::DebugReportFlag::ePerformanceWarning;
+				return VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
 			default:
-				return ashes::DebugReportFlag::eDebug;
+				return VK_DEBUG_REPORT_DEBUG_BIT_EXT;
 			}
 		}
 
-		ashes::DebugReportFlags convert( GlDebugSeverity severity )
+		VkDebugReportFlagsEXT convert( GlDebugSeverity severity )
 		{
 			switch ( severity )
 			{
 			case GL_DEBUG_SEVERITY_HIGH:
-				return ashes::DebugReportFlag::eError;
+				return VK_DEBUG_REPORT_ERROR_BIT_EXT;
 			case GL_DEBUG_SEVERITY_MEDIUM:
-				return ashes::DebugReportFlag::eWarning;
+				return VK_DEBUG_REPORT_WARNING_BIT_EXT;
 			case GL_DEBUG_SEVERITY_LOW:
-				return ashes::DebugReportFlag::eDebug;
+				return VK_DEBUG_REPORT_DEBUG_BIT_EXT;
 			default:
-				return ashes::DebugReportFlag::eInformation;
+				return VK_DEBUG_REPORT_INFORMATION_BIT_EXT;
 			}
 		}
 	}
 
-	DebugReportCallback::DebugReportCallback( Instance const & instance
-		, ashes::DebugReportCallbackCreateInfo createInfo )
-		: ashes::DebugReportCallback{ instance, std::move( createInfo ) }
+	DebugReportCallbackEXT::DebugReportCallbackEXT( VkInstance instance
+		, VkDebugReportCallbackCreateInfoEXT createInfo )
+		: m_createInfo{ std::move( createInfo ) }
 		, m_instance{ instance }
 	{
-		m_instance.registerDebugMessageCallback( PFNGLDEBUGPROC( &callbackDebugLog ), this );
-		m_instance.registerDebugMessageCallbackAMD( PFNGLDEBUGAMDPROC( &callbackDebugLogAMD ), this );
+		get( m_instance )->registerDebugMessageCallback( get( this ), PFNGLDEBUGPROC( &callbackDebugLog ), this );
+		get( m_instance )->registerDebugMessageCallbackAMD( get( this ), PFNGLDEBUGAMDPROC( &callbackDebugLogAMD ), this );
 	}
 
-	DebugReportCallback::~DebugReportCallback()
+	DebugReportCallbackEXT::~DebugReportCallbackEXT()
 	{
 	}
 
-	void DebugReportCallback::report( GlDebugSource source
+	void DebugReportCallbackEXT::report( VkDebugReportFlagsEXT flags
+		, VkDebugReportObjectTypeEXT objectType
+		, uint64_t object
+		, size_t location
+		, int32_t messageCode
+		, const char * pLayerPrefix
+		, const char * pMessage )
+	{
+		m_createInfo.pfnCallback( flags
+			, objectType
+			, object
+			, location
+			, messageCode
+			, pLayerPrefix
+			, pMessage
+			, m_createInfo.pUserData );
+	}
+
+	void DebugReportCallbackEXT::report( GlDebugSource source
 		, GlDebugType type
 		, uint32_t id
 		, GlDebugSeverity severity
@@ -152,7 +172,7 @@ namespace gl_renderer
 		auto flags = convert( type );
 		flags |= convert( severity );
 		m_createInfo.pfnCallback( flags
-			, ashes::DebugReportObjectType::eUnknown
+			, VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
 			, 0ull
 			, 0u
 			, id
@@ -161,7 +181,7 @@ namespace gl_renderer
 			, m_createInfo.pUserData );
 	}
 
-	void DebugReportCallback::report( uint32_t id
+	void DebugReportCallbackEXT::report( uint32_t id
 		, GlDebugCategory category
 		, GlDebugSeverity severity
 		, int length
@@ -170,7 +190,7 @@ namespace gl_renderer
 		auto layer = convert( category );
 		auto flags = convert( severity );
 		m_createInfo.pfnCallback( flags
-			, ashes::DebugReportObjectType::eUnknown
+			, VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
 			, 0ull
 			, 0u
 			, id

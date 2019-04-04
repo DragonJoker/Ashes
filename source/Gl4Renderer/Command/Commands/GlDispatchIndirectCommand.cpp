@@ -6,13 +6,15 @@ See LICENSE file in root folder.
 
 #include "Buffer/GlBuffer.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
-	DispatchIndirectCommand::DispatchIndirectCommand( Device const & device
-		, ashes::BufferBase const & buffer
-		, uint32_t offset )
+	DispatchIndirectCommand::DispatchIndirectCommand( VkDevice device
+		, VkBuffer buffer
+		, VkDeviceSize offset )
 		: CommandBase{ device }
-		, m_buffer{ static_cast< Buffer const & >( buffer ) }
+		, m_buffer{ static_cast< VkBuffer >( buffer ) }
 		, m_offset{ offset }
 	{
 	}
@@ -23,7 +25,7 @@ namespace gl_renderer
 		glLogCall( context
 			, glBindBuffer
 			, GL_BUFFER_TARGET_DISPATCH_INDIRECT
-			, m_buffer.getInternal() );
+			, get( m_buffer )->getInternal() );
 		glLogCall( context
 			, glDispatchComputeIndirect
 			, GLintptr( BufferOffset( m_offset ) ) );

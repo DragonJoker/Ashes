@@ -1,4 +1,4 @@
-#include "AshesC/ashes.h"
+#include "ashes/ashes.h"
 
 #include <AshesCommon/DynamicLibrary.hpp>
 #include <AshesCommon/FileUtils.hpp>
@@ -7,14 +7,6 @@
 #include <iostream>
 #include <memory>
 #include <vector>
-
-#if defined( _WIN32 )
-static char const * const libraryName = "ashes.dll";
-#elif defined( __linux__ )
-static char const * const libraryName = "libashes.so";
-#else
-#	error Unsupported platform
-#endif
 
 struct Plugin
 {
@@ -79,7 +71,8 @@ struct PluginLibrary
 			}
 			else
 			{
-				selectedPugin = &plugins.back();
+				selectedPugin = &plugins.front();
+				std::cout << "Using " << selectedPugin->description.description << std::endl;
 				result = VK_SUCCESS;
 			}
 		}

@@ -7,24 +7,25 @@ See LICENSE file in root folder.
 #include "Buffer/GlBuffer.hpp"
 #include "Core/GlDevice.hpp"
 
-#include <Ashes/Buffer/VertexBuffer.hpp>
+#include "ashesgl4_api.hpp"
 
 #include <algorithm>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	namespace
 	{
-		ashes::VertexInputAttributeDescriptionArray getAttributes( ashes::VertexInputAttributeDescriptionArray const & attributes
+		VkVertexInputAttributeDescriptionArray getAttributes( VkVertexInputAttributeDescription const * begin
+			, VkVertexInputAttributeDescription const * end
 			, uint32_t bindingSlot )
 		{
-			ashes::VertexInputAttributeDescriptionArray result;
+			VkVertexInputAttributeDescriptionArray result;
 
-			for ( auto & attribute : attributes )
+			for ( auto it = begin; it != end; ++it )
 			{
-				if ( attribute.binding == bindingSlot )
+				if ( it->binding == bindingSlot )
 				{
-					result.push_back( attribute );
+					result.push_back( *it );
 				}
 			}
 
@@ -54,11 +55,11 @@ namespace gl_renderer
 		}
 	}
 
-	GeometryBuffers::GeometryBuffers( Device const & device
+	GeometryBuffers::GeometryBuffers( VkDevice device
 		, VboBindings const & vbos
 		, IboBinding const & ibo
 		, VkPipelineVertexInputStateCreateInfo const & vertexInputState
-		, ashes::IndexType type )
+		, VkIndexType type )
 		: m_device{ device }
 		, m_vbos{ createVBOs( vbos, vertexInputState ) }
 		, m_ibo{ bool( ibo ) ? std::make_unique< IBO >( ibo.value().bo, ibo.value().offset, type ) : nullptr }
@@ -67,7 +68,7 @@ namespace gl_renderer
 
 	GeometryBuffers::~GeometryBuffers()noexcept
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteVertexArrays
 			, 1
@@ -76,7 +77,7 @@ namespace gl_renderer
 
 	void GeometryBuffers::initialise()
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glGenVertexArrays
 			, 1
@@ -98,7 +99,7 @@ namespace gl_renderer
 				, GL_BUFFER_TARGET_ARRAY
 				, vbo.vbo );
 
-			if ( vbo.binding.inputRate == ashes::VertexInputRate::eVertex )
+			if ( vbo.binding.inputRate == VK_VERTEX_INPUT_RATE_VERTEX )
 			{
 				for ( auto & attribute : vbo.attributes )
 				{
@@ -111,7 +112,7 @@ namespace gl_renderer
 						glLogCall( context
 							, glVertexAttribIPointer
 							, attribute.location
-							, getCount( attribute.format )
+							, ashes::getCount( attribute.format )
 							, getType( getInternalFormat( attribute.format ) )
 							, vbo.binding.stride
 							, BufferOffset( vbo.offset + attribute.offset ) );
@@ -121,7 +122,7 @@ namespace gl_renderer
 						glLogCall( context
 							, glVertexAttribPointer
 							, attribute.location
-							, getCount( attribute.format )
+							, ashes::getCount( attribute.format )
 							, getType( getInternalFormat( attribute.format ) )
 							, false
 							, vbo.binding.stride
@@ -147,7 +148,7 @@ namespace gl_renderer
 						glLogCall( context
 							, glVertexAttribIPointer
 							, location
-							, getCount( format )
+							, ashes::getCount( format )
 							, getType( getInternalFormat( attribute.format ) )
 							, vbo.binding.stride
 							, BufferOffset( vbo.offset + offset ) );
@@ -157,7 +158,7 @@ namespace gl_renderer
 						glLogCall( context
 							, glVertexAttribPointer
 							, location
-							, getCount( format )
+							, ashes::getCount( format )
 							, getType( getInternalFormat( attribute.format ) )
 							, false
 							, vbo.binding.stride
@@ -189,23 +190,24 @@ namespace gl_renderer
 		, VkPipelineVertexInputStateCreateInfo const & vertexInputState )
 	{
 		std::vector< GeometryBuffers::VBO > result;
-		assert( vbos.size() == vertexInputState.vertexBindingDescriptions.size() );
+		assert( vbos.size() == vertexInputState.vertexBindingDescriptionCount );
 		result.reserve( vbos.size() );
 
 		for ( auto & binding : vbos )
 		{
-			auto it = std::find_if( vertexInputState.vertexBindingDescriptions.begin()
-				, vertexInputState.vertexBindingDescriptions.end()
-				, [&binding]( ashes::VertexInputBindingDescription const & lookup )
+			auto it = std::find_if( vertexInputState.pVertexBindingDescriptions
+				, vertexInputState.pVertexBindingDescriptions + vertexInputState.vertexBindingDescriptionCount
+				, [&binding]( VkVertexInputBindingDescription const & lookup )
 			{
 				return lookup.binding == binding.first;
 			} );
-			assert( it != vertexInputState.vertexBindingDescriptions.end() );
+			assert( it != vertexInputState.pVertexBindingDescriptions + vertexInputState.vertexBindingDescriptionCount );
 			auto & vbo = binding.second;
 			result.emplace_back( vbo.bo
 				, vbo.offset
 				, *it
-				, getAttributes( vertexInputState.vertexAttributeDescriptions
+				, getAttributes( vertexInputState.pVertexAttributeDescriptions
+					, vertexInputState.pVertexAttributeDescriptions + vertexInputState.vertexAttributeDescriptionCount
 					, it->binding ) );
 		}
 

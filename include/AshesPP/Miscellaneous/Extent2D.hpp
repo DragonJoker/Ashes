@@ -15,7 +15,7 @@ See LICENSE file in root folder.
 #undef max
 #endif
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\~english

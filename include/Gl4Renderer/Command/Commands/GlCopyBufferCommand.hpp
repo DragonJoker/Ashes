@@ -6,9 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/Miscellaneous/BufferCopy.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -28,17 +26,17 @@ namespace gl_renderer
 		*\param[in] dst
 		*	Le tampon destination.
 		*/
-		CopyBufferCommand( Device const & device
-			, ashes::BufferCopy const & copyInfo
-			, ashes::BufferBase const & src
-			, ashes::BufferBase const & dst );
+		CopyBufferCommand( VkDevice device
+			, VkBufferCopy copyInfo
+			, VkBuffer src
+			, VkBuffer dst );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		Buffer const & m_src;
-		Buffer const & m_dst;
-		ashes::BufferCopy m_copyInfo;
+		VkBuffer m_src;
+		VkBuffer m_dst;
+		VkBufferCopy m_copyInfo;
 	};
 }

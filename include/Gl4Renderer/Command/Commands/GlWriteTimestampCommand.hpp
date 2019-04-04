@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -16,9 +16,9 @@ namespace gl_renderer
 		: public CommandBase
 	{
 	public:
-		WriteTimestampCommand( Device const & device
-			, ashes::PipelineStageFlag pipelineStage
-			, ashes::QueryPool const & pool
+		WriteTimestampCommand( VkDevice device
+			, VkPipelineStageFlagBits pipelineStage
+			, VkQueryPool pool
 			, uint32_t query );
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;

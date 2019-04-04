@@ -7,18 +7,18 @@ See LICENSE file in root folder.
 #include "RenderPass/GlFrameBuffer.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 
-#include <Ashes/RenderPass/AttachmentDescription.hpp>
+#include "ashesgl4_api.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	BeginSubpassCommand::BeginSubpassCommand( Device const & device
-		, RenderPass const & renderPass
-		, ashes::FrameBuffer const & frameBuffer
-		, ashes::SubpassDescription const & subpass )
+	BeginSubpassCommand::BeginSubpassCommand( VkDevice device
+		, VkRenderPass renderPass
+		, VkFramebuffer frameBuffer
+		, VkSubpassDescription subpass )
 		: CommandBase{ device }
-		, m_renderPass{ static_cast< RenderPass const & >( renderPass ) }
-		, m_subpass{ subpass }
-		, m_frameBuffer{ static_cast< FrameBuffer const & >( frameBuffer ) }
+		, m_renderPass{ static_cast< VkRenderPass >( renderPass ) }
+		, m_subpass{ std::move( subpass ) }
+		, m_frameBuffer{ static_cast< VkFramebuffer >( frameBuffer ) }
 	{
 	}
 
@@ -26,10 +26,10 @@ namespace gl_renderer
 	{
 		glLogCommand( "NextSubpassCommand" );
 
-		if ( m_frameBuffer.getInternal() )
+		if ( get( m_frameBuffer )->getInternal() )
 		{
-			m_frameBuffer.setDrawBuffers( context
-				, m_subpass.colorAttachments );
+			get( m_frameBuffer )->setDrawBuffers( context
+				, VkAttachmentReferenceArray{ m_subpass.pColorAttachments, m_subpass.pColorAttachments + m_subpass.colorAttachmentCount } );
 		}
 	}
 

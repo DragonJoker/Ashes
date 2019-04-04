@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Descriptor/DescriptorSet.hpp"
 #include "AshesPP/Descriptor/DescriptorSetLayout.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	namespace
 	{

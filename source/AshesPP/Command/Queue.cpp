@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Sync/Fence.hpp"
 #include "AshesPP/Sync/Semaphore.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	Queue::Queue( Device const & device
 		, uint32_t familyIndex

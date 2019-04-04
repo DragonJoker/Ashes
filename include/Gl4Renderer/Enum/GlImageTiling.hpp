@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/ImageTiling.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlImageTiling
 	{
@@ -16,11 +14,11 @@ namespace gl_renderer
 	std::string getName( GlImageTiling value );
 	/**
 	*\brief
-	*	Convertit un ashes::ImageTiling en GlImageTiling.
+	*	Convertit un VkImageTiling en GlImageTiling.
 	*\param[in] value
-	*	Le ashes::ImageTiling.
+	*	Le VkImageTiling.
 	*\return
 	*	Le GlImageTiling.
 	*/
-	GlImageTiling convert( ashes::ImageTiling const & value );
+	GlImageTiling convert( VkImageTiling const & value );
 }

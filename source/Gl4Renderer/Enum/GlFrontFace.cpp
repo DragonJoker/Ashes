@@ -1,15 +1,15 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlFrontFace value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_FRONT_FACE_CW:
+		case GL_FRONT_FACE_CW:
 			return "GL_CW";
 
-		case gl_renderer::GL_FRONT_FACE_CCW:
+		case GL_FRONT_FACE_CCW:
 			return "GL_CCW";
 
 		default:
@@ -18,14 +18,14 @@ namespace gl_renderer
 		}
 	}
 
-	GlFrontFace convert( ashes::FrontFace const & value )
+	GlFrontFace convert( VkFrontFace value )
 	{
 		switch ( value )
 		{
-		case ashes::FrontFace::eCounterClockwise:
+		case VK_FRONT_FACE_COUNTER_CLOCKWISE:
 			return GL_FRONT_FACE_CCW;
 
-		case ashes::FrontFace::eClockwise:
+		case VK_FRONT_FACE_CLOCKWISE:
 			return GL_FRONT_FACE_CW;
 
 		default:

@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Pipeline/ComputePipeline.hpp"
 #include "AshesPP/Pipeline/GraphicsPipeline.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	PipelineLayout::PipelineLayout( Device const & device
 		, DescriptorSetLayoutCRefArray const & layouts

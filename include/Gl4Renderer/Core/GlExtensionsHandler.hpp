@@ -5,8 +5,9 @@ See LICENSE file in root folder
 #pragma once
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
+#include "Gl4Renderer/Enum/GlShaderBinaryFormat.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class ExtensionsHandler
 	{
@@ -14,8 +15,8 @@ namespace gl_renderer
 		void initialise();
 
 		bool find( std::string const & name )const;
-		bool findAny( ashes::StringArray const & names )const;
-		bool findAll( ashes::StringArray const & names )const;
+		bool findAny( StringArray const & names )const;
+		bool findAll( StringArray const & names )const;
 		bool hasSPIRVShaderBinaryFormat()const;
 
 		inline int isSPIRVSupported()const
@@ -39,8 +40,8 @@ namespace gl_renderer
 		}
 
 	private:
-		ashes::StringArray m_deviceExtensionNames;
-		ashes::StringArray m_deviceSPIRVExtensionNames;
+		StringArray m_deviceExtensionNames;
+		StringArray m_deviceSPIRVExtensionNames;
 		std::vector< GlShaderBinaryFormat > m_shaderBinaryFormats;
 		int m_major{ 0 };
 		int m_minor{ 0 };

@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 #include <AshesCommon/DynamicLibrary.hpp>
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\~english
@@ -54,30 +54,11 @@ namespace ashespp
 		{
 			return m_plugin.getInstanceProcAddr( instance, name );
 		}
-		/**
-		*\~english
-		*name
-		*	Getters.
-		*\~french
-		*name
-		*	Accesseurs.
-		*/
-		/**@{*/
-		//inline std::string getName()const
-		//{
-		//	return m_plugin.name;
-		//}
 
-		//inline std::string getDescription()const
-		//{
-		//	return m_plugin.description;
-		//}
-
-		//inline AshPluginDescription const & getPluginDescription()const
-		//{
-		//	return m_plugin;
-		//}
-		/**@}*/
+		inline AshPluginDescription const & getPluginDescription()const
+		{
+			return m_plugin;
+		}
 
 	private:
 		ashes::DynamicLibrary m_library;

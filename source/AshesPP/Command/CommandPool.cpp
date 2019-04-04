@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Command/CommandBuffer.hpp"
 #include "AshesPP/Core/Device.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	CommandPool::CommandPool( Device const & device
 		, uint32_t queueFamilyIndex

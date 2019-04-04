@@ -7,14 +7,14 @@ See LICENSE file in root folder
 
 #include <atomic>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	extern char const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME[VK_MAX_EXTENSION_NAME_SIZE];
 
 	class Context
 	{
 	protected:
-		Context( Instance const & instance );
+		Context( VkInstance instance );
 
 	public:
 		virtual ~Context();
@@ -39,12 +39,73 @@ namespace gl_renderer
 			return m_enabled;
 		}
 
-		/**
-		*\brief
-		*	Crée un contexte.
-		*/
-		static ContextPtr create( Instance const & instance
-			, ashes::WindowHandle const & handle
+#if defined( VK_USE_PLATFORM_ANDROID_KHR )
+
+		static ContextPtr create( VkInstance instance
+			, VkAndroidSurfaceCreateInfoKHR createInfo
+			, Context const * mainContext );
+		VkAndroidSurfaceCreateInfoKHR m_createInfo;
+
+#elif defined( VK_USE_PLATFORM_FUCHSIA )
+
+		static ContextPtr create( VkInstance instance
+			, VkImagePipeSurfaceCreateInfoFUCHSIA createInfo
+			, Context const * mainContext );
+		VkImagePipeSurfaceCreateInfoFUCHSIA m_createInfo;
+
+#elif defined( VK_USE_PLATFORM_IOS_MVK )
+
+		static ContextPtr create( VkInstance instance
+			, VkIOSSurfaceCreateInfoMVK createInfo
+			, Context const * mainContext );
+		VkIOSSurfaceCreateInfoMVK m_createInfo;
+
+#elif defined( VK_USE_PLATFORM_MACOS_MVK )
+
+		static ContextPtr create( VkInstance instance
+			, VkMacOSSurfaceCreateInfoMVK createInfo
+			, Context const * mainContext );
+		VkMacOSSurfaceCreateInfoMVK m_createInfo;
+
+#elif defined( VK_USE_PLATFORM_VI_NN )
+
+		static ContextPtr create( VkInstance instance
+			, VkViSurfaceCreateInfoNN createInfo
+			, Context const * mainContext );
+		VkViSurfaceCreateInfoNN m_createInfo;
+
+#elif defined( VK_USE_PLATFORM_XCB_KHR )
+
+		static ContextPtr create( VkInstance instance
+			, VkXcbSurfaceCreateInfoKHR createInfo
+			, Context const * mainContext );
+		VkXcbSurfaceCreateInfoKHR m_createInfo;
+
+#elif defined( VK_USE_PLATFORM_XLIB_KHR )
+
+		static ContextPtr create( VkInstance instance
+			, VkXlibSurfaceCreateInfoKHR createInfo
+			, Context const * mainContext );
+		VkXlibSurfaceCreateInfoKHR m_createInfo;
+
+#elif defined( VK_USE_PLATFORM_WAYLAND_KHR )
+
+		static ContextPtr create( VkInstance instance
+			, VkWaylandSurfaceCreateInfoKHR createInfo
+			, Context const * mainContext );
+		VkWaylandSurfaceCreateInfoKHR m_createInfo;
+
+#elif defined( VK_USE_PLATFORM_WIN32_KHR )
+
+		static ContextPtr create( VkInstance instance
+			, VkWin32SurfaceCreateInfoKHR createInfo
+			, Context const * mainContext );
+		VkWin32SurfaceCreateInfoKHR m_createInfo;
+
+#endif
+
+		static ContextPtr create( VkInstance instance
+			, VkSurfaceKHR surface
 			, Context const * mainContext );
 
 #define GL_LIB_BASE_FUNCTION( fun )\
@@ -78,7 +139,7 @@ namespace gl_renderer
 		PFN_glObjectPtrLabel glObjectPtrLabel = nullptr;
 
 	protected:
-		Instance const & m_instance;
+		VkInstance m_instance;
 		mutable std::atomic< bool > m_enabled{ false };
 
 		using PFN_glDebugMessageCallback = void ( GLAPIENTRY * )( PFNGLDEBUGPROC callback, void * userParam );

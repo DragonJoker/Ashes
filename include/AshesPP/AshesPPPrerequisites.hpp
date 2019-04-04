@@ -6,12 +6,14 @@ See LICENSE file in root folder.
 #define ___AshesPP_Prerequisites_HPP___
 #pragma once
 
-#include <AshesC/ashes.h>
+#include <ashes/ashes.h>
 
 #include "Miscellaneous/Debug.hpp"
 #include "Miscellaneous/Error.hpp"
 #include "Miscellaneous/Format.hpp"
 #include "Miscellaneous/Extent2D.hpp"
+
+#include <AshesCommon/PlatformWindowHandle.hpp>
 
 #include <array>
 #include <cassert>
@@ -32,7 +34,7 @@ See LICENSE file in root folder.
 #		error "Unsupported version of GCC"
 #	elif ASHES_COMPILER_VERSION < 70400
 #		include <experimental/optional>
-namespace ashespp
+namespace ashes
 {
 	template< typename T >
 	using Optional = std::experimental::optional< T >;
@@ -40,7 +42,7 @@ namespace ashespp
 }
 #	else
 #		include <optional>
-namespace ashespp
+namespace ashes
 {
 	template< typename T >
 	using Optional = std::optional< T >;
@@ -49,7 +51,7 @@ namespace ashespp
 #	endif
 #else
 #	include <optional>
-namespace ashespp
+namespace ashes
 {
 	template< typename T >
 	using Optional = std::optional< T >;
@@ -62,7 +64,7 @@ namespace ashespp
 
 #include "AshesPP/Miscellaneous/Log.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	inline constexpr uint32_t getMajor( uint32_t version )
 	{
@@ -146,7 +148,6 @@ namespace ashespp
 	class SwapChain;
 	class UniformBufferBase;
 	class VertexBufferBase;
-	class WindowHandle;
 
 	/**
 	*\~french

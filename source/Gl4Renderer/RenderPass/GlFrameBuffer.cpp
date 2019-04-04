@@ -10,11 +10,11 @@ See LICENSE file in root folder.
 #include "Image/GlImage.hpp"
 #include "Image/GlImageView.hpp"
 
-#include <Ashes/RenderPass/AttachmentReference.hpp>
+#include "ashesgl4_api.hpp"
 
 #include <iostream>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	namespace
 	{
@@ -44,17 +44,17 @@ namespace gl_renderer
 
 		GlAttachmentPoint getAttachmentPoint( VkFormat format )
 		{
-			if ( ashes::isDepthStencilFormat( format ) )
+			if ( isDepthStencilFormat( format ) )
 			{
 				return GL_ATTACHMENT_POINT_DEPTH_STENCIL;
 			}
 
-			if ( ashes::isStencilFormat( format ) )
+			if ( isStencilFormat( format ) )
 			{
 				return GL_ATTACHMENT_POINT_STENCIL;
 			}
 
-			if ( ashes::isDepthFormat( format ) )
+			if ( isDepthFormat( format ) )
 			{
 				return GL_ATTACHMENT_POINT_DEPTH;
 			}
@@ -62,24 +62,24 @@ namespace gl_renderer
 			return GL_ATTACHMENT_POINT_COLOR0;
 		}
 
-		GlAttachmentPoint getAttachmentPoint( ImageView const & texture )
+		GlAttachmentPoint getAttachmentPoint( VkImageView texture )
 		{
-			return getAttachmentPoint( texture.getFormat() );
+			return getAttachmentPoint( get( texture )->getFormat() );
 		}
 
 		GlAttachmentType getAttachmentType( VkFormat format )
 		{
-			if ( ashes::isDepthStencilFormat( format ) )
+			if ( isDepthStencilFormat( format ) )
 			{
 				return GL_ATTACHMENT_TYPE_DEPTH_STENCIL;
 			}
 
-			if ( ashes::isStencilFormat( format ) )
+			if ( isStencilFormat( format ) )
 			{
 				return GL_ATTACHMENT_TYPE_STENCIL;
 			}
 
-			if ( ashes::isDepthFormat( format ) )
+			if ( isDepthFormat( format ) )
 			{
 				return GL_ATTACHMENT_TYPE_DEPTH;
 			}
@@ -87,9 +87,9 @@ namespace gl_renderer
 			return GL_ATTACHMENT_TYPE_COLOR;
 		}
 
-		GlAttachmentType getAttachmentType( ImageView const & texture )
+		GlAttachmentType getAttachmentType( VkImageView texture )
 		{
-			return getAttachmentType( texture.getFormat() );
+			return getAttachmentType( get( texture )->getFormat() );
 		}
 	}
 
@@ -98,7 +98,7 @@ namespace gl_renderer
 		switch ( status )
 		{
 		case 0:
-			ashes::Logger::logError( "An error has occured." );
+			std::cerr << "An error has occured." << std::endl;
 			assert( false );
 			break;
 
@@ -106,86 +106,118 @@ namespace gl_renderer
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_UNDEFINED:
-			ashes::Logger::logError( "The specified framebuffer is the default read or draw framebuffer, but the default framebuffer does not exist." );
+			std::cerr << "The specified framebuffer is the default read or draw framebuffer, but the default framebuffer does not exist." << std::endl;
 			assert( false );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT:
-			ashes::Logger::logError( "At least one of the framebuffer attachment points are framebuffer incomplete." );
+			std::cerr << "At least one of the framebuffer attachment points are framebuffer incomplete." << std::endl;
 			assert( false );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT:
-			ashes::Logger::logError( "The framebuffer does not have at least one image attached to it." );
+			std::cerr << "The framebuffer does not have at least one image attached to it." << std::endl;
 			assert( false );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER:
-			ashes::Logger::logError( "The value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for any color attachment point(s) named by GL_DRAW_BUFFERi." );
+			std::cerr << "The value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for any color attachment point(s) named by GL_DRAW_BUFFERi." << std::endl;
 			assert( false );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER:
-			ashes::Logger::logError( "GL_READ_BUFFER is not GL_NONE and the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for the color attachment point named by GL_READ_BUFFER." );
+			std::cerr << "GL_READ_BUFFER is not GL_NONE and the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for the color attachment point named by GL_READ_BUFFER." << std::endl;
 			assert( false );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_UNSUPPORTED:
-			ashes::Logger::logError( "The combination of internal formats of the attached images violates an implementation-dependent set of restrictions." );
+			std::cerr << "The combination of internal formats of the attached images violates an implementation-dependent set of restrictions." << std::endl;
 			assert( false );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE:
-			ashes::Logger::logError( "One of the following:" );
-			ashes::Logger::logError( "  - The value of GL_RENDERBUFFER_SAMPLES is not the same for all attached renderbuffers;" );
-			ashes::Logger::logError( "  - The value of GL_TEXTURE_SAMPLES is the not same for all attached textures;" );
-			ashes::Logger::logError( "  - The attached images are a mix of renderbuffers and textures, the value of GL_RENDERBUFFER_SAMPLES does not match the value of GL_TEXTURE_SAMPLES;" );
-			ashes::Logger::logError( "  - The value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not the same for all attached textures;" );
-			ashes::Logger::logError( "  - The attached images are a mix of renderbuffers and textures, the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not GL_TRUE for all attached textures." );
+			std::cerr << "One of the following:" << std::endl;
+			std::cerr << "  - The value of GL_RENDERBUFFER_SAMPLES is not the same for all attached renderbuffers;" << std::endl;
+			std::cerr << "  - The value of GL_TEXTURE_SAMPLES is the not same for all attached textures;" << std::endl;
+			std::cerr << "  - The attached images are a mix of renderbuffers and textures, the value of GL_RENDERBUFFER_SAMPLES does not match the value of GL_TEXTURE_SAMPLES;" << std::endl;
+			std::cerr << "  - The value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not the same for all attached textures;" << std::endl;
+			std::cerr << "  - The attached images are a mix of renderbuffers and textures, the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not GL_TRUE for all attached textures." << std::endl;
 			assert( false );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS:
-			ashes::Logger::logError( "At least one framebuffer attachment is layered, and any populated attachment is not layered, or all populated color attachments are not from textures of the same target." );
+			std::cerr << "At least one framebuffer attachment is layered, and any populated attachment is not layered, or all populated color attachments are not from textures of the same target." << std::endl;
 			assert( false );
 			break;
 		}
 	}
 
-	FrameBuffer::FrameBuffer( Device const & device
-		, RenderPass const & renderPass
-		, VkExtent2D const & dimensions
-		, ashes::FrameBufferAttachmentArray views )
-		: ashes::FrameBuffer{ renderPass, dimensions, std::move( views ) }
-		, m_device{ device }
-		, m_frameBuffer{ 0u }
-		, m_renderPass{ renderPass }
+	Framebuffer::Framebuffer( VkDevice device
+		, VkFramebufferCreateInfo createInfo )
+		: m_device{ device }
+		, m_flags{ createInfo.flags }
+		, m_renderPass{ createInfo.renderPass }
+		, m_attachments{ makeVector( createInfo.pAttachments, createInfo.attachmentCount ) }
+		, m_width{ createInfo.width }
+		, m_height{ createInfo.height }
+		, m_layers{ createInfo.layers }
 	{
-		doInitialiseFramebuffer();
+		auto context = get( m_device )->getContext();
+		glLogCall( context
+			, glGenFramebuffers
+			, 1
+			, &m_internal );
+		glLogCall( context
+			, glBindFramebuffer
+			, GL_FRAMEBUFFER
+			, m_internal );
+		uint32_t index = 0u;
+		auto renderPass = get( m_renderPass );
+		auto itPassAttach = renderPass->getAttachments().begin();
+
+		for ( auto & attachment : m_attachments )
+		{
+			if ( ashes::isDepthOrStencilFormat( itPassAttach->format ) )
+			{
+				doInitialiseAttach( attachment, 0u );
+			}
+			else
+			{
+				doInitialiseAttach( attachment, index++ );
+			}
+		}
+
+		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+		glLogCall( context
+			, glBindFramebuffer
+			, GL_FRAMEBUFFER
+			, 0 );
 	}
 
-	FrameBuffer::~FrameBuffer()
+	Framebuffer::~Framebuffer()
 	{
-		if ( m_frameBuffer > 0u )
+		if ( m_internal > 0u )
 		{
-			auto context = m_device.getContext();
+			auto context = get( m_device )->getContext();
 			glLogCall( context
 				, glDeleteFramebuffers
 				, 1
-				, &m_frameBuffer );
+				, &m_internal );
 		}
 	}
 
-	void FrameBuffer::setDrawBuffers( ContextLock const & context
+	void Framebuffer::setDrawBuffers( ContextLock const & context
 		, AttachmentDescriptionArray const & attaches )const
 	{
 		m_drawBuffers.clear();
 
 		for ( auto & attach : attaches )
 		{
-			auto & fboAttach = m_attachments[attach.index];
+			auto fboAttach = m_attachments[attach.index];
+			auto fboView = get( fboAttach );
+			auto fboImage = get( fboView->getImage() );
 
-			if ( static_cast< Image const & >( fboAttach.getImage() ).hasImage() )
+			if ( fboImage->hasInternal() )
 			{
 				m_drawBuffers.push_back( getAttachmentPoint( attach.attach.get().format ) + attach.index );
 			}
@@ -201,12 +233,12 @@ namespace gl_renderer
 			, m_drawBuffers.data() );
 	}
 
-	void FrameBuffer::setDrawBuffers( ContextLock const & context
-		, ashes::AttachmentReferenceArray const & attaches )const
+	void Framebuffer::setDrawBuffers( ContextLock const & context
+		, VkAttachmentReferenceArray const & attaches )const
 	{
 		if ( getInternal() != GL_INVALID_INDEX )
 		{
-			ashes::UInt32Array colours;
+			UInt32Array colours;
 
 			if ( m_colourAttaches.empty() && attaches.size() == 1 )
 			{
@@ -232,47 +264,19 @@ namespace gl_renderer
 		}
 	}
 
-	void FrameBuffer::doInitialiseFramebuffer()
+	void Framebuffer::doInitialiseAttach( VkImageView view
+		, uint32_t index )
 	{
-		auto context = m_device.getContext();
-		glLogCall( context
-			, glGenFramebuffers
-			, 1
-			, &m_frameBuffer );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, m_frameBuffer );
+		auto context = get( m_device )->getContext();
+		auto image = get( view )->getImage();
+		auto internal = get( view )->getInternal();
+		auto mipLevel = get( view )->getSubresourceRange().baseMipLevel;
 
-		for ( auto & attach : m_attachments )
+		if ( get( view )->getSubresourceRange().baseMipLevel )
 		{
-			auto & glview = static_cast< ImageView const & >( attach.getView() );
-			auto & gltexture = static_cast< Image const & >( glview.getImage() );
-			assert( gltexture.hasImage() );
-			doInitialiseFboAttach( attach );
-		}
-
-		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, 0 );
-	}
-
-	void FrameBuffer::doInitialiseFboAttach( ashes::FrameBufferAttachment const & attach )
-	{
-		auto context = m_device.getContext();
-		auto & glview = static_cast< ImageView const & >( attach.getView() );
-		auto & gltexture = static_cast< Image const & >( glview.getImage() );
-		uint32_t index = m_renderPass.getAttachmentIndex( attach.getAttachment() );
-		auto image = glview.getInternal();
-		auto mipLevel = glview.getSubResourceRange().baseMipLevel;
-
-		if ( glview.getSubResourceRange().baseMipLevel )
-		{
-			if ( gltexture.getLayerCount() == 1u )
+			if ( get( image )->getArrayLayers() == 1u )
 			{
-				image = gltexture.getInternal();
+				internal = get( image )->getInternal();
 			}
 			else
 			{
@@ -282,9 +286,9 @@ namespace gl_renderer
 
 		Attachment attachment
 		{
-			getAttachmentPoint( glview ),
-			image,
-			getAttachmentType( glview ),
+			getAttachmentPoint( view ),
+			internal,
+			getAttachmentType( view ),
 		};
 
 		if ( attachment.point == GL_ATTACHMENT_POINT_DEPTH_STENCIL
@@ -296,13 +300,13 @@ namespace gl_renderer
 		else
 		{
 			m_colourAttaches.push_back( attachment );
-			m_srgb |= isSRGBFormat( glview.getFormat() );
+			m_srgb |= isSRGBFormat( get( view )->getFormat() );
 		}
 
 		m_allAttaches.push_back( attachment );
 		auto target = GL_TEXTURE_2D;
 
-		if ( gltexture.getSamplesCount() > VK_SAMPLE_COUNT_1 )
+		if ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT )
 		{
 			target = GL_TEXTURE_2D_MULTISAMPLE;
 		}

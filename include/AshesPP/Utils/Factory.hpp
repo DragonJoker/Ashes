@@ -11,7 +11,7 @@ See LICENSE file in root folder
 #include <functional>
 #include <iostream>
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\~english

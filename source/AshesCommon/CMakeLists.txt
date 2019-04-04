@@ -25,6 +25,11 @@ file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
 )
 
 add_library( ${PROJECT_NAME} STATIC
@@ -34,6 +39,7 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 )
 
+parse_subdir_files( ${ASHES_SOURCE_DIR} Platform "Platform" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Win32 "Win32" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Linux "Linux" )
 

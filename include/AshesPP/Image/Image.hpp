@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/Miscellaneous/DeviceMemory.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\~english

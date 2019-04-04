@@ -35,13 +35,13 @@ add_library( ${PROJECT_NAME} STATIC
 )
 
 target_link_libraries( ${PROJECT_NAME}
-	Common
-	AshesC
+	AshesCommon
+	ashes
 )
 
 add_dependencies( ${PROJECT_NAME}
-	Common
-	AshesC
+	AshesCommon
+	ashes
 )
 
 parse_subdir_files( ${ASHES_SOURCE_DIR} Win32 "Win32" )

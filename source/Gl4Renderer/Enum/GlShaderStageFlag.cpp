@@ -1,43 +1,43 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getShaderStageFlagName( GlShaderStageFlags value )
 	{
 		std::string result;
 		std::string sep;
 
-		if ( checkFlag( value, gl_renderer::GlShaderStageFlag::GL_SHADER_STAGE_VERTEX ) )
+		if ( checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_VERTEX ) )
 		{
 			result += sep + " GL_VERTEX_SHADER";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, gl_renderer::GlShaderStageFlag::GL_SHADER_STAGE_TESS_CONTROL ) )
+		if ( checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_TESS_CONTROL ) )
 		{
 			result += sep + "GL_TESS_CONTROL_SHADER";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, gl_renderer::GlShaderStageFlag::GL_SHADER_STAGE_TESS_EVALUATION ) )
+		if ( checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_TESS_EVALUATION ) )
 		{
 			result += sep + "GL_TESS_EVALUATION_SHADER";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, gl_renderer::GlShaderStageFlag::GL_SHADER_STAGE_GEOMETRY ) )
+		if ( checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_GEOMETRY ) )
 		{
 			result += sep + "GL_GEOMETRY_SHADER";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, gl_renderer::GlShaderStageFlag::GL_SHADER_STAGE_FRAGMENT ) )
+		if ( checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_FRAGMENT ) )
 		{
 			result += sep + "GL_FRAGMENT_SHADER";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, gl_renderer::GlShaderStageFlag::GL_SHADER_STAGE_COMPUTE ) )
+		if ( checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_COMPUTE ) )
 		{
 			result += sep + "GL_COMPUTE_SHADER";
 		}

@@ -1,18 +1,18 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlQueryType value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_QUERY_TYPE_SAMPLES_PASSED:
+		case GL_QUERY_TYPE_SAMPLES_PASSED:
 			return "GL_SAMPLES_PASSED";
 
-		case gl_renderer::GL_QUERY_TYPE_TIMESTAMP:
+		case GL_QUERY_TYPE_TIMESTAMP:
 			return "GL_TIMESTAMP";
 
-		case gl_renderer::GL_QUERY_TYPE_PRIMITIVES_GENERATED:
+		case GL_QUERY_TYPE_PRIMITIVES_GENERATED:
 			return "GL_PRIMITIVES_GENERATED";
 
 		default:
@@ -21,17 +21,17 @@ namespace gl_renderer
 		}
 	}
 
-	GlQueryType convert( ashes::QueryType const & value )
+	GlQueryType convert( VkQueryType const & value )
 	{
 		switch ( value )
 		{
-		case ashes::QueryType::eOcclusion:
+		case VK_QUERY_TYPE_OCCLUSION:
 			return GL_QUERY_TYPE_SAMPLES_PASSED;
 
-		case ashes::QueryType::eTimestamp:
+		case VK_QUERY_TYPE_TIMESTAMP:
 			return GL_QUERY_TYPE_TIMESTAMP;
 
-		case ashes::QueryType::ePipelineStatistics:
+		case VK_QUERY_TYPE_PIPELINE_STATISTICS:
 			return GL_QUERY_TYPE_PRIMITIVES_GENERATED;
 
 		default:

@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "AshesPP/Buffer/VertexBuffer.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	VertexBufferBase::VertexBufferBase( Device const & device
 		, VkDeviceSize size

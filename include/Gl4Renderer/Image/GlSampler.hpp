@@ -10,15 +10,12 @@
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Image/Sampler.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class Sampler
-		: public ashes::Sampler
 	{
 	public:
-		Sampler( Device const & device
+		Sampler( VkDevice device
 			, VkSamplerCreateInfo const & createInfo );
 		/**
 		*\brief
@@ -35,7 +32,7 @@ namespace gl_renderer
 		}
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		GLuint m_sampler;
 	};
 }

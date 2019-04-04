@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "AshesPP/Core/Device.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	template< typename T >
 	UniformBuffer< T >::UniformBuffer( Device const & device

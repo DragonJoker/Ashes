@@ -6,29 +6,26 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/Pipeline/Scissor.hpp>
-#include <Ashes/RenderPass/ClearValue.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class BeginRenderPassCommand
 		: public CommandBase
 	{
 	public:
-		BeginRenderPassCommand( Device const & device
-			, RenderPass const & renderPass
-			, ashes::FrameBuffer const & frameBuffer
-			, ashes::ClearValueArray const & clearValues
-			, ashes::SubpassContents contents );
+		BeginRenderPassCommand( VkDevice device
+			, VkRenderPass renderPass
+			, VkFramebuffer frameBuffer
+			, VkClearValueArray clearValues
+			, VkSubpassContents contents );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		RenderPass const & m_renderPass;
-		FrameBuffer const & m_frameBuffer;
-		ashes::ClearValueArray m_rtClearValues;
-		ashes::ClearValue m_dsClearValue;
+		VkRenderPass m_renderPass;
+		VkFramebuffer m_frameBuffer;
+		VkClearValueArray m_rtClearValues;
+		VkClearValue m_dsClearValue;
 		VkRect2D m_scissor;
 	};
 }

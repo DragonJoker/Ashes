@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Command/Queue.hpp"
 #include "AshesPP/Sync/Fence.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	/**
 	*\name

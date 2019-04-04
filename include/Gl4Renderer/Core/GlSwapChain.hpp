@@ -8,12 +8,9 @@
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Core/SwapChain.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
-	class SwapChain
-		: public ashes::SwapChain
+	class SwapchainKHR
 	{
 	public:
 		/**
@@ -32,27 +29,42 @@ namespace gl_renderer
 		*\param[in] createInfo
 		*	The creation informations.
 		*/
-		SwapChain( Device const & device
+		SwapchainKHR( VkDevice device
 			, VkSwapchainCreateInfoKHR createInfo );
-		~SwapChain();
+		~SwapchainKHR();
+		uint32_t getImageCount()const;
 		/**
-		*\copydoc	ashes::SwapChain::getImages
+		*\copydoc	SwapChain::getImages
 		*/
-		ashes::ImagePtrArray getImages()const override;
+		VkImageArray getImages()const;
 		/**
-		*\copydoc	ashes::SwapChain::acquireNextImage
+		*\copydoc	SwapChain::acquireNextImage
 		*/
-		ashes::Result acquireNextImage( uint64_t timeout
-			, ashes::Semaphore const * semaphore
-			, ashes::Fence const * fence
-			, uint32_t & imageIndex )const override;
+		VkResult acquireNextImage( uint64_t timeout
+			, VkSemaphore semaphore
+			, VkFence fence
+			, uint32_t & imageIndex )const;
 
-		void present( uint32_t imageIndex )const;
+		VkResult present( uint32_t imageIndex )const;
 
 	private:
-		Device const & m_device;
-		std::unique_ptr< Image > m_image;
-		std::unique_ptr< ImageView > m_view;
+		VkDevice m_device;
+		VkSwapchainCreateFlagsKHR m_flags;
+		VkSurfaceKHR m_surface;
+		uint32_t m_minImageCount;
+		VkFormat m_imageFormat;
+		VkColorSpaceKHR m_imageColorSpace;
+		VkExtent2D m_imageExtent;
+		uint32_t m_imageArrayLayers;
+		VkImageUsageFlags m_imageUsage;
+		VkSharingMode m_imageSharingMode;
+		UInt32Array m_queueFamilyIndices;
+		VkSurfaceTransformFlagBitsKHR m_preTransform;
+		VkCompositeAlphaFlagBitsKHR m_compositeAlpha;
+		VkPresentModeKHR m_presentMode;
+		VkBool32 m_clipped;
+		VkImage m_image;
+		VkImageView m_view;
 		GLuint m_fbo;
 	};
 }

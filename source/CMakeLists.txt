@@ -86,7 +86,7 @@ endif ()
 set( SPIRV_CROSS_DIR ${ASHES_SOURCE_DIR}/external/SPIRV-Cross )
 
 add_subdirectory( AshesCommon )
-add_subdirectory( AshesC )
+add_subdirectory( ashes )
 add_subdirectory( AshesPP )
 
 if ( ASHES_BUILD_PLUGINS )
@@ -120,6 +120,6 @@ if ( ASHES_BUILD_PLUGINS )
 	set( ENABLED_RENDERERS ${ENABLED_RENDERERS} PARENT_SCOPE )
 endif ()
 
-if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
+if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES )
 	add_subdirectory( Utils )
 endif ()

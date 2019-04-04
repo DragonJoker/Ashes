@@ -1,21 +1,21 @@
-#include "GlRendererPrerequisites.hpp"
+#include "Gl4Renderer/Enum/GlConstantFormat.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlConstantFormatBaseType value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_CONSTANT_FORMAT_BASE_TYPE_UNSIGNED_BYTE:
+		case GL_CONSTANT_FORMAT_BASE_TYPE_UNSIGNED_BYTE:
 			return "GL_UNSIGNED_BYTE";
 
-		case gl_renderer::GL_CONSTANT_FORMAT_BASE_TYPE_INT:
+		case GL_CONSTANT_FORMAT_BASE_TYPE_INT:
 			return "GL_INT";
 
-		case gl_renderer::GL_CONSTANT_FORMAT_BASE_TYPE_UNSIGNED_INT:
+		case GL_CONSTANT_FORMAT_BASE_TYPE_UNSIGNED_INT:
 			return "GL_UNSIGNED_INT";
 
-		case gl_renderer::GL_CONSTANT_FORMAT_BASE_TYPE_FLOAT:
+		case GL_CONSTANT_FORMAT_BASE_TYPE_FLOAT:
 			return "GL_FLOAT";
 
 		default:
@@ -24,32 +24,32 @@ namespace gl_renderer
 		}
 	}
 
-	GlConstantFormatBaseType getType( ashes::ConstantFormat format )
+	GlConstantFormatBaseType getType( ConstantFormat format )
 	{
 		switch ( format )
 		{
-		case ashes::ConstantFormat::eFloat:
-		case ashes::ConstantFormat::eVec2f:
-		case ashes::ConstantFormat::eVec3f:
-		case ashes::ConstantFormat::eVec4f:
-		case ashes::ConstantFormat::eMat2f:
-		case ashes::ConstantFormat::eMat3f:
-		case ashes::ConstantFormat::eMat4f:
+		case ConstantFormat::eFloat:
+		case ConstantFormat::eVec2f:
+		case ConstantFormat::eVec3f:
+		case ConstantFormat::eVec4f:
+		case ConstantFormat::eMat2f:
+		case ConstantFormat::eMat3f:
+		case ConstantFormat::eMat4f:
 			return GL_CONSTANT_FORMAT_BASE_TYPE_FLOAT;
 
-		case ashes::ConstantFormat::eInt:
-		case ashes::ConstantFormat::eVec2i:
-		case ashes::ConstantFormat::eVec3i:
-		case ashes::ConstantFormat::eVec4i:
+		case ConstantFormat::eInt:
+		case ConstantFormat::eVec2i:
+		case ConstantFormat::eVec3i:
+		case ConstantFormat::eVec4i:
 			return GL_CONSTANT_FORMAT_BASE_TYPE_INT;
 
-		case ashes::ConstantFormat::eUInt:
-		case ashes::ConstantFormat::eVec2ui:
-		case ashes::ConstantFormat::eVec3ui:
-		case ashes::ConstantFormat::eVec4ui:
+		case ConstantFormat::eUInt:
+		case ConstantFormat::eVec2ui:
+		case ConstantFormat::eVec3ui:
+		case ConstantFormat::eVec4ui:
 			return GL_CONSTANT_FORMAT_BASE_TYPE_UNSIGNED_INT;
 
-		case ashes::ConstantFormat::eColour:
+		case ConstantFormat::eColour:
 			return GL_CONSTANT_FORMAT_BASE_TYPE_UNSIGNED_BYTE;
 
 		default:
@@ -58,36 +58,36 @@ namespace gl_renderer
 		}
 	}
 
-	uint32_t getCount( ashes::ConstantFormat format )
+	uint32_t getCount( ConstantFormat format )
 	{
 		switch ( format )
 		{
-		case ashes::ConstantFormat::eFloat:
-		case ashes::ConstantFormat::eInt:
-		case ashes::ConstantFormat::eUInt:
+		case ConstantFormat::eFloat:
+		case ConstantFormat::eInt:
+		case ConstantFormat::eUInt:
 			return 1u;
 
-		case ashes::ConstantFormat::eVec2f:
-		case ashes::ConstantFormat::eVec2i:
-		case ashes::ConstantFormat::eVec2ui:
+		case ConstantFormat::eVec2f:
+		case ConstantFormat::eVec2i:
+		case ConstantFormat::eVec2ui:
 			return 2u;
 
-		case ashes::ConstantFormat::eVec3f:
-		case ashes::ConstantFormat::eVec3i:
-		case ashes::ConstantFormat::eVec3ui:
+		case ConstantFormat::eVec3f:
+		case ConstantFormat::eVec3i:
+		case ConstantFormat::eVec3ui:
 			return 3u;
 
-		case ashes::ConstantFormat::eVec4f:
-		case ashes::ConstantFormat::eVec4i:
-		case ashes::ConstantFormat::eVec4ui:
-		case ashes::ConstantFormat::eMat2f:
-		case ashes::ConstantFormat::eColour:
+		case ConstantFormat::eVec4f:
+		case ConstantFormat::eVec4i:
+		case ConstantFormat::eVec4ui:
+		case ConstantFormat::eMat2f:
+		case ConstantFormat::eColour:
 			return 4u;
 
-		case ashes::ConstantFormat::eMat3f:
+		case ConstantFormat::eMat3f:
 			return 9u;
 
-		case ashes::ConstantFormat::eMat4f:
+		case ConstantFormat::eMat4f:
 			return 16u;
 
 		default:

@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -20,13 +20,13 @@ namespace gl_renderer
 		*\brief
 		*	Constructeur.
 		*/
-		MemoryBarrierCommand( Device const & device
-			, ashes::PipelineStageFlags after
-			, ashes::PipelineStageFlags before
-			, ashes::DependencyFlags dependencyFlags
-			, ashes::MemoryBarrierArray const & memoryBarriers
-			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers );
+		MemoryBarrierCommand( VkDevice device
+			, VkPipelineStageFlags after
+			, VkPipelineStageFlags before
+			, VkDependencyFlags dependencyFlags
+			, VkMemoryBarrierArray memoryBarriers
+			, VkBufferMemoryBarrierArray bufferMemoryBarriers
+			, VkImageMemoryBarrierArray imageMemoryBarriers );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;

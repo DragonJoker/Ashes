@@ -1,18 +1,22 @@
 #include "Miscellaneous/GlQueryPool.hpp"
 
 #include "Core/GlDevice.hpp"
+#include "Miscellaneous/GlCallLogger.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
-	QueryPool::QueryPool( Device const & device
-		, ashes::QueryType type
-		, uint32_t count
-		, VkQueryPipelineStatisticFlags pipelineStatistics )
-		: ashes::QueryPool{ device, type, count, pipelineStatistics }
-		, m_device{ device }
-		, m_names( size_t( count ), GLuint( GL_INVALID_INDEX ) )
+	QueryPool::QueryPool( VkDevice device
+		, VkQueryPoolCreateInfo createInfo )
+		: m_device{ device }
+		, m_flags{ createInfo.flags }
+		, m_queryType{ createInfo.queryType }
+		, m_queryCount{ createInfo.queryCount }
+		, m_pipelineStatistics{ createInfo.pipelineStatistics }
+		, m_names( size_t( m_queryCount ), GLuint( GL_INVALID_INDEX ) )
 	{
-		auto context = m_device.getContext();
+		auto & context = get( m_device )->getContext();
 		glLogCall( context
 			, glGenQueries
 			, GLsizei( m_names.size() )
@@ -21,34 +25,34 @@ namespace gl_renderer
 
 	QueryPool::~QueryPool()
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteQueries
 			, GLsizei( m_names.size() )
 			, m_names.data() );
 	}
 
-	void QueryPool::getResults( uint32_t firstQuery
+	VkResult QueryPool::getResults( uint32_t firstQuery
 		, uint32_t queryCount
-		, uint32_t stride
+		, VkDeviceSize stride
 		, VkQueryResultFlags flags
-		, ashes::UInt32Array & data )const
+		, UInt32Array & data )const
 	{
 		assert( firstQuery + queryCount <= m_names.size() );
 		assert( queryCount == data.size() );
-		ashes::UInt64Array data64;
+		UInt64Array data64;
 		data64.resize( data.size() );
 		auto begin = m_names.begin() + firstQuery;
 		auto end = begin + queryCount;
 		auto * buffer = data64.data();
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 
 		for ( auto it = begin; it != end; ++it )
 		{
 			glLogCall( context
 				, glGetQueryObjectui64v
 				, *it
-				, convert( flags )
+				, convertQueryResultFlags( flags )
 				, buffer );
 			++buffer;
 		}
@@ -57,29 +61,33 @@ namespace gl_renderer
 		{
 			data[i] = uint32_t( data64[i] );
 		}
+
+		return VK_SUCCESS;
 	}
 
-	void QueryPool::getResults( uint32_t firstQuery
+	VkResult QueryPool::getResults( uint32_t firstQuery
 		, uint32_t queryCount
-		, uint32_t stride
+		, VkDeviceSize stride
 		, VkQueryResultFlags flags
-		, ashes::UInt64Array & data )const
+		, UInt64Array & data )const
 	{
 		assert( firstQuery + queryCount <= m_names.size() );
 		assert( queryCount == data.size() );
 		auto begin = m_names.begin() + firstQuery;
 		auto end = begin + queryCount;
 		auto * buffer = data.data();
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 
 		for ( auto it = begin; it != end; ++it )
 		{
 			glLogCall( context
 				, glGetQueryObjectui64v
 				, *it
-				, convert( flags )
+				, convertQueryResultFlags( flags )
 				, buffer );
 			++buffer;
 		}
+
+		return VK_SUCCESS;
 	}
 }

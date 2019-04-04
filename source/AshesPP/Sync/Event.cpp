@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/Core/Device.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	Event::Event( Device const & device )
 		: m_device{ device }

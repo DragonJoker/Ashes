@@ -6,23 +6,23 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ContextLock const & context
 		, VkPipelineColorBlendStateCreateInfo const & state );
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ContextLock const & context
 		, VkPipelineRasterizationStateCreateInfo const & state
 		, bool dynamicLineWidth
 		, bool dynamicDepthBias );
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ContextLock const & context
 		, VkPipelineMultisampleStateCreateInfo const & state );
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ContextLock const & context
 		, VkPipelineDepthStencilStateCreateInfo const & state );
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ContextLock const & context
 		, VkPipelineTessellationStateCreateInfo const & state );
 	/**
@@ -41,16 +41,16 @@ namespace gl_renderer
 		*\param[in] bindingPoint
 		*	Le point d'attache du pipeline.
 		*/
-		BindPipelineCommand( Device const & device
-			, Pipeline const & pipeline
+		BindPipelineCommand( VkDevice device
+			, VkPipeline pipeline
 			, VkPipelineBindPoint bindingPoint );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		Pipeline const & m_pipeline;
-		PipelineLayout const & m_layout;
+		VkPipeline m_pipeline;
+		VkPipelineLayout m_layout;
 		GLuint m_program;
 		VkPipelineBindPoint m_bindingPoint;
 		bool m_dynamicLineWidth;

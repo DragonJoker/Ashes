@@ -9,25 +9,20 @@
 #pragma once
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
+#include "Gl4Renderer/Enum/GlBufferTarget.hpp"
 
-#include <Ashes/Buffer/Buffer.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class Buffer
 	{
 	public:
-		Buffer( Device const & device
+		Buffer( VkDevice device
 			, VkBufferCreateInfo createInfo );
 		~Buffer();
 		/**
-		*\copydoc	ashes::BufferBase::getMemoryRequirements
+		*\copydoc	VkBuffer::getMemoryRequirements
 		*/
 		VkMemoryRequirements getMemoryRequirements()const;
-		/**
-		*\copydoc	ashes::Image::bindMemory
-		*/
-		void bindMemory( DeviceMemoryPtr memory )const;
 		/**
 		*\return
 		*	Le tampon.
@@ -50,11 +45,15 @@ namespace gl_renderer
 		mutable BufferDestroySignal onDestroy;
 
 	private:
-		Device const & m_device;
-		VkBufferCreateInfo m_createInfo;
+		VkDevice m_device;
+		VkBufferCreateFlags m_flags;
+		VkDeviceSize m_size;
+		VkBufferUsageFlags m_usage;
+		VkSharingMode m_sharingMode;
+		UInt32Array m_queueFamilyIndices;
 		GLuint m_name{ GL_INVALID_INDEX };
 		GlBufferTarget m_target;
-		mutable DeviceMemoryPtr m_storage;
+		mutable VkDeviceMemory m_storage;
 		mutable GlBufferTarget m_copyTarget;
 	};
 }

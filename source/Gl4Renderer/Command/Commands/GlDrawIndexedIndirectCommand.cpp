@@ -6,17 +6,19 @@ See LICENSE file in root folder.
 
 #include "Buffer/GlBuffer.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
-	DrawIndexedIndirectCommand::DrawIndexedIndirectCommand( Device const & device
-		, ashes::BufferBase const & buffer
-		, uint32_t offset
+	DrawIndexedIndirectCommand::DrawIndexedIndirectCommand( VkDevice device
+		, VkBuffer buffer
+		, VkDeviceSize offset
 		, uint32_t drawCount
 		, uint32_t stride
-		, ashes::PrimitiveTopology mode
-		, ashes::IndexType type )
+		, VkPrimitiveTopology mode
+		, VkIndexType type )
 		: CommandBase{ device }
-		, m_buffer{ static_cast< Buffer const & >( buffer ) }
+		, m_buffer{ static_cast< VkBuffer >( buffer ) }
 		, m_offset{ offset }
 		, m_drawCount{ drawCount }
 		, m_stride{ stride }
@@ -31,7 +33,7 @@ namespace gl_renderer
 		glLogCall( context
 			, glBindBuffer
 			, GL_BUFFER_TARGET_DRAW_INDIRECT
-			, m_buffer.getInternal() );
+			, get( m_buffer )->getInternal() );
 		glLogCall( context
 			, glMultiDrawElementsIndirect
 			, m_mode

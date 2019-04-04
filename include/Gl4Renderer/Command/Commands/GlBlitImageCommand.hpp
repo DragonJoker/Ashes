@@ -6,9 +6,12 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/Miscellaneous/ImageBlit.hpp>
+#include "Gl4Renderer/Enum/GlAttachmentPoint.hpp"
+#include "Gl4Renderer/Enum/GlAttachmentType.hpp"
+#include "Gl4Renderer/Enum/GlFilter.hpp"
+#include "Gl4Renderer/Enum/GlImageAspectFlag.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class BlitImageCommand
 		: public CommandBase
@@ -16,41 +19,43 @@ namespace gl_renderer
 	public:
 		struct Attachment
 		{
-			Attachment( ashes::ImageSubresourceLayers & subresource
-				, Image const & image
+			Attachment( VkDevice device
+				, VkImageSubresourceLayers & subresource
+				, VkImage image
 				, uint32_t layer );
 
-			ashes::ImageViewPtr view;
+			VkImageView view;
 			GlAttachmentPoint point;
 			GLuint object;
 			GlAttachmentType type;
 		};
 		struct LayerCopy
 		{
-			LayerCopy( ashes::ImageBlit region
-				, Image const & srcImage
-				, Image const & dstImage
+			LayerCopy( VkDevice device
+				, VkImageBlit region
+				, VkImage srcImage
+				, VkImage dstImage
 				, uint32_t layer );
 
-			ashes::ImageBlit region;
+			VkImageBlit region;
 			Attachment src;
 			Attachment dst;
 		};
 
 	public:
-		BlitImageCommand( Device const & device
-			, ashes::Image const & srcImage
-			, ashes::Image const & dstImage
-			, std::vector< ashes::ImageBlit > const & regions
-			, ashes::Filter filter );
+		BlitImageCommand( VkDevice device
+			, VkImage srcImage
+			, VkImage dstImage
+			, VkImageBlit region
+			, VkFilter filter );
 		~BlitImageCommand();
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		Image const & m_srcTexture;
-		Image const & m_dstTexture;
+		VkImage m_srcTexture;
+		VkImage m_dstTexture;
 		std::vector< std::shared_ptr< LayerCopy > > m_layerCopies;
 		GLuint m_srcFbo;
 		GLuint m_dstFbo;

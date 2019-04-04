@@ -4,9 +4,9 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlSetDepthBiasCommand.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	SetDepthBiasCommand::SetDepthBiasCommand( Device const & device
+	SetDepthBiasCommand::SetDepthBiasCommand( VkDevice device
 		, float constantFactor
 		, float clamp
 		, float slopeFactor )

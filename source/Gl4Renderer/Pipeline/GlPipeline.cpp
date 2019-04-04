@@ -9,13 +9,15 @@
 #include "RenderPass/GlRenderPass.hpp"
 #include "Shader/GlShaderModule.hpp"
 
+#include "ashesgl4_api.hpp"
+
 #include <algorithm>
 
 #if defined( interface )
 #	undef interface
 #endif
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	namespace
 	{
@@ -95,53 +97,54 @@ namespace gl_renderer
 		}
 	}
 
-	Pipeline::Pipeline( Device const & device
-		, PipelineLayout const & layout
-		, RenderPass const & renderPass
+	Pipeline::Pipeline( VkDevice device
 		, VkGraphicsPipelineCreateInfo createInfo )
 		: m_device{ device }
-		, m_layout{ layout }
-		, m_renderPass{ renderPass }
-		, m_createInfo{ createInfo }
-		, m_ssState{ m_createInfo.pStages, m_createInfo.pStages + m_createInfo.stageCount ) }
-		, m_vertexInputState{ *m_createInfo.pVertexInputState }
-		, m_iaState{ *m_createInfo.pInputAssemblyState }
-		, m_cbState{ *m_createInfo.pColorBlendState }
-		, m_rsState{ *m_createInfo.pRasterizationState }
-		, m_dsState{ VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO, nullptr, 0u, false, true, VK_COMPARE_OP_LESS,  }
-		, m_msState{ *m_createInfo.pMultisampleState }
-		, m_viewportState{ *m_createInfo.pViewportState }
-		, m_vertexInputStateHash{ doHash( m_vertexInputState ) }
-		, m_program{ m_device, m_ssState }
+		, m_flags{ createInfo.flags }
+		, m_stages{ makeVector( createInfo.pStages, createInfo.stageCount ) }
+		, m_vertexInputState{ makeOptional( createInfo.pVertexInputState
+			, m_vertexBindingDescriptions
+			, m_vertexAttributeDescriptions ) }
+		, m_inputAssemblyState{ makeOptional( createInfo.pInputAssemblyState ) }
+		, m_tessellationState{ makeOptional( createInfo.pTessellationState ) }
+		, m_viewportState{ makeOptional( createInfo.pViewportState
+			, m_viewports
+			, m_scissors ) }
+		, m_rasterizationState{ makeOptional( createInfo.pRasterizationState ) }
+		, m_multisampleState{ makeOptional( createInfo.pMultisampleState ) }
+		, m_depthStencilState{ makeOptional( createInfo.pDepthStencilState ) }
+		, m_colorBlendState{ makeOptional( createInfo.pColorBlendState
+			, m_colorBlendAttachments ) }
+		, m_dynamicState{ makeOptional( createInfo.pDynamicState
+			, m_dynamicStates ) }
+		, m_layout{ createInfo.layout }
+		, m_renderPass{ createInfo.renderPass }
+		, m_subpass{ createInfo.subpass }
+		, m_basePipelineHandle{ createInfo.basePipelineHandle }
+		, m_basePipelineIndex{ createInfo.basePipelineIndex }
+		, m_vertexInputStateHash{ ( createInfo.pVertexInputState
+			? doHash( m_vertexInputState.value() )
+			: 0u ) }
+		, m_program{ m_device, m_stages }
 	{
-		if ( m_createInfo.pDepthStencilState )
-		{
-			m_dsState = *m_createInfo.pDepthStencilState;
-		}
-
-		if ( m_createInfo.pTessellationState )
-		{
-			m_tsState = *m_createInfo.pTessellationState;
-		}
-
-		auto context = device.getContext();
+		auto context = get( device )->getContext();
 		apply( m_device
 			, context
-			, m_cbState );
+			, m_colorBlendState.value() );
 		apply( m_device
 			, context
-			, m_rsState
+			, m_rasterizationState.value()
 			, hasDynamicStateEnable( VK_DYNAMIC_STATE_LINE_WIDTH )
 			, hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BIAS ) );
 		apply( m_device
 			, context
-			, m_dsState );
+			, m_depthStencilState.value() );
 		apply( m_device
 			, context
-			, m_msState );
+			, m_multisampleState.value() );
 		apply( m_device
 			, context
-			, m_tsState );
+			, m_tessellationState.value() );
 		ShaderDesc shaderDesc = m_program.link( context );
 		m_constantsPcb.stageFlags = shaderDesc.stageFlags;
 		uint32_t offset = 0u;
@@ -158,12 +161,48 @@ namespace gl_renderer
 
 		m_constantsPcb.size = offset;
 
-		if ( static_cast< Instance const & >( m_device.getInstance() ).isValidationEnabled() )
+		if ( get( get( m_device )->getInstance() )->isValidationEnabled() )
 		{
 			validatePipeline( context
 				, m_layout
 				, m_program.getProgram()
-				, m_vertexInputState
+				, m_vertexInputState.value()
+				, m_renderPass );
+		}
+	}
+
+	Pipeline::Pipeline( VkDevice device
+		, VkComputePipelineCreateInfo createInfo )
+		: m_device{ device }
+		, m_stages{ makeVector( &createInfo.stage, 1u ) }
+		, m_layout{ createInfo.layout }
+		, m_basePipelineHandle{ createInfo.basePipelineHandle }
+		, m_basePipelineIndex{ createInfo.basePipelineIndex }
+		, m_program{ m_device, m_stages }
+	{
+		auto context = get( device )->getContext();
+		ShaderDesc shaderDesc = m_program.link( context );
+		m_constantsPcb.stageFlags = shaderDesc.stageFlags;
+		uint32_t offset = 0u;
+
+		for ( auto & constant : shaderDesc.constantsLayout )
+		{
+			m_constantsPcb.constants.push_back( { constant.format
+				, constant.location
+				, offset
+				, constant.size
+				, constant.arraySize } );
+			offset += constant.size;
+		}
+
+		m_constantsPcb.size = offset;
+
+		if ( get( get( m_device )->getInstance() )->isValidationEnabled() )
+		{
+			validatePipeline( context
+				, m_layout
+				, m_program.getProgram()
+				, m_vertexInputState.value()
 				, m_renderPass );
 		}
 	}
@@ -198,15 +237,20 @@ namespace gl_renderer
 
 	GeometryBuffersRef Pipeline::createGeometryBuffers( VboBindings vbos
 		, IboBinding const & ibo
-		, ashes::IndexType type )const
+		, VkIndexType type )const
 	{
 		size_t hash = doHash( vbos, ibo );
-		m_geometryBuffers.emplace_back( hash, std::make_unique< GeometryBuffers >( m_device, vbos, ibo, m_vertexInputState, type ) );
+		m_geometryBuffers.emplace_back( hash
+			, std::make_unique< GeometryBuffers >( m_device
+				, vbos
+				, ibo
+				, m_vertexInputState.value()
+				, type ) );
 
 		for ( auto & binding : vbos )
 		{
 			auto & vbo = binding.second;
-			m_connections.emplace( vbo.bo, vbo.buffer->onDestroy.connect( [this]( GLuint name )
+			m_connections.emplace( vbo.bo, get( vbo.buffer )->onDestroy.connect( [this]( GLuint name )
 			{
 				auto it = std::remove_if( m_geometryBuffers.begin()
 					, m_geometryBuffers.end()

@@ -1,6 +1,6 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlImageAspectFlags value )
 	{
@@ -27,26 +27,26 @@ namespace gl_renderer
 		return result;
 	}
 
-	GlImageAspectFlags convert( VkImageAspectFlags const & flags )
+	GlImageAspectFlags convertImageAspectFlags( VkImageAspectFlags flags )
 	{
 		GLenum result{ 0 };
 
-		if ( checkFlag( flags, VkImageAspectFlagBits::eColour ) )
+		if ( checkFlag( flags, VK_IMAGE_ASPECT_COLOR_BIT ) )
 		{
 			result |= GL_COLOR_BUFFER_BIT;
 		}
 
-		if ( checkFlag( flags, VkImageAspectFlagBits::eDepth ) )
+		if ( checkFlag( flags, VK_IMAGE_ASPECT_DEPTH_BIT ) )
 		{
 			result |= GL_DEPTH_BUFFER_BIT;
 		}
 
-		if ( checkFlag( flags, VkImageAspectFlagBits::eStencil ) )
+		if ( checkFlag( flags, VK_IMAGE_ASPECT_STENCIL_BIT ) )
 		{
 			result |= GL_STENCIL_BUFFER_BIT;
 		}
 
-		if ( checkFlag( flags, VkImageAspectFlagBits::eMetaData ) )
+		if ( checkFlag( flags, VK_IMAGE_ASPECT_METADATA_BIT ) )
 		{
 		}
 

@@ -4,17 +4,17 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlMemoryBarrierCommand.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	MemoryBarrierCommand::MemoryBarrierCommand( Device const & device
-		, ashes::PipelineStageFlags after
-		, ashes::PipelineStageFlags before
-		, ashes::DependencyFlags dependencyFlags
-		, ashes::MemoryBarrierArray const & memoryBarriers
-		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )
+	MemoryBarrierCommand::MemoryBarrierCommand( VkDevice device
+		, VkPipelineStageFlags after
+		, VkPipelineStageFlags before
+		, VkDependencyFlags dependencyFlags
+		, VkMemoryBarrierArray memoryBarriers
+		, VkBufferMemoryBarrierArray bufferMemoryBarriers
+		, VkImageMemoryBarrierArray imageMemoryBarriers )
 		: CommandBase{ device }
-		, m_flags{ convert( before ) }
+		, m_flags{ getMemoryBarrierFlags( before ) }
 	{
 	}
 

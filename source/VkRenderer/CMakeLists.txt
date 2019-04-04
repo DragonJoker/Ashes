@@ -10,7 +10,7 @@ set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${ASHES_SOURCE_DIR}/include
-	${ASHES_SOURCE_DIR}/include/AshesC
+	${ASHES_SOURCE_DIR}/include/ashes
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
 	${Vulkan_INCLUDE_DIRS}
 )
@@ -50,12 +50,12 @@ set_target_properties( ${PROJECT_NAME}
 target_link_libraries( ${PROJECT_NAME}
 	${BinLibraries}
 	AshesCommon
-	AshesC
+	ashes
 )
 
 add_dependencies( ${PROJECT_NAME}
 	AshesCommon
-	AshesC
+	ashes
 )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )

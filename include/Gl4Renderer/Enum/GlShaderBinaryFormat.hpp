@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlShaderBinaryFormat
 		: GLenum

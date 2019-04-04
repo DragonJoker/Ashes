@@ -8,7 +8,9 @@ See LICENSE file in root folder.
 #include "Pipeline/GlPipeline.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
 	bool operator==( VkStencilOpState const & lhs
 		, VkStencilOpState const & rhs )
@@ -28,11 +30,11 @@ namespace gl_renderer
 		return !( lhs == rhs );
 	}
 
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ContextLock const & context
 		, VkPipelineInputAssemblyStateCreateInfo const & state )
 	{
-		auto & save = device.getCurrentInputAssemblyState();
+		auto & save = get( device )->getCurrentInputAssemblyState();
 
 		if ( state.topology != save.topology )
 		{
@@ -67,11 +69,11 @@ namespace gl_renderer
 		}
 	}
 
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ContextLock const & context
 		, VkPipelineColorBlendStateCreateInfo const & state )
 	{
-		auto & save = device.getCurrentBlendState();
+		auto & save = get( device )->getCurrentBlendState();
 		static bool hadBlend = false;
 
 		if ( state.logicOpEnable
@@ -143,13 +145,13 @@ namespace gl_renderer
 		hadBlend = blend;
 	}
 
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ContextLock const & context
 		, VkPipelineRasterizationStateCreateInfo const & state
 		, bool dynamicLineWidth
 		, bool dynamicDepthBias )
 	{
-		auto & save = device.getCurrentRasterisationState();
+		auto & save = get( device )->getCurrentRasterisationState();
 
 		if ( state.cullMode != save.cullMode
 			|| state.frontFace != save.frontFace )
@@ -167,7 +169,7 @@ namespace gl_renderer
 				{
 					glLogCall( context
 						, glCullFace
-						, convert( state.cullMode ) );
+						, convertCullModeFlags( state.cullMode ) );
 				}
 
 				if ( state.frontFace != save.frontFace )
@@ -296,11 +298,11 @@ namespace gl_renderer
 		save = state;
 	}
 
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ContextLock const & context
 		, VkPipelineMultisampleStateCreateInfo const & state )
 	{
-		auto & save = device.getCurrentMultisampleState();
+		auto & save = get( device )->getCurrentMultisampleState();
 
 		if ( state.rasterizationSamples != VK_SAMPLE_COUNT_1_BIT )
 		{
@@ -366,11 +368,11 @@ namespace gl_renderer
 		save = state;
 	}
 
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ContextLock const & context
 		, VkPipelineDepthStencilStateCreateInfo const & state )
 	{
-		auto & save = device.getCurrentDepthStencilState();
+		auto & save = get( device )->getCurrentDepthStencilState();
 
 		if ( state.depthWriteEnable )
 		{
@@ -486,11 +488,11 @@ namespace gl_renderer
 		save = state;
 	}
 
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ContextLock const & context
 		, VkPipelineTessellationStateCreateInfo const & state )
 	{
-		auto & save = device.getCurrentTessellationState();
+		auto & save = get( device )->getCurrentTessellationState();
 
 		if ( state.patchControlPoints )
 		{
@@ -503,11 +505,11 @@ namespace gl_renderer
 		save = state;
 	}
 
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ContextLock const & context
-		, ViewportArray const & states )
+		, VkViewportArray const & states )
 	{
-		auto & save = device.getCurrentViewport();
+		auto & save = get( device )->getCurrentViewport();
 		auto & state = *states.begin();
 
 		glLogCall( context
@@ -523,11 +525,11 @@ namespace gl_renderer
 		save = state;
 	}
 
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ContextLock const & context
-		, ScissorArray const & states )
+		, VkScissorArray const & states )
 	{
-		auto & save = device.getCurrentScissor();
+		auto & save = get( device )->getCurrentScissor();
 		auto & state = *states.begin();
 
 		glLogCall( context
@@ -539,62 +541,62 @@ namespace gl_renderer
 		save = state;
 	}
 
-	BindPipelineCommand::BindPipelineCommand( Device const & device
-		, Pipeline const & pipeline
+	BindPipelineCommand::BindPipelineCommand( VkDevice device
+		, VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint )
 		: CommandBase{ device }
 		, m_pipeline{ pipeline }
-		, m_layout{ m_pipeline.getLayout() }
-		, m_program{ m_pipeline.getProgram() }
+		, m_layout{ get( m_pipeline )->getLayout() }
+		, m_program{ get( m_pipeline )->getProgram() }
 		, m_bindingPoint{ bindingPoint }
-		, m_dynamicLineWidth{ m_pipeline.hasDynamicStateEnable( VK_DYNAMIC_STATE_LINE_WIDTH ) }
-		, m_dynamicDepthBias{ m_pipeline.hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BIAS ) }
-		, m_dynamicScissor{ m_pipeline.hasDynamicStateEnable( VK_DYNAMIC_STATE_SCISSOR ) }
-		, m_dynamicViewport{ m_pipeline.hasDynamicStateEnable( VK_DYNAMIC_STATE_VIEWPORT ) }
+		, m_dynamicLineWidth{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_LINE_WIDTH ) }
+		, m_dynamicDepthBias{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BIAS ) }
+		, m_dynamicScissor{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_SCISSOR ) }
+		, m_dynamicViewport{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_VIEWPORT ) }
 	{
 	}
 
 	void BindPipelineCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "BindPipelineCommand" );
-		gl_renderer::apply( m_device
+		gl4::apply( m_device
 			, context
-			, m_pipeline.getInputAssemblyState() );
-		gl_renderer::apply( m_device
+			, get( m_pipeline )->getInputAssemblyState() );
+		gl4::apply( m_device
 			, context
-			, m_pipeline.getColourBlendState() );
-		gl_renderer::apply( m_device
+			, get( m_pipeline )->getColourBlendState() );
+		gl4::apply( m_device
 			, context
-			, m_pipeline.getRasterisationState()
+			, get( m_pipeline )->getRasterisationState()
 			, m_dynamicLineWidth
 			, m_dynamicDepthBias );
-		gl_renderer::apply( m_device
+		gl4::apply( m_device
 			, context
-			, m_pipeline.getDepthStencilState() );
-		gl_renderer::apply( m_device
+			, get( m_pipeline )->getDepthStencilState() );
+		gl4::apply( m_device
 			, context
-			, m_pipeline.getMultisampleState() );
-		gl_renderer::apply( m_device
+			, get( m_pipeline )->getMultisampleState() );
+		gl4::apply( m_device
 			, context
-			, m_pipeline.getTessellationState() );
+			, get( m_pipeline )->getTessellationState() );
 
 		if ( !m_dynamicViewport )
 		{
-			assert( m_pipeline.hasViewport() );
-			gl_renderer::apply( m_device
+			assert( get( m_pipeline )->hasViewport() );
+			gl4::apply( m_device
 				, context
-				, m_pipeline.getViewports() );
+				, get( m_pipeline )->getViewports() );
 		}
 
 		if ( !m_dynamicScissor )
 		{
-			assert( m_pipeline.hasScissor() );
-			gl_renderer::apply( m_device
+			assert( get( m_pipeline )->hasScissor() );
+			gl4::apply( m_device
 				, context
-				, m_pipeline.getScissors() );
+				, get( m_pipeline )->getScissors() );
 		}
 
-		auto & save = m_device.getCurrentProgram();
+		auto & save = get( m_device )->getCurrentProgram();
 
 		//if ( m_program != save )
 		{

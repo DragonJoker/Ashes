@@ -6,13 +6,15 @@ See LICENSE file in root folder.
 
 #include "Image/GlImage.hpp"
 
-namespace gl_renderer
+#include "ashesgl4_api.hpp"
+
+namespace ashes::gl4
 {
-	GenerateMipmapsCommand::GenerateMipmapsCommand( Device const & device
-		, Image const & texture )
+	GenerateMipmapsCommand::GenerateMipmapsCommand( VkDevice device
+		, VkImage texture )
 		: CommandBase{ device }
-		, m_texture{ texture.getInternal() }
-		, m_target{ convert( texture.getType(), texture.getLayerCount() ) }
+		, m_texture{ get( texture )->getInternal() }
+		, m_target{ convert( get( texture )->getType(), get( texture )->getArrayLayers() ) }
 	{
 	}
 

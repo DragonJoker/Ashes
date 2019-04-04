@@ -6,8 +6,10 @@
 #include "Core/GlDevice.hpp"
 #include "Core/GlPhysicalDevice.hpp"
 
-#include <Ashes/Core/PlatformWindowHandle.hpp>
+#include <AshesCommon/PlatformWindowHandle.hpp>
 
+#include <algorithm>
+#include <array>
 #include <cmath>
 #include <iostream>
 
@@ -19,33 +21,12 @@
 #	include <GL/glx.h>
 #endif
 
+#include "ashesgl4_api.hpp"
+
 #undef CreateWindow
 
-namespace gl_renderer
+namespace ashes::gl4
 {
-	namespace
-	{
-#if defined( _WIN32 )
-
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( wglGetProcAddress( name ) );
-			return function != nullptr;
-		}
-
-#elif defined( __linux__ )
-
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
-		}
-
-#endif
-	}
-
 #if defined( _WIN32 )
 
 	class RenderWindow
@@ -120,9 +101,16 @@ namespace gl_renderer
 			::DestroyWindow( m_hWnd );
 		}
 
-		inline ashes::WindowHandle getHandle()const
+		inline VkWin32SurfaceCreateInfoKHR getCreateInfo()const
 		{
-			return ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( m_hInstance, m_hWnd ) };
+			return
+			{
+				VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+				nullptr,
+				0u,
+				m_hInstance,
+				m_hWnd,
+			};
 		}
 
 	private:
@@ -331,9 +319,16 @@ namespace gl_renderer
 			}
 		}
 
-		inline ashes::WindowHandle getHandle()const
+		inline VkXlibSurfaceCreateInfoKHR getCreateInfo()const
 		{
-			return ashes::WindowHandle{ std::make_unique< ashes::IXWindowHandle >( m_xWindow, m_display ) };
+			return 
+			{
+				VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
+				nullptr,
+				0u,
+				m_display,
+				m_xWindow,
+			};
 		}
 
 	private:
@@ -364,8 +359,28 @@ namespace gl_renderer
 		return result;
 	}();
 
+	std::string convert( const char * ptr )
+	{
+		return std::string{ ptr };
+	}
+
+	StringArray convert( const char * const * ptr
+		, uint32_t count )
+	{
+		StringArray result;
+
+		for ( auto it = ptr; it < ptr + count; ++it )
+		{
+			result.push_back( convert( *it ) );
+		}
+
+		return result;
+	}
+
 	Instance::Instance( VkInstanceCreateInfo createInfo )
-		: m_createInfo{ std::move( createInfo ) }
+		: m_flags{ createInfo.flags }
+		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
+		, m_enabledExtensions{ convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
 		, m_dummyWindow{ new RenderWindow }
 	{
 		m_extensions.initialise();
@@ -375,15 +390,16 @@ namespace gl_renderer
 		m_features.hasClearTexImage = m_extensions.find( ARB_clear_texture );
 		m_features.hasComputeShaders = m_extensions.find( ARB_compute_shader );
 		m_features.supportsPersistentMapping = m_extensions.find( ARB_buffer_storage );
-		auto end = m_createInfo.ppEnabledLayerNames + m_createInfo.enabledLayerCount;
-		auto it = std::find_if( m_createInfo.ppEnabledLayerNames
-			, end
-			, []( const char * const lookup )
+		auto it = std::find_if( m_enabledLayerNames.begin()
+			, m_enabledLayerNames.end()
+			, []( std::string const & lookup )
 			{
-				return lookup == std::string{ "validation" };
+				return lookup == "validation";
 			} );
-		m_validationEnabled = it != end;
-		m_context = Context::create( *this, m_dummyWindow->getHandle(), nullptr );
+		m_validationEnabled = it != m_enabledLayerNames.end();
+		m_context = Context::create( get( this )
+			, m_dummyWindow->getCreateInfo()
+			, nullptr );
 	}
 
 	Instance::~Instance()
@@ -392,46 +408,12 @@ namespace gl_renderer
 		delete m_dummyWindow;
 	}
 
-	PhysicalDevicePtrArray Instance::enumeratePhysicalDevices()const
+	VkPhysicalDeviceArray Instance::enumeratePhysicalDevices()const
 	{
 		RenderWindow dummyWindow;
-		ashes::PhysicalDevicePtrArray result;
-		result.emplace_back( std::make_unique< PhysicalDevice >( *this ) );
+		VkPhysicalDeviceArray result;
+		result.emplace_back( VkPhysicalDevice( new PhysicalDevice{ VkInstance( this ) } ) );
 		return result;
-	}
-
-	ashes::DevicePtr Instance::createDevice( ashes::PhysicalDevice const & physicalDevice
-		, ashes::DeviceCreateInfo createInfos )const
-	{
-		ashes::DevicePtr result;
-
-		try
-		{
-			result = std::make_shared< Device >( *this
-				, static_cast< PhysicalDevice const & >( physicalDevice )
-				, *m_context
-				, std::move( createInfos ) );
-		}
-		catch ( std::exception & exc )
-		{
-			ashes::Logger::logError( std::string{ "Could not initialise logical device:\n" } + exc.what() );
-		}
-
-		return result;
-	}
-
-	ashes::SurfacePtr Instance::createSurface( ashes::PhysicalDevice const & physicalDevice
-		, ashes::WindowHandle handle )const
-	{
-		return std::make_unique< Surface >( *this
-			, static_cast< PhysicalDevice const & >( physicalDevice )
-			, std::move( handle ) );
-	}
-
-	ashes::DebugReportCallbackPtr Instance::createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const
-	{
-		return std::make_unique< DebugReportCallback >( *this
-			, std::move( createInfo ) );
 	}
 
 	std::array< float, 16 > Instance::frustum( float left
@@ -510,15 +492,48 @@ namespace gl_renderer
 		return result;
 	}
 
-	void Instance::registerDebugMessageCallback( PFNGLDEBUGPROC callback
+	void Instance::registerDebugMessageCallback( VkDebugReportCallbackEXT report
+		, PFNGLDEBUGPROC callback
 		, void * userParam )const
 	{
-		m_debugCallbacks.push_back( { callback, userParam } );
+		m_debugCallbacks.push_back( { report, callback, userParam } );
 	}
 
-	void Instance::registerDebugMessageCallbackAMD( PFNGLDEBUGAMDPROC callback
+	void Instance::registerDebugMessageCallbackAMD( VkDebugReportCallbackEXT report
+		, PFNGLDEBUGAMDPROC callback
 		, void * userParam )const
 	{
-		m_debugAMDCallbacks.push_back( { callback, userParam } );
+		m_debugAMDCallbacks.push_back( { report, callback, userParam } );
+	}
+
+	void Instance::reportMessage( VkDebugReportFlagsEXT flags
+		, VkDebugReportObjectTypeEXT objectType
+		, uint64_t object
+		, size_t location
+		, int32_t messageCode
+		, const char * pLayerPrefix
+		, const char * pMessage )
+	{
+		for ( auto & callback : m_debugCallbacks )
+		{
+			get( callback.debugReport )->report( flags
+				, objectType
+				, object
+				, location
+				, messageCode
+				, pLayerPrefix
+				, pMessage );
+		}
+
+		for ( auto & callback : m_debugAMDCallbacks )
+		{
+			get( callback.debugReport )->report( flags
+				, objectType
+				, object
+				, location
+				, messageCode
+				, pLayerPrefix
+				, pMessage );
+		}
 	}
 }

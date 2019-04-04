@@ -6,67 +6,29 @@
 */
 #pragma once
 
-#include <AshesC/ashes.h>
+#include <ashes/ashes.h>
+
+#include <cassert>
+#include <functional>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "Gl4Renderer/Miscellaneous/OpenGLDefines.hpp"
-
-#include "Gl4Renderer/Enum/GlAccessFlag.hpp"
-#include "Gl4Renderer/Enum/GlAttachmentPoint.hpp"
-#include "Gl4Renderer/Enum/GlAttachmentType.hpp"
-#include "Gl4Renderer/Enum/GlBaseType.hpp"
-#include "Gl4Renderer/Enum/GlBlendFactor.hpp"
-#include "Gl4Renderer/Enum/GlBlendOp.hpp"
-#include "Gl4Renderer/Enum/GlBorderColour.hpp"
-#include "Gl4Renderer/Enum/GlBufferTarget.hpp"
-#include "Gl4Renderer/Enum/GlClearTarget.hpp"
-#include "Gl4Renderer/Enum/GlClipInfo.hpp"
-#include "Gl4Renderer/Enum/GlColourComponentFlag.hpp"
-#include "Gl4Renderer/Enum/GlCompareOp.hpp"
-#include "Gl4Renderer/Enum/GlComponentSwizzle.hpp"
-#include "Gl4Renderer/Enum/GlConstantFormat.hpp"
-#include "Gl4Renderer/Enum/GlCullModeFlag.hpp"
-#include "Gl4Renderer/Enum/GlDebugReportObjectType.hpp"
-#include "Gl4Renderer/Enum/GlFenceWaitFlag.hpp"
-#include "Gl4Renderer/Enum/GlFilter.hpp"
-#include "Gl4Renderer/Enum/GlFormat.hpp"
-#include "Gl4Renderer/Enum/GlFrameBufferTarget.hpp"
-#include "Gl4Renderer/Enum/GlFrontFace.hpp"
-#include "Gl4Renderer/Enum/GlGetParameter.hpp"
-#include "Gl4Renderer/Enum/GlImageAspectFlag.hpp"
-#include "Gl4Renderer/Enum/GlImageLayout.hpp"
-#include "Gl4Renderer/Enum/GlImageTiling.hpp"
-#include "Gl4Renderer/Enum/GlIndexType.hpp"
-#include "Gl4Renderer/Enum/GlLogicOp.hpp"
-#include "Gl4Renderer/Enum/GlMemoryBarrierFlag.hpp"
-#include "Gl4Renderer/Enum/GlMemoryMapFlag.hpp"
-#include "Gl4Renderer/Enum/GlMemoryPropertyFlag.hpp"
-#include "Gl4Renderer/Enum/GlMipmapMode.hpp"
-#include "Gl4Renderer/Enum/GlPolygonMode.hpp"
-#include "Gl4Renderer/Enum/GlPrimitiveTopology.hpp"
-#include "Gl4Renderer/Enum/GlQueryResultFlag.hpp"
-#include "Gl4Renderer/Enum/GlQueryType.hpp"
-#include "Gl4Renderer/Enum/GlSampleCountFlag.hpp"
-#include "Gl4Renderer/Enum/GlSamplerParameter.hpp"
-#include "Gl4Renderer/Enum/GlShaderBinaryFormat.hpp"
-#include "Gl4Renderer/Enum/GlShaderInfo.hpp"
-#include "Gl4Renderer/Enum/GlShaderStageFlag.hpp"
-#include "Gl4Renderer/Enum/GlStencilOp.hpp"
-#include "Gl4Renderer/Enum/GlTexLevelParameter.hpp"
-#include "Gl4Renderer/Enum/GlTexParameter.hpp"
-#include "Gl4Renderer/Enum/GlTextureType.hpp"
-#include "Gl4Renderer/Enum/GlTextureViewType.hpp"
-#include "Gl4Renderer/Enum/GlTextureUnit.hpp"
-#include "Gl4Renderer/Enum/GlTweak.hpp"
-#include "Gl4Renderer/Enum/GlWrapMode.hpp"
-
-#include "Gl4Renderer/Miscellaneous/GlCallLogger.hpp"
-#include "Gl4Renderer/Pipeline/GlSpecialisationInfo.hpp"
-
 #include "Gl4Renderer/Miscellaneous/GlDebug.hpp"
+#include "Gl4Renderer/Miscellaneous/GlCallLogger.hpp"
+
+#include <AshesRenderer/AshesRendererPrerequisites.hpp>
+#include <AshesRenderer/Util/ArrayView.hpp>
+#include <AshesRenderer/Util/ConstantFormat.hpp>
+#include <AshesRenderer/Util/Format.hpp>
+#include <AshesRenderer/Util/FlagCombination.hpp>
+#include <AshesRenderer/Util/Signal.hpp>
 
 #define BufferOffset( n ) ( ( uint8_t * )nullptr + ( n ) )
 
-#if defined( _WIN32 ) && !defined( Gl3Renderer_STATIC )
+#if defined( _WIN32 ) && !defined( Gl4Renderer_STATIC )
 #	ifdef Gl4Renderer_EXPORTS
 #		define Gl4Renderer_API __declspec( dllexport )
 #	else
@@ -76,115 +38,171 @@
 #	define Gl4Renderer_API
 #endif
 
-namespace gl_renderer
+#if defined( __GNUG__ )
+#	define ASHES_COMPILER_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#	if ASHES_COMPILER_VERSION < 40900
+#		error "Unsupported version of GCC"
+#	elif ASHES_COMPILER_VERSION < 70400
+#		include <experimental/optional>
+namespace ashes::gl4
 {
+	template< typename T >
+	using Optional = std::experimental::optional< T >;
+	using std::experimental::nullopt;
+}
+#	else
+#		include <optional>
+namespace ashes::gl4
+{
+	template< typename T >
+	using Optional = std::optional< T >;
+	using std::nullopt;
+}
+#	endif
+#else
+#	include <optional>
+namespace ashes::gl4
+{
+	template< typename T >
+	using Optional = std::optional< T >;
+	using std::nullopt;
+}
+#	if defined( MemoryBarrier )
+#		undef MemoryBarrier
+#	endif
+#endif
+
+#ifndef NDEBUG
+#	define declareDebugVariable( Type, Name, Value )\
+	mutable Type Name{ Value }
+#	define setDebugValue( Name, Value )\
+	Name = Value;
+#	define assertDebugValue( Name, Value )\
+	assert( Name == Value )
+#else
+#	define declareDebugVariable( Type, Name, Value )
+#	define setDebugValue( Name, Value )
+#	define assertDebugValue( Name, Value )
+#endif
+
+namespace ashes::gl4
+{
+	inline constexpr uint32_t getMajor( uint32_t version )
+	{
+		return ( ( uint32_t )( version ) >> 22 );
+	}
+
+	inline constexpr uint32_t getMinor( uint32_t version )
+	{
+		return ( ( ( uint32_t )( version ) >> 12 ) & 0x3ff );
+	}
+
+	inline constexpr uint32_t getPatch( uint32_t version )
+	{
+		return ( ( uint32_t )( version ) & 0xfff );
+	}
+
+	inline constexpr uint32_t makeVersion( uint32_t major
+		, uint32_t minor
+		, uint32_t patch )
+	{
+		return ( ( ( major ) << 22 ) | ( ( minor ) << 12 ) | ( patch ) );
+	}
+
+	using StringArray = std::vector< std::string >;
+	using UInt32Array = std::vector< uint32_t >;
+	using UInt64Array = std::vector< uint64_t >;
+
 	struct DebugReportCallbackData
 	{
+		VkDebugReportCallbackEXT debugReport;
 		PFNGLDEBUGPROC callback;
 		void * userParam;
 	};
 	
 	struct DebugReportAMDCallbackData
 	{
+		VkDebugReportCallbackEXT debugReport;
 		PFNGLDEBUGAMDPROC callback;
 		void * userParam;
 	};
-
-	struct AttachmentDescription;
 
 	class Buffer;
 	class BufferView;
 	class CommandBase;
 	class CommandBuffer;
-	class ComputePipeline;
-	class Context;
-	class ContextLock;
-	class DebugReportCallback;
+	class CommandPool;
+	class DebugReportCallbackEXT;
+	class DescriptorPool;
 	class DescriptorSet;
+	class DescriptorSetLayout;
 	class Device;
 	class DeviceMemory;
-	class FrameBuffer;
-	class GeometryBuffers;
+	class Event;
+	class Fence;
+	class Framebuffer;
 	class Image;
 	class ImageView;
 	class Instance;
 	class PhysicalDevice;
 	class Pipeline;
+	class PipelineCache;
 	class PipelineLayout;
 	class QueryPool;
 	class Queue;
 	class RenderPass;
+	class Sampler;
+	class Semaphore;
 	class ShaderModule;
+	class SurfaceKHR;
+	class SwapchainKHR;
+
+	class SamplerYcbcrConversion;
+	class DescriptorUpdateTemplate;
+	class DisplayKHR;
+	class DisplayModeKHR;
+	class ObjectTableNVX;
+	class IndirectCommandsLayoutNVX;
+	class DebugUtilsMessengerEXT;
+	class ValidationCacheEXT;
+
+	class FrameBufferAttachment;
+	class GeometryBuffers;
 	class ShaderProgram;
-	class Surface;
-	class UniformBuffer;
-	class WindowHandle;
 
+	class Context;
+	class ContextLock;
 	using ContextPtr = std::unique_ptr< Context >;
-	using CommandPtr = std::unique_ptr< CommandBase >;
-	using DebugReportCallbackPtr = std::unique_ptr< DebugReportCallback >;
-	using DevicePtr = std::unique_ptr< Device >;
-	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
-	using ImageViewPtr = std::unique_ptr< ImageView >;
-	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
-	using QueuePtr = std::unique_ptr< Queue >;
-	using SurfacePtr = std::unique_ptr< Surface >;
 
-	using DeviceMemoryPtr = std::shared_ptr< DeviceMemory >;
+	using CommandPtr = std::unique_ptr< CommandBase >;
+	using CommandArray = std::vector< CommandPtr >;
 
 	using GeometryBuffersRef = std::reference_wrapper< GeometryBuffers >;
-
-	using ShaderModuleCRef = std::reference_wrapper< ShaderModule const >;
-
+	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
 	using GeometryBuffersRefArray = std::vector< GeometryBuffersRef >;
 
-	using ShaderModuleCRefArray = std::vector< ShaderModuleCRef >;
+	struct AttachmentDescription
+	{
+		uint32_t index;
+		std::reference_wrapper< VkAttachmentDescription const > attach;
+	};
 
-	using PhysicalDevicePtrArray = std::vector< PhysicalDevicePtr >;
-
-	using CommandArray = std::vector< CommandPtr >;
 	using AttachmentDescriptionArray = std::vector< AttachmentDescription >;
-	using ViewportArray = std::vector< VkViewport >;
-	using ScissorArray = std::vector< VkRect2D >;
 
 	struct BufferObjectBinding
 	{
 		GLuint bo;
 		uint64_t offset;
-		Buffer const * buffer;
+		VkBuffer buffer;
 	};
 
 	using VboBindings = std::map< uint32_t, BufferObjectBinding >;
-	using IboBinding = ashes::Optional< BufferObjectBinding >;
+	using IboBinding = Optional< BufferObjectBinding >;
 
 	using BufferDestroyFunc = std::function< void( GLuint ) >;
-	using BufferDestroySignal = ashes::Signal< BufferDestroyFunc >;
-	using BufferDestroyConnection = ashes::SignalConnection< BufferDestroySignal >;
+	using BufferDestroySignal = Signal< BufferDestroyFunc >;
+	using BufferDestroyConnection = SignalConnection< BufferDestroySignal >;
 
 	uint32_t deduceMemoryType( uint32_t typeBits
-		, ashes::MemoryPropertyFlags requirements );
-
-	inline uint32_t checkFlag( uint32_t a, uint32_t b )
-	{
-		return ( a & b ) == b;
-	}
+		, VkMemoryPropertyFlags requirements );
 }
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-	typedef struct AshRendererFeatures
-	{
-		bool hasTexBufferRange;
-		bool hasImageTexture;
-		bool hasBaseInstance;
-		bool hasClearTexImage;
-		bool hasComputeShaders;
-		bool hasStorageBuffers;
-		bool supportsPersistentMapping;
-	} AshRendererFeatures;
-
-#ifdef __cplusplus
-}
-#endif

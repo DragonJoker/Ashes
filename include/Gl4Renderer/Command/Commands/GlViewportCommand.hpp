@@ -6,9 +6,7 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/Pipeline/Viewport.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	/**
 	*\brief
@@ -24,14 +22,14 @@ namespace gl_renderer
 		*\param[in] viewport
 		*	Le viewport.
 		*/
-		ViewportCommand( Device const & device
+		ViewportCommand( VkDevice device
 			, uint32_t firstViewport
-			, ashes::ViewportArray const & viewports );
+			, VkViewportArray viewports );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		ashes::ViewportArray m_viewports;
+		VkViewportArray m_viewports;
 	};
 }

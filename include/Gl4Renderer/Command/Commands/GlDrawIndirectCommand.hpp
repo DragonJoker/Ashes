@@ -6,25 +6,25 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class DrawIndirectCommand
 		: public CommandBase
 	{
 	public:
-		DrawIndirectCommand( Device const & device
-			, ashes::BufferBase const & buffer
-			, uint32_t offset
+		DrawIndirectCommand( VkDevice device
+			, VkBuffer buffer
+			, VkDeviceSize offset
 			, uint32_t drawCount
 			, uint32_t stride
-			, ashes::PrimitiveTopology mode );
+			, VkPrimitiveTopology mode );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		Buffer const & m_buffer;
-		uint32_t m_offset;
+		VkBuffer m_buffer;
+		VkDeviceSize m_offset;
 		uint32_t m_drawCount;
 		uint32_t m_stride;
 		GlPrimitiveTopology m_mode;

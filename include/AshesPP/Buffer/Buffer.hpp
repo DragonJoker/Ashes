@@ -7,10 +7,11 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Core/Exception.hpp"
 #include "AshesPP/Miscellaneous/DeviceMemory.hpp"
 
-namespace ashespp
+#include <AshesRenderer/Util/Exception.hpp>
+
+namespace ashes
 {
 	/**
 	*\~english

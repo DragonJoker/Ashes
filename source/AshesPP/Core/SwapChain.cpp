@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Sync/Fence.hpp"
 #include "AshesPP/Sync/Semaphore.hpp"
 
-namespace ashespp
+namespace ashes
 {
 	SwapChain::SwapChain( Device const & device
 		, VkSwapchainCreateInfoKHR createInfo )

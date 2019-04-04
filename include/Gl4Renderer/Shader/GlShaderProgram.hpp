@@ -6,15 +6,15 @@ See LICENSE file in root folder.
 
 #include "Gl4Renderer/Shader/GlShaderDesc.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class ShaderProgram
 	{
 	public:
-		ShaderProgram( Device const & device
-			, std::vector< VkPipelineShaderStageCreateInfo > const & stages );
-		ShaderProgram( Device const & device
-			, ashes::ShaderStageState const & stage );
+		ShaderProgram( VkDevice device
+			, VkPipelineShaderStageCreateInfoArray const & stages );
+		ShaderProgram( VkDevice device
+			, VkPipelineShaderStageCreateInfo const & stage );
 		~ShaderProgram();
 		ShaderDesc link( ContextLock const & context )const;
 
@@ -24,9 +24,9 @@ namespace gl_renderer
 		}
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		GLuint m_program;
-		ashes::ShaderStageFlags m_stageFlags;
-		ashes::UInt32Array m_shaders;
+		VkShaderStageFlags m_stageFlags;
+		UInt32Array m_shaders;
 	};
 }

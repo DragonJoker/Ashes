@@ -4,9 +4,9 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/ImageAspectFlag.hpp>
+#include <AshesRenderer/Util/FlagCombination.hpp>
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlImageAspectFlag
 		: GLenum
@@ -25,5 +25,5 @@ namespace gl_renderer
 	*\return
 	*	Le GlImageAspectFlags.
 	*/
-	GlImageAspectFlags convert( VkImageAspectFlags const & flags );
+	GlImageAspectFlags convertImageAspectFlags( VkImageAspectFlags flags );
 }

@@ -4,9 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/Enum/WrapMode.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlWrapMode
 		: GLenum
@@ -20,11 +18,11 @@ namespace gl_renderer
 	std::string getName( GlWrapMode value );
 	/**
 	*\brief
-	*	Convertit un ashes::WrapMode en GlWrapMode.
+	*	Convertit un VkSamplerAddressMode en GlWrapMode.
 	*\param[in] mode
-	*	Le ashes::WrapMode.
+	*	Le VkSamplerAddressMode.
 	*\return
 	*	Le GlWrapMode.
 	*/
-	GlWrapMode convert( ashes::WrapMode const & mode );
+	GlWrapMode convert( VkSamplerAddressMode const & mode );
 }

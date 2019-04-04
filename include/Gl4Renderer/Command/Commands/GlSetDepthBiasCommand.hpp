@@ -6,13 +6,13 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	class SetDepthBiasCommand
 		: public CommandBase
 	{
 	public:
-		SetDepthBiasCommand( Device const & device
+		SetDepthBiasCommand( VkDevice device
 			, float constantFactor
 			, float clamp
 			, float slopeFactor );

@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/LogicOp.hpp>
-
-namespace gl_renderer
+namespace ashes::gl4
 {
 	enum GlLogicOp
 	{
@@ -30,11 +28,11 @@ namespace gl_renderer
 	std::string getName( GlLogicOp value );
 	/**
 	*\brief
-	*	Convertit un ashes::LogicOp en GlLogicOp.
+	*	Convertit un VkLogicOp en GlLogicOp.
 	*\param[in] value
-	*	Le ashes::LogicOp.
+	*	Le VkLogicOp.
 	*\return
 	*	Le GlLogicOp.
 	*/
-	GlLogicOp convert( ashes::LogicOp const & value );
+	GlLogicOp convert( VkLogicOp const & value );
 }

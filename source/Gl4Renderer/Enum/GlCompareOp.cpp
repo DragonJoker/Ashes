@@ -1,33 +1,33 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlCompareOp value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_COMPARE_OP_NEVER:
+		case GL_COMPARE_OP_NEVER:
 			return "GL_NEVER";
 
-		case gl_renderer::GL_COMPARE_OP_LESS:
+		case GL_COMPARE_OP_LESS:
 			return "GL_LESS";
 
-		case gl_renderer::GL_COMPARE_OP_EQUAL:
+		case GL_COMPARE_OP_EQUAL:
 			return "GL_EQUAL";
 
-		case gl_renderer::GL_COMPARE_OP_LEQUAL:
+		case GL_COMPARE_OP_LEQUAL:
 			return "GL_LEQUAL";
 
-		case gl_renderer::GL_COMPARE_OP_GREATER:
+		case GL_COMPARE_OP_GREATER:
 			return "GL_GREATER";
 
-		case gl_renderer::GL_COMPARE_OP_NOTEQUAL:
+		case GL_COMPARE_OP_NOTEQUAL:
 			return "GL_NOTEQUAL";
 
-		case gl_renderer::GL_COMPARE_OP_GEQUAL:
+		case GL_COMPARE_OP_GEQUAL:
 			return "GL_GEQUAL";
 
-		case gl_renderer::GL_COMPARE_OP_ALWAYS:
+		case GL_COMPARE_OP_ALWAYS:
 			return "GL_ALWAYS";
 
 		default:
@@ -36,32 +36,32 @@ namespace gl_renderer
 		}
 	}
 
-	GlCompareOp convert( ashes::CompareOp const & value )
+	GlCompareOp convert( VkCompareOp const & value )
 	{
 		switch ( value )
 		{
-		case ashes::CompareOp::eNever:
+		case VK_COMPARE_OP_NEVER:
 			return GL_COMPARE_OP_NEVER;
 
-		case ashes::CompareOp::eLess:
+		case VK_COMPARE_OP_LESS:
 			return GL_COMPARE_OP_LESS;
 
-		case ashes::CompareOp::eEqual:
+		case VK_COMPARE_OP_EQUAL:
 			return GL_COMPARE_OP_EQUAL;
 
-		case ashes::CompareOp::eLessEqual:
+		case VK_COMPARE_OP_LESS_OR_EQUAL:
 			return GL_COMPARE_OP_LEQUAL;
 
-		case ashes::CompareOp::eGreater:
+		case VK_COMPARE_OP_GREATER:
 			return GL_COMPARE_OP_GREATER;
 
-		case ashes::CompareOp::eNotEqual:
+		case VK_COMPARE_OP_NOT_EQUAL:
 			return GL_COMPARE_OP_NOTEQUAL;
 
-		case ashes::CompareOp::eGreaterEqual:
+		case VK_COMPARE_OP_GREATER_OR_EQUAL:
 			return GL_COMPARE_OP_GEQUAL;
 
-		case ashes::CompareOp::eAlways:
+		case VK_COMPARE_OP_ALWAYS:
 			return GL_COMPARE_OP_ALWAYS;
 
 		default:

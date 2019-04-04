@@ -1,33 +1,33 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl4
 {
 	std::string getName( GlStencilOp value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_STENCIL_OP_ZERO:
+		case GL_STENCIL_OP_ZERO:
 			return "GL_ZERO";
 
-		case gl_renderer::GL_STENCIL_OP_KEEP:
+		case GL_STENCIL_OP_KEEP:
 			return "GL_KEEP";
 
-		case gl_renderer::GL_STENCIL_OP_REPLACE:
+		case GL_STENCIL_OP_REPLACE:
 			return "GL_REPLACE";
 
-		case gl_renderer::GL_STENCIL_OP_INCR:
+		case GL_STENCIL_OP_INCR:
 			return "GL_INCR";
 
-		case gl_renderer::GL_STENCIL_OP_DECR:
+		case GL_STENCIL_OP_DECR:
 			return "GL_DECR";
 
-		case gl_renderer::GL_STENCIL_OP_INVERT:
+		case GL_STENCIL_OP_INVERT:
 			return "GL_INVERT";
 
-		case gl_renderer::GL_STENCIL_OP_INCR_WRAP:
+		case GL_STENCIL_OP_INCR_WRAP:
 			return "GL_INCR_WRAP";
 
-		case gl_renderer::GL_STENCIL_OP_DECR_WRAP:
+		case GL_STENCIL_OP_DECR_WRAP:
 			return "GL_DECR_WRAP";
 
 		default:
@@ -36,32 +36,32 @@ namespace gl_renderer
 		}
 	}
 
-	GlStencilOp convert( ashes::StencilOp const & value )
+	GlStencilOp convert( VkStencilOp const & value )
 	{
 		switch ( value )
 		{
-		case ashes::StencilOp::eKeep:
+		case VK_STENCIL_OP_KEEP:
 			return GL_STENCIL_OP_KEEP;
 
-		case ashes::StencilOp::eZero:
+		case VK_STENCIL_OP_ZERO:
 			return GL_STENCIL_OP_ZERO;
 
-		case ashes::StencilOp::eReplace:
+		case VK_STENCIL_OP_REPLACE:
 			return GL_STENCIL_OP_REPLACE;
 
-		case ashes::StencilOp::eIncrementAndClamp:
+		case VK_STENCIL_OP_INCREMENT_AND_CLAMP:
 			return GL_STENCIL_OP_INCR;
 
-		case ashes::StencilOp::eDecrementAndClamp:
+		case VK_STENCIL_OP_DECREMENT_AND_CLAMP:
 			return GL_STENCIL_OP_DECR;
 
-		case ashes::StencilOp::eInvert:
+		case VK_STENCIL_OP_INVERT:
 			return GL_STENCIL_OP_INVERT;
 
-		case ashes::StencilOp::eIncrementAndWrap:
+		case VK_STENCIL_OP_INCREMENT_AND_WRAP:
 			return GL_STENCIL_OP_INCR_WRAP;
 
-		case ashes::StencilOp::eDecrementAndWrap:
+		case VK_STENCIL_OP_DECREMENT_AND_WRAP:
 			return GL_STENCIL_OP_DECR_WRAP;
 
 		default:
