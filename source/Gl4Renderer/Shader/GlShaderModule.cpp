@@ -268,7 +268,7 @@ namespace ashes::gl4
 		, VkShaderModuleCreateInfo createInfo )
 		: m_device{ device }
 		, m_flags{ createInfo.flags }
-		, m_code{ makeVector( createInfo.pCode, createInfo.codeSize ) }
+		, m_code{ UInt32Array( createInfo.pCode, createInfo.pCode + createInfo.codeSize ) }
 	{
 	}
 

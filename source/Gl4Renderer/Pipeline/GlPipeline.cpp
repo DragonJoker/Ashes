@@ -11,11 +11,29 @@
 
 #include "ashesgl4_api.hpp"
 
+#include <AshesRenderer/Helper/ColourBlendState.hpp>
+#include <AshesRenderer/Helper/DepthStencilState.hpp>
+#include <AshesRenderer/Helper/DynamicState.hpp>
+#include <AshesRenderer/Helper/InputAssemblyState.hpp>
+#include <AshesRenderer/Helper/MultisampleState.hpp>
+#include <AshesRenderer/Helper/RasterisationState.hpp>
+#include <AshesRenderer/Helper/TessellationState.hpp>
+#include <AshesRenderer/Helper/VertexInputState.hpp>
+#include <AshesRenderer/Helper/ViewportState.hpp>
+
 #include <algorithm>
 
 #if defined( interface )
 #	undef interface
 #endif
+
+namespace ashes
+{
+	inline VkPipelineShaderStageCreateInfo deepCopy( VkPipelineShaderStageCreateInfo const & rhs )
+	{
+		return rhs;
+	}
+}
 
 namespace ashes::gl4
 {

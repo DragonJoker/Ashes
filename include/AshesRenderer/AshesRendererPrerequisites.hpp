@@ -94,13 +94,6 @@ namespace ashes
 	}
 
 	template< typename Type, typename ... Params >
-	inline Type deepCopy( Type const & rhs
-		, Params && ... params )
-	{
-		return rhs;
-	}
-
-	template< typename Type, typename ... Params >
 	inline std::vector< Type > makeVector( Type const * ptr
 		, size_t count
 		, Params && ... params )

@@ -9,6 +9,14 @@
 #include <vulkan/vulkan.h>
 #include "ashesgl4_api.hpp"
 
+namespace ashes
+{
+	inline uint32_t deepCopy( uint32_t const & rhs )
+	{
+		return rhs;
+	}
+}
+
 namespace ashes::gl4
 {
 	namespace

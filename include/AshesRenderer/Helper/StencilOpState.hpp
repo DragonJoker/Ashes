@@ -39,6 +39,11 @@ namespace ashes
 	{
 		return !( lhs == rhs );
 	}
+
+	inline VkStencilOpState deepCopy( VkStencilOpState const & rhs )
+	{
+		return rhs;
+	}
 }
 
 #endif

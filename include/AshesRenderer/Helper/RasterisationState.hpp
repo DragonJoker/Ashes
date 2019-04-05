@@ -49,6 +49,11 @@ namespace ashes
 	{
 		return !( lhs == rhs );
 	}
+
+	inline VkPipelineRasterizationStateCreateInfo deepCopy( VkPipelineRasterizationStateCreateInfo const & rhs )
+	{
+		return rhs;
+	}
 }
 
 #endif

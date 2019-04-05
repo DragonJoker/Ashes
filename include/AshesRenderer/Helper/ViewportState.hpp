@@ -7,8 +7,6 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "AshesRenderer/AshesRendererPrerequisites.hpp"
-#include "AshesRenderer/Pipeline/Scissor.hpp"
-#include "AshesRenderer/Pipeline/Viewport.hpp"
 
 namespace ashes
 {
@@ -48,13 +46,88 @@ namespace ashes
 		return !( lhs == rhs );
 	}
 
+	inline bool operator==( VkViewport const & lhs
+		, VkViewport const & rhs )
+	{
+		return lhs.width == rhs.width
+			&& lhs.height == rhs.height
+			&& lhs.x == rhs.x
+			&& lhs.y == rhs.y
+			&& lhs.minDepth == rhs.minDepth
+			&& lhs.maxDepth == rhs.maxDepth;
+	}
+
+	inline bool operator!=( VkViewport const & lhs
+		, VkViewport const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkOffset2D const & lhs
+		, VkOffset2D const & rhs )
+	{
+		return lhs.x == rhs.x
+			&& lhs.y == rhs.y;
+	}
+
+	inline bool operator!=( VkOffset2D const & lhs
+		, VkOffset2D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkExtent2D const & lhs
+		, VkExtent2D const & rhs )
+	{
+		return lhs.width == rhs.width
+			&& lhs.height == rhs.height;
+	}
+
+	inline bool operator!=( VkExtent2D const & lhs
+		, VkExtent2D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkRect2D const & lhs
+		, VkRect2D const & rhs )
+	{
+		return lhs.offset == rhs.offset
+			&& lhs.extent == rhs.extent;
+	}
+
+	inline bool operator!=( VkRect2D const & lhs
+		, VkRect2D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline VkViewport deepCopy( VkViewport const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkRect2D deepCopy( VkRect2D const & rhs )
+	{
+		return rhs;
+	}
+
 	inline VkPipelineViewportStateCreateInfo deepCopy( VkPipelineViewportStateCreateInfo const & rhs
 		, VkViewportArray & viewports
 		, VkScissorArray & scissors )
 	{
 		VkPipelineViewportStateCreateInfo result = rhs;
-		viewports = makeVector( rhs.pViewports, rhs.viewportCount );
-		scissors = makeVector( rhs.pScissors, rhs.scissorCount );
+
+		if ( rhs.pViewports )
+		{
+			viewports = makeVector( rhs.pViewports, rhs.viewportCount );
+		}
+
+		if ( rhs.pScissors )
+		{
+			scissors = makeVector( rhs.pScissors, rhs.scissorCount );
+		}
+
 		result.pViewports = viewports.data();
 		result.pScissors = scissors.data();
 		return result;

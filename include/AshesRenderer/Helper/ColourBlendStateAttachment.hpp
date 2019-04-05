@@ -42,6 +42,11 @@ namespace ashes
 	{
 		return !( lhs == rhs );
 	}
+
+	inline VkPipelineColorBlendAttachmentState deepCopy( VkPipelineColorBlendAttachmentState const & rhs )
+	{
+		return rhs;
+	}
 }
 
 #endif

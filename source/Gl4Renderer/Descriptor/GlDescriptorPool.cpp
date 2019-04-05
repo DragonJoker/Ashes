@@ -3,6 +3,14 @@
 #include "Core/GlDevice.hpp"
 #include "Descriptor/GlDescriptorSet.hpp"
 
+namespace ashes
+{
+	inline VkDescriptorPoolSize deepCopy( VkDescriptorPoolSize const & rhs )
+	{
+		return rhs;
+	}
+}
+
 namespace ashes::gl4
 {
 	DescriptorPool::DescriptorPool( VkDevice device

@@ -223,6 +223,115 @@ namespace ashes::gl4
 				}
 			}
 		}
+
+		void bindCombinedSampler( ContextLock const & context
+			, LayoutBindingWrites const * writes )
+		{
+			for ( auto & write : writes->writes )
+			{
+				bindCombinedSampler( context, write );
+			}
+		}
+
+		void bindSampler( ContextLock const & context
+			, LayoutBindingWrites const * writes )
+		{
+			for ( auto & write : writes->writes )
+			{
+				bindSampler( context, write );
+			}
+		}
+
+		void bindSampledTexture( ContextLock const & context
+			, LayoutBindingWrites const * writes )
+		{
+			for ( auto & write : writes->writes )
+			{
+				bindSampledTexture( context, write );
+			}
+		}
+
+		void bindStorageTexture( ContextLock const & context
+			, LayoutBindingWrites const * writes )
+		{
+			for ( auto & write : writes->writes )
+			{
+				bindStorageTexture( context, write );
+			}
+		}
+
+		void bindUniformBuffer( ContextLock const & context
+			, LayoutBindingWrites const * writes )
+		{
+			for ( auto & write : writes->writes )
+			{
+				bindUniformBuffer( context, write );
+			}
+		}
+
+		void bindStorageBuffer( ContextLock const & context
+			, LayoutBindingWrites const * writes )
+		{
+			for ( auto & write : writes->writes )
+			{
+				bindStorageBuffer( context, write );
+			}
+		}
+
+		void bindTexelBuffer( ContextLock const & context
+			, LayoutBindingWrites const * writes )
+		{
+			for ( auto & write : writes->writes )
+			{
+				bindTexelBuffer( context, write );
+			}
+		}
+
+		void bindDynamicUniformBuffer( ContextLock const & context
+			, LayoutBindingWrites const * writes
+			, uint32_t offset )
+		{
+			for ( auto & write : writes->writes )
+			{
+				bindDynamicUniformBuffer( context, write, offset );
+			}
+		}
+
+		void bindDynamicStorageBuffer( ContextLock const & context
+			, LayoutBindingWrites const * writes
+			, uint32_t offset )
+		{
+			for ( auto & write : writes->writes )
+			{
+				bindDynamicStorageBuffer( context, write, offset );
+			}
+		}
+
+		void bindDynamicBuffers( ContextLock const & context
+			, LayoutBindingWritesArray const & writes
+			, UInt32Array const & offsets )
+		{
+			for ( auto i = 0u; i < offsets.size(); ++i )
+			{
+				auto & write = writes[i];
+
+				switch ( write->descriptorType )
+				{
+				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
+					bindDynamicUniformBuffer( context, write, offsets[i] );
+					break;
+
+				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
+					bindDynamicStorageBuffer( context, write, offsets[i] );
+					break;
+
+				default:
+					assert( false && "Unsupported dynamic descriptor type" );
+					throw std::runtime_error{ "Unsupported dynamic descriptor type" };
+					break;
+				}
+			}
+		}
 	}
 
 	BindDescriptorSetCommand::BindDescriptorSetCommand( VkDevice device
@@ -278,7 +387,9 @@ namespace ashes::gl4
 			bindTexelBuffer( context, write );
 		}
 
-		bindDynamicBuffers( context, get( m_descriptorSet )->getDynamicBuffers(), m_dynamicOffsets );
+		bindDynamicBuffers( context
+			, get( m_descriptorSet )->getDynamicBuffers()
+			, m_dynamicOffsets );
 	}
 
 	CommandPtr BindDescriptorSetCommand::clone()const

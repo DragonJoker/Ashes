@@ -31,6 +31,11 @@ namespace ashes
 	{
 		return !( lhs == rhs );
 	}
+
+	inline VkPipelineTessellationStateCreateInfo deepCopy( VkPipelineTessellationStateCreateInfo const & rhs )
+	{
+		return rhs;
+	}
 }
 
 #endif

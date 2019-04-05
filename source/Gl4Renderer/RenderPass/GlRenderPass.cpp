@@ -13,6 +13,24 @@ See LICENSE file in root folder.
 
 #include <algorithm>
 
+namespace ashes
+{
+	inline VkAttachmentDescription deepCopy( VkAttachmentDescription const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkSubpassDescription deepCopy( VkSubpassDescription const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkSubpassDependency deepCopy( VkSubpassDependency const & rhs )
+	{
+		return rhs;
+	}
+}
+
 namespace ashes::gl4
 {
 	RenderPass::RenderPass( VkDevice device

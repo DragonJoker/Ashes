@@ -42,6 +42,11 @@ namespace ashes
 	{
 		return !( lhs == rhs );
 	}
+
+	inline VkPipelineMultisampleStateCreateInfo deepCopy( VkPipelineMultisampleStateCreateInfo const & rhs )
+	{
+		return rhs;
+	}
 }
 
 #endif

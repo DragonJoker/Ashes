@@ -35,6 +35,11 @@ namespace ashes
 		return !( lhs == rhs );
 	}
 
+	inline VkDynamicState deepCopy( VkDynamicState const & rhs )
+	{
+		return rhs;
+	}
+
 	inline VkPipelineDynamicStateCreateInfo deepCopy( VkPipelineDynamicStateCreateInfo const & rhs
 		, VkDynamicStateArray & states )
 	{

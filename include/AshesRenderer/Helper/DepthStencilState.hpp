@@ -63,6 +63,11 @@ namespace ashes
 	{
 		return !( lhs == rhs );
 	}
+
+	inline VkPipelineDepthStencilStateCreateInfo deepCopy( VkPipelineDepthStencilStateCreateInfo const & rhs )
+	{
+		return rhs;
+	}
 }
 
 #endif

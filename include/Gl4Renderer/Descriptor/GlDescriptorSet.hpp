@@ -10,34 +10,46 @@
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
+#include <map>
 #include <vector>
 
 namespace ashes::gl4
 {
+	struct LayoutBindingWrites
+	{
+		uint32_t binding;
+		uint32_t descriptorCount;
+		VkDescriptorType descriptorType;
+		VkWriteDescriptorSetArray writes;
+	};
+	using LayoutBindingWritesArray = std::vector< LayoutBindingWrites * >;
+	using LayoutBindingWritesMap = std::map< uint32_t, LayoutBindingWrites >;
 	/**
 	*\brief
 	*	Set de descripteurs.
 	*/
 	class DescriptorSet
 	{
+	private:
 	public:
+		DescriptorSet( VkDescriptorSetLayout layout );
 		/**
 		*\copydoc		DescriptorSet::update
 		*/
-		void update( VkWriteDescriptorSet const & write )const;
+		void update( VkWriteDescriptorSet const & write );
 		/**
 		*\copydoc		DescriptorSet::update
 		*/
-		void update( VkCopyDescriptorSet const & write )const;
+		void update( VkCopyDescriptorSet const & write );
 		/**
 		*\copydoc		DescriptorSet::update
 		*/
-		void update()const;
+		void update();
 		/**
 		*\brief
 		*	Le tableau d'attaches de type sampler + get( texture )->
 		*/
-		inline VkWriteDescriptorSetArray const & getCombinedTextureSamplers()const
+		inline LayoutBindingWritesArray const & getCombinedTextureSamplers()const
 		{
 			return m_combinedTextureSamplers;
 		}
@@ -45,7 +57,7 @@ namespace ashes::gl4
 		*\brief
 		*	Le tableau d'attaches de type sampler.
 		*/
-		inline VkWriteDescriptorSetArray const & getSamplers()const
+		inline LayoutBindingWritesArray const & getSamplers()const
 		{
 			return m_samplers;
 		}
@@ -53,7 +65,7 @@ namespace ashes::gl4
 		*\brief
 		*	Le tableau d'attaches de type texture échantillonnée.
 		*/
-		inline VkWriteDescriptorSetArray const & getSampledTextures()const
+		inline LayoutBindingWritesArray const & getSampledTextures()const
 		{
 			return m_sampledTextures;
 		}
@@ -61,7 +73,7 @@ namespace ashes::gl4
 		*\brief
 		*	Le tableau d'attaches de type texture de stockage.
 		*/
-		inline VkWriteDescriptorSetArray const & getStorageTextures()const
+		inline LayoutBindingWritesArray const & getStorageTextures()const
 		{
 			return m_storageTextures;
 		}
@@ -69,7 +81,7 @@ namespace ashes::gl4
 		*\brief
 		*	Le tableau d'attaches de type tampon uniforme.
 		*/
-		inline VkWriteDescriptorSetArray const & getUniformBuffers()const
+		inline LayoutBindingWritesArray const & getUniformBuffers()const
 		{
 			return m_uniformBuffers;
 		}
@@ -77,7 +89,7 @@ namespace ashes::gl4
 		*\brief
 		*	Le tableau d'attaches de type tampon de stockage.
 		*/
-		inline VkWriteDescriptorSetArray const & getStorageBuffers()const
+		inline LayoutBindingWritesArray const & getStorageBuffers()const
 		{
 			return m_storageBuffers;
 		}
@@ -85,7 +97,7 @@ namespace ashes::gl4
 		*\brief
 		*	Le tableau d'attaches de type tampon uniforme de texels.
 		*/
-		inline VkWriteDescriptorSetArray const & getTexelBuffers()const
+		inline LayoutBindingWritesArray const & getTexelBuffers()const
 		{
 			return m_texelBuffers;
 		}
@@ -93,23 +105,26 @@ namespace ashes::gl4
 		*\brief
 		*	Le tableau d'attaches de type tampon dynamique.
 		*/
-		inline VkWriteDescriptorSetArray const & getDynamicBuffers()const
+		inline LayoutBindingWritesArray const & getDynamicBuffers()const
 		{
 			return m_dynamicBuffers;
 		}
 
 	private:
-		mutable VkWriteDescriptorSetArray m_writes;
-		mutable VkWriteDescriptorSetArray m_combinedTextureSamplers;
-		mutable VkWriteDescriptorSetArray m_samplers;
-		mutable VkWriteDescriptorSetArray m_sampledTextures;
-		mutable VkWriteDescriptorSetArray m_storageTextures;
-		mutable VkWriteDescriptorSetArray m_uniformBuffers;
-		mutable VkWriteDescriptorSetArray m_storageBuffers;
-		mutable VkWriteDescriptorSetArray m_texelBuffers;
-		mutable VkWriteDescriptorSetArray m_dynamicUniformBuffers;
-		mutable VkWriteDescriptorSetArray m_dynamicStorageBuffers;
-		mutable VkWriteDescriptorSetArray m_dynamicBuffers;
+		void mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write );
+
+	private:
+		LayoutBindingWritesMap m_writes;
+		LayoutBindingWritesArray m_combinedTextureSamplers;
+		LayoutBindingWritesArray m_samplers;
+		LayoutBindingWritesArray m_sampledTextures;
+		LayoutBindingWritesArray m_storageTextures;
+		LayoutBindingWritesArray m_uniformBuffers;
+		LayoutBindingWritesArray m_storageBuffers;
+		LayoutBindingWritesArray m_texelBuffers;
+		LayoutBindingWritesArray m_dynamicUniformBuffers;
+		LayoutBindingWritesArray m_dynamicStorageBuffers;
+		LayoutBindingWritesArray m_dynamicBuffers;
 	};
 }
 

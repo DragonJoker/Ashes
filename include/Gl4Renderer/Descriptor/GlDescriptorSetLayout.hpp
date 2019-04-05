@@ -17,6 +17,20 @@ namespace ashes::gl4
 	public:
 		DescriptorSetLayout( VkDevice device
 			, VkDescriptorSetLayoutCreateInfo createInfo );
+
+		auto begin()const
+		{
+			return m_bindings.begin();
+		}
+
+		auto end()const
+		{
+			return m_bindings.end();
+		}
+
+	private:
+		VkDescriptorSetLayoutCreateFlags m_flags;
+		VkDescriptorSetLayoutBindingArray m_bindings;
 	};
 }
 

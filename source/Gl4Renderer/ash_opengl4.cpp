@@ -763,7 +763,7 @@ namespace ashes::gl4
 		VkPipeline* pPipelines )
 	{
 		assert( pPipelines );
-		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
+		VkResult result = VK_SUCCESS;
 
 		for ( uint32_t i = 0u; i < createInfoCount; ++i )
 		{
@@ -791,7 +791,7 @@ namespace ashes::gl4
 		VkPipeline* pPipelines )
 	{
 		assert( pPipelines );
-		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
+		VkResult result = VK_SUCCESS;
 
 		for ( uint32_t i = 0u; i < createInfoCount; ++i )
 		{

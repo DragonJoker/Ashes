@@ -33,6 +33,11 @@ namespace ashes
 	{
 		return !( lhs == rhs );
 	}
+
+	inline VkPipelineInputAssemblyStateCreateInfo deepCopy( VkPipelineInputAssemblyStateCreateInfo const & rhs )
+	{
+		return rhs;
+	}
 }
 
 #endif
