@@ -45,7 +45,7 @@ namespace gl_renderer
 		: ashes::ImageView{ device
 		, image
 		, {
-			ashes::ImageViewType::e2D,
+			VK_IMAGE_VIEW_TYPE_2D,
 			image.getFormat(),
 			ashes::ComponentMapping{},
 			{

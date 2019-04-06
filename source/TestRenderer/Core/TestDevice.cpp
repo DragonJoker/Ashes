@@ -104,7 +104,7 @@ namespace test_renderer
 	}
 
 	ashes::BufferViewPtr Device::createBufferView( ashes::BufferBase const & buffer
-		, ashes::Format format
+		, VkFormat format
 		, uint32_t offset
 		, uint32_t range )const
 	{

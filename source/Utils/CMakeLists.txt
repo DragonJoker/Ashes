@@ -39,7 +39,10 @@ if ( MSVC )
 endif ()
 
 target_link_libraries( ${PROJECT_NAME}
-	Ashes
+	AshesCommon
+	ashes
+	AshesRenderer
+	AshesPP
 	glslang
 	OGLCompiler
 	OSDependent

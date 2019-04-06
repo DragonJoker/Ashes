@@ -12,7 +12,7 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	DescriptorSetLayout::DescriptorSetLayout( Device const & device
-		, DescriptorSetLayoutBindingArray bindings )
+		, VkDescriptorSetLayoutBindingArray bindings )
 		: m_device{ device }
 		, m_bindings{ std::move( bindings ) }
 	{

@@ -44,8 +44,8 @@ namespace test_renderer
 		*/
 		FrameBuffer( Device const & device
 			, RenderPass const & renderPass
-			, ashes::Extent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray attachments );
+			, VkExtent2D const & dimensions
+			, ashes::ashes::ImageViewPtrArray attachments );
 		/**
 		*\~french
 		*\brief
@@ -59,7 +59,7 @@ namespace test_renderer
 		*\return
 		*	Les dimensions du tampon.
 		*/
-		inline ashes::Extent2D const & getDimensions()const noexcept
+		inline VkExtent2D const & getDimensions()const noexcept
 		{
 			return m_dimensions;
 		}
@@ -67,6 +67,6 @@ namespace test_renderer
 	private:
 		Device const & m_device;
 		ImageViewCRefArray m_views;
-		ashes::Extent2D m_dimensions;
+		VkExtent2D m_dimensions;
 	};
 }

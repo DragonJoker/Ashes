@@ -38,25 +38,40 @@ extern "C"
 		VkBool32 supportsPersistentMapping;
 	} AshPluginFeatures;
 
-	typedef struct AshPluginDescription
+	typedef struct AshPluginSupport
 	{
-		char name[16];
-		char description[64];
-		PFN_vkGetInstanceProcAddr getInstanceProcAddr;
-		AshPluginFeatures features;
+		uint32_t priority;
+		VkBool32 supported;
+	} AshPluginSupport;
+
+	typedef struct AshPluginStaticFunction
+	{
 #define VK_LIB_GLOBAL_FUNCTION( x )\
 		PFN_vk##x x;
 #define VK_LIB_INSTANCE_FUNCTION( x )\
 		PFN_vk##x x;
 #define VK_LIB_DEVICE_FUNCTION( x )\
 		PFN_vk##x x;
+#define VK_LIB_GLOBAL_FUNCTION_EXT( x )
+#define VK_LIB_INSTANCE_FUNCTION_EXT( x )
+#define VK_LIB_DEVICE_FUNCTION_EXT( x )
 #include <AshesCommon/VulkanFunctionsList.inl>
+	} AshPluginStaticFunction;
+
+	typedef struct AshPluginDescription
+	{
+		char name[16];
+		char description[64];
+		PFN_vkGetInstanceProcAddr getInstanceProcAddr;
+		AshPluginFeatures features;
+		AshPluginStaticFunction functions;
+		AshPluginSupport support;
 	} AshPluginDescription;
 
-	typedef void( VKAPI_PTR * PFN_ashGetPluginsDescriptions )( uint32_t *, AshPluginDescription * );
+	typedef void( VKAPI_PTR * PFN_ashEnumeratePluginsDescriptions )( uint32_t *, AshPluginDescription * );
 	typedef VkResult( VKAPI_PTR * PFN_ashGetPluginDescription )( AshPluginDescription * );
 
-	Ashes_API void VKAPI_PTR ashGetPluginsDescriptions( uint32_t * count
+	Ashes_API void VKAPI_PTR ashEnumeratePluginsDescriptions( uint32_t * count
 		, AshPluginDescription * pDescriptions );
 	Ashes_API VkResult VKAPI_PTR ashGetCurrentPluginDescription( AshPluginDescription * description );
 

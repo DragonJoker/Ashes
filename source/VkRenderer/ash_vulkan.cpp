@@ -45,12 +45,18 @@ struct VkLibrary
 				true, // supportsPersistentMapping
 			};
 #define VK_LIB_GLOBAL_FUNCTION( x )\
-			library->getFunction( "vk"#x, description.x );
+			library->getFunction( "vk"#x, description.functions.x );
 #define VK_LIB_INSTANCE_FUNCTION( x )\
-			library->getFunction( "vk"#x, description.x );
+			library->getFunction( "vk"#x, description.functions.x );
 #define VK_LIB_DEVICE_FUNCTION( x )\
-			library->getFunction( "vk"#x, description.x );
+			library->getFunction( "vk"#x, description.functions.x );
+#define VK_LIB_GLOBAL_FUNCTION_EXT( x )
+#define VK_LIB_INSTANCE_FUNCTION_EXT( x )
+#define VK_LIB_DEVICE_FUNCTION_EXT( x )
 #include <AshesCommon/VulkanFunctionsList.inl>
+
+			description.support.priority = 10u;
+			description.support.supported = VK_TRUE;
 		}
 
 		return result;

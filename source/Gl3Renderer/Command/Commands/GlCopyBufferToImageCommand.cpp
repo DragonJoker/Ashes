@@ -21,7 +21,7 @@ namespace gl_renderer
 	};
 
 	CopyBufferToImageCommand::CopyBufferToImageCommand( Device const & device
-		, ashes::BufferImageCopyArray const & copyInfo
+		, ashes::VkBufferImageCopyArray const & copyInfo
 		, ashes::BufferBase const & src
 		, ashes::Image const & dst )
 		: CommandBase{ device }

@@ -10,7 +10,7 @@ namespace d3d11_renderer
 {
 	ClearColourCommand::ClearColourCommand( Device const & device
 		, ashes::ImageView const & image
-		, ashes::ClearColorValue const & colour )
+		, VkClearColorValue const & colour )
 		: CommandBase{ device }
 		, m_image{ static_cast< ImageView const & >( image ) }
 		, m_colour{ colour }

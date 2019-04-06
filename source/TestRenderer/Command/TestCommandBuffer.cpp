@@ -99,7 +99,7 @@ namespace test_renderer
 	}
 
 	void CommandBuffer::clear( ashes::ImageView const & image
-		, ashes::ClearColorValue const & colour )const
+		, VkClearColorValue const & colour )const
 	{
 	}
 
@@ -145,12 +145,12 @@ namespace test_renderer
 	}
 
 	void CommandBuffer::setViewport( uint32_t firstViewport
-		, ashes::ViewportArray const & viewports )const
+		, ashes::VkViewportArray const & viewports )const
 	{
 	}
 
 	void CommandBuffer::setScissor( uint32_t firstScissor
-		, ashes::ScissorArray const & scissors )const
+		, ashes::VkScissorArray const & scissors )const
 	{
 	}
 
@@ -187,13 +187,13 @@ namespace test_renderer
 		assert( m_currentPipeline && "No pipeline bound." );
 	}
 
-	void CommandBuffer::copyToImage( ashes::BufferImageCopyArray const & copyInfo
+	void CommandBuffer::copyToImage( ashes::VkBufferImageCopyArray const & copyInfo
 		, ashes::BufferBase const & src
 		, ashes::Image const & dst )const
 	{
 	}
 
-	void CommandBuffer::copyToBuffer( ashes::BufferImageCopyArray const & copyInfo
+	void CommandBuffer::copyToBuffer( ashes::VkBufferImageCopyArray const & copyInfo
 		, ashes::Image const & src
 		, ashes::BufferBase const & dst )const
 	{
@@ -290,7 +290,7 @@ namespace test_renderer
 		, ashes::PipelineStageFlags srcStageMask
 		, ashes::PipelineStageFlags dstStageMask
 		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const
+		, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
 	}
 
@@ -299,7 +299,7 @@ namespace test_renderer
 		, ashes::DependencyFlags dependencyFlags
 		, ashes::MemoryBarrierArray const & memoryBarriers
 		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const
+		, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
 	}
 }

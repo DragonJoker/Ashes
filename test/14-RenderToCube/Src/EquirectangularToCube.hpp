@@ -3,14 +3,14 @@
 #include "Prerequisites.hpp"
 
 #include <Buffer/StagingBuffer.hpp>
-#include <Core/Surface.hpp>
-#include <Core/Device.hpp>
+#include <AshesPP/Core/Surface.hpp>
+#include <AshesPP/Core/Device.hpp>
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
 #include <Image/Sampler.hpp>
 #include <Core/SwapChain.hpp>
 
-#include <Utils/Signal.hpp>
+#include <AshesPP/Utils/Signal.hpp>
 
 #include <ObjLoader.hpp>
 

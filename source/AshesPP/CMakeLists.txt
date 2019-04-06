@@ -34,6 +34,7 @@ add_library( ${PROJECT_NAME} STATIC
 add_dependencies( ${PROJECT_NAME}
 	AshesCommon
 	ashes
+	AshesRenderer
 )
 
 add_target_precompiled_header( ${PROJECT_NAME}
@@ -51,11 +52,11 @@ parse_subdir_files( ${ASHES_SOURCE_DIR} Enum "Enum" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Image "Image" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Miscellaneous "Miscellaneous" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Pipeline "Pipeline" )
+parse_subdir_files( ${ASHES_SOURCE_DIR} Core/Platform "Core\\\\Platform" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} RenderPass "RenderPass" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Shader "Shader" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Sync "Sync" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Utils "Utils" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} vulkan "vulkan" )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes" )

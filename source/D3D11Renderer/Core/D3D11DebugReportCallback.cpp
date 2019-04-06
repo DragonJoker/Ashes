@@ -92,7 +92,7 @@ namespace d3d11_renderer
 		ReportData report{ baseReport };
 		report.object = uint64_t( &cmd );
 		auto format = image.getFormat();
-		ashes::Extent3D texelBlockExtent{ 1u, 1u, 1u };
+		VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
 
 		if ( ashes::isCompressedFormat( format ) )
 		{
@@ -228,7 +228,7 @@ namespace d3d11_renderer
 	}
 
 	bool DebugLayer::onCopyToImageCommand( ashes::CommandBuffer const & cmd
-		, ashes::BufferImageCopyArray const & copyInfos
+		, ashes::VkBufferImageCopyArray const & copyInfos
 		, ashes::BufferBase const & src
 		, ashes::Image const & dst )const
 	{

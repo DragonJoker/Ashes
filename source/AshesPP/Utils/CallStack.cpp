@@ -2,6 +2,9 @@
 
 #if !defined( NDEBUG )
 #	if ASHES_WIN32
+#		ifndef NOMINMAX
+#			define NOMINMAX
+#		endif
 #		include <Windows.h>
 #		pragma warning( push )
 #		pragma warning( disable:4091 ) //'typedef ': ignored on left of '' when no variable is declared

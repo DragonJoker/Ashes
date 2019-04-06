@@ -6,15 +6,14 @@ See LICENSE file in root folder.
 
 #include "UtilsPlugin.hpp"
 
-#include <Ashes/Core/DebugReportCallback.hpp>
-#include <Ashes/Core/Instance.hpp>
+#include <AshesPP/Core/Instance.hpp>
 
 namespace utils
 {
 	class Instance
 	{
 	public:
-		Instance( InstanceFactory const & factory
+		Instance( ashes::RendererList const & rendererList
 			, std::string const & name
 			, ashes::ApplicationInfo applicationInfo );
 		/**
@@ -55,14 +54,14 @@ namespace utils
 
 	private:
 		ashes::InstancePtr m_instance;
-		ashes::DebugReportCallbackPtr m_debugCallback;
+		VkDebugReportCallbackEXT m_debugCallback;
 		ashes::PhysicalDevicePtrArray m_gpus;
-		ashes::LayerProperties m_globalLayer;
-		ashes::LayerPropertiesArray m_layers;
+		VkLayerProperties m_globalLayer;
+		ashes::VkLayerPropertiesArray m_layers;
 		ashes::StringArray m_layerNames;
 		ashes::StringArray m_extensionNames;
-		ashes::ExtensionPropertiesArray m_globalLayerExtensions;
-		std::map< std::string, ashes::ExtensionPropertiesArray > m_layersExtensions;
+		ashes::VkExtensionPropertiesArray m_globalLayerExtensions;
+		std::map< std::string, ashes::VkExtensionPropertiesArray > m_layersExtensions;
 	};
 	using InstancePtr = std::unique_ptr< Instance >;
 }

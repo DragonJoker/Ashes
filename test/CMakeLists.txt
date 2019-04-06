@@ -30,10 +30,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		${CMAKE_SOURCE_DIR}/Utils/Src
 		${CMAKE_BINARY_DIR}/Utils/Src
 		${CMAKE_SOURCE_DIR}/include
-		${CMAKE_SOURCE_DIR}/include/Ashes
-		${CMAKE_SOURCE_DIR}/include/Utils
 		${CMAKE_BINARY_DIR}/source
-		${CMAKE_BINARY_DIR}/source/Ashes
 		${CMAKE_SOURCE_DIR}/external/gli
 		${CMAKE_SOURCE_DIR}/external/glm
 		${CMAKE_SOURCE_DIR}/external/imgui
@@ -42,8 +39,11 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 	)
 
 	set( BinLibraries
-		Ashes
 		${BinLibraries}
+		AshesCommon
+		ashes
+		AshesRenderer
+		AshesPP
 		Utils
 	)
 

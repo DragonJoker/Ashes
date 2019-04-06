@@ -7,9 +7,9 @@
 #include <Buffer/UniformBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/Queue.hpp>
-#include <Core/Surface.hpp>
-#include <Core/Device.hpp>
-#include <Core/Instance.hpp>
+#include <AshesPP/Core/Surface.hpp>
+#include <AshesPP/Core/Device.hpp>
+#include <AshesPP/Core/Instance.hpp>
 #include <Core/SwapChain.hpp>
 #include <Descriptor/DescriptorSet.hpp>
 #include <Descriptor/DescriptorSetLayout.hpp>
@@ -260,8 +260,8 @@ namespace vkapp
 		m_swapChain = std::make_unique< utils::SwapChain >( m_device->getDevice()
 			, *m_commandPool
 			, std::move( surface )
-			, ashes::Extent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
-		m_clearColour = ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
+			, VkExtent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
+		m_clearColour = VkClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			doCreateFrameBuffer();
@@ -277,7 +277,7 @@ namespace vkapp
 			{
 				ashes::ImageCreateFlag::eCubeCompatible,
 				ashes::ImageType::e2D,
-				ashes::Format::eR8G8B8A8_UNORM,
+				VK_FORMAT_R8G8B8A8_UNORM,
 				{ 512u, 512u, 1u },
 				1u,
 				6u,
@@ -286,8 +286,8 @@ namespace vkapp
 				ashes::ImageUsageFlag::eTransferDst | ashes::ImageUsageFlag::eSampled
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_view = m_texture->createView( ashes::ImageViewType::eCube
-			, ashes::Format::eR8G8B8A8_UNORM
+		m_view = m_texture->createView( VK_IMAGE_VIEW_TYPE_Cube
+			, VK_FORMAT_R8G8B8A8_UNORM
 			, 0u
 			, 1u
 			, 0u
@@ -351,9 +351,9 @@ namespace vkapp
 	{
 		std::vector< ashes::DescriptorSetLayoutBinding > bindings
 		{
-			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
-			ashes::DescriptorSetLayoutBinding{ 1u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex },
-			ashes::DescriptorSetLayoutBinding{ 2u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex },
+			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment },
+			ashes::DescriptorSetLayoutBinding{ 1u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eVertex },
+			ashes::DescriptorSetLayoutBinding{ 2u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eVertex },
 		};
 		m_offscreenDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_offscreenDescriptorPool = m_offscreenDescriptorLayout->createPool( 1u );
@@ -374,10 +374,10 @@ namespace vkapp
 
 	void RenderPanel::doCreateOffscreenRenderPass()
 	{
-		ashes::AttachmentDescriptionArray attaches
+		ashes::VkAttachmentDescriptionArray attaches
 		{
 			{
-				ashes::Format::eR8G8B8A8_UNORM,
+				VK_FORMAT_R8G8B8A8_UNORM,
 				ashes::SampleCountFlag::e1,
 				ashes::AttachmentLoadOp::eClear,
 				ashes::AttachmentStoreOp::eStore,
@@ -387,7 +387,7 @@ namespace vkapp
 				ashes::ImageLayout::eShaderReadOnlyOptimal,
 			}
 		};
-		ashes::AttachmentReferenceArray subAttaches
+		ashes::VkAttachmentReferenceArray subAttaches
 		{
 			{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
 		};
@@ -411,7 +411,7 @@ namespace vkapp
 			{
 				0u,
 				ashes::ImageType::e2D,
-				ashes::Format::eR8G8B8A8_UNORM,
+				VK_FORMAT_R8G8B8A8_UNORM,
 				{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ), 1u },
 				1u,
 				1u,
@@ -420,9 +420,9 @@ namespace vkapp
 				ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eSampled
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		ashes::FrameBufferAttachmentArray attaches;
+		ashes::ImageViewPtrArray attaches;
 		attaches.emplace_back( *( m_offscreenRenderPass->getAttachments().begin() + 0u )
-			, m_renderTargetColour->createView( ashes::ImageViewType::e2D
+			, m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
 				, m_renderTargetColour->getFormat() ) );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
 			, std::move( attaches ) );
@@ -432,7 +432,7 @@ namespace vkapp
 	{
 		m_offscreenVertexLayout = ashes::makeLayout< NonTexturedVertexData >( 0 );
 		m_offscreenVertexLayout->createAttribute( 0u
-			, ashes::Format::eR32G32B32_SFLOAT
+			, VK_FORMAT_R32G32B32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 
 		m_offscreenVertexBuffer = utils::makeVertexBuffer< NonTexturedVertexData >( *m_device
@@ -467,13 +467,13 @@ namespace vkapp
 		}
 
 		std::vector< ashes::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( VkShaderStageFlagBits::eVertex ) } );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( VkShaderStageFlagBits::eFragment ) } );
 		shaderStages[0].module->loadShader( common::parseShaderFile( m_device->getDevice()
-			, ashes::ShaderStageFlag::eVertex
+			, VkShaderStageFlagBits::eVertex
 			, shadersFolder / "offscreen.vert" ) );
 		shaderStages[1].module->loadShader( common::parseShaderFile( m_device->getDevice()
-			, ashes::ShaderStageFlag::eFragment
+			, VkShaderStageFlagBits::eFragment
 			, shadersFolder / "offscreen.frag" ) );
 
 		ashes::RasterisationState rasterisationState;
@@ -496,7 +496,7 @@ namespace vkapp
 	{
 		std::vector< ashes::DescriptorSetLayoutBinding > bindings
 		{
-			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
+			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment },
 		};
 		m_mainDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
@@ -509,7 +509,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainRenderPass()
 	{
-		ashes::AttachmentDescriptionArray attaches
+		ashes::VkAttachmentDescriptionArray attaches
 		{
 			{
 				m_swapChain->getFormat(),
@@ -522,7 +522,7 @@ namespace vkapp
 				ashes::ImageLayout::ePresentSrc,
 			}
 		};
-		ashes::AttachmentReferenceArray subAttaches
+		ashes::VkAttachmentReferenceArray subAttaches
 		{
 			{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
 		};
@@ -587,10 +587,10 @@ namespace vkapp
 	{
 		m_mainVertexLayout = ashes::makeLayout< TexturedVertexData >( 0 );
 		m_mainVertexLayout->createAttribute( 0u
-			, ashes::Format::eR32G32B32A32_SFLOAT
+			, VK_FORMAT_R32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 		m_mainVertexLayout->createAttribute( 1u
-			, ashes::Format::eR32G32_SFLOAT
+			, VK_FORMAT_R32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_mainVertexBuffer = utils::makeVertexBuffer< TexturedVertexData >( *m_device
@@ -616,13 +616,13 @@ namespace vkapp
 		}
 
 		std::vector< ashes::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( VkShaderStageFlagBits::eVertex ) } );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( VkShaderStageFlagBits::eFragment ) } );
 		shaderStages[0].module->loadShader( common::parseShaderFile( m_device->getDevice()
-			, ashes::ShaderStageFlag::eVertex
+			, VkShaderStageFlagBits::eVertex
 			, shadersFolder / "main.vert" ) );
 		shaderStages[1].module->loadShader( common::parseShaderFile( m_device->getDevice()
-			, ashes::ShaderStageFlag::eFragment
+			, VkShaderStageFlagBits::eFragment
 			, shadersFolder / "main.frag" ) );
 
 		m_mainPipeline = m_mainPipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo

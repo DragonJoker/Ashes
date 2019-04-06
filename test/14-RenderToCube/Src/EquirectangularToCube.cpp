@@ -4,7 +4,7 @@
 #include <Buffer/UniformBuffer.hpp>
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/Queue.hpp>
-#include <Core/Device.hpp>
+#include <AshesPP/Core/Device.hpp>
 #include <Descriptor/DescriptorSet.hpp>
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetLayoutBinding.hpp>
@@ -47,7 +47,7 @@ namespace vkapp
 					0u,
 					ashes::ImageType::e2D,
 					image.format,
-					ashes::Extent3D{ image.size.width, image.size.height, 1u },
+					VkExtent3D{ image.size.width, image.size.height, 1u },
 					1u,
 					1u,
 					ashes::SampleCountFlag::e1,
@@ -55,7 +55,7 @@ namespace vkapp
 					ashes::ImageUsageFlag::eSampled | ashes::ImageUsageFlag::eTransferDst
 				}
 				, ashes::MemoryPropertyFlag::eDeviceLocal );
-			auto view = result->createView( ashes::ImageViewType::e2D
+			auto view = result->createView( VK_IMAGE_VIEW_TYPE_2D
 				, image.format );
 			
 			auto staging = ashes::StagingBuffer{ device, 0u, ashes::getSize( image.size, image.format ) };
@@ -133,13 +133,13 @@ namespace vkapp
 			}
 
 			std::vector< ashes::ShaderStageState > shaderStages;
-			shaderStages.push_back( { device->createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-			shaderStages.push_back( { device->createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
+			shaderStages.push_back( { device->createShaderModule( VkShaderStageFlagBits::eVertex ) } );
+			shaderStages.push_back( { device->createShaderModule( VkShaderStageFlagBits::eFragment ) } );
 			shaderStages[0].module->loadShader( common::parseShaderFile( device.getDevice()
-				, ashes::ShaderStageFlag::eVertex
+				, VkShaderStageFlagBits::eVertex
 				, shadersFolder / "equirectangular.vert" ) );
 			shaderStages[1].module->loadShader( common::parseShaderFile( device.getDevice()
-				, ashes::ShaderStageFlag::eFragment
+				, VkShaderStageFlagBits::eFragment
 				, shadersFolder / "equirectangular.frag" ) );
 
 			return shaderStages;
@@ -178,23 +178,23 @@ namespace vkapp
 		{
 			auto result = ashes::makeLayout< VertexData >( 0u );
 			result->createAttribute( 0u
-				, ashes::Format::eR32G32B32A32_SFLOAT
+				, VK_FORMAT_R32G32B32A32_SFLOAT
 				, 0u );
 			return result;
 		}
 
 		ashes::DescriptorSetLayoutPtr doCreateDescriptorSetLayout( utils::Device const & device )
 		{
-			ashes::DescriptorSetLayoutBindingArray bindings
+			ashes::VkDescriptorSetLayoutBindingArray bindings
 			{
-				{ 0u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex },
-				{ 1u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
+				{ 0u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eVertex },
+				{ 1u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment },
 			};
 			return device->createDescriptorSetLayout( std::move( bindings ) );
 		}
 
 		ashes::RenderPassPtr doCreateRenderPass( utils::Device const & device
-			, ashes::Format format )
+			, VkFormat format )
 		{
 			ashes::RenderPassCreateInfo renderPass;
 			renderPass.flags = 0u;
@@ -246,7 +246,7 @@ namespace vkapp
 		, m_image{ common::loadImage( filePath ) }
 		, m_stagingBuffer{ device, ashes::BufferTarget::eTransferSrc, uint32_t( m_image.data.size() ) }
 		, m_texture{ doCreateTexture( m_device, queue, commandPool, m_image ) }
-		, m_view{ m_texture->createView( ashes::ImageViewType::e2D, m_image.format ) }
+		, m_view{ m_texture->createView( VK_IMAGE_VIEW_TYPE_2D, m_image.format ) }
 		, m_sampler{ doCreateSampler( m_device ) }
 		, m_matrixUbo{ doCreateMatrixUbo( m_device, queue, commandPool, m_stagingBuffer ) }
 		, m_vertexBuffer{ doCreateVertexBuffer( m_device, queue, commandPool, m_stagingBuffer ) }
@@ -256,14 +256,14 @@ namespace vkapp
 		, m_pipelineLayout{ m_device->createPipelineLayout( *m_descriptorLayout ) }
 		, m_renderPass{ doCreateRenderPass( m_device, texture.getFormat() ) }
 	{
-		auto size = ashes::Extent2D{ texture.getDimensions().width, texture.getDimensions().height };
+		auto size = VkExtent2D{ texture.getDimensions().width, texture.getDimensions().height };
 		uint32_t face = 0u;
 
 		for ( auto & facePipeline : m_faces )
 		{
-			ashes::FrameBufferAttachmentArray attaches;
+			ashes::ImageViewPtrArray attaches;
 			attaches.emplace_back( *m_renderPass->getAttachments().begin()
-				, texture.createView( ashes::ImageViewType::e2D, texture.getFormat(), 0u, 1u, face, 1u ) );
+				, texture.createView( VK_IMAGE_VIEW_TYPE_2D, texture.getFormat(), 0u, 1u, face, 1u ) );
 			facePipeline.frameBuffer = m_renderPass->createFrameBuffer( size
 				, std::move( attaches ) );
 
@@ -306,7 +306,7 @@ namespace vkapp
 					, 0u ) );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, *facePipeline.frameBuffer
-				, { ashes::ClearColorValue{ 0, 0, 0, 0 } }
+				, { VkClearColorValue{ 0, 0, 0, 0 } }
 			, ashes::SubpassContents::eInline );
 			commandBuffer.bindPipeline( *facePipeline.pipeline );
 			commandBuffer.bindDescriptorSet( *facePipeline.descriptorSet

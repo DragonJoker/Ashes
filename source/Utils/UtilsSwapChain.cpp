@@ -4,15 +4,17 @@ See LICENSE file in root folder.
 */
 #include "Utils/UtilsSwapChain.hpp"
 
-#include <Ashes/Command/Queue.hpp>
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Core/Exception.hpp>
-#include <Ashes/Core/SwapChain.hpp>
-#include <Ashes/Image/Image.hpp>
-#include <Ashes/Miscellaneous/SwapChainCreateInfo.hpp>
-#include <Ashes/RenderPass/FrameBuffer.hpp>
-#include <Ashes/RenderPass/FrameBufferAttachment.hpp>
-#include <Ashes/RenderPass/RenderPass.hpp>
+#include <AshesPP/Command/Queue.hpp>
+#include <AshesPP/Core/Device.hpp>
+#include <AshesPP/Core/SwapChain.hpp>
+#include <AshesPP/Image/Image.hpp>
+#include <AshesPP/Image/ImageView.hpp>
+#include <AshesPP/Image/ImageViewCreateInfo.hpp>
+#include <AshesPP/RenderPass/FrameBuffer.hpp>
+#include <AshesPP/RenderPass/RenderPass.hpp>
+
+#include <AshesRenderer/Util/Exception.hpp>
+#include <AshesRenderer/Util/Format.hpp>
 
 namespace utils
 {
@@ -33,26 +35,26 @@ namespace utils
 			return desiredNumberOfSwapChainImages;
 		}
 
-		ashes::SurfaceFormat doSelectFormat( ashes::Surface const & surface )
+		VkSurfaceFormatKHR doSelectFormat( ashes::Surface const & surface )
 		{
-			ashes::SurfaceFormat result;
+			VkSurfaceFormatKHR result;
 			auto formats = surface.getFormats();
 			// Si la liste de formats ne contient qu'une entr�e VK_FORMAT_UNDEFINED,
 			// la surface n'a pas de format préféré. Sinon, au moins un format supporté
 			// sera renvoyé.
-			if ( formats.size() == 1u && formats[0].format == ashes::Format::eUndefined )
+			if ( formats.size() == 1u && formats[0].format == VK_FORMAT_UNDEFINED )
 			{
-				result.format = ashes::Format::eR8G8B8A8_UNORM;
-				result.colorSpace = ashes::ColorSpace::eSRGBNonLinear;
+				result.format = VK_FORMAT_R8G8B8A8_UNORM;
+				result.colorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
 			}
 			else
 			{
 				assert( formats.size() > 1u );
 				auto it = std::find_if( formats.begin()
 					, formats.end()
-					, []( ashes::SurfaceFormat const & lookup )
+					, []( VkSurfaceFormatKHR const & lookup )
 					{
-						return lookup.format == ashes::Format::eR8G8B8A8_UNORM;
+						return lookup.format == VK_FORMAT_R8G8B8A8_UNORM;
 					} );
 
 				if ( it != formats.end() )
@@ -68,25 +70,25 @@ namespace utils
 			return result;
 		}
 
-		ashes::PresentMode doSelectPresentMode( ashes::Surface const & surface )
+		VkPresentModeKHR doSelectPresentMode( ashes::Surface const & surface )
 		{
 			auto presentModes = surface.getPresentModes();
 			// Si le mode boîte aux lettres est disponible, on utilise celui-là, car c'est celui avec le
 			// minimum de latence dans tearing.
 			// Sinon, on essaye le mode IMMEDIATE, qui est normalement disponible, et est le plus rapide
 			// (bien qu'il y ait du tearing). Sinon on utilise le mode FIFO qui est toujours disponible.
-			ashes::PresentMode result{ ashes::PresentMode::eFifo };
+			VkPresentModeKHR result{ VK_PRESENT_MODE_FIFO_KHR };
 
 			for ( auto mode : presentModes )
 			{
-				if ( mode == ashes::PresentMode::eMailbox )
+				if ( mode == VK_PRESENT_MODE_MAILBOX_KHR )
 				{
 					result = mode;
 					break;
 				}
 
-				if ( ( result != ashes::PresentMode::eMailbox )
-					&& ( mode == ashes::PresentMode::eImmediate ) )
+				if ( ( result != VK_PRESENT_MODE_MAILBOX_KHR )
+					&& ( mode == VK_PRESENT_MODE_IMMEDIATE_KHR ) )
 				{
 					result = mode;
 				}
@@ -96,9 +98,9 @@ namespace utils
 		}
 
 		ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Surface const & surface
-			, ashes::Extent2D const & size )
+			, VkExtent2D const & size )
 		{
-			ashes::Extent2D swapChainExtent{};
+			VkExtent2D swapChainExtent{};
 			auto surfaceCaps = surface.getCapabilities();
 
 			// width et height valent soient tous les deux -1 ou tous les deux autre chose que -1.
@@ -122,11 +124,11 @@ namespace utils
 			// impact sur les performances sur certaines plateformes.
 			// Ici, nous ne voulons aucune transformation, donc si la transformation identité est supportée,
 			// nous l'utilisons, sinon nous utiliserons la même transformation que la transformation courante.
-			ashes::SurfaceTransformFlag preTransform{};
+			VkSurfaceTransformFlagBitsKHR preTransform{};
 
-			if ( checkFlag( surfaceCaps.supportedTransforms, ashes::SurfaceTransformFlag::eIdentity ) )
+			if ( ashes::checkFlag( surfaceCaps.supportedTransforms, VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR ) )
 			{
-				preTransform = ashes::SurfaceTransformFlag::eIdentity;
+				preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 			}
 			else
 			{
@@ -137,28 +139,30 @@ namespace utils
 			auto surfaceFormat = doSelectFormat( surface );
 			return ashes::SwapChainCreateInfo
 			{
-				ashes::SwapChainCreateFlag::eNone,
-				std::ref( surface ),
+				0u,
+				surface,
 				doGetImageCount( surface ),
 				surfaceFormat.format,
 				surfaceFormat.colorSpace,
 				swapChainExtent,
 				1u,
 				surfaceCaps.supportedUsageFlags,
-				ashes::SharingMode::eExclusive,
+				VK_SHARING_MODE_EXCLUSIVE,
 				{},
 				preTransform,
-				ashes::CompositeAlphaFlag::eOpaque,
+				VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
 				presentMode,
 				false,
-				ashes::nullopt
+				nullptr
 			};
 		}
 
 		ashes::ImageViewPtr doCloneView( ashes::ImageView const & view )
 		{
-			return view.getImage().createView(
+			return view.getImage().createView( ashes::ImageViewCreateInfo
 				{
+					0u,
+					view.getImage(),
 					view.getType(),
 					view.getFormat(),
 					view.getComponentMapping(),
@@ -170,7 +174,7 @@ namespace utils
 	SwapChain::SwapChain( ashes::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::SurfacePtr surface
-		, ashes::Extent2D const & size )
+		, VkExtent2D const & size )
 		: m_device{ device }
 		, m_commandPool{ commandPool }
 		, m_surface{ std::move( surface ) }
@@ -186,7 +190,7 @@ namespace utils
 		}
 	}
 
-	void SwapChain::reset( ashes::Extent2D const & size )
+	void SwapChain::reset( VkExtent2D const & size )
 	{
 		m_dimensions = size;
 		doResetSwapChain();
@@ -215,7 +219,9 @@ namespace utils
 
 		for ( size_t i = 0u; i < result.size(); ++i )
 		{
-			auto attaches = doPrepareAttaches( uint32_t( i ), renderPass.getAttachments(), depthStencilView );
+			auto attaches = doPrepareAttaches( uint32_t( i )
+				, renderPass.getAttachments()
+				, std::move( depthStencilView ) );
 			result[i] = static_cast< ashes::RenderPass const & >( renderPass ).createFrameBuffer( m_swapChain->getDimensions()
 				, std::move( attaches ) );
 		}
@@ -248,7 +254,7 @@ namespace utils
 				, resources.getImageAvailableSemaphore()
 				, imageIndex );
 
-			if ( doCheckNeedReset( ashes::Result( res )
+			if ( doCheckNeedReset( VkResult( res )
 				, true
 				, "Swap chain image acquisition" ) )
 			{
@@ -282,11 +288,11 @@ namespace utils
 		resources.setImageIndex( ~0u );
 	}
 
-	ashes::FrameBufferAttachmentArray SwapChain::doPrepareAttaches( uint32_t backBuffer
-		, ashes::AttachmentDescriptionArray const & attaches
+	ashes::ImageViewPtrArray SwapChain::doPrepareAttaches( uint32_t backBuffer
+		, ashes::VkAttachmentDescriptionArray const & attaches
 		, ashes::ImageViewPtr depthStencilView )const
 	{
-		ashes::FrameBufferAttachmentArray result;
+		ashes::ImageViewPtrArray result;
 
 		for ( auto & attach : attaches )
 		{
@@ -294,23 +300,21 @@ namespace utils
 
 			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
 			{
-				result.emplace_back( attach
-					, image.createView( ashes::ImageViewType::e2D
+				result.emplace_back( image.createView( VK_IMAGE_VIEW_TYPE_2D
 						, m_swapChain->getFormat() ) );
 			}
 			else
 			{
 				assert( depthStencilView
 					&& "Asked for a depth stencil attachment in RenderPass, but no depth stencil view provided." );
-				result.emplace_back( attach
-					, std::move( depthStencilView ) );
+				result.emplace_back( std::move( depthStencilView ) );
 			}
 		}
 
 		return result;
 	}
 
-	bool SwapChain::doCheckNeedReset( ashes::Result errCode
+	bool SwapChain::doCheckNeedReset( VkResult errCode
 		, bool acquisition
 		, char const * const action )
 	{
@@ -318,11 +322,11 @@ namespace utils
 
 		switch ( errCode )
 		{
-		case ashes::Result::eSuccess:
+		case VK_SUCCESS:
 			result = true;
 			break;
 
-		case ashes::Result::eErrorOutOfDate:
+		case VK_ERROR_OUT_OF_DATE_KHR:
 			if ( !acquisition )
 			{
 				doResetSwapChain();
@@ -333,7 +337,7 @@ namespace utils
 			}
 			break;
 
-		case ashes::Result::eSubOptimal:
+		case VK_SUBOPTIMAL_KHR:
 			doResetSwapChain();
 			break;
 

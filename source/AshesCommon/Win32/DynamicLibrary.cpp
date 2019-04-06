@@ -6,6 +6,9 @@
 #include <iostream>
 #include <sstream>
 
+#ifndef NOMINMAX
+#	define NOMINMAX
+#endif
 #include <Windows.h>
 
 namespace ashes

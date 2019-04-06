@@ -22,7 +22,7 @@ namespace d3d11_renderer
 	}
 
 	bool isRenderable( ashes::ImageUsageFlags const & flags
-		, ashes::Format format
+		, VkFormat format
 		, uint32_t mipLevels )
 	{
 		return isRenderTarget( flags )
@@ -30,7 +30,7 @@ namespace d3d11_renderer
 	}
 
 	bool isMipmapped( ashes::ImageUsageFlags const & flags
-		, ashes::Format format
+		, VkFormat format
 		, uint32_t mipLevels )
 	{
 		return isRenderable( flags, format, mipLevels )

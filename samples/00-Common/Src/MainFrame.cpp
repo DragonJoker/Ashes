@@ -46,7 +46,7 @@ namespace common
 
 		try
 		{
-			ashes::ApplicationInfo config
+			VkApplicationInfo config
 			{
 				m_name.ToStdString(),
 				ashes::makeVersion( 1, 0, 0 ),

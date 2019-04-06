@@ -20,7 +20,7 @@ namespace d3d11_renderer
 	public:
 		BufferView( Device const & device
 			, Buffer const & buffer
-			, ashes::Format format
+			, VkFormat format
 			, uint32_t offset
 			, uint32_t range );
 		~BufferView();

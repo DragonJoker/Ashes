@@ -3,14 +3,14 @@
 #include "Prerequisites.hpp"
 
 #include <Buffer/PushConstantsBuffer.hpp>
-#include <Core/Surface.hpp>
-#include <Core/Device.hpp>
+#include <AshesPP/Core/Surface.hpp>
+#include <AshesPP/Core/Device.hpp>
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
 #include <Image/Sampler.hpp>
 #include <Core/SwapChain.hpp>
 
-#include <Utils/Signal.hpp>
+#include <AshesPP/Utils/Signal.hpp>
 
 #include <wx/panel.h>
 
@@ -97,7 +97,7 @@ namespace vkapp
 		ashes::CommandPoolPtr m_commandPool;
 		ashes::CommandPoolPtr m_computeCommandPool;
 		utils::SwapChainPtr m_swapChain;
-		ashes::ClearColorValue m_clearColour;
+		VkClearColorValue m_clearColour;
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::ImagePtr m_texture;
 		ashes::ImageViewPtr m_view;

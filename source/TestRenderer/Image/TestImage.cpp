@@ -35,14 +35,14 @@ namespace test_renderer
 	}
 
 	Image::Image( Device const & device
-		, ashes::Format format
-		, ashes::Extent2D const & dimensions )
+		, VkFormat format
+		, VkExtent2D const & dimensions )
 		: ashes::Image{ device
 			, {
 				0u,
 				ashes::ImageType::e2D,
 				format,
-				ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
+				VkExtent3D{ dimensions.width, dimensions.height, 1u },
 				1u,
 				1u,
 				ashes::SampleCountFlag::e1,
@@ -50,7 +50,7 @@ namespace test_renderer
 				( isDepthOrStencilFormat( format )
 					? ashes::ImageUsageFlag::eDepthStencilAttachment
 					: ashes::ImageUsageFlag::eColourAttachment ),
-				ashes::SharingMode::eExclusive,
+				VK_SHARING_MODE_EXCLUSIVE,
 				{},
 				ashes::ImageLayout::eUndefined
 			} }
@@ -59,8 +59,8 @@ namespace test_renderer
 	}
 
 	Image::Image( Device const & device
-		, ashes::Format format
-		, ashes::Extent2D const & dimensions
+		, VkFormat format
+		, VkExtent2D const & dimensions
 		, ashes::ImageUsageFlags usageFlags
 		, ashes::ImageTiling tiling
 		, ashes::MemoryPropertyFlags memoryFlags )
@@ -69,13 +69,13 @@ namespace test_renderer
 				0u,
 				ashes::ImageType::e2D,
 				format,
-				ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
+				VkExtent3D{ dimensions.width, dimensions.height, 1u },
 				1u,
 				1u,
 				ashes::SampleCountFlag::e1,
 				tiling,
 				usageFlags,
-				ashes::SharingMode::eExclusive,
+				VK_SHARING_MODE_EXCLUSIVE,
 				{},
 				ashes::ImageLayout::eUndefined
 			} }

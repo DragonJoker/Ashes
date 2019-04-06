@@ -52,8 +52,8 @@ namespace d3d11_renderer
 		*	Le périphérique logique.
 		*/
 		Image( Device const & device
-			, ashes::Format format
-			, ashes::Extent2D const & dimensions
+			, VkFormat format
+			, VkExtent2D const & dimensions
 			, ID3D11Texture2D * image );
 		/**
 		*\brief
@@ -62,8 +62,8 @@ namespace d3d11_renderer
 		*	Le périphérique logique.
 		*/
 		Image( Device const & device
-			, ashes::Format format
-			, ashes::Extent2D const & dimensions
+			, VkFormat format
+			, VkExtent2D const & dimensions
 			, ashes::ImageUsageFlags usageFlags
 			, ashes::ImageTiling tiling
 			, ashes::MemoryPropertyFlags memoryFlags );

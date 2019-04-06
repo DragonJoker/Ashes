@@ -2,10 +2,10 @@
 
 #include "Prerequisites.hpp"
 
-#include <Core/Device.hpp>
+#include <AshesPP/Core/Device.hpp>
 #include <Core/SwapChain.hpp>
 
-#include <Utils/Signal.hpp>
+#include <AshesPP/Utils/Signal.hpp>
 
 #include <wx/panel.h>
 
@@ -62,7 +62,7 @@ namespace vkapp
 		void doCreateRenderingResources();
 		void doCreateFrameBuffers();
 		void doCreateCommandBuffers();
-		ashes::FrameBufferAttachmentArray doPrepareAttaches( uint32_t backBuffer )const;
+		ashes::ImageViewPtrArray doPrepareAttaches( uint32_t backBuffer )const;
 		/**@}*/
 		/**
 		*\name
@@ -72,7 +72,7 @@ namespace vkapp
 		void doDraw();
 		RenderingResources * getResources();
 		void present( RenderingResources & resources );
-		bool doCheckNeedReset( ashes::Result errCode
+		bool doCheckNeedReset( VkResult errCode
 			, bool acquisition
 			, char const * const action );
 		void doResetSwapChain();
@@ -99,7 +99,7 @@ namespace vkapp
 		ashes::SurfacePtr m_surface;
 		ashes::SwapChainPtr m_swapChain;
 		ashes::ImagePtrArray m_swapChainImages;
-		ashes::ClearColorValue m_clearColour;
+		VkClearColorValue m_clearColour;
 		ashes::RenderPassPtr m_renderPass;
 		RenderingResourcesArray m_renderingResources;
 		size_t m_resourceIndex{ 0u };

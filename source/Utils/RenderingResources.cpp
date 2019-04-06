@@ -4,9 +4,9 @@ See LICENSE file in root folder.
 */
 #include "Utils/RenderingResources.hpp"
 
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Core/SwapChain.hpp>
-#include <Ashes/Command/Queue.hpp>
+#include <AshesPP/Core/Device.hpp>
+#include <AshesPP/Core/SwapChain.hpp>
+#include <AshesPP/Command/Queue.hpp>
 
 namespace utils
 {
@@ -18,7 +18,7 @@ namespace utils
 		, m_commandBuffer{ commandPool.createCommandBuffer() }
 		, m_imageAvailableSemaphore{ m_device.createSemaphore() }
 		, m_finishedRenderingSemaphore{ m_device.createSemaphore() }
-		, m_fence{ m_device.createFence( ashes::FenceCreateFlag::eSignaled ) }
+		, m_fence{ m_device.createFence( VK_FENCE_CREATE_SIGNALED_BIT ) }
 	{
 	}
 
@@ -34,7 +34,7 @@ namespace utils
 		return res;
 	}
 
-	ashes::Result RenderingResources::present( ashes::Queue const & queue )
+	VkResult RenderingResources::present( ashes::Queue const & queue )
 	{
 		return queue.present( m_swapChain
 			, m_imageIndex

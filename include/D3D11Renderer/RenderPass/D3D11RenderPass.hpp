@@ -22,8 +22,8 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::RenderPass::createFrameBuffer
 		*/
-		ashes::FrameBufferPtr createFrameBuffer( ashes::Extent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray textures )const override;
+		ashes::FrameBufferPtr createFrameBuffer( VkExtent2D const & dimensions
+			, ashes::ashes::ImageViewPtrArray textures )const override;
 
 	private:
 		struct Subpass

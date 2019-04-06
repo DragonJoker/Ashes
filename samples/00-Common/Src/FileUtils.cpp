@@ -22,7 +22,7 @@ namespace common
 
 		uint8_t * data = image.GetData();
 		Image result;
-		result.format = ashes::Format::eR8G8B8A8_UNORM;
+		result.format = VK_FORMAT_R8G8B8A8_UNORM;
 		result.size = { uint32_t( image.GetSize().x ), uint32_t( image.GetSize().y ) };
 		uint32_t size = image.GetSize().x * image.GetSize().y;
 		result.data.resize( size * 4 );
@@ -56,7 +56,7 @@ namespace common
 	}
 
 	ashes::UInt32Array dumpShaderFile( ashes::Device const & device
-		, ashes::ShaderStageFlag stage
+		, VkShaderStageFlagBits stage
 		, std::string const & path )
 	{
 		return utils::compileGlslToSpv( device

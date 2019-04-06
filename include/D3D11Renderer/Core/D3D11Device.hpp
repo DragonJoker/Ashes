@@ -68,7 +68,7 @@ namespace d3d11_renderer
 		*\copydoc	ashes::Device::createBufferView
 		*/
 		ashes::BufferViewPtr createBufferView( ashes::BufferBase const & buffer
-			, ashes::Format format
+			, VkFormat format
 			, uint32_t offset
 			, uint32_t range )const override;
 		/**
@@ -126,7 +126,7 @@ namespace d3d11_renderer
 		*/
 		/**@{*/
 		bool onCopyToImageCommand( ashes::CommandBuffer const & cmd
-			, ashes::BufferImageCopyArray const & copyInfo
+			, ashes::VkBufferImageCopyArray const & copyInfo
 			, ashes::BufferBase const & src
 			, ashes::Image const & dst )const;
 		bool onCheckHResultCommand( HRESULT hresult

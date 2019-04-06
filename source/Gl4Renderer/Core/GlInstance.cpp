@@ -12,6 +12,9 @@
 #include <iostream>
 
 #if ASHES_WIN32
+#	ifndef NOMINMAX
+#		define NOMINMAX
+#	endif
 #	include <Windows.h>
 #elif ASHES_XLIB
 #	include <X11/X.h>

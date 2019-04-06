@@ -4,22 +4,89 @@ See LICENSE file in root folder.
 */
 #include <Utils/UtilsDebug.hpp>
 
-#include <Ashes/Core/DebugReportCallback.hpp>
-#include <Ashes/Core/Instance.hpp>
-#include <Ashes/Miscellaneous/DebugReportCallbackCreateInfo.hpp>
+#include <AshesPP/Core/Instance.hpp>
 
 namespace utils
 {
 	namespace
 	{
-		bool ASHES_API debugReportCallback( ashes::DebugReportFlags flags
-			, ashes::DebugReportObjectType objectType
+		char const * const getName( VkDebugReportObjectTypeEXT value )
+		{
+			switch ( value )
+			{
+			case VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT:
+				return "Unknown";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT:
+				return "Instance";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT:
+				return "PhysicalDevice";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT:
+				return "Device";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT:
+				return "Queue";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT:
+				return "Semaphore";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT:
+				return "CommandBuffer";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT:
+				return "Fence";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT:
+				return "DeviceMemory";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
+				return "Buffer";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
+				return "Image";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT:
+				return "Event";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT:
+				return "QueryPool";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT:
+				return "BufferView";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT:
+				return "ImageView";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT:
+				return "ShaderModule";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT:
+				return "PipelineCache";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT:
+				return "PipelineLayout";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT:
+				return "RenderPass";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT:
+				return "Pipeline";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT:
+				return "DescriptorSetLayout";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT:
+				return "Sampler";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT:
+				return "DescriptorPool";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT:
+				return "DescriptorSet";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT:
+				return "Framebuffer";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT:
+				return "CommandPool";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT:
+				return "Surface";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT:
+				return "Swapchain";
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT:
+				return "DebugReport";
+
+			default:
+				assert( false && "Unsupported VkDebugReportObjectTypeEXT." );
+				return "Undefined";
+			}
+		}
+
+		VkBool32 VKAPI_PTR debugReportCallback( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
 			, uint64_t object
 			, size_t location
 			, int32_t messageCode
 			, const char * pLayerPrefix
 			, const char * pMessage
-			, void* pUserData )
+			, void * pUserData )
 		{
 			// Select prefix depending on flags passed to the callback
 			// Note that multiple flags may be set for a single validation message
@@ -29,28 +96,28 @@ namespace utils
 			stream << "Vulkan ";
 
 			// Error that may result in undefined behaviour
-			if ( ashes::checkFlag( flags, ashes::DebugReportFlag::eError ) )
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
 			{
 				stream << "Error:\n";
 			};
 			// Warnings may hint at unexpected / non-spec API usage
-			if ( ashes::checkFlag( flags, ashes::DebugReportFlag::eWarning ) )
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_WARNING_BIT_EXT ) )
 			{
 				stream << "Warning:\n";
 			};
 			// May indicate sub-optimal usage of the API
-			if ( ashes::checkFlag( flags, ashes::DebugReportFlag::ePerformanceWarning ) )
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) )
 			{
 				stream << "Performance:\n";
 			};
 			// Informal messages that may become handy during debugging
-			if ( ashes::checkFlag( flags, ashes::DebugReportFlag::eInformation ) )
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) )
 			{
 				stream << "Info:\n";
 			}
 			// Diagnostic info from the Vulkan loader and layers
 			// Usually not helpful in terms of API usage, but may help to debug layer and loader problems 
-			if ( ashes::checkFlag( flags, ashes::DebugReportFlag::eDebug ) )
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_DEBUG_BIT_EXT ) )
 			{
 				stream << "Debug:\n";
 			}
@@ -61,11 +128,11 @@ namespace utils
 			stream << "    Object: (" << std::hex << object << ") " << getName( objectType ) << "\n";
 			stream << "    Message: " << pMessage;
 
-			auto result = false;
+			VkBool32 result = VK_FALSE;
 
 #if ASHES_ANDROID
 
-			if ( ashes::checkFlag( flags, ashes::DebugReportFlag::eError ) )
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
 			{
 				LOGE( "%s", stream.str().c_str() );
 			}
@@ -78,16 +145,16 @@ namespace utils
 
 #else
 
-			if ( ashes::checkFlag( flags, ashes::DebugReportFlag::eError ) )
+			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
 			{
 				ashes::Logger::logError( stream );
 			}
-			else if ( ashes::checkFlag( flags, ashes::DebugReportFlag::eWarning )
-				|| ashes::checkFlag( flags, ashes::DebugReportFlag::ePerformanceWarning ) )
+			else if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_WARNING_BIT_EXT )
+				|| ashes::checkFlag( flags, VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) )
 			{
 				ashes::Logger::logWarning( stream );
 			}
-			else if ( ashes::checkFlag( flags, ashes::DebugReportFlag::eInformation ) )
+			else if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) )
 			{
 				ashes::Logger::logTrace( stream );
 			}
@@ -108,20 +175,22 @@ namespace utils
 		}
 	}
 
-	ashes::DebugReportCallbackPtr setupDebugging( ashes::Instance const & instance
+	VkDebugReportCallbackEXT setupDebugging( ashes::Instance const & instance
 		, void * userData )
 	{
 		// The report flags determine what type of messages for the layers will be displayed
 		// For validating (debugging) an appplication the error and warning bits should suffice
-		ashes::DebugReportFlags debugReportFlags = 0u
-			/*| DebugReportFlag::eInformation*/
-			| ashes::DebugReportFlag::eWarning
-			| ashes::DebugReportFlag::ePerformanceWarning
-			| ashes::DebugReportFlag::eError
-			| ashes::DebugReportFlag::eDebug;
+		VkDebugReportFlagsEXT debugReportFlags = 0u
+			| VK_DEBUG_REPORT_DEBUG_BIT_EXT
+			//| VK_DEBUG_REPORT_INFORMATION_BIT_EXT
+			| VK_DEBUG_REPORT_WARNING_BIT_EXT
+			| VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT
+			| VK_DEBUG_REPORT_ERROR_BIT_EXT;
 
-		ashes::DebugReportCallbackCreateInfo dbgCreateInfo
+		VkDebugReportCallbackCreateInfoEXT dbgCreateInfo
 		{
+			VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT,
+			nullptr,
 			debugReportFlags,
 			debugReportCallback,
 			userData

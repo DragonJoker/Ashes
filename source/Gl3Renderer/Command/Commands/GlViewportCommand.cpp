@@ -10,7 +10,7 @@ namespace gl_renderer
 {
 	ViewportCommand::ViewportCommand( Device const & device
 		, uint32_t firstViewport
-		, ashes::ViewportArray const & viewports )
+		, ashes::VkViewportArray const & viewports )
 		: CommandBase{ device }
 		, m_viewports{ viewports.begin() + firstViewport, viewports.end() }
 	{

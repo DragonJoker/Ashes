@@ -40,15 +40,15 @@ namespace ashes
 #	endif
 #else
 #	include <optional>
+#	if defined( MemoryBarrier )
+#		undef MemoryBarrier
+#	endif
 namespace ashes
 {
 	template< typename T >
 	using Optional = std::optional< T >;
 	using std::nullopt;
 }
-#	if defined( MemoryBarrier )
-#		undef MemoryBarrier
-#	endif
 #endif
 
 #ifndef NDEBUG
@@ -66,6 +66,16 @@ namespace ashes
 
 namespace ashes
 {
+	using ByteArray = std::vector< uint8_t >;
+	using UInt16Array = std::vector< uint16_t >;
+	using UInt32Array = std::vector< uint32_t >;
+	using UInt64Array = std::vector< uint64_t >;
+	using FloatArray = std::vector< float >;
+	using StringArray = std::vector< std::string >;
+	using CharPtrArray = std::vector< char const * >;
+
+	static VkDeviceSize constexpr WholeSize = ~( 0ull );
+
 	inline constexpr uint32_t getMajor( uint32_t version )
 	{
 		return ( ( uint32_t )( version ) >> 22 );
@@ -132,9 +142,115 @@ namespace ashes
 			: nullopt;
 	}
 
-	using StringArray = std::vector< std::string >;
-	using UInt32Array = std::vector< uint32_t >;
-	using UInt64Array = std::vector< uint64_t >;
+	template< typename VkType, typename LibType >
+	inline std::vector< VkType > makeVkArray( std::vector< LibType > const & input )
+	{
+		std::vector< VkType > result;
+		result.reserve( input.size() );
+
+		for ( auto const & element : input )
+		{
+			result.emplace_back( element );
+		}
+
+		return result;
+	}
+
+	template< typename VkType, typename LibType >
+	inline std::vector< VkType > makeVkArray( std::vector< std::reference_wrapper< LibType > > const & input )
+	{
+		std::vector< VkType > result;
+		result.reserve( input.size() );
+
+		for ( auto const & element : input )
+		{
+			result.emplace_back( element.get() );
+		}
+
+		return result;
+	}
+
+	template< typename VkType, typename LibType >
+	inline std::vector< VkType > makeVkArray( std::vector< std::unique_ptr< LibType > > const & input )
+	{
+		std::vector< VkType > result;
+		result.reserve( input.size() );
+
+		for ( auto const & element : input )
+		{
+			result.emplace_back( *element );
+		}
+
+		return result;
+	}
+
+	template< typename VkType, typename LibType >
+	inline std::vector< VkType > makeVkArray( std::vector< std::reference_wrapper< LibType const > > const & input )
+	{
+		std::vector< VkType > result;
+		result.reserve( input.size() );
+
+		for ( auto const & element : input )
+		{
+			result.emplace_back( VkType( element.get() ) );
+		}
+
+		return result;
+	}
+
+	inline CharPtrArray convert( StringArray const & values )
+	{
+		CharPtrArray result;
+
+		for ( auto & value : values )
+		{
+			result.push_back( value.c_str() );
+		}
+
+		return result;
+	}
+
+	template< typename VkType, typename LibType >
+	std::vector< VkType > convert( std::vector< LibType > const & values )
+	{
+		std::vector< VkType > result;
+		result.reserve( values.size() );
+
+		for ( auto & value : values )
+		{
+			result.emplace_back( convert( value ) );
+		}
+
+		return result;
+	}
+
+	template< typename VkType, typename LibType >
+	std::vector< VkType > convert( std::vector< std::reference_wrapper< LibType const > > const & values )
+	{
+		std::vector< VkType > result;
+		result.reserve( values.size() );
+
+		for ( auto & value : values )
+		{
+			result.emplace_back( convert( value.get() ) );
+		}
+
+		return result;
+	}
+
+	template< typename VkType, typename ItType >
+	std::vector< VkType > convert( ItType begin, ItType end )
+	{
+		std::vector< VkType > result;
+		result.reserve( std::distance( begin, end ) );
+
+		for ( auto it = begin; it != end; ++it )
+		{
+			result.emplace_back( convert( *it ) );
+		}
+
+		return result;
+	}
 
 	using VkQueueCreateCount = std::pair< VkDeviceQueueCreateInfo, uint32_t >;
 	using VkQueueCreateCountMap = std::map< uint32_t, VkQueueCreateCount >;
@@ -153,6 +269,7 @@ namespace ashes
 	using VkDescriptorSetArray = std::vector< VkDescriptorSet >;
 	using VkDescriptorSetLayoutArray = std::vector< VkDescriptorSetLayout >;
 	using VkDescriptorSetLayoutBindingArray = std::vector< VkDescriptorSetLayoutBinding >;
+	using VkDeviceQueueCreateInfoArray = std::vector< VkDeviceQueueCreateInfo >;
 	using VkDeviceSizeArray = std::vector< VkDeviceSize >;
 	using VkDynamicStateArray = std::vector< VkDynamicState >;
 	using VkEventArray = std::vector< VkEvent >;
@@ -163,12 +280,15 @@ namespace ashes
 	using VkImageMemoryBarrierArray = std::vector< VkImageMemoryBarrier >;
 	using VkImageSubresourceRangeArray = std::vector< VkImageSubresourceRange >;
 	using VkImageViewArray = std::vector< VkImageView >;
+	using VkLayerPropertiesArray = std::vector< VkLayerProperties >;
 	using VkMemoryBarrierArray = std::vector< VkMemoryBarrier >;
 	using VkPipelineColorBlendAttachmentStateArray = std::vector< VkPipelineColorBlendAttachmentState >;
 	using VkPipelineShaderStageCreateInfoArray = std::vector< VkPipelineShaderStageCreateInfo >;
+	using VkPipelineStageFlagsArray = std::vector< VkPipelineStageFlags >;
 	using VkPhysicalDeviceArray = std::vector< VkPhysicalDevice >;
 	using VkPresentModeArrayKHR = std::vector< VkPresentModeKHR >;
 	using VkPushConstantRangeArray = std::vector< VkPushConstantRange >;
+	using VkQueueFamilyPropertiesArray = std::vector< VkQueueFamilyProperties >;
 	using VkResultArray = std::vector< VkResult >;
 	using VkSemaphoreArray = std::vector< VkSemaphore >;
 	using VkScissorArray = std::vector< VkRect2D >;
@@ -186,38 +306,47 @@ namespace ashes
 #if defined( VK_USE_PLATFORM_ANDROID_KHR )
 
 	using VkSurfaceCreateInfoKHR = VkAndroidSurfaceCreateInfoKHR;
+	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_KHR_android_surface";
 
 #elif defined( VK_USE_PLATFORM_FUCHSIA )
 
 	using VkSurfaceCreateInfoKHR = VkImagePipeSurfaceCreateInfoFUCHSIA;
+	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_FUCHSIA_imagepipe_surface";
 
 #elif defined( VK_USE_PLATFORM_IOS_MVK )
 
 	using VkSurfaceCreateInfoKHR = VkIOSSurfaceCreateInfoMVK;
+	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_MVK_ios_surface";
 
 #elif defined( VK_USE_PLATFORM_MACOS_MVK )
 
 	using VkSurfaceCreateInfoKHR = VkMacOSSurfaceCreateInfoMVK;
+	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_MVK_macos_surface";
 
 #elif defined( VK_USE_PLATFORM_VI_NN )
 
 	using VkSurfaceCreateInfoKHR = VkViSurfaceCreateInfoNN;
+	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_NN_vi_surface";
 
 #elif defined( VK_USE_PLATFORM_XCB_KHR )
 
 	using VkSurfaceCreateInfoKHR = VkXcbSurfaceCreateInfoKHR;
+	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_KHR_xcb_surface";
 
 #elif defined( VK_USE_PLATFORM_XLIB_KHR )
 
 	using VkSurfaceCreateInfoKHR = VkXlibSurfaceCreateInfoKHR;
+	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_KHR_xlib_surface";
 
 #elif defined( VK_USE_PLATFORM_WAYLAND_KHR )
 
 	using VkSurfaceCreateInfoKHR = VkWaylandSurfaceCreateInfoKHR;
+	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_KHR_wayland_surface";
 
 #elif defined( VK_USE_PLATFORM_WIN32_KHR )
 
 	using VkSurfaceCreateInfoKHR = VkWin32SurfaceCreateInfoKHR;
+	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_KHR_win32_surface";
 
 #endif
 }

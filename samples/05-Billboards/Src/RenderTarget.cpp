@@ -16,7 +16,7 @@ namespace vkapp
 	RenderTarget::RenderTarget( utils::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
-		, ashes::Extent2D const & size
+		, VkExtent2D const & size
 		, common::Scene scene
 		, common::ImagePtrArray images )
 		: common::RenderTarget{ device, commandPool, transferQueue, size, std::move( scene ), std::move( images ) }
@@ -30,7 +30,7 @@ namespace vkapp
 		m_camera.update();
 	}
 
-	void RenderTarget::doUpdateProjection( ashes::Extent2D const & size )
+	void RenderTarget::doUpdateProjection( VkExtent2D const & size )
 	{
 		auto width = float( size.width );
 		auto height = float( size.height );
@@ -45,7 +45,7 @@ namespace vkapp
 		if ( m_currentMousePosition != m_previousMousePosition
 			&& m_moveCamera )
 		{
-			ashes::Offset2D delta = {
+			VkOffset2D delta = {
 				m_currentMousePosition.x - m_previousMousePosition.x,
 				m_currentMousePosition.y - m_previousMousePosition.y,
 			};
@@ -67,7 +67,7 @@ namespace vkapp
 			, ashes::PipelineStageFlag::eVertexShader );
 	}
 
-	void RenderTarget::doResize( ashes::Extent2D const & size )
+	void RenderTarget::doResize( VkExtent2D const & size )
 	{
 		doUpdateProjection( size );
 	}

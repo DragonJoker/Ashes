@@ -12,9 +12,9 @@ namespace d3d11_renderer
 	bool isStorage( ashes::ImageUsageFlags const & flags );
 	bool isSampled( ashes::ImageUsageFlags const & flags );
 	bool isRenderable( ashes::ImageUsageFlags const & flags
-		, ashes::Format format
+		, VkFormat format
 		, uint32_t mipLevels );
 	bool isMipmapped( ashes::ImageUsageFlags const & flags
-		, ashes::Format format
+		, VkFormat format
 		, uint32_t mipLevels );
 }

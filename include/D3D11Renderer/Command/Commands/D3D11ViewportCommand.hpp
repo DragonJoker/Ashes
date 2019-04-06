@@ -26,7 +26,7 @@ namespace d3d11_renderer
 		*/
 		ViewportCommand( Device const & device
 			, uint32_t first
-			, ashes::ViewportArray const & viewports );
+			, ashes::VkViewportArray const & viewports );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;

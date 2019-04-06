@@ -9,6 +9,6 @@ See LICENSE file in root folder.
 namespace d3d11_renderer
 {
 	D3D11_VIEWPORT makeViewport( ashes::Viewport const & viewport );
-	std::vector< D3D11_VIEWPORT > makeViewports( ashes::ViewportArray::const_iterator const & begin
-		, ashes::ViewportArray::const_iterator const & end );
+	std::vector< D3D11_VIEWPORT > makeViewports( ashes::VkViewportArray::const_iterator const & begin
+		, ashes::VkViewportArray::const_iterator const & end );
 }

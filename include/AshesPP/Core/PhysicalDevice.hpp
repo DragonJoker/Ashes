@@ -52,7 +52,7 @@ namespace ashes
 		*\brief
 		*	Enumerates the devie layers.
 		*/
-		LayerPropertiesArray enumerateLayerProperties()const;
+		VkLayerPropertiesArray enumerateLayerProperties()const;
 		/**
 		*\~french
 		*\brief
@@ -61,7 +61,7 @@ namespace ashes
 		*\brief
 		*	Enumerates the extension for the given device layer.
 		*/
-		ExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const;
+		VkExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const;
 		/**
 		*\~english
 		*\brief
@@ -97,7 +97,7 @@ namespace ashes
 		*\brief
 		*	Récupère les propriétés des files du périphérique physique.
 		*/
-		QueueFamilyPropertiesArray getQueueFamilyProperties()const;
+		VkQueueFamilyPropertiesArray getQueueFamilyProperties()const;
 		/**
 		*\~english
 		*\brief

@@ -17,8 +17,8 @@ namespace d3d11_renderer
 		};
 	}
 
-	std::vector< RECT > makeScissors( ashes::ScissorArray::const_iterator const & begin
-		, ashes::ScissorArray::const_iterator const & end )
+	std::vector< RECT > makeScissors( ashes::VkScissorArray::const_iterator const & begin
+		, ashes::VkScissorArray::const_iterator const & end )
 	{
 		std::vector< RECT > result;
 
@@ -30,7 +30,7 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	RECT makeScissor( ashes::Extent2D const & extent )
+	RECT makeScissor( VkExtent2D const & extent )
 	{
 		return RECT
 		{

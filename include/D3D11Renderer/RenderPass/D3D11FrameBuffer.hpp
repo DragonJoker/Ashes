@@ -44,8 +44,8 @@ namespace d3d11_renderer
 		*/
 		FrameBuffer( Device const & device
 			, RenderPass const & renderPass
-			, ashes::Extent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray attachments );
+			, VkExtent2D const & dimensions
+			, ashes::ashes::ImageViewPtrArray attachments );
 		/**
 		*\~french
 		*\brief
@@ -59,7 +59,7 @@ namespace d3d11_renderer
 		*\return
 		*	Les dimensions du tampon.
 		*/
-		inline ashes::Extent2D const & getDimensions()const noexcept
+		inline VkExtent2D const & getDimensions()const noexcept
 		{
 			return m_dimensions;
 		}
@@ -87,7 +87,7 @@ namespace d3d11_renderer
 	private:
 		Device const & m_device;
 		ImageViewCRefArray m_views;
-		ashes::Extent2D m_dimensions;
+		VkExtent2D m_dimensions;
 		std::vector< ID3D11View * > m_allViews;
 		std::vector< ID3D11RenderTargetView * > m_rtViews;
 		ID3D11DepthStencilView * m_dsView{ nullptr };

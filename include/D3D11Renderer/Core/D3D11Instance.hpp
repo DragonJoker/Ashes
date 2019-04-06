@@ -82,7 +82,7 @@ namespace d3d11_renderer
 		void registerLayer( Layer * layer )const;
 		void unregisterLayer( Layer * layer )const;
 		bool onCopyToImageCommand( ashes::CommandBuffer const & cmd
-			, ashes::BufferImageCopyArray const & copyInfo
+			, ashes::VkBufferImageCopyArray const & copyInfo
 			, ashes::BufferBase const & src
 			, ashes::Image const & dst )const;
 		bool onCheckHResultCommand( HRESULT hresult

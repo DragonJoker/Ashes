@@ -10,6 +10,8 @@ See LICENSE file in root folder.
 #include "AshesPP/Image/ImageView.hpp"
 #include "AshesPP/Sync/Fence.hpp"
 
+#include <AshesRenderer/Util/Format.hpp>
+
 namespace ashes
 {
 	Image::Image( Image && rhs )

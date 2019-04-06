@@ -6,7 +6,9 @@ See LICENSE file in root folder.
 
 #include "RenderingResources.hpp"
 
-#include <Ashes/Core/SwapChain.hpp>
+#include <AshesPP/Core/SwapChain.hpp>
+#include <AshesPP/Core/SwapChainCreateInfo.hpp>
+#include <AshesPP/Utils/Signal.hpp>
 
 namespace utils
 {
@@ -36,7 +38,7 @@ namespace utils
 		SwapChain( ashes::Device const & device
 			, ashes::CommandPool const & commandPool
 			, ashes::SurfacePtr surface
-			, ashes::Extent2D const & size );
+			, VkExtent2D const & size );
 		/**
 		*\~french
 		*\brief
@@ -45,7 +47,7 @@ namespace utils
 		*\brief
 		*	Réinitialise la swap chain.
 		*/
-		void reset( ashes::Extent2D const & size );
+		void reset( VkExtent2D const & size );
 		/**
 		*\~french
 		*\brief
@@ -118,21 +120,21 @@ namespace utils
 		void present( RenderingResources & resources
 			, ashes::Queue const & queue );
 
-		inline ashes::Format getFormat()const
+		inline VkFormat getFormat()const
 		{
 			return m_swapChain->getFormat();
 		}
 
-		inline ashes::Extent2D getDimensions()const
+		inline VkExtent2D getDimensions()const
 		{
 			return m_swapChain->getDimensions();
 		}
 
 	private:
-		ashes::FrameBufferAttachmentArray doPrepareAttaches( uint32_t backBuffer
-			, ashes::AttachmentDescriptionArray const & attaches
+		ashes::ImageViewPtrArray doPrepareAttaches( uint32_t backBuffer
+			, ashes::VkAttachmentDescriptionArray const & attaches
 			, ashes::ImageViewPtr depthStencilView )const;
-		bool doCheckNeedReset( ashes::Result errCode
+		bool doCheckNeedReset( VkResult errCode
 			, bool acquisition
 			, char const * const action );
 		void doResetSwapChain();
@@ -148,7 +150,7 @@ namespace utils
 		ashes::Device const & m_device;
 		ashes::CommandPool const & m_commandPool;
 		ashes::SurfacePtr m_surface;
-		ashes::Extent2D m_dimensions;
+		VkExtent2D m_dimensions;
 		ashes::SwapChainPtr m_swapChain;
 		ashes::ImagePtrArray m_swapChainImages;
 		RenderingResourcesArray m_renderingResources;

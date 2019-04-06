@@ -52,10 +52,10 @@ namespace common
 			}
 
 			std::vector< ashes::ShaderStageState > result;
-			result.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-			result.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-			result[0].module->loadShader( dumpShaderFile( device, ashes::ShaderStageFlag::eVertex, shadersFolder / "object.vert" ) );
-			result[1].module->loadShader( dumpShaderFile( device, ashes::ShaderStageFlag::eFragment, fragmentShaderFile ) );
+			result.push_back( { device.createShaderModule( VkShaderStageFlagBits::eVertex ) } );
+			result.push_back( { device.createShaderModule( VkShaderStageFlagBits::eFragment ) } );
+			result[0].module->loadShader( dumpShaderFile( device, VkShaderStageFlagBits::eVertex, shadersFolder / "object.vert" ) );
+			result[1].module->loadShader( dumpShaderFile( device, VkShaderStageFlagBits::eFragment, fragmentShaderFile ) );
 			return result;
 		}
 
@@ -71,15 +71,15 @@ namespace common
 			}
 
 			std::vector< ashes::ShaderStageState > result;
-			result.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-			result.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-			result[0].module->loadShader( dumpShaderFile( device, ashes::ShaderStageFlag::eVertex, shadersFolder / "billboard.vert" ) );
-			result[1].module->loadShader( dumpShaderFile( device, ashes::ShaderStageFlag::eFragment, fragmentShaderFile ) );
+			result.push_back( { device.createShaderModule( VkShaderStageFlagBits::eVertex ) } );
+			result.push_back( { device.createShaderModule( VkShaderStageFlagBits::eFragment ) } );
+			result[0].module->loadShader( dumpShaderFile( device, VkShaderStageFlagBits::eVertex, shadersFolder / "billboard.vert" ) );
+			result[1].module->loadShader( dumpShaderFile( device, VkShaderStageFlagBits::eFragment, fragmentShaderFile ) );
 			return result;
 		}
 
 		ashes::RenderPassPtr doCreateRenderPass( ashes::Device const & device
-			, std::vector< ashes::Format > const & formats
+			, std::vector< VkFormat > const & formats
 			, bool clearViews )
 		{
 			uint32_t index{ 0u };
@@ -155,7 +155,7 @@ namespace common
 		{
 			assert( !views.empty() );
 			assert( views.size() == renderPass.getAttachmentCount() );
-			ashes::FrameBufferAttachmentArray attaches;
+			ashes::ImageViewPtrArray attaches;
 			auto it = renderPass.getAttachments().begin();
 			auto dimensions = views[0]->getImage().getDimensions();
 
@@ -165,7 +165,7 @@ namespace common
 				++it;
 			}
 
-			return renderPass.createFrameBuffer( ashes::Extent2D{ dimensions.width, dimensions.height }
+			return renderPass.createFrameBuffer( VkExtent2D{ dimensions.width, dimensions.height }
 			, std::move( attaches ) );
 		}
 
@@ -230,7 +230,7 @@ namespace common
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
 		, std::string const & fragmentShaderFile
-		, std::vector< ashes::Format > const & formats
+		, std::vector< VkFormat > const & formats
 		, bool clearViews
 		, bool opaqueNodes )
 		: m_device{ device }
@@ -304,12 +304,12 @@ namespace common
 	{
 		assert( !views.empty() );
 		auto dimensions = views[0]->getImage().getDimensions();
-		auto size = ashes::Extent2D{ dimensions.width, dimensions.height };
+		auto size = VkExtent2D{ dimensions.width, dimensions.height };
 
 		if ( size != m_size )
 		{
 			m_size = size;
-			static ashes::ClearColorValue const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
+			static VkClearColorValue const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
 			static ashes::DepthStencilClearValue const depth{ 1.0, 0 };
 			ashes::ClearValueArray clearValues;
 
@@ -397,7 +397,7 @@ namespace common
 		{
 			std::vector< ashes::DescriptorSetLayoutBinding > bindings
 			{
-				ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eFragment },
+				ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eFragment },
 			};
 			doFillBillboardDescriptorLayoutBindings( bindings );
 			m_billboardDescriptorLayout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
@@ -406,27 +406,27 @@ namespace common
 			// Initialise vertex layout.
 			m_billboardVertexLayout = ashes::makeLayout< Vertex >( 0u, ashes::VertexInputRate::eVertex );
 			m_billboardVertexLayout->createAttribute( 0u
-				, ashes::Format::eR32G32B32_SFLOAT
+				, VK_FORMAT_R32G32B32_SFLOAT
 				, offsetof( Vertex, position ) );
 			m_billboardVertexLayout->createAttribute( 1u
-				, ashes::Format::eR32G32B32_SFLOAT
+				, VK_FORMAT_R32G32B32_SFLOAT
 				, offsetof( Vertex, normal ) );
 			m_billboardVertexLayout->createAttribute( 2u
-				, ashes::Format::eR32G32B32_SFLOAT
+				, VK_FORMAT_R32G32B32_SFLOAT
 				, offsetof( Vertex, tangent ) );
 			m_billboardVertexLayout->createAttribute( 3u
-				, ashes::Format::eR32G32B32_SFLOAT
+				, VK_FORMAT_R32G32B32_SFLOAT
 				, offsetof( Vertex, bitangent ) );
 			m_billboardVertexLayout->createAttribute( 4u
-				, ashes::Format::eR32G32_SFLOAT
+				, VK_FORMAT_R32G32_SFLOAT
 				, offsetof( Vertex, texture ) );
 			// Initialise instance layout.
 			m_billboardInstanceLayout = ashes::makeLayout< BillboardInstanceData >( 1u, ashes::VertexInputRate::eInstance );
 			m_billboardInstanceLayout->createAttribute( 5u
-				, ashes::Format::eR32G32B32_SFLOAT
+				, VK_FORMAT_R32G32B32_SFLOAT
 				, offsetof( BillboardInstanceData, offset ) );
 			m_billboardInstanceLayout->createAttribute( 6u
-				, ashes::Format::eR32G32_SFLOAT
+				, VK_FORMAT_R32G32_SFLOAT
 				, offsetof( BillboardInstanceData, dimensions ) );
 
 			if ( billboard.material.hasOpacity == !m_opaqueNodes )
@@ -489,7 +489,7 @@ namespace common
 
 				// Initialise descriptor set for textures.
 				ashes::DescriptorSetLayoutBindingArray bindings;
-				bindings.emplace_back( 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment, 6u );
+				bindings.emplace_back( 0u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment, 6u );
 				materialNode.layout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 				materialNode.pool = materialNode.layout->createPool( 1u );
 				materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
@@ -558,7 +558,7 @@ namespace common
 	{
 		std::vector< ashes::DescriptorSetLayoutBinding > bindings
 		{
-			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eFragment },
+			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eFragment },
 		};
 		doFillObjectDescriptorLayoutBindings( bindings );
 		m_objectDescriptorLayout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
@@ -567,19 +567,19 @@ namespace common
 		// Initialise vertex layout.
 		m_objectVertexLayout = ashes::makeLayout< Vertex >( 0u );
 		m_objectVertexLayout->createAttribute( 0u
-			, ashes::Format::eR32G32B32_SFLOAT
+			, VK_FORMAT_R32G32B32_SFLOAT
 			, offsetof( common::Vertex, position ) );
 		m_objectVertexLayout->createAttribute( 1u
-			, ashes::Format::eR32G32B32_SFLOAT
+			, VK_FORMAT_R32G32B32_SFLOAT
 			, offsetof( common::Vertex, normal ) );
 		m_objectVertexLayout->createAttribute( 2u
-			, ashes::Format::eR32G32B32_SFLOAT
+			, VK_FORMAT_R32G32B32_SFLOAT
 			, offsetof( common::Vertex, tangent ) );
 		m_objectVertexLayout->createAttribute( 3u
-			, ashes::Format::eR32G32B32_SFLOAT
+			, VK_FORMAT_R32G32B32_SFLOAT
 			, offsetof( common::Vertex, bitangent ) );
 		m_objectVertexLayout->createAttribute( 4u
-			, ashes::Format::eR32G32_SFLOAT
+			, VK_FORMAT_R32G32_SFLOAT
 			, offsetof( common::Vertex, texture ) );
 
 		for ( auto & submesh : object )
@@ -648,7 +648,7 @@ namespace common
 
 					// Initialise descriptor set for textures.
 					ashes::DescriptorSetLayoutBindingArray bindings;
-					bindings.emplace_back( 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment, 6u );
+					bindings.emplace_back( 0u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment, 6u );
 					materialNode.layout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 					materialNode.pool = materialNode.layout->createPool( 1u );
 					materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );

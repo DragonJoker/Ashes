@@ -26,7 +26,7 @@ namespace d3d11_renderer
 		*/
 		ScissorCommand( Device const & device
 			, uint32_t first
-			, ashes::ScissorArray const & scissors );
+			, ashes::VkScissorArray const & scissors );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;

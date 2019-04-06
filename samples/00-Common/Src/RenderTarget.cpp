@@ -29,14 +29,14 @@ namespace common
 {
 	namespace
 	{
-		static ashes::Format const DepthFormat = ashes::Format::eD24_UNORM_S8_UINT;
-		static ashes::Format const ColourFormat = ashes::Format::eR8G8B8A8_UNORM;
+		static VkFormat const DepthFormat = VK_FORMAT_D24_UNORM_S8_UINT;
+		static VkFormat const ColourFormat = VK_FORMAT_R8G8B8A8_UNORM;
 	}
 
 	RenderTarget::RenderTarget( utils::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
-		, ashes::Extent2D const & size
+		, VkExtent2D const & size
 		, Scene scene
 		, ImagePtrArray images )
 		: m_device{ device }
@@ -68,7 +68,7 @@ namespace common
 		doCleanup();
 	}
 
-	void RenderTarget::resize( ashes::Extent2D const & size )
+	void RenderTarget::resize( VkExtent2D const & size )
 	{
 		if ( size != m_size )
 		{
@@ -142,7 +142,7 @@ namespace common
 					0u,
 					ashes::ImageType::e2D,
 					image->format,
-					ashes::Extent3D{ image->size.width, image->size.height, 1u },
+					VkExtent3D{ image->size.width, image->size.height, 1u },
 					4u,
 					1u,
 					ashes::SampleCountFlag::e1,
@@ -152,11 +152,11 @@ namespace common
 						| ashes::ImageUsageFlag::eSampled )
 				}
 				, ashes::MemoryPropertyFlag::eDeviceLocal );
-			textureNode->view = textureNode->texture->createView( ashes::ImageViewType( textureNode->texture->getType() )
+			textureNode->view = textureNode->texture->createView( VkImageViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat()
 				, 0u
 				, 4u );
-			auto view = textureNode->texture->createView( ashes::ImageViewType( textureNode->texture->getType() )
+			auto view = textureNode->texture->createView( VkImageViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat() );
 			auto staging = ashes::StagingBuffer{ m_device, 0u, getSize( image->size, image->format ) };
 			staging.uploadTextureData( m_transferQueue
@@ -183,7 +183,7 @@ namespace common
 				0,
 				ashes::ImageType::e2D,
 				ColourFormat,
-				ashes::Extent3D{ m_size.width, m_size.height, 1u },
+				VkExtent3D{ m_size.width, m_size.height, 1u },
 				1u,
 				1u,
 				ashes::SampleCountFlag::e1,
@@ -192,7 +192,7 @@ namespace common
 					| ashes::ImageUsageFlag::eSampled )
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_colourView = m_colour->createView( ashes::ImageViewType::e2D
+		m_colourView = m_colour->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_colour->getFormat() );
 
 		m_depthView.reset();
@@ -201,7 +201,7 @@ namespace common
 				0,
 				ashes::ImageType::e2D,
 				DepthFormat,
-				ashes::Extent3D{ m_size.width, m_size.height, 1u },
+				VkExtent3D{ m_size.width, m_size.height, 1u },
 				1u,
 				1u,
 				ashes::SampleCountFlag::e1,
@@ -209,7 +209,7 @@ namespace common
 				ashes::ImageUsageFlag::eDepthStencilAttachment
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_depthView = m_depth->createView( ashes::ImageViewType::e2D
+		m_depthView = m_depth->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_depth->getFormat() );
 	}
 }

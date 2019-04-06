@@ -28,11 +28,11 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::Instance::enumerateLayerProperties
 		*/
-		ashes::LayerPropertiesArray enumerateLayerProperties()const override;
+		ashes::VkLayerPropertiesArray enumerateLayerProperties()const override;
 		/**
 		*\copydoc	ashes::Instance::enumerateExtensionProperties
 		*/
-		ashes::ExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const override;
+		ashes::VkExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const override;
 		/**
 		*\copydoc	ashes::Instance::getProperties
 		*/
@@ -52,7 +52,7 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::Instance::getFormatProperties
 		*/
-		ashes::FormatProperties getFormatProperties( ashes::Format fmt )const override;
+		ashes::FormatProperties getFormatProperties( VkFormat fmt )const override;
 
 		inline IDXGIAdapter * getAdapter()const
 		{
@@ -89,6 +89,6 @@ namespace d3d11_renderer
 		ashes::PhysicalDeviceFeatures m_features{};
 		ashes::PhysicalDeviceProperties m_properties{};
 		ashes::QueueFamilyPropertiesArray m_queueProperties{};
-		mutable std::map< ashes::Format, ashes::FormatProperties > m_formatProperties;
+		mutable std::map< VkFormat, ashes::FormatProperties > m_formatProperties;
 	};
 }

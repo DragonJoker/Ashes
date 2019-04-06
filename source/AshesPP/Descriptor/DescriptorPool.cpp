@@ -12,7 +12,7 @@ namespace ashes
 	DescriptorPool::DescriptorPool( Device const & device
 		, VkDescriptorPoolCreateFlags flags
 		, uint32_t maxSets
-		, DescriptorPoolSizeArray poolSizes )
+		, VkDescriptorPoolSizeArray poolSizes )
 		: m_device{ device }
 		, m_automaticFree{ ( flags & ( ~VkDescriptorPoolCreateFlagBits::VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) ) == 0 }
 	{

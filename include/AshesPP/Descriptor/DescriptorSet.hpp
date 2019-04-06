@@ -64,7 +64,7 @@ namespace ashes
 		*\param[in] bindings
 		*	The bindings.
 		*/
-		void setBindings( WriteDescriptorSetArray bindings );
+		void setBindings( VkWriteDescriptorSetArray bindings );
 		/**
 		*\~french
 		*\brief
@@ -657,7 +657,7 @@ namespace ashes
 		}
 
 	protected:
-		WriteDescriptorSetArray m_writes;
+		VkWriteDescriptorSetArray m_writes;
 
 	private:
 		Device const & m_device;

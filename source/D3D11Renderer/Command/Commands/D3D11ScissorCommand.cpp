@@ -10,7 +10,7 @@ namespace d3d11_renderer
 {
 	ScissorCommand::ScissorCommand( Device const & device
 		, uint32_t first
-		, ashes::ScissorArray const & scissors )
+		, ashes::VkScissorArray const & scissors )
 		: CommandBase{ device }
 		, m_scissors{ makeScissors( scissors.begin() + first, scissors.end() ) }
 	{

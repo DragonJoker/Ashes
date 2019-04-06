@@ -51,7 +51,7 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type sampler + texture.
 		*/
-		inline ashes::WriteDescriptorSetArray const & getCombinedTextureSamplers()const
+		inline ashes::VkWriteDescriptorSetArray const & getCombinedTextureSamplers()const
 		{
 			return m_combinedTextureSamplers;
 		}
@@ -59,7 +59,7 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type sampler.
 		*/
-		inline ashes::WriteDescriptorSetArray const & getSamplers()const
+		inline ashes::VkWriteDescriptorSetArray const & getSamplers()const
 		{
 			return m_samplers;
 		}
@@ -67,7 +67,7 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type texture échantillonnée.
 		*/
-		inline ashes::WriteDescriptorSetArray const & getSampledTextures()const
+		inline ashes::VkWriteDescriptorSetArray const & getSampledTextures()const
 		{
 			return m_sampledTextures;
 		}
@@ -75,7 +75,7 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type texture de stockage.
 		*/
-		inline ashes::WriteDescriptorSetArray const & getStorageTextures()const
+		inline ashes::VkWriteDescriptorSetArray const & getStorageTextures()const
 		{
 			return m_storageTextures;
 		}
@@ -83,7 +83,7 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type tampon uniforme.
 		*/
-		inline ashes::WriteDescriptorSetArray const & getUniformBuffers()const
+		inline ashes::VkWriteDescriptorSetArray const & getUniformBuffers()const
 		{
 			return m_uniformBuffers;
 		}
@@ -91,7 +91,7 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type tampon de stockage.
 		*/
-		inline ashes::WriteDescriptorSetArray const & getStorageBuffers()const
+		inline ashes::VkWriteDescriptorSetArray const & getStorageBuffers()const
 		{
 			return m_storageBuffers;
 		}
@@ -99,7 +99,7 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type tampon uniforme de texels.
 		*/
-		inline ashes::WriteDescriptorSetArray const & getTexelBuffers()const
+		inline ashes::VkWriteDescriptorSetArray const & getTexelBuffers()const
 		{
 			return m_texelBuffers;
 		}
@@ -107,22 +107,22 @@ namespace gl_renderer
 		*\brief
 		*	Le tableau d'attaches de type tampon dynamique.
 		*/
-		inline ashes::WriteDescriptorSetArray const & getDynamicBuffers()const
+		inline ashes::VkWriteDescriptorSetArray const & getDynamicBuffers()const
 		{
 			return m_dynamicBuffers;
 		}
 
 	private:
-		mutable ashes::WriteDescriptorSetArray m_combinedTextureSamplers;
-		mutable ashes::WriteDescriptorSetArray m_samplers;
-		mutable ashes::WriteDescriptorSetArray m_sampledTextures;
-		mutable ashes::WriteDescriptorSetArray m_storageTextures;
-		mutable ashes::WriteDescriptorSetArray m_uniformBuffers;
-		mutable ashes::WriteDescriptorSetArray m_storageBuffers;
-		mutable ashes::WriteDescriptorSetArray m_texelBuffers;
-		mutable ashes::WriteDescriptorSetArray m_dynamicUniformBuffers;
-		mutable ashes::WriteDescriptorSetArray m_dynamicStorageBuffers;
-		mutable ashes::WriteDescriptorSetArray m_dynamicBuffers;
+		mutable ashes::VkWriteDescriptorSetArray m_combinedTextureSamplers;
+		mutable ashes::VkWriteDescriptorSetArray m_samplers;
+		mutable ashes::VkWriteDescriptorSetArray m_sampledTextures;
+		mutable ashes::VkWriteDescriptorSetArray m_storageTextures;
+		mutable ashes::VkWriteDescriptorSetArray m_uniformBuffers;
+		mutable ashes::VkWriteDescriptorSetArray m_storageBuffers;
+		mutable ashes::VkWriteDescriptorSetArray m_texelBuffers;
+		mutable ashes::VkWriteDescriptorSetArray m_dynamicUniformBuffers;
+		mutable ashes::VkWriteDescriptorSetArray m_dynamicStorageBuffers;
+		mutable ashes::VkWriteDescriptorSetArray m_dynamicBuffers;
 	};
 }
 

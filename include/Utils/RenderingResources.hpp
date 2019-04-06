@@ -4,9 +4,9 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/Command/CommandBuffer.hpp>
-#include <Ashes/Sync/Fence.hpp>
-#include <Ashes/Sync/Semaphore.hpp>
+#include <AshesPP/Command/CommandBuffer.hpp>
+#include <AshesPP/Sync/Fence.hpp>
+#include <AshesPP/Sync/Semaphore.hpp>
 
 namespace utils
 {
@@ -60,16 +60,16 @@ namespace utils
 		*\param[in] queue
 		*	The queue used for presentation.
 		*\return
-		*	\p ashes::Result::eSuccess if everything's fine.
+		*	\p VK_SUCCESS if everything's fine.
 		*\~french
 		*\brief
 		*	Présente l'image de la swapchain à la file donnée.
 		*\param[in] queue
 		*	La file de présentation.
 		*\return
-		*	\p ashes::Result::eSuccess si tout va bien.
+		*	\p VK_SUCCESS si tout va bien.
 		*/
-		ashes::Result present( ashes::Queue const & queue );
+		VkResult present( ashes::Queue const & queue );
 
 		inline void setImageIndex( uint32_t imageIndex )
 		{

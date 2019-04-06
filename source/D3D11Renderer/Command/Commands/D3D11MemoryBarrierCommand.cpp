@@ -11,7 +11,7 @@ namespace d3d11_renderer
 		, ashes::PipelineStageFlags before
 		, ashes::MemoryBarrierArray const & memoryBarriers
 		, ashes::BufferMemoryBarrierArray const & bufferBarriers
-		, ashes::ImageMemoryBarrierArray const & imageBarriers )
+		, ashes::VkImageMemoryBarrierArray const & imageBarriers )
 		: CommandBase{ device }
 	{
 	}

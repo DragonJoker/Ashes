@@ -5,7 +5,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Core/Surface.hpp"
 
 #include "AshesPP/Core/Instance.hpp"
-#include "AshesCommon/PlatformWindowHandle.hpp"
+#include "AshesPP/Core/PlatformWindowHandle.hpp"
 
 namespace ashes
 {

@@ -42,7 +42,7 @@ namespace ashes
 
 	void Queue::submit( CommandBufferCRefArray const & commandBuffers
 		, SemaphoreCRefArray const & semaphoresToWait
-		, PipelineStageFlagsArray const & semaphoresStage
+		, VkPipelineStageFlagsArray const & semaphoresStage
 		, SemaphoreCRefArray const & semaphoresToSignal
 		, Fence const * fence )const
 	{
@@ -80,7 +80,7 @@ namespace ashes
 		checkError( res, "Queue submit" );
 	}
 
-	ResultArray Queue::present( SwapChainCRefArray const & swapChains
+	VkResultArray Queue::present( SwapChainCRefArray const & swapChains
 		, UInt32Array const & imagesIndex
 		, SemaphoreCRefArray const & semaphoresToWait )const
 	{

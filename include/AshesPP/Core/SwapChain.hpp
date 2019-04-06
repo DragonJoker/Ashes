@@ -222,7 +222,6 @@ namespace ashes
 
 	protected:
 		Device const & m_device;
-		Surface const & m_surface;
 		VkSwapchainCreateInfoKHR m_createInfo;
 		VkSwapchainKHR m_internal{ VK_NULL_HANDLE };
 	};

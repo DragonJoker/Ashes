@@ -88,7 +88,7 @@ namespace gl_renderer
 		*\copydoc		ashes::Device::createBufferView
 		*/
 		ashes::BufferViewPtr createBufferView( ashes::BufferBase const & buffer
-			, ashes::Format format
+			, VkFormat format
 			, uint32_t offset
 			, uint32_t range )const override;
 		/**

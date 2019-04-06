@@ -38,7 +38,7 @@ namespace ashes
 		*	Les attaches du layout.
 		*/
 		DescriptorSetLayout( Device const & device
-			, DescriptorSetLayoutBindingArray bindings );
+			, VkDescriptorSetLayoutBindingArray bindings );
 		/**
 		*\~english
 		*\brief
@@ -74,7 +74,7 @@ namespace ashes
 		*\return
 		*	Les attaches de descripteurs.
 		*/
-		inline DescriptorSetLayoutBindingArray const & getBindings()const
+		inline VkDescriptorSetLayoutBindingArray const & getBindings()const
 		{
 			return m_bindings;
 		}
@@ -115,7 +115,7 @@ namespace ashes
 
 	protected:
 		Device const & m_device;
-		DescriptorSetLayoutBindingArray m_bindings;
+		VkDescriptorSetLayoutBindingArray m_bindings;
 		VkDescriptorSetLayout m_internal{ VK_NULL_HANDLE };
 	};
 }

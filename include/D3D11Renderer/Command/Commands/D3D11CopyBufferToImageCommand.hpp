@@ -29,7 +29,7 @@ namespace d3d11_renderer
 		*	L'image destination.
 		*/
 		CopyBufferToImageCommand( Device const & device
-			, ashes::BufferImageCopyArray const & copyInfo
+			, ashes::VkBufferImageCopyArray const & copyInfo
 			, ashes::BufferBase const & src
 			, ashes::Image const & dst );
 
@@ -59,7 +59,7 @@ namespace d3d11_renderer
 	private:
 		Buffer const & m_src;
 		Image const & m_dst;
-		ashes::BufferImageCopyArray m_copyInfo;
+		ashes::VkBufferImageCopyArray m_copyInfo;
 		DXGI_FORMAT m_format;
 		std::vector< D3D11_BOX > m_srcBoxes;
 		std::vector< ashes::SubresourceLayout > m_dstLayouts;

@@ -12,7 +12,6 @@ See LICENSE file in root folder
 
 namespace ashes
 {
-	static VkDeviceSize constexpr WholeSize = ~( 0ull );
 	/**
 	*\~english
 	*\brief
@@ -439,7 +438,26 @@ namespace ashes
 					? VK_IMAGE_ASPECT_STENCIL_BIT
 					: VK_IMAGE_ASPECT_COLOR_BIT ) );
 	}
-
+	/**
+	*\~french
+	*\brief
+	*	Récupère les dimensions réelles du niveau de mipmap donné.
+	*\param[in] extent
+	*	Les dimensions du niveau 0.
+	*\param[in] mipLevel
+	*	Le niveau de mipmap.
+	*\return
+	*	Les dimensions.
+	*\~english
+	*\brief
+	*	Retrieves the real extent for the given mipmap level.
+	*\param[in] extent
+	*	The level 0 extent.
+	*\param[in] mipLevel
+	*	The mipmap level.
+	*\return
+	*	The dimensions.
+	*/
 	inline VkExtent3D getSubresourceDimensions( VkExtent3D const & extent
 		, uint32_t mipLevel )
 	{
@@ -476,7 +494,26 @@ namespace ashes
 	{
 		return getSize( getSubresourceDimensions( extent, mipLevel ), format );
 	}
-
+	/**
+	*\~french
+	*\brief
+	*	Récupère les dimensions réelles du niveau de mipmap donné.
+	*\param[in] extent
+	*	Les dimensions du niveau 0.
+	*\param[in] mipLevel
+	*	Le niveau de mipmap.
+	*\return
+	*	Les dimensions.
+	*\~english
+	*\brief
+	*	Retrieves the real extent for the given mipmap level.
+	*\param[in] extent
+	*	The level 0 extent.
+	*\param[in] mipLevel
+	*	The mipmap level.
+	*\return
+	*	The dimensions.
+	*/
 	inline VkExtent3D getSubresourceDimensions( VkExtent2D const & extent
 		, uint32_t mipLevel )
 	{

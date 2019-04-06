@@ -253,7 +253,7 @@ namespace gl_renderer
 		}
 
 		void bindDynamicBuffers( ContextLock const & context
-			, ashes::WriteDescriptorSetArray const & writes
+			, ashes::VkWriteDescriptorSetArray const & writes
 			, ashes::UInt32Array const & offsets )
 		{
 			for ( auto i = 0u; i < offsets.size(); ++i )

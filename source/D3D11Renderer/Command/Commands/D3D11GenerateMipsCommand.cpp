@@ -13,7 +13,7 @@ namespace d3d11_renderer
 		ashes::ImageViewCreateInfo getCreateInfos( Image const & texture )
 		{
 			ashes::ImageViewCreateInfo result;
-			result.viewType = ashes::ImageViewType( texture.getType() );
+			result.viewType = VkImageViewType( texture.getType() );
 			result.format = texture.getFormat();
 			result.subresourceRange.aspectMask = getAspectMask( texture.getFormat() );
 			result.subresourceRange.baseArrayLayer = 0u;

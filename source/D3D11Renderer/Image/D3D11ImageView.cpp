@@ -16,7 +16,7 @@ namespace d3d11_renderer
 	{
 		switch ( createInfo.viewType )
 		{
-		case ashes::ImageViewType::e1D:
+		case VK_IMAGE_VIEW_TYPE_1D:
 			if ( m_image.getLayerCount() > 1 )
 			{
 				doCreate1DArray();
@@ -27,11 +27,11 @@ namespace d3d11_renderer
 			}
 			break;
 
-		case ashes::ImageViewType::e1DArray:
+		case VK_IMAGE_VIEW_TYPE_1DArray:
 			doCreate1DArray();
 			break;
 
-		case ashes::ImageViewType::e2D:
+		case VK_IMAGE_VIEW_TYPE_2D:
 			if ( m_image.getLayerCount() > 1 )
 			{
 				doCreate2DArray();
@@ -42,15 +42,15 @@ namespace d3d11_renderer
 			}
 			break;
 
-		case ashes::ImageViewType::e2DArray:
+		case VK_IMAGE_VIEW_TYPE_2DArray:
 			doCreate2DArray();
 			break;
 
-		case ashes::ImageViewType::e3D:
+		case VK_IMAGE_VIEW_TYPE_3D:
 			doCreate3D();
 			break;
 
-		case ashes::ImageViewType::eCube:
+		case VK_IMAGE_VIEW_TYPE_Cube:
 			if ( m_image.getLayerCount() > 1 )
 			{
 				doCreateCubeArray();
@@ -61,7 +61,7 @@ namespace d3d11_renderer
 			}
 			break;
 
-		case ashes::ImageViewType::eCubeArray:
+		case VK_IMAGE_VIEW_TYPE_CubeArray:
 			doCreateCubeArray();
 			break;
 		}

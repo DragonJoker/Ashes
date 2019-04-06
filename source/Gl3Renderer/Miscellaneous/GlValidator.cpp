@@ -259,7 +259,7 @@ namespace gl_renderer
 			}
 		}
 
-		bool areCompatible( ashes::Format lhs, ashes::Format rhs )
+		bool areCompatible( VkFormat lhs, VkFormat rhs )
 		{
 			if ( lhs == rhs )
 			{
@@ -268,69 +268,69 @@ namespace gl_renderer
 
 			switch ( lhs )
 			{
-			case ashes::Format::eR16_SFLOAT:
-			case ashes::Format::eR32_SFLOAT:
-			case ashes::Format::eR8_UNORM:
-			case ashes::Format::eR8_SINT:
-			case ashes::Format::eR8_SRGB:
-			case ashes::Format::eR8_SSCALED:
-				return rhs == ashes::Format::eR32_SFLOAT
-					|| rhs == ashes::Format::eR32G32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32A32_SFLOAT
-					|| rhs == ashes::Format::eR8_UNORM
-					|| rhs == ashes::Format::eR8_SINT
-					|| rhs == ashes::Format::eR8_SRGB
-					|| rhs == ashes::Format::eR8_SSCALED;
-			case ashes::Format::eR16G16_SFLOAT:
-			case ashes::Format::eR32G32_SFLOAT:
-			case ashes::Format::eR8G8_UNORM:
-			case ashes::Format::eR8G8_SINT:
-			case ashes::Format::eR8G8_SRGB:
-			case ashes::Format::eR8G8_SSCALED:
-				return rhs == ashes::Format::eR32G32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32A32_SFLOAT
-					|| rhs == ashes::Format::eR8G8_UNORM
-					|| rhs == ashes::Format::eR8G8_SINT
-					|| rhs == ashes::Format::eR8G8_SRGB
-					|| rhs == ashes::Format::eR8G8_SSCALED;
-			case ashes::Format::eR16G16B16_SFLOAT:
-			case ashes::Format::eR32G32B32_SFLOAT:
-			case ashes::Format::eR8G8B8_UNORM:
-			case ashes::Format::eR8G8B8_SINT:
-			case ashes::Format::eR8G8B8_SRGB:
-			case ashes::Format::eR8G8B8_SSCALED:
-				return rhs == ashes::Format::eR32G32B32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32A32_SFLOAT
-					|| rhs == ashes::Format::eR8G8B8_UNORM
-					|| rhs == ashes::Format::eR8G8B8_SINT
-					|| rhs == ashes::Format::eR8G8B8_SRGB
-					|| rhs == ashes::Format::eR8G8B8_SSCALED;
-			case ashes::Format::eR16G16B16A16_SFLOAT:
-			case ashes::Format::eR32G32B32A32_SFLOAT:
-			case ashes::Format::eR8G8B8A8_UNORM:
-			case ashes::Format::eB8G8R8A8_UNORM:
-			case ashes::Format::eR8G8B8A8_SINT:
-			case ashes::Format::eR8G8B8A8_SRGB:
-			case ashes::Format::eR8G8B8A8_SSCALED:
-				return rhs == ashes::Format::eR16G16B16A16_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32A32_SFLOAT
-					|| rhs == ashes::Format::eR8G8B8A8_UNORM
-					|| rhs == ashes::Format::eB8G8R8A8_UNORM
-					|| rhs == ashes::Format::eR16G16B16_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32_SFLOAT
-					|| rhs == ashes::Format::eR8G8B8_UNORM
-					|| rhs == ashes::Format::eB8G8R8_UNORM
-					|| rhs == ashes::Format::eR8G8B8A8_SINT
-					|| rhs == ashes::Format::eR8G8B8A8_SRGB
-					|| rhs == ashes::Format::eR8G8B8A8_SSCALED;
-			case ashes::Format::eD16_UNORM:
-			case ashes::Format::eD16_UNORM_S8_UINT:
-			case ashes::Format::eD24_UNORM_S8_UINT:
-			case ashes::Format::eD32_SFLOAT:
-			case ashes::Format::eD32_SFLOAT_S8_UINT:
-				return rhs == ashes::Format::eR32_SFLOAT;
+			case VK_FORMAT_R16_SFLOAT:
+			case VK_FORMAT_R32_SFLOAT:
+			case VK_FORMAT_R8_UNORM:
+			case VK_FORMAT_R8_SINT:
+			case VK_FORMAT_R8_SRGB:
+			case VK_FORMAT_R8_SSCALED:
+				return rhs == VK_FORMAT_R32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32A32_SFLOAT
+					|| rhs == VK_FORMAT_R8_UNORM
+					|| rhs == VK_FORMAT_R8_SINT
+					|| rhs == VK_FORMAT_R8_SRGB
+					|| rhs == VK_FORMAT_R8_SSCALED;
+			case VK_FORMAT_R16G16_SFLOAT:
+			case VK_FORMAT_R32G32_SFLOAT:
+			case VK_FORMAT_R8G8_UNORM:
+			case VK_FORMAT_R8G8_SINT:
+			case VK_FORMAT_R8G8_SRGB:
+			case VK_FORMAT_R8G8_SSCALED:
+				return rhs == VK_FORMAT_R32G32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32A32_SFLOAT
+					|| rhs == VK_FORMAT_R8G8_UNORM
+					|| rhs == VK_FORMAT_R8G8_SINT
+					|| rhs == VK_FORMAT_R8G8_SRGB
+					|| rhs == VK_FORMAT_R8G8_SSCALED;
+			case VK_FORMAT_R16G16B16_SFLOAT:
+			case VK_FORMAT_R32G32B32_SFLOAT:
+			case VK_FORMAT_R8G8B8_UNORM:
+			case VK_FORMAT_R8G8B8_SINT:
+			case VK_FORMAT_R8G8B8_SRGB:
+			case VK_FORMAT_R8G8B8_SSCALED:
+				return rhs == VK_FORMAT_R32G32B32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32A32_SFLOAT
+					|| rhs == VK_FORMAT_R8G8B8_UNORM
+					|| rhs == VK_FORMAT_R8G8B8_SINT
+					|| rhs == VK_FORMAT_R8G8B8_SRGB
+					|| rhs == VK_FORMAT_R8G8B8_SSCALED;
+			case VK_FORMAT_R16G16B16A16_SFLOAT:
+			case VK_FORMAT_R32G32B32A32_SFLOAT:
+			case VK_FORMAT_R8G8B8A8_UNORM:
+			case VK_FORMAT_B8G8R8A8_UNORM:
+			case VK_FORMAT_R8G8B8A8_SINT:
+			case VK_FORMAT_R8G8B8A8_SRGB:
+			case VK_FORMAT_R8G8B8A8_SSCALED:
+				return rhs == VK_FORMAT_R16G16B16A16_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32A32_SFLOAT
+					|| rhs == VK_FORMAT_R8G8B8A8_UNORM
+					|| rhs == VK_FORMAT_B8G8R8A8_UNORM
+					|| rhs == VK_FORMAT_R16G16B16_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32_SFLOAT
+					|| rhs == VK_FORMAT_R8G8B8_UNORM
+					|| rhs == VK_FORMAT_B8G8R8_UNORM
+					|| rhs == VK_FORMAT_R8G8B8A8_SINT
+					|| rhs == VK_FORMAT_R8G8B8A8_SRGB
+					|| rhs == VK_FORMAT_R8G8B8A8_SSCALED;
+			case VK_FORMAT_D16_UNORM:
+			case VK_FORMAT_D16_UNORM_S8_UINT:
+			case VK_FORMAT_D24_UNORM_S8_UINT:
+			case VK_FORMAT_D32_SFLOAT:
+			case VK_FORMAT_D32_SFLOAT_S8_UINT:
+				return rhs == VK_FORMAT_R32_SFLOAT;
 			default:
 				assert( false );
 				return false;
@@ -503,25 +503,25 @@ namespace gl_renderer
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY;
 		}
 
-		ashes::Format convertFormat( GlslAttributeType type )
+		VkFormat convertFormat( GlslAttributeType type )
 		{
 			switch ( type )
 			{
 			case GLSL_ATTRIBUTE_FLOAT:
-				return ashes::Format::eR32_SFLOAT;
+				return VK_FORMAT_R32_SFLOAT;
 			case GLSL_ATTRIBUTE_FLOAT_VEC2:
-				return ashes::Format::eR32G32_SFLOAT;
+				return VK_FORMAT_R32G32_SFLOAT;
 			case GLSL_ATTRIBUTE_FLOAT_VEC3:
-				return ashes::Format::eR32G32B32_SFLOAT;
+				return VK_FORMAT_R32G32B32_SFLOAT;
 			case GLSL_ATTRIBUTE_FLOAT_VEC4:
-				return ashes::Format::eR32G32B32A32_SFLOAT;
+				return VK_FORMAT_R32G32B32A32_SFLOAT;
 			default:
 				assert( false );
-				return ashes::Format::eR32G32B32A32_SFLOAT;
+				return VK_FORMAT_R32G32B32A32_SFLOAT;
 			}
 		}
 
-		bool areCompatibleInputs( ashes::Format lhs, ashes::Format rhs )
+		bool areCompatibleInputs( VkFormat lhs, VkFormat rhs )
 		{
 			if ( lhs == rhs )
 			{
@@ -530,100 +530,100 @@ namespace gl_renderer
 
 			switch ( lhs )
 			{
-			case ashes::Format::eR32G32B32A32_SFLOAT:
-				return rhs == ashes::Format::eR32G32B32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32A32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32A32_SINT
-					|| rhs == ashes::Format::eR32G32B32A32_UINT
-					|| rhs == ashes::Format::eR8G8B8A8_UNORM;
-			case ashes::Format::eR32G32B32A32_SINT:
-				return rhs == ashes::Format::eR32G32B32_SINT
-					|| rhs == ashes::Format::eR32G32B32A32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32A32_SINT
-					|| rhs == ashes::Format::eR32G32B32A32_UINT
-					|| rhs == ashes::Format::eR8G8B8A8_UNORM;
-			case ashes::Format::eR32G32B32A32_UINT:
-				return rhs == ashes::Format::eR32G32B32_UINT
-					|| rhs == ashes::Format::eR32G32B32A32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32A32_SINT
-					|| rhs == ashes::Format::eR32G32B32A32_UINT
-					|| rhs == ashes::Format::eR8G8B8A8_UNORM;
-			case ashes::Format::eR8G8B8A8_UNORM:
-				return rhs == ashes::Format::eR32G32B32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32A32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32A32_SINT
-					|| rhs == ashes::Format::eR32G32B32A32_UINT
-					|| rhs == ashes::Format::eR8G8B8A8_UNORM;
-			case ashes::Format::eR32G32B32_SFLOAT:
-				return rhs == ashes::Format::eR32G32B32A32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32_SINT
-					|| rhs == ashes::Format::eR32G32B32_UINT;
-			case ashes::Format::eR32G32B32_SINT:
-				return rhs == ashes::Format::eR32G32B32A32_SINT
-					|| rhs == ashes::Format::eR32G32B32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32_SINT
-					|| rhs == ashes::Format::eR32G32B32_UINT;
-			case ashes::Format::eR32G32B32_UINT:
-				return rhs == ashes::Format::eR32G32B32A32_UINT
-					|| rhs == ashes::Format::eR32G32B32_SFLOAT
-					|| rhs == ashes::Format::eR32G32B32_SINT
-					|| rhs == ashes::Format::eR32G32B32_UINT;
-			case ashes::Format::eR32G32_SFLOAT:
-			case ashes::Format::eR32G32_SINT:
-			case ashes::Format::eR32G32_UINT:
-				return rhs == ashes::Format::eR32G32_SFLOAT
-					|| rhs == ashes::Format::eR32G32_SINT
-					|| rhs == ashes::Format::eR32G32_UINT;
-			case ashes::Format::eR32_SINT:
-			case ashes::Format::eR32_UINT:
-			case ashes::Format::eR32_SFLOAT:
-				return rhs == ashes::Format::eR32_SINT
-					|| rhs == ashes::Format::eR32_UINT
-					|| rhs == ashes::Format::eR32_SFLOAT;
+			case VK_FORMAT_R32G32B32A32_SFLOAT:
+				return rhs == VK_FORMAT_R32G32B32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32A32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32A32_SINT
+					|| rhs == VK_FORMAT_R32G32B32A32_UINT
+					|| rhs == VK_FORMAT_R8G8B8A8_UNORM;
+			case VK_FORMAT_R32G32B32A32_SINT:
+				return rhs == VK_FORMAT_R32G32B32_SINT
+					|| rhs == VK_FORMAT_R32G32B32A32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32A32_SINT
+					|| rhs == VK_FORMAT_R32G32B32A32_UINT
+					|| rhs == VK_FORMAT_R8G8B8A8_UNORM;
+			case VK_FORMAT_R32G32B32A32_UINT:
+				return rhs == VK_FORMAT_R32G32B32_UINT
+					|| rhs == VK_FORMAT_R32G32B32A32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32A32_SINT
+					|| rhs == VK_FORMAT_R32G32B32A32_UINT
+					|| rhs == VK_FORMAT_R8G8B8A8_UNORM;
+			case VK_FORMAT_R8G8B8A8_UNORM:
+				return rhs == VK_FORMAT_R32G32B32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32A32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32A32_SINT
+					|| rhs == VK_FORMAT_R32G32B32A32_UINT
+					|| rhs == VK_FORMAT_R8G8B8A8_UNORM;
+			case VK_FORMAT_R32G32B32_SFLOAT:
+				return rhs == VK_FORMAT_R32G32B32A32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32_SINT
+					|| rhs == VK_FORMAT_R32G32B32_UINT;
+			case VK_FORMAT_R32G32B32_SINT:
+				return rhs == VK_FORMAT_R32G32B32A32_SINT
+					|| rhs == VK_FORMAT_R32G32B32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32_SINT
+					|| rhs == VK_FORMAT_R32G32B32_UINT;
+			case VK_FORMAT_R32G32B32_UINT:
+				return rhs == VK_FORMAT_R32G32B32A32_UINT
+					|| rhs == VK_FORMAT_R32G32B32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32B32_SINT
+					|| rhs == VK_FORMAT_R32G32B32_UINT;
+			case VK_FORMAT_R32G32_SFLOAT:
+			case VK_FORMAT_R32G32_SINT:
+			case VK_FORMAT_R32G32_UINT:
+				return rhs == VK_FORMAT_R32G32_SFLOAT
+					|| rhs == VK_FORMAT_R32G32_SINT
+					|| rhs == VK_FORMAT_R32G32_UINT;
+			case VK_FORMAT_R32_SINT:
+			case VK_FORMAT_R32_UINT:
+			case VK_FORMAT_R32_SFLOAT:
+				return rhs == VK_FORMAT_R32_SINT
+					|| rhs == VK_FORMAT_R32_UINT
+					|| rhs == VK_FORMAT_R32_SFLOAT;
 			default:
 				assert( false );
 				return false;
 			}
 		}
 
-		ashes::Format convertAttribute( GlslAttributeType type )
+		VkFormat convertAttribute( GlslAttributeType type )
 		{
 			switch ( type )
 			{
 			case GLSL_ATTRIBUTE_INT:
-				return ashes::Format::eR32_SINT;
+				return VK_FORMAT_R32_SINT;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT:
-				return ashes::Format::eR32_UINT;
+				return VK_FORMAT_R32_UINT;
 			case GLSL_ATTRIBUTE_FLOAT:
-				return ashes::Format::eR32_SFLOAT;
+				return VK_FORMAT_R32_SFLOAT;
 			case GLSL_ATTRIBUTE_FLOAT_VEC2:
-				return ashes::Format::eR32G32_SFLOAT;
+				return VK_FORMAT_R32G32_SFLOAT;
 			case GLSL_ATTRIBUTE_FLOAT_VEC3:
-				return ashes::Format::eR32G32B32_SFLOAT;
+				return VK_FORMAT_R32G32B32_SFLOAT;
 			case GLSL_ATTRIBUTE_FLOAT_VEC4:
-				return ashes::Format::eR32G32B32A32_SFLOAT;
+				return VK_FORMAT_R32G32B32A32_SFLOAT;
 			case GLSL_ATTRIBUTE_INT_VEC2:
-				return ashes::Format::eR32G32_SINT;
+				return VK_FORMAT_R32G32_SINT;
 			case GLSL_ATTRIBUTE_INT_VEC3:
-				return ashes::Format::eR32G32B32_SINT;
+				return VK_FORMAT_R32G32B32_SINT;
 			case GLSL_ATTRIBUTE_INT_VEC4:
-				return ashes::Format::eR32G32B32A32_SINT;
+				return VK_FORMAT_R32G32B32A32_SINT;
 			//case GLSL_ATTRIBUTE_FLOAT_MAT2:
-			//	return ashes::Format::eMat2f;
+			//	return VK_FORMAT_Mat2f;
 			//case GLSL_ATTRIBUTE_FLOAT_MAT3:
-			//	return ashes::Format::eMat3f;
+			//	return VK_FORMAT_Mat3f;
 			//case GLSL_ATTRIBUTE_FLOAT_MAT4:
-			//	return ashes::Format::eMat4f;
+			//	return VK_FORMAT_Mat4f;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC2:
-				return ashes::Format::eR32G32_UINT;
+				return VK_FORMAT_R32G32_UINT;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC3:
-				return ashes::Format::eR32G32B32_UINT;
+				return VK_FORMAT_R32G32B32_UINT;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC4:
-				return ashes::Format::eR32G32B32A32_UINT;
+				return VK_FORMAT_R32G32B32A32_UINT;
 			default:
 				assert( false );
-				return ashes::Format::eR32_SFLOAT;
+				return VK_FORMAT_R32_SFLOAT;
 			}
 		}
 
@@ -862,7 +862,7 @@ namespace gl_renderer
 
 		struct AttrSpec
 		{
-			ashes::Format format;
+			VkFormat format;
 			uint32_t location;
 		};
 

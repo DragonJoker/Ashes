@@ -27,7 +27,7 @@ namespace common
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue
 			, std::string const & fragmentShaderFile
-			, std::vector< ashes::Format > const & formats
+			, std::vector< VkFormat > const & formats
 			, bool clearViews
 			, bool opaqueNodes );
 		virtual ~NodesRenderer() = default;
@@ -90,7 +90,7 @@ namespace common
 		ashes::CommandPool const & m_commandPool;
 		ashes::Queue const & m_transferQueue;
 		bool m_opaqueNodes;
-		ashes::Extent2D m_size;
+		VkExtent2D m_size;
 		std::string m_fragmentShaderFile;
 		ashes::SamplerPtr m_sampler;
 		ashes::CommandBufferPtr m_commandBuffer;

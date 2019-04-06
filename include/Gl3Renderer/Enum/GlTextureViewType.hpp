@@ -18,8 +18,8 @@ namespace gl_renderer
 	*\return
 	*	Le GlTextureType.
 	*/
-	GlTextureType convert( ashes::ImageViewType const & mode );
-	GlTextureType convert( ashes::ImageViewType const & mode
+	GlTextureType convert( VkImageViewType const & mode );
+	GlTextureType convert( VkImageViewType const & mode
 		, uint32_t layers );
 }
 

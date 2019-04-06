@@ -6,7 +6,7 @@ namespace vkapp
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
 		, std::string const & fragmentShaderFile
-		, std::vector< ashes::Format > const & formats
+		, std::vector< VkFormat > const & formats
 		, bool clearViews
 		, bool opaqueNodes
 		, ashes::UniformBuffer< common::SceneData > const & sceneUbo )
@@ -23,7 +23,7 @@ namespace vkapp
 
 	void NodesRenderer::doFillBillboardDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
 	{
-		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
+		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eVertex );
 	}
 
 	void NodesRenderer::doFillBillboardDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout

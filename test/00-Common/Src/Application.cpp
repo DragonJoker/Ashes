@@ -3,7 +3,9 @@
 #include "FileUtils.hpp"
 #include "MainFrame.hpp"
 
-#include <GlslToSpv.hpp>
+#include <Utils/GlslToSpv.hpp>
+
+#include <ashes/ashes.h>
 
 #include <wx/cmdline.h>
 
@@ -255,7 +257,7 @@ namespace common
 				try
 				{
 					ashes::DynamicLibrary lib{ file };
-					m_plugins.emplace_back( std::move( lib ) );
+					m_renderers.emplace_back( std::move( lib ) );
 				}
 				catch ( std::exception & exc )
 				{

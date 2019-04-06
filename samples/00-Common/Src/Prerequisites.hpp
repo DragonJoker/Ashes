@@ -67,9 +67,9 @@ namespace common
 	/**\{*/
 	struct Image
 	{
-		ashes::Extent2D size;
+		VkExtent2D size;
 		ashes::ByteArray data;
-		ashes::Format format;
+		VkFormat format;
 		bool opacity{ false };
 	};
 
@@ -246,7 +246,7 @@ namespace common
 
 	ashes::WindowHandle makeWindowHandle( wxWindow const & window );
 
-	std::vector< ashes::Format > getFormats( ashes::ImageViewPtrArray const & views );
+	std::vector< VkFormat > getFormats( ashes::ImageViewPtrArray const & views );
 
 	struct Scene;
 

@@ -545,7 +545,7 @@ namespace gl_renderer
 
 	void apply( Device const & device
 		, ContextLock const & context
-		, ashes::ViewportArray const & states )
+		, ashes::VkViewportArray const & states )
 	{
 		auto & save = device.getCurrentViewport();
 		auto state = *states.begin();
@@ -568,7 +568,7 @@ namespace gl_renderer
 
 	void apply( Device const & device
 		, ContextLock const & context
-		, ashes::ScissorArray const & states )
+		, ashes::VkScissorArray const & states )
 	{
 		auto & save = device.getCurrentScissor();
 		auto state = *states.begin();

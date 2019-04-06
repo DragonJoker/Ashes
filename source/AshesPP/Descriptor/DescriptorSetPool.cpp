@@ -13,10 +13,10 @@ namespace ashes
 {
 	namespace
 	{
-		DescriptorPoolSizeArray convert( DescriptorSetLayoutBindingArray const & bindings
+		VkDescriptorPoolSizeArray convert( VkDescriptorSetLayoutBindingArray const & bindings
 			, uint32_t maxSets )
 		{
-			DescriptorPoolSizeArray result;
+			VkDescriptorPoolSizeArray result;
 
 			for ( auto & binding : bindings )
 			{

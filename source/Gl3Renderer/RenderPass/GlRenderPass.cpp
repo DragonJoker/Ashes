@@ -69,8 +69,8 @@ namespace gl_renderer
 		}
 	}
 
-	ashes::FrameBufferPtr RenderPass::createFrameBuffer( ashes::Extent2D const & dimensions
-		, ashes::FrameBufferAttachmentArray textures )const
+	ashes::FrameBufferPtr RenderPass::createFrameBuffer( VkExtent2D const & dimensions
+		, ashes::ashes::ImageViewPtrArray textures )const
 	{
 		return std::make_unique< FrameBuffer >( m_device
 			, *this

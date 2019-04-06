@@ -8,6 +8,9 @@
 
 #include "ashesgl4_api.hpp"
 
+#ifndef NOMINMAX
+#	define NOMINMAX
+#endif
 #include <Windows.h>
 #include <gl/GL.h>
 

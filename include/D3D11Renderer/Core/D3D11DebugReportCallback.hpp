@@ -35,7 +35,7 @@ namespace d3d11_renderer
 			, ashes::BufferBase const & buffer
 			, ashes::Image const & image )const;
 		bool onCopyToImageCommand( ashes::CommandBuffer const & cmd
-			, ashes::BufferImageCopyArray const & copyInfos
+			, ashes::VkBufferImageCopyArray const & copyInfos
 			, ashes::BufferBase const & src
 			, ashes::Image const & dst )const override;
 		bool onCheckHResultCommand( HRESULT hresult

@@ -20,7 +20,7 @@ namespace gl_renderer
 			, std::move( handle ) }
 		, m_context{ Context::create( instance, m_handle, &instance.getContext() ) }
 	{
-		m_presentModes.push_back( ashes::PresentMode::eFifo );
+		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
 		utils::getSurfaceInfos( m_handle, m_type, m_surfaceFormats, m_surfaceCapabilities );
 	}
 

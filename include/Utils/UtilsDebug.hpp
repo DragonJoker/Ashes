@@ -6,11 +6,11 @@ See LICENSE file in root folder
 #define ___Utils_Debug_HPP___
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
+#include <AshesPP/AshesPPPrerequisites.hpp>
 
 namespace utils
 {
-	ashes::DebugReportCallbackPtr setupDebugging( ashes::Instance const & instance
+	VkDebugReportCallbackEXT setupDebugging( ashes::Instance const & instance
 		, void * userData );
 }
 

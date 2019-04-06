@@ -19,8 +19,7 @@ add_library( ${PROJECT_NAME} STATIC
 )
 
 target_link_libraries( ${PROJECT_NAME}
-	Utils
-	Ashes
+	${BinLibraries}
 )
 
 add_dependencies( ${PROJECT_NAME}

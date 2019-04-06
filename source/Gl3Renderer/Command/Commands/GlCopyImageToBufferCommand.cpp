@@ -18,23 +18,23 @@ namespace gl_renderer
 	{
 		std::vector< ImageViewPtr > createViews( Device const & device
 			, ashes::Image const & texture
-			, ashes::BufferImageCopyArray const & copies )
+			, ashes::VkBufferImageCopyArray const & copies )
 		{
 			std::vector< ImageViewPtr > result;
 			ashes::ImageType type = texture.getType();
-			ashes::ImageViewType viewType;
+			VkImageViewType viewType;
 
 			if ( type == ashes::ImageType::e3D )
 			{
-				viewType = ashes::ImageViewType::e3D;
+				viewType = VK_IMAGE_VIEW_TYPE_3D;
 			}
 			else if ( type == ashes::ImageType::e2D )
 			{
-				viewType = ashes::ImageViewType::e2D;
+				viewType = VK_IMAGE_VIEW_TYPE_2D;
 			}
 			else if ( type == ashes::ImageType::e1D )
 			{
-				viewType = ashes::ImageViewType::e1D;
+				viewType = VK_IMAGE_VIEW_TYPE_1D;
 			}
 
 			for ( auto & copy : copies )
@@ -57,7 +57,7 @@ namespace gl_renderer
 	}
 
 	CopyImageToBufferCommand::CopyImageToBufferCommand( Device const & device
-		, ashes::BufferImageCopyArray const & copyInfo
+		, ashes::VkBufferImageCopyArray const & copyInfo
 		, ashes::Image const & src
 		, ashes::BufferBase const & dst )
 		: CommandBase{ device }

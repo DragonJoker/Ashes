@@ -30,7 +30,7 @@ namespace d3d11_renderer
 		*	Le tampon destination.
 		*/
 		CopyImageToBufferCommand( Device const & device
-			, ashes::BufferImageCopyArray const & copyInfo
+			, ashes::VkBufferImageCopyArray const & copyInfo
 			, ashes::Image const & src
 			, ashes::BufferBase const & dst );
 
@@ -60,7 +60,7 @@ namespace d3d11_renderer
 	private:
 		Image const & m_src;
 		Buffer const & m_dst;
-		ashes::BufferImageCopyArray m_copyInfo;
+		ashes::VkBufferImageCopyArray m_copyInfo;
 		DXGI_FORMAT m_format;
 		std::vector< ashes::SubresourceLayout > m_srcLayouts;
 		std::vector< D3D11_BOX > m_dstBoxes;

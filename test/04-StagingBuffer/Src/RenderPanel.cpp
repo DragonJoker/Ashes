@@ -3,9 +3,9 @@
 
 #include <Buffer/VertexBuffer.hpp>
 #include <Command/CommandBuffer.hpp>
-#include <Core/Surface.hpp>
-#include <Core/Device.hpp>
-#include <Core/Instance.hpp>
+#include <AshesPP/Core/Surface.hpp>
+#include <AshesPP/Core/Device.hpp>
+#include <AshesPP/Core/Instance.hpp>
 #include <Core/SwapChain.hpp>
 #include <Enum/SubpassContents.hpp>
 #include <Image/Image.hpp>
@@ -150,8 +150,8 @@ namespace vkapp
 		m_swapChain = std::make_unique< utils::SwapChain >( m_device->getDevice()
 			, *m_commandPool
 			, std::move( surface )
-			, ashes::Extent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
-		m_clearColour = ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
+			, VkExtent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
+		m_clearColour = VkClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			doResetSwapChain();
@@ -160,7 +160,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateRenderPass()
 	{
-		ashes::AttachmentDescriptionArray attaches
+		ashes::VkAttachmentDescriptionArray attaches
 		{
 			{
 				m_swapChain->getFormat(),
@@ -173,7 +173,7 @@ namespace vkapp
 				ashes::ImageLayout::ePresentSrc,
 			}
 		};
-		ashes::AttachmentReferenceArray subAttaches
+		ashes::VkAttachmentReferenceArray subAttaches
 		{
 			{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
 		};
@@ -203,10 +203,10 @@ namespace vkapp
 
 		m_vertexLayout =  ashes::makeLayout< VertexData >( 0u );
 		m_vertexLayout->createAttribute( 0u
-			, ashes::Format::eR32G32B32A32_SFLOAT
+			, VK_FORMAT_R32G32B32A32_SFLOAT
 			, uint32_t( offsetof( VertexData, position ) ) );
 		m_vertexLayout->createAttribute( 1u
-			, ashes::Format::eR32G32B32A32_SFLOAT
+			, VK_FORMAT_R32G32B32A32_SFLOAT
 			, uint32_t( offsetof( VertexData, colour ) ) );
 	}
 
@@ -230,13 +230,13 @@ namespace vkapp
 		}
 
 		std::vector< ashes::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( VkShaderStageFlagBits::eVertex ) } );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( VkShaderStageFlagBits::eFragment ) } );
 		shaderStages[0].module->loadShader( common::parseShaderFile( m_device->getDevice()
-			, ashes::ShaderStageFlag::eVertex
+			, VkShaderStageFlagBits::eVertex
 			, shadersFolder / "shader.vert" ) );
 		shaderStages[1].module->loadShader( common::parseShaderFile( m_device->getDevice()
-			, ashes::ShaderStageFlag::eFragment
+			, VkShaderStageFlagBits::eFragment
 			, shadersFolder / "shader.frag" ) );
 
 		m_pipeline = m_pipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo

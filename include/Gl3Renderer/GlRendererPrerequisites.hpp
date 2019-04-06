@@ -120,7 +120,7 @@ namespace gl_renderer
 	using ShaderModuleCRefArray = std::vector< ShaderModuleCRef >;
 
 	using CommandArray = std::vector< CommandPtr >;
-	using AttachmentDescriptionArray = std::vector< AttachmentDescription >;
+	using VkAttachmentDescriptionArray = std::vector< AttachmentDescription >;
 
 	struct BufferObjectBinding
 	{

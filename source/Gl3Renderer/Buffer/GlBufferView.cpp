@@ -10,7 +10,7 @@ namespace gl_renderer
 {
 	BufferView::BufferView( Device const & device
 		, Buffer const & buffer
-		, ashes::Format format
+		, VkFormat format
 		, uint32_t offset
 		, uint32_t range )
 		: ashes::BufferView{ device, buffer, format, offset, range }

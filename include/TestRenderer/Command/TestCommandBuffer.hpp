@@ -84,7 +84,7 @@ namespace test_renderer
 		*\copydoc	ashes::CommandBuffer:clear
 		*/
 		void clear( ashes::ImageView const & image
-			, ashes::ClearColorValue const & colour )const override;
+			, VkClearColorValue const & colour )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:clear
 		*/
@@ -128,12 +128,12 @@ namespace test_renderer
 		*\copydoc	ashes::CommandBuffer:setViewport
 		*/
 		void setViewport( uint32_t firstViewport
-			, ashes::ViewportArray const & viewports )const override;
+			, ashes::VkViewportArray const & viewports )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:setScissor
 		*/
 		void setScissor( uint32_t firstScissor
-			, ashes::ScissorArray const & scissors )const override;
+			, ashes::VkScissorArray const & scissors )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer:draw
 		*/
@@ -166,13 +166,13 @@ namespace test_renderer
 		/**
 		*\copydoc	ashes::CommandBuffer::copyToImage
 		*/
-		void copyToImage( ashes::BufferImageCopyArray const & copyInfo
+		void copyToImage( ashes::VkBufferImageCopyArray const & copyInfo
 			, ashes::BufferBase const & src
 			, ashes::Image const & dst )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer::copyToBuffer
 		*/
-		void copyToBuffer( ashes::BufferImageCopyArray const & copyInfo
+		void copyToBuffer( ashes::VkBufferImageCopyArray const & copyInfo
 			, ashes::Image const & src
 			, ashes::BufferBase const & dst )const override;
 		/**
@@ -267,7 +267,7 @@ namespace test_renderer
 			, ashes::PipelineStageFlags srcStageMask
 			, ashes::PipelineStageFlags dstStageMask
 			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const override;
+			, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )const override;
 		/**
 		*\copydoc	ashes::CommandBuffer::pipelineBarrier
 		*/
@@ -276,7 +276,7 @@ namespace test_renderer
 			, ashes::DependencyFlags dependencyFlags
 			, ashes::MemoryBarrierArray const & memoryBarriers
 			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const;
+			, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )const;
 		/**
 		*\~french
 		*\return

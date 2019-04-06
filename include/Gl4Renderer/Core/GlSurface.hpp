@@ -6,8 +6,6 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/Core/GlContext.hpp"
 
-#include <AshesCommon/WindowHandle.hpp>
-
 namespace ashes::gl4
 {
 	class SurfaceKHR

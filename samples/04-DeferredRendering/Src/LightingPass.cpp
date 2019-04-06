@@ -48,14 +48,14 @@ namespace vkapp
 			}
 
 			std::vector< ashes::ShaderStageState > shaderStages;
-			shaderStages.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-			shaderStages.push_back( { device.createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-			shaderStages[0].module->loadShader( common::dumpShaderFile( device, ashes::ShaderStageFlag::eVertex, shadersFolder / "opaque_lp.vert" ) );
-			shaderStages[1].module->loadShader( common::dumpShaderFile( device, ashes::ShaderStageFlag::eFragment, shadersFolder / "opaque_lp.frag" ) );
+			shaderStages.push_back( { device.createShaderModule( VkShaderStageFlagBits::eVertex ) } );
+			shaderStages.push_back( { device.createShaderModule( VkShaderStageFlagBits::eFragment ) } );
+			shaderStages[0].module->loadShader( common::dumpShaderFile( device, VkShaderStageFlagBits::eVertex, shadersFolder / "opaque_lp.vert" ) );
+			shaderStages[1].module->loadShader( common::dumpShaderFile( device, VkShaderStageFlagBits::eFragment, shadersFolder / "opaque_lp.frag" ) );
 			return shaderStages;
 		}
 
-		std::vector< ashes::Format > doGetFormats( ashes::ImageView const & depthView
+		std::vector< VkFormat > doGetFormats( ashes::ImageView const & depthView
 			, ashes::ImageView const & colourView )
 		{
 			return
@@ -65,10 +65,10 @@ namespace vkapp
 			};
 		}
 
-		ashes::AttachmentDescriptionArray doGetAttaches( ashes::ImageView const & depthView
+		ashes::VkAttachmentDescriptionArray doGetAttaches( ashes::ImageView const & depthView
 			, ashes::ImageView const & colourView )
 		{
-			return ashes::AttachmentDescriptionArray
+			return ashes::VkAttachmentDescriptionArray
 			{
 				{
 					depthView.getFormat(),
@@ -97,7 +97,7 @@ namespace vkapp
 			, ashes::ImageViewPtr depthView
 			, ashes::ImageViewPtr colourView )
 		{
-			ashes::AttachmentReferenceArray subAttaches
+			ashes::VkAttachmentReferenceArray subAttaches
 			{
 				ashes::AttachmentReference{ 1u, ashes::ImageLayout::eColourAttachmentOptimal },
 			};
@@ -119,13 +119,13 @@ namespace vkapp
 			, ashes::ImageViewPtr colourView )
 		{
 			auto formats = doGetFormats( *depthView, *colourView );
-			ashes::FrameBufferAttachmentArray attaches;
+			ashes::ImageViewPtrArray attaches;
 			attaches.emplace_back( *( renderPass.getAttachments().begin() + 0u )
 				, depthView );
 			attaches.emplace_back( *( renderPass.getAttachments().begin() + 1u )
 				, colourView );
 			auto dimensions = colourView->getImage().getDimensions();
-			return renderPass.createFrameBuffer( ashes::Extent2D{ dimensions.width, dimensions.height }
+			return renderPass.createFrameBuffer( VkExtent2D{ dimensions.width, dimensions.height }
 				, std::move( attaches ) );
 		}
 
@@ -133,11 +133,11 @@ namespace vkapp
 		{
 			std::vector< ashes::DescriptorSetLayoutBinding > bindings
 			{
-				ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
-				ashes::DescriptorSetLayoutBinding{ 1u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
-				ashes::DescriptorSetLayoutBinding{ 2u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
-				ashes::DescriptorSetLayoutBinding{ 3u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
-				ashes::DescriptorSetLayoutBinding{ 4u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
+				ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment },
+				ashes::DescriptorSetLayoutBinding{ 1u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment },
+				ashes::DescriptorSetLayoutBinding{ 2u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment },
+				ashes::DescriptorSetLayoutBinding{ 3u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment },
+				ashes::DescriptorSetLayoutBinding{ 4u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment },
 			};
 			return device.createDescriptorSetLayout( std::move( bindings ) );
 		}
@@ -146,8 +146,8 @@ namespace vkapp
 		{
 			std::vector< ashes::DescriptorSetLayoutBinding > bindings
 			{
-				ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eFragment },
-				ashes::DescriptorSetLayoutBinding{ 1u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eFragment },
+				ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eFragment },
+				ashes::DescriptorSetLayoutBinding{ 1u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eFragment },
 			};
 			return device.createDescriptorSetLayout( std::move( bindings ) );
 		}
@@ -197,10 +197,10 @@ namespace vkapp
 		{
 			auto result = ashes::makeLayout< common::TexturedVertexData >( 0 );
 			result->createAttribute( 0u
-				, ashes::Format::eR32G32B32A32_SFLOAT
+				, VK_FORMAT_R32G32B32A32_SFLOAT
 				, uint32_t( offsetof( common::TexturedVertexData, position ) ) );
 			result->createAttribute( 1u
-				, ashes::Format::eR32G32_SFLOAT
+				, VK_FORMAT_R32G32_SFLOAT
 				, uint32_t( offsetof( common::TexturedVertexData, uv ) ) );
 			return result;
 		}
@@ -266,7 +266,7 @@ namespace vkapp
 			, ashes::PipelineStageFlag::eFragmentShader );
 
 		auto dimensions = m_depthView->getImage().getDimensions();
-		auto size = ashes::Extent2D{ dimensions.width, dimensions.height };
+		auto size = VkExtent2D{ dimensions.width, dimensions.height };
 		m_frameBuffer = doCreateFrameBuffer( *m_renderPass, m_depthView, m_colourView );
 		m_gbufferDescriptorSet.reset();
 		m_gbufferDescriptorSet = m_gbufferDescriptorPool->createDescriptorSet( 0u );
@@ -283,7 +283,7 @@ namespace vkapp
 		m_commandBuffer->reset();
 		auto & commandBuffer = *m_commandBuffer;
 		static ashes::DepthStencilClearValue const depth{ 1.0, 0 };
-		static ashes::ClearColorValue const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
+		static VkClearColorValue const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
 
 		commandBuffer.begin( ashes::CommandBufferUsageFlag::eSimultaneousUse );
 		commandBuffer.resetQueryPool( *m_queryPool, 0u, 2u );

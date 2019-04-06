@@ -59,7 +59,7 @@ namespace ashes
 		*/ 
 		void submit( CommandBufferCRefArray const & commandBuffers
 			, SemaphoreCRefArray const & semaphoresToWait
-			, PipelineStageFlagsArray const & semaphoresStage
+			, VkPipelineStageFlagsArray const & semaphoresStage
 			, SemaphoreCRefArray const & semaphoresToSignal
 			, Fence const * fence )const;
 		/**
@@ -86,7 +86,7 @@ namespace ashes
 		*\return
 		*	The result for each swapchain presentation.
 		*/ 
-		ResultArray present( SwapChainCRefArray const & swapChains
+		VkResultArray present( SwapChainCRefArray const & swapChains
 			, UInt32Array const & imagesIndex
 			, SemaphoreCRefArray const & semaphoresToWait )const;
 		/**
@@ -178,7 +178,7 @@ namespace ashes
 		{
 			submit( { commandBuffer }
 				, SemaphoreCRefArray{}
-				, PipelineStageFlagsArray{}
+				, VkPipelineStageFlagsArray{}
 				, SemaphoreCRefArray{}
 				, fence );
 		}
@@ -222,7 +222,7 @@ namespace ashes
 		{
 			submit( { commandBuffer }
 				, SemaphoreCRefArray{ semaphoreToWait }
-				, PipelineStageFlagsArray{ semaphoreStage }
+				, VkPipelineStageFlagsArray{ semaphoreStage }
 				, SemaphoreCRefArray{ semaphoreToSignal }
 				, fence );
 		}

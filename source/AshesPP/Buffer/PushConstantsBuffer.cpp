@@ -4,6 +4,8 @@ See LICENSE file in root folder.
 */
 #include "AshesPP/Buffer/PushConstantsBuffer.hpp"
 
+#include <AshesRenderer/Util/Format.hpp>
+
 #include <algorithm>
 
 namespace ashes

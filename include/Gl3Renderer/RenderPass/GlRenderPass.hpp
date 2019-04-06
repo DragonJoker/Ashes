@@ -25,8 +25,8 @@ namespace gl_renderer
 		/**
 		*\copydoc	ashes::RenderPass::createFrameBuffer
 		*/
-		ashes::FrameBufferPtr createFrameBuffer( ashes::Extent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray textures )const override;
+		ashes::FrameBufferPtr createFrameBuffer( VkExtent2D const & dimensions
+			, ashes::ashes::ImageViewPtrArray textures )const override;
 
 		uint32_t getAttachmentIndex( ashes::AttachmentDescription const & attach )const;
 

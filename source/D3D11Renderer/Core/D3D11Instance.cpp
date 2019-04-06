@@ -244,7 +244,7 @@ namespace d3d11_renderer
 	}
 
 	bool Instance::onCopyToImageCommand( ashes::CommandBuffer const & cmd
-		, ashes::BufferImageCopyArray const & copyInfo
+		, ashes::VkBufferImageCopyArray const & copyInfo
 		, ashes::BufferBase const & src
 		, ashes::Image const & dst )const
 	{

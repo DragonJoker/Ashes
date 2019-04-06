@@ -22,13 +22,13 @@ namespace gl_renderer
 		*/
 		void submit( ashes::CommandBufferCRefArray const & commandBuffers
 			, ashes::SemaphoreCRefArray const & semaphoresToWait
-			, ashes::PipelineStageFlagsArray const & semaphoresStage
+			, ashes::VkPipelineStageFlagsArray const & semaphoresStage
 			, ashes::SemaphoreCRefArray const & semaphoresToSignal
 			, ashes::Fence const * fence )const override;
 		/**
 		*\copydoc		ashes::Queue::present
 		*/
-		ashes::ResultArray present( ashes::SwapChainCRefArray const & swapChains
+		ashes::VkResultArray present( ashes::SwapChainCRefArray const & swapChains
 			, ashes::UInt32Array const & imagesIndex
 			, ashes::SemaphoreCRefArray const & semaphoresToWait )const override;
 		/**

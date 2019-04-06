@@ -24,15 +24,15 @@ namespace d3d11_renderer
 		safeRelease( m_output );
 	}
 
-	ashes::LayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
+	ashes::VkLayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
 	{
-		ashes::LayerPropertiesArray result;
+		ashes::VkLayerPropertiesArray result;
 		return result;
 	}
 
-	ashes::ExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
+	ashes::VkExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
 	{
-		ashes::ExtensionPropertiesArray result;
+		ashes::VkExtensionPropertiesArray result;
 		return result;
 	}
 
@@ -56,7 +56,7 @@ namespace d3d11_renderer
 		return m_queueProperties;
 	}
 
-	ashes::FormatProperties PhysicalDevice::getFormatProperties( ashes::Format fmt )const
+	ashes::FormatProperties PhysicalDevice::getFormatProperties( VkFormat fmt )const
 	{
 		return m_formatProperties[fmt];
 	}

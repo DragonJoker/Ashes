@@ -46,7 +46,7 @@ namespace common
 	*	The file content.
 	*/
 	ashes::UInt32Array dumpShaderFile( ashes::Device const & device
-		, ashes::ShaderStageFlag stage
+		, VkShaderStageFlagBits stage
 		, std::string const & file );
 	/**
 	*\~french

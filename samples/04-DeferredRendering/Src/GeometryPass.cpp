@@ -38,10 +38,10 @@ namespace vkapp
 {
 	namespace
 	{
-		std::vector< ashes::Format > doGetFormats( GeometryPassResult const & gbuffer
-			, ashes::Format depthFormat )
+		std::vector< VkFormat > doGetFormats( GeometryPassResult const & gbuffer
+			, VkFormat depthFormat )
 		{
-			std::vector< ashes::Format > result
+			std::vector< VkFormat > result
 			{
 				depthFormat,
 			};
@@ -85,7 +85,7 @@ namespace vkapp
 		, ashes::Queue const & transferQueue
 		, std::string const & fragmentShaderFile
 		, GeometryPassResult const & gbuffer
-		, ashes::Format depthFormat
+		, VkFormat depthFormat
 		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
 		, ashes::UniformBuffer< common::ObjectData > const & objectUbo )
 		: common::NodesRenderer{ device
@@ -108,8 +108,8 @@ namespace vkapp
 
 	void GeometryPass::doFillObjectDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
 	{
-		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
-		bindings.emplace_back( 2u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
+		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eVertex );
+		bindings.emplace_back( 2u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eVertex );
 	}
 
 	void GeometryPass::doFillObjectDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout

@@ -234,16 +234,16 @@ namespace gl_renderer
 	/**
 	*\~french
 	*\brief
-	*	Dit si le ashes::Format donné est un format utilisable pour les tampons de profondeur et stencil.
+	*	Dit si le VkFormat donné est un format utilisable pour les tampons de profondeur et stencil.
 	*\param[in] format
-	*	Le ashes::Format à tester.
+	*	Le VkFormat à tester.
 	*\return
 	*	\p true s'il l'est...
 	*\~english
 	*\brief
-	*	Tells if the given ashes::Format is usable in depth and stencil buffers.
+	*	Tells if the given VkFormat is usable in depth and stencil buffers.
 	*\param[in] format
-	*	The ashes::Format.
+	*	The VkFormat.
 	*\return
 	*	\p true if it is usable in depth and stencil buffers.
 	*/
@@ -251,16 +251,16 @@ namespace gl_renderer
 	/**
 	*\~french
 	*\brief
-	*	Dit si le ashes::Format donné est un format utilisable pour les tampons de stencil.
+	*	Dit si le VkFormat donné est un format utilisable pour les tampons de stencil.
 	*\param[in] format
-	*	Le ashes::Format à tester.
+	*	Le VkFormat à tester.
 	*\return
 	*	\p true s'il l'est...
 	*\~english
 	*\brief
-	*	Tells if the given ashes::Format is usable in stencil buffers.
+	*	Tells if the given VkFormat is usable in stencil buffers.
 	*\param[in] format
-	*	The ashes::Format.
+	*	The VkFormat.
 	*\return
 	*	\p true if it is usable in stencil buffers.
 	*/
@@ -268,62 +268,62 @@ namespace gl_renderer
 	/**
 	*\~french
 	*\brief
-	*	Dit si le ashes::Format donné est un format utilisable pour les tampons de profondeur.
+	*	Dit si le VkFormat donné est un format utilisable pour les tampons de profondeur.
 	*\param[in] format
-	*	Le ashes::Format à tester.
+	*	Le VkFormat à tester.
 	*\return
 	*	\p true s'il l'est...
 	*\~english
 	*\brief
-	*	Tells if the given ashes::Format is usable in depth buffers.
+	*	Tells if the given VkFormat is usable in depth buffers.
 	*\param[in] format
-	*	The ashes::Format.
+	*	The VkFormat.
 	*\return
 	*	\p true if it is usable in depth buffers.
 	*/
 	bool isDepthFormat( GlInternal format )noexcept;
-	bool isSupportedInternal( ashes::Format const & format )noexcept;
+	bool isSupportedInternal( VkFormat const & format )noexcept;
 	/**
 	*\brief
-	*	Convertit un ashes::Format en GlInternal.
+	*	Convertit un VkFormat en GlInternal.
 	*\param[in] format
-	*	Le ashes::Format.
+	*	Le VkFormat.
 	*\return
 	*	Le GlInternal.
 	*/
-	GlInternal getInternal( ashes::Format const & format )noexcept;
+	GlInternal getInternal( VkFormat const & format )noexcept;
 	/**
 	*\brief
-	*	Convertit un ashes::Format en GlFormat.
+	*	Convertit un VkFormat en GlFormat.
 	*\param[in] format
-	*	Le ashes::Format.
+	*	Le VkFormat.
 	*\return
 	*	Le GlFormat.
 	*/
 	GlFormat getFormat( GlInternal format )noexcept;
 	/**
 	*\brief
-	*	Convertit un ashes::Format en GlType.
+	*	Convertit un VkFormat en GlType.
 	*\param[in] format
-	*	Le ashes::Format.
+	*	Le VkFormat.
 	*\return
 	*	Le GlType.
 	*/
 	GlType getType( GlInternal format )noexcept;
 	/**
 	*\brief
-	*	Convertit un GlInternal en ashes::Format.
+	*	Convertit un GlInternal en VkFormat.
 	*\param[in] format
 	*	Le GlInternal.
 	*\return
-	*	Le ashes::Format.
+	*	Le VkFormat.
 	*/
-	ashes::Format convert( GlInternal format )noexcept;
+	VkFormat convert( GlInternal format )noexcept;
 	/**
 	*\return
 	*	le nombre de composantes du format donné.
 	*\param[in] format
-	*	Le ashes::Format.
+	*	Le VkFormat.
 	*/
-	uint32_t getCount( ashes::Format format )noexcept;
+	uint32_t getCount( VkFormat format )noexcept;
 }

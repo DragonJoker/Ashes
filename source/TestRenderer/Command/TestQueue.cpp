@@ -21,17 +21,17 @@ namespace test_renderer
 
 	void Queue::submit( ashes::CommandBufferCRefArray const & commandBuffers
 		, ashes::SemaphoreCRefArray const & semaphoresToWait
-		, ashes::PipelineStageFlagsArray const & semaphoresStage
+		, ashes::VkPipelineStageFlagsArray const & semaphoresStage
 		, ashes::SemaphoreCRefArray const & semaphoresToSignal
 		, ashes::Fence const * fence )const
 	{
 	}
 
-	ashes::ResultArray Queue::present( ashes::SwapChainCRefArray const & swapChains
+	ashes::VkResultArray Queue::present( ashes::SwapChainCRefArray const & swapChains
 		, ashes::UInt32Array const & imagesIndex
 		, ashes::SemaphoreCRefArray const & semaphoresToWait )const
 	{
-		ashes::ResultArray result{ swapChains.size(), ashes::Result::eSuccess };
+		ashes::VkResultArray result{ swapChains.size(), ashes::Result::eSuccess };
 
 		for ( auto & swapChain : swapChains )
 		{

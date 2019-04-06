@@ -29,8 +29,8 @@ namespace gl_renderer
 		*	Le périphérique logique.
 		*/
 		Image( Device const & device
-			, ashes::Format format
-			, ashes::Extent2D const & dimensions );
+			, VkFormat format
+			, VkExtent2D const & dimensions );
 		/**
 		*\brief
 		*	Constructeur.

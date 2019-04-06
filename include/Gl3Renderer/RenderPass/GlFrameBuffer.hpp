@@ -11,10 +11,10 @@ See LICENSE file in root folder
 namespace gl_renderer
 {
 	GlAttachmentPoint getAttachmentPoint( GlInternal format );
-	GlAttachmentPoint getAttachmentPoint( ashes::Format format );
+	GlAttachmentPoint getAttachmentPoint( VkFormat format );
 	GlAttachmentPoint getAttachmentPoint( ImageView const & texture );
 	GlAttachmentType getAttachmentType( GlInternal format );
-	GlAttachmentType getAttachmentType( ashes::Format format );
+	GlAttachmentType getAttachmentType( VkFormat format );
 	GlAttachmentType getAttachmentType( ImageView const & texture );
 	void checkCompleteness( GLenum status );
 
@@ -47,8 +47,8 @@ namespace gl_renderer
 		*/
 		FrameBuffer( Device const & device
 			, RenderPass const & renderPass
-			, ashes::Extent2D const & dimensions
-			, ashes::FrameBufferAttachmentArray textures );
+			, VkExtent2D const & dimensions
+			, ashes::ashes::ImageViewPtrArray textures );
 		/**
 		*\brief
 		*	Destructeur
@@ -67,7 +67,7 @@ namespace gl_renderer
 		*	Les attaches.
 		*/
 		void setDrawBuffers( ContextLock const & context
-			, AttachmentDescriptionArray const & attaches )const;
+			, VkAttachmentDescriptionArray const & attaches )const;
 		/**
 		*\~english
 		*\brief

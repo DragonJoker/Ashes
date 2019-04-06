@@ -15,7 +15,6 @@ namespace ashes
 	SwapChain::SwapChain( Device const & device
 		, VkSwapchainCreateInfoKHR createInfo )
 		: m_device{ device }
-		, m_surface{ device.getSurface() }
 		, m_createInfo{ std::move( createInfo ) }
 	{
 		DEBUG_DUMP( createInfo );

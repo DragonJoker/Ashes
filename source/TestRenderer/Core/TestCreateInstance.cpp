@@ -35,7 +35,7 @@ extern "C"
 	}
 
 	TestRenderer_API ashes::Result enumerateLayerProperties( uint32_t * count
-		, ashes::LayerProperties * props )
+		, VkLayerProperties * props )
 	{
 		*count = 0u;
 		return ashes::Result::eSuccess;
@@ -43,9 +43,9 @@ extern "C"
 
 	TestRenderer_API ashes::Result enumerateExtensionProperties( char const * const layerName
 		, uint32_t * count
-		, ashes::ExtensionProperties * props )
+		, VkExtensionProperties * props )
 	{
-		static ashes::ExtensionPropertiesArray const extensions
+		static ashes::VkExtensionPropertiesArray const extensions
 		{
 			{ ashes::KHR_SURFACE_EXTENSION_NAME, ashes::makeVersion( 1, 0, 0 ) },
 			{ ashes::KHR_PLATFORM_SURFACE_EXTENSION_NAME, ashes::makeVersion( 1, 0, 0 ) },

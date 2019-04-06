@@ -20,17 +20,17 @@ namespace d3d11_renderer
 		~Surface();
 
 		bool getSupport( uint32_t queueFamilyIndex )const override;
-		std::vector < ashes::PresentMode > getPresentModes()const override;
+		std::vector < VkPresentModeKHR > getPresentModes()const override;
 		ashes::SurfaceCapabilities getCapabilities()const override;
-		std::vector< ashes::SurfaceFormat > getFormats()const override;
+		std::vector< VkSurfaceFormatKHR > getFormats()const override;
 
-		inline std::vector< DXGI_MODE_DESC > const & getDescs( ashes::Format format )const
+		inline std::vector< DXGI_MODE_DESC > const & getDescs( VkFormat format )const
 		{
 			return m_descs[format];
 		}
 
 	private:
 		std::vector< DXGI_MODE_DESC > m_displayModes;
-		mutable std::map< ashes::Format, std::vector< DXGI_MODE_DESC > > m_descs;
+		mutable std::map< VkFormat, std::vector< DXGI_MODE_DESC > > m_descs;
 	};
 }

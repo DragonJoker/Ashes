@@ -17,7 +17,7 @@ namespace utils
 		*\param[out] dst
 		*	Le pixel de destination.
 		*/
-		template< ashes::Format SrcF, ashes::Format DstF >
+		template< VkFormat SrcF, VkFormat DstF >
 		void convertPixel
 			( uint8_t const * src
 			, uint8_t * dst );
@@ -25,15 +25,15 @@ namespace utils
 		*\brief
 		*	Convertit un pixel d'un format donné dans un autre format.
 		*\remarks
-		*	Spécialisation pour la conversion de ashes::Format::eR8_UNORM
-		*	vers ashes::Format::eR8G8_UNORM.
+		*	Spécialisation pour la conversion de VK_FORMAT_R8_UNORM
+		*	vers VK_FORMAT_R8G8_UNORM.
 		*\param[in] src
 		*	Le pixel source.
 		*\param[out] dst
 		*	Le pixel de destination.
 		*/
 		template<>
-		inline void convertPixel< ashes::Format::eR8_UNORM, ashes::Format::eR8G8_UNORM >
+		inline void convertPixel< VK_FORMAT_R8_UNORM, VK_FORMAT_R8G8_UNORM >
 			( uint8_t const * src
 			, uint8_t * dst )
 		{
@@ -44,15 +44,15 @@ namespace utils
 		*\brief
 		*	Convertit un pixel d'un format donné dans un autre format.
 		*\remarks
-		*	Spécialisation pour la conversion de ashes::Format::eR8_UNORM
-		*	vers ashes::Format::eR8G8B8_UNORM.
+		*	Spécialisation pour la conversion de VK_FORMAT_R8_UNORM
+		*	vers VK_FORMAT_R8G8B8_UNORM.
 		*\param[in] src
 		*	Le pixel source.
 		*\param[out] dst
 		*	Le pixel de destination.
 		*/
 		template<>
-		inline void convertPixel< ashes::Format::eR8_UNORM, ashes::Format::eR8G8B8_UNORM >
+		inline void convertPixel< VK_FORMAT_R8_UNORM, VK_FORMAT_R8G8B8_UNORM >
 			( uint8_t const * src
 			, uint8_t * dst )
 		{
@@ -64,15 +64,15 @@ namespace utils
 		*\brief
 		*	Convertit un pixel d'un format donné dans un autre format.
 		*\remarks
-		*	Spécialisation pour la conversion de ashes::Format::eR8_UNORM
-		*	vers ashes::Format::eR8G8B8A8_UNORM.
+		*	Spécialisation pour la conversion de VK_FORMAT_R8_UNORM
+		*	vers VK_FORMAT_R8G8B8A8_UNORM.
 		*\param[in] src
 		*	Le pixel source.
 		*\param[out] dst
 		*	Le pixel de destination.
 		*/
 		template<>
-		inline void convertPixel< ashes::Format::eR8_UNORM, ashes::Format::eR8G8B8A8_UNORM >
+		inline void convertPixel< VK_FORMAT_R8_UNORM, VK_FORMAT_R8G8B8A8_UNORM >
 			( uint8_t const * src
 			, uint8_t * dst )
 		{
@@ -85,15 +85,15 @@ namespace utils
 		*\brief
 		*	Convertit un pixel d'un format donné dans un autre format.
 		*\remarks
-		*	Spécialisation pour la conversion de ashes::Format::eR8G8_UNORM
-		*	vers ashes::Format::eR8_UNORM.
+		*	Spécialisation pour la conversion de VK_FORMAT_R8G8_UNORM
+		*	vers VK_FORMAT_R8_UNORM.
 		*\param[in] src
 		*	Le pixel source.
 		*\param[out] dst
 		*	Le pixel de destination.
 		*/
 		template<>
-		inline void convertPixel< ashes::Format::eR8G8_UNORM, ashes::Format::eR8_UNORM >
+		inline void convertPixel< VK_FORMAT_R8G8_UNORM, VK_FORMAT_R8_UNORM >
 			( uint8_t const * src
 			, uint8_t * dst )
 		{
@@ -103,15 +103,15 @@ namespace utils
 		*\brief
 		*	Convertit un pixel d'un format donné dans un autre format.
 		*\remarks
-		*	Spécialisation pour la conversion de ashes::Format::eR8G8_UNORM
-		*	vers ashes::Format::eR8G8B8_UNORM.
+		*	Spécialisation pour la conversion de VK_FORMAT_R8G8_UNORM
+		*	vers VK_FORMAT_R8G8B8_UNORM.
 		*\param[in] src
 		*	Le pixel source.
 		*\param[out] dst
 		*	Le pixel de destination.
 		*/
 		template<>
-		inline void convertPixel< ashes::Format::eR8G8_UNORM, ashes::Format::eR8G8B8_UNORM >
+		inline void convertPixel< VK_FORMAT_R8G8_UNORM, VK_FORMAT_R8G8B8_UNORM >
 			( uint8_t const * src
 			, uint8_t * dst )
 		{
@@ -123,15 +123,15 @@ namespace utils
 		*\brief
 		*	Convertit un pixel d'un format donné dans un autre format.
 		*\remarks
-		*	Spécialisation pour la conversion de ashes::Format::eR8G8_UNORM
-		*	vers ashes::Format::eR8G8B8A8_UNORM.
+		*	Spécialisation pour la conversion de VK_FORMAT_R8G8_UNORM
+		*	vers VK_FORMAT_R8G8B8A8_UNORM.
 		*\param[in] src
 		*	Le pixel source.
 		*\param[out] dst
 		*	Le pixel de destination.
 		*/
 		template<>
-		inline void convertPixel< ashes::Format::eR8G8_UNORM, ashes::Format::eR8G8B8A8_UNORM >
+		inline void convertPixel< VK_FORMAT_R8G8_UNORM, VK_FORMAT_R8G8B8A8_UNORM >
 			( uint8_t const * src
 			, uint8_t * dst )
 		{
@@ -144,15 +144,15 @@ namespace utils
 		*\brief
 		*	Convertit un pixel d'un format donné dans un autre format.
 		*\remarks
-		*	Spécialisation pour la conversion de ashes::Format::eR8G8B8_UNORM
-		*	vers ashes::Format::eR8_UNORM.
+		*	Spécialisation pour la conversion de VK_FORMAT_R8G8B8_UNORM
+		*	vers VK_FORMAT_R8_UNORM.
 		*\param[in] src
 		*	Le pixel source.
 		*\param[out] dst
 		*	Le pixel de destination.
 		*/
 		template<>
-		inline void convertPixel< ashes::Format::eR8G8B8_UNORM, ashes::Format::eR8_UNORM >
+		inline void convertPixel< VK_FORMAT_R8G8B8_UNORM, VK_FORMAT_R8_UNORM >
 			( uint8_t const * src
 			, uint8_t * dst )
 		{
@@ -176,15 +176,15 @@ namespace utils
 		*\brief
 		*	Convertit un pixel d'un format donné dans un autre format.
 		*\remarks
-		*	Spécialisation pour la conversion de ashes::Format::eR8G8B8_UNORM
-		*	vers ashes::Format::eR8G8_UNORM.
+		*	Spécialisation pour la conversion de VK_FORMAT_R8G8B8_UNORM
+		*	vers VK_FORMAT_R8G8_UNORM.
 		*\param[in] src
 		*	Le pixel source.
 		*\param[out] dst
 		*	Le pixel de destination.
 		*/
 		template<>
-		inline void convertPixel< ashes::Format::eR8G8B8_UNORM, ashes::Format::eR8G8_UNORM >
+		inline void convertPixel< VK_FORMAT_R8G8B8_UNORM, VK_FORMAT_R8G8_UNORM >
 			( uint8_t const * src
 			, uint8_t * dst )
 		{
@@ -209,15 +209,15 @@ namespace utils
 		*\brief
 		*	Convertit un pixel d'un format donné dans un autre format.
 		*\remarks
-		*	Spécialisation pour la conversion de ashes::Format::eR8G8B8_UNORM
-		*	vers ashes::Format::eR8G8B8A8_UNORM.
+		*	Spécialisation pour la conversion de VK_FORMAT_R8G8B8_UNORM
+		*	vers VK_FORMAT_R8G8B8A8_UNORM.
 		*\param[in] src
 		*	Le pixel source.
 		*\param[out] dst
 		*	Le pixel de destination.
 		*/
 		template<>
-		inline void convertPixel< ashes::Format::eR8G8B8_UNORM, ashes::Format::eR8G8B8A8_UNORM >
+		inline void convertPixel< VK_FORMAT_R8G8B8_UNORM, VK_FORMAT_R8G8B8A8_UNORM >
 			( uint8_t const * src
 			, uint8_t * dst )
 		{
@@ -230,15 +230,15 @@ namespace utils
 		*\brief
 		*	Convertit un pixel d'un format donné dans un autre format.
 		*\remarks
-		*	Spécialisation pour la conversion de ashes::Format::eR8G8B8A8_UNORM
-		*	vers ashes::Format::eR8_UNORM.
+		*	Spécialisation pour la conversion de VK_FORMAT_R8G8B8A8_UNORM
+		*	vers VK_FORMAT_R8_UNORM.
 		*\param[in] src
 		*	Le pixel source.
 		*\param[out] dst
 		*	Le pixel de destination.
 		*/
 		template<>
-		inline void convertPixel< ashes::Format::eR8G8B8A8_UNORM, ashes::Format::eR8_UNORM >
+		inline void convertPixel< VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_R8_UNORM >
 			( uint8_t const * src
 			, uint8_t * dst )
 		{
@@ -263,15 +263,15 @@ namespace utils
 		*\brief
 		*	Convertit un pixel d'un format donné dans un autre format.
 		*\remarks
-		*	Spécialisation pour la conversion de ashes::Format::eR8G8B8A8_UNORM
-		*	vers ashes::Format::eR8G8_UNORM.
+		*	Spécialisation pour la conversion de VK_FORMAT_R8G8B8A8_UNORM
+		*	vers VK_FORMAT_R8G8_UNORM.
 		*\param[in] src
 		*	Le pixel source.
 		*\param[out] dst
 		*	Le pixel de destination.
 		*/
 		template<>
-		inline void convertPixel< ashes::Format::eR8G8B8A8_UNORM, ashes::Format::eR8G8_UNORM >
+		inline void convertPixel< VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_R8G8_UNORM >
 			( uint8_t const * src
 			, uint8_t * dst )
 		{
@@ -297,15 +297,15 @@ namespace utils
 		*\brief
 		*	Convertit un pixel d'un format donné dans un autre format.
 		*\remarks
-		*	Spécialisation pour la conversion de ashes::Format::eR8G8B8A8_UNORM
-		*	vers ashes::Format::eR8G8B8_UNORM.
+		*	Spécialisation pour la conversion de VK_FORMAT_R8G8B8A8_UNORM
+		*	vers VK_FORMAT_R8G8B8_UNORM.
 		*\param[in] src
 		*	Le pixel source.
 		*\param[out] dst
 		*	Le pixel de destination.
 		*/
 		template<>
-		inline void convertPixel< ashes::Format::eR8G8B8A8_UNORM, ashes::Format::eR8G8B8_UNORM >
+		inline void convertPixel< VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_R8G8B8_UNORM >
 			( uint8_t const * src
 			, uint8_t * dst )
 		{
@@ -321,7 +321,7 @@ namespace utils
 		*\param DstF
 		*	Le format des pixels de la destination.
 		*/
-		template< ashes::Format SrcF, ashes::Format DstF >
+		template< VkFormat SrcF, VkFormat DstF >
 		struct BufferConverter
 		{
 			/**
@@ -341,16 +341,16 @@ namespace utils
 				, uint8_t * dst
 				, size_t dsts )
 			{
-				static_assert( SrcF == ashes::Format::eR8_UNORM
-					|| SrcF == ashes::Format::eR8G8_UNORM
-					|| SrcF == ashes::Format::eR8G8B8_UNORM
-					|| SrcF == ashes::Format::eR8G8B8A8_UNORM
+				static_assert( SrcF == VK_FORMAT_R8_UNORM
+					|| SrcF == VK_FORMAT_R8G8_UNORM
+					|| SrcF == VK_FORMAT_R8G8B8_UNORM
+					|| SrcF == VK_FORMAT_R8G8B8A8_UNORM
 					, "Unsupported source format for conversion" );
 
-				static_assert( DstF == ashes::Format::eR8_UNORM
-					|| DstF == ashes::Format::eR8G8_UNORM
-					|| DstF == ashes::Format::eR8G8B8_UNORM
-					|| DstF == ashes::Format::eR8G8B8A8_UNORM
+				static_assert( DstF == VK_FORMAT_R8_UNORM
+					|| DstF == VK_FORMAT_R8G8_UNORM
+					|| DstF == VK_FORMAT_R8G8B8_UNORM
+					|| DstF == VK_FORMAT_R8G8B8A8_UNORM
 					, "Unsupported destination format for conversion" );
 
 				auto srcBuf = src;
@@ -378,7 +378,7 @@ namespace utils
 		*\remarks
 		*	Aucune conversion.
 		*/
-		template< ashes::Format SrcF >
+		template< VkFormat SrcF >
 		struct BufferConverter< SrcF, SrcF >
 		{
 			/**
@@ -404,41 +404,41 @@ namespace utils
 		};
 	}
 
-	template< ashes::Format SrcFormat >
+	template< VkFormat SrcFormat >
 	inline void convertBuffer( uint8_t const * src
 		, size_t srcs
 		, uint8_t * dst
-		, ashes::Format dstf
+		, VkFormat dstf
 		, size_t dsts )
 	{
 		switch ( dstf )
 		{
-		case ashes::Format::eR8_UNORM:
-			details::BufferConverter< SrcFormat, ashes::Format::eR8_UNORM >::convert
+		case VK_FORMAT_R8_UNORM:
+			details::BufferConverter< SrcFormat, VK_FORMAT_R8_UNORM >::convert
 				( src
 				, srcs
 				, dst
 				, dsts );
 			break;
 
-		case ashes::Format::eR8G8_UNORM:
-			details::BufferConverter< SrcFormat, ashes::Format::eR8G8_UNORM >::convert
+		case VK_FORMAT_R8G8_UNORM:
+			details::BufferConverter< SrcFormat, VK_FORMAT_R8G8_UNORM >::convert
 				( src
 				, srcs
 				, dst
 				, dsts );
 			break;
 
-		case ashes::Format::eR8G8B8_UNORM:
-			details::BufferConverter< SrcFormat, ashes::Format::eR8G8B8_UNORM >::convert
+		case VK_FORMAT_R8G8B8_UNORM:
+			details::BufferConverter< SrcFormat, VK_FORMAT_R8G8B8_UNORM >::convert
 				( src
 				, srcs
 				, dst
 				, dsts );
 			break;
 
-		case ashes::Format::eR8G8B8A8_UNORM:
-			details::BufferConverter< SrcFormat, ashes::Format::eR8G8B8A8_UNORM >::convert
+		case VK_FORMAT_R8G8B8A8_UNORM:
+			details::BufferConverter< SrcFormat, VK_FORMAT_R8G8B8A8_UNORM >::convert
 				( src
 				, srcs
 				, dst

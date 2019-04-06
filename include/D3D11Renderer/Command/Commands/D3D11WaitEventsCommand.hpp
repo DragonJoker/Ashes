@@ -17,7 +17,7 @@ namespace d3d11_renderer
 			, ashes::PipelineStageFlags srcStageMask
 			, ashes::PipelineStageFlags dstStageMask
 			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers );
+			, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers );
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;
 

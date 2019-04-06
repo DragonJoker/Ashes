@@ -44,7 +44,7 @@ namespace ashes
 		*/
 		PipelineLayout( Device const & device
 			, DescriptorSetLayoutCRefArray const & setLayouts
-			, PushConstantRangeArray const & pushConstantRanges );
+			, VkPushConstantRangeArray const & pushConstantRanges );
 		/**
 		*\~english
 		*\brief
@@ -108,7 +108,7 @@ namespace ashes
 		*\return
 		*	Les intervalles de push constants.
 		*/
-		inline PushConstantRangeArray const & getPushConstantRanges()const
+		inline VkPushConstantRangeArray const & getPushConstantRanges()const
 		{
 			return m_pushConstantRanges;
 		}
@@ -129,7 +129,7 @@ namespace ashes
 		Device const & m_device;
 		VkPipelineLayout m_internal{ VK_NULL_HANDLE };
 		DescriptorSetLayoutCRefArray m_setLayouts;
-		PushConstantRangeArray m_pushConstantRanges;
+		VkPushConstantRangeArray m_pushConstantRanges;
 	};
 }
 

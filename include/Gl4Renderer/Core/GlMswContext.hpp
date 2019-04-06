@@ -6,6 +6,9 @@ See LICENSE file in root folder
 #if _WIN32
 #	include "Gl4Renderer/Core/GlContext.hpp"
 
+#	ifndef NOMINMAX
+#		define NOMINMAX
+#	endif
 #	include <Windows.h>
 #	include "vulkan/vulkan_win32.h"
 

@@ -26,7 +26,7 @@ namespace gl_renderer
 			, ashes::DependencyFlags dependencyFlags
 			, ashes::MemoryBarrierArray const & memoryBarriers
 			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers );
+			, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;

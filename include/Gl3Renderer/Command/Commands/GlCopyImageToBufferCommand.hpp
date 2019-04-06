@@ -30,7 +30,7 @@ namespace gl_renderer
 		*	Le tampon destination.
 		*/
 		CopyImageToBufferCommand( Device const & device
-			, ashes::BufferImageCopyArray const & copyInfo
+			, ashes::VkBufferImageCopyArray const & copyInfo
 			, ashes::Image const & src
 			, ashes::BufferBase const & dst );
 		CopyImageToBufferCommand( CopyImageToBufferCommand const & rhs );
@@ -46,7 +46,7 @@ namespace gl_renderer
 	private:
 		Image const & m_src;
 		Buffer const & m_dst;
-		ashes::BufferImageCopyArray m_copyInfo;
+		ashes::VkBufferImageCopyArray m_copyInfo;
 		GlInternal m_internal;
 		GlFormat m_format;
 		GlType m_type;

@@ -10,7 +10,7 @@ namespace gl_renderer
 {
 	ScissorCommand::ScissorCommand( Device const & device
 		, uint32_t firstScissor
-		, ashes::ScissorArray const & scissors )
+		, ashes::VkScissorArray const & scissors )
 		: CommandBase{ device }
 		, m_scissors{ scissors.begin() + firstScissor, scissors.end() }
 	{

@@ -11,7 +11,7 @@ namespace gl_renderer
 {
 	ClearColourCommand::ClearColourCommand( Device const & device
 		, ashes::ImageView const & image
-		, ashes::ClearColorValue const & colour )
+		, VkClearColorValue const & colour )
 		: CommandBase{ device }
 		, m_image{ static_cast< Image const & >( image.getImage() ) }
 		, m_colour{ colour }

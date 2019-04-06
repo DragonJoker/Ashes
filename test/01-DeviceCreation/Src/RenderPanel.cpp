@@ -3,9 +3,9 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
-#include <Core/Surface.hpp>
-#include <Core/Device.hpp>
-#include <Core/Exception.hpp>
+#include <AshesPP/Core/Surface.hpp>
+#include <AshesPP/Core/Device.hpp>
+#include <AshesRenderer/Util/Exception.hpp>
 
 #include <Transform.hpp>
 
@@ -57,16 +57,16 @@ namespace vkapp
 	void RenderPanel::doCreateDevice( utils::Instance const & instance
 		, ashes::Surface const & surface )
 	{
-		ashes::DeviceCreateInfo createInfo;
-		createInfo.enabledFeatures = surface.getGpu().getFeatures();
-		createInfo.enabledLayerNames = instance.getLayerNames();
-		createInfo.enabledExtensionNames = instance.getExtensionNames();
-		createInfo.queueCreateInfos.push_back( ashes::DeviceQueueCreateInfo
-			{
-				0u,
-				0u,
-				{ 1.0f },
-			} );
+		ashes::DeviceQueueCreateInfoArray queueCreateInfos;
+		queueCreateInfos.emplace_back( 0u, 0u, ashes::FloatArray{ 1.0f } );
+		ashes::DeviceCreateInfo createInfo
+		{
+			0u,
+			std::move( queueCreateInfos ),
+			instance.getLayerNames(),
+			instance.getExtensionNames(),
+			surface.getGpu().getFeatures(),
+		};
 		m_device = instance.getInstance().createDevice( surface.getGpu()
 			, std::move( createInfo ) );
 

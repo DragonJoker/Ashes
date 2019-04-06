@@ -25,7 +25,7 @@ namespace common
 	private:
 		struct MouseState
 		{
-			ashes::Offset2D position;
+			VkOffset2D position;
 			bool left{ false };
 			bool right{ false };
 		};
@@ -42,7 +42,7 @@ namespace common
 
 	private:
 		virtual void doInitialise( utils::Device const & device
-			, ashes::Extent2D const & size ) = 0;
+			, VkExtent2D const & size ) = 0;
 		virtual void doUpdateOverlays( Gui const & gui ) = 0;
 
 		virtual void doUpdate()
@@ -90,7 +90,7 @@ namespace common
 
 		utils::DevicePtr m_device;
 		utils::SwapChainPtr m_swapChain;
-		ashes::ClearColorValue m_clearColour;
+		VkClearColorValue m_clearColour;
 		ashes::StagingBufferPtr m_stagingBuffer;
 
 		ashes::SamplerPtr m_sampler;

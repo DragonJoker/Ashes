@@ -2,7 +2,7 @@
 #include <AshesPP/Command/CommandPool.hpp>
 #include <AshesPP/Command/Queue.hpp>
 #include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Core/Renderer.hpp>
+#include <AshesPP/Core/RendererList.hpp>
 #include <AshesPP/Core/Surface.hpp>
 #include <AshesPP/Core/SwapChain.hpp>
 #include <AshesPP/Image/Image.hpp>
@@ -12,8 +12,9 @@
 #include <AshesPP/Sync/Fence.hpp>
 #include <AshesPP/Sync/Semaphore.hpp>
 
-#include <AshesCommon/PlatformWindowHandle.hpp>
+#include <AshesPP/Core/PlatformWindowHandle.hpp>
 
+#include <AshesRenderer/AshesRendererPrerequisites.hpp>
 #include <AshesRenderer/Util/Exception.hpp>
 
 #include <GLFW/glfw3.h>
@@ -36,7 +37,7 @@
 struct LayerExtensionList
 {
 	VkLayerProperties layerProperties;
-	ashes::ExtensionPropertiesArray extensionProperties;
+	ashes::VkExtensionPropertiesArray extensionProperties;
 };
 using LayerExtensionListArray = std::vector< LayerExtensionList >;
 
@@ -69,6 +70,7 @@ struct Application
 	uint32_t presentQueueFamilyIndex;
 	uint32_t graphicsQueueFamilyIndex;
 	uint32_t computeQueueFamilyIndex;
+	ashes::SurfacePtr surface;
 	ashes::DevicePtr device;
 	VkExtent2D dimensions;
 	ashes::SwapChainPtr swapChain;
@@ -88,24 +90,19 @@ std::string processCommandLine( int argc, char ** argv );
 std::vector< VkLayerProperties > enumerateLayerProperties( PFN_vkEnumerateInstanceLayerProperties enumLayerProperties );
 std::vector< VkExtensionProperties > enumerateExtensionProperties( PFN_vkEnumerateInstanceExtensionProperties enumInstanceExtensionProperties
 	, std::string const & layerName );
-VkDeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
+ashes::DeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
 	, ashes::Surface const & surface
 	, ashes::PhysicalDevice const & gpu
 	, uint32_t & presentQueueFamilyIndex
 	, uint32_t & graphicsQueueFamilyIndex
-	, uint32_t & computeQueueFamilyIndex
-	, ashes::DeviceQueueCreateInfoArray & queueCreateInfos
-	, std::vector< float > & queuePriorities
-	, VkPhysicalDeviceFeatures & features
-	, ashes::CharPtrArray & enabledLayers
-	, ashes::CharPtrArray & enabledExtensions );
+	, uint32_t & computeQueueFamilyIndex );
 void createSwapChain( Application & application );
 ashes::RenderPassPtr createRenderPass( ashes::Device const & device
 	, ashes::SwapChain const & swapChain
-	, ashes::AttachmentDescriptionArray & attaches
-	, ashes::AttachmentReferenceArray & subAttaches
-	, ashes::SubpassDescriptionArray & subpasses
-	, ashes::SubpassDependencyArray & dependencies );
+	, ashes::VkAttachmentDescriptionArray & attaches
+	, ashes::VkAttachmentReferenceArray & subAttaches
+	, ashes::VkSubpassDescriptionArray & subpasses
+	, ashes::VkSubpassDependencyArray & dependencies );
 void prepareFrames( Application & application );
 RenderingResources * getResources( Application & application );
 bool checkNeedReset( Application & application
@@ -125,19 +122,20 @@ static VkBool32 VKAPI_PTR DbgCallback( VkDebugReportFlagsEXT msgFlags
 int main( int argc, char * argv[] )
 {
 	// First, we need to retrieve the Ashes plugins
-	ashes::Renderer renderer;
+	ashes::RendererList renderers;
 
 	// Then we check in the command line if the user has wanted a specific plugin to be used.
 	std::string rendererName = processCommandLine( argc, argv );
+	auto plugin = renderers.selectPlugin( rendererName );
 	PFN_vkEnumerateInstanceLayerProperties enumLayerProperties;
-	enumLayerProperties = ( PFN_vkEnumerateInstanceLayerProperties )renderer.getInstanceProcAddr( VK_NULL_HANDLE,
+	enumLayerProperties = ( PFN_vkEnumerateInstanceLayerProperties )plugin.getInstanceProcAddr( VK_NULL_HANDLE,
 		"vkEnumerateInstanceLayerProperties" );
 	PFN_vkEnumerateInstanceExtensionProperties enumInstanceExtensionProperties;
-	enumInstanceExtensionProperties = ( PFN_vkEnumerateInstanceExtensionProperties )renderer.getInstanceProcAddr( VK_NULL_HANDLE,
+	enumInstanceExtensionProperties = ( PFN_vkEnumerateInstanceExtensionProperties )plugin.getInstanceProcAddr( VK_NULL_HANDLE,
 		"vkEnumerateInstanceExtensionProperties" );
 
 	auto globalLayerProperties = enumerateLayerProperties( enumLayerProperties );
-	ashes::ExtensionPropertiesArray globalExtensions;
+	ashes::VkExtensionPropertiesArray globalExtensions;
 	LayerExtensionListArray globalLayers( globalLayerProperties.size() );
 
 	for ( uint32_t i = 0; i < globalLayerProperties.size(); ++i )
@@ -155,10 +153,8 @@ int main( int argc, char * argv[] )
 	globalExtensions = enumerateExtensionProperties( enumInstanceExtensionProperties
 		, std::string{} );
 
-	const VkApplicationInfo appInfo
+	ashes::ApplicationInfo appInfo
 	{
-		VK_STRUCTURE_TYPE_APPLICATION_INFO,
-		nullptr,
 		"Ashes GLFW Template Application",
 		ashes::makeVersion( 1, 0, 0 ),
 		"GLFWTemplate",
@@ -167,27 +163,23 @@ int main( int argc, char * argv[] )
 	};
 
 	// Get all supported Instance extensions (excl. layer-provided ones)
-	ashes::CharPtrArray instanceExtensions;
+	ashes::StringArray instanceExtensions;
 
 	for ( auto & ext : globalExtensions )
 	{
 		instanceExtensions.push_back( ext.extensionName );
 	}
 
-	const VkInstanceCreateInfo instInfo
+	ashes::InstanceCreateInfo instInfo
 	{
-		VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-		nullptr,
 		0u,
-		&appInfo,
-		0,
-		nullptr,
-		uint32_t( instanceExtensions.size() ),
-		instanceExtensions.data(),
+		std::move( appInfo ),
+		{},
+		instanceExtensions,
 	};
 
-	// With that informations, we can now create the renderer instance.
-	ashes::InstancePtr instance = std::make_unique< ashes::Instance >( renderer
+	// With that informations, we can now create the instance.
+	ashes::InstancePtr instance = std::make_unique< ashes::Instance >( std::move( plugin )
 		, std::move( instInfo ) );
 
 	VkDebugReportCallbackCreateInfoEXT dbg_info
@@ -209,7 +201,7 @@ int main( int argc, char * argv[] )
 	glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API );
 	GLFWwindow * window = glfwCreateWindow( int( width )
 		, int( height )
-		, ( "GLFW Template (" + std::string( renderer.getPluginDescription().name ) + ")" ).c_str()
+		, ( "GLFW Template (" + rendererName + ")" ).c_str()
 		, nullptr
 		, nullptr );
 	Application app;
@@ -227,26 +219,16 @@ int main( int argc, char * argv[] )
 #else
 #	error "Unimplemented."
 #endif
-	ashes::SurfacePtr surface = instance->createSurface( *gpus[0], std::move( handle ) );
+	app.surface = instance->createSurface( *gpus[0], std::move( handle ) );
 
 	// We now create the logical device, using this surface
-	ashes::DeviceQueueCreateInfoArray queueCreateInfos;
-	std::vector< float > queuePriorities;
-	VkPhysicalDeviceFeatures features;
-	ashes::CharPtrArray enabledLayers;
-	ashes::CharPtrArray enabledExtensions;
-	VkDeviceCreateInfo deviceInfo = getDeviceCreateInfo( *instance
-		, *surface
+	ashes::DeviceCreateInfo deviceInfo = getDeviceCreateInfo( *instance
+		, *app.surface
 		, *gpus[0]
 		, app.presentQueueFamilyIndex
 		, app.graphicsQueueFamilyIndex
-		, app.computeQueueFamilyIndex
-		, queueCreateInfos
-		, queuePriorities
-		, features
-		, enabledLayers
-		, enabledExtensions );
-	app.device = instance->createDevice( std::move( surface ), std::move( deviceInfo ) );
+		, app.computeQueueFamilyIndex );
+	app.device = instance->createDevice( app.surface->getGpu(), std::move( deviceInfo ) );
 	app.graphicsQueue = app.device->getQueue( app.graphicsQueueFamilyIndex, 0u );
 	app.presentQueue = app.device->getQueue( app.presentQueueFamilyIndex, 0u );
 	app.commandPool = app.device->createCommandPool( app.graphicsQueueFamilyIndex
@@ -259,10 +241,10 @@ int main( int argc, char * argv[] )
 	createSwapChain( app );
 
 	// We retrieve the render pass that we'll be using to do our stuff on the swapchain surface.
-	ashes::AttachmentDescriptionArray attaches;
-	ashes::AttachmentReferenceArray subAttaches;
-	ashes::SubpassDescriptionArray subpasses;
-	ashes::SubpassDependencyArray dependencies;
+	ashes::VkAttachmentDescriptionArray attaches;
+	ashes::VkAttachmentReferenceArray subAttaches;
+	ashes::VkSubpassDescriptionArray subpasses;
+	ashes::VkSubpassDependencyArray dependencies;
 	app.renderPass = createRenderPass( *app.device
 		, *app.swapChain
 		, attaches
@@ -316,11 +298,13 @@ int main( int argc, char * argv[] )
 	app.frameBuffers.clear();
 	app.renderPass.reset();
 	app.renderingResources.clear();
+	app.swapChainImages.clear();
 	app.swapChain.reset();
 	app.graphicsQueue.reset();
 	app.presentQueue.reset();
 	app.commandPool.reset();
 	app.device.reset();
+	app.surface.reset();
 
 	glfwTerminate();
 	instance.reset();
@@ -480,17 +464,12 @@ void doInitialiseQueueFamilies( ashes::Instance const & instance
 	}
 }
 
-VkDeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
+ashes::DeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
 	, ashes::Surface const & surface
 	, ashes::PhysicalDevice const & gpu
 	, uint32_t & presentQueueFamilyIndex
 	, uint32_t & graphicsQueueFamilyIndex
-	, uint32_t & computeQueueFamilyIndex
-	, ashes::DeviceQueueCreateInfoArray & queueCreateInfos
-	, std::vector< float > & queuePriorities
-	, VkPhysicalDeviceFeatures & features
-	, ashes::CharPtrArray & enabledLayers
-	, ashes::CharPtrArray & enabledExtensions )
+	, uint32_t & computeQueueFamilyIndex )
 {
 	doInitialiseQueueFamilies( instance
 		, surface
@@ -498,18 +477,16 @@ VkDeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
 		, presentQueueFamilyIndex
 		, graphicsQueueFamilyIndex
 		, computeQueueFamilyIndex );
-	queuePriorities = { 1.0f };
+	ashes::FloatArray queuePriorities = { 1.0f };
+	ashes::DeviceQueueCreateInfoArray queueCreateInfos;
 
 	if ( graphicsQueueFamilyIndex != uint32_t( ~( 0u ) ) )
 	{
 		queueCreateInfos.push_back(
 			{
-				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-				nullptr,
 				0u,
 				graphicsQueueFamilyIndex,
-				uint32_t( queuePriorities.size() ),
-				queuePriorities.data(),
+				queuePriorities,
 			} );
 	}
 
@@ -517,12 +494,9 @@ VkDeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
 	{
 		queueCreateInfos.push_back(
 			{
-				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-				nullptr,
 				0u,
 				presentQueueFamilyIndex,
-				uint32_t( queuePriorities.size() ),
-				queuePriorities.data(),
+				queuePriorities,
 			} );
 	}
 
@@ -530,35 +504,27 @@ VkDeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
 	{
 		queueCreateInfos.push_back(
 			{
-				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-				nullptr,
 				0u,
 				computeQueueFamilyIndex,
-				uint32_t( queuePriorities.size() ),
-				queuePriorities.data(),
+				queuePriorities,
 			} );
 	}
 
-	enabledExtensions.push_back( VK_KHR_SWAPCHAIN_EXTENSION_NAME );
-	instance.getEnabledLayerNames();
-	features = gpu.getFeatures();
-	return VkDeviceCreateInfo
+	ashes::StringArray enabledExtensions
 	{
-		VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-		nullptr,
+		VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+	};
+	return ashes::DeviceCreateInfo
+	{
 		0u,
-		uint32_t( queueCreateInfos.size() ),
-		queueCreateInfos.data(),
-		uint32_t( enabledLayers.size() ),
-		enabledLayers.data(),
-		uint32_t( enabledExtensions.size() ),
-		enabledExtensions.data(),
-		&features,
+		std::move( queueCreateInfos ),
+		{},
+		std::move( enabledExtensions ),
+		gpu.getFeatures(),
 	};
 }
-uint32_t doGetImageCount( ashes::Device const & device )
+uint32_t doGetImageCount( ashes::Surface const & surface )
 {
-	auto & surface = device.getSurface();
 	auto surfaceCaps = surface.getCapabilities();
 	uint32_t desiredNumberOfSwapChainImages{ surfaceCaps.minImageCount + 1 };
 
@@ -572,9 +538,8 @@ uint32_t doGetImageCount( ashes::Device const & device )
 	return desiredNumberOfSwapChainImages;
 }
 
-VkSurfaceFormatKHR doSelectFormat( ashes::Device const & device )
+VkSurfaceFormatKHR doSelectFormat( ashes::Surface const & surface )
 {
-	auto & surface = device.getSurface();
 	VkSurfaceFormatKHR result;
 	auto formats = surface.getFormats();
 	// Si la liste de formats ne contient qu'une entr�e VK_FORMAT_UNDEFINED,
@@ -608,9 +573,8 @@ VkSurfaceFormatKHR doSelectFormat( ashes::Device const & device )
 	return result;
 }
 
-VkPresentModeKHR doSelectPresentMode( ashes::Device const & device )
+VkPresentModeKHR doSelectPresentMode( ashes::Surface const & surface )
 {
-	auto & surface = device.getSurface();
 	auto presentModes = surface.getPresentModes();
 	// Si le mode boîte aux lettres est disponible, on utilise celui-là, car c'est celui avec le
 	// minimum de latence dans tearing.
@@ -636,11 +600,10 @@ VkPresentModeKHR doSelectPresentMode( ashes::Device const & device )
 	return result;
 }
 
-VkSwapchainCreateInfoKHR doGetSwapChainCreateInfo( ashes::Device const & device
+VkSwapchainCreateInfoKHR doGetSwapChainCreateInfo( ashes::Surface const & surface
 	, VkExtent2D const & size )
 {
 	VkExtent2D swapChainExtent{};
-	auto & surface = device.getSurface();
 	auto surfaceCaps = surface.getCapabilities();
 
 	// width et height valent soient tous les deux -1 ou tous les deux autre chose que -1.
@@ -675,15 +638,15 @@ VkSwapchainCreateInfoKHR doGetSwapChainCreateInfo( ashes::Device const & device
 		preTransform = surfaceCaps.currentTransform;
 	}
 
-	auto presentMode = doSelectPresentMode( device );
-	auto surfaceFormat = doSelectFormat( device );
+	auto presentMode = doSelectPresentMode( surface );
+	auto surfaceFormat = doSelectFormat( surface );
 	return VkSwapchainCreateInfoKHR
 	{
 		VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
 		nullptr,
 		0u,
 		surface,
-		doGetImageCount( device ),
+		doGetImageCount( surface ),
 		surfaceFormat.format,
 		surfaceFormat.colorSpace,
 		swapChainExtent,
@@ -716,7 +679,8 @@ void doCreateRenderingResources( Application & application )
 
 void createSwapChain( Application & application )
 {
-	application.swapChain = application.device->createSwapChain( doGetSwapChainCreateInfo( *application.device, application.dimensions ) );
+	application.swapChain = application.device->createSwapChain( doGetSwapChainCreateInfo( *application.surface
+		, application.dimensions ) );
 	application.swapChainImages = application.swapChain->getImages();
 	application.clearColour = VkClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 	doCreateRenderingResources( application );
@@ -724,10 +688,10 @@ void createSwapChain( Application & application )
 
 ashes::RenderPassPtr createRenderPass( ashes::Device const & device
 	, ashes::SwapChain const & swapChain
-	, ashes::AttachmentDescriptionArray & attaches
-	, ashes::AttachmentReferenceArray & subAttaches
-	, ashes::SubpassDescriptionArray & subpasses
-	, ashes::SubpassDependencyArray & dependencies )
+	, ashes::VkAttachmentDescriptionArray & attaches
+	, ashes::VkAttachmentReferenceArray & subAttaches
+	, ashes::VkSubpassDescriptionArray & subpasses
+	, ashes::VkSubpassDependencyArray & dependencies )
 {
 	attaches.push_back(
 		// We'll have only one colour attachment for the render pass.
@@ -853,7 +817,7 @@ void prepareFrames( Application & application )
 		commandBuffer.begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 		commandBuffer.beginRenderPass( *application.renderPass
 			, frameBuffer
-			, ashes::ClearValueArray{ { application.clearColour } }
+			, ashes::VkClearValueArray{ { application.clearColour } }
 			, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE );
 		commandBuffer.endRenderPass();
 		commandBuffer.end();

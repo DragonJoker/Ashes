@@ -11,7 +11,7 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
-#define BufferOffset( n ) ( ( uint8_t * )nullptr + ( n ) )
+#define getBufferOffset( n ) ( ( uint8_t * )nullptr + ( n ) )
 
 namespace ashes::gl4
 {
@@ -65,7 +65,7 @@ namespace ashes::gl4
 					, m_copyInfo.imageExtent.width
 					, m_internal
 					, getSize( m_copyInfo.imageExtent, get( m_dst )->getFormat() )
-					, BufferOffset( m_copyInfo.bufferOffset ) );
+					, getBufferOffset( m_copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_2D:
@@ -79,7 +79,7 @@ namespace ashes::gl4
 					, m_copyInfo.imageExtent.height
 					, m_internal
 					, getSize( m_copyInfo.imageExtent, get( m_dst )->getFormat() )
-					, BufferOffset( m_copyInfo.bufferOffset ) );
+					, getBufferOffset( m_copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_3D:
@@ -95,7 +95,7 @@ namespace ashes::gl4
 					, m_copyInfo.imageExtent.depth
 					, m_internal
 					, getSize( m_copyInfo.imageExtent, get( m_dst )->getFormat() )
-					, BufferOffset( m_copyInfo.bufferOffset ) );
+					, getBufferOffset( m_copyInfo.bufferOffset ) );
 
 			case GL_TEXTURE_1D_ARRAY:
 				glLogCall( context
@@ -108,7 +108,7 @@ namespace ashes::gl4
 					, m_copyInfo.imageSubresource.layerCount
 					, m_internal
 					, getSize( m_copyInfo.imageExtent, get( m_dst )->getFormat() )
-					, BufferOffset( m_copyInfo.bufferOffset ) );
+					, getBufferOffset( m_copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_2D_ARRAY:
@@ -124,7 +124,7 @@ namespace ashes::gl4
 					, m_copyInfo.imageSubresource.layerCount
 					, m_internal
 					, getSize( m_copyInfo.imageExtent, get( m_dst )->getFormat() )
-					, BufferOffset( m_copyInfo.bufferOffset ) );
+					, getBufferOffset( m_copyInfo.bufferOffset ) );
 				break;
 			}
 		}
@@ -141,7 +141,7 @@ namespace ashes::gl4
 					, m_copyInfo.imageExtent.width
 					, m_format
 					, m_type
-					, BufferOffset( m_copyInfo.bufferOffset ) );
+					, getBufferOffset( m_copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_2D:
@@ -155,7 +155,7 @@ namespace ashes::gl4
 					, m_copyInfo.imageExtent.height
 					, m_format
 					, m_type
-					, BufferOffset( m_copyInfo.bufferOffset ) );
+					, getBufferOffset( m_copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_3D:
@@ -171,7 +171,7 @@ namespace ashes::gl4
 					, m_copyInfo.imageExtent.depth
 					, m_format
 					, m_type
-					, BufferOffset( m_copyInfo.bufferOffset ) );
+					, getBufferOffset( m_copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_1D_ARRAY:
@@ -185,7 +185,7 @@ namespace ashes::gl4
 					, m_copyInfo.imageSubresource.layerCount
 					, m_format
 					, m_type
-					, BufferOffset( m_copyInfo.bufferOffset ) );
+					, getBufferOffset( m_copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_2D_ARRAY:
@@ -201,7 +201,7 @@ namespace ashes::gl4
 					, m_copyInfo.imageSubresource.layerCount
 					, m_format
 					, m_type
-					, BufferOffset( m_copyInfo.bufferOffset ) );
+					, getBufferOffset( m_copyInfo.bufferOffset ) );
 				break;
 			}
 		}

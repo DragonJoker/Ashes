@@ -29,7 +29,7 @@ namespace gl_renderer
 		*	L'image destination.
 		*/
 		CopyBufferToImageCommand( Device const & device
-			, ashes::BufferImageCopyArray const & copyInfo
+			, ashes::VkBufferImageCopyArray const & copyInfo
 			, ashes::BufferBase const & src
 			, ashes::Image const & dst );
 
@@ -43,7 +43,7 @@ namespace gl_renderer
 	private:
 		Buffer const & m_src;
 		Image const & m_dst;
-		ashes::BufferImageCopyArray m_copyInfo;
+		ashes::VkBufferImageCopyArray m_copyInfo;
 		GlInternal m_internal;
 		GlFormat m_format;
 		GlType m_type;

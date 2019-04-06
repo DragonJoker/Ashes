@@ -3,6 +3,13 @@
 
 #include <wx/sizer.h>
 
+#ifdef min
+#	undef min
+#	undef max
+#	undef mabs
+#endif
+
+#include <algorithm>
 #include <numeric>
 
 namespace common
@@ -16,7 +23,7 @@ namespace common
 		, wxDefaultPosition
 		, WindowSize
 		, wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxRESIZE_BORDER | wxMAXIMIZE_BOX }
-		, m_name{ name }
+		, m_name{ name.ToStdString() }
 		, m_rendererName{ rendererName }
 		, m_factory{ factory }
 	{
@@ -31,11 +38,11 @@ namespace common
 		{
 			ashes::ApplicationInfo config
 			{
-				m_name.ToStdString(),
+				m_name.c_str(),
 				ashes::makeVersion( 1, 0, 0 ),
 				"Ashes",
 				ashes::makeVersion( 1, 0, 0 ),
-				ashes::API_VERSION_1_0,
+				VK_API_VERSION_1_0,
 			};
 			m_instance = std::make_unique< utils::Instance >( m_factory
 				, m_rendererName.ToStdString()

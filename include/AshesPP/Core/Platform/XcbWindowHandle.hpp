@@ -8,6 +8,9 @@ See LICENSE file in root folder.
 #include <xcbint.h>
 #include <xcb/xproto.h>
 
+#include "AshesPP/Core/WindowHandle.hpp"
+#include <vulkan/vulkan_xcb.h>
+
 namespace ashes
 {
 	class IXcbWindowHandle
@@ -16,7 +19,8 @@ namespace ashes
 	public:
 		IXcbWindowHandle( xcb_connection_t * connection
 			, xcb_window_t window )
-			: m_connection{ connection }
+			: IWindowHandle{ VK_KHR_XCB_SURFACE_EXTENSION_NAME }
+			, m_connection{ connection }
 			, m_window{ window }
 		{
 		}

@@ -4,13 +4,14 @@ See LICENSE file in root folder.
 */
 #include "Utils/UtilsDevice.hpp"
 
-#include <Ashes/Buffer/Buffer.hpp>
-#include <Ashes/Buffer/UniformBuffer.hpp>
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Core/Exception.hpp>
-#include <Ashes/Core/Instance.hpp>
-#include <Ashes/Image/Image.hpp>
-#include <Ashes/Miscellaneous/MemoryRequirements.hpp>
+#include <AshesPP/Buffer/Buffer.hpp>
+#include <AshesPP/Buffer/UniformBuffer.hpp>
+#include <AshesPP/Core/Device.hpp>
+#include <AshesPP/Core/DeviceCreateInfo.hpp>
+#include <AshesPP/Core/Instance.hpp>
+#include <AshesPP/Image/Image.hpp>
+
+#include <AshesRenderer/Util/Exception.hpp>
 
 namespace utils
 {
@@ -37,7 +38,7 @@ namespace utils
 
 				if ( queueProps[i].queueCount > 0 )
 				{
-					if ( queueProps[i].queueFlags & ashes::QueueFlag::eGraphics )
+					if ( ashes::checkFlag( queueProps[i].queueFlags, VK_QUEUE_GRAPHICS_BIT ) )
 					{
 						// Tout d'abord on choisit une file graphique
 						if ( graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
@@ -46,7 +47,7 @@ namespace utils
 						}
 
 						// Si la file supporte aussi les calculs, on la choisit en compute queue
-						if ( queueProps[i].queueFlags & ashes::QueueFlag::eCompute
+						if ( ashes::checkFlag( queueProps[i].queueFlags, VK_QUEUE_COMPUTE_BIT )
 							&& computeQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
 						{
 							computeQueueFamilyIndex = i;
@@ -60,7 +61,7 @@ namespace utils
 							break;
 						}
 					}
-					else if ( queueProps[i].queueFlags & ashes::QueueFlag::eCompute
+					else if ( ashes::checkFlag( queueProps[i].queueFlags, VK_QUEUE_COMPUTE_BIT )
 						&& computeQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
 					{
 						computeQueueFamilyIndex = i;
@@ -89,7 +90,7 @@ namespace utils
 				|| presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
 				|| computeQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
 			{
-				throw ashes::Exception{ ashes::Result::eErrorInitializationFailed
+				throw ashes::Exception{ VK_ERROR_INITIALIZATION_FAILED
 					, "Queue families retrieval" };
 			}
 		}
@@ -108,13 +109,13 @@ namespace utils
 				, graphicsQueueFamilyIndex
 				, computeQueueFamilyIndex );
 			std::vector< float > queuePriorities = { 1.0f };
-			ashes::DeviceCreateInfo result;
+			ashes::DeviceQueueCreateInfoArray queueCreateInfos;
 
 			if ( graphicsQueueFamilyIndex != uint32_t( ~( 0u ) ) )
 			{
-				result.queueCreateInfos.push_back(
+				queueCreateInfos.push_back(
 					{
-						ashes::DeviceQueueCreateFlag::eNone,
+						0u,
 						graphicsQueueFamilyIndex,
 						queuePriorities,
 					} );
@@ -122,9 +123,9 @@ namespace utils
 
 			if ( presentQueueFamilyIndex != graphicsQueueFamilyIndex )
 			{
-				result.queueCreateInfos.push_back(
+				queueCreateInfos.push_back(
 					{
-						ashes::DeviceQueueCreateFlag::eNone,
+						0u,
 						presentQueueFamilyIndex,
 						queuePriorities,
 					} );
@@ -132,18 +133,22 @@ namespace utils
 
 			if ( computeQueueFamilyIndex != graphicsQueueFamilyIndex )
 			{
-				result.queueCreateInfos.push_back(
+				queueCreateInfos.push_back(
 					{
-						ashes::DeviceQueueCreateFlag::eNone,
+						0u,
 						computeQueueFamilyIndex,
 						queuePriorities,
 					} );
 			}
 
-			result.enabledFeatures = gpu.getFeatures();
-			result.enabledLayerNames = instance.getEnabledLayerNames();
-			result.enabledExtensionNames.push_back( ashes::KHR_SWAPCHAIN_EXTENSION_NAME );
-			return result;
+			return ashes::DeviceCreateInfo
+			{
+				0u,
+				std::move( queueCreateInfos ),
+				instance.getEnabledLayerNames(),
+				{ 1u, ashes::KHR_PLATFORM_SURFACE_EXTENSION_NAME },
+				gpu.getFeatures()
+			};
 		}
 	}
 
@@ -163,32 +168,32 @@ namespace utils
 	}
 
 	ashes::BufferBasePtr Device::createBuffer( uint32_t size
-		, ashes::BufferTargets target
-		, ashes::MemoryPropertyFlags flags )const
+		, VkBufferUsageFlags target
+		, VkMemoryPropertyFlags flags )const
 	{
 		auto result = m_device->createBuffer( size, target );
 		auto requirements = result->getMemoryRequirements();
 		uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 			, flags );
-		result->bindMemory( m_device->allocateMemory( { requirements.size, deduced } ) );
+		result->bindMemory( m_device->allocateMemory( { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } ) );
 		return result;
 	}
 
 	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo
-		, ashes::MemoryPropertyFlags flags )const
+		, VkMemoryPropertyFlags flags )const
 	{
 		auto result = m_device->createImage( createInfo );
 		auto requirements = result->getMemoryRequirements();
 		uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 			, flags );
-		result->bindMemory( m_device->allocateMemory( { requirements.size, deduced } ) );
+		result->bindMemory( m_device->allocateMemory( { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } ) );
 		return result;
 	}
 
 	ashes::UniformBufferBasePtr Device::createUniformBuffer( uint32_t count
 		, uint32_t size
-		, ashes::BufferTargets target
-		, ashes::MemoryPropertyFlags memoryFlags )const
+		, VkBufferUsageFlags target
+		, VkMemoryPropertyFlags memoryFlags )const
 	{
 		auto result = std::make_unique< ashes::UniformBufferBase >( *m_device
 			, count
@@ -197,12 +202,12 @@ namespace utils
 		auto requirements = result->getMemoryRequirements();
 		uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 			, memoryFlags );
-		result->bindMemory( m_device->allocateMemory( { requirements.size, deduced } ) );
+		result->bindMemory( m_device->allocateMemory( { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } ) );
 		return result;
 	}
 
-	uint32_t Device::deduceMemoryType( ashes::MemoryPropertyFlags typeBits
-		, ashes::MemoryPropertyFlags requirements )const
+	uint32_t Device::deduceMemoryType( VkMemoryPropertyFlags typeBits
+		, VkMemoryPropertyFlags requirements )const
 	{
 		uint32_t result = 0xFFFFFFFFu;
 		bool found{ false };
@@ -210,9 +215,9 @@ namespace utils
 		// Recherche parmi les types de mémoire la première ayant les propriétés voulues.
 		uint32_t i{ 0 };
 
-		while ( i < m_memoryProperties.memoryTypes.size() && !found )
+		while ( i < m_memoryProperties.memoryTypeCount && !found )
 		{
-			if ( ( checkFlag( typeBits, ashes::MemoryPropertyFlag( 1u ) ) ) == 1 )
+			if ( ( ashes::checkFlag( typeBits, 1u ) ) == 1 )
 			{
 				// Le type de mémoire est disponible, a-t-il les propriétés demandées?
 				if ( ( m_memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
@@ -228,7 +233,7 @@ namespace utils
 
 		if ( !found )
 		{
-			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Could not deduce memory type" };
+			throw ashes::Exception{ VK_ERROR_VALIDATION_FAILED_EXT, "Could not deduce memory type" };
 		}
 
 		return result;

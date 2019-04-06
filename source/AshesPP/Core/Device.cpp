@@ -27,21 +27,22 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	Device::Device( Instance const & instance
-		, PhysicalDevice const & gpu
-		, SurfacePtr surface
-		, VkDeviceCreateInfo createInfos )
+		, PhysicalDevice const & physicalDevice
+		, ashes::DeviceCreateInfo createInfos )
 		: m_instance{ instance }
-		, m_gpu{ gpu }
-		, m_surface{ std::move( surface ) }
+		, m_physicalDevice{ physicalDevice }
 		, m_createInfos{ std::move( createInfos ) }
-		, m_memoryProperties{ m_gpu.getMemoryProperties() }
-		, m_properties{ m_gpu.getProperties() }
-		, m_features{ m_gpu.getFeatures() }
-		, m_queueFamilyProperties{ m_gpu.getQueueFamilyProperties() }
+		, m_memoryProperties{ m_physicalDevice.getMemoryProperties() }
+		, m_properties{ m_physicalDevice.getProperties() }
+		, m_features{ m_physicalDevice.getFeatures() }
+		, m_queueFamilyProperties{ m_physicalDevice.getQueueFamilyProperties() }
 	{
-		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
+		m_timestampPeriod = m_physicalDevice.getProperties().limits.timestampPeriod;
 		DEBUG_DUMP( m_createInfos );
-		auto res = m_instance.vkCreateDevice( m_gpu, &m_createInfos, nullptr, &m_internal );
+		auto res = m_instance.vkCreateDevice( m_physicalDevice
+			, &static_cast< VkDeviceCreateInfo const & >( m_createInfos )
+			, nullptr
+			, &m_internal );
 		checkError( res, "LogicalDevice creation" );
 
 #define VK_LIB_DEVICE_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( m_instance.vkGetDeviceProcAddr( m_internal, "vk"#fun ) );
@@ -101,21 +102,21 @@ namespace ashes
 	}
 
 	PipelineLayoutPtr Device::createPipelineLayout( DescriptorSetLayoutCRefArray const & setLayouts
-		, PushConstantRangeArray const & pushConstantRanges )const
+		, VkPushConstantRangeArray const & pushConstantRanges )const
 	{
 		return std::make_unique< PipelineLayout >( *this
 			, setLayouts
 			, pushConstantRanges );
 	}
 
-	DescriptorSetLayoutPtr Device::createDescriptorSetLayout( DescriptorSetLayoutBindingArray bindings )const
+	DescriptorSetLayoutPtr Device::createDescriptorSetLayout( VkDescriptorSetLayoutBindingArray bindings )const
 	{
 		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
 	}
 
 	DescriptorPoolPtr Device::createDescriptorPool( VkDescriptorPoolCreateFlags flags
 		, uint32_t maxSets
-		, DescriptorPoolSizeArray poolSizes )const
+		, VkDescriptorPoolSizeArray poolSizes )const
 	{
 		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
 	}
@@ -301,35 +302,35 @@ namespace ashes
 	PipelineLayoutPtr Device::createPipelineLayout()const
 	{
 		return createPipelineLayout( DescriptorSetLayoutCRefArray{}
-			, PushConstantRangeArray{} );
+			, VkPushConstantRangeArray{} );
 	}
 
 	PipelineLayoutPtr Device::createPipelineLayout( DescriptorSetLayout const & layout )const
 	{
 		return createPipelineLayout( DescriptorSetLayoutCRefArray{ layout }
-			, PushConstantRangeArray{} );
+			, VkPushConstantRangeArray{} );
 	}
 
 	PipelineLayoutPtr Device::createPipelineLayout( VkPushConstantRange const & pushConstantRange )const
 	{
 		return createPipelineLayout( DescriptorSetLayoutCRefArray{}
-			, PushConstantRangeArray{ 1u, pushConstantRange } );
+			, VkPushConstantRangeArray{ 1u, pushConstantRange } );
 	}
 
 	PipelineLayoutPtr Device::createPipelineLayout( DescriptorSetLayout const & layout
 		, VkPushConstantRange const & pushConstantRange )const
 	{
 		return createPipelineLayout( DescriptorSetLayoutCRefArray{ layout }
-			, PushConstantRangeArray{ 1u, pushConstantRange } );
+			, VkPushConstantRangeArray{ 1u, pushConstantRange } );
 	}
 
 	PipelineLayoutPtr Device::createPipelineLayout( DescriptorSetLayoutCRefArray const & layouts )const
 	{
 		return createPipelineLayout( layouts
-			, PushConstantRangeArray{} );
+			, VkPushConstantRangeArray{} );
 	}
 
-	PipelineLayoutPtr Device::createPipelineLayout( PushConstantRangeArray const & pushConstantRanges )const
+	PipelineLayoutPtr Device::createPipelineLayout( VkPushConstantRangeArray const & pushConstantRanges )const
 	{
 		return createPipelineLayout( DescriptorSetLayoutCRefArray{}
 			, pushConstantRanges );

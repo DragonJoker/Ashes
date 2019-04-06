@@ -52,7 +52,7 @@ extern "C"
 	*	Enumerates the instance layers.
 	*/
 	TestRenderer_API ashes::Result enumerateLayerProperties( uint32_t * count
-		, ashes::LayerProperties * props );
+		, VkLayerProperties * props );
 	/**
 	*\~french
 	*\brief
@@ -63,7 +63,7 @@ extern "C"
 	*/
 	TestRenderer_API ashes::Result enumerateExtensionProperties( char const * const layerName
 		, uint32_t * cont
-		, ashes::ExtensionProperties * props );
+		, VkExtensionProperties * props );
 	/**
 	*\~french
 	*\return

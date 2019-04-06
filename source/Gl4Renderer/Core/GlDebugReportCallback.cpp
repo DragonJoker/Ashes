@@ -7,6 +7,9 @@ See LICENSE file in root folder.
 #include "Gl4Renderer/Core/GlInstance.hpp"
 
 #if ASHES_WIN32
+#	ifndef NOMINMAX
+#		define NOMINMAX
+#	endif
 #	include <Windows.h>
 #	include <gl/GL.h>
 #elif ASHES_XLIB

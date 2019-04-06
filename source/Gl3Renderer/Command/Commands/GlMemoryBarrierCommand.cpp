@@ -12,7 +12,7 @@ namespace gl_renderer
 		, ashes::DependencyFlags dependencyFlags
 		, ashes::MemoryBarrierArray const & memoryBarriers
 		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )
+		, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )
 		: CommandBase{ device }
 		, m_flags{ convert( before ) }
 	{

@@ -17,6 +17,8 @@ See LICENSE file in root folder.
 #include "AshesPP/RenderPass/RenderPass.hpp"
 #include "AshesPP/Sync/Event.hpp"
 
+#include <AshesRenderer/Util/Format.hpp>
+
 namespace ashes
 {
 	namespace
@@ -185,8 +187,8 @@ namespace ashes
 			, &view.getSubResourceRange() );
 	}
 
-	void CommandBuffer::clearAttachments( ClearAttachmentArray const & clearAttachments
-		, ClearRectArray const & clearRects )
+	void CommandBuffer::clearAttachments( VkClearAttachmentArray const & clearAttachments
+		, VkClearRectArray const & clearRects )
 	{
 		m_device.vkCmdClearAttachments( m_internal
 			, uint32_t( clearAttachments.size() )
@@ -249,7 +251,7 @@ namespace ashes
 	}
 
 	void CommandBuffer::setViewport( uint32_t firstViewport
-		, ViewportArray const & viewports )const
+		, VkViewportArray const & viewports )const
 	{
 		m_device.vkCmdSetViewport( m_internal
 			, firstViewport
@@ -258,7 +260,7 @@ namespace ashes
 	}
 
 	void CommandBuffer::setScissor( uint32_t firstScissor
-		, ScissorArray const & scissors )const
+		, VkScissorArray const & scissors )const
 	{
 		m_device.vkCmdSetScissor( m_internal
 			, firstScissor
@@ -316,7 +318,7 @@ namespace ashes
 			, stride );
 	}
 
-	void CommandBuffer::copyToImage( BufferImageCopyArray const & copyInfo
+	void CommandBuffer::copyToImage( VkBufferImageCopyArray const & copyInfo
 		, BufferBase const & src
 		, Image const & dst )const
 	{
@@ -329,7 +331,7 @@ namespace ashes
 			, copyInfo.data() );
 	}
 
-	void CommandBuffer::copyToBuffer( BufferImageCopyArray const & copyInfo
+	void CommandBuffer::copyToBuffer( VkBufferImageCopyArray const & copyInfo
 		, Image const & src
 		, BufferBase const & dst )const
 	{
@@ -492,8 +494,8 @@ namespace ashes
 	void CommandBuffer::waitEvents( EventCRefArray const & events
 		, VkPipelineStageFlags srcStageMask
 		, VkPipelineStageFlags dstStageMask
-		, BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ImageMemoryBarrierArray const & imageMemoryBarriers )const
+		, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
+		, VkImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
 		auto vkevents = makeVkArray< VkEvent >( events );
 		m_device.vkCmdWaitEvents( m_internal
@@ -512,9 +514,9 @@ namespace ashes
 	void CommandBuffer::pipelineBarrier( VkPipelineStageFlags after
 		, VkPipelineStageFlags before
 		, VkDependencyFlags dependencyFlags
-		, MemoryBarrierArray const & memoryBarriers
-		, BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ImageMemoryBarrierArray const & imageMemoryBarriers )const
+		, VkMemoryBarrierArray const & memoryBarriers
+		, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
+		, VkImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
 		DEBUG_DUMP( memoryBarriers );
 		DEBUG_DUMP( bufferMemoryBarriers );
@@ -533,7 +535,7 @@ namespace ashes
 
 	void CommandBuffer::beginRenderPass( RenderPass const & renderPass
 		, FrameBuffer const & frameBuffer
-		, ClearValueArray const & clearValues
+		, VkClearValueArray const & clearValues
 		, VkSubpassContents contents )const
 	{
 		beginRenderPass( VkRenderPassBeginInfo
@@ -568,7 +570,7 @@ namespace ashes
 		, BufferBase const & src
 		, Image const & dst )const
 	{
-		copyToImage( BufferImageCopyArray{ 1u, copyInfo }
+		copyToImage( VkBufferImageCopyArray{ 1u, copyInfo }
 			, src
 			, dst );
 	}
@@ -577,7 +579,7 @@ namespace ashes
 		, Image const & src
 		, BufferBase const & dst )const
 	{
-		copyToBuffer( BufferImageCopyArray{ 1u, copyInfo }
+		copyToBuffer( VkBufferImageCopyArray{ 1u, copyInfo }
 			, src
 			, dst );
 	}

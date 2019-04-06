@@ -14,7 +14,7 @@ namespace d3d11_renderer
 {
 	namespace
 	{
-		ImageViewCRefArray convert( ashes::FrameBufferAttachmentArray const & attachs )
+		ImageViewCRefArray convert( ashes::ashes::ImageViewPtrArray const & attachs )
 		{
 			ImageViewCRefArray result;
 			result.reserve( attachs.size() );
@@ -114,8 +114,8 @@ namespace d3d11_renderer
 
 	FrameBuffer::FrameBuffer( Device const & device
 		, RenderPass const & renderPass
-		, ashes::Extent2D const & dimensions
-		, ashes::FrameBufferAttachmentArray attachments )
+		, VkExtent2D const & dimensions
+		, ashes::ashes::ImageViewPtrArray attachments )
 		: ashes::FrameBuffer{ renderPass, dimensions, std::move( attachments ) }
 		, m_device{ device }
 		, m_views{ convert( m_attachments ) }

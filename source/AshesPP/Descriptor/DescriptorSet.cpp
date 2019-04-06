@@ -63,7 +63,7 @@ namespace ashes
 			, nullptr );
 	}
 
-	void DescriptorSet::setBindings( WriteDescriptorSetArray bindings )
+	void DescriptorSet::setBindings( VkWriteDescriptorSetArray bindings )
 	{
 		m_writes = std::move( bindings );
 	}

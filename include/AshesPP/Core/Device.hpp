@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/Command/CommandPool.hpp"
 #include "AshesPP/Command/Queue.hpp"
+#include "AshesPP/Core/DeviceCreateInfo.hpp"
 #include "AshesPP/Core/Surface.hpp"
 #include "AshesPP/Core/PhysicalDevice.hpp"
 
@@ -36,29 +37,24 @@ namespace ashes
 		*\~english
 		*\brief
 		*	Constructor.
-		*\param[in] renderer
+		*\param[in] instance
 		*	The Instance instance.
-		*\param[in] gpu
+		*\param[in] physicalDevice
 		*	The physical device.
-		*\param[in] surface
-		*	The surface.
 		*	The creation informations.
 		*\~french
 		*\brief
 		*	Constructeur.
-		*\param[in] renderer
+		*\param[in] instance
 		*	L'instance.
-		*\param[in] gpu
+		*\param[in] physicalDevice
 		*	Le périphérique physique.
-		*\param[in] surface
-		*	La surface.
 		*\param[in] createInfos
 		*	Les informations de création.
 		*/
 		Device( Instance const & instance
-			, PhysicalDevice const & gpu
-			, SurfacePtr surface
-			, VkDeviceCreateInfo createInfos );
+			, PhysicalDevice const & physicalDevice
+			, ashes::DeviceCreateInfo createInfos );
 		/**
 		*\~english
 		*\brief
@@ -242,7 +238,7 @@ namespace ashes
 		*	Le layout créé.
 		*/
 		PipelineLayoutPtr createPipelineLayout( DescriptorSetLayoutCRefArray const & setLayouts
-			, PushConstantRangeArray const & pushConstantRanges )const;
+			, VkPushConstantRangeArray const & pushConstantRanges )const;
 		/**
 		*\~english
 		*\brief
@@ -259,7 +255,7 @@ namespace ashes
 		*\return
 		*	Le layout créé.
 		*/
-		DescriptorSetLayoutPtr createDescriptorSetLayout( DescriptorSetLayoutBindingArray bindings )const;
+		DescriptorSetLayoutPtr createDescriptorSetLayout( VkDescriptorSetLayoutBindingArray bindings )const;
 		/**
 		*\~english
 		*\brief
@@ -286,7 +282,7 @@ namespace ashes
 		*/
 		DescriptorPoolPtr createDescriptorPool( VkDescriptorPoolCreateFlags flags
 			, uint32_t maxSets
-			, DescriptorPoolSizeArray poolSizes )const;
+			, VkDescriptorPoolSizeArray poolSizes )const;
 		/**
 		*\~english
 		*\brief
@@ -634,7 +630,7 @@ namespace ashes
 		*\return
 		*	Le layout créé.
 		*/
-		PipelineLayoutPtr createPipelineLayout( PushConstantRangeArray const & pushConstantRanges )const;
+		PipelineLayoutPtr createPipelineLayout( VkPushConstantRangeArray const & pushConstantRanges )const;
 		/**
 		*\~english
 		*\brief
@@ -748,7 +744,7 @@ namespace ashes
 		/**@{*/
 		inline uint32_t getShaderVersion()const
 		{
-			return m_gpu.getShaderVersion();
+			return m_physicalDevice.getShaderVersion();
 		}
 
 		inline Instance const & getInstance()const
@@ -758,12 +754,7 @@ namespace ashes
 
 		inline PhysicalDevice const & getPhysicalDevice()const
 		{
-			return m_gpu;
-		}
-
-		inline Surface const & getSurface()const
-		{
-			return *m_surface;
+			return m_physicalDevice;
 		}
 
 		inline float getTimestampPeriod()const
@@ -786,7 +777,7 @@ namespace ashes
 			return m_features;
 		}
 
-		inline QueueFamilyPropertiesArray const & getQueueFamilyProperties()const
+		inline VkQueueFamilyPropertiesArray const & getQueueFamilyProperties()const
 		{
 			return m_queueFamilyProperties;
 		}
@@ -809,16 +800,15 @@ namespace ashes
 
 	protected:
 		Instance const & m_instance;
-		PhysicalDevice const & m_gpu;
-		SurfacePtr m_surface;
-		VkDeviceCreateInfo m_createInfos;
+		PhysicalDevice const & m_physicalDevice;
+		ashes::DeviceCreateInfo m_createInfos;
 		VkDevice m_internal{ VK_NULL_HANDLE };
 		float m_timestampPeriod;
 		uint32_t m_shaderVersion;
 		VkPhysicalDeviceMemoryProperties m_memoryProperties;
 		VkPhysicalDeviceProperties m_properties;
 		VkPhysicalDeviceFeatures m_features;
-		QueueFamilyPropertiesArray m_queueFamilyProperties;
+		VkQueueFamilyPropertiesArray m_queueFamilyProperties;
 
 #ifndef NDEBUG
 		struct ObjectAllocation

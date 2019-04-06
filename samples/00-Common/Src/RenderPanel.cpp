@@ -94,7 +94,7 @@ namespace common
 			m_gui = std::make_unique< Gui >( *m_device
 				, *m_graphicsQueue
 				, *m_commandPool
-				, ashes::Extent2D{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
+				, VkExtent2D{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 			m_gui->updateView( m_renderTarget->getColourView() );
 			m_sampler = m_device->getDevice().createSampler( ashes::WrapMode::eClampToEdge
 				, ashes::WrapMode::eClampToEdge
@@ -257,7 +257,7 @@ namespace common
 		m_swapChain = std::make_unique< utils::SwapChain >( m_device->getDevice()
 			, *m_commandPool
 			, std::move( surface )
-			, ashes::Extent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
+			, VkExtent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
 		m_clearColour = { 1.0f, 0.8f, 0.4f, 0.0f };
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
@@ -272,8 +272,8 @@ namespace common
 	{
 		std::vector< ashes::DescriptorSetLayoutBinding > bindings
 		{
-			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
-			ashes::DescriptorSetLayoutBinding{ 1u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment },
+			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment },
+			ashes::DescriptorSetLayoutBinding{ 1u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment },
 		};
 		m_descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorSet.reset();
@@ -290,7 +290,7 @@ namespace common
 
 	void RenderPanel::doCreateRenderPass()
 	{
-		ashes::AttachmentDescriptionArray attaches
+		ashes::VkAttachmentDescriptionArray attaches
 		{
 			{
 				m_swapChain->getFormat(),
@@ -303,7 +303,7 @@ namespace common
 				ashes::ImageLayout::ePresentSrc,
 			}
 		};
-		ashes::AttachmentReferenceArray subAttaches
+		ashes::VkAttachmentReferenceArray subAttaches
 		{
 			{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
 		};
@@ -324,10 +324,10 @@ namespace common
 	{
 		m_vertexLayout = ashes::makeLayout< TexturedVertexData >( 0 );
 		m_vertexLayout->createAttribute( 0u
-			, ashes::Format::eR32G32B32A32_SFLOAT
+			, VK_FORMAT_R32G32B32A32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, position ) ) );
 		m_vertexLayout->createAttribute( 1u
-			, ashes::Format::eR32G32_SFLOAT
+			, VK_FORMAT_R32G32_SFLOAT
 			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
 
 		m_vertexBuffer = utils::makeVertexBuffer< TexturedVertexData >( *m_device
@@ -352,10 +352,10 @@ namespace common
 		}
 
 		std::vector< ashes::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( dumpShaderFile( m_device->getDevice(), ashes::ShaderStageFlag::eVertex, shadersFolder / "main.vert" ) );
-		shaderStages[1].module->loadShader( dumpShaderFile( m_device->getDevice(), ashes::ShaderStageFlag::eFragment, shadersFolder / "main.frag" ) );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( VkShaderStageFlagBits::eVertex ) } );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( VkShaderStageFlagBits::eFragment ) } );
+		shaderStages[0].module->loadShader( dumpShaderFile( m_device->getDevice(), VkShaderStageFlagBits::eVertex, shadersFolder / "main.vert" ) );
+		shaderStages[1].module->loadShader( dumpShaderFile( m_device->getDevice(), VkShaderStageFlagBits::eFragment, shadersFolder / "main.frag" ) );
 
 		std::vector< ashes::DynamicStateEnable > dynamicStateEnables
 		{

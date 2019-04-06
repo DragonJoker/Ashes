@@ -345,15 +345,15 @@ namespace gl_renderer
 		doInitialise();
 	}
 
-	ashes::LayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
+	ashes::VkLayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
 	{
-		ashes::LayerPropertiesArray result;
+		ashes::VkLayerPropertiesArray result;
 		return result;
 	}
 
-	ashes::ExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
+	ashes::VkExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
 	{
-		ashes::ExtensionPropertiesArray result;
+		ashes::VkExtensionPropertiesArray result;
 		return result;
 	}
 
@@ -377,7 +377,7 @@ namespace gl_renderer
 		return m_queueProperties;
 	}
 
-	ashes::FormatProperties PhysicalDevice::getFormatProperties( ashes::Format fmt )const
+	ashes::FormatProperties PhysicalDevice::getFormatProperties( VkFormat fmt )const
 	{
 		return m_formatProperties[fmt];
 	}
@@ -631,7 +631,7 @@ namespace gl_renderer
 
 		if ( glGetInternalformativ )
 		{
-			for ( ashes::Format fmt = ashes::Format::eRange_BEGIN; fmt < ashes::Format::eRange_END; fmt = ashes::Format( uint32_t( fmt ) + 1 ) )
+			for ( VkFormat fmt = VK_FORMAT_Range_BEGIN; fmt < VK_FORMAT_Range_END; fmt = VkFormat( uint32_t( fmt ) + 1 ) )
 			{
 				if ( isSupportedInternal( fmt ) )
 				{

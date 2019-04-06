@@ -17,7 +17,7 @@ namespace vkapp
 	RenderTarget::RenderTarget( utils::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
-		, ashes::Extent2D const & size
+		, VkExtent2D const & size
 		, common::Scene scene
 		, common::ImagePtrArray images )
 		: common::RenderTarget{ device, commandPool, transferQueue, size, std::move( scene ), std::move( images ) }
@@ -59,7 +59,7 @@ namespace vkapp
 			, ashes::PipelineStageFlag::eVertexShader );
 	}
 
-	void RenderTarget::doResize( ashes::Extent2D const & size )
+	void RenderTarget::doResize( VkExtent2D const & size )
 	{
 		doUpdateMatrixUbo( size );
 		doCreateGBuffer();
@@ -108,7 +108,7 @@ namespace vkapp
 			, textureNodes );
 	}
 
-	void RenderTarget::doUpdateMatrixUbo( ashes::Extent2D const & size )
+	void RenderTarget::doUpdateMatrixUbo( VkExtent2D const & size )
 	{
 #if 0
 		float halfWidth = static_cast< float >( size[0] ) * 0.5f;
@@ -169,16 +169,16 @@ namespace vkapp
 
 	void RenderTarget::doCreateGBuffer()
 	{
-		static ashes::Format const formats[]
+		static VkFormat const formats[]
 		{
-			ashes::Format::eR32_SFLOAT,
-			ashes::Format::eR32G32B32A32_SFLOAT,
-			ashes::Format::eR32G32B32A32_SFLOAT,
-			ashes::Format::eR32G32B32A32_SFLOAT,
-			ashes::Format::eR32G32B32A32_SFLOAT,
+			VK_FORMAT_R32_SFLOAT,
+			VK_FORMAT_R32G32B32A32_SFLOAT,
+			VK_FORMAT_R32G32B32A32_SFLOAT,
+			VK_FORMAT_R32G32B32A32_SFLOAT,
+			VK_FORMAT_R32G32B32A32_SFLOAT,
 		};
 		size_t index = 0u;
-		ashes::Extent2D size
+		VkExtent2D size
 		{
 			getColourView()->getImage().getDimensions().width,
 			getColourView()->getImage().getDimensions().height,
@@ -199,7 +199,7 @@ namespace vkapp
 					ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eSampled
 				}
 				, ashes::MemoryPropertyFlag::eDeviceLocal );
-			texture.view = texture.texture->createView( ashes::ImageViewType::e2D
+			texture.view = texture.texture->createView( VK_IMAGE_VIEW_TYPE_2D
 				, texture.texture->getFormat() );
 			++index;
 		}

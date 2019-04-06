@@ -5,9 +5,12 @@ See LICENSE file in root folder.
 #ifndef ___Ashes_MswWindowHandle_HPP___
 #define ___Ashes_MswWindowHandle_HPP___
 
+#ifndef NOMINMAX
+#	define NOMINMAX
+#endif
 #include <Windows.h>
 
-#include "AshesCommon/WindowHandle.hpp"
+#include "AshesPP/Core/WindowHandle.hpp"
 #include <vulkan/vulkan_win32.h>
 
 namespace ashes

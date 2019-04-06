@@ -28,14 +28,14 @@ namespace gl_renderer
 		*/
 		ClearColourFboCommand( Device const & device
 			, ashes::ImageView const & image
-			, ashes::ClearColorValue const & colour );
+			, VkClearColorValue const & colour );
 
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
 		ImageView const & m_image;
-		ashes::ClearColorValue m_colour;
+		VkClearColorValue m_colour;
 		GlInternal m_internal;
 		GlFormat m_format;
 		GlType m_type;

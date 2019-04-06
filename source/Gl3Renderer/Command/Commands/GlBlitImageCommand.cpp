@@ -16,7 +16,7 @@ namespace gl_renderer
 {
 	namespace
 	{
-		GlImageAspectFlags getMask( ashes::Format format )
+		GlImageAspectFlags getMask( VkFormat format )
 		{
 			GlImageAspectFlags result = 0u;
 			auto internal = getInternal( format );

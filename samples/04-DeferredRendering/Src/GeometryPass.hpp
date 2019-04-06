@@ -15,7 +15,7 @@ namespace vkapp
 			, ashes::Queue const & transferQueue
 			, std::string const & fragmentShaderFile
 			, GeometryPassResult const & gbuffer
-			, ashes::Format depthFormat
+			, VkFormat depthFormat
 			, ashes::UniformBuffer< common::SceneData > const & sceneUbo
 			, ashes::UniformBuffer< common::ObjectData > const & objectUbo );
 		void update( common::RenderTarget const & target )override;

@@ -136,7 +136,7 @@ namespace gl_renderer
 		*\return
 		*	Le Viewport.
 		*/
-		inline ashes::ViewportArray const & getViewports()const
+		inline ashes::VkViewportArray const & getViewports()const
 		{
 			assert( !m_viewports.empty() );
 			return m_viewports;
@@ -145,7 +145,7 @@ namespace gl_renderer
 		*\return
 		*	Le Scissor.
 		*/
-		inline ashes::ScissorArray const & getScissors()const
+		inline ashes::VkScissorArray const & getScissors()const
 		{
 			assert( !m_scissors.empty() );
 			return m_scissors;
@@ -207,8 +207,8 @@ namespace gl_renderer
 		ashes::DepthStencilState m_dsState;
 		ashes::MultisampleState m_msState;
 		ashes::TessellationState m_tsState;
-		ashes::ViewportArray m_viewports;
-		ashes::ScissorArray m_scissors;
+		ashes::VkViewportArray m_viewports;
+		ashes::VkScissorArray m_scissors;
 		PushConstantsDesc m_constantsPcb;
 		ShaderProgram m_program;
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;

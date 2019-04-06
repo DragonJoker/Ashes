@@ -4024,13 +4024,19 @@ namespace ashes::gl4
 					true, // supportsPersistentMapping
 				};
 #define VK_LIB_GLOBAL_FUNCTION( x )\
-				description.x = vk##x;
+				description.functions.x = vk##x;
 #define VK_LIB_INSTANCE_FUNCTION( x )\
-				description.x = vk##x;
+				description.functions.x = vk##x;
 #define VK_LIB_DEVICE_FUNCTION( x )\
-				description.x = vk##x;
+				description.functions.x = vk##x;
+#define VK_LIB_GLOBAL_FUNCTION_EXT( x )
+#define VK_LIB_INSTANCE_FUNCTION_EXT( x )
+#define VK_LIB_DEVICE_FUNCTION_EXT( x )
 #include <AshesCommon/VulkanFunctionsList.inl>
 				result = VK_SUCCESS;
+
+				description.support.priority = 5u;
+				description.support.supported = VK_TRUE;
 			}
 
 			return result;

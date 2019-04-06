@@ -13,17 +13,17 @@ namespace d3d11_renderer
 {
 	namespace
 	{
-		std::vector< ashes::Format > const & getFormatsList()
+		std::vector< VkFormat > const & getFormatsList()
 		{
-			static std::vector< ashes::Format > const list = []()
+			static std::vector< VkFormat > const list = []()
 			{
-				std::vector< ashes::Format > result;
+				std::vector< VkFormat > result;
 
-				for ( uint32_t i = uint32_t( ashes::Format::eColour_BEGIN );
-					i <= uint32_t( ashes::Format::eColour_END );
+				for ( uint32_t i = uint32_t( VK_FORMAT_Colour_BEGIN );
+					i <= uint32_t( VK_FORMAT_Colour_END );
 					++i )
 				{
-					result.push_back( ashes::Format( i ) );
+					result.push_back( VkFormat( i ) );
 				}
 
 				return result;
@@ -77,7 +77,7 @@ namespace d3d11_renderer
 			return result;
 		}
 
-		std::map< ashes::Format, std::vector< DXGI_MODE_DESC > > updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
+		std::map< VkFormat, std::vector< DXGI_MODE_DESC > > updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
 			, RECT const & rect
 			, ashes::SurfaceCapabilities & capabilities )
 		{
@@ -88,12 +88,12 @@ namespace d3d11_renderer
 			capabilities.minImageExtent = { ~( 0u ), ~( 0u ) };
 			capabilities.maxImageExtent = { 0u, 0u };
 			capabilities.maxImageArrayLayers = 1u;
-			capabilities.supportedTransforms = ashes::SurfaceTransformFlag::eIdentity;
-			capabilities.currentTransform = ashes::SurfaceTransformFlag::eIdentity;
-			capabilities.supportedCompositeAlpha = ashes::CompositeAlphaFlag::eInherit;
+			capabilities.supportedTransforms = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+			capabilities.currentTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+			capabilities.supportedCompositeAlpha = VkCompositeAlphaFlagBitsKHR::eInherit;
 			capabilities.supportedUsageFlags = ashes::ImageUsageFlag::eUndefined;
 
-			std::map < ashes::Format, std::vector< DXGI_MODE_DESC > > result;
+			std::map < VkFormat, std::vector< DXGI_MODE_DESC > > result;
 
 			// Now go through all the display modes and find the one that matches the screen width and height.
 			std::vector< DXGI_MODE_DESC > matchingDisplayModes;
@@ -184,10 +184,10 @@ namespace d3d11_renderer
 			return result;
 		}
 
-		std::vector< ashes::SurfaceFormat > getSurfaceFormats( std::vector< DXGI_MODE_DESC > const & displayModeList )
+		std::vector< VkSurfaceFormatKHR > getSurfaceFormats( std::vector< DXGI_MODE_DESC > const & displayModeList )
 		{
-			std::vector< ashes::SurfaceFormat > result;
-			std::set< ashes::Format > uniqueFormats;
+			std::vector< VkSurfaceFormatKHR > result;
+			std::set< VkFormat > uniqueFormats;
 
 			for ( auto & displayMode : displayModeList )
 			{
@@ -195,7 +195,7 @@ namespace d3d11_renderer
 
 				if ( uniqueFormats.find( fmt ) == uniqueFormats.end() )
 				{
-					result.push_back( { fmt, ashes::ColorSpace::eSRGBNonLinear } );
+					result.push_back( { fmt, VK_COLORSPACE_SRGB_NONLINEAR_KHR } );
 					uniqueFormats.insert( fmt );
 				}
 			}
@@ -222,11 +222,11 @@ namespace d3d11_renderer
 		return true;
 	}
 
-	std::vector< ashes::PresentMode > Surface::getPresentModes()const
+	std::vector< VkPresentModeKHR > Surface::getPresentModes()const
 	{
-		static std::vector< ashes::PresentMode > const modes
+		static std::vector< VkPresentModeKHR > const modes
 		{
-			ashes::PresentMode::eFifo
+			VK_PRESENT_MODE_FIFO_KHR
 		};
 		return modes;
 	}
@@ -243,7 +243,7 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	std::vector< ashes::SurfaceFormat > Surface::getFormats()const
+	std::vector< VkSurfaceFormatKHR > Surface::getFormats()const
 	{
 		return getSurfaceFormats( m_displayModes );
 	}

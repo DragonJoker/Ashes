@@ -38,7 +38,7 @@ namespace ashes
 		DescriptorPool( Device const & device
 			, VkDescriptorPoolCreateFlags flags
 			, uint32_t maxSets
-			, DescriptorPoolSizeArray poolSizes );
+			, VkDescriptorPoolSizeArray poolSizes );
 		/**
 		*\~english
 		*\brief

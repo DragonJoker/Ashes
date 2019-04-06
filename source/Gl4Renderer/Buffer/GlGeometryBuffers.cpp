@@ -115,7 +115,7 @@ namespace ashes::gl4
 							, ashes::getCount( attribute.format )
 							, getType( getInternalFormat( attribute.format ) )
 							, vbo.binding.stride
-							, BufferOffset( vbo.offset + attribute.offset ) );
+							, getBufferOffset( vbo.offset + attribute.offset ) );
 					}
 					else
 					{
@@ -126,7 +126,7 @@ namespace ashes::gl4
 							, getType( getInternalFormat( attribute.format ) )
 							, false
 							, vbo.binding.stride
-							, BufferOffset( vbo.offset + attribute.offset ) );
+							, getBufferOffset( vbo.offset + attribute.offset ) );
 					}
 				}
 			}
@@ -151,7 +151,7 @@ namespace ashes::gl4
 							, ashes::getCount( format )
 							, getType( getInternalFormat( attribute.format ) )
 							, vbo.binding.stride
-							, BufferOffset( vbo.offset + offset ) );
+							, getBufferOffset( vbo.offset + offset ) );
 					}
 					else
 					{
@@ -162,7 +162,7 @@ namespace ashes::gl4
 							, getType( getInternalFormat( attribute.format ) )
 							, false
 							, vbo.binding.stride
-							, BufferOffset( vbo.offset + offset ) );
+							, getBufferOffset( vbo.offset + offset ) );
 					}
 
 					glLogCall( context

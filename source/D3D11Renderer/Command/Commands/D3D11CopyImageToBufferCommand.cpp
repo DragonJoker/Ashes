@@ -22,23 +22,23 @@ namespace d3d11_renderer
 	{
 		std::vector< ImageViewPtr > createViews( Device const & device
 			, ashes::Image const & texture
-			, ashes::BufferImageCopyArray const & copies )
+			, ashes::VkBufferImageCopyArray const & copies )
 		{
 			std::vector< ImageViewPtr > result;
 			ashes::ImageType type = texture.getType();
-			ashes::ImageViewType viewType;
+			VkImageViewType viewType;
 
 			if ( type == ashes::ImageType::e3D )
 			{
-				viewType = ashes::ImageViewType::e3D;
+				viewType = VK_IMAGE_VIEW_TYPE_3D;
 			}
 			else if ( type == ashes::ImageType::e2D )
 			{
-				viewType = ashes::ImageViewType::e2D;
+				viewType = VK_IMAGE_VIEW_TYPE_2D;
 			}
 			else if ( type == ashes::ImageType::e1D )
 			{
-				viewType = ashes::ImageViewType::e1D;
+				viewType = VK_IMAGE_VIEW_TYPE_1D;
 			}
 
 			for ( auto & copy : copies )
@@ -85,13 +85,13 @@ namespace d3d11_renderer
 		}
 
 		std::vector< D3D11_BOX > doGetDstBoxes( Image const & image
-			, ashes::BufferImageCopyArray const & copyInfos )
+			, ashes::VkBufferImageCopyArray const & copyInfos )
 		{
 			std::vector< D3D11_BOX > result;
 
 			for ( auto & copyInfo : copyInfos )
 			{
-				auto size = getSize( ashes::Extent3D
+				auto size = getSize( VkExtent3D
 					{
 						std::max( 1u, getBufferRowPitch( copyInfo ) ),
 						std::max( 1u, getBufferHeightPitch( copyInfo ) ),
@@ -115,7 +115,7 @@ namespace d3d11_renderer
 
 		std::vector< ashes::SubresourceLayout > doGetSrcLayouts( Device const & device
 			, Image const & image
-			, ashes::BufferImageCopyArray const & copyInfos )
+			, ashes::VkBufferImageCopyArray const & copyInfos )
 		{
 			std::vector< ashes::SubresourceLayout > result;
 			result.reserve( copyInfos.size() );
@@ -135,9 +135,9 @@ namespace d3d11_renderer
 
 			return result;
 		}
-		ashes::Extent3D getTexelBlockExtent( ashes::Format format )
+		VkExtent3D getTexelBlockExtent( VkFormat format )
 		{
-			ashes::Extent3D texelBlockExtent{ 1u, 1u, 1u };
+			VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
 
 			if ( ashes::isCompressedFormat( format ) )
 			{
@@ -153,8 +153,8 @@ namespace d3d11_renderer
 			return texelBlockExtent;
 		}
 
-		uint32_t getTexelBlockByteSize( ashes::Extent3D const & texelBlockExtent
-			, ashes::Format format )
+		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
+			, VkFormat format )
 		{
 			uint32_t texelBlockSize;
 
@@ -170,7 +170,7 @@ namespace d3d11_renderer
 			return texelBlockSize;
 		}
 
-		void doCopyMapped( ashes::Format format
+		void doCopyMapped( VkFormat format
 			, ashes::BufferImageCopy const & copyInfo
 			, uint8_t const * srcBuffer
 			, ashes::SubresourceLayout const & srcLayout
@@ -240,7 +240,7 @@ namespace d3d11_renderer
 
 		ashes::ImagePtr getStagingTexture( Device const & device
 			, ashes::Image const & image
-			, ashes::Extent3D dimensions )
+			, VkExtent3D dimensions )
 		{
 			ashes::ImagePtr result = std::make_unique< Image >( device
 				, ashes::ImageCreateInfo
@@ -248,7 +248,7 @@ namespace d3d11_renderer
 					0u,
 					image.getType(),
 					image.getFormat(),
-					ashes::Extent3D
+					VkExtent3D
 				{
 					dimensions.width,
 					dimensions.height,
@@ -259,7 +259,7 @@ namespace d3d11_renderer
 				ashes::SampleCountFlag::e1,
 				ashes::ImageTiling::eLinear,
 				ashes::ImageUsageFlag::eTransferSrc | ashes::ImageUsageFlag::eTransferDst,
-				ashes::SharingMode::eExclusive,
+				VK_SHARING_MODE_EXCLUSIVE,
 				{},
 				ashes::ImageLayout::eUndefined,
 				} );
@@ -272,7 +272,7 @@ namespace d3d11_renderer
 	}
 
 	CopyImageToBufferCommand::CopyImageToBufferCommand( Device const & device
-		, ashes::BufferImageCopyArray const & copyInfo
+		, ashes::VkBufferImageCopyArray const & copyInfo
 		, ashes::Image const & src
 		, ashes::BufferBase const & dst )
 		: CommandBase{ device }
@@ -392,7 +392,7 @@ namespace d3d11_renderer
 				copyInfo.imageSubresource,
 				copyInfo.imageOffset,
 				stagingSurbresouce,
-				ashes::Offset3D{},
+				VkOffset3D{},
 				copyInfo.imageExtent,
 			}
 			, src

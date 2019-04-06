@@ -6,11 +6,13 @@ See LICENSE file in root folder.
 #define ___AshesPP_Instance_HPP___
 #pragma once
 
-#include "AshesPP/Core/Renderer.hpp"
+#include "AshesPP/Core/DeviceCreateInfo.hpp"
+#include "AshesPP/Core/InstanceCreateInfo.hpp"
+#include "AshesPP/Core/RendererList.hpp"
 #include "AshesPP/Core/PhysicalDevice.hpp"
 #include "AshesPP/Miscellaneous/RendererFeatures.hpp"
 
-#include <AshesCommon/WindowHandle.hpp>
+#include "AshesPP/Core/WindowHandle.hpp"
 
 namespace ashes
 {
@@ -33,8 +35,8 @@ namespace ashes
 		*\brief
 		*	Constructeur, initialise l'instance de rendu.
 		*/
-		Instance( Renderer const & renderer
-			, VkInstanceCreateInfo createInfo );
+		Instance( AshPluginDescription plugin
+			, ashes::InstanceCreateInfo createInfo );
 		/**
 		*\~french
 		*\brief
@@ -69,8 +71,8 @@ namespace ashes
 		*\param[in] createInfos
 		*	Les informations de création.
 		*/
-		DevicePtr createDevice( SurfacePtr surface
-			, VkDeviceCreateInfo createInfos )const;
+		DevicePtr createDevice( PhysicalDevice const & physicalDevice
+			, ashes::DeviceCreateInfo createInfos )const;
 		/**
 		*\~french
 		*\brief
@@ -243,26 +245,19 @@ namespace ashes
 		*	Accesseurs.
 		*/
 		/**@{*/
-		inline uint32_t getApiVersion()const
-		{
-			return m_createInfo.pApplicationInfo->apiVersion;
-		}
-
 		inline RendererFeatures const & getFeatures()const
 		{
 			return m_features;
 		}
 
-		inline StringArray getEnabledLayerNames()const
+		inline StringArray const & getEnabledLayerNames()const
 		{
-			return StringArray{ m_createInfo.ppEnabledLayerNames
-				, m_createInfo.ppEnabledLayerNames + m_createInfo.enabledLayerCount };
+			return m_createInfo.enabledLayerNames;
 		}
 
-		inline StringArray getEnabledExtensionNames()const
+		inline StringArray const & getEnabledExtensionNames()const
 		{
-			return StringArray{ m_createInfo.ppEnabledExtensionNames
-				, m_createInfo.ppEnabledExtensionNames + m_createInfo.enabledExtensionCount };
+			return m_createInfo.enabledExtensionNames;
 		}
 		/**@}*/
 
@@ -271,8 +266,8 @@ namespace ashes
 		PFN_vkVoidFunction getInstanceProcAddr( char const * const name );
 
 	private:
-		Renderer const & m_renderer;
-		VkInstanceCreateInfo m_createInfo;
+		AshPluginDescription m_plugin;
+		ashes::InstanceCreateInfo m_createInfo;
 		VkInstance m_instance{ VK_NULL_HANDLE };
 		RendererFeatures m_features;
 	};

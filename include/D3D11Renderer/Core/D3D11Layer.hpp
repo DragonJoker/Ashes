@@ -12,7 +12,7 @@ namespace d3d11_renderer
 	{
 	public:
 		virtual bool onCopyToImageCommand( ashes::CommandBuffer const & cmd
-			, ashes::BufferImageCopyArray const & copyInfo
+			, ashes::VkBufferImageCopyArray const & copyInfo
 			, ashes::BufferBase const & src
 			, ashes::Image const & dst )const = 0;
 		virtual bool onCheckHResultCommand( HRESULT hresult

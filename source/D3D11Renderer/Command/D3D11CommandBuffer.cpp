@@ -241,7 +241,7 @@ namespace d3d11_renderer
 	}
 
 	void CommandBuffer::clear( ashes::ImageView const & image
-		, ashes::ClearColorValue const & colour )const
+		, VkClearColorValue const & colour )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearColourCommand >( m_device
 			, image
@@ -366,13 +366,13 @@ namespace d3d11_renderer
 	}
 
 	void CommandBuffer::setViewport( uint32_t firstViewport
-		, ashes::ViewportArray const & viewports )const
+		, ashes::VkViewportArray const & viewports )const
 	{
 		m_commands.emplace_back( std::make_unique< ViewportCommand >( m_device, firstViewport, viewports ) );
 	}
 
 	void CommandBuffer::setScissor( uint32_t firstScissor
-		, ashes::ScissorArray const & scissors )const
+		, ashes::VkScissorArray const & scissors )const
 	{
 		m_commands.emplace_back( std::make_unique< ScissorCommand >( m_device, firstScissor, scissors ) );
 	}
@@ -468,7 +468,7 @@ namespace d3d11_renderer
 			, m_state.vbos ) );
 	}
 
-	void CommandBuffer::copyToImage( ashes::BufferImageCopyArray const & copyInfo
+	void CommandBuffer::copyToImage( ashes::VkBufferImageCopyArray const & copyInfo
 		, ashes::BufferBase const & src
 		, ashes::Image const & dst )const
 	{
@@ -481,7 +481,7 @@ namespace d3d11_renderer
 		}
 	}
 
-	void CommandBuffer::copyToBuffer( ashes::BufferImageCopyArray const & copyInfo
+	void CommandBuffer::copyToBuffer( ashes::VkBufferImageCopyArray const & copyInfo
 		, ashes::Image const & src
 		, ashes::BufferBase const & dst )const
 	{
@@ -651,7 +651,7 @@ namespace d3d11_renderer
 		, ashes::PipelineStageFlags srcStageMask
 		, ashes::PipelineStageFlags dstStageMask
 		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const
+		, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
 		m_commands.emplace_back( std::make_unique< WaitEventsCommand >( m_device
 			, events
@@ -672,7 +672,7 @@ namespace d3d11_renderer
 		, ashes::DependencyFlags dependencyFlags
 		, ashes::MemoryBarrierArray const & memoryBarriers
 		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers )const
+		, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
 		m_commands.emplace_back( std::make_unique< MemoryBarrierCommand >( m_device
 			, after

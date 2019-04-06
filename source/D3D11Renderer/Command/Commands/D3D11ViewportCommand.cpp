@@ -10,7 +10,7 @@ namespace d3d11_renderer
 {
 	ViewportCommand::ViewportCommand( Device const & device
 		, uint32_t first
-		, ashes::ViewportArray const & viewports )
+		, ashes::VkViewportArray const & viewports )
 		: CommandBase{ device }
 		, m_viewports{ makeViewports( viewports.begin() + first, viewports.end() ) }
 	{

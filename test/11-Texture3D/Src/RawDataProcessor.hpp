@@ -5,6 +5,6 @@
 namespace vkapp
 {
 	void readFile( std::string const & name
-		, ashes::Extent3D const & size
+		, VkExtent3D const & size
 		, ashes::ByteArray & data );
 }

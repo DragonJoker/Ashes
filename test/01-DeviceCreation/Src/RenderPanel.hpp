@@ -2,9 +2,9 @@
 
 #include "Prerequisites.hpp"
 
-#include <Core/Device.hpp>
+#include <AshesPP/Core/Device.hpp>
 
-#include <Utils/Signal.hpp>
+#include <AshesPP/Utils/Signal.hpp>
 
 #include <wx/panel.h>
 

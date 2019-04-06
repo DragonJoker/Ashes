@@ -28,13 +28,13 @@ namespace d3d11_renderer
 		*/
 		ClearColourCommand( Device const & device
 			, ashes::ImageView const & image
-			, ashes::ClearColorValue const & colour );
+			, VkClearColorValue const & colour );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;
 
 	private:
 		ImageView const & m_image;
-		ashes::ClearColorValue m_colour;
+		VkClearColorValue m_colour;
 	};
 }

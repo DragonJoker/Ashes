@@ -7,6 +7,9 @@ See LICENSE file in root folder.
 
 #include <GL/glx.h>
 
+#include "AshesPP/Core/WindowHandle.hpp"
+#include <vulkan/vulkan_xlib.h>
+
 namespace ashes
 {
 	class IXWindowHandle
@@ -15,7 +18,8 @@ namespace ashes
 	public:
 		IXWindowHandle( GLXDrawable drawable
 			, Display * display )
-			: m_drawable{ drawable }
+			: IWindowHandle{ VK_KHR_XLIB_SURFACE_EXTENSION_NAME }
+			, m_drawable{ drawable }
 			, m_display{ display }
 		{
 		}

@@ -50,10 +50,10 @@ namespace common
 	Gui::Gui( utils::Device const & device
 		, ashes::Queue const & queue
 		, ashes::CommandPool const & commandPool
-		, ashes::Extent2D const & size )
+		, VkExtent2D const & size )
 		: m_device{ device }
 		, m_size{ size }
-		, m_pushConstants{ ashes::ShaderStageFlag::eVertex, doCreateConstants() }
+		, m_pushConstants{ VkShaderStageFlagBits::eVertex, doCreateConstants() }
 	{
 		// Init ImGui
 		// Color scheme
@@ -161,7 +161,7 @@ namespace common
 		}
 	}
 
-	void Gui::resize( ashes::Extent2D const & size )
+	void Gui::resize( VkExtent2D const & size )
 	{
 		ImGuiIO & io = ImGui::GetIO();
 		io.DisplaySize = ImVec2( float( size.width ), float( size.height ) );
@@ -256,8 +256,8 @@ namespace common
 			{
 				0u,
 				ashes::ImageType::e2D,
-				ashes::Format::eR8G8B8A8_UNORM,
-				ashes::Extent3D{ uint32_t( texWidth ), uint32_t( texHeight ), 1u },
+				VK_FORMAT_R8G8B8A8_UNORM,
+				VkExtent3D{ uint32_t( texWidth ), uint32_t( texHeight ), 1u },
 				1u,
 				1u,
 				ashes::SampleCountFlag::e1,
@@ -265,14 +265,14 @@ namespace common
 				ashes::ImageUsageFlag::eSampled | ashes::ImageUsageFlag::eTransferDst
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_fontView = m_fontImage->createView( ashes::ImageViewType( m_fontImage->getType() )
+		m_fontView = m_fontImage->createView( VkImageViewType( m_fontImage->getType() )
 			, m_fontImage->getFormat() );
 
 		auto copyCmd = commandPool.createCommandBuffer();
 		auto staging = ashes::StagingBuffer{ m_device, 0u };
 		staging.uploadTextureData( queue
 			, commandPool
-			, ashes::Format::eR8G8B8A8_UNORM
+			, VK_FORMAT_R8G8B8A8_UNORM
 			, fontData
 			, *m_fontView );
 
@@ -289,7 +289,7 @@ namespace common
 
 		ashes::DescriptorSetLayoutBindingArray bindings
 		{
-			{ 0u, ashes::DescriptorType::eCombinedImageSampler, ashes::ShaderStageFlag::eFragment }
+			{ 0u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment }
 		};
 		m_descriptorSetLayout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorPool = m_descriptorSetLayout->createPool( 2u );
@@ -299,7 +299,7 @@ namespace common
 			, *m_sampler );
 		m_descriptorSet->update();
 
-		ashes::PushConstantRange range{ ashes::ShaderStageFlag::eVertex, 0u, m_pushConstants.getSize() };
+		ashes::PushConstantRange range{ VkShaderStageFlagBits::eVertex, 0u, m_pushConstants.getSize() };
 		m_pipelineLayout = m_device.getDevice().createPipelineLayout( *m_descriptorSetLayout
 			, range );
 
@@ -307,20 +307,20 @@ namespace common
 
 		m_vertexLayout = ashes::makeLayout< ImDrawVert >( 0u );
 		m_vertexLayout->createAttribute( 0u
-			, ashes::Format::eR32G32_SFLOAT
+			, VK_FORMAT_R32G32_SFLOAT
 			, offsetof( ImDrawVert, pos ) );
 		m_vertexLayout->createAttribute( 1u
-			, ashes::Format::eR32G32_SFLOAT
+			, VK_FORMAT_R32G32_SFLOAT
 			, offsetof( ImDrawVert, uv ) );
 		m_vertexLayout->createAttribute( 2u
-			, ashes::Format::eR32_UINT
+			, VK_FORMAT_R32_UINT
 			, offsetof( ImDrawVert, col ) );
 	}
 
 	void Gui::doPreparePipeline()
 	{
 		auto dimensions = m_colourView->getImage().getDimensions();
-		auto size = ashes::Extent2D{ dimensions.width, dimensions.height };
+		auto size = VkExtent2D{ dimensions.width, dimensions.height };
 		m_target = m_device.createImage(
 			{
 				0u,
@@ -334,10 +334,10 @@ namespace common
 				ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eSampled | ashes::ImageUsageFlag::eTransferDst
 			}
 			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_targetView = m_target->createView( ashes::ImageViewType::e2D
+		m_targetView = m_target->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_target->getFormat() );
 		
-		ashes::AttachmentDescriptionArray rpAttaches
+		ashes::VkAttachmentDescriptionArray rpAttaches
 		{
 			{
 				m_targetView->getFormat(),
@@ -350,7 +350,7 @@ namespace common
 				ashes::ImageLayout::eShaderReadOnlyOptimal,
 			}
 		};
-		ashes::AttachmentReferenceArray subAttaches
+		ashes::VkAttachmentReferenceArray subAttaches
 		{
 			{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
 		};
@@ -368,7 +368,7 @@ namespace common
 			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eFragmentShader
 				, ashes::AccessFlag::eShaderRead } );
 
-		ashes::FrameBufferAttachmentArray attaches
+		ashes::ImageViewPtrArray attaches
 		{
 			{ *m_renderPass->getAttachments().begin(), m_targetView }
 		};
@@ -389,10 +389,10 @@ namespace common
 
 		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 		std::vector< ashes::ShaderStageState > shaderStages;
-		shaderStages.push_back( { m_device.getDevice().createShaderModule( ashes::ShaderStageFlag::eVertex ) } );
-		shaderStages.push_back( { m_device.getDevice().createShaderModule( ashes::ShaderStageFlag::eFragment ) } );
-		shaderStages[0].module->loadShader( dumpShaderFile( m_device.getDevice(), ashes::ShaderStageFlag::eVertex, shadersFolder / "gui.vert" ) );
-		shaderStages[1].module->loadShader( dumpShaderFile( m_device.getDevice(), ashes::ShaderStageFlag::eFragment, shadersFolder / "gui.frag" ) );
+		shaderStages.push_back( { m_device.getDevice().createShaderModule( VkShaderStageFlagBits::eVertex ) } );
+		shaderStages.push_back( { m_device.getDevice().createShaderModule( VkShaderStageFlagBits::eFragment ) } );
+		shaderStages[0].module->loadShader( dumpShaderFile( m_device.getDevice(), VkShaderStageFlagBits::eVertex, shadersFolder / "gui.vert" ) );
+		shaderStages[1].module->loadShader( dumpShaderFile( m_device.getDevice(), VkShaderStageFlagBits::eFragment, shadersFolder / "gui.frag" ) );
 
 		std::vector< ashes::DynamicStateEnable > dynamicStateEnables
 		{
@@ -437,7 +437,7 @@ namespace common
 			, m_indexBuffer->getBuffer().makeVertexShaderInputResource() );
 		m_commandBuffer->beginRenderPass( *m_renderPass
 			, *m_frameBuffer
-			, { ashes::ClearColorValue{ 1.0, 1.0, 1.0, 0.0 } }
+			, { VkClearColorValue{ 1.0, 1.0, 1.0, 0.0 } }
 			, ashes::SubpassContents::eInline );
 		m_commandBuffer->bindPipeline( *m_pipeline );
 		m_commandBuffer->bindDescriptorSet( *m_descriptorSet

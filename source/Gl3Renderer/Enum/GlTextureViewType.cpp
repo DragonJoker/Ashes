@@ -2,29 +2,29 @@
 
 namespace gl_renderer
 {
-	GlTextureType convert( ashes::ImageViewType const & value )
+	GlTextureType convert( VkImageViewType const & value )
 	{
 		switch ( value )
 		{
-		case ashes::ImageViewType::e1D:
+		case VK_IMAGE_VIEW_TYPE_1D:
 			return GL_TEXTURE_1D;
 
-		case ashes::ImageViewType::e2D:
+		case VK_IMAGE_VIEW_TYPE_2D:
 			return GL_TEXTURE_2D;
 
-		case ashes::ImageViewType::e3D:
+		case VK_IMAGE_VIEW_TYPE_3D:
 			return GL_TEXTURE_3D;
 
-		case ashes::ImageViewType::eCube:
+		case VK_IMAGE_VIEW_TYPE_Cube:
 			return GL_TEXTURE_CUBE;
 
-		case ashes::ImageViewType::e1DArray:
+		case VK_IMAGE_VIEW_TYPE_1DArray:
 			return GL_TEXTURE_1D_ARRAY;
 
-		case ashes::ImageViewType::e2DArray:
+		case VK_IMAGE_VIEW_TYPE_2DArray:
 			return GL_TEXTURE_2D_ARRAY;
 
-		case ashes::ImageViewType::eCubeArray:
+		case VK_IMAGE_VIEW_TYPE_CubeArray:
 			return GL_TEXTURE_CUBE_ARRAY;
 
 		default:
@@ -33,36 +33,36 @@ namespace gl_renderer
 		}
 	}
 
-	GlTextureType convert( ashes::ImageViewType const & mode
+	GlTextureType convert( VkImageViewType const & mode
 		, uint32_t layers )
 	{
 		switch ( mode )
 		{
-		case ashes::ImageViewType::e1D:
+		case VK_IMAGE_VIEW_TYPE_1D:
 			return layers > 1u
 				? GL_TEXTURE_1D_ARRAY
 				: GL_TEXTURE_1D;
 
-		case ashes::ImageViewType::e2D:
+		case VK_IMAGE_VIEW_TYPE_2D:
 			return layers > 1u
 				? GL_TEXTURE_2D_ARRAY
 				: GL_TEXTURE_2D;
 
-		case ashes::ImageViewType::e3D:
+		case VK_IMAGE_VIEW_TYPE_3D:
 			return GL_TEXTURE_3D;
 
-		case ashes::ImageViewType::eCube:
+		case VK_IMAGE_VIEW_TYPE_Cube:
 			return layers > 6u
 				? GL_TEXTURE_CUBE_ARRAY
 				: GL_TEXTURE_CUBE;
 
-		case ashes::ImageViewType::e1DArray:
+		case VK_IMAGE_VIEW_TYPE_1DArray:
 			return GL_TEXTURE_1D_ARRAY;
 
-		case ashes::ImageViewType::e2DArray:
+		case VK_IMAGE_VIEW_TYPE_2DArray:
 			return GL_TEXTURE_2D_ARRAY;
 
-		case ashes::ImageViewType::eCubeArray:
+		case VK_IMAGE_VIEW_TYPE_CubeArray:
 			return GL_TEXTURE_CUBE_ARRAY;
 
 		default:

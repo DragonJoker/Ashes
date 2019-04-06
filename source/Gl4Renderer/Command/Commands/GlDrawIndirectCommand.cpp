@@ -35,7 +35,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glMultiDrawArraysIndirect
 			, m_mode
-			, BufferOffset( m_offset )
+			, getBufferOffset( m_offset )
 			, m_drawCount
 			, m_stride );
 		glLogCall( context

@@ -47,9 +47,9 @@ namespace ashes
 	{
 	}
 
-	LayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
+	VkLayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
 	{
-		LayerPropertiesArray result;
+		VkLayerPropertiesArray result;
 		VkResult res;
 
 		do
@@ -73,9 +73,9 @@ namespace ashes
 		return result;
 	}
 
-	ExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
+	VkExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
 	{
-		ExtensionPropertiesArray result;
+		VkExtensionPropertiesArray result;
 		VkResult res;
 
 		do
@@ -122,7 +122,7 @@ namespace ashes
 		return features;
 	}
 
-	QueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
+	VkQueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
 	{
 		uint32_t queueCount{ 0 };
 		m_instance.vkGetPhysicalDeviceQueueFamilyProperties( m_gpu, &queueCount, nullptr );

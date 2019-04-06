@@ -17,7 +17,7 @@ namespace gl_renderer
 			, ashes::PipelineStageFlags srcStageMask
 			, ashes::PipelineStageFlags dstStageMask
 			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::ImageMemoryBarrierArray const & imageMemoryBarriers );
+			, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers );
 		void apply( ContextLock const & context )const override;
 		CommandPtr clone()const override;
 

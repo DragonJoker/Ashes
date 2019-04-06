@@ -82,9 +82,9 @@ namespace d3d11_renderer
 			return T( value >> mipLevel );
 		};
 
-		ashes::Extent3D getTexelBlockExtent( ashes::Format format )
+		VkExtent3D getTexelBlockExtent( VkFormat format )
 		{
-			ashes::Extent3D texelBlockExtent{ 1u, 1u, 1u };
+			VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
 
 			if ( ashes::isCompressedFormat( format ) )
 			{
@@ -100,8 +100,8 @@ namespace d3d11_renderer
 			return texelBlockExtent;
 		}
 
-		uint32_t getTexelBlockByteSize( ashes::Extent3D const & texelBlockExtent
-			, ashes::Format format )
+		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
+			, VkFormat format )
 		{
 			uint32_t texelBlockSize;
 
@@ -216,7 +216,7 @@ namespace d3d11_renderer
 	}
 
 	ashes::BufferViewPtr Device::createBufferView( ashes::BufferBase const & buffer
-		, ashes::Format format
+		, VkFormat format
 		, uint32_t offset
 		, uint32_t range )const
 	{
@@ -334,7 +334,7 @@ namespace d3d11_renderer
 	}
 
 	bool Device::onCopyToImageCommand( ashes::CommandBuffer const & cmd
-		, ashes::BufferImageCopyArray const & copyInfo
+		, ashes::VkBufferImageCopyArray const & copyInfo
 		, ashes::BufferBase const & src
 		, ashes::Image const & dst )const
 	{

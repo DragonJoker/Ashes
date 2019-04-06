@@ -90,9 +90,9 @@ namespace ashes
 			return m_createInfo.attachmentCount;
 		}
 
-		inline AttachmentDescriptionArray getAttachments()const
+		inline VkAttachmentDescriptionArray getAttachments()const
 		{
-			return AttachmentDescriptionArray{ m_createInfo.pAttachments
+			return VkAttachmentDescriptionArray{ m_createInfo.pAttachments
 				, m_createInfo.pAttachments + m_createInfo.attachmentCount };
 		}
 
@@ -106,9 +106,9 @@ namespace ashes
 			return m_createInfo.subpassCount;
 		}
 
-		inline SubpassDescriptionArray getSubpasses()const
+		inline VkSubpassDescriptionArray getSubpasses()const
 		{
-			return SubpassDescriptionArray{ m_createInfo.pSubpasses
+			return VkSubpassDescriptionArray{ m_createInfo.pSubpasses
 				, m_createInfo.pSubpasses + m_createInfo.subpassCount };
 		}
 		/**@}*/

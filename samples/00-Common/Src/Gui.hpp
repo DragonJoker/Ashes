@@ -14,10 +14,10 @@ namespace common
 		Gui( utils::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
-			, ashes::Extent2D const & size );
+			, VkExtent2D const & size );
 		void updateView( ashes::ImageViewPtr colourView );
 		void update();
-		void resize( ashes::Extent2D const & size );
+		void resize( VkExtent2D const & size );
 		void submit( ashes::Queue const & queue );
 
 		bool header( char const * caption );
@@ -50,7 +50,7 @@ namespace common
 
 		utils::Device const & m_device;
 		ashes::ImageViewPtr m_colourView;
-		ashes::Extent2D m_size;
+		VkExtent2D m_size;
 		ashes::PushConstantsBuffer< PushConstBlock > m_pushConstants;
 		ashes::VertexBufferPtr< ImDrawVert > m_vertexBuffer;
 		ashes::BufferPtr< ImDrawIdx > m_indexBuffer;

@@ -6,7 +6,7 @@ namespace vkapp
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
 		, std::string const & fragmentShaderFile
-		, std::vector< ashes::Format > const & formats
+		, std::vector< VkFormat > const & formats
 		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
 		, ashes::UniformBuffer< common::ObjectData > const & objectUbo
 		, ashes::UniformBuffer< common::LightsData > const & lightsUbo )
@@ -25,9 +25,9 @@ namespace vkapp
 
 	void TransparentRendering::doFillObjectDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
 	{
-		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
-		bindings.emplace_back( 2u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
-		bindings.emplace_back( 3u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eFragment );
+		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eVertex );
+		bindings.emplace_back( 2u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eVertex );
+		bindings.emplace_back( 3u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eFragment );
 	}
 
 	void TransparentRendering::doFillObjectDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout

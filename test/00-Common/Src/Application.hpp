@@ -40,7 +40,7 @@ namespace common
 		std::streambuf * m_cout{ nullptr };
 		std::streambuf * m_cerr{ nullptr };
 		std::streambuf * m_clog{ nullptr };
-		std::vector< utils::Plugin > m_plugins;
+		std::vector< ashes::Renderer > m_renderers;
 		utils::InstanceFactory m_factory;
 	};
 }

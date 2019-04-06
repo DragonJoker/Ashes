@@ -31,7 +31,7 @@ namespace common
 
 	private:
 		static size_t constexpr FrameSamplesCount = 1000;
-		wxString m_name;
+		std::string m_name;
 		wxString m_rendererName;
 		utils::InstancePtr m_instance;
 		utils::InstanceFactory & m_factory;

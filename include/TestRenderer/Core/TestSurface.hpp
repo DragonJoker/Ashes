@@ -25,19 +25,19 @@ namespace test_renderer
 			return m_surfaceCapabilities;
 		}
 
-		std::vector < ashes::PresentMode > getPresentModes()const override
+		std::vector < VkPresentModeKHR > getPresentModes()const override
 		{
 			return m_presentModes;
 		}
 
-		std::vector< ashes::SurfaceFormat > getFormats()const override
+		std::vector< VkSurfaceFormatKHR > getFormats()const override
 		{
 			return m_surfaceFormats;
 		}
 
 	private:
-		std::vector< ashes::SurfaceFormat > m_surfaceFormats;
+		std::vector< VkSurfaceFormatKHR > m_surfaceFormats;
 		ashes::SurfaceCapabilities m_surfaceCapabilities;
-		std::vector< ashes::PresentMode > m_presentModes;
+		std::vector< VkPresentModeKHR > m_presentModes;
 	};
 }

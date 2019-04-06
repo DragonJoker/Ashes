@@ -6,7 +6,9 @@ See LICENSE file in root folder.
 #define ___AshesPP_Surface_HPP___
 #pragma once
 
-#include <AshesCommon/WindowHandle.hpp>
+#include "AshesPP/AshesPPPrerequisites.hpp"
+
+#include "AshesPP/Core/WindowHandle.hpp"
 
 namespace ashes
 {

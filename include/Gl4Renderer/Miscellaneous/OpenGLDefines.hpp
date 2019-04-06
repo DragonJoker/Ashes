@@ -11,6 +11,9 @@ See LICENSE file in root folder.
 
 #if ASHES_WIN32
 #	define GLAPIENTRY __stdcall
+#	ifndef NOMINMAX
+#		define NOMINMAX
+#	endif
 #	include <Windows.h>
 #	undef MemoryBarrier
 #else

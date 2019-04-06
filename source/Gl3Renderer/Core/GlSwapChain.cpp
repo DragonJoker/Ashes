@@ -10,8 +10,8 @@ namespace gl_renderer
 	namespace
 	{
 		std::unique_ptr< Image > createImage( Device const & device
-			, ashes::Format format
-			, ashes::Extent2D dimensions )
+			, VkFormat format
+			, VkExtent2D dimensions )
 		{
 			auto result = std::make_unique< Image >( device
 				, format
@@ -25,13 +25,13 @@ namespace gl_renderer
 
 		std::unique_ptr< ImageView > createImageView( Device const & device
 			, Image const & image
-			, ashes::Format format )
+			, VkFormat format )
 		{
 			return std::make_unique< ImageView >( device
 				, image
 				, ashes::ImageViewCreateInfo
 				{
-					ashes::ImageViewType::e2D,
+					VK_IMAGE_VIEW_TYPE_2D,
 					format,
 					ashes::ComponentMapping{},
 					ashes::ImageSubresourceRange{ ashes::ImageAspectFlag::eColour },

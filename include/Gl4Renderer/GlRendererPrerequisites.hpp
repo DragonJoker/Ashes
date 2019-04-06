@@ -26,8 +26,6 @@
 #include <AshesRenderer/Util/FlagCombination.hpp>
 #include <AshesRenderer/Util/Signal.hpp>
 
-#define BufferOffset( n ) ( ( uint8_t * )nullptr + ( n ) )
-
 #if defined( _WIN32 ) && !defined( Gl4Renderer_STATIC )
 #	ifdef Gl4Renderer_EXPORTS
 #		define Gl4Renderer_API __declspec( dllexport )
@@ -38,80 +36,12 @@
 #	define Gl4Renderer_API
 #endif
 
-#if defined( __GNUG__ )
-#	define ASHES_COMPILER_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
-#	if ASHES_COMPILER_VERSION < 40900
-#		error "Unsupported version of GCC"
-#	elif ASHES_COMPILER_VERSION < 70400
-#		include <experimental/optional>
 namespace ashes::gl4
 {
-	template< typename T >
-	using Optional = std::experimental::optional< T >;
-	using std::experimental::nullopt;
-}
-#	else
-#		include <optional>
-namespace ashes::gl4
-{
-	template< typename T >
-	using Optional = std::optional< T >;
-	using std::nullopt;
-}
-#	endif
-#else
-#	include <optional>
-namespace ashes::gl4
-{
-	template< typename T >
-	using Optional = std::optional< T >;
-	using std::nullopt;
-}
-#	if defined( MemoryBarrier )
-#		undef MemoryBarrier
-#	endif
-#endif
-
-#ifndef NDEBUG
-#	define declareDebugVariable( Type, Name, Value )\
-	mutable Type Name{ Value }
-#	define setDebugValue( Name, Value )\
-	Name = Value;
-#	define assertDebugValue( Name, Value )\
-	assert( Name == Value )
-#else
-#	define declareDebugVariable( Type, Name, Value )
-#	define setDebugValue( Name, Value )
-#	define assertDebugValue( Name, Value )
-#endif
-
-namespace ashes::gl4
-{
-	inline constexpr uint32_t getMajor( uint32_t version )
+	inline void * getBufferOffset( intptr_t value )
 	{
-		return ( ( uint32_t )( version ) >> 22 );
+		return reinterpret_cast< void * >( reinterpret_cast< uint8_t * >( 0u ) + value );
 	}
-
-	inline constexpr uint32_t getMinor( uint32_t version )
-	{
-		return ( ( ( uint32_t )( version ) >> 12 ) & 0x3ff );
-	}
-
-	inline constexpr uint32_t getPatch( uint32_t version )
-	{
-		return ( ( uint32_t )( version ) & 0xfff );
-	}
-
-	inline constexpr uint32_t makeVersion( uint32_t major
-		, uint32_t minor
-		, uint32_t patch )
-	{
-		return ( ( ( major ) << 22 ) | ( ( minor ) << 12 ) | ( patch ) );
-	}
-
-	using StringArray = std::vector< std::string >;
-	using UInt32Array = std::vector< uint32_t >;
-	using UInt64Array = std::vector< uint64_t >;
 
 	struct DebugReportCallbackData
 	{

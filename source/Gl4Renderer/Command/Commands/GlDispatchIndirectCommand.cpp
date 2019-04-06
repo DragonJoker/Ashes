@@ -28,7 +28,7 @@ namespace ashes::gl4
 			, get( m_buffer )->getInternal() );
 		glLogCall( context
 			, glDispatchComputeIndirect
-			, GLintptr( BufferOffset( m_offset ) ) );
+			, GLintptr( getBufferOffset( m_offset ) ) );
 		glLogCall( context
 			, glBindBuffer
 			, GL_BUFFER_TARGET_DISPATCH_INDIRECT, 0 );

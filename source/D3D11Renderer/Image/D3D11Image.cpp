@@ -40,15 +40,15 @@ namespace d3d11_renderer
 	}
 
 	Image::Image( Device const & device
-		, ashes::Format format
-		, ashes::Extent2D const & dimensions
+		, VkFormat format
+		, VkExtent2D const & dimensions
 		, ID3D11Texture2D * image )
 		: ashes::Image{ device
 			, {
 				0u,
 				ashes::ImageType::e2D,
 				format,
-				ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
+				VkExtent3D{ dimensions.width, dimensions.height, 1u },
 				1u,
 				1u,
 				ashes::SampleCountFlag::e1,
@@ -56,7 +56,7 @@ namespace d3d11_renderer
 				( isDepthOrStencilFormat( format )
 					? ashes::ImageUsageFlag::eDepthStencilAttachment
 					: ashes::ImageUsageFlag::eColourAttachment ),
-				ashes::SharingMode::eExclusive,
+				VK_SHARING_MODE_EXCLUSIVE,
 				{},
 				ashes::ImageLayout::eUndefined
 			} }
@@ -67,8 +67,8 @@ namespace d3d11_renderer
 	}
 
 	Image::Image( Device const & device
-		, ashes::Format format
-		, ashes::Extent2D const & dimensions
+		, VkFormat format
+		, VkExtent2D const & dimensions
 		, ashes::ImageUsageFlags usageFlags
 		, ashes::ImageTiling tiling
 		, ashes::MemoryPropertyFlags memoryFlags )
@@ -77,13 +77,13 @@ namespace d3d11_renderer
 				0u,
 				ashes::ImageType::e2D,
 				format,
-				ashes::Extent3D{ dimensions.width, dimensions.height, 1u },
+				VkExtent3D{ dimensions.width, dimensions.height, 1u },
 				1u,
 				1u,
 				ashes::SampleCountFlag::e1,
 				tiling,
 				usageFlags,
-				ashes::SharingMode::eExclusive,
+				VK_SHARING_MODE_EXCLUSIVE,
 				{},
 				ashes::ImageLayout::eUndefined
 			} }

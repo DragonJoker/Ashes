@@ -30,7 +30,7 @@ namespace d3d11_renderer
 				, Image const & dstImage
 				, uint32_t layer );
 
-			ashes::Offset3D dstOffset;
+			VkOffset3D dstOffset;
 			D3D11_BOX srcBox;
 			Attachment src;
 			Attachment dst;

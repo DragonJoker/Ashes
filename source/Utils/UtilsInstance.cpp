@@ -7,6 +7,8 @@ See LICENSE file in root folder.
 #include "Utils/UtilsDebug.hpp"
 #include "Utils/Factory.hpp"
 
+#include <AshesRenderer/Util/Exception.hpp>
+
 #if !defined( NDEBUG )
 #	define LOAD_VALIDATION_LAYERS 1
 #else
@@ -33,19 +35,19 @@ namespace utils
 		void addOptionalDebugReportLayer( ashes::StringArray & names )
 		{
 #if LOAD_VALIDATION_LAYERS
-			names.push_back( ashes::EXT_DEBUG_REPORT_EXTENSION_NAME );
-			//names.push_back( ashes::EXT_DEBUG_MARKER_EXTENSION_NAME );
+			names.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
+			//names.push_back( VK_EXT_DEBUG_MARKER_EXTENSION_NAME );
 #endif
 		}
 
-		void checkExtensionsAvailability( std::vector< ashes::ExtensionProperties > const & available
+		void checkExtensionsAvailability( std::vector< VkExtensionProperties > const & available
 			, ashes::StringArray const & requested )
 		{
 			for ( auto const & name : requested )
 			{
 				if ( available.end() == std::find_if( available.begin()
 					, available.end()
-					, [&name]( ashes::ExtensionProperties const & extension )
+					, [&name]( VkExtensionProperties const & extension )
 					{
 						return extension.extensionName == name;
 					} ) )
@@ -54,33 +56,118 @@ namespace utils
 				}
 			}
 		}
+
+		ashes::VkLayerPropertiesArray enumerateLayerProperties( PFN_vkEnumerateInstanceLayerProperties enumLayerProperties )
+		{
+			if ( !enumLayerProperties )
+			{
+				return {};
+			}
+
+			uint32_t count;
+			std::vector< VkLayerProperties > result;
+			VkResult res;
+
+			do
+			{
+				res = enumLayerProperties( &count, nullptr );
+
+				if ( count )
+				{
+					result.resize( count );
+					res = enumLayerProperties( &count, result.data() );
+				}
+			}
+			while ( res == VK_INCOMPLETE );
+
+			if ( res != VK_SUCCESS )
+			{
+				throw ashes::Exception{ res, "Instance layers retrieval" };
+			}
+
+			return result;
+		}
+
+		ashes::VkExtensionPropertiesArray enumerateExtensionProperties( PFN_vkEnumerateInstanceExtensionProperties enumInstanceExtensionProperties
+			, std::string const & layerName )
+		{
+			if ( !enumInstanceExtensionProperties )
+			{
+				return {};
+			}
+
+			uint32_t count;
+			std::vector< VkExtensionProperties > result;
+			VkResult res;
+
+			do
+			{
+				res = enumInstanceExtensionProperties( layerName.empty() ? nullptr : layerName.c_str()
+					, &count
+					, nullptr );
+
+				if ( count )
+				{
+					result.resize( count );
+					res = enumInstanceExtensionProperties( layerName.empty() ? nullptr : layerName.c_str()
+						, &count
+						, result.data() );
+				}
+			}
+			while ( res == VK_INCOMPLETE );
+
+			if ( res != VK_SUCCESS )
+			{
+				throw ashes::Exception{ res, "Instance layer extensions retrieval" };
+			}
+
+			return result;
+		}
 	}
 
-	Instance::Instance( InstanceFactory const & factory
+	Instance::Instance( ashes::RendererList const & rendererList
 		, std::string const & name
 		, ashes::ApplicationInfo applicationInfo )
 	{
-		auto plugin = factory.findPlugin( name );
-		m_layers = plugin->enumerateLayerProperties();
-		m_globalLayerExtensions = plugin->enumerateExtensionProperties( m_globalLayer.layerName );
+		auto plugin = rendererList.selectPlugin( name );
+		PFN_vkEnumerateInstanceLayerProperties enumLayerProperties;
+		enumLayerProperties = ( PFN_vkEnumerateInstanceLayerProperties )plugin.getInstanceProcAddr( VK_NULL_HANDLE,
+			"vkEnumerateInstanceLayerProperties" );
+		PFN_vkEnumerateInstanceExtensionProperties enumInstanceExtensionProperties;
+		enumInstanceExtensionProperties = ( PFN_vkEnumerateInstanceExtensionProperties )plugin.getInstanceProcAddr( VK_NULL_HANDLE,
+			"vkEnumerateInstanceExtensionProperties" );
+
+		m_layers = enumerateLayerProperties( enumLayerProperties );
+		m_globalLayerExtensions = enumerateExtensionProperties( enumInstanceExtensionProperties
+			, m_globalLayer.layerName );
 
 		// On récupère la liste d'extensions pour chaque couche de l'instance.
 		for ( auto layerProperties : m_layers )
 		{
 			m_layersExtensions.emplace( layerProperties.layerName
-				, plugin->enumerateExtensionProperties( layerProperties.layerName ) );
+				, enumerateExtensionProperties( enumInstanceExtensionProperties
+					, layerProperties.layerName ) );
 		}
 
 		completeLayerNames( m_layerNames );
 
-		ashes::InstanceCreateInfo createInfo;
-		createInfo.enabledExtensionNames.push_back( ashes::KHR_SURFACE_EXTENSION_NAME );
-		createInfo.enabledExtensionNames.push_back( ashes::KHR_PLATFORM_SURFACE_EXTENSION_NAME );
-		addOptionalDebugReportLayer( createInfo.enabledExtensionNames );
-		checkExtensionsAvailability( m_globalLayerExtensions, createInfo.enabledExtensionNames );
-		createInfo.enabledLayerNames = m_layerNames;
-		createInfo.applicationInfo = std::move( applicationInfo );
-		m_instance = plugin->create( std::move( createInfo ) );
+		StringArray enabledExtensionNames
+		{
+			VK_KHR_SURFACE_EXTENSION_NAME,
+			ashes::KHR_PLATFORM_SURFACE_EXTENSION_NAME,
+		};
+		addOptionalDebugReportLayer( enabledExtensionNames );
+		checkExtensionsAvailability( m_globalLayerExtensions, enabledExtensionNames );
+		StringArray enabledLayerNames = m_layerNames;
+		ashes::InstanceCreateInfo createInfo
+		{
+			0u,
+			std::move( applicationInfo ),
+			enabledLayerNames,
+			enabledExtensionNames,
+		};
+		m_instance = std::make_unique< ashes::Instance >( std::move( plugin )
+			, std::move( createInfo ) );
 
 #if LOAD_VALIDATION_LAYERS
 		m_debugCallback = setupDebugging( *m_instance
@@ -88,40 +175,6 @@ namespace utils
 #endif
 
 		m_gpus = m_instance->enumeratePhysicalDevices();
-
-		//uint32_t instanceVersion = enumerateVersion();
-		//m_apiVersion = VK_MAKE_VERSION( VK_VERSION_MAJOR( instanceVersion )
-		//	, VK_VERSION_MINOR( instanceVersion )
-		//	, VK_VERSION_PATCH( VK_HEADER_VERSION ) );
-
-//		// On récupère les extensions supportées par le GPU.
-//		m_layerExtensions = enumerateLayerProperties();
-//		m_extensions = enumerateExtensionProperties( std::string{} );
-//
-//#if VkRenderer_UsePhysicalDeviceExtensions
-//
-//		for ( auto & layer : m_layerExtensions )
-//		{
-//			layer.extensions = getLayerExtensions( m_instance
-//				, m_gpu
-//				, layer.layerName.c_str() );
-//		}
-//
-//		m_instance.completeLayerNames( m_layerNames );
-//		m_extensionNames.push_back( VK_KHR_SWAPCHAIN_EXTENSION_NAME );
-//		checkExtensionsAvailability( m_extensions, m_extensionNames );
-//
-//#else
-//
-//		for ( auto layer : m_instance.getLayers() )
-//		{
-//			layer.extensions = getLayerExtensions( m_instance
-//				, m_gpu
-//				, layer.layerName.c_str() );
-//			m_layerExtensions.push_back( layer );
-//		}
-//
-//#endif
 	}
 
 	void Instance::completeLayerNames( ashes::StringArray & names )const

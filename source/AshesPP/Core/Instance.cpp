@@ -12,9 +12,9 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	Instance::Instance( Renderer const & renderer
-		, VkInstanceCreateInfo createInfo )
-		: m_renderer{ renderer }
+	Instance::Instance( AshPluginDescription plugin
+		, ashes::InstanceCreateInfo createInfo )
+		: m_plugin{ std::move( plugin ) }
 		, m_createInfo{ std::move( createInfo ) }
 	{
 #ifndef NDEBUG
@@ -31,7 +31,7 @@ namespace ashes
 		m_features.hasStorageBuffers = true;
 		m_features.supportsPersistentMapping = true;
 
-#define VK_LIB_GLOBAL_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( m_renderer.getInstanceProcAddr( nullptr, "vk"#fun ) );
+#define VK_LIB_GLOBAL_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( m_plugin.getInstanceProcAddr( nullptr, "vk"#fun ) );
 #include <AshesCommon/VulkanFunctionsList.inl>
 
 		doInitInstance();
@@ -156,17 +156,15 @@ namespace ashes
 		return result;
 	}
 
-	DevicePtr Instance::createDevice( SurfacePtr surface
-		, VkDeviceCreateInfo createInfos )const
+	DevicePtr Instance::createDevice( PhysicalDevice const & physicalDevice
+		, ashes::DeviceCreateInfo createInfos )const
 	{
 		DevicePtr result;
 
 		try
 		{
-			auto & gpu = surface->getGpu();
 			result = std::make_shared< Device >( *this
-				, gpu
-				, std::move( surface )
+				, physicalDevice
 				, std::move( createInfos ) );
 		}
 		catch ( std::exception & exc )
@@ -199,7 +197,9 @@ namespace ashes
 	void Instance::doInitInstance()
 	{
 		DEBUG_DUMP( m_createInfo );
-		auto res = vkCreateInstance( &m_createInfo, nullptr, &m_instance );
+		auto res = vkCreateInstance( &static_cast< VkInstanceCreateInfo const & >( m_createInfo )
+			, nullptr
+			, &m_instance );
 		checkError( res, "Instance creation" );
 
 #define VK_LIB_INSTANCE_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
@@ -208,7 +208,7 @@ namespace ashes
 
 	PFN_vkVoidFunction Instance::getInstanceProcAddr( char const * const name )
 	{
-		auto result = m_renderer.getInstanceProcAddr( m_instance, name );
+		auto result = m_plugin.getInstanceProcAddr( m_instance, name );
 
 		if ( !result )
 		{

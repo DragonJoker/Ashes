@@ -3,14 +3,14 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
-#include <Ashes/Core/Surface.hpp>
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Core/Exception.hpp>
-#include <Ashes/Image/Image.hpp>
-#include <Ashes/RenderPass/FrameBuffer.hpp>
-#include <Ashes/RenderPass/RenderPass.hpp>
-#include <Ashes/RenderPass/RenderSubpass.hpp>
-#include <Ashes/RenderPass/RenderSubpassState.hpp>
+#include <AshesPP/Core/Surface.hpp>
+#include <AshesPP/Core/Device.hpp>
+#include <AshesPP/Core/Exception.hpp>
+#include <AshesPP/Image/Image.hpp>
+#include <AshesPP/RenderPass/FrameBuffer.hpp>
+#include <AshesPP/RenderPass/RenderPass.hpp>
+#include <AshesPP/RenderPass/RenderSubpass.hpp>
+#include <AshesPP/RenderPass/RenderSubpassState.hpp>
 
 #include <Transform.hpp>
 
@@ -43,26 +43,26 @@ namespace vkapp
 			return desiredNumberOfSwapChainImages;
 		}
 
-		ashes::SurfaceFormat doSelectFormat( ashes::Surface const & surface )
+		VkSurfaceFormatKHR doSelectFormat( ashes::Surface const & surface )
 		{
-			ashes::SurfaceFormat result;
+			VkSurfaceFormatKHR result;
 			auto formats = surface.getFormats();
 			// Si la liste de formats ne contient qu'une entr�e VK_FORMAT_UNDEFINED,
 			// la surface n'a pas de format préféré. Sinon, au moins un format supporté
 			// sera renvoyé.
-			if ( formats.size() == 1u && formats[0].format == ashes::Format::eUndefined )
+			if ( formats.size() == 1u && formats[0].format == VK_FORMAT_UNDEFINED )
 			{
-				result.format = ashes::Format::eR8G8B8A8_UNORM;
-				result.colorSpace = ashes::ColorSpace::eSRGBNonLinear;
+				result.format = VK_FORMAT_R8G8B8A8_UNORM;
+				result.colorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
 			}
 			else
 			{
 				assert( formats.size() > 1u );
 				auto it = std::find_if( formats.begin()
 					, formats.end()
-					, []( ashes::SurfaceFormat const & lookup )
+					, []( VkSurfaceFormatKHR const & lookup )
 					{
-						return lookup.format == ashes::Format::eR8G8B8A8_UNORM;
+						return lookup.format == VK_FORMAT_R8G8B8A8_UNORM;
 					} );
 
 				if ( it != formats.end() )
@@ -78,25 +78,25 @@ namespace vkapp
 			return result;
 		}
 
-		ashes::PresentMode doSelectPresentMode( ashes::Surface const & surface )
+		VkPresentModeKHR doSelectPresentMode( ashes::Surface const & surface )
 		{
 			auto presentModes = surface.getPresentModes();
 			// Si le mode boîte aux lettres est disponible, on utilise celui-là, car c'est celui avec le
 			// minimum de latence dans tearing.
 			// Sinon, on essaye le mode IMMEDIATE, qui est normalement disponible, et est le plus rapide
 			// (bien qu'il y ait du tearing). Sinon on utilise le mode FIFO qui est toujours disponible.
-			ashes::PresentMode result{ ashes::PresentMode::eFifo };
+			VkPresentModeKHR result{ VK_PRESENT_MODE_FIFO_KHR };
 
 			for ( auto mode : presentModes )
 			{
-				if ( mode == ashes::PresentMode::eMailbox )
+				if ( mode == VK_PRESENT_MODE_MAILBOX_KHR )
 				{
 					result = mode;
 					break;
 				}
 
-				if ( ( result != ashes::PresentMode::eMailbox )
-					&& ( mode == ashes::PresentMode::eImmediate ) )
+				if ( ( result != VK_PRESENT_MODE_MAILBOX_KHR )
+					&& ( mode == VK_PRESENT_MODE_IMMEDIATE_KHR ) )
 				{
 					result = mode;
 				}
@@ -107,9 +107,9 @@ namespace vkapp
 
 		ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Device const & device
 			, ashes::Surface const & surface
-			, ashes::Extent2D const & size )
+			, VkExtent2D const & size )
 		{
-			ashes::Extent2D swapChainExtent{};
+			VkExtent2D swapChainExtent{};
 			auto surfaceCaps = surface.getCapabilities();
 
 			// width et height valent soient tous les deux -1 ou tous les deux autre chose que -1.
@@ -133,11 +133,11 @@ namespace vkapp
 			// impact sur les performances sur certaines plateformes.
 			// Ici, nous ne voulons aucune transformation, donc si la transformation identité est supportée,
 			// nous l'utilisons, sinon nous utiliserons la même transformation que la transformation courante.
-			ashes::SurfaceTransformFlag preTransform{};
+			VkSurfaceTransformFlagBitsKHR preTransform{};
 
-			if ( checkFlag( surfaceCaps.supportedTransforms, ashes::SurfaceTransformFlag::eIdentity ) )
+			if ( checkFlag( surfaceCaps.supportedTransforms, VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR ) )
 			{
-				preTransform = ashes::SurfaceTransformFlag::eIdentity;
+				preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 			}
 			else
 			{
@@ -156,10 +156,10 @@ namespace vkapp
 				swapChainExtent,
 				1u,
 				ashes::ImageUsageFlag::eColourAttachment,
-				ashes::SharingMode::eExclusive,
+				VK_SHARING_MODE_EXCLUSIVE,
 				{},
 				preTransform,
-				ashes::CompositeAlphaFlag::eOpaque,
+				VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
 				presentMode,
 				true,
 				ashes::nullopt
@@ -248,13 +248,13 @@ namespace vkapp
 			, *m_surface
 			, { uint32_t( size.x ), uint32_t( size.y ) } ) );
 		m_swapChainImages = m_swapChain->getImages();
-		m_clearColour = ashes::ClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
+		m_clearColour = VkClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 		doCreateRenderingResources();
 	}
 
 	void RenderPanel::doCreateRenderPass()
 	{
-		ashes::AttachmentDescriptionArray attaches
+		ashes::VkAttachmentDescriptionArray attaches
 		{
 			{
 				m_swapChain->getFormat(),
@@ -267,7 +267,7 @@ namespace vkapp
 				ashes::ImageLayout::ePresentSrc,
 			}
 		};
-		ashes::AttachmentReferenceArray subAttaches
+		ashes::VkAttachmentReferenceArray subAttaches
 		{
 			{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
 		};
@@ -315,7 +315,7 @@ namespace vkapp
 		{
 			m_renderingResources.emplace_back( std::make_unique< RenderingResources >( m_device->getDevice().createSemaphore()
 				, m_device->getDevice().createSemaphore()
-				, m_device->getDevice().createFence( ashes::FenceCreateFlag::eSignaled )
+				, m_device->getDevice().createFence( VK_FENCE_CREATE_SIGNALED_BIT )
 				, m_commandPool->createCommandBuffer()
 				, 0u ) );
 		}
@@ -343,14 +343,14 @@ namespace vkapp
 		}
 	}
 
-	ashes::FrameBufferAttachmentArray RenderPanel::doPrepareAttaches( uint32_t backBuffer )const
+	ashes::ImageViewPtrArray RenderPanel::doPrepareAttaches( uint32_t backBuffer )const
 	{
-		ashes::FrameBufferAttachmentArray attaches;
+		ashes::ImageViewPtrArray attaches;
 
 		for ( auto & attach : m_renderPass->getAttachments() )
 		{
 			attaches.emplace_back( attach
-				, m_swapChainImages[backBuffer]->createView( ashes::ImageViewType::e2D
+				, m_swapChainImages[backBuffer]->createView( VK_IMAGE_VIEW_TYPE_2D
 					, m_swapChain->getFormat() ) );
 		}
 
@@ -409,7 +409,7 @@ namespace vkapp
 				, *resources.imageAvailableSemaphore
 				, imageIndex );
 
-			if ( doCheckNeedReset( ashes::Result( res )
+			if ( doCheckNeedReset( VkResult( res )
 				, true
 				, "Swap chain image acquisition" ) )
 			{
@@ -442,7 +442,7 @@ namespace vkapp
 		resources.imageIndex = ~0u;
 	}
 
-	bool RenderPanel::doCheckNeedReset( ashes::Result errCode
+	bool RenderPanel::doCheckNeedReset( VkResult errCode
 		, bool acquisition
 		, char const * const action )
 	{
@@ -450,11 +450,11 @@ namespace vkapp
 
 		switch ( errCode )
 		{
-		case ashes::Result::eSuccess:
+		case VK_SUCCESS:
 			result = true;
 			break;
 
-		case ashes::Result::eErrorOutOfDate:
+		case VK_ERROR_OUT_OF_DATE_KHR:
 			if ( !acquisition )
 			{
 				doResetSwapChain();
@@ -465,7 +465,7 @@ namespace vkapp
 			}
 			break;
 
-		case ashes::Result::eSubOptimal:
+		case VK_SUBOPTIMAL_KHR:
 			doResetSwapChain();
 			break;
 

@@ -170,7 +170,7 @@ namespace ashes
 		*/
 		void beginRenderPass( RenderPass const & renderPass
 			, FrameBuffer const & frameBuffer
-			, ClearValueArray const & clearValues
+			, VkClearValueArray const & clearValues
 			, VkSubpassContents contents )const;
 		/**
 		*\~english
@@ -259,8 +259,8 @@ namespace ashes
 		*\param[in] clearRects
 		*	Les régions à nettoyer pour chaque attache sélectionnée.
 		*/
-		void clearAttachments( ClearAttachmentArray const & clearAttachments
-			, ClearRectArray const & clearRects );
+		void clearAttachments( VkClearAttachmentArray const & clearAttachments
+			, VkClearRectArray const & clearRects );
 		/**
 		*\~english
 		*\brief
@@ -284,9 +284,9 @@ namespace ashes
 		void pipelineBarrier( VkPipelineStageFlags after
 			, VkPipelineStageFlags before
 			, VkDependencyFlags dependencyFlags
-			, MemoryBarrierArray const & memoryBarriers
-			, BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ImageMemoryBarrierArray const & imaegMemoryBarriers )const;
+			, VkMemoryBarrierArray const & memoryBarriers
+			, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
+			, VkImageMemoryBarrierArray const & imaegMemoryBarriers )const;
 		/**
 		*\~english
 		*\brief
@@ -460,7 +460,7 @@ namespace ashes
 		*	Le viewport.
 		*/
 		void setViewport( uint32_t firstViewport
-			, ViewportArray const & viewports )const;
+			, VkViewportArray const & viewports )const;
 		/**
 		*\~english
 		*\brief
@@ -479,7 +479,7 @@ namespace ashes
 		*/
 		inline void setViewport( VkViewport const & viewport )const
 		{
-			setViewport( 0u, ViewportArray{ viewport } );
+			setViewport( 0u, VkViewportArray{ viewport } );
 		}
 		/**
 		*\~english
@@ -498,7 +498,7 @@ namespace ashes
 		*	Le scissor.
 		*/
 		void setScissor( uint32_t firstScissor
-			, ScissorArray const & scissors )const;
+			, VkScissorArray const & scissors )const;
 		/**
 		*\~english
 		*\brief
@@ -517,7 +517,7 @@ namespace ashes
 		*/
 		inline void setScissor( VkRect2D const & scissor )const
 		{
-			setScissor( 0u, ScissorArray{ scissor } );
+			setScissor( 0u, VkScissorArray{ scissor } );
 		}
 		/**
 		*\~english
@@ -656,7 +656,7 @@ namespace ashes
 		*\param[in] dst
 		*	The destination image.
 		*/
-		void copyToImage( BufferImageCopyArray const & copyInfo
+		void copyToImage( VkBufferImageCopyArray const & copyInfo
 			, BufferBase const & src
 			, Image const & dst )const;
 		/**
@@ -679,7 +679,7 @@ namespace ashes
 		*\param[in] dst
 		*	The destination image.
 		*/
-		void copyToBuffer( BufferImageCopyArray const & copyInfo
+		void copyToBuffer( VkBufferImageCopyArray const & copyInfo
 			, Image const & src
 			, BufferBase const & dst )const;
 		/**
@@ -1032,8 +1032,8 @@ namespace ashes
 		void waitEvents( EventCRefArray const & events
 			, VkPipelineStageFlags srcStageMask
 			, VkPipelineStageFlags dstStageMask
-			, BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ImageMemoryBarrierArray const & imageMemoryBarriers )const;
+			, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
+			, VkImageMemoryBarrierArray const & imageMemoryBarriers )const;
 		/**
 		*\~english
 		*\brief

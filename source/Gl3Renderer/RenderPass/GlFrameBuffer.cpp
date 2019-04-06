@@ -32,14 +32,14 @@ namespace gl_renderer
 			GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
 		};
 
-		bool isSRGBFormat( ashes::Format format )
+		bool isSRGBFormat( VkFormat format )
 		{
-			return format == ashes::Format::eR8G8_SRGB
-				|| format == ashes::Format::eR8G8B8_SRGB
-				|| format == ashes::Format::eB8G8R8_SRGB
-				|| format == ashes::Format::eR8G8B8A8_SRGB
-				|| format == ashes::Format::eB8G8R8A8_SRGB
-				|| format == ashes::Format::eA8B8G8R8_SRGB_PACK32;
+			return format == VK_FORMAT_R8G8_SRGB
+				|| format == VK_FORMAT_R8G8B8_SRGB
+				|| format == VK_FORMAT_B8G8R8_SRGB
+				|| format == VK_FORMAT_R8G8B8A8_SRGB
+				|| format == VK_FORMAT_B8G8R8A8_SRGB
+				|| format == VK_FORMAT_A8B8G8R8_SRGB_PACK32;
 		}
 	}
 
@@ -63,7 +63,7 @@ namespace gl_renderer
 		return GL_ATTACHMENT_POINT_COLOR0;
 	}
 
-	GlAttachmentPoint getAttachmentPoint( ashes::Format format )
+	GlAttachmentPoint getAttachmentPoint( VkFormat format )
 	{
 		return getAttachmentPoint( getInternal( format ) );
 	}
@@ -93,7 +93,7 @@ namespace gl_renderer
 		return GL_ATTACHMENT_TYPE_COLOR;
 	}
 
-	GlAttachmentType getAttachmentType( ashes::Format format )
+	GlAttachmentType getAttachmentType( VkFormat format )
 	{
 		return getAttachmentType( getInternal( format ) );
 	}
@@ -164,8 +164,8 @@ namespace gl_renderer
 
 	FrameBuffer::FrameBuffer( Device const & device
 		, RenderPass const & renderPass
-		, ashes::Extent2D const & dimensions
-		, ashes::FrameBufferAttachmentArray views )
+		, VkExtent2D const & dimensions
+		, ashes::ashes::ImageViewPtrArray views )
 		: ashes::FrameBuffer{ renderPass, dimensions, std::move( views ) }
 		, m_device{ device }
 		, m_frameBuffer{ 0u }
@@ -187,7 +187,7 @@ namespace gl_renderer
 	}
 
 	void FrameBuffer::setDrawBuffers( ContextLock const & context
-		, AttachmentDescriptionArray const & attaches )const
+		, VkAttachmentDescriptionArray const & attaches )const
 	{
 		m_drawBuffers.clear();
 

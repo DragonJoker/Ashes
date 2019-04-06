@@ -6,7 +6,7 @@
 #include <RenderPass/RenderPass.hpp>
 #include <Core/SwapChain.hpp>
 
-#include <Utils/Signal.hpp>
+#include <AshesPP/Utils/Signal.hpp>
 
 namespace vkapp
 {
@@ -63,7 +63,7 @@ namespace vkapp
 		ashes::QueuePtr m_presentQueue;
 		ashes::CommandPoolPtr m_commandPool;
 		utils::SwapChainPtr m_swapChain;
-		ashes::ClearColorValue m_clearColour;
+		VkClearColorValue m_clearColour;
 		ashes::RenderPassPtr m_renderPass;
 		ashes::PipelineLayoutPtr m_pipelineLayout;
 		ashes::PipelinePtr m_pipeline;

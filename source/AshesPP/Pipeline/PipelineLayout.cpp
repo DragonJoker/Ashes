@@ -13,7 +13,7 @@ namespace ashes
 {
 	PipelineLayout::PipelineLayout( Device const & device
 		, DescriptorSetLayoutCRefArray const & layouts
-		, PushConstantRangeArray const & pushConstantRanges )
+		, VkPushConstantRangeArray const & pushConstantRanges )
 		: m_device{ device }
 		, m_setLayouts{ layouts }
 		, m_pushConstantRanges{ pushConstantRanges }

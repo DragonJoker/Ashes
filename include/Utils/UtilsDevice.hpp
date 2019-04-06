@@ -6,10 +6,11 @@ See LICENSE file in root folder.
 
 #include "UtilsPrerequisites.hpp"
 
-#include <Ashes/Buffer/Buffer.hpp>
-#include <Ashes/Buffer/UniformBuffer.hpp>
-#include <Ashes/Buffer/VertexBuffer.hpp>
-#include <Ashes/Core/Device.hpp>
+#include <AshesPP/Buffer/Buffer.hpp>
+#include <AshesPP/Buffer/UniformBuffer.hpp>
+#include <AshesPP/Buffer/VertexBuffer.hpp>
+#include <AshesPP/Core/Device.hpp>
+#include <AshesPP/Image/ImageCreateInfo.hpp>
 
 namespace utils
 {
@@ -51,8 +52,8 @@ namespace utils
 		*	Les indicateurs de propriétés de mémoire pour l'objet DeviceMemory.
 		*/
 		ashes::BufferBasePtr createBuffer( uint32_t size
-			, ashes::BufferTargets target
-			, ashes::MemoryPropertyFlags flags )const;
+			, VkBufferUsageFlags target
+			, VkMemoryPropertyFlags flags )const;
 		/**
 		*\~english
 		*\brief
@@ -79,8 +80,8 @@ namespace utils
 		*/
 		ashes::UniformBufferBasePtr createUniformBuffer( uint32_t count
 			, uint32_t size
-			, ashes::BufferTargets target
-			, ashes::MemoryPropertyFlags memoryFlags )const;
+			, VkBufferUsageFlags target
+			, VkMemoryPropertyFlags memoryFlags )const;
 		/**
 		*\~english
 		*\brief
@@ -102,10 +103,10 @@ namespace utils
 		*	Les indicateurs de propriétés de mémoire pour l'objet DeviceMemory.
 		*/
 		ashes::ImagePtr createImage( ashes::ImageCreateInfo const & createInfo
-			, ashes::MemoryPropertyFlags flags )const;
+			, VkMemoryPropertyFlags flags )const;
 
-		uint32_t deduceMemoryType( ashes::MemoryPropertyFlags typeBits
-			, ashes::MemoryPropertyFlags requirements )const;
+		uint32_t deduceMemoryType( VkMemoryPropertyFlags typeBits
+			, VkMemoryPropertyFlags requirements )const;
 
 		inline ashes::Device const * operator->()const
 		{
@@ -142,7 +143,7 @@ namespace utils
 		uint32_t m_presentQueueFamilyIndex;
 		uint32_t m_graphicsQueueFamilyIndex;
 		uint32_t m_computeQueueFamilyIndex;
-		ashes::PhysicalDeviceMemoryProperties m_memoryProperties;
+		VkPhysicalDeviceMemoryProperties m_memoryProperties;
 		ashes::DeviceCreateInfo m_createInfos;
 		ashes::DevicePtr m_device;
 	};
@@ -152,8 +153,8 @@ namespace utils
 	template< typename T >
 	ashes::BufferPtr< T > makeBuffer( Device const & device
 		, uint32_t count
-		, ashes::BufferTargets target
-		, ashes::MemoryPropertyFlags flags )
+		, VkBufferUsageFlags target
+		, VkMemoryPropertyFlags flags )
 	{
 		auto result = ashes::makeBuffer< T >( device.getDevice()
 			, count
@@ -167,8 +168,8 @@ namespace utils
 	template< typename T >
 	ashes::VertexBufferPtr< T > makeVertexBuffer( Device const & device
 		, uint32_t count
-		, ashes::BufferTargets target
-		, ashes::MemoryPropertyFlags flags )
+		, VkBufferUsageFlags target
+		, VkMemoryPropertyFlags flags )
 	{
 		auto result = ashes::makeVertexBuffer< T >( device.getDevice()
 			, count
@@ -182,8 +183,8 @@ namespace utils
 	template< typename T >
 	ashes::UniformBufferPtr< T > makeUniformBuffer( Device const & device
 		, uint32_t count
-		, ashes::BufferTargets target
-		, ashes::MemoryPropertyFlags flags )
+		, VkBufferUsageFlags target
+		, VkMemoryPropertyFlags flags )
 	{
 		auto result = ashes::makeUniformBuffer< T >( device.getDevice()
 			, count

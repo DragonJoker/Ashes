@@ -3,6 +3,7 @@
 #include <AshesCommon/DynamicLibrary.hpp>
 #include <AshesCommon/FileUtils.hpp>
 
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <memory>
@@ -50,6 +51,12 @@ inline PluginArray listPlugins()
 			}
 		}
 
+		std::sort( result.begin()
+			, result.end()
+			, []( Plugin const & lhs, Plugin const & rhs )
+			{
+				return lhs.description.support.priority > rhs.description.support.priority;
+			} );
 	}
 
 	return result;
@@ -72,7 +79,6 @@ struct PluginLibrary
 			else
 			{
 				selectedPugin = &plugins.front();
-				std::cout << "Using " << selectedPugin->description.description << std::endl;
 				result = VK_SUCCESS;
 			}
 		}
