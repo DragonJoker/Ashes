@@ -1,31 +1,29 @@
 /*
-* Copyright (c) 2015-2016 The Khronos Group Inc.
-* Copyright (c) 2015-2016 Valve Corporation
-* Copyright (c) 2015-2016 LunarG, Inc.
-*
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and/or associated documentation files (the "Materials"), to
-* deal in the Materials without restriction, including without limitation the
-* rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-* sell copies of the Materials, and to permit persons to whom the Materials are
-* furnished to do so, subject to the following conditions:
-*
-* The above copyright notice(s) and this permission notice shall be included in
-* all copies or substantial portions of the Materials.
-*
-* THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-*
-* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-* DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-* OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE MATERIALS OR THE
-* USE OR OTHER DEALINGS IN THE MATERIALS.
-*
-* Author: Courtney Goeltzenleuchter <courtney@LunarG.com>
-* Author: David Pinedo <david@lunarg.com>
-* Author: Mark Lobodzinski <mark@lunarg.com>
-*/
+ * Copyright (c) 2015-2019 The Khronos Group Inc.
+ * Copyright (c) 2015-2019 Valve Corporation
+ * Copyright (c) 2015-2019 LunarG, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Author: Courtney Goeltzenleuchter <courtney@LunarG.com>
+ * Author: David Pinedo <david@lunarg.com>
+ * Author: Mark Lobodzinski <mark@lunarg.com>
+ * Author: Rene Lindsay <rene@lunarg.com>
+ * Author: Jeremy Kniager <jeremyk@lunarg.com>
+ * Author: Shannon McPherson <shannon@lunarg.com>
+ * Author: Bob Ellison <bob@lunarg.com>
+ */
+
 #ifdef __GNUC__
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
@@ -34,43 +32,33 @@
 #define strndup(p, n) strdup(p)
 #endif
 
-#include <Core/DebugReportCallback.hpp>
-#include <Core/Device.hpp>
-#include <Core/Exception.hpp>
-#include <Core/Instance.hpp>
-#include <Core/PhysicalDevice.hpp>
-#include <Core/PlatformWindowHandle.hpp>
-#include <Core/SwapChain.hpp>
-#include <Miscellaneous/FormatProperties.hpp>
-#include <Utils/DynamicLibrary.hpp>
-
-#if ASHES_WIN32
-#	include <fcntl.h>
-#	include <io.h>
-#endif // _WIN32
-
-#if ASHES_XLIB || ASHES_XCB
-#	include <X11/Xutil.h>
-#endif
-
-#if ASHES_MIR
-#	warning "Vulkaninfo does not have code for Mir at this time"
-#endif
-
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <cassert>
-#include <cinttypes>
-#include <iostream>
-
-#define ERR(err)                                                               \
-    printf("%s:%d: failed with %s\n", __FILE__, __LINE__,                      \
-           vk_result_string(err));
-
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+#include <assert.h>
+#include <inttypes.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef _WIN32
+#include <fcntl.h>
+#include <io.h>
+#endif  // _WIN32
+
+#if defined(VK_USE_PLATFORM_XLIB_KHR) || defined(VK_USE_PLATFORM_XCB_KHR)
+#include <X11/Xutil.h>
+#endif
+
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+#include "metal_view.h"
+#endif
+
+#define ASHES_VK_PROTOTYPES
+#include <ashes/ashes.h>
+
+#define ERR(err) fprintf(stderr, "%s:%d: failed with %s\n", __FILE__, __LINE__, VkResultString(err));
+
+#ifdef _WIN32
+#include <Windows.h>
 
 #define snprintf _snprintf
 #define strdup _strdup
@@ -80,31 +68,28 @@
 static int ConsoleIsExclusive( void )
 {
 	DWORD pids[2];
-	DWORD num_pids = GetConsoleProcessList( pids, ARRAY_SIZE( pids ) );
+	DWORD num_pids = GetConsoleProcessList( pids, ARRAYSIZE( pids ) );
 	return num_pids <= 1;
 }
 
-#define WAIT_FOR_CONSOLE_DESTROY                                               \
-    do {                                                                       \
-        if ( ConsoleIsExclusive() ) Sleep(INFINITE);                           \
+#define WAIT_FOR_CONSOLE_DESTROY                   \
+    do {                                           \
+        if (ConsoleIsExclusive()) Sleep(INFINITE); \
     } while (0)
 #else
 #define WAIT_FOR_CONSOLE_DESTROY
 #endif
 
-#define ERR_EXIT(err)                                                          \
-    do {                                                                       \
-        ERR(err);                                                              \
-        fflush(stdout);                                                        \
-        WAIT_FOR_CONSOLE_DESTROY;                                              \
-        exit(-1);                                                              \
+#define ERR_EXIT(err)             \
+    do {                          \
+        ERR(err);                 \
+        fflush(stdout);           \
+        fflush(stderr);           \
+        WAIT_FOR_CONSOLE_DESTROY; \
+        exit(-1);                 \
     } while (0)
 
-#if defined(NDEBUG) && defined(__GNUC__)
-#define U_ASSERT_ONLY __attribute__((unused))
-#else
-#define U_ASSERT_ONLY
-#endif
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 #define MAX_QUEUE_TYPES 5
 #define APP_SHORT_NAME "vulkaninfo"
@@ -114,100 +99,135 @@ static bool human_readable_output = true;
 static bool json_output = false;
 static uint32_t selected_gpu = 0;
 
-class RendererPlugin;
+struct VkStructureHeader
+{
+	VkStructureType sType;
+	void *pNext;
+};
+
+struct pNextChainBuildingBlockInfo
+{
+	VkStructureType sType;
+	uint32_t mem_size;
+};
 
 struct LayerExtensionList
 {
-	ashes::LayerProperties layer_properties;
-	ashes::ExtensionPropertiesArray extension_properties;
+	VkLayerProperties layer_properties;
+	uint32_t extension_count;
+	VkExtensionProperties *extension_properties;
 };
 
 struct AppInstance
 {
-	RendererPlugin const * plugin;
-	ashes::InstancePtr instance;
-	ashes::DebugReportCallbackPtr debug_report;
+	VkInstance instance;
 	uint32_t instance_version;
 	uint32_t vulkan_major;
 	uint32_t vulkan_minor;
 	uint32_t vulkan_patch;
-	std::vector< LayerExtensionList > global_layers;
-	ashes::ExtensionPropertiesArray global_extensions;
-	ashes::StringArray inst_layers;
-	ashes::StringArray inst_extensions;
 
-	ashes::SurfacePtr surface;
-	ashes::SurfaceCapabilities surface_capabilities;
+	uint32_t global_layer_count;
+	struct LayerExtensionList *global_layers;
+	uint32_t global_extension_count;
+	VkExtensionProperties *global_extensions;  // Instance Extensions
+
+	const char **inst_extensions;
+	uint32_t inst_extensions_count;
+
+	// Functions from vkGetInstanceProcAddress
+	PFN_vkGetPhysicalDeviceSurfaceSupportKHR vkGetPhysicalDeviceSurfaceSupportKHR;
+	PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR vkGetPhysicalDeviceSurfaceCapabilitiesKHR;
+	PFN_vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfaceFormatsKHR;
+	PFN_vkGetPhysicalDeviceSurfaceFormats2KHR vkGetPhysicalDeviceSurfaceFormats2KHR;
+	PFN_vkGetPhysicalDeviceSurfacePresentModesKHR vkGetPhysicalDeviceSurfacePresentModesKHR;
+	PFN_vkGetPhysicalDeviceProperties2KHR vkGetPhysicalDeviceProperties2KHR;
+	PFN_vkGetPhysicalDeviceFormatProperties2KHR vkGetPhysicalDeviceFormatProperties2KHR;
+	PFN_vkGetPhysicalDeviceQueueFamilyProperties2KHR vkGetPhysicalDeviceQueueFamilyProperties2KHR;
+	PFN_vkGetPhysicalDeviceFeatures2KHR vkGetPhysicalDeviceFeatures2KHR;
+	PFN_vkGetPhysicalDeviceMemoryProperties2KHR vkGetPhysicalDeviceMemoryProperties2KHR;
+	PFN_vkGetPhysicalDeviceSurfaceCapabilities2KHR vkGetPhysicalDeviceSurfaceCapabilities2KHR;
+	PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT vkGetPhysicalDeviceSurfaceCapabilities2EXT;
+
+	VkSurfaceCapabilitiesKHR surface_capabilities;
+	VkSurfaceCapabilities2KHR surface_capabilities2;
+	VkSharedPresentSurfaceCapabilitiesKHR shared_surface_capabilities;
+	VkSurfaceCapabilities2EXT surface_capabilities2_ext;
+
+	VkSurfaceKHR surface;
 	int width, height;
 
-
-#if ASHES_WIN32
+#ifdef VK_USE_PLATFORM_WIN32_KHR
 	HINSTANCE h_instance;  // Windows Instance
 	HWND h_wnd;            // window handle
-#elif ASHES_XCB
+#endif
+#ifdef VK_USE_PLATFORM_XCB_KHR
 	xcb_connection_t *xcb_connection;
 	xcb_screen_t *xcb_screen;
 	xcb_window_t xcb_window;
-#elif ASHES_XLIB
+#endif
+#ifdef VK_USE_PLATFORM_XLIB_KHR
 	Display *xlib_display;
 	Window xlib_window;
-#elif ASHES_ANDROID  // TODO
-	ANativeWindow *window;
+#endif
+#ifdef VK_USE_PLATFORM_ANDROID_KHR  // TODO
+	struct ANativeWindow *window;
+#endif
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+	void *window;
+#endif
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
+	struct wl_display *wayland_display;
+	struct wl_surface *wayland_surface;
 #endif
 };
 
 struct AppGpu
 {
 	uint32_t id;
-	ashes::PhysicalDevicePtr obj;
+	VkPhysicalDevice obj;
 
-	ashes::PhysicalDeviceProperties props;
+	VkPhysicalDeviceProperties props;
+	VkPhysicalDeviceProperties2KHR props2;
 
-	ashes::QueueFamilyPropertiesArray queue_props;
-	std::vector< ashes::DeviceQueueCreateInfo > queue_reqs;
+	uint32_t queue_count;
+	VkQueueFamilyProperties *queue_props;
+	VkQueueFamilyProperties2KHR *queue_props2;
+	VkDeviceQueueCreateInfo *queue_reqs;
 
 	struct AppInstance *inst;
 
-	ashes::PhysicalDeviceMemoryProperties memory_props;
+	VkPhysicalDeviceMemoryProperties memory_props;
+	VkPhysicalDeviceMemoryProperties2KHR memory_props2;
 
-	ashes::PhysicalDeviceFeatures features;
-	ashes::PhysicalDeviceLimits limits;
+	VkPhysicalDeviceFeatures features;
+	VkPhysicalDeviceFeatures2KHR features2;
+	VkPhysicalDevice limits;
 
-	ashes::ExtensionPropertiesArray device_extensions;
+	uint32_t device_extension_count;
+	VkExtensionProperties *device_extensions;
 };
 
 // return most severe flag only
-static const char *DebugReportFlagString( const ashes::DebugReportFlags flags )
+static const char *DebugReportFlagString( const VkDebugReportFlagsEXT flags )
 {
-	if ( checkFlag( flags, ashes::DebugReportFlag::eError ) )
+	switch ( flags )
 	{
+	case VK_DEBUG_REPORT_ERROR_BIT_EXT:
 		return "ERROR";
-	}
-
-	if ( checkFlag( flags, ashes::DebugReportFlag::eWarning ) )
-	{
+	case VK_DEBUG_REPORT_WARNING_BIT_EXT:
 		return "WARNING";
-	}
-
-	if ( checkFlag( flags, ashes::DebugReportFlag::ePerformanceWarning ) )
-	{
+	case VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT:
 		return "PERF";
-	}
-
-	if ( checkFlag( flags, ashes::DebugReportFlag::eInformation ) )
-	{
+	case VK_DEBUG_REPORT_INFORMATION_BIT_EXT:
 		return "INFO";
-	}
-
-	if ( checkFlag( flags, ashes::DebugReportFlag::eDebug ) )
-	{
+	case VK_DEBUG_REPORT_DEBUG_BIT_EXT:
 		return "DEBUG";
+	default:
+		return "UNKNOWN";
 	}
-
-	return "UNKNOWN";
 }
 
-static bool ASHES_API DbgCallback( ashes::DebugReportFlags msgFlags, ashes::DebugReportObjectType objType,
+static VKAPI_ATTR VkBool32 VKAPI_CALL DbgCallback( VkDebugReportFlagsEXT msgFlags, VkDebugReportObjectTypeEXT objType,
 	uint64_t srcObject, size_t location, int32_t msgCode, const char *pLayerPrefix,
 	const char *pMsg, void *pUserData )
 {
@@ -216,660 +236,505 @@ static bool ASHES_API DbgCallback( ashes::DebugReportFlags msgFlags, ashes::Debu
 
 	// True is reserved for layer developers, and MAY mean calls are not distributed down the layer chain after validation error.
 	// False SHOULD always be returned by apps:
-	return false;
+	return VK_FALSE;
 }
 
-// Ashes specifics
-#if ASHES_WIN32
-
-#include <cstdio>
-#include <cstring>
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <direct.h>
-#include <Shlobj.h>
-#include <windows.h>
-
-#elif defined( __linux__ )
-
-#include <sys/stat.h>
-
-#include <unistd.h>
-#include <dirent.h>
-#include <pwd.h>
-
-#endif
-
-#if ASHES_WIN32
-
-static char constexpr PathSeparator = '\\';
-
-namespace
+static const char *VkResultString( VkResult err )
 {
-	template< typename DirectoryFuncType, typename FileFuncType >
-	bool traverse_folder( std::string const & folderPath
-		, DirectoryFuncType directoryFunction
-		, FileFuncType fileFunction )
+	switch ( err )
 	{
-		assert( !folderPath.empty() );
-		bool result = false;
-		WIN32_FIND_DATAA findData;
-		HANDLE handle = ::FindFirstFileA( ( folderPath + PathSeparator + "*.*" ).c_str(), &findData );
-
-		if ( handle != INVALID_HANDLE_VALUE )
-		{
-			result = true;
-			std::string name = findData.cFileName;
-
-			if ( name != "." && name != ".." )
-			{
-				if ( ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY )
-				{
-					result = directoryFunction( folderPath + PathSeparator + name );
-				}
-				else
-				{
-					fileFunction( folderPath + PathSeparator + name );
-				}
-			}
-
-			while ( result && ::FindNextFileA( handle, &findData ) == TRUE )
-			{
-				if ( findData.cFileName != name )
-				{
-					name = findData.cFileName;
-
-					if ( name != "." && name != ".." )
-					{
-						if ( ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY )
-						{
-							result = directoryFunction( folderPath + PathSeparator + name );
-						}
-						else
-						{
-							fileFunction( folderPath + PathSeparator + name );
-						}
-					}
-				}
-			}
-
-			::FindClose( handle );
-		}
-
-		return result;
+#define STR(r) \
+    case r:    \
+        return #r
+		STR( VK_SUCCESS );
+		STR( VK_NOT_READY );
+		STR( VK_TIMEOUT );
+		STR( VK_EVENT_SET );
+		STR( VK_EVENT_RESET );
+		STR( VK_INCOMPLETE );
+		STR( VK_ERROR_OUT_OF_HOST_MEMORY );
+		STR( VK_ERROR_OUT_OF_DEVICE_MEMORY );
+		STR( VK_ERROR_INITIALIZATION_FAILED );
+		STR( VK_ERROR_DEVICE_LOST );
+		STR( VK_ERROR_MEMORY_MAP_FAILED );
+		STR( VK_ERROR_LAYER_NOT_PRESENT );
+		STR( VK_ERROR_EXTENSION_NOT_PRESENT );
+		STR( VK_ERROR_FEATURE_NOT_PRESENT );
+		STR( VK_ERROR_INCOMPATIBLE_DRIVER );
+		STR( VK_ERROR_TOO_MANY_OBJECTS );
+		STR( VK_ERROR_FORMAT_NOT_SUPPORTED );
+		STR( VK_ERROR_FRAGMENTED_POOL );
+		STR( VK_ERROR_OUT_OF_POOL_MEMORY );
+		STR( VK_ERROR_INVALID_EXTERNAL_HANDLE );
+		STR( VK_ERROR_SURFACE_LOST_KHR );
+		STR( VK_ERROR_NATIVE_WINDOW_IN_USE_KHR );
+		STR( VK_SUBOPTIMAL_KHR );
+		STR( VK_ERROR_OUT_OF_DATE_KHR );
+		STR( VK_ERROR_INCOMPATIBLE_DISPLAY_KHR );
+		STR( VK_ERROR_VALIDATION_FAILED_EXT );
+		STR( VK_ERROR_INVALID_SHADER_NV );
+		STR( VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT );
+		STR( VK_ERROR_FRAGMENTATION_EXT );
+		STR( VK_ERROR_NOT_PERMITTED_EXT );
+#undef STR
+	default:
+		return "UNKNOWN_RESULT";
 	}
 }
 
-#else
-
-static char constexpr PathSeparator = '/';
-
-namespace
+static const char *VkPhysicalDeviceTypeString( VkPhysicalDeviceType type )
 {
-	template< typename DirectoryFuncType, typename FileFuncType >
-	bool traverse_folder( std::string const & folderPath
-		, DirectoryFuncType directoryFunction
-		, FileFuncType fileFunction )
+	switch ( type )
 	{
-		assert( !folderPath.empty() );
-		bool result = false;
-		DIR * dir;
-
-		if ( ( dir = opendir( folderPath.c_str() ) ) == nullptr )
-		{
-			switch ( errno )
-			{
-			case EACCES:
-				std::cerr << "Can't open dir : Permission denied - Directory : " << folderPath << std::endl;
-				break;
-
-			case EBADF:
-				std::cerr << "Can't open dir : Invalid file descriptor - Directory : " << folderPath << std::endl;
-				break;
-
-			case EMFILE:
-				std::cerr << "Can't open dir : Too many file descriptor in use - Directory : " << folderPath << std::endl;
-				break;
-
-			case ENFILE:
-				std::cerr << "Can't open dir : Too many files currently open - Directory : " << folderPath << std::endl;
-				break;
-
-			case ENOENT:
-				std::cerr << "Can't open dir : Directory doesn't exist - Directory : " << folderPath << std::endl;
-				break;
-
-			case ENOMEM:
-				std::cerr << "Can't open dir : Insufficient memory - Directory : " << folderPath << std::endl;
-				break;
-
-			case ENOTDIR:
-				std::cerr << "Can't open dir : <name> is not a directory - Directory : " << folderPath << std::endl;
-				break;
-
-			default:
-				std::cerr << "Can't open dir : Unknown error - Directory : " << folderPath << std::endl;
-				break;
-			}
-
-			result = false;
-		}
-		else
-		{
-			result = true;
-			dirent * dirent;
-
-			while ( result && ( dirent = readdir( dir ) ) != nullptr )
-			{
-				std::string name = dirent->d_name;
-
-				if ( name != "." && name != ".." )
-				{
-					if ( dirent->d_type == DT_DIR )
-					{
-						result = directoryFunction( folderPath + PathSeparator + name );
-					}
-					else
-					{
-						fileFunction( folderPath + PathSeparator + name );
-					}
-				}
-			}
-
-			closedir( dir );
-		}
-
-		return result;
+#define STR(r)                        \
+    case VK_PHYSICAL_DEVICE_TYPE_##r: \
+        return #r
+		STR( OTHER );
+		STR( INTEGRATED_GPU );
+		STR( DISCRETE_GPU );
+		STR( VIRTUAL_GPU );
+		STR( CPU );
+#undef STR
+	default:
+		return "UNKNOWN_DEVICE";
 	}
 }
 
-#endif
-
-std::string get_parent_path( std::string const & path )
+static const char *VkFormatString( VkFormat fmt )
 {
-	return path.substr( 0, path.find_last_of( PathSeparator ) );
+	switch ( fmt )
+	{
+#define STR(r)          \
+    case VK_FORMAT_##r: \
+        return #r
+		STR( UNDEFINED );
+		STR( R4G4_UNORM_PACK8 );
+		STR( R4G4B4A4_UNORM_PACK16 );
+		STR( B4G4R4A4_UNORM_PACK16 );
+		STR( R5G6B5_UNORM_PACK16 );
+		STR( B5G6R5_UNORM_PACK16 );
+		STR( R5G5B5A1_UNORM_PACK16 );
+		STR( B5G5R5A1_UNORM_PACK16 );
+		STR( A1R5G5B5_UNORM_PACK16 );
+		STR( R8_UNORM );
+		STR( R8_SNORM );
+		STR( R8_USCALED );
+		STR( R8_SSCALED );
+		STR( R8_UINT );
+		STR( R8_SINT );
+		STR( R8_SRGB );
+		STR( R8G8_UNORM );
+		STR( R8G8_SNORM );
+		STR( R8G8_USCALED );
+		STR( R8G8_SSCALED );
+		STR( R8G8_UINT );
+		STR( R8G8_SINT );
+		STR( R8G8_SRGB );
+		STR( R8G8B8_UNORM );
+		STR( R8G8B8_SNORM );
+		STR( R8G8B8_USCALED );
+		STR( R8G8B8_SSCALED );
+		STR( R8G8B8_UINT );
+		STR( R8G8B8_SINT );
+		STR( R8G8B8_SRGB );
+		STR( B8G8R8_UNORM );
+		STR( B8G8R8_SNORM );
+		STR( B8G8R8_USCALED );
+		STR( B8G8R8_SSCALED );
+		STR( B8G8R8_UINT );
+		STR( B8G8R8_SINT );
+		STR( B8G8R8_SRGB );
+		STR( R8G8B8A8_UNORM );
+		STR( R8G8B8A8_SNORM );
+		STR( R8G8B8A8_USCALED );
+		STR( R8G8B8A8_SSCALED );
+		STR( R8G8B8A8_UINT );
+		STR( R8G8B8A8_SINT );
+		STR( R8G8B8A8_SRGB );
+		STR( B8G8R8A8_UNORM );
+		STR( B8G8R8A8_SNORM );
+		STR( B8G8R8A8_USCALED );
+		STR( B8G8R8A8_SSCALED );
+		STR( B8G8R8A8_UINT );
+		STR( B8G8R8A8_SINT );
+		STR( B8G8R8A8_SRGB );
+		STR( A8B8G8R8_UNORM_PACK32 );
+		STR( A8B8G8R8_SNORM_PACK32 );
+		STR( A8B8G8R8_USCALED_PACK32 );
+		STR( A8B8G8R8_SSCALED_PACK32 );
+		STR( A8B8G8R8_UINT_PACK32 );
+		STR( A8B8G8R8_SINT_PACK32 );
+		STR( A8B8G8R8_SRGB_PACK32 );
+		STR( A2R10G10B10_UNORM_PACK32 );
+		STR( A2R10G10B10_SNORM_PACK32 );
+		STR( A2R10G10B10_USCALED_PACK32 );
+		STR( A2R10G10B10_SSCALED_PACK32 );
+		STR( A2R10G10B10_UINT_PACK32 );
+		STR( A2R10G10B10_SINT_PACK32 );
+		STR( A2B10G10R10_UNORM_PACK32 );
+		STR( A2B10G10R10_SNORM_PACK32 );
+		STR( A2B10G10R10_USCALED_PACK32 );
+		STR( A2B10G10R10_SSCALED_PACK32 );
+		STR( A2B10G10R10_UINT_PACK32 );
+		STR( A2B10G10R10_SINT_PACK32 );
+		STR( R16_UNORM );
+		STR( R16_SNORM );
+		STR( R16_USCALED );
+		STR( R16_SSCALED );
+		STR( R16_UINT );
+		STR( R16_SINT );
+		STR( R16_SFLOAT );
+		STR( R16G16_UNORM );
+		STR( R16G16_SNORM );
+		STR( R16G16_USCALED );
+		STR( R16G16_SSCALED );
+		STR( R16G16_UINT );
+		STR( R16G16_SINT );
+		STR( R16G16_SFLOAT );
+		STR( R16G16B16_UNORM );
+		STR( R16G16B16_SNORM );
+		STR( R16G16B16_USCALED );
+		STR( R16G16B16_SSCALED );
+		STR( R16G16B16_UINT );
+		STR( R16G16B16_SINT );
+		STR( R16G16B16_SFLOAT );
+		STR( R16G16B16A16_UNORM );
+		STR( R16G16B16A16_SNORM );
+		STR( R16G16B16A16_USCALED );
+		STR( R16G16B16A16_SSCALED );
+		STR( R16G16B16A16_UINT );
+		STR( R16G16B16A16_SINT );
+		STR( R16G16B16A16_SFLOAT );
+		STR( R32_UINT );
+		STR( R32_SINT );
+		STR( R32_SFLOAT );
+		STR( R32G32_UINT );
+		STR( R32G32_SINT );
+		STR( R32G32_SFLOAT );
+		STR( R32G32B32_UINT );
+		STR( R32G32B32_SINT );
+		STR( R32G32B32_SFLOAT );
+		STR( R32G32B32A32_UINT );
+		STR( R32G32B32A32_SINT );
+		STR( R32G32B32A32_SFLOAT );
+		STR( R64_UINT );
+		STR( R64_SINT );
+		STR( R64_SFLOAT );
+		STR( R64G64_UINT );
+		STR( R64G64_SINT );
+		STR( R64G64_SFLOAT );
+		STR( R64G64B64_UINT );
+		STR( R64G64B64_SINT );
+		STR( R64G64B64_SFLOAT );
+		STR( R64G64B64A64_UINT );
+		STR( R64G64B64A64_SINT );
+		STR( R64G64B64A64_SFLOAT );
+		STR( B10G11R11_UFLOAT_PACK32 );
+		STR( E5B9G9R9_UFLOAT_PACK32 );
+		STR( D16_UNORM );
+		STR( X8_D24_UNORM_PACK32 );
+		STR( D32_SFLOAT );
+		STR( S8_UINT );
+		STR( D16_UNORM_S8_UINT );
+		STR( D24_UNORM_S8_UINT );
+		STR( D32_SFLOAT_S8_UINT );
+		STR( BC1_RGB_UNORM_BLOCK );
+		STR( BC1_RGB_SRGB_BLOCK );
+		STR( BC1_RGBA_UNORM_BLOCK );
+		STR( BC1_RGBA_SRGB_BLOCK );
+		STR( BC2_UNORM_BLOCK );
+		STR( BC2_SRGB_BLOCK );
+		STR( BC3_UNORM_BLOCK );
+		STR( BC3_SRGB_BLOCK );
+		STR( BC4_UNORM_BLOCK );
+		STR( BC4_SNORM_BLOCK );
+		STR( BC5_UNORM_BLOCK );
+		STR( BC5_SNORM_BLOCK );
+		STR( BC6H_UFLOAT_BLOCK );
+		STR( BC6H_SFLOAT_BLOCK );
+		STR( BC7_UNORM_BLOCK );
+		STR( BC7_SRGB_BLOCK );
+		STR( ETC2_R8G8B8_UNORM_BLOCK );
+		STR( ETC2_R8G8B8_SRGB_BLOCK );
+		STR( ETC2_R8G8B8A1_UNORM_BLOCK );
+		STR( ETC2_R8G8B8A1_SRGB_BLOCK );
+		STR( ETC2_R8G8B8A8_UNORM_BLOCK );
+		STR( ETC2_R8G8B8A8_SRGB_BLOCK );
+		STR( EAC_R11_UNORM_BLOCK );
+		STR( EAC_R11_SNORM_BLOCK );
+		STR( EAC_R11G11_UNORM_BLOCK );
+		STR( EAC_R11G11_SNORM_BLOCK );
+		STR( ASTC_4x4_UNORM_BLOCK );
+		STR( ASTC_4x4_SRGB_BLOCK );
+		STR( ASTC_5x4_UNORM_BLOCK );
+		STR( ASTC_5x4_SRGB_BLOCK );
+		STR( ASTC_5x5_UNORM_BLOCK );
+		STR( ASTC_5x5_SRGB_BLOCK );
+		STR( ASTC_6x5_UNORM_BLOCK );
+		STR( ASTC_6x5_SRGB_BLOCK );
+		STR( ASTC_6x6_UNORM_BLOCK );
+		STR( ASTC_6x6_SRGB_BLOCK );
+		STR( ASTC_8x5_UNORM_BLOCK );
+		STR( ASTC_8x5_SRGB_BLOCK );
+		STR( ASTC_8x6_UNORM_BLOCK );
+		STR( ASTC_8x6_SRGB_BLOCK );
+		STR( ASTC_8x8_UNORM_BLOCK );
+		STR( ASTC_8x8_SRGB_BLOCK );
+		STR( ASTC_10x5_UNORM_BLOCK );
+		STR( ASTC_10x5_SRGB_BLOCK );
+		STR( ASTC_10x6_UNORM_BLOCK );
+		STR( ASTC_10x6_SRGB_BLOCK );
+		STR( ASTC_10x8_UNORM_BLOCK );
+		STR( ASTC_10x8_SRGB_BLOCK );
+		STR( ASTC_10x10_UNORM_BLOCK );
+		STR( ASTC_10x10_SRGB_BLOCK );
+		STR( ASTC_12x10_UNORM_BLOCK );
+		STR( ASTC_12x10_SRGB_BLOCK );
+		STR( ASTC_12x12_UNORM_BLOCK );
+		STR( ASTC_12x12_SRGB_BLOCK );
+		STR( G8B8G8R8_422_UNORM );
+		STR( B8G8R8G8_422_UNORM );
+		STR( G8_B8_R8_3PLANE_420_UNORM );
+		STR( G8_B8R8_2PLANE_420_UNORM );
+		STR( G8_B8_R8_3PLANE_422_UNORM );
+		STR( G8_B8R8_2PLANE_422_UNORM );
+		STR( G8_B8_R8_3PLANE_444_UNORM );
+		STR( R10X6_UNORM_PACK16 );
+		STR( R10X6G10X6_UNORM_2PACK16 );
+		STR( R10X6G10X6B10X6A10X6_UNORM_4PACK16 );
+		STR( G10X6B10X6G10X6R10X6_422_UNORM_4PACK16 );
+		STR( B10X6G10X6R10X6G10X6_422_UNORM_4PACK16 );
+		STR( G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16 );
+		STR( G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16 );
+		STR( G10X6_B10X6_R10X6_3PLANE_422_UNORM_3PACK16 );
+		STR( G10X6_B10X6R10X6_2PLANE_422_UNORM_3PACK16 );
+		STR( G10X6_B10X6_R10X6_3PLANE_444_UNORM_3PACK16 );
+		STR( R12X4_UNORM_PACK16 );
+		STR( R12X4G12X4_UNORM_2PACK16 );
+		STR( R12X4G12X4B12X4A12X4_UNORM_4PACK16 );
+		STR( G12X4B12X4G12X4R12X4_422_UNORM_4PACK16 );
+		STR( B12X4G12X4R12X4G12X4_422_UNORM_4PACK16 );
+		STR( G12X4_B12X4_R12X4_3PLANE_420_UNORM_3PACK16 );
+		STR( G12X4_B12X4R12X4_2PLANE_420_UNORM_3PACK16 );
+		STR( G12X4_B12X4_R12X4_3PLANE_422_UNORM_3PACK16 );
+		STR( G12X4_B12X4R12X4_2PLANE_422_UNORM_3PACK16 );
+		STR( G12X4_B12X4_R12X4_3PLANE_444_UNORM_3PACK16 );
+		STR( G16B16G16R16_422_UNORM );
+		STR( B16G16R16G16_422_UNORM );
+		STR( G16_B16_R16_3PLANE_420_UNORM );
+		STR( G16_B16R16_2PLANE_420_UNORM );
+		STR( G16_B16_R16_3PLANE_422_UNORM );
+		STR( G16_B16R16_2PLANE_422_UNORM );
+		STR( G16_B16_R16_3PLANE_444_UNORM );
+		STR( PVRTC1_2BPP_UNORM_BLOCK_IMG );
+		STR( PVRTC1_4BPP_UNORM_BLOCK_IMG );
+		STR( PVRTC2_2BPP_UNORM_BLOCK_IMG );
+		STR( PVRTC2_4BPP_UNORM_BLOCK_IMG );
+		STR( PVRTC1_2BPP_SRGB_BLOCK_IMG );
+		STR( PVRTC1_4BPP_SRGB_BLOCK_IMG );
+		STR( PVRTC2_2BPP_SRGB_BLOCK_IMG );
+		STR( PVRTC2_4BPP_SRGB_BLOCK_IMG );
+#undef STR
+	default:
+		return "UNKNOWN_FORMAT";
+	}
 }
-
-std::string get_filename( std::string const & path )
-{
-	return path.substr( path.find_last_of( PathSeparator ) + 1 );
-}
-
-#if ASHES_WIN32
-
-std::string get_bin_folder()
-{
-	std::string pathReturn;
-	char path[FILENAME_MAX];
-	DWORD result = ::GetModuleFileNameA( nullptr
-		, path
-		, sizeof( path ) );
-
-	if ( result != 0 )
-	{
-		pathReturn = path;
-	}
-
-	pathReturn = get_parent_path( pathReturn );
-	return pathReturn;
-}
-
-bool list_folder_files( std::string const & folderPath
-	, std::vector< std::string > & files
-	, bool recursive )
-{
-	struct FileFunction
-	{
-		explicit FileFunction( std::vector< std::string > & files )
-			: m_files( files )
-		{
-		}
-		void operator()( std::string const & path )
-		{
-			m_files.push_back( path );
-		}
-		std::vector< std::string > & m_files;
-	};
-
-	if ( recursive )
-	{
-		struct DirectoryFunction
-		{
-			explicit DirectoryFunction( std::vector< std::string > & files )
-				: m_files( files )
-			{
-			}
-			bool operator()( std::string const & path )
-			{
-				return traverse_folder( path
-					, DirectoryFunction( m_files )
-					, FileFunction( m_files ) );
-			}
-			std::vector< std::string > & m_files;
-		};
-
-		return traverse_folder( folderPath
-			, DirectoryFunction( files )
-			, FileFunction( files ) );
-	}
-	else
-	{
-		struct DirectoryFunction
-		{
-			DirectoryFunction()
-			{
-			}
-			bool operator()( std::string const & path )
-			{
-				return true;
-			}
-		};
-
-		return traverse_folder( folderPath
-			, DirectoryFunction()
-			, FileFunction( files ) );
-	}
-}
-
-#elif defined( __linux__ )
-
-std::string get_bin_folder()
-{
-	std::string pathReturn;
-	char path[FILENAME_MAX];
-	char buffer[32];
-	sprintf( buffer, "/proc/%d/exe", getpid() );
-	int bytes = std::min< std::size_t >( readlink( buffer
-		, path
-		, sizeof( path ) )
-		, sizeof( path ) - 1 );
-
-	if ( bytes > 0 )
-	{
-		path[bytes] = '\0';
-		pathReturn = path;
-	}
-
-	pathReturn = get_parent_path( pathReturn );
-	return pathReturn;
-}
-
-bool list_folder_files( std::string const & folderPath
-	, std::vector< std::string > & files
-	, bool recursive )
-{
-	struct FileFunction
-	{
-		explicit FileFunction( std::vector< std::string > & files )
-			: m_files( files )
-		{
-		}
-		void operator()( std::string const & path )
-		{
-			m_files.push_back( path );
-		}
-
-		std::vector< std::string > & m_files;
-	};
-
-	if ( recursive )
-	{
-		struct DirectoryFunction
-		{
-			explicit DirectoryFunction( std::vector< std::string > & files )
-				: m_files( files )
-			{
-			}
-			bool operator()( std::string const & path )
-			{
-				return traverse_folder( path
-					, DirectoryFunction( m_files )
-					, FileFunction( m_files ) );
-			}
-			std::vector< std::string > & m_files;
-		};
-
-		return traverse_folder( folderPath
-			, DirectoryFunction( files )
-			, FileFunction( files ) );
-	}
-	else
-	{
-		struct DirectoryFunction
-		{
-			DirectoryFunction()
-			{
-			}
-			bool operator()( std::string const & path )
-			{
-				return true;
-			}
-		};
-
-		return traverse_folder( folderPath
-			, DirectoryFunction()
-			, FileFunction( files ) );
-	}
-}
-
-#endif
-
-class RendererPlugin
-{
-	using CreatorFunction = ashes::Result( *)( ashes::InstanceCreateInfo, ashes::Instance ** );
-	using VersionEnumeratorFunction = ashes::Result( *)( uint32_t * );
-	using LayerPropertiesEnumeratorFunction = ashes::Result( *)( uint32_t *, ashes::LayerProperties * );
-	using ExtensionPropertiesEnumeratorFunction = ashes::Result( *)( char const * const, uint32_t *, ashes::ExtensionProperties * );
-	using NamerFunction = char const *( *)( );
-
-public:
-	RendererPlugin( ashes::DynamicLibrary library )
-		: m_library{ std::move( library ) }
-		, m_creator{ nullptr }
-	{
-		if ( !m_library.getFunction( "createInstance", m_creator ) )
-		{
-			throw std::runtime_error{ "[" + get_filename( m_library.getPath() ) + "] is not a renderer plugin" };
-		}
-
-		if ( !m_library.getFunction( "enumerateVersion", m_enumerateVersion ) )
-		{
-			throw std::runtime_error{ "[" + get_filename( m_library.getPath() ) + "] is not a renderer plugin" };
-		}
-
-		if ( !m_library.getFunction( "enumerateLayerProperties", m_enumerateLayerProperties ) )
-		{
-			throw std::runtime_error{ "[" + get_filename( m_library.getPath() ) + "] is not a renderer plugin" };
-		}
-
-		if ( !m_library.getFunction( "enumerateExtensionProperties", m_enumerateExtensionProperties ) )
-		{
-			throw std::runtime_error{ "[" + get_filename( m_library.getPath() ) + "] is not a renderer plugin" };
-		}
-
-		NamerFunction shortNamer;
-
-		if ( !m_library.getFunction( "getShortName", shortNamer ) )
-		{
-			throw std::runtime_error{ "[" + get_filename( m_library.getPath() ) + "] is not a renderer plugin" };
-		}
-
-		NamerFunction fullNamer;
-
-		if ( !m_library.getFunction( "getFullName", fullNamer ) )
-		{
-			throw std::runtime_error{ "[" + get_filename( m_library.getPath() ) + "] is not a renderer plugin" };
-		}
-
-		m_shortName = shortNamer();
-		m_fullName = fullNamer();
-	}
-
-	uint32_t enumerateVersion()const
-	{
-		uint32_t result;
-		auto res = m_enumerateVersion( &result );
-
-		if ( res != ashes::Result::eSuccess )
-		{
-			throw ashes::Exception{ res, "Version retrieval" };
-		}
-
-		return result;
-	}
-
-	ashes::LayerPropertiesArray enumerateLayerProperties()const
-	{
-		uint32_t count;
-		ashes::LayerPropertiesArray result;
-		ashes::Result res;
-
-		do
-		{
-			res = m_enumerateLayerProperties( &count, nullptr );
-
-			if ( count )
-			{
-				result.resize( count );
-				res = m_enumerateLayerProperties( &count, result.data() );
-			}
-		}
-		while ( res == ashes::Result::eIncomplete );
-
-		if ( res != ashes::Result::eSuccess )
-		{
-			throw ashes::Exception{ res, "Instance layers retrieval" };
-		}
-
-		return result;
-	}
-
-	ashes::ExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const
-	{
-		uint32_t count{};
-		ashes::ExtensionPropertiesArray result;
-		ashes::Result res{};
-
-		do
-		{
-			res = m_enumerateExtensionProperties( layerName.empty() ? nullptr : layerName.c_str()
-				, &count
-				, nullptr );
-
-			if ( count )
-			{
-				result.resize( count );
-				res = m_enumerateExtensionProperties( layerName.empty() ? nullptr : layerName.c_str()
-					, &count
-					, result.data() );
-			}
-		}
-		while ( res == ashes::Result::eIncomplete );
-
-		if ( res != ashes::Result::eSuccess )
-		{
-			throw ashes::Exception{ res, "Instance layer [" + layerName + "] extensions retrieval" };
-		}
-
-		return result;
-	}
-
-	ashes::InstancePtr create( ashes::InstanceCreateInfo createInfo )const
-	{
-		ashes::Instance * result;
-		auto res = m_creator( std::move( createInfo ), &result );
-
-		if ( res != ashes::Result::eSuccess )
-		{
-			throw ashes::Exception{ res, "Instance creation" };
-		}
-
-		return ashes::InstancePtr{ result };
-	}
-
-	inline std::string const & getShortName()const
-	{
-		return m_shortName;
-	}
-
-private:
-	ashes::DynamicLibrary m_library;
-	CreatorFunction m_creator;
-	VersionEnumeratorFunction m_enumerateVersion;
-	LayerPropertiesEnumeratorFunction m_enumerateLayerProperties;
-	ExtensionPropertiesEnumeratorFunction m_enumerateExtensionProperties;
-	std::string m_shortName;
-	std::string m_fullName;
-};
-
-class InstanceFactory
-{
-protected:
-	using Key = std::string;
-	using PtrType = RendererPlugin const *;
-	using ObjMap = std::map< Key, PtrType >;
-
-public:
-	void registerType( Key const & key, PtrType plugin )
-	{
-		m_registered[key] = plugin;
-	}
-
-	template< typename ... Parameters >
-	PtrType findPlugin( Key const & key )const
-	{
-		PtrType result{ nullptr };
-		auto it = m_registered.find( key );
-
-		if ( it != m_registered.end() )
-		{
-			result = it->second;
-		}
-		else
-		{
-			static std::string const Error = "Unknown object type";
-			std::cerr << Error << std::endl;
-			throw std::runtime_error{ Error };
-		}
-
-		return result;
-	}
-
-private:
-	ObjMap m_registered;
-};
-
-std::vector< RendererPlugin > list_plugins( InstanceFactory & factory )
-{
-	std::vector< std::string > files;
-	std::vector< RendererPlugin > result;
-
-	if ( list_folder_files( get_bin_folder(), files, false ) )
-	{
-		for ( auto file : files )
-		{
-			if ( file.find( ".dll" ) != std::string::npos
-				|| file.find( ".so" ) != std::string::npos )
-				try
-			{
-				ashes::DynamicLibrary lib{ file };
-				result.emplace_back( std::move( lib ) );
-			}
-			catch ( std::exception & exc )
-			{
-				std::cerr << exc.what() << std::endl;
-			}
-		}
-
-		for ( auto & plugin : result )
-		{
-			factory.registerType( plugin.getShortName(), &plugin );
-		}
-	}
-
-	return result;
-}
-static std::string VkResultString( ashes::Result err )
-{
-	return getName( err );
-}
-
-static std::string VkPhysicalDeviceTypeString( ashes::PhysicalDeviceType type )
-{
-	return getName( type );
-}
-
-static std::string VkFormatString( ashes::Format fmt )
-{
-	return getName( fmt );
-}
-
-#if ASHES_XCB || ASHES_XLIB || ASHES_WIN32
-static std::string VkPresentModeString( ashes::PresentMode mode )
+#if defined(VK_USE_PLATFORM_XCB_KHR) || defined(VK_USE_PLATFORM_XLIB_KHR) || defined(VK_USE_PLATFORM_WIN32_KHR) || \
+    defined(VK_USE_PLATFORM_MACOS_MVK) || defined(VK_USE_PLATFORM_WAYLAND_KHR)
+static const char *VkPresentModeString( VkPresentModeKHR mode )
 {
 	switch ( mode )
 	{
-	case ashes::PresentMode::eImmediate:
-		return "IMMEDIATE_KHR";
-
-	case ashes::PresentMode::eMailbox:
-		return "MAILBOX_KHR";
-
-	case ashes::PresentMode::eFifo:
-		return "FIFO_KHR";
-
-	case ashes::PresentMode::eFifoRelaxed:
-		return "FIFO_RELAXED_KHR";
-
-	case ashes::PresentMode::eSharedDemandRefresh:
-		return "SHARED_DEMAND_REFRESH_KHR";
-
-	case ashes::PresentMode::eSharedContinuousRefresh:
-		return "SHARED_CONTINUOUS_REFRESH_KHR";
+#define STR(r)                \
+    case VK_PRESENT_MODE_##r: \
+        return #r
+		STR( IMMEDIATE_KHR );
+		STR( MAILBOX_KHR );
+		STR( FIFO_KHR );
+		STR( FIFO_RELAXED_KHR );
+		STR( SHARED_DEMAND_REFRESH_KHR );
+		STR( SHARED_CONTINUOUS_REFRESH_KHR );
+#undef STR
+	default:
+		return "UNKNOWN_FORMAT";
 	}
-
-	return std::string{};
 }
 #endif
 
-static bool CheckExtensionEnabled( const char * extension_to_check
-	, ashes::StringArray const & extension_list )
+static bool CheckExtensionEnabled( const char *extension_to_check, const char **extension_list, uint32_t extension_count )
 {
-	return extension_list.end() != std::find( extension_list.begin()
-		, extension_list.end()
-		, extension_to_check );
+	for ( uint32_t i = 0; i < extension_count; ++i )
+	{
+		if ( !strcmp( extension_to_check, extension_list[i] ) )
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
-static void ExtractVersion( uint32_t version
-	, uint32_t * major
-	, uint32_t * minor
-	, uint32_t * patch )
+static bool CheckPhysicalDeviceExtensionIncluded( const char *extension_to_check, VkExtensionProperties *extension_list,
+	uint32_t extension_count )
+{
+	for ( uint32_t i = 0; i < extension_count; ++i )
+	{
+		if ( !strcmp( extension_to_check, extension_list[i].extensionName ) )
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+static void buildpNextChain( struct VkStructureHeader *first, const struct pNextChainBuildingBlockInfo *chain_info,
+	uint32_t chain_info_len )
+{
+	struct VkStructureHeader *place = first;
+
+	for ( uint32_t i = 0; i < chain_info_len; i++ )
+	{
+		place->pNext = malloc( chain_info[i].mem_size );
+		if ( !place->pNext )
+		{
+			ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
+		}
+		memset( place->pNext, 0, chain_info[i].mem_size );
+		place = place->pNext;
+		place->sType = chain_info[i].sType;
+	}
+
+	place->pNext = NULL;
+}
+
+static void freepNextChain( struct VkStructureHeader *first )
+{
+	struct VkStructureHeader *place = first;
+	struct VkStructureHeader *next = NULL;
+
+	while ( place )
+	{
+		next = place->pNext;
+		free( place );
+		place = next;
+	}
+}
+
+static void ExtractVersion( uint32_t version, uint32_t *major, uint32_t *minor, uint32_t *patch )
 {
 	*major = version >> 22;
 	*minor = ( version >> 12 ) & 0x3ff;
 	*patch = version & 0xfff;
 }
 
-static void AppGetPhysicalDeviceLayerExtensions( AppGpu * gpu
-	, std::string const & layer_name
-	, std::vector< ashes::ExtensionProperties > & extension_properties )
+static void AppGetPhysicalDeviceLayerExtensions( struct AppGpu *gpu, char *layer_name, uint32_t *extension_count,
+	VkExtensionProperties **extension_properties )
 {
-	extension_properties = gpu->obj->enumerateExtensionProperties( layer_name );
+	VkResult err;
+	uint32_t ext_count = 0;
+	VkExtensionProperties *ext_ptr = NULL;
+
+	/* repeat get until VK_INCOMPLETE goes away */
+	do
+	{
+		err = vkEnumerateDeviceExtensionProperties( gpu->obj, layer_name, &ext_count, NULL );
+		if ( err ) ERR_EXIT( err );
+
+		if ( ext_ptr )
+		{
+			free( ext_ptr );
+		}
+		ext_ptr = malloc( ext_count * sizeof( VkExtensionProperties ) );
+		err = vkEnumerateDeviceExtensionProperties( gpu->obj, layer_name, &ext_count, ext_ptr );
+	}
+	while ( err == VK_INCOMPLETE );
+	if ( err ) ERR_EXIT( err );
+
+	*extension_count = ext_count;
+	*extension_properties = ext_ptr;
 }
 
-static void AppGetGlobalLayerExtensions( AppInstance *inst
-	, std::string const & layer_name
-	, ashes::ExtensionPropertiesArray & extension_properties )
+static void AppGetGlobalLayerExtensions( char *layer_name, uint32_t *extension_count, VkExtensionProperties **extension_properties )
 {
-	extension_properties = inst->plugin->enumerateExtensionProperties( layer_name );
+	VkResult err;
+	uint32_t ext_count = 0;
+	VkExtensionProperties *ext_ptr = NULL;
+
+	/* repeat get until VK_INCOMPLETE goes away */
+	do
+	{
+	// gets the extension count if the last parameter is NULL
+		err = vkEnumerateInstanceExtensionProperties( layer_name, &ext_count, NULL );
+		if ( err ) ERR_EXIT( err );
+
+		if ( ext_ptr )
+		{
+			free( ext_ptr );
+		}
+		ext_ptr = malloc( ext_count * sizeof( VkExtensionProperties ) );
+		// gets the extension properties if the last parameter is not NULL
+		err = vkEnumerateInstanceExtensionProperties( layer_name, &ext_count, ext_ptr );
+	}
+	while ( err == VK_INCOMPLETE );
+	if ( err ) ERR_EXIT( err );
+	*extension_count = ext_count;
+	*extension_properties = ext_ptr;
 }
 
 /* Gets a list of layer and instance extensions */
-static void AppGetInstanceExtensions( AppInstance * inst )
+static void AppGetInstanceExtensions( struct AppInstance *inst )
 {
-	auto global_layer_properties = inst->plugin->enumerateLayerProperties();
-	inst->global_layers.resize( global_layer_properties.size() );
+	VkResult err;
 
-	for ( uint32_t i = 0; i < global_layer_properties.size(); ++i )
+	uint32_t count = 0;
+
+	/* Scan layers */
+	VkLayerProperties *global_layer_properties = NULL;
+	struct LayerExtensionList *global_layers = NULL;
+
+	do
 	{
-		ashes::LayerProperties & src_info = global_layer_properties[i];
-		auto & dst_info = inst->global_layers[i];
-		dst_info.layer_properties = src_info;
+		err = vkEnumerateInstanceLayerProperties( &count, NULL );
+		if ( err ) ERR_EXIT( err );
+
+		if ( global_layer_properties )
+		{
+			free( global_layer_properties );
+		}
+		global_layer_properties = malloc( sizeof( VkLayerProperties ) * count );
+		assert( global_layer_properties );
+
+		if ( global_layers )
+		{
+			free( global_layers );
+		}
+		global_layers = malloc( sizeof( struct LayerExtensionList ) * count );
+		assert( global_layers );
+
+		err = vkEnumerateInstanceLayerProperties( &count, global_layer_properties );
+	}
+	while ( err == VK_INCOMPLETE );
+	if ( err ) ERR_EXIT( err );
+
+	inst->global_layer_count = count;
+	inst->global_layers = global_layers;
+
+	for ( uint32_t i = 0; i < inst->global_layer_count; ++i )
+	{
+		VkLayerProperties *src_info = &global_layer_properties[i];
+		struct LayerExtensionList *dst_info = &inst->global_layers[i];
+		memcpy( &dst_info->layer_properties, src_info, sizeof( VkLayerProperties ) );
 
 		// Save away layer extension info for report
 		// Gets layer extensions, if first parameter is not NULL
-		AppGetGlobalLayerExtensions( inst
-			, src_info.layerName
-			, dst_info.extension_properties );
+		AppGetGlobalLayerExtensions( src_info->layerName, &dst_info->extension_count, &dst_info->extension_properties );
 	}
+	free( global_layer_properties );
 
 	// Collect global extensions
+	inst->global_extension_count = 0;
 	// Gets instance extensions, if no layer was specified in the first
 	// paramteter
-	AppGetGlobalLayerExtensions( inst
-		, std::string{}
-		, inst->global_extensions );
+	AppGetGlobalLayerExtensions( NULL, &inst->global_extension_count, &inst->global_extensions );
 }
 
 // Prints opening code for html output file
@@ -1006,116 +871,120 @@ bool CheckForJsonOption( const char *arg )
 static void AppCompileInstanceExtensionsToEnable( struct AppInstance *inst )
 {
 // Get all supported Instance extensions (excl. layer-provided ones)
-	inst->inst_extensions.reserve( inst->global_extensions.size() );
+	inst->inst_extensions_count = inst->global_extension_count;
+	inst->inst_extensions = malloc( sizeof( char * ) * inst->inst_extensions_count );
+	if ( !inst->inst_extensions ) ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
 
-	for ( auto & ext : inst->global_extensions )
+	for ( uint32_t i = 0; i < inst->global_extension_count; ++i )
 	{
-		inst->inst_extensions.push_back( ext.extensionName );
+		inst->inst_extensions[i] = inst->global_extensions[i].extensionName;
 	}
 }
 
-std::string CheckForInstanceOption( const char * arg )
+static void AppLoadInstanceCommands( struct AppInstance *inst )
 {
-	std::string result = arg;
-	result = result.substr( result.find( '-' ) + 1 );
-	result = result.substr( result.find( '/' ) + 1 );
-	return result;
+#define LOAD_INSTANCE_VK_CMD(cmd) inst->cmd = (PFN_##cmd)vkGetInstanceProcAddr(inst->instance, #cmd)
+
+	LOAD_INSTANCE_VK_CMD( vkGetPhysicalDeviceSurfaceSupportKHR );
+	LOAD_INSTANCE_VK_CMD( vkGetPhysicalDeviceSurfaceCapabilitiesKHR );
+	LOAD_INSTANCE_VK_CMD( vkGetPhysicalDeviceSurfaceFormatsKHR );
+	LOAD_INSTANCE_VK_CMD( vkGetPhysicalDeviceSurfaceFormats2KHR );
+	LOAD_INSTANCE_VK_CMD( vkGetPhysicalDeviceSurfacePresentModesKHR );
+	LOAD_INSTANCE_VK_CMD( vkGetPhysicalDeviceProperties2KHR );
+	LOAD_INSTANCE_VK_CMD( vkGetPhysicalDeviceFormatProperties2KHR );
+	LOAD_INSTANCE_VK_CMD( vkGetPhysicalDeviceQueueFamilyProperties2KHR );
+	LOAD_INSTANCE_VK_CMD( vkGetPhysicalDeviceFeatures2KHR );
+	LOAD_INSTANCE_VK_CMD( vkGetPhysicalDeviceMemoryProperties2KHR );
+	LOAD_INSTANCE_VK_CMD( vkGetPhysicalDeviceSurfaceCapabilities2KHR );
+	LOAD_INSTANCE_VK_CMD( vkGetPhysicalDeviceSurfaceCapabilities2EXT );
+
+#undef LOAD_INSTANCE_VK_CMD
 }
 
-void print_usage( char *argv0 );
-std::string ProcessCommandLine( int argc
-	, char ** argv
-	, FILE ** out )
+static void AppGetPlugin( struct AppInstance *inst, AshPluginDescription * plugins, int selectedPlugin )
 {
-	std::string result = "vk";
-
-	// Combinations of output: html only, html AND json, json only, human readable only
-	for ( int i = 1; i < argc; ++i )
+	if ( selectedPlugin != -1 )
 	{
-		if ( !CheckForJsonOption( argv[i] ) )
-		{
-			if ( strcmp( argv[i], "--html" ) == 0 )
-			{
-				human_readable_output = false;
-				html_output = true;
-				continue;
-			}
-			else if ( strcmp( argv[i], "--help" ) == 0 || strcmp( argv[i], "-h" ) == 0 )
-			{
-				print_usage( argv[0] );
-				exit( 1 );
-			}
-			else
-			{
-				result = CheckForInstanceOption( argv[i] );
-			}
-		}
+		ashSelectPlugin( plugins[selectedPlugin] );
+	}
+}
+
+static void AppCreateInstance( struct AppInstance *inst, AshPluginDescription * plugins, int selectedPlugin )
+{
+	AppGetPlugin( inst, plugins, selectedPlugin );
+	PFN_vkEnumerateInstanceVersion enumerate_instance_version =
+		( PFN_vkEnumerateInstanceVersion )vkGetInstanceProcAddr( NULL, "vkEnumerateInstanceVersion" );
+
+	if ( !enumerate_instance_version )
+	{
+		inst->instance_version = VK_API_VERSION_1_0;
+	}
+	else
+	{
+		const VkResult err = enumerate_instance_version( &inst->instance_version );
+		if ( err ) ERR_EXIT( err );
 	}
 
-	return result;
-}
-
-static void AppCreateInstance( AppInstance * inst )
-{
-	inst->instance_version = inst->plugin->enumerateVersion();
-
-	inst->vulkan_major = ashes::getMajor( inst->instance_version );
-	inst->vulkan_minor = ashes::getMinor( inst->instance_version );
-	inst->vulkan_patch = ashes::getPatch( ashes::HEADER_VERSION );
+	inst->vulkan_major = VK_VERSION_MAJOR( inst->instance_version );
+	inst->vulkan_minor = VK_VERSION_MINOR( inst->instance_version );
+	inst->vulkan_patch = VK_VERSION_PATCH( VK_HEADER_VERSION );
 
 	AppGetInstanceExtensions( inst );
 
-	const ashes::DebugReportCallbackCreateInfo dbg_info
-	{
-		ashes::DebugReportFlag::eError | ashes::DebugReportFlag::eWarning,
-		DbgCallback,
-		nullptr,
-	};
+	const VkDebugReportCallbackCreateInfoEXT dbg_info = { .sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT,
+		.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT,
+		.pfnCallback = DbgCallback };
 
-	const ashes::ApplicationInfo app_info
-	{
-		APP_SHORT_NAME,
-		1,
-		APP_SHORT_NAME,
-		1,
-		ashes::API_VERSION_1_0,
-	};
+	const VkApplicationInfo app_info = { .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+		.pApplicationName = APP_SHORT_NAME,
+		.applicationVersion = 1,
+		.apiVersion = VK_API_VERSION_1_0 };
 
 	AppCompileInstanceExtensionsToEnable( inst );
-	const ashes::InstanceCreateInfo inst_info
-	{
-		0,
-		app_info,
-		{},
-		inst->inst_extensions,
-	};
-	inst->instance = inst->plugin->create( inst_info );
-	inst->debug_report = inst->instance->createDebugReportCallback( std::move( dbg_info ) );
+	const VkInstanceCreateInfo inst_info = { .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+		.pNext = &dbg_info,
+		.pApplicationInfo = &app_info,
+		.enabledExtensionCount = inst->inst_extensions_count,
+		.ppEnabledExtensionNames = inst->inst_extensions };
 
-	//AppLoadInstanceCommands( inst );
+	VkResult err = vkCreateInstance( &inst_info, NULL, &inst->instance );
+	if ( err == VK_ERROR_INCOMPATIBLE_DRIVER )
+	{
+		fprintf( stderr, "Cannot create Vulkan instance.\n" );
+		ERR_EXIT( err );
+	}
+	else if ( err )
+	{
+		ERR_EXIT( err );
+	}
+
+	AppLoadInstanceCommands( inst );
 }
 
 static void AppDestroyInstance( struct AppInstance *inst )
 {
-	inst->surface.reset();
-	inst->debug_report.reset();
-	inst->instance.reset();
+	free( inst->global_extensions );
+	for ( uint32_t i = 0; i < inst->global_layer_count; ++i )
+	{
+		free( inst->global_layers[i].extension_properties );
+	}
+	free( inst->global_layers );
+	free( ( char ** )inst->inst_extensions );
+	vkDestroyInstance( inst->instance, NULL );
 }
 
-static void AppGpuInit( AppGpu * gpu
-	, AppInstance * inst
-	, uint32_t id
-	, ashes::PhysicalDevicePtr obj )
+static void AppGpuInit( struct AppGpu *gpu, struct AppInstance *inst, uint32_t id, VkPhysicalDevice obj )
 {
 	uint32_t i;
 
+	memset( gpu, 0, sizeof( *gpu ) );
+
 	gpu->id = id;
-	gpu->obj = std::move( obj );
+	gpu->obj = obj;
 	gpu->inst = inst;
 
-	gpu->props = gpu->obj->getProperties();
+	vkGetPhysicalDeviceProperties( gpu->obj, &gpu->props );
 
-#if 0
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -1151,11 +1020,18 @@ static void AppGpuInit( AppGpu * gpu
 
 		inst->vkGetPhysicalDeviceProperties2KHR( gpu->obj, &gpu->props2 );
 	}
-#endif
-	/* get queue count */
-	gpu->queue_props = gpu->obj->getQueueFamilyProperties();
 
-#if 0
+	/* get queue count */
+	vkGetPhysicalDeviceQueueFamilyProperties( gpu->obj, &gpu->queue_count, NULL );
+
+	gpu->queue_props = malloc( sizeof( gpu->queue_props[0] ) * gpu->queue_count );
+
+	if ( !gpu->queue_props )
+	{
+		ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
+	}
+	vkGetPhysicalDeviceQueueFamilyProperties( gpu->obj, &gpu->queue_count, gpu->queue_props );
+
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -1174,35 +1050,62 @@ static void AppGpuInit( AppGpu * gpu
 
 		inst->vkGetPhysicalDeviceQueueFamilyProperties2KHR( gpu->obj, &gpu->queue_count, gpu->queue_props2 );
 	}
-#endif
 
 	/* set up queue requests */
-	gpu->queue_reqs.resize( gpu->queue_props.size() );
-
-	for ( i = 0; i < gpu->queue_props.size(); ++i )
+	gpu->queue_reqs = malloc( sizeof( *gpu->queue_reqs ) * gpu->queue_count );
+	if ( !gpu->queue_reqs )
 	{
-		std::vector< float > queue_priorities;
-#if 0
+		ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
+	}
+	for ( i = 0; i < gpu->queue_count; ++i )
+	{
+		float *queue_priorities = NULL;
 		if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 			gpu->inst->inst_extensions_count ) )
 		{
-			queue_priorities.resize( gpu->queue_props2[i].queueFamilyProperties.queueCount );
+			queue_priorities = malloc( gpu->queue_props2[i].queueFamilyProperties.queueCount * sizeof( float ) );
 		}
 		else
-#endif
 		{
-			queue_priorities.resize( gpu->queue_props[i].queueCount );
+			queue_priorities = malloc( gpu->queue_props[i].queueCount * sizeof( float ) );
+		}
+		if ( !queue_priorities )
+		{
+			ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
 		}
 
+		if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+			gpu->inst->inst_extensions_count ) )
+		{
+			memset( queue_priorities, 0, gpu->queue_props2[i].queueFamilyProperties.queueCount * sizeof( float ) );
+		}
+		else
+		{
+			memset( queue_priorities, 0, gpu->queue_props[i].queueCount * sizeof( float ) );
+		}
+
+		gpu->queue_reqs[i].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		gpu->queue_reqs[i].pNext = NULL;
 		gpu->queue_reqs[i].flags = 0;
 		gpu->queue_reqs[i].queueFamilyIndex = i;
-		gpu->queue_reqs[i].queuePriorities = queue_priorities;
+
+		if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+			gpu->inst->inst_extensions_count ) )
+		{
+			gpu->queue_reqs[i].queueCount = gpu->queue_props2[i].queueFamilyProperties.queueCount;
+		}
+		else
+		{
+			gpu->queue_reqs[i].queueCount = gpu->queue_props[i].queueCount;
+		}
+
+		gpu->queue_reqs[i].pQueuePriorities = queue_priorities;
 	}
 
-	gpu->memory_props = gpu->obj->getMemoryProperties();
-	gpu->features = gpu->obj->getFeatures();
+	vkGetPhysicalDeviceMemoryProperties( gpu->obj, &gpu->memory_props );
 
-#if 0
+	vkGetPhysicalDeviceFeatures( gpu->obj, &gpu->features );
+
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -1242,25 +1145,40 @@ static void AppGpuInit( AppGpu * gpu
 
 		inst->vkGetPhysicalDeviceFeatures2KHR( gpu->obj, &gpu->features2 );
 	}
-#endif
 
-	AppGetPhysicalDeviceLayerExtensions( gpu
-		, std::string{}
-		, gpu->device_extensions );
+	AppGetPhysicalDeviceLayerExtensions( gpu, NULL, &gpu->device_extension_count, &gpu->device_extensions );
 }
 
-static void AppGpuDestroy( AppGpu *gpu )
+static void AppGpuDestroy( struct AppGpu *gpu )
 {
-	gpu->obj.reset();
-}
+	free( gpu->device_extensions );
 
-// clang-format off
+	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		freepNextChain( gpu->features2.pNext );
+	}
+
+	for ( uint32_t i = 0; i < gpu->queue_count; ++i )
+	{
+		free( ( void * )gpu->queue_reqs[i].pQueuePriorities );
+	}
+	free( gpu->queue_reqs );
+
+	free( gpu->queue_props );
+	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		free( gpu->queue_props2 );
+
+		freepNextChain( gpu->props2.pNext );
+	}
+}
 
 //-----------------------------------------------------------
 
 //---------------------------Win32---------------------------
-#if ASHES_WIN32
-#include <Windows.h>
+#ifdef VK_USE_PLATFORM_WIN32_KHR
 
 // MS-Windows event handling function:
 LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
@@ -1268,14 +1186,14 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	return ( DefWindowProc( hWnd, uMsg, wParam, lParam ) );
 }
 
-static void AppCreateWin32Window( AppInstance *inst )
+static void AppCreateWin32Window( struct AppInstance *inst )
 {
 	inst->h_instance = GetModuleHandle( NULL );
 
 	WNDCLASSEXA win_class;
 
 	// Initialize the window class structure:
-	win_class.cbSize = sizeof( WNDCLASSEX );
+	win_class.cbSize = sizeof( WNDCLASSEXA );
 	win_class.style = CS_HREDRAW | CS_VREDRAW;
 	win_class.lpfnWndProc = WndProc;
 	win_class.cbClsExtra = 0;
@@ -1291,63 +1209,66 @@ static void AppCreateWin32Window( AppInstance *inst )
 	// Register window class:
 	if ( !RegisterClassExA( &win_class ) )
 	{
-		// It didn't work, so try to give a useful error:
-		printf( "Failed to register the window class!\n" );
-		fflush( stdout );
+// It didn't work, so try to give a useful error:
+		fprintf( stderr, "Failed to register the window class!\n" );
 		exit( 1 );
 	}
 	// Create window with the registered class:
 	RECT wr = { 0, 0, inst->width, inst->height };
 	AdjustWindowRect( &wr, WS_OVERLAPPEDWINDOW, FALSE );
 	inst->h_wnd = CreateWindowExA( 0,
-		APP_SHORT_NAME,       // class name
-		APP_SHORT_NAME,       // app name
-							  //WS_VISIBLE | WS_SYSMENU |
+		APP_SHORT_NAME,  // class name
+		APP_SHORT_NAME,  // app name
+		// WS_VISIBLE | WS_SYSMENU |
 		WS_OVERLAPPEDWINDOW,  // window style
 		100, 100,             // x/y coords
 		wr.right - wr.left,   // width
 		wr.bottom - wr.top,   // height
 		NULL,                 // handle to parent
 		NULL,                 // handle to menu
-		inst->h_instance,      // hInstance
+		inst->h_instance,     // hInstance
 		NULL );                // no extra parameters
 	if ( !inst->h_wnd )
 	{
-		// It didn't work, so try to give a useful error:
-		printf( "Failed to create a window!\n" );
-		fflush( stdout );
+// It didn't work, so try to give a useful error:
+		fprintf( stderr, "Failed to create a window!\n" );
 		exit( 1 );
 	}
 }
 
-static void AppCreateWin32Surface( AppInstance *inst
-	, ashes::PhysicalDevice const & gpu )
+static void AppCreateWin32Surface( struct AppInstance *inst )
 {
-	inst->surface = inst->instance->createSurface( gpu
-		, ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( inst->h_instance, inst->h_wnd ) } );
+	VkWin32SurfaceCreateInfoKHR createInfo;
+	createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+	createInfo.pNext = NULL;
+	createInfo.flags = 0;
+	createInfo.hinstance = inst->h_instance;
+	createInfo.hwnd = inst->h_wnd;
+	VkResult err = vkCreateWin32SurfaceKHR( inst->instance, &createInfo, NULL, &inst->surface );
+	if ( err ) ERR_EXIT( err );
 }
 
-static void AppDestroyWin32Window( AppInstance *inst )
+static void AppDestroyWin32Window( struct AppInstance *inst )
 {
 	DestroyWindow( inst->h_wnd );
 }
-#endif //ASHES_WIN32
+#endif  // VK_USE_PLATFORM_WIN32_KHR
 //-----------------------------------------------------------
 
-#if ASHES_XCB     || \
-    ASHES_XLIB    || \
-    ASHES_WIN32
-static void AppDestroySurface( AppInstance *inst )
-{ //same for all platforms
+#if defined(VK_USE_PLATFORM_XCB_KHR) || defined(VK_USE_PLATFORM_XLIB_KHR) || defined(VK_USE_PLATFORM_WIN32_KHR) || \
+    defined(VK_USE_PLATFORM_MACOS_MVK) || defined(VK_USE_PLATFORM_WAYLAND_KHR) || defined(VK_USE_PLATFORM_ANDROID_KHR)
+static void AppDestroySurface( struct AppInstance *inst )
+{  // same for all platforms
+	vkDestroySurfaceKHR( inst->instance, inst->surface, NULL );
 }
 #endif
 
 //----------------------------XCB----------------------------
 
-#if ASHES_XCB
-static void AppCreateXcbWindow( AppInstance *inst )
+#ifdef VK_USE_PLATFORM_XCB_KHR
+static void AppCreateXcbWindow( struct AppInstance *inst )
 {
-	//--Init Connection--
+//--Init Connection--
 	const xcb_setup_t *setup;
 	xcb_screen_iterator_t iter;
 	int scr;
@@ -1373,44 +1294,47 @@ static void AppCreateXcbWindow( AppInstance *inst )
 	//-------------------
 
 	inst->xcb_window = xcb_generate_id( inst->xcb_connection );
-	xcb_create_window( inst->xcb_connection, XCB_COPY_FROM_PARENT, inst->xcb_window,
-		inst->xcb_screen->root, 0, 0, inst->width, inst->height, 0,
-		XCB_WINDOW_CLASS_INPUT_OUTPUT, inst->xcb_screen->root_visual,
-		0, NULL );
+	xcb_create_window( inst->xcb_connection, XCB_COPY_FROM_PARENT, inst->xcb_window, inst->xcb_screen->root, 0, 0, inst->width,
+		inst->height, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, inst->xcb_screen->root_visual, 0, NULL );
 
 	xcb_intern_atom_cookie_t cookie = xcb_intern_atom( inst->xcb_connection, 1, 12, "WM_PROTOCOLS" );
 	xcb_intern_atom_reply_t *reply = xcb_intern_atom_reply( inst->xcb_connection, cookie, 0 );
 	free( reply );
 }
 
-static void AppCreateXcbSurface( AppInstance *inst
-	, ashes::PhysicalDevice const & gpu )
+static void AppCreateXcbSurface( struct AppInstance *inst )
 {
 	if ( !inst->xcb_connection )
 	{
 		return;
 	}
 
-	inst->surface = inst->instance->createSurface( gpu
-		, ashes::WindowHandle{ std::make_unique< ashes::IXcbWindowHandle >( inst->xcb_connection, inst->xcb_window ) } );
+	VkXcbSurfaceCreateInfoKHR xcb_createInfo;
+	xcb_createInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
+	xcb_createInfo.pNext = NULL;
+	xcb_createInfo.flags = 0;
+	xcb_createInfo.connection = inst->xcb_connection;
+	xcb_createInfo.window = inst->xcb_window;
+	VkResult err = vkCreateXcbSurfaceKHR( inst->instance, &xcb_createInfo, NULL, &inst->surface );
+	if ( err ) ERR_EXIT( err );
 }
 
-static void AppDestroyXcbWindow( AppInstance *inst )
+static void AppDestroyXcbWindow( struct AppInstance *inst )
 {
 	if ( !inst->xcb_connection )
 	{
-		return; // Nothing to destroy
+		return;  // Nothing to destroy
 	}
 
 	xcb_destroy_window( inst->xcb_connection, inst->xcb_window );
 	xcb_disconnect( inst->xcb_connection );
 }
-//VK_USE_PLATFORM_XCB_KHR
+#endif  // VK_USE_PLATFORM_XCB_KHR
 //-----------------------------------------------------------
 
 //----------------------------XLib---------------------------
-#elif ASHES_XLIB
-static void AppCreateXlibWindow( AppInstance *inst )
+#ifdef VK_USE_PLATFORM_XLIB_KHR
+static void AppCreateXlibWindow( struct AppInstance *inst )
 {
 	long visualMask = VisualScreenMask;
 	int numberOfVisuals;
@@ -1418,48 +1342,123 @@ static void AppCreateXlibWindow( AppInstance *inst )
 	inst->xlib_display = XOpenDisplay( NULL );
 	if ( inst->xlib_display == NULL )
 	{
-		printf( "XLib failed to connect to the X server.\nExiting ...\n" );
-		fflush( stdout );
+		fprintf( stderr, "XLib failed to connect to the X server.\nExiting ...\n" );
 		exit( 1 );
 	}
 
 	XVisualInfo vInfoTemplate = {};
 	vInfoTemplate.screen = DefaultScreen( inst->xlib_display );
-	XVisualInfo *visualInfo = XGetVisualInfo( inst->xlib_display, visualMask,
-		&vInfoTemplate, &numberOfVisuals );
-	inst->xlib_window = XCreateWindow(
-		inst->xlib_display, RootWindow( inst->xlib_display, vInfoTemplate.screen ), 0, 0,
-		inst->width, inst->height, 0, visualInfo->depth, InputOutput,
-		visualInfo->visual, 0, NULL );
+	XVisualInfo *visualInfo = XGetVisualInfo( inst->xlib_display, visualMask, &vInfoTemplate, &numberOfVisuals );
+	inst->xlib_window = XCreateWindow( inst->xlib_display, RootWindow( inst->xlib_display, vInfoTemplate.screen ), 0, 0, inst->width,
+		inst->height, 0, visualInfo->depth, InputOutput, visualInfo->visual, 0, NULL );
 
 	XSync( inst->xlib_display, false );
+	XFree( visualInfo );
 }
 
-static void AppCreateXlibSurface( AppInstance *inst
-	, ashes::PhysicalDevice const & gpu )
+static void AppCreateXlibSurface( struct AppInstance *inst )
 {
-	inst->surface = inst->instance->createSurface( gpu
-		, ashes::WindowHandle{ std::make_unique< ashes::IXWindowHandle >( inst->xlib_window, inst->xlib_display ) } );
+	VkXlibSurfaceCreateInfoKHR createInfo;
+	createInfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
+	createInfo.pNext = NULL;
+	createInfo.flags = 0;
+	createInfo.dpy = inst->xlib_display;
+	createInfo.window = inst->xlib_window;
+	VkResult err = vkCreateXlibSurfaceKHR( inst->instance, &createInfo, NULL, &inst->surface );
+	if ( err ) ERR_EXIT( err );
 }
 
-static void AppDestroyXlibWindow( AppInstance *inst )
+static void AppDestroyXlibWindow( struct AppInstance *inst )
 {
 	XDestroyWindow( inst->xlib_display, inst->xlib_window );
 	XCloseDisplay( inst->xlib_display );
 }
-#endif //VK_USE_PLATFORM_XLIB_KHR
+#endif  // VK_USE_PLATFORM_XLIB_KHR
 //-----------------------------------------------------------
 
-#if ASHES_XCB     || \
-    ASHES_XLIB    || \
-    ASHES_WIN32
-static int AppDumpSurfaceFormats( AppInstance * inst
-	, AppGpu const * gpu
-	, FILE *out )
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+
+static void AppCreateMacOSWindow( struct AppInstance *inst )
 {
-	// Get the list of ashes::Format's that are supported
-	std::vector< ashes::SurfaceFormat > surf_formats;
-#if 0
+	inst->window = CreateMetalView( inst->width, inst->height );
+	if ( inst->window == NULL )
+	{
+		fprintf( stderr, "Could not create a native Metal view.\nExiting...\n" );
+		exit( 1 );
+	}
+}
+
+static void AppCreateMacOSSurface( struct AppInstance *inst )
+{
+	VkMacOSSurfaceCreateInfoMVK surface;
+	surface.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
+	surface.pNext = NULL;
+	surface.flags = 0;
+	surface.pView = inst->window;
+
+	VkResult err = vkCreateMacOSSurfaceMVK( inst->instance, &surface, NULL, &inst->surface );
+	if ( err ) ERR_EXIT( err );
+}
+
+static void AppDestroyMacOSWindow( struct AppInstance *inst )
+{
+	DestroyMetalView( inst->window );
+}
+#endif  // VK_USE_PLATFORM_MACOS_MVK
+//-----------------------------------------------------------
+
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
+
+static void wayland_registry_global( void *data, struct wl_registry *registry, uint32_t id, const char *interface,
+	uint32_t version )
+{
+	struct AppInstance *inst = ( struct AppInstance * )data;
+	if ( strcmp( interface, "wl_compositor" ) == 0 )
+	{
+		struct wl_compositor *compositor = ( struct wl_compositor * )wl_registry_bind( registry, id, &wl_compositor_interface, 1 );
+		inst->wayland_surface = wl_compositor_create_surface( compositor );
+	}
+}
+static void wayland_registry_global_remove( void *data, struct wl_registry *registry, uint32_t id )
+{
+}
+static const struct wl_registry_listener wayland_registry_listener = { wayland_registry_global, wayland_registry_global_remove };
+
+static void AppCreateWaylandWindow( struct AppInstance *inst )
+{
+	inst->wayland_display = wl_display_connect( NULL );
+	struct wl_registry *registry = wl_display_get_registry( inst->wayland_display );
+	wl_registry_add_listener( wl_display_get_registry( inst->wayland_display ), &wayland_registry_listener, inst );
+	wl_display_roundtrip( inst->wayland_display );
+	wl_registry_destroy( registry );
+}
+
+static void AppCreateWaylandSurface( struct AppInstance *inst )
+{
+	VkWaylandSurfaceCreateInfoKHR createInfo;
+	createInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+	createInfo.pNext = NULL;
+	createInfo.flags = 0;
+	createInfo.display = inst->wayland_display;
+	createInfo.surface = inst->wayland_surface;
+	VkResult err = vkCreateWaylandSurfaceKHR( inst->instance, &createInfo, NULL, &inst->surface );
+	if ( err ) ERR_EXIT( err );
+}
+
+static void AppDestroyWaylandWindow( struct AppInstance *inst )
+{
+	wl_display_disconnect( inst->wayland_display );
+}
+#endif  // VK_USE_PLATFORM_WAYLAND_KHR
+
+#if defined(VK_USE_PLATFORM_XCB_KHR) || defined(VK_USE_PLATFORM_XLIB_KHR) || defined(VK_USE_PLATFORM_WIN32_KHR) || \
+    defined(VK_USE_PLATFORM_MACOS_MVK) || defined(VK_USE_PLATFORM_WAYLAND_KHR)
+static int AppDumpSurfaceFormats( struct AppInstance *inst, struct AppGpu *gpu, FILE *out )
+{
+// Get the list of VkFormat's that are supported
+	VkResult err;
+	uint32_t format_count = 0;
+	VkSurfaceFormatKHR *surf_formats = NULL;
 	VkSurfaceFormat2KHR *surf_formats2 = NULL;
 
 	const VkPhysicalDeviceSurfaceInfo2KHR surface_info2 = { .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR,
@@ -1481,12 +1480,14 @@ static int AppDumpSurfaceFormats( AppInstance * inst
 		if ( err ) ERR_EXIT( err );
 	}
 	else
-#endif
 	{
-		surf_formats = inst->surface->getFormats();
+		err = inst->vkGetPhysicalDeviceSurfaceFormatsKHR( gpu->obj, inst->surface, &format_count, NULL );
+		if ( err ) ERR_EXIT( err );
+		surf_formats = ( VkSurfaceFormatKHR * )malloc( format_count * sizeof( VkSurfaceFormatKHR ) );
+		if ( !surf_formats ) ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
+		err = inst->vkGetPhysicalDeviceSurfaceFormatsKHR( gpu->obj, inst->surface, &format_count, surf_formats );
+		if ( err ) ERR_EXIT( err );
 	}
-
-	auto format_count = uint32_t( surf_formats.size() );
 
 	if ( html_output )
 	{
@@ -1508,32 +1509,28 @@ static int AppDumpSurfaceFormats( AppInstance * inst
 	{
 		if ( html_output )
 		{
-#if 0
 			if ( CheckExtensionEnabled( VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 				gpu->inst->inst_extensions_count ) )
 			{
 				fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>%s</div></summary></details>\n",
-					VkFormatString( surf_formats2[i].surfaceFormat.format ).c_str() );
+					VkFormatString( surf_formats2[i].surfaceFormat.format ) );
 			}
 			else
-#endif
 			{
 				fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>%s</div></summary></details>\n",
-					VkFormatString( surf_formats[i].format ).c_str() );
+					VkFormatString( surf_formats[i].format ) );
 			}
 		}
 		else if ( human_readable_output )
 		{
-#if 0
 			if ( CheckExtensionEnabled( VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 				gpu->inst->inst_extensions_count ) )
 			{
-				printf( "\t%s\n", VkFormatString( surf_formats2[i].surfaceFormat.format ).c_str() );
+				printf( "\t%s\n", VkFormatString( surf_formats2[i].surfaceFormat.format ) );
 			}
 			else
-#endif
 			{
-				printf( "\t%s\n", VkFormatString( surf_formats[i].format ).c_str() );
+				printf( "\t%s\n", VkFormatString( surf_formats[i].format ) );
 			}
 		}
 	}
@@ -1544,17 +1541,31 @@ static int AppDumpSurfaceFormats( AppInstance * inst
 
 	fflush( out );
 	fflush( stdout );
+	if ( CheckExtensionEnabled( VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		free( surf_formats2 );
+	}
+	else
+	{
+		free( surf_formats );
+	}
 
 	return format_count;
 }
 
-static int AppDumpSurfacePresentModes( AppInstance * inst
-	, AppGpu const * gpu
-	, FILE *out )
+static int AppDumpSurfacePresentModes( struct AppInstance *inst, struct AppGpu *gpu, FILE *out )
 {
-	// Get the list of VkPresentMode's that are supported:
-	auto surf_present_modes = inst->surface->getPresentModes();
-	uint32_t present_mode_count = uint32_t( surf_present_modes.size() );
+// Get the list of VkPresentMode's that are supported:
+	VkResult err;
+	uint32_t present_mode_count = 0;
+	err = inst->vkGetPhysicalDeviceSurfacePresentModesKHR( gpu->obj, inst->surface, &present_mode_count, NULL );
+	if ( err ) ERR_EXIT( err );
+
+	VkPresentModeKHR *surf_present_modes = ( VkPresentModeKHR * )malloc( present_mode_count * sizeof( VkPresentInfoKHR ) );
+	if ( !surf_present_modes ) ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
+	err = inst->vkGetPhysicalDeviceSurfacePresentModesKHR( gpu->obj, inst->surface, &present_mode_count, surf_present_modes );
+	if ( err ) ERR_EXIT( err );
 
 	if ( html_output )
 	{
@@ -1577,11 +1588,11 @@ static int AppDumpSurfacePresentModes( AppInstance * inst
 		if ( html_output )
 		{
 			fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>%s</div></summary></details>\n",
-				VkPresentModeString( surf_present_modes[i] ).c_str() );
+				VkPresentModeString( surf_present_modes[i] ) );
 		}
 		else if ( human_readable_output )
 		{
-			printf( "\t%s\n", VkPresentModeString( surf_present_modes[i] ).c_str() );
+			printf( "\t%s\n", VkPresentModeString( surf_present_modes[i] ) );
 		}
 	}
 	if ( present_mode_count > 0 && html_output )
@@ -1591,19 +1602,18 @@ static int AppDumpSurfacePresentModes( AppInstance * inst
 
 	fflush( out );
 	fflush( stdout );
+	free( surf_present_modes );
 
 	return present_mode_count;
 }
 
-static void AppDumpSurfaceCapabilities( AppInstance *inst
-	, AppGpu const *gpu
-	, FILE *out )
+static void AppDumpSurfaceCapabilities( struct AppInstance *inst, struct AppGpu *gpu, FILE *out )
 {
-#if 0
 	if ( CheckExtensionEnabled( VK_KHR_SURFACE_EXTENSION_NAME, gpu->inst->inst_extensions, gpu->inst->inst_extensions_count ) )
 	{
-#endif
-		inst->surface_capabilities = inst->surface->getCapabilities();
+		VkResult err;
+		err = inst->vkGetPhysicalDeviceSurfaceCapabilitiesKHR( gpu->obj, inst->surface, &inst->surface_capabilities );
+		if ( err ) ERR_EXIT( err );
 
 		if ( html_output )
 		{
@@ -1633,59 +1643,59 @@ static void AppDumpSurfaceCapabilities( AppInstance *inst
 			fprintf( out, "\t\t\t\t\t\t<details><summary>maxImageArrayLayers = <div class='val'>%u</div></summary></details>\n",
 				inst->surface_capabilities.maxImageArrayLayers );
 			fprintf( out, "\t\t\t\t\t\t<details><summary>supportedTransform</summary>\n" );
-			if ( inst->surface_capabilities.supportedTransforms == ashes::SurfaceTransformFlag::eNone )
+			if ( inst->surface_capabilities.supportedTransforms == 0 )
 			{
 				fprintf( out, "\t\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eIdentity )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eRotate90 )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eRotate180 )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eRotate270 )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirror )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirrorRotate90 )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirrorRotate180 )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirrorRotate270 )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eInherit )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t\t<details><summary><div "
@@ -1693,59 +1703,59 @@ static void AppDumpSurfaceCapabilities( AppInstance *inst
 			}
 			fprintf( out, "\t\t\t\t\t\t</details>\n" );
 			fprintf( out, "\t\t\t\t\t\t<details><summary>currentTransform</summary>\n" );
-			if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eNone )
+			if ( inst->surface_capabilities.currentTransform == 0 )
 			{
 				fprintf( out, "\t\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eIdentity )
+			if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR</div></summary></details>\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate90 )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR</div></summary></details>\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate180 )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR</div></summary></details>\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate270 )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR</div></summary></details>\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirror )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR</div></summary></details>\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate90 )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR</div></summary></details>\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate180 )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR</div></summary></details>\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate270 )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR</div></summary></details>\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eInherit )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
@@ -1753,29 +1763,29 @@ static void AppDumpSurfaceCapabilities( AppInstance *inst
 			}
 			fprintf( out, "\t\t\t\t\t\t</details>\n" );
 			fprintf( out, "\t\t\t\t\t\t<details><summary>supportedCompositeAlpha</summary>\n" );
-			if ( inst->surface_capabilities.supportedCompositeAlpha == ashes::CompositeAlphaFlag::eNone )
+			if ( inst->surface_capabilities.supportedCompositeAlpha == 0 )
 			{
 				fprintf( out, "\t\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::eOpaque )
+			if ( inst->surface_capabilities.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::ePreMultiplied )
+			if ( inst->surface_capabilities.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::ePostMultiplied )
+			if ( inst->surface_capabilities.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::eInherit )
+			if ( inst->surface_capabilities.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
@@ -1783,51 +1793,51 @@ static void AppDumpSurfaceCapabilities( AppInstance *inst
 			}
 			fprintf( out, "\t\t\t\t\t\t</details>\n" );
 			fprintf( out, "\t\t\t\t\t\t<details><summary>supportedUsageFlags</summary>\n" );
-			if ( inst->surface_capabilities.supportedUsageFlags == ashes::ImageUsageFlag::eNone )
+			if ( inst->surface_capabilities.supportedUsageFlags == 0 )
 			{
 				fprintf( out, "\t\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eTransferSrc )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_IMAGE_USAGE_TRANSFER_SRC_BIT</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eTransferDst )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_IMAGE_USAGE_TRANSFER_DST_BIT</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eSampled )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_SAMPLED_BIT )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_SAMPLED_BIT</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eStorage )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_STORAGE_BIT )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div class='type'>VK_IMAGE_USAGE_STORAGE_BIT</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eColourAttachment )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eDepthStencilAttachment )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eTransientAttachment )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
 					"class='type'>VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT</div></summary></details>\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eInputAttachment )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT )
 			{
 				fprintf( out,
 					"\t\t\t\t\t\t\t<details><summary><div "
@@ -1851,84 +1861,84 @@ static void AppDumpSurfaceCapabilities( AppInstance *inst
 			printf( "\t\theight      = %u\n", inst->surface_capabilities.maxImageExtent.height );
 			printf( "\tmaxImageArrayLayers = %u\n", inst->surface_capabilities.maxImageArrayLayers );
 			printf( "\tsupportedTransform:\n" );
-			if ( inst->surface_capabilities.supportedTransforms == ashes::SurfaceTransformFlag::eNone )
+			if ( inst->surface_capabilities.supportedTransforms == 0 )
 			{
 				printf( "\t\tNone\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eIdentity )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eRotate90 )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eRotate180 )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eRotate270 )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirror )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirrorRotate90 )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirrorRotate180 )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eHorizontalMirrorRotate270 )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR\n" );
 			}
-			if ( inst->surface_capabilities.supportedTransforms & ashes::SurfaceTransformFlag::eInherit )
+			if ( inst->surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_INHERIT_BIT_KHR\n" );
 			}
 			printf( "\tcurrentTransform:\n" );
-			if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eNone )
+			if ( inst->surface_capabilities.currentTransform == 0 )
 			{
 				printf( "\t\tNone\n" );
 			}
-			if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eIdentity )
+			if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate90 )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate180 )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eRotate270 )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirror )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate90 )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate180 )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eHorizontalMirrorRotate270 )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR\n" );
 			}
-			else if ( inst->surface_capabilities.currentTransform == ashes::SurfaceTransformFlag::eInherit )
+			else if ( inst->surface_capabilities.currentTransform & VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR )
 			{
 				printf( "\t\tVK_SURFACE_TRANSFORM_INHERIT_BIT_KHR\n" );
 			}
@@ -1937,19 +1947,19 @@ static void AppDumpSurfaceCapabilities( AppInstance *inst
 			{
 				printf( "\t\tNone\n" );
 			}
-			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::eOpaque )
+			if ( inst->surface_capabilities.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR )
 			{
 				printf( "\t\tVK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR\n" );
 			}
-			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::ePreMultiplied )
+			if ( inst->surface_capabilities.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR )
 			{
 				printf( "\t\tVK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR\n" );
 			}
-			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::ePostMultiplied )
+			if ( inst->surface_capabilities.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR )
 			{
 				printf( "\t\tVK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR\n" );
 			}
-			if ( inst->surface_capabilities.supportedCompositeAlpha & ashes::CompositeAlphaFlag::eInherit )
+			if ( inst->surface_capabilities.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR )
 			{
 				printf( "\t\tVK_COMPOSITE_ALPHA_INHERIT_BIT_KHR\n" );
 			}
@@ -1958,40 +1968,40 @@ static void AppDumpSurfaceCapabilities( AppInstance *inst
 			{
 				printf( "\t\tNone\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eTransferSrc )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_SRC_BIT )
 			{
 				printf( "\t\tVK_IMAGE_USAGE_TRANSFER_SRC_BIT\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eTransferDst )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT )
 			{
 				printf( "\t\tVK_IMAGE_USAGE_TRANSFER_DST_BIT\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eSampled )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_SAMPLED_BIT )
 			{
 				printf( "\t\tVK_IMAGE_USAGE_SAMPLED_BIT\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eStorage )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_STORAGE_BIT )
 			{
 				printf( "\t\tVK_IMAGE_USAGE_STORAGE_BIT\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eColourAttachment )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT )
 			{
 				printf( "\t\tVK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eDepthStencilAttachment )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT )
 			{
 				printf( "\t\tVK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eTransientAttachment )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT )
 			{
 				printf( "\t\tVK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT\n" );
 			}
-			if ( inst->surface_capabilities.supportedUsageFlags & ashes::ImageUsageFlag::eInputAttachment )
+			if ( inst->surface_capabilities.supportedUsageFlags & VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT )
 			{
 				printf( "\t\tVK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT\n" );
 			}
 		}
-#if 0
+
 		// Get additional surface capability information from vkGetPhysicalDeviceSurfaceCapabilities2EXT
 		if ( CheckExtensionEnabled( VK_EXT_DISPLAY_SURFACE_COUNTER_EXTENSION_NAME, gpu->inst->inst_extensions,
 			gpu->inst->inst_extensions_count ) )
@@ -2034,8 +2044,7 @@ static void AppDumpSurfaceCapabilities( AppInstance *inst
 				}
 			}
 		}
-#endif
-#if 0
+
 		// Get additional surface capability information from vkGetPhysicalDeviceSurfaceCapabilities2KHR
 		if ( CheckExtensionEnabled( VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 			gpu->inst->inst_extensions_count ) )
@@ -2178,51 +2187,44 @@ static void AppDumpSurfaceCapabilities( AppInstance *inst
 				place = work->pNext;
 			}
 		}
-#endif
 		if ( html_output )
 		{
 			fprintf( out, "\t\t\t\t\t</details>\n" );
 		}
-#if 0
 	}
-#endif
 }
 
 struct SurfaceExtensionInfo
 {
 	const char *name;
 	void( *create_window )( struct AppInstance * );
-	void( *create_surface )( struct AppInstance *, ashes::PhysicalDevice const & );
+	void( *create_surface )( struct AppInstance * );
 	void( *destroy_window )( struct AppInstance * );
 };
 
-static void AppDumpSurfaceExtension( AppInstance * inst
-	, std::vector< AppGpu > const & gpus
-	, SurfaceExtensionInfo * surface_extension
-	, int * format_count
-	, int * present_mode_count
-	, FILE * out )
+static void AppDumpSurfaceExtension( struct AppInstance *inst, struct AppGpu *gpus, uint32_t gpu_count,
+	struct SurfaceExtensionInfo *surface_extension, int *format_count, int *present_mode_count,
+	FILE *out )
 {
-	if ( !CheckExtensionEnabled( surface_extension->name, inst->inst_extensions ) )
+	if ( !CheckExtensionEnabled( surface_extension->name, inst->inst_extensions, inst->inst_extensions_count ) )
 	{
 		return;
 	}
 
-	auto gpu_count = uint32_t( gpus.size() );
 	surface_extension->create_window( inst );
 	for ( uint32_t i = 0; i < gpu_count; ++i )
 	{
-		surface_extension->create_surface( inst, *gpus[i].obj );
+		surface_extension->create_surface( inst );
 		if ( html_output )
 		{
 			fprintf( out, "\t\t\t\t<details><summary>GPU id : <div class='val'>%u</div> (%s)</summary>\n", i,
-				gpus[i].props.deviceName.c_str() );
+				gpus[i].props.deviceName );
 			fprintf( out, "\t\t\t\t\t<details><summary>Surface type : <div class='type'>%s</div></summary></details>\n",
 				surface_extension->name );
 		}
 		else if ( human_readable_output )
 		{
-			printf( "GPU id       : %u (%s)\n", i, gpus[i].props.deviceName.c_str() );
+			printf( "GPU id       : %u (%s)\n", i, gpus[i].props.deviceName );
 			printf( "Surface type : %s\n", surface_extension->name );
 		}
 		*format_count += AppDumpSurfaceFormats( inst, &gpus[i], out );
@@ -2243,16 +2245,14 @@ static void AppDumpSurfaceExtension( AppInstance * inst
 
 #endif
 
-static void AppDevDumpFormatProps( const AppGpu * gpu
-	, ashes::Format fmt
-	, bool * first_in_list
-	, FILE *out )
+static void AppDevDumpFormatProps( const struct AppGpu *gpu, VkFormat fmt, bool *first_in_list, FILE *out )
 {
-	auto props = gpu->obj->getFormatProperties( fmt );
+	VkFormatProperties props;
+	vkGetPhysicalDeviceFormatProperties( gpu->obj, fmt, &props );
 	struct
 	{
 		const char *name;
-		uint32_t flags;
+		VkFlags flags;
 	} features[3];
 
 	features[0].name = "linearTiling   FormatFeatureFlags";
@@ -2264,11 +2264,11 @@ static void AppDevDumpFormatProps( const AppGpu * gpu
 
 	if ( html_output )
 	{
-		fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>FORMAT_%s</div></summary>\n", VkFormatString( fmt ).c_str() );
+		fprintf( out, "\t\t\t\t\t\t<details><summary><div class='type'>FORMAT_%s</div></summary>\n", VkFormatString( fmt ) );
 	}
 	else if ( human_readable_output )
 	{
-		printf( "\nFORMAT_%s:", VkFormatString( fmt ).c_str() );
+		printf( "\nFORMAT_%s:", VkFormatString( fmt ) );
 	}
 	for ( uint32_t i = 0; i < ARRAY_SIZE( features ); ++i )
 	{
@@ -2282,67 +2282,67 @@ static void AppDevDumpFormatProps( const AppGpu * gpu
 			else
 			{
 				fprintf( out, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
-					( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eSampledImage ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
+					( ( features[i].flags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
 						"class='type'>VK_FORMAT_FEATURE_SAMPLED_IMAGE_"
 						"BIT</div></summary></details>\n"
 						: "" ),  // 0x0001
-						( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eStorageImage ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
+						( ( features[i].flags & VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
 							"class='type'>VK_FORMAT_FEATURE_STORAGE_IMAGE_"
 							"BIT</div></summary></details>\n"
 							: "" ),  // 0x0002
-							( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eStorageImageAtomic )
+							( ( features[i].flags & VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT )
 								? "\t\t\t\t\t\t\t\t<details><summary><div "
 								"class='type'>VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT</div></summary></details>\n"
 								: "" ),  // 0x0004
-								( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eUniformTexelBuffer )
+								( ( features[i].flags & VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT )
 									? "\t\t\t\t\t\t\t\t<details><summary><div "
 									"class='type'>VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT</div></summary></details>\n"
 									: "" ),  // 0x0008
-									( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eStorageTexelBuffer )
+									( ( features[i].flags & VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT )
 										? "\t\t\t\t\t\t\t\t<details><summary><div "
 										"class='type'>VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT</div></summary></details>\n"
 										: "" ),  // 0x0010
-										( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eStorageTexelBufferAtomic )
+										( ( features[i].flags & VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT )
 											? "\t\t\t\t\t\t\t\t<details><summary><div "
 											"class='type'>VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT</div></summary></details>\n"
 											: "" ),  // 0x0020
-											( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eVertexBuffer ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
+											( ( features[i].flags & VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
 												"class='type'>VK_FORMAT_FEATURE_VERTEX_BUFFER_"
 												"BIT</div></summary></details>\n"
 												: "" ),  // 0x0040
-												( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eColourAttachment ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
+												( ( features[i].flags & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
 													"class='type'>VK_FORMAT_FEATURE_COLOR_"
 													"ATTACHMENT_BIT</div></summary></details>\n"
 													: "" ),  // 0x0080
-													( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eColourAttachmentBlend )
+													( ( features[i].flags & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT )
 														? "\t\t\t\t\t\t\t\t<details><summary><div "
 														"class='type'>VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT</div></summary></details>\n"
 														: "" ),  // 0x0100
-														( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eDepthStencilAttachment )
+														( ( features[i].flags & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT )
 															? "\t\t\t\t\t\t\t\t<details><summary><div "
 															"class='type'>VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT</div></summary></details>\n"
 															: "" ),  // 0x0200
-															( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eBlitSrc ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
+															( ( features[i].flags & VK_FORMAT_FEATURE_BLIT_SRC_BIT ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
 																"class='type'>VK_FORMAT_FEATURE_BLIT_SRC_BIT</"
 																"div></summary></details>\n"
 																: "" ),  // 0x0400
-																( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eBlitDst ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
+																( ( features[i].flags & VK_FORMAT_FEATURE_BLIT_DST_BIT ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
 																	"class='type'>VK_FORMAT_FEATURE_BLIT_DST_BIT</"
 																	"div></summary></details>\n"
 																	: "" ),  // 0x0800
-																	( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eSampledImageFilterLinear )
+																	( ( features[i].flags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT )
 																		? "\t\t\t\t\t\t\t\t<details><summary><div "
 																		"class='type'>VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT</div></summary></details>\n"
 																		: "" ),  // 0x1000
-																		( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eSampledImageFilterCubic )
+																		( ( features[i].flags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG )
 																			? "\t\t\t\t\t\t\t\t<details><summary><div "
 																			"class='type'>VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG</div></summary></details>\n"
 																			: "" ),  // 0x2000
-																			( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eTransferSrc ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
+																			( ( features[i].flags & VK_FORMAT_FEATURE_TRANSFER_SRC_BIT_KHR ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
 																				"class='type'>VK_FORMAT_FEATURE_TRANSFER_"
 																				"SRC_BIT_KHR</div></summary></details>\n"
 																				: "" ),  // 0x4000
-																				( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eTransferDst ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
+																				( ( features[i].flags & VK_FORMAT_FEATURE_TRANSFER_DST_BIT_KHR ) ? "\t\t\t\t\t\t\t\t<details><summary><div "
 																					"class='type'>VK_FORMAT_FEATURE_TRANSFER_"
 																					"DST_BIT_KHR</div></summary></details>\n"
 																					: "" ) );  // 0x8000
@@ -2360,43 +2360,43 @@ static void AppDevDumpFormatProps( const AppGpu * gpu
 			{
 				printf(
 					"%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
-					( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eSampledImage ) ? "\n\t\tVK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT"
+					( ( features[i].flags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT ) ? "\n\t\tVK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT"
 						: "" ),  // 0x0001
-						( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eStorageImage ) ? "\n\t\tVK_FORMAT_FEATURE_STORAGE_IMAGE_BIT"
+						( ( features[i].flags & VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT ) ? "\n\t\tVK_FORMAT_FEATURE_STORAGE_IMAGE_BIT"
 							: "" ),  // 0x0002
-							( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eStorageImageAtomic )
+							( ( features[i].flags & VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT )
 								? "\n\t\tVK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT"
 								: "" ),  // 0x0004
-								( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eUniformTexelBuffer )
+								( ( features[i].flags & VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT )
 									? "\n\t\tVK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT"
 									: "" ),  // 0x0008
-									( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eStorageTexelBuffer )
+									( ( features[i].flags & VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT )
 										? "\n\t\tVK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT"
 										: "" ),  // 0x0010
-										( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eStorageTexelBufferAtomic )
+										( ( features[i].flags & VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT )
 											? "\n\t\tVK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT"
 											: "" ),  // 0x0020
-											( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eVertexBuffer ) ? "\n\t\tVK_FORMAT_FEATURE_VERTEX_BUFFER_BIT"
+											( ( features[i].flags & VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT ) ? "\n\t\tVK_FORMAT_FEATURE_VERTEX_BUFFER_BIT"
 												: "" ),  // 0x0040
-												( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eColourAttachment ) ? "\n\t\tVK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT"
+												( ( features[i].flags & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT ) ? "\n\t\tVK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT"
 													: "" ),  // 0x0080
-													( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eColourAttachmentBlend )
+													( ( features[i].flags & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT )
 														? "\n\t\tVK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT"
 														: "" ),  // 0x0100
-														( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eDepthStencilAttachment )
+														( ( features[i].flags & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT )
 															? "\n\t\tVK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT"
 															: "" ),                                                                                            // 0x0200
-															( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eBlitSrc ) ? "\n\t\tVK_FORMAT_FEATURE_BLIT_SRC_BIT" : "" ),  // 0x0400
-					( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eBlitDst ) ? "\n\t\tVK_FORMAT_FEATURE_BLIT_DST_BIT" : "" ),  // 0x0800
-					( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eSampledImageFilterLinear )
+															( ( features[i].flags & VK_FORMAT_FEATURE_BLIT_SRC_BIT ) ? "\n\t\tVK_FORMAT_FEATURE_BLIT_SRC_BIT" : "" ),  // 0x0400
+					( ( features[i].flags & VK_FORMAT_FEATURE_BLIT_DST_BIT ) ? "\n\t\tVK_FORMAT_FEATURE_BLIT_DST_BIT" : "" ),  // 0x0800
+					( ( features[i].flags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT )
 						? "\n\t\tVK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT"
 						: "" ),  // 0x1000
-						( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eSampledImageFilterCubic )
+						( ( features[i].flags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG )
 							? "\n\t\tVK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG"
 							: "" ),  // 0x2000
-							( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eTransferSrc ) ? "\n\t\tVK_FORMAT_FEATURE_TRANSFER_SRC_BIT_KHR"
+							( ( features[i].flags & VK_FORMAT_FEATURE_TRANSFER_SRC_BIT_KHR ) ? "\n\t\tVK_FORMAT_FEATURE_TRANSFER_SRC_BIT_KHR"
 								: "" ),  // 0x4000
-								( checkFlag( features[i].flags, ashes::FormatFeatureFlag::eTransferDst ) ? "\n\t\tVK_FORMAT_FEATURE_TRANSFER_DST_BIT_KHR"
+								( ( features[i].flags & VK_FORMAT_FEATURE_TRANSFER_DST_BIT_KHR ) ? "\n\t\tVK_FORMAT_FEATURE_TRANSFER_DST_BIT_KHR"
 									: "" ) );  // 0x8000
 			}
 		}
@@ -2421,10 +2421,10 @@ static void AppDevDumpFormatProps( const AppGpu * gpu
 		}
 		printf( "\n" );
 		printf( "\t\t{\n" );
-		printf( "\t\t\t\"formatID\": %d,\n", int( fmt ) );
-		printf( "\t\t\t\"linearTilingFeatures\": %u,\n", props.linearTilingFeatures.value() );
-		printf( "\t\t\t\"optimalTilingFeatures\": %u,\n", props.optimalTilingFeatures.value() );
-		printf( "\t\t\t\"bufferFeatures\": %u\n", props.bufferFeatures.value() );
+		printf( "\t\t\t\"formatID\": %d,\n", fmt );
+		printf( "\t\t\t\"linearTilingFeatures\": %u,\n", props.linearTilingFeatures );
+		printf( "\t\t\t\"optimalTilingFeatures\": %u,\n", props.optimalTilingFeatures );
+		printf( "\t\t\t\"bufferFeatures\": %u\n", props.bufferFeatures );
 		printf( "\t\t}" );
 	}
 }
@@ -2441,32 +2441,32 @@ static struct FormatRange
 
 	// The name of the extension that supports this format range, or NULL if the range
 	// is only part of the standard
-	std::string const extension_name;
+	char *extension_name;
 
 	// The first and last supported formats within this range.
-	ashes::Format first_format;
-	ashes::Format last_format;
+	VkFormat first_format;
+	VkFormat last_format;
 } supported_format_ranges[] = {
 	{
 		// Standard formats in Vulkan 1.0
-		ashes::makeVersion( 1, 0, 0 ),
-		std::string{},
-		ashes::Format::eRange_BEGIN,
-		ashes::Format::eRange_END,
+		VK_MAKE_VERSION( 1, 0, 0 ),
+		NULL,
+		VK_FORMAT_BEGIN_RANGE,
+		VK_FORMAT_END_RANGE,
 	},
 	{
 		// YCBCR extension, standard in Vulkan 1.1
-		ashes::makeVersion( 1, 1, 0 ),
-		ashes::KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME,
-		ashes::Format::eG8B8G8R8_422_UNORM,
-		ashes::Format::eG16_B16_R16_3PLANE_444_UNORM,
+		VK_MAKE_VERSION( 1, 1, 0 ),
+		VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME,
+		VK_FORMAT_G8B8G8R8_422_UNORM,
+		VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM,
 	},
 	{
 		// PVRTC extension, not standardized
 		0,
-		ashes::IMG_FORMAT_PVRTC_EXTENSION_NAME,
-		ashes::Format::ePVRTC1_2BPP_UNORM_BLOCK_IMG,
-		ashes::Format::ePVRTC2_4BPP_SRGB_BLOCK_IMG,
+		VK_IMG_FORMAT_PVRTC_EXTENSION_NAME,
+		VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG,
+		VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG,
 	},
 };
 
@@ -2474,30 +2474,26 @@ static struct FormatRange
 bool FormatRangeSupported( const struct FormatRange *format_range, const struct AppGpu *gpu )
 {
 // True if standard and supported by both this instance and this GPU
-	if ( format_range->minimum_instance_version > 0
-		&& gpu->inst->instance_version >= format_range->minimum_instance_version
-		&& gpu->props.apiVersion >= format_range->minimum_instance_version )
+	if ( format_range->minimum_instance_version > 0 && gpu->inst->instance_version >= format_range->minimum_instance_version &&
+		gpu->props.apiVersion >= format_range->minimum_instance_version )
 	{
 		return true;
 	}
 
 	// True if this extension is present
-	if ( !format_range->extension_name.empty() )
+	if ( format_range->extension_name != NULL )
 	{
-		return CheckExtensionEnabled( format_range->extension_name.c_str()
-			, gpu->inst->inst_extensions );
+		return CheckExtensionEnabled( format_range->extension_name, gpu->inst->inst_extensions, gpu->inst->inst_extensions_count );
 	}
 
 	// Otherwise, not supported.
 	return false;
 }
 
-bool FormatPropsEq( const ashes::FormatProperties *props1
-	, const ashes::FormatProperties *props2 )
+bool FormatPropsEq( const VkFormatProperties *props1, const VkFormatProperties *props2 )
 {
-	if ( props1->bufferFeatures == props2->bufferFeatures
-		&& props1->linearTilingFeatures == props2->linearTilingFeatures
-		&& props1->optimalTilingFeatures == props2->optimalTilingFeatures )
+	if ( props1->bufferFeatures == props2->bufferFeatures && props1->linearTilingFeatures == props2->linearTilingFeatures &&
+		props1->optimalTilingFeatures == props2->optimalTilingFeatures )
 	{
 		return true;
 	}
@@ -2509,82 +2505,100 @@ bool FormatPropsEq( const ashes::FormatProperties *props1
 
 struct PropFormats
 {
-	ashes::FormatProperties props;
+	VkFormatProperties props;
 
 	uint32_t format_count;
 	uint32_t format_reserve;
-	ashes::Format *formats;
+	VkFormat *formats;
 };
 
-void FormatPropsShortenedDump( const AppGpu *gpu )
+void FormatPropsShortenedDump( const struct AppGpu *gpu )
 {
-	const ashes::FormatProperties unsupported_prop = {0};
+	const VkFormatProperties unsupported_prop = { 0 };
 	uint32_t unique_props_count = 1;
 	uint32_t unique_props_reserve = 50;
-	PropFormats *prop_map = (PropFormats*)malloc(sizeof(PropFormats) * unique_props_reserve);
+	struct PropFormats *prop_map = malloc( sizeof( struct PropFormats ) * unique_props_reserve );
+	if ( !prop_map ) ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
 	prop_map[0].props = unsupported_prop;
 	prop_map[0].format_count = 0;
 	prop_map[0].format_reserve = 20;
-	prop_map[0].formats = (ashes::Format*)malloc(sizeof(ashes::Format) * prop_map[0].format_reserve);
+	prop_map[0].formats = malloc( sizeof( VkFormat ) * prop_map[0].format_reserve );
+	if ( !prop_map[0].formats ) ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
 
-	for (uint32_t ri = 0; ri < ARRAY_SIZE(supported_format_ranges); ++ri) {
+	for ( uint32_t ri = 0; ri < ARRAY_SIZE( supported_format_ranges ); ++ri )
+	{
 		struct FormatRange format_range = supported_format_ranges[ri];
-		if (FormatRangeSupported(&format_range, gpu)) {
-			for (ashes::Format fmt = format_range.first_format; fmt <= format_range.last_format; fmt=ashes::Format(uint32_t(fmt)+1)) {
-				ashes::FormatProperties props = gpu->obj->getFormatProperties(ashes::Format(fmt));
+		if ( FormatRangeSupported( &format_range, gpu ) )
+		{
+			for ( VkFormat fmt = format_range.first_format; fmt <= format_range.last_format; ++fmt )
+			{
+				VkFormatProperties props;
+				vkGetPhysicalDeviceFormatProperties( gpu->obj, fmt, &props );
 
 				uint32_t formats_prop_i = 0;
-				for (; formats_prop_i < unique_props_count; ++formats_prop_i) {
-					if (FormatPropsEq(&prop_map[formats_prop_i].props, &props)) break;
+				for ( ; formats_prop_i < unique_props_count; ++formats_prop_i )
+				{
+					if ( FormatPropsEq( &prop_map[formats_prop_i].props, &props ) ) break;
 				}
 
-				if (formats_prop_i < unique_props_count) {
+				if ( formats_prop_i < unique_props_count )
+				{
 					struct PropFormats *propFormats = &prop_map[formats_prop_i];
 					++propFormats->format_count;
 
-					if (propFormats->format_count > propFormats->format_reserve) {
+					if ( propFormats->format_count > propFormats->format_reserve )
+					{
 						propFormats->format_reserve *= 2;
-						propFormats->formats = ( ashes::Format* )realloc(propFormats->formats, sizeof(ashes::Format) * propFormats->format_reserve);
+						propFormats->formats = realloc( propFormats->formats, sizeof( VkFormat ) * propFormats->format_reserve );
+						if ( !propFormats->formats ) ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
 					}
 
 					propFormats->formats[propFormats->format_count - 1] = fmt;
-				} else {
-					assert(formats_prop_i == unique_props_count);
+				}
+				else
+				{
+					assert( formats_prop_i == unique_props_count );
 					++unique_props_count;
 
-					if (unique_props_count > unique_props_reserve) {
+					if ( unique_props_count > unique_props_reserve )
+					{
 						unique_props_reserve *= 2;
-						prop_map = (PropFormats*)realloc(prop_map, sizeof(PropFormats) * unique_props_reserve);
+						prop_map = realloc( prop_map, sizeof( struct PropFormats ) * unique_props_reserve );
+						if ( !prop_map ) ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
 					}
 
 					struct PropFormats *propFormats = &prop_map[formats_prop_i];
 					propFormats->props = props;
 					propFormats->format_count = 1;
 					propFormats->format_reserve = 20;
-					propFormats->formats = (ashes::Format*)malloc(sizeof(ashes::Format) * propFormats->format_reserve);
+					propFormats->formats = malloc( sizeof( VkFormat ) * propFormats->format_reserve );
+					if ( !propFormats->formats ) ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
 					propFormats->formats[0] = fmt;
 				}
 			}
 		}
 	}
 
-	for (uint32_t pi = 1; pi < unique_props_count; ++pi) {
+	for ( uint32_t pi = 1; pi < unique_props_count; ++pi )
+	{
 		struct PropFormats *propFormats = &prop_map[pi];
 
-		for (uint32_t fi = 0; fi < propFormats->format_count; ++fi) {
-			const ashes::Format fmt = propFormats->formats[fi];
+		for ( uint32_t fi = 0; fi < propFormats->format_count; ++fi )
+		{
+			const VkFormat fmt = propFormats->formats[fi];
 
-			printf("\nFORMAT_%s", VkFormatString(fmt).c_str());
+			printf( "\nFORMAT_%s", VkFormatString( fmt ) );
 
-			if (fi < propFormats->format_count - 1)
-				printf(",");
+			if ( fi < propFormats->format_count - 1 )
+				printf( "," );
 			else
-				printf(":");
+				printf( ":" );
 		}
 
-		struct {
+		struct
+		{
 			const char *name;
-			uint32_t flags;
+			VkFlags flags;
 		} features[3];
 
 		features[0].name = "linearTiling   FormatFeatureFlags";
@@ -2594,72 +2608,76 @@ void FormatPropsShortenedDump( const AppGpu *gpu )
 		features[2].name = "bufferFeatures FormatFeatureFlags";
 		features[2].flags = propFormats->props.bufferFeatures;
 
-		for (uint32_t i = 0; i < ARRAY_SIZE(features); ++i) {
-			printf("\n\t%s:", features[i].name);
-			if (features[i].flags == 0) {
-				printf("\n\t\tNone");
-			} else {
+		for ( uint32_t i = 0; i < ARRAY_SIZE( features ); ++i )
+		{
+			printf( "\n\t%s:", features[i].name );
+			if ( features[i].flags == 0 )
+			{
+				printf( "\n\t\tNone" );
+			}
+			else
+			{
 				printf(
 					"%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eSampledImage) ? "\n\t\tVK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT"
-																				: ""),  // 0x0001
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eStorageImage) ? "\n\t\tVK_FORMAT_FEATURE_STORAGE_IMAGE_BIT"
-																				: ""),  // 0x0002
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eStorageImageAtomic)
-							? "\n\t\tVK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT"
-							: ""),  // 0x0004
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eUniformTexelBuffer)
-							? "\n\t\tVK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT"
-							: ""),  // 0x0008
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eStorageTexelBuffer)
-							? "\n\t\tVK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT"
-							: ""),  // 0x0010
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eStorageTexelBufferAtomic)
-							? "\n\t\tVK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT"
-							: ""),  // 0x0020
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eVertexBuffer) ? "\n\t\tVK_FORMAT_FEATURE_VERTEX_BUFFER_BIT"
-																				: ""),  // 0x0040
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eColourAttachment) ? "\n\t\tVK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT"
-																					: ""),  // 0x0080
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eColourAttachmentBlend)
-							? "\n\t\tVK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT"
-							: ""),  // 0x0100
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eDepthStencilAttachment)
-							? "\n\t\tVK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT"
-							: ""),                                                                                            // 0x0200
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eBlitSrc) ? "\n\t\tVK_FORMAT_FEATURE_BLIT_SRC_BIT" : ""),  // 0x0400
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eBlitDst) ? "\n\t\tVK_FORMAT_FEATURE_BLIT_DST_BIT" : ""),  // 0x0800
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eSampledImageFilterLinear)
-							? "\n\t\tVK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT"
-							: ""),  // 0x1000
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eSampledImageFilterCubic)
+					( ( features[i].flags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT ) ? "\n\t\tVK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT"
+						: "" ),  // 0x0001
+						( ( features[i].flags & VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT ) ? "\n\t\tVK_FORMAT_FEATURE_STORAGE_IMAGE_BIT"
+							: "" ),  // 0x0002
+							( ( features[i].flags & VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT )
+								? "\n\t\tVK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT"
+								: "" ),  // 0x0004
+								( ( features[i].flags & VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT )
+									? "\n\t\tVK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT"
+									: "" ),  // 0x0008
+									( ( features[i].flags & VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT )
+										? "\n\t\tVK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT"
+										: "" ),  // 0x0010
+										( ( features[i].flags & VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT )
+											? "\n\t\tVK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT"
+											: "" ),  // 0x0020
+											( ( features[i].flags & VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT ) ? "\n\t\tVK_FORMAT_FEATURE_VERTEX_BUFFER_BIT"
+												: "" ),  // 0x0040
+												( ( features[i].flags & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT ) ? "\n\t\tVK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT"
+													: "" ),  // 0x0080
+													( ( features[i].flags & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT )
+														? "\n\t\tVK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT"
+														: "" ),  // 0x0100
+														( ( features[i].flags & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT )
+															? "\n\t\tVK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT"
+															: "" ),                                                                                            // 0x0200
+															( ( features[i].flags & VK_FORMAT_FEATURE_BLIT_SRC_BIT ) ? "\n\t\tVK_FORMAT_FEATURE_BLIT_SRC_BIT" : "" ),  // 0x0400
+					( ( features[i].flags & VK_FORMAT_FEATURE_BLIT_DST_BIT ) ? "\n\t\tVK_FORMAT_FEATURE_BLIT_DST_BIT" : "" ),  // 0x0800
+					( ( features[i].flags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT )
+						? "\n\t\tVK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT"
+						: "" ),  // 0x1000
+						( ( features[i].flags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG )
 							? "\n\t\tVK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG"
-							: ""),  // 0x2000
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eTransferSrc) ? "\n\t\tVK_FORMAT_FEATURE_TRANSFER_SRC_BIT_KHR"
-																					: ""),  // 0x4000
-					(checkFlag(features[i].flags, ashes::FormatFeatureFlag::eTransferDst) ? "\n\t\tVK_FORMAT_FEATURE_TRANSFER_DST_BIT_KHR"
-																					: ""));  // 0x8000
+							: "" ),  // 0x2000
+							( ( features[i].flags & VK_FORMAT_FEATURE_TRANSFER_SRC_BIT_KHR ) ? "\n\t\tVK_FORMAT_FEATURE_TRANSFER_SRC_BIT_KHR"
+								: "" ),  // 0x4000
+								( ( features[i].flags & VK_FORMAT_FEATURE_TRANSFER_DST_BIT_KHR ) ? "\n\t\tVK_FORMAT_FEATURE_TRANSFER_DST_BIT_KHR"
+									: "" ) );  // 0x8000
 			}
 
-			printf("\n");
+			printf( "\n" );
 		}
 	}
 
-	printf("\nUnsupported formats:");
-	if (prop_map[0].format_count == 0) printf("\nNone");
-	for (uint32_t fi = 0; fi < prop_map[0].format_count; ++fi) {
-		const ashes::Format fmt = prop_map[0].formats[fi];
+	printf( "\nUnsupported formats:" );
+	if ( prop_map[0].format_count == 0 ) printf( "\nNone" );
+	for ( uint32_t fi = 0; fi < prop_map[0].format_count; ++fi )
+	{
+		const VkFormat fmt = prop_map[0].formats[fi];
 
-		printf("\nFORMAT_%s", VkFormatString(fmt).c_str());
+		printf( "\nFORMAT_%s", VkFormatString( fmt ) );
 	}
 
 	// cleanup
-	for (uint32_t pi = 0; pi < unique_props_count; ++pi) free(prop_map[pi].formats);
-	free(prop_map);
+	for ( uint32_t pi = 0; pi < unique_props_count; ++pi ) free( prop_map[pi].formats );
+	free( prop_map );
 }
 
-static void AppDevDump( const AppGpu * gpu
-	, FILE *out )
+static void AppDevDump( const struct AppGpu *gpu, FILE *out )
 {
 	if ( html_output )
 	{
@@ -2688,11 +2706,9 @@ static void AppDevDump( const AppGpu * gpu
 			struct FormatRange format_range = supported_format_ranges[i];
 			if ( FormatRangeSupported( &format_range, gpu ) )
 			{
-				for ( uint32_t fmt = uint32_t( format_range.first_format );
-					fmt <= uint32_t( format_range.last_format );
-					++fmt )
+				for ( VkFormat fmt = format_range.first_format; fmt <= format_range.last_format; ++fmt )
 				{
-					AppDevDumpFormatProps( gpu, ashes::Format( fmt ), &first_in_list, out );
+					AppDevDumpFormatProps( gpu, fmt, &first_in_list, out );
 				}
 			}
 		}
@@ -2709,13 +2725,27 @@ static void AppDevDump( const AppGpu * gpu
 }
 
 #ifdef _WIN32
-#define PRINTF_SIZE_T_SPECIFIER    "%Iu"
+#define PRINTF_SIZE_T_SPECIFIER "%Iu"
 #else
-#define PRINTF_SIZE_T_SPECIFIER    "%zu"
+#define PRINTF_SIZE_T_SPECIFIER "%zu"
 #endif
 
-static void AppGpuDumpFeatures( ashes::PhysicalDeviceFeatures const & features, FILE *out )
+static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 {
+	VkPhysicalDeviceFeatures features;
+
+	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		const VkPhysicalDeviceFeatures *features2_const = &gpu->features2.features;
+		features = *features2_const;
+	}
+	else
+	{
+		const VkPhysicalDeviceFeatures *features_const = &gpu->features;
+		features = *features_const;
+	}
+
 	if ( html_output )
 	{
 		fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceFeatures</summary>\n" );
@@ -3062,7 +3092,7 @@ static void AppGpuDumpFeatures( ashes::PhysicalDeviceFeatures const & features, 
 		printf( "\t\t\"inheritedQueries\": %u\n", features.inheritedQueries );
 		printf( "\t}" );
 	}
-#if 0
+
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -3381,423 +3411,785 @@ static void AppGpuDumpFeatures( ashes::PhysicalDeviceFeatures const & features, 
 			place = structure->pNext;
 		}
 	}
-#endif
 }
 
-static void AppDumpSparseProps( const ashes::PhysicalDeviceSparseProperties & sparse_props, FILE *out )
+static void AppDumpSparseProps( const VkPhysicalDeviceSparseProperties *sparse_props, FILE *out )
 {
 	if ( html_output )
 	{
 		fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceSparseProperties</summary>\n" );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>residencyStandard2DBlockShape            = <div class='val'>%u</div></summary></details>\n", sparse_props.residencyStandard2DBlockShape );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>residencyStandard2DMultisampleBlockShape = <div class='val'>%u</div></summary></details>\n", sparse_props.residencyStandard2DMultisampleBlockShape );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>residencyStandard3DBlockShape            = <div class='val'>%u</div></summary></details>\n", sparse_props.residencyStandard3DBlockShape );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>residencyAlignedMipSize                  = <div class='val'>%u</div></summary></details>\n", sparse_props.residencyAlignedMipSize );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>residencyNonResidentStrict               = <div class='val'>%u</div></summary></details>\n", sparse_props.residencyNonResidentStrict );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>residencyStandard2DBlockShape            = <div "
+			"class='val'>%u</div></summary></details>\n",
+			sparse_props->residencyStandard2DBlockShape );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>residencyStandard2DMultisampleBlockShape = <div "
+			"class='val'>%u</div></summary></details>\n",
+			sparse_props->residencyStandard2DMultisampleBlockShape );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>residencyStandard3DBlockShape            = <div "
+			"class='val'>%u</div></summary></details>\n",
+			sparse_props->residencyStandard3DBlockShape );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>residencyAlignedMipSize                  = <div "
+			"class='val'>%u</div></summary></details>\n",
+			sparse_props->residencyAlignedMipSize );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>residencyNonResidentStrict               = <div "
+			"class='val'>%u</div></summary></details>\n",
+			sparse_props->residencyNonResidentStrict );
 		fprintf( out, "\t\t\t\t\t</details>\n" );
 	}
 	else if ( human_readable_output )
 	{
 		printf( "\tVkPhysicalDeviceSparseProperties:\n" );
 		printf( "\t---------------------------------\n" );
-		printf( "\t\tresidencyStandard2DBlockShape            = %u\n", sparse_props.residencyStandard2DBlockShape );
-		printf( "\t\tresidencyStandard2DMultisampleBlockShape = %u\n", sparse_props.residencyStandard2DMultisampleBlockShape );
-		printf( "\t\tresidencyStandard3DBlockShape            = %u\n", sparse_props.residencyStandard3DBlockShape );
-		printf( "\t\tresidencyAlignedMipSize                  = %u\n", sparse_props.residencyAlignedMipSize );
-		printf( "\t\tresidencyNonResidentStrict               = %u\n", sparse_props.residencyNonResidentStrict );
+		printf( "\t\tresidencyStandard2DBlockShape            = %u\n", sparse_props->residencyStandard2DBlockShape );
+		printf( "\t\tresidencyStandard2DMultisampleBlockShape = %u\n", sparse_props->residencyStandard2DMultisampleBlockShape );
+		printf( "\t\tresidencyStandard3DBlockShape            = %u\n", sparse_props->residencyStandard3DBlockShape );
+		printf( "\t\tresidencyAlignedMipSize                  = %u\n", sparse_props->residencyAlignedMipSize );
+		printf( "\t\tresidencyNonResidentStrict               = %u\n", sparse_props->residencyNonResidentStrict );
 	}
 	if ( json_output )
 	{
 		printf( ",\n" );
 		printf( "\t\t\"sparseProperties\": {\n" );
-		printf( "\t\t\t\"residencyAlignedMipSize\": %u,\n", sparse_props.residencyAlignedMipSize );
-		printf( "\t\t\t\"residencyNonResidentStrict\": %u,\n", sparse_props.residencyNonResidentStrict );
-		printf( "\t\t\t\"residencyStandard2DBlockShape\": %u,\n", sparse_props.residencyStandard2DBlockShape );
-		printf( "\t\t\t\"residencyStandard2DMultisampleBlockShape\": %u,\n", sparse_props.residencyStandard2DMultisampleBlockShape );
-		printf( "\t\t\t\"residencyStandard3DBlockShape\": %u\n", sparse_props.residencyStandard3DBlockShape );
+		printf( "\t\t\t\"residencyStandard2DBlockShape\": %u,\n", sparse_props->residencyStandard2DBlockShape );
+		printf( "\t\t\t\"residencyStandard2DMultisampleBlockShape\": %u,\n", sparse_props->residencyStandard2DMultisampleBlockShape );
+		printf( "\t\t\t\"residencyStandard3DBlockShape\": %u,\n", sparse_props->residencyStandard3DBlockShape );
+		printf( "\t\t\t\"residencyAlignedMipSize\": %u,\n", sparse_props->residencyAlignedMipSize );
+		printf( "\t\t\t\"residencyNonResidentStrict\": %u\n", sparse_props->residencyNonResidentStrict );
 		printf( "\t\t}" );
 	}
 }
 
-static void AppDumpLimits( const ashes::PhysicalDeviceLimits & limits, FILE *out )
+static void AppDumpLimits( const VkPhysicalDeviceLimits *limits, FILE *out )
 {
 	if ( html_output )
 	{
 		fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceLimits</summary>\n" );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxImageDimension1D                     = <div class='val'>%u</div></summary></details>\n", limits.maxImageDimension1D );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxImageDimension2D                     = <div class='val'>%u</div></summary></details>\n", limits.maxImageDimension2D );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxImageDimension3D                     = <div class='val'>%u</div></summary></details>\n", limits.maxImageDimension3D );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxImageDimensionCube                   = <div class='val'>%u</div></summary></details>\n", limits.maxImageDimensionCube );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxImageArrayLayers                     = <div class='val'>%u</div></summary></details>\n", limits.maxImageArrayLayers );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxTexelBufferElements                  = <div class='val'>0x%" PRIxLEAST32 "</div></summary></details>\n", limits.maxTexelBufferElements );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxUniformBufferRange                   = <div class='val'>0x%" PRIxLEAST32 "</div></summary></details>\n", limits.maxUniformBufferRange );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxStorageBufferRange                   = <div class='val'>0x%" PRIxLEAST32 "</div></summary></details>\n", limits.maxStorageBufferRange );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxPushConstantsSize                    = <div class='val'>%u</div></summary></details>\n", limits.maxPushConstantsSize );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxMemoryAllocationCount                = <div class='val'>%u</div></summary></details>\n", limits.maxMemoryAllocationCount );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxSamplerAllocationCount               = <div class='val'>%u</div></summary></details>\n", limits.maxSamplerAllocationCount );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>bufferImageGranularity                  = <div class='val'>0x%" PRIxLEAST64 "</div></summary></details>\n", limits.bufferImageGranularity );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>sparseAddressSpaceSize                  = <div class='val'>0x%" PRIxLEAST64 "</div></summary></details>\n", limits.sparseAddressSpaceSize );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxBoundDescriptorSets                  = <div class='val'>%u</div></summary></details>\n", limits.maxBoundDescriptorSets );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxPerStageDescriptorSamplers           = <div class='val'>%u</div></summary></details>\n", limits.maxPerStageDescriptorSamplers );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxPerStageDescriptorUniformBuffers     = <div class='val'>%u</div></summary></details>\n", limits.maxPerStageDescriptorUniformBuffers );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxPerStageDescriptorStorageBuffers     = <div class='val'>%u</div></summary></details>\n", limits.maxPerStageDescriptorStorageBuffers );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxPerStageDescriptorSampledImages      = <div class='val'>%u</div></summary></details>\n", limits.maxPerStageDescriptorSampledImages );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxPerStageDescriptorStorageImages      = <div class='val'>%u</div></summary></details>\n", limits.maxPerStageDescriptorStorageImages );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxPerStageDescriptorInputAttachments   = <div class='val'>%u</div></summary></details>\n", limits.maxPerStageDescriptorInputAttachments );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxPerStageResources                    = <div class='val'>%u</div></summary></details>\n", limits.maxPerStageResources );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxDescriptorSetSamplers                = <div class='val'>%u</div></summary></details>\n", limits.maxDescriptorSetSamplers );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxDescriptorSetUniformBuffers          = <div class='val'>%u</div></summary></details>\n", limits.maxDescriptorSetUniformBuffers );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxDescriptorSetUniformBuffersDynamic   = <div class='val'>%u</div></summary></details>\n", limits.maxDescriptorSetUniformBuffersDynamic );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxDescriptorSetStorageBuffers          = <div class='val'>%u</div></summary></details>\n", limits.maxDescriptorSetStorageBuffers );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxDescriptorSetStorageBuffersDynamic   = <div class='val'>%u</div></summary></details>\n", limits.maxDescriptorSetStorageBuffersDynamic );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxDescriptorSetSampledImages           = <div class='val'>%u</div></summary></details>\n", limits.maxDescriptorSetSampledImages );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxDescriptorSetStorageImages           = <div class='val'>%u</div></summary></details>\n", limits.maxDescriptorSetStorageImages );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxDescriptorSetInputAttachments        = <div class='val'>%u</div></summary></details>\n", limits.maxDescriptorSetInputAttachments );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxVertexInputAttributes                = <div class='val'>%u</div></summary></details>\n", limits.maxVertexInputAttributes );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxVertexInputBindings                  = <div class='val'>%u</div></summary></details>\n", limits.maxVertexInputBindings );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxVertexInputAttributeOffset           = <div class='val'>0x%" PRIxLEAST32 "</div></summary></details>\n", limits.maxVertexInputAttributeOffset );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxVertexInputBindingStride             = <div class='val'>0x%" PRIxLEAST32 "</div></summary></details>\n", limits.maxVertexInputBindingStride );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxVertexOutputComponents               = <div class='val'>%u</div></summary></details>\n", limits.maxVertexOutputComponents );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxTessellationGenerationLevel          = <div class='val'>%u</div></summary></details>\n", limits.maxTessellationGenerationLevel );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxTessellationPatchSize                        = <div class='val'>%u</div></summary></details>\n", limits.maxTessellationPatchSize );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxTessellationControlPerVertexInputComponents  = <div class='val'>%u</div></summary></details>\n", limits.maxTessellationControlPerVertexInputComponents );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxTessellationControlPerVertexOutputComponents = <div class='val'>%u</div></summary></details>\n", limits.maxTessellationControlPerVertexOutputComponents );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxTessellationControlPerPatchOutputComponents  = <div class='val'>%u</div></summary></details>\n", limits.maxTessellationControlPerPatchOutputComponents );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxTessellationControlTotalOutputComponents     = <div class='val'>%u</div></summary></details>\n", limits.maxTessellationControlTotalOutputComponents );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxTessellationEvaluationInputComponents        = <div class='val'>%u</div></summary></details>\n", limits.maxTessellationEvaluationInputComponents );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxTessellationEvaluationOutputComponents       = <div class='val'>%u</div></summary></details>\n", limits.maxTessellationEvaluationOutputComponents );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxGeometryShaderInvocations            = <div class='val'>%u</div></summary></details>\n", limits.maxGeometryShaderInvocations );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxGeometryInputComponents              = <div class='val'>%u</div></summary></details>\n", limits.maxGeometryInputComponents );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxGeometryOutputComponents             = <div class='val'>%u</div></summary></details>\n", limits.maxGeometryOutputComponents );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxGeometryOutputVertices               = <div class='val'>%u</div></summary></details>\n", limits.maxGeometryOutputVertices );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxGeometryTotalOutputComponents        = <div class='val'>%u</div></summary></details>\n", limits.maxGeometryTotalOutputComponents );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxFragmentInputComponents              = <div class='val'>%u</div></summary></details>\n", limits.maxFragmentInputComponents );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxFragmentOutputAttachments            = <div class='val'>%u</div></summary></details>\n", limits.maxFragmentOutputAttachments );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxFragmentDualSrcAttachments           = <div class='val'>%u</div></summary></details>\n", limits.maxFragmentDualSrcAttachments );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxFragmentCombinedOutputResources      = <div class='val'>%u</div></summary></details>\n", limits.maxFragmentCombinedOutputResources );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxComputeSharedMemorySize              = <div class='val'>0x%" PRIxLEAST32 "</div></summary></details>\n", limits.maxComputeSharedMemorySize );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxComputeWorkGroupCount[0]             = <div class='val'>%u</div></summary></details>\n", limits.maxComputeWorkGroupCount[0] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxComputeWorkGroupCount[1]             = <div class='val'>%u</div></summary></details>\n", limits.maxComputeWorkGroupCount[1] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxComputeWorkGroupCount[2]             = <div class='val'>%u</div></summary></details>\n", limits.maxComputeWorkGroupCount[2] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxComputeWorkGroupInvocations          = <div class='val'>%u</div></summary></details>\n", limits.maxComputeWorkGroupInvocations );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxComputeWorkGroupSize[0]              = <div class='val'>%u</div></summary></details>\n", limits.maxComputeWorkGroupSize[0] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxComputeWorkGroupSize[1]              = <div class='val'>%u</div></summary></details>\n", limits.maxComputeWorkGroupSize[1] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxComputeWorkGroupSize[2]              = <div class='val'>%u</div></summary></details>\n", limits.maxComputeWorkGroupSize[2] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>subPixelPrecisionBits                   = <div class='val'>%u</div></summary></details>\n", limits.subPixelPrecisionBits );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>subTexelPrecisionBits                   = <div class='val'>%u</div></summary></details>\n", limits.subTexelPrecisionBits );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>mipmapPrecisionBits                     = <div class='val'>%u</div></summary></details>\n", limits.mipmapPrecisionBits );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxDrawIndexedIndexValue                = <div class='val'>%u</div></summary></details>\n", limits.maxDrawIndexedIndexValue );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxDrawIndirectCount                    = <div class='val'>%u</div></summary></details>\n", limits.maxDrawIndirectCount );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxSamplerLodBias                       = <div class='val'>%f</div></summary></details>\n", limits.maxSamplerLodBias );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxSamplerAnisotropy                    = <div class='val'>%f</div></summary></details>\n", limits.maxSamplerAnisotropy );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxViewports                            = <div class='val'>%u</div></summary></details>\n", limits.maxViewports );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxViewportDimensions[0]                = <div class='val'>%u</div></summary></details>\n", limits.maxViewportDimensions[0] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxViewportDimensions[1]                = <div class='val'>%u</div></summary></details>\n", limits.maxViewportDimensions[1] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>viewportBoundsRange[0]                  =<div class='val'>%13f</div></summary></details>\n", limits.viewportBoundsRange[0] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>viewportBoundsRange[1]                  =<div class='val'>%13f</div></summary></details>\n", limits.viewportBoundsRange[1] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>viewportSubPixelBits                    = <div class='val'>%u</div></summary></details>\n", limits.viewportSubPixelBits );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>minMemoryMapAlignment                   = <div class='val'>" PRINTF_SIZE_T_SPECIFIER "</div></summary></details>\n", limits.minMemoryMapAlignment );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>minTexelBufferOffsetAlignment           = <div class='val'>0x%" PRIxLEAST64 "</div></summary></details>\n", limits.minTexelBufferOffsetAlignment );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>minUniformBufferOffsetAlignment         = <div class='val'>0x%" PRIxLEAST64 "</div></summary></details>\n", limits.minUniformBufferOffsetAlignment );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>minStorageBufferOffsetAlignment         = <div class='val'>0x%" PRIxLEAST64 "</div></summary></details>\n", limits.minStorageBufferOffsetAlignment );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>minTexelOffset                          =<div class='val'>%3d</div></summary></details>\n", limits.minTexelOffset );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxTexelOffset                          =<div class='val'>%3d</div></summary></details>\n", limits.maxTexelOffset );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>minTexelGatherOffset                    =<div class='val'>%3d</div></summary></details>\n", limits.minTexelGatherOffset );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxTexelGatherOffset                    =<div class='val'>%3d</div></summary></details>\n", limits.maxTexelGatherOffset );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>minInterpolationOffset                  =<div class='val'>%9f</div></summary></details>\n", limits.minInterpolationOffset );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxInterpolationOffset                  =<div class='val'>%9f</div></summary></details>\n", limits.maxInterpolationOffset );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>subPixelInterpolationOffsetBits         = <div class='val'>%u</div></summary></details>\n", limits.subPixelInterpolationOffsetBits );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxFramebufferWidth                     = <div class='val'>%u</div></summary></details>\n", limits.maxFramebufferWidth );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxFramebufferHeight                    = <div class='val'>%u</div></summary></details>\n", limits.maxFramebufferHeight );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxFramebufferLayers                    = <div class='val'>%u</div></summary></details>\n", limits.maxFramebufferLayers );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>framebufferColorSampleCounts            = <div class='val'>%u</div></summary></details>\n", limits.framebufferColorSampleCounts.value() );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>framebufferDepthSampleCounts            = <div class='val'>%u</div></summary></details>\n", limits.framebufferDepthSampleCounts.value() );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>framebufferStencilSampleCounts          = <div class='val'>%u</div></summary></details>\n", limits.framebufferStencilSampleCounts.value() );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>framebufferNoAttachmentsSampleCounts    = <div class='val'>%u</div></summary></details>\n", limits.framebufferNoAttachmentsSampleCounts.value() );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxColorAttachments                     = <div class='val'>%u</div></summary></details>\n", limits.maxColorAttachments );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>sampledImageColorSampleCounts           = <div class='val'>%u</div></summary></details>\n", limits.sampledImageColorSampleCounts.value() );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>sampledImageDepthSampleCounts           = <div class='val'>%u</div></summary></details>\n", limits.sampledImageDepthSampleCounts.value() );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>sampledImageStencilSampleCounts         = <div class='val'>%u</div></summary></details>\n", limits.sampledImageStencilSampleCounts.value() );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>sampledImageIntegerSampleCounts         = <div class='val'>%u</div></summary></details>\n", limits.sampledImageIntegerSampleCounts.value() );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>storageImageSampleCounts                = <div class='val'>%u</div></summary></details>\n", limits.storageImageSampleCounts.value() );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxSampleMaskWords                      = <div class='val'>%u</div></summary></details>\n", limits.maxSampleMaskWords );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>timestampComputeAndGraphics             = <div class='val'>%u</div></summary></details>\n", limits.timestampComputeAndGraphics );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>timestampPeriod                         = <div class='val'>%f</div></summary></details>\n", limits.timestampPeriod );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxClipDistances                        = <div class='val'>%u</div></summary></details>\n", limits.maxClipDistances );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxCullDistances                        = <div class='val'>%u</div></summary></details>\n", limits.maxCullDistances );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>maxCombinedClipAndCullDistances         = <div class='val'>%u</div></summary></details>\n", limits.maxCombinedClipAndCullDistances );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>discreteQueuePriorities                 = <div class='val'>%u</div></summary></details>\n", limits.discreteQueuePriorities );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>pointSizeRange[0]                       = <div class='val'>%f</div></summary></details>\n", limits.pointSizeRange[0] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>pointSizeRange[1]                       = <div class='val'>%f</div></summary></details>\n", limits.pointSizeRange[1] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>lineWidthRange[0]                       = <div class='val'>%f</div></summary></details>\n", limits.lineWidthRange[0] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>lineWidthRange[1]                       = <div class='val'>%f</div></summary></details>\n", limits.lineWidthRange[1] );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>pointSizeGranularity                    = <div class='val'>%f</div></summary></details>\n", limits.pointSizeGranularity );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>lineWidthGranularity                    = <div class='val'>%f</div></summary></details>\n", limits.lineWidthGranularity );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>strictLines                             = <div class='val'>%u</div></summary></details>\n", limits.strictLines );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>standardSampleLocations                 = <div class='val'>%u</div></summary></details>\n", limits.standardSampleLocations );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>optimalBufferCopyOffsetAlignment        = <div class='val'>0x%" PRIxLEAST64 "</div></summary></details>\n", limits.optimalBufferCopyOffsetAlignment );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>optimalBufferCopyRowPitchAlignment      = <div class='val'>0x%" PRIxLEAST64 "</div></summary></details>\n", limits.optimalBufferCopyRowPitchAlignment );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>nonCoherentAtomSize                     = <div class='val'>0x%" PRIxLEAST64 "</div></summary></details>\n", limits.nonCoherentAtomSize );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxImageDimension1D                     = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxImageDimension1D );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxImageDimension2D                     = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxImageDimension2D );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxImageDimension3D                     = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxImageDimension3D );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxImageDimensionCube                   = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxImageDimensionCube );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxImageArrayLayers                     = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxImageArrayLayers );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxTexelBufferElements                  = <div class='val'>0x%" PRIxLEAST32
+			"</div></summary></details>\n",
+			limits->maxTexelBufferElements );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxUniformBufferRange                   = <div class='val'>0x%" PRIxLEAST32
+			"</div></summary></details>\n",
+			limits->maxUniformBufferRange );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxStorageBufferRange                   = <div class='val'>0x%" PRIxLEAST32
+			"</div></summary></details>\n",
+			limits->maxStorageBufferRange );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxPushConstantsSize                    = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxPushConstantsSize );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxMemoryAllocationCount                = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxMemoryAllocationCount );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxSamplerAllocationCount               = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxSamplerAllocationCount );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>bufferImageGranularity                  = <div class='val'>0x%" PRIxLEAST64
+			"</div></summary></details>\n",
+			limits->bufferImageGranularity );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>sparseAddressSpaceSize                  = <div class='val'>0x%" PRIxLEAST64
+			"</div></summary></details>\n",
+			limits->sparseAddressSpaceSize );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxBoundDescriptorSets                  = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxBoundDescriptorSets );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxPerStageDescriptorSamplers           = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxPerStageDescriptorSamplers );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxPerStageDescriptorUniformBuffers     = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxPerStageDescriptorUniformBuffers );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxPerStageDescriptorStorageBuffers     = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxPerStageDescriptorStorageBuffers );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxPerStageDescriptorSampledImages      = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxPerStageDescriptorSampledImages );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxPerStageDescriptorStorageImages      = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxPerStageDescriptorStorageImages );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxPerStageDescriptorInputAttachments   = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxPerStageDescriptorInputAttachments );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxPerStageResources                    = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxPerStageResources );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxDescriptorSetSamplers                = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxDescriptorSetSamplers );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxDescriptorSetUniformBuffers          = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxDescriptorSetUniformBuffers );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxDescriptorSetUniformBuffersDynamic   = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxDescriptorSetUniformBuffersDynamic );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxDescriptorSetStorageBuffers          = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxDescriptorSetStorageBuffers );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxDescriptorSetStorageBuffersDynamic   = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxDescriptorSetStorageBuffersDynamic );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxDescriptorSetSampledImages           = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxDescriptorSetSampledImages );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxDescriptorSetStorageImages           = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxDescriptorSetStorageImages );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxDescriptorSetInputAttachments        = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxDescriptorSetInputAttachments );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxVertexInputAttributes                = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxVertexInputAttributes );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxVertexInputBindings                  = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxVertexInputBindings );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxVertexInputAttributeOffset           = <div class='val'>0x%" PRIxLEAST32
+			"</div></summary></details>\n",
+			limits->maxVertexInputAttributeOffset );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxVertexInputBindingStride             = <div class='val'>0x%" PRIxLEAST32
+			"</div></summary></details>\n",
+			limits->maxVertexInputBindingStride );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxVertexOutputComponents               = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxVertexOutputComponents );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxTessellationGenerationLevel          = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxTessellationGenerationLevel );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxTessellationPatchSize                        = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxTessellationPatchSize );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxTessellationControlPerVertexInputComponents  = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxTessellationControlPerVertexInputComponents );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxTessellationControlPerVertexOutputComponents = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxTessellationControlPerVertexOutputComponents );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxTessellationControlPerPatchOutputComponents  = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxTessellationControlPerPatchOutputComponents );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxTessellationControlTotalOutputComponents     = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxTessellationControlTotalOutputComponents );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxTessellationEvaluationInputComponents        = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxTessellationEvaluationInputComponents );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxTessellationEvaluationOutputComponents       = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxTessellationEvaluationOutputComponents );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxGeometryShaderInvocations            = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxGeometryShaderInvocations );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxGeometryInputComponents              = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxGeometryInputComponents );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxGeometryOutputComponents             = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxGeometryOutputComponents );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxGeometryOutputVertices               = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxGeometryOutputVertices );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxGeometryTotalOutputComponents        = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxGeometryTotalOutputComponents );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxFragmentInputComponents              = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxFragmentInputComponents );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxFragmentOutputAttachments            = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxFragmentOutputAttachments );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxFragmentDualSrcAttachments           = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxFragmentDualSrcAttachments );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxFragmentCombinedOutputResources      = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxFragmentCombinedOutputResources );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxComputeSharedMemorySize              = <div class='val'>0x%" PRIxLEAST32
+			"</div></summary></details>\n",
+			limits->maxComputeSharedMemorySize );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxComputeWorkGroupCount[0]             = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxComputeWorkGroupCount[0] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxComputeWorkGroupCount[1]             = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxComputeWorkGroupCount[1] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxComputeWorkGroupCount[2]             = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxComputeWorkGroupCount[2] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxComputeWorkGroupInvocations          = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxComputeWorkGroupInvocations );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxComputeWorkGroupSize[0]              = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxComputeWorkGroupSize[0] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxComputeWorkGroupSize[1]              = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxComputeWorkGroupSize[1] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxComputeWorkGroupSize[2]              = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxComputeWorkGroupSize[2] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>subPixelPrecisionBits                   = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->subPixelPrecisionBits );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>subTexelPrecisionBits                   = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->subTexelPrecisionBits );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>mipmapPrecisionBits                     = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->mipmapPrecisionBits );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxDrawIndexedIndexValue                = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxDrawIndexedIndexValue );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxDrawIndirectCount                    = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxDrawIndirectCount );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxSamplerLodBias                       = <div "
+			"class='val'>%f</div></summary></details>\n",
+			limits->maxSamplerLodBias );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxSamplerAnisotropy                    = <div "
+			"class='val'>%f</div></summary></details>\n",
+			limits->maxSamplerAnisotropy );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxViewports                            = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxViewports );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxViewportDimensions[0]                = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxViewportDimensions[0] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxViewportDimensions[1]                = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxViewportDimensions[1] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>viewportBoundsRange[0]                  = <div "
+			"class='val'>%13f</div></summary></details>\n",
+			limits->viewportBoundsRange[0] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>viewportBoundsRange[1]                  = <div "
+			"class='val'>%13f</div></summary></details>\n",
+			limits->viewportBoundsRange[1] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>viewportSubPixelBits                    = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->viewportSubPixelBits );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>minMemoryMapAlignment                   = <div class='val'>" PRINTF_SIZE_T_SPECIFIER
+			"</div></summary></details>\n",
+			limits->minMemoryMapAlignment );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>minTexelBufferOffsetAlignment           = <div class='val'>0x%" PRIxLEAST64
+			"</div></summary></details>\n",
+			limits->minTexelBufferOffsetAlignment );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>minUniformBufferOffsetAlignment         = <div class='val'>0x%" PRIxLEAST64
+			"</div></summary></details>\n",
+			limits->minUniformBufferOffsetAlignment );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>minStorageBufferOffsetAlignment         = <div class='val'>0x%" PRIxLEAST64
+			"</div></summary></details>\n",
+			limits->minStorageBufferOffsetAlignment );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>minTexelOffset                          = <div "
+			"class='val'>%3d</div></summary></details>\n",
+			limits->minTexelOffset );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxTexelOffset                          = <div "
+			"class='val'>%3d</div></summary></details>\n",
+			limits->maxTexelOffset );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>minTexelGatherOffset                    = <div "
+			"class='val'>%3d</div></summary></details>\n",
+			limits->minTexelGatherOffset );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxTexelGatherOffset                    = <div "
+			"class='val'>%3d</div></summary></details>\n",
+			limits->maxTexelGatherOffset );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>minInterpolationOffset                  = <div "
+			"class='val'>%9f</div></summary></details>\n",
+			limits->minInterpolationOffset );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxInterpolationOffset                  = <div "
+			"class='val'>%9f</div></summary></details>\n",
+			limits->maxInterpolationOffset );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>subPixelInterpolationOffsetBits         = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->subPixelInterpolationOffsetBits );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxFramebufferWidth                     = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxFramebufferWidth );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxFramebufferHeight                    = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxFramebufferHeight );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxFramebufferLayers                    = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxFramebufferLayers );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>framebufferColorSampleCounts            = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->framebufferColorSampleCounts );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>framebufferDepthSampleCounts            = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->framebufferDepthSampleCounts );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>framebufferStencilSampleCounts          = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->framebufferStencilSampleCounts );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>framebufferNoAttachmentsSampleCounts    = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->framebufferNoAttachmentsSampleCounts );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxColorAttachments                     = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxColorAttachments );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>sampledImageColorSampleCounts           = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->sampledImageColorSampleCounts );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>sampledImageDepthSampleCounts           = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->sampledImageDepthSampleCounts );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>sampledImageStencilSampleCounts         = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->sampledImageStencilSampleCounts );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>sampledImageIntegerSampleCounts         = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->sampledImageIntegerSampleCounts );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>storageImageSampleCounts                = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->storageImageSampleCounts );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxSampleMaskWords                      = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxSampleMaskWords );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>timestampComputeAndGraphics             = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->timestampComputeAndGraphics );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>timestampPeriod                         = <div "
+			"class='val'>%f</div></summary></details>\n",
+			limits->timestampPeriod );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxClipDistances                        = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxClipDistances );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxCullDistances                        = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxCullDistances );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>maxCombinedClipAndCullDistances         = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->maxCombinedClipAndCullDistances );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>discreteQueuePriorities                 = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->discreteQueuePriorities );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>pointSizeRange[0]                       = <div "
+			"class='val'>%f</div></summary></details>\n",
+			limits->pointSizeRange[0] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>pointSizeRange[1]                       = <div "
+			"class='val'>%f</div></summary></details>\n",
+			limits->pointSizeRange[1] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>lineWidthRange[0]                       = <div "
+			"class='val'>%f</div></summary></details>\n",
+			limits->lineWidthRange[0] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>lineWidthRange[1]                       = <div "
+			"class='val'>%f</div></summary></details>\n",
+			limits->lineWidthRange[1] );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>pointSizeGranularity                    = <div "
+			"class='val'>%f</div></summary></details>\n",
+			limits->pointSizeGranularity );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>lineWidthGranularity                    = <div "
+			"class='val'>%f</div></summary></details>\n",
+			limits->lineWidthGranularity );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>strictLines                             = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->strictLines );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>standardSampleLocations                 = <div "
+			"class='val'>%u</div></summary></details>\n",
+			limits->standardSampleLocations );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>optimalBufferCopyOffsetAlignment        = <div class='val'>0x%" PRIxLEAST64
+			"</div></summary></details>\n",
+			limits->optimalBufferCopyOffsetAlignment );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>optimalBufferCopyRowPitchAlignment      = <div class='val'>0x%" PRIxLEAST64
+			"</div></summary></details>\n",
+			limits->optimalBufferCopyRowPitchAlignment );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>nonCoherentAtomSize                     = <div class='val'>0x%" PRIxLEAST64
+			"</div></summary></details>\n",
+			limits->nonCoherentAtomSize );
 		fprintf( out, "\t\t\t\t\t</details>\n" );
 	}
 	else if ( human_readable_output )
 	{
 		printf( "\tVkPhysicalDeviceLimits:\n" );
 		printf( "\t-----------------------\n" );
-		printf( "\t\tmaxImageDimension1D                     = %u\n", limits.maxImageDimension1D );
-		printf( "\t\tmaxImageDimension2D                     = %u\n", limits.maxImageDimension2D );
-		printf( "\t\tmaxImageDimension3D                     = %u\n", limits.maxImageDimension3D );
-		printf( "\t\tmaxImageDimensionCube                   = %u\n", limits.maxImageDimensionCube );
-		printf( "\t\tmaxImageArrayLayers                     = %u\n", limits.maxImageArrayLayers );
-		printf( "\t\tmaxTexelBufferElements                  = 0x%" PRIxLEAST32 "\n", limits.maxTexelBufferElements );
-		printf( "\t\tmaxUniformBufferRange                   = 0x%" PRIxLEAST32 "\n", limits.maxUniformBufferRange );
-		printf( "\t\tmaxStorageBufferRange                   = 0x%" PRIxLEAST32 "\n", limits.maxStorageBufferRange );
-		printf( "\t\tmaxPushConstantsSize                    = %u\n", limits.maxPushConstantsSize );
-		printf( "\t\tmaxMemoryAllocationCount                = %u\n", limits.maxMemoryAllocationCount );
-		printf( "\t\tmaxSamplerAllocationCount               = %u\n", limits.maxSamplerAllocationCount );
-		printf( "\t\tbufferImageGranularity                  = 0x%" PRIxLEAST64 "\n", limits.bufferImageGranularity );
-		printf( "\t\tsparseAddressSpaceSize                  = 0x%" PRIxLEAST64 "\n", limits.sparseAddressSpaceSize );
-		printf( "\t\tmaxBoundDescriptorSets                  = %u\n", limits.maxBoundDescriptorSets );
-		printf( "\t\tmaxPerStageDescriptorSamplers           = %u\n", limits.maxPerStageDescriptorSamplers );
-		printf( "\t\tmaxPerStageDescriptorUniformBuffers     = %u\n", limits.maxPerStageDescriptorUniformBuffers );
-		printf( "\t\tmaxPerStageDescriptorStorageBuffers     = %u\n", limits.maxPerStageDescriptorStorageBuffers );
-		printf( "\t\tmaxPerStageDescriptorSampledImages      = %u\n", limits.maxPerStageDescriptorSampledImages );
-		printf( "\t\tmaxPerStageDescriptorStorageImages      = %u\n", limits.maxPerStageDescriptorStorageImages );
-		printf( "\t\tmaxPerStageDescriptorInputAttachments   = %u\n", limits.maxPerStageDescriptorInputAttachments );
-		printf( "\t\tmaxPerStageResources                    = %u\n", limits.maxPerStageResources );
-		printf( "\t\tmaxDescriptorSetSamplers                = %u\n", limits.maxDescriptorSetSamplers );
-		printf( "\t\tmaxDescriptorSetUniformBuffers          = %u\n", limits.maxDescriptorSetUniformBuffers );
-		printf( "\t\tmaxDescriptorSetUniformBuffersDynamic   = %u\n", limits.maxDescriptorSetUniformBuffersDynamic );
-		printf( "\t\tmaxDescriptorSetStorageBuffers          = %u\n", limits.maxDescriptorSetStorageBuffers );
-		printf( "\t\tmaxDescriptorSetStorageBuffersDynamic   = %u\n", limits.maxDescriptorSetStorageBuffersDynamic );
-		printf( "\t\tmaxDescriptorSetSampledImages           = %u\n", limits.maxDescriptorSetSampledImages );
-		printf( "\t\tmaxDescriptorSetStorageImages           = %u\n", limits.maxDescriptorSetStorageImages );
-		printf( "\t\tmaxDescriptorSetInputAttachments        = %u\n", limits.maxDescriptorSetInputAttachments );
-		printf( "\t\tmaxVertexInputAttributes                = %u\n", limits.maxVertexInputAttributes );
-		printf( "\t\tmaxVertexInputBindings                  = %u\n", limits.maxVertexInputBindings );
-		printf( "\t\tmaxVertexInputAttributeOffset           = 0x%" PRIxLEAST32 "\n", limits.maxVertexInputAttributeOffset );
-		printf( "\t\tmaxVertexInputBindingStride             = 0x%" PRIxLEAST32 "\n", limits.maxVertexInputBindingStride );
-		printf( "\t\tmaxVertexOutputComponents               = %u\n", limits.maxVertexOutputComponents );
-		printf( "\t\tmaxTessellationGenerationLevel          = %u\n", limits.maxTessellationGenerationLevel );
-		printf( "\t\tmaxTessellationPatchSize                        = %u\n", limits.maxTessellationPatchSize );
-		printf( "\t\tmaxTessellationControlPerVertexInputComponents  = %u\n", limits.maxTessellationControlPerVertexInputComponents );
-		printf( "\t\tmaxTessellationControlPerVertexOutputComponents = %u\n", limits.maxTessellationControlPerVertexOutputComponents );
-		printf( "\t\tmaxTessellationControlPerPatchOutputComponents  = %u\n", limits.maxTessellationControlPerPatchOutputComponents );
-		printf( "\t\tmaxTessellationControlTotalOutputComponents     = %u\n", limits.maxTessellationControlTotalOutputComponents );
-		printf( "\t\tmaxTessellationEvaluationInputComponents        = %u\n", limits.maxTessellationEvaluationInputComponents );
-		printf( "\t\tmaxTessellationEvaluationOutputComponents       = %u\n", limits.maxTessellationEvaluationOutputComponents );
-		printf( "\t\tmaxGeometryShaderInvocations            = %u\n", limits.maxGeometryShaderInvocations );
-		printf( "\t\tmaxGeometryInputComponents              = %u\n", limits.maxGeometryInputComponents );
-		printf( "\t\tmaxGeometryOutputComponents             = %u\n", limits.maxGeometryOutputComponents );
-		printf( "\t\tmaxGeometryOutputVertices               = %u\n", limits.maxGeometryOutputVertices );
-		printf( "\t\tmaxGeometryTotalOutputComponents        = %u\n", limits.maxGeometryTotalOutputComponents );
-		printf( "\t\tmaxFragmentInputComponents              = %u\n", limits.maxFragmentInputComponents );
-		printf( "\t\tmaxFragmentOutputAttachments            = %u\n", limits.maxFragmentOutputAttachments );
-		printf( "\t\tmaxFragmentDualSrcAttachments           = %u\n", limits.maxFragmentDualSrcAttachments );
-		printf( "\t\tmaxFragmentCombinedOutputResources      = %u\n", limits.maxFragmentCombinedOutputResources );
-		printf( "\t\tmaxComputeSharedMemorySize              = 0x%" PRIxLEAST32 "\n", limits.maxComputeSharedMemorySize );
-		printf( "\t\tmaxComputeWorkGroupCount[0]             = %u\n", limits.maxComputeWorkGroupCount[0] );
-		printf( "\t\tmaxComputeWorkGroupCount[1]             = %u\n", limits.maxComputeWorkGroupCount[1] );
-		printf( "\t\tmaxComputeWorkGroupCount[2]             = %u\n", limits.maxComputeWorkGroupCount[2] );
-		printf( "\t\tmaxComputeWorkGroupInvocations          = %u\n", limits.maxComputeWorkGroupInvocations );
-		printf( "\t\tmaxComputeWorkGroupSize[0]              = %u\n", limits.maxComputeWorkGroupSize[0] );
-		printf( "\t\tmaxComputeWorkGroupSize[1]              = %u\n", limits.maxComputeWorkGroupSize[1] );
-		printf( "\t\tmaxComputeWorkGroupSize[2]              = %u\n", limits.maxComputeWorkGroupSize[2] );
-		printf( "\t\tsubPixelPrecisionBits                   = %u\n", limits.subPixelPrecisionBits );
-		printf( "\t\tsubTexelPrecisionBits                   = %u\n", limits.subTexelPrecisionBits );
-		printf( "\t\tmipmapPrecisionBits                     = %u\n", limits.mipmapPrecisionBits );
-		printf( "\t\tmaxDrawIndexedIndexValue                = %u\n", limits.maxDrawIndexedIndexValue );
-		printf( "\t\tmaxDrawIndirectCount                    = %u\n", limits.maxDrawIndirectCount );
-		printf( "\t\tmaxSamplerLodBias                       = %f\n", limits.maxSamplerLodBias );
-		printf( "\t\tmaxSamplerAnisotropy                    = %f\n", limits.maxSamplerAnisotropy );
-		printf( "\t\tmaxViewports                            = %u\n", limits.maxViewports );
-		printf( "\t\tmaxViewportDimensions[0]                = %u\n", limits.maxViewportDimensions[0] );
-		printf( "\t\tmaxViewportDimensions[1]                = %u\n", limits.maxViewportDimensions[1] );
-		printf( "\t\tviewportBoundsRange[0]                  =%13f\n", limits.viewportBoundsRange[0] );
-		printf( "\t\tviewportBoundsRange[1]                  =%13f\n", limits.viewportBoundsRange[1] );
-		printf( "\t\tviewportSubPixelBits                    = %u\n", limits.viewportSubPixelBits );
-		printf( "\t\tminMemoryMapAlignment                   = " PRINTF_SIZE_T_SPECIFIER "\n", limits.minMemoryMapAlignment );
-		printf( "\t\tminTexelBufferOffsetAlignment           = 0x%" PRIxLEAST64 "\n", limits.minTexelBufferOffsetAlignment );
-		printf( "\t\tminUniformBufferOffsetAlignment         = 0x%" PRIxLEAST64 "\n", limits.minUniformBufferOffsetAlignment );
-		printf( "\t\tminStorageBufferOffsetAlignment         = 0x%" PRIxLEAST64 "\n", limits.minStorageBufferOffsetAlignment );
-		printf( "\t\tminTexelOffset                          =%3d\n", limits.minTexelOffset );
-		printf( "\t\tmaxTexelOffset                          =%3d\n", limits.maxTexelOffset );
-		printf( "\t\tminTexelGatherOffset                    =%3d\n", limits.minTexelGatherOffset );
-		printf( "\t\tmaxTexelGatherOffset                    =%3d\n", limits.maxTexelGatherOffset );
-		printf( "\t\tminInterpolationOffset                  =%9f\n", limits.minInterpolationOffset );
-		printf( "\t\tmaxInterpolationOffset                  =%9f\n", limits.maxInterpolationOffset );
-		printf( "\t\tsubPixelInterpolationOffsetBits         = %u\n", limits.subPixelInterpolationOffsetBits );
-		printf( "\t\tmaxFramebufferWidth                     = %u\n", limits.maxFramebufferWidth );
-		printf( "\t\tmaxFramebufferHeight                    = %u\n", limits.maxFramebufferHeight );
-		printf( "\t\tmaxFramebufferLayers                    = %u\n", limits.maxFramebufferLayers );
-		printf( "\t\tframebufferColorSampleCounts            = %u\n", limits.framebufferColorSampleCounts.value() );
-		printf( "\t\tframebufferDepthSampleCounts            = %u\n", limits.framebufferDepthSampleCounts.value() );
-		printf( "\t\tframebufferStencilSampleCounts          = %u\n", limits.framebufferStencilSampleCounts.value() );
-		printf( "\t\tframebufferNoAttachmentsSampleCounts    = %u\n", limits.framebufferNoAttachmentsSampleCounts.value() );
-		printf( "\t\tmaxColorAttachments                     = %u\n", limits.maxColorAttachments );
-		printf( "\t\tsampledImageColorSampleCounts           = %u\n", limits.sampledImageColorSampleCounts.value() );
-		printf( "\t\tsampledImageDepthSampleCounts           = %u\n", limits.sampledImageDepthSampleCounts.value() );
-		printf( "\t\tsampledImageStencilSampleCounts         = %u\n", limits.sampledImageStencilSampleCounts.value() );
-		printf( "\t\tsampledImageIntegerSampleCounts         = %u\n", limits.sampledImageIntegerSampleCounts.value() );
-		printf( "\t\tstorageImageSampleCounts                = %u\n", limits.storageImageSampleCounts.value() );
-		printf( "\t\tmaxSampleMaskWords                      = %u\n", limits.maxSampleMaskWords );
-		printf( "\t\ttimestampComputeAndGraphics             = %u\n", limits.timestampComputeAndGraphics );
-		printf( "\t\ttimestampPeriod                         = %f\n", limits.timestampPeriod );
-		printf( "\t\tmaxClipDistances                        = %u\n", limits.maxClipDistances );
-		printf( "\t\tmaxCullDistances                        = %u\n", limits.maxCullDistances );
-		printf( "\t\tmaxCombinedClipAndCullDistances         = %u\n", limits.maxCombinedClipAndCullDistances );
-		printf( "\t\tdiscreteQueuePriorities                 = %u\n", limits.discreteQueuePriorities );
-		printf( "\t\tpointSizeRange[0]                       = %f\n", limits.pointSizeRange[0] );
-		printf( "\t\tpointSizeRange[1]                       = %f\n", limits.pointSizeRange[1] );
-		printf( "\t\tlineWidthRange[0]                       = %f\n", limits.lineWidthRange[0] );
-		printf( "\t\tlineWidthRange[1]                       = %f\n", limits.lineWidthRange[1] );
-		printf( "\t\tpointSizeGranularity                    = %f\n", limits.pointSizeGranularity );
-		printf( "\t\tlineWidthGranularity                    = %f\n", limits.lineWidthGranularity );
-		printf( "\t\tstrictLines                             = %u\n", limits.strictLines );
-		printf( "\t\tstandardSampleLocations                 = %u\n", limits.standardSampleLocations );
-		printf( "\t\toptimalBufferCopyOffsetAlignment        = 0x%" PRIxLEAST64 "\n", limits.optimalBufferCopyOffsetAlignment );
-		printf( "\t\toptimalBufferCopyRowPitchAlignment      = 0x%" PRIxLEAST64 "\n", limits.optimalBufferCopyRowPitchAlignment );
-		printf( "\t\tnonCoherentAtomSize                     = 0x%" PRIxLEAST64 "\n", limits.nonCoherentAtomSize );
+		printf( "\t\tmaxImageDimension1D                     = %u\n", limits->maxImageDimension1D );
+		printf( "\t\tmaxImageDimension2D                     = %u\n", limits->maxImageDimension2D );
+		printf( "\t\tmaxImageDimension3D                     = %u\n", limits->maxImageDimension3D );
+		printf( "\t\tmaxImageDimensionCube                   = %u\n", limits->maxImageDimensionCube );
+		printf( "\t\tmaxImageArrayLayers                     = %u\n", limits->maxImageArrayLayers );
+		printf( "\t\tmaxTexelBufferElements                  = 0x%" PRIxLEAST32 "\n", limits->maxTexelBufferElements );
+		printf( "\t\tmaxUniformBufferRange                   = 0x%" PRIxLEAST32 "\n", limits->maxUniformBufferRange );
+		printf( "\t\tmaxStorageBufferRange                   = 0x%" PRIxLEAST32 "\n", limits->maxStorageBufferRange );
+		printf( "\t\tmaxPushConstantsSize                    = %u\n", limits->maxPushConstantsSize );
+		printf( "\t\tmaxMemoryAllocationCount                = %u\n", limits->maxMemoryAllocationCount );
+		printf( "\t\tmaxSamplerAllocationCount               = %u\n", limits->maxSamplerAllocationCount );
+		printf( "\t\tbufferImageGranularity                  = 0x%" PRIxLEAST64 "\n", limits->bufferImageGranularity );
+		printf( "\t\tsparseAddressSpaceSize                  = 0x%" PRIxLEAST64 "\n", limits->sparseAddressSpaceSize );
+		printf( "\t\tmaxBoundDescriptorSets                  = %u\n", limits->maxBoundDescriptorSets );
+		printf( "\t\tmaxPerStageDescriptorSamplers           = %u\n", limits->maxPerStageDescriptorSamplers );
+		printf( "\t\tmaxPerStageDescriptorUniformBuffers     = %u\n", limits->maxPerStageDescriptorUniformBuffers );
+		printf( "\t\tmaxPerStageDescriptorStorageBuffers     = %u\n", limits->maxPerStageDescriptorStorageBuffers );
+		printf( "\t\tmaxPerStageDescriptorSampledImages      = %u\n", limits->maxPerStageDescriptorSampledImages );
+		printf( "\t\tmaxPerStageDescriptorStorageImages      = %u\n", limits->maxPerStageDescriptorStorageImages );
+		printf( "\t\tmaxPerStageDescriptorInputAttachments   = %u\n", limits->maxPerStageDescriptorInputAttachments );
+		printf( "\t\tmaxPerStageResources                    = %u\n", limits->maxPerStageResources );
+		printf( "\t\tmaxDescriptorSetSamplers                = %u\n", limits->maxDescriptorSetSamplers );
+		printf( "\t\tmaxDescriptorSetUniformBuffers          = %u\n", limits->maxDescriptorSetUniformBuffers );
+		printf( "\t\tmaxDescriptorSetUniformBuffersDynamic   = %u\n", limits->maxDescriptorSetUniformBuffersDynamic );
+		printf( "\t\tmaxDescriptorSetStorageBuffers          = %u\n", limits->maxDescriptorSetStorageBuffers );
+		printf( "\t\tmaxDescriptorSetStorageBuffersDynamic   = %u\n", limits->maxDescriptorSetStorageBuffersDynamic );
+		printf( "\t\tmaxDescriptorSetSampledImages           = %u\n", limits->maxDescriptorSetSampledImages );
+		printf( "\t\tmaxDescriptorSetStorageImages           = %u\n", limits->maxDescriptorSetStorageImages );
+		printf( "\t\tmaxDescriptorSetInputAttachments        = %u\n", limits->maxDescriptorSetInputAttachments );
+		printf( "\t\tmaxVertexInputAttributes                = %u\n", limits->maxVertexInputAttributes );
+		printf( "\t\tmaxVertexInputBindings                  = %u\n", limits->maxVertexInputBindings );
+		printf( "\t\tmaxVertexInputAttributeOffset           = 0x%" PRIxLEAST32 "\n", limits->maxVertexInputAttributeOffset );
+		printf( "\t\tmaxVertexInputBindingStride             = 0x%" PRIxLEAST32 "\n", limits->maxVertexInputBindingStride );
+		printf( "\t\tmaxVertexOutputComponents               = %u\n", limits->maxVertexOutputComponents );
+		printf( "\t\tmaxTessellationGenerationLevel          = %u\n", limits->maxTessellationGenerationLevel );
+		printf( "\t\tmaxTessellationPatchSize                        = %u\n", limits->maxTessellationPatchSize );
+		printf( "\t\tmaxTessellationControlPerVertexInputComponents  = %u\n",
+			limits->maxTessellationControlPerVertexInputComponents );
+		printf( "\t\tmaxTessellationControlPerVertexOutputComponents = %u\n",
+			limits->maxTessellationControlPerVertexOutputComponents );
+		printf( "\t\tmaxTessellationControlPerPatchOutputComponents  = %u\n",
+			limits->maxTessellationControlPerPatchOutputComponents );
+		printf( "\t\tmaxTessellationControlTotalOutputComponents     = %u\n", limits->maxTessellationControlTotalOutputComponents );
+		printf( "\t\tmaxTessellationEvaluationInputComponents        = %u\n", limits->maxTessellationEvaluationInputComponents );
+		printf( "\t\tmaxTessellationEvaluationOutputComponents       = %u\n", limits->maxTessellationEvaluationOutputComponents );
+		printf( "\t\tmaxGeometryShaderInvocations            = %u\n", limits->maxGeometryShaderInvocations );
+		printf( "\t\tmaxGeometryInputComponents              = %u\n", limits->maxGeometryInputComponents );
+		printf( "\t\tmaxGeometryOutputComponents             = %u\n", limits->maxGeometryOutputComponents );
+		printf( "\t\tmaxGeometryOutputVertices               = %u\n", limits->maxGeometryOutputVertices );
+		printf( "\t\tmaxGeometryTotalOutputComponents        = %u\n", limits->maxGeometryTotalOutputComponents );
+		printf( "\t\tmaxFragmentInputComponents              = %u\n", limits->maxFragmentInputComponents );
+		printf( "\t\tmaxFragmentOutputAttachments            = %u\n", limits->maxFragmentOutputAttachments );
+		printf( "\t\tmaxFragmentDualSrcAttachments           = %u\n", limits->maxFragmentDualSrcAttachments );
+		printf( "\t\tmaxFragmentCombinedOutputResources      = %u\n", limits->maxFragmentCombinedOutputResources );
+		printf( "\t\tmaxComputeSharedMemorySize              = 0x%" PRIxLEAST32 "\n", limits->maxComputeSharedMemorySize );
+		printf( "\t\tmaxComputeWorkGroupCount[0]             = %u\n", limits->maxComputeWorkGroupCount[0] );
+		printf( "\t\tmaxComputeWorkGroupCount[1]             = %u\n", limits->maxComputeWorkGroupCount[1] );
+		printf( "\t\tmaxComputeWorkGroupCount[2]             = %u\n", limits->maxComputeWorkGroupCount[2] );
+		printf( "\t\tmaxComputeWorkGroupInvocations          = %u\n", limits->maxComputeWorkGroupInvocations );
+		printf( "\t\tmaxComputeWorkGroupSize[0]              = %u\n", limits->maxComputeWorkGroupSize[0] );
+		printf( "\t\tmaxComputeWorkGroupSize[1]              = %u\n", limits->maxComputeWorkGroupSize[1] );
+		printf( "\t\tmaxComputeWorkGroupSize[2]              = %u\n", limits->maxComputeWorkGroupSize[2] );
+		printf( "\t\tsubPixelPrecisionBits                   = %u\n", limits->subPixelPrecisionBits );
+		printf( "\t\tsubTexelPrecisionBits                   = %u\n", limits->subTexelPrecisionBits );
+		printf( "\t\tmipmapPrecisionBits                     = %u\n", limits->mipmapPrecisionBits );
+		printf( "\t\tmaxDrawIndexedIndexValue                = %u\n", limits->maxDrawIndexedIndexValue );
+		printf( "\t\tmaxDrawIndirectCount                    = %u\n", limits->maxDrawIndirectCount );
+		printf( "\t\tmaxSamplerLodBias                       = %f\n", limits->maxSamplerLodBias );
+		printf( "\t\tmaxSamplerAnisotropy                    = %f\n", limits->maxSamplerAnisotropy );
+		printf( "\t\tmaxViewports                            = %u\n", limits->maxViewports );
+		printf( "\t\tmaxViewportDimensions[0]                = %u\n", limits->maxViewportDimensions[0] );
+		printf( "\t\tmaxViewportDimensions[1]                = %u\n", limits->maxViewportDimensions[1] );
+		printf( "\t\tviewportBoundsRange[0]                  = %13f\n", limits->viewportBoundsRange[0] );
+		printf( "\t\tviewportBoundsRange[1]                  = %13f\n", limits->viewportBoundsRange[1] );
+		printf( "\t\tviewportSubPixelBits                    = %u\n", limits->viewportSubPixelBits );
+		printf( "\t\tminMemoryMapAlignment                   = " PRINTF_SIZE_T_SPECIFIER "\n", limits->minMemoryMapAlignment );
+		printf( "\t\tminTexelBufferOffsetAlignment           = 0x%" PRIxLEAST64 "\n", limits->minTexelBufferOffsetAlignment );
+		printf( "\t\tminUniformBufferOffsetAlignment         = 0x%" PRIxLEAST64 "\n", limits->minUniformBufferOffsetAlignment );
+		printf( "\t\tminStorageBufferOffsetAlignment         = 0x%" PRIxLEAST64 "\n", limits->minStorageBufferOffsetAlignment );
+		printf( "\t\tminTexelOffset                          = %3d\n", limits->minTexelOffset );
+		printf( "\t\tmaxTexelOffset                          = %3d\n", limits->maxTexelOffset );
+		printf( "\t\tminTexelGatherOffset                    = %3d\n", limits->minTexelGatherOffset );
+		printf( "\t\tmaxTexelGatherOffset                    = %3d\n", limits->maxTexelGatherOffset );
+		printf( "\t\tminInterpolationOffset                  = %9f\n", limits->minInterpolationOffset );
+		printf( "\t\tmaxInterpolationOffset                  = %9f\n", limits->maxInterpolationOffset );
+		printf( "\t\tsubPixelInterpolationOffsetBits         = %u\n", limits->subPixelInterpolationOffsetBits );
+		printf( "\t\tmaxFramebufferWidth                     = %u\n", limits->maxFramebufferWidth );
+		printf( "\t\tmaxFramebufferHeight                    = %u\n", limits->maxFramebufferHeight );
+		printf( "\t\tmaxFramebufferLayers                    = %u\n", limits->maxFramebufferLayers );
+		printf( "\t\tframebufferColorSampleCounts            = %u\n", limits->framebufferColorSampleCounts );
+		printf( "\t\tframebufferDepthSampleCounts            = %u\n", limits->framebufferDepthSampleCounts );
+		printf( "\t\tframebufferStencilSampleCounts          = %u\n", limits->framebufferStencilSampleCounts );
+		printf( "\t\tframebufferNoAttachmentsSampleCounts    = %u\n", limits->framebufferNoAttachmentsSampleCounts );
+		printf( "\t\tmaxColorAttachments                     = %u\n", limits->maxColorAttachments );
+		printf( "\t\tsampledImageColorSampleCounts           = %u\n", limits->sampledImageColorSampleCounts );
+		printf( "\t\tsampledImageDepthSampleCounts           = %u\n", limits->sampledImageDepthSampleCounts );
+		printf( "\t\tsampledImageStencilSampleCounts         = %u\n", limits->sampledImageStencilSampleCounts );
+		printf( "\t\tsampledImageIntegerSampleCounts         = %u\n", limits->sampledImageIntegerSampleCounts );
+		printf( "\t\tstorageImageSampleCounts                = %u\n", limits->storageImageSampleCounts );
+		printf( "\t\tmaxSampleMaskWords                      = %u\n", limits->maxSampleMaskWords );
+		printf( "\t\ttimestampComputeAndGraphics             = %u\n", limits->timestampComputeAndGraphics );
+		printf( "\t\ttimestampPeriod                         = %f\n", limits->timestampPeriod );
+		printf( "\t\tmaxClipDistances                        = %u\n", limits->maxClipDistances );
+		printf( "\t\tmaxCullDistances                        = %u\n", limits->maxCullDistances );
+		printf( "\t\tmaxCombinedClipAndCullDistances         = %u\n", limits->maxCombinedClipAndCullDistances );
+		printf( "\t\tdiscreteQueuePriorities                 = %u\n", limits->discreteQueuePriorities );
+		printf( "\t\tpointSizeRange[0]                       = %f\n", limits->pointSizeRange[0] );
+		printf( "\t\tpointSizeRange[1]                       = %f\n", limits->pointSizeRange[1] );
+		printf( "\t\tlineWidthRange[0]                       = %f\n", limits->lineWidthRange[0] );
+		printf( "\t\tlineWidthRange[1]                       = %f\n", limits->lineWidthRange[1] );
+		printf( "\t\tpointSizeGranularity                    = %f\n", limits->pointSizeGranularity );
+		printf( "\t\tlineWidthGranularity                    = %f\n", limits->lineWidthGranularity );
+		printf( "\t\tstrictLines                             = %u\n", limits->strictLines );
+		printf( "\t\tstandardSampleLocations                 = %u\n", limits->standardSampleLocations );
+		printf( "\t\toptimalBufferCopyOffsetAlignment        = 0x%" PRIxLEAST64 "\n", limits->optimalBufferCopyOffsetAlignment );
+		printf( "\t\toptimalBufferCopyRowPitchAlignment      = 0x%" PRIxLEAST64 "\n", limits->optimalBufferCopyRowPitchAlignment );
+		printf( "\t\tnonCoherentAtomSize                     = 0x%" PRIxLEAST64 "\n", limits->nonCoherentAtomSize );
 	}
 	if ( json_output )
 	{
 		printf( ",\n" );
 		printf( "\t\t\"limits\": {\n" );
-		printf( "\t\t\t\"bufferImageGranularity\": %llu,\n", ( unsigned long long )limits.bufferImageGranularity );
-		printf( "\t\t\t\"discreteQueuePriorities\": %u,\n", limits.discreteQueuePriorities );
-		printf( "\t\t\t\"framebufferColorSampleCounts\": %u,\n", limits.framebufferColorSampleCounts.value() );
-		printf( "\t\t\t\"framebufferDepthSampleCounts\": %u,\n", limits.framebufferDepthSampleCounts.value() );
-		printf( "\t\t\t\"framebufferNoAttachmentsSampleCounts\": %u,\n", limits.framebufferNoAttachmentsSampleCounts.value() );
-		printf( "\t\t\t\"framebufferStencilSampleCounts\": %u,\n", limits.framebufferStencilSampleCounts.value() );
-		printf( "\t\t\t\"lineWidthGranularity\": %g,\n", limits.lineWidthGranularity );
-		printf( "\t\t\t\"lineWidthRange\": [\n" );
-		printf( "\t\t\t\t%g,\n", limits.lineWidthRange[0] );
-		printf( "\t\t\t\t%g\n", limits.lineWidthRange[1] );
-		printf( "\t\t\t],\n" );
-		printf( "\t\t\t\"maxBoundDescriptorSets\": %u,\n", limits.maxBoundDescriptorSets );
-		printf( "\t\t\t\"maxClipDistances\": %u,\n", limits.maxClipDistances );
-		printf( "\t\t\t\"maxColorAttachments\": %u,\n", limits.maxColorAttachments );
-		printf( "\t\t\t\"maxCombinedClipAndCullDistances\": %u,\n", limits.maxCombinedClipAndCullDistances );
-		printf( "\t\t\t\"maxComputeSharedMemorySize\": %u,\n", limits.maxComputeSharedMemorySize );
+		printf( "\t\t\t\"maxImageDimension1D\": %u,\n", limits->maxImageDimension1D );
+		printf( "\t\t\t\"maxImageDimension2D\": %u,\n", limits->maxImageDimension2D );
+		printf( "\t\t\t\"maxImageDimension3D\": %u,\n", limits->maxImageDimension3D );
+		printf( "\t\t\t\"maxImageDimensionCube\": %u,\n", limits->maxImageDimensionCube );
+		printf( "\t\t\t\"maxImageArrayLayers\": %u,\n", limits->maxImageArrayLayers );
+		printf( "\t\t\t\"maxTexelBufferElements\": %u,\n", limits->maxTexelBufferElements );
+		printf( "\t\t\t\"maxUniformBufferRange\": %u,\n", limits->maxUniformBufferRange );
+		printf( "\t\t\t\"maxStorageBufferRange\": %u,\n", limits->maxStorageBufferRange );
+		printf( "\t\t\t\"maxPushConstantsSize\": %u,\n", limits->maxPushConstantsSize );
+		printf( "\t\t\t\"maxMemoryAllocationCount\": %u,\n", limits->maxMemoryAllocationCount );
+		printf( "\t\t\t\"maxSamplerAllocationCount\": %u,\n", limits->maxSamplerAllocationCount );
+		printf( "\t\t\t\"bufferImageGranularity\": %llu,\n", ( unsigned long long )limits->bufferImageGranularity );
+		printf( "\t\t\t\"sparseAddressSpaceSize\": %llu,\n", ( unsigned long long )limits->sparseAddressSpaceSize );
+		printf( "\t\t\t\"maxBoundDescriptorSets\": %u,\n", limits->maxBoundDescriptorSets );
+		printf( "\t\t\t\"maxPerStageDescriptorSamplers\": %u,\n", limits->maxPerStageDescriptorSamplers );
+		printf( "\t\t\t\"maxPerStageDescriptorUniformBuffers\": %u,\n", limits->maxPerStageDescriptorUniformBuffers );
+		printf( "\t\t\t\"maxPerStageDescriptorStorageBuffers\": %u,\n", limits->maxPerStageDescriptorStorageBuffers );
+		printf( "\t\t\t\"maxPerStageDescriptorSampledImages\": %u,\n", limits->maxPerStageDescriptorSampledImages );
+		printf( "\t\t\t\"maxPerStageDescriptorStorageImages\": %u,\n", limits->maxPerStageDescriptorStorageImages );
+		printf( "\t\t\t\"maxPerStageDescriptorInputAttachments\": %u,\n", limits->maxPerStageDescriptorInputAttachments );
+		printf( "\t\t\t\"maxPerStageResources\": %u,\n", limits->maxPerStageResources );
+		printf( "\t\t\t\"maxDescriptorSetSamplers\": %u,\n", limits->maxDescriptorSetSamplers );
+		printf( "\t\t\t\"maxDescriptorSetUniformBuffers\": %u,\n", limits->maxDescriptorSetUniformBuffers );
+		printf( "\t\t\t\"maxDescriptorSetUniformBuffersDynamic\": %u,\n", limits->maxDescriptorSetUniformBuffersDynamic );
+		printf( "\t\t\t\"maxDescriptorSetStorageBuffers\": %u,\n", limits->maxDescriptorSetStorageBuffers );
+		printf( "\t\t\t\"maxDescriptorSetStorageBuffersDynamic\": %u,\n", limits->maxDescriptorSetStorageBuffersDynamic );
+		printf( "\t\t\t\"maxDescriptorSetSampledImages\": %u,\n", limits->maxDescriptorSetSampledImages );
+		printf( "\t\t\t\"maxDescriptorSetStorageImages\": %u,\n", limits->maxDescriptorSetStorageImages );
+		printf( "\t\t\t\"maxDescriptorSetInputAttachments\": %u,\n", limits->maxDescriptorSetInputAttachments );
+		printf( "\t\t\t\"maxVertexInputAttributes\": %u,\n", limits->maxVertexInputAttributes );
+		printf( "\t\t\t\"maxVertexInputBindings\": %u,\n", limits->maxVertexInputBindings );
+		printf( "\t\t\t\"maxVertexInputAttributeOffset\": %u,\n", limits->maxVertexInputAttributeOffset );
+		printf( "\t\t\t\"maxVertexInputBindingStride\": %u,\n", limits->maxVertexInputBindingStride );
+		printf( "\t\t\t\"maxVertexOutputComponents\": %u,\n", limits->maxVertexOutputComponents );
+		printf( "\t\t\t\"maxTessellationGenerationLevel\": %u,\n", limits->maxTessellationGenerationLevel );
+		printf( "\t\t\t\"maxTessellationPatchSize\": %u,\n", limits->maxTessellationPatchSize );
+		printf( "\t\t\t\"maxTessellationControlPerVertexInputComponents\": %u,\n",
+			limits->maxTessellationControlPerVertexInputComponents );
+		printf( "\t\t\t\"maxTessellationControlPerVertexOutputComponents\": %u,\n",
+			limits->maxTessellationControlPerVertexOutputComponents );
+		printf( "\t\t\t\"maxTessellationControlPerPatchOutputComponents\": %u,\n",
+			limits->maxTessellationControlPerPatchOutputComponents );
+		printf( "\t\t\t\"maxTessellationControlTotalOutputComponents\": %u,\n", limits->maxTessellationControlTotalOutputComponents );
+		printf( "\t\t\t\"maxTessellationEvaluationInputComponents\": %u,\n", limits->maxTessellationEvaluationInputComponents );
+		printf( "\t\t\t\"maxTessellationEvaluationOutputComponents\": %u,\n", limits->maxTessellationEvaluationOutputComponents );
+		printf( "\t\t\t\"maxGeometryShaderInvocations\": %u,\n", limits->maxGeometryShaderInvocations );
+		printf( "\t\t\t\"maxGeometryInputComponents\": %u,\n", limits->maxGeometryInputComponents );
+		printf( "\t\t\t\"maxGeometryOutputComponents\": %u,\n", limits->maxGeometryOutputComponents );
+		printf( "\t\t\t\"maxGeometryOutputVertices\": %u,\n", limits->maxGeometryOutputVertices );
+		printf( "\t\t\t\"maxGeometryTotalOutputComponents\": %u,\n", limits->maxGeometryTotalOutputComponents );
+		printf( "\t\t\t\"maxFragmentInputComponents\": %u,\n", limits->maxFragmentInputComponents );
+		printf( "\t\t\t\"maxFragmentOutputAttachments\": %u,\n", limits->maxFragmentOutputAttachments );
+		printf( "\t\t\t\"maxFragmentDualSrcAttachments\": %u,\n", limits->maxFragmentDualSrcAttachments );
+		printf( "\t\t\t\"maxFragmentCombinedOutputResources\": %u,\n", limits->maxFragmentCombinedOutputResources );
+		printf( "\t\t\t\"maxComputeSharedMemorySize\": %u,\n", limits->maxComputeSharedMemorySize );
 		printf( "\t\t\t\"maxComputeWorkGroupCount\": [\n" );
-		printf( "\t\t\t\t%u,\n", limits.maxComputeWorkGroupCount[0] );
-		printf( "\t\t\t\t%u,\n", limits.maxComputeWorkGroupCount[1] );
-		printf( "\t\t\t\t%u\n", limits.maxComputeWorkGroupCount[2] );
+		printf( "\t\t\t\t%u,\n", limits->maxComputeWorkGroupCount[0] );
+		printf( "\t\t\t\t%u,\n", limits->maxComputeWorkGroupCount[1] );
+		printf( "\t\t\t\t%u\n", limits->maxComputeWorkGroupCount[2] );
 		printf( "\t\t\t],\n" );
-		printf( "\t\t\t\"maxComputeWorkGroupInvocations\": %u,\n", limits.maxComputeWorkGroupInvocations );
+		printf( "\t\t\t\"maxComputeWorkGroupInvocations\": %u,\n", limits->maxComputeWorkGroupInvocations );
 		printf( "\t\t\t\"maxComputeWorkGroupSize\": [\n" );
-		printf( "\t\t\t\t%u,\n", limits.maxComputeWorkGroupSize[0] );
-		printf( "\t\t\t\t%u,\n", limits.maxComputeWorkGroupSize[1] );
-		printf( "\t\t\t\t%u\n", limits.maxComputeWorkGroupSize[2] );
+		printf( "\t\t\t\t%u,\n", limits->maxComputeWorkGroupSize[0] );
+		printf( "\t\t\t\t%u,\n", limits->maxComputeWorkGroupSize[1] );
+		printf( "\t\t\t\t%u\n", limits->maxComputeWorkGroupSize[2] );
 		printf( "\t\t\t],\n" );
-		printf( "\t\t\t\"maxCullDistances\": %u,\n", limits.maxCullDistances );
-		printf( "\t\t\t\"maxDescriptorSetInputAttachments\": %u,\n", limits.maxDescriptorSetInputAttachments );
-		printf( "\t\t\t\"maxDescriptorSetSampledImages\": %u,\n", limits.maxDescriptorSetSampledImages );
-		printf( "\t\t\t\"maxDescriptorSetSamplers\": %u,\n", limits.maxDescriptorSetSamplers );
-		printf( "\t\t\t\"maxDescriptorSetStorageBuffers\": %u,\n", limits.maxDescriptorSetStorageBuffers );
-		printf( "\t\t\t\"maxDescriptorSetStorageBuffersDynamic\": %u,\n", limits.maxDescriptorSetStorageBuffersDynamic );
-		printf( "\t\t\t\"maxDescriptorSetStorageImages\": %u,\n", limits.maxDescriptorSetStorageImages );
-		printf( "\t\t\t\"maxDescriptorSetUniformBuffers\": %u,\n", limits.maxDescriptorSetUniformBuffers );
-		printf( "\t\t\t\"maxDescriptorSetUniformBuffersDynamic\": %u,\n", limits.maxDescriptorSetUniformBuffersDynamic );
-		printf( "\t\t\t\"maxDrawIndexedIndexValue\": %u,\n", limits.maxDrawIndexedIndexValue );
-		printf( "\t\t\t\"maxDrawIndirectCount\": %u,\n", limits.maxDrawIndirectCount );
-		printf( "\t\t\t\"maxFragmentCombinedOutputResources\": %u,\n", limits.maxFragmentCombinedOutputResources );
-		printf( "\t\t\t\"maxFragmentDualSrcAttachments\": %u,\n", limits.maxFragmentDualSrcAttachments );
-		printf( "\t\t\t\"maxFragmentInputComponents\": %u,\n", limits.maxFragmentInputComponents );
-		printf( "\t\t\t\"maxFragmentOutputAttachments\": %u,\n", limits.maxFragmentOutputAttachments );
-		printf( "\t\t\t\"maxFramebufferHeight\": %u,\n", limits.maxFramebufferHeight );
-		printf( "\t\t\t\"maxFramebufferLayers\": %u,\n", limits.maxFramebufferLayers );
-		printf( "\t\t\t\"maxFramebufferWidth\": %u,\n", limits.maxFramebufferWidth );
-		printf( "\t\t\t\"maxGeometryInputComponents\": %u,\n", limits.maxGeometryInputComponents );
-		printf( "\t\t\t\"maxGeometryOutputComponents\": %u,\n", limits.maxGeometryOutputComponents );
-		printf( "\t\t\t\"maxGeometryOutputVertices\": %u,\n", limits.maxGeometryOutputVertices );
-		printf( "\t\t\t\"maxGeometryShaderInvocations\": %u,\n", limits.maxGeometryShaderInvocations );
-		printf( "\t\t\t\"maxGeometryTotalOutputComponents\": %u,\n", limits.maxGeometryTotalOutputComponents );
-		printf( "\t\t\t\"maxImageArrayLayers\": %u,\n", limits.maxImageArrayLayers );
-		printf( "\t\t\t\"maxImageDimension1D\": %u,\n", limits.maxImageDimension1D );
-		printf( "\t\t\t\"maxImageDimension2D\": %u,\n", limits.maxImageDimension2D );
-		printf( "\t\t\t\"maxImageDimension3D\": %u,\n", limits.maxImageDimension3D );
-		printf( "\t\t\t\"maxImageDimensionCube\": %u,\n", limits.maxImageDimensionCube );
-		printf( "\t\t\t\"maxInterpolationOffset\": %g,\n", limits.maxInterpolationOffset );
-		printf( "\t\t\t\"maxMemoryAllocationCount\": %u,\n", limits.maxMemoryAllocationCount );
-		printf( "\t\t\t\"maxPerStageDescriptorInputAttachments\": %u,\n", limits.maxPerStageDescriptorInputAttachments );
-		printf( "\t\t\t\"maxPerStageDescriptorSampledImages\": %u,\n", limits.maxPerStageDescriptorSampledImages );
-		printf( "\t\t\t\"maxPerStageDescriptorSamplers\": %u,\n", limits.maxPerStageDescriptorSamplers );
-		printf( "\t\t\t\"maxPerStageDescriptorStorageBuffers\": %u,\n", limits.maxPerStageDescriptorStorageBuffers );
-		printf( "\t\t\t\"maxPerStageDescriptorStorageImages\": %u,\n", limits.maxPerStageDescriptorStorageImages );
-		printf( "\t\t\t\"maxPerStageDescriptorUniformBuffers\": %u,\n", limits.maxPerStageDescriptorUniformBuffers );
-		printf( "\t\t\t\"maxPerStageResources\": %u,\n", limits.maxPerStageResources );
-		printf( "\t\t\t\"maxPushConstantsSize\": %u,\n", limits.maxPushConstantsSize );
-		printf( "\t\t\t\"maxSampleMaskWords\": %u,\n", limits.maxSampleMaskWords );
-		printf( "\t\t\t\"maxSamplerAllocationCount\": %u,\n", limits.maxSamplerAllocationCount );
-		printf( "\t\t\t\"maxSamplerAnisotropy\": %g,\n", limits.maxSamplerAnisotropy );
-		printf( "\t\t\t\"maxSamplerLodBias\": %g,\n", limits.maxSamplerLodBias );
-		printf( "\t\t\t\"maxStorageBufferRange\": %u,\n", limits.maxStorageBufferRange );
-		printf( "\t\t\t\"maxTessellationControlPerPatchOutputComponents\": %u,\n", limits.maxTessellationControlPerPatchOutputComponents );
-		printf( "\t\t\t\"maxTessellationControlPerVertexInputComponents\": %u,\n", limits.maxTessellationControlPerVertexInputComponents );
-		printf( "\t\t\t\"maxTessellationControlPerVertexOutputComponents\": %u,\n", limits.maxTessellationControlPerVertexOutputComponents );
-		printf( "\t\t\t\"maxTessellationControlTotalOutputComponents\": %u,\n", limits.maxTessellationControlTotalOutputComponents );
-		printf( "\t\t\t\"maxTessellationEvaluationInputComponents\": %u,\n", limits.maxTessellationEvaluationInputComponents );
-		printf( "\t\t\t\"maxTessellationEvaluationOutputComponents\": %u,\n", limits.maxTessellationEvaluationOutputComponents );
-		printf( "\t\t\t\"maxTessellationGenerationLevel\": %u,\n", limits.maxTessellationGenerationLevel );
-		printf( "\t\t\t\"maxTessellationPatchSize\": %u,\n", limits.maxTessellationPatchSize );
-		printf( "\t\t\t\"maxTexelBufferElements\": %u,\n", limits.maxTexelBufferElements );
-		printf( "\t\t\t\"maxTexelGatherOffset\": %u,\n", limits.maxTexelGatherOffset );
-		printf( "\t\t\t\"maxTexelOffset\": %u,\n", limits.maxTexelOffset );
-		printf( "\t\t\t\"maxUniformBufferRange\": %u,\n", limits.maxUniformBufferRange );
-		printf( "\t\t\t\"maxVertexInputAttributeOffset\": %u,\n", limits.maxVertexInputAttributeOffset );
-		printf( "\t\t\t\"maxVertexInputAttributes\": %u,\n", limits.maxVertexInputAttributes );
-		printf( "\t\t\t\"maxVertexInputBindings\": %u,\n", limits.maxVertexInputBindings );
-		printf( "\t\t\t\"maxVertexInputBindingStride\": %u,\n", limits.maxVertexInputBindingStride );
-		printf( "\t\t\t\"maxVertexOutputComponents\": %u,\n", limits.maxVertexOutputComponents );
+		printf( "\t\t\t\"subPixelPrecisionBits\": %u,\n", limits->subPixelPrecisionBits );
+		printf( "\t\t\t\"subTexelPrecisionBits\": %u,\n", limits->subTexelPrecisionBits );
+		printf( "\t\t\t\"mipmapPrecisionBits\": %u,\n", limits->mipmapPrecisionBits );
+		printf( "\t\t\t\"maxDrawIndexedIndexValue\": %u,\n", limits->maxDrawIndexedIndexValue );
+		printf( "\t\t\t\"maxDrawIndirectCount\": %u,\n", limits->maxDrawIndirectCount );
+		printf( "\t\t\t\"maxSamplerLodBias\": %g,\n", limits->maxSamplerLodBias );
+		printf( "\t\t\t\"maxSamplerAnisotropy\": %g,\n", limits->maxSamplerAnisotropy );
+		printf( "\t\t\t\"maxViewports\": %u,\n", limits->maxViewports );
 		printf( "\t\t\t\"maxViewportDimensions\": [\n" );
-		printf( "\t\t\t\t%u,\n", limits.maxViewportDimensions[0] );
-		printf( "\t\t\t\t%u\n", limits.maxViewportDimensions[1] );
+		printf( "\t\t\t\t%u,\n", limits->maxViewportDimensions[0] );
+		printf( "\t\t\t\t%u\n", limits->maxViewportDimensions[1] );
 		printf( "\t\t\t],\n" );
-		printf( "\t\t\t\"maxViewports\": %u,\n", limits.maxViewports );
-		printf( "\t\t\t\"minInterpolationOffset\": %g,\n", limits.minInterpolationOffset );
-		printf( "\t\t\t\"minMemoryMapAlignment\": " PRINTF_SIZE_T_SPECIFIER ",\n", limits.minMemoryMapAlignment );
-		printf( "\t\t\t\"minStorageBufferOffsetAlignment\": %llu,\n", ( unsigned long long )limits.minStorageBufferOffsetAlignment );
-		printf( "\t\t\t\"minTexelBufferOffsetAlignment\": %llu,\n", ( unsigned long long )limits.minTexelBufferOffsetAlignment );
-		printf( "\t\t\t\"minTexelGatherOffset\": %d,\n", limits.minTexelGatherOffset );
-		printf( "\t\t\t\"minTexelOffset\": %d,\n", limits.minTexelOffset );
-		printf( "\t\t\t\"minUniformBufferOffsetAlignment\": %llu,\n", ( unsigned long long )limits.minUniformBufferOffsetAlignment );
-		printf( "\t\t\t\"mipmapPrecisionBits\": %u,\n", limits.mipmapPrecisionBits );
-		printf( "\t\t\t\"nonCoherentAtomSize\": %llu,\n", ( unsigned long long )limits.nonCoherentAtomSize );
-		printf( "\t\t\t\"optimalBufferCopyOffsetAlignment\": %llu,\n", ( unsigned long long )limits.optimalBufferCopyOffsetAlignment );
-		printf( "\t\t\t\"optimalBufferCopyRowPitchAlignment\": %llu,\n", ( unsigned long long )limits.optimalBufferCopyRowPitchAlignment );
-		printf( "\t\t\t\"pointSizeGranularity\": %g,\n", limits.pointSizeGranularity );
-		printf( "\t\t\t\"pointSizeRange\": [\n" );
-		printf( "\t\t\t\t%g,\n", limits.pointSizeRange[0] );
-		printf( "\t\t\t\t%g\n", limits.pointSizeRange[1] );
-		printf( "\t\t\t],\n" );
-		printf( "\t\t\t\"sampledImageColorSampleCounts\": %u,\n", limits.sampledImageColorSampleCounts.value() );
-		printf( "\t\t\t\"sampledImageDepthSampleCounts\": %u,\n", limits.sampledImageDepthSampleCounts.value() );
-		printf( "\t\t\t\"sampledImageIntegerSampleCounts\": %u,\n", limits.sampledImageIntegerSampleCounts.value() );
-		printf( "\t\t\t\"sampledImageStencilSampleCounts\": %u,\n", limits.sampledImageStencilSampleCounts.value() );
-		printf( "\t\t\t\"sparseAddressSpaceSize\": %llu,\n", ( unsigned long long )limits.sparseAddressSpaceSize );
-		printf( "\t\t\t\"standardSampleLocations\": %u,\n", limits.standardSampleLocations );
-		printf( "\t\t\t\"storageImageSampleCounts\": %u,\n", limits.storageImageSampleCounts.value() );
-		printf( "\t\t\t\"strictLines\": %u,\n", limits.strictLines );
-		printf( "\t\t\t\"subPixelInterpolationOffsetBits\": %u,\n", limits.subPixelInterpolationOffsetBits );
-		printf( "\t\t\t\"subPixelPrecisionBits\": %u,\n", limits.subPixelPrecisionBits );
-		printf( "\t\t\t\"subTexelPrecisionBits\": %u,\n", limits.subTexelPrecisionBits );
-		printf( "\t\t\t\"timestampComputeAndGraphics\": %u,\n", limits.timestampComputeAndGraphics );
-		printf( "\t\t\t\"timestampPeriod\": %g,\n", limits.timestampPeriod );
 		printf( "\t\t\t\"viewportBoundsRange\": [\n" );
-		printf( "\t\t\t\t%g,\n", limits.viewportBoundsRange[0] );
-		printf( "\t\t\t\t%g\n", limits.viewportBoundsRange[1] );
+		printf( "\t\t\t\t%g,\n", limits->viewportBoundsRange[0] );
+		printf( "\t\t\t\t%g\n", limits->viewportBoundsRange[1] );
 		printf( "\t\t\t],\n" );
-		printf( "\t\t\t\"viewportSubPixelBits\": %u\n", limits.viewportSubPixelBits );
+		printf( "\t\t\t\"viewportSubPixelBits\": %u,\n", limits->viewportSubPixelBits );
+		printf( "\t\t\t\"minMemoryMapAlignment\": " PRINTF_SIZE_T_SPECIFIER ",\n", limits->minMemoryMapAlignment );
+		printf( "\t\t\t\"minTexelBufferOffsetAlignment\": %llu,\n", ( unsigned long long )limits->minTexelBufferOffsetAlignment );
+		printf( "\t\t\t\"minUniformBufferOffsetAlignment\": %llu,\n", ( unsigned long long )limits->minUniformBufferOffsetAlignment );
+		printf( "\t\t\t\"minStorageBufferOffsetAlignment\": %llu,\n", ( unsigned long long )limits->minStorageBufferOffsetAlignment );
+		printf( "\t\t\t\"minTexelOffset\": %d,\n", limits->minTexelOffset );
+		printf( "\t\t\t\"maxTexelOffset\": %u,\n", limits->maxTexelOffset );
+		printf( "\t\t\t\"minTexelGatherOffset\": %d,\n", limits->minTexelGatherOffset );
+		printf( "\t\t\t\"maxTexelGatherOffset\": %u,\n", limits->maxTexelGatherOffset );
+		printf( "\t\t\t\"minInterpolationOffset\": %g,\n", limits->minInterpolationOffset );
+		printf( "\t\t\t\"maxInterpolationOffset\": %g,\n", limits->maxInterpolationOffset );
+		printf( "\t\t\t\"subPixelInterpolationOffsetBits\": %u,\n", limits->subPixelInterpolationOffsetBits );
+		printf( "\t\t\t\"maxFramebufferWidth\": %u,\n", limits->maxFramebufferWidth );
+		printf( "\t\t\t\"maxFramebufferHeight\": %u,\n", limits->maxFramebufferHeight );
+		printf( "\t\t\t\"maxFramebufferLayers\": %u,\n", limits->maxFramebufferLayers );
+		printf( "\t\t\t\"framebufferColorSampleCounts\": %u,\n", limits->framebufferColorSampleCounts );
+		printf( "\t\t\t\"framebufferDepthSampleCounts\": %u,\n", limits->framebufferDepthSampleCounts );
+		printf( "\t\t\t\"framebufferStencilSampleCounts\": %u,\n", limits->framebufferStencilSampleCounts );
+		printf( "\t\t\t\"framebufferNoAttachmentsSampleCounts\": %u,\n", limits->framebufferNoAttachmentsSampleCounts );
+		printf( "\t\t\t\"maxColorAttachments\": %u,\n", limits->maxColorAttachments );
+		printf( "\t\t\t\"sampledImageColorSampleCounts\": %u,\n", limits->sampledImageColorSampleCounts );
+		printf( "\t\t\t\"sampledImageIntegerSampleCounts\": %u,\n", limits->sampledImageIntegerSampleCounts );
+		printf( "\t\t\t\"sampledImageDepthSampleCounts\": %u,\n", limits->sampledImageDepthSampleCounts );
+		printf( "\t\t\t\"sampledImageStencilSampleCounts\": %u,\n", limits->sampledImageStencilSampleCounts );
+		printf( "\t\t\t\"storageImageSampleCounts\": %u,\n", limits->storageImageSampleCounts );
+		printf( "\t\t\t\"maxSampleMaskWords\": %u,\n", limits->maxSampleMaskWords );
+		printf( "\t\t\t\"timestampComputeAndGraphics\": %u,\n", limits->timestampComputeAndGraphics );
+		printf( "\t\t\t\"timestampPeriod\": %g,\n", limits->timestampPeriod );
+		printf( "\t\t\t\"maxClipDistances\": %u,\n", limits->maxClipDistances );
+		printf( "\t\t\t\"maxCullDistances\": %u,\n", limits->maxCullDistances );
+		printf( "\t\t\t\"maxCombinedClipAndCullDistances\": %u,\n", limits->maxCombinedClipAndCullDistances );
+		printf( "\t\t\t\"discreteQueuePriorities\": %u,\n", limits->discreteQueuePriorities );
+		printf( "\t\t\t\"pointSizeRange\": [\n" );
+		printf( "\t\t\t\t%g,\n", limits->pointSizeRange[0] );
+		printf( "\t\t\t\t%g\n", limits->pointSizeRange[1] );
+		printf( "\t\t\t],\n" );
+		printf( "\t\t\t\"lineWidthRange\": [\n" );
+		printf( "\t\t\t\t%g,\n", limits->lineWidthRange[0] );
+		printf( "\t\t\t\t%g\n", limits->lineWidthRange[1] );
+		printf( "\t\t\t],\n" );
+		printf( "\t\t\t\"pointSizeGranularity\": %g,\n", limits->pointSizeGranularity );
+		printf( "\t\t\t\"lineWidthGranularity\": %g,\n", limits->lineWidthGranularity );
+		printf( "\t\t\t\"strictLines\": %u,\n", limits->strictLines );
+		printf( "\t\t\t\"standardSampleLocations\": %u,\n", limits->standardSampleLocations );
+		printf( "\t\t\t\"optimalBufferCopyOffsetAlignment\": %llu,\n", ( unsigned long long )limits->optimalBufferCopyOffsetAlignment );
+		printf( "\t\t\t\"optimalBufferCopyRowPitchAlignment\": %llu,\n",
+			( unsigned long long )limits->optimalBufferCopyRowPitchAlignment );
+		printf( "\t\t\t\"nonCoherentAtomSize\": %llu\n", ( unsigned long long )limits->nonCoherentAtomSize );
 		printf( "\t\t}" );
 	}
 }
 
-static void AppGpuDumpProps( const AppGpu * gpu
-	, FILE *out )
+static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 {
-	ashes::PhysicalDeviceProperties props;
-#if 0
+	VkPhysicalDeviceProperties props;
+
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -3805,26 +4197,33 @@ static void AppGpuDumpProps( const AppGpu * gpu
 		props = *props2_const;
 	}
 	else
-#endif
 	{
-		props = gpu->obj->getProperties();
+		const VkPhysicalDeviceProperties *props_const = &gpu->props;
+		props = *props_const;
 	}
-
 	const uint32_t apiVersion = props.apiVersion;
-	uint32_t major;
-	uint32_t minor;
-	uint32_t patch;
-	ExtractVersion( apiVersion, &major, &minor, &patch );
+	const uint32_t major = VK_VERSION_MAJOR( apiVersion );
+	const uint32_t minor = VK_VERSION_MINOR( apiVersion );
+	const uint32_t patch = VK_VERSION_PATCH( apiVersion );
 
 	if ( html_output )
 	{
 		fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceProperties</summary>\n" );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>apiVersion = <div class='val'>0x%" PRIxLEAST32 "</div>  (<div class='val'>%d.%d.%d</div>)</summary></details>\n", apiVersion, major, minor, patch );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>driverVersion = <div class='val'>%u</div> (<div class='val'>0x%" PRIxLEAST32 "</div>)</summary></details>\n", props.driverVersion, props.driverVersion );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>vendorID = <div class='val'>0x%04x</div></summary></details>\n", props.vendorID );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>deviceID = <div class='val'>0x%04x</div></summary></details>\n", props.deviceID );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>deviceType = %s</summary></details>\n", VkPhysicalDeviceTypeString( props.deviceType ).c_str() );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>deviceName = %s</summary></details>\n", props.deviceName.c_str() );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>apiVersion = <div class='val'>0x%" PRIxLEAST32
+			"</div>  (<div class='val'>%d.%d.%d</div>)</summary></details>\n",
+			apiVersion, major, minor, patch );
+		fprintf( out,
+			"\t\t\t\t\t\t<details><summary>driverVersion = <div class='val'>%u</div> (<div class='val'>0x%" PRIxLEAST32
+			"</div>)</summary></details>\n",
+			props.driverVersion, props.driverVersion );
+		fprintf( out, "\t\t\t\t\t\t<details><summary>vendorID = <div class='val'>0x%04x</div></summary></details>\n",
+			props.vendorID );
+		fprintf( out, "\t\t\t\t\t\t<details><summary>deviceID = <div class='val'>0x%04x</div></summary></details>\n",
+			props.deviceID );
+		fprintf( out, "\t\t\t\t\t\t<details><summary>deviceType = %s</summary></details>\n",
+			VkPhysicalDeviceTypeString( props.deviceType ) );
+		fprintf( out, "\t\t\t\t\t\t<details><summary>deviceName = %s</summary></details>\n", props.deviceName );
 		fprintf( out, "\t\t\t\t\t</details>\n" );
 	}
 	else if ( human_readable_output )
@@ -3835,8 +4234,8 @@ static void AppGpuDumpProps( const AppGpu * gpu
 		printf( "\tdriverVersion  = %u (0x%" PRIxLEAST32 ")\n", props.driverVersion, props.driverVersion );
 		printf( "\tvendorID       = 0x%04x\n", props.vendorID );
 		printf( "\tdeviceID       = 0x%04x\n", props.deviceID );
-		printf( "\tdeviceType     = %s\n", VkPhysicalDeviceTypeString( props.deviceType ).c_str() );
-		printf( "\tdeviceName     = %s\n", props.deviceName.c_str() );
+		printf( "\tdeviceType     = %s\n", VkPhysicalDeviceTypeString( props.deviceType ) );
+		printf( "\tdeviceName     = %s\n", props.deviceName );
 	}
 	if ( json_output )
 	{
@@ -3846,10 +4245,10 @@ static void AppGpuDumpProps( const AppGpu * gpu
 		printf( "\t\t\"driverVersion\": %u,\n", props.driverVersion );
 		printf( "\t\t\"vendorID\": %u,\n", props.vendorID );
 		printf( "\t\t\"deviceID\": %u,\n", props.deviceID );
-		printf( "\t\t\"deviceType\": %u,\n", int( props.deviceType ) );
-		printf( "\t\t\"deviceName\": \"%s\",\n", props.deviceName.c_str() );
+		printf( "\t\t\"deviceType\": %u,\n", props.deviceType );
+		printf( "\t\t\"deviceName\": \"%s\",\n", props.deviceName );
 		printf( "\t\t\"pipelineCacheUUID\": [" );
-		for ( uint32_t i = 0; i < ashes::UuidSize; ++i )
+		for ( uint32_t i = 0; i < VK_UUID_SIZE; ++i )
 		{
 			if ( i > 0 )
 			{
@@ -3862,35 +4261,30 @@ static void AppGpuDumpProps( const AppGpu * gpu
 		printf( "\t\t]" );
 	}
 
-#if 0
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
-		AppDumpLimits( gpu->props2.properties.limits, out );
+		AppDumpLimits( &gpu->props2.properties.limits, out );
 	}
 	else
-#endif
 	{
-		AppDumpLimits( gpu->props.limits, out );
+		AppDumpLimits( &gpu->props.limits, out );
 	}
 
-#if 0
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
 		AppDumpSparseProps( &gpu->props2.properties.sparseProperties, out );
 	}
 	else
-#endif
 	{
-		AppDumpSparseProps( gpu->props.sparseProperties, out );
+		AppDumpSparseProps( &gpu->props.sparseProperties, out );
 	}
 
 	if ( json_output )
 	{
 		printf( "\n\t}" );
 	}
-#if 0
 
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
@@ -4482,35 +4876,30 @@ static void AppGpuDumpProps( const AppGpu * gpu
 			place = structure->pNext;
 		}
 	}
-#endif
+
 	fflush( out );
 	fflush( stdout );
 }
 
 // Compare function for sorting extensions by name
-static int CompareExtensionName( const  ashes::ExtensionProperties & a
-	, const  ashes::ExtensionProperties & b )
+static int CompareExtensionName( const void *a, const void *b )
 {
-	auto lhs = a.extensionName;
-	auto rhs = b.extensionName;
-	return lhs < rhs;
+	const char *this = ( ( const VkExtensionProperties * )a )->extensionName;
+	const char *that = ( ( const VkExtensionProperties * )b )->extensionName;
+	return strcmp( this, that );
 }
 
 // Compare function for sorting layers by name
-static int CompareLayerName( const LayerExtensionList & a, const LayerExtensionList & b )
+static int CompareLayerName( const void *a, const void *b )
 {
-	auto lhs = a.layer_properties.layerName;
-	auto rhs = b.layer_properties.layerName;
-	return lhs < rhs;
+	const char *this = ( ( const struct LayerExtensionList * )a )->layer_properties.layerName;
+	const char *that = ( ( const struct LayerExtensionList * )b )->layer_properties.layerName;
+	return strcmp( this, that );
 }
 
-static void AppDumpExtensions( const char *indent
-	, const char *layer_name
-	, std::vector< ashes::ExtensionProperties > & extension_properties
-	, FILE *out )
+static void AppDumpExtensions( const char *indent, const char *layer_name, const uint32_t extension_count,
+	VkExtensionProperties *extension_properties, FILE *out )
 {
-	auto extension_count = uint32_t( extension_properties.size() );
-
 	if ( html_output )
 	{
 		fprintf( out, "\t\t\t%s<details><summary>", indent );
@@ -4557,24 +4946,22 @@ static void AppDumpExtensions( const char *indent
 		printf( "\t\"ArrayOfVkExtensionProperties\": [" );
 	}
 
-	std::sort( extension_properties.begin()
-		, extension_properties.end()
-		, CompareExtensionName );
+	qsort( extension_properties, extension_count, sizeof( VkExtensionProperties ), CompareExtensionName );
 
-	uint32_t i = 0;
-	for ( auto & ext_prop : extension_properties )
+	for ( uint32_t i = 0; i < extension_count; ++i )
 	{
+		VkExtensionProperties const *ext_prop = &extension_properties[i];
 		if ( html_output )
 		{
 			fprintf( out, "\t\t\t\t%s<details><summary>", indent );
-			fprintf( out, "<div class='type'>%s</div>: extension revision <div class='val'>%d</div>", ext_prop.extensionName.c_str(),
-				ext_prop.specVersion );
+			fprintf( out, "<div class='type'>%s</div>: extension revision <div class='val'>%d</div>", ext_prop->extensionName,
+				ext_prop->specVersion );
 			fprintf( out, "</summary></details>\n" );
 		}
 		else if ( human_readable_output )
 		{
 			printf( "%s\t", indent );
-			printf( "%-36s: extension revision %2d\n", ext_prop.extensionName.c_str(), ext_prop.specVersion );
+			printf( "%-36s: extension revision %2d\n", ext_prop->extensionName, ext_prop->specVersion );
 		}
 		if ( is_device_type && json_output )
 		{
@@ -4584,11 +4971,10 @@ static void AppDumpExtensions( const char *indent
 			}
 			printf( "\n" );
 			printf( "\t\t{\n" );
-			printf( "\t\t\t\"extensionName\": \"%s\",\n", ext_prop.extensionName.c_str() );
-			printf( "\t\t\t\"specVersion\": %u\n", ext_prop.specVersion );
+			printf( "\t\t\t\"extensionName\": \"%s\",\n", ext_prop->extensionName );
+			printf( "\t\t\t\"specVersion\": %u\n", ext_prop->specVersion );
 			printf( "\t\t}" );
 		}
-		++i;
 	}
 	if ( html_output )
 	{
@@ -4614,10 +5000,22 @@ static void AppDumpExtensions( const char *indent
 	fflush( stdout );
 }
 
-static void AppGpuDumpQueueProps( ashes::QueueFamilyProperties const & props
-	, uint32_t id
-	, FILE *out )
+static void AppGpuDumpQueueProps( const struct AppGpu *gpu, uint32_t id, FILE *out )
 {
+	VkQueueFamilyProperties props;
+
+	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
+		gpu->inst->inst_extensions_count ) )
+	{
+		const VkQueueFamilyProperties *props2_const = &gpu->queue_props2[id].queueFamilyProperties;
+		props = *props2_const;
+	}
+	else
+	{
+		const VkQueueFamilyProperties *props_const = &gpu->queue_props[id];
+		props = *props_const;
+	}
+
 	if ( html_output )
 	{
 		fprintf( out, "\t\t\t\t\t<details><summary>VkQueueFamilyProperties[<div class='val'>%d</div>]</summary>\n", id );
@@ -4631,25 +5029,25 @@ static void AppGpuDumpQueueProps( ashes::QueueFamilyProperties const & props
 	}
 	if ( html_output || human_readable_output )
 	{
-		std::string sep = "";  // separator character
-		if ( ashes::checkFlag( props.queueFlags, ashes::QueueFlag::eGraphics ) )
+		char *sep = "";  // separator character
+		if ( props.queueFlags & VK_QUEUE_GRAPHICS_BIT )
 		{
 			fprintf( out, "GRAPHICS" );
 			sep = " | ";
 		}
-		if ( ashes::checkFlag( props.queueFlags, ashes::QueueFlag::eCompute ) )
+		if ( props.queueFlags & VK_QUEUE_COMPUTE_BIT )
 		{
-			fprintf( out, "%sCOMPUTE", sep.c_str() );
+			fprintf( out, "%sCOMPUTE", sep );
 			sep = " | ";
 		}
-		if ( ashes::checkFlag( props.queueFlags, ashes::QueueFlag::eTransfer ) )
+		if ( props.queueFlags & VK_QUEUE_TRANSFER_BIT )
 		{
-			fprintf( out, "%sTRANSFER", sep.c_str() );
+			fprintf( out, "%sTRANSFER", sep );
 			sep = " | ";
 		}
-		if ( ashes::checkFlag( props.queueFlags, ashes::QueueFlag::eSparseBinding ) )
+		if ( props.queueFlags & VK_QUEUE_SPARSE_BINDING_BIT )
 		{
-			fprintf( out, "%sSPARSE", sep.c_str() );
+			fprintf( out, "%sSPARSE", sep );
 		}
 	}
 
@@ -4679,7 +5077,7 @@ static void AppGpuDumpQueueProps( ashes::QueueFamilyProperties const & props
 		printf( "\t\t\t\t\"width\": %u\n", props.minImageTransferGranularity.width );
 		printf( "\t\t\t},\n" );
 		printf( "\t\t\t\"queueCount\": %u,\n", props.queueCount );
-		printf( "\t\t\t\"queueFlags\": %u,\n", props.queueFlags.value() );
+		printf( "\t\t\t\"queueFlags\": %u,\n", props.queueFlags );
 		printf( "\t\t\t\"timestampValidBits\": %u\n", props.timestampValidBits );
 		printf( "\t\t}" );
 	}
@@ -4714,11 +5112,10 @@ static char *HumanReadable( const size_t sz )
 	return strndup( buf, kBufferSize );
 }
 
-static void AppGpuDumpMemoryProps( AppGpu const * gpu
-	, FILE *out )
+static void AppGpuDumpMemoryProps( const struct AppGpu *gpu, FILE *out )
 {
-	ashes:: PhysicalDeviceMemoryProperties props;
-#if 0
+	VkPhysicalDeviceMemoryProperties props;
+
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -4726,19 +5123,16 @@ static void AppGpuDumpMemoryProps( AppGpu const * gpu
 		props = *props2_const;
 	}
 	else
-#endif
 	{
-		props = gpu->obj->getMemoryProperties();
+		const VkPhysicalDeviceMemoryProperties *props_const = &gpu->memory_props;
+		props = *props_const;
 	}
-
-	auto memoryHeapCount = uint32_t( props.memoryHeaps.size() );
-	auto memoryTypeCount = uint32_t( props.memoryTypes.size() );
 
 	if ( html_output )
 	{
 		fprintf( out, "\t\t\t\t\t<details><summary>VkPhysicalDeviceMemoryProperties</summary>\n" );
-		fprintf( out, "\t\t\t\t\t\t<details><summary>memoryHeapCount = <div class='val'>%u</div></summary>", memoryHeapCount );
-		if ( memoryHeapCount > 0 )
+		fprintf( out, "\t\t\t\t\t\t<details><summary>memoryHeapCount = <div class='val'>%u</div></summary>", props.memoryHeapCount );
+		if ( props.memoryHeapCount > 0 )
 		{
 			fprintf( out, "\n" );
 		}
@@ -4747,7 +5141,7 @@ static void AppGpuDumpMemoryProps( AppGpu const * gpu
 	{
 		printf( "VkPhysicalDeviceMemoryProperties:\n" );
 		printf( "=================================\n" );
-		printf( "\tmemoryHeapCount       = %u\n", memoryHeapCount );
+		printf( "\tmemoryHeapCount       = %u\n", props.memoryHeapCount );
 	}
 	if ( json_output )
 	{
@@ -4755,15 +5149,17 @@ static void AppGpuDumpMemoryProps( AppGpu const * gpu
 		printf( "\t\"VkPhysicalDeviceMemoryProperties\": {\n" );
 		printf( "\t\t\"memoryHeaps\": [" );
 	}
-	for ( uint32_t i = 0; i < memoryHeapCount; ++i )
+	for ( uint32_t i = 0; i < props.memoryHeapCount; ++i )
 	{
-		const size_t memSize = size_t( props.memoryHeaps[i].size );
-		char *mem_size_human_readable = HumanReadable( memSize );
+		const VkDeviceSize memSize = props.memoryHeaps[i].size;
+		char *mem_size_human_readable = HumanReadable( ( const size_t )memSize );
 
 		if ( html_output )
 		{
 			fprintf( out, "\t\t\t\t\t\t\t<details><summary>memoryHeaps[<div class='val'>%u</div>]</summary>\n", i );
-			fprintf( out, "\t\t\t\t\t\t\t\t<details><summary>size = <div class='val'>" PRINTF_SIZE_T_SPECIFIER "</div> (<div class='val'>0x%" PRIxLEAST64 "</div>) (<div class='val'>%s</div>)</summary></details>\n",
+			fprintf( out,
+				"\t\t\t\t\t\t\t\t<details><summary>size = <div class='val'>" PRINTF_SIZE_T_SPECIFIER
+				"</div> (<div class='val'>0x%" PRIxLEAST64 "</div>) (<div class='val'>%s</div>)</summary></details>\n",
 				( size_t )memSize, memSize, mem_size_human_readable );
 		}
 		else if ( human_readable_output )
@@ -4774,12 +5170,13 @@ static void AppGpuDumpMemoryProps( AppGpu const * gpu
 		}
 		free( mem_size_human_readable );
 
-		const ashes::MemoryHeapFlags heap_flags = props.memoryHeaps[i].flags;
+		const VkMemoryHeapFlags heap_flags = props.memoryHeaps[i].flags;
 		if ( html_output )
 		{
 			fprintf( out, "\t\t\t\t\t\t\t\t<details open><summary>flags</summary>\n" );
 			fprintf( out, "\t\t\t\t\t\t\t\t\t<details><summary>" );
-			fprintf( out, checkFlag( heap_flags, ashes::MemoryHeapFlag::eDeviceLocal ) ? "<div class='type'>VK_MEMORY_HEAP_DEVICE_LOCAL_BIT</div>" : "None" );
+			fprintf( out, ( heap_flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT ) ? "<div class='type'>VK_MEMORY_HEAP_DEVICE_LOCAL_BIT</div>"
+				: "None" );
 			fprintf( out, "</summary></details>\n" );
 			fprintf( out, "\t\t\t\t\t\t\t\t</details>\n" );
 			fprintf( out, "\t\t\t\t\t\t\t</details>\n" );
@@ -4787,7 +5184,7 @@ static void AppGpuDumpMemoryProps( AppGpu const * gpu
 		else if ( human_readable_output )
 		{
 			printf( "\t\tflags:\n\t\t\t" );
-			printf( checkFlag( heap_flags, ashes::MemoryHeapFlag::eDeviceLocal ) ? "VK_MEMORY_HEAP_DEVICE_LOCAL_BIT\n" : "None\n" );
+			printf( ( heap_flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT ) ? "VK_MEMORY_HEAP_DEVICE_LOCAL_BIT\n" : "None\n" );
 		}
 		if ( json_output )
 		{
@@ -4797,14 +5194,14 @@ static void AppGpuDumpMemoryProps( AppGpu const * gpu
 			}
 			printf( "\n" );
 			printf( "\t\t\t{\n" );
-			printf( "\t\t\t\t\"flags\": %u,\n", heap_flags.value() );
+			printf( "\t\t\t\t\"flags\": %u,\n", heap_flags );
 			printf( "\t\t\t\t\"size\": " PRINTF_SIZE_T_SPECIFIER "\n", ( size_t )memSize );
 			printf( "\t\t\t}" );
 		}
 	}
 	if ( html_output )
 	{
-		if ( memoryHeapCount > 0 )
+		if ( props.memoryHeapCount > 0 )
 		{
 			fprintf( out, "\t\t\t\t\t\t" );
 		}
@@ -4812,7 +5209,7 @@ static void AppGpuDumpMemoryProps( AppGpu const * gpu
 	}
 	if ( json_output )
 	{
-		if ( memoryHeapCount > 0 )
+		if ( props.memoryHeapCount > 0 )
 		{
 			printf( "\n\t\t" );
 		}
@@ -4821,28 +5218,31 @@ static void AppGpuDumpMemoryProps( AppGpu const * gpu
 
 	if ( html_output )
 	{
-		fprintf( out, "\t\t\t\t\t\t<details><summary>memoryTypeCount = <div class='val'>%u</div></summary>", memoryTypeCount );
-		if ( memoryTypeCount > 0 )
+		fprintf( out, "\t\t\t\t\t\t<details><summary>memoryTypeCount = <div class='val'>%u</div></summary>", props.memoryTypeCount );
+		if ( props.memoryTypeCount > 0 )
 		{
 			fprintf( out, "\n" );
 		}
 	}
 	else if ( human_readable_output )
 	{
-		printf( "\tmemoryTypeCount       = %u\n", memoryTypeCount );
+		printf( "\tmemoryTypeCount       = %u\n", props.memoryTypeCount );
 	}
 	if ( json_output )
 	{
 		printf( ",\n" );
 		printf( "\t\t\"memoryTypes\": [" );
 	}
-	for ( uint32_t i = 0; i < memoryTypeCount; ++i )
+	for ( uint32_t i = 0; i < props.memoryTypeCount; ++i )
 	{
 		if ( html_output )
 		{
 			fprintf( out, "\t\t\t\t\t\t\t<details><summary>memoryTypes[<div class='val'>%u</div>]</summary>\n", i );
-			fprintf( out, "\t\t\t\t\t\t\t\t<details><summary>heapIndex = <div class='val'>%u</div></summary></details>\n", props.memoryTypes[i].heapIndex );
-			fprintf( out, "\t\t\t\t\t\t\t\t<details open><summary>propertyFlags = <div class='val'>0x%" PRIxLEAST32 "</div></summary>", props.memoryTypes[i].propertyFlags.value() );
+			fprintf( out, "\t\t\t\t\t\t\t\t<details><summary>heapIndex = <div class='val'>%u</div></summary></details>\n",
+				props.memoryTypes[i].heapIndex );
+			fprintf( out,
+				"\t\t\t\t\t\t\t\t<details open><summary>propertyFlags = <div class='val'>0x%" PRIxLEAST32 "</div></summary>",
+				props.memoryTypes[i].propertyFlags );
 			if ( props.memoryTypes[i].propertyFlags == 0 )
 			{
 				fprintf( out, "</details>\n" );
@@ -4856,7 +5256,7 @@ static void AppGpuDumpMemoryProps( AppGpu const * gpu
 		{
 			printf( "\tmemoryTypes[%u] :\n", i );
 			printf( "\t\theapIndex     = %u\n", props.memoryTypes[i].heapIndex );
-			printf( "\t\tpropertyFlags = 0x%" PRIxLEAST32 ":\n", props.memoryTypes[i].propertyFlags.value() );
+			printf( "\t\tpropertyFlags = 0x%" PRIxLEAST32 ":\n", props.memoryTypes[i].propertyFlags );
 		}
 		if ( json_output )
 		{
@@ -4867,34 +5267,54 @@ static void AppGpuDumpMemoryProps( AppGpu const * gpu
 			printf( "\n" );
 			printf( "\t\t\t{\n" );
 			printf( "\t\t\t\t\"heapIndex\": %u,\n", props.memoryTypes[i].heapIndex );
-			printf( "\t\t\t\t\"propertyFlags\": %u\n", props.memoryTypes[i].propertyFlags.value() );
+			printf( "\t\t\t\t\"propertyFlags\": %u\n", props.memoryTypes[i].propertyFlags );
 			printf( "\t\t\t}" );
 		}
 
 		// Print each named flag to html or std output if it is set
-		const auto flags = props.memoryTypes[i].propertyFlags;
+		const VkFlags flags = props.memoryTypes[i].propertyFlags;
 		if ( html_output )
 		{
-			if ( checkFlag( flags, ashes::MemoryPropertyFlag::eDeviceLocal ) )     fprintf( out, "\t\t\t\t\t\t\t\t\t<details><summary><div class='type'>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</div></summary></details>\n" );
-			if ( checkFlag( flags, ashes::MemoryPropertyFlag::eHostVisible ) )     fprintf( out, "\t\t\t\t\t\t\t\t\t<details><summary><div class='type'>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</div></summary></details>\n" );
-			if ( checkFlag( flags, ashes::MemoryPropertyFlag::eHostCoherent ) )    fprintf( out, "\t\t\t\t\t\t\t\t\t<details><summary><div class='type'>VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</div></summary></details>\n" );
-			if ( checkFlag( flags, ashes::MemoryPropertyFlag::eHostCached ) )      fprintf( out, "\t\t\t\t\t\t\t\t\t<details><summary><div class='type'>VK_MEMORY_PROPERTY_HOST_CACHED_BIT</div></summary></details>\n" );
-			if ( checkFlag( flags, ashes::MemoryPropertyFlag::eLazilyAllocated ) ) fprintf( out, "\t\t\t\t\t\t\t\t\t<details><summary><div class='type'>VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT</div></summary></details>\n" );
-			if ( props.memoryTypes[i].propertyFlags > 0 )         fprintf( out, "\t\t\t\t\t\t\t\t</details>\n" );
+			if ( flags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT )
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT</div></summary></details>\n" );
+			if ( flags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT</div></summary></details>\n" );
+			if ( flags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT )
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_MEMORY_PROPERTY_HOST_COHERENT_BIT</div></summary></details>\n" );
+			if ( flags & VK_MEMORY_PROPERTY_HOST_CACHED_BIT )
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_MEMORY_PROPERTY_HOST_CACHED_BIT</div></summary></details>\n" );
+			if ( flags & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT )
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT</div></summary></details>\n" );
+			if ( flags & VK_MEMORY_PROPERTY_PROTECTED_BIT )
+				fprintf( out,
+					"\t\t\t\t\t\t\t\t\t<details><summary><div "
+					"class='type'>VK_MEMORY_PROPERTY_PROTECTED_BIT</div></summary></details>\n" );
+			if ( props.memoryTypes[i].propertyFlags > 0 ) fprintf( out, "\t\t\t\t\t\t\t\t</details>\n" );
 			fprintf( out, "\t\t\t\t\t\t\t</details>\n" );
 		}
 		else if ( human_readable_output )
 		{
-			if ( checkFlag( flags, ashes::MemoryPropertyFlag::eDeviceLocal ) )     printf( "\t\t\tVK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT\n" );
-			if ( checkFlag( flags, ashes::MemoryPropertyFlag::eHostVisible ) )     printf( "\t\t\tVK_MEMORY_PROPERTY_HOST_VISIBLE_BIT\n" );
-			if ( checkFlag( flags, ashes::MemoryPropertyFlag::eHostCoherent ) )    printf( "\t\t\tVK_MEMORY_PROPERTY_HOST_COHERENT_BIT\n" );
-			if ( checkFlag( flags, ashes::MemoryPropertyFlag::eHostCached ) )      printf( "\t\t\tVK_MEMORY_PROPERTY_HOST_CACHED_BIT\n" );
-			if ( checkFlag( flags, ashes::MemoryPropertyFlag::eLazilyAllocated ) ) printf( "\t\t\tVK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT\n" );
+			if ( flags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) printf( "\t\t\tVK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT\n" );
+			if ( flags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) printf( "\t\t\tVK_MEMORY_PROPERTY_HOST_VISIBLE_BIT\n" );
+			if ( flags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) printf( "\t\t\tVK_MEMORY_PROPERTY_HOST_COHERENT_BIT\n" );
+			if ( flags & VK_MEMORY_PROPERTY_HOST_CACHED_BIT ) printf( "\t\t\tVK_MEMORY_PROPERTY_HOST_CACHED_BIT\n" );
+			if ( flags & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT ) printf( "\t\t\tVK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT\n" );
+			if ( flags & VK_MEMORY_PROPERTY_PROTECTED_BIT ) printf( "\t\t\tVK_MEMORY_PROPERTY_PROTECTED_BIT\n" );
 		}
 	}
 	if ( html_output )
 	{
-		if ( memoryTypeCount > 0 )
+		if ( props.memoryTypeCount > 0 )
 		{
 			fprintf( out, "\t\t\t\t\t\t" );
 		}
@@ -4903,7 +5323,7 @@ static void AppGpuDumpMemoryProps( AppGpu const * gpu
 	}
 	if ( json_output )
 	{
-		if ( memoryTypeCount > 0 )
+		if ( props.memoryTypeCount > 0 )
 		{
 			printf( "\n\t\t" );
 		}
@@ -4914,14 +5334,11 @@ static void AppGpuDumpMemoryProps( AppGpu const * gpu
 	fflush( out );
 	fflush( stdout );
 }
-// clang-format on
 
-static void AppGpuDump( AppGpu * gpu
-	, FILE *out )
+static void AppGpuDump( const struct AppGpu *gpu, FILE *out )
 {
 	if ( html_output )
 	{
-		fprintf( out, "\t\t\t<details><summary>Device Properties and Extensions</summary>\n" );
 		fprintf( out, "\t\t\t\t<details><summary>GPU%u</summary>\n", gpu->id );
 	}
 	else if ( human_readable_output )
@@ -4934,12 +5351,12 @@ static void AppGpuDump( AppGpu * gpu
 	AppGpuDumpProps( gpu, out );
 	if ( html_output )
 	{
-		AppDumpExtensions( "\t\t", "Device", gpu->device_extensions, out );
+		AppDumpExtensions( "\t\t", "Device", gpu->device_extension_count, gpu->device_extensions, out );
 	}
 	else if ( human_readable_output )
 	{
 		printf( "\n" );
-		AppDumpExtensions( "", "Device", gpu->device_extensions, out );
+		AppDumpExtensions( "", "Device", gpu->device_extension_count, gpu->device_extensions, out );
 		printf( "\n" );
 	}
 
@@ -4948,8 +5365,7 @@ static void AppGpuDump( AppGpu * gpu
 		printf( ",\n" );
 		printf( "\t\"ArrayOfVkQueueFamilyProperties\": [" );
 	}
-	auto queueProps = gpu->obj->getQueueFamilyProperties();
-	for ( uint32_t i = 0; i < queueProps.size(); ++i )
+	for ( uint32_t i = 0; i < gpu->queue_count; ++i )
 	{
 		if ( json_output )
 		{
@@ -4959,7 +5375,7 @@ static void AppGpuDump( AppGpu * gpu
 			}
 			printf( "\n" );
 		}
-		AppGpuDumpQueueProps( queueProps[i], i, out );
+		AppGpuDumpQueueProps( gpu, i, out );
 		if ( human_readable_output )
 		{
 			printf( "\n" );
@@ -4967,7 +5383,7 @@ static void AppGpuDump( AppGpu * gpu
 	}
 	if ( json_output )
 	{
-		if ( !queueProps.empty() )
+		if ( gpu->queue_count > 0 )
 		{
 			printf( "\n\t" );
 		}
@@ -4980,7 +5396,7 @@ static void AppGpuDump( AppGpu * gpu
 		printf( "\n" );
 	}
 
-	AppGpuDumpFeatures( gpu->obj->getFeatures(), out );
+	AppGpuDumpFeatures( gpu, out );
 	if ( human_readable_output )
 	{
 		printf( "\n" );
@@ -4990,8 +5406,199 @@ static void AppGpuDump( AppGpu * gpu
 	if ( html_output )
 	{
 		fprintf( out, "\t\t\t\t</details>\n" );
-		fprintf( out, "\t\t\t</details>\n" );
 	}
+}
+
+static void AppGroupDump( const VkPhysicalDeviceGroupProperties *group, const uint32_t id, const struct AppInstance *inst,
+	FILE *out )
+{
+	if ( html_output )
+	{
+		fprintf( out, "\t\t\t\t<details><summary>Device Group Properties (Group %u)</summary>\n", id );
+		fprintf( out, "\t\t\t\t\t<details><summary>physicalDeviceCount = <div class='val'>%u</div></summary>\n",
+			group->physicalDeviceCount );
+	}
+	else if ( human_readable_output )
+	{
+		printf( "\tDevice Group Properties (Group %u) :\n", id );
+		printf( "\t\tphysicalDeviceCount = %u\n", group->physicalDeviceCount );
+	}
+
+	// Keep a record of all physical device properties to give the user clearer information as output.
+	VkPhysicalDeviceProperties *props = malloc( sizeof( props[0] ) * group->physicalDeviceCount );
+	if ( !props )
+	{
+		ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
+	}
+	for ( uint32_t i = 0; i < group->physicalDeviceCount; ++i )
+	{
+		vkGetPhysicalDeviceProperties( group->physicalDevices[i], &props[i] );
+	}
+
+	// Output information to the user.
+	for ( uint32_t i = 0; i < group->physicalDeviceCount; ++i )
+	{
+		if ( html_output )
+		{
+			fprintf( out, "\t\t\t\t\t\t<details><summary>%s (ID: <div class='val'>%d</div>)</summary></details>\n",
+				props[i].deviceName, i );
+		}
+		else if ( human_readable_output )
+		{
+			printf( "\n\t\t\t%s (ID: %d)\n", props[i].deviceName, i );
+		}
+	}
+
+	if ( html_output )
+	{
+		fprintf( out, "\t\t\t\t\t</details>\n" );
+	}
+
+	if ( html_output )
+	{
+		fprintf( out, "\t\t\t\t\t<details><summary>subsetAllocation = <div class='val'>%u</div></summary></details>\n",
+			group->subsetAllocation );
+	}
+	else if ( human_readable_output )
+	{
+		printf( "\n\t\tsubsetAllocation = %u\n", group->subsetAllocation );
+	}
+
+	if ( html_output )
+	{
+		fprintf( out, "\t\t\t\t</details>\n" );
+	}
+
+	// Build create info for logical device made from all physical devices in this group.
+	const char *extensions_list[] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_DEVICE_GROUP_EXTENSION_NAME };
+
+	VkDeviceGroupDeviceCreateInfoKHR dg_ci = { .sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_DEVICE_CREATE_INFO_KHR,
+		.pNext = NULL,
+		.physicalDeviceCount = group->physicalDeviceCount,
+		.pPhysicalDevices = group->physicalDevices };
+
+	VkDeviceQueueCreateInfo q_ci = {
+		.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO, .pNext = NULL, .queueFamilyIndex = 0, .queueCount = 1 };
+
+	VkDeviceCreateInfo device_ci = { .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+		.pNext = &dg_ci,
+		.queueCreateInfoCount = 1,
+		.pQueueCreateInfos = &q_ci,
+		.enabledExtensionCount = ARRAY_SIZE( extensions_list ),
+		.ppEnabledExtensionNames = extensions_list };
+
+	VkDevice logical_device = VK_NULL_HANDLE;
+
+	VkResult err = vkCreateDevice( group->physicalDevices[0], &device_ci, NULL, &logical_device );
+	if ( err != VK_SUCCESS && err != VK_ERROR_EXTENSION_NOT_PRESENT ) ERR_EXIT( err );
+
+	if ( !err )
+	{
+		if ( html_output )
+		{
+			fprintf( out, "\t\t\t\t<details><summary>Device Group Present Capabilities (Group %d)</summary>\n", id );
+		}
+		else if ( human_readable_output )
+		{
+			printf( "\n\tDevice Group Present Capabilities (Group %d) :\n", id );
+		}
+
+		VkDeviceGroupPresentCapabilitiesKHR group_capabilities = { .sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHR,
+			.pNext = NULL };
+
+// If the KHR_device_group extension is present, write the capabilities of the logical device into a struct for later output
+// to user.
+		PFN_vkGetDeviceGroupPresentCapabilitiesKHR vkGetDeviceGroupPresentCapabilitiesKHR =
+			( PFN_vkGetDeviceGroupPresentCapabilitiesKHR )vkGetInstanceProcAddr( inst->instance,
+				"vkGetDeviceGroupPresentCapabilitiesKHR" );
+		err = vkGetDeviceGroupPresentCapabilitiesKHR( logical_device, &group_capabilities );
+		if ( err ) ERR_EXIT( err );
+
+		for ( uint32_t i = 0; i < group->physicalDeviceCount; i++ )
+		{
+			if ( html_output )
+			{
+				fprintf( out, "\t\t\t\t\t<details><summary>%s (ID: <div class='val'>%d</div>)</summary></details>\n",
+					props[i].deviceName, i );
+				fprintf( out, "\t\t\t\t\t<details><summary>Can present images from the following devices:</summary>\n" );
+				if ( group_capabilities.presentMask[i] != 0 )
+				{
+					for ( uint32_t j = 0; j < group->physicalDeviceCount; ++j )
+					{
+						uint32_t mask = 1 << j;
+						if ( group_capabilities.presentMask[i] & mask )
+						{
+							fprintf( out, "\t\t\t\t\t\t<details><summary>%s (ID: <div class='val'>%d</div>)</summary></details>\n",
+								props[j].deviceName, j );
+						}
+					}
+				}
+				else
+				{
+					fprintf( out, "\t\t\t\t\t\t<details><summary>None</summary></details>\n" );
+				}
+				fprintf( out, "\t\t\t\t\t</details>\n" );
+			}
+			else if ( human_readable_output )
+			{
+				printf( "\n\t\t%s (ID: %d)\n", props[i].deviceName, i );
+				printf( "\t\tCan present images from the following devices:\n" );
+				if ( group_capabilities.presentMask[i] != 0 )
+				{
+					for ( uint32_t j = 0; j < group->physicalDeviceCount; ++j )
+					{
+						uint32_t mask = 1 << j;
+						if ( group_capabilities.presentMask[i] & mask )
+						{
+							printf( "\t\t\t%s (ID: %d)\n", props[j].deviceName, j );
+						}
+					}
+				}
+				else
+				{
+					printf( "\t\t\tNone\n" );
+				}
+				printf( "\n" );
+			}
+		}
+
+		if ( html_output )
+		{
+			fprintf( out, "\t\t\t\t\t<details><summary>Present modes</summary>\n" );
+			if ( group_capabilities.modes & VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR )
+				fprintf( out, "\t\t\t\t\t\t<details><summary>VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR</summary></details>\n" );
+			if ( group_capabilities.modes & VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR )
+				fprintf( out, "\t\t\t\t\t\t<details><summary>VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR</summary></details>\n" );
+			if ( group_capabilities.modes & VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR )
+				fprintf( out, "\t\t\t\t\t\t<details><summary>VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR</summary></details>\n" );
+			if ( group_capabilities.modes & VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR )
+				fprintf(
+					out,
+					"\t\t\t\t\t\t<details><summary>VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR</summary></details>\n" );
+			fprintf( out, "\t\t\t\t\t</details>\n" );
+		}
+		else if ( human_readable_output )
+		{
+			printf( "\t\tPresent modes:\n" );
+			if ( group_capabilities.modes & VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR )
+				printf( "\t\t\tVK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR\n" );
+			if ( group_capabilities.modes & VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR )
+				printf( "\t\t\tVK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR\n" );
+			if ( group_capabilities.modes & VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR )
+				printf( "\t\t\tVK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR\n" );
+			if ( group_capabilities.modes & VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR )
+				printf( "\t\t\tVK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR\n" );
+		}
+
+		if ( html_output )
+		{
+			fprintf( out, "\t\t\t\t</details>\n" );
+		}
+	}
+
+	// Clean up after ourselves.
+	free( props );
+	vkDestroyDevice( logical_device, NULL );
 }
 
 #ifdef _WIN32
@@ -5021,7 +5628,7 @@ static void ConsoleEnlarge()
 }
 #endif
 
-void print_usage( char *argv0 )
+void print_usage( char *argv0, AshPluginDescription * plugins, uint32_t pluginsCount )
 {
 	printf( "\nvulkaninfo - Summarize Vulkan information in relation to the current environment.\n\n" );
 	printf( "USAGE: %s [options]\n\n", argv0 );
@@ -5035,27 +5642,98 @@ void print_usage( char *argv0 )
 	printf( "--json=<gpu-number>   For a multi-gpu system, a single gpu can be targetted by\n" );
 	printf( "                      specifying the gpu-number associated with the gpu of \n" );
 	printf( "                      interest. This number can be determined by running\n" );
-	printf( "                      vulkaninfo without any options specified.\n\n" );
+	printf( "                      vulkaninfo without any options specified.\n" );
+
+	for ( uint32_t i = 0; i < pluginsCount; ++i )
+	{
+		printf( "-%s                   Select plugin \"%s\"\n", plugins[i].name, plugins[i].description );
+	}
+
+	printf( "\n" );
 }
 
-int main_impl( int argc, char **argv )
+AshPluginDescription * EnumeratePlugins( uint32_t * count )
 {
-	AppInstance inst;
+	AshPluginDescription * result = NULL;
+	ashEnumeratePluginsDescriptions( count, NULL );
+
+	if ( *count )
+	{
+		result = ( AshPluginDescription * )malloc( ( *count ) * sizeof( AshPluginDescription ) );
+		ashEnumeratePluginsDescriptions( count, result );
+	}
+
+	return result;
+}
+
+int SelectPlugin( AshPluginDescription * plugins, uint32_t pluginsCount, char * option )
+{
+	int selectedPlugin = -1;
+
+	if ( pluginsCount > 0 )
+	{
+		char name[10];
+
+		for ( uint32_t i = 0; i < pluginsCount; ++i )
+		{
+			strncpy( name, "-", 9 );
+			strncat( name, plugins[i].name, 9 );
+
+			if ( strcmp( option, name ) == 0 )
+			{
+				selectedPlugin = i;
+			}
+		}
+	}
+
+	return selectedPlugin;
+}
+
+int main( int argc, char **argv )
+{
+	uint32_t gpu_count;
+	VkResult err;
+	struct AppInstance inst;
 	FILE *out = stdout;
 
 #ifdef _WIN32
 	if ( ConsoleIsExclusive() ) ConsoleEnlarge();
 #endif
 
-	// Then we check in the command line if the user has wanted a specific plugin to be used.
-	std::string rendererName = ProcessCommandLine( argc, argv, &out );
+	uint32_t pluginsCount = 0;
+	AshPluginDescription * plugins = EnumeratePlugins( &pluginsCount );
+	int selectedPlugin = -1;
 
-	// First, we need to retrieve the Ashes plugins
-	InstanceFactory factory;
-	auto plugins = list_plugins( factory );
-	inst.plugin = factory.findPlugin( rendererName );
+	// Combinations of output: html only, html AND json, json only, human readable only
+	for ( int i = 1; i < argc; ++i )
+	{
+		if ( !CheckForJsonOption( argv[i] ) )
+		{
+			if ( strcmp( argv[i], "--html" ) == 0 )
+			{
+				human_readable_output = false;
+				html_output = true;
+				continue;
+			}
+			else if ( strcmp( argv[i], "--help" ) == 0 || strcmp( argv[i], "-h" ) == 0 )
+			{
+				print_usage( argv[0], plugins, selectedPlugin );
+				return 1;
+			}
+			else
+			{
+				selectedPlugin = SelectPlugin( plugins, pluginsCount, argv[i] );
 
-	AppCreateInstance( &inst );
+				if ( selectedPlugin == -1 )
+				{
+					print_usage( argv[0], plugins, pluginsCount );
+					return 1;
+				}
+			}
+		}
+	}
+
+	AppCreateInstance( &inst, plugins, selectedPlugin );
 
 	if ( html_output )
 	{
@@ -5065,9 +5743,9 @@ int main_impl( int argc, char **argv )
 	}
 	else if ( human_readable_output )
 	{
-		printf( "=========\n" );
-		printf( "ASHESINFO\n" );
-		printf( "=========\n\n" );
+		printf( "==========\n" );
+		printf( "VULKANINFO\n" );
+		printf( "==========\n\n" );
 	}
 	if ( html_output || human_readable_output )
 	{
@@ -5084,16 +5762,33 @@ int main_impl( int argc, char **argv )
 		printf( "%d.%d.%d\n\n", inst.vulkan_major, inst.vulkan_minor, inst.vulkan_patch );
 	}
 
-	auto ashgpus = inst.instance->enumeratePhysicalDevices();
-	uint32_t gpu_count = 0u;
-	std::vector< AppGpu > gpus;
-
-	for ( auto & gpu : ashgpus )
+	err = vkEnumeratePhysicalDevices( inst.instance, &gpu_count, NULL );
+	if ( err )
 	{
-		AppGpu app_gpu;
-		AppGpuInit( &app_gpu, &inst, gpu_count++, std::move( gpu ) );
-		gpus.emplace_back( std::move( app_gpu ) );
+		ERR_EXIT( err );
+	}
 
+	VkPhysicalDevice *objs = malloc( sizeof( objs[0] ) * gpu_count );
+	if ( !objs )
+	{
+		ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
+	}
+
+	err = vkEnumeratePhysicalDevices( inst.instance, &gpu_count, objs );
+	if ( err )
+	{
+		ERR_EXIT( err );
+	}
+
+	struct AppGpu *gpus = malloc( sizeof( gpus[0] ) * gpu_count );
+	if ( !gpus )
+	{
+		ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
+	}
+
+	for ( uint32_t i = 0; i < gpu_count; ++i )
+	{
+		AppGpuInit( &gpus[i], &inst, i, objs[i] );
 		if ( human_readable_output )
 		{
 			printf( "\n\n" );
@@ -5115,37 +5810,35 @@ int main_impl( int argc, char **argv )
 		printf( "Instance Extensions:\n" );
 		printf( "====================\n" );
 	}
-	AppDumpExtensions( "", "Instance", inst.global_extensions, out );
+	AppDumpExtensions( "", "Instance", inst.global_extension_count, inst.global_extensions, out );
 
 	//---Layer-Device-Extensions---
 	if ( html_output )
 	{
-		fprintf( out, "\t\t\t<details><summary>Layers: count = <div class='val'>%d</div></summary>", uint32_t( inst.global_layers.size() ) );
-		if ( !inst.global_layers.empty() )
+		fprintf( out, "\t\t\t<details><summary>Layers: count = <div class='val'>%d</div></summary>", inst.global_layer_count );
+		if ( inst.global_layer_count > 0 )
 		{
 			fprintf( out, "\n" );
 		}
 	}
 	else if ( human_readable_output )
 	{
-		printf( "Layers: count = %d\n", uint32_t( inst.global_layers.size() ) );
+		printf( "Layers: count = %d\n", inst.global_layer_count );
 		printf( "=======\n" );
 	}
-	if ( json_output && ( !inst.global_layers.empty() ) )
+	if ( json_output && ( inst.global_layer_count > 0 ) )
 	{
 		printf( ",\n" );
 		printf( "\t\"ArrayOfVkLayerProperties\": [" );
 	}
 
-	std::sort( inst.global_layers.begin()
-		, inst.global_layers.end()
-		, CompareLayerName );
+	qsort( inst.global_layers, inst.global_layer_count, sizeof( struct LayerExtensionList ), CompareLayerName );
 
-	for ( uint32_t i = 0; i < inst.global_layers.size(); ++i )
+	for ( uint32_t i = 0; i < inst.global_layer_count; ++i )
 	{
 		uint32_t layer_major, layer_minor, layer_patch;
 		char spec_version[64], layer_version[64];
-		auto const *layer_prop = &inst.global_layers[i].layer_properties;
+		VkLayerProperties const *layer_prop = &inst.global_layers[i].layer_properties;
 
 		ExtractVersion( layer_prop->specVersion, &layer_major, &layer_minor, &layer_patch );
 		snprintf( spec_version, sizeof( spec_version ), "%d.%d.%d", layer_major, layer_minor, layer_patch );
@@ -5154,17 +5847,17 @@ int main_impl( int argc, char **argv )
 		if ( html_output )
 		{
 			fprintf( out, "\t\t\t\t<details><summary>" );
-			fprintf( out, "<div class='type'>%s</div> (%s) Vulkan version <div class='val'>%s</div>, ", layer_prop->layerName.c_str(),
-				( char * )layer_prop->description.c_str(), spec_version );
+			fprintf( out, "<div class='type'>%s</div> (%s) Vulkan version <div class='val'>%s</div>, ", layer_prop->layerName,
+				( char * )layer_prop->description, spec_version );
 			fprintf( out, "layer version <div class='val'>%s</div></summary>\n", layer_version );
-			AppDumpExtensions( "\t\t", "Layer", inst.global_layers[i].extension_properties,
+			AppDumpExtensions( "\t\t", "Layer", inst.global_layers[i].extension_count, inst.global_layers[i].extension_properties,
 				out );
 		}
 		else if ( human_readable_output )
 		{
-			printf( "%s (%s) Vulkan version %s, layer version %s\n", layer_prop->layerName.c_str(), ( char * )layer_prop->description.c_str(),
+			printf( "%s (%s) Vulkan version %s, layer version %s\n", layer_prop->layerName, ( char * )layer_prop->description,
 				spec_version, layer_version );
-			AppDumpExtensions( "\t", "Layer", inst.global_layers[i].extension_properties,
+			AppDumpExtensions( "\t", "Layer", inst.global_layers[i].extension_count, inst.global_layers[i].extension_properties,
 				out );
 		}
 		if ( json_output )
@@ -5175,10 +5868,10 @@ int main_impl( int argc, char **argv )
 			}
 			printf( "\n" );
 			printf( "\t\t{\n" );
-			printf( "\t\t\t\"layerName\": \"%s\",\n", layer_prop->layerName.c_str() );
+			printf( "\t\t\t\"layerName\": \"%s\",\n", layer_prop->layerName );
 			printf( "\t\t\t\"specVersion\": %u,\n", layer_prop->specVersion );
 			printf( "\t\t\t\"implementationVersion\": %u,\n", layer_prop->implementationVersion );
-			printf( "\t\t\t\"description\": \"%s\"\n", layer_prop->description.c_str() );
+			printf( "\t\t\t\"description\": \"%s\"\n", layer_prop->description );
 			printf( "\t\t}" );
 		}
 
@@ -5191,29 +5884,31 @@ int main_impl( int argc, char **argv )
 			printf( "\tDevices \tcount = %d\n", gpu_count );
 		}
 
-		char const *layer_name = inst.global_layers[i].layer_properties.layerName.c_str();
+		char *layer_name = inst.global_layers[i].layer_properties.layerName;
 
 		for ( uint32_t j = 0; j < gpu_count; ++j )
 		{
 			if ( html_output )
 			{
 				fprintf( out, "\t\t\t\t\t\t<details><summary>" );
-				fprintf( out, "GPU id: <div class='val'>%u</div> (%s)</summary></details>\n", j, gpus[j].props.deviceName.c_str() );
+				fprintf( out, "GPU id: <div class='val'>%u</div> (%s)</summary></details>\n", j, gpus[j].props.deviceName );
 			}
 			else if ( human_readable_output )
 			{
-				printf( "\t\tGPU id       : %u (%s)\n", j, gpus[j].props.deviceName.c_str() );
+				printf( "\t\tGPU id       : %u (%s)\n", j, gpus[j].props.deviceName );
 			}
-			ashes::ExtensionPropertiesArray props;
-			AppGetPhysicalDeviceLayerExtensions( &gpus[j], layer_name, props );
+			uint32_t count = 0;
+			VkExtensionProperties *props;
+			AppGetPhysicalDeviceLayerExtensions( &gpus[j], layer_name, &count, &props );
 			if ( html_output )
 			{
-				AppDumpExtensions( "\t\t\t", "Layer-Device", props, out );
+				AppDumpExtensions( "\t\t\t", "Layer-Device", count, props, out );
 			}
 			else if ( human_readable_output )
 			{
-				AppDumpExtensions( "\t\t", "Layer-Device", props, out );
+				AppDumpExtensions( "\t\t", "Layer-Device", count, props, out );
 			}
+			free( props );
 		}
 
 		if ( html_output )
@@ -5231,7 +5926,7 @@ int main_impl( int argc, char **argv )
 	{
 		fprintf( out, "\t\t\t</details>\n" );
 	}
-	if ( json_output && ( !inst.global_layers.empty() ) )
+	if ( json_output && ( inst.global_layer_count > 0 ) )
 	{
 		printf( "\n\t]" );
 	}
@@ -5262,7 +5957,7 @@ int main_impl( int argc, char **argv )
 	int format_count = 0;
 	int present_mode_count = 0;
 
-#if ASHES_XCB || ASHES_XLIB
+#if defined(VK_USE_PLATFORM_XCB_KHR) || defined(VK_USE_PLATFORM_XLIB_KHR)
 	bool has_display = true;
 	const char *display_var = getenv( "DISPLAY" );
 	if ( display_var == NULL || strlen( display_var ) == 0 )
@@ -5273,7 +5968,7 @@ int main_impl( int argc, char **argv )
 	}
 #endif
 
-#if ASHES_WAYLAND
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
 	struct wl_display *wayland_display = wl_display_connect( NULL );
 	bool has_wayland_display = false;
 	if ( wayland_display != NULL )
@@ -5284,57 +5979,57 @@ int main_impl( int argc, char **argv )
 #endif
 
 //--WIN32--
-#if ASHES_WIN32
+#ifdef VK_USE_PLATFORM_WIN32_KHR
 	struct SurfaceExtensionInfo surface_ext_win32;
-	surface_ext_win32.name = ashes::KHR_WIN32_SURFACE_EXTENSION_NAME;
+	surface_ext_win32.name = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
 	surface_ext_win32.create_window = AppCreateWin32Window;
 	surface_ext_win32.create_surface = AppCreateWin32Surface;
 	surface_ext_win32.destroy_window = AppDestroyWin32Window;
-	AppDumpSurfaceExtension( &inst, gpus, &surface_ext_win32, &format_count, &present_mode_count, out );
+	AppDumpSurfaceExtension( &inst, gpus, gpu_count, &surface_ext_win32, &format_count, &present_mode_count, out );
 #endif
 //--XCB--
-#if ASHES_XCB
+#ifdef VK_USE_PLATFORM_XCB_KHR
 	struct SurfaceExtensionInfo surface_ext_xcb;
-	surface_ext_xcb.name = ashes::KHR_XCB_SURFACE_EXTENSION_NAME;
+	surface_ext_xcb.name = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
 	surface_ext_xcb.create_window = AppCreateXcbWindow;
 	surface_ext_xcb.create_surface = AppCreateXcbSurface;
 	surface_ext_xcb.destroy_window = AppDestroyXcbWindow;
 	if ( has_display )
 	{
-		AppDumpSurfaceExtension( &inst, gpus, &surface_ext_xcb, &format_count, &present_mode_count, out );
+		AppDumpSurfaceExtension( &inst, gpus, gpu_count, &surface_ext_xcb, &format_count, &present_mode_count, out );
 	}
 #endif
 //--XLIB--
-#if ASHES_XLIB
+#ifdef VK_USE_PLATFORM_XLIB_KHR
 	struct SurfaceExtensionInfo surface_ext_xlib;
-	surface_ext_xlib.name = ashes::KHR_XLIB_SURFACE_EXTENSION_NAME;
+	surface_ext_xlib.name = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
 	surface_ext_xlib.create_window = AppCreateXlibWindow;
 	surface_ext_xlib.create_surface = AppCreateXlibSurface;
 	surface_ext_xlib.destroy_window = AppDestroyXlibWindow;
 	if ( has_display )
 	{
-		AppDumpSurfaceExtension( &inst, gpus, &surface_ext_xlib, &format_count, &present_mode_count, out );
+		AppDumpSurfaceExtension( &inst, gpus, gpu_count, &surface_ext_xlib, &format_count, &present_mode_count, out );
 	}
 #endif
 //--MACOS--
-#if ASHES_MACOS
+#ifdef VK_USE_PLATFORM_MACOS_MVK
 	struct SurfaceExtensionInfo surface_ext_macos;
-	surface_ext_macos.name = ashes::MVK_MACOS_SURFACE_EXTENSION_NAME;
+	surface_ext_macos.name = VK_MVK_MACOS_SURFACE_EXTENSION_NAME;
 	surface_ext_macos.create_window = AppCreateMacOSWindow;
 	surface_ext_macos.create_surface = AppCreateMacOSSurface;
 	surface_ext_macos.destroy_window = AppDestroyMacOSWindow;
-	AppDumpSurfaceExtension( &inst, gpus, &surface_ext_macos, &format_count, &present_mode_count, out );
+	AppDumpSurfaceExtension( &inst, gpus, gpu_count, &surface_ext_macos, &format_count, &present_mode_count, out );
 #endif
 //--WAYLAND--
-#if ASHES_WAYLAND
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
 	struct SurfaceExtensionInfo surface_ext_wayland;
-	surface_ext_wayland.name = ashes::KHR_WAYLAND_SURFACE_EXTENSION_NAME;
+	surface_ext_wayland.name = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
 	surface_ext_wayland.create_window = AppCreateWaylandWindow;
 	surface_ext_wayland.create_surface = AppCreateWaylandSurface;
 	surface_ext_wayland.destroy_window = AppDestroyWaylandWindow;
 	if ( has_wayland_display )
 	{
-		AppDumpSurfaceExtension( &inst, gpus, &surface_ext_wayland, &format_count, &present_mode_count, out );
+		AppDumpSurfaceExtension( &inst, gpus, gpu_count, &surface_ext_wayland, &format_count, &present_mode_count, out );
 	}
 #endif
 
@@ -5356,7 +6051,6 @@ int main_impl( int argc, char **argv )
 		fprintf( out, "\t\t\t</details>\n" );
 	}
 	//---------
-#if 0
 
 	if ( CheckExtensionEnabled( VK_KHR_DEVICE_GROUP_CREATION_EXTENSION_NAME, inst.inst_extensions, inst.inst_extensions_count ) )
 	{
@@ -5408,7 +6102,6 @@ int main_impl( int argc, char **argv )
 
 		free( groups );
 	}
-#endif
 
 	if ( html_output )
 	{
@@ -5443,8 +6136,11 @@ int main_impl( int argc, char **argv )
 	{
 		AppGpuDestroy( &gpus[i] );
 	}
+	free( gpus );
+	free( objs );
 
 	AppDestroyInstance( &inst );
+	free( plugins );
 
 	if ( html_output )
 	{
@@ -5459,27 +6155,12 @@ int main_impl( int argc, char **argv )
 
 	fflush( stdout );
 
+#ifdef _WIN32
+	if ( ConsoleIsExclusive() && human_readable_output )
+	{
+		Sleep( INFINITE );
+	}
+#endif
+
 	return 0;
-}
-
-int main( int argc, char **argv )
-{
-	int result = EXIT_SUCCESS;
-
-	try
-	{
-		result = main_impl( argc, argv );
-	}
-	catch ( std::exception & exc )
-	{
-		std::cerr << exc.what() << std::endl;
-		result = EXIT_FAILURE;
-	}
-	catch ( ... )
-	{
-		std::cerr << "Unknown unhandled exception" << std::endl;
-		result = EXIT_FAILURE;
-	}
-
-	return result;
 }

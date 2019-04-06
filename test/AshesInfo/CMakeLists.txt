@@ -6,6 +6,8 @@ set( ${PROJECT_NAME}_VERSION_MINOR 1 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
 file( GLOB SOURCE_FILES
+	Src/*.c
+	Src/*.cc
 	Src/*.cpp
 )
 

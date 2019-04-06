@@ -73,6 +73,7 @@ extern "C"
 
 	Ashes_API void VKAPI_PTR ashEnumeratePluginsDescriptions( uint32_t * count
 		, AshPluginDescription * pDescriptions );
+	Ashes_API VkResult VKAPI_PTR ashSelectPlugin( AshPluginDescription description );
 	Ashes_API VkResult VKAPI_PTR ashGetCurrentPluginDescription( AshPluginDescription * description );
 
 #ifdef __cplusplus

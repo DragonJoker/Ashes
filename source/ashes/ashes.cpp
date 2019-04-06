@@ -33,13 +33,25 @@ extern "C"
 		}
 	}
 
+	Ashes_API VkResult VKAPI_PTR ashSelectPlugin( AshPluginDescription description )
+	{
+		auto result = g_library.init();
+
+		if ( result == VK_SUCCESS )
+		{
+			result = g_library.selectDesc( description );
+		}
+
+		return result;
+	}
+
 	Ashes_API VkResult VKAPI_PTR ashGetCurrentPluginDescription( AshPluginDescription * description )
 	{
 		auto result = g_library.init();
 
 		if ( result == VK_SUCCESS )
 		{
-			*description = g_library.selectedPugin->description;
+			*description = g_library.getSelectedDesc();
 		}
 
 		return result;

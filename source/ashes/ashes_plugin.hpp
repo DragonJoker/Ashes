@@ -62,13 +62,31 @@ inline PluginArray listPlugins()
 	return result;
 }
 
+bool operator==( AshPluginFeatures const & lhs, AshPluginFeatures const & rhs )
+{
+	return memcmp( &lhs, &rhs, sizeof( AshPluginFeatures ) ) == 0;
+}
+
+bool operator==( AshPluginSupport const & lhs, AshPluginSupport const & rhs )
+{
+	return memcmp( &lhs, &rhs, sizeof( AshPluginSupport ) ) == 0;
+}
+
+bool operator==( AshPluginDescription const & lhs, AshPluginDescription const & rhs )
+{
+	return strncmp( lhs.description, rhs.description, 63 ) == 0
+		&& strncmp( lhs.name, rhs.name, 15 ) == 0
+		&& lhs.features == rhs.features
+		&& lhs.support == rhs.support;
+}
+
 struct PluginLibrary
 {
 	inline VkResult init()
 	{
 		VkResult result = VK_SUCCESS;
 
-		if ( !selectedPugin )
+		if ( !selectedPlugin )
 		{
 			plugins = listPlugins();
 
@@ -78,7 +96,7 @@ struct PluginLibrary
 			}
 			else
 			{
-				selectedPugin = &plugins.front();
+				selectedPlugin = &plugins.front();
 				result = VK_SUCCESS;
 			}
 		}
@@ -86,13 +104,33 @@ struct PluginLibrary
 		return result;
 	}
 
+	inline VkResult selectDesc( AshPluginDescription const & description )
+	{
+		auto res = init();
+		assert( res == VK_SUCCESS );
+		auto it = std::find_if( plugins.begin()
+			, plugins.end()
+			, [&description]( Plugin const & lookup )
+			{
+				return description == lookup.description;
+			} );
+
+		if ( it == plugins.end() )
+		{
+			return VK_ERROR_INITIALIZATION_FAILED;
+		}
+
+		selectedPlugin = &( *it );
+		return VK_SUCCESS;
+	}
+
 	inline AshPluginDescription & getSelectedDesc()
 	{
 		auto res = init();
 		assert( res == VK_SUCCESS );
-		return selectedPugin->description;
+		return selectedPlugin->description;
 	}
 
 	PluginArray plugins;
-	Plugin * selectedPugin{ nullptr };
+	Plugin * selectedPlugin{ nullptr };
 };
