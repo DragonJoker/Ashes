@@ -7,9 +7,9 @@
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
 #include <Image/Sampler.hpp>
-#include <Core/SwapChain.hpp>
+#include <AshesPP/Core/SwapChain.hpp>
 
-#include <AshesPP/Utils/Signal.hpp>
+#include <AshesRenderer/Util/Signal.hpp>
 
 #include <wx/panel.h>
 
@@ -79,7 +79,7 @@ namespace vkapp
 		VkClearColorValue m_clearColour;
 		ashes::RenderPassPtr m_renderPass;
 		ashes::PipelineLayoutPtr m_pipelineLayout;
-		ashes::PipelinePtr m_pipeline;
+		ashes::GraphicsPipelinePtr m_pipeline;
 		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
 		ashes::VertexLayoutPtr m_vertexLayout;
 		ashes::StagingBufferPtr m_stagingBuffer;

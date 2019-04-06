@@ -9,18 +9,16 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	ComputePipeline::ComputePipeline( Device const & device
-		, PipelineLayout const & layout
-		, VkComputePipelineCreateInfo createInfo )
+		, ComputePipelineCreateInfo createInfo )
 		: m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
-		, m_layout{ layout }
 	{
 		DEBUG_DUMP( m_createInfo );
 		DEBUG_WRITE( "pipeline.log" );
 		auto res = m_device.vkCreateComputePipelines( m_device
 			, VK_NULL_HANDLE
 			, 1
-			, &m_createInfo
+			, &static_cast< VkComputePipelineCreateInfo const & >( m_createInfo )
 			, nullptr
 			, &m_internal );
 		checkError( res, "ComputePipeline creation" );

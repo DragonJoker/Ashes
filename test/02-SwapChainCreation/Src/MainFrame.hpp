@@ -13,7 +13,7 @@ namespace vkapp
 	{
 	public:
 		MainFrame( wxString const & rendererName
-			, utils::InstanceFactory & factory );
+			, ashes::RendererList const & renderers );
 
 	private:
 		wxPanel * doCreatePanel( wxSize const & size

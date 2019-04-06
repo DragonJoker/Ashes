@@ -16,7 +16,7 @@ namespace ashes::gl4
 		void doClear( ContextLock const & context
 			, VkClearAttachment const & clearAttach )
 		{
-			if ( checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
+			if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
 			{
 				auto & colour = clearAttach.clearValue.color;
 				glLogCall( context
@@ -30,7 +30,7 @@ namespace ashes::gl4
 				auto & depthStencil = clearAttach.clearValue.depthStencil;
 				auto stencil = GLint( depthStencil.stencil );
 
-				if ( checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT ) )
+				if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT ) )
 				{
 					glLogCall( context
 						, glClearBufferfi
@@ -39,7 +39,7 @@ namespace ashes::gl4
 						, depthStencil.depth
 						, stencil );
 				}
-				else if ( checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT ) )
+				else if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT ) )
 				{
 					glLogCall( context
 						, glClearBufferfv
@@ -47,7 +47,7 @@ namespace ashes::gl4
 						, 0u
 						, &depthStencil.depth );
 				}
-				else if ( checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT ) )
+				else if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT ) )
 				{
 					glLogCall( context
 						, glClearBufferiv

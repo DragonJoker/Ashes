@@ -25,8 +25,8 @@ namespace vkapp
 
 	void NodesRenderer::doFillObjectDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
 	{
-		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eVertex );
-		bindings.emplace_back( 2u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eVertex );
+		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, VK_SHADER_STAGE_VERTEX_BIT );
+		bindings.emplace_back( 2u, ashes::DescriptorType::eUniformBuffer, VK_SHADER_STAGE_VERTEX_BIT );
 	}
 
 	void NodesRenderer::doFillObjectDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout

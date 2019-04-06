@@ -246,7 +246,7 @@ namespace common
 		bool result = false;
 		utils::StringArray files;
 
-		if ( utils::listDirectoryFiles( utils::getExecutableDirectory(), files, false ) )
+		if ( utils::listDirectoryFiles( ashes::getExecutableDirectory(), files, false ) )
 		{
 			for ( auto file : files )
 			{
@@ -265,7 +265,7 @@ namespace common
 
 			for ( auto & plugin : m_plugins )
 			{
-				m_factory.registerType( plugin.getShortName(), &plugin );
+				m_renderers.registerType( plugin.getShortName(), &plugin );
 			}
 		}
 

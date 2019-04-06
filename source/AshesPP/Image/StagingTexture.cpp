@@ -59,7 +59,7 @@ namespace ashes
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 	}
 
 	void StagingTexture::uploadTextureData( Queue const & queue
@@ -78,7 +78,7 @@ namespace ashes
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 	}
 
 	void StagingTexture::copyTextureData( Queue const & queue
@@ -95,7 +95,7 @@ namespace ashes
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 	}
 
 	void StagingTexture::copyTextureData( Queue const & queue
@@ -118,7 +118,7 @@ namespace ashes
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 	}
 
 	void StagingTexture::uploadTextureData( CommandBuffer const & commandBuffer
@@ -245,7 +245,7 @@ namespace ashes
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 
 		doCopyFromStagingTexture( data
 			, format

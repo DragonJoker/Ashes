@@ -4,7 +4,7 @@
 
 #include <AshesPP/Core/Device.hpp>
 
-#include <AshesPP/Utils/Signal.hpp>
+#include <AshesRenderer/Util/Signal.hpp>
 
 #include <wx/panel.h>
 
@@ -23,9 +23,8 @@ namespace vkapp
 
 	private:
 		void doCleanup();
-		ashes::SurfacePtr doCreateSurface( utils::Instance const & instance );
-		void doCreateDevice( utils::Instance const & instance
-			, ashes::Surface const & surface );
+		void doCreateSurface( utils::Instance const & instance );
+		void doCreateDevice( utils::Instance const & instance );
 
 	private:
 		ashes::SurfacePtr m_surface;

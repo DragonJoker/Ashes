@@ -3,16 +3,16 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
+#include <Utils/Transform.hpp>
+
 #include <AshesPP/Core/Surface.hpp>
 #include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Core/Exception.hpp>
 #include <AshesPP/Image/Image.hpp>
+#include <AshesPP/Image/ImageView.hpp>
 #include <AshesPP/RenderPass/FrameBuffer.hpp>
 #include <AshesPP/RenderPass/RenderPass.hpp>
-#include <AshesPP/RenderPass/RenderSubpass.hpp>
-#include <AshesPP/RenderPass/RenderSubpassState.hpp>
 
-#include <Transform.hpp>
+#include <AshesRenderer/Util/Exception.hpp>
 
 #include <chrono>
 
@@ -57,7 +57,7 @@ namespace vkapp
 			}
 			else
 			{
-				assert( formats.size() > 1u );
+				assert( !formats.empty() );
 				auto it = std::find_if( formats.begin()
 					, formats.end()
 					, []( VkSurfaceFormatKHR const & lookup )
@@ -135,7 +135,7 @@ namespace vkapp
 			// nous l'utilisons, sinon nous utiliserons la même transformation que la transformation courante.
 			VkSurfaceTransformFlagBitsKHR preTransform{};
 
-			if ( checkFlag( surfaceCaps.supportedTransforms, VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR ) )
+			if ( ashes::checkFlag( surfaceCaps.supportedTransforms, VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR ) )
 			{
 				preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 			}
@@ -148,21 +148,21 @@ namespace vkapp
 			auto surfaceFormat = doSelectFormat( surface );
 			return ashes::SwapChainCreateInfo
 			{
-				ashes::SwapChainCreateFlag::eNone,
-				std::ref( surface ),
+				0u,
+				surface,
 				doGetImageCount( surface ),
 				surfaceFormat.format,
 				surfaceFormat.colorSpace,
 				swapChainExtent,
 				1u,
-				ashes::ImageUsageFlag::eColourAttachment,
+				VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 				VK_SHARING_MODE_EXCLUSIVE,
 				{},
 				preTransform,
 				VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
 				presentMode,
-				true,
-				ashes::nullopt
+				VK_TRUE,
+				nullptr
 			};
 		}
 	}
@@ -238,7 +238,7 @@ namespace vkapp
 		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
 		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
 		m_commandPool = m_device->getDevice().createCommandPool( m_device->getGraphicsQueueFamily()
-			, ashes::CommandPoolCreateFlag::eResetCommandBuffer | ashes::CommandPoolCreateFlag::eTransient );
+			, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT );
 	}
 
 	void RenderPanel::doCreateSwapChain()
@@ -257,31 +257,57 @@ namespace vkapp
 		ashes::VkAttachmentDescriptionArray attaches
 		{
 			{
+				0u,
 				m_swapChain->getFormat(),
-				ashes::SampleCountFlag::e1,
-				ashes::AttachmentLoadOp::eClear,
-				ashes::AttachmentStoreOp::eStore,
-				ashes::AttachmentLoadOp::eDontCare,
-				ashes::AttachmentStoreOp::eDontCare,
-				ashes::ImageLayout::eUndefined,
-				ashes::ImageLayout::ePresentSrc,
+				VK_SAMPLE_COUNT_1_BIT,
+				VK_ATTACHMENT_LOAD_OP_CLEAR,
+				VK_ATTACHMENT_STORE_OP_STORE,
+				VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+				VK_ATTACHMENT_STORE_OP_DONT_CARE,
+				VK_IMAGE_LAYOUT_UNDEFINED,
+				VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
 			}
 		};
-		ashes::VkAttachmentReferenceArray subAttaches
+		ashes::SubpassDescriptionArray subpasses;
+		subpasses.emplace_back( ashes::SubpassDescription
+			{
+				0u,
+				VK_PIPELINE_BIND_POINT_GRAPHICS,
+				{},
+				{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
+				{},
+				std::nullopt,
+				{},
+			} );
+		ashes::VkSubpassDependencyArray dependencies
 		{
-			{ 0u, ashes::ImageLayout::eColourAttachmentOptimal }
+			{
+				VK_SUBPASS_EXTERNAL,
+				0u,
+				VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+				VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+				VK_ACCESS_MEMORY_READ_BIT,
+				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+				VK_DEPENDENCY_BY_REGION_BIT,
+			},
+			{
+				0u,
+				VK_SUBPASS_EXTERNAL,
+				VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+				VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+				VK_ACCESS_MEMORY_READ_BIT,
+				VK_DEPENDENCY_BY_REGION_BIT,
+			}
 		};
-		ashes::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( ashes::PipelineBindPoint::eGraphics
-			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eColourAttachmentOutput
-				, ashes::AccessFlag::eColourAttachmentWrite }
-			, subAttaches ) );
-		m_renderPass = m_device->getDevice().createRenderPass( attaches
-			, std::move( subpasses )
-			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
-				, ashes::AccessFlag::eMemoryRead }
-			, ashes::RenderSubpassState{ ashes::PipelineStageFlag::eBottomOfPipe
-				, ashes::AccessFlag::eMemoryRead } );
+		ashes::RenderPassCreateInfo createInfo
+		{
+			0u,
+			std::move( attaches ),
+			std::move( subpasses ),
+			std::move( dependencies ),
+		};
+		m_renderPass = m_device->getDevice().createRenderPass( std::move( createInfo ) );
 	}
 
 	bool RenderPanel::doPrepareFrames()
@@ -297,11 +323,11 @@ namespace vkapp
 			auto & frameBuffer = *m_frameBuffers[i];
 			auto & commandBuffer = *m_commandBuffers[i];
 
-			commandBuffer.begin( ashes::CommandBufferUsageFlag::eSimultaneousUse );
+			commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, frameBuffer
-				, { m_clearColour }
-				, ashes::SubpassContents::eInline );
+				, { { m_clearColour } }
+				, VK_SUBPASS_CONTENTS_INLINE );
 			commandBuffer.endRenderPass();
 			commandBuffer.end();
 		}
@@ -349,9 +375,8 @@ namespace vkapp
 
 		for ( auto & attach : m_renderPass->getAttachments() )
 		{
-			attaches.emplace_back( attach
-				, m_swapChainImages[backBuffer]->createView( VK_IMAGE_VIEW_TYPE_2D
-					, m_swapChain->getFormat() ) );
+			attaches.emplace_back( m_swapChainImages[backBuffer]->createView( VK_IMAGE_VIEW_TYPE_2D
+				, m_swapChain->getFormat() ) );
 		}
 
 		return attaches;
@@ -366,7 +391,7 @@ namespace vkapp
 			auto before = std::chrono::high_resolution_clock::now();
 			m_graphicsQueue->submit( *m_commandBuffers[resources->imageIndex]
 				, *resources->imageAvailableSemaphore
-				, ashes::PipelineStageFlag::eColourAttachmentOutput
+				, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
 				, *resources->finishedRenderingSemaphore
 				, resources->fence.get() );
 
@@ -399,13 +424,13 @@ namespace vkapp
 	{
 		auto & resources = *m_renderingResources[m_resourceIndex];
 		m_resourceIndex = ( m_resourceIndex + 1 ) % m_renderingResources.size();
-		bool res = resources.fence->wait( ashes::FenceTimeout ) == ashes::WaitResult::eSuccess;
+		bool res = resources.fence->wait( ashes::MaxTimeout ) == ashes::WaitResult::eSuccess;
 
 		if ( res )
 		{
 			resources.fence->reset();
 			uint32_t imageIndex{ 0u };
-			auto res = m_swapChain->acquireNextImage( std::numeric_limits< uint64_t >::max()
+			auto res = m_swapChain->acquireNextImage( ashes::MaxTimeout
 				, *resources.imageAvailableSemaphore
 				, imageIndex );
 

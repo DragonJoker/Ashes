@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include <AshesPP/Core/SwapChain.hpp>
 #include <AshesPP/Core/SwapChainCreateInfo.hpp>
-#include <AshesPP/Utils/Signal.hpp>
+#include <AshesRenderer/Util/Signal.hpp>
 
 namespace utils
 {

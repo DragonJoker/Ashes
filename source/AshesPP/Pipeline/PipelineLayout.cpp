@@ -49,18 +49,4 @@ namespace ashes
 			, m_internal
 			, nullptr );
 	}
-
-	GraphicsPipelinePtr PipelineLayout::createPipeline( VkGraphicsPipelineCreateInfo createInfo )const
-	{
-		return std::make_unique< GraphicsPipeline >( m_device
-			, *this
-			, std::move( createInfo ) );
-	}
-
-	ComputePipelinePtr PipelineLayout::createPipeline( VkComputePipelineCreateInfo createInfo )const
-	{
-		return std::make_unique< ComputePipeline >( m_device
-			, *this
-			, std::move( createInfo ) );
-	}
 }

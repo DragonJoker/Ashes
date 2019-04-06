@@ -7,37 +7,37 @@ namespace ashes::gl4
 		std::string result;
 		std::string sep;
 
-		if ( checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_VERTEX ) )
+		if ( ashes::checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_VERTEX ) )
 		{
 			result += sep + " GL_VERTEX_SHADER";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_TESS_CONTROL ) )
+		if ( ashes::checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_TESS_CONTROL ) )
 		{
 			result += sep + "GL_TESS_CONTROL_SHADER";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_TESS_EVALUATION ) )
+		if ( ashes::checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_TESS_EVALUATION ) )
 		{
 			result += sep + "GL_TESS_EVALUATION_SHADER";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_GEOMETRY ) )
+		if ( ashes::checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_GEOMETRY ) )
 		{
 			result += sep + "GL_GEOMETRY_SHADER";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_FRAGMENT ) )
+		if ( ashes::checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_FRAGMENT ) )
 		{
 			result += sep + "GL_FRAGMENT_SHADER";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_COMPUTE ) )
+		if ( ashes::checkFlag( value, GlShaderStageFlag::GL_SHADER_STAGE_COMPUTE ) )
 		{
 			result += sep + "GL_COMPUTE_SHADER";
 		}
@@ -50,37 +50,37 @@ namespace ashes::gl4
 		std::string result;
 		std::string sep;
 
-		if ( checkFlag( value, VK_SHADER_STAGE_VERTEX_BIT ) )
+		if ( ashes::checkFlag( value, VK_SHADER_STAGE_VERTEX_BIT ) )
 		{
 			result += sep + " VK_SHADER_STAGE_VERTEX_BIT";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT ) )
+		if ( ashes::checkFlag( value, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT ) )
 		{
 			result += sep + "VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT ) )
+		if ( ashes::checkFlag( value, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT ) )
 		{
 			result += sep + "VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, VK_SHADER_STAGE_GEOMETRY_BIT ) )
+		if ( ashes::checkFlag( value, VK_SHADER_STAGE_GEOMETRY_BIT ) )
 		{
 			result += sep + "VK_SHADER_STAGE_GEOMETRY_BIT";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, VK_SHADER_STAGE_FRAGMENT_BIT ) )
+		if ( ashes::checkFlag( value, VK_SHADER_STAGE_FRAGMENT_BIT ) )
 		{
 			result += sep + "VK_SHADER_STAGE_FRAGMENT_BIT";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, VK_SHADER_STAGE_COMPUTE_BIT ) )
+		if ( ashes::checkFlag( value, VK_SHADER_STAGE_COMPUTE_BIT ) )
 		{
 			result += sep + "VK_SHADER_STAGE_COMPUTE_BIT";
 		}
@@ -92,32 +92,32 @@ namespace ashes::gl4
 	{
 		GLenum result{ 0 };
 
-		if ( checkFlag( flags, VK_SHADER_STAGE_VERTEX_BIT ) )
+		if ( ashes::checkFlag( flags, VK_SHADER_STAGE_VERTEX_BIT ) )
 		{
 			result |= GL_SHADER_STAGE_VERTEX;
 		}
 
-		if ( checkFlag( flags, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT ) )
+		if ( ashes::checkFlag( flags, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT ) )
 		{
 			result |= GL_SHADER_STAGE_TESS_CONTROL;
 		}
 
-		if ( checkFlag( flags, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT ) )
+		if ( ashes::checkFlag( flags, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT ) )
 		{
 			result |= GL_SHADER_STAGE_TESS_EVALUATION;
 		}
 
-		if ( checkFlag( flags, VK_SHADER_STAGE_GEOMETRY_BIT ) )
+		if ( ashes::checkFlag( flags, VK_SHADER_STAGE_GEOMETRY_BIT ) )
 		{
 			result |= GL_SHADER_STAGE_GEOMETRY;
 		}
 
-		if ( checkFlag( flags, VK_SHADER_STAGE_FRAGMENT_BIT ) )
+		if ( ashes::checkFlag( flags, VK_SHADER_STAGE_FRAGMENT_BIT ) )
 		{
 			result |= GL_SHADER_STAGE_FRAGMENT;
 		}
 
-		if ( checkFlag( flags, VK_SHADER_STAGE_COMPUTE_BIT ) )
+		if ( ashes::checkFlag( flags, VK_SHADER_STAGE_COMPUTE_BIT ) )
 		{
 			result |= GL_SHADER_STAGE_COMPUTE;
 		}

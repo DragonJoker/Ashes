@@ -8,9 +8,9 @@
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
 #include <Image/Sampler.hpp>
-#include <Core/SwapChain.hpp>
+#include <AshesPP/Core/SwapChain.hpp>
 
-#include <AshesPP/Utils/Signal.hpp>
+#include <AshesRenderer/Util/Signal.hpp>
 
 #include <ObjLoader.hpp>
 
@@ -109,8 +109,8 @@ namespace vkapp
 		ashes::PipelineLayoutPtr m_offscreenPipelineLayout;
 		struct
 		{
-			ashes::PipelinePtr red;
-			ashes::PipelinePtr green;
+			ashes::GraphicsPipelinePtr red;
+			ashes::GraphicsPipelinePtr green;
 		} m_offscreenPipelines;
 		ashes::VertexBufferPtr< TexturedVertexData > m_offscreenVertexBuffer;
 		ashes::BufferPtr< uint16_t > m_offscreenIndexBuffer;
@@ -129,7 +129,7 @@ namespace vkapp
 		/**@{*/
 		ashes::RenderPassPtr m_mainRenderPass;
 		ashes::PipelineLayoutPtr m_mainPipelineLayout;
-		ashes::PipelinePtr m_mainPipeline;
+		ashes::GraphicsPipelinePtr m_mainPipeline;
 		ashes::VertexBufferPtr< TexturedVertexData > m_mainVertexBuffer;
 		ashes::VertexLayoutPtr m_mainVertexLayout;
 		ashes::DescriptorSetLayoutPtr m_mainDescriptorLayout;

@@ -145,13 +145,13 @@ namespace common
 					VkExtent3D{ image->size.width, image->size.height, 1u },
 					4u,
 					1u,
-					ashes::SampleCountFlag::e1,
+					VK_SAMPLE_COUNT_1_BIT,
 					ashes::ImageTiling::eOptimal,
-					( ashes::ImageUsageFlag::eTransferSrc
-						| ashes::ImageUsageFlag::eTransferDst
-						| ashes::ImageUsageFlag::eSampled )
+					( VkImageUsageFlagBits::eTransferSrc
+						| VkImageUsageFlagBits::eTransferDst
+						| VkImageUsageFlagBits::eSampled )
 				}
-				, ashes::MemoryPropertyFlag::eDeviceLocal );
+				, VkMemoryPropertyFlagBits::eDeviceLocal );
 			textureNode->view = textureNode->texture->createView( VkImageViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat()
 				, 0u
@@ -186,12 +186,12 @@ namespace common
 				VkExtent3D{ m_size.width, m_size.height, 1u },
 				1u,
 				1u,
-				ashes::SampleCountFlag::e1,
+				VK_SAMPLE_COUNT_1_BIT,
 				ashes::ImageTiling::eOptimal,
-				( ashes::ImageUsageFlag::eColourAttachment
-					| ashes::ImageUsageFlag::eSampled )
+				( VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+					| VkImageUsageFlagBits::eSampled )
 			}
-			, ashes::MemoryPropertyFlag::eDeviceLocal );
+			, VkMemoryPropertyFlagBits::eDeviceLocal );
 		m_colourView = m_colour->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_colour->getFormat() );
 
@@ -204,11 +204,11 @@ namespace common
 				VkExtent3D{ m_size.width, m_size.height, 1u },
 				1u,
 				1u,
-				ashes::SampleCountFlag::e1,
+				VK_SAMPLE_COUNT_1_BIT,
 				ashes::ImageTiling::eOptimal,
-				ashes::ImageUsageFlag::eDepthStencilAttachment
+				VkImageUsageFlagBits::eDepthStencilAttachment
 			}
-			, ashes::MemoryPropertyFlag::eDeviceLocal );
+			, VkMemoryPropertyFlagBits::eDeviceLocal );
 		m_depthView = m_depth->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_depth->getFormat() );
 	}

@@ -12,7 +12,7 @@ namespace ashes
 		: m_device{ device }
 		, m_size{ size }
 		, m_buffer{ m_device.createBuffer( size
-			, target | VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT ) }
+			, target | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT ) }
 	{
 	}
 

@@ -14,7 +14,7 @@ namespace common
 	public:
 		MainFrame( wxString const & name
 			, wxString const & rendererName
-			, utils::InstanceFactory & factory );
+			, ashes::RendererList const & renderers );
 		virtual ~MainFrame() = default;
 
 		void initialise();
@@ -34,7 +34,7 @@ namespace common
 		std::string m_name;
 		wxString m_rendererName;
 		utils::InstancePtr m_instance;
-		utils::InstanceFactory & m_factory;
+		ashes::RendererList const & m_renderers;
 		wxPanel * m_panel{ nullptr };
 		std::array< std::chrono::microseconds, FrameSamplesCount > m_cpuFramesTimes;
 		std::array< std::chrono::microseconds, FrameSamplesCount > m_gpuFramesTimes;

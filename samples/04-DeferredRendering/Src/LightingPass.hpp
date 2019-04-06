@@ -44,7 +44,7 @@ namespace vkapp
 		ashes::VertexBufferPtr< common::TexturedVertexData > m_vertexBuffer;
 		ashes::VertexLayoutPtr m_vertexLayout;
 		ashes::PipelineLayoutPtr m_pipelineLayout;
-		ashes::PipelinePtr m_pipeline;
+		ashes::GraphicsPipelinePtr m_pipeline;
 		ashes::FrameBufferPtr m_frameBuffer;
 		ashes::QueryPoolPtr m_queryPool;
 	};

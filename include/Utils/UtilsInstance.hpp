@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "UtilsPlugin.hpp"
+#include "UtilsPrerequisites.hpp"
 
 #include <AshesPP/Core/Instance.hpp>
 
@@ -16,6 +16,7 @@ namespace utils
 		Instance( ashes::RendererList const & rendererList
 			, std::string const & name
 			, ashes::ApplicationInfo applicationInfo );
+		~Instance();
 		/**
 		*\~french
 		*\brief
@@ -54,9 +55,9 @@ namespace utils
 
 	private:
 		ashes::InstancePtr m_instance;
-		VkDebugReportCallbackEXT m_debugCallback;
+		VkDebugReportCallbackEXT m_debugCallback{};
 		ashes::PhysicalDevicePtrArray m_gpus;
-		VkLayerProperties m_globalLayer;
+		VkLayerProperties m_globalLayer{};
 		ashes::VkLayerPropertiesArray m_layers;
 		ashes::StringArray m_layerNames;
 		ashes::StringArray m_extensionNames;

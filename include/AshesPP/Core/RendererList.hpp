@@ -20,6 +20,16 @@ namespace ashes
 
 		AshPluginDescription selectPlugin( std::string const & name )const;
 
+		auto begin()const
+		{
+			return m_plugins.begin();
+		}
+
+		auto end()const
+		{
+			return m_plugins.end();
+		}
+
 	private:
 		ashes::DynamicLibrary m_library;
 		std::vector< AshPluginDescription > m_plugins;

@@ -49,7 +49,7 @@ namespace utils
 			}
 			else
 			{
-				assert( formats.size() > 1u );
+				assert( !formats.empty() );
 				auto it = std::find_if( formats.begin()
 					, formats.end()
 					, []( VkSurfaceFormatKHR const & lookup )
@@ -247,7 +247,7 @@ namespace utils
 		auto & resources = *m_renderingResources[m_resourceIndex];
 		m_resourceIndex = ( m_resourceIndex + 1 ) % m_renderingResources.size();
 
-		if ( resources.waitRecord( ashes::FenceTimeout ) )
+		if ( resources.waitRecord( ashes::MaxTimeout ) )
 		{
 			uint32_t imageIndex{ 0u };
 			auto res = m_swapChain->acquireNextImage( std::numeric_limits< uint64_t >::max()

@@ -111,7 +111,7 @@ namespace ashes
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 	}
 
 	template< typename T >
@@ -289,7 +289,7 @@ namespace ashes
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 	}
 
 	template< typename T >
@@ -446,7 +446,7 @@ namespace ashes
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 	}
 
 	template< typename T >
@@ -615,7 +615,7 @@ namespace ashes
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 
 		doCopyFromStagingBuffer( data
 			, size );
@@ -718,7 +718,7 @@ namespace ashes
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 
 		doCopyFromStagingBuffer( data
 			, size );
@@ -802,7 +802,7 @@ namespace ashes
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 
 		doCopyUniformDataFromStagingBuffer( data
 			, count

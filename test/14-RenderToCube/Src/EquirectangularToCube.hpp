@@ -8,9 +8,9 @@
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
 #include <Image/Sampler.hpp>
-#include <Core/SwapChain.hpp>
+#include <AshesPP/Core/SwapChain.hpp>
 
-#include <AshesPP/Utils/Signal.hpp>
+#include <AshesRenderer/Util/Signal.hpp>
 
 #include <ObjLoader.hpp>
 
@@ -36,7 +36,7 @@ namespace vkapp
 		struct FacePipeline
 		{
 			ashes::FrameBufferPtr frameBuffer;
-			ashes::PipelinePtr pipeline;
+			ashes::GraphicsPipelinePtr pipeline;
 			ashes::DescriptorSetPtr descriptorSet;
 		};
 

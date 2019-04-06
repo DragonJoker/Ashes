@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Ashes_ColourBlendState_HPP___
 #pragma once
 
-#include "AshesRenderer/Helper/ColourBlendStateAttachment.hpp"
+#include "ColourBlendStateAttachment.hpp"
 
 namespace ashes
 {

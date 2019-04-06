@@ -11,13 +11,13 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	RenderPass::RenderPass( Device const & device
-		, VkRenderPassCreateInfo const & createInfo )
+		, RenderPassCreateInfo createInfo )
 		: m_device{ device }
-		, m_createInfo{ createInfo }
+		, m_createInfo{ std::move( createInfo ) }
 	{
 		DEBUG_DUMP( m_createInfo );
 		auto res = m_device.vkCreateRenderPass( m_device
-			, &m_createInfo
+			, &static_cast< VkRenderPassCreateInfo const & >( m_createInfo )
 			, nullptr
 			, &m_internal );
 		checkError( res, "RenderPass creation" );

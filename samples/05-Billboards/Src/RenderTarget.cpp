@@ -23,7 +23,7 @@ namespace vkapp
 		, m_sceneUbo{ utils::makeUniformBuffer< common::SceneData >( device
 			, 1u
 			, ashes::BufferTarget::eTransferDst
-			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+			, VkMemoryPropertyFlagBits::eDeviceLocal ) }
 	{
 		doInitialise();
 		doUpdateProjection( size );
@@ -64,7 +64,7 @@ namespace vkapp
 			, m_commandPool
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo
-			, ashes::PipelineStageFlag::eVertexShader );
+			, VkPipelineStageFlagBits::eVertexShader );
 	}
 
 	void RenderTarget::doResize( VkExtent2D const & size )
@@ -81,7 +81,7 @@ namespace vkapp
 		return std::make_unique< common::OpaqueRendering >( std::make_unique< NodesRenderer >( device
 				, m_commandPool
 				, m_transferQueue
-				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
+				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, true
 				, true
@@ -101,7 +101,7 @@ namespace vkapp
 		return std::make_unique< common::TransparentRendering >( std::make_unique< NodesRenderer >( device
 				, m_commandPool
 				, m_transferQueue
-				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
+				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, false
 				, false

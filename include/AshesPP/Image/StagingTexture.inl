@@ -34,7 +34,7 @@ namespace ashes
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 	}
 
 	inline void StagingTexture::uploadTextureData( Queue const & queue
@@ -53,7 +53,7 @@ namespace ashes
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
 			, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 	}
 
 	inline void StagingTexture::uploadTextureData( CommandBuffer const & commandBuffer

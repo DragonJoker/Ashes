@@ -25,12 +25,12 @@ namespace ashes::gl4
 	{
 		GlQueryResultFlags result{ 0 };
 
-		if ( checkFlag( flags, VK_QUERY_RESULT_WAIT_BIT ) )
+		if ( ashes::checkFlag( flags, VK_QUERY_RESULT_WAIT_BIT ) )
 		{
 			return GL_QUERY_RESULT;
 		}
 
-		if ( checkFlag( flags, VK_QUERY_RESULT_WITH_AVAILABILITY_BIT ) )
+		if ( ashes::checkFlag( flags, VK_QUERY_RESULT_WITH_AVAILABILITY_BIT ) )
 		{
 			return GL_QUERY_RESULT_NO_WAIT;
 		}

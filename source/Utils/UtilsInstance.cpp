@@ -5,7 +5,6 @@ See LICENSE file in root folder.
 #include "Utils/UtilsInstance.hpp"
 
 #include "Utils/UtilsDebug.hpp"
-#include "Utils/Factory.hpp"
 
 #include <AshesRenderer/Util/Exception.hpp>
 
@@ -151,20 +150,16 @@ namespace utils
 
 		completeLayerNames( m_layerNames );
 
-		StringArray enabledExtensionNames
-		{
-			VK_KHR_SURFACE_EXTENSION_NAME,
-			ashes::KHR_PLATFORM_SURFACE_EXTENSION_NAME,
-		};
-		addOptionalDebugReportLayer( enabledExtensionNames );
-		checkExtensionsAvailability( m_globalLayerExtensions, enabledExtensionNames );
-		StringArray enabledLayerNames = m_layerNames;
+		m_extensionNames.push_back( VK_KHR_SURFACE_EXTENSION_NAME );
+		m_extensionNames.push_back( ashes::KHR_PLATFORM_SURFACE_EXTENSION_NAME );
+		addOptionalDebugReportLayer( m_extensionNames );
+		checkExtensionsAvailability( m_globalLayerExtensions, m_extensionNames );
 		ashes::InstanceCreateInfo createInfo
 		{
 			0u,
 			std::move( applicationInfo ),
-			enabledLayerNames,
-			enabledExtensionNames,
+			m_layerNames,
+			m_extensionNames,
 		};
 		m_instance = std::make_unique< ashes::Instance >( std::move( plugin )
 			, std::move( createInfo ) );
@@ -175,6 +170,11 @@ namespace utils
 #endif
 
 		m_gpus = m_instance->enumeratePhysicalDevices();
+	}
+
+	Instance::~Instance()
+	{
+		m_instance->vkDestroyDebugReportCallbackEXT( *m_instance, m_debugCallback, nullptr );
 	}
 
 	void Instance::completeLayerNames( ashes::StringArray & names )const

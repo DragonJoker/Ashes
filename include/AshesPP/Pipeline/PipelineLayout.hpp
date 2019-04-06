@@ -56,40 +56,6 @@ namespace ashes
 		~PipelineLayout();
 		/**
 		*\~english
-		*\brief
-		*	Creates a graphics pipeline using this layout.
-		*\param[in] createInfo
-		*	The creation informations.
-		*\return
-		*	The created pipeline.
-		*\~french
-		*\brief
-		*	Crée un pipeline graphique utilisant ce layout.
-		*\param[in] createInfo
-		*	Les informations de création.
-		*\return
-		*	Le pipeline créé.
-		*/
-		GraphicsPipelinePtr createPipeline( VkGraphicsPipelineCreateInfo createInfo )const;
-		/**
-		*\~english
-		*\brief
-		*	Creates a compute pipeline using this layout.
-		*\param[in] createInfo
-		*	The creation informations.
-		*\return
-		*	The created pipeline.
-		*\~french
-		*\brief
-		*	Crée un pipeline de calcul utilisant ce layout.
-		*\param[in] createInfo
-		*	Les informations de création.
-		*\return
-		*	Le pipeline créé.
-		*/
-		ComputePipelinePtr createPipeline( VkComputePipelineCreateInfo createInfo )const;
-		/**
-		*\~english
 		*\return
 		*	The descriptor sets layouts.
 		*\~french

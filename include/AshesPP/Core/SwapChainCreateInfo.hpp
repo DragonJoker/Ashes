@@ -33,7 +33,7 @@ namespace ashes
 			: queueFamilyIndices{ std::move( queueFamilyIndices ) }
 			, vk
 			{
-				VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+				VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
 				nullptr,
 				flags,
 				surface,
@@ -59,7 +59,7 @@ namespace ashes
 			: queueFamilyIndices{ std::move( rhs.queueFamilyIndices ) }
 			, vk
 			{
-				VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+				VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
 				nullptr,
 				rhs.vk.flags,
 				rhs.vk.surface,
@@ -86,7 +86,7 @@ namespace ashes
 			queueFamilyIndices = std::move( rhs.queueFamilyIndices );
 			vk =
 			{
-				VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+				VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
 				nullptr,
 				rhs.vk.flags,
 				rhs.vk.surface,

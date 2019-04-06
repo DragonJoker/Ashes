@@ -161,7 +161,7 @@ namespace utils
 			, target );
 		auto requirements = result->getMemoryRequirements();
 		auto deduced = device.deduceMemoryType( requirements.memoryTypeBits, flags );
-		result->bindMemory( device.getDevice().allocateMemory( { requirements.size, deduced } ) );
+		result->bindMemory( device.getDevice().allocateMemory( { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, 0u, requirements.size, deduced } ) );
 		return result;
 	}
 
@@ -176,7 +176,7 @@ namespace utils
 			, target );
 		auto requirements = result->getMemoryRequirements();
 		auto deduced = device.deduceMemoryType( requirements.memoryTypeBits, flags );
-		result->bindMemory( device.getDevice().allocateMemory( { requirements.size, deduced } ) );
+		result->bindMemory( device.getDevice().allocateMemory( { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, 0u, requirements.size, deduced } ) );
 		return result;
 	}
 
@@ -191,7 +191,7 @@ namespace utils
 			, target );
 		auto requirements = result->getMemoryRequirements();
 		auto deduced = device.deduceMemoryType( requirements.memoryTypeBits, flags );
-		result->bindMemory( device.getDevice().allocateMemory( { requirements.size, deduced } ) );
+		result->bindMemory( device.getDevice().allocateMemory( { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, 0u, requirements.size, deduced } ) );
 		return result;
 	}
 }

@@ -9,23 +9,8 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	ShaderModule::ShaderModule( Device const & device
-		, VkShaderStageFlagBits stage )
+		, UInt32Array const & shader )
 		: m_device{ device }
-		, m_stage{ stage }
-	{
-	}
-
-	ShaderModule::~ShaderModule()
-	{
-		unregisterObject( m_device, this );
-
-		if ( m_internal != VK_NULL_HANDLE )
-		{
-			m_device.vkDestroyShaderModule( m_device, m_internal, nullptr );
-		}
-	}
-
-	void ShaderModule::loadShader( UInt32Array const & shader )
 	{
 		VkShaderModuleCreateInfo createInfo
 		{
@@ -42,5 +27,15 @@ namespace ashes
 			, &m_internal );
 		checkError( res, "ShaderModule creation" );
 		registerObject( m_device, "ShaderModule", this );
+	}
+
+	ShaderModule::~ShaderModule()
+	{
+		unregisterObject( m_device, this );
+
+		if ( m_internal != VK_NULL_HANDLE )
+		{
+			m_device.vkDestroyShaderModule( m_device, m_internal, nullptr );
+		}
 	}
 }

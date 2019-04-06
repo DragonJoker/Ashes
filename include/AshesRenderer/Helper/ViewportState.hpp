@@ -18,7 +18,7 @@ namespace ashes
 	*\brief
 	*	L'état de viewport.
 	*/
-	VkPipelineViewportStateCreateInfo getViewportState()
+	inline VkPipelineViewportStateCreateInfo getViewportState()
 	{
 		return
 		{

@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	VkPipelineDynamicStateCreateInfo getDynamicState()
+	inline VkPipelineDynamicStateCreateInfo getDynamicState()
 	{
 		return
 		{

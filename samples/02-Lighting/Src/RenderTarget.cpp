@@ -23,15 +23,15 @@ namespace vkapp
 		, m_sceneUbo{ utils::makeUniformBuffer< common::SceneData >( device
 			, 1u
 			, ashes::BufferTarget::eTransferDst
-			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+			, VkMemoryPropertyFlagBits::eDeviceLocal ) }
 		, m_objectUbo{ utils::makeUniformBuffer< common::ObjectData >( device
 			, 1u
 			, ashes::BufferTarget::eTransferDst
-			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+			, VkMemoryPropertyFlagBits::eDeviceLocal ) }
 		, m_lightsUbo{ utils::makeUniformBuffer< common::LightsData >( device
 			, 1u
 			, ashes::BufferTarget::eTransferDst
-			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+			, VkMemoryPropertyFlagBits::eDeviceLocal ) }
 	{
 		doInitialise();
 		doUpdateMatrixUbo( size );
@@ -54,7 +54,7 @@ namespace vkapp
 			, m_commandPool
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
-			, ashes::PipelineStageFlag::eVertexShader );
+			, VkPipelineStageFlagBits::eVertexShader );
 	}
 
 	void RenderTarget::doResize( VkExtent2D const & size )
@@ -71,7 +71,7 @@ namespace vkapp
 		return std::make_unique< common::OpaqueRendering >( std::make_unique< NodesRenderer >( device
 				, m_commandPool
 				, m_transferQueue
-				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
+				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, true
 				, true
@@ -93,7 +93,7 @@ namespace vkapp
 		return std::make_unique< common::TransparentRendering >( std::make_unique< NodesRenderer >( device
 				, m_commandPool
 				, m_transferQueue
-				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
+				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, false
 				, false
@@ -118,7 +118,7 @@ namespace vkapp
 			, m_commandPool
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo
-			, ashes::PipelineStageFlag::eVertexShader );
+			, VkPipelineStageFlagBits::eVertexShader );
 	}
 
 	void RenderTarget::doInitialiseLights()
@@ -139,6 +139,6 @@ namespace vkapp
 			, m_commandPool
 			, m_lightsUbo->getDatas()
 			, *m_lightsUbo
-			, ashes::PipelineStageFlag::eFragmentShader );
+			, VkPipelineStageFlagBits::eFragmentShader );
 	}
 }

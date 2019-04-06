@@ -66,7 +66,7 @@ namespace common
 		ashes::RenderPassPtr m_renderPass;
 		ashes::FrameBufferPtr m_frameBuffer;
 		ashes::VertexLayoutPtr m_vertexLayout;
-		ashes::PipelinePtr m_pipeline;
+		ashes::GraphicsPipelinePtr m_pipeline;
 		ashes::CommandPoolPtr m_commandPool;
 		ashes::CommandBufferPtr m_commandBuffer;
 		ashes::FencePtr m_fence;

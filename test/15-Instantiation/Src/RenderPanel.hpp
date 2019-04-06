@@ -7,9 +7,9 @@
 #include <Pipeline/Pipeline.hpp>
 #include <Pipeline/PipelineLayout.hpp>
 #include <Image/Sampler.hpp>
-#include <Core/SwapChain.hpp>
+#include <AshesPP/Core/SwapChain.hpp>
 
-#include <AshesPP/Utils/Signal.hpp>
+#include <AshesRenderer/Util/Signal.hpp>
 
 #include <Camera.hpp>
 
@@ -102,7 +102,7 @@ namespace vkapp
 		/**@{*/
 		ashes::RenderPassPtr m_renderPass;
 		ashes::PipelineLayoutPtr m_pipelineLayout;
-		ashes::PipelinePtr m_pipeline;
+		ashes::GraphicsPipelinePtr m_pipeline;
 		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
 		ashes::BufferPtr< uint16_t > m_indexBuffer;
 		ashes::VertexLayoutPtr m_vertexLayout;

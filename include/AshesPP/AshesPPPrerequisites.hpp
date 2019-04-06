@@ -82,12 +82,12 @@ namespace ashes
 	/**
 	*\~french
 	*\brief
-	*	Temps en nanosecondes à attendre pour qu'un tampon de commandes soit exécuté.
+	*	Temps en maximal à attendre, en nanosecondes.
 	*\~english
 	*\brief
-	*	Nanoseconds time to wait for a command buffer to be executed.
+	*	Maximum time to wait in nanoseconds.
 	*/
-	static const uint64_t FenceTimeout = ~( 0ull );
+	static const uint64_t MaxTimeout = ~( 0ull );
 
 	/**
 	*\name Typedefs généralistes.

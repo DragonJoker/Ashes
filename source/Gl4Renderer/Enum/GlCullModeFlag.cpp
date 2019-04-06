@@ -28,15 +28,15 @@ namespace ashes::gl4
 	{
 		GlCullMode result{ GL_CULL_MODE_NONE };
 
-		if ( checkFlag( flags, VK_CULL_MODE_FRONT_AND_BACK ) )
+		if ( ashes::checkFlag( flags, VK_CULL_MODE_FRONT_AND_BACK ) )
 		{
 			result = GL_CULL_MODE_FRONT_AND_BACK;
 		}
-		else if ( checkFlag( flags, VK_CULL_MODE_FRONT_BIT ) )
+		else if ( ashes::checkFlag( flags, VK_CULL_MODE_FRONT_BIT ) )
 		{
 			result = GL_CULL_MODE_FRONT;
 		}
-		else if ( checkFlag( flags, VK_CULL_MODE_BACK_BIT ) )
+		else if ( ashes::checkFlag( flags, VK_CULL_MODE_BACK_BIT ) )
 		{
 			result = GL_CULL_MODE_BACK;
 		}

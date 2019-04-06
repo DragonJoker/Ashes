@@ -23,18 +23,18 @@ namespace ashes
 		*	Constructeur.
 		*\param[in] device
 		*	The logical device.
-		*\param[in] stage
-		*	The module's shader stage.
+		*\param[in] shader
+		*	The module's SPIR-V code.
 		*\~french
 		*\brief
 		*	Constructeur.
 		*\param[in] device
 		*	Le périphérique logique.
-		*\param[in] stage
-		*	Le niveau de shader utilisé pour le module.
+		*\param[in] shader
+		*	Le code SPIR-V du module.
 		*/
 		ShaderModule( Device const & device
-			, VkShaderStageFlagBits stage );
+			, UInt32Array const & shader );
 		/**
 		*\~english
 		*\brief
@@ -44,24 +44,6 @@ namespace ashes
 		*	Destructeur.
 		*/
 		~ShaderModule();
-		/**
-		*\~english
-		*\brief
-		*	Loads a SPIR-V shader.
-		*\param[in] shader
-		*	The SPIR-V shader code.
-		*\~french
-		*\brief
-		*	Charge un programme SPIR-V.
-		*\param[in] shader
-		*	Le code SPIR-V du shader.
-		*/
-		void loadShader( UInt32Array const & shader );
-		
-		inline VkShaderStageFlagBits getStage()const
-		{
-			return m_stage;
-		}
 		/**
 		*\~french
 		*\brief
@@ -77,7 +59,6 @@ namespace ashes
 
 	protected:
 		Device const & m_device;
-		VkShaderStageFlagBits m_stage;
 		VkShaderModule m_internal{ VK_NULL_HANDLE };
 	};
 }

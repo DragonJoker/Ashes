@@ -11,6 +11,9 @@ See LICENSE file in root folder.
 #include "AshesPP/Core/DeviceCreateInfo.hpp"
 #include "AshesPP/Core/Surface.hpp"
 #include "AshesPP/Core/PhysicalDevice.hpp"
+#include "AshesPP/Pipeline/ComputePipelineCreateInfo.hpp"
+#include "AshesPP/Pipeline/GraphicsPipelineCreateInfo.hpp"
+#include "AshesPP/RenderPass/RenderPassCreateInfo.hpp"
 
 #include <string>
 #include <sstream>
@@ -216,7 +219,41 @@ namespace ashes
 		*\return
 		*	The created pass.
 		*/
-		RenderPassPtr createRenderPass( VkRenderPassCreateInfo createInfo )const;
+		RenderPassPtr createRenderPass( RenderPassCreateInfo createInfo )const;
+		/**
+		*\~english
+		*\brief
+		*	Creates a graphics pipeline using this layout.
+		*\param[in] createInfo
+		*	The creation informations.
+		*\return
+		*	The created pipeline.
+		*\~french
+		*\brief
+		*	Crée un pipeline graphique utilisant ce layout.
+		*\param[in] createInfo
+		*	Les informations de création.
+		*\return
+		*	Le pipeline créé.
+		*/
+		GraphicsPipelinePtr createPipeline( GraphicsPipelineCreateInfo createInfo )const;
+		/**
+		*\~english
+		*\brief
+		*	Creates a compute pipeline using this layout.
+		*\param[in] createInfo
+		*	The creation informations.
+		*\return
+		*	The created pipeline.
+		*\~french
+		*\brief
+		*	Crée un pipeline de calcul utilisant ce layout.
+		*\param[in] createInfo
+		*	Les informations de création.
+		*\return
+		*	Le pipeline créé.
+		*/
+		ComputePipelinePtr createPipeline( ComputePipelineCreateInfo createInfo )const;
 		/**
 		*\~english
 		*\brief
@@ -461,15 +498,15 @@ namespace ashes
 		*\~english
 		*\brief
 		*	Creates a shader module.
-		*\param[in] stage
-		*	The module's shader stage.
+		*\param[in] shader
+		*	The module's SPIR-V code.
 		*\~french
 		*\brief
 		*	Crée un module shader.
-		*\param[in] stage
-		*	Le niveau de shader utilisé pour le module.
+		*\param[in] shader
+		*	Le code SPIR-V du module.
 		*/
-		ShaderModulePtr createShaderModule( VkShaderStageFlagBits stage )const;
+		ShaderModulePtr createShaderModule( UInt32Array const & shader )const;
 		/**
 		*\~english
 		*\brief

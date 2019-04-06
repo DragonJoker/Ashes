@@ -143,7 +143,7 @@ namespace ashes
 		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer, fence.get() );
-		fence->wait( FenceTimeout );
+		fence->wait( MaxTimeout );
 	}
 
 	void Image::generateMipmaps( CommandBuffer & commandBuffer )const

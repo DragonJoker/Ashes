@@ -20,7 +20,7 @@ namespace common
 
 	MainFrame::MainFrame( wxString const & name
 		, wxString const & rendererName
-		, utils::InstanceFactory & factory )
+		, ashes::RendererList const & renderers )
 		: wxFrame{ nullptr
 			, wxID_ANY
 			, name
@@ -29,7 +29,7 @@ namespace common
 			, wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxRESIZE_BORDER | wxMAXIMIZE_BOX }
 		, m_name{ name }
 		, m_rendererName{ rendererName }
-		, m_factory{ factory }
+		, m_renderers{ factory }
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 	{
 	}
@@ -54,7 +54,7 @@ namespace common
 				ashes::makeVersion( 1, 0, 0 ),
 				ashes::API_VERSION_1_0,
 			};
-			m_instance = std::make_unique< utils::Instance >( m_factory
+			m_instance = std::make_unique< utils::Instance >( m_renderers
 				, m_rendererName.ToStdString()
 				, config );
 

@@ -43,11 +43,147 @@ namespace ashes::gl4
 		/**@}*/
 		/**
 		*\return
+		*	Le InputAssemblyState.
+		*/
+		inline bool hasInputAssemblyState()const
+		{
+			return bool( m_inputAssemblyState );
+		}
+		/**
+		*\return
+		*	Le InputAssemblyState.
+		*/
+		inline auto const & getInputAssemblyState()const
+		{
+			assert( hasInputAssemblyState() );
+			return m_inputAssemblyState.value();
+		}
+		/**
+		*\return
+		*	Le ColourBlendState.
+		*/
+		inline bool hasColourBlendState()const
+		{
+			return bool( m_colorBlendState );
+		}
+		/**
+		*\return
+		*	Le ColourBlendState.
+		*/
+		inline auto const & getColourBlendState()const
+		{
+			assert( hasColourBlendState() );
+			return m_colorBlendState.value();
+		}
+		/**
+		*\return
+		*	Le RasterisationState.
+		*/
+		inline bool hasRasterisationState()const
+		{
+			return bool( m_rasterizationState );
+		}
+		/**
+		*\return
+		*	Le RasterisationState.
+		*/
+		inline auto const & getRasterisationState()const
+		{
+			assert( hasRasterisationState() );
+			return m_rasterizationState.value();
+		}
+		/**
+		*\return
+		*	Le DepthStencilState.
+		*/
+		inline bool hasDepthStencilState()const
+		{
+			return bool( m_depthStencilState );
+		}
+		/**
+		*\return
+		*	Le DepthStencilState.
+		*/
+		inline auto const & getDepthStencilState()const
+		{
+			assert( hasDepthStencilState() );
+			return m_depthStencilState.value();
+		}
+		/**
+		*\return
+		*	Le MultisampleState.
+		*/
+		inline bool hasMultisampleState()const
+		{
+			return bool( m_multisampleState );
+		}
+		/**
+		*\return
+		*	Le MultisampleState.
+		*/
+		inline auto const & getMultisampleState()const
+		{
+			assert( hasMultisampleState() );
+			return m_multisampleState.value();
+		}
+		/**
+		*\return
+		*	Le TessellationState.
+		*/
+		inline bool hasTessellationState()const
+		{
+			return bool( m_tessellationState );
+		}
+		/**
+		*\return
+		*	Le TessellationState.
+		*/
+		inline auto const & getTessellationState()const
+		{
+			assert( hasTessellationState() );
+			return m_tessellationState.value();
+		}
+		/**
+		*\return
+		*	Le VertexInputState.
+		*/
+		inline bool hasVertexInputState()const
+		{
+			return bool( m_vertexInputState );
+		}
+		/**
+		*\return
+		*	Le VertexInputState.
+		*/
+		inline auto const & getVertexInputState()const
+		{
+			assert( hasVertexInputState() );
+			return m_vertexInputState.value();
+		}
+		/**
+		*\return
+		*	Le Viewport.
+		*/
+		inline bool hasViewportState()const
+		{
+			return bool( m_viewportState );
+		}
+		/**
+		*\return
+		*	Le Viewport.
+		*/
+		inline auto const & getViewportState()const
+		{
+			assert( hasViewportState() );
+			return m_viewportState.value();
+		}
+		/**
+		*\return
 		*	\p true si le Viewport est défini.
 		*/
 		inline bool hasViewport()const
 		{
-			return bool( m_viewportState )
+			return hasViewportState()
 				&& m_viewportState.value().viewportCount > 0;
 		}
 		/**
@@ -56,80 +192,8 @@ namespace ashes::gl4
 		*/
 		inline bool hasScissor()const
 		{
-			return bool( m_viewportState )
+			return hasViewportState()
 				&& m_viewportState.value().scissorCount > 0;
-		}
-		/**
-		*\return
-		*	Le InputAssemblyState.
-		*/
-		inline auto const & getInputAssemblyState()const
-		{
-			assert( bool( m_inputAssemblyState ) );
-			return m_inputAssemblyState.value();
-		}
-		/**
-		*\return
-		*	Le ColourBlendState.
-		*/
-		inline auto const & getColourBlendState()const
-		{
-			assert( bool( m_colorBlendState ) );
-			return m_colorBlendState.value();
-		}
-		/**
-		*\return
-		*	Le RasterisationState.
-		*/
-		inline auto const & getRasterisationState()const
-		{
-			assert( bool( m_rasterizationState ) );
-			return m_rasterizationState.value();
-		}
-		/**
-		*\return
-		*	Le DepthStencilState.
-		*/
-		inline auto const & getDepthStencilState()const
-		{
-			assert( bool( m_depthStencilState ) );
-			return m_depthStencilState.value();
-		}
-		/**
-		*\return
-		*	Le MultisampleState.
-		*/
-		inline auto const & getMultisampleState()const
-		{
-			assert( bool( m_multisampleState ) );
-			return m_multisampleState.value();
-		}
-		/**
-		*\return
-		*	Le TessellationState.
-		*/
-		inline auto const & getTessellationState()const
-		{
-			assert( bool( m_tessellationState ) );
-			return m_tessellationState.value();
-		}
-		/**
-		*\return
-		*	Le VertexInputState.
-		*/
-		inline auto const & getVertexInputState()const
-		{
-			assert( bool( m_viewportState ) );
-			return m_vertexInputState.value();
-		}
-		/**
-		*\return
-		*	Le Viewport.
-		*/
-		inline auto const & getViewportState()const
-		{
-			assert( bool( m_viewportState ) );
-			return m_viewportState.value();
 		}
 		/**
 		*\return
@@ -137,7 +201,6 @@ namespace ashes::gl4
 		*/
 		inline VkViewportArray const & getViewports()const
 		{
-			assert( bool( m_viewportState ) );
 			return m_viewports;
 		}
 		/**
@@ -146,7 +209,6 @@ namespace ashes::gl4
 		*/
 		inline VkScissorArray const & getScissors()const
 		{
-			assert( bool( m_viewportState ) );
 			return m_scissors;
 		}
 		/**
@@ -164,14 +226,6 @@ namespace ashes::gl4
 		inline GLuint getProgram()const
 		{
 			return m_program.getProgram();
-		}
-		/**
-		*\return
-		*	Dit si le pipeline a des sommets.
-		*/
-		inline bool hasVertexLayout()const
-		{
-			return bool( m_vertexInputState );
 		}
 		/**
 		*\return

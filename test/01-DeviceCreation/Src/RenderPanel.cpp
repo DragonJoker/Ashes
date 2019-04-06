@@ -7,7 +7,7 @@
 #include <AshesPP/Core/Device.hpp>
 #include <AshesRenderer/Util/Exception.hpp>
 
-#include <Transform.hpp>
+#include <Utils/Transform.hpp>
 
 #include <chrono>
 
@@ -20,9 +20,9 @@ namespace vkapp
 	{
 		try
 		{
-			m_surface = doCreateSurface( instance );
+			doCreateSurface( instance );
 			std::cout << "Surface created." << std::endl;
-			doCreateDevice( instance, *m_surface );
+			doCreateDevice( instance );
 			std::cout << "Logical device created." << std::endl;
 		}
 		catch ( std::exception & )
@@ -46,17 +46,17 @@ namespace vkapp
 		}
 	}
 
-	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
+	void RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.getInstance().createSurface( gpu
+		m_surface = instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
 
-	void RenderPanel::doCreateDevice( utils::Instance const & instance
-		, ashes::Surface const & surface )
+	void RenderPanel::doCreateDevice( utils::Instance const & instance )
 	{
+		auto & gpu = m_surface->getGpu();
 		ashes::DeviceQueueCreateInfoArray queueCreateInfos;
 		queueCreateInfos.emplace_back( 0u, 0u, ashes::FloatArray{ 1.0f } );
 		ashes::DeviceCreateInfo createInfo
@@ -64,10 +64,10 @@ namespace vkapp
 			0u,
 			std::move( queueCreateInfos ),
 			instance.getLayerNames(),
-			instance.getExtensionNames(),
-			surface.getGpu().getFeatures(),
+			{},//instance.getExtensionNames(),
+			gpu.getFeatures(),
 		};
-		m_device = instance.getInstance().createDevice( surface.getGpu()
+		m_device = instance.getInstance().createDevice( gpu
 			, std::move( createInfo ) );
 
 		if ( m_device )

@@ -96,9 +96,21 @@ namespace ashes
 		return std::make_unique< StagingTexture >( *this, format, extent );
 	}
 
-	RenderPassPtr Device::createRenderPass( VkRenderPassCreateInfo createInfo )const
+	RenderPassPtr Device::createRenderPass( RenderPassCreateInfo createInfo )const
 	{
 		return std::make_unique< RenderPass >( *this, std::move( createInfo ) );
+	}
+
+	GraphicsPipelinePtr Device::createPipeline( GraphicsPipelineCreateInfo createInfo )const
+	{
+		return std::make_unique< GraphicsPipeline >( *this
+			, std::move( createInfo ) );
+	}
+
+	ComputePipelinePtr Device::createPipeline( ComputePipelineCreateInfo createInfo )const
+	{
+		return std::make_unique< ComputePipeline >( *this
+			, std::move( createInfo ) );
 	}
 
 	PipelineLayoutPtr Device::createPipelineLayout( DescriptorSetLayoutCRefArray const & setLayouts
@@ -210,9 +222,9 @@ namespace ashes
 			, flags );
 	}
 
-	ShaderModulePtr Device::createShaderModule( VkShaderStageFlagBits stage )const
+	ShaderModulePtr Device::createShaderModule( UInt32Array const & shader )const
 	{
-		return std::make_shared< ShaderModule >( *this, stage );
+		return std::make_shared< ShaderModule >( *this, shader );
 	}
 
 	QueryPoolPtr Device::createQueryPool( VkQueryType type

@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___AshesPP_Pipeline_HPP___
 #pragma once
 
-#include "AshesPP/AshesPPPrerequisites.hpp"
+#include "GraphicsPipelineCreateInfo.hpp"
 
 namespace ashes
 {
@@ -42,8 +42,7 @@ namespace ashes
 		*	Les informations de création.
 		*/
 		GraphicsPipeline( Device const & device
-			, PipelineLayout const & layout
-			, VkGraphicsPipelineCreateInfo createInfo );
+			, GraphicsPipelineCreateInfo createInfo );
 		/**
 		*\~english
 		*\brief
@@ -53,18 +52,6 @@ namespace ashes
 		*	Destructeur.
 		*/
 		~GraphicsPipeline();
-		/**
-		*\~english
-		*\return
-		*	The parent layout.
-		*\~french
-		*\return
-		*	Le layout parent.
-		*/
-		inline PipelineLayout const & getLayout()const
-		{
-			return m_layout;
-		}
 		/**
 		*\~french
 		*\brief
@@ -80,8 +67,7 @@ namespace ashes
 
 	protected:
 		Device const & m_device;
-		PipelineLayout const & m_layout;
-		VkGraphicsPipelineCreateInfo m_createInfo;
+		GraphicsPipelineCreateInfo m_createInfo;
 		VkPipeline m_internal{ VK_NULL_HANDLE };
 	};
 }

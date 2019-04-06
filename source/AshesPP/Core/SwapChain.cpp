@@ -98,18 +98,21 @@ namespace ashes
 			, nullptr );
 		checkError( res, "Swap chain images count retrieval" );
 
-		std::vector< VkImage > swapChainImages( imageCount );
-		res = m_device.vkGetSwapchainImagesKHR( m_device
-			, m_internal
-			, &imageCount
-			, &swapChainImages[0] );
-		checkError( res, "Swap chain images retrieval" );
-
 		ImagePtrArray result;
 
-		for ( auto & image : swapChainImages )
+		if ( imageCount )
 		{
-			result.emplace_back( std::make_unique< Image >( m_device, image ) );
+			std::vector< VkImage > swapChainImages( imageCount );
+			res = m_device.vkGetSwapchainImagesKHR( m_device
+				, m_internal
+				, &imageCount
+				, &swapChainImages[0] );
+			checkError( res, "Swap chain images retrieval" );
+
+			for ( auto & image : swapChainImages )
+			{
+				result.emplace_back( std::make_unique< Image >( m_device, image ) );
+			}
 		}
 
 		return result;

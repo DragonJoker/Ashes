@@ -90,7 +90,7 @@ namespace ashes::gl4
 					, 0 );
 
 				// If the texture is visible to the host, we'll need a PBO to map it to RAM.
-				if ( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
+				if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 				{
 					glLogCall( context
 						, glGenBuffers
@@ -145,7 +145,7 @@ namespace ashes::gl4
 				, VkMemoryMapFlags flags
 				, void ** data )const override
 			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
 
 				auto context = get( m_device )->getContext();
@@ -171,7 +171,7 @@ namespace ashes::gl4
 			VkResult flush( VkDeviceSize offset
 				, VkDeviceSize size )const override
 			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
 				assertDebugValue( m_isLocked, true );
 
@@ -187,7 +187,7 @@ namespace ashes::gl4
 			VkResult invalidate( VkDeviceSize offset
 				, VkDeviceSize size )const override
 			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
 				assertDebugValue( m_isLocked, true );
 
@@ -202,7 +202,7 @@ namespace ashes::gl4
 
 			void unlock()const override
 			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
 				assertDebugValue( m_isLocked, true );
 
@@ -539,7 +539,7 @@ namespace ashes::gl4
 				, VkMemoryMapFlags flags
 				, void ** data )const override
 			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, false );
 				auto context = get( m_device )->getContext();
@@ -563,7 +563,7 @@ namespace ashes::gl4
 			VkResult flush( uint64_t offset
 				, uint64_t size )const override
 			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, true );
 				auto context = get( m_device )->getContext();
@@ -578,7 +578,7 @@ namespace ashes::gl4
 			VkResult invalidate( uint64_t offset
 				, uint64_t size )const override
 			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, true );
 				auto context = get( m_device )->getContext();
@@ -592,7 +592,7 @@ namespace ashes::gl4
 
 			void unlock()const override
 			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
 				assertDebugValue( m_isLocked, true );
 				auto context = get( m_device )->getContext();
@@ -626,12 +626,12 @@ namespace ashes::gl4
 		, m_memoryOffset{ memoryOffset }
 		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
 	{
-		if ( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
+		if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 		{
 			m_mapFlags |= GL_MEMORY_MAP_READ_BIT | GL_MEMORY_MAP_WRITE_BIT | GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
 		}
 
-		if ( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
+		if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
 		{
 			m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
 		}

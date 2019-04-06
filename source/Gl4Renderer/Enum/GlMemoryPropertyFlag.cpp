@@ -7,31 +7,31 @@ namespace ashes::gl4
 		std::string result;
 		std::string sep;
 
-		if ( checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_READ_BIT ) )
+		if ( ashes::checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_READ_BIT ) )
 		{
 			result += sep + "GL_MAP_READ_BIT";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_WRITE_BIT ) )
+		if ( ashes::checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_WRITE_BIT ) )
 		{
 			result += sep + "GL_MAP_WRITE_BIT";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_DYNAMIC_STORAGE_BIT ) )
+		if ( ashes::checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_DYNAMIC_STORAGE_BIT ) )
 		{
 			result += sep + "GL_DYNAMIC_STORAGE_BIT";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_COHERENT_BIT ) )
+		if ( ashes::checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_COHERENT_BIT ) )
 		{
 			result += sep + "GL_MAP_COHERENT_BIT";
 			sep = " | ";
 		}
 
-		if ( checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_PERSISTENT_BIT ) )
+		if ( ashes::checkFlag( value, GlMemoryPropertyFlag::GL_MEMORY_PROPERTY_PERSISTENT_BIT ) )
 		{
 			result += sep + "GL_MAP_INVALIDATE_RANGE_BIT";
 		}
@@ -43,14 +43,14 @@ namespace ashes::gl4
 	{
 		GlMemoryPropertyFlags result{ 0 };
 
-		if ( checkFlag( flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
+		if ( ashes::checkFlag( flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
 		{
 			result = GL_MEMORY_PROPERTY_COHERENT_BIT
 				| GL_MEMORY_PROPERTY_PERSISTENT_BIT
 				| GL_MEMORY_PROPERTY_READ_BIT
 				| GL_MEMORY_PROPERTY_WRITE_BIT;
 		}
-		else if ( checkFlag( flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
+		else if ( ashes::checkFlag( flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 		{
 			result = GL_MEMORY_PROPERTY_READ_BIT
 				| GL_MEMORY_PROPERTY_WRITE_BIT

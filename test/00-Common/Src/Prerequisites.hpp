@@ -3,12 +3,10 @@
 #include <AshesPP/Core/Surface.hpp>
 #include <AshesPP/Core/Instance.hpp>
 
-#include <Utils/Factory.hpp>
 #include <Utils/Quaternion.hpp>
 #include <Utils/UtilsDebug.hpp>
 #include <Utils/UtilsDevice.hpp>
 #include <Utils/UtilsInstance.hpp>
-#include <Utils/UtilsPlugin.hpp>
 #include <Utils/UtilsSwapChain.hpp>
 
 #pragma warning( disable: 4996 )

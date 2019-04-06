@@ -13,7 +13,6 @@
 #include <Utils/UtilsDebug.hpp>
 #include <Utils/UtilsDevice.hpp>
 #include <Utils/UtilsInstance.hpp>
-#include <Utils/UtilsPlugin.hpp>
 #include <Utils/UtilsSwapChain.hpp>
 
 #pragma warning( disable: 4996 )
@@ -217,7 +216,7 @@ namespace common
 		ashes::DescriptorSetPtr descriptorSetTextures;
 		ashes::DescriptorSetPtr descriptorSetUbos;
 		ashes::PipelineLayoutPtr pipelineLayout;
-		ashes::PipelinePtr pipeline;
+		ashes::GraphicsPipelinePtr pipeline;
 	};
 
 	struct SubmeshNode

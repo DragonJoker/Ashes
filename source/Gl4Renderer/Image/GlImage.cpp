@@ -160,8 +160,8 @@ namespace ashes::gl4
 		auto extent = getMinimalExtent3D( getFormat() );
 		result.alignment = getSize( extent, getFormat() );
 		result.memoryTypeBits = VK_MEMORY_HEAP_DEVICE_LOCAL_BIT
-			| ( ( checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_DST_BIT )
-				&& checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
+			| ( ( ashes::checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_DST_BIT )
+				&& ashes::checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
 				? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
 				: 0u );
 		return result;

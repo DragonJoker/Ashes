@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___AshesPP_RenderPass_HPP___
 #pragma once
 
-#include "AshesPP/AshesPPPrerequisites.hpp"
+#include "RenderPassCreateInfo.hpp"
 
 namespace ashes
 {
@@ -38,7 +38,7 @@ namespace ashes
 		*	Les informations de création.
 		*/
 		RenderPass( Device const & device
-			, VkRenderPassCreateInfo const & createInfo );
+			, RenderPassCreateInfo createInfo );
 		/**
 		*\~english
 		*\brief
@@ -87,13 +87,12 @@ namespace ashes
 		/**@{*/
 		inline size_t getAttachmentCount()const
 		{
-			return m_createInfo.attachmentCount;
+			return m_createInfo.attachments.size();
 		}
 
-		inline VkAttachmentDescriptionArray getAttachments()const
+		inline VkAttachmentDescriptionArray const & getAttachments()const
 		{
-			return VkAttachmentDescriptionArray{ m_createInfo.pAttachments
-				, m_createInfo.pAttachments + m_createInfo.attachmentCount };
+			return m_createInfo.attachments;
 		}
 
 		inline Device const & getDevice()const
@@ -103,13 +102,12 @@ namespace ashes
 
 		inline size_t getSubpassCount()const
 		{
-			return m_createInfo.subpassCount;
+			return m_createInfo.subpasses.size();
 		}
 
-		inline VkSubpassDescriptionArray getSubpasses()const
+		inline SubpassDescriptionArray const & getSubpasses()const
 		{
-			return VkSubpassDescriptionArray{ m_createInfo.pSubpasses
-				, m_createInfo.pSubpasses + m_createInfo.subpassCount };
+			return m_createInfo.subpasses;
 		}
 		/**@}*/
 		/**
@@ -127,7 +125,7 @@ namespace ashes
 
 	private:
 		Device const & m_device;
-		VkRenderPassCreateInfo m_createInfo;
+		RenderPassCreateInfo m_createInfo;
 		VkRenderPass m_internal{ VK_NULL_HANDLE };
 	};
 }

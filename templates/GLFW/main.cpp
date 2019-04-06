@@ -98,11 +98,7 @@ ashes::DeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
 	, uint32_t & computeQueueFamilyIndex );
 void createSwapChain( Application & application );
 ashes::RenderPassPtr createRenderPass( ashes::Device const & device
-	, ashes::SwapChain const & swapChain
-	, ashes::VkAttachmentDescriptionArray & attaches
-	, ashes::VkAttachmentReferenceArray & subAttaches
-	, ashes::VkSubpassDescriptionArray & subpasses
-	, ashes::VkSubpassDependencyArray & dependencies );
+	, ashes::SwapChain const & swapChain );
 void prepareFrames( Application & application );
 RenderingResources * getResources( Application & application );
 bool checkNeedReset( Application & application
@@ -241,16 +237,8 @@ int main( int argc, char * argv[] )
 	createSwapChain( app );
 
 	// We retrieve the render pass that we'll be using to do our stuff on the swapchain surface.
-	ashes::VkAttachmentDescriptionArray attaches;
-	ashes::VkAttachmentReferenceArray subAttaches;
-	ashes::VkSubpassDescriptionArray subpasses;
-	ashes::VkSubpassDependencyArray dependencies;
 	app.renderPass = createRenderPass( *app.device
-		, *app.swapChain
-		, attaches
-		, subAttaches
-		, subpasses
-		, dependencies );
+		, *app.swapChain );
 
 	// From all those things, we can now prepare our frames (one per framebuffer).
 	prepareFrames( app );
@@ -687,12 +675,9 @@ void createSwapChain( Application & application )
 }
 
 ashes::RenderPassPtr createRenderPass( ashes::Device const & device
-	, ashes::SwapChain const & swapChain
-	, ashes::VkAttachmentDescriptionArray & attaches
-	, ashes::VkAttachmentReferenceArray & subAttaches
-	, ashes::VkSubpassDescriptionArray & subpasses
-	, ashes::VkSubpassDependencyArray & dependencies )
+	, ashes::SwapChain const & swapChain )
 {
+	ashes::VkAttachmentDescriptionArray attaches;
 	attaches.push_back(
 		// We'll have only one colour attachment for the render pass.
 		{
@@ -720,18 +705,18 @@ ashes::RenderPassPtr createRenderPass( ashes::Device const & device
 	// In our case, this subpass is also the only one,
 	// its only attachment is the render pass' one.
 	// We want this attachment to be transitioned to colour attachment, so we can write into it.
-	subAttaches.push_back(
-		{
-			VkAttachmentReference{ 0u, VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
-		} );
 	// We now create the subpasses.
 	// The subpass state is used to setup the needed states at the beginning of the subpass.
-	subpasses.resize( 1u );
-	subpasses[0].flags = 0u;
-	subpasses[0].colorAttachmentCount = 1u;
-	subpasses[0].pColorAttachments = subAttaches.data();
-	subpasses[0].pipelineBindPoint = VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS;
+	ashes::SubpassDescriptionArray subpasses;
+	subpasses.emplace_back( 0u
+		, VK_PIPELINE_BIND_POINT_GRAPHICS
+		, ashes::VkAttachmentReferenceArray{}
+		, ashes::VkAttachmentReferenceArray{ VkAttachmentReference{ 0u, VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } }
+		, ashes::VkAttachmentReferenceArray{}
+		, std::nullopt
+		, ashes::UInt32Array{} );
 
+	ashes::VkSubpassDependencyArray dependencies;
 	dependencies.resize( 2u );
 	dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
 	dependencies[0].dstSubpass = 0u;
@@ -749,17 +734,12 @@ ashes::RenderPassPtr createRenderPass( ashes::Device const & device
 	dependencies[1].dstStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 	dependencies[1].dependencyFlags = VkDependencyFlagBits::VK_DEPENDENCY_BY_REGION_BIT;
 
-	VkRenderPassCreateInfo createInfo
+	ashes::RenderPassCreateInfo createInfo
 	{
-		VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-		nullptr,
 		0u,
-		uint32_t( attaches.size() ),
-		attaches.data(),
-		uint32_t( subpasses.size() ),
-		subpasses.data(),
-		uint32_t( dependencies.size() ),
-		dependencies.data(),
+		std::move( attaches ),
+		std::move( subpasses ),
+		std::move( dependencies ),
 	};
 	// Eventually, we create the render pass, using all previously built informations.
 	return device.createRenderPass( std::move( createInfo ) );
@@ -828,7 +808,7 @@ RenderingResources * getResources( Application & application )
 {
 	auto & resources = *application.renderingResources[application.resourceIndex];
 	application.resourceIndex = ( application.resourceIndex + 1 ) % application.renderingResources.size();
-	bool res = resources.fence->wait( ashes::FenceTimeout ) == ashes::WaitResult::eSuccess;
+	bool res = resources.fence->wait( ashes::MaxTimeout ) == ashes::WaitResult::eSuccess;
 
 	if ( res )
 	{

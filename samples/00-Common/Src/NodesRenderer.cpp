@@ -40,10 +40,10 @@ namespace common
 {
 	namespace
 	{
-		std::vector< ashes::ShaderStageState > doCreateObjectProgram( ashes::Device const & device
+		ashes::PipelineShaderStageCreateInfoArray doCreateObjectProgram( ashes::Device const & device
 			, std::string const & fragmentShaderFile )
 		{
-			std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
+			std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 
 			if ( !wxFileExists( shadersFolder / "object.vert" )
 				|| !wxFileExists( fragmentShaderFile ) )
@@ -51,18 +51,18 @@ namespace common
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			std::vector< ashes::ShaderStageState > result;
-			result.push_back( { device.createShaderModule( VkShaderStageFlagBits::eVertex ) } );
-			result.push_back( { device.createShaderModule( VkShaderStageFlagBits::eFragment ) } );
-			result[0].module->loadShader( dumpShaderFile( device, VkShaderStageFlagBits::eVertex, shadersFolder / "object.vert" ) );
-			result[1].module->loadShader( dumpShaderFile( device, VkShaderStageFlagBits::eFragment, fragmentShaderFile ) );
+			ashes::PipelineShaderStageCreateInfoArray result;
+			result.push_back( { device.createShaderModule( VK_SHADER_STAGE_VERTEX_BIT ) } );
+			result.push_back( { device.createShaderModule( VK_SHADER_STAGE_FRAGMENT_BIT ) } );
+			result[0].module->loadShader( dumpShaderFile( device, VK_SHADER_STAGE_VERTEX_BIT, shadersFolder / "object.vert" ) );
+			result[1].module->loadShader( dumpShaderFile( device, VK_SHADER_STAGE_FRAGMENT_BIT, fragmentShaderFile ) );
 			return result;
 		}
 
-		std::vector< ashes::ShaderStageState > doCreateBillboardProgram( ashes::Device const & device
+		ashes::PipelineShaderStageCreateInfoArray doCreateBillboardProgram( ashes::Device const & device
 			, std::string const & fragmentShaderFile )
 		{
-			std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
+			std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 
 			if ( !wxFileExists( shadersFolder / "billboard.vert" )
 				|| !wxFileExists( fragmentShaderFile ) )
@@ -70,11 +70,11 @@ namespace common
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			std::vector< ashes::ShaderStageState > result;
-			result.push_back( { device.createShaderModule( VkShaderStageFlagBits::eVertex ) } );
-			result.push_back( { device.createShaderModule( VkShaderStageFlagBits::eFragment ) } );
-			result[0].module->loadShader( dumpShaderFile( device, VkShaderStageFlagBits::eVertex, shadersFolder / "billboard.vert" ) );
-			result[1].module->loadShader( dumpShaderFile( device, VkShaderStageFlagBits::eFragment, fragmentShaderFile ) );
+			ashes::PipelineShaderStageCreateInfoArray result;
+			result.push_back( { device.createShaderModule( VK_SHADER_STAGE_VERTEX_BIT ) } );
+			result.push_back( { device.createShaderModule( VK_SHADER_STAGE_FRAGMENT_BIT ) } );
+			result[0].module->loadShader( dumpShaderFile( device, VK_SHADER_STAGE_VERTEX_BIT, shadersFolder / "billboard.vert" ) );
+			result[1].module->loadShader( dumpShaderFile( device, VK_SHADER_STAGE_FRAGMENT_BIT, fragmentShaderFile ) );
 			return result;
 		}
 
@@ -93,38 +93,38 @@ namespace common
 					renderPass.attachments.push_back(
 					{
 						format,
-						ashes::SampleCountFlag::e1,
+						VK_SAMPLE_COUNT_1_BIT,
 						( clearViews
-							? ashes::AttachmentLoadOp::eClear
-							: ashes::AttachmentLoadOp::eDontCare ),
-						ashes::AttachmentStoreOp::eStore,
+							? VK_ATTACHMENT_LOAD_OP_CLEAR
+							: VK_ATTACHMENT_LOAD_OP_DONT_CARE ),
+						VK_ATTACHMENT_STORE_OP_STORE,
 						( ( clearViews && ashes::isStencilFormat( format ) )
-							? ashes::AttachmentLoadOp::eClear
-							: ashes::AttachmentLoadOp::eDontCare ),
-						ashes::AttachmentStoreOp::eDontCare,
-						ashes::ImageLayout::eUndefined,
-						ashes::ImageLayout::eDepthStencilAttachmentOptimal
+							? VK_ATTACHMENT_LOAD_OP_CLEAR
+							: VK_ATTACHMENT_LOAD_OP_DONT_CARE ),
+						VK_ATTACHMENT_STORE_OP_DONT_CARE,
+						VK_IMAGE_LAYOUT_UNDEFINED,
+						VkImageLayout::eDepthStencilAttachmentOptimal
 					} );
-					renderPass.subpasses[0].depthStencilAttachment = { index, ashes::ImageLayout::eDepthStencilAttachmentOptimal };
+					renderPass.subpasses[0].depthStencilAttachment = { index, VkImageLayout::eDepthStencilAttachmentOptimal };
 				}
 				else
 				{
 					renderPass.attachments.push_back(
 					{
 						format,
-						ashes::SampleCountFlag::e1,
+						VK_SAMPLE_COUNT_1_BIT,
 						( clearViews
-							? ashes::AttachmentLoadOp::eClear
-							: ashes::AttachmentLoadOp::eDontCare ),
-						ashes::AttachmentStoreOp::eStore,
-						ashes::AttachmentLoadOp::eDontCare,
-						ashes::AttachmentStoreOp::eDontCare,
-						ashes::ImageLayout::eUndefined,
+							? VK_ATTACHMENT_LOAD_OP_CLEAR
+							: VK_ATTACHMENT_LOAD_OP_DONT_CARE ),
+						VK_ATTACHMENT_STORE_OP_STORE,
+						VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+						VK_ATTACHMENT_STORE_OP_DONT_CARE,
+						VK_IMAGE_LAYOUT_UNDEFINED,
 						( clearViews
-							? ashes::ImageLayout::eColourAttachmentOptimal
-							: ashes::ImageLayout::eShaderReadOnlyOptimal )
+							? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+							: VkImageLayout::eShaderReadOnlyOptimal )
 					} );
-					renderPass.subpasses[0].colorAttachments.emplace_back( ashes::AttachmentReference{ index, ashes::ImageLayout::eColourAttachmentOptimal } );
+					renderPass.subpasses[0].colorAttachments.emplace_back( ashes::AttachmentReference{ index, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
 				}
 
 				++index;
@@ -133,18 +133,18 @@ namespace common
 			renderPass.dependencies.resize( 2u );
 			renderPass.dependencies[0].srcSubpass = ashes::ExternalSubpass;
 			renderPass.dependencies[0].dstSubpass = 0u;
-			renderPass.dependencies[0].srcStageMask = ashes::PipelineStageFlag::eFragmentShader;
-			renderPass.dependencies[0].dstStageMask = ashes::PipelineStageFlag::eColourAttachmentOutput;
-			renderPass.dependencies[0].srcAccessMask = ashes::AccessFlag::eShaderRead;
-			renderPass.dependencies[0].dstAccessMask = ashes::AccessFlag::eColourAttachmentWrite;
+			renderPass.dependencies[0].srcStageMask = VkPipelineStageFlagBits::eFragmentShader;
+			renderPass.dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			renderPass.dependencies[0].srcAccessMask = VkAccessFlagBits::eShaderRead;
+			renderPass.dependencies[0].dstAccessMask = VkAccessFlagBits::eColourAttachmentWrite;
 			renderPass.dependencies[0].dependencyFlags = ashes::DependencyFlag::eByRegion;
 
 			renderPass.dependencies[1].srcSubpass = 0u;
 			renderPass.dependencies[1].dstSubpass = ashes::ExternalSubpass;
-			renderPass.dependencies[1].srcStageMask = ashes::PipelineStageFlag::eColourAttachmentOutput;
-			renderPass.dependencies[1].dstStageMask = ashes::PipelineStageFlag::eFragmentShader;
-			renderPass.dependencies[1].srcAccessMask = ashes::AccessFlag::eColourAttachmentWrite;
-			renderPass.dependencies[1].dstAccessMask = ashes::AccessFlag::eShaderRead;
+			renderPass.dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			renderPass.dependencies[1].dstStageMask = VkPipelineStageFlagBits::eFragmentShader;
+			renderPass.dependencies[1].srcAccessMask = VkAccessFlagBits::eColourAttachmentWrite;
+			renderPass.dependencies[1].dstAccessMask = VkAccessFlagBits::eShaderRead;
 			renderPass.dependencies[1].dependencyFlags = ashes::DependencyFlag::eByRegion;
 
 			return device.createRenderPass( renderPass );
@@ -201,7 +201,7 @@ namespace common
 				result = utils::makeUniformBuffer< common::MaterialData >( device
 					, objectsCount + billboardsCount
 					, ashes::BufferTarget::eTransferDst
-					, ashes::MemoryPropertyFlag::eDeviceLocal );
+					, VkMemoryPropertyFlagBits::eDeviceLocal );
 			}
 
 			return result;
@@ -245,7 +245,7 @@ namespace common
 			, ashes::Filter::eLinear ) }
 		, m_commandBuffer{ commandPool.createCommandBuffer() }
 		, m_renderPass{ doCreateRenderPass( m_device.getDevice(), formats, clearViews ) }
-		, m_queryPool{ m_device.getDevice().createQueryPool( ashes::QueryType::eTimestamp, 2u, 0u ) }
+		, m_queryPool{ m_device.getDevice().createQueryPool( VK_QUERY_TYPE_TIMESTAMP, 2u, 0u ) }
 	{
 	}
 
@@ -262,7 +262,7 @@ namespace common
 		m_queryPool->getResults( 0u
 			, 2u
 			, 0u
-			, ashes::QueryResultFlag::eWait
+			, VK_QUERY_RESULT_WAIT_BIT
 			, values );
 		gpu = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device.getDevice().getTimestampPeriod() ) ) };
 	}
@@ -294,7 +294,7 @@ namespace common
 				, m_commandPool
 				, m_materialsUbo->getDatas()
 				, *m_materialsUbo
-				, ashes::PipelineStageFlag::eFragmentShader );
+				, VkPipelineStageFlagBits::eFragmentShader );
 		}
 
 		doUpdate( std::move( views ) );
@@ -329,15 +329,15 @@ namespace common
 			m_commandBuffer->reset();
 			auto & commandBuffer = *m_commandBuffer;
 
-			commandBuffer.begin( ashes::CommandBufferUsageFlag::eSimultaneousUse );
+			commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 			commandBuffer.resetQueryPool( *m_queryPool, 0u, 2u );
-			commandBuffer.writeTimestamp( ashes::PipelineStageFlag::eTopOfPipe
+			commandBuffer.writeTimestamp( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 				, *m_queryPool
 				, 0u );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, *m_frameBuffer
 				, clearValues
-				, ashes::SubpassContents::eInline );
+				, VK_SUBPASS_CONTENTS_INLINE );
 
 			for ( auto & node : m_submeshRenderNodes )
 			{
@@ -381,7 +381,7 @@ namespace common
 			}
 
 			commandBuffer.endRenderPass();
-			commandBuffer.writeTimestamp( ashes::PipelineStageFlag::eBottomOfPipe
+			commandBuffer.writeTimestamp( VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
 				, *m_queryPool
 				, 1u );
 			commandBuffer.end();
@@ -397,7 +397,7 @@ namespace common
 		{
 			std::vector< ashes::DescriptorSetLayoutBinding > bindings
 			{
-				ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eFragment },
+				ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eUniformBuffer, VK_SHADER_STAGE_FRAGMENT_BIT },
 			};
 			doFillBillboardDescriptorLayoutBindings( bindings );
 			m_billboardDescriptorLayout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
@@ -445,7 +445,7 @@ namespace common
 				billboardNode->vbo = utils::makeVertexBuffer< Vertex >( m_device
 					, uint32_t( vertexData.size() )
 					, ashes::BufferTarget::eTransferDst
-					, ashes::MemoryPropertyFlag::eDeviceLocal );
+					, VkMemoryPropertyFlagBits::eDeviceLocal );
 				stagingBuffer.uploadVertexData( m_transferQueue
 					, m_commandPool
 					, vertexData
@@ -453,7 +453,7 @@ namespace common
 				billboardNode->instance = utils::makeVertexBuffer< BillboardInstanceData >( m_device
 					, uint32_t( billboard.list.size() )
 					, ashes::BufferTarget::eTransferDst
-					, ashes::MemoryPropertyFlag::eDeviceLocal );
+					, VkMemoryPropertyFlagBits::eDeviceLocal );
 				stagingBuffer.uploadVertexData( m_transferQueue
 					, m_commandPool
 					, billboard.list
@@ -489,7 +489,7 @@ namespace common
 
 				// Initialise descriptor set for textures.
 				ashes::DescriptorSetLayoutBindingArray bindings;
-				bindings.emplace_back( 0u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment, 6u );
+				bindings.emplace_back( 0u, ashes::DescriptorType::eCombinedImageSampler, VK_SHADER_STAGE_FRAGMENT_BIT, 6u );
 				materialNode.layout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 				materialNode.pool = materialNode.layout->createPool( 1u );
 				materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
@@ -499,7 +499,7 @@ namespace common
 					materialNode.descriptorSetTextures->createBinding( materialNode.layout->getBinding( 0u, index )
 						, *materialNode.textures[index]->view
 						, *m_sampler
-						, ashes::ImageLayout::eShaderReadOnlyOptimal
+						, VkImageLayout::eShaderReadOnlyOptimal
 						, index );
 				}
 
@@ -527,10 +527,10 @@ namespace common
 					}
 				}
 
-				std::vector< ashes::DynamicStateEnable > dynamicStateEnables
+				std::vector< VkDynamicState > dynamicStateEnables
 				{
-					ashes::DynamicStateEnable::eViewport,
-					ashes::DynamicStateEnable::eScissor
+					VK_DYNAMIC_STATE_VIEWPORT,
+					VK_DYNAMIC_STATE_SCISSOR
 				};
 
 				materialNode.pipeline = materialNode.pipelineLayout->createPipeline( 
@@ -538,7 +538,7 @@ namespace common
 					doCreateBillboardProgram( m_device.getDevice(), m_fragmentShaderFile ),
 					*m_renderPass,
 					ashes::VertexInputState::create( { *m_billboardVertexLayout, *m_billboardInstanceLayout } ),
-					{ ashes::PrimitiveTopology::eTriangleStrip },
+					{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
 					rasterisationState,
 					ashes::MultisampleState{},
 					blendState,
@@ -558,7 +558,7 @@ namespace common
 	{
 		std::vector< ashes::DescriptorSetLayoutBinding > bindings
 		{
-			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eUniformBuffer, VkShaderStageFlagBits::eFragment },
+			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eUniformBuffer, VK_SHADER_STAGE_FRAGMENT_BIT },
 		};
 		doFillObjectDescriptorLayoutBindings( bindings );
 		m_objectDescriptorLayout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
@@ -603,7 +603,7 @@ namespace common
 				submeshNode->vbo = utils::makeVertexBuffer< common::Vertex >( m_device
 					, uint32_t( submesh.vbo.data.size() )
 					, ashes::BufferTarget::eTransferDst
-					, ashes::MemoryPropertyFlag::eDeviceLocal );
+					, VkMemoryPropertyFlagBits::eDeviceLocal );
 				stagingBuffer.uploadVertexData( m_transferQueue
 					, m_commandPool
 					, submesh.vbo.data
@@ -611,7 +611,7 @@ namespace common
 				submeshNode->ibo = utils::makeBuffer< common::Face >( m_device
 					, uint32_t( submesh.ibo.data.size() )
 					, ashes::BufferTarget::eIndexBuffer | ashes::BufferTarget::eTransferDst
-					, ashes::MemoryPropertyFlag::eDeviceLocal );
+					, VkMemoryPropertyFlagBits::eDeviceLocal );
 				stagingBuffer.uploadBufferData( m_transferQueue
 					, m_commandPool
 					, submesh.ibo.data
@@ -648,7 +648,7 @@ namespace common
 
 					// Initialise descriptor set for textures.
 					ashes::DescriptorSetLayoutBindingArray bindings;
-					bindings.emplace_back( 0u, ashes::DescriptorType::eCombinedImageSampler, VkShaderStageFlagBits::eFragment, 6u );
+					bindings.emplace_back( 0u, ashes::DescriptorType::eCombinedImageSampler, VK_SHADER_STAGE_FRAGMENT_BIT, 6u );
 					materialNode.layout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 					materialNode.pool = materialNode.layout->createPool( 1u );
 					materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
@@ -658,7 +658,7 @@ namespace common
 						materialNode.descriptorSetTextures->createBinding( materialNode.layout->getBinding( 0u, index )
 							, *materialNode.textures[index]->view
 							, *m_sampler
-							, ashes::ImageLayout::eShaderReadOnlyOptimal
+							, VkImageLayout::eShaderReadOnlyOptimal
 							, index );
 					}
 
@@ -690,10 +690,10 @@ namespace common
 						}
 					}
 
-					std::vector< ashes::DynamicStateEnable > dynamicStateEnables
+					std::vector< VkDynamicState > dynamicStateEnables
 					{
-						ashes::DynamicStateEnable::eViewport,
-						ashes::DynamicStateEnable::eScissor
+						VK_DYNAMIC_STATE_VIEWPORT,
+						VK_DYNAMIC_STATE_SCISSOR
 					};
 
 					materialNode.pipeline = materialNode.pipelineLayout->createPipeline(
@@ -701,7 +701,7 @@ namespace common
 						doCreateObjectProgram( m_device.getDevice(), m_fragmentShaderFile ),
 						*m_renderPass,
 						ashes::VertexInputState::create( *m_objectVertexLayout ),
-						{ ashes::PrimitiveTopology::eTriangleList },
+						{ VkPrimitiveTopology::eTriangleList },
 						rasterisationState,
 						ashes::MultisampleState{},
 						blendState,

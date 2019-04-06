@@ -304,7 +304,7 @@ namespace ashes::gl4
 		for ( uint32_t i = 0u; i < memoryRangeCount; ++i )
 		{
 			result = get( pMemoryRanges->memory )->flush( pMemoryRanges->offset, pMemoryRanges->size );
-			++memoryRangeCount;
+			++pMemoryRanges;
 		}
 
 		return result;
@@ -320,7 +320,7 @@ namespace ashes::gl4
 		for ( uint32_t i = 0u; i < memoryRangeCount; ++i )
 		{
 			result = get( pMemoryRanges->memory )->invalidate( pMemoryRanges->offset, pMemoryRanges->size );
-			++memoryRangeCount;
+			++pMemoryRanges;
 		}
 
 		return result;
@@ -561,7 +561,7 @@ namespace ashes::gl4
 		if ( flags & VK_QUERY_RESULT_64_BIT )
 		{
 			std::vector< uint64_t > results;
-			results.reserve( queryCount );
+			results.resize( queryCount );
 			result = get( queryPool )->getResults( firstQuery
 				, queryCount
 				, stride
@@ -578,7 +578,7 @@ namespace ashes::gl4
 		else
 		{
 			std::vector< uint32_t > results;
-			results.reserve( queryCount );
+			results.resize( queryCount );
 			result = get( queryPool )->getResults( firstQuery
 				, queryCount
 				, stride

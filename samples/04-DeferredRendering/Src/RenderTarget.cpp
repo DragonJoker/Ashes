@@ -24,15 +24,15 @@ namespace vkapp
 		, m_sceneUbo{ utils::makeUniformBuffer< common::SceneData >( device
 			, 1u
 			, ashes::BufferTarget::eTransferDst
-			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+			, VkMemoryPropertyFlagBits::eDeviceLocal ) }
 		, m_objectUbo{ utils::makeUniformBuffer< common::ObjectData >( device
 			, 1u
 			, ashes::BufferTarget::eTransferDst
-			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+			, VkMemoryPropertyFlagBits::eDeviceLocal ) }
 		, m_lightsUbo{ utils::makeUniformBuffer< common::LightsData >( device
 			, 1u
 			, ashes::BufferTarget::eTransferDst
-			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+			, VkMemoryPropertyFlagBits::eDeviceLocal ) }
 	{
 		doCreateGBuffer();
 		doInitialise();
@@ -56,7 +56,7 @@ namespace vkapp
 			, m_commandPool
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
-			, ashes::PipelineStageFlag::eVertexShader );
+			, VkPipelineStageFlagBits::eVertexShader );
 	}
 
 	void RenderTarget::doResize( VkExtent2D const & size )
@@ -74,7 +74,7 @@ namespace vkapp
 		return std::make_unique< OpaqueRendering >( std::make_unique< GeometryPass >( device
 				, m_commandPool
 				, m_transferQueue
-				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "opaque_gp.frag"
+				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "opaque_gp.frag"
 				, m_gbuffer
 				, views[0]->getFormat()
 				, *m_sceneUbo
@@ -97,7 +97,7 @@ namespace vkapp
 		return std::make_unique< common::TransparentRendering >( std::make_unique< TransparentRendering >( device
 				, m_commandPool
 				, m_transferQueue
-				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "transparent.frag"
+				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "transparent.frag"
 				, common::getFormats( views )
 				, *m_sceneUbo
 				, *m_objectUbo
@@ -143,7 +143,7 @@ namespace vkapp
 			, m_commandPool
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo
-			, ashes::PipelineStageFlag::eVertexShader );
+			, VkPipelineStageFlagBits::eVertexShader );
 	}
 
 	void RenderTarget::doInitialiseLights()
@@ -164,7 +164,7 @@ namespace vkapp
 			, m_commandPool
 			, m_lightsUbo->getDatas()
 			, *m_lightsUbo
-			, ashes::PipelineStageFlag::eFragmentShader );
+			, VkPipelineStageFlagBits::eFragmentShader );
 	}
 
 	void RenderTarget::doCreateGBuffer()
@@ -194,11 +194,11 @@ namespace vkapp
 					getColourView()->getImage().getDimensions(),
 					1u,
 					1u,
-					ashes::SampleCountFlag::e1,
+					VK_SAMPLE_COUNT_1_BIT,
 					ashes::ImageTiling::eOptimal,
-					ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eSampled
+					VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VkImageUsageFlagBits::eSampled
 				}
-				, ashes::MemoryPropertyFlag::eDeviceLocal );
+				, VkMemoryPropertyFlagBits::eDeviceLocal );
 			texture.view = texture.texture->createView( VK_IMAGE_VIEW_TYPE_2D
 				, texture.texture->getFormat() );
 			++index;

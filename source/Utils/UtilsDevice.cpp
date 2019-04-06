@@ -146,7 +146,7 @@ namespace utils
 				0u,
 				std::move( queueCreateInfos ),
 				instance.getEnabledLayerNames(),
-				{ 1u, ashes::KHR_PLATFORM_SURFACE_EXTENSION_NAME },
+				{ VK_KHR_SWAPCHAIN_EXTENSION_NAME },
 				gpu.getFeatures()
 			};
 		}

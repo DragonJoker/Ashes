@@ -3,9 +3,9 @@
 #include "Prerequisites.hpp"
 
 #include <AshesPP/Core/Device.hpp>
-#include <Core/SwapChain.hpp>
+#include <AshesPP/Core/SwapChain.hpp>
 
-#include <AshesPP/Utils/Signal.hpp>
+#include <AshesRenderer/Util/Signal.hpp>
 
 #include <wx/panel.h>
 

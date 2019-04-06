@@ -11,18 +11,16 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	GraphicsPipeline::GraphicsPipeline( Device const & device
-		, PipelineLayout const & layout
-		, VkGraphicsPipelineCreateInfo createInfo )
+		, GraphicsPipelineCreateInfo createInfo )
 		: m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
-		, m_layout{ layout }
 	{
 		DEBUG_DUMP( m_createInfo );
 		DEBUG_WRITE( "pipeline.log" );
 		auto res = m_device.vkCreateGraphicsPipelines( m_device
 			, VK_NULL_HANDLE
 			, 1
-			, &m_createInfo
+			, &static_cast< VkGraphicsPipelineCreateInfo const & >( m_createInfo )
 			, nullptr
 			, &m_internal );
 		checkError( res, "GraphicsPipeline creation" );

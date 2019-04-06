@@ -5,12 +5,12 @@
 #include <Descriptor/DescriptorSetLayout.hpp>
 #include <Descriptor/DescriptorSetPool.hpp>
 #include <Descriptor/DescriptorSet.hpp>
-#include <RenderPass/FrameBuffer.hpp>
+#include <AshesPP/RenderPass/FrameBuffer.hpp>
 #include <Image/Image.hpp>
-#include <RenderPass/RenderPass.hpp>
+#include <AshesPP/RenderPass/RenderPass.hpp>
 #include <Image/Sampler.hpp>
 #include <Buffer/StagingBuffer.hpp>
-#include <Core/SwapChain.hpp>
+#include <AshesPP/Core/SwapChain.hpp>
 
 namespace vkapp
 {
@@ -76,7 +76,7 @@ namespace vkapp
 		ashes::RenderPassPtr m_renderPass;
 		ashes::PipelineLayoutPtr m_pipelineLayout;
 		ashes::VertexLayoutPtr m_vertexLayout;
-		ashes::PipelinePtr m_pipeline;
+		ashes::GraphicsPipelinePtr m_pipeline;
 		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::ImagePtr m_texture;

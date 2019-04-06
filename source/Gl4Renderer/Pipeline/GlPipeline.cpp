@@ -140,29 +140,50 @@ namespace ashes::gl4
 		, m_subpass{ createInfo.subpass }
 		, m_basePipelineHandle{ createInfo.basePipelineHandle }
 		, m_basePipelineIndex{ createInfo.basePipelineIndex }
-		, m_vertexInputStateHash{ ( createInfo.pVertexInputState
+		, m_vertexInputStateHash{ ( m_vertexInputState
 			? doHash( m_vertexInputState.value() )
 			: 0u ) }
 		, m_program{ m_device, m_stages }
 	{
 		auto context = get( device )->getContext();
-		apply( m_device
-			, context
-			, m_colorBlendState.value() );
-		apply( m_device
-			, context
-			, m_rasterizationState.value()
-			, hasDynamicStateEnable( VK_DYNAMIC_STATE_LINE_WIDTH )
-			, hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BIAS ) );
-		apply( m_device
-			, context
-			, m_depthStencilState.value() );
-		apply( m_device
-			, context
-			, m_multisampleState.value() );
-		apply( m_device
-			, context
-			, m_tessellationState.value() );
+
+		if ( m_colorBlendState )
+		{
+			apply( m_device
+				, context
+				, m_colorBlendState.value() );
+		}
+
+		if ( m_rasterizationState )
+		{
+			apply( m_device
+				, context
+				, m_rasterizationState.value()
+				, hasDynamicStateEnable( VK_DYNAMIC_STATE_LINE_WIDTH )
+				, hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BIAS ) );
+		}
+
+		if ( m_depthStencilState )
+		{
+			apply( m_device
+				, context
+				, m_depthStencilState.value() );
+		}
+
+		if ( m_multisampleState )
+		{
+			apply( m_device
+				, context
+				, m_multisampleState.value() );
+		}
+
+		if ( m_tessellationState )
+		{
+			apply( m_device
+				, context
+				, m_tessellationState.value() );
+		}
+
 		ShaderDesc shaderDesc = m_program.link( context );
 		m_constantsPcb.stageFlags = shaderDesc.stageFlags;
 		uint32_t offset = 0u;

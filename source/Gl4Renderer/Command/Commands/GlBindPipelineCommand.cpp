@@ -559,26 +559,51 @@ namespace ashes::gl4
 	void BindPipelineCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "BindPipelineCommand" );
-		gl4::apply( m_device
-			, context
-			, get( m_pipeline )->getInputAssemblyState() );
-		gl4::apply( m_device
-			, context
-			, get( m_pipeline )->getColourBlendState() );
-		gl4::apply( m_device
-			, context
-			, get( m_pipeline )->getRasterisationState()
-			, m_dynamicLineWidth
-			, m_dynamicDepthBias );
-		gl4::apply( m_device
-			, context
-			, get( m_pipeline )->getDepthStencilState() );
-		gl4::apply( m_device
-			, context
-			, get( m_pipeline )->getMultisampleState() );
-		gl4::apply( m_device
-			, context
-			, get( m_pipeline )->getTessellationState() );
+		auto pipeline = get( m_pipeline );
+
+		if ( pipeline->hasInputAssemblyState() )
+		{
+			gl4::apply( m_device
+				, context
+				, pipeline->getInputAssemblyState() );
+		}
+
+		if ( pipeline->hasColourBlendState() )
+		{
+			gl4::apply( m_device
+				, context
+				, pipeline->getColourBlendState() );
+		}
+
+		if ( pipeline->hasRasterisationState() )
+		{
+			gl4::apply( m_device
+				, context
+				, pipeline->getRasterisationState()
+				, m_dynamicLineWidth
+				, m_dynamicDepthBias );
+		}
+
+		if ( pipeline->hasDepthStencilState() )
+		{
+			gl4::apply( m_device
+				, context
+				, pipeline->getDepthStencilState() );
+		}
+
+		if ( pipeline->hasMultisampleState() )
+		{
+			gl4::apply( m_device
+				, context
+				, pipeline->getMultisampleState() );
+		}
+
+		if ( pipeline->hasTessellationState() )
+		{
+			gl4::apply( m_device
+				, context
+				, pipeline->getTessellationState() );
+		}
 
 		if ( !m_dynamicViewport )
 		{
