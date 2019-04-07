@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <Ashes/Core/Instance.hpp>
+#include <AshesPP/Core/Instance.hpp>
 
 #include <wx/frame.h>
 

@@ -497,7 +497,7 @@ namespace ashes
 		}
 
 	private:
-		Device m_device;
+		Device const & m_device;
 		BufferBasePtr m_buffer;
 	};
 	/**

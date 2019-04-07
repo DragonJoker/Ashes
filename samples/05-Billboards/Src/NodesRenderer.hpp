@@ -20,7 +20,7 @@ namespace vkapp
 			, ashes::UniformBuffer< common::SceneData > const & sceneUbo );
 
 	private:
-		void doFillBillboardDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )override;
+		void doFillBillboardDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )override;
 		void doFillBillboardDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout
 			, ashes::DescriptorSet & descriptorSet )override;
 

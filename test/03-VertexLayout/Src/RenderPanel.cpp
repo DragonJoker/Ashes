@@ -150,11 +150,11 @@ namespace vkapp
 			{
 				0u,
 				VK_PIPELINE_BIND_POINT_GRAPHICS,
-			{},
-			{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
-			{},
-			std::nullopt,
-			{},
+				{},
+				{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
+				{},
+				std::nullopt,
+				{},
 			} );
 		ashes::VkSubpassDependencyArray dependencies
 		{

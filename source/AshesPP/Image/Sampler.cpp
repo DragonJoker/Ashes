@@ -9,13 +9,13 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	Sampler::Sampler( Device const & device
-		, VkSamplerCreateInfo const & createInfo )
+		, SamplerCreateInfo createInfo )
 		: m_device{ device }
-		, m_info{ createInfo }
+		, m_createInfo{ createInfo }
 	{
 		DEBUG_DUMP( m_info );
 		auto res = m_device.vkCreateSampler( m_device
-			, &m_info
+			, &static_cast< VkSamplerCreateInfo const & >( m_createInfo )
 			, nullptr
 			, &m_internal );
 		checkError( res, "Sampler creation" );

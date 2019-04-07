@@ -7,8 +7,8 @@
 #include <OpaqueRendering.hpp>
 #include <TransparentRendering.hpp>
 
-#include <Ashes/Buffer/StagingBuffer.hpp>
-#include <Ashes/Buffer/UniformBuffer.hpp>
+#include <AshesPP/Buffer/StagingBuffer.hpp>
+#include <AshesPP/Buffer/UniformBuffer.hpp>
 
 #include <Utils/Transform.hpp>
 
@@ -23,16 +23,16 @@ namespace vkapp
 		: common::RenderTarget{ device, commandPool, transferQueue, size, std::move( scene ), std::move( images ) }
 		, m_sceneUbo{ utils::makeUniformBuffer< common::SceneData >( device
 			, 1u
-			, ashes::BufferTarget::eTransferDst
-			, VkMemoryPropertyFlagBits::eDeviceLocal ) }
+			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
 		, m_objectUbo{ utils::makeUniformBuffer< common::ObjectData >( device
 			, 1u
-			, ashes::BufferTarget::eTransferDst
-			, VkMemoryPropertyFlagBits::eDeviceLocal ) }
+			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
 		, m_lightsUbo{ utils::makeUniformBuffer< common::LightsData >( device
 			, 1u
-			, ashes::BufferTarget::eTransferDst
-			, VkMemoryPropertyFlagBits::eDeviceLocal ) }
+			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
 	{
 		doCreateGBuffer();
 		doInitialise();
@@ -56,7 +56,7 @@ namespace vkapp
 			, m_commandPool
 			, m_objectUbo->getDatas()
 			, *m_objectUbo
-			, VkPipelineStageFlagBits::eVertexShader );
+			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}
 
 	void RenderTarget::doResize( VkExtent2D const & size )
@@ -143,7 +143,7 @@ namespace vkapp
 			, m_commandPool
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo
-			, VkPipelineStageFlagBits::eVertexShader );
+			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}
 
 	void RenderTarget::doInitialiseLights()
@@ -164,7 +164,7 @@ namespace vkapp
 			, m_commandPool
 			, m_lightsUbo->getDatas()
 			, *m_lightsUbo
-			, VkPipelineStageFlagBits::eFragmentShader );
+			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
 	}
 
 	void RenderTarget::doCreateGBuffer()
@@ -189,16 +189,16 @@ namespace vkapp
 			texture.texture = m_device.createImage(
 				{
 					0,
-					ashes::ImageType::e2D,
+					VK_IMAGE_TYPE_2D,
 					formats[index],
 					getColourView()->getImage().getDimensions(),
 					1u,
 					1u,
 					VK_SAMPLE_COUNT_1_BIT,
-					ashes::ImageTiling::eOptimal,
-					VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VkImageUsageFlagBits::eSampled
+					VK_IMAGE_TILING_OPTIMAL,
+					VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT
 				}
-				, VkMemoryPropertyFlagBits::eDeviceLocal );
+				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 			texture.view = texture.texture->createView( VK_IMAGE_VIEW_TYPE_2D
 				, texture.texture->getFormat() );
 			++index;

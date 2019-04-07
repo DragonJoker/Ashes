@@ -8,6 +8,12 @@ See LICENSE file in root folder
 
 #include <Utils/UtilsFile.hpp>
 
+#ifdef min
+#	undef min
+#	undef max
+#	undef abs
+#endif
+
 namespace common
 {
 	/**

@@ -10,6 +10,12 @@ See LICENSE file in root folder
 
 #include <fstream>
 
+#ifdef min
+#	undef min
+#	undef max
+#	undef abs
+#endif
+
 namespace common
 {
 	/**

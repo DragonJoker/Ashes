@@ -5,7 +5,7 @@
 #include <AssimpLoader.hpp>
 #include <FileUtils.hpp>
 
-#include <Ashes/Buffer/UniformBuffer.hpp>
+#include <AshesPP/Buffer/UniformBuffer.hpp>
 
 namespace vkapp
 {

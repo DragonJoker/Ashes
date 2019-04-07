@@ -21,9 +21,9 @@ namespace ashes
 			, VkSampleCountFlagBits samples
 			, VkImageTiling tiling
 			, VkImageUsageFlags usage
-			, VkSharingMode sharingMode
-			, UInt32Array queueFamilyIndices
-			, VkImageLayout initialLayout )
+			, VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE
+			, UInt32Array queueFamilyIndices = {}
+			, VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED )
 			: queueFamilyIndices{ std::move( queueFamilyIndices ) }
 			, vk
 			{

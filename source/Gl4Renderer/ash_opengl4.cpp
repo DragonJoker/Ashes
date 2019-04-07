@@ -952,13 +952,11 @@ namespace ashes::gl4
 		for ( auto & write : makeArrayView( pDescriptorWrites, descriptorWriteCount ) )
 		{
 			get( write.dstSet )->update( write );
-			get( write.dstSet )->update();
 		}
 
 		for ( auto & copy : makeArrayView( pDescriptorCopies, descriptorCopyCount ) )
 		{
 			get( copy.dstSet )->update( copy );
-			get( copy.dstSet )->update();
 		}
 	}
 

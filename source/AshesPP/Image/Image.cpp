@@ -39,14 +39,14 @@ namespace ashes
 	}
 
 	Image::Image( Device const & device
-		, VkImageCreateInfo createInfo )
+		, ImageCreateInfo createInfo )
 		: m_device{ device }
 		, m_ownInternal{ true }
 		, m_createInfo{ std::move( createInfo ) }
 	{
 		DEBUG_DUMP( m_createInfo );
 		auto res = m_device.vkCreateImage( m_device
-			, &m_createInfo
+			, &static_cast< VkImageCreateInfo const & >( m_createInfo )
 			, nullptr
 			, &m_internal );
 		checkError( res, "Image creation" );
@@ -58,6 +58,18 @@ namespace ashes
 		: m_device{ device }
 		, m_ownInternal{ false }
 		, m_internal{ image }
+		, m_createInfo
+		{
+			0u,
+			VK_IMAGE_TYPE_2D,
+			VK_FORMAT_UNDEFINED,	// TODO ?
+			VkExtent3D{},			// TODO ?
+			1u,
+			1u,
+			VK_SAMPLE_COUNT_1_BIT,
+			VK_IMAGE_TILING_OPTIMAL,
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+		}
 	{
 	}
 

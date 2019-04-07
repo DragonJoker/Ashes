@@ -3,31 +3,21 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
-#include <Ashes/Buffer/StagingBuffer.hpp>
-#include <Ashes/Buffer/UniformBuffer.hpp>
-#include <Ashes/Buffer/VertexBuffer.hpp>
-#include <Ashes/Command/Queue.hpp>
-#include <Ashes/Core/Surface.hpp>
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Core/Instance.hpp>
-#include <Ashes/Core/SwapChain.hpp>
-#include <Ashes/Descriptor/DescriptorSet.hpp>
-#include <Ashes/Descriptor/DescriptorSetLayout.hpp>
-#include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
-#include <Ashes/Descriptor/DescriptorSetPool.hpp>
-#include <Ashes/Image/Image.hpp>
-#include <Ashes/Image/ImageView.hpp>
-#include <Ashes/Pipeline/DepthStencilState.hpp>
-#include <Ashes/Pipeline/InputAssemblyState.hpp>
-#include <Ashes/Pipeline/MultisampleState.hpp>
-#include <Ashes/Pipeline/Scissor.hpp>
-#include <Ashes/Pipeline/VertexLayout.hpp>
-#include <Ashes/Pipeline/Viewport.hpp>
-#include <Ashes/RenderPass/FrameBuffer.hpp>
-#include <Ashes/RenderPass/RenderPass.hpp>
-#include <Ashes/RenderPass/RenderSubpass.hpp>
-#include <Ashes/RenderPass/RenderSubpassState.hpp>
-#include <Ashes/Sync/ImageMemoryBarrier.hpp>
+#include <AshesPP/Buffer/StagingBuffer.hpp>
+#include <AshesPP/Buffer/UniformBuffer.hpp>
+#include <AshesPP/Buffer/VertexBuffer.hpp>
+#include <AshesPP/Command/Queue.hpp>
+#include <AshesPP/Core/Surface.hpp>
+#include <AshesPP/Core/Device.hpp>
+#include <AshesPP/Core/Instance.hpp>
+#include <AshesPP/Core/SwapChain.hpp>
+#include <AshesPP/Descriptor/DescriptorSet.hpp>
+#include <AshesPP/Descriptor/DescriptorSetLayout.hpp>
+#include <AshesPP/Descriptor/DescriptorSetPool.hpp>
+#include <AshesPP/Image/Image.hpp>
+#include <AshesPP/Image/ImageView.hpp>
+#include <AshesPP/RenderPass/FrameBuffer.hpp>
+#include <AshesPP/RenderPass/RenderPass.hpp>
 
 #include <Utils/GlslToSpv.hpp>
 #include <Utils/Transform.hpp>
@@ -37,6 +27,12 @@
 #include <algorithm>
 #include <chrono>
 #include <numeric>
+
+#ifdef min
+#	undef min
+#	undef max
+#	undef abs
+#endif
 
 namespace common
 {
@@ -96,11 +92,11 @@ namespace common
 				, *m_commandPool
 				, VkExtent2D{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 			m_gui->updateView( m_renderTarget->getColourView() );
-			m_sampler = m_device->getDevice().createSampler( ashes::WrapMode::eClampToEdge
-				, ashes::WrapMode::eClampToEdge
-				, ashes::WrapMode::eClampToEdge
-				, ashes::Filter::eLinear
-				, ashes::Filter::eLinear );
+			m_sampler = m_device->getDevice().createSampler( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+				, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+				, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+				, VK_FILTER_LINEAR
+				, VK_FILTER_LINEAR );
 			doCreateDescriptorSet();
 			std::cout << "Main descriptor set created." << std::endl;
 			doCreateRenderPass();
@@ -270,10 +266,10 @@ namespace common
 
 	void RenderPanel::doCreateDescriptorSet()
 	{
-		std::vector< ashes::DescriptorSetLayoutBinding > bindings
+		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			ashes::DescriptorSetLayoutBinding{ 0u, ashes::DescriptorType::eCombinedImageSampler, VK_SHADER_STAGE_FRAGMENT_BIT },
-			ashes::DescriptorSetLayoutBinding{ 1u, ashes::DescriptorType::eCombinedImageSampler, VK_SHADER_STAGE_FRAGMENT_BIT },
+			VkDescriptorSetLayoutBinding{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT },
+			VkDescriptorSetLayoutBinding{ 1u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT },
 		};
 		m_descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorSet.reset();
@@ -308,9 +304,9 @@ namespace common
 			{ 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
 		};
 		ashes::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( ashes::PipelineBindPoint::eGraphics
+		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( VkPipelineBindPoint::eGraphics
 			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, VkAccessFlagBits::eColourAttachmentWrite }
+				, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT }
 			, subAttaches ) );
 		m_renderPass = m_device->getDevice().createRenderPass( attaches
 			, std::move( subpasses )
@@ -332,8 +328,8 @@ namespace common
 
 		m_vertexBuffer = utils::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_vertexData.size() )
-			, ashes::BufferTarget::eTransferDst
-			, VkMemoryPropertyFlagBits::eDeviceLocal );
+			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 		m_stagingBuffer->uploadVertexData( *m_graphicsQueue
 			, *m_commandPool
 			, m_vertexData
@@ -352,10 +348,8 @@ namespace common
 		}
 
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( VK_SHADER_STAGE_VERTEX_BIT ) } );
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( VK_SHADER_STAGE_FRAGMENT_BIT ) } );
-		shaderStages[0].module->loadShader( dumpShaderFile( m_device->getDevice(), VK_SHADER_STAGE_VERTEX_BIT, shadersFolder / "main.vert" ) );
-		shaderStages[1].module->loadShader( dumpShaderFile( m_device->getDevice(), VK_SHADER_STAGE_FRAGMENT_BIT, shadersFolder / "main.frag" ) );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( dumpShaderFile( m_device->getDevice(), VK_SHADER_STAGE_VERTEX_BIT, shadersFolder / "main.vert" ) ) } );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( dumpShaderFile( m_device->getDevice(), VK_SHADER_STAGE_FRAGMENT_BIT, shadersFolder / "main.frag" ) ) } );
 
 		std::vector< VkDynamicState > dynamicStateEnables
 		{
@@ -364,13 +358,13 @@ namespace common
 		};
 
 		m_pipelineLayout = m_device->getDevice().createPipelineLayout( *m_descriptorLayout );
-		m_pipeline = m_pipelineLayout->createPipeline(
+		m_pipeline = m_device->getDevice().createPipeline(
 		{
 			std::move( shaderStages ),
 			*m_renderPass,
 			ashes::VertexInputState::create( *m_vertexLayout ),
 			{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-			ashes::RasterisationState{ 0u, false, false, ashes::PolygonMode::eFill, ashes::CullModeFlag::eNone },
+			ashes::RasterisationState{ 0u, false, false, ashes::PolygonMode::eFill, VK_CULL_MODE_NONE },
 			ashes::MultisampleState{},
 			ashes::ColourBlendState::createDefault(),
 			dynamicStateEnables,
@@ -381,7 +375,7 @@ namespace common
 	{
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
 		m_commandBuffers = m_swapChain->createCommandBuffers();
-		static ashes::ClearValue const clearValue{ { 1.0, 0.0, 0.0, 1.0 } };
+		static VkClearValue const clearValue{ { 1.0, 0.0, 0.0, 1.0 } };
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
 		{
@@ -397,14 +391,8 @@ namespace common
 				, { clearValue }
 				, VK_SUBPASS_CONTENTS_INLINE );
 			commandBuffer.bindPipeline( *m_pipeline );
-			commandBuffer.setViewport( { dimensions.width
-				, dimensions.height
-				, 0
-				, 0 } );
-			commandBuffer.setScissor( { 0
-				, 0
-				, dimensions.width
-				, dimensions.height } );
+			commandBuffer.setViewport( { 0.0f, 0.0f, float( dimensions.width ), float( dimensions.height ), 0.0f, 1.0f } );
+			commandBuffer.setScissor( { { 0, 0 }, { dimensions.width, dimensions.height } } );
 			commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
 			commandBuffer.bindDescriptorSet( *m_descriptorSet
 				, *m_pipelineLayout );
@@ -433,7 +421,7 @@ namespace common
 		ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver );
 		ImGui::Begin( "Ashes Sample", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove );
 		ImGui::TextUnformatted( getName( m_appDesc, m_device->getDevice().getInstance().getName() ).c_str() );
-		ImGui::TextUnformatted( m_device->getDevice().getProperties().deviceName.c_str() );
+		ImGui::TextUnformatted( m_device->getDevice().getProperties().deviceName );
 
 		auto count = std::min( m_frameCount, m_framesTimes.size() );
 

@@ -21,9 +21,9 @@ namespace vkapp
 	{
 	}
 
-	void NodesRenderer::doFillBillboardDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
+	void NodesRenderer::doFillBillboardDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )
 	{
-		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, VK_SHADER_STAGE_VERTEX_BIT );
+		bindings.emplace_back( 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT );
 	}
 
 	void NodesRenderer::doFillBillboardDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout

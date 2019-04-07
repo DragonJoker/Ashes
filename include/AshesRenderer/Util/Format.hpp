@@ -10,6 +10,12 @@ See LICENSE file in root folder
 #include <string>
 #include <algorithm>
 
+#ifdef min
+#	undef min
+#	undef max
+#	undef abs
+#endif
+
 namespace ashes
 {
 	/**
@@ -344,18 +350,18 @@ namespace ashes
 	/**
 	*\~english
 	*\brief
-	*	Retrieves the minimal Extent2D for given pixel format.
+	*	Retrieves the minimal VkExtent2D for given pixel format.
 	*\param[in] format
 	*	The pixel format.
 	*\return
-	*	The Extent2D.
+	*	The VkExtent2D.
 	*\~french
 	*\brief
-	*	Donne l'Extent2D minimales pour le format de pixels donné.
+	*	Donne l'VkExtent2D minimales pour le format de pixels donné.
 	*\param[in] format
 	*	Le format de pixel.
 	*\return
-	*	L'Extent2D.
+	*	L'VkExtent2D.
 	*/
 	inline VkExtent3D getMinimalExtent3D( VkFormat format )noexcept
 	{

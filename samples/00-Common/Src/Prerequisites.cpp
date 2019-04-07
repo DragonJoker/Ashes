@@ -1,9 +1,9 @@
 #include "Prerequisites.hpp"
 
-#include <Ashes/Core/Surface.hpp>
-#include <Ashes/Core/PlatformWindowHandle.hpp>
-#include <Ashes/Core/Instance.hpp>
-#include <Ashes/Image/ImageView.hpp>
+#include <AshesPP/Core/Surface.hpp>
+#include <AshesPP/Core/PlatformWindowHandle.hpp>
+#include <AshesPP/Core/Instance.hpp>
+#include <AshesPP/Image/ImageView.hpp>
 
 #if defined( __WXGTK__ )
 #	include <gdk/gdkx.h>

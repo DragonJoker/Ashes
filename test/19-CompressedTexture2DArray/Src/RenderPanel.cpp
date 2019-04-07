@@ -1,28 +1,18 @@
 #include "RenderPanel.hpp"
 #include "Application.hpp"
 
-#include <Buffer/VertexBuffer.hpp>
+#include <AshesPP/Buffer/VertexBuffer.hpp>
 #include <AshesPP/Command/CommandBuffer.hpp>
 #include <AshesPP/Core/Surface.hpp>
 #include <AshesPP/Core/Device.hpp>
 #include <AshesPP/Core/Instance.hpp>
 #include <AshesPP/Core/SwapChain.hpp>
-#include <Enum/SubpassContents.hpp>
-#include <Image/Image.hpp>
-#include <Miscellaneous/QueryPool.hpp>
-#include <Pipeline/InputAssemblyState.hpp>
-#include <Pipeline/MultisampleState.hpp>
-#include <Pipeline/Pipeline.hpp>
-#include <Pipeline/PipelineLayout.hpp>
-#include <Pipeline/Scissor.hpp>
-#include <Pipeline/VertexLayout.hpp>
-#include <Pipeline/Viewport.hpp>
+#include <AshesPP/Image/Image.hpp>
+#include <AshesPP/Miscellaneous/QueryPool.hpp>
+#include <AshesPP/Pipeline/GraphicsPipeline.hpp>
+#include <AshesPP/Pipeline/PipelineLayout.hpp>
 #include <AshesPP/RenderPass/RenderPass.hpp>
-#include <AshesPP/RenderPass/RenderSubpass.hpp>
-#include <AshesPP/RenderPass/RenderSubpassState.hpp>
-#include <GlslToSpv.hpp>
-#include <Sync/BufferMemoryBarrier.hpp>
-#include <Sync/ImageMemoryBarrier.hpp>
+#include <Utils/GlslToSpv.hpp>
 
 #include <FileUtils.hpp>
 
@@ -179,7 +169,7 @@ namespace vkapp
 		m_uniformBuffer = utils::makeUniformBuffer< LayerSelect >( *m_device
 			, 1u
 			, 0u
-			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits::eHostCoherent );
+			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT );
 	}
 
 	void RenderPanel::doCreateTexture()
@@ -212,23 +202,23 @@ namespace vkapp
 		m_texture = m_device->createImage(
 			{
 				0u,
-				ashes::ImageType::e2D,
+				VK_IMAGE_TYPE_2D,
 				format,
 				{ uint32_t( tex2DArray.extent().x ), uint32_t( tex2DArray.extent().y ), 1u },
 				uint32_t( tex2DArray.levels() ),
 				uint32_t( tex2DArray.layers() ),
 				VK_SAMPLE_COUNT_1_BIT,
-				ashes::ImageTiling::eOptimal,
-				VkImageUsageFlagBits::eTransferDst | VkImageUsageFlagBits::eSampled
+				VK_IMAGE_TILING_OPTIMAL,
+				VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT
 			}
-			, VkMemoryPropertyFlagBits::eDeviceLocal );
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 
 		auto staging = ashes::StagingBuffer{ *m_device
 			, 0u
-			, getSize( VkExtent2D{ uint32_t( tex2DArray.extent().x ), uint32_t( tex2DArray.extent().y ) }, format ) };
+			, ashes::getSize( VkExtent2D{ uint32_t( tex2DArray.extent().x ), uint32_t( tex2DArray.extent().y ) }, format ) };
 
 		// Prepare copy regions
-		std::vector< ashes::BufferImageCopy > bufferCopyRegions;
+		std::vector< VkBufferImageCopy > bufferCopyRegions;
 
 		for ( uint32_t layer = 0; layer < tex2DArray.layers(); layer++ )
 		{
@@ -237,7 +227,7 @@ namespace vkapp
 				auto texArray = tex2DArray[layer][level];
 				auto extent = VkExtent3D{ uint32_t( texArray.extent().x ), uint32_t( texArray.extent().y ), 1u };
 
-				if ( checkExtent( format, extent ) )
+				if ( ashes::checkExtent( format, extent ) )
 				{
 					auto view = m_texture->createView( VK_IMAGE_VIEW_TYPE_2D
 						, format
@@ -254,14 +244,14 @@ namespace vkapp
 		}
 
 		// Create the sampler.
-		m_sampler = m_device->getDevice().createSampler( ashes::WrapMode::eClampToEdge
-			, ashes::WrapMode::eClampToEdge
-			, ashes::WrapMode::eClampToEdge
-			, ashes::Filter::eLinear
-			, ashes::Filter::eLinear );
+		m_sampler = m_device->getDevice().createSampler( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+			, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+			, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+			, VK_FILTER_LINEAR
+			, VK_FILTER_LINEAR );
 
 		// Create the texture view for shader read.
-		m_view = m_texture->createView( VK_IMAGE_VIEW_TYPE_2DArray
+		m_view = m_texture->createView( VK_IMAGE_VIEW_TYPE_2D_ARRAY
 			, format
 			, 0u
 			, uint32_t( tex2DArray.levels() )
@@ -271,10 +261,10 @@ namespace vkapp
 
 	void RenderPanel::doCreateDescriptorSet()
 	{
-		std::vector< ashes::DescriptorSetLayoutBinding > bindings
+		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			{ 0u, ashes::DescriptorType::eCombinedImageSampler, VK_SHADER_STAGE_FRAGMENT_BIT },
-			{ 1u, ashes::DescriptorType::eUniformBuffer, VK_SHADER_STAGE_FRAGMENT_BIT }
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT },
+			{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT }
 		};
 		m_descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
@@ -307,9 +297,9 @@ namespace vkapp
 			{ 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
 		};
 		ashes::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( ashes::PipelineBindPoint::eGraphics
+		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( VkPipelineBindPoint::eGraphics
 			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, VkAccessFlagBits::eColourAttachmentWrite }
+				, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT }
 			, subAttaches ) );
 		m_renderPass = m_device->getDevice().createRenderPass( attaches
 			, std::move( subpasses )
@@ -323,8 +313,8 @@ namespace vkapp
 	{
 		m_vertexBuffer = utils::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_vertexData.size() )
-			, ashes::BufferTarget::eTransferDst
-			, VkMemoryPropertyFlagBits::eDeviceLocal );
+			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 		m_vertexLayout = ashes::makeLayout< TexturedVertexData >( 0 );
 		m_vertexLayout->createAttribute( 0u
 			, VK_FORMAT_R32G32B32A32_SFLOAT
@@ -358,14 +348,12 @@ namespace vkapp
 		}
 
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( VK_SHADER_STAGE_VERTEX_BIT ) } );
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( VK_SHADER_STAGE_FRAGMENT_BIT ) } );
-		shaderStages[0].module->loadShader( common::parseShaderFile( m_device->getDevice()
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
 			, VK_SHADER_STAGE_VERTEX_BIT
-			, shadersFolder / "shader.vert" ) );
-		shaderStages[1].module->loadShader( common::parseShaderFile( m_device->getDevice()
+			, shadersFolder / "shader.vert" ) ) } );
+		shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
 			, VK_SHADER_STAGE_FRAGMENT_BIT
-			, shadersFolder / "shader.frag" ) );
+			, shadersFolder / "shader.frag" ) ) } );
 
 		m_pipeline = m_pipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo
 		{
@@ -400,20 +388,14 @@ namespace vkapp
 				, 2u );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, frameBuffer
-				, { m_clearColour }
-			, VK_SUBPASS_CONTENTS_INLINE );
+				, { VkClearValue{ m_clearColour } }
+				, VK_SUBPASS_CONTENTS_INLINE );
 			commandBuffer.writeTimestamp( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 				, *m_queryPool
 				, 0u );
 			commandBuffer.bindPipeline( *m_pipeline );
-			commandBuffer.setViewport( { dimensions.width
-				, dimensions.height
-				, 0
-				, 0 } );
-			commandBuffer.setScissor( { 0
-				, 0
-				, dimensions.width
-				, dimensions.height } );
+			commandBuffer.setViewport( { 0.0f, 0.0f, float( dimensions.width ), float( dimensions.height ), 0.0f, 1.0f } );
+			commandBuffer.setScissor( { { 0, 0 }, { dimensions.width, dimensions.height } } );
 			commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
 			commandBuffer.bindDescriptorSet( *m_descriptorSet
 				, *m_pipelineLayout );

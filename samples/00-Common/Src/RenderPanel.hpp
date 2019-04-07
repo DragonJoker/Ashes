@@ -4,14 +4,14 @@
 #include "RenderTarget.hpp"
 #include "Gui.hpp"
 
-#include <Ashes/Core/Surface.hpp>
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Pipeline/Pipeline.hpp>
-#include <Ashes/Pipeline/PipelineLayout.hpp>
-#include <Ashes/Image/Sampler.hpp>
-#include <Ashes/Core/SwapChain.hpp>
+#include <AshesPP/Core/Surface.hpp>
+#include <AshesPP/Core/Device.hpp>
+#include <AshesPP/Pipeline/GraphicsPipeline.hpp>
+#include <AshesPP/Pipeline/PipelineLayout.hpp>
+#include <AshesPP/Image/Sampler.hpp>
+#include <AshesPP/Core/SwapChain.hpp>
 
-#include <Ashes/Utils/Signal.hpp>
+#include <AshesPP/Utils/Signal.hpp>
 
 #include <wx/panel.h>
 

@@ -11,6 +11,8 @@ See LICENSE file in root folder.
 #include "AshesPP/Core/DeviceCreateInfo.hpp"
 #include "AshesPP/Core/Surface.hpp"
 #include "AshesPP/Core/PhysicalDevice.hpp"
+#include "AshesPP/Image/ImageCreateInfo.hpp"
+#include "AshesPP/Image/SamplerCreateInfo.hpp"
 #include "AshesPP/Pipeline/ComputePipelineCreateInfo.hpp"
 #include "AshesPP/Pipeline/GraphicsPipelineCreateInfo.hpp"
 #include "AshesPP/RenderPass/RenderPassCreateInfo.hpp"
@@ -349,7 +351,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	Les informations de création.
 		*/
-		ImagePtr createImage( VkImageCreateInfo const & createInfo )const;
+		ImagePtr createImage( ImageCreateInfo createInfo )const;
 		/**
 		*\~english
 		*\brief
@@ -385,7 +387,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	Les informations de création.
 		*/
-		SamplerPtr createSampler( VkSamplerCreateInfo const & createInfo )const;
+		SamplerPtr createSampler( SamplerCreateInfo createInfo )const;
 		/**
 		*\~english
 		*\brief

@@ -2,12 +2,12 @@
 
 #include "Prerequisites.hpp"
 
-#include <Buffer/PushConstantsBuffer.hpp>
+#include <AshesPP/Buffer/PushConstantsBuffer.hpp>
 #include <AshesPP/Core/Surface.hpp>
 #include <AshesPP/Core/Device.hpp>
-#include <Pipeline/Pipeline.hpp>
-#include <Pipeline/PipelineLayout.hpp>
-#include <Image/Sampler.hpp>
+#include <AshesPP/Pipeline/GraphicsPipeline.hpp>
+#include <AshesPP/Pipeline/PipelineLayout.hpp>
+#include <AshesPP/Image/Sampler.hpp>
 #include <AshesPP/Core/SwapChain.hpp>
 
 #include <AshesRenderer/Util/Signal.hpp>

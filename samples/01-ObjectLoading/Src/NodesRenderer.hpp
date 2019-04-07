@@ -21,7 +21,7 @@ namespace vkapp
 			, ashes::UniformBuffer< common::ObjectData > const & objectUbo );
 
 	private:
-		void doFillObjectDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )override;
+		void doFillObjectDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )override;
 		void doFillObjectDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout
 			, ashes::DescriptorSet & descriptorSet )override;
 

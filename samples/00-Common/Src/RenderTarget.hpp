@@ -2,8 +2,8 @@
 
 #include "Scene.hpp"
 
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Miscellaneous/Extent2D.hpp>
+#include <AshesPP/Core/Device.hpp>
+#include <AshesPP/Miscellaneous/VkExtent2D.hpp>
 
 namespace common
 {

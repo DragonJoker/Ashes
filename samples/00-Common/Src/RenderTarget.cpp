@@ -3,22 +3,22 @@
 #include "OpaqueRendering.hpp"
 #include "TransparentRendering.hpp"
 
-#include <Ashes/Buffer/StagingBuffer.hpp>
-#include <Ashes/Buffer/UniformBuffer.hpp>
-#include <Ashes/Command/Queue.hpp>
-#include <Ashes/Descriptor/DescriptorSet.hpp>
-#include <Ashes/Descriptor/DescriptorSetLayout.hpp>
-#include <Ashes/Descriptor/DescriptorSetPool.hpp>
-#include <Ashes/Image/Image.hpp>
-#include <Ashes/Image/ImageView.hpp>
-#include <Ashes/Pipeline/PipelineLayout.hpp>
-#include <Ashes/Pipeline/Pipeline.hpp>
-#include <Ashes/Pipeline/VertexLayout.hpp>
-#include <Ashes/RenderPass/FrameBuffer.hpp>
-#include <Ashes/RenderPass/RenderPass.hpp>
-#include <Ashes/RenderPass/RenderSubpass.hpp>
-#include <Ashes/RenderPass/RenderSubpassState.hpp>
-#include <Ashes/Sync/ImageMemoryBarrier.hpp>
+#include <AshesPP/Buffer/StagingBuffer.hpp>
+#include <AshesPP/Buffer/UniformBuffer.hpp>
+#include <AshesPP/Command/Queue.hpp>
+#include <AshesPP/Descriptor/DescriptorSet.hpp>
+#include <AshesPP/Descriptor/DescriptorSetLayout.hpp>
+#include <AshesPP/Descriptor/DescriptorSetPool.hpp>
+#include <AshesPP/Image/Image.hpp>
+#include <AshesPP/Image/ImageView.hpp>
+#include <AshesPP/Pipeline/PipelineLayout.hpp>
+#include <AshesPP/Pipeline/GraphicsPipeline.hpp>
+#include <AshesPP/Pipeline/VertexLayout.hpp>
+#include <AshesPP/RenderPass/FrameBuffer.hpp>
+#include <AshesPP/RenderPass/RenderPass.hpp>
+#include <AshesPP/RenderPass/RenderSubpass.hpp>
+#include <AshesPP/RenderPass/RenderSubpassState.hpp>
+#include <AshesPP/Sync/ImageMemoryBarrier.hpp>
 
 #include <Utils/GlslToSpv.hpp>
 #include <Utils/Transform.hpp>
@@ -140,18 +140,18 @@ namespace common
 			textureNode->texture = m_device.createImage(
 				{
 					0u,
-					ashes::ImageType::e2D,
+					VK_IMAGE_TYPE_2D,
 					image->format,
 					VkExtent3D{ image->size.width, image->size.height, 1u },
 					4u,
 					1u,
 					VK_SAMPLE_COUNT_1_BIT,
-					ashes::ImageTiling::eOptimal,
-					( VkImageUsageFlagBits::eTransferSrc
-						| VkImageUsageFlagBits::eTransferDst
-						| VkImageUsageFlagBits::eSampled )
+					VK_IMAGE_TILING_OPTIMAL,
+					( VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+						| VK_IMAGE_USAGE_TRANSFER_DST_BIT
+						| VK_IMAGE_USAGE_SAMPLED_BIT )
 				}
-				, VkMemoryPropertyFlagBits::eDeviceLocal );
+				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 			textureNode->view = textureNode->texture->createView( VkImageViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat()
 				, 0u
@@ -181,17 +181,17 @@ namespace common
 		m_colour = m_device.createImage(
 			{
 				0,
-				ashes::ImageType::e2D,
+				VK_IMAGE_TYPE_2D,
 				ColourFormat,
 				VkExtent3D{ m_size.width, m_size.height, 1u },
 				1u,
 				1u,
 				VK_SAMPLE_COUNT_1_BIT,
-				ashes::ImageTiling::eOptimal,
+				VK_IMAGE_TILING_OPTIMAL,
 				( VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
-					| VkImageUsageFlagBits::eSampled )
+					| VK_IMAGE_USAGE_SAMPLED_BIT )
 			}
-			, VkMemoryPropertyFlagBits::eDeviceLocal );
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 		m_colourView = m_colour->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_colour->getFormat() );
 
@@ -199,16 +199,16 @@ namespace common
 		m_depth = m_device.createImage(
 			{
 				0,
-				ashes::ImageType::e2D,
+				VK_IMAGE_TYPE_2D,
 				DepthFormat,
 				VkExtent3D{ m_size.width, m_size.height, 1u },
 				1u,
 				1u,
 				VK_SAMPLE_COUNT_1_BIT,
-				ashes::ImageTiling::eOptimal,
-				VkImageUsageFlagBits::eDepthStencilAttachment
+				VK_IMAGE_TILING_OPTIMAL,
+				VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
 			}
-			, VkMemoryPropertyFlagBits::eDeviceLocal );
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 		m_depthView = m_depth->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_depth->getFormat() );
 	}

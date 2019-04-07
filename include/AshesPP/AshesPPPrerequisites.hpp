@@ -14,6 +14,8 @@ See LICENSE file in root folder.
 
 #include <AshesRenderer/AshesRendererPrerequisites.hpp>
 
+#include <AshesRenderer/Util/Format.hpp>
+
 #include <array>
 #include <cassert>
 #include <cstdint>

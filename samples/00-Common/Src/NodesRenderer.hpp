@@ -5,18 +5,18 @@
 #include <Utils/GlslToSpv.hpp>
 #include <Utils/UtilsDevice.hpp>
 
-#include <Ashes/Buffer/UniformBuffer.hpp>
-#include <Ashes/Command/CommandBuffer.hpp>
-#include <Ashes/Descriptor/DescriptorSet.hpp>
-#include <Ashes/Descriptor/DescriptorSetLayout.hpp>
-#include <Ashes/Descriptor/DescriptorSetPool.hpp>
-#include <Ashes/Image/Sampler.hpp>
-#include <Ashes/Miscellaneous/QueryPool.hpp>
-#include <Ashes/Pipeline/Pipeline.hpp>
-#include <Ashes/Pipeline/PipelineLayout.hpp>
-#include <Ashes/RenderPass/RenderPass.hpp>
-#include <Ashes/RenderPass/FrameBuffer.hpp>
-#include <Ashes/RenderPass/RenderPass.hpp>
+#include <AshesPP/Buffer/UniformBuffer.hpp>
+#include <AshesPP/Command/CommandBuffer.hpp>
+#include <AshesPP/Descriptor/DescriptorSet.hpp>
+#include <AshesPP/Descriptor/DescriptorSetLayout.hpp>
+#include <AshesPP/Descriptor/DescriptorSetPool.hpp>
+#include <AshesPP/Image/Sampler.hpp>
+#include <AshesPP/Miscellaneous/QueryPool.hpp>
+#include <AshesPP/Pipeline/GraphicsPipeline.hpp>
+#include <AshesPP/Pipeline/PipelineLayout.hpp>
+#include <AshesPP/RenderPass/RenderPass.hpp>
+#include <AshesPP/RenderPass/FrameBuffer.hpp>
+#include <AshesPP/RenderPass/RenderPass.hpp>
 
 namespace common
 {
@@ -67,7 +67,7 @@ namespace common
 			, TextureNodePtrArray const & textureNodes
 			, uint32_t & matIndex );
 
-		virtual void doFillObjectDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
+		virtual void doFillObjectDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )
 		{
 		}
 
@@ -76,7 +76,7 @@ namespace common
 		{
 		}
 
-		virtual void doFillBillboardDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
+		virtual void doFillBillboardDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )
 		{
 		}
 

@@ -204,8 +204,8 @@ namespace ashes
 		, uint32_t index )
 	{
 		auto type = ( buffer.getTargets() & VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT )
-			? VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
-			: VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			? VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER
+			: VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
 		m_bufferBindings.push_back( VkDescriptorBufferInfo{ buffer, view.getOffset(), view.getRange() } );
 		m_bufferViews.push_back( view );
 		m_writes.push_back(

@@ -139,9 +139,9 @@ namespace ashes
 			, std::move( allocateInfo ) );
 	}
 
-	ImagePtr Device::createImage( VkImageCreateInfo const & createInfo )const
+	ImagePtr Device::createImage( ImageCreateInfo createInfo )const
 	{
-		return std::make_unique< Image >( *this, createInfo );
+		return std::make_unique< Image >( *this, std::move( createInfo ) );
 	}
 
 	void Device::getImageSubresourceLayout( Image const & image
@@ -154,9 +154,9 @@ namespace ashes
 			, &layout );
 	}
 
-	SamplerPtr Device::createSampler( VkSamplerCreateInfo const & createInfo )const
+	SamplerPtr Device::createSampler( SamplerCreateInfo createInfo )const
 	{
-		return std::make_unique< Sampler >( *this, createInfo );
+		return std::make_unique< Sampler >( *this, std::move( createInfo ) );
 	}
 
 	BufferBasePtr Device::createBuffer( VkDeviceSize size
@@ -361,10 +361,8 @@ namespace ashes
 		, float maxAnisotropy
 		, VkCompareOp compareOp )const
 	{
-		return createSampler( VkSamplerCreateInfo
+		return createSampler( SamplerCreateInfo
 			{
-				VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-				nullptr,
 				0u,
 				minFilter,
 				magFilter,
@@ -375,7 +373,7 @@ namespace ashes
 				lodBias,
 				maxAnisotropy != 1.0f,
 				maxAnisotropy,
-				compareOp != VkCompareOp::VK_COMPARE_OP_ALWAYS ? 1u : 0u,
+				compareOp != VK_COMPARE_OP_ALWAYS ? 1u : 0u,
 				compareOp,
 				minLod,
 				maxLod,

@@ -6,6 +6,7 @@ See LICENSE file in root folder.
 #define ___AshesPP_Texture_HPP___
 #pragma once
 
+#include "AshesPP/Image/ImageCreateInfo.hpp"
 #include "AshesPP/Miscellaneous/DeviceMemory.hpp"
 
 namespace ashes
@@ -62,7 +63,7 @@ namespace ashes
 		*	The image creation informations.
 		*/
 		Image( Device const & device
-			, VkImageCreateInfo createInfo );
+			, ImageCreateInfo createInfo );
 		/**
 		*\~french
 		*\brief
@@ -264,77 +265,45 @@ namespace ashes
 			, uint32_t layerCount = 1u
 			, VkComponentMapping const & mapping = VkComponentMapping{} )const;
 		/**
-		*\~french
-		*\return
-		*	Le format des pixels de la texture.
-		*\~english
-		*\return
-		*	The texture pixel format.
-		*/
+		*\name
+		*	Getters.
+		**/
+		/**@{*/
 		inline VkFormat getFormat()const noexcept
 		{
-			return m_createInfo.format;
+			return static_cast< VkImageCreateInfo const & >( m_createInfo ).format;
 		}
-		/**
-		*\~french
-		*\return
-		*	Le nombre de couches.
-		*\~english
-		*\return
-		*	The layers count.
-		*/
+
 		inline uint32_t getLayerCount()const noexcept
 		{
-			return m_createInfo.arrayLayers;
+			return static_cast< VkImageCreateInfo const & >( m_createInfo ).arrayLayers;
 		}
-		/**
-		*\~french
-		*\return
-		*	Les indicateurs de création.
-		*\~english
-		*\return
-		*	The creation flags.
-		*/
+
 		inline VkImageCreateFlags getFlags()const noexcept
 		{
-			return m_createInfo.flags;
+			return static_cast< VkImageCreateInfo const & >( m_createInfo ).flags;
 		}
-		/**
-		*\~french
-		*\return
-		*	Le nombre de niveaux de mipmaps.
-		*\~english
-		*\return
-		*	The mipmap levels count.
-		*/
+
 		inline uint32_t getMipmapLevels()const noexcept
 		{
-			return m_createInfo.mipLevels;
+			return static_cast< VkImageCreateInfo const & >( m_createInfo ).mipLevels;
 		}
-		/**
-		*\~french
-		*\return
-		*	Les dimensions de la texture.
-		*\~english
-		*\return
-		*	The texture dimensions.
-		*/
+
 		inline VkExtent3D const & getDimensions()const noexcept
 		{
-			return m_createInfo.extent;
+			return static_cast< VkImageCreateInfo const & >( m_createInfo ).extent;
 		}
-		/**
-		*\~french
-		*\return
-		*	Le type de texture.
-		*\~english
-		*\return
-		*	The texture type.
-		*/
+
 		inline VkImageType getType()const
 		{
-			return m_createInfo.imageType;
+			return static_cast< VkImageCreateInfo const & >( m_createInfo ).imageType;
 		}
+
+		inline VkImageTiling getTiling()const
+		{
+			return static_cast< VkImageCreateInfo const & >( m_createInfo ).tiling;
+		}
+		/**@}*/
 		/**
 		*\~french
 		*\brief
@@ -350,7 +319,7 @@ namespace ashes
 
 	protected:
 		Device const & m_device;
-		VkImageCreateInfo m_createInfo;
+		ImageCreateInfo m_createInfo;
 		bool m_ownInternal;
 		VkImage m_internal{ VK_NULL_HANDLE };
 		DeviceMemoryPtr m_storage;

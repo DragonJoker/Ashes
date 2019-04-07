@@ -512,10 +512,95 @@ namespace ashes
 			, dstStageFlags );
 	}
 	/**@}*/
+	/**
+	*\name
+	*	Texture.
+	**/
+	/**@{*/
+	inline void StagingBuffer::uploadTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, VkImageSubresourceLayers const & subresourceLayers
+		, VkFormat format
+		, VkOffset3D const & offset
+		, VkExtent2D const & extent
+		, ByteArray const & data
+		, ImageView const & texture
+		, VkPipelineStageFlags dstStageFlags )const
+	{
+		auto commandBuffer = commandPool.createCommandBuffer( true );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		uploadTextureData( *commandBuffer
+			, subresourceLayers
+			, format
+			, offset
+			, extent
+			, data.data()
+			, texture
+			, dstStageFlags );
+		commandBuffer->end();
+		auto fence = m_device.createFence();
+		queue.submit( *commandBuffer
+			, fence.get() );
+		fence->wait( ashes::MaxTimeout );
+	}
+
+	inline void StagingBuffer::uploadTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, VkFormat format
+		, ByteArray const & data
+		, ImageView const & texture
+		, VkPipelineStageFlags dstStageFlags )const
+	{
+		auto commandBuffer = commandPool.createCommandBuffer( true );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		uploadTextureData( *commandBuffer
+			, format
+			, data.data()
+			, texture
+			, dstStageFlags );
+		commandBuffer->end();
+		auto fence = m_device.createFence();
+		queue.submit( *commandBuffer
+			, fence.get() );
+		fence->wait( ashes::MaxTimeout );
+	}
+
+	inline void StagingBuffer::uploadTextureData( CommandBuffer const & commandBuffer
+		, VkImageSubresourceLayers const & subresourceLayers
+		, VkFormat format
+		, VkOffset3D const & offset
+		, VkExtent2D const & extent
+		, ByteArray const & data
+		, ImageView const & texture
+		, VkPipelineStageFlags dstStageFlags )const
+	{
+		uploadTextureData( commandBuffer
+			, subresourceLayers
+			, format
+			, offset
+			, extent
+			, data.data()
+			, texture
+			, dstStageFlags );
+	}
+
+	inline void StagingBuffer::uploadTextureData( CommandBuffer const & commandBuffer
+		, VkFormat format
+		, ByteArray const & data
+		, ImageView const & texture
+		, VkPipelineStageFlags dstStageFlags )const
+	{
+		uploadTextureData( commandBuffer
+			, format
+			, data.data()
+			, texture
+			, dstStageFlags );
+	}
+	/**@}*/
 	/**@}*/
 	/**
 	*\name
-	*	Upload.
+	*	Download.
 	**/
 	/**@{*/
 	/**
@@ -809,6 +894,47 @@ namespace ashes
 			, elemAlignedSize );
 	}
 	/**@}*/
+	/**
+	*\name
+	*	Texture.
+	**/
+	/**@{*/
+	inline void StagingBuffer::downloadTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, VkImageSubresourceLayers const & subresourceLayers
+		, VkFormat format
+		, VkOffset3D const & offset
+		, VkExtent2D const & extent
+		, ByteArray & data
+		, ImageView const & texture
+		, VkPipelineStageFlags dstStageFlags )const
+	{
+		downloadTextureData( queue
+			, commandPool
+			, subresourceLayers
+			, format
+			, offset
+			, extent
+			, data.data()
+			, texture
+			, dstStageFlags );
+	}
+
+	inline void StagingBuffer::downloadTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, VkFormat format
+		, ByteArray & data
+		, ImageView const & texture
+		, VkPipelineStageFlags dstStageFlags )const
+	{
+		downloadTextureData( queue
+			, commandPool
+			, format
+			, data.data()
+			, texture
+			, dstStageFlags );
+	}
+	/**@}*/
 	/**@}*/
 	/**
 	*\name
@@ -824,7 +950,7 @@ namespace ashes
 		ByteArray data( size_t( size ), uint8_t{} );
 		auto buffer = data.data();
 
-		for ( uint32_t i; i < count; ++i )
+		for ( uint32_t i = 0u; i < count; ++i )
 		{
 			std::memcpy( buffer, &datas[i], sizeof( T ) );
 			buffer += elemAlignedSize;
@@ -848,7 +974,7 @@ namespace ashes
 		doCopyFromStagingBuffer( data.data(), size );
 		auto buffer = data.data();
 
-		for ( uint32_t i; i < count; ++i )
+		for ( uint32_t i = 0u; i < count; ++i )
 		{
 			std::memcpy( &datas[i], buffer, sizeof( T ) );
 			buffer += offset;

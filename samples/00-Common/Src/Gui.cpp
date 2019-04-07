@@ -2,32 +2,19 @@
 
 #include "FileUtils.hpp"
 
-#include <Ashes/Buffer/Buffer.hpp>
-#include <Ashes/Buffer/VertexBuffer.hpp>
-#include <Ashes/Buffer/StagingBuffer.hpp>
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Descriptor/DescriptorSet.hpp>
-#include <Ashes/Descriptor/DescriptorSetLayout.hpp>
-#include <Ashes/Descriptor/DescriptorSetPool.hpp>
-#include <Ashes/Image/Image.hpp>
-#include <Ashes/Image/ImageView.hpp>
-#include <Ashes/Miscellaneous/PushConstantRange.hpp>
-#include <Ashes/Pipeline/DepthStencilState.hpp>
-#include <Ashes/Pipeline/InputAssemblyState.hpp>
-#include <Ashes/Pipeline/MultisampleState.hpp>
-#include <Ashes/Pipeline/Pipeline.hpp>
-#include <Ashes/Pipeline/PipelineLayout.hpp>
-#include <Ashes/Pipeline/Scissor.hpp>
-#include <Ashes/Pipeline/VertexInputState.hpp>
-#include <Ashes/Pipeline/VertexLayout.hpp>
-#include <Ashes/Pipeline/Viewport.hpp>
-#include <Ashes/RenderPass/FrameBuffer.hpp>
-#include <Ashes/RenderPass/FrameBufferAttachment.hpp>
-#include <Ashes/RenderPass/RenderPass.hpp>
-#include <Ashes/RenderPass/RenderSubpass.hpp>
-#include <Ashes/RenderPass/RenderSubpassState.hpp>
-#include <Ashes/Sync/BufferMemoryBarrier.hpp>
-#include <Ashes/Sync/ImageMemoryBarrier.hpp>
+#include <AshesPP/Buffer/Buffer.hpp>
+#include <AshesPP/Buffer/VertexBuffer.hpp>
+#include <AshesPP/Buffer/StagingBuffer.hpp>
+#include <AshesPP/Core/Device.hpp>
+#include <AshesPP/Descriptor/DescriptorSet.hpp>
+#include <AshesPP/Descriptor/DescriptorSetLayout.hpp>
+#include <AshesPP/Descriptor/DescriptorSetPool.hpp>
+#include <AshesPP/Image/Image.hpp>
+#include <AshesPP/Image/ImageView.hpp>
+#include <AshesPP/Pipeline/GraphicsPipeline.hpp>
+#include <AshesPP/Pipeline/PipelineLayout.hpp>
+#include <AshesPP/RenderPass/FrameBuffer.hpp>
+#include <AshesPP/RenderPass/RenderPass.hpp>
 
 #include <Utils/GlslToSpv.hpp>
 
@@ -107,7 +94,7 @@ namespace common
 			m_vertexCount = vertexBufferSize;
 			m_vertexBuffer = utils::makeVertexBuffer< ImDrawVert >( m_device
 				, m_vertexCount
-				, ashes::BufferTargets{ 0u }
+				, 0u
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 			updateCmdBuffers = true;
 		}
@@ -120,14 +107,14 @@ namespace common
 			m_indexCount = indexBufferSize;
 			m_indexBuffer = utils::makeBuffer< ImDrawIdx >( m_device
 				, m_indexCount
-				, ashes::BufferTarget::eIndexBuffer
+				, VK_BUFFER_USAGE_INDEX_BUFFER_BIT
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 			updateCmdBuffers = true;
 		}
 
 		if ( auto vtx = m_vertexBuffer->lock( 0u
 			, m_vertexCount
-			, ashes::MemoryMapFlag::eInvalidateRange | ashes::MemoryMapFlag::eWrite ) )
+			, 0u ) )
 		{
 			for ( int n = 0; n < imDrawData->CmdListsCount; n++ )
 			{
@@ -142,7 +129,7 @@ namespace common
 
 		if ( auto idx = m_indexBuffer->lock( 0u
 			, m_indexCount
-			, ashes::MemoryMapFlag::eInvalidateRange | ashes::MemoryMapFlag::eWrite ) )
+			, 0u ) )
 		{
 			for ( int n = 0; n < imDrawData->CmdListsCount; n++ )
 			{
@@ -255,16 +242,16 @@ namespace common
 		m_fontImage = m_device.createImage(
 			{
 				0u,
-				ashes::ImageType::e2D,
+				VK_IMAGE_TYPE_2D,
 				VK_FORMAT_R8G8B8A8_UNORM,
 				VkExtent3D{ uint32_t( texWidth ), uint32_t( texHeight ), 1u },
 				1u,
 				1u,
 				VK_SAMPLE_COUNT_1_BIT,
-				ashes::ImageTiling::eOptimal,
-				VkImageUsageFlagBits::eSampled | VkImageUsageFlagBits::eTransferDst
+				VK_IMAGE_TILING_OPTIMAL,
+				VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT
 			}
-			, VkMemoryPropertyFlagBits::eDeviceLocal );
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 		m_fontView = m_fontImage->createView( VkImageViewType( m_fontImage->getType() )
 			, m_fontImage->getFormat() );
 
@@ -276,20 +263,20 @@ namespace common
 			, fontData
 			, *m_fontView );
 
-		m_sampler = m_device.getDevice().createSampler( ashes::WrapMode::eClampToEdge
-			, ashes::WrapMode::eClampToEdge
-			, ashes::WrapMode::eClampToEdge
-			, ashes::Filter::eLinear
-			, ashes::Filter::eLinear
-			, ashes::MipmapMode::eNone );
+		m_sampler = m_device.getDevice().createSampler( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+			, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+			, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+			, VK_FILTER_LINEAR
+			, VK_FILTER_LINEAR
+			, VK_SAMPLER_MIPMAP_MODE_NEAREST );
 
 		m_commandPool = m_device.getDevice().createCommandPool( queue.getFamilyIndex()
 			, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT );
 		m_commandBuffer = m_commandPool->createCommandBuffer();
 
-		ashes::DescriptorSetLayoutBindingArray bindings
+		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			{ 0u, ashes::DescriptorType::eCombinedImageSampler, VK_SHADER_STAGE_FRAGMENT_BIT }
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT }
 		};
 		m_descriptorSetLayout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorPool = m_descriptorSetLayout->createPool( 2u );
@@ -299,7 +286,7 @@ namespace common
 			, *m_sampler );
 		m_descriptorSet->update();
 
-		ashes::PushConstantRange range{ VK_SHADER_STAGE_VERTEX_BIT, 0u, m_pushConstants.getSize() };
+		VkPushConstantRange range{ VK_SHADER_STAGE_VERTEX_BIT, 0u, m_pushConstants.getSize() };
 		m_pipelineLayout = m_device.getDevice().createPipelineLayout( *m_descriptorSetLayout
 			, range );
 
@@ -324,16 +311,16 @@ namespace common
 		m_target = m_device.createImage(
 			{
 				0u,
-				ashes::ImageType::e2D,
+				VK_IMAGE_TYPE_2D,
 				m_colourView->getFormat(),
 				dimensions,
 				1u,
 				1u,
 				VK_SAMPLE_COUNT_1_BIT,
-				ashes::ImageTiling::eOptimal,
-				VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VkImageUsageFlagBits::eSampled | VkImageUsageFlagBits::eTransferDst
+				VK_IMAGE_TILING_OPTIMAL,
+				VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT
 			}
-			, VkMemoryPropertyFlagBits::eDeviceLocal );
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 		m_targetView = m_target->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_target->getFormat() );
 		
@@ -347,7 +334,7 @@ namespace common
 				VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 				VK_ATTACHMENT_STORE_OP_DONT_CARE,
 				VK_IMAGE_LAYOUT_UNDEFINED,
-				VkImageLayout::eShaderReadOnlyOptimal,
+				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			}
 		};
 		ashes::VkAttachmentReferenceArray subAttaches
@@ -355,18 +342,18 @@ namespace common
 			{ 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
 		};
 		ashes::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( ashes::PipelineBindPoint::eGraphics
+		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( VkPipelineBindPoint::eGraphics
 			, ashes::RenderSubpassState{
 				VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-				VkAccessFlagBits::eColourAttachmentRead | VkAccessFlagBits::eColourAttachmentWrite
+				VkAccessFlagBits::eColourAttachmentRead | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
 			}
 			, subAttaches ) );
 		m_renderPass = m_device.getDevice().createRenderPass( rpAttaches
 			, std::move( subpasses )
 			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, VkAccessFlagBits::eColourAttachmentWrite }
-			, ashes::RenderSubpassState{ VkPipelineStageFlagBits::eFragmentShader
-				, VkAccessFlagBits::eShaderRead } );
+				, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT }
+			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+				, VK_ACCESS_SHADER_READ_BIT } );
 
 		ashes::ImageViewPtrArray attaches
 		{
@@ -389,10 +376,8 @@ namespace common
 
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( { m_device.getDevice().createShaderModule( VK_SHADER_STAGE_VERTEX_BIT ) } );
-		shaderStages.push_back( { m_device.getDevice().createShaderModule( VK_SHADER_STAGE_FRAGMENT_BIT ) } );
-		shaderStages[0].module->loadShader( dumpShaderFile( m_device.getDevice(), VK_SHADER_STAGE_VERTEX_BIT, shadersFolder / "gui.vert" ) );
-		shaderStages[1].module->loadShader( dumpShaderFile( m_device.getDevice(), VK_SHADER_STAGE_FRAGMENT_BIT, shadersFolder / "gui.frag" ) );
+		shaderStages.push_back( { m_device.getDevice().createShaderModule( dumpShaderFile( m_device.getDevice(), VK_SHADER_STAGE_VERTEX_BIT, shadersFolder / "gui.vert" ) ) } );
+		shaderStages.push_back( { m_device.getDevice().createShaderModule( dumpShaderFile( m_device.getDevice(), VK_SHADER_STAGE_FRAGMENT_BIT, shadersFolder / "gui.frag" ) ) } );
 
 		std::vector< VkDynamicState > dynamicStateEnables
 		{
@@ -401,7 +386,7 @@ namespace common
 		};
 
 		ashes::RasterisationState rasterisationState;
-		rasterisationState.cullMode = ashes::CullModeFlag::eNone;
+		rasterisationState.cullMode = VK_CULL_MODE_NONE;
 
 		m_pipeline = m_pipelineLayout->createPipeline(
 		{
@@ -425,33 +410,27 @@ namespace common
 		m_pushConstants.getData()->translate = utils::Vec2{ -1.0f };
 
 		m_commandBuffer->begin();
-		m_commandBuffer->memoryBarrier( VkPipelineStageFlagBits::eTransfer
-			, VkPipelineStageFlagBits::eFragmentShader
+		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
 			, m_fontView->makeShaderInputResource( VK_IMAGE_LAYOUT_UNDEFINED
 				, 0u ) );
-		m_commandBuffer->memoryBarrier( VkPipelineStageFlagBits::eTransfer
-			, VkPipelineStageFlagBits::eVertexInput
+		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
 			, m_vertexBuffer->getBuffer().makeVertexShaderInputResource() );
-		m_commandBuffer->memoryBarrier( VkPipelineStageFlagBits::eTransfer
-			, VkPipelineStageFlagBits::eVertexInput
+		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
 			, m_indexBuffer->getBuffer().makeVertexShaderInputResource() );
 		m_commandBuffer->beginRenderPass( *m_renderPass
 			, *m_frameBuffer
-			, { VkClearColorValue{ 1.0, 1.0, 1.0, 0.0 } }
+			, { VkClearValue{ 1.0, 1.0, 1.0, 0.0 } }
 			, VK_SUBPASS_CONTENTS_INLINE );
 		m_commandBuffer->bindPipeline( *m_pipeline );
 		m_commandBuffer->bindDescriptorSet( *m_descriptorSet
 			, *m_pipelineLayout );
 		m_commandBuffer->bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
-		m_commandBuffer->bindIndexBuffer( m_indexBuffer->getBuffer(), 0u, ashes::IndexType::eUInt16 );
-		m_commandBuffer->setViewport( { uint32_t( ImGui::GetIO().DisplaySize.x )
-			, uint32_t( ImGui::GetIO().DisplaySize.y )
-			, 0
-			, 0 } );
-		m_commandBuffer->setScissor( { 0
-			, 0 
-			, uint32_t( ImGui::GetIO().DisplaySize.x )
-			, uint32_t( ImGui::GetIO().DisplaySize.y ) } );
+		m_commandBuffer->bindIndexBuffer( m_indexBuffer->getBuffer(), 0u, VK_INDEX_TYPE_UINT16 );
+		m_commandBuffer->setViewport( { 0.0f, 0.0f, float( ImGui::GetIO().DisplaySize.x ), float( ImGui::GetIO().DisplaySize.y ), 0.0f, 1.0f } );
+		m_commandBuffer->setScissor( { { 0, 0 }, { ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y } } );
 		m_commandBuffer->pushConstants( *m_pipelineLayout, m_pushConstants );
 		ImDrawData * imDrawData = ImGui::GetDrawData();
 		int32_t vertexOffset = 0;
@@ -478,11 +457,11 @@ namespace common
 		}
 
 		m_commandBuffer->endRenderPass();
-		m_commandBuffer->memoryBarrier( VkPipelineStageFlagBits::eVertexInput
-			, VkPipelineStageFlagBits::eTransfer
+		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, m_vertexBuffer->getBuffer().makeTransferDestination() );
-		m_commandBuffer->memoryBarrier( VkPipelineStageFlagBits::eVertexInput
-			, VkPipelineStageFlagBits::eTransfer
+		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, m_indexBuffer->getBuffer().makeTransferDestination() );
 		m_commandBuffer->end();
 	}

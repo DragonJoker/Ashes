@@ -23,10 +23,10 @@ namespace vkapp
 	{
 	}
 
-	void NodesRenderer::doFillObjectDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
+	void NodesRenderer::doFillObjectDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )
 	{
-		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, VK_SHADER_STAGE_VERTEX_BIT );
-		bindings.emplace_back( 2u, ashes::DescriptorType::eUniformBuffer, VK_SHADER_STAGE_VERTEX_BIT );
+		bindings.emplace_back( 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT );
+		bindings.emplace_back( 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT );
 	}
 
 	void NodesRenderer::doFillObjectDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout

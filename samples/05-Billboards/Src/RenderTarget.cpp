@@ -6,8 +6,8 @@
 #include <OpaqueRendering.hpp>
 #include <TransparentRendering.hpp>
 
-#include <Ashes/Buffer/StagingBuffer.hpp>
-#include <Ashes/Buffer/UniformBuffer.hpp>
+#include <AshesPP/Buffer/StagingBuffer.hpp>
+#include <AshesPP/Buffer/UniformBuffer.hpp>
 
 #include <Utils/Transform.hpp>
 
@@ -22,8 +22,8 @@ namespace vkapp
 		: common::RenderTarget{ device, commandPool, transferQueue, size, std::move( scene ), std::move( images ) }
 		, m_sceneUbo{ utils::makeUniformBuffer< common::SceneData >( device
 			, 1u
-			, ashes::BufferTarget::eTransferDst
-			, VkMemoryPropertyFlagBits::eDeviceLocal ) }
+			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
 	{
 		doInitialise();
 		doUpdateProjection( size );
@@ -64,7 +64,7 @@ namespace vkapp
 			, m_commandPool
 			, m_sceneUbo->getDatas()
 			, *m_sceneUbo
-			, VkPipelineStageFlagBits::eVertexShader );
+			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}
 
 	void RenderTarget::doResize( VkExtent2D const & size )

@@ -22,40 +22,43 @@ namespace ashes::gl4
 				binding.descriptorType
 			};
 			m_writes.insert( { binding.binding, bindingWrites } );
+		}
 
-			switch ( binding.descriptorType )
+		for ( auto & write : m_writes )
+		{
+			switch ( write.second.descriptorType )
 			{
 			case VK_DESCRIPTOR_TYPE_SAMPLER:
-				m_samplers.push_back( &bindingWrites );
+				m_samplers.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
-				m_combinedTextureSamplers.push_back( &bindingWrites );
+				m_combinedTextureSamplers.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
-				m_sampledTextures.push_back( &bindingWrites );
+				m_sampledTextures.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_STORAGE_IMAGE:
-				m_storageTextures.push_back( &bindingWrites );
+				m_storageTextures.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
-				m_texelBuffers.push_back( &bindingWrites );
+				m_texelBuffers.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
-				m_texelBuffers.push_back( &bindingWrites );
+				m_texelBuffers.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
-				m_uniformBuffers.push_back( &bindingWrites );
+				m_uniformBuffers.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:
-				m_storageBuffers.push_back( &bindingWrites );
+				m_storageBuffers.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
-				m_dynamicUniformBuffers.push_back( &bindingWrites );
-				m_dynamicBuffers.push_back( &bindingWrites );
+				m_dynamicUniformBuffers.push_back( &write.second );
+				m_dynamicBuffers.push_back( &write.second );
 				break;
 			case VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
-				m_dynamicStorageBuffers.push_back( &bindingWrites );
-				m_dynamicBuffers.push_back( &bindingWrites );
+				m_dynamicStorageBuffers.push_back( &write.second );
+				m_dynamicBuffers.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
 				break;
@@ -90,19 +93,5 @@ namespace ashes::gl4
 	{
 		//m_writes[copy.dstBinding].dstBinding = copy.srcBinding;
 		//m_writes[copy.dstBinding].dstArrayElement = copy.srcArrayElement;
-	}
-
-	void DescriptorSet::update()
-	{
-		m_combinedTextureSamplers.clear();
-		m_samplers.clear();
-		m_sampledTextures.clear();
-		m_storageTextures.clear();
-		m_uniformBuffers.clear();
-		m_storageBuffers.clear();
-		m_texelBuffers.clear();
-		m_dynamicUniformBuffers.clear();
-		m_dynamicStorageBuffers.clear();
-		m_dynamicBuffers.clear();
 	}
 }

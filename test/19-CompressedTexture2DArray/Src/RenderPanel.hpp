@@ -2,14 +2,14 @@
 
 #include "Prerequisites.hpp"
 
-#include <Descriptor/DescriptorSetLayout.hpp>
-#include <Descriptor/DescriptorSetPool.hpp>
-#include <Descriptor/DescriptorSet.hpp>
+#include <AshesPP/Descriptor/DescriptorSetLayout.hpp>
+#include <AshesPP/Descriptor/DescriptorSetPool.hpp>
+#include <AshesPP/Descriptor/DescriptorSet.hpp>
 #include <AshesPP/RenderPass/FrameBuffer.hpp>
-#include <Image/Image.hpp>
+#include <AshesPP/Image/Image.hpp>
 #include <AshesPP/RenderPass/RenderPass.hpp>
-#include <Image/Sampler.hpp>
-#include <Buffer/StagingBuffer.hpp>
+#include <AshesPP/Image/Sampler.hpp>
+#include <AshesPP/Buffer/StagingBuffer.hpp>
 #include <AshesPP/Core/SwapChain.hpp>
 
 namespace vkapp

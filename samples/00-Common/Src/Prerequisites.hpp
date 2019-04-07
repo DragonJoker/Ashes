@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Ashes/Core/Surface.hpp>
-#include <Ashes/Core/Instance.hpp>
-#include <Ashes/Image/Image.hpp>
-#include <Ashes/Image/ImageView.hpp>
-#include <Ashes/Miscellaneous/Extent2D.hpp>
-#include <Ashes/Pipeline/VertexLayout.hpp>
-#include <Ashes/RenderPass/RenderSubpass.hpp>
+#include <AshesPP/Core/Surface.hpp>
+#include <AshesPP/Core/Instance.hpp>
+#include <AshesPP/Image/Image.hpp>
+#include <AshesPP/Image/ImageView.hpp>
+#include <AshesPP/Miscellaneous/VkExtent2D.hpp>
+#include <AshesPP/Pipeline/VertexLayout.hpp>
+#include <AshesPP/RenderPass/RenderSubpass.hpp>
 
 #include <Utils/Factory.hpp>
 #include <Utils/Mat4.hpp>

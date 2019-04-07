@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___AshesPP_Sampler_HPP___
 #pragma once
 
-#include "AshesPP/AshesPPPrerequisites.hpp"
+#include "AshesPP/Image/SamplerCreateInfo.hpp"
 
 namespace ashes
 {
@@ -34,7 +34,7 @@ namespace ashes
 		*	The creation informations.
 		*/
 		Sampler( Device const & device
-			, VkSamplerCreateInfo const & createInfo );
+			, SamplerCreateInfo createInfo );
 		/**
 		*\~english
 		*\brief
@@ -54,7 +54,7 @@ namespace ashes
 		*/
 		inline VkSamplerAddressMode getWrapS()const
 		{
-			return m_info.addressModeU;
+			return static_cast< VkSamplerCreateInfo const & >( m_createInfo ).addressModeU;
 		}
 		/**
 		*\~english
@@ -66,7 +66,7 @@ namespace ashes
 		*/
 		inline VkSamplerAddressMode getWrapT()const
 		{
-			return m_info.addressModeV;
+			return static_cast< VkSamplerCreateInfo const & >( m_createInfo ).addressModeV;
 		}
 		/**
 		*\~english
@@ -78,7 +78,7 @@ namespace ashes
 		*/
 		inline VkSamplerAddressMode getWrapR()const
 		{
-			return m_info.addressModeW;
+			return static_cast< VkSamplerCreateInfo const & >( m_createInfo ).addressModeW;
 		}
 		/**
 		*\~english
@@ -90,7 +90,7 @@ namespace ashes
 		*/
 		inline VkFilter getMinFilter()const
 		{
-			return m_info.minFilter;
+			return static_cast< VkSamplerCreateInfo const & >( m_createInfo ).minFilter;
 		}
 		/**
 		*\~english
@@ -102,7 +102,7 @@ namespace ashes
 		*/
 		inline VkFilter getMagFilter()const
 		{
-			return m_info.magFilter;
+			return static_cast< VkSamplerCreateInfo const & >( m_createInfo ).magFilter;
 		}
 		/**
 		*\~english
@@ -114,7 +114,7 @@ namespace ashes
 		*/
 		inline VkSamplerMipmapMode getMipFilter()const
 		{
-			return m_info.mipmapMode;
+			return static_cast< VkSamplerCreateInfo const & >( m_createInfo ).mipmapMode;
 		}
 		/**
 		*\~english
@@ -126,7 +126,7 @@ namespace ashes
 		*/
 		inline float getMinLod()const
 		{
-			return m_info.minLod;
+			return static_cast< VkSamplerCreateInfo const & >( m_createInfo ).minLod;
 		}
 		/**
 		*\~english
@@ -138,7 +138,7 @@ namespace ashes
 		*/
 		inline float getMaxLod()const
 		{
-			return m_info.maxLod;
+			return static_cast< VkSamplerCreateInfo const & >( m_createInfo ).maxLod;
 		}
 		/**
 		*\~english
@@ -150,7 +150,7 @@ namespace ashes
 		*/
 		inline float getLodBias()const
 		{
-			return m_info.mipLodBias;
+			return static_cast< VkSamplerCreateInfo const & >( m_createInfo ).mipLodBias;
 		}
 		/**
 		*\~english
@@ -163,7 +163,7 @@ namespace ashes
 		*/
 		inline VkBorderColor getBorderColour()const
 		{
-			return m_info.borderColor;
+			return static_cast< VkSamplerCreateInfo const & >( m_createInfo ).borderColor;
 		}
 		/**
 		*\~english
@@ -175,7 +175,7 @@ namespace ashes
 		*/
 		inline float getMaxAnisotropy()const
 		{
-			return m_info.maxAnisotropy;
+			return static_cast< VkSamplerCreateInfo const & >( m_createInfo ).maxAnisotropy;
 		}
 		/**
 		*\~english
@@ -188,7 +188,7 @@ namespace ashes
 		*/
 		inline VkCompareOp getCompareOp()const
 		{
-			return m_info.compareOp;
+			return static_cast< VkSamplerCreateInfo const & >( m_createInfo ).compareOp;
 		}
 		/**
 		*\~french
@@ -205,7 +205,7 @@ namespace ashes
 
 	private:
 		Device const & m_device;
-		VkSamplerCreateInfo m_info;
+		SamplerCreateInfo m_createInfo;
 		VkSampler m_internal{ VK_NULL_HANDLE };
 	};
 }

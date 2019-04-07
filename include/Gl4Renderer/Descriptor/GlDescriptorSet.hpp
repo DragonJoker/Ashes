@@ -42,10 +42,6 @@ namespace ashes::gl4
 		*/
 		void update( VkCopyDescriptorSet const & write );
 		/**
-		*\copydoc		DescriptorSet::update
-		*/
-		void update();
-		/**
 		*\brief
 		*	Le tableau d'attaches de type sampler + get( texture )->
 		*/
