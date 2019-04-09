@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	inline VkPipelineMultisampleStateCreateInfo getMultisampleState()
+	inline VkPipelineMultisampleStateCreateInfo getDefaultMultisampleState()
 	{
 		return
 		{
@@ -25,6 +25,8 @@ namespace ashes
 			VK_FALSE,
 		};
 	};
+
+	VkPipelineMultisampleStateCreateInfo const & getDeactivatedMultisampleState();
 
 	inline bool operator==( VkPipelineMultisampleStateCreateInfo const & lhs, VkPipelineMultisampleStateCreateInfo const & rhs )
 	{

@@ -248,8 +248,8 @@ ModelManifest.xml
 .fake/
 /doc/GlLib
 /doc/html
-/source/Ashes/*.gch
-/source/Core/FreeType
 /source/RenderLib
 /.vscode
 /dependencies/glslang
+include/AshesOld
+source/AshesOld

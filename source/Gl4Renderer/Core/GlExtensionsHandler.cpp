@@ -38,29 +38,6 @@ namespace ashes::gl4
 
 		using PFN_glGetStringi = const GLubyte *( GLAPIENTRY * )( GLenum name, GLuint index );
 		PFN_glGetStringi glGetStringi;
-
-#if ASHES_WIN32
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( wglGetProcAddress( name ) );
-			return function != nullptr;
-		}
-#elif ASHES_XLIB
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
-		}
-#else
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
-		}
-#endif
 	}
 
 	void ExtensionsHandler::initialise()
@@ -74,11 +51,11 @@ namespace ashes::gl4
 			std::stringstream stream( sversion );
 			float fversion;
 			stream >> fversion;
-			auto version = std::min( int( fversion * 10 ), 330 );
+			auto version = std::min( int( fversion * 10 ), 420 );
 
 			if ( version < 30 )
 			{
-				throw std::runtime_error{ "OpenGL >= 3.0 is needed for this renderer." };
+				throw std::runtime_error{ "OpenGL >= 4.2 is needed for this renderer." };
 			}
 
 			m_major = version / 10;

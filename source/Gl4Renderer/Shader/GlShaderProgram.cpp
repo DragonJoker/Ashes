@@ -106,13 +106,14 @@ namespace ashes::gl4
 	}
 
 	ShaderProgram::ShaderProgram( VkDevice device
-		, VkPipelineShaderStageCreateInfoArray const & stages )
+		, VkPipelineShaderStageCreateInfoArray stages )
 		: m_device{ device }
+		, m_stages{ std::move( stages ) }
 	{
 		auto context = get( m_device )->getContext();
 		m_program = context->glCreateProgram();
 
-		for ( auto & stage : stages )
+		for ( auto & stage : m_stages )
 		{
 			m_stageFlags |= stage.stage;
 			get( stage.module )->compile( stage );

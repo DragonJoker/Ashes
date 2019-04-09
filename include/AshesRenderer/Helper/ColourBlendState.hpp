@@ -10,12 +10,13 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	inline VkPipelineColorBlendStateCreateInfo getColourBlendState( VkPipelineColorBlendAttachmentStateArray & attachments )
+	inline VkPipelineColorBlendStateCreateInfo getDefaultColorBlendState( VkPipelineColorBlendAttachmentStateArray & attachments
+		, void * pNext = nullptr )
 	{
 		return
 		{
 			VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
-			nullptr,
+			pNext,
 			0u,
 			VK_FALSE,
 			VK_LOGIC_OP_COPY,
@@ -23,7 +24,9 @@ namespace ashes
 			attachments.data(),
 			{ 0.0f, 0.0f, 0.0f, 0.0f }
 		};
-	};
+	}
+
+	VkPipelineColorBlendStateCreateInfo const & getDeactivatedColorBlendState();
 
 	inline bool operator==( VkPipelineColorBlendStateCreateInfo const & lhs
 		, VkPipelineColorBlendStateCreateInfo const & rhs )

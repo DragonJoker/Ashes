@@ -47,23 +47,23 @@ namespace ashes::gl4
 		/**
 		*\copydoc	Instance::getProperties
 		*/
-		VkPhysicalDeviceProperties getProperties()const;
+		VkPhysicalDeviceProperties const & getProperties()const;
 		/**
 		*\copydoc	Instance::getMemoryProperties
 		*/
-		VkPhysicalDeviceMemoryProperties getMemoryProperties()const;
+		VkPhysicalDeviceMemoryProperties const & getMemoryProperties()const;
 		/**
 		*\copydoc	Instance::getFeatures
 		*/
-		VkPhysicalDeviceFeatures getFeatures()const;
+		VkPhysicalDeviceFeatures const & getFeatures()const;
 		/**
 		*\copydoc	Instance::getQueueFamilyProperties
 		*/
-		std::vector< VkQueueFamilyProperties > getQueueFamilyProperties()const;
+		std::vector< VkQueueFamilyProperties > const & getQueueFamilyProperties()const;
 		/**
 		*\copydoc	Instance::getFormatProperties
 		*/
-		VkFormatProperties getFormatProperties( VkFormat fmt )const;
+		VkFormatProperties const & getFormatProperties( VkFormat fmt )const;
 
 		bool find( std::string const & name )const;
 		bool findAny( StringArray const & names )const;

@@ -22,7 +22,7 @@ namespace ashes::gl4
 			, glBindFramebuffer
 			, GL_FRAMEBUFFER
 			, 0u );
-		get( m_device )->setCurrentFramebuffer( 0u );
+		context->setCurrentFramebuffer( 0u );
 	}
 
 	CommandPtr EndRenderPassCommand::clone()const

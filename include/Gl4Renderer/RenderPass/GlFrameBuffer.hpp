@@ -78,6 +78,11 @@ namespace ashes::gl4
 			assert( m_internal != GL_INVALID_INDEX );
 			return m_internal;
 		}
+		
+		inline GLuint & getInternal()
+		{
+			return m_internal;
+		}
 
 		inline auto const & getAllAttaches()const
 		{

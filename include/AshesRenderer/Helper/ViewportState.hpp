@@ -18,19 +18,21 @@ namespace ashes
 	*\brief
 	*	L'état de viewport.
 	*/
-	inline VkPipelineViewportStateCreateInfo getViewportState()
+	inline VkPipelineViewportStateCreateInfo getDefaultViewportState()
 	{
 		return
 		{
 			VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
 			nullptr,
 			0u,
-			0u,
+			1u,
 			nullptr,
-			0u,
+			1u,
 			nullptr,
 		};
 	}
+
+	VkPipelineViewportStateCreateInfo const & getDeactivatedViewportState();
 
 	inline bool operator==( VkPipelineViewportStateCreateInfo const & lhs
 		, VkPipelineViewportStateCreateInfo const & rhs )

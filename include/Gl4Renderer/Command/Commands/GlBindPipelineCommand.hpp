@@ -8,23 +8,6 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	void apply( VkDevice device
-		, ContextLock const & context
-		, VkPipelineColorBlendStateCreateInfo const & state );
-	void apply( VkDevice device
-		, ContextLock const & context
-		, VkPipelineRasterizationStateCreateInfo const & state
-		, bool dynamicLineWidth
-		, bool dynamicDepthBias );
-	void apply( VkDevice device
-		, ContextLock const & context
-		, VkPipelineMultisampleStateCreateInfo const & state );
-	void apply( VkDevice device
-		, ContextLock const & context
-		, VkPipelineDepthStencilStateCreateInfo const & state );
-	void apply( VkDevice device
-		, ContextLock const & context
-		, VkPipelineTessellationStateCreateInfo const & state );
 	/**
 	*\brief
 	*	Commande d'activation d'un pipeline: shaders, tests, �tats, ...

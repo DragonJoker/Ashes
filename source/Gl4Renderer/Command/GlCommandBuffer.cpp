@@ -57,6 +57,8 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
+#include <AshesRenderer/Helper/VertexInputState.hpp>
+
 #include <algorithm>
 
 namespace ashes::gl4
@@ -314,7 +316,7 @@ namespace ashes::gl4
 		, uint32_t firstVertex
 		, uint32_t firstInstance )const
 	{
-		if ( !get( m_state.currentPipeline )->hasVertexInputState() )
+		if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() ) )
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 			m_state.boundVao = &get( m_device )->getEmptyIndexedVao();
@@ -359,7 +361,7 @@ namespace ashes::gl4
 		, uint32_t vertexOffset
 		, uint32_t firstInstance )const
 	{
-		if ( !get( m_state.currentPipeline )->hasVertexInputState() )
+		if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() ) )
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 			m_state.boundVao = &get( m_device )->getEmptyIndexedVao();
@@ -420,7 +422,7 @@ namespace ashes::gl4
 		, uint32_t drawCount
 		, uint32_t stride )const
 	{
-		if ( !get( m_state.currentPipeline )->hasVertexInputState() )
+		if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() ) )
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 			m_state.boundVao = &get( m_device )->getEmptyIndexedVao();

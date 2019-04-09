@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	inline VkPipelineInputAssemblyStateCreateInfo getInputAssemblyState()
+	inline VkPipelineInputAssemblyStateCreateInfo getDefaultInputAssemblyState()
 	{
 		return
 		{
@@ -21,6 +21,8 @@ namespace ashes
 			VK_FALSE,
 		};
 	};
+
+	VkPipelineInputAssemblyStateCreateInfo const & getDeactivatedInputAssemblyState();
 
 	inline bool operator==( VkPipelineInputAssemblyStateCreateInfo const & lhs, VkPipelineInputAssemblyStateCreateInfo const & rhs )
 	{

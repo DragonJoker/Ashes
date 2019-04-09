@@ -111,7 +111,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glBindFramebuffer
 			, GL_FRAMEBUFFER
-			, get( m_device )->getCurrentFramebuffer() );
+			, context->getCurrentFramebuffer() );
 
 		// Read pixels
 		glLogCall( context

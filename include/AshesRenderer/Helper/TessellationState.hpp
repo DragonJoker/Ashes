@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	inline VkPipelineTessellationStateCreateInfo getTessellationState()
+	inline VkPipelineTessellationStateCreateInfo getDefaultTessellationState()
 	{
 		return
 		{
@@ -20,6 +20,8 @@ namespace ashes
 			0u,
 		};
 	};
+
+	VkPipelineTessellationStateCreateInfo const & getDeactivatedTessellationState();
 
 	inline bool operator==( VkPipelineTessellationStateCreateInfo const & lhs, VkPipelineTessellationStateCreateInfo const & rhs )
 	{

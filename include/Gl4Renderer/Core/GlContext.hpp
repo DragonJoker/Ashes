@@ -3,49 +3,138 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl4Renderer/GlRendererPrerequisites.hpp"
+#include "GlContextState.hpp"
 
 #include <atomic>
+#include <mutex>
 
 namespace ashes::gl4
 {
 	extern char const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME[VK_MAX_EXTENSION_NAME_SIZE];
+	class ContextLock;
 
 	class Context
 	{
-	protected:
-		Context( VkInstance instance );
+	public:
+		class ContextImpl
+		{
+		protected:
+			ContextImpl( VkInstance instance
+				, VkSurfaceCreateInfoKHR createInfo )
+				: createInfo{ std::move( createInfo ) }
+				, instance{ instance }
+			{
+			}
+
+		public:
+			virtual void initialise( Context & parent ) = 0;
+			virtual void loadSystemFunctions() = 0;
+			/**
+			*\brief
+			*	Active le contexte.
+			*/
+			virtual void enable()const = 0;
+			/**
+			*\brief
+			*	Désactive le contexte.
+			*/
+			virtual void disable()const = 0;
+			/**
+			*\brief
+			*	Echange les tampons.
+			*/
+			virtual void swapBuffers()const = 0;
+
+			VkSurfaceCreateInfoKHR createInfo;
+			VkInstance instance;
+		};
+
+	private:
+		Context( std::unique_ptr< ContextImpl > impl );
 
 	public:
-		virtual ~Context();
-		/**
-		*\brief
-		*	Active le contexte.
-		*/
-		virtual void enable()const = 0;
-		/**
-		*\brief
-		*	Désactive le contexte.
-		*/
-		virtual void disable()const = 0;
-		/**
-		*\brief
-		*	Echange les tampons.
-		*/
-		virtual void swapBuffers()const = 0;
+		~Context();
+
+		void apply( ContextLock const & context
+			, Device const & device
+			, ContextState const & state );
+		void onBaseContextCreated();
+
+		static ContextPtr create( VkInstance instance
+			, VkSurfaceCreateInfoKHR createInfo
+			, Context const * mainContext );
+		static ContextPtr create( VkInstance instance
+			, VkSurfaceKHR surface
+			, Context const * mainContext );
+
+		inline void swapBuffers()const
+		{
+			m_impl->swapBuffers();
+		}
 
 		inline bool isEnabled()const
 		{
 			return m_enabled;
 		}
 
-		static ContextPtr create( VkInstance instance
-			, VkSurfaceCreateInfoKHR createInfo
-			, Context const * mainContext );
-		VkSurfaceCreateInfoKHR m_createInfo;
-		static ContextPtr create( VkInstance instance
-			, VkSurfaceKHR surface
-			, Context const * mainContext );
+		inline GLuint getCurrentFramebuffer()const
+		{
+			return m_fbo;
+		}
+
+		inline ContextImpl const & getImpl()const
+		{
+			return *m_impl;
+		}
+
+		inline VkRect2D const & getCurrentScissor()const
+		{
+			return m_scissor;
+		}
+
+		inline VkViewport const & getCurrentViewport()const
+		{
+			return m_viewport;
+		}
+
+		inline GLuint const & getCurrentProgram()const
+		{
+			return m_currentProgram;
+		}
+
+		inline void lock()
+		{
+			m_mutex.lock();
+			m_enabled = true;
+			m_impl->enable();
+		}
+
+		inline void unlock()
+		{
+			m_impl->disable();
+			m_enabled = false;
+			m_mutex.unlock();
+		}
+
+		inline void setCurrentFramebuffer( GLuint value )
+		{
+			m_fbo = value;
+		}
+
+		inline void setCurrentProgram( GLuint value )
+		{
+			m_currentProgram = value;
+		}
+
+		inline void setCurrentScissor( VkRect2D const & value )
+		{
+			m_scissor = value;
+		}
+
+		inline void setCurrentViewport( VkViewport const & value )
+		{
+			m_viewport = value;
+		}
 
 #define GL_LIB_BASE_FUNCTION( fun )\
 		PFN_gl##fun m_gl##fun = nullptr;\
@@ -76,68 +165,41 @@ namespace ashes::gl4
 
 		PFN_glObjectLabel glObjectLabel = nullptr;
 		PFN_glObjectPtrLabel glObjectPtrLabel = nullptr;
-
-	protected:
-		VkInstance m_instance;
-		mutable std::atomic< bool > m_enabled{ false };
-
-		using PFN_glDebugMessageCallback = void ( GLAPIENTRY * )( PFNGLDEBUGPROC callback, void * userParam );
-		using PFN_glDebugMessageCallbackAMD = void ( GLAPIENTRY * )( PFNGLDEBUGAMDPROC callback, void * userParam );
-
 		PFN_glDebugMessageCallback glDebugMessageCallback = nullptr;
 		PFN_glDebugMessageCallbackAMD glDebugMessageCallbackAMD = nullptr;
-	};
-
-	class ContextLock
-	{
-	public:
-		ContextLock( ContextLock const & ) = delete;
-		ContextLock & operator=( ContextLock const & ) = delete;
-
-		inline ContextLock( Context const & context )
-			: m_context{ &context }
-			, m_disable{ !context.isEnabled() }
-		{
-			if ( m_disable )
-			{
-				m_context->enable();
-			}
-		}
-
-		ContextLock( ContextLock && rhs )
-			: m_context{ rhs.m_context }
-			, m_disable{ rhs.m_disable }
-		{
-			rhs.m_context = nullptr;
-		}
-
-		ContextLock & operator=( ContextLock && rhs )
-		{
-			if ( &rhs != this )
-			{
-				m_context = rhs.m_context;
-				m_disable = rhs.m_disable;
-				rhs.m_context = nullptr;
-			}
-
-			return *this;
-		}
-
-		inline ~ContextLock()
-		{
-			if ( m_context && m_disable )
-			{
-				m_context->disable();
-			}
-		}
-
-		Context const * operator->()const
-		{
-			return m_context;
-		}
 
 	private:
-		Context const * m_context;
-		bool m_disable;
+		void loadBaseFunctions();
+		void loadDebugFunctions();
+		void apply( ContextLock const & context
+			, VkPipelineInputAssemblyStateCreateInfo const & state );
+		void apply( ContextLock const & context
+			, VkPipelineColorBlendStateCreateInfo const & newState );
+		void apply( ContextLock const & context
+			, VkPipelineRasterizationStateCreateInfo const & newState
+			, VkPipelineDynamicStateCreateInfo newDyState );
+		void apply( ContextLock const & context
+			, VkPipelineMultisampleStateCreateInfo const & newState );
+		void apply( ContextLock const & context
+			, VkPipelineDepthStencilStateCreateInfo const & newState );
+		void apply( ContextLock const & context
+			, VkPipelineTessellationStateCreateInfo const & newState );
+		void apply( ContextLock const & context
+			, VkPipelineViewportStateCreateInfo const & newState );
+
+	private:
+		std::unique_ptr< ContextImpl > m_impl;
+
+	public:
+		VkSurfaceCreateInfoKHR const & createInfo;
+
+	protected:
+		std::mutex m_mutex;
+		ContextState m_state;
+		GLuint m_fbo{ 0u };
+		VkRect2D m_scissor{ 0, 0, 0, 0 };
+		VkViewport m_viewport{ 0, 0, 0, 0 };
+		GLuint m_currentProgram;
+		std::atomic< bool > m_enabled{ false };
 	};
 }

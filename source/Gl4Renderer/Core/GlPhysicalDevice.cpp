@@ -286,29 +286,6 @@ namespace ashes::gl4
 		PFN_glGetStringi glGetStringi;
 		PFN_glGetInternalformativ glGetInternalformativ;
 
-#if ASHES_WIN32
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( wglGetProcAddress( name ) );
-			return function != nullptr;
-		}
-#elif ASHES_XLIB
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
-		}
-#else
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
-		}
-#endif
-
 		uint32_t doGetVendorID( std::string vendorName )
 		{
 			uint32_t result = 0u;
@@ -354,27 +331,27 @@ namespace ashes::gl4
 		return {};
 	}
 
-	VkPhysicalDeviceProperties PhysicalDevice::getProperties()const
+	VkPhysicalDeviceProperties const & PhysicalDevice::getProperties()const
 	{
 		return m_properties;
 	}
 
-	VkPhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
+	VkPhysicalDeviceMemoryProperties const & PhysicalDevice::getMemoryProperties()const
 	{
 		return Instance::getMemoryProperties();
 	}
 
-	VkPhysicalDeviceFeatures PhysicalDevice::getFeatures()const
+	VkPhysicalDeviceFeatures const & PhysicalDevice::getFeatures()const
 	{
 		return m_features;
 	}
 
-	std::vector < VkQueueFamilyProperties > PhysicalDevice::getQueueFamilyProperties()const
+	std::vector< VkQueueFamilyProperties > const & PhysicalDevice::getQueueFamilyProperties()const
 	{
 		return m_queueProperties;
 	}
 
-	VkFormatProperties PhysicalDevice::getFormatProperties( VkFormat fmt )const
+	VkFormatProperties const & PhysicalDevice::getFormatProperties( VkFormat fmt )const
 	{
 		return m_formatProperties[fmt];
 	}

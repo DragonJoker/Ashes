@@ -147,7 +147,7 @@ namespace ashes::gl4
 	{
 		glLogCommand( "BeginRenderPassCommand" );
 
-		auto & save = get( m_device )->getCurrentScissor();
+		auto & save = context->getCurrentScissor();
 
 		if ( save != m_scissor )
 		{
@@ -234,7 +234,7 @@ namespace ashes::gl4
 				, save.extent.height );
 		}
 
-		get( m_device )->setCurrentFramebuffer( get( m_frameBuffer )->getInternal() );
+		context->setCurrentFramebuffer( get( m_frameBuffer )->getInternal() );
 	}
 
 	CommandPtr BeginRenderPassCommand::clone()const

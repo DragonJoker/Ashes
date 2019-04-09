@@ -10,22 +10,25 @@ See LICENSE file in root folder
 #		define NOMINMAX
 #	endif
 #	include <Windows.h>
+#	include <gl/GL.h>
 #	include "vulkan/vulkan_win32.h"
 
 namespace ashes::gl4
 {
 	class MswContext
-		: public Context
+		: public Context::ContextImpl
 	{
 	public:
 		MswContext( VkInstance instance
-			, VkWin32SurfaceCreateInfoKHR createInfo
+			, VkSurfaceCreateInfoKHR createInfo
 			, Context const * mainContext );
 		MswContext( VkInstance instance
 			, VkSurfaceKHR surface
 			, Context const * mainContext );
 		~MswContext();
 
+		void initialise( Context & parent )override;
+		void loadSystemFunctions()override;
 		void enable()const override;
 		void disable()const override;
 		void swapBuffers()const override;
@@ -57,9 +60,6 @@ namespace ashes::gl4
 #include "Gl4Renderer/Miscellaneous/OpenGLFunctionsList.inl"
 
 	private:
-		void doLoadBaseFunctions();
-		void doLoadMswFunctions();
-		void doLoadDebugFunctions();
 		HGLRC doCreateDummyContext();
 		bool doSelectFormat();
 		bool doCreateGl3Context( Context const * mainContext );
@@ -67,6 +67,7 @@ namespace ashes::gl4
 	private:
 		HDC m_hDC;
 		HGLRC m_hContext;
+		Context const * m_mainContext;
 	};
 }
 

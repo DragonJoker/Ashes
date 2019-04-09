@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl4Renderer/Core/GlContext.hpp"
+#include "Gl4Renderer/Core/GlContextLock.hpp"
 
 namespace ashes::gl4
 {

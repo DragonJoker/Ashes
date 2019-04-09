@@ -38,6 +38,22 @@
 
 namespace ashes::gl4
 {
+	PFN_vkVoidFunction getFunction( char const * const name );
+
+	template< typename FuncT >
+	inline bool getFunction( char const * const name, FuncT & function )
+	{
+		function = FuncT( getFunction( name ) );
+		return function != nullptr;
+	}
+
+	template< typename FuncT >
+	inline bool getFunction( std::string const & name, FuncT & function )
+	{
+		function = FuncT( getFunction( name.c_str() ) );
+		return function != nullptr;
+	}
+
 	inline void * getBufferOffset( intptr_t value )
 	{
 		return reinterpret_cast< void * >( reinterpret_cast< uint8_t * >( 0u ) + value );

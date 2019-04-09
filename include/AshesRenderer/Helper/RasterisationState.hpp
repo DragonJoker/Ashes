@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	inline VkPipelineRasterizationStateCreateInfo getRasterisationState()
+	inline VkPipelineRasterizationStateCreateInfo getDefaultRasterisationState()
 	{
 		return
 		{
@@ -18,7 +18,7 @@ namespace ashes
 			nullptr,
 			0u,
 			VK_FALSE,
-			VK_FALSE,
+			VK_FALSE,	// rasterizerDiscardEnable.
 			VK_POLYGON_MODE_FILL,
 			VK_CULL_MODE_BACK_BIT,
 			VK_FRONT_FACE_COUNTER_CLOCKWISE,
@@ -29,6 +29,8 @@ namespace ashes
 			1.0f,
 		};
 	};
+
+	VkPipelineRasterizationStateCreateInfo const & getDeactivatedRasterizationState();
 
 	inline bool operator==( VkPipelineRasterizationStateCreateInfo const & lhs, VkPipelineRasterizationStateCreateInfo const & rhs )
 	{

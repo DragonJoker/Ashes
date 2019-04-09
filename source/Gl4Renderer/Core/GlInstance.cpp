@@ -390,6 +390,7 @@ namespace ashes::gl4
 		m_features.hasBaseInstance = m_extensions.find( ARB_base_instance );
 		m_features.hasClearTexImage = m_extensions.find( ARB_clear_texture );
 		m_features.hasComputeShaders = m_extensions.find( ARB_compute_shader );
+		m_features.hasStorageBuffers = m_extensions.findAll( { ARB_compute_shader, ARB_buffer_storage, ARB_shader_image_load_store, ARB_shader_storage_buffer_object } );
 		m_features.supportsPersistentMapping = m_extensions.find( ARB_buffer_storage );
 		auto it = std::find_if( m_enabledLayerNames.begin()
 			, m_enabledLayerNames.end()
@@ -498,6 +499,18 @@ namespace ashes::gl4
 		, void * userParam )const
 	{
 		m_debugCallbacks.push_back( { report, callback, userParam } );
+		auto context = ContextLock{ *m_context };
+
+		if ( context->glDebugMessageCallback )
+		{
+			glLogCall( context
+				, glDebugMessageCallback
+				, callback
+				, userParam );
+			glLogCall( context
+				, glEnable
+				, GL_DEBUG_OUTPUT_SYNCHRONOUS );
+		}
 	}
 
 	void Instance::registerDebugMessageCallbackAMD( VkDebugReportCallbackEXT report
@@ -505,6 +518,18 @@ namespace ashes::gl4
 		, void * userParam )const
 	{
 		m_debugAMDCallbacks.push_back( { report, callback, userParam } );
+		auto context = ContextLock{ *m_context };
+
+		if ( context->glDebugMessageCallbackAMD )
+		{
+			glLogCall( context
+				, glDebugMessageCallbackAMD
+				, callback
+				, userParam );
+			glLogCall( context
+				, glEnable
+				, GL_DEBUG_OUTPUT_SYNCHRONOUS );
+		}
 	}
 
 	void Instance::reportMessage( VkDebugReportFlagsEXT flags

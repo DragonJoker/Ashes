@@ -20,10 +20,9 @@ namespace ashes::gl4
 
 	void ViewportCommand::apply( ContextLock const & context )const
 	{
-		auto & save = get( m_device )->getCurrentViewport();
 		auto & viewport = *m_viewports.begin();
 
-		if ( viewport != save )
+		if ( viewport != context->getCurrentViewport() )
 		{
 			glLogCommand( "ViewportCommand" );
 			glLogCall( context
@@ -36,7 +35,7 @@ namespace ashes::gl4
 				, glDepthRange
 				, viewport.minDepth
 				, viewport.maxDepth );
-			save = viewport;
+			context->setCurrentViewport( viewport );
 		}
 	}
 

@@ -20,10 +20,9 @@ namespace ashes::gl4
 
 	void ScissorCommand::apply( ContextLock const & context )const
 	{
-		auto & save = get( m_device )->getCurrentScissor();
 		auto & scissor = *m_scissors.begin();
 
-		if ( scissor != save )
+		if ( scissor != context->getCurrentScissor() )
 		{
 			glLogCommand( "ScissorCommand" );
 			glLogCall( context
@@ -32,7 +31,7 @@ namespace ashes::gl4
 				, scissor.offset.y
 				, scissor.extent.width
 				, scissor.extent.height );
-			save = scissor;
+			context->setCurrentScissor( scissor );
 		}
 	}
 

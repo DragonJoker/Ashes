@@ -12,17 +12,19 @@ See LICENSE file in root folder
 namespace ashes::gl4
 {
 	class X11Context
-		: public Context
+		: public ContextImpl
 	{
 	public:
 		X11Context( VkInstance instance
-			, VkXlibSurfaceCreateInfoKHR createInfo
+			, VkSurfaceCreateInfoKHR createInfo
 			, Context const * mainContext );
 		X11Context( VkInstance instance
 			, VkSurfaceKHR surface
 			, Context const * mainContext );
 		~X11Context();
 
+		void initialise( Context & parent )override;
+		void loadSystemFunctions()override;
 		void enable()const override;
 		void disable()const override;
 		void swapBuffers()const override;
@@ -42,9 +44,6 @@ namespace ashes::gl4
 #include "Gl4Renderer/Miscellaneous/OpenGLFunctionsList.inl"
 
 	private:
-		void doLoadBaseFunctions();
-		void doLoadGLXFunctions();
-		void doLoadDebugFunctions();
 		XVisualInfo * doCreateVisualInfoWithFBConfig( std::vector< int > arrayAttribs, int screen );
 		XVisualInfo * doCreateVisualInfoWithoutFBConfig( std::vector< int > arrayAttribs, int screen );
 		bool doCreateGl3Context( X11Context const * mainContext );
@@ -53,6 +52,7 @@ namespace ashes::gl4
 		GLXContext m_glxContext;
 		int m_glxVersion;
 		GLXFBConfig * m_fbConfig;
+		Context const * m_mainContext;
 	};
 }
 

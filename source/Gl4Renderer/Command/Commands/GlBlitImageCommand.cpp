@@ -158,7 +158,6 @@ namespace ashes::gl4
 
 	void BlitImageCommand::apply( ContextLock const & context )const
 	{
-		auto fbo = get( m_device )->getCurrentDepthStencilState();
 		for ( auto & playerCopy : m_layerCopies )
 		{
 			auto & layerCopy = *playerCopy;
@@ -212,7 +211,7 @@ namespace ashes::gl4
 			glLogCall( context
 				, glBindFramebuffer
 				, GL_DRAW_FRAMEBUFFER
-				, get( m_device )->getCurrentFramebuffer() );
+				, context->getCurrentFramebuffer() );
 			glLogCall( context
 				, glBindFramebuffer
 				, GL_READ_FRAMEBUFFER

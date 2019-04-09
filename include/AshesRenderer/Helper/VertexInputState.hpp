@@ -67,6 +67,12 @@ namespace ashes
 		return !( lhs == rhs );
 	}
 
+	inline bool isEmpty( VkPipelineVertexInputStateCreateInfo const & value )
+	{
+		return value.vertexAttributeDescriptionCount == 0u
+			&& value.vertexBindingDescriptionCount == 0u;
+	}
+
 	inline VkVertexInputAttributeDescription deepCopy( VkVertexInputAttributeDescription const & rhs )
 	{
 		return rhs;

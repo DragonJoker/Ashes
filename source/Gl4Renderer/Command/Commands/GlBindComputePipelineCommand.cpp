@@ -26,14 +26,13 @@ namespace ashes::gl4
 	void BindComputePipelineCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "BindComputePipelineCommand" );
-		auto & save = get( m_device )->getCurrentProgram();
 
-		if ( m_program != save )
+		if ( m_program != context->getCurrentProgram() )
 		{
 			glLogCall( context
 				, glUseProgram
 				, m_program );
-			save = m_program;
+			context->setCurrentProgram( m_program );
 		}
 	}
 

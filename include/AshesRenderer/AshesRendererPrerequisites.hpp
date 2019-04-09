@@ -252,6 +252,20 @@ namespace ashes
 		return result;
 	}
 
+	inline VkClearValue makeClearValue( VkClearColorValue v )
+	{
+		VkClearValue result;
+		result.color = std::move( v );
+		return result;
+	}
+
+	inline VkClearValue makeClearValue( VkClearDepthStencilValue v )
+	{
+		VkClearValue result;
+		result.depthStencil = std::move( v );
+		return result;
+	}
+
 	using VkQueueCreateCount = std::pair< VkDeviceQueueCreateInfo, uint32_t >;
 	using VkQueueCreateCountMap = std::map< uint32_t, VkQueueCreateCount >;
 

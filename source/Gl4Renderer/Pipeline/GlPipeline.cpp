@@ -123,18 +123,17 @@ namespace ashes::gl4
 		, m_vertexInputState{ makeOptional( createInfo.pVertexInputState
 			, m_vertexBindingDescriptions
 			, m_vertexAttributeDescriptions ) }
-		, m_inputAssemblyState{ makeOptional( createInfo.pInputAssemblyState ) }
-		, m_tessellationState{ makeOptional( createInfo.pTessellationState ) }
-		, m_viewportState{ makeOptional( createInfo.pViewportState
-			, m_viewports
-			, m_scissors ) }
-		, m_rasterizationState{ makeOptional( createInfo.pRasterizationState ) }
-		, m_multisampleState{ makeOptional( createInfo.pMultisampleState ) }
-		, m_depthStencilState{ makeOptional( createInfo.pDepthStencilState ) }
-		, m_colorBlendState{ makeOptional( createInfo.pColorBlendState
-			, m_colorBlendAttachments ) }
-		, m_dynamicState{ makeOptional( createInfo.pDynamicState
-			, m_dynamicStates ) }
+		, m_contextState
+		{
+			*createInfo.pColorBlendState,
+			createInfo.pDepthStencilState,
+			createInfo.pMultisampleState,
+			createInfo.pTessellationState,
+			createInfo.pInputAssemblyState,
+			createInfo.pViewportState,
+			createInfo.pRasterizationState,
+			createInfo.pDynamicState,
+		}
 		, m_layout{ createInfo.layout }
 		, m_renderPass{ createInfo.renderPass }
 		, m_subpass{ createInfo.subpass }
@@ -146,43 +145,9 @@ namespace ashes::gl4
 		, m_program{ m_device, m_stages }
 	{
 		auto context = get( device )->getContext();
-
-		if ( m_colorBlendState )
-		{
-			apply( m_device
-				, context
-				, m_colorBlendState.value() );
-		}
-
-		if ( m_rasterizationState )
-		{
-			apply( m_device
-				, context
-				, m_rasterizationState.value()
-				, hasDynamicStateEnable( VK_DYNAMIC_STATE_LINE_WIDTH )
-				, hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BIAS ) );
-		}
-
-		if ( m_depthStencilState )
-		{
-			apply( m_device
-				, context
-				, m_depthStencilState.value() );
-		}
-
-		if ( m_multisampleState )
-		{
-			apply( m_device
-				, context
-				, m_multisampleState.value() );
-		}
-
-		if ( m_tessellationState )
-		{
-			apply( m_device
-				, context
-				, m_tessellationState.value() );
-		}
+		context->apply( context
+			, *get( device )
+			, m_contextState );
 
 		ShaderDesc shaderDesc = m_program.link( context );
 		m_constantsPcb.stageFlags = shaderDesc.stageFlags;

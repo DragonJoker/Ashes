@@ -37,6 +37,7 @@ namespace ashes::gl4
 	makeGlExtension( AMDX_debug_output );
 	makeGlExtension( ARB_texture_buffer_range );
 	makeGlExtension( ARB_shader_image_load_store );
+	makeGlExtension( ARB_shader_storage_buffer_object );
 	makeGlExtension( ARB_base_instance );
 	makeGlExtension( ARB_clear_texture );
 	makeGlExtension( ARB_compute_shader );
@@ -205,6 +206,8 @@ namespace ashes::gl4
 	using PFN_glCreateShader = GLuint( GLAPIENTRY * )( GLenum type );
 	using PFN_glCreateShaderProgramv = GLuint( GLAPIENTRY * )( GLenum type, GLsizei count, const char ** strings );
 	using PFN_glCullFace = void ( GLAPIENTRY * )( GLenum mode );
+	using PFN_glDebugMessageCallback = void ( GLAPIENTRY * )( PFNGLDEBUGPROC callback, void * userParam );
+	using PFN_glDebugMessageCallbackAMD = void ( GLAPIENTRY * )( PFNGLDEBUGAMDPROC callback, void * userParam );
 	using PFN_glDeleteBuffers = void ( GLAPIENTRY * )( GLsizei n, const GLuint * buffers );
 	using PFN_glDeleteFramebuffers = void ( GLAPIENTRY * )( GLsizei n, const GLuint* framebuffers );
 	using PFN_glDeleteProgram = void ( GLAPIENTRY * )( GLuint program );
@@ -222,6 +225,7 @@ namespace ashes::gl4
 	using PFN_glDispatchComputeIndirect = void ( GLAPIENTRY * )( GLintptr indirect );
 	using PFN_glDrawArrays = void ( GLAPIENTRY * )( GLenum mode, GLint first, GLsizei count );
 	using PFN_glDrawArraysInstancedBaseInstance = void ( GLAPIENTRY * )( GLenum mode, GLint first, GLsizei count, GLsizei primcount, GLuint baseinstance );
+	using PFN_glDrawBuffer = void ( GLAPIENTRY * )( GLenum buf );
 	using PFN_glDrawBuffers = void ( GLAPIENTRY * )( GLsizei n, const GLenum* bufs );
 	using PFN_glDrawElementsBaseVertex = void ( GLAPIENTRY * )( GLenum mode, GLsizei count, GLenum type, void *indices, GLint basevertex );
 	using PFN_glDrawElementsInstanced = void ( GLAPIENTRY * )( GLenum mode, GLsizei count, GLenum type, const void * indices, GLsizei primcount );

@@ -54,17 +54,25 @@ namespace ashes
 		*/
 		~FrameBuffer();
 		/**
-		*\~english
-		*\return
-		*	The framebuffer dimensions.
-		*\~french
-		*\return
-		*	Les dimensions du tampon d'image.
-		*/
+		*\name
+		*	Getters.
+		**/
+		/**@{*/
 		inline VkExtent2D const & getDimensions()const
 		{
 			return m_dimensions;
 		}
+
+		inline auto begin()const
+		{
+			return m_views.begin();
+		}
+
+		inline auto end()const
+		{
+			return m_views.end();
+		}
+		/**@}*/
 		/**
 		*\~french
 		*\brief

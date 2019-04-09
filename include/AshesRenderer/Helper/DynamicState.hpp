@@ -8,9 +8,11 @@ See LICENSE file in root folder.
 
 #include "AshesRenderer/AshesRendererPrerequisites.hpp"
 
+#include <algorithm>
+
 namespace ashes
 {
-	inline VkPipelineDynamicStateCreateInfo getDynamicState()
+	inline VkPipelineDynamicStateCreateInfo getDefaultDynamicState()
 	{
 		return
 		{
@@ -21,6 +23,16 @@ namespace ashes
 			nullptr,
 		};
 	};
+
+	VkPipelineDynamicStateCreateInfo const & getDeactivatedDynamicState();
+
+	template< typename ItType >
+	bool hasDynamicState( ItType begin
+		, ItType end
+		, VkDynamicState state )
+	{
+		return end != std::find( begin, end, state );
+	}
 
 	inline bool operator==( VkPipelineDynamicStateCreateInfo const & lhs
 		, VkPipelineDynamicStateCreateInfo const & rhs )

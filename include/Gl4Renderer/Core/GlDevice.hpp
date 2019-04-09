@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl4Renderer/Core/GlContext.hpp"
+#include "Gl4Renderer/Core/GlContextLock.hpp"
 #include "Gl4Renderer/Core/GlPhysicalDevice.hpp"
 
 namespace ashes::gl4
@@ -64,64 +64,9 @@ namespace ashes::gl4
 			return { *m_currentContext };
 		}
 
-		inline void setCurrentFramebuffer( GLuint fbo )const
-		{
-			m_fbo = fbo;
-		}
-
 		inline VkPhysicalDeviceFeatures const & getEnabledFeatures()const
 		{
 			return *m_createInfos.pEnabledFeatures;
-		}
-
-		inline GLuint getCurrentFramebuffer()const
-		{
-			return m_fbo;
-		}
-
-		inline VkRect2D & getCurrentScissor()const
-		{
-			return m_scissor;
-		}
-
-		inline VkViewport & getCurrentViewport()const
-		{
-			return m_viewport;
-		}
-
-		inline VkPipelineColorBlendStateCreateInfo & getCurrentBlendState()const
-		{
-			return m_cbState;
-		}
-
-		inline VkPipelineDepthStencilStateCreateInfo & getCurrentDepthStencilState()const
-		{
-			return m_dsState;
-		}
-
-		inline VkPipelineMultisampleStateCreateInfo & getCurrentMultisampleState()const
-		{
-			return m_msState;
-		}
-
-		inline VkPipelineRasterizationStateCreateInfo & getCurrentRasterisationState()const
-		{
-			return m_rsState;
-		}
-
-		inline VkPipelineTessellationStateCreateInfo & getCurrentTessellationState()const
-		{
-			return m_tsState;
-		}
-
-		inline VkPipelineInputAssemblyStateCreateInfo & getCurrentInputAssemblyState()const
-		{
-			return m_iaState;
-		}
-
-		inline GLuint & getCurrentProgram()const
-		{
-			return m_currentProgram;
 		}
 
 		inline GeometryBuffers & getEmptyIndexedVao()const
@@ -171,19 +116,10 @@ namespace ashes::gl4
 		{
 			VkBuffer indexBuffer;
 			VkBuffer vertexBuffer;
+			VkDeviceMemory indexMemory;
+			VkDeviceMemory vertexMemory;
 			GeometryBuffersPtr geometryBuffers;
 		} m_dummyIndexed;
-		mutable VkRect2D m_scissor{ 0, 0, 0, 0 };
-		mutable VkViewport m_viewport{ 0, 0, 0, 0 };
-		mutable VkPipelineColorBlendAttachmentStateArray m_cbStateAttachments;
-		mutable VkPipelineColorBlendStateCreateInfo m_cbState;
-		mutable VkPipelineDepthStencilStateCreateInfo m_dsState;
-		mutable VkPipelineMultisampleStateCreateInfo m_msState;
-		mutable VkPipelineRasterizationStateCreateInfo m_rsState;
-		mutable VkPipelineTessellationStateCreateInfo m_tsState;
-		mutable VkPipelineInputAssemblyStateCreateInfo m_iaState;
-		mutable GLuint m_currentProgram;
 		mutable GLuint m_blitFbos[2];
-		mutable GLuint m_fbo{ 0u };
 	};
 }

@@ -72,7 +72,7 @@ namespace ashes::gl4
 	void ClearAttachmentsCommand::apply( ContextLock const & context )const
 	{
 		glLogCommand( "ClearAttachmentsCommand" );
-		auto scissor = get( m_device )->getCurrentScissor();
+		auto scissor = context->getCurrentScissor();
 
 		for ( auto & clearAttach : m_clearAttaches )
 		{

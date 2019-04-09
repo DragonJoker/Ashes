@@ -10,12 +10,12 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	inline VkPipelineDepthStencilStateCreateInfo getDepthStencilState()
+	inline VkPipelineDepthStencilStateCreateInfo getDefaultDepthStencilState( void * pNext = nullptr )
 	{
 		return
 		{
 			VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-			nullptr,
+			pNext,
 			0u,
 			VK_TRUE,
 			VK_TRUE,
@@ -44,6 +44,8 @@ namespace ashes
 			1.0f,
 		};
 	};
+
+	VkPipelineDepthStencilStateCreateInfo const & getDeactivatedDepthStencilState();
 
 	inline bool operator==( VkPipelineDepthStencilStateCreateInfo const & lhs, VkPipelineDepthStencilStateCreateInfo const & rhs )
 	{
