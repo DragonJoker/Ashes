@@ -19,9 +19,17 @@ if ( OpenGL_FOUND )
 	)
 
 	file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
+		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.c
+		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
+		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
 		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
 		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
 		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
+	)
+
+	file( GLOB_RECURSE ${PROJECT_NAME}_NVS_FILES
+		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.natvis
+		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.natvis
 	)
 
 	file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
@@ -71,6 +79,7 @@ if ( OpenGL_FOUND )
 	add_library( ${PROJECT_NAME} SHARED
 		${${PROJECT_NAME}_SRC_FILES}
 		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_NVS_FILES}
 		${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 		${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 	)
@@ -116,6 +125,7 @@ if ( OpenGL_FOUND )
 
 	source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
 	source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
+	source_group( "Natvis Files" FILES ${${PROJECT_NAME}_NVS_FILES} )
 
 	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes" )

@@ -6,6 +6,7 @@
 #include <AshesPP/Core/Device.hpp>
 #include <AshesPP/Pipeline/GraphicsPipeline.hpp>
 #include <AshesPP/Pipeline/PipelineLayout.hpp>
+#include <AshesPP/Image/ImageView.hpp>
 #include <AshesPP/Image/Sampler.hpp>
 #include <AshesPP/Core/SwapChain.hpp>
 
@@ -85,7 +86,6 @@ namespace vkapp
 		ashes::GraphicsPipelinePtr m_pipeline;
 		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
 		ashes::BufferPtr< uint16_t > m_indexBuffer;
-		ashes::VertexLayoutPtr m_vertexLayout;
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::ImagePtr m_texture;
 		ashes::ImageViewPtr m_view;

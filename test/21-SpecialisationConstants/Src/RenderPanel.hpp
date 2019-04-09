@@ -113,7 +113,6 @@ namespace vkapp
 		} m_offscreenPipelines;
 		ashes::VertexBufferPtr< TexturedVertexData > m_offscreenVertexBuffer;
 		ashes::BufferPtr< uint16_t > m_offscreenIndexBuffer;
-		ashes::VertexLayoutPtr m_offscreenVertexLayout;
 		ashes::DescriptorSetLayoutPtr m_offscreenDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_offscreenDescriptorPool;
 		ashes::DescriptorSetPtr m_offscreenDescriptorSet;
@@ -130,7 +129,6 @@ namespace vkapp
 		ashes::PipelineLayoutPtr m_mainPipelineLayout;
 		ashes::GraphicsPipelinePtr m_mainPipeline;
 		ashes::VertexBufferPtr< TexturedVertexData > m_mainVertexBuffer;
-		ashes::VertexLayoutPtr m_mainVertexLayout;
 		ashes::DescriptorSetLayoutPtr m_mainDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_mainDescriptorPool;
 		ashes::DescriptorSetPtr m_mainDescriptorSet;

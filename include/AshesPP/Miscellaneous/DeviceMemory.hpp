@@ -15,38 +15,6 @@ namespace ashes
 	/**
 	*\~english
 	*\brief
-	*	Computes an aligned size.
-	*\param[in] size
-	*	The unaligned size.
-	*\param[in] align
-	*	The alignment value.
-	*\return
-	*	The aligned size.
-	*\~french
-	*\brief
-	*	Calcule une taille alignée.
-	*\param[in] size
-	*	La taille non alignée.
-	*\param[in] align
-	*	La valeur d'alignement.
-	*\return
-	*	La taille alignée.
-	*/
-	inline VkDeviceSize getAlignedSize( VkDeviceSize size, VkDeviceSize align )
-	{
-		VkDeviceSize result = 0u;
-
-		while ( size > align )
-		{
-			size -= align;
-			result += align;
-		}
-
-		return result + align;
-	}
-	/**
-	*\~english
-	*\brief
 	*	A device memory object.
 	*\~french
 	*\brief

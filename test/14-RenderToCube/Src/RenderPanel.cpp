@@ -474,7 +474,7 @@ namespace vkapp
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )
-			, m_frameBuffer->begin()->getView()
+			, *( *m_frameBuffer->begin() )
 			, *m_sampler );
 		m_mainDescriptorSet->update();
 	}

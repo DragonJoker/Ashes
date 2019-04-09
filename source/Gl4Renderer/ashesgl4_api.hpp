@@ -131,6 +131,10 @@ namespace ashes::gl4
 		{
 			result = exc.getResult();
 		}
+		catch ( std::exception & exc )
+		{
+			std::cerr << exc.what() << std::endl;
+		}
 		catch ( ... )
 		{
 		}

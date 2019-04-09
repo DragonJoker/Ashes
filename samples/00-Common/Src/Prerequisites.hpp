@@ -4,11 +4,7 @@
 #include <AshesPP/Core/Instance.hpp>
 #include <AshesPP/Image/Image.hpp>
 #include <AshesPP/Image/ImageView.hpp>
-#include <AshesPP/Miscellaneous/VkExtent2D.hpp>
-#include <AshesPP/Pipeline/VertexLayout.hpp>
-#include <AshesPP/RenderPass/RenderSubpass.hpp>
 
-#include <Utils/Factory.hpp>
 #include <Utils/Mat4.hpp>
 #include <Utils/UtilsDebug.hpp>
 #include <Utils/UtilsDevice.hpp>
