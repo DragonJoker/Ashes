@@ -11,213 +11,277 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
-#define getBufferOffset( n ) ( ( uint8_t * )nullptr + ( n ) )
-
 namespace ashes::gl4
 {
 	enum GlPackAlignment
+		: uint32_t
 	{
 		GL_UNPACK_ALIGNMENT = 0x0CF5,
 		GL_PACK_ALIGNMENT = 0x0D05,
 	};
 
-	CopyBufferToImageCommand::CopyBufferToImageCommand( VkDevice device
-		, VkBufferImageCopy copyInfo
-		, VkBuffer src
-		, VkImage dst )
-		: CommandBase{ device }
-		, m_copyInfo{ copyInfo }
-		, m_src{ static_cast< VkBuffer >( src ) }
-		, m_dst{ static_cast< VkImage >( dst ) }
-		, m_internal{ getInternalFormat( get( m_dst )->getFormat() ) }
-		, m_format{ getFormat( m_internal ) }
-		, m_type{ getType( m_internal ) }
-		, m_copyTarget{ convert( get( m_dst )->getType(), get( m_dst )->getArrayLayers() ) }
+	void apply( ContextLock const & context
+		, CmdPixelStore const & cmd )
 	{
-	}
-
-	void CopyBufferToImageCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "CopyBufferToImageCommand" );
-		glLogCall( context
-			, glBindTexture
-			, m_copyTarget
-			, get( m_dst )->getInternal() );
 		glLogCall( context
 			, glPixelStorei
-			, GL_UNPACK_ALIGNMENT
-			, 1 );
-		glLogCall( context
-			, glBindBuffer
-			, GL_BUFFER_TARGET_PIXEL_UNPACK
-			, get( m_src )->getInternal() );
+			, cmd.name
+			, cmd.param );
+	}
 
-		if ( isCompressedFormat( get( m_dst )->getFormat() ) )
+	void apply( ContextLock const & context
+		, CmdCompressedTexSubImage1D const & cmd )
+	{
+		glLogCall( context
+			, glCompressedTexSubImage1D
+			, cmd.copyTarget
+			, cmd.mipLevel
+			, cmd.x
+			, cmd.width
+			, cmd.format
+			, cmd.imageSize
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCompressedTexSubImage2D const & cmd )
+	{
+		glLogCall( context
+			, glCompressedTexSubImage2D
+			, cmd.copyTarget
+			, cmd.mipLevel
+			, cmd.x
+			, cmd.y
+			, cmd.width
+			, cmd.height
+			, cmd.format
+			, cmd.imageSize
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCompressedTexSubImage3D const & cmd )
+	{
+		glLogCall( context
+			, glCompressedTexSubImage3D
+			, cmd.copyTarget
+			, cmd.mipLevel
+			, cmd.x
+			, cmd.y
+			, cmd.z
+			, cmd.width
+			, cmd.height
+			, cmd.depth
+			, cmd.format
+			, cmd.imageSize
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdTexSubImage1D const & cmd )
+	{
+		glLogCall( context
+			, glTexSubImage1D
+			, cmd.copyTarget
+			, cmd.mipLevel
+			, cmd.x
+			, cmd.width
+			, cmd.format
+			, cmd.type
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdTexSubImage2D const & cmd )
+	{
+		glLogCall( context
+			, glTexSubImage2D
+			, cmd.copyTarget
+			, cmd.mipLevel
+			, cmd.x
+			, cmd.y
+			, cmd.width
+			, cmd.height
+			, cmd.format
+			, cmd.type
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdTexSubImage3D const & cmd )
+	{
+		glLogCall( context
+			, glTexSubImage3D
+			, cmd.copyTarget
+			, cmd.mipLevel
+			, cmd.x
+			, cmd.y
+			, cmd.z
+			, cmd.width
+			, cmd.height
+			, cmd.depth
+			, cmd.format
+			, cmd.type
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void buildCopyBufferToImageCommand( VkBufferImageCopy copyInfo
+		, VkBuffer src
+		, VkImage dst
+		, CmdList & list )
+	{
+		glLogCommand( "CopyBufferToImageCommand" );
+		auto copyTarget = convert( get( dst )->getType(), get( dst )->getArrayLayers() );
+		list.push_back( makeCmd< OpType::eBindTexture >( copyTarget
+			, get( dst )->getInternal() ) );
+
+		list.push_back( makeCmd< OpType::ePixelStore >( GL_UNPACK_ALIGNMENT
+			, 1 ) );
+
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_UNPACK
+			, get( src )->getInternal() ) );
+
+		if ( isCompressedFormat( get( dst )->getFormat() ) )
 		{
-			switch ( m_copyTarget )
+			switch ( copyTarget )
 			{
 			case GL_TEXTURE_1D:
-				glLogCall( context
-					, glCompressedTexSubImage1D
-					, m_copyTarget
-					, m_copyInfo.imageSubresource.mipLevel
-					, m_copyInfo.imageOffset.x
-					, m_copyInfo.imageExtent.width
-					, m_internal
-					, getSize( m_copyInfo.imageExtent, get( m_dst )->getFormat() )
-					, getBufferOffset( m_copyInfo.bufferOffset ) );
+				list.push_back( makeCmd< OpType::eCompressedTexSubImage1D >( copyTarget
+					, copyInfo.imageSubresource.mipLevel
+					, copyInfo.imageOffset.x
+					, copyInfo.imageExtent.width
+					, getInternalFormat( get( dst )->getFormat() )
+					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormat() ) )
+					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_2D:
-				glLogCall( context
-					, glCompressedTexSubImage2D
-					, m_copyTarget
-					, m_copyInfo.imageSubresource.mipLevel
-					, m_copyInfo.imageOffset.x
-					, m_copyInfo.imageOffset.y
-					, m_copyInfo.imageExtent.width
-					, m_copyInfo.imageExtent.height
-					, m_internal
-					, getSize( m_copyInfo.imageExtent, get( m_dst )->getFormat() )
-					, getBufferOffset( m_copyInfo.bufferOffset ) );
+				list.push_back( makeCmd< OpType::eCompressedTexSubImage2D >( copyTarget
+					, copyInfo.imageSubresource.mipLevel
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
+					, getInternalFormat( get( dst )->getFormat() )
+					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormat() ) )
+					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_3D:
-				glLogCall( context
-					, glCompressedTexSubImage3D
-					, m_copyTarget
-					, m_copyInfo.imageSubresource.mipLevel
-					, m_copyInfo.imageOffset.x
-					, m_copyInfo.imageOffset.y
-					, m_copyInfo.imageOffset.z
-					, m_copyInfo.imageExtent.width
-					, m_copyInfo.imageExtent.height
-					, m_copyInfo.imageExtent.depth
-					, m_internal
-					, getSize( m_copyInfo.imageExtent, get( m_dst )->getFormat() )
-					, getBufferOffset( m_copyInfo.bufferOffset ) );
+				list.push_back( makeCmd< OpType::eCompressedTexSubImage3D >( copyTarget
+					, copyInfo.imageSubresource.mipLevel
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
+					, copyInfo.imageOffset.z
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
+					, copyInfo.imageExtent.depth
+					, getInternalFormat( get( dst )->getFormat() )
+					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormat() ) )
+					, int32_t( copyInfo.bufferOffset ) ) );
 
 			case GL_TEXTURE_1D_ARRAY:
-				glLogCall( context
-					, glCompressedTexSubImage2D
-					, m_copyTarget
-					, m_copyInfo.imageSubresource.mipLevel
-					, m_copyInfo.imageOffset.x
-					, m_copyInfo.imageSubresource.baseArrayLayer
-					, m_copyInfo.imageExtent.width
-					, m_copyInfo.imageSubresource.layerCount
-					, m_internal
-					, getSize( m_copyInfo.imageExtent, get( m_dst )->getFormat() )
-					, getBufferOffset( m_copyInfo.bufferOffset ) );
+				list.push_back( makeCmd< OpType::eCompressedTexSubImage2D >( copyTarget
+					, copyInfo.imageSubresource.mipLevel
+					, copyInfo.imageOffset.x
+					, int32_t( copyInfo.imageSubresource.baseArrayLayer )
+					, copyInfo.imageExtent.width
+					, copyInfo.imageSubresource.layerCount
+					, getInternalFormat( get( dst )->getFormat() )
+					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormat() ) )
+					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_2D_ARRAY:
-				glLogCall( context
-					, glCompressedTexSubImage3D
-					, m_copyTarget
-					, m_copyInfo.imageSubresource.mipLevel
-					, m_copyInfo.imageOffset.x
-					, m_copyInfo.imageOffset.y
-					, m_copyInfo.imageSubresource.baseArrayLayer
-					, m_copyInfo.imageExtent.width
-					, m_copyInfo.imageExtent.height
-					, m_copyInfo.imageSubresource.layerCount
-					, m_internal
-					, getSize( m_copyInfo.imageExtent, get( m_dst )->getFormat() )
-					, getBufferOffset( m_copyInfo.bufferOffset ) );
+				list.push_back( makeCmd< OpType::eCompressedTexSubImage3D >( copyTarget
+					, copyInfo.imageSubresource.mipLevel
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
+					, int32_t( copyInfo.imageSubresource.baseArrayLayer )
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
+					, copyInfo.imageSubresource.layerCount
+					, getInternalFormat( get( dst )->getFormat() )
+					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormat() ) )
+					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 			}
 		}
 		else
 		{
-			switch ( m_copyTarget )
+			auto internal = getInternalFormat( get( dst )->getFormat() );
+			auto format{ getFormat( internal ) };
+			auto type{ getType( internal ) };
+
+			switch ( copyTarget )
 			{
 			case GL_TEXTURE_1D:
-				glLogCall( context
-					, glTexSubImage1D
-					, m_copyTarget
-					, m_copyInfo.imageSubresource.mipLevel
-					, m_copyInfo.imageOffset.x
-					, m_copyInfo.imageExtent.width
-					, m_format
-					, m_type
-					, getBufferOffset( m_copyInfo.bufferOffset ) );
+				list.push_back( makeCmd< OpType::eTexSubImage1D >( copyTarget
+					, copyInfo.imageSubresource.mipLevel
+					, copyInfo.imageOffset.x
+					, copyInfo.imageExtent.width
+					, format
+					, type
+					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_2D:
-				glLogCall( context
-					, glTexSubImage2D
-					, m_copyTarget
-					, m_copyInfo.imageSubresource.mipLevel
-					, m_copyInfo.imageOffset.x
-					, m_copyInfo.imageOffset.y
-					, m_copyInfo.imageExtent.width
-					, m_copyInfo.imageExtent.height
-					, m_format
-					, m_type
-					, getBufferOffset( m_copyInfo.bufferOffset ) );
+				list.push_back( makeCmd< OpType::eTexSubImage2D >( copyTarget
+					, copyInfo.imageSubresource.mipLevel
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
+					, format
+					, type
+					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_3D:
-				glLogCall( context
-					, glTexSubImage3D
-					, m_copyTarget
-					, m_copyInfo.imageSubresource.mipLevel
-					, m_copyInfo.imageOffset.x
-					, m_copyInfo.imageOffset.y
-					, m_copyInfo.imageOffset.z
-					, m_copyInfo.imageExtent.width
-					, m_copyInfo.imageExtent.height
-					, m_copyInfo.imageExtent.depth
-					, m_format
-					, m_type
-					, getBufferOffset( m_copyInfo.bufferOffset ) );
+				list.push_back( makeCmd< OpType::eTexSubImage3D >( copyTarget
+					, copyInfo.imageSubresource.mipLevel
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
+					, copyInfo.imageOffset.z
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
+					, copyInfo.imageExtent.depth
+					, format
+					, type
+					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_1D_ARRAY:
-				glLogCall( context
-					, glTexSubImage2D
-					, m_copyTarget
-					, m_copyInfo.imageSubresource.mipLevel
-					, m_copyInfo.imageOffset.x
-					, m_copyInfo.imageSubresource.baseArrayLayer
-					, m_copyInfo.imageExtent.width
-					, m_copyInfo.imageSubresource.layerCount
-					, m_format
-					, m_type
-					, getBufferOffset( m_copyInfo.bufferOffset ) );
+				list.push_back( makeCmd< OpType::eTexSubImage2D >( copyTarget
+					, copyInfo.imageSubresource.mipLevel
+					, copyInfo.imageOffset.x
+					, int32_t( copyInfo.imageSubresource.baseArrayLayer )
+					, copyInfo.imageExtent.width
+					, copyInfo.imageSubresource.layerCount
+					, format
+					, type
+					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_2D_ARRAY:
-				glLogCall( context
-					, glTexSubImage3D
-					, m_copyTarget
-					, m_copyInfo.imageSubresource.mipLevel
-					, m_copyInfo.imageOffset.x
-					, m_copyInfo.imageOffset.y
-					, m_copyInfo.imageSubresource.baseArrayLayer
-					, m_copyInfo.imageExtent.width
-					, m_copyInfo.imageExtent.height
-					, m_copyInfo.imageSubresource.layerCount
-					, m_format
-					, m_type
-					, getBufferOffset( m_copyInfo.bufferOffset ) );
+				list.push_back( makeCmd< OpType::eTexSubImage3D >( copyTarget
+					, copyInfo.imageSubresource.mipLevel
+					, copyInfo.imageOffset.x
+					, copyInfo.imageOffset.y
+					, int32_t( copyInfo.imageSubresource.baseArrayLayer )
+					, copyInfo.imageExtent.width
+					, copyInfo.imageExtent.height
+					, copyInfo.imageSubresource.layerCount
+					, format
+					, type
+					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 			}
 		}
 
-		glLogCall( context
-			, glBindBuffer
-			, GL_BUFFER_TARGET_PIXEL_UNPACK
-			, 0u );
-		glLogCall( context
-			, glBindTexture
-			, m_copyTarget
-			, 0u );
-	}
-
-	CommandPtr CopyBufferToImageCommand::clone()const
-	{
-		return std::make_unique< CopyBufferToImageCommand >( *this );
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_UNPACK
+			, 0u ) );
+		list.push_back( makeCmd< OpType::eBindTexture >( copyTarget
+			, 0u ) );
 	}
 }

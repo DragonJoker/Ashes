@@ -8,19 +8,7 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	class EndSubpassCommand
-		: public CommandBase
-	{
-	public:
-		EndSubpassCommand( VkDevice device
-			, VkFramebuffer frameBuffer
-			, VkSubpassDescription const & subpass );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		VkFramebuffer m_frameBuffer;
-		VkSubpassDescription const & m_subpass;
-	};
+	void buildEndSubpassCommand( VkFramebuffer frameBuffer
+		, VkSubpassDescription const & subpass
+		, CmdList & list );
 }

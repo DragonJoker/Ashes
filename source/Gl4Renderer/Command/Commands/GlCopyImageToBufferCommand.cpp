@@ -54,91 +54,68 @@ namespace ashes::gl4
 		}
 	}
 
-	CopyImageToBufferCommand::CopyImageToBufferCommand( VkDevice device
-		, VkBufferImageCopy m_copyInfo
-		, VkImage src
-		, VkBuffer dst )
-		: CommandBase{ device }
-		, m_src{ src }
-		, m_dst{ dst }
-		, m_copyInfo{ std::move( m_copyInfo ) }
-		, m_internal{ getInternalFormat( get( m_src )->getFormat() ) }
-		, m_format{ getFormat( m_internal ) }
-		, m_type{ getType( m_internal ) }
-		, m_target{ convert( get( m_src )->getType(), 1u ) }
-		, m_view{ createView( m_device, m_src, m_copyInfo ) }
-		, m_srcFbo{ get( m_device )->getBlitSrcFbo() }
+	void apply( ContextLock const & context
+		, CmdReadBuffer const & cmd )
 	{
-	}
-
-	CopyImageToBufferCommand::CopyImageToBufferCommand( CopyImageToBufferCommand const & rhs )
-		: CommandBase{ rhs.m_device }
-		, m_src{ rhs.m_src }
-		, m_dst{ rhs.m_dst }
-		, m_copyInfo{ rhs.m_copyInfo }
-		, m_internal{ rhs.m_internal }
-		, m_format{ rhs.m_format }
-		, m_type{ rhs.m_type }
-		, m_target{ rhs.m_target }
-		, m_view{ createView( m_device, m_src, m_copyInfo ) }
-		, m_srcFbo{ rhs.m_srcFbo }
-	{
-	}
-
-	void CopyImageToBufferCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "CopyImageToBufferCommand" );
-		glLogCall( context
-			, glBindBuffer
-			, GL_BUFFER_TARGET_PIXEL_PACK
-			, get( m_dst )->getInternal() );
-
-		// Setup source FBO
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, m_srcFbo );
-		glLogCall( context
-			, glFramebufferTexture2D
-			, GL_FRAMEBUFFER
-			, GL_ATTACHMENT_POINT_COLOR0
-			, GL_TEXTURE_2D
-			, get( m_view )->getInternal()
-			, 0u );
 		glLogCall( context
 			, glReadBuffer
-			, GL_ATTACHMENT_POINT_COLOR0 );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, context->getCurrentFramebuffer() );
-
-		// Read pixels
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_READ_FRAMEBUFFER
-			, m_srcFbo );
-		glLogCall( context
-			, glReadPixels
-			, m_copyInfo.imageOffset.x
-			, m_copyInfo.imageOffset.y
-			, m_copyInfo.imageExtent.width
-			, m_copyInfo.imageExtent.height
-			, m_format
-			, m_type
-			, nullptr );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_READ_FRAMEBUFFER
-			, 0u );
-		glLogCall( context
-			, glBindBuffer
-			, GL_BUFFER_TARGET_PIXEL_PACK
-			, 0u );
+			, cmd.point );
 	}
 
-	CommandPtr CopyImageToBufferCommand::clone()const
+	void apply( ContextLock const & context
+		, CmdReadPixels const & cmd )
 	{
-		return std::make_unique< CopyImageToBufferCommand >( *this );
+		glLogCall( context
+			, glReadPixels
+			, cmd.x
+			, cmd.y
+			, cmd.width
+			, cmd.height
+			, cmd.format
+			, cmd.type
+			, nullptr );
+	}
+
+	void buildCopyImageToBufferCommand( VkDevice device
+		, VkBufferImageCopy copyInfo
+		, VkImage src
+		, VkBuffer dst
+		, CmdList & list )
+	{
+		glLogCommand( "CopyImageToBufferCommand" );
+		auto internal = getInternalFormat( get( src )->getFormat() );
+		auto format = getFormat( internal );
+		auto type = getType( internal );
+		auto view = createView( device, src, copyInfo );
+
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
+			, get( dst )->getInternal() ) );
+
+		// Setup source FBO
+		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+			, get( device )->getBlitSrcFbo() ) );
+		list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+			, GL_ATTACHMENT_POINT_COLOR0
+			, GL_TEXTURE_2D
+			, get( view )->getInternal()
+			, 0u ) );
+		list.push_back( makeCmd< OpType::eReadBuffer >( GL_ATTACHMENT_POINT_COLOR0 ) );
+		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+			, 0u ) );
+
+		// Read pixels
+		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
+			, get( device )->getBlitSrcFbo() ) );
+		list.push_back( makeCmd< OpType::eReadPixels >( copyInfo.imageOffset.x
+			, copyInfo.imageOffset.y
+			, copyInfo.imageExtent.width
+			, copyInfo.imageExtent.height
+			, format
+			, type ) );
+		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
+			, 0u ) );
+
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
+			, 0u ) );
 	}
 }

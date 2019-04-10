@@ -10,37 +10,125 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Commande de vidage d'une image.
-	*/
-	class ClearDepthStencilCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eClearTexDepth >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] image
-		*	L'image à vider.
-		*\param[in] colour
-		*	La couleur de vidage.
-		*/
-		ClearDepthStencilCommand( VkDevice device
-			, VkImage image
-			, VkImageLayout imageLayout
-			, VkClearDepthStencilValue value
-			, VkImageSubresourceRangeArray ranges );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		VkImage m_image;
-		VkClearDepthStencilValue m_value;
-		VkImageSubresourceRangeArray m_ranges;
-		GlInternal m_internal;
-		GlFormat m_format;
-		GlType m_type;
+		static Op constexpr value = { OpType::eClearTexDepth, 6u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eClearTexDepth >
+	{
+		inline CmdT( uint32_t name
+			, uint32_t mipLevel
+			, uint32_t format
+			, uint32_t type
+			, float depth )
+			: cmd{ { OpType::eClearTexDepth, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, name{ std::move( name ) }
+			, mipLevel{ std::move( mipLevel ) }
+			, format{ std::move( format ) }
+			, type{ std::move( type ) }
+			, depth{ std::move( depth ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t name;
+		uint32_t mipLevel;
+		uint32_t format;
+		uint32_t type;
+		float depth;
+	};
+	using CmdClearTexDepth = CmdT< OpType::eClearTexDepth >;
+
+	void apply( ContextLock const & context
+		, CmdClearTexDepth const & cmd );
+	
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eClearTexStencil >
+	{
+		static Op constexpr value = { OpType::eClearTexStencil, 6u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eClearTexStencil >
+	{
+		inline CmdT( uint32_t name
+			, uint32_t mipLevel
+			, uint32_t format
+			, uint32_t type
+			, int32_t stencil )
+			: cmd{ { OpType::eClearTexStencil, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, name{ std::move( name ) }
+			, mipLevel{ std::move( mipLevel ) }
+			, format{ std::move( format ) }
+			, type{ std::move( type ) }
+			, stencil{ std::move( stencil ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t name;
+		uint32_t mipLevel;
+		uint32_t format;
+		uint32_t type;
+		int32_t stencil;
+	};
+	using CmdClearTexStencil = CmdT< OpType::eClearTexStencil >;
+
+	void apply( ContextLock const & context
+		, CmdClearTexStencil const & cmd );
+	
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eClearTexDepthStencil >
+	{
+		static Op constexpr value = { OpType::eClearTexDepthStencil, 7u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eClearTexDepthStencil >
+	{
+		inline CmdT( uint32_t name
+			, uint32_t mipLevel
+			, uint32_t format
+			, uint32_t type
+			, VkClearDepthStencilValue depthStencil )
+			: cmd{ { OpType::eClearTexDepthStencil, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, name{ std::move( name ) }
+			, mipLevel{ std::move( mipLevel ) }
+			, format{ std::move( format ) }
+			, type{ std::move( type ) }
+			, depthStencil{ std::move( depthStencil ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t name;
+		uint32_t mipLevel;
+		uint32_t format;
+		uint32_t type;
+		VkClearDepthStencilValue depthStencil;
+	};
+	using CmdClearTexDepthStencil = CmdT< OpType::eClearTexDepthStencil >;
+
+	void apply( ContextLock const & context
+		, CmdClearTexDepthStencil const & cmd );
+
+	//*************************************************************************
+
+	void buildClearDepthStencilCommand( VkDevice device
+		, VkImage image
+		, VkImageLayout imageLayout
+		, VkClearDepthStencilValue value
+		, VkImageSubresourceRangeArray ranges
+		, CmdList & list );
+
+	//*************************************************************************
 }

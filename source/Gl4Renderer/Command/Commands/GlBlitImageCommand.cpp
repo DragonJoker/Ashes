@@ -38,167 +38,130 @@ namespace ashes::gl4
 
 			return result;
 		}
-
-		GlAttachmentPoint getAttachmentPoint( VkFormat format )
-		{
-			switch ( format )
-			{
-			case VK_FORMAT_D16_UNORM:
-			case VK_FORMAT_D32_SFLOAT:
-				return GL_ATTACHMENT_POINT_DEPTH;
-
-			case VK_FORMAT_D24_UNORM_S8_UINT:
-			case VK_FORMAT_D32_SFLOAT_S8_UINT:
-				return GL_ATTACHMENT_POINT_DEPTH_STENCIL;
-
-			case VK_FORMAT_S8_UINT:
-				return GL_ATTACHMENT_POINT_STENCIL;
-
-			default:
-				return GL_ATTACHMENT_POINT_COLOR0;
-			}
-		}
-
-		GlAttachmentType getAttachmentType( VkFormat format )
-		{
-			switch ( format )
-			{
-			case VK_FORMAT_D16_UNORM:
-			case VK_FORMAT_D32_SFLOAT:
-				return GL_ATTACHMENT_TYPE_DEPTH;
-
-			case VK_FORMAT_D24_UNORM_S8_UINT:
-			case VK_FORMAT_D32_SFLOAT_S8_UINT:
-				return GL_ATTACHMENT_TYPE_DEPTH_STENCIL;
-
-			case VK_FORMAT_S8_UINT:
-				return GL_ATTACHMENT_TYPE_STENCIL;
-
-			default:
-				return GL_ATTACHMENT_TYPE_COLOR;
-			}
-		}
 	}
 
-	BlitImageCommand::Attachment::Attachment( VkDevice device
-		, VkImageSubresourceLayers & subresource
-		, VkImage image
-		, uint32_t layer )
-		: object{ get( image )->getInternal() }
-		, point{ getAttachmentPoint( get( image )->getFormat() ) }
-		, type{ getAttachmentType( get( image )->getFormat() ) }
+	struct Attachment
 	{
-		if ( get( image )->getArrayLayers() > 1u )
+		Attachment( VkDevice device
+			, VkImageSubresourceLayers & subresource
+			, VkImage image
+			, uint32_t layer )
+			: object{ get( image )->getInternal() }
+			, point{ getAttachmentPoint( get( image )->getFormat() ) }
+			, type{ getAttachmentType( get( image )->getFormat() ) }
 		{
-			VkImageView view;
-			allocate( view
-				, nullptr
-				, device
-				, VkImageViewCreateInfo
-				{
-					VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-					nullptr,
-					0u,
-					image,
-					VkImageViewType( get( image )->getType() ),
-					get( image )->getFormat(),
-					VkComponentMapping{},
+			if ( get( image )->getArrayLayers() > 1u )
+			{
+				VkImageView view;
+				allocate( view
+					, nullptr
+					, device
+					, VkImageViewCreateInfo
 					{
-						subresource.aspectMask,
-						subresource.mipLevel,
-						1u,
-						layer,
-						1u
-					},
-				} );
-			object = get( view )->getInternal();
-			subresource.mipLevel = 0u;
+						VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+						nullptr,
+						0u,
+						image,
+						VkImageViewType( get( image )->getType() ),
+						get( image )->getFormat(),
+						VkComponentMapping{},
+						{
+							subresource.aspectMask,
+							subresource.mipLevel,
+							1u,
+							layer,
+							1u
+						},
+					} );
+				object = get( view )->getInternal();
+				subresource.mipLevel = 0u;
+			}
 		}
-	}
 
-	BlitImageCommand::LayerCopy::LayerCopy( VkDevice device
-		, VkImageBlit blitRegion
-		, VkImage srcImage
-		, VkImage dstImage
-		, uint32_t layer )
-		: region{ blitRegion }
-		, src{ device, region.srcSubresource, srcImage, layer }
-		, dst{ device, region.dstSubresource, dstImage, layer }
+		VkImageView view;
+		GlAttachmentPoint point;
+		GLuint object;
+		GlAttachmentType type;
+	};
+	struct LayerCopy
 	{
+		LayerCopy( VkDevice device
+			, VkImageBlit region
+			, VkImage srcImage
+			, VkImage dstImage
+			, uint32_t layer )
+			: region{ region }
+			, src{ device, region.srcSubresource, srcImage, layer }
+			, dst{ device, region.dstSubresource, dstImage, layer }
+		{
+		}
+
+		VkImageBlit region;
+		Attachment src;
+		Attachment dst;
+	};
+
+	void apply( ContextLock const & context
+		, CmdBlitFramebuffer const & cmd )
+	{
+		glLogCall( context
+			, glBlitFramebuffer
+			, cmd.srcL
+			, cmd.srcT
+			, cmd.srcR
+			, cmd.srcB
+			, cmd.dstL
+			, cmd.dstT
+			, cmd.dstR
+			, cmd.dstB
+			, cmd.mask
+			, cmd.filter );
 	}
 
-	BlitImageCommand::BlitImageCommand( VkDevice device
+	void buildBlitImageCommand( VkDevice device
 		, VkImage srcImage
 		, VkImage dstImage
 		, VkImageBlit region
-		, VkFilter filter )
-		: CommandBase{ device }
-		, m_srcTexture{ srcImage }
-		, m_dstTexture{ dstImage }
-		, m_srcFbo{ get( device )->getBlitSrcFbo() }
-		, m_dstFbo{ get( device )->getBlitDstFbo() }
-		, m_filter{ convert( filter ) }
-		, m_mask{ getMask( get( m_srcTexture )->getFormat() ) }
+		, VkFilter filter
+		, CmdList & list )
 	{
-		assert( get( m_srcTexture )->getArrayLayers() == get( m_dstTexture )->getArrayLayers() );
+		assert( get( srcImage )->getArrayLayers() == get( dstImage )->getArrayLayers() );
 
-		for ( uint32_t layer = 0u; layer < get( m_srcTexture )->getArrayLayers(); ++layer )
+		for ( uint32_t layer = 0u; layer < get( srcImage )->getArrayLayers(); ++layer )
 		{
-			m_layerCopies.emplace_back( std::make_shared< BlitImageCommand::LayerCopy >( device
-				, region
-				, m_srcTexture
-				, m_dstTexture
-				, layer ) );
-		}
-	}
+			LayerCopy layerCopy
+			{
+				device,
+				region,
+				srcImage,
+				dstImage,
+				layer
+			};
 
-	BlitImageCommand::~BlitImageCommand()
-	{
-	}
-
-	void BlitImageCommand::apply( ContextLock const & context )const
-	{
-		for ( auto & playerCopy : m_layerCopies )
-		{
-			auto & layerCopy = *playerCopy;
 			// Setup source FBO
-			glLogCall( context
-				, glBindFramebuffer
-				, GL_FRAMEBUFFER
-				, m_srcFbo );
-			glLogCall( context
-				, glFramebufferTexture2D
-				, GL_FRAMEBUFFER
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, get( device )->getBlitSrcFbo() ) );
+			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
 				, layerCopy.src.point
 				, GL_TEXTURE_2D
 				, layerCopy.src.object
-				, layerCopy.region.srcSubresource.mipLevel );
+				, layerCopy.region.srcSubresource.mipLevel ) );
 
 			// Setup dst FBO
-			glLogCall( context
-				, glBindFramebuffer
-				, GL_FRAMEBUFFER
-				, m_dstFbo );
-			glLogCall( context
-				, glFramebufferTexture2D
-				, GL_FRAMEBUFFER
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, get( device )->getBlitDstFbo() ) );
+			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
 				, layerCopy.dst.point
 				, GL_TEXTURE_2D
 				, layerCopy.dst.object
-				, layerCopy.region.dstSubresource.mipLevel );
+				, layerCopy.region.dstSubresource.mipLevel ) );
 
 			// Perform the blit
-			glLogCall( context
-				, glBindFramebuffer
-				, GL_READ_FRAMEBUFFER
-				, m_srcFbo );
-			glLogCall( context
-				, glBindFramebuffer
-				, GL_DRAW_FRAMEBUFFER
-				, m_dstFbo );
-			glLogCall( context
-				, glBlitFramebuffer
-				, layerCopy.region.srcOffsets[0].x
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
+				, get( device )->getBlitSrcFbo() ) );
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
+				, get( device )->getBlitDstFbo() ) );
+			list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
 				, layerCopy.region.srcOffsets[0].y
 				, layerCopy.region.srcOffsets[1].x
 				, layerCopy.region.srcOffsets[1].y
@@ -206,21 +169,12 @@ namespace ashes::gl4
 				, layerCopy.region.dstOffsets[0].y
 				, layerCopy.region.dstOffsets[1].x
 				, layerCopy.region.dstOffsets[1].y
-				, m_mask
-				, m_filter );
-			glLogCall( context
-				, glBindFramebuffer
-				, GL_DRAW_FRAMEBUFFER
-				, context->getCurrentFramebuffer() );
-			glLogCall( context
-				, glBindFramebuffer
-				, GL_READ_FRAMEBUFFER
-				, 0u );
+				, getMask( get( srcImage )->getFormat() )
+				, convert( filter ) ) );
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
+				, 0u ) );
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
+				, 0u ) );
 		}
-	}
-
-	CommandPtr BlitImageCommand::clone()const
-	{
-		return std::make_unique< BlitImageCommand >( *this );
 	}
 }

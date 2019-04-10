@@ -10,26 +10,21 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	WriteTimestampCommand::WriteTimestampCommand( VkDevice device
-		, VkPipelineStageFlagBits pipelineStage
-		, VkQueryPool pool
-		, uint32_t query )
-		: CommandBase{ device }
-		, m_query{ *( get( pool )->begin() + query ) }
+	void apply( ContextLock const & context
+		, CmdWriteTimestamp const & cmd )
 	{
-	}
-
-	void WriteTimestampCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "WriteTimestampCommand" );
 		glLogCall( context
 			, glQueryCounter
-			, m_query
+			, cmd.name
 			, GL_QUERY_TYPE_TIMESTAMP );
 	}
 
-	CommandPtr WriteTimestampCommand::clone()const
+	void buildWriteTimestampCommand( VkPipelineStageFlagBits pipelineStage
+		, VkQueryPool pool
+		, uint32_t query
+		, CmdList & list )
 	{
-		return std::make_unique< WriteTimestampCommand >( *this );
+		glLogCommand( "WriteTimestampCommand" );
+		list.push_back( makeCmd< OpType::eWriteTimestamp >( *( get( pool )->begin() + query ) ) );
 	}
 }

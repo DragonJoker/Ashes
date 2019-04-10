@@ -60,6 +60,15 @@ See LICENSE file in root folder.
 #include <AshesRenderer/Helper/VertexInputState.hpp>
 
 #include <algorithm>
+#include <numeric>
+
+namespace ashes
+{
+	inline VkClearValue deepCopy( VkClearValue const & rhs )
+	{
+		return rhs;
+	}
+}
 
 namespace ashes::gl4
 {
@@ -70,18 +79,12 @@ namespace ashes::gl4
 	{
 	}
 
-	void CommandBuffer::applyPostSubmitActions( ContextLock const & context )const
-	{
-		for ( auto & action : m_afterSubmitActions )
-		{
-			action( context );
-		}
-	}
-
 	VkResult CommandBuffer::begin( VkCommandBufferBeginInfo info )const
 	{
-		m_afterSubmitActions.clear();
-		m_commands.clear();
+		m_cmdList.clear();
+		m_cmds.clear();
+		m_cmdAfterSubmit.clear();
+		m_cmdsAfterSubmit.clear();
 		m_state = State{};
 		m_state.beginFlags = info.flags;
 		return VK_SUCCESS;
@@ -90,13 +93,37 @@ namespace ashes::gl4
 	VkResult CommandBuffer::end()const
 	{
 		m_state.pushConstantBuffers.clear();
+		size_t totalSize = size_t( std::accumulate( m_cmdList.begin()
+			, m_cmdList.end()
+			, size_t( 0u )
+			, []( size_t value, CmdBuffer const & lookup )
+			{
+				return value + lookup.size();
+			} ) );
+
+		if ( totalSize )
+		{
+			m_cmds.resize( totalSize );
+			auto it = m_cmds.begin();
+
+			for ( auto & cmd : m_cmdList )
+			{
+				std::copy( cmd.begin()
+					, cmd.end()
+					, it );
+				it += cmd.size();
+			}
+		}
+
 		return VK_SUCCESS;
 	}
 
 	VkResult CommandBuffer::reset( VkCommandBufferResetFlags flags )const
 	{
-		m_afterSubmitActions.clear();
-		m_commands.clear();
+		m_cmdList.clear();
+		m_cmds.clear();
+		m_cmdAfterSubmit.clear();
+		m_cmdsAfterSubmit.clear();
 		return VK_SUCCESS;
 	}
 
@@ -106,37 +133,37 @@ namespace ashes::gl4
 		m_state.currentRenderPass = beginInfo.renderPass;
 		m_state.currentFrameBuffer = beginInfo.framebuffer;
 		m_state.currentSubpassIndex = 0u;
-		m_commands.emplace_back( std::make_unique< BeginRenderPassCommand >( m_device
-			, std::move( beginInfo.renderPass )
-			, std::move( beginInfo.framebuffer )
-			, VkClearValueArray{ beginInfo.pClearValues, beginInfo.pClearValues + beginInfo.clearValueCount }
-			, contents ) );
+		buildBeginRenderPassCommand( m_state.currentRenderPass
+			, m_state.currentFrameBuffer
+			, makeVector( beginInfo.pClearValues, beginInfo.clearValueCount )
+			, contents
+			, m_cmdList );
 		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex++];
-		m_commands.emplace_back( std::make_unique< BeginSubpassCommand >( m_device
-			, std::move( m_state.currentRenderPass )
-			, std::move( m_state.currentFrameBuffer )
-			, *m_state.currentSubpass ) );
+		buildBeginSubpassCommand( m_state.currentRenderPass
+			, m_state.currentFrameBuffer
+			, *m_state.currentSubpass
+			, m_cmdList );
 	}
 
 	void CommandBuffer::nextSubpass( VkSubpassContents contents )const
 	{
-		m_commands.emplace_back( std::make_unique< EndSubpassCommand >( m_device
-			, std::move( m_state.currentFrameBuffer )
-			, *m_state.currentSubpass ) );
+		buildEndSubpassCommand( m_state.currentFrameBuffer
+			, *m_state.currentSubpass
+			, m_cmdList );
 		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex++];
-		m_commands.emplace_back( std::make_unique< BeginSubpassCommand >( m_device
-			, std::move( m_state.currentRenderPass )
-			, std::move( m_state.currentFrameBuffer )
-			, *m_state.currentSubpass ) );
+		buildBeginSubpassCommand( m_state.currentRenderPass
+			, m_state.currentFrameBuffer
+			, *m_state.currentSubpass
+			, m_cmdList );
 		m_state.boundVbos.clear();
 	}
 
 	void CommandBuffer::endRenderPass()const
 	{
-		m_commands.emplace_back( std::make_unique< EndSubpassCommand >( m_device
-			, std::move( m_state.currentFrameBuffer )
-			, *m_state.currentSubpass ) );
-		m_commands.emplace_back( std::make_unique< EndRenderPassCommand >( m_device ) );
+		buildEndSubpassCommand( m_state.currentFrameBuffer
+			, *m_state.currentSubpass
+			, m_cmdList );
+		buildEndRenderPassCommand( m_cmdList );
 		m_state.boundVbos.clear();
 	}
 
@@ -146,15 +173,12 @@ namespace ashes::gl4
 		{
 			auto glCommandBuffer = get( commandBuffer );
 			glCommandBuffer->initialiseGeometryBuffers();
-
-			for ( auto & command : glCommandBuffer->getCommands() )
-			{
-				m_commands.emplace_back( command->clone() );
-			}
-
-			m_afterSubmitActions.insert( m_afterSubmitActions.end()
-				, glCommandBuffer->m_afterSubmitActions.begin()
-				, glCommandBuffer->m_afterSubmitActions.end() );
+			m_cmdList.insert( m_cmdList.end()
+				, glCommandBuffer->m_cmdList.begin()
+				, glCommandBuffer->m_cmdList.end() );
+			m_cmdAfterSubmit.insert( m_cmdAfterSubmit.end()
+				, glCommandBuffer->m_cmdAfterSubmit.begin()
+				, glCommandBuffer->m_cmdAfterSubmit.end() );
 		}
 	}
 
@@ -163,11 +187,12 @@ namespace ashes::gl4
 		, VkClearColorValue value
 		, VkImageSubresourceRangeArray ranges )const
 	{
-		m_commands.emplace_back( std::make_unique< ClearColourCommand >( m_device
-			, std::move( image )
-			, std::move( imageLayout )
+		buildClearColourCommand( m_device
+			, image
+			, imageLayout
 			, std::move( value )
-			, std::move( ranges ) ) );
+			, std::move( ranges )
+			, m_cmdList );
 	}
 
 	void CommandBuffer::clearDepthStencilImage( VkImage image
@@ -175,19 +200,20 @@ namespace ashes::gl4
 		, VkClearDepthStencilValue value
 		, VkImageSubresourceRangeArray ranges )const
 	{
-		m_commands.emplace_back( std::make_unique< ClearDepthStencilCommand >( m_device
-			, std::move( image )
-			, std::move( imageLayout )
+		buildClearDepthStencilCommand( m_device
+			, image
+			, imageLayout
 			, std::move( value )
-			, std::move( ranges ) ) );
+			, std::move( ranges )
+			, m_cmdList );
 	}
 
 	void CommandBuffer::clearAttachments( VkClearAttachmentArray clearAttachments
 		, VkClearRectArray clearRects )
 	{
-		m_commands.emplace_back( std::make_unique< ClearAttachmentsCommand >( m_device
-			, std::move( clearAttachments )
-			, std::move( clearRects ) ) );
+		buildClearAttachmentsCommand( std::move( clearAttachments )
+			, std::move( clearRects )
+			, m_cmdList );
 	}
 
 	void CommandBuffer::bindPipeline( VkPipeline pipeline
@@ -209,48 +235,39 @@ namespace ashes::gl4
 			}
 
 			m_state.currentPipeline = pipeline;
-			m_commands.emplace_back( std::make_unique< BindPipelineCommand >( m_device
-				, std::move( pipeline )
-				, bindingPoint ) );
+			buildBindPipelineCommand( m_device
+				, pipeline
+				, bindingPoint
+				, m_cmdList );
 
 			for ( auto & pcb : m_state.pushConstantBuffers )
 			{
-				m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-					, get( m_state.currentPipeline )->findPushConstantBuffer( pcb.second ) ) );
+				buildPushConstantsCommand( get( m_state.currentPipeline )->findPushConstantBuffer( pcb.second )
+					, m_cmdList );
 			}
 
 			m_state.pushConstantBuffers.clear();
 
-			m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-				, []( ContextLock const & context )
-				{
-					glLogCall( context
-						, glUseProgram
-						, 0u );
-				} );
+			m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
+				, makeCmd< OpType::eUseProgram >( 0u ) );
 		}
 		else if ( bindingPoint == VK_PIPELINE_BIND_POINT_COMPUTE )
 		{
 			m_state.currentComputePipeline = pipeline;
-			m_commands.emplace_back( std::make_unique< BindComputePipelineCommand >( m_device
-				, std::move( pipeline )
-				, bindingPoint ) );
+			buildBindComputePipelineCommand( pipeline
+				, bindingPoint
+				, m_cmdList );
 
 			for ( auto & pcb : m_state.pushConstantBuffers )
 			{
-				m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-					, get( m_state.currentComputePipeline )->findPushConstantBuffer( pcb.second ) ) );
+				buildPushConstantsCommand( get( m_state.currentComputePipeline )->findPushConstantBuffer( pcb.second )
+					, m_cmdList );
 			}
 
 			m_state.pushConstantBuffers.clear();
 
-			m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-				, []( ContextLock const & context )
-				{
-					glLogCall( context
-						, glUseProgram
-						, 0u );
-				} );
+			m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
+				, makeCmd< OpType::eUseProgram >( 0u ) );
 		}
 	}
 
@@ -287,28 +304,24 @@ namespace ashes::gl4
 	{
 		for ( auto & descriptorSet : descriptorSets )
 		{
-			m_commands.emplace_back( std::make_unique< BindDescriptorSetCommand >( m_device
-				, std::move( descriptorSet )
+			buildBindDescriptorSetCommand( descriptorSet
 				, layout
 				, dynamicOffsets
-				, bindingPoint ) );
+				, bindingPoint
+				, m_cmdList );
 		}
 	}
 
 	void CommandBuffer::setViewport( uint32_t firstViewport
 		, VkViewportArray viewports )const
 	{
-		m_commands.emplace_back( std::make_unique< ViewportCommand >( m_device
-			, firstViewport
-			, std::move( viewports ) ) );
+		m_cmdList.push_back( makeCmd< OpType::eApplyViewport >( viewports[firstViewport] ) );
 	}
 
 	void CommandBuffer::setScissor( uint32_t firstScissor
 		, VkScissorArray scissors )const
 	{
-		m_commands.emplace_back( std::make_unique< ScissorCommand >( m_device
-			, firstScissor
-			, std::move( scissors ) ) );
+		m_cmdList.push_back( makeCmd< OpType::eApplyScissor >( scissors[firstScissor] ) );
 	}
 
 	void CommandBuffer::draw( uint32_t vtxCount
@@ -320,16 +333,16 @@ namespace ashes::gl4
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 			m_state.boundVao = &get( m_device )->getEmptyIndexedVao();
-			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( m_device
-				, *m_state.boundVao ) );
-			m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( m_device
-				, vtxCount
+			buildBindGeometryBuffersCommand( *m_state.boundVao
+				, m_cmdList );
+			buildDrawIndexedCommand( vtxCount
 				, instCount
 				, 0u
 				, firstVertex
 				, firstInstance
 				, get( m_state.currentPipeline )->getInputAssemblyState().topology
-				, m_state.indexType ) );
+				, m_state.indexType
+				, m_cmdList );
 		}
 		else
 		{
@@ -338,21 +351,16 @@ namespace ashes::gl4
 				doBindVao();
 			}
 
-			m_commands.emplace_back( std::make_unique< DrawCommand >( m_device
-				, vtxCount
+			buildDrawCommand( vtxCount
 				, instCount
 				, firstVertex
 				, firstInstance
-				, get( m_state.currentPipeline )->getInputAssemblyState().topology ) );
+				, get( m_state.currentPipeline )->getInputAssemblyState().topology
+				, m_cmdList );
 		}
 
-		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, []( ContextLock const & context )
-			{
-				glLogCall( context
-					, glBindVertexArray
-					, 0u );
-			} );
+		m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
+			, makeCmd< OpType::eBindVextexArray >( nullptr ) );
 	}
 
 	void CommandBuffer::drawIndexed( uint32_t indexCount
@@ -365,30 +373,25 @@ namespace ashes::gl4
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 			m_state.boundVao = &get( m_device )->getEmptyIndexedVao();
-			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( m_device
-				, *m_state.boundVao ) );
+			buildBindGeometryBuffersCommand( *m_state.boundVao
+				, m_cmdList );
 		}
 		else if ( !m_state.boundVao )
 		{
 			doBindVao();
 		}
 
-		m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( m_device
-			, indexCount
+		buildDrawIndexedCommand( indexCount
 			, instCount
 			, firstIndex
 			, vertexOffset
 			, firstInstance
 			, get( m_state.currentPipeline )->getInputAssemblyState().topology
-			, m_state.indexType ) );
+			, m_state.indexType
+			, m_cmdList );
 
-		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, []( ContextLock const & context )
-			{
-				glLogCall( context
-					, glBindVertexArray
-					, 0u );
-			} );
+		m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
+			, makeCmd< OpType::eBindVextexArray >( nullptr ) );
 	}
 
 	void CommandBuffer::drawIndirect( VkBuffer buffer
@@ -401,20 +404,15 @@ namespace ashes::gl4
 			doBindVao();
 		}
 
-		m_commands.emplace_back( std::make_unique< DrawIndirectCommand >( m_device
-			, buffer
+		buildDrawIndirectCommand( buffer
 			, offset
 			, drawCount
 			, stride
-			, get( m_state.currentPipeline )->getInputAssemblyState().topology ) );
+			, get( m_state.currentPipeline )->getInputAssemblyState().topology
+			, m_cmdList );
 
-		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, []( ContextLock const & context )
-			{
-				glLogCall( context
-					, glBindVertexArray
-					, 0u );
-			} );
+		m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
+			, makeCmd< OpType::eBindVextexArray >( nullptr ) );
 	}
 
 	void CommandBuffer::drawIndexedIndirect( VkBuffer buffer
@@ -426,29 +424,24 @@ namespace ashes::gl4
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 			m_state.boundVao = &get( m_device )->getEmptyIndexedVao();
-			m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( m_device
-				, *m_state.boundVao ) );
+			buildBindGeometryBuffersCommand( *m_state.boundVao
+				, m_cmdList );
 		}
 		else if ( !m_state.boundVao )
 		{
 			doBindVao();
 		}
 
-		m_commands.emplace_back( std::make_unique< DrawIndexedIndirectCommand >( m_device
-			, buffer
+		buildDrawIndexedIndirectCommand( buffer
 			, offset
 			, drawCount
 			, stride
 			, get( m_state.currentPipeline )->getInputAssemblyState().topology
-			, m_state.indexType ) );
+			, m_state.indexType
+			, m_cmdList );
 
-		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
-			, []( ContextLock const & context )
-			{
-				glLogCall( context
-					, glBindVertexArray
-					, 0u );
-			} );
+		m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
+			, makeCmd< OpType::eBindVextexArray >( nullptr ) );
 	}
 
 	void CommandBuffer::copyToImage( VkBuffer src
@@ -458,10 +451,10 @@ namespace ashes::gl4
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
-			m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( m_device
-				, std::move( copyInfo )
+			buildCopyBufferToImageCommand( std::move( copyInfo )
 				, src
-				, dst ) );
+				, dst
+				, m_cmdList );
 		}
 	}
 
@@ -472,10 +465,11 @@ namespace ashes::gl4
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
-			m_commands.emplace_back( std::make_unique< CopyImageToBufferCommand >( m_device
+			buildCopyImageToBufferCommand( m_device
 				, std::move( copyInfo )
 				, src
-				, dst ) );
+				, dst
+				, m_cmdList );
 		}
 	}
 
@@ -485,10 +479,10 @@ namespace ashes::gl4
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
-			m_commands.emplace_back( std::make_unique< CopyBufferCommand >( m_device
-				, std::move( copyInfo )
+			buildCopyBufferCommand( std::move( copyInfo )
 				, src
-				, dst ) );
+				, dst
+				, m_cmdList );
 		}
 	}
 
@@ -500,10 +494,10 @@ namespace ashes::gl4
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
-			m_commands.emplace_back( std::make_unique< CopyImageCommand >( m_device
-				, std::move( copyInfo )
+			buildCopyImageCommand( std::move( copyInfo )
 				, src
-				, dst ) );
+				, dst
+				, m_cmdList );
 		}
 	}
 
@@ -516,11 +510,12 @@ namespace ashes::gl4
 	{
 		for ( auto & region : regions )
 		{
-			m_commands.emplace_back( std::make_unique< BlitImageCommand >( m_device
+			buildBlitImageCommand( m_device
 				, srcImage
 				, dstImage
 				, std::move( region )
-				, filter ) );
+				, filter
+				, m_cmdList );
 		}
 	}
 
@@ -528,38 +523,37 @@ namespace ashes::gl4
 		, uint32_t firstQuery
 		, uint32_t queryCount )const
 	{
-		m_commands.emplace_back( std::make_unique< ResetQueryPoolCommand >( m_device
-			, std::move( pool )
-			, std::move( firstQuery )
-			, std::move( queryCount ) ) );
+		buildResetQueryPoolCommand( pool
+			, firstQuery
+			, queryCount
+			, m_cmdList );
 	}
 
 	void CommandBuffer::beginQuery( VkQueryPool pool
 		, uint32_t query
 		, VkQueryControlFlags flags )const
 	{
-		m_commands.emplace_back( std::make_unique< BeginQueryCommand >( m_device
-			, std::move( pool )
-			, std::move( query )
-			, std::move( flags ) ) );
+		buildBeginQueryCommand( pool
+			, query
+			, m_cmdList );
 	}
 
 	void CommandBuffer::endQuery( VkQueryPool pool
 		, uint32_t query )const
 	{
-		m_commands.emplace_back( std::make_unique< EndQueryCommand >( m_device
-			, std::move( pool )
-			, std::move( query ) ) );
+		buildEndQueryCommand( pool
+			, query
+			, m_cmdList );
 	}
 
 	void CommandBuffer::writeTimestamp( VkPipelineStageFlagBits pipelineStage
 		, VkQueryPool pool
 		, uint32_t query )const
 	{
-		m_commands.emplace_back( std::make_unique< WriteTimestampCommand >( m_device
-			, std::move( pipelineStage )
-			, std::move( pool )
-			, std::move( query ) ) );
+		buildWriteTimestampCommand( pipelineStage
+			, pool
+			, query
+			, m_cmdList );
 	}
 
 	void CommandBuffer::pushConstants( VkPipelineLayout layout
@@ -579,13 +573,13 @@ namespace ashes::gl4
 
 		if ( m_state.currentPipeline )
 		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, get( m_state.currentPipeline )->findPushConstantBuffer( desc ) ) );
+			buildPushConstantsCommand( get( m_state.currentPipeline )->findPushConstantBuffer( desc )
+				, m_cmdList );
 		}
 		else if ( m_state.currentComputePipeline )
 		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, get( m_state.currentComputePipeline )->findPushConstantBuffer( desc ) ) );
+			buildPushConstantsCommand( get( m_state.currentComputePipeline )->findPushConstantBuffer( desc )
+				, m_cmdList );
 		}
 		else
 		{
@@ -597,50 +591,50 @@ namespace ashes::gl4
 		, uint32_t groupCountY
 		, uint32_t groupCountZ )const
 	{
-		m_commands.emplace_back( std::make_unique< DispatchCommand >( m_device
-			, groupCountX
-			, groupCountY 
-			, groupCountZ ) );
+		buildDispatchCommand( groupCountX
+			, groupCountY
+			, groupCountZ
+			, m_cmdList );
 	}
 
 	void CommandBuffer::dispatchIndirect( VkBuffer buffer
 		, VkDeviceSize offset )const
 	{
-		m_commands.emplace_back( std::make_unique< DispatchIndirectCommand >( m_device
-			, std::move( buffer )
-			, offset ) );
+		buildDispatchIndirectCommand( buffer
+			, offset
+			, m_cmdList );
 	}
 
 	void CommandBuffer::setLineWidth( float width )const
 	{
-		m_commands.emplace_back( std::make_unique< SetLineWidthCommand >( m_device
-			, width ) );
+		buildSetLineWidthCommand( width
+			, m_cmdList );
 	}
 
 	void CommandBuffer::setDepthBias( float constantFactor
 		, float clamp
 		, float slopeFactor )const
 	{
-		m_commands.emplace_back( std::make_unique< SetDepthBiasCommand >( m_device
-			, constantFactor
+		buildSetDepthBiasCommand( constantFactor
 			, clamp
-			, slopeFactor ) );
+			, slopeFactor
+			, m_cmdList );
 	}
 
 	void CommandBuffer::setEvent( VkEvent event
 		, VkPipelineStageFlags stageMask )const
 	{
-		m_commands.emplace_back( std::make_unique< SetEventCommand >( m_device
-			, event
-			, stageMask ) );
+		buildSetEventCommand( event
+			, stageMask
+			, m_cmdList );
 	}
 
 	void CommandBuffer::resetEvent( VkEvent event
 		, VkPipelineStageFlags stageMask )const
 	{
-		m_commands.emplace_back( std::make_unique< ResetEventCommand >( m_device
-			, event
-			, stageMask ) );
+		buildResetEventCommand( event
+			, stageMask
+			, m_cmdList );
 	}
 
 	void CommandBuffer::waitEvents( VkEventArray events
@@ -650,19 +644,19 @@ namespace ashes::gl4
 		, VkBufferMemoryBarrierArray bufferMemoryBarriers
 		, VkImageMemoryBarrierArray imageMemoryBarriers )const
 	{
-		m_commands.emplace_back( std::make_unique< WaitEventsCommand >( m_device
-			, std::move( events )
+		buildWaitEventsCommand( std::move( events )
 			, srcStageMask
 			, dstStageMask
 			, std::move( memoryBarriers )
 			, std::move( bufferMemoryBarriers )
-			, std::move( imageMemoryBarriers ) ) );
+			, std::move( imageMemoryBarriers )
+			, m_cmdList );
 	}
 
 	void CommandBuffer::generateMipmaps( VkImage texture )
 	{
-		m_commands.emplace_back( std::make_unique< GenerateMipmapsCommand >( m_device
-			, texture ) );
+		buildGenerateMipmapsCommand( texture
+			, m_cmdList );
 	}
 
 	void CommandBuffer::pipelineBarrier( VkPipelineStageFlags after
@@ -672,13 +666,13 @@ namespace ashes::gl4
 		, VkBufferMemoryBarrierArray bufferMemoryBarriers
 		, VkImageMemoryBarrierArray imageMemoryBarriers )const
 	{
-		m_commands.emplace_back( std::make_unique< MemoryBarrierCommand >( m_device
-			, after
+		buildMemoryBarrierCommand( after
 			, before
 			, dependencyFlags
 			, std::move( memoryBarriers )
 			, std::move( bufferMemoryBarriers )
-			, std::move( imageMemoryBarriers ) ) );
+			, std::move( imageMemoryBarriers )
+			, m_cmdList );
 	}
 
 	void CommandBuffer::initialiseGeometryBuffers()const
@@ -715,7 +709,7 @@ namespace ashes::gl4
 			}
 		}
 
-		m_commands.emplace_back( std::make_unique< BindGeometryBuffersCommand >( m_device
-			, *m_state.boundVao ) );
+		buildBindGeometryBuffersCommand( *m_state.boundVao
+			, m_cmdList );
 	}
 }

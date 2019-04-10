@@ -8,37 +8,41 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Commande d'activation d'un pipeline: shaders, tests, �tats, ...
-	*/
-	class BindPipelineCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eBindContextState >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] pipeline
-		*	Le pipeline � activer.
-		*\param[in] bindingPoint
-		*	Le point d'attache du pipeline.
-		*/
-		BindPipelineCommand( VkDevice device
-			, VkPipeline pipeline
-			, VkPipelineBindPoint bindingPoint );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		VkPipeline m_pipeline;
-		VkPipelineLayout m_layout;
-		GLuint m_program;
-		VkPipelineBindPoint m_bindingPoint;
-		bool m_dynamicLineWidth;
-		bool m_dynamicDepthBias;
-		bool m_dynamicScissor;
-		bool m_dynamicViewport;
+		static Op constexpr value = { OpType::eBindContextState, 6u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eBindContextState >
+	{
+		inline CmdT( VkDevice device
+			, ContextState const * state )
+			: cmd{ { OpType::eBindContextState, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, device{ device }
+			, state{ state }
+		{
+		}
+
+		Command cmd;
+		uint32_t dummy{ 0u }; // Here for alignment purpose
+		VkDevice device;
+		ContextState const * state;
+	};
+	using CmdBindContextState = CmdT< OpType::eBindContextState >;
+
+	void apply( ContextLock const & context
+		, CmdBindContextState const & cmd );
+
+	//*************************************************************************
+
+	void buildBindPipelineCommand( VkDevice device
+		, VkPipeline pipeline
+		, VkPipelineBindPoint bindingPoint
+		, CmdList & list );
+
+	//*************************************************************************
 }

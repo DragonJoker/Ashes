@@ -6,29 +6,24 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	DispatchCommand::DispatchCommand( VkDevice device
-		, uint32_t groupCountX
-		, uint32_t groupCountY
-		, uint32_t groupCountZ )
-		: CommandBase{ device }
-		, m_groupCountX{ groupCountX }
-		, m_groupCountY{ groupCountY }
-		, m_groupCountZ{ groupCountZ }
+	void apply( ContextLock const & context
+		, CmdDispatch const & cmd )
 	{
-	}
-
-	void DispatchCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "DispatchCommand" );
 		glLogCall( context
 			, glDispatchCompute
-			, m_groupCountX
-			, m_groupCountY
-			, m_groupCountZ );
+			, cmd.groupCountX
+			, cmd.groupCountY
+			, cmd.groupCountZ );
 	}
 
-	CommandPtr DispatchCommand::clone()const
+	void buildDispatchCommand( uint32_t groupCountX
+		, uint32_t groupCountY
+		, uint32_t groupCountZ
+		, CmdList & list )
 	{
-		return std::make_unique< DispatchCommand >( *this );
+		glLogCommand( "DispatchCommand" );
+		list.push_back( makeCmd< OpType::eDispatch >( groupCountX
+			, groupCountY
+			, groupCountZ ) );
 	}
 }

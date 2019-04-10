@@ -8,48 +8,59 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Commande de dessin index�.
-	*/
-	class DrawIndexedCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eDrawIndexed >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] indexCount
-		*	Nombre d'indices.
-		*\param[in] instCount
-		*	Nombre d'instances.
-		*\param[in] firstIndex
-		*	Index du premier indice.
-		*\param[in] vertexOffset
-		*	La valeur ajout�e � l'indice du sommet avant d'indexer le tampon de sommets.
-		*\param[in] firstInstance
-		*	Index de la premi�re instance.
-		*/
-		DrawIndexedCommand( VkDevice device
-			, uint32_t indexCount
+		static Op constexpr value = { OpType::eDrawIndexed, 8u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eDrawIndexed >
+	{
+		inline CmdT( uint32_t indexCount
 			, uint32_t instCount
-			, uint32_t firstIndex
+			, uint32_t indexOffset
 			, uint32_t vertexOffset
 			, uint32_t firstInstance
-			, VkPrimitiveTopology mode
-			, VkIndexType type );
+			, GlPrimitiveTopology mode
+			, GlIndexType type )
+			: cmd{ { OpType::eDrawIndexed, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, indexCount{ std::move( indexCount ) }
+			, instCount{ std::move( instCount ) }
+			, indexOffset{ std::move( indexOffset ) }
+			, vertexOffset{ std::move( vertexOffset ) }
+			, firstInstance{ std::move( firstInstance ) }
+			, mode{ std::move( mode ) }
+			, type{ std::move( type ) }
+		{
+		}
 
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		uint32_t m_indexCount;
-		uint32_t m_instCount;
-		size_t m_firstIndex;
-		uint32_t m_vertexOffset;
-		uint32_t m_firstInstance;
-		GlPrimitiveTopology m_mode;
-		GlIndexType m_type;
-		uint32_t m_size;
+		Command cmd;
+		uint32_t indexCount;
+		uint32_t instCount;
+		uint32_t indexOffset;
+		uint32_t vertexOffset;
+		uint32_t firstInstance;
+		GlPrimitiveTopology mode;
+		GlIndexType type;
 	};
+	using CmdDrawIndexed = CmdT< OpType::eDrawIndexed >;
+
+	void apply( ContextLock const & context
+		, CmdDrawIndexed const & cmd );
+
+	//*************************************************************************
+
+	void buildDrawIndexedCommand( uint32_t indexCount
+		, uint32_t instCount
+		, uint32_t firstIndex
+		, uint32_t vertexOffset
+		, uint32_t firstInstance
+		, VkPrimitiveTopology mode
+		, VkIndexType type
+		, CmdList & list );
+
+	//*************************************************************************
 }

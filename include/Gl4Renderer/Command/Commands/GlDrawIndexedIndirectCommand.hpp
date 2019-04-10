@@ -8,27 +8,52 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	class DrawIndexedIndirectCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eDrawIndexedIndirect >
 	{
-	public:
-		DrawIndexedIndirectCommand( VkDevice device
-			, VkBuffer buffer
-			, VkDeviceSize offset
+		static Op constexpr value = { OpType::eDrawIndexedIndirect, 7u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eDrawIndexedIndirect >
+	{
+		inline CmdT( uint64_t offset
 			, uint32_t drawCount
 			, uint32_t stride
-			, VkPrimitiveTopology mode
-			, VkIndexType type );
+			, GlPrimitiveTopology mode
+			, GlIndexType type )
+			: cmd{ { OpType::eDrawIndexedIndirect, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, offset{ std::move( offset ) }
+			, drawCount{ std::move( drawCount ) }
+			, stride{ std::move( stride ) }
+			, mode{ std::move( mode ) }
+			, type{ std::move( type ) }
+		{
+		}
 
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		VkBuffer m_buffer;
-		VkDeviceSize m_offset;
-		uint32_t m_drawCount;
-		uint32_t m_stride;
-		GlPrimitiveTopology m_mode;
-		GlIndexType m_type;
+		Command cmd;
+		uint64_t offset;
+		uint32_t drawCount;
+		uint32_t stride;
+		GlPrimitiveTopology mode;
+		GlIndexType type;
 	};
+	using CmdDrawIndexedIndirect = CmdT< OpType::eDrawIndexedIndirect >;
+
+	void apply( ContextLock const & context
+		, CmdDrawIndexedIndirect const & cmd );
+
+	//*************************************************************************
+
+	void buildDrawIndexedIndirectCommand( VkBuffer buffer
+		, VkDeviceSize offset
+		, uint32_t drawCount
+		, uint32_t stride
+		, VkPrimitiveTopology mode
+		, VkIndexType type
+		, CmdList & list );
+
+	//*************************************************************************
 }

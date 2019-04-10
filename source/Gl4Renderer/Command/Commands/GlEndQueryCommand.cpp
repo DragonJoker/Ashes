@@ -10,24 +10,19 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	EndQueryCommand::EndQueryCommand( VkDevice device
-		, VkQueryPool pool
-		, uint32_t query )
-		: CommandBase{ device }
-		, m_target{ convert( get( pool )->getType() ) }
+	void apply( ContextLock const & context
+		, CmdEndQuery const & cmd )
 	{
-	}
-
-	void EndQueryCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "EndQueryCommand" );
 		glLogCall( context
 			, glEndQuery
-			, m_target );
+			, cmd.target );
 	}
 
-	CommandPtr EndQueryCommand::clone()const
+	void buildEndQueryCommand( VkQueryPool pool
+		, uint32_t query
+		, CmdList & list )
 	{
-		return std::make_unique< EndQueryCommand >( *this );
+		glLogCommand( "EndQueryCommand" );
+		list.push_back( makeCmd< OpType::eEndQuery >( convert( get( pool )->getType() ) ) );
 	}
 }

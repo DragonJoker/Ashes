@@ -6,29 +6,24 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	SetDepthBiasCommand::SetDepthBiasCommand( VkDevice device
-		, float constantFactor
-		, float clamp
-		, float slopeFactor )
-		: CommandBase{ device }
-		, m_constantFactor{ constantFactor }
-		, m_clamp{ clamp }
-		, m_slopeFactor{ slopeFactor }
+	void apply( ContextLock const & context
+		, CmdSetDepthBias const & cmd )
 	{
-	}
-
-	void SetDepthBiasCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "SetDepthBiasCommand" );
 		glLogCall( context
 			, glPolygonOffsetClampEXT
-			, m_slopeFactor
-			, m_constantFactor
-			, m_clamp );
+			, cmd.slopeFactor
+			, cmd.constantFactor
+			, cmd.clamp );
 	}
 
-	CommandPtr SetDepthBiasCommand::clone()const
+	void buildSetDepthBiasCommand( float constantFactor
+		, float clamp
+		, float slopeFactor
+		, CmdList & list )
 	{
-		return std::make_unique< SetDepthBiasCommand >( *this );
+		glLogCommand( "SetDepthBiasCommand" );
+		list.push_back( makeCmd< OpType::eSetDepthBias >( constantFactor
+			, clamp
+			, slopeFactor ) );
 	}
 }

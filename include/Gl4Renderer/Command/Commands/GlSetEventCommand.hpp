@@ -8,17 +8,36 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	class SetEventCommand
-		: public CommandBase
-	{
-	public:
-		SetEventCommand( VkDevice device
-			, VkEvent event
-			, VkPipelineStageFlags stageFlags );
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
+	//*************************************************************************
 
-	private:
-		VkEvent m_event;
+	template<>
+	struct CmdConfig< OpType::eSetEvent >
+	{
+		static Op constexpr value = { OpType::eSetEvent, 3u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eSetEvent >
+	{
+		inline CmdT( VkEvent event )
+			: cmd{ { OpType::eSetEvent, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, event{ std::move( event ) }
+		{
+		}
+
+		Command cmd;
+		VkEvent event;
+	};
+	using CmdSetEvent = CmdT< OpType::eSetEvent >;
+
+	void apply( ContextLock const & context
+		, CmdSetEvent const & cmd );
+
+	//*************************************************************************
+
+	void buildSetEventCommand( VkEvent event
+		, VkPipelineStageFlags stageFlags
+		, CmdList & list );
+
+	//*************************************************************************
 }

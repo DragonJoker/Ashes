@@ -10,23 +10,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	EndRenderPassCommand::EndRenderPassCommand( VkDevice device )
-		: CommandBase{ device }
+	void buildEndRenderPassCommand( CmdList & list )
 	{
-	}
-
-	void EndRenderPassCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "EndRenderPassCommand" );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, 0u );
-		context->setCurrentFramebuffer( 0u );
-	}
-
-	CommandPtr EndRenderPassCommand::clone()const
-	{
-		return std::make_unique< EndRenderPassCommand >( *this );
+		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+			, 0u ) );
 	}
 }

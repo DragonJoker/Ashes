@@ -11,39 +11,44 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	ClearColourCommand::ClearColourCommand( VkDevice device
+	void apply( ContextLock const & context
+		, CmdClearTexColor const & cmd )
+	{
+		glLogCall( context
+			, glClearTexImage
+			, cmd.name
+			, cmd.mipLevel
+			, cmd.format
+			, cmd.type
+			, cmd.color.float32 );
+	}
+
+	void buildClearColourCommand( VkDevice device
 		, VkImage image
 		, VkImageLayout imageLayout
 		, VkClearColorValue value
-		, VkImageSubresourceRangeArray ranges )
-		: CommandBase{ device }
-		, m_image{ image }
-		, m_colour{ value }
-		, m_internal{ getInternalFormat( get( m_image )->getFormat() ) }
-		, m_format{ getFormat( m_internal ) }
-		, m_type{ getType( m_internal ) }
-	{
-	}
-
-	void ClearColourCommand::apply( ContextLock const & context )const
+		, VkImageSubresourceRangeArray ranges
+		, CmdList & list )
 	{
 		glLogCommand( "ClearColourCommand" );
 
-		if ( context->hasClearTexImage() )
+		if ( get( get( device )->getInstance() )->getContext().hasClearTexImage() )
 		{
-			for ( auto & range : m_ranges )
+			auto internal = getInternalFormat( get( image )->getFormat() );
+			auto format = getFormat( internal );
+			auto type = getType( internal );
+
+			for ( auto & range : ranges )
 			{
 				for ( uint32_t level = range.baseMipLevel;
 					level < range.baseMipLevel + range.levelCount;
 					++level )
 				{
-					glLogCall( context
-						, glClearTexImage
-						, get( m_image )->getInternal()
+					list.push_back( makeCmd< OpType::eClearTexColor >( get( image )->getInternal()
 						, level
-						, m_format
-						, m_type
-						, m_colour.float32 );
+						, format
+						, type
+						, value ) );
 				}
 			}
 		}
@@ -51,10 +56,5 @@ namespace ashes::gl4
 		{
 			std::cerr << "Unsupported command : ClearColourCommand" << std::endl;
 		}
-	}
-
-	CommandPtr ClearColourCommand::clone()const
-	{
-		return std::make_unique< ClearColourCommand >( *this );
 	}
 }

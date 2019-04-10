@@ -7,6 +7,7 @@ See LICENSE file in root folder
 namespace ashes::gl4
 {
 	enum GlTweak
+		: uint32_t
 	{
 		GL_CULL_FACE = 0x0B44,
 		GL_DEPTH_RANGE = 0x0B70,

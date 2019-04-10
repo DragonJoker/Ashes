@@ -8,23 +8,39 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Commande de d�marrage d'une requ�te.
-	*/
-	class BeginQueryCommand
-		: public CommandBase
-	{
-	public:
-		BeginQueryCommand( VkDevice device
-			, VkQueryPool pool
-			, uint32_t query
-			, VkQueryControlFlags flags );
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
+	//*************************************************************************
 
-	private:
-		GlQueryType m_target;
-		GLuint m_query;
+	template<>
+	struct CmdConfig< OpType::eBeginQuery >
+	{
+		static Op constexpr value = { OpType::eBeginQuery, 3u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eBeginQuery >
+	{
+		inline CmdT( uint32_t target
+			, uint32_t query )
+			: cmd{ { OpType::eBeginQuery, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, target{ std::move( target ) }
+			, query{ std::move( query ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t target;
+		uint32_t query;
+	};
+	using CmdBeginQuery = CmdT< OpType::eBeginQuery >;
+
+	void apply( ContextLock const & context
+		, CmdBeginQuery const & cmd );
+
+	//*************************************************************************
+
+	void buildBeginQueryCommand( VkQueryPool pool
+		, uint32_t query
+		, CmdList & list );
+
+	//*************************************************************************
 }

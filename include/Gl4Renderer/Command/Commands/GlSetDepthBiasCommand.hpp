@@ -8,21 +8,43 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	class SetDepthBiasCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eSetDepthBias >
 	{
-	public:
-		SetDepthBiasCommand( VkDevice device
-			, float constantFactor
-			, float clamp
-			, float slopeFactor );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		float m_constantFactor;
-		float m_clamp;
-		float m_slopeFactor;
+		static Op constexpr value = { OpType::eSetDepthBias, 4u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eSetDepthBias >
+	{
+		inline CmdT( float constantFactor
+			, float clamp
+			, float slopeFactor )
+			: cmd{ { OpType::eSetDepthBias, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, constantFactor{ std::move( constantFactor ) }
+			, clamp{ std::move( clamp ) }
+			, slopeFactor{ std::move( slopeFactor ) }
+		{
+		}
+
+		Command cmd;
+		float constantFactor;
+		float clamp;
+		float slopeFactor;
+	};
+	using CmdSetDepthBias = CmdT< OpType::eSetDepthBias >;
+
+	void apply( ContextLock const & context
+		, CmdSetDepthBias const & cmd );
+
+	//*************************************************************************
+
+	void buildSetDepthBiasCommand( float constantFactor
+		, float clamp
+		, float slopeFactor
+		, CmdList & list );
+
+	//*************************************************************************
 }

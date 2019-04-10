@@ -39,13 +39,13 @@ namespace ashes::gl4
 	}
 
 	ContextState::ContextState( VkPipelineColorBlendStateCreateInfo cbState
-		, VkPipelineDepthStencilStateCreateInfo const * dsState = nullptr
-		, VkPipelineMultisampleStateCreateInfo const * msState = nullptr
-		, VkPipelineTessellationStateCreateInfo const * tsState = nullptr
-		, VkPipelineInputAssemblyStateCreateInfo const * iaState = nullptr
-		, VkPipelineViewportStateCreateInfo const * vpState = nullptr
-		, VkPipelineRasterizationStateCreateInfo const * rsState = nullptr
-		, VkPipelineDynamicStateCreateInfo const * dyState = nullptr )
+		, VkPipelineDepthStencilStateCreateInfo const * dsState
+		, VkPipelineMultisampleStateCreateInfo const * msState
+		, VkPipelineTessellationStateCreateInfo const * tsState
+		, VkPipelineInputAssemblyStateCreateInfo const * iaState
+		, VkPipelineViewportStateCreateInfo const * vpState
+		, VkPipelineRasterizationStateCreateInfo const * rsState
+		, VkPipelineDynamicStateCreateInfo const * dyState )
 		: cbStateAttachments{ makeVector( cbState.pAttachments
 			, cbState.attachmentCount ) }
 		, cbState{ cbState }
@@ -85,12 +85,12 @@ namespace ashes::gl4
 
 	ContextState::ContextState()
 		: cbStateAttachments{ 1u, getColourBlendStateAttachment() }
-		, cbState{  getDefaultColorBlendState( cbStateAttachments ) }
-		, dsState{  getDefaultDepthStencilState() }
-		, msState{  getDefaultMultisampleState() }
-		, rsState{  getDefaultRasterisationState() }
-		, tsState{  getDefaultTessellationState() }
-		, iaState{  getDefaultInputAssemblyState() }
+		, cbState{ getDefaultColorBlendState( cbStateAttachments ) }
+		, dsState{ getDefaultDepthStencilState() }
+		, msState{ getDefaultMultisampleState() }
+		, rsState{ getDefaultRasterisationState() }
+		, tsState{ getDefaultTessellationState() }
+		, iaState{ getDefaultInputAssemblyState() }
 		, viewports{}
 		, scissors{}
 		, vpState{ getDefaultViewportState() }
@@ -110,3 +110,4 @@ namespace ashes::gl4
 		vpState.pViewports = viewports.data();
 		dyState.pDynamicStates = dynamicStates.data();
 	}
+}

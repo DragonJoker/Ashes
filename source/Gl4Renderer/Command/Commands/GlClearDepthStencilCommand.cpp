@@ -11,78 +11,102 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	ClearDepthStencilCommand::ClearDepthStencilCommand( VkDevice device
+	void apply( ContextLock const & context
+		, CmdClearTexDepth const & cmd )
+	{
+		glLogCall( context
+			, glClearTexImage
+			, cmd.name
+			, cmd.mipLevel
+			, cmd.format
+			, cmd.type
+			, &cmd.depth );
+	}
+	
+	void apply( ContextLock const & context
+		, CmdClearTexStencil const & cmd )
+	{
+		glLogCall( context
+			, glClearTexImage
+			, cmd.name
+			, cmd.mipLevel
+			, cmd.format
+			, cmd.type
+			, &cmd.stencil );
+	}
+	
+	void apply( ContextLock const & context
+		, CmdClearTexDepthStencil const & cmd )
+	{
+		glLogCall( context
+			, glClearTexImage
+			, cmd.name
+			, cmd.mipLevel
+			, cmd.format
+			, cmd.type
+			, &cmd.depthStencil.depth );
+	}
+
+	void buildClearDepthStencilCommand( VkDevice device
 		, VkImage image
 		, VkImageLayout imageLayout
 		, VkClearDepthStencilValue value
-		, VkImageSubresourceRangeArray ranges )
-		: CommandBase{ device }
-		, m_image{ image }
-		, m_value{ value }
-		, m_ranges{ ranges }
-		, m_internal{ getInternalFormat( get( m_image )->getFormat() ) }
-		, m_format{ getFormat( m_internal ) }
-		, m_type{ getType( m_internal ) }
-	{
-	}
-
-	void ClearDepthStencilCommand::apply( ContextLock const & context )const
+		, VkImageSubresourceRangeArray ranges
+		, CmdList & list )
 	{
 		glLogCommand( "ClearDepthStencilCommand" );
 
-		if ( context->hasClearTexImage() )
+		if ( get( get( device )->getInstance() )->getContext().hasClearTexImage() )
 		{
-			if ( isDepthStencilFormat( get( m_image )->getFormat() ) )
+			auto internal = getInternalFormat( get( image )->getFormat() );
+			auto format = getFormat( internal );
+			auto type = getType( internal );
+
+			if ( isDepthStencilFormat( get( image )->getFormat() ) )
 			{
-				for ( auto & range : m_ranges )
+				for ( auto & range : ranges )
 				{
 					for ( uint32_t level = range.baseMipLevel;
 						level < range.baseMipLevel + range.levelCount;
 						++level )
 					{
-						glLogCall( context
-							, glClearTexImage
-							, get( m_image )->getInternal()
+						list.push_back( makeCmd< OpType::eClearTexDepthStencil >( get( image )->getInternal()
 							, level
-							, m_format
-							, m_type
-							, &m_value.depth );
+							, format
+							, type
+							, value ) );
 					}
 				}
 			}
-			else if ( isStencilFormat( get( m_image )->getFormat() ) )
+			else if ( isStencilFormat( get( image )->getFormat() ) )
 			{
-				for ( auto & range : m_ranges )
+				for ( auto & range : ranges )
 				{
 					for ( uint32_t level = range.baseMipLevel;
 						level < range.baseMipLevel + range.levelCount;
 						++level )
 					{
-						glLogCall( context
-							, glClearTexImage
-							, get( m_image )->getInternal()
+						list.push_back( makeCmd< OpType::eClearTexStencil >( get( image )->getInternal()
 							, level
-							, m_format
-							, m_type
-							, &m_value.stencil );
+							, format
+							, type
+							, int32_t( value.stencil ) ) );
 					}
 				}
 			}
-			else if ( isDepthFormat( get( m_image )->getFormat() ) )
+			else if ( isDepthFormat( get( image )->getFormat() ) )
 			{
-				for ( auto & range : m_ranges )
+				for ( auto & range : ranges )
 				{
 					for ( uint32_t level = range.baseMipLevel;
 						level < range.baseMipLevel + range.levelCount;
 						++level )
 					{
-						glLogCall( context
-							, glClearTexImage
-							, get( m_image )->getInternal()
+						list.push_back( makeCmd< OpType::eClearTexDepth >( get( image )->getInternal()
 							, level
-							, m_format
-							, m_type
-							, &m_value.depth );
+							, format
+							, type
+							, value.depth ) );
 					}
 				}
 			}
@@ -91,10 +115,5 @@ namespace ashes::gl4
 		{
 			std::cerr << "Unsupported command : ClearDepthStencilCommand" << std::endl;
 		}
-	}
-
-	CommandPtr ClearDepthStencilCommand::clone()const
-	{
-		return std::make_unique< ClearDepthStencilCommand >( *this );
 	}
 }

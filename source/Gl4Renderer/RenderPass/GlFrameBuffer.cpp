@@ -24,83 +24,79 @@ namespace ashes
 
 namespace ashes::gl4
 {
-	namespace
+	enum GlFramebufferStatus
+		: GLenum
 	{
-		enum GlFramebufferStatus
-			: GLenum
-		{
-			GL_FRAMEBUFFER_STATUS_UNDEFINED = 0x8219,
-			GL_FRAMEBUFFER_STATUS_COMPLETE = 0x8CD5,
-			GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT = 0x8CD6,
-			GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT = 0x8CD7,
-			GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER = 0x8CDB,
-			GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER = 0x8CDC,
-			GL_FRAMEBUFFER_STATUS_UNSUPPORTED = 0x8CDD,
-			GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE = 0x8D56,
-			GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
-		};
+		GL_FRAMEBUFFER_STATUS_UNDEFINED = 0x8219,
+		GL_FRAMEBUFFER_STATUS_COMPLETE = 0x8CD5,
+		GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT = 0x8CD6,
+		GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT = 0x8CD7,
+		GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER = 0x8CDB,
+		GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER = 0x8CDC,
+		GL_FRAMEBUFFER_STATUS_UNSUPPORTED = 0x8CDD,
+		GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE = 0x8D56,
+		GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
+	};
 
-		bool isSRGBFormat( VkFormat format )
-		{
-			return format == VK_FORMAT_R8G8_SRGB
-				|| format == VK_FORMAT_R8G8B8_SRGB
-				|| format == VK_FORMAT_B8G8R8_SRGB
-				|| format == VK_FORMAT_R8G8B8A8_SRGB
-				|| format == VK_FORMAT_B8G8R8A8_SRGB
-				|| format == VK_FORMAT_A8B8G8R8_SRGB_PACK32;
-		}
-
-		GlAttachmentPoint getAttachmentPoint( VkFormat format )
-		{
-			if ( isDepthStencilFormat( format ) )
-			{
-				return GL_ATTACHMENT_POINT_DEPTH_STENCIL;
-			}
-
-			if ( isStencilFormat( format ) )
-			{
-				return GL_ATTACHMENT_POINT_STENCIL;
-			}
-
-			if ( isDepthFormat( format ) )
-			{
-				return GL_ATTACHMENT_POINT_DEPTH;
-			}
-
-			return GL_ATTACHMENT_POINT_COLOR0;
-		}
-
-		GlAttachmentPoint getAttachmentPoint( VkImageView texture )
-		{
-			return getAttachmentPoint( get( texture )->getFormat() );
-		}
-
-		GlAttachmentType getAttachmentType( VkFormat format )
-		{
-			if ( isDepthStencilFormat( format ) )
-			{
-				return GL_ATTACHMENT_TYPE_DEPTH_STENCIL;
-			}
-
-			if ( isStencilFormat( format ) )
-			{
-				return GL_ATTACHMENT_TYPE_STENCIL;
-			}
-
-			if ( isDepthFormat( format ) )
-			{
-				return GL_ATTACHMENT_TYPE_DEPTH;
-			}
-
-			return GL_ATTACHMENT_TYPE_COLOR;
-		}
-
-		GlAttachmentType getAttachmentType( VkImageView texture )
-		{
-			return getAttachmentType( get( texture )->getFormat() );
-		}
+	bool isSRGBFormat( VkFormat format )
+	{
+		return format == VK_FORMAT_R8G8_SRGB
+			|| format == VK_FORMAT_R8G8B8_SRGB
+			|| format == VK_FORMAT_B8G8R8_SRGB
+			|| format == VK_FORMAT_R8G8B8A8_SRGB
+			|| format == VK_FORMAT_B8G8R8A8_SRGB
+			|| format == VK_FORMAT_A8B8G8R8_SRGB_PACK32;
 	}
 
+	GlAttachmentPoint getAttachmentPoint( VkFormat format )
+	{
+		if ( isDepthStencilFormat( format ) )
+		{
+			return GL_ATTACHMENT_POINT_DEPTH_STENCIL;
+		}
+
+		if ( isStencilFormat( format ) )
+		{
+			return GL_ATTACHMENT_POINT_STENCIL;
+		}
+
+		if ( isDepthFormat( format ) )
+		{
+			return GL_ATTACHMENT_POINT_DEPTH;
+		}
+
+		return GL_ATTACHMENT_POINT_COLOR0;
+	}
+
+	GlAttachmentPoint getAttachmentPoint( VkImageView texture )
+	{
+		return getAttachmentPoint( get( texture )->getFormat() );
+	}
+
+	GlAttachmentType getAttachmentType( VkFormat format )
+	{
+		if ( isDepthStencilFormat( format ) )
+		{
+			return GL_ATTACHMENT_TYPE_DEPTH_STENCIL;
+		}
+
+		if ( isStencilFormat( format ) )
+		{
+			return GL_ATTACHMENT_TYPE_STENCIL;
+		}
+
+		if ( isDepthFormat( format ) )
+		{
+			return GL_ATTACHMENT_TYPE_DEPTH;
+		}
+
+		return GL_ATTACHMENT_TYPE_COLOR;
+	}
+
+	GlAttachmentType getAttachmentType( VkImageView texture )
+	{
+		return getAttachmentType( get( texture )->getFormat() );
+	}
 	void checkCompleteness( GLenum status )
 	{
 		switch ( status )
@@ -193,6 +189,8 @@ namespace ashes::gl4
 			{
 				doInitialiseAttach( attachment, index++ );
 			}
+
+			++itPassAttach;
 		}
 
 		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );

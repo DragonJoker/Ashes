@@ -60,44 +60,43 @@ namespace ashes::gl4
 
 	}
 
-	ClearAttachmentsCommand::ClearAttachmentsCommand( VkDevice device
-		, VkClearAttachmentArray clearAttaches
-		, VkClearRectArray clearRects )
-		: CommandBase{ device }
-		, m_clearAttaches{ clearAttaches }
-		, m_clearRects{ clearRects }
-	{
-	}
-
-	void ClearAttachmentsCommand::apply( ContextLock const & context )const
+	void buildClearAttachmentsCommand( VkClearAttachmentArray clearAttaches
+		, VkClearRectArray clearRects
+		, CmdList & list )
 	{
 		glLogCommand( "ClearAttachmentsCommand" );
-		auto scissor = context->getCurrentScissor();
 
-		for ( auto & clearAttach : m_clearAttaches )
+		for ( auto & clearAttach : clearAttaches )
 		{
-			for ( auto & rect : m_clearRects )
+			for ( auto & rect : clearRects )
 			{
-				glLogCall( context
-					, glScissor
-					, rect.rect.offset.x
-					, rect.rect.offset.x
-					, rect.rect.extent.width
-					, rect.rect.extent.height );
-				doClear( context, clearAttach );
+				list.push_back( makeCmd< OpType::eApplyScissor >( rect.rect ) );
+
+				if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
+				{
+					auto & colour = clearAttach.clearValue.color;
+					list.push_back( makeCmd< OpType::eClearColour >( colour
+						, clearAttach.colorAttachment ) );
+				}
+				else
+				{
+					auto & depthStencil = clearAttach.clearValue.depthStencil;
+					auto stencil = GLint( depthStencil.stencil );
+
+					if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT ) )
+					{
+						list.push_back( makeCmd< OpType::eClearDepthStencil >( depthStencil ) );
+					}
+					else if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT ) )
+					{
+						list.push_back( makeCmd< OpType::eClearDepth >( depthStencil.depth ) );
+					}
+					else if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT ) )
+					{
+						list.push_back( makeCmd< OpType::eClearStencil >( stencil ) );
+					}
+				}
 			}
 		}
-
-		glLogCall( context
-			, glScissor
-			, scissor.offset.x
-			, scissor.offset.y
-			, scissor.extent.width
-			, scissor.extent.height );
-	}
-
-	CommandPtr ClearAttachmentsCommand::clone()const
-	{
-		return std::make_unique< ClearAttachmentsCommand >( *this );
 	}
 }

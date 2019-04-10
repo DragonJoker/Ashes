@@ -9,32 +9,45 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
+namespace ashes
+{
+	inline VkAttachmentReference deepCopy( VkAttachmentReference const & rhs )
+	{
+		return rhs;
+	}
+}
+
 namespace ashes::gl4
 {
-	BeginSubpassCommand::BeginSubpassCommand( VkDevice device
-		, VkRenderPass renderPass
+	void buildBeginSubpassCommand( VkRenderPass renderPass
 		, VkFramebuffer frameBuffer
-		, VkSubpassDescription subpass )
-		: CommandBase{ device }
-		, m_renderPass{ static_cast< VkRenderPass >( renderPass ) }
-		, m_subpass{ std::move( subpass ) }
-		, m_frameBuffer{ static_cast< VkFramebuffer >( frameBuffer ) }
+		, VkSubpassDescription subpass
+		, CmdList & list )
 	{
-	}
+		glLogCommand( "BeginSubpassCommand" );
 
-	void BeginSubpassCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "NextSubpassCommand" );
-
-		if ( get( m_frameBuffer )->getInternal() )
+		if ( get( frameBuffer )->getInternal() != GL_INVALID_INDEX )
 		{
-			get( m_frameBuffer )->setDrawBuffers( context
-				, VkAttachmentReferenceArray{ m_subpass.pColorAttachments, m_subpass.pColorAttachments + m_subpass.colorAttachmentCount } );
-		}
-	}
+			UInt32Array drawBuffers;
+			auto & colourAttaches = get( frameBuffer )->getColourAttaches();
+			auto attaches = makeVector( subpass.pColorAttachments
+				, subpass.colorAttachmentCount );
 
-	CommandPtr BeginSubpassCommand::clone()const
-	{
-		return std::make_unique< BeginSubpassCommand >( *this );
+			if ( colourAttaches.empty()
+				&& attaches.size() == 1 )
+			{
+				drawBuffers.push_back( GL_ATTACHMENT_POINT_BACK );
+			}
+			else
+			{
+				for ( auto & attach : attaches )
+				{
+					auto & fboAttach = colourAttaches[attach.attachment];
+					drawBuffers.push_back( fboAttach.point + attach.attachment );
+				}
+			}
+
+			list.push_back( makeCmd< OpType::eDrawBuffers >( drawBuffers ) );
+		}
 	}
 }

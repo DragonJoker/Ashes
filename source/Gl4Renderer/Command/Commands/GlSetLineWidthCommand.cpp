@@ -6,23 +6,18 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	SetLineWidthCommand::SetLineWidthCommand( VkDevice device
-		, float width )
-		: CommandBase{ device }
-		, m_width{ width }
+	void apply( ContextLock const & context
+		, CmdSetLineWidth const & cmd )
 	{
-	}
-
-	void SetLineWidthCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "SetLineWidthCommand" );
 		glLogCall( context
 			, glLineWidth
-			, m_width );
+			, cmd.width );
 	}
 
-	CommandPtr SetLineWidthCommand::clone()const
+	void buildSetLineWidthCommand( float width
+		, CmdList & list )
 	{
-		return std::make_unique< SetLineWidthCommand >( *this );
+		glLogCommand( "SetLineWidthCommand" );
+		list.push_back( makeCmd< OpType::eSetLineWidth >( width ) );
 	}
 }

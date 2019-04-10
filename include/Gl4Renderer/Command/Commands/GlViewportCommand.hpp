@@ -8,28 +8,7 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Commande d'application d'un viewport.
-	*/
-	class ViewportCommand
-		: public CommandBase
-	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] viewport
-		*	Le viewport.
-		*/
-		ViewportCommand( VkDevice device
-			, uint32_t firstViewport
-			, VkViewportArray viewports );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		VkViewportArray m_viewports;
-	};
+	void buildViewportCommand( uint32_t firstViewport
+		, VkViewportArray viewports
+		, CmdList & list );
 }

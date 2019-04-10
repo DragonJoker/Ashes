@@ -8,21 +8,35 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Commande de génération de mipmaps.
-	*/
-	class GenerateMipmapsCommand
-		: public CommandBase
-	{
-	public:
-		GenerateMipmapsCommand( VkDevice device
-			, VkImage texture );
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
+	//*************************************************************************
 
-	private:
-		GLuint m_texture;
-		GLenum m_target;
+	template<>
+	struct CmdConfig< OpType::eGenerateMipmaps >
+	{
+		static Op constexpr value = { OpType::eGenerateMipmaps, 2u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eGenerateMipmaps >
+	{
+		inline CmdT( uint32_t target )
+			: cmd{ { OpType::eGenerateMipmaps, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, target{ std::move( target ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t target;
+	};
+	using CmdGenerateMipmaps = CmdT< OpType::eGenerateMipmaps >;
+
+	void apply( ContextLock const & context
+		, CmdGenerateMipmaps const & cmd );
+
+	//*************************************************************************
+
+	void buildGenerateMipmapsCommand( VkImage texture
+		, CmdList & list );
+
+	//*************************************************************************
 }

@@ -10,27 +10,21 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	BeginQueryCommand::BeginQueryCommand( VkDevice device
-		, VkQueryPool pool
-		, uint32_t query
-		, VkQueryControlFlags flags )
-		: CommandBase{ device }
-		, m_target{ convert( get( pool )->getType() ) }
-		, m_query{ *( get( pool )->begin() + query ) }
-	{
-	}
-
-	void BeginQueryCommand::apply( ContextLock const & context )const
+	void apply( ContextLock const & context
+		, CmdBeginQuery const & cmd )
 	{
 		glLogCommand( "BeginQueryCommand" );
 		glLogCall( context
 			, glBeginQuery
-			, m_target
-			, m_query );
+			, GlQueryType( cmd.target )
+			, GLuint( cmd.query ) );
 	}
 
-	CommandPtr BeginQueryCommand::clone()const
+	void buildBeginQueryCommand( VkQueryPool pool
+		, uint32_t query
+		, CmdList & list )
 	{
-		return std::make_unique< BeginQueryCommand >( *this );
+		list.push_back( makeCmd< OpType::eBeginQuery >( convert( get( pool )->getType() )
+			, *( get( pool )->begin() + query ) ) );
 	}
 }

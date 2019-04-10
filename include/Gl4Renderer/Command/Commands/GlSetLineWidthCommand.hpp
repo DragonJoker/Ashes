@@ -8,27 +8,35 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Commande d'application d'un scissor.
-	*/
-	class SetLineWidthCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eSetLineWidth >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] scissor
-		*	Le scissor.
-		*/
-		SetLineWidthCommand( VkDevice device
-			, float width );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		float m_width;
+		static Op constexpr value = { OpType::eSetLineWidth, 2u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eSetLineWidth >
+	{
+		inline CmdT( float width )
+			: cmd{ { OpType::eSetLineWidth, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, width{ std::move( width ) }
+		{
+		}
+
+		Command cmd;
+		float width;
+	};
+	using CmdSetLineWidth = CmdT< OpType::eSetLineWidth >;
+
+	void apply( ContextLock const & context
+		, CmdSetLineWidth const & cmd );
+
+	//*************************************************************************
+
+	void buildSetLineWidthCommand( float width
+		, CmdList & list );
+
+	//*************************************************************************
 }

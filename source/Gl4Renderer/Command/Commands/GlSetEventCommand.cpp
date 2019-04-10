@@ -10,22 +10,17 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	SetEventCommand::SetEventCommand( VkDevice device
-		, VkEvent event
-		, VkPipelineStageFlags stageFlags )
-		: CommandBase{ device }
-		, m_event{ event }
+	void apply( ContextLock const & context
+		, CmdSetEvent const & cmd )
 	{
+		get( cmd.event )->reset();
 	}
 
-	void SetEventCommand::apply( ContextLock const & context )const
+	void buildSetEventCommand( VkEvent event
+		, VkPipelineStageFlags stageFlags
+		, CmdList & list )
 	{
 		glLogCommand( "SetEventCommand" );
-		get( m_event )->reset();
-	}
-
-	CommandPtr SetEventCommand::clone()const
-	{
-		return std::make_unique< SetEventCommand >( *this );
+		list.push_back( makeCmd< OpType::eSetEvent >( event ) );
 	}
 }

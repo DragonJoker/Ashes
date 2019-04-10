@@ -10,6 +10,11 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
+	bool isSRGBFormat( VkFormat format );
+	GlAttachmentPoint getAttachmentPoint( VkFormat format );
+	GlAttachmentPoint getAttachmentPoint( VkImageView texture );
+	GlAttachmentType getAttachmentType( VkFormat format );
+	GlAttachmentType getAttachmentType( VkImageView texture );
 	void checkCompleteness( GLenum status );
 	/**
 	*\brief
@@ -82,6 +87,11 @@ namespace ashes::gl4
 		inline GLuint & getInternal()
 		{
 			return m_internal;
+		}
+
+		inline auto const & getAttachments()const
+		{
+			return m_attachments;
 		}
 
 		inline auto const & getAllAttaches()const

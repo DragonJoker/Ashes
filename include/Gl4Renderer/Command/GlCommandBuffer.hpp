@@ -30,7 +30,6 @@ namespace ashes::gl4
 		*/
 		CommandBuffer( VkDevice device
 			, VkCommandBufferLevel level );
-		void applyPostSubmitActions( ContextLock const & context )const;
 		/**
 		*\copydoc	CommandBuffer::begin
 		*/
@@ -266,9 +265,13 @@ namespace ashes::gl4
 		*\return
 		*	Le tableau de commandes.
 		*/
-		inline CommandArray const & getCommands()const
+		inline CmdBuffer const & getCmds()const
 		{
-			return m_commands;
+			return m_cmds;
+		}
+		inline CmdBuffer const & getCmdsAfterSubmit()const
+		{
+			return m_cmdsAfterSubmit;
 		}
 
 		void initialiseGeometryBuffers()const;
@@ -279,7 +282,10 @@ namespace ashes::gl4
 	private:
 		VkDevice m_device;
 		VkCommandBufferLevel m_level;
-		mutable CommandArray m_commands;
+		mutable CmdList m_cmdList;
+		mutable CmdBuffer m_cmds;
+		mutable CmdList m_cmdAfterSubmit;
+		mutable CmdBuffer m_cmdsAfterSubmit;
 		struct State
 		{
 			VkCommandBufferUsageFlags beginFlags{ 0u };
@@ -296,7 +302,6 @@ namespace ashes::gl4
 			GeometryBuffers * boundVao{ nullptr };
 			GeometryBuffersRefArray vaos;
 		};
-		mutable std::vector< std::function< void( ContextLock const & ) > > m_afterSubmitActions;
 		mutable State m_state;
 	};
 }

@@ -10,33 +10,11 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	ScissorCommand::ScissorCommand( VkDevice device
-		, uint32_t firstScissor
-		, VkScissorArray scissors )
-		: CommandBase{ device }
-		, m_scissors{ scissors.begin() + firstScissor, scissors.end() }
+	void buildScissorCommand( uint32_t firstScissor
+		, VkScissorArray scissors
+		, CmdList & list )
 	{
-	}
-
-	void ScissorCommand::apply( ContextLock const & context )const
-	{
-		auto & scissor = *m_scissors.begin();
-
-		if ( scissor != context->getCurrentScissor() )
-		{
-			glLogCommand( "ScissorCommand" );
-			glLogCall( context
-				, glScissor
-				, scissor.offset.x
-				, scissor.offset.y
-				, scissor.extent.width
-				, scissor.extent.height );
-			context->setCurrentScissor( scissor );
-		}
-	}
-
-	CommandPtr ScissorCommand::clone()const
-	{
-		return std::make_unique< ScissorCommand >( *this );
+		glLogCommand( "ScissorCommand" );
+		list.push_back( makeCmd< OpType::eApplyScissor >( *scissors.begin() ) );
 	}
 }

@@ -6,28 +6,23 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	MemoryBarrierCommand::MemoryBarrierCommand( VkDevice device
-		, VkPipelineStageFlags after
+	void apply( ContextLock const & context
+		, CmdMemoryBarrier const & cmd )
+	{
+		glLogCall( context
+			, glMemoryBarrier
+			, cmd.flags );
+	}
+
+	void buildMemoryBarrierCommand( VkPipelineStageFlags after
 		, VkPipelineStageFlags before
 		, VkDependencyFlags dependencyFlags
 		, VkMemoryBarrierArray memoryBarriers
 		, VkBufferMemoryBarrierArray bufferMemoryBarriers
-		, VkImageMemoryBarrierArray imageMemoryBarriers )
-		: CommandBase{ device }
-		, m_flags{ getMemoryBarrierFlags( before ) }
-	{
-	}
-
-	void MemoryBarrierCommand::apply( ContextLock const & context )const
+		, VkImageMemoryBarrierArray imageMemoryBarriers
+		, CmdList & list )
 	{
 		glLogCommand( "MemoryBarrierCommand" );
-		glLogCall( context
-			, glMemoryBarrier
-			, m_flags );
-	}
-
-	CommandPtr MemoryBarrierCommand::clone()const
-	{
-		return std::make_unique< MemoryBarrierCommand >( *this );
+		list.push_back( makeCmd< OpType::eMemoryBarrier >( getMemoryBarrierFlags( before ) ) );
 	}
 }

@@ -8,25 +8,36 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Classe de base d'une commande.
-	*/
-	class BindGeometryBuffersCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eBindVextexArray >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*/
-		BindGeometryBuffersCommand( VkDevice device
-			, GeometryBuffers const & vao );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		GeometryBuffers const & m_vao;
+		static Op constexpr value = { OpType::eBindVextexArray, 4u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eBindVextexArray >
+	{
+		inline CmdT( GeometryBuffers const * vao )
+			: cmd{ { OpType::eBindVextexArray, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, vao{ std::move( vao ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t dummy; // Here for alignment purpose
+		GeometryBuffers const * vao;
+	};
+	using CmdBindVextexArray = CmdT< OpType::eBindVextexArray >;
+
+	void apply( ContextLock const & context
+		, CmdBindVextexArray const & cmd );
+
+	//*************************************************************************
+
+	void buildBindGeometryBuffersCommand( GeometryBuffers const & vao
+		, CmdList & list );
+
+	//*************************************************************************
 }

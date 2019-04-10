@@ -8,43 +8,49 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Commande de copie du contenu d'une image dans une autre.
-	*/
-	class CopyImageCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eCopyImageSubData >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] copyInfo
-		*	Les informations de copie.
-		*\param[in] src
-		*	L'image source.
-		*\param[in] dst
-		*	L'image destination.
-		*/
-		CopyImageCommand( VkDevice device
-			, VkImageCopy copyInfo
-			, VkImage src
-			, VkImage dst );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		VkImage m_src;
-		VkImage m_dst;
-		VkImageCopy m_copyInfo;
-		GlInternal m_srcInternal;
-		GlFormat m_srcFormat;
-		GlType m_srcType;
-		GlTextureType m_srcTarget;
-		GlInternal m_dstInternal;
-		GlFormat m_dstFormat;
-		GlType m_dstType;
-		GlTextureType m_dstTarget;
+		static Op constexpr value = { OpType::eCopyImageSubData, 22u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eCopyImageSubData >
+	{
+		inline CmdT( uint32_t srcName
+			, uint32_t srcTarget
+			, uint32_t dstName
+			, uint32_t dstTarget
+			, VkImageCopy copy )
+			: cmd{ { OpType::eCopyImageSubData, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, srcName{ std::move( srcName ) }
+			, srcTarget{ std::move( srcTarget ) }
+			, dstName{ std::move( dstName ) }
+			, dstTarget{ std::move( dstTarget ) }
+			, copy{ std::move( copy ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t srcName;
+		uint32_t srcTarget;
+		uint32_t dstName;
+		uint32_t dstTarget;
+		VkImageCopy copy;
+	};
+	using CmdCopyImageSubData = CmdT< OpType::eCopyImageSubData >;
+
+	void apply( ContextLock const & context
+		, CmdCopyImageSubData const & cmd );
+
+	//*************************************************************************
+
+	void buildCopyImageCommand( VkImageCopy copyInfo
+		, VkImage src
+		, VkImage dst
+		, CmdList & list );
+
+	//*************************************************************************
 }

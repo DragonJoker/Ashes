@@ -8,42 +8,78 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Commande de copie du contenu d'une image dans un tampon.
-	*/
-	class CopyImageToBufferCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eReadBuffer >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] copyInfo
-		*	Les informations de copie.
-		*\param[in] src
-		*	L'image source.
-		*\param[in] dst
-		*	Le tampon destination.
-		*/
-		CopyImageToBufferCommand( VkDevice device
-			, VkBufferImageCopy copyInfo
-			, VkImage src
-			, VkBuffer dst );
-		CopyImageToBufferCommand( CopyImageToBufferCommand const & rhs );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		VkImage m_src;
-		VkBuffer m_dst;
-		VkBufferImageCopy m_copyInfo;
-		GlInternal m_internal;
-		GlFormat m_format;
-		GlType m_type;
-		GlTextureType m_target;
-		VkImageView m_view;
-		GLuint m_srcFbo;
+		static Op constexpr value = { OpType::eReadBuffer, 2u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eReadBuffer >
+	{
+		inline CmdT( uint32_t point )
+			: cmd{ { OpType::eReadBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, point{ std::move( point ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t point;
+	};
+	using CmdReadBuffer = CmdT< OpType::eReadBuffer >;
+
+	void apply( ContextLock const & context
+		, CmdReadBuffer const & cmd );
+	
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eReadPixels >
+	{
+		static Op constexpr value = { OpType::eReadPixels, 7u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eReadPixels >
+	{
+		inline CmdT( int32_t x
+			, int32_t y
+			, uint32_t width
+			, uint32_t height
+			, uint32_t format
+			, uint32_t type )
+			: cmd{ { OpType::eReadPixels, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, x{ std::move( x ) }
+			, y{ std::move( y ) }
+			, width{ std::move( width ) }
+			, height{ std::move( height ) }
+			, format{ std::move( format ) }
+			, type{ std::move( type ) }
+		{
+		}
+
+		Command cmd;
+		int32_t x;
+		int32_t y;
+		uint32_t width;
+		uint32_t height;
+		uint32_t format;
+		uint32_t type;
+	};
+	using CmdReadPixels = CmdT< OpType::eReadPixels >;
+
+	void apply( ContextLock const & context
+		, CmdReadPixels const & cmd );
+
+	//*************************************************************************
+
+	void buildCopyImageToBufferCommand( VkDevice device
+		, VkBufferImageCopy copyInfo
+		, VkImage src
+		, VkBuffer dst
+		, CmdList & list );
+
+	//*************************************************************************
 }

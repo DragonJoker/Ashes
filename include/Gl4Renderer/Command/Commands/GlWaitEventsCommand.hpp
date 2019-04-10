@@ -8,21 +8,40 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	class WaitEventsCommand
-		: public CommandBase
-	{
-	public:
-		WaitEventsCommand( VkDevice device
-			, VkEventArray const & events
-			, VkPipelineStageFlags srcStageMask
-			, VkPipelineStageFlags dstStageMask
-			, VkMemoryBarrierArray memoryBarriers
-			, VkBufferMemoryBarrierArray bufferMemoryBarriers
-			, VkImageMemoryBarrierArray imageMemoryBarriers );
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
+	//*************************************************************************
 
-	private:
-		VkEventArray const & m_events;
+	template<>
+	struct CmdConfig< OpType::eWaitEvents >
+	{
+		static Op constexpr value = { OpType::eWaitEvents, 1u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eWaitEvents >
+	{
+		inline CmdT( VkEventArray events )
+			: cmd{ { CmdConfigT< OpType::eWaitEvents >.type, CmdConfigT< OpType::eWaitEvents >.size + uint16_t( events.size() ) * 2u } }
+			, events{ std::move( events ) }
+		{
+		}
+
+		Command cmd;
+		VkEventArray events;
+	};
+	using CmdWaitEvents = CmdT< OpType::eWaitEvents >;
+
+	void apply( ContextLock const & context
+		, CmdWaitEvents const & cmd );
+
+	//*************************************************************************
+
+	void buildWaitEventsCommand( VkEventArray events
+		, VkPipelineStageFlags srcStageMask
+		, VkPipelineStageFlags dstStageMask
+		, VkMemoryBarrierArray memoryBarriers
+		, VkBufferMemoryBarrierArray bufferMemoryBarriers
+		, VkImageMemoryBarrierArray imageMemoryBarriers
+		, CmdList & list );
+
+	//*************************************************************************
 }

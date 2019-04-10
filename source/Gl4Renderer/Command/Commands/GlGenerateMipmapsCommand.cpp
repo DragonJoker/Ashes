@@ -10,32 +10,25 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	GenerateMipmapsCommand::GenerateMipmapsCommand( VkDevice device
-		, VkImage texture )
-		: CommandBase{ device }
-		, m_texture{ get( texture )->getInternal() }
-		, m_target{ convert( get( texture )->getType(), get( texture )->getArrayLayers() ) }
+	void apply( ContextLock const & context
+		, CmdGenerateMipmaps const & cmd )
 	{
-	}
-
-	void GenerateMipmapsCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "GenerateMipmapsCommand" );
-		glLogCall( context
-			, glBindTexture
-			, m_target
-			, m_texture );
 		glLogCall( context
 			, glGenerateMipmap
-			, m_target );
-		glLogCall( context
-			, glBindTexture
-			, m_target
-			, 0u );
+			, cmd.target );
 	}
 
-	CommandPtr GenerateMipmapsCommand::clone()const
+	//*************************************************************************
+
+	void buildGenerateMipmapsCommand( VkImage texture
+		, CmdList & list )
 	{
-		return std::make_unique< GenerateMipmapsCommand >( *this );
+		glLogCommand( "GenerateMipmapsCommand" );
+		auto target = convert( get( texture )->getType(), get( texture )->getArrayLayers() );
+		list.push_back( makeCmd< OpType::eBindTexture >( target
+				, get( texture )->getInternal() ) );
+		list.push_back( makeCmd< OpType::eGenerateMipmaps >( target ) );
+		list.push_back( makeCmd< OpType::eBindTexture >( target
+			, 0u ) );
 	}
 }

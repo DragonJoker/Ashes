@@ -3,6 +3,8 @@ This file belongs to GlInstance.
 See LICENSE file in root folder.
 */
 #include "Command/Commands/GlEndSubpassCommand.hpp"
+#include "Command/Commands/GlBlitImageCommand.hpp"
+#include "Command/Commands/GlCopyImageToBufferCommand.hpp"
 
 #include "Command/GlCommandBuffer.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
@@ -11,56 +13,49 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	EndSubpassCommand::EndSubpassCommand( VkDevice device
-		, VkFramebuffer frameBuffer
-		, VkSubpassDescription const & subpass )
-		: CommandBase{ device }
-		, m_frameBuffer{ frameBuffer }
-		, m_subpass{ subpass }
-	{
-	}
-
-	void EndSubpassCommand::apply( ContextLock const & context )const
+	void buildEndSubpassCommand( VkFramebuffer frameBuffer
+		, VkSubpassDescription const & subpass
+		, CmdList & list )
 	{
 		glLogCommand( "EndSubpassCommand" );
 
-		if ( m_subpass.pResolveAttachments )
+		if ( subpass.pResolveAttachments )
 		{
-			if ( get( m_frameBuffer )->getInternal() )
+			if ( get( frameBuffer )->getInternal() )
 			{
 				uint32_t index = 0u;
 
-				for ( auto it = m_subpass.pResolveAttachments;
-					it != m_subpass.pResolveAttachments + m_subpass.colorAttachmentCount;
+				for ( auto it = subpass.pResolveAttachments;
+					it != subpass.pResolveAttachments + subpass.colorAttachmentCount;
 					++it )
 				{
 					auto & resolveAttach = *it;
-					auto & srcattach = get( m_frameBuffer )->getColourAttaches()[index++];
-					auto & dstattach = get( m_frameBuffer )->getColourAttaches()[resolveAttach.attachment];
+					auto & srcattach = get( frameBuffer )->getColourAttaches()[index++];
+					auto & dstattach = get( frameBuffer )->getColourAttaches()[resolveAttach.attachment];
 
 					if ( dstattach.object != GL_INVALID_INDEX )
 					{
-						context->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, get( m_frameBuffer )->getInternal() );
+						list.push_back( makeCmd< OpType::eBindBuffer >( GL_DRAW_FRAMEBUFFER
+							, get( frameBuffer )->getInternal() ) );
 					}
 					else
 					{
-						context->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+						list.push_back( makeCmd< OpType::eBindBuffer >( GL_DRAW_FRAMEBUFFER
+							, 0u ) );
 					}
 
-					GLenum attach[1]{ dstattach.point };
-					context->glBindFramebuffer( GL_READ_FRAMEBUFFER, get( m_frameBuffer )->getInternal() );
-					context->glReadBuffer( srcattach.point );
-					context->glDrawBuffers( 1u, attach );
-					context->glBlitFramebuffer( 0, 0, get( m_frameBuffer )->getWidth(), get( m_frameBuffer )->getHeight()
-						, 0, 0, get( m_frameBuffer )->getWidth(), get( m_frameBuffer )->getHeight()
-						, GL_COLOR_BUFFER_BIT, GL_FILTER_NEAREST );
+					list.push_back( makeCmd< OpType::eBindBuffer >( GL_READ_FRAMEBUFFER
+						, get( frameBuffer )->getInternal() ) );
+					list.push_back( makeCmd< OpType::eReadBuffer >( srcattach.point ) );
+					UInt32Array attaches;
+					attaches.push_back( dstattach.point );
+					list.push_back( makeCmd< OpType::eDrawBuffers >( std::move( attaches ) ) );
+					list.push_back( makeCmd< OpType::eBlitFramebuffer >( 
+						0, 0, int32_t( get( frameBuffer )->getWidth() ), int32_t( get( frameBuffer )->getHeight() ),
+						0, 0, int32_t( get( frameBuffer )->getWidth() ), int32_t( get( frameBuffer )->getHeight() ),
+						GL_COLOR_BUFFER_BIT, GL_FILTER_NEAREST ) );
 				}
 			}
 		}
-	}
-
-	CommandPtr EndSubpassCommand::clone()const
-	{
-		return std::make_unique< EndSubpassCommand >( *this );
 	}
 }

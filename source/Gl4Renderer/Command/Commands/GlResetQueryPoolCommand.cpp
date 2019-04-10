@@ -6,21 +6,11 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	ResetQueryPoolCommand::ResetQueryPoolCommand( VkDevice device
-		, VkQueryPool pool
+	void buildResetQueryPoolCommand( VkQueryPool pool
 		, uint32_t firstQuery
-		, uint32_t queryCount )
-		: CommandBase{ device }
-	{
-	}
-
-	void ResetQueryPoolCommand::apply( ContextLock const & context )const
+		, uint32_t queryCount
+		, CmdList & list )
 	{
 		glLogCommand( "ResetQueryPoolCommand" );
-	}
-
-	CommandPtr ResetQueryPoolCommand::clone()const
-	{
-		return std::make_unique< ResetQueryPoolCommand >( *this );
 	}
 }

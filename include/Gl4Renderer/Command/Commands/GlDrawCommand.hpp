@@ -8,41 +8,51 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Commande de dessin non index�.
-	*/
-	class DrawCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eDraw >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] vtxCount
-		*	Nombre de sommets.
-		*\param[in] instCount
-		*	Nombre d'instances.
-		*\param[in] firstVertex
-		*	Index du premier sommet.
-		*\param[in] firstInstance
-		*	Index de la premi�re instance.
-		*/
-		DrawCommand( VkDevice device
-			, uint32_t vtxCount
+		static Op constexpr value = { OpType::eDraw, 6u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eDraw >
+	{
+		inline CmdT( uint32_t vtxCount
 			, uint32_t instCount
 			, uint32_t firstVertex
 			, uint32_t firstInstance
-			, VkPrimitiveTopology mode );
+			, GlPrimitiveTopology mode )
+			: cmd{ { OpType::eDraw, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, vtxCount{ std::move( vtxCount ) }
+			, instCount{ std::move( instCount ) }
+			, firstVertex{ std::move( firstVertex ) }
+			, firstInstance{ std::move( firstInstance ) }
+			, mode{ std::move( mode ) }
+		{
+		}
 
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		uint32_t m_vtxCount;
-		uint32_t m_instCount;
-		uint32_t m_firstVertex;
-		uint32_t m_firstInstance;
-		GlPrimitiveTopology m_mode;
+		Command cmd;
+		uint32_t vtxCount;
+		uint32_t instCount;
+		uint32_t firstVertex;
+		uint32_t firstInstance;
+		GlPrimitiveTopology mode;
 	};
+	using CmdDraw = CmdT< OpType::eDraw >;
+
+	void apply( ContextLock const & context
+		, CmdDraw const & cmd );
+
+	//*************************************************************************
+
+	void buildDrawCommand( uint32_t vtxCount
+		, uint32_t instCount
+		, uint32_t firstVertex
+		, uint32_t firstInstance
+		, VkPrimitiveTopology mode
+		, CmdList & list );
+
+	//*************************************************************************
 }

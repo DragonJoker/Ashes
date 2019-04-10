@@ -17,6 +17,49 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
+	void apply( ContextLock const & context
+		, CmdActiveTexture const & cmd )
+	{
+		glLogCall( context
+			, glActiveTexture
+			, GlTextureUnit( GL_TEXTURE0 + cmd.binding ) );
+	}
+	
+	void apply( ContextLock const & context
+		, CmdBindSampler const & cmd )
+	{
+		glLogCall( context
+			, glBindSampler
+			, cmd.binding
+			, cmd.name );
+	}
+
+	void apply( ContextLock const & context
+		, CmdBindImage const & cmd )
+	{
+		glLogCall( context
+			, glBindImageTexture
+			, cmd.binding
+			, cmd.name
+			, cmd.baseMipLevel
+			, cmd.layerCount
+			, cmd.baseArrayLayer
+			, GL_ACCESS_TYPE_READ_WRITE
+			, cmd.internal );
+	}
+
+	void apply( ContextLock const & context
+		, CmdBindBufferRange const & cmd )
+	{
+		glLogCall( context
+			, glBindBufferRange
+			, cmd.target
+			, cmd.binding
+			, cmd.name
+			, GLintptr( cmd.offset )
+			, GLsizeiptr( cmd.range ) );
+	}
+	
 	namespace
 	{
 		VkImageView getView( VkWriteDescriptorSet const & write, uint32_t index )
@@ -37,170 +80,148 @@ namespace ashes::gl4
 			return write.pBufferInfo[index].buffer;
 		}
 
-		void bindCombinedSampler( ContextLock const & context
-			, VkWriteDescriptorSet const & write )
+		void bindCombinedSampler( VkWriteDescriptorSet const & write
+			, CmdList & list )
 		{
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
+
 				auto view = getView( write, i );
+				list.push_back( makeCmd< OpType::eBindTexture >( uint32_t( convertViewType( get( view )->getType() ) )
+					, get( view )->getInternal() ) );
+
 				auto sampler = getSampler( write, i );
-				glLogCall( context
-					, glActiveTexture
-					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-				glLogCall( context
-					, glBindTexture
-					, convertViewType( get( view )->getType() )
-					, get( view )->getInternal() );
-				glLogCall( context
-					, glBindSampler
-					, bindingIndex
-					, get( sampler )->getInternal() );
+				list.push_back( makeCmd< OpType::eBindSampler >( bindingIndex
+					, get( sampler )->getInternal() ) );
 			}
 		}
 
-		void bindSampler( ContextLock const & context
-			, VkWriteDescriptorSet const & write )
+		void bindSampler( VkWriteDescriptorSet const & write
+			, CmdList & list )
 		{
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto sampler = getSampler( write, i );
-				glLogCall( context
-					, glBindSampler
-					, bindingIndex
-					, get( sampler )->getInternal() );
+				list.push_back( makeCmd< OpType::eBindSampler >( bindingIndex
+					, get( sampler )->getInternal() ) );
 			}
 		}
 
-		void bindSampledTexture( ContextLock const & context
-			, VkWriteDescriptorSet const & write )
+		void bindSampledTexture( VkWriteDescriptorSet const & write
+			, CmdList & list )
 		{
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
+
 				auto view = getView( write, i );
-				glLogCall( context
-					, glActiveTexture
-					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-				glLogCall( context
-					, glBindTexture
-					, convertViewType( get( view )->getType() )
-					, get( view )->getInternal() );
+				list.push_back( makeCmd< OpType::eBindTexture >( uint32_t( convertViewType( get( view )->getType() ) )
+					, get( view )->getInternal() ) );
 			}
 		}
 
-		void bindStorageTexture( ContextLock const & context
-			, VkWriteDescriptorSet const & write )
+		void bindStorageTexture( VkWriteDescriptorSet const & write
+			, CmdList & list )
 		{
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
+
 				auto view = getView( write, i );
 				auto & range = get( view )->getSubresourceRange();
-				glLogCall( context
-					, glActiveTexture
-					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-				glLogCall( context
-					, glBindImageTexture
-					, bindingIndex
+				list.push_back( makeCmd< OpType::eBindImage >( bindingIndex
 					, get( view )->getInternal()
 					, range.baseMipLevel
 					, range.layerCount
 					, range.baseArrayLayer
-					, GL_ACCESS_TYPE_READ_WRITE
-					, getInternalFormat( get( view )->getFormat() ) );
+					, getInternalFormat( get( view )->getFormat() ) ) );
 			}
 		}
 
-		void bindUniformBuffer( ContextLock const & context
-			, VkWriteDescriptorSet const & write )
+		void bindUniformBuffer( VkWriteDescriptorSet const & write
+			, CmdList & list )
 		{
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto buffer = getBuffer( write, i );
-				glLogCall( context
-					, glBindBufferRange
+				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 					, GL_BUFFER_TARGET_UNIFORM
-					, bindingIndex
 					, get( buffer )->getInternal()
-					, GLintptr( write.pBufferInfo[i].offset )
-					, GLsizeiptr( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) );
+					, int64_t( write.pBufferInfo[i].offset )
+					, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
 			}
 		}
 
-		void bindStorageBuffer( ContextLock const & context
-			, VkWriteDescriptorSet const & write )
+		void bindStorageBuffer( VkWriteDescriptorSet const & write
+			, CmdList & list )
 		{
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto buffer = getBuffer( write, i );
-				glLogCall( context
-					, glBindBufferRange
+				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 					, GL_BUFFER_TARGET_SHADER_STORAGE
-					, bindingIndex
 					, get( buffer )->getInternal()
-					, GLintptr( write.pBufferInfo[i].offset )
-					, GLsizeiptr( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) );
+					, int64_t( write.pBufferInfo[i].offset )
+					, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
 			}
 		}
 
-		void bindTexelBuffer( ContextLock const & context
-			, VkWriteDescriptorSet const & write )
+		void bindTexelBuffer( VkWriteDescriptorSet const & write
+			, CmdList & list )
+		{
+			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			{
+				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
+
+				auto buffer = getBuffer( write, i );
+				list.push_back( makeCmd< OpType::eBindTexture >( GL_BUFFER_TARGET_TEXTURE
+					, get( write.pTexelBufferView[i] )->getImage() ) );
+			}
+		}
+
+		void bindDynamicUniformBuffer( VkWriteDescriptorSet const & write
+			, uint32_t offset
+			, CmdList & list )
 		{
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto buffer = getBuffer( write, i );
-				glLogCall( context
-					, glActiveTexture
-					, GlTextureUnit( GL_TEXTURE0 + bindingIndex ) );
-				glLogCall( context
-					, glBindTexture
-					, GL_BUFFER_TARGET_TEXTURE
-					, get( write.pTexelBufferView[i] )->getImage() );
-			}
-		}
-
-		void bindDynamicUniformBuffer( ContextLock const & context
-			, VkWriteDescriptorSet const & write, uint32_t offset )
-		{
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
-			{
-				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
-				auto buffer = getBuffer( write, i );
-				glLogCall( context
-					, glBindBufferRange
+				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 					, GL_BUFFER_TARGET_UNIFORM
-					, bindingIndex
 					, get( buffer )->getInternal()
-					, GLintptr( write.pBufferInfo[i].offset + offset )
-					, GLsizeiptr( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) );
+					, int64_t( write.pBufferInfo[i].offset + offset )
+					, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
 			}
 		}
 
-		void bindDynamicStorageBuffer( ContextLock const & context
-			, VkWriteDescriptorSet const & write, uint32_t offset )
+		void bindDynamicStorageBuffer( VkWriteDescriptorSet const & write
+			, uint32_t offset
+			, CmdList & list )
 		{
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				auto buffer = getBuffer( write, i );
-				glLogCall( context
-					, glBindBufferRange
+				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 					, GL_BUFFER_TARGET_SHADER_STORAGE
-					, bindingIndex
 					, get( buffer )->getInternal()
-					, GLintptr( write.pBufferInfo[i].offset + offset )
-					, GLsizeiptr( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) );
+					, int64_t( write.pBufferInfo[i].offset + offset )
+					, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
 			}
 		}
 
-		void bindDynamicBuffers( ContextLock const & context
-			, VkWriteDescriptorSetArray const & writes
-			, UInt32Array const & offsets )
+		void bindDynamicBuffers( VkWriteDescriptorSetArray const & writes
+			, UInt32Array const & offsets
+			, CmdList & list )
 		{
 			for ( auto i = 0u; i < offsets.size(); ++i )
 			{
@@ -209,11 +230,11 @@ namespace ashes::gl4
 				switch ( write.descriptorType )
 				{
 				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
-					bindDynamicUniformBuffer( context, write, offsets[i] );
+					bindDynamicUniformBuffer( write, offsets[i], list );
 					break;
 
 				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
-					bindDynamicStorageBuffer( context, write, offsets[i] );
+					bindDynamicStorageBuffer( write, offsets[i], list );
 					break;
 
 				default:
@@ -224,92 +245,92 @@ namespace ashes::gl4
 			}
 		}
 
-		void bindCombinedSampler( ContextLock const & context
-			, LayoutBindingWrites const * writes )
+		void bindCombinedSampler( LayoutBindingWrites const * writes
+			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindCombinedSampler( context, write );
+				bindCombinedSampler( write, list );
 			}
 		}
 
-		void bindSampler( ContextLock const & context
-			, LayoutBindingWrites const * writes )
+		void bindSampler( LayoutBindingWrites const * writes
+			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindSampler( context, write );
+				bindSampler( write, list );
 			}
 		}
 
-		void bindSampledTexture( ContextLock const & context
-			, LayoutBindingWrites const * writes )
+		void bindSampledTexture( LayoutBindingWrites const * writes
+			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindSampledTexture( context, write );
+				bindSampledTexture( write, list );
 			}
 		}
 
-		void bindStorageTexture( ContextLock const & context
-			, LayoutBindingWrites const * writes )
+		void bindStorageTexture( LayoutBindingWrites const * writes
+			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindStorageTexture( context, write );
+				bindStorageTexture( write, list );
 			}
 		}
 
-		void bindUniformBuffer( ContextLock const & context
-			, LayoutBindingWrites const * writes )
+		void bindUniformBuffer( LayoutBindingWrites const * writes
+			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindUniformBuffer( context, write );
+				bindUniformBuffer( write, list );
 			}
 		}
 
-		void bindStorageBuffer( ContextLock const & context
-			, LayoutBindingWrites const * writes )
+		void bindStorageBuffer( LayoutBindingWrites const * writes
+			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindStorageBuffer( context, write );
+				bindStorageBuffer( write, list );
 			}
 		}
 
-		void bindTexelBuffer( ContextLock const & context
-			, LayoutBindingWrites const * writes )
+		void bindTexelBuffer( LayoutBindingWrites const * writes
+			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindTexelBuffer( context, write );
+				bindTexelBuffer( write, list );
 			}
 		}
 
-		void bindDynamicUniformBuffer( ContextLock const & context
-			, LayoutBindingWrites const * writes
-			, uint32_t offset )
+		void bindDynamicUniformBuffer( LayoutBindingWrites const * writes
+			, uint32_t offset
+			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindDynamicUniformBuffer( context, write, offset );
+				bindDynamicUniformBuffer( write, offset, list );
 			}
 		}
 
-		void bindDynamicStorageBuffer( ContextLock const & context
-			, LayoutBindingWrites const * writes
-			, uint32_t offset )
+		void bindDynamicStorageBuffer( LayoutBindingWrites const * writes
+			, uint32_t offset
+			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindDynamicStorageBuffer( context, write, offset );
+				bindDynamicStorageBuffer( write, offset, list );
 			}
 		}
 
-		void bindDynamicBuffers( ContextLock const & context
-			, LayoutBindingWritesArray const & writes
-			, UInt32Array const & offsets )
+		void bindDynamicBuffers( LayoutBindingWritesArray const & writes
+			, UInt32Array const & offsets
+			, CmdList & list )
 		{
 			for ( auto i = 0u; i < offsets.size(); ++i )
 			{
@@ -318,11 +339,11 @@ namespace ashes::gl4
 				switch ( write->descriptorType )
 				{
 				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
-					bindDynamicUniformBuffer( context, write, offsets[i] );
+					bindDynamicUniformBuffer( write, offsets[i], list );
 					break;
 
 				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
-					bindDynamicStorageBuffer( context, write, offsets[i] );
+					bindDynamicStorageBuffer( write, offsets[i], list );
 					break;
 
 				default:
@@ -334,66 +355,53 @@ namespace ashes::gl4
 		}
 	}
 
-	BindDescriptorSetCommand::BindDescriptorSetCommand( VkDevice device
-		, VkDescriptorSet descriptorSet
+	void buildBindDescriptorSetCommand( VkDescriptorSet descriptorSet
 		, VkPipelineLayout layout
 		, UInt32Array const & dynamicOffsets
-		, VkPipelineBindPoint bindingPoint )
-		: CommandBase{ device }
-		, m_descriptorSet{ static_cast< VkDescriptorSet >( descriptorSet ) }
-		, m_layout{ static_cast< VkPipelineLayout >( layout ) }
-		, m_bindingPoint{ bindingPoint }
-		, m_dynamicOffsets{ dynamicOffsets }
+		, VkPipelineBindPoint bindingPoint
+		, CmdList & list )
 	{
-		assert( get( m_descriptorSet )->getDynamicBuffers().size() == m_dynamicOffsets.size()
+		assert( get( descriptorSet )->getDynamicBuffers().size() == dynamicOffsets.size()
 			&& "Dynamic descriptors and dynamic offsets sizes must match." );
-	}
-
-	void BindDescriptorSetCommand::apply( ContextLock const & context )const
-	{
 		glLogCommand( "BindDescriptorSetCommand" );
-		for ( auto & write : get( m_descriptorSet )->getCombinedTextureSamplers() )
+
+		for ( auto & write : get( descriptorSet )->getCombinedTextureSamplers() )
 		{
-			bindCombinedSampler( context, write );
+			bindCombinedSampler( write, list );
 		}
 
-		for ( auto & write : get( m_descriptorSet )->getSamplers() )
+		for ( auto & write : get( descriptorSet )->getSamplers() )
 		{
-			bindSampler( context, write );
+			bindSampler( write, list );
 		}
 
-		for ( auto & write : get( m_descriptorSet )->getSampledTextures() )
+		for ( auto & write : get( descriptorSet )->getSampledTextures() )
 		{
-			bindSampledTexture( context, write );
+			bindSampledTexture( write, list );
 		}
 
-		for ( auto & write : get( m_descriptorSet )->getStorageTextures() )
+		for ( auto & write : get( descriptorSet )->getStorageTextures() )
 		{
-			bindStorageTexture( context, write );
+			bindStorageTexture( write, list );
 		}
 
-		for ( auto & write : get( m_descriptorSet )->getUniformBuffers() )
+		for ( auto & write : get( descriptorSet )->getUniformBuffers() )
 		{
-			bindUniformBuffer( context, write );
+			bindUniformBuffer( write, list );
 		}
 
-		for ( auto & write : get( m_descriptorSet )->getStorageBuffers() )
+		for ( auto & write : get( descriptorSet )->getStorageBuffers() )
 		{
-			bindStorageBuffer( context, write );
+			bindStorageBuffer( write, list );
 		}
 
-		for ( auto & write : get( m_descriptorSet )->getTexelBuffers() )
+		for ( auto & write : get( descriptorSet )->getTexelBuffers() )
 		{
-			bindTexelBuffer( context, write );
+			bindTexelBuffer( write, list );
 		}
 
-		bindDynamicBuffers( context
-			, get( m_descriptorSet )->getDynamicBuffers()
-			, m_dynamicOffsets );
-	}
-
-	CommandPtr BindDescriptorSetCommand::clone()const
-	{
-		return std::make_unique< BindDescriptorSetCommand >( *this );
+		bindDynamicBuffers( get( descriptorSet )->getDynamicBuffers()
+			, dynamicOffsets
+			, list );
 	}
 }

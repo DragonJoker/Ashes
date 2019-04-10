@@ -10,32 +10,23 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	DispatchIndirectCommand::DispatchIndirectCommand( VkDevice device
-		, VkBuffer buffer
-		, VkDeviceSize offset )
-		: CommandBase{ device }
-		, m_buffer{ static_cast< VkBuffer >( buffer ) }
-		, m_offset{ offset }
+	void apply( ContextLock const & context
+		, CmdDispatchIndirect const & cmd )
 	{
-	}
-
-	void DispatchIndirectCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "DispatchIndirectCommand" );
-		glLogCall( context
-			, glBindBuffer
-			, GL_BUFFER_TARGET_DISPATCH_INDIRECT
-			, get( m_buffer )->getInternal() );
 		glLogCall( context
 			, glDispatchComputeIndirect
-			, GLintptr( getBufferOffset( m_offset ) ) );
-		glLogCall( context
-			, glBindBuffer
-			, GL_BUFFER_TARGET_DISPATCH_INDIRECT, 0 );
+			, GLintptr( getBufferOffset( cmd.offset ) ) );
 	}
 
-	CommandPtr DispatchIndirectCommand::clone()const
+	void buildDispatchIndirectCommand( VkBuffer buffer
+		, VkDeviceSize offset
+		, CmdList & list )
 	{
-		return std::make_unique< DispatchIndirectCommand >( *this );
+		glLogCommand( "DispatchIndirectCommand" );
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DISPATCH_INDIRECT
+			, get( buffer )->getInternal() ) );
+		list.push_back( makeCmd< OpType::eDispatchIndirect >( offset ) );
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DISPATCH_INDIRECT
+			, 0u ) );
 	}
 }
