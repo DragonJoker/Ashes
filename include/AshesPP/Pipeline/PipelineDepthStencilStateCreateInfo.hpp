@@ -64,42 +64,13 @@ namespace ashes
 		}
 		
 		PipelineDepthStencilStateCreateInfo( PipelineDepthStencilStateCreateInfo && rhs )
-			: vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.depthTestEnable,
-				rhs.vk.depthWriteEnable,
-				rhs.vk.depthCompareOp,
-				rhs.vk.depthBoundsTestEnable,
-				rhs.vk.stencilTestEnable,
-				rhs.vk.front,
-				rhs.vk.back,
-				rhs.vk.minDepthBounds,
-				rhs.vk.maxDepthBounds,
-			}
+			: vk{ rhs.vk }
 		{
 		}
 		
 		PipelineDepthStencilStateCreateInfo & operator=( PipelineDepthStencilStateCreateInfo && rhs )
 		{
-			vk =
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.depthTestEnable,
-				rhs.vk.depthWriteEnable,
-				rhs.vk.depthCompareOp,
-				rhs.vk.depthBoundsTestEnable,
-				rhs.vk.stencilTestEnable,
-				rhs.vk.front,
-				rhs.vk.back,
-				rhs.vk.minDepthBounds,
-				rhs.vk.maxDepthBounds,
-			};
-
+			vk = rhs.vk;
 			return *this;
 		}
 

@@ -414,7 +414,7 @@ namespace vkapp
 		{
 			throw std::runtime_error{ "Shader files are missing" };
 		}
-		
+
 		ashes::PipelineVertexInputStateCreateInfo vertexLayout
 		{
 			0u,
@@ -602,7 +602,7 @@ namespace vkapp
 		{
 			throw std::runtime_error{ "Shader files are missing" };
 		}
-		
+
 		ashes::PipelineVertexInputStateCreateInfo vertexLayout
 		{
 			0u,

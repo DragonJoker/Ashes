@@ -127,32 +127,7 @@ namespace ashes
 				subresourceLayers.mipLevel,
 				subresourceLayers.baseArrayLayer,
 			};
-			VkSubresourceLayout layout;
-
-			if ( image.getTiling() == VK_IMAGE_TILING_LINEAR )
-			{
-				device.getImageSubresourceLayout( image
-					, subresource
-					, layout );
-			}
-			else
-			{
-				auto mipWidth = getSubresourceValue( image.getDimensions().width, subresource.mipLevel );
-				auto mipHeight = getSubresourceValue( image.getDimensions().height, subresource.mipLevel );
-				layout.rowPitch = texelBlockSize * mipWidth / ( texelBlockExtent.width * texelBlockExtent.height * texelBlockExtent.depth );
-				layout.arrayPitch = layout.rowPitch * mipHeight * texelBlockExtent.height / ( texelBlockExtent.width * texelBlockExtent.depth );
-				layout.depthPitch = layout.arrayPitch;
-				layout.offset = subresource.arrayLayer * layout.arrayPitch * texelBlockSize;
-				layout.size = layout.arrayPitch * image.getDimensions().depth;
-			}
-
-			VkImageSubresourceLayers layers
-			{
-				subresourceLayers.aspectMask,
-				subresourceLayers.mipLevel,
-				subresourceLayers.baseArrayLayer,
-				subresourceLayers.layerCount
-			};
+			VkImageSubresourceLayers layers{ subresourceLayers };
 			layers.baseArrayLayer = type == VK_IMAGE_TYPE_3D
 				? 0
 				: layers.baseArrayLayer;
