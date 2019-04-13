@@ -7,6 +7,7 @@
 #include <AshesPP/Descriptor/DescriptorSet.hpp>
 #include <AshesPP/RenderPass/FrameBuffer.hpp>
 #include <AshesPP/Image/Image.hpp>
+#include <AshesPP/Image/ImageView.hpp>
 #include <AshesPP/RenderPass/RenderPass.hpp>
 #include <AshesPP/Image/Sampler.hpp>
 #include <AshesPP/Buffer/StagingBuffer.hpp>
@@ -75,7 +76,6 @@ namespace vkapp
 		VkClearColorValue m_clearColour;
 		ashes::RenderPassPtr m_renderPass;
 		ashes::PipelineLayoutPtr m_pipelineLayout;
-		ashes::VertexLayoutPtr m_vertexLayout;
 		ashes::GraphicsPipelinePtr m_pipeline;
 		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
 		ashes::StagingBufferPtr m_stagingBuffer;

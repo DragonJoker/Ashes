@@ -556,7 +556,7 @@ namespace vkapp
 			commandBuffer.beginRenderPass( *m_renderPass
 				, frameBuffer
 				, { ashes::makeClearValue( m_clearColour ), ashes::makeClearValue( VkClearDepthStencilValue{ 1.0f, 0u } ) }
-			, VK_SUBPASS_CONTENTS_INLINE );
+				, VK_SUBPASS_CONTENTS_INLINE );
 			commandBuffer.writeTimestamp( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 				, *m_queryPool
 				, 0u );
