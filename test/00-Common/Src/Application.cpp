@@ -228,6 +228,12 @@ namespace common
 			freopen_s( &dump, "conout$", "w", stdout );
 			freopen_s( &dump, "conout$", "w", stderr );
 		}
+		else if ( ::AttachConsole( ATTACH_PARENT_PROCESS ) )
+		{
+			FILE * dump;
+			freopen_s( &dump, "conout$", "w", stdout );
+			freopen_s( &dump, "conout$", "w", stderr );
+		}
 		else
 		{
 			DWORD lastError = ::GetLastError();

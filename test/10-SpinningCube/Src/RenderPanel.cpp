@@ -106,7 +106,6 @@ namespace vkapp
 			m_queryPool.reset();
 			m_commandBuffers.clear();
 			m_frameBuffers.clear();
-			m_depthStencilView.reset();
 			m_depthStencil.reset();
 			m_descriptorSet.reset();
 			m_descriptorPool.reset();
@@ -265,6 +264,17 @@ namespace vkapp
 				VK_ATTACHMENT_STORE_OP_DONT_CARE,
 				VK_IMAGE_LAYOUT_UNDEFINED,
 				VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+			},
+			{
+				1u,
+				DepthFormat,
+				VK_SAMPLE_COUNT_1_BIT,
+				VK_ATTACHMENT_LOAD_OP_CLEAR,
+				VK_ATTACHMENT_STORE_OP_STORE,
+				VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+				VK_ATTACHMENT_STORE_OP_DONT_CARE,
+				VK_IMAGE_LAYOUT_UNDEFINED,
+				VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 			}
 		};
 		ashes::SubpassDescriptionArray subpasses;
@@ -275,7 +285,7 @@ namespace vkapp
 				{},
 				{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
 				{},
-				std::nullopt,
+				VkAttachmentReference{ 1u, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL },
 				{},
 			} );
 		ashes::VkSubpassDependencyArray dependencies
@@ -467,8 +477,6 @@ namespace vkapp
 				VK_IMAGE_LAYOUT_UNDEFINED,
 			}
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-		m_depthStencilView = m_depthStencil->createView( VK_IMAGE_VIEW_TYPE_2D
-			, DepthFormat );
 	}
 
 	void RenderPanel::doPrepareFrames()
@@ -478,7 +486,8 @@ namespace vkapp
 			, 2u
 			, 0u );
 		doCreateDepthStencil();
-		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass, std::move( m_depthStencilView ) );
+		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass
+			, *m_depthStencil );
 		m_commandBuffers = m_swapChain->createCommandBuffers();
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )

@@ -365,7 +365,7 @@ namespace vkapp
 
 		for ( auto & commandBuffer : m_commandBuffers )
 		{
-			commandBuffer = m_commandPool->createCommandBuffer( true );
+			commandBuffer = m_commandPool->createCommandBuffer();
 		}
 	}
 
@@ -375,8 +375,24 @@ namespace vkapp
 
 		for ( auto & attach : m_renderPass->getAttachments() )
 		{
-			attaches.emplace_back( m_swapChainImages[backBuffer]->createView( VK_IMAGE_VIEW_TYPE_2D
-				, m_swapChain->getFormat() ) );
+			attaches.emplace_back( std::make_unique< ashes::ImageView >( m_device->getDevice()
+				, VkImageViewCreateInfo
+				{
+						VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+						nullptr,
+						0u,
+						m_swapChainImages[backBuffer],
+						VK_IMAGE_VIEW_TYPE_2D,
+						m_swapChain->getFormat(),
+						{},
+						{
+							ashes::getAspectMask( m_swapChain->getFormat() ),
+							0u,
+							1u,
+							0u,
+							1u,
+						}
+				} ) );
 		}
 
 		return attaches;

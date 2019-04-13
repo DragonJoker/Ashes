@@ -50,7 +50,7 @@ namespace vkapp
 		ashes::SamplerPtr m_sampler;
 		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
 		ashes::VertexBufferPtr< VertexData > m_vertexBuffer;
-		ashes::VertexLayoutPtr m_vertexLayout;
+		ashes::PipelineVertexInputStateCreateInfo m_vertexLayout;
 		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
 		ashes::DescriptorSetPoolPtr m_descriptorPool;
 		ashes::PipelineLayoutPtr m_pipelineLayout;

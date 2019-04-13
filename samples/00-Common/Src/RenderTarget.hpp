@@ -3,7 +3,6 @@
 #include "Scene.hpp"
 
 #include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Miscellaneous/VkExtent2D.hpp>
 
 namespace common
 {

@@ -32,6 +32,14 @@ namespace vkapp
 			{
 			}
 
+			~RenderingResources()
+			{
+				imageAvailableSemaphore.reset();
+				finishedRenderingSemaphore.reset();
+				fence.reset();
+				commandBuffer.reset();
+			}
+
 			ashes::SemaphorePtr imageAvailableSemaphore;
 			ashes::SemaphorePtr finishedRenderingSemaphore;
 			ashes::FencePtr fence;
@@ -98,7 +106,7 @@ namespace vkapp
 		ashes::CommandPoolPtr m_commandPool;
 		ashes::SurfacePtr m_surface;
 		ashes::SwapChainPtr m_swapChain;
-		ashes::ImagePtrArray m_swapChainImages;
+		ashes::VkImageArray m_swapChainImages;
 		VkClearColorValue m_clearColour;
 		ashes::RenderPassPtr m_renderPass;
 		RenderingResourcesArray m_renderingResources;

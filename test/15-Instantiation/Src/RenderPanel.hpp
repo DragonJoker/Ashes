@@ -105,9 +105,7 @@ namespace vkapp
 		ashes::GraphicsPipelinePtr m_pipeline;
 		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
 		ashes::BufferPtr< uint16_t > m_indexBuffer;
-		ashes::VertexLayoutPtr m_vertexLayout;
 		ashes::VertexBufferPtr< utils::Mat4 > m_matrixBuffer;
-		ashes::VertexLayoutPtr m_matrixLayout;
 		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
 		ashes::DescriptorSetPoolPtr m_descriptorPool;
 		ashes::DescriptorSetPtr m_descriptorSet;
@@ -119,7 +117,6 @@ namespace vkapp
 		*/
 		/**@{*/
 		ashes::ImagePtr m_depthStencil;
-		ashes::ImageViewPtr m_depthStencilView;
 		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
 		std::vector< ashes::CommandBufferPtr > m_commandBuffers;
 		ashes::SignalConnection< utils::SwapChain::OnReset > m_swapChainReset;
