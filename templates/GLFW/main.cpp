@@ -74,7 +74,7 @@ struct Application
 	ashes::DevicePtr device;
 	VkExtent2D dimensions;
 	ashes::SwapChainPtr swapChain;
-	ashes::ImagePtrArray swapChainImages;
+	ashes::VkImageArray swapChainImages;
 	std::vector< ashes::FrameBufferPtr > frameBuffers;
 	ashes::CommandPoolPtr commandPool;
 	ashes::CommandBufferPtrArray commandBuffers;
@@ -753,8 +753,24 @@ ashes::ImageViewPtrArray doPrepareAttaches( Application const & application
 	for ( auto & attach : application.renderPass->getAttachments() )
 	{
 		auto & image = application.swapChainImages[backBuffer];
-		attaches.emplace_back( image->createView( VkImageViewType::VK_IMAGE_VIEW_TYPE_2D
-			, application.swapChain->getFormat() ) );
+		attaches.emplace_back( std::make_unique< ashes::ImageView >( *application.device
+			, VkImageViewCreateInfo
+			{
+				VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+				nullptr,
+				0u,
+				image,
+				VK_IMAGE_VIEW_TYPE_2D,
+				application.swapChain->getFormat(),
+				{},
+				{
+					ashes::getAspectMask( application.swapChain->getFormat() ),
+					0u,
+					1u,
+					0u,
+					1u,
+				}
+			} ) );
 	}
 
 	return attaches;
