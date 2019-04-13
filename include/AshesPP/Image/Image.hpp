@@ -41,11 +41,12 @@ namespace ashes
 
 	private:
 		Image( Image const & ) = delete;
-		Image( Image && rhs );
 		Image & operator=( Image const & ) = delete;
-		Image & operator=( Image && rhs );
 
 	public:
+		Image( Image && rhs );
+		Image & operator=( Image && rhs );
+		Image();
 		/**
 		*\~french
 		*\brief
@@ -220,7 +221,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	The view creation informations.
 		*/
-		ImageViewPtr createView( VkImageViewCreateInfo const & createInfo )const;
+		ImageView createView( VkImageViewCreateInfo createInfo )const;
 		/**
 		*\~french
 		*\brief
@@ -257,7 +258,7 @@ namespace ashes
 		*\param[in] mapping
 		*	The colours component mapping.
 		*/
-		ImageViewPtr createView( VkImageViewType type
+		ImageView createView( VkImageViewType type
 			, VkFormat format
 			, uint32_t baseMipLevel = 0u
 			, uint32_t levelCount = 1u
@@ -271,37 +272,37 @@ namespace ashes
 		/**@{*/
 		inline VkFormat getFormat()const noexcept
 		{
-			return static_cast< VkImageCreateInfo const & >( m_createInfo ).format;
+			return m_createInfo->format;
 		}
 
 		inline uint32_t getLayerCount()const noexcept
 		{
-			return static_cast< VkImageCreateInfo const & >( m_createInfo ).arrayLayers;
+			return m_createInfo->arrayLayers;
 		}
 
 		inline VkImageCreateFlags getFlags()const noexcept
 		{
-			return static_cast< VkImageCreateInfo const & >( m_createInfo ).flags;
+			return m_createInfo->flags;
 		}
 
 		inline uint32_t getMipmapLevels()const noexcept
 		{
-			return static_cast< VkImageCreateInfo const & >( m_createInfo ).mipLevels;
+			return m_createInfo->mipLevels;
 		}
 
 		inline VkExtent3D const & getDimensions()const noexcept
 		{
-			return static_cast< VkImageCreateInfo const & >( m_createInfo ).extent;
+			return m_createInfo->extent;
 		}
 
 		inline VkImageType getType()const
 		{
-			return static_cast< VkImageCreateInfo const & >( m_createInfo ).imageType;
+			return m_createInfo->imageType;
 		}
 
 		inline VkImageTiling getTiling()const
 		{
-			return static_cast< VkImageCreateInfo const & >( m_createInfo ).tiling;
+			return m_createInfo->tiling;
 		}
 		/**@}*/
 		/**
@@ -312,17 +313,22 @@ namespace ashes
 		*\brief
 		*	VkImage implicit cast operator.
 		*/
-		inline operator VkImage const & ( )const
+		inline operator VkImage const & ()const
 		{
 			return m_internal;
 		}
 
-	protected:
-		Device const & m_device;
-		ImageCreateInfo m_createInfo;
+	private:
+		void destroyView( VkImageView view )const;
+		void destroyView( ImageView view )const;
+
+	private:
+		Device const * m_device{ nullptr };
+		ImageCreateInfo m_createInfo{ 0u, VK_IMAGE_TYPE_2D, VK_FORMAT_UNDEFINED, { 1u, 1u, 1u }, 1u, 1u, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, 0u };
 		VkImage m_internal{ VK_NULL_HANDLE };
 		DeviceMemoryPtr m_storage;
 		bool m_ownInternal{ true };
+		mutable std::map< VkImageView, std::unique_ptr< VkImageViewCreateInfo > > m_views;
 	};
 }
 

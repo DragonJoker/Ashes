@@ -88,7 +88,7 @@ namespace vkapp
 		ashes::BufferPtr< uint16_t > m_indexBuffer;
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::ImagePtr m_texture;
-		ashes::ImageViewPtr m_view;
+		ashes::ImageView m_view;
 		ashes::SamplerPtr m_sampler;
 		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
 		ashes::DescriptorSetPoolPtr m_descriptorPool;

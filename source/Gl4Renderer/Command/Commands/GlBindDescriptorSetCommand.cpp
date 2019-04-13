@@ -18,14 +18,6 @@ See LICENSE file in root folder.
 namespace ashes::gl4
 {
 	void apply( ContextLock const & context
-		, CmdActiveTexture const & cmd )
-	{
-		glLogCall( context
-			, glActiveTexture
-			, GlTextureUnit( GL_TEXTURE0 + cmd.binding ) );
-	}
-	
-	void apply( ContextLock const & context
 		, CmdBindSampler const & cmd )
 	{
 		glLogCall( context

@@ -114,6 +114,123 @@ namespace ashes::gl4
 
 			return texelBlockSize;
 		}
+
+		UInt32Array convert( std::string const & value )
+		{
+			auto size = getAlignedSize( value.size(), sizeof( uint32_t ) );
+			UInt32Array result;
+			result.resize( size / sizeof( uint32_t ) );
+			std::memcpy( result.data(), value.data(), value.size() );
+			return result;
+		}
+
+		UInt32Array getVertexShader()
+		{
+			static std::string const glsl
+			{
+				R"(#version 420
+
+vec4 points[4] = vec4[4](
+	vec4( -1.0, -1.0, 1.0, 1.0 ),
+	vec4( -1.0,  1.0, 1.0, 1.0 ),
+	vec4(  1.0,  1.0, 1.0, 1.0 ),
+	vec4(  1.0, -1.0, 1.0, 1.0 ),
+);
+
+layout( location = 0 ) out vec2 vtx_texture;
+
+void main()
+{
+	vec4 position = points[gl_VertexID % 4];
+	vtx_texture = ( position.xy + 1.0 ) / 2.0;
+	gl_Position = position;
+}
+)"
+			};
+			return convert( glsl );
+		}
+
+		UInt32Array getPixelShader()
+		{
+			static std::string const glsl
+			{
+				R"(#version 420
+
+layout( binding = 0 ) uniform sampler2D mapColour;
+
+layout( location = 0 ) in vec2 vtx_texture;
+
+layout( location = 0 ) out vec4 pxl_colour;
+
+void main()
+{
+	pxl_colour = texture( mapColour, vtx_texture );
+}
+)"
+			};
+			return convert( glsl );
+		}
+
+		std::unique_ptr< ShaderProgram > doCreateShaderProgram( VkDevice device
+			, ContextLock & context
+			, ContextState const & state )
+		{
+			VkPipelineShaderStageCreateInfoArray shaderStages;
+			UInt32Array vtx = getVertexShader();
+			UInt32Array pxl = getPixelShader();
+			VkShaderModule vtxModule;
+			allocate( vtxModule
+				, nullptr
+				, device
+				, VkShaderModuleCreateInfo
+				{
+					VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+					nullptr,
+					0u,
+					uint32_t( vtx.size() * sizeof( uint32_t ) ),
+					vtx.data()
+				} );
+			VkShaderModule pxlModule;
+			allocate( pxlModule
+				, nullptr
+				, device
+				, VkShaderModuleCreateInfo
+				{
+					VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+					nullptr,
+					0u,
+					uint32_t( vtx.size() * sizeof( uint32_t ) ),
+					vtx.data()
+				} );
+
+			shaderStages.push_back( VkPipelineShaderStageCreateInfo
+				{
+					VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+					nullptr,
+					0u,
+					VK_SHADER_STAGE_VERTEX_BIT,
+					vtxModule,
+					"main",
+					nullptr,
+				} );
+			shaderStages.push_back( VkPipelineShaderStageCreateInfo
+				{
+					VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+					nullptr,
+					0u,
+					VK_SHADER_STAGE_FRAGMENT_BIT,
+					pxlModule,
+					"main",
+					nullptr,
+				} );
+
+			context->apply( context, *get( device ), state );
+			auto result = std::make_unique< ShaderProgram >( device
+				, std::move( shaderStages )
+				, true );
+			result->link( context );
+			return result;
+		}
 	}
 
 	Device::Device( VkInstance instance
@@ -124,55 +241,26 @@ namespace ashes::gl4
 		, m_physicalDevice{ gpu }
 		, m_createInfos{ std::move( createInfos ) }
 		, m_currentContext{ &context }
+		, m_dyState{ VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT }
+		, m_rtocContextState
+		{
+			getDefaultColorBlendState( m_cbStateAttachments ),
+			std::nullopt,
+			std::nullopt,
+			std::nullopt,
+			{ VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO, nullptr, 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP, VK_FALSE },
+			{ VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO, nullptr, 0u, 1, nullptr, 1u, nullptr },
+			{ VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO, nullptr, 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, GL_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f },
+			{ VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO, nullptr, 0u, uint32_t( m_dyState.size() ), m_dyState.data() },
+		}
+		, m_rtocCommands{ get( this ), VK_COMMAND_BUFFER_LEVEL_PRIMARY }
 	{
 		//m_timestampPeriod = 1;
-		doCreateQueues();
+		doInitialiseQueues();
 		auto lock = getContext();
-		doInitialiseContext( lock );
-
-		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
-		allocate( m_dummyIndexed.indexBuffer
-			, nullptr
-			, get( this )
-			, VkBufferCreateInfo
-			{
-				VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-				nullptr,
-				0u,
-				count * sizeof( uint32_t ),
-				VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-				VK_SHARING_MODE_EXCLUSIVE,
-				0u,
-				nullptr,
-			} );
-		auto indexBuffer = get( m_dummyIndexed.indexBuffer );
-		auto requirements = indexBuffer->getMemoryRequirements();
-		auto deduced = deduceMemoryType( requirements.memoryTypeBits
-			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-		allocate( m_dummyIndexed.indexMemory
-			, nullptr
-			, get( this )
-			, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
-		get( m_dummyIndexed.indexMemory )->bindToBuffer( m_dummyIndexed.indexBuffer, 0u );
-		auto memory = get( m_dummyIndexed.indexMemory );
-		uint8_t * buffer{ nullptr };
-		memory->lock( 0u, count, 0u, reinterpret_cast< void ** >( &buffer ) );
-
-		if ( buffer )
-		{
-			std::copy( dummyIndex, dummyIndex + count, buffer );
-			memory->flush( 0, count );
-			memory->unlock();
-		}
-
-		m_dummyIndexed.geometryBuffers = std::make_unique< GeometryBuffers >( get( this )
-			, VboBindings{}
-			, BufferObjectBinding{ indexBuffer->getInternal(), 0u, m_dummyIndexed.indexBuffer }
-			, VkPipelineVertexInputStateCreateInfo{}
-			, VK_INDEX_TYPE_UINT32 );
-		m_dummyIndexed.geometryBuffers->initialise();
-
+		doInitialiseDummy( lock );
 		lock->glGenFramebuffers( 2, m_blitFbos );
+		doInitialiseRtoc( lock );
 	}
 
 	Device::~Device()
@@ -298,7 +386,6 @@ namespace ashes::gl4
 		{
 			auto context = Context::create( m_instance, surface, nullptr );
 			ContextLock lock{ *context };
-			doInitialiseContext( lock );
 
 			if ( !m_ownContext )
 			{
@@ -317,11 +404,13 @@ namespace ashes::gl4
 	{
 	}
 
-	void Device::doInitialiseContext( ContextLock const & context )const
+	GLuint Device::getRtocProgram()const
 	{
+		assert( m_rtocProgram );
+		return m_rtocProgram->getProgram();
 	}
 
-	void Device::doCreateQueues()
+	void Device::doInitialiseQueues()
 	{
 		for ( auto itQueue = m_createInfos.pQueueCreateInfos;
 			itQueue != m_createInfos.pQueueCreateInfos + m_createInfos.queueCreateInfoCount;
@@ -339,5 +428,58 @@ namespace ashes::gl4
 				, uint32_t( it->second.queues.size() ) );
 			it->second.queues.emplace_back( queue );
 		}
+	}
+
+	void Device::doInitialiseDummy( ContextLock & context )
+	{
+		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
+		allocate( m_dummyIndexed.indexBuffer
+			, nullptr
+			, get( this )
+			, VkBufferCreateInfo
+			{
+				VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+				nullptr,
+				0u,
+				count * sizeof( uint32_t ),
+				VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+				VK_SHARING_MODE_EXCLUSIVE,
+				0u,
+				nullptr,
+			} );
+		auto indexBuffer = get( m_dummyIndexed.indexBuffer );
+		auto requirements = indexBuffer->getMemoryRequirements();
+		auto deduced = deduceMemoryType( requirements.memoryTypeBits
+			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
+		allocate( m_dummyIndexed.indexMemory
+			, nullptr
+			, get( this )
+			, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
+		get( m_dummyIndexed.indexMemory )->bindToBuffer( m_dummyIndexed.indexBuffer, 0u );
+		auto memory = get( m_dummyIndexed.indexMemory );
+		uint8_t * buffer{ nullptr };
+		memory->lock( 0u, count, 0u, reinterpret_cast< void ** >( &buffer ) );
+
+		if ( buffer )
+		{
+			std::copy( dummyIndex, dummyIndex + count, buffer );
+			memory->flush( 0, count );
+			memory->unlock();
+		}
+
+		m_dummyIndexed.geometryBuffers = std::make_unique< GeometryBuffers >( get( this )
+			, VboBindings{}
+			, BufferObjectBinding{ indexBuffer->getInternal(), 0u, m_dummyIndexed.indexBuffer }
+			, VkPipelineVertexInputStateCreateInfo{}
+		, VK_INDEX_TYPE_UINT32 );
+		m_dummyIndexed.geometryBuffers->initialise();
+	}
+
+	void Device::doInitialiseRtoc( ContextLock & context )
+	{
+		//m_rtocProgram = doCreateShaderProgram( get( this )
+		//	, context
+		//	, m_rtocContextState );
+		//m_rtocCommands.begin( );
 	}
 }

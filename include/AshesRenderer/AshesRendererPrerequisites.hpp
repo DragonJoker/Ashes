@@ -304,6 +304,7 @@ namespace ashes
 	using VkSemaphoreArray = std::vector< VkSemaphore >;
 	using VkScissorArray = std::vector< VkRect2D >;
 	using VkShaderModuleArray = std::vector< VkShaderModule >;
+	using VkSpecializationMapEntryArray = std::vector< VkSpecializationMapEntry >;
 	using VkSubmitInfoArray = std::vector< VkSubmitInfo >;
 	using VkSubpassDependencyArray = std::vector< VkSubpassDependency >;
 	using VkSubpassDescriptionArray = std::vector< VkSubpassDescription >;

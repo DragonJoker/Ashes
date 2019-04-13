@@ -14,15 +14,25 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+	Image::Image()
+	{
+	}
+
 	Image::Image( Image && rhs )
 		: m_device{ rhs.m_device }
 		, m_createInfo{ std::move( rhs.m_createInfo ) }
 		, m_internal{ rhs.m_internal }
+		, m_storage{ std::move( rhs.m_storage ) }
 		, m_ownInternal{ rhs.m_ownInternal }
+		, m_views{ std::move( rhs.m_views ) }
 	{
 		rhs.m_internal = VK_NULL_HANDLE;
 		rhs.m_ownInternal = true;
-		registerObject( m_device, "Image", this );
+
+		if ( m_ownInternal )
+		{
+			registerObject( *m_device, "Image", this );
+		}
 	}
 
 	Image & Image::operator=( Image && rhs )
@@ -31,10 +41,16 @@ namespace ashes
 		{
 			m_createInfo = std::move( rhs.m_createInfo );
 			m_internal = rhs.m_internal;
+			m_storage = std::move( rhs.m_storage );
 			m_ownInternal = rhs.m_ownInternal;
+			m_views = std::move( rhs.m_views );
 			rhs.m_internal = VK_NULL_HANDLE;
 			rhs.m_ownInternal = true;
-			registerObject( m_device, "Image", this );
+
+			if ( m_ownInternal )
+			{
+				registerObject( *m_device, "Image", this );
+			}
 		}
 
 		return *this;
@@ -42,21 +58,21 @@ namespace ashes
 
 	Image::Image( Device const & device
 		, ImageCreateInfo createInfo )
-		: m_device{ device }
+		: m_device{ &device }
 		, m_createInfo{ std::move( createInfo ) }
 	{
 		DEBUG_DUMP( m_createInfo );
-		auto res = m_device.vkCreateImage( m_device
+		auto res = m_device->vkCreateImage( *m_device
 			, &static_cast< VkImageCreateInfo const & >( m_createInfo )
 			, nullptr
 			, &m_internal );
 		checkError( res, "Image creation" );
-		registerObject( m_device, "Image", this );
+		registerObject( *m_device, "Image", this );
 	}
 
 	Image::Image( Device const & device
 		, VkImage image )
-		: m_device{ device }
+		: m_device{ &device }
 		, m_internal{ image }
 		, m_createInfo
 		{
@@ -76,13 +92,23 @@ namespace ashes
 
 	Image::~Image()
 	{
-		if ( m_ownInternal
-			&& m_internal != VK_NULL_HANDLE )
+		assert( ( ( m_internal != VK_NULL_HANDLE ) || m_views.empty() )
+			&& "No more internal handle, but some image views remain." );
+
+		if ( m_internal != VK_NULL_HANDLE )
 		{
-			unregisterObject( m_device, this );
-			m_device.vkDestroyImage( m_device
-				, m_internal
-				, nullptr );
+			for ( auto & view : m_views )
+			{
+				destroyView( view.first );
+			}
+
+			if ( m_ownInternal )
+			{
+				unregisterObject( *m_device, this );
+				m_device->vkDestroyImage( *m_device
+					, m_internal
+					, nullptr );
+			}
 		}
 	}
 
@@ -90,7 +116,7 @@ namespace ashes
 	{
 		assert( !m_storage && "A resource can only be bound once to a device memory object." );
 		m_storage = std::move( memory );
-		auto res = m_device.vkBindImageMemory( m_device
+		auto res = m_device->vkBindImageMemory( *m_device
 			, m_internal
 			, *m_storage
 			, 0 );
@@ -106,7 +132,7 @@ namespace ashes
 		VkImageSubresource subResource{};
 		subResource.aspectMask = getAspectMask( getFormat() );
 		VkSubresourceLayout subResourceLayout;
-		m_device.getImageSubresourceLayout( *this, subResource, subResourceLayout );
+		m_device->getImageSubresourceLayout( *this, subResource, subResourceLayout );
 
 		mapped.data = m_storage->lock( offset
 			, size
@@ -151,7 +177,7 @@ namespace ashes
 		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		generateMipmaps( *commandBuffer );
 		commandBuffer->end();
-		auto fence = m_device.createFence();
+		auto fence = m_device->createFence();
 		queue.submit( *commandBuffer, fence.get() );
 		fence->wait( MaxTimeout );
 	}
@@ -183,10 +209,10 @@ namespace ashes
 				} );
 			commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
 				, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-				, srcView->makeTransferSource( VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, 0u ) );
+				, srcView.makeTransferSource( VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, 0u ) );
 
 			// Copy down mips from n-1 to n
-			for ( uint32_t level = 1; level < getMipmapLevels(); level++ )
+			for ( uint32_t level = 1u; level < getMipmapLevels(); level++ )
 			{
 				VkImageBlit imageBlit{};
 
@@ -198,8 +224,8 @@ namespace ashes
 				imageBlit.srcOffsets[0].x;
 				imageBlit.srcOffsets[0].y;
 				imageBlit.srcOffsets[0].z;
-				imageBlit.srcOffsets[1].x = int32_t( width >> ( level - 1 ) );
-				imageBlit.srcOffsets[1].y = int32_t( height >> ( level - 1 ) );
+				imageBlit.srcOffsets[1].x = getSubresourceDimension( width, ( level - 1 ) );
+				imageBlit.srcOffsets[1].y = getSubresourceDimension( height, ( level - 1 ) );
 				imageBlit.srcOffsets[1].z = 1;
 
 				// Destination
@@ -210,8 +236,8 @@ namespace ashes
 				imageBlit.dstOffsets[0].x;
 				imageBlit.dstOffsets[0].y;
 				imageBlit.dstOffsets[0].z;
-				imageBlit.dstOffsets[1].x = int32_t( width >> level );
-				imageBlit.dstOffsets[1].y = int32_t( height >> level );
+				imageBlit.dstOffsets[1].x = getSubresourceDimension( width, level );
+				imageBlit.dstOffsets[1].y = getSubresourceDimension( height, level );
 				imageBlit.dstOffsets[1].z = 1;
 
 				VkImageSubresourceRange mipSubRange
@@ -268,6 +294,7 @@ namespace ashes
 					, srcTransitionBarrier );
 			}
 
+			destroyView( std::move( srcView ) );
 			srcView = createView(
 				{
 					VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
@@ -288,23 +315,38 @@ namespace ashes
 				} );
 			commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
 				, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-				, srcView->makeShaderInputResource( VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, 0u ) );
+				, srcView.makeShaderInputResource( VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, 0u ) );
+			destroyView( std::move( srcView ) );
 		}
 	}
 
 	VkMemoryRequirements Image::getMemoryRequirements()const
 	{
-		return m_device.getImageMemoryRequirements( m_internal );
+		return m_device->getImageMemoryRequirements( m_internal );
 	}
 
-	ImageViewPtr Image::createView( VkImageViewCreateInfo const & createInfo )const
+	ImageView Image::createView( VkImageViewCreateInfo createInfo )const
 	{
-		return std::make_unique< ImageView >( m_device
-			, *this
-			, createInfo );
+		DEBUG_DUMP( createInfo );
+		auto pCreateInfo = std::make_unique< VkImageViewCreateInfo >( std::move( createInfo ) );
+		VkImageView vk;
+		auto res = m_device->vkCreateImageView( *m_device
+			, pCreateInfo.get()
+			, nullptr
+			, &vk );
+		checkError( res, "ImageView creation" );
+		auto create = *pCreateInfo;
+		m_views.emplace( vk, std::move( pCreateInfo ) );
+		registerObject( *m_device, "ImageView", vk );
+		return ImageView
+		{
+			create,
+			vk,
+			this,
+		};
 	}
 
-	ImageViewPtr Image::createView( VkImageViewType type
+	ImageView Image::createView( VkImageViewType type
 		, VkFormat format
 		, uint32_t baseMipLevel
 		, uint32_t levelCount
@@ -329,5 +371,21 @@ namespace ashes
 				layerCount
 			}
 		} );
+	}
+
+	void Image::destroyView( VkImageView view )const
+	{
+		unregisterObject( *m_device, view );
+		m_device->vkDestroyImageView( *m_device
+			, view
+			, nullptr );
+	}
+
+	void Image::destroyView( ImageView view )const
+	{
+		auto it = m_views.find( view );
+		assert( it != m_views.end() );
+		destroyView( it->first );
+		m_views.erase( it );
 	}
 }

@@ -184,7 +184,6 @@ namespace vkapp
 			m_commandBuffers.clear();
 			m_frameBuffers.clear();
 			m_sampler.reset();
-			m_view.reset();
 			m_texture.reset();
 			m_stagingBuffer.reset();
 
@@ -329,7 +328,7 @@ namespace vkapp
 			, *m_commandPool
 			, image.format
 			, image.data
-			, *m_view );
+			, m_view );
 	}
 
 	void RenderPanel::doCreateUniformBuffers()
@@ -368,7 +367,7 @@ namespace vkapp
 
 		m_offscreenDescriptorSets[0] = m_offscreenDescriptorPool->createDescriptorSet();
 		m_offscreenDescriptorSets[0]->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
-			, *m_view
+			, m_view
 			, *m_sampler );
 		m_offscreenDescriptorSets[0]->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
 			, *m_matrixUbo
@@ -382,7 +381,7 @@ namespace vkapp
 
 		m_offscreenDescriptorSets[1] = m_offscreenDescriptorPool->createDescriptorSet();
 		m_offscreenDescriptorSets[1]->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
-			, *m_view
+			, m_view
 			, *m_sampler );
 		m_offscreenDescriptorSets[1]->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
 			, *m_matrixUbo
@@ -494,7 +493,7 @@ namespace vkapp
 				VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
 			}
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-		ashes::ImageViewPtrArray attaches;
+		ashes::ImageViewArray attaches;
 		attaches.emplace_back( m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_renderTargetColour->getFormat() ) );
 		attaches.emplace_back( m_renderTargetDepth->createView( VK_IMAGE_VIEW_TYPE_2D
@@ -600,7 +599,7 @@ namespace vkapp
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )
-			, *( *m_frameBuffer->begin() )
+			, *m_frameBuffer->begin()
 			, *m_sampler );
 		m_mainDescriptorSet->update();
 	}
@@ -723,7 +722,7 @@ namespace vkapp
 			, 0u
 			, 1u );
 		m_computeDescriptorSet->createBinding( m_computeDescriptorLayout->getBinding( 1u )
-			, *( *m_frameBuffer->begin() )
+			, *m_frameBuffer->begin()
 			, 0u );
 		m_computeDescriptorSet->update();
 		m_computeUbo->getData( 0u ).textureSize = utils::IVec2{ m_swapChain->getDimensions().width, m_swapChain->getDimensions().height };
@@ -789,7 +788,7 @@ namespace vkapp
 			, 1u );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT
 			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-			, ( *m_frameBuffer->begin() )->makeShaderInputResource( VK_IMAGE_LAYOUT_GENERAL, 0u ) );
+			, ( *m_frameBuffer->begin() ).makeShaderInputResource( VK_IMAGE_LAYOUT_GENERAL, 0u ) );
 		commandBuffer.writeTimestamp( VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
 			, *m_computeQueryPool
 			, 1u );

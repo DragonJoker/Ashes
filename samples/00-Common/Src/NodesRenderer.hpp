@@ -36,7 +36,7 @@ namespace common
 			, std::chrono::nanoseconds & gpu )const;
 		void initialise( Scene const & scene
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::ImageViewPtrArray views
+			, ashes::ImageViewArray views
 			, TextureNodePtrArray const & textureNodes );
 
 		inline utils::Device const & getDevice()const
@@ -55,7 +55,7 @@ namespace common
 		}
 
 	protected:
-		void doUpdate( ashes::ImageViewPtrArray views );
+		void doUpdate( ashes::ImageViewArray views );
 
 	private:
 		void doInitialiseObject( Object const & object

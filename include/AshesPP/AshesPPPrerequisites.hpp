@@ -43,6 +43,7 @@ namespace ashes
 	class VertexBuffer;
 
 	struct PushConstant;
+	struct ImageView;
 
 	class BufferBase;
 	class BufferView;
@@ -60,7 +61,6 @@ namespace ashes
 	class FrameBuffer;
 	class GraphicsPipeline;
 	class Image;
-	class ImageView;
 	class Instance;
 	class IWindowHandle;
 	class PhysicalDevice;
@@ -127,7 +127,6 @@ namespace ashes
 	using FrameBufferPtr = std::unique_ptr< FrameBuffer >;
 	using GraphicsPipelinePtr = std::unique_ptr< GraphicsPipeline >;
 	using ImagePtr = std::unique_ptr< Image >;
-	using ImageViewPtr = std::unique_ptr< ImageView >;
 	using InstancePtr = std::unique_ptr< Instance >;
 	using IWindowHandlePtr = std::unique_ptr< IWindowHandle >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
@@ -151,12 +150,13 @@ namespace ashes
 	using DeviceMemoryPtr = std::shared_ptr< DeviceMemory >;
 
 	using PushConstantArray = std::vector< PushConstant >;
+	using ImageArray = std::vector< Image >;
+	using ImageViewArray = std::vector< ImageView >;
 
 	using FrameBufferPtrArray = std::vector< FrameBufferPtr >;
 	using CommandBufferPtrArray = std::vector< CommandBufferPtr >;
 	using PhysicalDevicePtrArray = std::vector< PhysicalDevicePtr >;
 	using ImagePtrArray = std::vector< ImagePtr >;
-	using ImageViewPtrArray = std::vector< ImageViewPtr >;
 
 	using BufferCRef = std::reference_wrapper< BufferBase const >;
 	using BufferViewCRef = std::reference_wrapper< BufferView const >;

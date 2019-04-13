@@ -153,16 +153,16 @@ namespace ashes
 		, uint8_t const * const data
 		, ImageView const & view )const
 	{
-		auto extent = VkExtent3D{ view.getImage().getDimensions() };
-		auto mipLevel = view.getSubResourceRange().baseMipLevel;
+		auto extent = VkExtent3D{ view.image->getDimensions() };
+		auto mipLevel = view->subresourceRange.baseMipLevel;
 		extent.width = std::max( 1u, extent.width >> mipLevel );
 		extent.height = std::max( 1u, extent.height >> mipLevel );
 		uploadTextureData( commandBuffer
 			, {
-				view.getSubResourceRange().aspectMask,
+				view->subresourceRange.aspectMask,
 				mipLevel,
-				view.getSubResourceRange().baseArrayLayer,
-				view.getSubResourceRange().layerCount
+				view->subresourceRange.baseArrayLayer,
+				view->subresourceRange.layerCount
 			}
 			, format
 			, VkOffset3D{}
@@ -175,16 +175,16 @@ namespace ashes
 		, VkFormat format
 		, ImageView const & view )const
 	{
-		auto extent = view.getImage().getDimensions();
-		auto mipLevel = view.getSubResourceRange().baseMipLevel;
+		auto extent = view.image->getDimensions();
+		auto mipLevel = view->subresourceRange.baseMipLevel;
 		extent.width = std::max( 1u, extent.width >> mipLevel );
 		extent.height = std::max( 1u, extent.height >> mipLevel );
 		copyTextureData( commandBuffer
 			, {
-				view.getSubResourceRange().aspectMask,
+				view->subresourceRange.aspectMask,
 				mipLevel,
-				view.getSubResourceRange().baseArrayLayer,
-				view.getSubResourceRange().layerCount
+				view->subresourceRange.baseArrayLayer,
+				view->subresourceRange.layerCount
 			}
 			, format
 			, VkOffset3D{}
@@ -258,17 +258,17 @@ namespace ashes
 		, uint8_t * data
 		, ImageView const & view )const
 	{
-		auto extent = view.getImage().getDimensions();
-		auto mipLevel = view.getSubResourceRange().baseMipLevel;
+		auto extent = view.image->getDimensions();
+		auto mipLevel = view->subresourceRange.baseMipLevel;
 		extent.width = std::max( 1u, extent.width >> mipLevel );
 		extent.height = std::max( 1u, extent.height >> mipLevel );
 		downloadTextureData( queue
 			, commandPool
 			, {
-				view.getSubResourceRange().aspectMask,
+				view->subresourceRange.aspectMask,
 				mipLevel,
-				view.getSubResourceRange().baseArrayLayer,
-				view.getSubResourceRange().layerCount
+				view->subresourceRange.baseArrayLayer,
+				view->subresourceRange.layerCount
 			}
 			, format
 			, VkOffset3D{}
@@ -331,7 +331,7 @@ namespace ashes
 				}
 			}
 			, m_buffer
-			, texture.getImage() );
+			, *texture.image );
 	}
 
 	void StagingTexture::doCopyDestinationToStaging( CommandBuffer const & commandBuffer
@@ -357,7 +357,7 @@ namespace ashes
 					1u
 				}
 			}
-			, texture.getImage()
+			, *texture.image
 			, m_buffer );
 	}
 

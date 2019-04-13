@@ -2,8 +2,6 @@
 
 #include "Prerequisites.hpp"
 
-#include <Utils/Factory.hpp>
-
 #include <wx/app.h>
 
 namespace common

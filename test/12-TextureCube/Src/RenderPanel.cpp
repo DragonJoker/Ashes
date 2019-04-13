@@ -173,7 +173,6 @@ namespace vkapp
 			m_commandBuffers.clear();
 			m_frameBuffers.clear();
 			m_sampler.reset();
-			m_view.reset();
 			m_texture.reset();
 			m_stagingBuffer.reset();
 
@@ -305,8 +304,8 @@ namespace vkapp
 			m_stagingBuffer->uploadTextureData( *m_graphicsQueue
 				, *m_commandPool
 				, {
-					m_view->getSubResourceRange().aspectMask,
-					m_view->getSubResourceRange().baseMipLevel,
+					m_view->subresourceRange.aspectMask,
+					m_view->subresourceRange.baseMipLevel,
 					uint32_t( i ),
 					1u,
 				}
@@ -314,7 +313,7 @@ namespace vkapp
 				, { 0, 0, 0 }
 				, { image.size.width, image.size.height }
 				, image.data
-				, *m_view );
+				, m_view );
 		}
 	}
 
@@ -341,15 +340,15 @@ namespace vkapp
 	{
 		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			VkDescriptorSetLayoutBinding{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-			VkDescriptorSetLayoutBinding{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT, nullptr },
-			VkDescriptorSetLayoutBinding{ 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT, nullptr },
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+			{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT, nullptr },
+			{ 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT, nullptr },
 		};
 		m_offscreenDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_offscreenDescriptorPool = m_offscreenDescriptorLayout->createPool( 1u );
 		m_offscreenDescriptorSet = m_offscreenDescriptorPool->createDescriptorSet();
 		m_offscreenDescriptorSet->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
-			, *m_view
+			, m_view
 			, *m_sampler );
 		m_offscreenDescriptorSet->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
 			, *m_matrixUbo
@@ -436,7 +435,7 @@ namespace vkapp
 				VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT
 			}
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-		ashes::ImageViewPtrArray attaches;
+		ashes::ImageViewArray attaches;
 		attaches.emplace_back( m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_renderTargetColour->getFormat() ) );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
@@ -531,13 +530,13 @@ namespace vkapp
 	{
 		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			VkDescriptorSetLayoutBinding{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, false },
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, false },
 		};
 		m_mainDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )
-			, *( *m_frameBuffer->begin() )
+			, *m_frameBuffer->begin()
 			, *m_sampler );
 		m_mainDescriptorSet->update();
 	}
@@ -618,7 +617,7 @@ namespace vkapp
 			, 2u );
 		commandBuffer.beginRenderPass( *m_offscreenRenderPass
 			, frameBuffer
-			, { VkClearValue{ m_clearColour } }
+			, { ashes::makeClearValue( m_clearColour ) }
 			, VK_SUBPASS_CONTENTS_INLINE );
 		commandBuffer.writeTimestamp( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 			, *m_queryPool
@@ -661,7 +660,7 @@ namespace vkapp
 		{
 			throw std::runtime_error{ "Shader files are missing" };
 		}
-		
+
 		ashes::PipelineVertexInputStateCreateInfo vertexLayout
 		{
 			0u,

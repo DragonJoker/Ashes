@@ -10,23 +10,12 @@
 #include <AshesPP/Core/Device.hpp>
 #include <AshesPP/Descriptor/DescriptorSet.hpp>
 #include <AshesPP/Descriptor/DescriptorSetLayout.hpp>
-#include <AshesPP/Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <AshesPP/Descriptor/DescriptorSetPool.hpp>
 #include <AshesPP/Image/Image.hpp>
 #include <AshesPP/Image/ImageView.hpp>
-#include <AshesPP/Pipeline/DepthStencilState.hpp>
-#include <AshesPP/Pipeline/InputAssemblyState.hpp>
-#include <AshesPP/Pipeline/MultisampleState.hpp>
 #include <AshesPP/Pipeline/GraphicsPipeline.hpp>
 #include <AshesPP/Pipeline/PipelineLayout.hpp>
-#include <AshesPP/Pipeline/Scissor.hpp>
-#include <AshesPP/Pipeline/VertexLayout.hpp>
-#include <AshesPP/Pipeline/Viewport.hpp>
 #include <AshesPP/RenderPass/RenderPass.hpp>
-#include <AshesPP/RenderPass/RenderSubpass.hpp>
-#include <AshesPP/RenderPass/RenderSubpassState.hpp>
-#include <AshesPP/RenderPass/FrameBufferAttachment.hpp>
-#include <AshesPP/Sync/ImageMemoryBarrier.hpp>
 
 #include <Utils/GlslToSpv.hpp>
 
@@ -54,21 +43,21 @@ namespace vkapp
 			return result;
 		}
 
-		ashes::ImageViewPtr doCloneView( ashes::ImageView const & view )
+		ashes::ImageView doCloneView( ashes::ImageView const & view )
 		{
-			return view.getImage().createView(
+			return view.image->createView(
 				{
-					view.getType(),
-					view.getFormat(),
-					view.getComponentMapping(),
-					view.getSubResourceRange(),
+					view->viewType,
+					view->format,
+					view->components,
+					view->subresourceRange,
 				} );
 		}
 
-		ashes::ImageViewPtrArray doGetViews( GeometryPassResult const & gbuffer
-			, ashes::ImageViewPtr depthview )
+		ashes::ImageViewArray doGetViews( GeometryPassResult const & gbuffer
+			, ashes::ImageView depthview )
 		{
-			ashes::ImageViewPtrArray result;
+			ashes::ImageViewArray result;
 			result.emplace_back( depthview );
 
 			for ( auto & texture : gbuffer )

@@ -169,22 +169,22 @@ namespace ashes
 		, VkClearColorValue const & colour )const
 	{
 		m_device.vkCmdClearColorImage( m_internal
-			, view.getImage()
+			, *view.image
 			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 			, &colour
 			, 1
-			, &view.getSubResourceRange() );
+			, &view->subresourceRange );
 	}
 
 	void CommandBuffer::clear( ImageView const & view
 		, VkClearDepthStencilValue const & value )const
 	{
 		m_device.vkCmdClearDepthStencilImage( m_internal
-			, view.getImage()
+			, *view.image
 			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 			, &value
 			, 1
-			, &view.getSubResourceRange() );
+			, &view->subresourceRange );
 	}
 
 	void CommandBuffer::clearAttachments( VkClearAttachmentArray const & clearAttachments
@@ -685,12 +685,12 @@ namespace ashes
 	void CommandBuffer::copyImage( ImageView const & src
 		, ImageView const & dst )const
 	{
-		auto const & srcRange = src.getSubResourceRange();
-		auto const & dstRange = dst.getSubResourceRange();
+		auto const & srcRange = src->subresourceRange;
+		auto const & dstRange = dst->subresourceRange;
 		copyImage( VkImageCopy
 			{
 				{                                                   // srcSubresource
-					getAspectMask( src.getFormat() ),
+					getAspectMask( src->format ),
 					srcRange.baseMipLevel,
 					srcRange.baseArrayLayer,
 					srcRange.layerCount
@@ -701,7 +701,7 @@ namespace ashes
 					0                                                   // z
 				},
 				{                                                   // dstSubresource
-					getAspectMask( dst.getFormat() ),
+					getAspectMask( dst->format ),
 					dstRange.baseMipLevel,
 					dstRange.baseArrayLayer,
 					dstRange.layerCount
@@ -711,11 +711,11 @@ namespace ashes
 					0,                                                  // y
 					0                                                   // z
 				},
-				dst.getImage().getDimensions()                    // extent
+				dst.image->getDimensions()                    // extent
 			}
-			, src.getImage()
+			, *src.image
 			, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
-			, dst.getImage()
+			, *dst.image
 			, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
 	}
 

@@ -60,8 +60,8 @@ namespace vkapp
 		{
 			return
 			{
-				depthView.getFormat(),
-				colourView.getFormat(),
+				depthView->format,
+				colourView->format,
 			};
 		}
 
@@ -71,7 +71,7 @@ namespace vkapp
 			return ashes::VkAttachmentDescriptionArray
 			{
 				{
-					depthView.getFormat(),
+					depthView->format,
 					VK_SAMPLE_COUNT_1_BIT,
 					VkAttachmentLoadOp::eLoad,
 					VK_ATTACHMENT_STORE_OP_STORE,
@@ -81,7 +81,7 @@ namespace vkapp
 					VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 				},
 				{
-					colourView.getFormat(),
+					colourView->format,
 					VK_SAMPLE_COUNT_1_BIT,
 					VK_ATTACHMENT_LOAD_OP_CLEAR,
 					VK_ATTACHMENT_STORE_OP_STORE,
@@ -119,7 +119,7 @@ namespace vkapp
 			, ashes::ImageViewPtr colourView )
 		{
 			auto formats = doGetFormats( *depthView, *colourView );
-			ashes::ImageViewPtrArray attaches;
+			ashes::ImageViewArray attaches;
 			attaches.emplace_back( *( renderPass.getAttachments().begin() + 0u )
 				, depthView );
 			attaches.emplace_back( *( renderPass.getAttachments().begin() + 1u )
@@ -211,7 +211,7 @@ namespace vkapp
 		, ashes::Queue const & transferQueue
 		, ashes::UniformBuffer< common::LightsData > const & lightsUbo
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::ImageViewPtrArray views )
+		, ashes::ImageViewArray views )
 		: m_device{ device }
 		, m_commandPool{ commandPool }
 		, m_transferQueue{ transferQueue }
@@ -251,7 +251,7 @@ namespace vkapp
 
 	void LightingPass::update( common::SceneData const & sceneData
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::ImageViewPtrArray views
+		, ashes::ImageViewArray views
 		, GeometryPassResult const & geometryBuffers )
 	{
 		m_geometryBuffers = &geometryBuffers;

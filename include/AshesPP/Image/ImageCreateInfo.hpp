@@ -51,6 +51,11 @@ namespace ashes
 			return vk;
 		}
 
+		inline VkImageCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
 	private:
 		UInt32Array queueFamilyIndices;
 		VkImageCreateInfo vk;

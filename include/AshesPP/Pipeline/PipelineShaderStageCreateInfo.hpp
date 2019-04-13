@@ -9,6 +9,7 @@ See LICENSE file in root folder.
 #include "AshesPP/AshesPPPrerequisites.hpp"
 
 #include "AshesPP/Shader/ShaderModule.hpp"
+#include <AshesRenderer/Helper/ShaderStageState.hpp>
 
 namespace ashes
 {
@@ -33,9 +34,10 @@ namespace ashes
 				stage,
 				*this->module,
 				this->name.data(),
-				bool( this->specializationInfo ) ? &this->specializationInfo.value() : nullptr,
+				nullptr,
 			}
 		{
+			doInit();
 		}
 
 		PipelineShaderStageCreateInfo( PipelineShaderStageCreateInfo && rhs )
@@ -50,9 +52,20 @@ namespace ashes
 				rhs.vk.stage,
 				*this->module,
 				this->name.data(),
-				bool( this->specializationInfo ) ? &this->specializationInfo.value() : nullptr,
+				nullptr,
 			}
 		{
+			rhs.vk =
+			{
+				VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+				nullptr,
+				0u,
+				rhs.vk.stage,
+				nullptr,
+				nullptr,
+				nullptr,
+			};
+			doInit();
 		}
 
 		PipelineShaderStageCreateInfo & operator=( PipelineShaderStageCreateInfo && rhs )
@@ -68,8 +81,19 @@ namespace ashes
 				rhs.vk.stage,
 				*this->module,
 				this->name.data(),
-				bool( this->specializationInfo ) ? &this->specializationInfo.value() : nullptr,
+				nullptr,
 			};
+			rhs.vk =
+			{
+				VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+				nullptr,
+				0u,
+				rhs.vk.stage,
+				nullptr,
+				nullptr,
+				nullptr,
+			};
+			doInit();
 
 			return *this;
 		}
@@ -82,6 +106,20 @@ namespace ashes
 		ShaderModulePtr module;
 		std::string name;
 		Optional< VkSpecializationInfo > specializationInfo;
+		VkSpecializationMapEntryArray specializationEntries;
+		ByteArray specializationData;
+
+	private:
+		void doInit()
+		{
+			if ( bool( specializationInfo ) )
+			{
+				specializationInfo = deepCopy( specializationInfo.value()
+					, specializationEntries
+					, specializationData );
+				vk.pSpecializationInfo = &specializationInfo.value();
+			}
+		}
 
 	private:
 		VkPipelineShaderStageCreateInfo vk;

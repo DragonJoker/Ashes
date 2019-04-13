@@ -6,8 +6,6 @@ See LICENSE file in root folder
 
 #include "Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include "Gl4Renderer/Core/GlDevice.hpp"
-
 #include <array>
 
 namespace ashes::gl4
@@ -570,6 +568,31 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdFramebufferTexture2D const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eActiveTexture >
+	{
+		static Op constexpr value = { OpType::eActiveTexture, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eActiveTexture >
+	{
+		inline CmdT( uint32_t binding )
+			: cmd{ { OpType::eActiveTexture, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, binding{ std::move( binding ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t binding;
+	};
+	using CmdActiveTexture = CmdT< OpType::eActiveTexture >;
+
+	void apply( ContextLock const & context
+		, CmdActiveTexture const & cmd );
 
 	//*************************************************************************
 

@@ -53,7 +53,7 @@ namespace vkapp
 				, commandPool
 				, image.format
 				, image.data
-				, *view );
+				, view );
 			return result;
 		}
 
@@ -290,7 +290,7 @@ namespace vkapp
 
 		for ( auto & facePipeline : m_faces )
 		{
-			ashes::ImageViewPtrArray attaches;
+			ashes::ImageViewArray attaches;
 			attaches.emplace_back( texture.createView( VK_IMAGE_VIEW_TYPE_2D
 				, texture.getFormat()
 				, 0u
@@ -323,7 +323,7 @@ namespace vkapp
 				, face
 				, 1u );
 			facePipeline.descriptorSet->createBinding( m_descriptorLayout->getBinding( 1u )
-				, *m_view
+				, m_view
 				, *m_sampler );
 			facePipeline.descriptorSet->update();
 			++face;
@@ -336,7 +336,7 @@ namespace vkapp
 		{
 			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 				, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, ( *facePipeline.frameBuffer->begin() )->makeColourAttachment( VK_IMAGE_LAYOUT_UNDEFINED
+				, ( *facePipeline.frameBuffer->begin() ).makeColourAttachment( VK_IMAGE_LAYOUT_UNDEFINED
 					, 0u ) );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, *facePipeline.frameBuffer

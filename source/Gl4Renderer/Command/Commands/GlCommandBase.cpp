@@ -4,6 +4,8 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlCommandBase.hpp"
 
+#include "Core/GlContextLock.hpp"
+
 namespace ashes::gl4
 {
 	void apply( ContextLock const & context
@@ -177,5 +179,13 @@ namespace ashes::gl4
 			, cmd.texTarget
 			, cmd.object
 			, cmd.mipLevel );
+	}
+
+	void apply( ContextLock const & context
+		, CmdActiveTexture const & cmd )
+	{
+		glLogCall( context
+			, glActiveTexture
+			, GlTextureUnit( GL_TEXTURE0 + cmd.binding ) );
 	}
 }

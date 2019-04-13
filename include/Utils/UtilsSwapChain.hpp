@@ -132,7 +132,7 @@ namespace utils
 		}
 
 	private:
-		ashes::ImageViewPtrArray doPrepareAttaches( uint32_t backBuffer
+		ashes::ImageViewArray doPrepareAttaches( uint32_t backBuffer
 			, ashes::VkAttachmentDescriptionArray const & attaches
 			, ashes::Image const * depthImage )const;
 		bool doCheckNeedReset( VkResult errCode
@@ -153,7 +153,7 @@ namespace utils
 		ashes::SurfacePtr m_surface;
 		VkExtent2D m_dimensions;
 		ashes::SwapChainPtr m_swapChain;
-		ashes::VkImageArray m_swapChainImages;
+		ashes::ImageArray m_swapChainImages;
 		RenderingResourcesArray m_renderingResources;
 		mutable size_t m_resourceIndex{ 0u };
 	};

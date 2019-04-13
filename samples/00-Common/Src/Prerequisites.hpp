@@ -196,7 +196,7 @@ namespace common
 	{
 		ImagePtr image;
 		ashes::ImagePtr texture;
-		ashes::ImageViewPtr view;
+		ashes::ImageView view;
 	};
 
 	using TextureNodePtr = std::shared_ptr< TextureNode >;
@@ -241,7 +241,7 @@ namespace common
 
 	ashes::WindowHandle makeWindowHandle( wxWindow const & window );
 
-	std::vector< VkFormat > getFormats( ashes::ImageViewPtrArray const & views );
+	std::vector< VkFormat > getFormats( ashes::ImageViewArray const & views );
 
 	struct Scene;
 

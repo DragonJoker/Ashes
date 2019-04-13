@@ -7,6 +7,7 @@
 #include <AshesPP/Core/Device.hpp>
 #include <AshesPP/Pipeline/GraphicsPipeline.hpp>
 #include <AshesPP/Pipeline/PipelineLayout.hpp>
+#include <AshesPP/Image/ImageView.hpp>
 #include <AshesPP/Image/Sampler.hpp>
 #include <AshesPP/Core/SwapChain.hpp>
 
@@ -90,7 +91,7 @@ namespace vkapp
 		VkClearColorValue m_clearColour;
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::ImagePtr m_texture;
-		ashes::ImageViewPtr m_view;
+		ashes::ImageView m_view;
 		ashes::SamplerPtr m_sampler;
 		ashes::ImagePtr m_renderTargetColour;
 		ashes::ImagePtr m_renderTargetDepth;
@@ -114,7 +115,6 @@ namespace vkapp
 		} m_offscreenPipelines;
 		ashes::VertexBufferPtr< TexturedVertexData > m_offscreenVertexBuffer;
 		ashes::BufferPtr< uint16_t > m_offscreenIndexBuffer;
-		ashes::VertexLayoutPtr m_offscreenVertexLayout;
 		ashes::DescriptorSetLayoutPtr m_offscreenDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_offscreenDescriptorPool;
 		ashes::DescriptorSetPtr m_offscreenDescriptorSet;
@@ -131,7 +131,6 @@ namespace vkapp
 		ashes::PipelineLayoutPtr m_mainPipelineLayout;
 		ashes::GraphicsPipelinePtr m_mainPipeline;
 		ashes::VertexBufferPtr< TexturedVertexData > m_mainVertexBuffer;
-		ashes::VertexLayoutPtr m_mainVertexLayout;
 		ashes::DescriptorSetLayoutPtr m_mainDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_mainDescriptorPool;
 		ashes::DescriptorSetPtr m_mainDescriptorSet;

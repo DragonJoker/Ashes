@@ -204,7 +204,7 @@ namespace ashes
 		{
 			ashes::VkBufferImageCopyArray copyInfos;
 			copyInfos.push_back( makeValidCopyInfo( device
-				, view.getImage()
+				, *view.image
 				, size
 				, offset
 				, subresourceLayers ) );
@@ -304,7 +304,8 @@ namespace ashes
 		uploadTextureData( *commandBuffer
 			, format
 			, data
-			, view );
+			, view
+			, dstStageFlags );
 		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
@@ -321,7 +322,7 @@ namespace ashes
 		, ImageView const & view
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		auto range = view.getSubResourceRange();
+		auto range = view->subresourceRange;
 		auto layerSize = getAllLevelsSize( extent
 			, format
 			, range.baseMipLevel
@@ -342,16 +343,16 @@ namespace ashes
 		, ImageView const & view
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		auto extent = VkExtent3D{ view.getImage().getDimensions() };
-		auto mipLevel = view.getSubResourceRange().baseMipLevel;
+		auto extent = VkExtent3D{ view.image->getDimensions() };
+		auto mipLevel = view->subresourceRange.baseMipLevel;
 		extent.width = getSubresourceValue( extent.width, mipLevel );
 		extent.height = getSubresourceValue( extent.height, mipLevel );
 		uploadTextureData( commandBuffer
 			, {
-				getAspectMask( view.getFormat() ),
+				getAspectMask( view->format ),
 				mipLevel,
-				view.getSubResourceRange().baseArrayLayer,
-				view.getSubResourceRange().layerCount
+				view->subresourceRange.baseArrayLayer,
+				view->subresourceRange.layerCount
 			}
 			, format
 			, VkOffset3D{}
@@ -372,7 +373,7 @@ namespace ashes
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		auto mipLevel = view.getSubResourceRange().baseMipLevel;
+		auto mipLevel = view->subresourceRange.baseMipLevel;
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
@@ -384,10 +385,10 @@ namespace ashes
 			, view
 			, dstStageFlags
 			, {
-				getAspectMask( view.getFormat() ),
+				getAspectMask( view->format ),
 				mipLevel,
-				view.getSubResourceRange().baseArrayLayer,
-				view.getSubResourceRange().layerCount
+				view->subresourceRange.baseArrayLayer,
+				view->subresourceRange.layerCount
 			} );
 		commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
@@ -400,7 +401,7 @@ namespace ashes
 			, fence.get() );
 		fence->wait( ashes::MaxTimeout );
 
-		auto range = view.getSubResourceRange();
+		auto range = view->subresourceRange;
 		doCopyFromStagingBuffer( data
 			, getAllLevelsSize( extent
 				, format
@@ -415,17 +416,17 @@ namespace ashes
 		, ImageView const & view
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		auto extent = view.getImage().getDimensions();
-		auto mipLevel = view.getSubResourceRange().baseMipLevel;
+		auto extent = view.image->getDimensions();
+		auto mipLevel = view->subresourceRange.baseMipLevel;
 		extent.width = getSubresourceValue( extent.width, mipLevel );
 		extent.height = getSubresourceValue( extent.height, mipLevel );
 		downloadTextureData( queue
 			, commandPool
 			, {
-				getAspectMask( view.getFormat() ),
+				getAspectMask( view->format ),
 				mipLevel,
-				view.getSubResourceRange().baseArrayLayer,
-				view.getSubResourceRange().layerCount
+				view->subresourceRange.baseArrayLayer,
+				view->subresourceRange.layerCount
 			}
 			, format
 			, VkOffset3D{}
@@ -531,9 +532,9 @@ namespace ashes
 		, VkImageSubresourceLayers const & subresourceLayers )const
 	{
 		auto realSize = getAllLevelsSize( size
-			, view.getFormat()
-			, view.getSubResourceRange().baseMipLevel
-			, view.getSubResourceRange().levelCount );
+			, view->format
+			, view->subresourceRange.baseMipLevel
+			, view->subresourceRange.levelCount );
 		assert( realSize <= getBuffer().getSize() );
 
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
@@ -544,7 +545,7 @@ namespace ashes
 			, view.makeTransferDestination( VK_IMAGE_LAYOUT_UNDEFINED, 0u ) );
 		commandBuffer.copyToImage( makeValidCopyInfos( m_device, view, subresourceLayers, size, offset )
 			, getBuffer()
-			, view.getImage() );
+			, *view.image );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, dstStageFlags
 			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
@@ -653,7 +654,7 @@ namespace ashes
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, getBuffer().makeTransferDestination() );
 		commandBuffer.copyToBuffer( makeValidCopyInfos( m_device, view, subresourceLayers, size, offset )
-			, view.getImage()
+			, *view.image
 			, getBuffer() );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, dstStageFlags

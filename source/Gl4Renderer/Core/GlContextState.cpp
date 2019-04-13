@@ -39,6 +39,28 @@ namespace ashes::gl4
 	}
 
 	ContextState::ContextState( VkPipelineColorBlendStateCreateInfo cbState
+		, Optional< VkPipelineDepthStencilStateCreateInfo > dsState
+		, Optional< VkPipelineMultisampleStateCreateInfo > msState
+		, Optional< VkPipelineTessellationStateCreateInfo > tsState
+		, VkPipelineInputAssemblyStateCreateInfo iaState
+		, VkPipelineViewportStateCreateInfo vpState
+		, VkPipelineRasterizationStateCreateInfo rsState
+		, VkPipelineDynamicStateCreateInfo dyState )
+		: ContextState
+		{
+			cbState,
+			dsState ? &dsState.value() : nullptr,
+			msState ? &msState.value() : nullptr,
+			tsState ? &tsState.value() : nullptr,
+			&iaState,
+			&vpState,
+			&rsState,
+			&dyState,
+		}
+	{
+	}
+
+	ContextState::ContextState( VkPipelineColorBlendStateCreateInfo cbState
 		, VkPipelineDepthStencilStateCreateInfo const * dsState
 		, VkPipelineMultisampleStateCreateInfo const * msState
 		, VkPipelineTessellationStateCreateInfo const * tsState

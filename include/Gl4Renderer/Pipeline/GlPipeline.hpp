@@ -49,7 +49,7 @@ namespace ashes::gl4
 		{
 			return m_backContextState;
 		}
-		
+
 		ContextState const & getRtotContextState()const
 		{
 			return m_rtotContextState;

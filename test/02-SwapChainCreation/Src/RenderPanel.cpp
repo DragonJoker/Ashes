@@ -369,14 +369,13 @@ namespace vkapp
 		}
 	}
 
-	ashes::ImageViewPtrArray RenderPanel::doPrepareAttaches( uint32_t backBuffer )const
+	ashes::ImageViewArray RenderPanel::doPrepareAttaches( uint32_t backBuffer )const
 	{
-		ashes::ImageViewPtrArray attaches;
+		ashes::ImageViewArray attaches;
 
 		for ( auto & attach : m_renderPass->getAttachments() )
 		{
-			attaches.emplace_back( std::make_unique< ashes::ImageView >( m_device->getDevice()
-				, VkImageViewCreateInfo
+			attaches.emplace_back( m_swapChainImages[backBuffer].createView( VkImageViewCreateInfo
 				{
 						VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 						nullptr,

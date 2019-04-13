@@ -110,7 +110,6 @@ namespace vkapp
 			m_descriptorPool.reset();
 			m_descriptorLayout.reset();
 			m_sampler.reset();
-			m_view.reset();
 			m_texture.reset();
 			m_stagingBuffer.reset();
 			m_pipeline.reset();
@@ -181,6 +180,17 @@ namespace vkapp
 			}
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 
+		// Create the texture view for shader read.
+		m_view = m_texture->createView( VK_IMAGE_VIEW_TYPE_2D
+			, format
+			, 0u
+			, uint32_t( tex2D.levels() ) );
+
+		auto commandBuffer = m_commandPool->createCommandBuffer( true );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		ashes::ImageViewArray views;
+		std::vector< ashes::StagingBufferPtr > stagingBuffers;
+
 		for ( uint32_t level = 0; level < tex2D.levels(); level++ )
 		{
 			auto texLevel = tex2D[level];
@@ -188,16 +198,24 @@ namespace vkapp
 
 			if ( ashes::checkExtent( format, extent ) )
 			{
-				auto view = m_texture->createView( VK_IMAGE_VIEW_TYPE_2D
+				views.emplace_back( m_texture->createView( VK_IMAGE_VIEW_TYPE_2D
 					, format
-					, level );
-				m_stagingBuffer->uploadTextureData( *m_graphicsQueue
-					, *m_commandPool
+					, level ) );
+				stagingBuffers.emplace_back( std::make_unique< ashes::StagingBuffer >( m_device->getDevice()
+					, 0u
+					, texLevel.size() ) );
+				stagingBuffers.back()->uploadTextureData( *commandBuffer
 					, format
 					, reinterpret_cast< uint8_t const * >( texLevel.data() )
-					, *view );
+					, views.back() );
 			}
 		}
+
+		commandBuffer->end();
+		auto fence = m_device->getDevice().createFence();
+		m_graphicsQueue->submit( *commandBuffer
+			, fence.get() );
+		fence->wait( ashes::MaxTimeout );
 
 		// Create the sampler.
 		m_sampler = m_device->getDevice().createSampler( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
@@ -205,12 +223,6 @@ namespace vkapp
 			, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
 			, VK_FILTER_LINEAR
 			, VK_FILTER_LINEAR );
-
-		// Create the texture view for shader read.
-		m_view = m_texture->createView( VK_IMAGE_VIEW_TYPE_2D
-			, format
-			, 0u
-			, uint32_t( tex2D.levels() ) );
 	}
 
 	void RenderPanel::doCreateDescriptorSet()
@@ -223,7 +235,7 @@ namespace vkapp
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
-			, *m_view
+			, m_view
 			, *m_sampler );
 		m_descriptorSet->update();
 	}
@@ -389,7 +401,7 @@ namespace vkapp
 				, 2u );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, frameBuffer
-				, { VkClearValue{ m_clearColour } }
+				, { ashes::makeClearValue( m_clearColour ) }
 				, VK_SUBPASS_CONTENTS_INLINE );
 			commandBuffer.writeTimestamp( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 				, *m_queryPool

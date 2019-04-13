@@ -74,7 +74,7 @@ struct Application
 	ashes::DevicePtr device;
 	VkExtent2D dimensions;
 	ashes::SwapChainPtr swapChain;
-	ashes::VkImageArray swapChainImages;
+	ashes::ImageArray swapChainImages;
 	std::vector< ashes::FrameBufferPtr > frameBuffers;
 	ashes::CommandPoolPtr commandPool;
 	ashes::CommandBufferPtrArray commandBuffers;
@@ -745,16 +745,15 @@ ashes::RenderPassPtr createRenderPass( ashes::Device const & device
 	return device.createRenderPass( std::move( createInfo ) );
 }
 
-ashes::ImageViewPtrArray doPrepareAttaches( Application const & application
+ashes::ImageViewArray doPrepareAttaches( Application const & application
 	, uint32_t backBuffer )
 {
-	ashes::ImageViewPtrArray attaches;
+	ashes::ImageViewArray attaches;
 
 	for ( auto & attach : application.renderPass->getAttachments() )
 	{
 		auto & image = application.swapChainImages[backBuffer];
-		attaches.emplace_back( std::make_unique< ashes::ImageView >( *application.device
-			, VkImageViewCreateInfo
+		attaches.emplace_back( image.createView( VkImageViewCreateInfo
 			{
 				VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 				nullptr,

@@ -6,6 +6,7 @@
 #include <AshesPP/Core/Device.hpp>
 #include <AshesPP/Pipeline/GraphicsPipeline.hpp>
 #include <AshesPP/Pipeline/PipelineLayout.hpp>
+#include <AshesPP/Image/ImageView.hpp>
 #include <AshesPP/Image/Sampler.hpp>
 #include <AshesPP/Core/SwapChain.hpp>
 
@@ -91,7 +92,7 @@ namespace vkapp
 		VkClearColorValue m_clearColour;
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::ImagePtr m_texture;
-		ashes::ImageViewPtr m_view;
+		ashes::ImageView m_view;
 		ashes::SamplerPtr m_sampler;
 		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
 		/**@}*/

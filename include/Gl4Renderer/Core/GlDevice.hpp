@@ -4,6 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
+#include "Gl4Renderer/Command/GlCommandBuffer.hpp"
 #include "Gl4Renderer/Core/GlContextLock.hpp"
 #include "Gl4Renderer/Core/GlPhysicalDevice.hpp"
 
@@ -58,6 +59,7 @@ namespace ashes::gl4
 
 		void registerContext( VkSurfaceKHR surface )const;
 		void unregisterContext( VkSurfaceKHR surface )const;
+		GLuint getRtocProgram()const;
 
 		inline ContextLock getContext()const
 		{
@@ -94,9 +96,15 @@ namespace ashes::gl4
 			return m_instance;
 		}
 
+		ContextState const & getRtocContextState()const
+		{
+			return m_rtocContextState;
+		}
+
 	private:
-		void doInitialiseContext( ContextLock const & context )const;
-		void doCreateQueues();
+		void doInitialiseQueues();
+		void doInitialiseDummy( ContextLock & context );
+		void doInitialiseRtoc( ContextLock & context );
 
 	private:
 		struct QueueCreates
@@ -129,5 +137,10 @@ namespace ashes::gl4
 			GeometryBuffersPtr geometryBuffers;
 		} m_dummyIndexed;
 		mutable GLuint m_blitFbos[2];
+		VkPipelineColorBlendAttachmentStateArray m_cbStateAttachments;
+		VkDynamicStateArray m_dyState;
+		ContextState m_rtocContextState;
+		std::unique_ptr< ShaderProgram > m_rtocProgram;
+		CommandBuffer m_rtocCommands;
 	};
 }

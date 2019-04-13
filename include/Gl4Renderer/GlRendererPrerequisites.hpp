@@ -118,6 +118,7 @@ namespace ashes::gl4
 
 	class Context;
 	class ContextLock;
+	struct ContextState;
 	using ContextPtr = std::unique_ptr< Context >;
 
 	using CommandPtr = std::unique_ptr< CommandBase >;

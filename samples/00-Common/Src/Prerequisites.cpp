@@ -88,7 +88,7 @@ namespace common
 		};
 	}
 
-	std::vector< VkFormat > getFormats( ashes::ImageViewPtrArray const & views )
+	std::vector< VkFormat > getFormats( ashes::ImageViewArray const & views )
 	{
 		std::vector< VkFormat > result;
 

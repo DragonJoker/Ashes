@@ -7,6 +7,7 @@
 #include <AshesPP/Descriptor/DescriptorSet.hpp>
 #include <AshesPP/RenderPass/FrameBuffer.hpp>
 #include <AshesPP/Image/Image.hpp>
+#include <AshesPP/Image/ImageView.hpp>
 #include <AshesPP/RenderPass/RenderPass.hpp>
 #include <AshesPP/Image/Sampler.hpp>
 #include <AshesPP/Buffer/StagingBuffer.hpp>
@@ -89,7 +90,7 @@ namespace vkapp
 		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::ImagePtr m_texture;
-		ashes::ImageViewPtr m_view;
+		ashes::ImageView m_view;
 		ashes::SamplerPtr m_sampler;
 		ashes::UniformBufferPtr< LayerSelect > m_uniformBuffer;
 		ashes::DescriptorSetLayoutPtr m_descriptorLayout;

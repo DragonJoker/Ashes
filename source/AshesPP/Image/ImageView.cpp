@@ -5,47 +5,13 @@
 
 namespace ashes
 {
-	ImageView::ImageView( Device const & device
-		, Image const & image
-		, VkImageViewCreateInfo const & createInfo )
-		: m_device{ device }
-		, m_image{ &image }
-		, m_createInfo{ createInfo }
+	ImageView::ImageView( VkImageViewCreateInfo createInfo
+		, VkImageView internal
+		, Image const * image )
+		: createInfo{ std::move( createInfo ) }
+		, internal{ internal }
+		, image{ image }
 	{
-		DEBUG_DUMP( m_createInfo );
-		auto res = m_device.vkCreateImageView( m_device
-			, &m_createInfo
-			, nullptr
-			, &m_internal );
-		checkError( res, "ImageView creation" );
-		registerObject( m_device, "ImageView", this );
-	}
-	
-	ImageView::ImageView( Device const & device
-		, VkImageViewCreateInfo const & createInfo )
-		: m_device{ device }
-		, m_image{ nullptr }
-		, m_createInfo{ createInfo }
-	{
-		DEBUG_DUMP( m_createInfo );
-		auto res = m_device.vkCreateImageView( m_device
-			, &m_createInfo
-			, nullptr
-			, &m_internal );
-		checkError( res, "ImageView creation" );
-		registerObject( m_device, "ImageView", this );
-	}
-
-	ImageView::~ImageView()
-	{
-		unregisterObject( m_device, this );
-
-		if ( m_internal )
-		{
-			m_device.vkDestroyImageView( m_device
-				, m_internal
-				, nullptr );
-		}
 	}
 
 	VkImageMemoryBarrier ImageView::makeGeneralLayout( VkImageLayout srcLayout
@@ -170,8 +136,8 @@ namespace ashes
 			dstLayout,
 			srcQueueFamily,
 			dstQueueFamily,
-			getImage(),
-			getSubResourceRange()
+			createInfo.image,
+			createInfo.subresourceRange
 		};
 	}
 }

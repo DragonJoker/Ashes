@@ -58,12 +58,12 @@ namespace common
 
 		virtual OpaqueRenderingPtr doCreateOpaqueRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::ImageViewPtrArray views
+			, ashes::ImageViewArray views
 			, Scene const & scene
 			, TextureNodePtrArray const & textureNodes ) = 0;
 		virtual TransparentRenderingPtr doCreateTransparentRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::ImageViewPtrArray views
+			, ashes::ImageViewArray views
 			, Scene const & scene
 			, TextureNodePtrArray const & textureNodes ) = 0;
 

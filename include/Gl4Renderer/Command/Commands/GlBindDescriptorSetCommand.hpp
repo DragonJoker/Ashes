@@ -11,31 +11,6 @@ namespace ashes::gl4
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eActiveTexture >
-	{
-		static Op constexpr value = { OpType::eActiveTexture, 2u };
-	};
-
-	template<>
-	struct alignas( uint64_t ) CmdT< OpType::eActiveTexture >
-	{
-		inline CmdT( uint32_t binding )
-			: cmd{ { OpType::eActiveTexture, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, binding{ std::move( binding ) }
-		{
-		}
-
-		Command cmd;
-		uint32_t binding;
-	};
-	using CmdActiveTexture = CmdT< OpType::eActiveTexture >;
-
-	void apply( ContextLock const & context
-		, CmdActiveTexture const & cmd );
-
-	//*************************************************************************
-
-	template<>
 	struct CmdConfig< OpType::eBindSampler >
 	{
 		static Op constexpr value = { OpType::eBindSampler, 3u };

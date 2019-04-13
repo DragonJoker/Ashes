@@ -10,7 +10,7 @@ namespace common
 	OpaqueRendering::OpaqueRendering( NodesInstancePtr renderer
 		, Scene const & scene
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::ImageViewPtrArray views
+		, ashes::ImageViewArray views
 		, common::TextureNodePtrArray const & textureNodes )
 		: m_instance{ std::move( renderer ) }
 	{

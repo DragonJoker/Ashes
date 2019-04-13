@@ -146,7 +146,6 @@ namespace vkapp
 			m_commandBuffers.clear();
 			m_frameBuffers.clear();
 			m_sampler.reset();
-			m_view.reset();
 			m_texture.reset();
 			m_stagingBuffer.reset();
 
@@ -262,7 +261,7 @@ namespace vkapp
 			, *m_commandPool
 			, image.format
 			, image.data
-			, *m_view );
+			, m_view );
 	}
 
 	void RenderPanel::doCreateUniformBuffer()
@@ -291,7 +290,7 @@ namespace vkapp
 		m_offscreenDescriptorPool = m_offscreenDescriptorLayout->createPool( 1u );
 		m_offscreenDescriptorSet = m_offscreenDescriptorPool->createDescriptorSet();
 		m_offscreenDescriptorSet->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
-			, *m_view
+			, m_view
 			, *m_sampler );
 		m_offscreenDescriptorSet->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
 			, *m_matrixUbo
@@ -375,7 +374,7 @@ namespace vkapp
 			}
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 
-		ashes::ImageViewPtrArray attaches;
+		ashes::ImageViewArray attaches;
 		attaches.emplace_back( m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
 				, VK_FORMAT_R8G8B8A8_UNORM ) );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
@@ -477,7 +476,7 @@ namespace vkapp
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )
-			, *( *m_frameBuffer->begin() )
+			, *m_frameBuffer->begin()
 			, *m_sampler );
 		m_mainDescriptorSet->update();
 	}
@@ -558,7 +557,7 @@ namespace vkapp
 			, 2u );
 		commandBuffer.beginRenderPass( *m_offscreenRenderPass
 			, frameBuffer
-			, { VkClearValue{ m_clearColour } }
+			, { ashes::makeClearValue( m_clearColour ) }
 			, VK_SUBPASS_CONTENTS_INLINE );
 		commandBuffer.writeTimestamp( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 			, *m_queryPool

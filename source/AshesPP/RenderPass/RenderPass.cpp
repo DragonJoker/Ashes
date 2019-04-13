@@ -33,7 +33,7 @@ namespace ashes
 	}
 
 	FrameBufferPtr RenderPass::createFrameBuffer( VkExtent2D const & dimensions
-		, ImageViewPtrArray views )const
+		, ImageViewArray views )const
 	{
 		return std::make_unique< FrameBuffer >( *this
 			, dimensions

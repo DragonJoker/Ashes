@@ -108,7 +108,6 @@ namespace vkapp
 			m_descriptorPool.reset();
 			m_descriptorLayout.reset();
 			m_sampler.reset();
-			m_view.reset();
 			m_texture.reset();
 			m_stagingBuffer.reset();
 			m_pipeline.reset();
@@ -187,7 +186,7 @@ namespace vkapp
 			, *m_commandPool
 			, image.format
 			, image.data
-			, *m_view );
+			, m_view );
 	}
 
 	void RenderPanel::doCreateDescriptorSet()
@@ -200,7 +199,7 @@ namespace vkapp
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
-			, *m_view
+			, m_view
 			, *m_sampler );
 		m_descriptorSet->update();
 	}
@@ -366,7 +365,7 @@ namespace vkapp
 				, 2u );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, frameBuffer
-				, { VkClearValue{ m_clearColour } }
+				, { ashes::makeClearValue( m_clearColour ) }
 				, VK_SUBPASS_CONTENTS_INLINE );
 			commandBuffer.writeTimestamp( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 				, *m_queryPool

@@ -4,6 +4,8 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlDispatchCommand.hpp"
 
+#include "Core/GlContextLock.hpp"
+
 namespace ashes::gl4
 {
 	void apply( ContextLock const & context

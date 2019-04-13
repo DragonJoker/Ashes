@@ -18,59 +18,15 @@ namespace ashes
 	*\brief
 	*	Image view wrapper.
 	*/
-	class ImageView
+	struct ImageView
 	{
-	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	La connexion logique au GPU.
-		*\param[in] image
-		*	L'image sur laquelle la vue est créée.
-		*\param[in] createInfo
-		*	Les informations de création de la vue.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The logical connection to the GPU.
-		*\param[in] image
-		*	The image from which the view is created.
-		*\param[in] createInfo
-		*	The view creation informations.
-		*/
-		ImageView( Device const & device
-			, Image const & image
-			, VkImageViewCreateInfo const & createInfo );
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	La connexion logique au GPU.
-		*\param[in] createInfo
-		*	Les informations de création de la vue.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The logical connection to the GPU.
-		*\param[in] createInfo
-		*	The view creation informations.
-		*/
-		ImageView( Device const & device
-			, VkImageViewCreateInfo const & createInfo );
-		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
-		*\brief
-		*	Destructor.
-		*/
-		~ImageView();
+		VkImageViewCreateInfo createInfo;
+		VkImageView internal;
+		Image const * image;
+
+		ImageView( VkImageViewCreateInfo createInfo = {}
+			, VkImageView internal = VK_NULL_HANDLE
+			, Image const * image = nullptr );
 		/**
 		*\~french
 		*\brief
@@ -333,40 +289,29 @@ namespace ashes
 			, uint32_t srcQueueFamily = ~( 0u )
 			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
-		*\~english
-		*name
-		*	Getters.
 		*\~french
-		*name
-		*	Accesseurs.
+		*\brief
+		*	Forward vers VkImageView.
+		*\~english
+		*\brief
+		*	Forward to VkImageView.
 		*/
-		/**@{*/
-		inline VkImageViewType getType()const
+		inline VkImageViewCreateInfo const * operator->()const
 		{
-			return m_createInfo.viewType;
+			return &createInfo;
 		}
-
-		inline VkFormat getFormat()const
+		/**
+		*\~french
+		*\brief
+		*	Conversion vers VkImageViewCreateInfo.
+		*\~english
+		*\brief
+		*	VkImageViewCreateInfo cast operator.
+		*/
+		inline explicit operator VkImageViewCreateInfo const & ()const
 		{
-			return m_createInfo.format;
+			return createInfo;
 		}
-
-		inline Image const & getImage()const
-		{
-			assert( m_image );
-			return *m_image;
-		}
-
-		inline VkComponentMapping const & getComponentMapping()const
-		{
-			return m_createInfo.components;
-		}
-
-		inline VkImageSubresourceRange const & getSubResourceRange()const
-		{
-			return m_createInfo.subresourceRange;
-		}
-		/**@}*/
 		/**
 		*\~french
 		*\brief
@@ -375,9 +320,9 @@ namespace ashes
 		*\brief
 		*	VkImageView implicit cast operator.
 		*/
-		inline operator VkImageView const & ( )const
+		inline operator VkImageView const & ()const
 		{
-			return m_internal;
+			return internal;
 		}
 
 	private:
@@ -387,14 +332,6 @@ namespace ashes
 			, VkAccessFlags dstAccessMask
 			, uint32_t srcQueueFamily
 			, uint32_t dstQueueFamily )const;
-
-	protected:
-		VkImageViewCreateInfo m_createInfo;
-
-	private:
-		Device const & m_device;
-		Image const * m_image;
-		VkImageView m_internal{ VK_NULL_HANDLE };
 	};
 }
 

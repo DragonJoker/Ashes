@@ -172,7 +172,7 @@ namespace ashes
 		*\brief
 		*	Les images utilisées par la swapchain.
 		*/
-		VkImageArray getImages()const;
+		ImageArray getImages()const;
 		/**
 		*\~english
 		*name

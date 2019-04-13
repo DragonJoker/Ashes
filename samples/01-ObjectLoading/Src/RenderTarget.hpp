@@ -22,12 +22,12 @@ namespace vkapp
 		virtual void doResize( VkExtent2D const & size )override;
 		common::OpaqueRenderingPtr doCreateOpaqueRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::ImageViewPtrArray views
+			, ashes::ImageViewArray views
 			, common::Scene const & scene
 			, common::TextureNodePtrArray const & textureNodes )override;
 		common::TransparentRenderingPtr doCreateTransparentRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::ImageViewPtrArray views
+			, ashes::ImageViewArray views
 			, common::Scene const & scene
 			, common::TextureNodePtrArray const & textureNodes )override;
 		void doUpdateMatrixUbo( VkExtent2D const & size );

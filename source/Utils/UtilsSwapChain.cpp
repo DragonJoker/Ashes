@@ -157,16 +157,16 @@ namespace utils
 			};
 		}
 
-		ashes::ImageViewPtr doCloneView( ashes::ImageView const & view )
+		ashes::ImageView doCloneView( ashes::ImageView const & view )
 		{
-			return view.getImage().createView( ashes::ImageViewCreateInfo
+			return view.image->createView( ashes::ImageViewCreateInfo
 				{
 					0u,
-					view.getImage(),
-					view.getType(),
-					view.getFormat(),
-					view.getComponentMapping(),
-					view.getSubResourceRange(),
+					*view.image,
+					view->viewType,
+					view->format,
+					view->components,
+					view->subresourceRange,
 				} );
 		}
 	}
@@ -297,20 +297,19 @@ namespace utils
 		resources.setImageIndex( ~0u );
 	}
 
-	ashes::ImageViewPtrArray SwapChain::doPrepareAttaches( uint32_t backBuffer
+	ashes::ImageViewArray SwapChain::doPrepareAttaches( uint32_t backBuffer
 		, ashes::VkAttachmentDescriptionArray const & attaches
 		, ashes::Image const * depthImage )const
 	{
-		ashes::ImageViewPtrArray result;
+		ashes::ImageViewArray result;
 
 		for ( auto & attach : attaches )
 		{
-			VkImage image = m_swapChainImages[backBuffer];
+			auto & image = m_swapChainImages[backBuffer];
 
 			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
 			{
-				result.emplace_back( std::make_unique< ashes::ImageView >( m_device
-					, VkImageViewCreateInfo
+				result.emplace_back( image.createView( VkImageViewCreateInfo
 					{
 						VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 						nullptr,

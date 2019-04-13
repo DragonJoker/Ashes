@@ -89,7 +89,7 @@ namespace ashes
 			, imageIndex );
 	}
 
-	VkImageArray SwapChain::getImages()const
+	ImageArray SwapChain::getImages()const
 	{
 		uint32_t imageCount{ 0u };
 		auto res = m_device.vkGetSwapchainImagesKHR( m_device
@@ -98,16 +98,22 @@ namespace ashes
 			, nullptr );
 		checkError( res, "Swap chain images count retrieval" );
 
-		VkImageArray result;
+		ImageArray result;
 
 		if ( imageCount )
 		{
-			result.resize( imageCount );
+			VkImageArray images;
+			images.resize( imageCount );
 			res = m_device.vkGetSwapchainImagesKHR( m_device
 				, m_internal
 				, &imageCount
-				, &result[0] );
+				, &images[0] );
 			checkError( res, "Swap chain images retrieval" );
+
+			for ( auto image : images )
+			{
+				result.emplace_back( m_device, image );
+			}
 		}
 
 		return result;

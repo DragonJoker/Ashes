@@ -70,7 +70,7 @@ namespace vkapp
 		void doCreateRenderingResources();
 		void doCreateFrameBuffers();
 		void doCreateCommandBuffers();
-		ashes::ImageViewPtrArray doPrepareAttaches( uint32_t backBuffer )const;
+		ashes::ImageViewArray doPrepareAttaches( uint32_t backBuffer )const;
 		/**@}*/
 		/**
 		*\name
@@ -106,7 +106,7 @@ namespace vkapp
 		ashes::CommandPoolPtr m_commandPool;
 		ashes::SurfacePtr m_surface;
 		ashes::SwapChainPtr m_swapChain;
-		ashes::VkImageArray m_swapChainImages;
+		ashes::ImageArray m_swapChainImages;
 		VkClearColorValue m_clearColour;
 		ashes::RenderPassPtr m_renderPass;
 		RenderingResourcesArray m_renderingResources;

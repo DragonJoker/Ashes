@@ -4,6 +4,8 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlBindGeometryBuffersCommand.hpp"
 
+#include "Core/GlContextLock.hpp"
+
 #include "Buffer/GlGeometryBuffers.hpp"
 
 namespace ashes::gl4

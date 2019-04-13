@@ -84,7 +84,7 @@ namespace vkapp
 		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::ImagePtr m_texture;
-		ashes::ImageViewPtr m_view;
+		ashes::ImageView m_view;
 		ashes::SamplerPtr m_sampler;
 		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
 		ashes::DescriptorSetPoolPtr m_descriptorPool;

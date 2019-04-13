@@ -129,7 +129,6 @@ namespace vkapp
 			m_frameBuffers.clear();
 			m_depthStencil.reset();
 			m_sampler.reset();
-			m_view.reset();
 			m_texture.reset();
 			m_stagingBuffer.reset();
 
@@ -227,7 +226,7 @@ namespace vkapp
 			, *m_commandPool
 			, image.format
 			, image.data
-			, *m_view );
+			, m_view );
 	}
 
 	void RenderPanel::doCreateUniformBuffer()
@@ -256,7 +255,7 @@ namespace vkapp
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
-			, *m_view
+			, m_view
 			, *m_sampler );
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 1u )
 			, *m_matrixUbo

@@ -42,8 +42,13 @@ namespace ashes::gl4
 	void buildBindPipelineCommand( VkDevice device
 		, VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint
-		, CmdList & list
-		, bool isRtot );
+		, bool isRtot
+		, CmdList & list );
+
+	void buildUnbindPipelineCommand( VkDevice device
+		, VkPipeline pipeline
+		, VkImageView view
+		, CmdList & list );
 
 	//*************************************************************************
 }

@@ -37,10 +37,10 @@ namespace vkapp
 {
 	namespace
 	{
-		ashes::ImageViewPtrArray doGetViews( GeometryPassResult const & gbuffer
-			, ashes::ImageViewPtrArray views )
+		ashes::ImageViewArray doGetViews( GeometryPassResult const & gbuffer
+			, ashes::ImageViewArray views )
 		{
-			ashes::ImageViewPtrArray result
+			ashes::ImageViewArray result
 			{
 				views[0]
 			};
@@ -58,7 +58,7 @@ namespace vkapp
 		, common::Scene const & scene
 		, ashes::StagingBuffer & stagingBuffer
 		, GeometryPassResult const & gbuffer
-		, ashes::ImageViewPtrArray views
+		, ashes::ImageViewArray views
 		, common::TextureNodePtrArray const & textureNodes
 		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
 		, ashes::UniformBuffer< common::LightsData > const & lightsUbo )

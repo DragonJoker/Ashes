@@ -239,8 +239,8 @@ namespace ashes::gl4
 			buildBindPipelineCommand( m_device
 				, pipeline
 				, bindingPoint
-				, m_cmdList
-				, !get( m_state.currentFrameBuffer )->hasSwapchainImage() );
+				, !get( m_state.currentFrameBuffer )->hasSwapchainImage()
+				, m_cmdList );
 
 			for ( auto & pcb : m_state.pushConstantBuffers )
 			{
@@ -250,8 +250,10 @@ namespace ashes::gl4
 
 			m_state.pushConstantBuffers.clear();
 
-			m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
-				, makeCmd< OpType::eUseProgram >( 0u ) );
+			buildUnbindPipelineCommand( m_device
+				, pipeline
+				, VK_NULL_HANDLE
+				, m_cmdAfterSubmit );
 		}
 		else if ( bindingPoint == VK_PIPELINE_BIND_POINT_COMPUTE )
 		{

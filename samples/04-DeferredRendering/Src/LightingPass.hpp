@@ -14,10 +14,10 @@ namespace vkapp
 			, ashes::Queue const & transferQueue
 			, ashes::UniformBuffer< common::LightsData > const & lightsUbo
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::ImageViewPtrArray views );
+			, ashes::ImageViewArray views );
 		void update( common::SceneData const & sceneData
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::ImageViewPtrArray views
+			, ashes::ImageViewArray views
 			, GeometryPassResult const & geometryBuffers );
 		void draw( ashes::Queue const & queue
 			, std::chrono::nanoseconds & gpu )const;

@@ -355,7 +355,7 @@ namespace common
 			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
 				, VK_ACCESS_SHADER_READ_BIT } );
 
-		ashes::ImageViewPtrArray attaches
+		ashes::ImageViewArray attaches
 		{
 			{ *m_renderPass->getAttachments().begin(), m_targetView }
 		};

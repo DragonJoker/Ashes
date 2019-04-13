@@ -136,11 +136,11 @@ namespace common
 		}
 
 		ashes::FrameBufferPtr doCreateFrameBuffer( ashes::RenderPass const & renderPass
-			, ashes::ImageViewPtrArray views )
+			, ashes::ImageViewArray views )
 		{
 			assert( !views.empty() );
 			assert( views.size() == renderPass.getAttachmentCount() );
-			ashes::ImageViewPtrArray attaches;
+			ashes::ImageViewArray attaches;
 			auto it = renderPass.getAttachments().begin();
 			auto dimensions = views[0]->getImage().getDimensions();
 
@@ -192,19 +192,13 @@ namespace common
 			return result;
 		}
 
-		ashes::ImageViewPtrArray doCloneViews( ashes::ImageViewCRefArray const & views )
+		ashes::ImageViewArray doCloneViews( ashes::ImageViewCRefArray const & views )
 		{
-			ashes::ImageViewPtrArray result;
+			ashes::ImageViewArray result;
 
 			for ( auto & view : views )
 			{
-				result.emplace_back( view.get().getImage().createView(
-					{
-						view.get().getType(),
-						view.get().getFormat(),
-						view.get().getComponentMapping(),
-						view.get().getSubResourceRange(),
-					} ) );
+				result.emplace_back( view.get().image->createView( *view.get() ) );
 			}
 
 			return result;
@@ -254,7 +248,7 @@ namespace common
 
 	void NodesRenderer::initialise( Scene const & scene
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::ImageViewPtrArray views
+		, ashes::ImageViewArray views
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		m_materialsUbo = doCreateMaterialsUbo( m_device
@@ -285,7 +279,7 @@ namespace common
 		doUpdate( std::move( views ) );
 	}
 
-	void NodesRenderer::doUpdate( ashes::ImageViewPtrArray views )
+	void NodesRenderer::doUpdate( ashes::ImageViewArray views )
 	{
 		assert( !views.empty() );
 		auto dimensions = views[0]->getImage().getDimensions();

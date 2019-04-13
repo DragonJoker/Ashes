@@ -64,7 +64,7 @@ namespace vkapp
 
 	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( utils::Device const & device
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::ImageViewPtrArray views
+		, ashes::ImageViewArray views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
@@ -86,7 +86,7 @@ namespace vkapp
 
 	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( utils::Device const & device
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::ImageViewPtrArray views
+		, ashes::ImageViewArray views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{

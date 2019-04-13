@@ -183,7 +183,6 @@ namespace vkapp
 			m_commandBuffers.clear();
 			m_frameBuffers.clear();
 			m_sampler.reset();
-			m_view.reset();
 			m_texture.reset();
 			m_stagingBuffer.reset();
 
@@ -300,7 +299,7 @@ namespace vkapp
 			, *m_commandPool
 			, image.format
 			, image.data
-			, *m_view );
+			, m_view );
 	}
 
 	void RenderPanel::doCreateUniformBuffer()
@@ -335,7 +334,7 @@ namespace vkapp
 
 		m_offscreenDescriptorSets[0] = m_offscreenDescriptorPool->createDescriptorSet();
 		m_offscreenDescriptorSets[0]->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
-			, *m_view
+			, m_view
 			, *m_sampler );
 		m_offscreenDescriptorSets[0]->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
 			, *m_matrixUbo
@@ -349,7 +348,7 @@ namespace vkapp
 
 		m_offscreenDescriptorSets[1] = m_offscreenDescriptorPool->createDescriptorSet();
 		m_offscreenDescriptorSets[1]->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
-			, *m_view
+			, m_view
 			, *m_sampler );
 		m_offscreenDescriptorSets[1]->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
 			, *m_matrixUbo
@@ -461,7 +460,7 @@ namespace vkapp
 				VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
 			}
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-		ashes::ImageViewPtrArray attaches;
+		ashes::ImageViewArray attaches;
 		attaches.emplace_back( m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_renderTargetColour->getFormat() ) );
 		attaches.emplace_back( m_renderTargetDepth->createView( VK_IMAGE_VIEW_TYPE_2D
@@ -567,7 +566,7 @@ namespace vkapp
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )
-			, *( *m_frameBuffer->begin() )
+			, *m_frameBuffer->begin()
 			, *m_sampler );
 		m_mainDescriptorSet->update();
 	}

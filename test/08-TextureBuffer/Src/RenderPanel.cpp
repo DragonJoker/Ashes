@@ -362,7 +362,7 @@ namespace vkapp
 				, 2u );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, frameBuffer
-				, { VkClearValue{ m_clearColour } }
+				, { ashes::makeClearValue( m_clearColour ) }
 				, VK_SUBPASS_CONTENTS_INLINE );
 			commandBuffer.writeTimestamp( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 				, *m_queryPool

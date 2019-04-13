@@ -479,6 +479,32 @@ namespace ashes
 	/**
 	*\~french
 	*\brief
+	*	Récupère une dimension réelle du niveau de mipmap donné.
+	*\param[in] extent
+	*	La dimension du niveau 0.
+	*\param[in] mipLevel
+	*	Le niveau de mipmap.
+	*\return
+	*	La dimension du niveau de mipmap.
+	*\~english
+	*\brief
+	*	Retrieves the real extent for the given mipmap level.
+	*\param[in] extent
+	*	The level 0 extent.
+	*\param[in] mipLevel
+	*	The mipmap level.
+	*\return
+	*	The mipmap level extent.
+	*/
+	template< typename T >
+	inline T getSubresourceDimension( T const & extent
+		, uint32_t mipLevel )
+	{
+		return extent >> mipLevel;
+	}
+	/**
+	*\~french
+	*\brief
 	*	Récupère les dimensions réelles du niveau de mipmap donné.
 	*\param[in] extent
 	*	Les dimensions du niveau 0.
@@ -501,8 +527,8 @@ namespace ashes
 	{
 		return
 		{
-			extent.width >> mipLevel,
-			extent.height >> mipLevel,
+			getSubresourceDimension( extent.width, mipLevel ),
+			getSubresourceDimension( extent.height, mipLevel ),
 			extent.depth
 		};
 	}
@@ -557,8 +583,8 @@ namespace ashes
 	{
 		return
 		{
-			extent.width >> mipLevel,
-			extent.height >> mipLevel
+			getSubresourceDimension( extent.width, mipLevel ),
+			getSubresourceDimension( extent.height, mipLevel ),
 		};
 	}
 	/**
