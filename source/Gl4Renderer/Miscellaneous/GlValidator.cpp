@@ -846,14 +846,16 @@ namespace ashes::gl4
 				// Skip any uniforms that are in a block.
 				if ( values[0] == -1 )
 				{
-					std::vector< char > nameData( values[2] );
+					std::vector< char > nameData;
+					auto bufferSize = size_t( values[2] + 1u );
+					nameData.resize( bufferSize, 0 );
 					context->glGetProgramResourceName( program
 						, variableInterface
 						, unif
-						, GLsizei( nameData.size() )
+						, GLsizei( values[2] )
 						, nullptr
 						, &nameData[0] );
-					std::string variableName( nameData.begin(), nameData.end() - 1 );
+					std::string variableName = nameData.data();
 					variableFunction( variableName
 						, GlslAttributeType( values[1] )
 						, values[3]

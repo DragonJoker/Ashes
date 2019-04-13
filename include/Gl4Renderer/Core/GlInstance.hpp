@@ -111,6 +111,7 @@ namespace ashes::gl4
 		VkInstanceCreateFlags m_flags;
 		StringArray m_enabledLayerNames;
 		StringArray m_enabledExtensions;
+		VkPhysicalDeviceArray m_physicalDevices;
 		mutable std::vector< DebugReportCallbackData > m_debugCallbacks;
 		mutable std::vector< DebugReportAMDCallbackData > m_debugAMDCallbacks;
 		ExtensionsHandler m_extensions;

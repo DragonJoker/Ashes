@@ -47,6 +47,24 @@ namespace ashes
 		/**
 		*\~french
 		*\brief
+		*	Constructeur.
+		*\param[in] device
+		*	La connexion logique au GPU.
+		*\param[in] createInfo
+		*	Les informations de création de la vue.
+		*\~english
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical connection to the GPU.
+		*\param[in] createInfo
+		*	The view creation informations.
+		*/
+		ImageView( Device const & device
+			, VkImageViewCreateInfo const & createInfo );
+		/**
+		*\~french
+		*\brief
 		*	Destructeur.
 		*\~english
 		*\brief
@@ -335,7 +353,8 @@ namespace ashes
 
 		inline Image const & getImage()const
 		{
-			return m_image;
+			assert( m_image );
+			return *m_image;
 		}
 
 		inline VkComponentMapping const & getComponentMapping()const
@@ -374,7 +393,7 @@ namespace ashes
 
 	private:
 		Device const & m_device;
-		Image const & m_image;
+		Image const * m_image;
 		VkImageView m_internal{ VK_NULL_HANDLE };
 	};
 }

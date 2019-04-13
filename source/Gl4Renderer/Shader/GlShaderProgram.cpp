@@ -116,8 +116,7 @@ namespace ashes::gl4
 		for ( auto & stage : m_stages )
 		{
 			m_stageFlags |= stage.stage;
-			get( stage.module )->compile( stage );
-			m_shaders.push_back( get( stage.module )->getInternal() );
+			m_shaders.push_back( get( stage.module )->compile( stage ) );
 			glLogCall( context
 				, glAttachShader
 				, m_program

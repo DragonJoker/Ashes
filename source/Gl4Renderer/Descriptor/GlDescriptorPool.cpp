@@ -3,6 +3,8 @@
 #include "Core/GlDevice.hpp"
 #include "Descriptor/GlDescriptorSet.hpp"
 
+#include "ashesgl4_api.hpp"
+
 namespace ashes
 {
 	inline VkDescriptorPoolSize deepCopy( VkDescriptorPoolSize const & rhs )
@@ -19,6 +21,22 @@ namespace ashes::gl4
 		, m_maxSets{ createInfo.maxSets }
 		, m_poolSizes{ makeVector( createInfo.pPoolSizes, createInfo.poolSizeCount ) }
 	{
+	}
+
+	DescriptorPool::~DescriptorPool()
+	{
+		for ( auto & set : m_sets )
+		{
+			delete get( set );
+		}
+	}
+
+	void DescriptorPool::registerSet( VkDescriptorSet set )
+	{
+		if ( checkFlag( m_flags, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) )
+		{
+			m_sets.push_back( set );
+		}
 	}
 
 	VkResult DescriptorPool::reset( VkDescriptorPoolResetFlags flags )

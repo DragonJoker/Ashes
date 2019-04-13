@@ -266,9 +266,6 @@ namespace ashes
 		return result;
 	}
 
-	using VkQueueCreateCount = std::pair< VkDeviceQueueCreateInfo, uint32_t >;
-	using VkQueueCreateCountMap = std::map< uint32_t, VkQueueCreateCount >;
-
 	using VkAttachmentDescriptionArray = std::vector< VkAttachmentDescription >;
 	using VkAttachmentReferenceArray = std::vector< VkAttachmentReference >;
 	using VkBufferArray = std::vector< VkBuffer >;

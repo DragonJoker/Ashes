@@ -21,6 +21,7 @@ namespace ashes
 		, m_ownInternal{ rhs.m_ownInternal }
 	{
 		rhs.m_internal = VK_NULL_HANDLE;
+		rhs.m_ownInternal = true;
 		registerObject( m_device, "Image", this );
 	}
 
@@ -32,6 +33,7 @@ namespace ashes
 			m_internal = rhs.m_internal;
 			m_ownInternal = rhs.m_ownInternal;
 			rhs.m_internal = VK_NULL_HANDLE;
+			rhs.m_ownInternal = true;
 			registerObject( m_device, "Image", this );
 		}
 
@@ -41,7 +43,6 @@ namespace ashes
 	Image::Image( Device const & device
 		, ImageCreateInfo createInfo )
 		: m_device{ device }
-		, m_ownInternal{ true }
 		, m_createInfo{ std::move( createInfo ) }
 	{
 		DEBUG_DUMP( m_createInfo );
@@ -56,7 +57,6 @@ namespace ashes
 	Image::Image( Device const & device
 		, VkImage image )
 		: m_device{ device }
-		, m_ownInternal{ false }
 		, m_internal{ image }
 		, m_createInfo
 		{
@@ -70,21 +70,19 @@ namespace ashes
 			VK_IMAGE_TILING_OPTIMAL,
 			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT
 		}
+		, m_ownInternal{ false }
 	{
 	}
 
 	Image::~Image()
 	{
-		if ( m_ownInternal )
+		if ( m_ownInternal
+			&& m_internal != VK_NULL_HANDLE )
 		{
 			unregisterObject( m_device, this );
-
-			if ( m_internal != VK_NULL_HANDLE )
-			{
-				m_device.vkDestroyImage( m_device
-					, m_internal
-					, nullptr );
-			}
+			m_device.vkDestroyImage( m_device
+				, m_internal
+				, nullptr );
 		}
 	}
 

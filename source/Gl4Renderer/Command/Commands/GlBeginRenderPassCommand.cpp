@@ -66,21 +66,23 @@ namespace ashes::gl4
 	{
 		VkClearValueArray rtClearValues;
 		VkClearValue dsClearValue;
+		assert( clearValues.size() == get( renderPass )->getAttachments().size() );
+		auto it = get( renderPass )->getAttachments().begin();
 
 		for ( auto & clearValue : clearValues )
 		{
-			if ( clearValue.color.int32[0] != 0
-				|| clearValue.color.int32[1] != 0
-				|| clearValue.color.int32[2] != 0
-				|| clearValue.color.int32[3] != 0 )
-			{
-				rtClearValues.push_back( clearValue );
-			}
-			else
+			if ( ashes::isDepthOrStencilFormat( it->format ) )
 			{
 				dsClearValue = clearValue;
 			}
+			else
+			{
+				rtClearValues.push_back( clearValue );
+			}
+
+			++it;
 		}
+
 		glLogCommand( "BeginRenderPassCommand" );
 		list.push_back( makeCmd< OpType::eApplyScissor >( VkRect2D
 			{

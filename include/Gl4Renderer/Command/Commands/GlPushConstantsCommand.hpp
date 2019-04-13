@@ -15,7 +15,7 @@ namespace ashes::gl4
 	template<>
 	struct CmdConfig< OpType::eUniform1fv >
 	{
-		static Op constexpr value = { OpType::eUniform1fv, 5u };
+		static Op constexpr value = { OpType::eUniform1fv, 4u };
 	};
 
 	template<>
@@ -27,14 +27,14 @@ namespace ashes::gl4
 			: cmd{ { OpType::eUniform1fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
-			, buffer{ std::move( buffer ) }
+			, buffer{ *buffer }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
 		uint32_t arraySize;
-		float const * buffer;
+		float buffer;
 	};
 	using CmdUniform1fv = CmdT< OpType::eUniform1fv >;
 
@@ -58,14 +58,14 @@ namespace ashes::gl4
 			: cmd{ { OpType::eUniform2fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
-			, buffer{ std::move( buffer ) }
+			, buffer{ buffer[0], buffer[1] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
 		uint32_t arraySize;
-		float const * buffer;
+		float buffer[2];
 	};
 	using CmdUniform2fv = CmdT< OpType::eUniform2fv >;
 
@@ -77,7 +77,7 @@ namespace ashes::gl4
 	template<>
 	struct CmdConfig< OpType::eUniform3fv >
 	{
-		static Op constexpr value = { OpType::eUniform3fv, 5u };
+		static Op constexpr value = { OpType::eUniform3fv, 6u };
 	};
 
 	template<>
@@ -89,14 +89,14 @@ namespace ashes::gl4
 			: cmd{ { OpType::eUniform3fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
-			, buffer{ std::move( buffer ) }
+			, buffer{ buffer[0], buffer[1], buffer[2] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
 		uint32_t arraySize;
-		float const * buffer;
+		float buffer[3];
 	};
 	using CmdUniform3fv = CmdT< OpType::eUniform3fv >;
 
@@ -108,7 +108,7 @@ namespace ashes::gl4
 	template<>
 	struct CmdConfig< OpType::eUniform4fv >
 	{
-		static Op constexpr value = { OpType::eUniform4fv, 5u };
+		static Op constexpr value = { OpType::eUniform4fv, 7u };
 	};
 
 	template<>
@@ -120,14 +120,14 @@ namespace ashes::gl4
 			: cmd{ { OpType::eUniform4fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
-			, buffer{ std::move( buffer ) }
+			, buffer{ buffer[0], buffer[1], buffer[2], buffer[3] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
 		uint32_t arraySize;
-		float const * buffer;
+		float buffer[4];
 	};
 	using CmdUniform4fv = CmdT< OpType::eUniform4fv >;
 
@@ -139,7 +139,7 @@ namespace ashes::gl4
 	template<>
 	struct CmdConfig< OpType::eUniformMatrix2fv >
 	{
-		static Op constexpr value = { OpType::eUniformMatrix2fv, 6u };
+		static Op constexpr value = { OpType::eUniformMatrix2fv, 8u };
 	};
 
 	template<>
@@ -153,7 +153,11 @@ namespace ashes::gl4
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
 			, transpose{ std::move( transpose ) }
-			, buffer{ std::move( buffer ) }
+			, buffer
+			{
+				buffer[0], buffer[1],
+				buffer[2], buffer[3]
+			}
 		{
 		}
 
@@ -161,7 +165,7 @@ namespace ashes::gl4
 		uint32_t location;
 		uint32_t arraySize;
 		uint32_t transpose;
-		float const * buffer;
+		float buffer[4];
 	};
 	using CmdUniformMatrix2fv = CmdT< OpType::eUniformMatrix2fv >;
 
@@ -173,7 +177,7 @@ namespace ashes::gl4
 	template<>
 	struct CmdConfig< OpType::eUniformMatrix3fv >
 	{
-		static Op constexpr value = { OpType::eUniformMatrix3fv, 6u };
+		static Op constexpr value = { OpType::eUniformMatrix3fv, 13u };
 	};
 
 	template<>
@@ -187,7 +191,12 @@ namespace ashes::gl4
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
 			, transpose{ std::move( transpose ) }
-			, buffer{ std::move( buffer ) }
+			, buffer
+			{
+				buffer[0], buffer[1], buffer[2],
+				buffer[3], buffer[4], buffer[5],
+				buffer[6], buffer[7], buffer[8],
+			}
 		{
 		}
 
@@ -195,7 +204,7 @@ namespace ashes::gl4
 		uint32_t location;
 		uint32_t arraySize;
 		uint32_t transpose;
-		float const * buffer;
+		float buffer[9];
 	};
 	using CmdUniformMatrix3fv = CmdT< OpType::eUniformMatrix3fv >;
 
@@ -207,7 +216,7 @@ namespace ashes::gl4
 	template<>
 	struct CmdConfig< OpType::eUniformMatrix4fv >
 	{
-		static Op constexpr value = { OpType::eUniformMatrix4fv, 6u };
+		static Op constexpr value = { OpType::eUniformMatrix4fv, 20u };
 	};
 
 	template<>
@@ -221,7 +230,13 @@ namespace ashes::gl4
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
 			, transpose{ std::move( transpose ) }
-			, buffer{ std::move( buffer ) }
+			, buffer
+			{
+				buffer[0], buffer[1], buffer[2], buffer[3],
+				buffer[4], buffer[5], buffer[6], buffer[7],
+				buffer[8], buffer[9], buffer[10], buffer[11],
+				buffer[12], buffer[13], buffer[14], buffer[15],
+			}
 		{
 		}
 
@@ -229,7 +244,7 @@ namespace ashes::gl4
 		uint32_t location;
 		uint32_t arraySize;
 		uint32_t transpose;
-		float const * buffer;
+		float buffer[16];
 	};
 	using CmdUniformMatrix4fv = CmdT< OpType::eUniformMatrix4fv >;
 
@@ -241,7 +256,7 @@ namespace ashes::gl4
 	template<>
 	struct CmdConfig< OpType::eUniform1iv >
 	{
-		static Op constexpr value = { OpType::eUniform1iv, 5u };
+		static Op constexpr value = { OpType::eUniform1iv, 4u };
 	};
 
 	template<>
@@ -253,14 +268,14 @@ namespace ashes::gl4
 			: cmd{ { OpType::eUniform1iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
-			, buffer{ std::move( buffer ) }
+			, buffer{ *buffer }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
 		uint32_t arraySize;
-		int32_t const * buffer;
+		int32_t buffer;
 	};
 	using CmdUniform1iv = CmdT< OpType::eUniform1iv >;
 
@@ -284,14 +299,14 @@ namespace ashes::gl4
 			: cmd{ { OpType::eUniform2iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
-			, buffer{ std::move( buffer ) }
+			, buffer{ buffer[0], buffer[1] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
 		uint32_t arraySize;
-		int32_t const * buffer;
+		int32_t buffer[2];
 	};
 	using CmdUniform2iv = CmdT< OpType::eUniform2iv >;
 
@@ -303,7 +318,7 @@ namespace ashes::gl4
 	template<>
 	struct CmdConfig< OpType::eUniform3iv >
 	{
-		static Op constexpr value = { OpType::eUniform3iv, 5u };
+		static Op constexpr value = { OpType::eUniform3iv, 6u };
 	};
 
 	template<>
@@ -315,14 +330,14 @@ namespace ashes::gl4
 			: cmd{ { OpType::eUniform3iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
-			, buffer{ std::move( buffer ) }
+			, buffer{ buffer[0], buffer[1], buffer[2] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
 		uint32_t arraySize;
-		int32_t const * buffer;
+		int32_t buffer[3];
 	};
 	using CmdUniform3iv = CmdT< OpType::eUniform3iv >;
 
@@ -334,7 +349,7 @@ namespace ashes::gl4
 	template<>
 	struct CmdConfig< OpType::eUniform4iv >
 	{
-		static Op constexpr value = { OpType::eUniform4iv, 5u };
+		static Op constexpr value = { OpType::eUniform4iv, 7u };
 	};
 
 	template<>
@@ -346,14 +361,14 @@ namespace ashes::gl4
 			: cmd{ { OpType::eUniform4iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
-			, buffer{ std::move( buffer ) }
+			, buffer{ buffer[0], buffer[1], buffer[2], buffer[3] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
 		uint32_t arraySize;
-		int32_t const * buffer;
+		int32_t buffer[4];
 	};
 	using CmdUniform4iv = CmdT< OpType::eUniform4iv >;
 
@@ -365,7 +380,7 @@ namespace ashes::gl4
 	template<>
 	struct CmdConfig< OpType::eUniform1uiv >
 	{
-		static Op constexpr value = { OpType::eUniform1uiv, 5u };
+		static Op constexpr value = { OpType::eUniform1uiv, 4u };
 	};
 
 	template<>
@@ -377,14 +392,14 @@ namespace ashes::gl4
 			: cmd{ { OpType::eUniform1uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
-			, buffer{ std::move( buffer ) }
+			, buffer{ *buffer }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
 		uint32_t arraySize;
-		uint32_t const * buffer;
+		uint32_t buffer;
 	};
 	using CmdUniform1uiv = CmdT< OpType::eUniform1uiv >;
 
@@ -408,14 +423,14 @@ namespace ashes::gl4
 			: cmd{ { OpType::eUniform2uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
-			, buffer{ std::move( buffer ) }
+			, buffer{ buffer[0], buffer[1] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
 		uint32_t arraySize;
-		uint32_t const * buffer;
+		uint32_t buffer[2];
 	};
 	using CmdUniform2uiv = CmdT< OpType::eUniform2uiv >;
 
@@ -427,7 +442,7 @@ namespace ashes::gl4
 	template<>
 	struct CmdConfig< OpType::eUniform3uiv >
 	{
-		static Op constexpr value = { OpType::eUniform3uiv, 5u };
+		static Op constexpr value = { OpType::eUniform3uiv, 6u };
 	};
 
 	template<>
@@ -439,14 +454,14 @@ namespace ashes::gl4
 			: cmd{ { OpType::eUniform3uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
-			, buffer{ std::move( buffer ) }
+			, buffer{ buffer[0], buffer[1], buffer[2] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
 		uint32_t arraySize;
-		uint32_t const * buffer;
+		uint32_t buffer[3];
 	};
 	using CmdUniform3uiv = CmdT< OpType::eUniform3uiv >;
 
@@ -458,7 +473,7 @@ namespace ashes::gl4
 	template<>
 	struct CmdConfig< OpType::eUniform4uiv >
 	{
-		static Op constexpr value = { OpType::eUniform4uiv, 5u };
+		static Op constexpr value = { OpType::eUniform4uiv, 7u };
 	};
 
 	template<>
@@ -470,14 +485,14 @@ namespace ashes::gl4
 			: cmd{ { OpType::eUniform4uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
 			, arraySize{ std::move( arraySize ) }
-			, buffer{ std::move( buffer ) }
+			, buffer{ buffer[0], buffer[1], buffer[2], buffer[3] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
 		uint32_t arraySize;
-		uint32_t const * buffer;
+		uint32_t buffer[4];
 	};
 	using CmdUniform4uiv = CmdT< OpType::eUniform4uiv >;
 

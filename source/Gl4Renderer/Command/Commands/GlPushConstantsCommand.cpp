@@ -15,7 +15,7 @@ namespace ashes::gl4
 			, glUniform1fv
 			, cmd.location
 			, cmd.arraySize
-			, cmd.buffer );
+			, &cmd.buffer );
 	}
 	
 	void apply( ContextLock const & context
@@ -88,7 +88,7 @@ namespace ashes::gl4
 			, glUniform1iv
 			, cmd.location
 			, cmd.arraySize
-			, cmd.buffer );
+			, &cmd.buffer );
 	}
 
 	void apply( ContextLock const & context
@@ -128,7 +128,7 @@ namespace ashes::gl4
 			, glUniform1uiv
 			, cmd.location
 			, cmd.arraySize
-			, cmd.buffer );
+			, &cmd.buffer );
 	}
 
 	void apply( ContextLock const & context

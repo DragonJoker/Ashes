@@ -39,6 +39,7 @@ namespace utils
 			, ashes::CommandPool const & commandPool
 			, ashes::SurfacePtr surface
 			, VkExtent2D const & size );
+		~SwapChain();
 		/**
 		*\~french
 		*\brief
@@ -82,7 +83,7 @@ namespace utils
 		*	Les tampons d'images.
 		*/
 		ashes::FrameBufferPtrArray createFrameBuffers( ashes::RenderPass const & renderPass
-			, ashes::ImageViewPtr depthStencilView )const;
+			, ashes::Image const & depthImage )const;
 		/**
 		*\~french
 		*\brief
@@ -133,7 +134,7 @@ namespace utils
 	private:
 		ashes::ImageViewPtrArray doPrepareAttaches( uint32_t backBuffer
 			, ashes::VkAttachmentDescriptionArray const & attaches
-			, ashes::ImageViewPtr depthStencilView )const;
+			, ashes::Image const * depthImage )const;
 		bool doCheckNeedReset( VkResult errCode
 			, bool acquisition
 			, char const * const action );
@@ -152,7 +153,7 @@ namespace utils
 		ashes::SurfacePtr m_surface;
 		VkExtent2D m_dimensions;
 		ashes::SwapChainPtr m_swapChain;
-		ashes::ImagePtrArray m_swapChainImages;
+		ashes::VkImageArray m_swapChainImages;
 		RenderingResourcesArray m_renderingResources;
 		mutable size_t m_resourceIndex{ 0u };
 	};

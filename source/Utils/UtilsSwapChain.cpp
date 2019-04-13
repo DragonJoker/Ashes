@@ -190,6 +190,13 @@ namespace utils
 		}
 	}
 
+	SwapChain::~SwapChain()
+	{
+		m_renderingResources.clear();
+		m_swapChainImages.clear();
+		m_swapChain.reset();
+	}
+
 	void SwapChain::reset( VkExtent2D const & size )
 	{
 		m_dimensions = size;
@@ -203,7 +210,9 @@ namespace utils
 
 		for ( size_t i = 0u; i < result.size(); ++i )
 		{
-			auto attaches = doPrepareAttaches( uint32_t( i ), renderPass.getAttachments(), nullptr );
+			auto attaches = doPrepareAttaches( uint32_t( i )
+				, renderPass.getAttachments()
+				, nullptr );
 			result[i] = static_cast< ashes::RenderPass const & >( renderPass ).createFrameBuffer( m_swapChain->getDimensions()
 				, std::move( attaches ) );
 		}
@@ -212,7 +221,7 @@ namespace utils
 	}
 
 	ashes::FrameBufferPtrArray SwapChain::createFrameBuffers( ashes::RenderPass const & renderPass
-		, ashes::ImageViewPtr depthStencilView )const
+		, ashes::Image const & depthImage )const
 	{
 		ashes::FrameBufferPtrArray result;
 		result.resize( m_swapChainImages.size() );
@@ -221,7 +230,7 @@ namespace utils
 		{
 			auto attaches = doPrepareAttaches( uint32_t( i )
 				, renderPass.getAttachments()
-				, std::move( depthStencilView ) );
+				, &depthImage );
 			result[i] = static_cast< ashes::RenderPass const & >( renderPass ).createFrameBuffer( m_swapChain->getDimensions()
 				, std::move( attaches ) );
 		}
@@ -290,24 +299,41 @@ namespace utils
 
 	ashes::ImageViewPtrArray SwapChain::doPrepareAttaches( uint32_t backBuffer
 		, ashes::VkAttachmentDescriptionArray const & attaches
-		, ashes::ImageViewPtr depthStencilView )const
+		, ashes::Image const * depthImage )const
 	{
 		ashes::ImageViewPtrArray result;
 
 		for ( auto & attach : attaches )
 		{
-			auto & image = *m_swapChainImages[backBuffer];
+			VkImage image = m_swapChainImages[backBuffer];
 
 			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
 			{
-				result.emplace_back( image.createView( VK_IMAGE_VIEW_TYPE_2D
-						, m_swapChain->getFormat() ) );
+				result.emplace_back( std::make_unique< ashes::ImageView >( m_device
+					, VkImageViewCreateInfo
+					{
+						VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+						nullptr,
+						0u,
+						image,
+						VK_IMAGE_VIEW_TYPE_2D,
+						m_swapChain->getFormat(),
+						{},
+						{
+							ashes::getAspectMask( m_swapChain->getFormat() ),
+							0u,
+							1u,
+							0u,
+							1u,
+						}
+					} ) );
 			}
 			else
 			{
-				assert( depthStencilView
+				assert( depthImage
 					&& "Asked for a depth stencil attachment in RenderPass, but no depth stencil view provided." );
-				result.emplace_back( std::move( depthStencilView ) );
+				result.emplace_back( depthImage->createView( VK_IMAGE_VIEW_TYPE_2D
+					, depthImage->getFormat() ) );
 			}
 		}
 

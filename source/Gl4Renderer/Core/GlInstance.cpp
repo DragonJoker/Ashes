@@ -402,20 +402,24 @@ namespace ashes::gl4
 		m_context = Context::create( get( this )
 			, m_dummyWindow->getCreateInfo()
 			, nullptr );
+		ContextLock context{ *m_context };
+		m_physicalDevices.emplace_back( VkPhysicalDevice( new PhysicalDevice{ VkInstance( this ) } ) );
 	}
 
 	Instance::~Instance()
 	{
+		for ( auto & physicalDevice : m_physicalDevices )
+		{
+			delete get( physicalDevice );
+		}
+
 		m_context.reset();
 		delete m_dummyWindow;
 	}
 
 	VkPhysicalDeviceArray Instance::enumeratePhysicalDevices()const
 	{
-		RenderWindow dummyWindow;
-		VkPhysicalDeviceArray result;
-		result.emplace_back( VkPhysicalDevice( new PhysicalDevice{ VkInstance( this ) } ) );
-		return result;
+		return m_physicalDevices;
 	}
 
 	std::array< float, 16 > Instance::frustum( float left

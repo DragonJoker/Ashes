@@ -229,6 +229,7 @@ namespace ashes::gl4
 			options.enable_420pack_extension = true;
 			options.vertex.fixup_clipspace = false;
 			options.vertex.flip_vert_y = true;
+			//options.vertex.flip_vert_y = true;
 			options.vertex.support_nonzero_base_instance = true;
 			compiler.set_common_options( options );
 		}
@@ -262,6 +263,29 @@ namespace ashes::gl4
 			std::memcpy( glslCode.data(), shader.data(), glslCode.size() );
 			return std::string( glslCode.data(), glslCode.data() + strlen( glslCode.data() ) );
 		}
+
+		void getSpecializationInfo( VkSpecializationInfo const * pSpecializationInfo
+			, std::vector< GLuint > & indices
+			, std::vector< GLuint > & values )
+		{
+			if ( pSpecializationInfo )
+			{
+				auto & specializationInfo = *pSpecializationInfo;
+				auto count = GLuint( specializationInfo.mapEntryCount );
+				indices.reserve( count );
+				values.reserve( count );
+				auto src = reinterpret_cast< GLuint const * >( specializationInfo.pData );
+
+				for ( auto itEntry = specializationInfo.pMapEntries;
+					itEntry != specializationInfo.pMapEntries + specializationInfo.mapEntryCount;
+					++itEntry )
+				{
+					indices.push_back( itEntry->constantID );
+					values.push_back( *src );
+					++src;
+				}
+			}
+		}
 	}
 
 	ShaderModule::ShaderModule( VkDevice device
@@ -272,74 +296,30 @@ namespace ashes::gl4
 	{
 	}
 
-	ShaderModule::~ShaderModule()
+	GLuint ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state )const
 	{
-		// Shader object is destroyed by the ShaderProgram.
-	}
-
-	void ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state )const
-	{
-		m_internal = get( m_device )->getContext()->glCreateShader( convertShaderStageFlag( state.stage ) );
+		auto result = get( m_device )->getContext()->glCreateShader( convertShaderStageFlag( state.stage ) );
+		auto context = get( m_device )->getContext();
 
 		if ( get( get( m_device )->getInstance() )->isSPIRVSupported() )
 		{
-			auto context = get( m_device )->getContext();
 			context->glShaderBinary( 1u
-				, &m_internal
+				, &result
 				, GL_SHADER_BINARY_FORMAT_SPIR_V
 				, m_code.data()
 				, GLsizei( m_code.size() * sizeof( uint32_t ) ) );
-
-			if ( state.pSpecializationInfo )
-			{
-				auto & specialisationInfo = *state.pSpecializationInfo;
-				auto count = GLuint( specialisationInfo.mapEntryCount );
-				std::vector< GLuint > indices;
-				indices.reserve( count );
-				std::vector< GLuint > values;
-				values.reserve( count );
-				auto src = reinterpret_cast< GLuint const * >( specialisationInfo.pData );
-				auto dst = values.data();
-
-				for ( auto itEntry = state.pSpecializationInfo->pMapEntries;
-					itEntry != state.pSpecializationInfo->pMapEntries + state.pSpecializationInfo->mapEntryCount;
-					++itEntry )
-				{
-					indices.push_back( itEntry->constantID );
-					values.push_back( *src );
-					++src;
-				}
-
-				glLogCall( context
-					, glSpecializeShader
-					, m_internal
-					, state.pName
-					, count
-					, indices.data()
-					, values.data() );
-			}
-			else
-			{
-				glLogCall( context
-					, glSpecializeShader
-					, m_internal
-					, state.pName
-					, 0u
-					, nullptr
-					, nullptr );
-			}
-
-			int compiled = 0;
+			std::vector< GLuint > indices;
+			std::vector< GLuint > values;
+			getSpecializationInfo( state.pSpecializationInfo
+				, indices
+				, values );
 			glLogCall( context
-				, glGetShaderiv
-				, m_internal
-				, GL_INFO_COMPILE_STATUS
-				, &compiled );
-
-			if ( !doCheckCompileErrors( m_device, compiled != 0, m_internal, m_source ) )
-			{
-				throw std::runtime_error{ "Shader compilation failed." };
-			}
+				, glSpecializeShader
+				, result
+				, state.pName
+				, GLuint( indices.size() )
+				, indices.data()
+				, values.data() );
 		}
 		else
 		{
@@ -349,27 +329,29 @@ namespace ashes::gl4
 				, state );
 			auto length = int( m_source.size() );
 			char const * data = m_source.data();
-			auto context = get( m_device )->getContext();
 			glLogCall( context
 				, glShaderSource
-				, m_internal
+				, result
 				, 1
 				, &data
 				, &length );
 			glLogCall( context
 				, glCompileShader
-				, m_internal );
-			int compiled = 0;
-			glLogCall( context
-				, glGetShaderiv
-				, m_internal
-				, GL_INFO_COMPILE_STATUS
-				, &compiled );
-
-			if ( !doCheckCompileErrors( m_device, compiled != 0, m_internal, m_source ) )
-			{
-				throw std::runtime_error{ "Shader compilation failed." };
-			}
+				, result );
 		}
+
+		int compiled = 0;
+		glLogCall( context
+			, glGetShaderiv
+			, result
+			, GL_INFO_COMPILE_STATUS
+			, &compiled );
+
+		if ( !doCheckCompileErrors( m_device, compiled != 0, result, m_source ) )
+		{
+			throw std::runtime_error{ "Shader compilation failed." };
+		}
+
+		return result;
 	}
 }

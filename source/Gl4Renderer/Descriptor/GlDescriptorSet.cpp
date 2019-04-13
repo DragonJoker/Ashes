@@ -11,8 +11,11 @@
 
 namespace ashes::gl4
 {
-	DescriptorSet::DescriptorSet( VkDescriptorSetLayout layout )
+	DescriptorSet::DescriptorSet( VkDescriptorPool pool
+		, VkDescriptorSetLayout layout )
 	{
+		get( pool )->registerSet( get( this ) );
+
 		for ( auto & binding : *get( layout ) )
 		{
 			LayoutBindingWrites bindingWrites

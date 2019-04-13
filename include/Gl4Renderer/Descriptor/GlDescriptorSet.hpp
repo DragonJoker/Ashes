@@ -32,7 +32,8 @@ namespace ashes::gl4
 	{
 	private:
 	public:
-		DescriptorSet( VkDescriptorSetLayout layout );
+		DescriptorSet( VkDescriptorPool pool
+			, VkDescriptorSetLayout layout );
 		/**
 		*\copydoc		DescriptorSet::update
 		*/

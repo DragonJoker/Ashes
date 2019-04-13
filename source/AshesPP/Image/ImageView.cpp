@@ -9,7 +9,22 @@ namespace ashes
 		, Image const & image
 		, VkImageViewCreateInfo const & createInfo )
 		: m_device{ device }
-		, m_image{ image }
+		, m_image{ &image }
+		, m_createInfo{ createInfo }
+	{
+		DEBUG_DUMP( m_createInfo );
+		auto res = m_device.vkCreateImageView( m_device
+			, &m_createInfo
+			, nullptr
+			, &m_internal );
+		checkError( res, "ImageView creation" );
+		registerObject( m_device, "ImageView", this );
+	}
+	
+	ImageView::ImageView( Device const & device
+		, VkImageViewCreateInfo const & createInfo )
+		: m_device{ device }
+		, m_image{ nullptr }
 		, m_createInfo{ createInfo }
 	{
 		DEBUG_DUMP( m_createInfo );

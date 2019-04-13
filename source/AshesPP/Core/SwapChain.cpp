@@ -89,7 +89,7 @@ namespace ashes
 			, imageIndex );
 	}
 
-	ImagePtrArray SwapChain::getImages()const
+	VkImageArray SwapChain::getImages()const
 	{
 		uint32_t imageCount{ 0u };
 		auto res = m_device.vkGetSwapchainImagesKHR( m_device
@@ -98,21 +98,16 @@ namespace ashes
 			, nullptr );
 		checkError( res, "Swap chain images count retrieval" );
 
-		ImagePtrArray result;
+		VkImageArray result;
 
 		if ( imageCount )
 		{
-			std::vector< VkImage > swapChainImages( imageCount );
+			result.resize( imageCount );
 			res = m_device.vkGetSwapchainImagesKHR( m_device
 				, m_internal
 				, &imageCount
-				, &swapChainImages[0] );
+				, &result[0] );
 			checkError( res, "Swap chain images retrieval" );
-
-			for ( auto & image : swapChainImages )
-			{
-				result.emplace_back( std::make_unique< Image >( m_device, image ) );
-			}
 		}
 
 		return result;

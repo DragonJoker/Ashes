@@ -55,7 +55,7 @@ namespace ashes::gl4
 				result = *reinterpret_cast< QueryPool const * >( object )->begin();
 				break;
 			case GlDebugReportObjectType::eShaderModule:
-				result = reinterpret_cast< ShaderModule const * >( object )->getInternal();
+				result = GL_INVALID_INDEX;
 				break;
 			case GlDebugReportObjectType::eSampler:
 				result = reinterpret_cast< Sampler const * >( object )->getInternal();
@@ -177,11 +177,20 @@ namespace ashes::gl4
 
 	Device::~Device()
 	{
-		if ( m_ownContext )
+		if ( m_currentContext )
 		{
 			auto context = getContext();
+
+			for ( auto creates : m_queues )
+			{
+				for ( auto queue : creates.second.queues )
+				{
+					deallocate( queue, nullptr );
+				}
+			}
+
 			context->glDeleteFramebuffers( 2, m_blitFbos );
-			m_dummyIndexed.geometryBuffers.reset();
+			deallocate( m_dummyIndexed.indexMemory, nullptr );
 			deallocate( m_dummyIndexed.indexBuffer, nullptr );
 		}
 	}
@@ -269,19 +278,13 @@ namespace ashes::gl4
 				, "Couldn't find family index within created queues" };
 		}
 
-		if ( it->second.second <= index )
+		if ( it->second.queues.size() <= index )
 		{
 			throw Exception{ VK_ERROR_INCOMPATIBLE_DRIVER
 				, "Couldn't find queue with wanted index within its family" };
 		}
 
-		VkQueue result;
-		allocate( result
-			, nullptr
-			, get( this )
-			, it->second.first
-			, index );
-		return result;
+		return it->second.queues[index];
 	}
 
 	void Device::swapBuffers()const
@@ -326,8 +329,15 @@ namespace ashes::gl4
 		{
 			auto & queueCreateInfo = *itQueue;
 			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
-				, VkQueueCreateCount{ queueCreateInfo, 0u } ).first;
-			it->second.second++;
+				, QueueCreates{ queueCreateInfo, {} } ).first;
+
+			VkQueue queue;
+			allocate( queue
+				, nullptr
+				, get( this )
+				, it->second.createInfo
+				, uint32_t( it->second.queues.size() ) );
+			it->second.queues.emplace_back( queue );
 		}
 	}
 }

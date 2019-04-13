@@ -13,17 +13,10 @@ namespace ashes::gl4
 	public:
 		ShaderModule( VkDevice device
 			, VkShaderModuleCreateInfo createInfo );
-		~ShaderModule();
-		void compile( VkPipelineShaderStageCreateInfo const & state )const;
-
-		inline GLuint getInternal()const
-		{
-			return m_internal;
-		}
+		GLuint compile( VkPipelineShaderStageCreateInfo const & state )const;
 
 	private:
 		VkDevice m_device;
-		mutable GLuint m_internal;
 		VkShaderModuleCreateFlags m_flags;
 		UInt32Array m_code;
 		mutable std::string m_source;

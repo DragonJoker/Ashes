@@ -320,9 +320,9 @@ namespace ashes
 	protected:
 		Device const & m_device;
 		ImageCreateInfo m_createInfo;
-		bool m_ownInternal;
 		VkImage m_internal{ VK_NULL_HANDLE };
 		DeviceMemoryPtr m_storage;
+		bool m_ownInternal{ true };
 	};
 }
 

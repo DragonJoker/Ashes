@@ -23,7 +23,9 @@ namespace ashes::gl4
 		*/
 		DescriptorPool( VkDevice device
 			, VkDescriptorPoolCreateInfo createInfo );
+		~DescriptorPool();
 
+		void registerSet( VkDescriptorSet set );
 		VkResult reset( VkDescriptorPoolResetFlags flags );
 		VkResult free( VkDescriptorSetArray sets );
 
@@ -31,6 +33,7 @@ namespace ashes::gl4
 		VkDescriptorPoolCreateFlags m_flags;
 		uint32_t m_maxSets;
 		VkDescriptorPoolSizeArray m_poolSizes;
+		VkDescriptorSetArray m_sets;
 	};
 }
 

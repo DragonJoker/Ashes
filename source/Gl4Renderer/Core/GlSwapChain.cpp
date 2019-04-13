@@ -23,7 +23,8 @@ namespace ashes::gl4
 	{
 		VkImage createImage( VkDevice device
 			, VkFormat format
-			, VkExtent2D dimensions )
+			, VkExtent2D dimensions
+			, VkDeviceMemory & deviceMemory )
 		{
 			VkImage result;
 			allocate( result
@@ -34,7 +35,6 @@ namespace ashes::gl4
 			auto requirements = get( result )->getMemoryRequirements();
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 				, VK_MEMORY_HEAP_DEVICE_LOCAL_BIT );
-			VkDeviceMemory deviceMemory;
 			allocate( deviceMemory
 				, nullptr
 				, device
@@ -69,27 +69,19 @@ namespace ashes::gl4
 	SwapchainKHR::SwapchainKHR( VkDevice device
 		, VkSwapchainCreateInfoKHR createInfo )
 		: m_device{ device }
-		, m_flags{ createInfo.flags }
-		, m_surface{ createInfo.surface }
-		, m_minImageCount{ createInfo.minImageCount }
-		, m_imageFormat{ createInfo.imageFormat }
-		, m_imageColorSpace{ createInfo.imageColorSpace }
-		, m_imageExtent{ createInfo.imageExtent }
-		, m_imageArrayLayers{ createInfo.imageArrayLayers }
-		, m_imageUsage{ createInfo.imageUsage }
-		, m_imageSharingMode{ createInfo.imageSharingMode }
-		, m_queueFamilyIndices{ makeVector( createInfo.pQueueFamilyIndices, createInfo.queueFamilyIndexCount ) }
-		, m_preTransform{ createInfo.preTransform }
-		, m_compositeAlpha{ createInfo.compositeAlpha }
-		, m_presentMode{ createInfo.presentMode }
-		, m_clipped{ createInfo.clipped }
+		, m_createInfo{ createInfo }
 	{
-		get( m_device )->registerContext( m_surface );
-		m_imageExtent.height = std::max( 1u, m_imageExtent.height );
-		m_imageExtent.width = std::max( 1u, m_imageExtent.width );
+		get( m_device )->registerContext( m_createInfo.surface );
+		m_createInfo.imageExtent.height = std::max( 1u, m_createInfo.imageExtent.height );
+		m_createInfo.imageExtent.width = std::max( 1u, m_createInfo.imageExtent.width );
 
-		m_image = createImage( device, m_imageFormat, m_imageExtent );
-		m_view = createImageView( device, m_image, m_imageFormat );
+		m_image = createImage( device
+			, m_createInfo.imageFormat
+			, m_createInfo.imageExtent
+			, m_deviceMemory );
+		m_view = createImageView( device
+			, m_image
+			, m_createInfo.imageFormat );
 		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glGenFramebuffers
@@ -120,7 +112,10 @@ namespace ashes::gl4
 			, glDeleteFramebuffers
 			, 1
 			, &m_fbo );
-		get( m_device )->unregisterContext( m_surface );
+		deallocate( m_view, nullptr );
+		deallocate( m_deviceMemory, nullptr );
+		deallocate( m_image, nullptr );
+		get( m_device )->unregisterContext( m_createInfo.surface );
 	}
 
 	uint32_t SwapchainKHR::getImageCount()const
@@ -131,12 +126,7 @@ namespace ashes::gl4
 	VkImageArray SwapchainKHR::getImages()const
 	{
 		VkImageArray result;
-		VkImage image;
-		allocate( image
-			, nullptr
-			, m_device
-			, m_image );
-		result.emplace_back( image );
+		result.emplace_back( m_image );
 		return result;
 	}
 
@@ -162,8 +152,8 @@ namespace ashes::gl4
 			, 0 );
 		glLogCall( context
 			, glBlitFramebuffer
-			, 0, 0, m_imageExtent.width, m_imageExtent.height
-			, 0, 0, m_imageExtent.width, m_imageExtent.height
+			, 0, 0, m_createInfo.imageExtent.width, m_createInfo.imageExtent.height
+			, 0, 0, m_createInfo.imageExtent.width, m_createInfo.imageExtent.height
 			, GL_COLOR_BUFFER_BIT, GL_FILTER_NEAREST );
 		glLogCall( context
 			, glBindFramebuffer

@@ -27,7 +27,7 @@ namespace ashes
 		{
 			assert( !folderPath.empty() );
 			bool result = false;
-			WIN32_FIND_DATAA findData;
+			WIN32_FIND_DATAA findData{};
 			HANDLE handle = ::FindFirstFileA( ( folderPath / "*.*" ).c_str(), &findData );
 
 			if ( handle != INVALID_HANDLE_VALUE )

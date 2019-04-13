@@ -7,6 +7,8 @@ See LICENSE file in root folder.
 #include "Command/GlCommandBuffer.hpp"
 #include "Core/GlDevice.hpp"
 
+#include "ashesgl4_api.hpp"
+
 namespace ashes::gl4
 {
 	CommandPool::CommandPool( VkDevice device
@@ -21,6 +23,11 @@ namespace ashes::gl4
 
 	VkResult CommandPool::free( VkCommandBufferArray sets )
 	{
+		for ( auto & buffer : sets )
+		{
+			deallocate( buffer, nullptr );
+		}
+
 		return VK_SUCCESS;
 	}
 }

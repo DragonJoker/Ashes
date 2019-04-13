@@ -49,21 +49,10 @@ namespace ashes::gl4
 
 	private:
 		VkDevice m_device;
-		VkSwapchainCreateFlagsKHR m_flags;
-		VkSurfaceKHR m_surface;
-		uint32_t m_minImageCount;
-		VkFormat m_imageFormat;
-		VkColorSpaceKHR m_imageColorSpace;
-		VkExtent2D m_imageExtent;
-		uint32_t m_imageArrayLayers;
-		VkImageUsageFlags m_imageUsage;
-		VkSharingMode m_imageSharingMode;
-		UInt32Array m_queueFamilyIndices;
-		VkSurfaceTransformFlagBitsKHR m_preTransform;
-		VkCompositeAlphaFlagBitsKHR m_compositeAlpha;
-		VkPresentModeKHR m_presentMode;
-		VkBool32 m_clipped;
+		VkSwapchainCreateInfoKHR m_createInfo;
+		VkImageArray m_images;
 		VkImage m_image;
+		VkDeviceMemory m_deviceMemory;
 		VkImageView m_view;
 		GLuint m_fbo;
 	};

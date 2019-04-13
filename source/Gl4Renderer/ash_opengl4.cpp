@@ -926,6 +926,7 @@ namespace ashes::gl4
 			{
 				result = allocate( *itSet
 					, nullptr
+					, pAllocateInfo->descriptorPool
 					, *itLayout );
 			}
 		}

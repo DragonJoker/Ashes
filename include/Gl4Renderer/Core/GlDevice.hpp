@@ -99,10 +99,18 @@ namespace ashes::gl4
 		void doCreateQueues();
 
 	private:
+		struct QueueCreates
+		{
+			VkDeviceQueueCreateInfo createInfo;
+			std::vector< VkQueue > queues;
+		};
+		using QueueCreateCountMap = std::map< uint32_t, QueueCreates >;
+
+	private:
 		VkInstance m_instance;
 		VkPhysicalDevice m_physicalDevice;
 		VkDeviceCreateInfo m_createInfos;
-		VkQueueCreateCountMap m_queues;
+		QueueCreateCountMap m_queues;
 		mutable ContextPtr m_ownContext;
 		mutable Context * m_currentContext;
 		struct Vertex
