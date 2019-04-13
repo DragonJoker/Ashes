@@ -12,7 +12,8 @@ namespace ashes::gl4
 	{
 	public:
 		ShaderProgram( VkDevice device
-			, VkPipelineShaderStageCreateInfoArray stages );
+			, VkPipelineShaderStageCreateInfoArray stages
+			, bool isRtot );
 		ShaderProgram( VkDevice device
 			, VkPipelineShaderStageCreateInfo const & stage );
 		~ShaderProgram();

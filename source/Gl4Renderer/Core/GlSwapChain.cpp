@@ -31,7 +31,8 @@ namespace ashes::gl4
 				, nullptr
 				, device
 				, format
-				, std::move( dimensions ) );
+				, std::move( dimensions )
+				, true );
 			auto requirements = get( result )->getMemoryRequirements();
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 				, VK_MEMORY_HEAP_DEVICE_LOCAL_BIT );

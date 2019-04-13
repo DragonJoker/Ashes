@@ -23,11 +23,22 @@ namespace ashes::gl4
 	void buildBindPipelineCommand( VkDevice device
 		, VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint
-		, CmdList & list )
+		, CmdList & list
+		, bool isRtot )
 	{
 		glLogCommand( "BindPipelineCommand" );
-		list.push_back( makeCmd< OpType::eBindContextState >( device
-			, &get( pipeline )->getContextState() ) );
-		list.push_back( makeCmd< OpType::eUseProgram >( get( pipeline )->getProgram() ) );
+
+		if ( isRtot )
+		{
+			list.push_back( makeCmd< OpType::eBindContextState >( device
+				, &get( pipeline )->getRtotContextState() ) );
+			list.push_back( makeCmd< OpType::eUseProgram >( get( pipeline )->getRtotProgram() ) );
+		}
+		else
+		{
+			list.push_back( makeCmd< OpType::eBindContextState >( device
+				, &get( pipeline )->getBackContextState() ) );
+			list.push_back( makeCmd< OpType::eUseProgram >( get( pipeline )->getBackProgram() ) );
+		}
 	}
 }

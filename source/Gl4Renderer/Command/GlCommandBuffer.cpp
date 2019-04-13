@@ -12,7 +12,6 @@ See LICENSE file in root folder.
 #include "Image/GlImage.hpp"
 #include "Image/GlImageView.hpp"
 #include "Miscellaneous/GlCallLogger.hpp"
-#include "Pipeline/GlComputePipeline.hpp"
 #include "Pipeline/GlPipeline.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
@@ -235,10 +234,13 @@ namespace ashes::gl4
 			}
 
 			m_state.currentPipeline = pipeline;
+			assert( m_state.currentFrameBuffer
+				&& "Binding a graphics pipeline without framebuffer." );
 			buildBindPipelineCommand( m_device
 				, pipeline
 				, bindingPoint
-				, m_cmdList );
+				, m_cmdList
+				, !get( m_state.currentFrameBuffer )->hasSwapchainImage() );
 
 			for ( auto & pcb : m_state.pushConstantBuffers )
 			{

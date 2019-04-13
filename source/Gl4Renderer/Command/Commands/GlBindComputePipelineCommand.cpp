@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlBindComputePipelineCommand.hpp"
 
-#include "Pipeline/GlComputePipeline.hpp"
+#include "Pipeline/GlPipeline.hpp"
 
 #include "ashesgl4_api.hpp"
 
@@ -15,6 +15,6 @@ namespace ashes::gl4
 		, CmdList & list )
 	{
 		glLogCommand( "BindComputePipelineCommand" );
-		list.push_back( makeCmd< OpType::eUseProgram >( get( pipeline )->getProgram() ) );
+		list.push_back( makeCmd< OpType::eUseProgram >( get( pipeline )->getCompProgram() ) );
 	}
 }

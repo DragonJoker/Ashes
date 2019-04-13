@@ -113,6 +113,18 @@ namespace ashes::gl4
 
 			return result;
 		}
+
+		Optional< VkPipelineRasterizationStateCreateInfo > invertFrontFace( VkPipelineRasterizationStateCreateInfo const * state )
+		{
+			if ( state )
+			{
+				VkPipelineRasterizationStateCreateInfo result{ *state };
+				result.frontFace = VkFrontFace( VK_FRONT_FACE_END_RANGE - result.frontFace );
+				return result;
+			}
+
+			return std::nullopt;
+		}
 	}
 
 	Pipeline::Pipeline( VkDevice device
@@ -123,7 +135,7 @@ namespace ashes::gl4
 		, m_vertexInputState{ makeOptional( createInfo.pVertexInputState
 			, m_vertexBindingDescriptions
 			, m_vertexAttributeDescriptions ) }
-		, m_contextState
+		, m_backContextState
 		{
 			*createInfo.pColorBlendState,
 			createInfo.pDepthStencilState,
@@ -134,6 +146,20 @@ namespace ashes::gl4
 			createInfo.pRasterizationState,
 			createInfo.pDynamicState,
 		}
+		, m_rtotRasterizationState{ invertFrontFace( createInfo.pRasterizationState ) }
+		, m_rtotContextState
+		{
+			*createInfo.pColorBlendState,
+			createInfo.pDepthStencilState,
+			createInfo.pMultisampleState,
+			createInfo.pTessellationState,
+			createInfo.pInputAssemblyState,
+			createInfo.pViewportState,
+			( bool( m_rtotRasterizationState )
+				? &m_rtotRasterizationState.value()
+				: nullptr ),
+			createInfo.pDynamicState,
+		}
 		, m_layout{ createInfo.layout }
 		, m_renderPass{ createInfo.renderPass }
 		, m_subpass{ createInfo.subpass }
@@ -142,36 +168,46 @@ namespace ashes::gl4
 		, m_vertexInputStateHash{ ( m_vertexInputState
 			? doHash( m_vertexInputState.value() )
 			: 0u ) }
-		, m_program{ m_device, m_stages }
+		, m_backProgram{ std::make_unique< ShaderProgram >( m_device, m_stages, false ) }
+		, m_rtotProgram{ std::make_unique< ShaderProgram >( m_device, m_stages, true ) }
 	{
-		auto context = get( device )->getContext();
-		context->apply( context
-			, *get( device )
-			, m_contextState );
-
-		ShaderDesc shaderDesc = m_program.link( context );
-		m_constantsPcb.stageFlags = shaderDesc.stageFlags;
-		uint32_t offset = 0u;
-
-		for ( auto & constant : shaderDesc.constantsLayout )
 		{
-			m_constantsPcb.constants.push_back( { constant.format
-				, constant.location
-				, offset
-				, constant.size
-				, constant.arraySize } );
-			offset += constant.size;
+			auto context = get( device )->getContext();
+			context->apply( context
+				, *get( device )
+				, m_backContextState );
+
+			ShaderDesc shaderDesc = m_backProgram->link( context );
+			m_constantsPcb.stageFlags = shaderDesc.stageFlags;
+			uint32_t offset = 0u;
+
+			for ( auto & constant : shaderDesc.constantsLayout )
+			{
+				m_constantsPcb.constants.push_back( { constant.format
+					, constant.location
+					, offset
+					, constant.size
+					, constant.arraySize } );
+				offset += constant.size;
+			}
+
+			m_constantsPcb.size = offset;
+
+			if ( get( get( m_device )->getInstance() )->isValidationEnabled() )
+			{
+				validatePipeline( context
+					, m_layout
+					, m_backProgram->getProgram()
+					, m_vertexInputState.value()
+					, m_renderPass );
+			}
 		}
-
-		m_constantsPcb.size = offset;
-
-		if ( get( get( m_device )->getInstance() )->isValidationEnabled() )
 		{
-			validatePipeline( context
-				, m_layout
-				, m_program.getProgram()
-				, m_vertexInputState.value()
-				, m_renderPass );
+			auto context = get( device )->getContext();
+			context->apply( context
+				, *get( device )
+				, m_rtotContextState );
+			m_rtotProgram->link( context );
 		}
 	}
 
@@ -182,10 +218,10 @@ namespace ashes::gl4
 		, m_layout{ createInfo.layout }
 		, m_basePipelineHandle{ createInfo.basePipelineHandle }
 		, m_basePipelineIndex{ createInfo.basePipelineIndex }
-		, m_program{ m_device, m_stages }
+		, m_compProgram{ std::make_unique< ShaderProgram >( m_device, m_stages.back() ) }
 	{
 		auto context = get( device )->getContext();
-		ShaderDesc shaderDesc = m_program.link( context );
+		ShaderDesc shaderDesc = m_compProgram->link( context );
 		m_constantsPcb.stageFlags = shaderDesc.stageFlags;
 		uint32_t offset = 0u;
 
@@ -205,7 +241,7 @@ namespace ashes::gl4
 		{
 			validatePipeline( context
 				, m_layout
-				, m_program.getProgram()
+				, m_compProgram->getProgram()
 				, m_vertexInputState.value()
 				, m_renderPass );
 		}

@@ -78,6 +78,7 @@ namespace ashes::gl4
 		*	Accesseurs.
 		*/
 		/**@{*/
+		bool hasSwapchainImage()const;
 		inline GLuint getInternal()const
 		{
 			assert( m_internal != GL_INVALID_INDEX );

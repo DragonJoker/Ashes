@@ -42,7 +42,8 @@ namespace ashes::gl4
 	void buildBindPipelineCommand( VkDevice device
 		, VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint
-		, CmdList & list );
+		, CmdList & list
+		, bool isRtot );
 
 	//*************************************************************************
 }

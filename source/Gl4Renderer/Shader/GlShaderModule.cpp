@@ -220,7 +220,8 @@ namespace ashes::gl4
 		}
 
 		void doSetupOptions( VkDevice device
-			, spirv_cross::CompilerGLSL & compiler )
+			, spirv_cross::CompilerGLSL & compiler
+			, bool isRtot )
 		{
 			auto options = compiler.get_common_options();
 			options.version = get( get( device )->getInstance() )->getExtensions().getShaderVersion();
@@ -228,8 +229,7 @@ namespace ashes::gl4
 			options.separate_shader_objects = true;
 			options.enable_420pack_extension = true;
 			options.vertex.fixup_clipspace = false;
-			options.vertex.flip_vert_y = true;
-			//options.vertex.flip_vert_y = true;
+			options.vertex.flip_vert_y = !isRtot;
 			options.vertex.support_nonzero_base_instance = true;
 			compiler.set_common_options( options );
 		}
@@ -239,7 +239,8 @@ namespace ashes::gl4
 		std::string compileSpvToGlsl( VkDevice device
 			, UInt32Array const & shader
 			, VkShaderStageFlagBits stage
-			, VkPipelineShaderStageCreateInfo const & state )
+			, VkPipelineShaderStageCreateInfo const & state
+			, bool isRtot )
 		{
 			if ( shader[0] == OpCodeSPIRV )
 			{
@@ -249,7 +250,7 @@ namespace ashes::gl4
 				auto compiler = std::make_unique< spirv_cross::CompilerGLSL >( shader );
 				doProcessSpecializationConstants( state, *compiler );
 				doSetEntryPoint( stage, *compiler );
-				doSetupOptions( device, *compiler );
+				doSetupOptions( device, *compiler, isRtot );
 				return compiler->compile();
 
 #else
@@ -296,7 +297,8 @@ namespace ashes::gl4
 	{
 	}
 
-	GLuint ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state )const
+	GLuint ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state
+		, bool isRtot )const
 	{
 		auto result = get( m_device )->getContext()->glCreateShader( convertShaderStageFlag( state.stage ) );
 		auto context = get( m_device )->getContext();
@@ -326,7 +328,8 @@ namespace ashes::gl4
 			m_source = compileSpvToGlsl( m_device
 				, m_code
 				, state.stage
-				, state );
+				, state
+				, isRtot );
 			auto length = int( m_source.size() );
 			char const * data = m_source.data();
 			glLogCall( context

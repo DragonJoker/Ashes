@@ -45,39 +45,62 @@ namespace ashes::gl4
 		*name
 		*	Getters.
 		*/
-		ContextState const & getContextState()const
+		ContextState const & getBackContextState()const
 		{
-			return m_contextState;
+			return m_backContextState;
+		}
+		
+		ContextState const & getRtotContextState()const
+		{
+			return m_rtotContextState;
+		}
+
+		inline GLuint getBackProgram()const
+		{
+			assert( m_backProgram );
+			return m_backProgram->getProgram();
+		}
+
+		inline GLuint getRtotProgram()const
+		{
+			assert( m_rtotProgram );
+			return m_rtotProgram->getProgram();
+		}
+
+		inline GLuint getCompProgram()const
+		{
+			assert( m_compProgram );
+			return m_compProgram->getProgram();
 		}
 
 		inline auto const & getInputAssemblyState()const
 		{
-			return m_contextState.iaState;
+			return m_backContextState.iaState;
 		}
 
 		inline auto const & getColourBlendState()const
 		{
-			return m_contextState.cbState;
+			return m_backContextState.cbState;
 		}
 
 		inline auto const & getRasterisationState()const
 		{
-			return m_contextState.rsState;
+			return m_backContextState.rsState;
 		}
 
 		inline auto const & getDepthStencilState()const
 		{
-			return m_contextState.dsState;
+			return m_backContextState.dsState;
 		}
 
 		inline auto const & getMultisampleState()const
 		{
-			return m_contextState.msState;
+			return m_backContextState.msState;
 		}
 
 		inline auto const & getTessellationState()const
 		{
-			return m_contextState.tsState;
+			return m_backContextState.tsState;
 		}
 
 		inline auto const & getVertexInputState()const
@@ -87,33 +110,33 @@ namespace ashes::gl4
 
 		inline auto const & getViewportState()const
 		{
-			return m_contextState.vpState;
+			return m_backContextState.vpState;
 		}
 
 		inline bool hasViewport()const
 		{
-			return m_contextState.vpState.viewportCount > 0;
+			return m_backContextState.vpState.viewportCount > 0;
 		}
 
 		inline bool hasScissor()const
 		{
-			return m_contextState.vpState.scissorCount > 0;
+			return m_backContextState.vpState.scissorCount > 0;
 		}
 
 		inline VkViewportArray const & getViewports()const
 		{
-			return m_contextState.viewports;
+			return m_backContextState.viewports;
 		}
 
 		inline VkScissorArray const & getScissors()const
 		{
-			return m_contextState.scissors;
+			return m_backContextState.scissors;
 		}
 
 		inline bool hasDynamicStateEnable( VkDynamicState state )const
 		{
-			auto view = makeArrayView( m_contextState.dyState.pDynamicStates
-				, m_contextState.dyState.dynamicStateCount );
+			auto view = makeArrayView( m_backContextState.dyState.pDynamicStates
+				, m_backContextState.dyState.dynamicStateCount );
 			return view.end() != std::find( view.begin()
 				, view.end()
 				, state );
@@ -123,11 +146,6 @@ namespace ashes::gl4
 		inline VkPipelineLayout getLayout()const
 		{
 			return m_layout;
-		}
-
-		inline GLuint getProgram()const
-		{
-			return m_program.getProgram();
 		}
 
 		inline size_t getVertexInputStateHash()const
@@ -143,14 +161,18 @@ namespace ashes::gl4
 		VkVertexInputBindingDescriptionArray m_vertexBindingDescriptions;
 		VkVertexInputAttributeDescriptionArray m_vertexAttributeDescriptions;
 		Optional< VkPipelineVertexInputStateCreateInfo > m_vertexInputState;
-		ContextState m_contextState;
+		ContextState m_backContextState;
+		Optional< VkPipelineRasterizationStateCreateInfo > m_rtotRasterizationState;
+		ContextState m_rtotContextState;
 		VkPipelineLayout m_layout;
 		VkRenderPass m_renderPass;
 		uint32_t m_subpass;
 		VkPipeline m_basePipelineHandle;
 		int32_t m_basePipelineIndex;
 		PushConstantsDesc m_constantsPcb;
-		ShaderProgram m_program;
+		std::unique_ptr< ShaderProgram > m_backProgram;
+		std::unique_ptr< ShaderProgram > m_rtotProgram;
+		std::unique_ptr< ShaderProgram > m_compProgram;
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;
 		mutable std::unordered_map< GLuint, BufferDestroyConnection > m_connections;
 		size_t m_vertexInputStateHash;

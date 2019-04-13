@@ -106,7 +106,8 @@ namespace ashes::gl4
 	}
 
 	ShaderProgram::ShaderProgram( VkDevice device
-		, VkPipelineShaderStageCreateInfoArray stages )
+		, VkPipelineShaderStageCreateInfoArray stages
+		, bool isRtot )
 		: m_device{ device }
 		, m_stages{ std::move( stages ) }
 	{
@@ -116,7 +117,7 @@ namespace ashes::gl4
 		for ( auto & stage : m_stages )
 		{
 			m_stageFlags |= stage.stage;
-			m_shaders.push_back( get( stage.module )->compile( stage ) );
+			m_shaders.push_back( get( stage.module )->compile( stage, isRtot ) );
 			glLogCall( context
 				, glAttachShader
 				, m_program
@@ -126,7 +127,7 @@ namespace ashes::gl4
 
 	ShaderProgram::ShaderProgram( VkDevice device
 		, VkPipelineShaderStageCreateInfo const & stage )
-		: ShaderProgram{ device, { 1u, stage } }
+		: ShaderProgram{ device, { 1u, stage }, false }
 	{
 	}
 

@@ -30,17 +30,8 @@ namespace ashes::gl4
 		*/
 		Image( VkDevice device
 			, VkFormat format
-			, VkExtent2D const & dimensions );
-		/**
-		*\brief
-		*	Constructeur.
-		*\remarks
-		*	Used for swapchain images creation.
-		*\param[in] device
-		*	Le périphérique logique.
-		*/
-		Image( VkDevice device
-			, VkImage image );
+			, VkExtent2D const & dimensions
+			, bool swapchainImage = false );
 		/**
 		*\brief
 		*	Constructeur.
@@ -48,7 +39,8 @@ namespace ashes::gl4
 		*	Le périphérique logique.
 		*/
 		Image( VkDevice device
-			, VkImageCreateInfo createInfo );
+			, VkImageCreateInfo createInfo
+			, bool swapchainImage = false );
 		/**
 		*\brief
 		*	Destructeur.
@@ -116,6 +108,11 @@ namespace ashes::gl4
 			return m_mipLevels;
 		}
 
+		inline bool isSwapchainImage()const noexcept
+		{
+			return m_swapchainImage;
+		}
+
 	private:
 		VkDevice m_device;
 		VkImageCreateFlags m_flags;
@@ -131,7 +128,7 @@ namespace ashes::gl4
 		UInt32Array m_queueFamilyIndices;
 		GlTextureType m_target;
 		GLuint m_internal{ GL_INVALID_INDEX };
-		bool m_ownTexture{ true };
+		bool m_swapchainImage{ false };
 	};
 }
 

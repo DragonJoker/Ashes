@@ -2,7 +2,6 @@
 
 #include "Core/GlDevice.hpp"
 #include "Descriptor/GlDescriptorSetLayout.hpp"
-#include "Pipeline/GlComputePipeline.hpp"
 #include "Pipeline/GlPipeline.hpp"
 
 namespace ashes::gl4

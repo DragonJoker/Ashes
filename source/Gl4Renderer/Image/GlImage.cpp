@@ -75,7 +75,8 @@ namespace ashes::gl4
 
 	Image::Image( VkDevice device
 		, VkFormat format
-		, VkExtent2D const & dimensions )
+		, VkExtent2D const & dimensions
+		, bool swapchainImage )
 		: Image
 		{
 			device,
@@ -92,33 +93,15 @@ namespace ashes::gl4
 				VK_SAMPLE_COUNT_1_BIT,
 				VK_IMAGE_TILING_OPTIMAL,
 				VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT
-			}
+			},
+			swapchainImage
 		}
 	{
 	}
 
 	Image::Image( VkDevice device
-		, VkImage image )
-		: m_flags{ get( image )->m_flags }
-		, m_imageType{ get( image )->m_imageType }
-		, m_format{ get( image )->m_format }
-		, m_extent{ get( image )->m_extent }
-		, m_mipLevels{ get( image )->m_mipLevels }
-		, m_arrayLayers{ get( image )->m_arrayLayers }
-		, m_samples{ get( image )->m_samples }
-		, m_tiling{ get( image )->m_tiling }
-		, m_usage{ get( image )->m_usage }
-		, m_sharingMode{ get( image )->m_sharingMode }
-		, m_queueFamilyIndices{ get( image )->m_queueFamilyIndices }
-		, m_device{ device }
-		, m_target{ get( image )->m_target }
-		, m_internal{ get( image )->m_internal }
-		, m_ownTexture{ false }
-	{
-	}
-
-	Image::Image( VkDevice device
-		, VkImageCreateInfo createInfo )
+		, VkImageCreateInfo createInfo
+		, bool swapchainImage )
 		: m_flags{ createInfo.flags }
 		, m_imageType{ createInfo.imageType }
 		, m_format{ createInfo.format }
@@ -132,7 +115,7 @@ namespace ashes::gl4
 		, m_queueFamilyIndices{ createInfo.pQueueFamilyIndices, createInfo.pQueueFamilyIndices + createInfo.queueFamilyIndexCount }
 		, m_device{ device }
 		, m_target{ convert( getType(), getArrayLayers(), getSamples() ) }
-		, m_ownTexture{ true }
+		, m_swapchainImage{ swapchainImage }
 	{
 		auto context = get( m_device )->getContext();
 		glLogCall( context
@@ -143,14 +126,11 @@ namespace ashes::gl4
 
 	Image::~Image()
 	{
-		if ( m_ownTexture )
-		{
-			auto context = get( m_device )->getContext();
-			glLogCall( context
-				, glDeleteTextures
-				, 1
-				, &m_internal );
-		}
+		auto context = get( m_device )->getContext();
+		glLogCall( context
+			, glDeleteTextures
+			, 1
+			, &m_internal );
 	}
 
 	VkMemoryRequirements Image::getMemoryRequirements()const
