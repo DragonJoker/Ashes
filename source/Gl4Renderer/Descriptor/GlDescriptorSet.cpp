@@ -13,6 +13,7 @@ namespace ashes::gl4
 {
 	DescriptorSet::DescriptorSet( VkDescriptorPool pool
 		, VkDescriptorSetLayout layout )
+		: m_layout{ layout }
 	{
 		get( pool )->registerSet( get( this ) );
 
@@ -80,6 +81,18 @@ namespace ashes::gl4
 	void DescriptorSet::mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write )
 	{
 		writes.writes.push_back( write );
+
+		if ( write.pImageInfo )
+		{
+			m_imagesInfos.emplace_back( std::make_unique< VkDescriptorImageInfo >( *write.pImageInfo ) );
+			writes.writes.back().pImageInfo = m_imagesInfos.back().get();
+		}
+
+		if ( write.pBufferInfo )
+		{
+			m_buffersInfos.emplace_back( std::make_unique< VkDescriptorBufferInfo >( *write.pBufferInfo ) );
+			writes.writes.back().pBufferInfo = m_buffersInfos.back().get();
+		}
 	}
 
 	void DescriptorSet::update( VkWriteDescriptorSet const & write )

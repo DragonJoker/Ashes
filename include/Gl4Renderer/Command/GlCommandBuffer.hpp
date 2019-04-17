@@ -278,6 +278,11 @@ namespace ashes::gl4
 
 	private:
 		void doBindVao()const;
+		void doProcessMappedBoundDescriptorBuffersIn( VkDescriptorSet descriptor )const;
+		void doProcessMappedBoundDescriptorsBuffersOut()const;
+		void doProcessMappedBoundVaoBuffersIn()const;
+		void doProcessMappedBoundBufferIn( VkBuffer buffer )const;
+		void doProcessMappedBoundBufferOut( VkBuffer buffer )const;
 
 	private:
 		VkDevice m_device;
@@ -301,6 +306,7 @@ namespace ashes::gl4
 			VkIndexType indexType;
 			GeometryBuffers * boundVao{ nullptr };
 			GeometryBuffersRefArray vaos;
+			VkDescriptorSetArray boundDescriptors;
 		};
 		mutable State m_state;
 	};

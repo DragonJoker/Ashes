@@ -20,7 +20,7 @@ namespace ashes::gl4
 			return "GL_SHADER_BINARY_FORMAT_SPIR_V";
 
 		default:
-			return "GlShaderBinaryFormat_UNKNOWN";
+			return "GL_SHADER_BINARY_FORMAT_UNKNOWN";
 		}
 	}
 }

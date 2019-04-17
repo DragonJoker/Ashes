@@ -70,6 +70,7 @@ extern "C"
 
 	typedef void( VKAPI_PTR * PFN_ashEnumeratePluginsDescriptions )( uint32_t *, AshPluginDescription * );
 	typedef VkResult( VKAPI_PTR * PFN_ashGetPluginDescription )( AshPluginDescription * );
+	typedef VkResult( VKAPI_PTR * PFN_ashSelectPlugin )( AshPluginDescription );
 
 	Ashes_API void VKAPI_PTR ashEnumeratePluginsDescriptions( uint32_t * count
 		, AshPluginDescription * pDescriptions );

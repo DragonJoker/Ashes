@@ -16,6 +16,8 @@ file( GLOB HEADER_FILES
 	Src/*.inl
 )
 
+include_directories( ${TestIncludeDirectories} )
+
 add_executable( ${PROJECT_NAME}
 	${SOURCE_FILES}
 	${HEADER_FILES}

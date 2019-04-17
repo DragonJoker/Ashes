@@ -282,6 +282,12 @@ namespace ashes::gl4
 				case OpType::eWriteTimestamp:
 					apply( lock, map< OpType::eWriteTimestamp >( cmd ) );
 					break;
+				case OpType::eDownloadMemory:
+					apply( lock, map< OpType::eDownloadMemory >( cmd ) );
+					break;
+				case OpType::eUploadMemory:
+					apply( lock, map< OpType::eUploadMemory >( cmd ) );
+					break;
 				}
 			}
 		}
@@ -312,13 +318,26 @@ namespace ashes::gl4
 	VkResult Queue::present( VkPresentInfoKHR const & presentInfo )const
 	{
 		auto itIndex = presentInfo.pImageIndices;
-		auto itResult = presentInfo.pResults;
 
-		for ( auto itSwapchain = presentInfo.pSwapchains;
-			itSwapchain != presentInfo.pSwapchains + presentInfo.swapchainCount;
-			++itIndex, ++itResult, ++itSwapchain )
+		if ( presentInfo.pResults )
 		{
-			*itResult = get( *itSwapchain )->present( *itIndex );
+			auto itResult = presentInfo.pResults;
+
+			for ( auto itSwapchain = presentInfo.pSwapchains;
+				itSwapchain != presentInfo.pSwapchains + presentInfo.swapchainCount;
+				++itIndex, ++itResult, ++itSwapchain )
+			{
+				*itResult = get( *itSwapchain )->present( *itIndex );
+			}
+		}
+		else
+		{
+			for ( auto itSwapchain = presentInfo.pSwapchains;
+				itSwapchain != presentInfo.pSwapchains + presentInfo.swapchainCount;
+				++itIndex, ++itSwapchain )
+			{
+				get( *itSwapchain )->present( *itIndex );
+			}
 		}
 
 		return VK_SUCCESS;

@@ -9,6 +9,14 @@
 #include <cstring>
 #include <iostream>
 
+namespace ashes
+{
+	inline VkPipelineCache deepCopy( VkPipelineCache const & rhs )
+	{
+		return rhs;
+	}
+}
+
 namespace ashes::gl4
 {
 #pragma region Vulkan 1.0
@@ -718,9 +726,11 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkPipelineCache* pPipelineCache )
 	{
-		// TODO
-		std::cerr << "vkCreatePipelineCache Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		assert( pPipelineCache );
+		return allocate( *pPipelineCache
+			, pAllocator
+			, device
+			, *pCreateInfo );
 	}
 
 	void VKAPI_CALL vkDestroyPipelineCache(
@@ -728,8 +738,7 @@ namespace ashes::gl4
 		VkPipelineCache pipelineCache,
 		const VkAllocationCallbacks* pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyPipelineCache Unsupported" << std::endl;
+		deallocate( pipelineCache, pAllocator );
 	}
 
 	VkResult VKAPI_CALL vkGetPipelineCacheData(
@@ -738,9 +747,19 @@ namespace ashes::gl4
 		size_t* pDataSize,
 		void* pData )
 	{
-		// TODO
-		std::cerr << "vkGetPipelineCacheData Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		auto & data = get( pipelineCache )->getData();
+
+		if ( pDataSize )
+		{
+			*pDataSize = data.size();
+		}
+
+		if ( pData )
+		{
+			std::memcpy( pData, data.data(), data.size() );
+		}
+
+		return VK_SUCCESS;
 	}
 
 	VkResult VKAPI_CALL vkMergePipelineCaches(
@@ -749,9 +768,7 @@ namespace ashes::gl4
 		uint32_t srcCacheCount,
 		const VkPipelineCache* pSrcCaches )
 	{
-		// TODO
-		std::cerr << "vkMergePipelineCaches Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return get( dstCache )->merge( makeVector( pSrcCaches, srcCacheCount ) );
 	}
 
 	VkResult VKAPI_CALL vkCreateGraphicsPipelines(
@@ -4034,7 +4051,7 @@ namespace ashes::gl4
 #include <AshesCommon/VulkanFunctionsList.inl>
 				result = VK_SUCCESS;
 
-				description.support.priority = 5u;
+				description.support.priority = 15u;
 				description.support.supported = VK_TRUE;
 			}
 

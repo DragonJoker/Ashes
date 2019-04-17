@@ -54,18 +54,26 @@ See LICENSE file in root folder
 #include "Gl4Renderer/Enum/GlWrapMode.hpp"
 
 #include <iostream>
+#include <iomanip>
+#include <locale>
 #include <sstream>
 
 #define GL_LOG_CALLS 0
 
 namespace ashes::gl4
 {
+	class Context;
+	class ContextLock;
+
+	Context const & getContext( ContextLock const & lock );
+
 	template< typename T >
 	struct Stringifier
 	{
 		static inline std::string toString( T const value )
 		{
 			std::stringstream stream;
+			stream.imbue( std::locale{ "C" } );
 			stream << value;
 			return stream.str();
 		}
@@ -79,7 +87,8 @@ namespace ashes::gl4
 			if ( value )
 			{
 				std::stringstream stream;
-				stream << std::hex << size_t( value );
+				stream.imbue( std::locale{ "C" } );
+				stream << "0x" << std::hex << std::setw( sizeof( intptr_t ) * 2u ) << std::setfill( '0' ) << intptr_t( value );
 				return stream.str();
 			}
 
@@ -95,7 +104,8 @@ namespace ashes::gl4
 			if ( value )
 			{
 				std::stringstream stream;
-				stream << std::hex << size_t( value );
+				stream.imbue( std::locale{ "C" } );
+				stream << "0x" << std::hex << std::setw( sizeof( intptr_t ) * 2u ) << std::setfill( '0' ) << intptr_t( value );
 				return stream.str();
 			}
 
@@ -398,6 +408,8 @@ namespace ashes::gl4
 			, FuncT function
 			, char const * const name )
 		{
+			stream << name;
+			logParams( stream );
 			std::clog << std::string{ name } << "()" << std::endl;
 			function();
 		}
@@ -416,18 +428,18 @@ namespace ashes::gl4
 	}
 
 #if GL_LOG_CALLS
-#	define glLogCall( Context, Name, ... )\
-	executeFunction( Context->Name, #Name, __VA_ARGS__ )
-#	define glLogCommand( Name )\
-	Logger::logDebug( std::string{ "Command: " } + Name )
+#	define glLogCall( lock, name, ... )\
+	executeFunction( ashes::gl4::getContext( lock ).m_##name, #name, __VA_ARGS__ )
+#	define glLogCommand( name )\
+	std::clog << "Command: " << name << std::endl
 #elif defined( NDEBUG )
-#	define glLogCall( Context, Name, ... )\
-	( Context->Name( __VA_ARGS__ ) )
-#	define glLogCommand( Name )
+#	define glLogCall( lock, name, ... )\
+	( lock->m_##name( __VA_ARGS__ ) )
+#	define glLogCommand( name )
 #	else
-#	define glLogCall( Context, Name, ... )\
-	( Context->Name( __VA_ARGS__ ) );\
-	glCheckError( #Name )
-#	define glLogCommand( Name )
+#	define glLogCall( lock, name, ... )\
+	( lock->m_##name( __VA_ARGS__ ) );\
+	glCheckError( #name )
+#	define glLogCommand( name )
 #endif
 }

@@ -13,6 +13,8 @@ file( GLOB HEADER_FILES
 	Src/*.inl
 )
 
+include_directories( ${TestIncludeDirectories} )
+
 add_library( ${PROJECT_NAME} STATIC
 	${SOURCE_FILES}
 	${HEADER_FILES}

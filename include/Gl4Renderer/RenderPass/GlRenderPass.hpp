@@ -46,12 +46,25 @@ namespace ashes::gl4
 			return VkExtent2D{ 1u, 1u };
 		}
 
+	public:
+		struct SubpassDescriptionData
+		{
+			VkAttachmentReferenceArray inputAttachments;
+			VkAttachmentReferenceArray colorAttachments;
+			VkAttachmentReferenceArray resolveAttachments;
+			Optional< VkAttachmentReference > depthStencilAttachment;
+			UInt32Array reserveAttachments;
+		};
+		using SubpassDescriptionDataPtr = std::unique_ptr< SubpassDescriptionData >;
+		using SubpassDescriptionDataPtrMap = std::map< VkSubpassDescription const *, SubpassDescriptionDataPtr >;
+
 	private:
 		VkDevice m_device;
 		VkRenderPassCreateFlags m_flags;
 		uint32_t m_attachmentCount;
 		VkAttachmentDescriptionArray m_attachments;
 		VkSubpassDescriptionArray m_subpasses;
+		SubpassDescriptionDataPtrMap m_subpassesDatas;
 		VkSubpassDependencyArray m_dependencies;
 		bool m_hasDepthAttach{ false };
 		VkAttachmentDescription m_depthAttach;

@@ -26,7 +26,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		)
 	endif()
 
-	include_directories(
+	set( TestIncludeDirectories
 		${CMAKE_SOURCE_DIR}/Utils/Src
 		${CMAKE_BINARY_DIR}/Utils/Src
 		${CMAKE_SOURCE_DIR}/include
@@ -72,4 +72,83 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 	add_subdirectory( 22-SPIRVSpecialisationConstants )
 	add_subdirectory( 23-Bloom )
 	add_subdirectory( AshesInfo )
+	
+	if ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Vulkan/CMakeLists.txt )
+		set( Vulkan_FOUND ON )
+		set( Vulkan_LIBRARY ashes ${ENABLED_RENDERERS} )
+		add_subdirectory( Vulkan )
+		set(EXAMPLES
+			bloom
+			computecloth
+			computecullandlod
+			computeheadless
+			computenbody
+			computeparticles
+			computeshader
+			conditionalrender
+			conservativeraster
+			debugmarker
+			deferred
+			deferredmultisampling
+			deferredshadows
+			descriptorsets
+			displacement
+			distancefieldfonts
+			dynamicuniformbuffer
+			gears
+			geometryshader
+			hdr
+			imgui
+			indirectdraw
+			inlineuniformblocks
+			inputattachments
+			instancing
+			mesh
+			multisampling
+			multithreading
+			multiview
+			negativeviewportheight
+			occlusionquery
+			offscreen
+			parallaxmapping
+			particlefire
+			pbrbasic
+			pbribl
+			pbrtexture
+			pipelines
+			pipelinestatistics
+			pushconstants
+			pushdescriptors
+			radialblur
+			raytracing
+			renderheadless
+			scenerendering
+			screenshot
+			shadowmapping
+			shadowmappingomni
+			shadowmappingcascade
+			skeletalanimation
+			specializationconstants
+			sphericalenvmapping
+			ssao
+			stencilbuffer
+			subpasses
+			terraintessellation
+			tessellation
+			textoverlay
+			texture
+			texture3d
+			texturearray
+			texturecubemap
+			texturemipmapgen
+			texturesparseresidency
+			triangle
+			viewportarray
+			vulkanscene
+		)
+		foreach ( EXAMPLE ${EXAMPLES} )
+			set_property( TARGET ${EXAMPLE} PROPERTY FOLDER "Examples" )
+		endforeach ( EXAMPLE )
+		set_property( TARGET base PROPERTY FOLDER "Examples" )
+	endif ()
 endif ()

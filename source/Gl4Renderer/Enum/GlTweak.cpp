@@ -102,6 +102,15 @@ namespace ashes::gl4
 		case GL_SAMPLE_SHADING:
 			return "GL_SAMPLE_SHADING";
 
+		case GL_TEXTURE_CUBE_MAP_SEAMLESS:
+			return "GL_TEXTURE_CUBE_MAP_SEAMLESS";
+
+		case GL_FRAMEBUFFER_SRGB:
+			return "GL_FRAMEBUFFER_SRGB";
+
+		case GL_DEBUG_OUTPUT_SYNC:
+			return "GL_DEBUG_OUTPUT_SYNCHRONOUS";
+
 		default:
 			assert( false && "Unsupported GlTweak" );
 			return "GlTweak_UNKNOWN";

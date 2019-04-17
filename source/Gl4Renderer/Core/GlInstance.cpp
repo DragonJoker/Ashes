@@ -344,18 +344,18 @@ namespace ashes::gl4
 
 	VkPhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
 	{
-		VkPhysicalDeviceMemoryProperties result;
-		result.memoryHeapCount = 2u;
+		VkPhysicalDeviceMemoryProperties result{};
 		// Emulate one device local heap
-		result.memoryHeaps[0] = { ~( 0ull ), VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
+		result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
 		// and one host visible heap
-		result.memoryHeaps[1] = { ~( 0ull ), 0u };
+		result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), 0u };
 
-		result.memoryTypeCount = 2u;
 		// Emulate all combinations of device local memory types
 		// and all combinations of host visible memory types
-		result.memoryTypes[0] = { VK_MEMORY_HEAP_DEVICE_LOCAL_BIT, 0u };
-		result.memoryTypes[1] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT | VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT, 1u };
+		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_HEAP_DEVICE_LOCAL_BIT, 0u };
+		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, 1u };
+		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 1u };
+		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT, 1u };
 
 		return result;
 	}();
@@ -505,7 +505,7 @@ namespace ashes::gl4
 		m_debugCallbacks.push_back( { report, callback, userParam } );
 		auto context = ContextLock{ *m_context };
 
-		if ( context->glDebugMessageCallback )
+		if ( context->m_glDebugMessageCallback )
 		{
 			glLogCall( context
 				, glDebugMessageCallback
@@ -513,7 +513,7 @@ namespace ashes::gl4
 				, userParam );
 			glLogCall( context
 				, glEnable
-				, GL_DEBUG_OUTPUT_SYNCHRONOUS );
+				, GL_DEBUG_OUTPUT_SYNC );
 		}
 	}
 
@@ -524,7 +524,7 @@ namespace ashes::gl4
 		m_debugAMDCallbacks.push_back( { report, callback, userParam } );
 		auto context = ContextLock{ *m_context };
 
-		if ( context->glDebugMessageCallbackAMD )
+		if ( context->m_glDebugMessageCallbackAMD )
 		{
 			glLogCall( context
 				, glDebugMessageCallbackAMD
@@ -532,7 +532,7 @@ namespace ashes::gl4
 				, userParam );
 			glLogCall( context
 				, glEnable
-				, GL_DEBUG_OUTPUT_SYNCHRONOUS );
+				, GL_DEBUG_OUTPUT_SYNC );
 		}
 	}
 
@@ -564,6 +564,43 @@ namespace ashes::gl4
 				, messageCode
 				, pLayerPrefix
 				, pMessage );
+		}
+	}
+
+	void Instance::registerContext( Context & context )
+	{
+		ContextLock lock( context );
+
+		if ( lock->m_glDebugMessageCallbackAMD || lock->m_glDebugMessageCallback )
+		{
+			if ( lock->m_glDebugMessageCallback )
+			{
+				for ( auto & callback : m_debugCallbacks )
+				{
+					glLogCall( lock
+						, glDebugMessageCallback
+						, callback.callback
+						, callback.userParam );
+				}
+			}
+
+			if ( lock->m_glDebugMessageCallbackAMD )
+			{
+				for ( auto & callback : m_debugAMDCallbacks )
+				{
+					glLogCall( lock
+						, glDebugMessageCallbackAMD
+						, callback.callback
+						, callback.userParam );
+				}
+			}
+
+			if ( !m_debugCallbacks.empty() || !m_debugAMDCallbacks.empty() )
+			{
+				glLogCall( lock
+					, glEnable
+					, GL_DEBUG_OUTPUT_SYNC );
+			}
 		}
 	}
 }

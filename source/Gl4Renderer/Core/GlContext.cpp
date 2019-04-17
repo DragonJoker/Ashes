@@ -1,5 +1,7 @@
 #include "Core/GlContext.hpp"
 
+#include "Core/GlContextLock.hpp"
+
 #if VK_USE_PLATFORM_WIN32_KHR
 #	include "Core/GlMswContext.hpp"
 #elif VK_USE_PLATFORM_XLIB_KHR
@@ -18,6 +20,11 @@ namespace ashes::gl4
 
 	using ashes::operator==;
 	using ashes::operator!=;
+
+	Context const & getContext( ContextLock const & lock )
+	{
+		return lock.getContext();
+	}
 
 	//*************************************************************************
 
@@ -74,13 +81,13 @@ namespace ashes::gl4
 			{
 				glLogCall( context
 					, glEnable
-					, GL_BLEND );
+					, GlTweak( GL_BLEND ) );
 			}
 			else
 			{
 				glLogCall( context
 					, glDisable
-					, GL_BLEND );
+					, GlTweak( GL_BLEND ) );
 			}
 		}
 
@@ -91,7 +98,7 @@ namespace ashes::gl4
 			{
 				glLogCall( context
 					, glEnable
-					, GL_CULL_FACE );
+					, GlTweak( GL_CULL_FACE ) );
 				glLogCall( context
 					, glCullFace
 					, convertCullModeFlags( state.cullMode ) );
@@ -103,7 +110,7 @@ namespace ashes::gl4
 			{
 				glLogCall( context
 					, glDisable
-					, GL_CULL_FACE );
+					, GlTweak( GL_CULL_FACE ) );
 			}
 
 			glLogCall( context
@@ -118,19 +125,19 @@ namespace ashes::gl4
 				case VK_POLYGON_MODE_FILL:
 					glLogCall( context
 						, glEnable
-						, GL_POLYGON_OFFSET_FILL );
+						, GlTweak( GL_POLYGON_OFFSET_FILL ) );
 					break;
 
 				case VK_POLYGON_MODE_LINE:
 					glLogCall( context
 						, glEnable
-						, GL_POLYGON_OFFSET_LINE );
+						, GlTweak( GL_POLYGON_OFFSET_LINE ) );
 					break;
 
 				case VK_POLYGON_MODE_POINT:
 					glLogCall( context
 						, glEnable
-						, GL_POLYGON_OFFSET_POINT );
+						, GlTweak( GL_POLYGON_OFFSET_POINT ) );
 					break;
 				}
 
@@ -147,19 +154,19 @@ namespace ashes::gl4
 				case VK_POLYGON_MODE_FILL:
 					glLogCall( context
 						, glDisable
-						, GL_POLYGON_OFFSET_FILL );
+						, GlTweak( GL_POLYGON_OFFSET_FILL ) );
 					break;
 
 				case VK_POLYGON_MODE_LINE:
 					glLogCall( context
 						, glDisable
-						, GL_POLYGON_OFFSET_LINE );
+						, GlTweak( GL_POLYGON_OFFSET_LINE ) );
 					break;
 
 				case VK_POLYGON_MODE_POINT:
 					glLogCall( context
 						, glDisable
-						, GL_POLYGON_OFFSET_POINT );
+						, GlTweak( GL_POLYGON_OFFSET_POINT ) );
 					break;
 				}
 			}
@@ -252,7 +259,7 @@ namespace ashes::gl4
 			{
 				glLogCall( context
 					, glEnable
-					, GL_DEPTH_TEST );
+					, GlTweak( GL_DEPTH_TEST ) );
 				glLogCall( context
 					, glDepthFunc
 					, convert( state.depthCompareOp ) );
@@ -261,14 +268,14 @@ namespace ashes::gl4
 			{
 				glLogCall( context
 					, glDisable
-					, GL_DEPTH_TEST );
+					, GlTweak( GL_DEPTH_TEST ) );
 			}
 
 			if ( state.stencilTestEnable )
 			{
 				glLogCall( context
 					, glEnable
-					, GL_STENCIL_TEST );
+					, GlTweak( GL_STENCIL_TEST ) );
 				glLogCall( context
 					, glStencilMaskSeparate
 					, GL_CULL_MODE_BACK
@@ -306,7 +313,7 @@ namespace ashes::gl4
 			{
 				glLogCall( context
 					, glDisable
-					, GL_STENCIL_TEST );
+					, GlTweak( GL_STENCIL_TEST ) );
 			}
 
 			if ( state.depthBoundsTestEnable )
@@ -585,7 +592,7 @@ ContextPtr Context::create( VkInstance instance
 	void Context::loadBaseFunctions()
 	{
 #define GL_LIB_BASE_FUNCTION( fun )\
-		m_gl##fun = &::gl##fun;
+		m_gl##fun = PFN_gl##fun( &::gl##fun );
 #define GL_LIB_FUNCTION( fun )\
 		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
 		{\
@@ -605,9 +612,9 @@ ContextPtr Context::create( VkInstance instance
 
 		if ( extensions.find( KHR_debug ) )
 		{
-			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
+			if ( !getFunction( "glDebugMessageCallback", m_glDebugMessageCallback ) )
 			{
-				if ( !getFunction( "glDebugMessageCallbackKHR", glDebugMessageCallback ) )
+				if ( !getFunction( "glDebugMessageCallbackKHR", m_glDebugMessageCallback ) )
 				{
 					std::cerr << "Unable to retrieve function glDebugMessageCallback" << std::endl;
 				}
@@ -615,9 +622,9 @@ ContextPtr Context::create( VkInstance instance
 		}
 		else if ( extensions.find( ARB_debug_output ) )
 		{
-			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
+			if ( !getFunction( "glDebugMessageCallback", m_glDebugMessageCallback ) )
 			{
-				if ( !getFunction( "glDebugMessageCallbackARB", glDebugMessageCallback ) )
+				if ( !getFunction( "glDebugMessageCallbackARB", m_glDebugMessageCallback ) )
 				{
 					std::cerr << "Unable to retrieve function glDebugMessageCallback" << std::endl;
 				}
@@ -625,7 +632,7 @@ ContextPtr Context::create( VkInstance instance
 		}
 		else if ( extensions.find( AMDX_debug_output ) )
 		{
-			if ( !getFunction( "glDebugMessageCallbackAMD", glDebugMessageCallbackAMD ) )
+			if ( !getFunction( "glDebugMessageCallbackAMD", m_glDebugMessageCallbackAMD ) )
 			{
 				std::cerr << "Unable to retrieve function glDebugMessageCallbackAMD" << std::endl;
 			}
@@ -731,13 +738,13 @@ ContextPtr Context::create( VkInstance instance
 			{
 				glLogCall( context
 					, glEnable
-					, GL_BLEND );
+					, GlTweak( GL_BLEND ) );
 			}
 			else
 			{
 				glLogCall( context
 					, glDisable
-					, GL_BLEND );
+					, GlTweak( GL_BLEND ) );
 			}
 		}
 
@@ -760,7 +767,7 @@ ContextPtr Context::create( VkInstance instance
 				{
 					glLogCall( context
 						, glEnable
-						, GL_CULL_FACE );
+						, GlTweak( GL_CULL_FACE ) );
 				}
 
 				if ( state.cullMode != save.cullMode )
@@ -781,7 +788,7 @@ ContextPtr Context::create( VkInstance instance
 			{
 				glLogCall( context
 					, glDisable
-					, GL_CULL_FACE );
+					, GlTweak( GL_CULL_FACE ) );
 			}
 		}
 
@@ -803,19 +810,19 @@ ContextPtr Context::create( VkInstance instance
 				case VK_POLYGON_MODE_FILL:
 					glLogCall( context
 						, glEnable
-						, GL_POLYGON_OFFSET_FILL );
+						, GlTweak( GL_POLYGON_OFFSET_FILL ) );
 					break;
 
 				case VK_POLYGON_MODE_LINE:
 					glLogCall( context
 						, glEnable
-						, GL_POLYGON_OFFSET_LINE );
+						, GlTweak( GL_POLYGON_OFFSET_LINE ) );
 					break;
 
 				case VK_POLYGON_MODE_POINT:
 					glLogCall( context
 						, glEnable
-						, GL_POLYGON_OFFSET_POINT );
+						, GlTweak( GL_POLYGON_OFFSET_POINT ) );
 					break;
 				}
 
@@ -837,19 +844,19 @@ ContextPtr Context::create( VkInstance instance
 				case VK_POLYGON_MODE_FILL:
 					glLogCall( context
 						, glDisable
-						, GL_POLYGON_OFFSET_FILL );
+						, GlTweak( GL_POLYGON_OFFSET_FILL ) );
 					break;
 
 				case VK_POLYGON_MODE_LINE:
 					glLogCall( context
 						, glDisable
-						, GL_POLYGON_OFFSET_LINE );
+						, GlTweak( GL_POLYGON_OFFSET_LINE ) );
 					break;
 
 				case VK_POLYGON_MODE_POINT:
 					glLogCall( context
 						, glDisable
-						, GL_POLYGON_OFFSET_POINT );
+						, GlTweak( GL_POLYGON_OFFSET_POINT ) );
 					break;
 				}
 			}
@@ -993,13 +1000,13 @@ ContextPtr Context::create( VkInstance instance
 			{
 				glLogCall( context
 					, glEnable
-					, GL_DEPTH_TEST );
+					, GlTweak( GL_DEPTH_TEST ) );
 			}
 			else
 			{
 				glLogCall( context
 					, glDisable
-					, GL_DEPTH_TEST );
+					, GlTweak( GL_DEPTH_TEST ) );
 			}
 		}
 
@@ -1020,7 +1027,7 @@ ContextPtr Context::create( VkInstance instance
 			{
 				glLogCall( context
 					, glEnable
-					, GL_STENCIL_TEST );
+					, GlTweak( GL_STENCIL_TEST ) );
 				glLogCall( context
 					, glStencilMaskSeparate
 					, GL_CULL_MODE_BACK
@@ -1058,7 +1065,7 @@ ContextPtr Context::create( VkInstance instance
 			{
 				glLogCall( context
 					, glDisable
-					, GL_STENCIL_TEST );
+					, GlTweak( GL_STENCIL_TEST ) );
 			}
 		}
 

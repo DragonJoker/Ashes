@@ -2,8 +2,6 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___GlRenderer_TextureType_HPP___
-#define ___GlRenderer_TextureType_HPP___
 #pragma once
 
 namespace ashes::gl4
@@ -31,5 +29,3 @@ namespace ashes::gl4
 	GlTextureType convert( VkImageType const & mode
 		, uint32_t layerCount );
 }
-
-#endif

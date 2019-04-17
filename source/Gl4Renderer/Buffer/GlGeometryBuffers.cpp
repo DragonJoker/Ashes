@@ -62,7 +62,7 @@ namespace ashes::gl4
 		, VkIndexType type )
 		: m_device{ device }
 		, m_vbos{ createVBOs( vbos, vertexInputState ) }
-		, m_ibo{ bool( ibo ) ? std::make_unique< IBO >( ibo.value().bo, ibo.value().offset, type ) : nullptr }
+		, m_ibo{ bool( ibo ) ? std::make_unique< IBO >( ibo.value().buffer, ibo.value().offset, type ) : nullptr }
 	{
 	}
 
@@ -97,7 +97,7 @@ namespace ashes::gl4
 			glLogCall( context
 				, glBindBuffer
 				, GL_BUFFER_TARGET_ARRAY
-				, vbo.vbo );
+				, get( vbo.vbo )->getInternal() );
 
 			if ( vbo.binding.inputRate == VK_VERTEX_INPUT_RATE_VERTEX )
 			{
@@ -178,7 +178,7 @@ namespace ashes::gl4
 			glLogCall( context
 				, glBindBuffer
 				, GL_BUFFER_TARGET_ELEMENT_ARRAY
-				, m_ibo->ibo );
+				, get( m_ibo->ibo )->getInternal() );
 		}
 
 		glLogCall( context
@@ -203,7 +203,7 @@ namespace ashes::gl4
 			} );
 			assert( it != vertexInputState.pVertexBindingDescriptions + vertexInputState.vertexBindingDescriptionCount );
 			auto & vbo = binding.second;
-			result.emplace_back( vbo.bo
+			result.emplace_back( vbo.buffer
 				, vbo.offset
 				, *it
 				, getAttributes( vertexInputState.pVertexAttributeDescriptions

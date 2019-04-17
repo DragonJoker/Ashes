@@ -110,9 +110,12 @@ namespace ashes
 	{
 		std::vector< Type > result;
 
-		for ( auto & elem : makeArrayView( ptr, count ) )
+		if ( ptr )
 		{
-			result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
+			for ( auto & elem : makeArrayView( ptr, count ) )
+			{
+				result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
+			}
 		}
 
 		return result;
@@ -125,9 +128,12 @@ namespace ashes
 	{
 		std::vector< Type > result;
 
-		for ( auto & elem : makeArrayView( ptr, count ) )
+		if ( ptr )
 		{
-			result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
+			for ( auto & elem : makeArrayView( ptr, count ) )
+			{
+				result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
+			}
 		}
 
 		return result;
@@ -293,6 +299,7 @@ namespace ashes
 	using VkImageViewArray = std::vector< VkImageView >;
 	using VkLayerPropertiesArray = std::vector< VkLayerProperties >;
 	using VkMemoryBarrierArray = std::vector< VkMemoryBarrier >;
+	using VkPipelineCacheArray = std::vector< VkPipelineCache >;
 	using VkPipelineColorBlendAttachmentStateArray = std::vector< VkPipelineColorBlendAttachmentState >;
 	using VkPipelineShaderStageCreateInfoArray = std::vector< VkPipelineShaderStageCreateInfo >;
 	using VkPipelineStageFlagsArray = std::vector< VkPipelineStageFlags >;

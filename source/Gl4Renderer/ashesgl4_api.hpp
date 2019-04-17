@@ -22,6 +22,7 @@ See LICENSE file in root folder.
 #include "Image/GlImageView.hpp"
 #include "Image/GlSampler.hpp"
 #include "Pipeline/GlPipeline.hpp"
+#include "Pipeline/GlPipelineCache.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 #include "RenderPass/GlRenderPass.hpp"

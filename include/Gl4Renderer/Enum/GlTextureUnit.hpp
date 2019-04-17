@@ -2,8 +2,6 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___GlRenderer_TextureUnit_HPP___
-#define ___GlRenderer_TextureUnit_HPP___
 #pragma once
 
 namespace ashes::gl4
@@ -46,5 +44,3 @@ namespace ashes::gl4
 	};
 	std::string getName( GlTextureUnit value );
 }
-
-#endif

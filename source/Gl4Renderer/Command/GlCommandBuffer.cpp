@@ -273,6 +273,21 @@ namespace ashes::gl4
 			m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
 				, makeCmd< OpType::eUseProgram >( 0u ) );
 		}
+
+		for ( auto & layout : get( pipeline )->getDescriptorsLayouts() )
+		{
+			auto it = std::remove_if( m_state.boundDescriptors.begin()
+				, m_state.boundDescriptors.end()
+				, [&layout]( VkDescriptorSet lookup )
+				{
+					return get( lookup )->getLayout() == layout;
+				} );
+
+			if ( it != m_state.boundDescriptors.begin() )
+			{
+				m_state.boundDescriptors.erase( m_state.boundDescriptors.begin(), it );
+			}
+		}
 	}
 
 	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding
@@ -308,6 +323,8 @@ namespace ashes::gl4
 	{
 		for ( auto & descriptorSet : descriptorSets )
 		{
+			m_state.boundDescriptors.push_back( descriptorSet );
+			doProcessMappedBoundDescriptorBuffersIn( descriptorSet );
 			buildBindDescriptorSetCommand( descriptorSet
 				, layout
 				, dynamicOffsets
@@ -339,6 +356,7 @@ namespace ashes::gl4
 			m_state.boundVao = &get( m_device )->getEmptyIndexedVao();
 			buildBindGeometryBuffersCommand( *m_state.boundVao
 				, m_cmdList );
+			doProcessMappedBoundVaoBuffersIn();
 			buildDrawIndexedCommand( vtxCount
 				, instCount
 				, 0u
@@ -347,6 +365,7 @@ namespace ashes::gl4
 				, get( m_state.currentPipeline )->getInputAssemblyState().topology
 				, m_state.indexType
 				, m_cmdList );
+			doProcessMappedBoundDescriptorsBuffersOut();
 		}
 		else
 		{
@@ -355,12 +374,14 @@ namespace ashes::gl4
 				doBindVao();
 			}
 
+			doProcessMappedBoundVaoBuffersIn();
 			buildDrawCommand( vtxCount
 				, instCount
 				, firstVertex
 				, firstInstance
 				, get( m_state.currentPipeline )->getInputAssemblyState().topology
 				, m_cmdList );
+			doProcessMappedBoundDescriptorsBuffersOut();
 		}
 
 		m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
@@ -385,6 +406,7 @@ namespace ashes::gl4
 			doBindVao();
 		}
 
+		doProcessMappedBoundVaoBuffersIn();
 		buildDrawIndexedCommand( indexCount
 			, instCount
 			, firstIndex
@@ -393,6 +415,7 @@ namespace ashes::gl4
 			, get( m_state.currentPipeline )->getInputAssemblyState().topology
 			, m_state.indexType
 			, m_cmdList );
+		doProcessMappedBoundDescriptorsBuffersOut();
 
 		m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
 			, makeCmd< OpType::eBindVextexArray >( nullptr ) );
@@ -408,12 +431,14 @@ namespace ashes::gl4
 			doBindVao();
 		}
 
+		doProcessMappedBoundVaoBuffersIn();
 		buildDrawIndirectCommand( buffer
 			, offset
 			, drawCount
 			, stride
 			, get( m_state.currentPipeline )->getInputAssemblyState().topology
 			, m_cmdList );
+		doProcessMappedBoundDescriptorsBuffersOut();
 
 		m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
 			, makeCmd< OpType::eBindVextexArray >( nullptr ) );
@@ -436,6 +461,7 @@ namespace ashes::gl4
 			doBindVao();
 		}
 
+		doProcessMappedBoundVaoBuffersIn();
 		buildDrawIndexedIndirectCommand( buffer
 			, offset
 			, drawCount
@@ -443,6 +469,7 @@ namespace ashes::gl4
 			, get( m_state.currentPipeline )->getInputAssemblyState().topology
 			, m_state.indexType
 			, m_cmdList );
+		doProcessMappedBoundDescriptorsBuffersOut();
 
 		m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
 			, makeCmd< OpType::eBindVextexArray >( nullptr ) );
@@ -599,6 +626,7 @@ namespace ashes::gl4
 			, groupCountY
 			, groupCountZ
 			, m_cmdList );
+		doProcessMappedBoundDescriptorsBuffersOut();
 	}
 
 	void CommandBuffer::dispatchIndirect( VkBuffer buffer
@@ -607,6 +635,7 @@ namespace ashes::gl4
 		buildDispatchIndirectCommand( buffer
 			, offset
 			, m_cmdList );
+		doProcessMappedBoundDescriptorsBuffersOut();
 	}
 
 	void CommandBuffer::setLineWidth( float width )const
@@ -715,5 +744,94 @@ namespace ashes::gl4
 
 		buildBindGeometryBuffersCommand( *m_state.boundVao
 			, m_cmdList );
+	}
+
+	void CommandBuffer::doProcessMappedBoundDescriptorBuffersIn( VkDescriptorSet descriptor )const
+	{
+		for ( auto & writes : get( descriptor )->getDynamicBuffers() )
+		{
+			for ( auto & write : writes->writes )
+			{
+				doProcessMappedBoundBufferIn( write.pBufferInfo->buffer );
+			}
+		}
+
+		for ( auto & writes : get( descriptor )->getStorageBuffers() )
+		{
+			for ( auto & write : writes->writes )
+			{
+				doProcessMappedBoundBufferIn( write.pBufferInfo->buffer );
+			}
+		}
+
+		for ( auto & writes : get( descriptor )->getUniformBuffers() )
+		{
+			for ( auto & write : writes->writes )
+			{
+				doProcessMappedBoundBufferIn( write.pBufferInfo->buffer );
+			}
+		}
+	}
+
+	void CommandBuffer::doProcessMappedBoundDescriptorsBuffersOut()const
+	{
+		for ( auto descriptor : m_state.boundDescriptors )
+		{
+			for ( auto & writes : get( descriptor )->getDynamicBuffers() )
+			{
+				if ( writes->descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC )
+				{
+					for ( auto & write : writes->writes )
+					{
+						if ( write.descriptorType )
+							doProcessMappedBoundBufferOut( write.pBufferInfo->buffer );
+					}
+				}
+			}
+
+			for ( auto & writes : get( descriptor )->getStorageBuffers() )
+			{
+				for ( auto & write : writes->writes )
+				{
+					doProcessMappedBoundBufferOut( write.pBufferInfo->buffer );
+				}
+			}
+		}
+	}
+
+	void CommandBuffer::doProcessMappedBoundVaoBuffersIn()const
+	{
+		if ( m_state.boundVao )
+		{
+			for ( auto & vbo : m_state.boundVao->getVbos() )
+			{
+				doProcessMappedBoundBufferIn( vbo.vbo );
+			}
+
+			if ( m_state.boundVao->hasIbo() )
+			{
+				doProcessMappedBoundBufferIn( m_state.boundVao->getIbo().ibo );
+			}
+		}
+	}
+
+	void CommandBuffer::doProcessMappedBoundBufferIn( VkBuffer buffer )const
+	{
+		auto buf = get( buffer );
+
+		if ( buf->isMapped() )
+		{
+			m_cmdList.emplace_back( makeCmd< OpType::eUploadMemory >( buf->getMemory() ) );
+		}
+	}
+
+	void CommandBuffer::doProcessMappedBoundBufferOut( VkBuffer buffer )const
+	{
+		auto buf = get( buffer );
+
+		if ( buf->isMapped() )
+		{
+			m_cmdList.emplace_back( makeCmd< OpType::eDownloadMemory >( buf->getMemory() ) );
+		}
 	}
 }

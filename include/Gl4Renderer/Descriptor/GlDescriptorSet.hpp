@@ -107,10 +107,18 @@ namespace ashes::gl4
 			return m_dynamicBuffers;
 		}
 
+		inline VkDescriptorSetLayout getLayout()const
+		{
+			return m_layout;
+		}
+
 	private:
 		void mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write );
 
 	private:
+		VkDescriptorSetLayout m_layout;
+		std::vector< std::unique_ptr< VkDescriptorImageInfo > > m_imagesInfos;
+		std::vector< std::unique_ptr< VkDescriptorBufferInfo > > m_buffersInfos;
 		LayoutBindingWritesMap m_writes;
 		LayoutBindingWritesArray m_combinedTextureSamplers;
 		LayoutBindingWritesArray m_samplers;

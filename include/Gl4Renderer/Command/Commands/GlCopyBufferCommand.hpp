@@ -30,8 +30,8 @@ namespace ashes::gl4
 		}
 
 		Command cmd;
-		uint32_t srcTarget;
-		uint32_t dstTarget;
+		GlBufferTarget srcTarget;
+		GlBufferTarget dstTarget;
 		VkBufferCopy copy;
 	};
 	using CmdCopyBufferSubData = CmdT< OpType::eCopyBufferSubData >;

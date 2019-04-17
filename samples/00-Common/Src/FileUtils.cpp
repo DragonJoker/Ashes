@@ -59,7 +59,7 @@ namespace common
 		, VkShaderStageFlagBits stage
 		, std::string const & path )
 	{
-		return utils::compileGlslToSpv( device
+		return utils::compileGlslToSpv( device.getProperties()
 			, stage
 			, utils::dumpTextFile( path ) );
 	}

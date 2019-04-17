@@ -15,8 +15,8 @@ namespace ashes::gl4
 	public:
 		struct VBO
 		{
-			VBO( GLuint vbo
-				, uint64_t offset
+			VBO( VkBuffer vbo
+				, VkDeviceSize offset
 				, VkVertexInputBindingDescription binding
 				, VkVertexInputAttributeDescriptionArray attributes )
 				: vbo{ vbo }
@@ -26,16 +26,16 @@ namespace ashes::gl4
 			{
 			}
 
-			GLuint vbo;
-			uint64_t offset;
+			VkBuffer vbo;
+			VkDeviceSize offset;
 			VkVertexInputBindingDescription binding;
 			VkVertexInputAttributeDescriptionArray attributes;
 		};
 
 		struct IBO
 		{
-			IBO( GLuint ibo
-				, uint64_t offset
+			IBO( VkBuffer ibo
+				, VkDeviceSize offset
 				, VkIndexType type )
 				: ibo{ ibo }
 				, offset{ offset }
@@ -43,7 +43,7 @@ namespace ashes::gl4
 			{
 			}
 
-			GLuint ibo;
+			VkBuffer ibo;
 			uint64_t offset;
 			VkIndexType type;
 		};

@@ -244,30 +244,6 @@ namespace common
 		wxInitAllImageHandlers();
 		utils::initialiseGlslang();
 		bool result = false;
-		utils::StringArray files;
-
-		if ( utils::listDirectoryFiles( ashes::getExecutableDirectory(), files, false ) )
-		{
-			for ( auto file : files )
-			{
-				if ( file.find( ".dll" ) != std::string::npos 
-					|| file.find( ".so" ) != std::string::npos )
-				try
-				{
-					ashes::DynamicLibrary lib{ file };
-					m_plugins.emplace_back( std::move( lib ) );
-				}
-				catch ( std::exception & exc )
-				{
-					std::clog << exc.what() << std::endl;
-				}
-			}
-
-			for ( auto & plugin : m_plugins )
-			{
-				m_renderers.registerType( plugin.getShortName(), &plugin );
-			}
-		}
 
 		try
 		{
@@ -303,7 +279,6 @@ namespace common
 #	endif
 #endif
 
-		m_plugins.clear();
 		delete m_cout;
 		delete m_cerr;
 		delete m_clog;
@@ -315,9 +290,9 @@ namespace common
 		wxCmdLineParser parser( wxApp::argc, wxApp::argv );
 		parser.AddSwitch( wxT( "h" ), wxT( "help" ), _( "Displays this help" ) );
 
-		for ( auto & plugin : m_plugins )
+		for ( auto & renderer : m_renderers )
 		{
-			parser.AddSwitch( plugin.getShortName(), wxEmptyString, _( "Defines the renderer to " ) + plugin.getFullName() );
+			parser.AddSwitch( renderer.name, wxEmptyString, _( "Defines the renderer to " ) + renderer.description );
 		}
 
 		bool result = parser.Parse( false ) == 0;
@@ -333,13 +308,13 @@ namespace common
 		{
 			m_rendererName = wxT( "vk" );
 
-			for ( auto & plugin : m_plugins )
+			for ( auto & renderer : m_renderers )
 			{
 				if ( m_rendererName == wxT( "vk" ) )
 				{
-					if ( parser.Found( plugin.getShortName() ) )
+					if ( parser.Found( renderer.name ) )
 					{
-						m_rendererName = plugin.getShortName();
+						m_rendererName = renderer.name;
 					}
 				}
 			}

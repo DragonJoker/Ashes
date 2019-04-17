@@ -29,6 +29,16 @@ namespace ashes
 	{
 		return rhs;
 	}
+
+	inline VkAttachmentReference deepCopy( VkAttachmentReference const & rhs )
+	{
+		return rhs;
+	}
+
+	inline uint32_t deepCopy( uint32_t const & rhs )
+	{
+		return rhs;
+	}
 }
 
 namespace ashes::gl4
@@ -41,6 +51,29 @@ namespace ashes::gl4
 		, m_subpasses{ makeVector( createInfo.pSubpasses, createInfo.subpassCount ) }
 		, m_dependencies{ makeVector( createInfo.pDependencies, createInfo.dependencyCount ) }
 	{
+		for ( auto & subpass : m_subpasses )
+		{
+			auto data = std::make_unique< SubpassDescriptionData >( SubpassDescriptionData
+				{
+					makeVector( subpass.pInputAttachments, subpass.inputAttachmentCount ),
+					makeVector( subpass.pColorAttachments, subpass.colorAttachmentCount ),
+					makeVector( subpass.pResolveAttachments, subpass.colorAttachmentCount ),
+					( subpass.pDepthStencilAttachment
+						? Optional< VkAttachmentReference >( *subpass.pDepthStencilAttachment )
+						: std::nullopt ),
+					makeVector( subpass.pPreserveAttachments, subpass.preserveAttachmentCount )
+				} );
+			subpass.pColorAttachments = data->colorAttachments.data();
+			subpass.pInputAttachments = data->inputAttachments.data();
+			subpass.pResolveAttachments = data->resolveAttachments.data();
+			subpass.pDepthStencilAttachment = ( bool( data->depthStencilAttachment )
+				? &data->depthStencilAttachment.value()
+				: nullptr );
+			subpass.pPreserveAttachments = data->reserveAttachments.data();
+			m_subpassesDatas.emplace( &subpass
+				, std::move( data ) );
+		}
+
 		uint32_t index = 0u;
 		std::vector< uint32_t > indices;
 

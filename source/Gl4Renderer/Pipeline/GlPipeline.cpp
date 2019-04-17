@@ -251,15 +251,6 @@ namespace ashes::gl4
 	{
 	}
 
-	PushConstantsDesc Pipeline::findPushConstantBuffer( PushConstantsDesc const & pushConstants )const
-	{
-		PushConstantsDesc result{ m_constantsPcb };
-		result.offset = pushConstants.offset;
-		result.size = pushConstants.size;
-		result.data = pushConstants.data;
-		return result;
-	}
-
 	GeometryBuffers * Pipeline::findGeometryBuffers( VboBindings const & vbos
 		, IboBinding const & ibo )const
 	{
@@ -267,9 +258,9 @@ namespace ashes::gl4
 		auto it = std::find_if( m_geometryBuffers.begin()
 			, m_geometryBuffers.end()
 			, [&hash]( std::pair< size_t, GeometryBuffersPtr > const & pair )
-		{
-			return pair.first == hash;
-		} );
+			{
+				return pair.first == hash;
+			} );
 		return it == m_geometryBuffers.end()
 			? nullptr
 			: it->second.get();
@@ -290,37 +281,49 @@ namespace ashes::gl4
 		for ( auto & binding : vbos )
 		{
 			auto & vbo = binding.second;
-			m_connections.emplace( vbo.bo, get( vbo.buffer )->onDestroy.connect( [this]( GLuint name )
-			{
-				auto it = std::remove_if( m_geometryBuffers.begin()
-					, m_geometryBuffers.end()
-					, [&name]( std::pair< size_t, GeometryBuffersPtr > const & pair )
-				{
-					bool result = false;
-
-					for ( auto & vbo : pair.second->getVbos() )
+			m_connections.emplace( vbo.bo
+				, get( vbo.buffer )->onDestroy.connect( [this]( GLuint name )
 					{
-						if ( !result )
-						{
-							result = vbo.vbo == name;
-						}
-					}
+						auto it = std::remove_if( m_geometryBuffers.begin()
+							, m_geometryBuffers.end()
+							, [&name]( std::pair< size_t, GeometryBuffersPtr > const & pair )
+							{
+								bool result = false;
 
-					if ( !result && bool( pair.second->hasIbo() ) )
-					{
-						result = pair.second->getIbo().ibo == name;
-					}
+								for ( auto & vbo : pair.second->getVbos() )
+								{
+									if ( !result )
+									{
+										result = get( vbo.vbo )->getInternal() == name;
+									}
+								}
 
-					return result;
-				} );
+								if ( !result && bool( pair.second->hasIbo() ) )
+								{
+									result = get( pair.second->getIbo().ibo )->getInternal() == name;
+								}
 
-				if ( it != m_geometryBuffers.end() )
-				{
-					m_geometryBuffers.erase( it, m_geometryBuffers.end() );
-				}
-			} ) );
+								return result;
+							} );
+
+						m_geometryBuffers.erase( it, m_geometryBuffers.end() );
+					} ) );
 		}
 
 		return *m_geometryBuffers.back().second;
+	}
+
+	PushConstantsDesc Pipeline::findPushConstantBuffer( PushConstantsDesc const & pushConstants )const
+	{
+		PushConstantsDesc result{ m_constantsPcb };
+		result.offset = pushConstants.offset;
+		result.size = pushConstants.size;
+		result.data = pushConstants.data;
+		return result;
+	}
+
+	VkDescriptorSetLayoutArray const & Pipeline::getDescriptorsLayouts()const
+	{
+		return get( m_layout )->getDescriptorsLayouts();
 	}
 }

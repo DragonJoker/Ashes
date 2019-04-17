@@ -1,5 +1,6 @@
 #include "Buffer/GlBuffer.hpp"
 
+#include "Core/GlContextLock.hpp"
 #include "Core/GlDevice.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
 
@@ -18,36 +19,30 @@ namespace ashes::gl4
 	Buffer::Buffer( VkDevice device
 		, VkBufferCreateInfo createInfo )
 		: m_device{ device }
-		, m_flags{ createInfo.flags }
-		, m_size{ createInfo.size }
-		, m_usage{ createInfo.usage }
-		, m_sharingMode{ createInfo.sharingMode }
 		, m_queueFamilyIndices{ makeVector( createInfo.pQueueFamilyIndices, createInfo.queueFamilyIndexCount ) }
-		, m_target{ getTargetFromUsageFlags( m_usage ) }
+		, m_createInfo{ createInfo }
+		, m_target{ getTargetFromUsageFlags( m_createInfo.usage ) }
 	{
-		auto context = get( m_device )->getContext();
-		glLogCall( context
-			, glGenBuffers
-			, 1
-			, &m_name );
+		m_createInfo.pQueueFamilyIndices = m_queueFamilyIndices.data();
 	}
 
 	Buffer::~Buffer()
 	{
-		onDestroy( m_name );
-		auto context = get( m_device )->getContext();
-		glLogCall( context
-			, glDeleteBuffers
-			, 1
-			, &m_name );
+		onDestroy( m_internal );
 	}
 
 	VkMemoryRequirements Buffer::getMemoryRequirements()const
 	{
 		VkMemoryRequirements result{};
-		result.size = m_size;
+		result.size = m_createInfo.size;
 		result.alignment = 1u;
 		result.memoryTypeBits = ~( 0u );
 		return result;
+	}
+
+	bool Buffer::isMapped()const
+	{
+		assert( m_memory != VK_NULL_HANDLE );
+		return get( m_memory )->isMapped();
 	}
 }

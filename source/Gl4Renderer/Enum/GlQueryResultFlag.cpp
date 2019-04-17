@@ -17,8 +17,33 @@ namespace ashes::gl4
 
 		default:
 			assert( false && "Unsupported GlQueryResultFlag" );
-			return "GlQueryResultFlag_UNKNOWN";
+			return "GL_QUERY_RESULT_UNKNOWN";
 		}
+	}
+
+	std::string getName( GlQueryResultFlags value )
+	{
+		std::string result;
+		std::string sep;
+
+		if ( checkFlag( value, GL_QUERY_RESULT ) )
+		{
+			result += sep + getName( GL_QUERY_RESULT );
+			sep = "|";
+		}
+
+		if ( checkFlag( value, GL_QUERY_RESULT_NO_WAIT ) )
+		{
+			result += sep + getName( GL_QUERY_RESULT_NO_WAIT );
+			sep = "|";
+		}
+
+		if ( !value )
+		{
+			result = "0";
+		}
+
+		return result;
 	}
 
 	GlQueryResultFlags convertQueryResultFlags( VkQueryResultFlags const & flags )

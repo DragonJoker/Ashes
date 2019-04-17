@@ -88,6 +88,8 @@ namespace ashes::gl4
 		eSetDepthBias,
 		eSetLineWidth,
 		eWriteTimestamp,
+		eDownloadMemory,
+		eUploadMemory,
 	};
 
 	struct Op
@@ -99,6 +101,7 @@ namespace ashes::gl4
 	struct Command
 	{
 		Op op;
+		uint32_t dummy{ 0u };
 	};
 
 	template< OpType OpT >
@@ -175,7 +178,7 @@ namespace ashes::gl4
 		}
 
 		Command cmd;
-		uint32_t value;
+		GlTweak value;
 	};
 	using CmdDisable = CmdT< OpType::eDisable >;
 
@@ -393,7 +396,7 @@ namespace ashes::gl4
 		}
 
 		Command cmd;
-		uint32_t target;
+		GlBufferTarget target;
 		uint32_t name;
 	};
 	using CmdBindBuffer = CmdT< OpType::eBindBuffer >;
@@ -593,6 +596,56 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdActiveTexture const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eUploadMemory >
+	{
+		static Op constexpr value = { OpType::eUploadMemory, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eUploadMemory >
+	{
+		inline CmdT( VkDeviceMemory memory )
+			: cmd{ { OpType::eUploadMemory, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, memory{ memory }
+		{
+		}
+
+		Command cmd;
+		VkDeviceMemory memory;
+	};
+	using CmdUploadMemory = CmdT< OpType::eUploadMemory >;
+
+	void apply( ContextLock const & context
+		, CmdUploadMemory const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eDownloadMemory >
+	{
+		static Op constexpr value = { OpType::eDownloadMemory, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eDownloadMemory >
+	{
+		inline CmdT( VkDeviceMemory memory )
+			: cmd{ { OpType::eDownloadMemory, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, memory{ memory }
+		{
+		}
+
+		Command cmd;
+		VkDeviceMemory memory;
+	};
+	using CmdDownloadMemory = CmdT< OpType::eDownloadMemory >;
+
+	void apply( ContextLock const & context
+		, CmdDownloadMemory const & cmd );
 
 	//*************************************************************************
 

@@ -391,6 +391,7 @@ void main()
 			{
 				m_ownContext = std::move( context );
 				m_currentContext = m_ownContext.get();
+				get( m_instance )->registerContext( *m_ownContext );
 			}
 		}
 		catch ( std::exception & exc )
@@ -458,12 +459,12 @@ void main()
 		get( m_dummyIndexed.indexMemory )->bindToBuffer( m_dummyIndexed.indexBuffer, 0u );
 		auto memory = get( m_dummyIndexed.indexMemory );
 		uint8_t * buffer{ nullptr };
-		memory->lock( 0u, count, 0u, reinterpret_cast< void ** >( &buffer ) );
+		auto size = count * sizeof( uint32_t );
 
-		if ( buffer )
+		if ( memory->lock( 0u, size, 0u, reinterpret_cast< void ** >( &buffer ) ) == VK_SUCCESS )
 		{
-			std::copy( dummyIndex, dummyIndex + count, buffer );
-			memory->flush( 0, count );
+			std::copy( dummyIndex, dummyIndex + size, buffer );
+			memory->flush( 0, size );
 			memory->unlock();
 		}
 

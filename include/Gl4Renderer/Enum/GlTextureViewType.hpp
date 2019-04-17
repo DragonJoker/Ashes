@@ -2,8 +2,6 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___GlRenderer_TextureViewType_HPP___
-#define ___GlRenderer_TextureViewType_HPP___
 #pragma once
 
 namespace ashes::gl4
@@ -38,5 +36,3 @@ namespace ashes::gl4
 	*/
 	GlTextureViewType convertViewType( VkImageViewType const & mode );
 }
-
-#endif

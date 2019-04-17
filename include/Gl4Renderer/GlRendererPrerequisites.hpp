@@ -15,9 +15,8 @@
 #include <string>
 #include <vector>
 
-#include "Gl4Renderer/Miscellaneous/OpenGLDefines.hpp"
 #include "Gl4Renderer/Miscellaneous/GlDebug.hpp"
-#include "Gl4Renderer/Miscellaneous/GlCallLogger.hpp"
+#include "Gl4Renderer/Miscellaneous/OpenGLDefines.hpp"
 
 #include <AshesRenderer/AshesRendererPrerequisites.hpp>
 #include <AshesRenderer/Util/ArrayView.hpp>

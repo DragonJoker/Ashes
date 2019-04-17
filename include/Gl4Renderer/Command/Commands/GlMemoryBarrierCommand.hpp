@@ -32,7 +32,7 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdMemoryBarrier const & cmd );
-
+	
 	//*************************************************************************
 
 	void buildMemoryBarrierCommand( VkPipelineStageFlags after

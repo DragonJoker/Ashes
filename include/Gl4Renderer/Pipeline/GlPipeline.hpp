@@ -41,6 +41,7 @@ namespace ashes::gl4
 			, VkIndexType type )const;
 		~Pipeline();
 		PushConstantsDesc findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
+		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const;
 		/**
 		*name
 		*	Getters.

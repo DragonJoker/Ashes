@@ -28,8 +28,8 @@ namespace common
 		{
 			return
 			{
-				{ 0u, ashes::ConstantFormat::eVec2f },
-				{ 8u, ashes::ConstantFormat::eVec2f },
+				{ 0u, VK_FORMAT_R32G32_SFLOAT },
+				{ 8u, VK_FORMAT_R32G32_SFLOAT },
 			};
 		}
 	}
@@ -61,12 +61,12 @@ namespace common
 		doPrepareResources( queue, commandPool );
 	}
 
-	void Gui::updateView( ashes::ImageViewPtr colourView )
+	void Gui::updateView( ashes::ImageView colourView )
 	{
 		if ( m_colourView != colourView )
 		{
-			bool first = m_colourView == nullptr;
-			m_colourView = colourView;
+			bool first = m_colourView.internal == VK_NULL_HANDLE;
+			m_colourView = std::move( colourView );
 			doPreparePipeline();
 
 			if ( !first )
@@ -261,7 +261,7 @@ namespace common
 			, commandPool
 			, VK_FORMAT_R8G8B8A8_UNORM
 			, fontData
-			, *m_fontView );
+			, m_fontView );
 
 		m_sampler = m_device.getDevice().createSampler( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
 			, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
@@ -282,7 +282,7 @@ namespace common
 		m_descriptorPool = m_descriptorSetLayout->createPool( 2u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
 		m_descriptorSet->createBinding( m_descriptorSetLayout->getBinding( 0u )
-			, *m_fontView
+			, m_fontView
 			, *m_sampler );
 		m_descriptorSet->update();
 
@@ -306,13 +306,13 @@ namespace common
 
 	void Gui::doPreparePipeline()
 	{
-		auto dimensions = m_colourView->getImage().getDimensions();
+		auto dimensions = m_colourView.image->getDimensions();
 		auto size = VkExtent2D{ dimensions.width, dimensions.height };
 		m_target = m_device.createImage(
 			{
 				0u,
 				VK_IMAGE_TYPE_2D,
-				m_colourView->getFormat(),
+				m_colourView.createInfo.format,
 				dimensions,
 				1u,
 				1u,
@@ -327,7 +327,7 @@ namespace common
 		ashes::VkAttachmentDescriptionArray rpAttaches
 		{
 			{
-				m_targetView->getFormat(),
+				m_targetView.createInfo.format,
 				VK_SAMPLE_COUNT_1_BIT,
 				VK_ATTACHMENT_LOAD_OP_CLEAR,
 				VK_ATTACHMENT_STORE_OP_STORE,
@@ -412,7 +412,7 @@ namespace common
 		m_commandBuffer->begin();
 		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-			, m_fontView->makeShaderInputResource( VK_IMAGE_LAYOUT_UNDEFINED
+			, m_fontView.makeShaderInputResource( VK_IMAGE_LAYOUT_UNDEFINED
 				, 0u ) );
 		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT

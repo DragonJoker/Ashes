@@ -31,11 +31,13 @@ namespace ashes::gl4
 			: public DeviceMemory::DeviceMemoryImpl
 		{
 		public:
-			ImageMemory( VkDevice device
+			ImageMemory( VkDeviceMemory parent
+				, VkDevice device
 				, VkMemoryAllocateInfo allocateInfo
 				, VkImage texture
-				, VkDeviceSize memoryOffset )
-				: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ), get( texture )->getInternal(), get( texture )->getTarget(), memoryOffset }
+				, VkDeviceSize memoryOffset
+				, GLuint buffer )
+				: DeviceMemory::DeviceMemoryImpl{ parent, device, std::move( allocateInfo ), get( texture )->getInternal(), get( texture )->getTarget(), memoryOffset, buffer }
 				, m_texture{ get( texture ) }
 				, m_internal{ getInternalFormat( m_texture->getFormat() ) }
 				, m_format{ getFormat( m_internal ) }
@@ -92,26 +94,6 @@ namespace ashes::gl4
 				// If the texture is visible to the host, we'll need a PBO to map it to RAM.
 				if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 				{
-					glLogCall( context
-						, glGenBuffers
-						, 1u
-						, &m_pbo );
-					// Initialise Upload PBO.
-					glLogCall( context
-						, glBindBuffer
-						, GL_BUFFER_TARGET_PIXEL_UNPACK
-						, m_pbo );
-					glLogCall( context
-						, glBufferStorage
-						, m_pbo
-						, GLsizeiptr( m_allocateInfo.allocationSize )
-						, nullptr
-						, GLbitfield( convertMemoryPropertyFlags( m_flags ) ) );
-					glLogCall( context
-						, glBindBuffer
-						, GL_BUFFER_TARGET_PIXEL_UNPACK
-						, 0u );
-
 					// Prepare update regions, layer by layer.
 					uint32_t offset = 0;
 					VkBufferImageCopy bufferCopyRegion = {};
@@ -142,69 +124,36 @@ namespace ashes::gl4
 
 			VkResult lock( VkDeviceSize offset
 				, VkDeviceSize size
-				, VkMemoryMapFlags flags
 				, void ** data )const override
 			{
 				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
 
 				auto context = get( m_device )->getContext();
+				auto copySize = size == WholeSize
+					? m_allocateInfo.allocationSize
+					: size;
 				glLogCall( context
 					, glBindBuffer
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, m_pbo );
+					, m_buffer );
 				doSetupUpdateRegions( offset, size );
 				auto result = glLogCall( context
 					, glMapBufferRange
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
 					, GLintptr( offset )
-					, GLsizei( size == WholeSize ? m_allocateInfo.allocationSize : size )
+					, GLsizei( copySize )
 					, m_mapFlags );
-				assertDebugValue( m_isLocked, false );
-				setDebugValue( m_isLocked, result != nullptr );
 				*data = result;
 				return result
 					? VK_SUCCESS
 					: VK_ERROR_MEMORY_MAP_FAILED;
 			}
 
-			VkResult flush( VkDeviceSize offset
-				, VkDeviceSize size )const override
-			{
-				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
-					&& "Unsupported action on a device local texture" );
-				assertDebugValue( m_isLocked, true );
-
-				auto context = get( m_device )->getContext();
-				glLogCall( context
-					, glFlushMappedBufferRange
-					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, GLintptr( offset )
-					, GLsizei( size == WholeSize ? m_allocateInfo.allocationSize : size ) );
-				return VK_SUCCESS;
-			}
-
-			VkResult invalidate( VkDeviceSize offset
-				, VkDeviceSize size )const override
-			{
-				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
-					&& "Unsupported action on a device local texture" );
-				assertDebugValue( m_isLocked, true );
-
-				auto context = get( m_device )->getContext();
-				glLogCall( context
-					, glInvalidateBufferSubData
-					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, GLintptr( offset )
-					, GLsizei( size == WholeSize ? m_allocateInfo.allocationSize : size ) );
-				return VK_SUCCESS;
-			}
-
 			void unlock()const override
 			{
 				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
-				assertDebugValue( m_isLocked, true );
 
 				auto context = get( m_device )->getContext();
 				glLogCall( context
@@ -240,7 +189,6 @@ namespace ashes::gl4
 					, glBindTexture
 					, m_boundTarget
 					, 0u );
-				setDebugValue( m_isLocked, false );
 			}
 
 		private:
@@ -303,8 +251,8 @@ namespace ashes::gl4
 					, GL_TRUE );
 			}
 
-			void doSetupUpdateRegions( uint64_t offset
-				, uint64_t size )const
+			void doSetupUpdateRegions( VkDeviceSize offset
+				, VkDeviceSize size )const
 			{
 				assert( !m_updateRegions.empty() && "Can't update this texture." );
 				auto layerSize = getSize( m_updateRegions[0].imageExtent
@@ -511,99 +459,85 @@ namespace ashes::gl4
 			: public DeviceMemory::DeviceMemoryImpl
 		{
 		public:
-			BufferMemory( VkDevice device
+			BufferMemory( VkDeviceMemory parent
+				, VkDevice device
 				, VkMemoryAllocateInfo allocateInfo
-				, VkBuffer buffer
-				, VkDeviceSize memoryOffset )
-				: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ), get( buffer)->getInternal(), get( buffer )->getTarget(), memoryOffset }
+				, GlBufferTarget target
+				, VkDeviceSize memoryOffset
+				, GLuint buffer )
+				: DeviceMemory::DeviceMemoryImpl{ parent, device, std::move( allocateInfo ), buffer, target, memoryOffset, buffer }
 			{
-				auto context = get( m_device )->getContext();
-				glLogCall( context
-					, glBindBuffer
-					, m_boundTarget
-					, m_boundResource );
-				glLogCall( context
-					, glBufferStorage
-					, m_boundTarget
-					, GLsizeiptr( m_allocateInfo.allocationSize )
-					, nullptr
-					, GLbitfield( convertMemoryPropertyFlags( m_flags ) ) );
-				glLogCall( context
-					, glBindBuffer
-					, m_boundTarget
-					, 0u );
+				if ( !checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
+				{
+					auto context = get( m_device )->getContext();
+					glLogCall( context
+						, glGenBuffers
+						, 1u
+						, &m_boundResource );
+					glLogCall( context
+						, glBindBuffer
+						, GlBufferTarget( m_boundTarget )
+						, m_boundResource );
+					glLogCall( context
+						, glBufferStorage
+						, GlBufferTarget( m_boundTarget )
+						, GLsizeiptr( m_allocateInfo.allocationSize )
+						, nullptr
+						, convertMemoryPropertyFlags( m_flags ) );
+					glLogCall( context
+						, glBindBuffer
+						, GlBufferTarget( m_boundTarget )
+						, 0u );
+				}
 			}
 
-			VkResult lock( uint64_t offset
-				, uint64_t size
-				, VkMemoryMapFlags flags
+			~BufferMemory()
+			{
+				if ( m_boundResource != m_buffer )
+				{
+					auto context = get( m_device )->getContext();
+					glLogCall( context
+						, glDeleteBuffers
+						, 1u
+						, &m_boundResource );
+				}
+			}
+
+			VkResult lock( VkDeviceSize offset
+				, VkDeviceSize size
 				, void ** data )const override
 			{
 				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
-				assertDebugValue( m_isLocked, false );
 				auto context = get( m_device )->getContext();
 				glLogCall( context
 					, glBindBuffer
-					, GL_BUFFER_TARGET_COPY_WRITE
+					, GlBufferTarget( m_boundTarget )
 					, m_boundResource );
 				auto result = glLogCall( context
 					, glMapBufferRange
-					, GL_BUFFER_TARGET_COPY_WRITE
+					, GlBufferTarget( m_boundTarget )
 					, GLintptr( offset )
 					, GLsizei( size == WholeSize ? m_allocateInfo.allocationSize : size )
 					, m_mapFlags );
-				setDebugValue( m_isLocked, result != nullptr );
 				*data = result;
 				return result
 					? VK_SUCCESS
 					: VK_ERROR_MEMORY_MAP_FAILED;
 			}
 
-			VkResult flush( uint64_t offset
-				, uint64_t size )const override
-			{
-				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
-					&& "Unsupported action on a device local buffer" );
-				assertDebugValue( m_isLocked, true );
-				auto context = get( m_device )->getContext();
-				glLogCall( context
-					, glFlushMappedBufferRange
-					, GL_BUFFER_TARGET_COPY_WRITE
-					, GLintptr( offset )
-					, GLsizei( size == WholeSize ? m_allocateInfo.allocationSize : size ) );
-				return VK_SUCCESS;
-			}
-
-			VkResult invalidate( uint64_t offset
-				, uint64_t size )const override
-			{
-				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
-					&& "Unsupported action on a device local buffer" );
-				assertDebugValue( m_isLocked, true );
-				auto context = get( m_device )->getContext();
-				glLogCall( context
-					, glInvalidateBufferSubData
-					, GL_BUFFER_TARGET_COPY_WRITE
-					, GLintptr( offset )
-					, GLsizei( size == WholeSize ? m_allocateInfo.allocationSize : size ) );
-				return VK_SUCCESS;
-			}
-
 			void unlock()const override
 			{
 				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
-				assertDebugValue( m_isLocked, true );
 				auto context = get( m_device )->getContext();
 				glLogCall( context
 					, glUnmapBuffer
-					, GL_BUFFER_TARGET_COPY_WRITE );
+					, GlBufferTarget( m_boundTarget ) );
 				glLogCall( context
 					, glBindBuffer
-					, GL_BUFFER_TARGET_COPY_WRITE
+					, GlBufferTarget( m_boundTarget )
 					, 0u );
-				setDebugValue( m_isLocked, false );
 			}
 
 		private:
@@ -613,27 +547,75 @@ namespace ashes::gl4
 
 	//************************************************************************************************
 
-	DeviceMemory::DeviceMemoryImpl::DeviceMemoryImpl( VkDevice device
+	DeviceMemory::DeviceMemoryImpl::DeviceMemoryImpl( VkDeviceMemory parent
+		, VkDevice device
 		, VkMemoryAllocateInfo allocateInfo
 		, GLuint boundResource
 		, GLuint boundTarget
-		, VkDeviceSize memoryOffset )
+		, VkDeviceSize memoryOffset
+		, GLuint buffer )
 		: m_device{ device }
 		, m_allocateInfo{ allocateInfo }
 		, m_mapFlags{ 0u }
 		, m_boundResource{ boundResource }
 		, m_boundTarget{ boundTarget }
 		, m_memoryOffset{ memoryOffset }
+		, m_buffer{ buffer }
 		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
 	{
 		if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 		{
-			m_mapFlags |= GL_MEMORY_MAP_READ_BIT | GL_MEMORY_MAP_WRITE_BIT | GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
-		}
+			m_mapFlags |= GL_MEMORY_MAP_READ_BIT;
+			m_mapFlags |= GL_MEMORY_MAP_WRITE_BIT;
+			m_mapFlags |= GL_MEMORY_MAP_PERSISTENT_BIT;
 
-		if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
+			if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
+			{
+				m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
+			}
+			else
+			{
+				m_mapFlags |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
+			}
+
+		}
+	}
+
+	void DeviceMemory::DeviceMemoryImpl::upload( ByteArray const & data
+		, VkDeviceSize offset
+		, VkDeviceSize size )const
+	{
+		void * dst;
+
+		if ( lock( offset, size, &dst ) == VK_SUCCESS )
 		{
-			m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
+			if ( size == ~( 0ull ) )
+			{
+				assert( offset == 0ull );
+				size = m_allocateInfo.allocationSize;
+			}
+
+			std::memcpy( dst, data.data() + offset, size );
+			unlock();
+		}
+	}
+
+	void DeviceMemory::DeviceMemoryImpl::download( ByteArray & data
+		, VkDeviceSize offset
+		, VkDeviceSize size )const
+	{
+		void * dst;
+
+		if ( lock( offset, size, &dst ) == VK_SUCCESS )
+		{
+			if ( size == ~( 0ull ) )
+			{
+				assert( offset == 0ull );
+				size = m_allocateInfo.allocationSize;
+			}
+
+			std::memcpy( data.data() + offset, dst, size );
+			unlock();
 		}
 	}
 
@@ -641,27 +623,81 @@ namespace ashes::gl4
 
 	DeviceMemory::DeviceMemory( VkDevice device
 		, VkMemoryAllocateInfo allocateInfo )
-		: m_allocateInfo{ std::move( allocateInfo ) }
-		, m_device{ device }
+		: m_device{ device }
+		, m_allocateInfo{ std::move( allocateInfo ) }
+		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
 	{
+		if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
+		{
+			m_mapFlags |= GL_MEMORY_MAP_READ_BIT;
+			m_mapFlags |= GL_MEMORY_MAP_WRITE_BIT;
+			m_mapFlags |= GL_MEMORY_MAP_PERSISTENT_BIT;
+			m_data.resize( allocateInfo.allocationSize );
+
+			if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
+			{
+				m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
+			}
+			else
+			{
+				m_mapFlags |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
+			}
+
+			if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
+			{
+				auto context = get( m_device )->getContext();
+				glLogCall( context
+					, glGenBuffers
+					, 1u
+					, &m_buffer );
+				glLogCall( context
+					, glBindBuffer
+					, GL_BUFFER_TARGET_COPY_WRITE
+					, m_buffer );
+				glLogCall( context
+					, glBufferStorage
+					, GL_BUFFER_TARGET_COPY_WRITE
+					, GLsizeiptr( m_allocateInfo.allocationSize )
+					, nullptr
+					, convertMemoryPropertyFlags( m_flags ) );
+				glLogCall( context
+					, glBindBuffer
+					, GL_BUFFER_TARGET_COPY_WRITE
+					, 0u );
+				m_impl = std::make_unique< BufferMemory >( get( this )
+					, m_device
+					, m_allocateInfo
+					, GL_BUFFER_TARGET_COPY_WRITE
+					, 0u
+					, m_buffer );
+			}
+		}
 	}
 
 	DeviceMemory::~DeviceMemory()
 	{
+		auto context = get( m_device )->getContext();
+		glLogCall( context
+			, glDeleteBuffers
+			, 1u
+			, &m_buffer );
 	}
 
 	VkResult DeviceMemory::bindToBuffer( VkBuffer buffer
 		, VkDeviceSize memoryOffset )
 	{
-		assert( !m_impl && "Memory object was already bound to a resource object" );
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
 
 		try
 		{
-			m_impl = std::make_unique< BufferMemory >( m_device
+			m_impl = std::make_unique< BufferMemory >( get( this )
+				, m_device
 				, m_allocateInfo
-				, buffer
-				, memoryOffset );
+				, get( buffer )->getTarget()
+				, memoryOffset
+				, m_buffer );
+			get( buffer )->setInternal( m_impl->getInternal() );
+			get( buffer )->setMemory( get( this ) );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -678,15 +714,16 @@ namespace ashes::gl4
 	VkResult DeviceMemory::bindToImage( VkImage image
 		, VkDeviceSize memoryOffset )
 	{
-		assert( !m_impl && "Memory object was already bound to a resource object" );
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
 
 		try
 		{
-			m_impl = std::make_unique< ImageMemory >( m_device
+			m_impl = std::make_unique< ImageMemory >( get( this )
+				, m_device
 				, m_allocateInfo
 				, image
-				, memoryOffset );
+				, memoryOffset
+				, m_buffer );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -700,33 +737,57 @@ namespace ashes::gl4
 		return result;
 	}
 
-	VkResult DeviceMemory::lock( uint64_t offset
-		, uint64_t size
+	void DeviceMemory::upload( VkDeviceSize offset
+		, VkDeviceSize size )const
+	{
+		return m_impl->upload( m_data, offset, size );
+	}
+
+	void DeviceMemory::download( VkDeviceSize offset
+		, VkDeviceSize size )const
+	{
+		return m_impl->download( m_data, offset, size );
+	}
+
+	VkResult DeviceMemory::lock( VkDeviceSize offset
+		, VkDeviceSize size
 		, VkMemoryMapFlags flags
 		, void ** data )const
 	{
-		assert( m_impl && "Memory object was not bound to a resource object" );
-		return m_impl->lock( offset, size, flags, data );
+		assertDebugValue( m_isLocked, false );
+		assertDebugValue( m_mapped, false );
+		*data = m_data.data() + offset;
+		m_mappedOffset = offset;
+		m_mappedSize = size;
+		m_mapped = true;
+		setDebugValue( m_isLocked, *data != nullptr );
+		return VK_SUCCESS;
 	}
 
-	VkResult DeviceMemory::flush( uint64_t offset
-		, uint64_t size )const
+	VkResult DeviceMemory::flush( VkDeviceSize offset
+		, VkDeviceSize size )const
 	{
-		assert( m_impl && "Memory object was not bound to a resource object" );
-		return m_impl->flush( offset, size );
+		assertDebugValue( m_isLocked, true );
+		assertDebugValue( m_mapped, true );
+		m_impl->upload( m_data, offset, size );
+		return VK_SUCCESS;
 	}
 
-	VkResult DeviceMemory::invalidate( uint64_t offset
-		, uint64_t size )const
+	VkResult DeviceMemory::invalidate( VkDeviceSize offset
+		, VkDeviceSize size )const
 	{
-		assert( m_impl && "Memory object was not bound to a resource object" );
-		return m_impl->invalidate( offset, size );
+		assertDebugValue( m_isLocked, true );
+		assertDebugValue( m_mapped, true );
+		return VK_SUCCESS;
 	}
 
 	void DeviceMemory::unlock()const
 	{
-		assert( m_impl && "Memory object was not bound to a resource object" );
-		m_impl->unlock();
+		assertDebugValue( m_isLocked, true );
+		assertDebugValue( m_mapped, true );
+		m_mapped = false;
+		m_impl->upload( m_data, m_mappedOffset, m_mappedSize );
+		setDebugValue( m_isLocked, false );
 	}
 
 	//************************************************************************************************

@@ -70,7 +70,7 @@ namespace ashes::gl4
 			, int32_t messageCode
 			, const char * pLayerPrefix
 			, const char * pMessage );
-
+		void registerContext( Context & context );
 		inline bool isSPIRVSupported()const
 		{
 			return m_extensions.isSPIRVSupported();

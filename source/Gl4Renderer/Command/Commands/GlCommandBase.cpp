@@ -5,6 +5,9 @@ See LICENSE file in root folder.
 #include "Command/Commands/GlCommandBase.hpp"
 
 #include "Core/GlContextLock.hpp"
+#include "Miscellaneous/GlDeviceMemory.hpp"
+
+#include "ashesgl4_api.hpp"
 
 namespace ashes::gl4
 {
@@ -187,5 +190,17 @@ namespace ashes::gl4
 		glLogCall( context
 			, glActiveTexture
 			, GlTextureUnit( GL_TEXTURE0 + cmd.binding ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUploadMemory const & cmd )
+	{
+		get( cmd.memory )->upload( 0u, ~( 0ull ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDownloadMemory const & cmd )
+	{
+		get( cmd.memory )->download( 0u, ~( 0ull ) );
 	}
 }

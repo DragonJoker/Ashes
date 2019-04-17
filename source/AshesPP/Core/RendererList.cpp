@@ -21,20 +21,23 @@ namespace ashes
 	RendererList::RendererList()
 		: m_library{ libraryName }
 	{
-		PFN_ashEnumeratePluginsDescriptions enumeratePluginDescriptions;
+		if ( !m_library.getFunction( "ashEnumeratePluginsDescriptions", m_enumeratePluginDescriptions ) )
+		{
+			throw std::runtime_error{ "[" + ashes::getFileName( m_library.getPath() ) + "] is not a renderer plugin" };
+		}
 
-		if ( !m_library.getFunction( "ashEnumeratePluginsDescriptions", enumeratePluginDescriptions ) )
+		if ( !m_library.getFunction( "ashSelectPlugin", m_selectPlugin ) )
 		{
 			throw std::runtime_error{ "[" + ashes::getFileName( m_library.getPath() ) + "] is not a renderer plugin" };
 		}
 
 		uint32_t count = 0u;
-		enumeratePluginDescriptions( &count, nullptr );
+		m_enumeratePluginDescriptions( &count, nullptr );
 
 		if ( count > 0 )
 		{
 			m_plugins.resize( count );
-			enumeratePluginDescriptions( &count, m_plugins.data() );
+			m_enumeratePluginDescriptions( &count, m_plugins.data() );
 		}
 	}
 
@@ -58,6 +61,7 @@ namespace ashes
 			throw std::runtime_error{ Error };
 		}
 
+		m_selectPlugin( *it );
 		return *it;
 	}
 }

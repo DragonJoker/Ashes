@@ -43,6 +43,7 @@ namespace ashes::gl4
 		GL_PRIMITIVE_RESTART = 0x8F9D,
 		GL_SAMPLE_SHADING = 0x8C36,
 		GL_FRAMEBUFFER_SRGB = 0x8DB9,
+		GL_DEBUG_OUTPUT_SYNC = 0x8242,
 	};
 	std::string getName( GlTweak value );
 }

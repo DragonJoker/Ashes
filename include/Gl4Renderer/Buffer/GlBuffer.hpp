@@ -15,45 +15,54 @@ namespace ashes::gl4
 {
 	class Buffer
 	{
+		friend class DeviceMemory;
+
 	public:
 		Buffer( VkDevice device
 			, VkBufferCreateInfo createInfo );
 		~Buffer();
-		/**
-		*\copydoc	VkBuffer::getMemoryRequirements
-		*/
+
 		VkMemoryRequirements getMemoryRequirements()const;
-		/**
-		*\return
-		*	Le tampon.
-		*/
+		bool isMapped()const;
+
 		inline GLuint getInternal()const
 		{
-			assert( m_name != GL_INVALID_INDEX );
-			return m_name;
+			assert( m_internal != GL_INVALID_INDEX );
+			return m_internal;
 		}
-		/**
-		*\return
-		*	La cible du tampon.
-		*/
+
 		inline GlBufferTarget getTarget()const
 		{
 			return m_target;
+		}
+
+		inline void setMemory( VkDeviceMemory memory )
+		{
+			m_memory = memory;
+		}
+
+		inline VkDeviceMemory getMemory()const
+		{
+			return m_memory;
 		}
 
 	public:
 		mutable BufferDestroySignal onDestroy;
 
 	private:
+		inline void setInternal( GLuint value )
+		{
+			assert( m_internal == GL_INVALID_INDEX );
+			m_internal = value;
+		}
+
+	private:
 		VkDevice m_device;
-		VkBufferCreateFlags m_flags;
-		VkDeviceSize m_size;
-		VkBufferUsageFlags m_usage;
-		VkSharingMode m_sharingMode;
 		UInt32Array m_queueFamilyIndices;
-		GLuint m_name{ GL_INVALID_INDEX };
+		VkBufferCreateInfo m_createInfo;
+		GLuint m_internal{ GL_INVALID_INDEX };
 		GlBufferTarget m_target;
-		mutable VkDeviceMemory m_storage;
+		VkDeviceMemory m_memory{ VK_NULL_HANDLE };
 		mutable GlBufferTarget m_copyTarget;
 	};
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Prerequisites.hpp"
+#include <AshesPP/Core/RendererList.hpp>
 
 #include <wx/app.h>
 
@@ -34,7 +35,6 @@ namespace common
 		std::streambuf * m_cout{ nullptr };
 		std::streambuf * m_cerr{ nullptr };
 		std::streambuf * m_clog{ nullptr };
-		std::vector< utils::Plugin > m_plugins;
-		utils::InstanceFactory m_renderers;
+		ashes::RendererList m_renderers;
 	};
 }

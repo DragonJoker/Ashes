@@ -38,7 +38,15 @@ namespace ashes::gl4
 		PipelineLayout( VkDevice device
 			, VkPipelineLayoutCreateInfo createInfo );
 
+		inline VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const
+		{
+			return m_setLayouts;
+		}
+
 	private:
 		VkDevice m_device;
+		VkDescriptorSetLayoutArray m_setLayouts;
+		VkPushConstantRangeArray m_pushConstantRanges;
+		VkPipelineLayoutCreateInfo m_createInfo;
 	};
 }

@@ -14,6 +14,8 @@ file( GLOB HEADER_FILES
 	Src/*.inl
 )
 
+include_directories( ${TestIncludeDirectories} )
+
 include_directories( ${CMAKE_SOURCE_DIR}/Test/00-Common/Src )
 
 add_executable( ${PROJECT_NAME} WIN32

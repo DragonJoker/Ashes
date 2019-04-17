@@ -18,6 +18,8 @@ file( GLOB SHADER_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/Shaders/*.*
 )
 
+include_directories( ${TestIncludeDirectories} )
+
 source_group( "Shader Files" FILES ${SHADER_FILES} )
 include_directories( ${CMAKE_SOURCE_DIR}/Test/00-Common/Src )
 

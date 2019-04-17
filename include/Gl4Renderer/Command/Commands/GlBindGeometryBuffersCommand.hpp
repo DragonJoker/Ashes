@@ -26,7 +26,6 @@ namespace ashes::gl4
 		}
 
 		Command cmd;
-		uint32_t dummy; // Here for alignment purpose
 		GeometryBuffers const * vao;
 	};
 	using CmdBindVextexArray = CmdT< OpType::eBindVextexArray >;

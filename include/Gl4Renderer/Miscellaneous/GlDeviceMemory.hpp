@@ -24,31 +24,42 @@ namespace ashes::gl4
 		class DeviceMemoryImpl
 		{
 		public:
-			DeviceMemoryImpl( VkDevice device
+			DeviceMemoryImpl( VkDeviceMemory parent
+				, VkDevice device
 				, VkMemoryAllocateInfo allocateInfo
 				, GLuint boundResource
-				, GLuint boundTarget
-				, VkDeviceSize memoryOffset );
+				, GLenum boundTarget
+				, VkDeviceSize memoryOffset
+				, GLuint buffer );
 			virtual ~DeviceMemoryImpl() = default;
+
+			void upload( ByteArray const & data
+				, VkDeviceSize offset
+				, VkDeviceSize size )const;
+			void download( ByteArray & data
+				, VkDeviceSize offset
+				, VkDeviceSize size )const;
+
 			virtual VkResult lock( VkDeviceSize offset
 				, VkDeviceSize size
-				, VkMemoryMapFlags flags
 				, void ** data )const = 0;
-			virtual VkResult flush( VkDeviceSize offset
-				, VkDeviceSize size )const = 0;
-			virtual VkResult invalidate( VkDeviceSize offset
-				, VkDeviceSize size )const = 0;
 			virtual void unlock()const = 0;
 
+			inline GLuint getInternal()const
+			{
+				return m_boundResource;
+			}
+
 		protected:
+			VkDeviceMemory m_parent;
 			VkDevice m_device;
 			VkMemoryAllocateInfo m_allocateInfo;
 			VkMemoryPropertyFlags m_flags;
 			GlMemoryMapFlags m_mapFlags;
+			GLuint m_buffer;
 			GLuint m_boundResource;
 			GLenum m_boundTarget;
 			VkDeviceSize m_memoryOffset;
-			declareDebugVariable( bool, m_isLocked, false );
 		};
 
 	public:
@@ -59,31 +70,38 @@ namespace ashes::gl4
 			, VkDeviceSize memoryOffset );
 		VkResult bindToImage( VkImage texture
 			, VkDeviceSize memoryOffset );
-		/**
-		*\copydoc	DeviceMemory::lock
-		*/
+
+		void upload( VkDeviceSize offset
+			, VkDeviceSize size )const;
+		void download( VkDeviceSize offset
+			, VkDeviceSize size )const;
+
 		VkResult lock( VkDeviceSize offset
 			, VkDeviceSize size
 			, VkMemoryMapFlags flags
 			, void ** data )const;
-		/**
-		*\copydoc	DeviceMemory::flush
-		*/
 		VkResult flush( VkDeviceSize offset
 			, VkDeviceSize size )const;
-		/**
-		*\copydoc	DeviceMemory::invalidate
-		*/
 		VkResult invalidate( VkDeviceSize offset
 			, VkDeviceSize size )const;
-		/**
-		*\copydoc	DeviceMemory::unlock
-		*/
 		void unlock()const;
+
+		bool isMapped()const
+		{
+			return m_mapped;
+		}
 
 	private:
 		VkDevice m_device;
 		VkMemoryAllocateInfo m_allocateInfo;
+		VkMemoryPropertyFlags m_flags;
+		GlMemoryMapFlags m_mapFlags;
 		std::unique_ptr< DeviceMemoryImpl > m_impl;
+		GLuint m_buffer{ GL_INVALID_INDEX };
+		mutable bool m_mapped = false;
+		mutable VkDeviceSize m_mappedOffset;
+		mutable VkDeviceSize m_mappedSize;
+		mutable ByteArray m_data;
+		declareDebugVariable( bool, m_isLocked, false );
 	};
 }

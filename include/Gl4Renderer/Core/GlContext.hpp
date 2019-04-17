@@ -163,10 +163,10 @@ namespace ashes::gl4
 		}
 #include "Gl4Renderer/Miscellaneous/OpenGLFunctionsList.inl"
 
-		PFN_glObjectLabel glObjectLabel = nullptr;
-		PFN_glObjectPtrLabel glObjectPtrLabel = nullptr;
-		PFN_glDebugMessageCallback glDebugMessageCallback = nullptr;
-		PFN_glDebugMessageCallbackAMD glDebugMessageCallbackAMD = nullptr;
+		PFN_glObjectLabel m_glObjectLabel = nullptr;
+		PFN_glObjectPtrLabel m_glObjectPtrLabel = nullptr;
+		PFN_glDebugMessageCallback m_glDebugMessageCallback = nullptr;
+		PFN_glDebugMessageCallbackAMD m_glDebugMessageCallbackAMD = nullptr;
 
 	private:
 		void loadBaseFunctions();

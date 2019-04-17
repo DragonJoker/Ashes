@@ -55,6 +55,11 @@ namespace ashes::gl4
 			return m_context;
 		}
 
+		inline Context const & getContext()const
+		{
+			return *m_context;
+		}
+
 	private:
 		Context * m_context;
 		bool m_disable;

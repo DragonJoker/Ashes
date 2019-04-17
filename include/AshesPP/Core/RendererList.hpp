@@ -33,6 +33,8 @@ namespace ashes
 	private:
 		ashes::DynamicLibrary m_library;
 		std::vector< AshPluginDescription > m_plugins;
+		PFN_ashEnumeratePluginsDescriptions m_enumeratePluginDescriptions;;
+		PFN_ashSelectPlugin m_selectPlugin;
 	};
 }
 

@@ -103,7 +103,7 @@ namespace ashes::gl4
 
 		Command cmd;
 		uint32_t binding;
-		uint32_t target;
+		GlBufferTarget target;
 		uint32_t name;
 		int64_t offset;
 		int64_t range;
