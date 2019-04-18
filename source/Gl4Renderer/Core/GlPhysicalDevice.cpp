@@ -594,6 +594,8 @@ namespace ashes::gl4
 				{
 					GLint value;
 					glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_INTERNALFORMAT_SUPPORTED, 1, &value );
+					m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+					m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 
 					if ( value == GL_TRUE )
 					{
@@ -630,6 +632,14 @@ namespace ashes::gl4
 						if ( value == GL_FULL_SUPPORT )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
+						}
+
+						glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_READ_PIXELS, 1, &value );
+
+						if ( value == GL_FULL_SUPPORT )
+						{
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
 						}
 					}
 				}
