@@ -10,6 +10,8 @@ See LICENSE file in root folder
 #include "Image/GlImage.hpp"
 #include "Miscellaneous/GlCallLogger.hpp"
 
+#include "sha512.hpp"
+
 #include "ashesgl4_api.hpp"
 
 namespace ashes::gl4
@@ -567,17 +569,16 @@ namespace ashes::gl4
 		{
 			m_mapFlags |= GL_MEMORY_MAP_READ_BIT;
 			m_mapFlags |= GL_MEMORY_MAP_WRITE_BIT;
-			m_mapFlags |= GL_MEMORY_MAP_PERSISTENT_BIT;
+			//m_mapFlags |= GL_MEMORY_MAP_PERSISTENT_BIT;
 
-			if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
-			{
-				m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
-			}
-			else
-			{
-				m_mapFlags |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
-			}
-
+			//if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
+			//{
+			//	m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
+			//}
+			//else
+			//{
+			//	m_mapFlags |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
+			//}
 		}
 	}
 
@@ -585,16 +586,16 @@ namespace ashes::gl4
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		void * dst;
+		if ( size == WholeSize )
+		{
+			assert( offset == 0ull );
+			size = m_allocateInfo.allocationSize;
+		}
+
+		void * dst{ nullptr };
 
 		if ( lock( offset, size, &dst ) == VK_SUCCESS )
 		{
-			if ( size == ~( 0ull ) )
-			{
-				assert( offset == 0ull );
-				size = m_allocateInfo.allocationSize;
-			}
-
 			std::memcpy( dst, data.data() + offset, size );
 			unlock();
 		}
@@ -604,17 +605,17 @@ namespace ashes::gl4
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		void * dst;
-
-		if ( lock( offset, size, &dst ) == VK_SUCCESS )
+		if ( size == WholeSize )
 		{
-			if ( size == ~( 0ull ) )
-			{
-				assert( offset == 0ull );
-				size = m_allocateInfo.allocationSize;
-			}
+			assert( offset == 0ull );
+			size = m_allocateInfo.allocationSize;
+		}
 
-			std::memcpy( data.data() + offset, dst, size );
+		void * src{ nullptr };
+
+		if ( lock( offset, size, &src ) == VK_SUCCESS )
+		{
+			std::memcpy( data.data() + offset, src, size );
 			unlock();
 		}
 	}
@@ -631,46 +632,45 @@ namespace ashes::gl4
 		{
 			m_mapFlags |= GL_MEMORY_MAP_READ_BIT;
 			m_mapFlags |= GL_MEMORY_MAP_WRITE_BIT;
-			m_mapFlags |= GL_MEMORY_MAP_PERSISTENT_BIT;
+			//m_mapFlags |= GL_MEMORY_MAP_PERSISTENT_BIT;
+
+			//if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
+			//{
+			//	m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
+			//}
+			//else
+			//{
+			//	m_mapFlags |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
+			//}
+
 			m_data.resize( allocateInfo.allocationSize );
+			m_sha = sha512( m_data );
 
-			if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
-			{
-				m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
-			}
-			else
-			{
-				m_mapFlags |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
-			}
-
-			if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
-			{
-				auto context = get( m_device )->getContext();
-				glLogCall( context
-					, glGenBuffers
-					, 1u
-					, &m_buffer );
-				glLogCall( context
-					, glBindBuffer
-					, GL_BUFFER_TARGET_COPY_WRITE
-					, m_buffer );
-				glLogCall( context
-					, glBufferStorage
-					, GL_BUFFER_TARGET_COPY_WRITE
-					, GLsizeiptr( m_allocateInfo.allocationSize )
-					, nullptr
-					, convertMemoryPropertyFlags( m_flags ) );
-				glLogCall( context
-					, glBindBuffer
-					, GL_BUFFER_TARGET_COPY_WRITE
-					, 0u );
-				m_impl = std::make_unique< BufferMemory >( get( this )
-					, m_device
-					, m_allocateInfo
-					, GL_BUFFER_TARGET_COPY_WRITE
-					, 0u
-					, m_buffer );
-			}
+			auto context = get( m_device )->getContext();
+			glLogCall( context
+				, glGenBuffers
+				, 1u
+				, &m_buffer );
+			glLogCall( context
+				, glBindBuffer
+				, GL_BUFFER_TARGET_COPY_WRITE
+				, m_buffer );
+			glLogCall( context
+				, glBufferStorage
+				, GL_BUFFER_TARGET_COPY_WRITE
+				, GLsizeiptr( m_allocateInfo.allocationSize )
+				, nullptr
+				, convertMemoryPropertyFlags( m_flags ) );
+			glLogCall( context
+				, glBindBuffer
+				, GL_BUFFER_TARGET_COPY_WRITE
+				, 0u );
+			m_impl = std::make_unique< BufferMemory >( get( this )
+				, m_device
+				, m_allocateInfo
+				, GL_BUFFER_TARGET_COPY_WRITE
+				, 0u
+				, m_buffer );
 		}
 	}
 
@@ -740,13 +740,19 @@ namespace ashes::gl4
 	void DeviceMemory::upload( VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		return m_impl->upload( m_data, offset, size );
+		auto sha = sha512( m_data );
+
+		if ( m_sha != sha )
+		{
+			m_sha = sha;
+			m_impl->upload( m_data, offset, size );
+		}
 	}
 
 	void DeviceMemory::download( VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		return m_impl->download( m_data, offset, size );
+		m_impl->download( m_data, offset, size );
 	}
 
 	VkResult DeviceMemory::lock( VkDeviceSize offset
@@ -754,40 +760,49 @@ namespace ashes::gl4
 		, VkMemoryMapFlags flags
 		, void ** data )const
 	{
-		assertDebugValue( m_isLocked, false );
-		assertDebugValue( m_mapped, false );
+		assert( !m_mapped && "VkDeviceMemory should not be mapped" );
 		*data = m_data.data() + offset;
 		m_mappedOffset = offset;
-		m_mappedSize = size;
-		m_mapped = true;
-		setDebugValue( m_isLocked, *data != nullptr );
+		m_mappedSize = size == ~( 0ull )
+			? m_allocateInfo.allocationSize
+			: size;
+		m_mapped = *data != nullptr;
 		return VK_SUCCESS;
 	}
 
 	VkResult DeviceMemory::flush( VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		assertDebugValue( m_isLocked, true );
-		assertDebugValue( m_mapped, true );
-		m_impl->upload( m_data, offset, size );
+		assert( m_mapped && "VkDeviceMemory should be mapped" );
+		auto sha = sha512( m_data );
+
+		if ( m_sha != sha )
+		{
+			m_sha = sha;
+			m_impl->upload( m_data, offset, size );
+		}
+
 		return VK_SUCCESS;
 	}
 
 	VkResult DeviceMemory::invalidate( VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		assertDebugValue( m_isLocked, true );
-		assertDebugValue( m_mapped, true );
+		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		return VK_SUCCESS;
 	}
 
 	void DeviceMemory::unlock()const
 	{
-		assertDebugValue( m_isLocked, true );
-		assertDebugValue( m_mapped, true );
+		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		m_mapped = false;
-		m_impl->upload( m_data, m_mappedOffset, m_mappedSize );
-		setDebugValue( m_isLocked, false );
+		auto sha = sha512( m_data );
+
+		if ( m_sha != sha )
+		{
+			m_sha = sha;
+			m_impl->upload( m_data, m_mappedOffset, m_mappedSize );
+		}
 	}
 
 	//************************************************************************************************

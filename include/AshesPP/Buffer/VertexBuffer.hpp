@@ -249,12 +249,12 @@ namespace ashes
 				, m_device.getProperties().limits.nonCoherentAtomSize );
 			auto result = count == m_buffer->getSize()
 				? ( offset == 0ull
-					? ~( 0ull )
+					? WholeSize
 					: aligned )
 				: ( offset + count == m_buffer->getSize()
 					? count
 					: aligned );
-			assert( result == ~( 0ull ) || offset + result <= m_buffer->getSize() );
+			assert( result == WholeSize || offset + result <= m_buffer->getSize() );
 			return result;
 		}
 	};

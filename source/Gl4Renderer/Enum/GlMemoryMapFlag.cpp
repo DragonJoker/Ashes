@@ -65,16 +65,12 @@ namespace ashes::gl4
 		{
 			result |= GL_MEMORY_MAP_READ_BIT;
 			result |= GL_MEMORY_MAP_WRITE_BIT;
+			//result |= GL_MEMORY_MAP_PERSISTENT_BIT;
 
-			if ( ashes::checkFlag( flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
-			{
-				result |= GL_MEMORY_MAP_PERSISTENT_BIT;
-				result |= GL_MEMORY_MAP_COHERENT_BIT;
-			}
-			else
-			{
-				result |= GL_MEMORY_MAP_UNSYNCHRONIZED_BIT;
-			}
+			//if ( ashes::checkFlag( flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
+			//{
+			//	result |= GL_MEMORY_MAP_COHERENT_BIT;
+			//}
 		}
 
 		result |= GL_MEMORY_MAP_INVALIDATE_RANGE_BIT;

@@ -133,7 +133,7 @@ namespace ashes
 			dstQueueFamily,
 			*this,
 			0,
-			~( 0ull )
+			WholeSize
 		};
 		m_currentAccessFlags = dstAccessFlags;
 

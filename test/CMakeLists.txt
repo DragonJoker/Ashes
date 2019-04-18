@@ -8,21 +8,23 @@ endif()
 if( wxWidgets_FOUND AND GTK2_FOUND )
 	string( COMPARE EQUAL "${wxWidgets_USE_DEBUG}" "ON" IsWxDebug )
 
-	add_definitions(
-		-D_FILE_OFFSET_BITS=64
-		-D_LARGE_FILES
-		-D_UNICODE
+	set( TestAdditionalDefinitions
+		"-D_FILE_OFFSET_BITS=64"
+		"-D_LARGE_FILES"
+		"-D_UNICODE"
 	)
 
 	if( NOT WIN32 )
-		add_definitions(
-			-D__WXGTK__
+		set( TestAdditionalDefinitions
+			${TestAdditionalDefinitions}
+			"-D__WXGTK__"
 		)
 	endif()
 
 	if( IsWxDebug )
-		add_definitions(
-			-D__WXDEBUG__
+		set( TestAdditionalDefinitions
+			${TestAdditionalDefinitions}
+			"-D__WXDEBUG__"
 		)
 	endif()
 

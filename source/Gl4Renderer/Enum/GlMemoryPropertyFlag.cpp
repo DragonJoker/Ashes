@@ -45,14 +45,14 @@ namespace ashes::gl4
 
 		if ( ashes::checkFlag( flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 		{
-			result = GL_MEMORY_PROPERTY_PERSISTENT_BIT
-				| GL_MEMORY_PROPERTY_READ_BIT
-				| GL_MEMORY_PROPERTY_WRITE_BIT;
+			result |= GL_MEMORY_PROPERTY_READ_BIT;
+			result |= GL_MEMORY_PROPERTY_WRITE_BIT;
+			//result |= GL_MEMORY_PROPERTY_PERSISTENT_BIT;
 
-			if ( ashes::checkFlag( flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
-			{
-				result |= GL_MEMORY_PROPERTY_COHERENT_BIT;
-			}
+			//if ( ashes::checkFlag( flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
+			//{
+			//	result |= GL_MEMORY_PROPERTY_COHERENT_BIT;
+			//}
 		}
 
 		return result;

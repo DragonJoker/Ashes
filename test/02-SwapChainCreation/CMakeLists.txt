@@ -15,6 +15,7 @@ file( GLOB HEADER_FILES
 )
 
 include_directories( ${TestIncludeDirectories} )
+add_definitions( ${TestAdditionalDefinitions} )
 
 include_directories( ${CMAKE_SOURCE_DIR}/Test/00-Common/Src )
 

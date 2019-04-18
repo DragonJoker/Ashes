@@ -443,7 +443,7 @@ namespace ashes
 		auto mappedSize = getAlignedSize( size
 			, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) );
 		mappedSize = mappedSize > getBuffer().getSize()
-			? ~( 0ull )
+			? WholeSize
 			: mappedSize;
 		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0u
 			, mappedSize
@@ -559,7 +559,7 @@ namespace ashes
 		auto mappedSize = getAlignedSize( size
 			, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) );
 		mappedSize = mappedSize > getBuffer().getSize()
-			? ~( 0ull )
+			? WholeSize
 			: mappedSize;
 		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0u
 			, mappedSize

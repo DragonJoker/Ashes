@@ -17,6 +17,7 @@ file( GLOB HEADER_FILES
 )
 
 include_directories( ${TestIncludeDirectories} )
+add_definitions( ${TestAdditionalDefinitions} )
 
 add_executable( ${PROJECT_NAME}
 	${SOURCE_FILES}

@@ -89,11 +89,11 @@ namespace ashes::gl4
 		return VK_SUCCESS;
 	}
 
-	VkResult CommandBuffer::end()const
+	void mergeList( CmdList const & list
+		, CmdBuffer & cmds )
 	{
-		m_state.pushConstantBuffers.clear();
-		size_t totalSize = size_t( std::accumulate( m_cmdList.begin()
-			, m_cmdList.end()
+		size_t totalSize = size_t( std::accumulate( list.begin()
+			, list.end()
 			, size_t( 0u )
 			, []( size_t value, CmdBuffer const & lookup )
 			{
@@ -102,10 +102,10 @@ namespace ashes::gl4
 
 		if ( totalSize )
 		{
-			m_cmds.resize( totalSize );
-			auto it = m_cmds.begin();
+			cmds.resize( totalSize );
+			auto it = cmds.begin();
 
-			for ( auto & cmd : m_cmdList )
+			for ( auto & cmd : list )
 			{
 				std::copy( cmd.begin()
 					, cmd.end()
@@ -113,7 +113,13 @@ namespace ashes::gl4
 				it += cmd.size();
 			}
 		}
+	}
 
+	VkResult CommandBuffer::end()const
+	{
+		m_state.pushConstantBuffers.clear();
+		mergeList( m_cmdList, m_cmds );
+		mergeList( m_cmdAfterSubmit, m_cmdsAfterSubmit );
 		return VK_SUCCESS;
 	}
 

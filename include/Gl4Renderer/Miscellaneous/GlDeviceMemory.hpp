@@ -102,6 +102,6 @@ namespace ashes::gl4
 		mutable VkDeviceSize m_mappedOffset;
 		mutable VkDeviceSize m_mappedSize;
 		mutable ByteArray m_data;
-		declareDebugVariable( bool, m_isLocked, false );
+		mutable ByteArray m_sha;
 	};
 }

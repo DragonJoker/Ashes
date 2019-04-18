@@ -195,12 +195,12 @@ namespace ashes::gl4
 	void apply( ContextLock const & context
 		, CmdUploadMemory const & cmd )
 	{
-		get( cmd.memory )->upload( 0u, ~( 0ull ) );
+		get( cmd.memory )->upload( 0u, WholeSize );
 	}
 
 	void apply( ContextLock const & context
 		, CmdDownloadMemory const & cmd )
 	{
-		get( cmd.memory )->download( 0u, ~( 0ull ) );
+		get( cmd.memory )->download( 0u, WholeSize );
 	}
 }
