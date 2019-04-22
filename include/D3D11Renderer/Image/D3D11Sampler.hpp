@@ -12,7 +12,7 @@
 
 #include <Ashes/Image/Sampler.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class Sampler
 		: public ashes::Sampler

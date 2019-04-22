@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Pipeline/RasterisationState.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	D3D11_RASTERIZER_DESC convert( ashes::RasterisationState const & state
 		, ashes::MultisampleState const & ms );

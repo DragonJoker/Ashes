@@ -1,16 +1,16 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	bool isHostVisible( ashes::MemoryPropertyFlags const & flags )
+	bool isHostVisible( VkMemoryPropertyFlags const & flags )
 	{
-		return checkFlag( flags, ashes::MemoryPropertyFlag::eHostVisible )
-			|| checkFlag( flags, ashes::MemoryPropertyFlag::eHostCached )
-			|| checkFlag( flags, ashes::MemoryPropertyFlag::eHostCoherent );
+		return checkFlag( flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+			|| checkFlag( flags, VK_MEMORY_PROPERTY_HOST_CACHED_BIT )
+			|| checkFlag( flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT );
 	}
 
-	D3D11_USAGE getUsage( ashes::MemoryPropertyFlags const & flags
-		, ashes::BufferTargets const & targets )
+	D3D11_USAGE getUsage( VkMemoryPropertyFlags const & flags
+		, VkBufferUsageFlags const & targets )
 	{
 		D3D11_USAGE result{ D3D11_USAGE_DEFAULT };
 
@@ -20,12 +20,12 @@ namespace d3d11_renderer
 			{
 				result = D3D11_USAGE_DYNAMIC;
 			}
-			else if ( checkFlag( targets, ashes::BufferTarget::eStorageBuffer )
-				|| checkFlag( targets, ashes::BufferTarget::eStorageTexelBuffer ) )
+			else if ( checkFlag( targets, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT )
+				|| checkFlag( targets, VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT ) )
 			{
 			}
-			else if ( checkFlag( targets, ashes::BufferTarget::eTransferSrc )
-				|| checkFlag( targets, ashes::BufferTarget::eTransferDst ) )
+			else if ( checkFlag( targets, VK_BUFFER_USAGE_TRANSFER_SRC_BIT )
+				|| checkFlag( targets, VK_BUFFER_USAGE_TRANSFER_DST_BIT ) )
 			{
 				result = D3D11_USAGE_STAGING;
 			}
@@ -38,8 +38,8 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	UINT getCpuAccessFlags( ashes::MemoryPropertyFlags const & flags
-		, ashes::BufferTargets const & targets )
+	UINT getCpuAccessFlags( VkMemoryPropertyFlags const & flags
+		, VkBufferUsageFlags const & targets )
 	{
 		UINT result{};
 
@@ -51,8 +51,8 @@ namespace d3d11_renderer
 			}
 			else
 			{
-				if ( checkFlag( targets, ashes::BufferTarget::eTransferSrc )
-					|| checkFlag( targets, ashes::BufferTarget::eTransferDst ) )
+				if ( checkFlag( targets, VK_BUFFER_USAGE_TRANSFER_SRC_BIT )
+					|| checkFlag( targets, VK_BUFFER_USAGE_TRANSFER_DST_BIT ) )
 				{
 					result |= D3D11_CPU_ACCESS_WRITE;
 					result |= D3D11_CPU_ACCESS_READ;
@@ -63,8 +63,8 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	D3D11_USAGE getUsage( ashes::MemoryPropertyFlags const & flags
-		, ashes::ImageUsageFlags const & usage )
+	D3D11_USAGE getUsage( VkMemoryPropertyFlags const & flags
+		, VkImageUsageFlags const & usage )
 	{
 		D3D11_USAGE result{ D3D11_USAGE_DEFAULT };
 
@@ -72,8 +72,8 @@ namespace d3d11_renderer
 		{
 			if ( !isRenderTarget( usage ) )
 			{
-				if ( checkFlag( usage, ashes::ImageUsageFlag::eTransferSrc )
-					|| checkFlag( usage, ashes::ImageUsageFlag::eTransferDst ) )
+				if ( checkFlag( usage, VK_IMAGE_USAGE_TRANSFER_SRC_BIT )
+					|| checkFlag( usage, VK_IMAGE_USAGE_TRANSFER_DST_BIT ) )
 				{
 					result = D3D11_USAGE_STAGING;
 				}
@@ -87,8 +87,8 @@ namespace d3d11_renderer
 		return result;
 	}
 
-	UINT getCpuAccessFlags( ashes::MemoryPropertyFlags const & flags
-		, ashes::ImageUsageFlags const & usage )
+	UINT getCpuAccessFlags( VkMemoryPropertyFlags const & flags
+		, VkImageUsageFlags const & usage )
 	{
 		UINT result{};
 
@@ -100,12 +100,12 @@ namespace d3d11_renderer
 			}
 			else
 			{
-				if ( checkFlag( usage, ashes::ImageUsageFlag::eTransferSrc ) )
+				if ( checkFlag( usage, VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
 				{
 					result |= D3D11_CPU_ACCESS_READ;
 				}
 
-				if ( checkFlag( usage, ashes::ImageUsageFlag::eTransferDst ) )
+				if ( checkFlag( usage, VK_IMAGE_USAGE_TRANSFER_DST_BIT ) )
 				{
 					result |= D3D11_CPU_ACCESS_WRITE;
 				}

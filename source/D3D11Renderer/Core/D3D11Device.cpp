@@ -35,7 +35,7 @@ See LICENSE file in root folder.
 
 #include <D3DCommon.h>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	namespace
 	{
@@ -164,7 +164,7 @@ namespace d3d11_renderer
 			, pushConstantRanges );
 	}
 
-	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const
+	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( VkDescriptorSetLayoutBindingArray bindings )const
 	{
 		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
 	}
@@ -208,7 +208,7 @@ namespace d3d11_renderer
 	}
 
 	ashes::BufferBasePtr Device::createBuffer( uint32_t size
-		, ashes::BufferTargets target )const
+		, VkBufferUsageFlags target )const
 	{
 		return std::make_unique< Buffer >( *this
 			, size
@@ -416,15 +416,15 @@ namespace d3d11_renderer
 		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
 		m_dummyIndexed = ashes::makeBuffer< uint32_t >( *this
 			, count
-			, ashes::BufferTarget::eIndexBuffer | ashes::BufferTarget::eTransferDst );
+			, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT );
 		auto requirements = m_dummyIndexed->getBuffer().getMemoryRequirements();
 		auto deduced = deduceMemoryType( requirements.memoryTypeBits
-			, ashes::MemoryPropertyFlag::eHostVisible );
+			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 		m_dummyIndexed->bindMemory( allocateMemory( { requirements.size, deduced } ) );
 
 		if ( auto * buffer = m_dummyIndexed->lock( 0u
 			, count
-			, ashes::MemoryMapFlag::eWrite ) )
+			, VkMemoryMapFlagBits::eWrite ) )
 		{
 			std::copy( dummyIndex, dummyIndex + count, buffer );
 			m_dummyIndexed->flush( 0, count );

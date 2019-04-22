@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/D3D11SetDepthBiasCommand.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	SetDepthBiasCommand::SetDepthBiasCommand( Device const & device
 		, float constantFactor

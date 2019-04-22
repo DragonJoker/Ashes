@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "Pipeline/D3D11PipelineLayout.hpp"
 #include "Shader/D3D11ShaderModule.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	void apply( ID3D11DeviceContext * context
 		, ID3D11InputLayout * state )
@@ -81,33 +81,33 @@ namespace d3d11_renderer
 
 	void BindPipelineCommand::apply( Context const & context )const
 	{
-		d3d11_renderer::apply( context.context
+		ashes::d3d11::apply( context.context
 			, m_pipeline.getIAState() );
-		d3d11_renderer::apply( context.context
+		ashes::d3d11::apply( context.context
 			, m_pipeline.getBDState()
 			, m_pipeline.getBlendFactor()
 			, m_pipeline.getSampleMask() );
-		d3d11_renderer::apply( context.context
+		ashes::d3d11::apply( context.context
 			, m_pipeline.getRSState() );
-		d3d11_renderer::apply( context.context
+		ashes::d3d11::apply( context.context
 			, m_pipeline.getDSState()
 			, m_pipeline.getStencilRef() );
-		//d3d11_renderer::apply( context
+		//ashes::d3d11::apply( context
 		//	, m_pipeline.getMultisampleState() );
-		//d3d11_renderer::apply( context
+		//ashes::d3d11::apply( context
 		//	, m_pipeline.getTessellationState() );
 
 		if ( !m_dynamicViewport )
 		{
 			assert( m_pipeline.hasViewport() );
-			d3d11_renderer::apply( context.context
+			ashes::d3d11::apply( context.context
 				, m_pipeline.getViewports() );
 		}
 
 		if ( !m_dynamicScissor )
 		{
 			assert( m_pipeline.hasScissor() );
-			d3d11_renderer::apply( context.context
+			ashes::d3d11::apply( context.context
 				, m_pipeline.getScissors() );
 		}
 
@@ -152,20 +152,20 @@ namespace d3d11_renderer
 
 	void BindPipelineCommand::remove( Context const & context )const
 	{
-		d3d11_renderer::apply( context.context
+		ashes::d3d11::apply( context.context
 			, ( ID3D11InputLayout * )nullptr );
-		d3d11_renderer::apply( context.context
+		ashes::d3d11::apply( context.context
 			, nullptr
 			, m_pipeline.getBlendFactor()
 			, m_pipeline.getSampleMask() );
-		d3d11_renderer::apply( context.context
+		ashes::d3d11::apply( context.context
 			, ( ID3D11RasterizerState * )nullptr );
-		d3d11_renderer::apply( context.context
+		ashes::d3d11::apply( context.context
 			, ( ID3D11DepthStencilState * )nullptr
 			, m_pipeline.getStencilRef() );
-		//d3d11_renderer::apply( context
+		//ashes::d3d11::apply( context
 		//	, m_pipeline.getMultisampleState() );
-		//d3d11_renderer::apply( context
+		//ashes::d3d11::apply( context
 		//	, m_pipeline.getTessellationState() );
 
 		// Bind program

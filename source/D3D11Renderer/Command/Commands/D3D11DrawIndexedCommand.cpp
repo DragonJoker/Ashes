@@ -4,17 +4,17 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/D3D11DrawIndexedCommand.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	namespace
 	{
-		uint32_t getSize( ashes::IndexType type )
+		uint32_t getSize( VkIndexType type )
 		{
 			switch ( type )
 			{
-			case ashes::IndexType::eUInt16:
+			case VK_INDEX_TYPE_UINT16:
 				return 2u;
-			case ashes::IndexType::eUInt32:
+			case VK_INDEX_TYPE_UINT32:
 				return 4u;
 			default:
 				assert( false && "Unsupported index type" );
@@ -29,8 +29,8 @@ namespace d3d11_renderer
 		, uint32_t firstIndex
 		, uint32_t vertexOffset
 		, uint32_t firstInstance
-		, ashes::PrimitiveTopology mode
-		, ashes::IndexType type
+		, VkPrimitiveTopology mode
+		, VkIndexType type
 		, VbosBindingArray const & vbos )
 		: CommandBase{ device }
 		, m_indexCount{ indexCount }

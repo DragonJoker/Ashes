@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Sync/D3D11Event.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	ResetEventCommand::ResetEventCommand( Device const & device
 		, ashes::Event const & event

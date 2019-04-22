@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\brief
@@ -19,8 +19,8 @@ namespace d3d11_renderer
 		ResetEventCommand( Device const & device
 			, ashes::Event const & event
 			, ashes::PipelineStageFlags stageFlags );
-		void apply( Context const & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		CommandPtr clone()const;
 
 	private:
 		ashes::Event const & m_event;

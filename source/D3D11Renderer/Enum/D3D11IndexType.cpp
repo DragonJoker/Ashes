@@ -1,15 +1,15 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	DXGI_FORMAT convert( ashes::IndexType const & type )
+	DXGI_FORMAT convert( VkIndexType const & type )
 	{
 		switch ( type )
 		{
-		case ashes::IndexType::eUInt16:
+		case VK_INDEX_TYPE_UINT16:
 			return DXGI_FORMAT_R16_UINT;
 
-		case ashes::IndexType::eUInt32:
+		case VK_INDEX_TYPE_UINT32:
 			return DXGI_FORMAT_R32_UINT;
 
 		default:

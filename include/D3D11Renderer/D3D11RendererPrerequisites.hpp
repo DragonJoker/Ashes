@@ -61,10 +61,7 @@ typedef uint8_t UINT8;
 #	define __WIDL_DXGI_H
 #endif
 
-#include <Ashes/AshesConfig.hpp>
-#include <Ashes/AshesPrerequisites.hpp>
-
-#include "D3D11Renderer/D3D11RendererConfig.hpp"
+#include <ashes/ashes.h>
 
 #include <Windows.h>
 #include <initguid.h>
@@ -99,10 +96,20 @@ typedef uint8_t UINT8;
 #include "D3D11Renderer/Pipeline/D3D11StencilOpState.hpp"
 #include "D3D11Renderer/Pipeline/D3D11Viewport.hpp"
 
-#include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
-#include <Ashes/Descriptor/WriteDescriptorSet.hpp>
+#include <AshesRenderer/AshesRendererPrerequisites.hpp>
+#include <AshesRenderer/Util/ArrayView.hpp>
+#include <AshesRenderer/Util/ConstantFormat.hpp>
+#include <AshesRenderer/Util/Format.hpp>
+#include <AshesRenderer/Util/FlagCombination.hpp>
+#include <AshesRenderer/Util/Signal.hpp>
 
+#include <cassert>
+#include <functional>
 #include <list>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 #ifdef min
 #	undef min
@@ -193,7 +200,7 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 #	define dxDebugName( obj, txt )
 #endif
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	struct AdapterInfo
 	{
@@ -321,8 +328,8 @@ namespace d3d11_renderer
 
 	struct WriteDescriptorSetBinding
 	{
-		ashes::WriteDescriptorSet write;
-		ashes::DescriptorSetLayoutBinding binding;
+		VkWriteDescriptorSet write;
+		VkDescriptorSetLayoutBinding binding;
 	};
 
 	using VbosBindingArray = std::vector< VbosBinding >;
@@ -332,7 +339,7 @@ namespace d3d11_renderer
 	bool checkError( Device const & device, HRESULT hResult, char const * const text );
 	std::string toString( std::wstring const & text );
 	uint32_t deduceMemoryType( uint32_t typeBits
-		, ashes::MemoryPropertyFlags requirements );
+		, VkMemoryPropertyFlags requirements );
 }
 
 #endif

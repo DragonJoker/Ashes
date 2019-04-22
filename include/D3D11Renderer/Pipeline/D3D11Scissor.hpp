@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include <Ashes/Pipeline/Scissor.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	RECT makeScissor( ashes::Scissor const & scissor );
 	std::vector< RECT > makeScissors( ashes::VkScissorArray::const_iterator const & begin

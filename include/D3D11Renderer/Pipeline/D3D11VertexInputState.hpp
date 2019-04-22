@@ -11,7 +11,7 @@
 
 #include <Ashes/Pipeline/VertexInputState.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	std::vector< D3D11_INPUT_ELEMENT_DESC > convert( ashes::VertexInputState const & state
 		, InputLayout const & inputLayout );

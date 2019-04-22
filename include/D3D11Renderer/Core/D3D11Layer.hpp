@@ -6,15 +6,15 @@ See LICENSE file in root folder
 
 #include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class Layer
 	{
 	public:
-		virtual bool onCopyToImageCommand( ashes::CommandBuffer const & cmd
-			, ashes::VkBufferImageCopyArray const & copyInfo
-			, ashes::BufferBase const & src
-			, ashes::Image const & dst )const = 0;
+		virtual bool onCopyToImageCommand( VkCommandBuffer cmd
+			, VkBufferImageCopyArray const & copyInfo
+			, VkBuffer src
+			, VkImage dst )const = 0;
 		virtual bool onCheckHResultCommand( HRESULT hresult
 			, std::string message )const = 0;
 	};
@@ -35,7 +35,7 @@ namespace d3d11_renderer
 			return m_layer;
 		}
 
-		const char * what()const override
+		const char * what()const
 		{
 			return m_message.c_str();
 		}

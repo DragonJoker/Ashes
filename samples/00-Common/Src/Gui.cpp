@@ -393,7 +393,7 @@ namespace common
 			std::move( shaderStages ),
 			*m_renderPass,
 			ashes::VertexInputState::create( *m_vertexLayout ),
-			ashes::InputAssemblyState{ VkPrimitiveTopology::eTriangleList },
+			ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
 			rasterisationState,
 			ashes::MultisampleState{},
 			cbState,

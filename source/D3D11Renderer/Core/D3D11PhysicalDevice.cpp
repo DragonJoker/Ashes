@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #include "Core/D3D11Instance.hpp"
 #include "Core/D3D11Device.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	PhysicalDevice::PhysicalDevice( Instance const & instance
 		, AdapterInfo adapterInfo )

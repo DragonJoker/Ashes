@@ -4,9 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	D3D11_FILTER_TYPE convert( ashes::Filter const & filter );
+	D3D11_FILTER_TYPE convert( VkFilter const & filter );
 }

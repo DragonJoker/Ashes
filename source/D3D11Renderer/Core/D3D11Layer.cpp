@@ -4,6 +4,6 @@ See LICENSE file in root folder.
 */
 #include "Core/D3D11Layer.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 }

@@ -1,53 +1,51 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	bool isPipelineBindable( ashes::BufferTargets const & targets )
+	bool isPipelineBindable( VkBufferUsageFlags const & targets )
 	{
-		return checkFlag( targets, ashes::BufferTarget::eDispatchIndirectBuffer )
-			|| checkFlag( targets, ashes::BufferTarget::eDrawIndirectBuffer )
-			|| checkFlag( targets, ashes::BufferTarget::eIndexBuffer )
-			|| checkFlag( targets, ashes::BufferTarget::eUniformBuffer )
-			|| checkFlag( targets, ashes::BufferTarget::eUniformTexelBuffer )
-			|| checkFlag( targets, ashes::BufferTarget::eVertexBuffer );
+		return checkFlag( targets, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT )
+			|| checkFlag( targets, VK_BUFFER_USAGE_INDEX_BUFFER_BIT )
+			|| checkFlag( targets, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT )
+			|| checkFlag( targets, VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT )
+			|| checkFlag( targets, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT );
 	}
 
-	UINT convert( ashes::BufferTargets const & targets )
+	UINT convert( VkBufferUsageFlags const & targets )
 	{
 		UINT result{};
 
-		if ( checkFlag( targets, ashes::BufferTarget::eIndexBuffer ) )
+		if ( checkFlag( targets, VK_BUFFER_USAGE_INDEX_BUFFER_BIT ) )
 		{
 			result |= D3D11_BIND_INDEX_BUFFER;
 		}
 
-		if ( checkFlag( targets, ashes::BufferTarget::eDispatchIndirectBuffer )
-			|| checkFlag( targets, ashes::BufferTarget::eDrawIndirectBuffer ) )
+		if ( checkFlag( targets, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT ) )
 		{
 			result |= D3D11_BIND_SHADER_RESOURCE;
 		}
 
-		if ( checkFlag( targets, ashes::BufferTarget::eStorageBuffer ) )
+		if ( checkFlag( targets, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT ) )
 		{
 			result |= D3D11_BIND_UNORDERED_ACCESS;
 		}
 
-		if ( checkFlag( targets, ashes::BufferTarget::eStorageTexelBuffer ) )
+		if ( checkFlag( targets, VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT ) )
 		{
 			result |= D3D11_BIND_UNORDERED_ACCESS;
 		}
 
-		if ( checkFlag( targets, ashes::BufferTarget::eUniformBuffer ) )
+		if ( checkFlag( targets, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ) )
 		{
 			result |= D3D11_BIND_CONSTANT_BUFFER;
 		}
 
-		if ( checkFlag( targets, ashes::BufferTarget::eUniformTexelBuffer ) )
+		if ( checkFlag( targets, VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT ) )
 		{
 			result |= D3D11_BIND_SHADER_RESOURCE;
 		}
 
-		if ( checkFlag( targets, ashes::BufferTarget::eVertexBuffer ) )
+		if ( checkFlag( targets, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT ) )
 		{
 			result |= D3D11_BIND_VERTEX_BUFFER;
 		}

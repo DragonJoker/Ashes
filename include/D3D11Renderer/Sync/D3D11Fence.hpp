@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Sync/Fence.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class Fence
 		: public ashes::Fence
@@ -18,7 +18,7 @@ namespace d3d11_renderer
 			, ashes::FenceCreateFlags flags = 0 );
 		~Fence();
 
-		ashes::WaitResult wait( uint64_t timeout )const override;
-		void reset()const override;
+		ashes::WaitResult wait( uint64_t timeout )const;
+		void reset()const;
 	};
 }

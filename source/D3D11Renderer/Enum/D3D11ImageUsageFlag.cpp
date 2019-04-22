@@ -1,27 +1,27 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	bool isRenderTarget( ashes::ImageUsageFlags const & flags )
+	bool isRenderTarget( VkImageUsageFlags const & flags )
 	{
-		return checkFlag( flags, ashes::ImageUsageFlag::eColourAttachment )
-			|| checkFlag( flags, ashes::ImageUsageFlag::eDepthStencilAttachment )
-			|| checkFlag( flags, ashes::ImageUsageFlag::eTransientAttachment )
-			|| checkFlag( flags, ashes::ImageUsageFlag::eInputAttachment );
+		return checkFlag( flags, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT )
+			|| checkFlag( flags, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT )
+			|| checkFlag( flags, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT )
+			|| checkFlag( flags, VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT );
 	}
 
-	bool isStorage( ashes::ImageUsageFlags const & flags )
+	bool isStorage( VkImageUsageFlags const & flags )
 	{
-		return checkFlag( flags, ashes::ImageUsageFlag::eStorage );
+		return checkFlag( flags, VK_IMAGE_USAGE_STORAGE_BIT );
 	}
 
-	bool isSampled( ashes::ImageUsageFlags const & flags )
+	bool isSampled( VkImageUsageFlags const & flags )
 	{
-		return checkFlag( flags, ashes::ImageUsageFlag::eSampled )
-			/*|| checkFlag( flags, ashes::ImageUsageFlag::eTransferSrc )*/;
+		return checkFlag( flags, VK_IMAGE_USAGE_SAMPLED_BIT )
+			/*|| checkFlag( flags, VK_IMAGE_USAGE_TRANSFER_SRC_BIT )*/;
 	}
 
-	bool isRenderable( ashes::ImageUsageFlags const & flags
+	bool isRenderable( VkImageUsageFlags const & flags
 		, VkFormat format
 		, uint32_t mipLevels )
 	{
@@ -29,7 +29,7 @@ namespace d3d11_renderer
 			|| ( mipLevels > 1 && !isCompressedFormat( format ) );
 	}
 
-	bool isMipmapped( ashes::ImageUsageFlags const & flags
+	bool isMipmapped( VkImageUsageFlags const & flags
 		, VkFormat format
 		, uint32_t mipLevels )
 	{

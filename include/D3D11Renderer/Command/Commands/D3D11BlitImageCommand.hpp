@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Miscellaneous/ImageBlit.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class BlitImageCommand
 		: public CommandBase
@@ -41,11 +41,11 @@ namespace d3d11_renderer
 			, ashes::Image const & srcImage
 			, ashes::Image const & dstImage
 			, std::vector< ashes::ImageBlit > const & regions
-			, ashes::Filter filter );
+			, VkFilter filter );
 		~BlitImageCommand();
 
-		void apply( Context const & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		CommandPtr clone()const;
 
 	private:
 		Image const & m_srcTexture;

@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Image/D3D11ImageView.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	ClearColourCommand::ClearColourCommand( Device const & device
 		, ashes::ImageView const & image

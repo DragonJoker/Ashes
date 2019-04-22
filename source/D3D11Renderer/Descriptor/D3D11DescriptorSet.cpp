@@ -10,12 +10,12 @@
 
 #include <Ashes/Buffer/UniformBuffer.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	namespace
 	{
 		WriteDescriptorSetBinding doCreateBinding( ashes::DescriptorSetLayout const & layout
-			, ashes::WriteDescriptorSet const & write )
+			, VkWriteDescriptorSet const & write )
 		{
 			return { write, layout.getBinding( write.dstBinding, write.dstArrayElement ) };
 		}

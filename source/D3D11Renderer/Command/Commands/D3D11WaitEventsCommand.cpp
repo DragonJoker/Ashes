@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 #include <chrono>
 #include <thread>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	WaitEventsCommand::WaitEventsCommand( Device const & device
 		, ashes::EventCRefArray const & events

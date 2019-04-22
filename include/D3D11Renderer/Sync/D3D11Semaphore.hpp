@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include <Ashes/Sync/Semaphore.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\~french

@@ -15,7 +15,7 @@ See LICENSE file in root folder.
 
 #include <algorithm>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	RenderPass::RenderPass( Device const & device
 		, ashes::RenderPassCreateInfo createInfo )
@@ -43,7 +43,7 @@ namespace d3d11_renderer
 	}
 
 	ashes::FrameBufferPtr RenderPass::createFrameBuffer( VkExtent2D const & dimensions
-		, ashes::ashes::ImageViewPtrArray attaches )const
+		, ashes::ImageViewPtrArray attaches )const
 	{
 		return std::make_unique< FrameBuffer >( m_device
 			, *this

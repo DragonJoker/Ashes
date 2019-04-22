@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 #include <Ashes/RenderPass/AttachmentDescription.hpp>
 #include <Ashes/RenderPass/RenderSubpassState.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class RenderPass
 		: public ashes::RenderPass
@@ -23,7 +23,7 @@ namespace d3d11_renderer
 		*\copydoc	ashes::RenderPass::createFrameBuffer
 		*/
 		ashes::FrameBufferPtr createFrameBuffer( VkExtent2D const & dimensions
-			, ashes::ashes::ImageViewPtrArray textures )const override;
+			, ashes::ImageViewPtrArray textures )const;
 
 	private:
 		struct Subpass

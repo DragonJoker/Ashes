@@ -15,7 +15,7 @@ See LICENSE file in root folder.
 #include <Ashes/Image/ImageSubresourceRange.hpp>
 #include <Ashes/Image/SubresourceLayout.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	namespace
 	{
@@ -189,10 +189,10 @@ namespace d3d11_renderer
 		{
 			ashes::BufferBasePtr result = std::make_unique< Buffer >( device
 				, size
-				, ashes::BufferTarget::eTransferSrc | ashes::BufferTarget::eTransferDst );
+				, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT );
 			auto requirements = result->getMemoryRequirements();
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
-				, ashes::MemoryPropertyFlag::eHostVisible );
+				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 			result->bindMemory( device.allocateMemory( { requirements.size, deduced } ) );
 			return result;
 		}
@@ -217,14 +217,14 @@ namespace d3d11_renderer
 				image.getLayerCount(),
 				ashes::SampleCountFlag::e1,
 				ashes::ImageTiling::eLinear,
-				ashes::ImageUsageFlag::eTransferSrc | ashes::ImageUsageFlag::eTransferDst,
+				VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
 				VK_SHARING_MODE_EXCLUSIVE,
 				{},
 				ashes::ImageLayout::eUndefined,
 				} );
 			auto requirements = result->getMemoryRequirements();
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
-				, ashes::MemoryPropertyFlag::eHostVisible );
+				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 			result->bindMemory( device.allocateMemory( { requirements.size, deduced } ) );
 			return result;
 		}
@@ -241,8 +241,8 @@ namespace d3d11_renderer
 		, m_format{ getSRVFormat( m_dst.getFormat() ) }
 		, m_srcBoxes{ doGetSrcBoxes( m_dst, copyInfo ) }
 		, m_dstLayouts{ doGetDstLayouts( device, m_dst, copyInfo ) }
-		, m_srcMappable{ m_src.getMemoryRequirements().memoryTypeBits == ashes::MemoryPropertyFlag::eHostVisible }
-		, m_dstMappable{ m_dst.getMemoryRequirements().memoryTypeBits == ashes::MemoryPropertyFlag::eHostVisible }
+		, m_srcMappable{ m_src.getMemoryRequirements().memoryTypeBits == VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT }
+		, m_dstMappable{ m_dst.getMemoryRequirements().memoryTypeBits == VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT }
 	{
 	}
 
@@ -316,10 +316,10 @@ namespace d3d11_renderer
 	{
 		if ( auto srcBuffer = src.lock( srcBox.left
 			, srcBox.right - srcBox.left
-			, ashes::MemoryMapFlag::eRead ) )
+			, VkMemoryMapFlagBits::eRead ) )
 		{
 			if ( auto dstBuffer = dst.lock( dstLayout
-				, ashes::MemoryMapFlag::eWrite ) )
+				, VkMemoryMapFlagBits::eWrite ) )
 			{
 				doCopyMapped( dst.getFormat()
 					, copyInfo

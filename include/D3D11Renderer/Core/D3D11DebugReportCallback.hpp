@@ -10,7 +10,7 @@
 
 #include <Ashes/Core/DebugReportCallback.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	struct ReportData
 	{
@@ -37,9 +37,9 @@ namespace d3d11_renderer
 		bool onCopyToImageCommand( ashes::CommandBuffer const & cmd
 			, ashes::VkBufferImageCopyArray const & copyInfos
 			, ashes::BufferBase const & src
-			, ashes::Image const & dst )const override;
+			, ashes::Image const & dst )const;
 		bool onCheckHResultCommand( HRESULT hresult
-			, std::string message )const override;
+			, std::string message )const;
 
 	private:
 		DebugReportCallback & m_callback;

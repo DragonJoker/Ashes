@@ -8,43 +8,25 @@
 
 #include "D3D11Renderer/Core/D3D11Layer.hpp"
 
-#include <Ashes/Core/Instance.hpp>
-#include <Utils/DynamicLibrary.hpp>
+#include <array>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class Instance
-		: public ashes::Instance
 	{
 	public:
 		/**
 		*\brief
 		*	Constructeur, initialise l'instance de Vulkan.
 		*/
-		Instance( ashes::InstanceCreateInfo createInfo );
+		Instance( VkInstanceCreateInfo createInfo );
 		/**
 		*\brief
 		*	Destructeur.
 		*/
 		~Instance();
-		/**
-		*\copydoc	ashes::Instance::enumerateLayerProperties
-		*/
-		ashes::PhysicalDevicePtrArray enumeratePhysicalDevices()const override;
-		/**
-		*\copydoc	ashes::Instance::createDevice
-		*/
-		ashes::DevicePtr createDevice( ashes::PhysicalDevice const & physicalDevice
-			, ashes::DeviceCreateInfo createInfos )const override;
-		/**
-		*\copydoc	ashes::Instance::createSurface
-		*/
-		ashes::SurfacePtr createSurface( ashes::PhysicalDevice const & gpu
-			, ashes::WindowHandle handle )const override;
-		/**
-		*\copydoc	ashes::Instance::createDebugReportCallback
-		*/
-		ashes::DebugReportCallbackPtr createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const override;
+
+		VkPhysicalDeviceArray enumeratePhysicalDevices()const;
 		/**
 		*\copydoc	ashes::Instance::frustum
 		*/
@@ -53,14 +35,14 @@ namespace d3d11_renderer
 			, float bottom
 			, float top
 			, float zNear
-			, float zFar )const override;
+			, float zFar )const;
 		/**
 		*\copydoc	ashes::Instance::perspective
 		*/
 		std::array< float, 16 > perspective( float radiansFovY
 			, float aspect
 			, float zNear
-			, float zFar )const override;
+			, float zFar )const;
 		/**
 		*\copydoc	ashes::Instance::ortho
 		*/
@@ -69,7 +51,7 @@ namespace d3d11_renderer
 			, float bottom
 			, float top
 			, float zNear
-			, float zFar )const override;
+			, float zFar )const;
 		/**
 		*\~english
 		*name
@@ -81,10 +63,10 @@ namespace d3d11_renderer
 		/**@{*/
 		void registerLayer( Layer * layer )const;
 		void unregisterLayer( Layer * layer )const;
-		bool onCopyToImageCommand( ashes::CommandBuffer const & cmd
+		bool onCopyToImageCommand( VkCommandBuffer cmd
 			, ashes::VkBufferImageCopyArray const & copyInfo
-			, ashes::BufferBase const & src
-			, ashes::Image const & dst )const;
+			, VkBuffer src
+			, VkImage dst )const;
 		bool onCheckHResultCommand( HRESULT hresult
 			, std::string message )const;
 		/**@}*/
@@ -94,7 +76,7 @@ namespace d3d11_renderer
 			return m_factory;
 		}
 
-		static inline ashes::PhysicalDeviceMemoryProperties const & getMemoryProperties()
+		static inline VkPhysicalDeviceMemoryProperties const & getMemoryProperties()
 		{
 			return m_memoryProperties;
 		}
@@ -104,10 +86,15 @@ namespace d3d11_renderer
 		void doLoadAdapters();
 
 	private:
+		AshPluginFeatures m_features;
+		VkInstanceCreateFlags m_flags;
+		StringArray m_enabledLayerNames;
+		StringArray m_enabledExtensions;
+		VkPhysicalDeviceArray m_physicalDevices;
 		IDXGIFactory * m_factory;
 		std::vector< AdapterInfo > m_adapters;
 		D3D_FEATURE_LEVEL m_maxFeatureLevel;
 		mutable std::vector< Layer * > m_layers;
-		static ashes::PhysicalDeviceMemoryProperties const m_memoryProperties;
+		static VkPhysicalDeviceMemoryProperties const m_memoryProperties;
 	};
 }

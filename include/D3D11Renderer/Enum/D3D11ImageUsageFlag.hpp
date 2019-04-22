@@ -4,17 +4,15 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	bool isRenderTarget( ashes::ImageUsageFlags const & flags );
-	bool isStorage( ashes::ImageUsageFlags const & flags );
-	bool isSampled( ashes::ImageUsageFlags const & flags );
-	bool isRenderable( ashes::ImageUsageFlags const & flags
+	bool isRenderTarget( VkImageUsageFlags const & flags );
+	bool isStorage( VkImageUsageFlags const & flags );
+	bool isSampled( VkImageUsageFlags const & flags );
+	bool isRenderable( VkImageUsageFlags const & flags
 		, VkFormat format
 		, uint32_t mipLevels );
-	bool isMipmapped( ashes::ImageUsageFlags const & flags
+	bool isMipmapped( VkImageUsageFlags const & flags
 		, VkFormat format
 		, uint32_t mipLevels );
 }

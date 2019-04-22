@@ -1,51 +1,51 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	D3D11_BLEND convert( ashes::BlendFactor const & value )
+	D3D11_BLEND convert( VkBlendFactor const & value )
 	{
 		switch ( value )
 		{
-		case ashes::BlendFactor::eZero:
+		case VK_BLEND_FACTOR_ZERO:
 			return D3D11_BLEND_ZERO;
 
-		case ashes::BlendFactor::eOne:
+		case VK_BLEND_FACTOR_ONE:
 			return D3D11_BLEND_ONE;
 
-		case ashes::BlendFactor::eSrcColour:
+		case VK_BLEND_FACTOR_SRC_COLOR:
 			return D3D11_BLEND_SRC_COLOR;
 
-		case ashes::BlendFactor::eInvSrcColour:
+		case VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR:
 			return D3D11_BLEND_INV_SRC_COLOR;
 
-		case ashes::BlendFactor::eDstColour:
+		case VK_BLEND_FACTOR_DST_COLOR:
 			return D3D11_BLEND_DEST_COLOR;
 
-		case ashes::BlendFactor::eInvDstColour:
+		case VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR:
 			return D3D11_BLEND_INV_DEST_COLOR;
 
-		case ashes::BlendFactor::eSrcAlpha:
+		case VK_BLEND_FACTOR_SRC_ALPHA_SATURATE:
 			return D3D11_BLEND_SRC_ALPHA;
 
-		case ashes::BlendFactor::eInvSrcAlpha:
+		case VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA:
 			return D3D11_BLEND_INV_SRC_ALPHA;
 
-		case ashes::BlendFactor::eDstAlpha:
+		case VK_BLEND_FACTOR_DST_ALPHA:
 			return D3D11_BLEND_DEST_ALPHA;
 
-		case ashes::BlendFactor::eInvDstAlpha:
+		case VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA:
 			return D3D11_BLEND_INV_DEST_ALPHA;
 
-		case ashes::BlendFactor::eSrc1Colour:
+		case VK_BLEND_FACTOR_SRC1_COLOR:
 			return D3D11_BLEND_SRC1_COLOR;
 
-		case ashes::BlendFactor::eInvSrc1Colour:
+		case VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR:
 			return D3D11_BLEND_INV_SRC1_COLOR;
 
-		case ashes::BlendFactor::eSrc1Alpha:
+		case VK_BLEND_FACTOR_SRC1_ALPHA:
 			return D3D11_BLEND_SRC1_ALPHA;
 
-		case ashes::BlendFactor::eInvSrc1Alpha:
+		case VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA:
 			return D3D11_BLEND_INV_SRC1_ALPHA;
 
 		default:

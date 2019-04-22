@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include <Ashes/Miscellaneous/BufferCopy.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	CopyBufferCommand::CopyBufferCommand( Device const & device
 		, ashes::BufferCopy const & copyInfo

@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Core/PhysicalDevice.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\~french
@@ -28,31 +28,31 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::Instance::enumerateLayerProperties
 		*/
-		ashes::VkLayerPropertiesArray enumerateLayerProperties()const override;
+		ashes::VkLayerPropertiesArray enumerateLayerProperties()const;
 		/**
 		*\copydoc	ashes::Instance::enumerateExtensionProperties
 		*/
-		ashes::VkExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const override;
+		ashes::VkExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const;
 		/**
 		*\copydoc	ashes::Instance::getProperties
 		*/
-		ashes::PhysicalDeviceProperties getProperties()const override;
+		ashes::PhysicalDeviceProperties getProperties()const;
 		/**
 		*\copydoc	ashes::Instance::getMemoryProperties
 		*/
-		ashes::PhysicalDeviceMemoryProperties getMemoryProperties()const override;
+		ashes::PhysicalDeviceMemoryProperties getMemoryProperties()const;
 		/**
 		*\copydoc	ashes::Instance::getFeatures
 		*/
-		ashes::PhysicalDeviceFeatures getFeatures()const override;
+		ashes::PhysicalDeviceFeatures getFeatures()const;
 		/**
 		*\copydoc	ashes::Instance::getQueueFamilyProperties
 		*/
-		ashes::QueueFamilyPropertiesArray getQueueFamilyProperties()const override;
+		ashes::QueueFamilyPropertiesArray getQueueFamilyProperties()const;
 		/**
 		*\copydoc	ashes::Instance::getFormatProperties
 		*/
-		ashes::FormatProperties getFormatProperties( VkFormat fmt )const override;
+		ashes::FormatProperties getFormatProperties( VkFormat fmt )const;
 
 		inline IDXGIAdapter * getAdapter()const
 		{

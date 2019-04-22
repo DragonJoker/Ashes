@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <Ashes/RenderPass/ClearValue.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\brief
@@ -30,8 +30,8 @@ namespace d3d11_renderer
 			, ashes::ImageView const & image
 			, ashes::DepthStencilClearValue const & value );
 
-		void apply( Context const & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		CommandPtr clone()const;
 
 	private:
 		ImageView const & m_image;

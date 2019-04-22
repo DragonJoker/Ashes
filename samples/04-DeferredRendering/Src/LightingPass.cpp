@@ -242,7 +242,7 @@ namespace vkapp
 				ashes::MultisampleState{},
 				ashes::ColourBlendState::createDefault(),
 				{ VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR },
-				ashes::DepthStencilState{ 0u, false, false, ashes::CompareOp::eLess }
+				ashes::DepthStencilState{ 0u, false, false, VK_COMPARE_OP_LESS }
 			} )
 		}
 		, m_queryPool{ m_device.getDevice().createQueryPool( VK_QUERY_TYPE_TIMESTAMP, 2u, 0u ) }

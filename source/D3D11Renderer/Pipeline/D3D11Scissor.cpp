@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	RECT makeScissor( ashes::Scissor const & scissor )
 	{

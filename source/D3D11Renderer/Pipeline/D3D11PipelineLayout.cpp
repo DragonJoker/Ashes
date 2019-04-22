@@ -4,7 +4,7 @@
 #include "Pipeline/D3D11ComputePipeline.hpp"
 #include "Pipeline/D3D11Pipeline.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	PipelineLayout::PipelineLayout( Device const & device
 		, ashes::DescriptorSetLayoutCRefArray const & setLayouts

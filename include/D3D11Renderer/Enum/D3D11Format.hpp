@@ -4,11 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-#include <Ashes/Miscellaneous/Extent2D.hpp>
-
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	DXGI_FORMAT getDxgiFormat( VkFormat const & format )noexcept;
 	DXGI_FORMAT getTextureFormat( VkFormat const & format )noexcept;

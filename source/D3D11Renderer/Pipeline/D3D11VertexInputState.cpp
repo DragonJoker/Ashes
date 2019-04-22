@@ -1,6 +1,6 @@
 #include "Pipeline/D3D11VertexInputState.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	std::vector< D3D11_INPUT_ELEMENT_DESC > convert( ashes::VertexInputState const & state
 		, InputLayout const & inputLayout )
@@ -37,7 +37,7 @@ namespace d3d11_renderer
 						attribute.binding,
 						attribute.offset,
 						convert( binding.inputRate ),
-						( binding.inputRate == ashes::VertexInputRate::eInstance
+						( binding.inputRate == VK_VERTEX_INPUT_RATE_INSTANCE
 							? 1u
 							: 0u )
 					} );

@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Miscellaneous/D3D11QueryPool.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	WriteTimestampCommand::WriteTimestampCommand( Device const & device
 		, ashes::PipelineStageFlag pipelineStage

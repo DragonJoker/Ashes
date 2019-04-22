@@ -3,7 +3,7 @@
 #include "Buffer/D3D11Buffer.hpp"
 #include "Core/D3D11Device.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	BufferView::BufferView( Device const & device
 		, Buffer const & buffer

@@ -1,33 +1,33 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	D3D11_COMPARISON_FUNC convert( ashes::CompareOp const & value )
+	D3D11_COMPARISON_FUNC convert( VkCompareOp const & value )
 	{
 		switch ( value )
 		{
-		case ashes::CompareOp::eNever:
+		case VK_COMPARE_OP_NEVER:
 			return D3D11_COMPARISON_NEVER;
 
-		case ashes::CompareOp::eLess:
+		case VK_COMPARE_OP_LESS:
 			return D3D11_COMPARISON_LESS;
 
-		case ashes::CompareOp::eEqual:
+		case VK_COMPARE_OP_EQUAL:
 			return D3D11_COMPARISON_EQUAL;
 
-		case ashes::CompareOp::eLessEqual:
+		case VK_COMPARE_OP_LESS_OR_EQUAL:
 			return D3D11_COMPARISON_LESS_EQUAL;
 
-		case ashes::CompareOp::eGreater:
+		case VK_COMPARE_OP_GREATER:
 			return D3D11_COMPARISON_GREATER;
 
-		case ashes::CompareOp::eNotEqual:
+		case VK_COMPARE_OP_NOT_EQUAL:
 			return D3D11_COMPARISON_NOT_EQUAL;
 
-		case ashes::CompareOp::eGreaterEqual:
+		case VK_COMPARE_OP_GREATER_OR_EQUAL:
 			return D3D11_COMPARISON_GREATER_EQUAL;
 
-		case ashes::CompareOp::eAlways:
+		case VK_COMPARE_OP_ALWAYS:
 			return D3D11_COMPARISON_ALWAYS;
 
 		default:

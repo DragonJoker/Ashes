@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Miscellaneous/QueryPool.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\~english
@@ -66,7 +66,7 @@ namespace d3d11_renderer
 			, uint32_t queryCount
 			, uint32_t stride
 			, ashes::QueryResultFlags flags
-			, ashes::UInt32Array & data )const override;
+			, ashes::UInt32Array & data )const;
 		/**
 		*\copydoc	ashes::QueryPool:getResults
 		*/
@@ -74,7 +74,7 @@ namespace d3d11_renderer
 			, uint32_t queryCount
 			, uint32_t stride
 			, ashes::QueryResultFlags flags
-			, ashes::UInt64Array & data )const override;
+			, ashes::UInt64Array & data )const;
 		/**
 		*\return
 		*	Le début du tableau de requêtes.

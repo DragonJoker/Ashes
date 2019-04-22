@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Command/D3D11CommandBuffer.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	ExecuteCommandsCommand::ExecuteCommandsCommand( Device const & device
 		, ashes::CommandBuffer const & commandBuffer )

@@ -1,15 +1,15 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	D3D11_INPUT_CLASSIFICATION convert( ashes::VertexInputRate const & value )
+	D3D11_INPUT_CLASSIFICATION convert( VkVertexInputRate const & value )
 	{
 		switch ( value )
 		{
-		case ashes::VertexInputRate::eVertex:
+		case VK_VERTEX_INPUT_RATE_VERTEX:
 			return D3D11_INPUT_PER_VERTEX_DATA;
 
-		case ashes::VertexInputRate::eInstance:
+		case VK_VERTEX_INPUT_RATE_INSTANCE:
 			return D3D11_INPUT_PER_INSTANCE_DATA;
 
 		default:

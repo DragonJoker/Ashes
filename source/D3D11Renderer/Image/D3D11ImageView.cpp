@@ -3,7 +3,7 @@
 #include "Core/D3D11Device.hpp"
 #include "Image/D3D11Image.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	ImageView::ImageView( Device const & device
 		, Image const & image

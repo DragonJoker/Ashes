@@ -9,7 +9,7 @@ See LICENSE file in root folder
 #include <Ashes/Miscellaneous/DeviceMemory.hpp>
 #include <Ashes/Miscellaneous/MemoryRequirements.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\~french
@@ -31,7 +31,7 @@ namespace d3d11_renderer
 			virtual ~DeviceMemoryImpl() = default;
 			virtual uint8_t * lock( uint64_t offset
 				, uint64_t size
-				, ashes::MemoryMapFlags flags )const = 0;
+				, VkMemoryMapFlags flags )const = 0;
 			virtual void flush( uint64_t offset
 				, uint64_t size )const = 0;
 			virtual void invalidate( uint64_t offset
@@ -41,7 +41,7 @@ namespace d3d11_renderer
 		protected:
 			Device const & m_device;
 			ashes::MemoryAllocateInfo m_allocateInfo;
-			ashes::MemoryPropertyFlags m_flags;
+			VkMemoryPropertyFlags m_flags;
 		};
 
 	public:
@@ -81,30 +81,30 @@ namespace d3d11_renderer
 		*/
 		uint8_t * lock( uint64_t offset
 			, uint64_t size
-			, ashes::MemoryMapFlags flags )const override;
+			, VkMemoryMapFlags flags )const;
 		/**
 		*\copydoc	ashes::DeviceMemory::flush
 		*/
 		void flush( uint64_t offset
-			, uint64_t size )const override;
+			, uint64_t size )const;
 		/**
 		*\copydoc	ashes::DeviceMemory::invalidate
 		*/
 		void invalidate( uint64_t offset
-			, uint64_t size )const override;
+			, uint64_t size )const;
 		/**
 		*\copydoc	ashes::DeviceMemory::unlock
 		*/
-		void unlock()const override;
+		void unlock()const;
 
-		ID3D11Buffer * bindToBuffer( ashes::BufferTargets targets );
+		ID3D11Buffer * bindToBuffer( VkBufferUsageFlags targets );
 		ID3D11Texture1D * bindToTexture1D( ashes::ImageCreateInfo const & createInfo );
 		ID3D11Texture2D * bindToTexture2D( ashes::ImageCreateInfo const & createInfo );
 		ID3D11Texture3D * bindToTexture3D( ashes::ImageCreateInfo const & createInfo );
 
 	private:
 		Device const & m_device;
-		ashes::MemoryRequirements m_requirements;
+		VkMemoryRequirements m_requirements;
 		std::unique_ptr< DeviceMemoryImpl > m_impl;
 	};
 }

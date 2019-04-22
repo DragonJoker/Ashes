@@ -11,7 +11,7 @@ See LICENSE file in root folder.
 
 #include <d3d11shader.h>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class CompiledShaderModule
 	{

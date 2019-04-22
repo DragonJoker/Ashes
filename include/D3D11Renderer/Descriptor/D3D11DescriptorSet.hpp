@@ -16,7 +16,7 @@
 
 #include <vector>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class DescriptorSet
 		: public ashes::DescriptorSet
@@ -28,7 +28,7 @@ namespace d3d11_renderer
 			, uint32_t bindingPoint );
 		~DescriptorSet();
 
-		void update()const override;
+		void update()const;
 
 		inline WriteDescriptorSetBindingArray const & getCombinedTextureSamplers()const
 		{

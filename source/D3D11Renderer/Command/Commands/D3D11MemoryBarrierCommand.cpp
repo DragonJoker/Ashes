@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/D3D11MemoryBarrierCommand.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	MemoryBarrierCommand::MemoryBarrierCommand( Device const & device
 		, ashes::PipelineStageFlags after

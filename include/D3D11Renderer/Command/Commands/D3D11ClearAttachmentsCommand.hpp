@@ -9,7 +9,7 @@ See LICENSE file in root folder
 #include <Ashes/RenderPass/ClearAttachment.hpp>
 #include <Ashes/RenderPass/ClearRect.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	struct ClearAttachmentView
 	{
@@ -27,8 +27,8 @@ namespace d3d11_renderer
 			, ashes::ClearAttachmentArray const & clearAttaches
 			, ashes::ClearRectArray const & clearRects );
 
-		void apply( Context const & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		CommandPtr clone()const;
 
 	private:
 		ashes::ClearRectArray m_clearRects;

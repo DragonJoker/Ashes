@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #include "RenderPass/D3D11FrameBuffer.hpp"
 #include "RenderPass/D3D11RenderPass.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	EndRenderPassCommand::EndRenderPassCommand( Device const & device
 		, ashes::RenderPass const & renderPass

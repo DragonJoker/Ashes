@@ -4,19 +4,17 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	bool isHostVisible( ashes::MemoryPropertyFlags const & flags );
+	bool isHostVisible( VkMemoryPropertyFlags const & flags );
 	// Buffer
-	D3D11_USAGE getUsage( ashes::MemoryPropertyFlags const & flags
-		, ashes::BufferTargets const & targets );
-	D3D11_USAGE getUsage( ashes::MemoryPropertyFlags const & flags
-		, ashes::ImageUsageFlags const & usage );
+	D3D11_USAGE getUsage( VkMemoryPropertyFlags const & flags
+		, VkBufferUsageFlags const & targets );
+	D3D11_USAGE getUsage( VkMemoryPropertyFlags const & flags
+		, VkImageUsageFlags const & usage );
 	// Image
-	UINT getCpuAccessFlags( ashes::MemoryPropertyFlags const & flags
-		, ashes::BufferTargets const & targets );
-	UINT getCpuAccessFlags( ashes::MemoryPropertyFlags const & flags
-		, ashes::ImageUsageFlags const & usage );
+	UINT getCpuAccessFlags( VkMemoryPropertyFlags const & flags
+		, VkBufferUsageFlags const & targets );
+	UINT getCpuAccessFlags( VkMemoryPropertyFlags const & flags
+		, VkImageUsageFlags const & usage );
 }

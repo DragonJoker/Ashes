@@ -7,7 +7,7 @@ See LICENSE file in root folder
 #include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 #include "D3D11Renderer/Shader/D3D11ShaderDesc.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\brief
@@ -29,9 +29,9 @@ namespace d3d11_renderer
 			, ashes::ComputePipeline const & pipeline
 			, ashes::PipelineBindPoint bindingPoint );
 
-		void apply( Context const & context )const override;
-		void remove( Context const & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		void remove( Context const & context )const;
+		CommandPtr clone()const;
 
 	private:
 		ComputePipeline const & m_pipeline;

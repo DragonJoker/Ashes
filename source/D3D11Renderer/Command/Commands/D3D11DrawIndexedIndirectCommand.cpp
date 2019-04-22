@@ -6,15 +6,15 @@ See LICENSE file in root folder.
 
 #include "Buffer/D3D11Buffer.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	DrawIndexedIndirectCommand::DrawIndexedIndirectCommand( Device const & device
 		, ashes::BufferBase const & buffer
 		, uint32_t offset
 		, uint32_t drawCount
 		, uint32_t stride
-		, ashes::PrimitiveTopology mode
-		, ashes::IndexType type
+		, VkPrimitiveTopology mode
+		, VkIndexType type
 		, VbosBindingArray const & vbos )
 		: CommandBase{ device }
 		, m_buffer{ static_cast< Buffer const & >( buffer ) }

@@ -1,18 +1,18 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	D3D11_FILL_MODE convert( ashes::PolygonMode const & value )
+	D3D11_FILL_MODE convert( VkPolygonMode const & value )
 	{
 		switch ( value )
 		{
-		case ashes::PolygonMode::eFill:
+		case VK_POLYGON_MODE_FILL:
 			return D3D11_FILL_SOLID;
 
-		case ashes::PolygonMode::eLine:
+		case VK_POLYGON_MODE_LINE:
 			return D3D11_FILL_WIREFRAME;
 
-		case ashes::PolygonMode::ePoint:
+		case VK_POLYGON_MODE_POINT:
 			return D3D11_FILL_MODE( 1 );
 
 		default:

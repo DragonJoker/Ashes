@@ -1,51 +1,35 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	D3D11_MAP convert( ashes::MemoryMapFlags const & flags
-		, ashes::MemoryPropertyFlags const & memory
-		, ashes::BufferTargets const & targets )
+	D3D11_MAP convert( VkMemoryMapFlags const & flags
+		, VkMemoryPropertyFlags const & memory
+		, VkBufferUsageFlags const & usage )
 	{
 		UINT result{ 0 };
 
 		if ( isHostVisible( memory ) )
 		{
-			if ( isPipelineBindable( targets ) )
+			if ( isPipelineBindable( usage ) )
 			{
 				result = D3D11_MAP_WRITE_DISCARD;
 			}
 			else
 			{
-				if ( checkFlag( flags, ashes::MemoryMapFlag::eRead ) )
-				{
-					result |= D3D11_MAP_READ;
-				}
-
-				if ( checkFlag( flags, ashes::MemoryMapFlag::eWrite ) )
-				{
-					result |= D3D11_MAP_WRITE;
-				}
+				result |= D3D11_MAP_READ_WRITE;
 			}
 		}
 		else
 		{
-			if ( checkFlag( flags, ashes::MemoryMapFlag::eRead ) )
-			{
-				result |= D3D11_MAP_READ;
-			}
-
-			if ( checkFlag( flags, ashes::MemoryMapFlag::eWrite ) )
-			{
-				result |= D3D11_MAP_WRITE;
-			}
+			result |= D3D11_MAP_READ_WRITE;
 		}
 
 		return D3D11_MAP( result );
 	}
 
-	D3D11_MAP convert( ashes::MemoryMapFlags const & flags
-		, ashes::MemoryPropertyFlags const & memory
-		, ashes::ImageUsageFlags const & usage )
+	D3D11_MAP convert( VkMemoryMapFlags const & flags
+		, VkMemoryPropertyFlags const & memory
+		, VkImageUsageFlags const & usage )
 	{
 		UINT result{ 0 };
 
@@ -53,28 +37,12 @@ namespace d3d11_renderer
 		{
 			if ( !isRenderTarget( usage ) )
 			{
-				if ( checkFlag( flags, ashes::MemoryMapFlag::eRead ) )
-				{
-					result |= D3D11_MAP_READ;
-				}
-
-				if ( checkFlag( flags, ashes::MemoryMapFlag::eWrite ) )
-				{
-					result |= D3D11_MAP_WRITE;
-				}
+				result |= D3D11_MAP_READ_WRITE;
 			}
 		}
 		else
 		{
-			if ( checkFlag( flags, ashes::MemoryMapFlag::eRead ) )
-			{
-				result |= D3D11_MAP_READ;
-			}
-
-			if ( checkFlag( flags, ashes::MemoryMapFlag::eWrite ) )
-			{
-				result |= D3D11_MAP_WRITE;
-			}
+			result |= D3D11_MAP_READ_WRITE;
 		}
 
 		return D3D11_MAP( result );

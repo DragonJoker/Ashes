@@ -8,11 +8,11 @@ See LICENSE file in root folder
 #include "Core/D3D11Instance.hpp"
 #include "Core/D3D11PhysicalDevice.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	//*********************************************************************************************
 
-	ashes::MemoryPropertyFlags getFlags( uint32_t memoryTypeIndex )
+	VkMemoryPropertyFlags getFlags( uint32_t memoryTypeIndex )
 	{
 		assert( memoryTypeIndex < Instance::getMemoryProperties().memoryTypes.size()
 			&& "Wrong deduced memory type" );
@@ -27,7 +27,7 @@ namespace d3d11_renderer
 	public:
 		BufferDeviceMemory( Device const & device
 			, ashes::MemoryAllocateInfo allocateInfo
-			, ashes::BufferTargets targets )
+			, VkBufferUsageFlags targets )
 			: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ) }
 		{
 			auto d3ddevice = m_device.getDevice();
@@ -41,8 +41,8 @@ namespace d3d11_renderer
 				desc.Usage = getUsage( m_flags, m_bufferTargets );
 				desc.BindFlags = convert( m_bufferTargets );
 				desc.CPUAccessFlags = getCpuAccessFlags( m_flags, m_bufferTargets );
-				desc.MiscFlags = ( ( checkFlag( m_bufferTargets, ashes::BufferTarget::eDrawIndirectBuffer )
-						|| checkFlag( m_bufferTargets, ashes::BufferTarget::eDispatchIndirectBuffer ) )
+				desc.MiscFlags = ( ( checkFlag( m_bufferTargets, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT )
+						|| checkFlag( m_bufferTargets, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT ) )
 					? D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS
 					: 0u );
 				desc.StructureByteStride = 0;
@@ -63,7 +63,7 @@ namespace d3d11_renderer
 
 		uint8_t * lock( uint64_t offset
 			, uint64_t size
-			, ashes::MemoryMapFlags flags )const override
+			, VkMemoryMapFlags flags )const
 		{
 			ID3D11DeviceContext * context;
 			m_device.getDevice()->GetImmediateContext( &context );
@@ -86,16 +86,16 @@ namespace d3d11_renderer
 		}
 
 		void flush( uint64_t offset
-			, uint64_t size )const override
+			, uint64_t size )const
 		{
 		}
 
 		void invalidate( uint64_t offset
-			, uint64_t size )const override
+			, uint64_t size )const
 		{
 		}
 
-		void unlock()const override
+		void unlock()const
 		{
 			ID3D11DeviceContext * context;
 			m_device.getDevice()->GetImmediateContext( &context );
@@ -109,7 +109,7 @@ namespace d3d11_renderer
 		}
 
 	private:
-		ashes::BufferTargets m_bufferTargets;
+		VkBufferUsageFlags m_bufferTargets;
 		ID3D11Buffer * m_buffer{ nullptr };
 	};
 	
@@ -171,7 +171,7 @@ namespace d3d11_renderer
 
 		uint8_t * lock( uint64_t offset
 			, uint64_t size
-			, ashes::MemoryMapFlags flags )const override
+			, VkMemoryMapFlags flags )const
 		{
 			ID3D11DeviceContext * context;
 			m_device.getDevice()->GetImmediateContext( &context );
@@ -194,16 +194,16 @@ namespace d3d11_renderer
 		}
 
 		void flush( uint64_t offset
-			, uint64_t size )const override
+			, uint64_t size )const
 		{
 		}
 
 		void invalidate( uint64_t offset
-			, uint64_t size )const override
+			, uint64_t size )const
 		{
 		}
 
-		void unlock()const override
+		void unlock()const
 		{
 			ID3D11DeviceContext * context;
 			m_device.getDevice()->GetImmediateContext( &context );
@@ -237,7 +237,7 @@ namespace d3d11_renderer
 		}
 
 	private:
-		ashes::ImageUsageFlags m_usage;
+		VkImageUsageFlags m_usage;
 		ID3D11Texture1D * m_texture{ nullptr };
 	};
 
@@ -272,7 +272,7 @@ namespace d3d11_renderer
 
 		uint8_t * lock( uint64_t offset
 			, uint64_t size
-			, ashes::MemoryMapFlags flags )const override
+			, VkMemoryMapFlags flags )const
 		{
 			ID3D11DeviceContext * context;
 			m_device.getDevice()->GetImmediateContext( &context );
@@ -295,16 +295,16 @@ namespace d3d11_renderer
 		}
 
 		void flush( uint64_t offset
-			, uint64_t size )const override
+			, uint64_t size )const
 		{
 		}
 
 		void invalidate( uint64_t offset
-			, uint64_t size )const override
+			, uint64_t size )const
 		{
 		}
 
-		void unlock()const override
+		void unlock()const
 		{
 			ID3D11DeviceContext * context;
 			m_device.getDevice()->GetImmediateContext( &context );
@@ -353,7 +353,7 @@ namespace d3d11_renderer
 		}
 
 	private:
-		ashes::ImageUsageFlags m_usage;
+		VkImageUsageFlags m_usage;
 		ID3D11Texture2D * m_texture{ nullptr };
 	};
 	
@@ -388,7 +388,7 @@ namespace d3d11_renderer
 
 		uint8_t * lock( uint64_t offset
 			, uint64_t size
-			, ashes::MemoryMapFlags flags )const override
+			, VkMemoryMapFlags flags )const
 		{
 			ID3D11DeviceContext * context;
 			m_device.getDevice()->GetImmediateContext( &context );
@@ -411,16 +411,16 @@ namespace d3d11_renderer
 		}
 
 		void flush( uint64_t offset
-			, uint64_t size )const override
+			, uint64_t size )const
 		{
 		}
 
 		void invalidate( uint64_t offset
-			, uint64_t size )const override
+			, uint64_t size )const
 		{
 		}
 
-		void unlock()const override
+		void unlock()const
 		{
 			ID3D11DeviceContext * context;
 			m_device.getDevice()->GetImmediateContext( &context );
@@ -455,7 +455,7 @@ namespace d3d11_renderer
 		}
 
 	private:
-		ashes::ImageUsageFlags m_usage;
+		VkImageUsageFlags m_usage;
 		ID3D11Texture3D * m_texture{ nullptr };
 	};
 
@@ -484,7 +484,7 @@ namespace d3d11_renderer
 
 	uint8_t * DeviceMemory::lock( uint64_t offset
 		, uint64_t size
-		, ashes::MemoryMapFlags flags )const
+		, VkMemoryMapFlags flags )const
 	{
 		return m_impl->lock( offset, size, flags );
 	}
@@ -506,7 +506,7 @@ namespace d3d11_renderer
 		m_impl->unlock();
 	}
 
-	ID3D11Buffer * DeviceMemory::bindToBuffer( ashes::BufferTargets targets )
+	ID3D11Buffer * DeviceMemory::bindToBuffer( VkBufferUsageFlags targets )
 	{
 		auto impl = std::make_unique< BufferDeviceMemory >( m_device
 			, m_allocateInfo

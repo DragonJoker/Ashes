@@ -12,7 +12,7 @@ See LICENSE file in root folder.
 #include <Ashes/Image/ImageSubresourceRange.hpp>
 #include <Ashes/RenderPass/FrameBufferAttachment.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	BlitImageCommand::Attachment::Attachment( ashes::ImageSubresourceLayers & subresource
 		, Image const & image
@@ -45,7 +45,7 @@ namespace d3d11_renderer
 		, ashes::Image const & srcImage
 		, ashes::Image const & dstImage
 		, std::vector< ashes::ImageBlit > const & regions
-		, ashes::Filter filter )
+		, VkFilter filter )
 		: CommandBase{ device }
 		, m_srcTexture{ static_cast< Image const & >( srcImage ) }
 		, m_dstTexture{ static_cast< Image const & >( dstImage ) }

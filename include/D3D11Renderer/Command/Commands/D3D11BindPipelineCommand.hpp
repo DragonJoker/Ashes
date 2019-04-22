@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	void apply( Device const & device
 		, ashes::ColourBlendState const & state );
@@ -40,9 +40,9 @@ namespace d3d11_renderer
 			, ashes::Pipeline const & pipeline
 			, ashes::PipelineBindPoint bindingPoint );
 
-		void apply( Context const & context )const override;
-		void remove( Context const & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		void remove( Context const & context )const;
+		CommandPtr clone()const;
 
 	private:
 		Pipeline const & m_pipeline;

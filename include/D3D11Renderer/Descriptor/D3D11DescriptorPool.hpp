@@ -14,7 +14,7 @@
 
 #include <vector>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class DescriptorPool
 		: public ashes::DescriptorPool
@@ -37,7 +37,7 @@ namespace d3d11_renderer
 		*\copydoc	ashes::DescriptorSetPool::createDescriptorSet
 		*/
 		ashes::DescriptorSetPtr createDescriptorSet( ashes::DescriptorSetLayout const & layout
-			, uint32_t bindingPoint )const override;
+			, uint32_t bindingPoint )const;
 
 	private:
 		Device const & m_device;

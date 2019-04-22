@@ -15,7 +15,7 @@
 
 #include <optional>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class Pipeline
 		: public ashes::Pipeline

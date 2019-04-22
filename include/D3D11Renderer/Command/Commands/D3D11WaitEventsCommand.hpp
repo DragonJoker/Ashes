@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class WaitEventsCommand
 		: public CommandBase
@@ -18,8 +18,8 @@ namespace d3d11_renderer
 			, ashes::PipelineStageFlags dstStageMask
 			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
 			, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers );
-		void apply( Context const & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		CommandPtr clone()const;
 
 	private:
 		ashes::EventCRefArray const & m_events;

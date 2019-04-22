@@ -8,13 +8,11 @@ See LICENSE file in root folder.
 #include "Image/D3D11ImageView.hpp"
 #include "RenderPass/D3D11RenderPass.hpp"
 
-#include <Ashes/RenderPass/FrameBufferAttachment.hpp>
-
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	namespace
 	{
-		ImageViewCRefArray convert( ashes::ashes::ImageViewPtrArray const & attachs )
+		ImageViewCRefArray convert( ashes::ImageViewPtrArray const & attachs )
 		{
 			ImageViewCRefArray result;
 			result.reserve( attachs.size() );
@@ -112,22 +110,22 @@ namespace d3d11_renderer
 		}
 	}
 
-	FrameBuffer::FrameBuffer( Device const & device
+	Framebuffer::Framebuffer( Device const & device
 		, RenderPass const & renderPass
 		, VkExtent2D const & dimensions
-		, ashes::ashes::ImageViewPtrArray attachments )
+		, ashes::ImageViewPtrArray attachments )
 		: ashes::FrameBuffer{ renderPass, dimensions, std::move( attachments ) }
 		, m_device{ device }
 		, m_views{ convert( m_attachments ) }
 		, m_dimensions{ dimensions }
-		, m_allViews{ d3d11_renderer::getAllViews( m_views ) }
+		, m_allViews{ ashes::d3d11::getAllViews( m_views ) }
 		, m_rtViews{ getRenderTargetViews( m_views ) }
 		, m_dsView{ getDepthStencilView( m_views ) }
 		, m_dsViewFlags{ getDepthStencilFlags( m_views ) }
 	{
 	}
 
-	FrameBuffer::~FrameBuffer()
+	Framebuffer::~Framebuffer()
 	{
 	}
 }

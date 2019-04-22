@@ -10,7 +10,7 @@
 
 #include <Ashes/Core/SwapChain.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class SwapChain
 		: public ashes::SwapChain
@@ -46,14 +46,14 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::SwapChain::getImages
 		*/
-		ashes::ImagePtrArray getImages()const override;
+		ashes::ImagePtrArray getImages()const;
 		/**
 		*\copydoc	ashes::SwapChain::acquireNextImage
 		*/
 		ashes::Result acquireNextImage( uint64_t timeout
 			, ashes::Semaphore const * semaphore
 			, ashes::Fence const * fence
-			, uint32_t & imageIndex )const override;
+			, uint32_t & imageIndex )const;
 
 		inline IDXGISwapChain * getSwapChain()const
 		{

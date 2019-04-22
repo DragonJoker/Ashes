@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Pipeline/ColourBlendState.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	D3D11_BLEND_DESC convert( ashes::ColourBlendState const & state );
 }

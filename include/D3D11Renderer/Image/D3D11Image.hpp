@@ -12,7 +12,7 @@
 
 #include <Ashes/Image/Image.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\~french
@@ -64,9 +64,9 @@ namespace d3d11_renderer
 		Image( Device const & device
 			, VkFormat format
 			, VkExtent2D const & dimensions
-			, ashes::ImageUsageFlags usageFlags
+			, VkImageUsageFlags usageFlags
 			, ashes::ImageTiling tiling
-			, ashes::MemoryPropertyFlags memoryFlags );
+			, VkMemoryPropertyFlags memoryFlags );
 		/**
 		*\brief
 		*	Destructeur.
@@ -75,15 +75,15 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::Image::createView
 		*/
-		ashes::MemoryRequirements getMemoryRequirements()const override;
+		VkMemoryRequirements getMemoryRequirements()const;
 		/**
 		*\copydoc	ashes::Image::createView
 		*/
-		ashes::ImageViewPtr createView( ashes::ImageViewCreateInfo const & createInfo )const override;
+		ashes::ImageViewPtr createView( ashes::ImageViewCreateInfo const & createInfo )const;
 		/**
 		*\copydoc	ashes::Image::generateMipmaps
 		*/
-		void generateMipmaps( ashes::CommandBuffer & commandBuffer )const override;
+		void generateMipmaps( ashes::CommandBuffer & commandBuffer )const;
 
 		inline ID3D11Resource * getResource()const
 		{
@@ -110,17 +110,17 @@ namespace d3d11_renderer
 
 		bool isRenderTarget()const
 		{
-			return d3d11_renderer::isRenderTarget( m_createInfo.usage );
+			return ashes::d3d11::isRenderTarget( m_createInfo.usage );
 		}
 
 		bool isSamplable()const
 		{
-			return checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eSampled );
+			return checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_SAMPLED_BIT );
 		}
 
 		bool isStorage()const
 		{
-			return checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eStorage );
+			return checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_STORAGE_BIT );
 		}
 
 	private:

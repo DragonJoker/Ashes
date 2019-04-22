@@ -12,7 +12,7 @@
 #include <Ashes/Core/PlatformWindowHandle.hpp>
 #include <Ashes/Miscellaneous/MemoryRequirements.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	SwapChain::SwapChain( Device const & device
 		, ashes::SwapChainCreateInfo createInfo )

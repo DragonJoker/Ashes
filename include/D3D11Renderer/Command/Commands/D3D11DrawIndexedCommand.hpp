@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\brief
@@ -36,12 +36,12 @@ namespace d3d11_renderer
 			, uint32_t firstIndex
 			, uint32_t vertexOffset
 			, uint32_t firstInstance
-			, ashes::PrimitiveTopology mode
-			, ashes::IndexType type
+			, VkPrimitiveTopology mode
+			, VkIndexType type
 			, VbosBindingArray const & vbos );
 
-		void apply( Context const & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		CommandPtr clone()const;
 
 	private:
 		uint32_t m_indexCount;

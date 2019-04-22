@@ -32,7 +32,7 @@ extern "C"
 	*\param[in] createInfo
 	*	The creation options.
 	*/
-	D3D11Renderer_API ashes::Result createInstance( ashes::InstanceCreateInfo createInfo
+	D3D11Renderer_API ashes::Result createInstance( VkInstanceCreateInfo createInfo
 		, ashes::Instance ** instance );
 	/**
 	*\~french

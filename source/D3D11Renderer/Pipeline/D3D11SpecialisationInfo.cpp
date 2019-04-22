@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include <algorithm>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	ashes::PushConstantArray convert( ashes::ShaderStageFlag stage
 		, ashes::SpecialisationMapEntryArray::const_iterator const & begin

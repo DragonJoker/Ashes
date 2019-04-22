@@ -11,7 +11,7 @@ See LICENSE file in root folder.
 
 #include <Ashes/RenderPass/ClearValue.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	BeginRenderPassCommand::BeginRenderPassCommand( Device const & device
 		, ashes::RenderPass const & renderPass

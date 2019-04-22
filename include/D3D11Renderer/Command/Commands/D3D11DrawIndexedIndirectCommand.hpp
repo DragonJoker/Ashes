@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class DrawIndexedIndirectCommand
 		: public CommandBase
@@ -17,12 +17,12 @@ namespace d3d11_renderer
 			, uint32_t offset
 			, uint32_t drawCount
 			, uint32_t stride
-			, ashes::PrimitiveTopology mode
-			, ashes::IndexType type
+			, VkPrimitiveTopology mode
+			, VkIndexType type
 			, VbosBindingArray const & vbos );
 
-		void apply( Context const & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		CommandPtr clone()const;
 
 	private:
 		Buffer const & m_buffer;

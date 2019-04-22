@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Pipeline/PipelineLayout.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\brief
@@ -49,11 +49,11 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::PipelineLayout::createPipeline
 		*/
-		ashes::PipelinePtr createPipeline( ashes::GraphicsPipelineCreateInfo createInfo )const override;
+		ashes::PipelinePtr createPipeline( ashes::GraphicsPipelineCreateInfo createInfo )const;
 		/**
 		*\copydoc	ashes::PipelineLayout::createPipeline
 		*/
-		ashes::ComputePipelinePtr createPipeline( ashes::ComputePipelineCreateInfo createInfo )const override;
+		ashes::ComputePipelinePtr createPipeline( ashes::ComputePipelineCreateInfo createInfo )const;
 
 	private:
 		Device const & m_device;

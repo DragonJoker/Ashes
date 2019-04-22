@@ -4,10 +4,8 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	bool isPipelineBindable( ashes::BufferTargets const & targets );
-	UINT convert( ashes::BufferTargets const & targets );
+	bool isPipelineBindable( VkBufferUsageFlags const & targets );
+	UINT convert( VkBufferUsageFlags const & targets );
 }

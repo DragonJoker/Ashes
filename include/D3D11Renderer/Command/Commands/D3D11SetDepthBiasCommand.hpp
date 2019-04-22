@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class SetDepthBiasCommand
 		: public CommandBase
@@ -17,8 +17,8 @@ namespace d3d11_renderer
 			, float clamp
 			, float slopeFactor );
 
-		void apply( Context const & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		CommandPtr clone()const;
 
 	private:
 		float m_constantFactor;

@@ -1,39 +1,39 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	D3D11_PRIMITIVE_TOPOLOGY convert( ashes::PrimitiveTopology const & topology )
+	D3D11_PRIMITIVE_TOPOLOGY convert( VkPrimitiveTopology const & topology )
 	{
 		switch ( topology )
 		{
-		case ashes::PrimitiveTopology::ePointList:
+		case VK_PRIMITIVE_TOPOLOGY_POINT_LIST:
 			return D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
 
-		case ashes::PrimitiveTopology::eLineList:
+		case VK_PRIMITIVE_TOPOLOGY_LINE_LIST:
 			return D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
 
-		case ashes::PrimitiveTopology::eLineStrip:
+		case VK_PRIMITIVE_TOPOLOGY_LINE_STRIP:
 			return D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
 
-		case ashes::PrimitiveTopology::eTriangleList:
+		case VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST:
 			return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-		case ashes::PrimitiveTopology::eTriangleStrip:
+		case VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP:
 			return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 
-		case ashes::PrimitiveTopology::eLineListWithAdjacency:
+		case VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY:
 			return D3D11_PRIMITIVE_TOPOLOGY_LINELIST_ADJ;
 
-		case ashes::PrimitiveTopology::eLineStripWithAdjacency:
+		case VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY:
 			return D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP_ADJ;
 
-		case ashes::PrimitiveTopology::eTriangleListWithAdjacency:
+		case VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY:
 			return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ;
 
-		case ashes::PrimitiveTopology::eTriangleStripWithAdjacency:
+		case VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY:
 			return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ;
 
-		case ashes::PrimitiveTopology::ePatchList:
+		case VK_PRIMITIVE_TOPOLOGY_PATCH_LIST:
 			return D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST;
 
 		default:

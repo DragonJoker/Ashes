@@ -12,7 +12,7 @@ See LICENSE file in root folder.
 #include <Ashes/RenderPass/ClearValue.hpp>
 #include <Ashes/RenderPass/AttachmentDescription.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	BeginSubpassCommand::BeginSubpassCommand( Device const & device
 		, ashes::RenderPass const & renderPass

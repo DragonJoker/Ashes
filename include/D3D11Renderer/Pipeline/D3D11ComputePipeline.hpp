@@ -13,7 +13,7 @@
 
 #include <Ashes/Pipeline/ComputePipeline.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class ComputePipeline
 		: public ashes::ComputePipeline

@@ -2,7 +2,7 @@
 
 #include "Core/D3D11Device.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	D3D11_TEXTURE_ADDRESS_MODE convert( ashes::WrapMode mode )
 	{
@@ -57,13 +57,13 @@ namespace d3d11_renderer
 		}
 	}
 
-	D3D11_FILTER convert( ashes::Filter min
-		, ashes::Filter mag
+	D3D11_FILTER convert( VkFilter min
+		, VkFilter mag
 		, ashes::MipmapMode mip )
 	{
-		if ( min == ashes::Filter::eNearest )
+		if ( min == VK_FILTER_NEAREST )
 		{
-			if ( mag == ashes::Filter::eNearest )
+			if ( mag == VK_FILTER_NEAREST )
 			{
 				switch ( mip )
 				{
@@ -94,7 +94,7 @@ namespace d3d11_renderer
 		}
 		else
 		{
-			if ( mag == ashes::Filter::eNearest )
+			if ( mag == VK_FILTER_NEAREST )
 			{
 				switch ( mip )
 				{

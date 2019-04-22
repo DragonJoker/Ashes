@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class ExecuteCommandsCommand
 		: public CommandBase
@@ -15,8 +15,8 @@ namespace d3d11_renderer
 		ExecuteCommandsCommand( Device const & device
 			, ashes::CommandBuffer const & commandBuffer );
 		~ExecuteCommandsCommand();
-		void apply( Context const & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		CommandPtr clone()const;
 
 	private:
 		CommandBuffer const & m_commandBuffer;

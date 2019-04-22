@@ -1,6 +1,6 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	DXGI_FORMAT getDxgiFormat( VkFormat const & format )noexcept
 	{
@@ -741,8 +741,8 @@ namespace d3d11_renderer
 
 		if ( isCompressedFormat( format ) )
 		{
-			if ( format >= VK_FORMAT_BCCompressed_BEGIN
-				&& format <= VK_FORMAT_EACCompressed_END )
+			if ( format >= VK_FORMAT_BC1_RGB_UNORM_BLOCK
+				&& format <= VK_FORMAT_EAC_R11G11_SNORM_BLOCK )
 			{
 				result.block.width = 4u;
 				result.block.height = 4u;

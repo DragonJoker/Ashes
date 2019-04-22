@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include <Ashes/Command/Queue.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class Queue
 		: public ashes::Queue
@@ -25,18 +25,18 @@ namespace d3d11_renderer
 			, ashes::SemaphoreCRefArray const & semaphoresToWait
 			, ashes::VkPipelineStageFlagsArray const & semaphoresStage
 			, ashes::SemaphoreCRefArray const & semaphoresToSignal
-			, ashes::Fence const * fence )const override;
+			, ashes::Fence const * fence )const;
 		/**
 		*\copydoc		ashes::Queue::present
 		*/
 		ashes::VkResultArray present( ashes::SwapChainCRefArray const & swapChains
 			, ashes::UInt32Array const & imagesIndex
-			, ashes::SemaphoreCRefArray const & semaphoresToWait )const override;
+			, ashes::SemaphoreCRefArray const & semaphoresToWait )const;
 		/**
 		/**
 		*\copydoc		ashes::Queue::waitIdle
 		*/
-		void waitIdle()const override;
+		void waitIdle()const;
 
 	private:
 		Device const & m_device;

@@ -6,12 +6,14 @@
 #include "Core/D3D11PhysicalDevice.hpp"
 #include "Core/D3D11SwapChain.hpp"
 
+#include <AshesRenderer/Util/Exception.hpp>
+
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <locale>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	namespace
 	{
@@ -42,68 +44,35 @@ namespace d3d11_renderer
 
 			if ( !SUCCEEDED( hr ) )
 			{
-				throw ashes::Exception{ ashes::Result::eErrorIncompatibleDriver, "Feature level retrieval" };
+				throw ashes::Exception{ VK_ERROR_INCOMPATIBLE_DRIVER, "Feature level retrieval" };
 			}
 
 			return result;
 		}
 	}
 
-	ashes::PhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
-		{
-			ashes::PhysicalDeviceMemoryProperties result;
+	VkPhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
+	{
+		VkPhysicalDeviceMemoryProperties result{};
+		// Emulate one device local heap
+		result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
+		// and one host visible heap
+		result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), 0u };
 
-			// Emulate one device local heap
-			result.memoryHeaps.push_back(
-				{
-					~( 0ull ),
-					0u | ashes::MemoryHeapFlag::eDeviceLocal
-				} );
-			// and one host visible heap
-			result.memoryHeaps.push_back(
-				{
-					~( 0ull ),
-					0u
-				} );
+		// Emulate all combinations of device local memory types
+		// and all combinations of host visible memory types
+		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_HEAP_DEVICE_LOCAL_BIT, 0u };
+		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, 1u };
+		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 1u };
+		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT, 1u };
 
-			// Emulate all combinations of device local memory types
-			// and all combinations of host visible memory types
-			result.memoryTypes.push_back(
-				{
-					0u | ashes::MemoryPropertyFlag::eDeviceLocal,
-					0u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					0u | ashes::MemoryPropertyFlag::eHostVisible,
-					1u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent,
-					1u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCached,
-					1u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eLazilyAllocated,
-					1u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					ashes::MemoryPropertyFlag::eHostVisible | ashes::MemoryPropertyFlag::eHostCoherent | ashes::MemoryPropertyFlag::eHostCached,
-					1u,
-				} );
+		return result;
+	}();
 
-			return result;
-		}();
-
-	Instance::Instance( ashes::InstanceCreateInfo createInfo )
-		: ashes::Instance{ ashes::ClipDirection::eTopDown, "d3d11", std::move( createInfo ) }
+	Instance::Instance( VkInstanceCreateInfo createInfo )
+		: m_flags{ createInfo.flags }
+		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
+		, m_enabledExtensions{ convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
 	{
 		doCreateDXGIFactory();
 		doLoadAdapters();
@@ -128,9 +97,9 @@ namespace d3d11_renderer
 		safeRelease( m_factory );
 	}
 
-	ashes::PhysicalDevicePtrArray Instance::enumeratePhysicalDevices()const
+	VkPhysicalDeviceArray Instance::enumeratePhysicalDevices()const
 	{
-		ashes::PhysicalDevicePtrArray result;
+		VkPhysicalDeviceArray result;
 
 		for ( auto adapter : m_adapters )
 		{
@@ -138,39 +107,6 @@ namespace d3d11_renderer
 		}
 
 		return result;
-	}
-
-	ashes::DevicePtr Instance::createDevice( ashes::PhysicalDevice const & physicalDevice
-		, ashes::DeviceCreateInfo createInfos )const
-	{
-		ashes::DevicePtr result;
-
-		try
-		{
-			result = std::make_shared< Device >( *this
-				, static_cast< PhysicalDevice const & >( physicalDevice )
-				, std::move( createInfos ) );
-		}
-		catch ( std::exception & exc )
-		{
-			ashes::Logger::logError( std::string{ "Could not initialise logical device:\n" } + exc.what() );
-		}
-
-		return result;
-	}
-
-	ashes::SurfacePtr Instance::createSurface( ashes::PhysicalDevice const & gpu
-		, ashes::WindowHandle handle )const
-	{
-		return std::make_unique< Surface >( *this
-			, gpu
-			, std::move( handle ) );
-	}
-
-	ashes::DebugReportCallbackPtr Instance::createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const
-	{
-		return std::make_unique< DebugReportCallback >( *this
-			, std::move( createInfo ) );
 	}
 
 	std::array< float, 16 > Instance::frustum( float left
@@ -243,10 +179,10 @@ namespace d3d11_renderer
 		}
 	}
 
-	bool Instance::onCopyToImageCommand( ashes::CommandBuffer const & cmd
+	bool Instance::onCopyToImageCommand( VkCommandBuffer cmd
 		, ashes::VkBufferImageCopyArray const & copyInfo
-		, ashes::BufferBase const & src
-		, ashes::Image const & dst )const
+		, VkBuffer src
+		, VkImage dst )const
 	{
 		try
 		{

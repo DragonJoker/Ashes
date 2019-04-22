@@ -12,7 +12,7 @@
 
 #include <Ashes/Buffer/BufferView.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class BufferView
 		: public ashes::BufferView

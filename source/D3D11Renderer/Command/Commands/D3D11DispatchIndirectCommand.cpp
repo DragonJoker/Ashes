@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Buffer/D3D11Buffer.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	DispatchIndirectCommand::DispatchIndirectCommand( Device const & device
 		, ashes::BufferBase const & buffer

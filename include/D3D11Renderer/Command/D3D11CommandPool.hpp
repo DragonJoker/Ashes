@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Command/CommandPool.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\brief
@@ -67,7 +67,7 @@ namespace d3d11_renderer
 		*\return
 		*	The created command buffer.
 		*/
-		ashes::CommandBufferPtr createCommandBuffer( bool primary )const override;
+		ashes::CommandBufferPtr createCommandBuffer( bool primary )const;
 
 	private:
 		Device const & m_device;

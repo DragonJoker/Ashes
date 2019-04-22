@@ -12,7 +12,7 @@ See LICENSE file in root folder.
 #include "Pipeline/D3D11PipelineLayout.hpp"
 #include "Shader/D3D11ShaderModule.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	BindComputePipelineCommand::BindComputePipelineCommand( Device const & device
 		, ashes::ComputePipeline const & pipeline

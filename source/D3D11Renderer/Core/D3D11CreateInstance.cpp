@@ -5,7 +5,7 @@
 
 extern "C"
 {
-	D3D11Renderer_API ashes::Result createInstance( ashes::InstanceCreateInfo createInfo
+	D3D11Renderer_API ashes::Result createInstance( VkInstanceCreateInfo createInfo
 		, ashes::Instance ** instance )
 	{
 		ashes::Result result = ashes::Result::eSuccess;
@@ -13,7 +13,7 @@ extern "C"
 		try
 		{
 			assert( instance );
-			*instance = new d3d11_renderer::Instance{ std::move( createInfo ) };
+			*instance = new ashes::d3d11::Instance{ std::move( createInfo ) };
 		}
 		catch ( ashes::Exception & exc )
 		{

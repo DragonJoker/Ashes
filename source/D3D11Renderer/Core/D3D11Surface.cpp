@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 
 #include <Ashes/Core/PlatformWindowHandle.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	namespace
 	{
@@ -91,7 +91,7 @@ namespace d3d11_renderer
 			capabilities.supportedTransforms = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 			capabilities.currentTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 			capabilities.supportedCompositeAlpha = VkCompositeAlphaFlagBitsKHR::eInherit;
-			capabilities.supportedUsageFlags = ashes::ImageUsageFlag::eUndefined;
+			capabilities.supportedUsageFlags = VkImageUsageFlagBits::eUndefined;
 
 			std::map < VkFormat, std::vector< DXGI_MODE_DESC > > result;
 

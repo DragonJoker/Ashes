@@ -6,12 +6,12 @@ See LICENSE file in root folder.
 
 #include "Buffer/D3D11Buffer.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	BindIndexBufferCommand::BindIndexBufferCommand( Device const & device
 		, Buffer const & ibo
 		, uint64_t offset
-		, ashes::IndexType indexType )
+		, VkIndexType indexType )
 		: CommandBase{ device }
 		, m_ibo{ ibo }
 		, m_offset{ UINT( offset ) }

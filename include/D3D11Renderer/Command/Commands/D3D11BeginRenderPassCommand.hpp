@@ -9,7 +9,7 @@ See LICENSE file in root folder
 #include <Ashes/Pipeline/Scissor.hpp>
 #include <Ashes/RenderPass/ClearValue.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class BeginRenderPassCommand
 		: public CommandBase
@@ -20,8 +20,8 @@ namespace d3d11_renderer
 			, ashes::FrameBuffer const & frameBuffer
 			, ashes::ClearValueArray const & clearValues );
 
-		void apply( Context const & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		CommandPtr clone()const;
 
 	private:
 		RenderPass const & m_renderPass;

@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Core/Surface.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class Surface
 		: public ashes::Surface
@@ -19,10 +19,10 @@ namespace d3d11_renderer
 			, ashes::WindowHandle handle );
 		~Surface();
 
-		bool getSupport( uint32_t queueFamilyIndex )const override;
-		std::vector < VkPresentModeKHR > getPresentModes()const override;
-		ashes::SurfaceCapabilities getCapabilities()const override;
-		std::vector< VkSurfaceFormatKHR > getFormats()const override;
+		bool getSupport( uint32_t queueFamilyIndex )const;
+		std::vector < VkPresentModeKHR > getPresentModes()const;
+		ashes::SurfaceCapabilities getCapabilities()const;
+		std::vector< VkSurfaceFormatKHR > getFormats()const;
 
 		inline std::vector< DXGI_MODE_DESC > const & getDescs( VkFormat format )const
 		{

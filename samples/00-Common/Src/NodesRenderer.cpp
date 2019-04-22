@@ -668,7 +668,7 @@ namespace common
 						doCreateObjectProgram( m_device.getDevice(), m_fragmentShaderFile ),
 						*m_renderPass,
 						ashes::VertexInputState::create( *m_objectVertexLayout ),
-						{ VkPrimitiveTopology::eTriangleList },
+						{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
 						rasterisationState,
 						ashes::MultisampleState{},
 						blendState,

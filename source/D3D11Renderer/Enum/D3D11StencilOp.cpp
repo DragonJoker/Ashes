@@ -1,33 +1,33 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	D3D11_STENCIL_OP convert( ashes::StencilOp const & value )
+	D3D11_STENCIL_OP convert( VkStencilOp const & value )
 	{
 		switch ( value )
 		{
-		case ashes::StencilOp::eKeep:
+		case VK_STENCIL_OP_KEEP:
 			return D3D11_STENCIL_OP_KEEP;
 
-		case ashes::StencilOp::eZero:
+		case VK_STENCIL_OP_ZERO:
 			return D3D11_STENCIL_OP_ZERO;
 
-		case ashes::StencilOp::eReplace:
+		case VK_STENCIL_OP_REPLACE:
 			return D3D11_STENCIL_OP_REPLACE;
 
-		case ashes::StencilOp::eIncrementAndWrap:
+		case VK_STENCIL_OP_INCREMENT_AND_WRAP:
 			return D3D11_STENCIL_OP_INCR;
 
-		case ashes::StencilOp::eDecrementAndWrap:
+		case VK_STENCIL_OP_DECREMENT_AND_WRAP:
 			return D3D11_STENCIL_OP_DECR;
 
-		case ashes::StencilOp::eIncrementAndClamp:
+		case VK_STENCIL_OP_INCREMENT_AND_CLAMP:
 			return D3D11_STENCIL_OP_INCR_SAT;
 
-		case ashes::StencilOp::eDecrementAndClamp:
+		case VK_STENCIL_OP_DECREMENT_AND_CLAMP:
 			return D3D11_STENCIL_OP_DECR_SAT;
 
-		case ashes::StencilOp::eInvert:
+		case VK_STENCIL_OP_INVERT:
 			return D3D11_STENCIL_OP_INVERT;
 
 		default:

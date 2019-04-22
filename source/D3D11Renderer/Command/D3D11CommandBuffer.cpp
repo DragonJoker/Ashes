@@ -64,7 +64,7 @@ See LICENSE file in root folder.
 
 #define AshesD3D_UseCommandsList 0
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	namespace
 	{
@@ -339,7 +339,7 @@ namespace d3d11_renderer
 
 	void CommandBuffer::bindIndexBuffer( ashes::BufferBase const & buffer
 		, uint64_t offset
-		, ashes::IndexType indexType )const
+		, VkIndexType indexType )const
 	{
 		m_commands.emplace_back( std::make_unique< BindIndexBufferCommand >( m_device
 			, static_cast< Buffer const & >( buffer )
@@ -386,7 +386,7 @@ namespace d3d11_renderer
 
 		if ( !m_state.currentPipeline->hasVertexLayout() )
 		{
-			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, ashes::IndexType::eUInt32 );
+			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 			m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( m_device
 				, vtxCount
 				, instCount
@@ -417,7 +417,7 @@ namespace d3d11_renderer
 	{
 		if ( !m_state.currentPipeline->hasVertexLayout() )
 		{
-			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, ashes::IndexType::eUInt32 );
+			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 		}
 
 		doFillVboStrides();
@@ -454,7 +454,7 @@ namespace d3d11_renderer
 	{
 		if ( !m_state.currentPipeline->hasVertexLayout() )
 		{
-			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, ashes::IndexType::eUInt32 );
+			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 		}
 
 		doFillVboStrides();
@@ -518,7 +518,7 @@ namespace d3d11_renderer
 		, ashes::Image const & dstImage
 		, ashes::ImageLayout dstLayout
 		, std::vector< ashes::ImageBlit > const & regions
-		, ashes::Filter filter )const
+		, VkFilter filter )const
 	{
 		m_commands.emplace_back( std::make_unique< BlitImageCommand >( m_device
 			, srcImage

@@ -11,7 +11,7 @@ See LICENSE file in root folder.
 #include <Ashes/Pipeline/PipelineLayout.hpp>
 #include <Ashes/Miscellaneous/PushConstantRange.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	PushConstantsCommand::PushConstantsCommand( Device const & device
 		, PushConstantsBuffer const & pcb )

@@ -6,9 +6,7 @@ See LICENSE file in root folder
 
 #include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
-#include <Ashes/RenderPass/FrameBuffer.hpp>
-
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\brief
@@ -16,8 +14,7 @@ namespace d3d11_renderer
 	*\remarks
 	*	Contient les tampon de profondeur et de couleur.
 	*/
-	class FrameBuffer
-		: public ashes::FrameBuffer
+	class Framebuffer
 	{
 	public:
 		/**
@@ -42,10 +39,10 @@ namespace d3d11_renderer
 		*\param[in] textures
 		*	The attachments.
 		*/
-		FrameBuffer( Device const & device
+		Framebuffer( Device const & device
 			, RenderPass const & renderPass
 			, VkExtent2D const & dimensions
-			, ashes::ashes::ImageViewPtrArray attachments );
+			, ashes::ImageViewArray attachments );
 		/**
 		*\~french
 		*\brief
@@ -54,7 +51,7 @@ namespace d3d11_renderer
 		*\brief
 		*	Destructor.
 		*/
-		~FrameBuffer();
+		~Framebuffer();
 		/**
 		*\return
 		*	Les dimensions du tampon.

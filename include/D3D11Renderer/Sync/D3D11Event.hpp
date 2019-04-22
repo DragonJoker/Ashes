@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Sync/Event.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class Event
 		: public ashes::Event
@@ -19,15 +19,15 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::Event::getStatus
 		*/
-		ashes::EventStatus getStatus()const override;
+		ashes::EventStatus getStatus()const;
 		/**
 		*\copydoc	ashes::Event::getStatus
 		*/
-		void set()const override;
+		void set()const;
 		/**
 		*\copydoc	ashes::Event::getStatus
 		*/
-		void reset()const override;
+		void reset()const;
 
 	private:
 		mutable ashes::EventStatus m_status{ ashes::EventStatus::eReset };

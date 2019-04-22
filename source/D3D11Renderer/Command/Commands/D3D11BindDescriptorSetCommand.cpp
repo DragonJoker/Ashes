@@ -15,41 +15,41 @@ See LICENSE file in root folder.
 #include <Ashes/Buffer/UniformBuffer.hpp>
 #include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	namespace
 	{
-		ID3D11ShaderResourceView * getView( ashes::WriteDescriptorSet const & write, uint32_t index )
+		ID3D11ShaderResourceView * getView( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.imageInfo.size() );
 			return static_cast< ImageView const & >( write.imageInfo[index].imageView.value().get() ).getShaderView();
 		}
 		
-		ID3D11ShaderResourceView * getBufferView( ashes::WriteDescriptorSet const & write, uint32_t index )
+		ID3D11ShaderResourceView * getBufferView( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.texelBufferView.size() );
 			return static_cast< BufferView const & >( write.texelBufferView[index].get() ).getView();
 		}
 		
-		ID3D11UnorderedAccessView * getImageUAV( ashes::WriteDescriptorSet const & write, uint32_t index )
+		ID3D11UnorderedAccessView * getImageUAV( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.imageInfo.size() );
 			return static_cast< ImageView const & >( write.imageInfo[index].imageView.value().get() ).getUnorderedAccessView();
 		}
 
-		ID3D11SamplerState * getSampler( ashes::WriteDescriptorSet const & write, uint32_t index )
+		ID3D11SamplerState * getSampler( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.imageInfo.size() );
 			return static_cast< Sampler const & >( write.imageInfo[index].sampler.value().get() ).getSampler();
 		}
 
-		ID3D11Buffer * getBuffer( ashes::WriteDescriptorSet const & write, uint32_t index )
+		ID3D11Buffer * getBuffer( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.bufferInfo.size() );
 			return static_cast< Buffer const & >( write.bufferInfo[index].buffer.get() ).getBuffer();
 		}
 
-		ID3D11UnorderedAccessView * getBufferUAV( ashes::WriteDescriptorSet const & write, uint32_t index )
+		ID3D11UnorderedAccessView * getBufferUAV( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.bufferInfo.size() );
 			return static_cast< Buffer const & >( write.bufferInfo[index].buffer.get() ).getUnorderedAccessView();

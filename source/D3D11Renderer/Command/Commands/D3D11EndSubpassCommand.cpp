@@ -11,7 +11,7 @@ See LICENSE file in root folder.
 #include <Ashes/RenderPass/AttachmentDescription.hpp>
 #include <Ashes/RenderPass/SubpassDescription.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	EndSubpassCommand::EndSubpassCommand( Device const & device
 		, ashes::FrameBuffer const & frameBuffer

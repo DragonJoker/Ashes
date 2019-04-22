@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Pipeline/Scissor.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\brief
@@ -28,8 +28,8 @@ namespace d3d11_renderer
 			, uint32_t first
 			, ashes::VkScissorArray const & scissors );
 
-		void apply( Context const & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		CommandPtr clone()const;
 
 	private:
 		std::vector< RECT > m_scissors;

@@ -10,19 +10,14 @@
 
 #include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
-#include <Ashes/Buffer/Buffer.hpp>
-
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class Buffer
-		: public ashes::BufferBase
 	{
 	public:
-		Buffer( Device const & device
-			, uint32_t size
-			, ashes::BufferTargets target );
+		Buffer( VkBufferCreateInfo createInfo );
 		~Buffer();
-		ashes::MemoryRequirements getMemoryRequirements()const override;
+		VkMemoryRequirements getMemoryRequirements()const;
 
 		inline ID3D11Buffer * getBuffer()const
 		{
@@ -35,10 +30,10 @@ namespace d3d11_renderer
 		}
 
 	private:
-		void doBindMemory()override;
+		void doBindMemory();
 
 	private:
-		Device const & m_device;
+		VkBufferCreateInfo m_createInfo;
 		ID3D11Buffer * m_buffer{ nullptr };
 		ID3D11UnorderedAccessView * m_unorderedAccessView{ nullptr };
 	};

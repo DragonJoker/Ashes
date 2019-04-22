@@ -592,7 +592,7 @@ namespace vkapp
 			std::move( shaderStages ),
 			*m_offscreenRenderPass,
 			ashes::VertexInputState::create( *m_offscreenVertexLayout ),
-			ashes::InputAssemblyState{ VkPrimitiveTopology::eTriangleList },
+			ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
 			rasterisationState,
 			ashes::MultisampleState{},
 			ashes::ColourBlendState::createDefault(),

@@ -2,10 +2,10 @@
 
 #include "Core/D3D11Device.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	DescriptorSetLayout::DescriptorSetLayout( Device const & device
-		, ashes::DescriptorSetLayoutBindingArray bindings )
+		, VkDescriptorSetLayoutBindingArray bindings )
 		: ashes::DescriptorSetLayout{ device, std::move( bindings ) }
 	{
 	}

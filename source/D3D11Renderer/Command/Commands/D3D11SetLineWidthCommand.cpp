@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/D3D11SetLineWidthCommand.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	SetLineWidthCommand::SetLineWidthCommand( Device const & device
 		, float width )

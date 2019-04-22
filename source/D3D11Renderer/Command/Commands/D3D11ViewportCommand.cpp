@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Core/D3D11Device.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	ViewportCommand::ViewportCommand( Device const & device
 		, uint32_t first

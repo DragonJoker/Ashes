@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 #include "D3D11Renderer/Image/D3D11Image.hpp"
 #include <Ashes/Miscellaneous/BufferImageCopy.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	//*************************************************************************
 	

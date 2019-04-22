@@ -11,7 +11,7 @@ See LICENSE file in root folder.
 #include "Sync/D3D11Fence.hpp"
 #include "Sync/D3D11Semaphore.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	Queue::Queue( Device const & device
 		, ashes::DeviceQueueCreateInfo createInfo

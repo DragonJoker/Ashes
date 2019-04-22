@@ -13,7 +13,7 @@
 #include <Ashes/Sync/ImageMemoryBarrier.hpp>
 #include <Ashes/Image/ImageSubresourceRange.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	Image::Image( Image && rhs )
 		: ashes::Image{ std::move( rhs ) }
@@ -54,8 +54,8 @@ namespace d3d11_renderer
 				ashes::SampleCountFlag::e1,
 				ashes::ImageTiling::eOptimal,
 				( isDepthOrStencilFormat( format )
-					? ashes::ImageUsageFlag::eDepthStencilAttachment
-					: ashes::ImageUsageFlag::eColourAttachment ),
+					? VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+					: VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT ),
 				VK_SHARING_MODE_EXCLUSIVE,
 				{},
 				ashes::ImageLayout::eUndefined
@@ -69,9 +69,9 @@ namespace d3d11_renderer
 	Image::Image( Device const & device
 		, VkFormat format
 		, VkExtent2D const & dimensions
-		, ashes::ImageUsageFlags usageFlags
+		, VkImageUsageFlags usageFlags
 		, ashes::ImageTiling tiling
-		, ashes::MemoryPropertyFlags memoryFlags )
+		, VkMemoryPropertyFlags memoryFlags )
 		: Image{ device
 			, {
 				0u,
@@ -95,18 +95,18 @@ namespace d3d11_renderer
 		safeRelease( m_image.tex1D );
 	}
 
-	ashes::MemoryRequirements Image::getMemoryRequirements()const
+	VkMemoryRequirements Image::getMemoryRequirements()const
 	{
-		ashes::MemoryRequirements result{};
+		VkMemoryRequirements result{};
 		result.size = ashes::getSize( getDimensions(), getFormat() );
 		result.type = ashes::ResourceType::eImage;
 		auto extent = ashes::getMinimalExtent3D( getFormat() );
 		result.alignment = ashes::getSize( extent, getFormat() );
-		result.memoryTypeBits = ashes::MemoryPropertyFlag::eDeviceLocal
-			| ( ( checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferDst )
-				&& checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferSrc ) )
-				? ashes::MemoryPropertyFlag::eHostVisible
-				: ashes::MemoryPropertyFlag::eDeviceLocal );
+		result.memoryTypeBits = VkMemoryPropertyFlagBits::eDeviceLocal
+			| ( ( checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_TRANSFER_DST_BIT )
+				&& checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
+				? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+				: VkMemoryPropertyFlagBits::eDeviceLocal );
 		return result;
 	}
 

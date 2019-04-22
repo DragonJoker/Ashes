@@ -9,7 +9,7 @@
 #include <Ashes/Miscellaneous/MemoryRequirements.hpp>
 #include <Ashes/Pipeline/SpecialisationInfo.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	namespace
 	{
@@ -217,7 +217,7 @@ namespace d3d11_renderer
 				};
 				auto requirements = pcb.ubo->getMemoryRequirements();
 				auto deduced = deduceMemoryType( requirements.memoryTypeBits
-					, ashes::MemoryPropertyFlag::eHostVisible );
+					, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 				pcb.ubo->bindMemory( device.allocateMemory( { requirements.size, deduced } ) );
 				m_constantsPcbs.push_back( std::move( pcb ) );
 			}

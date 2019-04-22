@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include <Ashes/Pipeline/SpecialisationInfo.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	ashes::PushConstantArray convert( ashes::ShaderStageFlag stage
 		, std::vector< ashes::SpecialisationMapEntry > const & entries );

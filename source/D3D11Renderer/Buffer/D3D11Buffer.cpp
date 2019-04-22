@@ -3,18 +3,10 @@
 #include "Core/D3D11Device.hpp"
 #include "Miscellaneous/D3D11DeviceMemory.hpp"
 
-#include <Ashes/Miscellaneous/MemoryRequirements.hpp>
-#include <Ashes/Sync/BufferMemoryBarrier.hpp>
-
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	Buffer::Buffer( Device const & device
-		, uint32_t size
-		, ashes::BufferTargets target )
-		: ashes::BufferBase{ device
-			, size
-			, target }
-		, m_device{ device }
+	Buffer::Buffer( VkBufferCreateInfo createInfo )
+		: m_createInfo{ std::move( createInfo ) }
 	{
 	}
 
@@ -22,15 +14,14 @@ namespace d3d11_renderer
 	{
 	}
 
-	ashes::MemoryRequirements Buffer::getMemoryRequirements()const
+	VkMemoryRequirements Buffer::getMemoryRequirements()const
 	{
-		ashes::MemoryRequirements result{};
+		VkMemoryRequirements result{};
 		result.alignment = 0u;
 		result.memoryTypeBits = ~result.memoryTypeBits;
-		result.size = getSize();
-		result.type = ashes::ResourceType::eBuffer;
+		result.size = m_createInfo.size;
 
-		if ( checkFlag( m_target, ashes::BufferTarget::eUniformBuffer ) )
+		if ( checkFlag( m_createInfo.usage, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ) )
 		{
 			result.size = ashes::getAlignedSize( result.size, 16u );
 		}
@@ -42,7 +33,7 @@ namespace d3d11_renderer
 	{
 		m_buffer = static_cast< DeviceMemory & >( *m_storage ).bindToBuffer( m_target );
 
-		if ( checkFlag( m_target, ashes::BufferTarget::eStorageBuffer )
+		if ( checkFlag( m_target, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT )
 			&& m_device.getFeatureLevel() >= D3D_FEATURE_LEVEL_11_0 )
 		{
 			auto device = m_device.getDevice();

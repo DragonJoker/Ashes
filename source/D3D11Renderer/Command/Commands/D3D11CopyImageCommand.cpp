@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 
 #include <Ashes/Image/ImageSubresourceRange.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	namespace
 	{

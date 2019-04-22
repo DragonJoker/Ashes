@@ -1,24 +1,24 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	D3D11_BLEND_OP convert( ashes::BlendOp const & value )
+	D3D11_BLEND_OP convert( VkBlendOp const & value )
 	{
 		switch ( value )
 		{
-		case ashes::BlendOp::eAdd:
+		case VK_BLEND_OP_ADD:
 			return D3D11_BLEND_OP_ADD;
 
-		case ashes::BlendOp::eSubtract:
+		case VK_BLEND_OP_SUBTRACT:
 			return D3D11_BLEND_OP_SUBTRACT;
 
-		case ashes::BlendOp::eReverseSubtract:
+		case VK_BLEND_OP_REVERSE_SUBTRACT:
 			return D3D11_BLEND_OP_REV_SUBTRACT;
 
-		case ashes::BlendOp::eMin:
+		case VK_BLEND_OP_MIN:
 			return D3D11_BLEND_OP_MIN;
 
-		case ashes::BlendOp::eMax:
+		case VK_BLEND_OP_MAX:
 			return D3D11_BLEND_OP_MAX;
 
 		default:

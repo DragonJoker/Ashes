@@ -1,15 +1,15 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	D3D11_FILTER_TYPE convert( ashes::Filter const & filter )
+	D3D11_FILTER_TYPE convert( VkFilter const & filter )
 	{
 		switch ( filter )
 		{
-		case ashes::Filter::eNearest:
+		case VK_FILTER_NEAREST:
 			return D3D11_FILTER_TYPE_POINT;
 
-		case ashes::Filter::eLinear:
+		case VK_FILTER_LINEAR:
 			return D3D11_FILTER_TYPE_LINEAR;
 
 		default:

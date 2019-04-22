@@ -4,9 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	DXGI_FORMAT convert( ashes::IndexType const & type );
+	DXGI_FORMAT convert( VkIndexType const & type );
 }

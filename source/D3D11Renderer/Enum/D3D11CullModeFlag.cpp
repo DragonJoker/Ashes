@@ -1,16 +1,16 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
-	D3D11_CULL_MODE convert( ashes::CullModeFlags const & flags )
+	D3D11_CULL_MODE convert( VkCullModeFlags const & flags )
 	{
 		D3D11_CULL_MODE result( D3D11_CULL_NONE );
 
-		if ( checkFlag( flags, ashes::CullModeFlag::eFront ) )
+		if ( checkFlag( flags, VK_CULL_MODE_FRONT_BIT ) )
 		{
 			result = D3D11_CULL_FRONT;
 		}
-		else if ( checkFlag( flags, ashes::CullModeFlag::eBack ) )
+		else if ( checkFlag( flags, VK_CULL_MODE_BACK_BIT ) )
 		{
 			result = D3D11_CULL_BACK;
 		}

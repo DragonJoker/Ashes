@@ -3,7 +3,9 @@
 #include "Core/D3D11Instance.hpp"
 #include "Core/D3D11Device.hpp"
 
-#include <Ashes/Core/Exception.hpp>
+#include <AshesRenderer/Util/Exception.hpp>
+
+#include <iostream>
 
 #if defined __GNUG__
 #   ifdef DEFINE_GUID
@@ -45,7 +47,7 @@ DEFINE_GUID( IID_ID3D11Device, 0xdb6f6ddb, 0xac77, 0x4e88, 0x82, 0x53, 0x81, 0x9
 DEFINE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0xae, 0x32, 0x1a, 0xe3, 0x69 );
 #endif
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	std::string getLastErrorText()
 	{
@@ -98,7 +100,7 @@ namespace d3d11_renderer
 				, nullptr
 				, nullptr ) )
 			{
-				ashes::Logger::logError( getLastErrorText() );
+				std::cerr << getLastErrorText() << std::endl;
 			}
 			else
 			{
@@ -107,14 +109,14 @@ namespace d3d11_renderer
 		}
 		else
 		{
-			ashes::Logger::logError( getLastErrorText() );
+			std::cerr << getLastErrorText() << std::endl;
 		}
 
 		return result;
 	}
 
 	uint32_t deduceMemoryType( uint32_t typeBits
-		, ashes::MemoryPropertyFlags requirements )
+		, VkMemoryPropertyFlags requirements )
 	{
 		auto & memoryProperties = Instance::getMemoryProperties();
 		uint32_t result = 0xFFFFFFFFu;
@@ -141,7 +143,7 @@ namespace d3d11_renderer
 
 		if ( !found )
 		{
-			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Could not deduce memory type" };
+			throw ashes::Exception{ VK_ERROR_INCOMPATIBLE_DRIVER, "Could not deduce memory type" };
 		}
 
 		return result;

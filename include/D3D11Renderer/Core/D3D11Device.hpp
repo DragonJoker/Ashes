@@ -12,7 +12,7 @@ See LICENSE file in root folder
 #include <Ashes/Miscellaneous/QueueCreateInfo.hpp>
 #include <Ashes/Miscellaneous/SwapChainCreateInfo.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	class Device
 		: public ashes::Device
@@ -25,97 +25,97 @@ namespace d3d11_renderer
 		/*
 		*\copydoc	ashes::Device::createRenderPass
 		*/
-		ashes::RenderPassPtr createRenderPass( ashes::RenderPassCreateInfo createInfo )const override;
+		ashes::RenderPassPtr createRenderPass( ashes::RenderPassCreateInfo createInfo )const;
 		/**
 		*\copydoc	ashes::Device::createPipelineLayout
 		*/
 		ashes::PipelineLayoutPtr createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeArray const & pushConstantRanges )const override;
+			, ashes::PushConstantRangeArray const & pushConstantRanges )const;
 		/**
 		*\copydoc	ashes::Device::createDescriptorSetLayout
 		*/
-		ashes::DescriptorSetLayoutPtr createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const override;
+		ashes::DescriptorSetLayoutPtr createDescriptorSetLayout( VkDescriptorSetLayoutBindingArray bindings )const;
 		/**
 		*\copydoc	ashes::Device::createDescriptorPool
 		*/
 		ashes::DescriptorPoolPtr createDescriptorPool( ashes::DescriptorPoolCreateFlags flags
 			, uint32_t maxSets
-			, ashes::DescriptorPoolSizeArray poolSizes )const override;
+			, ashes::DescriptorPoolSizeArray poolSizes )const;
 		/**
 		*\copydoc	ashes::Device::allocateMemory
 		*/
-		ashes::DeviceMemoryPtr allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const override;
+		ashes::DeviceMemoryPtr allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const;
 		/**
 		*\copydoc	ashes::Device::createImage
 		*/
-		ashes::ImagePtr createImage( ashes::ImageCreateInfo const & createInfo )const override;
+		ashes::ImagePtr createImage( ashes::ImageCreateInfo const & createInfo )const;
 		/**
 		*\copydoc	ashes::Device::getImageSubresourceLayout
 		*/
 		void getImageSubresourceLayout( ashes::Image const & image
 			, ashes::ImageSubresource const & subresource
-			, ashes::SubresourceLayout & layout )const override;
+			, ashes::SubresourceLayout & layout )const;
 		/**
 		*\copydoc	ashes::Device::createSampler
 		*/
-		ashes::SamplerPtr createSampler( ashes::SamplerCreateInfo const & createInfo )const override;
+		ashes::SamplerPtr createSampler( ashes::SamplerCreateInfo const & createInfo )const;
 		/**
 		*\copydoc	ashes::Device::createBuffer
 		*/
 		ashes::BufferBasePtr createBuffer( uint32_t size
-			, ashes::BufferTargets target )const override;
+			, VkBufferUsageFlags target )const;
 		/**
 		*\copydoc	ashes::Device::createBufferView
 		*/
 		ashes::BufferViewPtr createBufferView( ashes::BufferBase const & buffer
 			, VkFormat format
 			, uint32_t offset
-			, uint32_t range )const override;
+			, uint32_t range )const;
 		/**
 		*\copydoc	ashes::Device::createSwapChain
 		*/
-		ashes::SwapChainPtr createSwapChain( ashes::SwapChainCreateInfo createInfo )const override;
+		ashes::SwapChainPtr createSwapChain( ashes::SwapChainCreateInfo createInfo )const;
 		/**
 		*\copydoc	ashes::Device::createSemaphore
 		*/
-		ashes::SemaphorePtr createSemaphore()const override;
+		ashes::SemaphorePtr createSemaphore()const;
 		/**
 		*\copydoc	ashes::Device::createFence
 		*/
-		ashes::FencePtr createFence( ashes::FenceCreateFlags flags )const override;
+		ashes::FencePtr createFence( ashes::FenceCreateFlags flags )const;
 		/**
 		*\copydoc	ashes::Device::createEvent
 		*/
-		ashes::EventPtr createEvent()const override;
+		ashes::EventPtr createEvent()const;
 		/**
 		*\copydoc	ashes::Device::createCommandPool
 		*/
 		ashes::CommandPoolPtr createCommandPool( uint32_t queueFamilyIndex
-			, ashes::CommandPoolCreateFlags const & flags )const override;
+			, ashes::CommandPoolCreateFlags const & flags )const;
 		/**
 		*\copydoc	ashes::Device::createShaderProgram
 		*/
-		virtual ashes::ShaderModulePtr createShaderModule( ashes::ShaderStageFlag stage )const override;
+		virtual ashes::ShaderModulePtr createShaderModule( ashes::ShaderStageFlag stage )const;
 		/**
 		*\copydoc	ashes::Device::createQueryPool
 		*/
 		ashes::QueryPoolPtr createQueryPool( ashes::QueryType type
 			, uint32_t count
-			, ashes::QueryPipelineStatisticFlags pipelineStatistics )const override;
+			, ashes::QueryPipelineStatisticFlags pipelineStatistics )const;
 		/**
 		*\copydoc	ashes::Device::debugMarkerSetObjectName
 		*/
-		void debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const override;
+		void debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const;
 		/**
 		*\copydoc	ashes::Device::getQueue
 		*/
 		ashes::QueuePtr getQueue( uint32_t familyIndex
-			, uint32_t index )const override;
+			, uint32_t index )const;
 		/**
 		*\brief
 		*	Attend que le périphérique soit inactif.
 		*/
-		void waitIdle()const override;
+		void waitIdle()const;
 		/**
 		*\~english
 		*name

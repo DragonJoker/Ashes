@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\brief
@@ -32,10 +32,10 @@ namespace d3d11_renderer
 			, ashes::UInt32Array const & dynamicOffsets
 			, ashes::PipelineBindPoint bindingPoint );
 
-		void apply( Context const & context )const override;
-		void remove( Context const & context )const override;
-		void fillContext( Context & context )const override;
-		CommandPtr clone()const override;
+		void apply( Context const & context )const;
+		void remove( Context const & context )const;
+		void fillContext( Context & context )const;
+		CommandPtr clone()const;
 
 	private:
 		void apply11_0( Context const & context )const;

@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <Ashes/Command/CommandBuffer.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\~french
@@ -55,42 +55,42 @@ namespace d3d11_renderer
 		/**
 		*\copydoc	ashes::CommandBuffer:begin
 		*/
-		void begin( ashes::CommandBufferBeginInfo const & info )const override;
+		void begin( ashes::CommandBufferBeginInfo const & info )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:end
 		*/
-		void end()const override;
+		void end()const;
 		/**
 		*\copydoc	ashes::CommandBuffer:reset
 		*/
-		void reset( ashes::CommandBufferResetFlags flags )const override;
+		void reset( ashes::CommandBufferResetFlags flags )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:beginRenderPass
 		*/
 		void beginRenderPass( ashes::RenderPassBeginInfo const & beginInfo
-			, ashes::SubpassContents contents )const override;
+			, ashes::SubpassContents contents )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:nextSubpass
 		*/
-		void nextSubpass( ashes::SubpassContents contents )const override;
+		void nextSubpass( ashes::SubpassContents contents )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:endRenderPass
 		*/
-		void endRenderPass()const override;
+		void endRenderPass()const;
 		/**
 		*\copydoc	ashes::CommandBuffer:executeCommands
 		*/
-		void executeCommands( ashes::CommandBufferCRefArray const & commands )const override;
+		void executeCommands( ashes::CommandBufferCRefArray const & commands )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:clear
 		*/
 		void clear( ashes::ImageView const & image
-			, VkClearColorValue const & colour )const override;
+			, VkClearColorValue const & colour )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:clear
 		*/
 		void clear( ashes::ImageView const & image
-			, ashes::DepthStencilClearValue const & colour )const override;
+			, ashes::DepthStencilClearValue const & colour )const;
 		/**
 		*\copydoc	ashes::clearAttachments:clear
 		*/
@@ -100,48 +100,48 @@ namespace d3d11_renderer
 		*\copydoc	ashes::CommandBuffer:bindPipeline
 		*/
 		void bindPipeline( ashes::Pipeline const & pipeline
-			, ashes::PipelineBindPoint bindingPoint )const override;
+			, ashes::PipelineBindPoint bindingPoint )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:bindPipeline
 		*/
 		void bindPipeline( ashes::ComputePipeline const & pipeline
-			, ashes::PipelineBindPoint bindingPoint )const override;
+			, ashes::PipelineBindPoint bindingPoint )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:bindVertexBuffers
 		*/
 		void bindVertexBuffers( uint32_t firstBinding
 			, ashes::BufferCRefArray const & buffers
-			, ashes::UInt64Array offsets )const override;
+			, ashes::UInt64Array offsets )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:bindIndexBuffer
 		*/
 		void bindIndexBuffer( ashes::BufferBase const & buffer
 			, uint64_t offset
-			, ashes::IndexType indexType )const override;
+			, VkIndexType indexType )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:bindDescriptorSet
 		*/
 		void bindDescriptorSets( ashes::DescriptorSetCRefArray const & descriptorSets
 			, ashes::PipelineLayout const & layout
 			, ashes::UInt32Array const & dynamicOffsets
-			, ashes::PipelineBindPoint bindingPoint )const override;
+			, ashes::PipelineBindPoint bindingPoint )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:setViewport
 		*/
 		void setViewport( uint32_t firstViewport
-			, ashes::VkViewportArray const & viewports )const override;
+			, ashes::VkViewportArray const & viewports )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:setScissor
 		*/
 		void setScissor( uint32_t firstScissor
-			, ashes::VkScissorArray const & scissors )const override;
+			, ashes::VkScissorArray const & scissors )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:draw
 		*/
 		void draw( uint32_t vtxCount
 			, uint32_t instCount
 			, uint32_t firstVertex
-			, uint32_t firstInstance )const override;
+			, uint32_t firstInstance )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:drawIndexed
 		*/
@@ -149,39 +149,39 @@ namespace d3d11_renderer
 			, uint32_t instCount
 			, uint32_t firstIndex
 			, uint32_t vertexOffset
-			, uint32_t firstInstance )const override;
+			, uint32_t firstInstance )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:drawIndirect
 		*/
 		void drawIndirect( ashes::BufferBase const & buffer
 			, uint32_t offset
 			, uint32_t drawCount
-			, uint32_t stride )const override;
+			, uint32_t stride )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:drawIndexedIndirect
 		*/
 		void drawIndexedIndirect( ashes::BufferBase const & buffer
 			, uint32_t offset
 			, uint32_t drawCount
-			, uint32_t stride )const override;
+			, uint32_t stride )const;
 		/**
 		*\copydoc	ashes::CommandBuffer::copyToImage
 		*/
 		void copyToImage( ashes::VkBufferImageCopyArray const & copyInfo
 			, ashes::BufferBase const & src
-			, ashes::Image const & dst )const override;
+			, ashes::Image const & dst )const;
 		/**
 		*\copydoc	ashes::CommandBuffer::copyToBuffer
 		*/
 		void copyToBuffer( ashes::VkBufferImageCopyArray const & copyInfo
 			, ashes::Image const & src
-			, ashes::BufferBase const & dst )const override;
+			, ashes::BufferBase const & dst )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:copyBuffer
 		*/
 		void copyBuffer( ashes::BufferCopy const & copyInfo
 			, ashes::BufferBase const & src
-			, ashes::BufferBase const & dst )const override;
+			, ashes::BufferBase const & dst )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:copyImage
 		*/
@@ -189,7 +189,7 @@ namespace d3d11_renderer
 			, ashes::Image const & src
 			, ashes::ImageLayout srcLayout
 			, ashes::Image const & dst
-			, ashes::ImageLayout dstLayout )const override;
+			, ashes::ImageLayout dstLayout )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:blitImage
 		*/
@@ -198,30 +198,30 @@ namespace d3d11_renderer
 			, ashes::Image const & dstImage
 			, ashes::ImageLayout dstLayout
 			, std::vector< ashes::ImageBlit > const & regions
-			, ashes::Filter filter )const override;
+			, VkFilter filter )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:resetQueryPool
 		*/
 		void resetQueryPool( ashes::QueryPool const & pool
 			, uint32_t firstQuery
-			, uint32_t queryCount )const override;
+			, uint32_t queryCount )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:beginQuery
 		*/
 		void beginQuery( ashes::QueryPool const & pool
 			, uint32_t query
-			, ashes::QueryControlFlags flags )const override;
+			, ashes::QueryControlFlags flags )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:endQuery
 		*/
 		void endQuery( ashes::QueryPool const & pool
-			, uint32_t query )const override;
+			, uint32_t query )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:writeTimestamp
 		*/
 		void writeTimestamp( ashes::PipelineStageFlag pipelineStage
 			, ashes::QueryPool const & pool
-			, uint32_t query )const override;
+			, uint32_t query )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:pushConstants
 		*/
@@ -229,38 +229,38 @@ namespace d3d11_renderer
 			, ashes::ShaderStageFlags stageFlags
 			, uint32_t offset
 			, uint32_t size
-			, void const * data )const override;
+			, void const * data )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:dispatch
 		*/
 		void dispatch( uint32_t groupCountX
 			, uint32_t groupCountY
-			, uint32_t groupCountZ )const override;
+			, uint32_t groupCountZ )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:dispatchIndirect
 		*/
 		void dispatchIndirect( ashes::BufferBase const & buffer
-			, uint32_t offset )const override;
+			, uint32_t offset )const;
 		/**
 		*\copydoc	ashes::CommandBuffer::setLineWidth
 		*/
-		void setLineWidth( float width )const override;
+		void setLineWidth( float width )const;
 		/**
 		*\copydoc	ashes::CommandBuffer::setDepthBias
 		*/
 		void setDepthBias( float constantFactor
 			, float clamp
-			, float slopeFactor )const override;
+			, float slopeFactor )const;
 		/**
 		*\copydoc	ashes::CommandBuffer::setEvent
 		*/
 		void setEvent( ashes::Event const & event
-			, ashes::PipelineStageFlags stageMask )const override;
+			, ashes::PipelineStageFlags stageMask )const;
 		/**
 		*\copydoc	ashes::CommandBuffer::resetEvent
 		*/
 		void resetEvent( ashes::Event const & event
-			, ashes::PipelineStageFlags stageMask )const override;
+			, ashes::PipelineStageFlags stageMask )const;
 		/**
 		*\copydoc	ashes::CommandBuffer::waitEvents
 		*/
@@ -268,7 +268,7 @@ namespace d3d11_renderer
 			, ashes::PipelineStageFlags srcStageMask
 			, ashes::PipelineStageFlags dstStageMask
 			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )const override;
+			, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )const;
 		/**
 		*\copydoc	ashes::CommandBuffer::waitEvents
 		*/
@@ -312,7 +312,7 @@ namespace d3d11_renderer
 			ashes::FrameBuffer const * currentFrameBuffer{ nullptr };
 			uint32_t currentSubpassIndex{ 0u };
 			mutable VbosBindingArray vbos;
-			ashes::IndexType indexType;
+			VkIndexType indexType;
 		};
 		mutable State m_state;
 		mutable std::vector< std::function< void( Context const & ) > > m_afterSubmitActions;

@@ -12,7 +12,7 @@
 
 #include <Ashes/Descriptor/DescriptorSetLayout.hpp>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	/**
 	*\brief
@@ -37,7 +37,7 @@ namespace d3d11_renderer
 		*	The bindings.
 		*/
 		DescriptorSetLayout( Device const & device
-			, ashes::DescriptorSetLayoutBindingArray bindings );
+			, VkDescriptorSetLayoutBindingArray bindings );
 		/**
 		*\~french
 		*\brief

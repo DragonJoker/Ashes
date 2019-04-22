@@ -1,6 +1,6 @@
 #include <cstdint>
 
-namespace d3d11_renderer
+namespace ashes::d3d11
 {
 	uint32_t const dummyIndex[]
 	{
