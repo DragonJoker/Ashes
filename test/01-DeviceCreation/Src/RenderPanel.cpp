@@ -5,7 +5,7 @@
 
 #include <AshesPP/Core/Surface.hpp>
 #include <AshesPP/Core/Device.hpp>
-#include <AshesRenderer/Util/Exception.hpp>
+#include <common/Exception.hpp>
 
 #include <Utils/Transform.hpp>
 

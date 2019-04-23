@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/AshesPPPrerequisites.hpp"
 
-#include <AshesRenderer/Helper/DepthStencilState.hpp>
+#include <renderer/RendererCommon/Helper/DepthStencilState.hpp>
 
 namespace ashes
 {

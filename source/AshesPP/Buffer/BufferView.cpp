@@ -4,7 +4,7 @@
 #include "AshesPP/Core/Device.hpp"
 #include "AshesPP/Core/Instance.hpp"
 
-#include <AshesRenderer/Util/Exception.hpp>
+#include <common/Exception.hpp>
 
 namespace ashes
 {

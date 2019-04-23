@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/AshesPPPrerequisites.hpp"
 
-#include <AshesRenderer/Helper/TessellationState.hpp>
+#include <renderer/RendererCommon/Helper/TessellationState.hpp>
 
 namespace ashes
 {

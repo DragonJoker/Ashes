@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/AshesPPPrerequisites.hpp"
 
-#include <AshesRenderer/Helper/ViewportState.hpp>
+#include <renderer/RendererCommon/Helper/ViewportState.hpp>
 
 namespace ashes
 {

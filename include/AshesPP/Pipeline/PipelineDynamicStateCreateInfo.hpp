@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/AshesPPPrerequisites.hpp"
 
-#include <AshesRenderer/Helper/DynamicState.hpp>
+#include <renderer/RendererCommon/Helper/DynamicState.hpp>
 
 namespace ashes
 {

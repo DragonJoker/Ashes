@@ -21,7 +21,7 @@
 #include <AshesPP/RenderPass/FrameBuffer.hpp>
 #include <AshesPP/RenderPass/RenderPass.hpp>
 
-#include <AshesRenderer/Util/ConstantFormat.hpp>
+#include <renderer/RendererCommon/Helper/ConstantFormat.hpp>
 
 #include <Utils/GlslToSpv.hpp>
 #include <Utils/Transform.hpp>

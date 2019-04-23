@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Image/Image.hpp"
 #include "AshesPP/Image/ImageView.hpp"
 
-#include <AshesRenderer/Util/Exception.hpp>
+#include <common/Exception.hpp>
 
 namespace ashes
 {

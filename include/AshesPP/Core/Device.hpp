@@ -835,7 +835,7 @@ namespace ashes
 		}
 
 #define VK_LIB_DEVICE_FUNCTION( fun ) PFN_vk##fun vk##fun;
-#	include <AshesCommon/VulkanFunctionsList.inl>
+#	include <common/VulkanFunctionsList.inl>
 
 	protected:
 		Instance const & m_instance;

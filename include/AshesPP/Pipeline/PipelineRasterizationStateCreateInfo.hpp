@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/AshesPPPrerequisites.hpp"
 
-#include <AshesRenderer/Helper/RasterisationState.hpp>
+#include <renderer/RendererCommon/Helper/RasterisationState.hpp>
 
 namespace ashes
 {

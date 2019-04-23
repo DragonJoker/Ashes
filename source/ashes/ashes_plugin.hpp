@@ -1,7 +1,7 @@
 #include "ashes/ashes.h"
 
-#include <AshesCommon/DynamicLibrary.hpp>
-#include <AshesCommon/FileUtils.hpp>
+#include <common/DynamicLibrary.hpp>
+#include <common/FileUtils.hpp>
 
 #include <algorithm>
 #include <cassert>

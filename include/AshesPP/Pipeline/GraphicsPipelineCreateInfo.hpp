@@ -17,7 +17,7 @@ See LICENSE file in root folder.
 #include "PipelineVertexInputStateCreateInfo.hpp"
 #include "PipelineViewportStateCreateInfo.hpp"
 
-#include <AshesRenderer/Helper/DepthStencilState.hpp>
+#include <renderer/RendererCommon/Helper/DepthStencilState.hpp>
 
 #include <map>
 

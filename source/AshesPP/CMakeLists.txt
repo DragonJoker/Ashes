@@ -32,9 +32,9 @@ add_library( ${PROJECT_NAME} STATIC
 )
 
 add_dependencies( ${PROJECT_NAME}
-	AshesCommon
+	common
 	ashes
-	AshesRenderer
+	RendererCommon
 )
 
 add_target_precompiled_header( ${PROJECT_NAME}

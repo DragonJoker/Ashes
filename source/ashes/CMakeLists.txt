@@ -68,11 +68,11 @@ add_library( ${PROJECT_NAME} SHARED
 )
 
 target_link_libraries( ${PROJECT_NAME}
-	AshesCommon
+	common
 )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes" )
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Core" )
 
 if ( BUILD_ASHES )
 	target_add_doc( ${PROJECT_NAME} "French" "*.h *.hpp" )

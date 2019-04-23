@@ -235,7 +235,7 @@ namespace ashes
 
 #define VK_LIB_GLOBAL_FUNCTION( fun ) PFN_vk##fun vk##fun;
 #define VK_LIB_INSTANCE_FUNCTION( fun ) PFN_vk##fun vk##fun;
-#	include <AshesCommon/VulkanFunctionsList.inl>
+#	include <common/VulkanFunctionsList.inl>
 		/**
 		*\~english
 		*name

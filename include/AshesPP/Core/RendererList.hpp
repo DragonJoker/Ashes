@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/Core/Instance.hpp"
 
-#include <AshesCommon/DynamicLibrary.hpp>
+#include <common/DynamicLibrary.hpp>
 
 namespace ashes
 {

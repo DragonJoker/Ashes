@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/AshesPPPrerequisites.hpp"
 
-#include <AshesRenderer/Helper/MultisampleState.hpp>
+#include <renderer/RendererCommon/Helper/MultisampleState.hpp>
 
 namespace ashes
 {

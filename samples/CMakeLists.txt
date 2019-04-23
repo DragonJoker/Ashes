@@ -41,8 +41,10 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 		${BinLibraries}
 		${glslang_LIBRARIES}
 		${SPIRV_LIBRARIES}
-		Ashes
-		Utils
+		common
+		ashes
+		AshesPP
+		util
 	)
 
 	add_subdirectory( 00-Common )

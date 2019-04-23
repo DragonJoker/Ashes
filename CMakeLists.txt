@@ -82,6 +82,20 @@ macro( parse_subdir_files _BASE_DIR _FOLDER _GROUP )
 	source_group( "Source Files\\${_GROUP}" FILES ${_FOLDER_SOURCE_FILES} )
 endmacro()
 
+macro( parse_subdir_files_ex _BASE_DIR _PROJGROUP _FOLDER _GROUP )
+	file( GLOB _FOLDER_HEADER_FILES
+		${_BASE_DIR}/include/${_PROJGROUP}/${PROJECT_NAME}/${_FOLDER}/*.h
+		${_BASE_DIR}/include/${_PROJGROUP}/${PROJECT_NAME}/${_FOLDER}/*.hpp
+		${_BASE_DIR}/include/${_PROJGROUP}/${PROJECT_NAME}/${_FOLDER}/*.inl
+	)
+	file( GLOB _FOLDER_SOURCE_FILES
+		${_BASE_DIR}/source/${_PROJGROUP}/${PROJECT_NAME}/${_FOLDER}/*.c
+		${_BASE_DIR}/source/${_PROJGROUP}/${PROJECT_NAME}/${_FOLDER}/*.cpp
+	)
+	source_group( "Header Files\\${_GROUP}" FILES ${_FOLDER_HEADER_FILES} )
+	source_group( "Source Files\\${_GROUP}" FILES ${_FOLDER_SOURCE_FILES} )
+endmacro()
+
 if ( MSVC )
 	string( REGEX REPLACE "/Zi" "/ZI" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG} )
 endif ()

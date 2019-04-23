@@ -32,8 +32,10 @@ add_library( ${PROJECT_NAME} STATIC
 )
 
 target_link_libraries( ${PROJECT_NAME}
-	Utils
-	Ashes
+	common
+	ashes
+	AshesPP
+	util
 )
 
 add_dependencies( ${PROJECT_NAME}

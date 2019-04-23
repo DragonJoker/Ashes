@@ -12,9 +12,9 @@ See LICENSE file in root folder.
 #include "Miscellaneous/Error.hpp"
 #include "Miscellaneous/Log.hpp"
 
-#include <AshesRenderer/AshesRendererPrerequisites.hpp>
+#include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
 
-#include <AshesRenderer/Util/Format.hpp>
+#include <common/Format.hpp>
 
 #include <array>
 #include <cassert>
@@ -167,7 +167,6 @@ namespace ashes
 	using FrameBufferCRef = std::reference_wrapper< FrameBuffer const >;
 	using ImageViewCRef = std::reference_wrapper< ImageView const >;
 	using PhysicalDeviceCRef = std::reference_wrapper< PhysicalDevice const >;
-	using PushConstantRangeCRef = std::reference_wrapper< VkPushConstantRange const >;
 	using RenderPassCRef = std::reference_wrapper< RenderPass const >;
 	using SamplerCRef = std::reference_wrapper< Sampler const >;
 	using SemaphoreCRef = std::reference_wrapper< Semaphore const >;

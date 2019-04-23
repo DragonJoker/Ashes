@@ -22,7 +22,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Sync/Semaphore.hpp"
 #include "AshesPP/Utils/CallStack.hpp"
 
-#include <AshesRenderer/Util/Exception.hpp>
+#include <common/Exception.hpp>
 
 namespace ashes
 {
@@ -46,7 +46,7 @@ namespace ashes
 		checkError( res, "LogicalDevice creation" );
 
 #define VK_LIB_DEVICE_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( m_instance.vkGetDeviceProcAddr( m_internal, "vk"#fun ) );
-#include <AshesCommon/VulkanFunctionsList.inl>
+#include <common/VulkanFunctionsList.inl>
 	}
 
 	Device::~Device()

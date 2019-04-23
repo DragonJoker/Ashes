@@ -29,8 +29,8 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 	endif()
 
 	set( TestIncludeDirectories
-		${CMAKE_SOURCE_DIR}/Utils/Src
-		${CMAKE_BINARY_DIR}/Utils/Src
+		${CMAKE_SOURCE_DIR}/util/Src
+		${CMAKE_BINARY_DIR}/util/Src
 		${CMAKE_SOURCE_DIR}/include
 		${CMAKE_BINARY_DIR}/source
 		${CMAKE_SOURCE_DIR}/external/gli
@@ -46,7 +46,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		ashes
 		AshesRenderer
 		AshesPP
-		Utils
+		util
 	)
 
 	add_subdirectory( 00-Common )

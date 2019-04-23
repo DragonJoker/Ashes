@@ -362,16 +362,16 @@ namespace common
 		m_frameBuffer = m_renderPass->createFrameBuffer( size
 			, std::move( attaches ) );
 
-		ashes::ColourBlendState cbState;
+		VkPipelineColorBlendStateCreateInfo cbState;
 		cbState.attachs.push_back( ashes::ColourBlendStateAttachment
 		{
 			true,
-			ashes::BlendFactor::eSrcAlpha,
-			ashes::BlendFactor::eInvSrcAlpha,
-			ashes::BlendOp::eAdd,
-			ashes::BlendFactor::eSrcAlpha,
-			ashes::BlendFactor::eInvSrcAlpha,
-			ashes::BlendOp::eAdd
+			VK_BLEND_FACTOR_SRC_ALPHA,
+			VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+			VK_BLEND_OP_ADD,
+			VK_BLEND_FACTOR_SRC_ALPHA,
+			VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+			VK_BLEND_OP_ADD
 		} );
 
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
@@ -385,7 +385,7 @@ namespace common
 			VK_DYNAMIC_STATE_SCISSOR
 		};
 
-		ashes::RasterisationState rasterisationState;
+		VkPipelineRasterizationStateCreateInfo rasterisationState;
 		rasterisationState.cullMode = VK_CULL_MODE_NONE;
 
 		m_pipeline = m_pipelineLayout->createPipeline(
@@ -395,10 +395,10 @@ namespace common
 			ashes::VertexInputState::create( *m_vertexLayout ),
 			ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
 			rasterisationState,
-			ashes::MultisampleState{},
+			VkPipelineMultisampleStateCreateInfo{},
 			cbState,
 			dynamicStateEnables,
-			ashes::DepthStencilState{},
+			VkPipelineDepthStencilStateCreateInfo{},
 		} );
 	}
 

@@ -14,8 +14,8 @@
 
 #include <AshesPP/Core/PlatformWindowHandle.hpp>
 
-#include <AshesRenderer/AshesRendererPrerequisites.hpp>
-#include <AshesRenderer/Util/Exception.hpp>
+#include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
+#include <common/Exception.hpp>
 
 #include <GLFW/glfw3.h>
 

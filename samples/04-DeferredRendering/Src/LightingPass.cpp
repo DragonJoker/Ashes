@@ -238,11 +238,11 @@ namespace vkapp
 				*m_renderPass,
 				ashes::VertexInputState::create( *m_vertexLayout ),
 				{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-				ashes::RasterisationState{},
-				ashes::MultisampleState{},
-				ashes::ColourBlendState::createDefault(),
+				VkPipelineRasterizationStateCreateInfo{},
+				VkPipelineMultisampleStateCreateInfo{},
+				VkPipelineColorBlendStateCreateInfo::createDefault(),
 				{ VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR },
-				ashes::DepthStencilState{ 0u, false, false, VK_COMPARE_OP_LESS }
+				VkPipelineDepthStencilStateCreateInfo{ 0u, false, false, VK_COMPARE_OP_LESS }
 			} )
 		}
 		, m_queryPool{ m_device.getDevice().createQueryPool( VK_QUERY_TYPE_TIMESTAMP, 2u, 0u ) }

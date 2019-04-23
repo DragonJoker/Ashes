@@ -4,7 +4,7 @@
 
 #include <AshesPP/Core/Device.hpp>
 
-#include <AshesRenderer/Util/Signal.hpp>
+#include <common/Signal.hpp>
 
 #include <wx/panel.h>
 

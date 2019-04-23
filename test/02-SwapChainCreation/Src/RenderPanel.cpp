@@ -12,7 +12,7 @@
 #include <AshesPP/RenderPass/FrameBuffer.hpp>
 #include <AshesPP/RenderPass/RenderPass.hpp>
 
-#include <AshesRenderer/Util/Exception.hpp>
+#include <common/Exception.hpp>
 
 #include <chrono>
 

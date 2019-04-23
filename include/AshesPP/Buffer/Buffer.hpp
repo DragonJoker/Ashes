@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "AshesPP/Core/Device.hpp"
 #include "AshesPP/Miscellaneous/DeviceMemory.hpp"
 
-#include <AshesRenderer/Util/Exception.hpp>
+#include <common/Exception.hpp>
 
 namespace ashes
 {

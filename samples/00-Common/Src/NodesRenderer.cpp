@@ -471,7 +471,7 @@ namespace common
 				}
 
 				materialNode.descriptorSetTextures->update();
-				ashes::RasterisationState rasterisationState;
+				VkPipelineRasterizationStateCreateInfo rasterisationState;
 				rasterisationState.cullMode = VK_CULL_MODE_NONE;
 
 				// Initialise the pipeline
@@ -484,7 +484,7 @@ namespace common
 					materialNode.pipelineLayout = m_device.getDevice().createPipelineLayout( *m_billboardDescriptorLayout );
 				}
 
-				ashes::ColourBlendState blendState;
+				VkPipelineColorBlendStateCreateInfo blendState;
 
 				for ( auto & attach : m_renderPass->getAttachments() )
 				{
@@ -507,10 +507,10 @@ namespace common
 					ashes::VertexInputState::create( { *m_billboardVertexLayout, *m_billboardInstanceLayout } ),
 					{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
 					rasterisationState,
-					ashes::MultisampleState{},
+					VkPipelineMultisampleStateCreateInfo{},
 					blendState,
 					dynamicStateEnables,
-					ashes::DepthStencilState{}
+					VkPipelineDepthStencilStateCreateInfo{}
 				} );
 				m_billboardRenderNodes.emplace_back( std::move( materialNode ) );
 				++matIndex;
@@ -630,7 +630,7 @@ namespace common
 					}
 
 					materialNode.descriptorSetTextures->update();
-					ashes::RasterisationState rasterisationState;
+					VkPipelineRasterizationStateCreateInfo rasterisationState;
 
 					if ( material.data.backFace )
 					{
@@ -647,7 +647,7 @@ namespace common
 						materialNode.pipelineLayout = m_device.getDevice().createPipelineLayout( *m_objectDescriptorLayout );
 					}
 
-					ashes::ColourBlendState blendState;
+					VkPipelineColorBlendStateCreateInfo blendState;
 
 					for ( auto & attach : m_renderPass->getAttachments() )
 					{
@@ -670,10 +670,10 @@ namespace common
 						ashes::VertexInputState::create( *m_objectVertexLayout ),
 						{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
 						rasterisationState,
-						ashes::MultisampleState{},
+						VkPipelineMultisampleStateCreateInfo{},
 						blendState,
 						dynamicStateEnables,
-						ashes::DepthStencilState{}
+						VkPipelineDepthStencilStateCreateInfo{}
 					} );
 					m_submeshRenderNodes.emplace_back( std::move( materialNode ) );
 					++matIndex;

@@ -364,9 +364,9 @@ namespace common
 			*m_renderPass,
 			ashes::VertexInputState::create( *m_vertexLayout ),
 			{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-			ashes::RasterisationState{ 0u, false, false, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE },
-			ashes::MultisampleState{},
-			ashes::ColourBlendState::createDefault(),
+			VkPipelineRasterizationStateCreateInfo{ 0u, false, false, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE },
+			VkPipelineMultisampleStateCreateInfo{},
+			VkPipelineColorBlendStateCreateInfo::createDefault(),
 			dynamicStateEnables,
 		} );
 	}

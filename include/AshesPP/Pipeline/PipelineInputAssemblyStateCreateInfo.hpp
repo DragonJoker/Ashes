@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/AshesPPPrerequisites.hpp"
 
-#include <AshesRenderer/Helper/InputAssemblyState.hpp>
+#include <renderer/RendererCommon/Helper/InputAssemblyState.hpp>
 
 namespace ashes
 {

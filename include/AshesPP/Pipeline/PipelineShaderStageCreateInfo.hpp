@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include "AshesPP/AshesPPPrerequisites.hpp"
 
 #include "AshesPP/Shader/ShaderModule.hpp"
-#include <AshesRenderer/Helper/ShaderStageState.hpp>
+#include <renderer/RendererCommon/Helper/ShaderStageState.hpp>
 
 namespace ashes
 {

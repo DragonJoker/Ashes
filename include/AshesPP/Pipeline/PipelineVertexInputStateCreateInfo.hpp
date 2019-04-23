@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 #include "AshesPP/AshesPPPrerequisites.hpp"
 
-#include <AshesRenderer/Helper/VertexInputState.hpp>
+#include <renderer/RendererCommon/Helper/VertexInputState.hpp>
 
 namespace ashes
 {

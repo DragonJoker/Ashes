@@ -4,7 +4,7 @@ See LICENSE file in root folder
 #ifndef ___Ashes_QueryPool_H___
 #define ___Ashes_QueryPool_H___
 
-#include <ashes/ashes.h>
+#include "AshesPP/AshesPPPrerequisites.hpp"
 
 namespace ashes
 {

@@ -7,7 +7,7 @@
 #include <AshesPP/Buffer/StagingBuffer.hpp>
 #include <AshesPP/Core/SwapChain.hpp>
 
-#include <AshesRenderer/Util/Signal.hpp>
+#include <common/Signal.hpp>
 
 namespace vkapp
 {

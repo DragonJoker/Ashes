@@ -584,7 +584,7 @@ namespace vkapp
 			, VK_SHADER_STAGE_FRAGMENT_BIT
 			, shadersFolder / "offscreen.frag" ) ) } );
 
-		ashes::RasterisationState rasterisationState;
+		VkPipelineRasterizationStateCreateInfo rasterisationState;
 		rasterisationState.cullMode = VK_CULL_MODE_NONE;
 
 		m_offscreenPipeline = m_offscreenPipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo
@@ -594,8 +594,8 @@ namespace vkapp
 			ashes::VertexInputState::create( *m_offscreenVertexLayout ),
 			ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
 			rasterisationState,
-			ashes::MultisampleState{},
-			ashes::ColourBlendState::createDefault(),
+			VkPipelineMultisampleStateCreateInfo{},
+			VkPipelineColorBlendStateCreateInfo::createDefault(),
 			{ VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR }
 		} );
 	}
@@ -794,9 +794,9 @@ namespace vkapp
 			*m_passes.hi.renderPass,
 			ashes::VertexInputState::create( *m_mainVertexLayout ),
 			ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-			ashes::RasterisationState{},
-			ashes::MultisampleState{},
-			ashes::ColourBlendState::createDefault(),
+			VkPipelineRasterizationStateCreateInfo{},
+			VkPipelineMultisampleStateCreateInfo{},
+			VkPipelineColorBlendStateCreateInfo::createDefault(),
 			{},
 			ashes::nullopt,
 			ashes::nullopt,
@@ -971,9 +971,9 @@ namespace vkapp
 				*m_passes.blurX[0].renderPass,
 				ashes::VertexInputState::create( *m_mainVertexLayout ),
 				ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-				ashes::RasterisationState{},
-				ashes::MultisampleState{},
-				ashes::ColourBlendState::createDefault(),
+				VkPipelineRasterizationStateCreateInfo{},
+				VkPipelineMultisampleStateCreateInfo{},
+				VkPipelineColorBlendStateCreateInfo::createDefault(),
 				{},
 				ashes::nullopt,
 				ashes::nullopt,
@@ -1092,9 +1092,9 @@ namespace vkapp
 				*m_passes.blurY[0].renderPass,
 				ashes::VertexInputState::create( *m_mainVertexLayout ),
 				ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-				ashes::RasterisationState{},
-				ashes::MultisampleState{},
-				ashes::ColourBlendState::createDefault(),
+				VkPipelineRasterizationStateCreateInfo{},
+				VkPipelineMultisampleStateCreateInfo{},
+				VkPipelineColorBlendStateCreateInfo::createDefault(),
 				{},
 				ashes::nullopt,
 				ashes::nullopt,
@@ -1253,9 +1253,9 @@ namespace vkapp
 			*m_passes.combine.renderPass,
 			ashes::VertexInputState::create( *m_mainVertexLayout ),
 			ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-			ashes::RasterisationState{},
-			ashes::MultisampleState{},
-			ashes::ColourBlendState::createDefault(),
+			VkPipelineRasterizationStateCreateInfo{},
+			VkPipelineMultisampleStateCreateInfo{},
+			VkPipelineColorBlendStateCreateInfo::createDefault(),
 			{},
 			ashes::nullopt,
 			ashes::nullopt,
@@ -1326,9 +1326,9 @@ namespace vkapp
 			*m_mainRenderPass,
 			ashes::VertexInputState::create( *m_mainVertexLayout ),
 			ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-			ashes::RasterisationState{},
-			ashes::MultisampleState{},
-			ashes::ColourBlendState::createDefault(),
+			VkPipelineRasterizationStateCreateInfo{},
+			VkPipelineMultisampleStateCreateInfo{},
+			VkPipelineColorBlendStateCreateInfo::createDefault(),
 			{ VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR }
 		} );
 	}

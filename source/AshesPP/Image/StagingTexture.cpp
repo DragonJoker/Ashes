@@ -8,8 +8,8 @@ See LICENSE file in root folder.
 #include "AshesPP/Image/Image.hpp"
 #include "AshesPP/Image/ImageView.hpp"
 
-#include <AshesRenderer/Util/Exception.hpp>
-#include <AshesRenderer/Util/Format.hpp>
+#include <common/Exception.hpp>
+#include <common/Format.hpp>
 
 namespace ashes
 {
