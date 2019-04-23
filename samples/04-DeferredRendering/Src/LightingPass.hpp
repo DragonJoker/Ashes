@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <AshesPP/Pipeline/VertexLayout.hpp>
+#include <ashespp/Pipeline/VertexLayout.hpp>
 
 namespace vkapp
 {

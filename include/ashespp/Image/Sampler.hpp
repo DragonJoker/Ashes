@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___AshesPP_Sampler_HPP___
 #pragma once
 
-#include "AshesPP/Image/SamplerCreateInfo.hpp"
+#include "ashespp/Image/SamplerCreateInfo.hpp"
 
 namespace ashes
 {

@@ -2,9 +2,9 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include <Utils/UtilsDebug.hpp>
+#include "util/UtilsDebug.hpp"
 
-#include <AshesPP/Core/Instance.hpp>
+#include <ashespp/Core/Instance.hpp>
 
 namespace utils
 {

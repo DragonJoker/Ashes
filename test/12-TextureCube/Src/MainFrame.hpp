@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <AshesPP/Core/Instance.hpp>
+#include <ashespp/Core/Instance.hpp>
 
 #include <MainFrame.hpp>
 

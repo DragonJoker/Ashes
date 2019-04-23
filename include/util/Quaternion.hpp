@@ -4,8 +4,8 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils/Mat4.hpp"
-#include "Utils/Angle.hpp"
+#include "util/Mat4.hpp"
+#include "util/Angle.hpp"
 
 namespace utils
 {
@@ -341,4 +341,4 @@ namespace utils
 	/**\}*/
 }
 
-#include "Utils/Quaternion.inl"
+#include "util/Quaternion.inl"

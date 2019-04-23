@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #include <math.h>
 
-#include "Utils/Vectorisation.hpp"
+#include "util/Vectorisation.hpp"
 
 namespace utils
 {

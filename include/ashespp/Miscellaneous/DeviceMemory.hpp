@@ -6,9 +6,9 @@ See LICENSE file in root folder.
 #define ___AshesPP_DeviceMemory_HPP___
 #pragma once
 
-#include "AshesPP/AshesPPPrerequisites.hpp"
+#include "ashespp/AshesPPPrerequisites.hpp"
 
-#include "AshesPP/Core/Device.hpp"
+#include "ashespp/Core/Device.hpp"
 
 namespace ashes
 {

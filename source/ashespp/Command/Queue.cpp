@@ -2,13 +2,13 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Command/Queue.hpp"
+#include "ashespp/Command/Queue.hpp"
 
-#include "AshesPP/Command/CommandBuffer.hpp"
-#include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Core/SwapChain.hpp"
-#include "AshesPP/Sync/Fence.hpp"
-#include "AshesPP/Sync/Semaphore.hpp"
+#include "ashespp/Command/CommandBuffer.hpp"
+#include "ashespp/Core/Device.hpp"
+#include "ashespp/Core/SwapChain.hpp"
+#include "ashespp/Sync/Fence.hpp"
+#include "ashespp/Sync/Semaphore.hpp"
 
 namespace ashes
 {

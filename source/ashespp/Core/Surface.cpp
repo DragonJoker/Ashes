@@ -2,10 +2,10 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Core/Surface.hpp"
+#include "ashespp/Core/Surface.hpp"
 
-#include "AshesPP/Core/Instance.hpp"
-#include "AshesPP/Core/PlatformWindowHandle.hpp"
+#include "ashespp/Core/Instance.hpp"
+#include "ashespp/Core/PlatformWindowHandle.hpp"
 
 namespace ashes
 {

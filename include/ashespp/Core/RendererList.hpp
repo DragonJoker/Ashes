@@ -6,9 +6,9 @@ See LICENSE file in root folder.
 #define ___AshesPP_Renderer_HPP___
 #pragma once
 
-#include "AshesPP/Core/Instance.hpp"
+#include "ashespp/Core/Instance.hpp"
 
-#include <common/DynamicLibrary.hpp>
+#include <ashes/common/DynamicLibrary.hpp>
 
 namespace ashes
 {

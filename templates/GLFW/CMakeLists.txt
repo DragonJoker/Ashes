@@ -18,10 +18,9 @@ if( GLFW_FOUND )
 	)
 
 	target_link_libraries( ${PROJECT_NAME}
-		AshesCommon
+		common
 		ashes
-		AshesRenderer
-		AshesPP
+		ashespp
 		${GLFW_LIBRARIES}
 		${BinLibraries}
 	)

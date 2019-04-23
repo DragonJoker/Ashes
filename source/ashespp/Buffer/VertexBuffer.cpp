@@ -2,7 +2,7 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Buffer/VertexBuffer.hpp"
+#include "ashespp/Buffer/VertexBuffer.hpp"
 
 namespace ashes
 {

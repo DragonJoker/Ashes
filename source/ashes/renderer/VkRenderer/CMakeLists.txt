@@ -9,28 +9,22 @@ set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_SOURCE_DIR}/include
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
 	${Vulkan_INCLUDE_DIRS}
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.c
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.cc
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.cpp
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.inc
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.inc
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inc
 )
 
 add_definitions(

@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils/Logarithm.hpp"
+#include "util/Logarithm.hpp"
 
 #include <math.h>
 #include <limits>

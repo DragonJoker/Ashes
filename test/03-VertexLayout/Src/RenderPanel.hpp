@@ -2,11 +2,11 @@
 
 #include "Prerequisites.hpp"
 
-#include <AshesPP/RenderPass/Framebuffer.hpp>
-#include <AshesPP/RenderPass/RenderPass.hpp>
-#include <AshesPP/Core/SwapChain.hpp>
+#include <ashespp/RenderPass/Framebuffer.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
+#include <ashespp/Core/SwapChain.hpp>
 
-#include <common/Signal.hpp>
+#include <ashes/common/Signal.hpp>
 
 namespace vkapp
 {

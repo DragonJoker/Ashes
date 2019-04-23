@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 #endif
 #include <Windows.h>
 
-#include "AshesPP/Core/WindowHandle.hpp"
+#include "ashespp/Core/WindowHandle.hpp"
 #include <vulkan/vulkan_win32.h>
 
 namespace ashes

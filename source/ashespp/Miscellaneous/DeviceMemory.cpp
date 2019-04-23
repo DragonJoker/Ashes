@@ -2,10 +2,10 @@
 This file belongs to Ashes.
 See LICENSE file in root folder
 */
-#include "AshesPP/Miscellaneous/DeviceMemory.hpp"
+#include "ashespp/Miscellaneous/DeviceMemory.hpp"
 
-#include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Core/PhysicalDevice.hpp"
+#include "ashespp/Core/Device.hpp"
+#include "ashespp/Core/PhysicalDevice.hpp"
 
 namespace ashes
 {

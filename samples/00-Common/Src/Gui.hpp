@@ -3,8 +3,8 @@
 #include "Prerequisites.hpp"
 #include "imgui.h"
 
-#include <AshesPP/Buffer/PushConstantsBuffer.hpp>
-#include <AshesPP/Image/Sampler.hpp>
+#include <ashespp/Buffer/PushConstantsBuffer.hpp>
+#include <ashespp/Image/Sampler.hpp>
 
 namespace common
 {

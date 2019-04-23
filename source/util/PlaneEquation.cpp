@@ -2,7 +2,7 @@
 This file belongs to Ashes.
 See LICENSE file in root folder
 */
-#include "Utils/PlaneEquation.hpp"
+#include "util/PlaneEquation.hpp"
 
 namespace utils
 {

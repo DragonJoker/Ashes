@@ -4,24 +4,24 @@
 #include "RenderTarget.hpp"
 #include "Scene.hpp"
 
-#include <AshesPP/Buffer/Buffer.hpp>
-#include <AshesPP/Buffer/StagingBuffer.hpp>
-#include <AshesPP/Buffer/VertexBuffer.hpp>
-#include <AshesPP/Command/CommandBuffer.hpp>
-#include <AshesPP/Command/CommandPool.hpp>
-#include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Descriptor/DescriptorSet.hpp>
-#include <AshesPP/Descriptor/DescriptorSetLayout.hpp>
-#include <AshesPP/Descriptor/DescriptorSetPool.hpp>
-#include <AshesPP/Image/Image.hpp>
-#include <AshesPP/Image/ImageView.hpp>
-#include <AshesPP/Miscellaneous/QueryPool.hpp>
-#include <AshesPP/Pipeline/GraphicsPipeline.hpp>
-#include <AshesPP/Pipeline/PipelineLayout.hpp>
-#include <AshesPP/RenderPass/RenderPass.hpp>
-#include <AshesPP/RenderPass/RenderPassCreateInfo.hpp>
+#include <ashespp/Buffer/Buffer.hpp>
+#include <ashespp/Buffer/StagingBuffer.hpp>
+#include <ashespp/Buffer/VertexBuffer.hpp>
+#include <ashespp/Command/CommandBuffer.hpp>
+#include <ashespp/Command/CommandPool.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Descriptor/DescriptorSet.hpp>
+#include <ashespp/Descriptor/DescriptorSetLayout.hpp>
+#include <ashespp/Descriptor/DescriptorSetPool.hpp>
+#include <ashespp/Image/Image.hpp>
+#include <ashespp/Image/ImageView.hpp>
+#include <ashespp/Miscellaneous/QueryPool.hpp>
+#include <ashespp/Pipeline/GraphicsPipeline.hpp>
+#include <ashespp/Pipeline/PipelineLayout.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
+#include <ashespp/RenderPass/RenderPassCreateInfo.hpp>
 
-#include <Utils/GlslToSpv.hpp>
+#include <util/GlslToSpv.hpp>
 
 #include <algorithm>
 

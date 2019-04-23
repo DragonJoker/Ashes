@@ -2,12 +2,12 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Pipeline/PipelineLayout.hpp"
+#include "ashespp/Pipeline/PipelineLayout.hpp"
 
-#include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Descriptor/DescriptorSetLayout.hpp"
-#include "AshesPP/Pipeline/ComputePipeline.hpp"
-#include "AshesPP/Pipeline/GraphicsPipeline.hpp"
+#include "ashespp/Core/Device.hpp"
+#include "ashespp/Descriptor/DescriptorSetLayout.hpp"
+#include "ashespp/Pipeline/ComputePipeline.hpp"
+#include "ashespp/Pipeline/GraphicsPipeline.hpp"
 
 namespace ashes
 {

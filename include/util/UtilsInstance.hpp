@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "UtilsPrerequisites.hpp"
 
-#include <AshesPP/Core/Instance.hpp>
+#include <ashespp/Core/Instance.hpp>
 
 namespace utils
 {

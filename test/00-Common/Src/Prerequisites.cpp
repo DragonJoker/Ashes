@@ -1,6 +1,6 @@
 #include "Prerequisites.hpp"
 
-#include <AshesPP/Core/PlatformWindowHandle.hpp>
+#include <ashespp/Core/PlatformWindowHandle.hpp>
 
 #if defined( __WXGTK__ )
 #	include <gdk/gdkx.h>

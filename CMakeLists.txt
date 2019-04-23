@@ -68,51 +68,52 @@ macro( source_add_forced_include _FILE ) #ARGN: _FILES
 endmacro( source_add_forced_include )
 
 # Small macro to add subdirectory files to current target source and header files
-macro( parse_subdir_files _BASE_DIR _FOLDER _GROUP )
+macro( parse_subdir_files_ex _BASE_DIR _PROJGROUP _FOLDER _GROUP )
+	set( __PROJGROUP "${_PROJGROUP}" )
+	if ( NOT ${__PROJGROUP} STREQUAL "" )
+		set( __PROJGROUP "${__PROJGROUP}/" )
+	endif ()
 	file( GLOB _FOLDER_HEADER_FILES
-		${_BASE_DIR}/include/${PROJECT_NAME}/${_FOLDER}/*.h
-		${_BASE_DIR}/include/${PROJECT_NAME}/${_FOLDER}/*.hpp
-		${_BASE_DIR}/include/${PROJECT_NAME}/${_FOLDER}/*.inl
+		${_BASE_DIR}/include/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.h
+		${_BASE_DIR}/include/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.hpp
+		${_BASE_DIR}/include/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.inl
+		${_BASE_DIR}/source/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.h
+		${_BASE_DIR}/source/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.hpp
+		${_BASE_DIR}/source/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.inl
 	)
 	file( GLOB _FOLDER_SOURCE_FILES
-		${_BASE_DIR}/source/${PROJECT_NAME}/${_FOLDER}/*.c
-		${_BASE_DIR}/source/${PROJECT_NAME}/${_FOLDER}/*.cpp
+		${_BASE_DIR}/include/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.c
+		${_BASE_DIR}/include/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.cpp
+		${_BASE_DIR}/source/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.c
+		${_BASE_DIR}/source/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.cpp
 	)
 	source_group( "Header Files\\${_GROUP}" FILES ${_FOLDER_HEADER_FILES} )
 	source_group( "Source Files\\${_GROUP}" FILES ${_FOLDER_SOURCE_FILES} )
 endmacro()
 
-macro( parse_subdir_files_ex _BASE_DIR _PROJGROUP _FOLDER _GROUP )
-	file( GLOB _FOLDER_HEADER_FILES
-		${_BASE_DIR}/include/${_PROJGROUP}/${PROJECT_NAME}/${_FOLDER}/*.h
-		${_BASE_DIR}/include/${_PROJGROUP}/${PROJECT_NAME}/${_FOLDER}/*.hpp
-		${_BASE_DIR}/include/${_PROJGROUP}/${PROJECT_NAME}/${_FOLDER}/*.inl
-	)
-	file( GLOB _FOLDER_SOURCE_FILES
-		${_BASE_DIR}/source/${_PROJGROUP}/${PROJECT_NAME}/${_FOLDER}/*.c
-		${_BASE_DIR}/source/${_PROJGROUP}/${PROJECT_NAME}/${_FOLDER}/*.cpp
-	)
-	source_group( "Header Files\\${_GROUP}" FILES ${_FOLDER_HEADER_FILES} )
-	source_group( "Source Files\\${_GROUP}" FILES ${_FOLDER_SOURCE_FILES} )
+macro( parse_subdir_files _BASE_DIR _FOLDER _GROUP )
+	parse_subdir_files_ex( ${_BASE_DIR} "" ${_FOLDER} ${_GROUP} )
 endmacro()
 
 if ( MSVC )
 	string( REGEX REPLACE "/Zi" "/ZI" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG} )
 endif ()
 
-if ( WIN32 )
-	set( BinLibraries
-		Dbghelp
-	)
-else ()
-	set( BinLibraries
-		dl
-	)
-endif ()
-
 find_package( Vulkan )
 
 if( Vulkan_FOUND )
+	set( SPIRV_CROSS_DIR ${CMAKE_SOURCE_DIR}/external/SPIRV-Cross )
+
+	if ( WIN32 )
+		set( BinLibraries
+			Dbghelp
+		)
+	else ()
+		set( BinLibraries
+			dl
+		)
+	endif ()
+
 	include_directories( ${Vulkan_INCLUDE_DIRS} )
 	add_subdirectory( source )
 
@@ -204,15 +205,15 @@ if( Vulkan_FOUND )
 	endif ()
 
 	if ( ASHES_BUILD_TEMPLATES )
-		add_subdirectory( Templates )
+		add_subdirectory( templates )
 	endif ()
 
 	if ( ASHES_BUILD_TESTS )
-		add_subdirectory( Test )
+		add_subdirectory( test )
 	endif ()
 
 	if ( ASHES_BUILD_SAMPLES )
-		add_subdirectory( Samples )
+		add_subdirectory( samples )
 	endif ()
 else ()
 	

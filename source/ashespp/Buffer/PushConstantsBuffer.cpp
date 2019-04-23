@@ -2,7 +2,7 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Buffer/PushConstantsBuffer.hpp"
+#include "ashespp/Buffer/PushConstantsBuffer.hpp"
 
 #include <common/Format.hpp>
 

@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___AshesPP_PushConstantsBuffer_HPP___
 #pragma once
 
-#include "AshesPP/Core/Device.hpp"
+#include "ashespp/Core/Device.hpp"
 
 namespace ashes
 {

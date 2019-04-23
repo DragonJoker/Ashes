@@ -2,25 +2,25 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Core/Device.hpp"
+#include "ashespp/Core/Device.hpp"
 
-#include "AshesPP/Buffer/Buffer.hpp"
-#include "AshesPP/Buffer/BufferView.hpp"
-#include "AshesPP/Core/Instance.hpp"
-#include "AshesPP/Core/SwapChain.hpp"
-#include "AshesPP/Descriptor/DescriptorPool.hpp"
-#include "AshesPP/Descriptor/DescriptorSetLayout.hpp"
-#include "AshesPP/Image/Image.hpp"
-#include "AshesPP/Image/Sampler.hpp"
-#include "AshesPP/Image/StagingTexture.hpp"
-#include "AshesPP/Miscellaneous/QueryPool.hpp"
-#include "AshesPP/Pipeline/PipelineLayout.hpp"
-#include "AshesPP/RenderPass/RenderPass.hpp"
-#include "AshesPP/Shader/ShaderModule.hpp"
-#include "AshesPP/Sync/Event.hpp"
-#include "AshesPP/Sync/Fence.hpp"
-#include "AshesPP/Sync/Semaphore.hpp"
-#include "AshesPP/Utils/CallStack.hpp"
+#include "ashespp/Buffer/Buffer.hpp"
+#include "ashespp/Buffer/BufferView.hpp"
+#include "ashespp/Core/Instance.hpp"
+#include "ashespp/Core/SwapChain.hpp"
+#include "ashespp/Descriptor/DescriptorPool.hpp"
+#include "ashespp/Descriptor/DescriptorSetLayout.hpp"
+#include "ashespp/Image/Image.hpp"
+#include "ashespp/Image/Sampler.hpp"
+#include "ashespp/Image/StagingTexture.hpp"
+#include "ashespp/Miscellaneous/QueryPool.hpp"
+#include "ashespp/Pipeline/PipelineLayout.hpp"
+#include "ashespp/RenderPass/RenderPass.hpp"
+#include "ashespp/Shader/ShaderModule.hpp"
+#include "ashespp/Sync/Event.hpp"
+#include "ashespp/Sync/Fence.hpp"
+#include "ashespp/Sync/Semaphore.hpp"
+#include "ashespp/Utils/CallStack.hpp"
 
 #include <common/Exception.hpp>
 

@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___AshesPP_CommandBufferInheritanceInfo_HPP___
 #pragma once
 
-#include "AshesPP/Image/VkImageSubresourceLayers.hpp"
+#include "ashespp/Image/VkImageSubresourceLayers.hpp"
 
 namespace ashes
 {

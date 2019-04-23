@@ -2,16 +2,16 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Descriptor/DescriptorSet.hpp"
+#include "ashespp/Descriptor/DescriptorSet.hpp"
 
-#include "AshesPP/Buffer/Buffer.hpp"
-#include "AshesPP/Buffer/BufferView.hpp"
-#include "AshesPP/Buffer/UniformBuffer.hpp"
-#include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Descriptor/DescriptorPool.hpp"
-#include "AshesPP/Descriptor/DescriptorSetLayout.hpp"
-#include "AshesPP/Image/ImageView.hpp"
-#include "AshesPP/Image/Sampler.hpp"
+#include "ashespp/Buffer/Buffer.hpp"
+#include "ashespp/Buffer/BufferView.hpp"
+#include "ashespp/Buffer/UniformBuffer.hpp"
+#include "ashespp/Core/Device.hpp"
+#include "ashespp/Descriptor/DescriptorPool.hpp"
+#include "ashespp/Descriptor/DescriptorSetLayout.hpp"
+#include "ashespp/Image/ImageView.hpp"
+#include "ashespp/Image/Sampler.hpp"
 
 namespace ashes
 {

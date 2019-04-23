@@ -6,10 +6,10 @@
 #include <OpaqueRendering.hpp>
 #include <TransparentRendering.hpp>
 
-#include <AshesPP/Buffer/StagingBuffer.hpp>
-#include <AshesPP/Buffer/UniformBuffer.hpp>
+#include <ashespp/Buffer/StagingBuffer.hpp>
+#include <ashespp/Buffer/UniformBuffer.hpp>
 
-#include <Utils/Transform.hpp>
+#include <util/Transform.hpp>
 
 namespace vkapp
 {

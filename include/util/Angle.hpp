@@ -6,9 +6,9 @@ See LICENSE file in root folder
 
 #include <math.h>
 
-#include "Utils/UtilsPrerequisites.hpp"
-#include "Utils/Degrees.hpp"
-#include "Utils/Radians.hpp"
+#include "util/UtilsPrerequisites.hpp"
+#include "util/Degrees.hpp"
+#include "util/Radians.hpp"
 
 namespace utils
 {

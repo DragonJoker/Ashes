@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___AshesPP_VertexBuffer_HPP___
 #pragma once
 
-#include "AshesPP/Buffer/Buffer.hpp"
+#include "ashespp/Buffer/Buffer.hpp"
 
 #include <vector>
 
@@ -283,6 +283,6 @@ namespace ashes
 	}
 }
 
-#include "AshesPP/Buffer/VertexBuffer.inl"
+#include "ashespp/Buffer/VertexBuffer.inl"
 
 #endif

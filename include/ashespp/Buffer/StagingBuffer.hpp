@@ -6,9 +6,9 @@ See LICENSE file in root folder.
 #define ___AshesPP_StagingBuffer_HPP___
 #pragma once
 
-#include "AshesPP/Buffer/Buffer.hpp"
-#include "AshesPP/Buffer/VertexBuffer.hpp"
-#include "AshesPP/Buffer/UniformBuffer.hpp"
+#include "ashespp/Buffer/Buffer.hpp"
+#include "ashespp/Buffer/VertexBuffer.hpp"
+#include "ashespp/Buffer/UniformBuffer.hpp"
 
 namespace ashes
 {
@@ -551,6 +551,6 @@ namespace ashes
 	};
 }
 
-#include "AshesPP/Buffer/StagingBuffer.inl"
+#include "ashespp/Buffer/StagingBuffer.inl"
 
 #endif

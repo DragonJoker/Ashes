@@ -2,21 +2,21 @@
 
 #include "FileUtils.hpp"
 
-#include <AshesPP/Buffer/Buffer.hpp>
-#include <AshesPP/Buffer/VertexBuffer.hpp>
-#include <AshesPP/Buffer/StagingBuffer.hpp>
-#include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Descriptor/DescriptorSet.hpp>
-#include <AshesPP/Descriptor/DescriptorSetLayout.hpp>
-#include <AshesPP/Descriptor/DescriptorSetPool.hpp>
-#include <AshesPP/Image/Image.hpp>
-#include <AshesPP/Image/ImageView.hpp>
-#include <AshesPP/Pipeline/GraphicsPipeline.hpp>
-#include <AshesPP/Pipeline/PipelineLayout.hpp>
-#include <AshesPP/RenderPass/FrameBuffer.hpp>
-#include <AshesPP/RenderPass/RenderPass.hpp>
+#include <ashespp/Buffer/Buffer.hpp>
+#include <ashespp/Buffer/VertexBuffer.hpp>
+#include <ashespp/Buffer/StagingBuffer.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Descriptor/DescriptorSet.hpp>
+#include <ashespp/Descriptor/DescriptorSetLayout.hpp>
+#include <ashespp/Descriptor/DescriptorSetPool.hpp>
+#include <ashespp/Image/Image.hpp>
+#include <ashespp/Image/ImageView.hpp>
+#include <ashespp/Pipeline/GraphicsPipeline.hpp>
+#include <ashespp/Pipeline/PipelineLayout.hpp>
+#include <ashespp/RenderPass/FrameBuffer.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
 
-#include <Utils/GlslToSpv.hpp>
+#include <util/GlslToSpv.hpp>
 
 #include <stdarg.h>
 

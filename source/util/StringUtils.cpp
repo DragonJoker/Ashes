@@ -2,7 +2,7 @@
 This file belongs to Ashes.
 See LICENSE file in root folder
 */
-#include "Utils/StringUtils.hpp"
+#include "util/StringUtils.hpp"
 
 #include <algorithm>
 

@@ -6,28 +6,24 @@ See LICENSE file in root folder.
 #define ___AshesPP_Prerequisites_HPP___
 #pragma once
 
-#include <ashes/ashes.h>
+#include <ashes/ashes.hpp>
 
 #include "Miscellaneous/Debug.hpp"
 #include "Miscellaneous/Error.hpp"
 #include "Miscellaneous/Log.hpp"
 
-#include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
-
-#include <common/Format.hpp>
+#include <ashes/common/Format.hpp>
 
 #include <array>
 #include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <ctime>
-#include <functional>
 #include <iomanip>
 #include <map>
 #include <memory>
 #include <sstream>
 #include <string>
-#include <vector>
 
 namespace ashes
 {

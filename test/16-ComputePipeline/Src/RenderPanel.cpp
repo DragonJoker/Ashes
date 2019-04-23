@@ -3,27 +3,27 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
-#include <AshesPP/Buffer/PushConstantsBuffer.hpp>
-#include <AshesPP/Buffer/StagingBuffer.hpp>
-#include <AshesPP/Buffer/UniformBuffer.hpp>
-#include <AshesPP/Buffer/VertexBuffer.hpp>
-#include <AshesPP/Command/Queue.hpp>
-#include <AshesPP/Core/Surface.hpp>
-#include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Core/Instance.hpp>
-#include <AshesPP/Core/SwapChain.hpp>
-#include <AshesPP/Descriptor/DescriptorSet.hpp>
-#include <AshesPP/Descriptor/DescriptorSetLayout.hpp>
-#include <AshesPP/Descriptor/DescriptorSetPool.hpp>
-#include <AshesPP/Image/Image.hpp>
-#include <AshesPP/Image/ImageView.hpp>
-#include <AshesPP/Miscellaneous/QueryPool.hpp>
-#include <AshesPP/Pipeline/ComputePipeline.hpp>
-#include <AshesPP/RenderPass/FrameBuffer.hpp>
-#include <AshesPP/RenderPass/RenderPass.hpp>
-#include <Utils/GlslToSpv.hpp>
+#include <ashespp/Buffer/PushConstantsBuffer.hpp>
+#include <ashespp/Buffer/StagingBuffer.hpp>
+#include <ashespp/Buffer/UniformBuffer.hpp>
+#include <ashespp/Buffer/VertexBuffer.hpp>
+#include <ashespp/Command/Queue.hpp>
+#include <ashespp/Core/Surface.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Core/Instance.hpp>
+#include <ashespp/Core/SwapChain.hpp>
+#include <ashespp/Descriptor/DescriptorSet.hpp>
+#include <ashespp/Descriptor/DescriptorSetLayout.hpp>
+#include <ashespp/Descriptor/DescriptorSetPool.hpp>
+#include <ashespp/Image/Image.hpp>
+#include <ashespp/Image/ImageView.hpp>
+#include <ashespp/Miscellaneous/QueryPool.hpp>
+#include <ashespp/Pipeline/ComputePipeline.hpp>
+#include <ashespp/RenderPass/FrameBuffer.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
+#include <util/GlslToSpv.hpp>
 
-#include <Utils/Transform.hpp>
+#include <util/Transform.hpp>
 
 #include <FileUtils.hpp>
 

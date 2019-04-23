@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
+#include <ashespp/AshesPPPrerequisites.hpp>
 
 #include <cassert>
 #include <chrono>

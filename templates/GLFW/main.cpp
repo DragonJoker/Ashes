@@ -1,21 +1,20 @@
-#include <AshesPP/Command/CommandBuffer.hpp>
-#include <AshesPP/Command/CommandPool.hpp>
-#include <AshesPP/Command/Queue.hpp>
-#include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Core/RendererList.hpp>
-#include <AshesPP/Core/Surface.hpp>
-#include <AshesPP/Core/SwapChain.hpp>
-#include <AshesPP/Image/Image.hpp>
-#include <AshesPP/Image/ImageView.hpp>
-#include <AshesPP/RenderPass/FrameBuffer.hpp>
-#include <AshesPP/RenderPass/RenderPass.hpp>
-#include <AshesPP/Sync/Fence.hpp>
-#include <AshesPP/Sync/Semaphore.hpp>
+#include <ashespp/Command/CommandBuffer.hpp>
+#include <ashespp/Command/CommandPool.hpp>
+#include <ashespp/Command/Queue.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Core/RendererList.hpp>
+#include <ashespp/Core/Surface.hpp>
+#include <ashespp/Core/SwapChain.hpp>
+#include <ashespp/Image/Image.hpp>
+#include <ashespp/Image/ImageView.hpp>
+#include <ashespp/RenderPass/FrameBuffer.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
+#include <ashespp/Sync/Fence.hpp>
+#include <ashespp/Sync/Semaphore.hpp>
 
-#include <AshesPP/Core/PlatformWindowHandle.hpp>
+#include <ashespp/Core/PlatformWindowHandle.hpp>
 
-#include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
-#include <common/Exception.hpp>
+#include <ashes/common/Exception.hpp>
 
 #include <GLFW/glfw3.h>
 

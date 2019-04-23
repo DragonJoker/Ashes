@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <Utils/UtilsInstance.hpp>
+#include <util/UtilsInstance.hpp>
 
 #include <wx/frame.h>
 

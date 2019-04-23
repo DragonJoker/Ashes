@@ -2,21 +2,21 @@
 
 #include "Prerequisites.hpp"
 
-#include <Utils/GlslToSpv.hpp>
-#include <Utils/UtilsDevice.hpp>
+#include <util/GlslToSpv.hpp>
+#include <util/UtilsDevice.hpp>
 
-#include <AshesPP/Buffer/UniformBuffer.hpp>
-#include <AshesPP/Command/CommandBuffer.hpp>
-#include <AshesPP/Descriptor/DescriptorSet.hpp>
-#include <AshesPP/Descriptor/DescriptorSetLayout.hpp>
-#include <AshesPP/Descriptor/DescriptorSetPool.hpp>
-#include <AshesPP/Image/Sampler.hpp>
-#include <AshesPP/Miscellaneous/QueryPool.hpp>
-#include <AshesPP/Pipeline/GraphicsPipeline.hpp>
-#include <AshesPP/Pipeline/PipelineLayout.hpp>
-#include <AshesPP/RenderPass/RenderPass.hpp>
-#include <AshesPP/RenderPass/FrameBuffer.hpp>
-#include <AshesPP/RenderPass/RenderPass.hpp>
+#include <ashespp/Buffer/UniformBuffer.hpp>
+#include <ashespp/Command/CommandBuffer.hpp>
+#include <ashespp/Descriptor/DescriptorSet.hpp>
+#include <ashespp/Descriptor/DescriptorSetLayout.hpp>
+#include <ashespp/Descriptor/DescriptorSetPool.hpp>
+#include <ashespp/Image/Sampler.hpp>
+#include <ashespp/Miscellaneous/QueryPool.hpp>
+#include <ashespp/Pipeline/GraphicsPipeline.hpp>
+#include <ashespp/Pipeline/PipelineLayout.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
+#include <ashespp/RenderPass/FrameBuffer.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
 
 namespace common
 {

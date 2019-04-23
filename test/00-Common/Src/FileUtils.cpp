@@ -1,8 +1,8 @@
 #include "FileUtils.hpp"
 
-#include <AshesPP/Core/Device.hpp>
+#include <ashespp/Core/Device.hpp>
 
-#include <Utils/GlslToSpv.hpp>
+#include <util/GlslToSpv.hpp>
 
 #include <cassert>
 #include <regex>

@@ -5,7 +5,7 @@
 #include <Camera.hpp>
 #include <RenderTarget.hpp>
 
-#include <AshesPP/Miscellaneous/Offset2D.hpp>
+#include <ashespp/Miscellaneous/Offset2D.hpp>
 
 namespace vkapp
 {

@@ -2,11 +2,11 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "Utils/RenderingResources.hpp"
+#include "util/RenderingResources.hpp"
 
-#include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Core/SwapChain.hpp>
-#include <AshesPP/Command/Queue.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Core/SwapChain.hpp>
+#include <ashespp/Command/Queue.hpp>
 
 namespace utils
 {

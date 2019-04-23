@@ -2,8 +2,8 @@
 
 #include "Scene.hpp"
 
-#include <AshesPP/Pipeline/VertexLayout.hpp>
-#include <AshesPP/RenderPass/RenderSubpass.hpp>
+#include <ashespp/Pipeline/VertexLayout.hpp>
+#include <ashespp/RenderPass/RenderSubpass.hpp>
 
 namespace common
 {

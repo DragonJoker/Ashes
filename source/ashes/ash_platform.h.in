@@ -23,6 +23,9 @@ See LICENSE file in root folder.
 #		define VK_USE_PLATFORM_ANDROID_KHR 1
 #	endif
 #else
+#	ifdef ASHES_ANDROID
+#		undef ASHES_ANDROID
+#	endif
 #	define ASHES_ANDROID VK_USE_PLATFORM_ANDROID_KHR
 #endif
 
@@ -31,6 +34,9 @@ See LICENSE file in root folder.
 #		define VK_USE_PLATFORM_IOS_MVK 1
 #	endif
 #else
+#	ifdef ASHES_IOS
+#		undef ASHES_IOS
+#	endif
 #	define ASHES_IOS VK_USE_PLATFORM_IOS_MVK
 #endif
 
@@ -39,6 +45,9 @@ See LICENSE file in root folder.
 #		define VK_USE_PLATFORM_MACOS_MVK 1
 #	endif
 #else
+#	ifdef ASHES_MACOS
+#		undef ASHES_MACOS
+#	endif
 #	define ASHES_MACOS VK_USE_PLATFORM_MACOS_MVK
 #endif
 
@@ -47,6 +56,9 @@ See LICENSE file in root folder.
 #		define VK_USE_PLATFORM_MIR_KHR 1
 #	endif
 #else
+#	ifdef ASHES_MIR
+#		undef ASHES_MIR
+#	endif
 #	define ASHES_MIR VK_USE_PLATFORM_MIR_KHR
 #endif
 
@@ -55,6 +67,9 @@ See LICENSE file in root folder.
 #		define VK_USE_PLATFORM_VI_NN 1
 #	endif
 #else
+#	ifdef ASHES_VI
+#		undef ASHES_VI
+#	endif
 #	define ASHES_VI VK_USE_PLATFORM_VI_NN
 #endif
 
@@ -63,6 +78,9 @@ See LICENSE file in root folder.
 #		define VK_USE_PLATFORM_WAYLAND_KHR 1
 #	endif
 #else
+#	ifdef ASHES_WAYLAND
+#		undef ASHES_WAYLAND
+#	endif
 #	define ASHES_WAYLAND VK_USE_PLATFORM_WAYLAND_KHR
 #endif
 
@@ -71,6 +89,9 @@ See LICENSE file in root folder.
 #		define VK_USE_PLATFORM_WIN32_KHR 1
 #	endif
 #else
+#	ifdef ASHES_WIN32
+#		undef ASHES_WIN32
+#	endif
 #	define ASHES_WIN32 VK_USE_PLATFORM_WIN32_KHR
 #endif
 
@@ -79,6 +100,9 @@ See LICENSE file in root folder.
 #		define VK_USE_PLATFORM_XCB_KHR 1
 #	endif
 #else
+#	ifdef ASHES_XCB
+#		undef ASHES_XCB
+#	endif
 #	define ASHES_XCB VK_USE_PLATFORM_XCB_KHR
 #endif
 
@@ -87,6 +111,9 @@ See LICENSE file in root folder.
 #		define VK_USE_PLATFORM_XLIB_KHR 1
 #	endif
 #else
+#	ifdef ASHES_XLIB
+#		undef ASHES_XLIB
+#	endif
 #	define ASHES_XLIB VK_USE_PLATFORM_XLIB_KHR
 #endif
 
@@ -95,6 +122,9 @@ See LICENSE file in root folder.
 #		define VK_USE_PLATFORM_XLIB_XRANDR_EXT 1
 #	endif
 #else
+#	ifdef ASHES_XLIB_XRANDR
+#		undef ASHES_XLIB_XRANDR
+#	endif
 #	define ASHES_XLIB_XRANDR VK_USE_PLATFORM_XLIB_XRANDR_EXT
 #endif
 

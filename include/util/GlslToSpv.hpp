@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "Utils/UtilsPrerequisites.hpp"
+#include "util/UtilsPrerequisites.hpp"
 
 namespace utils
 {

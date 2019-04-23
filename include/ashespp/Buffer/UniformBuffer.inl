@@ -2,7 +2,7 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Core/Device.hpp"
+#include "ashespp/Core/Device.hpp"
 
 namespace ashes
 {

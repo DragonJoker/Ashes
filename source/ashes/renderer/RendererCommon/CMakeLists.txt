@@ -9,27 +9,21 @@ set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_SOURCE_DIR}/include
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.c
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.cc
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.cpp
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.inc
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.inc
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inc
 )
 
 add_library( ${PROJECT_NAME} STATIC
@@ -44,12 +38,12 @@ add_dependencies( ${PROJECT_NAME}
 	common
 )
 
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Helper "Helper" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Layer "Layer" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Linux "Linux" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Platform "Platform" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Util "Util" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Win32 "Win32" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Helper "Helper" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Layer "Layer" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Linux "Linux" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Platform "Platform" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Util "Util" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Win32 "Win32" )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Renderer" )

@@ -3,25 +3,25 @@
 #include "OpaqueRendering.hpp"
 #include "TransparentRendering.hpp"
 
-#include <AshesPP/Buffer/StagingBuffer.hpp>
-#include <AshesPP/Buffer/UniformBuffer.hpp>
-#include <AshesPP/Command/Queue.hpp>
-#include <AshesPP/Descriptor/DescriptorSet.hpp>
-#include <AshesPP/Descriptor/DescriptorSetLayout.hpp>
-#include <AshesPP/Descriptor/DescriptorSetPool.hpp>
-#include <AshesPP/Image/Image.hpp>
-#include <AshesPP/Image/ImageView.hpp>
-#include <AshesPP/Pipeline/PipelineLayout.hpp>
-#include <AshesPP/Pipeline/GraphicsPipeline.hpp>
-#include <AshesPP/Pipeline/VertexLayout.hpp>
-#include <AshesPP/RenderPass/FrameBuffer.hpp>
-#include <AshesPP/RenderPass/RenderPass.hpp>
-#include <AshesPP/RenderPass/RenderSubpass.hpp>
-#include <AshesPP/RenderPass/RenderSubpassState.hpp>
-#include <AshesPP/Sync/ImageMemoryBarrier.hpp>
+#include <ashespp/Buffer/StagingBuffer.hpp>
+#include <ashespp/Buffer/UniformBuffer.hpp>
+#include <ashespp/Command/Queue.hpp>
+#include <ashespp/Descriptor/DescriptorSet.hpp>
+#include <ashespp/Descriptor/DescriptorSetLayout.hpp>
+#include <ashespp/Descriptor/DescriptorSetPool.hpp>
+#include <ashespp/Image/Image.hpp>
+#include <ashespp/Image/ImageView.hpp>
+#include <ashespp/Pipeline/PipelineLayout.hpp>
+#include <ashespp/Pipeline/GraphicsPipeline.hpp>
+#include <ashespp/Pipeline/VertexLayout.hpp>
+#include <ashespp/RenderPass/FrameBuffer.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
+#include <ashespp/RenderPass/RenderSubpass.hpp>
+#include <ashespp/RenderPass/RenderSubpassState.hpp>
+#include <ashespp/Sync/ImageMemoryBarrier.hpp>
 
-#include <Utils/GlslToSpv.hpp>
-#include <Utils/Transform.hpp>
+#include <util/GlslToSpv.hpp>
+#include <util/Transform.hpp>
 
 #include <chrono>
 

@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___AshesPP_DescriptorSetPool_HPP___
 #pragma once
 
-#include "AshesPP/Descriptor/DescriptorPool.hpp"
+#include "ashespp/Descriptor/DescriptorPool.hpp"
 
 #include <vector>
 

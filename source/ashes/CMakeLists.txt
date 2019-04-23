@@ -8,26 +8,32 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${ASHES_SOURCE_DIR}/include
+	${ASHES_SOURCE_DIR}/include/ashes
+	${ASHES_SOURCE_DIR}/source
+	${ASHES_SOURCE_DIR}/source/ashes
 	${Vulkan_INCLUDE_DIRS}
 )
 
-file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
+file( GLOB ${PROJECT_NAME}_SRC_FILES
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.c
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
 )
 
-file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
+file( GLOB ${PROJECT_NAME}_HDR_FILES
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
+)
+
+set( ${PROJECT_NAME}_HDR_FILES
+	${${PROJECT_NAME}_HDR_FILES}
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/ashes.h
 )
 
 set( ASHES_WIN32 0 )
@@ -50,11 +56,11 @@ else ()
 endif ()
 
 set( ${PROJECT_NAME}_CONFIG_HEADER
-	${CMAKE_CURRENT_BINARY_DIR}/ash_platform.h
+	${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}/ash_platform.h
 )
 
 configure_file(
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/ash_platform.h.in
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/ash_platform.h.in
 	${${PROJECT_NAME}_CONFIG_HEADER}
 	NEWLINE_STYLE LF
 )
@@ -102,4 +108,10 @@ install(
 	LIBRARY DESTINATION lib/Debug
 	RUNTIME DESTINATION bin/Debug
 )
-target_install_headers( ${PROJECT_NAME} ${ASHES_SOURCE_DIR}/include/${PROJECT_NAME} )
+target_install_dir_headers( ${PROJECT_NAME}
+	${PROJECT_NAME}
+	${PROJECT_NAME}
+)
+
+add_subdirectory( renderer )
+set( ENABLED_RENDERERS ${ENABLED_RENDERERS} PARENT_SCOPE )

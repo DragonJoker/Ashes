@@ -2,10 +2,10 @@
 
 #include "Prerequisites.hpp"
 
-#include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Core/SwapChain.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Core/SwapChain.hpp>
 
-#include <common/Signal.hpp>
+#include <ashes/common/Signal.hpp>
 
 #include <wx/panel.h>
 

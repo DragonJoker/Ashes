@@ -4,8 +4,8 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils/Quaternion.hpp"
-#include "Utils/Angle.hpp"
+#include "util/Quaternion.hpp"
+#include "util/Angle.hpp"
 
 namespace utils
 {
@@ -127,4 +127,4 @@ namespace utils
 		, Vec4T< U > const & viewport );
 }
 
-#include "Utils/Transform.inl"
+#include "util/Transform.inl"

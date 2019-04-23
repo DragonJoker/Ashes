@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___AshesPP_UniformBuffer_HPP___
 #pragma once
 
-#include "AshesPP/Buffer/Buffer.hpp"
+#include "ashespp/Buffer/Buffer.hpp"
 
 namespace ashes
 {
@@ -349,6 +349,6 @@ namespace ashes
 	}
 }
 
-#include "AshesPP/Buffer/UniformBuffer.inl"
+#include "ashespp/Buffer/UniformBuffer.inl"
 
 #endif

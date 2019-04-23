@@ -2,11 +2,11 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Image/StagingTexture.hpp"
+#include "ashespp/Image/StagingTexture.hpp"
 
-#include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Image/Image.hpp"
-#include "AshesPP/Image/ImageView.hpp"
+#include "ashespp/Core/Device.hpp"
+#include "ashespp/Image/Image.hpp"
+#include "ashespp/Image/ImageView.hpp"
 
 #include <common/Exception.hpp>
 #include <common/Format.hpp>

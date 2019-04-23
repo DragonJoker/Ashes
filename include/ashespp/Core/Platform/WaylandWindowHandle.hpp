@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 
 #include <wayland-client-core.h>
 
-#include "AshesPP/Core/WindowHandle.hpp"
+#include "ashespp/Core/WindowHandle.hpp"
 #include <vulkan/vulkan_wayland.h>
 
 namespace ashes

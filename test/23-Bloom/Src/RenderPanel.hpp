@@ -2,14 +2,15 @@
 
 #include "Prerequisites.hpp"
 
-#include <AshesPP/Core/Surface.hpp>
-#include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Pipeline/GraphicsPipeline.hpp>
-#include <AshesPP/Pipeline/PipelineLayout.hpp>
-#include <AshesPP/Image/Sampler.hpp>
-#include <AshesPP/Core/SwapChain.hpp>
+#include <ashespp/Core/Surface.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Pipeline/GraphicsPipeline.hpp>
+#include <ashespp/Pipeline/PipelineLayout.hpp>
+#include <ashespp/Image/ImageView.hpp>
+#include <ashespp/Image/Sampler.hpp>
+#include <ashespp/Core/SwapChain.hpp>
 
-#include <common/Signal.hpp>
+#include <ashes/common/Signal.hpp>
 
 #include <ObjLoader.hpp>
 
@@ -93,10 +94,10 @@ namespace vkapp
 		VkClearColorValue m_clearColour;
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::ImagePtr m_texture;
-		ashes::ImageViewPtr m_view;
+		ashes::ImageView m_view;
 		ashes::SamplerPtr m_sampler;
 		ashes::ImagePtr m_renderTargetColour;
-		ashes::ImageViewPtr m_renderTargetColourView;
+		ashes::ImageView m_renderTargetColourView;
 		ashes::FrameBufferPtr m_frameBuffer;
 		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
 		ashes::UniformBufferPtr< utils::Mat4 > m_objectUbo;
@@ -136,7 +137,7 @@ namespace vkapp
 			ashes::FrameBufferPtr frameBuffer;
 			ashes::GraphicsPipelinePtr pipeline;
 			ashes::ImagePtr image;
-			ashes::ImageViewPtrArray views;
+			ashes::ImageViewArray views;
 			ashes::SemaphorePtr semaphore;
 		};
 		struct
@@ -146,7 +147,7 @@ namespace vkapp
 			std::array< Pass, 4u > blurY;
 			Pass combine;
 		} m_passes;
-		ashes::ImageViewPtr m_blurMipView;
+		ashes::ImageView m_blurMipView;
 		ashes::SamplerPtr m_mipSampler;
 		std::array< ashes::SamplerPtr, 4 > m_blurSamplers;
 		struct Configuration

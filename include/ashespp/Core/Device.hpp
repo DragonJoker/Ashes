@@ -6,16 +6,16 @@ See LICENSE file in root folder.
 #define ___AshesPP_Device_HPP___
 #pragma once
 
-#include "AshesPP/Command/CommandPool.hpp"
-#include "AshesPP/Command/Queue.hpp"
-#include "AshesPP/Core/DeviceCreateInfo.hpp"
-#include "AshesPP/Core/Surface.hpp"
-#include "AshesPP/Core/PhysicalDevice.hpp"
-#include "AshesPP/Image/ImageCreateInfo.hpp"
-#include "AshesPP/Image/SamplerCreateInfo.hpp"
-#include "AshesPP/Pipeline/ComputePipelineCreateInfo.hpp"
-#include "AshesPP/Pipeline/GraphicsPipelineCreateInfo.hpp"
-#include "AshesPP/RenderPass/RenderPassCreateInfo.hpp"
+#include "ashespp/Command/CommandPool.hpp"
+#include "ashespp/Command/Queue.hpp"
+#include "ashespp/Core/DeviceCreateInfo.hpp"
+#include "ashespp/Core/Surface.hpp"
+#include "ashespp/Core/PhysicalDevice.hpp"
+#include "ashespp/Image/ImageCreateInfo.hpp"
+#include "ashespp/Image/SamplerCreateInfo.hpp"
+#include "ashespp/Pipeline/ComputePipelineCreateInfo.hpp"
+#include "ashespp/Pipeline/GraphicsPipelineCreateInfo.hpp"
+#include "ashespp/RenderPass/RenderPassCreateInfo.hpp"
 
 #include <string>
 #include <sstream>
@@ -835,7 +835,7 @@ namespace ashes
 		}
 
 #define VK_LIB_DEVICE_FUNCTION( fun ) PFN_vk##fun vk##fun;
-#	include <common/VulkanFunctionsList.inl>
+#	include <ashes/common/VulkanFunctionsList.inl>
 
 	protected:
 		Instance const & m_instance;

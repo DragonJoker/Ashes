@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils/Vec2.hpp"
+#include "util/Vec2.hpp"
 
 namespace utils
 {
@@ -308,4 +308,4 @@ namespace utils
 	/**\}*/
 }
 
-#include "Utils/Vec3.inl"
+#include "util/Vec3.inl"

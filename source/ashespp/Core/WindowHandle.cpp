@@ -2,7 +2,7 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Core/WindowHandle.hpp"
+#include "ashespp/Core/WindowHandle.hpp"
 
 namespace ashes
 {

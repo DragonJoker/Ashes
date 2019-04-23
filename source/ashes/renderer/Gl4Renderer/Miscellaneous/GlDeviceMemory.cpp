@@ -10,8 +10,6 @@ See LICENSE file in root folder
 #include "Image/GlImage.hpp"
 #include "Miscellaneous/GlCallLogger.hpp"
 
-#include "sha512.hpp"
-
 #include "ashesgl4_api.hpp"
 
 namespace ashes::gl4
@@ -644,7 +642,6 @@ namespace ashes::gl4
 			//}
 
 			m_data.resize( allocateInfo.allocationSize );
-			m_sha = sha512( m_data );
 
 			auto context = get( m_device )->getContext();
 			glLogCall( context
@@ -740,13 +737,7 @@ namespace ashes::gl4
 	void DeviceMemory::upload( VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		auto sha = sha512( m_data );
-
-		if ( m_sha != sha )
-		{
-			m_sha = sha;
-			m_impl->upload( m_data, offset, size );
-		}
+		m_impl->upload( m_data, offset, size );
 	}
 
 	void DeviceMemory::download( VkDeviceSize offset
@@ -774,14 +765,7 @@ namespace ashes::gl4
 		, VkDeviceSize size )const
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
-		auto sha = sha512( m_data );
-
-		if ( m_sha != sha )
-		{
-			m_sha = sha;
-			m_impl->upload( m_data, offset, size );
-		}
-
+		m_impl->upload( m_data, offset, size );
 		return VK_SUCCESS;
 	}
 
@@ -796,13 +780,7 @@ namespace ashes::gl4
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		m_mapped = false;
-		auto sha = sha512( m_data );
-
-		if ( m_sha != sha )
-		{
-			m_sha = sha;
-			m_impl->upload( m_data, m_mappedOffset, m_mappedSize );
-		}
+		m_impl->upload( m_data, m_mappedOffset, m_mappedSize );
 	}
 
 	//************************************************************************************************

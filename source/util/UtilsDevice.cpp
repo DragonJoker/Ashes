@@ -2,16 +2,16 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "Utils/UtilsDevice.hpp"
+#include "util/UtilsDevice.hpp"
 
-#include <AshesPP/Buffer/Buffer.hpp>
-#include <AshesPP/Buffer/UniformBuffer.hpp>
-#include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Core/DeviceCreateInfo.hpp>
-#include <AshesPP/Core/Instance.hpp>
-#include <AshesPP/Image/Image.hpp>
+#include <ashespp/Buffer/Buffer.hpp>
+#include <ashespp/Buffer/UniformBuffer.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Core/DeviceCreateInfo.hpp>
+#include <ashespp/Core/Instance.hpp>
+#include <ashespp/Image/Image.hpp>
 
-#include <common/Exception.hpp>
+#include <ashes/common/Exception.hpp>
 
 namespace utils
 {

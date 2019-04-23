@@ -2,7 +2,7 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Core/RendererList.hpp"
+#include "ashespp/Core/RendererList.hpp"
 
 #include <common/FileUtils.hpp>
 

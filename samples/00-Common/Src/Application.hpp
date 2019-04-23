@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Prerequisites.hpp"
-#include <AshesPP/Core/RendererList.hpp>
+#include <ashespp/Core/RendererList.hpp>
 
 #include <wx/app.h>
 

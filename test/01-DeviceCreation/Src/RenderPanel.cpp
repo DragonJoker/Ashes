@@ -3,11 +3,12 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
-#include <AshesPP/Core/Surface.hpp>
-#include <AshesPP/Core/Device.hpp>
-#include <common/Exception.hpp>
+#include <ashespp/Core/Surface.hpp>
+#include <ashespp/Core/Device.hpp>
 
-#include <Utils/Transform.hpp>
+#include <ashes/common/Exception.hpp>
+
+#include <util/Transform.hpp>
 
 #include <chrono>
 

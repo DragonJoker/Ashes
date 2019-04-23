@@ -2,20 +2,20 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Command/CommandBuffer.hpp"
+#include "ashespp/Command/CommandBuffer.hpp"
 
-#include "AshesPP/Buffer/VertexBuffer.hpp"
-#include "AshesPP/Buffer/UniformBuffer.hpp"
-#include "AshesPP/Descriptor/DescriptorSet.hpp"
-#include "AshesPP/Image/Image.hpp"
-#include "AshesPP/Image/ImageView.hpp"
-#include "AshesPP/Miscellaneous/QueryPool.hpp"
-#include "AshesPP/Pipeline/ComputePipeline.hpp"
-#include "AshesPP/Pipeline/GraphicsPipeline.hpp"
-#include "AshesPP/Pipeline/PipelineLayout.hpp"
-#include "AshesPP/RenderPass/FrameBuffer.hpp"
-#include "AshesPP/RenderPass/RenderPass.hpp"
-#include "AshesPP/Sync/Event.hpp"
+#include "ashespp/Buffer/VertexBuffer.hpp"
+#include "ashespp/Buffer/UniformBuffer.hpp"
+#include "ashespp/Descriptor/DescriptorSet.hpp"
+#include "ashespp/Image/Image.hpp"
+#include "ashespp/Image/ImageView.hpp"
+#include "ashespp/Miscellaneous/QueryPool.hpp"
+#include "ashespp/Pipeline/ComputePipeline.hpp"
+#include "ashespp/Pipeline/GraphicsPipeline.hpp"
+#include "ashespp/Pipeline/PipelineLayout.hpp"
+#include "ashespp/RenderPass/FrameBuffer.hpp"
+#include "ashespp/RenderPass/RenderPass.hpp"
+#include "ashespp/Sync/Event.hpp"
 
 #include <common/Format.hpp>
 

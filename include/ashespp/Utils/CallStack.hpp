@@ -4,7 +4,7 @@ See LICENSE file in root folder
 #ifndef ___AshesPP_Callstack_HPP___
 #define ___AshesPP_Callstack_HPP___
 
-#include "AshesPP/AshesPPPrerequisites.hpp"
+#include "ashespp/AshesPPPrerequisites.hpp"
 
 namespace ashes
 {

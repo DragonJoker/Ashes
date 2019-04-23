@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Ashes_SwapChainCreateInfo_HPP___
 #pragma once
 
-#include "renderer/RendererCommon/AshesRendererPrerequisites.hpp"
+#include "ashespp/AshesPPPrerequisites.hpp"
 
 namespace ashes
 {

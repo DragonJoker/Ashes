@@ -2,11 +2,11 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "Utils/UtilsInstance.hpp"
+#include "util/UtilsInstance.hpp"
 
-#include "Utils/UtilsDebug.hpp"
+#include "util/UtilsDebug.hpp"
 
-#include <common/Exception.hpp>
+#include <ashes/common/Exception.hpp>
 
 #if !defined( NDEBUG )
 #	define LOAD_VALIDATION_LAYERS 1

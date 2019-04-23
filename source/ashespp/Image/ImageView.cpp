@@ -1,7 +1,7 @@
-#include "AshesPP/Image/ImageView.hpp"
+#include "ashespp/Image/ImageView.hpp"
 
-#include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Image/Image.hpp"
+#include "ashespp/Core/Device.hpp"
+#include "ashespp/Image/Image.hpp"
 
 namespace ashes
 {

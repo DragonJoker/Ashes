@@ -6,10 +6,10 @@ See LICENSE file in root folder.
 #define ___AshesPP_Buffer_HPP___
 #pragma once
 
-#include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Miscellaneous/DeviceMemory.hpp"
+#include "ashespp/Core/Device.hpp"
+#include "ashespp/Miscellaneous/DeviceMemory.hpp"
 
-#include <common/Exception.hpp>
+#include <ashes/common/Exception.hpp>
 
 namespace ashes
 {
@@ -539,6 +539,6 @@ namespace ashes
 	}
 }
 
-#include "AshesPP/Buffer/Buffer.inl"
+#include "ashespp/Buffer/Buffer.inl"
 
 #endif

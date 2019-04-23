@@ -2,11 +2,11 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Core/Instance.hpp"
+#include "ashespp/Core/Instance.hpp"
 
-#include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Core/Surface.hpp"
-#include "AshesPP/Utils/CallStack.hpp"
+#include "ashespp/Core/Device.hpp"
+#include "ashespp/Core/Surface.hpp"
+#include "ashespp/Utils/CallStack.hpp"
 
 #include <cmath>
 

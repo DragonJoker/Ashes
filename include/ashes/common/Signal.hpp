@@ -6,6 +6,7 @@ See LICENSE file in root folder
 #define ___Ashes_common_Signal_HPP___
 #pragma once
 
+#include <cassert>
 #include <functional>
 #include <set>
 #include <map>

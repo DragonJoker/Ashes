@@ -2,10 +2,10 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Command/CommandBuffer.hpp"
-#include "AshesPP/Command/CommandPool.hpp"
-#include "AshesPP/Command/Queue.hpp"
-#include "AshesPP/Sync/Fence.hpp"
+#include "ashespp/Command/CommandBuffer.hpp"
+#include "ashespp/Command/CommandPool.hpp"
+#include "ashespp/Command/Queue.hpp"
+#include "ashespp/Sync/Fence.hpp"
 
 namespace ashes
 {

@@ -2,12 +2,12 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Descriptor/DescriptorSetPool.hpp"
+#include "ashespp/Descriptor/DescriptorSetPool.hpp"
 
-#include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Descriptor/DescriptorPool.hpp"
-#include "AshesPP/Descriptor/DescriptorSet.hpp"
-#include "AshesPP/Descriptor/DescriptorSetLayout.hpp"
+#include "ashespp/Core/Device.hpp"
+#include "ashespp/Descriptor/DescriptorPool.hpp"
+#include "ashespp/Descriptor/DescriptorSet.hpp"
+#include "ashespp/Descriptor/DescriptorSetLayout.hpp"
 
 namespace ashes
 {

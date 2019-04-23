@@ -11,9 +11,17 @@ file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.c
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
@@ -41,8 +49,7 @@ endif ()
 target_link_libraries( ${PROJECT_NAME}
 	common
 	ashes
-	RendererCommon
-	AshesPP
+	ashespp
 	glslang
 	OGLCompiler
 	OSDependent

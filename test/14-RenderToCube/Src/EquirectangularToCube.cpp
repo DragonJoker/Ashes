@@ -1,21 +1,21 @@
 #include "EquirectangularToCube.hpp"
 
-#include <AshesPP/Buffer/StagingBuffer.hpp>
-#include <AshesPP/Buffer/UniformBuffer.hpp>
-#include <AshesPP/Buffer/VertexBuffer.hpp>
-#include <AshesPP/Command/Queue.hpp>
-#include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Descriptor/DescriptorSet.hpp>
-#include <AshesPP/Descriptor/DescriptorSetLayout.hpp>
-#include <AshesPP/Descriptor/DescriptorSetPool.hpp>
-#include <AshesPP/Image/Image.hpp>
-#include <AshesPP/Image/ImageView.hpp>
-#include <AshesPP/RenderPass/FrameBuffer.hpp>
-#include <AshesPP/RenderPass/RenderPassCreateInfo.hpp>
-#include <AshesPP/RenderPass/RenderPass.hpp>
-#include <Utils/GlslToSpv.hpp>
+#include <ashespp/Buffer/StagingBuffer.hpp>
+#include <ashespp/Buffer/UniformBuffer.hpp>
+#include <ashespp/Buffer/VertexBuffer.hpp>
+#include <ashespp/Command/Queue.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Descriptor/DescriptorSet.hpp>
+#include <ashespp/Descriptor/DescriptorSetLayout.hpp>
+#include <ashespp/Descriptor/DescriptorSetPool.hpp>
+#include <ashespp/Image/Image.hpp>
+#include <ashespp/Image/ImageView.hpp>
+#include <ashespp/RenderPass/FrameBuffer.hpp>
+#include <ashespp/RenderPass/RenderPassCreateInfo.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
+#include <util/GlslToSpv.hpp>
 
-#include <Utils/Transform.hpp>
+#include <util/Transform.hpp>
 
 #include <FileUtils.hpp>
 

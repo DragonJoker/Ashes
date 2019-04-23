@@ -1,6 +1,6 @@
 #include "FileUtils.hpp"
 
-#include <Utils/GlslToSpv.hpp>
+#include <util/GlslToSpv.hpp>
 
 #include <cassert>
 

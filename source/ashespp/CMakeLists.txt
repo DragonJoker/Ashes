@@ -1,4 +1,4 @@
-project( AshesPP )
+project( ashespp )
 
 set( ${PROJECT_NAME}_DESCRIPTION "${PROJECT_NAME} library" )
 set( ${PROJECT_NAME}_VERSION_MAJOR 1 )
@@ -9,6 +9,9 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${ASHES_SOURCE_DIR}/include
 	${ASHES_BINARY_DIR}/include
+	${ASHES_SOURCE_DIR}/include/ashes
+	${ASHES_BINARY_DIR}/include/ashes
+	${ASHES_SOURCE_DIR}/source/ashes
 	${Vulkan_INCLUDE_DIRS}
 )
 
@@ -16,6 +19,9 @@ file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.c
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
@@ -24,6 +30,11 @@ file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
 )
 
 add_library( ${PROJECT_NAME} STATIC
@@ -34,7 +45,6 @@ add_library( ${PROJECT_NAME} STATIC
 add_dependencies( ${PROJECT_NAME}
 	common
 	ashes
-	RendererCommon
 )
 
 add_target_precompiled_header( ${PROJECT_NAME}
@@ -52,7 +62,7 @@ parse_subdir_files( ${ASHES_SOURCE_DIR} Enum "Enum" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Image "Image" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Miscellaneous "Miscellaneous" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Pipeline "Pipeline" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Core/Platform "Core\\\\Platform" )
+parse_subdir_files( ${ASHES_SOURCE_DIR} Core/Platform "Core\\\\\\\\Platform" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} RenderPass "RenderPass" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Shader "Shader" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Sync "Sync" )

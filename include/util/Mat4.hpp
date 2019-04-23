@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils/Vec4.hpp"
+#include "util/Vec4.hpp"
 
 #include <array>
 
@@ -235,4 +235,4 @@ namespace utils
 	/**\}*/
 }
 
-#include "Utils/Mat4.inl"
+#include "util/Mat4.inl"

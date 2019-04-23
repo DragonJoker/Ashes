@@ -6,8 +6,8 @@ See LICENSE file in root folder.
 #define ___AshesPP_Texture_HPP___
 #pragma once
 
-#include "AshesPP/Image/ImageCreateInfo.hpp"
-#include "AshesPP/Miscellaneous/DeviceMemory.hpp"
+#include "ashespp/Image/ImageCreateInfo.hpp"
+#include "ashespp/Miscellaneous/DeviceMemory.hpp"
 
 namespace ashes
 {

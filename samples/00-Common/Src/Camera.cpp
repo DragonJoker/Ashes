@@ -1,7 +1,7 @@
 #include "Camera.hpp"
 
-#include <Utils/Transform.hpp>
-#include <Utils/Quaternion.hpp>
+#include <util/Transform.hpp>
+#include <util/Quaternion.hpp>
 
 namespace common
 {

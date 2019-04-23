@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 
 #include <GL/glx.h>
 
-#include "AshesPP/Core/WindowHandle.hpp"
+#include "ashespp/Core/WindowHandle.hpp"
 #include <vulkan/vulkan_xlib.h>
 
 namespace ashes

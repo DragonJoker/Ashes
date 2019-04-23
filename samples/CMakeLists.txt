@@ -29,7 +29,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 	endif()
 
 	include_directories(
-		${CMAKE_BINARY_DIR}/source
+		${CMAKE_BINARY_DIR}/include
 		${CMAKE_SOURCE_DIR}/include
 		${wxWidgets_INCLUDE_DIRS}
 		${GTK2_INCLUDE_DIRS}
@@ -43,7 +43,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 		${SPIRV_LIBRARIES}
 		common
 		ashes
-		AshesPP
+		ashespp
 		util
 	)
 

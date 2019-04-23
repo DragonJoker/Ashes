@@ -32,7 +32,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		${CMAKE_SOURCE_DIR}/util/Src
 		${CMAKE_BINARY_DIR}/util/Src
 		${CMAKE_SOURCE_DIR}/include
-		${CMAKE_BINARY_DIR}/source
+		${CMAKE_BINARY_DIR}/include
 		${CMAKE_SOURCE_DIR}/external/gli
 		${CMAKE_SOURCE_DIR}/external/glm
 		${CMAKE_SOURCE_DIR}/external/imgui
@@ -42,10 +42,9 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 
 	set( BinLibraries
 		${BinLibraries}
-		AshesCommon
+		common
 		ashes
-		AshesRenderer
-		AshesPP
+		ashespp
 		util
 	)
 
@@ -77,6 +76,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 	
 	if ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Vulkan/CMakeLists.txt )
 		set( Vulkan_FOUND ON )
+		set( Vulkan_INCLUDE_DIR ${Vulkan_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include )
 		set( Vulkan_LIBRARY ashes ${ENABLED_RENDERERS} )
 		add_subdirectory( Vulkan )
 		set(EXAMPLES

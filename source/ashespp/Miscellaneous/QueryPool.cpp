@@ -1,6 +1,6 @@
-#include "AshesPP/Miscellaneous/QueryPool.hpp"
+#include "ashespp/Miscellaneous/QueryPool.hpp"
 
-#include "AshesPP/Core/Device.hpp"
+#include "ashespp/Core/Device.hpp"
 
 namespace ashes
 {

@@ -1,8 +1,8 @@
-#include "AshesPP/Buffer/BufferView.hpp"
+#include "ashespp/Buffer/BufferView.hpp"
 
-#include "AshesPP/Buffer/Buffer.hpp"
-#include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Core/Instance.hpp"
+#include "ashespp/Buffer/Buffer.hpp"
+#include "ashespp/Core/Device.hpp"
+#include "ashespp/Core/Instance.hpp"
 
 #include <common/Exception.hpp>
 

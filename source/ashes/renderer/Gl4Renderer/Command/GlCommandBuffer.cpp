@@ -309,7 +309,12 @@ namespace ashes::gl4
 			++binding;
 		}
 
-		m_state.boundVao = nullptr;
+		if ( m_state.boundVao )
+		{
+			m_state.boundVao = nullptr;
+			m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
+				, makeCmd< OpType::eBindVextexArray >( nullptr ) );
+		}
 	}
 
 	void CommandBuffer::bindIndexBuffer( VkBuffer buffer
@@ -318,7 +323,13 @@ namespace ashes::gl4
 	{
 		m_state.boundIbo = BufferObjectBinding{ get( buffer )->getInternal(), offset, buffer };
 		m_state.indexType = indexType;
-		m_state.boundVao = nullptr;
+
+		if ( m_state.boundVao )
+		{
+			m_state.boundVao = nullptr;
+			m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
+				, makeCmd< OpType::eBindVextexArray >( nullptr ) );
+		}
 	}
 
 	void CommandBuffer::bindDescriptorSets( VkPipelineBindPoint bindingPoint
@@ -432,12 +443,13 @@ namespace ashes::gl4
 		, uint32_t drawCount
 		, uint32_t stride )const
 	{
+		doProcessMappedBoundVaoBuffersIn();
+
 		if ( !m_state.boundVao )
 		{
 			doBindVao();
 		}
 
-		doProcessMappedBoundVaoBuffersIn();
 		buildDrawIndirectCommand( buffer
 			, offset
 			, drawCount

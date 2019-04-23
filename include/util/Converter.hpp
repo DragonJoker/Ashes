@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <AshesPP/Enum/Format.hpp>
+#include <ashespp/Enum/Format.hpp>
 
 namespace utils
 {

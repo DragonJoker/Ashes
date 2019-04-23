@@ -6,9 +6,7 @@ See LICENSE file in root folder.
 #define ___Ashes_PipelineVertexInputStateCreateInfo_HPP___
 #pragma once
 
-#include "AshesPP/AshesPPPrerequisites.hpp"
-
-#include <renderer/RendererCommon/Helper/VertexInputState.hpp>
+#include "ashespp/AshesPPPrerequisites.hpp"
 
 namespace ashes
 {

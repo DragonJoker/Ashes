@@ -2,9 +2,9 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Image/Sampler.hpp"
+#include "ashespp/Image/Sampler.hpp"
 
-#include "AshesPP/Core/Device.hpp"
+#include "ashespp/Core/Device.hpp"
 
 namespace ashes
 {

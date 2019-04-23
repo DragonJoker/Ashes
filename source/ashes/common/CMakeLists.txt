@@ -10,26 +10,27 @@ set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${ASHES_SOURCE_DIR}/include
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
+	${ASHES_SOURCE_DIR}/include/ashes
+	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
+	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.c
+	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.cc
+	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
+	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}/*.inc
+	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.inc
 )
 
 add_library( ${PROJECT_NAME} STATIC
@@ -39,9 +40,9 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 )
 
-parse_subdir_files( ${ASHES_SOURCE_DIR} Platform "Platform" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Win32 "Win32" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Linux "Linux" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Platform "Platform" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Win32 "Win32" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Linux "Linux" )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Core" )

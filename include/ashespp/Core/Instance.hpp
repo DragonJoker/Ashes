@@ -6,13 +6,13 @@ See LICENSE file in root folder.
 #define ___AshesPP_Instance_HPP___
 #pragma once
 
-#include "AshesPP/Core/DeviceCreateInfo.hpp"
-#include "AshesPP/Core/InstanceCreateInfo.hpp"
-#include "AshesPP/Core/RendererList.hpp"
-#include "AshesPP/Core/PhysicalDevice.hpp"
-#include "AshesPP/Miscellaneous/RendererFeatures.hpp"
+#include "ashespp/Core/DeviceCreateInfo.hpp"
+#include "ashespp/Core/InstanceCreateInfo.hpp"
+#include "ashespp/Core/RendererList.hpp"
+#include "ashespp/Core/PhysicalDevice.hpp"
+#include "ashespp/Miscellaneous/RendererFeatures.hpp"
 
-#include "AshesPP/Core/WindowHandle.hpp"
+#include "ashespp/Core/WindowHandle.hpp"
 
 namespace ashes
 {
@@ -235,7 +235,7 @@ namespace ashes
 
 #define VK_LIB_GLOBAL_FUNCTION( fun ) PFN_vk##fun vk##fun;
 #define VK_LIB_INSTANCE_FUNCTION( fun ) PFN_vk##fun vk##fun;
-#	include <common/VulkanFunctionsList.inl>
+#	include <ashes/common/VulkanFunctionsList.inl>
 		/**
 		*\~english
 		*name

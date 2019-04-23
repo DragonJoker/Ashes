@@ -4,8 +4,8 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils/Range.hpp"
-#include "Utils/Logarithm.hpp"
+#include "util/Range.hpp"
+#include "util/Logarithm.hpp"
 
 #include <math.h>
 #include <limits>

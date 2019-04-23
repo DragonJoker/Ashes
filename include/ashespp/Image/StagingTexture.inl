@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Command/CommandBuffer.hpp"
-#include "AshesPP/Sync/Fence.hpp"
+#include "ashespp/Command/CommandBuffer.hpp"
+#include "ashespp/Sync/Fence.hpp"
 
 namespace ashes
 {

@@ -2,11 +2,11 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/RenderPass/RenderPass.hpp"
+#include "ashespp/RenderPass/RenderPass.hpp"
 
-#include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Image/ImageView.hpp"
-#include "AshesPP/RenderPass/FrameBuffer.hpp"
+#include "ashespp/Core/Device.hpp"
+#include "ashespp/Image/ImageView.hpp"
+#include "ashespp/RenderPass/FrameBuffer.hpp"
 
 namespace ashes
 {

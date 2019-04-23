@@ -2,19 +2,19 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "Utils/UtilsSwapChain.hpp"
+#include "util/UtilsSwapChain.hpp"
 
-#include <AshesPP/Command/Queue.hpp>
-#include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Core/SwapChain.hpp>
-#include <AshesPP/Image/Image.hpp>
-#include <AshesPP/Image/ImageView.hpp>
-#include <AshesPP/Image/ImageViewCreateInfo.hpp>
-#include <AshesPP/RenderPass/FrameBuffer.hpp>
-#include <AshesPP/RenderPass/RenderPass.hpp>
+#include <ashespp/Command/Queue.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Core/SwapChain.hpp>
+#include <ashespp/Image/Image.hpp>
+#include <ashespp/Image/ImageView.hpp>
+#include <ashespp/Image/ImageViewCreateInfo.hpp>
+#include <ashespp/RenderPass/FrameBuffer.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
 
-#include <common/Exception.hpp>
-#include <common/Format.hpp>
+#include <ashes/common/Exception.hpp>
+#include <ashes/common/Format.hpp>
 
 namespace utils
 {

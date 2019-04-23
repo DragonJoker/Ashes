@@ -2,10 +2,10 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Descriptor/DescriptorSetLayout.hpp"
+#include "ashespp/Descriptor/DescriptorSetLayout.hpp"
 
-#include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Descriptor/DescriptorSetPool.hpp"
+#include "ashespp/Core/Device.hpp"
+#include "ashespp/Descriptor/DescriptorSetPool.hpp"
 
 #include <algorithm>
 

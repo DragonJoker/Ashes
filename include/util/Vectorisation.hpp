@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Utils/Vec4.hpp"
+#include "util/Vec4.hpp"
 
 namespace utils
 {
@@ -44,4 +44,4 @@ namespace utils
 	inline V vectorCall( R( *func )( T const & ), V const & vector );
 }
 
-#include "Utils/Vectorisation.inl"
+#include "util/Vectorisation.inl"

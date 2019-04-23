@@ -4,9 +4,9 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <AshesPP/Command/CommandBuffer.hpp>
-#include <AshesPP/Sync/Fence.hpp>
-#include <AshesPP/Sync/Semaphore.hpp>
+#include <ashespp/Command/CommandBuffer.hpp>
+#include <ashespp/Sync/Fence.hpp>
+#include <ashespp/Sync/Semaphore.hpp>
 
 namespace utils
 {

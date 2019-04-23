@@ -6,8 +6,8 @@ See LICENSE file in root folder.
 #define ___AshesPP_PipelineLayout_HPP___
 #pragma once
 
-#include "AshesPP/Pipeline/GraphicsPipeline.hpp"
-#include "AshesPP/Pipeline/ComputePipeline.hpp"
+#include "ashespp/Pipeline/GraphicsPipeline.hpp"
+#include "ashespp/Pipeline/ComputePipeline.hpp"
 
 namespace ashes
 {

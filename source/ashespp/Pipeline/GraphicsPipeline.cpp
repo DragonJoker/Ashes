@@ -2,9 +2,9 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Pipeline/GraphicsPipeline.hpp"
+#include "ashespp/Pipeline/GraphicsPipeline.hpp"
 
-#include "AshesPP/Core/Device.hpp"
+#include "ashespp/Core/Device.hpp"
 
 #include <common/Exception.hpp>
 

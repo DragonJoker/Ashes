@@ -2,7 +2,8 @@
 
 #include "Prerequisites.hpp"
 
-#include <AshesPP/Core/Instance.hpp>
+#include <ashespp/Core/Instance.hpp>
+#include <ashespp/Core/RendererList.hpp>
 
 #include <wx/frame.h>
 
@@ -32,7 +33,7 @@ namespace common
 		wxString m_name;
 		wxString m_rendererName;
 		utils::InstancePtr m_instance;
-		utils::InstanceFactory & m_renderers;
+		ashes::RendererList const & m_renderers;
 		RenderPanel * m_panel{ nullptr };
 	};
 }

@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-#include <Utils/StringUtils.hpp>
+#include <util/StringUtils.hpp>
 
 namespace common
 {

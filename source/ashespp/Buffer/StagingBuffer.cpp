@@ -2,13 +2,13 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Buffer/StagingBuffer.hpp"
+#include "ashespp/Buffer/StagingBuffer.hpp"
 
-#include "AshesPP/Buffer/Buffer.hpp"
-#include "AshesPP/Command/CommandBuffer.hpp"
-#include "AshesPP/Core/Device.hpp"
-#include "AshesPP/Image/Image.hpp"
-#include "AshesPP/Image/ImageView.hpp"
+#include "ashespp/Buffer/Buffer.hpp"
+#include "ashespp/Command/CommandBuffer.hpp"
+#include "ashespp/Core/Device.hpp"
+#include "ashespp/Image/Image.hpp"
+#include "ashespp/Image/ImageView.hpp"
 
 #include <common/Exception.hpp>
 

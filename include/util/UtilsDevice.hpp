@@ -6,11 +6,11 @@ See LICENSE file in root folder.
 
 #include "UtilsPrerequisites.hpp"
 
-#include <AshesPP/Buffer/Buffer.hpp>
-#include <AshesPP/Buffer/UniformBuffer.hpp>
-#include <AshesPP/Buffer/VertexBuffer.hpp>
-#include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Image/ImageCreateInfo.hpp>
+#include <ashespp/Buffer/Buffer.hpp>
+#include <ashespp/Buffer/UniformBuffer.hpp>
+#include <ashespp/Buffer/VertexBuffer.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Image/ImageCreateInfo.hpp>
 
 namespace utils
 {

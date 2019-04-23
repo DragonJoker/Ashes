@@ -29,7 +29,7 @@ namespace common
 			, wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxRESIZE_BORDER | wxMAXIMIZE_BOX }
 		, m_name{ name }
 		, m_rendererName{ rendererName }
-		, m_renderers{ factory }
+		, m_renderers{ renderers }
 		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 	{
 	}
@@ -46,13 +46,13 @@ namespace common
 
 		try
 		{
-			VkApplicationInfo config
+			ashes::ApplicationInfo config
 			{
 				m_name.ToStdString(),
 				ashes::makeVersion( 1, 0, 0 ),
 				"Ashes",
 				ashes::makeVersion( 1, 0, 0 ),
-				ashes::API_VERSION_1_0,
+				VK_API_VERSION_1_0,
 			};
 			m_instance = std::make_unique< utils::Instance >( m_renderers
 				, m_rendererName.ToStdString()

@@ -6,9 +6,7 @@ See LICENSE file in root folder.
 #define ___Ashes_PipelineRasterizationStateCreateInfo_HPP___
 #pragma once
 
-#include "AshesPP/AshesPPPrerequisites.hpp"
-
-#include <renderer/RendererCommon/Helper/RasterisationState.hpp>
+#include "ashespp/AshesPPPrerequisites.hpp"
 
 namespace ashes
 {

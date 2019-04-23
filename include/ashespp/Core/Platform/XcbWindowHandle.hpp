@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 #include <xcbint.h>
 #include <xcb/xproto.h>
 
-#include "AshesPP/Core/WindowHandle.hpp"
+#include "ashespp/Core/WindowHandle.hpp"
 #include <vulkan/vulkan_xcb.h>
 
 namespace ashes

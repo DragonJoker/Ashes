@@ -2,9 +2,9 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "AshesPP/Core/PhysicalDevice.hpp"
+#include "ashespp/Core/PhysicalDevice.hpp"
 
-#include "AshesPP/Core/Instance.hpp"
+#include "ashespp/Core/Instance.hpp"
 
 #include <algorithm>
 

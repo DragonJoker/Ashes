@@ -2,15 +2,15 @@
 
 #include "EquirectangularToCube.hpp"
 
-#include <AshesPP/Core/Surface.hpp>
-#include <AshesPP/Core/Device.hpp>
-#include <AshesPP/Pipeline/GraphicsPipeline.hpp>
-#include <AshesPP/Pipeline/PipelineLayout.hpp>
-#include <AshesPP/Image/ImageView.hpp>
-#include <AshesPP/Image/Sampler.hpp>
-#include <AshesPP/Core/SwapChain.hpp>
+#include <ashespp/Core/Surface.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Pipeline/GraphicsPipeline.hpp>
+#include <ashespp/Pipeline/PipelineLayout.hpp>
+#include <ashespp/Image/ImageView.hpp>
+#include <ashespp/Image/Sampler.hpp>
+#include <ashespp/Core/SwapChain.hpp>
 
-#include <common/Signal.hpp>
+#include <ashes/common/Signal.hpp>
 
 #include <ObjLoader.hpp>
 

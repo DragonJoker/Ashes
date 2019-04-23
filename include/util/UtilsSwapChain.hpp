@@ -6,9 +6,9 @@ See LICENSE file in root folder.
 
 #include "RenderingResources.hpp"
 
-#include <AshesPP/Core/SwapChain.hpp>
-#include <AshesPP/Core/SwapChainCreateInfo.hpp>
-#include <common/Signal.hpp>
+#include <ashespp/Core/SwapChain.hpp>
+#include <ashespp/Core/SwapChainCreateInfo.hpp>
+#include <ashes/common/Signal.hpp>
 
 namespace utils
 {

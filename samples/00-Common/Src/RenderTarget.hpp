@@ -2,7 +2,7 @@
 
 #include "Scene.hpp"
 
-#include <AshesPP/Core/Device.hpp>
+#include <ashespp/Core/Device.hpp>
 
 namespace common
 {

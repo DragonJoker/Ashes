@@ -2,11 +2,11 @@
 This file belongs to Ashes.
 See LICENSE file in root folder
 */
-#include "Utils/UtilsPrerequisites.hpp"
+#include "util/UtilsPrerequisites.hpp"
 
-#include "Utils/Vec2.hpp"
-#include "Utils/Vec3.hpp"
-#include "Utils/Vec4.hpp"
+#include "util/Vec2.hpp"
+#include "util/Vec3.hpp"
+#include "util/Vec4.hpp"
 
 #include <cassert>
 

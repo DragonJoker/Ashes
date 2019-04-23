@@ -10,36 +10,25 @@ set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${SPIRV_CROSS_DIR}
-	${ASHES_SOURCE_DIR}/include
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.c
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.cc
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.cpp
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.c
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.cc
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.cpp
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_NVS_FILES
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.natvis
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.natvis
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.natvis
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/*.inc
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/*.inc
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inc
 )
 
 set( ${PROJECT_NAME}_USE_SPIRV_CROSS 0 )
@@ -89,9 +78,9 @@ set_target_properties( ${PROJECT_NAME}
 )
 
 add_target_precompiled_header_ex( ${PROJECT_NAME}
-	renderer
-	${ASHES_SOURCE_DIR}/include/renderer/${PROJECT_NAME}/${PROJECT_NAME}Pch.hpp
-	${ASHES_SOURCE_DIR}/source/renderer/${PROJECT_NAME}/${PROJECT_NAME}Pch.cpp
+	ashes/renderer
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/${PROJECT_NAME}Pch.hpp
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/${PROJECT_NAME}Pch.cpp
 	"${CMAKE_CXX_FLAGS}"
 	${${PROJECT_NAME}_SRC_FILES}
 )
@@ -113,19 +102,19 @@ add_dependencies( ${PROJECT_NAME}
 	RendererCommon
 )
 
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Buffer "Buffer" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Command "Command" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Command/Commands "Command\\\\Commands" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Core "Core" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Descriptor "Descriptor" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Enum "Enum" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Image "Image" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Miscellaneous "Miscellaneous" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Pipeline "Pipeline" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer RenderPass "RenderPass" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Shader "Shader" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer Sync "Sync" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} renderer vulkan "vulkan" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Buffer "Buffer" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Command "Command" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Command/Commands "Command\\\\Commands" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Core "Core" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Descriptor "Descriptor" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Enum "Enum" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Image "Image" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Miscellaneous "Miscellaneous" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Pipeline "Pipeline" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer RenderPass "RenderPass" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Shader "Shader" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Sync "Sync" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer vulkan "vulkan" )
 
 source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
 source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )

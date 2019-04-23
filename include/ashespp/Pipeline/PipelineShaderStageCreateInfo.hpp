@@ -6,10 +6,9 @@ See LICENSE file in root folder.
 #define ___Ashes_PipelineShaderStageCreateInfo_HPP___
 #pragma once
 
-#include "AshesPP/AshesPPPrerequisites.hpp"
+#include "ashespp/AshesPPPrerequisites.hpp"
 
-#include "AshesPP/Shader/ShaderModule.hpp"
-#include <renderer/RendererCommon/Helper/ShaderStageState.hpp>
+#include "ashespp/Shader/ShaderModule.hpp"
 
 namespace ashes
 {

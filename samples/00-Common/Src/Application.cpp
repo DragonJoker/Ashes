@@ -3,7 +3,7 @@
 #include "FileUtils.hpp"
 #include "MainFrame.hpp"
 
-#include <Utils/GlslToSpv.hpp>
+#include <util/GlslToSpv.hpp>
 
 #include <wx/cmdline.h>
 

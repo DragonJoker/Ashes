@@ -1,15 +1,15 @@
 #pragma once
 
-#include <AshesPP/Core/Surface.hpp>
-#include <AshesPP/Core/Instance.hpp>
-#include <AshesPP/Image/Image.hpp>
-#include <AshesPP/Image/ImageView.hpp>
+#include <ashespp/Core/Surface.hpp>
+#include <ashespp/Core/Instance.hpp>
+#include <ashespp/Image/Image.hpp>
+#include <ashespp/Image/ImageView.hpp>
 
-#include <Utils/Mat4.hpp>
-#include <Utils/UtilsDebug.hpp>
-#include <Utils/UtilsDevice.hpp>
-#include <Utils/UtilsInstance.hpp>
-#include <Utils/UtilsSwapChain.hpp>
+#include <util/Mat4.hpp>
+#include <util/UtilsDebug.hpp>
+#include <util/UtilsDevice.hpp>
+#include <util/UtilsInstance.hpp>
+#include <util/UtilsSwapChain.hpp>
 
 #pragma warning( disable: 4996 )
 #include <wx/wx.h>
