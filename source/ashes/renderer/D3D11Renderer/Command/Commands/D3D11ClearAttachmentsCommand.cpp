@@ -43,7 +43,7 @@ namespace ashes::d3d11
 
 	}
 
-	ClearAttachmentsCommand::ClearAttachmentsCommand( Device const & device
+	ClearAttachmentsCommand::ClearAttachmentsCommand( VkDevice device
 		, RenderPass const & renderPass
 		, ashes::SubpassDescription const & subpass
 		, FrameBuffer const & framebuffer

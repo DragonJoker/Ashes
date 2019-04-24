@@ -21,7 +21,7 @@ namespace ashes::d3d11
 		CompiledShaderModule( CompiledShaderModule && rhs );
 		CompiledShaderModule & operator=( CompiledShaderModule && rhs );
 
-		CompiledShaderModule( Device const & device
+		CompiledShaderModule( VkDevice device
 			, ashes::UInt32Array const & spv
 			, ashes::ShaderStageState const & state );
 		~CompiledShaderModule();
@@ -72,8 +72,8 @@ namespace ashes::d3d11
 		}
 
 	private:
-		void doRetrieveShader( Device const & device );
-		ShaderDesc doRetrieveShaderDesc( Device const & device );
+		void doRetrieveShader( VkDevice device );
+		ShaderDesc doRetrieveShaderDesc( VkDevice device );
 		InputLayout doRetrieveInputLayout( ID3D11ShaderReflection * reflection
 			, UINT inputParameters );
 		InterfaceBlockLayout doRetrieveInterfaceBlockLayout( ID3D11ShaderReflection * reflection
@@ -106,7 +106,7 @@ namespace ashes::d3d11
 		: public ashes::ShaderModule
 	{
 	public:
-		ShaderModule( Device const & device
+		ShaderModule( VkDevice device
 			, VkShaderStageFlagBits stage );
 		~ShaderModule();
 		/**
@@ -117,7 +117,7 @@ namespace ashes::d3d11
 		CompiledShaderModule compile( ashes::ShaderStageState const & state );
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		ashes::UInt32Array m_spv;
 	};
 }

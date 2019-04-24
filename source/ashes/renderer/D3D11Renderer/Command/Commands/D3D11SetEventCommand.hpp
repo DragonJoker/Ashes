@@ -12,7 +12,7 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		SetEventCommand( Device const & device
+		SetEventCommand( VkDevice device
 			, ashes::Event const & event
 			, VkPipelineStageFlags stageFlags );
 		void apply( Context const & context )const;

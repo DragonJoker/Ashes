@@ -35,7 +35,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	BindVertexBuffersCommand::BindVertexBuffersCommand( Device const & device
+	BindVertexBuffersCommand::BindVertexBuffersCommand( VkDevice device
 		, uint32_t firstBinding
 		, ashes::BufferCRefArray const & buffers
 		, ashes::UInt64Array const & offsets )

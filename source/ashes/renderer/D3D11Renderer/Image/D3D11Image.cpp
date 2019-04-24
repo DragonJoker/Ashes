@@ -16,7 +16,7 @@
 namespace ashes::d3d11
 {
 	Image::Image( Image && rhs )
-		: ashes::Image{ std::move( rhs ) }
+		: VkImage{ std::move( rhs ) }
 		, m_device{ rhs.m_device }
 		, m_image{ rhs.m_image }
 	{
@@ -25,25 +25,25 @@ namespace ashes::d3d11
 
 	Image & Image::operator=( Image && rhs )
 	{
-		ashes::Image::operator=( std::move( rhs ) );
+		VkImage::operator=( std::move( rhs ) );
 		m_image = rhs.m_image;
 		rhs.m_image.tex1D = nullptr;
 		return *this;
 	}
 
-	Image::Image( Device const & device
-		, ashes::ImageCreateInfo const & createInfo )
-		: ashes::Image{ device, createInfo }
+	Image::Image( VkDevice device
+		, VkImageCreateInfo const & createInfo )
+		: VkImage{ device, createInfo }
 		, m_device{ device }
 		, m_image{ nullptr }
 	{
 	}
 
-	Image::Image( Device const & device
+	Image::Image( VkDevice device
 		, VkFormat format
 		, VkExtent2D const & dimensions
 		, ID3D11Texture2D * image )
-		: ashes::Image{ device
+		: VkImage{ device
 			, {
 				0u,
 				VK_IMAGE_TYPE_2D,
@@ -66,7 +66,7 @@ namespace ashes::d3d11
 		m_image.tex2D = image;
 	}
 
-	Image::Image( Device const & device
+	Image::Image( VkDevice device
 		, VkFormat format
 		, VkExtent2D const & dimensions
 		, VkImageUsageFlags usageFlags

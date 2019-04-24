@@ -15,7 +15,7 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		BeginRenderPassCommand( Device const & device
+		BeginRenderPassCommand( VkDevice device
 			, ashes::RenderPass const & renderPass
 			, ashes::FrameBuffer const & frameBuffer
 			, ashes::ClearValueArray const & clearValues );

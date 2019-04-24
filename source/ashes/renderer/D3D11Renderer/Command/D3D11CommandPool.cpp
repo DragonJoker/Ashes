@@ -9,9 +9,9 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	CommandPool::CommandPool( Device const & device
+	CommandPool::CommandPool( VkDevice device
 		, uint32_t queueFamilyIndex
-		, ashes::CommandPoolCreateFlags flags )
+		, VkCommandPoolCreateFlags flags )
 		: ashes::CommandPool{ device, queueFamilyIndex, flags }
 		, m_device{ device }
 	{

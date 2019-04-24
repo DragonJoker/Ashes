@@ -32,8 +32,8 @@ namespace ashes::d3d11
 		*\param[in] createInfo
 		*	The creation informations.
 		*/
-		SwapChain( Device const & device
-			, ashes::SwapChainCreateInfo createInfo );
+		SwapChain( VkDevice device
+			, VkSwapchainCreateInfoKHR createInfo );
 		/**
 		*\~french
 		*\brief
@@ -64,7 +64,7 @@ namespace ashes::d3d11
 		DXGI_SWAP_CHAIN_DESC doInitPresentParameters();
 
 	protected:
-		Device const & m_device;
+		VkDevice m_device;
 		uint32_t m_currentBuffer{};
 		IDXGISwapChain * m_swapChain;
 		Surface const & m_surface;

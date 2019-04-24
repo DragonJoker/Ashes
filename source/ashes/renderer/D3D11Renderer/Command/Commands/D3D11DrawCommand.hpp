@@ -28,7 +28,7 @@ namespace ashes::d3d11
 		*\param[in] firstInstance
 		*	Index de la premi�re instance.
 		*/
-		DrawCommand( Device const & device
+		DrawCommand( VkDevice device
 			, uint32_t vtxCount
 			, uint32_t instCount
 			, uint32_t firstVertex

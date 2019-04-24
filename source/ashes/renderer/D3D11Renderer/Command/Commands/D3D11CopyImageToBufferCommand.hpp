@@ -29,10 +29,10 @@ namespace ashes::d3d11
 		*\param[in] dst
 		*	Le tampon destination.
 		*/
-		CopyImageToBufferCommand( Device const & device
+		CopyImageToBufferCommand( VkDevice device
 			, ashes::VkBufferImageCopyArray const & copyInfo
-			, ashes::Image const & src
-			, ashes::BufferBase const & dst );
+			, VkImage src
+			, VkBuffer dst );
 
 		void apply( Context const & context )const;
 		CommandPtr clone()const;
@@ -40,21 +40,21 @@ namespace ashes::d3d11
 	private:
 		void applyOne( Context const & context
 			, ashes::BufferImageCopy const & copyInfo
-			, ashes::SubresourceLayout const & srcLayout
+			, VkSubresourceLayout const & srcLayout
 			, D3D11_BOX const & dstBox )const;
 		void doMapCopy( ashes::BufferImageCopy const & copyInfo
-			, ashes::SubresourceLayout const & srcLayout
+			, VkSubresourceLayout const & srcLayout
 			, D3D11_BOX const & dstBox
-			, ashes::Image const & src
-			, ashes::BufferBase const & dst )const;
+			, VkImage src
+			, VkBuffer dst )const;
 		void doCopyToStaging( Context const & context
 			, ashes::BufferImageCopy const & copyInfo
-			, ashes::Image const & src
-			, ashes::Image const & staging )const;
+			, VkImage src
+			, VkImage staging )const;
 		void doCopyFromStaging( Context const & context
 			, ashes::BufferImageCopy const & copyInfo
-			, ashes::BufferBase const & staging
-			, ashes::BufferBase const & dst
+			, VkBuffer staging
+			, VkBuffer dst
 			, D3D11_BOX const & dstBox )const;
 
 	private:
@@ -62,7 +62,7 @@ namespace ashes::d3d11
 		Buffer const & m_dst;
 		ashes::VkBufferImageCopyArray m_copyInfo;
 		DXGI_FORMAT m_format;
-		std::vector< ashes::SubresourceLayout > m_srcLayouts;
+		std::vector< VkSubresourceLayout > m_srcLayouts;
 		std::vector< D3D11_BOX > m_dstBoxes;
 		bool m_srcMappable;
 		bool m_dstMappable;

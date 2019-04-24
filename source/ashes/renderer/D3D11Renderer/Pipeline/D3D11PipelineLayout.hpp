@@ -38,9 +38,9 @@ namespace ashes::d3d11
 		*\param[in] pushConstantRanges
 		*	Les intervalles de push constants.
 		*/
-		PipelineLayout( Device const & device
-			, ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeArray const & pushConstantRanges );
+		PipelineLayout( VkDevice device
+			, ashes::VkDescriptorSetLayoutArray const & setLayouts
+			, ashes::VkPushConstantRangeArray const & pushConstantRanges );
 		/**
 		*\brief
 		*	Destructeur.
@@ -56,6 +56,6 @@ namespace ashes::d3d11
 		ashes::ComputePipelinePtr createPipeline( ashes::ComputePipelineCreateInfo createInfo )const;
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 	};
 }

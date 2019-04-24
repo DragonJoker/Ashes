@@ -26,7 +26,7 @@ namespace ashes::d3d11
 		*\param[in] colour
 		*	La couleur de vidage.
 		*/
-		ClearColourCommand( Device const & device
+		ClearColourCommand( VkDevice device
 			, ashes::ImageView const & image
 			, VkClearColorValue const & colour );
 

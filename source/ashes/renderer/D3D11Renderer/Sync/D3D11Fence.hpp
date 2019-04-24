@@ -14,8 +14,8 @@ namespace ashes::d3d11
 		: public ashes::Fence
 	{
 	public:
-		Fence( Device const & device
-			, ashes::FenceCreateFlags flags = 0 );
+		Fence( VkDevice device
+			, VkFenceCreateFlags flags = 0 );
 		~Fence();
 
 		ashes::WaitResult wait( uint64_t timeout )const;

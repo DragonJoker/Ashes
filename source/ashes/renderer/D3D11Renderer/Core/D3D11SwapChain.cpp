@@ -14,8 +14,8 @@
 
 namespace ashes::d3d11
 {
-	SwapChain::SwapChain( Device const & device
-		, ashes::SwapChainCreateInfo createInfo )
+	SwapChain::SwapChain( VkDevice device
+		, VkSwapchainCreateInfoKHR createInfo )
 		: ashes::SwapChain{ device, std::move( createInfo ) }
 		, m_device{ device }
 		, m_surface{ static_cast< Surface const & >( m_createInfo.surface.get() ) }

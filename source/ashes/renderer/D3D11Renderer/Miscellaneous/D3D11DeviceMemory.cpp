@@ -25,8 +25,8 @@ namespace ashes::d3d11
 		:  public DeviceMemory::DeviceMemoryImpl
 	{
 	public:
-		BufferDeviceMemory( Device const & device
-			, ashes::MemoryAllocateInfo allocateInfo
+		BufferDeviceMemory( VkDevice device
+			, VkMemoryAllocateInfo allocateInfo
 			, VkBufferUsageFlags targets )
 			: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ) }
 		{
@@ -115,7 +115,7 @@ namespace ashes::d3d11
 	
 	//*********************************************************************************************
 
-	UINT getBindFlags( ashes::ImageCreateInfo const & createInfo )
+	UINT getBindFlags( VkImageCreateInfo const & createInfo )
 	{
 		return ( ( isSampled( createInfo.usage )
 				? D3D11_BIND_SHADER_RESOURCE
@@ -130,7 +130,7 @@ namespace ashes::d3d11
 				: 0 ) );
 	}
 
-	UINT getMiscFlags( ashes::ImageCreateInfo const & createInfo )
+	UINT getMiscFlags( VkImageCreateInfo const & createInfo )
 	{
 		return ( isMipmapped( createInfo.usage, createInfo.format, createInfo.mipLevels )
 				? D3D11_RESOURCE_MISC_GENERATE_MIPS
@@ -146,9 +146,9 @@ namespace ashes::d3d11
 		: public DeviceMemory::DeviceMemoryImpl
 	{
 	public:
-		Texture1DDeviceMemory( Device const & device
-			, ashes::MemoryAllocateInfo allocateInfo
-			, ashes::ImageCreateInfo const & createInfo )
+		Texture1DDeviceMemory( VkDevice device
+			, VkMemoryAllocateInfo allocateInfo
+			, VkImageCreateInfo const & createInfo )
 			: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ) }
 			, m_usage{ createInfo.usage }
 		{
@@ -217,7 +217,7 @@ namespace ashes::d3d11
 		}
 
 	private:
-		void doInitTexDesc( ashes::ImageCreateInfo const & createInfo
+		void doInitTexDesc( VkImageCreateInfo const & createInfo
 			, D3D11_TEXTURE1D_DESC & desc )
 		{
 			auto device = m_device.getDevice();
@@ -247,9 +247,9 @@ namespace ashes::d3d11
 		: public DeviceMemory::DeviceMemoryImpl
 	{
 	public:
-		Texture2DDeviceMemory( Device const & device
-			, ashes::MemoryAllocateInfo allocateInfo
-			, ashes::ImageCreateInfo const & createInfo )
+		Texture2DDeviceMemory( VkDevice device
+			, VkMemoryAllocateInfo allocateInfo
+			, VkImageCreateInfo const & createInfo )
 			: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ) }
 			, m_usage{ createInfo.usage }
 		{
@@ -318,7 +318,7 @@ namespace ashes::d3d11
 		}
 
 	private:
-		void doInitTexDesc( ashes::ImageCreateInfo const & createInfo
+		void doInitTexDesc( VkImageCreateInfo const & createInfo
 			, D3D11_TEXTURE2D_DESC & desc )
 		{
 			auto device = m_device.getDevice();
@@ -363,9 +363,9 @@ namespace ashes::d3d11
 		: public DeviceMemory::DeviceMemoryImpl
 	{
 	public:
-		Texture3DDeviceMemory( Device const & device
-			, ashes::MemoryAllocateInfo allocateInfo
-			, ashes::ImageCreateInfo const & createInfo )
+		Texture3DDeviceMemory( VkDevice device
+			, VkMemoryAllocateInfo allocateInfo
+			, VkImageCreateInfo const & createInfo )
 			: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ) }
 			, m_usage{ createInfo.usage }
 		{
@@ -434,7 +434,7 @@ namespace ashes::d3d11
 		}
 
 	private:
-		void doInitTexDesc( ashes::ImageCreateInfo const & createInfo
+		void doInitTexDesc( VkImageCreateInfo const & createInfo
 			, D3D11_TEXTURE3D_DESC & desc )
 		{
 			auto device = m_device.getDevice();
@@ -461,8 +461,8 @@ namespace ashes::d3d11
 
 	//*********************************************************************************************
 
-	DeviceMemory::DeviceMemoryImpl::DeviceMemoryImpl( Device const & device
-		, ashes::MemoryAllocateInfo allocateInfo )
+	DeviceMemory::DeviceMemoryImpl::DeviceMemoryImpl( VkDevice device
+		, VkMemoryAllocateInfo allocateInfo )
 		: m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }
 		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
@@ -471,8 +471,8 @@ namespace ashes::d3d11
 
 	//*********************************************************************************************
 
-	DeviceMemory::DeviceMemory( Device const & device
-		, ashes::MemoryAllocateInfo allocateInfo )
+	DeviceMemory::DeviceMemory( VkDevice device
+		, VkMemoryAllocateInfo allocateInfo )
 		: ashes::DeviceMemory{ device, std::move( allocateInfo ) }
 		, m_device{ device }
 	{
@@ -516,7 +516,7 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	ID3D11Texture1D * DeviceMemory::bindToTexture1D( ashes::ImageCreateInfo const & createInfo )
+	ID3D11Texture1D * DeviceMemory::bindToTexture1D( VkImageCreateInfo const & createInfo )
 	{
 		auto impl = std::make_unique< Texture1DDeviceMemory >( m_device
 			, m_allocateInfo
@@ -526,7 +526,7 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	ID3D11Texture2D * DeviceMemory::bindToTexture2D( ashes::ImageCreateInfo const & createInfo )
+	ID3D11Texture2D * DeviceMemory::bindToTexture2D( VkImageCreateInfo const & createInfo )
 	{
 		auto impl = std::make_unique< Texture2DDeviceMemory >( m_device
 			, m_allocateInfo
@@ -536,7 +536,7 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	ID3D11Texture3D * DeviceMemory::bindToTexture3D( ashes::ImageCreateInfo const & createInfo )
+	ID3D11Texture3D * DeviceMemory::bindToTexture3D( VkImageCreateInfo const & createInfo )
 	{
 		auto impl = std::make_unique< Texture3DDeviceMemory >( m_device
 			, m_allocateInfo

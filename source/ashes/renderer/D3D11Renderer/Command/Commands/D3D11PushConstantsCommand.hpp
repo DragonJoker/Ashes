@@ -18,7 +18,7 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		PushConstantsCommand( Device const & device
+		PushConstantsCommand( VkDevice device
 			, PushConstantsBuffer const & pcb );
 		void apply( Context const & context )const;
 		void remove( Context const & context )const;

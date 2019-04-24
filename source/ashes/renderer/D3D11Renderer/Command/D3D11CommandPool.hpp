@@ -40,9 +40,9 @@ namespace ashes::d3d11
 		*\param[in] flags
 		*	ashes::CommandPoolCreateFlag bitwise OR combination.
 		*/
-		CommandPool( Device const & device
+		CommandPool( VkDevice device
 			, uint32_t queueFamilyIndex
-			, ashes::CommandPoolCreateFlags flags = 0 );
+			, VkCommandPoolCreateFlags flags = 0 );
 		/**
 		*\~french
 		*\brief
@@ -70,6 +70,6 @@ namespace ashes::d3d11
 		ashes::CommandBufferPtr createCommandBuffer( bool primary )const;
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 	};
 }

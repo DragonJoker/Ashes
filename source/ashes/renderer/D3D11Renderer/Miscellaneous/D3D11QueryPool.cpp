@@ -52,10 +52,10 @@ namespace ashes::d3d11
 		}
 	}
 
-	QueryPool::QueryPool( Device const & device
+	QueryPool::QueryPool( VkDevice device
 		, VkQueryType type
 		, uint32_t count
-		, ashes::QueryPipelineStatisticFlags pipelineStatistics )
+		, VkQueryPipelineStatisticFlags pipelineStatistics )
 		: ashes::QueryPool{ device, type, count, pipelineStatistics }
 		, m_device{ device }
 	{

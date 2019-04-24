@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	DispatchCommand::DispatchCommand( Device const & device
+	DispatchCommand::DispatchCommand( VkDevice device
 		, uint32_t groupCountX
 		, uint32_t groupCountY
 		, uint32_t groupCountZ )

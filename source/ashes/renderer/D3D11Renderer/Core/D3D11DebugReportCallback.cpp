@@ -75,10 +75,10 @@ namespace ashes::d3d11
 	{
 	}
 
-	bool DebugLayer::onBufferImageCommand( ashes::CommandBuffer const & cmd
+	bool DebugLayer::onBufferImageCommand( VkCommandBuffer cmd
 		, ashes::BufferImageCopy const & copyInfo
-		, ashes::BufferBase const & buffer
-		, ashes::Image const & image )const
+		, VkBuffer buffer
+		, VkImage image )const
 	{
 		static ReportData const baseReport
 		{
@@ -227,10 +227,10 @@ namespace ashes::d3d11
 		return false;
 	}
 
-	bool DebugLayer::onCopyToImageCommand( ashes::CommandBuffer const & cmd
+	bool DebugLayer::onCopyToImageCommand( VkCommandBuffer cmd
 		, ashes::VkBufferImageCopyArray const & copyInfos
-		, ashes::BufferBase const & src
-		, ashes::Image const & dst )const
+		, VkBuffer src
+		, VkImage dst )const
 	{
 		for ( auto & copyInfo : copyInfos )
 		{

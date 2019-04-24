@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	CommandBase::CommandBase( Device const & device )
+	CommandBase::CommandBase( VkDevice device )
 		: m_device{ device }
 	{
 	}

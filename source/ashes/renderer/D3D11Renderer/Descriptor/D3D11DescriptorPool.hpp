@@ -20,10 +20,10 @@ namespace ashes::d3d11
 		: public ashes::DescriptorPool
 	{
 	public:
-		DescriptorPool( Device const & device
-			, ashes::DescriptorPoolCreateFlags flags
+		DescriptorPool( VkDevice device
+			, VkDescriptorPoolCreateFlags flags
 			, uint32_t maxSets
-			, ashes::DescriptorPoolSizeArray poolSizes );
+			, ashes::VkDescriptorPoolSizeArray poolSizes );
 		/**
 		*\~french
 		*\brief
@@ -40,7 +40,7 @@ namespace ashes::d3d11
 			, uint32_t bindingPoint )const;
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 	};
 }
 

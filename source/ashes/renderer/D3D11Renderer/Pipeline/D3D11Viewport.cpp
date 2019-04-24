@@ -6,14 +6,14 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	D3D11_VIEWPORT makeViewport( ashes::Viewport const & viewport )
+	D3D11_VIEWPORT makeViewport( VkViewport const & viewport )
 	{
 		return D3D11_VIEWPORT
 		{
-			float( viewport.offset.x ),
-			float( viewport.offset.y ),
-			float( viewport.size.width ),
-			float( viewport.size.height ),
+			viewport.x,
+			viewport.y,
+			viewport.width,
+			viewport.height,
 			viewport.minDepth,
 			viewport.maxDepth
 		};

@@ -14,7 +14,7 @@ namespace ashes::d3d11
 		: public ashes::Event
 	{
 	public:
-		Event( Device const & device );
+		Event( VkDevice device );
 		~Event();
 		/**
 		*\copydoc	ashes::Event::getStatus

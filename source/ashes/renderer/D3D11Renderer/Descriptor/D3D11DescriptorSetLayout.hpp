@@ -36,7 +36,7 @@ namespace ashes::d3d11
 		*\param[in] bindings
 		*	The bindings.
 		*/
-		DescriptorSetLayout( Device const & device
+		DescriptorSetLayout( VkDevice device
 			, VkDescriptorSetLayoutBindingArray bindings );
 		/**
 		*\~french

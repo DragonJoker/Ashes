@@ -8,8 +8,8 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	DispatchIndirectCommand::DispatchIndirectCommand( Device const & device
-		, ashes::BufferBase const & buffer
+	DispatchIndirectCommand::DispatchIndirectCommand( VkDevice device
+		, VkBuffer buffer
 		, uint32_t offset )
 		: CommandBase{ device }
 		, m_buffer{ static_cast< Buffer const & >( buffer ) }

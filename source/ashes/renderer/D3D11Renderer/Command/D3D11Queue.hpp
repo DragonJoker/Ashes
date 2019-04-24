@@ -14,8 +14,8 @@ namespace ashes::d3d11
 		: public ashes::Queue
 	{
 	public:
-		Queue( Device const & device
-			, ashes::DeviceQueueCreateInfo createInfo
+		Queue( VkDevice device
+			, VkDeviceQueueCreateInfo createInfo
 			, uint32_t index );
 		~Queue();
 		/**
@@ -39,7 +39,7 @@ namespace ashes::d3d11
 		void waitIdle()const;
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		ID3D11Query * m_waitIdleQuery{ nullptr };
 	};
 }

@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	SetDepthBiasCommand::SetDepthBiasCommand( Device const & device
+	SetDepthBiasCommand::SetDepthBiasCommand( VkDevice device
 		, float constantFactor
 		, float clamp
 		, float slopeFactor )

@@ -26,7 +26,7 @@ namespace ashes::d3d11
 		*\param[in] colour
 		*	La couleur de vidage.
 		*/
-		ClearDepthStencilCommand( Device const & device
+		ClearDepthStencilCommand( VkDevice device
 			, ashes::ImageView const & image
 			, ashes::DepthStencilClearValue const & value );
 

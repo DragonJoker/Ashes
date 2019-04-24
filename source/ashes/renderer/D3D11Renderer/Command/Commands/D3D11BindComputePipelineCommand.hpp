@@ -25,7 +25,7 @@ namespace ashes::d3d11
 		*\param[in] bindingPoint
 		*	Le point d'attache du pipeline.
 		*/
-		BindComputePipelineCommand( Device const & device
+		BindComputePipelineCommand( VkDevice device
 			, ashes::ComputePipeline const & pipeline
 			, ashes::PipelineBindPoint bindingPoint );
 

@@ -4,7 +4,7 @@
 
 namespace ashes::d3d11
 {
-	DescriptorSetLayout::DescriptorSetLayout( Device const & device
+	DescriptorSetLayout::DescriptorSetLayout( VkDevice device
 		, VkDescriptorSetLayoutBindingArray bindings )
 		: ashes::DescriptorSetLayout{ device, std::move( bindings ) }
 	{

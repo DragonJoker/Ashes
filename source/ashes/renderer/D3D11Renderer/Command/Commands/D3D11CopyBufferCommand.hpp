@@ -28,10 +28,10 @@ namespace ashes::d3d11
 		*\param[in] dst
 		*	Le tampon destination.
 		*/
-		CopyBufferCommand( Device const & device
+		CopyBufferCommand( VkDevice device
 			, ashes::BufferCopy const & copyInfo
-			, ashes::BufferBase const & src
-			, ashes::BufferBase const & dst );
+			, VkBuffer src
+			, VkBuffer dst );
 
 		void apply( Context const & context )const;
 		CommandPtr clone()const;

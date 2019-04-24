@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	ScissorCommand::ScissorCommand( Device const & device
+	ScissorCommand::ScissorCommand( VkDevice device
 		, uint32_t first
 		, ashes::VkScissorArray const & scissors )
 		: CommandBase{ device }

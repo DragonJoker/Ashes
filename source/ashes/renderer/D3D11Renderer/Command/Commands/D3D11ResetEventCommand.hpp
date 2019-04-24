@@ -16,7 +16,7 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		ResetEventCommand( Device const & device
+		ResetEventCommand( VkDevice device
 			, ashes::Event const & event
 			, VkPipelineStageFlags stageFlags );
 		void apply( Context const & context )const;

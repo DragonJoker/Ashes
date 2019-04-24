@@ -22,7 +22,7 @@ namespace ashes::d3d11
 		: public ashes::DescriptorSet
 	{
 	public:
-		DescriptorSet( Device const & device
+		DescriptorSet( VkDevice device
 			, DescriptorPool const & pool
 			, DescriptorSetLayout const & layout
 			, uint32_t bindingPoint );

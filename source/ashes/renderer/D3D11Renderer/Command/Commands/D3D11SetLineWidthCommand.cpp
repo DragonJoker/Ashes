@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	SetLineWidthCommand::SetLineWidthCommand( Device const & device
+	SetLineWidthCommand::SetLineWidthCommand( VkDevice device
 		, float width )
 		: CommandBase{ device }
 		, m_width{ width }

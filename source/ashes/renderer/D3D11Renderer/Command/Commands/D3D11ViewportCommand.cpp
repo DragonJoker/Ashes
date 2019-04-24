@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	ViewportCommand::ViewportCommand( Device const & device
+	ViewportCommand::ViewportCommand( VkDevice device
 		, uint32_t first
 		, ashes::VkViewportArray const & viewports )
 		: CommandBase{ device }

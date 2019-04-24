@@ -18,8 +18,8 @@ namespace ashes::d3d11
 		: public ashes::Sampler
 	{
 	public:
-		Sampler( Device const & device
-			, ashes::SamplerCreateInfo const & createInfo );
+		Sampler( VkDevice device
+			, VkSamplerCreateInfo const & createInfo );
 		~Sampler();
 
 		inline ID3D11SamplerState * getSampler()const

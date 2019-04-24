@@ -14,7 +14,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	BindComputePipelineCommand::BindComputePipelineCommand( Device const & device
+	BindComputePipelineCommand::BindComputePipelineCommand( VkDevice device
 		, ashes::ComputePipeline const & pipeline
 		, ashes::PipelineBindPoint bindingPoint )
 		: CommandBase{ device }

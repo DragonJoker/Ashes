@@ -69,7 +69,7 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	bool checkError( Device const & device, HRESULT hResult, char const * const text )
+	bool checkError( VkDevice device, HRESULT hResult, char const * const text )
 	{
 		return !device.onCheckHResultCommand( hResult, text );
 	}

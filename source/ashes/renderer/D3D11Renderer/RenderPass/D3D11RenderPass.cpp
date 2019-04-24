@@ -17,8 +17,8 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	RenderPass::RenderPass( Device const & device
-		, ashes::RenderPassCreateInfo createInfo )
+	RenderPass::RenderPass( VkDevice device
+		, VkRenderPassCreateInfo createInfo )
 		: ashes::RenderPass{ device, createInfo }
 		, m_device{ device }
 	{

@@ -21,7 +21,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	DescriptorSet::DescriptorSet( Device const & device
+	DescriptorSet::DescriptorSet( VkDevice device
 		, DescriptorPool const & pool
 		, DescriptorSetLayout const & layout
 		, uint32_t bindingPoint )

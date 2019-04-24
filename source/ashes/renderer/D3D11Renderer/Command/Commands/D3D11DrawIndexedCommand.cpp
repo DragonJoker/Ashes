@@ -23,7 +23,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	DrawIndexedCommand::DrawIndexedCommand( Device const & device
+	DrawIndexedCommand::DrawIndexedCommand( VkDevice device
 		, uint32_t indexCount
 		, uint32_t instCount
 		, uint32_t firstIndex

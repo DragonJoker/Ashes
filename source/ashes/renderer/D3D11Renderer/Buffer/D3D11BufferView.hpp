@@ -8,21 +8,15 @@
 #define ___D3D11Renderer_BufferView_HPP___
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-
-#include <Ashes/Buffer/BufferView.hpp>
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 namespace ashes::d3d11
 {
 	class BufferView
-		: public ashes::BufferView
 	{
 	public:
-		BufferView( Device const & device
-			, Buffer const & buffer
-			, VkFormat format
-			, uint32_t offset
-			, uint32_t range );
+		BufferView( VkDevice device
+			, VkBufferViewCreateInfo createInfo );
 		~BufferView();
 
 		inline ID3D11ShaderResourceView * getView()const
@@ -31,6 +25,8 @@ namespace ashes::d3d11
 		}
 
 	private:
+		VkDevice m_device;
+		VkBufferViewCreateInfo m_createInfo;
 		ID3D11ShaderResourceView * m_view;
 	};
 }

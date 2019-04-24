@@ -13,7 +13,7 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		GenerateMipsCommand( Device const & device
+		GenerateMipsCommand( VkDevice device
 			, Image const & texture );
 		void apply( Context const & context )const;
 		CommandPtr clone()const;

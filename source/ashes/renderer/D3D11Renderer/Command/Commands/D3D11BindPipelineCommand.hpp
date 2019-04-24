@@ -8,17 +8,17 @@ See LICENSE file in root folder
 
 namespace ashes::d3d11
 {
-	void apply( Device const & device
+	void apply( VkDevice device
 		, VkPipelineColorBlendStateCreateInfo const & state );
-	void apply( Device const & device
+	void apply( VkDevice device
 		, VkPipelineRasterizationStateCreateInfo const & state
 		, bool dynamicLineWidth
 		, bool dynamicDepthBias );
-	void apply( Device const & device
+	void apply( VkDevice device
 		, VkPipelineMultisampleStateCreateInfo const & state );
-	void apply( Device const & device
+	void apply( VkDevice device
 		, VkPipelineDepthStencilStateCreateInfo const & state );
-	void apply( Device const & device
+	void apply( VkDevice device
 		, ashes::TessellationState const & state );
 	/**
 	*\brief
@@ -36,7 +36,7 @@ namespace ashes::d3d11
 		*\param[in] bindingPoint
 		*	Le point d'attache du pipeline.
 		*/
-		BindPipelineCommand( Device const & device
+		BindPipelineCommand( VkDevice device
 			, ashes::Pipeline const & pipeline
 			, ashes::PipelineBindPoint bindingPoint );
 

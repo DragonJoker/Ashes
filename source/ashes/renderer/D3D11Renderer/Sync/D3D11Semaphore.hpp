@@ -38,7 +38,7 @@ namespace ashes::d3d11
 		*\param[in] device
 		*	The logical connection to the GPU.
 		*/
-		explicit Semaphore( Device const & device );
+		explicit Semaphore( VkDevice device );
 		/**
 		*\~french
 		*\brief

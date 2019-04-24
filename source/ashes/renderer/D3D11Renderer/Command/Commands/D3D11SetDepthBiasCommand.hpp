@@ -12,7 +12,7 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		SetDepthBiasCommand( Device const & device
+		SetDepthBiasCommand( VkDevice device
 			, float constantFactor
 			, float clamp
 			, float slopeFactor );

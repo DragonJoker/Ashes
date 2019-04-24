@@ -20,7 +20,7 @@ namespace ashes::d3d11
 		*\brief
 		*	Constructeur.
 		*/
-		MemoryBarrierCommand( Device const & device
+		MemoryBarrierCommand( VkDevice device
 			, VkPipelineStageFlags after
 			, VkPipelineStageFlags before
 			, ashes::MemoryBarrierArray const & memoryBarriers

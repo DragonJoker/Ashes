@@ -10,7 +10,7 @@
 
 namespace ashes::d3d11
 {
-	ComputePipeline::ComputePipeline( Device const & device
+	ComputePipeline::ComputePipeline( VkDevice device
 		, ashes::PipelineLayout const & layout
 		, ashes::ComputePipelineCreateInfo createInfo )
 		: ashes::ComputePipeline{ device
@@ -81,7 +81,7 @@ namespace ashes::d3d11
 		return dummy;
 	}
 
-	void ComputePipeline::doCompileProgram( Device const & device )
+	void ComputePipeline::doCompileProgram( VkDevice device )
 	{
 		auto module = std::static_pointer_cast< ShaderModule >( m_createInfo.stage.module );
 		m_compiled.push_back( module->compile( m_createInfo.stage ) );

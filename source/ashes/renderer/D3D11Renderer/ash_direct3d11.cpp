@@ -1,10 +1,10 @@
-#include <ashes/ashes.h>
+#include <ashes/ashes.hpp>
 
-#include "Core/D3D11Context.hpp"
+#include "renderer/D3D11Renderer/Core/D3D11Device.hpp"
 
-#include "ashesgl4_api.hpp"
+#include "ashesd3d11_api.hpp"
 
-#include <renderer/RendererCommon/Helper/Exception.hpp>
+#include <ashes/common/Exception.hpp>
 
 #include <cstring>
 #include <iostream>

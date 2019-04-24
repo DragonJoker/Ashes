@@ -8,8 +8,8 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	Fence::Fence( Device const & device
-		, ashes::FenceCreateFlags flags )
+	Fence::Fence( VkDevice device
+		, VkFenceCreateFlags flags )
 		: ashes::Fence{ device, flags }
 	{
 	}

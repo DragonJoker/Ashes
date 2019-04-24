@@ -8,8 +8,8 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	DrawIndirectCommand::DrawIndirectCommand( Device const & device
-		, ashes::BufferBase const & buffer
+	DrawIndirectCommand::DrawIndirectCommand( VkDevice device
+		, VkBuffer buffer
 		, uint32_t offset
 		, uint32_t drawCount
 		, uint32_t stride

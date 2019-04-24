@@ -16,7 +16,7 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		WriteTimestampCommand( Device const & device
+		WriteTimestampCommand( VkDevice device
 			, VkPipelineStageFlagBits pipelineStage
 			, ashes::QueryPool const & pool
 			, uint32_t query );

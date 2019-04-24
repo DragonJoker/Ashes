@@ -16,7 +16,7 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		BeginQueryCommand( Device const & device
+		BeginQueryCommand( VkDevice device
 			, ashes::QueryPool const & pool
 			, uint32_t query
 			, ashes::QueryControlFlags flags );

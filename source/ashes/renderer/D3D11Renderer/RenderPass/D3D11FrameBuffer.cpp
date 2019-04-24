@@ -110,7 +110,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	Framebuffer::Framebuffer( Device const & device
+	Framebuffer::Framebuffer( VkDevice device
 		, RenderPass const & renderPass
 		, VkExtent2D const & dimensions
 		, ashes::ImageViewPtrArray attachments )

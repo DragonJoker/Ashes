@@ -13,13 +13,13 @@ namespace ashes::d3d11
 	struct Context
 	{
 		Context( D3D_FEATURE_LEVEL featureLevel
-			, Device const & device )
+			, VkDevice device )
 			: Context{ featureLevel, device, getImmediateContext( device ) }
 		{
 		}
 
 		Context( D3D_FEATURE_LEVEL featureLevel
-			, Device const & device
+			, VkDevice device
 			, ID3D11DeviceContext * context )
 			: device{ device }
 			, context{ context }
@@ -36,14 +36,14 @@ namespace ashes::d3d11
 			safeRelease( context );
 		}
 
-		Device const & device;
+		VkDevice device;
 		ID3D11DeviceContext * context;
 		ID3D11DeviceContext1 * context1;
 		WriteDescriptorSetBindingArray uavs;
 		D3D_FEATURE_LEVEL featureLevel;
 
 	private:
-		static inline ID3D11DeviceContext * getImmediateContext( Device const & device )
+		static inline ID3D11DeviceContext * getImmediateContext( VkDevice device )
 		{
 			ID3D11DeviceContext * result;
 			device.getDevice()->GetImmediateContext( &result );
@@ -54,7 +54,7 @@ namespace ashes::d3d11
 	class CommandBase
 	{
 	public:
-		CommandBase( Device const & device );
+		CommandBase( VkDevice device );
 		virtual ~CommandBase()noexcept;
 
 		virtual void apply( Context const & context )const = 0;
@@ -67,6 +67,6 @@ namespace ashes::d3d11
 		virtual CommandPtr clone()const = 0;
 
 	protected:
-		Device const & m_device;
+		VkDevice m_device;
 	};
 }

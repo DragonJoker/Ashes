@@ -16,8 +16,8 @@ namespace ashes::d3d11
 		: public ashes::RenderPass
 	{
 	public:
-		RenderPass( Device const & device
-			, ashes::RenderPassCreateInfo createInfo );
+		RenderPass( VkDevice device
+			, VkRenderPassCreateInfo createInfo );
 		~RenderPass();
 		/**
 		*\copydoc	ashes::RenderPass::createFrameBuffer
@@ -35,7 +35,7 @@ namespace ashes::d3d11
 		};
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		std::vector< Subpass > m_subpassInfos;
 	};
 }

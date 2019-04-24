@@ -7,8 +7,6 @@ See LICENSE file in root folder.
 #include "Core/D3D11PhysicalDevice.hpp"
 #include "Core/D3D11Instance.hpp"
 
-#include <Ashes/Core/PlatformWindowHandle.hpp>
-
 namespace ashes::d3d11
 {
 	namespace
@@ -19,8 +17,8 @@ namespace ashes::d3d11
 			{
 				std::vector< VkFormat > result;
 
-				for ( uint32_t i = uint32_t( VK_FORMAT_Colour_BEGIN );
-					i <= uint32_t( VK_FORMAT_Colour_END );
+				for ( uint32_t i = uint32_t( VK_FORMAT_R4G4_UNORM_PACK8 );
+					i <= uint32_t( VK_FORMAT_E5B9G9R9_UFLOAT_PACK32 );
 					++i )
 				{
 					result.push_back( VkFormat( i ) );
@@ -79,7 +77,7 @@ namespace ashes::d3d11
 
 		std::map< VkFormat, std::vector< DXGI_MODE_DESC > > updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
 			, RECT const & rect
-			, ashes::SurfaceCapabilities & capabilities )
+			, VkSurfaceCapabilitiesKHR & capabilities )
 		{
 			capabilities.minImageCount = 1u;
 			capabilities.maxImageCount = 1u;
@@ -90,8 +88,8 @@ namespace ashes::d3d11
 			capabilities.maxImageArrayLayers = 1u;
 			capabilities.supportedTransforms = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 			capabilities.currentTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-			capabilities.supportedCompositeAlpha = VkCompositeAlphaFlagBitsKHR::eInherit;
-			capabilities.supportedUsageFlags = VkImageUsageFlagBits::eUndefined;
+			capabilities.supportedCompositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
+			capabilities.supportedUsageFlags = 0u;
 
 			std::map < VkFormat, std::vector< DXGI_MODE_DESC > > result;
 
@@ -119,7 +117,7 @@ namespace ashes::d3d11
 					&& displayMode.Height == height )
 				{
 					matchingDisplayModes.push_back( displayMode );
-					auto it = result.emplace( convert( displayMode.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
+					auto it = result.emplace( getVkFormat( displayMode.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
 					it->second.emplace_back( displayMode );
 				}
 			}
@@ -133,7 +131,7 @@ namespace ashes::d3d11
 						&& displayMode.Height >= height )
 					{
 						matchingDisplayModes.push_back( displayMode );
-						auto it = result.emplace( convert( displayMode.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
+						auto it = result.emplace( getVkFormat( displayMode.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
 						it->second.emplace_back( displayMode );
 					}
 				}
@@ -162,14 +160,14 @@ namespace ashes::d3d11
 				{
 					// Choose the display mode with highest width.
 					matchingDisplayModes.push_back( maxWidth );
-					auto it = result.emplace( convert( maxWidth.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
+					auto it = result.emplace( getVkFormat( maxWidth.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
 					it->second.emplace_back( maxWidth );
 				}
 				else
 				{
 					// Choose the display mode with highest height.
 					matchingDisplayModes.push_back( maxHeight );
-					auto it = result.emplace( convert( maxHeight.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
+					auto it = result.emplace( getVkFormat( maxHeight.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
 					it->second.emplace_back( maxHeight );
 				}
 			}
@@ -191,7 +189,7 @@ namespace ashes::d3d11
 
 			for ( auto & displayMode : displayModeList )
 			{
-				auto fmt = convert( displayMode.Format );
+				auto fmt = getVkFormat( displayMode.Format );
 
 				if ( uniqueFormats.find( fmt ) == uniqueFormats.end() )
 				{
@@ -204,47 +202,49 @@ namespace ashes::d3d11
 		}
 	}
 
-	Surface::Surface( Instance const & instance
-		, ashes::PhysicalDevice const & gpu
-		, ashes::WindowHandle handle )
-		: ashes::Surface{ instance, gpu, std::move( handle ) }
-		, m_displayModes{ getDisplayModesList( static_cast< PhysicalDevice const & >( m_gpu ).getOutput() ) }
+	SurfaceKHR::SurfaceKHR( VkInstance instance
+		, VkSurfaceCreateInfoKHR createInfo )
+		: m_createInfo{ std::move( createInfo ) }
 	{
+		getSurfaceInfos();
 		m_type = "VK_KHR_win32_surface";
 	}
 
-	Surface::~Surface()
+	SurfaceKHR::~SurfaceKHR()
 	{
 	}
 
-	bool Surface::getSupport( uint32_t queueFamilyIndex )const
+	void SurfaceKHR::getSurfaceInfos()
 	{
-		return true;
-	}
+		m_displayModes = getDisplayModesList( get().getOutput() );
 
-	std::vector< VkPresentModeKHR > Surface::getPresentModes()const
-	{
-		static std::vector< VkPresentModeKHR > const modes
-		{
-			VK_PRESENT_MODE_FIFO_KHR
-		};
-		return modes;
-	}
+		m_surfaceFormats = getSurfaceFormats( m_displayModes );
 
-	ashes::SurfaceCapabilities Surface::getCapabilities()const
-	{
-		auto hWnd = m_handle.getInternal< ashes::IMswWindowHandle >().getHwnd();
+		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
+
+		m_surfaceCapabilities.minImageCount = 1u;
+		m_surfaceCapabilities.maxImageCount = 1u;
+		m_surfaceCapabilities.currentExtent.width = ~( 0u );
+		m_surfaceCapabilities.currentExtent.height = ~( 0u );
+		m_surfaceCapabilities.minImageExtent = m_surfaceCapabilities.currentExtent;
+		m_surfaceCapabilities.maxImageExtent = m_surfaceCapabilities.currentExtent;
+		m_surfaceCapabilities.maxImageArrayLayers = 1u;
+		m_surfaceCapabilities.supportedUsageFlags = 0u;
+		m_surfaceCapabilities.supportedTransforms = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+		m_surfaceCapabilities.currentTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+		m_surfaceCapabilities.supportedCompositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
+
+		auto hWnd = m_createInfo.hwnd;
 		RECT rect{};
 		::GetWindowRect( hWnd, &rect );
-		ashes::SurfaceCapabilities result;
+		VkSurfaceCapabilitiesKHR result;
 		m_descs = updateSurfaceCapabilities( m_displayModes
 			, rect
 			, result );
-		return result;
 	}
 
-	std::vector< VkSurfaceFormatKHR > Surface::getFormats()const
+	bool SurfaceKHR::getSupport( uint32_t queueFamilyIndex )const
 	{
-		return getSurfaceFormats( m_displayModes );
+		return true;
 	}
 }

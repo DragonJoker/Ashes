@@ -5,7 +5,7 @@
 
 namespace ashes::d3d11
 {
-	ImageView::ImageView( Device const & device
+	ImageView::ImageView( VkDevice device
 		, Image const & image
 		, ashes::ImageViewCreateInfo const & createInfo )
 		: ashes::ImageView{ device

@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	MemoryBarrierCommand::MemoryBarrierCommand( Device const & device
+	MemoryBarrierCommand::MemoryBarrierCommand( VkDevice device
 		, VkPipelineStageFlags after
 		, VkPipelineStageFlags before
 		, ashes::MemoryBarrierArray const & memoryBarriers

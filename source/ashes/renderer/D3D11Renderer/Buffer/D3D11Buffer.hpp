@@ -8,14 +8,15 @@
 #define ___D3D11Renderer_Buffer_HPP___
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 namespace ashes::d3d11
 {
 	class Buffer
 	{
 	public:
-		Buffer( VkBufferCreateInfo createInfo );
+		Buffer( VkDevice device
+			, VkBufferCreateInfo createInfo );
 		~Buffer();
 		VkMemoryRequirements getMemoryRequirements()const;
 
@@ -33,7 +34,9 @@ namespace ashes::d3d11
 		void doBindMemory();
 
 	private:
+		VkDevice m_device;
 		VkBufferCreateInfo m_createInfo;
+		VkDeviceMemory m_memory{ VK_NULL_HANDLE };
 		ID3D11Buffer * m_buffer{ nullptr };
 		ID3D11UnorderedAccessView * m_unorderedAccessView{ nullptr };
 	};

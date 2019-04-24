@@ -46,10 +46,10 @@ namespace ashes::d3d11
 		*\param[in] pipelineStatistics
 		*	Définit les compteurs que les requêtes retournent.
 		*/
-		QueryPool( Device const & device
+		QueryPool( VkDevice device
 			, VkQueryType type
 			, uint32_t count
-			, ashes::QueryPipelineStatisticFlags pipelineStatistics );
+			, VkQueryPipelineStatisticFlags pipelineStatistics );
 		/**
 		*\~english
 		*\brief
@@ -95,7 +95,7 @@ namespace ashes::d3d11
 	private:
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		std::vector< ID3D11Query * > m_queries;
 		mutable ashes::ByteArray m_data;
 		std::function< uint32_t( uint32_t ) > getUint32;

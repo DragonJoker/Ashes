@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	ResetQueryPoolCommand::ResetQueryPoolCommand( Device const & device
+	ResetQueryPoolCommand::ResetQueryPoolCommand( VkDevice device
 		, ashes::QueryPool const & pool
 		, uint32_t firstQuery
 		, uint32_t queryCount )

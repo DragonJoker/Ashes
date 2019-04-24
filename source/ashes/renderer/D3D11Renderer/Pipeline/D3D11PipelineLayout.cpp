@@ -6,9 +6,9 @@
 
 namespace ashes::d3d11
 {
-	PipelineLayout::PipelineLayout( Device const & device
-		, ashes::DescriptorSetLayoutCRefArray const & setLayouts
-		, ashes::PushConstantRangeArray const & pushConstantRanges )
+	PipelineLayout::PipelineLayout( VkDevice device
+		, ashes::VkDescriptorSetLayoutArray const & setLayouts
+		, ashes::VkPushConstantRangeArray const & pushConstantRanges )
 		: ashes::PipelineLayout{ device, setLayouts, pushConstantRanges }
 		, m_device{ device }
 	{

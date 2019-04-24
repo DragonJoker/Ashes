@@ -32,7 +32,7 @@ namespace ashes::d3d11
 	*	The TestImage will be destroyed or not.
 	*/
 	class Image
-		: public ashes::Image
+		: public VkImage
 	{
 	public:
 		Image( Image const & ) = delete;
@@ -43,15 +43,15 @@ namespace ashes::d3d11
 		*\brief
 		*	Constructeur.
 		*/
-		Image( Device const & device
-			, ashes::ImageCreateInfo const & createInfo );
+		Image( VkDevice device
+			, VkImageCreateInfo const & createInfo );
 		/**
 		*\brief
 		*	Constructeur.
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		Image( Device const & device
+		Image( VkDevice device
 			, VkFormat format
 			, VkExtent2D const & dimensions
 			, ID3D11Texture2D * image );
@@ -61,7 +61,7 @@ namespace ashes::d3d11
 		*\param[in] device
 		*	Le périphérique logique.
 		*/
-		Image( Device const & device
+		Image( VkDevice device
 			, VkFormat format
 			, VkExtent2D const & dimensions
 			, VkImageUsageFlags usageFlags
@@ -73,15 +73,15 @@ namespace ashes::d3d11
 		*/
 		~Image();
 		/**
-		*\copydoc	ashes::Image::createView
+		*\copydoc	VkImage::createView
 		*/
 		VkMemoryRequirements getMemoryRequirements()const;
 		/**
-		*\copydoc	ashes::Image::createView
+		*\copydoc	VkImage::createView
 		*/
 		ashes::ImageViewPtr createView( ashes::ImageViewCreateInfo const & createInfo )const;
 		/**
-		*\copydoc	ashes::Image::generateMipmaps
+		*\copydoc	VkImage::generateMipmaps
 		*/
 		void generateMipmaps( ashes::CommandBuffer & commandBuffer )const;
 
@@ -127,7 +127,7 @@ namespace ashes::d3d11
 		void doBindMemory()override;
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		union
 		{
 			ID3D11Texture1D * tex1D;

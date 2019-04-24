@@ -16,7 +16,7 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		ResetQueryPoolCommand( Device const & device
+		ResetQueryPoolCommand( VkDevice device
 			, ashes::QueryPool const & pool
 			, uint32_t firstQuery
 			, uint32_t queryCount );

@@ -65,7 +65,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	Pipeline::Pipeline( Device const & device
+	Pipeline::Pipeline( VkDevice device
 		, ashes::PipelineLayout const & layout
 		, ashes::GraphicsPipelineCreateInfo createInfo )
 		: ashes::Pipeline{ device
@@ -143,7 +143,7 @@ namespace ashes::d3d11
 		return dummy;
 	}
 
-	void Pipeline::doCreateBlendState( Device const & device )
+	void Pipeline::doCreateBlendState( VkDevice device )
 	{
 		auto d3ddevice = device.getDevice();
 		auto blendDesc = convert( m_createInfo.colourBlendState );
@@ -157,7 +157,7 @@ namespace ashes::d3d11
 		dxDebugName( m_bdState, PipelineBlendState );
 	}
 
-	void Pipeline::doCreateRasterizerState( Device const & device )
+	void Pipeline::doCreateRasterizerState( VkDevice device )
 	{
 		auto d3ddevice = device.getDevice();
 		auto rasterizerDesc = convert( m_createInfo.rasterisationState
@@ -172,7 +172,7 @@ namespace ashes::d3d11
 		dxDebugName( m_rsState, PipelineRasterizerState );
 	}
 
-	void Pipeline::doCreateDepthStencilState( Device const & device )
+	void Pipeline::doCreateDepthStencilState( VkDevice device )
 	{
 		if ( m_createInfo.depthStencilState )
 		{
@@ -189,7 +189,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	void Pipeline::doCompileProgram( Device const & device )
+	void Pipeline::doCompileProgram( VkDevice device )
 	{
 		for ( auto & state : m_createInfo.stages )
 		{
@@ -224,7 +224,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	void Pipeline::doCreateInputLayout( Device const & device )
+	void Pipeline::doCreateInputLayout( VkDevice device )
 	{
 		auto it = m_programLayout.find( VK_SHADER_STAGE_VERTEX_BIT );
 

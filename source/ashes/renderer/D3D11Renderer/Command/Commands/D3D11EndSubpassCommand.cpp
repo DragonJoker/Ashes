@@ -13,7 +13,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	EndSubpassCommand::EndSubpassCommand( Device const & device
+	EndSubpassCommand::EndSubpassCommand( VkDevice device
 		, ashes::FrameBuffer const & frameBuffer
 		, ashes::SubpassDescription const & subpass )
 		: CommandBase{ device }

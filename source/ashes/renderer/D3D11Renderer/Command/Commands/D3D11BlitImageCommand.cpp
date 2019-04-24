@@ -41,9 +41,9 @@ namespace ashes::d3d11
 	{
 	}
 
-	BlitImageCommand::BlitImageCommand( Device const & device
-		, ashes::Image const & srcImage
-		, ashes::Image const & dstImage
+	BlitImageCommand::BlitImageCommand( VkDevice device
+		, VkImage srcImage
+		, VkImage dstImage
 		, std::vector< ashes::ImageBlit > const & regions
 		, VkFilter filter )
 		: CommandBase{ device }

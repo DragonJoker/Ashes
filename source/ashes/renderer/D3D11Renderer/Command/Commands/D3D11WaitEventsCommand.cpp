@@ -12,7 +12,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	WaitEventsCommand::WaitEventsCommand( Device const & device
+	WaitEventsCommand::WaitEventsCommand( VkDevice device
 		, ashes::EventCRefArray const & events
 		, VkPipelineStageFlags srcStageMask
 		, VkPipelineStageFlags dstStageMask

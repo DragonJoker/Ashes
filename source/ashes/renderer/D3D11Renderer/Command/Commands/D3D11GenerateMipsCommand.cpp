@@ -24,7 +24,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	GenerateMipsCommand::GenerateMipsCommand( Device const & device
+	GenerateMipsCommand::GenerateMipsCommand( VkDevice device
 		, Image const & texture )
 		: CommandBase{ device }
 		, m_texture{ texture }

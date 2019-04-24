@@ -39,7 +39,7 @@ namespace ashes::d3d11
 {
 	namespace
 	{
-		ID3D11DeviceChild * getResource( Device const & device
+		ID3D11DeviceChild * getResource( VkDevice device
 			, VkDebugReportObjectTypeEXT objectType
 			, void const * object )
 		{
@@ -120,7 +120,7 @@ namespace ashes::d3d11
 
 	Device::Device( Instance const & instance
 		, PhysicalDevice const & physicalDevice
-		, ashes::DeviceCreateInfo createInfos )
+		, VkDeviceCreateInfo createInfos )
 		: ashes::Device{ instance
 			, physicalDevice
 			, std::move( createInfos ) }
@@ -151,45 +151,45 @@ namespace ashes::d3d11
 #endif
 	}
 
-	ashes::RenderPassPtr Device::createRenderPass( ashes::RenderPassCreateInfo createInfo )const
+	VkRenderPass Device::createRenderPass( VkRenderPassCreateInfo createInfo )const
 	{
 		return std::make_unique< RenderPass >( *this, std::move( createInfo ) );
 	}
 
-	ashes::PipelineLayoutPtr Device::createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeArray const & pushConstantRanges )const
+	VkPipelineLayout Device::createPipelineLayout( ashes::VkDescriptorSetLayoutArray const & setLayouts
+			, ashes::VkPushConstantRangeArray const & pushConstantRanges )const
 	{
 		return std::make_unique< PipelineLayout >( *this
 			, setLayouts
 			, pushConstantRanges );
 	}
 
-	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( VkDescriptorSetLayoutBindingArray bindings )const
+	VkDescriptorSetLayout Device::createDescriptorSetLayout( VkDescriptorSetLayoutBindingArray bindings )const
 	{
 		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
 	}
 
-	ashes::DescriptorPoolPtr Device::createDescriptorPool( ashes::DescriptorPoolCreateFlags flags
+	VkDescriptorPool Device::createDescriptorPool( VkDescriptorPoolCreateFlags flags
 		, uint32_t maxSets
-		, ashes::DescriptorPoolSizeArray poolSizes )const
+		, ashes::VkDescriptorPoolSizeArray poolSizes )const
 	{
 		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
 	}
 
-	ashes::DeviceMemoryPtr Device::allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const
+	VkDeviceMemory Device::allocateMemory( VkMemoryAllocateInfo allocateInfo )const
 	{
 		return std::make_unique< DeviceMemory >( *this
 			, std::move( allocateInfo ) );
 	}
 
-	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo )const
+	VkImage Device::createImage( VkImageCreateInfo const & createInfo )const
 	{
 		return std::make_unique< Image >( *this, createInfo );
 	}
 
-	void Device::getImageSubresourceLayout( ashes::Image const & image
-		, ashes::ImageSubresource const & subresource
-		, ashes::SubresourceLayout & layout )const
+	void Device::getImageSubresourceLayout( VkImage image
+		, VkImageSubresource const & subresource
+		, VkSubresourceLayout & layout )const
 	{
 		auto extent = getTexelBlockExtent( image.getFormat() );
 		auto byteSize = getTexelBlockByteSize( extent, image.getFormat() );
@@ -202,12 +202,12 @@ namespace ashes::d3d11
 		layout.size = layout.arrayPitch * image.getDimensions().depth;
 	}
 
-	ashes::SamplerPtr Device::createSampler( ashes::SamplerCreateInfo const & createInfo )const
+	VkSampler Device::createSampler( VkSamplerCreateInfo const & createInfo )const
 	{
 		return std::make_unique< Sampler >( *this, createInfo );
 	}
 
-	ashes::BufferBasePtr Device::createBuffer( uint32_t size
+	VkBuffer Device::createBuffer( uint32_t size
 		, VkBufferUsageFlags target )const
 	{
 		return std::make_unique< Buffer >( *this
@@ -215,7 +215,7 @@ namespace ashes::d3d11
 			, target );
 	}
 
-	ashes::BufferViewPtr Device::createBufferView( ashes::BufferBase const & buffer
+	VkBufferView Device::createBufferView( VkBuffer buffer
 		, VkFormat format
 		, uint32_t offset
 		, uint32_t range )const
@@ -227,9 +227,9 @@ namespace ashes::d3d11
 			, range );
 	}
 
-	ashes::SwapChainPtr Device::createSwapChain( ashes::SwapChainCreateInfo createInfo )const
+	VkSwapchainKHR Device::createSwapChain( VkSwapchainCreateInfoKHR createInfo )const
 	{
-		ashes::SwapChainPtr result;
+		VkSwapchainKHR result;
 
 		try
 		{
@@ -247,37 +247,37 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	ashes::SemaphorePtr Device::createSemaphore()const
+	VkSemaphore Device::createSemaphore()const
 	{
 		return std::make_unique< Semaphore >( *this );
 	}
 
-	ashes::FencePtr Device::createFence( ashes::FenceCreateFlags flags )const
+	VkFence Device::createFence( VkFenceCreateFlags flags )const
 	{
 		return std::make_unique< Fence >( *this, flags );
 	}
 
-	ashes::EventPtr Device::createEvent()const
+	VkEvent Device::createEvent()const
 	{
 		return std::make_unique< Event >( *this );
 	}
 
-	ashes::CommandPoolPtr Device::createCommandPool( uint32_t queueFamilyIndex
-		, ashes::CommandPoolCreateFlags const & flags )const
+	VkCommandPool Device::createCommandPool( uint32_t queueFamilyIndex
+		, VkCommandPoolCreateFlags const & flags )const
 	{
 		return std::make_unique< CommandPool >( *this
 			, queueFamilyIndex
 			, flags );
 	}
 
-	ashes::ShaderModulePtr Device::createShaderModule( VkShaderStageFlagBits stage )const
+	VkShaderModule Device::createShaderModule( VkShaderStageFlagBits stage )const
 	{
 		return std::make_shared< ShaderModule >( *this, stage );
 	}
 
-	ashes::QueryPoolPtr Device::createQueryPool( VkQueryType type
+	VkQueryPool Device::createQueryPool( VkQueryType type
 		, uint32_t count
-		, ashes::QueryPipelineStatisticFlags pipelineStatistics )const
+		, VkQueryPipelineStatisticFlags pipelineStatistics )const
 	{
 		return std::make_unique< QueryPool >( *this
 			, type
@@ -285,7 +285,7 @@ namespace ashes::d3d11
 			, pipelineStatistics );
 	}
 
-	void Device::debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const
+	void Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
 #if !defined( NDEBUG )
 		auto * resource = getResource( *this, nameInfo.objectType, nameInfo.object );
@@ -299,7 +299,7 @@ namespace ashes::d3d11
 #endif
 	}
 
-	ashes::QueuePtr Device::getQueue( uint32_t familyIndex
+	VkQueue Device::getQueue( uint32_t familyIndex
 		, uint32_t index )const
 	{
 		auto it = m_queues.find( familyIndex );
@@ -333,10 +333,10 @@ namespace ashes::d3d11
 		}
 	}
 
-	bool Device::onCopyToImageCommand( ashes::CommandBuffer const & cmd
+	bool Device::onCopyToImageCommand( VkCommandBuffer cmd
 		, ashes::VkBufferImageCopyArray const & copyInfo
-		, ashes::BufferBase const & src
-		, ashes::Image const & dst )const
+		, VkBuffer src
+		, VkImage dst )const
 	{
 		return m_instance.onCopyToImageCommand( cmd, copyInfo, src, dst );
 	}

@@ -26,7 +26,7 @@ namespace ashes::d3d11
 		: public ashes::ImageView
 	{
 	public:
-		ImageView( Device const & device
+		ImageView( VkDevice device
 			, Image const & image
 			, ashes::ImageViewCreateInfo const & createInfo );
 		~ImageView();
@@ -61,7 +61,7 @@ namespace ashes::d3d11
 		void doCreateCubeArray();
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		Image const & m_image;
 		ID3D11RenderTargetView * m_renderTargetView{ nullptr };
 		ID3D11DepthStencilView * m_depthStencilView{ nullptr };

@@ -26,7 +26,7 @@ namespace ashes::d3d11
 		*\param[in] bindingPoint
 		*	Le point d'attache du set.
 		*/
-		BindDescriptorSetCommand( Device const & device
+		BindDescriptorSetCommand( VkDevice device
 			, ashes::DescriptorSet const & descriptorSet
 			, ashes::PipelineLayout const & layout
 			, ashes::UInt32Array const & dynamicOffsets

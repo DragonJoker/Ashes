@@ -30,7 +30,7 @@ namespace ashes::d3d11
 		*\param[in] firstInstance
 		*	Index de la premi�re instance.
 		*/
-		DrawIndexedCommand( Device const & device
+		DrawIndexedCommand( VkDevice device
 			, uint32_t indexCount
 			, uint32_t instCount
 			, uint32_t firstIndex

@@ -28,10 +28,10 @@ namespace ashes::d3d11
 		*\param[in] dst
 		*	L'image destination.
 		*/
-		CopyImageCommand( Device const & device
+		CopyImageCommand( VkDevice device
 			, ashes::ImageCopy const & copyInfo
-			, ashes::Image const & src
-			, ashes::Image const & dst );
+			, VkImage src
+			, VkImage dst );
 
 		void apply( Context const & context )const;
 		CommandPtr clone()const;

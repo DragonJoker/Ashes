@@ -65,7 +65,7 @@ namespace ashes::d3d11
 		context->RSSetScissorRects( UINT( state.size() ), state.data() );
 	}
 
-	BindPipelineCommand::BindPipelineCommand( Device const & device
+	BindPipelineCommand::BindPipelineCommand( VkDevice device
 		, ashes::Pipeline const & pipeline
 		, ashes::PipelineBindPoint bindingPoint )
 		: CommandBase{ device }

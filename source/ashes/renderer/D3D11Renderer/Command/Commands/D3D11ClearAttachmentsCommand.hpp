@@ -20,7 +20,7 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		ClearAttachmentsCommand( Device const & device
+		ClearAttachmentsCommand( VkDevice device
 			, RenderPass const & renderPass
 			, ashes::SubpassDescription const & subpass
 			, FrameBuffer const & framebuffer

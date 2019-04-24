@@ -20,7 +20,7 @@ namespace ashes::d3d11
 		*\brief
 		*	Constructeur.
 		*/
-		BindIndexBufferCommand( Device const & device
+		BindIndexBufferCommand( VkDevice device
 			, Buffer const & ibo
 			, uint64_t offset
 			, VkIndexType indexType );

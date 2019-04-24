@@ -19,7 +19,7 @@ namespace ashes::d3d11
 		: public ashes::ComputePipeline
 	{
 	public:
-		ComputePipeline( Device const & device
+		ComputePipeline( VkDevice device
 			, ashes::PipelineLayout const & layout
 			, ashes::ComputePipelineCreateInfo createInfo );
 		PushConstantsBuffer findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
@@ -40,7 +40,7 @@ namespace ashes::d3d11
 		}
 
 	private:
-		void doCompileProgram( Device const & device );
+		void doCompileProgram( VkDevice device );
 
 	private:
 		std::vector< PushConstantsBuffer > m_constantsPcbs;

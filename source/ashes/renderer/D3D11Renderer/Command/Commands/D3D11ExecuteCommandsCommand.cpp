@@ -8,8 +8,8 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	ExecuteCommandsCommand::ExecuteCommandsCommand( Device const & device
-		, ashes::CommandBuffer const & commandBuffer )
+	ExecuteCommandsCommand::ExecuteCommandsCommand( VkDevice device
+		, VkCommandBuffer commandBuffer )
 		: CommandBase{ device }
 		, m_commandBuffer{ static_cast< CommandBuffer const & >( commandBuffer ) }
 	{

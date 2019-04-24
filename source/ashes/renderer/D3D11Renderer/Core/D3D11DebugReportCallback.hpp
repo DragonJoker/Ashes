@@ -30,14 +30,14 @@ namespace ashes::d3d11
 	{
 	public:
 		DebugLayer( DebugReportCallback & callback );
-		bool onBufferImageCommand( ashes::CommandBuffer const & cmd
+		bool onBufferImageCommand( VkCommandBuffer cmd
 			, ashes::BufferImageCopy const & copyInfo
-			, ashes::BufferBase const & buffer
-			, ashes::Image const & image )const;
-		bool onCopyToImageCommand( ashes::CommandBuffer const & cmd
+			, VkBuffer buffer
+			, VkImage image )const;
+		bool onCopyToImageCommand( VkCommandBuffer cmd
 			, ashes::VkBufferImageCopyArray const & copyInfos
-			, ashes::BufferBase const & src
-			, ashes::Image const & dst )const;
+			, VkBuffer src
+			, VkImage dst )const;
 		bool onCheckHResultCommand( HRESULT hresult
 			, std::string message )const;
 

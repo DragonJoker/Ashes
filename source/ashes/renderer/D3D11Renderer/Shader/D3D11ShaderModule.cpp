@@ -157,7 +157,7 @@ namespace ashes::d3d11
 			compiler.set_entry_point( entryPoint, model );
 		}
 
-		void doSetupOptions( Device const & device
+		void doSetupOptions( VkDevice device
 			, spirv_cross::CompilerHLSL & compiler )
 		{
 			auto options = compiler.get_common_options();
@@ -170,7 +170,7 @@ namespace ashes::d3d11
 			compiler.set_common_options( options );
 		}
 
-		void doSetupHlslOptions( Device const & device
+		void doSetupHlslOptions( VkDevice device
 			, spirv_cross::CompilerHLSL & compiler )
 		{
 			auto hlslOptions = compiler.get_hlsl_options();
@@ -180,7 +180,7 @@ namespace ashes::d3d11
 
 #endif
 
-		std::string compileSpvToHlsl( Device const & device
+		std::string compileSpvToHlsl( VkDevice device
 			, ashes::UInt32Array const & shader
 			, VkShaderStageFlagBits stage
 			, ashes::ShaderStageState const & state )
@@ -267,7 +267,7 @@ namespace ashes::d3d11
 		return *this;
 	}
 
-	CompiledShaderModule::CompiledShaderModule( Device const & device
+	CompiledShaderModule::CompiledShaderModule( VkDevice device
 		, ashes::UInt32Array const & spv
 		, ashes::ShaderStageState const & state )
 		: m_shader{ nullptr }
@@ -409,7 +409,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	void CompiledShaderModule::doRetrieveShader( Device const & device )
+	void CompiledShaderModule::doRetrieveShader( VkDevice device )
 	{
 		auto dxDevice = device.getDevice();
 		HRESULT hr;
@@ -472,7 +472,7 @@ namespace ashes::d3d11
 		checkError( device, hr, "RetrieveShader" );
 	}
 
-	ShaderDesc CompiledShaderModule::doRetrieveShaderDesc( Device const & device )
+	ShaderDesc CompiledShaderModule::doRetrieveShaderDesc( VkDevice device )
 	{
 		// Reflect shader info
 		CComPtr< ID3D11ShaderReflection > shaderReflection;
@@ -594,7 +594,7 @@ namespace ashes::d3d11
 
 	//*************************************************************************
 
-	ShaderModule::ShaderModule( Device const & device
+	ShaderModule::ShaderModule( VkDevice device
 		, VkShaderStageFlagBits stage )
 		: ashes::ShaderModule{ device, stage }
 		, m_device{ device }

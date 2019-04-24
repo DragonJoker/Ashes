@@ -128,8 +128,8 @@ namespace ashes::d3d11
 		return D3D11_FILTER_MIN_MAG_MIP_POINT;
 	}
 
-	Sampler::Sampler( Device const & device
-		, ashes::SamplerCreateInfo const & createInfo )
+	Sampler::Sampler( VkDevice device
+		, VkSamplerCreateInfo const & createInfo )
 		: ashes::Sampler{ device, createInfo }
 	{
 		auto d3ddevice = device.getDevice();

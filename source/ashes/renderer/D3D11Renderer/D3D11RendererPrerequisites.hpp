@@ -61,7 +61,7 @@ typedef uint8_t UINT8;
 #	define __WIDL_DXGI_H
 #endif
 
-#include <ashes/ashes.h>
+#include <ashes/ashes.hpp>
 
 #include <Windows.h>
 #include <initguid.h>
@@ -313,7 +313,7 @@ namespace ashes::d3d11
 
 	struct PushConstantsBuffer
 	{
-		std::shared_ptr< ashes::UniformBufferBase > ubo;
+		std::shared_ptr< Buffer > ubo;
 		UINT location;
 		PushConstantsDesc data;
 	};
@@ -336,7 +336,7 @@ namespace ashes::d3d11
 	using WriteDescriptorSetBindingArray = std::vector< WriteDescriptorSetBinding >;
 
 	std::string getLastErrorText();
-	bool checkError( Device const & device, HRESULT hResult, char const * const text );
+	bool checkError( VkDevice device, HRESULT hResult, char const * const text );
 	std::string toString( std::wstring const & text );
 	uint32_t deduceMemoryType( uint32_t typeBits
 		, VkMemoryPropertyFlags requirements );

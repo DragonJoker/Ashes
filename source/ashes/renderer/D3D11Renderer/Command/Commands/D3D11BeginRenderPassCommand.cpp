@@ -13,7 +13,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	BeginRenderPassCommand::BeginRenderPassCommand( Device const & device
+	BeginRenderPassCommand::BeginRenderPassCommand( VkDevice device
 		, ashes::RenderPass const & renderPass
 		, ashes::FrameBuffer const & frameBuffer
 		, ashes::ClearValueArray const & clearValues )

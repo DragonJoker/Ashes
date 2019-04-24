@@ -6,10 +6,10 @@
 
 namespace ashes::d3d11
 {
-	DescriptorPool::DescriptorPool( Device const & device
-		, ashes::DescriptorPoolCreateFlags flags
+	DescriptorPool::DescriptorPool( VkDevice device
+		, VkDescriptorPoolCreateFlags flags
 		, uint32_t maxSets
-		, ashes::DescriptorPoolSizeArray poolSizes )
+		, ashes::VkDescriptorPoolSizeArray poolSizes )
 		: ashes::DescriptorPool{ device, flags }
 		, m_device{ device }
 	{

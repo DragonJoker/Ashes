@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	ClearDepthStencilCommand::ClearDepthStencilCommand( Device const & device
+	ClearDepthStencilCommand::ClearDepthStencilCommand( VkDevice device
 		, ashes::ImageView const & image
 		, ashes::DepthStencilClearValue const & value )
 		: CommandBase{ device }

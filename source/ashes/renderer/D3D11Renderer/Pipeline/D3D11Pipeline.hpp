@@ -21,7 +21,7 @@ namespace ashes::d3d11
 		: public ashes::Pipeline
 	{
 	public:
-		Pipeline( Device const & device
+		Pipeline( VkDevice device
 			, ashes::PipelineLayout const & layout
 			, ashes::GraphicsPipelineCreateInfo createInfo );
 		~Pipeline();
@@ -133,11 +133,11 @@ namespace ashes::d3d11
 		}
 
 	private:
-		void doCreateBlendState( Device const & device );
-		void doCreateRasterizerState( Device const & device );
-		void doCreateDepthStencilState( Device const & device );
-		void doCompileProgram( Device const & device );
-		void doCreateInputLayout( Device const & device );
+		void doCreateBlendState( VkDevice device );
+		void doCreateRasterizerState( VkDevice device );
+		void doCreateDepthStencilState( VkDevice device );
+		void doCompileProgram( VkDevice device );
+		void doCreateInputLayout( VkDevice device );
 
 	private:
 		ID3D11DepthStencilState * m_dsState{ nullptr };

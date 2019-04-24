@@ -12,8 +12,8 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		DispatchIndirectCommand( Device const & device
-			, ashes::BufferBase const & buffer
+		DispatchIndirectCommand( VkDevice device
+			, VkBuffer buffer
 			, uint32_t offset );
 
 		void apply( Context const & context )const;

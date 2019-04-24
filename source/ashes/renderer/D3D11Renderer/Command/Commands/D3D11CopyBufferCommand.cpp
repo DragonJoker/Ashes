@@ -10,10 +10,10 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	CopyBufferCommand::CopyBufferCommand( Device const & device
+	CopyBufferCommand::CopyBufferCommand( VkDevice device
 		, ashes::BufferCopy const & copyInfo
-		, ashes::BufferBase const & src
-		, ashes::BufferBase const & dst )
+		, VkBuffer src
+		, VkBuffer dst )
 		: CommandBase{ device }
 		, m_src{ static_cast< Buffer const & >( src ) }
 		, m_dst{ static_cast< Buffer const & >( dst ) }

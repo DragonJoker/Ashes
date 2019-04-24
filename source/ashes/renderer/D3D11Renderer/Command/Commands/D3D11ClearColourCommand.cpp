@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	ClearColourCommand::ClearColourCommand( Device const & device
+	ClearColourCommand::ClearColourCommand( VkDevice device
 		, ashes::ImageView const & image
 		, VkClearColorValue const & colour )
 		: CommandBase{ device }

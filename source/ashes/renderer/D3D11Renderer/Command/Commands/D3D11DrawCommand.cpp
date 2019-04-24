@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	DrawCommand::DrawCommand( Device const & device
+	DrawCommand::DrawCommand( VkDevice device
 		, uint32_t vtxCount
 		, uint32_t instCount
 		, uint32_t firstVertex

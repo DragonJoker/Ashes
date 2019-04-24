@@ -4,112 +4,108 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Core/D3D11Layer.hpp"
+#include "renderer/D3D11Renderer/Core/D3D11Layer.hpp"
 
-#include <Ashes/Buffer/Buffer.hpp>
-#include <Ashes/Core/Surface.hpp>
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Miscellaneous/QueueCreateInfo.hpp>
-#include <Ashes/Miscellaneous/SwapChainCreateInfo.hpp>
+#include "renderer/D3D11Renderer/Buffer/D3D11Buffer.hpp"
+#include "renderer/D3D11Renderer/Core/D3D11Surface.hpp"
 
 namespace ashes::d3d11
 {
 	class Device
-		: public ashes::Device
 	{
 	public:
 		Device( Instance const & instance
 			, PhysicalDevice const & physicalDevice
-			, ashes::DeviceCreateInfo createInfos );
+			, VkDeviceCreateInfo createInfos );
 		~Device();
 		/*
 		*\copydoc	ashes::Device::createRenderPass
 		*/
-		ashes::RenderPassPtr createRenderPass( ashes::RenderPassCreateInfo createInfo )const;
+		VkRenderPass createRenderPass( VkRenderPassCreateInfo createInfo )const;
 		/**
 		*\copydoc	ashes::Device::createPipelineLayout
 		*/
-		ashes::PipelineLayoutPtr createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeArray const & pushConstantRanges )const;
+		VkPipelineLayout createPipelineLayout( ashes::VkDescriptorSetLayoutArray const & setLayouts
+			, ashes::VkPushConstantRangeArray const & pushConstantRanges )const;
 		/**
 		*\copydoc	ashes::Device::createDescriptorSetLayout
 		*/
-		ashes::DescriptorSetLayoutPtr createDescriptorSetLayout( VkDescriptorSetLayoutBindingArray bindings )const;
+		VkDescriptorSetLayout createDescriptorSetLayout( VkDescriptorSetLayoutBindingArray bindings )const;
 		/**
 		*\copydoc	ashes::Device::createDescriptorPool
 		*/
-		ashes::DescriptorPoolPtr createDescriptorPool( ashes::DescriptorPoolCreateFlags flags
+		VkDescriptorPool createDescriptorPool( VkDescriptorPoolCreateFlags flags
 			, uint32_t maxSets
-			, ashes::DescriptorPoolSizeArray poolSizes )const;
+			, ashes::VkDescriptorPoolSizeArray poolSizes )const;
 		/**
 		*\copydoc	ashes::Device::allocateMemory
 		*/
-		ashes::DeviceMemoryPtr allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const;
+		VkDeviceMemory allocateMemory( VkMemoryAllocateInfo allocateInfo )const;
 		/**
 		*\copydoc	ashes::Device::createImage
 		*/
-		ashes::ImagePtr createImage( ashes::ImageCreateInfo const & createInfo )const;
+		VkImage createImage( VkImageCreateInfo const & createInfo )const;
 		/**
 		*\copydoc	ashes::Device::getImageSubresourceLayout
 		*/
-		void getImageSubresourceLayout( ashes::Image const & image
-			, ashes::ImageSubresource const & subresource
-			, ashes::SubresourceLayout & layout )const;
+		void getImageSubresourceLayout( VkImage image
+			, VkImageSubresource const & subresource
+			, VkSubresourceLayout & layout )const;
 		/**
 		*\copydoc	ashes::Device::createSampler
 		*/
-		ashes::SamplerPtr createSampler( ashes::SamplerCreateInfo const & createInfo )const;
+		VkSampler createSampler( VkSamplerCreateInfo const & createInfo )const;
 		/**
 		*\copydoc	ashes::Device::createBuffer
 		*/
-		ashes::BufferBasePtr createBuffer( uint32_t size
+		VkBuffer createBuffer( uint32_t size
 			, VkBufferUsageFlags target )const;
 		/**
 		*\copydoc	ashes::Device::createBufferView
 		*/
-		ashes::BufferViewPtr createBufferView( ashes::BufferBase const & buffer
+		VkBufferView createBufferView( VkBuffer buffer
 			, VkFormat format
 			, uint32_t offset
 			, uint32_t range )const;
 		/**
 		*\copydoc	ashes::Device::createSwapChain
 		*/
-		ashes::SwapChainPtr createSwapChain( ashes::SwapChainCreateInfo createInfo )const;
+		VkSwapchainKHR createSwapChain( VkSwapchainCreateInfoKHR createInfo )const;
 		/**
 		*\copydoc	ashes::Device::createSemaphore
 		*/
-		ashes::SemaphorePtr createSemaphore()const;
+		VkSemaphore createSemaphore()const;
 		/**
 		*\copydoc	ashes::Device::createFence
 		*/
-		ashes::FencePtr createFence( ashes::FenceCreateFlags flags )const;
+		VkFence createFence( VkFenceCreateFlags flags )const;
 		/**
 		*\copydoc	ashes::Device::createEvent
 		*/
-		ashes::EventPtr createEvent()const;
+		VkEvent createEvent()const;
 		/**
 		*\copydoc	ashes::Device::createCommandPool
 		*/
-		ashes::CommandPoolPtr createCommandPool( uint32_t queueFamilyIndex
-			, ashes::CommandPoolCreateFlags const & flags )const;
+		VkCommandPool createCommandPool( uint32_t queueFamilyIndex
+			, VkCommandPoolCreateFlags const & flags )const;
 		/**
 		*\copydoc	ashes::Device::createShaderProgram
 		*/
-		virtual ashes::ShaderModulePtr createShaderModule( VkShaderStageFlagBits stage )const;
+		VkShaderModule createShaderModule( VkShaderStageFlagBits stage )const;
 		/**
 		*\copydoc	ashes::Device::createQueryPool
 		*/
-		ashes::QueryPoolPtr createQueryPool( VkQueryType type
+		VkQueryPool createQueryPool( VkQueryType type
 			, uint32_t count
-			, ashes::QueryPipelineStatisticFlags pipelineStatistics )const;
+			, VkQueryPipelineStatisticFlags pipelineStatistics )const;
 		/**
 		*\copydoc	ashes::Device::debugMarkerSetObjectName
 		*/
-		void debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const;
+		void debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const;
 		/**
 		*\copydoc	ashes::Device::getQueue
 		*/
-		ashes::QueuePtr getQueue( uint32_t familyIndex
+		VkQueue getQueue( uint32_t familyIndex
 			, uint32_t index )const;
 		/**
 		*\brief
@@ -125,10 +121,10 @@ namespace ashes::d3d11
 		*	Délégation aux layers.
 		*/
 		/**@{*/
-		bool onCopyToImageCommand( ashes::CommandBuffer const & cmd
+		bool onCopyToImageCommand( VkCommandBuffer cmd
 			, ashes::VkBufferImageCopyArray const & copyInfo
-			, ashes::BufferBase const & src
-			, ashes::Image const & dst )const;
+			, VkBuffer src
+			, VkImage dst )const;
 		bool onCheckHResultCommand( HRESULT hresult
 			, std::string message )const;
 		/**@}*/
@@ -162,9 +158,9 @@ namespace ashes::d3d11
 			return m_d3dDevice;
 		}
 
-		inline ashes::BufferBase const & getEmptyIndexedVaoIdx()const
+		inline VkBuffer getEmptyIndexedVaoIdx()const
 		{
-			return m_dummyIndexed->getBuffer();
+			return m_dummyIndexed;
 		}
 
 		inline PhysicalDevice const & getGpu()const
@@ -193,12 +189,12 @@ namespace ashes::d3d11
 		ID3D11DeviceContext * m_deviceContext;
 		ID3D11Query * m_waitIdleQuery;
 		D3D_FEATURE_LEVEL m_featureLevel;
-		using QueueCreateCount = std::pair< ashes::DeviceQueueCreateInfo, uint32_t >;
+		using QueueCreateCount = std::pair< VkDeviceQueueCreateInfo, uint32_t >;
 		std::map< uint32_t, QueueCreateCount > m_queues;
 #if !defined( NDEBUG )
 		ID3D11Debug * m_debug;
 #endif
 		// Mimic the behavior in Vulkan, when no IBO nor VBO is bound.
-		ashes::BufferPtr< uint32_t > m_dummyIndexed;
+		VkBuffer m_dummyIndexed;
 	};
 }

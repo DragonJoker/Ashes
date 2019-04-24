@@ -22,7 +22,7 @@ namespace ashes::d3d11
 		*\param[in] groupCountX, groupCountY, groupCountZ
 		*	Le nombre de groupes de travail locaux à distribuer dans les dimensions Xy, Y, et Z.
 		*/
-		DispatchCommand( Device const & device
+		DispatchCommand( VkDevice device
 			, uint32_t groupCountX
 			, uint32_t groupCountY
 			, uint32_t groupCountZ );

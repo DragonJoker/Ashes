@@ -27,10 +27,10 @@ namespace ashes::d3d11
 		}
 	}
 
-	CopyImageCommand::CopyImageCommand( Device const & device
+	CopyImageCommand::CopyImageCommand( VkDevice device
 		, ashes::ImageCopy const & copyInfo
-		, ashes::Image const & src
-		, ashes::Image const & dst )
+		, VkImage src
+		, VkImage dst )
 		: CommandBase{ device }
 		, m_copyInfo{ copyInfo }
 		, m_src{ static_cast< Image const & >( src ) }

@@ -3,23 +3,23 @@
 #include "Buffer/D3D11Buffer.hpp"
 #include "Core/D3D11Device.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
-	BufferView::BufferView( Device const & device
-		, Buffer const & buffer
-		, VkFormat format
-		, uint32_t offset
-		, uint32_t range )
-		: ashes::BufferView{ device, buffer, format, offset, range }
+	BufferView::BufferView( VkDevice device
+		, VkBufferViewCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc{};
-		desc.Format = getSRVFormat( format );
+		desc.Format = getSRVFormat( m_createInfo.format );
 		desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-		auto elemSize = getSize( format );
-		desc.Buffer.FirstElement = offset / elemSize;
-		desc.Buffer.NumElements = range / elemSize;
+		auto elemSize = getSize( m_createInfo.format );
+		desc.Buffer.FirstElement = m_createInfo.offset / elemSize;
+		desc.Buffer.NumElements = m_createInfo.range / elemSize;
 
-		auto hr = device.getDevice()->CreateShaderResourceView( buffer.getBuffer()
+		auto hr = get( device )->getDevice()->CreateShaderResourceView( get( m_createInfo.buffer )->getBuffer()
 			, &desc
 			, &m_view );
 

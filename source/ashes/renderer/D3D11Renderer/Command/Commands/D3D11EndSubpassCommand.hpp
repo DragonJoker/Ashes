@@ -12,7 +12,7 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		EndSubpassCommand( Device const & device
+		EndSubpassCommand( VkDevice device
 			, ashes::FrameBuffer const & frameBuffer
 			, ashes::SubpassDescription const & subpass );
 

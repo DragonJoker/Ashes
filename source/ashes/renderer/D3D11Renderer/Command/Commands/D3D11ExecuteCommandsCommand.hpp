@@ -12,8 +12,8 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		ExecuteCommandsCommand( Device const & device
-			, ashes::CommandBuffer const & commandBuffer );
+		ExecuteCommandsCommand( VkDevice device
+			, VkCommandBuffer commandBuffer );
 		~ExecuteCommandsCommand();
 		void apply( Context const & context )const;
 		CommandPtr clone()const;

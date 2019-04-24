@@ -4,25 +4,34 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-
-#include <Ashes/Core/Surface.hpp>
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 namespace ashes::d3d11
 {
-	class Surface
-		: public ashes::Surface
+	class SurfaceKHR
 	{
 	public:
-		Surface( Instance const & instance
-			, ashes::PhysicalDevice const & gpu
-			, ashes::WindowHandle handle );
-		~Surface();
+		SurfaceKHR( VkInstance instance
+			, VkSurfaceCreateInfoKHR createInfo );
+		~SurfaceKHR();
 
 		bool getSupport( uint32_t queueFamilyIndex )const;
-		std::vector < VkPresentModeKHR > getPresentModes()const;
-		ashes::SurfaceCapabilities getCapabilities()const;
-		std::vector< VkSurfaceFormatKHR > getFormats()const;
+
+		VkSurfaceCapabilitiesKHR getCapabilities()const
+		{
+			return m_surfaceCapabilities;
+		}
+
+		VkPresentModeArrayKHR getPresentModes()const
+		{
+			return m_presentModes;
+		}
+
+		VkSurfaceFormatArrayKHR getFormats()const
+		{
+			return m_surfaceFormats;
+		}
+
 
 		inline std::vector< DXGI_MODE_DESC > const & getDescs( VkFormat format )const
 		{
@@ -30,6 +39,14 @@ namespace ashes::d3d11
 		}
 
 	private:
+		void getSurfaceInfos();
+
+	private:
+		VkSurfaceCreateInfoKHR m_createInfo;
+		VkSurfaceFormatArrayKHR m_surfaceFormats;
+		VkSurfaceCapabilitiesKHR m_surfaceCapabilities;
+		VkPresentModeArrayKHR m_presentModes;
+		std::string m_type;
 		std::vector< DXGI_MODE_DESC > m_displayModes;
 		mutable std::map< VkFormat, std::vector< DXGI_MODE_DESC > > m_descs;
 	};

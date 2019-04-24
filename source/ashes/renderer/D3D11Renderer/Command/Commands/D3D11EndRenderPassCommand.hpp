@@ -20,7 +20,7 @@ namespace ashes::d3d11
 		*\brief
 		*	Constructeur.
 		*/
-		EndRenderPassCommand( Device const & device
+		EndRenderPassCommand( VkDevice device
 			, ashes::RenderPass const & renderPass
 			, ashes::FrameBuffer const & frameBuffer );
 

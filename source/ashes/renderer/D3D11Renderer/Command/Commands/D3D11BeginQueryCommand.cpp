@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	BeginQueryCommand::BeginQueryCommand( Device const & device
+	BeginQueryCommand::BeginQueryCommand( VkDevice device
 		, ashes::QueryPool const & pool
 		, uint32_t query
 		, ashes::QueryControlFlags flags )

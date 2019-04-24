@@ -24,7 +24,7 @@ namespace ashes::d3d11
 		*\param[in] scissor
 		*	Le scissor.
 		*/
-		SetLineWidthCommand( Device const & device
+		SetLineWidthCommand( VkDevice device
 			, float width );
 
 		void apply( Context const & context )const;

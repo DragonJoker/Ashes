@@ -24,7 +24,7 @@ namespace ashes::d3d11
 		*\param[in] viewport
 		*	Le viewport.
 		*/
-		ViewportCommand( Device const & device
+		ViewportCommand( VkDevice device
 			, uint32_t first
 			, ashes::VkViewportArray const & viewports );
 

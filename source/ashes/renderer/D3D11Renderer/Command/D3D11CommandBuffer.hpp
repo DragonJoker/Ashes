@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
-
-#include <Ashes/Command/CommandBuffer.hpp>
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -16,7 +14,6 @@ namespace ashes::d3d11
 	*	Encapsulation d'un TestCommandBuffer.
 	*/
 	class CommandBuffer
-		: public ashes::CommandBuffer
 	{
 	public:
 		/**
@@ -39,7 +36,7 @@ namespace ashes::d3d11
 		*\param[in] primary
 		*	Specifies if the command buffer is primary (\p true) or secondary (\p false).
 		*/
-		CommandBuffer( Device const & device
+		CommandBuffer( VkDevice device
 			, CommandPool const & pool
 			, bool primary );
 		/**
@@ -115,7 +112,7 @@ namespace ashes::d3d11
 		/**
 		*\copydoc	ashes::CommandBuffer:bindIndexBuffer
 		*/
-		void bindIndexBuffer( ashes::BufferBase const & buffer
+		void bindIndexBuffer( VkBuffer buffer
 			, uint64_t offset
 			, VkIndexType indexType )const;
 		/**
@@ -153,14 +150,14 @@ namespace ashes::d3d11
 		/**
 		*\copydoc	ashes::CommandBuffer:drawIndirect
 		*/
-		void drawIndirect( ashes::BufferBase const & buffer
+		void drawIndirect( VkBuffer buffer
 			, uint32_t offset
 			, uint32_t drawCount
 			, uint32_t stride )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:drawIndexedIndirect
 		*/
-		void drawIndexedIndirect( ashes::BufferBase const & buffer
+		void drawIndexedIndirect( VkBuffer buffer
 			, uint32_t offset
 			, uint32_t drawCount
 			, uint32_t stride )const;
@@ -168,34 +165,34 @@ namespace ashes::d3d11
 		*\copydoc	ashes::CommandBuffer::copyToImage
 		*/
 		void copyToImage( ashes::VkBufferImageCopyArray const & copyInfo
-			, ashes::BufferBase const & src
-			, ashes::Image const & dst )const;
+			, VkBuffer src
+			, VkImage dst )const;
 		/**
 		*\copydoc	ashes::CommandBuffer::copyToBuffer
 		*/
 		void copyToBuffer( ashes::VkBufferImageCopyArray const & copyInfo
-			, ashes::Image const & src
-			, ashes::BufferBase const & dst )const;
+			, VkImage src
+			, VkBuffer dst )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:copyBuffer
 		*/
 		void copyBuffer( ashes::BufferCopy const & copyInfo
-			, ashes::BufferBase const & src
-			, ashes::BufferBase const & dst )const;
+			, VkBuffer src
+			, VkBuffer dst )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:copyImage
 		*/
 		void copyImage( ashes::ImageCopy const & copyInfo
-			, ashes::Image const & src
+			, VkImage src
 			, VkImageLayout srcLayout
-			, ashes::Image const & dst
+			, VkImage dst
 			, VkImageLayout dstLayout )const;
 		/**
 		*\copydoc	ashes::CommandBuffer:blitImage
 		*/
-		void blitImage( ashes::Image const & srcImage
+		void blitImage( VkImage srcImage
 			, VkImageLayout srcLayout
-			, ashes::Image const & dstImage
+			, VkImage dstImage
 			, VkImageLayout dstLayout
 			, std::vector< ashes::ImageBlit > const & regions
 			, VkFilter filter )const;
@@ -239,7 +236,7 @@ namespace ashes::d3d11
 		/**
 		*\copydoc	ashes::CommandBuffer:dispatchIndirect
 		*/
-		void dispatchIndirect( ashes::BufferBase const & buffer
+		void dispatchIndirect( VkBuffer buffer
 			, uint32_t offset )const;
 		/**
 		*\copydoc	ashes::CommandBuffer::setLineWidth
@@ -298,7 +295,7 @@ namespace ashes::d3d11
 		void doAddAfterSubmitAction()const;
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		CommandPool const & m_pool;
 		mutable CommandArray m_commands;
 		struct State

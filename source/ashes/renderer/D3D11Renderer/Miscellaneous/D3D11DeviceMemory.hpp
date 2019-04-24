@@ -26,8 +26,8 @@ namespace ashes::d3d11
 		class DeviceMemoryImpl
 		{
 		public:
-			DeviceMemoryImpl( Device const & device
-				, ashes::MemoryAllocateInfo allocateInfo );
+			DeviceMemoryImpl( VkDevice device
+				, VkMemoryAllocateInfo allocateInfo );
 			virtual ~DeviceMemoryImpl() = default;
 			virtual uint8_t * lock( uint64_t offset
 				, uint64_t size
@@ -39,8 +39,8 @@ namespace ashes::d3d11
 			virtual void unlock()const = 0;
 
 		protected:
-			Device const & m_device;
-			ashes::MemoryAllocateInfo m_allocateInfo;
+			VkDevice m_device;
+			VkMemoryAllocateInfo m_allocateInfo;
 			VkMemoryPropertyFlags m_flags;
 		};
 
@@ -65,8 +65,8 @@ namespace ashes::d3d11
 		*\param[in] flags
 		*	The wanted memory flags.
 		*/
-		DeviceMemory( Device const & device
-			, ashes::MemoryAllocateInfo allocateInfo );
+		DeviceMemory( VkDevice device
+			, VkMemoryAllocateInfo allocateInfo );
 		/**
 		*\~french
 		*\brief
@@ -98,12 +98,12 @@ namespace ashes::d3d11
 		void unlock()const;
 
 		ID3D11Buffer * bindToBuffer( VkBufferUsageFlags targets );
-		ID3D11Texture1D * bindToTexture1D( ashes::ImageCreateInfo const & createInfo );
-		ID3D11Texture2D * bindToTexture2D( ashes::ImageCreateInfo const & createInfo );
-		ID3D11Texture3D * bindToTexture3D( ashes::ImageCreateInfo const & createInfo );
+		ID3D11Texture1D * bindToTexture1D( VkImageCreateInfo const & createInfo );
+		ID3D11Texture2D * bindToTexture2D( VkImageCreateInfo const & createInfo );
+		ID3D11Texture3D * bindToTexture3D( VkImageCreateInfo const & createInfo );
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		VkMemoryRequirements m_requirements;
 		std::unique_ptr< DeviceMemoryImpl > m_impl;
 	};

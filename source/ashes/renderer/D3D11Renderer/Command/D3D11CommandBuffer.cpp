@@ -93,7 +93,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	CommandBuffer::CommandBuffer( Device const & device
+	CommandBuffer::CommandBuffer( VkDevice device
 		, CommandPool const & pool
 		, bool primary )
 		: ashes::CommandBuffer{ device, pool, primary }
@@ -337,7 +337,7 @@ namespace ashes::d3d11
 		doAddAfterSubmitAction();
 	}
 
-	void CommandBuffer::bindIndexBuffer( ashes::BufferBase const & buffer
+	void CommandBuffer::bindIndexBuffer( VkBuffer buffer
 		, uint64_t offset
 		, VkIndexType indexType )const
 	{
@@ -432,7 +432,7 @@ namespace ashes::d3d11
 			, m_state.vbos ) );
 	}
 
-	void CommandBuffer::drawIndirect( ashes::BufferBase const & buffer
+	void CommandBuffer::drawIndirect( VkBuffer buffer
 		, uint32_t offset
 		, uint32_t drawCount
 		, uint32_t stride )const
@@ -447,7 +447,7 @@ namespace ashes::d3d11
 			, m_state.vbos ) );
 	}
 
-	void CommandBuffer::drawIndexedIndirect( ashes::BufferBase const & buffer
+	void CommandBuffer::drawIndexedIndirect( VkBuffer buffer
 		, uint32_t offset
 		, uint32_t drawCount
 		, uint32_t stride )const
@@ -469,8 +469,8 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::copyToImage( ashes::VkBufferImageCopyArray const & copyInfo
-		, ashes::BufferBase const & src
-		, ashes::Image const & dst )const
+		, VkBuffer src
+		, VkImage dst )const
 	{
 		if ( !m_device.onCopyToImageCommand( *this, copyInfo, src, dst ) )
 		{
@@ -482,8 +482,8 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::copyToBuffer( ashes::VkBufferImageCopyArray const & copyInfo
-		, ashes::Image const & src
-		, ashes::BufferBase const & dst )const
+		, VkImage src
+		, VkBuffer dst )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyImageToBufferCommand >( m_device
 			, copyInfo
@@ -492,8 +492,8 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::copyBuffer( ashes::BufferCopy const & copyInfo
-		, ashes::BufferBase const & src
-		, ashes::BufferBase const & dst )const
+		, VkBuffer src
+		, VkBuffer dst )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( m_device
 			, copyInfo
@@ -502,9 +502,9 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::copyImage( ashes::ImageCopy const & copyInfo
-		, ashes::Image const & src
+		, VkImage src
 		, VkImageLayout srcLayout
-		, ashes::Image const & dst
+		, VkImage dst
 		, VkImageLayout dstLayout )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyImageCommand >( m_device
@@ -513,9 +513,9 @@ namespace ashes::d3d11
 			, dst ) );
 	}
 
-	void CommandBuffer::blitImage( ashes::Image const & srcImage
+	void CommandBuffer::blitImage( VkImage srcImage
 		, VkImageLayout srcLayout
-		, ashes::Image const & dstImage
+		, VkImage dstImage
 		, VkImageLayout dstLayout
 		, std::vector< ashes::ImageBlit > const & regions
 		, VkFilter filter )const
@@ -607,7 +607,7 @@ namespace ashes::d3d11
 			, groupCountZ ) );
 	}
 
-	void CommandBuffer::dispatchIndirect( ashes::BufferBase const & buffer
+	void CommandBuffer::dispatchIndirect( VkBuffer buffer
 		, uint32_t offset )const
 	{
 		m_commands.emplace_back( std::make_unique< DispatchIndirectCommand >( m_device

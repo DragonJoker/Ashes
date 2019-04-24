@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	SetEventCommand::SetEventCommand( Device const & device
+	SetEventCommand::SetEventCommand( VkDevice device
 		, ashes::Event const & event
 		, VkPipelineStageFlags stageFlags )
 		: CommandBase{ device }

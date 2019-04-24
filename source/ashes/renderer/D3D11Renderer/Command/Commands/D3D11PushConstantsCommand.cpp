@@ -13,7 +13,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	PushConstantsCommand::PushConstantsCommand( Device const & device
+	PushConstantsCommand::PushConstantsCommand( VkDevice device
 		, PushConstantsBuffer const & pcb )
 		: CommandBase{ device }
 		, m_pcb{ pcb }

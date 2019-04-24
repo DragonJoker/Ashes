@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	WriteTimestampCommand::WriteTimestampCommand( Device const & device
+	WriteTimestampCommand::WriteTimestampCommand( VkDevice device
 		, VkPipelineStageFlagBits pipelineStage
 		, ashes::QueryPool const & pool
 		, uint32_t query )

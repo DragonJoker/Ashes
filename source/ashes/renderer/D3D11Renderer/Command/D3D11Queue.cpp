@@ -13,8 +13,8 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	Queue::Queue( Device const & device
-		, ashes::DeviceQueueCreateInfo createInfo
+	Queue::Queue( VkDevice device
+		, VkDeviceQueueCreateInfo createInfo
 		, uint32_t index )
 		: ashes::Queue{ device, std::move( createInfo ), index }
 		, m_device{ device }

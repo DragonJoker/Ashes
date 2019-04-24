@@ -809,7 +809,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	BindDescriptorSetCommand::BindDescriptorSetCommand( Device const & context
+	BindDescriptorSetCommand::BindDescriptorSetCommand( VkDevice context
 		, ashes::DescriptorSet const & descriptorSet
 		, ashes::PipelineLayout const & layout
 		, ashes::UInt32Array const & dynamicOffsets

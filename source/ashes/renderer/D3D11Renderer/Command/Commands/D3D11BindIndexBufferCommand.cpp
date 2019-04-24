@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	BindIndexBufferCommand::BindIndexBufferCommand( Device const & device
+	BindIndexBufferCommand::BindIndexBufferCommand( VkDevice device
 		, Buffer const & ibo
 		, uint64_t offset
 		, VkIndexType indexType )

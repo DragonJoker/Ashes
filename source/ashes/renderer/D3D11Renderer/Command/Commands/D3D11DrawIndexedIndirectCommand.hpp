@@ -12,8 +12,8 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		DrawIndexedIndirectCommand( Device const & device
-			, ashes::BufferBase const & buffer
+		DrawIndexedIndirectCommand( VkDevice device
+			, VkBuffer buffer
 			, uint32_t offset
 			, uint32_t drawCount
 			, uint32_t stride

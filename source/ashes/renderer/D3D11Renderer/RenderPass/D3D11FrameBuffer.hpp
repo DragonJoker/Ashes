@@ -39,7 +39,7 @@ namespace ashes::d3d11
 		*\param[in] textures
 		*	The attachments.
 		*/
-		Framebuffer( Device const & device
+		Framebuffer( VkDevice device
 			, RenderPass const & renderPass
 			, VkExtent2D const & dimensions
 			, ashes::ImageViewArray attachments );
@@ -82,7 +82,7 @@ namespace ashes::d3d11
 		}
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		ImageViewCRefArray m_views;
 		VkExtent2D m_dimensions;
 		std::vector< ID3D11View * > m_allViews;
