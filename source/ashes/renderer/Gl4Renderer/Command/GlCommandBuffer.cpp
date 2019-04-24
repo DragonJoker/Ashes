@@ -309,12 +309,7 @@ namespace ashes::gl4
 			++binding;
 		}
 
-		if ( m_state.boundVao )
-		{
-			m_state.boundVao = nullptr;
-			m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
-				, makeCmd< OpType::eBindVextexArray >( nullptr ) );
-		}
+		m_state.selectedVao = nullptr;
 	}
 
 	void CommandBuffer::bindIndexBuffer( VkBuffer buffer
@@ -323,13 +318,7 @@ namespace ashes::gl4
 	{
 		m_state.boundIbo = BufferObjectBinding{ get( buffer )->getInternal(), offset, buffer };
 		m_state.indexType = indexType;
-
-		if ( m_state.boundVao )
-		{
-			m_state.boundVao = nullptr;
-			m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
-				, makeCmd< OpType::eBindVextexArray >( nullptr ) );
-		}
+		m_state.selectedVao = nullptr;
 	}
 
 	void CommandBuffer::bindDescriptorSets( VkPipelineBindPoint bindingPoint
@@ -370,10 +359,10 @@ namespace ashes::gl4
 		if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() ) )
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
-			m_state.boundVao = &get( m_device )->getEmptyIndexedVao();
-			buildBindGeometryBuffersCommand( *m_state.boundVao
-				, m_cmdList );
+			m_state.selectedVao = &get( m_device )->getEmptyIndexedVao();
 			doProcessMappedBoundVaoBuffersIn();
+			buildBindGeometryBuffersCommand( *m_state.selectedVao
+				, m_cmdList );
 			buildDrawIndexedCommand( vtxCount
 				, instCount
 				, 0u
@@ -382,27 +371,27 @@ namespace ashes::gl4
 				, get( m_state.currentPipeline )->getInputAssemblyState().topology
 				, m_state.indexType
 				, m_cmdList );
-			doProcessMappedBoundDescriptorsBuffersOut();
 		}
 		else
 		{
-			if ( !m_state.boundVao )
+			if ( !m_state.selectedVao )
 			{
-				doBindVao();
+				doSelectVao();
 			}
 
 			doProcessMappedBoundVaoBuffersIn();
+			buildBindGeometryBuffersCommand( *m_state.selectedVao
+				, m_cmdList );
 			buildDrawCommand( vtxCount
 				, instCount
 				, firstVertex
 				, firstInstance
 				, get( m_state.currentPipeline )->getInputAssemblyState().topology
 				, m_cmdList );
-			doProcessMappedBoundDescriptorsBuffersOut();
 		}
 
-		m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
-			, makeCmd< OpType::eBindVextexArray >( nullptr ) );
+		m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
+		doProcessMappedBoundDescriptorsBuffersOut();
 	}
 
 	void CommandBuffer::drawIndexed( uint32_t indexCount
@@ -414,16 +403,16 @@ namespace ashes::gl4
 		if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() ) )
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
-			m_state.boundVao = &get( m_device )->getEmptyIndexedVao();
-			buildBindGeometryBuffersCommand( *m_state.boundVao
-				, m_cmdList );
+			m_state.selectedVao = &get( m_device )->getEmptyIndexedVao();
 		}
-		else if ( !m_state.boundVao )
+		else if ( !m_state.selectedVao )
 		{
-			doBindVao();
+			doSelectVao();
 		}
 
 		doProcessMappedBoundVaoBuffersIn();
+		buildBindGeometryBuffersCommand( *m_state.selectedVao
+			, m_cmdList );
 		buildDrawIndexedCommand( indexCount
 			, instCount
 			, firstIndex
@@ -432,10 +421,8 @@ namespace ashes::gl4
 			, get( m_state.currentPipeline )->getInputAssemblyState().topology
 			, m_state.indexType
 			, m_cmdList );
+		m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
 		doProcessMappedBoundDescriptorsBuffersOut();
-
-		m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
-			, makeCmd< OpType::eBindVextexArray >( nullptr ) );
 	}
 
 	void CommandBuffer::drawIndirect( VkBuffer buffer
@@ -443,23 +430,22 @@ namespace ashes::gl4
 		, uint32_t drawCount
 		, uint32_t stride )const
 	{
-		doProcessMappedBoundVaoBuffersIn();
-
-		if ( !m_state.boundVao )
+		if ( !m_state.selectedVao )
 		{
-			doBindVao();
+			doSelectVao();
 		}
 
+		doProcessMappedBoundVaoBuffersIn();
+		buildBindGeometryBuffersCommand( *m_state.selectedVao
+			, m_cmdList );
 		buildDrawIndirectCommand( buffer
 			, offset
 			, drawCount
 			, stride
 			, get( m_state.currentPipeline )->getInputAssemblyState().topology
 			, m_cmdList );
+		m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
 		doProcessMappedBoundDescriptorsBuffersOut();
-
-		m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
-			, makeCmd< OpType::eBindVextexArray >( nullptr ) );
 	}
 
 	void CommandBuffer::drawIndexedIndirect( VkBuffer buffer
@@ -470,16 +456,16 @@ namespace ashes::gl4
 		if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() ) )
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
-			m_state.boundVao = &get( m_device )->getEmptyIndexedVao();
-			buildBindGeometryBuffersCommand( *m_state.boundVao
-				, m_cmdList );
+			m_state.selectedVao = &get( m_device )->getEmptyIndexedVao();
 		}
-		else if ( !m_state.boundVao )
+		else if ( !m_state.selectedVao )
 		{
-			doBindVao();
+			doSelectVao();
 		}
 
 		doProcessMappedBoundVaoBuffersIn();
+		buildBindGeometryBuffersCommand( *m_state.selectedVao
+			, m_cmdList );
 		buildDrawIndexedIndirectCommand( buffer
 			, offset
 			, drawCount
@@ -487,10 +473,8 @@ namespace ashes::gl4
 			, get( m_state.currentPipeline )->getInputAssemblyState().topology
 			, m_state.indexType
 			, m_cmdList );
+		m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
 		doProcessMappedBoundDescriptorsBuffersOut();
-
-		m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
-			, makeCmd< OpType::eBindVextexArray >( nullptr ) );
 	}
 
 	void CommandBuffer::copyToImage( VkBuffer src
@@ -736,32 +720,29 @@ namespace ashes::gl4
 		m_state.vaos.clear();
 	}
 
-	void CommandBuffer::doBindVao()const
+	void CommandBuffer::doSelectVao()const
 	{
-		m_state.boundVao = get( m_state.currentPipeline )->findGeometryBuffers( m_state.boundVbos, m_state.boundIbo );
+		m_state.selectedVao = get( m_state.currentPipeline )->findGeometryBuffers( m_state.boundVbos, m_state.boundIbo );
 
-		if ( !m_state.boundVao )
+		if ( !m_state.selectedVao )
 		{
-			m_state.boundVao = &get( m_state.currentPipeline )->createGeometryBuffers( m_state.boundVbos, m_state.boundIbo, m_state.indexType ).get();
-			m_state.vaos.emplace_back( *m_state.boundVao );
+			m_state.selectedVao = &get( m_state.currentPipeline )->createGeometryBuffers( m_state.boundVbos, m_state.boundIbo, m_state.indexType ).get();
+			m_state.vaos.emplace_back( *m_state.selectedVao );
 		}
-		else if ( m_state.boundVao->getVao() == GL_INVALID_INDEX )
+		else if ( m_state.selectedVao->getVao() == GL_INVALID_INDEX )
 		{
 			auto it = std::find_if( m_state.vaos.begin()
 				, m_state.vaos.end()
 				, [this]( GeometryBuffersRef const & lookup )
 				{
-					return &lookup.get() == m_state.boundVao;
+					return &lookup.get() == m_state.selectedVao;
 				} );
 
 			if ( it == m_state.vaos.end() )
 			{
-				m_state.vaos.emplace_back( *m_state.boundVao );
+				m_state.vaos.emplace_back( *m_state.selectedVao );
 			}
 		}
-
-		buildBindGeometryBuffersCommand( *m_state.boundVao
-			, m_cmdList );
 	}
 
 	void CommandBuffer::doProcessMappedBoundDescriptorBuffersIn( VkDescriptorSet descriptor )const
@@ -819,17 +800,16 @@ namespace ashes::gl4
 
 	void CommandBuffer::doProcessMappedBoundVaoBuffersIn()const
 	{
-		if ( m_state.boundVao )
-		{
-			for ( auto & vbo : m_state.boundVao->getVbos() )
-			{
-				doProcessMappedBoundBufferIn( vbo.vbo );
-			}
+		assert( m_state.selectedVao );
 
-			if ( m_state.boundVao->hasIbo() )
-			{
-				doProcessMappedBoundBufferIn( m_state.boundVao->getIbo().ibo );
-			}
+		for ( auto & vbo : m_state.selectedVao->getVbos() )
+		{
+			doProcessMappedBoundBufferIn( vbo.vbo );
+		}
+
+		if ( m_state.selectedVao->hasIbo() )
+		{
+			doProcessMappedBoundBufferIn( m_state.selectedVao->getIbo().ibo );
 		}
 	}
 

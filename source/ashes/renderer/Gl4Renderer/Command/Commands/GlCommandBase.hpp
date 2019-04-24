@@ -40,6 +40,7 @@ namespace ashes::gl4
 		eBindImage,
 		eBindBufferRange,
 		eBindVextexArray,
+		eBindVextexArrayObject,
 		eBindContextState,
 		eFramebufferTexture2D,
 		eBlitFramebuffer,

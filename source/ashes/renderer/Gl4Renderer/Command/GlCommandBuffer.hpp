@@ -277,7 +277,7 @@ namespace ashes::gl4
 		void initialiseGeometryBuffers()const;
 
 	private:
-		void doBindVao()const;
+		void doSelectVao()const;
 		void doProcessMappedBoundDescriptorBuffersIn( VkDescriptorSet descriptor )const;
 		void doProcessMappedBoundDescriptorsBuffersOut()const;
 		void doProcessMappedBoundVaoBuffersIn()const;
@@ -304,7 +304,7 @@ namespace ashes::gl4
 			VboBindings boundVbos;
 			IboBinding boundIbo;
 			VkIndexType indexType;
-			GeometryBuffers * boundVao{ nullptr };
+			GeometryBuffers * selectedVao{ nullptr };
 			GeometryBuffersRefArray vaos;
 			VkDescriptorSetArray boundDescriptors;
 		};

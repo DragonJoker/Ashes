@@ -737,13 +737,21 @@ namespace ashes::gl4
 	void DeviceMemory::upload( VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		m_impl->upload( m_data, offset, size );
+		if ( m_dirty )
+		{
+			m_impl->upload( m_data, offset, size );
+			m_dirty = false;
+		}
 	}
 
 	void DeviceMemory::download( VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		m_impl->download( m_data, offset, size );
+		if ( m_dirty )
+		{
+			m_impl->download( m_data, offset, size );
+			m_dirty = false;
+		}
 	}
 
 	VkResult DeviceMemory::lock( VkDeviceSize offset
@@ -758,6 +766,7 @@ namespace ashes::gl4
 			? m_allocateInfo.allocationSize
 			: size;
 		m_mapped = *data != nullptr;
+		m_dirty = true;
 		return VK_SUCCESS;
 	}
 
@@ -765,7 +774,7 @@ namespace ashes::gl4
 		, VkDeviceSize size )const
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
-		m_impl->upload( m_data, offset, size );
+		upload( offset, size );
 		return VK_SUCCESS;
 	}
 
@@ -773,6 +782,7 @@ namespace ashes::gl4
 		, VkDeviceSize size )const
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
+		m_dirty = true;
 		return VK_SUCCESS;
 	}
 
@@ -780,7 +790,7 @@ namespace ashes::gl4
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		m_mapped = false;
-		m_impl->upload( m_data, m_mappedOffset, m_mappedSize );
+		upload( m_mappedOffset, m_mappedSize );
 	}
 
 	//************************************************************************************************

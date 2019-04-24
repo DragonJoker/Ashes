@@ -58,7 +58,11 @@ See LICENSE file in root folder
 #include <locale>
 #include <sstream>
 
-#define GL_LOG_CALLS 1
+#if !defined( NDEBUG )
+#	define GL_LOG_CALLS 1
+#else
+#	define GL_LOG_CALLS 0
+#endif
 
 namespace ashes::gl4
 {

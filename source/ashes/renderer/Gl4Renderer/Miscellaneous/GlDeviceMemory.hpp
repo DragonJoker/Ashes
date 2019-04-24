@@ -98,6 +98,7 @@ namespace ashes::gl4
 		GlMemoryMapFlags m_mapFlags;
 		std::unique_ptr< DeviceMemoryImpl > m_impl;
 		GLuint m_buffer{ GL_INVALID_INDEX };
+		mutable bool m_dirty = true;
 		mutable bool m_mapped = false;
 		mutable VkDeviceSize m_mappedOffset;
 		mutable VkDeviceSize m_mappedSize;
