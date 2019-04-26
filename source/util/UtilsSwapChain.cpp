@@ -98,25 +98,8 @@ namespace utils
 		}
 
 		ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Surface const & surface
-			, VkExtent2D const & size )
+			, VkSurfaceCapabilitiesKHR const & surfaceCaps )
 		{
-			VkExtent2D swapChainExtent{};
-			auto surfaceCaps = surface.getCapabilities();
-
-			// width et height valent soient tous les deux -1 ou tous les deux autre chose que -1.
-			if ( surfaceCaps.currentExtent.width == uint32_t( -1 ) )
-			{
-				// Si les dimensions de la surface sont indéfinies, elles sont initialisées
-				// aux dimensions des images requises.
-				swapChainExtent = size;
-			}
-			else
-			{
-				// Si les dimensions de la surface sont définies, alors les dimensions de la swap chain
-				// doivent correspondre.
-				swapChainExtent = surfaceCaps.currentExtent;
-			}
-
 			// Parfois, les images doivent être transformées avant d'être présentées (lorsque l'orientation
 			// du périphérique est différente de l'orientation par défaut, par exemple).
 			// Si la transformation spécifiée est différente de la transformation par défaut, le moteur de 
@@ -144,7 +127,7 @@ namespace utils
 				doGetImageCount( surface ),
 				surfaceFormat.format,
 				surfaceFormat.colorSpace,
-				swapChainExtent,
+				surfaceCaps.currentExtent,
 				1u,
 				surfaceCaps.supportedUsageFlags,
 				VK_SHARING_MODE_EXCLUSIVE,
@@ -155,6 +138,35 @@ namespace utils
 				false,
 				nullptr
 			};
+		}
+
+		ashes::SwapChainCreateInfo doGetSwapChainResetInfo( ashes::Surface const & surface
+			, VkExtent2D const & size )
+		{
+			auto surfaceCaps = surface.getCapabilities();
+			surfaceCaps.currentExtent = size;
+			return doGetSwapChainCreateInfo( surface, surfaceCaps );
+		}
+
+		ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Surface const & surface
+			, VkExtent2D const & size )
+		{
+			auto surfaceCaps = surface.getCapabilities();
+
+			// width et height valent soient tous les deux -1 ou tous les deux autre chose que -1.
+			if ( surfaceCaps.currentExtent.width == uint32_t( -1 ) )
+			{
+				// Si les dimensions de la surface sont indéfinies, elles sont initialisées
+				// aux dimensions des images requises.
+				surfaceCaps.currentExtent = size;
+			}
+			else
+			{
+				// Si les dimensions de la surface sont définies, alors les dimensions de la swap chain
+				// doivent correspondre.
+			}
+
+			return doGetSwapChainCreateInfo( surface, surfaceCaps );
 		}
 
 		ashes::ImageView doCloneView( ashes::ImageView const & view )
@@ -380,7 +392,7 @@ namespace utils
 		m_swapChainImages.clear();
 		m_renderingResources.clear();
 		m_swapChain.reset();
-		m_swapChain = m_device.createSwapChain( doGetSwapChainCreateInfo( *m_surface, m_dimensions ) );
+		m_swapChain = m_device.createSwapChain( doGetSwapChainResetInfo( *m_surface, m_dimensions ) );
 		m_swapChainImages = m_swapChain->getImages();
 
 		for ( uint32_t i = 0u; i < uint32_t( m_swapChainImages.size() ); ++i )

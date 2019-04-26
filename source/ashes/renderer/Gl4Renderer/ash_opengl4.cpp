@@ -4051,7 +4051,7 @@ namespace ashes::gl4
 #include <common/VulkanFunctionsList.inl>
 				result = VK_SUCCESS;
 
-				description.support.priority = 5u;
+				description.support.priority = 7u;
 				description.support.supported = VK_TRUE;
 			}
 

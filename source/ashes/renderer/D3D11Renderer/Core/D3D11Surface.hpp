@@ -19,6 +19,7 @@ namespace ashes::d3d11
 
 		VkSurfaceCapabilitiesKHR getCapabilities( VkPhysicalDevice physicalDevice )const
 		{
+			m_currentPhysicalDevice = VK_NULL_HANDLE;
 			doUpdate( physicalDevice );
 			return m_surfaceCapabilities;
 		}

@@ -4052,7 +4052,7 @@ namespace ashes::d3d11
 #include <common/VulkanFunctionsList.inl>
 				result = VK_SUCCESS;
 
-				description.support.priority = 15u;
+				description.support.priority = 6u;
 				description.support.supported = VK_TRUE;
 			}
 
